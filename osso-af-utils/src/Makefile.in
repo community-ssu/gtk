@@ -163,7 +163,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = \
+waitdbus_INCLUDES = \
 	`pkg-config --cflags dbus-1` \
 	-I/usr/X11R6/include
 

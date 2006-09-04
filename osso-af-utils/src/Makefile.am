@@ -1,6 +1,7 @@
 sbin_PROGRAMS = waitdbus waitx runas fb-progress temp-reaper anim-shower
 bin_PROGRAMS = xset770 ageoffile
-INCLUDES = \
+
+waitdbus_INCLUDES = \
 	`pkg-config --cflags dbus-1` \
 	-I/usr/X11R6/include
 
