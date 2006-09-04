@@ -1921,7 +1921,7 @@ static void hildon_file_system_model_finalize(GObject * self)
 
     /* Disconnecting filesystem volumes-changed signal */
     if (g_signal_handler_is_connected (priv->filesystem,
-                                       priv->volumes_changed_handler));
+                                       priv->volumes_changed_handler))
       g_signal_handler_disconnect (priv->filesystem,
                                    priv->volumes_changed_handler);
 
@@ -2894,7 +2894,7 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
   const gchar *uri, GError **error)
 {
   GtkFileSystem *backend;
-  GtkFilePath *folder;
+  GtkFilePath *folder = NULL;
   GtkFilePath * uri_path = NULL;
   gchar *file = NULL;
   gchar *result = NULL;
