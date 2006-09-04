@@ -1,3 +1,11 @@
+2006-09-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_finalize): Removed semicolon after 'if'
+	condition. (N34414)
+	(hildon_file_system_model_autoname_uri): Initialize "folder" to
+	NULL. (N34414)
+
 2006-08-31  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
 
 	* hildon-file-system-model.c (link_file_folder): Added signal
