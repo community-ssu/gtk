@@ -1,4 +1,4 @@
-sbin_PROGRAMS = waitdbus waitx runas fb-progress temp-reaper
+sbin_PROGRAMS = waitdbus waitx runas fb-progress temp-reaper anim-shower
 bin_PROGRAMS = xset770 ageoffile
 INCLUDES = \
 	`pkg-config --cflags dbus-1` \
@@ -15,6 +15,12 @@ fb_progress_INCLUDES = \
 
 fb_progress_LDFLAGS = \
 	`pkg-config --libs libpng12`
+
+anim_shower_INCLUDES = \
+	`pkg-config --cflags gdk-2.0`
+
+anim_shower_LDFLAGS = \
+	`pkg-config --libs gdk-2.0`
 
 waitdbus_SOURCES = \
 	waitdbus.c \
@@ -37,6 +43,9 @@ runas_SOURCES = \
 fb_progress_SOURCES = \
 	fb-progress.c \
 	omapfb.h
+
+anim_shower_SOURCES = \
+	anim-shower.c
 
 ageoffile_SOURCES = \
 	ageoffile.c

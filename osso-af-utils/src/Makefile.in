@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
+SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -37,7 +37,7 @@ NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
 sbin_PROGRAMS = waitdbus$(EXEEXT) waitx$(EXEEXT) runas$(EXEEXT) \
-	fb-progress$(EXEEXT) temp-reaper$(EXEEXT)
+	fb-progress$(EXEEXT) temp-reaper$(EXEEXT) anim-shower$(EXEEXT)
 bin_PROGRAMS = xset770$(EXEEXT) ageoffile$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -54,6 +54,9 @@ PROGRAMS = $(bin_PROGRAMS) $(sbin_PROGRAMS)
 am_ageoffile_OBJECTS = ageoffile.$(OBJEXT)
 ageoffile_OBJECTS = $(am_ageoffile_OBJECTS)
 ageoffile_LDADD = $(LDADD)
+am_anim_shower_OBJECTS = anim-shower.$(OBJEXT)
+anim_shower_OBJECTS = $(am_anim_shower_OBJECTS)
+anim_shower_LDADD = $(LDADD)
 am_fb_progress_OBJECTS = fb-progress.$(OBJEXT)
 fb_progress_OBJECTS = $(am_fb_progress_OBJECTS)
 fb_progress_LDADD = $(LDADD)
@@ -76,6 +79,7 @@ DEFAULT_INCLUDES = -I. -I$(srcdir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ageoffile.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/anim-shower.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/fb-progress.Po ./$(DEPDIR)/runas.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/temp-reaper.Po ./$(DEPDIR)/waitdbus.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/waitx.Po ./$(DEPDIR)/xset770.Po
@@ -83,12 +87,12 @@ COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) \
-	$(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) \
-	$(xset770_SOURCES)
-DIST_SOURCES = $(ageoffile_SOURCES) $(fb_progress_SOURCES) \
-	$(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) \
-	$(waitx_SOURCES) $(xset770_SOURCES)
+SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) \
+	$(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) \
+	$(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
+DIST_SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) \
+	$(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) \
+	$(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -175,6 +179,12 @@ fb_progress_INCLUDES = \
 fb_progress_LDFLAGS = \
 	`pkg-config --libs libpng12`
 
+anim_shower_INCLUDES = \
+	`pkg-config --cflags gdk-2.0`
+
+anim_shower_LDFLAGS = \
+	`pkg-config --libs gdk-2.0`
+
 waitdbus_SOURCES = \
 	waitdbus.c \
 	waitdbus.h
@@ -196,6 +206,9 @@ runas_SOURCES = \
 fb_progress_SOURCES = \
 	fb-progress.c \
 	omapfb.h
+
+anim_shower_SOURCES = \
+	anim-shower.c
 
 ageoffile_SOURCES = \
 	ageoffile.c
@@ -375,6 +388,9 @@ clean-sbinPROGRAMS:
 ageoffile$(EXEEXT): $(ageoffile_OBJECTS) $(ageoffile_DEPENDENCIES) 
 	@rm -f ageoffile$(EXEEXT)
 	$(LINK) $(ageoffile_LDFLAGS) $(ageoffile_OBJECTS) $(ageoffile_LDADD) $(LIBS)
+anim-shower$(EXEEXT): $(anim_shower_OBJECTS) $(anim_shower_DEPENDENCIES) 
+	@rm -f anim-shower$(EXEEXT)
+	$(LINK) $(anim_shower_LDFLAGS) $(anim_shower_OBJECTS) $(anim_shower_LDADD) $(LIBS)
 fb-progress$(EXEEXT): $(fb_progress_OBJECTS) $(fb_progress_DEPENDENCIES) 
 	@rm -f fb-progress$(EXEEXT)
 	$(LINK) $(fb_progress_LDFLAGS) $(fb_progress_OBJECTS) $(fb_progress_LDADD) $(LIBS)
@@ -401,6 +417,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ageoffile.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/anim-shower.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fb-progress.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runas.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temp-reaper.Po@am__quote@

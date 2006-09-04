@@ -1,3 +1,11 @@
+osso-af-utils (1.5-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added a new program 'anim-shower' to show progress animation during
+    the first boot.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Sep 2006 17:14:24 +0300
+
 osso-af-utils (1.4-1) unstable; urgency=low
 
   * Corrected length of the bootup progress bar (N#22474).
