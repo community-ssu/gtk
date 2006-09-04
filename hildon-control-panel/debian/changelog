@@ -1,3 +1,9 @@
+hildon-control-panel (2.2.6-1) unstable; urgency=low
+
+   * Changed license header texts. Closes bug N#39397.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 04 Sep 2006 15:12:24 +0300
+
 hildon-control-panel (2.2.5-1) unstable; urgency=low
 
    * hildon-cp-applist.c: Really free the lists return by gconf
