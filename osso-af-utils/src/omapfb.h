@@ -1,5 +1,5 @@
 /*
- * File: drivers/video/omap/omapfb.h
+ * File: include/asm-arm/arch-omap/omapfb.h
  *
  * Framebuffer driver for TI OMAP boards
  *
@@ -24,6 +24,9 @@
 #ifndef __OMAPFB_H
 #define __OMAPFB_H
 
+#include <asm/ioctl.h>
+#include <asm/types.h>
+
 /* IOCTL commands. */
 
 #define OMAP_IOW(num, dtype)	_IOW('O', num, dtype)
@@ -31,86 +34,97 @@
 #define OMAP_IOWR(num, dtype)	_IOWR('O', num, dtype)
 #define OMAP_IO(num)		_IO('O', num)
 
-#define OMAPFB_FILLRECT		OMAP_IOW(0, struct fb_fillrect)
-#define OMAPFB_COPYAREA		OMAP_IOW(1, struct fb_copyarea)
-#define OMAPFB_IMAGEBLIT	OMAP_IOW(2, struct fb_image)
-
-#define OMAPFB_TRANSPARENT_BLIT	OMAP_IOW(30, struct fb_image)
 #define OMAPFB_MIRROR		OMAP_IOW(31, int)
-#define OMAPFB_SCALE		OMAP_IOW(32, struct fb_scale)
-#define OMAPFB_SELECT_VIS_FRAME	OMAP_IOW(33, int)
-#define OMAPFB_SELECT_SRC_FRAME OMAP_IOW(34, int)
-#define OMAPFB_SELECT_DST_FRAME	OMAP_IOW(35, int)
-#define OMAPFB_GET_FRAME_OFFSET	OMAP_IOWR(36, struct fb_frame_offset)
 #define OMAPFB_SYNC_GFX		OMAP_IO(37)
 #define OMAPFB_VSYNC		OMAP_IO(38)
-#define OMAPFB_LATE_ACTIVATE	OMAP_IO(39)
-#define OMAPFB_SET_UPDATE_MODE	OMAP_IOW(40, enum fb_update_mode)
-#define OMAPFB_UPDATE_WINDOW_OLD OMAP_IOW(41, struct fb_update_window_old)
-#define OMAPFB_GET_CAPS		OMAP_IOR(42, unsigned long)
-#define OMAPFB_GET_UPDATE_MODE	OMAP_IOW(43, enum fb_update_mode)
-#define OMAPFB_GET_GFX_STATUS	OMAP_IOR(44, unsigned long)
+#define OMAPFB_SET_UPDATE_MODE	OMAP_IOW(40, int)
+#define OMAPFB_UPDATE_WINDOW_OLD OMAP_IOW(41, struct omapfb_update_window_old)
+#define OMAPFB_GET_UPDATE_MODE	OMAP_IOW(43, int)
 #define OMAPFB_LCD_TEST		OMAP_IOW(45, int)
 #define OMAPFB_CTRL_TEST	OMAP_IOW(46, int)
-#define OMAPFB_UPDATE_WINDOW	OMAP_IOW(47, struct fb_update_window)
+#define OMAPFB_UPDATE_WINDOW	OMAP_IOW(47, struct omapfb_update_window)
+#define OMAPFB_SET_COLOR_KEY	OMAP_IOW(50, struct omapfb_color_key)
+#define OMAPFB_GET_COLOR_KEY	OMAP_IOW(51, struct omapfb_color_key)
+#define OMAPFB_SETUP_PLANE	OMAP_IOW(52, struct omapfb_plane_info)
+#define OMAPFB_QUERY_PLANE	OMAP_IOW(53, struct omapfb_plane_info)
 
-#define FBCAPS_GENERIC_MASK	0x00000fff
-#define FBCAPS_LCDC_MASK	0x00fff000
-#define FBCAPS_PANEL_MASK	0xff000000
+#define OMAPFB_CAPS_GENERIC_MASK	0x00000fff
+#define OMAPFB_CAPS_LCDC_MASK		0x00fff000
+#define OMAPFB_CAPS_PANEL_MASK		0xff000000
 
-#define FBCAPS_MANUAL_UPDATE	0x00001000
-#define FBCAPS_SET_BACKLIGHT	0x01000000
+#define OMAPFB_CAPS_MANUAL_UPDATE	0x00001000
+#define OMAPFB_CAPS_SET_BACKLIGHT	0x01000000
 
 /* Values from DSP must map to lower 16-bits */
-#define FB_FORMAT_MASK         0x00ff
-#define FB_FORMAT_FLAG_DOUBLE  0x0100
+#define OMAPFB_FORMAT_MASK         0x00ff
+#define OMAPFB_FORMAT_FLAG_DOUBLE  0x0100
 
-enum omapfb_gfx_status {
-	OMAPFB_GFX_STATUS_OK	= 0,
-	OMAPFB_GFX_STATUS_CHANGED
+#define OMAPFB_EVENT_READY	1
+#define OMAPFB_EVENT_DISABLED	2
+
+enum omapfb_color_format {
+	OMAPFB_COLOR_RGB565 = 0,
+	OMAPFB_COLOR_YUV422,
+	OMAPFB_COLOR_YUV420,
+	OMAPFB_COLOR_CLUT_8BPP,
+	OMAPFB_COLOR_CLUT_4BPP,
+	OMAPFB_COLOR_CLUT_2BPP,
+	OMAPFB_COLOR_CLUT_1BPP,
+	OMAPFB_COLOR_RGB444,
+	OMAPFB_COLOR_YUY422,
 };
 
-struct fb_copyarea_ext {
-	__u32 dx;
-	__u32 dy;
-	__u32 width;
-	__u32 height;
-	__u32 sx;
-	__u32 sy;
-	__u32 trans_color;
-	__u32 rev_dir;
+struct omapfb_update_window {
+	__u32 x, y;
+	__u32 width, height;
+	__u32 format;
 };
 
-struct fb_scale {
-	unsigned int xscale, yscale;
+struct omapfb_update_window_old {
+	__u32 x, y;
+	__u32 width, height;
 };
 
-struct fb_frame_offset {
-	unsigned int idx;
-	unsigned long offset;
+enum omapfb_plane {
+	OMAPFB_PLANE_GFX = 0,
+	OMAPFB_PLANE_VID1,
+	OMAPFB_PLANE_VID2,
 };
 
-struct fb_update_window_old {
-	unsigned int x, y;
-	unsigned int width, height;
+enum omapfb_channel_out {
+	OMAPFB_CHANNEL_OUT_LCD = 0,
+	OMAPFB_CHANNEL_OUT_DIGIT,
 };
 
-enum fb_color_format {
-	FB_COLOR_RGB565 = 0,
-	FB_COLOR_YUV422,
-	FB_COLOR_YUV420
+struct omapfb_plane_info {
+	__u32 pos_x;
+	__u32 pos_y;
+	__u8  enabled;
+	__u8  channel_out;
+	__u8  mirror;
+	__u8  reserved1;
+	__u32 out_width;
+	__u32 out_height;
+	__u32 reserved2[12];
 };
 
-struct fb_update_window {
-	unsigned int x, y;
-	unsigned int width, height;
-	unsigned int format;
+enum omapfb_color_key_type {
+	OMAPFB_COLOR_KEY_DISABLED = 0,
+	OMAPFB_COLOR_KEY_GFX_DST,
+	OMAPFB_COLOR_KEY_VID_SRC,
 };
 
-enum fb_update_mode {
-	FB_UPDATE_DISABLED = 0,
-	FB_AUTO_UPDATE,
-	FB_MANUAL_UPDATE
+struct omapfb_color_key {
+	__u8  channel_out;
+	__u32 background;
+	__u32 trans_key;
+	__u8  key_type;
+};
+
+enum omapfb_update_mode {
+	OMAPFB_UPDATE_DISABLED = 0,
+	OMAPFB_AUTO_UPDATE,
+	OMAPFB_MANUAL_UPDATE
 };
 
 #ifdef __KERNEL__
@@ -118,79 +132,159 @@ enum fb_update_mode {
 #include <linux/completion.h>
 #include <linux/interrupt.h>
 #include <linux/fb.h>
+#include <linux/mutex.h>
 
-#define OMAPFB_DEVICE "omapfb"
-#define OMAPFB_DRIVER "omapfb"
+#include <asm/arch/board.h>
 
-#define PRNERR(fmt, args...)  printk(KERN_ERR OMAPFB_DRIVER ": " fmt, ## args)
+#define OMAP_LCDC_INV_VSYNC             0x0001
+#define OMAP_LCDC_INV_HSYNC             0x0002
+#define OMAP_LCDC_INV_PIX_CLOCK         0x0004
+#define OMAP_LCDC_INV_OUTPUT_EN         0x0008
+#define OMAP_LCDC_HSVS_RISING_EDGE      0x0010
+#define OMAP_LCDC_HSVS_OPPOSITE         0x0020
 
-#define GFX_FIFO_SIZE 2
+#define OMAP_LCDC_SIGNAL_MASK		0x003f
 
-#define LCD_PANEL_TFT 0x01
+#define OMAP_LCDC_PANEL_TFT		0x0100
 
-#define OMAP_LCDC_INV_VSYNC             0x01
-#define OMAP_LCDC_INV_HSYNC             0x02
-#define OMAP_LCDC_INV_PIX_CLOCK         0x04
-#define OMAP_LCDC_INV_OUTPUT_EN         0x08
-#define OMAP_LCDC_HSVS_RISING_EDGE      0x10
-#define OMAP_LCDC_HSVS_OPPOSITE         0x20
+#define OMAPFB_PLANE_XRES_MIN		8
+#define OMAPFB_PLANE_YRES_MIN		8
 
-struct lcdc_video_mode {
-	u16	x_res, y_res;
-	u32	pixel_clock;	/* In kHz */
-	int	bpp;
-	u8	hsw;		/* Horizontal synchronization pulse width */
-	u8	hfp;		/* Horizontal front porch */
-	u8	hbp;		/* Horizontal back porch */
-	u8	vsw;		/* Vertical synchronization pulse width */
-	u8	vfp;		/* Vertical front porch */
-	u8	vbp;		/* Vertical back porch */
-	u8	acb;		/* ac-bias pin frequency */
-	u8	pcd;		/* Pixel clock divider (this will change) */
-	u8  flags;
-};
+#ifdef CONFIG_ARCH_OMAP1
+#define OMAPFB_PLANE_NUM		1
+#else
+#define OMAPFB_PLANE_NUM		3
+#endif
 
 struct omapfb_device;
 
 struct lcd_panel {
-	const char *name;
-	int  config;
-	int  signals;
-	struct lcdc_video_mode *video_mode;
+	const char	*name;
+	int		config;		/* TFT/STN, signal inversion */
+	int		bpp;		/* Pixel format in fb mem */
+	int		data_lines;	/* Lines on LCD HW interface */
 
-	int  (*init)	(struct lcd_panel *panel);
-	void (*cleanup)	(struct lcd_panel *panel);
-	int  (*enable)	(struct lcd_panel *panel);
-	void (*disable)	(struct lcd_panel *panel);
-	unsigned long (*get_caps)(struct lcd_panel *panel);
-	int	      (*set_bklight_level)(struct lcd_panel *panel,
-					   unsigned int level);
-	unsigned int  (*get_bklight_level)(struct lcd_panel *panel);
-	unsigned int  (*get_bklight_max)  (struct lcd_panel *panel);
-	int  (*run_test)(struct omapfb_device *fbdev, int test_num);
+	int		x_res, y_res;
+	int		pixel_clock;	/* In kHz */
+	int		hsw;		/* Horizontal synchronization
+					   pulse width */
+	int		hfp;		/* Horizontal front porch */
+	int		hbp;		/* Horizontal back porch */
+	int		vsw;		/* Vertical synchronization
+					   pulse width */
+	int		vfp;		/* Vertical front porch */
+	int		vbp;		/* Vertical back porch */
+	int		acb;		/* ac-bias pin frequency */
+	int		pcd;		/* pixel clock divider.
+					   Obsolete use pixel_clock instead */
+
+	int		(*init)		(struct lcd_panel *panel,
+					 struct omapfb_device *fbdev);
+	void		(*cleanup)	(struct lcd_panel *panel);
+	int		(*enable)	(struct lcd_panel *panel);
+	void		(*disable)	(struct lcd_panel *panel);
+	unsigned long	(*get_caps)	(struct lcd_panel *panel);
+	int		(*set_bklight_level)(struct lcd_panel *panel,
+					     unsigned int level);
+	unsigned int	(*get_bklight_level)(struct lcd_panel *panel);
+	unsigned int	(*get_bklight_max)  (struct lcd_panel *panel);
+	int		(*run_test)	(struct lcd_panel *panel, int test_num);
 };
 
 struct omapfb_device;
 
+struct extif_timings {
+	int cs_on_time;
+	int cs_off_time;
+	int we_on_time;
+	int we_off_time;
+	int re_on_time;
+	int re_off_time;
+	int we_cycle_time;
+	int re_cycle_time;
+	int cs_pulse_width;
+	int access_time;
+
+	int clk_div;
+
+	u32 tim[5];		/* set by extif->convert_timings */
+
+	int converted;
+};
+
+struct lcd_ctrl_extif {
+	int  (*init)		(struct omapfb_device *fbdev);
+	void (*cleanup)		(void);
+	void (*get_clk_info)	(u32 *clk_period, u32 *max_clk_div);
+	int  (*convert_timings)	(struct extif_timings *timings);
+	void (*set_timings)	(const struct extif_timings *timings);
+	void (*set_bits_per_cycle)(int bpc);
+	void (*write_command)	(const void *buf, unsigned int len);
+	void (*read_data)	(void *buf, unsigned int len);
+	void (*write_data)	(const void *buf, unsigned int len);
+	void (*transfer_area)	(int width, int height,
+				 void (callback)(void * data), void *data);
+
+	unsigned long		max_transmit_size;
+};
+
+struct omapfb_notifier_block {
+	struct notifier_block	nb;
+	void			*data;
+	int			plane_idx;
+};
+
+typedef int (*omapfb_notifier_callback_t)(struct notifier_block *,
+					  unsigned long event,
+					  void *fbi);
+
+struct omapfb_mem_region {
+	dma_addr_t	paddr;
+	void		*vaddr;
+	unsigned long	size;
+	int		alloc:1;
+};
+
+struct omapfb_mem_desc {
+	int				region_cnt;
+	struct omapfb_mem_region	region[OMAPFB_PLANE_NUM];
+};
+
 struct lcd_ctrl {
 	const char	*name;
 	void		*data;
-	int		(*init)		  (struct omapfb_device *fbdev);
-	void		(*cleanup)	  (struct omapfb_device *fbdev);
-	void		(*get_mem_layout) (struct omapfb_device *fbdev,
-					   unsigned long *size,
-					   unsigned long *fb_org);
-	unsigned long	(*get_caps)	  (struct omapfb_device *fbdev);
-	int		(*set_update_mode)(struct omapfb_device *fbdev,
-					   enum fb_update_mode mode);
-	enum fb_update_mode (*get_update_mode)(struct omapfb_device *fbdev);
-	int		(*update_window)  (struct omapfb_device *fbdev,
-					   struct fb_update_window *win);
-	void		(*suspend)	  (struct omapfb_device *fbdev);
-	void		(*resume)	  (struct omapfb_device *fbdev);
-	void		(*change_mode)	  (struct omapfb_device *fbdev);
-	int		(*run_test)	  (struct omapfb_device *fbdev,
-					   int test_num);
+
+	int		(*init)		  (struct omapfb_device *fbdev,
+					   int ext_mode,
+					   struct omapfb_mem_desc *req_md);
+	void		(*cleanup)	  (void);
+	void		(*bind_client)	  (struct omapfb_notifier_block *nb);
+	unsigned long	(*get_caps)	  (void);
+	int		(*set_update_mode)(enum omapfb_update_mode mode);
+	enum omapfb_update_mode (*get_update_mode)(void);
+	int		(*setup_plane)	  (int plane, int channel_out,
+					   unsigned long offset,
+					   int screen_width,
+					   int pos_x, int pos_y, int width,
+					   int height, int color_mode);
+	int		(*set_scale)	  (int plane,
+					   int orig_width, int orig_height,
+					   int out_width, int out_height);
+	int		(*enable_plane)	  (int plane, int enable);
+	int		(*update_window)  (struct fb_info *fbi,
+					   struct omapfb_update_window *win,
+					   void (*callback)(void *),
+					   void *callback_data);
+	void		(*sync)		  (void);
+	void		(*suspend)	  (void);
+	void		(*resume)	  (void);
+	int		(*run_test)	  (int test_num);
+	int		(*setcolreg)	  (u_int regno, u16 red, u16 green,
+					   u16 blue, u16 transp,
+					   int update_hw_mem);
+	int		(*set_color_key)  (struct omapfb_color_key *ck);
+	int		(*get_color_key)  (struct omapfb_color_key *ck);
+
 };
 
 enum omapfb_state {
@@ -199,156 +293,59 @@ enum omapfb_state {
 	OMAPFB_ACTIVE	= 100
 };
 
-struct gfx_lchannel {
-	int			lch_num;
-	struct gfx_lchannel	*next, *prev;
-};
-
-struct gfx_dma {
-	spinlock_t		spinlock;
-
-	struct completion	sync_complete;		/* Signalled when the
-							   fifo gets empty */
-	volatile int		done;			/* Indicates the
-							   end of a DMA chain
-							   transfer */
-	struct gfx_lchannel	fifo[GFX_FIFO_SIZE];
-	struct gfx_lchannel	*f_head, *f_tail;	/* Process and insert
-							   points on the
-							   fifo */
-	struct gfx_lchannel	*f_chain_end;		/* Points to the new
-							   chain end */
-	struct semaphore	f_free;			/* # of free lch-s */
-	int			f_run;			/* # of active lch-s */
-	int			f_wait;			/* # of lch-s
-							   waiting */
-	struct tasklet_struct	dequeue_tasklet;	/* Processes new DMA
-							   chain  transfers on
-							   the fifo */
-};
-
-#define OMAPFB_RQUEUE_SIZE 20
-
-struct omapfb_fillrect_params
-{
-	unsigned long	dst;
-	unsigned int	width;
-	unsigned int	height;
-	u32		color;
-};
-
-struct omapfb_copyarea_params
-{
-	unsigned long	src;
-	unsigned long	dst;
-	unsigned int	width;
-	unsigned int	height;
-	u32		trans_color;
-	int		flags;
-};
-
-struct omapfb_imageblit_params
-{
-	const void	*img;
-	unsigned int	dst;
-	unsigned int	width;
-	unsigned int	height;
-	u32		bg_color;
-	int		flags;
-};
-
-struct omapfb_update_window_params
-{
-	struct fb_update_window	win;
-};
-
-union req_params
-{
-	/* All possible requests are to be listed here */
-	struct omapfb_fillrect_params		fillrect;
-	struct omapfb_copyarea_params		copyarea;
-	struct omapfb_update_window_params	update_window;
-	struct omapfb_imageblit_params		imageblit;
-};
-
-struct omapfb_request
-{
-	struct list_head	entry;
-	void			(*function)(struct omapfb_device *fbdev,
-					    void *par);
-	union req_params	par;
-};
-
-struct omapfb_rqueue
-{
-	spinlock_t		list_lock;
-	struct semaphore	queue_sema;
-	struct completion	process_end;
-	struct list_head	free_list;
-	struct list_head	pending_list;
-	int			running;
-	struct omapfb_request	req_pool[OMAPFB_RQUEUE_SIZE];
-	struct work_struct	work;
-	struct omapfb_device	*fbdev;
+struct omapfb_plane_struct {
+	int				idx;
+	struct omapfb_plane_info	info;
+	enum omapfb_color_format	color_mode;
+	struct omapfb_device		*fbdev;
 };
 
 struct omapfb_device {
 	int			state;
 	int                     ext_lcdc;               /* Using external
                                                            LCD controller */
-	void			*lcddma_base;		/* MPU virtual
-							   address */
-	dma_addr_t		lcddma_handle;		/* Bus physical
-							   address */
-	unsigned long		lcddma_mem_size;
-	unsigned long		palette_org;		/* Palette offset into
-							   lcddma_base/handle */
-	unsigned long		frame0_org, frame1_org;	/* Frame offsets for
-							   back and front
-							   frame buffers into
-							   lcddma_base/handle */
-	unsigned long		vis_frame_org;		/* Offset of visible
-							   frame buffer.
-							   = frame0/1_org */
-	unsigned long		src_frame_org;		/* Offset of source
-							   frame for drawing
-							   operations.
-							   = frame0/1_org */
-	unsigned long		dst_frame_org;		/* Offset of dest
-							   frame for drawing
-							   operations.
-							   = frame0/1_org */
-	unsigned long		view_org;		/* View offset into
-							   lcddma_base/handle+
-							   vis_frame_org.
-							   Used for panning */
-	unsigned long		palette_size;
-	int			xscale, yscale, mirror;	/* transformations.
-							   rotate is stored in
-							   fb_info->var */
+	struct mutex		rqueue_mutex;
 
+	int			palette_size;
 	u32			pseudo_palette[17];
 
-	struct gfx_dma		gfx;			/* Accelerator */
-	struct omapfb_rqueue	rqueue;
 	struct lcd_panel	*panel;			/* LCD panel */
 	struct lcd_ctrl         *ctrl;			/* LCD controller */
-
-	struct fb_info		*fb_info;		/* Linux fbdev
-							   framework data */
+	struct lcd_ctrl		*int_ctrl;		/* internal LCD ctrl */
+	struct lcd_ctrl_extif	*ext_if;		/* LCD ctrl external
+							   interface */
 	struct device		*dev;
+
+	struct omapfb_mem_desc		mem_desc;
+	struct fb_info			*fb_info[OMAPFB_PLANE_NUM];
 };
 
-extern struct lcd_panel h3_panel;
-extern struct lcd_panel h2_panel;
-extern struct lcd_panel p2_panel;
-extern struct lcd_panel osk_panel;
-extern struct lcd_panel innovator1610_panel;
-extern struct lcd_panel innovator1510_panel;
+struct omapfb_platform_data {
+	struct omap_lcd_config		lcd;
+	struct omapfb_mem_desc		mem_desc;
+};
 
-extern struct lcd_ctrl omapfb_lcdc_ctrl;
+#ifdef CONFIG_ARCH_OMAP1
+extern struct lcd_ctrl omap1_lcd_ctrl;
+#else
+extern struct lcd_ctrl omap2_disp_ctrl;
+#endif
 
+extern void omapfb_register_panel(struct lcd_panel *panel);
 extern void omapfb_write_first_pixel(struct omapfb_device *fbdev, u16 pixval);
+extern void omapfb_notify_clients(struct omapfb_device *fbdev,
+				  unsigned long event);
+extern int  omapfb_register_client(struct omapfb_notifier_block *nb,
+				   omapfb_notifier_callback_t callback,
+				   void *callback_data);
+extern int  omapfb_unregister_client(struct omapfb_notifier_block *nb);
+extern int  omapfb_update_window_async(struct fb_info *fbi,
+				       struct omapfb_update_window *win,
+				       void (*callback)(void *),
+				       void *callback_data);
+
+/* in arch/arm/plat-omap/devices.c */
+extern void omapfb_reserve_mem(void);
 
 #endif /* __KERNEL__ */
 

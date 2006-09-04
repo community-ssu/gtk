@@ -47,6 +47,9 @@
  *   - Remove remains of "night rider" mode
  * 2006-03-22
  *   - Fix fd leak and add more debugging output
+ * 2006-09-04
+ *   - Update to new omapfb.h header
+ *   - Fix mmap() return value checking
  * 
  * This is free software; you can redistribute it and/or modify it
  * under the terms specified in the GNU Public Licence (GPL).
@@ -88,14 +91,16 @@
 #include <linux/vt.h>
 #include <linux/kd.h>
 #include <png.h>
-#include "omapfb.h"	/* stuff needed by fb_flush() */
-
+/* stuff needed by fb_flush().
+ */
+#include "omapfb.h"
+ 
 #define PROGRESS_HEIGHT_MAX 200	/* max. height for image progressbar */
 #define PROGRESS_HEIGHT 20	/* height for non-image progressbar */
 #define PROGRESS_ADVANCE 8	/* advance this many pixels at the time */
 
-/* VT switch takes some time during which the progress bar cannot
- * be updated.  For N770 it's about 500ms
+/* X server VT switch takes some time during which the progress bar
+ * cannot be updated.  For N770 it's about 500ms
  */
 #define VT_SWITCH_DELAY 500
 
@@ -398,7 +403,7 @@ static myfb_t* fb_init(void)
 	Fb.ht = vinfo.yres;
 
 	Fb.mem = mmap(0, Fb.size, PROT_READ | PROT_WRITE, MAP_SHARED, Fb.fd, 0);
-	if (Fb.mem < NULL) {
+	if (Fb.mem == MAP_FAILED) {
 		perror("mmap(" FB_DEV ")");
 		close(Fb.fd);
 		return NULL;
@@ -453,14 +458,14 @@ static void fb_dirty(int x1, int y1, int x2, int y2)
 
 static void fb_flush(void)
 {
-	struct fb_update_window update;
+	struct omapfb_update_window update;
 
 	if (Fb.mem && Fb.dirty) {
 		update.x = Fb.dx1;
 		update.y = Fb.dy1;
 		update.width = Fb.dx2 - Fb.dx1;
 		update.height = Fb.dy2 - Fb.dy1;
-		update.format = FB_COLOR_RGB565;
+		update.format = OMAPFB_COLOR_RGB565;
 		if (Options.verbose) {
 			printf("fb-progress: update %dx%d+%d+%d\n",
 			       update.width, update.height,

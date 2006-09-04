@@ -3,6 +3,7 @@ osso-af-utils (1.5-1) unstable; urgency=low
   * UNRELEASED
   * Added a new program 'anim-shower' to show progress animation during
     the first boot.
+  * Updated fb-progress for a new omapfb.h.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Sep 2006 17:14:24 +0300
 
