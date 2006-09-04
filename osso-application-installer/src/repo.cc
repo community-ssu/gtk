@@ -729,10 +729,7 @@ maybe_add_new_repo_cont (bool res, void *data)
       repo_line *old_repo = c->find_repo (ac->new_repo->deb_line);
 
       if (old_repo)
-	{
-	  annoy_user (_("Catalogue already in use."));
-	  ac->cont (true, ac->cont_data);
-	}
+	ac->cont (true, ac->cont_data);
       else
 	{
 	  repo_line *r = ac->new_repo;
