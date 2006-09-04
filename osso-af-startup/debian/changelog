@@ -1,3 +1,10 @@
+osso-af-startup (1.24-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added a new progress indicator for the first boot. Fixes: NB#37000
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Sep 2006 18:45:13 +0300
+
 osso-af-startup (1.23-1) unstable; urgency=low
 
   * Added new file locale.orig for RFS/ROS and CUD operations.

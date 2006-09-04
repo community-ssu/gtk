@@ -55,6 +55,8 @@ start)
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
       source $AF_INIT_DIR/startup-wizard.sh start
       source $AF_INIT_DIR/af-defines.sh ;# re-read locale variables
+      # show progress animation
+      /usr/sbin/anim-shower 10000 &
       # restart processes because the locale might have changed
       source $AF_INIT_DIR/after-suw-process-restart.sh
     fi
