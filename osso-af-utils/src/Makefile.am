@@ -4,17 +4,8 @@ sbin_PROGRAMS = waitdbus waitx runas fb-progress temp-reaper anim-shower
 INCLUDES = `pkg-config --cflags gdk-2.0` \
 	   `pkg-config --cflags dbus-1`
 
-waitx_INCLUDES = -I/usr/X11R6/include
-
-xset770_INCLUDES = \
-	`pkg-config --cflags x11 xsp`
-
-fb_progress_INCLUDES = \
-	`pkg-config --cflags libpng12`
-
 xset770_LDFLAGS = \
 	`pkg-config --libs x11 xsp`
-
 
 fb_progress_LDFLAGS = \
 	`pkg-config --libs libpng12`
