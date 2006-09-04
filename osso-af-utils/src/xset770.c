@@ -50,7 +50,7 @@ set_keyrepeat (int key, int val)
 }
 
 
-void usage()
+static void usage(void)
 {
   fprintf(stderr, "usage : -r <key> <value>\n");
   exit (1);
