@@ -1,12 +1,11 @@
 libosso (1.17-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added detailed instructions for implementing state saving and autosaving
     to libosso.h (finally).
   * Fixed sometimes occurring infinite loop in _read_state() and added
     some missing EINTR handling. Fixes: NB#38937
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 30 Aug 2006 13:08:25 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 04 Sep 2006 19:30:51 +0300
 
 libosso (1.16-1) unstable; urgency=low
 
