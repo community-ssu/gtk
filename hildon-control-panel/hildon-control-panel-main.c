@@ -827,7 +827,7 @@ hcp_topmost_status_change (GObject * gobject,
     } else {
         /* Do not set ourselves as background killable if we are
          * running an applet which doesn't implementing state-saving */
-        if (!hcp->running || hcp->focused_item->save_state)
+        if (!hcp->focused_item->running || hcp->focused_item->save_state)
         {
             hcp_save_state (hcp, FALSE);
             hildon_program_set_can_hibernate (program, TRUE);
