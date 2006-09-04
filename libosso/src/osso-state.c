@@ -287,12 +287,24 @@ _read_state_read_again:
     if (bytes_read == -1 && errno == EINTR) {
         goto _read_state_read_again;
     }
+    if (bytes_read > 0 && bytes_read < sizeof(guint32)) {
+        /* Not even sizeof(guint32) bytes read: seek back to
+         * beginning and try again */
+        if (lseek(fd, 0, SEEK_SET) == (off_t)-1) {
+            ULOG_ERR_F("lseek(): %s", strerror(errno));
+            ret = OSSO_ERROR;
+            goto _get_state_ret1;
+        } else {
+            goto _read_state_read_again;
+        }
+    }
     if (bytes_read != sizeof(guint32)) {
 	ULOG_ERR_F("Error reading size from statefile '%s': %s",
 		   statefile, strerror(errno));
 	ret = OSSO_ERROR_STATE_SIZE;
 	goto _get_state_ret1;
     }
+
     if(state->state_size == 0) {
 	state->state_size = size;
     }
