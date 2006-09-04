@@ -36,9 +36,9 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
+bin_PROGRAMS = xset770$(EXEEXT) ageoffile$(EXEEXT)
 sbin_PROGRAMS = waitdbus$(EXEEXT) waitx$(EXEEXT) runas$(EXEEXT) \
 	fb-progress$(EXEEXT) temp-reaper$(EXEEXT) anim-shower$(EXEEXT)
-bin_PROGRAMS = xset770$(EXEEXT) ageoffile$(EXEEXT)
 subdir = src
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -163,27 +163,24 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-waitdbus_INCLUDES = \
-	`pkg-config --cflags dbus-1`
+INCLUDES = `pkg-config --cflags gdk-2.0` \
+	   `pkg-config --cflags dbus-1`
 
 waitx_INCLUDES = -I/usr/X11R6/include
 xset770_INCLUDES = \
 	`pkg-config --cflags x11 xsp`
 
-xset770_LDFLAGS = \
-	`pkg-config --libs x11 xsp`
-
 fb_progress_INCLUDES = \
 	`pkg-config --cflags libpng12`
+
+xset770_LDFLAGS = \
+	`pkg-config --libs x11 xsp`
 
 fb_progress_LDFLAGS = \
 	`pkg-config --libs libpng12`
 
-anim_shower_INCLUDES = \
-	`pkg-config --cflags gdk-2.0`
-
 anim_shower_LDFLAGS = \
-	`pkg-config --libs gdk-2.0`
+	`pkg-config --cflags --libs gdk-2.0`
 
 waitdbus_SOURCES = \
 	waitdbus.c \
@@ -319,9 +316,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign  src/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign  src/Makefile
+	  $(AUTOMAKE) --gnu  src/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
