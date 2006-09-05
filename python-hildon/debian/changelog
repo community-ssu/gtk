@@ -1,3 +1,11 @@
+python-hildon (0.8.7-1osso1) unstable; urgency=low
+
+  * employed new build system based on distutils
+  * removed configure.in, Makefile.am
+  * added setup.py
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Tue,  5 Sep 2006 18:01:41 -0300
+
 python-hildon (0.8.6-1osso1) unstable; urgency=low
 
   * fixed depends on shlibs
