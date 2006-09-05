@@ -1,3 +1,14 @@
+2006-09-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c (node_needs_reload): New,
+	factored out of hildon_file_system_model_delayed_add_children.
+	(hildon_file_system_model_delayed_add_children): Use it.  Call
+	handle_possibly_finished_node when the reload request is ignored
+	so that the "finished-loading" signal is emitted for every node
+	that enters the reload queue. (N31278)
+	(_hildon_file_system_model_queue_reload): Use it to reject
+	unneeded reloads.
+
 2006-09-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-model.c

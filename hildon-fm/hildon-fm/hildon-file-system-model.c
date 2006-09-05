@@ -436,6 +436,37 @@ hildon_file_system_model_delayed_add_node_list(HildonFileSystemModel *
     }
 }
 
+static gboolean
+node_needs_reload (HildonFileSystemModel *model, GNode *node,
+		   gboolean force)
+{
+  HildonFileSystemModelNode *model_node;
+  time_t current_time;
+  gboolean removable;
+
+  model_node = node->data;
+  g_assert(model_node != NULL);
+
+  /* Check if we really need to load children. We don't want 
+     to reload if not needed and we don't want to restart existing
+     async loadings. We also don't try to access gateway if not accessed yet.
+  */
+  if ((model_node->location && !model_node->accessed &&
+       hildon_file_system_special_location_requires_access (model_node->location))
+      || model_node->folder == NULL
+      || !is_node_loaded (model->priv, node))
+    return FALSE;
+  
+  current_time = time(NULL);
+  removable = !gtk_file_system_path_is_local (model->priv->filesystem, 
+					      model_node->path);
+
+  return (model_node->load_time == 0
+	  || force
+	  || ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD)
+	      && (removable || model_node->error)));
+}
+
 /* We are not any more called directly by GtkTreeModel interface methods, so we can modify
    model and send notifications */
 static void
@@ -443,32 +474,22 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
                                               model, GNode * node, gboolean force)
 {
     HildonFileSystemModelNode *model_node;
-    time_t current_time;
-    gboolean removable, result;
+    gboolean result;
 
     model_node = node->data;
     g_assert(model_node != NULL);
 
-    /* Check if we really need to load children. We don't want 
-        to reload if not needed and we don't want to restart existing
-        async loadings. We also don't try to access gateway if not accessed yet.  */
-    if ((model_node->location && !model_node->accessed &&
-        hildon_file_system_special_location_requires_access(model_node->location)) ||
-      model_node->folder == NULL ||
-      !is_node_loaded(model->priv, node))
-      return;
-
-    current_time = time(NULL);
-    removable = !gtk_file_system_path_is_local(model->priv->filesystem, 
-        model_node->path);
-
-    if (model_node->load_time == 0 || force || 
-       ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD) &&
-        (removable || model_node->error)))
+    if (!node_needs_reload (model, node, force))
+      {
+	handle_possibly_finished_node (node);
+	return;
+      }
+    
+    /* Unix backend can fail to set children to NULL if it encounters error */
     {
-      /* Unix backend can fail to set children to NULL if it encounters error */
       GSList *children = NULL;
       guint *banner_id = &(CAST_GET_PRIVATE(model)->banner_timeout_id);
+      time_t current_time = time(NULL);
 
       g_clear_error(&model_node->error);
       _hildon_file_system_prepare_banner(banner_id);
@@ -476,7 +497,9 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       /* List children do not work reliably with bluetooth connections. It can
          still succeed, even though the connection has died already. This
          if statement can be removed when the backend works better... */
-      if (removable)
+      
+      if (!gtk_file_system_path_is_local (model->priv->filesystem, 
+					  model_node->path))
       {
         unlink_file_folder(node);
         if (!link_file_folder(node, model_node->path, &model_node->error))
@@ -2629,14 +2652,21 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
   GtkTreeIter *parent_iter, gboolean force)
 {
+  GNode *node;
+
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
   g_return_if_fail(parent_iter != NULL);
   g_return_if_fail(parent_iter->stamp == model->priv->stamp);
 
-  if (g_queue_find(model->priv->reload_list, parent_iter->user_data) == NULL)
+  node = parent_iter->user_data;
+
+  if (!node_needs_reload (model, node, force))
+    return;
+
+  if (g_queue_find(model->priv->reload_list, node) == NULL)
   {
     hildon_file_system_model_ensure_idle(model);
-    g_queue_push_tail(model->priv->reload_list, parent_iter->user_data);
+    g_queue_push_tail(model->priv->reload_list, node);
   }
 }
 
@@ -2900,7 +2930,6 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
   gchar *result = NULL;
   GtkTreeIter iter;
   
-
   g_return_val_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model), NULL);
   g_return_val_if_fail(uri != NULL, NULL);
 
@@ -2970,7 +2999,6 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
  
   gtk_file_path_free(folder);
  
-  
   return result;
 }
 
