@@ -1,0 +1,25 @@
+diff -ur dbus/glib/dbus-gtype-specialized.h dbus.new/glib/dbus-gtype-specialized.h
+--- dbus/glib/dbus-gtype-specialized.h	2006-05-05 18:59:24.000000000 +0300
++++ dbus.new/glib/dbus-gtype-specialized.h	2006-09-05 16:45:15.521607040 +0300
+@@ -47,7 +47,7 @@
+ GType          dbus_g_type_get_map_key_specialization       (GType       gtype);
+ GType          dbus_g_type_get_map_value_specialization     (GType       gtype);
+ GType          dbus_g_type_get_struct_member_type           (GType       gtype,
+-                                                             guint       index);
++                                                             guint       idx);
+ guint          dbus_g_type_get_struct_size                  (GType       gtype);
+ 
+ typedef void   (*DBusGTypeSpecializedCollectionIterator)    (const GValue *val,
+@@ -92,10 +92,10 @@
+ 							     gpointer                                user_data);
+ 
+ gboolean       dbus_g_type_struct_get_member            (const GValue *value,
+-                                                         guint index,
++                                                         guint idx,
+                                                          GValue *dest);
+ gboolean       dbus_g_type_struct_set_member            (GValue *value,
+-                                                         guint index,
++                                                         guint idx,
+                                                          const GValue *src);
+ 
+ gboolean       dbus_g_type_struct_get                   (const GValue *value,

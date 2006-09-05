@@ -1,3 +1,10 @@
+dbus (0.61-osso18) experimental; urgency=low
+
+  * UNRELEASED
+  * Fixed compilation with -Wshadow. Fixes: NB#22902
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 05 Sep 2006 16:50:32 +0300
+
 dbus (0.61-osso17) experimental; urgency=low
 
   * Removed compilation of asserts and the forced initialisation of threads.
