@@ -1,3 +1,14 @@
+maemo-af-desktop (2.9.24-1) unstable; urgency=low
+
+  * hildon-home/layout-manager.c:
+  * hildon-home/hildon-home-titlebar.[ch]:
+    - hide the accept and cancel layout during applet loading
+    preventing desktop crashing.  Fixes (NB#39029)
+  * hildon-home/hildon-home-main.c: Force creation of user's
+    hildon-home configuration folder.
+
+ -- Moises Martinez <moises.martinzes@nokia.com>  Wed,  6 Sep 2006 14:43:46 +0300
+
 maemo-af-desktop (2.9.23-1) unstable; urgency=low
 
   Imported Hildon Home refactoring
