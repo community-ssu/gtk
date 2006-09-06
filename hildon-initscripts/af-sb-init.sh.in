@@ -1,4 +1,25 @@
 #!/bin/sh
+# Script for starting Maemo environment in Scratchbox.
+#
+# This file is part of osso-af-sb-startup
+#
+# Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+#
+# Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License 
+# version 2 as published by the Free Software Foundation. 
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+# 02110-1301 USA
 
 STOP=FALSE
 START=FALSE
@@ -89,6 +110,15 @@ if [ -e /targets/links/scratchbox.config ]; then
   fi
 fi
 
+# check DISPLAY before starting anything
+if [ "x$START" = "xTRUE" -a "x$DISPLAY" = "x" ]; then
+  echo "$0: Error, DISPLAY is not defined"
+  echo "DISPLAY must be host:display when using sbrsh in Scratchbox and "
+  echo "X forwarding will be used. Set display to :0 (the display number "
+  echo "of your Desktop X) to launch Xephyr."
+  exit 1
+fi
+
 # we need to save these, because the source commands below messes them up
 TMPSTART=$START
 TMPSTOP=$STOP
@@ -141,14 +171,6 @@ if [ "$START" = "TRUE" ]; then
   if [ "x$MYDOCSDIR" = "x" ]; then
       echo "$0: Error, MYDOCSDIR is not defined"
       exit 2
-  fi
-
-  if [ "x$DISPLAY" = "x" ]; then
-      echo "$0: Error, DISPLAY is not defined"
-      echo "DISPLAY must be host:display when using sbrsh in Scratchbox and "
-      echo "X forwarding will be used. Set display to :0 (the display number "
-      echo "of your Desktop X) to launch Xephyr."
-      exit 1
   fi
 
   host=`echo $DISPLAY | cut -f 1 -d ':'`
