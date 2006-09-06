@@ -202,11 +202,9 @@ documented in the header files.
 BUGS
 ----
 
-- "Cataloque needs to be enabled".
-- "Catalogue already present".
+- https needs to be trusted, even without key.
 - avoid cache refresh when provable unnecessary,
   add "version" to .install for that
-- https needs to be trusted, even without key.
 
 - use doubles for sizes, maybe
 - "No catalogue in use."
