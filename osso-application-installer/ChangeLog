@@ -1,5 +1,17 @@
 2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (refresh_updating_banner): New, for showing/hiding
+	the banner based on the current state.
+	(updating_timeout): Increase updating_level here and call
+	refresh_updating_banner ...
+	(show_updating): ... and not here.
+	(hide_updating): Let refresh_updating_banner do the work.
+	(allow_updating_banner, allow_updating, prevent_updating): New.
+	* src/main.cc (show_view): Call allow_updating so that it is the
+	default.
+	(make_main_view): Call prevent_updating to disallow the banner
+	from ever showing in the main view. (N32230)
+	
 	* src/repo.cc (add_entry): Use a non-editable, non-focusable
 	GtkTextView instead of a GtkLabel for displaying read only
 	entries.
