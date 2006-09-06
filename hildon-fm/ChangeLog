@@ -1,5 +1,7 @@
 2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.8.
+	
 	* hildon-fm/hildon-file-system-settings.c (BANNER_TIMEOUT):
 	Reduced to 500 ms so that it is smaller than the initial delay of
 	showing the banner.  There needs to be more theory for determining
