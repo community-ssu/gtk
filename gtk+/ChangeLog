@@ -1,5 +1,15 @@
 2006-09-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Taken from GNOME CVS. NB#38982
+
+    2006-03-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktextview.c (text_window_invalidate_cursors): Take
+	cursor width into account when calculating the area to
+	be invalidated.  (#333377, #323401 Steve Frécinaux)
+
+2006-09-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkcombobox.c (gtk_combo_box_list_key_press): Close the popup
 	window on F5 (Hildon Home key) NB#30986
 
