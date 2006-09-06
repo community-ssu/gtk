@@ -1,3 +1,13 @@
+gtk+2.0 (2:2.6.10-2.osso11) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Fixes: NB#30986,NB#37050,NB#37495 GtkComboBox popup remains when switching
+    to home using the hardware button
+  * Fixes: NB#33737 Formattings are lost at destination with copy-paste
+    operation
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  6 Sep 2006 15:39:24 +0300
+
 gtk+2.0 (2:2.6.10-2.osso10) unstable; urgency=low
 
   * Fixes: NB#34004,NB#36078 combobox doesn't move to selected value in the
