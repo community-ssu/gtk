@@ -42,7 +42,6 @@
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
-#define HILDON_HEIGHT_INCREMENT  1
 #define HILDON_ARROW_SPACE       6
 
 #define MENU_ITEM_CLASS(w)  GTK_MENU_ITEM_CLASS (GTK_OBJECT (w)->klass)
@@ -581,14 +580,14 @@ gtk_menu_item_size_request (GtkWidget      *widget,
   else
     {
       /* separator item */
-      requisition->height += 4;
-    }
+      guint separator_height;
 
-   /* We get correct focus size if we make the widget a bit bigger.
-    * (If the increment would be big, we should probably adjust the text
-    * position aswell.)
-    */
-   requisition->height += HILDON_HEIGHT_INCREMENT;
+      gtk_widget_style_get (widget,
+			    "separator_height", &separator_height,
+			    NULL);
+      
+      requisition->height += separator_height;
+    }
 
   accel_width = 0;
   gtk_container_foreach (GTK_CONTAINER (menu_item),
