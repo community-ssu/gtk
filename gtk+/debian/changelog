@@ -5,8 +5,9 @@ gtk+2.0 (2:2.6.10-2.osso11) UNRELEASED; urgency=low
     to home using the hardware button
   * Fixes: NB#33737 Formattings are lost at destination with copy-paste
     operation
+  * Fixes: NB#38982 Blinking behavior is different for centered alignment.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  6 Sep 2006 15:39:24 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  6 Sep 2006 16:48:47 +0300
 
 gtk+2.0 (2:2.6.10-2.osso10) unstable; urgency=low
 
