@@ -1,0 +1,5946 @@
+# translation of dpkg_po_el.po to Greek
+# translation of dpkg.po.orig.po to Greek
+# translation of dpkg.po to Greek
+# This file is distributed under the same license as the PACKAGE package.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER.
+# Konstantinos Margaritis <markos@debian.org>, 2003.
+# George Papamichelakis <george@step.gr>, 2004.
+# George Papamichelakis <debian-l10n-greek@lists.debian.org>, 2004.
+# Greek Translation Team <debian-l10n-greek@lists.debian.org>, 2005.
+# quad-nrg.net <galaxico@quad-nrg.net>, 2005.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: dpkg_po_el\n"
+"Report-Msgid-Bugs-To: debian-dpkg@lists.debian.org\n"
+"POT-Creation-Date: 2006-01-23 19:31+0100\n"
+"PO-Revision-Date: 2005-12-22 23:26+0200\n"
+"Last-Translator: quad-nrg.net <galaxico@quad-nrg.net>\n"
+"Language-Team: Greek <debian-l10n-greek@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"org>\n"
+"org>\n"
+"X-Generator: KBabel 1.10.2\n"
+"Plural-Forms:  nplurals=2; plural=(n != 1);\n"
+"\n"
+
+#: lib/compat.c:46
+msgid "unable to open tmpfile for vsnprintf"
+msgstr "αδύνατο το άνοιγμα του tmpfile για vsnprintf"
+
+#: lib/compat.c:48
+msgid "unable to rewind at start of vsnprintf"
+msgstr "αδύνατη η επιστροφή στην αρχή του vnsprintf"
+
+#: lib/compat.c:49
+msgid "unable to truncate in vsnprintf"
+msgstr "αδύνατη η αποκοπή στο vnsprintf"
+
+#: lib/compat.c:51
+msgid "write error in vsnprintf"
+msgstr "σφάλμα εγγραφής στο vsnprintf"
+
+#: lib/compat.c:52
+msgid "unable to flush in vsnprintf"
+msgstr "αδύνατη η εκκένωση στο vnsprintf"
+
+#: lib/compat.c:53
+msgid "unable to stat in vsnprintf"
+msgstr "αδύνατη η εξακρίβωση στο vsnprintf"
+
+#: lib/compat.c:54
+msgid "unable to rewind in vsnprintf"
+msgstr "αδύνατη η επιστροφή στο vnsprintf"
+
+#: lib/compat.c:62
+msgid "read error in vsnprintf truncated"
+msgstr "σφάλμα ανάγνωσης στο κομμένο vnsprintf"
+
+#: lib/compat.c:89
+#, c-format
+msgid "System error no.%d"
+msgstr "Σφάλμα συστήματος αρ.%d"
+
+#: lib/compat.c:99
+#, c-format
+msgid "Signal no.%d"
+msgstr "Σήμα αρ.%d"
+
+#: lib/compression.c:45
+#, c-format
+msgid "%s: internal gzip error: `%s'"
+msgstr "%s: εσωτερικό σφάλμα gzip: `%s'"
+
+#: lib/compression.c:60
+#, c-format
+msgid "%s: failed to exec gzip -dc"
+msgstr "%s: αποτυχία εκτέλεσης του gzip -dc"
+
+#: lib/compression.c:76
+#, c-format
+msgid "%s: internal bzip2 error: `%s'"
+msgstr "%s: εσωτερικό σφάλμα bzip2: `%s'"
+
+#: lib/compression.c:91
+#, c-format
+msgid "%s: failed to exec bzip2 -dc"
+msgstr "%s: αποτυχία εκτέλεσης του gzip -dc"
+
+#: lib/compression.c:94
+#, c-format
+msgid "%s: decompression"
+msgstr "%s: αποσυμπίεση"
+
+#: lib/compression.c:128
+#, c-format
+msgid "%s: internal gzip error: read: `%s'"
+msgstr "%s: εσωτερικό σφάλμα gzipr: ανάγνωση: `%s'"
+
+#: lib/compression.c:138
+#, c-format
+msgid "%s: internal gzip error: write: `%s'"
+msgstr "%s: εσωτερικό σφάλμα gzip: εγγραφή: `%s'"
+
+#: lib/compression.c:141
+#, c-format
+msgid "%s: internal gzip error: read(%i) != write(%i)"
+msgstr "%s: εσωτερικό σφάλμα gzip: ανάγνωση(%i) != εγγραφή(%i)"
+
+#: lib/compression.c:157
+#, c-format
+msgid "%s: failed to exec gzip %s"
+msgstr "%s: αποτυχία εκτέλεσης του gzip %s"
+
+#: lib/compression.c:171
+#, c-format
+msgid "%s: internal bzip2 error: read: `%s'"
+msgstr "%s: εσωτερικό σφάλμα bzip2: ανάγνωση: `%s'"
+
+#: lib/compression.c:181
+#, c-format
+msgid "%s: internal bzip2 error: write: `%s'"
+msgstr "%s: εσωτερικό σφάλμα bzip2: εγγραφή: `%s'"
+
+#: lib/compression.c:184
+#, c-format
+msgid "%s: internal bzip2 error: read(%i) != write(%i)"
+msgstr "%s: εσωτερικό σφάλμα bzip2: ανάγνωση(%i) != εγγραφή(%i)"
+
+#: lib/compression.c:200
+#, c-format
+msgid "%s: failed to exec bzip2 %s"
+msgstr "%s: αποτυχία εκτέλεσης του bzip2 %s"
+
+#: lib/compression.c:203
+#, c-format
+msgid "%s: compression"
+msgstr "%s: συμπίεση"
+
+#: lib/database.c:125
+#, c-format
+msgid "couldn't allocate memory for strdup in findpackage(%s)"
+msgstr "αδύνατη η δέσμευση μνήμης για το strdup στο findpackage(%s)"
+
+#: lib/database.c:195
+#, c-format
+msgid "size %7d occurs %5d times\n"
+msgstr "το μέγεθος %7d λαμβάνει χώρα %5d φορές\n"
+
+#: lib/database.c:196
+msgid "failed write during hashreport"
+msgstr "αποτυχία εγγραφής κατά το hashreport"
+
+#: lib/dbmodify.c:59
+#, c-format
+msgid ""
+"updates directory contains file `%.250s' whose name is too long (length=%d, "
+"max=%d)"
+msgstr ""
+"ο κατάλογος ενημερώσεων περιέχει το αρχείο `%.250s' το όνομα του οποίου "
+"είναι πολύ μακρύ (μέγεθος=%d, μεγ=%d)"
+
+#: lib/dbmodify.c:63
+#, c-format
+msgid ""
+"updates directory contains files with different length names (both %d and %d)"
+msgstr ""
+"ο κατάλογος ενημερώσεων περιέχει αρχεία με διαφορετικά μεγέθη ονομάτων (και %"
+"d και %d)"
+
+#: lib/dbmodify.c:77
+#, c-format
+msgid "cannot scan updates directory `%.255s'"
+msgstr "αδύνατη η σάρωση του καταλόγου ενημερώσεων `%.255s'"
+
+#: lib/dbmodify.c:93
+#, c-format
+msgid "failed to remove incorporated update file %.255s"
+msgstr "αποτυχία αφαίρεσης του συγχωνευμένου αρχείου ενημέρωσης %.255s"
+
+#: lib/dbmodify.c:110
+#, c-format
+msgid "unable to create %.250s"
+msgstr "αδύνατη η δημιουργία %.250s"
+
+#: lib/dbmodify.c:114
+#, c-format
+msgid "unable to fill %.250s with padding"
+msgstr "αδύνατο το γέμισμα %.250s με παραγέμιση"
+
+#: lib/dbmodify.c:116
+#, c-format
+msgid "unable flush %.250s after padding"
+msgstr "αδύνατη η εκκένωση %.250s μετά από παραγέμιση"
+
+#: lib/dbmodify.c:118
+#, c-format
+msgid "unable seek to start of %.250s after padding"
+msgstr "αδύνατη η μετακίνηση στην αρχή του %.250s μετά το padding"
+
+#: lib/dbmodify.c:148
+msgid "requested operation requires superuser privilege"
+msgstr "η ζητούμενη ενέργεια απαιτεί προνόμια υπερχρήστη"
+
+#: lib/dbmodify.c:153
+msgid "unable to access dpkg status area"
+msgstr "αδύνατη η πρόσβαση στην περιοχή κατάστασης dpkg"
+
+#: lib/dbmodify.c:155
+msgid "operation requires read/write access to dpkg status area"
+msgstr ""
+"η ενέργεια αυτή απαιτεί πρόσβαση ανάγνωσης/εγγραφής στην περιοχή κατάστασης "
+"dpkg"
+
+#: lib/dbmodify.c:203
+#, c-format
+msgid "failed to remove my own update file %.255s"
+msgstr "αποτυχία αφαίρεσης το δικό μου ενημερωτικό αρχείο %.255s"
+
+#: lib/dbmodify.c:260
+#, c-format
+msgid "unable to write updated status of `%.250s'"
+msgstr "αδυναμία εγγραφής της ενημερωμένης κατάστασης του `%.250s'"
+
+#: lib/dbmodify.c:262
+#, c-format
+msgid "unable to flush updated status of `%.250s'"
+msgstr "αδυναμία καθαρισμού της ενημερωμένης κατάστασης του `%.250s'"
+
+#: lib/dbmodify.c:264
+#, c-format
+msgid "unable to truncate for updated status of `%.250s'"
+msgstr "αδύνατος ο ψαλιδισμός της ανανεωμένης κατάστασης του `%.250s'"
+
+#: lib/dbmodify.c:266
+#, c-format
+msgid "unable to fsync updated status of `%.250s'"
+msgstr ""
+"αδύνατος ο συγχρονισμός (fsync) της ανανεωμένης κατάστασης του `%.250s'"
+
+#: lib/dbmodify.c:268
+#, c-format
+msgid "unable to close updated status of `%.250s'"
+msgstr "αδυναμία κλεισίματος της ενημερωμένης κατάστασης του `%.250s'"
+
+#: lib/dbmodify.c:271
+#, c-format
+msgid "unable to install updated status of `%.250s'"
+msgstr "αδύνατη η εγκατάσταση της ενημερωμένης κατάστασης του `%.250s'"
+
+#: lib/dbmodify.c:301
+#, c-format
+msgid "couldn't open log `%s': %s\n"
+msgstr "αδύνατο το άνοιγμα του αρχείου καταγραφής '%s': %s\n"
+
+#: lib/dump.c:291
+#, c-format
+msgid "failed to open `%s' for writing %s information"
+msgstr "αποτυχία ανοίγματος του `%s' για εγγραφή %s πληροφοριών"
+
+#: lib/dump.c:294
+msgid "unable to set buffering on status file"
+msgstr "αδύνατος ο ορισμός του buffering στο αρχείο κατάστασης"
+
+#: lib/dump.c:305
+#, c-format
+msgid "failed to write %s record about `%.50s' to `%.250s'"
+msgstr "αποτυχία εγγραφής %s καταχώρησης σχετικά με `%.50s' στο `%.250s'"
+
+#: lib/dump.c:313
+#, c-format
+msgid "failed to flush %s information to `%.250s'"
+msgstr "αποτυχία καθαρισμού πληροφοριών %s στο `%.250s'"
+
+#: lib/dump.c:315
+#, c-format
+msgid "failed to fsync %s information to `%.250s'"
+msgstr "αποτυχία συγχρονισμού %s πληροφοριών στο `%.250s'"
+
+#: lib/dump.c:317
+#, c-format
+msgid "failed to close `%.250s' after writing %s information"
+msgstr "αποτυχία κλεισίματος του `%.250s' μετά την εγγραφή πληροφοριών %s"
+
+#: lib/dump.c:321
+#, c-format
+msgid "failed to link `%.250s' to `%.250s' for backup of %s info"
+msgstr ""
+"απέτυχε ο δεσμός του `%.250s' στο `%.250s' για αντίγραφο των πληροφοριών του "
+"%s"
+
+#: lib/dump.c:324
+#, c-format
+msgid "failed to install `%.250s' as `%.250s' containing %s info"
+msgstr ""
+"αποτυχία εγκατάστασης του `%.250s' ως `%.250s' που περιέχει πληροφορίες %s"
+
+#: lib/ehandle.c:81
+msgid "out of memory pushing error handler: "
+msgstr "ο δείκτης σφάλματος ωθείται εκτός μνήμης: "
+
+#: lib/ehandle.c:96
+#, c-format
+msgid ""
+"%s: error while cleaning up:\n"
+" %s\n"
+msgstr ""
+"%s: σφάλμα κατά τον καθαρισμό:\n"
+" %s\n"
+
+#: lib/ehandle.c:111
+#, c-format
+msgid "dpkg: too many nested errors during error recovery !!\n"
+msgstr "dpkg: πάρα πολλά φωλιασμένα σφάλματα κατά την ανάκτηση σφαλμάτων !!\n"
+
+#: lib/ehandle.c:186
+msgid "out of memory for new cleanup entry with many arguments"
+msgstr "η νέα εκκαθαριστική καταχώρηση με αρκετά ορίσματα βρέθηκε εκτός μνήμης"
+
+#: lib/ehandle.c:198
+msgid "out of memory for new cleanup entry"
+msgstr "η νέα εκκαθαριστική καταχώρηση βρέθηκε εκτός μνήμης"
+
+#: lib/ehandle.c:284
+#, c-format
+msgid "error writing `%s'"
+msgstr "σφάλμα κατά την εγγραφή `%s'"
+
+#: lib/ehandle.c:288
+#, c-format
+msgid "%s:%d: internal error `%s'\n"
+msgstr "%s:%d: εσωτερικό σφάλμα `%s'\n"
+
+#: lib/fields.c:44
+#, c-format
+msgid "%s is missing"
+msgstr "%s λείπει"
+
+#: lib/fields.c:57
+#, c-format
+msgid "`%.*s' is not allowed for %s"
+msgstr "`%.*s' δεν επιτρέπεται για %s"
+
+#: lib/fields.c:64
+#, c-format
+msgid "junk after %s"
+msgstr "σκουπίδια μετά από %s"
+
+#: lib/fields.c:74
+#, c-format
+msgid "invalid package name (%.250s)"
+msgstr "μη έγκυρο όνομα πακέτου (%.250s)"
+
+#: lib/fields.c:91
+#, c-format
+msgid "empty file details field `%s'"
+msgstr "πεδίο `%s' λεπτομερειών κενού αρχείου"
+
+#: lib/fields.c:94
+#, c-format
+msgid "file details field `%s' not allowed in status file"
+msgstr ""
+"το πεδίο `%s' λεπτομερειών αρχείου δεν επιτρέπεται στο αρχείο κατάστασης"
+
+#: lib/fields.c:104
+#, c-format
+msgid "too many values in file details field `%s' (compared to others)"
+msgstr ""
+"πάρα πολλές τιμές στο πεδίο `%s' αρχείου λεπτομερειών (σε σύγκριση με άλλα)"
+
+#: lib/fields.c:117
+#, c-format
+msgid "too few values in file details field `%s' (compared to others)"
+msgstr ""
+"πολύ λίγες τιμές στο πεδίο `%s' αρχείου λεπτομερειών (σε σύγκριση με άλλα)"
+
+#: lib/fields.c:133
+msgid "yes/no in boolean field"
+msgstr "ναι/όχι στο πεδίο boolean"
+
+#: lib/fields.c:166
+msgid "value for `status' field not allowed in this context"
+msgstr ""
+"η τιμή για το πεδίο `κατάστασης' δεν επιτρέπεται σε αυτά τα συμφραζόμενα"
+
+#: lib/fields.c:177
+msgid "third (status) word in `status' field"
+msgstr "τρίτη λέξη (κατάστασης) σε πεδίο `κατάστασης'"
+
+#: lib/fields.c:188
+#, c-format
+msgid "error in Version string `%.250s': %.250s"
+msgstr "σφάλμα στο αλφαριθμητικό Έκδοση `%.250s': %.250s"
+
+#: lib/fields.c:199
+msgid "obsolete `Revision' or `Package-Revision' field used"
+msgstr "χρησιμοποιήθηκε παρωχημένο πεδίο `Revision' ή `Package-Revision' "
+
+#: lib/fields.c:217
+msgid "value for `config-version' field not allowed in this context"
+msgstr ""
+"η τιμή για το πεδίο `config-version' δεν επιτρέπεται σε αυτά τα συμφραζόμενα"
+
+#: lib/fields.c:221
+#, c-format
+msgid "error in Config-Version string `%.250s': %.250s"
+msgstr "σφάλμα στη συμβολοσειρά Config-Version `%.250s': %.250s"
+
+#: lib/fields.c:238
+#, c-format
+msgid "value for `conffiles' has line starting with non-space `%c'"
+msgstr "η τιμή για το `conffiles' περιέχει γραμμή που ξεκινά χωρίς κενό `%c'"
+
+#: lib/fields.c:244
+#, c-format
+msgid "value for `conffiles' has malformatted line `%.*s'"
+msgstr "η τιμή για το `conffiles' περιέχει κακοδιαμορφωμένη γραμμή `%.*s'"
+
+#: lib/fields.c:250
+msgid "root or null directory is listed as a conffile"
+msgstr "root ή null κατάλογος εμφανίζεται ως conffile"
+
+#: lib/fields.c:305
+#, c-format
+msgid ""
+"`%s' field, missing package name, or garbage where package name expected"
+msgstr ""
+"`πεδίο %s', λείπει το όνομα πακέτου, ή σκουπίδια εκεί που αναμένονταν το "
+"όνομα πακέτου"
+
+#: lib/fields.c:308
+#, c-format
+msgid "`%s' field, invalid package name `%.255s': %s"
+msgstr "πεδίο `%s', μη έγκυρο όνομα πακέτου `%.255s': %s"
+
+#: lib/fields.c:339
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" bad version relationship %c%c"
+msgstr ""
+"πεδίο `%s', αναφορά σε `%.255s':\n"
+" κακή σχέση έκδοσης %c%c"
+
+#: lib/fields.c:345
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" `%c' is obsolete, use `%c=' or `%c%c' instead"
+msgstr ""
+"το πεδίο `%s', αναφορά σε `%.255s':\n"
+" `%c' είναι εκτός χρήσης, χρησιμοποιείστε `%c=' ή `%c%c'"
+
+#: lib/fields.c:355
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" implicit exact match on version number, suggest using `=' instead"
+msgstr ""
+"πεδίο `%s', αναφορά σε `%.255s':\n"
+" απόλυτο ταίριασμα στον αριθμό έκδοσης, προτείνεται η χρήση `='"
+
+#: lib/fields.c:362
+msgid "Only exact versions may be used for Provides"
+msgstr "Μόνο απόλυτες εκδόσεις μπορούν να χρησιμοποιηθούν για το Παρέχει"
+
+#: lib/fields.c:366
+#, c-format
+msgid ""
+"`%s' field, reference to `%.255s':\n"
+" version value starts with non-alphanumeric, suggest adding a space"
+msgstr ""
+"πεδίο `%s', αναφορά σε `%.255s':\n"
+" η τιμή έκδοσης ξεκινά με μη αλφαριθμητικό, πρόταση προσθήκης κενού"
+
+#: lib/fields.c:381
+#, c-format
+msgid "`%s' field, reference to `%.255s': version contains `('"
+msgstr "πεδίο `%s', αναφορά στο `%.255s': η έκδοση περιέχει `('"
+
+#: lib/fields.c:384
+#, c-format
+msgid "`%s' field, reference to `%.255s': version contains ` '"
+msgstr "πεδίο `%s', αναφορά στο `%.255s': η έκδοση περιέχει ` '"
+
+#: lib/fields.c:387
+#, c-format
+msgid "`%s' field, reference to `%.255s': version unterminated"
+msgstr "πεδίο `%s' field, αναφορά σε `%.255s': η έκδοση είναι μη τερματισμένη"
+
+#: lib/fields.c:397
+#, c-format
+msgid "`%s' field, reference to `%.255s': error in version: %.255s"
+msgstr "πεδίο `%s', αναφορά στο `%.255s': σφάλμα στην έκδοση: %.255s"
+
+#: lib/fields.c:406
+#, c-format
+msgid "`%s' field, syntax error after reference to package `%.255s'"
+msgstr "πεδίο `%s', συντακτικό σφάλμα μετά την αναφορά στο πακέτο `%.255s'"
+
+#: lib/fields.c:413
+#, c-format
+msgid "alternatives (`|') not allowed in %s field"
+msgstr "εναλλακτικά (`|') δεν επιτρέπονται στο πεδίο %s"
+
+#: lib/lock.c:45
+msgid "unable to unlock dpkg status database"
+msgstr "αδύνατο το ξεκλείδωμα της βάσης δεδομένων κατάστασης dpkg"
+
+#: lib/lock.c:65
+msgid "you do not have permission to lock the dpkg status database"
+msgstr ""
+"δεν έχετε την άδεια για να ξεκλειδώσετε τη βάση δεδομένων κατάστασης dpkg"
+
+#: lib/lock.c:66
+msgid "unable to open/create status database lockfile"
+msgstr "αδύνατη το άνοιγμα ή η δημιουργία του κλειδώματος της βάσης κατάστασης"
+
+#: lib/lock.c:75
+msgid "status database area is locked by another process"
+msgstr ""
+"η περιοχή της βάσης δεδομένων κατάστασης είναι κλειδωμένη από άλλη διεργασία"
+
+#: lib/lock.c:76
+msgid "unable to lock dpkg status database"
+msgstr "αδυναμία κλειδώματος βάσης δεδομένων κατάστασης dpkg"
+
+#: lib/mlib.c:51
+#, c-format
+msgid "malloc failed (%ld bytes)"
+msgstr "η malloc απέτυχε (%ld bytes)"
+
+#: lib/mlib.c:64
+#, c-format
+msgid "realloc failed (%ld bytes)"
+msgstr "η realloc απέτυχε (%ld bytes)"
+
+#: lib/mlib.c:71
+#, c-format
+msgid "%s (subprocess): %s\n"
+msgstr "%s (υποδιεργασία): %s\n"
+
+#: lib/mlib.c:85
+msgid "fork failed"
+msgstr "αποτυχία διχάλωσης"
+
+#: lib/mlib.c:98
+#, c-format
+msgid "failed to dup for std%s"
+msgstr "αποτυχία αντιγραφής για το std%s"
+
+#: lib/mlib.c:99
+#, c-format
+msgid "failed to dup for fd %d"
+msgstr "αποτυχία αντιγραφής για το fd%d"
+
+#: lib/mlib.c:105
+msgid "failed to create pipe"
+msgstr "αποτυχία δημιουργίας σωλήνωσης"
+
+#: lib/mlib.c:114
+#, c-format
+msgid "dpkg: warning - %s returned error exit status %d\n"
+msgstr "dpkg: προειδοποίηση - το %s επέστρεψε κατάσταση λάθους %d\n"
+
+#: lib/mlib.c:116
+#, c-format
+msgid "subprocess %s returned error exit status %d"
+msgstr "η υποδιεργασία %s επέστρεψε κατάσταση λάθους %d"
+
+#: lib/mlib.c:121
+#, c-format
+msgid "dpkg: warning - %s killed by signal (%s)%s\n"
+msgstr "dpkg: προειδοποίηση - το %s σκοτώθηκε από σήμα (%s)%s\n"
+
+#: lib/mlib.c:124
+#, c-format
+msgid "subprocess %s killed by signal (%s)%s"
+msgstr "η υποδιεργασία %s σκοτώθηκε από το σήμα (%s)%s"
+
+#: lib/mlib.c:127
+#, c-format
+msgid "subprocess %s failed with wait status code %d"
+msgstr "η υποδιεργασία %s απέτυχε με κωδικό κατάστασης αναμονής %d"
+
+#: lib/mlib.c:137
+#, c-format
+msgid "wait for %s failed"
+msgstr "η αναμονή για %s απέτυχε"
+
+#: lib/mlib.c:145
+#, c-format
+msgid "unable to read filedescriptor flags for %.250s"
+msgstr "αδύνατη η ανάγνωση των σημάνσεων περιγραφέα αρχείου του %.250s"
+
+#: lib/mlib.c:147
+#, c-format
+msgid "unable to set close-on-exec flag for %.250s"
+msgstr "αδύνατο να τεθεί η σήμανση close-on-exec για το %.250s"
+
+#: lib/mlib.c:199
+#, c-format
+msgid "failed in buffer_write(fd) (%i, ret=%li): %s"
+msgstr "αποτυχία στην buffer_write(fd) (%i, ret=%li): %s"
+
+#: lib/mlib.c:206
+#, c-format
+msgid "eof in buffer_write(stream): %s"
+msgstr "eof στο buffer_write(stream): %s"
+
+#: lib/mlib.c:208
+#, c-format
+msgid "error in buffer_write(stream): %s"
+msgstr "σφάλμα στο buffer_write(stream): %s"
+
+#: lib/mlib.c:214
+#, c-format
+msgid "unknown data type `%i' in buffer_write\n"
+msgstr "άγνωστος τύπος δεδομένων `%i' στο buffer_write\n"
+
+#: lib/mlib.c:230
+#, c-format
+msgid "failed in buffer_read(fd): %s"
+msgstr "αποτυχία στο buffer_read(fd): %s"
+
+#: lib/mlib.c:237
+#, c-format
+msgid "error in buffer_read(stream): %s"
+msgstr "σφάλμα στο buffer_read(stream): %s"
+
+#: lib/mlib.c:240
+#, c-format
+msgid "unknown data type `%i' in buffer_read\n"
+msgstr "άγνωστος τύπος δεδομένων `%i' στο buffer_read\n"
+
+#: lib/mlib.c:306
+#, c-format
+msgid "failed to allocate buffer in buffer_copy (%s)"
+msgstr "αποτυχία εκχώρησης ενδιάμεσης μνήμης στην buffer_copy (%s)"
+
+#: lib/mlib.c:337
+#, c-format
+msgid "failed in buffer_copy (%s)"
+msgstr "αποτυχία στο buffer_copy (%s)"
+
+#: lib/mlib.c:338
+#, c-format
+msgid "short read in buffer_copy (%s)"
+msgstr "βραχεία ανάγνωση στην buffer_copy (%s)"
+
+#: lib/myopt.c:40
+#, c-format
+msgid "failed to open configuration file `%.255s' for reading"
+msgstr "αποτυχία ανοίγματος αρχείου ρυθμίσεων `%.255s' για ανάγνωση"
+
+#: lib/myopt.c:73
+#, c-format
+msgid "configuration error: unknown option %s"
+msgstr "σφάλμα ρυθμίσεων: άγνωστη επιλογή %s"
+
+#: lib/myopt.c:76
+#, c-format
+msgid "configuration error: %s needs a value"
+msgstr "σφάλμα ρυθμίσεων: το %s χρειάζεται μια τιμή"
+
+#: lib/myopt.c:80
+#, c-format
+msgid "configuration error: %s does not take a value"
+msgstr "σφάλμα ρυθμίσεων: το %s δεν παίρνει τιμή"
+
+#: lib/myopt.c:85
+#, c-format
+msgid "read error in configuration file `%.255s'"
+msgstr "σφάλμα ανάγνωσης στο αρχείο ρυθμίσεων `%.255s'"
+
+#: lib/myopt.c:86
+#, c-format
+msgid "error closing configuration file `%.255s'"
+msgstr "σφάλμα κλεισίματος αρχείου ρυθμίσεων `%.255s'"
+
+#: lib/myopt.c:94 lib/myopt.c:102
+msgid "Error allocating memory for cfgfilename"
+msgstr "Σφάλμα εκχώρησης μνήμης για το cfgfilename"
+
+#: lib/myopt.c:130
+#, c-format
+msgid "unknown option --%s"
+msgstr "άγνωστη επιλογή --%s"
+
+#: lib/myopt.c:134
+#, c-format
+msgid "--%s option takes a value"
+msgstr "--%s επιλογή παίρνει μια τιμή"
+
+#: lib/myopt.c:139
+#, c-format
+msgid "--%s option does not take a value"
+msgstr "--%s επιλογή δεν παίρνει τιμή"
+
+#: lib/myopt.c:146
+#, c-format
+msgid "unknown option -%c"
+msgstr "άγνωστη επιλογή -%c"
+
+#: lib/myopt.c:151
+#, c-format
+msgid "-%c option takes a value"
+msgstr "-%c επιλογή παίρνει μια τιμή"
+
+#: lib/myopt.c:159
+#, c-format
+msgid "-%c option does not take a value"
+msgstr "-%c επιλογή δεν παίρνει τιμή"
+
+#: lib/parse.c:105
+#, c-format
+msgid "failed to open package info file `%.255s' for reading"
+msgstr "αποτυχία ανοίγματος αρχείου πληροφοριών πακέτου `%.255s' για ανάγνωση"
+
+#: lib/parse.c:110
+#, c-format
+msgid "can't stat package info file `%.255s'"
+msgstr "αδύνατη η εύρεση κατάστασης του αρχείου πληροφοριών πακέτων `%.255s'"
+
+#: lib/parse.c:115
+#, c-format
+msgid "can't mmap package info file `%.255s'"
+msgstr ""
+"αδύνατη η απεικόνιση στη μνήμη (mmap) του αρχείου πληροφοριών των πακέτων `"
+"%.255s'"
+
+#: lib/parse.c:118
+#, c-format
+msgid "failed to malloc for info file `%.255s'"
+msgstr "αποτυχία εκχώρησης μνήμης για το αρχείο πληροφοριών `%.255s'"
+
+#: lib/parse.c:120
+#, c-format
+msgid "copy info file `%.255s'"
+msgstr "αντιγραφή αρχείου πληροφοριών `%.255s'"
+
+#: lib/parse.c:152
+#, c-format
+msgid "EOF after field name `%.*s'"
+msgstr "Το EOF μετά το όνομα πεδίου `%.*s'"
+
+#: lib/parse.c:155
+#, c-format
+msgid "newline in field name `%.*s'"
+msgstr "νέα γραμμή στο όνομα πεδίου `%.*s'"
+
+#: lib/parse.c:158
+#, c-format
+msgid "MSDOS EOF (^Z) in field name `%.*s'"
+msgstr "MSDOS EOF (^Z) στο όνομα πεδίου `%.*s'"
+
+#: lib/parse.c:161
+#, c-format
+msgid "field name `%.*s' must be followed by colon"
+msgstr "το όνομα πεδίου `%.*s' πρέπει να ακολουθείται από άνω/κάτω τελεία"
+
+#: lib/parse.c:169
+#, c-format
+msgid "EOF before value of field `%.*s' (missing final newline)"
+msgstr "EOF πριν από την τιμή του πεδίου `%.*s' (λείπει η τελική νέα γραμμή)"
+
+#: lib/parse.c:173
+#, c-format
+msgid "MSDOS EOF char in value of field `%.*s' (missing newline?)"
+msgstr ""
+"χαρακτήρας MSDOS EOF στην τιμή του πεδίου `%.*s' (λείπει η νέα γραμμή;)"
+
+#: lib/parse.c:187
+#, c-format
+msgid "EOF during value of field `%.*s' (missing final newline)"
+msgstr "EOF στη τιμή του πεδίου `%.*s' (λείπει η τελική νέα γραμμή)"
+
+#: lib/parse.c:210
+#, c-format
+msgid "duplicate value for `%s' field"
+msgstr "διπλή τιμή για το πεδίο `%s'"
+
+#: lib/parse.c:215
+#, c-format
+msgid "user-defined field name `%.*s' too short"
+msgstr "το προσδιορισμένο από το χρήστη όνομα πεδίου `%.*s' είναι πολύ μικρό"
+
+#: lib/parse.c:220
+#, c-format
+msgid "duplicate value for user-defined field `%.*s'"
+msgstr "διπλασιασμός του καθοριζόμενου από το χρήστη πεδίο `%.*s'"
+
+#: lib/parse.c:233
+msgid "several package info entries found, only one allowed"
+msgstr "βρέθηκαν αρκετές εισαγωγές πληροφοριών πακέτου, μόνο μία επιτρέπεται"
+
+#: lib/parse.c:259
+msgid "Configured-Version for package with inappropriate Status"
+msgstr "Ρυθμισμένη-Έκδοση για πακέτο με ακατάλληλη Κατάσταση"
+
+#: lib/parse.c:273
+msgid "Package which in state not-installed has conffiles, forgetting them"
+msgstr ""
+"Πακέτο το οποίο στην κατάσταση μη εγκατεστημένο έχει ρυθμίσεις, ξέχασέ το"
+
+#: lib/parse.c:330
+#, c-format
+msgid "failed to close after read: `%.255s'"
+msgstr "αποτυχία κλεισίματος μετά την ανάγνωση: `%.255s'"
+
+#: lib/parse.c:331
+#, c-format
+msgid "no package information in `%.255s'"
+msgstr "καμία πληροφορία πακέτου στο  `%.255s'"
+
+#: lib/parsehelp.c:38
+#, c-format
+msgid "failed to read `%s' at line %d"
+msgstr "αποτυχία ανάγνωσης `%s' στη γραμμή %d"
+
+#: lib/parsehelp.c:39
+#, c-format
+msgid "%s, in file `%.255s' near line %d"
+msgstr "%s, στο αρχείο `%.255s' κοντά στη γραμμή %d"
+
+#: lib/parsehelp.c:40
+msgid "warning"
+msgstr "προειδοποίηση"
+
+#: lib/parsehelp.c:40
+msgid "parse error"
+msgstr "σφάλμα ανάλυσης"
+
+#: lib/parsehelp.c:42
+#, c-format
+msgid " package `%.255s'"
+msgstr " πακέτο `%.255s'"
+
+#: lib/parsehelp.c:53
+msgid "failed to write parsing warning"
+msgstr "αποτυχία εγγραφής προειδοποίησης ανάλυσης"
+
+#: lib/parsehelp.c:113
+msgid "may not be empty string"
+msgstr "μπορεί να μην είναι κενό αλφαριθμητικό"
+
+#: lib/parsehelp.c:114
+msgid "must start with an alphanumeric"
+msgstr "πρέπει να ξεκινά με αλφαριθμητικό"
+
+#: lib/parsehelp.c:123
+#, c-format
+msgid "character `%c' not allowed - only letters, digits and %s allowed"
+msgstr ""
+"ο χαρακτήρας `%c' δεν επιτρέπεται - επιτρέπονται μόνο γράμματα, ψηφία και %s"
+
+#: lib/parsehelp.c:178
+msgid "<none>"
+msgstr "<κανένα>"
+
+#: lib/parsehelp.c:193
+msgid "version string is empty"
+msgstr "το αλφαριθμητικό της έκδοσης είναι κενό"
+
+#: lib/parsehelp.c:204
+msgid "version string has embedded spaces"
+msgstr "η συμβολοσειρά έκδοσης περιέχει ενσωματωμένα κενά"
+
+#: lib/parsehelp.c:209
+msgid "epoch in version is not number"
+msgstr "η εποχή στην έκδοση δεν είναι αριθμός"
+
+#: lib/parsehelp.c:210
+msgid "nothing after colon in version number"
+msgstr "δεν υπάρχει τίποτα μετά το κώλον (:) στον αριθμό έκδοσης"
+
+#: lib/parsehelp.c:232
+#, c-format
+msgid "missing %s"
+msgstr "λείπει %s"
+
+#: lib/parsehelp.c:236
+#, c-format
+msgid "empty value for %s"
+msgstr "κενή τιμή για το %s"
+
+#: lib/showcright.c:33
+msgid "cannot open GPL file "
+msgstr "αδυναμία ανοίγματος αρχείου GPL "
+
+#: lib/showpkg.c:70
+#, c-format
+msgid "invalid character `%c' in field width\n"
+msgstr "μη έγκυρος χαρακτήρας `%c' στο πλάτος πεδίου\n"
+
+#: lib/showpkg.c:157
+#, c-format
+msgid "Closing brace missing in format\n"
+msgstr "Λείπει η παρένθεση τερματισμού από τη διαμόρφωση\n"
+
+#: lib/varbuf.c:105
+msgid "failed to realloc for variable buffer"
+msgstr "αποτυχία επανεκχώρησης μνήμης για το ενδιάμεσο μεταβλητών"
+
+#: src/archives.c:208
+msgid "process_archive ...  already disappeared !"
+msgstr "process_archive ...  ήδη εξαφανίστηκε !"
+
+#: src/archives.c:228
+msgid "error reading from dpkg-deb pipe"
+msgstr "σφάλμα από την ανάγνωση της σωλήνωσης του dpkg-deb"
+
+#: src/archives.c:265
+#, c-format
+msgid "error setting timestamps of `%.255s'"
+msgstr "σφάλμα ορισμού της χρονοσήμανσης του `%.255s'"
+
+#: src/archives.c:272 src/archives.c:585
+#, c-format
+msgid "error setting ownership of `%.255s'"
+msgstr "σφάλμα ρύθμισης ιδιοκτησίας του `%.255s'"
+
+#: src/archives.c:274 src/archives.c:588
+#, c-format
+msgid "error setting permissions of `%.255s'"
+msgstr "σφάλμα ορισμού  των δικαιωμάτων του `%.255s'"
+
+#: src/archives.c:358
+#, c-format
+msgid ""
+"trying to overwrite `%.250s', which is the diverted version of `%.250s'%.10s"
+"%.100s%.10s"
+msgstr ""
+"προσπάθεια αντικατάστασης του `%.250s', που είναι παράκαμψη του `%.250s'%.10s"
+"%.100s%.10s"
+
+#: src/archives.c:362
+msgid " (package: "
+msgstr " (πακέτο: "
+
+#: src/archives.c:384
+#, c-format
+msgid "unable to stat `%.255s' (which I was about to install)"
+msgstr ""
+"αδύνατη η εύρεση κατάστασης του `%.255s' (που προσπάθησα να εγκαταστήσω)"
+
+#: src/archives.c:392
+#, c-format
+msgid ""
+"unable to clean up mess surrounding `%.255s' before installing another "
+"version"
+msgstr ""
+"αδύνατος ο καθαρισμός της σαβούρας γύρω από το `%.255s' πριν την εγκατάσταση "
+"άλλης έκδοσης"
+
+#: src/archives.c:398
+#, c-format
+msgid "unable to stat restored `%.255s' before installing another version"
+msgstr ""
+"αδύνατη η εύρεση κατάστασης του επαναφερθέντος `%.255s' προτού εγκατασταθεί "
+"νέα έκδοση"
+
+#: src/archives.c:430
+#, c-format
+msgid "archive contained object `%.255s' of unknown type 0x%x"
+msgstr "το αρχείο περιείχε το αντικείμενο `%.255s' άγνωστου τύπου 0x%x"
+
+#: src/archives.c:467
+#, c-format
+msgid "Replacing files in old package %s ...\n"
+msgstr "Αντικατάσταση αρχείων στο παλιό πακέτο %s ...\n"
+
+#: src/archives.c:470
+#, c-format
+msgid "Replaced by files in installed package %s ...\n"
+msgstr "Αντικατάσταση από αρχεία στο εγκατεστημένο πακέτο %s ...\n"
+
+#: src/archives.c:476
+#, c-format
+msgid ""
+"trying to overwrite directory `%.250s' in package %.250s with nondirectory"
+msgstr ""
+"προσπάθεια αντικατάστασης του καταλόγου `%.250s' στο πακέτο %.250s με μη "
+"κατάλογο"
+
+#: src/archives.c:486
+#, c-format
+msgid "trying to overwrite `%.250s', which is also in package %.250s"
+msgstr ""
+"προσπάθεια αντικατάστασης του `%.250s', που είναι επίσης στο πακέτο %.250s"
+
+#: src/archives.c:511
+#, c-format
+msgid "gobble replaced file `%.255s'"
+msgstr "αναγνώστηκε και αγνοήθηκε το αρχείο `%.250s'"
+
+#: src/archives.c:568 dpkg-deb/build.c:314
+#, c-format
+msgid "unable to create `%.255s'"
+msgstr "αδύνατη η δημιουργία `%.255s'"
+
+#: src/archives.c:573
+#, c-format
+msgid "backend dpkg-deb during `%.255s'"
+msgstr "backend dpkg-deb κατά το `%.255s'"
+
+#: src/archives.c:591
+#, c-format
+msgid "error closing/writing `%.255s'"
+msgstr "σφάλμα κλεισίματος/εγγραφής `%.255s'"
+
+#: src/archives.c:596
+#, c-format
+msgid "error creating pipe `%.255s'"
+msgstr "σφάλμα δημιουργίας σωλήνωσης `%.255s'"
+
+#: src/archives.c:602 src/archives.c:608
+#, c-format
+msgid "error creating device `%.255s'"
+msgstr "σφάλμα κατά τη δημιουργία συσκευής `%.255s'"
+
+#: src/archives.c:617
+#, c-format
+msgid "error creating hard link `%.255s'"
+msgstr "σφάλμα δημιουργίας συνδέσμου `%.255s'"
+
+#: src/archives.c:624
+#, c-format
+msgid "error creating symbolic link `%.255s'"
+msgstr "σφάλμα δημιουργίας συμβολικού δεσμού `%.255s'"
+
+#: src/archives.c:630 src/archives.c:635
+#, c-format
+msgid "error setting ownership of symlink `%.255s'"
+msgstr "σφάλμα ρύθμισης ιδιοκτησίας του `%.255s'"
+
+#: src/archives.c:641
+#, c-format
+msgid "error creating directory `%.255s'"
+msgstr "σφάλμα κατά τη δημιουργία καταλόγου `%.255s'"
+
+#: src/archives.c:676
+#, c-format
+msgid "unable to move aside `%.255s' to install new version"
+msgstr ""
+"αδύνατη η μετακίνηση του `%.255s' κατά μέρους για εγκατάσταση νέας έκδοσης"
+
+#: src/archives.c:685
+#, c-format
+msgid "unable to read link `%.255s'"
+msgstr "αδύνατη η ανάγνωση δεσμού `%.255s'"
+
+#: src/archives.c:689
+#, c-format
+msgid "unable to make backup symlink for `%.255s'"
+msgstr "αδυναμία δημιουργίας εφεδρικού δεσμού για `%.255s'"
+
+#: src/archives.c:692 src/archives.c:695
+#, c-format
+msgid "unable to chown backup symlink for `%.255s'"
+msgstr "αδύνατη η αλλαγή ιδιοκτήτη του εφεδρικού δεσμού για το `%.255s'"
+
+#: src/archives.c:700
+#, c-format
+msgid "unable to make backup link of `%.255s' before installing new version"
+msgstr ""
+"αδυναμία δημιουργίας εφεδρικού δεσμού του `%.255s' πριν την εγκατάσταση νέας "
+"έκδοσης"
+
+#: src/archives.c:724
+#, c-format
+msgid "unable to install new version of `%.255s'"
+msgstr "αδύνατη η εγκατάσταση της νέας έκδοσης του `%.255s'"
+
+#: src/archives.c:756
+#, c-format
+msgid ""
+"dpkg: warning - ignoring dependency problem with removal of %s:\n"
+"%s"
+msgstr ""
+"dpkg: προειδοποίηση - με την αφαίρεση του %s αγνοείται το πρόβλημα "
+"εξάρτησης:\n"
+"%s"
+
+#: src/archives.c:763
+#, c-format
+msgid ""
+"dpkg: warning - considering deconfiguration of essential\n"
+" package %s, to enable removal of %s.\n"
+msgstr ""
+"dpkg: προειδοποίηση - θεωρώντας την απορρύθμιση του βασικού \n"
+" πακέτου %s, για ενεργοποίηση αφαίρεσης του %s.\n"
+
+#: src/archives.c:767
+#, c-format
+msgid ""
+"dpkg: no, %s is essential, will not deconfigure\n"
+" it in order to enable removal of %s.\n"
+msgstr ""
+"dpkg: όχι,το %s είναι βασικό, δε θα απορρυθμιστεί\n"
+" για να ενεργοποιηθεί η αφαίρεση του %s.\n"
+
+#: src/archives.c:780
+#, c-format
+msgid ""
+"dpkg: no, cannot remove %s (--auto-deconfigure will help):\n"
+"%s"
+msgstr ""
+"dpkg: δε γίνεται η αφαίρεση %s (το --auto-deconfigure θα βοηθήσει):\n"
+"%s"
+
+#: src/archives.c:814
+#, c-format
+msgid "dpkg: considering removing %s in favour of %s ...\n"
+msgstr "dpkg: θεωρώντας την αφαίρεση του %s για χάρη του %s ...\n"
+
+#: src/archives.c:818
+#, c-format
+msgid "%s is not properly installed - ignoring any dependencies on it.\n"
+msgstr ""
+"το %s δεν είναι κατάλληλα εγκατεστημένο - αγνοώντας όλες τις εξαρτήσεις "
+"του.\n"
+
+#: src/archives.c:845
+#, c-format
+msgid "dpkg: may have trouble removing %s, as it provides %s ...\n"
+msgstr ""
+"dpkg: η αφαίρεση του %s μπορεί να δημιουργήσει προβλήματα καθώς παρέχει %"
+"s ...\n"
+
+#: src/archives.c:860
+#, c-format
+msgid ""
+"dpkg: package %s requires reinstallation, but will remove anyway as you "
+"request.\n"
+msgstr ""
+"dpkg: το πακέτο %s απαιτεί επανεγκατάσταση αλλά θα αφαιρεθεί όπως ζητήσατε.\n"
+
+#: src/archives.c:863
+#, c-format
+msgid "dpkg: package %s requires reinstallation, will not remove.\n"
+msgstr "dpkg: το πακέτο %s απαιτεί επανεγκατάσταση, δε θα αφαιρεθεί.\n"
+
+#: src/archives.c:876
+#, c-format
+msgid "dpkg: yes, will remove %s in favour of %s.\n"
+msgstr "dpkg: θα μετακινηθεί το %s για χάρη του %s.\n"
+
+#: src/archives.c:884
+#, c-format
+msgid ""
+"dpkg: regarding %s containing %s:\n"
+"%s"
+msgstr ""
+"dpkg: σχετικά με το %s που περιέχει το %s:\n"
+"%s"
+
+#: src/archives.c:887
+#, c-format
+msgid "conflicting packages - not installing %.250s"
+msgstr "συγκρουόμενα πακέτα - δε γίνεται εγκατάσταση %.250s"
+
+#: src/archives.c:888
+#, c-format
+msgid "dpkg: warning - ignoring conflict, may proceed anyway !\n"
+msgstr "dpkg: προειδοποίηση - θα αγνοηθεί η σύγκρουση, μπορεί να συνεχίσει !\n"
+
+#: src/archives.c:926
+#, c-format
+msgid "--%s --recursive needs at least one path argument"
+msgstr "--%s --recursive χρειάζεται τουλάχιστον ένα όρισμα μονοπατιού"
+
+#: src/archives.c:956
+msgid "failed to exec find for --recursive"
+msgstr "αδύνατη η εκτέλεση της find με --recursive"
+
+#: src/archives.c:961
+msgid "failed to fdopen find's pipe"
+msgstr "αδύνατο το άνοιγμα της σωλήνωσης της find"
+
+#: src/archives.c:967
+msgid "error reading find's pipe"
+msgstr "αδύνατη η ανάγνωση από τη σωλήνωση της find"
+
+#: src/archives.c:968
+msgid "error closing find's pipe"
+msgstr "αδύνατο το κλείσιμο της σωλήνωσης της find"
+
+#: src/archives.c:971
+#, c-format
+msgid "find for --recursive returned unhandled error %i"
+msgstr "η εκτέλεση της find με --recursive επέστρεψε απρόσμενο σφάλμα %i"
+
+#: src/archives.c:974
+msgid "searched, but found no packages (files matching *.deb)"
+msgstr ""
+"έγινε αναζήτηση, δε βρέθηκε κανένα πακέτα (αρχεία που ταιριάζουν *.deb)"
+
+#: src/archives.c:990
+#, c-format
+msgid "--%s needs at least one package archive file argument"
+msgstr "--%s χρειάζεται τουλάχιστον ένα αρχείο πακέτου ως παράμετρο"
+
+#: src/archives.c:1060
+#, c-format
+msgid "Selecting previously deselected package %s.\n"
+msgstr "Επιλογή προηγούμενου απεπιλεγμένου πακέτου %s.\n"
+
+#: src/archives.c:1065
+#, c-format
+msgid "Skipping deselected package %s.\n"
+msgstr "Παράλειψη απόεπιλεγμένου πακέτου %s.\n"
+
+#: src/archives.c:1079
+#, c-format
+msgid "Version %.250s of %.250s already installed, skipping.\n"
+msgstr "Έκδοση %.250s του %.250s είναι ήδη εγκατεστημένη, παράβλεψη.\n"
+
+#: src/archives.c:1091
+#, c-format
+msgid "%s - warning: downgrading %.250s from %.250s to %.250s.\n"
+msgstr "%s - προειδοποίηση: υποβάθμιση του %.250s από %.250s σε %.250s.\n"
+
+#: src/archives.c:1097
+#, c-format
+msgid "Will not downgrade %.250s from version %.250s to %.250s, skipping.\n"
+msgstr ""
+"Δε θα υποβαθμιστεί το %.250s από την έκδοση %.250s στην %.250s, παράλειψη.\n"
+
+#: src/cleanup.c:83
+#, c-format
+msgid ""
+"unable to remove newly-installed version of `%.250s' to allow reinstallation "
+"of backup copy"
+msgstr ""
+"αδύνατη η αφαίρεση της νεοεγκατεστημένης έκδοσης του `%.250s' για να "
+"επανεγκατασταθεί ένα εφεδρικό αντίγραφο"
+
+#: src/cleanup.c:90
+#, c-format
+msgid "unable to restore backup version of `%.250s'"
+msgstr "αδύνατη η ανάκτηση της εφεδρικής έκδοσης του `%.250s'"
+
+#: src/cleanup.c:94
+#, c-format
+msgid "unable to remove newly-installed version of `%.250s'"
+msgstr "αδυναμία αφαίρεσης της νεο-εγκατεστημένης έκδοσης του`%.250s'"
+
+#: src/cleanup.c:101
+#, c-format
+msgid "unable to remove newly-extracted version of `%.250s'"
+msgstr "αδύνατη η αφαίρεση της νεοεξαχθείσας έκδοσης του`%.250s'"
+
+#: src/configure.c:91
+#, c-format
+msgid "no package named `%s' is installed, cannot configure"
+msgstr ""
+"δεν είναι εγκατεστημένο κανένα πακέτο με όνομα `%s', δε γίνεται ρύθμιση"
+
+#: src/configure.c:93
+#, c-format
+msgid "package %.250s is already installed and configured"
+msgstr "το πακέτο %.250s έχει ήδη εγκατεσταθεί και ρυθμιστεί"
+
+#: src/configure.c:95
+#, c-format
+msgid ""
+"package %.250s is not ready for configuration\n"
+" cannot configure (current status `%.250s')"
+msgstr ""
+"το πακέτο %.250s δεν είναι έτοιμο για ρυθμίσεις\n"
+" αδύνατη η ρύθμιση (τωρινή κατάσταση `%.250s')"
+
+#: src/configure.c:114
+#, c-format
+msgid ""
+"dpkg: dependency problems prevent configuration of %s:\n"
+"%s"
+msgstr ""
+"dpkg: προβλήματα εξαρτήσεων εμποδίζουν τη ρύθμιση του %s:\n"
+"%s"
+
+#: src/configure.c:117
+msgid "dependency problems - leaving unconfigured"
+msgstr "προβλήματα εξάρτησης - αφήνεται μη ρυθμισμένο"
+
+#: src/configure.c:121
+#, c-format
+msgid ""
+"dpkg: %s: dependency problems, but configuring anyway as you request:\n"
+"%s"
+msgstr ""
+"dpkg: %s: προβλήματα εξαρτήσεων αλλά θα γίνει ρύθμιση όπως ζητήσατε:\n"
+"%s"
+
+#: src/configure.c:129
+msgid ""
+"Package is in a very bad inconsistent state - you should\n"
+" reinstall it before attempting configuration."
+msgstr ""
+"Το πακέτο βρίσκεται σε πολύ κακή και ασυνεπή κατάσταση - θα πρέπει να το "
+"επανεγκαταστήσετε πριν προχωρήσετε στη ρύθμισή του."
+
+#: src/configure.c:132
+#, c-format
+msgid "Setting up %s (%s) ...\n"
+msgstr "Γίνεται εγκατάσταση %s (%s) ...\n"
+
+#: src/configure.c:179
+#, c-format
+msgid "unable to stat new dist conffile `%.250s'"
+msgstr "αδύνατη η εύρεση κατάστασης του νέου αρχείου ρυθμίσεων `%.250s'"
+
+#: src/configure.c:189 src/configure.c:427
+#, c-format
+msgid "unable to stat current installed conffile `%.250s'"
+msgstr "αδύνατη η εύρεση κατάστασης του τρέχοντος αρχείου ρυθμίσεων`%.250s'"
+
+#: src/configure.c:198
+#, c-format
+msgid ""
+"\n"
+"Configuration file `%s', does not exist on system.\n"
+"Installing new config file as you request.\n"
+msgstr ""
+"\n"
+"Το αρχείο ρυθμίσεων `%s', δεν υπάρχει στο σύστημα.\n"
+"Εγκατάσταση νέου αρχείου config όπως ζητήσατε.\n"
+
+#: src/configure.c:230
+#, c-format
+msgid "dpkg: %s: warning - failed to remove old backup `%.250s': %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αποτυχία αφαίρεσης του παλιού εφεδρικού αρχείου `"
+"%.250s': %s\n"
+
+#: src/configure.c:238
+#, c-format
+msgid "dpkg: %s: warning - failed to rename `%.250s' to `%.250s': %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αποτυχία μετονομασίας του `%.250s' σε `%.250s': %"
+"s\n"
+
+#: src/configure.c:246
+#, c-format
+msgid "dpkg: %s: warning - failed to remove `%.250s': %s\n"
+msgstr "dpkg: %s: προειδοποίηση - αποτυχία αφαίρεσης `%.250s': %s\n"
+
+#: src/configure.c:254
+#, c-format
+msgid "dpkg: %s: warning - failed to remove old distrib version `%.250s': %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αποτυχία αφαίρεσης παλιάς έκδοσης `%.250s': %s\n"
+
+#: src/configure.c:259
+#, c-format
+msgid "dpkg: %s: warning - failed to remove `%.250s' (before overwrite): %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αποτυχία αφαίρεσης του `%.250s' (πριν την "
+"αντικατάσταση): %s\n"
+
+#: src/configure.c:263
+#, c-format
+msgid "dpkg: %s: warning - failed to link `%.250s' to `%.250s': %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αποτυχία δημιουργίας δεσμού `%.250s' προς `"
+"%.250s': %s\n"
+
+#: src/configure.c:267
+#, c-format
+msgid "Installing new version of config file %s ...\n"
+msgstr "Εγκατάσταση νέας έκδοσης του αρχείου ρυθμίσεων %s ...\n"
+
+#: src/configure.c:271
+#, c-format
+msgid "unable to install `%.250s' as `%.250s'"
+msgstr "αδύνατη η εγκατάσταση `%.250s' ως `%.250s'"
+
+#: src/configure.c:332
+#, c-format
+msgid ""
+"dpkg: %s: warning - unable to stat config file `%s'\n"
+" (= `%s'): %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αδύνατη η stat του αρχείου ρυθμίσεων `%s'\n"
+" (= `%s'): %s\n"
+
+#: src/configure.c:343
+#, c-format
+msgid ""
+"dpkg: %s: warning - config file `%s' is a circular link\n"
+" (= `%s')\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - το αρχείο ρυθμίσεων `%s' είναι κυκλικός δεσμός\n"
+" (= `%s')\n"
+
+#: src/configure.c:356
+#, c-format
+msgid ""
+"dpkg: %s: warning - unable to readlink conffile `%s'\n"
+" (= `%s'): %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αδύνατη η ανάγνωση του `%s'\n"
+" (= `%s'): %s\n"
+
+#: src/configure.c:376
+#, c-format
+msgid ""
+"dpkg: %s: warning - conffile `%.250s' resolves to degenerate filename\n"
+" (`%s' is a symlink to `%s')\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - το αρχείο ρυθμίσεων `%.250s' καταλήγει σε "
+"εκφυλισμένο όνομα\n"
+" (το `%s' είναι δεσμός στο `%s')\n"
+
+#: src/configure.c:389
+#, c-format
+msgid ""
+"dpkg: %s: warning - conffile `%.250s' is not a plain file or symlink (= `%"
+"s')\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - το αρχείο ρυθμίσεων `%.250s' δεν είναι κοινό "
+"αρχείο ή δεσμός (= `%s')\n"
+
+#: src/configure.c:407
+msgid "md5hash"
+msgstr "md5hash"
+
+#: src/configure.c:413
+#, c-format
+msgid "dpkg: %s: warning - unable to open conffile %s for hash: %s\n"
+msgstr ""
+"dpkg: %s: προειδοποίηση - αδύνατη το άνοιγμα του αρχείου ρυθμίσεων %s για "
+"hash: %s\n"
+
+#: src/configure.c:431
+#, c-format
+msgid "unable to change ownership of new dist conffile `%.250s'"
+msgstr "αδύνατη η αλλαγή ιδιοκτησίας του νέου αρχείου ρυθμίσεων dist `%.250s'"
+
+#: src/configure.c:434
+#, c-format
+msgid "unable to set mode of new dist conffile `%.250s'"
+msgstr "αδύνατος ο ορισμός κατάστασης του νέου αρχείου ρυθμίσεων `%.250s'"
+
+#: src/configure.c:464
+#, c-format
+msgid "failed to run %s (%.250s)"
+msgstr "αποτυχία εκτέλεσης %s (%.250s)"
+
+#: src/configure.c:473 src/configure.c:511
+msgid "wait for shell failed"
+msgstr "αναμονή για κέλυφος απέτυχε"
+
+#: src/configure.c:493
+msgid "Type `exit' when you're done.\n"
+msgstr "Πληκτρολογήστε `exit' όταν τελειώσετε.\n"
+
+#: src/configure.c:502
+#, c-format
+msgid "failed to exec shell (%.250s)"
+msgstr "απέτυχε η εκκίνηση κελύφους (%.250s)"
+
+#: src/configure.c:514
+msgid "Don't forget to foreground (`fg') this process when you're done !\n"
+msgstr ""
+"Μην ξεχάσετε να επαναφέρετε την διαδικασία αυτή (`fg') όταν τελειώσετε !\n"
+
+#: src/configure.c:553
+#, c-format
+msgid ""
+"\n"
+"Configuration file `%s'"
+msgstr ""
+"\n"
+"Αρχείο ρυθμίσεων `%s'"
+
+#: src/configure.c:555
+#, c-format
+msgid " (actually `%s')"
+msgstr " (στην πραγματικότητα `%s')"
+
+#: src/configure.c:559
+#, c-format
+msgid ""
+"\n"
+" ==> File on system created by you or by a script.\n"
+" ==> File also in package provided by package maintainer.\n"
+msgstr ""
+"\n"
+" ==> Το αρχείο στο σύστημα δημιουργήθηκε από εσάς ή από σενάριο.\n"
+" ==> Το αρχείο επίσης στο πακέτο χορηγήθηκε από το συντηρητή πακέτου.\n"
+
+#: src/configure.c:564
+#, c-format
+msgid ""
+"\n"
+" ==> Modified (by you or by a script) since installation.\n"
+msgstr ""
+"\n"
+" ==> Τροποποιήθηκε (από εσάς ή από σενάριο) μετά την εγκατάσταση.\n"
+
+#: src/configure.c:565
+#, c-format
+msgid ""
+"\n"
+"     Not modified since installation.\n"
+msgstr ""
+"\n"
+"     Δεν τροποποιήθηκε μετά την εγκατάσταση.\n"
+
+#: src/configure.c:568
+#, c-format
+msgid " ==> Package distributor has shipped an updated version.\n"
+msgstr ""
+" ==> Ο διανομέας του πακέτου έχει κυκλοφορήσει μια ανανεωμένη έκδοση.\n"
+
+#: src/configure.c:569
+#, c-format
+msgid "     Version in package is the same as at last installation.\n"
+msgstr ""
+"     Η έκδοση στο πακέτο είναι η ίδια με της τελευταίας εγκατάστασης.\n"
+
+#: src/configure.c:576
+#, c-format
+msgid " ==> Using new file as you requested.\n"
+msgstr " ==> Γίνεται χρήση νέου αρχείου όπως ζητήσατε.\n"
+
+#: src/configure.c:580
+#, c-format
+msgid " ==> Using current old file as you requested.\n"
+msgstr " ==> Γίνεται χρήση του τωρινού παλιού αρχείου όπως ζητήσατε.\n"
+
+#: src/configure.c:590
+#, c-format
+msgid " ==> Keeping old config file as default.\n"
+msgstr " ==> Διατήρηση παλιού αρχείου ρυθμίσεων ως προεπιλογή.\n"
+
+#: src/configure.c:594
+#, c-format
+msgid " ==> Using new config file as default.\n"
+msgstr " ==> Χρήση του νέου αρχείου ρυθμίσεων ως προεπιλογή.\n"
+
+#: src/configure.c:602
+#, c-format
+msgid ""
+"   What would you like to do about it ?  Your options are:\n"
+"    Y or I  : install the package maintainer's version\n"
+"    N or O  : keep your currently-installed version\n"
+"      D     : show the differences between the versions\n"
+"      Z     : background this process to examine the situation\n"
+msgstr ""
+"   Τι θα θέλατε να γίνει; Οι επιλογές σας είναι:\n"
+"    Y ή I  : εγκατάσταση του πακέτου έκδοσης συντηρητή\n"
+"    N ή O  : κρατήστε την προς το παρόν εγκατεστημένη έκδοση\n"
+"      D     : εμφάνιση των διαφορών μεταξύ των εκδόσεων\n"
+"      Z     : η διεργασία εξέτασης της κατάστασης να τεθεί στο παρασκήνιο \n"
+
+#: src/configure.c:609
+#, c-format
+msgid " The default action is to keep your current version.\n"
+msgstr " Η προεπιλεγμένη ενέργεια είναι να κρατήσετε την τωρινή έκδοση.\n"
+
+#: src/configure.c:611
+#, c-format
+msgid " The default action is to install the new version.\n"
+msgstr " Η προεπιλεγμένη ενέργεια είναι να εγκατασταθεί η νέα έκδοση.\n"
+
+#: src/configure.c:617
+msgid "[default=N]"
+msgstr "[προεπιλογή=Ο]"
+
+#: src/configure.c:618
+msgid "[default=Y]"
+msgstr "[προεπιλογή=Ν]"
+
+#: src/configure.c:618
+msgid "[no default]"
+msgstr "[καμία προεπιλογή]"
+
+#: src/configure.c:621
+msgid "error writing to stderr, discovered before conffile prompt"
+msgstr ""
+"σφάλμα κατά την εγγραφή στην stderr, ανιχνεύθηκε πριν την προτροπή για το "
+"αρχείο ρυθμίσεων"
+
+#: src/configure.c:628
+msgid "read error on stdin at conffile prompt"
+msgstr "σφάλμα ανάγνωσης της stdin κατά την προτροπή για το αρχείο ρυθμίσεων"
+
+#: src/configure.c:629
+msgid "EOF on stdin at conffile prompt"
+msgstr "Τέλος αρχείου στην stdin κατά την προτροπή για το αρχείο ρυθμίσεων"
+
+#: src/depcon.c:76
+#, c-format
+msgid "unable to check for existence of `%.250s'"
+msgstr "αδύνατος ο έλεγχος ύπαρξης του `%.250s'"
+
+#: src/depcon.c:153 src/packages.c:389
+msgid " depends on "
+msgstr " εξαρτάται από "
+
+#: src/depcon.c:154
+msgid " pre-depends on "
+msgstr " προεξαρτάται από "
+
+#: src/depcon.c:155
+msgid " recommends "
+msgstr " συστήνει "
+
+#: src/depcon.c:156
+msgid " conflicts with "
+msgstr " συγκρούεται με "
+
+#: src/depcon.c:157
+msgid " suggests "
+msgstr " προτείνει "
+
+#: src/depcon.c:158
+msgid " enhances "
+msgstr " επαυξάνει "
+
+#: src/depcon.c:234
+#, c-format
+msgid "  %.250s is to be removed.\n"
+msgstr "  %.250s πρόκειται να αφαιρεθεί.\n"
+
+#: src/depcon.c:237
+#, c-format
+msgid "  %.250s is to be deconfigured.\n"
+msgstr "  %.250s πρόκειται να απορρυθμιστεί.\n"
+
+#: src/depcon.c:241
+#, c-format
+msgid "  %.250s is to be installed, but is version %.250s.\n"
+msgstr "  %.250s πρόκειται να εγκατασταθεί, αλλά είναι έκδοση %.250s.\n"
+
+#: src/depcon.c:249
+#, c-format
+msgid "  %.250s is installed, but is version %.250s.\n"
+msgstr "  %.250s είναι εγκατεστημένο, αλλά είναι έκδοση %.250s.\n"
+
+#: src/depcon.c:264
+#, c-format
+msgid "  %.250s is unpacked, but has never been configured.\n"
+msgstr "  %.250s είναι αποσυμπιεσμένο αλλά δεν έχει ρυθμιστεί.\n"
+
+#: src/depcon.c:268
+#, c-format
+msgid "  %.250s is unpacked, but is version %.250s.\n"
+msgstr "  %.250s είναι αποσυμπιεσμένο αλλά είναι έκδοση %.250s.\n"
+
+#: src/depcon.c:274
+#, c-format
+msgid "  %.250s latest configured version is %.250s.\n"
+msgstr "  %.250s τελευταία ρυθμισμένη έκδοση είναι %.250s.\n"
+
+#: src/depcon.c:283
+#, c-format
+msgid "  %.250s is %s.\n"
+msgstr "  %.250s είναι %s.\n"
+
+#: src/depcon.c:319
+#, c-format
+msgid "  %.250s provides %.250s but is to be removed.\n"
+msgstr "  %.250s παρέχει %.250s αλλά πρόκειται να αφαιρεθεί.\n"
+
+#: src/depcon.c:323
+#, c-format
+msgid "  %.250s provides %.250s but is to be deconfigured.\n"
+msgstr "  %.250s παρέχει %.250s αλλά πρόκειται να απορρυθμιστεί.\n"
+
+#: src/depcon.c:328
+#, c-format
+msgid "  %.250s provides %.250s but is %s.\n"
+msgstr "  %.250s παρέχει %.250s αλλά είναι %s.\n"
+
+#: src/depcon.c:342
+#, c-format
+msgid "  %.250s is not installed.\n"
+msgstr "  %.250s δεν έχει εγκατασταθεί.\n"
+
+#: src/depcon.c:373
+#, c-format
+msgid "  %.250s (version %.250s) is to be installed.\n"
+msgstr "  %.250s (έκδοση %.250s) πρόκειται να εγκατασταθεί.\n"
+
+#: src/depcon.c:387
+#, c-format
+msgid "  %.250s (version %.250s) is %s.\n"
+msgstr "  %.250s (έκδοση %.250s) είναι %s.\n"
+
+#: src/depcon.c:412
+#, c-format
+msgid "  %.250s provides %.250s and is to be installed.\n"
+msgstr "  %.250s παρέχει %.250s και είναι προς εγκατάσταση.\n"
+
+#: src/depcon.c:443
+#, c-format
+msgid "  %.250s provides %.250s and is %s.\n"
+msgstr "  %.250s παρέχει %.250s και είναι %s.\n"
+
+#: src/enquiry.c:56 src/query.c:96 src/query.c:139
+msgid "(no description available)"
+msgstr "(χωρίς διαθέσιμη περιγραφή)"
+
+#: src/enquiry.c:81
+msgid ""
+"The following packages are in a mess due to serious problems during\n"
+"installation.  They must be reinstalled for them (and any packages\n"
+"that depend on them) to function properly:\n"
+msgstr ""
+"Τα ακόλουθα πακέτα είναι χάλια λόγω σοβαρών προβλημάτων κατά την\n"
+"εγκατάσταση. Πρέπει να επανεγκατασταθούν (και όσα πακέτα\n"
+"εξαρτώνται από αυτά) για να λειτουργήσουν κατάλληλα:\n"
+
+#: src/enquiry.c:86
+msgid ""
+"The following packages have been unpacked but not yet configured.\n"
+"They must be configured using dpkg --configure or the configure\n"
+"menu option in dselect for them to work:\n"
+msgstr ""
+"Τα ακόλουθα πακέτα έχουν αποσυμπιεστεί αλλά δεν έχουν ρυθμιστεί.\n"
+"Για να λειτουργήσουν πρέπει να ρυθμιστούν με το dpkg --configure\n"
+"ή με την επιλογή μενού Ρύθμιση στο dselect:\n"
+
+#: src/enquiry.c:91
+msgid ""
+"The following packages are only half configured, probably due to problems\n"
+"configuring them the first time.  The configuration should be retried using\n"
+"dpkg --configure <package> or the configure menu option in dselect:\n"
+msgstr ""
+"Τα ακόλουθα πακέτα είναι μισορυθμισμένα, λόγω προβλημάτων\n"
+"αρχικής ρύθμισης.  Πρέπει να ξαναγίνει προσπάθεια ρύθμισης με\n"
+"το dpkg --configure <πακέτο> ή με την επιλογή μενού ρύθμιση στο dselect:\n"
+
+#: src/enquiry.c:96
+msgid ""
+"The following packages are only half installed, due to problems during\n"
+"installation.  The installation can probably be completed by retrying it;\n"
+"the packages can be removed using dselect or dpkg --remove:\n"
+msgstr ""
+"Τα ακόλουθα πακέτα είναι μισοεγκατεστημένα, λόγω προβλημάτων στην\n"
+"αρχική εγκατάσταση. Η εγκατάσταση ίσως συμπληρωθεί προσπαθώντας ξανά.\n"
+"Τα πακέτα μπορούν να αφαιρεθούν με το dselect ή dpkg --remove:\n"
+
+#: src/enquiry.c:121
+msgid "--audit does not take any arguments"
+msgstr "--audit δεν παίρνει κανένα όρισμα"
+
+#: src/enquiry.c:156
+msgid "<unknown>"
+msgstr "<άγνωστο>"
+
+#: src/enquiry.c:173
+msgid "--yet-to-unpack does not take any arguments"
+msgstr "--yet-to-unpack δεν παίρνει κανένα όρισμα"
+
+#: src/enquiry.c:211
+#, c-format
+msgid " %d in %s: "
+msgstr " %d σε %s: "
+
+#: src/enquiry.c:226
+#, c-format
+msgid " %d packages, from the following sections:"
+msgstr " %d πακέτα, από τα παρακάτω τμήματα:"
+
+#: src/enquiry.c:245
+msgid "--assert-* does not take any arguments"
+msgstr "--assert-* δεν παίρνει κανένα όρισμα"
+
+#: src/enquiry.c:260
+#, c-format
+msgid ""
+"Version of dpkg with working epoch support not yet configured.\n"
+" Please use `dpkg --configure dpkg', and then try again.\n"
+msgstr ""
+"Η έκδοση του dpkg με λειτουργική την υποστήριξη για epochs δεν έχει\n"
+"ρυθμιστεί ακόμη. Παρακαλώ χρησιμοποιήστε `dpkg --configure dpkg', και\n"
+"ξαναδοκιμάστε.\n"
+
+#: src/enquiry.c:264
+#, c-format
+msgid "dpkg not recorded as installed, cannot check for epoch support !\n"
+msgstr ""
+"το dpkg δε βρέθηκε ως εγκατεστημένο, δεν είναι δυνατός ο έλεγχος\n"
+"υποστήριξης του epoch!\n"
+
+#: src/enquiry.c:307
+msgid "--predep-package does not take any argument"
+msgstr "--predep-package δεν παίρνει κανένα όρισμα"
+
+#: src/enquiry.c:359
+#, c-format
+msgid ""
+"dpkg: cannot see how to satisfy pre-dependency:\n"
+" %s\n"
+msgstr ""
+"dpkg: αδιέξοδο η ικανοποίηση της προεξάρτησης:\n"
+" %s\n"
+
+#: src/enquiry.c:360
+#, c-format
+msgid "cannot satisfy pre-dependencies for %.250s (wanted due to %.250s)"
+msgstr ""
+"αδιέξοδο η ικανοποίηση των προεξαρτήσεων για το %.250s (ζητήθηκε λόγω του "
+"%.250s)"
+
+#: src/enquiry.c:377
+msgid "--print-architecture does not take any argument"
+msgstr "--print-architecture δεν παίρνει κανένα όρισμα"
+
+#: src/enquiry.c:419
+msgid ""
+"--compare-versions takes three arguments: <version> <relation> <version>"
+msgstr "--compare-versions παίρνει τρία ορίσματα: <έκδοση> <σχέση> <έκδοση>"
+
+#: src/enquiry.c:424
+msgid "--compare-versions bad relation"
+msgstr "--compare-versions κακή συσχέτιση"
+
+#: src/enquiry.c:429
+#, c-format
+msgid "version a has bad syntax: %s\n"
+msgstr "η έκδοση a έχει κακή σύνταξη: %s\n"
+
+#: src/enquiry.c:439
+#, c-format
+msgid "version b has bad syntax: %s\n"
+msgstr "η έκδοση b έχει κακή σύνταξη: %s\n"
+
+#: src/errors.c:58
+#, c-format
+msgid ""
+"%s: error processing %s (--%s):\n"
+" %s\n"
+msgstr ""
+"%s: σφάλμα στην επεξεργασία του %s (--%s):\n"
+" %s\n"
+
+#: src/errors.c:81
+msgid ""
+"dpkg: failed to allocate memory for new entry in list of failed packages."
+msgstr ""
+"dpkg: αποτυχία κατά τη δέσμευση μνήμης για νέα καταχώριση στη λίστα των "
+"αποτυχόντων πακέτων."
+
+#: src/errors.c:91
+#, c-format
+msgid "dpkg: too many errors, stopping\n"
+msgstr "dpkg: πάρα πολλά σφάλματα, διακοπή λειτουργίας\n"
+
+#: src/errors.c:97
+msgid "Errors were encountered while processing:\n"
+msgstr "Προέκυψαν σφάλματα κατά την επεξεργασία του:\n"
+
+#: src/errors.c:104
+msgid "Processing was halted because there were too many errors.\n"
+msgstr "Η επεξεργασία σταμάτησε γιατί προέκυψαν πάρα πολλά σφάλματα.\n"
+
+#: src/errors.c:112
+#, c-format
+msgid "Package %s was on hold, processing it anyway as you request\n"
+msgstr ""
+"Το πακέτο %s ήταν σε συγκράτηση, θα επεξεργαστεί κατά την επιθυμία σας\n"
+
+#: src/errors.c:116
+#, c-format
+msgid ""
+"Package %s is on hold, not touching it.  Use --force-hold to override.\n"
+msgstr ""
+"Το πακέτο %s είναι σε συγκράτηση, δεν θα επεξεργαστεί.  Χρησιμοποιήστε το --"
+"force-hold για να παρακάμψετε.\n"
+
+#: src/errors.c:125
+msgid ""
+"dpkg - warning, overriding problem because --force enabled:\n"
+" "
+msgstr ""
+"dpkg - προειδοποίηση, το πρόβλημα παρακάμπτεται λόγω του --force enabled:\n"
+" "
+
+#: src/filesdb.c:123
+#, c-format
+msgid "unable to open files list file for package `%.250s'"
+msgstr "αδύνατο το άνοιγμα της λίστας αρχείων για το πακέτο `%.250s'"
+
+#: src/filesdb.c:128
+#, c-format
+msgid ""
+"dpkg: serious warning: files list file for package `%.250s' missing, "
+"assuming package has no files currently installed.\n"
+msgstr ""
+"dpkg: σοβαρή προειδοποίηση: το αρχείο της λίστας αρχείων για το πακέτο\n"
+"`%.250s' δεν υπάρχει, θα υποθέσουμε ότι το πακέτο δεν έχει εγκατεστημένα\n"
+"αρχεία.\n"
+
+#: src/filesdb.c:145
+#, c-format
+msgid "files list for package `%.250s'"
+msgstr "λίστα αρχείων για το πακέτο `%.250s'"
+
+#: src/filesdb.c:158
+#, c-format
+msgid "files list file for package `%.250s' contains empty filename"
+msgstr ""
+"το αρχείο λίστας αρχείων για το πακέτο `%.250s' περιέχει κενό όνομα αρχείου"
+
+#: src/filesdb.c:170
+#, c-format
+msgid "error closing files list file for package `%.250s'"
+msgstr "σφάλμα κλεισίματος αρχείου λίστας αρχείων για το πακέτο `%.250s'"
+
+#: src/filesdb.c:201
+#, c-format
+msgid "(Reading database ... "
+msgstr "(Ανάγνωση βάσης δεδομένων ... "
+
+#: src/filesdb.c:209
+#, c-format
+msgid "%d files and directories currently installed.)\n"
+msgstr "προς το παρόν εγκαταστάθηκαν %d αρχεία και κατάλογοι.)\n"
+
+#: src/filesdb.c:240
+#, c-format
+msgid "unable to create updated files list file for package %s"
+msgstr "αδύνατη η δημιουργία ανανέωμένης λίστας αρχείων για το πακέτο %s"
+
+#: src/filesdb.c:250
+#, c-format
+msgid "failed to write to updated files list file for package %s"
+msgstr "αποτυχία εγγραφής της ανανεωμένης λίστας αρχείων για το πακέτο %s"
+
+#: src/filesdb.c:252
+#, c-format
+msgid "failed to flush updated files list file for package %s"
+msgstr "αποτυχία απόρριψης της ανανεωμένης λίστας αρχείων για το πακέτο %s"
+
+#: src/filesdb.c:254
+#, c-format
+msgid "failed to sync updated files list file for package %s"
+msgstr "αποτυχία συγχρονισμού της ανανεωμένης λίστας αρχείων για το πακέτο %s"
+
+#: src/filesdb.c:257
+#, c-format
+msgid "failed to close updated files list file for package %s"
+msgstr "αποτυχία κλεισίματος της ανανεωμένης λίστας αρχείων για το πακέτο %s"
+
+#: src/filesdb.c:259
+#, c-format
+msgid "failed to install updated files list file for package %s"
+msgstr "αποτυχία εγκατάστασης της ανανεωμένης λίστας αρχείων για το πακέτο %s"
+
+#: src/filesdb.c:323
+msgid "failed to open statoverride file"
+msgstr "αποτυχία κατά το άνοιγμα του αρχείου statoverride"
+
+#: src/filesdb.c:327
+msgid "failed to fstat statoverride file"
+msgstr "αποτυχία κατά την εκτέλεση της fstat στο αρχείο statoverride"
+
+#: src/filesdb.c:330
+msgid "failed to fstat previous statoverride file"
+msgstr ""
+"αποτυχία κατά την εκτέλεση της fstat στο προηγούμενο αρχείο statoverride"
+
+#: src/filesdb.c:349
+#, c-format
+msgid "statoverride file `%.250s'"
+msgstr "αρχείο statoverride `%.250s'"
+
+#: src/filesdb.c:362
+msgid "statoverride file contains empty line"
+msgstr "το αρχείο statoverride περιέχει μια κενή γραμμή"
+
+#: src/filesdb.c:447
+msgid "failed to open diversions file"
+msgstr "αποτυχία κατά το άνοιγμα του αρχείου diversions"
+
+#: src/filesdb.c:451
+msgid "failed to fstat previous diversions file"
+msgstr "αποτυχία κατά την εκτέλεση της fstat στο προηγούμενο αρχείο diversions"
+
+#: src/filesdb.c:453
+msgid "failed to fstat diversions file"
+msgstr "αποτυχία κατά την εκτέλεση της fstat στο αρχείο diversions"
+
+#: src/filesdb.c:474
+msgid "fgets gave an empty string from diversions [i]"
+msgstr "η fgets επέστρεψε κενή συμβολοσειρά από το diversions [i]"
+
+#: src/filesdb.c:475
+msgid "diversions file has too-long line or EOF [i]"
+msgstr ""
+"το αρχείο diversions έχει πολύ μεγάλη σε μήκος γραμμή ή βρέθηκε EOF [i]"
+
+#: src/filesdb.c:481
+msgid "read error in diversions [ii]"
+msgstr "σφάλμα ανάγνωσης στο αρχείο diversions [ii]"
+
+#: src/filesdb.c:482
+msgid "unexpected EOF in diversions [ii]"
+msgstr "μη αναμενόμενο τέλος αρχείου στο αρχείο diversions [ii]"
+
+#: src/filesdb.c:485
+msgid "fgets gave an empty string from diversions [ii]"
+msgstr "η fgets επέστρεψε κενή συμβολοσειρά από το diversions [ii]"
+
+#: src/filesdb.c:486 src/filesdb.c:497
+msgid "diversions file has too-long line or EOF [ii]"
+msgstr ""
+"το αρχείο diversions έχει πολύ μεγάλη σε μήκος γραμμή ή βρέθηκε EOF [ii]"
+
+#: src/filesdb.c:492
+msgid "read error in diversions [iii]"
+msgstr "σφάλμα ανάγνωσης στο αρχείο diversions [iii]"
+
+#: src/filesdb.c:493
+msgid "unexpected EOF in diversions [iii]"
+msgstr "μη αναμενόμενο τέλος αρχείου στο αρχείο diversions [iii]"
+
+#: src/filesdb.c:496
+msgid "fgets gave an empty string from diversions [iii]"
+msgstr "η fgets επέστρεψε κενή συμβολοσειρά από το diversions [iii]"
+
+#: src/filesdb.c:504
+#, c-format
+msgid "conflicting diversions involving `%.250s' or `%.250s'"
+msgstr "συγκρουόμενες αποκλίσεις ανάμεσα σε `%.250s' ή `%.250s'"
+
+#: src/filesdb.c:513
+msgid "read error in diversions [i]"
+msgstr "σφάλμα ανάγνωσης στο αρχείο diversions [i]"
+
+#: src/help.c:41 dselect/pkgdisplay.cc:52
+msgid "not installed"
+msgstr "δεν είναι εγκατεστημένο"
+
+#: src/help.c:42
+msgid "unpacked but not configured"
+msgstr "αποσυμπιεσμένο αλλά όχι ρυθμισμένο"
+
+#: src/help.c:43
+msgid "broken due to postinst failure"
+msgstr "κατεστραμμένο λόγω σφάλματος μετά την εγκατάσταση (postinst)"
+
+#: src/help.c:44 dselect/pkgdisplay.cc:55
+msgid "installed"
+msgstr "εγκατεστημένο"
+
+#: src/help.c:45
+msgid "broken due to failed removal"
+msgstr "κατεστραμμένο λόγω αποτυχημένης απεγκατάστασης"
+
+#: src/help.c:46
+msgid "not installed but configs remain"
+msgstr "όχι εγκατεστημένο αλλά παραμένουν οι ρυθμίσεις"
+
+#: src/help.c:87
+msgid "dpkg - error: PATH is not set.\n"
+msgstr "dpkg - σφάλμα: το PATH δεν έχει οριστεί.\n"
+
+#: src/help.c:102
+#, c-format
+msgid "dpkg: `%s' not found on PATH.\n"
+msgstr "dpkg: το `%s' δε βρέθηκε στο PATH.\n"
+
+#: src/help.c:109
+#, c-format
+msgid ""
+"%d expected program(s) not found on PATH.\n"
+"NB: root's PATH should usually contain /usr/local/sbin, /usr/sbin and /sbin."
+msgstr ""
+"%d αναμενόμενα προγράμμα δε βρέθηκαν στο PATH.\n"
+"Σημ.: το PATH του root τυπικά περιέχει /usr/local/sbin, /usr/sbin and /sbin."
+
+#: src/help.c:179
+#, c-format
+msgid "failed to chroot to `%.250s'"
+msgstr "αποτυχία κατά το chroot στο `%.250s'"
+
+#: src/help.c:227
+#, c-format
+msgid "error un-catching signal %s: %s\n"
+msgstr "σφάλμα κατά την απελευθέρωση του σήματος %s: %s\n"
+
+#: src/help.c:245
+#, c-format
+msgid "unable to ignore signal %s before running script"
+msgstr "αδύνατη η παράλειψη του %s πριν την εκτέλεση του σεναρίου"
+
+#: src/help.c:254
+#, c-format
+msgid "unable to set execute permissions on `%.250s'"
+msgstr "αδύνατος ο ορισμός άδειας εκτέλεσης στο `%.250s'"
+
+#: src/help.c:299
+#, c-format
+msgid "unable to stat installed %s script `%.250s'"
+msgstr "αδύνατη η εύρεση κατάστασης του εγκατεστημένου σεναρίου %s `%.250s'"
+
+#: src/help.c:301 src/help.c:357 src/help.c:377
+#, c-format
+msgid "unable to execute %s"
+msgstr "αδύνατη η εκτέλεση %s"
+
+#: src/help.c:325
+#, c-format
+msgid "unable to stat new %s script `%.250s'"
+msgstr "αδύνατη η εύρεση κατάστασης νέου σεναρίου %s `%.250s'"
+
+#: src/help.c:327
+#, c-format
+msgid "unable to execute new %s"
+msgstr "αδύνατη η εκτέλεση νέου %s"
+
+#: src/help.c:346
+#, c-format
+msgid "old %s script"
+msgstr "παλιό σενάριο %s"
+
+#: src/help.c:354
+#, c-format
+msgid "dpkg: warning - unable to stat %s `%.250s': %s\n"
+msgstr ""
+"dpkg: προειδοποίηση - αδύνατη η εύρεση κατάστασης του %s `%.250s': %s\n"
+
+#: src/help.c:361
+#, c-format
+msgid "dpkg - trying script from the new package instead ...\n"
+msgstr "dpkg - δοκιμάζεται εναλλακτικά το σενάριο από το νέο πακέτο ...\n"
+
+#: src/help.c:368
+#, c-format
+msgid "new %s script"
+msgstr "νέο σενάριο %s "
+
+#: src/help.c:372
+msgid "there is no script in the new version of the package - giving up"
+msgstr "δεν υπάρχει σενάριο στη νέα έκδοση του πακέτου - εγκατάλειψη"
+
+#: src/help.c:374
+#, c-format
+msgid "unable to stat %s `%.250s'"
+msgstr "αδύνατη η εύρεση κατάστασης του %s `%.250s'"
+
+#: src/help.c:378
+#, c-format
+msgid "dpkg: ... it looks like that went OK.\n"
+msgstr "dpkg: ... μάλλον επιτυχής..\n"
+
+#: src/help.c:473
+#, c-format
+msgid "failed to rmdir/unlink `%.255s'"
+msgstr "αδύνατη η διαγραφή `%.255s'"
+
+#: src/help.c:477 dpkg-deb/info.c:54
+msgid "failed to exec rm for cleanup"
+msgstr "σφάλμα κατά την διαγραφή κατά τον τερματισμό"
+
+#: src/main.c:44
+msgid "Debian GNU/Linux `"
+msgstr "Debian GNU/Linux `"
+
+#: src/main.c:46
+msgid "' package management program version "
+msgstr "' έκδοση προγράμματος διαχείρισης πακέτων "
+
+#: src/main.c:48 src/query.c:463
+msgid ""
+"This is free software; see the GNU General Public Licence version 2 or\n"
+"later for copying conditions.  There is NO warranty.\n"
+"See "
+msgstr ""
+"Αυτό είναι ελεύθερο λογισμικό. Δείτε την GNU General Public Licence έκδοσης "
+"2 ή\n"
+"μεταγενέστερη για συνθήκες αντιγραφής.  Δεν υπάρχει ΚΑΜΙΑ εγγύηση.\n"
+"Δείτε "
+
+#: src/main.c:50 src/query.c:465
+msgid " --licence for copyright and license details.\n"
+msgstr " --licence για λεπτομέρειες πνευματικών δικαιωμάτων και άδειας.\n"
+
+#: src/main.c:58
+#, c-format
+msgid ""
+"Usage: \n"
+"  dpkg -i|--install      <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  dpkg --unpack          <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  dpkg -A|--record-avail <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  dpkg --configure              <package name> ... | -a|--pending\n"
+"  dpkg -r|--remove | -P|--purge <package name> ... | -a|--pending\n"
+"  dpkg --get-selections [<pattern> ...]    get list of selections to stdout\n"
+"  dpkg --set-selections                    set package selections from "
+"stdin\n"
+"  dpkg --update-avail <Packages-file>      replace available packages info\n"
+"  dpkg --merge-avail <Packages-file>       merge with info from file\n"
+"  dpkg --clear-avail                       erase existing available info\n"
+"  dpkg --forget-old-unavail                forget uninstalled unavailable "
+"pkgs\n"
+"  dpkg -s|--status <package-name> ...      display package status details\n"
+"  dpkg -p|--print-avail <package-name> ... display available version "
+"details\n"
+"  dpkg -L|--listfiles <package-name> ...   list files `owned' by package(s)\n"
+"  dpkg -l|--list [<pattern> ...]           list packages concisely\n"
+"  dpkg -S|--search <pattern> ...           find package(s) owning file(s)\n"
+"  dpkg -C|--audit                          check for broken package(s)\n"
+"  dpkg --print-architecture                print dpkg architecture\n"
+"  dpkg --compare-versions <a> <rel> <b>    compare version numbers - see "
+"below\n"
+"  dpkg --help | --version                  show this help / version number\n"
+"  dpkg --force-help | -Dh|--debug=help     help on forcing resp. debugging\n"
+"  dpkg --licence                           print copyright licensing terms\n"
+"\n"
+"Use dpkg -b|--build|-c|--contents|-e|--control|-I|--info|-f|--field|\n"
+" -x|--extract|-X|--vextract|--fsys-tarfile  on archives (type %s --help.)\n"
+"\n"
+"For internal use: dpkg --assert-support-predepends | --predep-package |\n"
+"  --assert-working-epoch | --assert-long-filenames | --assert-multi-conrep\n"
+"\n"
+"Options:\n"
+"  --admindir=<directory>     Use <directory> instead of %s\n"
+"  --root=<directory>         Install on alternative system rooted elsewhere\n"
+"  --instdir=<directory>      Change inst'n root without changing admin dir\n"
+"  -O|--selected-only         Skip packages not selected for install/upgrade\n"
+"  -E|--skip-same-version     Skip packages whose same version is installed\n"
+"  -G|--refuse-downgrade      Skip packages with earlier version than "
+"installed\n"
+"  -B|--auto-deconfigure      Install even if it would break some other "
+"package\n"
+"  --no-debsig                Do not try to verify package signatures\n"
+"  --no-act|--dry-run|--simulate\n"
+"                             Just say what we would do - don't do it\n"
+"  -D|--debug=<octal>         Enable debugging - see -Dhelp or --debug=help\n"
+"  --status-fd <n>            Send status change updates to file descriptor "
+"<n>\n"
+"  --log=<filename>           Log status changes and actions to <filename>\n"
+"  --ignore-depends=<package>,... Ignore dependencies involving <package>\n"
+"  --force-...                    Override problems - see --force-help\n"
+"  --no-force-...|--refuse-...    Stop when problems encountered\n"
+"  --abort-after <n>              Abort after encountering <n> errors\n"
+"\n"
+"Comparison operators for --compare-versions are:\n"
+" lt le eq ne ge gt       (treat empty version as earlier than any version);\n"
+" lt-nl le-nl ge-nl gt-nl (treat empty version as later than any version);\n"
+" < << <= = >= >> >       (only for compatibility with control file syntax).\n"
+"\n"
+"Use `dselect' or `aptitude' for user-friendly package management.\n"
+msgstr ""
+"Χρήση: \n"
+"  dpkg -i|--install      <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  dpkg --unpack          <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  dpkg -A|--record-avail <.deb file name> ... | -R|--recursive <dir> ...\n"
+"  dpkg --configure              <package name> ... | -a|--pending\n"
+"   dpkg -r|--remove | -P|--purge <package name> ... | -a|--pending\n"
+"  dpkg --get-selections [<pattern> ...]    λίστα επιλογών στην  stdout\n"
+"  dpkg --set-selections                    ορισμός λίστας επιλογών από την "
+"stdin\n"
+"  dpkg --update-avail <Packages-file>      αντικατάσταση πληροφοριών "
+"πακέτων\n"
+"  dpkg --merge-avail <Packages-file>       συγχώνευση πληροφοριών από "
+"αρχείο\n"
+"  dpkg --clear-avail                       καθαρισμός υπαρχουσών "
+"πληροφοριών\n"
+"  dpkg --forget-old-unavail                διαγραφή μη εγκατεστημένων "
+"πακέτων\n"
+"  dpkg -s|--status <package-name> ...      εμφάνιση κατάστασης πακέτου\n"
+"  dpkg -p|--print-avail <package-name> ... προβολή πληροφοριών διαθέσιμων "
+"εκδόσεων\n"
+"  dpkg -L|--listfiles <package-name> ...   εμφάνιση αρχείων του/των πακέτων\n"
+"  dpkg -l|--list [<pattern> ...]           προβολή πακέτων\n"
+"  dpkg -S|--search <pattern> ...           αναζήτηση αρχείων σε πακέτα\n"
+"  dpkg -C|--audit                          έλεγχος κατεστραμμένων πακέτων\n"
+"  dpkg --print-architecture                προβολή αρχιτεκτονικής (από GCC)\n"
+"  dpkg --compare-versions <a> <rel> <b>    σύγκριση εκδόσεων - βλ. παρακάτω\n"
+"  dpkg --help | --version                  εμφάνιση βοήθειας/έκδοσης\n"
+"  dpkg --force-help | -Dh|--debug=help     βοήθεια στην ενεργοποίηση debug\n"
+"  dpkg --licence                           εμφάνιση άδειας χρήσης\n"
+"\n"
+"Χρήση dpkg -b|--build|-c|--contents|-e|--control|-I|--info|-f|--field|\n"
+" -x|--extract|-X|--vextract|--fsys-tarfile  σε αρχειοθήκες (δώστε %s --"
+"help.)\n"
+"\n"
+"Για εσωτερική χρήση: dpkg --assert-support-predepends | --predep-package |\n"
+"  --assert-working-epoch | --assert-long-filenames | --assert-multi-conrep\n"
+"\n"
+"Επιλογές:\n"
+"  --admindir=<directory>     Χρήση του <directory> αντί του %s\n"
+"  --root=<directory>         εγκατάσταση σε εναλλακτικό σύστημα\n"
+"  --instdir=<directory>      εγκατάσταση σε άλλο κατάλογο χωρίς αλλαγή admin "
+"dir\n"
+"  -O|--selected-only         Παράλειψη μη επιλεγμένων για εγκατάσταση "
+"πακέτων\n"
+"  -E|--skip-same-version     Παράλειψη πακέτων με ίδια έκδοση εγκατεστημένη\n"
+"  -G|--refuse-downgrade      Παράλειψη πακέτων με μικρότερη έκδοση από την\n"
+"   εγκατεστημένη\n"
+"  -B|--auto-deconfigure      εγκατάσταση ακόμη και στην περίπτωση πρόκλησης\n"
+"   βλάβης σε άλλο πακέτο\n"
+"  --no-debsig                Χωρίς έλεγχο ψηφιακής υπογραφής του πακέτου\n"
+"  --no-act|--dry-run|--simulate\n"
+"                    Απλή καταγραφή των ενεργειών χωρίς πραγματοποίησή τους\n"
+"  -D|--debug=<octal>   Ενεργοποίηση του debugging - βλ. -Dhelp ή --"
+"debug=help\n"
+"  --status-fd <n>            Αποστολή της κατάστασης αναβάθμισης στον\n"
+"  περιγραφέα αρχείου <n>\n"
+"  --ignore-depends=<package>,... αγνόησε εξαρτήσεις σχετικές με το "
+"<package>\n"
+"  --force-...                    Υπερπήδηση εμποδίων - βλέπε --force-help\n"
+"  --no-force-...|--refuse-...    Τερματισμός κατά την εμφάνιση προβλημάτων\n"
+"  --abort-after <n>            Τερματισμός κατά την εμφάνιση <n> "
+"προβλημάτων\n"
+"\n"
+"Τελεστές σύγκρισης για --compare-versions είναι:\n"
+" lt le eq ne ge gt       (αν δε δοθεί η έκδοση θα θεωρηθεί ως μικρότερη);\n"
+" lt-nl le-nl ge-nl gt-nl (αν δε δοθεί η έκδοση θα θεωρηθεί ως μεγαλύτερη);\n"
+" < << <= = >= >> >       (για συμβατότητα με σύνταξη του αρχείου control).\n"
+"\n"
+"Χρησιμοποιήστε το `dselect' ή το 'aptitude' για φιλική διαχείριση πακέτων.\n"
+
+#: src/main.c:119
+msgid ""
+"Type dpkg --help for help about installing and deinstalling packages [*];\n"
+"Use `dselect' or `aptitude' for user-friendly package management;\n"
+"Type dpkg -Dhelp for a list of dpkg debug flag values;\n"
+"Type dpkg --force-help for a list of forcing options;\n"
+"Type dpkg-deb --help for help about manipulating *.deb files;\n"
+"Type dpkg --licence for copyright licence and lack of warranty (GNU GPL) "
+"[*].\n"
+"\n"
+"Options marked [*] produce a lot of output - pipe it through `less' or "
+"`more' !"
+msgstr ""
+"Δώστε dpkg --help για βοήθεια στην εγκατάσταση/απεγκατάσταση πακέτων [*];\n"
+"Χρησιμοποιήστε 'dselect' ή 'aptitude' για φιλική διαχείριση πακέτων;\n"
+"Δώστε dpkg -Dhelp για μια λίστα των επιλογών debug του dpkg;\n"
+"Δώστε dpkg --force-help για μια λίστα των εξαναγκαστικών επιλογών (force);\n"
+"Δώστε dpkg-deb --help για βοήθεια στην επεξεργασία των αρχέιων *.deb;\n"
+"Δώστε dpkg --licence για άδεια χρήσης και έλειψη εγγύησης (GNU GPL)[*].\n"
+"\n"
+"Οι επιλογές με [*] εμφανίζουν αρκετό περιεχόμενο - χρησιμοποιήστε μια "
+"σωλήνωση με τις εντολές `less' ή `more' !"
+
+#: src/main.c:184 src/query.c:531 dpkg-deb/main.c:162 dpkg-split/main.c:145
+#, c-format
+msgid "conflicting actions --%s and --%s"
+msgstr "συγκρουόμενες δράσεις --%s και --%s"
+
+#: src/main.c:189
+#, c-format
+msgid "Warning: obsolete option `--%s'\n"
+msgstr "Προειδοποίηση: επιλογή εκτός χρήσης `--%s'\n"
+
+#: src/main.c:197
+#, c-format
+msgid ""
+"%s debugging option, --debug=<octal> or -D<octal>:\n"
+"\n"
+" number  ref. in source   description\n"
+"      1   general           Generally helpful progress information\n"
+"      2   scripts           Invocation and status of maintainer scripts\n"
+"     10   eachfile          Output for each file processed\n"
+"    100   eachfiledetail    Lots of output for each file processed\n"
+"     20   conff             Output for each configuration file\n"
+"    200   conffdetail       Lots of output for each configuration file\n"
+"     40   depcon            Dependencies and conflicts\n"
+"    400   depcondetail      Lots of dependencies/conflicts output\n"
+"   1000   veryverbose       Lots of drivel about eg the dpkg/info directory\n"
+"   2000   stupidlyverbose   Insane amounts of drivel\n"
+"\n"
+"Debugging options are be mixed using bitwise-or.\n"
+"Note that the meanings and values are subject to change.\n"
+msgstr ""
+"%s επιλογή αποσφαλμάτωσης, --debug=<octal> ή -D<octal>:\n"
+"\n"
+" αριθμός  αναφ.σε κώδικα  περιγραφή\n"
+"      1   general           Γενική βοήθειαπροόδου\n"
+"      2   scripts           Κλήση και κατάσταση των σεναρίων συντήρησης\n"
+"     10   eachfile          Έξοδος για κάθε αρχείο\n"
+"    100   eachfiledetail    Αναλυτική έξοδος για κάθε αρχείο\n"
+"     20   conff             Έξοδος για κάθε αρχείο ρυθμίσεων\n"
+"    200   conffdetail       Αναλυτική έξοδος για κάθε αρχείο ρυθμίσεων\n"
+"     40   depcon            Εξαρτήσεις και ασυμβατότητες\n"
+"    400   depcondetail      Αναλυτική έξοδος για εξαρτήσεις και "
+"ασυμβατότητες\n"
+"   1000   veryverbose       Υπερβολικές πληροφορίες για τον κατάλογο dpkg/"
+"info\n"
+"   2000   stupidlyverbose   Εξωφρενικά Υπερβολικές πληροφορίες\n"
+"\n"
+"Οι επιλογές αποσφαλμάτωσης μπορούν να συνδυαστούν (με βάση δυαδική "
+"άλγεβρα).\n"
+"Σημειώστε ότι οι εξηγήσεις και οι τιμές πιθανόν να αλλάξουν.\n"
+
+#: src/main.c:216
+msgid "--debug requires an octal argument"
+msgstr "--debug απαιτεί ένα οκταδικό όρισμα"
+
+#: src/main.c:240
+#, c-format
+msgid "null package name in --ignore-depends comma-separated list `%.250s'"
+msgstr ""
+"μη ορισμένο όνομα πακέτου στην χωρισμένη με κόμμα λίστα της --ignore-"
+"depends  `%.250s'"
+
+#: src/main.c:246
+#, c-format
+msgid "--ignore-depends requires a legal package name. `%.250s' is not; %s"
+msgstr ""
+"η --ignore-depends απαιτεί ένα έγκυρο όνομα πακέτου. Το `%.250s' δεν είναι. %"
+"s"
+
+#: src/main.c:262 src/main.c:273
+#, c-format
+msgid "invalid integer for --%s: `%.250s'"
+msgstr "μη έγκυρος ακέραιος για --%s: `%.250s'"
+
+#: src/main.c:292
+#, c-format
+msgid ""
+"%s forcing options - control behaviour when problems found:\n"
+"  warn but continue:  --force-<thing>,<thing>,...\n"
+"  stop with error:    --refuse-<thing>,<thing>,... | --no-force-<thing>,...\n"
+" Forcing things:\n"
+"  all                    Set all force options\n"
+"  auto-select [*]        (De)select packages to install (remove) them\n"
+"  downgrade [*]          Replace a package with a lower version\n"
+"  configure-any          Configure any package which may help this one\n"
+"  hold                   Process incidental packages even when on hold\n"
+"  bad-path               PATH is missing important programs, problems "
+"likely\n"
+"  not-root               Try to (de)install things even when not root\n"
+"  overwrite              Overwrite a file from one package with another\n"
+"  overwrite-diverted     Overwrite a diverted file with an undiverted "
+"version\n"
+"  bad-verify             Install a package even if it fails authenticity "
+"check\n"
+"  depends-version [!]    Turn dependency version problems into warnings\n"
+"  depends [!]            Turn all dependency problems into warnings\n"
+"  confnew [!]            Always use the new config files, don't prompt\n"
+"  confold [!]            Always use the old config files, don't prompt\n"
+"  confdef [!]            Use the default option for new config files if one\n"
+"                         is available, don't prompt. If no default can be "
+"found,\n"
+"                         you will be prompted unless one of the confold or\n"
+"                         confnew options is also given\n"
+"  confmiss [!]           Always install missing config files\n"
+"  conflicts [!]          Allow installation of conflicting packages\n"
+"  architecture [!]       Process even packages with wrong architecture\n"
+"  overwrite-dir [!]      Overwrite one package's directory with another's "
+"file\n"
+"  remove-reinstreq [!]   Remove packages which require installation\n"
+"  remove-essential [!]   Remove an essential package\n"
+"\n"
+"WARNING - use of options marked [!] can seriously damage your installation.\n"
+"Forcing options marked [*] are enabled by default.\n"
+msgstr ""
+"%s επιλογές εξαναγκασμού - έλεγχος λειτουργίας σε προβλήματα:\n"
+"  συνέχεια με προειδοποίηση:  --force-<thing>,<thing>,...\n"
+"  τερματισμός με σφάλμα:      --refuse-<thing>,<thing>,... | --no-force-"
+"<thing>,...\n"
+" Επιλογές εξαναγκασμού :\n"
+"  all                    Ενεργοποίηση όλων των επιλογών εξαναγκασμού\n"
+"  auto-select [*]        (Από)επιλογή πακέτων για (απ)εγκατάσταση\n"
+"  downgrade [*]          Αντικατάσταση πακέτου με μικρότερη έκδοση\n"
+"  configure-any          Ρύθμιση κάθε πακέτου με πιθανή επίδραση σε αυτό\n"
+"  hold                   Επεξεργασία πακέτων ακόμη και είναι 'διατηρητέα'\n"
+"  bad-path               λείπουν σημαντικά προγράμματα από την PATH, πιθανά "
+"προβλήματα\n"
+"  not-root               Προσπάθεια (απ)εγκατάστασης ακόμη και αν δεν είμαι "
+"root\n"
+"  overwrite              Αντικατάσταση αρχείων από διαφορετικό πακέτο\n"
+"  overwrite-diverted     Αντικατάσταση παράκαμψης με πραγματικό αρχείο\n"
+"  bad-verify             Εγκατάσταση μη πιστοποιημένων πακέτων\n"
+"  depends-version [!]    Μετατροπή προβλημάτων εξαρτήσεων εκδόσεων σε "
+"προειδοποιήσεις\n"
+"  depends [!]            Μετατροπή όλων των προβλημάτων εξαρτήσεων σε "
+"προειδοποιήσεις\n"
+"  confnew [!]            Πάντα χρήση των νέων αρχείων ρυθμίσεων, χωρίς "
+"προτροπή\n"
+"  confold [!]            Πάντα χρήση των παλιών αρχείων ρυθμίσεων, χωρίς "
+"προτροπή\n"
+"  confdef [!]            Χρήση της προκαθορισμένης επιλογής για τα νέα "
+"αρχεία\n"
+"`                         ρυθμίσεων αν έχει οριστεί τέτοια, χωρίς προτροπή.\n"
+"                         Αν δε μπορεί να βρεθεί προκαθορισμένη επιλογή, θα\n"
+"                         ερωτηθείτε εκτός αν έχει δοθεί μία εκ των επιλογών\n"
+"                         confold ή confnew\n"
+"  confmiss [!]           Πάντα εγκατάσταση αρχείων ρυθμίσεων αν λείπουν\n"
+"  conflicts [!]          Να επιτρέπεται η εγκατάσταση ασύμβατων πακέτων\n"
+"  architecture [!]       Επεξεργασία πακέτων ακόμη και από άλλη "
+"αρχιτεκτονική\n"
+"  overwrite-dir [!]      Αντικατάσταση καταλόγου ενός πακέτου με αρχείο από\n"
+"                         άλλο πακέτο\n"
+"  remove-reinstreq [!]   Αφαίρεση πακέτων που είναι απαιτούν εγκατάσταση\n"
+"  remove-essential [!]   Αφαίρεση ενός απαραιτήτου πακέτου\n"
+"\n"
+"ΠΡΟΕΙΔΟΠΟΙΗΣΗ - χρήση των επιλογών με σήμανση [!] μπορεί να αποβεί "
+"καταστροφική\n"
+"για το σύστημά σας. Ο εξαναγκασμός των επιλογών με σήμανση [*] είναι εξ'\n"
+"ορισμού ενεργοποιημένος.\n"
+
+#: src/main.c:337
+#, c-format
+msgid "unknown force/refuse option `%.*s'"
+msgstr "άγνωστη επιλογή force/refuse `%.*s'"
+
+#: src/main.c:442 src/main.c:446
+msgid "couldn't malloc in execbackend"
+msgstr "αδύνατη η δέσμευση μνήμης με τη malloc στο execbackend"
+
+#: src/main.c:444 src/main.c:451
+msgid "couldn't strdup in execbackend"
+msgstr "αδύνατη η αντιγραφή συμβολοσειράς με τη strdup στο execbackend"
+
+#: src/main.c:455
+#, c-format
+msgid "failed to exec %s"
+msgstr "αδύνατη η εκτέλεση του %s"
+
+#: src/main.c:467
+msgid "--command-fd takes 1 argument, not 0"
+msgstr "η --command-fd παίρνει 1 όρισμα, όχι 0"
+
+#: src/main.c:468
+msgid "--command-fd only takes 1 argument"
+msgstr "--command-fd παίρνει μόνο 1 όρισμα"
+
+#: src/main.c:470
+msgid "invalid number for --command-fd"
+msgstr "μη έγκυρος αριθμός για το --command-fd"
+
+#: src/main.c:472
+#, c-format
+msgid "couldn't open `%i' for stream"
+msgstr "αδύνατο το άνοιγμα του `%i' ως ροή (stream)"
+
+#: src/main.c:497
+#, c-format
+msgid "unexpected eof before end of line %d"
+msgstr "απρόσμενο eof πριν το τέλος της γραμμής %d"
+
+#: src/main.c:541 src/main.c:556 src/query.c:566 dpkg-deb/main.c:184
+#: dpkg-split/main.c:157
+msgid "need an action option"
+msgstr "χρειάζεται μια επιλογή ενέργειας"
+
+#: src/packages.c:79
+#, c-format
+msgid "--%s --pending does not take any non-option arguments"
+msgstr "--%s --pending δεν παίρνει κανένα όρισμα μη επιλογής"
+
+#: src/packages.c:109 src/query.c:321
+#, c-format
+msgid "--%s needs at least one package name argument"
+msgstr "--%s χρειάζεται τουλάχιστον ένα όρισμα ονόματος πακέτου"
+
+#: src/packages.c:116
+msgid ""
+"you must specify packages by their own names, not by quoting the names of "
+"the files they come in"
+msgstr ""
+"Θα πρέπει να ορίσετε τα πακέτα με το όνομά τους και όχι με το όνομα των "
+"αρχείων τους"
+
+#: src/packages.c:150
+#, c-format
+msgid "Package %s listed more than once, only processing once.\n"
+msgstr ""
+"Το πακέτο %s δόθηκε περισσότερες από μία φορές, η επεξεργασία θα γίνει μόνο "
+"μία φορά.\n"
+
+#: src/packages.c:154
+#, c-format
+msgid ""
+"More than one copy of package %s has been unpacked\n"
+" in this run !  Only configuring it once.\n"
+msgstr ""
+"Έχουν αποσυμπιεστεί περισσότερα από ένα αντίγραφα\n"
+"του πακέτου %s ! Θα ρυθμιστεί μόνο μια φορά.\n"
+
+#: src/packages.c:267 src/packages.c:311 src/packages.c:324
+msgid "  Package "
+msgstr "  Πακέτο "
+
+#: src/packages.c:270 src/packages.c:314 src/packages.c:327
+msgid " which provides "
+msgstr " που παρέχει "
+
+#: src/packages.c:273
+msgid " is to be removed.\n"
+msgstr " πρόκειται να αφαιρεθεί.\n"
+
+#: src/packages.c:285
+msgid "  Version of "
+msgstr "  Η έκδοση του "
+
+#: src/packages.c:287
+msgid " on system is "
+msgstr " στο σύστημα είναι"
+
+#: src/packages.c:307
+#, c-format
+msgid "dpkg: also configuring `%s' (required by `%s')\n"
+msgstr "dpkg: ρυθμίζεται επίσης το `%s' (απαιτείται από `%s')\n"
+
+#: src/packages.c:317
+msgid " is not configured yet.\n"
+msgstr " δεν έχει ρυθμιστεί ακόμη.\n"
+
+#: src/packages.c:330
+msgid " is not installed.\n"
+msgstr " δεν είναι εγκατεστημένο.\n"
+
+#: src/packages.c:395
+msgid "; however:\n"
+msgstr ". Ωστόσο:\n"
+
+#: src/processarc.c:102
+msgid "cannot access archive"
+msgstr "αδύνατη η πρόσβαση στην αρχειοθήκη"
+
+#: src/processarc.c:112
+#, c-format
+msgid "error ensuring `%.250s' doesn't exist"
+msgstr "σφάλμα κατά την επιβεβαίωση ότι το `%.250s' δεν υπάρχει"
+
+#: src/processarc.c:117
+msgid "failed to exec dpkg-split to see if it's part of a multiparter"
+msgstr ""
+"αδύνατη η εκτέλεση του dpkg-split για έλεγχο αν είναι τμήμα ενός "
+"πολυτμηματικού πακέτου"
+
+#: src/processarc.c:120
+msgid "wait for dpkg-split failed"
+msgstr "η αναμονή για το dpkg-split απέτυχε"
+
+#: src/processarc.c:126
+msgid "reassembled package file"
+msgstr "ανασυγκρότηση αρχείου πακέτου"
+
+#: src/processarc.c:141
+#, c-format
+msgid "Authenticating %s ...\n"
+msgstr "Γίνεται πιστοποίηση %s ...\n"
+
+#: src/processarc.c:146
+msgid "failed to execl debsig-verify"
+msgstr "αδύνατη η εκτέλεση με execl του debsig-verify"
+
+#: src/processarc.c:152
+#, c-format
+msgid "Verification on package %s failed!"
+msgstr "Η επαλήθευση του πακέτου %s απέτυχε!"
+
+#: src/processarc.c:154
+#, c-format
+msgid ""
+"Verification on package %s failed,\n"
+"but installing anyway as you request.\n"
+msgstr ""
+"Η επαλήθευση του πακέτου %s απέτυχε,\n"
+"αλλά θα εγκατασταθεί όπως ζητήσατε.\n"
+
+#: src/processarc.c:157
+#, c-format
+msgid "passed\n"
+msgstr "επιτυχής\n"
+
+#: src/processarc.c:166
+msgid "unable to get unique filename for control info"
+msgstr "αδύνατη η λήψη μοναδικού ονόματος αρχείου για πληροφορίες ελέγχου "
+
+#: src/processarc.c:188
+msgid "failed to exec dpkg-deb to extract control information"
+msgstr "απέτυχε η εκτέλεση του dpkg-deb για εξαγωγή πληροφοριών ελέγχου"
+
+#: src/processarc.c:205
+#, c-format
+msgid "Recorded info about %s from %s.\n"
+msgstr "Καταγράφτηκαν πληροφορίες ελέγχου για το %s από %s.\n"
+
+#: src/processarc.c:214
+#, c-format
+msgid "package architecture (%s) does not match system (%s)"
+msgstr ""
+"η αρχιτεκτονική του πακέτου (%s) δεν ταιριάζει με αυτή του συστήματος (%s)"
+
+#: src/processarc.c:265
+#, c-format
+msgid ""
+"dpkg: regarding %s containing %s, pre-dependency problem:\n"
+"%s"
+msgstr ""
+"dpkg: σχετικά με το %s που περιέχει %s, πρόβλημα προεξάρτησης:\n"
+"%s"
+
+#: src/processarc.c:268
+#, c-format
+msgid "pre-dependency problem - not installing %.250s"
+msgstr "πρόβλημα προεξάρτησης - δε θα εγκατασταθεί %.250s"
+
+#: src/processarc.c:269
+#, c-format
+msgid "dpkg: warning - ignoring pre-dependency problem !\n"
+msgstr "dpkg: προειδοποίηση - αγνοείται το πρόβλημα προεξάρτησης !\n"
+
+#: src/processarc.c:284
+#, c-format
+msgid "Preparing to replace %s %s (using %s) ...\n"
+msgstr "Προετοιμασία για αντικατάσταση %s %s (χρησιμοποιώντας το %s) ...\n"
+
+#: src/processarc.c:289
+#, c-format
+msgid "Unpacking %s (from %s) ...\n"
+msgstr "Γίνεται αποσυμπίεση %s (από %s) ...\n"
+
+#: src/processarc.c:311
+#, c-format
+msgid "name of conffile (starting `%.250s') is too long (>%d characters)"
+msgstr ""
+"το όνομα του αρχείου ρυθμίσεων (από `%.250s') είναι πολύ μεγάλο (>%d "
+"χαρακτήρες)"
+
+#: src/processarc.c:365
+#, c-format
+msgid "read error in %.250s"
+msgstr "σφάλμα ανάγνωσης στο %.250s"
+
+#: src/processarc.c:367
+#, c-format
+msgid "error closing %.250s"
+msgstr "σφάλμα κλεισίματος %.250s"
+
+#: src/processarc.c:369
+#, c-format
+msgid "error trying to open %.250s"
+msgstr "σφάλμα κατά το άνοιγμα του %.250s"
+
+#: src/processarc.c:402
+#, c-format
+msgid "De-configuring %s, so that we can remove %s ...\n"
+msgstr "Γίνεται απορρύθμιση του %s, ώστε να μπορεί να αφαιρεθεί το %s ...\n"
+
+#: src/processarc.c:460
+#, c-format
+msgid "Unpacking replacement %.250s ...\n"
+msgstr "Αποσυμπίεση του αντικαταστάτη %.250s ...\n"
+
+#: src/processarc.c:539
+msgid "unable to exec dpkg-deb to get filesystem archive"
+msgstr "αδύνατη η εκτέλεση του dpkg-deb για τη λήψη της αρχειοθήκης"
+
+#: src/processarc.c:552
+msgid "error reading dpkg-deb tar output"
+msgstr "σφάλμα κατά την ανάγνωση της εξόδου της tar από το dpkg-deb"
+
+#: src/processarc.c:554
+msgid "corrupted filesystem tarfile - corrupted package archive"
+msgstr "κατεστραμμένη αρχειοθήκη tar - κατεστραμμένη αρχειοθήκη πακέτου"
+
+#: src/processarc.c:557
+msgid "dpkg-deb: zap possible trailing zeros"
+msgstr "dpkg-deb: διαγραφή πιθανών μηδενικών στο τέλος"
+
+#: src/processarc.c:667
+#, c-format
+msgid "dpkg: warning - unable to delete old file `%.250s': %s\n"
+msgstr ""
+"dpkg: προειδοποίηση - αδύνατη η διαγραφή του παλιού αρχείου `%.250s': %s\n"
+
+#: src/processarc.c:689 src/processarc.c:929 src/remove.c:286
+msgid "cannot read info directory"
+msgstr "αδύνατη η ανάγνωση πληροφοριών καταλόγου"
+
+#: src/processarc.c:702
+#, c-format
+msgid "old version of package has overly-long info file name starting `%.250s'"
+msgstr ""
+"η παλιά έκδοση του πακέτου έχει υπερβολικά μεγάλο μήκος ονόματος αρχείου "
+"πληροφοριών`%.250s'"
+
+#: src/processarc.c:714
+#, c-format
+msgid "unable to remove obsolete info file `%.250s'"
+msgstr "αδύνατη η διαγραφή του παρωχημένου αρχείου πληροφοριών `%.250s'"
+
+#: src/processarc.c:717
+#, c-format
+msgid "unable to install (supposed) new info file `%.250s'"
+msgstr "αδύνατη η εγκατάσταση (υποτιθέμενου) νέου αρχείου πληροφοριών `%.250s'"
+
+#: src/processarc.c:724
+msgid "unable to open temp control directory"
+msgstr "αδύνατο το άνοιγμα προσωρινού καταλόγου ελέγχου (control)"
+
+#: src/processarc.c:733
+#, c-format
+msgid "package contains overly-long control info file name (starting `%.50s')"
+msgstr ""
+"το πακέτο έχει υπερβολικά μεγάλο μήκος ονόματος αρχείου ελέγχου `%.250s'"
+
+#: src/processarc.c:738
+#, c-format
+msgid "package control info contained directory `%.250s'"
+msgstr "οι πληροφορίες ελέγχου του πακέτου περιείχαν τον κατάλογο `%.250s'"
+
+#: src/processarc.c:740
+#, c-format
+msgid "package control info rmdir of `%.250s' didn't say not a dir"
+msgstr "δόθηκε rmdir του `%.250s' αλλά δεν δηλώθηκε ως μη κατάλογος"
+
+#: src/processarc.c:746
+#, c-format
+msgid "dpkg: warning - package %s contained list as info file"
+msgstr ""
+";dpkg: προειδοποίηση - το πακέτο %s περιείχε λίστα ως αρχείο πληροφοριών"
+
+#: src/processarc.c:753
+#, c-format
+msgid "unable to install new info file `%.250s' as `%.250s'"
+msgstr "αδύνατη η εγκατάσταση νέου αρχείου πληροφοριών `%.250s' ως `%.250s'"
+
+#: src/processarc.c:909
+#, c-format
+msgid "(Noting disappearance of %s, which has been completely replaced.)\n"
+msgstr ""
+"(Σημειώνεται η εξαφάνιση του %s, το οποίο έχει αντικατασταθεί πλήρως)\n"
+
+#: src/processarc.c:945
+#, c-format
+msgid "unable to delete disappearing control info file `%.250s'"
+msgstr "αδύνατη η διαγραφή του προς εξαφάνιση αρχείου ελέγχου `%.250s'"
+
+#: src/query.c:160
+msgid ""
+"Desired=Unknown/Install/Remove/Purge/Hold\n"
+"| Status=Not/Installed/Config-files/Unpacked/Failed-config/Half-installed\n"
+"|/ Err?=(none)/Hold/Reinst-required/X=both-problems (Status,Err: "
+"uppercase=bad)\n"
+msgstr ""
+"Desired=Unknown/Install/Remove/Purge/Hold\n"
+"| Status=Not/Installed/Config-files/Unpacked/Failed-config/Half-installed\n"
+"|/ Err?=(none)/Hold/Reinst-required/X=both-problems (Status,Err: "
+"uppercase=bad)\n"
+
+#: src/query.c:164
+msgid "Name"
+msgstr "Όνομα"
+
+#: src/query.c:164
+msgid "Version"
+msgstr "Έκδοση"
+
+#: src/query.c:164 dselect/methlist.cc:122 dselect/pkgtop.cc:297
+msgid "Description"
+msgstr "Περιγραφή"
+
+#: src/query.c:218 src/query.c:447 src/select.c:80
+#, c-format
+msgid "No packages found matching %s.\n"
+msgstr "Δε βρέθηκαν πακέτα που να ταιριάζουν με %s.\n"
+
+#: src/query.c:240
+#, c-format
+msgid "diversion by %s"
+msgstr "παράκαμψη από %s"
+
+#: src/query.c:241
+#, c-format
+msgid "local diversion"
+msgstr "τοπική παράκαμψη"
+
+#: src/query.c:242
+msgid "to"
+msgstr "προς"
+
+#: src/query.c:242
+msgid "from"
+msgstr "από"
+
+#: src/query.c:275
+msgid "--search needs at least one file name pattern argument"
+msgstr ""
+"η --search χρειάζεται τουλάχιστον μια παράσταση ονομάτων αρχείων ως παράμετρο"
+
+#: src/query.c:303
+#, c-format
+msgid "dpkg: %s not found.\n"
+msgstr "dpkg: Το %s δε βρέθηκε.\n"
+
+#: src/query.c:341
+#, c-format
+msgid "Package `%s' is not installed and no info is available.\n"
+msgstr ""
+"Το πακέτο `%s' δεν είναι εγκατεστημένο και δεν υπάρχουν διαθέσιμες "
+"πληροφορίες.\n"
+
+#: src/query.c:350
+#, c-format
+msgid "Package `%s' is not available.\n"
+msgstr "Το πακέτο `%s' δεν είναι διαθέσιμο.\n"
+
+#: src/query.c:360
+#, c-format
+msgid "Package `%s' is not installed.\n"
+msgstr "Το πακέτο `%s' δεν είναι εγκατεστημένο.\n"
+
+#: src/query.c:369
+#, c-format
+msgid "Package `%s' does not contain any files (!)\n"
+msgstr "Το πακέτο `%s' δεν περιέχει κανένα αρχείο (!)\n"
+
+#: src/query.c:375
+#, c-format
+msgid "locally diverted"
+msgstr "τοπική παράκαμψη"
+
+#: src/query.c:376
+#, c-format
+msgid "package diverts others"
+msgstr "το πακέτο παρακάμπτει άλλα"
+
+#: src/query.c:377
+#, c-format
+msgid "diverted by %s"
+msgstr "παρακάμφθηκε από %s"
+
+#: src/query.c:378
+#, c-format
+msgid " to: %s\n"
+msgstr " προς: %s\n"
+
+#: src/query.c:398
+msgid ""
+"Use dpkg --info (= dpkg-deb --info) to examine archive files,\n"
+"and dpkg --contents (= dpkg-deb --contents) to list their contents.\n"
+msgstr ""
+"Χρησιμοποιήστε το dpkg --info (= dpkg-deb --info) για επεξεργασία "
+"αρχειοθηκών,\n"
+"και dpkg --contents (= dpkg-deb --contents) για προβολή των περιεχομένων "
+"τους.\n"
+
+#: src/query.c:459 dpkg-deb/main.c:46
+msgid "Debian `"
+msgstr "Debian `"
+
+#: src/query.c:461
+msgid "' package management program query tool\n"
+msgstr "' εργαλείο πληροφόρησης προγράμματος διαχείρισης πακέτων\n"
+
+#: src/query.c:473
+#, c-format
+msgid "Usage: "
+msgstr "Χρήση: "
+
+#: src/query.c:474
+#, c-format
+msgid ""
+" [<option>] <command>\n"
+"Commands:\n"
+"  -s|--status <package-name> ...      display package status details\n"
+"  -p|--print-avail <package-name> ... display available version details\n"
+"  -L|--listfiles <package-name> ...   list files `owned' by package(s)\n"
+"  -l|--list [<pattern> ...]           list packages concisely\n"
+"  -W|--show <pattern> ...             show information on package(s)\n"
+"  -S|--search <pattern> ...           find package(s) owning file(s)\n"
+"  --help | --version                  show this help / version number\n"
+"  --licence                           print copyright licensing terms\n"
+"\n"
+"Options:\n"
+"  --admindir=<directory>     Use <directory> instead of %s\n"
+"  -f|--showformat=<format>   Use alternative format for --show\n"
+"\n"
+"Format syntax:\n"
+"  A format is a string that will be output for each package. The format\n"
+"  can include the standard escape sequences \\n (newline), \\r (carriage\n"
+"  return) or \\\\ (plain backslash). Package information can be included\n"
+"  by inserting variable references to package fields using the ${var[;"
+"width]}\n"
+"  syntax. Fields will be right-aligned unless the width is negative in "
+"which\n"
+"   case left aligenment will be used. \n"
+msgstr ""
+" [<επιλογή>] <εντολή>\n"
+"Εντολές:\n"
+"  -s|--status <package-name> ...      προβολή κατάστασης πακέτου\n"
+"  -p|--print-avail <package-name> ... προβολή πληροφορίες διαθέσιμων "
+"πακέτων\n"
+"  -L|--listfiles <package-name> ...   λίστα αρχείων του πακέτου\n"
+"  -l|--list [<pattern> ...]           λίστα πακέτων\n"
+"  -W|--show <pattern> ...             προβολή πληροφοριών των πακέτων\n"
+"  -S|--search <pattern> ...           αναζήτηση πακέτων με βάση αρχεία\n"
+"  --help | --version                  προβολή βοήθειας / έκδοσης\n"
+"  --licence                           προβολή copyright και άδειας χρήσης\n"
+"\n"
+"Επιλογές:\n"
+"  --admindir=<directory>     Use <directory> instead of %s\n"
+"  -f|--showformat=<format>      Use alternative format for --show\n"
+"\n"
+"Σύνταξη μορφής:\n"
+"  Η μορφή είναι μια συμβολοσειρά που θα εμφανιστεί για κάθε πακέτο. Μπορεί\n"
+"  να περιλαμβάνει τους τυπικούς χαρακτήρες escape \\n (newline), \\r "
+"(carriage\n"
+"  return) ή \\\\ (απλό backslash). Οι πληροφορίες του πακέτου μπορούν να\n"
+"  συμπεριληφθούν με μεταβλητές/αναφορές σε πεδία των πακέτων "
+"χρησιμοποιώντας\n"
+"  τη σύνταξη ${var[;width]}. Τα πεδία θα πρέπει να είναι στοιχισμένα δεξιά\n"
+"  εκτός αν το μήκος είναι αρνητικό, οπότε χρησιμοποιείται αριστερή "
+"στοίχιση.\n"
+" \n"
+
+#: src/query.c:501
+msgid ""
+"Use --help for help about querying packages;\n"
+"Use --licence for copyright licence and lack of warranty (GNU GPL).\n"
+"\n"
+msgstr ""
+"Δώστε --help για βοήθεια σχετικά με πληροφόρηση πακέτων;\n"
+"Δώστε --licence για άδεια χρήσης και έλλειψη εγγύησης (GNU GPL).\n"
+"\n"
+
+#: src/remove.c:92
+#, c-format
+msgid ""
+"dpkg - warning: ignoring request to remove %.250s which isn't installed.\n"
+msgstr ""
+"dpkg - προειδοποίηση: αγνοείται το αίτημα αφαίρεσης του %.250s που δεν "
+"έχει \n"
+" εγκατασταθεί.\n"
+
+#: src/remove.c:100
+#, c-format
+msgid ""
+"dpkg - warning: ignoring request to remove %.250s, only the config\n"
+" files of which are on the system.  Use --purge to remove them too.\n"
+msgstr ""
+"dpkg - προειδοποίηση: αγνοείται το αίτημα αφαίρεσης του %.250s, μόνο τα\n"
+" αρχεία ρυθμίσεων τα οποία βρίσκονται στο σύστημα. Χρησιμοποιήστε --purge\n"
+" για να τα διαγράψετε και αυτά.\n"
+
+#: src/remove.c:109
+msgid "This is an essential package - it should not be removed."
+msgstr "Αυτό είναι ένα βασικό πακέτο - δεν πρέπει να αφαιρεθεί."
+
+#: src/remove.c:135
+#, c-format
+msgid ""
+"dpkg: dependency problems prevent removal of %s:\n"
+"%s"
+msgstr ""
+"dpkg: προβλήματα εξάρτησης εμποδίζουν την αφαίρεση του %s:\n"
+"%s"
+
+#: src/remove.c:137
+msgid "dependency problems - not removing"
+msgstr "προβλήματα εξάρτησης - δε γίνεται αφαίρεση"
+
+#: src/remove.c:141
+#, c-format
+msgid ""
+"dpkg: %s: dependency problems, but removing anyway as you request:\n"
+"%s"
+msgstr ""
+"dpkg: %s: προβλήματα εξάρτησης, αλλά γίνεται αφαίρεση όπως ζητήσατε:\n"
+"%s"
+
+#: src/remove.c:149
+msgid ""
+"Package is in a very bad inconsistent state - you should\n"
+" reinstall it before attempting a removal."
+msgstr ""
+"Το πακέτο είναι σε πολύ κακή κατάσταση - θα πρέπει να το επανεγκαταστήσετε\n"
+" πριν προσπαθήσετε την αφαίρεσή του."
+
+#: src/remove.c:156
+#, c-format
+msgid "Would remove or purge %s ...\n"
+msgstr "Θα γινόταν αφαίρεση ή διαγραφή του %s ...\n"
+
+#: src/remove.c:164
+#, c-format
+msgid "Removing %s ...\n"
+msgstr "Αφαίρεση του %s ...\n"
+
+#: src/remove.c:251 src/remove.c:364
+#, c-format
+msgid ""
+"dpkg - warning: while removing %.250s, unable to remove directory `%.250s': %"
+"s - directory may be a mount point ?\n"
+msgstr ""
+"dpkg - προειδοποίηση: κατά την αφαίρεση του %.250s, ήταν αδύνατη η αφαίρεση "
+"του καταλόγου `%.250s': %s - μήπως ο κατάλογος είναι σημείο επαφής;\n"
+
+#: src/remove.c:258 src/remove.c:371
+#, c-format
+msgid "cannot remove `%.250s'"
+msgstr "αδύνατη η αφαίρεση του `%.250s'"
+
+#: src/remove.c:276
+#, c-format
+msgid "cannot remove file `%.250s'"
+msgstr "αδύνατη η αφαίρεση του αρχείου `%.250s'"
+
+#: src/remove.c:309
+#, c-format
+msgid "unable to delete control info file `%.250s'"
+msgstr "αδύνατη η διαγραφή του αρχείου ελέγχου `%.250s'"
+
+#: src/remove.c:358
+#, c-format
+msgid ""
+"dpkg - warning: while removing %.250s, directory `%.250s' not empty so not "
+"removed.\n"
+msgstr ""
+"dpkg - προειδοποίηση: κατά την αφαίρεση του %.250s, ο κατάλογος `%.250s' δεν "
+"είναι άδειος οπότε δεν αφαιρέθηκε.\n"
+
+#: src/remove.c:394
+#, c-format
+msgid "Purging configuration files for %s ...\n"
+msgstr "Διαγραφή των αρχείων ρυθμίσεων του %s ...\n"
+
+#: src/remove.c:439
+#, c-format
+msgid "cannot remove old config file `%.250s' (= `%.250s')"
+msgstr "αδύνατη η διαγραφή παλιού αρχείου ρυθμίσεων του `%.250s' (= `%.250s')"
+
+#: src/remove.c:454
+#, c-format
+msgid "cannot read config file dir `%.250s' (from `%.250s')"
+msgstr ""
+"αδύνατη η ανάγνωση του καταλόγου των αρχείων ρυθμίσεων του `%.250s' (από `"
+"%.250s')"
+
+#: src/remove.c:489
+#, c-format
+msgid "cannot remove old backup config file `%.250s' (of `%.250s')"
+msgstr ""
+"αδύνατη η διαγραφή του παλιού αντιγράφου αρχείου ρυθμίσεων του `%.250s' (από "
+"`%.250s')"
+
+#: src/remove.c:525
+#, c-format
+msgid "unable to check existence of `%.250s'"
+msgstr "αδύνατος ο έλεγχος ύπαρξης για το `%.250s'"
+
+#: src/remove.c:560
+msgid "cannot remove old files list"
+msgstr "αδύνατη η διαγραφή της λίστας των παλιών αρχείων"
+
+#: src/remove.c:566
+msgid "can't remove old postrm script"
+msgstr "αδύνατη η διαγραφή του παλιού σεναρίου postrm"
+
+#: src/select.c:95
+msgid "--set-selections does not take any argument"
+msgstr "η --set-selections δεν παίρνει κανένα όρισμα"
+
+#: src/select.c:114
+#, c-format
+msgid "unexpected eof in package name at line %d"
+msgstr "απρόσμενο eof στο όνομα πακέτου στη γραμμή %d"
+
+#: src/select.c:115
+#, c-format
+msgid "unexpected end of line in package name at line %d"
+msgstr "απρόσμενο τέλος της γραμμής στο όνομα πακέτου στη γραμμή %d"
+
+#: src/select.c:119
+#, c-format
+msgid "unexpected eof after package name at line %d"
+msgstr "απρόσμενο eof μετά το όνομα πακέτου στη  γραμμή %d"
+
+#: src/select.c:120
+#, c-format
+msgid "unexpected end of line after package name at line %d"
+msgstr "απρόσμενο τέλος της γραμμής μετά το όνομα πακέτου στη γραμμή %d"
+
+#: src/select.c:129
+#, c-format
+msgid "unexpected data after package and selection at line %d"
+msgstr "απρόσμενα δεδομένα μετά το πακέτο και την επιλογή στη γραμμή %d"
+
+#: src/select.c:134
+#, c-format
+msgid "illegal package name at line %d: %.250s"
+msgstr "μη αποδεκτό όνομα πακέτου στη γραμμή %d: %.250s"
+
+#: src/select.c:136
+#, c-format
+msgid "unknown wanted status at line %d: %.250s"
+msgstr "άγνωστη ζητούμενη κατάσταση στη γραμμή %d: %.250s"
+
+#: src/select.c:142
+msgid "read error on standard input"
+msgstr "σφάλμα ανάγνωσης στην πρότυπη είσοδο (stdin)"
+
+#: src/update.c:44
+#, c-format
+msgid "--%s takes no arguments"
+msgstr "η --%s δεν παίρνει ορίσματα"
+
+#: src/update.c:48
+#, c-format
+msgid "--%s needs exactly one Packages file argument"
+msgstr "η --%s απαιτεί ακριβώς μία παράμετρο ένα αρχείο Packages"
+
+#: src/update.c:57
+msgid "unable to access dpkg status area for bulk available update"
+msgstr ""
+"αδύνατη η πρόσβαση στο αρχείο κατάστασης του dpkg για μαζικές ανανεώσεις "
+"διαθεσιμότητας"
+
+#: src/update.c:59
+msgid "bulk available update requires write access to dpkg status area"
+msgstr ""
+"οι μαζικές ανανεώσεις διαθεσιμότητας απαιτούν άδεια εγγραφής στο αρχείο "
+"κατάστασης"
+
+#: src/update.c:66
+#, c-format
+msgid "Replacing available packages info, using %s.\n"
+msgstr "Αντικατάσταση πληροφοριών διαθέσιμων πακέτων, με χρήση του %s.\n"
+
+#: src/update.c:69
+#, c-format
+msgid "Updating available packages info, using %s.\n"
+msgstr "Ανανέωση πληροφοριών διαθέσιμων πακέτων, με χρήση του %s.\n"
+
+#: src/update.c:93
+#, c-format
+msgid "Information about %d package(s) was updated.\n"
+msgstr "Ανανεώθηκαν οι πληροφορίες για %d πακέτα.\n"
+
+#: src/update.c:101
+msgid "--forget-old-unavail takes no arguments"
+msgstr "η --forget-old-unavail δεν παίρνει ορίσματα"
+
+#: dselect/basecmds.cc:121
+msgid "Search for ? "
+msgstr "Αναζήτηση για;"
+
+#: dselect/basecmds.cc:143
+msgid "Error: "
+msgstr "Σφάλμα:"
+
+#: dselect/basecmds.cc:171
+msgid "Help: "
+msgstr "Βοήθεια: "
+
+#: dselect/basecmds.cc:177
+msgid "Press ? for help menu, . for next topic, <space> to exit help."
+msgstr "Πατήστε ? για μενού βοηθείας, <space> για επόμενο θέμα."
+
+#: dselect/basecmds.cc:184
+msgid "Help information is available under the following topics:"
+msgstr "Πληροφορίες βοήθειας είναι διαθέσιμες για τα ακόλουθα θέματα:"
+
+#: dselect/basecmds.cc:192
+msgid ""
+"Press a key from the list above, <space> or `q' to exit help,\n"
+"  or `.' (full stop) to read each help page in turn. "
+msgstr ""
+"Πιέστε ένα πλήκτρο από την λίστα, <space> ή `q' για έξοδο από τη βοήθεια,\n"
+"  η '.' (τελεία) για να διαβάσετε κάθε σελίδα με τη σειρά. "
+
+#: dselect/basecmds.cc:198
+msgid "error reading keyboard in help"
+msgstr "σφάλμα εισόδου από το πληκτρολόγιο στη βοήθεια"
+
+#: dselect/baselist.cc:57
+msgid "ioctl(TIOCGWINSZ) failed"
+msgstr "η ioctl(TIOCGWINSZ) απέτυχε"
+
+#: dselect/baselist.cc:60
+msgid "doupdate in SIGWINCH handler failed"
+msgstr "η doupdate στον ελεγκτή SIGWINCH απέτυχε"
+
+#: dselect/baselist.cc:67
+msgid "failed to restore old SIGWINCH sigact"
+msgstr "απέτυχε η επαναφορά του παλιού SIGWINCH sigact"
+
+#: dselect/baselist.cc:69
+msgid "failed to restore old signal mask"
+msgstr "απέτυχε η επαναφορά της παλιάς μάσκας σημάτων"
+
+#: dselect/baselist.cc:79
+msgid "failed to get old signal mask"
+msgstr "απέτυχε η λήψη της παλιάς μάσκας σημάτων"
+
+#: dselect/baselist.cc:80
+msgid "failed to get old SIGWINCH sigact"
+msgstr "απέτυχε η λήψη του παλιού SIGWINCH sigact"
+
+#: dselect/baselist.cc:84
+msgid "failed to block SIGWINCH"
+msgstr "απέτυχε ο αποκλεισμός του SIGWINCH"
+
+#: dselect/baselist.cc:89
+msgid "failed to set new SIGWINCH sigact"
+msgstr "απέτυχε ο ορισμός νέου SIGWINCH sigact"
+
+#: dselect/baselist.cc:126
+msgid "failed to allocate colour pair"
+msgstr "απέτυχε η δέσμευση ζεύγους χρωμάτων"
+
+#: dselect/baselist.cc:166
+msgid "failed to create title window"
+msgstr "απέτυχε η δημιουργία παραθύρου τίτλου"
+
+#: dselect/baselist.cc:170
+msgid "failed to create whatinfo window"
+msgstr "απέτυχε η δημιουργία παραθύρου whatinfo"
+
+#: dselect/baselist.cc:174
+msgid "failed to create baselist pad"
+msgstr "απέτυχε η δημιουργία επιφάνειας βασικής λίστας"
+
+#: dselect/baselist.cc:177
+msgid "failed to create heading pad"
+msgstr "απέτυχε η δημιουργία επιφάνειας πλοήγησης"
+
+#: dselect/baselist.cc:181
+msgid "failed to create thisstate pad"
+msgstr "απέτυχε η δημιουργία επιφάνειας thisstate"
+
+#: dselect/baselist.cc:185
+msgid "failed to create info pad"
+msgstr "απέτυχε η δημιουργία επιφάνειας πληροφοριών"
+
+#: dselect/baselist.cc:190
+msgid "failed to create query window"
+msgstr "απέτυχε η δημιουργία παραθύρου ερωτήσεων"
+
+#: dselect/baselist.cc:203
+#, c-format
+msgid ""
+"baselist::startdisplay() done ...\n"
+"\n"
+" xmax=%d, ymax=%d;\n"
+"\n"
+" title_height=%d, colheads_height=%d, list_height=%d;\n"
+" thisstate_height=%d, info_height=%d, whatinfo_height=%d;\n"
+"\n"
+" colheads_row=%d, thisstate_row=%d, info_row=%d;\n"
+" whatinfo_row=%d, list_row=%d;\n"
+"\n"
+msgstr ""
+"baselist::startdisplay() done ...\n"
+"\n"
+" xmax=%d, ymax=%d;\n"
+"\n"
+" title_height=%d, colheads_height=%d, list_height=%d;\n"
+" thisstate_height=%d, info_height=%d, whatinfo_height=%d;\n"
+"\n"
+" colheads_row=%d, thisstate_row=%d, info_row=%d;\n"
+" whatinfo_row=%d, list_row=%d;\n"
+"\n"
+
+#: dselect/baselist.cc:259
+msgid "keybindings"
+msgstr "συνδυασμοί πλήκτρων"
+
+#: dselect/baselist.cc:307
+#, c-format
+msgid "  -- %d%%, press "
+msgstr "  -- %d%%, πατήστε "
+
+#: dselect/baselist.cc:310
+#, c-format
+msgid "%s for more"
+msgstr "%s για περισσότερα"
+
+#: dselect/baselist.cc:314
+#, c-format
+msgid "%s to go back"
+msgstr "%s για επιστροφή"
+
+#: dselect/bindings.cc:71
+msgid "[not bound]"
+msgstr "[χωρίς δεσμό]"
+
+#: dselect/bindings.cc:75
+#, c-format
+msgid "[unk: %d]"
+msgstr "[unk: %d]"
+
+#: dselect/bindings.cc:129
+msgid "Scroll onwards through help/information"
+msgstr "μετακινηθείτε εμπρός στη βοήθεια/πληροφορίες"
+
+#: dselect/bindings.cc:130
+msgid "Scroll backwards through help/information"
+msgstr "μετακινηθείτε πίσω στη βοήθεια/πληροφορίες"
+
+#: dselect/bindings.cc:131
+msgid "Move up"
+msgstr "Μετακίνηση επάνω"
+
+#: dselect/bindings.cc:132
+msgid "Move down"
+msgstr "Μετακίνηση κάτω"
+
+#: dselect/bindings.cc:133
+msgid "Go to top of list"
+msgstr "Μετάβαση στην αρχή της λίστας"
+
+#: dselect/bindings.cc:134
+msgid "Go to end of list"
+msgstr "Μετάβαση στο τέλος της λίστας"
+
+#: dselect/bindings.cc:135
+msgid "Request help (cycle through help screens)"
+msgstr "Αίτηση βοηθείας (εναλλαγή οθονών βοηθείας)"
+
+#: dselect/bindings.cc:136
+msgid "Cycle through information displays"
+msgstr "Εναλλαγή οθονών πληροφοριών"
+
+#: dselect/bindings.cc:137
+msgid "Redraw display"
+msgstr "Επανασχεδιασμός οθόνης"
+
+#: dselect/bindings.cc:138
+msgid "Scroll onwards through list by 1 line"
+msgstr "Μετακίνηση εμπρός στη λίστα κατά μια γραμμή"
+
+#: dselect/bindings.cc:139
+msgid "Scroll backwards through list by 1 line"
+msgstr "Μετακίνηση πίσω στη λίστα κατά μια γραμμή"
+
+#: dselect/bindings.cc:140
+msgid "Scroll onwards through help/information by 1 line"
+msgstr "Μετακίνηση εμπρός στη βοήθεια/πληροφορίες κατά μια γραμμή"
+
+#: dselect/bindings.cc:141
+msgid "Scroll backwards through help/information by 1 line"
+msgstr "Μετακίνηση πίσω στη βοήθεια/πληροφορίες κατά μια γραμμή"
+
+#: dselect/bindings.cc:142
+msgid "Scroll onwards through list"
+msgstr "Μετακίνηση εμπρός στη λίστα"
+
+#: dselect/bindings.cc:143
+msgid "Scroll backwards through list"
+msgstr "Μετακίνηση πίσω στη λίστα"
+
+#: dselect/bindings.cc:146
+msgid "Mark package(s) for installation"
+msgstr "Μαρκάρισμα πακέτου(ων) για εγκατάσταση"
+
+#: dselect/bindings.cc:147
+msgid "Mark package(s) for deinstallation"
+msgstr "Μαρκάρισμα πακέτου(ων) για απεγκατάσταση"
+
+#: dselect/bindings.cc:148
+msgid "Mark package(s) for deinstall and purge"
+msgstr "Μαρκάρισμα πακέτου(ων) για απεγκατάσταση και διαγραφή"
+
+#: dselect/bindings.cc:149
+msgid "Make highlight more specific"
+msgstr "Πιο συγκεκριμένος τονισμός"
+
+#: dselect/bindings.cc:150
+msgid "Make highlight less specific"
+msgstr "Λιγότερο συγκεκριμένος τονισμός"
+
+#: dselect/bindings.cc:151
+msgid "Search for a package whose name contains a string"
+msgstr "αναζήτηση πακέτου με βάση το όνομα"
+
+#: dselect/bindings.cc:152
+msgid "Repeat last search."
+msgstr "επανάληψη προηγούμενης αναζήτησης."
+
+#: dselect/bindings.cc:153
+msgid "Swap sort order priority/section"
+msgstr "Αντιστροφή σειράς ταξινόμησης προτεραιότητας/τομέα"
+
+#: dselect/bindings.cc:154
+msgid "Quit, confirming, and checking dependencies"
+msgstr "Έξοδος, επιβεβαίωση, και έλεγχος εξαρτήσεων"
+
+#: dselect/bindings.cc:155
+msgid "Quit, confirming without check"
+msgstr "Έξοδος, επιβεβαίωση χωρίς έλεγχο"
+
+#: dselect/bindings.cc:156
+msgid "Quit, rejecting conflict/dependency suggestions"
+msgstr "Έξοδος, με απόρριψη προειδοποιήσεων για εξαρτήσεις/ασυμβατότητες"
+
+#: dselect/bindings.cc:157
+msgid "Abort - quit without making changes"
+msgstr "Εγκατάλειψη - έξοδος χωρίς αλλαγές"
+
+#: dselect/bindings.cc:158
+msgid "Revert to old state for all packages"
+msgstr "Επαναφορά στην προηγούμενη κατάσταση όλων των πακέτων"
+
+#: dselect/bindings.cc:159
+msgid "Revert to suggested state for all packages"
+msgstr "Επαναφορά σε προτεινόμενη κατάσταση όλων των πακέτων"
+
+#: dselect/bindings.cc:160
+msgid "Revert to directly requested state for all packages"
+msgstr "Επαναφορά στην ζητούμενη κατάσταση όλων των πακέτων"
+
+#: dselect/bindings.cc:163
+msgid "Select currently-highlighted access method"
+msgstr "Επιλογή της τρέχουσας μεθόδου πρόσβασης"
+
+#: dselect/bindings.cc:164
+msgid "Quit without changing selected access method"
+msgstr "Έξοδος χωρίς αλλαγή της επιλεγμένης μεθόδου"
+
+#: dselect/helpmsgs.cc:8
+msgid "Keystrokes"
+msgstr "Συνδυασμοί πλήκτρων"
+
+#: dselect/helpmsgs.cc:8
+msgid ""
+"Motion keys: Next/Previous, Top/End, Up/Down, Backwards/Forwards:\n"
+"  Down-arrow, j         Up-arrow, k             move highlight\n"
+"  N, Page-down, Space   P, Page-up, Backspace   scroll list by 1 page\n"
+"  ^n                    ^p                      scroll list by 1 line\n"
+"  t, Home               e, End                  jump to top/end of list\n"
+"  u                     d                       scroll info by 1 page\n"
+"  ^u                    ^d                      scroll info by 1 line\n"
+"  B, Left-arrow         F, Right-arrow          pan display by 1/3 screen\n"
+"  ^b                    ^f                      pan display by 1 character\n"
+"\n"
+"Mark packages for later processing:\n"
+" +, Insert  install or upgrade      =, H  hold in present state\n"
+" -, Delete  remove                  :, G  unhold: upgrade or leave "
+"uninstalled\n"
+" _          remove & purge config\n"
+"                                             Miscellaneous:\n"
+"Quit, exit, overwrite (note capitals!):       ?, F1 request help (also "
+"Help)\n"
+" Return  Confirm, quit (check dependencies)   i, I  toggle/cycle info "
+"displays\n"
+"   Q     Confirm, quit (override dep.s)       o, O  cycle through sort "
+"options\n"
+" X, Esc  eXit, abandoning any changes made    v, V  change status display "
+"opts\n"
+"   R     Revert to state before this list      ^l   redraw display\n"
+"   U     set all to sUggested state             /   search (Return to "
+"cancel)\n"
+"   D     set all to Directly requested state  n, \\  repeat last search\n"
+msgstr ""
+"Πλήκτρα κίνησης: Επόμενο/Προηγούμενο, Αρχή/Τέλος, Επάνω/Κάτω, Εμπρός/Πίσω:\n"
+"  Βέλος κάτω,j         Βέλος επάνω, k             κίνηση τονισμού\n"
+"  N, Σελ. κάτω, Κενό   P, Σελ. επάνω, Πίσω        κατέβασμα ανά 1 σελίδα\n"
+"  ^n                   ^p                         κύλιση λίστας ανά 1 "
+"γραμμή\n"
+"  t, Home              e, Τέλος                   αρχή/τέλος της λίστας\n"
+"  u                    d                          πληροφ. κάτω ανά 1 σελίδα\n"
+"  ^u                   ^d                         πληροφ. κάτωανά 1 γραμμή\n"
+"  B, Βέλος αριστερά    F, Βέλος δεξιά             μετατόπιση κατά το 1/3\n"
+"  ^b                   ^f                         μετατόπιση κατά 1 χαρακτ.\n"
+"\n"
+"Σήμανση πακέτων για επεξεργασία:\n"
+" +, Insert  Εγκατάσταση ή αναβάθμιση  =, Η  διατήρηση στην τρέχουσα "
+"κατάσταση\n"
+" -, Delete  Αφαίρεση                  :, G ελευθέρωση: αναβάθμιση ή χωρίς "
+"εγκατάσταση\n"
+" _        διαγραφή και αφαίρεση ρυθμίσεων\n"
+"                                             Miscellaneous:\n"
+"Quit, exit, overwrite (προσοχή κεφαλαία!):    ?, F1 αίτηση βοήθειας (επίσης "
+"Help)\n"
+" Return  Confirm, quit (έλεγχος εξαρτήσεων)   i, I  εναλλαγή μεταξύ "
+"πληροφοριών\n"
+"   Q     Confirm, quit (αγνόησε εξαρτήσεις)   o, O  εναλλαγή μεταξύ "
+"επιλογών\n"
+" X, Esc  eXit, εγκατάλειψη αλλαγών            v, V  αλλαγή προβολής "
+"κατάστασης\n"
+"   R     Επαναφορά σε προηγούμενη κατάσταση    ^l   επανασχεδιασμός οθόνης\n"
+"   U     ορισμός όλων ως προτεινόμενα           /   αναζήτηση (Return για  "
+"ακύρωση)\n"
+"   D     ορισμός όλων ως άμεσα αιτούμενα      n, \\  επανάληψη τελευταίας "
+"αναζήτησης\n"
+
+#: dselect/helpmsgs.cc:33
+msgid "Introduction to package selections"
+msgstr "Εισαγωγή στις επιλογές πακέτων"
+
+#: dselect/helpmsgs.cc:33
+msgid ""
+"Welcome to dselect's main package listing.\n"
+"\n"
+"You will be presented with a list of packages which are installed or "
+"available\n"
+"for installation.  You can navigate around the list using the cursor keys,\n"
+"mark packages for installation (using `+') or deinstallation (using `-').\n"
+"Packages can be marked either singly or in groups; initially you will see "
+"that\n"
+"the line `All packages' is selected.  `+', `-' and so on will affect all "
+"the\n"
+"packages described by the highlighted line.\n"
+"\n"
+"Some of your choices will cause conflicts or dependency problems; you will "
+"be\n"
+"given a sub-list of the relevant packages, so that you can solve the "
+"problems.\n"
+"\n"
+"You should read the list of keys and the explanations of the display.\n"
+"Much on-line help is available, please make use of it - press `?' at\n"
+"any time for help.\n"
+"\n"
+"When you have finished selecting packages, press <enter> to confirm "
+"changes,\n"
+"or `X' to quit without saving changes. A final check on conflicts and\n"
+"dependencies will be done - here too you may see a sublist.\n"
+"\n"
+"Press <space> to leave help and enter the list now.\n"
+msgstr ""
+"Καλώς ορίσατε στην οθόνη με την λίστα των κυρίων πακέτων του dselect.\n"
+"\n"
+"Θα σας εμφανιστεί μια λίστα από πακέτα τα οποία είναι εγκατεστημένα ή "
+"διαθέσιμα\n"
+"για εγκατάσταση.  Μπορείτε να πλοηγηθείτε στη λίστα των πακέτων με τα "
+"βελάκια\n"
+"να τα σημειώσετε για εγκατάσταση (με `+') ή απεγκατάσταση (με `-').\n"
+"Μπορείτε να σημειώσετε τα πακέτα μεμονωμένα ή σε ομάδες, αρχικά θα δείτε "
+"ότι\n"
+"η γραμμή `Όλα τα πακέτα` είναι επιλεγμένη. Τα πλήκτρα `+', `-' κλπ θα "
+"επηρεάσουν\n"
+"όλα τα πακέτα που είναι επιλεγμένα.\n"
+"Μερικές από τις επιλογές σας μπορεί να προκαλέσουν προβλήματα ασυμβατοτήτων\n"
+"και εξαρτήσεων. Σε αυτήν την περίπτωση, θα σας εμφανιστεί μια λίστα των\n"
+"με τα εν λόγω πακέτα, για να μπορέσετε να αντιμετωπίσετε τυχόν προβλήματα.\n"
+"\n"
+"Θα πρέπει να διαβάσετε την λίστα με τους συνδυασμούς πλήκτρων και την\n"
+" επεξήγηση στην οθόνη.  Υπάρχει διαθέσιμη αρκετή βοήθεια και χρησιμοποιήστε\n"
+"την όσο μπορείτε - πληκτρολογώντας `?' οποιαδήποτε στιγμή.\n"
+"\n"
+"Όταν τελειώσετε με την επιλογή, πιέστε <enter> για να αποδεχτείτε τις\n"
+"αλλαγές, ή `X' για έξοδο χωρίς αποθήκευση των αλλαγών. Θα γίνει ένας\n"
+"τελευταίος έλεγχος ασυμβατοτήτων και εξαρτήσεων, όπου πιθανόν να δείτε\n"
+"μια δεύτερη λίστα.\n"
+"Πιέστε <space> για κλείσει η βοήθεια και να δείτε τη λίστα τώρα.\n"
+
+#: dselect/helpmsgs.cc:57
+msgid "Introduction to read-only package list browser"
+msgstr "Εισαγωγή στην προβολή πακέτων για ανάγνωση μόνο"
+
+#: dselect/helpmsgs.cc:57
+msgid ""
+"Welcome to dselect's main package listing.\n"
+"\n"
+"You will be presented with a list of packages which are installed or "
+"available\n"
+"for installation.  Since you do not have the privilege necessary to update\n"
+"package states, you are in a read-only mode.  You can navigate around the\n"
+"list using the cursor keys (please see the `Keystrokes' help screen), "
+"observe\n"
+"the status of the packages and read information about them.\n"
+"\n"
+"You should read the list of keys and the explanations of the display.\n"
+"Much on-line help is available, please make use of it - press `?' at\n"
+"any time for help.\n"
+"\n"
+"When you have finished browsing, press `Q' or <enter> to quit.\n"
+"\n"
+"Press <space> to leave help and enter the list now.\n"
+msgstr ""
+"Καλώς ορίσατε στην οθόνη με την λίστα των κυρίων πακέτων του dselect.\n"
+"\n"
+"Θα σας εμφανιστεί μια λίστα από πακέτα τα οποία είναι εγκατεστημένα ή "
+"διαθέσιμα\n"
+"για εγκατάσταση.  Αυτή τη στιγμή δεν διαθέτετε τα απαραίτητα προνόμια  για \n"
+"να αναβαθμίσετε την κατάσταση των πακέτων και βρίσκεστε σε κατάσταση μόνο\n"
+"για ανάγνωση.  Μπορείτε να πλοηγηθείτε στη λίστα των πακέτων με τα βελάκια\n"
+"(δείτε τη σελίδα βοηθείας σχετικά με τους `συνδυασμούς πλήκτρων'), να \n"
+"παρατηρήσετε την τρέχουσα κατάσταση τους και να διαβάσετε πληροφορίες για "
+"αυτά.\n"
+"\n"
+"Θα πρέπει να διαβάσετε την λίστα με τους συνδυασμούς πλήκτρων και την "
+"επεξήγηση\n"
+"της οθόνης.  Υπάρχει διαθέσιμη αρκετή βοήθεια και χρησιμοποιήστε την όσο\n"
+"μπορείτε - πληκτρολογώντας `?' οποιαδήποτε στιγμή.\n"
+"\n"
+"Όταν τελειώσετε με την αναζήτηση, πιέστε `Q' ή ,<enter> για να φύγετε.\n"
+"\n"
+"Πιέστε <enter> για κλείσει η βοήθεια και να δείτε τη λίστα τώρα.\n"
+
+#: dselect/helpmsgs.cc:75
+msgid "Introduction to conflict/dependency resolution sub-list"
+msgstr "Εισαγωγή στην λίστα ανάλυσης εξαρτήσεων/συγκρούσεων"
+
+#: dselect/helpmsgs.cc:75
+msgid ""
+"Dependency/conflict resolution - introduction.\n"
+"\n"
+"One or more of your choices have raised a conflict or dependency problem -\n"
+"some packages should only be installed in conjunction with certain others, "
+"and\n"
+"some combinations of packages may not be installed together.\n"
+"\n"
+"You will see a sub-list containing the packages involved.  The bottom half "
+"of\n"
+"the display shows relevant conflicts and dependencies; use `i' to cycle "
+"between\n"
+"that, the package descriptions and the internal control information.\n"
+"\n"
+"A set of `suggested' packages has been calculated, and the initial markings "
+"in\n"
+"this sub-list have been set to match those, so you can just hit Return to\n"
+"accept the suggestions if you wish.  You may abort the change(s) which "
+"caused\n"
+"the problem(s), and go back to the main list, by pressing capital `X'.\n"
+"\n"
+"You can also move around the list and change the markings so that they are "
+"more\n"
+"like what you want, and you can `reject' my suggestions by using the "
+"capital\n"
+"`D' or `R' keys (see the keybindings help screen).  You can use capital `Q' "
+"to\n"
+"force me to accept the situation currently displayed, in case you want to\n"
+"override a recommendation or think that the program is mistaken.\n"
+"\n"
+"Press <space> to leave help and enter the sub-list; remember: press `?' for "
+"help.\n"
+msgstr ""
+"Εισαγωγή στη ανάλυση εξαρτήσεων/συγκρούσεων.\n"
+"\n"
+"Μια ή περισσότερες από τις επιλογές σας προκάλεσε ένα πρόβλημα εξάρτησης ή\n"
+"σύγκρουσης. Μερικά πακέτα πρέπει να εγκαθιστώνται μόνο σε συνδυασμό με\n"
+" συγκεκριμένα πακέτα, και μερικοί συνδυασμοί δεν μπορούν να συνυπάρχουν.\n"
+"\n"
+"Θα σας εμφανιστεί μια λίστα που θα περιέχει τα πακέτα που εμπλέκονται.  Το\n"
+" κάτω μισό της οθόνης σας εμφανίζει τις σχετικές πληροφορίες σχετικά με τις\n"
+" συγκρούσεις ή τις εξαρτήσεις, χρησιμοποιήστε το `i' για να εναλλάξετε "
+"μεταξύ\n"
+"των περιγραφών και των εσωτερικών πληροφοριών ελέγχου.\n"
+"\n"
+"Έχει υπολογιστεί μια λίστα από `προτεινόμενα' πακέτα και έχουν σημανθεί\n"
+" έτσι ώστε πιέζοντας απλά το Return για να τις αποδεχτείτε αν το "
+"επιθυμείτε.\n"
+"Μπορείτε να απορρίψετε τις αλλαγές που προκάλεσαν αυτά τα προβλήματα και να\n"
+"επιστρέψετε στην αρχική οθόνη πιέζοντας κεφαλαίο `X'.\n"
+"\n"
+"Μπορείτε να ακόμα να κάνετε αλλαγές στην προτεινόμενη λίστα σύμφωνα με τις\n"
+"προτιμήσεις σας ή ακόμα και να `απορρίψετε' τις προτάσεις χρησιμοποιώντας\n"
+"κεφαλαίο `D' ή `R' (δείτε και τη σελίδα με τα βοηθητικά πλήκτρα).  Μπορείτε\n"
+" ακόμα να χρησιμοποιήσετε ένα κεφαλαίο `Q' για να αναγκάσετε την αποδοχή "
+"της\n"
+" εμφανιζόμενης κατάστασης, στην περίπτωση που θέλετε να παρακάμψετε μια από\n"
+"τις προτάσεις ή αν πιστεύετε ότι υπάρχει πρόβλημα στο πρόγραμμα.\n"
+"\n"
+"Πιέστε <enter> για να φύγετε από τη βοήθεια και να δείτε την προτεινόμενη\n"
+"λίστα. Πιέστε `?' για βοήθεια.\n"
+
+#: dselect/helpmsgs.cc:100
+msgid "Display, part 1: package listing and status chars"
+msgstr "Οθόνη, μέρος 1ο: εμφάνιση καταλόγου πακέτων και χαρακτήρων κατάστασης"
+
+#: dselect/helpmsgs.cc:100
+msgid ""
+"The top half of the screen shows a list of packages.  For each package you "
+"see\n"
+"four columns for its current status on the system and mark.  In terse mode "
+"(use\n"
+"`v' to toggle verbose display) these are single characters, from left to "
+"right:\n"
+"\n"
+" Error flag: Space - no error (but package may be in broken state - see "
+"below)\n"
+"              `R'  - serious error during installation, needs "
+"reinstallation;\n"
+" Installed state:   Space - not installed;\n"
+"                     `*'  - installed;\n"
+"                     `-'  - not installed but config files remain;\n"
+"       packages in { `U'  - unpacked but not yet configured;\n"
+"      these states { `C'  - half-configured (an error happened);\n"
+"        are broken { `I'  - half-installed (an error happened).\n"
+" Old mark: what was requested for this package before presenting this list;\n"
+" Mark: what is requested for this package:\n"
+"  `*': marked for installation or upgrade;\n"
+"  `-': marked for removal, but any configuration files will remain;\n"
+"  `=': on hold: package will not be processed at all;\n"
+"  `_': marked for purge completely - even remove configuration;\n"
+"  `n': package is new and has yet to be marked for install/remove/&c.\n"
+"\n"
+"Also displayed are each package's Priority, Section, name, installed and\n"
+"available version numbers (shift-V to display/hide) and summary "
+"description.\n"
+msgstr ""
+"Το επάνω μέρος της οθόνης εμφανίζει μια λίστα από τα πακέτα.  Για κάθε "
+"πακέτο που βλέπετε\n"
+"υπάρχουν τέσσερις στήλες που εμφανίζουν την τρέχουσα κατάσταση στο σύστημα.\n"
+"Στην σύντομη περιγραφή (χρησιμοποιήστε το `v' για εναλλαγή) πρόκειται για "
+"απλούς\n"
+"χαρακτήρες, από αριστερά προς τα δεξιά:\n"
+"\n"
+" Σήμανση σφάλματος: Κενό - χωρίς σφάλμα (αλλά μπορεί το πακέτο να είναι "
+"χαλασμένο- δείτε παρακάτω)\n"
+"              `R'  - σοβαρό σφάλμα κατά την εγκατάσταση, πρέπει να "
+"επανεγκατάσταση\n"
+" Κατάσταση εγκατάστασης:   Κενό - μη εγκατεστημένο\n"
+"                     `*'  - εγκατεστημένο\n"
+"                     `-'  - μη εγκατεστημένο αλλά υπάρχουν αρχεία ρυθμίσεων\n"
+"            πακέτα σε { `U'  - αποσυμπιεσμένο αλλά όχι ρυθμισμένο\n"
+"αυτές τις καταστάσεις { `C'  - μισό-ρυθμισμένα (κάποιο σφάλμα συνέβη)\n"
+"      είναι χαλασμένα { `I'  - μισό-εγκατεστημένα (κάποιο σφάλμα συνέβη).\n"
+" Παλαιά σήμανση: τι είχε ζητηθεί για αυτό το πακέτο πριν από τη εμφάνιση της "
+"λίστας αυτής.\n"
+" Σήμανση: τι έχει ζητηθεί για αυτό το πακέτο:\n"
+"  `*': σημειωμένο για εγκατάσταση ή αναβάθμιση.\n"
+"  `-': σημειωμένο για αφαίρεση αλλά με συγκράτηση των ρυθμίσεων.\n"
+"  `=': σε αναμονή: δεν θα γίνει καμία ενέργεια στο πακέτο.\n"
+"  `_': σημειωμένο για ολική διαγραφή - ακόμα και οι ρυθμίσεις του.\n"
+"  `n': το πακέτο είναι νέο και δεν έχει σημειωθεί για εγκατάσταση/αφαίρεση/"
+"&c.\n"
+"\n"
+"Ακόμα εμφανίζονται για κάθε πακέτο η Προτεραιότητα του, η Ενότητα, το όνομα, "
+"η εγκατεστημένη\n"
+"η διαθέσιμη έκδοση (πιέστε shift-V για να εμφανίσετε/κρύψετε) και μια "
+"περίληψη.\n"
+
+#: dselect/helpmsgs.cc:125
+msgid "Display, part 2: list highlight; information display"
+msgstr "Οθόνη, μέρος 2ο: εστίαση λίστας, εμφάνιση πληροφοριών"
+
+#: dselect/helpmsgs.cc:125
+msgid ""
+"* Highlight: One line in the package list will be highlighted.  It "
+"indicates\n"
+"  which package(s) will be affected by presses of `+', `-' and `_'.\n"
+"\n"
+"* The dividing line in the middle of the screen shows a brief explanation "
+"of\n"
+"  the status of the currently-highlighted package, or a description of "
+"which\n"
+"  group is highlighted if a group line is.  If you don't understand the\n"
+"  meaning of some of the status characters displayed, go to the relevant\n"
+"  package and look at this divider line, or use the `v' key for a verbose\n"
+"  display (press `v' again to go back to the terse display).\n"
+"\n"
+"* The bottom of the screen shows more information about the\n"
+"  currently-highlighted package (if there is only one).\n"
+"\n"
+"  It can show an extended description of the package, the internal package\n"
+"  control details (either for the installed or available version of the\n"
+"  package), or information about conflicts and dependencies involving the\n"
+"  current package (in conflict/dependency resolution sublists).\n"
+"\n"
+"  Use the `i' key to cycle through the displays, and `I' to hide the\n"
+"  information display or expand it to use almost all of the screen.\n"
+msgstr ""
+"* Εστίαση: Μια γραμμή από την λίστα με τα πακέτα θα έχει την εστίαση.  Αυτό "
+"υποδεικνύει\n"
+"  πιο(α) πακέτο(α) θα επηρεαστούν όταν πιέζετε τα πλήκτρα `+', `-' and `_'.\n"
+"\n"
+"* Η διαχωριστική γραμμή στη μέση της οθόνης εμφανίζει μια σύντομη επεξήγηση "
+"της\n"
+"  κατάστασης του εστιασμένου πακέτου, ή μια περιγραφή από την τρέχουσα "
+"ενότητα που\n"
+"  είναι εστιασμένη (αν είναι σε ενότητα).  Αν δεν καταλαβαίνετε το νόημα "
+"των\n"
+"  χαρακτήρων κατάστασης που εμφανίζονται, πηγαίνετε στο ανάλογο πακέτο και \n"
+"  κοιτάξτε τη διαχωριστική γραμμή, ή πιέστε το πλήκτρο `v' για μια πιο \n"
+"  αναλυτική περιγραφή (και ξανά για επιστροφή στη σύντομη περιγραφή).\n"
+"\n"
+"* Στο κάτω μέρος της οθόνης μπορείτε να δείτε περισσότερες πληροφορίες\n"
+"  σχετικά με το τρέχον εστιασμένο πακέτο (αν κάποιο είναι εστιασμένο).\n"
+"\n"
+"  Μπορεί να εμφανίσει μια εκτεταμένη περιγραφή του πακέτου, τις εσωτερικές\n"
+"  λεπτομέρειες ελέγχου (είτε για την εγκατεστημένη ή για την διαθέσιμη \n"
+"  έκδοση του πακέτου), πληροφορίες σχετικά με συγκρούσεις και εξαρτήσεις\n"
+"  για το τρέχον πακέτο (στη λίστα συγκρούσεων/εξαρτήσεων).\n"
+"\n"
+"  Χρησιμοποιήστε το πλήκτρο `i' για να εναλλάξετε τις εμφανιζόμενες "
+"πληροφορίες\n"
+"  και το `Ι' για την απόκρυψη των πληροφοριών ή την επέκτασή τους.\n"
+
+#: dselect/helpmsgs.cc:148
+msgid "Introduction to method selection display"
+msgstr "Εισαγωγή στην οθόνη μεθόδου επιλογής"
+
+#: dselect/helpmsgs.cc:148
+msgid ""
+"dselect and dpkg can do automatic installation, loading the package files to "
+"be\n"
+"installed from one of a number of different possible places.\n"
+"\n"
+"This list allows you to select one of these installation methods.\n"
+"\n"
+"Move the highlight to the method you wish to use, and hit Enter.  You will "
+"then\n"
+"be prompted for the information required to do the installation.\n"
+"\n"
+"As you move the highlight a description of each method, where available, is\n"
+"displayed in the bottom half of the screen.\n"
+"\n"
+"If you wish to quit without changing anything use the `x' key while in the "
+"list\n"
+"of installation methods.\n"
+"\n"
+"A full list of keystrokes is available by pressing `k' now, or from the "
+"help\n"
+"menu reachable by pressing `?'.\n"
+msgstr ""
+"το dselect και το dpkg μπορούν να κάνουν μια αυτόματη εγκατάσταση, "
+"φορτώνοντας τα \n"
+"απαραίτητα πακέτα για εγκατάσταση από διάφορες πηγές.\n"
+"\n"
+"Αυτή η λίστα σας επιτρέπει να επιλέξετε μια από αυτές τις μεθόδους "
+"εγκατάστασης.\n"
+"\n"
+"Επιλέξτε τη μέθοδο που επιθυμείτε να χρησιμοποιήσετε, και πιέστε το Enter.  "
+"Θα σας \n"
+"ζητηθεί στη συνέχεια να δώσετε τις πληροφορίες που απαιτούνται για τη "
+"εγκατάσταση.\n"
+"\n"
+"Καθώς μετακινήστε μεταξύ των μεθόδων, εμφανίζεται μια περιγραφή της κάθε "
+"μίας\n"
+"στο κάτω μισό της οθόνης.\n"
+"\n"
+"Αν θέλετε να φύγετε χωρίς να κάνετε καμία αλλαγή, χρησιμοποιήστε το "
+"πλήκτρο`x'.\n"
+"\n"
+"Ένας πλήρης κατάλογος από συνδυασμούς πλήκτρων είναι διαθέσιμος αν πιέσετε "
+"`k'\n"
+"τώρα, ή από την επιλογή βοηθείας πιέζοντας `?'.\n"
+
+#: dselect/helpmsgs.cc:167
+msgid "Keystrokes for method selection"
+msgstr "Πλήκτρα για την επιλογή της μεθόδου"
+
+#: dselect/helpmsgs.cc:167
+msgid ""
+"Motion keys: Next/Previous, Top/End, Up/Down, Backwards/Forwards:\n"
+"  n, Down-arrow         p, Up-arrow             move highlight\n"
+"  N, Page-down, Space   P, Page-up, Backspace   scroll list by 1 page\n"
+"  ^n                    ^p                      scroll list by 1 line\n"
+"  t, Home               e, End                  jump to top/end of list\n"
+"  u                     d                       scroll info by 1 page\n"
+"  ^u                    ^d                      scroll info by 1 line\n"
+"  B, Left-arrow         F, Right-arrow          pan display by 1/3 screen\n"
+"  ^b                    ^f                      pan display by 1 character\n"
+"(These are the same motion keys as in the package list display.)\n"
+"\n"
+"Quit:\n"
+" Return, Enter    select this method and go to its configuration dialogue\n"
+" x, X             exit without changing or setting up the installation "
+"method\n"
+"\n"
+"Miscellaneous:\n"
+"  ?, Help, F1      request help\n"
+" ^l                redraw display\n"
+"  /                search (just return to cancel)\n"
+"  \\                repeat last search\n"
+msgstr ""
+"Πλήκτρα κίνησης: Επόμενο/Προηγούμενο, Αρχή/Τέλος, Επάνω/Κάτω, Εμπρός/Πίσω:\n"
+"  n, Βέλος κάτω         p, Βέλος επάνω             κίνηση επάνω/κάτω\n"
+"  N, Σελίδα κάτω, Διάστημα   P, Σελίδα επάνω, Πισωγύρισμα   κατέβασμα λίστας "
+"ανά 1 σελίδα\n"
+"  ^n                    ^p                      κύλιση λίστας ανά 1 γραμμή\n"
+"  t, Home               e, End                  πήγαινε στην αρχή/τέλος της "
+"λίστας\n"
+"  u                     d                       κύλιση πληροφοριών ανά 1 "
+"σελίδα\n"
+"  ^u                    ^d                      κύλιση πληροφοριών ανά 1 "
+"γραμμή\n"
+"  B, Βέλος αριστερά         F, Βέλος δεξιά          μετατόπιση οθόνης κατά "
+"το 1/3\n"
+"  ^b                    ^f                      μετατόπιση οθόνης κατά 1 "
+"χαρακτήρα\n"
+"(Ισχύουν τα ίδια πλήκτρα κίνησης με την οθόνη εμφάνισης πακέτων.)\n"
+"\n"
+"Εγκατάλειψη:\n"
+" Return, Enter    επιλέξτε τη μέθοδο αυτή και πηγαίνετε στο διαλόγο "
+"παραμέτρων της\n"
+" x, X             έξοδος χωρίς καθορισμό ή αλλαγή της μεθόδου εγκατάστασης\n"
+"\n"
+"Διάφορα:\n"
+"  ?, Βοήθεια, F1      εμφάνιση βοήθειας\n"
+" ^l                επανασχεδιασμός της οθόνης\n"
+"  /                αναζήτηση (πιέστε return για να ακυρώσετε)\n"
+"  \\                επανάληψη τελευταίας αναζήτησης\n"
+
+#: dselect/main.cc:55
+msgid "Type dselect --help for help."
+msgstr "Πληκτρολογήστε dselect --help για βοήθεια."
+
+#: dselect/main.cc:138
+msgid "a"
+msgstr "a"
+
+#: dselect/main.cc:138
+msgid "[A]ccess"
+msgstr "Πρόσβαση ([a])"
+
+#: dselect/main.cc:138
+msgid "Choose the access method to use."
+msgstr "Επιλέξτε τη μέθοδο πρόσβασης που θα χρησιμοποιήσετε"
+
+#: dselect/main.cc:139
+msgid "u"
+msgstr "u"
+
+#: dselect/main.cc:139
+msgid "[U]pdate"
+msgstr "Ανανέωση([u])"
+
+#: dselect/main.cc:139
+msgid "Update list of available packages, if possible."
+msgstr "Ανανέωσε τη λίστα των διαθέσιμων πακέτων, αν είναι δυνατό."
+
+#: dselect/main.cc:140
+msgid "s"
+msgstr "s"
+
+#: dselect/main.cc:140
+msgid "[S]elect"
+msgstr "Επιλογή ([s])"
+
+#: dselect/main.cc:140
+msgid "Request which packages you want on your system."
+msgstr "Επιλέξτε ποια πακέτα θέλετε στο σύστημά σας."
+
+#: dselect/main.cc:141
+msgid "i"
+msgstr "i"
+
+#: dselect/main.cc:141
+msgid "[I]nstall"
+msgstr "Εγκατάσταση ([i])"
+
+#: dselect/main.cc:141
+msgid "Install and upgrade wanted packages."
+msgstr "Εγκατάσταση και αναβάθμιση ζητούμενων πακέτων."
+
+#: dselect/main.cc:142
+msgid "c"
+msgstr "c"
+
+#: dselect/main.cc:142
+msgid "[C]onfig"
+msgstr "Ρύθμιση ([c])"
+
+#: dselect/main.cc:142
+msgid "Configure any packages that are unconfigured."
+msgstr "Ρύθμιση όποιων πακέτων είναι μη ρυθμισμένα."
+
+#: dselect/main.cc:143
+msgid "r"
+msgstr "r"
+
+#: dselect/main.cc:143
+msgid "[R]emove"
+msgstr "Αφαίρεση ([r])"
+
+#: dselect/main.cc:143
+msgid "Remove unwanted software."
+msgstr "Αφαίρεση ανεπιθύμητου λογισμικού."
+
+#: dselect/main.cc:144
+msgid "q"
+msgstr "q"
+
+#: dselect/main.cc:144
+msgid "[Q]uit"
+msgstr "Έξοδος ([q])"
+
+#: dselect/main.cc:144
+msgid "Quit dselect."
+msgstr "Έξοδος από το dselect."
+
+#: dselect/main.cc:145
+msgid "menu"
+msgstr "μενού"
+
+#: dselect/main.cc:150
+#, c-format
+msgid "Debian `%s' package handling frontend."
+msgstr "Πρόγραμμα διαχείρισης των πακέτων του Debian `%s'"
+
+#: dselect/main.cc:153
+#, c-format
+msgid ""
+"Version %s.\n"
+"Copyright (C) 1994-1996 Ian Jackson.\n"
+"Copyright (C) 2000,2001 Wichert Akkerman.\n"
+"This is free software; see the GNU General Public Licence version 2\n"
+"or later for copying conditions.  There is NO warranty.  See\n"
+"dselect --licence for details.\n"
+msgstr ""
+"Έκδοση %s.\n"
+"Πνευματικά δικαιώματα (C) 1994-1996 Ian Jackson.\n"
+"Πνευματικά δικαιώματα (C) 2000,2001 Wichert Akkerman.\n"
+"Αυτό είναι ελεύθερο λογισμικό. Δείτε την GNU General Public Licence έκδοσης "
+"2\n"
+"ή επόμενης για συνθήκες αντιγραφής.  Δεν υπάρχει ΚΑΜΙΑ εγγύηση.  Δείτε\n"
+"dselect --licence για λεπτομέρειες.\n"
+
+#: dselect/main.cc:169
+msgid ""
+"Usage: dselect [options]\n"
+"       dselect [options] action ...\n"
+"Options:  --admindir <directory>  (default is /var/lib/dpkg)\n"
+"          --help  --version  --licence  --expert  --debug <file> | -D<file>\n"
+"          --colour screenpart:[foreground],[background][:attr[+attr+..]]\n"
+"Actions:  access update select install config remove quit\n"
+msgstr ""
+"Χρήση: dselect [επιλογές]\n"
+"       dselect [επιλογές] δράση ...\n"
+"Επιλογές:  --admindir <directory>  (default is /var/lib/dpkg)\n"
+"           --help  --version  --licence  --expert  --debug <file> | -"
+"D<file>\n"
+"           --colour screenpart:[foreground],[background][:attr[+attr+..]]\n"
+"Δράσεις:  access update select install config remove quit\n"
+
+#: dselect/main.cc:177
+#, c-format
+msgid "Screenparts:\n"
+msgstr "Οθόνες:\n"
+
+#: dselect/main.cc:182
+#, c-format
+msgid "Colours:\n"
+msgstr "Χρώματα:\n"
+
+#: dselect/main.cc:187
+#, c-format
+msgid "Attributes:\n"
+msgstr "Ιδιότητες:\n"
+
+#: dselect/main.cc:207
+#, c-format
+msgid "couldn't open debug file `%.255s'\n"
+msgstr "αδύνατο το άνοιγμα του αρχείου debug `%.255s'\n"
+
+#: dselect/main.cc:222
+#, c-format
+msgid "Invalid %s `%s'\n"
+msgstr "Μη έγκυρο %s `%s'\n"
+
+#: dselect/main.cc:239
+msgid "screen part"
+msgstr "τμήμα οθόνης"
+
+#: dselect/main.cc:245
+msgid "Null colour specification\n"
+msgstr "κενός χρωματικός προσδιορισμός\n"
+
+#: dselect/main.cc:253 dselect/main.cc:258
+msgid "colour"
+msgstr "χρώμα"
+
+#: dselect/main.cc:266
+msgid "colour attribute"
+msgstr "ιδιότητα χρώματος"
+
+#: dselect/main.cc:300
+msgid "Terminal does not appear to support cursor addressing.\n"
+msgstr "Το τερματικό δεν φαίνεται να υποστηρίζει κατευθυνόμενο δρομέα.\n"
+
+#: dselect/main.cc:302
+msgid "Terminal does not appear to support highlighting.\n"
+msgstr "Το τερματικό δεν φαίνεται να υποστηρίζει τονισμό.\n"
+
+#: dselect/main.cc:303
+msgid ""
+"Set your TERM variable correctly, use a better terminal,\n"
+"or make do with the per-package management tool "
+msgstr ""
+"Ορίστε τη μεταβλητή TERM σωστά, χρησιμοποιήστε ένα καλύτερο τερματικό,\n"
+"ή χρησιμοποιήστε με το εργαλείο διαχείρισης μεμονωμένων πακέτων "
+
+#: dselect/main.cc:306
+msgid "terminal lacks necessary features, giving up"
+msgstr "το τερματικό δεν υποστηρίζει απαραίτητα χαρακτηριστικά, εγκατάλειψη"
+
+#: dselect/main.cc:384
+msgid ""
+"\n"
+"\n"
+"Move around with ^P and ^N, cursor keys, initial letters, or digits;\n"
+"Press <enter> to confirm selection.   ^L redraws screen.\n"
+"\n"
+msgstr ""
+"\n"
+"\n"
+"Πλοηγηθείτε με τα πλήκτρα ^P και ^N, τα βελάκια, αρχικά γράμματα, η ψηφία.\n"
+"Πιέστε <enter> για αποδοχή της επιλογής.   το ^L ανανεώνει την οθόνη.\n"
+"\n"
+
+#: dselect/main.cc:398
+msgid ""
+"\n"
+"\n"
+"Read-only access: only preview of selections is available!"
+msgstr ""
+"\n"
+"\n"
+"Πρόσβαση μόνο για ανάγνωση: Μόνο η προεπισκόπηση των επιλογών είναι "
+"διαθέσιμη!"
+
+#: dselect/main.cc:417
+msgid "failed to getch in main menu"
+msgstr "απέτυχε η getch στο κυρίως μενού"
+
+#: dselect/main.cc:490
+#, c-format
+msgid "unknown action string `%.50s'"
+msgstr "άγνωστη συμβολοσειρά δράσης `%.50s'"
+
+#: dselect/methlist.cc:78
+msgid "dselect - list of access methods"
+msgstr "dselect - λίστα των μεθόδων πρόσβασης"
+
+#: dselect/methlist.cc:87
+#, c-format
+msgid "Access method `%s'."
+msgstr "Μέθοδος πρόσβασης `%s'."
+
+#: dselect/methlist.cc:121
+msgid "Abbrev."
+msgstr "Σύντμηση"
+
+#: dselect/methlist.cc:166
+msgid "doupdate failed"
+msgstr "η doupdate απέτυχε"
+
+#: dselect/methlist.cc:168
+msgid "failed to unblock SIGWINCH"
+msgstr "απέτυχε η απεμπλοκή του SIGWINCH"
+
+#: dselect/methlist.cc:172
+msgid "failed to re-block SIGWINCH"
+msgstr "απέτυχε η επανεμπλοκή του SIGWINCH"
+
+#: dselect/methlist.cc:173
+msgid "getch failed"
+msgstr "η getch απέτυχε"
+
+#: dselect/methlist.cc:177 dselect/pkgdepcon.cc:242
+msgid "[none]"
+msgstr "[κανένα]"
+
+#: dselect/methlist.cc:191
+msgid "explanation of "
+msgstr "εξήγηση του "
+
+#: dselect/methlist.cc:201
+msgid "No explanation available."
+msgstr "Καμία διαθέσιμη εξήγηση."
+
+#: dselect/method.cc:64
+#, c-format
+msgid ""
+"\n"
+"\n"
+"%s: %s\n"
+msgstr ""
+"\n"
+"\n"
+"%s: %s\n"
+
+#: dselect/method.cc:67
+msgid ""
+"\n"
+"Press <enter> to continue."
+msgstr ""
+"\n"
+"Πατήστε <enter> για συνέχεια."
+
+#: dselect/method.cc:144
+#, c-format
+msgid "error un-catching signal %d: %s\n"
+msgstr "σφάλμα ελευθέρωσης σήματος %d: %s\n"
+
+#: dselect/method.cc:162
+#, c-format
+msgid "unable to ignore signal %d before running %.250s"
+msgstr "αδύνατο να αγνοηθεί το σήμα %d πριν την εκτέλεση του %.250s"
+
+#: dselect/method.cc:169
+#, c-format
+msgid "unable to run %.250s process `%.250s'"
+msgstr "αδύνατη η εκτέλεση %.250s διεργασία `%.250s'"
+
+#: dselect/method.cc:173
+#, c-format
+msgid "unable to wait for %.250s"
+msgstr "αδύνατη η αναμονή για %.250s"
+
+#: dselect/method.cc:175
+#, c-format
+msgid "got wrong child's status - asked for %ld, got %ld"
+msgstr ""
+"λήφθηκε λάθος κατάσταση θυγατρικής διεργασίας - ζητήθηκε %ld, λήφθηκε %ld"
+
+#: dselect/method.cc:186
+#, c-format
+msgid "returned error exit status %d.\n"
+msgstr "επιστράφηκε κωδικός σφάλματος %d.\n"
+
+#: dselect/method.cc:190
+#, c-format
+msgid "was interrupted.\n"
+msgstr "διακόπηκε.\n"
+
+#: dselect/method.cc:192
+#, c-format
+msgid "was terminated by a signal: %s.\n"
+msgstr "τερματίστηκε από ένα σήμα: %s.\n"
+
+#: dselect/method.cc:195
+#, c-format
+msgid "(It left a coredump.)\n"
+msgstr "(άφησε ένα coredump.)\n"
+
+#: dselect/method.cc:197
+#, c-format
+msgid "failed with an unknown wait return code %d.\n"
+msgstr "απέτυχε με άγνωστο κωδικό επιστροφής της wait %d.\n"
+
+#: dselect/method.cc:199
+#, c-format
+msgid "Press <enter> to continue.\n"
+msgstr "Πατήστε <enter> για συνέχεια.\n"
+
+#: dselect/method.cc:201
+msgid "write error on standard error"
+msgstr "σφάλμα εγγραφής στην πρότυπη έξοδο σφαλμάτων (stderr)"
+
+#: dselect/method.cc:204
+msgid "error reading acknowledgement of program failure message"
+msgstr "σφάλμα ανάγνωσης επιβεβαίωσης του μηνύματος σφάλματος του προγράμματος"
+
+#: dselect/method.cc:235
+msgid "update available list script"
+msgstr "ανανέωση της λίστας των διαθέσιμων πακέτων"
+
+#: dselect/method.cc:239
+msgid "installation script"
+msgstr "σενάριο εγκατάστασης"
+
+#: dselect/method.cc:287
+msgid "query/setup script"
+msgstr "σενάριο ερωτήματος/εγκατάστασης"
+
+#: dselect/methparse.cc:53
+#, c-format
+msgid "syntax error in method options file `%.250s' -- %s"
+msgstr "σφάλμα σύνταξης στο αρχείο επιλογών μεθόδων `%.250s' -- %s"
+
+#: dselect/methparse.cc:58
+#, c-format
+msgid "error reading options file `%.250s'"
+msgstr "σφάλμα ανάγνωσης αρχείου επιλογών `%.250s'"
+
+#: dselect/methparse.cc:86
+#, c-format
+msgid "unable to read `%.250s' directory for reading methods"
+msgstr "αδύνατη η ανάγνωση του καταλόγου `%.250s' για μεθόδους ανάγνωσης"
+
+#: dselect/methparse.cc:100
+#, c-format
+msgid "method `%.250s' has name that is too long (%d > %d characters)"
+msgstr "η μέθοδος `%.250s' έχει πολύ μακρύ όνομα (%d > %d χαρακτήρες)"
+
+#: dselect/methparse.cc:111
+#, c-format
+msgid "unable to access method script `%.250s'"
+msgstr "αδύνατη η πρόσβαση του σεναρίου μεθόδου `%.250s'"
+
+#: dselect/methparse.cc:117
+#, c-format
+msgid "unable to read method options file `%.250s'"
+msgstr "αδύνατη η ανάγνωση του αρχείου επιλογών μεθόδων `%.250s'"
+
+#: dselect/methparse.cc:140
+msgid "non-digit where digit wanted"
+msgstr "μη ψηφίο όπου αναμενόταν ψηφίο"
+
+#: dselect/methparse.cc:143
+msgid "EOF in index string"
+msgstr "EOF στη συμβολοσειρά index"
+
+#: dselect/methparse.cc:146
+msgid "index string too long"
+msgstr "πολύ μεγάλη συμβολοσειρά index "
+
+#: dselect/methparse.cc:149
+msgid "newline before option name start"
+msgstr "χαρακτήρας newline πριν το όνομα επιλογής"
+
+#: dselect/methparse.cc:151
+msgid "EOF before option name start"
+msgstr "EOF πριν το όνομα επιλογής"
+
+#: dselect/methparse.cc:155
+msgid "nonalpha where option name start wanted"
+msgstr "μη αλφαβητικός χαρακτήρας όπου αναμενόταν όνομα επιλογής"
+
+#: dselect/methparse.cc:157
+msgid "non-alphanum in option name"
+msgstr "μη αλφαριθμητικός χαρακτήρας στο όνομα επιλογής"
+
+#: dselect/methparse.cc:160
+msgid "EOF in option name"
+msgstr "EOF σε όνομα επιλογής"
+
+#: dselect/methparse.cc:165
+msgid "newline before summary"
+msgstr "χαρακτήρας newline πριν την περίληψη"
+
+#: dselect/methparse.cc:167
+msgid "EOF before summary"
+msgstr "EOF πριν την περίληψη"
+
+#: dselect/methparse.cc:173
+msgid "EOF in summary - missing newline"
+msgstr "EOF στην περίληψη - λείπει ο χαρακτήρας newline"
+
+#: dselect/methparse.cc:183
+#, c-format
+msgid "unable to open option description file `%.250s'"
+msgstr "αδύνατο το άνοιγμα του αρχείου περιγραφής επιλογών `%.250s'"
+
+#: dselect/methparse.cc:187
+#, c-format
+msgid "unable to stat option description file `%.250s'"
+msgstr "αδύνατο η εύρεση κατάστασης του αρχείου περιγραφής επιλογών `%.250s'"
+
+#: dselect/methparse.cc:191
+#, c-format
+msgid "failed to read option description file `%.250s'"
+msgstr "απέτυχε η ανάγνωση του αρχείου περιγραφής επιλογών`%.250s'"
+
+#: dselect/methparse.cc:194
+#, c-format
+msgid "error during read of option description file `%.250s'"
+msgstr "σφάλμα κατά την ανάγνωση του αρχείου περιγραφής επιλογών `%.250s'"
+
+#: dselect/methparse.cc:216
+#, c-format
+msgid "error during read of method options file `%.250s'"
+msgstr "σφάλμα κατά την ανάγνωση του αρχείου επιλογών μεθόδων `%.250s'"
+
+#: dselect/methparse.cc:246
+#, c-format
+msgid "unable to open current option file `%.250s'"
+msgstr "αδύνατο το άνοιγμα του τρέχοντος αρχείου επιλογών `%.250s'"
+
+#: dselect/methparse.cc:284
+#, c-format
+msgid "unable to open new option file `%.250s'"
+msgstr "αδύνατο το άνοιγμα του νέου αρχείου επιλογών `%.250s'"
+
+#: dselect/methparse.cc:287
+#, c-format
+msgid "unable to write new option to `%.250s'"
+msgstr "αδύνατη η εγγραφή νέας επιλογής στο `%.250s'"
+
+#: dselect/methparse.cc:290
+#, c-format
+msgid "unable to close new option file `%.250s'"
+msgstr "αδύνατο το κλείσιμο του νέου αρχείου επιλογών `%.250s' "
+
+#: dselect/methparse.cc:292
+#, c-format
+msgid "unable to install new option as `%.250s'"
+msgstr "αδύνατη η εγκατάσταση νέας επιλογής ως `%.250s'"
+
+#: dselect/pkgdepcon.cc:215
+msgid "(no clientdata)"
+msgstr "(χωρίς clientdata)"
+
+#: dselect/pkgdisplay.cc:38
+msgid "new package"
+msgstr "νέο πακέτο"
+
+#: dselect/pkgdisplay.cc:39
+msgid "install"
+msgstr "εγκατάσταση"
+
+#: dselect/pkgdisplay.cc:40
+msgid "hold"
+msgstr "συγκράτηση"
+
+#: dselect/pkgdisplay.cc:41
+msgid "remove"
+msgstr "αφαίρεση"
+
+#: dselect/pkgdisplay.cc:42
+msgid "purge"
+msgstr "διαγραφή"
+
+#: dselect/pkgdisplay.cc:48
+msgid " "
+msgstr " "
+
+#: dselect/pkgdisplay.cc:49
+msgid "REINSTALL"
+msgstr "ΕΠΑΝΕΓΚΑΤΑΣΤΑΣΗ"
+
+#: dselect/pkgdisplay.cc:53
+msgid "unpacked (not set up)"
+msgstr "αποσυμπιεσμένο (όχι ρυθμισμένο)"
+
+#: dselect/pkgdisplay.cc:54
+msgid "failed config"
+msgstr "απέτυχε η ρύθμιση"
+
+#: dselect/pkgdisplay.cc:56
+msgid "half installed"
+msgstr "μισόεγκατεστημένο"
+
+#: dselect/pkgdisplay.cc:57
+msgid "removed (configs remain)"
+msgstr "αφαιρέθηκε (παραμένουν οι ρυθμίσεις)"
+
+#: dselect/pkgdisplay.cc:60
+msgid "Required"
+msgstr "Απαιτούμενο"
+
+#: dselect/pkgdisplay.cc:61
+msgid "Important"
+msgstr "Σημαντικό"
+
+#: dselect/pkgdisplay.cc:62
+msgid "Standard"
+msgstr "Βασικό"
+
+#: dselect/pkgdisplay.cc:63
+msgid "Recommended"
+msgstr "Συνιστώμενο"
+
+#: dselect/pkgdisplay.cc:64
+msgid "Optional"
+msgstr "Προαιρετικό"
+
+#: dselect/pkgdisplay.cc:65
+msgid "Extra"
+msgstr "Επιπλέον"
+
+#: dselect/pkgdisplay.cc:66
+msgid "Contrib"
+msgstr "Συνεισφερόμενο"
+
+#: dselect/pkgdisplay.cc:67
+msgid "!Bug!"
+msgstr "!σφάλμα!"
+
+#: dselect/pkgdisplay.cc:68
+msgid "Unclassified"
+msgstr "Αταξινόμητο"
+
+#: dselect/pkgdisplay.cc:71
+msgid "suggests"
+msgstr "προτείνει"
+
+#: dselect/pkgdisplay.cc:72
+msgid "recommends"
+msgstr "συστήνει"
+
+#: dselect/pkgdisplay.cc:73
+msgid "depends on"
+msgstr "εξαρτάται από "
+
+#: dselect/pkgdisplay.cc:74
+msgid "pre-depends on"
+msgstr "προεξαρτάται από "
+
+#: dselect/pkgdisplay.cc:75
+msgid "conflicts with"
+msgstr "ασύμβατο με"
+
+#: dselect/pkgdisplay.cc:76
+msgid "provides"
+msgstr "παρέχει"
+
+#: dselect/pkgdisplay.cc:77
+msgid "replaces"
+msgstr "αντικαθιστά"
+
+#: dselect/pkgdisplay.cc:78
+msgid "enhances"
+msgstr "επεκτείνει"
+
+#: dselect/pkgdisplay.cc:81
+msgid "Req"
+msgstr "Req"
+
+#: dselect/pkgdisplay.cc:82
+msgid "Imp"
+msgstr "Imp"
+
+#: dselect/pkgdisplay.cc:83
+msgid "Std"
+msgstr "Std"
+
+#: dselect/pkgdisplay.cc:84
+msgid "Rec"
+msgstr "Rec"
+
+#: dselect/pkgdisplay.cc:85
+msgid "Opt"
+msgstr "Opt"
+
+#: dselect/pkgdisplay.cc:86
+msgid "Xtr"
+msgstr "Xtr"
+
+#: dselect/pkgdisplay.cc:87
+msgid "Ctb"
+msgstr "Ctb"
+
+#: dselect/pkgdisplay.cc:88
+msgid "bUG"
+msgstr "bUG"
+
+#: dselect/pkgdisplay.cc:89
+msgid "?"
+msgstr ";"
+
+#: dselect/pkgdisplay.cc:97 dselect/pkgdisplay.cc:117
+msgid "Broken"
+msgstr "Κατεστραμμένο"
+
+#: dselect/pkgdisplay.cc:98
+msgid "New"
+msgstr "Νέο"
+
+#: dselect/pkgdisplay.cc:99
+msgid "Updated"
+msgstr "Ενημερωμένο"
+
+#: dselect/pkgdisplay.cc:100
+msgid "Obsolete/local"
+msgstr "Απαρχαιωμένο/τοπικό"
+
+#: dselect/pkgdisplay.cc:101
+msgid "Up-to-date"
+msgstr "Ενημερωμένο"
+
+#: dselect/pkgdisplay.cc:102
+msgid "Available"
+msgstr "Διαθέσιμο"
+
+#: dselect/pkgdisplay.cc:103 dselect/pkgdisplay.cc:119
+msgid "Removed"
+msgstr "Αφαιρέθηκε"
+
+#: dselect/pkgdisplay.cc:104 dselect/pkgdisplay.cc:113
+msgid "Brokenly installed packages"
+msgstr "Χαλασμένα και εγκατεστημένα πακέτα"
+
+#: dselect/pkgdisplay.cc:105
+msgid "Newly available packages"
+msgstr "Νέα διαθέσιμα πακέτα"
+
+#: dselect/pkgdisplay.cc:106
+msgid "Updated packages (newer version is available)"
+msgstr "Ενημερωμένα πακέτα (νεώτερη έκδοση είναι διαθέσιμη)"
+
+#: dselect/pkgdisplay.cc:107
+msgid "Obsolete and local packages present on system"
+msgstr "Απαρχαιωμένα και τοπικά πακέτα που υπάρχουν στο σύστημα"
+
+#: dselect/pkgdisplay.cc:108
+msgid "Up to date installed packages"
+msgstr "Εγκατεστημένα πακέτα σε τρέχουσα έκδοση"
+
+#: dselect/pkgdisplay.cc:109
+msgid "Available packages (not currently installed)"
+msgstr "Διαθέσιμα πακέτα (προς το παρόν όχι εγκατεστημένα)"
+
+#: dselect/pkgdisplay.cc:110
+msgid "Removed and no longer available packages"
+msgstr "Πακέτα που έχουν αφαιρεθεί και δεν είναι πλέον διαθέσιμα"
+
+#: dselect/pkgdisplay.cc:114
+msgid "Installed packages"
+msgstr "Εγκατεστημένα πακέτα"
+
+#: dselect/pkgdisplay.cc:115
+msgid "Removed packages (configuration still present)"
+msgstr "Πακέτα που αφαιρέθηκαν (οι ρυθμίσεις παραμένουν)"
+
+#: dselect/pkgdisplay.cc:116
+msgid "Purged packages and those never installed"
+msgstr "Διεγραμμένα πακέτα καθώς και αυτά που ποτέ δεν εγκαταστάθηκαν"
+
+#: dselect/pkgdisplay.cc:118
+msgid "Installed"
+msgstr "Εγκατεστημένα"
+
+#: dselect/pkgdisplay.cc:120
+msgid "Purged"
+msgstr "Διεγραμμένα"
+
+#: dselect/pkgdisplay.cc:200
+msgid "dselect - recursive package listing"
+msgstr "dselect - αναδρομική λίστα πακέτων"
+
+#: dselect/pkgdisplay.cc:201
+msgid "dselect - inspection of package states"
+msgstr "dselect - έλεγχος κατάστασης των πακέτων"
+
+#: dselect/pkgdisplay.cc:202
+msgid "dselect - main package listing"
+msgstr "dselect - εμφάνιση κυρίων πακέτων"
+
+#: dselect/pkgdisplay.cc:210
+msgid " (by section)"
+msgstr " (ανά ενότητα)"
+
+#: dselect/pkgdisplay.cc:213
+msgid " (avail., section)"
+msgstr " (διαθέσιμο, ενότητα)"
+
+#: dselect/pkgdisplay.cc:216
+msgid " (status, section)"
+msgstr " (κατάσταση, ενότητα)"
+
+#: dselect/pkgdisplay.cc:225
+msgid " (by priority)"
+msgstr " (ανά προτεραιότητα)"
+
+#: dselect/pkgdisplay.cc:228
+msgid " (avail., priority)"
+msgstr " (διαθέσιμο, προτεραιότητα)"
+
+#: dselect/pkgdisplay.cc:231
+msgid " (status, priority)"
+msgstr " (κατάσταση, προτεραιότητα)"
+
+#: dselect/pkgdisplay.cc:240 dselect/pkgdisplay.cc:252
+msgid " (alphabetically)"
+msgstr " (αλφαβητικά)"
+
+#: dselect/pkgdisplay.cc:243
+msgid " (by availability)"
+msgstr " (ανά διαθεσιμότητα)"
+
+#: dselect/pkgdisplay.cc:246
+msgid " (by status)"
+msgstr " (ανά κατάσταση)"
+
+#: dselect/pkgdisplay.cc:260
+msgid " mark:+/=/- terse:v help:?"
+msgstr " σημείωση:+/=/- σύντομα:v βοήθεια:?"
+
+#: dselect/pkgdisplay.cc:261
+msgid " mark:+/=/- verbose:v help:?"
+msgstr " σημείωση:+/=/- αναλυτικά:v βοήθεια:?"
+
+#: dselect/pkgdisplay.cc:262
+msgid " terse:v help:?"
+msgstr " σύντομα:v βοήθεια:?"
+
+#: dselect/pkgdisplay.cc:263
+msgid " verbose:v help:?"
+msgstr " αναλυτικά: βοήθεια:?"
+
+#: dselect/pkginfo.cc:82
+msgid ""
+"The line you have highlighted represents many packages; if you ask to "
+"install, remove, hold, etc. it you will affect all the packages which match "
+"the criterion shown.\n"
+"\n"
+"If you move the highlight to a line for a particular package you will see "
+"information about that package displayed here.\n"
+"You can use `o' and `O' to change the sort order and give yourself the "
+"opportunity to mark packages in different kinds of groups."
+msgstr ""
+"Η γραμμή που τονίσατε αντιπροσωπεύει πολλά πακέτα. Αν ζητήσετε εγκατάσταση, "
+"αφαίρεση, κράτηση, κλπ. θα επηρεαστούν όλα τα πακέτα που ταιριάζουν με το "
+"κριτήριο που εμφανίζονται.\n"
+"\n"
+"Αν μετακινήσετε τον τονισμό σε μια γραμμή για ένα ξεχωριστό πακέτο θα δείτε "
+"πληροφορίες σχετικά με το πακέτο που εμφανίζεται εδώ.\n"
+"Χρησιμοποιήστε το `o' και το `O' για να αλλάξετε τη σειρά ταξινόμησης και να "
+"επιλέξετε πακέτα από ομάδες διαφορετικών ειδών."
+
+#: dselect/pkginfo.cc:96
+msgid "interrelationships affecting "
+msgstr "εσωτερικές συσχετίσεις επηρεάζουν το"
+
+#: dselect/pkginfo.cc:102
+msgid "interrelationships"
+msgstr "εσωτερικές συσχετίσεις"
+
+#: dselect/pkginfo.cc:108
+msgid "description of "
+msgstr "περιγραφή του "
+
+#: dselect/pkginfo.cc:112
+msgid "no description available."
+msgstr "καμία διαθέσιμη περιγραφή."
+
+#: dselect/pkginfo.cc:125
+msgid "description"
+msgstr "περιγραφή"
+
+#: dselect/pkginfo.cc:132
+msgid "currently installed control info"
+msgstr "τρέχουσα εγκατεστημένη πληροφορία ελέγχου"
+
+#: dselect/pkginfo.cc:134
+msgid "installed control info for "
+msgstr "εγκατεστημένη πληροφορία ελέγχου για το "
+
+#: dselect/pkginfo.cc:148
+msgid "available version of control file info"
+msgstr "διαθέσιμη έκδοση πληροφορίας ελέγχου αρχείου"
+
+#: dselect/pkginfo.cc:150
+msgid "available version of control info for "
+msgstr "διαθέσιμη έκδοση πληροφορίας ελέγχου για το"
+
+#: dselect/pkglist.cc:123 dselect/pkglist.cc:124
+msgid "<null>"
+msgstr "<κενό>"
+
+#: dselect/pkglist.cc:507
+msgid "invalid search option given"
+msgstr "δόθηκε άκυρη παράμετρος αναζήτησης"
+
+#: dselect/pkglist.cc:521
+msgid "error in regular expression"
+msgstr "σφάλμα στην κανονική έκφραση"
+
+#: dselect/pkgsublist.cc:105
+msgid " does not appear to be available\n"
+msgstr " δε φαίνεται να είναι διαθέσιμο\n"
+
+#: dselect/pkgsublist.cc:122
+msgid " or "
+msgstr " ή "
+
+#: dselect/pkgtop.cc:56
+msgid "All"
+msgstr "Όλα"
+
+#: dselect/pkgtop.cc:78
+msgid "All packages"
+msgstr "Όλα τα πακέτα"
+
+#: dselect/pkgtop.cc:82
+#, c-format
+msgid "%s packages without a section"
+msgstr "%s πακέτα χωρίς τομέα"
+
+#: dselect/pkgtop.cc:84
+#, c-format
+msgid "%s packages in section %s"
+msgstr "%s πακέτα στον τομέα %s"
+
+#: dselect/pkgtop.cc:90
+#, c-format
+msgid "%s %s packages"
+msgstr "%s %s πακέτα"
+
+#: dselect/pkgtop.cc:94
+#, c-format
+msgid "%s %s packages without a section"
+msgstr "%s %s πακέτα χωρίς τομέα"
+
+#: dselect/pkgtop.cc:96
+#, c-format
+msgid "%s %s packages in section %s"
+msgstr "%s %s πακέτα στον τομέα %s"
+
+#: dselect/pkgtop.cc:117
+#, c-format
+msgid "%-*s %s%s%s;  %s (was: %s).  %s"
+msgstr "%-*s %s%s%s;  %s (ήταν: %s).  %s"
+
+#: dselect/pkgtop.cc:269
+msgid "Error"
+msgstr "Σφάλμα"
+
+#: dselect/pkgtop.cc:273
+msgid "Installed?"
+msgstr "Εγκατεστημένο;"
+
+#: dselect/pkgtop.cc:277
+msgid "Old mark"
+msgstr "Παλαιά σήμανση"
+
+#: dselect/pkgtop.cc:281
+msgid "Marked for"
+msgstr "Σημειώθηκε για"
+
+#: dselect/pkgtop.cc:284
+msgid "EIOM"
+msgstr "EIOM"
+
+#: dselect/pkgtop.cc:286
+msgid "Section"
+msgstr "Τομέας"
+
+#: dselect/pkgtop.cc:287
+msgid "Priority"
+msgstr "Προτεραιότητα"
+
+#: dselect/pkgtop.cc:288
+msgid "Package"
+msgstr "Πακέτο"
+
+#: dselect/pkgtop.cc:292
+msgid "Inst.ver"
+msgstr "Έκδ.εγκ."
+
+#: dselect/pkgtop.cc:295
+msgid "Avail.ver"
+msgstr "Διαθ.εκδόσεις"
+
+#: dpkg-deb/build.c:67
+#, c-format
+msgid "dpkg-deb - error: %s (`%s') doesn't contain any digits\n"
+msgstr "dpkg-deb - σφάλμα: το %s (`%s') δεν περιέχει ψηφία\n"
+
+#: dpkg-deb/build.c:170
+msgid "--build needs a directory argument"
+msgstr "η --build χρειάζεται ένα όρισμα καταλόγου"
+
+#: dpkg-deb/build.c:179
+msgid "--build takes at most two arguments"
+msgstr "η --build παίρνει το πολύ δύο ορίσματα"
+
+#: dpkg-deb/build.c:183
+#, c-format
+msgid "unable to check for existence of archive `%.250s'"
+msgstr "αδύνατος ο έλεγχος ύπαρξης της αρχειοθήκης `%.250s'"
+
+#: dpkg-deb/build.c:198
+msgid "target is directory - cannot skip control file check"
+msgstr ""
+"ο προορισμός είναι κατάλογος - αδύνατη η παράλειψη ελέγχου αρχείου control"
+
+#: dpkg-deb/build.c:199
+#, c-format
+msgid ""
+"dpkg-deb: warning, not checking contents of control area.\n"
+"dpkg-deb: building an unknown package in `%s'.\n"
+msgstr ""
+"dpkg-deb: προειδοποίηση, δε θα γίνει έλεγχος των περιεχομένων του αρχείου "
+"control.\n"
+"dpkg-deb: κατασκευή αγνώστου πακέτου `%s'.\n"
+
+#: dpkg-deb/build.c:217
+msgid "package name has characters that aren't lowercase alphanums or `-+.'"
+msgstr ""
+"το όνομα του αρχείου περιέχει χαρακτήρες που δεν είναι πεζοί αλφαριθμητικοί "
+"ή `-+'."
+
+#: dpkg-deb/build.c:219
+#, c-format
+msgid "warning, `%s' contains user-defined Priority value `%s'\n"
+msgstr ""
+"προειδοποίηση, το `%s' περιέχει ορισμένη από το χρήστη τιμή Priority `%s'\n"
+
+#: dpkg-deb/build.c:224
+#, c-format
+msgid "warning, `%s' contains user-defined field `%s'\n"
+msgstr "προειδοποίηση, το `%s' περιέχει ορισμένο από το χρήστη πεδίο `%s'\n"
+
+#: dpkg-deb/build.c:230
+#, c-format
+msgid "%d errors in control file"
+msgstr "%d σφάλματα στο αρχείο ελέγχου (control)"
+
+#: dpkg-deb/build.c:241
+#, c-format
+msgid "dpkg-deb: building package `%s' in `%s'.\n"
+msgstr "dpkg-deb: δημιουργία πακέτου `%s' στο `%s'.\n"
+
+#: dpkg-deb/build.c:249
+#, c-format
+msgid "control directory has bad permissions %03lo (must be >=0755 and <=0775)"
+msgstr ""
+"ο κατάλογος control έχει λάθος άδειες %03lo (χρειάζεται >=0755 και <=0775)"
+
+#: dpkg-deb/build.c:260
+#, c-format
+msgid "maintainer script `%.50s' is not a plain file or symlink"
+msgstr "το σενάριο `%.50s' δεν είναι απλό αρχείο ή δεσμός"
+
+#: dpkg-deb/build.c:262
+#, c-format
+msgid ""
+"maintainer script `%.50s' has bad permissions %03lo (must be >=0555 and "
+"<=0775)"
+msgstr ""
+"το σενάριο `%.50s' έχει λάθος άδειες %03lo (χρειάζεται >=0755 και <=0775)"
+
+#: dpkg-deb/build.c:266
+#, c-format
+msgid "maintainer script `%.50s' is not stattable"
+msgstr "αδύνατη η εύρεση της κατάστασης (stat) του σεναρίου `%.50s'"
+
+#: dpkg-deb/build.c:276
+msgid "empty string from fgets reading conffiles"
+msgstr "κενή συμβολοσειρά από την fgets κατά την ανάγνωση αρχείων ρυθμίσεων"
+
+#: dpkg-deb/build.c:278
+#, c-format
+msgid ""
+"warning, conffile name `%.50s...' is too long, or missing final newline\n"
+msgstr ""
+"προειδοποίηση, το όνομα του αρχείου ρυθμίσεων `%.50s...' είναι πολύ μεγάλο,\n"
+" ή λείπει ο τελικός χαρακτήρας newline\n"
+
+#: dpkg-deb/build.c:290
+#, c-format
+msgid "conffile `%.250s' does not appear in package"
+msgstr "το conffile `%.250s' δεν εμφανίζεται στο πακέτο"
+
+#: dpkg-deb/build.c:292
+#, c-format
+msgid "conffile `%.250s' is not stattable"
+msgstr "αδύνατη η εύρεση της κατάστασης (stat) του αρχείου ρυθμίσεων `%.50s'"
+
+#: dpkg-deb/build.c:294
+#, c-format
+msgid "warning, conffile `%s' is not a plain file\n"
+msgstr "προειδοποίηση, το αρχείο ρυθμίσεων `%s' δεν είναι κοινό αρχείο\n"
+
+#: dpkg-deb/build.c:299
+msgid "error reading conffiles file"
+msgstr "σφάλμα ανάγνωσης αρχείου conffiles"
+
+#: dpkg-deb/build.c:302
+msgid "error opening conffiles file"
+msgstr "σφάλμα ανοίγματος αρχείου conffiles"
+
+#: dpkg-deb/build.c:305
+#, c-format
+msgid "dpkg-deb: ignoring %d warnings about the control file(s)\n"
+msgstr ""
+"dpkg-deb: παραλείπονται %d προειδοποιητικά μηνύματα για τα αρχεία control\n"
+
+#: dpkg-deb/build.c:315
+#, c-format
+msgid "unable to unbuffer `%.255s'"
+msgstr "αδύνατη η αποδέσμευση `%.255s'"
+
+#: dpkg-deb/build.c:320 dpkg-deb/build.c:393 dpkg-deb/build.c:414
+#, c-format
+msgid "failed to chdir to `%.255s'"
+msgstr "αποτυχία αλλαγής καταλόγου (chdir) στο `%.255s'"
+
+#: dpkg-deb/build.c:321
+msgid "failed to chdir to .../DEBIAN"
+msgstr "αποτυχία αλλαγής καταλόγου (chdir) στο .../DEBIAN"
+
+#: dpkg-deb/build.c:322 dpkg-deb/build.c:395
+msgid "failed to exec tar -cf"
+msgstr "απέτυχε η εκτέλεση της εντολής tar -cf"
+
+#: dpkg-deb/build.c:328
+msgid "failed to make tmpfile (control)"
+msgstr "απέτυχε η δημιουργία του προσωρινού αρχείου tmpfile (control)"
+
+#: dpkg-deb/build.c:329
+#, c-format
+msgid "failed to open tmpfile (control), %s"
+msgstr "απέτυχε το άνοιγμα του προσωρινού αρχείου tmpfile (control), %s"
+
+#: dpkg-deb/build.c:332
+#, c-format
+msgid "failed to unlink tmpfile (control), %s"
+msgstr "απέτυχε η διαγραφή του προσωρινού αρχείου tmpfile (control), %s"
+
+#: dpkg-deb/build.c:340 dpkg-deb/build.c:369
+msgid "control"
+msgstr "έλεγχος"
+
+#: dpkg-deb/build.c:345
+msgid "failed to fstat tmpfile (control)"
+msgstr "απέτυχε η fstat στο προσωρινό αρχείο tmpfile (control)"
+
+#: dpkg-deb/build.c:368
+msgid "failed to rewind tmpfile (control)"
+msgstr "απέτυχε η επαναφορά στην αρχή στο προσωρινό αρχείο tmpfile (control)"
+
+#: dpkg-deb/build.c:376
+msgid "failed to make tmpfile (data)"
+msgstr "απέτυχε η δημιουργία του προσωρινού αρχείου tmpfile (data)"
+
+#: dpkg-deb/build.c:377
+#, c-format
+msgid "failed to open tmpfile (data), %s"
+msgstr "απέτυχε το άνοιγμα του προσωρινού αρχείου tmpfile (data), %s"
+
+#: dpkg-deb/build.c:380
+#, c-format
+msgid "failed to unlink tmpfile (data), %s"
+msgstr "απέτυχε η διαγραφή του προσωρινού αρχείου tmpfile (data), %s"
+
+#: dpkg-deb/build.c:404 dpkg-deb/extract.c:268
+msgid "data"
+msgstr "δεδομένα"
+
+#: dpkg-deb/build.c:416
+msgid "failed to exec find"
+msgstr "απέτυχε η εκτέλεση της find"
+
+#: dpkg-deb/build.c:427 dpkg-deb/build.c:434
+msgid "failed to write filename to tar pipe (data)"
+msgstr "απέτυχε η εγγραφή του ονόματος αρχείου στη σωλήνωση της tar (data)"
+
+#: dpkg-deb/build.c:448
+#, c-format
+msgid "Internal error, compress_type `%i' unknown!"
+msgstr "εσωτερικό σφάλμα, άγνωστο compress_type '%i'!"
+
+#: dpkg-deb/build.c:460
+msgid "failed to rewind tmpfile (data)"
+msgstr "απέτυχε η επαναφορά στην αρχή στο προσωρινό αρχείο tmpfile (data)"
+
+#: dpkg-deb/build.c:461
+msgid "cat (data)"
+msgstr "cat (δεδομένα)"
+
+#: dpkg-deb/extract.c:51
+msgid "failed to exec sh -c mv foo/* &c"
+msgstr "απέτυχε η εκτέλεση της sh -c mv foo/* &c"
+
+#: dpkg-deb/extract.c:59
+#, c-format
+msgid "error reading %s from %.255s"
+msgstr "σφάλμα ανάγνωσης του %s από %.255s"
+
+#: dpkg-deb/extract.c:61
+#, c-format
+msgid "unexpected end of file in %s in %.255s"
+msgstr "απρόσμενο τέλος αρχείου του %s στο %.255s"
+
+#: dpkg-deb/extract.c:72 dpkg-split/info.c:52
+#, c-format
+msgid "file `%.250s' is corrupt - %.250s length contains nulls"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - το %.250s μήκος περιέχει μηδενικά"
+
+#: dpkg-deb/extract.c:79 dpkg-split/info.c:43
+#, c-format
+msgid "file `%.250s' is corrupt - bad digit (code %d) in %s"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - λάθος ψηφίο (κωδικός %d) στο %s"
+
+#: dpkg-deb/extract.c:104
+#, c-format
+msgid "failed to read archive `%.255s'"
+msgstr "αδύνατο το άνοιγμα της αρχειοθήκης `%.255s'"
+
+#: dpkg-deb/extract.c:105
+msgid "failed to fstat archive"
+msgstr "απέτυχε η fstat στην αρχειοθήκη"
+
+#: dpkg-deb/extract.c:106
+msgid "version number"
+msgstr "αριθμός έκδοσης"
+
+#: dpkg-deb/extract.c:115
+msgid "between members"
+msgstr "ανάμεσα στα μέλη"
+
+#: dpkg-deb/extract.c:117 dpkg-split/info.c:95
+#, c-format
+msgid "file `%.250s' is corrupt - bad magic at end of first header"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - λάθος κωδικός στο τέλος της πρώτης "
+"κεφαλίδας"
+
+#: dpkg-deb/extract.c:121
+#, c-format
+msgid "file `%.250s' is corrupt - negative member length %zi"
+msgstr "το αρχείο `%.250s' είναι κατεστραμμένο - αρνητικό μήκος του μέλους %zi"
+
+#: dpkg-deb/extract.c:125
+#, c-format
+msgid "file `%.250s' is not a debian binary archive (try dpkg-split?)"
+msgstr ""
+"το αρχείο `%.250s' δεν είναι αρχειοθήκη πακέτου debian (δοκιμάστε dpkg-"
+"split;)"
+
+#: dpkg-deb/extract.c:128
+msgid "header info member"
+msgstr "μέλος πληροφοριών κεφαλίδας"
+
+#: dpkg-deb/extract.c:131
+msgid "archive has no newlines in header"
+msgstr "η αρχειοθήκη δεν έχει χαρακτήρες newline στην κεφαλίδα"
+
+#: dpkg-deb/extract.c:134
+msgid "archive has no dot in version number"
+msgstr "η αρχειοθήκη δεν έχει τελεία στον αριθμό έκδοσης"
+
+#: dpkg-deb/extract.c:137
+#, c-format
+msgid "archive version %.250s not understood, get newer dpkg-deb"
+msgstr ""
+"μη κατανοητή η έκδοση της αρχειοθήκης %.250s, χρειάζεστε νεώτερο dpkg-deb"
+
+#: dpkg-deb/extract.c:146 dpkg-deb/extract.c:175
+#, c-format
+msgid "skipped member data from %s"
+msgstr "παραλείφθηκε μέλος δεδομένων από %s"
+
+#: dpkg-deb/extract.c:165
+#, c-format
+msgid "file `%.250s' contains ununderstood data member %.*s, giving up"
+msgstr "το αρχείο `%.250s' περιέχει μη κατανοητά δεδομένα %.*s, εγκατάλειψη"
+
+#: dpkg-deb/extract.c:171
+#, c-format
+msgid "file `%.250s' contains two control members, giving up"
+msgstr "το αρχείο `%.250s' περιέχει δύο μέλη control, εγκατάλειψη"
+
+#: dpkg-deb/extract.c:183
+#, c-format
+msgid ""
+" new debian package, version %s.\n"
+" size %ld bytes: control archive= %zi bytes.\n"
+msgstr ""
+" νέο πακέτο debian, έκδοση %s.\n"
+" μέγεθος %ld bytes: αρχειοθήκη control = %zi bytes.\n"
+
+#: dpkg-deb/extract.c:195
+msgid "ctrl information length"
+msgstr "μήκος πληροφοριών ctrl"
+
+#: dpkg-deb/extract.c:197
+#, c-format
+msgid "archive has malformatted ctrl len `%s'"
+msgstr "η αρχειοθήκη έχει κακοδιατυπωμένο ctrl len `%s'"
+
+#: dpkg-deb/extract.c:200
+#, c-format
+msgid ""
+" old debian package, version %s.\n"
+" size %ld bytes: control archive= %zi, main archive= %ld.\n"
+msgstr ""
+" παλιό πακέτο debian, έκδοση %s.\n"
+" μέγεθος %ld bytes: αρχειοθήκη control = %zi bytes, κυρίως αρχειοθήκη= %ld.\n"
+
+#: dpkg-deb/extract.c:209
+msgid "ctrlarea"
+msgstr "ctrlarea"
+
+#: dpkg-deb/extract.c:215
+#, c-format
+msgid ""
+"dpkg-deb: file looks like it might be an archive which has been\n"
+"dpkg-deb:    corrupted by being downloaded in ASCII mode\n"
+msgstr ""
+"dpkg-deb: το αρχείο φαίνεται ως αρχειοθήκη που πιθανόν να έχει καταστραφεί\n"
+"dpkg-deb:    από μεταφόρτωση σε κατάσταση ASCII\n"
+
+#: dpkg-deb/extract.c:220
+#, c-format
+msgid "`%.255s' is not a debian format archive"
+msgstr "το `%.255s' δεν είναι μια αρχειοθήκη debian"
+
+#: dpkg-deb/extract.c:225
+msgid "fgetpos failed"
+msgstr "η fgetpos απέτυχε"
+
+#: dpkg-deb/extract.c:229
+msgid "fsetpos failed"
+msgstr "η fsetpos απέτυχε"
+
+#: dpkg-deb/extract.c:236
+msgid "failed to fdopen p1 in paste"
+msgstr "απέτυχε η fdopen p 1 κατά την επικόλληση"
+
+#: dpkg-deb/extract.c:238
+msgid "failed to write to gzip -dc"
+msgstr "απέτυχε η εγγραφή στο gzip -dc"
+
+#: dpkg-deb/extract.c:239
+msgid "failed to close gzip -dc"
+msgstr "απέτυχε το κλείσιμο του gzip -dc"
+
+#: dpkg-deb/extract.c:246
+msgid "failed to syscall lseek to files archive portion"
+msgstr "απέτυχε η κλήση συστήματος της lseek στην αρχειοθήκη"
+
+#: dpkg-deb/extract.c:254
+msgid "failed to write to pipe in copy"
+msgstr "απέτυχε η εγγραφή στη σωλήνωση της copy"
+
+#: dpkg-deb/extract.c:255
+msgid "failed to close pipe in copy"
+msgstr "απέτυχε το κλείσιμο της σωλήνωσης της copy"
+
+#: dpkg-deb/extract.c:276
+msgid "failed to create directory"
+msgstr "απέτυχε η δημιουργία καταλόγου"
+
+#: dpkg-deb/extract.c:277
+msgid "failed to chdir to directory after creating it"
+msgstr "απέτυχε η αλλαγή καταλόγου (chdir) μετά τη δημιουργία του"
+
+#: dpkg-deb/extract.c:279
+msgid "failed to chdir to directory"
+msgstr "απέτυχε η αλλαγή καταλόγου (chdir)"
+
+#: dpkg-deb/extract.c:293
+msgid "failed to exec tar"
+msgstr "απέτυχε η εκτέλεση της tar"
+
+#: dpkg-deb/extract.c:316 dpkg-deb/extract.c:331 dpkg-deb/info.c:68
+#, c-format
+msgid "--%s needs a .deb filename argument"
+msgstr "η --%s χρειάζεται ένα όρισμα ονόματος αρχείου .deb"
+
+#: dpkg-deb/extract.c:319
+#, c-format
+msgid ""
+"--%s needs a target directory.\n"
+"Perhaps you should be using dpkg --install ?"
+msgstr ""
+"η --%s χρειάζεται έναν κατάλογο στόχο.\n"
+"Ίσως πρέπει να χρησιμοποιήσετε dpkg --install ;"
+
+#: dpkg-deb/extract.c:322
+#, c-format
+msgid "--%s takes at most two arguments (.deb and directory)"
+msgstr "η --%s παίρνει το πολύ δύο ορίσματα (.deb και κατάλογο)"
+
+#: dpkg-deb/extract.c:333
+#, c-format
+msgid "--%s takes only one argument (.deb filename)"
+msgstr "η --%s παίρνει μόνο ένα όρισμα (όνομα αρχείου .deb)"
+
+#: dpkg-deb/info.c:49
+msgid "failed to chdir to `/' for cleanup"
+msgstr "απέτυχε η αλλαγή καταλόγου στον '/' για τερματισμό"
+
+#: dpkg-deb/info.c:51
+msgid "failed to fork for cleanup"
+msgstr "απέτυχε η διχάλωση (fork) για τερματισμό"
+
+#: dpkg-deb/info.c:56
+msgid "failed to wait for rm cleanup"
+msgstr "απέτυχε η αναμονή για καθαρισμό με την rm"
+
+#: dpkg-deb/info.c:57
+#, c-format
+msgid "rm cleanup failed, code %d\n"
+msgstr "ο καθαρισμός με την rm απέτυχε, κωδικός %d\n"
+
+#: dpkg-deb/info.c:71
+msgid "failed to make temporary directoryname"
+msgstr "απέτυχε η δημιουργία ονόματος προσωρινού καταλόγου "
+
+#: dpkg-deb/info.c:75
+msgid "failed to exec rm -rf"
+msgstr "απέτυχε η εκτέλεση της rm -rf"
+
+#: dpkg-deb/info.c:95
+msgid "info_spew"
+msgstr "info_spew"
+
+#: dpkg-deb/info.c:97
+#, c-format
+msgid "dpkg-deb: `%.255s' contains no control component `%.255s'\n"
+msgstr "dpkg-deb: το `%.255s' δεν περιέχει τμήμα ελέγχου `%.255s'\n"
+
+#: dpkg-deb/info.c:101
+#, c-format
+msgid "open component `%.255s' (in %.255s) failed in an unexpected way"
+msgstr ""
+"το άνοιγμα του τμήματος `%.255s' (στο %.255s) απέτυχε με απρόσμενο τρόπο"
+
+#: dpkg-deb/info.c:106
+msgid "One requested control component is missing"
+msgstr "Δεν υπάρχει ένα τμήμα ελέγχου που ζητήθηκε"
+
+#: dpkg-deb/info.c:108
+#, c-format
+msgid "%d requested control components are missing"
+msgstr "Δεν υπάρχουν %d τμήματα ελέγχου που ζητήθηκαν"
+
+#: dpkg-deb/info.c:121
+#, c-format
+msgid "cannot scan directory `%.255s'"
+msgstr "αδύνατη η ανίχνευση του καταλόγου `%.255s'"
+
+#: dpkg-deb/info.c:126
+#, c-format
+msgid "cannot stat `%.255s' (in `%.255s')"
+msgstr "αδύνατη η εύρεση κατάστασης (stat) του `%.255s' (στο `%.255s')"
+
+#: dpkg-deb/info.c:129
+#, c-format
+msgid "cannot open `%.255s' (in `%.255s')"
+msgstr "αδύνατο το άνοιγμα του `%.255s' (στο `%.255s')"
+
+#: dpkg-deb/info.c:143
+#, c-format
+msgid "failed to read `%.255s' (in `%.255s')"
+msgstr "απέτυχε η ανάγνωση `%.255s' (στο `%.255s')"
+
+#: dpkg-deb/info.c:146
+#, c-format
+msgid " %7ld bytes, %5d lines   %c  %-20.127s %.127s\n"
+msgstr " %7ld bytes, %5d γραμμές   %c  %-20.127s %.127s\n"
+
+#: dpkg-deb/info.c:152
+#, c-format
+msgid "     not a plain file          %.255s\n"
+msgstr "     όχι απλό αρχείο           %.255s\n"
+
+#: dpkg-deb/info.c:157
+#, c-format
+msgid "failed to read `control' (in `%.255s')"
+msgstr "απέτυχε η ανάγνωση του `control' (στο `%.255s')"
+
+#: dpkg-deb/info.c:158
+msgid "(no `control' file in control archive!)\n"
+msgstr "(δεν υπάρχει αρχείο `control' στην αρχειοθήκη ελέγχου)\n"
+
+#: dpkg-deb/info.c:178
+msgid "could not open the `control' component"
+msgstr "αδύνατο το άνοιγμα του τμήματος `control'"
+
+#: dpkg-deb/info.c:208
+msgid "failed during read of `control' component"
+msgstr "σφάλμα κατά την ανάγνωση από το τμήμα `control'"
+
+#: dpkg-deb/info.c:219
+msgid "Error in format"
+msgstr "Σφάλμα στη μορφοποίηση"
+
+#: dpkg-deb/info.c:255
+msgid "--contents takes exactly one argument"
+msgstr "η --contents παίρνει μόνο ένα όρισμα"
+
+#: dpkg-deb/main.c:48
+msgid "' package archive backend version "
+msgstr " έκδοση υποδομής αρχειοθήκης πακέτου"
+
+#: dpkg-deb/main.c:50
+msgid ""
+"This is free software; see the GNU General Public Licence version 2 or\n"
+"later for copying conditions. There is NO warranty.\n"
+"See dpkg-deb --licence for details.\n"
+msgstr ""
+"Αυτό είναι ελεύθερο λογισμικό. Δείτε την GNU General Public Licence έκδοσης "
+"2 ή\n"
+"μεταγενέστερης για συνθήκες αντιγραφής. Δεν υπάρχει ΚΑΜΙΑ εγγύηση.\n"
+"Δείτε dpkg-deb --licence για λεπτομέρειες.\n"
+
+#: dpkg-deb/main.c:58
+msgid ""
+"Command:\n"
+"  -b|--build <directory> [<deb>]    build an archive.\n"
+"  -c|--contents <deb>               list contents.\n"
+"  -I|--info <deb> [<cfile>...]      show info to stdout.\n"
+"  -W|--show <deb>                   show information on package(s)\n"
+"  -f|--field <deb> [<cfield>...]    show field(s) to stdout.\n"
+"  -e|--control <deb> [<directory>]  extract control info.\n"
+"  -x|--extract <deb> <directory>    extract files.\n"
+"  -X|--vextract <deb> <directory>   extract & list files.\n"
+"  --fsys-tarfile <deb>              output filesystem tarfile.\n"
+"  -h|--help                         display this message.\n"
+"  --version | --licence             show version/licence.\n"
+"\n"
+"<deb> is the filename of a Debian format archive.\n"
+"<cfile> is the name of an administrative file component.\n"
+"<cfield> is the name of a field in the main `control' file.\n"
+"\n"
+"Options:\n"
+"  --showformat=<format>      use alternative format for --show\n"
+"  -D                         enable debugging output\n"
+"  --old, --new               select archive format\n"
+"  --nocheck                  suppress control file check (build bad "
+"package).\n"
+"  -z# to set the compression when building\n"
+"  -Z<type>                   set the compression type to use when building.\n"
+"                             allowed values: gzip, bzip2, none\n"
+"\n"
+"Format syntax:\n"
+"  A format is a string that will be output for each package. The format\n"
+"  can include the standard escape sequences \\n (newline), \\r (carriage\n"
+"  return) or \\\\ (plain backslash). Package information can be included\n"
+"  by inserting variable references to package fields using the ${var[;"
+"width]}\n"
+"  syntax. Fields will be right-aligned unless the width is negative in "
+"which\n"
+"   case left alignment will be used. \n"
+"\n"
+"Use `dpkg' to install and remove packages from your system, or\n"
+"`dselect' or `aptitude' for user-friendly package management.  Packages\n"
+"unpacked using `dpkg-deb --extract' will be incorrectly installed !\n"
+msgstr ""
+"Εντολή:\n"
+"  -b|--build <κατάλογος> [<deb>]    δημιουργία αρχειοθήκης.\n"
+"  -c|--contents <deb>               προβολή περιεχομένων.\n"
+"  -I|--info <deb> [<cfile>...]      πληροφορίες στην stdout.\n"
+"  -W|--show <deb>                   πληροφορίες για το/τα πακέτα\n"
+"  -f|--field <deb> [<cfield>...]    προβολή πεδίου/πεδίων στην stdout.\n"
+"  -e|--control <deb> [<κατάλογος>]  εξαγωγή πληροφοριών ελέγχου.\n"
+"  -x|--extract <deb> <κατάλογος>    εξαγωγή αρχείων.\n"
+"  -X|--vextract <deb> <κατάλογος>   εξαγωγή και λίστα αρχείων.\n"
+"  --fsys-tarfile <deb>              έξοδος αρχειοθήκης tar.\n"
+"  -h|--help                         προβολή αυτού του μηνύματος.\n"
+"  --version | --licence             προβολή έκδοσης/άδειας.\n"
+"\n"
+"<deb> είναι το όνομα μιας αρχειοθήκης Debian.\n"
+"<cfile> είναι το όνομα ενός διαχειριστικού αρχείου.\n"
+"<cfield> είναι το όνομα ενός πεδίου στο κυρίως αρχείο `control'.\n"
+"\n"
+"Επιλογές:\n"
+"  --showformat=<format>      χρήση εναλλακτικής μορφής για τη --show\n"
+"  -D                         έξοδος για αποσφαλμάτωση\n"
+"  --old, --new               επιλογή μορφής αρχειοθήκης\n"
+"  --nocheck                  χωρίς έλεγχο αρχείου control (δημιουργία "
+"κατεστραμμένου πακέτου).\n"
+"  -z# για να ορίσετε το επίπεδο συμπίεσης κατά τη κατασκευή \n"
+"  -Z<type>                   ορισμός του τύπου συμπίεσης κατά την "
+"κατασκευή.\n"
+"                             επιτρεπόμενες τιμές: gzip, bzip2, none\n"
+"\n"
+"Σύνταξη μορφής:\n"
+"  Η μορφή είναι μια συμβολοσειρά που θα εμφανιστεί για κάθε πακέτο. Μπορεί\n"
+"  να περιλαμβάνει τους τυπικούς χαρακτήρες escape \\n (newline), \\r "
+"(carriage\n"
+"  return) ή \\\\ (απλό backslash). Οι πληροφορίες του πακέτου μπορούν να\n"
+"  συμπεριληφθούν με μεταβλητές/αναφορές σε πεδία των πακέτων "
+"χρησιμοποιώντας\n"
+"  τη σύνταξη ${var[;width]}. Τα πεδία θα πρέπει να είναι στοιχισμένα δεξιά\n"
+"  εκτός αν το μήκος είναι αρνητικό, οπότε χρησιμοποιείται αριστερή "
+"στοίχιση.\n"
+" \n"
+"Χρησιμοποιήστε το `dpkg' για εγκατάσταση ή αφαίρεση πακέτων από το σύστημά\n"
+"σας, ή το`dselect' ή το 'aptitude' για φιλική διαχείριση πακέτων.  Τα πακέτα "
+"που αποσυμπιέζονται\n"
+"με την εντολή `dpkg-deb --extract' δε θα εγκατασταθούν σωστά!\n"
+
+#: dpkg-deb/main.c:100
+msgid ""
+"Type dpkg-deb --help for help about manipulating *.deb files;\n"
+"Type dpkg --help for help about installing and deinstalling packages."
+msgstr ""
+"Πληκτρολογήστε dpkg-deb --help για βοήθεια σχετικά με διαχείριση αρχείων\n"
+"*.deb. Πληκτρολογήστε dpkg --help για βοήθεια σχετικά με εγκατάσταση και\n"
+"απεγκατάσταση πακέτων."
+
+#: dpkg-deb/main.c:176
+#, c-format
+msgid "unknown compression type `%s'!"
+msgstr "άγνωστος τύπος συμπίεσης '%s'!"
+
+#: dpkg-split/info.c:64
+#, c-format
+msgid "file `%.250s' is corrupt - %.250s missing"
+msgstr "το αρχείο `%.250s' είναι κατεστραμμένο - το %.250s αγνοειίται"
+
+#: dpkg-split/info.c:67
+#, c-format
+msgid "file `%.250s' is corrupt - missing newline after %.250s"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - αγνοείται newline μετά το %.250s"
+
+#: dpkg-split/info.c:91
+msgid "unable to seek back"
+msgstr "αδύνατη η μετακίνηση πίσω"
+
+#: dpkg-split/info.c:105
+#, c-format
+msgid "file `%.250s' is corrupt - bad padding character (code %d)"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - λάθος χαρακτήρας pad (κωδικός %d)"
+
+#: dpkg-split/info.c:109
+#, c-format
+msgid "file `%.250s' is corrupt - nulls in info section"
+msgstr "το αρχείο `%.250s' είναι κατεστραμμένο - κενά στην ενότητα πληροφοριών"
+
+#: dpkg-split/info.c:116
+#, c-format
+msgid "file `%.250s' is format version `%.250s' - you need a newer dpkg-split"
+msgstr ""
+"η μορφή του αρχείου `%.250s' είναι της έκδοσης `%.250s' - χρειάζεστε ένα "
+"νεώτερο dpkg-split"
+
+#: dpkg-split/info.c:124
+#, c-format
+msgid "file `%.250s' is corrupt - bad MD5 checksum `%.250s'"
+msgstr "το αρχείο `%.250s' είναι κατεστραμμένο - λάθος άθροισμά MD5 `%.250s'"
+
+#: dpkg-split/info.c:131
+#, c-format
+msgid "file `%.250s' is corrupt - no slash between part numbers"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - οι αριθμοί τμημάτων δεν χωρίζονται "
+"με '/'"
+
+#: dpkg-split/info.c:140
+#, c-format
+msgid "file `%.250s' is corrupt - bad part number"
+msgstr "το αρχείο `%.250s' είναι κατεστραμμένο - λάθος αριθμός τμήματος"
+
+#: dpkg-split/info.c:145
+#, c-format
+msgid "file `%.250s' is corrupt - bad magic at end of second header"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - λάθος κωδικός magic στο τέλος της "
+"2ης κεφαλίδας"
+
+#: dpkg-split/info.c:147
+#, c-format
+msgid "file `%.250s' is corrupt - second member is not data member"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - το 2ο μέλος δεν είναι μέλος "
+"δεδομένων"
+
+#: dpkg-split/info.c:153
+#, c-format
+msgid "file `%.250s' is corrupt - wrong number of parts for quoted sizes"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - λάθος αριθμός τμημάτων για τα "
+"δοσμένα μεγέθη"
+
+#: dpkg-split/info.c:157
+#, c-format
+msgid "file `%.250s' is corrupt - size is wrong for quoted part number"
+msgstr ""
+"το αρχείο `%.250s' είναι κατεστραμμένο - λάθος μέγεθος για συγκεκριμένο "
+"αριθμό τμήματος"
+
+#: dpkg-split/info.c:163
+#, c-format
+msgid "unable to fstat part file `%.250s'"
+msgstr "αδύνατη η εκτέλεση της fstat στο αρχείο τμήματος `%.250s'"
+
+#: dpkg-split/info.c:169
+#, c-format
+msgid "file `%.250s' is corrupt - too short"
+msgstr "το αρχείο `%.250s' είναι αλλοιωμένο - πολύ βραχύ"
+
+#: dpkg-split/info.c:181 dpkg-split/info.c:222
+#, c-format
+msgid "cannot open archive part file `%.250s'"
+msgstr "αδύνατο το άνοιγμα του αρχείου τμήματος της αρχειοθήκης `%.250s'"
+
+#: dpkg-split/info.c:183
+#, c-format
+msgid "file `%.250s' is not an archive part"
+msgstr "το αρχείο `%.250s' δεν είναι τμήμα της αρχειοθήκης"
+
+#: dpkg-split/info.c:188
+#, c-format
+msgid ""
+"%s:\n"
+"    Part format version:            %s\n"
+"    Part of package:                %s\n"
+"        ... version:                %s\n"
+"        ... MD5 checksum:           %s\n"
+"        ... length:                 %lu bytes\n"
+"        ... split every:            %lu bytes\n"
+"    Part number:                    %d/%d\n"
+"    Part length:                    %zi bytes\n"
+"    Part offset:                    %lu bytes\n"
+"    Part file size (used portion):  %lu bytes\n"
+"\n"
+msgstr ""
+"%s:\n"
+"    Έκδοση μορφής τμήματος:               %s\n"
+"    Τμήμα πακέτου:                        %s\n"
+"        ... έκδοση:                       %s\n"
+"        ... MD5 checksum:                 %s\n"
+"        ... μέγεθος:                      %lu bytes\n"
+"        ... διαχωρισμός κάθε:             %lu bytes\n"
+"    Αριθμός τμήματος:                     %d/%d\n"
+"    Μέγεθος τμήματος:                     %zi bytes\n"
+"    Αρχή τμήματος:                        %lu bytes\n"
+"    Μέγεθος αρχείου τμήματος (σε χρήση):  %lu bytes\n"
+"\n"
+
+#: dpkg-split/info.c:218
+msgid "--info requires one or more part file arguments"
+msgstr "η --info απαιτεί ένα ή περισσότερα αρχεία τμήματος ως παραμέτρους"
+
+#: dpkg-split/info.c:228
+#, c-format
+msgid "file `%s' is not an archive part\n"
+msgstr "το αρχείο `%s' δεν είναι τμήμα της αρχειοθήκης\n"
+
+#: dpkg-split/join.c:48
+#, c-format
+msgid "unable to open output file `%.250s'"
+msgstr "αδύνατο το άνοιγμα του αρχείου εξόδου `%.250s'"
+
+#: dpkg-split/join.c:52
+#, c-format
+msgid "unable to (re)open input part file `%.250s'"
+msgstr "αδύνατο το άνοιγμα για είσοδο του αρχείου τμήματος `%.250s'"
+
+#: dpkg-split/join.c:68
+#, c-format
+msgid "done\n"
+msgstr "έγινε\n"
+
+#: dpkg-split/join.c:84
+#, c-format
+msgid "files `%.250s' and `%.250s' are not parts of the same file"
+msgstr "τα αρχεία `%.250s' και `%.250s' δεν είναι κομμάτια του ίδιου αρχείου"
+
+#: dpkg-split/join.c:89
+#, c-format
+msgid "there are several versions of part %d - at least `%.250s' and `%.250s'"
+msgstr ""
+"υπάρχουν αρκετές εκδόσεις του αρχείου τμήματος %d - τουλ. η `%.250s' και η `"
+"%.250s'"
+
+#: dpkg-split/join.c:102
+msgid "--join requires one or more part file arguments"
+msgstr "η --join απαιτεί ένα ή περισσότερα αρχεία τμημάτων ως παραμέτρους"
+
+#: dpkg-split/join.c:123
+#, c-format
+msgid "part %d is missing"
+msgstr "λείπει το κομμάτι %d"
+
+#: dpkg-split/main.c:39
+msgid "Debian GNU/Linux `dpkg-split' package split/join tool; version "
+msgstr ""
+"Debian GNU/Linux `dpkg-split' εργαλείο χωρισμού ένωσης πακέτων. Έκδοση  "
+
+#: dpkg-split/main.c:41
+msgid ""
+"Copyright (C) 1994-1996 Ian Jackson.  This is free software; see the\n"
+"GNU General Public Licence version 2 or later for copying conditions.\n"
+"There is NO warranty.  See dpkg-split --licence for details.\n"
+msgstr ""
+"Πνευματικά Δικαιώματα (C) 1994-1996 Ian Jackson.  Αυτό είναι ελεύθερο\n"
+"λογισμικό. Δείτε την GNU General Public Licence έκδοσης 2 ή μεταγενέστερη\n"
+"για συνθήκες αντιγραφής.\n"
+"Δεν υπάρχει ΚΑΜΙΑ εγγύηση. Δείτε dpkg-split --licence για λεπτομέρειες.\n"
+
+#: dpkg-split/main.c:48
+#, c-format
+msgid ""
+"Usage: dpkg-split -s|--split <file> [<prefix>]     Split an archive.\n"
+"       dpkg-split -j|--join <part> <part> ...      Join parts together.\n"
+"       dpkg-split -I|--info <part> ...             Display info about a "
+"part.\n"
+"       dpkg-split -h|--help|--version|--licence    Show help/version/"
+"licence.\n"
+"\n"
+"       dpkg-split -a|--auto -o <complete> <part>   Auto-accumulate parts.\n"
+"       dpkg-split -l|--listq                       List unmatched pieces.\n"
+"       dpkg-split -d|--discard [<filename> ...]    Discard unmatched "
+"pieces.\n"
+"\n"
+"Options:  --depotdir <directory>  (default is %s/%s)\n"
+"          -S|--partsize <size>    (in Kb, for -s, default is 450)\n"
+"          -o|--output <file>      (for -j, default is <package>-<version>."
+"deb)\n"
+"          -Q|--npquiet            (be quiet when -a is not a part)\n"
+"          --msdos                 (generate 8.3 filenames)\n"
+"\n"
+"Exit status: 0 = OK;  1 = -a is not a part;  2 = trouble!\n"
+msgstr ""
+"Χρήση: dpkg-split -s|--split <αρχείο> [<πρόθεμα>]  Διαχωρισμός αρχείοθήκης.\n"
+"       dpkg-split -j|--join <τμήμα> <τμήμα> ...    Συγκόληση τμημάτων.\n"
+"       dpkg-split -I|--info <τμήμα> ...            Πληροφορίες τμήματος.\n"
+"       dpkg-split -h|--help|--version|--licence    Βοήθεια/Έκδοση/Άδεια.\n"
+"\n"
+"       dpkg-split -a|--auto -o <πλήρες> <τμήμα>    Συγκέντρωση τμημάτων.\n"
+"       dpkg-split -l|--listq                       Λίστα αταίριαστων "
+"τμημάτων.\n"
+"       dpkg-split -d|--discard [<αρχείο> ...]      Απόρριψη αταίριαστων.\n"
+"\n"
+"Επιλογές: --depotdir <κατάλογος>   (προκαθορισμένος %s/%s)\n"
+"          -S|--partsize <μέγεθος>  (σε Kb, για -s, προκαθορισμένο 450)\n"
+"          -o|--output <αρχείο>     (για -j, προκαθ. <πακέτο>-<έκδοση>.deb)\n"
+"          -Q|--npquiet             (ήσυχο όταν το -a δεν είναι τμήμα)\n"
+"          --msdos                  (δημιουργία ονομάτων αρχείων σε 8.3)\n"
+"\n"
+"Κατάσταση εξόδου: 0 = OK;  1 = το -a δεν είναι τμήμα;  2 = πρόβλημα!\n"
+
+#: dpkg-split/main.c:69
+msgid "Type dpkg-split --help for help."
+msgstr "Δώστε dpkg-split --help για βοήθεια."
+
+#: dpkg-split/main.c:79
+#, c-format
+msgid "error reading %s"
+msgstr "σφάλμα κατά την ανάγνωση %s"
+
+#: dpkg-split/main.c:83
+#, c-format
+msgid "error reading %.250s"
+msgstr "σφάλμα κατά την ανάγνωση %.250s"
+
+#: dpkg-split/main.c:84
+#, c-format
+msgid "unexpected end of file in %.250s"
+msgstr "απρόσμενο τέλος αρχείου στο %.250s"
+
+#: dpkg-split/main.c:104
+msgid "part size is far too large or is not positive"
+msgstr "το μέγεθος του τμήματος είναι πολύ μεγάλο ή μη θετικό"
+
+#: dpkg-split/main.c:108
+#, c-format
+msgid "part size must be at least %dk (to allow for header)"
+msgstr ""
+"το μέγεθος του τμήματος πρέπει να είναι τουλάχιστον %dk (για την κεφαλίδα)"
+
+#: dpkg-split/queue.c:69
+#, c-format
+msgid "unable to read depot directory `%.250s'"
+msgstr "αδύνατη η ανάγνωση του καταλόγου depot `%.250s'"
+
+#: dpkg-split/queue.c:107
+msgid "--auto requires the use of the --output option"
+msgstr "η --auto απαιτεί τη χρήση της επιλογής --output"
+
+#: dpkg-split/queue.c:109
+msgid "--auto requires exactly one part file argument"
+msgstr "η --auto απαιτεί ακριβώς ένα αρχείο τμήματος ως παράμετρο"
+
+#: dpkg-split/queue.c:113
+#, c-format
+msgid "unable to read part file `%.250s'"
+msgstr "αδύνατη η ανάγνωση αρχείου τμήματος `%.250s'"
+
+#: dpkg-split/queue.c:116
+#, c-format
+msgid "File `%.250s' is not part of a multipart archive.\n"
+msgstr "Το αρχείο `%.250s' δεν είναι μέρος μιας πολυτμηματικής αρχειοθήκης.\n"
+
+#: dpkg-split/queue.c:143
+#, c-format
+msgid "unable to reopen part file `%.250s'"
+msgstr "αδύνατο το επανάνοιγμα του αρχείου τμήματος `%.250s'"
+
+#: dpkg-split/queue.c:147
+#, c-format
+msgid "part file `%.250s' has trailing garbage"
+msgstr "το αρχείο τμήματος `%.250s' έχει σκουπίδια στο τέλος"
+
+#: dpkg-split/queue.c:156
+#, c-format
+msgid "unable to open new depot file `%.250s'"
+msgstr "αδύνατο το άνοιγμα νέου αρχείου depot `%.250s'"
+
+#: dpkg-split/queue.c:160
+#, c-format
+msgid "unable to rename new depot file `%.250s' to `%.250s'"
+msgstr "αδύνατη η μετονομασία του νέου αρχείου depot `%.250s' στο `%.250s'"
+
+#: dpkg-split/queue.c:162
+#, c-format
+msgid "Part %d of package %s filed (still want "
+msgstr "Το τμήμα %d του πακέτου %s αρχειοθετήθηκε (ακόμη θέλει "
+
+#: dpkg-split/queue.c:166
+msgid " and "
+msgstr " και "
+
+#: dpkg-split/queue.c:179
+#, c-format
+msgid "unable to delete used-up depot file `%.250s'"
+msgstr "αδύνατη η διαγραφή χρησιμοποιημένου αρχείου depot `%.250s'"
+
+#: dpkg-split/queue.c:194
+msgid "--listq does not take any arguments"
+msgstr "η --listq δεν παίρνει κανένα όρισμα"
+
+#: dpkg-split/queue.c:197
+msgid "Junk files left around in the depot directory:\n"
+msgstr "Βρέθηκαν αρχεία σκουπίδια στον κατάλογο depot:\n"
+
+#: dpkg-split/queue.c:202 dpkg-split/queue.c:226
+#, c-format
+msgid "unable to stat `%.250s'"
+msgstr "αδύνατη η εύρεση κατάστασης του `%.250s'"
+
+#: dpkg-split/queue.c:205
+#, c-format
+msgid " %s (%lu bytes)\n"
+msgstr " %s (%lu bytes)\n"
+
+#: dpkg-split/queue.c:207
+#, c-format
+msgid " %s (not a plain file)\n"
+msgstr " το %s (όχι κοινό αρχείο)\n"
+
+#: dpkg-split/queue.c:212
+msgid "Packages not yet reassembled:\n"
+msgstr "Τα πακέτα δεν έχουν επανασυναρμολογηθεί:\n"
+
+#: dpkg-split/queue.c:228
+#, c-format
+msgid "part file `%.250s' is not a plain file"
+msgstr "το αρχείο τμήματος `%.250s' δεν είναι κοινό αρχείο"
+
+#: dpkg-split/queue.c:233
+#, c-format
+msgid "(total %lu bytes)\n"
+msgstr "(σύνολο %lu bytes)\n"
+
+#: dpkg-split/queue.c:256
+#, c-format
+msgid "unable to discard `%.250s'"
+msgstr "αδύνατη η καταστροφή του `%.250s'"
+
+#: dpkg-split/queue.c:257
+#, c-format
+msgid "Deleted %s.\n"
+msgstr "Διεγράφη το %s.\n"
+
+#: dpkg-split/split.c:45
+msgid "--split needs a source filename argument"
+msgstr "η --split χρειάζεται ένα όρισμα πηγαίου ονόματος αρχείου"
+
+#: dpkg-split/split.c:48
+msgid "--split takes at most a source filename and destination prefix"
+msgstr ""
+"η --split δέχεται το πολύ ένα όνομα αρχείου πηγής και ένα πρόθεμα προορισμού"
+
+#: dpkg-split/split.c:62
+#, c-format
+msgid "unable to open source file `%.250s'"
+msgstr "αδύνατο το άνοιγμα του αρχείου πηγής `%.250s'"
+
+#: dpkg-split/split.c:63
+msgid "unable to fstat source file"
+msgstr "αδύνατο η εύρεση κατάστασης του αρχείου πηγής"
+
+#: dpkg-split/split.c:64
+#, c-format
+msgid "source file `%.250s' not a plain file"
+msgstr "το αρχείο πηγής `%.250s' δεν είναι κοινό αρχείο"
+
+#: dpkg-split/split.c:70
+msgid "unable to exec mksplit"
+msgstr "αδύνατη η εκτέλεση της mksplit"

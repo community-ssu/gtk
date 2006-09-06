@@ -1,0 +1,133 @@
+#!/usr/bin/make -f
+# debian/rules for the dpkg suite.
+# Copyright © 2004 Scott James Remnant <scott@netsplit.com>
+
+include /usr/share/dpatch/dpatch.make
+
+CFLAGS = -Wall -g
+CXXFLAGS = -Wall -g
+
+# Disable optimisations if ‘noopt’ found in $DEB_BUILD_OPTIONS
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+	CXXFLAGS += -O0
+else
+	CFLAGS += -Os
+	CXXFLAGS += -Os
+endif
+
+# Use soft-float and thumb mode if it enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+	CXXFLAGS += -mthumb
+endif
+
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
+	confflags += --build=$(DEB_HOST_GNU_TYPE)
+else
+	confflags += --build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+endif
+
+# Don't enable everything on all platforms
+DEB_HOST_ARCH_OS  ?= $(shell dpkg-architecture -qDEB_HOST_ARCH_OS)
+
+
+# Create configure script if necessary, automake handles rebuilding it.
+configure: 
+	dh_testdir
+
+	autoreconf -v -i
+
+# Configure the build tree
+build-tree/config.status: configure
+	dh_testdir
+
+	install -d build-tree
+	cd build-tree && PERL=/usr/bin/perl ../configure $(confflags) \
+		CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" \
+		--prefix=/usr \
+		--mandir=\$${datadir}/man \
+		--infodir=\$${datadir}/info \
+		--sysconfdir=/etc \
+		--localstatedir=/var/lib \
+		--with-zlib=static \
+		--without-bz2 \
+		--without-dselect
+
+# Build the package in build-tree
+build: build-tree/build-stamp
+build-tree/build-stamp: build-tree/config.status patch-stamp
+	dh_testdir
+
+	cd build-tree && $(MAKE)
+	touch $@
+
+
+# Install the package underneath debian/tmp
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cd build-tree && $(MAKE) DESTDIR="$(CURDIR)/debian/tmp" install
+	for i in cleanup-info  dpkg-divert  install-info  update-alternatives; do \
+	  install -m 755 $(CURDIR)/debian/osso/$$i $(CURDIR)/debian/tmp/usr/sbin ;\
+	done
+
+# Put together the dpkg and dselect packages
+binary-arch: install
+	dh_testdir -a
+	dh_testroot -a
+	dh_install --sourcedir=debian/tmp -a
+	install -d debian/dpkg/etc/logrotate.d
+	install -m 644 debian/dpkg.logrotate debian/dpkg/etc/logrotate.d/dpkg
+	install -d debian/dpkg/sbin
+	mv debian/dpkg/usr/sbin/start-stop-daemon debian/dpkg/sbin
+
+	dh_installdocs -pdpkg
+
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+# Put together the dpkg-dev package
+binary-indep: install
+	dh_testdir -i
+	dh_testroot -i
+	dh_install --sourcedir=debian/tmp -i
+
+	install -d debian/dpkg-dev/usr/share/doc
+	ln -s dpkg debian/dpkg-dev/usr/share/doc/dpkg-dev
+
+	dh_strip -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+binary: binary-arch binary-indep
+
+
+# Clean up the mess we made
+clean: unpatch
+	dh_testdir
+
+	rm -rf build-tree
+	dh_clean
+
+
+.PHONY: build install binary-arch binary-indep binary clean
