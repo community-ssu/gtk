@@ -284,10 +284,18 @@ add_entry (GtkWidget *box, GtkSizeGroup *group,
 
   if (readonly)
     {
-      char *t = g_strndup (text, end-text);
-      entry = gtk_label_new (t);
-      gtk_misc_set_alignment (GTK_MISC (entry), 0.0, 0.5);
-      g_free (t);
+      GtkTextBuffer *buffer;
+
+      entry = gtk_text_view_new ();
+           
+      buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (entry));
+      gtk_text_view_set_editable (GTK_TEXT_VIEW (entry), false);
+      
+      if (text)
+	gtk_text_buffer_set_text (buffer, text, end-text);
+
+      gtk_text_view_set_cursor_visible (GTK_TEXT_VIEW (entry), FALSE);
+      g_object_set (entry, "can-focus", FALSE, NULL);
     }
   else
     {
@@ -326,12 +334,21 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
     title = _("ai_ti_edit_repository");
 
   if (readonly)
-    dialog = gtk_dialog_new_with_buttons (title,
-					  get_main_window (),
-					  GTK_DIALOG_MODAL,
-					  "Close",
-					  1,
-					  NULL);
+    {
+      GtkWidget *button;
+
+      dialog = gtk_dialog_new_with_buttons (title,
+					    get_main_window (),
+					    GTK_DIALOG_MODAL,
+					    NULL);
+
+      // We create the button separately in order to put the focus on
+      // the button.
+      button = gtk_dialog_add_button (GTK_DIALOG (dialog),
+				      _("ai_bd_repository_close"),
+				      1);
+      gtk_widget_grab_focus (button);
+    }
   else
     dialog = gtk_dialog_new_with_buttons (title,
 					  get_main_window (),

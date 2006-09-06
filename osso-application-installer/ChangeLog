@@ -1,3 +1,11 @@
+2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (add_entry): Use a non-editable, non-focusable
+	GtkTextView instead of a GtkLabel for displaying read only
+	entries.
+	(show_repo_edit_dialog): Use proper logical id for "Close" button.
+	Make it grab the focus.
+
 2006-09-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/repo.cc (maybe_add_new_repo_cont): Don't annoy user when
