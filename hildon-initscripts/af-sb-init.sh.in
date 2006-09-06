@@ -71,7 +71,9 @@ export LAUNCHWRAPPER=/usr/bin/scratchbox-launcher.sh
 
 # We have only one wrapper in SB
 export LAUNCHWRAPPER_NICE=$LAUNCHWRAPPER
+export LAUNCHWRAPPER_NICE_KILL=$LAUNCHWRAPPER
 export LAUNCHWRAPPER_NICE_TRYRESTART=$LAUNCHWRAPPER
+export LAUNCHWRAPPER_TRYRESTART=$LAUNCHWRAPPER
 
 # Check our environment
 if [ -e /targets/links/scratchbox.config ]; then
