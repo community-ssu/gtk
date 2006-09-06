@@ -1,3 +1,8 @@
+maemo-af-desktop (2.9.25-1) unstable; urgency=low
+
+  * Updated header texts. Closes bug N#
+ -- Moises Martinez <karoliina.t.salminen@nokia.com>  Wed,  6 Sep 2006 18:33:46 +0300
+
 maemo-af-desktop (2.9.24-1) unstable; urgency=low
 
   * hildon-home/layout-manager.c:
