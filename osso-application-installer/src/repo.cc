@@ -335,7 +335,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
   c->isnew = isnew;
   c->readonly = readonly;
   c->line = r;
-  c->had_name = false;
+  c->had_name = isnew;
 
   const char *title;
   if (readonly)
