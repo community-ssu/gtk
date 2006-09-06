@@ -1,3 +1,12 @@
+hildon-base-lib (0.10.2-1) unstable; urgency=low
+
+  * configure.ac: released 0.10.2
+  * hildon-base-dir-change.c:
+    hildon_dnotify_remove_cb:
+    - fixed minor leak on path. NB#34409
+
+ -- Moises Martinez <moises.martinzes@nokia.com>  Mon,  4 Sep 2006 13:17:28 +0300
+
 hildon-base-lib (0.10.1-2) unstable; urgency=low
 
   * -test and -dev should be architecture independant (Closes N#27023) 

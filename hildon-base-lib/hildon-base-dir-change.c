@@ -189,7 +189,12 @@ hildon_return_t hildon_dnotify_remove_cb(char * path)
 	gboolean shared_path = FALSE;
 
 	if( (path == NULL) || (dir_funcs == NULL) || (dir_src == NULL) )
+	{
+	 	if (shared_path)
+		  	free (path);
 		return HILDON_ERR;
+	}
+
 	dir = _dir_map;
 	prev = NULL;
 	while(dir!=NULL) {

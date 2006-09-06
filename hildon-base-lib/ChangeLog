@@ -1,3 +1,10 @@
+2006-09-04  Moises Martinez <moises.martinzes@nokia.com>
+
+	* configure.ac: released 0.10.2
+	* hildon-base-dir-change.c:  
+	  hildon_dnotify_remove_cb: 
+	  - fixed minor leak on path. NB#34409  
+
 2006-07-06  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: released 0.10.1
