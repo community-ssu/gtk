@@ -112,7 +112,7 @@ fi
 
 # check DISPLAY before starting anything
 if [ "x$START" = "xTRUE" -a "x$DISPLAY" = "x" ]; then
-  echo "$0: Error, DISPLAY is not defined"
+  echo "$0: Error, the DISPLAY environment variable is not defined."
   echo "DISPLAY must be host:display when using sbrsh in Scratchbox and"
   echo "X forwarding will be used. If you use Xephyr, set DISPLAY to :N,"
   echo "where 'N' is the display number passed to Xephyr in command line."
