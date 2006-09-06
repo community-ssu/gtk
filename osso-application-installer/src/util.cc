@@ -470,16 +470,30 @@ progress_was_cancelled ()
 }
 
 static void
-create_progress (bool with_cancel)
+create_progress (const gchar *title, bool with_cancel)
 {
   if (progress_dialog)
     gtk_widget_destroy (progress_dialog);
 
+  // XXX - we make the title slightly longer so that there is a bit
+  //       room to grow without having to resize the dialog or risking
+  //       ellipsization.  This only matters when the total download
+  //       size changes during a download and it that case it would be
+  //       better to resize the dialog, but that doesn't seem to
+  //       happen...
+  //
+  //       The "XXXX" is never shown since we set a real title
+  //       immediately.
+  
+  gchar *longer_title = g_strconcat (title, "XXXXX", NULL);
   progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
   progress_dialog =
     hildon_note_new_cancel_with_progress_bar (get_main_window (),
-					      _("ai_nw_updating_list"),
+					      longer_title,
 					      progress_bar);
+  g_free (longer_title);
+  g_object_set (progress_dialog, "description", title, NULL);
+
   if (!with_cancel)
     {
       GtkWidget *box = GTK_DIALOG (progress_dialog)->action_area;
@@ -507,7 +521,7 @@ set_general_progress_title (const char *title)
 void
 show_progress (const char *title)
 {
-  create_progress (FALSE);
+  create_progress (title, FALSE);
 
   set_general_progress_title (title);
   current_status_operation = op_general;
@@ -517,42 +531,64 @@ show_progress (const char *title)
 void
 set_progress (apt_proto_operation op, int already, int total)
 {
-  const char *title;
+  const char *title = NULL;
 
-  if (op != current_status_operation
-      && (progress_dialog || op != op_updating_cache))
-    {
-      hide_progress ();
-      create_progress (op == op_downloading);
-    }
+  // Determine if we need a new title
 
   if (op == op_downloading)
     {
+      // The downloading title can change dynamically when the total
+      // changes.
+
       static int last_total;
       static char *dynlabel = NULL;
 
-      if (dynlabel == NULL || total != last_total)
+      if (dynlabel == NULL
+	  || total != last_total
+	  || current_status_operation != op_downloading)
 	{
 	  char size_buf[20];
 	  size_string_detailed (size_buf, 20, total);
 	  g_free (dynlabel);
-	  dynlabel =  g_strdup_printf (_("ai_nw_downloading"), size_buf);
+	  dynlabel = g_strdup_printf (_("ai_nw_downloading"), size_buf);
+	  title = dynlabel;
 	}
-      title = dynlabel;
     }
-  else if (op == op_updating_cache)
-    title = _("ai_nw_updating_list");
-  else
-    title = general_title;
-
-  current_status_operation = op;
+  else if (op != current_status_operation)
+    {
+      // Otherwise the title only changes when the operation changes
+      
+      if (op == op_updating_cache)
+	title = _("ai_nw_updating_list");
+      else
+	title = general_title;
+    }
 
   // printf ("STATUS: %s -- %f\n", title, fraction);
 
-  if (progress_dialog)
+  if (progress_dialog || op != op_updating_cache)
     {
-      g_object_set (progress_dialog, "description", title, NULL);
-      
+      // 'title' is non-NULL when it needs to change.  Since the
+      // dialog does not resize when its contents changes, we simply
+      // recreate it, except when the operation is op_downloading.  In
+      // that case, title changes are frequent and recreating the
+      // dialog every time is annoying.  In that case, we simply set
+      // the new description.  CREATE_PROGRESS takes care that there
+      // is a bit of space for the title to grow.
+
+      if (title
+	  && op == op_downloading
+	  && current_status_operation == op_downloading
+	  && progress_dialog)
+	{
+	  g_object_set (progress_dialog, "description", title, NULL);
+	}
+      else if (title || progress_dialog == NULL)
+	{
+	  hide_progress ();
+	  create_progress (title, op == op_downloading);
+	}
+
       if (already >= 0)
 	{
 	  stop_pulsing ();
@@ -562,6 +598,8 @@ set_progress (apt_proto_operation op, int already, int total)
       else
 	start_pulsing ();
     }
+
+  current_status_operation = op;
 }
 
 void
@@ -1718,13 +1756,18 @@ run_cmd (char **argv,
   g_child_watch_add (child_pid, reap_process, c);
 }
 
-int
-all_white_space (const char *text)
+const char *
+skip_whitespace (const char *str)
 {
-  while (*text)
-    if (!isspace (*text++))
-      return 0;
-  return 1;
+  while (isspace (*str))
+    str++;
+  return str;
+}
+
+bool
+all_white_space (const char *str)
+{
+  return (*skip_whitespace (str)) == '\0';
 }
 
 struct en_closure {

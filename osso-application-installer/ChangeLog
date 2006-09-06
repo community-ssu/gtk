@@ -1,5 +1,19 @@
 2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.h, src/util.cc (skip_whitespace): New.
+	(all_white_space): Make it return bool, not int.  Reimplemented
+	using skip_whitespace.
+	* src/repo.cc (skipped_equal): New.
+	(repo_edit_response): Use it to reject URIs that are just
+	"http://". (N35491)
+	
+	* src/util.cc (create_progress): Added title parameter since we
+	really have to create the dialog with the correct title from the
+	start.  Resizing does not happen afterwards. (N38086)
+	(show_progress): Pass title.
+	(set_progress): Redone logic so that the title of the dialog is
+	only changed if necessary.  Pass new title when recreating dialog.
+	
 	* src/repo.cc (repo_edit_closure): Added had_name flag.
 	(repo_edit_response): Irritate user when it is true but the name
 	entry is empty (N34922). If the flag is false, allow an empty name

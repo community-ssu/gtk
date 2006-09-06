@@ -333,10 +333,15 @@ void run_cmd (char **argv,
 	      void (*cont) (int status, void *data),
 	      void *data);
 
+/* Skip over the leading whitespace characters of STR and return a
+   pointer to the first non-whitespace one.
+*/
+const char *skip_whitespace (const char *str);
+
 /* Return true when STR contains only whitspace characters, as
    determined by isspace.
  */
-int all_white_space (const char *str);
+bool all_white_space (const char *str);
 
 /* ENSURE_NETWORK requests an internet connection and calls CONT when
    it has been established or when the attempt failed.  SUCCESS

@@ -211,6 +211,18 @@ struct repo_edit_closure {
 
 static void ask_the_pill_question ();
 
+/* Determine whether two STR1 equals STR2 when ignoring leading and
+   trailing whitespace in STR1.
+*/
+static bool
+stripped_equal (const char *str1, const char *str2)
+{
+  size_t len = strlen (str2);
+
+  str1 = skip_whitespace (str1);
+  return !strncmp (str1, str2, len) && all_white_space (str1 + len);
+}
+
 static void
 repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 {
@@ -227,7 +239,7 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
       const char *dist = gtk_entry_get_text (GTK_ENTRY (c->dist_entry));
       const char *comps = gtk_entry_get_text (GTK_ENTRY (c->components_entry));
 
-      if (all_white_space (uri))
+      if (all_white_space (uri) || stripped_equal (uri, "http://"))
 	{
 	  irritate_user (_("ai_ib_enter_web_address"));
 	  return;
