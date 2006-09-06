@@ -195,6 +195,7 @@ repo_closure::find_repo (const char *deb)
 struct repo_edit_closure {
   bool isnew;
   bool readonly;
+  bool had_name;
   repo_line *line;
   GtkWidget *name_entry;
   GtkWidget *uri_entry;
@@ -239,11 +240,22 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 	}
 
       repo_line *r = c->line;
-      if (name && !all_white_space (name))
+      if (name)
 	{
+	  if (all_white_space (name))
+	    {
+	      if (c->had_name)
+		{
+		  irritate_user (_("ai_ib_enter_name"));
+		  return;
+		}
+	      name = NULL;
+	    }
+	  
 	  free (r->name);
 	  r->name = g_strdup (name);
 	}
+
       free (r->line);
 
       if (c->enabled_button)
@@ -323,7 +335,8 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
   c->isnew = isnew;
   c->readonly = readonly;
   c->line = r;
-  
+  c->had_name = false;
+
   const char *title;
   if (readonly)
     title = _UI2_("ai_ti_catalogue_details",
@@ -372,7 +385,10 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
   if (ui_version > 1)
     {
       if (r->name)
-	end = r->name + strlen (r->name);
+	{
+	  end = r->name + strlen (r->name);
+	  c->had_name = true;
+	}
       c->name_entry = add_entry (vbox, group,
 				 _UI2_("ai_fi_new_repository_name",
 				       "Cataloque Name"),
