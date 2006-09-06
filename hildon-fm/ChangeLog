@@ -1,3 +1,15 @@
+2006-09-06  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c: (navigation_pane_filter_func),
+	(hildon_file_selection_set_property),
+	(hildon_file_selection_get_property),
+	(hildon_file_selection_class_init): added a new property: "show_upnp"
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	* hildon-fm/hildon-file-chooser-dialog.h: Added two new APIs
+	funcitions: hildon_file_chooser_dialog_set_show_upnp / 
+	hildon_file_chooser_dialog_get_show_upnp to show or not UPNP
+	locations.
+
 2006-09-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-model.c (node_needs_reload): New,

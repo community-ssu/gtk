@@ -109,7 +109,8 @@ enum {
     PROP_EMPTY_TEXT,
     PROP_VISIBLE_COLUMNS,
     PROP_SAFE_FOLDER,
-    PROP_ACTIVE_PANE
+    PROP_ACTIVE_PANE,
+    PROP_SHOW_UPNP
 };
 
 struct _HildonFileSelectionPrivate {
@@ -166,6 +167,7 @@ struct _HildonFileSelectionPrivate {
     gboolean drag_enabled;
     gboolean local_only;
     gboolean show_hidden;
+    gboolean show_upnp;
     GtkFilePath *safe_folder;
 
     gchar **drag_data_uris;
@@ -604,18 +606,29 @@ static void hildon_file_selection_finalize(GObject * obj)
 static gboolean navigation_pane_filter_func(GtkTreeModel *model,
     GtkTreeIter *iter, gpointer data)
 {
-  gboolean folder, hidden, local;
+  gboolean folder, hidden, local, upnp;
+  char *uri = NULL;
   HildonFileSelectionPrivate *priv = data;
 
   gtk_tree_model_get(model, iter,
     HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER, &folder,
     HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH, &local,
     HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN, &hidden,
+    HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
     -1);
+
+  if (uri && g_str_has_prefix (uri, g_getenv ("UPNP_ROOT"))) {
+	  upnp = TRUE;
+  } else {
+	  upnp = FALSE;
+  }
+
+  g_free (uri);
 
   return (folder && 
          (!priv->local_only || local) && 
-         (priv->show_hidden || !hidden));
+         (priv->show_hidden || !hidden) &&
+	 (priv->show_upnp || !upnp));
 }
 
 static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
@@ -854,6 +867,20 @@ static void hildon_file_selection_set_property(GObject * object,
         activate_view(g_value_get_int(value) == HILDON_FILE_SELECTION_PANE_NAVIGATION ?
           priv->dir_tree : get_current_view(priv));
         break;
+    case PROP_SHOW_UPNP:
+    {
+        gboolean new_state = g_value_get_boolean(value);
+
+        if (new_state != priv->show_upnp) {
+            priv->show_upnp = new_state;
+	    if (priv->dir_filter) {
+            	gtk_tree_model_filter_refilter(GTK_TREE_MODEL_FILTER
+                                               (priv->dir_filter));
+	    }
+        }
+        break;
+    }
+
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
         break;
@@ -892,6 +919,9 @@ static void hildon_file_selection_get_property(GObject * object,
         break;
     case PROP_ACTIVE_PANE:
         g_value_set_int(value, (gint) priv->content_pane_last_used);
+        break;
+    case PROP_SHOW_UPNP:
+        g_value_set_boolean(value, priv->show_upnp);
         break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, property_id, pspec);
@@ -1103,6 +1133,12 @@ static void hildon_file_selection_class_init(HildonFileSelectionClass *
                            "Whether or not all the displayed items should "
                            "have a local file path", 
                            FALSE, G_PARAM_READWRITE));
+    
+    g_object_class_install_property(object, PROP_SHOW_UPNP,
+      g_param_spec_boolean("show-upnp", "Show UPNP",
+                           "Whether or not to show UPNP devices",
+                           TRUE, G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
+
 }
 
 static gboolean

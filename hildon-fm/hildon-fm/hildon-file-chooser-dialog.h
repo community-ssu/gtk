@@ -85,6 +85,9 @@ gchar *hildon_file_chooser_dialog_get_safe_folder(
 gchar *hildon_file_chooser_dialog_get_safe_folder_uri(
   HildonFileChooserDialog *self);
 
+void     hildon_file_chooser_dialog_set_show_upnp (HildonFileChooserDialog *self, gboolean value);
+gboolean hildon_file_chooser_dialog_get_show_upnp (HildonFileChooserDialog *self);
+
 /* 
     Note! Other functionality is provided by GtkFileChooser interface. See:
     

@@ -163,6 +163,7 @@ struct _HildonFileChooserDialogPrivate {
     gboolean edited;
     gboolean should_show_folder_button;
     gboolean should_show_location;
+    gboolean show_upnp;
 };
 
 static void hildon_file_chooser_dialog_iface_init(GtkFileChooserIface *
@@ -1453,7 +1454,7 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                              "Use -1 for no limit or 0 to look the value "
                              "from MAX_FILENAME_LENGTH environment variable", 
                              -1, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
-
+    
     hildon_gtk_file_chooser_install_properties(gobject_class);
 }
 
@@ -1886,3 +1887,47 @@ void hildon_file_chooser_dialog_focus_to_input(HildonFileChooserDialog *d)
   hildon_file_chooser_dialog_select_text(d->priv);
 }
 
+
+
+/**
+ * hildon_file_chooser_dialog_set_show_upnp:
+ * @self: a #HildonFileChooserDialog widget.
+ * @value: a gboolean value to be set.
+ * 
+ * Set whether the dialog shows UPNP locations.
+ *
+ */
+void hildon_file_chooser_dialog_set_show_upnp(
+  HildonFileChooserDialog *self, gboolean value)
+{
+  HildonFileChooserDialogPrivate *priv;
+  g_return_if_fail(HILDON_IS_FILE_CHOOSER_DIALOG(self));
+
+  priv = self->priv;
+  g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
+								     
+  g_object_set (priv->filetree, "show-upnp", value, NULL);
+}
+
+
+/**
+ * hildon_file_chooser_dialog_get_show_upnp:
+ * @self: a #HildonFileChooserDialog widget.
+ * 
+ * Gets whether the dialog shows UPNP locations.
+ * Returns: gboolean value..
+ *
+ */
+gboolean hildon_file_chooser_dialog_get_show_upnp (HildonFileChooserDialog *self)
+{
+  HildonFileChooserDialogPrivate *priv;
+  gboolean show_upnp;
+  
+  g_return_val_if_fail(HILDON_IS_FILE_CHOOSER_DIALOG(self), FALSE);
+
+  priv = self->priv;
+  g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
+								     
+  g_object_get (priv->filetree, "show-upnp", &show_upnp, NULL);
+  return show_upnp;
+}
