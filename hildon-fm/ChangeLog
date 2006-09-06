@@ -1,3 +1,15 @@
+2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c (BANNER_TIMEOUT):
+	Reduced to 500 ms so that it is smaller than the initial delay of
+	showing the banner.  There needs to be more theory for determining
+	the 'right' timeout.
+	(banner_pid): New, to store a permanent pid in the face of Linux'
+	per-thread-pids.
+	(_hildon_file_system_prepare_banner): Initialize it when needed
+	and use it instead of getpid() in the D-Bus message.
+	(_hildon_file_system_cancel_banner): Likewise. (N39738)
+
 2006-09-06  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* hildon-fm/hildon-file-selection.c: (navigation_pane_filter_func),

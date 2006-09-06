@@ -606,12 +606,31 @@ static gboolean banner_timeout(gpointer data)
   return FALSE;
 }
 
+/* The clients of delayed_infobanner service are identified by their
+   pid.  However, Linux has the bug that each thread has its own pid.
+   It might happen that the banner is cancelled from a different
+   thread that asked for it, but we need to make sure that we use the
+   same pid in both messages.
+
+   Therefore, we just store the pid of the first thread in this
+   process that uses the service, and then use it to identify
+   ourselves to the statusbar.
+
+   XXX - It is theoretically possible that the pid will be reused
+         while this process still uses it as an identifier.
+
+	 When the kernel-glibc combo is fixed to no longer have
+	 per-thread-pids, banner_pid can be removed.
+*/
+
+static dbus_int32_t banner_pid = 0;
+
 #define BANNER_SERVICE "com.nokia.statusbar"
 #define BANNER_REQUEST_PATH "/com/nokia/statusbar"
 #define BANNER_REQUEST_IF "com.nokia.statusbar"
 #define BANNER_SHOW "delayed_infobanner"
 #define BANNER_HIDE "cancel_delayed_infobanner"
-#define BANNER_TIMEOUT 2000
+#define BANNER_TIMEOUT 500
 
 /* Communication with tasknavigator for displaying possible
    banner while making blocking calls */
@@ -620,7 +639,6 @@ void _hildon_file_system_prepare_banner(guint *timeout_id)
   HildonFileSystemSettings *settings;
   DBusConnection *conn;
   DBusMessage *message;
-  dbus_int32_t pid;
   static const dbus_int32_t initial_value = 1000;
   static const dbus_int32_t display_timeout = 30000;
   const char *ckdg_pb_updating_str;
@@ -654,8 +672,10 @@ void _hildon_file_system_prepare_banner(guint *timeout_id)
     return;
   }
 
-  pid = getpid(); /* id */
-  ret = dbus_message_append_args(message, DBUS_TYPE_INT32, &pid,
+  if (banner_pid == 0)
+    banner_pid = getpid(); /* id */
+
+  ret = dbus_message_append_args(message, DBUS_TYPE_INT32, &banner_pid,
                                  DBUS_TYPE_INT32, &initial_value,
                                  DBUS_TYPE_INT32, &display_timeout,
                                  DBUS_TYPE_STRING, &ckdg_pb_updating_str,
@@ -687,7 +707,6 @@ void _hildon_file_system_cancel_banner(guint *timeout_id)
   HildonFileSystemSettings *settings;
   DBusConnection *conn;
   DBusMessage *message;
-  dbus_int32_t pid;
 
   if (timeout_id != NULL && *timeout_id != 0)
   {
@@ -710,8 +729,7 @@ void _hildon_file_system_cancel_banner(guint *timeout_id)
     return;
   }
 
-  pid = getpid();
-  if (!dbus_message_append_args(message, DBUS_TYPE_INT32, &pid,
+  if (!dbus_message_append_args(message, DBUS_TYPE_INT32, &banner_pid,
                                 DBUS_TYPE_INVALID))
   {
     ULOG_ERR_F("dbus_message_append_args failed");
