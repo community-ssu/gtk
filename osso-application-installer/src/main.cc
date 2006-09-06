@@ -99,6 +99,8 @@ show_view (view *v)
   set_operation_label (NULL, NULL);
   set_operation_callback (NULL, NULL);
 
+  allow_updating ();
+
   cur_view = v->maker (v);
   cur_view_struct = v;
 
@@ -315,6 +317,8 @@ make_main_view (view *v)
 
   enable_search (false);
   set_current_help_topic (AI_TOPIC ("mainview"));
+
+  prevent_updating ();
 
   return view;
 }

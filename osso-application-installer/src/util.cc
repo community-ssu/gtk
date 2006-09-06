@@ -578,11 +578,14 @@ hide_progress ()
 
 static GtkWidget *updating_banner = NULL;
 static int updating_level = 0;
+static bool allow_updating_banner = true;
 
-static gboolean
-updating_timeout (gpointer unused)
+static void
+refresh_updating_banner ()
 {
-  if (updating_banner == NULL && updating_level > 0)
+  bool show_it = (updating_level > 0 && allow_updating_banner);
+
+  if (show_it && updating_banner == NULL)
     {
       updating_banner = 
 	hildon_banner_show_animation (GTK_WIDGET (get_main_window ()),
@@ -591,26 +594,50 @@ updating_timeout (gpointer unused)
 						"ckdg_pb_updating"));
       g_object_ref (updating_banner);
     }
+
+  if (!show_it && updating_banner != NULL)
+    {
+      gtk_widget_destroy (updating_banner);
+      g_object_unref (updating_banner);
+      updating_banner = NULL;
+    }
+}
+
+static gboolean
+updating_timeout (gpointer unused)
+{
+  updating_level++;
+  refresh_updating_banner ();
   return FALSE;
 }
 
 void
 show_updating ()
 {
+  // We must never cancel this timeout since otherwise the
+  // UPDATING_LEVEL will get out of sync.
   gtk_timeout_add (2000, updating_timeout, NULL);
-  updating_level++;
 }
 
 void
 hide_updating ()
 {
   updating_level--;
-  if (updating_banner && updating_level == 0)
-    {
-      gtk_widget_destroy (updating_banner);
-      g_object_unref (updating_banner);
-      updating_banner = NULL;
-    }
+  refresh_updating_banner ();
+}
+
+void
+allow_updating ()
+{
+  allow_updating_banner = true;
+  refresh_updating_banner ();
+}
+
+void
+prevent_updating ()
+{
+  allow_updating_banner = false;
+  refresh_updating_banner ();
 }
 
 static PangoFontDescription *

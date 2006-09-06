@@ -166,9 +166,16 @@ void hide_progress ();
    banner is shown whenever that counter is positive.  The actual
    display of the banner is delayed by two seconds so that when the
    counter is positive for less than two seconds, no banner is shown.
+
+   In addition ALLOW_UPDATING and PREVENT_UPDATING maintain a flag and
+   the updating banner is only shown when that flag allows it.  The
+   flag starts out in the 'allow' state.
 */
 void show_updating ();
 void hide_updating ();
+void allow_updating ();
+void prevent_updating ();
+
 
 /* MAKE_SMALL_TEXT_VIEW constructs a widget that displays TEXT in a
    small font and with scrollbars if necessary.
