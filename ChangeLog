@@ -1,4 +1,11 @@
 2006-09-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkmenuitem.c (gtk_menu_item_size_request): Use
+	'separator-height' style property for separator height instead of
+	hardcoded value. Get rid of dubious HILDON_HEIGHT_INCREMENT.
+	Partially fixes MB#21506
+
+2006-09-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Taken from GNOME CVS. NB#38982
 
