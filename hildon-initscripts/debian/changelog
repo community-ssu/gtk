@@ -1,13 +1,12 @@
 hildon-initscripts (1.4-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed a warning when stopped process used LAUNCHWRAPPER_TRYRESTART.
     The patch came from Peter Hägg. Fixes: NB#19325
   * Added handling of LAUNCHWRAPPER_NICE_KILL to af-sb-init.sh.
   * Added the check for DISPLAY to be earlier in af-sb-init.sh so that
     calling it with 'stop' to recover is not necessary.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 06 Sep 2006 11:51:29 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 06 Sep 2006 13:39:52 +0300
 
 hildon-initscripts (1.3-1) unstable; urgency=low
 
