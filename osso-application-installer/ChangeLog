@@ -1,5 +1,11 @@
 2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/repo.cc (repo_edit_closure): Added had_name flag.
+	(repo_edit_response): Irritate user when it is true but the name
+	entry is empty (N34922). If the flag is false, allow an empty name
+	and canonicalize it to NULL.
+	(show_repo_edit_dialog): Set had_name appropriately.
+
 	* src/util.cc (refresh_updating_banner): New, for showing/hiding
 	the banner based on the current state.
 	(updating_timeout): Increase updating_level here and call
@@ -14,7 +20,7 @@
 	
 	* src/repo.cc (add_entry): Use a non-editable, non-focusable
 	GtkTextView instead of a GtkLabel for displaying read only
-	entries.
+	entries. (N34538)
 	(show_repo_edit_dialog): Use proper logical id for "Close" button.
 	Make it grab the focus.
 
