@@ -84,6 +84,9 @@ gboolean   hildon_home_titlebar_get_menu_active (HildonHomeTitlebar     *titleba
 void       hildon_home_titlebar_set_menu_active (HildonHomeTitlebar     *titlebar,
 						 gboolean                active);
 
+GtkWidget *hildon_home_titlebar_layout_ok (HildonHomeTitlebar *titlebar);
+GtkWidget *hildon_home_titlebar_layout_cancel (HildonHomeTitlebar *titlebar);
+
 G_END_DECLS
 
 #endif /* __HILDON_HOME_TITLEBAR_H__ */

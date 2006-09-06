@@ -1,3 +1,13 @@
+2006-09-06  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-home/layout-manager.c: 
+	* hildon-home/hildon-home-titlebar.[ch]:
+	- hide the accept and cancel layout during applet loading 
+	preventing desktop crashing.. 
+	Fixes (NB#39029)
+	* hildon-home/hildon-home-main.c: Force creation of user's
+	hildon-home configuration folder.
+
 2006-08-31  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/others-menu.c: Do not hardcode the menu y

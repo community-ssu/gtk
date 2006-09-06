@@ -598,7 +598,9 @@ layout_hw_cb_f (osso_hw_state_t *state, gpointer data)
   create_tapnhold_menu();
 
 #endif
-
+  gtk_widget_hide ( hildon_home_titlebar_layout_ok     (general_data.titlebar));
+  gtk_widget_hide ( hildon_home_titlebar_layout_cancel (general_data.titlebar));
+  
   if (addable_applets)
     {
       general_data.is_save_changes = TRUE;
@@ -608,7 +610,10 @@ layout_hw_cb_f (osso_hw_state_t *state, gpointer data)
 				GTK_EVENT_BOX(general_data.home_area_eventbox),
 				    TRUE);
     }
-    
+  
+  gtk_widget_show ( hildon_home_titlebar_layout_ok     (general_data.titlebar));
+  gtk_widget_show ( hildon_home_titlebar_layout_cancel (general_data.titlebar));
+   
   if (removed_applets)
     {
       general_data.is_save_changes = TRUE;

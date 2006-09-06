@@ -56,6 +56,7 @@
 #include <osso-helplib.h>
 
 #include <glib.h>
+#include <glib/gstdio.h> /* how many stdios we need? :)*/
 #include <libgnomevfs/gnome-vfs.h>
 
 #include <hildon-widgets/hildon-banner.h>
@@ -235,7 +236,17 @@ hildon_home_main (void)
 {
   GtkWidget *window;
   GdkWindow *root_window;
+  gchar *user_path_home;
   osso_hw_state_t hs = { 0 };
+
+  /* It's necessary create the user hildon-home folder at first boot */
+
+  user_path_home = 
+    g_strdup_printf ("%s/%s",getenv(HILDON_HOME_ENV_HOME),HILDON_HOME_SYSTEM_DIR);
+
+  g_mkdir (user_path_home, 0755); /* Create it anyway!!! */
+
+  g_free (user_path_home);
 
   /* create instance of AppletManager; we do not unref this one here
    */

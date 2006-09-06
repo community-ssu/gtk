@@ -976,3 +976,29 @@ hildon_home_titlebar_set_mode (HildonHomeTitlebar     *titlebar,
       g_object_unref (titlebar);
     }
 }
+
+GtkWidget *
+hildon_home_titlebar_layout_ok (HildonHomeTitlebar *titlebar)
+{
+  HildonHomeTitlebarPrivate *priv;
+  
+  g_return_val_if_fail (HILDON_IS_HOME_TITLEBAR (titlebar),NULL);
+  
+  priv = titlebar->priv;
+
+  return priv->layout_accept;
+}
+
+GtkWidget *
+hildon_home_titlebar_layout_cancel (HildonHomeTitlebar *titlebar)
+{
+  HildonHomeTitlebarPrivate *priv;
+  
+  g_return_val_if_fail (HILDON_IS_HOME_TITLEBAR (titlebar),NULL);
+  
+  priv = titlebar->priv;
+
+  return priv->layout_cancel;
+}
+
+
