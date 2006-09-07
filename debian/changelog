@@ -4,10 +4,12 @@ gtk+2.0 (2:2.6.10-2.osso11) unstable; urgency=low
     to home using the hardware button
   * Fixes: NB#33737 Formattings are lost at destination with copy-paste
     operation
+  * Fixes: NB#37624,NB#37868 dimmed items in gtktreeview shouldn't be
+    focusable
   * Fixes: NB#38982 Blinking behavior is different for centered alignment.
   * Partially fixes NB#21506
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 11:07:54 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 12:45:15 +0300
 
 gtk+2.0 (2:2.6.10-2.osso10) unstable; urgency=low
 
