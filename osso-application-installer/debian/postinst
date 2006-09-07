@@ -11,6 +11,7 @@ add_sudoer ()
     line="$1"
     if ! grep -F -q "$line" /etc/sudoers; then
 	echo "+$line"
+	chmod u+w /etc/sudoers # *cough*
 	echo "$line" >>/etc/sudoers
     fi
 }
