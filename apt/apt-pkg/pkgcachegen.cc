@@ -665,6 +665,7 @@ static bool BuildCache(pkgCacheGenerator &Gen,
    return true;
 }
 									/*}}}*/
+
 // MakeStatusCache - Construct the status cache				/*{{{*/
 // ---------------------------------------------------------------------
 /* This makes sure that the status cache (the cache that has all 
@@ -673,11 +674,11 @@ static bool BuildCache(pkgCacheGenerator &Gen,
    the cache will be stored there. This is pretty much mandetory if you
    are using AllowMem. AllowMem lets the function be run as non-root
    where it builds the cache 'fast' into a memory buffer. */
-bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
-			MMap **OutMap,bool AllowMem)
+static bool MakeStatusCacheWithSize (pkgSourceList &List,OpProgress &Progress,
+				     MMap **OutMap,bool AllowMem,
+				     unsigned long MapSize,
+				     bool &Overfull)
 {
-   unsigned long MapSize = _config->FindI("APT::Cache-Limit",12*1024*1024);
-   
    vector<pkgIndexFile *> Files;
    for (vector<metaIndex *>::const_iterator i = List.begin();
         i != List.end();
@@ -757,7 +758,10 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 return false;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin()+EndOfSource,Files.end()) == false)
-	 return false;
+	{
+	  Overfull = Map->IsOverfull ();
+	  return false;
+	}
    }
    else
    {
@@ -769,7 +773,10 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
 	 return false;
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin(),Files.begin()+EndOfSource) == false)
-	 return false;
+	{
+	  Overfull = Map->IsOverfull ();
+	  return false;
+	}
       
       // Write it back
       if (Writeable == true && SrcCacheFile.empty() == false)
@@ -797,7 +804,10 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
       // Build the status cache
       if (BuildCache(Gen,Progress,CurrentSize,TotalSize,
 		     Files.begin()+EndOfSource,Files.end()) == false)
-	 return false;
+	{
+	  Overfull = Map->IsOverfull ();
+	  return false;
+	}
    }
 
    if (_error->PendingError() == true)
@@ -817,6 +827,36 @@ bool pkgMakeStatusCache(pkgSourceList &List,OpProgress &Progress,
    
    return true;
 }
+
+bool
+pkgMakeStatusCache (pkgSourceList &List,OpProgress &Progress,
+		    MMap **OutMap,bool AllowMem)
+{
+  unsigned long SmallMapSize = _config->FindI("APT::Small-Cache-Limit",
+					       12*1024*1024);
+  unsigned long MapSize = _config->FindI("APT::Cache-Limit", 12*1024*1024);
+
+  if (SmallMapSize > MapSize)
+    SmallMapSize = MapSize;
+
+  bool Overfull = false, result;
+
+  result = MakeStatusCacheWithSize (List, Progress, OutMap, AllowMem,
+				    SmallMapSize, Overfull);
+
+  if (!result && Overfull && SmallMapSize < MapSize)
+    {
+      _error->Discard ();
+      _error->Warning
+	("Small-Cache-Limit exceeded, trying again with Cache-Limit");
+      
+      result = MakeStatusCacheWithSize (List, Progress, OutMap, AllowMem,
+					MapSize, Overfull);
+    }
+
+  return result;
+}
+  
 									/*}}}*/
 // MakeOnlyStatusCache - Build a cache with just the status files	/*{{{*/
 // ---------------------------------------------------------------------

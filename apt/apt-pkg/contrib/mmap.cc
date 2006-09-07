@@ -314,6 +314,12 @@ unsigned long DynamicMMap::Allocate(unsigned long ItemSize)
    I->Start += ItemSize;  
    return Result/ItemSize;
 }
+
+bool DynamicMMap::IsOverfull ()
+{
+  return iSize > WorkSpace;
+}
+
 									/*}}}*/
 // DynamicMMap::WriteString - Write a string to the file		/*{{{*/
 // ---------------------------------------------------------------------
