@@ -1,3 +1,11 @@
+2006-09-07 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c : Added new properties for
+	tracking mmc status
+	* hildon-fm/hildon-file-system-mmc.c : check for mmc status to give a
+	proper reason in hildon_file_system_mmc_get_unavailable_reason()
+	(N37947)
+
 2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.8.
