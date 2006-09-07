@@ -1,5 +1,16 @@
 2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-selection.c (tap_and_hold_query,
+	content_pane_tap_and_hold_query,
+	navigation_pane_tap_and_hold_query): New, to stop tap-and-hold
+	animation when no handlers are connected.
+	(hildon_file_selection_create_thumbnail_view,
+	hildon_file_selection_create_list_view,
+	hildon_file_selection_create_dir_view): Connect them to
+	"tap-and-hold-query", as appropriate. (N21395)
+
+2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
         Released 1.9.
 
 2006-09-07 Tapani Palli <tapani.palli@nokia.com>
