@@ -1,3 +1,9 @@
+2006-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_scroll_to_cell): Align view with
+	row/column background area, which includes margins and such unlike
+	cell area. (#354780)  NB#37442
+
 2006-09-07  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): don't clear and
