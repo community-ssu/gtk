@@ -56,13 +56,23 @@ enum {
   PROP_BTNAME,
   PROP_GATEWAY,
   PROP_USB,
-  PROP_GATEWAY_FTP
+  PROP_GATEWAY_FTP,
+  PROP_MMC_PRESENT,
+  PROP_MMC_USED,
+  PROP_MMC_CORRUPTED,
+  PROP_INTERNAL_MMC_CORRUPTED
 };
 
 #define PRIVATE(obj) HILDON_FILE_SYSTEM_SETTINGS(obj)->priv
-#define USB_CABLE_DIR "/system/osso/af"
-#define USB_CABLE_KEY USB_CABLE_DIR "/usb-cable-attached"
 
+#define USB_CABLE_DIR "/system/osso/af"
+#define MMC_DIR "/system/osso/af/mmc"
+
+#define USB_CABLE_KEY USB_CABLE_DIR "/usb-cable-attached"
+#define MMC_USED_KEY USB_CABLE_DIR "/mmc-used-over-usb"
+#define MMC_PRESENT_KEY USB_CABLE_DIR "/mmc-device-present"
+#define MMC_CORRUPTED_KEY MMC_DIR "/mmc-corrupted"
+#define MMC_INTERNAL_CORRUPTED_KEY MMC_DIR "/internal-mmc-corrupted"
 
 #define MCE_MATCH_RULE "type='signal',interface='" MCE_SIGNAL_IF \
                        "',member='" MCE_DEVICE_MODE_SIG "'"
@@ -84,6 +94,9 @@ struct _HildonFileSystemSettingsPrivate
   gboolean gconf_ready;
   gboolean flightmode_ready;
   gboolean btname_ready;
+
+  gboolean mmc_is_present;
+  gboolean mmc_used_over_usb;
 };
 
 G_DEFINE_TYPE(HildonFileSystemSettings, \
@@ -113,6 +126,12 @@ hildon_file_system_settings_get_property(GObject *object,
       break;
     case PROP_GATEWAY_FTP:
       g_value_set_boolean(value, priv->gateway_ftp);
+      break;
+    case PROP_MMC_PRESENT:
+      g_value_set_boolean(value, priv->mmc_is_present);
+      break;
+    case PROP_MMC_USED:
+      g_value_set_boolean(value, priv->mmc_used_over_usb);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -177,6 +196,29 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
 
   g_object_notify(G_OBJECT(self), "gateway");
   g_object_notify(G_OBJECT(self), "gateway-ftp");
+}
+
+static void
+set_mmc_present_from_gconf_value(HildonFileSystemSettings *self,
+	                         GConfValue *value)
+{
+  if (value && value->type == GCONF_VALUE_BOOL)
+  {
+    self->priv->mmc_is_present = gconf_value_get_bool(value);
+    g_object_notify(G_OBJECT(self), "mmc-is-present");
+  }
+}
+
+
+static void
+set_mmc_used_from_gconf_value(HildonFileSystemSettings *self,
+                              GConfValue *value)
+{
+  if (value && value->type == GCONF_VALUE_BOOL)
+  {
+    self->priv->mmc_used_over_usb = gconf_value_get_bool(value);
+    g_object_notify(G_OBJECT(self), "mmc-used");
+  }
 }
 
 static void
@@ -412,14 +454,20 @@ gconf_gateway_changed(GConfClient *client, guint cnxn_id,
 }
 
 static void
-gconf_usb_changed(GConfClient *client, guint cnxn_id,
-                  GConfEntry *entry, gpointer data)
+gconf_value_changed(GConfClient *client, guint cnxn_id,
+                    GConfEntry *entry, gpointer data)
 {
   g_assert(entry != NULL);
-  	 
+  
   if (g_ascii_strcasecmp(entry->key, USB_CABLE_KEY) == 0)
     set_usb_from_gconf_value(
       HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
+  else if (g_ascii_strcasecmp(entry->key, MMC_USED_KEY) == 0)
+         set_mmc_used_from_gconf_value(
+           HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
+  else if (g_ascii_strcasecmp(entry->key, MMC_PRESENT_KEY) == 0)
+	  set_mmc_present_from_gconf_value(
+	   HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
 }
 
 static void
@@ -481,6 +529,14 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
     g_param_spec_boolean("gateway-ftp", "Gateway ftp",
                          "Whether current gateway device supports file transfer",
                          FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_MMC_USED,
+    g_param_spec_boolean("mmc-used", "MMC used",
+                         "Whether or not the MMC is being used",
+                         FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_MMC_PRESENT,
+    g_param_spec_boolean("mmc-is-present", "MMC present",
+	                 "Whether or not the MMC is present",
+			 FALSE, G_PARAM_READABLE));
 }
 
 static gboolean delayed_init(gpointer data)
@@ -520,7 +576,7 @@ static gboolean delayed_init(gpointer data)
   }
 
   gconf_client_notify_add(self->priv->gconf, USB_CABLE_DIR,
-                          gconf_usb_changed, self, NULL, &error);
+                          gconf_value_changed, self, NULL, &error);
   if (error != NULL)
   {
     ULOG_ERR_F("gconf_client_notify_add failed: %s", error->message);

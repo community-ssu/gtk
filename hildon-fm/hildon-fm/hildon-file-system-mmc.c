@@ -175,7 +175,9 @@ hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
     HildonFileSystemMMC *device;
 
     gboolean is_connected;
-
+    gboolean mmc_is_used;
+    gboolean mmc_is_present;
+    
     device = HILDON_FILE_SYSTEM_MMC (location);
 
     if (!device->available)
@@ -183,8 +185,10 @@ hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
         fs_settings = _hildon_file_system_settings_get_instance ();
 
         g_object_get (fs_settings, "usb-cable", &is_connected, NULL);
+	g_object_get (fs_settings, "mmc-used", &mmc_is_used, NULL);
+	g_object_get (fs_settings, "mmc-is-present", &mmc_is_present, NULL);
 
-        if (is_connected)
+        if (is_connected && mmc_is_used)
             return g_strdup (_("sfil_ib_mmc_usb_connected"));
         else
             return g_strdup (_("hfil_ib_mmc_not_present"));
