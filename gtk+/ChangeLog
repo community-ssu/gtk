@@ -1,3 +1,8 @@
+2006-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcalendar.c: Add #include <locale.h> to fix the build with
+	optimizations disabled.
+
 2006-09-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkmenuitem.c (gtk_menu_item_size_request): Use

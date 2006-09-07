@@ -40,6 +40,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <langinfo.h>
+#include <locale.h>
 #include <glib/gprintf.h>
 
 #include "gtkcalendar.h"
