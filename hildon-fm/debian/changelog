@@ -1,3 +1,9 @@
+hildon-fm (1.10-unreleased1) unstable; urgency=low
+
+  * Fixes: NB#21395.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  7 Sep 2006 18:19:21 +0300
+
 hildon-fm (1.9-1) unstable; urgency=low
 
   * Create configure in debian/rules when needed.
