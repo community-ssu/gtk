@@ -1,3 +1,12 @@
+2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* apt-pkg/contrib/mmap.h (DynamicMMap::IsOverfull): New.
+	* apt-pkg/pkgcachegen.cc (MakeStatusCacheWithSize,
+	pkgMakeStatusCache): Factored everything except getting the
+	MapSize out of pkgMakeStatusCacheout into MakeStatusCacheWithSize.
+	Try both Small-Cache-Limit and Cache-Limit in pkgMakeStatusCache
+	before giving up. (N31929, N32959)
+
 2006-08-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* apt-pkg/deb/dpkgpm.cc (pkgDPkgPM::Go): Redone dpkg status
