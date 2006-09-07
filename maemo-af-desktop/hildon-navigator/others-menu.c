@@ -191,7 +191,8 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
 
     gchar *service_field;
     gchar *exec_field;
-
+    gchar *program = NULL;
+    
     GError *error = NULL;
 
     if ((service_field =
@@ -214,12 +215,18 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
         
 	exec_field =
            g_object_get_data(G_OBJECT(item), DESKTOP_ENTRY_EXEC_FIELD);
-        if(exec_field != NULL) {
+
+        if (exec_field)
+          {
+            program = g_find_program_in_path (exec_field);
+          }
+        
+        if(program != NULL) {
             gint     argc;
             gchar ** argv;
             GPid     child_pid;
 
-            if (g_shell_parse_argv (exec_field, &argc, &argv, &error))
+            if (g_shell_parse_argv (program, &argc, &argv, &error))
               {
 				  g_spawn_async(
                                 /* child's current working directory,
@@ -276,6 +283,8 @@ static void others_menu_activate_item(GtkMenuItem * item, gpointer data)
     }
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(om->toggle_button),
 				 FALSE);
+
+    g_free (program);
 }
 
 

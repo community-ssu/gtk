@@ -1,7 +1,15 @@
+2006-09-07  Moises Martinez <moises.martinzes@nokia.com>
+
+	* others-menu.c: Applied fix to "Task Navigator requires
+	  full binary path in .desktop file Exec field" 
+	  Fixes: NB#39036
+	* hn-app-switcher.c: "Application switcher menu button is
+	  not working fine" Fixes: NB#39326
+
 2006-09-06  Karoliina Salminen <karoliina.t.salminen@nokia.com>
     
-    * All source files: Updated header texts
-    * configure.ac: 2.9.25
+	* All source files: Updated header texts
+	* configure.ac: 2.9.25
 
 2006-09-06  Moises Martinez <moises.martinzes@nokia.com>
 

@@ -553,6 +553,9 @@ main_menu_detach (GtkWidget *attach_widget,
   app_switcher->priv->main_menu = NULL;
   app_switcher->priv->main_home_item = NULL;
   app_switcher->priv->is_thumbable = FALSE;
+
+  GtkToggleButton *button = GTK_TOGGLE_BUTTON(app_switcher->priv->main_button);
+  gtk_toggle_button_set_active (button, FALSE);
 }
 
 static void
