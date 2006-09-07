@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.6.10-2.osso12) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Fixes: NB#39784 Tap'n'hold on selected non-focused row clears selection
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 16:24:36 +0300
+
 gtk+2.0 (2:2.6.10-2.osso11) unstable; urgency=low
 
   * Fixes: NB#30986,NB#37050,NB#37495 GtkComboBox popup remains when switching
