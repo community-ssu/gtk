@@ -2141,6 +2141,31 @@ content_pane_focus(GObject *object, GParamSpec *pspec, gpointer data)
   }
 }
 
+static gboolean
+tap_and_hold_query (gpointer self, guint signal_id)
+{
+  /* Only start the animation when there are actually handlers for our
+     "foo-context-menu" signal.
+  */
+  return !g_signal_has_handler_pending (self, signal_id, 0, FALSE);
+}
+
+static gboolean
+content_pane_tap_and_hold_query (GtkWidget *widget,
+				 GdkEvent *event,
+				 gpointer self)
+{
+  return tap_and_hold_query (self, signal_content_pane_context_menu);
+}
+
+static gboolean
+navigation_pane_tap_and_hold_query (GtkWidget *widget,
+				    GdkEvent *event,
+				    gpointer self)
+{
+  return tap_and_hold_query (self, signal_content_pane_context_menu);
+}
+
 static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
                                                         * self)
 {
@@ -2198,6 +2223,9 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
                      self, 0);
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(tree), NULL, NULL,
                                   GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
+    g_signal_connect_object (tree, "tap-and-hold-query",
+			     G_CALLBACK (content_pane_tap_and_hold_query),
+			     self, 0);
     g_signal_connect_object(tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_content_pane_context), self, 0);
@@ -2312,6 +2340,9 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
          self, 0);
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(tree), NULL, NULL,
                                   GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
+    g_signal_connect_object (tree, "tap-and-hold-query",
+			     G_CALLBACK (content_pane_tap_and_hold_query),
+			     self, 0);
     g_signal_connect_object(tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_content_pane_context), self, 0);
@@ -2398,6 +2429,9 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
                      self, 0);
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(self->priv->dir_tree), NULL,
                                   NULL, GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
+    g_signal_connect_object (self->priv->dir_tree, "tap-and-hold-query",
+			     G_CALLBACK (navigation_pane_tap_and_hold_query),
+			     self, 0);
     g_signal_connect_object(self->priv->dir_tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_navigation_pane_context),
