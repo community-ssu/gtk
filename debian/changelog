@@ -1,6 +1,5 @@
-gtk+2.0 (2:2.6.10-2.osso11) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso11) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Fixes: NB#30986,NB#37050,NB#37495 GtkComboBox popup remains when switching
     to home using the hardware button
   * Fixes: NB#33737 Formattings are lost at destination with copy-paste
@@ -8,7 +7,7 @@ gtk+2.0 (2:2.6.10-2.osso11) UNRELEASED; urgency=low
   * Fixes: NB#38982 Blinking behavior is different for centered alignment.
   * Partially fixes NB#21506
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed,  6 Sep 2006 17:53:23 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 11:07:54 +0300
 
 gtk+2.0 (2:2.6.10-2.osso10) unstable; urgency=low
 
