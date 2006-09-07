@@ -1,3 +1,13 @@
+2006-09-07  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): rework the code
+	responsible for starting DnD/pen drag; only move focus if the
+	destination is selectable; if the button down path is not yet
+	selectable we can already clear the selection here in some cases.
+	(gtk_tree_view_motion_bin_window): only look into unselecting the
+	current selection if there's a queued select row.
+	NB#37868, NB#37624.
+
 2006-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcalendar.c: Add #include <locale.h> to fix the build with
