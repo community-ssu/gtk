@@ -1,8 +1,9 @@
 hildon-fm (1.9-unreleased) unstable; urgency=low
 
+  * Create configure in debian/rules when needed.
   * Fixes: NB#37947
 
- -- Tapani Palli <tapani.palli@nokia.com>  Thu,  7 Sep 2006 13:00:39 +0300
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  7 Sep 2006 14:32:47 +0300
 
 hildon-fm (1.8-1) unstable; urgency=low
 
