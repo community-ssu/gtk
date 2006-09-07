@@ -1,3 +1,9 @@
+hildon-fm (1.9-unreleased) unstable; urgency=low
+
+  * Fixes: NB#37947
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu,  7 Sep 2006 13:00:39 +0300
+
 hildon-fm (1.8-1) unstable; urgency=low
 
   * Fixes: NB#34414, NB#31278, NB#38652, NB#35160, NB#39738.
