@@ -4,8 +4,10 @@ gtk+2.0 (2:2.6.10-2.osso12) UNRELEASED; urgency=low
   * Fixes: NB#35221 Having a property to set the png compression level would
     be convenient.
   * Fixes: NB#39784 Tap'n'hold on selected non-focused row clears selection
+  * Fixes: NB#37442,NB#37456 scrolling to the top/bottom of a file tree
+    doesn't scroll enough for the extreme of the selection
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 16:45:05 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  7 Sep 2006 18:19:38 +0300
 
 gtk+2.0 (2:2.6.10-2.osso11) unstable; urgency=low
 
