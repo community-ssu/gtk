@@ -3,4 +3,4 @@
 // is 250 bytes or so, so 1.6 MB is good for about 6400 packages, give
 // or take, which should be enough for everyone.
 
-APT { Cache-Limit 1600000 };
+APT { Small-Cache-Limit 1600000 };
