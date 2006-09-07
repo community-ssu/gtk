@@ -1,3 +1,7 @@
+2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.9.
+
 2006-09-07 Tapani Palli <tapani.palli@nokia.com>
 
 	* hildon-fm/hildon-file-system-settings.c : Added new properties for

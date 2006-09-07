@@ -1,4 +1,4 @@
-hildon-fm (1.9-unreleased1) unstable; urgency=low
+hildon-fm (1.9-1) unstable; urgency=low
 
   * Create configure in debian/rules when needed.
   * Fixes: NB#37947
