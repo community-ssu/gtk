@@ -1,3 +1,11 @@
+2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* debian/postinst: Make /etc/sudoers writable before appending to
+	it. (N39538)
+
+	* 00-smallcache: Use the "Small-Cache-Limit" option instead of
+	"Cache-Limit", available in apt 0.6.42.3osso17.  (N31929, N32959)
+
 2006-09-06  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.30.
