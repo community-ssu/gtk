@@ -1,3 +1,14 @@
+2006-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Backported from GNOME CVS. NB#35221
+
+    2005-05-24  Sven Neumann  <sven@gimp.org>
+
+	* io-png.c: allow to specify the PNG compression level by passing
+	a "compression" parameter to the PNG save function (bug #305337).
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_save): document the new parameter.
+
 2006-04-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use spinguard to
