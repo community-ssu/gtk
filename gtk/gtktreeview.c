@@ -2765,24 +2765,44 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 
                   if (tree_view->priv->queued_select_row)
                     gtk_tree_row_reference_free (tree_view->priv->queued_select_row);
-                  tree_view->priv->queued_select_row =
-                    gtk_tree_row_reference_new (tree_view->priv->model, path);
+		  tree_view->priv->queued_select_row = NULL;
 
-                  /* however, move focus */
-                  if (tree_view->priv->cursor)
-                    {
-                      old_cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
-                      gtk_tree_row_reference_free (tree_view->priv->cursor);
-                    }
-                  tree_view->priv->cursor = gtk_tree_row_reference_new (tree_view->priv->model,
+		  if (_gtk_tree_selection_is_row_selectable (tree_view->priv->selection, node, path))
+		    {
+		      /* however, move focus */
+		      if (tree_view->priv->cursor)
+		        {
+			  old_cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
+			  gtk_tree_row_reference_free (tree_view->priv->cursor);
+			}
+		      tree_view->priv->cursor = gtk_tree_row_reference_new (tree_view->priv->model,
                                                                             path);
-                  gtk_tree_view_queue_draw_path (tree_view, path, NULL);
-                  if (old_cursor_path)
-                    {
-                      gtk_tree_view_queue_draw_path (tree_view, old_cursor_path, NULL);
-                      gtk_tree_path_free (old_cursor_path);
-                    }
-                }
+		      gtk_tree_view_queue_draw_path (tree_view, path, NULL);
+		      if (old_cursor_path)
+		        {
+			  gtk_tree_view_queue_draw_path (tree_view, old_cursor_path, NULL);
+			  gtk_tree_path_free (old_cursor_path);
+			}
+		    }
+
+		  /* If path is unselected we start pen dragging and if there's
+		   * only one item selected we will unselect it
+		   */
+		  if (!gtk_tree_selection_path_is_selected (tree_view->priv->selection, path)
+		      && gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_MULTIPLE
+		      && !tree_view->priv->pen_drag_direction
+		      && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) == 1)
+		    {
+		      gtk_tree_selection_unselect_all (tree_view->priv->selection);
+		      gtk_tree_view_real_set_cursor (tree_view, path,
+						     queue_row, TRUE);
+		    }
+		  else
+		    {
+		      tree_view->priv->queued_select_row =
+			gtk_tree_row_reference_new (tree_view->priv->model, path);
+		    }
+		}
               else
                 gtk_tree_view_real_set_cursor (tree_view, path,
                                                queue_row, TRUE);
@@ -3885,6 +3905,7 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
 
       /* Clear the current selection, if it contains a single item */
       if (gtk_tree_selection_get_mode (tree_view->priv->selection) == GTK_SELECTION_MULTIPLE
+	  && tree_view->priv->queued_select_row
 	  && !tree_view->priv->pen_drag_direction
 	  && gtk_tree_selection_count_selected_rows (tree_view->priv->selection) == 1)
 	gtk_tree_selection_unselect_all (tree_view->priv->selection);
