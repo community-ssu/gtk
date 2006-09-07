@@ -14508,7 +14508,7 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
 	  GtkTreePath *select_path =
 	    gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
 
-	  gtk_tree_view_real_set_cursor (tree_view, select_path, TRUE, TRUE);
+	  gtk_tree_view_real_set_cursor (tree_view, select_path, FALSE, TRUE);
 
 	  gtk_tree_path_free (select_path);
 	}

@@ -1,5 +1,10 @@
 2006-09-07  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): don't clear and
+	select when setting cursor.  NB#39784
+
+2006-09-07  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_button_press): rework the code
 	responsible for starting DnD/pen drag; only move focus if the
 	destination is selectable; if the button down path is not yet
