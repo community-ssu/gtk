@@ -627,6 +627,7 @@ apt_worker_install_package_cont (bool success, void *clos)
       set_general_progress_title (updating 
 				  ? _("ai_nw_updating")
 				  : _("ai_nw_installing"));
+      reset_progress_was_cancelled ();
 
       call_apt_worker (APTCMD_INSTALL_PACKAGE,
 		       request.get_buf (), request.get_len (),

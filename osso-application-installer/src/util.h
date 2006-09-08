@@ -126,10 +126,22 @@ void scare_user_with_legalese (bool sure,
   button.  The progress bar can either pulse or show a 'completed'
   fraction.
 
+  The dialog will be shown when calling SHOW_PROGRESS but also
+  automatically when a status report from the apt-worker comes, except
+  when that status report is for op_updating_cache.  To be prepared
+  for this automatic showing, you should use
+  set_general_progress_title and reset_progress_was_cancelled at the
+  right time.
+
+  XXX - Yes, this logic is ugly and needs to be cleaned up.
+
   SHOW_PROGRESS shows the progress dialog, resets it to pulsing mode,
   and sets the current operation associated with the dialog to
   op_general (see apt-worker-proto.h).  The TITLE given in the call to
   show_progress is used whenever the current operation is op_general.
+
+  SET_GENERAL_PROGRESS_TITLE can be use to set the title used for
+  op_general without causing the dialog to show.
 
   SET_PROGRESS sets the displayed progress to relfect that ALREADY
   units out of TOTAL units have been completed.  When ALREADY is -1,
@@ -150,14 +162,18 @@ void scare_user_with_legalese (bool sure,
 
   PROGRESS_WAS_CANCELLED can be used to determine whether
   cancel_apt_worker was indeed called as the response to a click on
-  the "Cancel" button (since the last call to show_progress).
+  the "Cancel" button (since the last call to show_progress or
+  reset_progress_was_cancelled).
 
- */
+  RESET_PROGRESS_WAS_CANCELLED resets the flag to false that tracks
+  whether the user has clicked on the "Cancel" button.
+*/
 
 void show_progress (const char *title);
 void set_general_progress_title (const char *title);
 void set_progress (apt_proto_operation op, int already, int total);
 bool progress_was_cancelled ();
+void reset_progress_was_cancelled ();
 void hide_progress ();
 
 /* SHOW_UPDATING and HIDE_UPDATING determine whether the "Updating"

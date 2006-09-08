@@ -469,6 +469,13 @@ progress_was_cancelled ()
   return progress_cancelled;
 }
 
+void
+reset_progress_was_cancelled ()
+{
+  progress_cancelled = false;
+  cancel_count = 0;
+}
+
 static void
 create_progress (const gchar *title, bool with_cancel)
 {
@@ -507,9 +514,6 @@ create_progress (const gchar *title, bool with_cancel)
 		      G_CALLBACK (cancel_response), NULL);
 
   gtk_widget_show (progress_dialog);
-
-  progress_cancelled = false;
-  cancel_count = 0;
 }
 
 void
@@ -526,6 +530,8 @@ show_progress (const char *title)
   set_general_progress_title (title);
   current_status_operation = op_general;
   set_progress (op_general, -1, 0);
+
+  reset_progress_was_cancelled ();
 }
 
 void
@@ -565,6 +571,15 @@ set_progress (apt_proto_operation op, int already, int total)
     }
 
   // printf ("STATUS: %s -- %f\n", title, fraction);
+
+  // We might need to change the progress title or we might need to
+  // create the whole dialog here.
+  //
+  // XXX - The dialog will only be created when the new operation is
+  // not op_updating_cache since apt-worker outputs progress messages
+  // with that operation that we don't want to show (for example,
+  // during startup).  The whole progress logic needs to be better
+  // defined and apt-worker made more silent, etc.
 
   if (progress_dialog || op != op_updating_cache)
     {
