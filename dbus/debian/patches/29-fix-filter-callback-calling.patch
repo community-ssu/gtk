@@ -1,0 +1,17 @@
+diff -pur dbus/dbus/dbus-connection.c dbus.new/dbus/dbus-connection.c
+--- dbus/dbus/dbus-connection.c	2006-05-05 18:59:22.000000000 +0300
++++ dbus.new/dbus/dbus-connection.c	2006-09-08 13:32:05.991642496 +0300
+@@ -3625,6 +3626,13 @@ dbus_connection_dispatch (DBusConnection
+       DBusMessageFilter *filter = link->data;
+       DBusList *next = _dbus_list_get_next_link (&filter_list_copy, link);
+ 
++      if (filter->function == NULL)
++        {
++          _dbus_verbose ("  filter was removed in a callback function\n");
++          link = next;
++          continue;
++        }
++
+       _dbus_verbose ("  running filter on message %p\n", message);
+       result = (* filter->function) (connection, message, filter->user_data);
+ 

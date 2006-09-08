@@ -6,6 +6,7 @@ dbus (0.61-osso18) experimental; urgency=low
     calls. Fixes: NB#17964
   * Added some parameter checks to public pending call API.
     Fixes: NB#36226, NB#38408, NB#38413, NB#38415
+  * Fixed a possible crash in filter handling code.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 08 Sep 2006 10:48:37 +0300
 
