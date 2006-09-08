@@ -608,6 +608,7 @@ static gboolean navigation_pane_filter_func(GtkTreeModel *model,
 {
   gboolean folder, hidden, local, upnp;
   char *uri = NULL;
+  const char *upnp_root;
   HildonFileSelectionPrivate *priv = data;
 
   gtk_tree_model_get(model, iter,
@@ -617,7 +618,8 @@ static gboolean navigation_pane_filter_func(GtkTreeModel *model,
     HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
     -1);
 
-  if (uri && g_str_has_prefix (uri, g_getenv ("UPNP_ROOT"))) {
+  upnp_root = g_getenv ("UPNP_ROOT");
+  if (uri && upnp_root && g_str_has_prefix (uri, upnp_root)) {
 	  upnp = TRUE;
   } else {
 	  upnp = FALSE;
@@ -2163,7 +2165,7 @@ navigation_pane_tap_and_hold_query (GtkWidget *widget,
 				    GdkEvent *event,
 				    gpointer self)
 {
-  return tap_and_hold_query (self, signal_content_pane_context_menu);
+  return tap_and_hold_query (self, signal_navigation_pane_context_menu);
 }
 
 static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
