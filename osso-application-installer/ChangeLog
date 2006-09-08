@@ -1,3 +1,14 @@
+2006-09-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.h, src/util.cc (reset_progress_was_cancelled): New, to
+	reset the progress_cancelled flag which used to be done in
+	create_progress.
+	(create_progress): Don't reset it here.
+	(show_progress): Call reset_progress_was_cancelled here.
+	* src/apt-worker-client.cc (apt_worker_install_package_cont): Call
+	reset_progress_was_cancelled here to be prepared for the
+	spontaneous showing of the dialog. (N35475)
+
 2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* debian/postinst: Make /etc/sudoers writable before appending to
