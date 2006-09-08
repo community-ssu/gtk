@@ -259,7 +259,7 @@
 	Show more specific information banners when pressing on
 	insensitive things.
 
-	* src/main.cc: Throughout, onyl show "Foo has been cancelled"
+	* src/main.cc: Throughout, only show "Foo has been cancelled"
 	information notes for UI version 2 and up. (N33240)
 	(set_operation_label): Added "insens" parameter.  Updated all
 	callers to provide the right string.  Force old value of "Not
