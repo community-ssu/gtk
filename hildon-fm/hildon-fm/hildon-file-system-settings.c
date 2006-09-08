@@ -48,6 +48,7 @@
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
+
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-settings.h"
 
@@ -58,6 +59,7 @@ enum {
   PROP_USB,
   PROP_GATEWAY_FTP,
   PROP_MMC_PRESENT,
+  PROP_MMC_COVER_OPEN,
   PROP_MMC_USED,
   PROP_MMC_CORRUPTED,
   PROP_INTERNAL_MMC_CORRUPTED
@@ -71,6 +73,7 @@ enum {
 #define USB_CABLE_KEY USB_CABLE_DIR "/usb-cable-attached"
 #define MMC_USED_KEY USB_CABLE_DIR "/mmc-used-over-usb"
 #define MMC_PRESENT_KEY USB_CABLE_DIR "/mmc-device-present"
+#define MMC_COVER_OPEN_KEY USB_CABLE_DIR "/mmc-cover-open"
 #define MMC_CORRUPTED_KEY MMC_DIR "/mmc-corrupted"
 #define MMC_INTERNAL_CORRUPTED_KEY MMC_DIR "/internal-mmc-corrupted"
 
@@ -96,7 +99,9 @@ struct _HildonFileSystemSettingsPrivate
   gboolean btname_ready;
 
   gboolean mmc_is_present;
+  gboolean mmc_is_corrupted;
   gboolean mmc_used_over_usb;
+  gboolean mmc_cover_open;
 };
 
 G_DEFINE_TYPE(HildonFileSystemSettings, \
@@ -132,6 +137,12 @@ hildon_file_system_settings_get_property(GObject *object,
       break;
     case PROP_MMC_USED:
       g_value_set_boolean(value, priv->mmc_used_over_usb);
+      break;
+    case PROP_MMC_COVER_OPEN:
+      g_value_set_boolean(value, priv->mmc_cover_open);
+      break;
+    case PROP_MMC_CORRUPTED:
+      g_value_set_boolean(value, priv->mmc_is_corrupted);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -199,6 +210,28 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
 }
 
 static void
+set_mmc_cover_open_from_gconf_value(HildonFileSystemSettings *self,
+		                    GConfValue *value)
+{
+  if (value && value->type == GCONF_VALUE_BOOL)
+  {
+    self->priv->mmc_cover_open = gconf_value_get_bool(value);
+    g_object_notify(G_OBJECT(self), "mmc-cover-open");
+  }
+}
+
+static void
+set_mmc_corrupted_from_gconf_value(HildonFileSystemSettings *self,
+			           GConfValue *value)
+{
+  if (value && value->type == GCONF_VALUE_BOOL)
+  {
+    self->priv->mmc_is_corrupted = gconf_value_get_bool(value);
+    g_object_notify(G_OBJECT(self), "mmc-is-corrupted");
+  }
+}
+
+static void
 set_mmc_present_from_gconf_value(HildonFileSystemSettings *self,
 	                         GConfValue *value)
 {
@@ -208,7 +241,6 @@ set_mmc_present_from_gconf_value(HildonFileSystemSettings *self,
     g_object_notify(G_OBJECT(self), "mmc-is-present");
   }
 }
-
 
 static void
 set_mmc_used_from_gconf_value(HildonFileSystemSettings *self,
@@ -454,6 +486,17 @@ gconf_gateway_changed(GConfClient *client, guint cnxn_id,
 }
 
 static void
+gconf_mmc_value_changed(GConfClient *client, guint cnxn_id,
+		        GConfEntry *entry, gpointer data)
+{
+  g_assert(entry != NULL);
+
+  if (g_ascii_strcasecmp(entry->key, MMC_CORRUPTED_KEY) == 0)
+    set_mmc_corrupted_from_gconf_value(
+      HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
+}
+
+static void
 gconf_value_changed(GConfClient *client, guint cnxn_id,
                     GConfEntry *entry, gpointer data)
 {
@@ -466,7 +509,10 @@ gconf_value_changed(GConfClient *client, guint cnxn_id,
          set_mmc_used_from_gconf_value(
            HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
   else if (g_ascii_strcasecmp(entry->key, MMC_PRESENT_KEY) == 0)
-	  set_mmc_present_from_gconf_value(
+	 set_mmc_present_from_gconf_value(
+	   HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
+  else if (g_ascii_strcasecmp(entry->key, MMC_COVER_OPEN_KEY) == 0)
+	 set_mmc_cover_open_from_gconf_value(
 	   HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
 }
 
@@ -537,6 +583,14 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
     g_param_spec_boolean("mmc-is-present", "MMC present",
 	                 "Whether or not the MMC is present",
 			 FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_MMC_CORRUPTED,
+    g_param_spec_boolean("mmc-is-corrupted", "MMC corrupted",
+	                 "Whether or not the MMC is corrupted",
+			 FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_MMC_COVER_OPEN,
+    g_param_spec_boolean("mmc-cover-open", "MMC cover open",
+	                 "Whether or not the MMC cover is open",
+			 FALSE, G_PARAM_READABLE));
 }
 
 static gboolean delayed_init(gpointer data)
@@ -566,6 +620,15 @@ static gboolean delayed_init(gpointer data)
     error = NULL;
   }
 
+  gconf_client_add_dir(self->priv->gconf, MMC_DIR,
+		       GCONF_CLIENT_PRELOAD_NONE, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_add_dir failed: %s", error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+  
   gconf_client_notify_add(self->priv->gconf, BTCOND_GCONF_PATH,
                           gconf_gateway_changed, self, NULL, &error);
   if (error != NULL)
@@ -584,6 +647,16 @@ static gboolean delayed_init(gpointer data)
     error = NULL;
   }
 
+  gconf_client_notify_add(self->priv->gconf, MMC_DIR,
+		          gconf_mmc_value_changed, self, NULL, &error);
+ 
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_notify_add failed: %s", error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+  
   value = gconf_client_get_without_default(self->priv->gconf,
                                            BTCOND_GCONF_PREFERRED, &error);
   if (error != NULL)

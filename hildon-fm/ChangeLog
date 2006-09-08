@@ -1,3 +1,10 @@
+2006-09-08 Tapani Palli <tapani.palli@nokia.com>
+
+	* hildon-fm/hildon-file-system-settings.c : added more properties for
+	mmc status
+	* hildon-fm/hildon-file-system-mmc.c : checks for opened cover and
+	corrupted mmc (N39775, N40002)
+
 2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-selection.c (tap_and_hold_query,
