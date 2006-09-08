@@ -1,0 +1,407 @@
+diff -ur dbus/bus/dir-watch.c dbus.new/bus/dir-watch.c
+--- dbus/bus/dir-watch.c	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/dir-watch.c	2006-09-07 16:34:51.336521624 +0300
+@@ -66,7 +66,7 @@
+   if (fcntl (fd, F_NOTIFY, DN_DELETE|DN_RENAME|DN_MODIFY) == -1)
+     {
+       _dbus_warn ("Cannot setup D_NOTIFY for '%s' error '%s'\n", dir, _dbus_strerror (errno));
+-      close (fd);
++      _dbus_close (fd, NULL);
+       goto out;
+     }
+   
+@@ -86,7 +86,7 @@
+   
+   for (i = 0; i < num_fds; i++)
+     {
+-      if (close (fds[i]) != 0)
++      if (!_dbus_close (fds[i], NULL))
+ 	{
+ 	  _dbus_verbose ("Error closing fd %d for config directory watch\n", fds[i]);
+ 	}
+diff -ur dbus/bus/main.c dbus.new/bus/main.c
+--- dbus/bus/main.c	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/main.c	2006-09-07 15:57:55.947311976 +0300
+@@ -168,6 +168,9 @@
+       exit (1);
+     }
+ 
++  _dbus_fd_set_close_on_exec (reload_pipe[0]);
++  _dbus_fd_set_close_on_exec (reload_pipe[1]);
++
+   watch = _dbus_watch_new (reload_pipe[RELOAD_READ_END],
+ 			   DBUS_WATCH_READABLE, TRUE,
+ 			   handle_reload_watch, NULL, NULL);
+diff -ur dbus/dbus/dbus-server-unix.c dbus.new/dbus/dbus-server-unix.c
+--- dbus/dbus/dbus-server-unix.c	2006-05-05 18:59:22.000000000 +0300
++++ dbus.new/dbus/dbus-server-unix.c	2006-09-07 16:26:50.929554584 +0300
+@@ -102,7 +102,7 @@
+   transport = _dbus_transport_new_for_fd (client_fd, &server->guid_hex, NULL);
+   if (transport == NULL)
+     {
+-      close (client_fd);
++      _dbus_close (client_fd, NULL);
+       SERVER_UNLOCK (server);
+       return FALSE;
+     }
+@@ -219,7 +219,7 @@
+       unix_server->watch = NULL;
+     }
+   
+-  close (unix_server->fd);
++  _dbus_close (unix_server->fd, NULL);
+   unix_server->fd = -1;
+ 
+   if (unix_server->socket_name != NULL)
+@@ -436,7 +436,7 @@
+   if (server == NULL)
+     {
+       dbus_set_error (error, DBUS_ERROR_NO_MEMORY, NULL);
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       _dbus_string_free (&address);
+       return NULL;
+     }
+diff -ur dbus/dbus/dbus-spawn.c dbus.new/dbus/dbus-spawn.c
+--- dbus/dbus/dbus-spawn.c	2006-05-05 18:59:22.000000000 +0300
++++ dbus.new/dbus/dbus-spawn.c	2006-09-07 18:32:08.176759304 +0300
+@@ -276,13 +276,13 @@
+            * a hangup and then the babysitter will
+            * quit itself.
+            */
+-          close (sitter->socket_to_babysitter);
++          _dbus_close (sitter->socket_to_babysitter, NULL);
+           sitter->socket_to_babysitter = -1;
+         }
+ 
+       if (sitter->error_pipe_from_child >= 0)
+         {
+-          close (sitter->error_pipe_from_child);
++          _dbus_close (sitter->error_pipe_from_child, NULL);
+           sitter->error_pipe_from_child = -1;
+         }
+ 
+@@ -470,7 +470,7 @@
+ close_socket_to_babysitter (DBusBabysitter *sitter)
+ {
+   _dbus_verbose ("Closing babysitter\n");
+-  close (sitter->socket_to_babysitter);
++  _dbus_close (sitter->socket_to_babysitter, NULL);
+   sitter->socket_to_babysitter = -1;
+ }
+ 
+@@ -478,7 +478,7 @@
+ close_error_pipe_from_child (DBusBabysitter *sitter)
+ {
+   _dbus_verbose ("Closing child error\n");
+-  close (sitter->error_pipe_from_child);
++  _dbus_close (sitter->error_pipe_from_child, NULL);
+   sitter->error_pipe_from_child = -1;
+ }
+ 
+@@ -753,7 +753,7 @@
+     return -1;
+   else
+     {
+-      ret = close (*fd);
++      ret = _dbus_close (*fd, NULL);
+       *fd = -1;
+     }
+ 
+@@ -1061,6 +1061,7 @@
+     goto cleanup_and_fail;
+ 
+   _dbus_fd_set_close_on_exec (child_err_report_pipe[READ_END]);
++  _dbus_fd_set_close_on_exec (child_err_report_pipe[WRITE_END]);
+   
+   if (!_dbus_full_duplex_pipe (&babysitter_pipe[0], &babysitter_pipe[1], TRUE, error))
+     goto cleanup_and_fail;
+diff -ur dbus/dbus/dbus-sysdeps-util.c dbus.new/dbus/dbus-sysdeps-util.c
+--- dbus/dbus/dbus-sysdeps-util.c	2006-05-05 18:59:23.000000000 +0300
++++ dbus.new/dbus/dbus-sysdeps-util.c	2006-09-07 18:14:43.750536224 +0300
+@@ -210,7 +210,7 @@
+     {
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Failed to fdopen fd %d: %s", fd, _dbus_strerror (errno));
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return FALSE;
+     }
+   
+@@ -219,6 +219,7 @@
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Failed to write to \"%s\": %s", cfilename,
+                       _dbus_strerror (errno));
++      fclose (f);
+       return FALSE;
+     }
+ 
+diff -ur dbus/dbus/dbus-sysdeps.c dbus.new/dbus/dbus-sysdeps.c
+--- dbus/dbus/dbus-sysdeps.c	2006-05-05 18:59:23.000000000 +0300
++++ dbus.new/dbus/dbus-sysdeps.c	2006-09-07 16:33:05.518608392 +0300
+@@ -432,7 +432,7 @@
+         {
+           dbus_set_error (error, DBUS_ERROR_BAD_ADDRESS,
+                       "Abstract socket name too long\n");
+-          close (fd);
++          _dbus_close (fd, NULL);
+           return -1;
+ 	}
+ 	
+@@ -441,7 +441,7 @@
+ #else /* HAVE_ABSTRACT_SOCKETS */
+       dbus_set_error (error, DBUS_ERROR_NOT_SUPPORTED,
+                       "Operating system does not support abstract socket namespace\n");
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return -1;
+ #endif /* ! HAVE_ABSTRACT_SOCKETS */
+     }
+@@ -451,7 +451,7 @@
+         {
+           dbus_set_error (error, DBUS_ERROR_BAD_ADDRESS,
+                       "Socket name too long\n");
+-          close (fd);
++          _dbus_close (fd, NULL);
+           return -1;
+ 	}
+ 
+@@ -465,7 +465,7 @@
+                       "Failed to connect to socket %s: %s",
+                       path, _dbus_strerror (errno));
+ 
+-      close (fd);
++      _dbus_close (fd, NULL);
+       fd = -1;
+       
+       return -1;
+@@ -475,7 +475,7 @@
+     {
+       _DBUS_ASSERT_ERROR_IS_SET (error);
+       
+-      close (fd);
++      _dbus_close (fd, NULL);
+       fd = -1;
+ 
+       return -1;
+@@ -540,7 +540,7 @@
+         {
+           dbus_set_error (error, DBUS_ERROR_BAD_ADDRESS,
+                       "Abstract socket name too long\n");
+-          close (listen_fd);
++          _dbus_close (listen_fd, NULL);
+           return -1;
+ 	}
+       
+@@ -549,7 +549,7 @@
+ #else /* HAVE_ABSTRACT_SOCKETS */
+       dbus_set_error (error, DBUS_ERROR_NOT_SUPPORTED,
+                       "Operating system does not support abstract socket namespace\n");
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+ #endif /* ! HAVE_ABSTRACT_SOCKETS */
+     }
+@@ -577,7 +577,7 @@
+         {
+           dbus_set_error (error, DBUS_ERROR_BAD_ADDRESS,
+                       "Abstract socket name too long\n");
+-          close (listen_fd);
++          _dbus_close (listen_fd, NULL);
+           return -1;
+ 	}
+ 	
+@@ -589,7 +589,7 @@
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Failed to bind socket \"%s\": %s",
+                       path, _dbus_strerror (errno));
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+ 
+@@ -598,14 +598,14 @@
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Failed to listen on socket \"%s\": %s",
+                       path, _dbus_strerror (errno));
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+ 
+   if (!_dbus_set_fd_nonblocking (listen_fd, error))
+     {
+       _DBUS_ASSERT_ERROR_IS_SET (error);
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+   
+@@ -663,7 +663,7 @@
+                       _dbus_error_from_errno (errno),
+                       "Failed to lookup hostname: %s",
+                       host);
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return -1;
+     }
+   
+@@ -681,7 +681,7 @@
+                       "Failed to connect to socket %s: %s:%d",
+                       host, _dbus_strerror (errno), port);
+ 
+-      close (fd);
++      _dbus_close (fd, NULL);
+       fd = -1;
+       
+       return -1;
+@@ -689,7 +689,7 @@
+ 
+   if (!_dbus_set_fd_nonblocking (fd, error))
+     {
+-      close (fd);
++      _dbus_close (fd, NULL);
+       fd = -1;
+ 
+       return -1;
+@@ -737,7 +737,7 @@
+                       _dbus_error_from_errno (errno),
+                       "Failed to lookup hostname: %s",
+                       host);
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+   
+@@ -753,7 +753,7 @@
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Failed to bind socket \"%s:%d\": %s",
+                       host, port, _dbus_strerror (errno));
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+ 
+@@ -762,13 +762,13 @@
+       dbus_set_error (error, _dbus_error_from_errno (errno),  
+                       "Failed to listen on socket \"%s:%d\": %s",
+                       host, port, _dbus_strerror (errno));
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+ 
+   if (!_dbus_set_fd_nonblocking (listen_fd, error))
+     {
+-      close (listen_fd);
++      _dbus_close (listen_fd, NULL);
+       return -1;
+     }
+   
+@@ -2120,7 +2120,7 @@
+       _dbus_verbose ("fstat() failed: %s",
+                      _dbus_strerror (errno));
+       
+-      close (fd);
++      _dbus_close (fd, NULL);
+       
+       return FALSE;
+     }
+@@ -2130,7 +2130,7 @@
+       dbus_set_error (error, DBUS_ERROR_FAILED,
+                       "File size %lu of \"%s\" is too large.",
+                       (unsigned long) sb.st_size, filename_c);
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return FALSE;
+     }
+   
+@@ -2154,7 +2154,7 @@
+               _dbus_verbose ("read() failed: %s",
+                              _dbus_strerror (errno));
+               
+-              close (fd);
++              _dbus_close (fd, NULL);
+               _dbus_string_set_length (str, orig_len);
+               return FALSE;
+             }
+@@ -2162,7 +2162,7 @@
+             total += bytes_read;
+         }
+ 
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return TRUE;
+     }
+   else if (sb.st_size != 0)
+@@ -2171,12 +2171,12 @@
+       dbus_set_error (error, DBUS_ERROR_FAILED,
+                       "\"%s\" is not a regular file",
+                       filename_c);
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return FALSE;
+     }
+   else
+     {
+-      close (fd);
++      _dbus_close (fd, NULL);
+       return TRUE;
+     }
+ }
+@@ -2275,7 +2275,7 @@
+       total += bytes_written;
+     }
+ 
+-  if (close (fd) < 0)
++  if (!_dbus_close (fd, NULL))
+     {
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Could not close file %s: %s",
+@@ -2306,7 +2306,7 @@
+    */
+ 
+   if (fd >= 0)
+-    close (fd);
++    _dbus_close (fd, NULL);
+         
+   if (need_unlink && unlink (tmp_filename_c) < 0)
+     _dbus_verbose ("Failed to unlink temp file %s: %s\n",
+@@ -2349,7 +2349,7 @@
+       return FALSE;
+     }
+ 
+-  if (close (fd) < 0)
++  if (!_dbus_close (fd, NULL))
+     {
+       dbus_set_error (error,
+                       DBUS_ERROR_FAILED,
+@@ -2572,7 +2572,7 @@
+ 
+   if (_dbus_read (fd, str, n_bytes) != n_bytes)
+     {
+-      close (fd);
++      _dbus_close (fd, NULL);
+       _dbus_string_set_length (str, old_len);
+       return pseudorandom_generate_random_bytes (str, n_bytes);
+     }
+@@ -2580,7 +2580,7 @@
+   _dbus_verbose ("Read %d bytes from /dev/urandom\n",
+                  n_bytes);
+   
+-  close (fd);
++  _dbus_close (fd, NULL);
+   
+   return TRUE;
+ }
+@@ -2962,8 +2962,8 @@
+       dbus_set_error (error, _dbus_error_from_errno (errno),
+                       "Could not set full-duplex pipe nonblocking");
+       
+-      close (fds[0]);
+-      close (fds[1]);
++      _dbus_close (fds[0], NULL);
++      _dbus_close (fds[1], NULL);
+       
+       return FALSE;
+     }
