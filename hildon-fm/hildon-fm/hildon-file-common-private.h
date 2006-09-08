@@ -40,6 +40,7 @@ G_BEGIN_DECLS
 #define _(String) dgettext(PACKAGE, String)
 #define N_(String) String
 #define HCS(String) dgettext("hildon-common-strings", String)
+#define KE(String) dgettext("ke-recv", String)
 
 /* If environment doesn't define, use this */
 #define MAX_FILENAME_LENGTH_DEFAULT 255
