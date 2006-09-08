@@ -39,7 +39,7 @@ typedef struct _HildonNavigatorPanelPrivate HildonNavigatorPanelPrivate;
 struct _HildonNavigatorPanelPrivate
 {
   HildonLog *log;
-  HNPanelDirection direction;
+  GtkOrientation   orientation;
   gboolean         plugins_loaded;
   guint 	   num_plugins;
 };
@@ -104,7 +104,7 @@ hildon_navigator_panel_init (HildonNavigatorPanel *panel)
   
   priv->log = hildon_log_new (path);
 
-  priv->direction      = HN_PANEL_VERT;
+  priv->orientation    = GTK_ORIENTATION_VERTICAL;
   priv->plugins_loaded = FALSE;
   priv->num_plugins    = 0;
 
@@ -125,7 +125,7 @@ hildon_navigator_panel_class_init (HildonNavigatorPanelClass *panel_class)
 
   panel_class->load_plugins_from_file = hn_panel_load_plugins_from_file;
   panel_class->unload_all_plugins     = hn_panel_unload_all_plugins;
-  panel_class->set_direction          = hn_panel_set_direction;
+  panel_class->set_orientation        = hn_panel_set_orientation;
   panel_class->flip_panel             = hn_panel_flip_panel;  
   panel_class->add_button	      = hn_panel_add_button;
   panel_class->get_plugins            = hn_panel_get_plugins;	      
@@ -517,17 +517,14 @@ hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
 
   priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
 
-  loaded_plugins = gtk_container_get_children (GTK_CONTAINER (panel));
+  loaded_plugins = hn_panel_peek_plugins (panel);
 
   for (l=loaded_plugins ; l != NULL ; l=l->next)
   {
-    if (HILDON_IS_NAVIGATOR_ITEM (l->data))
+    if (!mandatory ||  
+        !hildon_navigator_item_get_mandatory ( HILDON_NAVIGATOR_ITEM (l->data)))
     {
-      if (!mandatory ||  
-          !hildon_navigator_item_get_mandatory ( HILDON_NAVIGATOR_ITEM (l->data)))
-      {
-        gtk_widget_destroy (GTK_WIDGET (l->data));
-      }
+      gtk_container_remove (GTK_CONTAINER (panel), GTK_WIDGET (l->data));
     }
   }
 
@@ -538,7 +535,7 @@ hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
 }
 
 void 
-hn_panel_set_direction (HildonNavigatorPanel *panel, HNPanelDirection direction)
+hn_panel_set_orientation (HildonNavigatorPanel *panel, GtkOrientation orientation)
 {
   HildonNavigatorPanelPrivate *priv;
 
@@ -547,22 +544,22 @@ hn_panel_set_direction (HildonNavigatorPanel *panel, HNPanelDirection direction)
 
   priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
 
-  priv->direction = direction;
+  priv->orientation = orientation;
 
   gtk_container_resize_children (GTK_CONTAINER (panel));
 }
 
-HNPanelDirection 
-hn_panel_get_direction (HildonNavigatorPanel *panel)
+GtkOrientation 
+hn_panel_get_orientation (HildonNavigatorPanel *panel)
 {
   HildonNavigatorPanelPrivate *priv;
 
-  g_return_val_if_fail (panel,HN_PANEL_VERT);
-  g_return_val_if_fail (HILDON_IS_NAVIGATOR_PANEL (panel),HN_PANEL_VERT);
+  g_return_val_if_fail (panel,GTK_ORIENTATION_VERTICAL);
+  g_return_val_if_fail (HILDON_IS_NAVIGATOR_PANEL (panel),GTK_ORIENTATION_VERTICAL);
 
   priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
 
-  return priv->direction;
+  return priv->orientation;
 }
 
 void 
@@ -575,7 +572,7 @@ hn_panel_flip_panel (HildonNavigatorPanel *panel)
 
   priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
 
-  priv->direction = !priv->direction; /*FIXME: could this change? */
+  priv->orientation = !priv->orientation; /*FIXME: could this change? */
 
   gtk_container_resize_children (GTK_CONTAINER (panel));
 }
@@ -664,14 +661,14 @@ hn_panel_size_request (GtkWidget *widget, GtkRequisition *requisition)
 {
   HildonNavigatorPanel        *panel = HILDON_NAVIGATOR_PANEL (widget);
   HildonNavigatorPanelPrivate *priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
-  HNPanelDirection             direction = priv->direction;
+  GtkOrientation              orientation = priv->orientation;
 
-  switch (direction)
+  switch (orientation)
   {
-    case HN_PANEL_VERT:
+    case GTK_ORIENTATION_VERTICAL:
       hn_panel_vbox_size_request (widget,requisition);
       break;
-    case HN_PANEL_HORIZ:
+    case GTK_ORIENTATION_HORIZONTAL:
     default:
       hn_panel_hbox_size_request (widget,requisition);
       break;
@@ -683,14 +680,14 @@ hn_panel_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
   HildonNavigatorPanel        *panel = HILDON_NAVIGATOR_PANEL (widget);
   HildonNavigatorPanelPrivate *priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
-  HNPanelDirection             direction = priv->direction;
+  GtkOrientation              orientation = priv->orientation;
 
-  switch (direction)
+  switch (orientation)
   {
-    case HN_PANEL_VERT:
+    case GTK_ORIENTATION_VERTICAL:
       hn_panel_vbox_size_allocate (widget,allocation);
       break;
-    case HN_PANEL_HORIZ:
+    case GTK_ORIENTATION_HORIZONTAL:
     default:
       hn_panel_hbox_size_allocate (widget,allocation);
       break;

@@ -57,8 +57,6 @@ G_BEGIN_DECLS
         (G_TYPE_INSTANCE_GET_PRIVATE ((obj), \
         HILDON_NAVIGATOR_PANEL_TYPE, HildonNavigatorPanelPrivate));
 
-typedef enum {HN_PANEL_HORIZ,HN_PANEL_VERT} HNPanelDirection; 
-
 typedef struct _HildonNavigatorPanel HildonNavigatorPanel;
 typedef struct _HildonNavigatorPanelClass HildonNavigatorPanelClass;
 
@@ -76,10 +74,10 @@ struct _HildonNavigatorPanelClass
 		    		     gchar *filename);
     void (*unload_all_plugins)      (HildonNavigatorPanel *panel,
 		    		     gboolean mandatory);
-    void (*set_direction)           (HildonNavigatorPanel *panel, 
-		    		     HNPanelDirection direction);
-    HNPanelDirection 
-	 (*get_direction) 	    (HildonNavigatorPanel *panel);
+    void (*set_orientation)         (HildonNavigatorPanel *panel, 
+		    		     GtkOrientation orientation);
+    GtkOrientation  
+	 (*get_orientation) 	    (HildonNavigatorPanel *panel);
     
     void (*flip_panel)              (HildonNavigatorPanel *panel);
 
@@ -106,10 +104,10 @@ void
 hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory);
 
 void 
-hn_panel_set_direction (HildonNavigatorPanel *panel, HNPanelDirection direction);
+hn_panel_set_orientation (HildonNavigatorPanel *panel, GtkOrientation orientation);
 
-HNPanelDirection 
-hn_panel_get_direction (HildonNavigatorPanel *panel);
+GtkOrientation 
+hn_panel_get_orientation (HildonNavigatorPanel *panel);
 
 void 
 hn_panel_flip_panel (HildonNavigatorPanel *panel);

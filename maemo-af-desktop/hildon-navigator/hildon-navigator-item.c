@@ -86,8 +86,6 @@ static GtkBinClass *parent_class;
 
 static void hildon_navigator_item_finalize (GObject *object);
 
-static void hildon_navigator_item_destroy (GtkObject *self);
-
 static void hildon_navigator_item_class_init (HildonNavigatorItemClass *item_class);
 
 static void hildon_navigator_item_init (HildonNavigatorItem *item);
@@ -129,24 +127,6 @@ hildon_navigator_item_finalize (GObject *object)
 
   if (priv->dlhandler)
     dlclose (priv->dlhandler);
-}
-
-static void
-hildon_navigator_item_destroy (GtkObject *self)
-{
-  HildonNavigatorItemPrivate *priv;
-
-  g_return_if_fail (self);
-
-  priv = HILDON_NAVIGATOR_ITEM_GET_PRIVATE (self);
-
-  if (priv->widget)
-    gtk_widget_unparent (priv->widget);
-
-  priv->widget = NULL;
-
-  if ( GTK_OBJECT_CLASS (parent_class)->destroy ) 
-    GTK_OBJECT_CLASS (parent_class)->destroy(self);   
 }
 
 static void 
@@ -218,7 +198,6 @@ hildon_navigator_item_class_init (HildonNavigatorItemClass *item_class)
   object_class->get_property      = hildon_navigator_item_get_property;
   widget_class->size_request      = hildon_navigator_item_size_request;
   widget_class->size_allocate     = hildon_navigator_item_size_allocate;
-  GTK_OBJECT_CLASS( item_class )->destroy = hildon_navigator_item_destroy;
  
   navigator_signals[NAV_ITEM_SIGNAL_LOG_CREATE] = 
 	g_signal_new("hn_item_create",
@@ -268,7 +247,7 @@ hildon_navigator_item_class_init (HildonNavigatorItemClass *item_class)
                                                         "mandatory",
 	                                                "mandatory",
 	                                                FALSE,
-	                                                G_PARAM_READWRITE));	
+	                                                G_PARAM_CONSTRUCT | G_PARAM_READWRITE));	
 
   g_object_class_install_property (object_class,
                                    HNI_POSITION_PROP,
@@ -278,7 +257,7 @@ hildon_navigator_item_class_init (HildonNavigatorItemClass *item_class)
                                                      0,
 						     100,/*FIXME: what value?*/
 						     0,
-                                                     G_PARAM_READWRITE));
+                                                     G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
 }
 
 static void 
