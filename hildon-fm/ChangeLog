@@ -1,3 +1,13 @@
+2006-09-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-common-private.h (KE): New.
+
+	* hildon-fm/hildon-file-selection.c (navigation_pane_filter_func):
+	Only test prefix when UPNP_ROOT is set.
+	(navigation_pane_tap_and_hold_query): Use
+	signal_navigation_pane_context_menu instead of
+	signal_content_pane_context_menu, stupid.
+
 2006-09-08 Tapani Palli <tapani.palli@nokia.com>
 
 	* hildon-fm/hildon-file-system-settings.c : added more properties for
