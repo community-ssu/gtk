@@ -1,6 +1,5 @@
 dbus (0.61-osso18) experimental; urgency=low
 
-  * UNRELEASED
   * Fixed compilation with -Wshadow. Fixes: NB#22902
   * Plugged some FD leaks and fixed EINTR handling in multiple close()
     calls. Fixes: NB#17964
@@ -8,7 +7,7 @@ dbus (0.61-osso18) experimental; urgency=low
     Fixes: NB#36226, NB#38408, NB#38413, NB#38415
   * Fixed a possible crash in filter handling code.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 08 Sep 2006 10:48:37 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 08 Sep 2006 14:41:13 +0300
 
 dbus (0.61-osso17) experimental; urgency=low
 
