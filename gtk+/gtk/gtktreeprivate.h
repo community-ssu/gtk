@@ -239,11 +239,10 @@ struct _GtkTreeViewPrivate
   guint allow_checkbox_mode : 1; /* is checkbox mode ever allowed to be on? */
   guint pen_down : 1;
   guint pen_drag_active : 1;
-  guint pen_drag_motion_counter;
   gint pen_drag_direction;
   GList *pen_drag_old_selection;
   guint pen_drag_reverse : 1;
-  gboolean pen_scroll_timer;
+  guint first_drag_selectable : 1;
   gdouble old_y;
   gboolean pen_focus;
   gboolean dotted_lines;
