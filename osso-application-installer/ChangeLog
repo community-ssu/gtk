@@ -4,6 +4,10 @@
 	instead of cache_init so that the cache building happens in the
 	background.  Return rescode_download_failed for any kind of
 	failure.
+	(escape_for_shell): New.
+	(get_deb_record, install_from_file): Use it to guard against
+	filenames with single quotes in them. (N38383)
+
 	* src/main.cc (refresh_package_cache_reply): Show appropriate
 	error message when result code is
 	rescode_download_failed. (N36104)

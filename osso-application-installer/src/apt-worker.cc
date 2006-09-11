@@ -2376,16 +2376,54 @@ cmd_clean ()
     need_cache_init ();
 }
 
+static char *
+escape_for_shell (const char *str)
+{
+  char buf[2000];
+  char *p = buf;
+
+  /* Enclose the string in single quotes and escape single quotes.
+   */
+
+  *p++ = '\'';
+  while (*str)
+    {
+      if (p >= buf+sizeof(buf)-6)
+	return NULL;
+
+      if (*str == '\'')
+	{
+	  // Don't you love bourne shell syntax?
+	  *p++ = '\'';
+	  *p++ = '\\';
+	  *p++ = '\'';
+	  *p++ = '\'';
+	  str++;
+	}
+      else
+	*p++ = *str++;
+    }
+  *p++ = '\'';
+  *p++ = '\0';
+  return g_strdup (buf);
+}
+
 // XXX - interpret status codes
 
 static char *
 get_deb_record (const char *filename)
 {
-  char *cmd =
-    g_strdup_printf ("/usr/bin/dpkg-deb -f '%s'", filename);
+  char *esc_filename = escape_for_shell (filename);
+  if (esc_filename == NULL)
+    return NULL;
+
+  char *cmd = g_strdup_printf ("/usr/bin/dpkg-deb -f %s", esc_filename);
   fprintf (stderr, "%s\n", cmd);
   FILE *f = popen (cmd, "r");
+
   g_free (cmd);
+  g_free (esc_filename);
+
   if (f)
     {
       const size_t incr = 2000;
@@ -2700,10 +2738,17 @@ void
 cmd_install_file ()
 {
   const char *filename = request.decode_string_in_place ();
+  char *esc_filename = escape_for_shell (filename);
+  
+  if (esc_filename == NULL)
+    {
+      response.encode_int (0);
+      return;
+    }
 
   _system->UnLock();
 
-  char *cmd = g_strdup_printf ("/usr/bin/dpkg --install '%s'", filename);
+  char *cmd = g_strdup_printf ("/usr/bin/dpkg --install %s", esc_filename);
   fprintf (stderr, "%s\n", cmd);
   int res = system (cmd);
   g_free (cmd);
@@ -2712,12 +2757,14 @@ cmd_install_file ()
     {
       char *cmd =
 	g_strdup_printf ("/usr/bin/dpkg --purge "
-			 "`/usr/bin/dpkg-deb -f '%s' Package`",
-			 filename);
+			 "`/usr/bin/dpkg-deb -f %s Package`",
+			 esc_filename);
       fprintf (stderr, "%s\n", cmd);
       system (cmd);
       g_free (cmd);
     }
+
+  g_free (esc_filename);
 
   _system->Lock();
 
