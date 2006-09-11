@@ -1,5 +1,14 @@
 2006-09-11  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Taken from GNOME CVS. NB#11656
+	
+    Fri Sep 16 14:00:20 2005  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkwindow.c: fix bug #316180.
+	gtk_window_map_event(): new function to work around lost unmap requests.
+
+2006-09-11  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkentry.c (gtk_entry_set_property): Remove senseless hack
 	which made non-editable GtkEntry insensitive.
 
