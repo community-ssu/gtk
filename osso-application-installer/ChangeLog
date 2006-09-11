@@ -1,5 +1,14 @@
 2006-09-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.h (show_updating): Added label parameter.
+	(update_label): New, to store it.
+	(refresh_updating_banner): Use it.
+	* src/main.cc (search_packages): Show "searching" banner before
+	calling backend.
+	(search_packages_reply): Hide it. (N32375)
+	(refresh_package_cache_reply): Show appropriate error message when
+	result code is rescode_download_failed. (N36104)
+
 	* src/repo.h (parse_quoted_word): Added prototype.
 	* src/main.cc (check_repositories, check_repositories_reply): New,
 	to check whether any repositories are defined and enabled and
@@ -7,7 +16,7 @@
 	maybe_refresh_package_cache.  them.
 	(make_install_applications_view, make_upgrade_applications_view):
 	Use check_repositories instead of maybe_refresh_package_cache.
-	(N30390)
+	(N30390, N33091)
 	
 	* src/util.cc (call_copy_cont): Replaced 'success' parameter with
 	GnomeVFSResult.  Removed 'show_error' parameter.  Use "no
