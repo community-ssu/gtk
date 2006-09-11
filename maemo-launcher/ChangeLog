@@ -1,5 +1,9 @@
 2006-09-11  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac (MINIMAL_DEPENDS): Add missing dbus-1 dependency.
+
+2006-09-11  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (rise_oom_defense): Use pid_t for pid variables.
 	(invoked_send_pid): Likewise.
 
