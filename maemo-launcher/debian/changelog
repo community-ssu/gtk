@@ -1,6 +1,7 @@
 maemo-launcher (0.18~-1) UNRELEASED; urgency=low
 
   * New Upstream Release.
+    - Create a new session id for the childs. (Closes: #28627@Nokia)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Mon,  3 Jul 2006 18:06:54 +0300
 

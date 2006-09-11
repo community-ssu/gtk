@@ -1,3 +1,7 @@
+2006-09-11  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/launcher.c (main): Set a new session id for the childs.
+
 2006-07-10  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/ui.h: Renamed to ...

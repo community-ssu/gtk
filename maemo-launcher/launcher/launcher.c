@@ -820,6 +820,9 @@ main(int argc, char *argv[])
       break;
 
     case 0: /* Child. */
+      if (setsid() < 0)
+	error(1, "setting session id");
+
       sigs_restore();
 
       invoked_get_actions(sd, &prog);
