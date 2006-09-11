@@ -2,7 +2,7 @@
 # debian/rules for the dpkg suite.
 # Copyright © 2004 Scott James Remnant <scott@netsplit.com>
 
-include /usr/share/dpatch/dpatch.make
+# include /usr/share/dpatch/dpatch.make
 
 CFLAGS = -Wall -g
 CXXFLAGS = -Wall -g
