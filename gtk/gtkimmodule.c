@@ -545,7 +545,7 @@ match_locale (const gchar *locale,
  *    the value is newly allocated and must be freed
  *    with g_free().
  **/
-const gchar *
+gchar *
 _gtk_im_module_get_default_context_id (const gchar *locale)
 {
   GSList *tmp_list;

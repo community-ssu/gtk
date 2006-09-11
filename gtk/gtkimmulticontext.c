@@ -125,7 +125,7 @@ get_global_context_id(void)
 			&context_id)) {
     /* Fall back to default locale */
     gchar *locale = _gtk_get_lc_ctype ();
-    context_id = (gchar*)_gtk_im_module_get_default_context_id (locale);
+    context_id = _gtk_im_module_get_default_context_id (locale);
     g_free (locale);
   }
   
