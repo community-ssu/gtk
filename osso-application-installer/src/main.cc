@@ -44,6 +44,7 @@
 #include "settings.h"
 #include "search.h"
 #include "instr.h"
+#include "repo.h"
 
 #define MAX_PACKAGES_NO_CATEGORIES 7
 
@@ -1591,12 +1592,49 @@ view_section (section_info *si)
   show_view (&install_section_view);
 }
 
+static void
+check_repositories_reply (int cmd, apt_proto_decoder *dec, void *data)
+{
+  if (dec == NULL)
+    return;
+
+  while (!dec->corrupted ())
+    {
+      const char *line = dec->decode_string_in_place ();
+      char *start, *end;
+
+      if (line == NULL)
+	break;
+
+      start = (char *)line;
+      if (parse_quoted_word (&start, &end, false)
+	  && end - start == 3 && !strncmp (start, "deb", 3))
+	{
+	  /* Found one active repository.  Maybe we need to refresh
+	     it.
+	  */
+	  maybe_refresh_package_cache ();
+	  return;
+	}
+    }
+
+  /* No repositories active.
+   */
+  irritate_user (_("ai_ib_no_repositories"));
+}
+
+static void
+check_repositories ()
+{
+  apt_worker_get_sources_list (check_repositories_reply, NULL);
+}
+
 GtkWidget *
 make_install_applications_view (view *v)
 {
   GtkWidget *list, *view, *label;
 
-  maybe_refresh_package_cache ();
+  check_repositories ();
 
   set_operation_label (_("ai_me_package_install"),
 		       _("ai_ib_nothing_to_install"));
@@ -1641,7 +1679,7 @@ make_upgrade_applications_view (view *v)
 {
   GtkWidget *view;
 
-  maybe_refresh_package_cache ();
+  check_repositories ();
 
   set_operation_label (_("ai_me_package_update"),
 		       _("ai_ib_nothing_to_update"));
