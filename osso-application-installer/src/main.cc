@@ -997,7 +997,12 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *data)
     {
       int result_code = dec->decode_int ();
 
-      if (result_code != rescode_success)
+      if (result_code == rescode_download_failed)
+	{
+	  annoy_user (_("ai_ni_error_download_failed"));
+	  success = false;
+	}
+      else if (result_code != rescode_success)
 	{
 	  annoy_user (_("ai_ni_update_list_not_successful"));
 	  success = false;
@@ -2035,6 +2040,8 @@ search_packages_reply (int cmd, apt_proto_decoder *dec, void *data)
 {
   view *parent = (view *)data;
 
+  hide_updating ();
+
   if (dec == NULL)
     return;
 
@@ -2139,6 +2146,8 @@ search_packages (const char *pattern, bool in_descriptions)
     }
   else
     {
+      show_updating (_("ai_nw_searching"));
+
       bool only_installed = (parent == &uninstall_applications_view
 			     || parent == &upgrade_applications_view);
       bool only_available = (parent == &install_applications_view

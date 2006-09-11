@@ -186,8 +186,14 @@ void hide_progress ();
    In addition ALLOW_UPDATING and PREVENT_UPDATING maintain a flag and
    the updating banner is only shown when that flag allows it.  The
    flag starts out in the 'allow' state.
+
+   The label shown in the banner is determined by SHOW_UPDATING.
+   Using NULL (the default) gives you the standard "Updating" label.
+   The label specified with SHOW_LABEL will only be used when the
+   banner is created.  Thus, when a banner is already active when you
+   call SHOW_UPDATING again, the label is not changed.
 */
-void show_updating ();
+void show_updating (const char *label = NULL);
 void hide_updating ();
 void allow_updating ();
 void prevent_updating ();

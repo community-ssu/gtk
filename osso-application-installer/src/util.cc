@@ -631,6 +631,7 @@ hide_progress ()
 
 static GtkWidget *updating_banner = NULL;
 static int updating_level = 0;
+static const char *updating_label = NULL;
 static bool allow_updating_banner = true;
 
 static void
@@ -643,8 +644,7 @@ refresh_updating_banner ()
       updating_banner = 
 	hildon_banner_show_animation (GTK_WIDGET (get_main_window ()),
 				      NULL,
-				      dgettext ("hildon-common-strings",
-						"ckdg_pb_updating"));
+				      updating_label);
       g_object_ref (updating_banner);
     }
 
@@ -665,8 +665,14 @@ updating_timeout (gpointer unused)
 }
 
 void
-show_updating ()
+show_updating (const char *label)
 {
+  if (label == NULL)
+    label = dgettext ("hildon-common-strings",
+		      "ckdg_pb_updating");
+
+  updating_label = label;
+
   // We must never cancel this timeout since otherwise the
   // UPDATING_LEVEL will get out of sync.
   gtk_timeout_add (2000, updating_timeout, NULL);
