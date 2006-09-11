@@ -821,7 +821,7 @@ main(int argc, char *argv[])
 
     case 0: /* Child. */
       if (setsid() < 0)
-	error(1, "setting session id");
+	error("setting session id\n");
 
       sigs_restore();
 
