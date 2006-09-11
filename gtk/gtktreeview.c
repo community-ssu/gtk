@@ -14505,10 +14505,13 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
 
       if (gtk_tree_row_reference_valid (tree_view->priv->queued_select_row))
         {
+	  gboolean clear_selection;
 	  GtkTreePath *select_path =
 	    gtk_tree_row_reference_get_path (tree_view->priv->queued_select_row);
 
-	  gtk_tree_view_real_set_cursor (tree_view, select_path, FALSE, TRUE);
+	  clear_selection = !gtk_tree_selection_path_is_selected (tree_view->priv->selection, select_path);
+
+	  gtk_tree_view_real_set_cursor (tree_view, select_path, clear_selection, TRUE);
 
 	  gtk_tree_path_free (select_path);
 	}
