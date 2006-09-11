@@ -1572,10 +1572,6 @@ gboolean set_menu_contents( GtkTreeModel *model )
 
 	xmlBufferFree( buffer );
 	xmlCleanupParser();
-	
-	if ( user_home_dir ) {
-		g_free( user_home_dir );
-	}
 
 	if ( user_menu_conf_file ) {
 		g_free( user_menu_conf_file );

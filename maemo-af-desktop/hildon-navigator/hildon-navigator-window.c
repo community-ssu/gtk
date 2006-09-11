@@ -175,7 +175,6 @@ configuration_changed (char *path, gpointer *data)
     hn_panel_load_plugins_from_file (panel, config_file);
 
     g_free (config_file);
-    g_free (home_dir);
 }
 
 static void
@@ -290,7 +289,6 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   /* cleanup */
   g_free (plugin_dir);
   g_free (config_file);
-  g_free (home_dir);
 }
 
 HildonNavigatorWindow *

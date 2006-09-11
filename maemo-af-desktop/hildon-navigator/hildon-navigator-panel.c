@@ -108,7 +108,6 @@ hildon_navigator_panel_init (HildonNavigatorPanel *panel)
   priv->plugins_loaded = FALSE;
   priv->num_plugins    = 0;
 
-  g_free (home);
   g_free (path);
 }
 

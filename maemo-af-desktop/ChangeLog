@@ -1,3 +1,10 @@
+2006-09-11  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hildon-navigator-window.c,
+	  hildon-navigator/hildon-navigator-panel.c,
+	  libhildonmenu/libhildonmenu.c: Do not free const char *
+	  (Closes NB#39640)
+
 2006-09-08  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hildon-navigator-panel.[ch]:
