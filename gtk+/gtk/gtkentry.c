@@ -1128,7 +1128,6 @@ gtk_entry_set_property (GObject         *object,
 	      }
 
 	    entry->editable = new_value;
-            gtk_widget_set_sensitive( GTK_WIDGET( entry ), entry->editable );
 
 	    if (new_value && GTK_WIDGET_HAS_FOCUS (entry))
 	      gtk_im_context_focus_in (entry->im_context);
