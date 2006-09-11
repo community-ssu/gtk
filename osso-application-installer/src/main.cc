@@ -2493,6 +2493,12 @@ get_main_window ()
   return main_window;
 }
 
+GtkWidget *
+get_main_trail ()
+{
+  return main_trail;
+}
+
 void
 present_main_window ()
 {

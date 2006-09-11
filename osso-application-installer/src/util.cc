@@ -964,6 +964,60 @@ static void set_global_package_list (GList *packages,
 
 static GList *global_packages;
 
+static gboolean
+global_package_list_key_pressed (GtkWidget * widget,
+				 GdkEventKey * event)
+{
+  GtkTreePath *cursor_path = NULL;
+
+  switch (event->keyval) 
+    {
+    case HILDON_HARDKEY_LEFT:
+      return TRUE;
+      break;
+    case HILDON_HARDKEY_RIGHT:
+      return TRUE;
+      break;
+    case HILDON_HARDKEY_UP:
+      // we set the focus to the last button of the main_trail
+      gtk_tree_view_get_cursor (GTK_TREE_VIEW (widget), &cursor_path, NULL);
+        
+      if (cursor_path) 
+        {
+          if (!gtk_tree_path_prev (cursor_path))
+            {
+              GList *children = NULL;
+
+              children = 
+                gtk_container_get_children (GTK_CONTAINER (get_main_trail()));
+
+              if (children) 
+                {
+                  GList *last_child = g_list_last (children);
+
+                  while (last_child && 
+                         ((!GTK_WIDGET_CAN_FOCUS (last_child->data)) ||
+                         (!GTK_WIDGET_IS_SENSITIVE (last_child->data))))
+                    last_child = g_list_previous (last_child);
+
+                  if (last_child)
+                    gtk_widget_grab_focus (GTK_WIDGET (last_child->data));
+                  
+                  g_list_free (children);
+                  gtk_tree_path_free(cursor_path);
+                  return TRUE;
+                }
+            }
+
+          gtk_tree_path_free(cursor_path);
+        }
+    
+      break;
+    }
+
+  return FALSE;
+}
+
 GtkWidget *
 make_global_package_list (GList *packages,
 			  bool installed,
@@ -1019,7 +1073,7 @@ make_global_package_list (GList *packages,
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
 
   // Setting the sizing of this columne to FIXED but not specifying
-  // the widh is a workaround for some bug in GtkTreeView.  If we
+  // the width is a workaround for some bug in GtkTreeView.  If we
   // don't do this, the name will not get ellipsized and the size
   // and/or version columns might disappear completely.  With this
   // workaround, the name gets properly elipsized.
@@ -1076,6 +1130,9 @@ make_global_package_list (GList *packages,
 
   g_signal_connect (tree, "row-activated", 
 		    G_CALLBACK (global_row_activated), NULL);
+
+  g_signal_connect (tree, "key-press-event",
+                    G_CALLBACK (global_package_list_key_pressed), NULL);
 
   GtkWidget *menu = create_package_menu (op_label);
   gtk_widget_show_all (menu);
