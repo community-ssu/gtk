@@ -1,5 +1,12 @@
 2006-09-11  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkimmodule.c (_gtk_im_module_get_default_context_id)
+	gtk/gtkimmodule.h (_gtk_im_module_get_default_context_id)
+	gtk/gtkimmulticontext.c (get_global_context_id): Remove misleading 
+	'const' (#333767) NB#23240 
+
+2006-09-11  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Taken from GNOME CVS. NB#11656
 	
     Fri Sep 16 14:00:20 2005  Tim Janik  <timj@imendio.com>

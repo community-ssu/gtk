@@ -42,7 +42,7 @@ struct _GtkIMContextInfo
 void          _gtk_im_module_list                   (const GtkIMContextInfo ***contexts,
 						    guint                    *n_contexts);
 GtkIMContext *_gtk_im_module_create                 (const gchar             *context_id);
-const gchar * _gtk_im_module_get_default_context_id (const gchar             *lang);
+gchar        *_gtk_im_module_get_default_context_id (const gchar             *lang);
 
 /* The following entry points are exported by each input method module
  */
