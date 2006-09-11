@@ -1,3 +1,10 @@
+osso-af-utils (1.6-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added dependency to osso-core-config.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 11 Sep 2006 14:28:50 +0300
+
 osso-af-utils (1.5-1) unstable; urgency=low
 
   * Added a new program 'anim-shower' to show progress animation during
