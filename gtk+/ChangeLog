@@ -1,3 +1,10 @@
+2006-09-08  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): clear current
+	selection if the node where the pen drag started was previously
+	unselected; don't clear selection otherwise.
+	NB#37624
+	
 2006-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_scroll_to_cell): Align view with
