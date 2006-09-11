@@ -90,9 +90,9 @@ extern char **environ;
 typedef int (*entry_t)(int, char **);
 
 static bool
-rise_oom_defense(int pid)
+rise_oom_defense(pid_t pid)
 {
-  int defender_pid;
+  pid_t defender_pid;
   int status;
 
   defender_pid = fork();
@@ -345,7 +345,7 @@ invoked_get_prio(int fd, prog_t *prog)
 }
 
 static bool
-invoked_send_pid(int fd, int pid)
+invoked_send_pid(int fd, pid_t pid)
 {
   invoke_send_msg(fd, INVOKER_MSG_PID);
   invoke_send_msg(fd, pid);
