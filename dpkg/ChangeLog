@@ -1,3 +1,9 @@
+2006-05-31  Koblinger Egmont  <egmont@uhulinux.hu>
+
+	* src/processarc.c (process_archive): Do not pass to parsedb
+	pdb_weakclassification, so that the Section and Priority fields
+	gets updated with new packages.
+
 2006-01-28  Frank Lichtenheld  <djpig@debian.org>
 
 	* configure.ac: Release 1.13.13
