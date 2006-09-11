@@ -172,9 +172,9 @@ t_fmt     "<U0025><U0048><U002E><U0025><U004D><U002E><U0025><U0053>"
 am_pm     "";""
 t_fmt_ampm  ""
 date_fmt       "<U0025><U0061><U0020><U0025><U0065><U0020><U0025><U0062><U0020><U0025><U0059>"
-week      7;19971201;4
-first_weekday 1
-first_workday 1
+week      7;19971130;4
+first_weekday 2
+first_workday 2
 timezone   "<U0047><U004D><U0054><U002B><U0031>"
 END LC_TIME
 

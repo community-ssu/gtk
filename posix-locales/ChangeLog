@@ -1,3 +1,10 @@
+2006-06-11  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/da_DK, de_DE, el_GR, en_GB, en_US, es_ES, es_MX, fi_FI, fr_CA, fr_FR, it_IT, nl_NL, no_NO, pt_BR, pt_PT, ru_RU, sv_SE: Updated first_weekday and second field of week. Fixes NB#36804.
+	* locales/el_GR: Amended abmon, mon, name_mr.
+	* locales/nl_NL: Amended timezone, and d_fmt.
+	* locales/pt_PT: Amended thousands_sep.
+
 2006-05-11  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/fr_CA: Shortened lang_name.
