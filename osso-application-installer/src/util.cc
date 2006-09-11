@@ -694,15 +694,24 @@ prevent_updating ()
 }
 
 static PangoFontDescription *
-get_small_font ()
+get_small_font (GtkWidget *widget)
 {
   static PangoFontDescription *small_font = NULL;
 
   if (small_font == NULL)
     {
-      // XXX - do it nicer...
-      small_font = pango_font_description_from_string ("Nokia Sans 13");
+      GtkStyle *fontstyle = NULL;
+
+      fontstyle = gtk_rc_get_style_by_paths (gtk_widget_get_settings (GTK_WIDGET(widget)),
+                                             "osso-SmallFont", NULL,
+                                             G_TYPE_NONE);
+  
+      if (fontstyle)
+        small_font = pango_font_description_copy (fontstyle->font_desc);
+      else
+        small_font = pango_font_description_from_string ("Nokia Sans 11.625");
     }
+
   return small_font;
 }
 
@@ -732,7 +741,7 @@ make_small_text_view (const char *text)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
 				  GTK_POLICY_AUTOMATIC,
 				  GTK_POLICY_AUTOMATIC);
-  gtk_widget_modify_font (view, get_small_font ());
+  gtk_widget_modify_font (view, get_small_font (view));
 
   return scroll;
 }
@@ -749,7 +758,7 @@ GtkWidget *
 make_small_label (const char *text)
 {
   GtkWidget *label = gtk_label_new (text);
-  gtk_widget_modify_font (label, get_small_font ());
+  gtk_widget_modify_font (label, get_small_font (label));
   return label;
 }
 

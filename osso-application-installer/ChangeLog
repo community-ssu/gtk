@@ -1,5 +1,14 @@
 2006-09-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (get_small_font): Added support to get the
+	osso-SmallFont from the theme instead of a fixed font
+	definition. It uses a fixed definition just in case the theme has
+	not osso-SmallFont definition.
+	(make_small_text_view): Modified the call to the get_small_font
+	function.
+	(make_small_label): Modified the call to the get_small_font
+	function. (N32249)
+
 	* src/main.h, src/main.cc (get_main_trail): New function, required
 	to access the main_trail from other objects.
 	* util.cc (global_package_list_key_pressed): Added, this function
