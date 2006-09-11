@@ -448,11 +448,14 @@ static void
 hn_app_menu_item_activate (GtkMenuItem *menu_item)
 {
   HNEntryInfo *info;
+  gchar *title;
 
   info = hn_app_menu_item_get_entry_info (HN_APP_MENU_ITEM (menu_item));
   g_assert (info != NULL);
   
-  HN_DBG ("Raising application '%s'", hn_entry_info_get_title (info));
+  HN_DBG ("Raising application '%s'", (title = hn_entry_info_get_title (info)));
+  
+  g_free (title);
   
   hn_wm_top_item (info);
 }

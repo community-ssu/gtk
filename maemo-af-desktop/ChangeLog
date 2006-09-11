@@ -1,3 +1,12 @@
+2006-09-11  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-app-menu-item.c:
+	* hildon-navigator/hn-app-button.c:
+	- Fixed memory leaks for hn_entry_info_get_title()
+	* hildon-navigator/hildon-navigator-item.c:
+	* hildon-statusbar/hildon-status-bar-main.c:
+	- Fixed memory leaks. Fixes: NB#39673
+
 2006-09-11  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hildon-navigator-window.c,

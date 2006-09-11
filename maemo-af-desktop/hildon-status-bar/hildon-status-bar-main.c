@@ -628,10 +628,11 @@ gboolean add_configured_plugins( StatusBar *panel )
                 g_free(stripped);
             }
         }
+
+	g_free (plugin_path);
     }
 
     /* Cleanup */
-    g_free(plugin_path);
     g_list_free (l);
     g_list_foreach (bad_plugins,(GFunc)g_free,NULL);
     g_list_free (bad_plugins);

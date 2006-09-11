@@ -127,6 +127,8 @@ hildon_navigator_item_finalize (GObject *object)
 
   if (priv->dlhandler)
     dlclose (priv->dlhandler);
+
+  g_free (priv->api);
 }
 
 static void 
@@ -406,6 +408,7 @@ hildon_navigator_item_new (const gchar *name, const gchar *filename)
   {    
     ULOG_ERR("HildonNavigatorItem: Unable to open plugin %s: %s",name, dlerror());
     gtk_object_sink( GTK_OBJECT( item ) );
+    g_free (path);
     return NULL;
   }
 

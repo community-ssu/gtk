@@ -1046,6 +1046,7 @@ compose_app_pixbuf (const GdkPixbuf *src,
   GError *error;
   gint dest_width, dest_height;
   gint off_x, off_y;
+  gchar *title;
 
   g_return_val_if_fail (GDK_IS_PIXBUF (src), NULL);
   g_return_val_if_fail (info != NULL, NULL);
@@ -1068,8 +1069,8 @@ compose_app_pixbuf (const GdkPixbuf *src,
       if (!n_instances)
         {
           g_warning ("top-level item '%s' has no instances",
-                     hn_entry_info_get_title (info));
-
+                     (title = hn_entry_info_get_title (info)));
+	  g_free (title);
           return NULL;
         }
 
@@ -1083,8 +1084,10 @@ compose_app_pixbuf (const GdkPixbuf *src,
     }
   
   HN_DBG ("Compositing icon for '%s' with icon name '%s'",
-	  hn_entry_info_get_title (info),
+	  (title = hn_entry_info_get_title (info)),
 	  inst_name);
+
+  g_free (title);
 
   error = NULL;
   inst_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
