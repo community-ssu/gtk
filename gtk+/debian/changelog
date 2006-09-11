@@ -2,11 +2,13 @@ gtk+2.0 (2:2.6.10-2.osso13) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
   * Fixes: NB#11656 Withdrawn windows staying around
+  * Fixes: NB#23240 _gtk_im_module_get_default_context_id returns a duplicated
+    string as const char *
   * Fixes: NB#37624 Focus in the content pane is not consistent with user
     action
   * Fixes: NB#39901 Tapping on dimmed row loses focus
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 11 Sep 2006 14:34:41 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 11 Sep 2006 14:41:41 +0300
 
 gtk+2.0 (2:2.6.10-2.osso12) unstable; urgency=low
 
