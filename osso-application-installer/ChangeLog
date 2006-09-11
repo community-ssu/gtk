@@ -1,3 +1,17 @@
+2006-09-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.h, src/main.cc (get_main_trail): New function, required
+	to access the main_trail from other objects.
+	* util.cc (global_package_list_key_pressed): Added, this function
+	is a callback that controls the focus movement between the
+	main_trail and the package list. It is connected to the
+	key-press-event of the package list treeview. If we are in the
+	first row and press up hardkey we send the focus to the last
+	button in the main_trail. It also avoids left and right movements
+	in the treeview.
+	(make_global_package_list): Added the connection of the of the
+	key-press-event to its new callback. (N27946)
+
 2006-09-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.h, src/util.cc (reset_progress_was_cancelled): New, to
