@@ -1589,16 +1589,21 @@ static char *copy_target;
 static char *copy_tempdir;
 
 static void
-call_copy_cont (bool success, bool show_error = true)
+call_copy_cont (GnomeVFSResult result)
 {
   hide_progress ();
 
-  if (!success && show_error)
+  if (result == GNOME_VFS_ERROR_IO)
+    annoy_user (dgettext ("hildon-common-strings",
+			  "sfil_ni_cannot_open_no_connection"));
+  else if (result == GNOME_VFS_ERROR_CANCELLED)
+    ;
+  else if (result != GNOME_VFS_OK)
     annoy_user (_("ai_ni_operation_failed"));
-    
+
   if (copy_cont)
     {
-      if (success)
+      if (result == GNOME_VFS_OK)
 	copy_cont (copy_target, copy_cont_data);
       else
 	{
@@ -1627,7 +1632,22 @@ copy_progress (GnomeVFSAsyncHandle *handle,
 
   if (info->phase == GNOME_VFS_XFER_PHASE_COMPLETED)
     {
-      call_copy_cont (!progress_was_cancelled (), false);
+      struct stat buf;
+
+      if (stat (copy_target, &buf) < 0)
+	{
+	  /* If a obex connection is refused before the downloading is
+	     started, ovu_async_xfer seems to report success without
+	     actually creating the file.  We treat that situation as
+	     an I/O error.
+	  */
+	  call_copy_cont (GNOME_VFS_ERROR_IO);
+	}
+      else
+	call_copy_cont (progress_was_cancelled ()
+			? GNOME_VFS_ERROR_CANCELLED
+			: GNOME_VFS_OK);
+
       gnome_vfs_async_cancel (handle);
     }
 
@@ -1639,7 +1659,7 @@ copy_progress (GnomeVFSAsyncHandle *handle,
     }
   else if (info->status == GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR)
     {
-      call_copy_cont (false);
+      call_copy_cont (info->vfs_status);
       gnome_vfs_async_cancel (handle);
       return GNOME_VFS_XFER_ERROR_ACTION_ABORT;
     }
@@ -1662,7 +1682,7 @@ do_copy (const char *source, GnomeVFSURI *source_uri,
   target_uri = gnome_vfs_uri_new (target);
   if (target_uri == NULL)
     {
-      call_copy_cont (false);
+      call_copy_cont (GNOME_VFS_ERROR_NO_MEMORY);
       return;
     }
 
@@ -1685,7 +1705,7 @@ do_copy (const char *source, GnomeVFSURI *source_uri,
 			   NULL);
 
   if (result != GNOME_VFS_OK)
-    call_copy_cont (false);
+    call_copy_cont (result);
 }
 
 void
@@ -1701,7 +1721,7 @@ localize_file (const char *uri,
 
   if (!gnome_vfs_init ())
     {
-      call_copy_cont (false);
+      call_copy_cont (GNOME_VFS_ERROR_GENERIC);
       return;
     }
 
@@ -1709,7 +1729,7 @@ localize_file (const char *uri,
 
   if (vfs_uri == NULL)
     {
-      call_copy_cont (false);
+      call_copy_cont (GNOME_VFS_ERROR_NO_MEMORY);
       return;
     }
 
@@ -1724,7 +1744,7 @@ localize_file (const char *uri,
     {
       const gchar *path = gnome_vfs_uri_get_path (vfs_uri);
       copy_target = gnome_vfs_unescape_string (path, NULL);
-      call_copy_cont (true);
+      call_copy_cont (GNOME_VFS_OK);
     }
   else
     {
@@ -1744,12 +1764,12 @@ localize_file (const char *uri,
       if (copy_tempdir == NULL)
 	{
 	  add_log ("Can not create %s: %m", copy_tempdir);
-	  call_copy_cont (false);
+	  call_copy_cont (GNOME_VFS_ERROR_GENERIC);
 	}
       else if (chmod (copy_tempdir, 0755) < 0)
 	{
 	  add_log ("Can not chmod %s: %m", copy_tempdir);
-	  call_copy_cont (false);
+	  call_copy_cont (GNOME_VFS_ERROR_GENERIC);
 	}
       else
 	{

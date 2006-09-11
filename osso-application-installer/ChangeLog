@@ -1,5 +1,11 @@
 2006-09-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (call_copy_cont): Replaced 'success' parameter with
+	GnomeVFSResult.  Removed 'show_error' parameter.  Use "no
+	connection" for ERROR_IO.  Updated all callers.
+	(copy_progress): When completed, check for existence of file and
+	fail with ERROR_IO if it is not there. (N30375)
+	
 	* src/util.cc (get_small_font): Added support to get the
 	osso-SmallFont from the theme instead of a fixed font
 	definition. It uses a fixed definition just in case the theme has
