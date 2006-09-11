@@ -331,12 +331,19 @@ scripts to interact with the user:
   clicks "Cancel", it exits with code 1; and when an error occurs, it
   exits with code 2.
 
-  If you do in fact show a license agreement in your postinst script,
-  it is probably not a good idea to make the postinst script fail when
-  the user does not agree to the license terms.  Instead, you could
+  The recommended place to call this utility is in the preinst
+  maintainer script of a package.  If the user does not agree to the
+  license, the preinst script should fail, thus causing the
+  installation to abort.  (XXX - maybe we should recommend using
+  something like debconf for this so that we can get the agreement for
+  a bunch of packages with one dialog.)
+
+  (If you show a license agreement in your _postinst_ script, it is
+  probably not a good idea to make the postinst script fail when the
+  user does not agree to the license terms.  Instead, you could
   configure your application in such a way that it will ask the user
   to agree to the license agreement again when the application is
-  started and refuse to run when he disagrees.
+  started and refuse to run when he disagrees.)
 
   In order to use maemo-confirm-text in postinst, you should
   Pre-Depend on the "maemo-installer-utils" package.
