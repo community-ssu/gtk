@@ -62,7 +62,7 @@ build-tree/config.status: configure
 
 # Build the package in build-tree
 build: build-tree/build-stamp
-build-tree/build-stamp: build-tree/config.status patch-stamp
+build-tree/build-stamp: build-tree/config.status # patch-stamp
 	dh_testdir
 
 	cd build-tree && $(MAKE)
@@ -123,7 +123,7 @@ binary: binary-arch binary-indep
 
 
 # Clean up the mess we made
-clean: unpatch
+clean: # unpatch
 	dh_testdir
 
 	rm -rf build-tree
