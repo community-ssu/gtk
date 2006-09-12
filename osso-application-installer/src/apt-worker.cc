@@ -1794,11 +1794,9 @@ update_package_cache ()
       Fetcher.Clean (_config->FindDir("Dir::State::lists") + "partial/");
     }
   
-  need_cache_init ();
+  cache_init ();
 
-  /* The only thing that can go wrong is the download...
-   */
-  return Failed? rescode_download_failed : rescode_success;
+  return Failed? rescode_failure : rescode_success;
 }
 
 void
