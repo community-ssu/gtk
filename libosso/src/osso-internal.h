@@ -45,6 +45,9 @@
 # define OSSO_BUS_CTRLPAN	"controlpanel"
 # define OSSO_BUS_STATUSBAR     "statusbar"
 
+#define OSSO_BUS_ROOT          "com.nokia"
+#define OSSO_BUS_ROOT_PATH     "/com/nokia"
+
 # define OSSO_BUS_ACTIVATE	"activate"
 # define OSSO_BUS_MIMEOPEN	"mime_open"
 # define OSSO_BUS_TOP		"top_application"
