@@ -128,6 +128,7 @@ struct osso_af_context_t {
     gchar application[MAX_APP_NAME_LEN + 1];
     gchar version[MAX_VERSION_LEN + 1];
     char object_path[MAX_OP_LEN + 1];
+    char interface[MAX_IF_LEN + 1];
     GArray *ifs;
     _osso_autosave_t autosave;
     guint log_handler;

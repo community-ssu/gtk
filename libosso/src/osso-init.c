@@ -161,8 +161,15 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 	return NULL;
     }	
 
-    g_snprintf(&osso->application[0], MAX_APP_NAME_LEN, "%s", application);
-    g_snprintf(&osso->version[0], MAX_VERSION_LEN, "%s", version);
+    g_snprintf(osso->application, MAX_APP_NAME_LEN, "%s", application);
+    g_snprintf(osso->version, MAX_VERSION_LEN, "%s", version);
+
+    if (g_strrstr(application, ".") != NULL) {
+        g_snprintf(osso->interface, MAX_IF_LEN, "%s", application);
+    } else {
+        g_snprintf(osso->interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
+                   application);
+    }
 
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
