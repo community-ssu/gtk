@@ -610,6 +610,8 @@ hn_entry_info_is_active (HNEntryInfo *info)
         return hn_wm_watched_window_is_active(real->d.window);
       case HN_ENTRY_WATCHED_VIEW:
         return hn_wm_watched_window_view_is_active(real->d.view);
+      case HN_ENTRY_DESKTOP:
+        return TRUE;
       case HN_ENTRY_INVALID:
       default:
         g_critical("Invalid Entry type");

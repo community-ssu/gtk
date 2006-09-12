@@ -1,3 +1,11 @@
+2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hn-app-switcher.[ch]:
+	* hn-wm.c:
+	* hn-entry-info.c:
+	- Fix for "RSS feed reader is still seen 
+	  to be selected in tasknavigator". Fixes: NB#34939
+
 2006-09-12  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Applied further fixes to NB#39667

@@ -929,6 +929,20 @@ hn_wm_process_mb_current_app_window (void)
       
         }
     }
+  else
+    {
+      /* this happens when, for example, when Home is topped, or an application
+       * gets minimised and the desktop is showing. We need to notify the AS to
+       * deactivate any active buttons.
+       */
+      HNEntryInfo * info
+        = hn_app_switcher_get_home_entry_info (hnwm.app_switcher);
+
+      if (info)
+        hn_app_switcher_changed_stack (hnwm.app_switcher, info);
+      else
+        HN_DBG ("***************** No Home info yet");
+    }
   
 out:
   XFree(app_xwin);

@@ -627,11 +627,8 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
       gtk_widget_destroy (priv->main_home_item);
       priv->main_home_item = NULL;
     }
-  
-  priv->home_info = hn_entry_info_new (HN_ENTRY_DESKTOP);
-  g_debug ("home (%s), icon: %s",
-	   hn_entry_info_get_title (priv->home_info),
-	   hn_entry_info_get_app_icon_name (priv->home_info));
+ 
+  g_assert (priv->home_info); 
   priv->main_home_item = hn_app_menu_item_new (priv->home_info,
 		                               FALSE,
 					       priv->is_thumbable);
@@ -1049,6 +1046,13 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
   GtkWidget *button;
 
   g_assert (app_switcher && hn_wm_init (app_switcher));
+
+  if (!app_switcher->priv->home_info)
+     app_switcher->priv->home_info = hn_entry_info_new (HN_ENTRY_DESKTOP);
+
+  g_debug ("home (%s), icon: %s",
+           hn_entry_info_get_title (app_switcher->priv->home_info),
+           hn_entry_info_get_app_icon_name (app_switcher->priv->home_info));
 
   gtk_widget_push_composite_child ();
   
@@ -1918,29 +1922,33 @@ hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
       return;
     }
   
-  parent = hn_entry_info_get_parent (entry_info);
 
-  if (!parent)
+  if(entry_info->type != HN_ENTRY_DESKTOP)  
     {
-      g_warning ("Orphan entry info");
-      return;
-    }
-  
-  /* locate the associated button, and toggle it */
-  active_pos = 0;
-  for (l = priv->applications, pos = AS_APP1_BUTTON;
-       l != NULL && pos < N_BUTTONS;
-       l = l->next, pos++)
-    {
-      HNEntryInfo *entry = l->data;
-          
-      if (parent == entry)
+      parent = hn_entry_info_get_parent (entry_info);
+     
+      if (!parent)
 	{
-	  hn_app_button_make_active (HN_APP_BUTTON(priv->buttons[pos]));
-	  active_pos = pos;
-	  active_found = TRUE;
-	  break;
-	}
+	  g_warning ("Orphan entry info");
+	  return;
+	} 
+
+      /* locate the associated button, and toggle it */
+      active_pos = 0;
+      for (l = priv->applications, pos = AS_APP1_BUTTON;
+           l != NULL && pos < N_BUTTONS;
+           l = l->next, pos++)
+        {
+          HNEntryInfo *entry = l->data;
+          
+          if (parent == entry)
+	    {
+	      hn_app_button_make_active (HN_APP_BUTTON(priv->buttons[pos]));
+	      active_pos = pos;
+	      active_found = TRUE;
+	      break;
+	    }
+        }
     }
 
   /* no active window in the buttons, make sure that
@@ -2199,7 +2207,8 @@ hn_app_switcher_changed_stack (HNAppSwitcher *app_switcher,
 			       HNEntryInfo   *entry_info)
 {
   g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
-  g_return_if_fail (HN_ENTRY_INFO_IS_VALID_TYPE (entry_info->type));
+  g_return_if_fail (!entry_info ||
+		    HN_ENTRY_INFO_IS_VALID_TYPE (entry_info->type));
 
   HN_DBG ("Emitting the CHANGED_STACK signal");
 
@@ -2270,5 +2279,13 @@ hn_app_switcher_get_system_inactivity (HNAppSwitcher *app_switcher)
   priv = app_switcher->priv;
 
   return priv->system_inactivity;
+}
+
+HNEntryInfo *
+hn_app_switcher_get_home_entry_info (HNAppSwitcher *app_switcher)
+{
+  g_return_val_if_fail (app_switcher, NULL);
+
+  return app_switcher->priv->home_info;
 }
 

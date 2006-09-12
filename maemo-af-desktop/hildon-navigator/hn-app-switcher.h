@@ -104,6 +104,8 @@ gboolean   hn_app_switcher_get_system_inactivity (HNAppSwitcher *app_switcher);
 gboolean   hn_app_switcher_menu_button_release_cb (GtkWidget      *widget,
                                                  GdkEventButton *event);
 
+HNEntryInfo * hn_app_switcher_get_home_entry_info (HNAppSwitcher *as);
+
 G_END_DECLS
 
 #endif /* HN_APP_SWITCHER_H */
