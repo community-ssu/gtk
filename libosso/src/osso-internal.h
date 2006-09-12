@@ -187,7 +187,6 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 			        osso_rpc_cb_f *cb, gpointer data,
 			        gboolean use_system_bus);
 
-gchar* appname_to_valid_path_component(const gchar *application);
 gboolean validate_appname(const gchar *application);
 
 /**

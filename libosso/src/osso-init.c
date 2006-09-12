@@ -29,7 +29,7 @@
  * This function strdups application name and makes it
  * suitable for being part of an object path, or returns NULL.
  * Currently needed for allowing '.' in application name. */
-gchar* appname_to_valid_path_component(const gchar *application)
+static gchar* appname_to_valid_path_component(const gchar *application)
 {
     gchar* copy = NULL, *p = NULL;
     assert(application != NULL);
