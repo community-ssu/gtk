@@ -1,3 +1,11 @@
+2006-09-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 4.31.
+
+	* src/apt-worker.cc (update_package_cache): Reverted change from
+	2006-09-11: call cache_init so that the process is visible, return
+	rescode_failure instead of rescode_download_failed.
+
 2006-09-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/apt-worker.cc (update_package_cache): Call need_cache_init
