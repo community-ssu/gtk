@@ -316,32 +316,18 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 					 int argument_type,
 					 ...)
 {
-    char service[MAX_SVC_LEN] = {0}, object_path[MAX_OP_LEN] = {0},
-         interface[MAX_IF_LEN] = {0};
     fill_from_va_list_data data;
     osso_return_t ret;
-    gchar* copy = NULL;
 
-    dprint("");
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
     
-    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
-    copy = appname_to_valid_path_component(application);
-    if (copy == NULL) {
-	ULOG_ERR_F("failure in appname_to_valid_path_component");
-	return OSSO_ERROR;
-    }
-    g_snprintf(object_path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
-    g_free(copy); copy = NULL;
-    g_snprintf(interface, MAX_IF_LEN, "%s", service);
-
     data.argument_type = argument_type;
     va_start(data.arg_list, argument_type);
 
-    ret = _rpc_run_with_argfill (osso, osso->conn,
-				 service, object_path, interface, method,
-				 retval,
+    ret = _rpc_run_with_argfill (osso, osso->conn, osso->service,
+                                 osso->object_path, osso->interface,
+                                 method, retval,
 				 fill_from_va_list, &data);
     
     va_end(data.arg_list);
@@ -514,30 +500,18 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 {
     fill_from_va_list_data argfill_data;
     osso_return_t ret;
-    char service[MAX_SVC_LEN] = {0}, object_path[MAX_OP_LEN] = {0},
-         interface[MAX_IF_LEN] = {0};
-    gchar* copy = NULL;
 
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
     
-    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
-    copy = appname_to_valid_path_component(application);
-    if (copy == NULL) {
-        ULOG_ERR_F("failure in appname_to_valid_path_component");
-	return OSSO_ERROR;
-    }
-    g_snprintf(object_path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
-    g_free(copy); copy = NULL;
-    g_snprintf(interface, MAX_IF_LEN, "%s", service);
-
     argfill_data.argument_type = argument_type;
     va_start(argfill_data.arg_list, argument_type);
 
-    ret = osso_rpc_async_run_with_argfill (osso,
-				       service, object_path, interface, method,
-				       async_cb, data,
-				       fill_from_va_list, &argfill_data);
+    ret = osso_rpc_async_run_with_argfill (osso, osso->service,
+                                           osso->object_path,
+                                           osso->interface, method,
+				           async_cb, data,
+				           fill_from_va_list, &argfill_data);
     dprint("osso_rpc_async_run_with_argfill returned");
     
     va_end(argfill_data.arg_list);
@@ -654,7 +628,6 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
 						   gpointer data,
 						   osso_rpc_retval_free_f *retval_free)
 {
-    gchar interface[MAX_IF_LEN] = {0};
     _osso_rpc_t *rpc;
     
     if( (osso == NULL) || (cb == NULL) )
@@ -666,13 +639,11 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
 	return OSSO_ERROR;
     }
     
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-               osso->application);    
     rpc->func = cb;
     rpc->retval_free = retval_free;
     rpc->data = data;
     
-    _msg_handler_set_cb_f_free_data(osso, interface, _rpc_handler,
+    _msg_handler_set_cb_f_free_data(osso, osso->interface, _rpc_handler,
 			  (gpointer)rpc, TRUE);
     return OSSO_OK;
 }
@@ -707,15 +678,10 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 osso_return_t osso_rpc_unset_default_cb_f(osso_context_t *osso,
 					  osso_rpc_cb_f *cb, gpointer data)
 {
-    gchar interface[MAX_IF_LEN] = {0};
-    
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-	       osso->application);
-
-    _rm_cb_f(osso, interface, cb, data);
+    _rm_cb_f(osso, osso->interface, cb, data);
 
     return OSSO_OK;
 }

@@ -45,9 +45,6 @@
 # define OSSO_BUS_CTRLPAN	"controlpanel"
 # define OSSO_BUS_STATUSBAR     "statusbar"
 
-# define OSSO_BUS_ROOT		"com.nokia"
-# define OSSO_BUS_ROOT_PATH	"/com/nokia"
-
 # define OSSO_BUS_ACTIVATE	"activate"
 # define OSSO_BUS_MIMEOPEN	"mime_open"
 # define OSSO_BUS_TOP		"top_application"
@@ -129,6 +126,7 @@ struct osso_af_context_t {
     gchar version[MAX_VERSION_LEN + 1];
     char object_path[MAX_OP_LEN + 1];
     char interface[MAX_IF_LEN + 1];
+    char service[MAX_SVC_LEN + 1];
     GArray *ifs;
     _osso_autosave_t autosave;
     guint log_handler;

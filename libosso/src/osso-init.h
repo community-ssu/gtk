@@ -29,7 +29,8 @@
 #include <unistd.h>
 #include <pwd.h>
 
-
+#define OSSO_BUS_ROOT          "com.nokia"
+#define OSSO_BUS_ROOT_PATH     "/com/nokia"
 
 /**
  * This internal function performs a simple validation for the application

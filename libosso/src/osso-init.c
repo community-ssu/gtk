@@ -214,6 +214,14 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
     g_snprintf(osso->application, MAX_APP_NAME_LEN, "%s", application);
     g_snprintf(osso->version, MAX_VERSION_LEN, "%s", version);
     make_default_interface((const char*)application, osso->interface);
+    make_default_service((const char*)application, osso->service);
+
+    if (!make_default_object_path((const char*)application,
+        osso->object_path)) {
+        ULOG_ERR_F("make_default_object_path() failed");
+        free(osso);
+        return NULL;
+    }
 
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
@@ -267,7 +275,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     DBusConnection *conn;
     DBusError err;
     DBusObjectPathVTable vtable;
-    gchar service[MAX_SVC_LEN];
     gint i;
     
     dbus_error_init(&err);
@@ -281,11 +288,9 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dbus_connection_setup_with_g_main(conn, context);
     
     dprint("connection to the D-BUS daemon was a success");
-   
-    make_default_service(osso->application, service);
-    dprint("service='%s'",service);
+    dprint("service='%s'", osso->service);
 
-    i = dbus_bus_request_name(conn, service,
+    i = dbus_bus_request_name(conn, osso->service,
                               DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &err);
     dprint("acquire service returned '%d'", i);
     if (i == -1) {
@@ -294,9 +299,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 	goto dbus_conn_error1;
     }
     
-    if (osso->object_path[0] == '\0') {
-        make_default_object_path(osso->application, osso->object_path);
-    }
     dprint("osso->object_path='%s'", osso->object_path);
 
     vtable.message_function = _msg_handler;
