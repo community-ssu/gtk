@@ -775,7 +775,8 @@ hn_app_button_press_event (GtkWidget      *widget,
           break;
         }
     }
-  
+
+  gtk_toggle_button_set_inconsistent (toggle_button, FALSE);
   gtk_toggle_button_set_active (toggle_button, TRUE);
   gtk_toggle_button_toggled (toggle_button);
   

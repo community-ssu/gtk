@@ -1,3 +1,7 @@
+2006-09-12  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c: Applied further fixes to NB#39667
+
 2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-statusbar/hildon-statusbar-main.c:

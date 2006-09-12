@@ -1366,7 +1366,7 @@ refresh_buttons (gpointer user_data)
   HNAppSwitcherPrivate *priv = app_switcher->priv;
   GList                *l;
   gint                  pos;
-  gint                  last_active;
+  gint                  active_button = -1;
   gboolean              was_blinking;
   gboolean              is_urgent = FALSE;
   GtkWidget            *app_image;
@@ -1396,11 +1396,29 @@ refresh_buttons (gpointer user_data)
           continue;
         }
 
+      if (active_button < 0 &&
+          gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(priv->buttons[pos]))&&
+          !hn_entry_info_is_active (entry))
+        active_button = pos;
+      
       refresh_app_button (app_switcher, entry, pos);
 
       HN_DBG ("Showing object");
     }
 
+  if (active_button >= 0)
+    {
+      GtkToggleButton *button;
+      
+          HN_DBG ("Unsetting the previously active button %d",
+                  active_button);
+
+          button = GTK_TOGGLE_BUTTON (priv->buttons[active_button]);
+          gtk_toggle_button_set_inconsistent (button, TRUE);
+          gtk_toggle_button_set_active (button, FALSE);
+          gtk_toggle_button_toggled (button);
+    }
+  
   /*
    * now we need to process the menu button to ensure that it blinks
    * if needed
@@ -1408,7 +1426,6 @@ refresh_buttons (gpointer user_data)
   was_blinking = get_main_button_is_blinking (priv->main_button);
 
   is_urgent = FALSE;
-  last_active = 0;
   for (l = priv->applications, pos = 0;
        l != NULL;
        l = l->next, ++pos)
@@ -1416,20 +1433,8 @@ refresh_buttons (gpointer user_data)
       const GList       *k;
       HNEntryInfo       *child;
 
-      if (pos < N_BUTTONS && hn_entry_info_is_active (l->data))
-        {
-          GtkToggleButton *active_button;
-
-          HN_DBG ("Unsetting the previously active button %d",
-                  last_active);
-
-          active_button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
-          gtk_toggle_button_set_inconsistent (active_button, TRUE);
-          gtk_toggle_button_set_active (active_button, FALSE);
-          gtk_toggle_button_toggled (active_button);
-
-          last_active = pos;
-        }
+      if (pos < N_BUTTONS)
+        continue;
 
       /* set the ignore flag on any children that were causing the blinking
        * we skip the first four apps, which cause blinking of the app buttons,
