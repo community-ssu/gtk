@@ -1,10 +1,9 @@
 dbus (0.61-osso19) experimental; urgency=low
 
-  * UNRELEASED
   * Fixed crash in dbus-gproxy.c, also merged two other gproxy patches
     to the same fix. Fixes: NB#31796
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Sep 2006 15:04:06 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Sep 2006 16:53:52 +0300
 
 dbus (0.61-osso18) experimental; urgency=low
 
