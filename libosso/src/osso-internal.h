@@ -176,6 +176,9 @@ make_default_interface(const char *application, char *interface);
 void __attribute__ ((visibility("hidden")))
 make_default_service(const char *application, char *service);
 
+gboolean __attribute__ ((visibility("hidden")))
+make_default_object_path(const char *application, char *path);
+
 /* this is only needed by some unit testing code */
 osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                 const gchar *object_path,

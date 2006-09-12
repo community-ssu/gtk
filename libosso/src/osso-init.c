@@ -173,6 +173,27 @@ make_default_service(const char *application, char *service)
     }
 }
 
+gboolean __attribute__ ((visibility("hidden")))
+make_default_object_path(const char *application, char *path)
+{
+    char *copy;
+
+    g_assert(application != NULL);
+    g_assert(path != NULL);
+
+    copy = appname_to_valid_path_component(osso->application);
+    if (copy == NULL) {
+        return FALSE;
+    }
+    if (g_strrstr(application, ".") != NULL) {
+        g_snprintf(path, MAX_OP_LEN, "/%s", copy);
+    } else {
+        g_snprintf(path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
+    }
+    g_free(copy);
+    return TRUE;
+}
+
 /************************************************************************/
 static osso_context_t * _init(const gchar *application, const gchar *version)
 {
@@ -273,18 +294,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     }
     
     if (osso->object_path[0] == '\0') {
-        char* copy = NULL;
-        copy = appname_to_valid_path_component(osso->application);
-        if (copy == NULL) {
-            goto dbus_conn_error1;
-        }
-        if (g_strrstr(osso->application, ".") != NULL) {
-            g_snprintf(&osso->object_path[0], MAX_OP_LEN, "/%s", copy);
-        } else {
-            g_snprintf(&osso->object_path[0], MAX_OP_LEN,
-                       OSSO_BUS_ROOT_PATH "/%s", copy);
-        }
-        g_free(copy);
+        make_default_object_path(osso->application, osso->object_path);
     }
     dprint("osso->object_path='%s'", osso->object_path);
 
