@@ -181,7 +181,7 @@ make_default_object_path(const char *application, char *path)
     g_assert(application != NULL);
     g_assert(path != NULL);
 
-    copy = appname_to_valid_path_component(osso->application);
+    copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
         return FALSE;
     }
