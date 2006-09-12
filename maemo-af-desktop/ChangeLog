@@ -1,3 +1,9 @@
+2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.[ch]:
+	- Added HSB_PLUGIN_CONFIG_LIBRARY_VALUE for knowing
+	  we don't have to load an statusbar applet. 
+
 2006-09-11  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hn-app-menu-item.c:

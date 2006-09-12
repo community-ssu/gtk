@@ -73,6 +73,10 @@ G_BEGIN_DECLS
 #define HSB_PLUGIN_CONFIG_POSITION_KEY  "Position"
 #define HSB_PLUGIN_CONFIG_MANDATORY_KEY "Mandatory"
 
+/* library key value for not loaading plugin */
+
+#define HSB_PLUGIN_CONFIG_LIBRARY_VALUE "None"
+
 /* Plugin categories */
 #define HSB_PLUGIN_CATEGORY_PERMANENT   "permanent"
 #define HSB_PLUGIN_CATEGORY_CONDITIONAL "conditional"

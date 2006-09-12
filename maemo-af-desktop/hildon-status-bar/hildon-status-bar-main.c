@@ -502,6 +502,12 @@ GList* get_plugins_from_file( const gchar *file )
 	    
 	    continue;
 	}
+
+	if (!strcmp (library,HSB_PLUGIN_CONFIG_LIBRARY_VALUE))
+	{
+	  g_free (library);
+	  continue;
+	}
 	
         /* get position value */
 	position = g_key_file_get_integer(keyfile, groups[i], 
