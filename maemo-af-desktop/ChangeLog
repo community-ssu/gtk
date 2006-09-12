@@ -1,3 +1,9 @@
+2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-statusbar/hildon-statusbar-main.c:
+	- Changed extension window from GTK_WINDOW_POPUP to
+	  GTK_WINDOW_TOPLEVEL without decoration. Fixes: NB#38730
+
 2006-09-12  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Fixed a buffer

@@ -238,8 +238,12 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
     if ( sb_panel->arrow_button_toggled ) {
 	    
 	/* Initialize popup window */ 
-	sb_panel->popup = gtk_window_new( GTK_WINDOW_POPUP );
+	sb_panel->popup = gtk_window_new( GTK_WINDOW_TOPLEVEL );
 	gtk_widget_set_name(sb_panel->popup, "HildonStatusBar");
+	
+	gtk_window_set_type_hint( GTK_WINDOW( sb_panel->popup ),
+ 				  GDK_WINDOW_TYPE_HINT_DIALOG );
+	gtk_window_set_decorated( GTK_WINDOW( sb_panel->popup ), FALSE);
 	
 	/* Add popup fixed into window */
 	sb_panel->popup_fixed = gtk_fixed_new();
