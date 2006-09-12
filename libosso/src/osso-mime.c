@@ -32,25 +32,20 @@ static char * _get_arg(DBusMessageIter *iter);
 osso_return_t osso_mime_set_cb(osso_context_t *osso, osso_mime_cb_f *cb,
 			       gpointer data)
 {
-    char interface[MAX_IF_LEN + 1];
     if (osso == NULL || cb == NULL) {
         ULOG_ERR_F("invalid arguments");
 	return OSSO_INVALID;
     }
 
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-               osso->application);
-
     osso->mime.func = cb;
     osso->mime.data = data;
     
-    _msg_handler_set_cb_f(osso, interface, _mime_handler, NULL, TRUE);
+    _msg_handler_set_cb_f(osso, osso->interface, _mime_handler, NULL, TRUE);
     return OSSO_OK;
 }
 
 osso_return_t osso_mime_unset_cb(osso_context_t *osso)
 {
-    char interface[MAX_IF_LEN + 1];
     if (osso == NULL) {
         ULOG_ERR_F("osso context is NULL");
 	return OSSO_INVALID;
@@ -60,13 +55,10 @@ osso_return_t osso_mime_unset_cb(osso_context_t *osso)
 	return OSSO_INVALID;
     }
 
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-               osso->application);
-
     osso->mime.func = NULL;
     osso->mime.data = NULL;
     
-    _msg_handler_rm_cb_f(osso, interface, _mime_handler, TRUE);
+    _msg_handler_rm_cb_f(osso, osso->interface, _mime_handler, TRUE);
     return OSSO_OK;
 }
 
@@ -88,12 +80,10 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
 				       gpointer data)
 {
-    char interface[MAX_IF_LEN + 1] = {0};
     g_assert(osso != NULL);
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-               osso->application);
 
-    if (dbus_message_is_method_call(msg, interface, OSSO_BUS_MIMEOPEN)) {
+    if (dbus_message_is_method_call(msg, osso->interface,
+        OSSO_BUS_MIMEOPEN)) {
 	int argc, idx = 0;
         gchar **argv = NULL;
         gchar *arg = NULL;
