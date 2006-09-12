@@ -170,6 +170,12 @@ void _msg_handler_set_ret(osso_context_t *osso, gint serial,
 			  osso_rpc_t *retval);
 void _msg_handler_rm_ret(osso_context_t *osso, gint serial);
 
+void __attribute__ ((visibility("hidden")))
+make_default_interface(const char *application, char *interface);
+
+void __attribute__ ((visibility("hidden")))
+make_default_service(const char *application, char *service);
+
 /* this is only needed by some unit testing code */
 osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                 const gchar *object_path,

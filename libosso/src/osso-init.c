@@ -145,6 +145,34 @@ static gboolean _validate(const gchar *application, const gchar* version)
     return TRUE;
 }
 
+void __attribute__ ((visibility("hidden")))
+make_default_interface(const char *application, char *interface)
+{
+    g_assert(application != NULL);
+    g_assert(interface != NULL);
+
+    if (g_strrstr(application, ".") != NULL) {
+        g_snprintf(interface, MAX_IF_LEN, "%s", application);
+    } else {
+        g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
+                   application);
+    }
+}
+
+void __attribute__ ((visibility("hidden")))
+make_default_service(const char *application, char *service)
+{
+    g_assert(application != NULL);
+    g_assert(service != NULL);
+
+    if (g_strrstr(application, ".") != NULL) {
+        g_snprintf(service, MAX_SVC_LEN, "%s", application);
+    } else {
+        g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s",
+                   application);
+    }
+}
+
 /************************************************************************/
 static osso_context_t * _init(const gchar *application, const gchar *version)
 {
@@ -163,13 +191,7 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
 
     g_snprintf(osso->application, MAX_APP_NAME_LEN, "%s", application);
     g_snprintf(osso->version, MAX_VERSION_LEN, "%s", version);
-
-    if (g_strrstr(application, ".") != NULL) {
-        g_snprintf(osso->interface, MAX_IF_LEN, "%s", application);
-    } else {
-        g_snprintf(osso->interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-                   application);
-    }
+    make_default_interface((const char*)application, osso->interface);
 
     osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
@@ -238,12 +260,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     
     dprint("connection to the D-BUS daemon was a success");
    
-    if (g_strrstr(osso->application, ".") != NULL) {
-        g_snprintf(service, MAX_SVC_LEN, "%s", osso->application);
-    } else {
-        g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s",
-                   osso->application);
-    }
+    make_default_service(osso->application, service);
     dprint("service='%s'",service);
 
     i = dbus_bus_request_name(conn, service,
