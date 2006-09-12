@@ -92,14 +92,10 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
                                       DBusMessage *msg, gpointer data)
 {
     struct _osso_top *top;
-    gchar interface[MAX_IF_LEN] = {0};
 
     top = (struct _osso_top *)data;
 
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-	       osso->application);
-
-    if(dbus_message_is_method_call(msg, interface, OSSO_BUS_TOP))
+    if (dbus_message_is_method_call(msg, osso->interface, OSSO_BUS_TOP))
     {	
         char *arguments = NULL;
         DBusMessageIter iter;
@@ -127,7 +123,7 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
 					  gpointer data)
 {
     struct _osso_top *top;
-    gchar interface[MAX_IF_LEN] = {0};
+
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
@@ -139,11 +135,9 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
     top->handler = cb;
     top->data = data;
 
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-	       osso->application);
-
     /* register our top_application handler to the main message handler */
-    _msg_handler_set_cb_f_free_data(osso, interface, _top_handler, top, TRUE);
+    _msg_handler_set_cb_f_free_data(osso, osso->interface, _top_handler,
+                                    top, TRUE);
 
     return OSSO_OK;
 }
@@ -154,15 +148,11 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 					    gpointer data)
 {
     struct _osso_top *top;
-    gchar interface[MAX_IF_LEN] = {0};
     
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
-    g_snprintf(interface, MAX_IF_LEN, OSSO_BUS_ROOT ".%s",
-	       osso->application);
-    
-    top = (struct _osso_top *)_msg_handler_rm_cb_f(osso, interface,
+    top = (struct _osso_top *)_msg_handler_rm_cb_f(osso, osso->interface,
 						   _top_handler, TRUE);
 
     free(top);
