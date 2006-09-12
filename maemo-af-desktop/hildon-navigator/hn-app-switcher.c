@@ -1359,7 +1359,7 @@ refresh_app_button (HNAppSwitcher *app_switcher,
                 NULL);
 }
 
-static gboolean
+    static gboolean
 refresh_buttons (gpointer user_data)
 {
   HNAppSwitcher        *app_switcher = HN_APP_SWITCHER (user_data);
@@ -1381,14 +1381,14 @@ refresh_buttons (gpointer user_data)
     }
 
   priv->buttons_group = NULL;
-  
+
   /* then refresh the icons of the application buttons */
   for (l = priv->applications, pos = AS_APP1_BUTTON;
        l != NULL && pos < N_BUTTONS;
        l = l->next, pos++)
     {
       HNEntryInfo *entry = l->data;
-      
+
       /* we just want the most recently used top-level applications */
       if (entry->type != HN_ENTRY_WATCHED_APP)
         {
@@ -1397,7 +1397,7 @@ refresh_buttons (gpointer user_data)
         }
 
       refresh_app_button (app_switcher, entry, pos);
-      
+
       HN_DBG ("Showing object");
     }
 
@@ -1406,7 +1406,7 @@ refresh_buttons (gpointer user_data)
    * if needed
    */
   was_blinking = get_main_button_is_blinking (priv->main_button);
-  
+
   is_urgent = FALSE;
   last_active = 0;
   for (l = priv->applications, pos = 0;
@@ -1416,26 +1416,20 @@ refresh_buttons (gpointer user_data)
       const GList       *k;
       HNEntryInfo       *child;
 
-      if (pos < N_BUTTONS)
-        {
-          if (hn_entry_info_is_active (l->data))
-	    last_active = pos;
-	  
-          continue;
-	}
-
-      if (hn_entry_info_is_active (l->data))
+      if (pos < N_BUTTONS && hn_entry_info_is_active (l->data))
         {
           GtkToggleButton *active_button;
 
-	  HN_DBG ("Unsetting the previously active button %d",
-		  last_active);
-	  
-	  active_button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
-	  gtk_toggle_button_set_inconsistent (active_button, TRUE);
-	  gtk_toggle_button_set_active (active_button, FALSE);
-	  gtk_toggle_button_toggled (active_button);
-	}
+          HN_DBG ("Unsetting the previously active button %d",
+                  last_active);
+
+          active_button = GTK_TOGGLE_BUTTON (priv->buttons[pos]);
+          gtk_toggle_button_set_inconsistent (active_button, TRUE);
+          gtk_toggle_button_set_active (active_button, FALSE);
+          gtk_toggle_button_toggled (active_button);
+
+          last_active = pos;
+        }
 
       /* set the ignore flag on any children that were causing the blinking
        * we skip the first four apps, which cause blinking of the app buttons,
@@ -1446,7 +1440,7 @@ refresh_buttons (gpointer user_data)
           child = k->data;
 
           /* If the entry is urgent and the ignore flag is not set, the
-	   * button should blink
+           * button should blink
            */
           if(hn_entry_info_is_urgent(child) &&
              !hn_entry_info_get_ignore_urgent(child))
@@ -1472,14 +1466,14 @@ refresh_buttons (gpointer user_data)
   if (is_urgent && !was_blinking && !priv->system_inactivity)
     {
       HN_DBG("Setting menu button urgency to '%s'",
-	     is_urgent ? "true" : "false");
+             is_urgent ? "true" : "false");
       hn_app_image_animation (app_image, is_urgent);
       set_main_button_is_blinking (priv->main_button, is_urgent);
     }
   else if (was_blinking && priv->system_inactivity)
     {
       HN_DBG("Setting menu button urgency to 'false'", FALSE);
-      
+
       hn_app_image_animation (app_image, FALSE);
       set_main_button_is_blinking (priv->main_button, FALSE);
     }
@@ -1488,14 +1482,14 @@ refresh_buttons (gpointer user_data)
   if (!priv->applications)
     {
       HN_DBG ("Hiding main button icon");
-      
+
       gtk_widget_hide (app_image);
       gtk_widget_set_sensitive (priv->main_button, FALSE);
     }
   else
     {
       HN_DBG ("Showing main button icon");
-      
+
       gtk_widget_set_sensitive (priv->main_button, TRUE);
       gtk_widget_show (app_image);
     }
