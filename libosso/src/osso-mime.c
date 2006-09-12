@@ -23,6 +23,7 @@
  */
 
 #include "osso-internal.h"
+#include <assert.h>
 
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
@@ -80,7 +81,7 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
 				       gpointer data)
 {
-    g_assert(osso != NULL);
+    assert(osso != NULL);
 
     if (dbus_message_is_method_call(msg, osso->interface,
         OSSO_BUS_MIMEOPEN)) {
@@ -111,7 +112,7 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 	    argv[idx++] = arg;
 	    dbus_message_iter_next(&iter);
 	}
-        g_assert(idx == argc);
+        assert(idx == argc);
         argv[idx] = NULL;
 	
 	(osso->mime.func)(osso->mime.data, argc, argv);

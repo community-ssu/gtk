@@ -50,10 +50,10 @@ int main(int nargs, char *argv[])
     if(osso == NULL)
 	return 1;
 
-    osso_rpc_set_default_cb_f(osso, cb, (gpointer)loop);
+    osso_rpc_set_default_cb_f(osso, (osso_rpc_cb_f*)cb, (gpointer)loop);
     dprint("cb = %p",cb);
     osso_rpc_set_cb_f(osso, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-		      cb,(gpointer)loop);
+		      (osso_rpc_cb_f*)cb,(gpointer)loop);
     g_main_loop_run(loop);
     osso_deinitialize(osso);
 

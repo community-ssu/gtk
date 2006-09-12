@@ -26,43 +26,47 @@
 #include "osso-application-top.h"
 #include <stdlib.h>
 
+static guint dummy_serial;
+
 osso_return_t osso_application_top(osso_context_t *osso,
                                    const gchar *application,
                                    const gchar *arguments)
 {
     char service[MAX_SVC_LEN], path[MAX_OP_LEN], interface[MAX_IF_LEN];
-    guint serial;
     DBusMessage *msg = NULL;
-    gchar* copy = NULL;
     const char *arg = "";
 
     if (osso == NULL) return OSSO_INVALID;
+    if (osso->conn == NULL) return OSSO_INVALID;
     if (application == NULL) return OSSO_INVALID;
 
-    dprint("Topping application (service) '%s' with args %s",
-	   application, arguments);
+    ULOG_DEBUG_F("Topping application (service) '%s' with args '%s'",
+	         application, arguments);
     
-    g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
+    make_default_service(application, service);
 
-    copy = appname_to_valid_path_component(application);
-    if (copy == NULL) {
-        ULOG_ERR_F("failure in appname_to_valid_path_component");
+    if (!make_default_object_path(application, path)) {
+        ULOG_ERR_F("make_default_object_path() failed");
         return OSSO_ERROR;
     }
-    g_snprintf(path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
-    g_free(copy); copy = NULL;
 
-    g_snprintf(interface, MAX_IF_LEN, "%s", service);
+    make_default_interface(application, interface);
 
-    dprint("New method: %s:%s:%s:%s",service,path,interface,OSSO_BUS_TOP);
+    ULOG_DEBUG_F("New method: %s:%s:%s:%s", service, path, interface,
+                 OSSO_BUS_TOP);
     msg = dbus_message_new_method_call(service, path, interface,
 				       OSSO_BUS_TOP);
+    if (msg == NULL) {
+        ULOG_ERR_F("dbus_message_new_method_call() failed");
+        return OSSO_ERROR;
+    }
 
     if (arguments != NULL) {
         arg = arguments;
     }
     if (!dbus_message_append_args(msg, DBUS_TYPE_STRING, &arg,
                                   DBUS_TYPE_INVALID)) {
+        ULOG_ERR_F("dbus_message_append_args() failed");
 	dbus_message_unref(msg);
 	return OSSO_ERROR;
     }
@@ -70,7 +74,7 @@ osso_return_t osso_application_top(osso_context_t *osso,
     dbus_message_set_no_reply(msg, TRUE);
     dbus_message_set_auto_start(msg, TRUE);
 
-    if (!dbus_connection_send(osso->conn, msg, &serial)) {
+    if (!dbus_connection_send(osso->conn, msg, &dummy_serial)) {
         ULOG_ERR_F("dbus_connection_send failed");
 	dbus_message_unref(msg);
 	return OSSO_ERROR;

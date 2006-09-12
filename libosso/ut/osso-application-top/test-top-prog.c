@@ -47,7 +47,8 @@ int main(int nargs, char *argv[])
     if(osso == NULL)
 	return 1;
 
-    osso_application_set_top_cb(osso, _top_cb_f, (gpointer)loop);
+    osso_application_set_top_cb(osso,
+        (osso_application_top_cb_f*)_top_cb_f, (gpointer)loop);
 
     g_main_loop_run(loop);
 

@@ -23,6 +23,7 @@
 #include "osso-internal.h"
 #include "osso-hw.h"
 #include "osso-mem.h"
+#include <assert.h>
 
 #define MCE_SERVICE			"com.nokia.mce"
 #define MCE_REQUEST_PATH		"/com/nokia/mce/request"
@@ -287,7 +288,7 @@ static void write_device_state_to_file(const char* s)
 {
     char buf[STORED_LEN];
     int ret;
-    g_assert(cache_file_name[0] != 0);
+    assert(cache_file_name[0] != 0);
     ret = readlink(cache_file_name, buf, STORED_LEN - 1);
     if (errno == ENOENT) {
         /* does not exist, create it */
@@ -323,8 +324,8 @@ static void read_device_state_from_file(osso_context_t *osso)
     char s[STORED_LEN];
 
     ULOG_DEBUG_F("entered");
-    g_assert(osso != NULL);
-    g_assert(cache_file_name[0] != 0);
+    assert(osso != NULL);
+    assert(cache_file_name[0] != 0);
 
     ret = readlink(cache_file_name, s, STORED_LEN - 1);
     if (ret >= 0) {
@@ -357,7 +358,7 @@ static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
                 DBusMessage *msg, gpointer data)
 {
     ULOG_DEBUG_F("entered");
-    g_assert(osso != NULL);
+    assert(osso != NULL);
 
     if (dbus_message_is_signal(msg, USER_LOWMEM_ON_SIGNAL_IF,
                                USER_LOWMEM_ON_SIGNAL_NAME)) {
@@ -383,7 +384,7 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
                                         DBusMessage *msg, gpointer data)
 {
     ULOG_DEBUG_F("entered");
-    g_assert(osso != NULL);
+    assert(osso != NULL);
 
     if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SHUTDOWN_SIG)) {
         osso->hw_state.shutdown_ind = TRUE;

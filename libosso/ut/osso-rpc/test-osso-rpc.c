@@ -272,7 +272,8 @@ gint dummy(const gchar *interface, const gchar *method,
 
 int test_osso_rpc_set_default_cb_invalid_osso( void )
 {
-    if(osso_rpc_set_default_cb_f(NULL, dummy, NULL) == OSSO_INVALID)
+    if(osso_rpc_set_default_cb_f(NULL, (osso_rpc_cb_f*)dummy,
+                                 NULL) == OSSO_INVALID)
 	return 1;
     else
 	return 0;
@@ -302,7 +303,7 @@ int test_osso_rpc_set_default_cb( void )
 
     assert(osso != NULL);
 
-    r = osso_rpc_set_default_cb_f(osso, dummy, NULL);
+    r = osso_rpc_set_default_cb_f(osso, (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_OK)
 	return 1;
@@ -312,7 +313,8 @@ int test_osso_rpc_set_default_cb( void )
 
 int test_osso_rpc_unset_default_cb_invalid_osso( void )
 {
-    if(osso_rpc_unset_default_cb_f(NULL, dummy, NULL) == OSSO_INVALID)
+    if(osso_rpc_unset_default_cb_f(NULL, (osso_rpc_cb_f*)dummy,
+                                   NULL) == OSSO_INVALID)
 	return 1;
     else
 	return 0;
@@ -342,10 +344,10 @@ int test_osso_rpc_unset_default_cb( void )
 
     assert(osso != NULL);
 
-    r = osso_rpc_set_default_cb_f(osso, dummy, NULL);
+    r = osso_rpc_set_default_cb_f(osso, (osso_rpc_cb_f*)dummy, NULL);
     assert(r == OSSO_OK);
     
-    r = osso_rpc_unset_default_cb_f(osso, dummy, NULL);
+    r = osso_rpc_unset_default_cb_f(osso, (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_OK)
 	return 1;
@@ -441,7 +443,7 @@ int test_osso_rpc_set_cb_with_invalid_osso( void )
 {
     gint r;
     r = osso_rpc_set_cb_f(NULL, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     if(r == OSSO_INVALID)
 	return 1;
     else
@@ -457,7 +459,7 @@ int test_osso_rpc_set_cb_with_invalid_service( void )
     assert(osso != NULL);
 
     r = osso_rpc_set_cb_f(osso, NULL, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_INVALID)
 	return 1;
@@ -474,7 +476,7 @@ int test_osso_rpc_set_cb_with_invalid_object( void )
     assert(osso != NULL);
 
     r = osso_rpc_set_cb_f(osso, TEST_SERVICE, NULL, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_INVALID)
 	return 1;
@@ -491,7 +493,7 @@ int test_osso_rpc_set_cb_with_invalid_if( void )
     assert(osso != NULL);
 
     r = osso_rpc_set_cb_f(osso, TEST_SERVICE, TEST_OBJECT, NULL,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_INVALID)
 	return 1;
@@ -525,7 +527,7 @@ int test_osso_rpc_set_cb( void )
     assert(osso != NULL);
 
     r = osso_rpc_set_cb_f(osso, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_OK)
 	return 1;
@@ -538,7 +540,7 @@ int test_osso_rpc_unset_cb_with_invalid_osso( void )
 {
     gint r;
     r = osso_rpc_unset_cb_f(NULL, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     if(r == OSSO_INVALID)
 	return 1;
     else
@@ -554,7 +556,7 @@ int test_osso_rpc_unset_cb_with_invalid_service( void )
     assert(osso != NULL);
 
     r = osso_rpc_unset_cb_f(osso, NULL, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_INVALID)
 	return 1;
@@ -571,7 +573,7 @@ int test_osso_rpc_unset_cb_with_invalid_object( void )
     assert(osso != NULL);
 
     r = osso_rpc_unset_cb_f(osso, TEST_SERVICE, NULL, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_INVALID)
 	return 1;
@@ -588,7 +590,7 @@ int test_osso_rpc_unset_cb_with_invalid_if( void )
     assert(osso != NULL);
 
     r = osso_rpc_unset_cb_f(osso, TEST_SERVICE, TEST_OBJECT, NULL,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_INVALID)
 	return 1;
@@ -622,10 +624,10 @@ int test_osso_rpc_unset_cb( void )
     assert(osso != NULL);
 
     r = osso_rpc_set_cb_f(osso, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     assert(r == OSSO_OK);
     r = osso_rpc_unset_cb_f(osso, TEST_SERVICE, TEST_OBJECT, TEST_IFACE,
-			  dummy, NULL);
+			  (osso_rpc_cb_f*)dummy, NULL);
     osso_deinitialize(osso);
     if(r == OSSO_OK)
 	return 1;
@@ -1099,7 +1101,8 @@ int test_osso_rpc_async_run_and_return( void )
     dprint("foobar.loop = %p",foobar.loop);
 
     r = osso_rpc_async_run(osso, TEST_SERVICE, TEST_OBJECT, TEST_IFACE, 
-			   "echo", async_ret_handler, &foobar,
+			   "echo", (osso_rpc_async_f*)async_ret_handler,
+                           &foobar,
 			   DBUS_TYPE_INT32, intval, DBUS_TYPE_INVALID);
 
     sleep(2);

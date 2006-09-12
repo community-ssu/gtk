@@ -23,6 +23,7 @@
 #include "osso-internal.h"
 #include "osso-init.h"
 #include "osso-log.h"
+#include <assert.h>
 
 /* for internal use only
  * This function strdups application name and makes it
@@ -31,7 +32,7 @@
 gchar* appname_to_valid_path_component(const gchar *application)
 {
     gchar* copy = NULL, *p = NULL;
-    g_assert(application != NULL);
+    assert(application != NULL);
     copy = g_strdup(application);
     if (copy == NULL) {
        return NULL;
@@ -148,8 +149,8 @@ static gboolean _validate(const gchar *application, const gchar* version)
 void __attribute__ ((visibility("hidden")))
 make_default_interface(const char *application, char *interface)
 {
-    g_assert(application != NULL);
-    g_assert(interface != NULL);
+    assert(application != NULL);
+    assert(interface != NULL);
 
     if (g_strrstr(application, ".") != NULL) {
         g_snprintf(interface, MAX_IF_LEN, "%s", application);
@@ -162,8 +163,8 @@ make_default_interface(const char *application, char *interface)
 void __attribute__ ((visibility("hidden")))
 make_default_service(const char *application, char *service)
 {
-    g_assert(application != NULL);
-    g_assert(service != NULL);
+    assert(application != NULL);
+    assert(service != NULL);
 
     if (g_strrstr(application, ".") != NULL) {
         g_snprintf(service, MAX_SVC_LEN, "%s", application);
@@ -178,8 +179,8 @@ make_default_object_path(const char *application, char *path)
 {
     char *copy;
 
-    g_assert(application != NULL);
-    g_assert(path != NULL);
+    assert(application != NULL);
+    assert(path != NULL);
 
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
@@ -349,7 +350,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
 {
     DBusConnection *conn = NULL;
-    g_assert(osso != NULL);
+    assert(osso != NULL);
     if (sys) {
         conn = osso->sys_conn;
         osso->sys_conn = NULL;

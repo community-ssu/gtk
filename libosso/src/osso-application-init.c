@@ -22,6 +22,7 @@
 
 #include "osso-internal.h"
 #include "libosso.h"
+#include <assert.h>
 
 static void _run_main_loop( void );
 
@@ -76,7 +77,7 @@ static void _run_main_loop( void )
 
 static gboolean _rpc_run_ret_cb(gpointer data)
 {
-    g_assert(data);
+    assert(data);
 
 
 /*    g_print("rpc_run_ret_cb Loop = %p\n",data);

@@ -47,9 +47,11 @@ int main(int nargs, char *argv[])
     if(osso == NULL)
 	return 1;
     
-    osso_application_set_top_cb(osso, _top_cb_f, (gpointer)loop);
+    osso_application_set_top_cb(osso,
+         (osso_application_top_cb_f*)_top_cb_f, (gpointer)loop);
     _test_rpc_set_cb_f(osso, "com.nokia.statusbar", "/com/nokia/statusbar",
-                      "com.nokia.statusbar", cb, (gpointer)loop, TRUE);
+                      "com.nokia.statusbar", (osso_rpc_cb_f*)cb,
+                      (gpointer)loop, TRUE);
 
     g_main_loop_run(loop);
 

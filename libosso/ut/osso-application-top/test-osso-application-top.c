@@ -109,7 +109,8 @@ int set_top_handler_invalid_osso( void )
 {
     gint r;
 
-    r = osso_application_set_top_cb(NULL, _top_cb_f, NULL);
+    r = osso_application_set_top_cb(NULL,
+            (osso_application_top_cb_f*)_top_cb_f, NULL);
     
     if(r == OSSO_INVALID)
 	return 1;
@@ -144,17 +145,20 @@ int set_top_handler( void )
     assert(osso != NULL);
 
     n = osso->ifs->len;
-    r = osso_application_set_top_cb(osso, _top_cb_f, osso);
+    r = osso_application_set_top_cb(osso,
+            (osso_application_top_cb_f*)_top_cb_f, osso);
         
     if(r == OSSO_OK) {
 	_osso_interface_t *intf;
 	struct _osso_top *top;
+        void *tmp;
 	intf = &g_array_index(osso->ifs, _osso_interface_t, n);
-	top = (struct _osso_top *)(intf->data);
+	tmp = intf->data;
+        top = tmp;
 
 	if(!intf->method)
 	    ret = 0;	    
-	else if(top->handler != _top_cb_f)
+	else if(top->handler != (osso_application_top_cb_f*)_top_cb_f)
 	    ret = 0;	
 	else if(top->data != (gpointer) osso)
 	    ret = 0;
@@ -173,7 +177,8 @@ int unset_top_handler_invalid_osso( void )
 {
     gint r;
 
-    r = osso_application_unset_top_cb(NULL, _top_cb_f, NULL);
+    r = osso_application_unset_top_cb(NULL,
+            (osso_application_top_cb_f*)_top_cb_f, NULL);
     
     if(r == OSSO_INVALID)
 	return 1;
@@ -208,9 +213,11 @@ int unset_top_handler( void )
     assert(osso != NULL);
 
     n = osso->ifs->len;
-    r = osso_application_set_top_cb(osso, _top_cb_f, osso);
+    r = osso_application_set_top_cb(osso,
+            (osso_application_top_cb_f*)_top_cb_f, osso);
     assert(r == OSSO_OK);
-    r = osso_application_unset_top_cb(osso, _top_cb_f, osso);
+    r = osso_application_unset_top_cb(osso,
+            (osso_application_top_cb_f*)_top_cb_f, osso);
         
     if(r == OSSO_OK)
 	ret = 1;

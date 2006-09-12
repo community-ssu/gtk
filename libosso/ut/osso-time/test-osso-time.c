@@ -129,13 +129,13 @@ int osso_time_set_valid(void)
 {
     osso_context_t *osso =NULL;
     gint retval = OSSO_ERROR;
-    time_t time = OK_TIME;
+    time_t t = OK_TIME;
     osso = osso_initialize(APP_NAME, APP_VER, FALSE, NULL);
     if (osso == NULL) {
         return 0;
     }
 
-    retval = osso_time_set(osso, time);
+    retval = osso_time_set(osso, t);
     if (retval == OSSO_OK) {
         osso_deinitialize(osso);
         return 1;
@@ -210,7 +210,7 @@ int osso_time_set_notification_and_time(void)
     struct stat buf;
     gint retval = OSSO_ERROR;
     osso_context_t *osso = NULL;
-    time_t time = (time_t)OK_TIME;
+    time_t t = (time_t)OK_TIME;
     struct foo foobar; 
     GSource *to; 
     osso = osso_initialize(APP_NAME, APP_VER, FALSE, NULL);
@@ -231,7 +231,7 @@ int osso_time_set_notification_and_time(void)
     if (retval != OSSO_OK) {
         return 0;
     }
-    osso_time_set(osso, time);
+    osso_time_set(osso, t);
     g_main_loop_run(foobar.loop);
     retval = stat(CALLBACKFILE, &buf);
     g_free(foobar.loop);
