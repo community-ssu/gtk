@@ -738,6 +738,8 @@ hildon_thumb_menu_item_set_thumb_label (HildonThumbMenuItem *thumb_menu_item,
     /* Set the attributes */
     g_object_set(label, "attributes", attrs, NULL);
 
+    gtk_label_set_ellipsize (label,PANGO_ELLIPSIZE_NONE);
+
     /* Clean up */
     if (attrs)
         pango_attr_list_unref(attrs);
@@ -830,6 +832,7 @@ hildon_thumb_menu_item_new_with_mnemonic (const gchar *label,
      */
     accel_label = g_object_new (GTK_TYPE_ACCEL_LABEL, NULL);
     gtk_label_set_text_with_mnemonic (GTK_LABEL (accel_label), label);
+    gtk_label_set_ellipsize (GTK_LABEL (accel_label),PANGO_ELLIPSIZE_NONE);
     gtk_misc_set_alignment (GTK_MISC (accel_label), 0.0, 0.5);
 
     gtk_container_add (GTK_CONTAINER (thumb_menu_item), accel_label);

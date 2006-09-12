@@ -1,5 +1,10 @@
 2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
 
+	* libhildonmenu/hildon-thumb-menu-item.c:  Set each 
+	  label's ellipsize to PANGO_ELLIPSIZE_NONE. Fixes: NB#37617
+
+2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hn-app-switcher.[ch]:
 	* hn-wm.c:
 	* hn-entry-info.c:
