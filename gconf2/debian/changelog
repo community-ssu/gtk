@@ -1,3 +1,9 @@
+gconf2 (2.6.4.14-osso4) unstable; urgency=low
+
+  * Added building of debug package libgconf2-6-dbg. Fixes: NB#40229
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Sep 2006 16:33:17 +0300
+
 gconf2 (2.6.4.14-osso3) unstable; urgency=low
 
   * Added dependency to dbus because of the messagebus user created by it.

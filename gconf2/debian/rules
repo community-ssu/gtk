@@ -87,6 +87,13 @@ install: build
 
 	dh_movefiles --sourcedir=debian/gconf2
 	find debian/ -type d -empty | sort -r | xargs rmdir -p --ignore-fail-on-non-empty
+
+	# for the -dbg package
+	-rm -rf $(CURDIR)/debian/libgconf2-6-dbg/usr/lib/debug
+	-mkdir -p $(CURDIR)/debian/libgconf2-6-dbg/usr/lib/debug
+	-cp -vd $(CURDIR)/debian/libgconf2-6/usr/lib/lib*.so* \
+	        $(CURDIR)/debian/libgconf2-6-dbg/usr/lib/debug
+
 	install -m 755 -d $(CURDIR)/debian/gconf2/etc/gconf/gconf.xml.defaults
 	install -m 755 -d $(CURDIR)/debian/gconf2/etc/gconf/gconf.xml.mandatory
 	install -d $(CURDIR)/debian/gconf2/usr/share/lintian/overrides
@@ -125,7 +132,7 @@ binary-arch: build install
 	dh_link -plibgconf2-dev /usr/share/doc/gconf2 /usr/share/doc/libgconf2-dev
 
 	dh_installcatalogs
-	dh_strip
+	dh_strip --dbg-package="libgconf2-6-dbg"
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -plibgconf2-$(CURRENT) -V 'libgconf2-$(CURRENT) (>= ${SHLIBDEPS})' -Xlibgconfbackend
