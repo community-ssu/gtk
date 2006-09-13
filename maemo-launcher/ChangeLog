@@ -1,3 +1,19 @@
+2006-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.c (report): Rename to ...
+	(vreport): ... this.
+	(report): New function.
+	(debug): Remove function.
+	(info): Likewise.
+	(error): Likewise.
+	(die): Call vreport instead of report.
+	(report_type): Move to ...
+	* launcher/report.h: ... here.
+	(report): New declaration.
+	(debug): Change the function declaration to a macro using report.
+	(info): Likewise.
+	(error): Likewise.
+
 2006-09-11  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac (MINIMAL_DEPENDS): Add missing dbus-1 dependency.

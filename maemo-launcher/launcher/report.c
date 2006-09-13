@@ -29,13 +29,6 @@
 
 static enum report_output output = report_console;
 
-enum report_type {
-  report_debug,
-  report_info,
-  report_error,
-  report_fatal
-};
-
 void
 report_set_output(enum report_output new_output)
 {
@@ -52,7 +45,7 @@ report_set_output(enum report_output new_output)
 }
 
 static void
-report(enum report_type type, char *msg, va_list arg)
+vreport(enum report_type type, char *msg, va_list arg)
 {
   char str[400];
   char *str_type = "";
@@ -85,35 +78,13 @@ report(enum report_type type, char *msg, va_list arg)
     syslog(log_type, "%s%s", str_type, str);
 }
 
-#ifdef DEBUG
 void
-debug(char *msg, ...)
+report(enum report_type type, char *msg, ...)
 {
   va_list arg;
 
   va_start(arg, msg);
-  report(report_debug, msg, arg);
-  va_end(arg);
-}
-#endif
-
-void
-info(char *msg, ...)
-{
-  va_list arg;
-
-  va_start(arg, msg);
-  report(report_info, msg, arg);
-  va_end(arg);
-}
-
-void
-error(char *msg, ...)
-{
-  va_list arg;
-
-  va_start(arg, msg);
-  report(report_error, msg, arg);
+  vreport(type, msg, arg);
   va_end(arg);
 }
 
@@ -123,7 +94,7 @@ die(int status, char *msg, ...)
   va_list arg;
 
   va_start(arg, msg);
-  report(report_fatal, msg, arg);
+  vreport(report_fatal, msg, arg);
   va_end(arg);
 
   exit(status);

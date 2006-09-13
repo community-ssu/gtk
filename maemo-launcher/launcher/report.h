@@ -35,16 +35,25 @@ enum report_output {
   report_none
 };
 
+enum report_type {
+  report_debug,
+  report_info,
+  report_error,
+  report_fatal
+};
+
 extern void report_set_output(enum report_output new_output);
+extern void report(enum report_type type, char *msg, ...);
 
 #ifdef DEBUG
-extern void debug(char *msg, ...);
+#define debug(msg, ...) report(report_debug, msg, #__VA_ARGS__)
 #else
 #define debug(...)
 #endif
 
-extern void info(char *msg, ...);
-extern void error(char *msg, ...);
+#define info(msg, ...) report(report_info, msg, #__VA_ARGS__)
+#define error(msg, ...) report(report_error, msg, #__VA_ARGS__)
+
 extern void ATTR_NORET die(int status, char *msg, ...);
 
 #endif
