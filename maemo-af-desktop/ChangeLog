@@ -1,3 +1,9 @@
+2006-09-13  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-wm-watchable-app.c:
+	  - Improved fix for NB#35577. Split failing of 
+	  g_key_file_new from g_return_val_if_fail.
+
 2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
 
 	* libhildonmenu/hildon-thumb-menu-item.c:  Set each 

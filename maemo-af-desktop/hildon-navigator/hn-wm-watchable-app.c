@@ -137,7 +137,11 @@ hn_wm_watchable_app_new (const char * file)
   gchar            *startup_wmclass, *exec_name, *app_name, *text_domain;
   GKeyFile         *key_file;
 
-  g_return_val_if_fail(file && (key_file = g_key_file_new()), NULL);
+  g_return_val_if_fail(file,NULL);
+ 
+  key_file = g_key_file_new();
+
+  if (!key_file) return NULL;
 
   if (!g_key_file_load_from_file (key_file, file, G_KEY_FILE_NONE, NULL))
   {
