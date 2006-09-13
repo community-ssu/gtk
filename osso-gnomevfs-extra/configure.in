@@ -47,10 +47,13 @@ AC_FUNC_STRERROR_R
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([memset mkdir strdup strncasecmp opendir closedir readdir_r])
 
-AC_CHECK_FUNCS(open64 lseek64 statfs statvfs posix_fadvise)
-AC_CHECK_HEADERS(sys/mount.h sys/vfs.h sys/statvfs.h sys/vmount.h)
-AC_CHECK_FUNCS(dirname, [AC_CHECK_HEADERS(libgen.h)] ,[
-  AC_SEARCH_LIBS(dirname, [gen])])
+AC_CHECK_FUNCS(getdtablesize open64 lseek64 statfs statvfs seteuid setegid setresuid setresgid readdir_r mbrtowc inet_pton getdelim sysctlbyname poll posix_fadvise fchmod atoll)
+AC_CHECK_MEMBERS([struct stat.st_blksize, struct stat.st_rdev])
+AC_STRUCT_ST_BLOCKS
+
+dnl Volume monitor stuff
+AC_CHECK_FUNCS(setmntent endmntent hasmntopt getmntinfo)
+AC_CHECK_HEADERS(mntent.h sys/mnttab.h sys/vfstab.h sys/cdio.h sys/mount.h sys/mntctl.h sys/vfs.h sys/vmount.h sys/sysctl.h fstab.h fnmatch.h sys/statvfs.h)
 
 # Needed to build the obex and file modules outside of gnome-vfs.
 AC_CACHE_CHECK([for off64_t],
@@ -65,7 +68,7 @@ if test x"$ac_cv_have_off64_t" = "xyes" ; then
 	AC_DEFINE(HAVE_OFF64_T, 1, [Whether off64_t type is available])
 fi
 
-AC_CHECK_HEADERS(sys/param.h sys/resource.h sys/statfs.h sys/param.h)
+AC_CHECK_HEADERS(sys/param.h sys/resource.h sys/vfs.h sys/mount.h sys/statfs.h sys/statvfs.h sys/param.h wctype.h sys/poll.h poll.h)
 
 dnl
 dnl file system type member in statfs struct
@@ -94,6 +97,7 @@ AC_CHECK_MEMBERS([struct statfs.f_type], ,[
 #ifdef HAVE_SYS_STATFS_H
 #include <sys/statfs.h>
 #endif])
+
  
 dnl
 dnl if statfs() takes 2 arguments or 4 (Solaris)
@@ -135,6 +139,20 @@ if test "$ac_cv_func_statfs" = yes ; then
       AC_MSG_RESULT(unknown)
       AC_MSG_ERROR([unable to determine number of arguments to statfs()])])])
 fi dnl test "$ac_cv_func_statfs" = yes
+
+AC_TYPE_MBSTATE_T
+
+AC_CHECK_FUNCS(dirname, [AC_CHECK_HEADERS(libgen.h)] ,[
+  AC_SEARCH_LIBS(dirname, [gen])])
+
+dnl borrowed from gnu findutils
+dnl and relicensed as LGPL by the FSF
+
+AC_ARG_WITH(afs,
+	    [  --with-afs              support -fstype afs],
+	    [  AC_DEFINE(AFS, [], [Define if you have the Andrew File System])
+	      CPPFLAGS="$CPPFLAGS -I/usr/afsws/include"
+	        LIBS="$LIBS -L/usr/afsws/lib -L/usr/afsws/lib/afs -lsys -lrx -llwp"])
 
 AC_MSG_CHECKING(how to get filesystem type)
 fstype=no
@@ -201,6 +219,25 @@ AC_SUBST(GTK_VERSION)
 dnl =======================================
 dnl File Module
 dnl =======================================
+
+dnl ********************** 
+dnl *** inotify***
+dnl **********************  
+inotify_support=no 
+AC_CHECK_HEADERS([linux/inotify.h],
+                 [
+                 inotify_support=yes
+                 ])
+ AC_CHECK_HEADERS([sys/inotify.h],
+                 [
+                 inotify_support=yes
+                 ]) 
+AM_CONDITIONAL(HAVE_INOTIFY, [test "$inotify_support" = "yes"])
+
+if test "$inotify_support" = "no"; then
+   AC_MSG_ERROR([inotify support is required to build this module])
+fi
+
 PKG_CHECK_MODULES(FILE_MODULE, [
         glib-2.0 >= $GLIB_REQUIRED
         dbus-glib-1 >= $DBUS_REQUIRED

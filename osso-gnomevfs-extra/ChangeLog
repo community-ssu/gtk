@@ -1,3 +1,38 @@
+2006-09-13  Martyn Russell  <martyn@imendio.com>
+
+	* configure.in: Updated the AC_ checks for stating, etc from
+	GnomeVFS HEAD to make sure config.h has all the necessary up to
+	date definitions.
+	
+	* file-module/src/Makefile.am: Added the additional inotify files
+	required.
+	
+	* file-module/src/dbus-file-method.c: Merged inotify changes from
+	the file-method.c on GnomeVFS HEAD.
+
+	* file-module/src/gnome-vfs-monitor-private.h: Added because these
+	functions are required by the inotify files we use.
+	
+	* file-module/src/inotify-diag.c:
+	* file-module/src/inotify-diag.h:
+	* file-module/src/inotify-helper.c:
+	* file-module/src/inotify-helper.h:
+	* file-module/src/inotify-kernel.c:
+	* file-module/src/inotify-kernel.h:
+	* file-module/src/inotify-missing.c:
+	* file-module/src/inotify-missing.h:
+	* file-module/src/inotify-path.c:
+	* file-module/src/inotify-path.h:
+	* file-module/src/inotify-sub.c:
+	* file-module/src/inotify-sub.h:
+	* file-module/src/local_inotify.h:
+	* file-module/src/local_inotify_syscalls.h: Added from GnomeVFS
+	HEAD. We use the /usr/include/asm/unistd.h system calls for
+	inotify instead of those specified by GnomeVFS (commented out of
+	local_inotify_syscalls.h). We add support for the __arm__
+	processor in the function definitions in
+	local_inotify_syscalls.h. This fixes NB#36554.
+
 2006-09-13  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Bump version.

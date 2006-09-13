@@ -61,6 +61,11 @@
 #include <fam.h>
 #endif
 
+#if defined(HAVE_LINUX_INOTIFY_H) || defined(HAVE_SYS_INOTIFY_H)
+#define USE_INOTIFY 1
+#include "inotify-helper.h"
+#endif
+
 #if HAVE_SYS_STATVFS_H
 #include <sys/statvfs.h>
 #endif
@@ -92,9 +97,9 @@ GnomeVFSResult  gnome_vfs_create_temp   (const gchar *prefix,
                                          gchar **name_return,
                                          GnomeVFSHandle **handle_return);
 
-/* Data structures for the monitor hash table. */
-static GHashTable *monitor_hash;
-static GMutex     *monitor_mutex;
+typedef struct {
+	GnomeVFSMethodMonitorCancelFunc cancel_func;  /* Must be first */
+} AnyFileMonitorHandle;
 
 typedef struct {
 	GnomeVFSURI         *uri;
@@ -106,9 +111,6 @@ typedef struct {
 	GList *handles; /* list of MonitorHandle* */
 } MonitorList;
 
-static void   dfm_notify_monitor          (GnomeVFSURI              *uri,
-					   GnomeVFSMonitorEventType  event_type,
-					   gboolean                  force);
 static gchar *dfm_fetch_and_free_old_path (gchar                    *old_path);
 
 
@@ -175,11 +177,11 @@ static gint fam_watch_id = 0;
 G_LOCK_DEFINE_STATIC (fam_connection);
 
 typedef struct {
-	FAMRequest request;
+	GnomeVFSMethodMonitorCancelFunc cancel_func;  /* Must be first */
 	GnomeVFSURI *uri;
+	FAMRequest request;
 	gboolean     cancelled;
 } FileMonitorHandle;
-
 #endif
 
 #ifdef PATH_MAX
@@ -253,15 +255,12 @@ ftruncate (int     fd,
 
 #endif
 
-// ---
-
 static gchar *
 get_path_from_uri (GnomeVFSURI const *uri)
 {
 	gchar *path;
 
 	path = gnome_vfs_unescape_string (uri->text, DIR_SEPARATORS);
-
 	if (path == NULL) {
 		return NULL;
 	}
@@ -270,7 +269,6 @@ get_path_from_uri (GnomeVFSURI const *uri)
 		g_free (path);
 		return NULL;
 	}
-
 #ifdef G_OS_WIN32
 	/* Drop slash in front of drive letter */
 	if (path[0] == '/' && g_ascii_isalpha (path[1]) && path[2] == ':') {
@@ -311,7 +309,6 @@ get_base_from_uri (GnomeVFSURI const *uri)
 typedef struct {
 	GnomeVFSURI *uri;
 	gint fd;
-	gboolean written;
 } FileHandle;
 
 static FileHandle *
@@ -403,7 +400,7 @@ do_open (GnomeVFSMethod *method,
 		return GNOME_VFS_ERROR_IS_DIRECTORY;
 	}
 	
-	/*In case insensitive manner, file_name should be "real" for 
+	/* In case insensitive manner, file_name should be "real" for 
 	 * file handle.*/
 	escaped_path = gnome_vfs_escape_path_string (file_name);
 	g_free (file_name);
@@ -527,11 +524,8 @@ do_create (GnomeVFSMethod *method,
 
 	dfo_clear_cache ();
 
-	dfm_notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_CREATED, FALSE);
-	
 	return GNOME_VFS_OK;
 }
-
 
 static GnomeVFSResult
 do_close (GnomeVFSMethod *method,
@@ -553,16 +547,6 @@ do_close (GnomeVFSMethod *method,
 
 	dfo_clear_cache ();
 
-	/* Emit a forced event, only non-local, if we have written to the
-	 * handle. This will emit a last change event in case we have throttled
-	 * events.
-	 */
-	if (file_handle->written) {
-		dfm_dbus_emit_notify (file_handle->uri,
-				      GNOME_VFS_MONITOR_EVENT_CHANGED, 
-				      TRUE);
-	}
-
 	/* FIXME bugzilla.eazel.com 1163: Should do this even after a failure?  */
 	file_handle_destroy (file_handle);
 
@@ -572,7 +556,6 @@ do_close (GnomeVFSMethod *method,
 
 	return GNOME_VFS_OK;
 }
-
 
 static GnomeVFSResult
 do_forget_cache	(GnomeVFSMethod *method,
@@ -655,13 +638,10 @@ do_write (GnomeVFSMethod *method,
 		return gnome_vfs_result_from_errno ();
 	} else {
 		*bytes_written = write_val;
-		dfm_notify_monitor (file_handle->uri, 
-				    GNOME_VFS_MONITOR_EVENT_CHANGED,
-				    FALSE);
-		file_handle->written = TRUE;
 		return GNOME_VFS_OK;
 	}
 }
+
 
 static gint
 seek_position_to_unix (GnomeVFSSeekPosition position)
@@ -738,10 +718,6 @@ do_truncate_handle (GnomeVFSMethod *method,
 	file_handle = (FileHandle *) method_handle;
 
 	if (ftruncate (file_handle->fd, where) == 0) {
-		file_handle->written = TRUE;
-		dfm_notify_monitor (file_handle->uri,
-				    GNOME_VFS_MONITOR_EVENT_CHANGED,
-				    FALSE);
 		return GNOME_VFS_OK;
 	} else {
 		switch (errno) {
@@ -776,7 +752,6 @@ do_truncate (GnomeVFSMethod *method,
 
 	if (truncate (path, where) == 0) {
 		g_free (path);
-		dfm_notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_CHANGED, FALSE);
 		return GNOME_VFS_OK;
 	} else {
 		g_free (path);
@@ -926,7 +901,7 @@ read_link (const gchar *full_name)
 
 static void
 get_access_info (GnomeVFSFileInfo *file_info,
-              const gchar *full_name)
+		 const gchar *full_name)
 {
      /* FIXME: should check errno after calling access because we don't
       * want to set valid_fields if something bad happened during one
@@ -1182,14 +1157,13 @@ do_read_directory (GnomeVFSMethod *method,
 		if (errno == 0) {
 			return GNOME_VFS_ERROR_EOF;
 		}
-
 		return gnome_vfs_result_from_errno ();
 	}
 #else
 	G_LOCK (readdir);
 	errno = 0;
 #ifndef G_OS_WIN32
- 	result = readdir (handle->dir);
+	result = readdir (handle->dir);
 #else
 	result = g_dir_read_name (handle->dir);
 #endif
@@ -1197,13 +1171,12 @@ do_read_directory (GnomeVFSMethod *method,
 	if (result == NULL && errno != 0) {
 		GnomeVFSResult ret = gnome_vfs_result_from_errno ();
 		G_UNLOCK (readdir);
-
 		return ret;
 	}
 #ifndef G_OS_WIN32
- 	if (result != NULL) {
- 		memcpy (handle->current_entry, result, sizeof (struct dirent));
- 	}
+	if (result != NULL) {
+		memcpy (handle->current_entry, result, sizeof (struct dirent));
+	}
 #endif
 	G_UNLOCK (readdir);
 #endif
@@ -1249,9 +1222,8 @@ do_get_file_info (GnomeVFSMethod *method,
 	gchar *file_name;
 
 	full_name = get_path_from_uri (uri);
-	if (full_name == NULL) {
+	if (full_name == NULL)
 		return GNOME_VFS_ERROR_INVALID_URI;
-	}
 
 	/*Check if input uri exisits or not, if not, real path is fetched.*/
 	if (!uri_exists_case_sensitive (uri)) {
@@ -1329,6 +1301,7 @@ GHashTable *fstype_hash = NULL;
 G_LOCK_DEFINE_STATIC (fstype_hash);
 extern char *filesystem_type (char *path, char *relpath, struct stat *statp);
 
+
 static gboolean
 do_is_local (GnomeVFSMethod *method,
 	     const GnomeVFSURI *uri)
@@ -1389,7 +1362,6 @@ do_make_directory (GnomeVFSMethod *method,
 		return GNOME_VFS_ERROR_INVALID_URI;
 		
 	/*Check and fetch the path in case sensitive manner if needed*/
-	
 	if (!uri_exists_case_sensitive (uri)) {
 		full_name = dfm_fetch_and_free_old_path (full_name);
 	}
@@ -1401,8 +1373,6 @@ do_make_directory (GnomeVFSMethod *method,
 	if (retval != 0) {
 		return gnome_vfs_result_from_errno ();
 	}
-
-	dfm_notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_CREATED, FALSE);
 
 	return GNOME_VFS_OK;
 }
@@ -1420,7 +1390,6 @@ do_remove_directory (GnomeVFSMethod *method,
 		return GNOME_VFS_ERROR_INVALID_URI;
 		
 	/*Check and fetch the path in case sensitive manner if needed*/	
-	
 	if (!uri_exists_case_sensitive (uri)) {
 		full_name = dfm_fetch_and_free_old_path (full_name);
 	}
@@ -1433,8 +1402,6 @@ do_remove_directory (GnomeVFSMethod *method,
 		return gnome_vfs_result_from_errno ();
 	}
 
-	dfm_notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_DELETED, FALSE);
-	
 	return GNOME_VFS_OK;
 }
 
@@ -2050,7 +2017,6 @@ do_find_directory (GnomeVFSMethod *method,
 		return GNOME_VFS_ERROR_INVALID_URI;
 
 	/*Check and fetch the path in case sensitive manner if needed*/
-	
 	if (!uri_exists_case_sensitive (near_uri)) {
 		full_name_near = dfm_fetch_and_free_old_path (full_name_near);
 	}
@@ -2096,9 +2062,6 @@ do_find_directory (GnomeVFSMethod *method,
 			/* This volume does not contain our home, we have to find/create the Trash
 			 * elsewhere on the volume. Use a heuristic to find a good place.
 			 */
-			FindByDeviceIDParameters tmp;
-			tmp.device_id = near_item_stat.st_dev;
-
 			if (gnome_vfs_context_check_cancellation (context))
 				return GNOME_VFS_ERROR_CANCELLED;
 
@@ -2171,6 +2134,7 @@ rename_helper (const gchar *old_full_name,
 		 */
 		if (g_ascii_strcasecmp (old_full_name, new_full_name) == 0
 		    && strcmp (old_full_name, new_full_name) != 0 && ! force_replace) {
+
 			if (gnome_vfs_context_check_cancellation (context))
 				return GNOME_VFS_ERROR_CANCELLED;
 			
@@ -2209,8 +2173,14 @@ rename_helper (const gchar *old_full_name,
 	if (gnome_vfs_context_check_cancellation (context))
 		return GNOME_VFS_ERROR_CANCELLED;
 
+#ifdef G_OS_WIN32
+	if (force_replace && old_exists)
+		g_remove (new_full_name);
+#endif
+
 	retval = g_rename (old_full_name, new_full_name);
 
+#ifndef G_OS_WIN32
 	/* FIXME bugzilla.eazel.com 1186: The following assumes that,
 	 * if `new_uri' and `old_uri' are on different file systems,
 	 * `rename()' will always return `EXDEV' instead of `EISDIR',
@@ -2237,7 +2207,7 @@ rename_helper (const gchar *old_full_name,
 			retval = g_rename (old_full_name, new_full_name);
 		}
 	}
-
+#endif
 	if (retval != 0) {
 		return gnome_vfs_result_from_errno ();
 	}
@@ -2400,11 +2370,6 @@ do_move (GnomeVFSMethod  *method,
 	g_free (new_full_name);
 	g_free (new_full_name_ondisk);
 
-	if (result == GNOME_VFS_OK) {
-		dfm_notify_monitor (old_uri, GNOME_VFS_MONITOR_EVENT_DELETED, FALSE);
-		dfm_notify_monitor (new_uri, GNOME_VFS_MONITOR_EVENT_CREATED, FALSE);
-	}
-
 	return result;
 }
 
@@ -2421,8 +2386,7 @@ do_unlink (GnomeVFSMethod *method,
 		return GNOME_VFS_ERROR_INVALID_URI;
 	}
 
-	/*Check and fetch the path in case sensitive manner if needed*/
-		
+	/*Check and fetch the path in case sensitive manner if needed*/	
 	if (!uri_exists_case_sensitive (uri)) {
 		full_name = dfm_fetch_and_free_old_path (full_name);
 	}
@@ -2439,8 +2403,6 @@ do_unlink (GnomeVFSMethod *method,
 	if (retval != 0) {
 		return gnome_vfs_result_from_errno ();
 	}
-
-	dfm_notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_DELETED, FALSE);
 
 	return GNOME_VFS_OK;
 }
@@ -2475,9 +2437,8 @@ do_create_symbolic_link (GnomeVFSMethod *method,
 	if (target_scheme == NULL) {
 		target_scheme = "file";
 	}
-
-	/* strcmp() changed to strcasecmp()	*/
 	
+	/* strcmp() changed to strcasecmp()	*/
 	if ((strcasecmp (link_scheme, "file") == 0) && (strcasecmp (target_scheme, "file") == 0)) {
 		/* symlink between two places on the local filesystem */
 		if (strncmp (target_reference, "file", 4) != 0) {
@@ -2486,15 +2447,13 @@ do_create_symbolic_link (GnomeVFSMethod *method,
 		} else {
 			target_full_name = get_path_from_uri (target_uri);
 		}
-		
+
 		link_full_name = get_path_from_uri (uri);
 
 		/*Check and fetch the path in case sensitive manner if needed*/	
-
 		if (!uri_exists_case_sensitive (uri)) {
 			link_full_name = dfm_fetch_and_free_old_path (link_full_name);
 		}
-
 
 		if (symlink (target_full_name, link_full_name) != 0) {
 			result = gnome_vfs_result_from_errno ();
@@ -2509,10 +2468,6 @@ do_create_symbolic_link (GnomeVFSMethod *method,
 		result = GNOME_VFS_ERROR_NOT_SUPPORTED;
 	}
 
-	if (result == GNOME_VFS_OK) {
-		dfm_notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_CREATED, FALSE);
-	}
-	
 	gnome_vfs_uri_unref (target_uri);
 
 	return result;
@@ -2544,7 +2499,6 @@ do_check_same_fs (GnomeVFSMethod *method,
 		return GNOME_VFS_ERROR_INVALID_URI;
 
 	/*Check and fetch the path in case sensitive manner if needed*/
-	
 	if (!uri_exists_case_sensitive (source_uri)) {
 		full_name_source = dfm_fetch_and_free_old_path (full_name_source);
 	}
@@ -2561,7 +2515,6 @@ do_check_same_fs (GnomeVFSMethod *method,
 	full_name_target = get_path_from_uri (target_uri);
 
 	/*Check and fetch the path in case sensitive manner if needed*/
-		
 	if (!uri_exists_case_sensitive (target_uri)) {
 		full_name_target = dfm_fetch_and_free_old_path (full_name_target);
 	}
@@ -2629,15 +2582,10 @@ do_set_file_info (GnomeVFSMethod *method,
 			GnomeVFSURI *parent;
 			GnomeVFSURI *new_uri;
 			
-			dfm_notify_monitor (uri, 
-					    GNOME_VFS_MONITOR_EVENT_DELETED, 
-					    FALSE);
 			parent = gnome_vfs_uri_get_parent (uri);
 			new_uri = gnome_vfs_uri_append_path (parent, 
 							     info->name);
-			dfm_notify_monitor (new_uri, 
-					    GNOME_VFS_MONITOR_EVENT_CREATED,
-					    FALSE);
+
 			gnome_vfs_uri_unref (parent);
 			gnome_vfs_uri_unref (new_uri);
 		}
@@ -2652,10 +2600,6 @@ do_set_file_info (GnomeVFSMethod *method,
 		if (chmod (full_name, info->permissions) != 0) {
 			g_free (full_name);
 			return gnome_vfs_result_from_errno ();
-		} else {
-			dfm_notify_monitor (uri,
-					    GNOME_VFS_MONITOR_EVENT_CHANGED,
-					    FALSE);
 		}
 	}
 
@@ -2669,15 +2613,12 @@ do_set_file_info (GnomeVFSMethod *method,
 		if (chown (full_name, info->uid, info->gid) != 0) {
 			g_free (full_name);
 			return gnome_vfs_result_from_errno ();
-		} else {
-			dfm_notify_monitor (uri, 
-					    GNOME_VFS_MONITOR_EVENT_CHANGED,
-					    FALSE);
 		}
-	}
 #else
 	g_warning ("Not implemented: GNOME_VFS_SET_FILE_INFO_OWNER");
 #endif
+	}
+	
 	if (gnome_vfs_context_check_cancellation (context)) {
 		g_free (full_name);
 		return GNOME_VFS_ERROR_CANCELLED;
@@ -2692,10 +2633,6 @@ do_set_file_info (GnomeVFSMethod *method,
 		if (utime (full_name, &utimbuf) != 0) {
 			g_free (full_name);
 			return gnome_vfs_result_from_errno ();
-		} else {
-			dfm_notify_monitor (uri,
-					    GNOME_VFS_MONITOR_EVENT_CHANGED,
-					    FALSE);
 		}
 	}
 
@@ -2704,171 +2641,293 @@ do_set_file_info (GnomeVFSMethod *method,
 	return GNOME_VFS_OK;
 }
 
-/* Only notifies locally, i.e. doesn't send dbus events. */
-static void
-dfm_notify_monitor_local_only (GnomeVFSURI              *uri,
-			       GnomeVFSMonitorEventType  event_type)
+#ifdef HAVE_FAM
+static gboolean
+fam_do_iter_unlocked (void)
 {
-	MonitorList   *monitors;
-	GList         *l;
-	MonitorHandle *handle;
-	GnomeVFSURI   *parent;
-	GnomeVFSURI   *grand_parent;
-	GnomeVFSURI   *unescaped_uri;
+	while (fam_connection != NULL && FAMPending(fam_connection)) {
+		FAMEvent ev;
+		FileMonitorHandle *handle;
+		gboolean cancelled;
+		GnomeVFSMonitorEventType event_type;
 
-	g_mutex_lock (monitor_mutex);
+		if (FAMNextEvent(fam_connection, &ev) != 1) {
+			FAMClose(fam_connection);
+			g_free(fam_connection);
+			g_source_remove (fam_watch_id);
+			fam_watch_id = 0;
+			fam_connection = NULL;
+			return FALSE;
+		}
 
-	/* Note: gnome_vfs_monitor_callback may be called from any thread, so
-	 * there are no threading issues here.
-	 */
-	unescaped_uri = dfm_vfs_utils_create_unescaped_uri (uri);
-	monitors = g_hash_table_lookup (monitor_hash, unescaped_uri);
-	gnome_vfs_uri_unref (unescaped_uri);
+		handle = (FileMonitorHandle *)ev.userdata;
+		cancelled = handle->cancelled;
+		event_type = -1;
 
-	if (monitors) {
-		for (l = monitors->handles; l; l = l->next) {
-			handle = l->data;
+		switch (ev.code) {
+			case FAMChanged:
+				event_type = GNOME_VFS_MONITOR_EVENT_CHANGED;
+				break;
+			case FAMDeleted:
+				event_type = GNOME_VFS_MONITOR_EVENT_DELETED;
+				break;
+			case FAMStartExecuting:
+				event_type = GNOME_VFS_MONITOR_EVENT_STARTEXECUTING;
+				break;
+			case FAMStopExecuting:
+				event_type = GNOME_VFS_MONITOR_EVENT_STOPEXECUTING;
+				break;
+			case FAMCreated:
+				event_type = GNOME_VFS_MONITOR_EVENT_CREATED;
+				break;
+			case FAMAcknowledge:
+				if (handle->cancelled) {
+					gnome_vfs_uri_unref (handle->uri);
+					g_free (handle);
+				}
+				break;
+			case FAMExists:
+			case FAMEndExist:
+			case FAMMoved:
+				/* Not supported */
+				break;
+		}
 
-			gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) handle,
-						    uri,
+		if (event_type != -1 && !cancelled) {
+			GnomeVFSURI *info_uri;
+			gchar *info_str;
+
+			/* 
+			 * FAM can send events with either a absolute or
+			 * relative (from the monitored URI) path, so check if
+			 * the filename starts with '/'.  
+			 */
+			if (ev.filename[0] == '/') {
+				info_str = gnome_vfs_get_uri_from_local_path (ev.filename);
+				info_uri = gnome_vfs_uri_new (info_str);
+				g_free (info_str);
+			} else
+				info_uri = gnome_vfs_uri_append_file_name (handle->uri, ev.filename);
+
+			/* This queues an idle, so there are no reentrancy issues */
+			gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *)handle,
+						    info_uri, 
 						    event_type);
-		}
-	}
-	
-	parent = gnome_vfs_uri_get_parent (uri);
-	if (!parent) {
-		g_mutex_unlock (monitor_mutex);
-		return;
-	}
-	
-	unescaped_uri = dfm_vfs_utils_create_unescaped_uri (parent);
-	monitors = g_hash_table_lookup (monitor_hash, unescaped_uri);
-	gnome_vfs_uri_unref (unescaped_uri);
-	if (monitors) {
-		for (l = monitors->handles; l; l = l->next) {
-			handle = l->data;
-
-			if (handle->monitor_type == GNOME_VFS_MONITOR_DIRECTORY) {
-				gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) handle,
-							    uri,
-							    event_type);
-			}
+			gnome_vfs_uri_unref (info_uri);
 		}
 	}
 
-	if (event_type != GNOME_VFS_MONITOR_EVENT_CREATED &&
-	    event_type != GNOME_VFS_MONITOR_EVENT_DELETED) {
-		gnome_vfs_uri_unref (parent);
-		g_mutex_unlock (monitor_mutex);
-		return;
-	}
-	
-	grand_parent = gnome_vfs_uri_get_parent (parent);
-	if (!grand_parent) {
-		gnome_vfs_uri_unref (parent);
-		g_mutex_unlock (monitor_mutex);
-		return;
-	}
-	
-
-	unescaped_uri = dfm_vfs_utils_create_unescaped_uri (grand_parent);
-	monitors = g_hash_table_lookup (monitor_hash, unescaped_uri);
-	gnome_vfs_uri_unref (unescaped_uri);
-	if (monitors) {
-		for (l = monitors->handles; l; l = l->next) {
-			handle = l->data;
-
-			if (handle->monitor_type == GNOME_VFS_MONITOR_DIRECTORY) {
-				gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) handle,
-							    parent,
-							    GNOME_VFS_MONITOR_EVENT_CHANGED);
-			}
-		}
-	}
-	
-	gnome_vfs_uri_unref (parent);
-	gnome_vfs_uri_unref (grand_parent);
-
-	g_mutex_unlock (monitor_mutex);
+	return TRUE;
 }
 
-static void
-dfm_notify_monitor (GnomeVFSURI *uri, GnomeVFSMonitorEventType event_type, gboolean force)
+static gboolean
+fam_callback (GIOChannel *source,
+	      GIOCondition condition,
+	      gpointer data)
 {
-	dfm_dbus_emit_notify (uri, event_type, force);
-	dfm_notify_monitor_local_only (uri, event_type);
+	gboolean res;
+	G_LOCK (fam_connection);
+
+	res = fam_do_iter_unlocked ();
+
+	G_UNLOCK (fam_connection);
+
+	return res;
 }
 
-static gchar *
-dfm_fetch_and_free_old_path (gchar *old_path)
+
+
+static gboolean
+monitor_setup (void)
 {
-	gchar *new_path;
-		
-	new_path = osso_fetch_path (old_path);
-	g_free (old_path);
-	
-	return new_path;
-}
+	GIOChannel *ioc;
 
+	G_LOCK (fam_connection);
+
+	if (fam_connection == NULL) {
+		fam_connection = g_malloc0(sizeof(FAMConnection));
+		if (FAMOpen2(fam_connection, "gnome-vfs user") != 0) {
+#ifdef DEBUG_FAM
+			g_print ("FAMOpen failed, FAMErrno=%d\n", FAMErrno);
+#endif
+			g_free(fam_connection);
+			fam_connection = NULL;
+			G_UNLOCK (fam_connection);
+			return FALSE;
+		}
+		ioc = g_io_channel_unix_new (FAMCONNECTION_GETFD(fam_connection));
+		fam_watch_id = g_io_add_watch (ioc,
+					       G_IO_IN | G_IO_HUP | G_IO_ERR,
+					       fam_callback, fam_connection);
+		g_io_channel_unref (ioc);
+	}
+
+	G_UNLOCK (fam_connection);
+
+	return TRUE;
+}
+#endif
+
+#ifdef HAVE_FAM
 static GnomeVFSResult
-do_monitor_add (GnomeVFSMethod        *method,
-		GnomeVFSMethodHandle **method_handle,
-		GnomeVFSURI           *uri,
-		GnomeVFSMonitorType    monitor_type)
+fam_monitor_cancel (GnomeVFSMethod *method,
+		    GnomeVFSMethodHandle *method_handle)
 {
-	MonitorHandle *handle;
-	MonitorList   *monitors;
+	FileMonitorHandle *handle = (FileMonitorHandle *)method_handle;
 
-	handle = g_new0 (MonitorHandle, 1);
-	handle->uri = dfm_vfs_utils_create_unescaped_uri (uri);
-	handle->monitor_type = monitor_type;
-
-	g_mutex_lock (monitor_mutex);
-	
-	monitors = g_hash_table_lookup (monitor_hash, handle->uri);
-	if (!monitors) {
-		monitors = g_new0 (MonitorList, 1);
-		g_hash_table_insert (monitor_hash,
-
-				     gnome_vfs_uri_ref (handle->uri),
-				     monitors);
+	if (!monitor_setup ()) {
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
 	}
 
-	monitors->handles = g_list_prepend (monitors->handles, handle); 
+	if (handle->cancelled)
+		return GNOME_VFS_OK;
 
-	g_mutex_unlock (monitor_mutex);
+	handle->cancelled = TRUE;
+	G_LOCK (fam_connection);
 
-	*method_handle = (GnomeVFSMethodHandle *) handle;
-			
+	/* We need to queue up incoming messages to avoid blocking on write
+	   if there are many monitors being canceled */
+	fam_do_iter_unlocked ();
+
+	if (fam_connection == NULL) {
+		G_UNLOCK (fam_connection);
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+	
+	FAMCancelMonitor (fam_connection, &handle->request);
+	G_UNLOCK (fam_connection);
+
 	return GNOME_VFS_OK;
 }
 
+
 static GnomeVFSResult
-do_monitor_cancel (GnomeVFSMethod       *method,
+fam_monitor_add (GnomeVFSMethod *method,
+		 GnomeVFSMethodHandle **method_handle_return,
+		 GnomeVFSURI *uri,
+		 GnomeVFSMonitorType monitor_type)
+{
+	FileMonitorHandle *handle;
+	char *filename;
+
+	if (!monitor_setup ()) {
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+
+	filename = get_path_from_uri (uri);
+	if (filename == NULL) {
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
+	
+	handle = g_new0 (FileMonitorHandle, 1);
+	handle->cancel_func = fam_monitor_cancel;
+	handle->uri = uri;
+	handle->cancelled = FALSE;
+	gnome_vfs_uri_ref (uri);
+
+	G_LOCK (fam_connection);
+	/* We need to queue up incoming messages to avoid blocking on write
+	   if there are many monitors being added */
+	fam_do_iter_unlocked ();
+
+	if (fam_connection == NULL) {
+		G_UNLOCK (fam_connection);
+		g_free (handle);
+		gnome_vfs_uri_unref (uri);
+		g_free (filename);
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+	
+	if (monitor_type == GNOME_VFS_MONITOR_FILE) {
+		FAMMonitorFile (fam_connection, filename, 
+			&handle->request, handle);
+	} else {
+		FAMMonitorDirectory (fam_connection, filename, 
+			&handle->request, handle);
+	}
+
+	G_UNLOCK (fam_connection);
+	
+	*method_handle_return = (GnomeVFSMethodHandle *)handle;
+
+	g_free (filename);
+
+	return GNOME_VFS_OK;
+
+}
+#endif
+
+#ifdef USE_INOTIFY
+
+static GnomeVFSResult
+inotify_monitor_cancel (GnomeVFSMethod *method,
+			GnomeVFSMethodHandle *method_handle)
+{
+	ih_sub_t *sub = (ih_sub_t *)method_handle;
+
+	if (sub->cancelled)
+		return GNOME_VFS_OK;
+
+	ih_sub_cancel (sub);
+	ih_sub_free (sub);
+	return GNOME_VFS_OK;
+
+}
+
+static GnomeVFSResult
+inotify_monitor_add (GnomeVFSMethod *method,
+		     GnomeVFSMethodHandle **method_handle_return,
+		     GnomeVFSURI *uri,
+		     GnomeVFSMonitorType monitor_type)
+{
+	ih_sub_t *sub;
+	
+	sub = ih_sub_new (uri, monitor_type);
+	if (sub == NULL) {
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
+	sub->cancel_func = inotify_monitor_cancel;
+	if (ih_sub_add (sub) == FALSE) {
+		ih_sub_free (sub);
+		*method_handle_return = NULL;
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
+
+	*method_handle_return = (GnomeVFSMethodHandle *)sub;
+	return GNOME_VFS_OK;
+
+}
+#endif
+
+static GnomeVFSResult
+do_monitor_add (GnomeVFSMethod *method,
+		GnomeVFSMethodHandle **method_handle_return,
+		GnomeVFSURI *uri,
+		GnomeVFSMonitorType monitor_type)
+{
+#ifdef USE_INOTIFY
+	/* For remote files, always prefer FAM */
+	if (ih_startup ()) {
+		return inotify_monitor_add (method, method_handle_return, uri, monitor_type);
+	}
+#endif
+#ifdef HAVE_FAM
+	return fam_monitor_add (method, method_handle_return, uri, monitor_type);
+#endif
+	return GNOME_VFS_ERROR_NOT_SUPPORTED;
+}
+
+static GnomeVFSResult
+do_monitor_cancel (GnomeVFSMethod *method,
 		   GnomeVFSMethodHandle *method_handle)
 {
-	MonitorHandle *handle;
-	MonitorList   *monitors;
+	AnyFileMonitorHandle *handle;
 
-	handle = (MonitorHandle *) method_handle;
-
-	g_mutex_lock (monitor_mutex);
-	
-	monitors = g_hash_table_lookup (monitor_hash, handle->uri);
-	if (monitors) {
-		monitors->handles = g_list_remove (monitors->handles, handle);
-		if (!monitors->handles) {
-			g_hash_table_remove (monitor_hash, handle->uri);
-			g_free (monitors);
-		}
+	handle = (AnyFileMonitorHandle *)method_handle;
+	if (handle != NULL) {
+		return (handle->cancel_func) (method, method_handle);
 	}
-
-	gnome_vfs_uri_unref (handle->uri);
-	g_free (handle);
-	
-	g_mutex_unlock (monitor_mutex);
-
-	return GNOME_VFS_OK;
+	return GNOME_VFS_ERROR_NOT_SUPPORTED;
 }
 
 static GnomeVFSResult
@@ -2883,6 +2942,17 @@ do_file_control (GnomeVFSMethod *method,
 		return GNOME_VFS_OK;
 	}
 	return GNOME_VFS_ERROR_NOT_SUPPORTED;
+}
+
+static gchar *
+dfm_fetch_and_free_old_path (gchar *old_path)
+{
+	gchar *new_path;
+		
+	new_path = osso_fetch_path (old_path);
+	g_free (old_path);
+	
+	return new_path;
 }
 
 static gboolean
@@ -2989,7 +3059,7 @@ do_get_volume_free_space (GnomeVFSMethod *method,
 	*free_space = block_size * free_blocks;
 	
 	return GNOME_VFS_OK;
-#else // G_OS_WIN32
+#else /* G_OS_WIN32 */
 	g_warning ("Not implemented for WIN32: file-method.c:do_get_volume_free_space()");
 	return GNOME_VFS_ERROR_NOT_SUPPORTED;
 #endif
@@ -3031,42 +3101,10 @@ static GnomeVFSMethod method = {
 GnomeVFSMethod *
 vfs_module_init (const char *method_name, const char *args)
 {
-	monitor_mutex = g_mutex_new ();
-	monitor_hash = g_hash_table_new_full (dfm_vfs_utils_uri_case_hash,
-					      dfm_vfs_utils_uri_case_equal,
-					      (GDestroyNotify) gnome_vfs_uri_unref,
-					      NULL);
-
-	dfm_dbus_init_monitor (dfm_notify_monitor_local_only);
-	
 	return &method;
-}
-
-static void
-monitor_hash_foreach_free (gpointer key, gpointer value, gpointer user_data)
-{
-	MonitorList   *monitors;
-	MonitorHandle *handle;
-	GList         *l;
-
-	monitors = value;
-
-	for (l = monitors->handles; l; l = l->next) {
-		handle = l->data;
-
-		gnome_vfs_uri_unref (handle->uri);
-		g_free (handle);
-	}
 }
 
 void
 vfs_module_shutdown (GnomeVFSMethod *method)
 {
-	g_mutex_lock (monitor_mutex);
-	g_hash_table_foreach (monitor_hash, monitor_hash_foreach_free, NULL);
-	g_hash_table_destroy (monitor_hash);
-	monitor_hash = NULL;
-	g_mutex_unlock (monitor_mutex);
-
-	g_mutex_free (monitor_mutex);
 }
