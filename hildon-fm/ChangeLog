@@ -1,3 +1,12 @@
+2006-09-13  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
+
+	* hildon-fm/hildon-file-system-mmc.c: Added a proper private struct
+        and a property for specifying which memory card is which.
+
+        Order of memory cards is now fixed (NB#38145).
+        Fixed the localised name of an unnamed (or non-FAT) memory card
+	(NB#35433).
+
 2006-09-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-common-private.h (KE): New.
