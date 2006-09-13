@@ -117,7 +117,7 @@ rise_oom_defense(pid_t pid)
 }
 
 static void
-launch_process(prog_t *prog, booster_state_t state)
+launch_process(prog_t *prog)
 {
   void *module;
   entry_t entry;
@@ -140,11 +140,6 @@ launch_process(prog_t *prog, booster_state_t state)
     error("loading symbol 'main': '%s'\n", error_s);
     return;
   }
-
-  /* Initialize the launched application. */
-  setenv("_", prog->argv[0], true);
-
-  booster_init(prog->argv[0], state);
 
   /* Possibly restore process priority. */
   errno = 0;
@@ -203,6 +198,8 @@ set_progname(char *progname, int argc, char **argv)
   strncpy(argv[0], progname, argvlen - 1);
 
   set_process_name(progname);
+
+  setenv("_", progname, true);
 }
 
 static int
@@ -836,7 +833,10 @@ main(int argc, char *argv[])
       {
         info("invoking '%s'\n", prog.filename);
         set_progname(prog.argv[0], argc, argv);
-        launch_process(&prog, state);
+
+	booster_init(prog.argv[0], state);
+
+	launch_process(&prog);
       }
       else
         error("nothing to invoke\n");

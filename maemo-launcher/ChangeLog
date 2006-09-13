@@ -1,5 +1,13 @@
 2006-09-13  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (launch_process): Do not take booster_state_t
+	as argument. Do not call booster_init. Move setting of environment
+	variable "_" to ...
+	(set_progname): ... here.
+	(main): Call booster_init before launch_process.
+
+2006-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/report.c (report): Rename to ...
 	(vreport): ... this.
 	(report): New function.
