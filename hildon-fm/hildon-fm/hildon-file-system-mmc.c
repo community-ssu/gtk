@@ -22,6 +22,7 @@
  *
  */
 
+#include <string.h>
 #include <glib.h>
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
 #include <gtk/gtkfilesystem.h>
@@ -163,27 +164,23 @@ hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
         gtk_file_system_volume_free (fs, vol);
     }
 
+    /* check first if it is an unnamed memory card */
+    if (name && strncmp (name, "mmc-undefined-name", 18) == 0) 
+    {
+        g_free (name);
+        name = NULL;
+    }
+
     if (!name)
     {
-        const gchar *env;
+        HildonFileSystemMMCPrivate *priv;
+        priv = PRIVATE (location);
 
-        env = g_getenv ("INTERNAL_MMC_MOUNTPOINT");
-        if (env && env[0])
+        if (priv->internal_card)
         {
-            gchar *prefix;
-
-            prefix = g_strconcat ("file://", env, NULL);
-            if (prefix != NULL &&
-                g_str_has_prefix (location->basepath, prefix))
-            {
-                name = g_strdup (_("sfil_li_memorycard_internal"));
-            }
-            if (prefix != NULL)
-            {
-                g_free (prefix);
-            }
+            name = g_strdup (_("sfil_li_memorycard_internal"));
         }
-        if (name == NULL)
+        else
         {
             name = g_strdup (_("sfil_li_memorycard_removable"));
         }
