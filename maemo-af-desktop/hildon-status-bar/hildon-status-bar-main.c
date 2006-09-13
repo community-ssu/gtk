@@ -951,10 +951,6 @@ gint rpc_cb( const gchar *interface,
             return OSSO_ERROR;
 
         item = get_item( panel, val[0]->value.s );
-        /* Check if the method item is not already loaded */
-        if( !item ) {
-            item = add_item( panel, val[0]->value.s, FALSE, -1 ); /* !!!WILL THIS CHANGE???? */	
-        }
         
         /* Plugin loading failed */
         if ( !item ) {

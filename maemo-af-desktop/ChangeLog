@@ -1,5 +1,11 @@
 2006-09-13  Moises Martinez <moises.martinzes@nokia.com>
 
+	* hildon-status-bar/hildon-status-bar-main.c:
+	- No plugin is created if after sending "event" to
+	statusbar the plugin's not already loaded. Fixes: NB#39109
+
+2006-09-13  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hildon-navigator/hn-wm-watchable-app.c:
 	  - Improved fix for NB#35577. Split failing of 
 	  g_key_file_new from g_return_val_if_fail.
