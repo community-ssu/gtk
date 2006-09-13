@@ -639,7 +639,8 @@ gboolean add_configured_plugins( StatusBar *panel )
             }
         }
 
-	g_free (plugin_path);
+	if (plugin_path)
+	  g_free (plugin_path);
     }
 
     /* Cleanup */
