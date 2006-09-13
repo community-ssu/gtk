@@ -1,3 +1,8 @@
+0.8.8 - 20060913
+    - Luciano Miguel Wolf <luciano.wolf@indt.org.br>
+      - Fixed messages print format inside setup.py
+      - Applied patch for bug#725 - Author: Jan Arne Petersen <maemo@jpetersen.org>
+
 0.8.7 - 20060905
     - Luciano Miguel Wolf <luciano.wolf@indt.org.br>
       - Employed new build system based on distutils

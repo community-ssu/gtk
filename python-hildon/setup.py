@@ -25,10 +25,10 @@ class PyHildonBuild(build):
 		
 		filename = 'hildon-types.h.in'
 		cmdinput, cmdresult, error = os.popen3('./gen-enum-h '+HILDON_TYPE_FILES+' >'+filename+'.tmp && mv '+filename+'.tmp '+filename)
-		print error.readlines()
+		print >>sys.stderr, error.read()
 		filename = 'hildon-types.c.in'
 		cmdinput, cmdresult, error = os.popen3('./gen-enum-c '+HILDON_TYPE_FILES+' >'+filename+'.tmp && mv '+filename+'.tmp '+filename)
-		print error.readlines()
+		print >>sys.stderr, error.read()
 		
 		# Creation of ".c" files, using pygtk-codegen-2.0
 		filenames = ['hildon',]
@@ -46,7 +46,7 @@ class PyHildonBuild(build):
 			&& rm -f gen-'+filename+'.c'
 			
 			cmdinput, cmdresult, error = os.popen3(cmdtoexec)
-			print error.readlines()
+			print >>sys.stderr, error.read()
 		build.run(self)
 		
 hildon = Extension('hildon',
