@@ -96,7 +96,7 @@ osso_return_t osso_rpc_run(osso_context_t *osso, const gchar *service,
     fill_from_va_list_data data;
     
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
+	(interface == NULL) || (method == NULL) || (osso->conn == NULL))
 	return OSSO_INVALID;
 
     data.argument_type = argument_type;
@@ -122,7 +122,7 @@ osso_return_t osso_rpc_run_with_argfill (osso_context_t *osso,
 					 void *argfill_data)
 {
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
+	(interface == NULL) || (method == NULL) || (osso->conn == NULL))
 	return OSSO_INVALID;
 
     return _rpc_run_with_argfill (osso, osso->conn,
@@ -142,7 +142,7 @@ osso_return_t osso_rpc_run_system(osso_context_t *osso, const gchar *service,
     fill_from_va_list_data data;
     
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
+	(interface == NULL) || (method == NULL) || (osso->sys_conn == NULL))
 	return OSSO_INVALID;
 
     data.argument_type = argument_type;
@@ -168,7 +168,7 @@ osso_return_t osso_rpc_run_system_with_argfill (osso_context_t *osso,
 						void *argfill_data)
 {
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (method == NULL))
+	(interface == NULL) || (method == NULL) || (osso->sys_conn == NULL))
 	return OSSO_INVALID;
 
     return _rpc_run_with_argfill (osso, osso->sys_conn,
@@ -316,17 +316,28 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 					 int argument_type,
 					 ...)
 {
+    char service[MAX_SVC_LEN], path[MAX_OP_LEN], interface[MAX_IF_LEN];
     fill_from_va_list_data data;
     osso_return_t ret;
 
-    if( (osso == NULL) || (application == NULL) || (method == NULL) )
+    if( (osso == NULL) || (application == NULL) || (method == NULL)
+        || (osso->conn == NULL) )
 	return OSSO_INVALID;
+
+    make_default_service(application, service);
+
+    if (!make_default_object_path(application, path)) {
+        ULOG_ERR_F("make_default_object_path() failed");
+        return OSSO_ERROR;
+    }
+
+    make_default_interface(application, interface);
     
     data.argument_type = argument_type;
     va_start(data.arg_list, argument_type);
 
-    ret = _rpc_run_with_argfill (osso, osso->conn, osso->service,
-                                 osso->object_path, osso->interface,
+    ret = _rpc_run_with_argfill (osso, osso->conn, service,
+                                 path, interface,
                                  method, retval,
 				 fill_from_va_list, &data);
     
@@ -498,18 +509,27 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 					       gpointer data,
 					       int argument_type, ...)
 {
+    char service[MAX_SVC_LEN], path[MAX_OP_LEN], interface[MAX_IF_LEN];
     fill_from_va_list_data argfill_data;
     osso_return_t ret;
 
     if( (osso == NULL) || (application == NULL) || (method == NULL) )
 	return OSSO_INVALID;
+
+    make_default_service(application, service);
+
+    if (!make_default_object_path(application, path)) {
+        ULOG_ERR_F("make_default_object_path() failed");
+        return OSSO_ERROR;
+    }
+
+    make_default_interface(application, interface);
     
     argfill_data.argument_type = argument_type;
     va_start(argfill_data.arg_list, argument_type);
 
-    ret = osso_rpc_async_run_with_argfill (osso, osso->service,
-                                           osso->object_path,
-                                           osso->interface, method,
+    ret = osso_rpc_async_run_with_argfill (osso, service, path,
+                                           interface, method,
 				           async_cb, data,
 				           fill_from_va_list, &argfill_data);
     dprint("osso_rpc_async_run_with_argfill returned");
@@ -528,7 +548,6 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                                    osso_rpc_retval_free_f *retval_free,
                                    gboolean use_system_bus)
 {
-    DBusError err;
     struct DBusObjectPathVTable vt;
     _osso_rpc_t *rpc;
     int ret;
@@ -544,28 +563,42 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
         return OSSO_ERROR;
     }
     
-    dbus_error_init(&err);
+    if (strcmp(service, osso->service) != 0
+        || (use_system_bus && !osso->systembus_service_registered)
+        || (!use_system_bus && !osso->sessionbus_service_registered)) {
+        DBusError err;
 
-    dprint("requesting service '%s'", service);
-    ret = dbus_bus_request_name(use_system_bus ? osso->sys_conn :
-              osso->conn, service, DBUS_NAME_FLAG_ALLOW_REPLACEMENT |
-              DBUS_NAME_FLAG_REPLACE_EXISTING |
-              DBUS_NAME_FLAG_DO_NOT_QUEUE, &err);
-    if (ret == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER ||
-        ret == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER) {
-        /* success */ 
-    } else if (ret == DBUS_REQUEST_NAME_REPLY_IN_QUEUE ||
-               ret == DBUS_REQUEST_NAME_REPLY_EXISTS) {
-        /* this should be impossible */
-        ULOG_ERR_F("dbus_bus_request_name is broken");
-        free(rpc);
-        return OSSO_ERROR;
-    } else if (ret == -1) {
-        ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
-                   service, err.message);
-	dbus_error_free(&err);
-        free(rpc);
-        return OSSO_ERROR;
+        dbus_error_init(&err);
+
+        ULOG_DEBUG_F("requesting service '%s'", service);
+        ret = dbus_bus_request_name(use_system_bus ? osso->sys_conn :
+                  osso->conn, service, DBUS_NAME_FLAG_ALLOW_REPLACEMENT |
+                  DBUS_NAME_FLAG_REPLACE_EXISTING |
+                  DBUS_NAME_FLAG_DO_NOT_QUEUE, &err);
+        if (ret == DBUS_REQUEST_NAME_REPLY_PRIMARY_OWNER ||
+            ret == DBUS_REQUEST_NAME_REPLY_ALREADY_OWNER) {
+            /* success */ 
+        } else if (ret == DBUS_REQUEST_NAME_REPLY_IN_QUEUE ||
+                   ret == DBUS_REQUEST_NAME_REPLY_EXISTS) {
+            /* this should be impossible */
+            ULOG_ERR_F("dbus_bus_request_name is broken");
+            free(rpc);
+            return OSSO_ERROR;
+        } else if (ret == -1) {
+            ULOG_ERR_F("dbus_bus_request_name for '%s' failed: %s",
+                       service, err.message);
+            dbus_error_free(&err);
+            free(rpc);
+            return OSSO_ERROR;
+        }
+
+        if (strcmp(service, osso->service) == 0) {
+            if (use_system_bus) {
+                osso->systembus_service_registered = TRUE;
+            } else {
+                osso->sessionbus_service_registered = TRUE;
+            }
+        }
     }
 
     vt.message_function = _msg_handler;
@@ -603,10 +636,12 @@ osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
 }
 
 /************************************************************************/
-osso_return_t osso_rpc_set_cb_f_with_free (osso_context_t *osso, const gchar *service,
-					   const gchar *object_path, const gchar *interface,
-					   osso_rpc_cb_f *cb, gpointer data,
-					   osso_rpc_retval_free_f *retval_free)
+osso_return_t osso_rpc_set_cb_f_with_free (osso_context_t *osso,
+                                           const gchar *service,
+                                           const gchar *object_path,
+                                           const gchar *interface,
+                                           osso_rpc_cb_f *cb, gpointer data,
+                                           osso_rpc_retval_free_f *retval_free)
 {
     if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
 	(interface == NULL) || (cb == NULL))
@@ -615,11 +650,14 @@ osso_return_t osso_rpc_set_cb_f_with_free (osso_context_t *osso, const gchar *se
 			 interface,cb, data, retval_free, FALSE);
 }
 
-osso_return_t osso_rpc_set_cb_f (osso_context_t *osso, const gchar *service,
-				 const gchar *object_path, const gchar *interface,
-				 osso_rpc_cb_f *cb, gpointer data)
+osso_return_t osso_rpc_set_cb_f (osso_context_t *osso,
+                                 const gchar *service,
+                                 const gchar *object_path,
+                                 const gchar *interface,
+                                 osso_rpc_cb_f *cb, gpointer data)
 {
-    return osso_rpc_set_cb_f_with_free (osso, service, object_path, interface, cb, data, NULL);
+    return osso_rpc_set_cb_f_with_free (osso, service, object_path,
+                                        interface, cb, data, NULL);
 }
 
 /************************************************************************/
@@ -644,7 +682,7 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
     rpc->data = data;
     
     _msg_handler_set_cb_f_free_data(osso, osso->interface, _rpc_handler,
-			  (gpointer)rpc, TRUE);
+                                    (gpointer)rpc, TRUE);
     return OSSO_OK;
 }
 
@@ -666,6 +704,7 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 	(interface == NULL) || (cb == NULL))
 	return OSSO_INVALID;
 
+    /* FIXME KORJAA */
     dbus_connection_unregister_object_path(osso->conn, object_path);
 
     _rm_cb_f(osso, interface, cb, data);

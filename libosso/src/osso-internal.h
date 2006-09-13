@@ -130,6 +130,8 @@ struct osso_af_context_t {
     char object_path[MAX_OP_LEN + 1];
     char interface[MAX_IF_LEN + 1];
     char service[MAX_SVC_LEN + 1];
+    gboolean systembus_service_registered;
+    gboolean sessionbus_service_registered;
     GArray *ifs;
     _osso_autosave_t autosave;
     guint log_handler;
