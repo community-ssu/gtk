@@ -36,6 +36,18 @@ Description: The GNOME virtual file-system libraries (for GNOME2)
  .
  This package is a patched version of gnome-vfs in GNOME2.
 
+Package: libosso-gnomevfs2-0-dbg
+Architecture: any
+Depends: libosso-gnomevfs2-0 (= ${Source-Version})
+Description: The GNOME virtual file-system libraries with debugging symbols
+ GNOME VFS is the GNOME virtual file system. It is the foundation of the
+ Nautilus file manager. It provides a modular architecture and ships with
+ several modules that implement support for file systems, http, ftp and others.
+ It provides a URI-based API, a backend supporting asynchronous file
+ operations, a MIME type manipulation library and other features.
+ .
+ This package is a patched version of gnome-vfs in GNOME2.
+
 Package: libosso-gnomevfs2-dev
 Section: libdevel
 Architecture: any

@@ -1,3 +1,10 @@
+osso-gnome-vfs2 (2.12.0.12-2) unstable; urgency=low
+
+  * FIXME: UNRELEASED
+  * Fixes: NB#40269, gnomevfs package doesn't provide debug symbols
+
+ -- Richard Hult <richard@imendio.com>  Fri, 15 Sep 2006 17:01:07 +0200
+
 osso-gnome-vfs2 (2.12.0.12-1) unstable; urgency=low
 
   * NB #33839 removed 02-obext-volumes.patch
