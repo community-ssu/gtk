@@ -3485,12 +3485,13 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
         GtkTreeSelection *selection;
         GtkTreeView *treeview = GTK_TREE_VIEW(view);
 
-        gtk_tree_model_sort_convert_child_iter_to_iter(GTK_TREE_MODEL_SORT
-                                                       (priv->sort_model),
-                                                       &sort_iter, iter);
         gtk_tree_model_filter_convert_child_iter_to_iter
-            (GTK_TREE_MODEL_FILTER(priv->view_filter), &filter_iter,
-             &sort_iter);
+	  (GTK_TREE_MODEL_FILTER(priv->view_filter),
+	   &filter_iter, iter);
+
+        gtk_tree_model_sort_convert_child_iter_to_iter
+	  (GTK_TREE_MODEL_SORT(priv->sort_model),
+	   &sort_iter, &filter_iter);
 
         selection = gtk_tree_view_get_selection(treeview);
 
@@ -3521,10 +3522,10 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
             }
           }
 
-          gtk_tree_selection_select_iter(selection, &filter_iter);
+          gtk_tree_selection_select_iter(selection, &sort_iter);
         }
         else
-          gtk_tree_selection_unselect_iter(selection, &filter_iter);
+          gtk_tree_selection_unselect_iter(selection, &sort_iter);
     }
 }
 

@@ -1,3 +1,12 @@
+<<<<<<< .mine
+2006-09-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_select_unselect_main_iter): The sort_model
+	is the parent of the filter_view, not the other way around.
+	Corrected conversion and usage of iters accordingly.  (N39660)
+
+=======
 2006-09-13  Kimmo Hämäläinen  <kimmo.hamalainen@nokia.com>
 
 	* hildon-fm/hildon-file-system-mmc.c: Added a proper private struct
@@ -7,6 +16,7 @@
         Fixed the localised name of an unnamed (or non-FAT) memory card
 	(NB#35433).
 
+>>>>>>> .r6310
 2006-09-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-common-private.h (KE): New.
