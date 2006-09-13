@@ -36,6 +36,60 @@ int main()
    [prctl=no])
 AC_MSG_RESULT([$prctl])
 
+#
+# Launcher dependencies
+#
+
+DBUS_DEPENDS="dbus-1 >= 0.60"
+
+PKG_CHECK_MODULES([DBUS], [
+	$DBUS_DEPENDS
+])
+
+AC_SUBST([DBUS_CFLAGS])
+AC_SUBST([DBUS_LIBS])
+
+#
+# Booster modules section
+#
+
+AC_ARG_ENABLE([hildon-booster],
+	[AS_HELP_STRING([--enable-hildon-booster],
+			[link with hildon libs to reduce runtime linker time])],
+	[case "${enableval}" in
+	  (yes) hildon_booster=true ;;
+	  (no)  hildon_booster=false ;;
+	  (*) AC_MSG_ERROR([bad value ${enableval} for --enable-hildon-booster]) ;;
+	esac], [hildon_booster=false])
+
+GTK_DEPENDS="
+	gtk+-2.0 >= 2.6.4
+	fontconfig
+	pangoxft
+"
+HILDON_DEPENDS="$GTK_DEPENDS
+	gnome-vfs-2.0 >= 2.8.0
+	hildon-libs >= 0.7.5
+"
+
+if test x$hildon_booster = xtrue
+then
+  BOOSTER_GTK_DEPENDS=$HILDON_DEPENDS
+else
+  BOOSTER_GTK_DEPENDS=$GTK_DEPENDS
+fi
+
+PKG_CHECK_MODULES([BOOSTER_GTK], [
+	$BOOSTER_GTK_DEPENDS
+])
+
+AC_SUBST([BOOSTER_GTK_CFLAGS])
+AC_SUBST([BOOSTER_GTK_LIBS])
+
+#
+# Test client program
+#
+
 AC_ARG_ENABLE([pie],
 	[AS_HELP_STRING([--enable-pie],
 			[link the client as a PIE])],
@@ -45,16 +99,6 @@ AC_ARG_ENABLE([pie],
 	  *) AC_MSG_ERROR([bad value ${enableval} for --enable-pie]) ;;
 	esac], [pie=false])
 AM_CONDITIONAL([USE_PIE], [test x$pie = xtrue])
-
-AC_ARG_ENABLE([extra-libs],
-	[AS_HELP_STRING([--enable-extra-libs],
-			[link with extra libs to reduce runtime linker time])],
-	[case "${enableval}" in
-	  yes) extra_libs=true ;;
-	  no)  extra_libs=false ;;
-	  *) AC_MSG_ERROR([bad value ${enableval} for --enable-extra-libs]) ;;
-	esac], [extra_libs=false])
-AM_CONDITIONAL([USE_EXTRA_LIBS], [test x$extra_libs = xtrue])
 
 AC_ARG_ENABLE([client],
 	[AS_HELP_STRING([--enable-client],
@@ -66,39 +110,11 @@ AC_ARG_ENABLE([client],
 	esac], [client=false])
 AM_CONDITIONAL([BUILD_CLIENT], [test x$client = xtrue])
 
-MINIMAL_DEPENDS="
-	dbus-1 >= 0.60
-	gtk+-2.0 >= 2.6.4
-	fontconfig
-	pangoxft
-"
-
-EXTRA_DEPENDS="$MINIMAL_DEPENDS
-	gnome-vfs-2.0 >= 2.8.0
-	hildon-libs >= 0.7.5
-"
-
-if test x$extra_libs = xtrue
-then
-  LAUNCHER_DEPENDS=$EXTRA_DEPENDS
-else
-  LAUNCHER_DEPENDS=$MINIMAL_DEPENDS
-fi
-
-PKG_CHECK_MODULES([LAUNCHER], [
-	$LAUNCHER_DEPENDS
-])
-
-AC_SUBST([LAUNCHER_CFLAGS])
-AC_SUBST([LAUNCHER_LIBS])
-
 if test x$client = xtrue
 then
 
-CLIENT_DEPENDS=$EXTRA_DEPENDS
-
 PKG_CHECK_MODULES([CLIENT], [
-	$CLIENT_DEPENDS
+	$HILDON_DEPENDS
 ])
 
 AC_SUBST([CLIENT_CFLAGS])

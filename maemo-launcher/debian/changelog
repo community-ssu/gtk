@@ -2,6 +2,12 @@ maemo-launcher (0.18~-1) UNRELEASED; urgency=low
 
   * New Upstream Release.
     - Create a new session id for the childs. (Closes: #28627@Nokia)
+    - Use new --booster option and select the gtk module.
+    - Use the renamed --enable-hildon-booster instead of --extra-libs in
+      configure.
+    - Remove the now not required LD_BIND_NOW environment variable from
+      the init script (as it's implemented using the boosters).
+      (Closes: #28055@Nokia)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Mon,  3 Jul 2006 18:06:54 +0300
 

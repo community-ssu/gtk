@@ -24,7 +24,7 @@ config.status: configure
 	
 	CFLAGS="$(CFLAGS)" ./configure \
 	  --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
-	  --enable-extra-libs \
+	  --enable-hildon-booster \
 	  --mandir=\$${prefix}/share/man \
 	  --prefix=/usr
 

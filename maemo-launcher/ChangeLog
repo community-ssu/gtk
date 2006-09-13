@@ -1,5 +1,61 @@
 2006-09-13  Guillem Jover  <guillem.jover@nokia.com>
 
+	* README: Write about the new booster module architecture.
+	* launcher/booster.h (booster_preinit): Remove function prototype.
+	(booster_init): Likewise.
+	(booster_reload): Likewise.
+	(booster_api_t): New type.
+	(MAEMO_LAUNCHER_BOOSTER_API_VERSION): New macro.
+	(booster_t): New type.
+	(booster_module_load): New function protoype.
+	* launcher/booster.c: New file.
+	* launcher/booster_null.c: Likewise.
+	* launcher/booster_gtk.c (booster_api): New variable.
+	(booster_preinit): Rename to ...
+	(booster_gtk_preinit): ... this.
+	(booster_init): Rename to ...
+	(booster_gtk_init): ... this.
+	(booster_reload): Renamed to ...
+	(booster_gtk_reload): ... this.
+	* launcher/launcher.c (usage): Document new '--booster' option.
+	(main): Remove state variable. Add a booster variable. Add a new
+	command line '--booster' option. Call booster_module_load.
+	Use the new booster module api instead of the direct booster_preinit,
+	booster_init and booster_reload.
+	* launcher/launcher.1.in: Document new '--booster' option.
+	* launcher/Makefile.am (boosterdir): New variable.
+	(booster_PROGRAMS): Likewise.
+	(MAEMO_BOOSTER_DIR): Likewise.
+	(maemo_booster_null_so_SOURCES): Likewise.
+	(maemo_booster_null_so_LDFLAGS): Likewise.
+	(maemo_booster_gtk_so_SOURCES): Likewise.
+	(maemo_booster_gtk_so_LDFLAGS): Likewise.
+	(maemo_booster_gtk_so_CPPFLAGS): Likewise.
+	(maemo_booster_gtk_so_LDADD): Likewise.
+	(maemo_launcher_SOURCES): Add 'booster.c' and 'booster.h'.
+	Remove 'booster_gtk.c' and 'booster_gtk.h'.
+	(maemo_launcher_CPPFLAGS): Change LAUNCHER_CFLAGS to DBUS_CFLAGS.
+	Pass the MAEMO_BOOSTER_DIR and MAEMO_BOOSTER_DEFAULT definitions.
+	(maemo_launcher_LDADD): Add -ldl and change LAUNCHER_LIBS to
+	DBUS_LIBS.
+	(maemo_launcher_LDFLAGS): New variable.
+	* configure.ac (DBUS_DEPENDS): New variable.
+	(DBUS): New pkg-config checking.
+	(extra-libs): Rename configure argument to ...
+	(hildon-booster): ... this.
+	(USE_EXTRA_LIBS): Remove AM_CONDITIONAL.
+	(MINIMAL_DEPENDS): Renamed to ...
+	(GTK_DEPENDS): ... this.
+	(EXTRA_DEPENDS): Renamed to ...
+	(HILDON_DEPENDS): ... this.
+	(LAUNCHER_DEPENDS): Renamed to ...
+	(BOOSTER_GTK_DEPENDS): ... this.
+	(LAUNCHER): Renamed to ...
+	(BOOSTER_GTK): ... this.
+	(CLIENT_DEPENDS): Remove and use HILDON_DEPENDS directly instead.
+
+2006-09-13  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (launch_process): Do not take booster_state_t
 	as argument. Do not call booster_init. Move setting of environment
 	variable "_" to ...

@@ -25,9 +25,23 @@
 
 typedef void *booster_state_t;
 
-extern booster_state_t booster_preinit(int *argc, char **argv[]);
-extern void booster_init(const char *progfilename, const booster_state_t state);
-extern void booster_reload(booster_state_t state);
+typedef struct {
+  int booster_version;
+  booster_state_t (*booster_preinit)(int *argc, char **argv[]);
+  void (*booster_init)(const char *progfilename, const booster_state_t state);
+  void (*booster_reload)(booster_state_t state);
+} booster_api_t;
+
+#define MAEMO_LAUNCHER_BOOSTER_API_VERSION 0
+
+typedef struct {
+  booster_state_t	state;
+  booster_api_t		*api;
+  void			*so;
+  const char		*name;
+} booster_t;
+
+void booster_module_load(booster_t *mod);
 
 #endif
 

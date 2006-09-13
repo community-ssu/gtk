@@ -6,7 +6,7 @@
 NAME=maemo-launcher
 DESC="Maemo Launcher"
 DAEMON=/usr/bin/$NAME
-DAEMON_BASE_OPTS="--daemon"
+DAEMON_BASE_OPTS="--daemon --booster gtk"
 PIDFILE=/tmp/$NAME.pid
 
 # OSSO AF Init definitions
@@ -42,9 +42,6 @@ fi
 
 case "$1" in
   start)
-    # Make the launcher resolve all relocations
-    export LD_BIND_NOW=1
-
     echo -n "Starting $DESC: $NAME"
     start-stop-daemon --start --quiet --pidfile $PIDFILE $CHUID $NICE \
       --exec $DAEMON -- $DAEMON_OPTS || echo -n " start failed"

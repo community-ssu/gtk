@@ -5,9 +5,13 @@
 What is the maemo-launcher?
 ===========================
 
-The maemo-launcher is a daemon to speedup applications startup time.
+The maemo-launcher is a daemon to speedup applications startup time and
+memory sharing between processes. It supports booster modules, which are
+the ones in charge of preinitializing and keeping the interesting state.
 
-It opens a new GdkDisplay, makes it the default and forces all gtkrc files
+The only current useful booster module is for gtk, with an option to
+link against the hildon library to speedup symbol resolving. This module
+opens a new GdkDisplay, makes it the default and forces all gtkrc files
 to be parsed and initializes some other components like pango, stores the
 GtkSettings object that was associated with the display's default screen
 (this is a hack, the settings and all cached gtkrc stuff should be deleted

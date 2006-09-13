@@ -129,8 +129,8 @@ init_gquarks(void)
   return 0;
 }
 
-booster_state_t
-booster_preinit(int *argc, char ***argv)
+static booster_state_t
+booster_gtk_preinit(int *argc, char ***argv)
 {
   GdkDisplay *display;
   GtkSettings *settings;
@@ -274,8 +274,8 @@ timestamp_func(gpointer data)
 }
 #endif
 
-void
-booster_init(const char *progfilename, const booster_state_t state)
+static void
+booster_gtk_init(const char *progfilename, const booster_state_t state)
 {
   char *progname;
   GtkSettings *settings = state;
@@ -315,8 +315,8 @@ booster_init(const char *progfilename, const booster_state_t state)
 				   settings, NULL);
 }
 
-void
-booster_reload(booster_state_t state)
+static void
+booster_gtk_reload(booster_state_t state)
 {
   GtkSettings *settings = state;
   GdkDisplay *display;
@@ -335,4 +335,11 @@ booster_reload(booster_state_t state)
 
   gdk_display_close(display);
 }
+
+booster_api_t booster_api = {
+  .booster_version = MAEMO_LAUNCHER_BOOSTER_API_VERSION,
+  .booster_preinit = booster_gtk_preinit,
+  .booster_init = booster_gtk_init,
+  .booster_reload = booster_gtk_reload,
+};
 

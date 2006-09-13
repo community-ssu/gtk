@@ -1,5 +1,5 @@
 .\" $Id$
-.TH maemo\-launcher 1 2006-02-17 @VERSION@ "Maemo Launcher manual"
+.TH maemo\-launcher 1 2006-09-13 @VERSION@ "Maemo Launcher manual"
 .SH NAME
 maemo\-launcher \- initialization launcher daemon
 .SH SYNOPSIS
@@ -24,6 +24,9 @@ Fork and go to background.
 .TP
 .B \-\-pidfile \fIPIDFILE\fP
 Specify a different filename for the pid file.
+.TP
+.B \-\-booster \fIMODULE\fP
+Specify a booster module to use, to preinitialize some state.
 .TP
 .B \-\-quiet
 Do not print anything.

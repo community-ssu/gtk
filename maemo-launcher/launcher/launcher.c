@@ -689,6 +689,7 @@ usage(int status)
 	 "Options:\n"
 	 "  --daemon            Fork and go into the background.\n"
 	 "  --pidfile FILE      Specify a different pid file (default %s).\n"
+	 "  --booster MODULE    Specify a booster module to use (default '%s').\n"
 	 "  --send-app-died     Send application died signal.\n"
 	 "  --quiet             Do not print anything.\n"
 	 "  --version           Print program version.\n"
@@ -697,7 +698,7 @@ usage(int status)
 	 "Use the invoker to start a <shared object> from the launcher.\n"
 	 "Where <shared object> is a binary including a 'main' symbol.\n"
 	 "Note that the binary needs to be linked with -shared or -pie.\n",
-	 PROG_NAME, LAUNCHER_PIDFILE);
+	 PROG_NAME, LAUNCHER_PIDFILE, MAEMO_BOOSTER_DEFAULT);
 
   exit(status);
 }
@@ -705,7 +706,7 @@ usage(int status)
 int
 main(int argc, char *argv[])
 {
-  booster_state_t state;
+  booster_t booster = { .name = MAEMO_BOOSTER_DEFAULT };
   kindergarten_t *childs;
   const int initial_child_slots = 64;
   int i;
@@ -727,6 +728,11 @@ main(int argc, char *argv[])
       if (argv[++i])
 	pidfilename = argv[i];
     }
+    else if (strcmp(argv[i], "--booster") == 0)
+    {
+      if (argv[++i])
+	booster.name = argv[i];
+    }
     else if (strcmp(argv[i], "--send-app-died") == 0)
       send_app_died = true;
     else if (strcmp(argv[i], "--version") == 0)
@@ -740,7 +746,9 @@ main(int argc, char *argv[])
   /*
    * Daemon initialization.
    */
-  state = booster_preinit(&argc, &argv);
+  booster_module_load(&booster);
+
+  booster.state = booster.api->booster_preinit(&argc, &argv);
 
   sigs_init();
   env_init();
@@ -783,7 +791,7 @@ main(int argc, char *argv[])
 
     if (sighup_catched)
     {
-      booster_reload(state);
+      booster.api->booster_reload(booster.state);
       sighup_catched = false;
     }
 
@@ -834,7 +842,7 @@ main(int argc, char *argv[])
         info("invoking '%s'\n", prog.filename);
         set_progname(prog.argv[0], argc, argv);
 
-	booster_init(prog.argv[0], state);
+	booster.api->booster_init(prog.argv[0], booster.state);
 
 	launch_process(&prog);
       }
