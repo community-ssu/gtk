@@ -22,7 +22,6 @@
  */
 
 #include "osso-internal.h"
-#include "log-functions.h"
 #include "osso-application-top.h"
 #include <stdlib.h>
 
@@ -107,9 +106,10 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
         if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
             dbus_message_iter_get_basic(&iter, &arguments);
         } else {
+            ULOG_WARN_F("argument type was not DBUS_TYPE_STRING");
             arguments = "";
         }
-        dprint("arguments = '%s'", arguments);
+        ULOG_DEBUG_F("arguments = '%s'", arguments);
 
 	top->handler(arguments, top->data);
 	return DBUS_HANDLER_RESULT_HANDLED;

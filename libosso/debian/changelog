@@ -3,7 +3,7 @@ libosso (1.18-1) unstable; urgency=low
   * UNRELEASED
   * Added postinst script for calling ldconfig.
   * Fixed problems in supporting non-com.nokia-prefixed services.
-    Fixes: NB#31831
+    Fixes: NB#31831, NB#32067
   * Added more warning flags to compilation and fixed warnings.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Sep 2006 18:08:55 +0300
