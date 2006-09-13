@@ -118,15 +118,21 @@ static GNode *setup_safe_folder(GNode *parent, const gchar *root_path,
     return result;
 }
 
-static void setup_mmc(GNode *parent, const gchar *path)
+static void setup_mmc(GNode *parent, const gchar *path, gboolean internal)
 {
     HildonFileSystemSpecialLocation *location;
     gchar *uri;
 
     if (path && path[0]) {
+        GValue val = {0, };
+        g_value_init(&val, G_TYPE_BOOLEAN);
+
         uri = g_filename_to_uri(path, NULL, NULL);
         if (uri) {
             location = g_object_new(HILDON_TYPE_FILE_SYSTEM_MMC, NULL);
+            g_value_set_boolean(&val, internal);
+            g_object_set_property(G_OBJECT(location), "internal-card",
+                                  &val);
             location->basepath = uri;
             g_node_append_data(parent, location);
         }
@@ -173,8 +179,8 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
         g_free(rootpath);
 
         /* Setup MMC device(s) */
-        setup_mmc(rootnode, g_getenv("MMC_MOUNTPOINT"));
-        setup_mmc(rootnode, g_getenv("INTERNAL_MMC_MOUNTPOINT"));
+        setup_mmc(rootnode, g_getenv("MMC_MOUNTPOINT"), FALSE);
+        setup_mmc(rootnode, g_getenv("INTERNAL_MMC_MOUNTPOINT"), TRUE);
 
         /* Setup uPnP devices */
         env = g_getenv("UPNP_ROOT");

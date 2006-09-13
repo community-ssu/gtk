@@ -39,14 +39,12 @@ G_BEGIN_DECLS
 
 typedef struct _HildonFileSystemMMC HildonFileSystemMMC;
 typedef struct _HildonFileSystemMMCClass HildonFileSystemMMCClass;
-
+typedef struct _HildonFileSystemMMCPrivate HildonFileSystemMMCPrivate;
 
 struct _HildonFileSystemMMC
 {
     HildonFileSystemSpecialLocation parent_instance;
-
-    /* private */
-    gboolean available;
+    HildonFileSystemMMCPrivate *priv;
 };
 
 struct _HildonFileSystemMMCClass
