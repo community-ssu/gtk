@@ -9,9 +9,7 @@ else
   confflags += --build $(DEB_BUILD_GNU_TYPE) --host $(DEB_HOST_GNU_TYPE)
 endif
 
-ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
-        CFLAGS += -g
-endif
+CFLAGS += -g
 
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
         INSTALL_PROGRAM += -s
@@ -74,7 +72,7 @@ binary-arch: install
 	dh_installchangelogs 
 	dh_installdocs README obex-module/README.unsupported obex-module/docs/*.txt libossomime/mime-category-mapping.txt libossomime/mime-dbus-mapping.txt
 	dh_link
-	dh_strip
+	dh_strip --dbg-package=osso-gnomevfs-extra --dbg-package=libossomime0
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -V

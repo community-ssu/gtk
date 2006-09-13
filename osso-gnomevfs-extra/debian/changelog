@@ -1,3 +1,10 @@
+osso-gnomevfs-extra (1.7.2-1) unstable; urgency=low
+
+  * FIXME: UNRELEASED
+  * Fixes: NB#40282, libossomime package doesn't provide debug symbols
+
+ -- Richard Hult <richard@imendio.com>  Fre, 15 Sep 2006 12:30:23 +0200
+
 osso-gnomevfs-extra (1.7.1-1) unstable; urgency=low
 
   * Sync the icon name fallbacks to match the ones used in the filechooser

@@ -29,6 +29,14 @@ Depends: osso-gnomevfs-extra (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.
 Description: OSSO GnomeVFS Extra Development files
  Development files for the osso-gnome-vfs-extra package.
 
+Package: osso-gnomevfs-extra-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: osso-gnomevfs-extra (= ${Source-Version})
+Description: OSSO GnomeVFS Extra debugging symbols
+ Development files for the osso-gnome-vfs-extra package.
+
 Package: libossomime0
 Section: libs
 Architecture: any
@@ -42,6 +50,14 @@ Section: devel
 Architecture: any
 Depends: libossomime0 (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libdbus-glib-1-dev
 Description: libossomime development files
+ Development files for the libossomime package.
+
+Package: libossomime0-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: libossomime0 (= ${Source-Version})
+Description: libossomime debugging symbols
  Development files for the libossomime package.
 
 Package: osso-update-category-database
