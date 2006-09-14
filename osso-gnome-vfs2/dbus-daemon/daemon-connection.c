@@ -1459,6 +1459,8 @@ connection_handle_get_file_info (DaemonConnection *conn,
 							  options,
 							  context);
 
+	gnome_vfs_uri_unref (uri);
+
 	if (cancellation) {
 		connection_remove_cancellation (conn, cancellation);
 	}
@@ -1564,6 +1566,8 @@ connection_handle_is_local (DaemonConnection *conn,
 		   gnome_vfs_uri_to_string (uri, GNOME_VFS_URI_HIDE_NONE)));
 
 	is_local = gnome_vfs_uri_is_local (uri);
+
+	gnome_vfs_uri_unref (uri);
 
 	reply = connection_create_reply_ok (message);
 
@@ -1863,6 +1867,7 @@ connection_handle_set_file_info (DaemonConnection *conn,
 	}
 
 	gnome_vfs_uri_unref (uri);
+	gnome_vfs_file_info_unref (info);
 
 	connection_reply_result (conn, message, result);
 }

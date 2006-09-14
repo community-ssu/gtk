@@ -14,7 +14,7 @@ LIBGNOMEVFS_INTERFACE_AGE=0
 
 # If you need a modifier for the version number. 
 # Normally empty, but can be used to make "fixup" releases.
-LIBGNOMEVFS_EXTRAVERSION=12
+LIBGNOMEVFS_EXTRAVERSION=13
 
 dnl libtool versioning from libgnome
 

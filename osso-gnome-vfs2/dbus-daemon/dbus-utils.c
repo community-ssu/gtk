@@ -41,7 +41,7 @@ utils_append_string_or_null (DBusMessageIter *iter,
 	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &str);
 }
 
-static gchar *
+static const gchar *
 utils_get_string_or_null (DBusMessageIter *iter)
 {
 	const gchar *str;
@@ -52,7 +52,7 @@ utils_get_string_or_null (DBusMessageIter *iter)
 		return NULL;
 	}
 
-	return g_strdup (str);
+	return str;
 }
 
 
@@ -156,7 +156,7 @@ dbus_utils_message_iter_get_file_info (DBusMessageIter *iter)
 {
 	DBusMessageIter   struct_iter;
 	GnomeVFSFileInfo *info;
-	gchar            *str;
+	const gchar      *str;
 	gint32            i;
 	guint32           u;
 	gint64            i64;
