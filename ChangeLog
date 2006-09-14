@@ -1,5 +1,9 @@
 2006-09-14  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtknotebook.c (gtk_notebook_pages_allocate): Fix compiler warnings.
+	
+2006-09-14  Xan Lopez  <xan.lopez@nokia.com>
+
 	Taken from GNOME Bugzilla #355732. NB#40316.
 
     2006-09-13  Richard Hult  <richard@imendio.com>

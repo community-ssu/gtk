@@ -3384,7 +3384,7 @@ gtk_notebook_pages_allocate (GtkNotebook   *notebook)
   gint memo_x;
   gboolean truncate = FALSE;
   gint arrow_width, arrow_height, arrow_spacing, tab_overlap;
-  gint total_width, ideal_tab_width, n_expanding_tabs;
+  gint total_width;
 
   if (!notebook->show_tabs || !notebook->children || !notebook->cur_page)
     return;
