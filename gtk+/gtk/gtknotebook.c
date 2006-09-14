@@ -3691,21 +3691,6 @@ gtk_notebook_pages_allocate (GtkNotebook   *notebook)
 	}
      }
 
-  ideal_tab_width = n ? (total_width / n) : total_width;
-  n_expanding_tabs = 0;
-
-  while (children)
-    {
-      if (children == last_child)
-        break;
-
-      page = children->data;
-      children = gtk_notebook_search_page (notebook, children, STEP_NEXT,TRUE);
-
-      if (page->requisition.width <= ideal_tab_width)
-        n_expanding_tabs++;
-    }
-
   children = notebook->first_tab;
 
   while (children)
@@ -3723,10 +3708,9 @@ gtk_notebook_pages_allocate (GtkNotebook   *notebook)
       
       delta = 0;
 
-      if (n && (showarrow || page->expand || notebook->homogeneous) &&
-          (page->requisition.width <= ideal_tab_width))
+      if (n && (showarrow || page->expand || notebook->homogeneous))
 	{
-	  new_fill = (tab_space * i++) / n_expanding_tabs;
+	  new_fill = (tab_space * i++) / n;
 	  delta = new_fill - old_fill;
 	  old_fill = new_fill;
 	}
