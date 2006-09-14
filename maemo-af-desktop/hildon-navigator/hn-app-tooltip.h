@@ -50,7 +50,7 @@ void         hn_app_tooltip_set_widget    (HNAppTooltip *tip,
 					   GtkWidget    *widget);
 GtkWidget *  hn_app_tooltip_get_widget    (HNAppTooltip *tip);
 void         hn_app_tooltip_set_text      (HNAppTooltip *tip,
-										   gchar  *text);
+					   const gchar  *text);
 const gchar *hn_app_tooltip_get_text      (HNAppTooltip *tip);
 
 void         hn_app_tooltip_install_timer (HNAppTooltip *tip,

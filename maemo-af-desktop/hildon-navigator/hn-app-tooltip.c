@@ -298,12 +298,12 @@ hn_app_tooltip_get_widget (HNAppTooltip *tip)
 
 void
 hn_app_tooltip_set_text (HNAppTooltip *tip,
-                         gchar  *text)
+                         const gchar  *text)
 {
   g_return_if_fail (HN_IS_APP_TOOLTIP (tip));
 
   g_free (tip->text);
-  tip->text = text;
+  tip->text = g_strdup (text);
   
   gtk_label_set_text (GTK_LABEL (tip->label), tip->text);
 

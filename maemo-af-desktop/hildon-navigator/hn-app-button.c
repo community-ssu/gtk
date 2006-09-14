@@ -344,6 +344,8 @@ hn_app_button_create_menu (HNAppButton *app_button)
   GtkWidget *active_item = NULL;
   HNEntryInfo *info;
   const GList *children, *l;
+  gint width;
+  GtkRequisition req;
 
   info = app_button->priv->info;
   g_assert (info != NULL);
@@ -368,6 +370,13 @@ hn_app_button_create_menu (HNAppButton *app_button)
 
   if (active_item)
     gtk_menu_shell_select_item (GTK_MENU_SHELL (menu), active_item);
+
+  width = MIN (menu->allocation.width, AS_MENU_ITEM_WIDTH);
+  gtk_widget_set_size_request (menu, -1, -1);
+  gtk_widget_size_request (menu, &req);
+  gtk_widget_set_size_request (menu,
+		  	       MAX (width, req.width),
+			       -1);
 
   return menu;
 }
@@ -792,7 +801,7 @@ hn_app_button_press_event (GtkWidget      *widget,
     priv->tooltip = hn_app_tooltip_new (GTK_WIDGET (app_button));
 
   hn_app_tooltip_set_text (HN_APP_TOOLTIP(app_button->priv->tooltip),
-                           hn_entry_info_get_title(info));
+                           hn_entry_info_peek_title (info));
 
   hn_app_tooltip_install_timer (HN_APP_TOOLTIP(app_button->priv->tooltip),
                                 NULL,
@@ -1047,7 +1056,6 @@ compose_app_pixbuf (const GdkPixbuf *src,
   GError *error;
   gint dest_width, dest_height;
   gint off_x, off_y;
-  gchar *title;
 
   g_return_val_if_fail (GDK_IS_PIXBUF (src), NULL);
   g_return_val_if_fail (info != NULL, NULL);
@@ -1070,8 +1078,7 @@ compose_app_pixbuf (const GdkPixbuf *src,
       if (!n_instances)
         {
           g_warning ("top-level item '%s' has no instances",
-                     (title = hn_entry_info_get_title (info)));
-	  g_free (title);
+                     hn_entry_info_peek_title (info));
           return NULL;
         }
 
@@ -1085,10 +1092,8 @@ compose_app_pixbuf (const GdkPixbuf *src,
     }
   
   HN_DBG ("Compositing icon for '%s' with icon name '%s'",
-	  (title = hn_entry_info_get_title (info)),
+	  hn_entry_info_peek_title (info),
 	  inst_name);
-
-  g_free (title);
 
   error = NULL;
   inst_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),

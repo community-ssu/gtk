@@ -245,8 +245,7 @@ hn_app_menu_item_constructor (GType                  type,
   HNAppMenuItem *menuitem;
   HNAppMenuItemPrivate *priv;
   GtkWidget *hbox, *vbox = NULL;
-  GtkWidget * label2 = NULL;
-  gchar     * app_name = NULL, * win_name = NULL;
+  GtkWidget *label2 = NULL;
   
   gobject = G_OBJECT_CLASS (hn_app_menu_item_parent_class)->constructor (type,
 		  							 n_construct_params,
@@ -356,19 +355,30 @@ hn_app_menu_item_constructor (GType                  type,
             hn_app_menu_item_icon_animation (priv->icon, TRUE);
         }
 
-      app_name = hn_entry_info_get_app_name (priv->info);
-      win_name = hn_entry_info_get_window_name (priv->info);
-      g_debug ("app_name: %s, win_name: %s", app_name, win_name);
-      
-      if (priv->thumbable && win_name)
-        {
-	  gtk_label_set_text (GTK_LABEL (label2), win_name);
-        }
+      if (!priv->thumbable)
+	{
+          gchar *app_name = hn_entry_info_get_title (priv->info);
 
-      gtk_label_set_text (GTK_LABEL (priv->label), app_name);
+	  g_debug ("app_name: %s", app_name);
 
-      g_free (app_name);
-      g_free (win_name);
+	  gtk_label_set_text (GTK_LABEL (priv->label), app_name);
+	  g_free (app_name);
+	}
+      else
+	{
+          gchar *app_name = hn_entry_info_get_app_name (priv->info);
+	  gchar *win_name = hn_entry_info_get_window_name (priv->info);
+
+	  g_debug ("app_name: %s, win_name: %s", app_name, win_name);
+
+	  if (win_name)
+            gtk_label_set_text (GTK_LABEL (label2), win_name);
+	  
+	  gtk_label_set_text (GTK_LABEL (priv->label), app_name);
+
+	  g_free (app_name);
+	  g_free (win_name);
+	}
     }
 
   if (priv->show_close)
@@ -448,14 +458,11 @@ static void
 hn_app_menu_item_activate (GtkMenuItem *menu_item)
 {
   HNEntryInfo *info;
-  gchar *title;
 
   info = hn_app_menu_item_get_entry_info (HN_APP_MENU_ITEM (menu_item));
   g_assert (info != NULL);
   
-  HN_DBG ("Raising application '%s'", (title = hn_entry_info_get_title (info)));
-  
-  g_free (title);
+  HN_DBG ("Raising application '%s'", hn_entry_info_peek_title (info));
   
   hn_wm_top_item (info);
 }
@@ -662,9 +669,9 @@ hn_app_menu_item_set_entry_info (HNAppMenuItem *menuitem,
       gtk_image_set_from_pixbuf (GTK_IMAGE (priv->icon), pixbuf);
       g_object_unref (pixbuf);
     }
-      
+  
   gtk_label_set_text (GTK_LABEL (priv->label),
-                      hn_entry_info_get_title (priv->info));
+		      hn_entry_info_peek_title (priv->info));
 
   g_object_notify (G_OBJECT (menuitem), "entry-info");
 }

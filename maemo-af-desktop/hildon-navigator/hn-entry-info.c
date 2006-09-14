@@ -250,11 +250,11 @@ hn_entry_info_get_n_children (HNEntryInfo *entry_info)
   return g_list_length(real->children);
 }
 
-gchar *
-hn_entry_info_get_title (HNEntryInfo *entry_info)
+const gchar *
+hn_entry_info_peek_title (HNEntryInfo *entry_info)
 {
   RealEntryInfo *real;
-  gchar *retval = NULL;
+  const gchar *retval;
   
   g_return_val_if_fail (entry_info != NULL, NULL);
 
@@ -267,27 +267,34 @@ hn_entry_info_get_title (HNEntryInfo *entry_info)
 
 	win = hn_wm_watchable_app_get_active_window (real->d.app);
 	if (win)
-          retval = g_strdup (hn_wm_watched_window_get_name (win));
+          retval = hn_wm_watched_window_get_name (win);
 	else
-          retval = g_strdup (hn_wm_watchable_app_get_name (real->d.app));
+          retval = hn_wm_watchable_app_get_name (real->d.app);
       }
       break;
     case HN_ENTRY_WATCHED_WINDOW:
-      retval = g_strdup (hn_wm_watched_window_get_name (real->d.window));
+      retval = hn_wm_watched_window_get_name (real->d.window);
       break;
     case HN_ENTRY_WATCHED_VIEW:
-      retval = g_strdup (hn_wm_watched_window_view_get_name (real->d.view));
+      retval = hn_wm_watched_window_view_get_name (real->d.view);
       break;
     case HN_ENTRY_DESKTOP:
-      retval = g_strdup (_("tana_fi_home"));
+      retval = _("tana_fi_home");
       break;
     case HN_ENTRY_INVALID:
     default:
       g_assert_not_reached ();
+      retval = NULL;
       break;
     }
  
   return retval;
+}
+
+gchar *
+hn_entry_info_get_title (HNEntryInfo *info)
+{
+  return g_strdup (hn_entry_info_peek_title (info));
 }
 
 gchar *

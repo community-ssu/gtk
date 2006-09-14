@@ -1,3 +1,11 @@
+2006-09-14  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "Application switcher truncates browser page names"
+	(Closes NB#39987)
+	* hildon-navigator/hn-app-switcher.c: Fixed ellipsis of the window
+	  titles
+	* hildon-navigator/hn-entry-info.c: Fixed leak of the tooltip string
+
 2006-09-13  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:

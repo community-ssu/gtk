@@ -81,6 +81,7 @@ gboolean     hn_entry_info_remove_child    (HNEntryInfo *info,
 const GList* hn_entry_info_get_children    (HNEntryInfo *info);
 gint         hn_entry_info_get_n_children  (HNEntryInfo *info);
 
+const gchar *hn_entry_info_peek_title      (HNEntryInfo *info);
 gchar *      hn_entry_info_get_title       (HNEntryInfo *info);
 void         hn_entry_info_set_title       (HNEntryInfo *info,
 				            const gchar *title);

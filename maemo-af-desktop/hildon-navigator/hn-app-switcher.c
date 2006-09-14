@@ -600,14 +600,17 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
 
       for(child = children; child != NULL; child = child->next)
         {
-          HN_DBG ("Creating new app menu item (thumb:%s)",
-	          priv->is_thumbable ? "on" : "off");
+          HNEntryInfo *entry = child->data;
+	  
+          HN_DBG ("Creating new app menu item (thumb:%s) for %s",
+	          priv->is_thumbable ? "on" : "off",
+		  hn_entry_info_peek_title (entry));
 
-          menu_item = hn_app_menu_item_new (child->data,
+          menu_item = hn_app_menu_item_new (entry,
 			 		    TRUE,
 					    priv->is_thumbable);
 
-          if(hn_entry_info_is_active(child->data))
+          if (hn_entry_info_is_active (entry))
             active_menu_item = menu_item;
           
           gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu), menu_item);
@@ -627,7 +630,7 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
       gtk_widget_destroy (priv->main_home_item);
       priv->main_home_item = NULL;
     }
- 
+  
   g_assert (priv->home_info); 
   priv->main_home_item = hn_app_menu_item_new (priv->home_info,
 		                               FALSE,
@@ -793,6 +796,8 @@ main_menu_pop (HNAppSwitcher *app_switcher,
 {
   HNAppSwitcherPrivate *priv;
   gboolean was_blinking;
+  GtkRequisition req;
+  gint width;
 
   g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
   g_return_if_fail (GTK_IS_WIDGET (toggle));
@@ -833,6 +838,15 @@ main_menu_pop (HNAppSwitcher *app_switcher,
     }
   
   main_menu_build (app_switcher);
+
+  /* force the menu size */
+  width = MIN (priv->main_menu->allocation.width,
+	       AS_MENU_ITEM_WIDTH);
+  gtk_widget_set_size_request (priv->main_menu, -1, -1);
+  gtk_widget_size_request (priv->main_menu, &req);
+  gtk_widget_set_size_request (priv->main_menu,
+		               MAX (width, req.width),
+			       -1);
 
   gtk_menu_popup (GTK_MENU (priv->main_menu), NULL, NULL,
                   main_menu_position_func, app_switcher,
