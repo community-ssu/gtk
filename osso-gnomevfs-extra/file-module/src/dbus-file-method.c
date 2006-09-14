@@ -85,7 +85,6 @@
 #define DIR_SEPARATORS "/"
 #endif
 
-#include "dfm-dbus.h"
 #include "dfm-vfs-utils.h"
 #include "dfm-file-open.h"
 #include "osso_case_in.h"

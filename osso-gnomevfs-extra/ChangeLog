@@ -1,3 +1,12 @@
+2006-09-14  Martyn Russell  <martyn@imendio.com>
+
+	* file-module/src/Makefile.am: Also cleaned up the inotify files
+	required and how they are listed.
+	
+	* file-module/src/dbus-file-method.c:
+	* file-module/src/dfm-dbus.[ch]: Removed, no longer needed since
+	inotify support was added.
+
 2006-09-13  Martyn Russell  <martyn@imendio.com>
 
 	* configure.in: Updated the AC_ checks for stating, etc from

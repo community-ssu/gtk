@@ -38,7 +38,7 @@ endif
 libdbusfile_la_SOURCES =		\
 	dbus-file-method.c  		\
 	fstype.c			\
-	inotify-kernel.c inotify-missing.c inotify-path.c inotify-sub.c inotify-helper.c inotify-diag.c \
+	$(notify_files)			\
 	$(NULL)
 
 libdbusfile_la_LDFLAGS = -avoid-version -module
@@ -47,8 +47,6 @@ libdbusfile_la_LIBADD = $(FILE_MODULE_LIBS) libdfm.la
 noinst_LTLIBRARIES = libdfm.la
 
 libdfm_la_SOURCES =                     \
-	dfm-dbus.c			\
-	dfm-dbus.h              	\
 	dfm-vfs-utils.c         	\
 	dfm-vfs-utils.h			\
 	dfm-file-open.c			\
