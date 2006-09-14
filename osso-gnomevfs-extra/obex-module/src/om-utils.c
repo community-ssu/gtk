@@ -126,6 +126,8 @@ om_utils_get_parent_path_from_uri (const GnomeVFSURI *uri)
 
 	parent_path = g_strconcat (tmp, "/", NULL);
 
+	g_free (tmp);
+
 	return parent_path;
 }
 
@@ -196,6 +198,8 @@ om_utils_get_path_list_from_uri (const gchar       *cur_dir,
 				       g_strndup (path_start, ch - path_start));
 		path_start = ch;
 	}
+
+	g_free (new_path);
 
 	list = g_list_reverse (list);
 

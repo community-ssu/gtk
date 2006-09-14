@@ -1495,7 +1495,9 @@ do_unlink (GnomeVFSMethod  *method,
 	ret = gw_obex_delete (conn->obex, name, &error);
 	g_free (name);
 
-	om_connection_check_gwobex_error (conn, error);
+	if (!ret) {
+		om_connection_check_gwobex_error (conn, error);
+	}
 
 	om_connection_invalidate_cache (conn);
 
@@ -1609,7 +1611,9 @@ do_set_file_info (GnomeVFSMethod          *method,
 	ret = gw_obex_move (conn->obex, name, info->name, &error);
 	g_free (name);
 
-	om_connection_check_gwobex_error (conn, error);
+	if (!ret) {
+		om_connection_check_gwobex_error (conn, error);
+	}
 
 	om_set_cancel_context (conn, NULL);
 	om_connection_unref (conn);
@@ -1670,6 +1674,8 @@ do_get_volume_free_space (GnomeVFSMethod    *method,
 	}
 	
 	ovu_caps_free (caps);
+
+	g_free (caps_str);
 	
 	return GNOME_VFS_OK;
 }

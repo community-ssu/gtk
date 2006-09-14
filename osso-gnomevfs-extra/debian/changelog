@@ -3,6 +3,7 @@ osso-gnomevfs-extra (1.7.2-1) unstable; urgency=low
   * FIXME: UNRELEASED
   * Fixes: NB#36554, Missing inotify support
   * Fixes: NB#40282, libossomime package doesn't provide debug symbols
+  * Fixes: NB#32771, dbus-vfs-daemon leaks memory when copying files using BT
 
  -- Richard Hult <richard@imendio.com>  Fre, 15 Sep 2006 12:30:23 +0200
 
