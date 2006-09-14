@@ -7,6 +7,8 @@ libosso (1.18-1) unstable; urgency=low
   * Added more warning flags to compilation and fixed warnings.
   * Added optimisation to service registration so that registering the
     default service name is not tried more than once.
+  * Message handling was rewritten: unregistering message and signal
+    handlers should now be more predictable.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Sep 2006 18:08:55 +0300
 

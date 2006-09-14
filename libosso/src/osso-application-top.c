@@ -127,7 +127,7 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
     
-    top = (struct _osso_top *) calloc(1, sizeof(struct _osso_top));
+    top = calloc(1, sizeof(struct _osso_top));
     if (top == NULL) {
         ULOG_ERR_F("calloc failed");
         return OSSO_ERROR;
@@ -136,10 +136,33 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
     top->data = data;
 
     /* register our top_application handler to the main message handler */
-    _msg_handler_set_cb_f_free_data(osso, osso->interface, _top_handler,
+    _msg_handler_set_cb_f_free_data(osso,
+                                    osso->service,
+                                    osso->object_path,
+                                    osso->interface,
+                                    _top_handler,
                                     top, TRUE);
 
     return OSSO_OK;
+}
+
+static DBusHandlerResult match_cb(osso_context_t *osso,
+                                  DBusMessage *msg,
+                                  gpointer data)
+{
+    _osso_rm_cb_match_t *match_data = data;
+    struct _osso_top *top;
+    _osso_handler_t *handler;
+
+    top = match_data->data;
+    handler = match_data->handler;
+
+    if ((unsigned)top->handler == (unsigned)handler->handler
+        && top->data == handler->data) {
+        return DBUS_HANDLER_RESULT_HANDLED;
+    } else {
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
 }
 
 /************************************************************************/
@@ -148,12 +171,24 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 					    gpointer data)
 {
     struct _osso_top *top;
-    
+
     if(osso == NULL) return OSSO_INVALID;
     if(cb == NULL) return OSSO_INVALID;
+
+    top = calloc(1, sizeof(struct _osso_top));
+    if (top == NULL) {
+        ULOG_ERR_F("calloc failed");
+        return OSSO_ERROR;
+    }
+    top->handler = cb;
+    top->data = data;
     
-    top = (struct _osso_top *)_msg_handler_rm_cb_f(osso, osso->interface,
-						   _top_handler, TRUE);
+    _msg_handler_rm_cb_f(osso,
+                         osso->service,
+                         osso->object_path,
+                         osso->interface,
+                         match_cb, TRUE,
+                         RM_CB_IS_MATCH_FUNCTION, top);
 
     free(top);
     return OSSO_OK;

@@ -30,9 +30,8 @@
 
 
 #include "osso-internal.h"
+#include <assert.h>
 
-static void _rm_cb_f (osso_context_t * osso, const gchar * interface,
-                      osso_rpc_cb_f * cb, gpointer data);
 static DBusHandlerResult _rpc_handler (osso_context_t * osso,
                                        DBusMessage * msg, gpointer data);
 static void _append_args(DBusMessage *msg, int type, va_list var_args);
@@ -557,7 +556,7 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                  service, object_path, interface,
                  use_system_bus ? "system" : "session");
     
-    rpc = (_osso_rpc_t *)calloc(1, sizeof(_osso_rpc_t));
+    rpc = calloc(1, sizeof(_osso_rpc_t));
     if (rpc == NULL) {
         ULOG_ERR_F("calloc failed");
         return OSSO_ERROR;
@@ -619,8 +618,12 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
     rpc->retval_free = retval_free;
     rpc->data = data;
 
-    _msg_handler_set_cb_f(osso, interface, _rpc_handler,
-                          (gpointer)rpc, TRUE);
+    _msg_handler_set_cb_f(osso,
+                          service,
+                          object_path,
+                          interface,
+                          _rpc_handler,
+                          rpc, TRUE);
     return OSSO_OK;
 }
 
@@ -668,10 +671,10 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
 {
     _osso_rpc_t *rpc;
     
-    if( (osso == NULL) || (cb == NULL) )
+    if (osso == NULL || cb == NULL)
 	return OSSO_INVALID;
 
-    rpc = (_osso_rpc_t *)calloc(1, sizeof(_osso_rpc_t));
+    rpc = calloc(1, sizeof(_osso_rpc_t));
     if (rpc == NULL) {
         ULOG_ERR_F("calloc failed");
 	return OSSO_ERROR;
@@ -681,8 +684,12 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t *osso,
     rpc->retval_free = retval_free;
     rpc->data = data;
     
-    _msg_handler_set_cb_f_free_data(osso, osso->interface, _rpc_handler,
-                                    (gpointer)rpc, TRUE);
+    _msg_handler_set_cb_f_free_data(osso,
+                                    osso->service,
+                                    osso->object_path,
+                                    osso->interface,
+                                    _rpc_handler,
+                                    rpc, TRUE);
     return OSSO_OK;
 }
 
@@ -693,6 +700,29 @@ osso_return_t osso_rpc_set_default_cb_f (osso_context_t *osso,
     return osso_rpc_set_default_cb_f_with_free (osso, cb, data, NULL);
 }
 
+static DBusHandlerResult match_cb(osso_context_t *osso,
+                                  DBusMessage *msg,
+                                  gpointer data)
+{
+    _osso_rm_cb_match_t *match_data = data;
+    _osso_rpc_t *rpc;
+    _osso_handler_t *handler;
+
+    rpc = match_data->data;
+    assert(rpc != NULL);
+    assert(rpc->func != NULL);
+    handler = match_data->handler;
+    assert(handler != NULL);
+    assert(handler->handler != NULL);
+
+    if ((unsigned)rpc->func == (unsigned)handler->handler
+        && rpc->data == handler->data) {
+        return DBUS_HANDLER_RESULT_HANDLED;
+    } else {
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+}
+
 /************************************************************************/
 osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 				  const gchar *service,
@@ -700,14 +730,35 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 				  const gchar *interface,
 				  osso_rpc_cb_f *cb, gpointer data)
 {
-    if( (osso == NULL) || (service == NULL) || (object_path == NULL) ||
-	(interface == NULL) || (cb == NULL))
+    _osso_rpc_t *rpc;
+
+    if (osso == NULL || service == NULL || object_path == NULL
+	|| interface == NULL || cb == NULL || osso->conn == NULL) {
+        ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
+    }
 
-    /* FIXME KORJAA */
+    /* TODO: this would be nice to call but needs more checking 
     dbus_connection_unregister_object_path(osso->conn, object_path);
+    */
 
-    _rm_cb_f(osso, interface, cb, data);
+    rpc = calloc(1, sizeof(_osso_rpc_t));
+    if (rpc == NULL) {
+        ULOG_ERR_F("calloc failed");
+	return OSSO_ERROR;
+    }
+    rpc->func = cb;
+    rpc->retval_free = NULL;
+    rpc->data = data;
+
+    _msg_handler_rm_cb_f(osso,
+                         service,
+                         object_path,
+                         interface,
+                         match_cb,
+                         TRUE, RM_CB_IS_MATCH_FUNCTION,
+                         rpc);
+    free(rpc);
 
     return OSSO_OK;
 }
@@ -717,10 +768,29 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 osso_return_t osso_rpc_unset_default_cb_f(osso_context_t *osso,
 					  osso_rpc_cb_f *cb, gpointer data)
 {
-    if(osso == NULL) return OSSO_INVALID;
-    if(cb == NULL) return OSSO_INVALID;
+    _osso_rpc_t *rpc;
+
+    if (osso == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid parameters");
+        return OSSO_INVALID;
+    }
+
+    rpc = calloc(1, sizeof(_osso_rpc_t));
+    if (rpc == NULL) {
+        ULOG_ERR_F("calloc failed");
+	return OSSO_ERROR;
+    }
+    rpc->func = cb;
+    rpc->retval_free = NULL;
+    rpc->data = data;
     
-    _rm_cb_f(osso, osso->interface, cb, data);
+    _msg_handler_rm_cb_f(osso,
+                         osso->service,
+                         osso->object_path,
+                         osso->interface,
+                         match_cb, TRUE,
+                         RM_CB_IS_MATCH_FUNCTION, rpc);
+    free(rpc);
 
     return OSSO_OK;
 }
@@ -741,6 +811,8 @@ osso_return_t osso_rpc_set_timeout(osso_context_t *osso, gint timeout)
     osso->rpc_timeout = timeout;
     return OSSO_OK;
 }
+
+#if 0
 /************************************************************************/
 static void _rm_cb_f(osso_context_t *osso, const gchar *interface,
 		     osso_rpc_cb_f *cb, gpointer data)
@@ -751,14 +823,18 @@ static void _rm_cb_f(osso_context_t *osso, const gchar *interface,
 
     for(i = 0; i < osso->ifs->len; i++) {
 	_osso_interface_t *intf;
+
 	intf = &g_array_index(osso->ifs, _osso_interface_t, i);
-	if( (intf->handler == &_rpc_handler) &&
-	    (strcmp(intf->interface, interface)==0) &&
-	    (intf->method) ) {
+
+	if (intf->handler == &_rpc_handler &&
+	    strcmp(intf->interface, interface) == 0 && intf->method) {
 	    _osso_rpc_t *rpc;
+
 	    rpc = (_osso_rpc_t *)intf->data;
-	    if( (rpc->func == cb) && (rpc->data == data) ) {
+
+	    if (rpc->func == cb && rpc->data == data) {
 		g_free(intf->interface);
+                intf->interface = NULL;
 		g_array_remove_index_fast(osso->ifs, i);
 		free(rpc);
 	    }
@@ -768,6 +844,7 @@ static void _rm_cb_f(osso_context_t *osso, const gchar *interface,
 
     return;
 }
+#endif
 
 /************************************************************************/
 

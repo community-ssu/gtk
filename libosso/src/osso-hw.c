@@ -30,6 +30,7 @@
 #define MCE_REQUEST_IF			"com.nokia.mce.request"
 #define MCE_SIGNAL_PATH			"/com/nokia/mce/signal"
 #define MCE_SIGNAL_IF			"com.nokia.mce.signal"
+#define MCE_SIGNAL_SVC		        MCE_SERVICE	
 #define MCE_DISPLAY_ON_REQ		"req_display_state_on"
 #define MCE_PREVENT_BLANK_REQ		"req_display_blanking_pause"
 
@@ -44,9 +45,11 @@
 #define INVALID_MODE                    "invalid"
 
 /* user lowmem signal */
+#define USER_LOWMEM_OFF_SIGNAL_SVC "com.nokia.ke_recv"
 #define USER_LOWMEM_OFF_SIGNAL_OP "/com/nokia/ke_recv/user_lowmem_off"
 #define USER_LOWMEM_OFF_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_off"
 #define USER_LOWMEM_OFF_SIGNAL_NAME "user_lowmem_off"
+#define USER_LOWMEM_ON_SIGNAL_SVC "com.nokia.ke_recv"
 #define USER_LOWMEM_ON_SIGNAL_OP "/com/nokia/ke_recv/user_lowmem_on"
 #define USER_LOWMEM_ON_SIGNAL_IF "com.nokia.ke_recv.user_lowmem_on"
 #define USER_LOWMEM_ON_SIGNAL_NAME "user_lowmem_on"
@@ -173,9 +176,15 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
                 USER_LOWMEM_OFF_SIGNAL_IF "'", NULL);
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
                 USER_LOWMEM_ON_SIGNAL_IF "'", NULL);
-            _msg_handler_set_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_IF,
+            _msg_handler_set_cb_f(osso,
+                                  USER_LOWMEM_OFF_SIGNAL_SVC,
+                                  USER_LOWMEM_OFF_SIGNAL_OP,
+                                  USER_LOWMEM_OFF_SIGNAL_IF,
                                   lowmem_signal_handler, NULL, FALSE);
-            _msg_handler_set_cb_f(osso, USER_LOWMEM_ON_SIGNAL_IF,
+            _msg_handler_set_cb_f(osso,
+                                  USER_LOWMEM_ON_SIGNAL_SVC,
+                                  USER_LOWMEM_ON_SIGNAL_OP,
+                                  USER_LOWMEM_ON_SIGNAL_IF,
                                   lowmem_signal_handler, NULL, FALSE);
         }
         osso->hw_cbs.memory_low_ind.set = TRUE;
@@ -223,7 +232,11 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
     }
 
     if (install_mce_handler) {
-        _msg_handler_set_cb_f(osso, MCE_SIGNAL_IF, signal_handler,
+        _msg_handler_set_cb_f(osso,
+                              MCE_SIGNAL_SVC,
+                              MCE_SIGNAL_PATH,
+                              MCE_SIGNAL_IF,
+                              signal_handler,
                               NULL, FALSE);
     }
     first_hw_set_cb_call = FALSE;  /* set before calling callbacks */
@@ -236,6 +249,8 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
     return OSSO_OK;    
 }
 
+/* TODO: needs additional function that allows several handlers
+ * for the same signal */
 osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 				     osso_hw_state_t *state)
 {
@@ -267,10 +282,16 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
                 USER_LOWMEM_OFF_SIGNAL_IF "'", NULL);
         dbus_bus_remove_match(osso->sys_conn, "type='signal',interface='"
                 USER_LOWMEM_ON_SIGNAL_IF "'", NULL);
-        _msg_handler_rm_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_IF,
-                             lowmem_signal_handler, FALSE);
-        _msg_handler_rm_cb_f(osso, USER_LOWMEM_ON_SIGNAL_IF,
-                             lowmem_signal_handler, FALSE);
+        _msg_handler_rm_cb_f(osso,
+                             USER_LOWMEM_OFF_SIGNAL_SVC,
+                             USER_LOWMEM_OFF_SIGNAL_OP,
+                             USER_LOWMEM_OFF_SIGNAL_IF,
+                             lowmem_signal_handler, FALSE, NULL, NULL);
+        _msg_handler_rm_cb_f(osso,
+                             USER_LOWMEM_ON_SIGNAL_SVC,
+                             USER_LOWMEM_ON_SIGNAL_OP,
+                             USER_LOWMEM_ON_SIGNAL_IF,
+                             lowmem_signal_handler, FALSE, NULL, NULL);
     }
     _unset_state_cb(save_unsaved_data_ind);
     _unset_state_cb(system_inactivity_ind);
@@ -278,7 +299,11 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     dbus_connection_flush(osso->sys_conn);
 
     if (_state_is_unset()) {
-	_msg_handler_rm_cb_f(osso, MCE_SIGNAL_IF, signal_handler, FALSE);
+	_msg_handler_rm_cb_f(osso,
+                             MCE_SIGNAL_SVC,
+                             MCE_SIGNAL_PATH,
+                             MCE_SIGNAL_IF,
+                             signal_handler, FALSE, NULL, NULL);
     }
     return OSSO_OK;    
 }

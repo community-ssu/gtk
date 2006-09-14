@@ -1272,6 +1272,9 @@ osso_return_t osso_mime_set_cb(osso_context_t *osso, osso_mime_cb_f *cb,
  * and OSSO_ERROR if there was an error.
  */
 osso_return_t osso_mime_unset_cb(osso_context_t *osso);
+
+osso_return_t osso_mime_unset_cb_full(osso_context_t *osso,
+                                      osso_mime_cb_f *cb, gpointer data);
 /*@}*/
 
 /**

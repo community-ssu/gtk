@@ -30,36 +30,105 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       gpointer data);
 static char * _get_arg(DBusMessageIter *iter);
 
-osso_return_t osso_mime_set_cb(osso_context_t *osso, osso_mime_cb_f *cb,
+osso_return_t osso_mime_set_cb(osso_context_t *osso,
+                               osso_mime_cb_f *cb,
 			       gpointer data)
 {
+    _osso_mime_t *mime;
+
     if (osso == NULL || cb == NULL) {
         ULOG_ERR_F("invalid arguments");
 	return OSSO_INVALID;
     }
 
-    osso->mime.func = cb;
-    osso->mime.data = data;
+    mime = calloc(1, sizeof(_osso_mime_t));
+    if (mime == NULL) {
+        ULOG_ERR_F("calloc() failed");
+        return OSSO_ERROR;
+    }
+
+    mime->func = cb;
+    mime->data = data;
     
-    _msg_handler_set_cb_f(osso, osso->interface, _mime_handler, NULL, TRUE);
+    _msg_handler_set_cb_f_free_data(osso,
+                                    osso->service,
+                                    osso->object_path,
+                                    osso->interface,
+                                    _mime_handler, mime, TRUE);
     return OSSO_OK;
+}
+
+static DBusHandlerResult match_cb(osso_context_t *osso,
+                                  DBusMessage *msg,
+                                  gpointer data)
+{
+    /* we just match all because the API does not allow
+     * us to do more */
+    return DBUS_HANDLER_RESULT_HANDLED;
 }
 
 osso_return_t osso_mime_unset_cb(osso_context_t *osso)
 {
     if (osso == NULL) {
-        ULOG_ERR_F("osso context is NULL");
-	return OSSO_INVALID;
-    }
-    if (osso->mime.func == NULL) {
-        ULOG_ERR_F("MIME callback is NULL");
+        ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
     }
 
-    osso->mime.func = NULL;
-    osso->mime.data = NULL;
-    
-    _msg_handler_rm_cb_f(osso, osso->interface, _mime_handler, TRUE);
+    _msg_handler_rm_cb_f(osso,
+                         osso->service,
+                         osso->object_path,
+                         osso->interface,
+                         match_cb, TRUE,
+                         RM_CB_IS_MATCH_FUNCTION, NULL);
+    return OSSO_OK;
+}
+
+static DBusHandlerResult match_cb_full(osso_context_t *osso,
+                                       DBusMessage *msg,
+                                       gpointer data)
+{
+    _osso_rm_cb_match_t *match_data = data;
+    _osso_mime_t *mime;
+    _osso_handler_t *handler;
+
+    mime = match_data->data;
+    handler = match_data->handler;
+
+    if ((unsigned)mime->func == (unsigned)handler->handler
+        && mime->data == handler->data) {
+        return DBUS_HANDLER_RESULT_HANDLED;
+    } else {
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+}
+
+osso_return_t osso_mime_unset_cb_full(osso_context_t *osso,
+                                      osso_mime_cb_f *cb,
+			              gpointer data)
+{
+    _osso_mime_t *mime;
+
+    if (osso == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid parameters");
+	return OSSO_INVALID;
+    }
+
+    mime = calloc(1, sizeof(_osso_mime_t));
+    if (mime == NULL) {
+        ULOG_ERR_F("calloc() failed");
+        return OSSO_ERROR;
+    }
+
+    mime->func = cb;
+    mime->data = data;
+
+    _msg_handler_rm_cb_f(osso,
+                         osso->service,
+                         osso->object_path,
+                         osso->interface,
+                         match_cb_full, TRUE,
+                         RM_CB_IS_MATCH_FUNCTION, mime);
+    free(mime);
     return OSSO_OK;
 }
 
@@ -84,11 +153,15 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
     assert(osso != NULL);
 
     if (dbus_message_is_method_call(msg, osso->interface,
-        OSSO_BUS_MIMEOPEN)) {
+                                    OSSO_BUS_MIMEOPEN)) {
 	int argc, idx = 0;
         gchar **argv = NULL;
         gchar *arg = NULL;
 	DBusMessageIter iter;
+        _osso_mime_t *mime = data;
+
+        assert(mime != NULL);
+        assert(mime->func != NULL);
 
         argc = get_message_arg_count(msg);
         if (argc == 0) {
@@ -115,14 +188,12 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
         assert(idx == argc);
         argv[idx] = NULL;
 	
-	(osso->mime.func)(osso->mime.data, argc, argv);
+	(mime->func)(mime->data, argc, argv);
         free(argv);
-
-	return DBUS_HANDLER_RESULT_HANDLED;
     }
-    else {
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
+    /* have to return this, because there could be more
+     * MIME callbacks */
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
 static char * _get_arg(DBusMessageIter *iter)

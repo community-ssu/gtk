@@ -62,13 +62,16 @@
 #define MAX_IF_LEN 255
 #define MAX_SVC_LEN 255
 #define MAX_OP_LEN 255
+#define MAX_HASH_KEY_LEN (MAX_IF_LEN + MAX_SVC_LEN + MAX_OP_LEN)
 
 #define MAX_APP_NAME_LEN 50
 #define MAX_VERSION_LEN 30
 
-typedef DBusHandlerResult (_osso_interface_cb_f)(osso_context_t *osso,
-						 DBusMessage *msg,
-						 gpointer data);
+#define RM_CB_IS_MATCH_FUNCTION ((gpointer)-1)
+
+typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,
+				            DBusMessage *msg,
+					    gpointer data);
 
 typedef struct {
     osso_hw_cb_f *cb;
@@ -100,23 +103,26 @@ typedef struct {
 }_osso_autosave_t;
 
 typedef struct {
-    _osso_interface_cb_f *handler;
-    gchar *interface;
+    _osso_handler_f *handler;
     gpointer data;
     gboolean method;
     gboolean can_free_data;
-}_osso_interface_t;
+} _osso_handler_t;
+
+typedef struct {
+    GList *handlers;
+} _osso_hash_value_t;
 
 typedef struct {
     void *lib;
     gchar *name;
     gchar *svcname;
-}_osso_cp_plugin_t;
+} _osso_cp_plugin_t;
 
 typedef struct {
-    osso_application_exit_cb *cb;
+    _osso_handler_t *handler;
     gpointer data;
-}_osso_exit_t;
+} _osso_rm_cb_match_t;
 
 /**
  * This structure is used to store library specific stuff
@@ -132,15 +138,17 @@ struct osso_af_context_t {
     char service[MAX_SVC_LEN + 1];
     gboolean systembus_service_registered;
     gboolean sessionbus_service_registered;
-    GArray *ifs;
+    GHashTable *uniq_hash;  /* handlers hashed by the triplet: service,
+                               object path, and interface. */
+    GHashTable *if_hash;    /* handlers hashed by interface only */
     _osso_autosave_t autosave;
+#ifdef LIBOSSO_DEBUG
     guint log_handler;
+#endif
     _osso_hw_cb_t hw_cbs;
     osso_hw_state_t hw_state;
     guint rpc_timeout;
-    _osso_mime_t mime;
     GArray *cp_plugins;
-    _osso_exit_t exit;
 };
 
 # ifdef LIBOSSO_DEBUG
@@ -161,14 +169,28 @@ struct osso_af_context_t {
  */
 DBusHandlerResult _msg_handler(DBusConnection *conn, DBusMessage *msg, 
 			       void *data);
-void _msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
-			   _osso_interface_cb_f *cb, gpointer data, 
+void _msg_handler_set_cb_f(osso_context_t *osso,
+                           const gchar *service,
+                           const gchar *object_path,
+                           const gchar *interface,
+			   _osso_handler_f *cb,
+                           gpointer user_data, 
 			   gboolean method);
-void _msg_handler_set_cb_f_free_data(osso_context_t *osso, const gchar *interface,
-				     _osso_interface_cb_f *cb, gpointer data, 
+void _msg_handler_set_cb_f_free_data(osso_context_t *osso,
+                                     const gchar *service,
+                                     const gchar *object_path,
+                                     const gchar *interface,
+				     _osso_handler_f *cb,
+                                     gpointer user_data, 
 				     gboolean method);
-gpointer _msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
-			      _osso_interface_cb_f *cb, gboolean method);
+gpointer _msg_handler_rm_cb_f(osso_context_t *osso,
+                              const gchar *service,
+                              const gchar *object_path,
+                              const gchar *interface,
+			      _osso_handler_f *cb,
+                              gboolean method,
+                              gpointer user_data,
+                              gpointer data_for_match_cb);
 void _msg_handler_set_ret(osso_context_t *osso, gint serial,
 			  osso_rpc_t *retval);
 void _msg_handler_rm_ret(osso_context_t *osso, gint serial);

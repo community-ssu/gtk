@@ -43,6 +43,18 @@ static gchar* appname_to_valid_path_component(const gchar *application)
     return copy;
 }
 
+static void
+compose_hash_key(const char *service, const char *object_path,
+                 const char *interface, char *key)
+{
+    key[0] = '\0';
+    strncat(key, interface, MAX_IF_LEN);
+    strncat(key, object_path, MAX_OP_LEN);
+    if (service != NULL) {
+        strncat(key, service, MAX_SVC_LEN);
+    }
+}
+
 gboolean __attribute__ ((visibility("hidden")))
 validate_appname(const gchar *application)
 {
@@ -196,16 +208,57 @@ make_default_object_path(const char *application, char *path)
 }
 
 /************************************************************************/
-static osso_context_t * _init(const gchar *application, const gchar *version)
+
+static void free_handler(gpointer data, gpointer user_data)
 {
-    osso_context_t * osso;
+    _osso_handler_t *h = data;
+
+    if (h != NULL) {
+        if (h->can_free_data) {
+            free(h->data);
+            h->data = NULL;
+        }
+        free(h);
+    }
+}
+
+static void free_uniq_hash_value(gpointer data)
+{
+    _osso_hash_value_t *elem = data;
+
+    if (elem != NULL) {
+        if (elem->handlers != NULL) {
+            g_list_foreach(elem->handlers, free_handler, NULL);
+            g_list_free(elem->handlers);
+            elem->handlers = NULL;
+        }
+        free(elem);
+    }
+}
+
+static void free_if_hash_value(gpointer data)
+{
+    _osso_hash_value_t *elem = data;
+
+    if (elem != NULL) {
+        if (elem->handlers != NULL) {
+            g_list_free(elem->handlers);
+            elem->handlers = NULL;
+        }
+        free(elem);
+    }
+}
+
+static osso_context_t *_init(const gchar *application, const gchar *version)
+{
+    osso_context_t *osso;
     
     if (!_validate(application, version)) {
 	ULOG_ERR_F("invalid arguments");
 	return NULL;
     }
 
-    osso = (osso_context_t *)calloc(1, sizeof(osso_context_t));
+    osso = calloc(1, sizeof(osso_context_t));
     if (osso == NULL) {
 	ULOG_ERR_F("calloc failed");
 	return NULL;
@@ -223,7 +276,15 @@ static osso_context_t * _init(const gchar *application, const gchar *version)
         return NULL;
     }
 
-    osso->ifs = g_array_new(FALSE, FALSE, sizeof(_osso_interface_t));
+    osso->uniq_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                            free, free_uniq_hash_value);
+    osso->if_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                          free, free_if_hash_value);
+    if (osso->uniq_hash == NULL || osso->if_hash == NULL) {
+        ULOG_ERR_F("g_hash_table_new_full failed");
+        free(osso);
+        return NULL;
+    }
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
     osso->rpc_timeout = -1;
     return osso;
@@ -236,23 +297,11 @@ static void _deinit(osso_context_t *osso)
     if (osso == NULL) {
 	return;
     }
-    if (osso->ifs != NULL) {
-        int i;
-        _osso_interface_t *elem;
-        /* some members need to be freed separately */
-        for (i = 0; i < osso->ifs->len; ++i) {
-            elem = (_osso_interface_t*)
-                    &g_array_index(osso->ifs, _osso_interface_t, i);
-            if (elem->interface != NULL) {
-                g_free(elem->interface);
-        	elem->interface = NULL;
-            }
-            if (elem->can_free_data) {
-                free(elem->data);
-                elem->data = NULL;
-            }
-        }
-        g_array_free(osso->ifs, TRUE);
+    if (osso->uniq_hash != NULL) {
+        g_hash_table_destroy(osso->uniq_hash);
+    }
+    if (osso->if_hash != NULL) {
+        g_hash_table_destroy(osso->if_hash);
     }
     if (osso->cp_plugins != NULL) {
         g_array_free(osso->cp_plugins, TRUE);
@@ -371,33 +420,77 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
 }
 
 /*************************************************************************/
+
 DBusHandlerResult __attribute__ ((visibility("hidden")))
 _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 {
     osso_context_t *osso;
-    const gchar *interface;
-    gboolean is_method = FALSE;
-    guint i;
+    _osso_hash_value_t *elem;
+    gboolean is_method;
+    const char *interface;
+#ifdef OSSOLOG_COMPILE
+    gboolean found = FALSE;
+#endif
 
-    osso = (osso_context_t *)data;
-    dprint("message!");
-    
-    if(dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_CALL)
+    osso = data;
+
+    assert(osso != NULL);
+
+    if (dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_CALL)
 	is_method = TRUE;
-    else if(dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_SIGNAL)
+    else if (dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_SIGNAL)
 	is_method = FALSE;
     else
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 
-    dprint("");
+    /* FIXME: this is kind of brain-damaged: only interface is considered
+     * (would require new API to fix, to keep backwards compatibility) */
     interface = dbus_message_get_interface(msg);
-    
-    dprint("Got a %s %s interface '%s'",
-	   type_to_name(dbus_message_get_type(msg)), 
-	   is_method?"to":"from", interface);
 
-    osso->cur_conn = conn;
+    if (interface == NULL) {
+        ULOG_DEBUG_F("interface of the message was NULL");
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
 
+    ULOG_DEBUG_F("key = '%s'", interface);
+    elem = g_hash_table_lookup(osso->if_hash, interface);
+
+    if (elem != NULL) {
+        GList *list;
+
+        osso->cur_conn = conn;
+
+        list = g_list_first(elem->handlers);
+        while (list != NULL) {
+            _osso_handler_t *handler;
+            DBusHandlerResult ret;
+
+            handler = list->data;
+
+            if (handler->method == is_method) {
+                ULOG_DEBUG_F("before calling the handler");
+                ULOG_DEBUG_F(" handler = %p", handler->handler);
+                ULOG_DEBUG_F(" data = %p", handler->data);
+                ret = (*handler->handler)(osso, msg, handler->data);
+                ULOG_DEBUG_F("after calling the handler");
+                if (ret == DBUS_HANDLER_RESULT_HANDLED) {
+                    return ret;
+                }
+#ifdef OSSOLOG_COMPILE
+                found = TRUE;
+#endif
+            }
+
+            list = g_list_next(list);
+        }
+    } 
+#ifdef OSSOLOG_COMPILE
+    if (!found) {
+        ULOG_DEBUG_F("suitable handler not found from the hash table");
+    }
+#endif
+
+#if 0
     for(i=0; i<osso->ifs->len; i++) {
 	_osso_interface_t *intf;
 	DBusHandlerResult r;
@@ -413,65 +506,263 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 	    }
 	}
     }	
+#endif
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
 
 /************************************************************************/
-void __attribute__ ((visibility("hidden")))
-_msg_handler_set_cb_f(osso_context_t *osso, const gchar *interface,
-                      _osso_interface_cb_f *cb, gpointer data, 
-                      gboolean method)
-{   
-    _osso_interface_t intf;
-    if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
-	return;
-    
-    intf.handler = cb;
-    intf.interface = g_strdup(interface);
-    intf.data = data;
-    intf.method = method;
-    intf.can_free_data = FALSE;
-    
-    dprint("intf.handler = %p",intf.handler);
-    dprint("intf.interface = '%s'",intf.interface);
-    dprint("intf.data = %p", intf.data);
-    dprint("intf.method = %s", intf.method?"TRUE":"FALSE");
-    g_array_append_val(osso->ifs, intf);
 
-    return;
+static gboolean add_to_if_hash(osso_context_t *osso,
+                               const _osso_handler_t *handler,
+                               const char *interface)
+{
+    _osso_hash_value_t *old;
+
+    old = g_hash_table_lookup(osso->if_hash, interface);
+    if (old != NULL) {
+        old->handlers = g_list_append(old->handlers, handler);
+    } else {
+        _osso_hash_value_t *new_elem;
+        char *new_key;
+
+        /* we need to allocate a new hash table element */
+        new_elem = calloc(1, sizeof(_osso_hash_value_t));
+        if (new_elem == NULL) {
+            ULOG_ERR_F("calloc() failed");
+            return FALSE;
+        }
+
+        new_key = strdup(interface);
+        if (new_elem == NULL) {
+            ULOG_ERR_F("calloc() failed");
+            free(new_elem);
+            return FALSE;
+        }
+
+        new_elem->handlers = g_list_append(NULL, handler);
+
+        g_hash_table_insert(osso->if_hash, new_key, new_elem);
+    }
+    return TRUE;
+}
+
+static gboolean set_handler_helper(osso_context_t *osso,
+                                   const char *service,
+                                   const char *object_path,
+                                   const char *interface,
+                                   _osso_handler_f *cb,
+                                   gpointer data, 
+                                   gboolean method,
+                                   gboolean can_free_data)
+{
+    char uniq_key[MAX_HASH_KEY_LEN + 1];
+    _osso_hash_value_t *old;
+    _osso_handler_t *handler;
+
+    compose_hash_key(service, object_path, interface, uniq_key);
+
+    handler = calloc(1, sizeof(_osso_handler_t));
+    if (handler == NULL) {
+        ULOG_ERR_F("calloc() failed");
+        return FALSE;
+    }
+
+    handler->handler = cb;
+    handler->data = data;
+    handler->method = method;
+    handler->can_free_data = can_free_data;
+
+    /* warn about the old element if it exists */
+    old = g_hash_table_lookup(osso->uniq_hash, uniq_key);
+    if (old != NULL) {
+        ULOG_WARN_F("Libosso WARNING: yet another handler"
+                    " registered for:");
+        ULOG_WARN_F(" service: %s", service);
+        ULOG_WARN_F(" obj. path: %s", object_path);
+        ULOG_WARN_F(" interface: %s", interface);
+        fprintf(stderr, "\nLibosso WARNING: yet another "
+                        "handler registered for:\n");
+        fprintf(stderr, " service: %s\n", service);
+        fprintf(stderr, " obj. path: %s\n", object_path);
+        fprintf(stderr, " interface: %s\n", interface);
+
+        /* add it to the list of handlers */
+        old->handlers = g_list_append(old->handlers, handler);
+
+    } else {
+        _osso_hash_value_t *new_elem;
+        char *new_key;
+
+        /* we need to allocate a new hash table element */
+        new_elem = calloc(1, sizeof(_osso_hash_value_t));
+        if (new_elem == NULL) {
+            ULOG_ERR_F("calloc() failed");
+            free(handler);
+            return FALSE;
+        }
+
+        new_key = strdup(uniq_key);
+        if (new_key == NULL) {
+            ULOG_ERR_F("strdup() failed");
+            free(handler);
+            free(new_elem);
+            return FALSE;
+        }
+
+        new_elem->handlers = g_list_append(NULL, handler);
+
+        g_hash_table_insert(osso->uniq_hash, new_key, new_elem);
+    }
+    return add_to_if_hash(osso, handler, interface);
 }
 
 void __attribute__ ((visibility("hidden")))
-_msg_handler_set_cb_f_free_data(osso_context_t *osso, const gchar *interface,
-                      _osso_interface_cb_f *cb, gpointer data, 
+_msg_handler_set_cb_f(osso_context_t *osso,
+                      const char *service,
+                      const char *object_path,
+                      const char *interface,
+                      _osso_handler_f *cb,
+                      gpointer data, 
                       gboolean method)
 {   
-    _osso_interface_t intf;
-    if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
+    if (osso == NULL || object_path == NULL
+        || interface == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid parameters");
 	return;
-    
-    intf.handler = cb;
-    intf.interface = g_strdup(interface);
-    intf.data = data;
-    intf.method = method;
-    intf.can_free_data = TRUE;
-    
-    g_array_append_val(osso->ifs, intf);
+    }
 
-    return;
+    set_handler_helper(osso, service, object_path, interface,
+                       cb, data, method, FALSE);
+}
+
+void __attribute__ ((visibility("hidden")))
+_msg_handler_set_cb_f_free_data(osso_context_t *osso,
+                                const gchar *service,
+                                const gchar *object_path,
+                                const gchar *interface,
+                                _osso_handler_f *cb,
+                                gpointer data, 
+                                gboolean method)
+{   
+    if (osso == NULL || object_path == NULL
+        || interface == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid parameters");
+	return;
+    }
+
+    set_handler_helper(osso, service, object_path, interface,
+                       cb, data, method, TRUE);
 }
 
 /************************************************************************/
 gpointer __attribute__ ((visibility("hidden")))
-_msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
-                     _osso_interface_cb_f *cb, gboolean method)
+_msg_handler_rm_cb_f(osso_context_t *osso,
+                     const gchar *service,
+                     const gchar *object_path,
+                     const gchar *interface,
+                     _osso_handler_f *cb,
+                     gboolean method,
+                     gpointer user_data,
+                     gpointer data_for_mf)
 {   
-    guint i=0;
-    if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
-	return NULL;
+    char uniq_key[MAX_HASH_KEY_LEN + 1];
+    const _osso_hash_value_t *elem;
+    const _osso_handler_t *matched_handler = NULL;
+    gpointer ret = NULL;
 
+    if (osso == NULL || object_path == NULL || interface == NULL
+        || cb == NULL || osso->uniq_hash == NULL || osso->if_hash == NULL) {
+        ULOG_DEBUG_F("invalid parameters");
+	return NULL;
+    }
+
+    compose_hash_key(service, object_path, interface, uniq_key);
+
+    elem = g_hash_table_lookup(osso->uniq_hash, uniq_key);
+    if (elem != NULL) {
+        GList *list;
+
+        list = g_list_first(elem->handlers);
+        while (list != NULL) {
+            _osso_handler_t *handler;
+
+            handler = list->data;
+
+            if (handler->method == method) {
+                if (user_data == RM_CB_IS_MATCH_FUNCTION) {
+                    _osso_rm_cb_match_t *match;
+                    DBusHandlerResult ret;
+
+                    /* FIXME: this is really ugly -- caused by plurality of
+                     * struct types used as the user data */
+                    ULOG_DEBUG_F("similarity is determined by callback"); 
+
+                    match = calloc(1, sizeof(_osso_rm_cb_match_t));
+                    if (match == NULL) {
+                        ULOG_ERR_F("calloc() failed");
+                        return NULL;
+                    }
+                    match->handler = handler;
+                    match->data = data_for_mf;
+
+                    ret = (*cb)(osso, NULL, match);
+                    free(match);
+                    if (ret == DBUS_HANDLER_RESULT_HANDLED) {
+                        matched_handler = handler;
+                    }
+                } else if (handler->handler == cb
+                           && handler->data == user_data) {
+                    matched_handler = handler;
+                }
+
+                if (matched_handler != NULL) {
+                    ULOG_DEBUG_F("found from uniq_hash");
+                    elem->handlers = g_list_remove_link(elem->handlers, list);
+                    ret = handler->data;
+
+                    free_handler(handler, NULL);
+                    g_list_free(list); /* free the removed link */
+
+                    /* if this was the last element in the list, free the
+                     * list and the hash element */
+                    if (g_list_length(elem->handlers) == 0) {
+                        g_hash_table_remove(osso->uniq_hash, interface);
+                    }
+                    break;
+                }
+            }
+
+            list = g_list_next(list);
+        }
+    }
+
+    if (matched_handler != NULL) {
+        elem = g_hash_table_lookup(osso->if_hash, interface);
+        if (elem != NULL) {
+            GList *list;
+
+            list = g_list_first(elem->handlers);
+            while (list != NULL) {
+                if (list->data == matched_handler) {
+                    ULOG_DEBUG_F("found from if_hash");
+                    elem->handlers = g_list_remove_link(elem->handlers, list);
+                    g_list_free(list); /* free the removed link */
+
+                    /* if this was the last element in the list, free the
+                     * list and the hash element */
+                    if (g_list_length(elem->handlers) == 0) {
+                        g_hash_table_remove(osso->if_hash, interface);
+                    }
+                    return ret;
+                }
+                list = g_list_next(list);
+            }
+        }
+    }
+
+#if 0
     for(i = 0; i < osso->ifs->len; i++) {
 	_osso_interface_t *intf;
 	intf = &g_array_index(osso->ifs, _osso_interface_t, i);
@@ -485,7 +776,12 @@ _msg_handler_rm_cb_f(osso_context_t *osso, const gchar *interface,
 	    return ret;
 	}
     }
+#endif
 
+    ULOG_DEBUG_F("WARNING: tried to remove non-existent handler for:");
+    ULOG_DEBUG_F(" service: %s", service);
+    ULOG_DEBUG_F(" obj. path: %s", object_path);
+    ULOG_DEBUG_F(" interface: %s", interface);
     return NULL;
 }
 

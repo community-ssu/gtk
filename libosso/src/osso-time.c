@@ -61,7 +61,10 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso,
   ot->handler = cb;
   ot->data = data;
   ot->name = CHANGED_SIG_NAME;
-  _msg_handler_set_cb_f_free_data(osso, TIME_INTERFACE,
+  _msg_handler_set_cb_f_free_data(osso,
+                                  NULL,
+                                  TIME_PATH,
+                                  TIME_INTERFACE,
                                   _time_handler, ot, FALSE);
   dbus_connection_flush(osso->sys_conn);
   ULOG_DEBUG_F("The callback for filter should now be set.");
