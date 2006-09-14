@@ -1,5 +1,14 @@
 2006-09-14  Xan Lopez  <xan.lopez@nokia.com>
 
+	Taken from GNOME Bugzilla #355732. NB#40316.
+
+    2006-09-13  Richard Hult  <richard@imendio.com>
+
+	* gtk/gtkcombobox.c: (gtk_combo_box_finalize): Unref the treeview
+	used in appears-as-list mode, fixes leak.
+	
+2006-09-14  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtknotebook.c: (gtk_notebook_pages_allocate): Calculate proper
 	width for overflowing notebook tabs,  NB#22230.
 
