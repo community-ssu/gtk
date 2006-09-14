@@ -1,5 +1,13 @@
 2006-09-14  Richard Hult  <richard@imendio.com>
 
+	* obex-module/src/om-utils.c (om_utils_obex_error_to_vfs_result):
+	Add error code mappings for OBEX_RSP_REQ_ENTITY_TOO_LARGE and
+	OBEX_RSP_DATABASE_FULL. Fixes NB#38107. Also change some of the
+	hex codes into the proper macro now that openobex has all of them
+	defined.
+
+2006-09-14  Richard Hult  <richard@imendio.com>
+
 	Fix obex leaks, part of NB#32771:
 	
 	* obex-module/src/om-utils.c (om_utils_get_parent_path_from_uri):

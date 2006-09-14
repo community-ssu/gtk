@@ -279,9 +279,7 @@ om_utils_obex_error_to_vfs_result (gint error)
 		break;
 	}
 
-	/* FIXME: OpenObex (and gw-obex) doesn't have a mapping for all useful
-	 * error codes. Catch those like this for now:
-	 */
+	/* Handle the OBEX error values as well: */
 	switch (error) {
 	case OBEX_RSP_BAD_REQUEST: /* 0x40 */
 		/* We get this when trying to move a file on Nokia 6230 and
@@ -295,17 +293,24 @@ om_utils_obex_error_to_vfs_result (gint error)
 	case OBEX_RSP_NOT_FOUND: /* 0x44 */
 		return GNOME_VFS_ERROR_NOT_FOUND;
 
-	case 0x48: /* REQUEST TIME OUT */
+	case OBEX_RSP_REQUEST_TIME_OUT: /* 0x48 */
 		return GNOME_VFS_ERROR_IO;
 
-	case 0x46: /* NOT_ACCEPTABLE */
+	case OBEX_RSP_NOT_ACCEPTABLE: /* 0x46 */
 		return GNOME_VFS_ERROR_NOT_PERMITTED;
+		
+	case OBEX_RSP_REQ_ENTITY_TOO_LARGE: /* 0x4d */
+		return GNOME_VFS_ERROR_TOO_BIG;
 		
 	case OBEX_RSP_NOT_IMPLEMENTED:	/* 0x51 */
 		return GNOME_VFS_ERROR_NOT_SUPPORTED;
 
+	case OBEX_RSP_DATABASE_FULL: /* 0x60 */
+		return GNOME_VFS_ERROR_NO_SPACE;
+		
 	case OBEX_RSP_DATABASE_LOCKED: /* 0x61 */
 		return GNOME_VFS_ERROR_NOT_PERMITTED;
+
 		
 	default:
 		break;
