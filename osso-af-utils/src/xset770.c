@@ -29,28 +29,52 @@
 #include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/extensions/Xsp.h>
+#include <X11/extensions/XI.h>
+#include <X11/extensions/XInput.h>
 
 Display *dpy=NULL;
 
+static int
+get_feedback_id (XDevice *device)
+{
+  int i = 0;
+  
+  for (i = 0; i < device->num_classes; i++)
+  {
+    if (device->classes[i].input_class == KbdFeedbackClass)
+      return i;
+  }
+  return -1;
+}
 
 /*
  * set_keyrepeat
  *
  */
 static void
-set_keyrepeat (int key, int val)
+set_keyrepeat (int id, int key, int val)
 {
-  XKeyboardControl values;
-  values.key = key;
-  values.auto_repeat_mode = val;
+  XKbdFeedbackControl *values = (XKbdFeedbackControl *)calloc (sizeof (XKbdFeedbackControl), 1);
+  XDevice *device = XOpenDevice (dpy, id);
 
-  XChangeKeyboardControl(dpy,
-                         KBKey | KBAutoRepeatMode,
-			 &values);
+  if (!values || !device)
+    return;
+
+  values->id = get_feedback_id (device);
+  if (values->id < 0)
+    return;
+
+  values->key = key;
+  values->auto_repeat_mode = val;
+  values->class = KbdFeedbackClass;
+
+  XChangeFeedbackControl (dpy, device,
+                          DvKey | DvAutoRepeatMode,
+			  (XFeedbackControl *) values);
 }
 
 
-static void usage(void)
+void usage()
 {
   fprintf(stderr, "usage : -r <key> <value>\n");
   exit (1);
@@ -62,8 +86,9 @@ static void usage(void)
  */
 int main (int argc, char*argv[])
 {
-  int i;
+  int i, n_devices = 0;
   int key = -1, val = 0; /* for keyrepeat */
+  XDeviceInfo *devices = NULL;
 
   dpy = XOpenDisplay(NULL);
 
@@ -75,6 +100,8 @@ int main (int argc, char*argv[])
   {
     return 0;
   }
+
+  devices = XListInputDevices(dpy, &n_devices);
 
   if (argc < 2)
   {
@@ -112,7 +139,14 @@ int main (int argc, char*argv[])
 	usage();
       }
       else
-	set_keyrepeat (key, val);
+      {
+        for (i = 0; i < n_devices; i++)
+        {
+          if (devices[i].use == IsXExtensionKeyboard)
+            set_keyrepeat (devices[i].id, key, val);
+        }
+      }
+
       break;
 
     default :
@@ -120,9 +154,10 @@ int main (int argc, char*argv[])
     }
   }
 
-
-
+  if (devices)
+    XFreeDeviceList(devices);
   XCloseDisplay (dpy);
+
   return 0;
 }
 
