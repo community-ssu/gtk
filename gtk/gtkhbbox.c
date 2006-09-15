@@ -54,8 +54,8 @@ static void osso_gtk_hbutton_box_remove_child_signal_handlers (GtkHButtonBox *hb
 							       GtkWidget *removed_widget,
 							       gpointer data);
 static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
-					      GtkWidget *addremovewidget,
-					      gpointer data);
+						     GtkWidget *addremovewidget,
+						     gpointer data);
 
 static gint default_spacing = 30;
 static gint default_layout_style = GTK_BUTTONBOX_EDGE;
@@ -137,14 +137,14 @@ gtk_hbutton_box_new (void)
    * it will do the hildonizing
    */
   g_signal_connect_after (G_OBJECT (hbutton_box), "remove",
-		    G_CALLBACK (osso_gtk_hbutton_box_remove_child_signal_handlers),
-		    NULL);
-  g_signal_connect_after( G_OBJECT( hbutton_box ), "add",
-		  G_CALLBACK( osso_gtk_hbutton_box_find_button_detail ),
-		  NULL );
-  g_signal_connect_after( G_OBJECT( hbutton_box ), "remove",
-		  G_CALLBACK( osso_gtk_hbutton_box_find_button_detail ),
-		  NULL );
+			  G_CALLBACK (osso_gtk_hbutton_box_remove_child_signal_handlers),
+			  NULL);
+  g_signal_connect_after (G_OBJECT (hbutton_box), "add",
+			  G_CALLBACK (osso_gtk_hbutton_box_find_button_detail),
+			  NULL);
+  g_signal_connect_after (G_OBJECT (hbutton_box), "remove",
+			  G_CALLBACK (osso_gtk_hbutton_box_find_button_detail),
+			  NULL);
   return GTK_WIDGET (hbutton_box);
 }
 
@@ -220,9 +220,9 @@ gtk_hbutton_box_size_request (GtkWidget      *widget,
 
   /* should GTK_BUTTONBOX_HETEROGENOUS add into the GtkButtonBoxStyle 
      enum struct 
-  */ 
-   if( !box->homogeneous )
-     layout = GTK_BUTTONBOX_HETEROGENOUS; 
+  */
+  if (!box->homogeneous)
+    layout = GTK_BUTTONBOX_HETEROGENOUS; 
 
   if (nvis_children == 0)
   {
@@ -254,13 +254,14 @@ gtk_hbutton_box_size_request (GtkWidget      *widget,
 
 	  if (GTK_WIDGET_VISIBLE (child_req->widget))
 	    {
-	      gtk_widget_get_child_requisition( child_req->widget, 
-						&(treq) );   	      
+	      gtk_widget_get_child_requisition (child_req->widget, 
+						&treq);   	      
 	      requisition->width += treq.width;
 	 
-              gtk_widget_style_get(widget, 
-				   "child-internal-pad-x", 
-				   &(child_xpad), NULL);
+              gtk_widget_style_get (widget,
+				    "child-internal-pad-x", 
+				    &child_xpad, NULL);
+
 	      requisition->width  += (child_xpad*2);	      
 	    }
       	}
@@ -318,8 +319,8 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
   widget->allocation = *allocation;
   width = allocation->width - GTK_CONTAINER (box)->border_width*2;
 
-  if( !base_box->homogeneous )
-     layout = GTK_BUTTONBOX_HETEROGENOUS;
+  if (!base_box->homogeneous)
+    layout = GTK_BUTTONBOX_HETEROGENOUS;
 
   switch (layout)
   {
@@ -363,7 +364,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
       gint sumwidth = 0;
       GtkBoxChild *child_h;
       GList *children_h = GTK_BOX (box)->children;
-        /* heterogenous sized childs onto center */
+      /* heterogenous sized childs onto center */
       childspacing = spacing;
 
       while (children_h )
@@ -375,17 +376,17 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	    {
 	      gint child_xpad = 0;
 	      GtkRequisition treq;
-	      gtk_widget_get_child_requisition( child_h->widget, &(treq) );  
+	      gtk_widget_get_child_requisition (child_h->widget, &treq);  
 	      sumwidth += treq.width;
 
 	      gtk_widget_style_get(widget, 
 				   "child-internal-pad-x", 
-				   &(child_xpad), NULL); 
+				   &child_xpad, NULL); 
 	      sumwidth += (child_xpad*2);
 	    }
 	}
       x = allocation->x + 
-       ( (allocation->width - sumwidth - (spacing * (nvis_children - 1)))/2 );
+	((allocation->width - sumwidth - (spacing * (nvis_children - 1)))/2);
       /* secondary property will be ignored below */
       break; 
     }
@@ -410,7 +411,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	  child_allocation.height = child_height;
 	  child_allocation.y = y;
 	  
-	  if(layout != GTK_BUTTONBOX_HETEROGENOUS)
+	  if (layout != GTK_BUTTONBOX_HETEROGENOUS)
 	    {
 	      child_allocation.width = child_width; 
 	    }
@@ -420,7 +421,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	      GtkRequisition treq;
 	      gint child_xpad = 0;
 
-	      gtk_widget_get_child_requisition( child->widget, &(treq) );
+	      gtk_widget_get_child_requisition (child->widget, &treq);
 	      child_hwidth += treq.width;      
 
 	      gtk_widget_style_get(widget, 
@@ -430,7 +431,6 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 	         
 	      child_allocation.width =  child_hwidth;
 	      childspace = child_hwidth + childspacing;
-
 	    }
 	  
 	  /* calculate the horizontal location */
@@ -475,8 +475,8 @@ static void osso_gtk_hbutton_box_remove_child_signal_handlers (GtkHButtonBox *hb
  * gtk_horizontal_button_box.
  */  
 static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
-					      GtkWidget *addremovewidget,
-					      gpointer data)
+						     GtkWidget *addremovewidget,
+						     gpointer data)
 {
   GList *child;
   gint visible_buttons = 0;
@@ -484,30 +484,30 @@ static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
   GtkWidget *leftmost_button = NULL;
   GtkWidget *rightmost_button = NULL;
 
-  for( child = GTK_BOX (hbbox)->children ; child ; child = child->next ) 
+  for (child = GTK_BOX (hbbox)->children ; child ; child = child->next) 
     {
       GtkBoxChild *box_child = child->data;
       GtkWidget *child_widget = box_child->widget;
-      gulong signal_handler = g_signal_handler_find ( G_OBJECT( child_widget ),
-						      G_SIGNAL_MATCH_FUNC,
-						      0, 0, NULL,
-						      G_CALLBACK (osso_gtk_hbutton_child_showhide_handler),
-						      NULL);
+      gulong signal_handler = g_signal_handler_find (G_OBJECT (child_widget),
+						     G_SIGNAL_MATCH_FUNC,
+						     0, 0, NULL,
+						     G_CALLBACK (osso_gtk_hbutton_child_showhide_handler),
+						     NULL);
 
       if (signal_handler == 0)
 	{
-	  g_signal_connect_object ( G_OBJECT( child_widget ), 
-				    "hide", 
-				    G_CALLBACK ( osso_gtk_hbutton_child_showhide_handler ), 
-				    hbbox, G_CONNECT_SWAPPED);
-	  g_signal_connect_object ( G_OBJECT( child_widget ), 
-				    "show", 
-				    G_CALLBACK ( osso_gtk_hbutton_child_showhide_handler ), 
-				    hbbox, G_CONNECT_SWAPPED);
+	  g_signal_connect_object (G_OBJECT (child_widget), 
+				   "hide", 
+				   G_CALLBACK (osso_gtk_hbutton_child_showhide_handler), 
+				   hbbox, G_CONNECT_SWAPPED);
+	  g_signal_connect_object (G_OBJECT (child_widget), 
+				   "show", 
+				   G_CALLBACK (osso_gtk_hbutton_child_showhide_handler), 
+				   hbbox, G_CONNECT_SWAPPED);
 	}
 
       if ((GTK_WIDGET_VISIBLE (child_widget)) &&
-         (GTK_IS_BUTTON (child_widget)))
+	  (GTK_IS_BUTTON (child_widget)))
 	visible_buttons++;
       else
 	continue;
@@ -531,7 +531,7 @@ static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
   if (visible_buttons == 0)
     return;
 
-  for( child = GTK_BOX (hbbox)->children ; child ; child = child->next ) 
+  for (child = GTK_BOX (hbbox)->children ; child ; child = child->next) 
     {
       GtkBoxChild *box_child = child->data;
       GtkWidget *child_widget = box_child->widget;
@@ -539,7 +539,7 @@ static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
       gboolean automatic_detail;
 
       if (!((GTK_WIDGET_VISIBLE (child_widget)) &&
-	  (GTK_IS_BUTTON (child_widget))))
+	    (GTK_IS_BUTTON (child_widget))))
 	continue;
 
       if (child_widget == leftmost_button)
@@ -549,6 +549,7 @@ static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
 	attachflags |= OSSO_GTK_BUTTON_ATTACH_EAST;
 
       g_object_get (G_OBJECT (child_widget), "automatic_detail", &automatic_detail, NULL);
+      printf ("******** automatic detail is %d\n", automatic_detail);
       if (automatic_detail == TRUE)
         g_object_set (G_OBJECT (child_widget), "detail", osso_gtk_button_attach_details[attachflags], NULL);
     }

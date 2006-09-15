@@ -1,3 +1,11 @@
+2006-09-15 Xan Lopez <xan.lopez@nokia.com> 
+
+	* gtk/gtkhbbox.c: (gtk_hbutton_box_new),
+	(gtk_hbutton_box_size_request), (gtk_hbutton_box_size_allocate),
+	(osso_gtk_hbutton_box_find_button_detail): Fix coding style.
+	* gtk/gtktreeview.c: (gtk_tree_view_bin_expose): Remove debug
+	leftovers.
+
 2006-09-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkselection.c (_gtk_selection_request): Free mult_atoms also
