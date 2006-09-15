@@ -1,5 +1,13 @@
 2006-09-15 Xan Lopez <xan.lopez@nokia.com> 
 
+	* gtk/gtklabel.c: (get_layout_location): Update ellipsized labels
+	width calculation.
+
+	From GNOME CVS (http://cvs.gnome.org/viewcvs/gtk%2B/gtk/gtklabel.c?r1=1.194&r2=1.195).
+	Fixes: NB#40560.
+
+2006-09-15 Xan Lopez <xan.lopez@nokia.com> 
+
 	* gtk/gtkhbbox.c: (gtk_hbutton_box_new),
 	(gtk_hbutton_box_size_request), (gtk_hbutton_box_size_allocate),
 	(osso_gtk_hbutton_box_find_button_detail): Fix coding style.
