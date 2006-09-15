@@ -2023,9 +2023,9 @@ gtk_label_ensure_layout_full (GtkLabel *label, gboolean have_allocation)
               /* If we already know our allocation size, make sure we don't
                * try to set the width to more than we have
                */
-              if (width > widget->allocation.width * PANGO_SCALE &&
+	      if (width > widget->allocation.width * PANGO_SCALE &&
                   have_allocation)
-                width = widget->allocation.width * PANGO_SCALE;
+		width = widget->allocation.width * PANGO_SCALE;
 
 	      pango_layout_set_width (label->layout, width);
 	    }
@@ -2324,11 +2324,13 @@ get_layout_location (GtkLabel  *label,
 
   if (label->ellipsize)
     {
-      PangoRectangle ink_rect;
+      int width;
 
-      pango_layout_get_extents (label->layout, &ink_rect, NULL);
-
-      req_width = PANGO_PIXELS (ink_rect.width);
+      width = pango_layout_get_width (label->layout);
+      if (width == -1)
+	pango_layout_get_pixel_size (label->layout, &req_width, NULL);
+      else
+	req_width = PANGO_PIXELS (width);
     }
 
   x = floor (widget->allocation.x + (gint)misc->xpad +
