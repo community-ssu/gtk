@@ -396,6 +396,9 @@ hn_wm_watchable_app_set_hibernate (HNWMWatchableApp *app,
 gboolean
 hn_wm_watchable_app_is_able_to_hibernate (HNWMWatchableApp *app)
 {
+  if (hn_wm_watchable_app_is_dummy (app))
+    return FALSE;
+
   return HNWM_APP_IS_SET_FLAG(app, HNWM_APP_CAN_HIBERNATE);
 }
 

@@ -1,5 +1,12 @@
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Task Navigator bg-kills applications it doesn't know how
+	to resume" Fixes: NB#40028
+	* hildon-navigator/hn-wm-watchable-app.c: Applications with no
+	  desktop file shall not hibernate
+
+2006-09-15  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Glib CRITICAL error from the TN application switcher menu"
 	Fixes: NB#39653
 	* hildon-navigator/hn-app-switcher.c: added safegard to not close
