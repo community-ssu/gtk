@@ -881,7 +881,8 @@ main_menu_button_toggled_cb (HNAppSwitcher *app_switcher,
 {
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle)))
     {
-      gtk_menu_popdown (GTK_MENU (app_switcher->priv->main_menu));
+      if (app_switcher->priv->main_menu)
+        gtk_menu_popdown (GTK_MENU (app_switcher->priv->main_menu));
       return;
     }
 

@@ -1,5 +1,12 @@
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Glib CRITICAL error from the TN application switcher menu"
+	Fixes: NB#39653
+	* hildon-navigator/hn-app-switcher.c: added safegard to not close
+	  a NULL menu
+
+2006-09-15  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.90
 
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
