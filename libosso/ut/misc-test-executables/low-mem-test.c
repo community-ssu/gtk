@@ -9,6 +9,7 @@ void cb(osso_hw_state_t *state, gpointer data)
         if (state->memory_low_ind) {
                 printf("low memory signal received\n");
         }
+        g_main_loop_quit(loop);
 }
 
 int main(int argc, char* argv[])
@@ -22,5 +23,9 @@ int main(int argc, char* argv[])
         osso_hw_set_event_cb(context, NULL, cb, NULL);
 
         g_main_loop_run(loop);
+
+        osso_hw_unset_event_cb(context, NULL);
+        osso_deinitialize(context);
+
         return 0;
 }

@@ -7,6 +7,7 @@ static GMainLoop *loop;
 void cb(gpointer data)
 {
         printf("time changed signal received\n");
+        g_main_loop_quit(loop);
 }
 
 gboolean timeout_func(gpointer data)
@@ -29,5 +30,8 @@ int main(int argc, char* argv[])
         g_timeout_add(2000, timeout_func, context);
 
         g_main_loop_run(loop);
+
+        osso_deinitialize(context);
+
         return 0;
 }
