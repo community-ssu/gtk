@@ -11,6 +11,7 @@ libosso (1.18-1) unstable; urgency=low
     handlers should now be more predictable.
   * Removed redundant dbus_connection_register_object_path() calls made
     in osso-init.c and osso-rpc.c (there is a filter so those are redundant).
+  * Fixed a brain-damage in appname_to_valid_path_component().
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 15 Sep 2006 16:12:50 +0300
 

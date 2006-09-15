@@ -31,14 +31,19 @@
  * Currently needed for allowing '.' in application name. */
 static gchar* appname_to_valid_path_component(const gchar *application)
 {
-    gchar* copy = NULL, *p = NULL;
+    gchar *copy, *p;
+
     assert(application != NULL);
+
     copy = g_strdup(application);
     if (copy == NULL) {
-       return NULL;
+        return NULL;
     }
-    for (p = g_strrstr(copy, "."); p != NULL; p = g_strrstr(p + 1, ".")) {
-        *p = '/';
+
+    for (p = copy; *p != '\0'; ++p) {
+         if (*p == '.') {
+             *p = '/';
+         }
     }
     return copy;
 }
