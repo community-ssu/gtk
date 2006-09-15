@@ -341,7 +341,6 @@ hildon_home_area_save_configuration (HildonHomeArea *area,
     {
       gint written;
       written = buffer_size * fwrite (p, buffer_size, 1, file);
-      fprintf (stderr, "Wrote %i\n", buffer_size);
       p += written;
       buffer_size -= written;
     }
@@ -364,7 +363,6 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
   g_return_if_fail (area);
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
 
-  fprintf (stderr, "Reloading configuration\n");
   applets = gtk_container_get_children (GTK_CONTAINER (area));
 
   keyfile = g_key_file_new ();
@@ -411,7 +409,6 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
       if (list_element)
         {
           applet = GTK_WIDGET (list_element->data);
-          fprintf (stderr, "Moving applet %s to (%i,%i)\n", groups[n_groups-1], x,y);
           gtk_fixed_move (GTK_FIXED (area),
                           applet,
                           x, 
@@ -432,7 +429,6 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
 
               gtk_widget_show (applet);
               
-              fprintf (stderr, "Placing applet %s to (%i,%i)\n", groups[n_groups-1], x,y);
               g_signal_emit_by_name (G_OBJECT (area), "applet-added", applet);
               if (priv->layout_mode)
                 {
@@ -546,8 +542,6 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
                           &active,
                           -1);
           
-      fprintf (stderr, "Checking for %s, is active %i\n", desktop_file, active);
-
       list_element = g_list_find_custom (applets,
                                          desktop_file,
                                          (GCompareFunc)
@@ -558,7 +552,6 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
 
       if (active && !applet)
         {
-          fprintf (stderr, "Creating new applet\n");
           applet = hildon_home_applet_new_with_plugin (desktop_file);
 
           if (applet)
@@ -575,7 +568,6 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
                     - LAYOUT_AREA_BOTTOM_BORDER_PADDING)
                 y = LAYOUT_AREA_TOP_BORDER_PADDING;
 
-              fprintf (stderr, "Putting applet to (%i,%i)\n", x,y);
               gtk_fixed_put (GTK_FIXED (area), applet, x, y);
               g_signal_emit_by_name (G_OBJECT (area), "applet-added", applet);
               x += APPLET_ADD_X_STEP;

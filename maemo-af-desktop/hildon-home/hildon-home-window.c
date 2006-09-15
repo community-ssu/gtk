@@ -453,7 +453,6 @@ hildon_home_window_background (HildonHomeWindow   *window,
   HildonHomeWindowPrivate *priv = window->priv;
 
   g_debug ("HildonHome is background: %i", is_background);
-  fprintf (stderr, "HildonHome is background: %i\n", is_background);
 
   /* If we were in layout mode and went to background, we need
    * to cancel it */
@@ -810,9 +809,7 @@ hildon_home_window_init (HildonHomeWindow *window)
                                     "default-text-domain", "maemo-af-desktop",
                                     NULL);
 
-  fprintf (stderr, "Calling set_directory\n");
   hildon_plugin_list_set_directory (priv->plugin_list, HH_DESKTOP_FILES_DIR);
-  fprintf (stderr, "Done set_directory\n");
 }
 
 GtkWidget *

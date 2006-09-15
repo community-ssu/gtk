@@ -799,8 +799,6 @@ hildon_home_applet_button_press_event (GtkWidget *w,
 
   priv = HILDON_HOME_APPLET_GET_PRIVATE (HILDON_HOME_APPLET (w));
 
-  fprintf (stderr, "Got key press\n");
-  
   if (!priv->layout_mode)
     {
       if (GTK_WIDGET_CLASS (parent_class)->button_press_event)
@@ -862,8 +860,6 @@ hildon_home_applet_button_release_event (GtkWidget *applet,
   HildonHomeAppletPriv      *priv;
 
   priv = HILDON_HOME_APPLET_GET_PRIVATE (applet);
-  fprintf (stderr, "Got key release\n");
-
   if (!priv->layout_mode)
     {
       if  (GTK_WIDGET_CLASS (parent_class)->button_release_event)

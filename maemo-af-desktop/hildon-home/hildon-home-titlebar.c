@@ -944,8 +944,6 @@ hildon_home_titlebar_toggle_menu (HildonHomeTitlebar *titlebar)
   GtkMenu * menu = NULL;
   HildonHomeTitlebarPrivate *priv = titlebar->priv;
 
-  fprintf (stderr, "About to toggle menu\n");
-
   switch (priv->mode)
     {
       case HILDON_HOME_TITLEBAR_NORMAL:

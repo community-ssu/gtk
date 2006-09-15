@@ -185,7 +185,6 @@ static void home_applet_handler_finalize(GObject * obj_self)
     g_assert(HOME_APPLET_HANDLER(obj_self));
     
     self = HOME_APPLET_HANDLER(obj_self);
-    fprintf (stderr, "Called finalize on %s handler\n", self->desktoppath);
     
     g_assert(self);
     g_free (self->libraryfile);
@@ -546,8 +545,6 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler)
     
     if (priv->applet_data)
     {
-      fprintf (stderr, "Called deinitialize on %s handler\n",
-               handler->desktoppath);
         priv->deinitialize(priv->applet_data);
         /* The applet should have freed the data so we just clear the pointer */
         priv->applet_data = NULL;
