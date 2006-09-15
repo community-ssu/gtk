@@ -32,7 +32,6 @@
 #include "home-applet-handler.h"
 #include "hildon-home-plugin-interface.h"
 #include "hildon-home-interface.h"
-#include "home-applet-manager.h"
 #include "hildon-home-applet.h"
 
 /* Systems includes */
