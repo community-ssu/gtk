@@ -59,7 +59,6 @@
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-color-button.h>
 
-#include "home-applet-manager.h"
 #include "background-manager.h"
 #include "home-applet-handler.h"
 
