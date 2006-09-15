@@ -176,7 +176,7 @@ HNKeysActionConfLookup[] =
   { HN_KEYS_GCONF_PATH "/home",            HN_KEY_ACTION_HOME,
     hn_keys_action_home, NULL },
   { HN_KEYS_GCONF_PATH "/menu",            HN_KEY_ACTION_MENU,
-    hn_keys_action_send_key, (gpointer)XK_F10 },
+    hn_keys_action_send_key, (gpointer)XK_F4 },
   { HN_KEYS_GCONF_PATH "/fullscreen",      HN_KEY_ACTION_FULLSCREEN,
     hn_keys_action_send_key, (gpointer)XK_F6 },
   { HN_KEYS_GCONF_PATH "/zoom_in",         HN_KEY_ACTION_ZOOM_IN,

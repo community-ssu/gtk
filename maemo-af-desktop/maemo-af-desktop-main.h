@@ -37,9 +37,6 @@
 #define OSSO_USER_DIR               ".osso"
 #define MAEMO_AF_DESKTOP_GTKRC      "current-gtk-theme.maemo_af_desktop"
 
-void pipe_signals(int signal);
-gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d);
-
 /* The combined main function of Task Navigator, Home and Status bar */
 
 int maemo_af_desktop_main(int argc, char* argv[]);

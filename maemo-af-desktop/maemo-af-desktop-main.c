@@ -37,30 +37,18 @@
 #define USE_AF_DESKTOP_MAIN__
  
 #ifdef USE_AF_DESKTOP_MAIN__
+
+#include "maemo-af-desktop-main.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
  
-/* GTK includes */ 
-#include <gtk/gtkmain.h>
-#include <gtk/gtkvbox.h>
-#include <gtk/gtkwindow.h>
-#include <gtk/gtktogglebutton.h>
-
-/* status bar GTK includes */
-#include <gtk/gtkwindow.h>
-#include <gtk/gtkbutton.h>
-#include <gtk/gtkfixed.h>
 /* home gtk includes */
-#include <gdk/gdkx.h>
-#include <gdk/gdkkeysyms.h>
-#include <gtk/gtk.h>
+#include <gtk/gtkmain.h>
 #include <gtk/gtkwidget.h>
-
-
-#include <unistd.h>
-
-/* GDK includes */
 #include <gdk/gdk.h>
-#include <gdk/gdkx.h>
-#include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 /* System includes */
 #include <string.h>
@@ -68,78 +56,37 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdlib.h>
-
-
-/* GDK includes */
-#include <gdk/gdkwindow.h>
-#include <gdk/gdkx.h>
-
-/* GLib include */
-#include <glib.h>
-
-/* X include */
-#include <X11/X.h>
-#include <X11/Xatom.h>
-#include <X11/Xlib.h>
-
-
-/* dlfcn include */
-#include <dlfcn.h>
-
-/* stdio include */
 #include <stdio.h>
-
-/* libintl include */
+#include <fcntl.h>  /* for fcntl, O_NONBLOCK */
+#include <signal.h> /* for signal */
 #include <libintl.h>
-
-/* Locale include */
 #include <locale.h>
+#include <libosso.h>
+/*#include <osso-log.h>*/
 
 /* Hildon includes */
 #include "hildon-navigator/osso-manager.h"
 #include "hildon-navigator/hildon-navigator.h"
+#include "hildon-navigator/hildon-navigator-window.h"
 #include "hildon-navigator/hn-app-switcher.h"
 #include "hildon-navigator/others-menu.h"
-
-
-/* Hildon status bar includes */
 #include "hildon-status-bar/hildon-status-bar-lib.h"
 #include "hildon-status-bar/hildon-status-bar-item.h"
+#include "hildon-status-bar/hildon-status-bar-interface.h"
+#include "hildon-home/hildon-home-interface.h"
+
+/* Hildon status bar includes */
+#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-note.h>
 
-
-#include <libosso.h>
-/*#include <osso-log.h>*/
-
-
-#ifdef HAVE_CONFIG_H
-#include <config.h>
-#endif
-
-#include <locale.h>
-#include <libintl.h>
-#include <math.h>
-#include <stdio.h>
 #include <libmb/mbutil.h>
-
-#include <libgnomevfs/gnome-vfs.h>
-#include <fcntl.h>		/* for fcntl, O_NONBLOCK */
-#include <signal.h>		/* for signal */
-
 #include "libmb/mbdotdesktop.h"
-#include <hildon-widgets/hildon-note.h>
-#include <hildon-widgets/hildon-file-chooser-dialog.h>
-#include <hildon-widgets/hildon-defines.h>
-
 /* log include */
 #include <log-functions.h>
 
 /* Header file */
-#include "maemo-af-desktop-main.h"
-#include "hildon-status-bar/hildon-status-bar-interface.h"
-#include "hildon-home/hildon-home-interface.h"
-#include "hildon-navigator/hildon-navigator-window.h"
 #include "kstrace.h"
 /* Moved from main to globals to reduce the amount
    of used stack -- Karoliina Salminen */
@@ -157,7 +104,8 @@ static gint keysnooper_id;
 /*
  * Signaling pipe handle
  */
-void pipe_signals(int signal)
+static void 
+pipe_signals(int signal)
 {
     if(write(signal_pipe[1], &signal, sizeof(int)) != sizeof(int))
     {
@@ -172,7 +120,8 @@ void pipe_signals(int signal)
  *   G_IO_IN or G_IO_PRI (I don't know what could lead to G_IO_PRI)
  * the pointer d is always NULL
  */
-gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
+static gboolean 
+deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
 {
     GError *error = NULL;		/* for error handling */
 
@@ -244,11 +193,12 @@ gboolean deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
 }
 
 
-int maemo_af_desktop_main(int argc, char* argv[])
+int 
+maemo_af_desktop_main(int argc, char* argv[])
 {
     GIOChannel *g_signal_in; 
 
-    GError *error = NULL;	/* handle errors */
+    GError *error = NULL;   /* handle errors */
     long fd_flags; 	    /* used to change the pipe into non-blocking mode */
     gchar *gtkrc = NULL;
 
@@ -283,7 +233,7 @@ int maemo_af_desktop_main(int argc, char* argv[])
 
     gnome_vfs_init();
 
-        /* initialize osso */
+    /* initialize osso */
     osso = osso_initialize( HILDON_STATUS_BAR_NAME, 
                             HILDON_STATUS_BAR_VERSION, FALSE, NULL );
     if( !osso )
@@ -294,9 +244,7 @@ int maemo_af_desktop_main(int argc, char* argv[])
     
 
     tasknav = hildon_navigator_window_new ();
-
     gtk_widget_show_all (GTK_WIDGET (tasknav));
-    /*task_navigator_main(&tasknav);*/
 
     keysnooper_id = 0;
     keysnooper_id=hildon_home_main();
@@ -357,12 +305,10 @@ int maemo_af_desktop_main(int argc, char* argv[])
     return 0;
 }
     
-int main( int argc, char* argv[] )
+int 
+main( int argc, char* argv[] )
 {
-    
-    return maemo_af_desktop_main(argc,argv);   
-        
+   return maemo_af_desktop_main(argc,argv);        
 }
-
 
 #endif

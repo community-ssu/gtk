@@ -1,3 +1,10 @@
+2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-keys.c: Changed HW fake Hardkey Menu from
+	F10 to F4. Fixes: #39988
+	* maemo-af-desktop-main.[ch]: header cleanup.
+	* hildon-home/hildon-home-interface.h: header missing.
+
 2006-09-14  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "Application switcher truncates browser page names"
