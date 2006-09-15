@@ -44,13 +44,4 @@
 */
 static gboolean _validate_time(time_t time_candidate);
 
-static DBusHandlerResult _time_handler(osso_context_t *osso,
-                                       DBusMessage *msg, gpointer data);
-
-struct _osso_time {
-  gchar *name;
-  osso_time_cb_f *handler;
-  gpointer data;
-};
-
 #endif

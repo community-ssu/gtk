@@ -67,12 +67,6 @@
 #define MAX_APP_NAME_LEN 50
 #define MAX_VERSION_LEN 30
 
-#define RM_CB_IS_MATCH_FUNCTION ((gpointer)-1)
-
-typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,
-				            DBusMessage *msg,
-					    gpointer data);
-
 typedef struct {
     osso_hw_cb_f *cb;
     gpointer data;
@@ -87,11 +81,6 @@ typedef struct {
   _osso_hw_cb_data_t sig_device_mode_ind;
 }_osso_hw_cb_t;
 
-typedef struct {
-    osso_mime_cb_f *func;
-    gpointer data;
-}_osso_mime_t;
-
 /**
  * This structure is used to store autosave information
  */
@@ -102,9 +91,20 @@ typedef struct {
     guint id; /**< The timeout event id, returned by GLib */
 }_osso_autosave_t;
 
+/* data given by the library user */
+typedef struct {
+    gpointer user_cb;
+    gpointer user_data;
+    gpointer data;
+} _osso_callback_data_t;
+
+typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,
+				            DBusMessage *msg,
+					    _osso_callback_data_t *data);
+
 typedef struct {
     _osso_handler_f *handler;
-    gpointer data;
+    _osso_callback_data_t *data;
     gboolean method;
     gboolean can_free_data;
 } _osso_handler_t;
@@ -158,39 +158,34 @@ struct osso_af_context_t {
 #  define dprint(f, a...)
 # endif /* LIBOSSO_DEBUG */
 
-/**
- * This is the first-level message handler. it checks to see if the message
- * we receive is of any interest to us, if it is the corresponding callback
- * function is called, or if the message is a return for something we are
- * interested in.
- * @param conn The dbus connection that should be used to send replies.
- * @param msg The dbus message.
- * @param data An osso_context_t structure.
- */
-DBusHandlerResult _msg_handler(DBusConnection *conn, DBusMessage *msg, 
-			       void *data);
-void _msg_handler_set_cb_f(osso_context_t *osso,
-                           const gchar *service,
-                           const gchar *object_path,
-                           const gchar *interface,
-			   _osso_handler_f *cb,
-                           gpointer user_data, 
-			   gboolean method);
-void _msg_handler_set_cb_f_free_data(osso_context_t *osso,
-                                     const gchar *service,
-                                     const gchar *object_path,
-                                     const gchar *interface,
-				     _osso_handler_f *cb,
-                                     gpointer user_data, 
-				     gboolean method);
-gpointer _msg_handler_rm_cb_f(osso_context_t *osso,
-                              const gchar *service,
-                              const gchar *object_path,
-                              const gchar *interface,
-			      _osso_handler_f *cb,
-                              gboolean method,
-                              gpointer user_data,
-                              gpointer data_for_match_cb);
+
+DBusHandlerResult __attribute__ ((visibility("hidden")))
+_msg_handler(DBusConnection *conn, DBusMessage *msg, void *data);
+
+void __attribute__ ((visibility("hidden")))
+_msg_handler_set_cb_f(osso_context_t *osso,
+                      const gchar *service,
+                      const gchar *object_path,
+                      const gchar *interface,
+                      _osso_handler_f *cb,
+                      _osso_callback_data_t *data, 
+                      gboolean method);
+void __attribute__ ((visibility("hidden")))
+_msg_handler_set_cb_f_free_data(osso_context_t *osso,
+                                const gchar *service,
+                                const gchar *object_path,
+                                const gchar *interface,
+                                _osso_handler_f *cb,
+                                _osso_callback_data_t *data, 
+                                gboolean method);
+gpointer __attribute__ ((visibility("hidden")))
+_msg_handler_rm_cb_f(osso_context_t *osso,
+                     const gchar *service,
+                     const gchar *object_path,
+                     const gchar *interface,
+                     const _osso_handler_f *cb,
+                     const _osso_callback_data_t *data,
+                     gboolean method);
 void _msg_handler_set_ret(osso_context_t *osso, gint serial,
 			  osso_rpc_t *retval);
 void _msg_handler_rm_ret(osso_context_t *osso, gint serial);

@@ -48,9 +48,5 @@
                             (!osso->hw_cbs.sig_device_mode_ind.set) )
 
 static void read_device_state_from_file(osso_context_t *osso);
-static DBusHandlerResult signal_handler(osso_context_t *osso,
-                                        DBusMessage *msg, gpointer data);
-static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
-                                        DBusMessage *msg, gpointer data);
 
 #endif /* OSSO_HW_H_ */

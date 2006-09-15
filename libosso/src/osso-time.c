@@ -26,6 +26,10 @@
 #define MATCH_RULE "type='signal',interface='com.nokia.time',"\
                    "member='changed'"
 
+static DBusHandlerResult _time_handler(osso_context_t *osso,
+                                       DBusMessage *msg,
+                                       _osso_callback_data_t *ot);
+
 static gboolean _validate_time(time_t time_candidate)
 {
   if (time_candidate < 0) {
@@ -41,33 +45,41 @@ osso_return_t osso_time_set_notification_cb(osso_context_t *osso,
                                             osso_time_cb_f *cb,
                                             gpointer data) 
 {
-  struct _osso_time *ot;
-  if ( (osso == NULL) || (cb == NULL) ) {
-    return OSSO_INVALID;
+  _osso_callback_data_t *ot;
+  DBusError error;
+
+  if (osso == NULL || cb == NULL) {
+      ULOG_ERR_F("invalid arguments");
+      return OSSO_INVALID;
   }
   if (osso->sys_conn == NULL) {
-    ULOG_ERR_F("no D-Bus system bus connection");
-    return OSSO_INVALID;
+      ULOG_ERR_F("no D-Bus system bus connection");
+      return OSSO_INVALID;
   }
 
-  ot = (struct _osso_time *)calloc(1, sizeof(struct _osso_time));
-  if(ot == NULL) {
-    ULOG_ERR_F("calloc failed");
-    return OSSO_ERROR;
+  ot = calloc(1, sizeof(_osso_callback_data_t));
+  if (ot == NULL) {
+      ULOG_ERR_F("calloc failed");
+      return OSSO_ERROR;
   }
 
-  dbus_bus_add_match (osso->sys_conn, MATCH_RULE, NULL);
+  dbus_error_init(&error);
+  dbus_bus_add_match(osso->sys_conn, MATCH_RULE, &error);
+  if (dbus_error_is_set(&error)) {
+      ULOG_ERR_F("dbus_bus_add_match() failed: %s", error.message);
+      dbus_error_free(&error);
+      return OSSO_ERROR;
+  }
   
-  ot->handler = cb;
-  ot->data = data;
-  ot->name = CHANGED_SIG_NAME;
+  ot->user_cb = cb;
+  ot->user_data = data;
+  ot->data = CHANGED_SIG_NAME;
+
   _msg_handler_set_cb_f_free_data(osso,
                                   NULL,
                                   TIME_PATH,
                                   TIME_INTERFACE,
                                   _time_handler, ot, FALSE);
-  dbus_connection_flush(osso->sys_conn);
-  ULOG_DEBUG_F("The callback for filter should now be set.");
   return OSSO_OK;
 }
 
@@ -80,6 +92,7 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
 
   if (_validate_time(new_time) == FALSE || osso == NULL
       || osso->sys_conn == NULL) {
+      ULOG_ERR_F("invalid arguments");
       return OSSO_INVALID;
   }
 
@@ -105,21 +118,21 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
       return OSSO_ERROR;
   }
   dbus_message_unref(m);
-  dbus_connection_flush(osso->sys_conn);
 
   return OSSO_OK;
 }
 
 /************************************************************************/
 static DBusHandlerResult _time_handler(osso_context_t *osso,
-                                       DBusMessage *msg, gpointer data)
+                                       DBusMessage *msg,
+                                       _osso_callback_data_t *ot)
 {
-    struct _osso_time *ot;
+    if (dbus_message_is_signal(msg, TIME_INTERFACE, (char*)ot->data)) {
+        osso_time_cb_f *handler = ot->user_cb;
 
-    ot = (struct _osso_time *)data;
-    if (dbus_message_is_signal(msg, TIME_INTERFACE, ot->name)) {
-      ot->handler(ot->data);
-      return DBUS_HANDLER_RESULT_HANDLED;
+        (*handler)(ot->user_data);
+
+        return DBUS_HANDLER_RESULT_HANDLED;
     }
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }

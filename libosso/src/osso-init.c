@@ -323,7 +323,10 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 {
     DBusConnection *conn;
     DBusError err;
-    DBusObjectPathVTable vtable;
+    static const DBusObjectPathVTable vtable = {
+        .message_function = _msg_handler,
+        .unregister_function = NULL
+    };
     gint i;
     
     dbus_error_init(&err);
@@ -350,9 +353,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     
     dprint("osso->object_path='%s'", osso->object_path);
 
-    vtable.message_function = _msg_handler;
-    vtable.unregister_function = NULL;
-    
     if(!dbus_connection_register_object_path(conn, osso->object_path,
 					     &vtable, osso)) {
 	ULOG_ERR_F("Unable to register object '%s'\n", osso->object_path);
@@ -553,7 +553,7 @@ static gboolean set_handler_helper(osso_context_t *osso,
                                    const char *object_path,
                                    const char *interface,
                                    _osso_handler_f *cb,
-                                   gpointer data, 
+                                   _osso_callback_data_t *data, 
                                    gboolean method,
                                    gboolean can_free_data)
 {
@@ -624,7 +624,7 @@ _msg_handler_set_cb_f(osso_context_t *osso,
                       const char *object_path,
                       const char *interface,
                       _osso_handler_f *cb,
-                      gpointer data, 
+                      _osso_callback_data_t *data, 
                       gboolean method)
 {   
     if (osso == NULL || object_path == NULL
@@ -643,7 +643,7 @@ _msg_handler_set_cb_f_free_data(osso_context_t *osso,
                                 const gchar *object_path,
                                 const gchar *interface,
                                 _osso_handler_f *cb,
-                                gpointer data, 
+                                _osso_callback_data_t *data, 
                                 gboolean method)
 {   
     if (osso == NULL || object_path == NULL
@@ -656,16 +656,32 @@ _msg_handler_set_cb_f_free_data(osso_context_t *osso,
                        cb, data, method, TRUE);
 }
 
+static inline gboolean data_matches(const _osso_handler_t *handler,
+                                    const _osso_callback_data_t *data)
+{
+    if (data == NULL) {
+        return TRUE;
+    } else {
+        const _osso_callback_data_t *cb_data;
+        cb_data = handler->data;
+
+        if (cb_data->user_cb == data->user_cb
+            && cb_data->user_data == data->user_data) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 /************************************************************************/
 gpointer __attribute__ ((visibility("hidden")))
 _msg_handler_rm_cb_f(osso_context_t *osso,
                      const gchar *service,
                      const gchar *object_path,
                      const gchar *interface,
-                     _osso_handler_f *cb,
-                     gboolean method,
-                     gpointer user_data,
-                     gpointer data_for_mf)
+                     const _osso_handler_f *cb,
+                     const _osso_callback_data_t *data,
+                     gboolean method)
 {   
     char uniq_key[MAX_HASH_KEY_LEN + 1];
     const _osso_hash_value_t *elem;
@@ -673,7 +689,7 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
     gpointer ret = NULL;
 
     if (osso == NULL || object_path == NULL || interface == NULL
-        || cb == NULL || osso->uniq_hash == NULL || osso->if_hash == NULL) {
+        || cb == NULL) {
         ULOG_DEBUG_F("invalid parameters");
 	return NULL;
     }
@@ -690,36 +706,11 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
 
             handler = list->data;
 
-            if (handler->method == method) {
-                if (user_data == RM_CB_IS_MATCH_FUNCTION) {
-                    _osso_rm_cb_match_t *match;
-                    DBusHandlerResult ret;
-
-                    /* FIXME: this is really ugly -- caused by plurality of
-                     * struct types used as the user data */
-                    ULOG_DEBUG_F("similarity is determined by callback"); 
-
-                    match = calloc(1, sizeof(_osso_rm_cb_match_t));
-                    if (match == NULL) {
-                        ULOG_ERR_F("calloc() failed");
-                        return NULL;
-                    }
-                    match->handler = handler;
-                    match->data = data_for_mf;
-
-                    ret = (*cb)(osso, NULL, match);
-                    free(match);
-                    if (ret == DBUS_HANDLER_RESULT_HANDLED) {
-                        matched_handler = handler;
-                    }
-                } else if (handler->handler == cb
-                           && handler->data == user_data) {
-                    matched_handler = handler;
-                }
-
-                if (matched_handler != NULL) {
+            if (handler->method == method && handler->handler == cb) {
+                if (data_matches(handler, data)) {
                     ULOG_DEBUG_F("found from uniq_hash");
-                    elem->handlers = g_list_remove_link(elem->handlers, list);
+                    elem->handlers = g_list_remove_link(elem->handlers,
+                                                        list);
                     ret = handler->data;
 
                     free_handler(handler, NULL);
@@ -730,10 +721,10 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
                     if (g_list_length(elem->handlers) == 0) {
                         g_hash_table_remove(osso->uniq_hash, interface);
                     }
+                    matched_handler = handler;
                     break;
                 }
             }
-
             list = g_list_next(list);
         }
     }
@@ -747,7 +738,8 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
             while (list != NULL) {
                 if (list->data == matched_handler) {
                     ULOG_DEBUG_F("found from if_hash");
-                    elem->handlers = g_list_remove_link(elem->handlers, list);
+                    elem->handlers = g_list_remove_link(elem->handlers,
+                                                        list);
                     g_list_free(list); /* free the removed link */
 
                     /* if this was the last element in the list, free the

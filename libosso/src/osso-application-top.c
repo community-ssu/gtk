@@ -35,9 +35,10 @@ osso_return_t osso_application_top(osso_context_t *osso,
     DBusMessage *msg = NULL;
     const char *arg = "";
 
-    if (osso == NULL) return OSSO_INVALID;
-    if (osso->conn == NULL) return OSSO_INVALID;
-    if (application == NULL) return OSSO_INVALID;
+    if (osso == NULL || osso->conn == NULL || application == NULL) {
+        ULOG_ERR_F("invalid arguments");
+        return OSSO_INVALID;
+    }
 
     ULOG_DEBUG_F("Topping application (service) '%s' with args '%s'",
 	         application, arguments);
@@ -51,8 +52,8 @@ osso_return_t osso_application_top(osso_context_t *osso,
 
     make_default_interface(application, interface);
 
-    ULOG_DEBUG_F("New method: %s:%s:%s:%s", service, path, interface,
-                 OSSO_BUS_TOP);
+    ULOG_DEBUG_F("New method: %s:%s:%s:" OSSO_BUS_TOP, service, path,
+                 interface);
     msg = dbus_message_new_method_call(service, path, interface,
 				       OSSO_BUS_TOP);
     if (msg == NULL) {
@@ -85,17 +86,14 @@ osso_return_t osso_application_top(osso_context_t *osso,
 }
 
 /************************************************************************/
+
 static DBusHandlerResult _top_handler(osso_context_t *osso,
-                                      DBusMessage *msg, gpointer data);
-static DBusHandlerResult _top_handler(osso_context_t *osso,
-                                      DBusMessage *msg, gpointer data)
+                                      DBusMessage *msg,
+                                      _osso_callback_data_t *top)
 {
-    struct _osso_top *top;
-
-    top = (struct _osso_top *)data;
-
     if (dbus_message_is_method_call(msg, osso->interface, OSSO_BUS_TOP))
     {	
+        osso_application_top_cb_f *handler;
         char *arguments = NULL;
         DBusMessageIter iter;
 
@@ -111,7 +109,8 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
         }
         ULOG_DEBUG_F("arguments = '%s'", arguments);
 
-	top->handler(arguments, top->data);
+        handler = top->user_cb;
+	(*handler)(arguments, top->user_data);
 	return DBUS_HANDLER_RESULT_HANDLED;
     }
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -122,18 +121,21 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
 					  osso_application_top_cb_f *cb,
 					  gpointer data)
 {
-    struct _osso_top *top;
+    _osso_callback_data_t *top;
 
-    if(osso == NULL) return OSSO_INVALID;
-    if(cb == NULL) return OSSO_INVALID;
+    if (osso == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid arguments");
+        return OSSO_INVALID;
+    }
     
-    top = calloc(1, sizeof(struct _osso_top));
+    top = calloc(1, sizeof(_osso_callback_data_t));
     if (top == NULL) {
         ULOG_ERR_F("calloc failed");
         return OSSO_ERROR;
     }
-    top->handler = cb;
-    top->data = data;
+    top->user_cb = cb;
+    top->user_data = data;
+    top->data = NULL;
 
     /* register our top_application handler to the main message handler */
     _msg_handler_set_cb_f_free_data(osso,
@@ -146,50 +148,27 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
     return OSSO_OK;
 }
 
-static DBusHandlerResult match_cb(osso_context_t *osso,
-                                  DBusMessage *msg,
-                                  gpointer data)
-{
-    _osso_rm_cb_match_t *match_data = data;
-    struct _osso_top *top;
-    _osso_handler_t *handler;
-
-    top = match_data->data;
-    handler = match_data->handler;
-
-    if ((unsigned)top->handler == (unsigned)handler->handler
-        && top->data == handler->data) {
-        return DBUS_HANDLER_RESULT_HANDLED;
-    } else {
-        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
-}
-
 /************************************************************************/
 osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 					    osso_application_top_cb_f *cb,
 					    gpointer data)
 {
-    struct _osso_top *top;
+    _osso_callback_data_t top;
 
-    if(osso == NULL) return OSSO_INVALID;
-    if(cb == NULL) return OSSO_INVALID;
-
-    top = calloc(1, sizeof(struct _osso_top));
-    if (top == NULL) {
-        ULOG_ERR_F("calloc failed");
-        return OSSO_ERROR;
+    if (osso == NULL || cb == NULL) {
+        ULOG_ERR_F("invalid arguments");
+        return OSSO_INVALID;
     }
-    top->handler = cb;
-    top->data = data;
+
+    top.user_cb = cb;
+    top.user_data = data;
+    top.data = NULL;
     
     _msg_handler_rm_cb_f(osso,
                          osso->service,
                          osso->object_path,
                          osso->interface,
-                         match_cb, TRUE,
-                         RM_CB_IS_MATCH_FUNCTION, top);
+                         _top_handler, &top, TRUE);
 
-    free(top);
     return OSSO_OK;
 }
