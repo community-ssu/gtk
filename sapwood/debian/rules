@@ -77,7 +77,7 @@ binary-arch: build install
 	dh_installdocs -a
 	dh_installchangelogs -a ChangeLog
 #	dh_installexamples -a
-	dh_strip -a
+	dh_strip -a --dbg-package=gtk2-engines-sapwood
 	dh_compress -a
 	dh_fixperms -a
 	dh_installdeb -a

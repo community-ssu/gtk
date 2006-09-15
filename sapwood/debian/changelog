@@ -1,3 +1,11 @@
+sapwood (2.24-2) unstable; urgency=low
+
+  * Package debugging symbols (Fixes: NB#40232)
+    - debian/control: add gtk2-engines-sapwood-dbg package
+    - debian/rules: update dh_strip call
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 15 Sep 2006 11:54:30 +0300
+
 sapwood (2.24-1) unstable; urgency=low
 
   * debian/rules:
