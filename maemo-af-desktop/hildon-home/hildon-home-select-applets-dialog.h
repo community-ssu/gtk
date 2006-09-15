@@ -1,10 +1,10 @@
-/* -*- mode:C; c-file-style:"gnu"; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
  * Copyright (C) 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
+ * Author: Johan Bilien <johan.bilien@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -22,13 +22,22 @@
  *
  */
 
-#ifndef HILDON_HOME_BACKGROUND_DIALOG
-#define HILDON_HOME_BACKGROUND_DIALOG
+#ifndef __HILDON_HOME_SELECT_APPLETS_DIALOG_H__
+#define __HILDON_HOME_SELECT_APPLETS_DIALOG_H__
 
-G_BEGIN_DECLS
+#include <libosso.h>
+#include <gtk/gtkwidget.h>
+#include <gtk/gtktreemodel.h>
+#include <glib/gi18n.h>
 
-gboolean home_bgd_dialog_run (GtkWindow * parent);
+#define HOME_APPLETS_SELECT_TITLE      _("home_ti_select_applets")
+#define HOME_APPLETS_SELECT_OK         _("home_bd_select_applets_ok")
+#define HOME_APPLETS_SELECT_CANCEL     _("home_bd_select_applets_cancel")
 
-G_END_DECLS
+
+GtkWidget *     hildon_home_select_applets_dialog_new_with_model 
+                                                (GtkTreeModel *model,
+                                                 osso_context_t *osso_home);
+
 
 #endif

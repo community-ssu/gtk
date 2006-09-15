@@ -37,6 +37,7 @@
 #define HILDON_HOME_TITLEBAR_MENU_LABEL_COLOR "TitleTextColor"
 
 #define APPLET_GROUP                  "Desktop Entry"
+#define APPLET_KEY_NAME               "Name"
 #define APPLET_KEY_LIBRARY            "X-home-applet"
 #define APPLET_KEY_DESKTOP            "Desktop"
 #define APPLET_KEY_X                  "X"
@@ -52,13 +53,9 @@
 
 /* Additions by Karoliina Salminen <karoliina.t.salminen at nokia dot com> */
 
-#include <gtk/gtkmenu.h>
-
 int hildon_home_main(void);
 
 void home_deinitialize(gint keysnooper_id);
-
-GtkMenu * set_menu (GtkMenu * new_menu);
                                                  
 #endif
 

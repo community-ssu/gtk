@@ -33,6 +33,7 @@
 #include "hildon-home-plugin-interface.h"
 #include "hildon-home-interface.h"
 #include "home-applet-manager.h"
+#include "hildon-home-applet.h"
 
 /* Systems includes */
 #include <string.h>  /* for strcmp */
@@ -64,14 +65,17 @@ static void home_applet_handler_class_init(
 static void home_applet_handler_finalize(GObject * obj_self);
 static const char *load_symbols(HomeAppletHandler *handler, 
                                 gint symbol_id);
+#if 0
 static void destroy_handler (GtkObject *object,
                              gpointer user_data);
+#endif
 
 
 struct _HomeAppletHandlerPrivate {
    
     void *applet_data;
     void *dlhandle;  
+    GtkWidget *widget;
     
     /* Struct for the applet API function pointers */
     AppletInitializeFn initialize;
@@ -165,7 +169,6 @@ static void home_applet_handler_init(HomeAppletHandler * self)
 
     self->libraryfile = NULL;
     self->desktoppath = NULL;
-    self->eventbox = NULL;
     self->x = APPLET_INVALID_COORDINATE;
     self->y = APPLET_INVALID_COORDINATE;
     self->minwidth = APPLET_NONCHANGABLE_DIMENSION;
@@ -178,10 +181,12 @@ static void home_applet_handler_finalize(GObject * obj_self)
 {
     HomeAppletHandler *self;
     HomeAppletHandlerPrivate *priv;
+
     
     g_assert(HOME_APPLET_HANDLER(obj_self));
     
     self = HOME_APPLET_HANDLER(obj_self);
+    fprintf (stderr, "Called finalize on %s handler\n", self->desktoppath);
     
     g_assert(self);
     g_free (self->libraryfile);
@@ -203,40 +208,6 @@ static void home_applet_handler_finalize(GObject * obj_self)
     {
         G_OBJECT_CLASS(parent_class)->finalize(obj_self);
     }
-}
-
-/*
- * Catch the "destroy" signal for the applet widget and remove it from the
- * applet manager. Provides a clean way to close a home applet on demand.
- */
-static void destroy_handler (GtkObject *object,
-                             gpointer user_data)
-{
-    AppletManager *appman;
-    HomeAppletHandler *self;
-    HomeAppletHandlerPrivate *priv;
-    GtkWidget *ebox;
-    
-    g_assert(HOME_APPLET_HANDLER(user_data));
-    
-    self = HOME_APPLET_HANDLER(user_data);
-
-    g_assert(self);
-
-    priv = HOME_APPLET_HANDLER_GET_PRIVATE(self);
-
-    appman = applet_manager_get_instance();
-
-    ebox = GTK_WIDGET(self->eventbox);
-    
-    /* Kill the handler through appman so it is removed from the list */
-    applet_manager_remove_applet_by_handler(appman, self);
-    /* Save the new configuration */
-    applet_manager_configure_save_all(appman);
-    /* Destroy the eventbox too */
-    gtk_widget_destroy (ebox);
-    self->eventbox = NULL;
-    g_object_unref (appman);
 }
 
 static void warning_function( void )
@@ -287,9 +258,9 @@ static const char *load_symbols(HomeAppletHandler *handler,
 /*******************/
 
 HomeAppletHandler *home_applet_handler_new(const char *desktoppath, 
-                                           const char *libraryfile, 
                                            void *state_data, int *state_size)
 {
+    static GHashTable *htable = NULL;
     GtkWidget *applet;
     HomeAppletHandlerPrivate *priv;
     HomeAppletHandler *handler;
@@ -299,139 +270,151 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     gint applet_minheight = APPLET_NONCHANGABLE_DIMENSION;
     gboolean applet_resizable_width = FALSE;
     gboolean applet_resizable_height = FALSE;
+    gchar *libraryfile = NULL;
     gchar *librarypath = NULL;
     gchar *resizable = NULL;
+    GKeyFile* kfile;
+    GError *error = NULL;
 
     g_return_val_if_fail (desktoppath, NULL);
 
-    handler = g_object_new(HOME_TYPE_APPLET_HANDLER,
-                                              NULL);
-    g_return_val_if_fail (desktoppath, NULL);
+    if (!htable)
+      htable = g_hash_table_new (g_str_hash, g_str_equal);
 
-    g_debug ("_applet_handler_new: [%s] [%s]", desktoppath, libraryfile);
+    /* HACK to not unload applets for the moment, as this is not supported
+     * by some */
+    handler = g_hash_table_lookup (htable, desktoppath);
+
+    if (handler)
+      {
+        g_debug ("found existing handler");
+        priv = HOME_APPLET_HANDLER_GET_PRIVATE (handler);
+        priv->applet_data = priv->initialize(state_data, state_size, &applet);
+        priv->widget = applet;
+        g_object_ref (handler);
+        return handler;
+      }
+
+    handler = g_object_new (HOME_TYPE_APPLET_HANDLER, NULL);
+    g_object_ref (handler);
+    g_hash_table_insert (htable, g_strdup (desktoppath), handler);
     
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
-    if (!libraryfile)
-    {
-        GKeyFile* kfile;
-        GError *error = NULL;
+    kfile = g_key_file_new();
 
-        kfile = g_key_file_new();
-
-        if (!g_key_file_load_from_file (kfile,
-                                       desktoppath,
-                                       G_KEY_FILE_NONE,
-                                       &error))
-        {
-	    g_debug ("cannot opent keyfile");
-            g_key_file_free (kfile);
-            if (error)
-                g_error_free (error);
-            return NULL;
-        }
-
-        libraryfile = g_key_file_get_string (kfile, 
-                                             APPLET_GROUP,
-                                             APPLET_KEY_LIBRARY,
-                                             &error);
-
-        if (!libraryfile || error)
-        {
-            g_debug ("Unable find library path from desktop file %s\n",
-                    desktoppath);
-            ULOG_WARN ("Unable find library path from desktop file %s\n",
-                    desktoppath);
-            g_key_file_free (kfile);
-            
-            if (error)
-                g_error_free (error);
-            
-            return NULL;
-        }
-
-        applet_x = g_key_file_get_integer (kfile,
-                                           APPLET_GROUP,
-                                           APPLET_KEY_X,
-                                           &error);
-
-        if (error)
-        {
-            applet_x = APPLET_INVALID_COORDINATE;
-            g_error_free (error);
-            error = NULL;
-        }
-        
-        applet_y = g_key_file_get_integer (kfile,
-                                           APPLET_GROUP,
-                                           APPLET_KEY_Y,
-                                           &error);
-        
-        if (error)
-        {
-            applet_y = APPLET_INVALID_COORDINATE;
-            g_error_free (error);
-            error = NULL;
-        }
-        
-        applet_minwidth = g_key_file_get_integer (kfile,
-                                           APPLET_GROUP,
-                                           APPLET_KEY_MINWIDTH,
-                                           &error);
-        
-        if (error)
-        {
-            applet_minwidth = APPLET_NONCHANGABLE_DIMENSION;
-            g_error_free (error);
-            error = NULL;
-        }
-        
-        applet_minheight = g_key_file_get_integer (kfile,
-                                           APPLET_GROUP,
-                                           APPLET_KEY_MINHEIGHT,
-                                           &error);
-        
-        if (error)
-        {
-            applet_minheight = APPLET_NONCHANGABLE_DIMENSION;
-            g_error_free (error);
-            error = NULL;
-        }
-
-        resizable = g_key_file_get_string (kfile,
-                                           APPLET_GROUP,
-                                           APPLET_KEY_RESIZABLE,
-                                           &error);
-
-        if (!resizable || error)
-        {
-            g_error_free (error);
-            error = NULL;
-        }
-        else
-        {
-             if (g_str_equal (resizable, HOME_APPLET_HANDLER_RESIZABLE_FULL))
-             {
-                 applet_resizable_width = TRUE;
-                 applet_resizable_height = TRUE;
-             }
-             else if (g_str_equal (resizable, 
-                                   HOME_APPLET_HANDLER_RESIZABLE_WIDTH))
-             {
-                 applet_resizable_width = TRUE;
-             }
-             else if (g_str_equal (resizable,
-                                   HOME_APPLET_HANDLER_RESIZABLE_HEIGHT))
-             {
-                 applet_resizable_height = TRUE;
-             }
-
-             g_free (resizable);
-        }
-
-
+    if (!g_key_file_load_from_file (kfile,
+                                    desktoppath,
+                                    G_KEY_FILE_NONE,
+                                    &error))
+      {
+        g_debug ("cannot opent keyfile");
         g_key_file_free (kfile);
-    } 
+        if (error)
+          g_error_free (error);
+        return NULL;
+      }
+
+    libraryfile = g_key_file_get_string (kfile, 
+                                         APPLET_GROUP,
+                                         APPLET_KEY_LIBRARY,
+                                         &error);
+
+    if (!libraryfile || error)
+      {
+        g_debug ("Unable find library path from desktop file %s\n",
+                 desktoppath);
+        ULOG_WARN ("Unable find library path from desktop file %s\n",
+                   desktoppath);
+        g_key_file_free (kfile);
+
+        if (error)
+          g_error_free (error);
+
+        return NULL;
+      }
+
+    applet_x = g_key_file_get_integer (kfile,
+                                       APPLET_GROUP,
+                                       APPLET_KEY_X,
+                                       &error);
+
+    if (error)
+      {
+        applet_x = APPLET_INVALID_COORDINATE;
+        g_error_free (error);
+        error = NULL;
+      }
+
+    applet_y = g_key_file_get_integer (kfile,
+                                       APPLET_GROUP,
+                                       APPLET_KEY_Y,
+                                       &error);
+
+    if (error)
+      {
+        applet_y = APPLET_INVALID_COORDINATE;
+        g_error_free (error);
+        error = NULL;
+      }
+
+    applet_minwidth = g_key_file_get_integer (kfile,
+                                              APPLET_GROUP,
+                                              APPLET_KEY_MINWIDTH,
+                                              &error);
+
+    if (error)
+      {
+        applet_minwidth = APPLET_NONCHANGABLE_DIMENSION;
+        g_error_free (error);
+        error = NULL;
+      }
+
+    applet_minheight = g_key_file_get_integer (kfile,
+                                               APPLET_GROUP,
+                                               APPLET_KEY_MINHEIGHT,
+                                               &error);
+
+    if (error)
+      {
+        applet_minheight = APPLET_NONCHANGABLE_DIMENSION;
+        g_error_free (error);
+        error = NULL;
+      }
+
+    resizable = g_key_file_get_string (kfile,
+                                       APPLET_GROUP,
+                                       APPLET_KEY_RESIZABLE,
+                                       &error);
+
+    if (!resizable || error)
+      {
+        g_error_free (error);
+        error = NULL;
+      }
+    else
+      {
+        if (g_str_equal (resizable, HOME_APPLET_HANDLER_RESIZABLE_FULL))
+          {
+            applet_resizable_width = TRUE;
+            applet_resizable_height = TRUE;
+          }
+        else if (g_str_equal (resizable, 
+                              HOME_APPLET_HANDLER_RESIZABLE_WIDTH))
+          {
+            applet_resizable_width = TRUE;
+          }
+        else if (g_str_equal (resizable,
+                              HOME_APPLET_HANDLER_RESIZABLE_HEIGHT))
+          {
+            applet_resizable_height = TRUE;
+          }
+
+        g_free (resizable);
+      }
+
+
+    g_key_file_free (kfile);
         
     librarypath =
             g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
@@ -441,8 +424,9 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     
     if (!priv->dlhandle)
     {   
-        g_debug ("Unable to open Home Applet %s\n", librarypath);
-        ULOG_WARN("Unable to open Home Applet %s\n", librarypath);
+        g_warning ("Unable to open Home Applet %s\n", librarypath);
+        g_free (libraryfile);
+        g_object_unref (handler);
 
         return NULL;
     }
@@ -456,25 +440,15 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         {
             g_debug ("Unable to load symbols from Applet %s: %s\n", 
                       libraryfile, error_str);
-            ULOG_WARN("Unable to load symbols from Applet %s: %s\n", 
-                      libraryfile, error_str);
 
             dlclose(priv->dlhandle);
             return NULL;
         }
 
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
+        priv->widget = applet;
 	
-        handler->eventbox = GTK_EVENT_BOX(gtk_event_box_new());
-        /* The eventbox window should be invisible in normal mode so that the
-         * shape mask for the applets will work
-         */
-        gtk_event_box_set_visible_window(GTK_EVENT_BOX(handler->eventbox),
-                                         FALSE);
-        gtk_container_add(GTK_CONTAINER(handler->eventbox), applet);
-        g_signal_connect (G_OBJECT(applet), "destroy",
-                          G_CALLBACK(destroy_handler), handler);
-        handler->libraryfile = g_strdup (libraryfile);
+        handler->libraryfile = libraryfile;
         handler->desktoppath = g_strdup (desktoppath);
         handler->x = applet_x;
         handler->y = applet_y;
@@ -485,6 +459,16 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     }
 
     return handler;
+}
+
+GtkWidget *home_applet_handler_get_widget(HomeAppletHandler *handler)
+{
+    HomeAppletHandlerPrivate *priv;
+    g_return_val_if_fail (handler, NULL);
+    priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
+
+    return priv->widget;
+    
 }
 
 int home_applet_handler_save_state(HomeAppletHandler *handler, 
@@ -563,6 +547,8 @@ void home_applet_handler_deinitialize(HomeAppletHandler *handler)
     
     if (priv->applet_data)
     {
+      fprintf (stderr, "Called deinitialize on %s handler\n",
+               handler->desktoppath);
         priv->deinitialize(priv->applet_data);
         /* The applet should have freed the data so we just clear the pointer */
         priv->applet_data = NULL;
@@ -657,10 +643,23 @@ void home_applet_handler_set_resizable(HomeAppletHandler *handler,
                                        gboolean resizable_width, 
                                        gboolean resizable_height)
 {
+    HildonHomeAppletResizeType resize_type;
     g_return_if_fail (handler);
 
     handler->resizable_width = resizable_width;
     handler->resizable_height = resizable_height;
+    
+    if (resizable_width && resizable_height)
+      resize_type = HILDON_HOME_APPLET_RESIZE_BOTH;
+    else if (resizable_width)
+      resize_type = HILDON_HOME_APPLET_RESIZE_HORIZONTAL;
+    else if (resizable_height)
+      resize_type = HILDON_HOME_APPLET_RESIZE_VERTICAL;
+    else
+      resize_type = HILDON_HOME_APPLET_RESIZE_NONE;
+
+    hildon_home_applet_set_resize_type (HILDON_HOME_APPLET (handler->eventbox),
+                                        resize_type);
 }
 
 void home_applet_handler_get_resizable(HomeAppletHandler *handler, 

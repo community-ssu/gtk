@@ -61,19 +61,40 @@
 
 #include "home-applet-manager.h"
 #include "background-manager.h"
-#include "layout-manager.h"
-#include "home-select-applets-dialog.h"
 #include "home-applet-handler.h"
 
+#include "hildon-home-area.h"
 #include "hildon-home-titlebar.h"
 #include "hildon-home-common.h"
 #include "hildon-home-private.h"
+#include "hildon-home-interface.h"
 #include "hildon-home-window.h"
+#include "hildon-plugin-list.h"
+#include "hildon-home-select-applets-dialog.h"
 
 #define HILDON_HOME_LEFT_PADDING	80	/* keep synced with the TN width */
 #define HILDON_HOME_WINDOW_WIDTH	800
 #define HILDON_HOME_WINDOW_HEIGHT	480
 #define HILDON_HOME_TOP_BAR_HEIGHT	60
+
+#define HH_AREA_CONFIGURATION_FILE      ".osso/hildon-home/applet_manager.conf"
+#define HH_AREA_GLOBAL_CONFIGURATION_FILE "/etc/hildon-home/applet_manager.conf"
+#define HH_DESKTOP_FILES_DIR DATADIR"/applications/hildon-home"
+
+
+/* DBUS defines */
+#define STATUSBAR_SERVICE_NAME          "statusbar"
+#define STATUSBAR_INSENSITIVE_METHOD    "statusbar_insensitive"
+#define STATUSBAR_SENSITIVE_METHOD      "statusbar_sensitive"
+
+#define TASKNAV_SERVICE_NAME            "com.nokia.tasknav"
+#define TASKNAV_GENERAL_PATH            "/com/nokia/tasknav"
+#define TASKNAV_INSENSITIVE_INTERFACE \
+        TASKNAV_SERVICE_NAME "." TASKNAV_INSENSITIVE_METHOD
+#define TASKNAV_SENSITIVE_INTERFACE \
+        TASKNAV_SERVICE_NAME "." TASKNAV_SENSITIVE_METHOD
+#define TASKNAV_INSENSITIVE_METHOD      "tasknav_insensitive"
+#define TASKNAV_SENSITIVE_METHOD        "tasknav_sensitive"
 
 #define HILDON_HOME_WINDOW_GET_PRIVATE(obj) \
 (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_HOME_WINDOW, HildonHomeWindowPrivate))
@@ -81,6 +102,7 @@
 struct _HildonHomeWindowPrivate
 {
   BackgroundManager *bg_manager;
+  HildonPluginList  *plugin_list;
   osso_context_t *osso_context;
 
   GtkWidget *align;
@@ -88,8 +110,6 @@ struct _HildonHomeWindowPrivate
   GtkWidget *titlebar;
   GtkWidget *applet_area;
   GtkWidget *main_area;
-
-  gboolean   menu_key_pressed;
 };
 
 G_DEFINE_TYPE (HildonHomeWindow, hildon_home_window, GTK_TYPE_WINDOW);
@@ -103,45 +123,144 @@ enum
 
 static void
 titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
-				     HildonHomeWindow   *window)
+                                     HildonHomeWindow   *window)
 {
+  GtkWidget *dialog;
+  gint response;
+  gchar *filename = NULL;
+  HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("select applets activate\n");
 
-  select_applets_selected (window->priv->osso_context,
-		  	   titlebar,
-			   GTK_FIXED (window->priv->applet_area));
+  hildon_home_area_sync_to_list (HILDON_HOME_AREA (priv->applet_area),
+                                 priv->plugin_list);
 
+  dialog = hildon_home_select_applets_dialog_new_with_model 
+                                    (GTK_TREE_MODEL (priv->plugin_list),
+                                     priv->osso_context);
+
+  response = gtk_dialog_run (GTK_DIALOG (dialog));
   
+  if (response == GTK_RESPONSE_OK)
+    {
+      gint n_added;
+      n_added =hildon_home_area_sync_from_list (
+                                       HILDON_HOME_AREA (priv->applet_area),
+                                       priv->plugin_list);
+
+      if (n_added > 0)
+        hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                          TRUE);
+    }
+  
+  gtk_widget_destroy (dialog);
+        
+  /* Only save if not in layout mode (if we just removed an applet). If in
+   * layout mode it will be saved if the layout is accepted */
+  if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
+    {
+      filename = g_build_filename (g_getenv ("HOME"),
+                                   HH_AREA_CONFIGURATION_FILE,
+                                   NULL);
+
+      hildon_home_area_save_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                           filename);
+
+      g_free (filename);
+    }
+
 }
 
 static void
 titlebar_layout_mode_activate_cb (HildonHomeTitlebar *titlebar,
 				  HildonHomeWindow   *window)
 {
+  HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("layout mode activate");
 
-  layout_mode_begin (titlebar,
-		     GTK_FIXED (window->priv->applet_area),
-		     NULL, NULL);
+  hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                    TRUE);
+
 }
 
 static void
 titlebar_layout_accept_cb (HildonHomeTitlebar *titlebar,
 			   HildonHomeWindow   *window)
 {
+  HildonHomeWindowPrivate *priv = window->priv;
+  gchar *filename;
   g_debug ("layout accepted");
+  
+  if (hildon_home_area_get_overlaps (HILDON_HOME_AREA (priv->applet_area)))
+    {
+      GtkWidget *note;
 
-  layout_mode_accept ();
+      note = hildon_note_new_information
+          (GTK_WINDOW (window),
+           LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT);
+      gtk_dialog_run (GTK_DIALOG (note));
+      gtk_widget_destroy (note);
+      return;
+    }
+  hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                    FALSE);
+  
+  filename = g_build_filename (g_getenv ("HOME"),
+                               HH_AREA_CONFIGURATION_FILE,
+                               NULL);
+  
+  hildon_home_area_save_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                       filename);
+
+  g_free (filename);
 }
 
 static void
 titlebar_layout_cancel_cb (HildonHomeTitlebar *titlebar,
 			   HildonHomeWindow   *window)
 {
+  HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("layout discarded");
 
-  /* this will rollback */
-  layout_mode_cancel ();
+  if (hildon_home_area_get_layout_changed 
+      (HILDON_HOME_AREA (priv->applet_area)))
+    {
+      GtkWidget *note;
+      gint response;
+      gchar *user_filename = NULL; 
+      gchar *filename = NULL;
+
+      note = hildon_note_new_confirmation_add_buttons 
+          (NULL,
+           LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_TEXT,
+           LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES,
+           GTK_RESPONSE_ACCEPT,
+           LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO,
+           GTK_RESPONSE_CANCEL,
+           NULL);
+
+      response = gtk_dialog_run (GTK_DIALOG (note));
+      gtk_widget_destroy (note);
+
+      if (response != GTK_RESPONSE_ACCEPT)
+        return;
+  
+      user_filename = g_build_filename (g_getenv ("HOME"),
+                                        HH_AREA_CONFIGURATION_FILE,
+                                        NULL);
+
+      if (g_file_test (user_filename, G_FILE_TEST_EXISTS))
+        filename = user_filename;
+      else
+        filename = HH_AREA_GLOBAL_CONFIGURATION_FILE;
+
+      hildon_home_area_load_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                           filename);
+
+      g_free (user_filename);
+    }
+
+  hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                    FALSE);
 }
 
 static void
@@ -211,43 +330,76 @@ titlebar_help_activate_cb (HildonHomeTitlebar *titlebar,
     }
 }
 
-static gint
-hildon_home_window_key_press_cb (GtkWidget * widget,
-				 GdkEventKey * keyevent,
-				 gpointer data)
+static void
+area_layout_mode_start (HildonHomeArea *area,
+                        HildonHomeWindow   *window)
 {
-  HildonHomeWindow  * window = HILDON_HOME_WINDOW (widget);
-  
-  if (keyevent->keyval == HILDON_HARDKEY_MENU)
-    {
-      window->priv->menu_key_pressed = TRUE;
-    }
-  
-  return FALSE;
+  HildonHomeWindowPrivate *priv = window->priv;
+
+  hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
+                                 HILDON_HOME_TITLEBAR_LAYOUT);
+
+  osso_rpc_run_with_defaults (priv->osso_context,
+                              STATUSBAR_SERVICE_NAME,
+                              STATUSBAR_INSENSITIVE_METHOD,
+                              NULL,
+                              0,
+                              NULL);
+
+  osso_rpc_run (priv->osso_context,
+                TASKNAV_SERVICE_NAME,
+                TASKNAV_GENERAL_PATH,
+                TASKNAV_INSENSITIVE_INTERFACE,
+                TASKNAV_INSENSITIVE_METHOD,
+                NULL,
+                0,
+                NULL);
 }
 
-static gint
-hildon_home_window_key_release_cb (GtkWidget * widget,
-				   GdkEventKey * keyevent,
-				   gpointer data)
+static void
+area_layout_mode_end (HildonHomeArea *area,
+                      HildonHomeWindow   *window)
 {
-  if (keyevent->keyval == HILDON_HARDKEY_MENU)
-    {
-      HildonHomeWindow  * window = HILDON_HOME_WINDOW (widget);
-      
-      if (window->priv->menu_key_pressed)
-        {
-	  HildonHomeTitlebar * tb =
-	    HILDON_HOME_TITLEBAR (window->priv->titlebar);
-	  
-	  gboolean state = hildon_home_titlebar_get_menu_active (tb);
-	  
-	  hildon_home_titlebar_set_menu_active (tb, !state);
-	  window->priv->menu_key_pressed = FALSE;
-        }
-    }
+  HildonHomeWindowPrivate *priv = window->priv;
   
-  return FALSE;
+  hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
+                                 HILDON_HOME_TITLEBAR_NORMAL);
+
+  osso_rpc_run_with_defaults (priv->osso_context,
+                              STATUSBAR_SERVICE_NAME,
+                              STATUSBAR_SENSITIVE_METHOD,
+                              NULL,
+                              0,
+                              NULL);
+
+  osso_rpc_run (priv->osso_context,
+                TASKNAV_SERVICE_NAME,
+                TASKNAV_GENERAL_PATH,
+                TASKNAV_SENSITIVE_INTERFACE,
+                TASKNAV_SENSITIVE_METHOD,
+                NULL,
+                0,
+                NULL);
+
+
+}
+
+static void
+area_add (HildonHomeArea   *area,
+          GtkWidget        *applet,
+          HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+  g_signal_emit_by_name (priv->titlebar, "applet-added", area);
+}
+
+static void
+area_remove (HildonHomeArea   *area,
+             GtkWidget        *applet,
+             HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+  g_signal_emit_by_name (priv->titlebar, "applet-removed", area);
 }
 
 static void
@@ -294,6 +446,47 @@ background_manager_changed_cb (BackgroundManager *manager,
   
   gtk_widget_queue_draw (GTK_WIDGET (window));
 }
+
+static void
+hildon_home_window_background (HildonHomeWindow   *window,
+                               gboolean is_background)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+
+  g_debug ("HildonHome is background: %i", is_background);
+  fprintf (stderr, "HildonHome is background: %i\n", is_background);
+
+  /* If we were in layout mode and went to background, we need
+   * to cancel it */
+  if (is_background && 
+      hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
+    {
+      gchar *user_filename = NULL; 
+      gchar *filename = NULL;
+
+      hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                   FALSE);
+
+      user_filename = g_build_filename (g_getenv ("HOME"),
+                                        HH_AREA_CONFIGURATION_FILE,
+                                        NULL);
+
+      if (g_file_test (user_filename, G_FILE_TEST_EXISTS))
+        filename = user_filename;
+      else
+        filename = HH_AREA_GLOBAL_CONFIGURATION_FILE;
+
+      hildon_home_area_load_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                           filename);
+
+      g_free (user_filename);
+    }
+
+  gtk_container_foreach (GTK_CONTAINER (priv->applet_area),
+                         (GtkCallback)hildon_home_applet_set_is_background,
+                         (gpointer)is_background);
+}
+
 
 static const gchar *
 get_sidebar_image_from_theme (GtkWidget *widget)
@@ -358,6 +551,31 @@ hildon_home_window_style_set (GtkWidget *widget,
 				     get_sidebar_image_from_theme (widget));
 }
 
+static gboolean
+hildon_home_window_key_press_event (GtkWidget *widget,
+                                    GdkEventKey *event)
+{
+  HildonHomeWindowPrivate *priv = HILDON_HOME_WINDOW (widget)->priv;
+
+  switch (event->keyval)
+    {
+      case HILDON_HARDKEY_MENU:
+          hildon_home_titlebar_toggle_menu (HILDON_HOME_TITLEBAR (priv->titlebar));
+          break;
+      case HILDON_HARDKEY_ESC:
+          /* FIXME: Have a signal in HomeWindow instead */
+          if (hildon_home_area_get_layout_mode (
+                                    HILDON_HOME_AREA(priv->applet_area)))
+            g_signal_emit_by_name (G_OBJECT (priv->titlebar), "layout-cancel");
+
+          break;
+      default:
+          return FALSE;
+    }
+
+  return TRUE;
+}
+
 static void
 hildon_home_window_finalize (GObject *gobject)
 {
@@ -408,47 +626,26 @@ hildon_home_window_get_property (GObject    *gobject,
     }
 }
 
-static void
+void
 hildon_home_window_applets_init (HildonHomeWindow * window)
 {
-  GList *ids, *l;
-  AppletManager *manager;
-  gint applet_x = 20;
-  gint applet_y = -100;
+  HildonHomeWindowPrivate *priv = window->priv;
+  gchar *user_filename = NULL; 
+  gchar *filename = NULL;
 
-  manager = applet_manager_get_instance ();
+  user_filename = g_build_filename (g_getenv ("HOME"),
+                                    HH_AREA_CONFIGURATION_FILE,
+                                    NULL);
+
+  if (g_file_test (user_filename, G_FILE_TEST_EXISTS))
+    filename = user_filename;
+  else
+    filename = HH_AREA_GLOBAL_CONFIGURATION_FILE;
   
-  ids = applet_manager_get_identifier_all (manager);
-  for (l = ids; l != NULL; l = l->next)
-    {
-      const gchar *id = l->data;
+  hildon_home_area_load_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                       filename);
 
-      applet_manager_get_coordinates (manager, id, &applet_x, &applet_y);
-      g_debug ("adding applet <%s>[%d, %d]", id, applet_x, applet_y);
-      
-      if (applet_x != -1 && applet_y != -1)
-        {
-	  GtkWidget *applet;
-
-	  applet = GTK_WIDGET (applet_manager_get_eventbox (manager, id));
-
-	  g_debug ("adding applet <%s>[%d, %d]", id,
-		   applet_x, applet_y - HILDON_HOME_TOP_BAR_HEIGHT);
-	  gtk_fixed_put (GTK_FIXED (window->priv->applet_area),
-			 applet,
-			 applet_x,
-			 applet_y - HILDON_HOME_TOP_BAR_HEIGHT);
-	  gtk_widget_show_all (applet);
-
-	  g_debug ("resulting allocation @ [%d,%d]",
-		   applet->allocation.x,
-		   applet->allocation.y);
-	  
-	}
-    }
-  
-  applet_manager_foreground_all (manager);
-  g_object_unref (manager);
+  g_free (user_filename);
 }
 
 static GObject *
@@ -514,12 +711,6 @@ hildon_home_window_constructor (GType                  gtype,
   g_signal_connect (priv->titlebar, "help-activate",
 		    G_CALLBACK (titlebar_help_activate_cb),
 		    window);
-  
-  g_signal_connect (window, "key_press_event",
-		    G_CALLBACK(hildon_home_window_key_press_cb), NULL);
-  g_signal_connect (window, "key_release_event",
-		    G_CALLBACK(hildon_home_window_key_release_cb), NULL);
-  
   gtk_box_pack_start (GTK_BOX (hbox), priv->titlebar, TRUE, TRUE, 0);
   gtk_widget_show (priv->titlebar);
 
@@ -528,10 +719,22 @@ hildon_home_window_constructor (GType                  gtype,
   gtk_box_pack_end (GTK_BOX (vbox), priv->main_area, TRUE, TRUE, 0);
   gtk_widget_show (priv->main_area);
 
-  priv->applet_area = gtk_fixed_new();
+  priv->applet_area = hildon_home_area_new ();/*gtk_fixed_new();*/
   gtk_container_add( GTK_CONTAINER(priv->main_area), priv->applet_area );
+  g_signal_connect (priv->applet_area, "layout-mode-start",
+                    G_CALLBACK (area_layout_mode_start),
+                    window);
+  g_signal_connect (priv->applet_area, "layout-mode-end",
+                    G_CALLBACK (area_layout_mode_end),
+                    window);
 
-  hildon_home_window_applets_init (window);
+  g_signal_connect (priv->applet_area, "applet-added",
+                    G_CALLBACK (area_add),
+                    window);
+  g_signal_connect (priv->applet_area, "remove",
+                    G_CALLBACK (area_remove),
+                    window);
+
   gtk_widget_show_all (priv->applet_area);
   
   g_signal_connect (priv->bg_manager, "changed",
@@ -559,7 +762,21 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
   
   widget_class->show = hildon_home_window_show;
   widget_class->style_set = hildon_home_window_style_set;
+  widget_class->key_press_event = hildon_home_window_key_press_event;
 
+  klass->background = hildon_home_window_background;
+  
+  g_signal_new ("background",
+                G_OBJECT_CLASS_TYPE (gobject_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeWindowClass, background),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__BOOLEAN,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_BOOLEAN);
+  
   g_object_class_install_property (gobject_class,
 		                   PROP_OSSO_CONTEXT,
 				   g_param_spec_pointer ("osso-context",
@@ -575,18 +792,28 @@ hildon_home_window_init (HildonHomeWindow *window)
 {
   HildonHomeWindowPrivate *priv;
   GtkWidget *widget;
-  
+
   gtk_window_set_has_frame (GTK_WINDOW (window), FALSE);
-  
+
   widget = GTK_WIDGET (window);
   gtk_widget_set_size_request (widget, HILDON_HOME_WINDOW_WIDTH,
-		  		       HILDON_HOME_WINDOW_HEIGHT);
-  
-  
+                               HILDON_HOME_WINDOW_HEIGHT);
+
+
   window->priv = priv = HILDON_HOME_WINDOW_GET_PRIVATE (window);
 
   priv->osso_context = NULL;
   priv->bg_manager = background_manager_get_default ();
+  priv->plugin_list = g_object_new (HILDON_TYPE_PLUGIN_LIST,
+                                    "name-key", APPLET_KEY_NAME,
+                                    "library-key", APPLET_KEY_LIBRARY,
+                                    "group", APPLET_GROUP,
+                                    "default-text-domain", "maemo-af-desktop",
+                                    NULL);
+
+  fprintf (stderr, "Calling set_directory\n");
+  hildon_plugin_list_set_directory (priv->plugin_list, HH_DESKTOP_FILES_DIR);
+  fprintf (stderr, "Done set_directory\n");
 }
 
 GtkWidget *

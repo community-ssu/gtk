@@ -65,17 +65,15 @@
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-color-button.h>
 
-#include "home-applet-manager.h"
 #include "hildon-home-main.h"
 #include "hildon-home-window.h"
-#include "layout-manager.h"
 #include "../kstrace.h"
 
 #ifdef USE_AF_DESKTOP_MAIN
 
 static osso_context_t *osso_home = NULL;
 static gboolean home_is_topmost = TRUE;
-GtkWidget *home_window = NULL;
+static GtkWidget *home_window = NULL;
 
 osso_context_t *
 home_get_osso_context ()
@@ -83,58 +81,22 @@ home_get_osso_context ()
   return osso_home;
 }
 
-GtkMenu *
-set_menu (GtkMenu *new_menu)
-{
-  return new_menu;
-}
-
 static void
 hildon_home_osso_hw_cb (osso_hw_state_t *state,
-		        gpointer         data)
+                        gpointer         window)
 {
-  AppletManager *man;
   g_return_if_fail (state);
   
-  man = applet_manager_get_instance ();
-  g_return_if_fail (man);
+  g_signal_emit_by_name (G_OBJECT (window),
+                         "background",
+                         state->system_inactivity_ind);
 
-  if (state->system_inactivity_ind)
-    applet_manager_background_all (man);
-  else
-    applet_manager_foreground_all (man);
-
-  g_object_unref (man);
-}
-
-/* FIXME - replace using _MB_CURRENT_APP_WINDOW */
-static Window
-get_active_main_window (Window window)
-{
-  Window parent_window;
-  gint limit = 0;
-
-  gdk_error_trap_push ();
-  
-  while (XGetTransientForHint (GDK_DISPLAY (), window, &parent_window))
-    {
-      if (!parent_window || parent_window == GDK_ROOT_WINDOW () ||
-          parent_window == window || limit | TRANSIENCY_MAXITER)
-	break;
-
-      limit += 1;
-      window = parent_window;
-    }
-
-  gdk_error_trap_pop ();
-  
-  return window;
 }
 
 static GdkFilterReturn
 hildon_home_event_filter (GdkXEvent *xevent,
-			  GdkEvent  *event,
-			  gpointer   user_data)
+                          GdkEvent  *event,
+                          gpointer   window)
 {
   static Atom active_window_atom = 0;
   XPropertyEvent *prop = NULL;
@@ -145,8 +107,9 @@ hildon_home_event_filter (GdkXEvent *xevent,
   if (active_window_atom == 0)
     {
       active_window_atom = XInternAtom (GDK_DISPLAY (),
-		      			"_NET_ACTIVE_WINDOW",
-					False);
+                                        "_MB_CURRENT_APP_WINDOW",
+                                        False);
+
     }
 
   prop = (XPropertyEvent *) xevent;
@@ -159,51 +122,52 @@ hildon_home_event_filter (GdkXEvent *xevent,
       unsigned long n_res, extra;
       Window my_window;
       union {
-	Window *win;
-	unsigned char *pointer;
+        Window *win;
+        unsigned char *pointer;
       } res;
 
       gdk_error_trap_push ();
 
       status = XGetWindowProperty (GDK_DISPLAY (),
-		      		   GDK_ROOT_WINDOW (),
-				   active_window_atom,
-				   0L, G_MAXLONG,
-				   False, XA_WINDOW, &real_type,
-				   &format, &n_res,
-				   &extra, (unsigned char **) &res.pointer);
+                                   GDK_ROOT_WINDOW (),
+                                   active_window_atom,
+                                   0L, G_MAXLONG,
+                                   False, XA_WINDOW, &real_type,
+                                   &format, &n_res,
+                                   &extra, (unsigned char **) &res.pointer);
 
       gdk_error_trap_pop ();
-      
-      if ((status != Success) && (real_type != XA_WINDOW) &&
-	  (format != 32) && (n_res != 1) && (res.win == NULL) &&
-	  (error_trap != 0))
-	{
-	  return GDK_FILTER_CONTINUE;
-	}
 
-      my_window = GDK_WINDOW_XID (home_window->window);
+      if ((status != Success) || (real_type != XA_WINDOW) ||
+          (format != 32) || (n_res != 1) || (res.win == NULL) ||
+          (error_trap != 0))
+        {
+          return GDK_FILTER_CONTINUE;
+        }
 
-      AppletManager *manager;
-      manager = applet_manager_get_instance ();
-      
+      my_window = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
+
       if ((res.win[0] != my_window) &&
-          (get_active_main_window (res.win[0]) != my_window) &&
-	  (home_is_topmost == TRUE))
-	{
-	  applet_manager_background_state_save_all (manager);
-	  home_is_topmost = FALSE;
-	}
+/*          (get_active_main_window (res.win[0]) != my_window) &&*/
+          (home_is_topmost == TRUE))
+        {
+          home_is_topmost = FALSE;
+          g_signal_emit_by_name (G_OBJECT (window),
+                                 "background",
+                                 !home_is_topmost);
+        }
       else if ((res.win[0] == my_window) && (home_is_topmost == FALSE))
-	{
-	  applet_manager_foreground_all (manager);
-	  home_is_topmost = TRUE;
-	}
-      g_object_unref (manager);
+        {
+          home_is_topmost = TRUE;
+          g_signal_emit_by_name (G_OBJECT (window),
+                                 "background",
+                                 !home_is_topmost);
+        }
+
 
       if (res.win)
-	XFree (res.win);
-      
+        XFree (res.win);
+
     }
 
   return GDK_FILTER_CONTINUE;
@@ -212,8 +176,6 @@ hildon_home_event_filter (GdkXEvent *xevent,
 void
 home_deinitialize (gint id)
 {
-  AppletManager *manager;
-
   g_warning ("De-initialising hildon-home");
   
   gdk_window_remove_filter (GDK_WINDOW (home_window->window),
@@ -221,13 +183,6 @@ home_deinitialize (gint id)
 			    NULL);
 
   osso_deinitialize (osso_home);
-
-  /* now destroy the applet manager by unreffing it twice (the second ref is
-   * from hildon_home_main ()
-   */
-  manager = applet_manager_get_instance ();
-  g_object_unref (manager);
-  g_object_unref (manager);
 }
 
 int
@@ -235,23 +190,20 @@ hildon_home_main (void)
 {
   GtkWidget *window;
   GdkWindow *root_window;
-  gchar *user_path_home;
+  gchar *user_path_home = NULL;
   osso_hw_state_t hs = { 0 };
+
 
   /* It's necessary create the user hildon-home folder at first boot */
 
-  user_path_home = 
-    g_strdup_printf ("%s/%s",getenv(HILDON_HOME_ENV_HOME),HILDON_HOME_SYSTEM_DIR);
+  user_path_home =
+    g_strdup_printf ("%s/%s",
+                     getenv(HILDON_HOME_ENV_HOME),
+                     HILDON_HOME_SYSTEM_DIR);
 
   g_mkdir (user_path_home, 0755); /* Create it anyway!!! */
 
   g_free (user_path_home);
-
-  /* create instance of AppletManager; we do not unref this one here
-   */
-  AppletManager * manager = applet_manager_get_instance ();
-
-  g_warning ("Initialising hildon-home");
 
   /* Osso needs to be initialized before creation of applets */
   osso_home = osso_initialize (HILDON_HOME_NAME,
@@ -264,24 +216,23 @@ hildon_home_main (void)
       return -1;
     }
 
-  /* Register callback for handling the screen dimmed event
-   * We need to signal this to our applets
-   */
-  hs.system_inactivity_ind = TRUE;
-  osso_hw_set_event_cb (osso_home, &hs, hildon_home_osso_hw_cb, NULL);
-
-  layout_mode_init (osso_home);
   
   window = hildon_home_window_new (osso_home);
   home_window = window;
   
-  applet_manager_set_window (manager, window);
+  /* Register callback for handling the screen dimmed event
+   * We need to signal this to our applets
+   */
+  hs.system_inactivity_ind = TRUE;
+  osso_hw_set_event_cb (osso_home, &hs, hildon_home_osso_hw_cb, window);
+  
+  hildon_home_window_applets_init (HILDON_HOME_WINDOW (window));
   
   root_window = gdk_get_default_root_window ();
   gdk_window_set_events (root_window,
 		         gdk_window_get_events (root_window)
 			 | GDK_PROPERTY_CHANGE_MASK);
-  gdk_window_add_filter (root_window, hildon_home_event_filter, NULL);
+  gdk_window_add_filter (root_window, hildon_home_event_filter, window);
   
   gtk_widget_show (window);
 

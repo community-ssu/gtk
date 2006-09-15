@@ -7,7 +7,8 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * version 2.1 as published by the Free Software Foundation.
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -31,6 +32,7 @@
 #define __HILDON_HOME_PRIVATE_H__
 
 #include <glib.h>
+#include <glib/gi18n.h>
 
 G_BEGIN_DECLS
 
@@ -236,6 +238,14 @@ G_BEGIN_DECLS
 
 /* FIL-INF010 */
 #define HILDON_HOME_FILE_UNREADABLE_TEXT FM("sfil_ib_opening_not_allowed")
+
+#define LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT  _("home_ni_overlapping_applets")
+#define LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT   _("home_pb_layout_mode")
+#define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_TEXT  _("home_nc_cancel_layout")
+#define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_YES   _("home_bd_cancel_layout_yes")
+
+#define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO    _("home_bd_cancel_layout_no")
+#define LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT  _("home_ni_overlapping_applets")
 
 
 #define TRANSIENCY_MAXITER 50

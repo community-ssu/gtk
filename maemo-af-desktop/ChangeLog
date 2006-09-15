@@ -1,5 +1,13 @@
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/*: Imported layout mode and applet management rewrite
+	  Fixes: NB#40246, Fixes: NB#32663, Fixes: NB#36039, Fixes: NB#38283,
+	  Fixes: NB#37073, Fixes: NB#39280, Fixes: NB#34074, Fixes: NB#31018,
+	  Fixes: NB#39007, Fixes: NB#39531, Fixes: NB#39591, Fixes: NB#40225,
+	  Fixes: NB#37011
+
+2006-09-15  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.27
 
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>

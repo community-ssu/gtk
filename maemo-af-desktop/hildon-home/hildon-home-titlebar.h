@@ -27,6 +27,8 @@
 
 #include <gtk/gtkeventbox.h>
 #include <libosso.h>
+#include "hildon-home-applet.h"
+#include "hildon-home-area.h"
 
 #define HILDON_TYPE_HOME_TITLEBAR_MODE		(hildon_home_titlebar_mode_get_type ())
 #define HILDON_TYPE_HOME_TITLEBAR		(hildon_home_titlebar_get_type ())
@@ -68,6 +70,11 @@ struct _HildonHomeTitlebarClass
   void (*applet_activate)         (HildonHomeTitlebar *titlebar,
 		  	           const gchar        *applet_path);
   void (*help_activate)           (HildonHomeTitlebar *titlebar);
+  
+  void (*applet_added)            (HildonHomeTitlebar *titlebar,
+                                   HildonHomeArea     *area);
+  void (*applet_removed)          (HildonHomeTitlebar *titlebar,
+                                   HildonHomeArea     *area);
 };
 
 GType      hildon_home_titlebar_get_type        (void) G_GNUC_CONST;
@@ -76,15 +83,8 @@ GtkWidget *hildon_home_titlebar_new             (osso_context_t         *osso_co
 void       hildon_home_titlebar_set_mode        (HildonHomeTitlebar     *titlebar,
 						 HildonHomeTitlebarMode  mode);
 
-void       hildon_home_titlebar_set_layout_menu (HildonHomeTitlebar     *titlebar,
-						 const gchar            *label,
-						 GtkWidget              *menu);
-gboolean   hildon_home_titlebar_get_menu_active (HildonHomeTitlebar     *titlebar);
-void       hildon_home_titlebar_set_menu_active (HildonHomeTitlebar     *titlebar,
-						 gboolean                active);
 
-GtkWidget *hildon_home_titlebar_layout_ok (HildonHomeTitlebar *titlebar);
-GtkWidget *hildon_home_titlebar_layout_cancel (HildonHomeTitlebar *titlebar);
+void       hildon_home_titlebar_toggle_menu     (HildonHomeTitlebar     *titlebar);
 
 G_END_DECLS
 

@@ -51,6 +51,8 @@ struct _HildonHomeWindow
 struct _HildonHomeWindowClass
 {
   GtkWindowClass parent_class;
+
+  void    (* background)    (HildonHomeWindow *window, gboolean is_background);
 };
 
 GType hildon_home_window_get_type                  (void) G_GNUC_CONST;
@@ -64,6 +66,8 @@ GtkWidget *hildon_home_window_get_titlebar         (HildonHomeWindow *window);
 GtkWidget *hildon_home_window_get_main_area        (HildonHomeWindow *window);
 
 void       hildon_home_window_show_flash_full_note (HildonHomeWindow *window);
+
+void       hildon_home_window_applets_init         (HildonHomeWindow *window);
 
 G_END_DECLS
 

@@ -18,6 +18,9 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 #
+
+
+#
 # SUBDIRS = po 
 
 INCLUDES = \
@@ -40,8 +43,6 @@ pkgconfig_DATA = hildon-home.pc
 
 lib_LTLIBRARIES = libhildonhome.la
 
-bin_PROGRAMS = home-image-loader
-
 initexecdir=$(sysconfdir)/osso-af-init/init.d
 
 
@@ -59,28 +60,23 @@ libhildonhome_la_SOURCES = 			\
 	hildon-home-window.c 			\
 	hildon-home-background-dialog.c		\
 	hildon-home-background-dialog.h		\
-	home-applet-manager.h 			\
-	home-applet-manager.c 			\
+	hildon-home-area.c 		\
+	hildon-home-area.h 		\
+	hildon-home-applet.c  	\
+	hildon-home-applet.h  	\
+	hildon-home-select-applets-dialog.c \
+	hildon-home-select-applets-dialog.h \
+	hildon-plugin-list.c    \
+	hildon-plugin-list.h    \
 	background-manager.h			\
 	background-manager.c			\
-	layout-manager.h 			\
-	layout-manager.c 			\
 	home-applet-handler.h 			\
 	home-applet-handler.c 			\
 	hildon-home-plugin-interface.h 		\
-	hildon-home-interface.h 		\
-	home-select-applets-dialog.h 		\
-	home-select-applets-dialog.c 		\
-	screenshot.c 				\
-	screenshot.h
+	hildon-home-interface.h
 
 libhildonhome_la_LIBADD = $(HILDON_LIBS) $(OSSO_LIBS) $(HILDON_FM_LIBS)
 
-home_image_loader_SOURCES = \
-	hildon-home-image-loader.c \
-	hildon-home-image-loader.h
-
-home_image_loader_LDADD = $(GDK_LIBS) $(GNOME_VFS_LIBS) $(GCONF_LIBS) $(OSSO_LIBS)
 
 
 hildon_home_pluginincludeinstdir=$(includedir)/hildon-home-plugin

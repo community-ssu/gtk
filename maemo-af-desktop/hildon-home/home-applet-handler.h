@@ -119,8 +119,6 @@ GType home_applet_handler_get_type(void);
  *                     file. This is also unique identifier for applet 
  *                     in Home context
  *
- *  @param libraryfile The file name of the applet implementation library
- *
  *  @param state_data Statesaved data as returned by applet_save_state.
  *                    NULL if applet is to be loaded in initial state.
  *
@@ -129,7 +127,6 @@ GType home_applet_handler_get_type(void);
  *  @Returns A @HomeAppletHandler.
  **/
 HomeAppletHandler *home_applet_handler_new(const char *desktoppath, 
-                                           const char *libraryfile, 
                                            void *state_data, 
                                            int *state_size);
 
@@ -385,6 +382,8 @@ void home_applet_handler_get_resizable(HomeAppletHandler *handler,
  *  @returns eventbox of applet
  **/
 GtkEventBox *home_applet_handler_get_eventbox(HomeAppletHandler *handler);
+
+GtkWidget *home_applet_handler_get_widget(HomeAppletHandler *handler);
 
 G_END_DECLS
 #endif /* HOME_APPLET_HANDLER_H */
