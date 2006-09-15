@@ -1,3 +1,73 @@
+maemo-af-desktop (2.9.26-1) unstable; urgency=low
+
+  * hildon-navigator/hn-keys.c: Changed HW fake Hardkey Menu from
+  F10 to F4. Fixes: #39988
+  * maemo-af-desktop-main.[ch]: header cleanup.
+  * hildon-home/hildon-home-interface.h: header missing.
+
+  Applied fix to "Application switcher truncates browser page names"
+  (Fixes NB#39987)
+  * hildon-navigator/hn-app-switcher.c: Fixed ellipsis of the window
+    titles
+  * hildon-navigator/hn-entry-info.c: Fixed leak of the tooltip string
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - No plugin is created if after sending "event" to
+  statusbar the plugin's not already loaded. Fixes: NB#39109
+
+  * hildon-navigator/hn-wm-watchable-app.c:
+    - Improved fix for NB#35577. Split failing of 
+    g_key_file_new from g_return_val_if_fail.
+
+  * libhildonmenu/hildon-thumb-menu-item.c:  Set each 
+    label's ellipsize to PANGO_ELLIPSIZE_NONE. Fixes: NB#37617
+
+  * hn-app-switcher.[ch]:
+  * hn-wm.c:
+  * hn-entry-info.c:
+  - Fix for "RSS feed reader is still seen 
+    to be selected in tasknavigator". Fixes: NB#34939
+
+  * hildon-navigator/hn-app-switcher.c: Applied further fixes to NB#39667
+
+  * hildon-statusbar/hildon-statusbar-main.c:
+  - Changed extension window from GTK_WINDOW_POPUP to
+    GTK_WINDOW_TOPLEVEL without decoration. Fixes: NB#38730
+
+  * hildon-navigator/hn-app-switcher.c: Fixed a buffer
+    overflow (Fixes: NB#39667)
+
+  * hildon-status-bar/hildon-status-bar-main.[ch]:
+  - Added HSB_PLUGIN_CONFIG_LIBRARY_VALUE for knowing
+    we don't have to load an statusbar applet. 
+
+  * hildon-navigator/hn-app-menu-item.c:
+  * hildon-navigator/hn-app-button.c:
+  - Fixed memory leaks for hn_entry_info_get_title()
+  * hildon-navigator/hildon-navigator-item.c:
+  * hildon-statusbar/hildon-status-bar-main.c:
+  - Fixed memory leaks. Fixes: NB#39673
+
+  * hildon-navigator/hildon-navigator-window.c,
+    hildon-navigator/hildon-navigator-panel.c,
+    libhildonmenu/libhildonmenu.c: Do not free const char *
+    (Fixed: NB#39640)
+
+  * hildon-navigator/hildon-navigator-panel.[ch]:
+  - Removing plugins from panel by removing from his
+  container. Fixes: NB#4005
+  - Changed HNPanelDirection to GtkOrientation
+  * hildon-navigator/hildon-navigator-item.c: Using
+    parent gtk_widget_destroy implementation.
+
+  * others-menu.c: Applied fix to "Task Navigator requires
+    full binary path in .desktop file Exec field" 
+    Fixes: NB#39036
+  * hn-app-switcher.c: "Application switcher menu button is
+    not working fine" Fixes: NB#39326
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 15 Sep 2006 14:25:51 +0300
+
 maemo-af-desktop (2.9.25-1) unstable; urgency=low
 
   * Updated header texts. Closes bug N#
