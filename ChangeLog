@@ -1,4 +1,9 @@
 2006-09-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkselection.c (_gtk_selection_request): Free mult_atoms also
+	when successful. NB#22354 
+
+2006-09-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_list_key_press): Close the popup
 	when F4 (Hildon menu key) is pressed. NB#40033
