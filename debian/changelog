@@ -19,6 +19,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
   * Fixes: NB#22230 GtkNoteBook: Right arrow head is not shown when the
     caption text of tab is very long.
   * Fixes: NB#40316 Combobox leaks treeview
+  * Fixes: NB#40560 Ellipsized label width is not correctly computed.
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 15 Sep 2006 15:46:12 +0300
 
