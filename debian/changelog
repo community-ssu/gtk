@@ -1,3 +1,18 @@
+gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Package new style debugging symbols (Fixes: NB#40541)
+    - debian/control.in:
+      + rename libgtk2.0-dbg to libgtk2.0-0-dbg
+      (Conflicts: and Replaces: libgtk2.0-dbg)
+    - debian/rules:
+      + remove extra cruft that used to handle debug versions of libraries
+      + adjust to new package name
+      + call dh_strip with --dbg-package=libgtk2.0-$(soname)
+    - debian/libgtk2.0-dbg.dirs, debian/libgtk2.0-dbg.files: removed
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 15 Sep 2006 14:20:26 +0300
+
 gtk+2.0 (2:2.6.10-2.osso13) unstable; urgency=low
 
   * Fixes: NB#11656 Withdrawn windows staying around

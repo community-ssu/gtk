@@ -166,15 +166,6 @@ install: install-shared
 
 	cp $(BUILD_SHARED_DIR)/docs/*.txt debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc
 
-	# for -dbg
-	-rm -rf $(CURDIR)/debian/tmp/usr/lib/debug
-	mkdir -p $(CURDIR)/debian/tmp/usr/lib/debug
-
-	for l in `find $(CURDIR)/debian/tmp/usr/lib -name 'lib*.so*'`; do \
-		cp -vdf $$l \
-			$(CURDIR)/debian/tmp/usr/lib/debug; \
-	done
-
 	# examples (without .svn)
 	mkdir -p $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
 	find examples -name .svn -prune -o \
@@ -251,13 +242,13 @@ binary-arch: build install
 #	dh_installdebconf	
 	dh_installdocs -a
 
-	rm -rf $(CURDIR)/debian/libgtk$(apiver)-dbg/usr/share/doc/libgtk$(apiver)-dbg
+	rm -rf $(CURDIR)/debian/libgtk$(apiver)-$(soname)-dbg/usr/share/doc/libgtk$(apiver)-$(soname)-dbg
 	rm -rf $(CURDIR)/debian/libgtk$(apiver)-dev/usr/share/doc/libgtk$(apiver)-dev
 	rm -rf $(CURDIR)/debian/libgtk$(apiver)-bin/usr/share/doc/libgtk$(apiver)-bin
 
-	dh_link -plibgtk$(apiver)-dbg \
+	dh_link -plibgtk$(apiver)-$(soname)-dbg \
 		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
-		usr/share/doc/libgtk$(apiver)-dbg
+		usr/share/doc/libgtk$(apiver)-$(soname)-dbg
 	dh_link -plibgtk$(apiver)-dev \
 		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
 		usr/share/doc/libgtk$(apiver)-dev
@@ -268,10 +259,10 @@ binary-arch: build install
 	dh_installman -a
 	dh_installinfo -a
 	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
-	dh_strip -a -Nlibgtk$(apiver)-dbg
+	dh_strip -a --dbg-package=libgtk2.0-$(soname)
 	dh_compress -a
 	dh_fixperms -a
-	dh_makeshlibs -a -Nlibgtk$(apiver)-dbg
+	dh_makeshlibs -a -Nlibgtk$(apiver)-$(soname)-dbg
 	dh_makeshlibs -n -X usr/lib/gtk-$(apiver) -plibgtk$(apiver)-$(soname)$(suffix) -V "libgtk${apiver}-${soname}${suffix} (>= 2:2.6.10-1.osso8)"
 	dh_installdeb -a
 	dh_shlibdeps -l$(libpath) -a
