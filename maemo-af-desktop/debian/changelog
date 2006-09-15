@@ -6,7 +6,7 @@ maemo-af-desktop (2.9.27-1) unstable; urgency=low
     - fixed menu Y positioning
 
   * hildon-navigator/hn-others-button.[ch]:
-  - New implementation of others menu.
+  - New implementation of others menu. Fixes: NB#33935
   * hildon-navigator/others-menu.[ch]: Removed
     files of old implementation of others menu.
   * hildon-navigator/hn-wm.c: Modified in order 

@@ -12,7 +12,7 @@
 2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hn-others-button.[ch]:
-	- New implementation of others menu.
+	- New implementation of others menu. Fixes: NB#33935
 	* hildon-navigator/others-menu.[ch]: Removed
 	  files of old implementation of others menu.
 	* hildon-navigator/hn-wm.c: Modified in order 
