@@ -268,5 +268,8 @@ hn_wm_reset_active_window(void);
 extern inline void
 hn_wm_reset_last_active_window(void);
 
+void 
+hn_wm_others_open (void);
+
 #endif /* HILDON_NAVIGATOR_WM_H */
 

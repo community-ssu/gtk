@@ -887,7 +887,9 @@ main_menu_button_toggled_cb (HNAppSwitcher *app_switcher,
     }
 
   HN_DBG("Main menu button toggled");
-  
+
+  hn_wm_others_open ();
+ 
   main_menu_pop (app_switcher, toggle);
 }
 

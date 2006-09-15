@@ -1,3 +1,15 @@
+2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c:
+	* hildon-navigator/hildon-navigator-window.c:
+	* hildon-navigator/hildon-navigator-window.h:
+	* hildon-navigator/hn-wm.c:
+	* hildon-navigator/hn-wm.h:
+	* hildon-navigator/hn-others-button.c:
+	* hildon-navigator/hn-others-button.h:
+	- if you open app-switcher's menu and others menu is
+	  already opened, the former closes the later. Fixes: NB#35154
+
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "TN menu shows logical string §chat_ap_chat"

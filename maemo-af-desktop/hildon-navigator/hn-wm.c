@@ -28,7 +28,7 @@
 #include <signal.h>
 #include <dirent.h>
 #include <X11/Xatom.h>
-  
+
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkevents.h>
@@ -2244,5 +2244,15 @@ hn_wm_dnotify_register ()
       g_warning("unable to register TN callback for %s",
 	        DESKTOPENTRYDIR);
     }
+}
+
+void 
+hn_wm_others_open (void)
+{
+  if (gtk_toggle_button_get_active 
+	   (GTK_TOGGLE_BUTTON (hn_window_get_others_menu (tasknav))))
+  {
+    hn_window_close_others_menu (tasknav);
+  }
 }
 

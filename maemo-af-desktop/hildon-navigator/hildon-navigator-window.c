@@ -377,6 +377,24 @@ hn_window_get_others_menu (HildonNavigatorWindow *window)
   return priv->others_button;
 }
 
+void 
+hn_window_close_others_menu (HildonNavigatorWindow *window)
+{
+  HildonNavigatorWindowPrivate *priv;
+
+  g_return_if_fail (window);
+  g_return_if_fail (HILDON_IS_NAVIGATOR_WINDOW (window));
+
+  priv = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
+
+  gtk_toggle_button_set_active 
+    (GTK_TOGGLE_BUTTON (priv->others_button),FALSE);
+
+  hn_others_button_close_menu 
+    (HN_OTHERS_BUTTON (priv->others_button));
+}
+
+
 GtkWidget *
 hn_window_get_button_focus (HildonNavigatorWindow *window, gint what)
 {

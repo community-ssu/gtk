@@ -976,3 +976,11 @@ hn_others_button_dnotify_register (HNOthersButton * button)
     }
 }
 
+void
+hn_others_button_close_menu (HNOthersButton * button)
+{
+  g_return_if_fail (button && HN_IS_OTHERS_BUTTON (button));
+  g_return_if_fail (button->priv->menu);
+
+  gtk_menu_popdown (GTK_MENU (button->priv->menu));
+}

@@ -84,6 +84,8 @@ void hn_window_set_focus (HildonNavigatorWindow *window,
 
 GtkWidget *hn_window_get_others_menu (HildonNavigatorWindow *window);
 
+void hn_window_close_others_menu (HildonNavigatorWindow *window);
+
 GtkWidget *hn_window_get_button_focus (HildonNavigatorWindow *window,
 				       gint);
 

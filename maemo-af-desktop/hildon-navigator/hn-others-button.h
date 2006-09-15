@@ -66,6 +66,7 @@ GType hn_others_button_get_type (void) G_GNUC_CONST;
 
 GtkWidget *  hn_others_button_new                  (void);
 void         hn_others_button_dnotify_register     (HNOthersButton * button);
+void         hn_others_button_close_menu	   (HNOthersButton * button);
 
 G_END_DECLS
 #endif /*HN_OTHERS_BUTTON_H*/
