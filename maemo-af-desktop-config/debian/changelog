@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.1.2-1) unstable; urgency=low
+
+  * applet_manager.conf: Offset the applet by y-60 for the new home
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 15 Sep 2006 15:14:49 +0300
+
 maemo-af-desktop-config (0.1.1-1) unstable; urgency=low
 
   * plugins.conf: make contacts and presence mandatory

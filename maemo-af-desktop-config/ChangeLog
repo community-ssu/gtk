@@ -1,3 +1,8 @@
+2006-09-15  Johan Bilien <johan.bilien@nokia.com>
+
+	* applet_manager.conf: Offset the applet by y-60 for the new home
+	* configure.ac: 0.1.2
+
 2006-08-02  Johan Bilien <johan.bilien@nokia.com>
 
 	* plugins.conf: make contacts and presence mandatory
