@@ -1838,6 +1838,8 @@ _gtk_selection_request (GtkWidget *widget,
 	      info->conversions[i].property = ((GdkAtom *)mult_atoms)[2*i+1];
 	    }
 	}
+
+      g_free (mult_atoms);
     }
   else				/* only a single conversion */
     {
