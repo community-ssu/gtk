@@ -92,8 +92,8 @@ libhildonnavigator_la_SOURCES = \
 	hn-app-switcher.h \
 	close-application-dialog.c \
 	close-application-dialog.h \
-	others-menu.c \
-	others-menu.h \
+	hn-others-button.c \
+	hn-others-button.h \
 	hn-keys.c \
 	hn-keys.h
 

@@ -179,13 +179,8 @@ hn_wm_compute_watched_window_hibernation_key (Window xwin,
 gboolean
 hn_wm_init (HNAppSwitcher *as);
 
-/*
- *  Because of the way in which the hildon_dnotify lib works and the way in
- *  which other_menu is designed, this callback has to be installed from
- *  the others_menu
- */
 void
-hn_wm_dnotify_cb ( char *path, void * data);
+hn_wm_dnotify_register (void);
 
 /* keyboard handling functions */
 

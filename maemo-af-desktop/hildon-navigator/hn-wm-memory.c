@@ -37,7 +37,6 @@
 #include "hn-wm-watched-window.h"
 #include "hn-wm-watchable-app.h"
 #include "hildon-navigator.h"
-#include "others-menu.h"
 #include "osso-manager.h"
 #include "hildon-navigator-window.h"
 

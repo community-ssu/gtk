@@ -52,7 +52,6 @@
 #include "hn-wm-memory.h"
 #include "hn-entry-info.h"
 #include "hn-app-switcher.h"
-#include "others-menu.h"
 #include "osso-manager.h"
 #include "hildon-navigator-window.h"
 #include "close-application-dialog.h"
@@ -147,6 +146,7 @@ struct HNWM   /* Our main struct */
   gint          timer_id;
   gboolean      about_to_shutdown;
   gboolean      has_focus;
+  guint         dnotify_timeout_id;
 };
 
 static HNWM hnwm; 			/* Singleton instance */
@@ -1677,25 +1677,20 @@ dnotify_hash_table_foreach_remove_func (gpointer key,
   return FALSE;
 }
 
-void
-hn_wm_dnotify_cb ( char *path, void * data)
+static gboolean 
+hn_wm_dnotify_process ()
 {
   GHashTable * new_apps;
   struct _cb_steal_data std;
-  
-  /*
-   * for some reason the path parameter we receive contains complete gibberish,
-   * but since we only registerd this for DESKTOPENTRYDIR, we can ignore it
-   */
-  
-  HN_DBG("called with path [%s], data 0x%x", path, (guint)data);
+
+  hnwm.dnotify_timeout_id = 0;
 
   /* reread all .desktop files and compare each agains existing apps; add any
    * new ones, updated existing ones
    *
    * This is quite involved, so we will take a shortcut if we can
    */
-
+  
   if(!g_hash_table_size(hnwm.watched_windows) &&
      !g_hash_table_size(hnwm.watched_windows_hibernating))
     {
@@ -1706,7 +1701,7 @@ hn_wm_dnotify_cb ( char *path, void * data)
       HN_DBG("Have no watched windows -- reinitialising watched apps");
       g_hash_table_destroy(hnwm.watched_apps);
       hnwm.watched_apps = hn_wm_watchable_apps_init();
-      return;
+      return FALSE;
   }
 
   HN_DBG("Some watched windows -- doing it the hard way");
@@ -1739,6 +1734,8 @@ hn_wm_dnotify_cb ( char *path, void * data)
 
   /* whatever is left in the new_apps hash, we are not interested in */
   g_hash_table_destroy(new_apps);
+
+  return FALSE;
 }
 
 
@@ -2217,5 +2214,35 @@ hn_wm_fullscreen_mode ()
 
   /* destktop cannot run in fullscreen mode */
   return FALSE;
+}
+
+/* Dnotify callback function -- we filter dnotify calls through a timout, see
+ * comments on hn_wm_dnotify_process ()
+ */
+static void
+hn_wm_dnotify_cb ( char *path, void * data)
+{
+  if( !hnwm.dnotify_timeout_id )
+    {
+      hnwm.dnotify_timeout_id =
+      g_timeout_add(1000,
+                    (GSourceFunc)hn_wm_dnotify_process,
+                    NULL);
+    }
+}
+
+/* Public function to register our dnotify callback (called from
+ * hildon-navigator-main.c)
+ */
+void
+hn_wm_dnotify_register ()
+{
+  if(hildon_dnotify_set_cb((hildon_dnotify_cb_f *)hn_wm_dnotify_cb,
+                           DESKTOPENTRYDIR,
+                           NULL) != HILDON_OK)
+    {
+      g_warning("unable to register TN callback for %s",
+	        DESKTOPENTRYDIR);
+    }
 }
 

@@ -1,3 +1,4 @@
+/* -*- mode:C; c-file-style:"gnu"; -*- */
 /*
  * This file is part of maemo-af-desktop
  *
@@ -8,7 +9,8 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * version 2.1 as published by the Free Software Foundation.
+ * as published by the Free Software Foundation; either version 2.1 of
+ * the License, or (at your option) any later version.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -34,7 +36,7 @@
 #include "hildon-navigator.h"
 #include "hildon-navigator-panel.h"
 #include "hn-app-switcher.h"
-#include "others-menu.h"
+#include "hn-others-button.h"
 
 #include "hn-wm.h"
 #include "kstrace.h"
@@ -53,10 +55,7 @@ struct _HildonNavigatorWindowPrivate
 {
   GtkWidget *panel;
   GtkWidget *app_switcher;
-
-  OthersMenu_t *others_menu;
-
-  void *app_switcher_dnotify_cb;
+  GtkWidget *others_button;
 
   gboolean focus;
 };
@@ -175,6 +174,7 @@ configuration_changed (char *path, gpointer *data)
     hn_panel_load_plugins_from_file (panel, config_file);
 
     g_free (config_file);
+    g_free (home_dir);
 }
 
 static void
@@ -185,10 +185,6 @@ initialize_navigator_menus (HildonNavigatorWindowPrivate *priv)
   /*Initialize application switcher menu*/
   application_switcher_initialize_menu(tasknav->app_switcher);
 #endif
-  priv->app_switcher_dnotify_cb = hn_wm_dnotify_cb;
-
-  /* Initialize others menu */
-  others_menu_initialize_menu (priv->others_menu, hn_wm_dnotify_cb);
 }
 
 static void 
@@ -203,7 +199,10 @@ hildon_navigator_window_finalize (GObject *self)
   window = HILDON_NAVIGATOR_WINDOW (self);
   priv   = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
 
-  others_menu_deinit (priv->others_menu);
+  /* deinit dnotify */
+  hildon_dnotify_handler_clear ();
+  
+  gtk_widget_destroy (priv->others_button);
 }
 
 static void 
@@ -212,7 +211,7 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   HildonNavigatorWindowPrivate *priv;
   gchar *plugin_dir, *config_file, *home_dir;
   gboolean dnotify_ret;
-
+  
   g_return_if_fail (window);
 
   GTK_WINDOW (window)->type = GTK_WINDOW_TOPLEVEL;
@@ -256,27 +255,16 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
     hn_panel_load_plugins_from_file (HILDON_NAVIGATOR_PANEL (priv->panel), 
 				     NAVIGATOR_FACTORY_PLUGINS);
   
-  /* This is moved here since it inits the dnotify stuff and initing them
-     * twice would result in an error according to
-     * hildon-base-lib/hildon-base-dnotify.h
-     */
-  priv->others_menu = others_menu_init();
+  priv->others_button = hn_others_button_new ();
+  
+  if (priv->others_button)
+    {
+      hn_panel_add_button ( HILDON_NAVIGATOR_PANEL (priv->panel),
+			    priv->others_button);
 
-  /* Create the directory if it does not exist, as we need to monitor
-     * it for the TN applet to write its configuration */
-  if (!g_file_test(plugin_dir, G_FILE_TEST_IS_DIR))
-    g_mkdir(plugin_dir, 0755); /* THIS WILL CHANGE! CREATE IT ANYWAY! */
-
-  dnotify_ret = hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)configuration_changed,
-                	      	       plugin_dir,
-				       priv->panel);
-  /*if (dnotify_ret != HILDON_OK)
-    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );*/
-
-  if (priv->others_menu)
-    hn_panel_add_button ( HILDON_NAVIGATOR_PANEL (priv->panel),
-			  others_menu_get_button (priv->others_menu));
-
+      hn_others_button_dnotify_register (HN_OTHERS_BUTTON (priv->others_button));
+    }
+  
   priv->app_switcher = hn_app_switcher_new ();
   gtk_box_pack_start ( GTK_BOX (priv->panel), 
 		       priv->app_switcher, 
@@ -286,9 +274,35 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
 
   priv->focus = FALSE;
 
+  /* Create the directory if it does not exist, as we need to monitor
+     * it for the TN applet to write its configuration */
+  if (!g_file_test(plugin_dir, G_FILE_TEST_IS_DIR))
+    g_mkdir(plugin_dir, 0755); /* THIS WILL CHANGE! CREATE IT ANYWAY! */
+
+
+  /* initialize dnotify*/
+  if (hildon_dnotify_handler_init() == HILDON_OK )
+    {
+      /* register dnotify callbacks */
+      dnotify_ret =
+	hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)configuration_changed,
+			       plugin_dir,
+			       priv->panel);
+      
+      hn_others_button_dnotify_register (
+				HN_OTHERS_BUTTON (priv->others_button));
+
+      hn_wm_dnotify_register ();
+    }
+  else
+    {
+      ULOG_ERR( "failed to initialize dnotify" );
+    }
+  
   /* cleanup */
   g_free (plugin_dir);
   g_free (config_file);
+  g_free (home_dir);
 }
 
 HildonNavigatorWindow *
@@ -360,7 +374,7 @@ hn_window_get_others_menu (HildonNavigatorWindow *window)
 
   priv = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
 
-  return others_menu_get_button (priv->others_menu);
+  return priv->others_button;
 }
 
 GtkWidget *

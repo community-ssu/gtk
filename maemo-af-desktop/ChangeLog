@@ -1,3 +1,18 @@
+2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-others-button.[ch]:
+	- New implementation of others menu.
+	* hildon-navigator/others-menu.[ch]: Removed
+	  files of old implementation of others menu.
+	* hildon-navigator/hn-wm.c: Modified in order 
+	  handle new others menu implementation.
+	* hildon-navigator/hn-wm-memory.c:
+	* hildon-navigator/hn-wm-watched-app.c:
+	* maemo-af-desktop-main.c:
+	  Removed old others-menu.h header.
+	* hildon-navigator/Makefile.am:
+	  Changed others-menu.[ch] to hn-others-button.[ch]
+
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.26

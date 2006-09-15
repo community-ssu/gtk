@@ -69,7 +69,6 @@
 #include "hildon-navigator/hildon-navigator.h"
 #include "hildon-navigator/hildon-navigator-window.h"
 #include "hildon-navigator/hn-app-switcher.h"
-#include "hildon-navigator/others-menu.h"
 #include "hildon-status-bar/hildon-status-bar-lib.h"
 #include "hildon-status-bar/hildon-status-bar-item.h"
 #include "hildon-status-bar/hildon-status-bar-interface.h"

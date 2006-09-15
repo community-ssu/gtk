@@ -41,7 +41,6 @@
 #include "hn-entry-info.h"
 #include "hn-app-switcher.h"
 #include "osso-manager.h"
-#include "others-menu.h"          /* needed by hildon-navigator-main.h */
 
 #define PING_TIMEOUT_MESSAGE_STRING       _( "qgn_nc_apkil_notresponding" )
 #define PING_TIMEOUT_RESPONSE_STRING      _( "qgn_ib_apkil_responded" )
