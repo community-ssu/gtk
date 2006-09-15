@@ -103,7 +103,6 @@ hn_wm_launch_banner_info_free (HNWMLaunchBannerInfo* info)
   g_free(info);
 }
 
-
 HNWMWatchableApp*
 hn_wm_watchable_app_new_dummy (void)
 {
@@ -217,9 +216,17 @@ hn_wm_watchable_app_new (const char * file)
       goto out;
     }
 
+  /* translate the application name as appropriate */
+  if (app_name)
+    {
+      app->app_name = g_strdup ((text_domain && *text_domain) ?
+                                dgettext(text_domain, app_name): _(app_name));
+
+      g_free (app_name);
+    }
+  
   app->icon_name      = icon_name; 
   app->service        = service;    
-  app->app_name       = app_name; 
   app->exec_name      = exec_name;
   app->text_domain    = text_domain;
 

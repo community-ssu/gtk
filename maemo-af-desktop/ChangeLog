@@ -1,5 +1,12 @@
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "TN menu shows logical string §chat_ap_chat"
+	Fixes: NB#37658
+	* hildon-navigator/hn-wm-watchable-app.c: Always translate the
+	  application name in the tooltip.
+
+2006-09-15  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Task Navigator bg-kills applications it doesn't know how
 	to resume" Fixes: NB#40028
 	* hildon-navigator/hn-wm-watchable-app.c: Applications with no
