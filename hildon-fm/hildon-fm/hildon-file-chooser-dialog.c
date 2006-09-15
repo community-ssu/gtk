@@ -422,9 +422,11 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
 
         if (name)
         {
+	  gboolean edited = !selection && 
+		  	     (pos != g_utf8_strlen (gtk_entry_get_text(GTK_ENTRY(priv->entry_name)), -1));
           gtk_entry_set_text(GTK_ENTRY(priv->entry_name), name);
           g_free(name);
-          if (selection)
+          if (!edited)
             gtk_editable_select_region(GTK_EDITABLE(priv->entry_name), 0, -1);
           else
             /* if the user has already started to edit the name,
