@@ -1,3 +1,13 @@
+maemo-af-desktop (2.9.90-1) unstable; urgency=low
+
+  * hildon-home/*: Imported layout mode and applet management rewrite
+    Fixes: NB#40246, Fixes: NB#32663, Fixes: NB#36039, Fixes: NB#38283,
+    Fixes: NB#37073, Fixes: NB#39280, Fixes: NB#34074, Fixes: NB#31018,
+    Fixes: NB#39007, Fixes: NB#39531, Fixes: NB#39591, Fixes: NB#40225,
+    Fixes: NB#37011
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 15 Sep 2006 16:02:16 +0300
+
 maemo-af-desktop (2.9.27-1) unstable; urgency=low
 
   * hildon-navigator/hn-others-button.c: forward-ported a few bugfixes:
