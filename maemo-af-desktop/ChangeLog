@@ -1,5 +1,9 @@
 2006-09-15  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.27
+
+2006-09-15  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-others-button.c: forward-ported a few bugfixes:
 	  - fixed flickering when switching from thumb to normal
 	  - fixed localization of %d items

@@ -1,3 +1,25 @@
+maemo-af-desktop (2.9.27-1) unstable; urgency=low
+
+  * hildon-navigator/hn-others-button.c: forward-ported a few bugfixes:
+    - fixed flickering when switching from thumb to normal
+    - fixed localization of %d items
+    - fixed menu Y positioning
+
+  * hildon-navigator/hn-others-button.[ch]:
+  - New implementation of others menu.
+  * hildon-navigator/others-menu.[ch]: Removed
+    files of old implementation of others menu.
+  * hildon-navigator/hn-wm.c: Modified in order 
+    handle new others menu implementation.
+  * hildon-navigator/hn-wm-memory.c:
+  * hildon-navigator/hn-wm-watched-app.c:
+  * maemo-af-desktop-main.c:
+    Removed old others-menu.h header.
+  * hildon-navigator/Makefile.am:
+    Changed others-menu.[ch] to hn-others-button.[ch]
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 15 Sep 2006 15:05:35 +0300
+
 maemo-af-desktop (2.9.26-1) unstable; urgency=low
 
   * hildon-navigator/hn-keys.c: Changed HW fake Hardkey Menu from
