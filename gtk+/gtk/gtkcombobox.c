@@ -4168,6 +4168,7 @@ gtk_combo_box_list_key_press (GtkWidget   *widget,
   guint state = event->state & gtk_accelerator_get_default_mod_mask ();
 
   if (event->keyval == GDK_Escape ||
+      event->keyval == GDK_F4 || /* hildon menu key */
       event->keyval == GDK_F5 || /* hildon home key */
       ((event->keyval == GDK_Up || event->keyval == GDK_KP_Up) && 
        state == GDK_MOD1_MASK))
