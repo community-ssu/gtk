@@ -1,3 +1,9 @@
+2006-09-15  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Ellipsize name on details
+	dialog. (N40046)
+
 2006-09-14  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* hildon-fm/hildon-file-chooser-dialog.c

@@ -344,6 +344,7 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     priv->file_device = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_location = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_name = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
+    gtk_label_set_ellipsize(GTK_LABEL(priv->file_name), PANGO_ELLIPSIZE_END);
     priv->file_type = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_size = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_date = g_object_new(GTK_TYPE_LABEL,"xalign", 0.0f, NULL);
