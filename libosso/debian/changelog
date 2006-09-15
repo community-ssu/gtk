@@ -1,6 +1,5 @@
 libosso (1.18-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added postinst script for calling ldconfig.
   * Fixed problems in supporting non-com.nokia-prefixed services.
     Fixes: NB#31831, NB#32067
@@ -13,7 +12,7 @@ libosso (1.18-1) unstable; urgency=low
     in osso-init.c and osso-rpc.c (there is a filter so those are redundant).
   * Fixed a brain-damage in appname_to_valid_path_component().
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 15 Sep 2006 16:12:50 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 15 Sep 2006 18:14:51 +0300
 
 libosso (1.17-1) unstable; urgency=low
 
