@@ -4281,8 +4281,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
                         "passive_focus", &passivefocus,
 			NULL);
 
-  printf ("horizontal separator %d\n", horizontal_separator);
-
   g_object_get (widget, "dotted_lines", &dottedlines, NULL);
 
   if (tree_view->priv->tree == NULL)
@@ -4387,9 +4385,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	}
 
       max_height = ROW_HEIGHT (tree_view, BACKGROUND_HEIGHT (node));
-      printf ("Node offset: %d, left offset %d, right offset %d\n", node->offset, node->left->offset, node->right->offset);
-      printf ("BACKGROUND HEIGHT IS %d\n", BACKGROUND_HEIGHT (node));
-      printf ("MAX HEIGHT %d\n", max_height);
 
       x_offset = -event->area.x;
       cell_offset = 0;
@@ -4448,8 +4443,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
           cell_area.x += horizontal_separator / 2;
           cell_area.height -= vertical_separator;
 	  cell_area.width -= horizontal_separator;
-
-	  printf ("cell area height: %d width: %d\n", cell_area.height, cell_area.width);
 
 	  if (gdk_region_rect_in (event->region, &background_area) == GDK_OVERLAP_RECTANGLE_OUT)
 	    {
@@ -4686,8 +4679,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
                   flags &= GTK_CELL_RENDERER_INSENSITIVE;
                 }
 
-	      printf ("********** H %d\n", cell_area.height);
-
 	      if (is_separator)
 		gtk_paint_hline (widget->style,
 				 event->window,
@@ -4764,8 +4755,6 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	    }
 	  else
 	    {
-	      printf ("¿?¿?¿?¿? %d\n", cell_area.height);
-
 	      if (is_separator)
 		gtk_paint_hline (widget->style,
 				 event->window,
