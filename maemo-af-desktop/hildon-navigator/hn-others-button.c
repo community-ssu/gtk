@@ -96,6 +96,8 @@
 #define HN_OTHERS_BUTTON_GET_PRIVATE(obj) \
 (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HN_TYPE_OTHERS_BUTTON, HNOthersButtonPrivate))
 
+#define MENU_ITEM_N_ITEMS(n)    dngettext("hildon-fm", "sfil_li_folder_contents_item", "sfil_li_folder_contents_items", n)
+
 /* forward declarations */
 static void
 hn_others_button_create_menu (HNOthersButton * button);
@@ -447,10 +449,9 @@ hn_others_menu_get_items (GtkMenu * menu,
 			    HILDON_NAVIGATOR_MENU_NAME);
 
 	/* Create a menu item and add it to the menu.
-	 * FIXME: Localization?
 	 */
 	children     = gtk_tree_model_iter_n_children (model, iter);
-	child_string = g_strdup_printf("%i items", children);
+    child_string = g_strdup_printf(MENU_ITEM_N_ITEMS(children), children);
 	
 	menu_item = hildon_thumb_menu_item_new_with_labels(
 				(item_text_domain && *item_text_domain)?
@@ -492,9 +493,8 @@ hn_others_menu_get_items (GtkMenu * menu,
 				HILDON_NAVIGATOR_MENU_NAME);
 
 	    /* Create a menu item and add it to the menu.
-	     * FIXME: Localization?
 	     */
-	    child_string = g_strdup_printf("%i items", children);
+        child_string = g_strdup_printf(MENU_ITEM_N_ITEMS(children), children);
 	    menu_item = hildon_thumb_menu_item_new_with_labels (
 				(item_text_domain && *item_text_domain)?
 				dgettext(item_text_domain, item_name):
@@ -715,7 +715,11 @@ hn_others_button_get_workarea (GtkAllocation *allocation)
 }
 
 static void
-hn_others_button_get_menu_position(GtkMenu * menu, gint * x, gint * y)
+hn_others_button_get_menu_position(GtkMenu * menu,
+                                   gint * x,
+                                   gint * y,
+                                   gboolean *push_in,
+                                   GtkWidget *button)
 {
   GtkRequisition   req;
   GdkScreen      * screen = gtk_widget_get_screen(GTK_WIDGET(menu));
@@ -730,15 +734,16 @@ hn_others_button_get_menu_position(GtkMenu * menu, gint * x, gint * y)
   menu_height = req.height;
   main_height = gdk_screen_get_height(screen);
 
+  *push_in = FALSE;
   *x =  workarea.x;
 
-  if (main_height - MENU_Y_POS < menu_height)
+  if (main_height - button->allocation.y < menu_height)
     {
       *y = MAX(0, ((main_height - menu_height) / 2));
     }
   else
     {
-      *y = MENU_Y_POS;
+      *y = button->allocation.y;
     }
 }
 
@@ -751,7 +756,7 @@ hn_others_button_menu_show (HNOthersButton * button)
 		 NULL,
 		 NULL,
 		 (GtkMenuPositionFunc) hn_others_button_get_menu_position,
-		 NULL,
+		 button,
 		 1,
 		 gtk_get_current_event_time());
   
@@ -762,6 +767,9 @@ hn_others_button_menu_show (HNOthersButton * button)
 static void
 hn_others_button_button_toggled (HNOthersButton *button, gpointer d)
 {
+  if (button->priv->collapse_id)
+    return;
+
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
     {
       HN_DBG ("button not active -- not showing menu");
