@@ -1,3 +1,9 @@
+2006-09-15  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/report.h (debug): Add a missing # in front of __VA_ARGS__.
+	(error): Likewise.
+	(info): Likewise.
+
 2006-09-13  Guillem Jover  <guillem.jover@nokia.com>
 
 	* README: Write about the new booster module architecture.

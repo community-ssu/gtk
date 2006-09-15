@@ -46,13 +46,13 @@ extern void report_set_output(enum report_output new_output);
 extern void report(enum report_type type, char *msg, ...);
 
 #ifdef DEBUG
-#define debug(msg, ...) report(report_debug, msg, #__VA_ARGS__)
+#define debug(msg, ...) report(report_debug, msg, ##__VA_ARGS__)
 #else
 #define debug(...)
 #endif
 
-#define info(msg, ...) report(report_info, msg, #__VA_ARGS__)
-#define error(msg, ...) report(report_error, msg, #__VA_ARGS__)
+#define info(msg, ...) report(report_info, msg, ##__VA_ARGS__)
+#define error(msg, ...) report(report_error, msg, ##__VA_ARGS__)
 
 extern void ATTR_NORET die(int status, char *msg, ...);
 
