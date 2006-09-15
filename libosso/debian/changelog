@@ -9,8 +9,10 @@ libosso (1.18-1) unstable; urgency=low
     default service name is not tried more than once.
   * Message handling was rewritten: unregistering message and signal
     handlers should now be more predictable.
+  * Removed redundant dbus_connection_register_object_path() calls made
+    in osso-init.c and osso-rpc.c (there is a filter so those are redundant).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 12 Sep 2006 18:08:55 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 15 Sep 2006 16:12:50 +0300
 
 libosso (1.17-1) unstable; urgency=low
 

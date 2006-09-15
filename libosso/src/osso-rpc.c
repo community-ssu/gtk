@@ -50,12 +50,6 @@ static osso_return_t _rpc_run_with_argfill (osso_context_t *osso,
 					    void *argfill_data);
 
 typedef struct {
-    osso_rpc_cb_f *func;
-    osso_rpc_retval_free_f *retval_free;
-    gpointer data;
-}_osso_rpc_t;
-
-typedef struct {
     osso_rpc_async_f *func;
     gpointer data;
     gchar *interface;
@@ -548,13 +542,8 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                                    osso_rpc_retval_free_f *retval_free,
                                    gboolean use_system_bus)
 {
-    static const DBusObjectPathVTable vt = {
-       .message_function = _msg_handler,
-       .unregister_function = NULL
-    };
     _osso_callback_data_t *rpc;
     int ret;
-    dbus_bool_t bret;
 
     ULOG_DEBUG_F("s '%s' o '%s' i '%s', %s bus",
                  service, object_path, interface,
@@ -602,17 +591,6 @@ static osso_return_t _rpc_set_cb_f(osso_context_t *osso,
                 osso->sessionbus_service_registered = TRUE;
             }
         }
-    }
-
-    dprint("registering object_path: '%s'", object_path);
-    bret = dbus_connection_register_object_path(use_system_bus ?
-               osso->sys_conn : osso->conn, object_path, &vt,
-               (void *)osso);
-    if (!bret) {
-        ULOG_WARN_F("ignoring dbus_connection_register_object_path"
-                    " failure, maybe it was already registered");
-	/* error ignored because we cannot distinguish OOM and already
-	 * registered object path */
     }
 
     rpc->user_cb = cb;
@@ -716,13 +694,6 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
 	return OSSO_INVALID;
     }
 
-    /* TODO: this would be nice to call but needs more checking,
-     *       because it registers whole subtree and could unregister
-     *       someone else's object paths in the same time (since the
-     *       connection is shared).
-    dbus_connection_unregister_object_path(osso->conn, object_path);
-    */
-
     user_data.user_cb = cb;
     user_data.user_data = data;
     user_data.data = NULL;
@@ -772,40 +743,6 @@ osso_return_t osso_rpc_set_timeout(osso_context_t *osso, gint timeout)
     osso->rpc_timeout = timeout;
     return OSSO_OK;
 }
-
-#if 0
-/************************************************************************/
-static void _rm_cb_f(osso_context_t *osso, const gchar *interface,
-		     osso_rpc_cb_f *cb, gpointer data)
-{   
-    guint i=0;
-    if( (osso == NULL) || (interface == NULL) || (cb == NULL) )
-	return;
-
-    for(i = 0; i < osso->ifs->len; i++) {
-	_osso_interface_t *intf;
-
-	intf = &g_array_index(osso->ifs, _osso_interface_t, i);
-
-	if (intf->handler == &_rpc_handler &&
-	    strcmp(intf->interface, interface) == 0 && intf->method) {
-	    _osso_rpc_t *rpc;
-
-	    rpc = (_osso_rpc_t *)intf->data;
-
-	    if (rpc->func == cb && rpc->data == data) {
-		g_free(intf->interface);
-                intf->interface = NULL;
-		g_array_remove_index_fast(osso->ifs, i);
-		free(rpc);
-	    }
-	    return;
-	}
-    }
-
-    return;
-}
-#endif
 
 /************************************************************************/
 

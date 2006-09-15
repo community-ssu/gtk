@@ -323,11 +323,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 {
     DBusConnection *conn;
     DBusError err;
-    static const DBusObjectPathVTable vtable = {
-        .message_function = _msg_handler,
-        .unregister_function = NULL
-    };
-    gint i;
+    int ret;
     
     dbus_error_init(&err);
     dprint("getting the DBUS");
@@ -342,10 +338,9 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dprint("connection to the D-BUS daemon was a success");
     dprint("service='%s'", osso->service);
 
-    i = dbus_bus_request_name(conn, osso->service,
-                              DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &err);
-    dprint("acquire service returned '%d'", i);
-    if (i == -1) {
+    ret = dbus_bus_request_name(conn, osso->service,
+                                DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &err);
+    if (ret == -1) {
         ULOG_ERR_F("dbus_bus_request_name failed: %s", err.message);
 	dbus_error_free(&err);
 	goto dbus_conn_error1;
@@ -353,24 +348,18 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     
     dprint("osso->object_path='%s'", osso->object_path);
 
-    if(!dbus_connection_register_object_path(conn, osso->object_path,
-					     &vtable, osso)) {
-	ULOG_ERR_F("Unable to register object '%s'\n", osso->object_path);
-	goto dbus_conn_error2;
-    }
-   
-    dbus_connection_set_exit_on_disconnect(conn, FALSE );
+    dbus_connection_set_exit_on_disconnect(conn, FALSE);
 
 #ifdef LIBOSSO_DEBUG
-    dprint("adding Filter function %p",&_debug_filter);
+    dprint("adding debug filter function %p", _debug_filter);
     if(!dbus_connection_add_filter(conn, &_debug_filter, NULL, NULL))
     {
         ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error3;
     }
 #endif
-    dprint("adding Filter function %p",&_msg_handler);
-    if(!dbus_connection_add_filter(conn, &_msg_handler, osso, NULL))
+
+    if (!dbus_connection_add_filter(conn, _msg_handler, osso, NULL))
     {
         ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error4;
@@ -386,9 +375,7 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
     dbus_conn_error3:
 #endif
-    dbus_connection_unregister_object_path(conn, osso->object_path);
 
-    dbus_conn_error2:
     dbus_conn_error1:
         
     /* no explicit disconnection, because the connections are shared */
@@ -413,7 +400,6 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
 #ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
 #endif
-    dbus_connection_unregister_object_path(conn, osso->object_path);
     /* no explicit disconnection, because the connections are shared */
     /* no unref either, because it makes assert() fail in DBus */
     return;
