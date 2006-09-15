@@ -1,3 +1,8 @@
+2006-09-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_list_key_press): Close the popup
+	when F4 (Hildon menu key) is pressed. NB#40033
+
 2006-09-14  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtknotebook.c (gtk_notebook_pages_allocate): Fix compiler warnings.
