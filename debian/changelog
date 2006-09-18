@@ -1,6 +1,4 @@
-gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
 
   [ Tommi Komulainen ]
   * Extension events are now always enabled for touchscreen
@@ -16,7 +14,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
   * Fixes: NB#22354 Minor memory leak in Gtk selection handling
   * Fixes: NB#40033 Menu HW key does not close combobox popup
 
-  [ Xan López]
+  [ Xan López ]
   * Fixes: NB#3490 TreeView not scrolling to first row
   * Fixes: NB#22230 GtkNoteBook: Right arrow head is not shown when the
     caption text of tab is very long.
@@ -25,7 +23,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
   * Fixes: NB#40316 Combobox leaks treeview
   * Fixes: NB#40560 Ellipsized label width is not correctly computed.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 18 Sep 2006 12:37:36 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 18 Sep 2006 13:44:53 +0300
 
 gtk+2.0 (2:2.6.10-2.osso13) unstable; urgency=low
 
