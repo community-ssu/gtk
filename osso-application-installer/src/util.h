@@ -411,6 +411,7 @@ const char *gettext_alt (const char *id, const char *english);
 /* Return the device name.
  */
 const char *device_name ();
+void setup_dbus();
 
 /* Set up a handler that emits the given RESPONSE for DIALOG when
    the user hits Escape.
