@@ -1,3 +1,9 @@
+2006-09-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	(hildon_file_details_dialog_init): Ellipsize location on details
+        dialog. (N38147)
+
 2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.10.
