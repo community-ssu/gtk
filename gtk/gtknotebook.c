@@ -1261,6 +1261,7 @@ gtk_notebook_realize (GtkWidget *widget)
   notebook->event_window = gdk_window_new (gtk_widget_get_parent_window (widget), 
 					   &attributes, attributes_mask);
   gdk_window_set_user_data (notebook->event_window, notebook);
+  _gtk_widget_window_set_extension_events (widget, notebook->event_window);
 
   widget->style = gtk_style_attach (widget->style, widget->window);
 }

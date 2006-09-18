@@ -1291,6 +1291,7 @@ _gtk_tree_view_column_realize_button (GtkTreeViewColumn *column)
   column->window = gdk_window_new (tree_view->priv->header_window,
 				   &attr, attributes_mask);
   gdk_window_set_user_data (column->window, tree_view);
+  _gtk_widget_window_set_extension_events (GTK_WIDGET (tree_view), column->window);
 
   gtk_tree_view_column_update_button (column);
 

@@ -458,6 +458,7 @@ gtk_event_box_realize (GtkWidget *widget)
       priv->event_window = gdk_window_new (widget->window,
 					   &attributes, attributes_mask);
       gdk_window_set_user_data (priv->event_window, widget);
+      _gtk_widget_window_set_extension_events (widget, priv->event_window);
     }
 
 

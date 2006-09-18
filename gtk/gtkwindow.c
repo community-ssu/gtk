@@ -4155,8 +4155,8 @@ gtk_window_realize (GtkWidget *widget)
       
       window->frame = gdk_window_new (gtk_widget_get_root_window (widget),
 				      &attributes, attributes_mask);
-						 
       gdk_window_set_user_data (window->frame, widget);
+      _gtk_widget_window_set_extension_events (widget, window->frame);
       
       attributes.window_type = GDK_WINDOW_CHILD;
       attributes.x = window->frame_left;
