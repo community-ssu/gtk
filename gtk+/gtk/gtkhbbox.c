@@ -53,6 +53,9 @@ static void osso_gtk_hbutton_child_showhide_handler (GtkWidget *widget,
 static void osso_gtk_hbutton_box_remove_child_signal_handlers (GtkHButtonBox *hbbox,
 							       GtkWidget *removed_widget,
 							       gpointer data);
+static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
+						     GtkWidget *addremovewidget,
+						     gpointer data);
 
 static gint default_spacing = 30;
 static gint default_layout_style = GTK_BUTTONBOX_EDGE;
@@ -136,9 +139,11 @@ gtk_hbutton_box_new (void)
   g_signal_connect_after (G_OBJECT (hbutton_box), "remove",
 			  G_CALLBACK (osso_gtk_hbutton_box_remove_child_signal_handlers),
 			  NULL);
-
+  g_signal_connect_after (G_OBJECT (hbutton_box), "add",
+			  G_CALLBACK (osso_gtk_hbutton_box_find_button_detail),
+			  NULL);
   g_signal_connect_after (G_OBJECT (hbutton_box), "remove",
-			  G_CALLBACK (_osso_gtk_hbutton_box_find_button_detail),
+			  G_CALLBACK (osso_gtk_hbutton_box_find_button_detail),
 			  NULL);
   return GTK_WIDGET (hbutton_box);
 }
@@ -453,7 +458,7 @@ gtk_hbutton_box_size_allocate (GtkWidget     *widget,
 static void osso_gtk_hbutton_child_showhide_handler (GtkWidget *widget,
 						     gpointer user_data)
 {
-  _osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (widget), GTK_WIDGET (user_data));
+  osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (widget), GTK_WIDGET (user_data), NULL);
 }
   
 /* Function to remove "show"&"hide" signal handlers
@@ -462,15 +467,16 @@ static void osso_gtk_hbutton_box_remove_child_signal_handlers (GtkHButtonBox *hb
 							       GtkWidget *removed_widget,
 							       gpointer data)
 {
-  g_signal_handlers_disconnect_by_func (G_OBJECT (removed_widget), _osso_gtk_hbutton_box_find_button_detail, hbbox);
+  g_signal_handlers_disconnect_by_func (G_OBJECT (removed_widget), osso_gtk_hbutton_box_find_button_detail, hbbox);
 }
 
 /* Signal handler called when we have to set
  * painting detail values for buttons in this 
  * gtk_horizontal_button_box.
  */  
-void _osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
-					       GtkWidget *addremovewidget)
+static void osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
+						     GtkWidget *addremovewidget,
+						     gpointer data)
 {
   GList *child;
   gint visible_buttons = 0;
@@ -543,8 +549,9 @@ void _osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
 	attachflags |= OSSO_GTK_BUTTON_ATTACH_EAST;
 
       g_object_get (G_OBJECT (child_widget), "automatic_detail", &automatic_detail, NULL);
+      printf ("******** automatic detail is %d\n", automatic_detail);
       if (automatic_detail == TRUE)
-	g_object_set (G_OBJECT (child_widget), "detail", osso_gtk_button_attach_details[attachflags], NULL);
+        g_object_set (G_OBJECT (child_widget), "detail", osso_gtk_button_attach_details[attachflags], NULL);
     }
 }
 

@@ -1,14 +1,17 @@
-2006-09-18  Xan Lopez <xan.lopez@nokia.com>
+2006-09-18 Xan Lopez <xan.lopez@nokia.com> 
 
-	* gtk/gtkbox.c
-	* gtk/gtkhbbox.c:
+	* gtk/gtkbox.c: (gtk_box_pack_start), (gtk_box_pack_end):
+	* gtk/gtkhbbox.c: (gtk_hbutton_box_new),
+	(osso_gtk_hbutton_child_showhide_handler),
+	(osso_gtk_hbutton_box_remove_child_signal_handlers),
+	(osso_gtk_hbutton_box_find_button_detail):
 	* gtk/gtkhbbox.h:
 
-	Fix NB#36265. Add a call to _osso_gtk_hbutton_box_find_button_detail to
-	gtk_box_pack_start/end if the box is an instance of GtkHButtonBox. This ugly
-	hack had to be done because the "add" signal is not emitted when widgets are
-	added to a box using the base class functions, which made the _find_button_detail
-	function not to be called for every button in the about dialog.
+       Fix NB#36265, MB#759. Add a call to _osso_gtk_hbutton_box_find_button_detail to
+       gtk_box_pack_start/end if the box is an instance of GtkHButtonBox. This ugly
+       hack had to be done because the "add" signal is not emitted when widgets are
+       added to a box using the base class functions, which made the _find_button_detail
+       function not to be called for every button in the about dialog.
 
 2006-09-15 Xan Lopez <xan.lopez@nokia.com> 
 

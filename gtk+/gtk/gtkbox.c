@@ -30,9 +30,6 @@
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
-/* UGLY HACK */
-#include "gtkhbbox.h"
-
 enum {
   PROP_0,
   PROP_SPACING,
@@ -398,13 +395,6 @@ gtk_box_pack_start (GtkBox    *box,
   gtk_widget_child_notify (child, "pack_type");
   gtk_widget_child_notify (child, "position");
   gtk_widget_thaw_child_notify (child);
-
-  /* UGLY HACK: we need to call this because the "add" signal is not emitted when a button
-     is a added to a container via the base class functions like this one. The find_button_detail
-     function was attached to that signal, which made us not to compute the proper details for all
-     the buttons in a GtkHButtonBox. See NB#36265 */
-  if (GTK_IS_HBUTTON_BOX (box))
-    _osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (box), child);
 }
 
 void
@@ -440,10 +430,6 @@ gtk_box_pack_end (GtkBox    *box,
   gtk_widget_child_notify (child, "pack_type");
   gtk_widget_child_notify (child, "position");
   gtk_widget_thaw_child_notify (child);
-
-  /* UGLY HACK: same as in gtk_box_pack_start */
-  if (GTK_IS_HBUTTON_BOX (box))
-      _osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (box), child);
 }
 
 void
