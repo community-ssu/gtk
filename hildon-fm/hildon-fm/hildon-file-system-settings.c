@@ -447,6 +447,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   if (dbus_connection_send_with_reply(conn, request, &call, -1))
   {
     dbus_pending_call_set_notify(call, btname_received, self, NULL);
+    dbus_pending_call_block(call);
     dbus_pending_call_unref(call);
   }
 
