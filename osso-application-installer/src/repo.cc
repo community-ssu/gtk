@@ -376,7 +376,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
       // the button.
       button = gtk_dialog_add_button (GTK_DIALOG (dialog),
 				      _("ai_bd_repository_close"),
-				      1);
+				      GTK_RESPONSE_CANCEL);
       gtk_widget_grab_focus (button);
     }
   else
