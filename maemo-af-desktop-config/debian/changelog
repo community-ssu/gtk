@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.1.3-1) unstable; urgency=low
+
+  * applet_manager.conf: Fixed bogus entry for speeddial
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 18 Sep 2006 17:41:43 +0300
+
 maemo-af-desktop-config (0.1.2-1) unstable; urgency=low
 
   * applet_manager.conf: Offset the applet by y-60 for the new home
