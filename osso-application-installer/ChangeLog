@@ -1,5 +1,29 @@
 2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/details.h (decode_summary): Transfer lists to
+	package_info::summary_packages and put the header into
+	package_info::summary directly.  Don't return a value.  Updated
+	all callers.
+	(add_table_field): Omit field when value is blank.  Handle NULL
+	field names.
+	(add_tabel_list, add_table_list_1): New, they do the job of
+	format_string_list and format_string_list_1 now.
+	(format_string_list, format_string_list_1): Removed.
+	(show_with_details): Use a GtkTable for the summary tab. (N32246)
+	
+	* src/main.h, src/main.c (package_info): Added summary_packages
+	field.
+	(package_info, ~package_info): Initialize and free it.
+	
+	* src/util.h, src/util.cc (setup_dbus): New.
+	(btname, set_bt_name_from_message, btname_received,
+	handle_dbus_signal): New.
+	(device_name): Just return btname.
+	* src/main.h, src/main.cc (device_label): New.
+	(make_main_view): Set it and make sure it is reset.
+	(get_device_label): Return it.
+	(main): Call setup_dbus. (N29726)
+	
 	* src/main.cc (make_main_view): Set ellipsize mode to device name
 	label and new organization for main window, removing GtkTable and
 	add just containers (GtkHbox). (N36027)
