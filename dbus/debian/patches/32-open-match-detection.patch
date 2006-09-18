@@ -1,0 +1,84 @@
+diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
+--- dbus/bus/signals.c	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/signals.c	2006-09-18 16:02:58.652148576 +0300
+@@ -24,6 +24,7 @@
+ #include "services.h"
+ #include "utils.h"
+ #include <dbus/dbus-marshal-validate.h>
++#include <syslog.h>
+ 
+ struct BusMatchRule
+ {
+@@ -764,6 +765,8 @@ bus_match_rule_parse (DBusConnection   *
+   BusMatchRule *rule;
+   RuleToken tokens[MAX_RULE_TOKENS+1]; /* NULL termination + 1 */
+   int i;
++  dbus_bool_t method_type_is = FALSE, sender_is = FALSE, interface_is = FALSE,
++              member_is = FALSE, path_is = FALSE, arg_is = FALSE;
+   
+   _DBUS_ASSERT_ERROR_IS_CLEAR (error);
+ 
+@@ -818,6 +821,8 @@ bus_match_rule_parse (DBusConnection   *
+                               "Invalid message type (%s) in match rule\n", value);
+               goto failed;
+             }
++          if (t == DBUS_MESSAGE_TYPE_METHOD_CALL)
++              method_type_is = TRUE;
+ 
+           if (!bus_match_rule_set_message_type (rule, t))
+             {
+@@ -840,6 +845,7 @@ bus_match_rule_parse (DBusConnection   *
+                               "Sender name '%s' is invalid\n", value);
+               goto failed;
+             }
++          sender_is = TRUE;
+ 
+           if (!bus_match_rule_set_sender (rule, value))
+             {
+@@ -862,6 +868,7 @@ bus_match_rule_parse (DBusConnection   *
+                               "Interface name '%s' is invalid\n", value);
+               goto failed;
+             }
++          interface_is = TRUE;
+ 
+           if (!bus_match_rule_set_interface (rule, value))
+             {
+@@ -884,6 +891,7 @@ bus_match_rule_parse (DBusConnection   *
+                               "Member name '%s' is invalid\n", value);
+               goto failed;
+             }
++          member_is = TRUE;
+ 
+           if (!bus_match_rule_set_member (rule, value))
+             {
+@@ -906,6 +914,7 @@ bus_match_rule_parse (DBusConnection   *
+                               "Path '%s' is invalid\n", value);
+               goto failed;
+             }
++          path_is = TRUE;
+ 
+           if (!bus_match_rule_set_path (rule, value))
+             {
+@@ -939,6 +948,7 @@ bus_match_rule_parse (DBusConnection   *
+         {
+           if (!bus_match_rule_parse_arg_match (rule, key, &tmp_str, error))
+             goto failed;
++          arg_is = TRUE;
+         }
+       else
+         {
+@@ -951,6 +961,14 @@ bus_match_rule_parse (DBusConnection   *
+       ++i;
+     }
+   
++  if (!method_type_is && !sender_is && !interface_is && !member_is
++      && !path_is && !arg_is) {
++      openlog("D-Bus daemon", LOG_PID | LOG_CONS, LOG_DAEMON);
++      syslog(LOG_DAEMON | LOG_WARNING, "WARNING: match %s added by %s",
++             _dbus_string_get_data(rule_text),
++             bus_connection_get_name(matches_go_to));
++      closelog();
++  }
+ 
+   goto out;
+   

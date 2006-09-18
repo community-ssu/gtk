@@ -1,0 +1,21 @@
+diff -pur dbus/bus/driver.c dbus.new/bus/driver.c
+--- dbus/bus/driver.c	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/driver.c	2006-09-18 15:11:34.466016136 +0300
+@@ -734,17 +734,6 @@ bus_driver_handle_add_match (DBusConnect
+   text = NULL;
+   rule = NULL;
+ 
+-  if (bus_connection_get_n_match_rules (connection) >=
+-      bus_context_get_max_match_rules_per_connection (bus_transaction_get_context (transaction)))
+-    {
+-      dbus_set_error (error, DBUS_ERROR_LIMITS_EXCEEDED,
+-                      "Connection \"%s\" is not allowed to add more match rules "
+-                      "(increase limits in configuration file if required)",
+-                      bus_connection_is_active (connection) ?
+-                      bus_connection_get_name (connection) :
+-                      "(inactive)");
+-      goto failed;
+-    }
+   
+   if (!dbus_message_get_args (message, error,
+                               DBUS_TYPE_STRING, &text,
