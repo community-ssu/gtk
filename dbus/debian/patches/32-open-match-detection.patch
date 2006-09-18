@@ -1,6 +1,6 @@
-diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
+diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
 --- dbus/bus/signals.c	2006-05-05 18:59:25.000000000 +0300
-+++ dbus.new/bus/signals.c	2006-09-18 16:02:58.652148576 +0300
++++ dbus.new/bus/signals.c	2006-09-18 16:39:32.183681096 +0300
 @@ -24,6 +24,7 @@
  #include "services.h"
  #include "utils.h"
@@ -9,7 +9,7 @@ diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
  
  struct BusMatchRule
  {
-@@ -764,6 +765,8 @@ bus_match_rule_parse (DBusConnection   *
+@@ -764,6 +765,8 @@
    BusMatchRule *rule;
    RuleToken tokens[MAX_RULE_TOKENS+1]; /* NULL termination + 1 */
    int i;
@@ -18,7 +18,7 @@ diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
    
    _DBUS_ASSERT_ERROR_IS_CLEAR (error);
  
-@@ -818,6 +821,8 @@ bus_match_rule_parse (DBusConnection   *
+@@ -818,6 +821,8 @@
                                "Invalid message type (%s) in match rule\n", value);
                goto failed;
              }
@@ -27,23 +27,27 @@ diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
  
            if (!bus_match_rule_set_message_type (rule, t))
              {
-@@ -840,6 +845,7 @@ bus_match_rule_parse (DBusConnection   *
-                               "Sender name '%s' is invalid\n", value);
+@@ -841,6 +846,9 @@
                goto failed;
              }
-+          sender_is = TRUE;
  
++          if (strstr(value, "org.freedesktop.DBus") == NULL)
++            sender_is = TRUE;
++
            if (!bus_match_rule_set_sender (rule, value))
              {
-@@ -862,6 +868,7 @@ bus_match_rule_parse (DBusConnection   *
-                               "Interface name '%s' is invalid\n", value);
+               BUS_SET_OOM (error);
+@@ -863,6 +871,9 @@
                goto failed;
              }
-+          interface_is = TRUE;
  
++          if (strstr(value, "org.freedesktop.DBus") == NULL)
++            interface_is = TRUE;
++
            if (!bus_match_rule_set_interface (rule, value))
              {
-@@ -884,6 +891,7 @@ bus_match_rule_parse (DBusConnection   *
+               BUS_SET_OOM (error);
+@@ -884,6 +895,7 @@
                                "Member name '%s' is invalid\n", value);
                goto failed;
              }
@@ -51,15 +55,17 @@ diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
  
            if (!bus_match_rule_set_member (rule, value))
              {
-@@ -906,6 +914,7 @@ bus_match_rule_parse (DBusConnection   *
-                               "Path '%s' is invalid\n", value);
+@@ -907,6 +919,9 @@
                goto failed;
              }
-+          path_is = TRUE;
  
++          if (strstr(value, "/org/freedesktop/DBus") == NULL)
++            path_is = TRUE;
++
            if (!bus_match_rule_set_path (rule, value))
              {
-@@ -939,6 +948,7 @@ bus_match_rule_parse (DBusConnection   *
+               BUS_SET_OOM (error);
+@@ -939,6 +954,7 @@
          {
            if (!bus_match_rule_parse_arg_match (rule, key, &tmp_str, error))
              goto failed;
@@ -67,7 +73,7 @@ diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
          }
        else
          {
-@@ -951,6 +961,14 @@ bus_match_rule_parse (DBusConnection   *
+@@ -951,6 +967,14 @@
        ++i;
      }
    
