@@ -1,3 +1,8 @@
+2006-09-18  Johan Bilien <johan.bilien@nokia.com>
+
+	* libhildonmenu/libhildonmenu.c: Fixed the leak of a GtkTreePath and
+	  2 strings. Fixes: NB#40645
+
 2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c:

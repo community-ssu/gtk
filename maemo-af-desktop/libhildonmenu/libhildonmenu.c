@@ -773,6 +773,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						GTK_TREE_MODEL( menu_tree ),
 						&sibling, last_folder );
 
+                gtk_tree_path_free( last_folder );
 				gtk_tree_store_insert_after(
 						menu_tree, extras_iter,
 						NULL, &sibling );
@@ -782,6 +783,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						GTK_TREE_MODEL( menu_tree ),
 						&sibling, first_folder );
 
+                gtk_tree_path_free( first_folder );
 				gtk_tree_store_insert_after(
 						menu_tree, extras_iter,
 						NULL, &sibling );
@@ -1149,6 +1151,7 @@ void find_first_and_last_root_level_folders( GtkTreeModel *model,
 
 	GtkTreeIter top_iter;
 	GtkTreeIter child_iter;
+	GtkTreeIter last_iter;
 
 	if ( !gtk_tree_model_get_iter_first( model, &top_iter ) ) {
 		ULOG_ERR( "find_first_and_last_root_level_folders: model is empty." );
@@ -1160,8 +1163,6 @@ void find_first_and_last_root_level_folders( GtkTreeModel *model,
 		return;
 	}
 
-	gchar *name = NULL;
-	gchar *desktop_id = NULL;
 
 	/* "Reset" the paths */
 	if ( first_folder != NULL ) {
@@ -1186,9 +1187,9 @@ void find_first_and_last_root_level_folders( GtkTreeModel *model,
 	 * if there's only one folder *last_folder will be  NULL 
 	 * after the loop finishes. */
 	do {
+        gchar *desktop_id = NULL;
+      
 		gtk_tree_model_get( model, &child_iter,
-				TREE_MODEL_NAME,
-				&name,
 				TREE_MODEL_DESKTOP_ID,
 				&desktop_id,
 				-1 );
@@ -1199,17 +1200,15 @@ void find_first_and_last_root_level_folders( GtkTreeModel *model,
 			if ( first_folder != NULL && *first_folder == NULL ) {
 				*first_folder = gtk_tree_model_get_path(
 						model, &child_iter );
-			} else if ( last_folder != NULL ) {
-				/* Free up the previous path of last folder */
-				if ( *last_folder != NULL ) {
-					gtk_tree_path_free( *last_folder );
-				}
-				/* Update the path of last folder */
-				*last_folder = gtk_tree_model_get_path(
-						model, &child_iter );
 			}
+           
+            last_iter = child_iter;
 		}
+
+        g_free( desktop_id );
 	} while ( gtk_tree_model_iter_next( model, &child_iter ) );
+
+    *last_folder = gtk_tree_model_get_path( model, &last_iter );
 }
 
 
