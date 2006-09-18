@@ -20,3 +20,9 @@ Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: OSSO Help Runtime library
  Shared library required for running Help UI and integrating
  with other applications.
+
+Package: libosso-help0-dbg
+Section: libdevel
+Architecture: any
+Depends: libosso-help0 (= ${Source-Version})
+Description: Debug symbols for OSSO Help Runtime library

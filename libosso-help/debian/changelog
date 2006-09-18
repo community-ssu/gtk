@@ -1,3 +1,9 @@
+libosso-help (2.0.6-2) unstable; urgency=low
+
+  * Adding the dbg package. Fixes: NB#40270
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 18 Sep 2006 11:23:15 +0300
+
 libosso-help (2.0.6-1) unstable; urgency=low
 
   * src/dialog.c, src/filter.c: Changed to show hyperlinks in help
