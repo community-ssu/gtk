@@ -1521,6 +1521,9 @@ hildon_file_chooser_entry_changed( GtkWidget * widget,
 
     priv = HILDON_FILE_CHOOSER_DIALOG( data )->priv;
     priv->edited = TRUE;
+    gtk_dialog_set_response_sensitive(GTK_DIALOG(data),
+		    		      GTK_RESPONSE_OK,
+    				      strlen(gtk_entry_get_text(GTK_ENTRY(widget))) > 0);
 }
 
 static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)

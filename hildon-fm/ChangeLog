@@ -2,6 +2,15 @@
 
 	Released 1.10.
 
+2006-09-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(hildon_file_chooser_entry_changed): Make OK button insensitive
+	when text entry is empty in the Create Folder/Rename/Move dialogs
+	(N33732)
+
+2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
 	* hildon-fm/hildon-file-system-model.c
 	(hildon_file_system_model_delayed_add_node_list_timeout): Call
 	hildon_file_system_model_delayed_add_children with FORCE set to
