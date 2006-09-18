@@ -3,6 +3,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
   * NOT RELEASED YET
 
   [ Tommi Komulainen ]
+  * Extension events are now always enabled for touchscreen
   * Package new style debugging symbols (Fixes: NB#40541)
     - debian/control.in:
       + rename libgtk2.0-dbg to libgtk2.0-0-dbg
@@ -12,6 +13,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
       + adjust to new package name
       + call dh_strip with --dbg-package=libgtk2.0-$(soname)
     - debian/libgtk2.0-dbg.dirs, debian/libgtk2.0-dbg.files: removed
+  * Fixes: NB#22354 Minor memory leak in Gtk selection handling
   * Fixes: NB#40033 Menu HW key does not close combobox popup
 
   [ Xan López]
@@ -22,7 +24,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
   * Fixes: NB#40316 Combobox leaks treeview
   * Fixes: NB#40560 Ellipsized label width is not correctly computed.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 15 Sep 2006 15:46:12 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 18 Sep 2006 12:37:36 +0300
 
 gtk+2.0 (2:2.6.10-2.osso13) unstable; urgency=low
 
