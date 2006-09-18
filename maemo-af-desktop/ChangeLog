@@ -1,5 +1,11 @@
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.[ch], 
+	  libhildonmenu/hildon-thumb-menu-item.[ch]: Added LGPL header
+	* ibhildonmenu/hildon-thumb-menu-item.h: Removed duplicate code
+
+2006-09-18  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-area.c: Fixed the leak of a string array
 
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
