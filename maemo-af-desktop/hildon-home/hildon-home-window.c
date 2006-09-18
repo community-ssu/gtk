@@ -126,6 +126,7 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
 {
   GtkWidget *dialog;
   gint response;
+  gint n_added;
   gchar *filename = NULL;
   HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("select applets activate\n");
@@ -138,36 +139,39 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
                                      priv->osso_context);
 
   response = gtk_dialog_run (GTK_DIALOG (dialog));
-  
-  if (response == GTK_RESPONSE_OK)
-    {
-      gint n_added;
-      n_added =hildon_home_area_sync_from_list (
-                                       HILDON_HOME_AREA (priv->applet_area),
-                                       priv->plugin_list);
-
-      if (n_added > 0)
-        hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
-                                          TRUE);
-    }
-  
   gtk_widget_destroy (dialog);
-        
-  /* Only save if not in layout mode (if we just removed an applet). If in
-   * layout mode it will be saved if the layout is accepted */
-  if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
+  
+  if (response != GTK_RESPONSE_OK)
+    return;
+
+  n_added = hildon_home_area_sync_from_list (
+                          HILDON_HOME_AREA (priv->applet_area),
+                          priv->plugin_list);
+
+  if (n_added > 0)
     {
+      hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                        TRUE);
+      g_signal_emit_by_name (priv->applet_area, "layout-changed");
+    }
+  else if (!hildon_home_area_get_layout_mode (
+                        HILDON_HOME_AREA (priv->applet_area)))
+    {
+      /* Only save if not in layout mode (if we just removed an applet). If in
+       * layout mode it will be saved if the layout is accepted */
       filename = g_build_filename (g_getenv ("HOME"),
                                    HH_AREA_CONFIGURATION_FILE,
                                    NULL);
 
-      hildon_home_area_save_configuration (HILDON_HOME_AREA (priv->applet_area),
-                                           filename);
+      if (hildon_home_area_save_configuration
+                                    (HILDON_HOME_AREA (priv->applet_area),
+                                     filename) < 0)
+        hildon_home_window_show_flash_full_note (window);
 
       g_free (filename);
     }
-
 }
+
 
 static void
 titlebar_layout_mode_activate_cb (HildonHomeTitlebar *titlebar,
@@ -207,8 +211,9 @@ titlebar_layout_accept_cb (HildonHomeTitlebar *titlebar,
                                HH_AREA_CONFIGURATION_FILE,
                                NULL);
   
-  hildon_home_area_save_configuration (HILDON_HOME_AREA (priv->applet_area),
-                                       filename);
+  if (hildon_home_area_save_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                       filename) < 0)
+    hildon_home_window_show_flash_full_note (window); 
 
   g_free (filename);
 }
@@ -399,6 +404,22 @@ area_remove (HildonHomeArea   *area,
 {
   HildonHomeWindowPrivate *priv = window->priv;
   g_signal_emit_by_name (priv->titlebar, "applet-removed", area);
+  
+  /* Only save if not in layout mode (if we just removed an applet). If in
+   * layout mode it will be saved if the layout is accepted */
+  if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
+    {
+      gchar *filename = g_build_filename (g_getenv ("HOME"),
+                                          HH_AREA_CONFIGURATION_FILE,
+                                          NULL);
+
+      if (hildon_home_area_save_configuration (
+                                           HILDON_HOME_AREA (priv->applet_area),
+                                           filename) < 0 )
+        hildon_home_window_show_flash_full_note (window);
+
+      g_free (filename);
+    }
 }
 
 static void

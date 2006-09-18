@@ -1,5 +1,14 @@
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-area.[ch]:
+	  - Added a add/remove handler
+	  to set the layout as having changed in these cases
+	  - _save_configuration now returns an error code so the flash_full
+	  not can be displayed when appropriate
+	* hildon-home/hildon-window.c: reflect these changes
+
+2006-09-18  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/hildon-thumb-menu-item.c: set a name to the menu's
 	  toplevel window to apply thumb/normal theming of the scroll arrow
 	  Fixes: NB#38690

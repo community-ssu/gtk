@@ -29,6 +29,7 @@
 #include "hildon-home-private.h"
 #include "hildon-home-interface.h" /* .desktop files keys */
 #include <hildon-widgets/hildon-note.h>
+#include <string.h> /* strlen */
 
 
 enum
@@ -52,6 +53,9 @@ typedef struct HildonHomeAreaPriv_
 #define HILDON_HOME_AREA_GET_PRIVATE(obj) \
   (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_HOME_AREA, HildonHomeAreaPriv));
 
+
+static GtkFixedClass *parent_class;
+
 static void
 hildon_home_area_class_init (HildonHomeAreaClass *klass);
 
@@ -66,6 +70,12 @@ hildon_home_area_layout_mode_end (HildonHomeArea *area);
 
 static void
 hildon_home_area_layout_changed (HildonHomeArea *area);
+
+static void
+hildon_home_area_applet_added (HildonHomeArea *area, GtkWidget *applet);
+
+static void
+hildon_home_area_remove (GtkContainer *area, GtkWidget *applet);
 
 static void
 hildon_home_area_set_property (GObject      *object,
@@ -114,15 +124,21 @@ static void
 hildon_home_area_class_init (HildonHomeAreaClass *klass)
 {
   GObjectClass *object_class;
+  GtkContainerClass *container_class;
   GParamSpec   *pspec;
 
   object_class = G_OBJECT_CLASS (klass);
+  container_class = GTK_CONTAINER_CLASS (klass);
+  parent_class = g_type_class_peek_parent (klass);
 
   g_type_class_add_private (klass, sizeof (HildonHomeAreaPriv));
 
   klass->layout_mode_start = hildon_home_area_layout_mode_start;
   klass->layout_mode_end   = hildon_home_area_layout_mode_end;
   klass->layout_changed    = hildon_home_area_layout_changed;
+  klass->applet_added      = hildon_home_area_applet_added;
+
+  container_class->remove = hildon_home_area_remove;
 
   object_class->set_property = hildon_home_area_set_property;
   object_class->get_property = hildon_home_area_get_property;
@@ -257,6 +273,38 @@ hildon_home_area_layout_changed (HildonHomeArea *area)
   priv->layout_changed = TRUE;
 }
 
+
+static void
+hildon_home_area_applet_added (HildonHomeArea *area, GtkWidget *applet)
+{
+  HildonHomeAreaPriv      *priv;
+  g_return_if_fail (area);
+
+  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
+  if (priv->layout_mode)
+    {
+      if (HILDON_IS_HOME_APPLET (applet))
+        hildon_home_applet_set_layout_mode (HILDON_HOME_APPLET (applet), TRUE);
+      g_signal_emit_by_name (area, "layout-changed");
+    }
+}
+
+static void
+hildon_home_area_remove (GtkContainer *area, GtkWidget *applet)
+{
+  HildonHomeAreaPriv      *priv;
+  g_return_if_fail (area);
+
+  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
+  if (priv->layout_mode)
+    {
+      g_signal_emit_by_name (area, "layout-changed");
+    }
+
+  if (GTK_CONTAINER_CLASS (parent_class)->remove)
+    GTK_CONTAINER_CLASS (parent_class)->remove (area, applet);
+}
+
 /* Public functions */
 
 GtkWidget *
@@ -298,16 +346,16 @@ hildon_home_area_get_layout_mode (HildonHomeArea *area)
   return priv->layout_mode;
 }
 
-void
+gint
 hildon_home_area_save_configuration (HildonHomeArea *area,
                                      const gchar *path)
 {
   GKeyFile *keyfile;
   FILE     *file;
   gchar    *buffer = NULL;
-  gchar    *p = NULL;
   guint     buffer_size;
   GError   *error = NULL;
+  gint      ret;
 
   keyfile = g_key_file_new ();
 
@@ -320,8 +368,8 @@ hildon_home_area_save_configuration (HildonHomeArea *area,
   if (!file)
     {
       g_warning ("Could not open %s for saving the applet configuration", path);
-      /* FIXME do something */
-      return;
+      g_key_file_free (keyfile);
+      return -1;
     }
 
   buffer = g_key_file_to_data (keyfile, &buffer_size, &error);
@@ -331,22 +379,34 @@ hildon_home_area_save_configuration (HildonHomeArea *area,
       g_warning ("Could not create buffer to save applet configuration: %s",
                  error->message);
       g_error_free (error);
-      return;
+      if (file)
+        fclose (file);
+      return 1;
     }
-
+  
   g_key_file_free (keyfile);
-  p = buffer;
 
-  while (buffer_size > 0)
+  if (buffer_size == 0)
     {
-      gint written;
-      written = buffer_size * fwrite (p, buffer_size, 1, file);
-      p += written;
-      buffer_size -= written;
+      const char *empty_file = "# No applet";
+      int len =  strlen (empty_file);
+      ret = fwrite (empty_file, len, 1, file);
     }
 
-  g_free (buffer);
-  fclose (file);
+  else
+    {
+      ret = fwrite (buffer, buffer_size, 1, file);
+
+      g_free (buffer);
+    }
+
+  if (file)
+    fclose (file);
+
+  if (ret != 1)
+    return -1;
+
+  return 0;
 }
 
 void
@@ -368,6 +428,7 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
   keyfile = g_key_file_new ();
 
   g_key_file_load_from_file (keyfile, path, G_KEY_FILE_NONE, &error);
+  
   if (error) goto cleanup;
 
   groups = g_key_file_get_groups (keyfile, &n_groups);
@@ -577,9 +638,6 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
               y += APPLET_ADD_Y_STEP;
               
               gtk_widget_show (applet);
-              if (priv->layout_mode)
-                hildon_home_applet_set_layout_mode (HILDON_HOME_APPLET (applet),
-                                                    TRUE);
 
               n_added ++;
             }

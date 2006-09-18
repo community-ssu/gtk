@@ -69,7 +69,7 @@ void        hildon_home_area_set_layout_mode    (HildonHomeArea *area,
 
 gboolean    hildon_home_area_get_layout_mode    (HildonHomeArea *area);
 
-void        hildon_home_area_save_configuration (HildonHomeArea *area,
+gint        hildon_home_area_save_configuration (HildonHomeArea *area,
                                                  const gchar *filename);
 void        hildon_home_area_load_configuration (HildonHomeArea *area,
                                                  const gchar *filename);
