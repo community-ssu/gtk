@@ -1,6 +1,39 @@
-diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
+diff -pur dbus/bus/connection.c dbus.new/bus/connection.c
+--- dbus/bus/connection.c	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/connection.c	2006-09-18 16:56:42.078113344 +0300
+@@ -1248,6 +1248,18 @@ bus_connection_get_n_services_owned (DBu
+   return d->n_services_owned;
+ }
+ 
++const DBusList *
++bus_connection_get_services (DBusConnection *connection)
++{
++  const DBusList *link;
++  BusConnectionData *d;
++
++  d = BUS_CONNECTION_DATA (connection);
++  link = d->services_owned;
++
++  return link;
++}
++
+ dbus_bool_t
+ bus_connection_complete (DBusConnection   *connection,
+ 			 const DBusString *name,
+diff -pur dbus/bus/connection.h dbus.new/bus/connection.h
+--- dbus/bus/connection.h	2006-05-05 18:59:25.000000000 +0300
++++ dbus.new/bus/connection.h	2006-09-18 16:52:57.150307568 +0300
+@@ -96,6 +96,7 @@ void        bus_connection_remove_owned_
+ void        bus_connection_add_owned_service_link (DBusConnection *connection,
+                                                    DBusList       *link);
+ int         bus_connection_get_n_services_owned   (DBusConnection *connection);
++const DBusList *bus_connection_get_services(DBusConnection *connection);
+ 
+ /* called by driver.c */
+ dbus_bool_t bus_connection_complete (DBusConnection               *connection,
+diff -pur dbus/bus/signals.c dbus.new/bus/signals.c
 --- dbus/bus/signals.c	2006-05-05 18:59:25.000000000 +0300
-+++ dbus.new/bus/signals.c	2006-09-18 16:39:32.183681096 +0300
++++ dbus.new/bus/signals.c	2006-09-18 17:12:15.081275304 +0300
 @@ -24,6 +24,7 @@
  #include "services.h"
  #include "utils.h"
@@ -9,7 +42,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
  
  struct BusMatchRule
  {
-@@ -764,6 +765,8 @@
+@@ -764,6 +765,8 @@ bus_match_rule_parse (DBusConnection   *
    BusMatchRule *rule;
    RuleToken tokens[MAX_RULE_TOKENS+1]; /* NULL termination + 1 */
    int i;
@@ -18,7 +51,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
    
    _DBUS_ASSERT_ERROR_IS_CLEAR (error);
  
-@@ -818,6 +821,8 @@
+@@ -818,6 +821,8 @@ bus_match_rule_parse (DBusConnection   *
                                "Invalid message type (%s) in match rule\n", value);
                goto failed;
              }
@@ -27,7 +60,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
  
            if (!bus_match_rule_set_message_type (rule, t))
              {
-@@ -841,6 +846,9 @@
+@@ -841,6 +846,9 @@ bus_match_rule_parse (DBusConnection   *
                goto failed;
              }
  
@@ -37,7 +70,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
            if (!bus_match_rule_set_sender (rule, value))
              {
                BUS_SET_OOM (error);
-@@ -863,6 +871,9 @@
+@@ -863,6 +871,9 @@ bus_match_rule_parse (DBusConnection   *
                goto failed;
              }
  
@@ -47,7 +80,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
            if (!bus_match_rule_set_interface (rule, value))
              {
                BUS_SET_OOM (error);
-@@ -884,6 +895,7 @@
+@@ -884,6 +895,7 @@ bus_match_rule_parse (DBusConnection   *
                                "Member name '%s' is invalid\n", value);
                goto failed;
              }
@@ -55,7 +88,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
  
            if (!bus_match_rule_set_member (rule, value))
              {
-@@ -907,6 +919,9 @@
+@@ -907,6 +919,9 @@ bus_match_rule_parse (DBusConnection   *
                goto failed;
              }
  
@@ -65,7 +98,7 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
            if (!bus_match_rule_set_path (rule, value))
              {
                BUS_SET_OOM (error);
-@@ -939,6 +954,7 @@
+@@ -939,6 +954,7 @@ bus_match_rule_parse (DBusConnection   *
          {
            if (!bus_match_rule_parse_arg_match (rule, key, &tmp_str, error))
              goto failed;
@@ -73,16 +106,28 @@ diff -ur dbus/bus/signals.c dbus.new/bus/signals.c
          }
        else
          {
-@@ -951,6 +967,14 @@
+@@ -951,6 +967,26 @@ bus_match_rule_parse (DBusConnection   *
        ++i;
      }
    
 +  if (!method_type_is && !sender_is && !interface_is && !member_is
 +      && !path_is && !arg_is) {
++      const DBusList *list, *link = NULL;
++      list = bus_connection_get_services(matches_go_to);
++
 +      openlog("D-Bus daemon", LOG_PID | LOG_CONS, LOG_DAEMON);
-+      syslog(LOG_DAEMON | LOG_WARNING, "WARNING: match %s added by %s",
++      syslog(LOG_DAEMON | LOG_WARNING, "WARNING: match %s added by %s"
++             " who owns services:",
 +             _dbus_string_get_data(rule_text),
 +             bus_connection_get_name(matches_go_to));
++      if (list != NULL)
++        link = _dbus_list_get_first_link(&list);
++      while (link != NULL) {
++        if (link->data != NULL)
++          syslog(LOG_DAEMON | LOG_WARNING, " %s",
++                 bus_service_get_name(link->data));
++        link = _dbus_list_get_next_link(&list, link);
++      }
 +      closelog();
 +  }
  
