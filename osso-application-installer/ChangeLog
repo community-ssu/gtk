@@ -1,5 +1,7 @@
 2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.32.
+	
 	* src/repo.cc (show_repo_edit_dialog): Let the "Close" button
 	respond with GTK_RESPONSE_CANCEL, to make the Escape key work.
 	(N40618)
