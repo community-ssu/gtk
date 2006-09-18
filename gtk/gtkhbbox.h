@@ -58,6 +58,10 @@ struct _GtkHButtonBoxClass
 GType      gtk_hbutton_box_get_type (void) G_GNUC_CONST;
 GtkWidget* gtk_hbutton_box_new      (void);
 
+/* UGLY HACK */
+void _osso_gtk_hbutton_box_find_button_detail (GtkHButtonBox *hbbox,
+					       GtkWidget *addremovewidget);
+
 /* buttons can be added by gtk_container_add() */
 
 #ifndef GTK_DISABLE_DEPRECATED
@@ -66,6 +70,7 @@ GtkButtonBoxStyle gtk_hbutton_box_get_layout_default (void);
 
 void gtk_hbutton_box_set_spacing_default (gint spacing);
 void gtk_hbutton_box_set_layout_default (GtkButtonBoxStyle layout);
+
 #endif
 
 G_END_DECLS
