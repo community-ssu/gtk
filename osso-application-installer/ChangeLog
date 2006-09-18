@@ -1,5 +1,9 @@
 2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/main.cc (make_main_view): Set ellipsize mode to device name
+	label and new organization for main window, removing GtkTable and
+	add just containers (GtkHbox). (N36027)
+
 	* src/repo.cc (repo_edit_response): Move check for empty name
 	before check for empty web address so that the empty name check
 	has higher priority. (N34922)
