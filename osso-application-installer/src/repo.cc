@@ -239,18 +239,6 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
       const char *dist = gtk_entry_get_text (GTK_ENTRY (c->dist_entry));
       const char *comps = gtk_entry_get_text (GTK_ENTRY (c->components_entry));
 
-      if (all_white_space (uri) || stripped_equal (uri, "http://"))
-	{
-	  irritate_user (_("ai_ib_enter_web_address"));
-	  return;
-	}
-
-      if (all_white_space (dist))
-	{
-	  irritate_user (_("ai_ib_enter_distribution"));
-	  return;
-	}
-
       repo_line *r = c->line;
       if (name)
 	{
@@ -259,6 +247,7 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 	      if (c->had_name)
 		{
 		  irritate_user (_("ai_ib_enter_name"));
+		  gtk_widget_grab_focus (c->name_entry);
 		  return;
 		}
 	      name = NULL;
@@ -266,6 +255,20 @@ repo_edit_response (GtkDialog *dialog, gint response, gpointer clos)
 	  
 	  free (r->name);
 	  r->name = g_strdup (name);
+	}
+
+      if (all_white_space (uri) || stripped_equal (uri, "http://"))
+	{
+	  irritate_user (_("ai_ib_enter_web_address"));
+	  gtk_widget_grab_focus (c->uri_entry);
+	  return;
+	}
+
+      if (all_white_space (dist))
+	{
+	  irritate_user (_("ai_ib_enter_distribution"));
+	  gtk_widget_grab_focus (c->dist_entry);
+	  return;
 	}
 
       free (r->line);
@@ -301,7 +304,7 @@ static GtkWidget *
 add_entry (GtkWidget *box, GtkSizeGroup *group,
 	   const char *label,
 	   const char *text, const char *end,
-	   bool autocap, bool readonly)
+	   bool autocap, bool readonly, bool mandatory)
 {
   GtkWidget *caption, *entry;
   gint pos = 0;
@@ -330,7 +333,9 @@ add_entry (GtkWidget *box, GtkSizeGroup *group,
     }
 
   caption = hildon_caption_new (group, label, entry,
-				NULL, HILDON_CAPTION_OPTIONAL);
+				NULL, (mandatory
+				       ? HILDON_CAPTION_MANDATORY
+				       : HILDON_CAPTION_OPTIONAL));
   gtk_box_pack_start_defaults (GTK_BOX (box), caption);
   
   return entry;
@@ -404,7 +409,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
       c->name_entry = add_entry (vbox, group,
 				 _UI2_("ai_fi_new_repository_name",
 				       "Cataloque Name"),
-				 r->name, end, true, readonly);
+				 r->name, end, true, readonly, true);
     }
   else
     c->name_entry = NULL;
@@ -413,20 +418,20 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
   parse_quoted_word (&start, &end, false);
   c->uri_entry = add_entry (vbox, group,
 			    _("ai_fi_new_repository_web_address"),
-			    start, end, false, readonly);
+			    start, end, false, readonly, true);
 
   start = end;
   parse_quoted_word (&start, &end, false);
   c->dist_entry = add_entry (vbox, group,
 			     _("ai_fi_new_repository_distribution"),
-			     start, end, false, readonly);
+			     start, end, false, readonly, true);
 
   start = end;
   parse_quoted_word (&start, &end, false);
   end = start + strlen (start);
   c->components_entry = add_entry (vbox, group,
 				   _("ai_fi_new_repository_component"),
-				   start, end, false, readonly);
+				   start, end, false, readonly, false);
 
   if (ui_version < 2)
     {
