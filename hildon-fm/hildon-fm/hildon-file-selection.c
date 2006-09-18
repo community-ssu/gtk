@@ -87,6 +87,10 @@ static void hildon_file_selection_real_row_insensitive(HildonFileSelection *self
 static void
 get_safe_folder_tree_iter(HildonFileSelectionPrivate *priv, GtkTreeIter *iter);
 
+static void
+hildon_file_selection_enable_cursor_magic_for_model (HildonFileSelection *self,
+						     GtkTreeModel *model);
+
 static GtkTreeModel *
 hildon_file_selection_create_sort_model(HildonFileSelection *self,
                                         GtkTreeModel *parent_model);
@@ -172,6 +176,29 @@ struct _HildonFileSelectionPrivate {
 
     gchar **drag_data_uris;
 };
+
+#if 0
+static void
+dump_iter (const char *label, GtkTreeModel *model, GtkTreeIter *iter)
+{
+  char *uri;
+  gtk_tree_model_get (model, iter, 
+		      HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
+		      -1);
+  fprintf (stderr, "%s: %s\n", label, uri);
+  g_free (uri);
+}
+
+static void
+dump_path (const char *label, GtkTreeModel *model, GtkTreePath *path)
+{
+  GtkTreeIter iter;
+  if (gtk_tree_model_get_iter (model, &iter, path))
+    dump_iter (label, model, &iter);
+  else
+    fprintf (stderr, "%s: <invalid>\n", label);
+}
+#endif
 
 static void
 hildon_file_selection_cancel_delayed_select(HildonFileSelectionPrivate *priv)
@@ -1161,8 +1188,8 @@ content_pane_selection_changed_idle(gpointer data)
    invalid iterators if this signal is received when we are deleting
    something. */
 static void 
-hildon_file_selection_content_pane_selection_changed(GtkWidget *widget,
-  gpointer data)
+hildon_file_selection_content_pane_selection_changed (GtkTreeSelection *sel,
+						      gpointer data)
 {
     HildonFileSelectionPrivate *priv = HILDON_FILE_SELECTION(data)->priv;
 
@@ -1171,7 +1198,7 @@ hildon_file_selection_content_pane_selection_changed(GtkWidget *widget,
       priv->content_pane_changed_id = 
         g_idle_add(content_pane_selection_changed_idle, data);
     }  
-}  
+}
 
 /* Checks whether the given path matches current content pane path.
    We have to use view_filter rather than current_folder, since these
@@ -1260,6 +1287,7 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
                                                     self)
 {
     HildonFileSelectionPrivate *priv = self->priv;
+    GtkWidget *view;
 
     if (priv->update_banner)
     {
@@ -1284,50 +1312,29 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
     /* Load can finish with no contents */
     hildon_file_selection_inspect_view(priv);
 
-    if (!priv->user_touched && priv->view_filter)
-    {
-      /* User hasn't changed the selection. Select the first row. */
-      GtkTreeIter iter;
-      gboolean content_pane_focused = priv->content_pane_last_used;
-      GtkWidget *view = get_current_view(priv);
+    /* There should always be a valid cursor in a TreeView.  If
+       there still isn't one after finishing the loading, we set it
+       to the first row.
+    */
+    
+    view = get_current_view(priv);
 
-      if (view && gtk_tree_model_get_iter_first(priv->view_filter, &iter))
+    if (view && GTK_IS_TREE_VIEW (view))
       {
-        gboolean is_available;
-
-        gtk_tree_model_get(priv->view_filter, &iter,
-          HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE, &is_available,
-          -1);
-
-        if (is_available && !priv->user_scrolled)
-        {
-          GtkTreePath *treepath =
-            gtk_tree_model_get_path(priv->view_filter, &iter);
-
-          if (treepath)
-          {
-            gtk_tree_view_set_cursor(GTK_TREE_VIEW(view),
-                                 treepath, NULL, FALSE);
-            gtk_tree_path_free(treepath);
-          }
-        }
-
-        /* Left side was focused before we changed the cursor.
-           Set the focus back. Older implementation caused
-           focus to travel back and fort, causing unwanted
-           pane change notifications. */
-        if (!content_pane_focused && !priv->force_content_pane)
-        {
-          if (!priv->user_scrolled)
-            scroll_to_cursor(GTK_TREE_VIEW(view));
-          gtk_widget_grab_focus(priv->dir_tree);
-        }
-        else if (!priv->user_scrolled)
-          activate_view(view);
-        else
-          gtk_widget_grab_focus(view);
+	GtkTreePath *cursor_path;
+	
+	gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
+	if (cursor_path == NULL)
+	  {
+	    GtkTreePath *path = gtk_tree_path_new_first ();
+	    gtk_tree_view_set_cursor (GTK_TREE_VIEW (view), path,
+				      NULL, FALSE);
+	    gtk_tree_path_free (path);
+	  }
+	else
+	  gtk_tree_path_free (cursor_path);
       }
-    }
+
     priv->force_content_pane = FALSE;
 }
 
@@ -1548,6 +1555,9 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
                 gtk_tree_model_filter_new(priv->main_model, sort_path);
 
             priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
+
+	    hildon_file_selection_enable_cursor_magic_for_model
+	      (self, priv->sort_model);
 
             g_assert(priv->view_filter != NULL);
             gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER
@@ -2385,6 +2395,9 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
         NULL);
 #endif
 
+    hildon_file_selection_enable_cursor_magic_for_model
+      (self, self->priv->dir_filter);
+
     self->priv->dir_tree =
         gtk_tree_view_new_with_model(self->priv->dir_filter);
 
@@ -2920,7 +2933,8 @@ static GObject *hildon_file_selection_constructor(GType type,
     priv->view_filter = gtk_tree_model_filter_new(priv->main_model, temp_path);
 
     priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
-
+    hildon_file_selection_enable_cursor_magic_for_model
+      (self, priv->sort_model);
 
     hildon_file_selection_create_dir_view(self);
     hildon_file_selection_create_list_view(self);
@@ -4046,6 +4060,129 @@ hildon_file_selection_get_column_headers_visible(HildonFileSelection *self)
   return self->priv->column_headers_visible;
 }
 
+/* Set the cursor of VIEW to be at PATH, or somehwere near if PATH is
+   not valid for the model.
+*/
+static void
+hildon_file_selection_set_cursor_stubbornly (GtkTreeView *view,
+					     GtkTreePath *path)
+{
+  GtkTreeIter iter;
+  GtkTreeModel *model = gtk_tree_view_get_model (view);
+
+  /* We try setting thr cursor to PATH, then the previous item of
+     PATH, then the parent of PATH.
+  */
+
+  if (model == NULL)
+    return;
+
+  if (gtk_tree_model_get_iter (model, &iter, path))
+    gtk_tree_view_set_cursor (GTK_TREE_VIEW (view), path, NULL, FALSE);
+  else
+    {
+      GtkTreePath *p = gtk_tree_path_copy (path);
+
+      if (!gtk_tree_path_prev (p))
+	{
+	  gtk_tree_path_free (p);
+	  GtkTreePath *p = gtk_tree_path_copy (path);
+	  if (!gtk_tree_path_up (p))
+	    {
+	      gtk_tree_path_free (p);
+	      return;
+	    }
+	}
+
+      gtk_tree_view_set_cursor (GTK_TREE_VIEW (view), p, NULL, FALSE);
+      gtk_tree_path_free (p);
+    }
+}
+
+struct idle_cursor_magic_closure {
+  GtkTreeView *view;
+  GtkTreePath *path;
+};
+
+static gboolean
+hildon_file_selection_idle_cursor_magic (gpointer data)
+{
+  struct idle_cursor_magic_closure *c =
+    (struct idle_cursor_magic_closure *)data;
+
+  hildon_file_selection_set_cursor_stubbornly (c->view, c->path);
+
+  gtk_tree_path_free (c->path);
+  g_free (c);
+  
+  return FALSE;
+}
+
+static void
+hildon_file_selection_row_deleted (GtkTreeModel *model,
+				   GtkTreePath *path,
+				   gpointer data)
+{
+  HildonFileSelection *self = (HildonFileSelection *)data;
+  HildonFileSelectionPrivate *priv = self->priv;
+  GtkWidget *view;
+  GtkTreePath *focus_path;
+
+  /* Check the view to see if we need to move the cursor so that it is
+     always set.
+  */
+
+  /* XXX - figuring out the view from the model is too closely tied to
+           our setup.
+  */
+  if (model == priv->dir_filter)
+    view = priv->dir_tree;
+  else
+    {
+      GtkTreeModel *active_model;
+
+      view = get_current_view (priv);
+      if (!GTK_IS_TREE_VIEW (view))
+	return;
+
+      active_model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
+      if (model != active_model)
+	return;
+    }
+  
+  if (view)
+    {
+      GtkTreePath *cursor_path;
+      GtkTreeIter iter;
+      struct idle_cursor_magic_closure *c;
+
+      gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
+      if (cursor_path && gtk_tree_path_compare (path, cursor_path) != 0)
+	{
+	  gtk_tree_path_free (cursor_path);
+	  return;
+	}
+      gtk_tree_path_free (cursor_path);
+
+      c = g_new (struct idle_cursor_magic_closure, 1);
+      c->view = GTK_TREE_VIEW (view);
+      c->path = gtk_tree_path_copy (path);
+      g_idle_add (hildon_file_selection_idle_cursor_magic, c);
+    }
+}
+
+/* Setup things so that the view that shows MODEL (at any time) will
+   not lose its cursor when rows are deleted from the model.
+*/
+
+static void
+hildon_file_selection_enable_cursor_magic_for_model (HildonFileSelection *self,
+						     GtkTreeModel *model)
+{
+  g_signal_connect (model, "row-deleted",
+		    G_CALLBACK (hildon_file_selection_row_deleted),
+		    self);
+}
 
 static GtkTreeModel *
 hildon_file_selection_create_sort_model(HildonFileSelection *self,
@@ -4080,7 +4217,6 @@ hildon_file_selection_create_sort_model(HildonFileSelection *self,
                                        (gint)
                                        HILDON_FILE_SELECTION_SORT_NAME,
                                        GTK_SORT_ASCENDING);
-
 
   return ret;
 }
