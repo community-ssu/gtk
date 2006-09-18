@@ -1,3 +1,10 @@
+dbus (0.61-osso20) experimental; urgency=low
+
+  * UNRELEASED
+  * Fixed Nokia copyright notices. Fixes: NB#40650
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 18 Sep 2006 14:53:15 +0300
+
 dbus (0.61-osso19) experimental; urgency=low
 
   * Fixed crash in dbus-gproxy.c, also merged two other gproxy patches

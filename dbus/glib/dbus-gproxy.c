@@ -2,7 +2,7 @@
 /* dbus-gproxy.c Proxy for remote objects
  *
  * Copyright (C) 2003, 2004, 2005 Red Hat, Inc.
- * Copyright (C) 2005 Nokia
+ * Copyright (C) 2005 Nokia Corporation. All rights reserved.
  *
  * Licensed under the Academic Free License version 2.1
  * 
