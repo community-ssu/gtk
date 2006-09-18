@@ -468,6 +468,7 @@ gtk_handle_box_realize (GtkWidget *widget)
 			    GDK_BUTTON_RELEASE_MASK);
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_VISUAL | GDK_WA_COLORMAP;
   hb->bin_window = gdk_window_new (widget->window, &attributes, attributes_mask);
+  _gtk_widget_window_set_extension_events (widget, hb->bin_window);
   gdk_window_set_user_data (hb->bin_window, widget);
   if (GTK_BIN (hb)->child)
     gtk_widget_set_parent_window (GTK_BIN (hb)->child, hb->bin_window);

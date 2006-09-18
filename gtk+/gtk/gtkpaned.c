@@ -677,6 +677,7 @@ gtk_paned_realize (GtkWidget *widget)
   paned->handle = gdk_window_new (widget->window,
 				  &attributes, attributes_mask);
   gdk_window_set_user_data (paned->handle, paned);
+  _gtk_widget_window_set_extension_events (widget, paned->handle);
   gdk_cursor_unref (attributes.cursor);
 
   widget->style = gtk_style_attach (widget->style, widget->window);

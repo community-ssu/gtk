@@ -571,6 +571,7 @@ gtk_spin_button_realize (GtkWidget *widget)
   spin_button->panel = gdk_window_new (gtk_widget_get_parent_window (widget), 
 				       &attributes, attributes_mask);
   gdk_window_set_user_data (spin_button->panel, widget);
+  _gtk_widget_window_set_extension_events (widget, spin_button->panel);
 
   gtk_style_set_background (widget->style, spin_button->panel, GTK_STATE_NORMAL);
 

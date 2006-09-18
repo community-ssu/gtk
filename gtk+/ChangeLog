@@ -1,3 +1,36 @@
+2006-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkwidget.[ch] (_gtk_widget_window_set_extension_events,
+	gtk_widget_realize): Refactor setting of extension events on GdkWindow
+	to separate function.
+
+	* gtk/gtkrange.c (gtk_range_realize)
+	* gtk/gtkexpander.c (gtk_expander_realize)
+	* gtk/gtkstatusbar.c (gtk_statusbar_create_window)
+	* gtk/gtktextview.c (text_window_realize)
+	* gtk/gtkeventbox.c (gtk_event_box_realize)
+	* gtk/gtkspinbutton.c (gtk_spin_button_realize)
+	* gtk/gtklabel.c (gtk_label_create_window)
+	* gtk/gtkentry.c (gtk_entry_realize)
+	* gtk/gtktreeviewcolumn.c (_gtk_tree_view_column_realize_button)
+	* gtk/gtkmenuitem.c (gtk_menu_item_realize)
+	* gtk/gtktext.c (gtk_text_realize)
+	* gtk/gtktoolitem.c (create_drag_window)
+	* gtk/gtkmenu.c (gtk_menu_realize)
+	* gtk/gtkhandlebox.c (gtk_handle_box_realize)
+	* gtk/gtktreeview.c (gtk_tree_view_realize)
+	* gtk/gtktoolbar.c (gtk_toolbar_realize)
+	* gtk/gtkiconview.c (gtk_icon_view_realize)
+	* gtk/gtkwindow.c (gtk_window_realize)
+	* gtk/gtkviewport.c (gtk_viewport_realize)
+	* gtk/gtkhsv.c (gtk_hsv_realize)
+	* gtk/gtkbutton.c (gtk_button_realize)
+	* gtk/gtkpaned.c (gtk_paned_realize)
+	* gtk/gtklayout.c (gtk_layout_realize)
+	* gtk/gtknotebook.c (gtk_notebook_realize): Call the new function to
+	enable extension events also on internal/input-only windows so that
+	they're delivered as expected, for example with GtkButton.
+	
 2006-09-18 Xan Lopez <xan.lopez@nokia.com> 
 
 	* gtk/gtkbox.c: (gtk_box_pack_start), (gtk_box_pack_end):
