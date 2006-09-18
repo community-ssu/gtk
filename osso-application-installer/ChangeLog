@@ -1,3 +1,13 @@
+2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (repo_edit_response): Move check for empty name
+	before check for empty web address so that the empty name check
+	has higher priority. (N34922)
+	(add_entry): Added mandatory argument to select the flags for the
+	captions.
+	(show_repo_edit_dialog): Pass mandatory flag to add_entry as
+	appropriate.
+
 2006-09-12  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.31.
