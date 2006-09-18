@@ -23,6 +23,9 @@
  */
 
 #define DBUS_API_SUBJECT_TO_CHANGE
+#include <dbus/dbus.h>
+#include <dbus/dbus-glib-lowlevel.h>
+#include <bttools-dbus.h>
 
 #include <string.h>
 #include <unistd.h>
@@ -56,6 +59,10 @@ extern "C" {
 #include "apt-worker-client.h"
 
 #define _(x) gettext (x)
+
+#define BTNAME_MATCH_RULE "type='signal',interface='" BTNAME_SIGNAL_IF \
+                          "',member='" BTNAME_SIG_CHANGED "'"
+#define BTNAME_DEFAULT "Nokia 770"
 
 struct ayn_closure {
   package_info *pi;
@@ -2094,35 +2101,136 @@ gettext_alt (const char *id, const char *english)
          the device name.
  */
 
-static const char *btname_result = NULL;
+static char *btname = NULL;
 
 const char *
 device_name ()
 {
-  if (btname_result)
-    return btname_result;
+  if (btname != NULL)
+    return btname;
+  else
+    return BTNAME_DEFAULT;
+}
 
-  GError *error = NULL;
-  char *output = NULL;
-  btname_result = "Nokia 770";
+static void
+set_bt_name_from_message (DBusMessage *message)
+{
+  DBusMessageIter iter;
+  const char *name = NULL;
+  GtkWidget *label = NULL;
 
-  char *params[] = { "/usr/bin/btname", "-g", NULL };
+  g_return_if_fail (message != NULL);
 
-  if (!g_spawn_sync (NULL, params, NULL, GSpawnFlags(0), NULL, NULL, 
-		     &output, NULL, NULL, &error))
+  if (!dbus_message_iter_init (message, &iter))
     {
-      add_log ("can't run btname: %s", error->message);
-      g_error_free (error);
+      add_log ("message did not have argument\n");
+      return;
     }
-  else if (output && output[0] != '\0')
+  dbus_message_iter_get_basic (&iter, &name);
+
+  add_log ("BT name changed into \"%s\" \n", name);
+
+  if (btname) 
+    g_free (btname);
+
+  btname = g_strdup (name);
+
+  label = get_device_label ();
+
+  if (label)
+    gtk_label_set_text (GTK_LABEL (label), btname);
+}
+
+static void 
+btname_received(DBusPendingCall *call, void *user_data)
+{
+  DBusMessage *message;
+  DBusError error;
+
+  g_assert (dbus_pending_call_get_completed (call));
+  message = dbus_pending_call_steal_reply (call);
+  if (message == NULL)
     {
-      /* Strip the newline.
-       */
-      output[strlen(output)-1] = '\0';
-      btname_result = output;
+      add_log ("no reply\n");
+      return;
     }
 
-  return btname_result;
+  dbus_error_init (&error);
+
+  if (dbus_set_error_from_message (&error, message))
+    {
+      add_log ("get btname: %s\n", error.message);
+      dbus_error_free (&error);
+    }
+  else   
+    set_bt_name_from_message (message);
+
+  dbus_message_unref (message);
+}
+
+static DBusHandlerResult
+handle_dbus_signal (DBusConnection *conn,
+		    DBusMessage *msg,
+		    gpointer data)
+{
+  if (dbus_message_is_signal(msg, BTNAME_SIGNAL_IF, BTNAME_SIG_CHANGED))
+    set_bt_name_from_message(msg);
+
+  return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+
+void 
+setup_dbus ()
+{
+  static DBusConnection *conn = NULL;
+  DBusMessage *request;
+  DBusError error;
+  DBusPendingCall *call = NULL;
+
+  dbus_error_init (&error);
+  if (conn == NULL)
+    {
+      conn = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
+      if (conn == NULL)
+        {
+          add_log ("%s: %s\n", error.name, error.message);
+	  dbus_error_free (&error);
+          return;
+        }
+    }
+
+  /* Let's query initial state.  These calls are async, so they do not
+     consume too much startup time.
+   */
+  request = dbus_message_new_method_call (BTNAME_SERVICE,
+					  BTNAME_REQUEST_PATH,
+					  BTNAME_REQUEST_IF,
+					  BTNAME_REQ_GET);
+  if (request == NULL)
+    {
+      add_log ("dbus_message_new_method_call failed\n");
+      return;
+    }
+  dbus_message_set_auto_start (request, TRUE);
+
+  if (dbus_connection_send_with_reply (conn, request, &call, -1))
+    {
+      dbus_pending_call_set_notify (call, btname_received, NULL, NULL);
+      dbus_pending_call_unref (call);
+    }
+
+  dbus_message_unref (request);
+
+  dbus_connection_setup_with_g_main (conn, NULL);
+  dbus_bus_add_match (conn, BTNAME_MATCH_RULE, &error);
+  if (dbus_error_is_set(&error))
+    {
+      add_log ("dbus_bus_add_match failed: %s\n", error.message);
+      dbus_error_free (&error);
+    }
+
+  if (!dbus_connection_add_filter(conn, handle_dbus_signal, NULL, NULL))
+    add_log ("dbus_connection_add_filter failed\n");
 }
 
 static gboolean

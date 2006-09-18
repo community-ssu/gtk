@@ -64,6 +64,7 @@ struct package_info {
   char *maintainer;
   char *description;
   char *summary;
+  GList *summary_packages[sumtype_max];  // GList of strings.
   char *dependencies;
 
   GtkTreeModel *model;
@@ -114,6 +115,7 @@ const char *nicify_section_name (const char *name);
 
 GtkWindow *get_main_window ();
 GtkWidget *get_main_trail ();
+GtkWidget *get_device_label ();
 
 void set_fullscreen (bool);
 void toggle_fullscreen ();

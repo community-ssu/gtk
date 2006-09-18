@@ -76,54 +76,19 @@ decode_dependencies (apt_proto_decoder *dec)
   return chars;
 }
 
-static void
-format_string_list (GString *str, const char *title,
-		    GList *list)
-{
-  if (list)
-    {
-      g_string_append (str, title);
-      g_string_append (str, "\n");
-    }
-
-  while (list)
-    {
-      g_string_append_printf (str, "  %s\n", (char *)list->data);
-      list = list->next;
-    }
-}
-
-/* Same as format_string_list, but when there is only one entry and it
-   is equal to MYSELF, the list is not shown.
-*/
-
-static void
-format_string_list_1 (GString *str, const char *title,
-		      gchar *myself_name, gchar *myself_version,
-		      GList *list)
-{
-  if (list && list->next == NULL)
-    {
-      gchar *myself_target = g_strdup_printf ("%s %s",
-					      myself_name, myself_version);
-      bool only_me = !g_ascii_strcasecmp ((gchar *)list->data, myself_target);
-      g_free (myself_target);
-      if (only_me)
-	return;
-    }
-
-  format_string_list (str, title, list);
-}
-
-char *
+void
 decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
 {
-  GList *sum[sumtype_max];
-  GString *str = g_string_new ("");
   char size_buf[20];
 
+  g_free (pi->summary);
+  pi->summary = NULL;
+
   for (int i = 0; i < sumtype_max; i++)
-    sum[i] = NULL;
+    {
+      //g_free (pi->summary_packages[i]);
+      pi->summary_packages[i] = NULL;
+    }
 
   while (true)
     {
@@ -131,9 +96,12 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
       if (dec->corrupted () || type == sumtype_end)
 	break;
       
-      const char *target = dec->decode_string_in_place ();
+      char *target = dec->decode_string_dup ();
       if (type >= 0 && type < sumtype_max)
-	sum[type] = g_list_append (sum[type], (void *)target);
+	pi->summary_packages[type] = g_list_append (pi->summary_packages[type],
+						    target);
+      else
+	g_free (target);
     }
 
   bool possible = true;
@@ -143,14 +111,14 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
 	{
 	  size_string_detailed (size_buf, 20,
 				-pi->info.remove_user_size_delta);
-	  g_string_append_printf
-	    (str, _("ai_va_details_uninstall_frees"),
-	     pi->name, size_buf);
+	  pi->summary =
+	    g_strdup_printf (_("ai_va_details_uninstall_frees"),
+			     pi->name, size_buf);
 	}
       else
 	{
-	  g_string_append_printf
-	    (str, _("ai_va_details_unable_uninstall"), pi->name);
+	  pi->summary =
+	    g_strdup_printf (_("ai_va_details_unable_uninstall"), pi->name);
 	  possible = false;
 	}
     }
@@ -164,23 +132,23 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
 		{
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
-		  g_string_append_printf
-		    (str, _("ai_va_details_update_requires"),
-		     pi->name, size_buf);
+		  pi->summary =
+		    g_strdup_printf (_("ai_va_details_update_requires"),
+				     pi->name, size_buf);
 		}
 	      else
 		{
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
-		  g_string_append_printf
-		    (str, _("ai_va_details_update_frees"),
-		     pi->name, size_buf);
+		  pi->summary =
+		    g_strdup_printf (_("ai_va_details_update_frees"),
+				     pi->name, size_buf);
 		}
 	    }
 	  else
 	    {
-	      g_string_append_printf
-		(str, _("ai_va_details_unable_update"), pi->name);
+	      pi->summary =
+		g_strdup_printf (_("ai_va_details_unable_update"), pi->name);
 	      possible = false;
 	    }
 	}
@@ -192,65 +160,28 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
 		{
 		  size_string_detailed (size_buf, 20,
 					pi->info.install_user_size_delta);
-		  g_string_append_printf
-		    (str, _("ai_va_details_install_requires"),
-		     pi->name, size_buf);
+		  pi->summary =
+		    g_strdup_printf (_("ai_va_details_install_requires"),
+				     pi->name, size_buf);
 		}
 	      else
 		{
 		  size_string_detailed (size_buf, 20,
 					-pi->info.install_user_size_delta);
-		  g_string_append_printf
-		    (str, _("ai_va_details_install_frees"),
-		     pi->name, size_buf);
+		  pi->summary =
+		    g_strdup_printf (_("ai_va_details_install_frees"),
+				     pi->name, size_buf);
 		}
 	    }
 	  else
 	    {
-	      g_string_append_printf
-		(str, _("ai_va_details_unable_install"),
-		 pi->name, size_buf);
+	      pi->summary =
+		g_strdup_printf (_("ai_va_details_unable_install"),
+				 pi->name, size_buf);
 	      possible = false;
 	    }
 	}
     }
-
-  g_string_append (str, "\n");
-
-  if (possible)
-    {
-      format_string_list_1 (str,
-			    _("ai_fi_details_packages_install"),
-			    pi->name, pi->available_version,
-			    sum[sumtype_installing]);
-      format_string_list_1 (str,
-			    _("ai_fi_details_packages_update"),
-			    pi->name, pi->available_version,
-			    sum[sumtype_upgrading]);
-      format_string_list_1 (str,
-			    _("ai_fi_details_packages_uninstall"),
-			    pi->name, pi->installed_version,
-			    sum[sumtype_removing]);
-    }
-  else
-    {
-      format_string_list (str,
-			  _("ai_fi_details_packages_missing"),
-			  sum[sumtype_missing]);
-      format_string_list (str,
-			  _("ai_fi_details_packages_conflicting"),
-			  sum[sumtype_conflicting]);
-      format_string_list (str,
-			  _("ai_fi_details_packages_needing"),
-			  sum[sumtype_needed_by]);
-    }
-
-  for (int i = 0; i < sumtype_max; i++)
-    g_list_free (sum[i]);
-
-  char *chars = str->str;
-  g_string_free (str, 0);
-  return chars;
 }
 
 static void
@@ -259,15 +190,60 @@ add_table_field (GtkWidget *table, int row,
 {
   GtkWidget *label;
 
-  label = make_small_label (field);
-  gtk_misc_set_alignment (GTK_MISC (label), 1.0, 0.0);
-  gtk_table_attach (GTK_TABLE (table), label, 0, 1, row, row+1,
-		    GTK_FILL, GTK_FILL, 0, 0);
-  label = make_small_label (value);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.0);
-  gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-  gtk_table_attach (GTK_TABLE (table), label, 1, 2, row, row+1,
-		    GtkAttachOptions (GTK_EXPAND | GTK_FILL), GTK_FILL, 0, 0);
+  if (value && !all_white_space (value))
+    {
+      if (field)
+	{
+	  label = make_small_label (field);
+	  gtk_misc_set_alignment (GTK_MISC (label), 1.0, 0.0);
+	  gtk_table_attach (GTK_TABLE (table), label, 0, 1, row, row+1,
+			    GTK_FILL, GTK_FILL, 0, 0);
+	}
+
+      label = make_small_label (value);
+      gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.0);
+      gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+      gtk_table_attach (GTK_TABLE (table), label, 1, 2, row, row+1,
+			GtkAttachOptions (GTK_EXPAND | GTK_FILL), GTK_FILL,
+			0, 0);
+    }
+}
+
+static int
+add_table_list (GtkWidget *table, int row,
+		const char *title,
+		GList *list)
+{
+  while (list)
+    {
+      add_table_field (table, row++, title, (char *)list->data);
+      title = NULL;
+      list = list->next;
+    }
+  return row;
+}
+
+/* Same as add_table_list, but when there is only one entry and it is
+   equal to MYSELF, the list is not shown.
+*/
+
+static int
+add_table_list_1 (GtkWidget *table, int row,
+		  const char *title,
+		  gchar *myself_name, gchar *myself_version,
+		  GList *list)
+{
+  if (list && list->next == NULL)
+    {
+      gchar *myself_target = g_strdup_printf ("%s %s",
+					      myself_name, myself_version);
+      bool only_me = !g_ascii_strcasecmp ((gchar *)list->data, myself_target);
+      g_free (myself_target);
+      if (only_me)
+	return row;
+    }
+
+  return add_table_list (table, row, title, list);
 }
 
 static void
@@ -281,6 +257,7 @@ show_with_details (package_info *pi, bool show_problems)
 {
   GtkWidget *dialog, *notebook;
   GtkWidget *table, *common;
+  GtkWidget *summary_table, *summary_tab;
 
   gchar *status;
 
@@ -378,6 +355,59 @@ show_with_details (package_info *pi, bool show_problems)
   else
     summary_label = _("ai_ti_details_noteb_installing");
 
+  bool possible;
+  if (pi->have_detail_kind == remove_details)
+    possible = (pi->info.removable_status == status_able);
+  else
+    possible = (pi->info.installable_status == status_able);
+
+  summary_table = gtk_table_new (1, 2, FALSE);
+  gtk_table_set_col_spacings (GTK_TABLE (summary_table), 10);
+  gtk_table_set_row_spacings (GTK_TABLE (summary_table), 0);
+
+  GtkWidget *header_label = make_small_label (pi->summary);
+  gtk_misc_set_alignment (GTK_MISC (header_label), 0.0, 0.0);
+  gtk_label_set_line_wrap (GTK_LABEL (header_label), TRUE);
+  gtk_table_attach (GTK_TABLE (summary_table), header_label, 0, 2, 0, 1,
+		    GtkAttachOptions (GTK_EXPAND | GTK_FILL), GTK_FILL,
+		    0, 0);
+
+  int r = 1;
+  if (possible)
+    {
+      r = add_table_list_1 (summary_table, r,
+			    _("ai_fi_details_packages_install"),
+			    pi->name, pi->available_version,
+			    pi->summary_packages[sumtype_installing]);
+      r = add_table_list_1 (summary_table, r,
+			    _("ai_fi_details_packages_update"),
+			    pi->name, pi->available_version,
+			    pi->summary_packages[sumtype_upgrading]);
+      r = add_table_list_1 (summary_table, r,
+			    _("ai_fi_details_packages_uninstall"),
+			    pi->name, pi->installed_version,
+			    pi->summary_packages[sumtype_removing]);
+    }
+  else
+    {
+      r = add_table_list (summary_table, r,
+			  _("ai_fi_details_packages_missing"),
+			  pi->summary_packages[sumtype_missing]);
+      r = add_table_list (summary_table, r,
+			  _("ai_fi_details_packages_conflicting"),
+			  pi->summary_packages[sumtype_conflicting]);
+      r = add_table_list (summary_table, r,
+			  _("ai_fi_details_packages_needing"),
+			  pi->summary_packages[sumtype_needed_by]);
+    }
+
+  summary_tab = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW (summary_tab),
+					summary_table);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (summary_tab),
+				  GTK_POLICY_AUTOMATIC,
+				  GTK_POLICY_AUTOMATIC);
+
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_details"),
 					get_main_window (),
 					GTK_DIALOG_MODAL,
@@ -399,7 +429,7 @@ show_with_details (package_info *pi, bool show_problems)
 			    (_("ai_ti_details_noteb_description")));
   int problems_page =
     gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
-			      make_small_text_view (pi->summary),
+			      summary_tab,
 			      gtk_label_new (summary_label));
   if (pi->dependencies)
     {
@@ -477,7 +507,6 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
   g_free (pi->maintainer);
   g_free (pi->description);
   g_free (pi->dependencies);
-  g_free (pi->summary);
 
   pi->maintainer = dec->decode_string_dup ();
   pi->description = dec->decode_string_dup ();
@@ -491,7 +520,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
       pi->dependencies = NULL;
     }
       
-  pi->summary = decode_summary (dec, pi, kind);
+  decode_summary (dec, pi, kind);
 
   pi->have_detail_kind = kind;
 

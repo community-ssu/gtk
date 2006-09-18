@@ -30,8 +30,8 @@
 void show_package_details (package_info *p, detail_kind kind,
 			   bool show_problems);
 
-char *decode_summary (apt_proto_decoder *dec,
-		      package_info *pi, detail_kind kind);
+void decode_summary (apt_proto_decoder *dec,
+		     package_info *pi, detail_kind kind);
 void nicify_description_in_place (char *desc);
 
 #endif /* !DETAILS_H */

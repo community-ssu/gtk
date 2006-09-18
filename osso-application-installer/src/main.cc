@@ -77,6 +77,7 @@ struct view {
 
 GtkWidget *main_vbox;
 GtkWidget *main_trail;
+GtkWidget *device_label = NULL;
 GtkWidget *cur_view = NULL;
 view *cur_view_struct;
 GList *cur_path;
@@ -230,6 +231,13 @@ expose_main_view (GtkWidget *w, GdkEventExpose *ev, gpointer data)
   return TRUE;
 }
 
+static void
+device_label_destroyed (GtkWidget *widget, gpointer data)
+{
+  if (device_label == widget)
+    device_label = NULL;
+}
+
 GtkWidget *
 make_main_view (view *v)
 {
@@ -255,12 +263,15 @@ make_main_view (view *v)
 					HILDON_ICON_SIZE_26);
   gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
 
-  label = gtk_label_new (device_name ());
-  gtk_label_set_ellipsize(GTK_LABEL (label), PANGO_ELLIPSIZE_END);
-  gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_box_pack_start (GTK_BOX (hbox),  label, TRUE, TRUE, 0);
+  device_label = gtk_label_new (device_name ());
+  gtk_label_set_ellipsize(GTK_LABEL (device_label), PANGO_ELLIPSIZE_END);
+  gtk_misc_set_alignment (GTK_MISC (device_label), 0.0, 0.5);
+  gtk_box_pack_start (GTK_BOX (hbox),  device_label, TRUE, TRUE, 0);
   gtk_box_pack_start (GTK_BOX (vbox), hbox,  FALSE, FALSE, 0);
   
+  g_signal_connect (device_label, "destroy",
+		    G_CALLBACK (device_label_destroyed), NULL);
+
   // first button
   hbox = gtk_hbox_new (FALSE, 0);
   btn = make_padded_button (_("ai_li_uninstall"),
@@ -357,6 +368,8 @@ package_info::package_info ()
   maintainer = NULL;
   description = NULL;
   summary = NULL;
+  for (int i = 0; i < sumtype_max; i++)
+    summary_packages[i] = NULL;
   dependencies = NULL;
 
   model = NULL;
@@ -380,6 +393,11 @@ package_info::~package_info ()
   g_free (maintainer);
   g_free (description);
   g_free (summary);
+  for (int i = 0; i < sumtype_max; i++)
+    {
+      g_list_foreach (summary_packages[i], (GFunc) g_free, NULL);
+      g_list_free (summary_packages[i]);
+    }
   g_free (dependencies);
   g_free (filename);
 }
@@ -2401,7 +2419,7 @@ file_details_reply (int cmd, apt_proto_decoder *dec, void *data)
   else if (pi->info.installable_status == status_corrupted)
     pi->summary = g_strdup (_("ai_ni_error_install_corrupted"));
   else
-    pi->summary = decode_summary (dec, pi, install_details);
+    decode_summary (dec, pi, install_details);
 
   GString *text = g_string_new ("");
 
@@ -2551,6 +2569,12 @@ GtkWidget *
 get_main_trail ()
 {
   return main_trail;
+}
+
+GtkWidget *
+get_device_label ()
+{
+  return device_label;
 }
 
 void
@@ -2740,6 +2764,7 @@ main (int argc, char **argv)
   load_settings ();
 
   gtk_init (&argc, &argv);
+  setup_dbus();
 
   // XXX - We don't want a two-part title and this seems to be the
   //       only way to get rid of it.  Hopefully, setting an empty
