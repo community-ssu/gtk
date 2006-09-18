@@ -1,4 +1,9 @@
 2006-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gdk/x11/gdkinput-x11.c (gdk_input_device_new): Always enable
+	extension events for 'pen' devices to get touchscreen pressure. 
+
+2006-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gtk/gtkwidget.[ch] (_gtk_widget_window_set_extension_events,
 	gtk_widget_realize): Refactor setting of extension events on GdkWindow
