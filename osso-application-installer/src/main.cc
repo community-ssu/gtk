@@ -234,8 +234,11 @@ GtkWidget *
 make_main_view (view *v)
 {
   GtkWidget *view;
-  GtkWidget *vbox, *hbox, *table;
+  GtkWidget *vbox, *hbox;
   GtkWidget *btn, *label, *image;
+  GtkSizeGroup *btn_group;
+
+  btn_group = gtk_size_group_new(GTK_SIZE_GROUP_BOTH);
 
   view = gtk_event_box_new ();
   gtk_widget_set_name (view, "osso-application-installer-main-view");
@@ -243,31 +246,23 @@ make_main_view (view *v)
   g_signal_connect (view, "expose-event",
                     G_CALLBACK (expose_main_view), NULL);
 
-  hbox = gtk_hbox_new (FALSE, 0);
-  gtk_container_add (GTK_CONTAINER (view), hbox);
+  vbox = gtk_vbox_new (FALSE, 10);
+  gtk_container_add (GTK_CONTAINER (view), vbox);
 
-  vbox = gtk_vbox_new (FALSE, 0);
-  table = gtk_table_new (5, 2, FALSE);
-  gtk_box_pack_start (GTK_BOX (vbox), table, FALSE, FALSE, 0);
-  gtk_box_pack_start (GTK_BOX (hbox), vbox, FALSE, FALSE, 0);
-
-  gtk_table_set_row_spacings (GTK_TABLE (table), 10);
-  gtk_table_set_col_spacings (GTK_TABLE (table), 10);
-
+  // first label
+  hbox = gtk_hbox_new (FALSE, 10);
   image = gtk_image_new_from_icon_name ("qgn_list_filesys_divc_cls",
 					HILDON_ICON_SIZE_26);
-  gtk_table_attach_defaults (GTK_TABLE (table), image,
-			     0, 1, 0, 1);
-
-  // XXX - The usize request below prevents the label from expanding
-  //       the table column if the device is too long.
+  gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
 
   label = gtk_label_new (device_name ());
-  gtk_widget_set_usize (label, 10, -1);
+  gtk_label_set_ellipsize(GTK_LABEL (label), PANGO_ELLIPSIZE_END);
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table), label,
-			     1, 2, 0, 1);
+  gtk_box_pack_start (GTK_BOX (hbox),  label, TRUE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox,  FALSE, FALSE, 0);
   
+  // first button
+  hbox = gtk_hbox_new (FALSE, 0);
   btn = make_padded_button (_("ai_li_uninstall"),
 			    OssoGtkButtonAttachFlags
 			    (OSSO_GTK_BUTTON_ATTACH_NORTH |
@@ -277,19 +272,25 @@ make_main_view (view *v)
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &uninstall_applications_view);
-  gtk_table_attach_defaults (GTK_TABLE (table), btn,
-			     1, 2, 1, 2);
+  gtk_size_group_add_widget(btn_group, btn);
+  // 36 padding = 26 icon size + 10 padding
+  gtk_box_pack_start (GTK_BOX (hbox),  btn,  FALSE, FALSE, 36); 
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   grab_focus_on_map (btn);
 
+  // second label
+  hbox = gtk_hbox_new (FALSE, 10);
   image = gtk_image_new_from_icon_name ("qgn_list_browser",
 					HILDON_ICON_SIZE_26);
-  gtk_table_attach_defaults (GTK_TABLE (table), image,
-			     0, 1, 2, 3);
+  gtk_box_pack_start (GTK_BOX (hbox), image, FALSE, FALSE, 0);
+
   label = gtk_label_new (_("ai_li_repository"));
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-  gtk_table_attach_defaults (GTK_TABLE (table), label,
-			     1, 2, 2, 3);
+  gtk_box_pack_start (GTK_BOX (hbox),  label, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox,  FALSE, FALSE, 0);
 
+  // second button
+  hbox = gtk_hbox_new (FALSE, 0);
   btn = make_padded_button (_("ai_li_install"),
 			    OssoGtkButtonAttachFlags
 			    (OSSO_GTK_BUTTON_ATTACH_NORTH |
@@ -298,9 +299,13 @@ make_main_view (view *v)
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &install_applications_view);
-  gtk_table_attach_defaults (GTK_TABLE (table), btn,
-			     1, 2, 3, 4);
+  gtk_size_group_add_widget(btn_group, btn);
+  // 36 padding = 26 icon size + 10 padding
+  gtk_box_pack_start (GTK_BOX (hbox),  btn,  FALSE, FALSE, 36);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   
+  // third button
+  hbox = gtk_hbox_new (FALSE, 0);
   btn = make_padded_button (_("ai_li_update"),
 			    OssoGtkButtonAttachFlags
 			    (OSSO_GTK_BUTTON_ATTACH_EAST |
@@ -309,8 +314,10 @@ make_main_view (view *v)
   g_signal_connect (G_OBJECT (btn), "clicked",
 		    G_CALLBACK (show_view_callback),
 		    &upgrade_applications_view);
-  gtk_table_attach_defaults (GTK_TABLE (table), btn,
-			     1, 2, 4, 5);
+  gtk_size_group_add_widget(btn_group, btn);
+  // 36 padding = 26 icon size + 10 padding
+  gtk_box_pack_start (GTK_BOX (hbox),  btn,  FALSE, FALSE, 36);
+  gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   gtk_widget_show_all (view);
 
