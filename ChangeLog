@@ -1,3 +1,8 @@
+2006-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkarrow.c (gtk_arrow_expose): Use full extents of the widget to
+	draw bigger arrows. NB#33725
+
 2006-09-18  Xan Lopez <xan.lopez@nokia.com>
 
         Taken from GNOME CVS, fixes NB#31582.
