@@ -343,7 +343,7 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
        we can do modifications to model. */
   	if ( (node = g_queue_pop_head(priv->reload_list)) != NULL)
   	{
-  	  hildon_file_system_model_delayed_add_children(model, node, FALSE);
+  	  hildon_file_system_model_delayed_add_children(model, node, TRUE);
           GDK_THREADS_LEAVE();
   	  return TRUE;
   	}
