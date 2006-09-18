@@ -1,0 +1,61 @@
+# Patch for fixing crash when search is called before any content has been
+# added to gtkhtml
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the gtkhtml package
+#
+diff -Nru gtkhtml-3.9.1.orig/src/htmlengine-search.c gtkhtml-3.9.1/src/htmlengine-search.c
+--- gtkhtml-3.9.1.orig/src/htmlengine-search.c	2002-11-01 17:06:53.000000000 +0200
++++ gtkhtml-3.9.1/src/htmlengine-search.c	2006-09-06 09:46:45.000000000 +0300
+@@ -141,6 +141,7 @@
+ {
+ 	HTMLSearch *info;
+ 	HTMLObject *p;
++	HTMLObject *o;
+ 
+ 	if (e->search_info) {
+ 		html_search_destroy (e->search_info);
+@@ -148,8 +149,9 @@
+ 
+ 	info = e->search_info = html_search_new (e, text, case_sensitive, forward, regular);
+ 
+-	p = HTML_OBJECT (e->search_info->stack->data)->parent;
+-	if (html_object_search (p ? p : e->clue, info)) {
++	p = e->search_info->stack ? HTML_OBJECT (e->search_info->stack->data)->parent : NULL;
++	o = p ? p : e->clue;
++	if (o && html_object_search (o, info)) {
+ 		display_search_results (info);
+ 		return TRUE;
+ 	} else
+@@ -181,7 +183,7 @@
+ 			retval = html_object_search (HTML_OBJECT (info->stack->data), info);
+ 		else {
+ 			html_search_push (info, e->clue);
+-			retval = html_object_search (e->clue, info);
++			retval = e->clue ? html_object_search (e->clue, info) : FALSE;
+ 		}
+ 		if (retval)
+ 			display_search_results (info);
+diff -ru gtkhtml-3.9.1.orig/src/htmlsearch.c modified/htmlsearch.c
+--- gtkhtml-3.9.1.orig/src/htmlsearch.c	2006-09-06 10:18:09.000000000 +0300
++++ gtkhtml-3.9.1/src/htmlsearch.c	2006-09-06 09:46:45.000000000 +0300
+@@ -67,11 +67,17 @@
+ 		for (o = e->cursor->object; o; o = o->parent)
+ 			html_search_push (ns, o);
+ 		ns->stack = g_slist_reverse (ns->stack);
+-		ns->found = g_list_append (ns->found, e->cursor->object);
++		if (e->cursor->object)
++		{
++			ns->found = g_list_append (ns->found, e->cursor->object);
++		}
+ 	} else {
+ 		ns->stack     = NULL;
+ 		ns->start_pos = 0;
+-		html_search_push (ns, e->clue);
++		if (e->clue)
++		{
++			html_search_push (ns, e->clue);
++		}
+ 	}
+ 
+ 	/* translate table

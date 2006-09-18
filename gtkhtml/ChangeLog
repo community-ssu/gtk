@@ -1,3 +1,9 @@
+2006-09-18 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/htmlengine-search.c, src/htmlsearch.c: Fixed crash when search
+	        is called before adding any content to gtkhtml
+	Fixes NB#33770 NB#39675
+
 2006-08-28 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* Version 3.9.1-2osso4

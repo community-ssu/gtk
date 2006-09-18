@@ -18,3 +18,9 @@ Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: GtkHTML shared library without Gnome dependencies
  GtkHTML shared library without Gnome dependencies
+
+Package: gtkhtml0-dbg
+Section: devel
+Architecture: any
+Depends: gtkhtml0 (= ${Source-Version})
+Description: Debug symbols for GtkHTML

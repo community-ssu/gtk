@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-2osso5) unstable; urgency=low
+
+  * Added a dbg package
+  * Fixes : NB#33770, NB#39675, NB#40235
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 18 Sep 2006 11:05:27 +0300
+
 gtkhtml (3.9.1-2osso4) unstable; urgency=low
 
   * Bugfixes
