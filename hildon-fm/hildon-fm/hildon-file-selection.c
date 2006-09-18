@@ -4126,7 +4126,6 @@ hildon_file_selection_row_deleted (GtkTreeModel *model,
   HildonFileSelection *self = (HildonFileSelection *)data;
   HildonFileSelectionPrivate *priv = self->priv;
   GtkWidget *view;
-  GtkTreePath *focus_path;
 
   /* Check the view to see if we need to move the cursor so that it is
      always set.
@@ -4153,7 +4152,6 @@ hildon_file_selection_row_deleted (GtkTreeModel *model,
   if (view)
     {
       GtkTreePath *cursor_path;
-      GtkTreeIter iter;
       struct idle_cursor_magic_closure *c;
 
       gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
