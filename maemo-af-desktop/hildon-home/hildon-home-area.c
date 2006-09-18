@@ -356,7 +356,7 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
   HildonHomeAreaPriv      *priv;
   GKeyFile *keyfile;
   GError *error = NULL;
-  gchar **groups;
+  gchar **groups = NULL;
   gint n_groups;
   GList *applets = NULL;
 
@@ -454,6 +454,9 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
   
 cleanup:
   g_list_free (applets);
+  if (groups)
+    g_strfreev (groups);
+
   if (error)
     {
       g_warning ("An error occurred when reading HildonHome applets' "

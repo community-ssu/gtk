@@ -1,5 +1,9 @@
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-area.c: Fixed the leak of a string array
+
+2006-09-18  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Fixed the leak of a GtkTreePath and
 	  2 strings. Fixes: NB#40645
 
