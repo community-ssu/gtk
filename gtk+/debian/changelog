@@ -20,6 +20,7 @@ gtk+2.0 (2:2.6.10-2.osso14) UNRELEASED; urgency=low
   * Fixes: NB#3490 TreeView not scrolling to first row
   * Fixes: NB#22230 GtkNoteBook: Right arrow head is not shown when the
     caption text of tab is very long.
+  * Fixes: NB#31582 "grab-notify" signal not correctly propagated for internal children
   * Fixes: NB#36265, MB#759 "Close" button is different in GtkAboutDialog
   * Fixes: NB#40316 Combobox leaks treeview
   * Fixes: NB#40560 Ellipsized label width is not correctly computed.
