@@ -1,3 +1,15 @@
+2006-09-18  Xan Lopez <xan.lopez@nokia.com>
+
+	* gtk/gtkbox.c
+	* gtk/gtkhbbox.c:
+	* gtk/gtkhbbox.h:
+
+	Fix NB#36265. Add a call to _osso_gtk_hbutton_box_find_button_detail to
+	gtk_box_pack_start/end if the box is an instance of GtkHButtonBox. This ugly
+	hack had to be done because the "add" signal is not emitted when widgets are
+	added to a box using the base class functions, which made the _find_button_detail
+	function not to be called for every button in the about dialog.
+
 2006-09-15 Xan Lopez <xan.lopez@nokia.com> 
 
 	* gtk/gtklabel.c: (get_layout_location): Update ellipsized labels
