@@ -1,4 +1,4 @@
-hildon-fm (1.10-unreleased3) unstable; urgency=low
+hildon-fm (1.10-1) unstable; urgency=low
 
   * Fixes: NB#21395, NB#39775, NB#40002, NB#39660.
   * Fixes: NB#38145, NB#35433, NB#39128, NB#30868.

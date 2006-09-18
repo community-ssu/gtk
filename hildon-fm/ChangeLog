@@ -1,5 +1,7 @@
 2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.10.
+
 	* hildon-fm/hildon-file-system-model.c
 	(hildon_file_system_model_delayed_add_node_list_timeout): Call
 	hildon_file_system_model_delayed_add_children with FORCE set to
