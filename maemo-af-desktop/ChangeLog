@@ -1,5 +1,11 @@
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/hildon-thumb-menu-item.c: set a name to the menu's
+	  toplevel window to apply thumb/normal theming of the scroll arrow
+	  Fixes: NB#38690
+
+2006-09-18  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.[ch], 
 	  libhildonmenu/hildon-thumb-menu-item.[ch]: Added LGPL header
 	* ibhildonmenu/hildon-thumb-menu-item.h: Removed duplicate code
