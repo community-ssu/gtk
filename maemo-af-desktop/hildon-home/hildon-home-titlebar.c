@@ -533,7 +533,7 @@ ensure_titlebar_menu_status (HildonHomeTitlebar *titlebar,
                              HildonHomeArea *area)
 {
   HildonHomeTitlebarPrivate *priv = titlebar->priv;
-  gboolean settings_item_active = TRUE;
+  gboolean settings_item_active = FALSE;
   GList *items, *l;
 
   if (!priv->menu)

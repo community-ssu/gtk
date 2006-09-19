@@ -200,7 +200,8 @@ static void home_applet_handler_finalize(GObject * obj_self)
       priv->deinitialize(priv->applet_data);
     }
 
-    dlclose(priv->dlhandle);
+    if (priv->dlhandle)
+      dlclose(priv->dlhandle);
     
     if (G_OBJECT_CLASS(parent_class)->finalize)
     {
@@ -293,11 +294,6 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         return handler;
       }
 
-    handler = g_object_new (HOME_TYPE_APPLET_HANDLER, NULL);
-    g_object_ref (handler);
-    g_hash_table_insert (htable, g_strdup (desktoppath), handler);
-    
-    priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
     kfile = g_key_file_new();
 
@@ -416,6 +412,9 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         
     librarypath =
             g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
+    
+    handler = g_object_new (HOME_TYPE_APPLET_HANDLER, NULL);
+    priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
 
     priv->dlhandle = dlopen(librarypath, RTLD_NOW);
     g_free(librarypath);
@@ -455,6 +454,9 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
         handler->resizable_width = applet_resizable_width;
         handler->resizable_height = applet_resizable_height;
     }
+    
+    g_object_ref (handler);
+    g_hash_table_insert (htable, g_strdup (desktoppath), handler);
 
     return handler;
 }

@@ -1,5 +1,13 @@
 2006-09-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-applet-handler.c:
+	  - do not the handler to the hash table until we are sure we could
+	    open the applet
+	* hildon-home/hildon-home-titlebar.c: Made the Applet settings menu item
+	  disabled by default
+
+2006-09-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-background-dialog.c: set spacing to the
 	  dialog vbox
 
