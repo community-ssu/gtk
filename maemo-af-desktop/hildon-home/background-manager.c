@@ -1267,6 +1267,7 @@ background_manager_create_background (BackgroundManager *manager)
 
           g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
           g_object_unref (pixbuf);
+          first_run = FALSE;
 
           return;
         }
