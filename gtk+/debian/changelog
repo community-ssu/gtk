@@ -3,6 +3,8 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * NOT RELEASED YET
 
   [ Tommi Komulainen ]
+  * Allow disabling XSHM usage by setting GDK_DISABLE_XSHM environment
+    variable (for NB#22173)
   * Fixes: NB#33725 GtkArrow graphics are clipped
   * Fixes: NB#40428 AF-BAT:Calendar pop-up does not reflect the correct
     first_weekday on changing region.
@@ -11,7 +13,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Fixes: NB#23035 GtkCalendar arrows not shown correctly
   * Fixes: NB#37326 The Separator for combobox doesn't work
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 19 Sep 2006 17:46:39 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 19 Sep 2006 19:15:12 +0300
 
 gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
 
