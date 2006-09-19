@@ -1,7 +1,12 @@
 gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
+
+  [ Tommi Komulainen ]
   * Fixes NB#33725 GtkArrow graphics are clipped
+
+  [ Xan LÃpez ]
+  * Fixes: NB#23035 GtkCalendar arrows not shown correctly
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 18 Sep 2006 18:27:12 +0300
 

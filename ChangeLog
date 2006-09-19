@@ -1,3 +1,10 @@
+2006-09-19 Xan Lopez <xan.lopez@nokia.com> 
+
+	* gtk/gtkcalendar.c: (gtk_calendar_realize_arrows),
+	(gtk_calendar_size_allocate), (gtk_calendar_paint_arrow):
+
+	Changed hardcoded arrow sizes for style properties. Fixes NB#23025
+
 2006-09-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkarrow.c (gtk_arrow_expose): Use full extents of the widget to
