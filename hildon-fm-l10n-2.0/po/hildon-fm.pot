@@ -5,10 +5,10 @@
 
 msgid ""
 msgstr ""
-"Project-Id-Version: hildon-fm 6.1\n"
+"Project-Id-Version: hildon-fm 6.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.05.15 16:36+0300\n"
-"PO-Revision-Date: 2006.05.15 16:36+0300\n"
+"POT-Creation-Date: 2006.08.30 14:02+0300\n"
+"PO-Revision-Date: 2006.08.30 14:02+0300\n"
 "Last-Translator:\n"
 "Language-Team: Engineering English\n"
 "MIME-Version: 1.0\n"
@@ -16,17 +16,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
 
-# Device’s MMC name when card has no name or is not present.
-msgid "sfil_li_mmc_localdevice"
-msgstr "Memory card"
-
-# Gateway name shown when real Bluetooth name is not available
-msgid "sfil_li_gateway_root"
-msgstr "Phone"
-
 # Device name shown when real Bluetooth name is not available
 msgid "sfil_li_folder_root"
 msgstr "Nokia 770"
+
+# Device’s internal memory card name when card has no name or is not present. 
+msgid "sfil_li_memorycard_internal"
+msgstr "Internal memory card"
+
+# Device’s removable memory card name when card has no name or is not present. 
+msgid "sfil_li_memorycard_removable"
+msgstr "Removable memory card"
+
+# Root for UPnP AV servers device
+msgid "sfil_li_shared_media"
+msgstr "Shared media"
+
+# Root for Bluetooth devices
+msgid "sfil_li_bluetooth"
+msgstr "Bluetooth"
 
 # Folder for images
 msgid "sfil_li_folder_images"
@@ -100,14 +108,6 @@ msgstr "Size"
 msgid "sfil_li_header_date"
 msgstr "Date"
 
-# Free space in MMC, shown in megabytes, when MMC item is shown in Thumbnail Listbox widget
-msgid "sfil_li_mmc_free_mb"
-msgstr "%d MB available"
-
-# Free space in MMC, shown in kilobytes, when MMC item is shown in Thumbnail Listbox widget
-msgid "sfil_li_mmc_free_kb"
-msgstr "%d kB available "
-
 # Format string for date and time value in Thumbnail Listbox widget for a file that has been modified 'today'
 msgid "sfil_li_modified_today"
 msgstr "Today %X"
@@ -125,6 +125,9 @@ msgid "sfil_li_folder_contents_item"
 msgid_plural "sfil_li_folder_contents_items"
 msgstr[0] "%d item"
 msgstr[1] "%d items"
+msgstr[2] "%d items"
+msgstr[3] "%d items"
+msgstr[4] "%d items"
 
 # Title of "Change folder" dialog
 msgid "ckdg_ti_change_folder"
@@ -314,10 +317,6 @@ msgstr "%d notes"
 msgid "sfil_va_number_of_objects_sketches"
 msgstr "%d sketches"
 
-# Title for new folder dialog
-msgid "ckdg_ti_new_folder"
-msgstr "New folder"
-
 # New folder dialog OK button.
 msgid "ckdg_bd_new_folder_dialog_ok"
 msgstr "OK"
@@ -420,7 +419,7 @@ msgstr "Time:"
 
 # Value text for property in <filetype> Details dialog, when value is unknown
 msgid "ckdg_va_property_unknown"
-msgstr "unknown"
+msgstr "Unknown"
 
 # Title for Shorten names dialog when there are only one name to be shorten.
 msgid "hfil_ti_shorten_name"
@@ -448,7 +447,7 @@ msgstr "Shorten remaining names automatically"
 
 # Informative annotation for Shorten names dialog done with label
 msgid "hfil_ia_shorten_names"
-msgstr "These names are too long for the target location and must be shortened."
+msgstr "Names are too long for target location and must be shortened"
 
 # Confirmation text for Delete Current File Confirmation Note (WID – NOT173) when user is about to delete the active/open file in the application.
 msgid "sfil_nc_delete_open_file"
@@ -456,7 +455,7 @@ msgstr "Delete file?"
 
 # OK button for Delete Current File Confirmation Note (WID – NOT173)
 msgid "sfil_bd_delete_open_file_ok"
-msgstr "Delete"
+msgstr "OK"
 
 # Cancel button Delete Current File Confirmation Note (WID – NOT173)
 msgid "docm_bd_delete_open_file_cancel"
@@ -464,15 +463,15 @@ msgstr "Cancel"
 
 # Confirmation text for Recover File Confirmation Note (WID – NOT176) when user has opened application and the is a recovered file available.
 msgid "sfil_nc_recover_file"
-msgstr "File was saved automatically when application was closed. Do you want to keep it?"
+msgstr "File was saved automatically when application was closed.\nDo you want to keep it?"
 
 # OK button for Recover File Confirmation Note (WID – NOT176).
 msgid "sfil_bd_recover_file_ok"
-msgstr "Yes"
+msgstr "OK"
 
 # Cancel button Recover File Confirmation Note (WID – NOT176)
 msgid "docm_bd_recover_file_cancel"
-msgstr "No"
+msgstr "Cancel"
 
 # Presented when a file already exists in the target folder that is of the same type and has the same name as a file that is being copied/moved.
 msgid "docm_nc_replace_file"
@@ -480,7 +479,7 @@ msgstr "Replace existing file of same name?"
 
 # Tapping the 'Replace' button deletes the existing file and replaces it with the file being copied/moved. 
 msgid "docm_bd_replace_file_ok"
-msgstr "Replace"
+msgstr "OK"
 
 # Tapping the 'Cancel' button cancels the entire copy/move operation. 
 msgid "docm_bd_replace_file_cancel"
@@ -492,7 +491,7 @@ msgstr "Replace existing folder contents of same name?"
 
 # Tapping the 'Replace' button deletes the existing files/folders, including contents, and replaces them with the files/folders being copied/moved.
 msgid "docm_bd_replace_multiple_ok"
-msgstr "Replace"
+msgstr "OK"
 
 # Tapping the 'Cancel' button cancels the entire copy/move operation. 
 msgid "docm_bd_replace_multiple_cancel"
@@ -544,11 +543,11 @@ msgstr "Unable to save to selected location.\nSave to device memory?"
 
 # Button text for Unable to save to selected location Save to device memory confirmation note [WID-NOT255]. Tapping the 'Yes' button opens Save <Object> Dialog for saving the file.
 msgid "sfil_bd_not_available_save_local_yes"
-msgstr "Yes"
+msgstr "OK"
 
 # Button text for Unable to save to selected location Save to device memory confirmation note [WID-NOT255]. Tapping the 'No button closes notification without closing file.
 msgid "sfil_bd_not_available_save_local_no"
-msgstr "No"
+msgstr "Cancel"
 
 # Moving file/folder(s) notification [WID-NOT253] text when single file is being moved.
 msgid "sfil_nw_moving_file"
@@ -620,17 +619,17 @@ msgstr "Stopping"
 
 # Shown after user has tried to access files on remote device and connection does not succeed.
 msgid "sfil_ib_cannot_connect_device"
-msgstr "Unable to connect to phone\n%s"
+msgstr "Unable to connect to device"
 
 # Shown after user has tried to access files on remote device and connection does not succeed because remote device does not support file transfer.
 msgid "sfil_ib_no_connection_support"
-msgstr "Connection not supported by phone"
+msgstr "Connection not supported by device"
 
 # Shown after user has tried to access files on remote device and local device is in flight mode.
 msgid "sfil_ib_no_connections_flightmode"
 msgstr "Offline mode.\nConnection not allowed."
 
-# Shown after user has tried to select MMC, which is not inserted.
+# Shown after user has tried to select memory card, which is not inserted.
 msgid "hfil_ib_mmc_not_present"
 msgstr "No memory card inserted"
 
@@ -646,7 +645,7 @@ msgstr "Unable to cut some items"
 msgid "sfil_ib_readonly_location"
 msgstr "Selected location is read-only"
 
-# Shown if the user tries to open MMC when USB cable is connected.
+# Shown if the user tries to open memory card when USB cable is connected.
 msgid "sfil_ib_mmc_usb_connected"
 msgstr "Memory card not available.\n USB cable connected."
 

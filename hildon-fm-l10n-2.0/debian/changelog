@@ -1,3 +1,9 @@
+hildon-fm-l10n (3.0-sardine1) unstable; urgency=low
+
+  * Updated.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 19 Sep 2006 15:35:01 +0300
+
 hildon-fm-l10n (2.0-4r3467) unstable; urgency=low
 
   * tentatively placed in stage.maemo.org SVN
