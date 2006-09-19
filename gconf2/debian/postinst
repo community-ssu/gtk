@@ -10,7 +10,7 @@ update-alternatives --install \
 
 # KHä: create directory for the database
 mkdir -p /var/lib/gconf
-chown messagebus.messagebus /var/lib/gconf
+chown messagebus:messagebus /var/lib/gconf
 chmod -R go+rwx /var/lib/gconf
 
 #DEBHELPER#

@@ -1,7 +1,7 @@
 Source: gconf2
 Section: libs
 Priority: optional
-Maintainer: Mikael Hallendal <micke@imendio.com> 
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com> 
 Uploaders: @GNOME_TEAM@
 Build-Depends: debhelper (>> 3.0.0), gtk-doc-tools, libdbus-glib-1-dev (>= 0.60), libpopt-dev, libxml2-dev, zlib1g-dev, gettext, dbs, gcc (>= 3:3.2.2), gnome-pkg-tools
 Standards-Version: 3.6.1.0

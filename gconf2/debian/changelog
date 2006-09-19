@@ -1,10 +1,10 @@
 gconf2 (2.6.4.15-osso1) unstable; urgency=low
 
-  * UNRELEASED
   * Upstream tarball updated to 2.6.4.15.
     Fixes a leak in gconf/gconf-client.c (gconf_client_notify).
+  * Fixed a Lintian warning and corrected the maintainer name.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 15:50:55 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 17:09:27 +0300
 
 gconf2 (2.6.4.14-osso4) unstable; urgency=low
 
