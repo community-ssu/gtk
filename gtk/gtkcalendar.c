@@ -813,7 +813,10 @@ gtk_calendar_init (GtkCalendar *calendar)
 /*  gchar *year_before;*/
 /*  gint row;
   gint col; */
-  guint32 week_1stday;
+  gchar *langinfo;
+  GDateWeekday week_1stday;
+  gint first_weekday;
+  guint week_origin;
   
   widget = GTK_WIDGET (calendar);
   GTK_WIDGET_SET_FLAGS (widget, GTK_CAN_FOCUS);
@@ -905,25 +908,32 @@ gtk_calendar_init (GtkCalendar *calendar)
   else if (strcmp (year_before, "calendar:MY") != 0)
     g_warning ("Whoever translated calendar:MY did so wrongly.\n");
 #endif
-
-  /* Use nl_langinfo to obtain the first day of the week */
-  week_1stday = (guint32) nl_langinfo (_NL_TIME_WEEK_1STDAY);
-
-  if (g_date_valid_dmy (week_1stday % 100,
-                        week_1stday % 10000 / 100,
-                        week_1stday / 10000))
+  langinfo = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
+  first_weekday = langinfo[0];
+  langinfo = nl_langinfo (_NL_TIME_WEEK_1STDAY);
+  week_origin = GPOINTER_TO_UINT (langinfo);
+  if (week_origin == 19971130)
+    week_1stday = G_DATE_SUNDAY;
+  else if (week_origin == 19971201)
+    week_1stday = G_DATE_MONDAY;
+  else if (g_date_valid_dmy ((week_origin % 100),
+			     (week_origin / 100) % 100,
+			     (week_origin / 10000)))
     {
-      GDate *start_day = g_date_new_dmy (week_1stday % 100,
-                                         week_1stday % 10000 / 100,
-                                         week_1stday / 10000);
-      private_data->week_start = g_date_get_weekday (start_day) % 7;
-      g_date_free (start_day);
+      GDate *date;
+      date = g_date_new_dmy ((week_origin % 100),
+			     (week_origin / 100) % 100,
+			     (week_origin / 10000));
+      week_1stday = g_date_get_weekday (date);
+      g_date_free (date);
     }
   else
     {
-      g_warning ("nl_langinfo(_NL_TIME_WEEK_1STDAY) returns invalid date");
-      private_data->week_start = 0;
+      g_warning ("Invalid value set for _NL_TIME_WEEK_1STDAY"); 
+      week_1stday = G_DATE_SUNDAY;
     }
+
+  private_data->week_start = (week_1stday + first_weekday - 1) % 7;
 
   locales_init (private_data);
 }
