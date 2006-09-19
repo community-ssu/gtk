@@ -30,7 +30,10 @@ if [ $START = TRUE ]; then
     exit 2
   fi
 
+  # NB#22173 memory saving hack, depends on modified gtk+
+  GDK_DISABLE_XSHM=1; export GDK_DISABLE_XSHM
   $LAUNCHWRAPPER_NICE start "$SVC" $PROG
+  unset GDK_DISABLE_XSHM
 else
   $LAUNCHWRAPPER_NICE stop "$SVC" $PROG
 fi

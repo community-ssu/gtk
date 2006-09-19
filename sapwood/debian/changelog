@@ -1,3 +1,12 @@
+sapwood (2.24-3) unstable; urgency=low
+
+  * debian/sapwood-server.sh:
+    - set GDK_DISABLE_XSHM=1 environment variable when starting the server
+  * Fixes: NB#22173 Sapwood server keeps redundant shared memory with the X
+    server (when used with gtk+2.0 (>= 2:2.6.10-2.osso15))
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 19 Sep 2006 19:12:55 +0300
+
 sapwood (2.24-2) unstable; urgency=low
 
   * Package debugging symbols (Fixes: NB#40232)
