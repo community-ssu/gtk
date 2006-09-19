@@ -11,5 +11,9 @@ if [ ! -d $HOME/.osso ]; then
   mkdir -p $HOME/.osso
   chown user:users $HOME/.osso
 fi
-cp -f /etc/osso-af-init/current-gtk-theme.default $HOME/.osso/current-gtk-theme
-chown user:users $HOME/.osso/current-gtk-theme
+
+DEFAULTCONF=$HOME/.osso/current-gtk-theme
+if [ ! -e $DEFAULTCONF ]; then
+  cp -f /etc/osso-af-init/current-gtk-theme.default $DEFAULTCONF
+  chown user:users $DEFAULTCONF
+fi
