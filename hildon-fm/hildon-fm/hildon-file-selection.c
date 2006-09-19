@@ -2931,6 +2931,7 @@ static GObject *hildon_file_selection_constructor(GType type,
 
     temp_path = gtk_tree_path_new_from_string("0");
     priv->view_filter = gtk_tree_model_filter_new(priv->main_model, temp_path);
+    gtk_tree_path_free (temp_path);
 
     priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
     hildon_file_selection_enable_cursor_magic_for_model
