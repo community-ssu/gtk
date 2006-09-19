@@ -9,6 +9,7 @@ fi
 
 PREFIX=/usr
 SYSCONFDIR=/etc
+ORIGHOME=$HOME
 HOME=/home/user  ;# needed for some root processes
 
 export XDG_DATA_HOME=$PREFIX/share/mime
@@ -53,6 +54,8 @@ else
     DEFAULTMBTHEME=default
   fi
 fi
+
+HOME=$ORIGHOME  ;# have to do this for the case that this was sourced
 
 export DEFAULTMBTHEME=$DEFAULTMBTHEME
 export DEFAULTGTKTHEME=$DEFAULTGTKTHEME
