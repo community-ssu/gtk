@@ -7,6 +7,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
 
   [ Xan LÃpez ]
   * Fixes: NB#23035 GtkCalendar arrows not shown correctly
+  * Fixes: NB#37326 The Separator for combobox doesn't work
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 18 Sep 2006 18:27:12 +0300
 

@@ -1,5 +1,12 @@
 2006-09-19 Xan Lopez <xan.lopez@nokia.com> 
 
+	* gtk/gtktreeview.c: (gtk_tree_view_class_init), (validate_row):
+
+	Add a separator-height style property to GtkTreeView and use it to
+	calculate separator's height in treeviews. Fixes NB#37326.
+
+2006-09-19 Xan Lopez <xan.lopez@nokia.com> 
+
 	* gtk/gtkcalendar.c: (gtk_calendar_realize_arrows),
 	(gtk_calendar_size_allocate), (gtk_calendar_paint_arrow):
 
