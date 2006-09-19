@@ -1262,18 +1262,20 @@ background_manager_create_background (BackgroundManager *manager)
           g_error_free (load_error);
         }
       else
-	{
+        {
           g_debug ("Background loaded from cache");
-	  first_run = FALSE;
-	  
+
           g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
-	  g_object_unref (pixbuf);
-	  
-	  return;
-	}
+          g_object_unref (pixbuf);
+
+          return;
+        }
     }
 
-  priv->bg_timeout = g_timeout_add (1000, (GSourceFunc)bg_timeout_cb, manager);
+  if (first_run)
+    first_run = FALSE;
+  else
+    priv->bg_timeout = g_timeout_add (1000, (GSourceFunc)bg_timeout_cb, manager);
   
   g_debug ("unlink the cache image file");
   if (g_unlink (priv->cache) == -1)

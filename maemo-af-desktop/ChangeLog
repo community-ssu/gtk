@@ -1,5 +1,10 @@
 2006-09-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/background-manager.c: Set the first_run flag to FALSE
+	  even when the cache could not be read
+
+2006-09-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-applet.c: Do not use g_error because it aborts
 
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
