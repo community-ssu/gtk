@@ -1,3 +1,7 @@
+2006-09-19  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-applet.c: Do not use g_error because it aborts
+
 2006-09-18  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-area.[ch]:

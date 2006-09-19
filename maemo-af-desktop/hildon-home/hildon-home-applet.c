@@ -338,7 +338,7 @@ static void hildon_home_applet_init(HildonHomeApplet * self)
 
   if (error)
     {
-      g_error ("Could not load close button icon: %s", error->message);
+      g_warning ("Could not load close button icon: %s", error->message);
       priv->close_button = NULL;
     }
   
@@ -1003,7 +1003,7 @@ hildon_home_applet_set_resize_type (HildonHomeApplet *applet,
 
           if (error)
             {
-              g_error ("Could not load resize handle icon: %s", error->message);
+              g_warning ("Could not load resize handle icon: %s", error->message);
               priv->resize_handle = NULL;
             }
         }
