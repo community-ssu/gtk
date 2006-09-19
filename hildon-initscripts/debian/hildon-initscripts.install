@@ -1,4 +1,5 @@
 /etc/osso-af-init/matchbox.defs
 /etc/osso-af-init/matchbox.sh
 /etc/osso-af-init/osso-gtk.defs
+/etc/osso-af-init/current-gtk-theme.default
 /usr/bin/run-standalone.sh

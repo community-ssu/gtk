@@ -7,6 +7,10 @@ if [ "x$HOME" = "x" ]; then
   exit 2
 fi
 
+if [ "x$USER" = "xroot" ]; then
+  DONOTCREATE=1
+fi
+
 PREFIX=/usr
 SYSCONFDIR=/etc
 
@@ -25,32 +29,32 @@ fi
 CURRENT_THEME_DIR=$HOME/.osso
 CURRENT_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-theme
 
-if [ ! -f $CURRENT_THEME_FILE ]; then
-  mkdir -p $CURRENT_THEME_DIR
-  echo "include \"$PREFIX/share/themes/$DEFAULTGTKTHEME/gtk-2.0/gtkrc\"" \
-    > $CURRENT_THEME_FILE
-else
-
-  # investigate if theme exists
-  THEMEFILE=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//'|tr -d '\n')
-  DEFAULTMBTHEME=$THEMEFILE
-
-  # if theme directory does not exist, use 'default' theme
-  if [ ! -d /usr/share/themes/$THEMEFILE ]; then
-
-    # set GTK theme
-    echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc\"" \
+if [ "x$DONOTCREATE" = "x" ]; then
+  if [ ! -f $CURRENT_THEME_FILE ]; then
+    mkdir -p $CURRENT_THEME_DIR
+    echo "include \"$PREFIX/share/themes/$DEFAULTGTKTHEME/gtk-2.0/gtkrc\"" \
       > $CURRENT_THEME_FILE
+  else
 
-    # set MAD theme
-    echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc.maemo_af_desktop\"" \
-      > $CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop
+    # investigate if theme exists
+    THEMEFILE=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//'|tr -d '\n')
+    DEFAULTMBTHEME=$THEMEFILE
 
-    # set MBOX theme
-    DEFAULTMBTHEME=default
+    # if theme directory does not exist, use 'default' theme
+    if [ ! -d /usr/share/themes/$THEMEFILE ]; then
 
+      # set GTK theme
+      echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc\"" \
+        > $CURRENT_THEME_FILE
+
+      # set MAD theme
+      echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc.maemo_af_desktop\"" \
+        > $CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop
+
+      # set MBOX theme
+      DEFAULTMBTHEME=default
+    fi
   fi
-
 fi
 
 export DEFAULTMBTHEME=$DEFAULTMBTHEME
