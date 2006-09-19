@@ -1,3 +1,9 @@
+2006-09-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcalendar.c (gtk_calendar_init): Update first day of the week
+	calculation logic to take into account both related _NL_* values.
+	NB#40428
+
 2006-09-19 Xan Lopez <xan.lopez@nokia.com> 
 
 	* gtk/gtktreeview.c: (gtk_tree_view_class_init), (validate_row):
