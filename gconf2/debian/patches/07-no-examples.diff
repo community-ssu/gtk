@@ -1,0 +1,11 @@
+diff -pur gconf-dbus-2.6.4.15/configure.in gconf-dbus-2.6.4.15.new/configure.in
+--- gconf-dbus-2.6.4.15/configure.in	2006-09-19 15:43:36.000000000 +0300
++++ gconf-dbus-2.6.4.15.new/configure.in	2006-09-19 16:13:23.211475672 +0300
+@@ -245,7 +245,6 @@ backends/Makefile
+ po/Makefile.in
+ doc/Makefile
+ doc/gconf/Makefile
+-examples/Makefile
+ tests/Makefile
+ gconf-2.0.pc
+ ])

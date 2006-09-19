@@ -1,9 +1,9 @@
-diff -ur gconf-dbus-2.6.4.14/Makefile.am gconf-dbus-2.6.4.13.new/Makefile.am
---- gconf-dbus-2.6.4.14/Makefile.am	2005-05-23 23:58:09.000000000 +0300
-+++ gconf-dbus-2.6.4.14.new/Makefile.am	2005-11-23 13:45:58.190664880 +0200
+diff -ur gconf-dbus-2.6.4.15/Makefile.am gconf-dbus-2.6.4.13.new/Makefile.am
+--- gconf-dbus-2.6.4.15/Makefile.am	2005-05-23 23:58:09.000000000 +0300
++++ gconf-dbus-2.6.4.15.new/Makefile.am	2005-11-23 13:45:58.190664880 +0200
 @@ -1,4 +1,4 @@
 -SUBDIRS = gconf backends po doc examples
-+SUBDIRS = gconf backends doc examples
++SUBDIRS = gconf backends doc
  DIST_SUBDIRS=tests $(SUBDIRS)
  
  DBUS_GCONF_CONF=gconfd.conf
