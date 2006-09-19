@@ -1,5 +1,11 @@
 2006-09-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gdk/x11/gdkdisplay-x11.c (gdk_display_open): Allow disabling XSHM
+	by setting GDK_DISABLE_XSHM environment variable. Partial hack for
+	NB#22173/sapwood
+
+2006-09-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkcalendar.c (gtk_calendar_init): Update first day of the week
 	calculation logic to take into account both related _NL_* values.
 	NB#40428
