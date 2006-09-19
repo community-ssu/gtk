@@ -14,7 +14,8 @@ startup_DATA = \
 	matchbox.defs \
 	matchbox.sh \
 	osso-gtk.defs \
-	dbus-systembus.sh
+	dbus-systembus.sh \
+	current-gtk-theme.default
 
 bin_SCRIPTS = af-sb-init.sh \
 	scratchbox-launcher.sh \

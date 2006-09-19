@@ -38,7 +38,7 @@ POST_UNINSTALL = :
 subdir = .
 DIST_COMMON = $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/af-sb-init.sh.in \
-	$(top_srcdir)/configure COPYING install-sh missing
+	$(top_srcdir)/configure COPYING ChangeLog install-sh missing
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
@@ -133,7 +133,8 @@ startup_DATA = \
 	matchbox.defs \
 	matchbox.sh \
 	osso-gtk.defs \
-	dbus-systembus.sh
+	dbus-systembus.sh \
+	current-gtk-theme.default
 
 bin_SCRIPTS = af-sb-init.sh \
 	scratchbox-launcher.sh \
