@@ -10,7 +10,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
     first_weekday on changing region.
 
   [ Xan López ]
-  * Fixes: NB#23035 GtkCalendar arrows not shown correctly
+  * Fixes: NB#23025 GtkCalendar arrows not shown correctly
   * Fixes: NB#37326 The Separator for combobox doesn't work
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 19 Sep 2006 19:15:12 +0300
