@@ -5,7 +5,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   [ Tommi Komulainen ]
   * Fixes NB#33725 GtkArrow graphics are clipped
 
-  [ Xan LÃpez ]
+  [ Xan LÃ³pez ]
   * Fixes: NB#23035 GtkCalendar arrows not shown correctly
   * Fixes: NB#37326 The Separator for combobox doesn't work
 
