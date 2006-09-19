@@ -1,6 +1,5 @@
 hildon-initscripts (1.5-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed lintian warnings.
   * Fixed osso-gtk.defs to not create '.osso' directory when the caller is
     the root. Fixes: NB#40493
@@ -9,7 +8,7 @@ hildon-initscripts (1.5-1) unstable; urgency=low
   * Fixed a bug in osso-gtk.defs: it has given wrong theme to root processes
     that do not set the HOME to /home/user.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 18:32:10 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 20:06:16 +0300
 
 hildon-initscripts (1.4-1) unstable; urgency=low
 
