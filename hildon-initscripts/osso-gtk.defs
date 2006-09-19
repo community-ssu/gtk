@@ -55,7 +55,12 @@ else
   fi
 fi
 
-HOME=$ORIGHOME  ;# have to do this for the case that this was sourced
+# have to do these for the case that this was sourced
+HOME=$ORIGHOME
+unset ORIGHOME
+unset PREFIX
+unset SYSCONFDIR
+unset DONOTCREATE
 
 export DEFAULTMBTHEME=$DEFAULTMBTHEME
 export DEFAULTGTKTHEME=$DEFAULTGTKTHEME
