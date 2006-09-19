@@ -1,10 +1,9 @@
 osso-af-utils (1.6-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added dependency to osso-core-config.
-  * Make xset770 Xi-aware (patch from daniels)
+  * Made xset770 Xi-aware (patch from daniels).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 11 Sep 2006 14:28:50 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 18:18:45 +0300
 
 osso-af-utils (1.5-1) unstable; urgency=low
 
