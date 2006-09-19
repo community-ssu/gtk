@@ -51,10 +51,6 @@ G_DEFINE_TYPE (HildonFileSystemObex,
                hildon_file_system_obex,
                HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
 
-static const gchar *
-root_failed_message = "Unable to list paired OBEX devices";
-
-
 static gchar *_unescape_base_uri (gchar *uri);
 
 static gchar *_uri_to_display_name (gchar *uri);
@@ -85,7 +81,7 @@ hildon_file_system_obex_init (HildonFileSystemObex *device)
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
     location->fixed_title = g_strdup (_("sfil_li_bluetooth"));
-    location->failed_access_message = root_failed_message;
+    location->failed_access_message = NULL;
 }
 
 static void
