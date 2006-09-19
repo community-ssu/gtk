@@ -1,11 +1,10 @@
 dbus (0.61-osso20) experimental; urgency=low
 
-  * UNRELEASED
   * Fixed Nokia copyright notices. Fixes: NB#40650
   * Removed limit for maximum matches per connection. Fixes: NB#40305
   * Added logging for detecting possible open matches to the daemon.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 18 Sep 2006 14:53:15 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 14:35:20 +0300
 
 dbus (0.61-osso19) experimental; urgency=low
 
