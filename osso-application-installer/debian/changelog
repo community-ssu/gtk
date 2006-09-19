@@ -1,3 +1,9 @@
+osso-application-installer (4.32.1) unstable; urgency=low
+
+  * debian/control (Build-Depends): Added osso-bttools-dev.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 19 Sep 2006 13:07:11 +0300
+
 osso-application-installer (4.32) unstable; urgency=low
 
   * Fixes: NB#32246, NB#29726, NB#36027, NB#34922, NB#40618.
