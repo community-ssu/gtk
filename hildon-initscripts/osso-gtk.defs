@@ -2,17 +2,14 @@
 # osso-gtk.defs - Gtk, Pango, IM definitions for all applications 
 # using Gtk in AF.
 
-if [ "x$HOME" = "x" ]; then
-  echo "$0: Error, HOME is not defined"
-  exit 2
-fi
-
 if [ "x$USER" = "xroot" ]; then
+  # do not create files or directories as root
   DONOTCREATE=1
 fi
 
 PREFIX=/usr
 SYSCONFDIR=/etc
+HOME=/home/user  ;# needed for some root processes
 
 export XDG_DATA_HOME=$PREFIX/share/mime
 export GTK_PATH=$PREFIX/lib/gtk-2.0/2.4.0
@@ -29,31 +26,31 @@ fi
 CURRENT_THEME_DIR=$HOME/.osso
 CURRENT_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-theme
 
-if [ "x$DONOTCREATE" = "x" ]; then
-  if [ ! -f $CURRENT_THEME_FILE ]; then
-    mkdir -p $CURRENT_THEME_DIR
-    echo "include \"$PREFIX/share/themes/$DEFAULTGTKTHEME/gtk-2.0/gtkrc\"" \
-      > $CURRENT_THEME_FILE
-  else
+if [ ! -f $CURRENT_THEME_FILE -a "x$DONOTCREATE" = "x" ]; then
 
-    # investigate if theme exists
-    THEMEFILE=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//'|tr -d '\n')
-    DEFAULTMBTHEME=$THEMEFILE
+  mkdir -p $CURRENT_THEME_DIR
+  cp -f /etc/osso-af-init/current-gtk-theme.default $CURRENT_THEME_FILE
 
-    # if theme directory does not exist, use 'default' theme
-    if [ ! -d /usr/share/themes/$THEMEFILE ]; then
+else
 
+  # investigate if theme exists
+  THEMEFILE=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//'|tr -d '\n')
+  DEFAULTMBTHEME=$THEMEFILE
+
+  # if theme directory does not exist, use 'default' theme
+  if [ ! -d /usr/share/themes/$THEMEFILE ]; then
+
+    if [ "x$DONOTCREATE" = "x" ]; then
       # set GTK theme
-      echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc\"" \
-        > $CURRENT_THEME_FILE
+      cp -f /etc/osso-af-init/current-gtk-theme.default $CURRENT_THEME_FILE
 
       # set MAD theme
       echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc.maemo_af_desktop\"" \
         > $CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop
-
-      # set MBOX theme
-      DEFAULTMBTHEME=default
     fi
+
+    # set MBOX theme
+    DEFAULTMBTHEME=default
   fi
 fi
 

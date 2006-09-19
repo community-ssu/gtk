@@ -6,6 +6,8 @@ hildon-initscripts (1.5-1) unstable; urgency=low
     the root. Fixes: NB#40493
   * The default theme file is now installed by the package, so that writing
     to flash in the first boot is not required.
+  * Fixed a bug in osso-gtk.defs: it has given wrong theme to root processes
+    that do not set the HOME to /home/user.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 19 Sep 2006 18:32:10 +0300
 
