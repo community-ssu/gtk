@@ -774,6 +774,7 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 #define _TREE_VIEW_EXPANDER_INDENT 10
 #define _TREE_VIEW_VERTICAL_SEPARATOR 2
 #define _TREE_VIEW_HORIZONTAL_SEPARATOR 2
+#define _TREE_VIEW_SEPARATOR_HEIGHT 2
     
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("expander-size",
@@ -859,6 +860,22 @@ GTK_PARAM_READABLE));
                                                                  P_("Used for tree view passive focus"),
                                                                  TRUE,
                                                                  GTK_PARAM_READABLE));
+
+  /**
+   * GtkTreeView::separator-height:
+   *
+   * Height in pixels of a separator.
+   *
+   * Since: maemo 3.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
+					   g_param_spec_int ("separator-height",
+							     P_("Separator height"),
+							     P_("Height of the separator"),
+							     0,
+							     G_MAXINT,
+							     _TREE_VIEW_SEPARATOR_HEIGHT,
+							     GTK_PARAM_READABLE));
 
   /* Signals */
   widget_class->set_scroll_adjustments_signal =
@@ -5638,6 +5655,7 @@ validate_row (GtkTreeView *tree_view,
   gboolean is_separator = FALSE;
   gint focus_pad;
   gint expander_indent;
+  gint separator_height;
       
   /* double check the row needs validating */
   if (! GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_INVALID) &&
@@ -5656,6 +5674,7 @@ validate_row (GtkTreeView *tree_view,
 			"horizontal_separator", &horizontal_separator,
                         "vertical_separator", &vertical_separator,
                         "expander_indent", &expander_indent,
+			"separator-height", &separator_height,
 			NULL);
   
   for (list = tree_view->priv->columns; list; list = list->next)
@@ -5686,7 +5705,7 @@ validate_row (GtkTreeView *tree_view,
 	  height = MAX (height, tree_view->priv->expander_size);
 	}
       else
-	height = 2 + 2 * focus_pad;
+	height = separator_height + 2 * focus_pad;
 
       if (gtk_tree_view_is_expander_column (tree_view, column) && TREE_VIEW_DRAW_EXPANDERS (tree_view))
         {
