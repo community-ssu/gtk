@@ -121,6 +121,11 @@ static void add_notify_for_configured_plugins( StatusBar *panel );
 static void update_conditional_plugin_cb( HildonStatusBarItem *item, 
 		                          gboolean conditional_status, 
 					  StatusBar *panel );
+
+static void statusbar_send_signal (DBusConnection *conn, 
+				    HildonStatusBarItem *item,
+				    gboolean status);
+
 	
 /* Global variables */		
 static GHashTable *delayed_banners;
@@ -1040,6 +1045,10 @@ gint rpc_cb( const gchar *interface,
 
         return OSSO_OK;
     }
+    else if( g_str_equal( "sb_conditional_plugins", method ) )
+    {
+	return OSSO_OK;
+    }
     /* Unknown method */
     else
     {
@@ -1206,7 +1215,14 @@ void update_conditional_plugin_cb( HildonStatusBarItem *item,
             gtk_container_remove( GTK_CONTAINER(panel->fixed), 
                     panel->items[slot] );
         }
+
     }
+
+    statusbar_send_signal ( osso_get_dbus_connection (panel->osso),
+ 			    HILDON_STATUS_BAR_ITEM (panel->items[slot]),
+			    conditional_status);
+
+    g_debug ("signal sended %d",conditional_status);
 
     /* Arrange items on visible panel */  
     arrange_items( panel, slot );
@@ -1442,13 +1458,45 @@ _remove_sb_d_ib_item(gpointer key, gpointer value, gpointer user_data)
   
 }
 
+static void 
+statusbar_send_signal (DBusConnection *conn, 
+			HildonStatusBarItem *item,
+			gboolean status)
+{
+  DBusMessage *message;
+  gchar *item_name = NULL;
+
+  message = dbus_message_new_signal ("/com/nokia/statusbar",
+                                     "com.nokia.statusbar.conditional", 
+				     "update_status");
+  
+  item_name = g_strdup_printf ("lib%s.so",hildon_status_bar_item_get_name (item));
+  
+  if (item_name)
+  { 
+    dbus_message_append_args (message,
+                              DBUS_TYPE_STRING, 
+  			      &item_name,
+			      DBUS_TYPE_BOOLEAN,
+			      &status,
+                              DBUS_TYPE_INVALID);
+    
+    dbus_connection_send (conn, message, NULL);
+  }
+
+  dbus_message_unref (message);
+  g_free (item_name);
+}
 
 int 
-status_bar_main( osso_context_t *osso, StatusBar **panel ){
-
+status_bar_main( osso_context_t *osso, StatusBar **panel )
+{
     StatusBar *sb_panel = NULL;
+    
     TRACE(TDEBUG,"status_bar_main: 1 g_new0");
     sb_panel = g_new0(StatusBar, 1);
+
+    sb_panel->osso = osso;
 
     TRACE(TDEBUG,"status_bar_main: 2 check panel ptr");
     if ( !sb_panel ) {  
@@ -1486,7 +1534,7 @@ status_bar_main( osso_context_t *osso, StatusBar **panel ){
     
     delayed_banners = g_hash_table_new(g_direct_hash, g_direct_equal);
     delayed_ib_onscreen = NULL;
-
+    
     TRACE(TDEBUG,"status_bar_main: 8, status bar initialized successfully");
     *panel = sb_panel;
     

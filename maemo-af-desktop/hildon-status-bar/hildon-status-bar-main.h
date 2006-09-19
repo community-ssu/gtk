@@ -111,6 +111,8 @@ struct status_bar_st
     gint plugin_pos_x[HSB_MAX_NO_OF_ITEMS];
     /* fixed Y pixel coordinates for the plugins */
     gint plugin_pos_y[HSB_MAX_NO_OF_ITEMS];
+
+    osso_context_t *osso;
 };
 
 

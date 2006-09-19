@@ -1,3 +1,10 @@
+2006-09-19  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: 
+	* hildon-status-bar/hildon-status-bar-main.h:
+	  Send dbus signal when sb's conditional or 
+	  temporal plugin fulfill its  condition.
+
 2006-09-19  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/home-applet-handler.c:
