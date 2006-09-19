@@ -175,7 +175,6 @@ dates_difference(N_int year1, N_int mm1, N_int dd1,
 /*** END OF lib_date routines ********************************************/
 
 /* HILDON: Spacings modified */
-
 #define HILDON_ARROW_SEP        5     /* Space between arrows and data */
 
 #define HILDON_DAY_WIDTH         26
