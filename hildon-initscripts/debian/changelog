@@ -1,7 +1,7 @@
 hildon-initscripts (1.5-1) unstable; urgency=low
 
   * UNRELEASED
-  * TODO: fix lintian warnings
+  * Fixed lintian warnings.
   * Fixed osso-gtk.defs to not create '.osso' directory when the caller is
     the root. Fixes: NB#40493
   * The default theme file is now installed by the package, so that writing
