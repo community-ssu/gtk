@@ -1296,6 +1296,7 @@ set_focus( CPGrid * grid, GtkWidget * widget, const gboolean refresh_view )
     GtkContainer *parent;
     GList fchain[GRID_MAXIMUM_NUMBER_OF_GRIDS];
     GList *focus_chain = &fchain[0];
+    GList *l;
 
     priv = CP_GRID_GET_PRIVATE(grid);
     container = GTK_CONTAINER(grid);
@@ -1316,9 +1317,10 @@ set_focus( CPGrid * grid, GtkWidget * widget, const gboolean refresh_view )
     /* Get the child index which the user wanted to focus */
     priv->focus_index = get_child_index(priv, widget);
     parent = GTK_CONTAINER(gtk_widget_get_parent(GTK_WIDGET(grid)));
-    if(gtk_container_get_focus_chain(parent, &focus_chain)) 
+    gtk_container_get_focus_chain(parent, &l);
+    if(l) 
     {
-	focus_chain = g_list_first(focus_chain);
+	focus_chain = l;
 	while (focus_chain)
 	{
 	    if (focus_chain->data != grid)
@@ -1328,6 +1330,8 @@ set_focus( CPGrid * grid, GtkWidget * widget, const gboolean refresh_view )
 	    focus_chain = g_list_next(focus_chain);
 	}
     }
+
+    g_list_free (l);
 
     gtk_widget_grab_focus(widget);
 
@@ -1916,11 +1920,12 @@ static GtkWidget *
 cp_grid_get_previous(GtkWidget *self)
 {
     GtkWidget *parent;
+    GtkWidget *previous;
     GList focwidg[GRID_MAXIMUM_NUMBER_OF_GRIDS];
-    GList *focusable = &focwidg[0];
+    GList *focusable = &focwidg[0], *l;
     parent = gtk_widget_get_parent(self);
     gtk_container_get_focus_chain(GTK_CONTAINER(parent),
-				  &focusable);
+				  &l);
     focusable = g_list_first(focusable);
     while (GTK_WIDGET(focusable->data) != self)
     {
@@ -1931,8 +1936,11 @@ cp_grid_get_previous(GtkWidget *self)
     {
 	return NULL;
     }
+
+    previous = GTK_WIDGET (g_list_previous(focusable)->data);
+    g_list_free (l);
     
-    return g_list_previous(focusable)->data;
+    return previous;
 }
 
 
@@ -1949,15 +1957,16 @@ static GtkWidget *
 cp_grid_get_next( GtkWidget *self )
 {
     GtkWidget *parent;
+    GtkWidget *next;
     GList focwidg[GRID_MAXIMUM_NUMBER_OF_GRIDS];
-    GList *focusable = &focwidg[0];
+    GList *focusable = &focwidg[0], *l;
     
     ULOG_DEBUG("In cp_grid_get_next");
 
     parent = gtk_widget_get_parent(self);
 
     gtk_container_get_focus_chain(GTK_CONTAINER(parent),
-				  &focusable);
+				  &l);
 
     focusable = g_list_first(focusable);
 
@@ -1969,7 +1978,10 @@ cp_grid_get_next( GtkWidget *self )
     {
 	return NULL;
     }
-    return g_list_next(focusable)->data;
+    
+    next = GTK_WIDGET(g_list_next(focusable)->data);
+    g_list_free(l);
+    return next;
 }
 
 /*

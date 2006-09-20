@@ -1,5 +1,9 @@
 2006-09-20  Johan Bilien <johan.bilien@nokia.com>
 
+	* cp-grid.c: Fixed various leaks of GList. Fixes: NB#40616
+
+2006-09-20  Johan Bilien <johan.bilien@nokia.com>
+
 	* cp-grid.c:
 	  - try to fix utterly broken size request
 	  - do not hide/show widgets which are "out of view" (we don't
