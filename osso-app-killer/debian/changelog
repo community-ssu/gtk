@@ -1,9 +1,8 @@
 osso-app-killer (1.9-1) unstable; urgency=low
 
-  * UNRELEASED
-  * Now removing also connectivity settings. Fixes: NB#39144
+  * Now removing also connectivity settings on CUD. Fixes: NB#39144
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 20 Sep 2006 13:59:53 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 20 Sep 2006 15:04:21 +0300
 
 osso-app-killer (1.8-1) unstable; urgency=low
 
