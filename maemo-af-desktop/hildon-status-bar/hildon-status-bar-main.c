@@ -1045,8 +1045,21 @@ gint rpc_cb( const gchar *interface,
 
         return OSSO_OK;
     }
-    else if( g_str_equal( "sb_conditional_plugins", method ) )
+    else if( g_str_equal( "statusbar_get_conditional", method ) )
     {
+	int i;
+
+	for (i=0;i<HSB_MAX_NO_OF_ITEMS;i++) /* can we break earlier? */
+	{
+	   if (panel->items[i])
+	   {
+	     statusbar_send_signal (osso_get_dbus_connection (panel->osso),
+	                            HILDON_STATUS_BAR_ITEM (panel->items[i]),
+				    hildon_status_bar_item_get_conditional
+				     (HILDON_STATUS_BAR_ITEM (panel->items[i])));
+	   }
+	}   
+   	g_debug ("Conditional check called");
 	return OSSO_OK;
     }
     /* Unknown method */
