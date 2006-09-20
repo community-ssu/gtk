@@ -1,0 +1,11 @@
+Source: maemo-theme-default
+Section: x11
+Priority: optional
+Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, maemo-theme-tools
+Standards-Version: 3.6.0
+
+Package: maemo-theme-default
+Architecture: all
+Depends: gtk2-engines-sapwood, ui-fonts, osso-icons
+Description: Default maemo theme

@@ -1,0 +1,5 @@
+maemo-theme-default (0.0-unreleased1) unstable; urgency=low
+
+  * Copied from osso-theme-demo-config 2.1.0-1 and modified a bit.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 20 Sep 2006 14:55:06 +0300
