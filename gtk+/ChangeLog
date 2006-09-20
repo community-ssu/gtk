@@ -1,5 +1,11 @@
 2006-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtktreeprivate.h (TREE_VIEW_DRAG_WIDTH): Increase the drag area
+	width for column header resizing from 6px to 28px
+	(6 * (dpi/96) * (stylus ? 2 : 1))
+
+2006-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeviewcolumn.c (_gtk_tree_view_column_realize_button):
 	Replace magical '3' with properly calculated value when positioning
 	the drag window, similar to gtk_tree_view_size_allocate_columns.

@@ -29,7 +29,7 @@ extern "C" {
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkrbtree.h>
 
-#define TREE_VIEW_DRAG_WIDTH 6
+#define TREE_VIEW_DRAG_WIDTH 28
 
 typedef enum
 {
