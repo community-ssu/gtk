@@ -17,7 +17,7 @@ $(THEMEDIR)/gtk-2.0/gtkrc:: themespecificgtk
 	cp $(srcdir)/themespecificgtk temp/themespecificgtk
 
 	mkdir -p $(THEMEDIR)/gtk-2.0/
-	
+
 	pushd temp; \
 	for i in gtkrc $$(grep include gtkrc|grep -v '\#'|sed -e 's/^include "//' -e 's/".*$$//'); do cat $$i; done|grep -v '^include' > $(srcdir)/$(THEMEDIR)/gtk-2.0/gtkrc; \
 	popd;
@@ -28,10 +28,10 @@ $(THEMEDIR)/gtk-2.0/gtkrc.maemo_af_desktop:: themespecificgtk $(THEMEDIR)/gtk-2.
         popd;
 
 $(THEMEDIR)/gtk-2.0/gtkrc.cache: $(THEMEDIR)/gtk-2.0/gtkrc
-	cache-generator $(THEMEDIR) 2> /dev/null
+	maemo-theme-cache-generator $(THEMEDIR) 2> /dev/null
  
 $(THEMEDIR)/gtk-2.0/gtkrc.maemo_af_desktop.cache: $(THEMEDIR)/gtk-2.0/gtkrc.maemo_af_desktop
-	cache-generator $(THEMEDIR) 2> /dev/null
+	maemo-theme-cache-generator $(THEMEDIR) 2> /dev/null
 
 $(THEMEDIR)/matchbox/theme.xml: theme.xml
 	mkdir -p $(THEMEDIR)/matchbox/

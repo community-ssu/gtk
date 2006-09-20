@@ -1,8 +1,6 @@
-INCLUDES = $(GTK_CFLAGS)
+bin_PROGRAMS = maemo-theme-cache-generator
 
-bin_PROGRAMS = cache-generator
+maemo_theme_cache_generator_CFLAGS = $(GTK_CFLAGS)
+maemo_theme_cache_generator_LDADD = $(GTK_LIBS)
 
-cache_generator_LDADD = $(GTK_LIBS)
-
-cache_generator_SOURCES = \
-	cache-generator.c
+maemo_theme_cache_generator_SOURCES = cache-generator.c
