@@ -1,7 +1,12 @@
 # This file is used by the theme build toolchain to cut the individual
 # images out of the big template.
 #
-# filename, left, top, width, height (bordervalues here? l,r,t,b?)
+# Syntax:
+# filename, left, top, width, height
+# 
+# possibly we should move the bordervalues from gtkrc here as well..
+
+#
 
 [Main]
 TemplateWidth=8000
