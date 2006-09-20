@@ -51,16 +51,6 @@
 
 #define HILDON_CONTROL_PANEL_STATEFILE_NO_CONTENT "EOF"
 
-/* Definitions for ugly hacks that have to be used in order to make
- * CPGrid behave in this situation.
- * FIXME: use a widget better suited for this purpose
- */
-#define LARGE_ITEM_ROW_HEIGHT 64
-#define SMALL_ITEM_ROW_HEIGHT 30
-#define GRID_WIDTH            650
-#define LARGE_ITEM_PADDING    0 /* Padding is unnecessary as the item  */
-#define SMALL_ITEM_PADDING    0 /* category label contains padding too */
-
 
 /* Sets DNOTIFY callback for the .desktop dir */
 static int hcp_init_dnotify (HCP *hcp, const gchar * path);
@@ -119,9 +109,6 @@ static void hcp_my_quit  (GtkWidget * widget, HCP *hcp);
 
 /* Callback for handling HW signals */
 static void hcp_hw_signal_cb (osso_hw_state_t * state, HCP *hcp);
-
-/* Hack to make CPGrid behave */
-static int hcp_calculate_grid_rows (GtkWidget *grid);
     
 /* RPC setup */
 static void hcp_init_rpc (HCP *hcp);
@@ -452,10 +439,6 @@ void hcp_large_icons (HCP *hcp)
             {
                 grid = GTK_WIDGET (iter->data);
                 cp_grid_set_style(CP_GRID(grid), "largeicons-cp");
-            
-                guint num_rows = hcp_calculate_grid_rows (grid);
-                gtk_widget_set_size_request (grid, GRID_WIDTH,
-                        num_rows * LARGE_ITEM_ROW_HEIGHT + LARGE_ITEM_PADDING);
             }
 
             iter = iter->next;
@@ -491,10 +474,6 @@ hcp_small_icons (HCP *hcp)
             {
                 grid = GTK_WIDGET (iter->data);
                 cp_grid_set_style(CP_GRID(grid), "smallicons-cp");
-
-                guint num_rows = hcp_calculate_grid_rows (grid);
-                gtk_widget_set_size_request (grid, GRID_WIDTH,
-                        num_rows * SMALL_ITEM_ROW_HEIGHT + SMALL_ITEM_PADDING);
             }
 
             iter = iter->next;
@@ -979,6 +958,7 @@ static void hcp_hw_signal_cb (osso_hw_state_t *state, HCP *hcp)
 
 
 
+#if 0
 static int hcp_calculate_grid_rows (GtkWidget *grid)
 {
     guint num_columns = 0, num_rows = 0, num_items = 0;
@@ -995,6 +975,7 @@ static int hcp_calculate_grid_rows (GtkWidget *grid)
 
     return num_rows;
 }
+#endif
 
 
 static void

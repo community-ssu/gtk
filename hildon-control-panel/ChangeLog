@@ -1,3 +1,11 @@
+2006-09-20  Johan Bilien <johan.bilien@nokia.com>
+
+	* cp-grid.c:
+	  - try to fix utterly broken size request
+	  - do not hide/show widgets which are "out of view" (we don't
+	    use a scrollbar any longer). Fixes: NB#40768
+	* hildon-control-panel-main.c: Removed unnecessary hard-coded size request
+
 2006-09-04 Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-control-panel-main.c: Fixed building problem on
@@ -6,9 +14,9 @@
 
 2006-09-04 Karoliina Salminen <karoliina.t.salminen@nokia.com>
 
-    	* All files: modification to license headers
-    	Closes bug N#39397.
-    	* configure.ac -> 2.2.6
+	* All files: modification to license headers
+    	Fixes: NB#39397.
+	* configure.ac -> 2.2.6
 
 2006-08-24 Johan Bilien <johan.bilien@nokia.com>
 

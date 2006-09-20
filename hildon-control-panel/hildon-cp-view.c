@@ -116,7 +116,7 @@ hcp_view_add_category (HCPCategory *category, GtkWidget *view)
 
         /* Pack the separator and the corresponding grid to the vbox */
         gtk_box_pack_start (GTK_BOX (view), separator, FALSE, FALSE, 5);
-        gtk_box_pack_start (GTK_BOX (view), grid, TRUE, TRUE, 5);
+        gtk_box_pack_start (GTK_BOX (view), grid, FALSE, TRUE, 5);
 
         /* Why do we explicitely need to do this, shouldn't GTK take
          * care of it? -- Jobi

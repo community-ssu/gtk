@@ -870,17 +870,9 @@ cp_grid_expose( GtkWidget * widget, GdkEventExpose * event )
         return FALSE;
     }
 
-    /* Only expose visible children. */
-
-    /* Jump over invisible. */
     for (list = priv->children, child_no = 0;
-         list != NULL && child_no < priv->first_index;
-         list = list->next, child_no++) {
-        ;       /* Nothing here. */
-    }
-
-    for (; list != NULL && child_no < priv->first_index +
-         priv->num_columns * priv->area_rows; list = list->next) {
+         list != NULL;
+         list = list->next) {
         gtk_container_propagate_expose(container,
                                        ((CPGridChild *) list->data)
                                        ->widget, event);
@@ -908,17 +900,16 @@ cp_grid_size_request( GtkWidget * widget, GtkRequisition * requisition )
     CPGridPrivate *priv;
     GList *list;
     GtkWidget *child;
-    GtkRequisition req;
+    gint max_width = 0;
+    gint max_height = 0;
+    GtkRequisition req = {0,};
+    GtkRequisition req2 = {0,};
 
     g_return_if_fail(widget);
     g_return_if_fail(requisition);
 
     grid = CP_GRID(widget);
     priv = CP_GRID_GET_PRIVATE(grid);
-
-    /* Want as big as possible. */
-    requisition->width  = 0x7fff;  /* Largest possible gint16 */
-    requisition->height = 0x7fff;  /* Largest possible gint16 */
 
     if (priv->children == NULL) {
         if (priv->empty_label != NULL &&
@@ -928,14 +919,34 @@ cp_grid_size_request( GtkWidget * widget, GtkRequisition * requisition )
     }
 
     if (priv->scrollbar != NULL && GTK_WIDGET_VISIBLE(priv->scrollbar)) {
-        gtk_widget_size_request(priv->scrollbar, &req);
+        gtk_widget_size_request(priv->scrollbar, &req2);
     }
+    req.width += req2.width;
 
     for (list = priv->children; list != NULL; list = list->next) {
+        GtkRequisition child_req = {0,};
         child = ((CPGridChild *) list->data)->widget;
 
-        gtk_widget_size_request(child, &req);
+            gtk_widget_size_request(child, &child_req);
+            if (child_req.width > max_width)
+                max_width = child_req.width;
+            if (child_req.height > max_height)
+                max_height = child_req.height;
     }
+
+    req.width += priv->num_columns * max_width;
+
+    if (priv->num_columns)
+        req.height += (/*max_height + priv->v_margin*/priv->item_height) * 
+                      (1 + ((g_list_length (priv->children) - 1)
+                            /priv->num_columns));
+
+    /* first vmargin */
+    req.height += priv->v_margin;
+    
+    requisition->width  = req.width;
+    requisition->height = req.height;
+
 }
 
 
@@ -1044,10 +1055,12 @@ cp_grid_size_allocate( GtkWidget * widget, GtkAllocation * allocation )
             priv->num_columns;
     }
 
-    priv->first_index =
+    priv->first_index = 0;
         (int) gtk_range_get_value(GTK_RANGE(priv->scrollbar)) /
         priv->item_height * priv->num_columns;
 
+    /* all items are always visible */
+#if 0
     /* Hide items before visible ones. */
     for (list = priv->children, child_no = 0;
          list != NULL && child_no < priv->first_index;
@@ -1058,6 +1071,9 @@ cp_grid_size_allocate( GtkWidget * widget, GtkAllocation * allocation )
             gtk_widget_hide(child);
         }
     }
+#endif
+    list = priv->children;
+    child_no = 0;
 
     /* Allocate visible items. */
     alloc.width = priv->item_width - priv->h_margin;
@@ -1084,6 +1100,7 @@ cp_grid_size_allocate( GtkWidget * widget, GtkAllocation * allocation )
         _cp_grid_item_done_updating_settings(CP_GRID_ITEM(child));
         gtk_widget_size_allocate(child, &alloc);
     }
+#if 0
 
     /* Hide items after visible items. */
     for (; list != NULL; list = list->next) {
@@ -1093,6 +1110,7 @@ cp_grid_size_allocate( GtkWidget * widget, GtkAllocation * allocation )
             gtk_widget_hide(child);
         }
     }
+#endif
 }
 
 
@@ -1323,10 +1341,12 @@ set_focus( CPGrid * grid, GtkWidget * widget, const gboolean refresh_view )
         view_updated = FALSE;
     }
 
+#if 0
     if (view_updated) {
         cp_grid_size_allocate(GTK_WIDGET(grid),
                                   &GTK_WIDGET(grid)->allocation);
     }
+#endif
 }
 
 static void
