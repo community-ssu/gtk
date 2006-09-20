@@ -1,5 +1,18 @@
 2006-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Taken from GNOME CVS. NB#18559
+
+    Wed Sep 20 16:59:38 2006  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkviewport.c: always update the bin_window position and size
+	in size_allocate, even if we don't have a visible child. this fixes
+	expose artefacts as described in #313508.
+
+	* gtk/gtkscrolledwindow.c: make hiding of automatic scrollbars when we
+	have no visible child explicit.
+
+2006-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeprivate.h (TREE_VIEW_DRAG_WIDTH): Increase the drag area
 	width for column header resizing from 6px to 28px
 	(6 * (dpi/96) * (stylus ? 2 : 1))
