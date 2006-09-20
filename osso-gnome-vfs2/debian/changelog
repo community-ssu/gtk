@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.12.0.14-2osso1) unstable; urgency=low
+
+  * Fixes: NB#36464, FM hangs after replacing folder on GW
+
+ -- Richard Hult <richard@imendio.com>  Fri, 22 Sep 2006 16:15:54 +0200
+
 osso-gnome-vfs2 (2.12.0.13-2osso1) unstable; urgency=low
 
   * Fixes: NB#32771, dbus-vfs-daemon leaks memory when copying files using BT

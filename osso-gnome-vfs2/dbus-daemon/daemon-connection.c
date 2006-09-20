@@ -495,6 +495,11 @@ connection_add_directory_handle (DaemonConnection        *conn,
 
 	handle = directory_handle_new (vfs_handle, conn->next_id++);
 
+	/* Protect against wrap-around, we can never have 0. */
+	if (conn->next_id == 0) {
+		conn->next_id = 1;
+	}
+
 	g_hash_table_insert (conn->directory_handles,
 			     GINT_TO_POINTER (handle->id), handle);
 
@@ -553,6 +558,11 @@ connection_add_monitor_handle (DaemonConnection      *conn,
 
 	handle = monitor_handle_new (vfs_handle, conn->next_id++);
 
+	/* Protect against wrap-around, we can never have 0. */
+	if (conn->next_id == 0) {
+		conn->next_id = 1;
+	}
+	
 	g_hash_table_insert (conn->monitor_handles,
 			     GINT_TO_POINTER (handle->id), handle);
 
@@ -638,6 +648,11 @@ connection_add_file_handle (DaemonConnection *conn,
 
 	handle = file_handle_new (vfs_handle, conn->next_id++);
 
+	/* Protect against wrap-around, we can never have 0. */
+	if (conn->next_id == 0) {
+		conn->next_id = 1;
+	}
+	
 	g_hash_table_insert (conn->file_handles,
 			     GINT_TO_POINTER (handle->id), handle);
 

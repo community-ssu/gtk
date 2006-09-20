@@ -87,10 +87,13 @@ static DBusConnection *dbus_conn = NULL;
 static dbus_int32_t    dbus_conn_id = 0;
 
 static GStaticMutex    mutex = G_STATIC_MUTEX_INIT;
-
 #define MUTEX_LOCK(x) g_static_mutex_lock (&mutex);
 #define MUTEX_UNLOCK(x) g_static_mutex_unlock (&mutex);
 
+static GHashTable     *active_monitors = NULL;
+static GStaticMutex    active_monitors_mutex = G_STATIC_MUTEX_INIT;
+#define ACTIVE_MONITORS_LOCK(x) g_static_mutex_lock (&active_monitors_mutex);
+#define ACTIVE_MONITORS_UNLOCK(x) g_static_mutex_unlock (&active_monitors_mutex);
 
 typedef struct {
 	gint32 id;
@@ -598,12 +601,26 @@ message_handler (DBusConnection *conn,
 			       DBUS_TYPE_INVALID);
 
 	uri = gnome_vfs_uri_new (uri_str);
+	if (uri) {
+		gpointer tmp;
 
-	gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) GINT_TO_POINTER (id),
-				    uri,
-				    (GnomeVFSMonitorEventType) event_type);
+		/* Make sure the monitor has not been removed. This happens if
+		 * we get a callback from the daemon after removing the monitor
+		 * client-side but before the daemon has noticed. If we don't
+		 * check here, libgnomevfs will get stuck in an infinite loop
+		 * waiting for the monitor to be added.
+		 */
+		ACTIVE_MONITORS_LOCK ();
+		tmp = g_hash_table_lookup (active_monitors, GINT_TO_POINTER (id));
+		ACTIVE_MONITORS_UNLOCK ();
+		if (tmp) {
+			gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) GINT_TO_POINTER (id),
+						    uri,
+						    (GnomeVFSMonitorEventType) event_type);
+		}
 
-	gnome_vfs_uri_unref (uri);
+		gnome_vfs_uri_unref (uri);
+	}
 
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -1504,6 +1521,13 @@ do_monitor_add (GnomeVFSMethod        *method,
 	GnomeVFSResult  result;
 	dbus_int32_t    id;
 
+	ACTIVE_MONITORS_LOCK ();
+	if (!active_monitors) {
+		active_monitors = g_hash_table_new (g_direct_hash,
+						    g_direct_equal);
+	}
+	ACTIVE_MONITORS_UNLOCK ();
+	
 	reply = execute_operation (DVD_DAEMON_METHOD_MONITOR_ADD,
 				   NULL, &result, -1,
 				   DVD_TYPE_URI, uri,
@@ -1537,6 +1561,12 @@ do_monitor_cancel (GnomeVFSMethod       *method,
 	DBusMessage    *reply;
 	GnomeVFSResult  result;
 
+	ACTIVE_MONITORS_LOCK ();
+	if (active_monitors) {
+		g_hash_table_remove (active_monitors, method_handle);
+	}
+	ACTIVE_MONITORS_UNLOCK ();
+	
 	reply = execute_operation (DVD_DAEMON_METHOD_MONITOR_CANCEL,
 				   NULL, &result, -1,
 				   DVD_TYPE_INT32, GPOINTER_TO_INT (method_handle),
