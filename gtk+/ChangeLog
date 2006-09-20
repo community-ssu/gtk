@@ -1,3 +1,9 @@
+2006-09-20  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeviewcolumn.c (_gtk_tree_view_column_realize_button):
+	Replace magical '3' with properly calculated value when positioning
+	the drag window, similar to gtk_tree_view_size_allocate_columns.
+
 2006-09-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk/x11/gdkdisplay-x11.c (gdk_display_open): Allow disabling XSHM
