@@ -1,0 +1,35 @@
+
+class "GtkWidget" style "osso-logical-colors"
+
+style "osso-color-themeing" = "osso-logical-colors" {
+  fg[NORMAL] = "DefaultTextColor"
+  bg[NORMAL] = "DefaultBackgrdColor"
+
+  fg[PRELIGHT] = "DefaultTextColor"
+  bg[PRELIGHT] = "DefaultBackgrdColor"
+
+  fg[ACTIVE] = "DefaultTextColor"
+  bg[ACTIVE] = "PaintedBackgrdColor"
+                                                                                                                                    
+  fg[SELECTED] = "DefaultTextColor"
+  bg[SELECTED] = "PaintedBackgrdColor"
+                                                                                                                                     
+  fg[INSENSITIVE] = "DisabledTextColor"
+  bg[INSENSITIVE] = "DefaultBackgrdColor"
+                                                                                                                                     
+  text[NORMAL] = "DefaultTextColor"
+  base[NORMAL] = "DefaultBackgrdColor"
+                                                                                                                                     
+  text[PRELIGHT] = "DefaultTextColor"
+  base[PRELIGHT] = "DefaultBackgrdColor"
+                                                                                                                                     
+  text[ACTIVE] = "PaintedDefaultTextColor"
+  base[ACTIVE] = "PaintedBackgrdColor"
+
+  text[SELECTED] = "PaintedDefaultTextColor"
+  base[SELECTED] = "PaintedBackgrdColor"
+                                                                                                                                    
+  text[INSENSITIVE] = "DisabledTextColor"
+  base[INSENSITIVE] = "DefaultBackgrdColor"
+}
+class "GtkWidget" style "osso-color-themeing"

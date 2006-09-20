@@ -1,0 +1,375 @@
+
+##############################################
+# Task Navigator Tooltip
+##############################################
+style "osso-task-navigator-tooltip" 
+{
+    engine "sapwood" 
+    {
+        image 
+        {
+            function = FLAT_BOX
+            state = NORMAL
+            file = "../images/qgn_plat_task_navigation_menu_frame.png"	
+	    border = { 20, 20, 20, 20 }
+            stretch = TRUE
+        }
+    }
+}
+
+widget "hildon-task-navigator-tooltip" style "osso-task-navigator-tooltip"
+
+#####################################
+#Temporar theming to the navigator
+#(Just to make it look nice)
+#####################################
+style "osso-navigator-button-one"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			state = NORMAL
+			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = PRELIGHT
+			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = INSENSITIVE
+			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_button_01_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = SELECTED
+			file = "../images/qgn_plat_task_navigation_button_01_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+widget "*.hildon-navigator-button-one" style "osso-navigator-button-one"
+
+style "osso-navigator-button-two"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			state = NORMAL
+			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = PRELIGHT
+			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = INSENSITIVE
+			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_button_02_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = SELECTED
+			file = "../images/qgn_plat_task_navigation_button_02_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+widget "*.hildon-navigator-button-two" style "osso-navigator-button-two"
+
+style "osso-navigator-button-three"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			state = NORMAL
+			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = PRELIGHT
+			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = INSENSITIVE
+			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_button_03_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = SELECTED
+			file = "../images/qgn_plat_task_navigation_button_03_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+widget "*.hildon-navigator-button-three" style "osso-navigator-button-three"
+
+style "osso-navigator-upper-separator"
+{
+  engine "sapwood"
+    {
+      image
+        {
+	  function = BOX
+	  file     = "../images/qgn_plat_task_navigation_skin_01.png"
+	  border   = { 0, 0, 0, 0 }
+	  stretch  = TRUE
+	}
+    }
+}
+widget "*.hildon-navigator-upper-separator" style "osso-navigator-upper-separator"
+
+style "osso-navigator-lower-separator"
+{
+  engine "sapwood"
+    {
+      image
+        {
+	  function = BOX
+	  file     = "../images/qgn_plat_task_navigation_skin_02.png"
+	  border   = { 0, 0, 0, 0 }
+	  stretch  = TRUE
+	}
+    }
+}
+widget "*.hildon-navigator-lower-separator" style "osso-navigator-lower-separator"
+
+style "osso-navigator-small-button1"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_01_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button1" style "osso-navigator-small-button1"
+
+style "osso-navigator-small-button2"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_02_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button2" style "osso-navigator-small-button2"
+
+style "osso-navigator-small-button3"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_03_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button3" style "osso-navigator-small-button3"
+
+style "osso-navigator-small-button4"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_04_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button4" style "osso-navigator-small-button4"
+
+style "osso-navigator-small-button5"
+{   
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			state = NORMAL
+			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = PRELIGHT
+			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_application_switcher_05_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = SELECTED
+			file = "../images/qgn_plat_task_navigation_application_switcher_05_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		image {
+			function = BOX
+			state = INSENSITIVE
+			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+		
+	}
+}
+
+widget "*.hildon-navigator-small-button5" style "osso-navigator-small-button5"
+
+
+
+
+style "osso-navigator-small-button1-pressed"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button1-pressed" style "osso-navigator-small-button1-pressed"
+
+style "osso-navigator-small-button2-pressed"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button2-pressed" style "osso-navigator-small-button2-pressed"
+
+style "osso-navigator-small-button3-pressed"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button3-pressed" style "osso-navigator-small-button3-pressed"
+
+style "osso-navigator-small-button4-pressed"
+{
+   GtkButton::child_displacement_x = 0
+   GtkButton::child_displacement_y = 0
+
+	engine "sapwood" {
+		image {
+			function = BOX
+			file = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}
+	}
+}
+
+widget "*.hildon-navigator-small-button4-pressed" style "osso-navigator-small-button4-pressed"

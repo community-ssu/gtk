@@ -1,0 +1,20 @@
+#
+# GTK-SETTINGS
+#
+
+# Default backend to use
+gtk-file-chooser-backend = "gnome-vfs"
+
+# Are we using toolbar animation
+gtk-toolbar-animation = 0
+gtk-toolbar-style = GTK_TOOLBAR_ICONS
+
+# Keyboard navigation
+hildon-keyboard-navigation = 1
+
+# Menu interaction
+gtk-menu-shell-timeout = -1
+
+# Drag and drop treshold
+gtk-dnd-drag-threshold = 30
+

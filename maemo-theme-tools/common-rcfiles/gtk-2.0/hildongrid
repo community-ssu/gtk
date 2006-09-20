@@ -1,0 +1,76 @@
+# Likely to change
+#
+style "osso-grid-small-icons"
+{
+    HildonGrid::item_height = 30
+    HildonGrid::item_hspacing = 12
+    HildonGrid::item_vspacing = 0
+    
+    HildonGrid::label_hspacing = 6
+    HildonGrid::label_vspacing = 6
+    HildonGrid::label_height = 30
+
+    HildonGrid::icon_size = 26
+    HildonGrid::n_columns = 2
+    HildonGrid::label_pos = 2
+
+    CPGrid::item_height = 30
+    CPGrid::item_hspacing = 12
+    CPGrid::item_vspacing = 0
+    
+    CPGrid::label_hspacing = 6
+    CPGrid::label_vspacing = 6
+    CPGrid::label_height = 30
+
+    CPGrid::icon_size = 26
+    CPGrid::n_columns = 2
+    CPGrid::label_pos = 2
+}
+
+style "osso-grid-big-icons"
+{
+    HildonGrid::item_height = 64
+    HildonGrid::item_hspacing = 12
+    HildonGrid::item_vspacing = 6
+    
+    HildonGrid::label_hspacing = 6
+    HildonGrid::label_vspacing = 6
+    HildonGrid::label_height = 30
+
+    HildonGrid::icon_size = 64
+    HildonGrid::n_columns = 2
+    HildonGrid::label_pos = 1
+    
+    CPGrid::item_height = 64
+    CPGrid::item_hspacing = 12
+    CPGrid::item_vspacing = 6
+    
+    CPGrid::label_hspacing = 6
+    CPGrid::label_vspacing = 6
+    CPGrid::label_height = 30
+
+    CPGrid::icon_size = 64
+    CPGrid::n_columns = 2
+    CPGrid::label_pos = 1
+}
+
+class "HildonGrid" style "osso-grid-big-icons"
+class "CPGrid" style "osso-grid-big-icons"
+
+widget "*.smallicons" style "osso-grid-small-icons"
+
+style "osso-grid-item-label" {
+    engine "sapwood" {
+        image {
+            function = BOX
+            state = SELECTED
+            file = "../images/qgn_plat_focus_active.png"
+            border = {2, 2, 2, 2}
+            stretch = TRUE
+        }
+    }
+}
+widget "*.hildon-grid-item-label" style "osso-grid-item-label"
+
+widget "*.smallicons-cp" style "osso-grid-small-icons"
+widget "*.largeicons-cp" style "osso-grid-big-icons"

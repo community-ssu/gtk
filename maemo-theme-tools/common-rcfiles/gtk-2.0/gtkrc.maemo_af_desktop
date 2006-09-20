@@ -1,0 +1,20 @@
+#
+# Adding all non-maemo_af_desktop widgets into maemo_af_desktop 
+include "gtkrc"
+
+# Adding maemo_af_desktop specific widgets 
+include "hildonhome"
+include "hildonnavigator"
+include "hildonnavigatorpopuplist"
+include "hildonstatusbar"
+
+##################
+# THESE HAVE MISSING IMAGES BUT ARE HERE BECAUSE OF STYLE PROPERTIES
+##################
+
+# Home applets
+include "ossoclock"
+include "ossoiradioapplet"
+include "ossorssfeedreader"
+include "ossospeeddial"
+include "ossointernetsearchapplet"

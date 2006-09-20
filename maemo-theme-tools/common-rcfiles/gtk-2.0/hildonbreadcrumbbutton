@@ -1,0 +1,92 @@
+####################################################
+# HILDON BREAD CRUMB BUTTON
+#
+# Copyright 2006 Nokia Oyj
+#
+# This file has the themeing of toolbar's menu
+# button.
+#
+# The choicelist version of combobox which only
+# allows selection, not edition is named GtkComboBox
+# and is actually just one big GtkButton that has text
+# inside it. Therefore one image per state is enough
+# for it.
+#
+# The combobox version that allows editing of the text
+# is named GtkComboBoxEntry and consists of two parts:
+# A GtkButton and GtkEntry. These have to be themed
+# separately.
+#
+# Additionally, when a combobox is in a toolbar,
+# it will use different graphics that show the arrow
+# pointing upwards.
+#
+####################################################
+
+
+####################################################
+#
+# Style for the hildon-bread-crumb-button
+#
+####################################################
+
+
+style "osso-breadcrumb-button" = "osso-logical-colors" {
+
+    GtkWidget::focus-line-pattern = "\0\0\0\0\0\0\0\0"
+    GtkWidget::focus-width = 0
+    GtkButton::default_border = { 0, 0, 0, 0 }
+    GtkButton::child-displacement-x = 0
+    GtkButton::child-displacement-y = 1
+    GtkButton::interior_focus = 0
+    GtkButton::child_spacing = 1
+    xthickness = 0
+    ythickness = 0
+
+    fg[INSENSITIVE] = "DefaultTextColor"
+
+    engine "sapwood" {
+
+        image {
+            function = FOCUS
+            state    = ACTIVE
+            file     = "../images/qgn_plat_button_breadcrumb_pressed.png"
+            border   = { 14, 14, 14, 14 }
+            stretch  = TRUE
+        }
+        image {
+            function = FOCUS
+            file     = "../images/qgn_plat_button_breadcrumb_focused.png"
+            border   = { 14, 14, 14, 14 }
+            stretch  = TRUE
+        }
+        image {
+            function = BOX
+            shadow   = IN
+            file     = "../images/qgn_plat_button_breadcrumb_pressed.png"
+            border   = { 14, 14, 14, 14 }
+            stretch  = TRUE
+        }
+        image {
+            function = BOX
+            state    = SELECTED
+            file     = "../images/qgn_plat_button_breadcrumb_pressed.png"
+            border   = { 14, 14, 14, 14 }
+            stretch  = TRUE
+        }
+        image {
+            function = BOX
+            state    = INSENSITIVE
+            # no image
+        }
+        image {
+            function = BOX
+            file     = "../images/qgn_plat_button_breadcrumb_normal.png"
+            border   = { 14, 14, 14, 14 }
+            stretch  = TRUE
+        }
+
+    }
+}
+
+widget "*.osso-breadcrumb-button*"   style "osso-breadcrumb-button"

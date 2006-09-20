@@ -1,0 +1,122 @@
+
+####################################################
+#HILDON NUMBER EDITOR
+#
+#
+####################################################
+style "osso-number-editor"
+{
+  xthickness = 0
+  ythickness = 0
+}
+class "HildonNumberEditor" style "osso-number-editor"
+
+style "osso-number-editor-plus"
+{
+  GtkButton::default_border = { 0, 0, 0, 0 }
+  GtkButton::child-displacement-y = 0
+  GtkButton::child-displacement-x = 0
+  xthickness = 0
+  ythickness = 0
+
+  engine "sapwood"
+  {
+    image
+  	{
+  	  function = BOX
+          state = NORMAL
+  	  file = "../images/qgn_plat_number_editor_more_normal.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+    image
+  	{
+  	  function = BOX
+          state = SELECTED
+  	  file = "../images/qgn_plat_number_editor_more_normal.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+    image
+  	{
+  	  function = BOX
+          state = PRELIGHT
+  	  file = "../images/qgn_plat_number_editor_more_normal.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+  	image
+  	{
+  	  function = BOX
+          state = INSENSITIVE
+  	  file = "../images/qgn_plat_number_editor_more_disabled.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+  	image
+  	{
+  	  function = BOX
+          state = ACTIVE
+  	  file = "../images/qgn_plat_number_editor_more_pressed.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+  }
+}
+
+widget "*.ne-plus-button" style "osso-number-editor-plus"
+
+style "osso-number-editor-minus"
+{
+  GtkButton::default_border = { 0, 0, 0, 0 }
+  GtkButton::child-displacement-y = 0
+  GtkButton::child-displacement-x = 0
+  xthickness = 0
+  ythickness = 0
+
+  engine "sapwood"
+  {
+    image
+  	{
+  	  function = BOX
+          state = NORMAL
+  	  file = "../images/qgn_plat_number_editor_less_normal.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+    image
+  	{
+  	  function = BOX
+          state = SELECTED
+  	  file = "../images/qgn_plat_number_editor_less_normal.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+    image
+  	{
+  	  function = BOX
+          state = PRELIGHT
+  	  file = "../images/qgn_plat_number_editor_less_normal.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+  	image
+  	{
+  	  function = BOX
+          state = INSENSITIVE
+  	  file = "../images/qgn_plat_number_editor_less_disabled.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+  	image
+  	{
+  	  function = BOX
+          state = ACTIVE
+  	  file = "../images/qgn_plat_number_editor_less_pressed.png"
+  	  stretch = TRUE
+	  border = {0,0,0,0}
+  	}
+  }
+}
+
+widget "*.ne-minus-button" style "osso-number-editor-minus"

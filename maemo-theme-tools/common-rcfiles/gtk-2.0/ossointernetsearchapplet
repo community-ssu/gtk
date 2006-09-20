@@ -1,0 +1,37 @@
+####################################################  
+# OSSO RSS FEED READER
+#
+# Copyright 2005 Nokia Oyj
+#
+####################################################
+style "osso-internetsearch-applet"
+{
+  engine "sapwood"
+    {
+      image
+        {
+          function = BOX
+          file     = "../images/qgn_plat_home_search_bg.png"
+          border   = { 20, 20, 20, 20 }
+          stretch  = TRUE
+        }
+    }
+}
+class "MisWidget" style "osso-internetsearch-applet"
+
+style "osso-internetsearch-applet-button"
+{
+  engine "sapwood"
+    {
+      image
+        {
+          function = BOX
+        }
+      image
+        {
+          function = FOCUS
+        }
+    }
+}
+
+widget_class "*.MisWidget.GtkButton" style "osso-internetsearch-applet-button"
