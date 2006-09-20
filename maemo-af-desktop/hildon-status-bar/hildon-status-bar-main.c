@@ -1033,6 +1033,8 @@ gint rpc_cb( const gchar *interface,
                 (GtkCallback)(statusbar_insensitive_cb),
                 NULL);
 
+	gtk_widget_set_sensitive 
+	  (GTK_WIDGET (panel->arrow_button),FALSE);
 
         return OSSO_OK;
     }
@@ -1042,6 +1044,9 @@ gint rpc_cb( const gchar *interface,
         gtk_container_foreach(GTK_CONTAINER(panel->fixed),
                 (GtkCallback)(statusbar_sensitive_cb),
                 NULL);
+
+	gtk_widget_set_sensitive 
+	  (GTK_WIDGET (panel->arrow_button),TRUE);
 
         return OSSO_OK;
     }

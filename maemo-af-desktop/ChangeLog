@@ -1,6 +1,11 @@
 2006-09-20  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
+	  - Set always sensitiveness of extension button. Fixes: NB#40831
+
+2006-09-20  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c:
 	- Implemented dbus method for communicating with
 	  cpa-navigatorapplet. Required by NB #31079.
 
