@@ -24,7 +24,7 @@
       <applyto>/apps/osso/apps/controlpanel/icon_size</applyto>
       <owner>controlpanel</owner>
       <type>bool</type>
-      <default>true</default>
+      <default>false</default>
       <locale name="C"/>
     </schema>
   </schemalist>

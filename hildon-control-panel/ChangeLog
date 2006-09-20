@@ -1,5 +1,10 @@
 2006-09-20  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-control-panel-main.c: Removed unnecessary assignment
+	* hildon-control-panel.scheme: default size is small. Fixes: NB#31084
+
+2006-09-20  Johan Bilien <johan.bilien@nokia.com>
+
 	* cp-grid.c: Fixed various leaks of GList. Fixes: NB#40616
 
 2006-09-20  Johan Bilien <johan.bilien@nokia.com>

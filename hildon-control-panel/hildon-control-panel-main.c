@@ -734,8 +734,6 @@ hcp_retrieve_configuration (HCP *hcp)
 
     g_return_if_fail (client);
 
-    icon_size = hcp->icon_size?TRUE:FALSE;
-
     icon_size = gconf_client_get_bool (client,
                                        HCP_GCONF_ICON_SIZE,
                                        &error);
