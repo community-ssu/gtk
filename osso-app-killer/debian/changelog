@@ -1,3 +1,10 @@
+osso-app-killer (1.9-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Now removing also connectivity settings. Fixes: NB#39144
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 20 Sep 2006 13:59:53 +0300
+
 osso-app-killer (1.8-1) unstable; urgency=low
 
   * Removed the osso-bttools dependency (using dbus-send instead of btname).
