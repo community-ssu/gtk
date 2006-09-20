@@ -1,3 +1,9 @@
+hildon-control-panel (2.2.6-2) unstable; urgency=low
+
+  * debian/{build, control}: added hildon-control-panel-dbg. Fixes: NB#40292
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 20 Sep 2006 17:54:48 +0300
+
 hildon-control-panel (2.2.6-1) unstable; urgency=low
 
    * Changed license header texts. Closes bug N#39397.

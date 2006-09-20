@@ -21,3 +21,9 @@ Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-control-panel, hildon-base-lib-dev, hildon-libs-dev
 Description: Hildon Control Panel development files.
 
+Package: hildon-control-panel-dbg
+Section: libs
+Architecture: all
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Debug symbols for hildon-control-panel
+
