@@ -1,5 +1,10 @@
 2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkmenu.c (gtk_menu_popup): if no item is selected, select the
+	first one. NB#4379
+
+2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): Revert commit 154 as
 	the graphics are improved and passive focus is clearly distinguishable
 	from unselected. NB#22069
