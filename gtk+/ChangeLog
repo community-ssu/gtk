@@ -1,5 +1,11 @@
 2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkwidget.c: Restructure tap'n'hold (animation) code so that the
+	animation is loaded only for the duration of tapping and holding.
+	NB#22403
+
+2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Taken from GNOME CVS. NB#31766
 
     2005-08-20  Matthias Clasen  <mclasen@redhat.com>
