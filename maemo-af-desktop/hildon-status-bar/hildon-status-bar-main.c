@@ -132,6 +132,10 @@ static GHashTable *delayed_banners;
 static gpointer delayed_ib_onscreen;
 static gboolean sb_is_sensitive;
 
+static gboolean 
+force_close_popup_cb (GtkWidget *widget, 
+		      GdkEventKey *event, 
+		      gpointer data);
 
 static 
 void init_dock( StatusBar *panel )
@@ -197,7 +201,7 @@ void init_dock( StatusBar *panel )
     panel->arrow_button_toggled = FALSE; 
     g_signal_connect(panel->arrow_button, "toggled", 
 		     G_CALLBACK(arrow_button_toggled_cb), panel);
-    
+   
     log_path = g_strdup_printf("%s%s",(gchar *)getenv("HOME"),HSB_PLUGIN_LOG_FILE);
     
     panel->log = hildon_log_new (log_path);
@@ -225,6 +229,16 @@ void init_dock( StatusBar *panel )
     g_free (log_path);	            
 }
 
+static gboolean 
+force_close_popup_cb (GtkWidget *widget, GdkEventKey *event, gpointer data)
+{
+  StatusBar *sb_panel = (StatusBar *)data;
+  
+  if (event->keyval == GDK_F6)
+    close_popup_window( sb_panel );
+
+  return TRUE;
+}
 
 static 
 void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
@@ -261,7 +275,8 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 	GdkScreen *screen = gdk_screen_get_default();
 	gtk_window_set_screen(GTK_WINDOW(sb_panel->popup), screen);
 	gtk_window_set_modal(GTK_WINDOW(sb_panel->popup), FALSE);
-	
+
+		
     /* Add all yet non-visible plugins into extension panel */	
     for ( i = 0; i < HSB_MAX_NO_OF_ITEMS; i++ ) {
 
@@ -308,7 +323,6 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 
     } /* ..for items */  
 
-	
 	/* Define extension panel size and show it */
 	gtk_window_get_size(GTK_WINDOW(sb_panel->window), &sb_width, &sb_height);
 	
@@ -328,7 +342,7 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 			sb_height + sb_y + HSB_MARGIN_DEFAULT);
 	gtk_widget_show_all(sb_panel->popup);
 	
-	/* Set button-release listener */
+	/* Set button-release listener */	
 	if ( gdk_pointer_grab(sb_panel->popup->window, TRUE,  
 			      GDK_BUTTON_RELEASE_MASK | 
 			      GDK_LEAVE_NOTIFY_MASK | 
@@ -339,12 +353,17 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 		      "extension window.");
 	} 
 	
-	gtk_grab_add( sb_panel->popup );
+	gtk_grab_add( sb_panel->popup );	
 	g_signal_connect(G_OBJECT(sb_panel->popup), "button-release-event", 
 		         G_CALLBACK(popup_window_event_cb), sb_panel);
 
+	g_signal_connect (G_OBJECT (sb_panel->popup),
+			  "key-press-event",
+			  G_CALLBACK(force_close_popup_cb),
+			  (gpointer)sb_panel);
+
     } /* ..if arrow button toggled */ 
-    
+ 
 }
 
 
