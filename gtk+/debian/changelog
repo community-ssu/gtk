@@ -13,6 +13,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Fixes: NB#31766 GtkTreeView scrollbar redrawn when adding/removing rows in
     collapsed branches
   * Fixes: NB#33725 GtkArrow graphics are clipped
+  * Fixes: NB#36935 Checkbox in ListViews cannot be checked with HW key
   * Fixes: NB#40428 AF-BAT:Calendar pop-up does not reflect the correct
     first_weekday on changing region.
 
@@ -20,7 +21,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Fixes: NB#23025 GtkCalendar arrows not shown correctly
   * Fixes: NB#37326 The Separator for combobox doesn't work
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 12:07:59 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 14:29:56 +0300
 
 gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
 
