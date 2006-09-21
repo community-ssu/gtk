@@ -2,6 +2,8 @@ libosso (1.19-1) unstable; urgency=low
 
   * UNRELEASED
   * Added calling ldconfig to postinst.
+  * More fixes to copyright headers. Fixes: NB#40918
+  * Added more deprecation warnings to osso_application_set_exit_cb().
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 21 Sep 2006 11:02:14 +0300
 

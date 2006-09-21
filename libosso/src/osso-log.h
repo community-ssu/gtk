@@ -5,32 +5,41 @@
   Macro definitions that have an effect to the logging macros:
   
   DEBUG, OSSOLOG_COMPILE    Whether to compile the macros
-  OSSOLOG_STDOUT            All logging to stdout*
-  OSSOLOG_STDERR            All logging to stderr*
+                            (prefer OSSOLOG_COMPILE over DEBUG)
+  OSSOLOG_STDOUT            All logging to stdout(*
+  OSSOLOG_STDERR            All logging to stderr(*
 
   *) No timestamp nor file name.
 
-  To see logging output of D-BUS-activated programs, define
-  DBUS_DEBUG_OUTPUT environment variable for the D-BUS daemon and
+  To see the logging output of D-Bus-activated programs, define
+  DBUS_DEBUG_OUTPUT environment variable for the D-Bus daemon and
   define the OSSOLOG_STDERR macro at compile time.
-  <p>
-  Copyright (C) 2004-2005 Nokia Corporation.
-  <p>
+
+  Note that these macros are provided because Glib logging does not
+  currently allow stripping the logging function calls away at
+  compile time.
+
+  ---
+
+  This file is part of libosso.
+ 
+  Copyright (C) 2004-2005 Nokia Corporation. All rights reserved.
+ 
   Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  
   This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation;
-  version 2.1 of the License.
+  modify it under the terms of the GNU Lesser General Public License
+  version 2.1 as published by the Free Software Foundation.
  
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  This library is distributed in the hope that it will be useful, but
+  WITHOUT ANY WARRANTY; without even the implied warranty of
   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
   Lesser General Public License for more details.
-
+ 
   You should have received a copy of the GNU Lesser General Public
   License along with this library; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+  02110-1301 USA
 */
 
 #ifndef OSSO_LOG_H

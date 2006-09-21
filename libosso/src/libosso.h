@@ -2,24 +2,25 @@
  * @file libosso.h
  * This file is the public API for the Libosso library.
  *
- * Copyright (C) 2005-2006 Nokia Corporation.
+ * This file is part of libosso
+ *
+ * Copyright (C) 2005-2006 Nokia Corporation. All rights reserved.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation;
- * version 2.1 of the License.
+ * modify it under the terms of the GNU Lesser General Public License
+ * version 2.1 as published by the Free Software Foundation.
  *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * This library is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
- *
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
+ * 02110-1301 USA
  */
 
 #ifndef LIBOSSO_H_
@@ -1312,22 +1313,13 @@ gpointer osso_get_sys_dbus_connection(osso_context_t *osso);
 /* @{*/
 
 /**
- * This is the type of the exit callback function.
- * @param die_now This parameter is obsolete and should be ignored.
- * @param data The data given to #osso_application_set_exit_cb.
+ * Obsolete type -- do not use.
  */
 typedef void (osso_application_exit_cb)(gboolean die_now, gpointer data);
 
 /**
- * This function registers the application's exit callback function.
- * When Libosso calls the application's exit callback function, the application
- * should save its GUI state and unsaved user data and exit as soon as possible.
- *
- * @param osso The library context as returned by #osso_initialize.
- * @param cb The exit callback function to register.
- * @param data Arbitrary application specific pointer that will be passed
- * to the callback and ignored by Libosso.
- * */
+ * This function is obsolete and does nothing. Do not use it.
+ */
 osso_return_t osso_application_set_exit_cb(osso_context_t *osso,
 					   osso_application_exit_cb *cb,
 					   gpointer data);
