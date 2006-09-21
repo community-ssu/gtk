@@ -6,6 +6,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Allow disabling XSHM usage by setting GDK_DISABLE_XSHM environment
     variable (for NB#22173)
   * Increase treeview column header resizing area width
+  * Fixes: NB#4379 GtkMenu - Initial focus missing on the menuitem.
   * Fixes: NB#18559 NOKGTK-48 GtkScrolledWindow: not handling hiding child
     widgets
   * Fixes: NB#22069 Focus indicated incorrectly in the file manager
@@ -23,7 +24,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Fixes: NB#37326 The Separator for combobox doesn't work
   * Fixes: NB#38922 "Cursur" is getting bold when tab space key
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 16:20:05 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 17:03:14 +0300
 
 gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
 
