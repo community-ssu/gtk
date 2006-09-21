@@ -71,7 +71,41 @@ hcp_view_launch_item (GtkWidget *item_widget, HCPItem *item)
 static gboolean
 hcp_view_focus (GtkWidget *item_widget, GdkEventFocus *event, HCPItem *item)
 {
+    GtkWidget *scrolled_window = item_widget->parent->parent->parent->parent;
+    GtkWidget *vbox = item_widget->parent->parent;
+    GtkAdjustment *adj;
+    gint visible_y;
+    
     hcp_item_focus (item);
+
+    g_return_val_if_fail (GTK_IS_SCROLLED_WINDOW (scrolled_window), FALSE);
+    
+    adj = gtk_scrolled_window_get_vadjustment (
+                                  GTK_SCROLLED_WINDOW (scrolled_window));
+    g_return_val_if_fail ((adj->upper - adj->lower) && vbox->allocation.height,
+                          FALSE);
+
+    visible_y = vbox->allocation.y +
+       (gint)(vbox->allocation.height * adj->value / (adj->upper - adj->lower));
+
+
+    if (item_widget->allocation.y < visible_y)
+    {
+        adj->value = item_widget->allocation.y * (adj->upper - adj->lower)
+                                                / vbox->allocation.height;
+        gtk_adjustment_value_changed (adj);
+    }
+
+    else if (item_widget->allocation.y + item_widget->allocation.height > 
+             visible_y + scrolled_window->allocation.height)
+    {
+        adj->value = (item_widget->allocation.y + item_widget->allocation.height
+               - scrolled_window->allocation.height) * (adj->upper - adj->lower)
+               / vbox->allocation.height;
+        gtk_adjustment_value_changed (adj);
+
+    }
+    
     return FALSE;
 }
 
