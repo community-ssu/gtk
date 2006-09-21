@@ -13,6 +13,7 @@ add_sudoer ()
 	echo "+$line"
 	chmod u+w /etc/sudoers # *cough*
 	echo "$line" >>/etc/sudoers
+	chmod u-w /etc/sudoers
     fi
 }
 

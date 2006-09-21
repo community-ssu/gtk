@@ -1,3 +1,9 @@
+osso-application-installer (4.32.2) unstable; urgency=low
+
+  * debian/postinst: Reset /etc/sudoers to 0440 after appending to it.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 21 Sep 2006 21:29:25 +0300
+
 osso-application-installer (4.32.1) unstable; urgency=low
 
   * debian/control (Build-Depends): Added osso-bttools-dev.
