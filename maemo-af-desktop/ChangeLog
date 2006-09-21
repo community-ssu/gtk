@@ -2,7 +2,7 @@
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	- Forced to close statusbar's panel extension when 
-	  pressed full screen hardkey.
+	  pressed full screen hardkey. Fixes: NB#40771
 
 2006-09-20  Moises Martinez <moises.martinzes@nokia.com>
 
