@@ -1,3 +1,9 @@
+2006-09-21  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkstyle.c (draw_insertion_cursor): 
+	Change the x coord of the cursor at line start so it's completely visible
+	when we offset it. Fixes NB#38922.
+
 2006-09-21  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_class_init): enable original
