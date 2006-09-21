@@ -202,9 +202,8 @@ documented in the header files.
 BUGS
 ----
 
+- don't rely on apt-worker startup being successful.
 - https needs to be trusted, even without key.
-- avoid cache refresh when provable unnecessary,
-  add "version" to .install for that
 
 - use doubles for sizes, maybe
-- "No catalogue in use."
+
