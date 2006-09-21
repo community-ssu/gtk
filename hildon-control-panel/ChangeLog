@@ -1,3 +1,7 @@
+2006-09-21  Johan Bilien <johan.bilien@nokia.com>
+
+	* cp-grid.c: Fixed a crash freshly introduced
+
 2006-09-20  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-control-panel-main.c: Removed unnecessary assignment
