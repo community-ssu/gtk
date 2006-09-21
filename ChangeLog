@@ -1,3 +1,12 @@
+2006-09-21  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_class_init): enable original
+	keybindings for Enter,
+	(gtk_tree_view_key_press): for Enter, only handle the special
+	cases, for the other cases we chain up to the parent class which
+	will activate the original keybindings.
+	NB#36935
+	
 2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c: Restructure tap'n'hold (animation) code so that the

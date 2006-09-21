@@ -1109,13 +1109,12 @@ GTK_PARAM_READABLE));
 
   gtk_binding_entry_add_signal (binding_set, GDK_space, 0, "select_cursor_row", 1,
 				G_TYPE_BOOLEAN, TRUE);
-  /* Hildon change: Enter shouldn't select
   gtk_binding_entry_add_signal (binding_set, GDK_Return, 0, "select_cursor_row", 1,
 				G_TYPE_BOOLEAN, TRUE);
   gtk_binding_entry_add_signal (binding_set, GDK_ISO_Enter, 0, "select_cursor_row", 1,
 				G_TYPE_BOOLEAN, TRUE);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Enter, 0, "select_cursor_row", 1,
-				G_TYPE_BOOLEAN, TRUE);*/
+				G_TYPE_BOOLEAN, TRUE);
 
   /* expand and collapse rows */
   gtk_binding_entry_add_signal (binding_set, GDK_plus, 0, "expand_collapse_cursor_row", 3,
@@ -5206,6 +5205,7 @@ gtk_tree_view_key_press (GtkWidget   *widget,
       gtk_tree_row_reference_valid (tree_view->priv->cursor))
     {
       gboolean force_list_kludge;
+      gboolean handled = TRUE;
 
       g_object_get (widget, "force_list_kludge", &force_list_kludge, NULL);
       if (force_list_kludge ||
@@ -5218,17 +5218,8 @@ gtk_tree_view_key_press (GtkWidget   *widget,
               /* multisel with checkboxes: select key toggles focused */
               gtk_tree_view_real_toggle_cursor_row (tree_view);
             }
-          else
-            {
-              /* no checkboxes: select key activates focused */
-              GtkTreePath *cursor_path =
-                gtk_tree_row_reference_get_path (tree_view->priv->cursor);
-
-              gtk_tree_view_row_activated (tree_view, cursor_path,
-                                           tree_view->priv->focus_column);
-
-              gtk_tree_path_free (cursor_path);
-             }
+	  else
+	    handled = FALSE;
          }
        else
          {
@@ -5256,7 +5247,8 @@ gtk_tree_view_key_press (GtkWidget   *widget,
            gtk_tree_path_free (cursor_path);
          }
 
-       return TRUE;
+       if (handled)
+	 return TRUE;
      }
 
   if (GTK_TREE_VIEW_FLAG_SET (tree_view, GTK_TREE_VIEW_IN_COLUMN_DRAG))
