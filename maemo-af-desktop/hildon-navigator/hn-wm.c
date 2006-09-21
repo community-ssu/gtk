@@ -1593,6 +1593,7 @@ hn_wm_dbus_signal_handler(DBusConnection *conn, DBusMessage *msg, void *data)
        HN_DBG("Showing app died dialog ...");
        hn_wm_watchable_app_died_dialog_show(app);
     }
+    return DBUS_HANDLER_RESULT_HANDLED;
   }
   
   if (dbus_message_is_signal(msg, APPKILLER_SIGNAL_INTERFACE,
