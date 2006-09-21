@@ -8,6 +8,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Increase treeview column header resizing area width
   * Fixes: NB#18559 NOKGTK-48 GtkScrolledWindow: not handling hiding child
     widgets
+  * Fixes: NB#22069 Focus indicated incorrectly in the file manager
   * Fixes: NB#22403 No API to de-initialize tap-and-hold i.e. to get rid of
     the associated 40KB animation
   * Fixes: NB#31766 GtkTreeView scrollbar redrawn when adding/removing rows in
@@ -22,7 +23,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Fixes: NB#37326 The Separator for combobox doesn't work
   * Fixes: NB#38922 "Cursur" is getting bold when tab space key
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 14:29:56 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 16:20:05 +0300
 
 gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
 
