@@ -1,7 +1,5 @@
 2006-09-21  Richard Hult  <richard@imendio.com>
 
-	reviewed by: <delete if not using a buddy>
-
 	* dbus-daemon/daemon-connection.c:
 	* dbus-daemon/daemon-connection.h:
 	* dbus-daemon/dbus-method.c:
@@ -9,7 +7,8 @@
 	* dbus-daemon/dbus-utils.h:
 	* dbus-daemon/vfs-daemon.c:
 	* libgnomevfs/gnome-vfs-dbus-utils.c:
-	* libgnomevfs/gnome-vfs-dbus-utils.h:
+	* libgnomevfs/gnome-vfs-dbus-utils.h: Update copyright notices,
+	NB#40651.
 
 2006-09-20  Richard Hult  <richard@imendio.com>
 
