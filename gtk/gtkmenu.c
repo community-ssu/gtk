@@ -1590,6 +1590,10 @@ gtk_menu_popup (GtkMenu		    *menu,
 
   _gtk_menu_shell_set_first_click (menu_shell);
 
+  /* Hildon: if no item is selected, select the first one */
+  if (!menu_shell->active_menu_item)
+    gtk_menu_shell_select_first (menu_shell, TRUE);
+
   /* Once everything is set up correctly, map the toplevel window on
      the screen.
    */
