@@ -20,6 +20,7 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   [ Xan López ]
   * Fixes: NB#23025 GtkCalendar arrows not shown correctly
   * Fixes: NB#37326 The Separator for combobox doesn't work
+  * Fixes: NB#38922 "Cursur" is getting bold when tab space key
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 14:29:56 +0300
 

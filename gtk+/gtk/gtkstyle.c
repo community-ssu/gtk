@@ -6879,6 +6879,7 @@ draw_insertion_cursor (GtkWidget        *widget,
   gint i;
   gfloat cursor_aspect_ratio;
   gint offset;
+  gint window_width;
   
   g_return_if_fail (direction != GTK_TEXT_DIR_NONE);
   
@@ -6896,7 +6897,14 @@ draw_insertion_cursor (GtkWidget        *widget,
     offset = stem_width / 2;
   else
     offset = stem_width - stem_width / 2;
-  
+
+  gdk_drawable_get_size (widget->window, &window_width, NULL);
+
+  if (location->x - offset < 0 && direction == GTK_TEXT_DIR_LTR)
+    location->x += ABS (location->x - offset);
+  else if (location->x + offset > window_width && direction == GTK_TEXT_DIR_RTL)
+    location->x -= location->x + offset - window_width;
+
   for (i = 0; i < stem_width; i++)
     gdk_draw_line (drawable, gc,
 		   location->x + i - offset, location->y,
