@@ -1,3 +1,10 @@
+libosso (1.19-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added calling ldconfig to postinst.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 21 Sep 2006 11:02:14 +0300
+
 libosso (1.18-1) unstable; urgency=low
 
   * Added postinst script for calling ldconfig.
