@@ -34,7 +34,8 @@ EXTRA_DIST = debian/changelog debian/control debian/copyright debian/rules \
 	debian/hildon-status-bar-lib-dev.install \
 	debian/hildon-status-bar-lib0.install \
 	debian/hildon-home-dev.install \
-	debian/hildon-navigator-dev.install
+	debian/hildon-navigator-dev.install \
+	install_sbapplet.sh
 
 INCLUDES = \
 	$(HILDON_CFLAGS) -g $(OSSO_CFLAGS) $(GNOME_VFS_CFLAGS) \
@@ -44,8 +45,9 @@ INCLUDES = \
 	-DPREFIX=\"$(prefix)\"
 
 bin_PROGRAMS = \
-	maemo_af_desktop 
+	maemo_af_desktop
 
+bin_SCRIPTS = install_sbapplet.sh
         
 maemo_af_desktop_SOURCES = maemo-af-desktop-main.c maemo-af-desktop-main.h
 

@@ -1,3 +1,10 @@
+2006-09-21  Moises Martinez <moises.martinzes@nokia.com>
+
+	* install_sbapplet.sh: Added script to help sb's 
+	  plugins packages install its plugin.
+	* debian/maemo_af_desktop.install: Added entry
+	  for install_sbapplet.sh
+
 2006-09-21  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm.c: return DBUS_HANDLER_RESULT_HANDLED
