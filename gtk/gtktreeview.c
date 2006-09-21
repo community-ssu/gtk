@@ -4606,44 +4606,24 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
           else if (node == cursor && passivefocus &&
                   !GTK_WIDGET_HAS_FOCUS (widget))
             {
-              if (tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE &&
-                  !tree_view->priv->checkbox_mode)
-                {
-                  /* don't use passive focus graphics in multiple selection mode
-                     because it might make cursor row look unselected */
-                  gtk_paint_flat_box (widget->style,
-                                      event->window,
-                                      GTK_STATE_SELECTED,
-                                      GTK_SHADOW_NONE,
-                                      &event->area,
-                                      widget,
-				      (is_first
-				       ? (is_last ? "full" : "left")
-				       : (is_last ? "right" : "middle")),
-				      background_area.x,
-                                      background_area.y,
-                                      background_area.width,
-                                      background_area.height);
-                } else {
-                  GtkStyle *style = gtk_rc_get_style_by_paths (gtk_widget_get_settings (widget),
-                                                               "hildon-focus",
-                                                               NULL,
-                                                               G_TYPE_NONE);
-                  if (style != NULL)
-                    gtk_style_attach (style, event->window);
-                  else
-                    style = widget->style;
+              GtkStyle *style = gtk_rc_get_style_by_paths (gtk_widget_get_settings (widget),
+                                                           "hildon-focus",
+                                                            NULL,
+                                                            G_TYPE_NONE);
+              if (style != NULL)
+                gtk_style_attach (style, event->window);
+              else
+                style = widget->style;
                          
-                  gtk_paint_focus (style, event->window, GTK_STATE_SELECTED,
-                                   &event->area, widget,
-                                   (is_first
-                                    ? (is_last ? "full" : "left")
-                                    : (is_last ? "right" : "middle")),
-                                   background_area.x,
-                                   background_area.y,
-                                   background_area.width,
-                                   background_area.height);
-                }
+              gtk_paint_focus (style, event->window, GTK_STATE_SELECTED,
+                               &event->area, widget,
+                               (is_first
+                                ? (is_last ? "full" : "left")
+                                : (is_last ? "right" : "middle")),
+                                background_area.x,
+                               background_area.y,
+                               background_area.width,
+                               background_area.height);
             }
 
           if (node == cursor)

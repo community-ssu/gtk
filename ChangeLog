@@ -1,3 +1,9 @@
+2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): Revert commit 154 as
+	the graphics are improved and passive focus is clearly distinguishable
+	from unselected. NB#22069
+
 2006-09-21  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkstyle.c (draw_insertion_cursor): 
