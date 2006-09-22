@@ -51,7 +51,6 @@ Description: The GNOME virtual file-system libraries with debugging symbols
 Package: libosso-gnomevfs2-dev
 Section: libdevel
 Architecture: any
-Section: libdevel
 Depends: libosso-gnomevfs2-common, libosso-gnomevfs2-0 (= ${Source-Version}), libc6-dev, libgconf2-dev (>= 2.6.0), libxml2-dev
 Replaces: libgnomevfs2-common (<< 2.2.5-1), libgnomevfs2-dev
 Conflicts: libgnomevfs2-common (<< 2.2.5-1), libgnomevfs2-dev
