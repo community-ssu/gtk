@@ -1,7 +1,20 @@
+2006-09-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(check_illegal_characters): Added '.' to list of illegal
+	characters. (N40732)
+
+2006-09-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-obex.c
+	(root_failed_message): Removed, since it is not specified.
+	(hildon_file_system_obex_init): Set failed_access_message to NULL
+	instead.  Thanks to Jouni Tulkki for the patch!  (N39687)
+
 2006-09-19  Xan Lopez  <xan.lopez@nokia.com>
 
-	* hildon-fm/hildon-file-selection.c (hildon_file_selection_constructor): 
-	Fix memory leak, NB#34417.
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_constructor): Fix memory leak, NB#34417.
 
 2006-09-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
