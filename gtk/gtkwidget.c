@@ -1862,7 +1862,7 @@ tap_and_hold_free_data (gpointer data)
       td->timer_id = 0;
 
       if (GTK_IS_MENU (td->menu))
-	gtk_widget_destroy (td->menu);
+	g_object_unref (td->menu);
       td->menu = NULL;
 
       tap_and_hold_stop_animation (td);
@@ -8067,7 +8067,11 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
     return;
 
   if (menu != NULL)
-    _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
+    {
+      g_object_ref (menu);
+      gtk_object_sink (GTK_OBJECT (menu));
+      _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
+    }
 
   td->menu = menu;
   td->func = (GtkMenuPositionFunc)func;

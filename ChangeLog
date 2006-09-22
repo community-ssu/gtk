@@ -1,5 +1,12 @@
 2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_setup,
+	tap_and_hold_free_data): ref+sink and unref the menu instead of
+	destroying it. Avoids crashing on showing the menu after a child
+	widget has been removed from container.  NB#41002
+
+2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkmenu.c (gtk_menu_popup): if no item is selected, select the
 	first one. NB#4379
 
