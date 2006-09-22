@@ -44,20 +44,6 @@
 
 #define MCE_TRIGGER_POWERKEY_EVENT_REQ  "req_trigger_powerkey_event"
 
-typedef void (*HNKeysActionFunc) (HNKeysConfig *keys, gpointer *user_data);
-
-typedef struct HNKeyShortcut
-{
-  HNKeyAction       action;
-  KeySym            keysym;
-  KeyCode           keycode;
-  gint              mod_mask;
-  gint              index;
-  HNKeysActionFunc  action_func;
-  gpointer          action_func_data;
-} 
-HNKeyShortcut;
-
 static void 
 hn_keys_action_send_key (HNKeysConfig *keys,
 			 gpointer     *user_data)
@@ -350,10 +336,6 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
 		      mask |= mod_lookup[i].mask;
 		      found = True;
 		    } 
-		  /* No mask for key - ie keyboard is missing that
-		   * modifier key.
-		   */
-		  else return NULL;
 		}
 	      i++;
 	    }
@@ -384,7 +366,7 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
     }
 
   if (!keydef) 
-    return FALSE;
+    return NULL;
 
   if ((ks = XStringToKeysym(keydef)) == (KeySym)NULL)
     {
@@ -442,7 +424,7 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
       return NULL;
   
   /* If we grab keycode 0, we end up grabbing the entire keyboard :\ */
-  if (XKeysymToKeycode(GDK_DISPLAY(), ks) == 0 && mask == 0)
+  if (XKeysymToKeycode(GDK_DISPLAY(), ks) == 0)
       return NULL;
 
   shortcut = g_new0(HNKeyShortcut, 1);
@@ -687,7 +669,7 @@ hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys)
   hn_keys_load_and_grab_all_shortcuts (keys);
 }
 
-void
+HNKeyShortcut *
 hn_keys_handle_keypress (HNKeysConfig *keys, 
 			 KeyCode       keycode, 
 			 guint32       mod_mask)
@@ -709,11 +691,11 @@ hn_keys_handle_keypress (HNKeysConfig *keys,
                                                keycode, 
                                                shortcut->index))
 	{
-          HN_DBG ("Calling action function");
-          
-	  shortcut->action_func (keys, shortcut->action_func_data); 
-	  return;
+	  return shortcut;
 	}
       item = g_slist_next(item);
     }
+
+  return NULL;
 } 
+

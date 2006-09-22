@@ -134,6 +134,7 @@ struct HNWM   /* Our main struct */
 
   /* Key bindings and shortcuts */
   HNKeysConfig *keys;
+  HNKeyShortcut *shortcut;
 
   /* FIXME: Below memory management related not 100% sure what they do */
 
@@ -1298,10 +1299,19 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
       return GDK_FILTER_CONTINUE;
     }
 
-  if (((XEvent*)xevent)->type == KeyRelease)
+  if (((XEvent*)xevent)->type == KeyPress)
     {
       XKeyEvent *kev = (XKeyEvent *)xevent;
-      hn_keys_handle_keypress (hnwm.keys, kev->keycode, kev->state); 
+      hnwm.shortcut = hn_keys_handle_keypress (hnwm.keys, kev->keycode, kev->state); 
+      return GDK_FILTER_CONTINUE;
+    }
+  else if (((XEvent*)xevent)->type == KeyRelease)
+    {
+      if (hnwm.shortcut != NULL)
+        {
+          hnwm.shortcut->action_func (hnwm.keys, hnwm.shortcut->action_func_data);
+          hnwm.shortcut = NULL;
+        }
       return GDK_FILTER_CONTINUE;
     }
 

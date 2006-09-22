@@ -1,3 +1,20 @@
+2006-09-22  Tomas Junnonen <tomas.junnonen@nokia.com>
+
+	Applied fix to "Shortcuts requiring modifiers fail to work most of the
+	time". Fixes: NB#37546
+	* hildon-navigator/hn-keys.c: Only return the shortcut on keypress
+	* hildon-navigator/hn-wm-c: Apply the corresponding action on keyrelease
+
+2006-09-22  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fix to "        after setting ctrl+alt+"Russian char" for
+	shortcut, in "finland" layout mode, can not assign any
+	ctrl+alt+char shortcut any more". Fixes NB# 40214
+	* hildon-navigator/hn-keys.c:
+	  - do not grab keycode = 0 even with a mask
+	  - do not return after first mask parsing failure
+	  - _new should return NULL, not FALSE
+
 2006-09-21  Moises Martinez <moises.martinzes@nokia.com>
 
 	* install_sbapplet.sh: Added script to help sb's 

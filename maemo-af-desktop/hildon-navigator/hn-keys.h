@@ -46,7 +46,6 @@ typedef enum HNKeyAction
 }
 HNKeyAction;
 
-
 typedef struct HNKeysConfig
 {
   GConfClient *gconf_client;
@@ -57,6 +56,20 @@ typedef struct HNKeysConfig
 } 
 HNKeysConfig;
 
+typedef void (*HNKeysActionFunc) (HNKeysConfig *keys, gpointer *user_data);
+
+typedef struct HNKeyShortcut
+{
+  HNKeyAction       action;
+  KeySym            keysym;
+  KeyCode           keycode;
+  gint              mod_mask;
+  gint              index;
+  HNKeysActionFunc  action_func;
+  gpointer          action_func_data;
+} 
+HNKeyShortcut;
+
 #define HN_KEYS_GCONF_PATH "/system/osso/af/keybindings"
 
 HNKeysConfig*
@@ -65,7 +78,7 @@ hn_keys_init (void);
 void
 hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys);
 
-void
+HNKeyShortcut *
 hn_keys_handle_keypress (HNKeysConfig *keys, 
 			 KeyCode       keycode, 
 			 guint32       mod_mask);
