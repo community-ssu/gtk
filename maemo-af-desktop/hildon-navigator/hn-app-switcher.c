@@ -304,7 +304,7 @@ mce_handler (DBusConnection *conn,
   if (!member || member[0] == '\0')
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   
-  if (strcmp (HOME_LONG_PRESS, member) == 0)
+  if (strcmp (HOME_LONG_PRESS, member) == 0 && !hn_wm_modal_windows_present())
     {
       if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
         {
@@ -327,7 +327,7 @@ mce_handler (DBusConnection *conn,
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
   
-  if (strcmp (HOME_PRESS, member) == 0)
+  if (strcmp (HOME_PRESS, member) == 0 && !hn_wm_modal_windows_present())
     {
       if (GTK_WIDGET_IS_SENSITIVE (priv->main_button))
         {

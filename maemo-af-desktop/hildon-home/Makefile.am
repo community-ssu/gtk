@@ -35,7 +35,7 @@ INCLUDES = \
 	-DPLUGINLIBDIR=\"$(pluginlibdir)\" \
 	-DCONTROLPANEL_ENTRY_DIR=\"$(hildoncpdesktopentrydir)\"
 
-EXTRA_DIST = hildon-home.pc.in empty_exec.sh
+EXTRA_DIST = hildon-home.pc.in
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-home.pc

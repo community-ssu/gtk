@@ -148,6 +148,7 @@ struct HNWM   /* Our main struct */
   gboolean      about_to_shutdown;
   gboolean      has_focus;
   guint         dnotify_timeout_id;
+  gboolean      modal_windows;
 };
 
 static HNWM hnwm; 			/* Singleton instance */
@@ -558,7 +559,8 @@ hn_wm_atoms_init()
     "_MB_COMMAND",              /* FIXME: Unused */
     "_MB_CURRENT_APP_WINDOW",
     "_MB_APP_WINDOW_LIST_STACKING",
-
+    "_MB_NUM_MODAL_WINDOWS_PRESENT",
+    
     "UTF8_STRING",
   };
 
@@ -1309,7 +1311,8 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
     {
       if (hnwm.shortcut != NULL)
         {
-          hnwm.shortcut->action_func (hnwm.keys, hnwm.shortcut->action_func_data);
+          if (!hn_wm_modal_windows_present())
+            hnwm.shortcut->action_func (hnwm.keys, hnwm.shortcut->action_func_data);
           hnwm.shortcut = NULL;
         }
       return GDK_FILTER_CONTINUE;
@@ -1354,6 +1357,28 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
 	      XFree(desktop_state);
 	    }
 	}
+      else if (prop->atom == hnwm.atoms[HN_ATOM_MB_NUM_MODAL_WINDOWS_PRESENT])
+        {
+          HN_DBG ("Received MODAL WINDOWS notification");
+          
+	  int * value;
+
+	  value =
+	    hn_wm_util_get_win_prop_data_and_validate (
+                              GDK_WINDOW_XID(gdk_get_default_root_window()),
+                              hnwm.atoms[HN_ATOM_MB_NUM_MODAL_WINDOWS_PRESENT],
+                              XA_CARDINAL,
+                              32,
+                              1,
+                              NULL);
+          
+	  if (value)
+	    {
+              hnwm.modal_windows = *value;
+              HN_DBG ("value = %d", hnwm.modal_windows);
+              XFree(value);
+	    }
+        }
     }
   else /* Non root win prop change */
     {
@@ -2189,6 +2214,13 @@ hn_wm_get_last_active_window(void)
 {
   return hnwm.last_active_window;
 }
+
+gboolean
+hn_wm_modal_windows_present(void)
+{
+  return hnwm.modal_windows;
+}
+
 
 void
 hn_wm_reset_last_active_window(void)

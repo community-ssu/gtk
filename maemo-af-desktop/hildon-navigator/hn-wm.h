@@ -255,6 +255,9 @@ hn_wm_get_active_window(void);
 extern inline HNWMWatchedWindow *
 hn_wm_get_last_active_window(void);
 
+extern inline gboolean
+hn_wm_modal_windows_present(void);
+
 /*
  * reset the active window to NULL
  *

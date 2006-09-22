@@ -1,5 +1,17 @@
 2006-09-22  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "AF-BAT:Able to launch the Task launcher using the
+	shortcuts in some cases when it is not possible from device".
+	Fixes: NB#37594
+	* hn-wm.c:
+	  - Added tracking of the "_MB_NUM_MODAL_WINDOWS_PRESENT" MB
+	  property
+	  - Do not trigger an shortcut if there is a system modal window
+	* hn-app-switcher.c: Do not handle HOME key when there is a system
+	  modal window
+
+2006-09-22  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-area.c:
 	  - when selecting applets, add all applets first, then go to layout
 	    mode if required, then remove the applets.
