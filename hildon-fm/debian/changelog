@@ -1,3 +1,9 @@
+hildon-fm (1.11-0talko) unstable; urgency=low
+
+  * Intermediate release for talko.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 22 Sep 2006 15:20:01 +0300
+
 hildon-fm (1.11-unreleased1) unstable; urgency=low
 
   * Fixes: NB#34417, NB#38147, NB#39687, NB#40732.
