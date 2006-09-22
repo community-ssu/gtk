@@ -22,7 +22,7 @@
 INCLUDES = $(HILDON_CFLAGS) $(OSSO_CFLAGS) \
 	-DPREFIX=\"$(prefix)\"
 
-EXTRA_DIST = hildon-status-bar-lib.pc empty_exec.sh
+EXTRA_DIST = hildon-status-bar-lib.pc empty_exec.sh 
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-status-bar-lib.pc
