@@ -18,13 +18,15 @@ gtk+2.0 (2:2.6.10-2.osso15) UNRELEASED; urgency=low
   * Fixes: NB#36935 Checkbox in ListViews cannot be checked with HW key
   * Fixes: NB#40428 AF-BAT:Calendar pop-up does not reflect the correct
     first_weekday on changing region.
+  * Fixes: NB#41002 Tap and hold menu can cause a segmentation fault with
+    specific widget configuration
 
   [ Xan López ]
   * Fixes: NB#23025 GtkCalendar arrows not shown correctly
   * Fixes: NB#37326 The Separator for combobox doesn't work
   * Fixes: NB#38922 "Cursur" is getting bold when tab space key
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 21 Sep 2006 17:03:14 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 22 Sep 2006 16:00:30 +0300
 
 gtk+2.0 (2:2.6.10-2.osso14) unstable; urgency=low
 
