@@ -1,6 +1,6 @@
 hildon-fm (1.11-unreleased1) unstable; urgency=low
 
-  * Fixes: NB#34417, NB#38147.
+  * Fixes: NB#34417, NB#38147, NB#39687, NB#40732.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 19 Sep 2006 12:09:55 +0300
 
