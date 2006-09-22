@@ -3,3 +3,4 @@ usr/bin/hn-hung-app-handler*
 etc
 usr/share/mime/packages
 usr/bin/install_sbapplet.sh
+usr/bin/tn_regenerate_config

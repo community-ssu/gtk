@@ -746,12 +746,12 @@ void reload_configured_plugins( char *applets_path, gpointer user_data )
                      HILDON_STATUS_BAR_ITEM(panel->items[i]));	
 
 	    if (!item_is_mandatory)
-        { 
-            GtkWidget *item = panel->items[i];
-            gtk_widget_destroy(item);
-            /* We need to finalize the plugin, so remove our reference */
-            g_object_unref (item);
-        }
+            { 
+              GtkWidget *item = panel->items[i];
+              gtk_widget_destroy(item);
+              /* We need to finalize the plugin, so remove our reference */
+              g_object_unref (item);
+            }
 	    else
 	    {
 	      buffer_item(panel,panel->items[i]);

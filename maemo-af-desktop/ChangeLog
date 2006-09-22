@@ -22,6 +22,12 @@
 
 2006-09-22  Moises Martinez <moises.martinzes@nokia.com>
 
+	* hildon-navigator/regenerate_config.c:
+  	- New helper program for postrm tn's plugin
+          packages. Fixes: NB#36990
+
+2006-09-22  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hildon-navigator/hildon-navigator-window.c:
         - Fixed initialization of hildon_dnotify_handler
 
