@@ -1,9 +1,9 @@
 /*
  * This file is part of hildon-fm package
  *
- * Copyright (C) 2005-2006 Nokia Corporation.
+ * Copyright (C) 2005-2006 Nokia Corporation.  All rights reserved.
  *
- * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+ * Contact: Marius Vollmer <marius.vollmer@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
@@ -874,13 +874,13 @@ static GString *check_illegal_characters(const gchar * name)
 
         unichar = g_utf8_get_char(name);
 
-        if (unichar == '\\' || unichar == '/' || unichar == ':' || unichar == '*' || unichar == '?' ||
-            unichar == '\"' || unichar == '<' || unichar == '>' || unichar == '|' ) {
+	if (g_utf8_strchr ("\\/:*?\"<>|.", -1, unichar))
+	  {
             if (!illegals)
                 illegals = g_string_new(NULL);
-            if (g_utf8_strchr(illegals->str, -1, unichar) == NULL)
-                g_string_append_unichar(illegals, unichar);
-        }
+            if (g_utf8_strchr (illegals->str, -1, unichar) == NULL)
+	      g_string_append_unichar (illegals, unichar);
+	  }
 
         name = g_utf8_next_char(name);
     }
