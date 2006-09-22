@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.90-2) unstable; urgency=low
+
+  * debian/conffile: added
+  * debian/control: removed dependencies on shared libraries 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 22 Sep 2006 18:01:10 +0300
+
 maemo-af-desktop (2.9.90-1) unstable; urgency=low
 
   * hildon-home/*: Imported layout mode and applet management rewrite
