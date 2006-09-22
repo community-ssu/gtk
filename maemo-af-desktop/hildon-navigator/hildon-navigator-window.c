@@ -211,6 +211,7 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   HildonNavigatorWindowPrivate *priv;
   gchar *plugin_dir, *config_file, *home_dir;
   gboolean dnotify_ret;
+  hildon_return_t dnotify_status;
   
   g_return_if_fail (window);
 
@@ -246,6 +247,9 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
 
   plugin_dir  = g_build_filename (home_dir, NAVIGATOR_USER_DIR, NULL);
   config_file = g_strdup_printf  ("%s%s", home_dir, NAVIGATOR_USER_PLUGINS);
+
+  /* Initialize this before any plugin or whatever */
+  dnotify_status = hildon_dnotify_handler_init();
     
   /* Initialize Plugins */
   if (g_file_test (config_file, G_FILE_TEST_EXISTS))
@@ -258,12 +262,8 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   priv->others_button = hn_others_button_new ();
   
   if (priv->others_button)
-    {
-      hn_panel_add_button ( HILDON_NAVIGATOR_PANEL (priv->panel),
-			    priv->others_button);
-
-      hn_others_button_dnotify_register (HN_OTHERS_BUTTON (priv->others_button));
-    }
+    hn_panel_add_button ( HILDON_NAVIGATOR_PANEL (priv->panel),
+			  priv->others_button);
   
   priv->app_switcher = hn_app_switcher_new ();
   gtk_box_pack_start ( GTK_BOX (priv->panel), 
@@ -279,26 +279,20 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   if (!g_file_test(plugin_dir, G_FILE_TEST_IS_DIR))
     g_mkdir(plugin_dir, 0755); /* THIS WILL CHANGE! CREATE IT ANYWAY! */
 
-
-  /* initialize dnotify*/
-  if (hildon_dnotify_handler_init() == HILDON_OK )
-    {
-      /* register dnotify callbacks */
-      dnotify_ret =
-	hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)configuration_changed,
-			       plugin_dir,
-			       priv->panel);
+  if (dnotify_status == HILDON_OK)
+  { 
+    dnotify_ret =
+      hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)configuration_changed,
+		            plugin_dir,
+			    priv->panel);
       
-      hn_others_button_dnotify_register (
-				HN_OTHERS_BUTTON (priv->others_button));
+    hn_others_button_dnotify_register (HN_OTHERS_BUTTON (priv->others_button));
 
-      hn_wm_dnotify_register ();
-    }
+    hn_wm_dnotify_register ();
+  }
   else
-    {
-      ULOG_ERR( "failed to initialize dnotify" );
-    }
-  
+    g_debug ("failed to initialize dnotify");
+ 
   /* cleanup */
   g_free (plugin_dir);
   g_free (config_file);
