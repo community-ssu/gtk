@@ -205,6 +205,15 @@ titlebar_normal_menu_detach (GtkWidget *widget,
   titlebar->priv->menu = NULL;
 }
 
+static void
+titlebar_layout_menu_detach (GtkWidget *widget,
+                             GtkMenu   *menu)
+{
+  HildonHomeTitlebar *titlebar = HILDON_HOME_TITLEBAR (widget);
+
+  titlebar->priv->layout_menu = NULL;
+}
+
 
 static void
 titlebar_menu_position_func (GtkMenu  *menu,
@@ -391,6 +400,10 @@ build_layout_mode_titlebar_menu (HildonHomeTitlebar *titlebar)
   priv = titlebar->priv;
 
   menu = gtk_menu_new ();
+  gtk_widget_set_name (menu, HILDON_HOME_TITLEBAR_MENU_NAME);
+  gtk_menu_attach_to_widget (GTK_MENU (menu),
+                             GTK_WIDGET (titlebar),
+                             titlebar_layout_menu_detach);
 
   mi = gtk_menu_item_new_with_label (LAYOUT_MENU_ITEM_SELECT_APPLETS);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
@@ -491,14 +504,6 @@ build_titlebar_menu (HildonHomeTitlebar *titlebar)
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
   gtk_widget_show (menu_item);
 
-  /* personalisation */
-  menu_item = gtk_menu_item_new_with_label (HILDON_HOME_TITLEBAR_SUB_PERSONALISATION);
-  g_signal_connect (menu_item, "activate",
-		    G_CALLBACK (personalisation_activate_cb),
-		    titlebar);
-  gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
-  gtk_widget_show (menu_item);
-
   /* set background */
   menu_item = gtk_menu_item_new_with_label (HILDON_HOME_TITLEBAR_SUB_SET_BG);
   g_signal_connect (menu_item, "activate",
@@ -507,6 +512,14 @@ build_titlebar_menu (HildonHomeTitlebar *titlebar)
   gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
   gtk_widget_show (menu_item);
   
+  /* personalisation */
+  menu_item = gtk_menu_item_new_with_label (HILDON_HOME_TITLEBAR_SUB_PERSONALISATION);
+  g_signal_connect (menu_item, "activate",
+		    G_CALLBACK (personalisation_activate_cb),
+		    titlebar);
+  gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
+  gtk_widget_show (menu_item);
+
   /* calibration */
   menu_item = gtk_menu_item_new_with_label (HILDON_HOME_TITLEBAR_SUB_CALIBRATION);
   g_signal_connect (menu_item, "activate",

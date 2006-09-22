@@ -1,3 +1,13 @@
+2006-09-22  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-area.c:
+	  - when selecting applets, add all applets first, then go to layout
+	    mode if required, then remove the applets.
+	* hildon-home/hildon-home-window.c: Added layout mode banner
+	* hildon-home/hildon-home-titlebar.c:
+	  - changed order of Tools submenu
+	  - set name layout mode menu to get proper positioning
+
 2006-09-22  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hildon-navigator-window.c:

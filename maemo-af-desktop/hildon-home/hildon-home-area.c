@@ -579,7 +579,8 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
 {
   HildonHomeAreaPriv      *priv;
   GtkTreeIter i;
-  GList *applets;
+  GList *applets = NULL;
+  GSList *applets_to_remove = NULL;
   gint x = LAYOUT_AREA_LEFT_BORDER_PADDING;
   gint y = LAYOUT_AREA_TOP_BORDER_PADDING;
   gboolean valid;
@@ -644,14 +645,26 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
         }
       else if (!active && applet)
         {
+          applets_to_remove = g_slist_append (applets_to_remove, applet);
           applets = g_list_remove (applets, applet);
-          gtk_widget_destroy (applet);
         }
       
       g_free (desktop_file);
       valid = gtk_tree_model_iter_next (GTK_TREE_MODEL (list), &i);
     }
-  
+
+  /* First go to layout mode ... */
+  if (n_added)
+    {
+      hildon_home_area_set_layout_mode (area, TRUE);
+      g_signal_emit_by_name (area, "layout-changed");
+    }
+
+  /* ... then remove the applets */
+  g_slist_foreach (applets_to_remove,
+                   (GFunc)gtk_widget_destroy,
+                   NULL);
+  g_slist_free (applets_to_remove);
   g_list_free (applets);
 
   return n_added;

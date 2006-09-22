@@ -76,6 +76,8 @@
 #define HILDON_HOME_WINDOW_HEIGHT	480
 #define HILDON_HOME_TOP_BAR_HEIGHT	60
 
+#define LAYOUT_OPENING_BANNER_TIMEOUT 2500
+
 #define HH_AREA_CONFIGURATION_FILE      ".osso/hildon-home/applet_manager.conf"
 #define HH_AREA_GLOBAL_CONFIGURATION_FILE "/etc/hildon-home/applet_manager.conf"
 #define HH_DESKTOP_FILES_DIR DATADIR"/applications/hildon-home"
@@ -109,6 +111,9 @@ struct _HildonHomeWindowPrivate
   GtkWidget *titlebar;
   GtkWidget *applet_area;
   GtkWidget *main_area;
+
+  GtkWidget *layout_mode_banner;
+  guint      layout_mode_banner_to;
 };
 
 G_DEFINE_TYPE (HildonHomeWindow, hildon_home_window, GTK_TYPE_WINDOW);
@@ -120,14 +125,45 @@ enum
   PROP_OSSO_CONTEXT
 };
 
+static gboolean
+destroy_banner (HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+  
+  if (priv->layout_mode_banner)
+    {
+      gtk_widget_destroy (priv->layout_mode_banner);
+      priv->layout_mode_banner = NULL;
+      priv->layout_mode_banner_to = 0;
+    }
+  return FALSE;
+}
+
+static void
+hildon_home_window_show_layout_mode_banner (HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+  
+  if (!priv->layout_mode_banner)
+    {
+      priv->layout_mode_banner = 
+          hildon_banner_show_animation (GTK_WIDGET (window),
+                                        NULL,
+                                        LAYOUT_MODE_NOTIFICATION_MODE_BEGIN_TEXT);
+      priv->layout_mode_banner_to = 
+          g_timeout_add (LAYOUT_OPENING_BANNER_TIMEOUT,
+                         (GSourceFunc)destroy_banner,
+                         window);
+    }
+    
+}
+
 static void
 titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
                                      HildonHomeWindow   *window)
 {
   GtkWidget *dialog;
   gint response;
-  gint n_added;
-  gchar *filename = NULL;
   HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("select applets activate\n");
 
@@ -144,32 +180,10 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
   if (response != GTK_RESPONSE_OK)
     return;
 
-  n_added = hildon_home_area_sync_from_list (
+  hildon_home_area_sync_from_list (
                           HILDON_HOME_AREA (priv->applet_area),
                           priv->plugin_list);
 
-  if (n_added > 0)
-    {
-      hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
-                                        TRUE);
-      g_signal_emit_by_name (priv->applet_area, "layout-changed");
-    }
-  else if (!hildon_home_area_get_layout_mode (
-                        HILDON_HOME_AREA (priv->applet_area)))
-    {
-      /* Only save if not in layout mode (if we just removed an applet). If in
-       * layout mode it will be saved if the layout is accepted */
-      filename = g_build_filename (g_getenv ("HOME"),
-                                   HH_AREA_CONFIGURATION_FILE,
-                                   NULL);
-
-      if (hildon_home_area_save_configuration
-                                    (HILDON_HOME_AREA (priv->applet_area),
-                                     filename) < 0)
-        hildon_home_window_show_flash_full_note (window);
-
-      g_free (filename);
-    }
 }
 
 
@@ -358,6 +372,8 @@ area_layout_mode_start (HildonHomeArea *area,
                 NULL,
                 0,
                 NULL);
+
+  hildon_home_window_show_layout_mode_banner (window);
 }
 
 static void
@@ -385,7 +401,15 @@ area_layout_mode_end (HildonHomeArea *area,
                 0,
                 NULL);
 
-
+  if (priv->layout_mode_banner_to)
+    {
+      g_source_remove (priv->layout_mode_banner_to);
+      if (priv->layout_mode_banner)
+        {
+          gtk_widget_destroy (priv->layout_mode_banner);
+          priv->layout_mode_banner = NULL;
+        }
+    }
 }
 
 static void
@@ -409,6 +433,7 @@ area_remove (HildonHomeArea   *area,
    * layout mode it will be saved if the layout is accepted */
   if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
     {
+      fprintf (stderr, "Removed, no layout mode, saving!\n");
       gchar *filename = g_build_filename (g_getenv ("HOME"),
                                           HH_AREA_CONFIGURATION_FILE,
                                           NULL);
@@ -522,6 +547,7 @@ get_sidebar_image_from_theme (GtkWidget *widget)
 
   return NULL;
 }
+
 
 static const gchar *
 get_titlebar_image_from_theme (GtkWidget *widget)
