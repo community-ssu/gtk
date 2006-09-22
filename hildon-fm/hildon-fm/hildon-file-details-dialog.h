@@ -1,9 +1,9 @@
 /*
  * This file is part of hildon-fm
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005 Nokia Corporation.  All rights reserved.
  *
- * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+ * Contact: Marius Vollmer <marius.vollmer@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
