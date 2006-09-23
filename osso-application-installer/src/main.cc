@@ -2488,6 +2488,19 @@ window_destroy (GtkWidget* widget, gpointer data)
 }
 
 static void
+main_window_realized (GtkWidget* widget, gpointer data)
+{
+  GdkWindow *win = widget->window;
+
+  /* Some utilities search for our main window so that they can make
+     their dialogs transient for it.  They identify our window by
+     name.
+  */
+  XStoreName (GDK_WINDOW_XDISPLAY (win), GDK_WINDOW_XID (win),
+	      "osso-application-installer");
+}
+
+static void
 apt_status_callback (int cmd, apt_proto_decoder *dec, void *unused)
 {
   if (dec == NULL)
@@ -2869,6 +2882,9 @@ main (int argc, char **argv)
 
   g_signal_connect (G_OBJECT (window), "destroy",
 		    G_CALLBACK (window_destroy), NULL);
+
+  g_signal_connect (G_OBJECT (window), "realize",
+		    G_CALLBACK (main_window_realized), NULL);
 
   main_menu = GTK_MENU (gtk_menu_new ());
   create_menu (main_menu);
