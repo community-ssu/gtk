@@ -37,19 +37,30 @@
 #include <libintl.h>
 
 #include <gtk/gtk.h>
+#include <gdk/gdkx.h>
 
 #define _(x) dgettext ("osso-application-installer", x)
 
-PangoFontDescription *
-get_small_font ()
+static PangoFontDescription *
+get_small_font (GtkWidget *widget)
 {
   static PangoFontDescription *small_font = NULL;
 
   if (small_font == NULL)
     {
-      // XXX - do it nicer...
-      small_font = pango_font_description_from_string ("Nokia Sans 13");
+      GtkStyle *fontstyle = NULL;
+
+      fontstyle =
+	gtk_rc_get_style_by_paths (gtk_widget_get_settings (GTK_WIDGET(widget)),
+				   "osso-SmallFont", NULL,
+				   G_TYPE_NONE);
+  
+      if (fontstyle)
+        small_font = pango_font_description_copy (fontstyle->font_desc);
+      else
+        small_font = pango_font_description_from_string ("Nokia Sans 11.625");
     }
+
   return small_font;
 }
 
@@ -106,12 +117,77 @@ make_small_text_view (const char *file)
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scroll),
 				  GTK_POLICY_AUTOMATIC,
 				  GTK_POLICY_AUTOMATIC);
-  gtk_widget_modify_font (view, get_small_font ());
+  gtk_widget_modify_font (view, get_small_font (view));
 
   g_signal_connect (view, "button-press-event",
 		    G_CALLBACK (no_button_events), NULL);
 
   return scroll;
+}
+
+Window
+find_window_1 (Window win, const char *name, int level, int max_level)
+{
+  char *win_name;
+  
+  if (XFetchName (gdk_display, win, &win_name))
+    {
+      if (!strcmp (win_name, name))
+	{
+	  XFree (win_name);
+	  return win;
+	}
+      XFree (win_name);
+    }
+  
+  if (level < max_level)
+    {
+      Window root, parent, *children;
+      unsigned int n_children;
+      
+      if (XQueryTree (gdk_display, win, &root, &parent,
+		      &children, &n_children))
+	{
+	  int i;
+	  Window w;
+
+	  for (i = 0; i < n_children; i++)
+	    {
+	      w = find_window_1 (children[i], name, level+1, max_level);
+	      if (w)
+		{
+		  XFree (children);
+		  return w;
+		}
+	    }
+	  XFree (children);
+	}
+    }
+  
+  return 0;
+}
+
+Window
+find_window (const char *name, int max_level)
+{
+  return find_window_1 (GDK_ROOT_WINDOW (), name, 0, max_level);
+}
+
+Window
+find_application_installer_window ()
+{
+  return find_window ("osso-application-installer", 2);
+}
+
+void
+dialog_realized (GtkWidget *widget, gpointer data)
+{
+  GdkWindow *win = widget->window;
+  Window ai_win = find_application_installer_window ();
+  
+  if (ai_win)
+    XSetTransientForHint (GDK_WINDOW_XDISPLAY (win), GDK_WINDOW_XID (win),
+			  ai_win);
 }
 
 int
@@ -144,6 +220,9 @@ main (int argc, char **argv)
      _("ai_bd_license_ok"), GTK_RESPONSE_OK,
      _("ai_bd_license_cancel"), GTK_RESPONSE_CANCEL,
      NULL);
+
+  g_signal_connect (dialog, "realize",
+		    G_CALLBACK (dialog_realized), NULL);
 
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 		     make_small_text_view (file));
