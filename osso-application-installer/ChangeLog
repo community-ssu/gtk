@@ -1,3 +1,17 @@
+2006-09-24  Marius Vollmer  <mvo@zagadka.de>
+
+	* utils/maemo-confirm-text-user.c (get_small_font): Updated with
+	new code from src/util.cc.
+	(find_window_1, find_window, find_application_installer_window):
+	New.
+	(dialog_realized): New, to make the dialog transient for the
+	Application Installer main window.
+	(main): Connect it.
+	
+	* src/main.cc (main_window_realized): New, to set WM_NAME of the
+	main window.
+	(main): Connect it.
+	
 2006-09-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.32.
