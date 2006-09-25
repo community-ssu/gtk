@@ -1,0 +1,41 @@
+#! /usr/bin/perl
+
+# This program installs a maemo theme into a directory.  The theme is
+# created based on a 'layout' and on a template image.
+#
+# The following options are accepted:
+#
+#   --layout DIR
+#
+#   The layout is defined by the files in DIR.  XXX - more details to follow.
+#
+#   --theme DIR
+#
+#   The theme is installed into DIR, typically /usr/share/themes/<name>.
+#
+#   --template FILE
+#
+#   The individual theme images are cut out from FILE.
+
+use Getopt::Long;
+
+GetOptions ( "layout=s" => \$layoutdir,
+	     "theme=s" => \$themedir,
+             "template=s" => \$template ) or die;
+
+if ($themedir eq "" or $layoutdir eq "" or $template eq "")
+{
+    die "usage: maemo-install-theme --layout DIR --theme DIR --template FILE\n";
+}
+
+# XXX - we just install some bogus files for now...
+
+print "themedir: '", $themedir, "'\n";
+print "layoutdir: '", $layoutdir, "'\n";
+print "template: '", $template, "'\n";
+
+mkdir ("$themedir/");
+
+open (BOGUS, ">$themedir/index.theme") or die;
+print BOGUS "Hello, maemo\n";
+close (BOGUS);
