@@ -34,8 +34,6 @@ print "themedir: '", $themedir, "'\n";
 print "layoutdir: '", $layoutdir, "'\n";
 print "template: '", $template, "'\n";
 
-mkdir ("$themedir/");
-
 open (BOGUS, ">$themedir/index.theme") or die;
 print BOGUS "Hello, maemo\n";
 close (BOGUS);
