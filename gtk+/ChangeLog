@@ -1,5 +1,12 @@
 2006-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkwidget.c (gtk_widget_set_extension_events_internal): New
+	function which recursively sets extension events for all GdkWindows
+	belonging to the widget.
+	(gtk_widget_realize): Use it from here.
+
+2006-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/*.c (*_realize): Revert commit r6410 from 2006-09-18 as it's
 	stupid.
 	
