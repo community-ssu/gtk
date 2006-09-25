@@ -1,0 +1,53 @@
+####################################################
+# CALENDAR POPOUP (GTKCALENDAR)
+#
+# Copyright 2004,2005 Nokia Oyj
+#
+# Following style is for switching on osso theming
+# for GtkCalendar.
+# Assign this style to all GtkCalendars
+####################################################
+
+style "osso-calendar" = "osso-logical-colors"
+{
+  GtkCalendar::hildonlike = 1
+  xthickness = 0
+  ythickness = 0
+  text[SELECTED] = "DefaultTextColor"
+
+  engine "sapwood" {
+  
+    # Image used for indicating the current actual date  
+    image {
+      function = BOX
+      state = NORMAL
+      detail = "current-day"
+      file = "../images/qgn_plat_calendar_current_day_indicator.png"
+      stretch = TRUE
+      border = {4,4,4,4}
+    }
+    
+    # Image used for indicating the currently selected day
+    image {
+      function = BOX
+      state = NORMAL
+      detail = "active-day"
+      file = "../images/qgn_plat_calendar_active_day_indicator.png"
+      stretch = TRUE
+      border = {1,1,1,1}
+    }
+    
+    # Image used for indicating the current week in week number column
+    # and the current weekday in weekday list row.
+    image {
+      function = BOX
+      state = NORMAL
+      detail = "passive-focus"
+      file = "../images/qgn_plat_calendar_week_day_indicator.png"
+      stretch = TRUE
+      border = {2,2,2,2}
+    }
+  }
+}
+
+class "GtkCalendar" style "osso-calendar"

@@ -1,0 +1,30 @@
+########################################################
+# Hildon Weekday Picker
+########################################################
+
+style "osso-weekday" {
+
+    xthickness = 6
+    ythickness = 4
+    
+    engine "sapwood" {
+        image {
+             function = BOX
+             state = NORMAL
+             file = "../images/qgn_plat_weekday_picker_normal.png"
+             border = { 2, 2, 0, 0 }
+             stretch = TRUE
+       }
+       image {
+            function = BOX
+            state = ACTIVE
+            file = "../images/qgn_plat_weekday_picker_pressed.png"
+            border = { 2, 2, 0, 0}
+            stretch = TRUE
+       }
+    }
+}
+
+widget_class "*.HildonWeekdayPicker.GtkToggleButton" style "osso-weekday"
+
+widget_class "*.HildonWeekdayPicker.GtkToggleButton.GtkLabel" style "osso-SmallFont"

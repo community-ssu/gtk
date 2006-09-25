@@ -1,0 +1,40 @@
+
+style "osso-note-dialog"
+{
+
+  HildonNote::button_spacing = 6
+  HildonNote::content_area_border = 0
+  HildonNote::action_area_border = 10
+  HildonNote::extended_left_border = 0
+  HildonNote::extneded_right_border = 0
+}
+
+class "HildonNote" style "osso-note-dialog"
+
+##################################################
+# Hildon notes
+##################################################
+
+style "osso-note-deleting"
+{
+#      bg_pixmap[NORMAL] = "../delanim.gif"
+}
+widget "hildon-note-deleting" style "osso-note-deleting"
+
+style "osso-infoprint-progress"
+{
+#	  bg_pixmap[NORMAL] = "../proganim.gif"
+}
+widget "hildon-infoprint-progress" style "osso-infoprint-progress"
+
+style "osso-note-question"
+{
+#     bg_pixmap[NORMAL] = "../question.png"
+}
+widget "hildon-note-question" style "osso-note-question"
+
+style "osso-note-information"
+{
+#     bg_pixmap[NORMAL] = "../warning.png"
+}
+widget "hildon-note-information" style "osso-note-information"

@@ -1,0 +1,5 @@
+style "osso-caption-control"
+{
+  ythickness = 1
+}
+class "HildonCaption" style "osso-caption-control"

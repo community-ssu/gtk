@@ -1,0 +1,28 @@
+####################################################
+# OSSO Global search theming
+#
+# Copyright 2006 Nokia Oyj
+#
+#
+####################################################
+
+
+style "osso-hitentry" = "osso-logical-colors" 
+{ 
+  engine "sapwood" 
+  { 
+    image 
+    { 
+      function = FLAT_BOX 
+      state = SELECTED 
+      detail = "eventbox" 
+      file = "../images/qgn_plat_focus_selection.png" 
+      border = { 2, 2, 2, 2 } 
+      stretch = TRUE 
+    } 
+  } 
+} 
+
+widget_class "*.OgsHitEntry*" style "osso-hitentry" 
+widget_class "*.OgsBookmarkEntry*" style "osso-hitentry" 
+widget_class "*.OgsContactEntry*" style "osso-hitentry" 

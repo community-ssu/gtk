@@ -1,0 +1,238 @@
+# OSSO WIDGET LOOK PROBLEMS
+# 
+# - Gtk scales _images_ instead of _widgets_ being scaled according
+#   to image size.  Widgets are scaled according layout and the internal
+#   widget layout/size is according to hardcoded widget code.
+#   If you don't let images to be stretched, they might be clipped
+#   (e.g. checkbox) or drawn partly outside parent widget (e.g. arrows).
+# - Style definitions are theme engine specific.
+# - Focus is always shown on the editable part of the widget,
+#   not on the label beside the editable part.  On menus also
+#   the arrow is highlighted.
+#
+#
+# OSSO WIDGET PROBLEMS
+#
+# - Menubar widget has to be made into a menu itself.
+# - Different button styles and different look for buttons
+#   when there are several buttons in a row.
+#
+#
+# POSITIVE SIDE
+#
+# - Lots of widgets.
+# - Can use any images (any style).
+# - Color can be changed also for images if one uses
+#   grayscale images (recolorable attribute).
+# - Anything can have focus and everything is keyboard navigatable,
+#   keyboard bindings are changable.
+# - Accessibility framework (untested).
+# - Input methods (untested).
+#
+# TODO
+# - Scale the arrow images to such size that you can tell
+#   Gtk not to scale them.
+#
+# When creating a new style, include a "osso-" -prefix to it.
+#
+##################################################
+# Default draw and background color settings
+##################################################
+
+style "osso-default"
+{
+  # 'fg' = foreground in state, 'bg' = background in given state
+  # 'text' = text color in state, 'base' = text background in state
+  # styles:
+  #   NORMAL:      normal widget state
+  #   PRELIGHT:    e.g. mouse over
+  #   ACTIVE:      active widget part, e.g. pressed scrollbar trough
+  #   SELECTED:    data selection highlight color, e.g. items in list widget
+  #   INSENSITIVE: disabled widget
+
+# global picture theming.
+#  GtkWidget::hildonlike = 1
+  GtkWidget::hildon-focus-handling = 1
+  GtkWidget::focus-line-width = 0
+  GtkWidget::focus-padding = 0
+  GtkWidget::focus-line-pattern = "\0\0\0\0\0\0\0\0"
+
+# Removed because this changes wrapping and results in incorrect wrapping
+# (and truncating) in dialogs.
+#  GtkLabel::hildonlike = 1
+
+  GtkToggleButton::hildonlike = 1
+  GtkCalendar::hildonlike = 1
+
+  engine "sapwood"
+  {
+    # selected text in entries, text widget, lists and trees
+    image
+      {
+	function = BOX
+	detail = "selection"
+	file = "../images/qgn_plat_focus_active.png"
+	border = { 2, 2, 2, 2 }
+      }
+#    image
+#      {
+#	function = FLAT_BOX
+#	detail = "text"
+#	file = "../sbarrowup.png"
+#	border = { 0, 0, 0, 0 }
+#      }
+#    # hline and vline
+#    image
+#      {
+#        function        = HLINE
+#        file            = "../hline.png"
+#        border          = { 2, 2, 0, 0 }
+#        stretch         = TRUE
+#      }
+#    image
+#      {
+#        function        = VLINE
+#        file            = "../black.png"
+#        border          = { 0, 0, 0, 0 }
+#        stretch         = TRUE
+#      }
+#
+#    # do not draw widget focus at all. 
+#    image
+#      {
+#        function        = FOCUS
+#        overlay_file    = "../transparent.png"
+#        overlay_border  = { 4, 4, 4, 4 }
+#        overlay_stretch = TRUE
+#      }
+    image
+      {
+        function = FOCUS
+      }
+  }
+
+}
+class "GtkWidget" style "osso-default"
+
+
+# recolorable=TRUE in the 'image' section means that the
+# image is grayscale and can be colored.
+
+#################################################### 
+# ABOUT STYLES
+#
+# The way that multiple RC styles bound to the same 
+# widget are prioritized is that RC styles bound with 
+# widget take precedence over RC styles bound with 
+# widget_class, which, in turn, take precedence over 
+# RC styles bound with class. For multiple declarations 
+# of the same type, later declarations take precedence 
+# over earlier ones.
+#################################################### 
+
+###########
+# PROBABLY WON'T BE USED
+###########
+#include "hildontasknavigatorbutton"
+#include "hildonclockarea"
+#include "gtktooltips"
+#include "gtkoptionmenu"
+#include "hildonsearch"
+#include "hildontoolbarbutton"
+
+###########
+# NEED TO BE PROCESSED
+###########
+
+#include "hildonstockicons"
+#include "progressanimation"
+#include "tapandholdanimation"
+
+# Uncomment these lines to get the tap-and-hold functionality
+# enabled with selected widget, (n.b. that you'll have to run
+# the hildon-tap-hold.diff to GTK to get it work)
+#style "hildon-tap-hold"
+#{
+#  GtkWidget::tap-hold = 1
+#}
+#class "GtkEntry" style "hildon-tap-hold"
+#class "GtkTextView" style "hildon-tap-hold"	
+
+#################
+# REAL, FINISHED STUFF.
+#################
+
+#This has to be first because of font styles.
+include "themespecificgtk"
+
+include "afterthemespecificgtk"
+
+include "defaultarrows"
+
+include "gtkbutton"
+include "gtkbuttonbox"
+include "gtkcheckbutton"
+include "gtkcheckmenuitem"
+include "gtkcombobox"
+include "gtkdialog"
+include "gtkentry"
+include "gtkframe"
+include "gtkmenu"
+include "gtkmenuitem"
+include "gtknotebook"
+include "gtkpaned"
+include "gtkprogressbar"
+include "gtkradiobutton"
+include "gtkrange"
+include "gtkscrollbar"
+include "gtkscrolledwindow"
+include "gtkseparator"
+include "gtksettings"
+include "gtktextview"
+include "gtktoolbar"
+include "gtktoolbutton"
+include "gtktoggletoolbutton"
+include "gtktreeview"
+include "gtkmenutoolbutton"
+include "gtkfilechooserbutton"
+include "gtkexpander"
+include "gtkentrycompletion"
+
+include "hildonapp"
+include "hildonbanners"
+include "hildoncandidatebox"
+include "hildoncaption"
+include "hildoncolorchooser"
+include "hildoncontrolbar"
+include "hildongrid"
+include "hildonkeyboard"
+include "hildonnote"
+include "hildonnumbereditor"
+include "hildonseekbar"
+include "hildontimeeditor"
+include "hildonvolumebar"
+include "hildonweekdaypicker"
+include "hildonbreadcrumbbutton"
+include "hildondateeditor"
+
+include "ossoclock"
+include "ossortc"
+include "ossoglobalsearch"
+include "ossoapplicationinstaller"
+
+# Maemo af desktop widgets included in gtkrc.maemo_af_desktop
+#include "hildonhome"
+#include "hildonhomeapplet"
+#include "hildonnavigator"
+#include "hildonnavigatorpopuplist"
+#include "hildonstatusbar"
+
+
+#include "../../../sapwoods/hildon-icons/stockrc"
+
+##################
+# THESE HAVE MISSING IMAGES BUT ARE HERE BECAUSE OF STYLE PROPERTIES
+##################
+include "gtkcalendar"
+include "hildontimepicker"
+include "afterincludes"

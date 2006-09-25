@@ -1,0 +1,39 @@
+#################################################### 
+# GTK PANED
+#
+# Copyright 2006 Nokia Oyj
+#
+# The GtkPaned is themed here
+#
+#################################################### 
+
+style "osso-paned"  = "osso-logical-colors" {
+
+    bg[NORMAL] = "PaintedBackgrdColor"  
+    bg[PRELIGHT] = "PaintedBackgrdColor"  
+    GtkPaned::handle_size = 10
+
+    engine "sapwood"
+    {
+        image
+        {
+            function    = HANDLE
+            file        = "../images/qgn_plat_separator_vertical_paned.png"
+            overlay_file= "../images/qgn_plat_separator_vertical_paned_thumb.png"
+            orientation = VERTICAL
+            border      = {0,0,12,12}
+            overlay_stretch = FALSE
+        }
+        image
+        {
+            function    = HANDLE
+            file        = "../images/qgn_plat_separator_horizontal_paned.png"
+            overlay_file= "../images/qgn_plat_separator_horizontal_paned_thumb.png"
+            orientation = HORIZONTAL
+            border      = {12,12,0,0}
+            overlay_stretch = FALSE
+        }
+    }
+}
+
+class "GtkPaned" style "osso-paned"

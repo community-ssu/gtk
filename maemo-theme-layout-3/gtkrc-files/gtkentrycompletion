@@ -1,0 +1,38 @@
+#################################################### 
+# GTK ENTRY COMPLETION
+#
+# Copyright 2006 Nokia Oyj
+#
+# The GtkEntryCompletion is themed here
+#
+#################################################### 
+
+style "osso-completion-frame"
+{
+  GtkFrame::hildonlike = 1
+
+  xthickness = 6
+  ythickness = 6
+
+  engine "sapwood"
+    {
+      # Not quite sure if INSENSITIVE is and option for this widget
+      image
+        {
+	  function = BOX
+	  state    = INSENSITIVE
+	  file     = "../images/qgn_plat_frame_disabled.png"
+	  border   = { 3, 3, 3, 3 }
+	  stretch  = TRUE
+	}
+      image
+        {
+	  function = BOX
+	  file     = "../images/qgn_plat_frame.png"
+	  border   = { 3, 3, 3, 3 }
+	  stretch  = TRUE
+	}
+    }
+}
+
+widget "hildon-completion-window.GtkFrame" style "osso-completion-frame"

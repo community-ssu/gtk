@@ -1,0 +1,162 @@
+#################################################### 
+# HILDON CONTROLBAR
+# 
+# Theming instructions for HildonControlbar -widget
+#
+# NOTE: pictures might not be right...
+#
+#################################################### 
+
+style "osso-controlbar"
+{
+	HildonControlbar::stepper_size = 26
+	HildonControlbar::slider_width = 30
+	HildonControlbar::stepper_spacing = 6
+	HildonControlbar::trough_border = 0
+	HildonControlbar::slider_length = 0
+        HildonControlbar::autodimmed_steppers = 1
+        HildonControlbar::inner_border_width = 4
+	GtkWidget::focus-line-width = 0
+	GtkWidget::focus-padding = 0
+	GtkRange::hildonlike = 1
+	GtkRange::draw_trough_under_steppers = 0
+
+	engine "sapwood" {
+		#
+		# At first, lets override some gtkrange specific things
+		#
+      		image {
+	 		function = BOX
+			detail = "stepper"
+      		}
+      		image {
+	 		function = SLIDER
+      		}
+		
+		#
+		# Then, lets define our osso specific things
+		#
+		
+		# Less button
+		image {
+	        	function = ARROW
+			arrow_direction = LEFT
+			state = NORMAL
+			overlay_file = "../images/qgn_plat_control_bar_less_normal.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		image {
+	        	function = ARROW
+			arrow_direction = LEFT
+			state = PRELIGHT
+			overlay_file = "../images/qgn_plat_control_bar_less_normal.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		image {
+	        	function = ARROW
+			arrow_direction = LEFT
+			state = ACTIVE
+			overlay_file = "../images/qgn_plat_control_bar_less_pressed.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		image {
+	        	function = ARROW
+			arrow_direction = LEFT
+			state = INSENSITIVE
+			overlay_file = "../images/qgn_plat_control_bar_less_disabled.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		
+		# More button
+		image {
+	        	function = ARROW
+			arrow_direction = RIGHT
+			state = NORMAL
+			overlay_file = "../images/qgn_plat_control_bar_more_normal.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		image {
+	        	function = ARROW
+			arrow_direction = RIGHT
+			state = PRELIGHT
+			overlay_file = "../images/qgn_plat_control_bar_more_normal.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		image {
+	        	function = ARROW
+			arrow_direction = RIGHT
+			state = ACTIVE
+			overlay_file = "../images/qgn_plat_control_bar_more_pressed.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		image {
+	        	function = ARROW
+			arrow_direction = RIGHT
+			state = INSENSITIVE
+			overlay_file = "../images/qgn_plat_control_bar_more_disabled.png"
+			overlay_border = { 0, 0, 0, 0 }
+			overlay_stretch = FALSE
+      		}
+		
+		# Controlbar frame borders
+      		image {
+	 		function = BOX
+			detail = "trough"
+			state = INSENSITIVE
+	 		file = "../images/qgn_plat_control_bar_border_disabled.png"
+	 		border = { 2, 2, 0, 0 }
+	 		stretch = TRUE
+      		}
+      		image {
+	 		function = BOX
+			detail = "trough"
+	 		file = "../images/qgn_plat_control_bar_border.png"
+	 		border = { 2, 2, 0, 0 }
+	 		stretch = TRUE
+      		}
+		
+		# Controlbar blocks
+       		image {
+ 	 		function = BOX
+ 			shadow = IN
+ 			detail = "hildon_block"
+ 	 		file = "../images/qgn_plat_control_bar_block_active.png"
+ 	 		border = { 2, 2, 0, 0 }
+ 	 		stretch = TRUE
+       		}
+       		image {
+ 	 		function = BOX
+ 			shadow = IN
+ 			detail = "hildon_block"
+ 			state = INSENSITIVE
+ 	 		file = "../images/qgn_plat_control_bar_block_active_disabled.png"
+ 	 		border = { 2, 2, 0, 0 }
+ 	 		stretch = TRUE
+      		}
+      		image {
+	 		function = BOX
+			shadow = OUT
+			detail = "hildon_block"
+	 		file = "../images/qgn_plat_control_bar_block_passive.png"
+	 		border = { 2, 2, 0, 0 }
+	 		stretch = TRUE
+      		}
+      		image {
+	 		function = BOX
+			shadow = OUT
+			detail = "hildon_block"
+			state = INSENSITIVE
+	 		file = "../images/qgn_plat_control_bar_block_passive_disabled.png"
+	 		border = { 2, 2, 0, 0 }
+	 		stretch = TRUE
+      		}
+	}
+}
+class "HildonControlbar" style "osso-controlbar"

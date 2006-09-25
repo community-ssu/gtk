@@ -1,0 +1,63 @@
+# Hildon Navigator Popup List
+include "themespecificgtk"
+
+class "GtkWidget" style "osso-logical-colors"
+
+style "osso-popuplist" = "osso-logical-colors"
+{
+
+  GtkTreeView::odd_row_color = "DefaultBackgrdColor"
+  GtkTreeView::even_row_color = "DefaultBackgrdColor"
+  GtkTreeView::expander-size = 0
+  GtkTreeView::expander-indent = 16
+  GtkTreeView::horizontal-separator = 0
+  GtkTreeView::vertical-separator = 0	  
+  GtkTreeView::hildonlike = 1
+  GtkTreeView::passive_focus = 0
+
+  engine "sapwood"
+  {
+    image
+      {
+        function        = CHECK
+        shadow          = OUT
+        state           = NORMAL
+        detail          = "cellcheck"
+        overlay_file    = "../images/qgn_plat_check_box_empty_normal.png"
+        overlay_border  = { 0, 0, 0, 0 }
+        overlay_stretch = FALSE
+      }
+    image
+      {
+        function        = CHECK
+        shadow          = OUT
+        state           = ACTIVE
+        detail          = "cellcheck"
+        overlay_file    = "../images/qgn_plat_check_box_selected_normal.png"
+        overlay_border  = { 0, 0, 0, 0 }
+        overlay_stretch = FALSE
+      }
+    image
+      {
+        function        = CHECK
+        shadow          = OUT
+        state           = SELECTED
+        detail          = "cellcheck"
+        overlay_file    = "../images/qgn_plat_check_box_selected_normal.png"
+        overlay_border  = { 0, 0, 0, 0 }
+        overlay_stretch = FALSE
+      }
+    image
+      {
+        function        = CHECK
+        shadow          = OUT
+        state           = INSENSITIVE
+        detail          = "cellcheck"
+        overlay_file    = "../images/qgn_plat_check_box_empty_normal.png"
+        overlay_border  = { 0, 0, 0, 0 }
+        overlay_stretch = FALSE
+      }
+  }
+}
+
+widget_class "HildonNavigatorPopupList.*.GtkTreeView" style "osso-popuplist"

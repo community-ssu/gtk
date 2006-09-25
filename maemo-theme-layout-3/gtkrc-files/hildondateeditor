@@ -1,0 +1,35 @@
+#################################################### 
+# HILDON DATE EDITOR
+#
+# Copyright 2006 Nokia Oyj
+#
+# This disables default button graphics from
+# the date editor button.
+#
+####################################################
+
+style "osso-date-editor-button"
+{
+  GtkButton::default_border = { 0, 0, 0, 0 }
+  GtkButton::default_outside_border = { 0, 0, 0, 0 }
+  GtkButton::child-displacement-y = 0
+  GtkButton::child-displacement-x = 0
+  GtkWidget::focus-width = 0
+  GtkButton::interior_focus = 0
+  GtkWidget::focus-padding = 0
+  GtkWidget::focus-line-width = 0
+  GtkButton::child_spacing = 0
+  xthickness = 0
+  ythickness = 0
+
+  engine "sapwood"
+    {
+      image
+        {
+	  function = BOX
+	}
+    }
+}
+
+widget_class "*.HildonDateEditor.GtkButton" style "osso-date-editor-button"
+

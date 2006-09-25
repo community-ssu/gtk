@@ -1,0 +1,365 @@
+
+#################################################### 
+# HILDON SEEKBAR
+# 
+# Theming instructions for HildonSeekBar -widget
+#
+# NOTE: hildon-lgpl is needed for theming of display 
+#       component 
+#
+#################################################### 
+
+style "osso-seekbar"
+{
+	HildonSeekbar::stepper_size = 26
+	HildonSeekbar::stepper_spacing = 6
+	HildonSeekbar::trough_border = 0
+	HildonSeekbar::slider_width = 58
+	HildonSeekbar::slider_length = 23
+        HildonSeekbar::focus-line-width = 0
+        HildonSeekbar::focus-padding = 0
+	HildonSeekbar::hildonlike = 1
+        HildonSeekbar::autodimmed_steppers = 1
+	HildonSeekbar::draw_trough_under_steppers = 0
+        HildonSeekbar::two_part_trough = 1
+	GtkRange::arrow_paint_box_layout = 1
+	GtkRange::stream_indicator_padding = 3
+	
+	engine "sapwood" {
+		#
+		# At first, lets override some gtkrange specific things
+		#
+      		image {
+	 		function = BOX
+			detail = "stepper"
+      		}
+
+                image {
+                        function = BOX
+                        detail = "seekbar"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_regular_background_disabled.png"
+                        border = { 20, 20, 18, 20 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "seekbar"
+                        state = NORMAL
+                        file = "../images/qgn_plat_seek_bar_regular_background_normal.png"
+                        border = { 20, 20, 18, 20 }
+                        stretch = TRUE
+                }
+		
+                image {
+                        function = BOX
+                        detail = "trough_northwest"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_left_disabled.png"
+                        border = { 4, 0, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_stream_disabled.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream_complete"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_stream_finished_disabled.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_southeast"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_right_disabled.png"
+                        border = { 0, 4, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_northwest"
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_left_normal.png"
+                        border = { 4, 0, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream"
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_stream_normal.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream_complete"
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_stream_finished_normal.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_southeast"
+                        file = "../images/qgn_plat_seek_bar_regular_shaft_right_normal.png"
+                        border = { 0, 4, 0, 0 }
+                        stretch = TRUE
+                }
+
+                image {
+                        function = SLIDER
+                        detail = "slider"
+                        orientation = HORIZONTAL
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_regular_thumb_disabled.png"
+                }
+                image {
+                        function = SLIDER
+                        detail = "slider"
+                        orientation = HORIZONTAL
+                        file = "../images/qgn_plat_seek_bar_regular_thumb_normal.png"
+                }
+
+                #left
+        	image {
+			function        = ARROW
+			state           = ACTIVE
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_backward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			state           = SELECTED
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_backward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			state           = INSENSITIVE
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_backward_button_disabled.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_backward_button_normal.png"
+			overlay_stretch = FALSE
+		}
+
+		#right
+		image {
+			function        = ARROW
+        		state           = ACTIVE
+			arrow_direction = RIGHT
+		        overlay_file    = "../images/qgn_plat_seek_bar_regular_forward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+		image {
+        		function        = ARROW
+			state           = SELECTED
+			arrow_direction = RIGHT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_forward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+                image {
+			function        = ARROW
+			state           = INSENSITIVE
+			arrow_direction = RIGHT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_forward_button_disabled.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			arrow_direction = RIGHT
+			overlay_file    = "../images/qgn_plat_seek_bar_regular_forward_button_normal.png"
+			overlay_stretch = FALSE
+		}
+	}
+}
+class "HildonSeekbar" style "osso-seekbar"
+
+style "osso-seekbar-toolbar"
+{
+	HildonSeekbar::stepper_size = 26
+	HildonSeekbar::stepper_spacing = 6
+	HildonSeekbar::trough_border = 0
+	HildonSeekbar::slider_width = 40
+	HildonSeekbar::slider_length = 23
+        HildonSeekbar::focus-line-width = 0
+        HildonSeekbar::focus-padding = 0
+	HildonSeekbar::hildonlike = 1
+        HildonSeekbar::autodimmed_steppers = 1
+	HildonSeekbar::draw_trough_under_steppers = 0
+        HildonSeekbar::two_part_trough = 1
+	GtkRange::stream_indicator_padding = 3
+		
+	engine "sapwood" {
+		#
+		# At first, lets override some gtkrange specific things
+		#
+      		image {
+	 		function = BOX
+			detail = "stepper"
+      		}
+
+                image {
+                        function = BOX
+                        detail = "seekbar"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_toolbar_background_disabled.png"
+                        border = { 20, 20, 19, 19 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "seekbar"
+                        state = NORMAL
+                        file = "../images/qgn_plat_seek_bar_toolbar_background_normal.png"
+                        border = { 20, 20, 19, 19 }
+                        stretch = TRUE
+                }
+
+                image {
+                        function = BOX
+                        detail = "trough_northwest"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_left_disabled.png"
+                        border = { 4, 0, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_disabled.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream_completete"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_finished_disabled.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_southeast"
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_right_disabled.png"
+                        border = { 0, 4, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_northwest"
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_left_normal.png"
+                        border = { 4, 0, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream"
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_normal.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_stream_complete"
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_finished_normal.png"
+                        border = { 0, 2, 0, 0 }
+                        stretch = TRUE
+                }
+                image {
+                        function = BOX
+                        detail = "trough_southeast"
+                        file = "../images/qgn_plat_seek_bar_toolbar_shaft_right_normal.png"
+                        border = { 0, 4, 0, 0 }
+                        stretch = TRUE
+                }
+
+                image {
+                        function = SLIDER
+                        detail = "slider"
+                        orientation = HORIZONTAL
+                        state = INSENSITIVE
+                        file = "../images/qgn_plat_seek_bar_toolbar_thumb_disabled.png"
+                }
+                image {
+                        function = SLIDER
+                        detail = "slider"
+                        orientation = HORIZONTAL
+                        file = "../images/qgn_plat_seek_bar_toolbar_thumb_normal.png"
+                }
+
+                #left
+        	image {
+			function        = ARROW
+			state           = ACTIVE
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_backward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			state           = SELECTED
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_backward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			state           = INSENSITIVE
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_backward_button_disabled.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			arrow_direction = LEFT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_backward_button_normal.png"
+			overlay_stretch = FALSE
+		}
+
+		#right
+		image {
+			function        = ARROW
+        		state           = ACTIVE
+			arrow_direction = RIGHT
+		        overlay_file    = "../images/qgn_plat_seek_bar_toolbar_forward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+		image {
+        		function        = ARROW
+			state           = SELECTED
+			arrow_direction = RIGHT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_forward_button_pressed.png"
+			overlay_stretch = FALSE
+		}
+                image {
+			function        = ARROW
+			state           = INSENSITIVE
+			arrow_direction = RIGHT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_forward_button_disabled.png"
+			overlay_stretch = FALSE
+		}
+		image {
+			function        = ARROW
+			arrow_direction = RIGHT
+			overlay_file    = "../images/qgn_plat_seek_bar_toolbar_forward_button_normal.png"
+			overlay_stretch = FALSE
+		}
+	}
+}
+widget_class "*.GtkToolbar.GtkToolItem.HildonSeekbar" style "osso-seekbar-toolbar"
