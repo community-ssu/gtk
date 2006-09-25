@@ -1,3 +1,4 @@
 #! /bin/sh
 
+prefix=@prefix@
 exec maemo-theme-install --templates @datadir@/maemo-theme-layout-3/ "$@"
