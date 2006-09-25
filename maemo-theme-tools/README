@@ -1,4 +1,9 @@
 These are the maemo theme tools
 -------------------------------
 
-These tools allow you to create themes for the maemo platform.
+These tools allow you to create themes for the maemo platform.  They
+are intended to support the various theme layout packages (such as
+maemo-theme-layout-2 for mistral or maemo-theme-layout-3 for sardine).
+
+See these layout packages for more information on how to create a
+actual theme package.
