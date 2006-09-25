@@ -67,5 +67,5 @@ nobase_dist_template_DATA =			\
      gtkrc-files/ossospeeddial			\
      gtkrc-files/themespecificgtk		\
      layout-coordinates.txt			\
-     matchbox-theme.xml				\
+     theme.xml					\
      index.theme
