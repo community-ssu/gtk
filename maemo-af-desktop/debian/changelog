@@ -1,3 +1,9 @@
+maemo-af-desktop (2.9.90-3) unstable; urgency=low
+
+  * Added libhildonmenu0-dbg and hildon-status-bar-lib0-dev. Fixes: NB#40729 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 25 Sep 2006 14:23:09 +0300
+
 maemo-af-desktop (2.9.90-2) unstable; urgency=low
 
   * debian/conffile: added
