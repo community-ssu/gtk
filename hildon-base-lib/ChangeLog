@@ -1,3 +1,8 @@
+2006-09-25  Karoliina Salminen <karoliina.t.salminen@nokia.com>
+
+    * configure.ac: released 0.11.0
+    * Updated header texts
+
 2006-09-04  Moises Martinez <moises.martinzes@nokia.com>
 
 	* configure.ac: released 0.10.2

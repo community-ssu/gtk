@@ -1775,7 +1775,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=hildon-base-lib
- VERSION=0.10.1
+ VERSION=0.11.0
 
 
 cat >>confdefs.h <<_ACEOF

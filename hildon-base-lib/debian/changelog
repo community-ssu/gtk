@@ -1,3 +1,9 @@
+hildon-base-lib (0.11.0-1) unstable; urgency=low
+
+  * Updated header texts on all files
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Mon, 25 Sep 2006 15:07:32 +0300
+
 hildon-base-lib (0.10.2-1) unstable; urgency=low
 
   * configure.ac: released 0.10.2
