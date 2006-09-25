@@ -7,33 +7,193 @@
 #
 #   --layout DIR
 #
-#   The layout is defined by the files in DIR.  XXX - more details to follow.
+#   The layout is defined by the files in DIR.  More details are below.
+#   (XXX - stay tuned)
 #
 #   --theme DIR
 #
 #   The theme is installed into DIR, typically /usr/share/themes/<name>.
 #
+#   --destdir DIR
+#
+#   The additional destination directory prefix, for use during
+#   staged installs.  Defaults to empty.
+#
 #   --template FILE
 #
 #   The individual theme images are cut out from FILE.
+#
+#   --name STRING
+#
+#   The name of the theme for the UI.
 
 use Getopt::Long;
+use File::Basename;
 
 GetOptions ( "layout=s" => \$layoutdir,
 	     "theme=s" => \$themedir,
-             "template=s" => \$template ) or die;
+	     "destdir=s" => \$destdir,
+             "template=s" => \$template,
+             "name=s" => \$name ) or die;
 
 if ($themedir eq "" or $layoutdir eq "" or $template eq "")
 {
     die "usage: maemo-install-theme --layout DIR --theme DIR --template FILE\n";
 }
 
-# XXX - we just install some bogus files for now...
+if ($name eq "")
+{
+    $name = basename ($themedir);
+}
 
-print "themedir: '", $themedir, "'\n";
-print "layoutdir: '", $layoutdir, "'\n";
-print "template: '", $template, "'\n";
+%substitutions = 
+    ( qw{@ThemeName@} => $name,
+      qw{@ThemeDir@} => $themedir,
+      qw{@ThemeDirBaseName@} => basename ($themedir) );
 
-open (BOGUS, ">$themedir/index.theme") or die;
-print BOGUS "Hello, maemo\n";
-close (BOGUS);
+sub do_substitutions
+{
+    my $line = $_[0];
+    foreach $pat (keys(%substitutions))
+    {
+	$subst = $substitutions{$pat};
+	$line =~ s/$pat/$subst/g;
+    }
+    return $line;
+}
+
+sub process_gtkrc
+{
+    my $source = "$layoutdir/gtkrc-files/$_[0]";
+    my $file;
+
+    open ($file, "< $source");
+    
+    while (<$file>)
+    {
+	if (/^include "(.*)"$/)
+	{
+	    process_gtkrc ($1);
+	}
+	else
+	{
+	    print TARGET do_substitutions ($_);
+	}
+    }
+    close ($file);
+}
+
+sub install_gtkrc
+{
+    my $name = $_[0];
+    my $target = "$destdir$themedir/gtk-2.0/$name";
+
+    print STDERR "Installing $name\n";
+
+    open (TARGET, "> $target") or die;
+    process_gtkrc ($name);
+    close (TARGET);
+}
+
+sub install_file
+{
+    my $name = $_[0];
+    my $source = "$layoutdir/$name";
+    my $target = "$destdir$themedir/$name";
+
+    print STDERR "Installing $name\n";
+
+    open (TARGET, "> $target") or die;
+    open (SOURCE, "< $source") or die;
+
+    while (<SOURCE>)
+    {
+	print TARGET do_substitutions ($_);
+    }
+	
+    close (SOURCE);
+    close (TARGET);
+}
+
+sub cut_images
+{
+    # XXX
+}
+
+sub add_color_substitutions
+{
+    # XXX - hardcoded for now.
+
+    $substitutions{qw{@DefaultTextColor@}}        = "#303030";
+    $substitutions{qw{@EmpTextColor@}}            = "#003F93";
+    $substitutions{qw{@PaintedDefaultTextColor@}} = "#003F93";
+    $substitutions{qw{@DisabledTextColor@}}       = "#808080";
+    $substitutions{qw{@ProgressTextColor1@}}      = "#000000";
+    $substitutions{qw{@ProgressTextColor2@}}      = "#000000";
+    $substitutions{qw{@SecondaryTextColor@}}      = "#5A5A5A";
+    $substitutions{qw{@TitleTextColor@}}          = "#303030";
+    $substitutions{qw{@DialogTitleTextColor@}}    = "#303030";
+
+    $substitutions{qw{@ClearButtonTextColor@}}    = "#FF3200";
+    $substitutions{qw{@MemButtonTextColor@}}      = "#2B28AF";
+
+    $substitutions{qw{@HWRAlphaTextColor@}}       = "#303030";
+    $substitutions{qw{@HWRNumberTextColor@}}      = "#333399";
+    $substitutions{qw{@HWRDimmedTextColor@}}      = "#808080";
+    $substitutions{qw{@HWRIllegalTextColor@}}     = "#FF0033";
+
+    $substitutions{qw{@WebTextColor@}}            = "#303030";
+    $substitutions{qw{@DimWebTextColor@}}         = "#808080";
+    $substitutions{qw{@LinkTextColor@}}           = "#2B28AF";
+    $substitutions{qw{@VisitedLinkTextColor@}}    = "#FF3200";
+
+    $substitutions{qw{@DefaultBackgrdColor@}}     = "#FFFFFF";
+    $substitutions{qw{@PaintedBackgrdColor@}}     = "#E2E2E2";
+    $substitutions{qw{@ImageBackgrdColor@}}       = "#000000";
+
+    $substitutions{qw{@InputBackgrdColor@}}       = "#000000";
+    $substitutions{qw{@HWRAlphaBackgrdColor@}}    = "#F4F4F4";
+    $substitutions{qw{@HWRPunctBackgrdColor@}}    = "#FFFFFF";
+    $substitutions{qw{@HWRContBackgrdColor@}}     = "#F4F4F4";
+    $substitutions{qw{@HWRHyphBackgrdColor@}}     = "#D1D1D1";
+
+    $substitutions{qw{@WebBackgrdColor@}}         = "#FFFFFF";
+
+    $substitutions{qw{@ImageBorderColor@}}        = "#CDCDCD";
+    $substitutions{qw{@FocusColor@}}              = "#FFCC00";
+    $substitutions{qw{@SelectionColor@}}          = "#CCCCCC";
+
+    $substitutions{qw{@MapTopLeftColor@}}         = "#CDCDCD";
+    $substitutions{qw{@MapBottomRightColor@}}     = "#CDCDCD";
+    $substitutions{qw{@ClockHandColor@}}          = "#000000";
+
+    $substitutions{qw{@HWRBaselineColor@}}        = "#C2C2C2";
+    $substitutions{qw{@HWRRecogColor@}}           = "#303030";
+    $substitutions{qw{@HWRUserColor@}}            = "#151C53";
+    $substitutions{qw{@HWRUserBackgrdColor@}}     = "#DEE8F3";
+    $substitutions{qw{@HWRHintColor@}}            = "#78B1D2";
+
+    $substitutions{qw{@ChatUserNameColor@}}       = "#000000";
+    $substitutions{qw{@ChatParticipantNameColor@}}= "#003399";
+    $substitutions{qw{@ChatEventColor@}}          = "#33CC00";
+
+    $substitutions{qw{@CallHeaderBlockBgColor@}}  = "#FFFFFF";
+    $substitutions{qw{@CallHeaderOnHoldBlockBgColor@}} = "#FFFFFF";
+	
+    $substitutions{qw{@HomeFrameNormal@}}         = "#00FF00";
+    $substitutions{qw{@HomeFrameResize@}}         = "#0000FF";
+    $substitutions{qw{@HomeFrameReject@}}         = "#FF0033";
+
+    $substitutions{qw{@MenuInfoTextColor@}}       = "#303030";
+
+    # XXX - 7 digits?
+    $substitutions{qw{@LowLightColor@}}           = "#d4e6fd80";
+}
+
+cut_images;
+add_color_substitutions;
+
+install_gtkrc ("gtkrc");
+install_gtkrc ("gtkrc.maemo_af_desktop");
+install_file ("theme.xml");
+install_file ("index.theme");
