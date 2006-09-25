@@ -88,6 +88,8 @@ sub install_gtkrc
     my $name = $_[0];
     my $target = "$destdir$themedir/gtk-2.0/$name";
 
+    mkdir ("$destdir$themedir/gtk-2.0/");
+
     print STDERR "Installing $name\n";
 
     open (TARGET, "> $target") or die;
