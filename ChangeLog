@@ -1,3 +1,18 @@
+2006-09-25  Kristian Rietveld  <kris@imendio.com>
+
+	Sync with upstream.
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_finalize):
+	Don't leak default_sort_data.  (#346341, Christian Weiske)
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_finalize):-
+	Clean up user data.  (#344624, Christian Weiske)
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_fetch_child):
+	update the refs from children to parents for all nodes, since
+	they may all have been moved by the insert operation. (#346800,
+	patch from Jonathan Matthew).
+
 2006-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* gdk/x11/gdkdisplay-x11.c (gdk_display_x11_finalize): Replace invalid
