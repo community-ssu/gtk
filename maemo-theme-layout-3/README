@@ -5,34 +5,31 @@ This package contains a number of tools and data files that can be
 used to easily created themes that are compatible with the maemo
 platform version 3.
 
-The available tools are
-
- - maemo-theme-install-3
-
- - maemo-theme-make-template-3
-
- - maemo-theme-make-package-template-3
-
 The basic tool for creating a theme for maemo 3 is
 'maemo-theme-install-3'.  This program will create a directory that
 can be dropped into /usr/share/themes on a maemo device.  You would
-normally put this directory into a suitable Debian package.  A
-template for such a package can be created with
-maemo-theme-make-package-template-3.
+normally put this directory into a suitable Debian package.
 
 Gtk+ themes for the maemo platform usually are graphics intensive;
 they are mainly defined by a number of small images that are displayed
 in different ways by the Gtk+ widgets.  Using maemo-theme-install
-allows you to specify your own images, the colors that are used in
-certain areas, and the fonts used to display various texts.  It does
-not allow you to change the layout of widgets, or use a theme engine
-other than sapwood, or other more advanced things.
+allows you to specify your own images (and the colors that are used in
+certain areas that are not covered by images), but nothing else.  You
+can't change fonts, for example, or make bigger layout changes.
 
-The images for a theme are defined by a single big template image and
-a list of coordinates.  Maemo-theme-install-3 will cut out parts of the
-big image to produce the image files that are referenced by the gtkrc
-files.
+The images for a theme are defined by a single big template image.
+Maemo-theme-install-3 will cut out parts of the big image to produce
+the smaller image files that are referenced by the gtkrc files.
+Maemo-theme-install-3 will also look into the big image to find the
+colors used for the non-image areas of widgets.
 
-In addition to the gtkrc files and the associated images,
-maemo-theme-install will also create suitable themring information for
-the matchbox window manager.
+The coordinates where to cut the big image are fixed.  The
+maemo-theme-layout-3 package installs a template image in
+/usr/share/doc/maemo-theme-layout-3/ that you can use as a layer in
+your graphics editor.  Of course, it is probably easiest to start from
+an existing theme.
+
+Thus, to summarize, the whole theme is defined by one big image, and
+the maemo-install-theme-3 tool from this package will create all
+suitable files from it.  Right now, you still need to take care of
+making the .deb package yourself, tho.
