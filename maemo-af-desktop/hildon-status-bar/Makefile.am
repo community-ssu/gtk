@@ -51,9 +51,7 @@ libhildonstatusbarincludeinst_DATA = \
 libhildonstatusbarmain_la_SOURCES = \
 	hildon-status-bar-main.c \
 	hildon-status-bar-main.h \
-	hildon-status-bar-interface.h \
-	../libdesktop/hildon-log.c \
-	../libdesktop/hildon-log.h
+	hildon-status-bar-interface.h
 
 libhildonstatusbarmain_la_LIBADD = \
 	$(HILDON_LIBS) \

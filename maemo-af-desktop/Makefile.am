@@ -49,7 +49,7 @@ bin_PROGRAMS = \
 
 bin_SCRIPTS = install_sbapplet.sh
         
-maemo_af_desktop_SOURCES = maemo-af-desktop-main.c maemo-af-desktop-main.h
+maemo_af_desktop_SOURCES = maemo-af-desktop-main.c maemo-af-desktop-main.h libdesktop/hildon-log.c libdesktop/hildon-log.h
 
 # libraries needed by task navigator, status bar and home to build them together
 maemo_af_desktop_LDADD = \

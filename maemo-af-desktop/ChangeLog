@@ -1,5 +1,10 @@
 2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
 
+	* hildon-status-bar/hildon-log.[ch]: Removed.
+	* Makefile.am: Added libdesktop/hildon-log.[ch]
+
+2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hildon-navigator/regenerate_config.c: Improved
 
 2006-09-22  Johan Bilien <johan.bilien@nokia.com>
