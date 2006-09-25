@@ -209,6 +209,9 @@ hildon_plugin_list_init (HildonPluginList *list)
   priv = HILDON_PLUGIN_LIST_GET_PRIVATE (list);
 
   gtk_list_store_set_column_types (GTK_LIST_STORE (list), 4, types);
+  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (list),
+                                        HILDON_PLUGIN_LIST_COLUMN_NAME,
+                                        GTK_SORT_ASCENDING);
 
   priv->name_key = NULL;
   priv->library_key = NULL;

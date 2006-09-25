@@ -1,5 +1,9 @@
 2006-09-25  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-plugin-list.c: Sort the list by names
+
+2006-09-25  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-switcher.c: Added a timeout after a
 	  button_press during which we do not react to such events
 	  Fixes: NB#41030
