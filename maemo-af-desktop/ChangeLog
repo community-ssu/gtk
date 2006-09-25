@@ -1,5 +1,11 @@
 2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
 
+	* libdesktop/hildon-log.c: Code cleanup.
+	* Makefile.am: added libdesktop.a
+	* hildon-navigator/Makefile.am: removed libdesktop.a
+
+2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hildon-status-bar/hildon-log.[ch]: Removed.
 	* Makefile.am: Added libdesktop/hildon-log.[ch]
 

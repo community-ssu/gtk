@@ -107,8 +107,7 @@ libhildonnavigator_la_LIBADD = \
 	$(XTEST_LIBS) \
 	$(LIBXML2_LIBS) \
 	$(GCONF_LIBS) \
-	../libhildonmenu/libhildonmenu.la \
-	../libdesktop/.libs/libdesktop.a
+	../libhildonmenu/libhildonmenu.la 
 
 libhildonnavigatorincludeinstdir=$(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \

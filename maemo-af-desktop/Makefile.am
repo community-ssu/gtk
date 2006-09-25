@@ -49,7 +49,7 @@ bin_PROGRAMS = \
 
 bin_SCRIPTS = install_sbapplet.sh
         
-maemo_af_desktop_SOURCES = maemo-af-desktop-main.c maemo-af-desktop-main.h libdesktop/hildon-log.c libdesktop/hildon-log.h
+maemo_af_desktop_SOURCES = maemo-af-desktop-main.c maemo-af-desktop-main.h
 
 # libraries needed by task navigator, status bar and home to build them together
 maemo_af_desktop_LDADD = \
@@ -65,7 +65,8 @@ maemo_af_desktop_LDADD = \
 	$(OSSO_HELP_LIBS) \
 	$(XTEST_LIBS) \
 	$(ESD_LIBS) \
-	$(LAUNCHER_LDFLAGS)
+	$(LAUNCHER_LDFLAGS) \
+	libdesktop/.libs/libdesktop.a
 
 initexecdir=$(sysconfdir)/osso-af-init/init.d
 initexec_SCRIPTS = maemo-af-desktop-launch.sh

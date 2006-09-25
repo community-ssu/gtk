@@ -44,25 +44,15 @@ struct _HildonLogPrivate
   gchar   *filename;
 };
 
-typedef enum
-{
-  NUM_SIGNALS
-} log_signals;
-
-typedef enum
+enum
 {
   PROPERTY_0,
   FILENAME_PROP
-} log_props;
+};
 
 static void hildon_log_class_init (HildonLogClass *log_class);
 static void hildon_log_init( HildonLog *log );
 static void hildon_log_finalize (GObject *object);
-/*
-static GObject *hildon_log_constructor (GType type,
-		                        guint n_construct_properties,
-					GObjectConstructParam *construct_params);
-*/
 static void hildon_log_set_property (GObject *object,
 		                     guint prop_id,
 			  	     const GValue *value,
@@ -121,7 +111,7 @@ hildon_log_class_init (HildonLogClass *log_class)
 			       			       "filename",
 			       			       "filename",
 						       NULL,
-						       G_PARAM_READWRITE));
+						       G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
 
   log_class->add_group   	   = hildon_log_add_group;
   log_class->add_message 	   = hildon_log_add_message;
@@ -143,27 +133,6 @@ hildon_log_finalize (GObject *object)
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
-/*
-static GObject * 
-hildon_log_constructor (GType type,
-                        guint n_construct_properties,
-                        GObjectConstructParam *construct_params)
-{
-  HildonLogPrivate *priv;
-  GObject *object;
-
-  object = parent_class->constructor (type,
-                                      n_construct_properties,
-                                      construct_params);
-
-  priv = HILDON_LOG_GET_PRIVATE ( HILDON_LOG (object));
-  printf("OPENING %p %s\n",construct_params,priv->filename);
-  priv->fp = fopen (priv->filename,"w+");
-
-  priv->flag_working = (priv->fp) ? TRUE : FALSE;
- 
-  return object;
-}*/
 
 static void 
 hildon_log_open_file (HildonLog *log)
@@ -200,7 +169,7 @@ hildon_log_set_property (GObject *object,
   switch (prop_id)
   {
     case FILENAME_PROP:
-      priv->filename = g_strdup ( g_value_get_string (value));
+      priv->filename = g_strdup (g_value_get_string (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -248,7 +217,7 @@ hildon_log_check_util (HildonLog *log)
   HildonLogPrivate *priv = NULL;
 
   g_return_val_if_fail (log,NULL);
-  g_return_val_if_fail ( HILDON_IS_LOG (log),NULL);
+  g_return_val_if_fail (HILDON_IS_LOG (log),NULL);
 
   priv = HILDON_LOG_GET_PRIVATE (log);
 
