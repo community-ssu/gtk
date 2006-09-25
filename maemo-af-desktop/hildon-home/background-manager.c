@@ -756,6 +756,7 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
   g_return_val_if_fail (src != NULL, NULL);
   g_return_val_if_fail (fill != NULL, NULL);
 
+
   if (width < 0)
     width = HILDON_HOME_WINDOW_WIDTH;
 
@@ -840,7 +841,7 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
 			    HILDON_HOME_IMAGE_ALPHA_FULL);
       break;
     case BACKGROUND_SCALED:
-      scaling_ratio = MIN ((gdouble) ((width - HILDON_HOME_TASKNAV_WIDTH) / src_width),
+      scaling_ratio = MIN ((gdouble) ((gdouble)(width - HILDON_HOME_TASKNAV_WIDTH) / src_width),
 		           (gdouble) height / src_height);
       dest_x = (gint) (MAX (HILDON_HOME_TASKNAV_WIDTH,
 			    (width
@@ -871,12 +872,12 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
       break;
     case BACKGROUND_TILED:
         for (dest_x = HILDON_HOME_TASKNAV_WIDTH;
-	     dest_x < (width - HILDON_HOME_TASKNAV_WIDTH);
+	     dest_x < width;
 	     dest_x += src_width)
           {
             for (dest_y = 0;
 	         dest_y < height;
-		 dest_y += src_height)
+             dest_y += src_height)
               {
                 gdk_pixbuf_composite (src, dest,
 				      dest_x, dest_y,
@@ -892,10 +893,10 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
     case BACKGROUND_STRETCHED:
       gdk_pixbuf_composite (src, dest,
 	      		    HILDON_HOME_TASKNAV_WIDTH, 0,
-			    width, height,
+			    width - HILDON_HOME_TASKNAV_WIDTH, height,
 			    0, 0,
-			    (gdouble) (width - HILDON_HOME_TASKNAV_WIDTH) / src_width,
-			    (gdouble) height / src_height,
+			    (gdouble) (width) / src_width,
+			    ((gdouble) height) / src_height,
 			    GDK_INTERP_NEAREST,
 			    HILDON_HOME_IMAGE_ALPHA_FULL);
       break;
@@ -1308,7 +1309,7 @@ background_manager_create_background (BackgroundManager *manager)
 
       if (priv->image_uri)
 	image = load_image_from_uri (priv->image_uri, TRUE, &err);
-	  
+
       if (err && err->message)
 	{
 	  write (pipe_from_child[1],
