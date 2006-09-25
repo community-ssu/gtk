@@ -1,3 +1,8 @@
+2006-09-25  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.cc (refresh_package_cache_reply): Show the "Refresh
+	cancelled" message for all versions of the UI.
+
 2006-09-24  Marius Vollmer  <mvo@zagadka.de>
 
 	* utils/maemo-confirm-text-user.c (get_small_font): Updated with
