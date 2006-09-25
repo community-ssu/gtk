@@ -1,4 +1,9 @@
 2006-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gdk/x11/gdkdisplay-x11.c (gdk_display_x11_finalize): Replace invalid
+	g_object_unref() with g_free() (#357566)
+
+2006-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_set_extension_events_internal): New
 	function which recursively sets extension events for all GdkWindows
