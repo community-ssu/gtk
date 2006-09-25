@@ -811,25 +811,23 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
     case BACKGROUND_CENTERED:
       if (src_width < (width - HILDON_HOME_TASKNAV_WIDTH))
         {
-          dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH, (width - src_width) / 2);
-          off_x = MAX (0.0, (width - src_width) / 2);
+          dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH, (width - HILDON_HOME_TASKNAV_WIDTH - src_width) / 2 + HILDON_HOME_TASKNAV_WIDTH);
 	}
       else
 	{
-	  dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH, (width - src_width) / 2);
-          off_x = MAX (0.0, (src_width - width) / 2);
+	  dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH, (width - HILDON_HOME_TASKNAV_WIDTH - src_width) / 2 + HILDON_HOME_TASKNAV_WIDTH);
 	}
 
       if (src_height < height)
         {
           dest_y = MAX (0, (height - src_height) / 2);
-          off_y = MAX (0.0, (height - src_height) / 2);
 	}
       else
         {
 	  dest_y = MAX (0, (height - src_height) / 2);
-	  off_y = MAX (0.0, (src_height - height) / 2);
 	}
+      off_x = (width-HILDON_HOME_TASKNAV_WIDTH-src_width) / 2 + HILDON_HOME_TASKNAV_WIDTH;
+      off_y = (height-src_height) / 2;
       
       gdk_pixbuf_composite (src, dest,
 		            dest_x, dest_y,

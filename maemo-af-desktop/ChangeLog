@@ -1,5 +1,9 @@
 2006-09-25  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/background-manager.c: Fixed CENTER mode
+
+2006-09-25  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Fixed a few problems
 	  with the different modes
 
