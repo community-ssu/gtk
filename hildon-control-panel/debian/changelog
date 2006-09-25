@@ -1,3 +1,27 @@
+hildon-control-panel (2.2.7-1) unstable; urgency=low
+
+  * hildon-cp-view.c: Adjust the scrollbar if necessary when focussing
+    on an item. Fixes: NB# 34439
+
+  * cp-grid.c: Fixed a crash freshly introduced
+
+  * hildon-control-panel-main.c: Removed unnecessary assignment
+  * hildon-control-panel.scheme: default size is small. Fixes: NB#31084
+
+  * cp-grid.c: Fixed various leaks of GList. Fixes: NB#40616
+
+  * cp-grid.c:
+    - try to fix utterly broken size request
+    - do not hide/show widgets which are "out of view" (we don't
+      use a scrollbar any longer). Fixes: NB#40768
+  * hildon-control-panel-main.c: Removed unnecessary hard-coded size request
+
+  * hildon-control-panel-main.c: Fixed building problem on
+   not declaring ourselves as background killable if we are 
+  running an applet and it does not support state-saving
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 25 Sep 2006 10:35:40 +0300
+
 hildon-control-panel (2.2.6-2) unstable; urgency=low
 
   * debian/{build, control}: added hildon-control-panel-dbg. Fixes: NB#40292
