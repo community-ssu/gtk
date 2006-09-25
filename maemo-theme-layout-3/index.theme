@@ -1,12 +1,11 @@
 [Desktop Entry]
 Type=X-Hildon-Metatheme
-Name=Maemo Default
-Icon=/usr/share/themes/maemo-default/images/qgn_plat_theme_thumbnail.png
+Name=@ThemeName@
+Icon=@ThemeDir@/images/qgn_plat_theme_thumbnail.png
 Encoding=UTF-8
 
 [X-Hildon-Metatheme]
-GtkTheme=maemo-default
-IconTheme=maemo-default
-X-MatchboxTheme=maemo-default
-X-OperaSkin=maemo-default.zip
+GtkTheme=@ThemeDirBaseName@
+IconTheme=@ThemeDirBaseName@
+X-MatchboxTheme=@ThemeDirBaseName@
 X-AdditionalRCFiles=maemo_af_desktop

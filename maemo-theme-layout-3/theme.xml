@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
-<theme name="maemo-default" author="Nokia"
+<theme name="@ThemeDirBaseName@" author="Nokia"
        desc="" version="1.0" engine_version="1" cache="false" >
 
 <!-- List Resources, defined by an id and then a definition -->
 
 <!-- Colors, in the format #rrggbb. -->
 
-<color id="lowlightcol" def="#d4e6fd80" />
+<color id="lowlightcol" def="@LowLightColor@" />
 
 <!-- Fonts, alternate fonts can be listed seperated by a '|'   
             The first matched will be used.                   -->
 <font id="osso-TitleFont" def="Nokia Sans-17.85" />
 
-<color id="osso-TitleTextColor" def="#303030" />
-<color id="osso-DialogTitleTextColor" def="#303030" />
+<color id="osso-TitleTextColor" def="@TitleTextColor@" />
+<color id="osso-DialogTitleTextColor" def="@DialogTitleTextColor@" />
 
 <!-- Pixmaps. xpm or png ( if support compiled in ) supported.
      They are expected to be found in the same location as this file -->
