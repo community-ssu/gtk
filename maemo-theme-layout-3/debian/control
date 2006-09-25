@@ -1,0 +1,17 @@
+Source: maemo-theme-layout-3
+Section: x11
+Priority: optional
+Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.0
+
+Package: maemo-theme-layout-3
+Architecture: all
+Depends: maemo-theme-tools
+Description: Support tools for making themes for the maemo 3 platform
+ This package contains tools that can help you create a theme for
+ the maemo platform version 3.
+ .
+ All you need to do is create a
+ big template image and these tools will create a theme package
+ from it.
