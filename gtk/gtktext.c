@@ -1356,7 +1356,6 @@ gtk_text_realize (GtkWidget *widget)
   
   text->text_area = gdk_window_new (widget->window, &attributes, attributes_mask);
   gdk_window_set_user_data (text->text_area, text);
-  _gtk_widget_window_set_extension_events (widget, text->text_area);
 
   gdk_cursor_destroy (attributes.cursor); /* The X server will keep it around as long as necessary */
   

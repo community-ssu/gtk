@@ -345,7 +345,6 @@ gtk_hsv_realize (GtkWidget *widget)
   
   priv->window = gdk_window_new (parent_window, &attr, attr_mask);
   gdk_window_set_user_data (priv->window, hsv);
-  _gtk_widget_window_set_extension_events (widget, priv->window);
   
   widget->style = gtk_style_attach (widget->style, widget->window);
   

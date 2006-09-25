@@ -1056,7 +1056,6 @@ gtk_range_realize (GtkWidget *widget)
   range->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
 					&attributes, attributes_mask);
   gdk_window_set_user_data (range->event_window, range);
-  _gtk_widget_window_set_extension_events (widget, range->event_window);
 
   widget->style = gtk_style_attach (widget->style, widget->window);
 }

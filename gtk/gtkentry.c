@@ -1439,7 +1439,6 @@ gtk_entry_realize (GtkWidget *widget)
 
   entry->text_area = gdk_window_new (widget->window, &attributes, attributes_mask);
   gdk_window_set_user_data (entry->text_area, entry);
-  _gtk_widget_window_set_extension_events (widget, entry->text_area);
 
   gdk_cursor_unref (attributes.cursor);
 

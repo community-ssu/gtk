@@ -1054,7 +1054,6 @@ gtk_button_realize (GtkWidget *widget)
   button->event_window = gdk_window_new (gtk_widget_get_parent_window (widget),
 					 &attributes, attributes_mask);
   gdk_window_set_user_data (button->event_window, button);
-  _gtk_widget_window_set_extension_events (widget, button->event_window);
 
   widget->style = gtk_style_attach (widget->style, widget->window);
 }

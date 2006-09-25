@@ -2506,6 +2506,8 @@ gtk_widget_unmap (GtkWidget *widget)
 void
 gtk_widget_realize (GtkWidget *widget)
 {
+  gint events;
+  GdkExtensionMode mode;
   GtkWidgetShapeInfo *shape_info;
   
   g_return_if_fail (GTK_IS_WIDGET (widget));
@@ -2542,20 +2544,16 @@ gtk_widget_realize (GtkWidget *widget)
 	}
       
       if (!GTK_WIDGET_NO_WINDOW (widget))
-	_gtk_widget_window_set_extension_events (widget, widget->window);
+	{
+	  mode = gtk_widget_get_extension_events (widget);
+	  if (mode != GDK_EXTENSION_EVENTS_NONE)
+	    {
+	      events = gtk_widget_get_events (widget);
+	      gdk_input_set_extension_events (widget->window, events, mode);
+	    }
+	}
+      
     }
-}
-
-void
-_gtk_widget_window_set_extension_events (GtkWidget *widget, GdkWindow *window)
-{
-  GdkExtensionMode mode;
-
-  mode = gtk_widget_get_extension_events (widget);
-  if (mode != GDK_EXTENSION_EVENTS_NONE)
-    gdk_input_set_extension_events (widget->window,
-				    gdk_window_get_events (window),
-				    mode);
 }
 
 /**

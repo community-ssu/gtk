@@ -898,7 +898,6 @@ gtk_icon_view_realize (GtkWidget *widget)
   icon_view->priv->bin_window = gdk_window_new (widget->window,
 						&attributes, attributes_mask);
   gdk_window_set_user_data (icon_view->priv->bin_window, widget);
-  _gtk_widget_window_set_extension_events (widget, icon_view->priv->bin_window);
 
   widget->style = gtk_style_attach (widget->style, widget->window);
   gdk_window_set_background (icon_view->priv->bin_window, &widget->style->base[widget->state]);

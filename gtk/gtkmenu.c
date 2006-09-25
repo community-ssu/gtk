@@ -2208,7 +2208,6 @@ gtk_menu_realize (GtkWidget *widget)
 
   menu->view_window = gdk_window_new (widget->window, &attributes, attributes_mask);
   gdk_window_set_user_data (menu->view_window, menu);
-  _gtk_widget_window_set_extension_events (widget, menu->view_window);
 
   attributes.x = 0;
   attributes.y = 0;
@@ -2217,7 +2216,6 @@ gtk_menu_realize (GtkWidget *widget)
   
   menu->bin_window = gdk_window_new (menu->view_window, &attributes, attributes_mask);
   gdk_window_set_user_data (menu->bin_window, menu);
-  _gtk_widget_window_set_extension_events (widget, menu->bin_window);
 
   children = GTK_MENU_SHELL (menu)->children;
   while (children)

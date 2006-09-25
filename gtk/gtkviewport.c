@@ -638,7 +638,6 @@ gtk_viewport_realize (GtkWidget *widget)
 
   viewport->bin_window = gdk_window_new (viewport->view_window, &attributes, attributes_mask);
   gdk_window_set_user_data (viewport->bin_window, viewport);
-  _gtk_widget_window_set_extension_events (widget, viewport->bin_window);
 
   if (bin->child)
     gtk_widget_set_parent_window (bin->child, viewport->bin_window);
