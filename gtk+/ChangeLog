@@ -1,3 +1,8 @@
+2006-09-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/*.c (*_realize): Revert commit r6410 from 2006-09-18 as it's
+	stupid.
+	
 2006-09-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_setup,

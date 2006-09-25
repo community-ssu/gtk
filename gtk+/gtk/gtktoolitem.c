@@ -386,7 +386,6 @@ create_drag_window (GtkToolItem *toolitem)
   toolitem->priv->drag_window = gdk_window_new (gtk_widget_get_parent_window (widget),
 					  &attributes, attributes_mask);
   gdk_window_set_user_data (toolitem->priv->drag_window, toolitem);
-  _gtk_widget_window_set_extension_events (widget, toolitem->priv->drag_window);
 }
 
 static void

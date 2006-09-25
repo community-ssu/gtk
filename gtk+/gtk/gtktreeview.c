@@ -1765,7 +1765,6 @@ gtk_tree_view_realize (GtkWidget *widget)
   tree_view->priv->bin_window = gdk_window_new (widget->window,
 						&attributes, attributes_mask);
   gdk_window_set_user_data (tree_view->priv->bin_window, widget);
-  _gtk_widget_window_set_extension_events (widget, tree_view->priv->bin_window);
 
   /* Make the column header window */
   attributes.x = 0;
@@ -1783,7 +1782,6 @@ gtk_tree_view_realize (GtkWidget *widget)
   tree_view->priv->header_window = gdk_window_new (widget->window,
 						   &attributes, attributes_mask);
   gdk_window_set_user_data (tree_view->priv->header_window, widget);
-  _gtk_widget_window_set_extension_events (widget, tree_view->priv->header_window);
 
 
   values.foreground = (widget->style->white.pixel==0 ?

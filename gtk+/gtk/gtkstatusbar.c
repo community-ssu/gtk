@@ -599,8 +599,8 @@ gtk_statusbar_create_window (GtkStatusbar *statusbar)
 
   statusbar->grip_window = gdk_window_new (widget->window,
                                            &attributes, attributes_mask);
+
   gdk_window_set_user_data (statusbar->grip_window, widget);
-  _gtk_widget_window_set_extension_events (widget, statusbar->grip_window);
 
   set_grip_cursor (statusbar);
 }

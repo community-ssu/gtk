@@ -7469,7 +7469,6 @@ text_window_realize (GtkTextWindow *win,
 
   gdk_window_show (win->bin_window);
   gdk_window_set_user_data (win->bin_window, win->widget);
-  _gtk_widget_window_set_extension_events (win->widget, win->bin_window);
 
   if (win->type == GTK_TEXT_WINDOW_TEXT)
     {

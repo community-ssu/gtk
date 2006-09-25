@@ -3076,7 +3076,6 @@ gtk_label_create_window (GtkLabel *label)
   label->select_info->window = gdk_window_new (widget->window,
                                                &attributes, attributes_mask);
   gdk_window_set_user_data (label->select_info->window, widget);
-  _gtk_widget_window_set_extension_events (widget, label->select_info->window);
 
   gdk_cursor_unref (attributes.cursor);
 }

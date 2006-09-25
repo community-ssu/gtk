@@ -812,8 +812,6 @@ void gtk_widget_tap_and_hold_setup (GtkWidget *widget, GtkWidget *menu,
 
 void gtk_widget_insensitive_press ( GtkWidget *widget );
 
-void _gtk_widget_window_set_extension_events (GtkWidget *widget, GdkWindow *window);
-
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
