@@ -1014,8 +1014,7 @@ refresh_package_cache_reply (int cmd, apt_proto_decoder *dec, void *data)
       /* The user hit cancel.  We don't care whether the operation was
 	 successful or not.
       */
-      if (ui_version < 2)
-	annoy_user (_("ai_ni_update_list_cancelled"));
+      annoy_user (_("ai_ni_update_list_cancelled"));
       success = false;
     }
   else
