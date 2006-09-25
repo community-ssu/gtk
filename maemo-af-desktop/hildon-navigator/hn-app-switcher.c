@@ -263,6 +263,8 @@ struct _HNAppSwitcherPrivate
   guint pointer_on_button : 1;
   guint is_thumbable : 1;
 
+  guint menu_button_timeout;
+
   GList *applications;
   
   GtkIconTheme *icon_theme;
@@ -879,6 +881,18 @@ static void
 main_menu_button_toggled_cb (HNAppSwitcher *app_switcher,
 			     GtkWidget     *toggle)
 {
+  HNAppSwitcherPrivate *priv;
+
+  g_return_if_fail (app_switcher);
+
+  priv = app_switcher->priv;
+
+  if (priv->menu_button_timeout)
+    {
+      g_source_remove (priv->menu_button_timeout);
+      priv->menu_button_timeout = 0;
+    }
+
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle)))
     {
       if (app_switcher->priv->main_menu)
@@ -898,12 +912,13 @@ menu_button_release_cb (GtkWidget      *widget,
                         GdkEventButton *event,
                         HNAppSwitcher  *app_switcher)
 {
-  gint x,y;
+/*  gint x,y;*/
   HNAppSwitcherPrivate *priv;
 
   g_return_val_if_fail (event && app_switcher, FALSE);
 
   priv = app_switcher->priv;
+#if 0
   
   /* if the relase is outside the button, reset the thumbable flag, to avoid
    * problems if the menu is raised some other way than via pointer
@@ -927,8 +942,24 @@ menu_button_release_cb (GtkWidget      *widget,
 
       hn_wm_activate (HN_TN_ACTIVATE_LAST_APP_WINDOW);
     }
+#endif
 
   return FALSE;
+}
+
+static gboolean
+menu_button_pressed_timeout (HNAppSwitcher *app_switcher)
+{
+  HNAppSwitcherPrivate *priv = app_switcher->priv;
+
+  priv->menu_button_timeout = 0;
+  
+  hn_app_switcher_toggle_menu_button (app_switcher);
+  
+  priv->is_thumbable = FALSE;
+
+  return FALSE;
+
 }
 
 static gboolean
@@ -943,19 +974,21 @@ menu_button_pressed_cb (GtkWidget      *widget,
   /* remember which button was used to press this button */
   HN_DBG("Main menu button pressed using button %d", event->button);
 
-  hn_wm_activate (HN_TN_DEACTIVATE_KEY_FOCUS);
+/*  hn_wm_activate (HN_TN_DEACTIVATE_KEY_FOCUS);*/
 
   if (event->button == APP_BUTTON_THUMBABLE || event->button == 2)
     {
       priv->is_thumbable = TRUE;
-      hn_app_switcher_toggle_menu_button (app_switcher);
-      
-      return TRUE;
     }
-  else
-    priv->is_thumbable = FALSE;
+
+  if (!priv->menu_button_timeout)
+    priv->menu_button_timeout = g_timeout_add (100,
+                                               (GSourceFunc)
+                                                 menu_button_pressed_timeout,
+                                               app_switcher);
+                                               
   
-  return FALSE;
+  return TRUE;
 }
 
 static GtkWidget *

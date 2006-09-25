@@ -1238,7 +1238,6 @@ hn_wm_activate(guint32 what)
       case HN_TN_ACTIVATE_LAST_APP_WINDOW:
         HN_DBG("passing focus to last active window");
         hnwm.has_focus = FALSE;
-        hn_window_set_focus (tasknav,FALSE);
         hn_wm_focus_active_window ();
         return;
         
