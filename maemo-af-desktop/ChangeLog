@@ -1,3 +1,7 @@
+2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/regenerate_config.c: Improved
+
 2006-09-22  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "AF-BAT:Able to launch the Task launcher using the

@@ -36,6 +36,12 @@
 #define GROUP_DESKTOP    "Desktop Entry"
 #define KEY_LIBRARY      "X-task-navigator-plugin"
 
+typedef struct
+{
+  gchar    *name;
+  gboolean  used;
+} plugin_t;
+
 static void 
 insert_desktop_file (GKeyFile *keyfile, gchar *desktop_file, gint position)
 {
@@ -96,13 +102,16 @@ regenerate_configuration (void)
   GKeyFile *keyfile = NULL;
   gchar *home, *path_config, *data;
   GError *error = NULL;
-  gboolean plugins_used[HN_MAX_PLUGINS],
-  	   positions_free[HN_MAX_PLUGINS];
+
+  plugin_t plugins[] = { { name: DEFAULT_PLUGIN_0, used: FALSE },
+	  		 { name: DEFAULT_PLUGIN_1, used: FALSE }};
+  
+  gboolean positions_free[HN_MAX_PLUGINS];
   FILE *file;
-  gint i;
+  gint i,j;
 
   for (i=0;i<HN_MAX_PLUGINS;i++)
-    positions_free[i] = plugins_used[i] = FALSE;
+    positions_free[i] = FALSE;
 
   home = (gchar *) getenv ("HOME");
 
@@ -123,9 +132,7 @@ regenerate_configuration (void)
     gchar *path_desktop;
 
     path_desktop = g_strdup_printf ("%s/%s",HN_DESKTOP_DIR,groups[i]);
-
-    g_debug (path_desktop);
-    
+ 
     if (!g_file_test (path_desktop, G_FILE_TEST_EXISTS))
     {
       g_key_file_remove_group (keyfile,groups[i],&error);
@@ -142,13 +149,11 @@ regenerate_configuration (void)
     }
     else
     {
-      if (g_str_equal (groups[i],DEFAULT_PLUGIN_0))
-        plugins_used[0] = TRUE;
-
-      if (g_str_equal (groups[i],DEFAULT_PLUGIN_1))
-        plugins_used[1] = TRUE;  
+      for (j=0;j<HN_MAX_PLUGINS;j++) 
+        if (g_str_equal (groups[i],plugins[j].name))
+          plugins[j].used = TRUE;
     }
-    
+ 
     g_free (path_desktop);
     i++;    
   }
@@ -157,18 +162,14 @@ regenerate_configuration (void)
   {
     if (positions_free[i])
     {
-      if (!plugins_used[0])  /* Oh my god, WTF is this sh*t?? */
+      for (j=0;j<HN_MAX_PLUGINS;j++)
       {
-        insert_desktop_file (keyfile,DEFAULT_PLUGIN_0,i);
-	plugins_used[0] = TRUE;
-	continue;
-      }
-      
-      if (!plugins_used[1])
-      {	  
-        insert_desktop_file (keyfile,DEFAULT_PLUGIN_1,i);
-	plugins_used[1] = TRUE;
-	continue;
+        if (!plugins[j].used)
+        {
+          insert_desktop_file (keyfile,plugins[j].name,i);
+	  plugins[j].used = TRUE;
+	  break;
+        } 
       }
     }
   }
