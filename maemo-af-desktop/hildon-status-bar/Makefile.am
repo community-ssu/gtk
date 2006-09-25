@@ -22,7 +22,7 @@
 INCLUDES = $(HILDON_CFLAGS) $(OSSO_CFLAGS) \
 	-DPREFIX=\"$(prefix)\"
 
-EXTRA_DIST = hildon-status-bar-lib.pc empty_exec.sh 
+EXTRA_DIST = hildon-status-bar-lib.pc
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-status-bar-lib.pc
@@ -63,5 +63,3 @@ libhildonstatusbarmain_la_LIBADD = \
 libhildonstatusbarmain_la_CPPFLAGS = $(INCLUDES) \
 				-DHSB_PLUGIN_PATH=\"$(hildonstatusbarlibdir)\" \
 				-DHSB_DESKTOP_ENTRY_DIR=\"$(hildonstatusbardesktopentrydir)\"
-
-initexec_SCRIPTS = empty_exec.sh

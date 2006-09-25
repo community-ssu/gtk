@@ -34,11 +34,23 @@ Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, libhildonmenu0 (=${Source-Version}), libxml2-dev
 Description: libhildonmenu development files
 
+Package: libhildonmenu-dbg
+Section: devel
+Architecture: all
+Depends: libhildonmenu0 (=${Source-Version})
+Description: libhildonmenu debug symbols
+
 Package: hildon-status-bar-lib-dev
 Section: devel
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-status-bar-lib0 (=${Source-Version}), hildon-libs-dev
 Description: Hildon Status Bar development files
+
+Package: hildon-status-bar-lib-dbg
+Section: devel
+Architecture: all
+Depends: hildon-status-bar-lib0 (=${Source-Version})
+Description: Hildon Status Bar lib debug symbols
 
 Package: hildon-navigator-dev
 Section: devel
