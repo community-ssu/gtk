@@ -2,7 +2,7 @@ Source: maemo-theme-default
 Section: x11
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, maemo-theme-tools
+Build-Depends: debhelper (>= 4.0.0), maemo-theme-layout-3
 Standards-Version: 3.6.0
 
 Package: maemo-theme-default
