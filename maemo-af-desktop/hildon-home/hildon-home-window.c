@@ -448,6 +448,15 @@ area_remove (HildonHomeArea   *area,
 }
 
 static void
+background_manager_load_cancel_cb (BackgroundManager *manager,
+                                   HildonHomeWindow  *window)
+{
+  g_debug (G_STRLOC ": load cancelled");
+
+  background_manager_discard_preview (manager, TRUE);
+}
+
+static void
 background_manager_changed_cb (BackgroundManager *manager,
 			       GdkPixbuf         *pixbuf,
 			       HildonHomeWindow  *window)
@@ -494,7 +503,7 @@ background_manager_changed_cb (BackgroundManager *manager,
 
 static void
 hildon_home_window_background (HildonHomeWindow   *window,
-                               gboolean is_background)
+                               gboolean            is_background)
 {
   HildonHomeWindowPrivate *priv = window->priv;
 
@@ -785,6 +794,13 @@ hildon_home_window_constructor (GType                  gtype,
   g_signal_connect (priv->bg_manager, "changed",
 		    G_CALLBACK (background_manager_changed_cb),
 		    window);
+  g_signal_connect (priv->bg_manager, "preview",
+                    G_CALLBACK (background_manager_changed_cb),
+                    window);
+  g_signal_connect (priv->bg_manager, "load-cancel",
+                    G_CALLBACK (background_manager_load_cancel_cb),
+                    window);
+
   background_manager_set_components (priv->bg_manager,
 		  		     get_titlebar_image_from_theme (widget),
 				     get_sidebar_image_from_theme (widget));

@@ -1,3 +1,16 @@
+2006-09-26  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied fixes to background manager:
+	* all the changes done inside the background selection dialog are
+	  contained in a "preview mode";
+	* if the user changes something and then taps "Preview" the background
+	  image is recomposited with the preview settings, applied to the
+	  desktop using a "preview" signal, and the result is cached inside 
+	  a "preview cache" file;
+	  + if the user taps "Cancel" all the changes done in preview mode
+	    are discarded and the previous cache file is reloaded;
+	  + if the user taps "Okay" the preview cache file is renamed to the
+
 2006-09-25  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-plugin-list.c: Sort the list by names

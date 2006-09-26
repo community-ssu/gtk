@@ -81,39 +81,43 @@ struct _BackgroundManagerClass
 {
   GObjectClass parent_class;
 
-  void (*changed) (BackgroundManager *manager,
-		   GdkPixbuf         *pixbuf);
+  void (*load_cancel) (BackgroundManager *manager);
+  void (*preview)     (BackgroundManager *manager,
+		       GdkPixbuf         *pixbuf);
+  void (*changed)     (BackgroundManager *manager,
+		       GdkPixbuf         *pixbuf);
 };
 
-GType                 background_manager_get_type         (void) G_GNUC_CONST;
+GType                 background_manager_get_type          (void) G_GNUC_CONST;
 
-BackgroundManager *   background_manager_get_default      (void);
+BackgroundManager *   background_manager_get_default       (void);
 
-G_CONST_RETURN gchar *background_manager_get_image_uri    (BackgroundManager  *manager);
-void                  background_manager_set_image_uri    (BackgroundManager  *manager,
-						           const gchar        *uri);
-gboolean              background_manager_preset_image_uri (BackgroundManager  *manager,
-						           const gchar        *uri);
-BackgroundMode        background_manager_get_mode         (BackgroundManager  *manager);
-void                  background_manager_set_mode         (BackgroundManager  *manager,
-							   BackgroundMode      mode);
-gboolean              background_manager_preset_mode      (BackgroundManager  *manager,
-							   BackgroundMode      mode);
-void                  background_manager_get_color        (BackgroundManager  *manager,
-						           GdkColor           *color);
-void                  background_manager_set_color        (BackgroundManager  *manager,
-							   const GdkColor     *color);
-gboolean              background_manager_preset_color     (BackgroundManager  *manager,
-							   const GdkColor     *color);
+G_CONST_RETURN gchar *background_manager_get_image_uri     (BackgroundManager *manager);
+void                  background_manager_set_image_uri     (BackgroundManager *manager,
+						            const gchar       *uri);
+BackgroundMode        background_manager_get_mode          (BackgroundManager *manager);
+void                  background_manager_set_mode          (BackgroundManager *manager,
+							    BackgroundMode     mode);
+void                  background_manager_get_color         (BackgroundManager *manager,
+						            GdkColor          *color);
+void                  background_manager_set_color         (BackgroundManager *manager,
+							    const GdkColor    *color);
+void                  background_manager_get_components    (BackgroundManager *manager,
+							    gchar             *titlebar,
+							    gchar             *sidebar);
+void                  background_manager_set_components    (BackgroundManager *manager,
+							    const gchar       *titlebar,
+							    const gchar       *sidebar);
+G_CONST_RETURN gchar *background_manager_get_cache         (BackgroundManager *manager);
+void                  background_manager_set_cache         (BackgroundManager *manager,
+						            const gchar       *uri);
 
-void                  background_manager_set_components   (BackgroundManager  *manager,
-							   const gchar        *titlebar,
-							   const gchar        *sidebar);
-G_CONST_RETURN gchar *background_manager_get_cache        (BackgroundManager  *manager);
-void                  background_manager_set_cache        (BackgroundManager  *manager,
-						           const gchar        *uri);
-
-void                  background_manager_apply_preset     (BackgroundManager  *manager);
+void                  background_manager_push_preview_mode (BackgroundManager *manager);
+void                  background_manager_pop_preview_mode  (BackgroundManager *manager);
+gboolean              background_manager_apply_preview     (BackgroundManager *manager);
+void                  background_manager_update_preview    (BackgroundManager *manager);
+void                  background_manager_discard_preview   (BackgroundManager *manager,
+                                                            gboolean           reload);
 
 G_END_DECLS
 

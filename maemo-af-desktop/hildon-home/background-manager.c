@@ -117,24 +117,87 @@ background_mode_get_type (void)
 #define BACKGROUND_MANAGER_GET_PRIVATE(obj) \
 (G_TYPE_INSTANCE_GET_PRIVATE ((obj), TYPE_BACKGROUND_MANAGER, BackgroundManagerPrivate))
 
-struct _BackgroundManagerPrivate
+typedef struct
 {
   gchar *image_uri;
   BackgroundMode mode;
   GdkColor color;
 
+  gchar *cache;
+
+  guint has_cache  : 1;
+  guint is_preview : 1;
+} BackgroundData;
+
+static BackgroundData *
+background_data_new (gboolean is_preview)
+{
+  BackgroundData *retval;
+
+  retval = g_new (BackgroundData, 1);
+
+  retval->color.red = 0;
+  retval->color.green = 0;
+  retval->color.blue = 0;
+  
+  retval->image_uri = NULL;
+  
+  if (!is_preview)
+    {
+      retval->image_uri = g_strdup_printf ("file://%s",
+					   hildon_home_get_user_bg_file ());
+      retval->cache = g_build_filename (hildon_home_get_user_config_dir (),
+			                "hildon_home_bg_user.png",
+					NULL);
+      retval->mode = BACKGROUND_CENTERED;
+    }
+  else
+    {
+      retval->image_uri = g_strdup_printf ("file://%s",
+		      			   hildon_home_get_user_bg_file ());
+      retval->cache = g_build_filename (hildon_home_get_user_config_dir (),
+		                        "hildon_home_bg_preview.png",
+				        NULL);
+      retval->mode = BACKGROUND_CENTERED;
+    }
+
+  retval->is_preview = is_preview;
+  retval->has_cache = FALSE;
+
+  return retval;
+}
+
+static void
+background_data_free (BackgroundData *data)
+{
+  if (G_LIKELY (data != NULL))
+    {
+      g_free (data->image_uri);
+      g_free (data->cache);
+
+      g_free (data);
+    }
+}
+
+struct _BackgroundManagerPrivate
+{
+  BackgroundData *normal;
+  BackgroundData *preview;
+  BackgroundData *current;
+
+  guint is_preview_mode : 1;
+  
   /* these are local files */
   gchar *titlebar;
   gchar *sidebar;
-  gchar *cache;
 
   GPid child_pid;
 
   guint is_screen_singleton : 1;
   GdkScreen *screen;
 
-  guint       bg_timeout;
-  GtkWidget * loading_note;
+  guint bg_timeout;
+  GtkWidget *loading_note;
 };
 
 enum
@@ -149,6 +212,8 @@ enum
 enum
 {
   CHANGED,
+  PREVIEW,
+  LOAD_CANCEL,
 
   LAST_SIGNAL
 };
@@ -183,15 +248,11 @@ background_manager_get_property (GObject    *object,
 				 GValue     *value,
 				 GParamSpec *pspec)
 {
-  BackgroundManager *manager = BACKGROUND_MANAGER (object);
-
   switch (prop_id)
     {
     case PROP_IMAGE_URI:
-      g_value_set_string (value, manager->priv->image_uri);
       break;
     case PROP_MODE:
-      g_value_set_enum (value, manager->priv->mode);
       break;
     case PROP_COLOR:
       break;
@@ -207,9 +268,10 @@ background_manager_finalize (GObject *object)
   BackgroundManager *manager = BACKGROUND_MANAGER (object);
   BackgroundManagerPrivate *priv = manager->priv;
 
-  g_free (priv->image_uri);
-  
-  g_free (priv->cache);
+  background_data_free (priv->preview);
+  background_data_free (priv->normal);
+  priv->current = NULL;
+
   g_free (priv->titlebar);
   g_free (priv->sidebar);
   
@@ -233,10 +295,10 @@ background_manager_write_configuration (BackgroundManager *manager)
   conf = g_key_file_new ();
   
   /* images locations */
-  if (priv->image_uri)
+  if (priv->current->image_uri)
     g_key_file_set_string (conf, HILDON_HOME_CONF_MAIN_GROUP,
 			   HILDON_HOME_CONF_BG_URI_KEY,
-			   priv->image_uri);
+			   priv->current->image_uri);
   else
     g_key_file_set_string (conf, HILDON_HOME_CONF_MAIN_GROUP,
 			   HILDON_HOME_CONF_BG_URI_KEY,
@@ -252,17 +314,17 @@ background_manager_write_configuration (BackgroundManager *manager)
   /* background color, by component */
   g_key_file_set_integer (conf, HILDON_HOME_CONF_MAIN_GROUP,
 		          HILDON_HOME_CONF_BG_COLOR_RED_KEY,
-		          priv->color.red);
+		          priv->current->color.red);
   g_key_file_set_integer (conf, HILDON_HOME_CONF_MAIN_GROUP,
 		  	  HILDON_HOME_CONF_BG_COLOR_GREEN_KEY,
-			  priv->color.green);
+			  priv->current->color.green);
   g_key_file_set_integer (conf, HILDON_HOME_CONF_MAIN_GROUP,
 		          HILDON_HOME_CONF_BG_COLOR_BLUE_KEY,
-			  priv->color.blue);
+			  priv->current->color.blue);
 
   /* background mode, by symbolic name */
   enum_class = g_type_class_ref (TYPE_BACKGROUND_MODE);
-  enum_value = g_enum_get_value (enum_class, priv->mode);
+  enum_value = g_enum_get_value (enum_class, priv->current->mode);
   g_key_file_set_string (conf, HILDON_HOME_CONF_MAIN_GROUP,
 		         HILDON_HOME_CONF_BG_MODE_KEY,
 			 enum_value->value_nick);
@@ -334,70 +396,67 @@ background_manager_read_configuration (BackgroundManager *manager)
 
   parse_error = NULL;
   
-  g_free (priv->image_uri);
-  priv->image_uri = g_key_file_get_string (conf,
-		  			   HILDON_HOME_CONF_MAIN_GROUP,
-					   HILDON_HOME_CONF_BG_URI_KEY,
-					   &parse_error);
+  g_free (priv->current->image_uri);
+  priv->current->image_uri =
+    g_key_file_get_string (conf, HILDON_HOME_CONF_MAIN_GROUP,
+				 HILDON_HOME_CONF_BG_URI_KEY,
+				 &parse_error);
   if (parse_error)
     {
-      priv->image_uri = g_strdup_printf ("file://%s",
-		                         hildon_home_get_user_bg_file ());
+      priv->current->image_uri =
+        g_strdup_printf ("file://%s", hildon_home_get_user_bg_file ());
       
       g_error_free (parse_error);
       parse_error = NULL;
     }
-  else if (g_str_equal (priv->image_uri, HILDON_HOME_BACKGROUND_NO_IMAGE))
+  else if (!strcmp (priv->current->image_uri, HILDON_HOME_BACKGROUND_NO_IMAGE))
     {
-      g_free (priv->image_uri);
-      priv->image_uri = NULL;
+      g_free (priv->current->image_uri);
+      priv->current->image_uri = NULL;
     }
   
-  priv->color.red = g_key_file_get_integer (conf,
-					    HILDON_HOME_CONF_MAIN_GROUP,
-					    HILDON_HOME_CONF_BG_COLOR_RED_KEY,
-					    &parse_error);
+  priv->current->color.red =
+    g_key_file_get_integer (conf, HILDON_HOME_CONF_MAIN_GROUP,
+				  HILDON_HOME_CONF_BG_COLOR_RED_KEY,
+				  &parse_error);
   if (parse_error)
     {
       g_warning ("failed read color.red");
-      priv->color.red = 0;
+      priv->current->color.red = 0;
 
       g_error_free (parse_error);
       parse_error = NULL;
     }
 
-  priv->color.green =
-    g_key_file_get_integer (conf,
-			    HILDON_HOME_CONF_MAIN_GROUP,
-			    HILDON_HOME_CONF_BG_COLOR_GREEN_KEY,
-			    &parse_error);
+  priv->current->color.green =
+    g_key_file_get_integer (conf, HILDON_HOME_CONF_MAIN_GROUP,
+			          HILDON_HOME_CONF_BG_COLOR_GREEN_KEY,
+			          &parse_error);
   if (parse_error)
     {
       g_warning ("failed read color.green");
-      priv->color.green = 0;
+      priv->current->color.green = 0;
 
       g_error_free (parse_error);
       parse_error = NULL;
     }
 
-  priv->color.blue =
-    g_key_file_get_integer (conf,
-			    HILDON_HOME_CONF_MAIN_GROUP,
-			    HILDON_HOME_CONF_BG_COLOR_BLUE_KEY,
-			    &parse_error);
+  priv->current->color.blue =
+    g_key_file_get_integer (conf, HILDON_HOME_CONF_MAIN_GROUP,
+			          HILDON_HOME_CONF_BG_COLOR_BLUE_KEY,
+			          &parse_error);
   if (parse_error)
     {
       g_warning ("failed read color.blue");
-      priv->color.blue = 0;
+      priv->current->color.blue = 0;
 
       g_error_free (parse_error);
       parse_error = NULL;
     }
   
-  mode = g_key_file_get_string (conf,
-		  		HILDON_HOME_CONF_MAIN_GROUP,
-				HILDON_HOME_CONF_BG_MODE_KEY,
-				&parse_error);
+  mode = g_key_file_get_string (conf, HILDON_HOME_CONF_MAIN_GROUP,
+				      HILDON_HOME_CONF_BG_MODE_KEY,
+				      &parse_error);
   if (parse_error)
     {
       mode = g_strdup ("centered");
@@ -408,7 +467,7 @@ background_manager_read_configuration (BackgroundManager *manager)
 
   enum_class = g_type_class_ref (TYPE_BACKGROUND_MODE);
   enum_value = g_enum_get_value_by_nick (enum_class, mode);
-  priv->mode = enum_value->value;
+  priv->current->mode = enum_value->value;
 
   g_free (mode);
 
@@ -634,15 +693,19 @@ load_image_from_file (const gchar  *filename,
 {
   gchar *filename_uri;
   GdkPixbuf *retval;
+  GError *uri_error;
   GError *load_error;
 
-  filename_uri = g_filename_to_uri (filename, NULL, NULL);
-  if (!filename_uri)
+  uri_error = NULL;
+  filename_uri = g_filename_to_uri (filename, NULL, &uri_error);
+  if (uri_error)
     {
       g_set_error (error, BACKGROUND_MANAGER_ERROR,
 		   BACKGROUND_MANAGER_ERROR_UNKNOWN,
-		   "Unable to convert `%s' to a valid URI",
-		   filename);
+		   "Unable to convert `%s' to a valid URI: %s",
+		   filename,
+		   uri_error->message);
+      g_error_free (uri_error);
 
       return NULL;
     }
@@ -906,35 +969,6 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
   return dest;
 }
 
-#if 0
-static GdkPixbuf *
-create_background_from_pixbuf_area (const GdkPixbuf  *src,
-				    gint              src_x,
-				    gint              src_y,
-				    gint              width,
-				    gint              height,
-				    GError          **error)
-{
-  GdkPixbuf *dest;
-  
-  g_return_val_if_fail (src != NULL, NULL);
-
-  dest = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, width, height);
-  if (!dest)
-    {
-      g_set_error (error, BACKGROUND_MANAGER_ERROR,
-		   BACKGROUND_MANAGER_ERROR_SYSTEM_RESOURCES,
-		   "Unable to create a new pixbuf");
-
-      return NULL;
-    }
-
-  gdk_pixbuf_copy_area (src, src_x, src_y, width, height, dest, 0, 0);
-
-  return dest;
-}
-#endif
-
 /* We create the cached pixbuf compositing the sidebar and the titlebar
  * pixbufs from their relative files; we use a child process to retain
  * some interactivity; we use a pipe to move the error messages from
@@ -1027,8 +1061,8 @@ composite_background (const GdkPixbuf  *bg_image,
       g_debug ("Compositing sidebar (w:%d, h:%d)",
 	       width, height);
       
-      sidebar_height = HILDON_HOME_WINDOW_HEIGHT - HILDON_HOME_TITLEBAR_HEIGHT;
-
+      sidebar_height = HILDON_HOME_WINDOW_HEIGHT
+	               - HILDON_HOME_TITLEBAR_HEIGHT;
       if (height != sidebar_height)
         {
           GdkPixbuf *scaled;
@@ -1073,11 +1107,21 @@ child_done_cb (GPid     pid,
 	       gint     status,
 	       gpointer user_data)
 {
-  BackgroundManager *manager;
+  BackgroundManager *manager = user_data;
   
-  g_warning ("child done");
+  g_debug ("child (pid:%d) done (status:%d)",
+	   (int) pid,
+	   WIFEXITED (status) ? WEXITSTATUS (status)
+	                      : WIFSIGNALED (status) ? WTERMSIG (status)
+			      			     : -1);
 
-  manager = BACKGROUND_MANAGER (user_data);
+  /* either the user cancelled the loading or the child
+   * was killed from the outside; in any case, we use
+   * SIGTERM as a mean of emitting the "load-cancel" signal
+   */
+  if (WIFSIGNALED (status) && WTERMSIG (status) == SIGTERM)
+    g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
+  
   manager->priv->child_pid = 0;
 }
 
@@ -1087,6 +1131,7 @@ read_pipe_from_child (GIOChannel   *source,
 		      gpointer      user_data)
 {
   BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
+  BackgroundManagerPrivate *priv = manager->priv;
   GError *load_error;
   GdkPixbuf *pixbuf;
   
@@ -1113,7 +1158,7 @@ read_pipe_from_child (GIOChannel   *source,
    */
   
   load_error = NULL;
-  pixbuf = gdk_pixbuf_new_from_file (manager->priv->cache,
+  pixbuf = gdk_pixbuf_new_from_file (priv->current->cache,
 		                     &load_error);
   if (load_error)
     {
@@ -1122,23 +1167,32 @@ read_pipe_from_child (GIOChannel   *source,
     }
   else
     {
-      background_manager_write_configuration (manager);
+      if (!priv->current->is_preview)
+	{
+          background_manager_write_configuration (manager);
+	  g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+	}
+      else
+        {
+          g_signal_emit (manager, manager_signals[PREVIEW], 0, pixbuf);
+        }
 
-      g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+      priv->current->has_cache = TRUE;
+      
       g_object_unref (pixbuf);
     }
 
- finish_up:
-  if (manager->priv->bg_timeout)
+finish_up:
+  if (priv->bg_timeout)
     {
-      g_source_remove (manager->priv->bg_timeout);
-      manager->priv->bg_timeout = 0;
+      g_source_remove (priv->bg_timeout);
+      priv->bg_timeout = 0;
     }
 
-  if (manager->priv->loading_note)
+  if (priv->loading_note)
     {
-      gtk_widget_destroy(manager->priv->loading_note);
-      manager->priv->loading_note = NULL;
+      gtk_widget_destroy (priv->loading_note);
+      priv->loading_note = NULL;
     }
 
   return FALSE;
@@ -1148,6 +1202,7 @@ static void
 signal_handler (int sig)
 {
   signal (sig, SIG_DFL);
+  
   kill (getpid (), sig);
 }
 
@@ -1222,24 +1277,29 @@ show_loading_image_banner (BackgroundManager *manager)
 }
 
 static gboolean
-bg_timeout_cb (BackgroundManager * manager)
+bg_timeout_cb (gpointer data)
 {
+  BackgroundManager *manager = data;
+  
   show_loading_image_banner (manager);
 
   /* one-off operation */
   manager->priv->bg_timeout = 0;
+  
   return FALSE;
 }
 
 static void
-background_manager_create_background (BackgroundManager *manager)
+background_manager_create_background (BackgroundManager *manager,
+                                      gboolean           cancellable)
 {
   BackgroundManagerPrivate *priv;
+  BackgroundData *current;
   GPid pid;
   int parent_exit_notify[2];
   int pipe_from_child[2];
   static gboolean first_run = TRUE;
-
+  
   priv = manager->priv;
 
   /* upon first load, try to get the cached pixmap instead
@@ -1253,7 +1313,7 @@ background_manager_create_background (BackgroundManager *manager)
       GdkPixbuf *pixbuf;
       GError *load_error = NULL;
 
-      pixbuf = gdk_pixbuf_new_from_file (priv->cache, &load_error);
+      pixbuf = gdk_pixbuf_new_from_file (priv->current->cache, &load_error);
       if (load_error)
         {
           g_warning ("Unable to load background from cache: %s",
@@ -1275,18 +1335,13 @@ background_manager_create_background (BackgroundManager *manager)
   if (first_run)
     first_run = FALSE;
   else
-    priv->bg_timeout = g_timeout_add (1000, (GSourceFunc)bg_timeout_cb, manager);
-  
-  g_debug ("unlink the cache image file");
-  if (g_unlink (priv->cache) == -1)
     {
-      if (errno != ENOENT)
-        {
-	  g_warning ("Unable to remove the cache file: %s",
-	             g_strerror (errno));
-	}
+      if (cancellable)
+        priv->bg_timeout = g_timeout_add (1000, bg_timeout_cb, manager);
     }
 
+  current = priv->current;
+  
   pipe (parent_exit_notify);
   pipe (pipe_from_child);
 
@@ -1305,8 +1360,8 @@ background_manager_create_background (BackgroundManager *manager)
       close (parent_exit_notify[1]);
       close (pipe_from_child[0]);
 
-      if (priv->image_uri)
-	image = load_image_from_uri (priv->image_uri, TRUE, &err);
+      if (current->image_uri)
+	image = load_image_from_uri (current->image_uri, TRUE, &err);
 
       if (err && err->message)
 	{
@@ -1319,8 +1374,9 @@ background_manager_create_background (BackgroundManager *manager)
 	  goto close_channel;
 	}
 
-      pixbuf = composite_background (image, &(priv->color),
-				     priv->mode,
+      pixbuf = composite_background (image,
+                                     &(current->color),
+				     current->mode,
 				     priv->sidebar,
 				     priv->titlebar,
 				     &err);
@@ -1344,15 +1400,20 @@ background_manager_create_background (BackgroundManager *manager)
 
       g_debug ("saving composited background");
       
-      /* FIXME: the actual saving of the file to the flash storage is
-       * slow (depending on the size of the image; for the default bacgrounds
-       * it is from 9 to 25s)
+      /* FIXME: the actual saving of the file to the flash storage
+       * is slow (depending on the size of the image; for the default
+       * backgrounds it is from 9 to 25s)
        *
-       * Perhaps we could use the pipe to send the pixbuf data from the child
-       * to the parent and so make it possible to load the background before
-       * while the child is working on the save.
+       * Perhaps we could use the pipe to send the pixbuf data from the
+       * child to the parent and so make it possible to load the background
+       * before while the child is working on the save, or we could get
+       * the XID from the desktop window and set the background ourselves
+       * in the parent while saving the file in the child process.  this
+       * opens a whole new can of worms, though, because we need to block
+       * the UI to avoid the user setting a new background while the
+       * child process is still saving the file.
        */
-      save_image_to_file (pixbuf, priv->cache, &err);
+      save_image_to_file (pixbuf, current->cache, &err);
 
       if (err && err->message)
 	{
@@ -1368,7 +1429,7 @@ background_manager_create_background (BackgroundManager *manager)
 	  g_object_unref (pixbuf);
 	}
 
-    close_channel:
+close_channel:
       /* we're done, so we close the pipe and let
        * the parent process know that we finished
        */
@@ -1381,7 +1442,7 @@ background_manager_create_background (BackgroundManager *manager)
       GIOChannel *channel;
 
       g_debug ("Child spawned (pid %d)...", pid);
-      manager->priv->child_pid = pid;
+      priv->child_pid = pid;
 
       close (parent_exit_notify[0]);
       close (pipe_from_child[1]);
@@ -1440,8 +1501,25 @@ background_manager_class_init (BackgroundManagerClass *klass)
 		  G_STRUCT_OFFSET (BackgroundManagerClass, changed),
 		  NULL, NULL,
 		  g_cclosure_marshal_VOID__POINTER,
-		  G_TYPE_NONE,
-		  1, G_TYPE_POINTER);
+		  G_TYPE_NONE, 1,
+		  G_TYPE_POINTER);
+  manager_signals[PREVIEW] =
+    g_signal_new ("preview",
+		  G_TYPE_FROM_CLASS (klass),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (BackgroundManagerClass, preview),
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__POINTER,
+		  G_TYPE_NONE, 1,
+		  G_TYPE_POINTER);
+  manager_signals[LOAD_CANCEL] =
+    g_signal_new ("load-cancel",
+		  G_TYPE_FROM_CLASS (klass),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (BackgroundManagerClass, load_cancel),
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__VOID,
+		  G_TYPE_NONE, 0);
 
   g_type_class_add_private (gobject_class, sizeof (BackgroundManagerPrivate));
 }
@@ -1456,17 +1534,12 @@ background_manager_init (BackgroundManager *manager)
   priv->screen = NULL;
   priv->is_screen_singleton = FALSE;
 
-  priv->color.red = 0;
-  priv->color.green = 0;
-  priv->color.blue = 0;
-
-  priv->image_uri = g_strdup_printf ("file://%s",
-		                     hildon_home_get_user_bg_file ());
-  priv->cache = g_build_filename (hildon_home_get_user_config_dir (),
-		                  "hildon_home_bg_user.png",
-				  NULL);
-  priv->mode = BACKGROUND_CENTERED;
-
+  priv->normal = background_data_new (FALSE);
+  priv->preview = background_data_new (TRUE);
+  
+  priv->current = priv->normal;
+  priv->is_preview_mode = FALSE;
+  
   background_manager_read_configuration (manager);
 }
 
@@ -1580,60 +1653,58 @@ background_manager_get_image_uri (BackgroundManager *manager)
 {
   g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), NULL);
 
-  return manager->priv->image_uri;
+  return manager->priv->current->image_uri;
 }
 
 void
 background_manager_set_image_uri (BackgroundManager  *manager,
 				  const gchar        *uri)
 {
-  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
-
-  g_object_ref (manager);
-
-  if (background_manager_preset_image_uri (manager, uri))
-    {
-      g_object_notify (G_OBJECT (manager), "image-uri");
-      background_manager_create_background (manager);
-      background_manager_write_configuration (manager);
-    }
-  
-  g_object_unref (manager);
-}
-
-gboolean
-background_manager_preset_image_uri (BackgroundManager  *manager,
-				     const gchar        *uri)
-{
   BackgroundManagerPrivate *priv;
-  gboolean retval = FALSE;
   
-  g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), FALSE);
-
-  g_object_ref (manager);
+  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
+  g_return_if_fail (uri != NULL);
 
   priv = manager->priv;
 
-  if (uri && g_str_equal (uri, HILDON_HOME_BACKGROUND_NO_IMAGE))
-    uri = NULL;
-  
-  if ((!priv->image_uri && uri)  ||
-      (priv->image_uri && ! uri) ||
-      (priv->image_uri && uri && !g_str_equal (uri, priv->image_uri)))
+  if (strcmp (uri, HILDON_HOME_BACKGROUND_NO_IMAGE) == 0)
     {
-      g_free (priv->image_uri);
+      if (priv->current->image_uri)
+        {
+          g_object_ref (manager);
 
-      if (uri)
-	priv->image_uri = g_strdup (uri);
-      else
-	priv->image_uri = NULL;
+          g_free (priv->current->image_uri);
+          priv->current->image_uri = NULL;
 
-      retval = TRUE;
+          if (!priv->is_preview_mode)
+            background_manager_create_background (manager, TRUE);
+
+          g_debug (G_STRLOC ": image uri set to `%s",
+                   priv->current->image_uri);
+
+          g_object_notify (G_OBJECT (manager), "image-uri");
+          g_object_unref (manager);
+        }
     }
-  
-  g_object_unref (manager);
+  else
+    {
+      if (strcmp (priv->current->image_uri, uri) != 0)
+        {
+          g_object_ref (manager);
 
-  return retval;
+          g_free (priv->current->image_uri);
+          priv->current->image_uri = g_strdup (uri);
+
+          if (!priv->is_preview_mode)
+            background_manager_create_background (manager, TRUE);
+
+          g_debug (G_STRLOC ": image uri set to `%s'",
+                   priv->current->image_uri);
+
+          g_object_notify (G_OBJECT (manager), "image-uri");
+          g_object_unref (manager);
+        }
+    }
 }
 
 void
@@ -1641,21 +1712,25 @@ background_manager_set_components (BackgroundManager *manager,
 				   const gchar       *titlebar,
 				   const gchar       *sidebar)
 {
+  BackgroundManagerPrivate *priv;
+  
   g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
 
+  priv = manager->priv;
+  
   if (titlebar && titlebar[0] != '\0')
     {
-      g_free (manager->priv->titlebar);
-      manager->priv->titlebar = g_strdup (titlebar);
+      g_free (priv->titlebar);
+      priv->titlebar = g_strdup (titlebar);
     }
 
   if (sidebar && sidebar[0] != '\0')
     {
-      g_free (manager->priv->sidebar);
-      manager->priv->sidebar = g_strdup (sidebar);
+      g_free (priv->sidebar);
+      priv->sidebar = g_strdup (sidebar);
     }
 
-  background_manager_create_background (manager);
+  background_manager_create_background (manager, FALSE);
 }
 
 G_CONST_RETURN gchar *
@@ -1663,7 +1738,7 @@ background_manager_get_cache (BackgroundManager *manager)
 {
   g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), NULL);
 
-  return manager->priv->cache;
+  return manager->priv->current->cache;
 }
 
 BackgroundMode
@@ -1671,50 +1746,31 @@ background_manager_get_mode (BackgroundManager *manager)
 {
   g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), BACKGROUND_CENTERED);
 
-  return manager->priv->mode;
+  return manager->priv->current->mode;
 }
 
 void
 background_manager_set_mode (BackgroundManager *manager,
 			     BackgroundMode     mode)
 {
-  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
-  
-  g_object_ref (manager);
-
-  if (background_manager_preset_mode (manager, mode))
-    {
-      g_object_notify (G_OBJECT (manager), "mode");
-      background_manager_create_background (manager);
-      background_manager_write_configuration (manager);
-    }
-  
-  g_object_unref (manager);
-}
-
-gboolean
-background_manager_preset_mode (BackgroundManager *manager,
-				BackgroundMode     mode)
-{
   BackgroundManagerPrivate *priv;
-  gboolean retval = FALSE;
   
-  g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), FALSE);
-  
+  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
+
   priv = manager->priv;
-  
-  if (priv->mode != mode)
+ 
+  if (priv->current->mode != mode)
     {
       g_object_ref (manager);
-      
-      priv->mode = mode;
 
+      priv->current->mode = mode;
+
+      if (!priv->is_preview_mode)
+        background_manager_create_background (manager, TRUE);
+
+      g_object_notify (G_OBJECT (manager), "mode");
       g_object_unref (manager);
-      
-      retval = TRUE;
     }
-
-  return retval;
 }
 
 void
@@ -1727,73 +1783,234 @@ background_manager_get_color (BackgroundManager *manager,
 
   priv = manager->priv;
   
-  color->red = priv->color.red;
-  color->green = priv->color.green;
-  color->blue = priv->color.blue;
+  color->red = priv->current->color.red;
+  color->green = priv->current->color.green;
+  color->blue = priv->current->color.blue;
 }
 
 void
 background_manager_set_color (BackgroundManager *manager,
 			      const GdkColor    *color)
 {
+  BackgroundManagerPrivate *priv;
+  
   g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
   g_return_if_fail (color != NULL);
 
-  g_object_ref (manager);
-
-  if (background_manager_preset_color (manager, color))
-    {
-      g_object_notify (G_OBJECT (manager), "color");
-      background_manager_create_background (manager);
-      background_manager_write_configuration (manager);
-    }
-  
-  g_object_unref (manager);
-}
-
-gboolean
-background_manager_preset_color (BackgroundManager *manager,
-				 const GdkColor    *color)
-{
-  BackgroundManagerPrivate *priv;
-  gboolean retval = FALSE;
-  
-  g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), FALSE);
-  g_return_val_if_fail (color != NULL, FALSE);
-
   priv = manager->priv;
-
-  g_object_ref (manager);
-
-  if ( priv->color.red != color->red     || 
-       priv->color.green != color->green ||
-       priv->color.blue != color->blue)
-    {
-      priv->color.red = color->red;
-      priv->color.green = color->green;
-      priv->color.blue = color->blue;
-
-      retval = TRUE;
-    }
   
-  g_object_unref (manager);
+  if ((priv->current->color.red != color->red) ||
+      (priv->current->color.green != color->green) ||
+      (priv->current->color.blue != color->blue))
+    {
+      g_object_ref (manager);
 
-  return retval;
+      priv->current->color.red = color->red;
+      priv->current->color.green = color->green;
+      priv->current->color.blue = color->blue;
+
+      if (!priv->is_preview_mode)
+        background_manager_create_background (manager, TRUE);
+
+      g_object_notify (G_OBJECT (manager), "color");
+      g_object_unref (manager);
+    }
 }
 
 void
-background_manager_apply_preset (BackgroundManager * manager)
+background_manager_push_preview_mode (BackgroundManager *manager)
+{
+  BackgroundManagerPrivate *priv;
+  
+  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
+
+  priv = manager->priv;
+  if (!priv->is_preview_mode)
+    {
+      g_debug (G_STRLOC ": in preview mode - image: %s",
+               priv->current->image_uri);
+      
+      background_manager_discard_preview (manager, FALSE);
+
+      priv->current = priv->preview;
+      priv->is_preview_mode = TRUE;
+    }
+}
+
+void
+background_manager_pop_preview_mode (BackgroundManager *manager)
+{
+  BackgroundManagerPrivate *priv;
+  
+  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
+
+  priv = manager->priv;
+  if (priv->is_preview_mode)
+    {
+      priv->current = priv->normal;
+      priv->is_preview_mode = FALSE;
+
+      g_debug ("%s: out of preview mode - image: %s",
+               G_STRLOC,
+               priv->current->image_uri);
+    }
+}
+
+gboolean
+background_manager_apply_preview (BackgroundManager *manager)
+{
+  BackgroundManagerPrivate *priv;
+  BackgroundData *preview, *normal;
+  gboolean changed = FALSE;
+  
+  g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), FALSE);
+
+  priv = manager->priv;
+  
+  if (!priv->is_preview_mode)
+    {
+      g_warning ("Attempting to save the preview settings but we are not in "
+                 "preview mode.  Use background_manager_push_preview_mode() "
+                 "to enable preview mode.");
+      return FALSE;
+    }
+  
+  g_object_ref (manager);
+
+  preview = priv->preview;
+  normal = priv->normal;
+
+  g_debug (G_STRLOC ": preview: [%s] normal: [%s]",
+           preview->image_uri,
+           normal->image_uri);
+  if (((preview->image_uri == NULL) && (normal->image_uri != NULL)) ||
+      ((preview->image_uri != NULL) && (normal->image_uri == NULL)) ||
+      (strcmp (preview->image_uri, normal->image_uri) != 0))
+    {
+      g_free (normal->image_uri);
+      normal->image_uri = g_strdup (preview->image_uri);
+      
+      g_object_notify (G_OBJECT (manager), "image-uri");
+     
+      g_debug (G_STRLOC ": image_uri changed");
+      changed = TRUE;
+    }
+
+  if (preview->mode != normal->mode)
+    {
+      normal->mode = preview->mode;
+      
+      g_object_notify (G_OBJECT (manager), "mode");
+      
+      g_debug (G_STRLOC ": mode changed");
+      changed = TRUE;
+    }
+
+  if ((preview->color.red != normal->color.red) ||
+      (preview->color.green != normal->color.green) ||
+      (preview->color.blue != normal->color.blue))
+    {
+      normal->color.red = preview->color.red;
+      normal->color.green = preview->color.green;
+      normal->color.blue = preview->color.blue;
+
+      g_object_notify (G_OBJECT (manager), "color");
+
+      g_debug (G_STRLOC ": color changed");
+      changed = TRUE;
+    }
+
+  if (changed)
+    {
+      priv->current = priv->normal;
+      
+      if (!preview->has_cache)
+        background_manager_create_background (manager, FALSE);
+      else
+        {
+          if (g_unlink (normal->cache) == -1)
+            {
+              if (errno != ENOENT)
+                {
+                  g_warning ("Unable to delete the cached background image: %s",
+                             g_strerror (errno));
+                }
+            }
+
+          if (g_rename (preview->cache, normal->cache) == -1)
+            {
+              if (errno != ENOENT)
+                {
+                  g_warning ("Unable to move the cached preview image: %s",
+                             g_strerror (errno));
+                }
+            }
+
+         g_debug (G_STRLOC ": renamed the preview cache");
+       }
+
+      background_manager_write_configuration (manager);
+    }
+
+  g_object_unref (manager);
+
+  return changed;
+}
+
+void
+background_manager_update_preview (BackgroundManager *manager)
 {
   g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
 
-  g_object_ref (manager);
+  if (!manager->priv->is_preview_mode)
+    {
+      g_warning ("Attempting to show the preview background but we are not "
+                 "in preview mode. Use background_manager_push_preview_mode() "
+                 "before showing the preview.");
+      return;
+    }
 
-  g_object_notify (G_OBJECT (manager), "color");
-  g_object_notify (G_OBJECT (manager), "mode");
-  g_object_notify (G_OBJECT (manager), "image-uri");
+  background_manager_create_background (manager, TRUE);
+}
+
+void
+background_manager_discard_preview (BackgroundManager *manager,
+                                    gboolean           reload)
+{
+  BackgroundManagerPrivate *priv;
+  BackgroundData *preview, *normal;
   
-  background_manager_create_background (manager);
-  background_manager_write_configuration (manager);
+  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
+
+  priv = manager->priv;
+
+  preview = priv->preview;
+  normal = priv->normal;
   
-  g_object_unref (manager);
+  g_free (preview->image_uri);
+  preview->image_uri = g_strdup (normal->image_uri);
+
+  preview->mode = normal->mode;
+
+  preview->color.red = normal->color.red;
+  preview->color.green = normal->color.green;
+  preview->color.blue = normal->color.blue;
+
+  /* reload the old background if we had generated a preview
+   * pixmap at least once.
+   */
+  if (reload && preview->has_cache)
+    {
+      GdkPixbuf *pixbuf = gdk_pixbuf_new_from_file (normal->cache, NULL);
+      if (pixbuf)
+        {
+          g_debug (G_STRLOC ": reloading old background");
+
+          g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+
+          g_object_unref (pixbuf);
+        }
+  
+      preview->has_cache = FALSE;
+    }
 }

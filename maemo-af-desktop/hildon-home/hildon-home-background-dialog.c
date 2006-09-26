@@ -72,6 +72,41 @@
 #define HILDON_HOME_SET_BG_MODE_STRETCHED  _("home_va_set_backgr_stretched")
 #define HILDON_HOME_SET_BG_MODE_TILED      _("home_va_set_backgr_tiled") 
 
+
+static gchar *
+home_bgd_filename_to_uri (const gchar *filename)
+{
+  GError *err = NULL;
+  gchar *retval;
+  
+  retval = g_filename_to_uri (filename, NULL, &err);
+  if (err)
+    {
+      g_warning ("Unable to transform `%s' into a URI: %s",
+                 filename,
+                 err->message);
+
+      g_error_free (err);
+
+      return g_strdup (filename);
+    }
+  
+  return retval;
+}
+
+static gchar *
+home_bgd_filename_from_uri (const char *uri_str)
+{
+  GnomeVFSURI *uri;
+  gchar *retval;
+    
+  uri = gnome_vfs_uri_new (uri_str);
+  retval = gnome_vfs_uri_extract_short_name (uri);
+  gnome_vfs_uri_unref (uri);
+
+  return retval;
+}
+
 /**
  * @home_bgd_get_priority
  *
@@ -86,18 +121,19 @@
 static gint
 home_bgd_get_priority (GtkTreeModel *tree, GtkTreeIter *iter)
 {
-    gint priority = -1;
-    GValue value = { 0, };
-    GValue value_priority = { 0, };        
+  gint priority = -1;
+  GValue value = { 0, };
+  GValue value_priority = { 0, };        
+
+  gtk_tree_model_get_value(tree, iter, BG_IMAGE_PRIORITY, &value);    
+  g_value_init(&value_priority, G_TYPE_INT);
     
-    gtk_tree_model_get_value(tree, iter, BG_IMAGE_PRIORITY, &value);    
-    g_value_init(&value_priority, G_TYPE_INT);
-    
-    if (g_value_transform(&value, &value_priority)) {
-        priority = g_value_get_int(&value_priority);
+  if (g_value_transform (&value, &value_priority))
+    {
+      priority = g_value_get_int(&value_priority);
     }
 
-    return priority;
+  return priority;
 }
 
 /**
@@ -276,26 +312,26 @@ home_bgd_select_file_dialog (GtkWidget   * parent,
  * Gets file path from the background image combo box.   
  */               
 static gchar *
-home_bgd_get_filename (GtkComboBox *box, gint index)
+home_bgd_get_filename (GtkComboBox *box,
+                       gint         index)
 {        
     gchar *name = NULL;          
     GtkTreeIter iter;    
     GtkTreePath *walkthrough;    
-    GtkTreeModel *tree = gtk_combo_box_get_model(box);   
+    GtkTreeModel *tree = gtk_combo_box_get_model (box);   
     
-    walkthrough = gtk_tree_path_new_from_indices(index, -1);
+    walkthrough = gtk_tree_path_new_from_indices (index, -1);
     
-    gtk_tree_model_get_iter(tree, &iter, walkthrough);   
+    gtk_tree_model_get_iter (tree, &iter, walkthrough);   
    
-    gtk_tree_model_get(tree, &iter,
-                       BG_IMAGE_FILENAME, &name, -1);
+    gtk_tree_model_get (tree, &iter,
+                        BG_IMAGE_FILENAME, &name,
+                        -1);
 
-    if (walkthrough != NULL) 
-    {
-        gtk_tree_path_free(walkthrough);     
-    }    
+    if (walkthrough) 
+      gtk_tree_path_free (walkthrough);    
 
-    return name;         
+    return name;
 }        
 
 /**
@@ -309,59 +345,138 @@ home_bgd_get_filename (GtkComboBox *box, gint index)
  *       
  * Applies dialog values to Home.   
  */               
-static gboolean
-home_bgd_apply (GtkWidget * img_combo,
-		GtkWidget * mode_combo,
-		GtkWidget * color_button)
+static void
+home_bgd_apply (GtkWidget *img_combo,
+		GtkWidget *mode_combo,
+		GtkWidget *color_button)
 {
-  BackgroundManager * bm = background_manager_get_default();
-  gboolean changed = FALSE;
+  BackgroundManager *manager = background_manager_get_default ();
   
   if (img_combo)
     {
-      gint active_index = gtk_combo_box_get_active(GTK_COMBO_BOX(img_combo));
+      gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (img_combo));
+      
+      if (active != -1)
+        {
+          gchar *filename = home_bgd_get_filename (GTK_COMBO_BOX (img_combo),
+                                                   active);
+          gchar *uri = home_bgd_filename_to_uri (filename);
 
-      if (active_index != -1) 
-	{       
-	  gchar *uri = home_bgd_get_filename (GTK_COMBO_BOX (img_combo),
-					      active_index);
+          g_debug ("selected index %d, [%s]", active, uri);
 
-	  g_debug ("selected index %d, [%s]", active_index, uri);
-	
-	  changed |= background_manager_preset_image_uri (bm, uri);
-	  g_free (uri);
-	}
+          background_manager_set_image_uri (manager, uri);
+
+          g_free (uri);
+          g_free (filename);
+        }
     }
 
   if (mode_combo)
     {
-      gint active_index = gtk_combo_box_get_active(GTK_COMBO_BOX(mode_combo));
+      gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (mode_combo));
 
-      if(active_index < 0)
-	{
-	  active_index = BACKGROUND_CENTERED;
-	}
+      if (active < 0)
+        {
+          active = BACKGROUND_CENTERED;
+        }
 
-      changed |= background_manager_preset_mode (bm, active_index);
+      background_manager_set_mode (manager, (BackgroundMode) active);
     }
 
   if (color_button)
     {
-      GdkColor * color = 
-	hildon_color_button_get_color(HILDON_COLOR_BUTTON (color_button));
+      GdkColor *color;
 
-      changed |= background_manager_preset_color (bm, color);
+      color =
+        hildon_color_button_get_color (HILDON_COLOR_BUTTON (color_button));
+
+      background_manager_set_color (manager, color);
     }
-
-  if (changed)
-    background_manager_apply_preset (bm);
-
-  return changed;
+ 
+  background_manager_apply_preview (manager);
 }
 
+static void
+home_bgd_preview (GtkWidget *img_combo,
+                  GtkWidget *mode_combo,
+                  GtkWidget *color_button)
+{
+  BackgroundManager *manager = background_manager_get_default ();
+  
+  if (img_combo)
+    {
+      gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (img_combo));
+      
+      if (active != -1)
+        {
+          gchar *filename = home_bgd_get_filename (GTK_COMBO_BOX (img_combo),
+                                                   active);
+          gchar *uri = home_bgd_filename_to_uri (filename);
+
+          g_debug ("selected index %d, [%s]", active, uri);
+
+          background_manager_set_image_uri (manager, uri);
+
+          g_free (uri);
+          g_free (filename);
+        }
+    }
+
+  if (mode_combo)
+    {
+      gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (mode_combo));
+
+      if (active < 0)
+        {
+          active = BACKGROUND_CENTERED;
+        }
+
+      background_manager_set_mode (manager, (BackgroundMode) active);
+    }
+
+  if (color_button)
+    {
+      GdkColor *color;
+
+      color =
+        hildon_color_button_get_color (HILDON_COLOR_BUTTON (color_button));
+
+      background_manager_set_color (manager, color);
+    }
+  
+  background_manager_update_preview (manager);
+}
+
+static void
+home_bgd_cancel (void)
+{
+  g_debug ("cancel background selection");
+
+  background_manager_discard_preview (background_manager_get_default (), TRUE);
+}
+
+static void
+home_bgd_load_cancel_cb (BackgroundManager *manager,
+                         gpointer           data)
+{
+#if 0
+  g_debug ("cancel background loading");
+
+  background_manager_discard_preview (background_manager_get_default (), FALSE);
+#endif
+}
+
+static void
+home_bgd_destroy_cb (GtkWidget *widget,
+                     gpointer   data)
+{
+  g_signal_handlers_disconnect_by_func (background_manager_get_default (),
+                                        G_CALLBACK (home_bgd_load_cancel_cb),
+                                        NULL);
+}
 
 /**
- * @home_bgd_respondse_cb
+ * @home_bgd_response_cb
  *
  * @param dialog parent widget
  * @param arg event that caused the call
@@ -372,11 +487,13 @@ home_bgd_apply (GtkWidget * img_combo,
 
 typedef struct 
 {
-  GtkWidget * img_combo;
-  GtkWidget * mode_combo;
-  GtkWidget * color_button;
-  gboolean    applied;
-  gboolean    built_in;
+  GtkWidget *img_combo;
+  GtkWidget *mode_combo;
+  GtkWidget *color_button;
+  
+  guint applied    : 1;
+  guint built_in   : 1;
+  guint is_changed : 1;
 } response_data;
 
 static void
@@ -384,7 +501,7 @@ home_bgd_response_cb (GtkWidget * dialog,
 		      gint        arg,
 		      gpointer    data)
 {
-  response_data * d = (response_data*)data;
+  response_data *d = data;
   
   GtkComboBox *img_combo = GTK_COMBO_BOX(d->img_combo);
   
@@ -396,28 +513,18 @@ home_bgd_response_cb (GtkWidget * dialog,
       break;
     case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
       g_signal_stop_emission_by_name (dialog, "response");
-      d->applied |= home_bgd_apply (d->img_combo,
-				    d->mode_combo,
-				    d->color_button);
+      home_bgd_preview (d->img_combo, d->mode_combo, d->color_button);
+      break;
+    case GTK_RESPONSE_OK:
+      home_bgd_apply (d->img_combo, d->mode_combo, d->color_button);
+      break;
+    case GTK_RESPONSE_CANCEL:
+      home_bgd_cancel ();
       break;
     default:
       break;
     }
 }
-
-static gchar *
-home_bgd_get_filename_from_uri (const char * uri_str)
-{
-    GnomeVFSURI *uri;
-    gchar * retval;
-    
-    uri = gnome_vfs_uri_new (uri_str);
-    retval = gnome_vfs_uri_extract_short_name(uri);
-    gnome_vfs_uri_unref (uri);
-
-    return retval;
-}
-
 
 /**
  * @home_bgd_dialog_run
@@ -448,7 +555,7 @@ home_bgd_dialog_run (GtkWindow * parent)
   
   /* Image Combobox Widgets */
   GtkCellRenderer * renderer; 
-  GtkTreeModel    * combobox_contents;
+  GtkListStore    * combobox_contents;
   GtkTreeIter       iterator;
   GDir            * bg_image_desc_base_dir;
   GError          * error = NULL;
@@ -465,64 +572,60 @@ home_bgd_dialog_run (GtkWindow * parent)
     HILDON_HOME_SET_BG_MODE_STRETCHED
   };
   
+  response_data     resp_data = {
+    NULL, NULL, NULL,
+    FALSE, FALSE, FALSE
+  };
   gint              combobox_active = -1;
   gint              active_count = 0;
   GdkColor          current_color;
   
-  BackgroundManager * bm = background_manager_get_default ();
+  BackgroundManager *bm = background_manager_get_default ();
 
-  /* original values (needed to handle cancel) */
-  GdkColor          orig_color;
-  gchar           * orig_uri;
-  BackgroundMode    orig_mode;
+  background_manager_push_preview_mode (bm);
 
-  background_manager_get_color (bm, & orig_color);
-  orig_uri  = g_strdup (background_manager_get_image_uri (bm));
-  orig_mode = background_manager_get_mode (bm);
+  g_signal_connect (bm, "load-cancel",
+                    G_CALLBACK (home_bgd_load_cancel_cb),
+                    NULL);
 
   /* data for the response callback */
-  response_data resp_data;
   resp_data.applied = FALSE;
-  resp_data.built_in  = FALSE;
+  resp_data.built_in = FALSE;
   
   bg_image_desc_base_dir = g_dir_open (HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
 				       0,
 				       &error);
 
-  combobox_contents
-    = GTK_TREE_MODEL (gtk_list_store_new (3,
-					  /*localised descriptive name */
-					  G_TYPE_STRING,
-					  /* image file path &name */
-					  G_TYPE_STRING,
-					  /* image priority */
-					  G_TYPE_INT));
+  combobox_contents =
+    gtk_list_store_new (3,
+		        G_TYPE_STRING, /*localised descriptive name */
+			G_TYPE_STRING, /* image file path & name */
+			G_TYPE_INT     /* image priority */);
 
   /* No background file option */
-  gtk_list_store_append(GTK_LIST_STORE(combobox_contents), &iterator);
+  gtk_list_store_append (combobox_contents, &iterator);
+  gtk_list_store_set (combobox_contents,
+		      &iterator,
+		      BG_IMAGE_NAME, HILDON_HOME_SET_BG_IMAGE_NONE,
+		      BG_IMAGE_FILENAME, NULL,
+		      BG_IMAGE_PRIORITY, 0, -1);
   
-  gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
-		     &iterator,
-		     BG_IMAGE_NAME, HILDON_HOME_SET_BG_IMAGE_NONE,
-		     BG_IMAGE_FILENAME, NULL,
-		     BG_IMAGE_PRIORITY, 0, -1);
-  
-  while ( bg_image_desc_base_dir && 
-	  (image_desc_file = g_dir_read_name (bg_image_desc_base_dir)) )
+  while (bg_image_desc_base_dir && 
+	 (image_desc_file = g_dir_read_name (bg_image_desc_base_dir)) )
     {
-      if (g_str_has_suffix (image_desc_file, 
-			   BG_IMG_INFO_FILE_TYPE)) 
+      if (g_str_has_suffix (image_desc_file, BG_IMG_INFO_FILE_TYPE)) 
         {
-	  gchar    * image_name = NULL;
-	  gchar    * image_path = NULL;
-	  gchar    * filename   = NULL;
-	  GKeyFile * kfile;
+	  gchar *image_name = NULL;
+	  gchar *image_path = NULL;
+	  gchar *filename   = NULL;
+	  const gchar *current_uri;
+          GKeyFile *kfile;
                 
 	  error = NULL;
 
 	  filename = g_build_filename (HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
-				      image_desc_file,
-				      NULL);
+				       image_desc_file,
+				       NULL);
 
 	  g_debug ("loading image descrition file [%s]", filename);
 	  
@@ -533,7 +636,9 @@ home_bgd_dialog_run (GtkWindow * parent)
 					  G_KEY_FILE_NONE,
 					  &error))
             {
-	      g_debug ("Failed to read file: %s\n", image_desc_file);
+	      g_debug ("Failed to read file: %s: %s\n",
+                       image_desc_file,
+                       error->message ? error->message : "Unknown");
 
 	      if (error)
 		g_error_free (error);
@@ -551,12 +656,16 @@ home_bgd_dialog_run (GtkWindow * parent)
 					      BG_DESKTOP_IMAGE_NAME,
 					      &error);
 
-	  g_debug ("image name [%s]", image_name);
+	  g_debug ("image name [%s]", image_name ? image_name : "None");
 	  
 	  if (!image_name || error)
             {
 	      if (error)
-		g_error_free (error);
+                {
+                  g_warning ("Unable to read image name: %s",
+                             error->message);
+                  g_error_free (error);
+                }
 
 	      g_key_file_free (kfile);
 
@@ -573,10 +682,14 @@ home_bgd_dialog_run (GtkWindow * parent)
 	  if (!image_path || error)
             {
 	      if (error)
-		g_error_free (error);
-
-	      g_key_file_free (kfile);
+                {
+                  g_warning ("Unable to read image filename: %s",
+                             error->message);
+		  g_error_free (error);
+                }
+              
 	      g_free (image_name);
+	      g_key_file_free (kfile);
 
 	      continue;
             }
@@ -588,21 +701,37 @@ home_bgd_dialog_run (GtkWindow * parent)
             
 	  if (error)
             {
+              g_warning ("Unable to read image priority: %s",
+                         error->message);
+              
 	      g_error_free (error);
-	      error = NULL;
-	      image_order = HOME_BG_IMG_DEFAULT_PRIORITY;
+	      
+              error = NULL;
+	      
+              image_order = HOME_BG_IMG_DEFAULT_PRIORITY;
             }
-                                
+          
 	  active_count++;
 
-	  const gchar * current_uri = background_manager_get_image_uri (bm);
+	  current_uri = background_manager_get_image_uri (bm);
 
 	  if (current_uri)
 	    {
-	      const gchar * current_path = current_uri;
+	      gchar *current_path;
+              GError *error = NULL;
 
-	      if (strstr (current_uri, "file://"))
-		current_path += 7;
+              current_path = g_filename_from_uri (current_uri, NULL, &error);
+              if (error)
+                {
+                  g_warning ("Unable to get the filename from uri `%s': %s",
+                             current_uri,
+                             error->message);
+                  
+                  g_error_free (error);
+
+                  /* we let the background manager deal with it */
+                  current_path = g_strdup (current_uri);
+                }
 	      
 	      g_debug ("current filename [%s], processing [%s]",
 		       current_path, image_path);
@@ -613,20 +742,20 @@ home_bgd_dialog_run (GtkWindow * parent)
 		  g_debug ("current BG uses built in image");
 		  resp_data.built_in = TRUE;
 		}
+
+              g_free (current_path);
 	    }
 	  
-	  gtk_list_store_append (GTK_LIST_STORE
-				 (combobox_contents),
-				 &iterator);
+	  gtk_list_store_append (combobox_contents, &iterator);
 
-	  gtk_list_store_set(GTK_LIST_STORE(combobox_contents),
-			&iterator,
-			BG_IMAGE_NAME,
-			/* work around a strange behavior of gettext for
-			 * empty strings */
-			((image_name && *image_name)?_(image_name):image_path),
-			BG_IMAGE_FILENAME, image_path,
-			BG_IMAGE_PRIORITY, image_order, -1);
+	  gtk_list_store_set (combobox_contents, &iterator,
+			      BG_IMAGE_NAME,
+			      /* work around a strange behavior of gettext for
+			       * empty strings */
+			      ((image_name && *image_name) ? _(image_name) : image_path),
+			      BG_IMAGE_FILENAME, image_path,
+			      BG_IMAGE_PRIORITY, image_order,
+                              -1);
             
 	  g_key_file_free (kfile);
 	  g_free (image_name);
@@ -634,7 +763,8 @@ home_bgd_dialog_run (GtkWindow * parent)
         } 
       else /* suffix test */ 
         {
-	  g_debug ( "Skipping non-.desktop file: %s ",image_desc_file);
+	  g_debug ("Skipping non-.desktop file: %s",
+                   image_desc_file);
         }
 
     } /* while */
@@ -644,30 +774,29 @@ home_bgd_dialog_run (GtkWindow * parent)
       g_dir_close (bg_image_desc_base_dir);             
     }
 	      
-  gtk_tree_sortable_set_sort_column_id(GTK_TREE_SORTABLE(combobox_contents),
-				       BG_IMAGE_PRIORITY, 
-				       GTK_SORT_ASCENDING);
+  gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (combobox_contents),
+				        BG_IMAGE_PRIORITY, 
+				        GTK_SORT_ASCENDING);
     
   if (resp_data.built_in == FALSE)
     {
       /* custom image is used for background; we need to add it to the
        * list; this includes the 'no-background option'
        */
-      const gchar * uri = background_manager_get_image_uri (bm);
+      const gchar *uri = background_manager_get_image_uri (bm);
 
       if ( uri == NULL ||
-	   g_str_equal(uri, HILDON_HOME_BACKGROUND_NO_IMAGE)) 
+	   g_str_equal (uri, HILDON_HOME_BACKGROUND_NO_IMAGE)) 
 	{
 	  g_debug ("no background");
 	  combobox_active = 0;
 	}
       else 
 	{
-	  gchar * image_filename = home_bgd_get_filename_from_uri (uri);
+	  gchar *image_filename = home_bgd_filename_from_uri (uri);
 	  g_debug ("current background uses custom image");
 					 
-	  gtk_list_store_append (GTK_LIST_STORE(combobox_contents), 
-				 &iterator);
+	  gtk_list_store_append (combobox_contents, &iterator);
             
 	  if ((dot = g_strrstr (image_filename, ".")) &&
 	      dot != image_filename) 
@@ -677,11 +806,9 @@ home_bgd_dialog_run (GtkWindow * parent)
 
 	  g_debug ("setting [%s] [%s}", image_filename, uri);
 	  
-	  gtk_list_store_set (GTK_LIST_STORE(combobox_contents),
-			      &iterator,
+	  gtk_list_store_set (combobox_contents, &iterator,
 			      BG_IMAGE_NAME, image_filename,
-			      BG_IMAGE_FILENAME,
-			      uri,
+			      BG_IMAGE_FILENAME, uri,
 			      BG_IMAGE_PRIORITY, G_MAXINT, -1);
 
 	  g_free (image_filename);
@@ -703,12 +830,12 @@ home_bgd_dialog_run (GtkWindow * parent)
 
       g_debug ("using built-in image");
       
-      is_node = gtk_tree_model_get_iter_first(model, &iterator);
+      is_node = gtk_tree_model_get_iter_first (model, &iterator);
       while (is_node) 
 	{
-	  gchar * filename;
-	  const gchar * uri = background_manager_get_image_uri (bm);
-	  const gchar * uri_filename = uri;
+	  gchar *filename;
+	  const gchar *uri = background_manager_get_image_uri (bm);
+	  const gchar *uri_filename = uri;
 
 	  if (uri && strstr (uri, "file://"))
 	    uri_filename += 7;
@@ -736,8 +863,7 @@ home_bgd_dialog_run (GtkWindow * parent)
   dialog = 
     gtk_dialog_new_with_buttons (HILDON_HOME_SET_BG_TITLE,
 				 parent,
-				 GTK_DIALOG_MODAL |
-				 GTK_DIALOG_DESTROY_WITH_PARENT,
+				 GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 				 HILDON_HOME_SET_BG_OK,
 				 GTK_RESPONSE_OK,
 				 HILDON_HOME_SET_BG_PREVIEW,
@@ -766,7 +892,8 @@ home_bgd_dialog_run (GtkWindow * parent)
   color_button = hildon_color_button_new_with_color (&current_color);
   resp_data.color_button = color_button;
   
-  combobox_image_select = gtk_combo_box_new_with_model(combobox_contents);
+  combobox_image_select =
+    gtk_combo_box_new_with_model (GTK_TREE_MODEL (combobox_contents));
   resp_data.img_combo = combobox_image_select;
   
   if(!background_manager_get_image_uri (bm) ||
@@ -776,14 +903,13 @@ home_bgd_dialog_run (GtkWindow * parent)
       combobox_active = 0;
     }
   
-  gtk_combo_box_set_active (GTK_COMBO_BOX(combobox_image_select),
+  gtk_combo_box_set_active (GTK_COMBO_BOX (combobox_image_select),
 			    combobox_active);
   
   renderer = gtk_cell_renderer_text_new ();
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (combobox_image_select),
 			      renderer, 
 			      TRUE);
-  
   gtk_cell_layout_set_attributes (GTK_CELL_LAYOUT (combobox_image_select),
 				  renderer, "text", 
 				  BG_IMAGE_NAME, NULL);
@@ -805,7 +931,7 @@ home_bgd_dialog_run (GtkWindow * parent)
 			    background_manager_get_mode (bm));
 
   /* Hildon captions in Set Background Image dialog */
-  group = GTK_SIZE_GROUP (gtk_size_group_new( GTK_SIZE_GROUP_HORIZONTAL));
+  group = GTK_SIZE_GROUP (gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL));
   color_caption =
     hildon_caption_new (group,
 			HILDON_HOME_SET_BG_COLOR_TITLE,  
@@ -825,23 +951,20 @@ home_bgd_dialog_run (GtkWindow * parent)
 			NULL,
 			HILDON_CAPTION_OPTIONAL);
      
-  gtk_box_pack_start (GTK_BOX (hbox_color),
-		      color_caption,
+  gtk_box_pack_start (GTK_BOX (hbox_color), color_caption,
 		      FALSE, FALSE, 0); 
-  gtk_box_pack_start (GTK_BOX (hbox_image), 
-		      image_caption,
+  gtk_box_pack_start (GTK_BOX (hbox_image), image_caption,
 		      TRUE, TRUE, 0);
-  gtk_box_pack_start (GTK_BOX (hbox_mode),
-		      mode_caption,
+  gtk_box_pack_start (GTK_BOX (hbox_mode), mode_caption,
 		      TRUE, TRUE, 0);
 
-  gtk_box_set_spacing(GTK_BOX(GTK_DIALOG(dialog)->vbox), 10);
+  gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 10);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox_color);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox_image);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), hbox_mode);
 
-  hildon_caption_set_child_expand( HILDON_CAPTION (image_caption), TRUE);
-  hildon_caption_set_child_expand( HILDON_CAPTION (mode_caption), TRUE);
+  hildon_caption_set_child_expand (HILDON_CAPTION (image_caption), TRUE);
+  hildon_caption_set_child_expand (HILDON_CAPTION (mode_caption), TRUE);
 
   /* Let matchbox take care of the positioning */
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_NONE);
@@ -850,32 +973,14 @@ home_bgd_dialog_run (GtkWindow * parent)
   g_signal_connect (G_OBJECT (dialog), "response", 
 		    G_CALLBACK (home_bgd_response_cb), 
 		    &resp_data);
+  g_signal_connect (dialog, "destroy",
+                    G_CALLBACK (home_bgd_destroy_cb),
+                    NULL);
 
-    
-  switch (gtk_dialog_run (GTK_DIALOG(dialog)))
-    {
-    case GTK_RESPONSE_OK:	
-      home_bgd_apply (combobox_image_select,
-		      combobox_mode_select,
-		      color_button);
-      break;
-      
-    case GTK_RESPONSE_CANCEL:
-      if (resp_data.applied)
-	{
-	  background_manager_preset_mode (bm, orig_mode);
-	  background_manager_preset_color (bm, &orig_color);
-	  background_manager_preset_image_uri (bm, orig_uri);
-
-	  background_manager_apply_preset (bm);
-	}
-      break;
-      
-    default:	    
-      break;
-    }
-  
+  gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
-  g_free (orig_uri);
+
+  background_manager_pop_preview_mode (bm);
+  
   return TRUE;
 } 
