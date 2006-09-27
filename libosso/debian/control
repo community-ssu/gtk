@@ -38,5 +38,5 @@ Description: Libosso D-BUS configuration settings
 Package: libosso1-dbg
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-dbus-conf
+Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-dbus-conf, libosso1 (>= ${Source-Version})
 Description: Libosso libraries (with debug info)
