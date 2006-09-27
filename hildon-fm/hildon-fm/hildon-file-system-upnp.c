@@ -44,7 +44,7 @@ G_DEFINE_TYPE (HildonFileSystemUpnp,
                hildon_file_system_upnp,
                HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
 
-static const gchar *root_failed_message = "Unable to connect to UPNP devices";
+static const gchar *root_failed_message = _("Unable to connect to UPNP devices");
 
 static void
 hildon_file_system_upnp_class_init (HildonFileSystemUpnpClass *klass)
