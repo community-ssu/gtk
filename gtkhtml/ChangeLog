@@ -1,3 +1,8 @@
+2006-09-27 Tomas Junnonen <tomas.junnonen@nokia.com>
+
+	* src/gtkhtml.c: Free the immulticontext
+	Fixes NB#41532
+
 2006-09-18 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* src/htmlengine-search.c, src/htmlsearch.c: Fixed crash when search
