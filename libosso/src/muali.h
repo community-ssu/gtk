@@ -93,10 +93,6 @@ typedef struct {
         /* event type, in case it is one of the pre-defined events */
         int event_type;
 
-        /* Arguments (coming or going), or NULL. Note that this is
-         * ignored in case of a vararg function. */
-        const muali_arg_t **args[];
-
         /* This can be ID of the reply or a received message. */
         long message_id;
 
@@ -105,6 +101,10 @@ typedef struct {
 
         /* muali-internal information, ignore this */
         void *muali_internal;
+
+        /* Arguments (coming or going), or NULL. Note that this is
+         * ignored in case of a vararg function. */
+        const muali_arg_t *args[];
 } muali_event_info_t;
 
 typedef void (muali_handler_t)(muali_context_t *context,
