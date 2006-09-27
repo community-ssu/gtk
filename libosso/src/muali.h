@@ -95,7 +95,7 @@ typedef struct {
 
         /* Arguments (coming or going), or NULL. Note that this is
          * ignored in case of a vararg function. */
-        const muali_arg_t *args[];
+        const muali_arg_t **args[];
 
         /* This can be ID of the reply or a received message. */
         long message_id;
