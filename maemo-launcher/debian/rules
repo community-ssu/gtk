@@ -14,6 +14,12 @@ else
 	CFLAGS += -O2
 endif
 
+ifneq (,$(findstring nohildon,$(DEB_BUILD_OPTIONS)))
+	opt_hildon :=
+else
+	opt_hildon := --enable-hildon-booster
+endif
+
 # Nasty thing due to having the upstream and debian stuff merged.
 configure: configure.ac
 	autoreconf -f -i -Wall
@@ -24,7 +30,7 @@ config.status: configure
 	
 	CFLAGS="$(CFLAGS)" ./configure \
 	  --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) \
-	  --enable-hildon-booster \
+	  $(opt_hildon) \
 	  --mandir=\$${prefix}/share/man \
 	  --prefix=/usr
 
