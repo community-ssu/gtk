@@ -1,7 +1,9 @@
 2006-09-27  Xan Lopez  <xan.lopez@nokia.com>
 
 	* hildon-fm/hildon-file-system-upnp.c: 
-	Mark string as translatable (NB#41283).
+	(root_failed_message): Removed, since it is not specified.
+	(hildon_file_system_upnp_init): Set failed_access_message to NULL instead.
+	(NB#41283).
 
 2006-09-21  Marius Vollmer  <marius.vollmer@nokia.com>
 

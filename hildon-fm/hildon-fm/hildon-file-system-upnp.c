@@ -44,8 +44,6 @@ G_DEFINE_TYPE (HildonFileSystemUpnp,
                hildon_file_system_upnp,
                HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
 
-static const gchar *root_failed_message = _("Unable to connect to UPNP devices");
-
 static void
 hildon_file_system_upnp_class_init (HildonFileSystemUpnpClass *klass)
 {
@@ -67,7 +65,7 @@ hildon_file_system_upnp_init (HildonFileSystemUpnp *device)
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
     location->fixed_title = g_strdup (_("sfil_li_shared_media"));
-    location->failed_access_message = root_failed_message;
+    location->failed_access_message = NULL;
 }
 
 static void
