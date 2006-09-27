@@ -533,7 +533,7 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
  * NEW API DEVELOPMENT - THESE ARE SUBJECT TO CHANGE!
  * muali = maemo user application library
  ******************************************************/
-
+#if 0
 inline static muali_error_t _set_handler(muali_context_t *context,
                                          const char *service,
                                          const char *object_path,
@@ -641,4 +641,4 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
         }
         return error;
 }
-
+#endif
