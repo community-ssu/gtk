@@ -1,3 +1,11 @@
+shared-mime-info (0.15-5) unstable; urgency=medium
+
+  * Fixes NB#: 34440, shared-mime-info: out-dated Makefile.in
+  * Do this by regenerating Makefile.in, config.guess, config.sub,
+    ltmain.sh, and adding autogen.sh to make this easier in the future
+
+ -- Richard Hult <richard@imendio.com>  Tue, 25 Sep 2006 15:56:42 +0200
+
 shared-mime-info (0.15-4) unstable; urgency=low
 
   * Removed documentation to avoid dependences

@@ -173,7 +173,6 @@ EXTRA_DIST = \
 	$(man_MANS)			\
 	shared-mime-info.pc.in
 
-CLEANFILES = freedesktop.org.xml
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = shared-mime-info.pc
 all: config.h
@@ -563,7 +562,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f $(CONFIG_CLEAN_FILES)
