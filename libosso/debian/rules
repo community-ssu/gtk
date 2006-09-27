@@ -79,9 +79,9 @@ install: build
 	rm -f $(CURDIR)/debian/build/usr/lib/outo/*.*a
 
 	# for the -dbg package
-	-rm -rf $(CURDIR)/debian/build/usr/lib/debug
-	-mkdir -p $(CURDIR)/debian/build/usr/lib/debug
-	-cp -vd $(CURDIR)/debian/build/usr/lib/lib*.so* $(CURDIR)/debian/build/usr/lib/debug
+#	-rm -rf $(CURDIR)/debian/build/usr/lib/debug
+#	-mkdir -p $(CURDIR)/debian/build/usr/lib/debug
+#	-cp -vd $(CURDIR)/debian/build/usr/lib/lib*.so* $(CURDIR)/debian/build/usr/lib/debug
 
 # Build architecture-independent files here.
 binary-indep: build install
@@ -106,7 +106,7 @@ binary-arch: build install
 #	dh_installinfo
 	dh_installman
 	dh_link
-	dh_strip --dbg-package="libosso1-dbg"
+	dh_strip --dbg-package=libosso1
 	dh_compress
 	dh_fixperms
 #	dh_perl
