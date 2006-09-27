@@ -606,6 +606,8 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
                           HILDON_PLUGIN_LIST_COLUMN_ACTIVE,
                           &active,
                           -1);
+
+      fprintf  (stderr, "Iterating %s\n", desktop_file);
           
       list_element = g_list_find_custom (applets,
                                          desktop_file,
@@ -643,10 +645,11 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
               n_added ++;
             }
         }
-      else if (!active && applet)
+      else if (applet)
         {
-          applets_to_remove = g_slist_append (applets_to_remove, applet);
           applets = g_list_remove (applets, applet);
+          if (!active)
+            applets_to_remove = g_slist_append (applets_to_remove, applet);
         }
       
       g_free (desktop_file);
@@ -660,10 +663,14 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
       g_signal_emit_by_name (area, "layout-changed");
     }
 
-  /* ... then remove the applets */
+  /* ... then remove the applets  which are no longer active */
   g_slist_foreach (applets_to_remove,
                    (GFunc)gtk_widget_destroy,
                    NULL);
+  /* and finally these which were not in the list */
+  g_list_foreach (applets,
+                  (GFunc)gtk_widget_destroy,
+                  NULL);
   g_slist_free (applets_to_remove);
   g_list_free (applets);
 

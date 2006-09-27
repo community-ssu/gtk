@@ -23,6 +23,7 @@
  */
 
 #include "hildon-plugin-list.h"
+#include <hildon-base-lib/hildon-base-dnotify.h>
 #include <string.h>
 #include <libintl.h>
 
@@ -298,8 +299,7 @@ hildon_plugin_list_directory_changed (HildonPluginList *list)
 
   priv = HILDON_PLUGIN_LIST_GET_PRIVATE (list);
 
-  /* FIXME Empty the list */
-
+  gtk_list_store_clear (GTK_LIST_STORE (list));
   hildon_plugin_list_populate (list);
 
 }
@@ -400,6 +400,14 @@ cleanup:
 
 }
 
+static void
+hildon_plugin_list_dnotify_callback (gchar *directory,
+                                     HildonPluginList *list)
+{
+  g_signal_emit_by_name (G_OBJECT(list), "directory-changed"); 
+}
+
+
 /* Public functions */
 
 void
@@ -416,8 +424,16 @@ hildon_plugin_list_set_directory (HildonPluginList *list,
       strcmp (directory, priv->directory))
     {
       g_object_notify (G_OBJECT (list), "directory");
+
+      if (priv->directory)
+        hildon_dnotify_remove_cb (priv->directory);
+      
       g_free (priv->directory);
       priv->directory = g_strdup (directory);
+      hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)
+                                hildon_plugin_list_dnotify_callback,
+                             priv->directory,
+                             list);
 
       g_signal_emit_by_name (G_OBJECT (list), "directory-changed");
     }

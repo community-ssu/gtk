@@ -377,6 +377,21 @@ area_layout_mode_start (HildonHomeArea *area,
 }
 
 static void
+plugin_list_directory_changed_cb (HildonPluginList *list,
+                                  HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+
+  hildon_home_area_sync_to_list (HILDON_HOME_AREA (priv->applet_area),
+                                 priv->plugin_list);
+
+  hildon_home_area_sync_from_list (
+                          HILDON_HOME_AREA (priv->applet_area),
+                          priv->plugin_list);
+}
+
+
+static void
 area_layout_mode_end (HildonHomeArea *area,
                       HildonHomeWindow   *window)
 {
@@ -433,7 +448,6 @@ area_remove (HildonHomeArea   *area,
    * layout mode it will be saved if the layout is accepted */
   if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
     {
-      fprintf (stderr, "Removed, no layout mode, saving!\n");
       gchar *filename = g_build_filename (g_getenv ("HOME"),
                                           HH_AREA_CONFIGURATION_FILE,
                                           NULL);
@@ -912,6 +926,11 @@ hildon_home_window_init (HildonHomeWindow *window)
                                     NULL);
 
   hildon_plugin_list_set_directory (priv->plugin_list, HH_DESKTOP_FILES_DIR);
+
+  g_signal_connect (G_OBJECT (priv->plugin_list), "directory-changed",
+                    G_CALLBACK (plugin_list_directory_changed_cb),
+                    window);
+                               
 }
 
 GtkWidget *

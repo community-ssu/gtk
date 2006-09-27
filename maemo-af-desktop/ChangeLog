@@ -1,3 +1,12 @@
+2006-09-27  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-plugin-list.c: Added dnotify callback to
+	  watch changes on the directory.
+	* hildon-home/hildon-applet-area.c: Handle the case where an
+	  applet is no longer in the plugin list
+	* hildon-home/hildon-home-window.c: Connect the "directory-changed"
+	  with a re-sync of the plugin list. Fixes NB#37765
+
 2006-09-27  Moises Martinez <moises.martinzes@nokia.com>
 
 	* libdesktop/hildon-log.c: 
