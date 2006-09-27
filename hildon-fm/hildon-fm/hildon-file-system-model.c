@@ -340,13 +340,14 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
 
     /* Handle pending reloads one at a time. We can now handle errors
        inside delayed_add_children, since we are called from idle and
-       we can do modifications to model. */
-  	if ( (node = g_queue_pop_head(priv->reload_list)) != NULL)
-  	{
-  	  hildon_file_system_model_delayed_add_children(model, node, TRUE);
-          GDK_THREADS_LEAVE();
-  	  return TRUE;
-  	}
+       we can do modifications to model.
+    */
+    if ( (node = g_queue_pop_head(priv->reload_list)) != NULL)
+      {
+	hildon_file_system_model_delayed_add_children(model, node, TRUE);
+	GDK_THREADS_LEAVE();
+	return TRUE;
+      }
   
     current_list = g_queue_peek_head(priv->delayed_lists);
     if (!current_list) { /* No items to insert => remove idle handler */
@@ -1223,6 +1224,16 @@ static void hildon_file_system_model_files_added(GtkFileFolder * monitor,
                                                  GSList * paths,
                                                  gpointer data)
 {
+  /* The files identified by PATHS have been created.  Normally, they
+     are children of MONITOR, but it might happen that the file
+     corresponding to MONITOR is among PATHS, too.  This happens when
+     you start monitoring a filename before it exists.
+
+     XXX - maybe this situation should be filtered out by the GnomeVFS
+           GtkFileSystem backend, depending on what guarantees the
+           "files-added" signal makes.
+  */
+
   if (paths != NULL)
   {
     GNode *node;
@@ -1292,21 +1303,34 @@ static void hildon_file_system_model_folder_finished_loading(GtkFileFolder *moni
   handle_possibly_finished_node(node);
 }
 
-static GNode
-    *hildon_file_system_model_search_path_internal
-    (GNode * parent_node, const GtkFilePath * path, gboolean recursively)
+static GNode *
+hildon_file_system_model_search_path_internal (GNode *parent_node,
+					       const GtkFilePath *path,
+					       gboolean recursively)
 {
     const gchar *folder_string, *test_string;
     GNode *node;
+    HildonFileSystemModelNode *model_node;
 
     g_assert(parent_node != NULL && path != NULL);
 
     /* Not allocated dynamically */
     folder_string = gtk_file_path_get_string(path);
     
+    /* First consider the parent itself.
+     */
+    model_node = parent_node->data;
+    if (model_node)
+      {
+	test_string = gtk_file_path_get_string (model_node->path);
+	if (_hildon_file_system_compare_ignore_last_separator (folder_string,
+							       test_string))
+	  return parent_node;
+      }
+    
     for (node = g_node_first_child(parent_node); node;
          node = g_node_next_sibling(node)) {
-        HildonFileSystemModelNode *model_node = node->data;
+        model_node = node->data;
 
         test_string = gtk_file_path_get_string(model_node->path);
 
