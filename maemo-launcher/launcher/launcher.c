@@ -617,6 +617,12 @@ sigs_restore(void)
 }
 
 static void
+sigs_interrupt(int flag)
+{
+  siginterrupt(SIGCHLD, flag);
+}
+
+static void
 env_init(void)
 {
   unsetenv("LD_BIND_NOW");
@@ -777,10 +783,10 @@ main(int argc, char *argv[])
     int errno_accept;
 
     /* Accept a new invokation. */
-    siginterrupt(SIGCHLD, 1);
+    sigs_interrupt(1);
     sd = accept(fd, NULL, NULL);
     errno_accept = errno;
-    siginterrupt(SIGCHLD, 0);
+    sigs_interrupt(0);
 
     /* Handle signals received. */
     if (sigchild_catched)
