@@ -1,3 +1,159 @@
+maemo-af-desktop (2.9.91-1) unstable; urgency=low
+
+  Applied fixes to background manager:
+  * all the changes done inside the background selection dialog are
+    contained in a "preview mode";
+  * if the user changes something and then taps "Preview" the background
+    image is recomposited with the preview settings, applied to the
+    desktop using a "preview" signal, and the result is cached inside 
+    a "preview cache" file;
+    + if the user taps "Cancel" all the changes done in preview mode
+      are discarded and the previous cache file is reloaded;
+    + if the user taps "Okay" the preview cache file is renamed to the
+
+  * hildon-home/hildon-plugin-list.c: Sort the list by names
+
+  * hildon-navigator/hn-app-switcher.c: Added a timeout after a
+    button_press during which we do not react to such events
+    Fixes: NB#41030
+
+  * hildon-home/background-manager.c: Fixed CENTER mode
+
+  * hildon-home/background-manager.c: Fixed a few problems
+    with the different modes
+
+  * libdesktop/hildon-log.c: Code cleanup.
+  * Makefile.am: added libdesktop.a
+  * hildon-navigator/Makefile.am: removed libdesktop.a
+
+  * hildon-status-bar/hildon-log.[ch]: Removed.
+  * Makefile.am: Added libdesktop/hildon-log.[ch]
+
+  * hildon-navigator/regenerate_config.c: Improved
+
+  Applied fix to "AF-BAT:Able to launch the Task launcher using the
+  shortcuts in some cases when it is not possible from device".
+  Fixes: NB#37594
+  * hn-wm.c:
+    - Added tracking of the "_MB_NUM_MODAL_WINDOWS_PRESENT" MB
+    property
+    - Do not trigger an shortcut if there is a system modal window
+  * hn-app-switcher.c: Do not handle HOME key when there is a system
+    modal window
+
+  * hildon-home/hildon-home-area.c:
+    - when selecting applets, add all applets first, then go to layout
+      mode if required, then remove the applets.
+  * hildon-home/hildon-home-window.c: Added layout mode banner
+  * hildon-home/hildon-home-titlebar.c:
+    - changed order of Tools submenu
+    - set name layout mode menu to get proper positioning
+
+  * hildon-navigator/regenerate_config.c:
+    - New helper program for postrm tn's plugin
+          packages. Fixes: NB#36990
+
+  * hildon-navigator/hildon-navigator-window.c:
+        - Fixed initialization of hildon_dnotify_handler
+
+  Applied fix to "Shortcuts requiring modifiers fail to work most of the
+  time". Fixes: NB#37546
+  * hildon-navigator/hn-keys.c: Only return the shortcut on keypress
+  * hildon-navigator/hn-wm-c: Apply the corresponding action on keyrelease
+
+  Applied fix to "        after setting ctrl+alt+"Russian char" for
+  shortcut, in "finland" layout mode, can not assign any
+  ctrl+alt+char shortcut any more". Fixes NB# 40214
+  * hildon-navigator/hn-keys.c:
+    - do not grab keycode = 0 even with a mask
+    - do not return after first mask parsing failure
+    - _new should return NULL, not FALSE
+
+  * install_sbapplet.sh: Added script to help sb's 
+    plugins packages install its plugin.
+  * debian/maemo_af_desktop.install: Added entry
+    for install_sbapplet.sh
+
+  * hildon-navigator/hn-wm.c: return DBUS_HANDLER_RESULT_HANDLED
+    after handling the "this application died" message. Fixes NB#32556
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - Forced to close statusbar's panel extension when 
+    pressed full screen hardkey. Fixes: NB#40771
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+    - Set always sensitiveness of extension button. Fixes: NB#40831
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - Implemented dbus method for communicating with
+    cpa-navigatorapplet. Required by NB #31079.
+
+  * hildon-status-bar/hildon-status-bar-main.c: 
+  * hildon-status-bar/hildon-status-bar-main.h:
+    Send dbus signal when sb's conditional or 
+    temporal plugin fulfill its  condition.
+
+  * hildon-home/home-applet-handler.c:
+    - do not the handler to the hash table until we are sure we could
+      open the applet
+  * hildon-home/hildon-home-titlebar.c: Made the Applet settings menu item
+    disabled by default
+
+  * hildon-home/hildon-home-background-dialog.c: set spacing to the
+    dialog vbox
+
+  * hildon-home/background-manager.c: Set the first_run flag to FALSE
+    even when the cache could not be read
+
+  * hildon-home/hildon-home-applet.c: Do not use g_error because it aborts
+
+  * hildon-home/hildon-area.[ch]:
+    - Added a add/remove handler
+    to set the layout as having changed in these cases
+    - _save_configuration now returns an error code so the flash_full
+    not can be displayed when appropriate
+  * hildon-home/hildon-window.c: reflect these changes
+
+  * libhildonmenu/hildon-thumb-menu-item.c: set a name to the menu's
+    toplevel window to apply thumb/normal theming of the scroll arrow
+    Fixes: NB#38690
+
+  * libhildonmenu/libhildonmenu.[ch], 
+    libhildonmenu/hildon-thumb-menu-item.[ch]: Added LGPL header
+  * ibhildonmenu/hildon-thumb-menu-item.h: Removed duplicate code
+
+  * hildon-home/hildon-home-area.c: Fixed the leak of a string array
+
+  * libhildonmenu/libhildonmenu.c: Fixed the leak of a GtkTreePath and
+    2 strings. Fixes: NB#40645
+
+  * hildon-navigator/hn-app-switcher.c:
+  * hildon-navigator/hildon-navigator-window.c:
+  * hildon-navigator/hildon-navigator-window.h:
+  * hildon-navigator/hn-wm.c:
+  * hildon-navigator/hn-wm.h:
+  * hildon-navigator/hn-others-button.c:
+  * hildon-navigator/hn-others-button.h:
+  - if you open app-switcher's menu and others menu is
+    already opened, the former closes the later. Fixes: NB#35154
+
+  Applied fix to "TN menu shows logical string §chat_ap_chat"
+  Fixes: NB#37658
+  * hildon-navigator/hn-wm-watchable-app.c: Always translate the
+    application name in the tooltip.
+
+  Applied fix to "Task Navigator bg-kills applications it doesn't know how
+  to resume" Fixes: NB#40028
+  * hildon-navigator/hn-wm-watchable-app.c: Applications with no
+    desktop file shall not hibernate
+
+  Applied fix to "Glib CRITICAL error from the TN application switcher menu"
+  Fixes: NB#39653
+  * hildon-navigator/hn-app-switcher.c: added safegard to not close
+    a NULL menu
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 27 Sep 2006 09:51:59 +0300
+
 maemo-af-desktop (2.9.90-3) unstable; urgency=low
 
   * Added libhildonmenu0-dbg and hildon-status-bar-lib0-dev. Fixes: NB#40729 
