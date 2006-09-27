@@ -196,6 +196,8 @@ struct _BackgroundManagerPrivate
   guint is_screen_singleton : 1;
   GdkScreen *screen;
 
+  GdkWindow *desktop;
+  
   guint bg_timeout;
   GtkWidget *loading_note;
 };
@@ -213,7 +215,10 @@ enum
 {
   CHANGED,
   PREVIEW,
+  LOAD_BEGIN,
+  LOAD_COMPLETE,
   LOAD_CANCEL,
+  LOAD_ERROR,
 
   LAST_SIGNAL
 };
@@ -486,8 +491,8 @@ load_image_oom_cb (size_t  current_size,
 
 static GdkPixbuf *
 load_image_from_uri (const gchar  *uri,
-		     gboolean      post_install,
-		     GError      **error)
+                     gboolean      post_install,
+                     GError      **error)
 {
   GConfClient *client;
   GdkPixbufLoader *loader;
@@ -499,47 +504,47 @@ load_image_from_uri (const gchar  *uri,
   gboolean image_from_mmc = FALSE;
   gboolean mmc_cover_open = FALSE;
   gboolean oom = FALSE;
-  
+
   g_return_val_if_fail (uri != NULL, NULL);
 
   client = gconf_client_get_default ();
   g_assert (GCONF_IS_CLIENT (client));
 
   mmc_mount_point = g_strdup_printf ("file://%s",
-		                     g_getenv (HILDON_HOME_ENV_MMC_MOUNTPOINT));
+                                     g_getenv (HILDON_HOME_ENV_MMC_MOUNTPOINT));
   if (g_str_has_prefix (uri, mmc_mount_point))
     {
       GError *gconf_error = NULL;
-      
+
       image_from_mmc = TRUE;
 
       mmc_cover_open = gconf_client_get_bool (client,
-		                              HILDON_HOME_GCONF_MMC_COVER_OPEN,
-					      &gconf_error);
+                                              HILDON_HOME_GCONF_MMC_COVER_OPEN,
+                                              &gconf_error);
       if (gconf_error)
         {
-	  g_set_error (error, BACKGROUND_MANAGER_ERROR,
-		       BACKGROUND_MANAGER_ERROR_SYSTEM_RESOURCES,
+          g_set_error (error, BACKGROUND_MANAGER_ERROR,
+                       BACKGROUND_MANAGER_ERROR_SYSTEM_RESOURCES,
                        "Unable to check key `%s' from GConf: %s",
-		       HILDON_HOME_GCONF_MMC_COVER_OPEN,
-		       gconf_error->message);
-	  
-	  g_error_free (gconf_error);
-	  g_object_unref (client);
+                       HILDON_HOME_GCONF_MMC_COVER_OPEN,
+                       gconf_error->message);
 
-	  return NULL;
-	}
+          g_error_free (gconf_error);
+          g_object_unref (client);
+
+          return NULL;
+        }
 
       if (mmc_cover_open)
         {
           g_set_error (error, BACKGROUND_MANAGER_ERROR,
-		       BACKGROUND_MANAGER_ERROR_MMC_OPEN,
-		       "MMC cover is open");
+                       BACKGROUND_MANAGER_ERROR_MMC_OPEN,
+                       "MMC cover is open");
 
-	  g_object_unref (client);
-	  
-	  return NULL;
-	}
+          g_object_unref (client);
+
+          return NULL;
+        }
     }
 
   g_free (mmc_mount_point);
@@ -548,11 +553,11 @@ load_image_from_uri (const gchar  *uri,
   if (result != GNOME_VFS_OK)
     {
       g_set_error (error, BACKGROUND_MANAGER_ERROR,
-		   BACKGROUND_MANAGER_ERROR_UNREADABLE,
-		   "Unable to open `%s': %s",
-		   uri,
-		   gnome_vfs_result_to_string (result));
-      
+                   BACKGROUND_MANAGER_ERROR_UNREADABLE,
+                   "Unable to open `%s': %s",
+                   uri,
+                   gnome_vfs_result_to_string (result));
+
       g_object_unref (client);
 
       return NULL;
@@ -572,72 +577,92 @@ load_image_from_uri (const gchar  *uri,
       GnomeVFSFileSize bytes_read;
 
       result = gnome_vfs_read (handle, buffer, BUFFER_SIZE, &bytes_read);
+
+      if ((result == GNOME_VFS_ERROR_IO))
+        {
+          gdk_pixbuf_loader_close (loader, NULL);
+          gnome_vfs_close (handle);
+
+          g_set_error (error, BACKGROUND_MANAGER_ERROR,
+                       BACKGROUND_MANAGER_ERROR_IO,
+                       "Unable to load `%s': read failed",
+                       uri);
+          g_warning ((*error)->message);
+
+          g_object_unref (loader);
+          g_object_unref (client);
+
+          retval = NULL;
+          break;
+        }
+
       if ((result == GNOME_VFS_ERROR_EOF) || (bytes_read == 0))
         {
           g_warning ("Reached EOF of `%s', building the pixbuf", uri);
-	  
-          gdk_pixbuf_loader_close (loader, NULL);
-	  gnome_vfs_close (handle);
 
-	  retval = gdk_pixbuf_loader_get_pixbuf (loader);
-	  if (!retval)
+          gdk_pixbuf_loader_close (loader, NULL);
+          gnome_vfs_close (handle);
+
+          retval = gdk_pixbuf_loader_get_pixbuf (loader);
+          if (!retval)
             {
               g_set_error (error, BACKGROUND_MANAGER_ERROR,
-		           BACKGROUND_MANAGER_ERROR_CORRUPT,
-		           "Unable to load `%s': loader failed",
-			   uri);
+                           BACKGROUND_MANAGER_ERROR_CORRUPT,
+                           "Unable to load `%s': loader failed",
+                           uri);
+              g_warning ((*error)->message);
 
-	      g_object_unref (loader);
-	      g_object_unref (client);
-	      
-	      retval = NULL;
-	      break;
-	    }
-	  else
+              g_object_unref (loader);
+              g_object_unref (client);
+
+              retval = NULL;
+              break;
+            }
+          else
             {
-	      gchar * name
-		= gdk_pixbuf_format_get_name (
-				      gdk_pixbuf_loader_get_format (loader));
-	      
-	      g_warning ("we got the pixbuf (%d x %d), type: %s",
-			 gdk_pixbuf_get_width (retval),
-			 gdk_pixbuf_get_height (retval),
-			 name);
-	      
-	      g_free (name);
-	      
-	      g_object_ref (retval);
+              gchar * name
+                  = gdk_pixbuf_format_get_name (
+                                                gdk_pixbuf_loader_get_format (loader));
 
-	      g_object_unref (client);
-	      g_object_unref (loader);
-	      
-	      break;
-	    }
-	}
+              g_warning ("we got the pixbuf (%d x %d), type: %s",
+                         gdk_pixbuf_get_width (retval),
+                         gdk_pixbuf_get_height (retval),
+                         name);
+
+              g_free (name);
+
+              g_object_ref (retval);
+
+              g_object_unref (client);
+              g_object_unref (loader);
+
+              break;
+            }
+        }
 
       if (!oom)
         {
           GError *load_error = NULL;
-          
-	  gdk_pixbuf_loader_write (loader, buffer, bytes_read, &load_error);
-	  if (load_error &&
-	      (load_error->domain == GDK_PIXBUF_ERROR) &&
-	      ((load_error->code == GDK_PIXBUF_ERROR_CORRUPT_IMAGE) ||
-	       (load_error->code == GDK_PIXBUF_ERROR_UNKNOWN_TYPE)))
-	    {
-              g_set_error (error, BACKGROUND_MANAGER_ERROR,
-			   BACKGROUND_MANAGER_ERROR_CORRUPT,
-			   "Unable to load `%s': %s",
-			   uri,
-			   load_error->message);
-	      
-	      g_error_free (load_error);
-	      g_object_unref (client);
 
-	      retval = NULL;
-	      break;
-	    }
-	}
+          gdk_pixbuf_loader_write (loader, buffer, bytes_read, &load_error);
+          if (load_error &&
+              (load_error->domain == GDK_PIXBUF_ERROR) &&
+              ((load_error->code == GDK_PIXBUF_ERROR_CORRUPT_IMAGE) ||
+               (load_error->code == GDK_PIXBUF_ERROR_UNKNOWN_TYPE)))
+            {
+              g_set_error (error, BACKGROUND_MANAGER_ERROR,
+                           BACKGROUND_MANAGER_ERROR_CORRUPT,
+                           "Unable to load `%s': %s",
+                           uri,
+                           load_error->message);
+
+              g_error_free (load_error);
+              g_object_unref (client);
+
+              retval = NULL;
+              break;
+            }
+        }
 
       if (!oom && image_from_mmc)
         {
@@ -1132,9 +1157,11 @@ read_pipe_from_child (GIOChannel   *source,
 {
   BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
   BackgroundManagerPrivate *priv = manager->priv;
+#if 0
   GError *load_error;
   GdkPixbuf *pixbuf;
-  
+#endif
+
   /* something arrived from the child pipe: this means that
    * the child fired an error message and (possibly) died; we
    * relay the error to the console.
@@ -1150,6 +1177,7 @@ read_pipe_from_child (GIOChannel   *source,
       goto finish_up;
     }
 
+#if 0
   /* at this point we should be done with the child,
    * so it means that the background creation went fine
    * and we can load the background from the cache,
@@ -1181,7 +1209,10 @@ read_pipe_from_child (GIOChannel   *source,
       
       g_object_unref (pixbuf);
     }
+#endif
 
+  g_signal_emit (manager, manager_signals[LOAD_COMPLETE], 0);
+  
 finish_up:
   if (priv->bg_timeout)
     {
@@ -1299,6 +1330,8 @@ background_manager_create_background (BackgroundManager *manager,
   int parent_exit_notify[2];
   int pipe_from_child[2];
   static gboolean first_run = TRUE;
+  GdkPixbuf *image, *pixbuf;
+  GError *err;
   
   priv = manager->priv;
 
@@ -1342,17 +1375,69 @@ background_manager_create_background (BackgroundManager *manager,
 
   current = priv->current;
   
+  g_debug ("Creating background (pid %d)...", getpid ());
+
+  g_signal_emit (manager, manager_signals[LOAD_BEGIN], 0);
+
+  err = NULL;
+  if (current->image_uri)
+    image = load_image_from_uri (current->image_uri, TRUE, &err);
+  else
+    image = NULL;
+
+  if (err && err->message)
+    {
+      g_warning ("Unable to load background from `%s': %s",
+                 current->image_uri,
+                 err->message);
+
+      if (cancellable)
+        {
+          if (priv->bg_timeout)
+            g_source_remove (priv->bg_timeout);
+          if (priv->loading_note)
+            gtk_widget_destroy (priv->loading_note);
+          priv->loading_note = NULL;
+        }
+
+      g_signal_emit_by_name (manager, "load-cancel");
+      g_signal_emit_by_name (manager, "load-error", err);
+
+      g_error_free (err);
+
+      return;
+    }
+
+  pixbuf = composite_background (image, &(current->color),
+				 current->mode,
+				 priv->sidebar,
+				 priv->titlebar,
+				 &err);
+  if (err && err->message)
+    {
+      g_warning ("Unable to composite backround: %s",
+                 err->message);
+
+      g_error_free (err);
+      if (image)
+        g_object_unref (image);
+
+      return;
+    }
+  else if (image)
+    {
+      g_object_unref (image);
+    }
+
   pipe (parent_exit_notify);
   pipe (pipe_from_child);
 
   pid = fork ();
   if (pid == 0)
     {
-      GError *err = NULL;
-      GdkPixbuf *image = NULL;
-      GdkPixbuf *pixbuf;
+      GError *save_err = NULL;
 
-      g_debug ("Creating background (pid %d)...", getpid ());
+      g_debug ("Saving background (pid %d)...", getpid ());
 
       signal (SIGINT, signal_handler);
       signal (SIGTERM, signal_handler);
@@ -1360,76 +1445,16 @@ background_manager_create_background (BackgroundManager *manager,
       close (parent_exit_notify[1]);
       close (pipe_from_child[0]);
 
-      if (current->image_uri)
-	image = load_image_from_uri (current->image_uri, TRUE, &err);
-
-      if (err && err->message)
+      save_image_to_file (pixbuf, current->cache, &save_err);
+      if (save_err && save_err->message)
 	{
 	  write (pipe_from_child[1],
-		 err->message,
-		 strlen (err->message));
-	  
-	  g_error_free (err);
+		 save_err->message,
+		 strlen (save_err->message));
 
-	  goto close_channel;
+	  g_error_free (save_err);
 	}
 
-      pixbuf = composite_background (image,
-                                     &(current->color),
-				     current->mode,
-				     priv->sidebar,
-				     priv->titlebar,
-				     &err);
-      if (err && err->message)
-	{
-	  write (pipe_from_child[1],
-		 err->message,
-		 strlen (err->message));
-
-	  g_error_free (err);
-
-	  if (image)
-	    g_object_unref (image);
-
-	  goto close_channel;
-	}
-      else if (image)
-	{
-	  g_object_unref (image);
-	}
-
-      g_debug ("saving composited background");
-      
-      /* FIXME: the actual saving of the file to the flash storage
-       * is slow (depending on the size of the image; for the default
-       * backgrounds it is from 9 to 25s)
-       *
-       * Perhaps we could use the pipe to send the pixbuf data from the
-       * child to the parent and so make it possible to load the background
-       * before while the child is working on the save, or we could get
-       * the XID from the desktop window and set the background ourselves
-       * in the parent while saving the file in the child process.  this
-       * opens a whole new can of worms, though, because we need to block
-       * the UI to avoid the user setting a new background while the
-       * child process is still saving the file.
-       */
-      save_image_to_file (pixbuf, current->cache, &err);
-
-      if (err && err->message)
-	{
-	  write (pipe_from_child[1],
-		 err->message,
-		 strlen (err->message));
-
-	  g_error_free (err);
-	  g_object_unref (pixbuf);
-	}
-      else
-	{
-	  g_object_unref (pixbuf);
-	}
-
-close_channel:
       /* we're done, so we close the pipe and let
        * the parent process know that we finished
        */
@@ -1439,6 +1464,7 @@ close_channel:
     }
   else if (pid > 0)
     {
+      /* parent */
       GIOChannel *channel;
 
       g_debug ("Child spawned (pid %d)...", pid);
@@ -1455,6 +1481,20 @@ close_channel:
       g_io_channel_unref (channel);
 
       g_child_watch_add (pid, child_done_cb, manager);
+
+      if (!priv->current->is_preview)
+	{
+          background_manager_write_configuration (manager);
+	  g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+	}
+      else
+        {
+          g_signal_emit (manager, manager_signals[PREVIEW], 0, pixbuf);
+        }
+
+      priv->current->has_cache = TRUE;
+      
+      g_object_unref (pixbuf);
     }
   else
     {
@@ -1512,6 +1552,22 @@ background_manager_class_init (BackgroundManagerClass *klass)
 		  g_cclosure_marshal_VOID__POINTER,
 		  G_TYPE_NONE, 1,
 		  G_TYPE_POINTER);
+  manager_signals[LOAD_BEGIN] =
+    g_signal_new ("load-begin",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_FIRST,
+                  G_STRUCT_OFFSET (BackgroundManagerClass, load_begin),
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__VOID,
+                  G_TYPE_NONE, 0);
+  manager_signals[LOAD_COMPLETE] =
+    g_signal_new ("load-complete",
+                  G_TYPE_FROM_CLASS (klass),
+                  G_SIGNAL_RUN_FIRST,
+                  G_STRUCT_OFFSET (BackgroundManagerClass, load_complete),
+                  NULL, NULL,
+                  g_cclosure_marshal_VOID__VOID,
+                  G_TYPE_NONE, 0);
   manager_signals[LOAD_CANCEL] =
     g_signal_new ("load-cancel",
 		  G_TYPE_FROM_CLASS (klass),
@@ -1520,6 +1576,16 @@ background_manager_class_init (BackgroundManagerClass *klass)
 		  NULL, NULL,
 		  g_cclosure_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+  manager_signals[LOAD_ERROR] =
+    g_signal_new ("load-error",
+		  G_TYPE_FROM_CLASS (klass),
+		  G_SIGNAL_RUN_FIRST,
+		  G_STRUCT_OFFSET (BackgroundManagerClass, load_error),
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__POINTER,
+		  G_TYPE_NONE,
+          1,
+          G_TYPE_POINTER);
 
   g_type_class_add_private (gobject_class, sizeof (BackgroundManagerPrivate));
 }
@@ -1925,7 +1991,7 @@ background_manager_apply_preview (BackgroundManager *manager)
       priv->current = priv->normal;
       
       if (!preview->has_cache)
-        background_manager_create_background (manager, FALSE);
+        background_manager_create_background (manager, TRUE);
       else
         {
           if (g_unlink (normal->cache) == -1)
@@ -2013,4 +2079,22 @@ background_manager_discard_preview (BackgroundManager *manager,
   
       preview->has_cache = FALSE;
     }
+}
+
+GdkWindow *
+background_manager_get_desktop (BackgroundManager *manager)
+{
+  g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), NULL);
+
+  return manager->priv->desktop;
+}
+
+void
+background_manager_set_desktop (BackgroundManager *manager,
+                                GdkWindow         *window)
+{
+  g_return_if_fail (IS_BACKGROUND_MANAGER (manager));
+  g_return_if_fail (window == NULL || GDK_IS_WINDOW (window));
+
+  manager->priv->desktop = window;
 }

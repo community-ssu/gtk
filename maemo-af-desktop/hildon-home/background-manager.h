@@ -27,6 +27,7 @@
 
 #include <glib-object.h>
 #include <gdk/gdkcolor.h>
+#include <gdk/gdkwindow.h>
 
 #define TYPE_BACKGROUND_MODE			(background_mode_get_type ())
 #define TYPE_BACKGROUND_MANAGER			(background_manager_get_type ())
@@ -63,6 +64,7 @@ typedef enum {
   BACKGROUND_MANAGER_ERROR_MMC_OPEN,
   BACKGROUND_MANAGER_ERROR_SYSTEM_RESOURCES,
   BACKGROUND_MANAGER_ERROR_FLASH_FULL,
+  BACKGROUND_MANAGER_ERROR_IO,
 
   BACKGROUND_MANAGER_ERROR_UNKNOWN
 } BackgroundManagerError;
@@ -81,17 +83,23 @@ struct _BackgroundManagerClass
 {
   GObjectClass parent_class;
 
-  void (*load_cancel) (BackgroundManager *manager);
-  void (*preview)     (BackgroundManager *manager,
-		       GdkPixbuf         *pixbuf);
-  void (*changed)     (BackgroundManager *manager,
-		       GdkPixbuf         *pixbuf);
+  void (*load_begin)    (BackgroundManager *manager);
+  void (*load_complete) (BackgroundManager *manager);
+  void (*load_cancel)   (BackgroundManager *manager);
+  void (*load_error)    (BackgroundManager *manager, GError *error);
+  void (*preview)       (BackgroundManager *manager,
+		         GdkPixbuf         *pixbuf);
+  void (*changed)       (BackgroundManager *manager,
+		         GdkPixbuf         *pixbuf);
 };
 
 GType                 background_manager_get_type          (void) G_GNUC_CONST;
 
 BackgroundManager *   background_manager_get_default       (void);
 
+GdkWindow *           background_manager_get_desktop       (BackgroundManager *manager);
+void                  background_manager_set_desktop       (BackgroundManager *manager,
+                                                            GdkWindow         *window);
 G_CONST_RETURN gchar *background_manager_get_image_uri     (BackgroundManager *manager);
 void                  background_manager_set_image_uri     (BackgroundManager *manager,
 						            const gchar       *uri);

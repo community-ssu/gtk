@@ -457,6 +457,39 @@ background_manager_load_cancel_cb (BackgroundManager *manager,
 }
 
 static void
+background_manager_load_error_cb (BackgroundManager *manager,
+                                  GError *error,
+                                  HildonHomeWindow  *window)
+{
+  gchar *text = NULL;
+  g_return_if_fail (error);
+  
+  switch (error->code)
+    {
+        case BACKGROUND_MANAGER_ERROR_IO:
+            text = HILDON_HOME_INTERRUPTED_TEXT;
+            break;
+        case BACKGROUND_MANAGER_ERROR_CORRUPT:
+            text = HILDON_HOME_CORRUPTED_TEXT;
+            break;
+        case BACKGROUND_MANAGER_ERROR_MMC_OPEN:
+            text = HILDON_HOME_MMC_OPEN_TEXT;
+            break;
+        case BACKGROUND_MANAGER_ERROR_MEMORY:
+        default:
+            break;
+    }
+
+  if (text)
+    {
+      GtkWidget *note;
+      note = hildon_note_new_information (GTK_WINDOW (window), text);
+      gtk_dialog_run (GTK_DIALOG(note));
+      gtk_widget_destroy (note);
+    }
+}
+
+static void
 background_manager_changed_cb (BackgroundManager *manager,
 			       GdkPixbuf         *pixbuf,
 			       HildonHomeWindow  *window)
@@ -581,6 +614,9 @@ hildon_home_window_show (GtkWidget *widget)
   gdk_window_set_type_hint (widget->window,
 		            GDK_WINDOW_TYPE_HINT_DESKTOP);
 
+  background_manager_set_desktop (background_manager_get_default (),
+                                  widget->window);
+  
   GTK_WIDGET_CLASS (hildon_home_window_parent_class)->show (widget);
 }
 
@@ -799,6 +835,9 @@ hildon_home_window_constructor (GType                  gtype,
                     window);
   g_signal_connect (priv->bg_manager, "load-cancel",
                     G_CALLBACK (background_manager_load_cancel_cb),
+                    window);
+  g_signal_connect (priv->bg_manager, "load-error",
+                    G_CALLBACK (background_manager_load_error_cb),
                     window);
 
   background_manager_set_components (priv->bg_manager,

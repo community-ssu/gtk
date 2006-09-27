@@ -45,6 +45,7 @@ G_BEGIN_DECLS
 #define HILDON_HOME_FLASH_FULL_TEXT      dgettext("ke-recv", "cerm_device_memory_full")
 #define HILDON_HOME_MMC_NOT_OPEN_TEXT   COMMON_STRING("sfil_ni_cannot_open_mmc_cover_open")
 #define HILDON_HOME_MMC_NOT_OPEN_CLOSE  COMMON_STRING("sfil_ni_cannot_open_mmc_cover_open_ok")
+#define HILDON_HOME_INTERRUPTED_TEXT    COMMON_STRING("sfil_ni_cannot_open_no_connection")
 
 /* Home */
 #define HILDON_HOME_NAME                "Home"
@@ -225,8 +226,6 @@ G_BEGIN_DECLS
 /* WID-NOT202 */
 #define HILDON_HOME_CONNECTIVITY_TEXT    COMMON_STRING("sfil_ni_cannot_open_no_connection")
 
-
-#define HILDON_HOME_CORRUPTED_TEXT    COMMON_STRING("ckct_ni_unable_to_open_file_corrupted")
 
 /* FIL-INF010 */
 #define HILDON_HOME_FILE_UNREADABLE_TEXT FM("sfil_ib_opening_not_allowed")

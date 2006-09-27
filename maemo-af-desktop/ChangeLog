@@ -1,5 +1,17 @@
 2006-09-27  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "AF-BAT:Changing background image sometimes takes long time"
+	Fixes NB#35129
+	* hildon-home/background-manager.c: Do the composition in the father
+	  process and the saving in the child
+
+	* hildon-home/background-manager.c: Added load-error signal
+	* hildon-home/hildon-home-window.c: Display appropriate note
+	  when error when loading background
+	Fixes NB#33918
+
+2006-09-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.91
 
 2006-09-26  Johan Bilien <johan.bilien@nokia.com>
