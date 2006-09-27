@@ -69,6 +69,9 @@ void       hildon_home_window_show_flash_full_note (HildonHomeWindow *window);
 
 void       hildon_home_window_applets_init         (HildonHomeWindow *window);
 
+void       hildon_home_window_set_desktop_dimmed   (HildonHomeWindow *window,
+                                                    gboolean dimmed);
+
 G_END_DECLS
 
 #endif /* __HILDON_HOME_WINDOW_H__ */

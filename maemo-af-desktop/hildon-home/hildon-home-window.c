@@ -139,6 +139,7 @@ destroy_banner (HildonHomeWindow *window)
   return FALSE;
 }
 
+
 static void
 hildon_home_window_show_layout_mode_banner (HildonHomeWindow *window)
 {
@@ -174,8 +175,10 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
                                     (GTK_TREE_MODEL (priv->plugin_list),
                                      priv->osso_context);
 
+  hildon_home_window_set_desktop_dimmed (window, TRUE);
   response = gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
+  hildon_home_window_set_desktop_dimmed (window, FALSE);
   
   if (response != GTK_RESPONSE_OK)
     return;
@@ -357,21 +360,7 @@ area_layout_mode_start (HildonHomeArea *area,
   hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
                                  HILDON_HOME_TITLEBAR_LAYOUT);
 
-  osso_rpc_run_with_defaults (priv->osso_context,
-                              STATUSBAR_SERVICE_NAME,
-                              STATUSBAR_INSENSITIVE_METHOD,
-                              NULL,
-                              0,
-                              NULL);
-
-  osso_rpc_run (priv->osso_context,
-                TASKNAV_SERVICE_NAME,
-                TASKNAV_GENERAL_PATH,
-                TASKNAV_INSENSITIVE_INTERFACE,
-                TASKNAV_INSENSITIVE_METHOD,
-                NULL,
-                0,
-                NULL);
+  hildon_home_window_set_desktop_dimmed (window, TRUE);
 
   hildon_home_window_show_layout_mode_banner (window);
 }
@@ -399,22 +388,8 @@ area_layout_mode_end (HildonHomeArea *area,
   
   hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
                                  HILDON_HOME_TITLEBAR_NORMAL);
-
-  osso_rpc_run_with_defaults (priv->osso_context,
-                              STATUSBAR_SERVICE_NAME,
-                              STATUSBAR_SENSITIVE_METHOD,
-                              NULL,
-                              0,
-                              NULL);
-
-  osso_rpc_run (priv->osso_context,
-                TASKNAV_SERVICE_NAME,
-                TASKNAV_GENERAL_PATH,
-                TASKNAV_SENSITIVE_INTERFACE,
-                TASKNAV_SENSITIVE_METHOD,
-                NULL,
-                0,
-                NULL);
+  
+  hildon_home_window_set_desktop_dimmed (window, FALSE);
 
   if (priv->layout_mode_banner_to)
     {
@@ -985,3 +960,48 @@ hildon_home_window_set_osso_context (HildonHomeWindow *window,
     }
 }
 
+void
+hildon_home_window_set_desktop_dimmed (HildonHomeWindow *window,
+                                       gboolean dimmed)
+{
+  HildonHomeWindowPrivate *priv;
+  g_return_if_fail (HILDON_IS_HOME_WINDOW (window));
+  priv = window->priv;
+
+  if (dimmed)
+    {
+      osso_rpc_run_with_defaults (priv->osso_context,
+                                  STATUSBAR_SERVICE_NAME,
+                                  STATUSBAR_INSENSITIVE_METHOD,
+                                  NULL,
+                                  0,
+                                  NULL);
+
+      osso_rpc_run (priv->osso_context,
+                    TASKNAV_SERVICE_NAME,
+                    TASKNAV_GENERAL_PATH,
+                    TASKNAV_INSENSITIVE_INTERFACE,
+                    TASKNAV_INSENSITIVE_METHOD,
+                    NULL,
+                    0,
+                    NULL);
+    }
+  else
+    {
+      osso_rpc_run_with_defaults (priv->osso_context,
+                                  STATUSBAR_SERVICE_NAME,
+                                  STATUSBAR_SENSITIVE_METHOD,
+                                  NULL,
+                                  0,
+                                  NULL);
+
+      osso_rpc_run (priv->osso_context,
+                    TASKNAV_SERVICE_NAME,
+                    TASKNAV_GENERAL_PATH,
+                    TASKNAV_SENSITIVE_INTERFACE,
+                    TASKNAV_SENSITIVE_METHOD,
+                    NULL,
+                    0,
+                    NULL);
+    }
+}

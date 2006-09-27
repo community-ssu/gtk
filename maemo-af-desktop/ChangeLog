@@ -1,5 +1,13 @@
 2006-09-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-window.c:
+	  - Added _set_desktop_dimmed
+	  - dim TN and SB while we run Select applets
+	* hildon-home/hildon-home-titlebar.c:
+	  - dim TN and SB when we run Select background. Fixes: NB#38534
+
+2006-09-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-plugin-list.c: Added dnotify callback to
 	  watch changes on the directory.
 	* hildon-home/hildon-applet-area.c: Handle the case where an

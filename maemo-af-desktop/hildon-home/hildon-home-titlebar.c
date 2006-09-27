@@ -59,6 +59,7 @@
 #include "hildon-home-private.h"
 #include "hildon-home-background-dialog.h"
 #include "hildon-home-area.h"
+#include "hildon-home-window.h"
 
 #define HILDON_HOME_TITLEBAR_WIDTH	720
 #define HILDON_HOME_TITLEBAR_HEIGHT	60
@@ -370,7 +371,11 @@ static void
 set_background_activate_cb (GtkMenuItem *item,
 			    gpointer     user_data)
 {
+  hildon_home_window_set_desktop_dimmed (HILDON_HOME_WINDOW (user_data),
+                                         TRUE);
   home_bgd_dialog_run (GTK_WINDOW (user_data));
+  hildon_home_window_set_desktop_dimmed (HILDON_HOME_WINDOW (user_data),
+                                         FALSE);
 }
 
 static void
