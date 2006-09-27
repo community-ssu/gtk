@@ -1,5 +1,7 @@
 2006-09-27  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.10.9.
+	
 	Provide the hildon_file_selection_move_cursor_to_uri (N40983).
 	
 	* hildon-fm/hildon-file-selection.h
