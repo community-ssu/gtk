@@ -1,0 +1,11 @@
+--- gtkhtml-3.9.1/src/gtkhtml.c	2006-09-27 12:48:45.000000000 +0300
++++ gtkhtml-imcontext-leak-fix/src/gtkhtml.c	2006-09-27 12:47:57.000000000 +0300
+@@ -761,6 +761,8 @@
+ 			html->priv->resize_cursor = NULL;
+ 		}
+ 
++		g_object_unref (html->priv->im_context);
++
+ 		g_free (html->priv->content_type);
+ 		g_free (html->priv->base_url);
+ 		g_free (html->priv);
