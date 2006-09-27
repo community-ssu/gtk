@@ -1,3 +1,14 @@
+2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/booster_null.c (booster_api): Renamed to ...
+	(booster_null_api): ... this.
+	* launcher/booster_gtk.c (booster_api): Renamed to ...
+	(booster_gtk_api): ... this.
+	* launcher/booster.c (booster_module_load): Dynamically generate
+	booster_sym using the booster name. Statically prefix the
+	booster_patch with MAEMO_BOOSTER_DIR. Free booster_path and
+	booster_sym.
+
 2006-09-27  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/launcher.c (release_childs): New function.

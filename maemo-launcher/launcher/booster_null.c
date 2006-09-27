@@ -45,7 +45,7 @@ booster_null_reload(booster_state_t state)
   debug("booster null module reload\n");
 }
 
-booster_api_t booster_api = {
+booster_api_t booster_null_api = {
   .booster_version = MAEMO_LAUNCHER_BOOSTER_API_VERSION,
   .booster_preinit = booster_null_preinit,
   .booster_init = booster_null_init,

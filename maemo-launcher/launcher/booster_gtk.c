@@ -336,7 +336,7 @@ booster_gtk_reload(booster_state_t state)
   gdk_display_close(display);
 }
 
-booster_api_t booster_api = {
+booster_api_t booster_gtk_api = {
   .booster_version = MAEMO_LAUNCHER_BOOSTER_API_VERSION,
   .booster_preinit = booster_gtk_preinit,
   .booster_init = booster_gtk_init,
