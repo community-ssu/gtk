@@ -38,4 +38,5 @@ libosso_la_SOURCES = \
 	osso-application-init.c \
 	osso-application-exit.c \
 	osso-mem.h \
-	osso-mem.c
+	osso-mem.c \
+	muali.h

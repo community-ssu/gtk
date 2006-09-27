@@ -98,7 +98,9 @@ typedef struct {
 typedef struct {
     gpointer user_cb;
     gpointer user_data;
+    char *match_rule;
     gpointer data;
+    int event_type;
 } _osso_callback_data_t;
 
 typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,

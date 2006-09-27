@@ -192,7 +192,8 @@ libosso_la_SOURCES = \
 	osso-application-init.c \
 	osso-application-exit.c \
 	osso-mem.h \
-	osso-mem.c
+	osso-mem.c \
+	muali.h
 
 subdir = src
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4

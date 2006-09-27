@@ -26,6 +26,7 @@
 #include "osso-internal.h"
 #include "osso-hw.h"
 #include "osso-mem.h"
+#include "muali.h"
 #include <assert.h>
 
 #define MCE_SERVICE			"com.nokia.mce"
@@ -527,3 +528,117 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
     }
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
+
+/******************************************************
+ * NEW API DEVELOPMENT - THESE ARE SUBJECT TO CHANGE!
+ * muali = maemo user application library
+ ******************************************************/
+
+inline static muali_error_t _set_handler(muali_context_t *context,
+                                         const char *service,
+                                         const char *object_path,
+                                         const char *interface,
+                                         const char *match,
+                                         _osso_handler_f *event_cb,
+                                         int event_type,
+                                         muali_handler_t *user_handler,
+                                         const void *user_data)
+{
+        DBusError error;
+        _osso_callback_data_t *cb_data;
+
+        cb_data = calloc(1, sizeof(_osso_callback_data_t));
+        if (cb_data == NULL) {
+                ULOG_ERR_F("calloc failed");
+                return MUALI_ERROR_OOM;
+        }
+
+        cb_data->user_cb = user_handler;
+        cb_data->user_data = user_data;
+        cb_data->match_rule = match;
+        cb_data->event_type = event_type;
+        cb_data->data = cb_data;
+
+        dbus_error_init(&error);
+        dbus_bus_add_match(context->sys_conn, match, &error);
+
+        if (dbus_error_is_set(&error)) {
+                ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
+                dbus_error_free(&error);
+                free(cb_data);
+                return MUALI_ERROR;
+        }
+
+        _msg_handler_set_cb_f(context,
+                              service,
+                              object_path,
+                              interface,
+                              event_cb,
+                              cb_data, FALSE);
+
+        return MUALI_ERROR_SUCCESS;
+}
+
+muali_error_t muali_set_event_handler(muali_context_t *context,
+                                      int event_type,
+                                      muali_handler_t *handler,
+                                      const void *user_data)
+{
+        muali_error_t error = MUALI_ERROR_SUCCESS;
+
+        ULOG_DEBUG_F("entered");
+
+        switch (event_type) {
+                _osso_handler_f *event_cb = NULL;
+                const char *service = NULL, *object_path = NULL,
+                           *interface = NULL;
+
+                case MUALI_EVENT_LOWMEM_BOTH:
+                case MUALI_EVENT_LOWMEM_OFF:
+                        event_cb = lowmem_signal_handler;
+                        service = USER_LOWMEM_OFF_SIGNAL_SVC;
+                        object_path = USER_LOWMEM_OFF_SIGNAL_OP;
+                        interface = USER_LOWMEM_OFF_SIGNAL_IF;
+                        match = "type='signal',interface='"
+                                USER_LOWMEM_OFF_SIGNAL_IF "'";
+                        error = _set_handler(context,
+                                             service,
+                                             object_path,
+                                             interface,
+                                             match,
+                                             event_cb,
+                                             event_type,
+                                             handler,
+                                             user_data);
+                        if (event_type == MUALI_EVENT_LOWMEM_BOTH
+                            && error == MUALI_ERROR_SUCCESS) {
+                                error = muali_set_event_handler(context,
+                                                MUALI_EVENT_LOWMEM_ON,
+                                                handler,
+                                                user_data);
+                        }
+                        break;
+                case MUALI_EVENT_LOWMEM_ON:
+                        event_cb = lowmem_signal_handler;
+                        service = USER_LOWMEM_ON_SIGNAL_SVC;
+                        object_path = USER_LOWMEM_ON_SIGNAL_OP;
+                        interface = USER_LOWMEM_ON_SIGNAL_IF;
+                        match = "type='signal',interface='"
+                                USER_LOWMEM_ON_SIGNAL_IF "'";
+                        error = _set_handler(context,
+                                             service,
+                                             object_path,
+                                             interface,
+                                             match,
+                                             event_cb,
+                                             event_type,
+                                             handler,
+                                             user_data);
+                        break;
+                default:
+                        ULOG_ERR_F("unknown event type %d", event_type);
+                        error = MUALI_ERROR_INVALID;
+        }
+        return error;
+}
+
