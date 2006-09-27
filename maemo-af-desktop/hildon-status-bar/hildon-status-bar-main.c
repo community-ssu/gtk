@@ -485,7 +485,11 @@ GList* get_plugins_from_file( const gchar *file )
     gint i;
     
     /* Return if file string does not exist */
-    if ( !file )  return NULL;	
+    if ( !file )
+    {
+	g_key_file_free (keyfile);
+	return NULL;	
+    }
     
     /* Load configuration file */ 
     g_key_file_load_from_file(keyfile, file, G_KEY_FILE_NONE, &error);
@@ -586,6 +590,9 @@ GList* get_plugins_from_file( const gchar *file )
  	plugin = g_new0(StatusBarPlugin, 1);
         if ( !plugin ) {   
             ULOG_ERR("FAILURE: Memory exhausted when loading plugin structure");
+	    g_strfreev (groups);
+	    g_key_file_free (keyfile);
+	    g_list_free (list);
             return NULL;
 	}
 	
@@ -630,15 +637,15 @@ gboolean add_configured_plugins( StatusBar *panel )
         l = get_plugins_from_file(HSB_PLUGIN_FACTORY_CONFIG_FILE);	
     }
 
-    bad_plugins = hildon_log_get_incomplete_groups (panel->log,
-		    				    HSB_PLUGIN_LOG_KEY_START,
-						    HSB_PLUGIN_LOG_KEY_END,NULL);
-
     /* Could not load plugin configuration file */     
     if (!l) { 
         ULOG_WARN("Could not read configuration file for status bar plugins.");
         return FALSE; 
     }
+
+    bad_plugins = hildon_log_get_incomplete_groups (panel->log,
+		    				    HSB_PLUGIN_LOG_KEY_START,
+						    HSB_PLUGIN_LOG_KEY_END,NULL);
 
     for (; l; l = l->next) {
         StatusBarPlugin *plugin = (StatusBarPlugin *)l->data;

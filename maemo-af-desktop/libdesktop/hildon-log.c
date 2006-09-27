@@ -308,8 +308,6 @@ hildon_log_get_incomplete_groups (HildonLog *log, ... )
 
   va_end (keys);
 
-  g_return_val_if_fail (priv,NULL);
-
   if( g_file_test (priv->filename, G_FILE_TEST_EXISTS) )
   {
     g_key_file_load_from_file(keyfile, priv->filename, G_KEY_FILE_NONE, &error);
@@ -317,6 +315,7 @@ hildon_log_get_incomplete_groups (HildonLog *log, ... )
     if (error)
     {
       g_key_file_free (keyfile);
+      g_list_free (keylist);
       g_error_free (error);
       return NULL;
     }
@@ -340,13 +339,12 @@ hildon_log_get_incomplete_groups (HildonLog *log, ... )
         }
       }
       /* next group */
-      g_free (groups[i]);      
       i++;
     }
   }
 
   /* Cleanup */
-  if(groups) g_free (groups);
+  g_strfreev (groups);
   g_list_free (keylist);
   g_key_file_free (keyfile);
 

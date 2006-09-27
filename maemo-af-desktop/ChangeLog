@@ -1,3 +1,9 @@
+2006-09-27  Moises Martinez <moises.martinzes@nokia.com>
+
+	* libdesktop/hildon-log.c: 
+	* hildon-status-bar/hildon-status-bar-main.c:
+	- Fixed many memory leaks. Fixes: NB#40900
+
 2006-09-27  Johan Bilien <johan.bilien@nokia.com>
 
 	Applied fix to "AF-BAT:Changing background image sometimes takes long time"
