@@ -88,8 +88,12 @@ static void
 get_safe_folder_tree_iter(HildonFileSelectionPrivate *priv, GtkTreeIter *iter);
 
 static void
-hildon_file_selection_enable_cursor_magic_for_model (HildonFileSelection *self,
+hildon_file_selection_enable_cursor_magic (HildonFileSelection *self,
 						     GtkTreeModel *model);
+
+static void
+hildon_file_selection_disable_cursor_magic (HildonFileSelection *self,
+					    GtkTreeModel *model);
 
 static GtkTreeModel *
 hildon_file_selection_create_sort_model(HildonFileSelection *self,
@@ -175,6 +179,8 @@ struct _HildonFileSelectionPrivate {
     GtkFilePath *safe_folder;
 
     gchar **drag_data_uris;
+
+    gchar *cursor_goal_uri;
 };
 
 #if 0
@@ -581,6 +587,12 @@ static void hildon_file_selection_finalize(GObject * obj)
         (priv->main_model,
         (gpointer) hildon_file_selection_modified,
         self);
+
+    hildon_file_selection_disable_cursor_magic (self, priv->sort_model);
+    hildon_file_selection_disable_cursor_magic (self, priv->dir_filter);
+
+    g_free (priv->cursor_goal_uri);
+    priv->cursor_goal_uri = NULL;
 
     hildon_file_selection_cancel_delayed_select(priv);
     g_source_remove_by_user_data(self); /* Banner checking timeout */
@@ -1556,8 +1568,7 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
             priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
 
-	    hildon_file_selection_enable_cursor_magic_for_model
-	      (self, priv->sort_model);
+	    hildon_file_selection_enable_cursor_magic (self, priv->sort_model);
 
             g_assert(priv->view_filter != NULL);
             gtk_tree_model_filter_set_visible_func(GTK_TREE_MODEL_FILTER
@@ -1638,13 +1649,6 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
         hildon_file_selection_close_load_banner(HILDON_FILE_SELECTION(data));
     }
-    else 
-      /* If we arrive there because the current cursor was removed, we are
-         in a very dangerous place. Filter model and sort model have still
-         their caches containing iterators that point to deleted values.
-         Almost any model accessing function will cause an assertion... */
-
-      hildon_file_selection_delayed_select_reference(self, priv->current_folder);
 }
 
 static void hildon_file_selection_row_activated(GtkTreeView * view,
@@ -2395,8 +2399,7 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
         NULL);
 #endif
 
-    hildon_file_selection_enable_cursor_magic_for_model
-      (self, self->priv->dir_filter);
+    hildon_file_selection_enable_cursor_magic (self, self->priv->dir_filter);
 
     self->priv->dir_tree =
         gtk_tree_view_new_with_model(self->priv->dir_filter);
@@ -2934,8 +2937,7 @@ static GObject *hildon_file_selection_constructor(GType type,
     gtk_tree_path_free (temp_path);
 
     priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
-    hildon_file_selection_enable_cursor_magic_for_model
-      (self, priv->sort_model);
+    hildon_file_selection_enable_cursor_magic (self, priv->sort_model);
 
     hildon_file_selection_create_dir_view(self);
     hildon_file_selection_create_list_view(self);
@@ -4100,18 +4102,21 @@ hildon_file_selection_set_cursor_stubbornly (GtkTreeView *view,
     }
 }
 
-struct idle_cursor_magic_closure {
+struct idle_cursor_data {
   GtkTreeView *view;
   GtkTreePath *path;
+  gboolean stubbornly;
 };
 
 static gboolean
-hildon_file_selection_idle_cursor_magic (gpointer data)
+set_cursor_idle_handler (gpointer data)
 {
-  struct idle_cursor_magic_closure *c =
-    (struct idle_cursor_magic_closure *)data;
+  struct idle_cursor_data *c = (struct idle_cursor_data *)data;
 
-  hildon_file_selection_set_cursor_stubbornly (c->view, c->path);
+  if (c->stubbornly)
+    hildon_file_selection_set_cursor_stubbornly (c->view, c->path);
+  else
+    gtk_tree_view_set_cursor (c->view, c->path, NULL, FALSE);
 
   gtk_tree_path_free (c->path);
   g_free (c);
@@ -4120,67 +4125,240 @@ hildon_file_selection_idle_cursor_magic (gpointer data)
 }
 
 static void
-hildon_file_selection_row_deleted (GtkTreeModel *model,
-				   GtkTreePath *path,
-				   gpointer data)
+set_cursor_when_idle (GtkTreeView *view, GtkTreePath *path,
+		      gboolean stubbornly)
 {
-  HildonFileSelection *self = (HildonFileSelection *)data;
-  HildonFileSelectionPrivate *priv = self->priv;
-  GtkWidget *view;
+  struct idle_cursor_data *c = g_new (struct idle_cursor_data, 1);
+  c->view = GTK_TREE_VIEW (view);
+  c->path = gtk_tree_path_copy (path);
+  c->stubbornly = stubbornly;
+  g_idle_add (set_cursor_idle_handler, c);
+}
 
-  /* Check the view to see if we need to move the cursor so that it is
-     always set.
-  */
+static GtkTreeView *
+get_view_for_model (HildonFileSelection *self, GtkTreeModel *model)
+{
+  HildonFileSelectionPrivate *priv = self->priv;
 
   /* XXX - figuring out the view from the model is too closely tied to
            our setup.
   */
   if (model == priv->dir_filter)
-    view = priv->dir_tree;
+    return GTK_TREE_VIEW (priv->dir_tree);
   else
     {
+      GtkWidget *view;
       GtkTreeModel *active_model;
 
       view = get_current_view (priv);
       if (!GTK_IS_TREE_VIEW (view))
-	return;
+	return NULL;
 
       active_model = gtk_tree_view_get_model (GTK_TREE_VIEW (view));
       if (model != active_model)
-	return;
+	return NULL;
+
+      return GTK_TREE_VIEW (view);
     }
-  
+}
+
+static void
+hildon_file_selection_row_deleted (GtkTreeModel *model,
+				   GtkTreePath *path,
+				   gpointer data)
+{
+  HildonFileSelection *self = (HildonFileSelection *)data;
+  GtkTreeView *view;
+
+  /* Check the view to see if we need to move the cursor so that it is
+     always set.
+  */
+
+  view = get_view_for_model (self, model);
   if (view)
     {
       GtkTreePath *cursor_path;
-      struct idle_cursor_magic_closure *c;
+
+      /* We want to move the cursor when its row is deleted.  However,
+         the TreeView is also watching the model for deleted rows and
+         updates its cursor accordingly.  Thus, when we check the
+         cursor here, it might or might not already have been unset,
+         depending whose handler is run first.  Thus, when the cursor
+         is not set here, we want to set it again.  Except when we
+         have a goal uri for the cursor.  In that case, we leave the
+         cursor unset.
+      */
 
       gtk_tree_view_get_cursor (GTK_TREE_VIEW (view), &cursor_path, NULL);
+
+      if (cursor_path == NULL && self->priv->cursor_goal_uri != NULL)
+	{
+	  /* We have a goal uri. Let's continue waiting for it.
+	   */
+	  return;
+	}
+
       if (cursor_path && gtk_tree_path_compare (path, cursor_path) != 0)
 	{
+	  /* We have a cursor but it is not on the row that is being
+	     deleted.  Do nothing.
+	  */
 	  gtk_tree_path_free (cursor_path);
 	  return;
 	}
       gtk_tree_path_free (cursor_path);
 
-      c = g_new (struct idle_cursor_magic_closure, 1);
-      c->view = GTK_TREE_VIEW (view);
-      c->path = gtk_tree_path_copy (path);
-      g_idle_add (hildon_file_selection_idle_cursor_magic, c);
+      set_cursor_when_idle (view, path, TRUE);
     }
 }
 
+static void
+hildon_file_selection_row_inserted (GtkTreeModel *model,
+				    GtkTreePath *path, GtkTreeIter *iter,
+				    gpointer data)
+{
+  HildonFileSelection *self = (HildonFileSelection *)data;
+  HildonFileSelectionPrivate *priv = self->priv;
+  GtkTreeView *view;
+  GtkTreePath *cursor;
+  char *uri;
+
+  if (priv->cursor_goal_uri == NULL)
+    return;
+
+  view = get_view_for_model (self, model);
+  if (view == NULL)
+    return;
+
+  gtk_tree_model_get (model, iter, 
+		      HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
+		      -1);
+  if (g_strcasecmp (uri, priv->cursor_goal_uri) != 0)
+    {
+      g_free (uri);
+      return;
+    }
+      
+  gtk_tree_view_get_cursor (view, &cursor, NULL);
+  if (cursor == NULL)
+    {
+      set_cursor_when_idle (view, path, FALSE);
+      g_free (priv->cursor_goal_uri);
+      priv->cursor_goal_uri = NULL;
+    }
+  else
+    gtk_tree_path_free (cursor);
+}
+
 /* Setup things so that the view that shows MODEL (at any time) will
-   not lose its cursor when rows are deleted from the model.
+   not lose its cursor when rows are deleted from the model.  Also,
+   the model will start tracking the cursor_goal_uri as explained for
+   hildon_file_selection_move_cursor_to_uri.
 */
 
 static void
-hildon_file_selection_enable_cursor_magic_for_model (HildonFileSelection *self,
-						     GtkTreeModel *model)
+hildon_file_selection_enable_cursor_magic (HildonFileSelection *self,
+					   GtkTreeModel *model)
 {
   g_signal_connect (model, "row-deleted",
 		    G_CALLBACK (hildon_file_selection_row_deleted),
 		    self);
+  g_signal_connect (model, "row-inserted",
+		    G_CALLBACK (hildon_file_selection_row_inserted),
+		    self);
+}
+
+static void
+hildon_file_selection_disable_cursor_magic (HildonFileSelection *self,
+					    GtkTreeModel *model)
+{
+  g_signal_handlers_disconnect_by_func
+    (model, G_CALLBACK (hildon_file_selection_row_deleted), self);
+  g_signal_handlers_disconnect_by_func
+    (model, G_CALLBACK (hildon_file_selection_row_inserted), self);
+}
+
+/* Move the cursor to URI.  This function also works when URI is not
+   listed in the model yet.  In that case, the current cursor will be
+   unset and when the URI appears and the cursor is till unset, it
+   will be set then.
+
+   The typical use of this function is when renaming a file.  You know
+   that a file with the new name will eventually appear and you want
+   the cursor to be on it.
+*/
+
+void
+hildon_file_selection_move_cursor_to_uri (HildonFileSelection * self,
+					  const gchar *uri)
+{
+  HildonFileSelectionPrivate *priv = self->priv;
+  GtkTreeIter iter;
+
+  if (hildon_file_system_model_load_uri 
+      (HILDON_FILE_SYSTEM_MODEL (priv->main_model), uri, &iter))
+    {
+      GtkTreeIter filter_iter, sort_iter;
+      GtkTreePath *path;
+
+      /* Now find the view corresponding to ITER and set its cursor.
+      */
+
+      if (priv->content_pane_last_used)
+	{
+	  GtkTreeView *view = get_view_for_model (self, priv->sort_model);
+	  if (view == NULL)
+	    return;
+
+	  gtk_tree_model_filter_convert_child_iter_to_iter
+	    (GTK_TREE_MODEL_FILTER(priv->view_filter),
+	     &filter_iter, &iter);
+      
+	  gtk_tree_model_sort_convert_child_iter_to_iter
+	    (GTK_TREE_MODEL_SORT(priv->sort_model),
+	     &sort_iter, &filter_iter);
+	  
+	  path = gtk_tree_model_get_path (priv->sort_model, &sort_iter);
+	  gtk_tree_view_set_cursor (GTK_TREE_VIEW (view), path, NULL, FALSE);
+	  gtk_tree_path_free (path);
+	}
+      else
+	{
+	  gtk_tree_model_sort_convert_child_iter_to_iter
+	    (GTK_TREE_MODEL_SORT(priv->dir_sort),
+	     &sort_iter, &iter);
+	  
+	  gtk_tree_model_filter_convert_child_iter_to_iter
+	    (GTK_TREE_MODEL_FILTER(priv->dir_filter),
+	     &filter_iter, &sort_iter);
+
+	  path = gtk_tree_model_get_path (priv->dir_filter, &filter_iter);
+	  gtk_tree_view_set_cursor (GTK_TREE_VIEW (priv->dir_tree), path,
+				    NULL, FALSE);
+	  gtk_tree_path_free (path);
+	}
+    }
+  else
+    {
+      GtkWidget *view;
+      GtkTreeSelection *selection;
+
+      g_free (priv->cursor_goal_uri);
+      priv->cursor_goal_uri = g_strdup (uri);
+
+      if (priv->content_pane_last_used)
+	view = get_current_view (priv);
+      else
+	view = priv->dir_tree;
+
+      if (view == NULL)
+	return;
+
+      /* XXX - we only want to unset the cursor...
+       */
+      selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (view));
+      gtk_tree_selection_unselect_all (selection);
+    }
 }
 
 static GtkTreeModel *

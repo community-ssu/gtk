@@ -209,6 +209,9 @@ HildonFileSelectionPane hildon_file_selection_get_active_pane(HildonFileSelectio
 void hildon_file_selection_hide_content_pane(HildonFileSelection * self);
 void hildon_file_selection_show_content_pane(HildonFileSelection * self);
 
+void hildon_file_selection_move_cursor_to_uri (HildonFileSelection * self,
+					       const gchar *uri);
+
 /* Not for public use */
 GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
                                                        * self);
