@@ -6,7 +6,7 @@
 NAME=maemo-launcher
 DESC="Maemo Launcher"
 DAEMON=/usr/bin/$NAME
-DAEMON_BASE_OPTS="--daemon --booster gtk"
+DAEMON_BASE_OPTS="--daemon --send-app-died --booster gtk"
 PIDFILE=/tmp/$NAME.pid
 
 # OSSO AF Init definitions

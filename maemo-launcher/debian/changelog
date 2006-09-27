@@ -10,6 +10,7 @@ maemo-launcher (0.18~-1) UNRELEASED; urgency=low
       (Closes: #28055@Nokia)
   * Add support in DEB_BUILD_OPTIONS with nohildong to not enable the
     hildon enhancment to the gtk booster
+  * Enable again sending the application died signal.
 
  -- Guillem Jover <guillem.jover@nokia.com>  Mon,  3 Jul 2006 18:06:54 +0300
 
