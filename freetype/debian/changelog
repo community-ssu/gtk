@@ -1,3 +1,11 @@
+freetype (2.2.1-1osso2) unstable; urgency=low
+
+  * Applied Debian patch for CVE-2006-3467 - when this one gets merged to
+    upstream freetype we can remove it.
+  * Editing the debian/copyright file: FTL license
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 27 Sep 2006 17:15:59 +0300
+
 freetype (2.2.1-1osso1) unstable; urgency=low
 
   * Upstream update from 2.1.10 to 2.2.1
