@@ -7,7 +7,8 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * version 2.1 as published by the Free Software Foundation.
+ * as published by the Free Software Foundation; version 2.1 of
+ * the License.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -75,6 +76,10 @@ hildon_file_system_remote_device_init (HildonFileSystemRemoteDevice *device)
     HildonFileSystemSettings *fs_settings;
 
     fs_settings = _hildon_file_system_settings_get_instance ();
+
+    g_object_get (fs_settings, "flight-mode", &device->accessible, NULL);
+    device->accessible = !device->accessible;
+    
     device->signal_handler_id = g_signal_connect (fs_settings,
                                                  "notify::flight-mode",
                                                  G_CALLBACK(flightmode_changed),
