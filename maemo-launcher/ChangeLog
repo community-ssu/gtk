@@ -1,5 +1,12 @@
 2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (prog_t): Add an entry member.
+	(launch_process): Use load_main and prog->entry when calling the entry
+	point, and move the logic to load the main symbol to ...
+	(load_main): ... here. New function.
+
+2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/booster_null.c (booster_api): Renamed to ...
 	(booster_null_api): ... this.
 	* launcher/booster_gtk.c (booster_api): Renamed to ...

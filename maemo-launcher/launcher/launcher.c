@@ -53,6 +53,8 @@
 /* FIXME: Should go into '/var/run/'. */
 #define LAUNCHER_PIDFILE "/tmp/"PROG_NAME".pid"
 
+typedef int (*entry_t)(int, char **);
+
 typedef struct
 {
   int options;
@@ -61,6 +63,7 @@ typedef struct
   char *filename;
   char *name;
   int prio;
+  entry_t entry;
 } prog_t;
 
 typedef struct
@@ -86,8 +89,6 @@ static bool send_app_died = false;
 #ifdef DEBUG
 extern char **environ;
 #endif
-
-typedef int (*entry_t)(int, char **);
 
 static bool
 rise_oom_defense(pid_t pid)
@@ -117,29 +118,29 @@ rise_oom_defense(pid_t pid)
 }
 
 static void
-launch_process(prog_t *prog)
+load_main(prog_t *prog)
 {
   void *module;
-  entry_t entry;
   char *error_s;
-  int cur_prio;
 
   /* Load the launched application. */
   module = dlopen(prog->filename, RTLD_LAZY | RTLD_GLOBAL);
   if (!module)
-  {
-    error("loading invoked application: '%s'\n", dlerror());
-    return;
-  }
+    die(1, "loading invoked application: '%s'\n", dlerror());
 
   dlerror();
-  entry = (entry_t)dlsym(module, "main");
+  prog->entry = (entry_t)dlsym(module, "main");
   error_s = dlerror();
   if (error_s != NULL)
-  {
-    error("loading symbol 'main': '%s'\n", error_s);
-    return;
-  }
+    die(1, "loading symbol 'main': '%s'\n", error_s);
+}
+
+static void
+launch_process(prog_t *prog)
+{
+  int cur_prio;
+
+  load_main(prog);
 
   /* Possibly restore process priority. */
   errno = 0;
@@ -169,7 +170,7 @@ launch_process(prog_t *prog)
   report_set_output(report_none);
 #endif
 
-  _exit(entry(prog->argc, prog->argv));
+  _exit(prog->entry(prog->argc, prog->argv));
 }
 
 #ifdef HAVE_PRCTL_SET_NAME
