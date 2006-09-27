@@ -4278,16 +4278,6 @@ hildon_file_selection_disable_cursor_magic (HildonFileSelection *self,
     (model, G_CALLBACK (hildon_file_selection_row_inserted), self);
 }
 
-/* Move the cursor to URI.  This function also works when URI is not
-   listed in the model yet.  In that case, the current cursor will be
-   unset and when the URI appears and the cursor is till unset, it
-   will be set then.
-
-   The typical use of this function is when renaming a file.  You know
-   that a file with the new name will eventually appear and you want
-   the cursor to be on it.
-*/
-
 void
 hildon_file_selection_move_cursor_to_uri (HildonFileSelection * self,
 					  const gchar *uri)
