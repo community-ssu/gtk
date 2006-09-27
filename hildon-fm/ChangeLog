@@ -1,3 +1,29 @@
+2006-09-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Provide the hildon_file_selection_move_cursor_to_uri (N40983).
+	
+	* hildon-fm/hildon-file-selection.h
+	(hildon_file_selection_move_cursor_to_uri): New prototype.
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_enable_cursor_magic_for_model,
+	hildon_file_selection_enable_cursor_magic): Renamed former to
+	latter, changed all callers.  Also connects row_inserted signal.
+	(hildon_file_selection_disable_cursor_magic): New.
+	(HildonFileSelectionPrivate): Added cursor_goal_uri field.
+        (hildon_file_selection_finalize): Call disable_magic.  Free
+	cursor_goal_uri.
+	(set_cursor_idle_handle, set_cursor_when_idle,
+	get_view_for_model): New.
+	(hildon_file_selection_row_deleted): Don't set cursor when we have
+	a cursor_goal_uri.
+	(hildon_file_selection_row_inserted): New, for tracking the
+	cursor_goal_uri.
+	(hildon_file_selection_move_cursor_to_uri): New.
+	(hildon_file_selection_selection_changed): Don't call
+	hildon_file_selection_delayed_select_reference when nothing is
+	selected, we take care of the cursor now with
+	hildon_file_selection_enable_cursor_magic et al.
+
 2006-09-27  Xan Lopez  <xan.lopez@nokia.com>
 
 	* hildon-fm/hildon-file-system-upnp.c: 
