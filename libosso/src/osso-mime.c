@@ -61,17 +61,19 @@ osso_return_t osso_mime_set_cb(osso_context_t *osso,
 
 osso_return_t osso_mime_unset_cb(osso_context_t *osso)
 {
+    gboolean ret;
+
     if (osso == NULL) {
         ULOG_ERR_F("invalid parameters");
 	return OSSO_INVALID;
     }
 
-    _msg_handler_rm_cb_f(osso,
-                         osso->service,
-                         osso->object_path,
-                         osso->interface,
-                         _mime_handler, NULL, TRUE);
-    return OSSO_OK;
+    ret = _msg_handler_rm_cb_f(osso,
+                               osso->service,
+                               osso->object_path,
+                               osso->interface,
+                               _mime_handler, NULL, TRUE);
+    return ret ? OSSO_OK : OSSO_INVALID;
 }
 
 osso_return_t osso_mime_unset_cb_full(osso_context_t *osso,
@@ -79,6 +81,7 @@ osso_return_t osso_mime_unset_cb_full(osso_context_t *osso,
 			              gpointer data)
 {
     _osso_callback_data_t mime;
+    gboolean ret;
 
     if (osso == NULL || cb == NULL) {
         ULOG_ERR_F("invalid parameters");
@@ -89,12 +92,12 @@ osso_return_t osso_mime_unset_cb_full(osso_context_t *osso,
     mime.user_data = data;
     mime.data = NULL;
 
-    _msg_handler_rm_cb_f(osso,
-                         osso->service,
-                         osso->object_path,
-                         osso->interface,
-                         _mime_handler, &mime, TRUE);
-    return OSSO_OK;
+    ret = _msg_handler_rm_cb_f(osso,
+                               osso->service,
+                               osso->object_path,
+                               osso->interface,
+                               _mime_handler, &mime, TRUE);
+    return ret ? OSSO_OK : OSSO_INVALID;
 }
 
 static int get_message_arg_count(DBusMessage *m)

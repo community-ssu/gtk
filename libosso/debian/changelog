@@ -5,6 +5,8 @@ libosso (1.19-1) unstable; urgency=low
   * More fixes to copyright headers. Fixes: NB#40918
   * Added more deprecation warnings to osso_application_set_exit_cb().
   * Fixed the state reading function once again. Fixes: NB#41325
+  * Now checking whether the MIME handler really existed when unsetting
+    it. Fixes: NB#41082
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 27 Sep 2006 18:32:20 +0300
 

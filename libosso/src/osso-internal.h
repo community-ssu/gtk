@@ -183,7 +183,7 @@ _msg_handler_set_cb_f_free_data(osso_context_t *osso,
                                 _osso_handler_f *cb,
                                 _osso_callback_data_t *data, 
                                 gboolean method);
-gpointer __attribute__ ((visibility("hidden")))
+gboolean __attribute__ ((visibility("hidden")))
 _msg_handler_rm_cb_f(osso_context_t *osso,
                      const gchar *service,
                      const gchar *object_path,

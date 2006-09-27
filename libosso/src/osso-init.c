@@ -668,7 +668,7 @@ static inline gboolean data_matches(const _osso_handler_t *handler,
 }
 
 /************************************************************************/
-gpointer __attribute__ ((visibility("hidden")))
+gboolean __attribute__ ((visibility("hidden")))
 _msg_handler_rm_cb_f(osso_context_t *osso,
                      const gchar *service,
                      const gchar *object_path,
@@ -680,12 +680,12 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
     char uniq_key[MAX_HASH_KEY_LEN + 1];
     const _osso_hash_value_t *elem;
     const _osso_handler_t *matched_handler = NULL;
-    gpointer ret = NULL;
+    gboolean ret = FALSE;
 
     if (osso == NULL || object_path == NULL || interface == NULL
         || cb == NULL) {
         ULOG_DEBUG_F("invalid parameters");
-	return NULL;
+	return FALSE;
     }
 
     compose_hash_key(service, object_path, interface, uniq_key);
@@ -703,10 +703,10 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
             if (handler->method == method && handler->handler == cb) {
                 if (data_matches(handler, data)) {
                     ULOG_DEBUG_F("found from uniq_hash");
+                    ret = TRUE;
+
                     elem->handlers = g_list_remove_link(elem->handlers,
                                                         list);
-                    ret = handler->data;
-
                     free_handler(handler, NULL);
                     g_list_free(list); /* free the removed link */
 
@@ -741,7 +741,7 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
                     if (g_list_length(elem->handlers) == 0) {
                         g_hash_table_remove(osso->if_hash, interface);
                     }
-                    return ret;
+                    return TRUE;
                 }
                 list = g_list_next(list);
             }
@@ -768,7 +768,7 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
     ULOG_DEBUG_F(" service: %s", service);
     ULOG_DEBUG_F(" obj. path: %s", object_path);
     ULOG_DEBUG_F(" interface: %s", interface);
-    return NULL;
+    return ret;
 }
 
 
