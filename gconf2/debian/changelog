@@ -1,9 +1,8 @@
 gconf2 (2.6.4.15-osso2) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed the debug package. Fixes: NB#41286
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 27 Sep 2006 15:14:29 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 27 Sep 2006 16:19:41 +0300
 
 gconf2 (2.6.4.15-osso1) unstable; urgency=low
 
