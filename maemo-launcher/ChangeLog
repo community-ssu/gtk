@@ -1,5 +1,10 @@
 2006-09-27  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (release_childs): New function.
+	(main): Use it after forking the child.
+
+2006-09-27  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (sigs_interrupt): New function.
 	(main): Use sigs_interrupt instead of directly siginterrupt.
 

@@ -450,6 +450,25 @@ grow_childs(kindergarten_t *childs)
   return true;
 }
 
+static bool
+release_childs(kindergarten_t *childs)
+{
+  int i;
+  child_t *list = childs->list;
+
+  for (i = 0; i < childs->used; i++)
+  {
+    close(list[i].sock);
+    free(list[i].name);
+  }
+
+  childs->used = 0;
+  childs->n = 0;
+  free(childs->list);
+
+  return true;
+}
+
 static int
 get_child_slot_by_pid(kindergarten_t *childs, pid_t pid)
 {
@@ -841,6 +860,8 @@ main(int argc, char *argv[])
       close(sd);
       close(fd);
       free(prog.name);
+
+      release_childs(childs);
 
       /* Invoke it. */
       if (prog.filename)
