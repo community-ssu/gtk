@@ -873,7 +873,7 @@ static GString *check_illegal_characters(const gchar * name)
 
         unichar = g_utf8_get_char(name);
 
-	if (g_utf8_strchr ("\\/:*?\"<>|.", -1, unichar))
+	if (g_utf8_strchr ("\\/:*?\"<>|", -1, unichar))
 	  {
             if (!illegals)
                 illegals = g_string_new(NULL);
