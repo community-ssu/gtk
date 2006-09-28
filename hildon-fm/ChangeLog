@@ -2,7 +2,7 @@
 
 	* hildon-fm/hildon-file-chooser-dialog.c (build_ui): 
 	Use a variable to hold the infobanner message the for insensitive
-	button press callback instead of hardcoding it. (N41749).
+	button press callback instead of hardcoding it. (N41719).
 
 2006-09-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
