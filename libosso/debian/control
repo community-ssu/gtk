@@ -10,13 +10,14 @@ Section: devel
 Architecture: any
 Depends: libosso1 (= ${Source-Version}), libdbus-glib-1-dev
 Description: Libosso development files
+ Libosso header files for development.
 
 Package: libosso1
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-dbus-conf
 Description: Libosso library
- Libosso contains D-BUS-related functionality for Maemo applications.
+ Libosso contains D-Bus-related functionality for Maemo applications.
 
 Package: libosso-test
 Section: libs
@@ -26,6 +27,7 @@ Conflicts: libosso0 (<< 0.8.6-1)
 Replaces: libosso0 (<< 0.8.6-1)
 Depends: libosso1 (= ${Source-Version}), libdbus-glib-1-dev, outo
 Description: Libosso unit tests
+ Libosso unit tests stuff.
 
 Package: libosso-dbus-conf
 Section: base
@@ -33,10 +35,12 @@ Priority: optional
 Conflicts: libosso0 (<< 0.8.6-1)
 Replaces: libosso0 (<< 0.8.6-1)
 Architecture: all
-Description: Libosso D-BUS configuration settings
+Description: Libosso D-Bus configuration settings for Scratchbox.
+ Libosso D-Bus configuration settings for Scratchbox environment.
 
 Package: libosso1-dbg
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-dbus-conf, libosso1 (>= ${Source-Version})
-Description: Libosso libraries (with debug info)
+Depends: ${shlibs:Depends}, ${misc:Depends}, libosso1 (= ${Source-Version})
+Description: Libosso library debug info
+ Debug symbols and stuff for the Libosso library.
