@@ -1,11 +1,9 @@
 hildon-initscripts (1.6-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added Gtk key theme definition to osso-gtk.defs. Patch from Tomas
     Junnonen. Fixes: NB#41731
-  * Fixed lintian opportunities.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 28 Sep 2006 15:44:07 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 28 Sep 2006 16:54:07 +0300
 
 hildon-initscripts (1.5-1) unstable; urgency=low
 
