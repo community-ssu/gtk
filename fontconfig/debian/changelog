@@ -1,3 +1,14 @@
+fontconfig (2.4.1-1osso1) unstable; urgency=low
+
+  * Updated to upstream version 2.4.1
+  * Ported our optimization and config patches
+  * Interesting reading: https://bugs.freedesktop.org/show_bug.cgi?id=8428
+    alond the lines of "valgrind is confused, this is not a bug".
+  * We have the memory mapped config in.
+  * Fixes: NB#XXX
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu, 28 Sep 2006 14:44:22 +0300
+
 fontconfig (2.3.95-1osso1) unstable; urgency=low
 
   * Upstream update
