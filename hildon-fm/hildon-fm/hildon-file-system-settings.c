@@ -7,8 +7,7 @@
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * version 2.1 as published by the Free Software Foundation.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -35,7 +34,6 @@
 
 #include <osso-log.h>
 #include <bt-gconf.h>
-#include <bttools-dbus.h>
 #include <gconf/gconf-client.h>
 #include <mce/dbus-names.h>
 #include <mce/mode-names.h>
@@ -43,6 +41,7 @@
 #include <unistd.h>
 #include <libintl.h>
 #include <string.h>
+
 
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
@@ -79,6 +78,18 @@ enum {
 
 #define MCE_MATCH_RULE "type='signal',interface='" MCE_SIGNAL_IF \
                        "',member='" MCE_DEVICE_MODE_SIG "'"
+
+/* For getting and tracking the Bluetooth name
+ */
+#define BTNAME_SERVICE                  "org.bluez"
+#define BTNAME_REQUEST_IF               "org.bluez.Adapter"
+#define BTNAME_SIGNAL_IF                "org.bluez.Adapter"
+#define BTNAME_REQUEST_PATH             "/org/bluez/hci0"
+#define BTNAME_SIGNAL_PATH              "/org/bluez/hci0"
+
+#define BTNAME_REQ_GET                  "GetName"
+#define BTNAME_SIG_CHANGED              "NameChanged"
+
 #define BTNAME_MATCH_RULE "type='signal',interface='" BTNAME_SIGNAL_IF \
                           "',member='" BTNAME_SIG_CHANGED "'"
 
