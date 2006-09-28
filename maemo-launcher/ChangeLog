@@ -1,5 +1,12 @@
 2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/summoner.c: Include <unistd.h>. Remove commented out
+	<sys/resource.h> include.
+	* launcher/prog.c: Include <stdlib.h>.
+	* launcher/booster.c: Likewise.
+
+2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	* configure.ac: Bump version to 0.19~.
 
 2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
