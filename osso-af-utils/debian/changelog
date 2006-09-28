@@ -1,3 +1,10 @@
+osso-af-utils (1.7-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added build dependencies: x11proto-core-dev, x11proto-input-dev
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 28 Sep 2006 17:25:04 +0300
+
 osso-af-utils (1.6-1) unstable; urgency=low
 
   * Added dependency to osso-core-config.

@@ -5,10 +5,10 @@ INCLUDES = `pkg-config --cflags gdk-2.0` \
 	   `pkg-config --cflags dbus-1`
 
 xset770_INCLUDES = \
-	`pkg-config --cflags x11 xsp xi`
+	`pkg-config --cflags x11 xsp xi xproto inputproto`
 
 xset770_LDFLAGS = \
-	`pkg-config --libs x11 xsp xi`
+	`pkg-config --libs x11 xsp xi xproto inputproto`
 
 fb_progress_LDFLAGS = \
 	`pkg-config --libs libpng12`
