@@ -1,3 +1,9 @@
+2006-09-28  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hildon-navigator-panel.c:
+	- Load default plugins if there is bogus plugin. Fixes: NB#37100
+	- Set style also to HildonNavigatorItem.
+
 2006-09-28  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Send a fake ESC key event

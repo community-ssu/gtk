@@ -22,11 +22,19 @@
  *
  */
 
+#include <libosso.h>
 #include <osso-log.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <unistd.h>
+#include <libintl.h>
 #include "hildon-navigator-panel.h"
+
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
+#define _(String) dgettext(PACKAGE, String)
 
 #include "../libdesktop/hildon-log.h"
 
@@ -34,19 +42,41 @@
 #define BUTTON_NAME_2      "hildon-navigator-button-two"
 #define BUTTON_NAME_MIDDLE "hildon-navigator-button-three"
 
+#define HN_ITEM_DEFAULT_1     "hildon-task-navigator-bookmarks.desktop"
+#define HN_ITEM_DEFAULT_2     "osso-contact-plugin.desktop"
+#define HN_ITEM_DEFAULT_1_LIB "libtn_bookmark_plugin.so"
+#define HN_ITEM_DEFAULT_2_LIB "libosso-contact-plugin.so"
+#define HN_MAX_DEFAULT 2
+
+static gchar *items_default_desktop [] =
+  { HN_ITEM_DEFAULT_1, HN_ITEM_DEFAULT_2 };
+
+static gchar *items_default_library [] =
+  { HN_ITEM_DEFAULT_1_LIB, HN_ITEM_DEFAULT_2_LIB };
+
+typedef struct
+{
+  gchar   *name;
+  gchar   *library;
+  gboolean used;
+} 
+HNItemsDefault;
+
 typedef struct _HildonNavigatorPanelPrivate HildonNavigatorPanelPrivate;
 
 struct _HildonNavigatorPanelPrivate
 {
-  HildonLog *log;
-  GtkOrientation   orientation;
-  gboolean         plugins_loaded;
-  guint 	   num_plugins;
+  HildonLog 		*log;
+  GtkOrientation   	 orientation;
+  gboolean         	 plugins_loaded;
+  guint 	   	 num_plugins;
+  HNItemsDefault 	*default_items;
 };
 
 /* static declarations */
 static void hildon_navigator_panel_class_init (HildonNavigatorPanelClass *panel_class);
 static void hildon_navigator_panel_init (HildonNavigatorPanel *panel);
+static void hildon_navigator_panel_finalize (GObject *object);
 
 static GList *hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 					      gchar *filename, 
@@ -94,6 +124,7 @@ hildon_navigator_panel_init (HildonNavigatorPanel *panel)
 {
   HildonNavigatorPanelPrivate *priv;
   gchar *home, *path;
+  gint i;
   
   g_return_if_fail (panel);
 
@@ -108,17 +139,50 @@ hildon_navigator_panel_init (HildonNavigatorPanel *panel)
   priv->plugins_loaded = FALSE;
   priv->num_plugins    = 0;
 
+  priv->default_items  = g_new0(HNItemsDefault,HN_MAX_DEFAULT);
+
+  for (i=0;i<HN_MAX_DEFAULT;i++)
+  {
+    priv->default_items[i].name    = g_strdup (items_default_desktop[i]);
+    priv->default_items[i].library = g_strdup (items_default_library[i]);
+    priv->default_items[i].used    = FALSE;
+  }
+
   g_free (path);
+}
+
+static void 
+hildon_navigator_panel_finalize (GObject *object)
+{
+  HildonNavigatorPanelPrivate *priv;
+  gint i;
+	
+  g_assert (object && HILDON_IS_NAVIGATOR_PANEL (object));
+
+  priv = 
+   HILDON_NAVIGATOR_PANEL_GET_PRIVATE (HILDON_NAVIGATOR_PANEL (object));
+
+  g_object_unref (priv->log);
+
+  for (i=0;i<HN_MAX_DEFAULT;i++)
+  {
+    g_free (priv->default_items[i].name);
+    g_free (priv->default_items[i].library);
+  }
+  
+  g_free (priv->default_items);
 }
 
 static void
 hildon_navigator_panel_class_init (HildonNavigatorPanelClass *panel_class)
 {
-  /*GObjectClass      *object_class = G_OBJECT_CLASS   (panel_class);*/
+  GObjectClass      *object_class = G_OBJECT_CLASS   (panel_class);
   GtkWidgetClass    *widget_class = GTK_WIDGET_CLASS (panel_class);
 
   g_type_class_add_private (panel_class, sizeof (HildonNavigatorPanelPrivate));
 
+  object_class->finalize	  = hildon_navigator_panel_finalize;
+  
   widget_class->size_request      = hn_panel_size_request;
   widget_class->size_allocate     = hn_panel_size_allocate;
 
@@ -136,11 +200,11 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 				gchar *filename, 
 				gboolean allow_mandatory)
 {
-  gint i;
+  gint i,j;
   gchar **groups;
   GList *list = NULL, *bad_plugins = NULL;
   GKeyFile *keyfile;
-  HildonNavigatorItem *plugin;
+  HildonNavigatorItem *plugin = NULL;
   HildonNavigatorPanelPrivate *priv;
   GError *error = NULL;
 
@@ -166,8 +230,20 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 						  HN_LOG_KEY_END,
 						  NULL);
 
+
   /* Groups are a list of plugins in this context */
   groups = g_key_file_get_groups(keyfile, NULL);
+
+  /* State what default plugins are gonna be used */
+  i=0;
+  while( groups[i] != NULL)
+  {
+    for (j=0; j < HN_MAX_DEFAULT ; j++)
+      if (g_str_equal (groups[i],priv->default_items[j].name))
+        priv->default_items[j].used = TRUE;
+    i++;
+  }
+  
   i = 0;
   while (groups[i] != NULL)
   {
@@ -211,17 +287,89 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 
     if (!hn_panel_exist_plugin (panel,groups[i]) &&
 	g_list_find_custom (bad_plugins,groups[i],(GCompareFunc)strcmp) == NULL)
-    {
+    { g_debug ("Instance %s",groups[i]);
       plugin = hildon_navigator_item_new (groups[i], library);
+
+      for (j=0;j<HN_MAX_DEFAULT;j++)
+        if (g_str_equal (groups[i],priv->default_items[j].name))
+        {
+	   priv->default_items[j].used = TRUE;
+	   break;
+	}	   	
     }
     else
       plugin = NULL;
-        
+    
+    if (!plugin) 
+    { 
+      for (j=0;j<HN_MAX_DEFAULT;j++)
+      {
+        if (!g_str_equal (groups[i],priv->default_items[j].name) &&
+	     priv->default_items[j].used == FALSE)
+	{
+      	  plugin = 
+	    hildon_navigator_item_new 
+	      (priv->default_items[j].name,priv->default_items[j].library);
+
+	  if (plugin)
+	  {
+            DBusConnection *connection;
+	    DBusMessage    *message;
+	    DBusError       dbus_error;
+	    gint pid,timeout,init;
+	    gchar *strmsg = g_strdup (_("tncpa_ib_default_plugin_restored"));
+
+	    pid     = getpid();
+	    timeout = 3000;
+	    init    = 0;
+
+	    dbus_error_init (&dbus_error);
+	    connection = dbus_bus_get( DBUS_BUS_SESSION, &dbus_error );
+
+	    message = dbus_message_new_method_call
+		      ("com.nokia.statusbar",
+		       "/com/nokia/statusbar", 
+		       "com.nokia.statusbar", 
+		       "delayed_infobanner");
+
+	    if (message)
+	    {
+	      dbus_message_append_args (message, 
+			      	        DBUS_TYPE_INT32, 
+					&pid,
+					DBUS_TYPE_INT32,
+					&init,
+					DBUS_TYPE_INT32, 
+					&timeout,
+					DBUS_TYPE_STRING, 
+					&strmsg,
+					DBUS_TYPE_INVALID);
+
+	      dbus_connection_send (connection, message, NULL);
+
+	      dbus_connection_flush (connection);
+	    }
+
+	    dbus_message_unref(message);
+		  
+	    priv->default_items[j].used = TRUE;
+	    position  = i;
+	    mandatory = FALSE;
+	    
+	    g_free (strmsg);
+	  }
+	  break;
+	}
+      }
+	
+      if (j == HN_MAX_DEFAULT)    
+        plugin = NULL;
+    }   
+    
     if (plugin == NULL)
     {
-      /*osso_log(LOG_WARNING, 
-               "Failed to load plugin %s (%s)\n", 
-               groups[i], library);*/
+      g_debug ("Failed to load plugin %s (%s)\n", 
+               groups[i], library);
 
       g_free(library);
       library = NULL;
@@ -305,14 +453,22 @@ hn_panel_set_plugin_style (HildonNavigatorItem *item)
   position      = hildon_navigator_item_get_position (item);
   plugin_widget = hildon_navigator_item_get_widget   (item);
 
-  if (position == 0)
+  if (position == 0i)
+  {
     gtk_widget_set_name (plugin_widget, BUTTON_NAME_1);
+    gtk_widget_set_name (GTK_WIDGET (item), BUTTON_NAME_1);
+  }
   else
   if ((position % 2) != 0)
+  {
     gtk_widget_set_name (plugin_widget, BUTTON_NAME_2);
+    gtk_widget_set_name (GTK_WIDGET (item), BUTTON_NAME_2);
+  }
   else
+  {
     gtk_widget_set_name (plugin_widget, BUTTON_NAME_MIDDLE);
-
+    gtk_widget_set_name (GTK_WIDGET (item), BUTTON_NAME_MIDDLE);
+  }
 }
 
 static gint 
@@ -511,6 +667,7 @@ hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
 {
   GList *loaded_plugins = NULL, *l;
   HildonNavigatorPanelPrivate   *priv;
+  gint i;
 
   g_assert (panel);/* is container? box? HNPanel? */
 
@@ -526,6 +683,9 @@ hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
       gtk_container_remove (GTK_CONTAINER (panel), GTK_WIDGET (l->data));
     }
   }
+
+  for (i=0;i<HN_MAX_DEFAULT;i++)
+     priv->default_items[i].used = FALSE;
 
   g_list_free (loaded_plugins);
 
