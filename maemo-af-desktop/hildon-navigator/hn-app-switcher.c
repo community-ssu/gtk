@@ -37,6 +37,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* X include */
+#include <X11/keysymdef.h>
+#include <X11/keysym.h>
+#include <X11/extensions/XTest.h>
+
 /* GLib include */
 #include <glib.h>
 #include <glib/gi18n.h>
@@ -340,9 +345,30 @@ mce_handler (DBusConnection *conn,
 
           is_active = gtk_toggle_button_get_active (button);
           is_active = !is_active;
-	      
           gtk_toggle_button_set_active (button, is_active);
           gtk_toggle_button_toggled (button);
+
+          if (is_active != ((priv->main_menu) && 
+                            GTK_WIDGET_VISIBLE (priv->main_menu)))
+            {
+              /* XXX */
+              /* Something went wrong. Most probably a menu
+               * is opened, send a fake ESC key event to attempt
+               * to close it
+               */
+              KeyCode keycode;
+              KeySym  keysym;
+
+              keysym = XK_Escape;
+              keycode = XKeysymToKeycode (GDK_DISPLAY(), keysym);
+              
+              XTestFakeKeyEvent (GDK_DISPLAY(), keycode, TRUE, CurrentTime);
+              XTestFakeKeyEvent (GDK_DISPLAY(), keycode, FALSE, CurrentTime);
+              XSync(GDK_DISPLAY(), False);
+          
+              /* Try again */
+              gtk_toggle_button_toggled (button);
+            }
         }
 
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;

@@ -1,3 +1,9 @@
+2006-09-28  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c: Send a fake ESC key event
+	  if the menu didn't get opened when we press the HOME key.
+	  Fixes: NB#39891
+
 2006-09-28  Tomas Junnonen <tomas.junnonen@nokia.com>
 
 	* maemo-af-desktop.defs: Include gtk key theme in RC files to be parsed
