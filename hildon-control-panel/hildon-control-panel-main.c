@@ -527,7 +527,7 @@ hcp_save_state (HCP *hcp, gboolean clear_state)
         if (ret != OSSO_OK)
             ULOG_ERR ("An error occured when clearing application state");
 
-        goto cleanup;
+        return;
     }
 
     keyfile = g_key_file_new ();
