@@ -26,7 +26,7 @@ configure-stamp:
 	#patch -p0 < fontconfig-nodebug.patch - reimplemented, patch (hopefully) not needed anymore, 2.3.95
 	patch -p0 < fontconfig-lessfloat.patch
 	patch -p0 < fontconfig-optimize_config.patch
-	patch -p0 < fontconfig-newtimes-nohint.patch
+	#patch -p0 < fontconfig-newtimes-nohint.patch 28.9.06: Merged to optimize-config - patch would fail otherwise :(
 	#cd fontconfig && patch -p0 < ../fontconfig-remove-i18n.patch
 	cd fontconfig && ./configure --prefix=/usr --sysconfdir=/etc
 	touch configure-stamp

@@ -1,28 +1,6 @@
-#
-# Copyright © 2006 Nokia Corporation. All rights reserved.
-#
-# Permission to use, copy, modify, distribute, and sell this software and its
-# documentation for any purpose is hereby granted without fee, provided that
-# the above copyright notice appear in all copies and that both that
-# copyright notice and this permission notice appear in supporting
-# documentation, and that the name of copyright holder not be used in
-# advertising or publicity pertaining to distribution of the software without
-# specific, written prior permission. Copyright holder makes no
-# representations about the suitability of this software for any purpose.
-# It is provided "as is" without express or implied warranty.
-#
-# COPYRIGHT HOLDER DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
-# INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
-# EVENT SHALL KEITH PACKARD BE LIABLE FOR ANY SPECIAL, INDIRECT OR
-# CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF
-# USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-# OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-# PERFORMANCE OF THIS SOFTWARE.
-#
-#
 diff -Naur fontconfig/conf.d/40-generic.conf fontconfig-2.4.1-optimize-config/conf.d/40-generic.conf
 --- fontconfig/conf.d/40-generic.conf	2006-09-10 06:33:43.000000000 +0300
-+++ fontconfig-2.4.1-optimize-config/conf.d/40-generic.conf	2006-09-28 15:21:28.000000000 +0300
++++ fontconfig-2.4.1-optimize-config/conf.d/40-generic.conf	2006-09-28 16:44:39.000000000 +0300
 @@ -10,6 +10,7 @@
    Serif faces
   -->
@@ -50,9 +28,30 @@ diff -Naur fontconfig/conf.d/40-generic.conf fontconfig-2.4.1-optimize-config/co
  		<family>Bitstream Vera Sans Mono</family>
  		<family>DejaVu Sans Mono</family>
  		<family>Courier</family>
+--- fontconfig/conf.d/20-newtimes-nohint.conf   1970-01-01 02:00:00.000000000 +0200
++++ fontconfig-2.4.1-newtimes-nohint/conf.d/20-newtimes-nohint.conf     2006-09-28 16:38:32.000000000 +0300
+@@ -0,0 +1,18 @@
++<?xml version="1.0"?>
++<!DOCTYPE fontconfig SYSTEM "fonts.dtd">
++<!-- conf.d/sub-pixel.conf -->
++<fontconfig>
++<!--
++       Fix the Freetype hinting problem with NewCourier's "#" chars
++ -->
++
++       <match target="font">
++               <test name="family">
++                       <string>NewCourier</string>
++               </test>
++               <edit name="hinting">
++                       <bool>false</bool>
++               </edit>
++       </match>
++
++</fontconfig>
 diff -Naur fontconfig/conf.d/60-latin.conf fontconfig-2.4.1-optimize-config/conf.d/60-latin.conf
 --- fontconfig/conf.d/60-latin.conf	2006-09-10 06:30:00.000000000 +0300
-+++ fontconfig-2.4.1-optimize-config/conf.d/60-latin.conf	2006-09-28 15:22:45.000000000 +0300
++++ fontconfig-2.4.1-optimize-config/conf.d/60-latin.conf	2006-09-28 16:44:39.000000000 +0300
 @@ -4,6 +4,7 @@
  	<alias>
  		<family>serif</family>
@@ -80,13 +79,22 @@ diff -Naur fontconfig/conf.d/60-latin.conf fontconfig-2.4.1-optimize-config/conf
  			<family>Andale Mono</family>
 diff -Naur fontconfig/conf.d/Makefile.am fontconfig-2.4.1-optimize-config/conf.d/Makefile.am
 --- fontconfig/conf.d/Makefile.am	2006-09-10 07:07:07.000000000 +0300
-+++ fontconfig-2.4.1-optimize-config/conf.d/Makefile.am	2006-09-28 15:28:35.000000000 +0300
-@@ -52,17 +52,13 @@
++++ fontconfig-2.4.1-optimize-config/conf.d/Makefile.am	2006-09-28 16:46:34.000000000 +0300
+@@ -33,6 +33,7 @@
+ 	20-fix-globaladvance.conf \
+ 	20-lohit-gujarati.conf \
+ 	20-unhint-small-vera.conf \
++	20-newtimes-nohint.conf \
+ 	30-amt-aliases.conf \
+ 	30-urw-aliases.conf \
+ 	40-generic.conf \
+@@ -52,17 +53,14 @@
  	20-fix-globaladvance.conf \
  	20-lohit-gujarati.conf \
  	20-unhint-small-vera.conf \
 -	30-amt-aliases.conf \
 -	30-urw-aliases.conf \
++	20-newtimes-nohint.conf \
  	40-generic.conf \
  	49-sansserif.conf \
  	50-user.conf \
@@ -101,13 +109,22 @@ diff -Naur fontconfig/conf.d/Makefile.am fontconfig-2.4.1-optimize-config/conf.d
  EXTRA_DIST = $(CONF_FILES)
 diff -Naur fontconfig/conf.d/Makefile.in fontconfig-2.4.1-optimize-config/conf.d/Makefile.in
 --- fontconfig/conf.d/Makefile.in	2006-09-15 20:12:37.000000000 +0300
-+++ fontconfig-2.4.1-optimize-config/conf.d/Makefile.in	2006-09-28 15:28:55.000000000 +0300
-@@ -261,17 +261,13 @@
++++ fontconfig-2.4.1-optimize-config/conf.d/Makefile.in	2006-09-28 16:46:49.000000000 +0300
+@@ -242,6 +242,7 @@
+ 	20-fix-globaladvance.conf \
+ 	20-lohit-gujarati.conf \
+ 	20-unhint-small-vera.conf \
++	20-newtimes-nohint.conf \
+ 	30-amt-aliases.conf \
+ 	30-urw-aliases.conf \
+ 	40-generic.conf \
+@@ -261,17 +262,14 @@
  	20-fix-globaladvance.conf \
  	20-lohit-gujarati.conf \
  	20-unhint-small-vera.conf \
 -	30-amt-aliases.conf \
 -	30-urw-aliases.conf \
++	20-newtimes-nohint.conf \
  	40-generic.conf \
  	49-sansserif.conf \
  	50-user.conf \
