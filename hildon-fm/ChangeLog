@@ -1,3 +1,16 @@
+2006-09-28  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(check_illegal_characters): Removed '.' again from the list of
+	illegal characters.
+
+	* hildon-fm/hildon-file-system-settings.c: Don't include
+	<bttools-dbus.h>, it is deprecated.
+	(BTNAME_SERVICE, BTNAME_REQUEST_IF, BTNAME_SIGNAL_IF,
+	BTNAME_REQUEST_PATH, BTNAME_SIGNAL_PATH, BTNAME_REQ_GET,
+	BTNAME_SIG_CHANGED): New, using the "bluez.org" D-Bus API.
+	(N41462)
+	
 2006-09-27 Tapani Palli <tapani.palli@nokia.com>
 
 	* hildon-fm/hildon-file-system-remote-device.c : initialize
