@@ -26,6 +26,7 @@ fi
 
 CURRENT_THEME_DIR=$HOME/.osso
 CURRENT_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-theme
+CURRENT_KEY_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-key-theme
 
 if [ ! -f $CURRENT_THEME_FILE -a "x$DONOTCREATE" = "x" ]; then
 
@@ -55,6 +56,10 @@ else
   fi
 fi
 
+if [ ! -f $CURRENT_KEY_THEME_FILE -a "x$DONOTCREATE" = "x" ]; then
+  cp -f /etc/osso-af-init/current-gtk-key-theme.default $CURRENT_KEY_THEME_FILE
+fi
+
 # have to do these for the case that this was sourced
 HOME=$ORIGHOME
 unset ORIGHOME
@@ -65,4 +70,4 @@ unset DONOTCREATE
 export DEFAULTMBTHEME=$DEFAULTMBTHEME
 export DEFAULTGTKTHEME=$DEFAULTGTKTHEME
 
-export GTK2_RC_FILES=$CURRENT_THEME_FILE
+export GTK2_RC_FILES=$CURRENT_THEME_FILE:$CURRENT_KEY_THEME_FILE

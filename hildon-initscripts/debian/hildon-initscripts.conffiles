@@ -2,3 +2,5 @@
 /etc/osso-af-init/matchbox.sh
 /etc/osso-af-init/osso-gtk.defs
 /etc/osso-af-init/current-gtk-theme.default
+/etc/osso-af-init/current-gtk-key-theme.default
+

@@ -15,6 +15,7 @@ startup_DATA = \
 	matchbox.sh \
 	osso-gtk.defs \
 	dbus-systembus.sh \
+	current-gtk-key-theme.default \
 	current-gtk-theme.default
 
 bin_SCRIPTS = af-sb-init.sh \
