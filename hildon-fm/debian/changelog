@@ -1,7 +1,7 @@
 hildon-fm (1.11-0unreleased1) unstable; urgency=low
 
   * debian/control (Build-Depends): Removed osso-bttools-dev.
-  * Fixes: NB#41347, NB#41462, NB#40914.
+  * Fixes: NB#41347, NB#41462, NB#40914, NB#41719.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 27 Sep 2006 19:02:56 +0300
 

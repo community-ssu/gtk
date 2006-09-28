@@ -149,6 +149,7 @@ struct _HildonFileChooserDialogPrivate {
     gint max_full_path_length;
     gint max_filename_length;
     gboolean popup_protect;
+    gchar *infobanner_message;
 
     /* Popup menu contents */
     GtkWidget *sort_type, *sort_name, *sort_date, *sort_size;
@@ -362,7 +363,10 @@ hildon_file_chooser_dialog_check_limit(GtkEditable *editable,
 
 static void insensitive_button(GtkWidget *widget, gpointer data)
 { 
-    gtk_infoprint(GTK_WINDOW(data), _("sfil_ib_select_file"));
+  HildonFileChooserDialogPrivate *priv =
+	HILDON_FILE_CHOOSER_DIALOG(data)->priv;
+
+  gtk_infoprint(GTK_WINDOW(data), priv->infobanner_message);
 }
 
 static void file_activated_handler(GtkWidget * widget, gpointer user_data)
@@ -777,6 +781,7 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_select_object_ok_open"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_select_object_cancel"));
+		priv->infobanner_message = _("sfil_ib_select_file");
         break;
     case GTK_FILE_CHOOSER_ACTION_SAVE:
         if (hildon_file_chooser_dialog_save_multiple_set(priv))
@@ -814,6 +819,7 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_save_object_dialog_cancel"));
         gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(self),
                                           _("ckdg_va_save_object_name_stub_default"));
+	priv->infobanner_message = HCS("ckdg_ib_enter_name");
         break;
     case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
         gtk_widget_hide(priv->caption_control_name);
@@ -830,6 +836,7 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_change_folder_new_folder"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_change_folder_cancel"));
+		priv->infobanner_message = _("sfil_ib_select_file");
         break;
     case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
         hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
@@ -848,6 +855,7 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_new_folder_dialog_ok"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_new_folder_dialog_cancel"));
+	priv->infobanner_message = HCS("ckdg_ib_enter_name");
         break;
     default:
         g_assert_not_reached();
@@ -1544,7 +1552,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     priv->autonaming_enabled = TRUE;
     priv->should_show_folder_button = TRUE;
     priv->should_show_location = TRUE;
-    priv->stub_name = priv->ext_name = NULL;
+    priv->stub_name = priv->ext_name = priv->infobanner_message = NULL;
     priv->action = GTK_FILE_CHOOSER_ACTION_OPEN;
     priv->action_button =
         gtk_dialog_add_button(GTK_DIALOG(self),
