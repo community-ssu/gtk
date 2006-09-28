@@ -1,3 +1,9 @@
+maemo-launcher (0.19~-1) UNRELEASED; urgency=low
+
+  * New Upstream Release.
+
+ -- Guillem Jover <guillem.jover@nokia.com>  Thu, 28 Sep 2006 16:50:02 +0300
+
 maemo-launcher (0.18-1) unstable; urgency=low
 
   * New Upstream Release.
