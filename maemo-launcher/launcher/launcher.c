@@ -88,6 +88,23 @@ static bool send_app_died = false;
 
 #ifdef DEBUG
 extern char **environ;
+
+static void
+print_prog_env_argv(prog_t *prog)
+{
+  int i;
+
+  for (i = 0; environ[i] != NULL; i++)
+    debug("env[%i]='%s'\n", i, environ[i]);
+
+  for (i = 0; i < prog->argc; i++)
+    debug("argv[%i]='%s'\n", i, prog->argv[i]);
+}
+#else
+static inline void
+print_prog_env_argv(prog_t *prog)
+{
+}
 #endif
 
 static bool
@@ -152,19 +169,11 @@ launch_process(prog_t *prog)
   if (prog->prio < 0)
     rise_oom_defense(getpid());
 
-#ifdef DEBUG
-  {
-    int i;
-
-    for (i = 0; environ[i] != NULL; i++)
-      debug("env[%i]='%s'\n", i, environ[i]);
-
-    for (i = 0; i < prog->argc; i++)
-      debug("argv[%i]='%s'\n", i, prog->argv[i]);
-  }
+  print_prog_env_argv(prog);
 
   debug("launching process: '%s'\n", prog->filename);
 
+#ifdef DEBUG
   report_set_output(report_console);
 #else
   report_set_output(report_none);
