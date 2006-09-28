@@ -1,6 +1,5 @@
 libosso (1.19-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added calling ldconfig to postinst.
   * More fixes to copyright headers. Fixes: NB#40918
   * Added more deprecation warnings to osso_application_set_exit_cb().
@@ -9,8 +8,9 @@ libosso (1.19-1) unstable; urgency=low
     it. Fixes: NB#41082
   * Fixed the debug package to be new-style. Fixes: NB#41394
   * Fixed possible memory leak in osso-state.c when reading the state fails.
+  * Fixes to debian/copyright and debian/control.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 28 Sep 2006 12:20:29 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 28 Sep 2006 12:33:29 +0300
 
 libosso (1.18-1) unstable; urgency=low
 
