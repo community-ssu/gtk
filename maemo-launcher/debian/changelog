@@ -1,4 +1,4 @@
-maemo-launcher (0.18~-1) UNRELEASED; urgency=low
+maemo-launcher (0.18-1) unstable; urgency=low
 
   * New Upstream Release.
     - Create a new session id for the childs. (Closes: #28627@Nokia)
@@ -14,7 +14,7 @@ maemo-launcher (0.18~-1) UNRELEASED; urgency=low
     hildon enhancment to the gtk booster
   * Enable again sending the application died signal.
 
- -- Guillem Jover <guillem.jover@nokia.com>  Mon,  3 Jul 2006 18:06:54 +0300
+ -- Guillem Jover <guillem.jover@nokia.com>  Thu, 28 Sep 2006 03:39:07 +0300
 
 maemo-launcher (0.17-1) unstable; urgency=low
 

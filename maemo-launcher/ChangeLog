@@ -1,5 +1,9 @@
 2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.18.
+
+2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	* configure.ac (AC_CONFIG_FILES): Generate maemo-summoner.1.
 	* launcher/launcher.c: Do not include <sys/prctl.h> nor <dlfcn.h>
 	anymore. Include 'prog.h'.
