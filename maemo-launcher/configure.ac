@@ -126,6 +126,7 @@ AC_CONFIG_FILES([
 	Makefile
 	launcher/Makefile
 	launcher/maemo-invoker.1:launcher/invoker.1.in
+	launcher/maemo-summoner.1:launcher/summoner.1.in
 	launcher/maemo-launcher.1:launcher/launcher.1.in
 	client/Makefile
 ])

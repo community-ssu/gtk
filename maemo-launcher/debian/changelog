@@ -8,6 +8,8 @@ maemo-launcher (0.18~-1) UNRELEASED; urgency=low
     - Remove the now not required LD_BIND_NOW environment variable from
       the init script (as it's implemented using the boosters).
       (Closes: #28055@Nokia)
+    - Add new maemo-summoner, to load directly .launch applications.
+      (Closes: #38580@Nokia)
   * Add support in DEB_BUILD_OPTIONS with nohildong to not enable the
     hildon enhancment to the gtk booster
   * Enable again sending the application died signal.

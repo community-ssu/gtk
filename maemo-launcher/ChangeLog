@@ -1,5 +1,25 @@
 2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac (AC_CONFIG_FILES): Generate maemo-summoner.1.
+	* launcher/launcher.c: Do not include <sys/prctl.h> nor <dlfcn.h>
+	anymore. Include 'prog.h'.
+	(entry_t, prog_t): Move type definitions to ...
+	* launcher/prog.h: ... here. New file.
+	(prog_t): Likewise.
+	* launcher/launcher.c (environment, print_prog_env_argv, load_main)
+	(set_process_name, set_progname): Move declarations to ...
+	* launcher/prog.c: ... here. New file.
+	* launcher/summoner.c: New file.
+	* launcher/summoner.1.in: Likewise.
+	* launcher/Makefile.am (bin_PROGRAMS): Add maemo-summoner.
+	(maemo_launcher_SOURCES): Add 'prog.c' and 'prog.h'.
+	(maemo_summoner_SOURCES): New variable.
+	(maemo_summoner_CPPFLAGS): Likewise.
+	(maemo_summoner_LDADD): Likewise.
+	(dist_man_MANS): Add maemo-summoner.1.
+
+2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (launch_process): Move program environment and
 	argv debugging prints to ...
 	(print_prog_env_argv): ... here. New function.
