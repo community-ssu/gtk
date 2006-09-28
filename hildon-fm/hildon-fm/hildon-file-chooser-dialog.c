@@ -781,7 +781,7 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_select_object_ok_open"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_select_object_cancel"));
-		priv->infobanner_message = _("sfil_ib_select_file");
+	priv->infobanner_message = _("sfil_ib_select_file");
         break;
     case GTK_FILE_CHOOSER_ACTION_SAVE:
         if (hildon_file_chooser_dialog_save_multiple_set(priv))
@@ -836,7 +836,7 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_change_folder_new_folder"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_change_folder_cancel"));
-		priv->infobanner_message = _("sfil_ib_select_file");
+	priv->infobanner_message = _("sfil_ib_select_file");
         break;
     case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
         hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
