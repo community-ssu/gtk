@@ -1033,18 +1033,33 @@ get_pixbuf_for_entry_info (HNEntryInfo *info)
 				     AS_ICON_SIZE,
 				     0,
 				     &error);
-  if (error)
-    {
-      osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
-                icon_name,
-                error->message);
+  if (!error)
+    return retval;
 
-      g_error_free (error);
+  osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
+            icon_name,
+            error->message);
 
-      return NULL;
-    }
+  g_error_free (error);
+  
+  /* Fallback to default icon */
+  icon_name = AS_MENU_DEFAULT_APP_ICON;
+  error = NULL;
+  retval = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		  		     icon_name,
+				     AS_ICON_SIZE,
+				     0,
+				     &error);
+  if (!error)
+    return retval;
 
-  return retval;
+  osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
+            icon_name,
+            error->message);
+
+  g_error_free (error);
+
+  return NULL;
 }
 
 static GdkPixbuf *
