@@ -3,7 +3,7 @@
 #---------------------------------------------------------------------------
 # Project related configuration options
 #---------------------------------------------------------------------------
-PROJECT_NAME           = LibOSSO
+PROJECT_NAME           = Libosso
 PROJECT_NUMBER         = @VERSION@
 OUTPUT_DIRECTORY       = $(DESTDIR)@API_DIR@
 OUTPUT_LANGUAGE        = English

@@ -278,6 +278,7 @@ static osso_return_t _read_state(const gchar *statefile, osso_state_t *state)
     gint fd = -1;
     ssize_t bytes_read=0, total_bytes=0;
     gpointer p;
+    gboolean free_state_data_on_error = FALSE;
     
     fd = open(statefile, O_RDONLY);
     if (fd == -1) {	
@@ -316,6 +317,7 @@ _read_state_read_again:
 	    ret = OSSO_ERROR;
 	    goto _get_state_ret1;
 	}
+        free_state_data_on_error = TRUE;
     }
     p = state->state_data;
     do {
@@ -369,6 +371,10 @@ _read_state_read_again:
 	    }
 	}
 #endif
+    if (ret != OSSO_OK && free_state_data_on_error) {
+        free(state->state_data);
+        state->state_data = NULL;
+    }
     return ret;
 }
 
