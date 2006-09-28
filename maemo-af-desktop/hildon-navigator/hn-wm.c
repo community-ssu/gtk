@@ -66,9 +66,6 @@
 
 #define LAUNCH_SUCCESS_TIMEOUT 20
 
-#define KEY_BINDINGS_RC_DIR ".osso"
-#define KEY_BINDINGS_RC_FILE KEY_BINDINGS_RC_DIR "/keybindings.rc"
-
 extern HildonNavigatorWindow *tasknav;
 
 static GdkFilterReturn
@@ -1948,42 +1945,6 @@ hn_wm_bgkill_cb (HNAppSwitcher *app_switcher,
   hn_wm_memory_bgkill_func (is_on);
 }
 
-static void
-hn_wm_load_key_bindings()
-{
-  gchar *filename;
-
-  filename = g_build_filename (g_getenv ("HOME"),
-                               KEY_BINDINGS_RC_FILE,
-                               NULL);
-  gtk_rc_parse(filename);
-  g_free(filename);
-}
-
-static void
-bindings_configuration_changed (gchar *path,
-                                gpointer *data)
-{
-  hn_wm_load_key_bindings();
-}
-
-static void
-hn_wm_setup_key_bindings_watcher (void)
-{
-  gchar *directory;
-
-  directory = g_build_filename (g_getenv ("HOME"),
-                                KEY_BINDINGS_RC_DIR,
-                                NULL);
-
-  if (hildon_dnotify_set_cb((hildon_dnotify_cb_f *)bindings_configuration_changed,
-                            directory, NULL ) != HILDON_OK) {
-    osso_log( LOG_ERR, "Error setting dir notify callback!\n" );
-  }
-
-  g_free(directory);
-}
-
 gboolean
 hn_wm_init (HNAppSwitcher *as)
 {
@@ -2068,8 +2029,6 @@ hn_wm_init (HNAppSwitcher *as)
   /* Setup shortcuts */
 
   hnwm.keys = hn_keys_init ();
-  hn_wm_load_key_bindings ();
-  hn_wm_setup_key_bindings_watcher ();
 
   /* Track changes in the keymap */
 

@@ -1,3 +1,9 @@
+2006-09-28  Tomas Junnonen <tomas.junnonen@nokia.com>
+
+	* maemo-af-desktop.defs: Include gtk key theme in RC files to be parsed
+	Fixes: NB#37669, NB#40608
+	* hildon-navigator/hn-wm.c: Revert direct sourcing of keybindings.rc
+
 2006-09-27  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-menu-item.c: Revert to default icon if icon is
