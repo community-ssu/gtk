@@ -2448,6 +2448,10 @@ void get_style_properties( CPGrid * grid )
     priv->v_margin = v_margin;
     priv->item_height = item_height;
 
+    /* Padding a constant to fit the icon */ 
+    if (g_str_equal (priv->style,"largeicons-cp"))
+      priv->v_margin -= 4;
+
     iter = NULL;
     /*
     for (iter = priv->children; iter != NULL; iter = iter->next) {

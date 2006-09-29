@@ -320,7 +320,7 @@ cp_grid_item_new(const gchar *icon_basename)
 
     priv->label = gtk_label_new("");
     gtk_widget_set_parent(priv->label, GTK_WIDGET(item));
-    gtk_widget_set_name(priv->label, "cp-grid-item-label");
+    gtk_widget_set_name(priv->label, "hildon-grid-item-label");
 
     update_icon(item);
     set_label_justify(item);
@@ -353,7 +353,7 @@ cp_grid_item_new_with_label(const gchar *icon_basename,
     priv->icon_basename = g_strdup(icon_basename);
 
     priv->label = gtk_label_new(label != NULL ? label : "");
-    gtk_widget_set_name(priv->label, "cp-grid-item-label");
+    gtk_widget_set_name(priv->label, "hildon-grid-item-label");
     gtk_widget_set_parent(priv->label, GTK_WIDGET(item));
 
     update_icon(item);
@@ -666,6 +666,18 @@ cp_grid_item_expose(GtkWidget *widget, GdkEventExpose *event)
                       GTK_SHADOW_NONE,
                       &clip, focused, "selected",
                       clip.x, clip.y, clip.width, clip.height);
+
+	gdk_gc_set_line_attributes (widget->style->fg_gc[GTK_STATE_NORMAL],
+                                    1,
+				    GDK_LINE_SOLID,
+                                    GDK_CAP_BUTT,
+                                    GDK_JOIN_MITER);
+
+	gdk_draw_rectangle (widget->window,
+			    widget->style->fg_gc[GTK_STATE_NORMAL], FALSE,
+			    clip.x,clip.y,
+			    clip.width-1,clip.height-1);
+
     }
 
     /* 
@@ -747,7 +759,9 @@ cp_grid_item_size_allocate(GtkWidget *widget, GtkAllocation *allocation)
         i_alloc.height-= i_alloc.y + i_alloc.height -
             allocation->y - allocation->height;
     }
-      
+   
+    /* Padding a constant to fit the icon */ 
+    i_alloc.y += 4;  
 
     i_alloc.width = priv->icon_width;
     i_alloc.height = priv->icon_height;
