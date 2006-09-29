@@ -597,8 +597,11 @@ gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
   GSList *iter;
   gint len;
 
+  if (mime == NULL)
+    return g_strrstr (name, ".");
+
   /* Unrecognized types are not touched */
-  if (mime && g_ascii_strcasecmp(mime, "application/octet-stream") == 0)
+  if (g_ascii_strcasecmp(mime, "application/octet-stream") == 0)
     return NULL;
 
   /* Initialize suffix hash table from /usr/share/mime/globs */
@@ -644,7 +647,7 @@ gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
   {
     type = iter->data;
 
-    if (!mime || g_ascii_strcasecmp(mime, type->mime) == 0)
+    if (g_ascii_strcasecmp(mime, type->mime) == 0)
     {
       gchar *candidate = name + len - strlen(type->extension);
 
@@ -655,9 +658,9 @@ gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
   }
 
   /* If we didn't find a match (but type was recognized), then we just
-     return the part after last dot. If we didn't have type information,
-     then we do not touch the name. */
-  return mime ? g_strrstr(name, ".") : NULL;
+     return the part after last dot.
+  */
+  return g_strrstr(name, ".");
 }
 
 enum {
