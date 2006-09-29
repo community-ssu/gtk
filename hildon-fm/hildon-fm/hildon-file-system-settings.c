@@ -699,6 +699,21 @@ static gboolean delayed_init(gpointer data)
     gconf_value_free(value);
   }
 
+  value = gconf_client_get_without_default(self->priv->gconf,
+                                           MMC_USED_KEY, &error);
+  if (error != NULL)
+  {
+    ULOG_ERR_F("gconf_client_get_without_default failed: %s",
+               error->message);
+    g_error_free(error);
+    error = NULL;
+  }
+  else if (value != NULL)
+  {
+    set_mmc_used_from_gconf_value(self, value);
+    gconf_value_free(value);
+  }
+
   self->priv->gconf_ready = TRUE;
 
   return FALSE; /* We need this only once */
