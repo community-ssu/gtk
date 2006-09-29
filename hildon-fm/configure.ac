@@ -64,10 +64,6 @@ AC_SUBST(DBUSGLIB_LIBS)
 PKG_CHECK_MODULES(LIBOSSO, libosso >= 0.8.8)
 AC_SUBST(LIBOSSO_CFLAGS)
 
-# We need only macros from bttools-dev package
-PKG_CHECK_MODULES(BTTOOLS, bttools >= 0.22)
-AC_SUBST(BTTOOLS_CFLAGS)
-
 # Now also mce has a pkgconfig file.
 PKG_CHECK_MODULES(MCE, mce >= 0.8.5)
 AC_SUBST(MCE_CFLAGS)
