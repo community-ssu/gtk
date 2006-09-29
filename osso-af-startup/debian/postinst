@@ -44,7 +44,7 @@ fi
 if [ -w $HOME ]; then
   MYDOCS=$HOME/MyDocs
   mkdir -p $MYDOCS/.sounds $MYDOCS/.videos \
-    $MYDOCS/.documents/.games $MYDOCS/.images 2> /dev/null
+    $MYDOCS/.documents $MYDOCS/.games $MYDOCS/.images 2> /dev/null
   if [ $? = 0 ]; then
     chown -R $USER:$GROUP $MYDOCS
   fi
