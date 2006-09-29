@@ -614,20 +614,43 @@ hildon_home_window_style_set (GtkWidget *widget,
 			      GtkStyle  *old_style)
 {
   HildonHomeWindowPrivate *priv = HILDON_HOME_WINDOW (widget)->priv;
+  static gchar *current_titlebar_image;
+  static gchar *current_sidebar_image;
+  const gchar *new_titlebar_image, *new_sidebar_image;
 
   if (GTK_WIDGET_CLASS (hildon_home_window_parent_class)->style_set)
     GTK_WIDGET_CLASS (hildon_home_window_parent_class)->style_set (widget,
 		    						   old_style);
   
+  new_titlebar_image = get_titlebar_image_from_theme (widget);
+  new_sidebar_image = get_sidebar_image_from_theme (widget);
+
   /* avoid resetting the background when the window is exposed for the
    * first time
    */
   if (!old_style)
+  {
+    current_titlebar_image = g_strdup(new_titlebar_image);
+    current_sidebar_image = g_strdup(new_sidebar_image);
     return;
+  }
+
+  /* avoid resetting the background if the theme hasn't changed */
+  if (g_str_equal(current_titlebar_image, new_titlebar_image) &&
+      g_str_equal(current_sidebar_image, new_sidebar_image))
+  {
+    background_manager_refresh_from_cache(priv->bg_manager);
+    return;
+  }
+
+  g_free(current_titlebar_image);
+  current_titlebar_image = g_strdup(new_titlebar_image);
+  g_free(current_sidebar_image);
+  current_sidebar_image = g_strdup(new_sidebar_image);
 
   background_manager_set_components (priv->bg_manager,
-		  		     get_titlebar_image_from_theme (widget),
-				     get_sidebar_image_from_theme (widget));
+                                     new_titlebar_image,
+                                     new_sidebar_image);
 }
 
 static gboolean

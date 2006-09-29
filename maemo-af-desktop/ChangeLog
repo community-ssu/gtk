@@ -1,3 +1,10 @@
+2006-09-29  Tomas Junnonen <tomas.junnonen@nokia.com>
+
+	* hildon-home/hildon-home-window.c,
+	  hildon-home/background-manager.[c,h]: Don't compose new background
+	  image on set-style if the title and sidebar images don't change.
+	  Fixes: NB#37723
+
 2006-09-28  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hildon-navigator-panel.c:

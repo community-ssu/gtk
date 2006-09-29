@@ -1320,6 +1320,35 @@ bg_timeout_cb (gpointer data)
   return FALSE;
 }
 
+gboolean
+background_manager_refresh_from_cache (BackgroundManager *manager)
+{
+  BackgroundManagerPrivate *priv;
+  GdkPixbuf *pixbuf;
+  GError *load_error = NULL;
+
+  priv = manager->priv;
+
+  pixbuf = gdk_pixbuf_new_from_file (priv->current->cache, &load_error);
+  if (load_error)
+    {
+      g_warning ("Unable to load background from cache: %s",
+                 load_error->message);
+      g_error_free (load_error);
+
+      return FALSE;
+    }
+  else
+    {
+      g_debug ("Background loaded from cache");
+      
+      g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+      g_object_unref (pixbuf);
+
+      return TRUE;
+    }
+}
+
 static void
 background_manager_create_background (BackgroundManager *manager,
                                       gboolean           cancellable)
@@ -1343,24 +1372,9 @@ background_manager_create_background (BackgroundManager *manager,
    */
   if (first_run)
     {
-      GdkPixbuf *pixbuf;
-      GError *load_error = NULL;
-
-      pixbuf = gdk_pixbuf_new_from_file (priv->current->cache, &load_error);
-      if (load_error)
+      if (background_manager_refresh_from_cache(manager))
         {
-          g_warning ("Unable to load background from cache: %s",
-		     load_error->message);
-          g_error_free (load_error);
-        }
-      else
-        {
-          g_debug ("Background loaded from cache");
-
-          g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
-          g_object_unref (pixbuf);
           first_run = FALSE;
-
           return;
         }
     }

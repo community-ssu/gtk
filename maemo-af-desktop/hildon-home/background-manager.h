@@ -127,6 +127,8 @@ void                  background_manager_update_preview    (BackgroundManager *m
 void                  background_manager_discard_preview   (BackgroundManager *manager,
                                                             gboolean           reload);
 
+gboolean              background_manager_refresh_from_cache (BackgroundManager *mananger);
+
 G_END_DECLS
 
 #endif /* __BACKGROUND_MANAGER_H__ */
