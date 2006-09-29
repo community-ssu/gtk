@@ -148,6 +148,20 @@ hildon_file_system_mmc_init (HildonFileSystemMMC *device)
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_MMC;
 }
 
+static void
+capitalize_ascii_string (gchar *str)
+{
+  if (*str)
+    {
+      *str = g_ascii_toupper (*str);
+      while (*str)
+	{
+	  *str = g_ascii_tolower (*str);
+	  str++;
+	}
+    }
+}
+
 static gchar*
 hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
                                          *location, GtkFileSystem *fs)
@@ -183,6 +197,10 @@ hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
         {
             name = g_strdup (_("sfil_li_memorycard_removable"));
         }
+    }
+    else
+    {
+      capitalize_ascii_string (name);
     }
 
     return name;
