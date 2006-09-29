@@ -11,9 +11,16 @@
 
 2006-09-28  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Move ".games" folder to root.
+	(N37440)
+	
 	* hildon-fm/hildon-file-chooser-dialog.c
 	(check_illegal_characters): Removed '.' again from the list of
 	illegal characters.
+	(hildon_file_chooser_dialog_set_limit): Don't try to be smart
+	about the full pathname length, only use max_filename_length to
+	limit the entry field. (N32010)
 
 	* hildon-fm/hildon-file-system-settings.c: Don't include
 	<bttools-dbus.h>, it is deprecated.
