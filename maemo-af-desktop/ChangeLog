@@ -1,3 +1,7 @@
+2006-09-29  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-wm.h: Disabled debug. Fixes: NB#41734
+
 2006-09-29  Tomas Junnonen <tomas.junnonen@nokia.com>
 
 	* hildon-home/hildon-home-window.c,
