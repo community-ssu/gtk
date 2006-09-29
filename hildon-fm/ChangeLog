@@ -1,5 +1,18 @@
 2006-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/Makefile.am (INCLUDES): Don't use BTTOOLS_CFLAGS.
+
+	* hildon-fm/hildon-file-system-mmc.c (capitalize_ascii_string):
+	New.
+	(hildon_file_system_mmc_get_display_name): Use it to nicify the
+	names.
+
+	* configure.ac (BTTOOLS_CFLAGS): Removed.
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_search_extension): If mime is NULL, just
+	return the part after the last dot. (N40336)
+
 	* hildon-fm/hildon-file-selection.c
 	(hildon_file_selection_check_location): Do not retreat to safe
 	folder.
