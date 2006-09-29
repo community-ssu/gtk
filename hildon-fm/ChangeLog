@@ -1,3 +1,22 @@
+2006-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_check_location): Do not retreat to safe
+	folder.
+	(hildon_file_selection_selection_changed): Disable cursor magic
+	when unreffing the sort_model.  Don't retreat do the old folder
+	when mounting fails.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_real_device_disconnected): Do not reset
+	'load_time' and 'accessed' fields of device node.  This better
+	reflects reality and makes it easier to control when the node is
+	reloaded.
+	(location_connection_state_changed): Likewise.
+	(node_needs_reload): Reload unwatched nodes when forced.
+	(_hildon_file_system_model_mount_device_iter): Set 'accessed' to
+	TRUE even for failures.
+	
 2006-09-29 Tapani Palli <tapani.palli@nokia.com>
 
 	* hildon-fm/hildon-file-system-settings.c:
