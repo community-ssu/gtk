@@ -147,7 +147,7 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
         HildonFileSystemSpecialLocation *location;
         const gchar *env;
         gchar *rootpath;
-        GNode *rootnode, *node;
+        GNode *rootnode;
 
         locations = g_node_new(NULL); /* Invisible root node above everything else */
         rootpath =  get_local_device_root_path();
@@ -159,19 +159,19 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
         g_node_append(locations, rootnode);
 
         /* Setup safe folders */
-        (void) setup_safe_folder(rootnode, rootpath, ".images", 
+        setup_safe_folder(rootnode, rootpath, ".images", 
             _("sfil_li_folder_images"), "qgn_list_filesys_image_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_IMAGES);
-        (void) setup_safe_folder(rootnode, rootpath, ".videos", 
+        setup_safe_folder(rootnode, rootpath, ".videos", 
             _("sfil_li_folder_video_clips"), "qgn_list_filesys_video_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_VIDEOS);
-        (void) setup_safe_folder(rootnode, rootpath, ".sounds", 
+        setup_safe_folder(rootnode, rootpath, ".sounds", 
             _("sfil_li_folder_sound_clips"), "qgn_list_filesys_audio_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_SOUNDS);
-        node = setup_safe_folder(rootnode, rootpath, ".documents", 
+        setup_safe_folder(rootnode, rootpath, ".documents", 
             _("sfil_li_folder_documents"), "qgn_list_filesys_doc_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_DOCUMENTS);
-        (void) setup_safe_folder(node, rootpath, ".documents/.games", 
+        setup_safe_folder(rootnode, rootpath, ".games", 
             _("sfil_li_folder_games"), "qgn_list_filesys_games_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES);
 
