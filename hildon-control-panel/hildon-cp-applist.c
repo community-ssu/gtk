@@ -333,6 +333,16 @@ hcp_al_new ()
     return al;
 }
 
+gboolean
+hcp_al_free (HCPAppList *al)
+{
+    g_hash_table_foreach_remove (al->applets, (GHRFunc)hcp_al_free_item, NULL);
+    g_hash_table_destroy (al->applets);
+    g_slist_foreach (al->categories, (GFunc)hcp_al_empty_category, NULL);
+
+    return TRUE;
+}
+
 
 gboolean
 hildon_cp_applist_focus_item (HCPAppList *al, const gchar * entryname)

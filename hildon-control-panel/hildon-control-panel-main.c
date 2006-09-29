@@ -508,6 +508,9 @@ hcp_destroy_data (HCP *hcp)
 {
     if (hcp->osso)
         osso_deinitialize (hcp->osso);
+    hcp_al_free (hcp->al);
+    g_free (hcp->al);
+    hcp->al = NULL;
 }
 
 /* Save state data on disk */

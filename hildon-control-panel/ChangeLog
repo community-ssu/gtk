@@ -1,4 +1,12 @@
-2006-09-27  Jakub Pavelek <jakub.pavelek@nokia.com>
+2006-09-29  Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* hildon-cp-applist.h: added prototype for hcp_al_free()
+	* hildon-cp-applist.c: implemented hcp_al_free() that frees the list
+	and hash table
+	* hildon-control-panel-main.c: now calls hcp_al_free() and frees the
+	applet list too
+
+2006-09-28  Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* hildon-control-panel-main.c: hcp_save_state(): fixed a SEGFAULT when
 	  freeing non-allocated data

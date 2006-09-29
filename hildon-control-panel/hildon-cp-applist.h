@@ -95,7 +95,8 @@ hildon_cp_applist_get_grids( void );
 MBDotDesktop*
 hildon_cp_applist_get_entry( const gchar * entryname );
 
-
+gboolean
+hcp_al_free (HCPAppList *al);
 
 G_END_DECLS
 
