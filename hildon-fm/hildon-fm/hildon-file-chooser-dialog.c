@@ -295,57 +295,19 @@ get_path_length_from_uri(const char *uri)
 static void
 hildon_file_chooser_dialog_set_limit(HildonFileChooserDialog *self)
 {
-  gchar *uri;
-  const char *str;
-  gint max_length = 0, len;
-  gboolean limited;
+  /* The full pathname is limited to MAX_FULL_PATH_LENGTH characters,
+     thus we could try to be smart here and limit the length of the
+     input field to MAX_FULL_PATH_LENGTH minus the length of the
+     current folder pathname.  That, however, leads to quite wierd
+     behavior when we get close to the limit, or even beyond it,
+     especially when the user changes the current folder.  Instead, we
+     allow arbitrary entry lengths and validate the full pathname
+     length when the user hits "Ok".
+  */
 
-  /* We cannot get the current folder uri without filetree, 
-     which is not available during initial setup */
-  if (self->priv->max_full_path_length >= 0 && self->priv->filetree)
-  {
-    uri = gtk_file_chooser_get_current_folder_uri(GTK_FILE_CHOOSER(self));
-    max_length = self->priv->max_full_path_length - get_path_length_from_uri(uri);
-    g_free(uri);
-
-    /* Possible extension length must be subtracted from maximum 
-       possible length */
-    if ((str = self->priv->ext_name) != NULL)
-    {
-      len = g_utf8_strlen(str, -1);
-      max_length -= len;
-      ULOG_DEBUG("Extension = [%s], length = %d", str, len);
-    }
-
-    /* We have to alloc space for trailing slash */
-    max_length--;
-
-    limited = TRUE;
-  }
-  else
-    limited = FALSE;
-
-  if (self->priv->max_filename_length >= 0 && 
-     (!limited || self->priv->max_filename_length < max_length))
-  {
-    max_length = self->priv->max_filename_length;
-    limited = TRUE;
-  }
-
-  if (limited)
-  {
-    /* Maximum length 0 means "no limit" for entry and negatives are
-       not allowed.  Setting this to one at least. */
-    if (max_length < 1) max_length = 1;
-
-    ULOG_DEBUG("Setting maximum length to %d", max_length);
-    gtk_entry_set_max_length(GTK_ENTRY(self->priv->entry_name), max_length);
-  }
-  else
-  {
-    ULOG_DEBUG("Unsetting maximum length");
-    gtk_entry_set_max_length(GTK_ENTRY(self->priv->entry_name), 0);
-  }
+  ULOG_DEBUG ("Setting maximum length to %d", max_length);
+  gtk_entry_set_max_length (GTK_ENTRY (self->priv->entry_name),
+			    self->priv->max_filename_length);
 }
 
 static void 
