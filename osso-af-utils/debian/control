@@ -2,7 +2,7 @@ Source: osso-af-utils
 Section: base
 Priority: optional
 Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libx11-dev, libdbus-1-dev (>= 0.60), libosso-dev, libxsp-dev, libpng12-dev, libgtk2.0-dev, x11proto-core-dev, x11proto-input-dev
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libx11-dev, libdbus-1-dev (>= 0.60), libosso-dev, libxsp-dev, libpng12-dev, libgtk2.0-dev, x11proto-core-dev, x11proto-input-dev, libxi-dev
 Standards-Version: 3.6.0
 
 Package: osso-af-utils

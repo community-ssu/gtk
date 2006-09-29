@@ -1,3 +1,9 @@
+osso-af-utils (1.7-2) unstable; urgency=low
+
+  * Added build dependency to libxi-dev.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 29 Sep 2006 15:47:42 +0300
+
 osso-af-utils (1.7-1) unstable; urgency=low
 
   * Added build dependencies x11proto-core-dev and x11proto-input-dev and
