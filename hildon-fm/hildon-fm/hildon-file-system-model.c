@@ -242,8 +242,6 @@ static void hildon_file_system_model_real_device_disconnected(
   g_return_if_fail(model_node != NULL);
 
   clear_model_node_caches(model_node);
-  model_node->load_time = 0;
-  model_node->accessed = FALSE;
 }
 
 static void send_device_disconnected(GNode *node)
@@ -447,22 +445,68 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
   model_node = node->data;
   g_assert(model_node != NULL);
 
-  /* Check if we really need to load children. We don't want 
-     to reload if not needed and we don't want to restart existing
-     async loadings. We also don't try to access gateway if not accessed yet.
+  /* Check if we really need to load children. We don't want to reload
+     if not needed and we don't want to restart existing async
+     loadings. We also don't try to access gateway if not accessed
+     yet.
   */
-  if ((model_node->location && !model_node->accessed &&
-       hildon_file_system_special_location_requires_access (model_node->location))
-      || model_node->folder == NULL
-      || !is_node_loaded (model->priv, node))
-    return FALSE;
-  
+
+  if (model_node->location
+      && !model_node->accessed
+      && (hildon_file_system_special_location_requires_access
+	  (model_node->location)))
+    {
+      /* Accessing this node is expensive and the user has not tried
+	 to do it explicitly yet.  We don't reload it even if forced.
+      */
+      return FALSE;
+    }
+
+  if (!is_node_loaded (model->priv, node))
+    {
+      /* This node is already queued for a reload, don't queue it
+	 again.
+       */
+      return FALSE;
+    }
+
+  if (force)
+    {
+      /* Explicit user action will trigger a reload even if the
+	 RELOAD_THRESHOLD timeout has not expired yet.
+      */
+      return TRUE;
+    }
+
+  if (model_node->folder == NULL)
+    {
+      /* This node is not being watched and we ignore it if not
+	 forced.  This case happens when a device is diconnected, for
+	 example, and its nodes are kicked from the model.  The
+	 selection then moves to the device node and we would try to
+	 reload it (since it has been accessed already).
+	 
+	 We don't reset the 'accessed' property of disconnected
+	 devices since that would prevent a reload to try again.
+
+	 XXX - This logic could be improved.
+      */
+      return FALSE;
+    }
+
+  /* If none of the rules above apply, we reload a node if it hasn't
+     been loaded yet, or if it is a node that we don't receive change
+     notifications for and it has been loaded too long ago.
+
+     We assume that we don't receive change notifications for
+     non-'local' locations and locations that had an error.
+  */
+
   current_time = time(NULL);
   removable = !gtk_file_system_path_is_local (model->priv->filesystem, 
 					      model_node->path);
 
   return (model_node->load_time == 0
-	  || force
 	  || ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD)
 	      && (removable || model_node->error)));
 }
@@ -2220,8 +2264,6 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
                 (char *) model_node->path);
             
             send_device_disconnected(node);
-            model_node->load_time = 0;
-            model_node->accessed = FALSE;
         }
 
         /* Ensure that the base path is updated */
@@ -2687,10 +2729,10 @@ void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
     return;
 
   if (g_queue_find(model->priv->reload_list, node) == NULL)
-  {
-    hildon_file_system_model_ensure_idle(model);
-    g_queue_push_tail(model->priv->reload_list, node);
-  }
+    {
+      hildon_file_system_model_ensure_idle(model);
+      g_queue_push_tail(model->priv->reload_list, node);
+    }
 }
 
 static void
@@ -2895,11 +2937,11 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
         _hildon_file_system_prepare_banner(&priv->banner_timeout_id);
         success = link_file_folder(node, model_node->path, error);
 
+        model_node->accessed = TRUE;
+
         if (!success)
             return FALSE;
     
-        model_node->accessed = TRUE;
-
         hildon_file_system_model_delayed_add_children(model, node, TRUE);
         return TRUE;
       }

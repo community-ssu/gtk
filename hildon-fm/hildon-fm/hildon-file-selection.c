@@ -522,7 +522,7 @@ static void hildon_file_selection_check_location(
 {
   HildonFileSelection *self;
   GtkTreeModel *tree_model;
-  GtkTreeIter current_iter, safe_folder;
+  GtkTreeIter current_iter;
   GtkTreePath *current_path, *device_path;
 
   ULOG_INFO(__FUNCTION__);
@@ -549,9 +549,6 @@ static void hildon_file_selection_check_location(
         hildon_banner_show_information(GTK_WIDGET(self), NULL, message);
         g_free(message);
       }
-
-      get_safe_folder_tree_iter(self->priv, &safe_folder);
-      hildon_file_selection_set_current_folder_iter(self, &safe_folder);
     }
 
     gtk_tree_path_free(current_path);
@@ -1515,7 +1512,6 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
     if (gtk_tree_selection_get_selected(selection, &model, &iter)) {
 
         GtkTreeIter sort_iter, main_iter;
-        GtkTreeRowReference *old_folder;
         GtkTreePath *sort_path;
         GError *error = NULL;
         gboolean success;
@@ -1553,12 +1549,15 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
                     &main_iter, FALSE);
             }
 
-            old_folder = priv->current_folder;
             priv->current_folder = gtk_tree_row_reference_new(priv->dir_sort, sort_path);
 
         if (hildon_file_selection_content_pane_visible(priv)) {
             if (priv->sort_model)
+	      {
+		hildon_file_selection_disable_cursor_magic (self,
+							    priv->sort_model);
                 g_object_unref(priv->sort_model);
+	      }
             if (priv->view_filter)
                 g_object_unref(priv->view_filter);
 
@@ -1619,6 +1618,7 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
         /* This can invalidate non-persisting iterators, so we need to do
            mounting as last action. */
+	
         success =
             _hildon_file_system_model_mount_device_iter
             (HILDON_FILE_SYSTEM_MODEL(priv->main_model), &main_iter,
@@ -1636,13 +1636,9 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
                 g_free(message);
             }
 
-            hildon_file_selection_delayed_select_reference(self, old_folder);
-
             ULOG_ERR("Mount failed (error #%d): %s", error->code, error->message);
             g_error_free(error);
         }
-        else
-          gtk_tree_row_reference_free(old_folder);
 
         gtk_tree_path_free(sort_path);
 
