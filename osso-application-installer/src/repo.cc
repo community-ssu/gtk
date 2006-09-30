@@ -4,14 +4,13 @@
  * Parts of this file are derived from apt.  Apt is copyright 1997,
  * 1998, 1999 Jason Gunthorpe and others.
  *
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005, 2006 Nokia Corporation.  All Right reserved.
  *
  * Contact: Marius Vollmer <marius.vollmer@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
+ * modify it under the terms of the GNU General Public License version
+ * 2 as published by the Free Software Foundation.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
