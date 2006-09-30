@@ -27,11 +27,10 @@ osso_application_installer_launch_SOURCES = main.h			\
 					    apt-worker-proto.h		\
 					    apt-worker-proto.cc
 
-osso_application_installer_launch_CFLAGS =   $(AI_DEPS_CFLAGS) \
-                                             $(LAUNCHER_CFLAGS)
-osso_application_installer_launch_CXXFLAGS = $(AI_DEPS_CFLAGS) \
-                                             $(LAUNCHER_CFLAGS)
-osso_application_installer_launch_LDFLAGS =  $(LAUNCHER_LDFLAGS)
+osso_application_installer_launch_CFLAGS =   $(AI_DEPS_CFLAGS) -shared
+osso_application_installer_launch_CXXFLAGS = $(AI_DEPS_CFLAGS) -shared
+osso_application_installer_launch_LDFLAGS =  -shared \
+                                             -Wl,--version-script=export.map
 osso_application_installer_launch_LDADD =    $(AI_DEPS_LIBS)
 
 osso_application_installer_run_SOURCES =  $(osso_application_installer_launch_SOURCES)
@@ -46,6 +45,8 @@ apt_worker_SOURCES = apt-worker.cc \
 apt_worker_CFLAGS = $(AW_DEPS_CFLAGS)
 apt_worker_CXXFLAGS = $(AW_DEPS_CFLAGS)
 apt_worker_LDADD = $(AW_DEPS_LIBS) -lapt-pkg
+
+EXTRA_DIST = export.map
 
 install-exec-local:
 	rm -f $(DESTDIR)$(bindir)/osso-application-installer

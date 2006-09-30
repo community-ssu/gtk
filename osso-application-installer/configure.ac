@@ -31,14 +31,6 @@ AC_SUBST(AW_DEPS_LIBS)
 DEB_HOST_ARCH=`dpkg-architecture -qDEB_HOST_ARCH`
 AC_DEFINE_UNQUOTED(DEB_HOST_ARCH, "$DEB_HOST_ARCH", [Debian architecture])
 
-# For using the maemo-launcher
-
-LAUNCHER_CFLAGS="-shared"
-LAUNCHER_LDFLAGS="-shared -export-dynamic"
-
-AC_SUBST(LAUNCHER_CFLAGS)
-AC_SUBST(LAUNCHER_LDFLAGS)
-
 AC_CONFIG_FILES([Makefile
                  src/Makefile
 		 utils/Makefile

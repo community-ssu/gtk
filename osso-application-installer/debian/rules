@@ -23,6 +23,11 @@ endif
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -mthumb
+endif
+
+CXXFLAGS = -fno-rtti -fno-exceptions
 
 config.status:
 	if [ ! -x configure ]; then ./autogen.sh; fi
