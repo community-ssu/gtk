@@ -1,3 +1,18 @@
+2006-10-01  Marius Vollmer  <mvo@zagadka.de>
+
+	Optimizations for the launcherized osso-application-installer from
+	Leonid Moiseichuk.  Thanks!
+
+	* utils/export.map, src/export.map: New.
+	* utils/Makefile.am, src/Makefile.am: Hardcode launcher flags.
+	Use export.map when linking.
+	(EXTRA_DIST): Distribute export.map.
+	* src/Makefile.am (osso_application_installer_launch_CXXFLAGS): 
+	Added -fno-rtti and -fno-exceptions.
+	* debian/rules (CFLAGS): Add -mthumb when requested by
+	DEB_BUILD_OPTIONS.
+	* configure.ac: Removed LAUNCHER_CFLAGS and LAUNCHER_LDFLAGS.
+
 2006-09-30  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/apt-worker.cc (encode_dependencies): Put version information
