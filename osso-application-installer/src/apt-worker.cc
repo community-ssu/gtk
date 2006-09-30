@@ -1560,7 +1560,7 @@ encode_broken (pkgCache::PkgIterator &pkg,
 	    {
 	      g_string_append_printf (str, "%s", target.Name());
 	      if (Start.TargetVer() != 0)
-		g_string_append_printf (str, " %s %s",
+		g_string_append_printf (str, " (%s %s)",
 					Start.CompType(), Start.TargetVer());
 	    }
 
