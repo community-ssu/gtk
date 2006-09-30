@@ -28,7 +28,8 @@ osso_application_installer_launch_SOURCES = main.h			\
 					    apt-worker-proto.cc
 
 osso_application_installer_launch_CFLAGS =   $(AI_DEPS_CFLAGS) -shared
-osso_application_installer_launch_CXXFLAGS = $(AI_DEPS_CFLAGS) -shared
+osso_application_installer_launch_CXXFLAGS = $(AI_DEPS_CFLAGS) -shared \
+                                             -fno-rtti -fno-exceptions
 osso_application_installer_launch_LDFLAGS =  -shared \
                                              -Wl,--version-script=export.map
 osso_application_installer_launch_LDADD =    $(AI_DEPS_LIBS)
