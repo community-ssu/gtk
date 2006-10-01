@@ -1,7 +1,18 @@
 2006-10-01  Marius Vollmer  <mvo@zagadka.de>
 
+	* src/repo.cc (_UI2_): Removed, corrected all uses.
+
+	* src/utils.cc: Don't include <bttools-dbus.h>, it is deprecated.
+	(BTNAME_SERVICE, BTNAME_REQUEST_IF, BTNAME_SIGNAL_IF,
+	BTNAME_REQUEST_PATH, BTNAME_SIGNAL_PATH, BTNAME_REQ_GET,
+	BTNAME_SIG_CHANGED): New, using the "bluez.org" D-Bus API.
+	* debian/control (Build-Depends): Don't depend on osso-bttools-dev-
+
+	* src/repo.cc (sources_list_reply): Use ai_ti_add_catalogue
+	instead of ai_ti_add_cataloque, stupid.  (N36147)
+
 	Optimizations for the launcherized osso-application-installer from
-	Leonid Moiseichuk.  Thanks!
+	Leonid Moiseichuk.  Thanks!  (N41085)
 
 	* utils/export.map, src/export.map: New.
 	* utils/Makefile.am, src/Makefile.am: Hardcode launcher flags.
@@ -21,7 +32,7 @@
 2006-09-25  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/main.cc (refresh_package_cache_reply): Show the "Refresh
-	cancelled" message for all versions of the UI.
+	cancelled" message for all versions of the UI. (N35475)
 
 2006-09-24  Marius Vollmer  <mvo@zagadka.de>
 
