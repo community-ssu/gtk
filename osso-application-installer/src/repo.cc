@@ -39,7 +39,6 @@
 #include "util.h"
 
 #define _(x)       gettext (x)
-#define _UI2_(x,y) gettext_alt (x,y)
 
 struct repo_closure;
 
@@ -355,8 +354,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
 
   const char *title;
   if (readonly)
-    title = _UI2_("ai_ti_catalogue_details",
- 		  "Catalogue details");
+    title = _("ai_ti_catalogue_details");
   else if (isnew)
     title = _("ai_ti_new_repository");
   else
@@ -406,8 +404,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
 	  c->had_name = true;
 	}
       c->name_entry = add_entry (vbox, group,
-				 _UI2_("ai_fi_new_repository_name",
-				       "Cataloque Name"),
+				 _("ai_fi_new_repository_name"),
 				 r->name, end, true, readonly, true);
     }
   else
@@ -884,17 +881,13 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  gchar *str;
 
 	  if (ac->for_install)
-	    str = g_strdup_printf (_UI2_("ai_ia_add_catalogue_text",
-					 "New catalogue needs to be added.\n"
-					 "Catalogue name: %s"),
+	    str = g_strdup_printf (_("ai_ia_add_catalogue_text"),
 				   name);
 	  else
-	    str = g_strdup_printf (_UI2_("ai_ia_add_catalogue_text2",
-					 "Add new catalogue?\n%s"),
+	    str = g_strdup_printf (_("ai_ia_add_catalogue_text2"),
 				   name);
 	    
-	  ask_yes_no_with_arbitrary_details (_UI2_("ai_ti_add_cataloque",
-						   "Add catalogue"),
+	  ask_yes_no_with_arbitrary_details (_("ai_ti_add_catalogue"),
 					     str,
 					     maybe_add_new_repo_cont,
 					     maybe_add_new_repo_details,
