@@ -24,7 +24,6 @@
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
-#include <bttools-dbus.h>
 
 #include <string.h>
 #include <unistd.h>
@@ -59,8 +58,20 @@ extern "C" {
 
 #define _(x) gettext (x)
 
+/* For getting and tracking the Bluetooth name
+ */
+#define BTNAME_SERVICE                  "org.bluez"
+#define BTNAME_REQUEST_IF               "org.bluez.Adapter"
+#define BTNAME_SIGNAL_IF                "org.bluez.Adapter"
+#define BTNAME_REQUEST_PATH             "/org/bluez/hci0"
+#define BTNAME_SIGNAL_PATH              "/org/bluez/hci0"
+
+#define BTNAME_REQ_GET                  "GetName"
+#define BTNAME_SIG_CHANGED              "NameChanged"
+
 #define BTNAME_MATCH_RULE "type='signal',interface='" BTNAME_SIGNAL_IF \
                           "',member='" BTNAME_SIG_CHANGED "'"
+
 #define BTNAME_DEFAULT "Nokia 770"
 
 struct ayn_closure {
