@@ -154,6 +154,7 @@ capitalize_ascii_string (gchar *str)
   if (*str)
     {
       *str = g_ascii_toupper (*str);
+      str++;
       while (*str)
 	{
 	  *str = g_ascii_tolower (*str);
