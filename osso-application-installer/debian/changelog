@@ -1,6 +1,7 @@
 osso-application-installer (4.33) unstable; urgency=low
 
-  * Fixes: NB#35475, NB#40909, NB#41085, NB#36147.
+  * Fixes: NB#35475, NB#40909, NB#41085, NB#36147, NB#40794, NB#40845.
+  * Fixes: NB#41160.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 21 Sep 2006 21:29:25 +0300
 

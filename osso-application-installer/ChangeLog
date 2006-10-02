@@ -1,5 +1,10 @@
 2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (make_global_package_list): Explicitly set cursor to
+	beginning and scroll to it.  (N40794, N40845, N41160)
+	(set_global_package_list): Use gtk_list_store_insert_with_values
+	instead of append/set.
+
 	* src/instr.h, src/instr.cc (instr_cont,
 	open_install_instructions, open_local_install_instructions): Do
 	not call localize_file in open_install_instructions since this has
