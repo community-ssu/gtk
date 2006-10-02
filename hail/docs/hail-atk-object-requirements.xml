@@ -1,0 +1,229 @@
+<section id="HailAtkObjectRequirements">
+<title>Requirements to implement an AtkObject interface</title>
+
+<para>This section describes the implementation requirements to fulfil a correct implementation of <classname>AtkObject</classname>.</para>
+
+<section>
+<title>Description of AtkObject</title>
+
+<para>An ATK object provides the following features:</para>
+<itemizedlist>
+<listitem>A name describing the widget. It should be the related label for any widget, or other significant name.</listitem>
+<listitem>A description for the widget.</listitem>
+<listitem>Methods to get children of the widget.</listitem>
+<listitem>Semantic relationships with other atk objects. For example a label with the labelled widget, etc.</listitem>
+<listitem>Role of the widget (for example, if it's a window, a button, a font selection widget, etc).</listitem>
+<listitem>State of the widget (methods and events).</listitem>
+</itemizedlist>
+
+<para>Basic ideas:</para>
+<itemizedlist>
+<listitem>Mandatory features should be: name, children access, relationships, role, states</listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>Name</title>
+
+<para>The name is an identifier for the widget. Usually it gets the value of a label associated with the widget, or the label itself if the widget has got one. If this name is changed, those changes should be handled.</para>
+
+<para>To do this, we should implement virtual methods of <classname>AtkObject</classname> class. We add this to the <function>class_init</function> of our implementation.</para>
+
+<programlisting>
+<![CDATA[
+static void our_implementation_class_init (HailCaptionKlass * klass) {
+
+AtkObjectClass *class = ATK_OBJECT_CLASS(klass);
+...
+class->get_name = our_class_get_name;
+...
+}
+]]>
+</programlisting>
+
+<para>And we define the following method:</para>
+<programlisting>
+<![CDATA[
+static G_CONST_RETURN gchar* hail_caption_get_name (AtkObject *obj):
+]]>
+</programlisting>
+
+<para>We should do the same with <function>class->set_name</function>. The interface is:</para>
+<programlisting>
+<![CDATA[
+void        atk_object_set_name             (AtkObject *accessible,
+                                             const gchar *name);
+]]>
+</programlisting>
+</section>
+
+<section>
+<title>Children</title>
+
+<para>The methods for referring children are the following</para>
+<programlisting>
+<![CDATA[
+gint            (* get_n_children) (AtkObject *accessible):
+AtkObject*      (* ref_child)      (AtkObject *accessible,
+                                    gint      i);
+]]>
+</programlisting>
+
+<para>We should also emit these signals when it's relevant:</para>
+<programlisting>
+<![CDATA[
+"children-changed"
+            void        user_function      (AtkObject *atkobject,
+                                            guint arg1,
+                                            gpointer arg2,
+                                            gpointer user_data);
+]]>
+</programlisting>
+
+<itemizedlist>
+<listitem><function>get_n_children</function>: the first method should provide the number of atk-exposed children. It should include internal children if they should be exposed in atk as children of the widget.</listitem>
+<listitem><function>ref_child</function>: this method should return a reference to the <classname>AtkObject</classname> of the <function>i</function> child of the widget. The reference counter should be increased inside this method (usually doing <function>g_object_ref</function>).</listitem>
+</itemizedlist>
+
+<programlisting>
+<![CDATA[
+signal children-changed
+
+void        user_function                  (AtkObject *atkobject,
+                                            guint arg1,
+                                            gpointer arg2,
+                                            gpointer user_data);
+]]>
+</programlisting>
+
+<itemizedlist>
+<listitem><function>atkobject</function>: the object</listitem>
+<listitem><function>arg1</function>: index of the added or removed child</listitem>
+<listitem><function>arg2</function>: the child which was added or removed</listitem>
+<listitem>user data set when the signal is connected</listitem>
+</itemizedlist>
+
+<para>To emit the signal we can do:</para>
+<programlisting>
+<![CDATA[
+  g_signal_emit_by_name (atk_parent, "children_changed::add",
+                         index, atk_child, NULL);
+  g_signal_emit_by_name (atk_parent, "children_changed::remove",
+                         index, atk_child, NULL);
+]]>
+</programlisting>
+
+<para>This should be done from the signal handler for the <function>add</function> or <function>remove</function> events. Usually we shouldn't care of the signal or even the <function>ref_child</function> method, because if we inherit from <classname>GailContainer</classname>, it manages <classname>GtkContainer</classname> children as accessible children.</para>
+</section>
+
+<section>
+<title>Relationships</title>
+
+<para>We should set the significant relationships we can detect automatically in Atk objects. For any object we can specify relations with other objects, with a relationship type. The most important we should care are:</para>
+<itemizedlist>
+<listitem><function>ATK_RELATION_LABELLED_BY</function> and <function>ATK_RELATION_LABEL_FOR</function> (a widget is labelled by another, and viceversa).</listitem>
+<listitem><function>ATK_RELATION_MEMBER_OF</function> (a widget is member of a target, for example a radio button to a group of radio buttons).</listitem>
+<listitem><function>ATK_RELATION_NODE_CHILD_OF</function> (a widget is a child of other in a column of the tree view).</listitem>
+</itemizedlist>
+
+<para>The method we have to implement is:</para>
+<programlisting>
+<![CDATA[
+  AtkRelationSet*         (* ref_relation_set)    (AtkObject                 *accessible);
+]]>
+</programlisting>
+
+<para>This method should return a relation set including the relevant relations. It's important to remember to get the relation set from the parent class. We can do this this way:
+</para>
+<programlisting>
+<![CDATA[
+  relation_set = ATK_OBJECT_CLASS (parent_class)->ref_relation_set (obj);
+]]>
+</programlisting>
+
+<para>Then we create the relevant relations with:</para>
+<programlisting>
+<![CDATA[
+AtkRelation * relation;
+AtkObject * target_array[<number of targets>];
+
+target_array[0] = <first target>;
+target_array[1] = <second target>;
+...
+relation = atk_relation_new (target_array, <number of targets>, ATK_RELATION_LABEL_FOR);
+]]>
+</programlisting>
+
+<para>
+You should note that a relation can specify more than one target. But the typical case is that number of targets is 1.
+</para>
+<para>
+Then we add the relation to the relation set:
+</para>
+<programlisting>
+<![CDATA[
+      atk_relation_set_add (relation_set, relation);
+      g_object_unref(relation);
+]]>
+</programlisting>
+
+<para>We unref the relation because the relation set creates its own reference, so this way it does not leak.
+</para>
+</section>
+
+<section>
+<title>Role</title>
+
+<para>
+The role attribute shows the main task of the described widget. It's only one per accessible object. So it should be selected carefully. Usually we set the role in atk object initialization. The method (hook in <classname>AtkObjectClass</classname>) is:</para>
+<programlisting>
+<![CDATA[
+void                      (* initialize)                         (AtkObject                     *accessible,
+                                                                  gpointer                      data);
+]]>
+</programlisting>
+
+<para>We should do:</para>
+<programlisting>
+<![CDATA[
+accessible->role = ATK_ROLE_<relevant role>;
+]]>
+</programlisting>
+
+<para>You can check the list of atk roles to decide.</para>
+</section>
+
+<section>
+<title>State</title>
+
+<para>Some widgets get an state which we want to expose to atk. Usually, the main states for a widget are managed in the gail parent class (focus, window state, and so on). But we should care of the relevant states the parent object does not handle. It's done implementing the <function>ref_state_set</function> method:</para>
+
+<programlisting>
+<![CDATA[
+  AtkStateSet*            (* ref_state_set)       (AtkObject                 *accessible);
+]]>
+</programlisting>
+
+<para>
+This method works quite similar to <function>ref_relation_set</function>. We should get the state set of the parent widget, when we redefine the method. In the implementation we should add relevant states of the object.</para>
+
+<para>An important thing we should care is changing the state of the objects if it's relevant. It's done using the method <function>atk_object_notify_state_change</function>:</para>
+<programlisting>
+<![CDATA[
+void                 atk_object_notify_state_change              (AtkObject                      *accessible,
+                                                                  AtkState                       state,
+                                                                  gboolean                       value);
+]]>
+</programlisting>
+
+<para>
+We should call this method every time a state is changed. For example, in <function>GailToggleButton</function> we can see:</para>
+
+<programlisting>
+<![CDATA[
+  atk_object_notify_state_change (accessible, ATK_STATE_CHECKED,
+                                  toggle_button->active);
+]]>
+</programlisting>
+</section>
+</section>

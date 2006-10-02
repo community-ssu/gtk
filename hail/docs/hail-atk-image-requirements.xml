@@ -1,0 +1,35 @@
+<section id="HailAtkImageRequirements">
+<title> Requirements to implement an AtkImage interface</title>
+
+<para><classname>AtkImage</classname> is for components showing image or pixmaps
+ on the screen. It offers a textual description, size, and position in the screen. 
+It should only be for those widgets showing real information through the image (for
+example state or attributting).</para>
+
+<section>
+<title>Image description</title>
+
+<para>The most important field for us should be the description. It should show a verbose 
+description of the image being shown, representing an alternative way to check the represented
+image information (for example, it can be used by screen readers). The method is
+<function>get_image_description()</function>.</para>
+
+<para>The image description should try to get the default implementation, and in case this
+ is null, add its own information. This is for applications defining an own image
+description.</para>
+</section>
+
+<section>
+<title>Position and size</title>
+
+<para>An image should expose its position and size. For widgets with an embedded image exposing
+the <classname>AtkImage</classname> interface, should expose position and size of this embedded
+image (and not the widget image itself).</para>
+
+<para>Fortunately, the default <classname>GailWidget</classname> implementation returns the
+<classname>GtkWidget</classname> position and size for realized widgets. Anyway, if you
+don't get the needed information, you can also try to get the relevant information from the
+<classname>GdkWindow</classname> of the image you want to position.</para>
+</section>
+
+</section>

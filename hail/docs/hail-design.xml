@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<para>
+This document describes some design considerations about the Atk Implementation of
+Hildon widgets included in Hail.
+
+</para>
+
+

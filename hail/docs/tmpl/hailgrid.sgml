@@ -1,0 +1,61 @@
+<!-- ##### SECTION Title ##### -->
+HailGrid
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonGrid
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailGrid implements the required ATK interfaces of #HildonGrid,
+showing its children. It also exposes the popup event as an action.
+It reports the children from their position through #AtkComponent.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonGrid</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#HildonGridItem</term>
+<listitem><para>the items embedded inside a grid.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#HailGridItem</term>
+<listitem><para>Atk implementation of the embedded items.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailContainer</term>
+<listitem><para>The parent class.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailGrid ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailGridClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_grid_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

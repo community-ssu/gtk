@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<chapter id="Introduction">
+<title>Introduction</title>
+
+<section>
+<title>What is Hail?</title>
+
+<para>HAIL is the Hildon Accessibility Implementation Library. It intends to
+be an implementation of ATK interfaces for the Hildon widget set. This way
+it provides accessibility support for them.</para>
+
+<para>It's built as a Gtk module. Once loaded, hildon widgets will return a
+Hail object implementing Atk interfaces for them, if you call the method
+<function>gtk_widget_get_accessible()</function>.</para>
+
+</section>
+
+</chapter>

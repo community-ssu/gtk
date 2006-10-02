@@ -1,0 +1,51 @@
+<!-- ##### SECTION Title ##### -->
+HailDialog
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #GtkDialog, taking into account the possibility that
+the help hint is enabled (see hail_dialog_help_enable()).
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailDialog implements the required ATK interfaces of #GtkDialog. It overrides #GailWindow
+to implement the help hint exposed in hildon dialog help methods. It handles the window manager
+trick used in the hildon stuff, through an action for all the dialogs.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>hildon-dialog</term>
+<listitem><para>Hildon wm help hint implementation.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailDialog ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailDialogClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_dialog_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

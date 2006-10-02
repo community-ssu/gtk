@@ -1,0 +1,52 @@
+<!-- ##### SECTION Title ##### -->
+HailWeekdayPicker
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonWeekdayPicker.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailWeekdayPicker implements the required ATK interfaces of #HildonWeekdayPicker and its
+children (the buttons inside the widget). It exposes:
+<itemizedlist>
+<listitem>The weekday buttons</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+<variablelist>
+<varlistentry>
+<term>#HildonWeekdayPicker</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailWeekdayPicker ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailWeekdayPickerClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_weekday_picker_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

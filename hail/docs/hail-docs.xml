@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book id="index" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <bookinfo>
+  <title>Hail Reference Manual</title>
+  </bookinfo>
+  <part id="UserManual">
+  <title>Hail user manual</title>
+  <xi:include href="hail-intro.xml"/>
+  <xi:include href="hail-buildsteps.xml"/>
+  </part>
+  <part id="DesignNotes">
+  <title>Hail Design notes</title>
+  <xi:include href="hail-design.xml"/>
+  <chapter id="ImplementationNotes">
+  <title>Implementation notes</title>
+  <xi:include href="hail-implement-hail-object.xml"/>
+  <xi:include href="hail-atk-object-requirements.xml"/>
+  <xi:include href="hail-atk-component-requirements.xml"/>
+  <xi:include href="hail-atk-action-requirements.xml"/>
+  <xi:include href="hail-atk-image-requirements.xml"/>
+  <xi:include href="hail-gail-inheritance-hints.xml"/>
+  </chapter>
+  <xi:include href="hail-unittests.xml"/>
+  </part>
+  <part id="HailReference">
+  <title>Hail reference</title>
+  <chapter id="ObjectHierarchy"><title>Object hierarchy</title>
+  <xi:include href="xml/tree_index.sgml"/>
+  </chapter>
+  <chapter id="HailAPIReference">
+  <title>Hail accessible objects reference</title>
+    <xi:include href="xml/hailappview.xml"/>
+    <xi:include href="xml/hailcaption.xml"/>
+    <xi:include href="xml/hailcolorbutton.xml"/>
+    <xi:include href="xml/hailcolorselector.xml"/>
+    <xi:include href="xml/haildateeditor.xml"/>
+    <xi:include href="xml/haildialog.xml"/>
+    <xi:include href="xml/hailfindtoolbar.xml"/>
+    <xi:include href="xml/hailfileselection.xml"/>
+    <xi:include href="xml/hailgrid.xml"/>
+    <xi:include href="xml/hailgriditem.xml"/>
+    <xi:include href="xml/hailnumbereditor.xml"/>
+    <xi:include href="xml/hailrangeeditor.xml"/>
+    <xi:include href="xml/hailtimeeditor.xml"/>
+    <xi:include href="xml/hailtimepicker.xml"/>
+    <xi:include href="xml/hailvolumebar.xml"/>
+    <xi:include href="xml/hailweekdaypicker.xml"/>
+    <xi:include href="xml/hailwindow.xml"/>
+  </chapter>
+  <chapter id="hailutilities">
+  <title>Hail utility functions and objects</title>
+    <xi:include href="xml/hailfactory.xml"/>
+  </chapter>
+  <chapter id="hailunittestref">
+    <title>Hail unit tests reference</title>
+    <xi:include href="ut/xml/hail_tests.xml"/>
+    <xi:include href="ut/xml/hail_tests_utils.xml"/>
+    <xi:include href="ut/xml/hailapp_tests.xml"/>
+    <xi:include href="ut/xml/hailappview_tests.xml"/>
+    <xi:include href="ut/xml/hailbanner_tests.xml"/>
+    <xi:include href="ut/xml/hailcaption_tests.xml"/>
+    <xi:include href="ut/xml/hailcodedialog_tests.xml"/>
+    <xi:include href="ut/xml/hailcolorbutton_tests.xml"/>
+    <xi:include href="ut/xml/hailcolorselector_tests.xml"/>
+    <xi:include href="ut/xml/hailcontrolbar_tests.xml"/>
+    <xi:include href="ut/xml/haildateeditor_tests.xml"/>
+    <xi:include href="ut/xml/haildialog_tests.xml"/>
+    <xi:include href="ut/xml/haildialogs_tests.xml"/>
+    <xi:include href="ut/xml/hailfileselection_tests.xml"/>
+    <xi:include href="ut/xml/hailfindtoolbar_tests.xml"/>
+    <xi:include href="ut/xml/hailgrid_tests.xml"/>
+    <xi:include href="ut/xml/hailnumbereditor_tests.xml"/>
+    <xi:include href="ut/xml/hailrangeeditor_tests.xml"/>
+    <xi:include href="ut/xml/hailseekbar_tests.xml"/>
+    <xi:include href="ut/xml/hailtimeeditor_tests.xml"/>
+    <xi:include href="ut/xml/hailtimepicker_tests.xml"/>
+    <xi:include href="ut/xml/hailvolumebar_tests.xml"/>
+    <xi:include href="ut/xml/hailweekdaypicker_tests.xml"/>
+    <xi:include href="ut/xml/hailwindow_tests.xml"/>
+    <xi:include href="ut/xml/hailwizarddialog_tests.xml"/>
+  </chapter>
+  </part>
+</book>

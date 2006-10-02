@@ -1,0 +1,38 @@
+
+#include <hail/hailcaption.h>
+#include <hail/hailappview.h>
+#include <hail/hailfindtoolbar.h>
+#include <hail/hailvolumebar.h>
+#include <hail/hailweekdaypicker.h>
+#include <hail/hailfileselection.h>
+#include <hail/haildialog.h>
+#include <hail/hailtimepicker.h>
+#include <hail/hailcolorselector.h>
+#include <hail/hailgriditem.h>
+#include <hail/haildateeditor.h>
+#include <hail/hailrangeeditor.h>
+#include <hail/hailcolorbutton.h>
+#include <hail/hailwindow.h>
+#include <hail/hailcodedialog.h>
+#include <hail/hailgrid.h>
+#include <hail/hailtimeeditor.h>
+#include <hail/hailnumbereditor.h>
+
+hail_caption_get_type
+hail_app_view_get_type
+hail_find_toolbar_get_type
+hail_volume_bar_get_type
+hail_weekday_picker_get_type
+hail_file_selection_get_type
+hail_dialog_get_type
+hail_time_picker_get_type
+hail_color_selector_get_type
+hail_grid_item_get_type
+hail_grid_get_type
+hail_date_editor_get_type
+hail_range_editor_get_type
+hail_number_editor_get_type
+hail_time_editor_get_type
+hail_color_button_get_type
+hail_window_get_type
+hail_code_dialog_get_type

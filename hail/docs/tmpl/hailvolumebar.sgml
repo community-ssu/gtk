@@ -1,0 +1,68 @@
+<!-- ##### SECTION Title ##### -->
+HailVolumeBar
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonVolumebar and its children
+(#HildonHVolumebar and #HildonVVolumebar).
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailVolumebar implements the required ATK interfaces of #HildonVolumebar and its
+children (#HildonHVolumebar and #HildonVVolumebar). It exposes:
+<itemizedlist>
+<listitem>The internal toggle button for muting the sound, as a #GailToggleButton
+referable as child of it.</listitem>
+<listitem>The internal range to set the volume, as a #GailRange referable as child of
+it.</listitem>
+<listitem>The horizontal or vertical representation of the widget as an AtkState</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonVolumebar</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailContainer</term>
+<listitem><para>The parent class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailToggleButton</term>
+<listitem><para>The exposed interface implementation for the mute button.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailRange</term>
+<listitem><para>The exposed interface implementation for the volume range.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailVolumeBar ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailVolumeBarClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_volume_bar_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

@@ -1,0 +1,215 @@
+Changes in Hail 1.2.0 (2006/06/01):
+==================================
+
+* Minor fix to HailColorButton.
+
+* Minor documentation improvements.
+
+Changes in Hail 1.1.6 (2006/05/27):
+==================================
+
+* Added support for the paned layout of HildonFileSelection.
+
+* Fixed initialization of HailTimeEditor.
+
+* New unit tests for accessibility support of
+  HildonWizardDialog.
+
+* Minor fixes and improvements to accessibility unit tests of
+  HailWeekdayPicker, HailVolumebar, HailGrid, 
+  HildonNamePasswordDialog, HailRangeEditor.
+
+* Small improvements to documentation.
+
+Changes in Hail 1.1.5 (2006/05/19):
+==================================
+
+* Small fixes to HailNumberEditor.
+
+* Improvements to unit tests of accessibility for
+  HildonSetPasswordDialog, HildonGetPasswordDialog and
+  HildonNamePasswordDialog and HildonApp.
+
+* Minor fixes to documentation scripts.
+
+Changes in Hail 1.1.4 (2006/05/12):
+==================================
+
+* Minor fixes.
+
+Changes in Hail 1.1.3 (2006/05/06):
+==================================
+
+* Added HailCodeDialog, implementing accessibility support
+  for HildonCodeDialog. Also added doc and unit tests for
+  it.
+
+* Added unit tests for accessibility support of 
+  HildonBanner.
+
+* Optimized includes in source code, so that compilation
+  gets lighter.
+
+Changes in Hail 1.1.2 (2006/04/28):
+==================================
+
+* Added HailWindow, implementing accessibility support for
+  HildonWindow. Added also doc and unit tests for it.
+
+* Split unit tests and redocumented them to use gtk-doc. Now
+  all the tests are covered.
+
+* Removed all templates and moved to gtk-doc 1.5 system,
+  where the comments of each module are included in source
+  code.
+
+Changes in Hail 1.1.1 (2006/04/21):
+==================================
+
+* Improved unit tests for HailCaption and HailFindToolbar.
+
+* Small fix to make HailFindToolbar respect previous atk
+  names of internal widgets.
+
+* Improvements to documentation of Hail unit tests.
+
+Changes in Hail 1.1.0 (2006/04/07):
+==================================
+
+* Removed hildon-lgpl dependency and updated other libraries
+  dependency information.
+
+* Port of changes in Hail 1.0 branch:
+
+     * Bugfix release of Hail.
+
+     * Added default accessible names to some widgets in
+       HailRangeEditor, HailCaption.
+
+     * Now HailFileSelection supports "activate" action
+       in folder treeview correctly.
+
+     * API documentation enhanced.
+
+Changes in Hail 1.0.0 (2006/01/24):
+==================================
+
+* Final release of Hail.
+
+* Improved Atk support for HildonGridItem (AtkImage),
+  HildonGrid (AtkComponent), HildonColorButton (AtkImage),
+  HildonVolumeBar (AtkValue), HildonDateEditor (AtkText).
+
+* Added unit tests for HildonSeekbar, HildonControlbar,
+  HildonRangeEditor, HildonGridItem, HildonGrid,
+  HildonVolumeBar, HildonDateEditor
+
+* API documentation updated. Also added documentation about
+  how to implement AtkImage and AtkComponent.
+
+* Many code fixes.
+
+Changes in Hail 0.9.1 (2006/01/19):
+==================================
+
+* Second release towards Hail 1.0.0.
+
+* Added Atk support for HailColorButton (AtkValue,
+  AtkImage).
+
+* Improved Atk support for HildonTimeEditor (AtkText),
+  HildonColorSelector (AtkValue, AtkImage)
+
+* Updated unit tests for HildonApp, HildonFindToolbar,
+  HailColorSelector, HailTimeEditor, HailNumberEditor,
+  HailColorButton
+
+* API documentation for the new classes
+
+* Many fixes.
+
+Changes in Hail 0.9.0 (2006/01/11):
+==================================
+
+* First release towards Hail 1.0.0. The only significant
+  change is the structure to build debian packages. Now
+  they can be built using standard debian commands.
+
+* Unit tests for AtkImage and AtkComponent of HailCaption.
+
+* Hard work to implement HildonFM unit tests (and added
+  unit tests for HailFileSelection and HildonFileChooser).
+
+Changes in Hail 0.2.0 (2006/01/04):
+==================================
+
+* This is a new stable release, intended to cover AtkObject
+  and AtkAction interfaces for all Hildon widgets.
+
+* Implementation of AtkObject and AtkAction interfaces for
+  HildonColorSelector, HildonGrid, HildonGridItem,
+  HildonDateEditor, HildonRangeEditor, HildonNumberEditor
+  and HildonTimeEditor
+
+* Documentation and Unit tests for the new accessibles and
+  some other dialogs. Now we've got extensive unit tests
+  for hildon dialogs.
+
+* Many code style fixes.
+
+Changes in Hail 0.1.1 (2005/12/30):
+==================================
+
+* Now Hail does not depend on Hildon Libs nor Gail sources
+  because of a new dynamic class definition procedure
+  getting object sizes on the fly and retrieving the
+  internal widgets of Hildon.
+
+* Implementation of AtkObject and AtkAction interfaces for
+  HildonFileSelection and HildonTimePicker.
+
+* Extended GtkDialog ATK support to take into account the
+  window manager help hint, as used in hildon dialog help.
+
+* Documentation and Unit tests for the new widgets and
+  some other dialogs. Also described in documentation the
+  new instanciation method.
+
+* Now HTML documentation nodes have significant names.
+
+Changes in Hail 0.1.0 (2005/12/21):
+==================================
+
+* Implementation of AtkObject and AtkAction interfaces for
+  HildonVolumebar, HildonWeekdayPicker, HildonFindToolbar
+
+* Completed implementation of AtkObject and AtkAction
+  interfaces for HildonAppView and HildonCaption
+
+* Unit tests for Atk support of HildonWeekdayPicker,
+  HildonVolumebar, HildonFindToolbar, HildonAppView,
+  HildonApp, HildonCaption, HildonFindToolbar, HildonSeekbar,
+  and HildonControlbar
+
+* Lots of documentation improvements
+
+* Now compilation depends on source code of hildon libs
+
+Changes in Hail 0.0.1 (2005/12/13):
+==================================
+
+* Implementation of basic Atk interfaces for HildonAppView and
+  HildonCaption
+
+* Basic documentation structure
+
+* Implementation reference in docbook
+
+* Unit tests framework using Outo
+
+
+
+2005-11-14: Initial release
+
+This is the initial release of Hail, the Hildon Accessibility Implementation
+library, which implements ATK interfaces for Hildon widgets.

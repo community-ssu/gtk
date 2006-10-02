@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<book id="index" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <bookinfo>
+  <title>Hail unit tests reference</title>
+  </bookinfo>
+  <part id="HailUnitTestsReference">
+  <title>Hail unit tests reference</title>
+  <chapter id="HailAPIReference">
+  <title>Hail accessible objects reference</title>
+    <xi:include href="xml/hail_tests.xml"/>
+    <xi:include href="xml/hail_tests_utils.xml"/>
+    <xi:include href="xml/hailapp_tests.xml"/>
+    <xi:include href="xml/hailappview_tests.xml"/>
+    <xi:include href="xml/hailbanner_tests.xml"/>
+    <xi:include href="xml/hailcaption_tests.xml"/>
+    <xi:include href="xml/hailcodedialog_tests.xml"/>
+    <xi:include href="xml/hailcolorbutton_tests.xml"/>
+    <xi:include href="xml/hailcolorselector_tests.xml"/>
+    <xi:include href="xml/hailcontrolbar_tests.xml"/>
+    <xi:include href="xml/haildateeditor_tests.xml"/>
+    <xi:include href="xml/haildialog_tests.xml"/>
+    <xi:include href="xml/haildialogs_tests.xml"/>
+    <xi:include href="xml/hailfileselection_tests.xml"/>
+    <xi:include href="xml/hailfindtoolbar_tests.xml"/>
+    <xi:include href="xml/hailgrid_tests.xml"/>
+    <xi:include href="xml/hailnumbereditor_tests.xml"/>
+    <xi:include href="xml/hailrangeeditor_tests.xml"/>
+    <xi:include href="xml/hailseekbar_tests.xml"/>
+    <xi:include href="xml/hailtimeeditor_tests.xml"/>
+    <xi:include href="xml/hailtimepicker_tests.xml"/>
+    <xi:include href="xml/hailvolumebar_tests.xml"/>
+    <xi:include href="xml/hailweekdaypicker_tests.xml"/>
+    <xi:include href="xml/hailwindow_tests.xml"/>
+    <xi:include href="xml/hailwizarddialog_tests.xml"/>
+  </chapter>
+  </part>
+</book>

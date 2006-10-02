@@ -1,0 +1,49 @@
+<!-- ##### SECTION Title ##### -->
+HailRangeEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonRangeEditor.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailRangeEditor implements the required ATK interfaces of #HildonRangeEditor and its
+children (the buttons inside the widget). It exposes the two entries and the label
+in the middle. The entries get Start and End names.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonRangeEditor</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailRangeEditor ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailRangeEditorClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_range_editor_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

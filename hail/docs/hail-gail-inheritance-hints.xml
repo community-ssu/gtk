@@ -1,0 +1,80 @@
+<section id="HailGailInheritanceHints">
+<title>Gail inheritance hints</title>
+
+<section>
+<title>Which widget?</title>
+
+<para>We should inherit from the gail implementation of the parent widget of the widget we've
+defined. It's done requiring in object initialization the parent widget atk implementation type. Then we should know which atk implementation is being used, in order to know which interfaces is the object providing currently.</para>
+
+</section>
+<section>
+<title>Services from specific classes</title>
+
+<para>In this section I'll describe the services provided by different gail widgets. Please remember that you should eval all the parent classes of the widget you're implementing ATK for. So, for example, if you inherit from <classname>GailContainer</classname>, you're also inheriting from <classname>GailWidget</classname> and <classname>GtkAccessible</classname>.</para>
+
+<section>
+<title>GailContainer (from GailWidget)</title>
+
+<para>It's the gail class for <classname>GtkToolbar</classname> and <classname>GtkViewport</classname> too.</para>
+<itemizedlist>
+<listitem> <classname>AtkObject</classname> children: it manages the atk accessible children references.</listitem>
+<listitem> <classname>AtkObject</classname> role: it sets panel role by default, and toolbar or viewport for specific classes.</listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>GailProgressBar (from GailWidget)</title>
+<itemizedlist>
+<listitem><classname>AtkValue</classname> exposing the adjustement inside (maximum, minimum and current value), and events of change.</listitem>
+<listitem><classname>AtkObject</classname> role: <function>ATK_PROGRESS_BAR</function></listitem>
+<listitem><classname>AtkObject</classname> hides the internal adjustment to show its own signaling.</listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>GailRange (from GailWidget)</title>
+<itemizedlist>
+<listitem><classname>AtkObject</classname> state: horizontal or vertical disposition of the range.</listitem>
+<listitem><classname>AtkValue</classname>: range value of the <classname>GtkAdjustement</classname> of the range (minimum, maximum and current value). It also hides the internal <classname>GtkAdjustment</classname> of the range, to show its own signaling.</listitem>
+<listitem><classname>AtkObject</classname> role: slider</listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>GailScale (from GailRange)</title>
+
+<para>Many properties are implemented in <classname>GailRange</classname>. But it adds text properties for the number shown.</para>
+<itemizedlist>
+<listitem><classname>AtkText</classname> events: it detects the changes in the text shown and exposes events.</listitem>
+<listitem><classname>AtkText</classname>: implementation of all <classname>AtkText</classname> methods, applied to the shown label text.</listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>GailWidget</title>
+<itemizedlist>
+<listitem><classname>AtkComponent</classname>: focus handling, position and size in window, etc.</listitem>
+<listitem><classname>AtkObject</classname> states: states related to widget status (visible, can_focus, mapped, has_focus, sensitive, etc).</listitem>
+<listitem><classname>AtkObject</classname> description: it gets the related tooltip</listitem>
+<listitem><classname>AtkObject</classname> parent: it gets the index of itself in the parent accessible.</listitem>
+<listitem><classname>AtkObject</classname> role: it sets an unknown role.</listitem>
+</itemizedlist>
+</section>
+
+<section>
+<title>GailWindow (from GailContainer)</title>
+
+<para>It inherits from gail container, but redefines some behaviours. It provides atk implementation for <classname>GtkWindow</classname>, many <classname>GtkDialogs</classname>, <classname>GtkPlug</classname>, and so on.</para>
+<itemizedlist>
+<listitem><classname>AtkComponent</classname>: redefines properties about window stacking, window size and focus.</listitem>
+<listitem><classname>AtkObject</classname> role: it determines the role of the widget from its type (if it's a gtk one). You can see the roles given in the internal method <function>gail_window_real_initialize</function>.</listitem>
+<listitem><classname>AtkObject</classname> name: if it's a <classname>GtkWindow</classname>, it gets its title. But if it's a tooltip, it gets its internal label.</listitem>
+<listitem><classname>AtkObject</classname> parent: similar to <classname>GailWidget</classname>, but handling the fact that the window is a toplevel.</listitem>
+<listitem><classname>AtkObject</classname> relations: pop up relations in relevant widgets.</listitem>
+<listitem><classname>AtkObject</classname> states: states related to window state.</listitem>
+</itemizedlist>
+</section>
+
+</section>
+</section>

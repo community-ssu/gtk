@@ -1,0 +1,59 @@
+<!-- ##### SECTION Title ##### -->
+HailColorButton
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonColorButton
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailColorButton implements the required ATK interfaces of #HildonColorButton . AtkValue
+support included to let the user get the color using a 24 bit number. AtkImage support
+also included to show the currently selected color and the position and size of the
+color image.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonColorButton</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailButton</term>
+<listitem><para>The parent class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#HailColorSelector</term>
+<listitem><para>Accessible for the dialog. Very similar to this.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailColorButton ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailColorButtonClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_color_button_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

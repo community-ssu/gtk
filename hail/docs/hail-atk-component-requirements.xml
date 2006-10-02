@@ -1,0 +1,46 @@
+<section id="HailAtkComponentRequirements">
+<title> Requirements to implement an AtkComponent interface</title>
+
+<para>First it's important to state that this interface is implemented in <classname>GailWidget</classname>, which is the one we will inherit usually. So usually we won't be required to define any of its methods. Anyway, for some widgets with special visibility behaviour, we'll need to redefine the implementations from gail widget or gail container.</para>
+
+<section>
+<title>Focus handling</title>
+
+<para><classname>GailWidget</classname> defines focus handling procedures. If our object does not inherit from <classname>GtkWidget</classname>, we should handle focus at our widget. An example of what's done is in <classname>GailCanvasItem</classname> (it's quite similar to <classname>GailWidget</classname>). Same for <function>grab focus</function>.</para>
+</section>
+<section>
+<title>Get accessible at point</title>
+
+<para>For widgets as tree view or similar, where there's a relevant position for the widget, we should redefine methods for it.</para>
+
+</section>
+
+<section>
+<title>Get extents, position and size.</title>
+
+<para>For widgets which modify the extents of <classname>GailWidget</classname> or <classname>GailWindow</classname>, we should redefine it. It's the extent the widget gets in the screen or toplevel. Only <function>get_extents()</function> method should be redefined, because default implementation of <function>get_size()</function> and <function>get_position()</function> rely on it.</para>
+</section>
+
+<section>
+<title>Layer and MDI Z order</title>
+
+<para>For widgets which change the current layer, you should change the internal <function>atk-component-layer</function>. The available layers are:</para>
+
+<programlisting>
+<![CDATA[
+  ATK_LAYER_INVALID,
+  ATK_LAYER_BACKGROUND,
+  ATK_LAYER_CANVAS,
+  ATK_LAYER_WIDGET,
+  ATK_LAYER_MDI,
+  ATK_LAYER_POPUP,
+  ATK_LAYER_OVERLAY,
+  ATK_LAYER_WINDOW
+]]>
+</programlisting>
+
+<para>
+MDI Z order is only relevant for windows, and it should be correctly managed in <classname>GailWindow</classname>.</para>
+</section>
+
+</section>

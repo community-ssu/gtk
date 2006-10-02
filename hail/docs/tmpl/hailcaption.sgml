@@ -1,0 +1,57 @@
+<!-- ##### SECTION Title ##### -->
+HailCaption
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for a #HildonCaption.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailCaption implements the required ATK interfaces of #HildonCaption. In particular it
+exposes:
+<itemizedlist>
+<listitem>The embedded control. It gets a default name (<literal>control</literal>) in case
+the developer does not provide a name to it.</listitem>
+<listitem>The relationship with its label.</listitem>
+<listitem>Whether it's mandatory or optional, through #ATK_STATE_REQUIRED</listitem>
+<listitem>Action of clicking the label</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+
+<varlistentry>
+<term>#HildonCaption</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailCaption ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailCaptionClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_caption_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

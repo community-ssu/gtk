@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<chapter id="HowToBuild">
+<title>How to build Hail</title>
+
+<para>These are the build steps followed in order to compile hail into the scratchbox.</para>
+
+<section id="DependenciesSetup">
+<title>Dependencies setup</title>
+
+    <para>This section assumes that you currently have a working scratchbox
+environment into. If you haven't got any you can follow this tutorial:
+</para>
+
+    <para>
+<ulink
+url="http://www.maemo.org/platform/docs/tutorials/maemo_tutorial.html">http://www.maemo.org/platform/docs/tutorials/maemo_tutorial.html</ulink></para>
+
+    <para>All the following commands are intended to be executed into
+a Debian environment. If it is not your case, please refer to the
+documentation of your distribution in order to know how to compile and
+install packages for your system.</para>
+
+
+    <para>First of all add this line to your
+    <code>/etc/apt/sources.list</code> file</para>
+
+    <para>
+<programlisting>
+deb-src http://debian-repository/debian stable main contrib non-free
+</programlisting>
+</para>
+
+    <para>and then run</para>
+    <programlisting>$ apt-get update</programlisting>
+
+    <para>in order to update the list of available packages. The required steps
+for building hail are the next, they must be executed in the same
+order in order to meet the build dependencies of each library:</para>
+
+    <orderedlist>
+      <listitem>
+	<para>Log into your scratchbox</para>
+	<programlisting>$ scratchbox</programlisting>
+      </listitem>
+
+      <listitem>
+	<para>Download and install <code>libart</code></para>
+	<programlisting>[sbox-SDK_PC: ~] > apt-get source libart-lgpl
+[sbox-SDK_PC: ~] > cd libart-lgpl-2.3.17
+[sbox-SDK_PC: ~/libart-lgpl-2.3.17] > dpkg-buildpackage -b -r fakeroot
+[sbox-SDK_PC: ~/libart-lgpl-2.3.17] > cd ..
+[sbox-SDK_PC: ~] > fakeroot dpkg -i
+libart-2.0-2_2.3.17-1_i386.deb
+libart-2.0-dev_2.3.17-1_i386.deb</programlisting>
+      </listitem>
+
+      <listitem>
+
+	<para>Download and install <code>libgnomecanvas</code></para>
+
+	<programlisting>[sbox-SDK_PC: ~] > apt-get source libgnomecanvas
+[sbox-SDK_PC: ~] > cd libgnomecanvas-2.8.0/</programlisting>
+
+	<para>Add this line to debian/rules file in order to avoid
+	building the documentation</para>
+
+	<programlisting>DEB_CONFIGURE_EXTRA_FLAGS := --disable-gtk-doc</programlisting>
+
+	<para>continue building</para>
+
+	<programlisting>[sbox-SDK_PC: ~/libgnomecanvas-2.8.0] > dpkg-buildpackage -b -r fakeroot
+[sbox-SDK_PC: ~/libgnomecanvas-2.8.0] > cd ..
+[sbox-SDK_PC: ~] > fakeroot dpkg -i
+libgnomecanvas2-0_2.10.2-2_i386.deb
+libgnomecanvas2-common_2.10.2-2_all.deb
+libgnomecanvas2-dev_2.10.2-2_i386.deb</programlisting>
+
+      </listitem>
+      <listitem>
+
+	<para>Download and install <code>libidl</code></para>
+
+	<programlisting>[sbox-SDK_PC: ~] > apt-get source libidl
+[sbox-SDK_PC: ~] > cd libidl-0.8.5/</programlisting>
+
+	<para>Add this line to <code>debian/rules</code> file</para>
+
+	<programlisting>DEB_CONFIGURE_EXTRA_FLAGS := --disable-gtk-doc</programlisting>
+
+	<para>and then build the package</para>
+
+	<programlisting>[sbox-SDK_PC: ~/libidl-0.8.5] > dpkg-buildpackage -b -r fakeroot
+[sbox-SDK_PC: ~/libidl-0.8.5] > cd ..
+[sbox-SDK_PC: ~] > fakeroot dpkg -i libidl0_0.8.5-1_i386.deb libidl-dev_0.8.5-1_i386.deb</programlisting>
+      </listitem>
+      <listitem>
+
+	<para>Download and install <code>orbit2</code></para>
+
+	<programlisting>[sbox-SDK_PC: ~] > apt-get source orbit2
+[sbox-SDK_PC: ~] > cd orbit2-2.12.2</programlisting>
+
+	<para>Edit the debian/rules file and replace
+	<code>--enable-gtk-doc</code> by
+	<code>--disable-gtk-doc</code></para>
+
+	<programlisting>[sbox-SDK_PC: ~/orbit2-2.12.2] > dpkg-buildpackage -b -r fakeroot
+[sbox-SDK_PC: ~/orbit2-2.12.2] > cd ..
+[sbox-SDK_PC: ~] > fakeroot dpkg -i liborbit2-dev_2.12.2-1_i386.deb
+liborbit2_2.12.2-1_i386.deb orbit2-nameserver_2.12.2-1_i386.deb orbit2_2.12.2-1_i386.deb</programlisting>
+      </listitem>
+
+      <listitem>
+
+	<para>Download and install <code>gail</code></para>
+	<programlisting>[sbox-SDK_PC: ~] > apt-get source gail
+[sbox-SDK_PC: ~] > cd gail-1.8.4</programlisting>
+
+	<para>Add this line to <code>debian/rules</code> file</para>
+
+	<programlisting>DEB_CONFIGURE_EXTRA_FLAGS += --disable-gtk-doc</programlisting>
+
+	<para>and then go on building the package</para>
+	<programlisting>[sbox-SDK_PC: ~/gail-1.8.4] > dpkg-buildpackage -b -r fakeroot
+[sbox-SDK_PC: ~/gail-1.8.4] > cd ..
+[sbox-SDK_PC: ~] > fakeroot dpkg -i libgail17_1.8.4-1_i386.deb libgail-dev_1.8.4-1_i386.deb libgail-dbg_1.8.4-1_i386.deb
+libgail-common_1.8.4-1_i386.deb</programlisting>
+      </listitem>
+      <listitem>
+
+	<para>Download and install <code>outo</code></para>
+	<programlisting>[sbox-SDK_PC: ~] > apt-get source outo
+[sbox-SDK_PC: ~] > cd outo-0.1.1
+[sbox-SDK_PC: ~/outo-0.1.1] > dpkg-buildpackage -b -r fakeroot
+[sbox-SDK_PC: ~/outo-0.1.1] > cd ..
+[sbox-SDK_PC: ~] > fakeroot dpkg -i outo_0.1.1-2_i386.deb</programlisting>
+      </listitem>
+    </orderedlist>
+    <para>Once all requirements are met, the hail library is ready for
+being built.</para>
+</section>
+
+<section id="HailCompilation">
+<title>Hail compilation</title>
+
+    <para> First of all, hail still needs a visible gail compilation
+at the root directory of the hail's tree. By default, hail expects
+gail source code in <code>../gail</code>. But it can be changed with a
+<code>./configure</code> parameter this way:</para>
+    <programlisting>$ ./configure --with-gail-dir=DIRECTORY</programlisting>
+
+    <para>Hail is compiled as other autotools programs. We should care
+about the prefix (we need to set it to a prefix where gtk will find
+modules). A prefix like <code>/usr</code> should work. And we should
+remember to set the path to gail.</para>
+
+    <programlisting>
+[sbox-SDK_PC: ~] > cd hail/
+[sbox-SDK_PC: ~/hail] > ./autogen.sh --prefix=/usr --with-gail-dir=FULL_PATH_TO_GAIL
+[sbox-SDK_PC: ~/hail] > make
+</programlisting>
+
+    <para>After this, you can <code>make install</code> to have the libraries, documentation and unit tests installed</para>
+</section>
+
+</chapter>
+

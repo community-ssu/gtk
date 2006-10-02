@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<chapter id="HailUnitTests">
+<title>Unit tests for Hail</title>
+
+<section id="HowToUseUnitTests">
+<title>How to use the unit tests</title>
+
+<para>Hail includes a set of unit tests, mainly for quality assurance purposes. They have been included in the <emphasis>ut</emphasis> directory, and are implemented using the <ulink url="http://outo.sf.net/">outo framework</ulink>.</para>
+
+<section>
+<title>Requirements</title>
+<para>These tests have some requirements to be launched properly.</para>
+
+<para>First, we should have an X server running, and a correctly configured <code>DISPLAY</code> variable referring to the X server in the scratchbox session. We recommend to use an X virtual frame buffer server for automatic tests. X.org includes Xvfb, which can be used to do it. For example, to get an X server in DISPLAY 20:</para>
+
+<programlisting>
+$ xvfb-run --server-num=20 -p + /usr/X11R6/bin/xeyes
+</programlisting>
+
+<para>In the scratchbox, we should set the <code>DISPLAY</code> variable to the correct one. And we should also set the environment variable to load the accessibility modules:
+</para>
+
+<programlisting>
+$ export DISPLAY=:20
+$ export GTK_MODULES=gail:hail:atk-bridge
+</programlisting>
+</section>
+
+<section>
+<title>Running the tests</title>
+<para>The tests should be run inside the scratchbox, setting up the correct environment variables (see the previous section). By default, the hail build scripts install the tests in outo directory (<code>/usr/lib/outo</code>).</para>
+
+<para>We can launch the tests this way:</para>
+<programlisting>
+$ outo -f -d DEBUG_OUTPUT /usr/lib/outo/libhail_unittests.so
+</programlisting>
+
+<para>It will run the tests, and write in the file <code>DEBUG_OUTPUT</code> the detailed results. The <code>-f</code> parameter is for overwriting the previous debug file if it exists.
+</para>
+</section>
+</section>
+
+</chapter>
+

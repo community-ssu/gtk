@@ -1,0 +1,60 @@
+<!-- ##### SECTION Title ##### -->
+HailFileSelection
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonFileSelection.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailFileSelection implements the required ATK interfaces of #HildonFileSelection and its
+children (the buttons inside the widget). It exposes:
+<itemizedlist>
+<listitem>The folder treeview, as its gail default implementation. The 
+<literal>activate</literal> signal in the cells has an implementation which selects
+another folder and shows it.</listitem>
+<listitem>The notebook holding the different views.</listitem>
+<listitem>The actions to get the contextual menus</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonFileSelection</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailContainer</term>
+<listitem><para>The parent class.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailFileSelection ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailFileSelectionClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_file_selection_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

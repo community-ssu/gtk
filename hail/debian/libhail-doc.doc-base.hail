@@ -1,0 +1,21 @@
+Document: hail
+Title: Hail Reference Manual
+Author: Jose Dapena Paz
+Abstract:  This manual describes classes and implementation
+ details for Hail.
+Section: Apps/Programming
+
+Format: HTML
+Index: /usr/share/gtk-doc/html/hail/index.html
+Files: /usr/share/gtk-doc/html/hail/*.html
+
+Document: hail-ut
+Title: Hail Unit Tests Reference
+Author: Jose Dapena Paz
+Abstract:  This document describes unit tests of Hail. classes and 
+Section: Apps/Programming
+
+Format: HTML
+Index: /usr/share/gtk-doc/html/hail-ut/index.html
+Files: /usr/share/gtk-doc/html/hail-ut/*.html
+

@@ -1,0 +1,817 @@
+2006-10-02 18:30  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* Imported 1.2.0 into SVN
+
+2006-06-01 13:00  
+
+        * Makefile.am, configure.in, hail/hailcolorbutton.c,
+          hail/hailcolorselector.c, ut/hailcolorselector_tests.c:
+          * Fixed HailColorSelector color conversion function. It was breaking
+            unit tests and was functionally broken.
+          * Improved documentation of HailColorButton and HailColorSelector.
+          * Release 1.2.0
+          * Changed the directory sort order. Now it compiles unit tests
+            before documentation.
+
+2006-05-27 12:58  
+
+        * configure.in:
+          * Release 1.1.6
+
+2006-05-27 12:41  
+
+        * ut/: hailwizarddialog_tests.c, hailwizarddialog_tests.h:
+          * Forgot to upload the unit tests for wizard dialog.
+
+2006-05-26 13:45  
+
+        * docs/hail-docs.xml, docs/ut/hail-ut-docs.xml,
+          docs/ut/hail-ut-sections.txt, hail/hailfileselection.c,
+          hail/hailgrid.c, ut/Makefile.am, ut/hail_tests.c,
+          ut/hail_tests.h, ut/haildialogs_tests.c,
+          ut/hailfileselection_tests.c, ut/hailgrid_tests.c,
+          ut/hailvolumebar_tests.c, ut/hailweekdaypicker_tests.c,
+          ut/hailwindow_tests.c:
+          * Added unit tests for accessibility support of HildonWizardDialog
+          (IMP-26) and documentation.
+          * Fix HailWeekdayPicker unit test increasing the waittime for
+          buttons interaction.
+          * Fix HailVolumebar accessibility unit tests increasing the waittime
+          for toggle button click.
+          * Add orientation state check in HailVolumebar unit test.
+          * Review HailGrid unit tests.
+          * Add HailFileSelection support for paned mode of
+          HildonFileSelection.
+          * Change unit test of HailFileSelection to include
+          HildonFileSelection paned mode support.
+
+2006-05-25 13:04  
+
+        * docs/ut/hail-ut-sections.txt, ut/hail_tests.c,
+          ut/haildialogs_tests.c, ut/hailrangeeditor_tests.c,
+          ut/hailrangeeditor_tests.h, ut/hailseekbar_tests.c:
+          * Small fix to Name/Password dialog unit test, in order to reflect
+            the strings in locale.
+          * Added unit test to check behavior of HailRangeEditor when limits
+            are forced. It also lets you test atk editting.
+          * Small fix in doc of Seekbar accessibility unit tests. It talked
+            about HailSeekbar, and it should say GailRange.
+
+2006-05-24 12:28  
+
+        * hail/hailweekdaypicker.c, ut/hailweekdaypicker_tests.c:
+          * Improved unit test for HailWeekdayPicker. Now it checks that the
+            weekday names are the expected ones in en_GB encoding.
+          * Small improvements to documentation of HailWeekdayPicker and its
+            unit test.
+
+2006-05-23 15:04  
+
+        * docs/ut/hail-ut-sections.txt, hail/hailtimeeditor.c,
+          ut/hail_tests.c, ut/hailtimeeditor_tests.c,
+          ut/hailtimeeditor_tests.h:
+          * Fix HailTimeEditor initialization to get again the widgets as
+          expected.
+          * Add unit tests for HailTimeEditor for evaluating what happens in
+            show-seconds/no-show-seconds and duration-mode.
+          * Improved documentation.
+
+2006-05-19 17:06  
+
+        * configure.in, docs/ut/hail-ut-sections.txt, ut/hail_tests.c,
+          ut/hailapp_tests.c, ut/hailapp_tests.h, ut/haildialogs_tests.c:
+          * Fixes to HildonApp accessibility unit tests (removed get_component
+            test as Gail is not providing this service).
+          * Release 1.1.5
+
+2006-05-19 13:03  
+
+        * hail/hailnumbereditor.c, ut/hailnumbereditor_tests.c:
+          * Now HailNumberEditor respects the previous names of the internal
+            widgets if they get another name.
+          * Small improvements to documentation of HailNumberEditor
+            implementation and unit tests.
+
+2006-05-19 13:02  
+
+        * docs/: Makefile.am, ut/Makefile.am:
+          * Another try to fix the documentation issue in tinderbox
+
+2006-05-18 16:06  
+
+        * docs/ut/hail-ut-sections.txt:
+          * Update sections to add new documentation in unit tests for IMP-19
+
+2006-05-18 15:56  
+
+        * ut/: hail_tests.c, haildialogs_tests.c, haildialogs_tests.h:
+          * Improve unit tests for HildonSetPasswordDialog,
+            HildonGetPasswordDialog and HildonNamePasswordDialog (IMP-19).
+
+2006-05-18 11:27  
+
+        * docs/hail-overrides.txt:
+          * Also adding overrides of doc (empty file) for hail main doc
+          directory
+
+2006-05-16 17:42  
+
+        * docs/ut/hail-ut-overrides.txt:
+          * Added a blank overrides file. Should fix compilation problems in
+          tinderbox env.
+
+2006-05-12 11:58  
+
+        * configure.in:
+          * Updated release to 1.1.4
+
+2006-05-12 11:29  
+
+        * ut/hail_tests.c:
+          * Fixed an error as nearly all unit tests were commented, and they
+            shouldn't be.
+
+2006-05-08 14:07  
+
+        * docs/ut/hail-ut.types:
+          * Added empty doc/ut/hail-ut.types to fix a compilation error in
+          tinderbox.
+
+2006-05-06 14:14  
+
+        * configure.in: Updated configure.in release to 1.1.3
+
+2006-05-06 14:10  
+
+        * docs/hail-docs.xml, docs/ut/hail-ut-docs.xml,
+          docs/ut/hail-ut-sections.txt, ut/Makefile.am, ut/hail_tests.c,
+          ut/hail_tests.h, ut/hailbanner_tests.c, ut/hailbanner_tests.h,
+          ut/haildialogs_tests.c:
+          * Added unit tests for validating atk support of HildonBanner
+          * Documented the unit tests for HildonBanner atk support
+
+2006-05-03 13:42  
+
+        * docs/hail-sections.txt, docs/hail.types, hail/hail.c,
+          hail/hail.h, hail/hailappview.c, hail/hailappview.h,
+          hail/hailcaption.c, hail/hailcaption.h, hail/hailcodedialog.c,
+          hail/hailcodedialog.h, hail/hailcolorbutton.c,
+          hail/hailcolorbutton.h, hail/hailcolorselector.c,
+          hail/hailcolorselector.h, hail/haildateeditor.c,
+          hail/haildateeditor.h, hail/haildialog.c, hail/haildialog.h,
+          hail/hailfactory.h, hail/hailfileselection.c,
+          hail/hailfileselection.h, hail/hailfindtoolbar.c,
+          hail/hailfindtoolbar.h, hail/hailgrid.c, hail/hailgrid.h,
+          hail/hailgriditem.c, hail/hailgriditem.h,
+          hail/hailnumbereditor.c, hail/hailrangeeditor.c,
+          hail/hailrangeeditor.h, hail/hailtimeeditor.c,
+          hail/hailtimepicker.c, hail/hailtimepicker.h,
+          hail/hailvolumebar.c, hail/hailvolumebar.h,
+          hail/hailweekdaypicker.c, hail/hailweekdaypicker.h,
+          ut/haildialogs_tests.c:
+          * Reduced includes weight: now we don't include unnecessary
+            includes, so that the compilation gets lighter.
+          * Added some missing documentation includes.
+
+2006-05-02 16:38  
+
+        * docs/hail-docs.xml, docs/ut/hail-ut-docs.xml,
+          docs/ut/hail-ut-sections.txt, hail/Makefile.am, hail/hail.c,
+          hail/hail.h, hail/hailcodedialog.c, hail/hailcodedialog.h,
+          ut/Makefile.am, ut/hail_tests.c, ut/hail_tests.h,
+          ut/hailcodedialog_tests.c, ut/hailcodedialog_tests.h:
+          * Added atk implementation for HildonCodeDialog in HailCodeDialog
+          (IMP-13)
+          * Added unit tests and doc for HailCodeDialog (IMP-13).
+
+2006-04-28 17:18  
+        
+        * docs/hail-docs.xml, docs/hail-sections.txt, docs/hail.types,
+	  docs/ut/hail-ut-docs.xml, docs/ut/hail-ut-sections.txt,
+          hail/Makefile.am, hail/hail.c, hail/hail.h, hail/hailwindow.c,
+	  hail/hailwindow.h, ut/Makefile.am, ut/hail_tests.c,
+	  ut/hail_tests.h, ut/hailappview_tests.h, ut/hailwindow_tests.c,
+	  ut/hailwindow_tests.h:
+	  * Added HildonWindow atk implementation in HailWindow.
+	  * Added unit tests for HildonWindow/HailWindow atk implementation.
+	  * Added documentation for implementation and unit tests of
+	  HailWindow.
+
+2006-04-25 19:11  
+        
+	* configure.in, debian/libhail-doc.doc-base.hail, docs/Makefile.am,
+	  docs/hail-docs.xml, docs/hail-unittests.xml, docs/ut/Makefile.am,
+          docs/ut/hail-ut-docs.xml, docs/ut/hail-ut-sections.txt,
+          hail/.cvsignore, ut/.cvsignore, ut/Makefile.am, ut/hail_tests.c,
+          ut/hail_tests.h, ut/hail_tests_utils.c, ut/hail_tests_utils.h,
+          ut/hailapp_tests.c, ut/hailapp_tests.h, ut/hailappview_tests.c,
+          ut/hailappview_tests.h, ut/hailcaption_tests.c,
+          ut/hailcaption_tests.h, ut/hailcolorbutton_tests.c,
+          ut/hailcolorbutton_tests.h, ut/hailcolorselector_tests.c,
+          ut/hailcolorselector_tests.h, ut/hailcontrolbar_tests.c,
+	  ut/hailcontrolbar_tests.h, ut/haildateeditor_tests.c,	  
+	  ut/haildateeditor_tests.h, ut/haildialog_tests.c,
+          ut/haildialog_tests.h, ut/haildialogs_tests.c,  
+	  ut/haildialogs_tests.h, ut/hailfileselection_tests.c,
+          ut/hailfileselection_tests.h, ut/hailfindtoolbar_tests.c,
+	  ut/hailfindtoolbar_tests.h, ut/hailgrid_tests.c,
+	  ut/hailgrid_tests.h, ut/hailnumbereditor_tests.c,
+	  ut/hailnumbereditor_tests.h, ut/hailrangeeditor_tests.c,
+	  ut/hailrangeeditor_tests.h, ut/hailseekbar_tests.c,
+	  ut/hailseekbar_tests.h, ut/hailtimeeditor_tests.c,
+	  ut/hailtimeeditor_tests.h, ut/hailtimepicker_tests.c,
+	  ut/hailtimepicker_tests.h, ut/hailvolumebar_tests.c,
+	  ut/hailvolumebar_tests.h, ut/hailweekdaypicker_tests.c,
+	  ut/hailweekdaypicker_tests.h:
+	  * Refactoring of unit tests. Now they've been splitted into files
+	    depending on the Hildon object they test.
+	  * VERY big review of documentation structure. Now unit tests are
+	    documented in the source code with gtk-doc, and there's a new
+	    document of unit tests.  We also add the unit tests documentation to
+	    the original manual.
+	  * Added documentation for all the unit tests.
+
+2006-04-24 19:34  
+        
+	* debian/rules, docs/Makefile.am:
+	  * Avoid compilation error on first try because of gtk-doc.make bug
+	  * Use autogen.sh from debian/rules
+
+2006-04-24 18:38  
+
+	* docs/Makefile.am:
+          * Now it uses gtk-doc.make
+
+2006-04-24 18:05  
+
+	* docs/Makefile.am:
+          * Minor change to fix compilation of doc
+
+2006-04-24 17:53  
+
+        * docs/Makefile.am, docs/hail-docs.xml, docs/hail-sections.txt,
+	  docs/tmpl/hailappview.sgml, docs/tmpl/hailcaption.sgml,
+	  docs/tmpl/hailcolorbutton.sgml, docs/tmpl/hailcolorselector.sgml,
+	  docs/tmpl/haildateeditor.sgml, docs/tmpl/haildialog.sgml,
+	  docs/tmpl/hailfileselection.sgml, docs/tmpl/hailfindtoolbar.sgml,
+	  docs/tmpl/hailgrid.sgml, docs/tmpl/hailgriditem.sgml,
+	  docs/tmpl/hailnumbereditor.sgml, docs/tmpl/hailrangeeditor.sgml,
+	  docs/tmpl/hailtimeeditor.sgml, docs/tmpl/hailtimepicker.sgml,
+	  docs/tmpl/hailvolumebar.sgml, docs/tmpl/hailweekdaypicker.sgml,
+	  hail/hail.h, hail/hailappview.c, hail/hailcaption.c,
+	  hail/hailcolorbutton.c, hail/hailcolorselector.c,
+	  hail/haildateeditor.c, hail/haildialog.c, hail/hailfactory.h,
+	  hail/hailfileselection.c, hail/hailfindtoolbar.c,
+	  hail/hailgrid.c, hail/hailgriditem.c, hail/hailnumbereditor.c,
+	  hail/hailnumbereditor.h, hail/hailrangeeditor.c,
+	  hail/hailtimeeditor.c, hail/hailtimeeditor.h,
+	  hail/hailtimepicker.c, hail/hailvolumebar.c,
+	  hail/hailweekdaypicker.c:
+	  * Updated gtk-doc structure to gtk-doc 1.5 system. Now we don't need
+	    any template, as short description, long description and see also
+	    sections are now included at the source code files.
+
+2006-04-21 16:47  
+
+	* NEWS:
+	  * Forgot to upload the NEWS file with release 1.1.1 info.
+
+2006-04-21 13:38  
+
+        * configure.in:
+          * Updated release to 1.1.1
+
+2006-04-21 13:19  
+
+        * docs/hail-unittests.xml, hail/hailfindtoolbar.c, ut/hail_tests.c:
+          * Now HailFindToolbar preserves names of the internal widgets if
+            they've got another name.
+          * Added documentation about the unit tests of HailFindToolbar
+          * Improved unit tests of HailFindToolbar to include check of
+          children.
+
+2006-04-17 19:12  
+
+        * docs/hail-unittests.xml, ut/hail_tests.c:
+          * Check in hail caption that changes in separator are tracked
+            through atk.
+          * Updated and completed tests documentation
+
+2006-04-07 17:14  
+
+        * configure.in:
+          * Release 1.1.0
+
+2006-04-04 17:26  
+
+        * README, configure.in, hail-uninstalled.pc.in, hail.pc.in,
+          debian/control, debian/control.in, docs/hail-unittests.xml,
+          docs/tmpl/hailappview.sgml, docs/tmpl/hailcaption.sgml,
+          docs/tmpl/hailcolorbutton.sgml, docs/tmpl/hailcolorselector.sgml,
+          docs/tmpl/haildateeditor.sgml, docs/tmpl/haildialog.sgml,
+          docs/tmpl/hailfileselection.sgml, docs/tmpl/hailfindtoolbar.sgml,
+          docs/tmpl/hailgrid.sgml, docs/tmpl/hailgriditem.sgml,
+          docs/tmpl/hailnumbereditor.sgml, docs/tmpl/hailrangeeditor.sgml,
+          docs/tmpl/hailtimeeditor.sgml, docs/tmpl/hailtimepicker.sgml,
+          docs/tmpl/hailvolumebar.sgml, docs/tmpl/hailweekdaypicker.sgml: *
+                (IMP-9):
+          * Removed hildon-lgpl dependency
+                * Updated library dependencies to Maemo 2006 SDK
+                * Removed hildon-lgpl references in documentation
+                * Some doc changes due to new gtk-doc release
+
+2006-03-25  
+
+        * docs/tmpl/hailcaption.sgml, docs/tmpl/hailfileselection.sgml,
+          docs/tmpl/hailrangeeditor.sgml, hail/hailfileselection.c,
+          ut/hail_tests.c:
+          * Added updated API documentation for last changes in HailCaption,
+            HailFileSelection and HailRangeEditor.
+          * Now HailFileSelection handles folder treeview cell "activate" atk
+            signal selecting the folder, making it change the directory as
+            expected (closes p.m.o #24431).
+          * Added unit test to check "activate" signal in folders cell is
+            managed properly (verifies nonregression of p.m.o #24431).
+
+2006-03-24  
+
+        * hail/hailcaption.c, ut/hail_tests.c:
+          * Now HailCaption sets the accessible name of the embedded control
+            to be "control" if it does not provide one. (closes p.m.o bug
+          #24395).
+          * Added unit test to verify "control" is set for a child without
+            name in HailCaption (unit test for p.m.o bug #24395).
+
+        * docs/tmpl/hailcolorbutton.sgml, hail/hailrangeeditor.c:
+          * Small change to let the developer set custom atk names to the
+            entries of a HildonRangeEditor.
+
+2006-03-23  
+
+        * hail/hailrangeeditor.c, ut/hail_tests.c:
+          * HailRangeEditor: given names to entries in HildonRangeEditor
+          (closes p.m.o 24392).
+          * Added labels check in HailRangeEditor unit tests (checks bug p.m.o
+          24392).
+
+2006-03-08  
+
+	* Fixed debian control file to make debian package compilation work
+	again.
+
+	* Updated debian changelog again.
+
+2006-01-24  
+
+	* Release 1.0.0
+
+	* Added AtkText interface support to HildonDateEditor in
+        HailDateEditor
+        
+	* Added unit test to check AtkEditableText and AtkText in
+        HailDateEditor
+        
+	* Update API documentation of HailDateEditor
+
+	* Reinserted new unit tests for seek bar and control bar
+
+	* Some code style fixes
+
+	* Lint fixes
+
+2006-01-21  
+
+	* Implemented AtkValue support for HildonVolumeBar
+        
+	* Added a unit test for testing the AtkValue support for
+        HildonVolumeBar
+
+2006-01-20  
+
+	* Added AtkImage support to HildonGridItem in HailGridItem. It shows
+	a description (including label and base name of emblem), and
+	position and size of the icon. Also removed the AtkObject
+        get_description method implementation (now it's reported through
+        AtkImage).
+	
+	* Added AtkComponent support to HildonGrid in HailGrid, implementing
+        a way to get the child of the grid in a position.
+        
+	* Improved AtkImage support of HildonColorButton in HailColorButton.
+        Now it provides an enhanced description of the image it holds, with
+        position and size information.
+        
+	* Added unit test of AtkImage support in HailGridItem
+        
+	* Added unit test of AtkComponent support in HailGrid
+        
+	* Updated API documentation of HailGridItem to reflect support of
+        AtkImage
+        
+	* Updated API documentation of HailGrid to reflect improved support
+        of AtkComponent
+        
+	* Updated API documentation of HailColorButton to reflect better
+        support in AtkImage
+        
+	* Improved documentation about how to implement AtkComponent (now it
+        explains the need to implement get_extents() method instead of
+        get_position() or get_size().
+        
+	* Added documentation about how to implement AtkImage, with hints
+        for description, position and size.
+
+2006-01-20  
+
+	* Added unit test for HildonSeekBar (AtkValue interface)
+          
+	* Added unit test for HildonControlBar (AtkValue interface)
+          
+	* Added unit test for HildonRangeEditor (AtkText and AtkEditableText
+	interfaces)
+ 
+
+2006-01-19  
+
+	* Release 0.9.1
+        
+	* Added AtkImage support of HildonColorSelector in
+        HailColorSelector.
+        
+	* Added AtkObject, AtkImage and AtkValue support of
+        HildonColorButton with the new HailColorButton.
+        
+	* Modified AtkObject get_name of HailColorSelector to avoid showing
+        the current value of the color
+        
+	* Removed an old value_change handler that is not currently used.
+        
+	* Added unit tests for Atk interfaces of HildonColorButton
+        implemented in HailColorButton
+        
+	* Modified unit test of HailColorSelector to test the AtkImage
+        interface
+        
+	* Added AtkEditableText and AtkText unit tests for HailNumberEditor
+        
+	* Update API documentation of HailNumberEditor to reflect the
+        AtkText.
+        
+	* Update API documentation of HailColorSelector to reflect the
+        AtkImage support.
+        
+	* Add API documentation for HailColorButton.
+
+	* Some copyright date changes
+        
+	* Code style fixes and more comments.
+        
+	* Removed some lint warnings
+
+2006-01-18  
+
+	* HildonTimeEditor AtkText support
+
+        * HildonColorSelector AtkValue support and improvements to AtkObject
+        in HailColorSelector
+        
+	* Updated API info for HailColorSelector
+        
+	* Updated API info for HailTimeEditor
+        
+	* New unit tests for HailTimeEditor testing the AtkValue interface
+        
+	* New unit test to check AtkComponent support of HildonApp
+        
+	* New unit test to check history exposure of HildonFindToolbar
+        
+	* New unit test to check HailColorSelector color changing support
+        
+	* New unit test to check HailTimeEditor testing the text interfaces
+        support
+        
+	* Some fixes to unit test of HailFileSelection (remove debugging)
+
+2006-01-12  
+
+	* Removed atkimage position check in test_caption_image unit test
+	
+        * Modified the HildonFileSelection unit tests that were breaking the
+	tinderbox (it was trying to focus elements in the tree before
+        loading the available files).
+
+2006-01-11  
+
+	* Release 0.9.0
+          
+	* Added unit tests for AtkImage and AtkComponent interfaces of
+	HailCaption
+
+
+2006-01-11  
+
+	* Added AtkAction interface in HailFileSelection. It exposes the
+	contextual menus actions.
+	
+	* Added unit tests for testing HildonFileSelection and
+	HildonFileChooser support.
+
+
+2006-01-09  
+
+	* Debian package structure. It gets two debian packages: one for the
+	gtk module, and another for the built documentation.
+
+
+2006-01-03  
+
+	* Added API documentation for HailNumberEditor
+        
+	* Added API documentation for HailTimeEditor
+        
+	* Release 0.2.0
+        
+	* Fixed some copyright notes. Updated some of them to reflect the
+        2006 note.
+        
+	* Code style improvement: removed const gchars and replaced with
+        defines
+        
+	* Code style improvement: consistent coments all around the code
+        
+	* Code style improvement: more NULL initializations
+        
+	* Code style improvement: removed a variable declaration in the
+        middle of a code block
+
+
+2006-01-03  
+
+	* Added Atk support for HildonNumberEditor in HailNumberEditor
+        
+	* Added Atk support for HildonTimeEditor in HailTimeEditor
+        
+	* Added HailNumberEditor unit tests
+        
+	* Added HailTimeEditor unit tests
+
+
+2006-01-03  
+
+	* Added Atk implementation for HildonGridItem in HailGridItem
+        
+	* Added Atk implementation for HildonGrid in HailGrid
+        
+	* Added unit tests for HailGrid
+        
+	* Added unit tests for HailGridItem
+        
+	* Added API documentation for HildonGrid
+        
+	* Added API documentation for HildonGridItem
+        
+	* Fixed inclusion of API documentation of HailColorSelector
+        
+	* Fixed inclusion of API documentation of HailWeekdayPicker
+        
+	* ATK Implementation of HildonDateEditor in HailDateEditor. Quite
+        complex because of the need to manage the signals to expose an
+        action to click the calendar dialog button.
+        
+	* Unit tests for HailDateEditor
+        
+	* API documentation for HailDateEditor
+        
+	* Added ATK implementation of HildonRangeEditor in HailRangeEditor
+        
+	* Decreased pedantism of unit tests (now it does not break with Gdk
+        warnings). It's done because new Hildon widgets and Gdk in maemo
+        svn are producing warnings on calls to gdk_set_property.
+        
+	* Added unit tests for HailRangeEditor
+        
+	* Added API documentation for HailRangeEditor
+
+
+2006-01-02  
+
+	* Added ATK implementation of HildonColorSelector in
+        HailColorSelector
+	
+	* Added basic unit test for HailColorSelector
+        
+	* API documentation for HailDialog and HailTimePicker (forgot to
+	upload)
+        
+	* API documentation for HailColorSelector
+
+	* Added unit test for HildonNamePasswordDialog atk support
+        
+	* Added unit test for HildonSortDialog atk support
+        
+	* Added unit tests for HildonNote atk support
+        
+	* Added unit tests for HildonGetPassword and HildonSetPassword atk
+        support
+        
+	* Added unit test for HildonFontSelectionDialog atk support
+
+
+
+2005-12-30  
+
+	* Release 0.1.1
+
+	* Updated README to reflect we don't need gail source dir anymore.
+
+	* Added API documentation for HailTimePicker
+	
+	* Added API documentation for HailDialog
+	
+	* Changed copyright notice to the Nokia one
+	
+	* Unit test to check the time picker set_time and get_time methods
+	and the response through atk
+
+	* Lint type cast fixes
+
+
+2005-12-29  
+
+	* Added HailDialog, which overrides the Gail implementation of ATK
+	for GtkDialog, in order to be able to reflect the help hint dialogs
+	of the window manager used in Hildon. This object accesses the
+	XProtocol extension.
+	
+	* Added Atk support of HildonTimePicker in HailTimePicker. It's a
+	complex implementation based on adding better info and
+	organization to the accessibility objects of the internal widgets
+	(giving them names and so on).
+	
+	* Added unit tests for time picker and the test dialog, and
+        corrected a unit test for HailAppView to be compliant to the new
+	changes in Hildon Libs 0.10 series.
+
+2005-12-23  
+
+	* Removed the Gail source code dependency: now it gets the parent
+	class size dynamically, and inherits from a known parent class. The
+	parent class type is obtained from the atk factory for the parent
+	type of the widget, so it should give a better behaviour with gail
+	changes and improvements. The attributes for the Hail classes are
+	stored in the private section of GType object system. Anyway, now
+	it's required to load gail before hail, so you should change the
+	GTK_MODULES to do that (for example you can put
+        GTK_MODULES=gail:hail:atk-bridge).
+	
+	* Removed also the hildon-libs dependency. Now the children are
+        obtained using gtk_container_forall
+	
+	* Changes in gtk-doc Makefile.am in order to load correctly the
+	parent types.  Now it adds a GTK_MODULES=gail:hail:atk-bridge to the
+	gtk-doc scan programs.  It also removes all the references to gail
+	source and compilation directory.
+	
+	* Added implementation of ATK support for HildonFileSelection
+	through HailFileSelection
+
+	* Added documentation for HailFileSelection
+
+	* New way in unit tests to verify the class of gail objects, using
+	the dynamic class checking system of gtype.
+
+	* Removed a non-existing include.
+
+	* Fixed an small bug in initializing the private area of
+	HailFileSelection
+	
+	* Now HailFileSelection gets the correct tree folder widget (an
+	scrolled window).
+
+	* Added id's to sections and chapters in order to get html's with
+	significant names we can show links to.
+
+	* Updated documentation to reflect the new way to define hail
+        objects (the trick to avoid any source code dependencies).
+
+2005-12-20  
+
+	* Changed the release to 0.1.0
+
+	* Added Atk implementation for HildonWeekdayPicker, in
+	HailWeekdayPicker.  It provides access to the internal weekday
+	buttons as toggles.
+	
+	* Added documentation for HailWeekdayPicker
+	
+	* Added unit tests for HailWeekdayPicker
+
+	* Improvements to the README file, explaining better how to compile
+	and use Hail.
+	
+	* Added support to configure.in to specify where's the hildon libs
+	source code, required now to compile.
+	
+	* Added dependency to hildon libs source code in order to access
+	internal attributes of some widgets.
+	
+	* Improved and updated the build steps section in docbook.
+	
+	* Added HailVolumeBar, which implements the ATK interfaces for
+	showing the internal mute toggle and the volume range
+	
+	* Added API documentation for HailVolumeBar
+	
+	* Added the function button_waiter to unit tests file, which let you
+	wait for a button to handle a click
+	
+	* Added unit tests for HailVolumeBar
+	
+2005-12-16  
+
+	* Added implementation of ATK for HildonFindToolbar through
+	HailFindToolbar
+	
+	* Added documentation of HailFindToolbar
+	
+	* Bugfix: Now the keybinding returned for the fullscreen actions in
+	HailAppView is a string as required.
+	
+	* Added unit tests for HailFindToolbar
+
+2005-12-15  
+
+	* Corrected documentation of HailAppView. Now it explains
+	HailAppView instead of HailCaption.
+	
+	* Added better descriptions in documentation of HailAppView and
+	HailCaption enumerating the new features exposed.
+	
+	* Removed specific management of ref_children and get_n_children in
+	HailCaption. It's already handled in GailContainer
+	
+	* Added AtkAction support to HailCaption, exposing the click event
+	over the label.
+	
+	* Expose the HildonCaption status as the AtkState
+	ATK_STATE_REQUIRED.
+	
+	* More style fixes
+	
+	* Added new unit tests for HildonCaption
+
+2005-12-14  
+
+	* Implemented AtkAction interface for HildonAppView in HailAppView.
+	It exposes the fullscreen button behaviour.
+	
+	* Added unit tests to check AtkAction interface in HailAppView, and
+	the role of HailAppView.
+
+2005-12-13  
+
+	* Changed LDFLAGS with AM_LDFLAGS in ut/Makefile.am to remove a warning.
+
+	* Added unit tests for HildonApp Atk support.
+
+	* Added a new factory setup macro for external factories (for example
+	Gail ones).
+
+	* Added factory set up to let GailWindow implement Atk for HildonApp.
+	It provides HildonApp Atk support.
+
+2005-12-12  
+
+	* Added an explanation of the tasks to implement a hail object.
+
+	* Added a description of what's implemented in hail to reuse it properly
+
+	* Added manual of implementation of AtkAction, AtkComponent and AtkObject
+
+	* Added documentation "how to build hail in scratchbox"
+
+	* Improved gtk doc support: Now it gets hierarchy info correctly
+
+	* Added documentation for HailAppView
+
+	* Added implementation of AtkObject interface for HailCaption,
+	exposing the embedded control.
+
+	* Added implementation of AtkObject interface for HailAppView,
+	exposing the toolbar and the menu.
+
+	* Implemented unit tests for hail caption and hail app view
+	(implemented interfaces in 1st milestone)
+
+	* Implemented a working environment for unit tests with outo
+
+	* Now you can establish in configure where's the gail source code
+
+	* Improved gtk-doc structure (now it builds api, and it has
+	a start of design issues document).
+
+2005-11-14  
+
+	First release. Only built compilation structure.
+
+	

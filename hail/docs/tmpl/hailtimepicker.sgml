@@ -1,0 +1,54 @@
+<!-- ##### SECTION Title ##### -->
+HailTimepicker
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonTimePicker.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailTimePicker implements the required ATK interfaces of #HildonTimePicker and its
+children (the buttons inside the widget). It exposes:
+<itemizedlist>
+<listitem>The action button of the dialog</listitem>
+<listitem>The up/down buttons.</listitem>
+<listitem>The labels.</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonTimePicker</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailTimePicker ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailTimePickerClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_time_picker_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

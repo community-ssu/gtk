@@ -1,0 +1,58 @@
+<!-- ##### SECTION Title ##### -->
+HailFindToolbar
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for a #HildonFindToolbar.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailFindToolbar implements the required ATK interfaces of #HildonFindToolbar,
+delegating in its parent class #GailContainer for most of the behaviour.But
+it redefines some things:
+<itemizedlist>
+<listitem>It gives ATK significative names to the toolbar buttons close and find.</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+
+<varlistentry>
+<term>#HildonFindToolbar</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailContainer</term>
+<listitem><para>the parent class.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailFindToolbar ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailFindToolbarClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_find_toolbar_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

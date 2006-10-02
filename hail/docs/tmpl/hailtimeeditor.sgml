@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+HailTimeEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonTimeEditor.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailTimeEditor implements the required ATK interfaces of #HildonTimeEditor and its
+children (the buttons inside the widget). It exposes:
+<itemizedlist>
+<listitem>An action to expose the am/pm switch </listitem>
+<listitem>The data entries and the dialog button.</listitem>
+<listitem>The AtkText interface showing a textual description of the selected time. It
+should make checking current value easier (it's not required to check the children).</listitem>
+</itemizedlist>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonTimeEditor</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailTimeEditor ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailTimeEditorClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_time_editor_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

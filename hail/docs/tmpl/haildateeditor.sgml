@@ -1,0 +1,56 @@
+<!-- ##### SECTION Title ##### -->
+HailDateEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonDateEditor.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailDateEditor implements the required ATK interfaces of #HildonDateEditor and its
+children (the buttons inside the widget). It exposes:
+<itemizedlist>
+<listitem>An action to expose the button which launches the calendar dialog</listitem>
+<listitem>The data entries inside their frame, with significant names</listitem>
+<listitem>An #AtkText with a standard representation (YYYY-MM-DD) of the day</listitem>
+</itemizedlist>
+</para>
+<para>It also links the modification events of the children, in order to handle changes and
+reflect them in the exposed AtkText.</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonDateEditor</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailDateEditor ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailDateEditorClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_date_editor_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

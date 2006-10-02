@@ -1,0 +1,2 @@
+debian/tmp/usr/lib/gtk-*/modules/*.so
+

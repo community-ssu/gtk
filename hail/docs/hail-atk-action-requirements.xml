@@ -1,0 +1,33 @@
+<section id="HailAtkActionRequirements">
+<title> Requirements to implement AtkAction interfaces</title>
+
+<para>Atk actions expose actions for widgets. It's used for buttons and similar, to let the ATK layer launch the actions related to them.</para>
+
+<para>Each action has the following properties:</para>
+
+<itemizedlist>
+<listitem>A name: a short name of the action</listitem>
+<listitem>A description: a verbose description of the action</listitem>
+<listitem>A localized name: the name, through the l10n layer.</listitem>
+<listitem>A keybinding: the current key binding of the action.</listitem>
+</itemizedlist>
+
+<para>We should implement at least information for name, and maybe keybinding. All actions have an index, and the methods <function>get_name</function>, <function>get_description</function>, <function>get_localized_name</function> and <function>get_keybinding</function> have an index parameter.</para>
+
+<para>Theres a method get_n_actions, to know how many actions are associated with the widget:</para>
+
+<programlisting>
+<![CDATA[
+  gint                    (*get_n_actions)     (AtkAction         *action);
+]]>
+</programlisting>
+
+<para>The main thing about actions is the implementation of do_action. This method should launch the correct action for the widget and index. The interface is:</para>
+
+<programlisting>
+<![CDATA[
+  gboolean                (*do_action)         (AtkAction         *action,
+                                                gint              i);
+]]>
+</programlisting>
+</section>

@@ -1,0 +1,474 @@
+<?xml version="1.0"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<section id="HailImplementHailObject">
+<title>How to implement a Hail object</title>
+
+<para>We'll follow the example of HailCaption to explain this.</para>
+
+<section>
+<title>Object implementation (include)</title>
+
+<para>
+We introduze the usual guards of the include:
+</para>
+
+<programlisting>
+<![CDATA[
+#ifndef __HAIL_CAPTION_H__
+#define __HAIL_CAPTION_H__
+]]>
+</programlisting>
+
+<para>
+Then the includes, which should, at least, include the hildon widget we'll implement atk for (<classname>HildonCaption</classname>), the object we inherit from (<classname>GailContainer</classname>) and other relevant includes.
+</para>
+
+<programlisting>
+<![CDATA[
+#include <gtk/gtkaccessible.h>
+#include <gtk/gtkcontainer.h>
+#include <gail/gailcontainer.h>
+#include <hildon-widgets/hildon-caption.h>
+]]>
+</programlisting>
+
+<para>
+More guards:
+</para>
+
+<programlisting>
+<![CDATA[
+G_BEGIN_DECLS
+]]>
+</programlisting>
+
+<para>
+And the classic macros for type casts:
+</para>
+
+<programlisting>
+<![CDATA[
+#define HAIL_TYPE_CAPTION                     (hail_caption_get_type ())
+#define HAIL_CAPTION(obj)                     (G_TYPE_CHECK_INSTANCE_CAST ((obj), HAIL_TYPE_CAPTION, HailCaption))
+#define HAIL_CAPTION_CLASS(klass)             (G_TYPE_CHECK_CLASS_CAST ((klass), HAIL_TYPE_CAPTION, HailCaptionClass))
+#define HAIL_IS_CAPTION(obj)                  (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HAIL_TYPE_CAPTION))
+#define HAIL_IS_CAPTION_CLASS(klass)          (G_TYPE_CHECK_CLASS_TYPE ((klass), HAIL_TYPE_CAPTION))
+#define HAIL_CAPTION_GET_CLASS(obj)           (G_TYPE_INSTANCE_GET_CLASS ((obj), HAIL_TYPE_CAPTION, HailCaptionClass))
+]]>
+</programlisting>
+
+<para>
+Now the type definitions. We should take into account that usually our implementations won't have internal state, so they'll get no attributes. But if they get internal attributes, those should be declared as gtype private (it's explained later). Because of the way we link Gail parent types dynamically, it's important to highlight that in the struct we should inherit always from GtkAccessible.  Also, you can see the typical <function>get_type</function> function declaration, which includes the class into the gtk type system.
+</para>
+
+<programlisting>
+<![CDATA[
+  /**
+   * HailCaption:
+   *
+   * Contains only private date.
+   */
+typedef struct _HailCaption                   HailCaption;
+typedef struct _HailCaptionClass              HailCaptionClass;
+  
+struct _HailCaption
+{
+  GtkAccessible parent;
+};
+
+GType hail_caption_get_type (void);
+
+struct _HailCaptionClass
+{
+  GtkAccessibleClass parent_class;
+};
+]]>
+</programlisting>
+
+<para>
+The only public method exported is the constructor. It's used from the object factory to get the atk implementation for the widgets. Always, the only parameter it should get is the widget it wraps:
+</para>
+
+<programlisting>
+<![CDATA[
+AtkObject* hail_caption_new (GtkWidget *widget);
+]]>
+</programlisting>
+
+<para>
+And the close of the guards:
+</para>
+
+<programlisting>
+<![CDATA[
+G_END_DECLS
+#endif /* __HAIL_CAPTION_H__ */
+]]>
+</programlisting>
+</section>
+
+<section>
+<title> Object implementation (source)</title>
+
+<para>
+Again, the relevant includes (this time the internal ones). Of course the main should be the own include (<filename>hailcaption.h</filename> in this case):
+</para>
+
+<programlisting>
+<![CDATA[
+#include <string.h>
+#include <gtk/gtk.h>
+#include <gdk/gdkkeysyms.h>
+#include "hailcaption.h"
+#include <libgail-util/gailmisc.h>
+]]>
+</programlisting>
+
+<para>
+Then the internal function headers. Usually the hail objects should be used through the atk interfaces they implement, so nearly every function is private. First we should declare the object and class instantiation functions:
+</para>
+
+<programlisting>
+<![CDATA[
+static void                  hail_caption_class_init       (HailCaptionClass *klass);
+static void                  hail_caption_object_init      (HailCaption      *caption);
+]]>
+</programlisting>
+
+<para>
+Then the method implementation for the virtual methods provided by the interfaces. Here we have the <classname>AtkObject</classname> methods.
+</para>
+
+<programlisting>
+<![CDATA[
+static gint                  hail_caption_get_n_children   (AtkObject       *obj);
+static AtkObject*            hail_caption_ref_child        (AtkObject       *obj,
+                                                           gint            i);
+static G_CONST_RETURN gchar* hail_caption_get_name         (AtkObject       *obj);
+static AtkStateSet*          hail_caption_ref_state_set    (AtkObject       *obj);
+static AtkRelationSet*       hail_caption_ref_relation_set (AtkObject       *accessible);
+
+static void                  hail_caption_real_initialize  (AtkObject       *obj,
+                                                           gpointer        data);
+static void                  hail_caption_finalize         (GObject        *object);
+]]>
+</programlisting>
+
+<para>
+And here the <classname>AtkImage</classname> implementation:
+</para>
+
+<programlisting>
+<![CDATA[
+/* AtkImage.h */
+static void                  atk_image_interface_init   (AtkImageIface  *iface);
+static G_CONST_RETURN gchar* hail_caption_get_image_description 
+                                                        (AtkImage       *image);
+static void                hail_caption_get_image_position
+                                                        (AtkImage       *image,
+                                                         gint           *x,
+                                                         gint           *y,
+                                                         AtkCoordType   coord_type);
+static void                  hail_caption_get_image_size (AtkImage       *image,
+                                                         gint           *width,
+                                                         gint           *height);
+static gboolean              hail_caption_set_image_description 
+                                                        (AtkImage       *image,
+                                                         const gchar    *description);
+]]>
+</programlisting>
+
+<para>
+This section won't describe how to implement the particular interfaces, only the general object structure. So now, we include a parent class pointer, and a parent_type pointer, useful for the class management:
+</para>
+
+<programlisting>
+<![CDATA[
+static GType parent_type;
+static GailContainer* parent_class = NULL;
+]]>
+</programlisting>
+
+<para>
+Next, we declare the type. The get_type function should establish the function handlers for class and object creation and destruction, the parent class, and the interfaces. </para>
+<para>We need to get the parent class from the atk register, so we get it from the GType of the parent widget, using <function>atk_registry_get_factory()</function>. Then, we correct the class size of the new type to be sure it holds the correct parent size.</para>
+
+<para>In this case we see that HailCaption inherits from the atk accessible object for <classname>GtkEventBox</classname> (the parent of <classname>HildonCaption</classname>), and implements the <classname>AtkImage</classname> interface. The interfaces can get their own initialization functions.
+</para>
+
+<programlisting>
+<![CDATA[
+GType
+hail_caption_get_type (void)
+{
+  static GType type = 0;
+
+  if (!type)
+    {
+      AtkObjectFactory *factory;
+      GTypeQuery query;
+      GTypeInfo tinfo =
+      {
+        sizeof (HailCaptionClass),
+        (GBaseInitFunc) NULL, /* base init */
+        (GBaseFinalizeFunc) NULL, /* base finalize */
+        (GClassInitFunc) hail_caption_class_init, /* class init */
+        (GClassFinalizeFunc) NULL, /* class finalize */
+        NULL, /* class data */
+        sizeof (HailCaption), /* instance size */
+        0, /* nb preallocs */
+        (GInstanceInitFunc) hail_caption_object_init, /* instance init */
+        NULL /* value table */
+      };
+
+      static const GInterfaceInfo atk_image_info =
+      {
+        (GInterfaceInitFunc) atk_image_interface_init,
+        (GInterfaceFinalizeFunc) NULL,
+        NULL
+      };
+
+      factory = atk_registry_get_factory (atk_get_default_registry (), GTK_TYPE_EVENT_BOX);
+      parent_type = atk_object_factory_get_accessible_type (factory);
+      g_type_query (parent_type, &query);
+
+      tinfo.class_size = query.class_size;
+      tinfo.instance_size = query.instance_size;
+
+      type = g_type_register_static (parent_type,
+                                     "HailCaption", &tinfo, 0);
+
+      g_type_add_interface_static (type, ATK_TYPE_IMAGE,
+                                   &atk_image_info);
+
+    }
+
+  return type;
+}
+]]>
+</programlisting>
+
+<para>
+Then we add the class initialization. Its main purpose in linking the functions with the virtual methods of the interfaces provided. In this case <classname>AtkImage</classname> methods are set up in the <classname>AtkImage</classname> interface init method. So it has only the <classname>AtkObject</classname> methods.
+</para>
+
+<programlisting>
+<![CDATA[
+static void
+hail_caption_class_init (HailCaptionClass *klass)
+{
+  GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
+  AtkObjectClass *class = ATK_OBJECT_CLASS (klass);
+  GailWidgetClass *widget_class;
+
+  widget_class = (GailWidgetClass*)klass;
+
+  gobject_class->finalize = hail_caption_finalize;
+
+  parent_class = g_type_class_peek_parent (klass);
+
+  class->get_name = hail_caption_get_name;
+  class->get_n_children = hail_caption_get_n_children;
+  class->ref_child = hail_caption_ref_child;
+  class->ref_relation_set = hail_caption_ref_relation_set;
+  class->ref_state_set = hail_caption_ref_state_set;
+  class->initialize = hail_caption_real_initialize;
+}
+]]>
+</programlisting>
+
+<para>
+The constructor is always equal. It's important to call atk_object_initialize to start the initialization of the atk object interface.
+</para>
+
+<programlisting>
+<![CDATA[
+AtkObject* 
+hail_caption_new (GtkWidget *widget)
+{
+  GObject *object;
+  AtkObject *accessible;
+
+  g_return_val_if_fail (HILDON_IS_CAPTION (widget), NULL);
+
+  object = g_object_new (HAIL_TYPE_CAPTION, NULL);
+
+  accessible = ATK_OBJECT (object);
+  atk_object_initialize (accessible, widget);
+
+  return accessible;
+}
+]]>
+</programlisting>
+
+<para>
+The initialization of <classname>AtkImage</classname> interface is something like this. As you can see, you only link the virtual methods with the implementations.
+</para>
+
+<programlisting>
+<![CDATA[
+static void
+atk_image_interface_init (AtkImageIface *iface)
+{
+  g_return_if_fail (iface != NULL);
+
+  iface->get_image_description = hail_caption_get_image_description;
+  iface->get_image_position = hail_caption_get_image_position;
+  iface->get_image_size = hail_caption_get_image_size;
+  iface->set_image_description = hail_caption_set_image_description;
+}
+]]>
+</programlisting>
+
+<para>
+Then we implement all the methods for the class and the interfaces. 
+</para>
+<section>
+<title>Adding private attributes to a Hail object</title>
+<para>GType gives us a way to declare private sections of objects, which works well for
+the way we inherit Gail objects dynamically. To see how we can do it, we'll see the code
+of <classname>HailWeekdayPicker</classname>. All the changes should be done in the 
+implementation file.</para>
+<para>First, we add the type declaration of the private section:
+</para>
+<programlisting>
+typedef struct _HailWeekdayPickerPrivate HailWeekdayPickerPrivate;
+
+struct _HailWeekdayPickerPrivate {
+  GPtrArray * accessible_buttons;
+};
+</programlisting>
+<para>Then we add the macro to access the private section:</para>
+<programlisting>
+#define HAIL_WEEKDAY_PICKER_GET_PRIVATE(o)  \
+   (G_TYPE_INSTANCE_GET_PRIVATE ((o), HAIL_TYPE_WEEKDAY_PICKER, HailWeekdayPickerPrivate))
+</programlisting>
+<para>In the <function>class_init</function> method we should report the private section to
+the GType section:</para>
+<programlisting>
+  parent_class = g_type_class_peek_parent (klass);
+
+  g_type_class_add_private(klass, sizeof(HailWeekdayPickerPrivate));
+</programlisting>
+<para>We should initialize correctly the private structures in the object initialization:</para>
+<programlisting>
+static void
+hail_weekday_picker_object_init (HailWeekdayPicker      *weekday_picker)
+{
+  HailWeekdayPickerPrivate * priv = NULL;
+
+  priv = HAIL_WEEKDAY_PICKER_GET_PRIVATE(weekday_picker);
+  priv->accessible_buttons = g_ptr_array_sized_new(7);
+}
+</programlisting>
+<para>In any region of the object, if we want to access a private attribute, we should use the macro. An example of getting the private section, and using it to get a reference:</para>
+<programlisting>
+  HailWeekdayPickerPrivate * priv = NULL;
+
+  g_return_val_if_fail (HAIL_IS_WEEKDAY_PICKER (obj), 0);
+  priv = HAIL_WEEKDAY_PICKER_GET_PRIVATE(HAIL_WEEKDAY_PICKER(obj));
+
+  ...
+
+  accessible_child = g_ptr_array_index(priv->accessible_buttons,i);
+
+</programlisting>
+</section>
+<section>
+<title>Accessing internal widgets</title>
+<para>Sometimes we need to access internal widgets of the widget we're implementing 
+accessibility for. These widgets are shown and added using 
+<function>gtk_widget_set_parent()</function>, but  not with <function>gtk_container_add()</function>. To access them we should use the function <function>gtk_container_forall</function> which
+goes through the internal widgets too.</para>
+<para>An example doing this to store the accessible objects of the internal widgets in the
+private section is in <classname>HailWeekdayPicker</classname>. We define a callback for 
+<function>gtk_container_forall</function>:</para>
+<programlisting>
+/* callback for gtk_container_forall. It's used from atk object initialize
+ * to get the references to the AtkObjects of the internal buttons */
+static void
+add_weekday_buttons (GtkWidget * widget,
+		     gpointer data)
+{
+  HailWeekdayPicker * picker = NULL;
+  AtkObject * accessible_child = NULL;
+  HailWeekdayPickerPrivate *priv = NULL;
+
+  g_return_if_fail (HAIL_IS_WEEKDAY_PICKER(data));
+  picker = HAIL_WEEKDAY_PICKER(data);
+  priv = HAIL_WEEKDAY_PICKER_GET_PRIVATE(picker);
+  if (GTK_IS_TOGGLE_BUTTON(widget)) {
+    accessible_child = gtk_widget_get_accessible(widget);
+    g_ptr_array_add(priv->accessible_buttons, accessible_child);
+  }
+}
+</programlisting>
+<para>And then, we call it from the handler of atk_object_initialize:</para>
+<programlisting>
+/* Implementation of AtkObject method initialize() */
+static void
+hail_weekday_picker_real_initialize (AtkObject *obj,
+                             gpointer   data)
+{
+  GtkWidget * widget = NULL;
+  ATK_OBJECT_CLASS (parent_class)->initialize (obj, data);
+
+  obj->role = ATK_ROLE_PANEL;
+
+  widget = GTK_ACCESSIBLE (obj)->widget;
+  gtk_container_forall(GTK_CONTAINER(widget), add_weekday_buttons, obj);
+
+}
+</programlisting>
+<para>An idea could be putting the call to <function>gtk_container_forall</function> in
+<classname>GObject</classname> object initialization. It can't be done because the atk
+objects are not created yet.</para>
+</section>
+</section>
+
+<section>
+<title>  Registering the object</title>
+
+<section>
+<title>Adding the object to the hail include</title>
+
+<para>
+We should add the object to hail.c:
+</para>
+
+<programlisting>
+<![CDATA[
+#include "hailcaption.h"
+]]>
+</programlisting>
+
+</section>
+<section>
+<title>Configuring hail factory</title>
+
+<para>Hail provides a factory which is intended to find the proper Hail object implementation for a Hildon widget. To configure it you have to add some changes to <filename>hail.c</filename>.</para>
+
+<para>First you add the macro <function>HAIL_ACCESSIBLE_FACTORY</function> at the beginning. It creates the factory implementation for the object (an implementation of <classname>AtkObjectFactory</classname>.</para>
+
+<programlisting>
+<![CDATA[
+HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_CAPTION, hail_caption, hail_caption_new)
+]]>
+</programlisting>
+
+<para>
+And then, in module initialization (method <function>hail_accessibility_module_init ()</function>) you should link the factory with the widget type it wraps:
+</para>
+
+<programlisting>
+<![CDATA[
+  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_CAPTION, hail_caption);
+]]>
+</programlisting>
+
+<para>It should be enough. You should also remember to include the source code files in the <filename>Makefile.am</filename>.</para>
+</section>
+</section>
+</section>

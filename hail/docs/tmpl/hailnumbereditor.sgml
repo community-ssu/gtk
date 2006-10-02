@@ -1,0 +1,50 @@
+<!-- ##### SECTION Title ##### -->
+HailNumberEditor
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonNumberEditor.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailNumberEditor implements the required ATK interfaces of #HildonNumberEditor and its
+children (the buttons inside the widget). It exposes the internal plus and minus buttons,
+and the number entry. Through the internal number entry you can set or check the value
+using the AtkText interface.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonNumberEditor</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailNumberEditor ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailNumberEditorClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_number_editor_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

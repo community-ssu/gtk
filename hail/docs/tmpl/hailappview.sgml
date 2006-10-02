@@ -1,0 +1,55 @@
+<!-- ##### SECTION Title ##### -->
+HailAppView
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for a #HildonAppView.
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailAppView implements the required ATK interfaces of #HildonAppView. In particular it
+exposes:
+<itemizedlist>
+<listitem>The embedded control, the toolbar and the menu.</listitem>
+<listitem>The fullscreen button through #AtkAction</listitem>
+</itemizedlist>
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+
+<varlistentry>
+<term>#HildonAppView</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+
+</variablelist>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailAppView ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailAppViewClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_app_view_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

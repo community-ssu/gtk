@@ -1,0 +1,53 @@
+<!-- ##### SECTION Title ##### -->
+HailGridItem
+
+<!-- ##### SECTION Short_Description ##### -->
+
+Implementation of the ATK interfaces for #HildonGridItem
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+#HailGridItem implements the required ATK interfaces of #HildonGridItem,
+hiding its children (the icon and the label). It also shows the label
+ and emblem in the #AtkImage description.
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+<variablelist>
+<varlistentry>
+<term>#HildonGridItem</term>
+<listitem><para>the wrapped class.</para></listitem>
+</varlistentry>
+<varlistentry>
+<term>#GailContainer</term>
+<listitem><para>The parent class.</para></listitem>
+</varlistentry>
+</variablelist>
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT HailGridItem ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT HailGridItemClass ##### -->
+<para>
+
+</para>
+
+@parent_class: 
+
+<!-- ##### FUNCTION hail_grid_item_new ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+

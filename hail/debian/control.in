@@ -1,0 +1,28 @@
+Source: hail
+Section: libs
+Priority: optional
+Maintainer: Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, outo, hildon-libs-dev (>= 0.12.7-1), hildon-fm-dev (>= 0.16-1), libgtk2.0-dev (>= 2:2.6.10-1.osso1), libgail-dev (>= 1.8.11-1)
+Standards-Version: 3.6.0
+
+Package: libhail-common
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Hildon Accessibility Implementation Library -- the shared libraries
+ Hail implements ATK interfaces for Hildon widgets which are dynamically
+ loadable at runtime by a Hildon framework application, as GAIL does for
+ GTK+ applications.
+ .
+ This package contains core shared libraries.
+
+Package: libhail-doc
+Architecture: all
+Section: doc
+Depends: lynx | www-browser
+Description: documentation files for the Hail library
+ Hail implements ATK interfaces for Hildon widgets which are dynamically
+ loadable at runtime by a Hildon framework application, as GAIL does for
+ GTK+ applications.
+ .
+ This package contains the documentation files for Hail.
