@@ -1,3 +1,23 @@
+hildon-control-panel (2.2.8-1) unstable; urgency=low
+
+  * cp-grid.c: Added a constant padding to fit the margin
+  * cp-grid-item.c: Added a constant padding to fit the margin 
+  and set proper style. Fixes: NB#38554
+
+  * hildon-cp-applist.h: added prototype for hcp_al_free()
+  * hildon-cp-applist.c: implemented hcp_al_free() that frees the list
+  and hash table
+  * hildon-control-panel-main.c: now calls hcp_al_free() and frees the
+  applet list too
+
+  * hildon-control-panel-main.c: hcp_save_state(): fixed a SEGFAULT when
+    freeing non-allocated data
+
+  * hildon-control-panel-main.c: Fixed a crash if no applet focussed
+    and we go to background
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  2 Oct 2006 09:48:35 +0300
+
 hildon-control-panel (2.2.7-1) unstable; urgency=low
 
   * hildon-cp-view.c: Adjust the scrollbar if necessary when focussing

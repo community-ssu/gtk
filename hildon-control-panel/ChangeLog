@@ -1,3 +1,7 @@
+2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.8
+
 2006-09-29  Moises Martinez <moises.martinzes@nokia.com>
 
 	* cp-grid.c: Added a constant padding to fit the margin

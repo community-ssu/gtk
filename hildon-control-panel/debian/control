@@ -14,16 +14,18 @@ Suggests: hildon-tests
 Conflicts: hildon-base
 Replaces: hildon-base, hildon-navigator (<= 0.8.10)
 Description: Hildon Control Panel
+ Control panel to configure the Hildon Desktop
 
 Package: hildon-control-panel-dev
 Section: libs
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-control-panel, hildon-base-lib-dev, hildon-libs-dev
 Description: Hildon Control Panel development files.
+ Development files to build Hildon Control Panel applets
 
 Package: hildon-control-panel-dbg
 Section: libs
 Architecture: all
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: Debug symbols for hildon-control-panel
-
+ Debug symbols for the Hildon Control Panel
