@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: maemo-af-desktop
 Section: x11
 Architecture: any
-Depends:  ${shlibs:Depends}, ${misc:Depends}, maemo-af-desktop-l10n-mr | maemo-af-desktop-l10n-mr0, matchbox-window-manager, hildon-status-bar-lib0 (=${Source-Version}), shared-mime-info, default-backgrounds-config, osso-gnomevfs-extra, libgtk2.0-bin, maemo-af-desktop-config
+Depends:  ${shlibs:Depends}, ${misc:Depends}, maemo-af-desktop-l10n-mr | maemo-af-desktop-l10n-mr0, matchbox-window-manager, shared-mime-info, default-backgrounds-config, osso-gnomevfs-extra, libgtk2.0-bin, maemo-af-desktop-config (>= 0.1.4)
 Conflicts: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, home-image-loader
 Replaces: hildon-base, hildon-navigator, hildon-status-bar, hildon-home, hildon-image-loader
 Provides: hildon-navigator, hildon-status-bar, hildon-home, home-image-loader
@@ -68,5 +68,5 @@ Description: Hildon Home development files
 Package: maemo-af-desktop-dbg
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: maemo-af-desktop (=${Source-Version})
 Description: Debug symbols for maemo-af-desktop
