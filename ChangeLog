@@ -1,5 +1,20 @@
 2006-10-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Merged small fixes from upstream.
+
+    2005-11-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_motion_resize_column): Another
+	erroneous semicolon.
+
+    2005-07-13  Kristian Rietveld  <kris@gtk.org>
+
+	* gtk/gtktreeview.c (gtk_tree_view_new_column_width): let's take
+	the MIN of width and max_width here, not width and max_width != -1.
+	(fixes #144480, reported by Mikael Magnusson).
+
+2006-10-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (update_checkbox_mode): Stop memory leak after
 	losing a pointer to list start. NB#41908
 
