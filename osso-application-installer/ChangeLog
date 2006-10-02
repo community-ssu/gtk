@@ -1,3 +1,23 @@
+2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/instr.h, src/instr.cc (instr_cont,
+	open_install_instructions, open_local_install_instructions): Do
+	not call localize_file in open_install_instructions since this has
+	already been done.  Renameds open_install_instructions to
+	open_local_install_instructions to reflect this fact.  Removed
+	instr_cont and do everything directly in
+	open_local_install_instructions.
+	* src/main.cc (install_from_file_cont2): Call
+	open_local_install_instructions instead of
+	open_install_instructions.
+	* src/util.h, src/util.cc (localize_file,
+	localize_file_and_keep_it_open): Renamed former to latter; changed
+	callers.  Open a GnomeVFSHandle.
+	(cleanup_temp_file): Close it.
+	
+	* osso-application-installer.desktop: Added Comment field for
+	thumb menu. (N41583)
+
 2006-10-01  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/repo.cc (_UI2_): Removed, corrected all uses.
