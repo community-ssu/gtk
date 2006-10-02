@@ -1,8 +1,10 @@
 gtk+2.0 (2:2.6.10-2.osso16) UNRELEASED; urgency=low
 
   * NOT RELEASED YET
+  * Fixes: NB#41908 update_checkbox_mode function in Maemo modified gtk leaks
+    memory
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 22 Sep 2006 17:33:33 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  2 Oct 2006 11:17:24 +0300
 
 gtk+2.0 (2:2.6.10-2.osso15) unstable; urgency=low
 
