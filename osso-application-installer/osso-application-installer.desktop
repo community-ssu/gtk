@@ -3,6 +3,7 @@ Encoding=UTF-8
 Version=0.9.4
 Type=Application
 Name=ai_ap_application_installer
+Comment=ai_ap_application_installer_thumb
 Exec=/usr/bin/osso-application-installer
 MimeType=application/x-debian-package;application/x-deb;application/x-install-instructions
 Icon=qgn_list_app_installer
