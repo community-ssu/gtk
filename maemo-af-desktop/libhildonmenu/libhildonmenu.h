@@ -45,7 +45,8 @@ G_BEGIN_DECLS
 /* Default directory for .desktop files */
 #define DEFAULT_APPS_DIR "/usr/share/applications/"
 #define ICON_FAVOURITES  "qgn_list_gene_favor"
-#define ICON_FOLDER      "qgn_list_gene_fldr_cls"
+#define ICON_FOLDER      "qgn_list_filesys_common_fldr"
+/*#define ICON_FOLDER      "qgn_list_gene_fldr_cls"*/
 #define ICON_DEFAULT_APP "qgn_list_gene_default_app"
 #define ICON_SIZE        26
 /* Apparently 64 is what we get for the "scalable" size. Should really be -1.*/
