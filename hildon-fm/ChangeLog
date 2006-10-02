@@ -1,13 +1,17 @@
-2006-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
+2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	* hildon-fm/Makefile.am (INCLUDES): Don't use BTTOOLS_CFLAGS.
+	* hildon-fm/hildon-file-system-mmc.c (capitalize_ascii_string):
+	Advance pointer after uppercasing the first char, stupid.
+
+2006-09-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-mmc.c (capitalize_ascii_string):
 	New.
 	(hildon_file_system_mmc_get_display_name): Use it to nicify the
-	names.
+	names. (N40288)
 
 	* configure.ac (BTTOOLS_CFLAGS): Removed.
+	* hildon-fm/Makefile.am (INCLUDES): Don't use BTTOOLS_CFLAGS.
 
 	* hildon-fm/hildon-file-system-private.c
 	(_hildon_file_system_search_extension): If mime is NULL, just
