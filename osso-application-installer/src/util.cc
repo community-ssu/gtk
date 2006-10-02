@@ -1175,6 +1175,11 @@ make_global_package_list (GList *packages,
 
   grab_focus_on_map (tree);
 
+  GtkTreePath *root = gtk_tree_path_new_root ();
+  gtk_tree_view_set_cursor (GTK_TREE_VIEW (tree), root, NULL, FALSE);
+  gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (tree), root, NULL, FALSE, 0, 0);
+  gtk_tree_path_free (root);
+
   return scroller;
 }
 
@@ -1199,15 +1204,17 @@ set_global_package_list (GList *packages,
   global_activation_callback = activated;
   global_packages = packages;
   
+  int pos = 0;
   for (GList *p = global_packages; p; p = p->next)
     {
       GtkTreeIter iter;
       package_info *pi = (package_info *)p->data;
       pi->model = GTK_TREE_MODEL (global_list_store);
-      gtk_list_store_append (global_list_store, &pi->iter);
-      gtk_list_store_set (global_list_store, &pi->iter,
-			  0, pi,
-			  -1);
+      gtk_list_store_insert_with_values (global_list_store, &pi->iter,
+					 pos,
+					 0, pi,
+					 -1);
+      pos++;
     }
 }
 
