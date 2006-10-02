@@ -62,7 +62,6 @@ clean:
 
 	# Add here commands to clean up after the build process.
 	# Skipped
-	
 	dh_clean 
 
 install: build
@@ -74,7 +73,7 @@ install: build
 	# Add here commands to install the package into debian/tmp
 	# The widget support code
 	mkdir -p $(CURDIR)/$(d)/$(HWIDGETS_PY_DIR)
-	cp hildonwidgets/*.py $(CURDIR)/$(d)/$(HWIDGETS_PY_DIR)
+	cp *.py $(CURDIR)/$(d)/$(HWIDGETS_PY_DIR)
 	chmod 0755 $(CURDIR)/$(d)/$(HWIDGETS_PY_DIR)
 	# The catalog
 	mkdir -p $(CURDIR)/$(d)/$(GCATALOG_DIR)

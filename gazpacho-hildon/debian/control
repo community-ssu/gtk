@@ -1,6 +1,6 @@
 Source: gazpacho-hildon
 Priority: optional
-Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com>
+Maintainer: Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.1
 
