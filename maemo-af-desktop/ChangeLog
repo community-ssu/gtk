@@ -1,5 +1,9 @@
 2006-10-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.92
+
+2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied new fixes to the background manager:
 	* hildon-home/hildon-home-titlebar.c: New signal for "select background"
 	* hildon-home/hildon-home-window.c: Handle backgound dialog control
