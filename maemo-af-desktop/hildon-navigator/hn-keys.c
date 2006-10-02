@@ -382,10 +382,10 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
   /* Cannot install grab for keys that we are supposed to fake */
   switch (ks)
     {
+      case XK_F4:
       case XK_F6:
       case XK_F7:
       case XK_F8:
-      case XK_F10:
         HN_DBG ("Illegal shortcut symbol -- ignoring");
         return NULL;
       

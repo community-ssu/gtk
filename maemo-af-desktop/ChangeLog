@@ -1,5 +1,10 @@
 2006-10-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-keys.c: Forbid F4, not F10
+	* configure.ac: 2.9.92.1
+
+2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.h: use the correct image for
 	  the folder icons
 
