@@ -2456,7 +2456,7 @@ install_from_file_cont2 (char *filename, void *unused)
     {
       if (g_str_has_suffix (filename, ".install"))
 	{
-	  open_install_instructions (filename);
+	  open_local_install_instructions (filename);
 	  g_free (filename);
 	}
       else
@@ -2469,7 +2469,7 @@ install_from_file_cont2 (char *filename, void *unused)
 static void
 install_from_file_cont (char *uri, void *unused)
 {
-  localize_file (uri, install_from_file_cont2, NULL);
+  localize_file_and_keep_it_open (uri, install_from_file_cont2, NULL);
   g_free (uri);
 }
 

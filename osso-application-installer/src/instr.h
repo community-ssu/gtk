@@ -24,6 +24,11 @@
 #ifndef INSTR_H
 #define INSTR_H
 
-void open_install_instructions (const char *filename);
+/* Carry out the instruction in FILENAME, which is assumed to refer to
+   a local file as produced by 'localize_file_and_keep_it_open'.
+   OPEN_LOCAL_INSTALL_INSTRUCTIONS will call 'cleanup_temp_file' when
+   it is done with FILENAME.
+*/
+void open_local_install_instructions (const char *filename);
 
 #endif /* !INSTR_H */

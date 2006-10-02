@@ -323,8 +323,14 @@ void show_file_chooser_for_save (const char *title,
 */
 GdkPixbuf *pixbuf_from_base64 (const char *base64);
 
-/* LOCALIZE_FILE makes sure that the file identified by URI is
-   accessible in the local filesystem.
+/* LOCALIZE_FILE_AND_KEEP_IT_OPEN makes sure that the file identified
+   by URI is accessible in the local filesystem.
+
+   In addition, the original URI is opened and kept open until
+   CLEANUP_TEMP_FILE is called.  Keeping the file open all the time
+   will signal to the system that it is in use all the time (and will
+   prevent the MMC from being unmounted, for example) even if the file
+   will in fact be read multiple times with gaps in between.
 
    CONT is called with the local name of the file, or NULL when
    something went wrong.  In the latter case, an appropriate error
@@ -337,9 +343,9 @@ GdkPixbuf *pixbuf_from_base64 (const char *base64);
    called after LOCALIZE_FILE has called CONT with a non-NULL filename.
 */
 
-void localize_file (const char *uri,
-		    void (*cont) (char *local, void *data),
-		    void *data);
+void localize_file_and_keep_it_open (const char *uri,
+				     void (*cont) (char *local, void *data),
+				     void *data);
 
 void cleanup_temp_file ();
 

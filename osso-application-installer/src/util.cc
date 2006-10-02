@@ -1610,6 +1610,7 @@ static void *copy_cont_data;
 static char *copy_local;
 static char *copy_target;
 static char *copy_tempdir;
+static GnomeVFSHandle *copy_vfs_handle;
 
 static void
 call_copy_cont (GnomeVFSResult result)
@@ -1732,15 +1733,16 @@ do_copy (const char *source, GnomeVFSURI *source_uri,
 }
 
 void
-localize_file (const char *uri,
-	       void (*cont) (char *local, void *data),
-	       void *data)
+localize_file_and_keep_it_open (const char *uri,
+				void (*cont) (char *local, void *data),
+				void *data)
 {
   copy_cont = cont;
   copy_cont_data = data;
   copy_target = NULL;
   copy_local = NULL;
   copy_tempdir = NULL;
+  copy_vfs_handle = NULL;
 
   if (!gnome_vfs_init ())
     {
@@ -1765,9 +1767,20 @@ localize_file (const char *uri,
   const gchar *scheme = gnome_vfs_uri_get_scheme (vfs_uri);
   if (scheme && !strcmp (scheme, "file"))
     {
-      const gchar *path = gnome_vfs_uri_get_path (vfs_uri);
-      copy_target = gnome_vfs_unescape_string (path, NULL);
-      call_copy_cont (GNOME_VFS_OK);
+      /* Open the file to protect against unmounting of the MMC, etc.
+       */
+      GnomeVFSResult result;
+      
+      result = gnome_vfs_open_uri (&copy_vfs_handle, vfs_uri,
+				   GNOME_VFS_OPEN_READ);
+      if (result != GNOME_VFS_OK)
+	call_copy_cont (result);
+      else
+	{
+	  const gchar *path = gnome_vfs_uri_get_path (vfs_uri);
+	  copy_target = gnome_vfs_unescape_string (path, NULL);
+	  call_copy_cont (GNOME_VFS_OK);
+	}
     }
   else
     {
@@ -1804,6 +1817,8 @@ localize_file (const char *uri,
 	  do_copy (uri, vfs_uri, copy_target);
 	}
     }
+      
+  gnome_vfs_uri_unref (vfs_uri);
 }
 
 void
@@ -1813,6 +1828,9 @@ cleanup_temp_file ()
      point of the user, the installation has been completed and he
      has seen the report already.
   */
+
+  if (copy_vfs_handle)
+    gnome_vfs_close (copy_vfs_handle);
 
   if (copy_local)
     {

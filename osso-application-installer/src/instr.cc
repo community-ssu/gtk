@@ -64,20 +64,16 @@ instr_cont2 (bool res, void *data)
     g_free (package);
 }
 
-static void
-instr_cont (char *filename, void *unused)
+void
+open_local_install_instructions (const char *filename)
 {
   GError *error = NULL;
-
-  if (filename == NULL)
-    return;
 
   GKeyFile *keys = g_key_file_new ();
   if (!g_key_file_load_from_file (keys, filename, GKeyFileFlags(0), &error))
     {
       annoy_user_with_gerror (filename, error);
       g_key_file_free (keys);
-      g_free (filename);
       cleanup_temp_file ();
       return;
     }
@@ -98,11 +94,4 @@ instr_cont (char *filename, void *unused)
   g_free (repo_name);
   g_free (repo_deb);
   g_key_file_free (keys);
-  g_free (filename);
-}
-
-void
-open_install_instructions (const char *filename)
-{
-  localize_file (filename, instr_cont, NULL);
 }
