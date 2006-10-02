@@ -3732,7 +3732,7 @@ gtk_tree_view_motion_resize_column (GtkWidget      *widget,
   new_width = gtk_tree_view_new_column_width (tree_view,
 					      tree_view->priv->drag_pos, &x);
   if (x != tree_view->priv->x_drag &&
-      (new_width != column->fixed_width));
+      (new_width != column->fixed_width))
     {
       column->use_resized_width = TRUE;
       column->resized_width = new_width;
@@ -10397,7 +10397,7 @@ gtk_tree_view_new_column_width (GtkTreeView *tree_view,
     width = MAX (column->min_width,
 		 width);
   if (column->max_width != -1)
-    width = MIN (width, column->max_width != -1);
+    width = MIN (width, column->max_width);
 
   *x = rtl ? (column->button->allocation.x + column->button->allocation.width - width) : (column->button->allocation.x + width);
  
