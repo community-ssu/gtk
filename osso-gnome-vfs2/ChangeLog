@@ -1,3 +1,11 @@
+2006-10-02  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* dbus-daemon/dbus-method.c (do_monitor_add): Insert the monitor
+	handle in the active monitors hash table, accidently missed when
+	merging this for the previous version. Fixes NB#41602.
+
 2006-09-22  Richard Hult  <richard@imendio.com>
 
 	* Release 2.12.0.14.
@@ -22,7 +30,7 @@
 	(do_monitor_cancel): Keep track of active monitors on the
 	client-side and ignore events from cancelled monitors (can happen
 	if we get events after removing a monitor but before the daemon
-	has noticed that).
+	has noticed that). Fixes NB#36464.
 	
 	* dbus-daemon/daemon-connection.c (connection_add_directory_handle),
 	(connection_add_monitor_handle, connection_add_file_handle): Add

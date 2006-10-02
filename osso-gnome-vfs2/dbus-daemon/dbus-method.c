@@ -1549,6 +1549,12 @@ do_monitor_add (GnomeVFSMethod        *method,
 
 	*method_handle = GINT_TO_POINTER (id);
 
+	ACTIVE_MONITORS_LOCK ();
+	g_hash_table_insert (active_monitors,
+			     *method_handle,
+			     GINT_TO_POINTER (TRUE));
+	ACTIVE_MONITORS_UNLOCK ();
+	
 	dbus_message_unref (reply);
 
 	return GNOME_VFS_OK;
