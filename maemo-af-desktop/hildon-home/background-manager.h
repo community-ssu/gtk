@@ -86,7 +86,8 @@ struct _BackgroundManagerClass
   void (*load_begin)    (BackgroundManager *manager);
   void (*load_complete) (BackgroundManager *manager);
   void (*load_cancel)   (BackgroundManager *manager);
-  void (*load_error)    (BackgroundManager *manager, GError *error);
+  void (*load_error)    (BackgroundManager *manager,
+                         const GError      *error);
   void (*preview)       (BackgroundManager *manager,
 		         GdkPixbuf         *pixbuf);
   void (*changed)       (BackgroundManager *manager,

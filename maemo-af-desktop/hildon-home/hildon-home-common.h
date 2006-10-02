@@ -39,6 +39,7 @@ G_CONST_RETURN gchar* hildon_home_get_user_config_dir   (void);
 G_CONST_RETURN gchar* hildon_home_get_user_config_file  (void);
 G_CONST_RETURN gchar* hildon_home_get_system_config_dir (void);
 G_CONST_RETURN gchar* hildon_home_get_user_bg_file      (void);
+G_CONST_RETURN gchar* hildon_home_get_mmc_mount_point   (void);
 
 G_END_DECLS
 

@@ -1,3 +1,14 @@
+2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+
+	Applied new fixes to the background manager:
+	* hildon-home/hildon-home-titlebar.c: New signal for "select background"
+	* hildon-home/hildon-home-window.c: Handle backgound dialog control
+	  here
+	* hildon-home/background-manager.c:
+	  - Move background setting here
+	  - Handle cancel after ok
+	  - send complete GError from child to parent process
+
 2006-09-29  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm.h: Disabled debug. Fixes: NB#41734

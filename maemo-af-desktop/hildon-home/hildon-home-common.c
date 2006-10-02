@@ -55,6 +55,8 @@ static gchar *hildon_home_system_conf = NULL;
 
 static gchar *hildon_home_user_bg_file = NULL;
 
+static gchar *hildon_home_mmc_mount_point = NULL;
+
 /* initialize the globals.
  * HOLDS: hildon_home_globals
  */
@@ -74,16 +76,21 @@ hildon_home_globals_init_do (void)
                                                 HILDON_HOME_CONF_DIR,
                                                 NULL);
 
-  g_free (hildon_home_user_file);
-  hildon_home_user_file = g_build_filename (hildon_home_user_conf,
-		  			    HILDON_HOME_CONF_FILE,
-					    NULL);
+  if (!hildon_home_user_file)
+    hildon_home_user_file = g_build_filename (hildon_home_user_conf,
+                                              HILDON_HOME_CONF_FILE,
+					      NULL);
 
-  g_free (hildon_home_user_bg_file);
-  hildon_home_user_bg_file = g_build_filename (DATADIR,
-		                               "backgrounds",
-		  			       "bg_img_01.png",
-					       NULL);
+  if (!hildon_home_user_bg_file)
+    hildon_home_user_bg_file = g_build_filename (DATADIR,
+		                                 "backgrounds",
+		  			         "bg_img_01.png",
+					         NULL);
+  if (!hildon_home_mmc_mount_point)
+    {
+      hildon_home_mmc_mount_point =
+        g_strdup (g_getenv (HILDON_HOME_ENV_MMC_MOUNTPOINT));
+    }
 }
 
 static inline void
@@ -156,4 +163,12 @@ hildon_home_get_user_bg_file (void)
   hildon_home_globals_init ();
 
   return hildon_home_user_bg_file;
+}
+
+G_CONST_RETURN gchar *
+hildon_home_get_mmc_mount_point (void)
+{
+  hildon_home_globals_init ();
+
+  return hildon_home_mmc_mount_point;
 }

@@ -57,7 +57,6 @@
 #include "hildon-home-titlebar.h"
 #include "hildon-home-common.h"
 #include "hildon-home-private.h"
-#include "hildon-home-background-dialog.h"
 #include "hildon-home-area.h"
 #include "hildon-home-window.h"
 
@@ -149,6 +148,7 @@ enum
   SELECT_APPLETS_ACTIVATE,
   LAYOUT_MODE_ACTIVATE,
   APPLET_ACTIVATE,
+  SET_BACKGROUND_ACTIVATE,
   HELP_ACTIVATE,
   LAYOUT_ACCEPT,
   LAYOUT_CANCEL,
@@ -371,11 +371,7 @@ static void
 set_background_activate_cb (GtkMenuItem *item,
 			    gpointer     user_data)
 {
-  hildon_home_window_set_desktop_dimmed (HILDON_HOME_WINDOW (user_data),
-                                         TRUE);
-  home_bgd_dialog_run (GTK_WINDOW (user_data));
-  hildon_home_window_set_desktop_dimmed (HILDON_HOME_WINDOW (user_data),
-                                         FALSE);
+  g_signal_emit (user_data, titlebar_signals[SET_BACKGROUND_ACTIVATE], 0);
 }
 
 static void
@@ -513,7 +509,7 @@ build_titlebar_menu (HildonHomeTitlebar *titlebar)
   menu_item = gtk_menu_item_new_with_label (HILDON_HOME_TITLEBAR_SUB_SET_BG);
   g_signal_connect (menu_item, "activate",
 		    G_CALLBACK (set_background_activate_cb),
-		    gtk_widget_get_toplevel (GTK_WIDGET (titlebar)));
+		    titlebar);
   gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
   gtk_widget_show (menu_item);
   
@@ -765,6 +761,14 @@ hildon_home_titlebar_class_init (HildonHomeTitlebarClass *klass)
                     G_TYPE_FROM_CLASS (klass),
                     G_SIGNAL_RUN_LAST,
                     G_STRUCT_OFFSET (HildonHomeTitlebarClass, help_activate),
+                    NULL, NULL,
+                    g_cclosure_marshal_VOID__VOID,
+                    G_TYPE_NONE, 0);
+  titlebar_signals[SET_BACKGROUND_ACTIVATE] =
+      g_signal_new ("set-background-activate",
+                    G_TYPE_FROM_CLASS (klass),
+                    G_SIGNAL_RUN_LAST,
+                    G_STRUCT_OFFSET (HildonHomeTitlebarClass, set_background_activate),
                     NULL, NULL,
                     g_cclosure_marshal_VOID__VOID,
                     G_TYPE_NONE, 0);

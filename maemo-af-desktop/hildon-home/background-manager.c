@@ -22,7 +22,7 @@
  *
  */
 #ifdef HAVE_CONFIG_H
-#include <config.h>
+#include "config.h"
 #endif
 
 #include <sys/time.h>
@@ -233,13 +233,19 @@ background_manager_set_property (GObject      *object,
 				 const GValue *value,
 				 GParamSpec   *pspec)
 {
+  BackgroundManager *manager = BACKGROUND_MANAGER (object);
+  
   switch (prop_id)
     {
     case PROP_IMAGE_URI:
+      background_manager_set_image_uri (manager,
+                                        g_value_get_string (value));
       break;
     case PROP_MODE:
+      background_manager_set_mode (manager, g_value_get_enum (value));
       break;
     case PROP_COLOR:
+      background_manager_set_color (manager, g_value_get_boxed (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -253,13 +259,23 @@ background_manager_get_property (GObject    *object,
 				 GValue     *value,
 				 GParamSpec *pspec)
 {
+  BackgroundManager *manager = BACKGROUND_MANAGER (object);
+  
   switch (prop_id)
     {
     case PROP_IMAGE_URI:
+      g_value_set_string (value, background_manager_get_image_uri (manager));
       break;
     case PROP_MODE:
+      g_value_set_enum (value, background_manager_get_mode (manager));
       break;
     case PROP_COLOR:
+      {
+        GdkColor color;
+
+        background_manager_get_color (manager, &color);
+        g_value_set_boxed (value, &color);
+      }
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -279,6 +295,12 @@ background_manager_finalize (GObject *object)
 
   g_free (priv->titlebar);
   g_free (priv->sidebar);
+
+  if (priv->bg_timeout)
+    g_source_remove (priv->bg_timeout);
+
+  if (priv->loading_note)
+    gtk_widget_destroy (priv->loading_note);
   
   G_OBJECT_CLASS (background_manager_parent_class)->finalize (object);
 }
@@ -293,6 +315,8 @@ background_manager_write_configuration (BackgroundManager *manager)
   gchar *data;
   gsize len;
   GError *error;
+  const gchar *config_file;
+  gchar *config_backup;
 
   priv = manager->priv;
   
@@ -347,12 +371,24 @@ background_manager_write_configuration (BackgroundManager *manager)
 
       return;
     }
+  else
+    g_key_file_free (conf);
 
+  config_file = hildon_home_get_user_config_file ();
+
+  /* save a backup copy of the current configuration */
+  config_backup = g_strconcat (config_file, ".bak", NULL);
+  if (g_rename (config_file, config_backup) == -1)
+    {
+      g_warning ("Unable to save a backup copy of the configuration: %s",
+                 g_strerror (errno));
+    }
+  
+  g_free (config_backup);
+
+  /* save the configuration */
   error = NULL;
-  g_file_set_contents (hildon_home_get_user_config_file (),
-		       data,
-		       len,
-		       &error);
+  g_file_set_contents (config_file, data, len, &error);
   if (error)
     {
       g_warning ("Error while saving configuration to file `%s': %s",
@@ -360,14 +396,9 @@ background_manager_write_configuration (BackgroundManager *manager)
 		 error->message);
 
       g_error_free (error);
-      g_key_file_free (conf);
-      g_free (data);
-
-      return;
     }
 
   g_free (data);
-  g_key_file_free (conf);
 }
 
 static void
@@ -409,7 +440,7 @@ background_manager_read_configuration (BackgroundManager *manager)
   if (parse_error)
     {
       priv->current->image_uri =
-        g_strdup_printf ("file://%s", hildon_home_get_user_bg_file ());
+        g_strconcat ("file://", hildon_home_get_user_bg_file (), NULL);
       
       g_error_free (parse_error);
       parse_error = NULL;
@@ -429,8 +460,7 @@ background_manager_read_configuration (BackgroundManager *manager)
       g_warning ("failed read color.red");
       priv->current->color.red = 0;
 
-      g_error_free (parse_error);
-      parse_error = NULL;
+      g_clear_error (&parse_error);
     }
 
   priv->current->color.green =
@@ -442,8 +472,7 @@ background_manager_read_configuration (BackgroundManager *manager)
       g_warning ("failed read color.green");
       priv->current->color.green = 0;
 
-      g_error_free (parse_error);
-      parse_error = NULL;
+      g_clear_error (&parse_error);
     }
 
   priv->current->color.blue =
@@ -455,8 +484,7 @@ background_manager_read_configuration (BackgroundManager *manager)
       g_warning ("failed read color.blue");
       priv->current->color.blue = 0;
 
-      g_error_free (parse_error);
-      parse_error = NULL;
+      g_clear_error (&parse_error);
     }
   
   mode = g_key_file_get_string (conf, HILDON_HOME_CONF_MAIN_GROUP,
@@ -466,16 +494,15 @@ background_manager_read_configuration (BackgroundManager *manager)
     {
       mode = g_strdup ("centered");
 
-      g_error_free (parse_error);
-      parse_error = NULL;
+      g_clear_error (&parse_error);
     }
 
   enum_class = g_type_class_ref (TYPE_BACKGROUND_MODE);
   enum_value = g_enum_get_value_by_nick (enum_class, mode);
   priv->current->mode = enum_value->value;
-
+  
+  g_type_class_unref (enum_class);
   g_free (mode);
-
   g_key_file_free (conf);
 }
 
@@ -491,7 +518,7 @@ load_image_oom_cb (size_t  current_size,
 
 static GdkPixbuf *
 load_image_from_uri (const gchar  *uri,
-                     gboolean      post_install,
+                     gboolean      oom_check,
                      GError      **error)
 {
   GConfClient *client;
@@ -510,8 +537,9 @@ load_image_from_uri (const gchar  *uri,
   client = gconf_client_get_default ();
   g_assert (GCONF_IS_CLIENT (client));
 
-  mmc_mount_point = g_strdup_printf ("file://%s",
-                                     g_getenv (HILDON_HOME_ENV_MMC_MOUNTPOINT));
+  mmc_mount_point = g_strconcat ("file://",
+                                 hildon_home_get_mmc_mount_point (),
+                                 NULL);
   if (g_str_has_prefix (uri, mmc_mount_point))
     {
       GError *gconf_error = NULL;
@@ -563,7 +591,7 @@ load_image_from_uri (const gchar  *uri,
       return NULL;
     }
 
-  if (!post_install &&
+  if (!oom_check &&
       osso_mem_saw_enable (3 << 20, 32767, load_image_oom_cb, (void *) &oom))
     {
       oom = TRUE;
@@ -577,8 +605,7 @@ load_image_from_uri (const gchar  *uri,
       GnomeVFSFileSize bytes_read;
 
       result = gnome_vfs_read (handle, buffer, BUFFER_SIZE, &bytes_read);
-
-      if ((result == GNOME_VFS_ERROR_IO))
+      if (result == GNOME_VFS_ERROR_IO)
         {
           gdk_pixbuf_loader_close (loader, NULL);
           gnome_vfs_close (handle);
@@ -587,7 +614,7 @@ load_image_from_uri (const gchar  *uri,
                        BACKGROUND_MANAGER_ERROR_IO,
                        "Unable to load `%s': read failed",
                        uri);
-          g_warning ((*error)->message);
+          g_debug ((*error)->message);
 
           g_object_unref (loader);
           g_object_unref (client);
@@ -598,7 +625,7 @@ load_image_from_uri (const gchar  *uri,
 
       if ((result == GNOME_VFS_ERROR_EOF) || (bytes_read == 0))
         {
-          g_warning ("Reached EOF of `%s', building the pixbuf", uri);
+          g_debug ("Reached EOF of `%s', building the pixbuf", uri);
 
           gdk_pixbuf_loader_close (loader, NULL);
           gnome_vfs_close (handle);
@@ -610,7 +637,6 @@ load_image_from_uri (const gchar  *uri,
                            BACKGROUND_MANAGER_ERROR_CORRUPT,
                            "Unable to load `%s': loader failed",
                            uri);
-              g_warning ((*error)->message);
 
               g_object_unref (loader);
               g_object_unref (client);
@@ -620,14 +646,16 @@ load_image_from_uri (const gchar  *uri,
             }
           else
             {
-              gchar * name
-                  = gdk_pixbuf_format_get_name (
-                                                gdk_pixbuf_loader_get_format (loader));
+              GdkPixbufFormat *format;
+              gchar *name;
 
-              g_warning ("we got the pixbuf (%d x %d), type: %s",
-                         gdk_pixbuf_get_width (retval),
-                         gdk_pixbuf_get_height (retval),
-                         name);
+              format = gdk_pixbuf_loader_get_format (loader);
+              name = gdk_pixbuf_format_get_name (format);
+
+              g_debug ("we got the pixbuf (w:%d, h:%d), format: %s",
+                       gdk_pixbuf_get_width (retval),
+                       gdk_pixbuf_get_height (retval),
+                       name);
 
               g_free (name);
 
@@ -706,7 +734,7 @@ load_image_from_uri (const gchar  *uri,
 	}
     }
 
-  if (post_install)
+  if (oom_check)
     osso_mem_saw_disable ();
 
   return retval;
@@ -899,11 +927,17 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
     case BACKGROUND_CENTERED:
       if (src_width < (width - HILDON_HOME_TASKNAV_WIDTH))
         {
-          dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH, (width - HILDON_HOME_TASKNAV_WIDTH - src_width) / 2 + HILDON_HOME_TASKNAV_WIDTH);
+          dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH,
+                        (width - HILDON_HOME_TASKNAV_WIDTH - src_width)
+                         / 2
+                         + HILDON_HOME_TASKNAV_WIDTH);
 	}
       else
 	{
-	  dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH, (width - HILDON_HOME_TASKNAV_WIDTH - src_width) / 2 + HILDON_HOME_TASKNAV_WIDTH);
+	  dest_x = MAX (HILDON_HOME_TASKNAV_WIDTH,
+                        (width - HILDON_HOME_TASKNAV_WIDTH - src_width)
+                        / 2
+                        + HILDON_HOME_TASKNAV_WIDTH);
 	}
 
       if (src_height < height)
@@ -914,7 +948,10 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
         {
 	  dest_y = MAX (0, (height - src_height) / 2);
 	}
-      off_x = (width-HILDON_HOME_TASKNAV_WIDTH-src_width) / 2 + HILDON_HOME_TASKNAV_WIDTH;
+      
+      off_x = (width - HILDON_HOME_TASKNAV_WIDTH - src_width)
+              / 2
+              + HILDON_HOME_TASKNAV_WIDTH;
       off_y = (height-src_height) / 2;
       
       gdk_pixbuf_composite (src, dest,
@@ -927,7 +964,7 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
 			    HILDON_HOME_IMAGE_ALPHA_FULL);
       break;
     case BACKGROUND_SCALED:
-      scaling_ratio = MIN ((gdouble) ((gdouble)(width - HILDON_HOME_TASKNAV_WIDTH) / src_width),
+      scaling_ratio = MIN ((gdouble) ((gdouble) (width - HILDON_HOME_TASKNAV_WIDTH) / src_width),
 		           (gdouble) height / src_height);
       dest_x = (gint) (MAX (HILDON_HOME_TASKNAV_WIDTH,
 			    (width
@@ -963,7 +1000,7 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
           {
             for (dest_y = 0;
 	         dest_y < height;
-             dest_y += src_height)
+                 dest_y += src_height)
               {
                 gdk_pixbuf_composite (src, dest,
 				      dest_x, dest_y,
@@ -1001,7 +1038,6 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
  * the composed image to the cache file and we read it inside the
  * child notification callback
  */
-
 static GdkPixbuf *
 composite_background (const GdkPixbuf  *bg_image,
 		      const GdkColor   *bg_color,
@@ -1127,6 +1163,73 @@ composite_background (const GdkPixbuf  *bg_image,
   return pixbuf;
 }
 
+static gchar *
+pack_gerror (GError *error,
+             gsize  *length)
+{
+  gchar *retval;
+  
+  g_return_val_if_fail (error != NULL, NULL);
+
+  retval = g_strdup_printf ("%s|%d|%s",
+                            g_quark_to_string (error->domain),
+                            error->code,
+                            error->message);
+  
+
+  if (*length)
+    *length = strlen (retval);
+
+  return retval;
+}
+
+static gboolean
+unpack_gerror (GError **dest,
+               gchar   *packed_gerror,
+               gsize    length)
+{
+  GError *error;
+  gchar **unpacked;
+  GQuark domain;
+  gint code;
+  gchar *message;
+  
+  g_return_val_if_fail ((dest != NULL) && (*dest == NULL), FALSE);
+  g_return_val_if_fail (packed_gerror != NULL, FALSE);
+
+  if (length < 0)
+    length = strlen (packed_gerror);
+
+  unpacked = g_strsplit (packed_gerror, "|", 3);
+  if (!unpacked)
+    return FALSE;
+
+  if (g_strv_length (unpacked) != 3)
+    {
+      g_strfreev (unpacked);
+      return FALSE;
+    }
+
+  g_debug ("error: { %s, %s, %s }", unpacked[0], unpacked[1], unpacked[2]);
+  
+  domain = g_quark_from_string (unpacked[0]);
+  code = atoi (unpacked[1]);
+  message = unpacked[2];
+  
+  error = g_error_new_literal (domain, code, message);
+  if (!error)
+    {
+      g_strfreev (unpacked);
+      return FALSE;
+    }
+  else
+    g_propagate_error (dest, error);
+  
+  g_strfreev (unpacked);
+  
+  return TRUE;
+}
+
 static void
 child_done_cb (GPid     pid,
 	       gint     status,
@@ -1140,13 +1243,6 @@ child_done_cb (GPid     pid,
 	                      : WIFSIGNALED (status) ? WTERMSIG (status)
 			      			     : -1);
 
-  /* either the user cancelled the loading or the child
-   * was killed from the outside; in any case, we use
-   * SIGTERM as a mean of emitting the "load-cancel" signal
-   */
-  if (WIFSIGNALED (status) && WTERMSIG (status) == SIGTERM)
-    g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
-  
   manager->priv->child_pid = 0;
 }
 
@@ -1157,60 +1253,33 @@ read_pipe_from_child (GIOChannel   *source,
 {
   BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
   BackgroundManagerPrivate *priv = manager->priv;
-#if 0
-  GError *load_error;
-  GdkPixbuf *pixbuf;
-#endif
-
+  
   /* something arrived from the child pipe: this means that
    * the child fired an error message and (possibly) died; we
    * relay the error to the console.
    */
   if (condition & G_IO_IN)
     {
-      gchar *error = NULL;
+      gchar *packed_error = NULL;
+      GError *error = NULL;
 
-      g_io_channel_read_line (source, &error, NULL, NULL, NULL);
+      g_io_channel_read_line (source, &packed_error, NULL, NULL, NULL);
       
-      g_warning ("Unable to create background: %s", error);
+      unpack_gerror (&error, packed_error, strlen (packed_error));
+      
+      g_warning ("Unable to create background: %s",
+                 error->message);
+
+      g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, error);
+
+      g_error_free (error);
 
       goto finish_up;
     }
 
-#if 0
-  /* at this point we should be done with the child,
-   * so it means that the background creation went fine
-   * and we can load the background from the cache,
-   * save the configuration and emit the changed signal
-   * for the users to update themselves
-   */
+  if (!priv->is_preview_mode)
+    background_manager_write_configuration (manager);
   
-  load_error = NULL;
-  pixbuf = gdk_pixbuf_new_from_file (priv->current->cache,
-		                     &load_error);
-  if (load_error)
-    {
-      g_warning ("Unable to load background: %s", load_error->message);
-      g_error_free (load_error);
-    }
-  else
-    {
-      if (!priv->current->is_preview)
-	{
-          background_manager_write_configuration (manager);
-	  g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
-	}
-      else
-        {
-          g_signal_emit (manager, manager_signals[PREVIEW], 0, pixbuf);
-        }
-
-      priv->current->has_cache = TRUE;
-      
-      g_object_unref (pixbuf);
-    }
-#endif
-
   g_signal_emit (manager, manager_signals[LOAD_COMPLETE], 0);
   
 finish_up:
@@ -1261,28 +1330,34 @@ loading_image_banner_response (GtkDialog *dialog,
       BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
       
       if (manager->priv->child_pid != 0)
-        kill (manager->priv->child_pid, SIGTERM);
+        {
+          kill (manager->priv->child_pid, SIGTERM);
+
+          g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
+        }
     }
 }
 
 static void
 show_loading_image_banner (BackgroundManager *manager)
 {
+  BackgroundManagerPrivate *priv;
   GtkDialog *dialog;
   GtkWidget *label;
   GtkWidget *prog_bar;
   
-  if (manager->priv->loading_note)
-    gtk_widget_destroy (manager->priv->loading_note);
+  priv = manager->priv;
   
-  manager->priv->loading_note =
+  if (priv->loading_note)
+    gtk_widget_destroy (priv->loading_note);
+  
+  priv->loading_note =
     gtk_dialog_new_with_buttons ("",
 		 		 NULL,
 				 GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
-				 HILDON_HOME_SET_BG_CANCEL,
-				 GTK_RESPONSE_CANCEL,
+				 HILDON_HOME_SET_BG_CANCEL, GTK_RESPONSE_CANCEL,
 				 NULL);
-  dialog = GTK_DIALOG (manager->priv->loading_note);
+  dialog = GTK_DIALOG (priv->loading_note);
   
   label = gtk_label_new (HILDON_HOME_LOADING_IMAGE_TEXT);
   gtk_container_add (GTK_CONTAINER (dialog->vbox), label);
@@ -1300,11 +1375,11 @@ show_loading_image_banner (BackgroundManager *manager)
 		    G_CALLBACK (loading_image_banner_response),
 		    manager);
 
-  gtk_widget_realize (manager->priv->loading_note);
-  gdk_window_set_decorations (manager->priv->loading_note->window,
+  gtk_widget_realize (priv->loading_note);
+  gdk_window_set_decorations (priv->loading_note->window,
 		  	      GDK_DECOR_BORDER);
 
-  gtk_widget_show_all (manager->priv->loading_note);
+  gtk_widget_show_all (priv->loading_note);
 }
 
 static gboolean
@@ -1349,6 +1424,30 @@ background_manager_refresh_from_cache (BackgroundManager *manager)
     }
 }
 
+/* background_manager_create_background:
+ * @manager: a #BackgroundManager
+ * @cancellable: whether the creation should be cancellable or not.
+ *
+ * this function creates the background by loading the user-defined image,
+ * compositing it into a pixbuf with the user-defined background color using
+ * the user-defined mode (scaled, stretched, tiled and centered).  then the
+ * "changed" signal is emitted, for the main desktop window to catch and
+ * update the background pixmap.
+ *
+ * a cache image is also saved, to be used when booting up; the image saving
+ * is the critical section because of the PNG compression and I/O operation;
+ * hence, it's done in a child process which relays the eventual errors using
+ * a pipe.
+ *
+ * the save process is cancellable: if @cancellable is %TRUE a modal dialog
+ * will appear; if the user presses the Cancel button inside it, the child
+ * process is killed and the "load-cancel" signal is emitted.  if the save
+ * process terminated successfully, the "load-complete" signal is emitted.
+ *
+ * in case the BackgroundManager is in preview mode (that is, the function
+ * background_manager_push_preview_mode() has been called), the "preview"
+ * signal is emitted instead of the "changed" signal.
+ */
 static void
 background_manager_create_background (BackgroundManager *manager,
                                       gboolean           cancellable)
@@ -1366,30 +1465,27 @@ background_manager_create_background (BackgroundManager *manager,
 
   /* upon first load, try to get the cached pixmap instead
    * of generating the background; this speeds up the loading
-   * as it's sure that the background did not change behind
+   * as we're sure that the background did not change behind
    * our backs since last time.  in case loading fails, then
    * we fall through and regenerate the cache.
    */
   if (first_run)
     {
-      if (background_manager_refresh_from_cache(manager))
+      if (background_manager_refresh_from_cache (manager))
         {
           first_run = FALSE;
           return;
         }
+      else
+        first_run = FALSE;
     }
 
-  if (first_run)
-    first_run = FALSE;
-  else
-    {
-      if (cancellable)
-        priv->bg_timeout = g_timeout_add (1000, bg_timeout_cb, manager);
-    }
+  if (cancellable)
+    priv->bg_timeout = g_timeout_add (1000, bg_timeout_cb, manager);
 
   current = priv->current;
   
-  g_debug ("Creating background (pid %d)...", getpid ());
+  g_debug ("Creating background...");
 
   g_signal_emit (manager, manager_signals[LOAD_BEGIN], 0);
 
@@ -1409,8 +1505,10 @@ background_manager_create_background (BackgroundManager *manager,
         {
           if (priv->bg_timeout)
             g_source_remove (priv->bg_timeout);
+          
           if (priv->loading_note)
             gtk_widget_destroy (priv->loading_note);
+          
           priv->loading_note = NULL;
         }
 
@@ -1462,10 +1560,13 @@ background_manager_create_background (BackgroundManager *manager,
       save_image_to_file (pixbuf, current->cache, &save_err);
       if (save_err && save_err->message)
 	{
-	  write (pipe_from_child[1],
-		 save_err->message,
-		 strlen (save_err->message));
+          gchar *save_err_packed;
+          gsize len;
+          
+          save_err_packed = pack_gerror (save_err, &len);
+	  write (pipe_from_child[1], save_err_packed, len);
 
+          g_free (save_err_packed);
 	  g_error_free (save_err);
 	}
 
@@ -1498,7 +1599,6 @@ background_manager_create_background (BackgroundManager *manager,
 
       if (!priv->current->is_preview)
 	{
-          background_manager_write_configuration (manager);
 	  g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
 	}
       else
@@ -1512,8 +1612,81 @@ background_manager_create_background (BackgroundManager *manager,
     }
   else
     {
+      g_warning ("Unable to fork: %s", g_strerror (errno));
       g_assert_not_reached ();
     }
+}
+
+static void
+background_manager_changed (BackgroundManager *manager,
+                            GdkPixbuf         *pixbuf)
+{
+  BackgroundManagerPrivate *priv;
+  GdkColormap *colormap;
+  GdkPixmap *pixmap;
+  GdkBitmap *bitmask;
+  
+  if (G_UNLIKELY (!pixbuf))
+    return;
+
+  priv = manager->priv;
+  if (G_UNLIKELY (!priv->desktop))
+    {
+      g_warning ("Attempting to set the background pixmap, but no desktop "
+                 "GdkWindow set. Use background_manager_set_desktop()");
+      return;
+    }
+
+  g_debug (G_STRLOC ": applying background");
+
+  colormap =
+    gdk_drawable_get_colormap (GDK_DRAWABLE (priv->desktop));
+
+  gdk_pixbuf_render_pixmap_and_mask_for_colormap (pixbuf, colormap,
+                                                  &pixmap,
+                                                  &bitmask,
+                                                  0);
+  if (pixmap)
+    gdk_window_set_back_pixmap (priv->desktop, pixmap, FALSE);
+
+  if (bitmask)
+    g_object_unref (bitmask);
+}
+
+static void
+background_manager_preview (BackgroundManager *manager,
+                            GdkPixbuf         *pixbuf)
+{
+  BackgroundManagerPrivate *priv;
+  GdkColormap *colormap;
+  GdkPixmap *pixmap;
+  GdkBitmap *bitmask;
+  
+  if (G_UNLIKELY (!pixbuf))
+    return;
+
+  priv = manager->priv;
+  if (G_UNLIKELY (!priv->desktop))
+    {
+      g_warning ("Attempting to set the background pixmap, but no desktop "
+                 "GdkWindow set. Use background_manager_set_desktop()");
+      return;
+    }
+
+  g_debug (G_STRLOC ": applying preview background");
+
+  colormap =
+    gdk_drawable_get_colormap (GDK_DRAWABLE (priv->desktop));
+
+  gdk_pixbuf_render_pixmap_and_mask_for_colormap (pixbuf, colormap,
+                                                  &pixmap,
+                                                  &bitmask,
+                                                  0);
+  if (pixmap)
+    gdk_window_set_back_pixmap (priv->desktop, pixmap, FALSE);
+
+  if (bitmask)
+    g_object_unref (bitmask);
 }
 
 static void
@@ -1600,6 +1773,9 @@ background_manager_class_init (BackgroundManagerClass *klass)
 		  G_TYPE_NONE,
           1,
           G_TYPE_POINTER);
+
+  klass->changed = background_manager_changed;
+  klass->preview = background_manager_preview;
 
   g_type_class_add_private (gobject_class, sizeof (BackgroundManagerPrivate));
 }
@@ -1722,6 +1898,19 @@ background_manager_get_for_screen (GdkScreen *screen)
   return manager;
 }
 
+/*
+ * background_manager_get_default:
+ * 
+ * Retrieves the #BackgroundManager object for the default screen; in case no
+ * #BackgroundManager object has been set, it creates one.
+ *
+ * You should not use g_object_unref() on the returned instance: the
+ * #BackgroundManager object is bound to the lifetime of the default screen
+ * (as returned by gdk_screen_get_default()) and will be destroyed when the
+ * default screen is closed.
+ *
+ * Return value: the #BackgroundManager for the default screen.
+ */
 BackgroundManager *
 background_manager_get_default (void)
 {
@@ -1734,6 +1923,30 @@ background_manager_get_image_uri (BackgroundManager *manager)
   g_return_val_if_fail (IS_BACKGROUND_MANAGER (manager), NULL);
 
   return manager->priv->current->image_uri;
+}
+
+static inline void
+background_manager_set_image_uri_internal (BackgroundManager *manager,
+                                           const gchar       *uri)
+{
+  BackgroundManagerPrivate *priv = manager->priv;
+
+  g_object_ref (manager);
+
+  g_free (priv->current->image_uri);
+  priv->current->image_uri = g_strdup (uri);
+
+  g_debug (G_STRLOC ": image_uri set to [%s]",
+           priv->current->image_uri);
+
+  if (!priv->is_preview_mode)
+    background_manager_create_background (manager, TRUE);
+  else
+    priv->current->has_cache = FALSE;
+  
+  g_object_notify (G_OBJECT (manager), "image-uri");
+
+  g_object_unref (manager);
 }
 
 void
@@ -1751,38 +1964,16 @@ background_manager_set_image_uri (BackgroundManager  *manager,
     {
       if (priv->current->image_uri)
         {
-          g_object_ref (manager);
-
-          g_free (priv->current->image_uri);
-          priv->current->image_uri = NULL;
-
-          if (!priv->is_preview_mode)
-            background_manager_create_background (manager, TRUE);
-
-          g_debug (G_STRLOC ": image uri set to `%s",
-                   priv->current->image_uri);
-
-          g_object_notify (G_OBJECT (manager), "image-uri");
-          g_object_unref (manager);
+          background_manager_set_image_uri_internal (manager, NULL);
         }
     }
   else
     {
-      if (strcmp (priv->current->image_uri, uri) != 0)
+      if ((priv->current->image_uri == NULL) ||
+          ((priv->current->image_uri != NULL) &&
+           (strcmp (priv->current->image_uri, uri))))
         {
-          g_object_ref (manager);
-
-          g_free (priv->current->image_uri);
-          priv->current->image_uri = g_strdup (uri);
-
-          if (!priv->is_preview_mode)
-            background_manager_create_background (manager, TRUE);
-
-          g_debug (G_STRLOC ": image uri set to `%s'",
-                   priv->current->image_uri);
-
-          g_object_notify (G_OBJECT (manager), "image-uri");
-          g_object_unref (manager);
+          background_manager_set_image_uri_internal (manager, uri);
         }
     }
 }
@@ -1847,6 +2038,8 @@ background_manager_set_mode (BackgroundManager *manager,
 
       if (!priv->is_preview_mode)
         background_manager_create_background (manager, TRUE);
+      else
+        priv->current->has_cache = FALSE;
 
       g_object_notify (G_OBJECT (manager), "mode");
       g_object_unref (manager);
@@ -1891,12 +2084,23 @@ background_manager_set_color (BackgroundManager *manager,
 
       if (!priv->is_preview_mode)
         background_manager_create_background (manager, TRUE);
+      else
+        priv->current->has_cache = FALSE;
 
       g_object_notify (G_OBJECT (manager), "color");
       g_object_unref (manager);
     }
 }
 
+/*
+ * background_manager_push_preview_mode:
+ * @manager: a #BackgroundManager
+ *
+ * Enables the "preview mode" of @manager.  A #BackgroundManager in preview
+ * will not save the settings and will emit a "preview" signal instead of a
+ * "changed" signal when the background is changed.  You should use this
+ * function when showing a preview of the new settings of the background.
+ */
 void
 background_manager_push_preview_mode (BackgroundManager *manager)
 {
@@ -1917,6 +2121,14 @@ background_manager_push_preview_mode (BackgroundManager *manager)
     }
 }
 
+/*
+ * background_manager_pop_preview_mode:
+ * @manager: a #BackgroundManager
+ *
+ * Disables the "preview mode" of @manager.  All the settings changed during a
+ * preview mode are discarded unless background_manager_apply_preview() is
+ * called before calling this function.
+ */
 void
 background_manager_pop_preview_mode (BackgroundManager *manager)
 {
@@ -1936,6 +2148,30 @@ background_manager_pop_preview_mode (BackgroundManager *manager)
     }
 }
 
+static inline void
+background_manager_apply_image_uri_internal (BackgroundManager *manager)
+{
+  BackgroundManagerPrivate *priv = manager->priv;
+  BackgroundData *preview = priv->preview;
+  BackgroundData *normal = priv->normal;
+
+  g_free (normal->image_uri);
+  normal->image_uri = g_strdup (preview->image_uri);
+
+  g_object_notify (G_OBJECT (manager), "image-uri");
+
+  g_debug (G_STRLOC ": image_uri changed");
+}
+
+/*
+ * background_manager_apply_preview:
+ * @manager: a #BackgroundManager
+ *
+ * Applies all the changes done in preview mode.  In case the preview mode
+ * created a cached image of the new background, the preview cache is renamed
+ * to be the main cache; otherwise, a new background with the new setting is
+ * created.
+ */
 gboolean
 background_manager_apply_preview (BackgroundManager *manager)
 {
@@ -1961,18 +2197,19 @@ background_manager_apply_preview (BackgroundManager *manager)
   normal = priv->normal;
 
   g_debug (G_STRLOC ": preview: [%s] normal: [%s]",
-           preview->image_uri,
-           normal->image_uri);
+           preview->image_uri ? preview->image_uri : HILDON_HOME_BACKGROUND_NO_IMAGE,
+           normal->image_uri  ? normal->image_uri  : HILDON_HOME_BACKGROUND_NO_IMAGE);
+  
   if (((preview->image_uri == NULL) && (normal->image_uri != NULL)) ||
-      ((preview->image_uri != NULL) && (normal->image_uri == NULL)) ||
-      (strcmp (preview->image_uri, normal->image_uri) != 0))
+      ((preview->image_uri != NULL) && (normal->image_uri == NULL)))
     {
-      g_free (normal->image_uri);
-      normal->image_uri = g_strdup (preview->image_uri);
-      
-      g_object_notify (G_OBJECT (manager), "image-uri");
-     
-      g_debug (G_STRLOC ": image_uri changed");
+      background_manager_apply_image_uri_internal (manager);
+      changed = TRUE;
+    }
+  else if (((preview->image_uri != NULL) && (normal->image_uri != NULL)) &&
+           (strcmp (preview->image_uri, normal->image_uri) != 0))
+    {
+      background_manager_apply_image_uri_internal (manager);
       changed = TRUE;
     }
 
@@ -2005,7 +2242,11 @@ background_manager_apply_preview (BackgroundManager *manager)
       priv->current = priv->normal;
       
       if (!preview->has_cache)
-        background_manager_create_background (manager, TRUE);
+        {
+          g_debug (G_STRLOC ": no preview cache found, generating");
+
+          background_manager_create_background (manager, TRUE);
+        }
       else
         {
           if (g_unlink (normal->cache) == -1)
@@ -2037,6 +2278,13 @@ background_manager_apply_preview (BackgroundManager *manager)
   return changed;
 }
 
+/*
+ * background_manager_update_preview:
+ * @manager: a #BackgroundManager
+ *
+ * Forces the creation of a new background image with the current preview
+ * settings.
+ */
 void
 background_manager_update_preview (BackgroundManager *manager)
 {
@@ -2053,6 +2301,15 @@ background_manager_update_preview (BackgroundManager *manager)
   background_manager_create_background (manager, TRUE);
 }
 
+/*
+ * background_manager_discard_preview:
+ * @manager: a #BackgroundManager
+ * @reload: whether to reload the current background
+ *
+ * Forces the reset of the preview settings to the currently saved settings.
+ * If @reload is %TRUE it also reloads the background from cache and emits the
+ * "changed" signal.
+ */
 void
 background_manager_discard_preview (BackgroundManager *manager,
                                     gboolean           reload)
@@ -2111,4 +2368,6 @@ background_manager_set_desktop (BackgroundManager *manager,
   g_return_if_fail (window == NULL || GDK_IS_WINDOW (window));
 
   manager->priv->desktop = window;
+
+  background_manager_create_background (manager, FALSE);
 }

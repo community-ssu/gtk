@@ -38,6 +38,7 @@
 
 #include <libintl.h>
 
+#include "hildon-home-window.h"
 #include "hildon-home-background-dialog.h"
 #include "hildon-home-main.h"
 #include "background-manager.h"
@@ -72,6 +73,19 @@
 #define HILDON_HOME_SET_BG_MODE_STRETCHED  _("home_va_set_backgr_stretched")
 #define HILDON_HOME_SET_BG_MODE_TILED      _("home_va_set_backgr_tiled") 
 
+typedef struct 
+{
+  GtkWidget *dialog;
+  
+  GtkWidget *parent;
+  
+  GtkWidget *img_combo;
+  GtkWidget *mode_combo;
+  GtkWidget *color_button;
+  
+  guint applied    : 1;
+  guint built_in   : 1;
+} ResponseData;
 
 static gchar *
 home_bgd_filename_to_uri (const gchar *filename)
@@ -352,7 +366,7 @@ home_bgd_apply (GtkWidget *img_combo,
 {
   BackgroundManager *manager = background_manager_get_default ();
   
-  if (img_combo)
+  if (GTK_IS_COMBO_BOX (img_combo))
     {
       gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (img_combo));
       
@@ -360,7 +374,12 @@ home_bgd_apply (GtkWidget *img_combo,
         {
           gchar *filename = home_bgd_get_filename (GTK_COMBO_BOX (img_combo),
                                                    active);
-          gchar *uri = home_bgd_filename_to_uri (filename);
+          gchar *uri;
+          
+          if (filename)
+            uri = home_bgd_filename_to_uri (filename);
+          else
+            uri = g_strdup (HILDON_HOME_BACKGROUND_NO_IMAGE);
 
           g_debug ("selected index %d, [%s]", active, uri);
 
@@ -371,7 +390,7 @@ home_bgd_apply (GtkWidget *img_combo,
         }
     }
 
-  if (mode_combo)
+  if (GTK_IS_COMBO_BOX (mode_combo))
     {
       gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (mode_combo));
 
@@ -383,7 +402,7 @@ home_bgd_apply (GtkWidget *img_combo,
       background_manager_set_mode (manager, (BackgroundMode) active);
     }
 
-  if (color_button)
+  if (HILDON_IS_COLOR_BUTTON (color_button))
     {
       GdkColor *color;
 
@@ -392,8 +411,8 @@ home_bgd_apply (GtkWidget *img_combo,
 
       background_manager_set_color (manager, color);
     }
- 
-  background_manager_apply_preview (manager);
+
+  background_manager_update_preview (manager);
 }
 
 static void
@@ -403,7 +422,7 @@ home_bgd_preview (GtkWidget *img_combo,
 {
   BackgroundManager *manager = background_manager_get_default ();
   
-  if (img_combo)
+  if (GTK_IS_COMBO_BOX (img_combo))
     {
       gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (img_combo));
       
@@ -411,7 +430,12 @@ home_bgd_preview (GtkWidget *img_combo,
         {
           gchar *filename = home_bgd_get_filename (GTK_COMBO_BOX (img_combo),
                                                    active);
-          gchar *uri = home_bgd_filename_to_uri (filename);
+          gchar *uri;
+          
+          if (filename)
+            uri = home_bgd_filename_to_uri (filename);
+          else
+            uri = g_strdup (HILDON_HOME_BACKGROUND_NO_IMAGE);
 
           g_debug ("selected index %d, [%s]", active, uri);
 
@@ -422,7 +446,7 @@ home_bgd_preview (GtkWidget *img_combo,
         }
     }
 
-  if (mode_combo)
+  if (GTK_IS_COMBO_BOX (mode_combo))
     {
       gint active = gtk_combo_box_get_active (GTK_COMBO_BOX (mode_combo));
 
@@ -434,7 +458,7 @@ home_bgd_preview (GtkWidget *img_combo,
       background_manager_set_mode (manager, (BackgroundMode) active);
     }
 
-  if (color_button)
+  if (HILDON_IS_COLOR_BUTTON (color_button))
     {
       GdkColor *color;
 
@@ -456,23 +480,99 @@ home_bgd_cancel (void)
 }
 
 static void
+home_bgd_load_error_cb (BackgroundManager *manager,
+                        const GError      *error,
+                        gpointer           data)
+{
+  ResponseData *resp_data = data;
+  
+  g_debug (G_STRLOC ": load error: %s", error->message);
+
+  background_manager_discard_preview (manager, TRUE);
+
+  if (!GTK_WIDGET_VISIBLE (resp_data->dialog))
+    {
+      gtk_widget_destroy (resp_data->dialog);
+    }
+}
+
+static void
 home_bgd_load_cancel_cb (BackgroundManager *manager,
                          gpointer           data)
 {
-#if 0
-  g_debug ("cancel background loading");
+  ResponseData *resp_data = data;
+  
+  g_debug (G_STRLOC ": load cancelled");
 
-  background_manager_discard_preview (background_manager_get_default (), FALSE);
-#endif
+  background_manager_discard_preview (manager, TRUE);
+
+  if (!GTK_WIDGET_VISIBLE (resp_data->dialog))
+    {
+      gtk_widget_destroy (resp_data->dialog);
+    }
+}
+
+static void
+home_bgd_load_complete_cb (BackgroundManager *manager,
+                           gpointer           data)
+{
+  ResponseData *resp_data = data;
+  
+  g_debug (G_STRLOC ": load complete");
+
+  /* if the dialog is not visible, then the user has pressed ok
+   * and we are applying the background the user has chosen.
+   */
+  if (resp_data->dialog && !GTK_WIDGET_VISIBLE (resp_data->dialog))
+    {
+      background_manager_apply_preview (manager);
+      gtk_widget_destroy (resp_data->dialog);
+    }
 }
 
 static void
 home_bgd_destroy_cb (GtkWidget *widget,
                      gpointer   data)
 {
-  g_signal_handlers_disconnect_by_func (background_manager_get_default (),
+  BackgroundManager *manager;
+  ResponseData *resp_data = data;
+  HildonHomeWindow *window = HILDON_HOME_WINDOW (resp_data->parent);
+
+  g_debug (G_STRLOC ": background selection dialog destroyed");
+
+  manager = background_manager_get_default ();
+
+  g_signal_handlers_disconnect_by_func (manager,
+                                        G_CALLBACK (home_bgd_load_complete_cb),
+                                        resp_data);
+  g_signal_handlers_disconnect_by_func (manager,
                                         G_CALLBACK (home_bgd_load_cancel_cb),
-                                        NULL);
+                                        resp_data);
+  g_signal_handlers_disconnect_by_func (manager,
+                                        G_CALLBACK (home_bgd_load_error_cb),
+                                        resp_data);
+  
+  background_manager_pop_preview_mode (manager);
+
+  hildon_home_window_set_desktop_dimmed (window, FALSE);
+
+  g_free (resp_data);
+}
+
+static void
+home_bgd_show_cb (GtkWidget *widget,
+                  gpointer   data)
+{
+  BackgroundManager *manager;
+  ResponseData *rd = data;
+  HildonHomeWindow *window = HILDON_HOME_WINDOW (rd->parent);
+
+  g_debug (G_STRLOC ": background selection dialog shown");
+  
+  manager = background_manager_get_default ();
+  background_manager_push_preview_mode (manager);
+
+  hildon_home_window_set_desktop_dimmed (window, TRUE);
 }
 
 /**
@@ -480,35 +580,37 @@ home_bgd_destroy_cb (GtkWidget *widget,
  *
  * @param dialog parent widget
  * @param arg event that caused the call
- * @param data pointer to response_data struct
+ * @param data pointer to ResponseData struct
  * 
  * "response" signal callback
  **/
-
-typedef struct 
-{
-  GtkWidget *img_combo;
-  GtkWidget *mode_combo;
-  GtkWidget *color_button;
-  
-  guint applied    : 1;
-  guint built_in   : 1;
-  guint is_changed : 1;
-} response_data;
 
 static void
 home_bgd_response_cb (GtkWidget * dialog, 
 		      gint        arg,
 		      gpointer    data)
 {
-  response_data *d = data;
-  
-  GtkComboBox *img_combo = GTK_COMBO_BOX(d->img_combo);
+  ResponseData *d = data;
+  GtkComboBox *img_combo;
+
+  g_debug ("response_data = {\n"
+           "  img_combo    .= %s\n"
+           "  mode_combo   .= %s\n"
+           "  color_button .= %s\n"
+           "  applied      .= %s\n"
+           "  built_in     .= %s\n"
+           "}",
+           g_type_name (G_OBJECT_TYPE (d->img_combo)),
+           g_type_name (G_OBJECT_TYPE (d->mode_combo)),
+           g_type_name (G_OBJECT_TYPE (d->color_button)),
+           d->applied ? "<true>" : "<false>",
+           d->built_in ? "<true>" : "<false>");
   
   switch (arg) 
     {
-    case HILDON_HOME_SET_BG_RESPONSE_IMAGE:    
+    case HILDON_HOME_SET_BG_RESPONSE_IMAGE:
       g_signal_stop_emission_by_name (dialog, "response");
+      img_combo = GTK_COMBO_BOX (d->img_combo);
       home_bgd_select_file_dialog (dialog, img_combo, d->built_in);
       break;
     case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
@@ -516,9 +618,11 @@ home_bgd_response_cb (GtkWidget * dialog,
       home_bgd_preview (d->img_combo, d->mode_combo, d->color_button);
       break;
     case GTK_RESPONSE_OK:
+      gtk_widget_hide (GTK_WIDGET (dialog));
       home_bgd_apply (d->img_combo, d->mode_combo, d->color_button);
       break;
     case GTK_RESPONSE_CANCEL:
+      gtk_widget_hide (GTK_WIDGET (dialog));
       home_bgd_cancel ();
       break;
     default:
@@ -572,25 +676,18 @@ home_bgd_dialog_run (GtkWindow * parent)
     HILDON_HOME_SET_BG_MODE_STRETCHED
   };
   
-  response_data     resp_data = {
-    NULL, NULL, NULL,
-    FALSE, FALSE, FALSE
-  };
+  ResponseData    * resp_data;
   gint              combobox_active = -1;
   gint              active_count = 0;
   GdkColor          current_color;
   
   BackgroundManager *bm = background_manager_get_default ();
 
-  background_manager_push_preview_mode (bm);
-
-  g_signal_connect (bm, "load-cancel",
-                    G_CALLBACK (home_bgd_load_cancel_cb),
-                    NULL);
+  resp_data = g_new (ResponseData, 1);
 
   /* data for the response callback */
-  resp_data.applied = FALSE;
-  resp_data.built_in = FALSE;
+  resp_data->applied = FALSE;
+  resp_data->built_in = FALSE;
   
   bg_image_desc_base_dir = g_dir_open (HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
 				       0,
@@ -740,7 +837,7 @@ home_bgd_dialog_run (GtkWindow * parent)
 		  g_str_equal(image_path, current_path)) 
 		{
 		  g_debug ("current BG uses built in image");
-		  resp_data.built_in = TRUE;
+		  resp_data->built_in = TRUE;
 		}
 
               g_free (current_path);
@@ -778,7 +875,7 @@ home_bgd_dialog_run (GtkWindow * parent)
 				        BG_IMAGE_PRIORITY, 
 				        GTK_SORT_ASCENDING);
     
-  if (resp_data.built_in == FALSE)
+  if (resp_data->built_in == FALSE)
     {
       /* custom image is used for background; we need to add it to the
        * list; this includes the 'no-background option'
@@ -804,7 +901,7 @@ home_bgd_dialog_run (GtkWindow * parent)
 	      *dot = '\0';
 	    }
 
-	  g_debug ("setting [%s] [%s}", image_filename, uri);
+	  g_debug ("setting [%s] [%s]", image_filename, uri);
 	  
 	  gtk_list_store_set (combobox_contents, &iterator,
 			      BG_IMAGE_NAME, image_filename,
@@ -837,10 +934,10 @@ home_bgd_dialog_run (GtkWindow * parent)
 	  const gchar *uri = background_manager_get_image_uri (bm);
 	  const gchar *uri_filename = uri;
 
-	  if (uri && strstr (uri, "file://"))
+	  if (uri && g_str_has_prefix (uri, "file://"))
 	    uri_filename += 7;
 	  
-	  gtk_tree_model_get(model, &iterator, 1, &filename, -1);
+	  gtk_tree_model_get (model, &iterator, 1, &filename, -1);
 
 	  g_debug ("filename [%s], uri [%s]", filename, uri_filename);
 	  
@@ -873,7 +970,7 @@ home_bgd_dialog_run (GtkWindow * parent)
 				 HILDON_HOME_SET_BG_CANCEL,
 				 GTK_RESPONSE_CANCEL,
 				 NULL);
-    
+  
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
   /* Add help button */
@@ -890,11 +987,11 @@ home_bgd_dialog_run (GtkWindow * parent)
   background_manager_get_color (bm, &current_color);
   
   color_button = hildon_color_button_new_with_color (&current_color);
-  resp_data.color_button = color_button;
+  resp_data->color_button = color_button;
   
   combobox_image_select =
     gtk_combo_box_new_with_model (GTK_TREE_MODEL (combobox_contents));
-  resp_data.img_combo = combobox_image_select;
+  resp_data->img_combo = combobox_image_select;
   
   if(!background_manager_get_image_uri (bm) ||
      g_str_equal(background_manager_get_image_uri (bm),
@@ -915,7 +1012,7 @@ home_bgd_dialog_run (GtkWindow * parent)
 				  BG_IMAGE_NAME, NULL);
     
   combobox_mode_select = gtk_combo_box_new_text ();
-  resp_data.mode_combo = combobox_mode_select;
+  resp_data->mode_combo = combobox_mode_select;
   
   gtk_combo_box_append_text (GTK_COMBO_BOX (combobox_mode_select), 
 			     image_modes[BACKGROUND_CENTERED]);
@@ -966,21 +1063,32 @@ home_bgd_dialog_run (GtkWindow * parent)
   hildon_caption_set_child_expand (HILDON_CAPTION (image_caption), TRUE);
   hildon_caption_set_child_expand (HILDON_CAPTION (mode_caption), TRUE);
 
+  resp_data->dialog = dialog;
+  resp_data->parent = GTK_WIDGET (parent);
+  
+  g_signal_connect (bm, "load-complete",
+                    G_CALLBACK (home_bgd_load_complete_cb),
+                    resp_data);
+  g_signal_connect (bm, "load-cancel",
+                    G_CALLBACK (home_bgd_load_cancel_cb),
+                    resp_data);
+  g_signal_connect (bm, "load-error",
+                    G_CALLBACK (home_bgd_load_error_cb),
+                    resp_data);
+
+  g_signal_connect (dialog, "show",
+                    G_CALLBACK (home_bgd_show_cb),
+                    resp_data);
+  g_signal_connect (dialog, "destroy",
+                    G_CALLBACK (home_bgd_destroy_cb),
+                    resp_data);
+  g_signal_connect (dialog, "response", 
+		    G_CALLBACK (home_bgd_response_cb), 
+		    resp_data);
+  
   /* Let matchbox take care of the positioning */
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_NONE);
   gtk_widget_show_all (dialog);
 
-  g_signal_connect (G_OBJECT (dialog), "response", 
-		    G_CALLBACK (home_bgd_response_cb), 
-		    &resp_data);
-  g_signal_connect (dialog, "destroy",
-                    G_CALLBACK (home_bgd_destroy_cb),
-                    NULL);
-
-  gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
-
-  background_manager_pop_preview_mode (bm);
-  
   return TRUE;
 } 

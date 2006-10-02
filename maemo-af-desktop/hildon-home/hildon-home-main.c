@@ -65,6 +65,7 @@
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-color-button.h>
 
+#include "hildon-home-common.h"
 #include "hildon-home-main.h"
 #include "hildon-home-window.h"
 #include "../kstrace.h"
@@ -190,20 +191,22 @@ hildon_home_main (void)
 {
   GtkWidget *window;
   GdkWindow *root_window;
-  gchar *user_path_home = NULL;
+  const gchar *user_path_home;
   osso_hw_state_t hs = { 0 };
 
 
   /* It's necessary create the user hildon-home folder at first boot */
-
-  user_path_home =
-    g_strdup_printf ("%s/%s",
-                     getenv(HILDON_HOME_ENV_HOME),
-                     HILDON_HOME_SYSTEM_DIR);
-
-  g_mkdir (user_path_home, 0755); /* Create it anyway!!! */
-
-  g_free (user_path_home);
+  user_path_home = hildon_home_get_user_config_dir ();
+  if (g_mkdir (user_path_home, 0755) == -1)
+    {
+      if (errno != EEXIST)
+        {
+          g_error ("Unable to create `%s' user configuration directory: %s",
+                   user_path_home,
+                   g_strerror (errno));
+          return -1;
+        }
+    }
 
   /* Osso needs to be initialized before creation of applets */
   osso_home = osso_initialize (HILDON_HOME_NAME,

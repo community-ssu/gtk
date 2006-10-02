@@ -70,6 +70,7 @@ struct _HildonHomeTitlebarClass
   void (*applet_activate)         (HildonHomeTitlebar *titlebar,
 		  	           const gchar        *applet_path);
   void (*help_activate)           (HildonHomeTitlebar *titlebar);
+  void (*set_background_activate) (HildonHomeTitlebar *titlebar);
   
   void (*applet_added)            (HildonHomeTitlebar *titlebar,
                                    HildonHomeArea     *area);

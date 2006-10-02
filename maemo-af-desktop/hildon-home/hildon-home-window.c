@@ -69,6 +69,7 @@
 #include "hildon-home-interface.h"
 #include "hildon-home-window.h"
 #include "hildon-plugin-list.h"
+#include "hildon-home-background-dialog.h"
 #include "hildon-home-select-applets-dialog.h"
 
 #define HILDON_HOME_LEFT_PADDING	80	/* keep synced with the TN width */
@@ -114,6 +115,8 @@ struct _HildonHomeWindowPrivate
 
   GtkWidget *layout_mode_banner;
   guint      layout_mode_banner_to;
+
+  guint is_dimmed : 1;
 };
 
 G_DEFINE_TYPE (HildonHomeWindow, hildon_home_window, GTK_TYPE_WINDOW);
@@ -189,6 +192,16 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
 
 }
 
+static void
+titlebar_set_background_activate_cb (HildonHomeTitlebar *titlebar,
+                                     HildonHomeWindow   *window)
+{
+  hildon_home_window_set_desktop_dimmed (window, TRUE);
+
+  home_bgd_dialog_run (GTK_WINDOW (window));
+
+  hildon_home_window_set_desktop_dimmed (window, FALSE);
+}
 
 static void
 titlebar_layout_mode_activate_cb (HildonHomeTitlebar *titlebar,
@@ -437,43 +450,52 @@ area_remove (HildonHomeArea   *area,
 }
 
 static void
+background_manager_load_complete_cb (BackgroundManager *manager,
+                                     HildonHomeWindow  *window)
+{
+  g_debug (G_STRLOC ": load complete");
+}
+
+static void
 background_manager_load_cancel_cb (BackgroundManager *manager,
                                    HildonHomeWindow  *window)
 {
   g_debug (G_STRLOC ": load cancelled");
-
-  background_manager_discard_preview (manager, TRUE);
 }
 
 static void
 background_manager_load_error_cb (BackgroundManager *manager,
-                                  GError *error,
+                                  const GError      *error,
                                   HildonHomeWindow  *window)
 {
-  gchar *text = NULL;
+  const gchar *text;
+  
   g_return_if_fail (error);
   
   switch (error->code)
     {
-        case BACKGROUND_MANAGER_ERROR_IO:
-            text = HILDON_HOME_INTERRUPTED_TEXT;
-            break;
-        case BACKGROUND_MANAGER_ERROR_CORRUPT:
-            text = HILDON_HOME_CORRUPTED_TEXT;
-            break;
-        case BACKGROUND_MANAGER_ERROR_MMC_OPEN:
-            text = HILDON_HOME_MMC_OPEN_TEXT;
-            break;
-        case BACKGROUND_MANAGER_ERROR_MEMORY:
-        default:
-            break;
+    case BACKGROUND_MANAGER_ERROR_IO:
+      text = HILDON_HOME_INTERRUPTED_TEXT;
+      break;
+    case BACKGROUND_MANAGER_ERROR_CORRUPT:
+      text = HILDON_HOME_CORRUPTED_TEXT;
+      break;
+    case BACKGROUND_MANAGER_ERROR_MMC_OPEN:
+      text = HILDON_HOME_MMC_OPEN_TEXT;
+      break;
+    case BACKGROUND_MANAGER_ERROR_MEMORY:
+    default:
+      text = NULL;
+      break;
     }
 
   if (text)
     {
       GtkWidget *note;
+      
       note = hildon_note_new_information (GTK_WINDOW (window), text);
-      gtk_dialog_run (GTK_DIALOG(note));
+      gtk_dialog_run (GTK_DIALOG (note));
+      
       gtk_widget_destroy (note);
     }
 }
@@ -489,38 +511,16 @@ background_manager_changed_cb (BackgroundManager *manager,
     return;
   else
     {
-      GtkWidget *widget = GTK_WIDGET (window);
-      GdkColormap *colormap = NULL;
-      GdkPixmap *pixmap;
-      GdkBitmap *bit_mask;
-
-      gtk_widget_set_app_paintable (widget, TRUE);
-      gtk_widget_realize (widget);
-
-      colormap =
-	gdk_drawable_get_colormap (GDK_DRAWABLE (widget->window));
-
-      gdk_pixbuf_render_pixmap_and_mask_for_colormap (pixbuf,
-		      				      colormap,
-						      &pixmap,
-						      &bit_mask,
-						      0);
-      if (pixmap)
-	gdk_window_set_back_pixmap (widget->window,
-				    pixmap,
-				    FALSE);
-
-      if (bit_mask)
-	g_object_unref (bit_mask);
+      priv = window->priv;
+      
+      /* force the event boxes to be window-less and avoid covering
+       * the area we paint directly onto
+       */
+      gtk_event_box_set_visible_window (GTK_EVENT_BOX (priv->titlebar), FALSE);
+      gtk_event_box_set_visible_window (GTK_EVENT_BOX (priv->main_area), FALSE);
+      
+      gtk_widget_queue_draw (GTK_WIDGET (window));
     }
-  
-  /* force the event boxes to be window-less and avoid covering
-   * the area we paint directly onto
-   */
-  gtk_event_box_set_visible_window (GTK_EVENT_BOX (priv->titlebar), FALSE);
-  gtk_event_box_set_visible_window (GTK_EVENT_BOX (priv->main_area), FALSE);
-  
-  gtk_widget_queue_draw (GTK_WIDGET (window));
 }
 
 static void
@@ -596,6 +596,7 @@ get_titlebar_image_from_theme (GtkWidget *widget)
   return NULL;
 }
 
+#if 0
 static void
 hildon_home_window_show (GtkWidget *widget)
 {
@@ -608,6 +609,7 @@ hildon_home_window_show (GtkWidget *widget)
   
   GTK_WIDGET_CLASS (hildon_home_window_parent_class)->show (widget);
 }
+#endif
 
 static void
 hildon_home_window_style_set (GtkWidget *widget,
@@ -629,24 +631,25 @@ hildon_home_window_style_set (GtkWidget *widget,
    * first time
    */
   if (!old_style)
-  {
-    current_titlebar_image = g_strdup(new_titlebar_image);
-    current_sidebar_image = g_strdup(new_sidebar_image);
-    return;
-  }
+    {
+      current_titlebar_image = g_strdup (new_titlebar_image);
+      current_sidebar_image = g_strdup (new_sidebar_image);
+      return;
+    }
 
   /* avoid resetting the background if the theme hasn't changed */
-  if (g_str_equal(current_titlebar_image, new_titlebar_image) &&
-      g_str_equal(current_sidebar_image, new_sidebar_image))
-  {
-    background_manager_refresh_from_cache(priv->bg_manager);
-    return;
-  }
+  if (g_str_equal (current_titlebar_image, new_titlebar_image) &&
+      g_str_equal (current_sidebar_image, new_sidebar_image))
+    {
+      background_manager_refresh_from_cache (priv->bg_manager);
+      return;
+    }
 
   g_free(current_titlebar_image);
-  current_titlebar_image = g_strdup(new_titlebar_image);
+  current_titlebar_image = g_strdup (new_titlebar_image);
+  
   g_free(current_sidebar_image);
-  current_sidebar_image = g_strdup(new_sidebar_image);
+  current_sidebar_image = g_strdup (new_sidebar_image);
 
   background_manager_set_components (priv->bg_manager,
                                      new_titlebar_image,
@@ -769,6 +772,8 @@ hildon_home_window_constructor (GType                  gtype,
   window = HILDON_HOME_WINDOW (retval);
   priv = window->priv;
 
+  gtk_widget_set_app_paintable (widget, TRUE);
+
   gtk_widget_push_composite_child ();
   
   /* we push everything inside an alignment because we don't want
@@ -801,6 +806,9 @@ hildon_home_window_constructor (GType                  gtype,
   g_signal_connect (priv->titlebar, "layout-mode-activate",
 		    G_CALLBACK (titlebar_layout_mode_activate_cb),
 		    window);
+  g_signal_connect (priv->titlebar, "set-background-activate",
+                    G_CALLBACK (titlebar_set_background_activate_cb),
+                    window);
   g_signal_connect (priv->titlebar, "layout-accept",
 		    G_CALLBACK (titlebar_layout_accept_cb),
 		    window);
@@ -838,12 +846,24 @@ hildon_home_window_constructor (GType                  gtype,
                     window);
 
   gtk_widget_show_all (priv->applet_area);
+
+  /* realize and set the window type hint; then bind the desktop
+   * GdkWindow to the background manager
+   */
+  gtk_widget_realize (widget);
+  gdk_window_set_type_hint (widget->window, GDK_WINDOW_TYPE_HINT_DESKTOP);
+  
+  priv->bg_manager = background_manager_get_default ();
+  background_manager_set_desktop (priv->bg_manager, widget->window);
   
   g_signal_connect (priv->bg_manager, "changed",
 		    G_CALLBACK (background_manager_changed_cb),
 		    window);
   g_signal_connect (priv->bg_manager, "preview",
                     G_CALLBACK (background_manager_changed_cb),
+                    window);
+  g_signal_connect (priv->bg_manager, "load-complete",
+                    G_CALLBACK (background_manager_load_complete_cb),
                     window);
   g_signal_connect (priv->bg_manager, "load-cancel",
                     G_CALLBACK (background_manager_load_cancel_cb),
@@ -872,7 +892,6 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
   gobject_class->get_property = hildon_home_window_get_property;
   gobject_class->finalize = hildon_home_window_finalize;
   
-  widget_class->show = hildon_home_window_show;
   widget_class->style_set = hildon_home_window_style_set;
   widget_class->key_press_event = hildon_home_window_key_press_event;
 
@@ -915,7 +934,6 @@ hildon_home_window_init (HildonHomeWindow *window)
   window->priv = priv = HILDON_HOME_WINDOW_GET_PRIVATE (window);
 
   priv->osso_context = NULL;
-  priv->bg_manager = background_manager_get_default ();
   priv->plugin_list = g_object_new (HILDON_TYPE_PLUGIN_LIST,
                                     "name-key", APPLET_KEY_NAME,
                                     "library-key", APPLET_KEY_LIBRARY,
@@ -928,7 +946,8 @@ hildon_home_window_init (HildonHomeWindow *window)
   g_signal_connect (G_OBJECT (priv->plugin_list), "directory-changed",
                     G_CALLBACK (plugin_list_directory_changed_cb),
                     window);
-                               
+
+  priv->is_dimmed = FALSE;
 }
 
 GtkWidget *
@@ -988,8 +1007,12 @@ hildon_home_window_set_desktop_dimmed (HildonHomeWindow *window,
                                        gboolean dimmed)
 {
   HildonHomeWindowPrivate *priv;
+  
   g_return_if_fail (HILDON_IS_HOME_WINDOW (window));
   priv = window->priv;
+
+  if (priv->is_dimmed == dimmed)
+    return;
 
   if (dimmed)
     {
@@ -1027,4 +1050,6 @@ hildon_home_window_set_desktop_dimmed (HildonHomeWindow *window,
                     0,
                     NULL);
     }
+
+  priv->is_dimmed = dimmed;
 }
