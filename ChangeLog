@@ -7,6 +7,12 @@
 	* gtk/gtktreeview.c (gtk_tree_view_motion_resize_column): Another
 	erroneous semicolon.
 
+    2005-08-11  Kristian Rietveld  <kris@gtk.org>
+
+	* gtk/gtktreeview.c (gtk_tree_view_size_allocate_columns): queue
+	a draw for the entire widget if any column changes width. (Fixes
+	#311026, reported by Frederic Crozat).
+
     2005-07-13  Kristian Rietveld  <kris@gtk.org>
 
 	* gtk/gtktreeview.c (gtk_tree_view_new_column_width): let's take
