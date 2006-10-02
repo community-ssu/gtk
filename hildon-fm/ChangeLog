@@ -1,5 +1,7 @@
 2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.11.
+	
 	* hildon-fm/hildon-file-system-mmc.c (capitalize_ascii_string):
 	Advance pointer after uppercasing the first char, stupid.
 

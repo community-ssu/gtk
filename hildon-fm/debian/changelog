@@ -1,4 +1,4 @@
-hildon-fm (1.11-0unreleased1) unstable; urgency=low
+hildon-fm (1.11-1) unstable; urgency=low
 
   * debian/control (Build-Depends): Removed osso-bttools-dev.
   * Fixes: NB#41347, NB#41462, NB#40914, NB#32010, NB#37440.
