@@ -14606,13 +14606,14 @@ update_checkbox_mode (GObject *object, GParamSpec *pspec, gpointer data)
           _gtk_tree_view_column_has_activatable_cell (col))
         {
           /* checkbox column found */
+          GList *cell;
         
-          for (renderers = gtk_tree_view_column_get_cell_renderers (col);
-               renderers; renderers = renderers->next)
+          renderers = gtk_tree_view_column_get_cell_renderers (col);
+          for (cell = renderers; cell; cell = cell->next)
             {
-              if (GTK_IS_CELL_RENDERER_TOGGLE (renderers->data))
+              if (GTK_IS_CELL_RENDERER_TOGGLE (cell->data))
                 {
-                  g_object_set (G_OBJECT (renderers->data),
+                  g_object_set (G_OBJECT (cell->data),
                                 "checkbox_mode", TRUE,
                                 NULL);
                 }
