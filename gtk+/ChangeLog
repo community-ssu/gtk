@@ -1,3 +1,11 @@
+2006-10-03 Xan Lopez <xan.lopez@nokia.com> 
+
+	* gtk/gtktreeview.c: (gtk_tree_view_size_request),
+	(gtk_tree_view_size_allocate), (validate_visible_area),
+	(do_validate_rows), (validate_rows), (validate_rows_handler):
+
+	Revert fix for NB#3490, as it was causing unintended side effects.	
+
 2006-10-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merged small fixes from upstream.
