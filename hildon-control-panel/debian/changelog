@@ -1,3 +1,9 @@
+hildon-control-panel (2.2.8-2) unstable; urgency=low
+
+  * debian/control: Fixed dependency for the -dbg package 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  3 Oct 2006 12:33:11 +0300
+
 hildon-control-panel (2.2.8-1) unstable; urgency=low
 
   * cp-grid.c: Added a constant padding to fit the margin
