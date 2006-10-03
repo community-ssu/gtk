@@ -12,6 +12,8 @@ TemplateHeight=800
 ThemeThumbnail=qgn_plat_theme_thumbnail.png
 
 [Colours]
+# yes, these are bogus for now until I add them to the template. -tigert
+
 # Text
 DefaultTextColor=10,10,100,100
 EmpTextColor=10,10,100,100
