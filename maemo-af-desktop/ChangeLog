@@ -1,5 +1,10 @@
 2006-10-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-window.c: Chain the key_press event handler
+	  to the parent class
+
+2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: set background components
 	  before setting the home window, which triggers a desktop update
 	* configure.ac: 2.9.92.2

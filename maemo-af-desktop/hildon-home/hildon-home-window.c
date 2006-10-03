@@ -676,7 +676,13 @@ hildon_home_window_key_press_event (GtkWidget *widget,
 
           break;
       default:
-          return FALSE;
+          if (GTK_WIDGET_CLASS (
+                     hildon_home_window_parent_class)->key_press_event)
+            return GTK_WIDGET_CLASS (
+                     hildon_home_window_parent_class)->key_press_event (widget,
+                                                                        event);
+          else
+            return FALSE;
     }
 
   return TRUE;
