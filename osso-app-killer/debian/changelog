@@ -1,3 +1,11 @@
+osso-app-killer (1.10-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Now preserving 'rtcom' GConf paths in ROS. Fixes: NB#41676
+  * Now running gconf-clean.sh without 'sudo' also in ROS.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 03 Oct 2006 15:30:55 +0300
+
 osso-app-killer (1.9-1) unstable; urgency=low
 
   * Now removing also connectivity settings on CUD. Fixes: NB#39144

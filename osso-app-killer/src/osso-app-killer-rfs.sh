@@ -36,7 +36,7 @@ sudo $DIR/gconf-daemon.sh stop
 
 # Remove user-modified settings
 if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
-  sudo /usr/sbin/gconf-clean.sh 
+  /usr/sbin/gconf-clean.sh 
   rm -rf /home/user/.osso/*
 
   OLDDIR=`pwd`

@@ -24,10 +24,24 @@ if [ $? = 0 ]; then
   for d in `ls`; do
     if [ "x$d" = "xschemas" ]; then
       continue
-    fi
-    if [ "x$CUD" != "x" ]; then
-      if [ "x$d" = "xsystem" ]; then
+    elif [ "x$d" = "xsystem" ]; then
+      # special handling for subdirectory 'system'
+      if [ "x$CUD" != "x" ]; then
         for f in `find system -name *.xml`; do
+          echo "$0: removing $f"
+          rm -f $f
+        done
+        continue
+      fi
+    elif [ "x$d" = "xapps" ]; then
+      # special handling for subdirectory 'apps'
+      if [ "x$CUD" = "x" ]; then
+        for f in `find apps -name *.xml`; do
+          # in RFS, paths having 'rtcom' are preserved
+          echo "$f" | grep -e 'rtcom' > /dev/null
+          if [ $? = 0 ]; then
+            continue
+          fi
           echo "$0: removing $f"
           rm -f $f
         done
