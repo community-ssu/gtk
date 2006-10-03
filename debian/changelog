@@ -1,6 +1,5 @@
-gtk+2.0 (2:2.6.10-2.osso16) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso16) unstable; urgency=low
 
-  * NOT RELEASED YET
   * Fixes: NB#41908 update_checkbox_mode function in Maemo modified gtk leaks
     memory
 
