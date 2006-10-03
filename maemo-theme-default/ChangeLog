@@ -1,3 +1,9 @@
+2006-10-03  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* theme-images-template.png: added the logical colours to the 
+	template image. The coordinates will be in the coord list on the
+	layout-3 module.
+
 2006-09-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* theme-images-template.png: oops, I accidentally saved without 
