@@ -11,8 +11,77 @@
 [Main]
 TemplateWidth=8000
 TemplateHeight=800
+ThemeThumbnail=qgn_plat_theme_thumbnail.png
 
-[Pieces]
+[Colours]
+# Text
+DefaultTextColor=10,10,100,100
+EmpTextColor=10,10,100,100
+PaintedDefaultTextColor=10,10,100,100
+DisabledTextColor=10,10,100,100
+ProgressTextColor1=10,10,100,100
+ProgressTextColor2=10,10,100,100
+SecondaryTextColor=10,10,100,100
+TitleTextColor=10,10,100,100
+DialogTitleTextColor=10,10,100,100
+
+# Calculator
+ClearButtonTextColor=10,10,100,100
+MemButtonTextColor=10,10,100,100
+
+# HW recognition
+HWRAlphaTextColor=10,10,100,100
+HWRNumberTextColor=10,10,100,100
+HWRDimmedTextColor=10,10,100,100
+HWRIllegalTextColor=10,10,100,100
+InputBackgrdColor=10,10,100,100
+HWRAlphaBackgrdColor=10,10,100,100
+HWRPunctBackgrdColor=10,10,100,100
+HWRContBackgrdColor=10,10,100,100
+HWRHyphBackgrdColor=10,10,100,100
+HWRBaselineColor=10,10,100,100
+HWRRecogColor=10,10,100,100
+HWRUserColor=10,10,100,100
+HWRUserBackgrdColor=10,10,100,100
+HWRHintColor=10,10,100,100
+
+
+# Web browser
+WebTextColor=10,10,100,100
+DimWebTextColor=10,10,100,100
+LinkTextColor=10,10,100,100
+VisitedLinkTextColor=10,10,100,100
+WebBackgrdColor=10,10,100,100
+
+# Sketch?
+DefaultBackgrdColor=10,10,100,100
+PaintedBackgrdColor=10,10,100,100
+ImageBackgrdColor=10,10,100,100
+
+# Gtk?
+ImageBorderColor=10,10,100,100
+FocusColor=10,10,100,100
+SelectionColor=10,10,100,100
+MenuInfoTextColor=10,10,100,100
+
+# Clock application
+MapTopLeftColor=10,10,100,100
+MapBottomRightColor=10,10,100,100
+ClockHandColor=10,10,100,100
+
+# Chat and voip
+ChatUserNameColor=10,10,100,100
+ChatParticipantNameColor=10,10,100,100
+ChatEventColor=10,10,100,100
+CallHeaderBlockBgColor=10,10,100,100
+CallHeaderOnHoldBlockBgColor=10,10,100,100
+
+# Applets?
+HomeFrameNormal=10,10,100,100
+HomeFrameResize=10,10,100,100
+HomeFrameReject=10,10,100,100
+
+[Elements]
 qgn_plat_view_button.png, 7496, 55, 30, 30
 qgn_plat_view_button_w.png, 7526, 55, 30, 30
 qgn_plat_view_button_n.png, 7556, 55, 30, 30
