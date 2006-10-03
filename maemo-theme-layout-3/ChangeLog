@@ -3,6 +3,8 @@
 	* layout-coordinates.txt: changed the format to be filename=coords
 	key/value pairs, to match the .ini file format that we resemble a
 	lot anyway.
+	* Added the color swatch coordinates for logical colors (to match
+	the ones in the template image on theme-default)
 
 2006-10-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 

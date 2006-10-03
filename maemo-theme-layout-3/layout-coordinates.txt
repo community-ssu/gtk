@@ -12,74 +12,73 @@ TemplateHeight=800
 ThemeThumbnail=qgn_plat_theme_thumbnail.png
 
 [Colours]
-# yes, these are bogus for now until I add them to the template. -tigert
 
 # Text
-DefaultTextColor=10,10,100,100
-EmpTextColor=10,10,100,100
-PaintedDefaultTextColor=10,10,100,100
-DisabledTextColor=10,10,100,100
-ProgressTextColor1=10,10,100,100
-ProgressTextColor2=10,10,100,100
-SecondaryTextColor=10,10,100,100
-TitleTextColor=10,10,100,100
-DialogTitleTextColor=10,10,100,100
+DefaultTextColor=7960,24,30,10
+EmpTextColor=7960,754,36,10
+PaintedDefaultTextColor=7960,48,30,10
+DisabledTextColor=7960,60,30,10
+ProgressTextColor1=7960,72,30,10
+ProgressTextColor2=7960,84,30,10
+SecondaryTextColor=7960,96,30,10
+TitleTextColor=7960,1,108,10
+DialogTitleTextColor=7960,120,30,10
 
 # Calculator
-ClearButtonTextColor=10,10,100,100
-MemButtonTextColor=10,10,100,100
+ClearButtonTextColor=7960,156,30,10
+MemButtonTextColor=7960,168,30,10
 
 # HW recognition
-HWRAlphaTextColor=10,10,100,100
-HWRNumberTextColor=10,10,100,100
-HWRDimmedTextColor=10,10,100,100
-HWRIllegalTextColor=10,10,100,100
-InputBackgrdColor=10,10,100,100
-HWRAlphaBackgrdColor=10,10,100,100
-HWRPunctBackgrdColor=10,10,100,100
-HWRContBackgrdColor=10,10,100,100
-HWRHyphBackgrdColor=10,10,100,100
-HWRBaselineColor=10,10,100,100
-HWRRecogColor=10,10,100,100
-HWRUserColor=10,10,100,100
-HWRUserBackgrdColor=10,10,100,100
-HWRHintColor=10,10,100,100
+HWRAlphaTextColor=7960,204,30,10
+HWRNumberTextColor=7960,216,30,10
+HWRDimmedTextColor=7960,228,30,10
+HWRIllegalTextColor=7960,240,30,10
+InputBackgrdColor=7960,252,30,10
+HWRAlphaBackgrdColor=7960,264,30,10
+HWRPunctBackgrdColor=7960,276,30,10
+HWRContBackgrdColor=7960,288,30,10
+HWRHyphBackgrdColor=7960,300,30,10
+HWRBaselineColor=7960,312,30,10
+HWRRecogColor=7960,324,30,10
+HWRUserColor=7960,336,30,10
+HWRUserBackgrdColor=7960,349,30,10
+HWRHintColor=7960,360,30,10
 
 
 # Web browser
-WebTextColor=10,10,100,100
-DimWebTextColor=10,10,100,100
-LinkTextColor=10,10,100,100
-VisitedLinkTextColor=10,10,100,100
-WebBackgrdColor=10,10,100,100
+WebTextColor=7960,396,30,10
+DimWebTextColor=7960,408,30,10
+LinkTextColor=7960,420,30,10
+VisitedLinkTextColor=7960,432,30,10
+WebBackgrdColor=7960,445,30,10
 
 # Sketch?
-DefaultBackgrdColor=10,10,100,100
-PaintedBackgrdColor=10,10,100,100
-ImageBackgrdColor=10,10,100,100
+DefaultBackgrdColor=7960,480,30,10
+PaintedBackgrdColor=7960,493,30,10
+ImageBackgrdColor=7960,504,30,10
 
 # Gtk?
-ImageBorderColor=10,10,100,100
-FocusColor=10,10,100,100
-SelectionColor=10,10,100,100
-MenuInfoTextColor=10,10,100,100
+ImageBorderColor=7960,540,30,10
+FocusColor=7960,552,30,10
+SelectionColor=7960,564,30,10
+MenuInfoTextColor=7960,576,30,10
 
 # Clock application
-MapTopLeftColor=10,10,100,100
-MapBottomRightColor=10,10,100,100
-ClockHandColor=10,10,100,100
+MapTopLeftColor=7960,612,30,10
+MapBottomRightColor=7960,624,30,10
+ClockHandColor=7960,636,30,10
 
 # Chat and voip
-ChatUserNameColor=10,10,100,100
-ChatParticipantNameColor=10,10,100,100
-ChatEventColor=10,10,100,100
-CallHeaderBlockBgColor=10,10,100,100
-CallHeaderOnHoldBlockBgColor=10,10,100,100
+ChatUserNameColor=7960,672,30,10
+ChatParticipantNameColor=7960,684,30,10
+ChatEventColor=7960,696,30,10
+CallHeaderBlockBgColor=7960,708,30,10
+CallHeaderOnHoldBlockBgColor=7960,720,30,10
 
 # Applets?
-HomeFrameNormal=10,10,100,100
-HomeFrameResize=10,10,100,100
-HomeFrameReject=10,10,100,100
+HomeFrameNormal=7960,756,30,10
+HomeFrameResize=7960,768,30,10
+HomeFrameReject=7960,780,30,10
 
 [Elements]
 qgn_plat_view_button.png=7496,55,30,30
