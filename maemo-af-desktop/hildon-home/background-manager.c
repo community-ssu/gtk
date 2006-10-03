@@ -1981,7 +1981,8 @@ background_manager_set_image_uri (BackgroundManager  *manager,
 void
 background_manager_set_components (BackgroundManager *manager,
 				   const gchar       *titlebar,
-				   const gchar       *sidebar)
+				   const gchar       *sidebar,
+                                   gboolean           reload)
 {
   BackgroundManagerPrivate *priv;
   
@@ -2001,7 +2002,8 @@ background_manager_set_components (BackgroundManager *manager,
       priv->sidebar = g_strdup (sidebar);
     }
 
-  background_manager_create_background (manager, FALSE);
+  if (reload)
+    background_manager_create_background (manager, FALSE);
 }
 
 G_CONST_RETURN gchar *

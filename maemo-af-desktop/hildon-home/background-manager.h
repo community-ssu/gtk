@@ -116,7 +116,8 @@ void                  background_manager_get_components    (BackgroundManager *m
 							    gchar             *sidebar);
 void                  background_manager_set_components    (BackgroundManager *manager,
 							    const gchar       *titlebar,
-							    const gchar       *sidebar);
+							    const gchar       *sidebar,
+                                                            gboolean           reload);
 G_CONST_RETURN gchar *background_manager_get_cache         (BackgroundManager *manager);
 void                  background_manager_set_cache         (BackgroundManager *manager,
 						            const gchar       *uri);

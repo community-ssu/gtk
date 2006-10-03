@@ -1,5 +1,11 @@
 2006-10-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/background-manager.c: set background components
+	  before setting the home window, which triggers a desktop update
+	* configure.ac: 2.9.92.2
+
+2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-keys.c: Forbid F4, not F10
 	* configure.ac: 2.9.92.1
 

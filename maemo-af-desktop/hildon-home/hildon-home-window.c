@@ -639,9 +639,9 @@ hildon_home_window_style_set (GtkWidget *widget,
 
   /* avoid resetting the background if the theme hasn't changed */
   if (g_str_equal (current_titlebar_image, new_titlebar_image) &&
-      g_str_equal (current_sidebar_image, new_sidebar_image))
+      g_str_equal (current_sidebar_image, new_sidebar_image) &&
+      background_manager_refresh_from_cache (priv->bg_manager))
     {
-      background_manager_refresh_from_cache (priv->bg_manager);
       return;
     }
 
@@ -653,7 +653,8 @@ hildon_home_window_style_set (GtkWidget *widget,
 
   background_manager_set_components (priv->bg_manager,
                                      new_titlebar_image,
-                                     new_sidebar_image);
+                                     new_sidebar_image,
+                                     TRUE);
 }
 
 static gboolean
@@ -854,7 +855,6 @@ hildon_home_window_constructor (GType                  gtype,
   gdk_window_set_type_hint (widget->window, GDK_WINDOW_TYPE_HINT_DESKTOP);
   
   priv->bg_manager = background_manager_get_default ();
-  background_manager_set_desktop (priv->bg_manager, widget->window);
   
   g_signal_connect (priv->bg_manager, "changed",
 		    G_CALLBACK (background_manager_changed_cb),
@@ -874,7 +874,9 @@ hildon_home_window_constructor (GType                  gtype,
 
   background_manager_set_components (priv->bg_manager,
 		  		     get_titlebar_image_from_theme (widget),
-				     get_sidebar_image_from_theme (widget));
+				     get_sidebar_image_from_theme (widget),
+                                     FALSE);
+  background_manager_set_desktop (priv->bg_manager, widget->window);
   
   gtk_widget_pop_composite_child ();
   

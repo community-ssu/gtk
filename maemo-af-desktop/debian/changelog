@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.92.2-1) unstable; urgency=low
+
+  * hildon-home/background-manager.c: set background components
+    before setting the home window, which triggers a desktop update
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  3 Oct 2006 13:33:52 +0300
+
 maemo-af-desktop (2.9.92.1-1) unstable; urgency=low
 
   * hildon-navigator/hn-keys.c: Forbid F4, not F10
