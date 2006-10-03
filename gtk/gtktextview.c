@@ -7585,7 +7585,7 @@ text_window_invalidate_rect (GtkTextWindow *win,
       return;
       break;
     }
-          
+      
   gdk_window_invalidate_rect (win->bin_window, &window_rect, FALSE);
 
 #if 0
@@ -7631,7 +7631,6 @@ text_window_invalidate_cursors (GtkTextWindow *win)
 
   stem_width = strong.height * cursor_aspect_ratio + 1;
   arrow_width = stem_width + 1;
-
   strong.width = stem_width;
 
   /* round up to the next even number */
@@ -7665,7 +7664,6 @@ text_window_invalidate_cursors (GtkTextWindow *win)
 
       weak.x     -= arrow_width;
       weak.width += arrow_width * 2;
-
       text_window_invalidate_rect (win, &weak);
     }
 }

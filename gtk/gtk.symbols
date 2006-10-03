@@ -3234,6 +3234,16 @@ gtk_tool_item_set_visible_vertical
 #endif
 #endif
 
+#if IN_HEADER(__GTK_TOOLTIP_H__)
+#if IN_FILE(__GTK_TOOLTIP_C__)
+gtk_tooltip_get_type G_GNUC_CONST
+gtk_tooltip_set_custom
+gtk_tooltip_set_icon
+gtk_tooltip_set_icon_from_stock
+gtk_tooltip_set_markup
+#endif
+#endif
+
 #if IN_HEADER(__GTK_TOOLTIPS_H__)
 #if IN_FILE(__GTK_TOOLTIPS_C__)
 gtk_tooltips_data_get
@@ -3751,6 +3761,7 @@ gtk_widget_get_screen
 gtk_widget_get_settings
 gtk_widget_get_size_request
 gtk_widget_get_style
+gtk_widget_get_tooltip_window
 gtk_widget_get_toplevel
 gtk_widget_get_type G_GNUC_CONST
 gtk_widget_get_visual
@@ -3822,6 +3833,7 @@ gtk_widget_set_sensitive
 gtk_widget_set_size_request
 gtk_widget_set_state
 gtk_widget_set_style
+gtk_widget_set_tooltip_window
 gtk_widget_shape_combine_mask
 gtk_widget_show
 gtk_widget_show_all

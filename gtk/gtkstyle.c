@@ -6905,6 +6905,8 @@ draw_insertion_cursor (GtkWidget        *widget,
   else if (location->x + offset > window_width && direction == GTK_TEXT_DIR_RTL)
     location->x -= location->x + offset - window_width;
 
+  g_print ("x: %d y: %d w: %d h: %d\n", location->x, location->y, stem_width, location->height);
+
   for (i = 0; i < stem_width; i++)
     gdk_draw_line (drawable, gc,
 		   location->x + i - offset, location->y,

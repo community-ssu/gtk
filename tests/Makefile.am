@@ -68,7 +68,8 @@ noinst_PROGRAMS =			\
 	pixbuf-random			\
 	pixbuf-threads			\
 	testmerge			\
-	testactions
+	testactions			\
+	testtooltips
 
 simple_DEPENDENCIES = $(TEST_DEPS)
 testicontheme_DEPENDENCIES = $(TEST_DEPS)
@@ -106,9 +107,11 @@ treestoretest_DEPENDENCIES = $(TEST_DEPS)
 testxinerama_DEPENDENCIES = $(TEST_DEPS)
 testmerge_DEPENDENCIES = $(TEST_DEPS)
 testactions_DEPENDENCIES = $(TEST_DEPS)
+testtooltips_DEPENDENCIES = $(TEST_DEPS)
 
 simple_LDADD = $(LDADDS)
 testcalendar_LDADD = $(LDADDS)
+testtooltips_LDADD = $(LDADDS)
 testcombo_LDADD = $(LDADDS)
 testcombochange_LDADD = $(LDADDS)
 testdnd_LDADD = $(LDADDS)
@@ -201,6 +204,9 @@ testactions_SOURCES = 		\
 testiconview_SOURCES = 		\
 	testiconview.c		\
 	prop-editor.c
+
+testtoooltips_SOURCES =		\
+	testtooltips.c
 
 EXTRA_DIST = 			\
 	prop-editor.h		\

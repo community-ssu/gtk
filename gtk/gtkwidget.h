@@ -155,6 +155,8 @@ typedef struct _GtkWidgetClass	   GtkWidgetClass;
 typedef struct _GtkWidgetAuxInfo   GtkWidgetAuxInfo;
 typedef struct _GtkWidgetShapeInfo GtkWidgetShapeInfo;
 typedef struct _GtkClipboard	   GtkClipboard;
+typedef struct _GtkTooltip         GtkTooltip;
+typedef struct _GtkWindow          GtkWindow;
 typedef void     (*GtkCallback)        (GtkWidget        *widget,
 					gpointer	  data);
 
@@ -417,9 +419,12 @@ struct _GtkWidgetClass
                                       GdkScreen *previous_screen);
   gboolean     (*can_activate_accel) (GtkWidget *widget,
                                       guint      signal_id);
-
+  gboolean     (* query_tooltip)      (GtkWidget  *widget,
+				       gint        x,
+				       gint        y,
+				       gboolean    keyboard_tooltip,
+				       GtkTooltip *tooltip);
   /* Padding for future expansion */
-  void (*_gtk_reserved2) (void);
   void (*_gtk_reserved3) (void);
   void (*tap_and_hold) (GtkWidget *widget);   /* Tap and hold action */
   void (*tap_and_hold_setup) (GtkWidget *widget, GtkWidget *menu,
@@ -778,6 +783,11 @@ void   gtk_widget_add_mnemonic_label    (GtkWidget *widget,
 					 GtkWidget *label);
 void   gtk_widget_remove_mnemonic_label (GtkWidget *widget,
 					 GtkWidget *label);
+
+void            gtk_widget_set_tooltip_window  (GtkWidget *widget,
+					        GtkWindow *custom_window);
+GtkWindow      *gtk_widget_get_tooltip_window  (GtkWidget *widget);
+
 
 GType           gtk_requisition_get_type (void) G_GNUC_CONST;
 GtkRequisition *gtk_requisition_copy     (const GtkRequisition *requisition);

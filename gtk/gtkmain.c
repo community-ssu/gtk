@@ -65,6 +65,7 @@
 #include "gtksettings.h"
 #include "gtkwidget.h"
 #include "gtkwindow.h"
+#include "gtktooltip.h"
 #include "gtkprivate.h"
 #include "gtkdebug.h"
 #include "gtkalias.h"
@@ -1283,6 +1284,13 @@ gtk_main_do_event (GdkEvent *event)
     {
       _gtk_clipboard_handle_event (&event->owner_change);
       return;
+    }
+
+  if (event->type == GDK_LEAVE_NOTIFY
+      || event->type == GDK_MOTION_NOTIFY
+      || event->type == GDK_SCROLL)
+    {
+      _gtk_tooltip_handle_event (event);
     }
 
   /* Find the widget which got the event. We store the widget
