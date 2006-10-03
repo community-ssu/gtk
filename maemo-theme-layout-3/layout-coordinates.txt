@@ -2,10 +2,8 @@
 # images out of the big template.
 #
 # Syntax:
-# filename, left, top, width, height
+# filename,left,top,width,height
 # 
-# possibly we should move the bordervalues from gtkrc here as well..
-
 #
 
 [Main]
@@ -82,525 +80,525 @@ HomeFrameResize=10,10,100,100
 HomeFrameReject=10,10,100,100
 
 [Elements]
-qgn_plat_view_button.png, 7496, 55, 30, 30
-qgn_plat_view_button_w.png, 7526, 55, 30, 30
-qgn_plat_view_button_n.png, 7556, 55, 30, 30
-qgn_plat_view_button_e.png, 7586, 55, 30, 30
-qgn_plat_view_button_s.png, 7616, 55, 30, 30
-qgn_plat_view_button_nesw.png, 7646, 55, 30, 30
-qgn_plat_arrow_up_normal.png, 2656, 59, 26, 26
-qgn_plat_cpa_screen_calib_target_passive.png, 6826, 60, 59, 59
-qgn_plat_cpa_screen_calib_target_active.png, 6926, 60, 59, 59
-qgn_plat_check_box_selected_normal.png, 47, 65, 26, 26
-qgn_plat_check_box_empty_normal.png, 95, 65, 26, 26
-qgn_plat_check_box_indeterminate_normal.png, 145, 65, 26, 26
-qgn_plat_status_bar_second_level_background.png, 4311, 71, 280, 50
-qgn_plat_inputmet_button_key_normal.png, 6290, 77, 12, 35
-qgn_plat_inputmet_button_side_normal.png, 6369, 77, 10, 35
-qgn_plat_inputmet_button_side_close_normal.png, 6399, 77, 10, 35
-qgn_plat_inputmet_button_keyboard_word_compl_normal.png, 6455, 77, 12, 35
-qgn_plat_inputmet_tab_special_character_normal.png, 6514, 77, 12, 35
-qgn_plat_seek_bar_regular_shaft_left_normal.png, 958, 78, 6, 58
-qgn_plat_seek_bar_regular_thumb_normal.png, 989, 78, 23, 58
-qgn_plat_seek_bar_regular_shaft_stream_normal.png, 1013, 78, 4, 58
-qgn_plat_seek_bar_regular_shaft_right_normal.png, 1027, 78, 6, 58
-qgn_plat_seek_bar_regular_shaft_stream_finished_normal.png, 1096, 78, 4, 58
-qgn_plat_control_bar_less_normal.png, 476, 79, 26, 30
-qgn_plat_control_bar_more_normal.png, 719, 79, 26, 30
-qgn_plat_listbox_border_with_icon_find_normal.png, 2059, 79, 37, 30
-qgn_plat_status_bar_pressed.png, 4679, 79, 40, 50
-qgn_plat_arrow_left_normal.png, 2630, 84, 26, 26
-qgn_plat_arrow_right_normal.png, 2682, 84, 26, 26
-qgn_plat_status_bar_background.png, 3618, 85, 280, 40
-qgn_plat_view_button_nw.png, 7496, 85, 30, 30
-qgn_plat_view_button_ne.png, 7526, 85, 30, 30
-qgn_plat_view_button_es.png, 7556, 85, 30, 30
-qgn_plat_view_button_sw.png, 7586, 85, 30, 30
-qgn_plat_view_button_ns.png, 7616, 85, 30, 30
-qgn_plat_view_button_ew.png, 7646, 85, 30, 30
-qgn_plat_seek_bar_toolbar_shaft_left_normal.png, 831, 87, 6, 40
-qgn_plat_seek_bar_toolbar_thumb_normal.png, 844, 87, 23, 40
-qgn_plat_seek_bar_toolbar_shaft_stream_normal.png, 868, 87, 4, 40
-qgn_plat_seek_bar_toolbar_shaft_right_normal.png, 874, 87, 6, 40
-qgn_plat_seek_bar_toolbar_shaft_stream_finished_normal.png, 1116, 87, 4, 40
-qgn_plat_inputmet_pane_border.png, 6174, 87, 6, 6
-qgn_plat_seek_bar_toolbar_backward_button_normal.png, 797, 94, 26, 26
-qgn_plat_seek_bar_toolbar_forward_button_normal.png, 888, 94, 26, 26
-qgn_plat_seek_bar_regular_backward_button_normal.png, 924, 94, 26, 26
-qgn_plat_seek_bar_regular_forward_button_normal.png, 1041, 94, 26, 26
-qgn_plat_arrow_down_normal.png, 2656, 108, 26, 26
-qgn_plat_scroll_horizontal_left_arrow_normal.png, 1306, 111, 26, 22
-qgn_plat_scroll_horizontal_shaft_normal.png, 1741, 111, 2, 22
-qgn_plat_scroll_horizontal_right_arrow_normal.png, 1930, 111, 26, 22
-qgn_plat_view_button_new.png, 7496, 115, 30, 30
-qgn_plat_view_button_nsw.png, 7526, 115, 30, 30
-qgn_plat_view_button_esw.png, 7556, 115, 30, 30
-qgn_plat_view_button_nes.png, 7586, 115, 30, 30
-qgn_plat_inputmet_button_key_pressed.png, 6290, 117, 12, 35
-qgn_plat_inputmet_button_key_latched.png, 6320, 117, 12, 35
-qgn_plat_inputmet_button_side_pressed.png, 6369, 117, 10, 35
-qgn_plat_inputmet_button_side_close_pressed.png, 6399, 117, 10, 35
-qgn_plat_inputmet_button_keyboard_word_compl_pressed.png, 6455, 117, 12, 35
-qgn_plat_inputmet_tab_special_character_selected.png, 6514, 117, 12, 35
-qgn_plat_weekday_picker_normal.png, 289, 124, 6, 30
-qgn_plat_weekday_picker_selected.png, 335, 124, 6, 30
-qgn_plat_weekday_picker_pressed.png, 381, 124, 6, 30
-qgn_plat_check_box_selected_focused.png, 47, 125, 26, 26
-qgn_plat_check_box_empty_focused.png, 95, 125, 26, 26
-qgn_plat_check_box_indeterminate_focused.png, 145, 125, 26, 26
-qgn_plat_menu_next_level_arrow_normal.png, 2364, 128, 20, 30
-qgn_plat_seek_bar_toolbar_background_normal.png, 786, 130, 42, 40
-qgn_plat_seek_bar_toolbar_background_disabled.png, 834, 130, 42, 40
-qgn_plat_menu_scroll_down_arrow_normal.png, 2162, 130, 26, 26
-qgn_plat_menu_scroll_up_arrow_normal.png, 2262, 130, 26, 26
-qgn_plat_control_bar_border.png, 583, 139, 6, 30
-qgn_plat_control_bar_less_pressed.png, 476, 140, 26, 30
-qgn_plat_control_bar_more_pressed.png, 719, 140, 26, 30
-qgn_plat_control_bar_block_passive.png, 656, 145, 6, 22
-qgn_plat_arrow_up_pressed.png, 2656, 145, 26, 26
-qgn_plat_control_bar_block_active.png, 627, 146, 6, 22
-qgn_plat_screen_calibration.png, 6651, 153, 800, 80
-qgn_plat_seek_bar_regular_background_disabled.png, 1086, 156, 42, 58
-qgn_plat_inputmet_button_key_disabled.png, 6290, 157, 12, 35
-qgn_plat_inputmet_button_side_disabled.png, 6369, 157, 10, 35
-qgn_plat_inputmet_button_keyboard_word_compl_prefix_normal.png, 6455, 157, 12, 35
-qgn_plat_scroll_horizontal_left_arrow_disabled.png, 1306, 161, 26, 22
-qgn_plat_scroll_horizontal_shaft_disabled.png, 1741, 161, 2, 22
-qgn_plat_scroll_horizontal_right_arrow_disabled.png, 1930, 161, 26, 22
-qgn_plat_seek_bar_regular_background_normal.png, 880, 163, 42, 58
-qgn_plat_task_navigation_button_01_normal.png, 3191, 163, 80, 90
-qgn_plat_application_status_bar_background.png, 3271, 163, 720, 60
-qgn_plat_task_navigation_button_01_focused.png, 4097, 163, 80, 90
-qgn_plat_task_navigation_button_01_pressed.png, 4181, 163, 80, 90
-qgn_plat_home_status_bar_background.png, 5250, 163, 720, 60
-qgn_plat_view_button_focused.png, 7496, 165, 30, 30
-qgn_plat_view_button_w_focused.png, 7526, 165, 30, 30
-qgn_plat_view_button_n_focused.png, 7556, 165, 30, 30
-qgn_plat_view_button_e_focused.png, 7586, 165, 30, 30
-qgn_plat_view_button_s_focused.png, 7616, 165, 30, 30
-qgn_plat_view_button_nesw_focused.png, 7646, 165, 30, 30
-qgn_plat_menu_next_level_arrow_pressed.png, 2364, 168, 20, 30
-qgn_plat_menu_scroll_down_arrow_pressed.png, 2162, 170, 26, 26
-qgn_plat_menu_scroll_up_arrow_pressed.png, 2262, 170, 26, 26
-qgn_plat_arrow_left_pressed.png, 2630, 170, 26, 26
-qgn_plat_arrow_right_pressed.png, 2682, 170, 26, 26
-qgn_plat_seek_bar_toolbar_backward_button_pressed.png, 804, 174, 26, 26
-qgn_plat_seek_bar_toolbar_forward_button_pressed.png, 848, 174, 26, 26
-qgn_plat_seek_bar_regular_backward_button_pressed.png, 924, 174, 26, 26
-qgn_plat_seek_bar_regular_forward_button_pressed.png, 1041, 174, 26, 26
-qgn_plat_inputmet_buffer_zone_left.png, 6526, 178, 24, 27
-qgn_plat_inputmet_buffer_zone_top.png, 6553, 178, 2, 10
-qgn_plat_check_box_selected_disabled.png, 47, 185, 26, 26
-qgn_plat_check_box_empty_disabled.png, 95, 185, 26, 26
-qgn_plat_check_box_indeterminate_disabled.png, 145, 185, 26, 26
-qgn_plat_arrow_down_pressed.png, 2656, 194, 26, 26
-qgn_plat_view_button_nw_focused.png, 7496, 195, 30, 30
-qgn_plat_view_button_ne_focused.png, 7526, 195, 30, 30
-qgn_plat_view_button_es_focused.png, 7556, 195, 30, 30
-qgn_plat_view_button_sw_focused.png, 7586, 195, 30, 30
-qgn_plat_view_button_ns_focused.png, 7616, 195, 30, 30
-qgn_plat_view_button_ew_focused.png, 7646, 195, 30, 30
-qgn_plat_inputmet_button_key_accent_normal.png, 6290, 197, 12, 35
-qgn_plat_inputmet_button_side_latched.png, 6369, 197, 10, 35
-qgn_plat_control_bar_less_disabled.png, 476, 199, 26, 30
-qgn_plat_control_bar_border_disabled.png, 583, 199, 6, 30
-qgn_plat_control_bar_more_disabled.png, 719, 199, 26, 30
-qgn_plat_control_bar_block_active_disabled.png, 627, 205, 6, 22
-qgn_plat_control_bar_block_passive_disabled.png, 656, 205, 6, 22
-qgn_plat_menu_next_level_arrow_disabled.png, 2364, 209, 20, 30
-qgn_plat_scroll_horizontal_left_arrow_pressed.png, 1306, 211, 26, 22
-qgn_plat_scroll_horizontal_right_arrow_pressed.png, 1930, 211, 26, 22
-qgn_plat_menu_scroll_down_arrow_disabled.png, 2162, 211, 26, 26
-qgn_plat_menu_scroll_up_arrow_disabled.png, 2262, 211, 26, 26
-qgn_plat_application_frame_left.png, 4261, 223, 24, 2
-qgn_plat_application_frame_right.png, 4957, 223, 24, 2
-qgn_plat_home_border_left.png, 5250, 223, 10, 2
-qgn_plat_application_voip_background.png, 3296, 225, 672, 396
-qgn_plat_view_button_new_focused.png, 7496, 225, 30, 30
-qgn_plat_view_button_nsw_focused.png, 7526, 225, 30, 30
-qgn_plat_view_button_esw_focused.png, 7556, 225, 30, 30
-qgn_plat_view_button_nes_focused.png, 7586, 225, 30, 30
-qgn_plat_arrow_up_disabled.png, 2656, 231, 26, 26
-qgn_plat_application_chat_background.png, 4280, 232, 672, 396
-qgn_plat_seek_bar_regular_shaft_left_disabled.png, 958, 238, 6, 58
-qgn_plat_seek_bar_regular_thumb_disabled.png, 989, 238, 23, 58
-qgn_plat_seek_bar_regular_shaft_stream_disabled.png, 1013, 238, 4, 58
-qgn_plat_seek_bar_regular_shaft_right_disabled.png, 1027, 238, 6, 58
-qgn_plat_seek_bar_regular_shaft_stream_finished_disabled.png, 1096, 238, 4, 58
-qgn_plat_seek_bar_toolbar_shaft_left_disabled.png, 831, 247, 6, 40
-qgn_plat_seek_bar_toolbar_thumb_disabled.png, 844, 247, 23, 40
-qgn_plat_seek_bar_toolbar_shaft_stream_disabled.png, 868, 247, 4, 40
-qgn_plat_seek_bar_toolbar_shaft_right_disabled.png, 874, 247, 6, 40
-qgn_plat_seek_bar_toolbar_shaft_stream_finished_disabled.png, 1116, 247, 4, 40
-qgn_plat_progress_bar_border.png, 300, 253, 10, 30
-qgn_plat_task_navigation_button_02_normal.png, 3191, 253, 80, 90
-qgn_plat_task_navigation_button_02_focused.png, 4097, 253, 80, 90
-qgn_plat_task_navigation_button_02_pressed.png, 4181, 253, 80, 90
-qgn_plat_seek_bar_toolbar_backward_button_disabled.png, 797, 254, 26, 26
-qgn_plat_seek_bar_toolbar_forward_button_disabled.png, 888, 254, 26, 26
-qgn_plat_seek_bar_regular_backward_button_disabled.png, 924, 254, 26, 26
-qgn_plat_seek_bar_regular_forward_button_disabled.png, 1041, 254, 26, 26
-qgn_plat_progress_bar_gradient.png, 320, 256, 1, 24
-qgn_plat_arrow_left_disabled.png, 2630, 256, 26, 26
-qgn_plat_arrow_right_disabled.png, 2682, 256, 26, 26
-qgn_plat_listbox_border_with_icon_find_disabled.png, 2059, 259, 37, 30
-qgn_plat_scroll_horizontal_thumb_normal.png, 1709, 261, 22, 22
-qgn_plat_scroll_horizontal_thumb_disabled.png, 1739, 261, 22, 22
-qgn_plat_application_menu_1st_level_frame.png, 2874, 264, 42, 42
-qgn_plat_application_menu_lower_level_frame.png, 2936, 264, 42, 42
-qgn_plat_task_navigation_menu_frame.png, 2996, 264, 42, 42
-qgn_plat_view_button_pressed_focused.png, 7496, 275, 30, 30
-qgn_plat_view_button_w_pressed_focused.png, 7526, 275, 30, 30
-qgn_plat_view_button_n_pressed_focused.png, 7556, 275, 30, 30
-qgn_plat_view_button_e_pressed_focused.png, 7586, 275, 30, 30
-qgn_plat_view_button_s_pressed_focused.png, 7616, 275, 30, 30
-qgn_plat_view_button_nesw_pressed_focused.png, 7646, 275, 30, 30
-qgn_plat_arrow_down_disabled.png, 2656, 280, 26, 26
-qgn_plat_button_radio_selected_normal.png, 47, 294, 26, 26
-qgn_plat_button_radio_empty_normal.png, 155, 294, 26, 26
-qgn_plat_thumb_menu_scroll_up_arrow_normal.png, 6519, 302, 58, 58
-qgn_plat_thumb_menu_scroll_down_arrow_normal.png, 6450, 303, 58, 58
-qgn_plat_inputmet_thumb_button_backspace_normal.png, 6919, 305, 42, 128
-qgn_plat_inputmet_thumb_button_commom_normal.png, 7021, 305, 42, 80
-qgn_plat_inputmet_thumb_button_key_normal.png, 7120, 305, 42, 87
-qgn_plat_inputmet_thumb_button_key_accent_normal.png, 7189, 305, 42, 87
-qgn_plat_inputmet_thumb_tab_normal.png, 7296, 305, 42, 87
-qgn_plat_inputmet_thumb_button_extra_normal.png, 7359, 305, 42, 87
-qgn_plat_inputmet_thumb_button_key_space_normal.png, 7414, 305, 42, 87
-qgn_plat_view_button_nw_pressed_focused.png, 7496, 305, 30, 30
-qgn_plat_view_button_ne_pressed_focused.png, 7526, 305, 30, 30
-qgn_plat_view_button_es_pressed_focused.png, 7556, 305, 30, 30
-qgn_plat_view_button_sw_pressed_focused.png, 7586, 305, 30, 30
-qgn_plat_view_button_ns_pressed_focused.png, 7616, 305, 30, 30
-qgn_plat_view_button_ew_pressed_focused.png, 7646, 305, 30, 30
-qgn_plat_application_installer_image.png, 5629, 309, 250, 250
-qgn_plat_combobox_button_normal.png, 6708, 314, 26, 30
-qgn_plat_view_button_new_pressed_focused.png, 7496, 335, 30, 30
-qgn_plat_view_button_nsw_pressed_focused.png, 7526, 335, 30, 30
-qgn_plat_view_button_esw_pressed_focused.png, 7556, 335, 30, 30
-qgn_plat_view_button_nes_pressed_focused.png, 7586, 335, 30, 30
-qgn_plat_task_navigation_button_03_normal.png, 3191, 343, 80, 90
-qgn_plat_task_navigation_button_03_focused.png, 4097, 343, 80, 90
-qgn_plat_task_navigation_button_03_pressed.png, 4181, 343, 80, 90
-qgn_plat_clock_analog_plain.png, 6128, 344, 100, 90
-qgn_plat_clock_digital_background.png, 6243, 344, 100, 90
-qgn_plat_button_radio_selected_focused.png, 47, 354, 26, 26
-qgn_plat_button_radio_empty_focused.png, 155, 354, 26, 26
-qgn_plat_combobox_frame_normal.png, 6696, 354, 6, 30
-qgn_plat_combobox_button_pressed.png, 6708, 354, 26, 30
-qgn_plat_volume_bar_horizontal_regular_shaft_left_normal.png, 970, 364, 6, 58
-qgn_plat_volume_bar_horizontal_regular_thumb_normal.png, 1001, 364, 23, 58
-qgn_plat_volume_bar_horizontal_regular_shaft_right_normal.png, 1039, 364, 6, 58
-qgn_plat_toolbar_menu_button_normal.png, 5128, 369, 20, 40
-qgn_plat_tool_tip.png, 1756, 370, 42, 42
-qgn_plat_scroll_vertical_up_arrow_normal.png, 1518, 372, 22, 26
-qgn_plat_scroll_vertical_up_arrow_disabled.png, 1568, 372, 22, 26
-qgn_plat_scroll_vertical_up_arrow_pressed.png, 1618, 372, 22, 26
-qgn_plat_volume_bar_toolbar_shaft_left_normal.png, 760, 373, 6, 40
-qgn_plat_volume_bar_toolbar_thumb_normal.png, 786, 373, 23, 40
-qgn_plat_volume_bar_toolbar_shaft_right_normal.png, 829, 373, 6, 40
-qgn_plat_thumb_menu_scroll_down_arrow_pressed.png, 6450, 375, 58, 58
-qgn_plat_thumb_menu_scroll_up_arrow_pressed.png, 6519, 375, 58, 58
-qgn_plat_volume_bar_toolbar_mute_button_normal.png, 693, 379, 26, 26
-qgn_plat_volume_bar_horizontal_regular_mute_button_normal.png, 903, 379, 26, 26
-qgn_plat_volume_bar_toolbar_less_button_normal.png, 726, 380, 26, 26
-qgn_plat_volume_bar_toolbar_more_button_normal.png, 843, 380, 26, 26
-qgn_plat_volume_bar_horizontal_regular_less_button_normal.png, 936, 380, 26, 26
-qgn_plat_volume_bar_horizontal_regular_more_button_normal.png, 1053, 380, 26, 26
-qgn_plat_infoprint_frame_corner_top_left.png, 2946, 385, 20, 20
-qgn_plat_infoprint_frame_tile_top.png, 2966, 385, 2, 20
-qgn_plat_infoprint_frame_corner_top_right.png, 3029, 385, 20, 20
-qgn_plat_view_button_pressed.png, 7496, 385, 30, 30
-qgn_plat_view_button_w_pressed.png, 7526, 385, 30, 30
-qgn_plat_view_button_n_pressed.png, 7556, 385, 30, 30
-qgn_plat_view_button_e_pressed.png, 7586, 385, 30, 30
-qgn_plat_view_button_s_pressed.png, 7616, 385, 30, 30
-qgn_plat_view_button_nesw_pressed.png, 7646, 385, 30, 30
-qgn_plat_combobox_frame_disabled.png, 6696, 394, 6, 30
-qgn_plat_combobox_button_disabled.png, 6708, 394, 26, 30
-qgn_plat_number_editor_less_normal.png, 554, 395, 30, 30
-qgn_plat_number_editor_more_normal.png, 607, 395, 30, 30
-qgn_plat_dialog_frame_corner_top_left.png, 2395, 395, 51, 51
-qgn_plat_dialog_frame_tile_top.png, 2496, 395, 2, 51
-qgn_plat_dialog_frame_corner_top_right.png, 2767, 395, 51, 51
-qgn_plat_inputmet_thumb_button_common_pressed.png, 7021, 396, 42, 80
-qgn_plat_inputmet_thumb_button_key_pressed.png, 7120, 396, 42, 87
-qgn_plat_inputmet_thumb_button_key_latched.png, 7189, 396, 42, 87
-qgn_plat_inputmet_thumb_tab_selected.png, 7296, 396, 42, 87
-qgn_plat_inputmet_thumb_button_extra_pressed.png, 7359, 396, 42, 87
-qgn_plat_inputmet_thumb_button_key_space_pressed.png, 7414, 396, 42, 87
-qgn_plat_volume_bar_vertical_regular_more_button_normal.png, 1203, 399, 26, 26
-qgn_plat_volume_bar_vertical_regular_more_button_pressed.png, 1283, 399, 26, 26
-qgn_plat_volume_bar_vertical_regular_more_button_disabled.png, 1360, 399, 26, 26
-qgn_plat_button_minimize_normal.png, 287, 402, 40, 40
-qgn_plat_button_close_normal.png, 327, 402, 40, 40
-qgn_plat_button_minimize_pressed.png, 399, 402, 40, 40
-qgn_plat_button_close_pressed.png, 439, 402, 40, 40
-qgn_plat_infoprint_frame_tile_left.png, 2946, 405, 20, 2
-qgn_plat_volume_bar_toolbar_background_normal.png, 843, 413, 42, 40
-qgn_plat_button_radio_selected_disabled.png, 47, 414, 26, 26
-qgn_plat_button_radio_empty_disabled.png, 155, 414, 26, 26
-qgn_plat_view_button_nw_pressed.png, 7496, 415, 30, 30
-qgn_plat_view_button_ne_pressed.png, 7526, 415, 30, 30
-qgn_plat_view_button_es_pressed.png, 7556, 415, 30, 30
-qgn_plat_view_button_sw_pressed.png, 7586, 415, 30, 30
-qgn_plat_view_button_ns_pressed.png, 7616, 415, 30, 30
-qgn_plat_view_button_ew_pressed.png, 7646, 415, 30, 30
-qgn_plat_scroll_vertical_shaft_normal.png, 1518, 416, 22, 2
-qgn_plat_scroll_vertical_shaft_disabled.png, 1568, 416, 22, 2
-qgn_plat_toolbar_menu_button_pressed.png, 5128, 420, 20, 40
-qgn_plat_infoprint_frame_tile_right.png, 3029, 425, 20, 2
-qgn_plat_volume_bar_vertical_regular_background_normal.png, 1261, 429, 58, 42
-qgn_plat_dialog_button_alone_normal.png, 1946, 430, 42, 47
-qgn_plat_dialog_button_left_normal.png, 1996, 430, 42, 47
-qgn_plat_dialog_button_middle_normal.png, 2046, 430, 42, 47
-qgn_plat_dialog_button_right_normal.png, 2096, 430, 42, 47
-qgn_plat_volume_bar_vertical_regular_shaft_top_normal.png, 1187, 431, 58, 6
-qgn_plat_volume_bar_vertical_regular_shaft_top_disabled.png, 1344, 431, 58, 6
-qgn_plat_task_navigation_application_switcher_01_normal.png, 3191, 433, 80, 38
-qgn_plat_task_navigation_application_switcher_01_focused.png, 4097, 433, 80, 38
-qgn_plat_task_navigation_application_switcher_01_pressed.png, 4181, 433, 80, 38
-qgn_plat_mediaplayer_buttons_bg.png, 2164, 435, 112, 226
-qgn_plat_volume_bar_horizontal_regular_background_disabled.png, 754, 442, 42, 58
-qgn_plat_volume_bar_horizontal_regular_background_normal.png, 796, 442, 42, 58
-qgn_plat_thumb_menu_scroll_down_arrow_disabled.png, 6450, 444, 58, 58
-qgn_plat_thumb_menu_scroll_up_arrow_disabled.png, 6519, 444, 58, 58
-qgn_plat_view_button_new_pressed.png, 7496, 445, 30, 30
-qgn_plat_view_button_nsw_pressed.png, 7526, 445, 30, 30
-qgn_plat_view_button_esw_pressed.png, 7556, 445, 30, 30
-qgn_plat_view_button_nes_pressed.png, 7586, 445, 30, 30
-qgn_plat_dialog_frame_tile_left.png, 2395, 447, 10, 2
-qgn_plat_dialog_frame_tile_right.png, 2808, 449, 10, 2
-qgn_plat_inputmet_thumb_button_backspace_pressed.png, 6919, 453, 42, 128
-qgn_plat_volume_bar_vertical_regular_thumb_normal.png, 1187, 454, 58, 23
-qgn_plat_volume_bar_vertical_regular_thumb_disabled.png, 1344, 454, 58, 23
-qgn_plat_number_editor_less_pressed.png, 554, 455, 30, 30
-qgn_plat_number_editor_more_pressed.png, 607, 455, 30, 30
-qgn_plat_volume_bar_toolbar_mute_button_pressed.png, 693, 459, 26, 26
-qgn_plat_volume_bar_horizontal_regular_mute_button_pressed.png, 903, 459, 26, 26
-qgn_plat_volume_bar_toolbar_less_button_pressed.png, 726, 460, 26, 26
-qgn_plat_volume_bar_toolbar_more_button_pressed.png, 843, 460, 26, 26
-qgn_plat_volume_bar_horizontal_regular_less_button_pressed.png, 936, 460, 26, 26
-qgn_plat_volume_bar_horizontal_regular_more_button_pressed.png, 1053, 460, 26, 26
-qgn_plat_infoprint_frame_corner_bottom_left.png, 2946, 461, 20, 20
-qgn_plat_infoprint_frame_tile_bottom.png, 2986, 461, 2, 20
-qgn_plat_infoprint_frame_corner_bottom_right.png, 3029, 461, 20, 20
-qgn_plat_volume_bar_vertical_regular_background_disabled.png, 1261, 471, 58, 42
-qgn_plat_task_navigation_application_switcher_02_normal.png, 3191, 471, 80, 38
-qgn_plat_task_navigation_application_switcher_02_focused.png, 4097, 471, 80, 38
-qgn_plat_task_navigation_application_switcher_02_pressed.png, 4181, 471, 80, 38
-qgn_plat_toolbar_menu_button_latched.png, 5128, 471, 20, 40
-qgn_plat_clock_analog_am.png, 6128, 474, 100, 90
-qgn_plat_dialog_button_alone_focused.png, 1946, 490, 42, 47
-qgn_plat_dialog_button_left_focused.png, 1996, 490, 42, 47
-qgn_plat_dialog_button_middle_focused.png, 2046, 490, 42, 47
-qgn_plat_dialog_button_right_focused.png, 2096, 490, 42, 47
-qgn_plat_volume_bar_toolbar_background_disabled.png, 843, 491, 42, 40
-qgn_plat_toolbar_fullscreen_frame_top.png, 3124, 493, 50, 9
-qgn_plat_inputmet_thumb_button_key_disabled.png, 7120, 494, 42, 87
-qgn_plat_view_button_disabled.png, 7496, 495, 30, 30
-qgn_plat_view_button_w_disabled.png, 7526, 495, 30, 30
-qgn_plat_view_button_n_disabled.png, 7556, 495, 30, 30
-qgn_plat_view_button_e_disabled.png, 7586, 495, 30, 30
-qgn_plat_view_button_s_disabled.png, 7616, 495, 30, 30
-qgn_plat_view_button_nesw_disabled.png, 7646, 495, 30, 30
-qgn_plat_inputmet_thumb_button_extra_disabled.png, 7359, 497, 42, 87
-qgn_plat_inputmet_thumb_button_key_space_disabled.png, 7414, 497, 42, 87
-qgn_plat_volume_bar_vertical_regular_shaft_bottom_normal.png, 1187, 500, 58, 6
-qgn_plat_volume_bar_vertical_regular_shaft_bottom_disabled.png, 1344, 500, 58, 6
-qgn_plat_frame.png, 6683, 501, 8, 8
-qgn_plat_frame_disabled.png, 6733, 501, 8, 8
-qgn_plat_inputmet_thumb_button_common_disabled.png, 7021, 501, 42, 80
-qgn_plat_clock_digital_label_am.png, 6279, 502, 30, 20
-qgn_plat_clock_digital_label_am_focused.png, 6378, 503, 30, 20
-qgn_plat_toolbar_fullscreen_find.png, 3124, 504, 50, 40
-qgn_plat_task_navigation_application_switcher_03_normal.png, 3191, 509, 80, 38
-qgn_plat_task_navigation_application_switcher_03_focused.png, 4097, 509, 80, 38
-qgn_plat_task_navigation_application_switcher_03_pressed.png, 4181, 509, 80, 38
-qgn_plat_toolbar_button_normal.png, 47, 513, 48, 40
-qgn_plat_toolbar_button_pressed.png, 108, 513, 48, 40
-qgn_plat_toolbar_button_selected.png, 168, 513, 48, 40
-qgn_plat_toolbar_button_disabled.png, 228, 513, 48, 40
-qgn_plat_volume_bar_vertical_regular_less_button_normal.png, 1203, 514, 26, 26
-qgn_plat_volume_bar_vertical_regular_less_button_pressed.png, 1283, 514, 26, 26
-qgn_plat_volume_bar_vertical_regular_less_button_disabled.png, 1360, 514, 26, 26
-qgn_plat_number_editor_less_disabled.png, 554, 515, 30, 30
-qgn_plat_number_editor_more_disabled.png, 607, 515, 30, 30
-qgn_plat_scroll_vertical_thumb_disabled.png, 1668, 521, 22, 22
-qgn_plat_toolbar_menu_button_disabled.png, 5128, 521, 20, 40
-qgn_plat_volume_bar_horizontal_regular_shaft_left_disabled.png, 970, 524, 6, 58
-qgn_plat_volume_bar_horizontal_regular_thumb_disabled.png, 1001, 524, 23, 58
-qgn_plat_volume_bar_horizontal_regular_shaft_right_disabled.png, 1039, 524, 6, 58
-qgn_plat_view_button_nw_disabled.png, 7496, 525, 30, 30
-qgn_plat_view_button_ne_disabled.png, 7526, 525, 30, 30
-qgn_plat_view_button_es_disabled.png, 7556, 525, 30, 30
-qgn_plat_view_button_sw_disabled.png, 7586, 525, 30, 30
-qgn_plat_view_button_ns_disabled.png, 7616, 525, 30, 30
-qgn_plat_view_button_ew_disabled.png, 7646, 525, 30, 30
-qgn_plat_menu_check_mark_normal.png, 379, 527, 26, 26
-qgn_plat_menu_check_mark_disabled.png, 424, 527, 26, 26
-qgn_plat_clock_digital_label_pm.png, 6279, 530, 30, 20
-qgn_plat_clock_digital_label_pm_focused.png, 6378, 531, 30, 20
-qgn_plat_volume_bar_toolbar_shaft_left_disabled.png, 760, 533, 6, 40
-qgn_plat_volume_bar_toolbar_thumb_disabled.png, 786, 533, 23, 40
-qgn_plat_volume_bar_toolbar_shaft_right_disabled.png, 829, 533, 6, 40
-qgn_plat_volume_bar_toolbar_mute_button_disabled.png, 693, 539, 26, 26
-qgn_plat_volume_bar_horizontal_regular_mute_button_disabled.png, 903, 539, 26, 26
-qgn_plat_volume_bar_toolbar_less_button_disabled.png, 726, 540, 26, 26
-qgn_plat_volume_bar_toolbar_more_button_disabled.png, 843, 540, 26, 26
-qgn_plat_volume_bar_horizontal_regular_less_button_disabled.png, 936, 540, 26, 26
-qgn_plat_volume_bar_horizontal_regular_more_button_disabled.png, 1053, 540, 26, 26
-qgn_plat_toolbar_fullscreen_frame_middle.png, 3124, 544, 50, 9
-qgn_plat_volume_bar_vertical_regular_mute_button_normal.png, 1204, 547, 26, 26
-qgn_plat_volume_bar_vertical_regular_mute_button_pressed.png, 1283, 547, 26, 26
-qgn_plat_volume_bar_vertical_regular_mute_button_disabled.png, 1360, 547, 26, 26
-qgn_plat_scroll_vertical_thumb_normal.png, 1668, 547, 22, 22
-qgn_plat_task_navigation_application_switcher_04_normal.png, 3191, 547, 80, 38
-qgn_plat_task_navigation_application_switcher_04_focused.png, 4097, 547, 80, 38
-qgn_plat_task_navigation_application_switcher_04_pressed.png, 4181, 547, 80, 38
-qgn_plat_dialog_button_alone_pressed.png, 1946, 550, 42, 47
-qgn_plat_dialog_button_left_pressed.png, 1996, 550, 42, 47
-qgn_plat_dialog_button_middle_pressed.png, 2046, 550, 42, 47
-qgn_plat_dialog_button_right_pressed.png, 2096, 550, 42, 47
-qgn_plat_toolbar_fullscreen.png, 3124, 553, 50, 40
-qgn_plat_view_button_new_disabled.png, 7496, 555, 30, 30
-qgn_plat_view_button_nsw_disabled.png, 7526, 555, 30, 30
-qgn_plat_view_button_esw_disabled.png, 7556, 555, 30, 30
-qgn_plat_view_button_nes_disabled.png, 7586, 555, 30, 30
-qgn_plat_menu_check_mark_focus.png, 379, 557, 26, 26
-qgn_plat_dialog_frame_corner_bottom_left.png, 2395, 567, 20, 20
-qgn_plat_dialog_frame_tile_bottom.png, 2496, 567, 2, 20
-qgn_plat_dialog_frame_corner_bottom_right.png, 2798, 567, 20, 20
-qgn_plat_volume_bar_horizontal_regular_mute_button_disabled_pressed.png, 903, 577, 26, 26
-qgn_plat_volume_bar_toolbar_mute_button_disabled_pressed.png, 693, 578, 26, 26
-qgn_plat_volume_bar_vertical_regular_mute_button_disabled_pressed.png, 1360, 579, 26, 26
-qgn_plat_task_navigation_application_switcher_05_normal.png, 3191, 585, 80, 58
-qgn_plat_task_navigation_application_switcher_05_focused.png, 4097, 585, 80, 58
-qgn_plat_task_navigation_application_switcher_05_pressed.png, 4181, 585, 80, 58
-qgn_plat_menu_button_radio_normal.png, 379, 586, 26, 26
-qgn_plat_menu_button_radio_disabled.png, 424, 586, 26, 26
-qgn_plat_clock_digital_display_number_1_focused.png, 6318, 590, 16, 30
-qgn_plat_clock_digital_display_number_2_focused.png, 6344, 590, 16, 30
-qgn_plat_clock_digital_display_number_3_focused.png, 6370, 590, 16, 30
-qgn_plat_clock_digital_display_number_4_focused.png, 6396, 590, 16, 30
-qgn_plat_clock_digital_display_number_5_focused.png, 6422, 590, 16, 30
-qgn_plat_clock_digital_display_number_6_focused.png, 6448, 590, 16, 30
-qgn_plat_clock_digital_display_number_7_focused.png, 6474, 590, 16, 30
-qgn_plat_clock_digital_display_number_8_focused.png, 6500, 590, 16, 30
-qgn_plat_clock_digital_display_number_9_focused.png, 6526, 590, 16, 30
-qgn_plat_clock_digital_display_number_0_focused.png, 6552, 590, 16, 30
-qgn_plat_toolbar_fullscreen_frame_bottom.png, 3124, 593, 50, 9
-qgn_plat_dialog_frame_help_button.png, 2779, 603, 32, 32
-qgn_plat_clock_analog_pm.png, 6128, 604, 100, 90
-qgn_plat_dialog_button_alone_disabled.png, 1946, 610, 42, 47
-qgn_plat_dialog_button_left_disabled.png, 1996, 610, 42, 47
-qgn_plat_dialog_button_middle_disabled.png, 2046, 610, 42, 47
-qgn_plat_dialog_button_right_disabled.png, 2096, 610, 42, 47
-qgn_plat_calendar_current_day_indicator.png, 6761, 610, 10, 10
-qgn_plat_menu_button_radio_focus.png, 379, 616, 26, 26
-qgn_plat_arrow_expander_normal.png, 7642, 619, 26, 26
-qgn_plat_arrow_expander_focused.png, 7673, 619, 26, 26
-qgn_plat_arrow_expander_disabled.png, 7704, 619, 26, 26
-qgn_plat_notebook_button_previous.png, 2661, 623, 20, 30
-qgn_plat_notebook_button_next.png, 2712, 623, 20, 30
-qgn_plat_radio_applet_bg.png, 5554, 624, 172, 110
-qgn_plat_column_listbox_header.png, 7501, 624, 6, 21
-qgn_plat_arrow_listbox_header_down.png, 7514, 624, 10, 10
-qgn_plat_arrow_listbox_header_up.png, 7531, 624, 10, 10
-qgn_plat_note_frame_corner_top_left.png, 2946, 625, 20, 20
-qgn_plat_note_frame_tile_top.png, 2966, 625, 2, 20
-qgn_plat_note_frame_corner_top_right.png, 3029, 625, 20, 20
-qgn_plat_notebook_tab_active.png, 2384, 629, 26, 39
-qgn_plat_notebook_tab_passive.png, 2410, 629, 26, 39
-qgn_plat_clock_digital_display_separator.png, 6292, 630, 16, 30
-qgn_plat_clock_digital_display_number_1.png, 6318, 630, 16, 30
-qgn_plat_clock_digital_display_number_2.png, 6344, 630, 16, 30
-qgn_plat_clock_digital_display_number_3.png, 6370, 630, 16, 30
-qgn_plat_clock_digital_display_number_4.png, 6396, 630, 16, 30
-qgn_plat_clock_digital_display_number_5.png, 6422, 630, 16, 30
-qgn_plat_clock_digital_display_number_6.png, 6448, 630, 16, 30
-qgn_plat_clock_digital_display_number_7.png, 6474, 630, 16, 30
-qgn_plat_clock_digital_display_number_8.png, 6500, 630, 16, 30
-qgn_plat_clock_digital_display_number_9.png, 6526, 630, 16, 30
-qgn_plat_clock_digital_display_number_0.png, 6552, 630, 16, 30
-qgn_plat_listbox_arrow_down_normal.png, 7141, 630, 26, 30
-qgn_plat_listbox_arrow_up_normal.png, 7194, 630, 26, 30
-qgn_plat_listbox_border_with_icon_normal.png, 7353, 630, 6, 30
-qgn_plat_button_breadcrumb_normal.png, 6872, 636, 30, 30
-qgn_plat_button_breadcrumb_focused.png, 6923, 636, 30, 30
-qgn_plat_button_breadcrumb_pressed.png, 6973, 636, 30, 30
-qgn_plat_news_applet_bg.png, 5361, 639, 112, 72
-qgn_plat_calendar_active_day_indicator.png, 6762, 640, 4, 4
-qgn_plat_separator_vertical.png, 149, 643, 3, 26
-qgn_plat_toolbar_frame_top.png, 3124, 643, 50, 11
-qgn_plat_separator_vertical_paned.png, 169, 645, 10, 26
-qgn_plat_separator_vertical_paned_thumb.png, 183, 645, 10, 30
-qgn_plat_separator_columnlist_header.png, 201, 645, 10, 30
-qgn_plat_note_frame_tile_left.png, 2946, 645, 20, 2
-qgn_plat_separator_horizontal.png, 113, 647, 26, 3
-qgn_plat_gene_applet_bg.png, 5818, 648, 52, 52
-qgn_plat_arrow_expander_down_normal.png, 7642, 650, 26, 26
-qgn_plat_arrow_expander_down_focused.png, 7673, 650, 26, 26
-qgn_plat_arrow_expander_down_disabled.png, 7704, 650, 26, 26
-qgn_plat_toolbar_find.png, 3124, 654, 50, 40
-qgn_plat_home_search_bg.png, 5749, 655, 42, 42
-qgn_plat_theme_thumbnail.png, 5170, 658, 80, 60
-qgn_plat_toolbar_separator.png, 282, 663, 15, 40
-qgn_plat_focus_left_passive.png, 754, 663, 4, 6
-qgn_plat_focus_middle_passive.png, 758, 663, 2, 6
-qgn_plat_focus_right_passive.png, 760, 663, 4, 6
-qgn_plat_focus_passive.png, 773, 663, 6, 6
-qgn_plat_notebook_button_previous_pressed.png, 2661, 663, 20, 30
-qgn_plat_notebook_button_next_pressed.png, 2712, 663, 20, 30
-qgn_plat_button_voip_normal.png, 3260, 663, 78, 78
-qgn_plat_button_voip_pressed.png, 3361, 663, 78, 78
-qgn_plat_button_voip_focused.png, 3462, 663, 78, 78
-qgn_plat_button_voip_disabled.png, 3563, 663, 78, 78
-qgn_plat_note_frame_tile_right.png, 3029, 665, 20, 2
-qgn_plat_mediaplayer_toolbar_bg.png, 2165, 668, 118, 58
-qgn_plat_listbox_border_with_icon_disabled.png, 7353, 669, 6, 30
-qgn_plat_dialog_button_alone_focused_pressed.png, 1946, 670, 42, 47
-qgn_plat_dialog_button_left_focused_pressed.png, 1996, 670, 42, 47
-qgn_plat_dialog_button_middle_focused_pressed.png, 2046, 670, 42, 47
-qgn_plat_dialog_button_right_focused_pressed.png, 2096, 670, 42, 47
-qgn_plat_listbox_arrow_down_pressed.png, 7141, 670, 26, 30
-qgn_plat_listbox_arrow_up_pressed.png, 7194, 670, 26, 30
-qgn_plat_calendar_week_day_indicator.png, 6762, 671, 6, 6
-qgn_plat_single_line_input.png, 1078, 679, 6, 6
-qgn_plat_multi_line_input.png, 1367, 679, 6, 6
-qgn_plat_scroll_vertical_down_arrow_normal.png, 1518, 679, 22, 26
-qgn_plat_scroll_vertical_down_arrow_disabled.png, 1568, 679, 22, 26
-qgn_plat_scroll_vertical_down_arrow_pressed.png, 1618, 679, 22, 26
-qgn_plat_separator_horizontal_paned.png, 169, 681, 26, 10
-qgn_plat_dialog_frame_help_button_pressed.png, 2779, 683, 32, 32
-qgn_plat_notebook_tab_area_border_arrow_space.png, 2472, 692, 78, 22
-qgn_plat_notebook_tab_area_border.png, 2564, 693, 22, 22
-qgn_plat_toolbar_frame_middle.png, 3124, 694, 50, 10
-qgn_plat_radio_applet_volume_bg.png, 5969, 695, 22, 22
-qgn_plat_separator_horizontal_paned_thumb.png, 169, 697, 30, 10
-qgn_plat_single_line_input_disabled.png, 1078, 699, 6, 6
-qgn_plat_multi_line_input_disabled.png, 1367, 699, 6, 6
-qgn_plat_note_frame_corner_bottom_left.png, 2946, 701, 20, 20
-qgn_plat_note_frame_tile_bottom.png, 2986, 701, 2, 20
-qgn_plat_note_frame_corner_bottom_right.png, 3029, 701, 20, 20
-qgn_plat_notebook_button_previous_disabled.png, 2661, 703, 20, 30
-qgn_plat_notebook_button_next_disabled.png, 2712, 703, 20, 30
-qgn_plat_toolbar.png, 3124, 704, 50, 40
-qgn_plat_application_frame_bottom.png, 3712, 709, 50, 24
-qgn_plat_listbox_arrow_down_disabled.png, 7141, 711, 26, 30
-qgn_plat_listbox_arrow_up_disabled.png, 7194, 711, 26, 30
-qgn_plat_focus_left_active.png, 754, 713, 4, 6
-qgn_plat_focus_middle_active.png, 758, 713, 2, 6
-qgn_plat_focus_right_active.png, 760, 713, 4, 6
-qgn_plat_focus_active.png, 773, 713, 6, 6
-qgn_plat_focus_left_selection.png, 804, 713, 4, 6
-qgn_plat_focus_middle_selection.png, 808, 713, 2, 6
-qgn_plat_focus_right_selection.png, 810, 713, 4, 6
-qgn_plat_focus_selection.png, 823, 713, 6, 6
-qgn_plat_application_call_handling_block_active.png, 7515, 719, 26, 26
-qgn_plat_application_call_handling_frame_block.png, 7580, 719, 26, 26
-qgn_plat_header_hide_pressed.png, 6859, 724, 25, 30
-qgn_plat_header_show_pressed.png, 6889, 724, 25, 30
-qgn_plat_header_hide.png, 6919, 724, 25, 30
-qgn_plat_header_show.png, 6949, 724, 25, 30
-qgn_plat_toolbar_frame_bottom.png, 3124, 744, 50, 9
+qgn_plat_view_button.png=7496,55,30,30
+qgn_plat_view_button_w.png=7526,55,30,30
+qgn_plat_view_button_n.png=7556,55,30,30
+qgn_plat_view_button_e.png=7586,55,30,30
+qgn_plat_view_button_s.png=7616,55,30,30
+qgn_plat_view_button_nesw.png=7646,55,30,30
+qgn_plat_arrow_up_normal.png=2656,59,26,26
+qgn_plat_cpa_screen_calib_target_passive.png=6826,60,59,59
+qgn_plat_cpa_screen_calib_target_active.png=6926,60,59,59
+qgn_plat_check_box_selected_normal.png=47,65,26,26
+qgn_plat_check_box_empty_normal.png=95,65,26,26
+qgn_plat_check_box_indeterminate_normal.png=145,65,26,26
+qgn_plat_status_bar_second_level_background.png=4311,71,280,50
+qgn_plat_inputmet_button_key_normal.png=6290,77,12,35
+qgn_plat_inputmet_button_side_normal.png=6369,77,10,35
+qgn_plat_inputmet_button_side_close_normal.png=6399,77,10,35
+qgn_plat_inputmet_button_keyboard_word_compl_normal.png=6455,77,12,35
+qgn_plat_inputmet_tab_special_character_normal.png=6514,77,12,35
+qgn_plat_seek_bar_regular_shaft_left_normal.png=958,78,6,58
+qgn_plat_seek_bar_regular_thumb_normal.png=989,78,23,58
+qgn_plat_seek_bar_regular_shaft_stream_normal.png=1013,78,4,58
+qgn_plat_seek_bar_regular_shaft_right_normal.png=1027,78,6,58
+qgn_plat_seek_bar_regular_shaft_stream_finished_normal.png=1096,78,4,58
+qgn_plat_control_bar_less_normal.png=476,79,26,30
+qgn_plat_control_bar_more_normal.png=719,79,26,30
+qgn_plat_listbox_border_with_icon_find_normal.png=2059,79,37,30
+qgn_plat_status_bar_pressed.png=4679,79,40,50
+qgn_plat_arrow_left_normal.png=2630,84,26,26
+qgn_plat_arrow_right_normal.png=2682,84,26,26
+qgn_plat_status_bar_background.png=3618,85,280,40
+qgn_plat_view_button_nw.png=7496,85,30,30
+qgn_plat_view_button_ne.png=7526,85,30,30
+qgn_plat_view_button_es.png=7556,85,30,30
+qgn_plat_view_button_sw.png=7586,85,30,30
+qgn_plat_view_button_ns.png=7616,85,30,30
+qgn_plat_view_button_ew.png=7646,85,30,30
+qgn_plat_seek_bar_toolbar_shaft_left_normal.png=831,87,6,40
+qgn_plat_seek_bar_toolbar_thumb_normal.png=844,87,23,40
+qgn_plat_seek_bar_toolbar_shaft_stream_normal.png=868,87,4,40
+qgn_plat_seek_bar_toolbar_shaft_right_normal.png=874,87,6,40
+qgn_plat_seek_bar_toolbar_shaft_stream_finished_normal.png=1116,87,4,40
+qgn_plat_inputmet_pane_border.png=6174,87,6,6
+qgn_plat_seek_bar_toolbar_backward_button_normal.png=797,94,26,26
+qgn_plat_seek_bar_toolbar_forward_button_normal.png=888,94,26,26
+qgn_plat_seek_bar_regular_backward_button_normal.png=924,94,26,26
+qgn_plat_seek_bar_regular_forward_button_normal.png=1041,94,26,26
+qgn_plat_arrow_down_normal.png=2656,108,26,26
+qgn_plat_scroll_horizontal_left_arrow_normal.png=1306,111,26,22
+qgn_plat_scroll_horizontal_shaft_normal.png=1741,111,2,22
+qgn_plat_scroll_horizontal_right_arrow_normal.png=1930,111,26,22
+qgn_plat_view_button_new.png=7496,115,30,30
+qgn_plat_view_button_nsw.png=7526,115,30,30
+qgn_plat_view_button_esw.png=7556,115,30,30
+qgn_plat_view_button_nes.png=7586,115,30,30
+qgn_plat_inputmet_button_key_pressed.png=6290,117,12,35
+qgn_plat_inputmet_button_key_latched.png=6320,117,12,35
+qgn_plat_inputmet_button_side_pressed.png=6369,117,10,35
+qgn_plat_inputmet_button_side_close_pressed.png=6399,117,10,35
+qgn_plat_inputmet_button_keyboard_word_compl_pressed.png=6455,117,12,35
+qgn_plat_inputmet_tab_special_character_selected.png=6514,117,12,35
+qgn_plat_weekday_picker_normal.png=289,124,6,30
+qgn_plat_weekday_picker_selected.png=335,124,6,30
+qgn_plat_weekday_picker_pressed.png=381,124,6,30
+qgn_plat_check_box_selected_focused.png=47,125,26,26
+qgn_plat_check_box_empty_focused.png=95,125,26,26
+qgn_plat_check_box_indeterminate_focused.png=145,125,26,26
+qgn_plat_menu_next_level_arrow_normal.png=2364,128,20,30
+qgn_plat_seek_bar_toolbar_background_normal.png=786,130,42,40
+qgn_plat_seek_bar_toolbar_background_disabled.png=834,130,42,40
+qgn_plat_menu_scroll_down_arrow_normal.png=2162,130,26,26
+qgn_plat_menu_scroll_up_arrow_normal.png=2262,130,26,26
+qgn_plat_control_bar_border.png=583,139,6,30
+qgn_plat_control_bar_less_pressed.png=476,140,26,30
+qgn_plat_control_bar_more_pressed.png=719,140,26,30
+qgn_plat_control_bar_block_passive.png=656,145,6,22
+qgn_plat_arrow_up_pressed.png=2656,145,26,26
+qgn_plat_control_bar_block_active.png=627,146,6,22
+qgn_plat_screen_calibration.png=6651,153,800,80
+qgn_plat_seek_bar_regular_background_disabled.png=1086,156,42,58
+qgn_plat_inputmet_button_key_disabled.png=6290,157,12,35
+qgn_plat_inputmet_button_side_disabled.png=6369,157,10,35
+qgn_plat_inputmet_button_keyboard_word_compl_prefix_normal.png=6455,157,12,35
+qgn_plat_scroll_horizontal_left_arrow_disabled.png=1306,161,26,22
+qgn_plat_scroll_horizontal_shaft_disabled.png=1741,161,2,22
+qgn_plat_scroll_horizontal_right_arrow_disabled.png=1930,161,26,22
+qgn_plat_seek_bar_regular_background_normal.png=880,163,42,58
+qgn_plat_task_navigation_button_01_normal.png=3191,163,80,90
+qgn_plat_application_status_bar_background.png=3271,163,720,60
+qgn_plat_task_navigation_button_01_focused.png=4097,163,80,90
+qgn_plat_task_navigation_button_01_pressed.png=4181,163,80,90
+qgn_plat_home_status_bar_background.png=5250,163,720,60
+qgn_plat_view_button_focused.png=7496,165,30,30
+qgn_plat_view_button_w_focused.png=7526,165,30,30
+qgn_plat_view_button_n_focused.png=7556,165,30,30
+qgn_plat_view_button_e_focused.png=7586,165,30,30
+qgn_plat_view_button_s_focused.png=7616,165,30,30
+qgn_plat_view_button_nesw_focused.png=7646,165,30,30
+qgn_plat_menu_next_level_arrow_pressed.png=2364,168,20,30
+qgn_plat_menu_scroll_down_arrow_pressed.png=2162,170,26,26
+qgn_plat_menu_scroll_up_arrow_pressed.png=2262,170,26,26
+qgn_plat_arrow_left_pressed.png=2630,170,26,26
+qgn_plat_arrow_right_pressed.png=2682,170,26,26
+qgn_plat_seek_bar_toolbar_backward_button_pressed.png=804,174,26,26
+qgn_plat_seek_bar_toolbar_forward_button_pressed.png=848,174,26,26
+qgn_plat_seek_bar_regular_backward_button_pressed.png=924,174,26,26
+qgn_plat_seek_bar_regular_forward_button_pressed.png=1041,174,26,26
+qgn_plat_inputmet_buffer_zone_left.png=6526,178,24,27
+qgn_plat_inputmet_buffer_zone_top.png=6553,178,2,10
+qgn_plat_check_box_selected_disabled.png=47,185,26,26
+qgn_plat_check_box_empty_disabled.png=95,185,26,26
+qgn_plat_check_box_indeterminate_disabled.png=145,185,26,26
+qgn_plat_arrow_down_pressed.png=2656,194,26,26
+qgn_plat_view_button_nw_focused.png=7496,195,30,30
+qgn_plat_view_button_ne_focused.png=7526,195,30,30
+qgn_plat_view_button_es_focused.png=7556,195,30,30
+qgn_plat_view_button_sw_focused.png=7586,195,30,30
+qgn_plat_view_button_ns_focused.png=7616,195,30,30
+qgn_plat_view_button_ew_focused.png=7646,195,30,30
+qgn_plat_inputmet_button_key_accent_normal.png=6290,197,12,35
+qgn_plat_inputmet_button_side_latched.png=6369,197,10,35
+qgn_plat_control_bar_less_disabled.png=476,199,26,30
+qgn_plat_control_bar_border_disabled.png=583,199,6,30
+qgn_plat_control_bar_more_disabled.png=719,199,26,30
+qgn_plat_control_bar_block_active_disabled.png=627,205,6,22
+qgn_plat_control_bar_block_passive_disabled.png=656,205,6,22
+qgn_plat_menu_next_level_arrow_disabled.png=2364,209,20,30
+qgn_plat_scroll_horizontal_left_arrow_pressed.png=1306,211,26,22
+qgn_plat_scroll_horizontal_right_arrow_pressed.png=1930,211,26,22
+qgn_plat_menu_scroll_down_arrow_disabled.png=2162,211,26,26
+qgn_plat_menu_scroll_up_arrow_disabled.png=2262,211,26,26
+qgn_plat_application_frame_left.png=4261,223,24,2
+qgn_plat_application_frame_right.png=4957,223,24,2
+qgn_plat_home_border_left.png=5250,223,10,2
+qgn_plat_application_voip_background.png=3296,225,672,396
+qgn_plat_view_button_new_focused.png=7496,225,30,30
+qgn_plat_view_button_nsw_focused.png=7526,225,30,30
+qgn_plat_view_button_esw_focused.png=7556,225,30,30
+qgn_plat_view_button_nes_focused.png=7586,225,30,30
+qgn_plat_arrow_up_disabled.png=2656,231,26,26
+qgn_plat_application_chat_background.png=4280,232,672,396
+qgn_plat_seek_bar_regular_shaft_left_disabled.png=958,238,6,58
+qgn_plat_seek_bar_regular_thumb_disabled.png=989,238,23,58
+qgn_plat_seek_bar_regular_shaft_stream_disabled.png=1013,238,4,58
+qgn_plat_seek_bar_regular_shaft_right_disabled.png=1027,238,6,58
+qgn_plat_seek_bar_regular_shaft_stream_finished_disabled.png=1096,238,4,58
+qgn_plat_seek_bar_toolbar_shaft_left_disabled.png=831,247,6,40
+qgn_plat_seek_bar_toolbar_thumb_disabled.png=844,247,23,40
+qgn_plat_seek_bar_toolbar_shaft_stream_disabled.png=868,247,4,40
+qgn_plat_seek_bar_toolbar_shaft_right_disabled.png=874,247,6,40
+qgn_plat_seek_bar_toolbar_shaft_stream_finished_disabled.png=1116,247,4,40
+qgn_plat_progress_bar_border.png=300,253,10,30
+qgn_plat_task_navigation_button_02_normal.png=3191,253,80,90
+qgn_plat_task_navigation_button_02_focused.png=4097,253,80,90
+qgn_plat_task_navigation_button_02_pressed.png=4181,253,80,90
+qgn_plat_seek_bar_toolbar_backward_button_disabled.png=797,254,26,26
+qgn_plat_seek_bar_toolbar_forward_button_disabled.png=888,254,26,26
+qgn_plat_seek_bar_regular_backward_button_disabled.png=924,254,26,26
+qgn_plat_seek_bar_regular_forward_button_disabled.png=1041,254,26,26
+qgn_plat_progress_bar_gradient.png=320,256,1,24
+qgn_plat_arrow_left_disabled.png=2630,256,26,26
+qgn_plat_arrow_right_disabled.png=2682,256,26,26
+qgn_plat_listbox_border_with_icon_find_disabled.png=2059,259,37,30
+qgn_plat_scroll_horizontal_thumb_normal.png=1709,261,22,22
+qgn_plat_scroll_horizontal_thumb_disabled.png=1739,261,22,22
+qgn_plat_application_menu_1st_level_frame.png=2874,264,42,42
+qgn_plat_application_menu_lower_level_frame.png=2936,264,42,42
+qgn_plat_task_navigation_menu_frame.png=2996,264,42,42
+qgn_plat_view_button_pressed_focused.png=7496,275,30,30
+qgn_plat_view_button_w_pressed_focused.png=7526,275,30,30
+qgn_plat_view_button_n_pressed_focused.png=7556,275,30,30
+qgn_plat_view_button_e_pressed_focused.png=7586,275,30,30
+qgn_plat_view_button_s_pressed_focused.png=7616,275,30,30
+qgn_plat_view_button_nesw_pressed_focused.png=7646,275,30,30
+qgn_plat_arrow_down_disabled.png=2656,280,26,26
+qgn_plat_button_radio_selected_normal.png=47,294,26,26
+qgn_plat_button_radio_empty_normal.png=155,294,26,26
+qgn_plat_thumb_menu_scroll_up_arrow_normal.png=6519,302,58,58
+qgn_plat_thumb_menu_scroll_down_arrow_normal.png=6450,303,58,58
+qgn_plat_inputmet_thumb_button_backspace_normal.png=6919,305,42,128
+qgn_plat_inputmet_thumb_button_commom_normal.png=7021,305,42,80
+qgn_plat_inputmet_thumb_button_key_normal.png=7120,305,42,87
+qgn_plat_inputmet_thumb_button_key_accent_normal.png=7189,305,42,87
+qgn_plat_inputmet_thumb_tab_normal.png=7296,305,42,87
+qgn_plat_inputmet_thumb_button_extra_normal.png=7359,305,42,87
+qgn_plat_inputmet_thumb_button_key_space_normal.png=7414,305,42,87
+qgn_plat_view_button_nw_pressed_focused.png=7496,305,30,30
+qgn_plat_view_button_ne_pressed_focused.png=7526,305,30,30
+qgn_plat_view_button_es_pressed_focused.png=7556,305,30,30
+qgn_plat_view_button_sw_pressed_focused.png=7586,305,30,30
+qgn_plat_view_button_ns_pressed_focused.png=7616,305,30,30
+qgn_plat_view_button_ew_pressed_focused.png=7646,305,30,30
+qgn_plat_application_installer_image.png=5629,309,250,250
+qgn_plat_combobox_button_normal.png=6708,314,26,30
+qgn_plat_view_button_new_pressed_focused.png=7496,335,30,30
+qgn_plat_view_button_nsw_pressed_focused.png=7526,335,30,30
+qgn_plat_view_button_esw_pressed_focused.png=7556,335,30,30
+qgn_plat_view_button_nes_pressed_focused.png=7586,335,30,30
+qgn_plat_task_navigation_button_03_normal.png=3191,343,80,90
+qgn_plat_task_navigation_button_03_focused.png=4097,343,80,90
+qgn_plat_task_navigation_button_03_pressed.png=4181,343,80,90
+qgn_plat_clock_analog_plain.png=6128,344,100,90
+qgn_plat_clock_digital_background.png=6243,344,100,90
+qgn_plat_button_radio_selected_focused.png=47,354,26,26
+qgn_plat_button_radio_empty_focused.png=155,354,26,26
+qgn_plat_combobox_frame_normal.png=6696,354,6,30
+qgn_plat_combobox_button_pressed.png=6708,354,26,30
+qgn_plat_volume_bar_horizontal_regular_shaft_left_normal.png=970,364,6,58
+qgn_plat_volume_bar_horizontal_regular_thumb_normal.png=1001,364,23,58
+qgn_plat_volume_bar_horizontal_regular_shaft_right_normal.png=1039,364,6,58
+qgn_plat_toolbar_menu_button_normal.png=5128,369,20,40
+qgn_plat_tool_tip.png=1756,370,42,42
+qgn_plat_scroll_vertical_up_arrow_normal.png=1518,372,22,26
+qgn_plat_scroll_vertical_up_arrow_disabled.png=1568,372,22,26
+qgn_plat_scroll_vertical_up_arrow_pressed.png=1618,372,22,26
+qgn_plat_volume_bar_toolbar_shaft_left_normal.png=760,373,6,40
+qgn_plat_volume_bar_toolbar_thumb_normal.png=786,373,23,40
+qgn_plat_volume_bar_toolbar_shaft_right_normal.png=829,373,6,40
+qgn_plat_thumb_menu_scroll_down_arrow_pressed.png=6450,375,58,58
+qgn_plat_thumb_menu_scroll_up_arrow_pressed.png=6519,375,58,58
+qgn_plat_volume_bar_toolbar_mute_button_normal.png=693,379,26,26
+qgn_plat_volume_bar_horizontal_regular_mute_button_normal.png=903,379,26,26
+qgn_plat_volume_bar_toolbar_less_button_normal.png=726,380,26,26
+qgn_plat_volume_bar_toolbar_more_button_normal.png=843,380,26,26
+qgn_plat_volume_bar_horizontal_regular_less_button_normal.png=936,380,26,26
+qgn_plat_volume_bar_horizontal_regular_more_button_normal.png=1053,380,26,26
+qgn_plat_infoprint_frame_corner_top_left.png=2946,385,20,20
+qgn_plat_infoprint_frame_tile_top.png=2966,385,2,20
+qgn_plat_infoprint_frame_corner_top_right.png=3029,385,20,20
+qgn_plat_view_button_pressed.png=7496,385,30,30
+qgn_plat_view_button_w_pressed.png=7526,385,30,30
+qgn_plat_view_button_n_pressed.png=7556,385,30,30
+qgn_plat_view_button_e_pressed.png=7586,385,30,30
+qgn_plat_view_button_s_pressed.png=7616,385,30,30
+qgn_plat_view_button_nesw_pressed.png=7646,385,30,30
+qgn_plat_combobox_frame_disabled.png=6696,394,6,30
+qgn_plat_combobox_button_disabled.png=6708,394,26,30
+qgn_plat_number_editor_less_normal.png=554,395,30,30
+qgn_plat_number_editor_more_normal.png=607,395,30,30
+qgn_plat_dialog_frame_corner_top_left.png=2395,395,51,51
+qgn_plat_dialog_frame_tile_top.png=2496,395,2,51
+qgn_plat_dialog_frame_corner_top_right.png=2767,395,51,51
+qgn_plat_inputmet_thumb_button_common_pressed.png=7021,396,42,80
+qgn_plat_inputmet_thumb_button_key_pressed.png=7120,396,42,87
+qgn_plat_inputmet_thumb_button_key_latched.png=7189,396,42,87
+qgn_plat_inputmet_thumb_tab_selected.png=7296,396,42,87
+qgn_plat_inputmet_thumb_button_extra_pressed.png=7359,396,42,87
+qgn_plat_inputmet_thumb_button_key_space_pressed.png=7414,396,42,87
+qgn_plat_volume_bar_vertical_regular_more_button_normal.png=1203,399,26,26
+qgn_plat_volume_bar_vertical_regular_more_button_pressed.png=1283,399,26,26
+qgn_plat_volume_bar_vertical_regular_more_button_disabled.png=1360,399,26,26
+qgn_plat_button_minimize_normal.png=287,402,40,40
+qgn_plat_button_close_normal.png=327,402,40,40
+qgn_plat_button_minimize_pressed.png=399,402,40,40
+qgn_plat_button_close_pressed.png=439,402,40,40
+qgn_plat_infoprint_frame_tile_left.png=2946,405,20,2
+qgn_plat_volume_bar_toolbar_background_normal.png=843,413,42,40
+qgn_plat_button_radio_selected_disabled.png=47,414,26,26
+qgn_plat_button_radio_empty_disabled.png=155,414,26,26
+qgn_plat_view_button_nw_pressed.png=7496,415,30,30
+qgn_plat_view_button_ne_pressed.png=7526,415,30,30
+qgn_plat_view_button_es_pressed.png=7556,415,30,30
+qgn_plat_view_button_sw_pressed.png=7586,415,30,30
+qgn_plat_view_button_ns_pressed.png=7616,415,30,30
+qgn_plat_view_button_ew_pressed.png=7646,415,30,30
+qgn_plat_scroll_vertical_shaft_normal.png=1518,416,22,2
+qgn_plat_scroll_vertical_shaft_disabled.png=1568,416,22,2
+qgn_plat_toolbar_menu_button_pressed.png=5128,420,20,40
+qgn_plat_infoprint_frame_tile_right.png=3029,425,20,2
+qgn_plat_volume_bar_vertical_regular_background_normal.png=1261,429,58,42
+qgn_plat_dialog_button_alone_normal.png=1946,430,42,47
+qgn_plat_dialog_button_left_normal.png=1996,430,42,47
+qgn_plat_dialog_button_middle_normal.png=2046,430,42,47
+qgn_plat_dialog_button_right_normal.png=2096,430,42,47
+qgn_plat_volume_bar_vertical_regular_shaft_top_normal.png=1187,431,58,6
+qgn_plat_volume_bar_vertical_regular_shaft_top_disabled.png=1344,431,58,6
+qgn_plat_task_navigation_application_switcher_01_normal.png=3191,433,80,38
+qgn_plat_task_navigation_application_switcher_01_focused.png=4097,433,80,38
+qgn_plat_task_navigation_application_switcher_01_pressed.png=4181,433,80,38
+qgn_plat_mediaplayer_buttons_bg.png=2164,435,112,226
+qgn_plat_volume_bar_horizontal_regular_background_disabled.png=754,442,42,58
+qgn_plat_volume_bar_horizontal_regular_background_normal.png=796,442,42,58
+qgn_plat_thumb_menu_scroll_down_arrow_disabled.png=6450,444,58,58
+qgn_plat_thumb_menu_scroll_up_arrow_disabled.png=6519,444,58,58
+qgn_plat_view_button_new_pressed.png=7496,445,30,30
+qgn_plat_view_button_nsw_pressed.png=7526,445,30,30
+qgn_plat_view_button_esw_pressed.png=7556,445,30,30
+qgn_plat_view_button_nes_pressed.png=7586,445,30,30
+qgn_plat_dialog_frame_tile_left.png=2395,447,10,2
+qgn_plat_dialog_frame_tile_right.png=2808,449,10,2
+qgn_plat_inputmet_thumb_button_backspace_pressed.png=6919,453,42,128
+qgn_plat_volume_bar_vertical_regular_thumb_normal.png=1187,454,58,23
+qgn_plat_volume_bar_vertical_regular_thumb_disabled.png=1344,454,58,23
+qgn_plat_number_editor_less_pressed.png=554,455,30,30
+qgn_plat_number_editor_more_pressed.png=607,455,30,30
+qgn_plat_volume_bar_toolbar_mute_button_pressed.png=693,459,26,26
+qgn_plat_volume_bar_horizontal_regular_mute_button_pressed.png=903,459,26,26
+qgn_plat_volume_bar_toolbar_less_button_pressed.png=726,460,26,26
+qgn_plat_volume_bar_toolbar_more_button_pressed.png=843,460,26,26
+qgn_plat_volume_bar_horizontal_regular_less_button_pressed.png=936,460,26,26
+qgn_plat_volume_bar_horizontal_regular_more_button_pressed.png=1053,460,26,26
+qgn_plat_infoprint_frame_corner_bottom_left.png=2946,461,20,20
+qgn_plat_infoprint_frame_tile_bottom.png=2986,461,2,20
+qgn_plat_infoprint_frame_corner_bottom_right.png=3029,461,20,20
+qgn_plat_volume_bar_vertical_regular_background_disabled.png=1261,471,58,42
+qgn_plat_task_navigation_application_switcher_02_normal.png=3191,471,80,38
+qgn_plat_task_navigation_application_switcher_02_focused.png=4097,471,80,38
+qgn_plat_task_navigation_application_switcher_02_pressed.png=4181,471,80,38
+qgn_plat_toolbar_menu_button_latched.png=5128,471,20,40
+qgn_plat_clock_analog_am.png=6128,474,100,90
+qgn_plat_dialog_button_alone_focused.png=1946,490,42,47
+qgn_plat_dialog_button_left_focused.png=1996,490,42,47
+qgn_plat_dialog_button_middle_focused.png=2046,490,42,47
+qgn_plat_dialog_button_right_focused.png=2096,490,42,47
+qgn_plat_volume_bar_toolbar_background_disabled.png=843,491,42,40
+qgn_plat_toolbar_fullscreen_frame_top.png=3124,493,50,9
+qgn_plat_inputmet_thumb_button_key_disabled.png=7120,494,42,87
+qgn_plat_view_button_disabled.png=7496,495,30,30
+qgn_plat_view_button_w_disabled.png=7526,495,30,30
+qgn_plat_view_button_n_disabled.png=7556,495,30,30
+qgn_plat_view_button_e_disabled.png=7586,495,30,30
+qgn_plat_view_button_s_disabled.png=7616,495,30,30
+qgn_plat_view_button_nesw_disabled.png=7646,495,30,30
+qgn_plat_inputmet_thumb_button_extra_disabled.png=7359,497,42,87
+qgn_plat_inputmet_thumb_button_key_space_disabled.png=7414,497,42,87
+qgn_plat_volume_bar_vertical_regular_shaft_bottom_normal.png=1187,500,58,6
+qgn_plat_volume_bar_vertical_regular_shaft_bottom_disabled.png=1344,500,58,6
+qgn_plat_frame.png=6683,501,8,8
+qgn_plat_frame_disabled.png=6733,501,8,8
+qgn_plat_inputmet_thumb_button_common_disabled.png=7021,501,42,80
+qgn_plat_clock_digital_label_am.png=6279,502,30,20
+qgn_plat_clock_digital_label_am_focused.png=6378,503,30,20
+qgn_plat_toolbar_fullscreen_find.png=3124,504,50,40
+qgn_plat_task_navigation_application_switcher_03_normal.png=3191,509,80,38
+qgn_plat_task_navigation_application_switcher_03_focused.png=4097,509,80,38
+qgn_plat_task_navigation_application_switcher_03_pressed.png=4181,509,80,38
+qgn_plat_toolbar_button_normal.png=47,513,48,40
+qgn_plat_toolbar_button_pressed.png=108,513,48,40
+qgn_plat_toolbar_button_selected.png=168,513,48,40
+qgn_plat_toolbar_button_disabled.png=228,513,48,40
+qgn_plat_volume_bar_vertical_regular_less_button_normal.png=1203,514,26,26
+qgn_plat_volume_bar_vertical_regular_less_button_pressed.png=1283,514,26,26
+qgn_plat_volume_bar_vertical_regular_less_button_disabled.png=1360,514,26,26
+qgn_plat_number_editor_less_disabled.png=554,515,30,30
+qgn_plat_number_editor_more_disabled.png=607,515,30,30
+qgn_plat_scroll_vertical_thumb_disabled.png=1668,521,22,22
+qgn_plat_toolbar_menu_button_disabled.png=5128,521,20,40
+qgn_plat_volume_bar_horizontal_regular_shaft_left_disabled.png=970,524,6,58
+qgn_plat_volume_bar_horizontal_regular_thumb_disabled.png=1001,524,23,58
+qgn_plat_volume_bar_horizontal_regular_shaft_right_disabled.png=1039,524,6,58
+qgn_plat_view_button_nw_disabled.png=7496,525,30,30
+qgn_plat_view_button_ne_disabled.png=7526,525,30,30
+qgn_plat_view_button_es_disabled.png=7556,525,30,30
+qgn_plat_view_button_sw_disabled.png=7586,525,30,30
+qgn_plat_view_button_ns_disabled.png=7616,525,30,30
+qgn_plat_view_button_ew_disabled.png=7646,525,30,30
+qgn_plat_menu_check_mark_normal.png=379,527,26,26
+qgn_plat_menu_check_mark_disabled.png=424,527,26,26
+qgn_plat_clock_digital_label_pm.png=6279,530,30,20
+qgn_plat_clock_digital_label_pm_focused.png=6378,531,30,20
+qgn_plat_volume_bar_toolbar_shaft_left_disabled.png=760,533,6,40
+qgn_plat_volume_bar_toolbar_thumb_disabled.png=786,533,23,40
+qgn_plat_volume_bar_toolbar_shaft_right_disabled.png=829,533,6,40
+qgn_plat_volume_bar_toolbar_mute_button_disabled.png=693,539,26,26
+qgn_plat_volume_bar_horizontal_regular_mute_button_disabled.png=903,539,26,26
+qgn_plat_volume_bar_toolbar_less_button_disabled.png=726,540,26,26
+qgn_plat_volume_bar_toolbar_more_button_disabled.png=843,540,26,26
+qgn_plat_volume_bar_horizontal_regular_less_button_disabled.png=936,540,26,26
+qgn_plat_volume_bar_horizontal_regular_more_button_disabled.png=1053,540,26,26
+qgn_plat_toolbar_fullscreen_frame_middle.png=3124,544,50,9
+qgn_plat_volume_bar_vertical_regular_mute_button_normal.png=1204,547,26,26
+qgn_plat_volume_bar_vertical_regular_mute_button_pressed.png=1283,547,26,26
+qgn_plat_volume_bar_vertical_regular_mute_button_disabled.png=1360,547,26,26
+qgn_plat_scroll_vertical_thumb_normal.png=1668,547,22,22
+qgn_plat_task_navigation_application_switcher_04_normal.png=3191,547,80,38
+qgn_plat_task_navigation_application_switcher_04_focused.png=4097,547,80,38
+qgn_plat_task_navigation_application_switcher_04_pressed.png=4181,547,80,38
+qgn_plat_dialog_button_alone_pressed.png=1946,550,42,47
+qgn_plat_dialog_button_left_pressed.png=1996,550,42,47
+qgn_plat_dialog_button_middle_pressed.png=2046,550,42,47
+qgn_plat_dialog_button_right_pressed.png=2096,550,42,47
+qgn_plat_toolbar_fullscreen.png=3124,553,50,40
+qgn_plat_view_button_new_disabled.png=7496,555,30,30
+qgn_plat_view_button_nsw_disabled.png=7526,555,30,30
+qgn_plat_view_button_esw_disabled.png=7556,555,30,30
+qgn_plat_view_button_nes_disabled.png=7586,555,30,30
+qgn_plat_menu_check_mark_focus.png=379,557,26,26
+qgn_plat_dialog_frame_corner_bottom_left.png=2395,567,20,20
+qgn_plat_dialog_frame_tile_bottom.png=2496,567,2,20
+qgn_plat_dialog_frame_corner_bottom_right.png=2798,567,20,20
+qgn_plat_volume_bar_horizontal_regular_mute_button_disabled_pressed.png=903,577,26,26
+qgn_plat_volume_bar_toolbar_mute_button_disabled_pressed.png=693,578,26,26
+qgn_plat_volume_bar_vertical_regular_mute_button_disabled_pressed.png=1360,579,26,26
+qgn_plat_task_navigation_application_switcher_05_normal.png=3191,585,80,58
+qgn_plat_task_navigation_application_switcher_05_focused.png=4097,585,80,58
+qgn_plat_task_navigation_application_switcher_05_pressed.png=4181,585,80,58
+qgn_plat_menu_button_radio_normal.png=379,586,26,26
+qgn_plat_menu_button_radio_disabled.png=424,586,26,26
+qgn_plat_clock_digital_display_number_1_focused.png=6318,590,16,30
+qgn_plat_clock_digital_display_number_2_focused.png=6344,590,16,30
+qgn_plat_clock_digital_display_number_3_focused.png=6370,590,16,30
+qgn_plat_clock_digital_display_number_4_focused.png=6396,590,16,30
+qgn_plat_clock_digital_display_number_5_focused.png=6422,590,16,30
+qgn_plat_clock_digital_display_number_6_focused.png=6448,590,16,30
+qgn_plat_clock_digital_display_number_7_focused.png=6474,590,16,30
+qgn_plat_clock_digital_display_number_8_focused.png=6500,590,16,30
+qgn_plat_clock_digital_display_number_9_focused.png=6526,590,16,30
+qgn_plat_clock_digital_display_number_0_focused.png=6552,590,16,30
+qgn_plat_toolbar_fullscreen_frame_bottom.png=3124,593,50,9
+qgn_plat_dialog_frame_help_button.png=2779,603,32,32
+qgn_plat_clock_analog_pm.png=6128,604,100,90
+qgn_plat_dialog_button_alone_disabled.png=1946,610,42,47
+qgn_plat_dialog_button_left_disabled.png=1996,610,42,47
+qgn_plat_dialog_button_middle_disabled.png=2046,610,42,47
+qgn_plat_dialog_button_right_disabled.png=2096,610,42,47
+qgn_plat_calendar_current_day_indicator.png=6761,610,10,10
+qgn_plat_menu_button_radio_focus.png=379,616,26,26
+qgn_plat_arrow_expander_normal.png=7642,619,26,26
+qgn_plat_arrow_expander_focused.png=7673,619,26,26
+qgn_plat_arrow_expander_disabled.png=7704,619,26,26
+qgn_plat_notebook_button_previous.png=2661,623,20,30
+qgn_plat_notebook_button_next.png=2712,623,20,30
+qgn_plat_radio_applet_bg.png=5554,624,172,110
+qgn_plat_column_listbox_header.png=7501,624,6,21
+qgn_plat_arrow_listbox_header_down.png=7514,624,10,10
+qgn_plat_arrow_listbox_header_up.png=7531,624,10,10
+qgn_plat_note_frame_corner_top_left.png=2946,625,20,20
+qgn_plat_note_frame_tile_top.png=2966,625,2,20
+qgn_plat_note_frame_corner_top_right.png=3029,625,20,20
+qgn_plat_notebook_tab_active.png=2384,629,26,39
+qgn_plat_notebook_tab_passive.png=2410,629,26,39
+qgn_plat_clock_digital_display_separator.png=6292,630,16,30
+qgn_plat_clock_digital_display_number_1.png=6318,630,16,30
+qgn_plat_clock_digital_display_number_2.png=6344,630,16,30
+qgn_plat_clock_digital_display_number_3.png=6370,630,16,30
+qgn_plat_clock_digital_display_number_4.png=6396,630,16,30
+qgn_plat_clock_digital_display_number_5.png=6422,630,16,30
+qgn_plat_clock_digital_display_number_6.png=6448,630,16,30
+qgn_plat_clock_digital_display_number_7.png=6474,630,16,30
+qgn_plat_clock_digital_display_number_8.png=6500,630,16,30
+qgn_plat_clock_digital_display_number_9.png=6526,630,16,30
+qgn_plat_clock_digital_display_number_0.png=6552,630,16,30
+qgn_plat_listbox_arrow_down_normal.png=7141,630,26,30
+qgn_plat_listbox_arrow_up_normal.png=7194,630,26,30
+qgn_plat_listbox_border_with_icon_normal.png=7353,630,6,30
+qgn_plat_button_breadcrumb_normal.png=6872,636,30,30
+qgn_plat_button_breadcrumb_focused.png=6923,636,30,30
+qgn_plat_button_breadcrumb_pressed.png=6973,636,30,30
+qgn_plat_news_applet_bg.png=5361,639,112,72
+qgn_plat_calendar_active_day_indicator.png=6762,640,4,4
+qgn_plat_separator_vertical.png=149,643,3,26
+qgn_plat_toolbar_frame_top.png=3124,643,50,11
+qgn_plat_separator_vertical_paned.png=169,645,10,26
+qgn_plat_separator_vertical_paned_thumb.png=183,645,10,30
+qgn_plat_separator_columnlist_header.png=201,645,10,30
+qgn_plat_note_frame_tile_left.png=2946,645,20,2
+qgn_plat_separator_horizontal.png=113,647,26,3
+qgn_plat_gene_applet_bg.png=5818,648,52,52
+qgn_plat_arrow_expander_down_normal.png=7642,650,26,26
+qgn_plat_arrow_expander_down_focused.png=7673,650,26,26
+qgn_plat_arrow_expander_down_disabled.png=7704,650,26,26
+qgn_plat_toolbar_find.png=3124,654,50,40
+qgn_plat_home_search_bg.png=5749,655,42,42
+qgn_plat_theme_thumbnail.png=5170,658,80,60
+qgn_plat_toolbar_separator.png=282,663,15,40
+qgn_plat_focus_left_passive.png=754,663,4,6
+qgn_plat_focus_middle_passive.png=758,663,2,6
+qgn_plat_focus_right_passive.png=760,663,4,6
+qgn_plat_focus_passive.png=773,663,6,6
+qgn_plat_notebook_button_previous_pressed.png=2661,663,20,30
+qgn_plat_notebook_button_next_pressed.png=2712,663,20,30
+qgn_plat_button_voip_normal.png=3260,663,78,78
+qgn_plat_button_voip_pressed.png=3361,663,78,78
+qgn_plat_button_voip_focused.png=3462,663,78,78
+qgn_plat_button_voip_disabled.png=3563,663,78,78
+qgn_plat_note_frame_tile_right.png=3029,665,20,2
+qgn_plat_mediaplayer_toolbar_bg.png=2165,668,118,58
+qgn_plat_listbox_border_with_icon_disabled.png=7353,669,6,30
+qgn_plat_dialog_button_alone_focused_pressed.png=1946,670,42,47
+qgn_plat_dialog_button_left_focused_pressed.png=1996,670,42,47
+qgn_plat_dialog_button_middle_focused_pressed.png=2046,670,42,47
+qgn_plat_dialog_button_right_focused_pressed.png=2096,670,42,47
+qgn_plat_listbox_arrow_down_pressed.png=7141,670,26,30
+qgn_plat_listbox_arrow_up_pressed.png=7194,670,26,30
+qgn_plat_calendar_week_day_indicator.png=6762,671,6,6
+qgn_plat_single_line_input.png=1078,679,6,6
+qgn_plat_multi_line_input.png=1367,679,6,6
+qgn_plat_scroll_vertical_down_arrow_normal.png=1518,679,22,26
+qgn_plat_scroll_vertical_down_arrow_disabled.png=1568,679,22,26
+qgn_plat_scroll_vertical_down_arrow_pressed.png=1618,679,22,26
+qgn_plat_separator_horizontal_paned.png=169,681,26,10
+qgn_plat_dialog_frame_help_button_pressed.png=2779,683,32,32
+qgn_plat_notebook_tab_area_border_arrow_space.png=2472,692,78,22
+qgn_plat_notebook_tab_area_border.png=2564,693,22,22
+qgn_plat_toolbar_frame_middle.png=3124,694,50,10
+qgn_plat_radio_applet_volume_bg.png=5969,695,22,22
+qgn_plat_separator_horizontal_paned_thumb.png=169,697,30,10
+qgn_plat_single_line_input_disabled.png=1078,699,6,6
+qgn_plat_multi_line_input_disabled.png=1367,699,6,6
+qgn_plat_note_frame_corner_bottom_left.png=2946,701,20,20
+qgn_plat_note_frame_tile_bottom.png=2986,701,2,20
+qgn_plat_note_frame_corner_bottom_right.png=3029,701,20,20
+qgn_plat_notebook_button_previous_disabled.png=2661,703,20,30
+qgn_plat_notebook_button_next_disabled.png=2712,703,20,30
+qgn_plat_toolbar.png=3124,704,50,40
+qgn_plat_application_frame_bottom.png=3712,709,50,24
+qgn_plat_listbox_arrow_down_disabled.png=7141,711,26,30
+qgn_plat_listbox_arrow_up_disabled.png=7194,711,26,30
+qgn_plat_focus_left_active.png=754,713,4,6
+qgn_plat_focus_middle_active.png=758,713,2,6
+qgn_plat_focus_right_active.png=760,713,4,6
+qgn_plat_focus_active.png=773,713,6,6
+qgn_plat_focus_left_selection.png=804,713,4,6
+qgn_plat_focus_middle_selection.png=808,713,2,6
+qgn_plat_focus_right_selection.png=810,713,4,6
+qgn_plat_focus_selection.png=823,713,6,6
+qgn_plat_application_call_handling_block_active.png=7515,719,26,26
+qgn_plat_application_call_handling_frame_block.png=7580,719,26,26
+qgn_plat_header_hide_pressed.png=6859,724,25,30
+qgn_plat_header_show_pressed.png=6889,724,25,30
+qgn_plat_header_hide.png=6919,724,25,30
+qgn_plat_header_show.png=6949,724,25,30
+qgn_plat_toolbar_frame_bottom.png=3124,744,50,9
