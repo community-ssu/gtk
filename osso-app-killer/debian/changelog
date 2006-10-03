@@ -1,3 +1,9 @@
+osso-app-killer (1.10-2) unstable; urgency=low
+
+  * Added license reference to debian/copyright.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 03 Oct 2006 16:48:17 +0300
+
 osso-app-killer (1.10-1) unstable; urgency=low
 
   * Now preserving 'rtcom' GConf paths in ROS. Fixes: NB#41676
