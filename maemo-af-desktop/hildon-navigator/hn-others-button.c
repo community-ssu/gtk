@@ -936,7 +936,7 @@ hn_others_button_dnotify_register (HNOthersButton * button)
        */
       dir = g_path_get_dirname( conf_file );
 
-      if (dir && *dir && !g_mkdir (dir, 0755))
+      if (dir && *dir && g_mkdir (dir, 0755))
 	{
 	  if ( hildon_dnotify_set_cb(
 		(hildon_dnotify_cb_f *)hn_others_button_dnotify_handler,
