@@ -1,6 +1,15 @@
+gtk+2.0 (2:2.6.10-2.osso18) unstable; urgency=low
+
+    * Fixes: NB#42165 GtkComboBox prevents parent window from having its
+    background painted
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed,  4 Oct 2006 15:27:43 +0300
+
 gtk+2.0 (2:2.6.10-2.osso17) unstable; urgency=low
 
   * The previous tag had some experimental code, making a proper release now.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  2 Oct 2006 11:17:24 +0300
 
 gtk+2.0 (2:2.6.10-2.osso16) unstable; urgency=low
 
