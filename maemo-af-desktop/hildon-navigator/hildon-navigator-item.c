@@ -55,6 +55,7 @@ typedef enum
   NAV_ITEM_SIGNAL_LOG_DESTROY,
   NAV_ITEM_SIGNAL_LOG_LOAD,
   NAV_ITEM_SIGNAL_LOG_END,
+  NAV_ITEM_SIGNAL_GET_WIDGET,
   NAV_ITEM_SIGNALS
 } navigator_item_signals;
 
@@ -65,7 +66,8 @@ typedef enum
 {
   PROP_0,
   HNI_MANDATORY_PROP,
-  HNI_POSITION_PROP
+  HNI_POSITION_PROP,
+  HNI_NAME_PROP
 } navigator_item_props;
 
 typedef struct
@@ -80,7 +82,7 @@ typedef struct
   /* ... */
 } HildonNavigatorItemPrivate;
 
-static GtkBinClass *parent_class;
+static GtkBinClass *parent_class = NULL;
 
 /* static declarations */
 
@@ -129,6 +131,8 @@ hildon_navigator_item_finalize (GObject *object)
     dlclose (priv->dlhandler);
 
   g_free (priv->api);
+
+  G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
 static void 
@@ -151,6 +155,9 @@ hildon_navigator_item_set_property (GObject *object,
       break;
     case HNI_POSITION_PROP:	   
       priv->position = g_value_get_uint (value);
+      break;
+    case HNI_NAME_PROP:
+      priv->name = g_strdup (g_value_get_string (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -179,6 +186,9 @@ hildon_navigator_item_get_property (GObject *object,
     case HNI_POSITION_PROP:
       g_value_set_uint (value,priv->position);
       break;
+    case HNI_NAME_PROP:
+      g_value_set_string (value,priv->name);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;						
@@ -200,6 +210,8 @@ hildon_navigator_item_class_init (HildonNavigatorItemClass *item_class)
   object_class->get_property      = hildon_navigator_item_get_property;
   widget_class->size_request      = hildon_navigator_item_size_request;
   widget_class->size_allocate     = hildon_navigator_item_size_allocate;
+  
+  item_class->get_widget	  = hildon_navigator_item_get_widget;
  
   navigator_signals[NAV_ITEM_SIGNAL_LOG_CREATE] = 
 	g_signal_new("hn_item_create",
@@ -260,6 +272,14 @@ hildon_navigator_item_class_init (HildonNavigatorItemClass *item_class)
 						     100,/*FIXME: what value?*/
 						     0,
                                                      G_PARAM_CONSTRUCT | G_PARAM_READWRITE));
+
+  g_object_class_install_property (object_class,
+                                   HNI_NAME_PROP,
+                                   g_param_spec_string ("name",
+                                                        "name",
+	                                                "name",
+	                                                NULL,
+	                                                G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE)); 
 }
 
 static void 
@@ -392,7 +412,7 @@ hildon_navigator_item_new (const gchar *name, const gchar *filename)
 
   g_return_val_if_fail (name && filename,NULL);
 
-  item = g_object_new (HILDON_NAVIGATOR_ITEM_TYPE,NULL);
+  item = g_object_new (HILDON_TYPE_NAVIGATOR_ITEM,"name",name,NULL);
 
   g_return_val_if_fail (item, NULL);
 
@@ -413,8 +433,6 @@ hildon_navigator_item_new (const gchar *name, const gchar *filename)
   }
 
   g_free (path);
-
-  priv->name = g_strdup (name);
 
   if (!hildon_navigator_load_symbols_api (item))
   {
@@ -471,18 +489,7 @@ hildon_navigator_item_initialize (HildonNavigatorItem *item)
 		 HN_LOG_KEY_END);
 }
 
-GtkWidget *
-hildon_navigator_item_get_widget (HildonNavigatorItem *item)
-{
-  HildonNavigatorItemPrivate *priv = NULL;
 
-  g_return_val_if_fail (item, NULL);
-  g_return_val_if_fail (HILDON_IS_NAVIGATOR_ITEM (item),NULL);
-
-  priv = HILDON_NAVIGATOR_ITEM_GET_PRIVATE (item);
-
-  return priv->widget;
-}
 
 guint 
 hildon_navigator_item_get_position (HildonNavigatorItem *item)
@@ -521,4 +528,14 @@ hildon_navigator_item_get_name (HildonNavigatorItem *item)
   priv = HILDON_NAVIGATOR_ITEM_GET_PRIVATE (item);
 
   return priv->name;
+}
+
+GtkWidget *
+hildon_navigator_item_get_widget (HildonNavigatorItem *item)
+{
+  g_return_val_if_fail (item, NULL);
+  g_return_val_if_fail (HILDON_IS_NAVIGATOR_ITEM (item),NULL);
+
+  return GTK_BIN (item)->child;
+
 }

@@ -30,6 +30,7 @@
 #include <libintl.h>
 #include "hildon-navigator-panel.h"
 
+#include "hn-item-dummy.h"
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
@@ -287,7 +288,7 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 
     if (!hn_panel_exist_plugin (panel,groups[i]) &&
 	g_list_find_custom (bad_plugins,groups[i],(GCompareFunc)strcmp) == NULL)
-    { g_debug ("Instance %s",groups[i]);
+    { 
       plugin = hildon_navigator_item_new (groups[i], library);
 
       for (j=0;j<HN_MAX_DEFAULT;j++)
@@ -531,6 +532,11 @@ hn_panel_recalculate_positions (HildonNavigatorPanel *panel, HildonNavigatorItem
  
   if (current_item)
   {
+    if (HN_IS_ITEM_DUMMY (current_item))
+    {
+      gtk_widget_destroy (GTK_WIDGET (current_item));
+    }
+    else     
     if (hildon_navigator_item_get_mandatory (current_item))
     {
        new_position = hn_panel_get_plugin_first_free_position (panel,position);
@@ -656,7 +662,7 @@ hn_panel_load_plugins_from_file (HildonNavigatorPanel *panel, gchar *file)
 #endif
     hn_panel_add_button (panel, GTK_WIDGET (item));
   }
-
+	  
   hildon_log_remove_file (priv->log);
 
   priv->plugins_loaded = TRUE;
@@ -685,7 +691,28 @@ hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
   }
 
   for (i=0;i<HN_MAX_DEFAULT;i++)
+  {
+     GtkWidget *dummy;
+     gchar *name_dummy = g_strdup_printf ("dummy%d",i);
+
+     dummy = GTK_WIDGET (hn_item_dummy_new (name_dummy));
+
+     if (dummy)
+     {
+       g_object_ref (G_OBJECT (dummy));
+#ifdef GLIB210
+       g_object_ref_sink (G_OBJECT (dummy));
+#else
+       gtk_object_sink (GTK_OBJECT (dummy));
+#endif
+       g_object_set (G_OBJECT (dummy),"position",i,NULL);
+       hn_panel_add_button (panel, dummy);
+     }	  
+     
      priv->default_items[i].used = FALSE;
+     
+     g_free (name_dummy);
+  }
 
   g_list_free (loaded_plugins);
 

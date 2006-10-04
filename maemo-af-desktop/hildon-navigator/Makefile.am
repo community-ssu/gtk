@@ -63,6 +63,8 @@ libhildonnavigator_la_SOURCES = \
 	hildon-navigator-item.h \
 	hildon-navigator-panel.c \
 	hildon-navigator-panel.h \
+	hn-item-dummy.c \
+	hn-item-dummy.h \
 	hildon-navigator-lib.h \
 	osso-manager.c \
 	osso-manager.h \

@@ -1,3 +1,14 @@
+2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-item-dummy.[ch]: New child class of
+	HildonNavigatorItem to have dummy buttons.
+	* hildon-navigator/hildon-navigator-item.c: Improved GObject
+	code and code cleanup.
+	* hildon-navigator/hildon-navigator-panel.c: Created dummy 
+	plugins while unloading in order to show the tasknavigator never
+	distorted.
+	* hildon-navigator/Makefile.am: Added hn-item-dummy.[ch].
+
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-others-button.c: We do need to create the

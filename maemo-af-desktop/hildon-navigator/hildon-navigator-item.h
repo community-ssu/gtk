@@ -43,19 +43,21 @@
 
 G_BEGIN_DECLS
 
-#define HILDON_NAVIGATOR_ITEM_TYPE ( hildon_navigator_item_get_type() )
+#define HILDON_TYPE_NAVIGATOR_ITEM ( hildon_navigator_item_get_type() )
 #define HILDON_NAVIGATOR_ITEM(obj) (GTK_CHECK_CAST (obj, \
-            HILDON_NAVIGATOR_ITEM_TYPE, \
+            HILDON_TYPE_NAVIGATOR_ITEM, \
             HildonNavigatorItem))
 #define HILDON_NAVIGATOR_ITEM_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), \
-            HILDON_NAVIGATOR_ITEM_TYPE, HildonNavigatorItemClass))
+            HILDON_TYPE_NAVIGATOR_ITEM, HildonNavigatorItemClass))
 #define HILDON_IS_NAVIGATOR_ITEM(obj) (GTK_CHECK_TYPE (obj, \
-            HILDON_NAVIGATOR_ITEM_TYPE))
+            HILDON_TYPE_NAVIGATOR_ITEM))
 #define HILDON_IS_NAVIGATOR_ITEM_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), \
-            HILDON_NAVIGATOR_ITEM_ITEM_TYPE))
+            HILDON_TYPE_NAVIGATOR_ITEM))
+#define HILDON_NAVIGATOR_ITEM_GET_CLASS(inst)  (G_TYPE_INSTANCE_GET_CLASS ((inst), \
+	    HILDON_TYPE_NAVIGATOR_ITEM, HildonNavigatorItemClass))
 #define HILDON_NAVIGATOR_ITEM_GET_PRIVATE(obj) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((obj), \
-        HILDON_NAVIGATOR_ITEM_TYPE, HildonNavigatorItemPrivate));
+        HILDON_TYPE_NAVIGATOR_ITEM, HildonNavigatorItemPrivate));
 
 
 typedef struct _HildonNavigatorItem HildonNavigatorItem; 
@@ -75,7 +77,7 @@ struct _HildonNavigatorItem
 
 struct _HildonNavigatorItemClass
 {
-    GtkContainerClass parent_class;
+    GtkBinClass parent_class;
 
     GtkWidget *(*get_widget) (HildonNavigatorItem *item);
 
