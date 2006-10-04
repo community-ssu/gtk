@@ -1,3 +1,11 @@
+dbus (0.61-osso21) experimental; urgency=low
+
+  * UNRELEASED
+  * Fixed startup script and added dependency to passwd. Patch from
+    Riku Voipio. Fixes: NB#41090
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Oct 2006 16:15:40 +0300
+
 dbus (0.61-osso20) experimental; urgency=low
 
   * Fixed Nokia copyright notices. Fixes: NB#40650

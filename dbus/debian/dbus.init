@@ -24,8 +24,7 @@ fi
 
 test "$ENABLED" != "0" || exit 0
 
-echo `uname -m` | grep "^armv" > /dev/null
-if [ $? = 0 -a -x /usr/sbin/dsmetool ]; then
+if [ ! -d /scratchbox  -a -x /usr/sbin/dsmetool ]; then
   USE_DT=1
 else
   USE_DT=""
@@ -37,8 +36,7 @@ start_it_up()
  # does not need changes
  if [ ! -d $PIDDIR ]; then
    mkdir -p $PIDDIR
-   chown $DAEMONUSER $PIDDIR
-   chgrp $DAEMONUSER $PIDDIR
+   chown $DAEMONUSER:$DAEMONUSER $PIDDIR
  fi
  if [ "x$USE_DT" = "x" ]; then
 # # The following is commented because readlink is not available
