@@ -3,6 +3,7 @@ libosso (1.20-1) unstable; urgency=low
   * UNRELEASED
   * Compilation fixes from Murray Cummings <murrayc@murrayc.com>.
     Fixes: MB#795
+  * Added content to the README file because of a sudden popular demand.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Oct 2006 14:52:59 +0300
 

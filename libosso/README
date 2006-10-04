@@ -1,0 +1,35 @@
+Welcome to the wonderful world of Libosso!
+
+Frequently asked questions (FAQ):
+
+1. What is Libosso?
+
+Libosso is a wrapper library for user applications for platform-specific,
+frequently-used D-Bus services. Thus, it should not contain anything
+that is not platform-specific -- ideally Libosso should not exist.
+
+2. What is the purpose of Libosso?
+
+The purpose of Libosso is to hide ugly D-Bus API details for
+frequently-used, platform-specific services. Note that 'frequently
+used' here means that they are frequently used in the user application
+level (as opposed to daemons and such lower-level programs). If there
+would be easy-to-use D-Bus library, even then there is still a purpose
+for Libosso: shielding applications from D-Bus API changes. Ideally,
+Libosso would completely hide the message bus technology, so that
+D-Bus could be even replaced by some other technology.
+
+3. Why don't you use ChangeLog?
+
+Basically because the current maintainer is too lazy to do work that
+a machine should do, and a diff of the code is sufficiently simple to
+understand even without explanations. The current maintainer thinks that
+the code should be self-explanatory -- if it's not, it needs to be
+sufficiently commented or even re-designed.
+
+4. What is 'muali'?
+
+Muali comes from words 'Maemo user application library' and it's a
+working-name for new, re-designed Libosso API. The API is in early
+development phase and will have a commenting round later when there
+is something to show.
