@@ -1,3 +1,57 @@
+maemo-af-desktop (2.9.93-1) unstable; urgency=low
+
+  * hildon-navigator/hn-item-dummy.c: Show the child!!!
+  * hildon-navigator/hildon-navigator-item.c: Removed widget
+  private member, using now GtkBin child public member
+  * hildon-navigator/hildon-navigator-item.h: Added size of
+  buttons
+
+  * hildon-home/hildon-home-background-select-dialog.c:
+    - make system-modal
+    - reverse stretched and tiled
+  *  hildon-home/{background-manager.h: reverse stretched and tiled
+  * hildon-home/hildon-home-window.c: error notes made system modal too
+
+  * hildon-home/{background-manager.c,
+    hildon-home-background-select-dialog.c}:
+    Applied various fixes to cancellation problems
+
+  * hildon-navigator/hn-item-dummy.[ch]: New child class of
+  HildonNavigatorItem to have dummy buttons.
+  * hildon-navigator/hildon-navigator-item.c: Improved GObject
+  code and code cleanup.
+  * hildon-navigator/hildon-navigator-panel.c: Created dummy 
+  plugins while unloading in order to show the tasknavigator never
+  distorted.
+  * hildon-navigator/Makefile.am: Added hn-item-dummy.[ch].
+
+  * hildon-home/hildon-home-window.c: Removed dimming of the
+    TN & SB when a dialog is shown
+
+  * hildon-navigator/hn-others-button.c: We do need to create the
+    directory if not there
+
+  * hildon-navigator/hn-app-switcher.c: Do not reset the thumb
+    flag after a toggle but only when we start the timer
+
+  * hildon-home/background-manager.c: Stretch only on top of the
+    home area (not under TN)
+
+  * hildon-status-bar/hildon-status-bar-main.c: 
+  - Dimm/Undimm the extension button and SB's plugins when appropiated.
+  - Send a Fake Key to Full Screen when extension panel is opened.
+  * hildon-navigator/hildon-navigator-window.c:
+  - The AppSwitcher is not stretched anymore.
+
+  * libhildonmenu/hildon-thumb-menu-item.c:
+    - apply naming of the toplevel window only once
+    - reselect the style after that
+
+  * hildon-home/hildon-home-window.c: Chain the key_press event handler
+    to the parent class
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  4 Oct 2006 20:30:50 +0300
+
 maemo-af-desktop (2.9.92.2-1) unstable; urgency=low
 
   * hildon-home/background-manager.c: set background components
