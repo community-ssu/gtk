@@ -936,11 +936,7 @@ hn_others_button_dnotify_register (HNOthersButton * button)
        */
       dir = g_path_get_dirname( conf_file );
 
-      /* The old code used to create the directory if it did not exist
-       * (seemingly so it could write the menu contents in), but the OM does
-       * not do any writing, so we just test for it's existence.
-       */
-      if (dir && *dir && g_file_test(dir, G_FILE_TEST_IS_DIR))
+      if (dir && *dir && !g_mkdir (dir, 0755))
 	{
 	  if ( hildon_dnotify_set_cb(
 		(hildon_dnotify_cb_f *)hn_others_button_dnotify_handler,
