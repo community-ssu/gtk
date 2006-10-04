@@ -41,6 +41,9 @@
 #define HN_LOG_KEY_DESTROY "Destroy"
 #define HN_LOG_KEY_END     "End"
 
+#define BUTTON_HEIGHT 90
+#define BUTTON_WIDTH  80
+
 G_BEGIN_DECLS
 
 #define HILDON_TYPE_NAVIGATOR_ITEM ( hildon_navigator_item_get_type() )

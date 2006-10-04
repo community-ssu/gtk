@@ -28,7 +28,7 @@
 
 #include "hn-item-dummy.h"
 
-#include <gtk/gtktogglebutton.h>
+#include <gtk/gtkbutton.h>
 
 
 /*
@@ -71,16 +71,13 @@ static void
 hn_item_dummy_init (HNItemDummy *dummy)
 {
   g_return_if_fail (dummy); 
-
-  gtk_widget_push_composite_child ();
-
-  dummy->button = gtk_toggle_button_new ();  
+  
+  dummy->button = gtk_button_new ();  
 
   gtk_container_add (GTK_CONTAINER (dummy),dummy->button);
+  gtk_widget_set_size_request(dummy->button, BUTTON_WIDTH, BUTTON_HEIGHT );
+  gtk_widget_show (dummy->button);
   
-  GTK_BIN (dummy)->child = dummy->button;
-
-  gtk_widget_pop_composite_child ();
 }
 
 GType hn_item_dummy_get_type (void)

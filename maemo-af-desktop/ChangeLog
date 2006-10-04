@@ -1,3 +1,11 @@
+2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-item-dummy.c: Show the child!!!
+	* hildon-navigator/hildon-navigator-item.c: Removed widget
+	private member, using now GtkBin child public member
+	* hildon-navigator/hildon-navigator-item.h: Added size of
+	buttons
+
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-background-select-dialog.c:

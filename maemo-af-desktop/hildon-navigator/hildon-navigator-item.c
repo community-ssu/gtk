@@ -45,7 +45,6 @@
 #define HN_SYMBOL_DESTROY    "hildon_navigator_lib_destroy"
 #define HN_SYMBOL_BUTTON     "hildon_navigator_lib_get_button_widget"
 
-#define BUTTON_HEIGHT 90
 
 typedef enum
 {
@@ -74,7 +73,6 @@ typedef struct
 {
   gchar                  *name;
   void                   *dlhandler;
-  GtkWidget              *widget;
   HildonNavigatorItemAPI *api;
   void		         *plugin_data;
   guint			  position;
@@ -295,7 +293,6 @@ hildon_navigator_item_init (HildonNavigatorItem *item)
 
   priv->dlhandler   = NULL;
   priv->name        = NULL;
-  priv->widget      = NULL;
   priv->api         = g_new0 (HildonNavigatorItemAPI,1);
   priv->plugin_data = NULL;
 
@@ -365,14 +362,11 @@ static void
 hildon_navigator_item_size_request (GtkWidget *widget, GtkRequisition *requisition)
 {
   HildonNavigatorItem *item = HILDON_NAVIGATOR_ITEM (widget);
-  HildonNavigatorItemPrivate *priv;
   GtkRequisition req;
 
-  priv = HILDON_NAVIGATOR_ITEM_GET_PRIVATE (item); 
-
-  if (priv->widget) 
+  if (GTK_BIN(item)->child) 
   { 
-    gtk_widget_size_request (priv->widget,&req);
+    gtk_widget_size_request (GTK_BIN(item)->child,&req);
     requisition->width  = req.width;
     requisition->height = req.height;
   } 
@@ -382,24 +376,22 @@ static void
 hildon_navigator_item_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
   HildonNavigatorItem *item = HILDON_NAVIGATOR_ITEM (widget);
-  HildonNavigatorItemPrivate *priv;
   GtkAllocation alloc;
   GtkRequisition req;
 
-  priv = HILDON_NAVIGATOR_ITEM_GET_PRIVATE( item );
     
   widget->allocation = *allocation;
 
-  if (priv->widget && GTK_WIDGET_VISIBLE (priv->widget)) 
+  if (GTK_BIN(item)->child && GTK_WIDGET_VISIBLE (GTK_BIN(item)->child)) 
   {
-    gtk_widget_size_request (priv->widget,&req);
+    gtk_widget_size_request (GTK_BIN(item)->child,&req);
 
     alloc.x      = allocation->x;
     alloc.y      = allocation->y;
     alloc.width  = req.width;
     alloc.height = req.height;
 
-    gtk_widget_size_allocate (priv->widget,&alloc);
+    gtk_widget_size_allocate (GTK_BIN(item)->child,&alloc);
   }
 }
 
@@ -448,6 +440,8 @@ hildon_navigator_item_initialize (HildonNavigatorItem *item)
 {
   HildonNavigatorItemPrivate *priv = NULL;
 
+  GtkWidget *child;
+
   g_return_if_fail (item);
   g_return_if_fail (HILDON_IS_NAVIGATOR_ITEM (item));
 
@@ -469,17 +463,17 @@ hildon_navigator_item_initialize (HildonNavigatorItem *item)
 		 g_quark_from_string (HN_LOG_KEY_INIT),
 		 HN_LOG_KEY_INIT); 
  
-  priv->widget = priv->api->get_button(priv->plugin_data);
+  child = priv->api->get_button(priv->plugin_data);
 
   g_signal_emit (G_OBJECT (item), 
 	  	 navigator_signals[NAV_ITEM_SIGNAL_LOG_BUTTON], 
 		 g_quark_from_string (HN_LOG_KEY_BUTTON),
 		 HN_LOG_KEY_BUTTON);
  
-  if (priv->widget && GTK_IS_WIDGET (priv->widget))
+  if (child && GTK_IS_WIDGET (child))
   { 
-    gtk_container_add (GTK_CONTAINER (item), priv->widget );
-    gtk_widget_set_size_request(priv->widget, -1, BUTTON_HEIGHT );
+    gtk_container_add (GTK_CONTAINER (item), child );
+    gtk_widget_set_size_request(child, -1, BUTTON_HEIGHT );
   }
   /* else????? */
 
