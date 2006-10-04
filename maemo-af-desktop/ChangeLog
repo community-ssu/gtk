@@ -1,3 +1,11 @@
+2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: 
+	- Dimm/Undimm the extension button and SB's plugins when appropiated.
+	- Send a Fake Key to Full Screen when extension panel is opened.
+	* hildon-navigator/hildon-navigator-window.c:
+	- The AppSwitcher is not stretched anymore.
+
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
 	* libhildonmenu/hildon-thumb-menu-item.c:

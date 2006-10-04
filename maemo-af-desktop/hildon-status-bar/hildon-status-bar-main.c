@@ -52,6 +52,9 @@
 #include <X11/X.h>
 #include <X11/Xatom.h>
 #include <X11/Xlib.h>
+#include <X11/keysymdef.h>
+#include <X11/keysym.h>
+#include <X11/extensions/XTest.h>
 
 /* log include */
 #include <osso-log.h>
@@ -130,7 +133,7 @@ static void statusbar_send_signal (DBusConnection *conn,
 /* Global variables */		
 static GHashTable *delayed_banners;
 static gpointer delayed_ib_onscreen;
-static gboolean sb_is_sensitive;
+static gboolean sb_is_sensitive = TRUE;
 
 static gboolean 
 force_close_popup_cb (GtkWidget *widget, 
@@ -233,9 +236,20 @@ static gboolean
 force_close_popup_cb (GtkWidget *widget, GdkEventKey *event, gpointer data)
 {
   StatusBar *sb_panel = (StatusBar *)data;
+
+  KeyCode keycode = 0;
+  KeySym  keysym = GDK_F6;
   
   if (event->keyval == GDK_F6)
+  {
     close_popup_window( sb_panel );
+
+    if ((keycode = XKeysymToKeycode (GDK_DISPLAY(), keysym)) != 0)
+    {
+      XTestFakeKeyEvent (GDK_DISPLAY(), keycode, TRUE, CurrentTime);
+      XTestFakeKeyEvent (GDK_DISPLAY(), keycode, FALSE, CurrentTime);
+    }
+  }
 
   return TRUE;
 }
@@ -1059,8 +1073,9 @@ gint rpc_cb( const gchar *interface,
                 (GtkCallback)(statusbar_insensitive_cb),
                 NULL);
 
-	gtk_widget_set_sensitive 
-	  (GTK_WIDGET (panel->arrow_button),FALSE);
+  	gtk_container_foreach(GTK_CONTAINER(panel->arrow_button),
+                (GtkCallback)(statusbar_insensitive_cb),
+                NULL);
 
         return OSSO_OK;
     }
@@ -1071,8 +1086,9 @@ gint rpc_cb( const gchar *interface,
                 (GtkCallback)(statusbar_sensitive_cb),
                 NULL);
 
-	gtk_widget_set_sensitive 
-	  (GTK_WIDGET (panel->arrow_button),TRUE);
+	gtk_container_foreach(GTK_CONTAINER(panel->arrow_button),
+                (GtkCallback)(statusbar_sensitive_cb),
+                NULL);
 
         return OSSO_OK;
     }
@@ -1344,10 +1360,16 @@ void arrange_items( StatusBar *panel, gint start )
                         panel->items[i] );
             }
 
+	    if (sb_is_sensitive)
+      	      gtk_widget_set_sensitive (panel->arrow_button,TRUE);
+    	    else
+	      gtk_widget_set_sensitive (panel->arrow_button,FALSE);
+	    
             gtk_fixed_put( GTK_FIXED( panel->fixed ), 
                     panel->arrow_button, 
                     panel->plugin_pos_x[place_here-1], 
                     panel->plugin_pos_y[place_here-1] );
+	
             break;	     
         }
 
@@ -1362,6 +1384,11 @@ void arrange_items( StatusBar *panel, gint start )
                        panel->items[i], 
                        panel->plugin_pos_x[place_here],
                        panel->plugin_pos_y[place_here] );
+
+	    if (sb_is_sensitive)
+      	      gtk_widget_set_sensitive (GTK_WIDGET (panel->items[i]),TRUE);
+    	    else
+              gtk_widget_set_sensitive (GTK_WIDGET (panel->items[i]),FALSE);
         }
 
         place_here++;

@@ -268,7 +268,7 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   priv->app_switcher = hn_app_switcher_new ();
   gtk_box_pack_start ( GTK_BOX (priv->panel), 
 		       priv->app_switcher, 
-		       TRUE, TRUE, 0);
+		       FALSE, FALSE, 0);
 
   initialize_navigator_menus (priv);
 
