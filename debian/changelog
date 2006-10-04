@@ -1,3 +1,7 @@
+gtk+2.0 (2:2.6.10-2.osso17) unstable; urgency=low
+
+  * The previous tag had some experimental code, making a proper release now.
+
 gtk+2.0 (2:2.6.10-2.osso16) unstable; urgency=low
 
   * Fixes: NB#41908 update_checkbox_mode function in Maemo modified gtk leaks
