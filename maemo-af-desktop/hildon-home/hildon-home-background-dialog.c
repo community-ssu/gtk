@@ -537,7 +537,6 @@ home_bgd_destroy_cb (GtkWidget *widget,
 {
   BackgroundManager *manager;
   ResponseData *resp_data = data;
-  HildonHomeWindow *window = HILDON_HOME_WINDOW (resp_data->parent);
 
   g_debug (G_STRLOC ": background selection dialog destroyed");
 
@@ -555,8 +554,6 @@ home_bgd_destroy_cb (GtkWidget *widget,
   
   background_manager_pop_preview_mode (manager);
 
-  hildon_home_window_set_desktop_dimmed (window, FALSE);
-
   g_free (resp_data);
 }
 
@@ -565,15 +562,12 @@ home_bgd_show_cb (GtkWidget *widget,
                   gpointer   data)
 {
   BackgroundManager *manager;
-  ResponseData *rd = data;
-  HildonHomeWindow *window = HILDON_HOME_WINDOW (rd->parent);
 
   g_debug (G_STRLOC ": background selection dialog shown");
   
   manager = background_manager_get_default ();
   background_manager_push_preview_mode (manager);
 
-  hildon_home_window_set_desktop_dimmed (window, TRUE);
 }
 
 /**
@@ -978,7 +972,7 @@ home_bgd_dialog_run (GtkWindow * parent)
   /* Create Set Background Image dialog */ 
   dialog = 
     gtk_dialog_new_with_buttons (HILDON_HOME_SET_BG_TITLE,
-				 parent,
+				 NULL,
 				 GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT,
 				 HILDON_HOME_SET_BG_OK,
 				 GTK_RESPONSE_OK,
@@ -1047,9 +1041,9 @@ home_bgd_dialog_run (GtkWindow * parent)
   gtk_combo_box_append_text (GTK_COMBO_BOX (combobox_mode_select), 
 			     image_modes[BACKGROUND_SCALED]);
   gtk_combo_box_append_text (GTK_COMBO_BOX (combobox_mode_select), 
-			     image_modes[BACKGROUND_TILED]);
-  gtk_combo_box_append_text (GTK_COMBO_BOX (combobox_mode_select), 
 			     image_modes[BACKGROUND_STRETCHED]);
+  gtk_combo_box_append_text (GTK_COMBO_BOX (combobox_mode_select), 
+			     image_modes[BACKGROUND_TILED]);
   
   /* Centered is a default scaling value */
   gtk_combo_box_set_active (GTK_COMBO_BOX (combobox_mode_select), 

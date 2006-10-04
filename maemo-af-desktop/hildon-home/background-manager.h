@@ -50,8 +50,8 @@ typedef struct _BackgroundManagerClass		BackgroundManagerClass;
 typedef enum {
   BACKGROUND_CENTERED,
   BACKGROUND_SCALED,
-  BACKGROUND_TILED,
-  BACKGROUND_STRETCHED
+  BACKGROUND_STRETCHED,
+  BACKGROUND_TILED
 } BackgroundMode;
 
 GType background_mode_get_type (void) G_GNUC_CONST;

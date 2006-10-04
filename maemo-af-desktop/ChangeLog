@@ -1,5 +1,13 @@
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-background-select-dialog.c:
+	  - make system-modal
+	  - reverse stretched and tiled
+	*  hildon-home/{background-manager.h: reverse stretched and tiled
+	* hildon-home/hildon-home-window.c: error notes made system modal too
+
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/{background-manager.c,
 	  hildon-home-background-select-dialog.c}:
 	  Applied various fixes to cancellation problems

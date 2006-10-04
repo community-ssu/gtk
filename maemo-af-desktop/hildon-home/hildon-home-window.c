@@ -493,7 +493,7 @@ background_manager_load_error_cb (BackgroundManager *manager,
     {
       GtkWidget *note;
       
-      note = hildon_note_new_information (GTK_WINDOW (window), text);
+      note = hildon_note_new_information (NULL, text);
       gtk_dialog_run (GTK_DIALOG (note));
       
       gtk_widget_destroy (note);
