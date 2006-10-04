@@ -1,5 +1,10 @@
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-switcher.c: Do not reset the thumb
+	  flag after a toggle but only when we start the timer
+
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Stretch only on top of the
 	  home area (not under TN)
 

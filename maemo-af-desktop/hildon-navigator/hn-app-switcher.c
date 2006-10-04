@@ -982,8 +982,6 @@ menu_button_pressed_timeout (HNAppSwitcher *app_switcher)
   
   hn_app_switcher_toggle_menu_button (app_switcher);
   
-  priv->is_thumbable = FALSE;
-
   return FALSE;
 
 }
@@ -1006,6 +1004,8 @@ menu_button_pressed_cb (GtkWidget      *widget,
     {
       priv->is_thumbable = TRUE;
     }
+  else if (!priv->menu_button_timeout)
+    priv->is_thumbable = FALSE;
 
   if (!priv->menu_button_timeout)
     priv->menu_button_timeout = g_timeout_add (100,
