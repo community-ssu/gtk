@@ -1,4 +1,10 @@
-2006-10-02  Johan Bilien <johan.bilien@nokia.com>
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
+	* libhildonmenu/hildon-thumb-menu-item.c:
+	  - apply naming of the toplevel window only once
+	  - reselect the style after that
+
+2006-10-03  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-window.c: Chain the key_press event handler
 	  to the parent class

@@ -513,7 +513,6 @@ hildon_thumb_menu_item_set_mode (HildonThumbMenuItem *thumb_menu_item,
                                  gboolean thumb_mode)
 {
     HildonThumbMenuItemPrivate *priv;
-    GtkWidget *toplevel;
 
     priv = HILDON_THUMB_MENU_ITEM_GET_PRIVATE (thumb_menu_item);
     
@@ -522,8 +521,6 @@ hildon_thumb_menu_item_set_mode (HildonThumbMenuItem *thumb_menu_item,
         return;
     
     priv->thumb_mode = !priv->thumb_mode;
-
-    toplevel = gtk_widget_get_toplevel (GTK_WIDGET (thumb_menu_item));
     
     if (priv->thumb_mode)
     {
@@ -537,9 +534,6 @@ hildon_thumb_menu_item_set_mode (HildonThumbMenuItem *thumb_menu_item,
             gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM(thumb_menu_item),
                                            priv->thumb_image);
         }
-
-        if (GTK_IS_WIDGET (toplevel))
-          gtk_widget_set_name (toplevel, HILDON_MENU_WINDOW_NAME_THUMB);
     }
     else
     {
@@ -568,8 +562,6 @@ hildon_thumb_menu_item_set_mode (HildonThumbMenuItem *thumb_menu_item,
         if (attrs)
             pango_attr_list_unref(attrs);
         
-        if (GTK_IS_WIDGET (toplevel))
-          gtk_widget_set_name (toplevel, HILDON_MENU_WINDOW_NAME_NORMAL);
     }
 }
 
@@ -923,6 +915,7 @@ hildon_menu_set_thumb_mode (GtkMenu *menu, gboolean thumb_mode)
 {
     GList *item_list = 0;
     GtkWidget *submenu = NULL;    
+    GtkWidget *toplevel;
     
     g_assert (GTK_IS_MENU(menu));
 
@@ -955,4 +948,14 @@ hildon_menu_set_thumb_mode (GtkMenu *menu, gboolean thumb_mode)
             hildon_menu_set_thumb_mode (GTK_MENU (submenu), thumb_mode);
         }
     }
+
+    /* Apply correct theming, by naming the toplevel window */
+    toplevel = gtk_widget_get_toplevel (GTK_WIDGET (menu));
+    if (GTK_IS_WIDGET (toplevel))
+      {
+        gtk_widget_set_name (toplevel, thumb_mode?"hildon-menu-window-thumb":
+                                                  "hildon-menu-window-normal");
+        gtk_widget_reset_rc_styles (toplevel);
+
+      }
 }
