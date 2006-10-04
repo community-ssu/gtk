@@ -1,6 +1,5 @@
 osso-af-utils (1.9-1) unstable; urgency=low
 
-  * UNRELEASED
   * Shortened the fb-progress bar. Fixes: NB#35395
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Oct 2006 16:42:41 +0300
