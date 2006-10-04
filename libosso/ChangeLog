@@ -1,3 +1,15 @@
+2006-10-04  Murray Cumming  <murrayc@murrayc.com>
+
+	* src/osso-application-top.c: (osso_application_unset_top_cb):
+	* src/osso-hw.c: (osso_hw_unset_event_cb):
+	* src/osso-init.c: (add_to_if_hash), (_msg_handler_rm_cb_f):
+	* src/osso-mime.c: (osso_mime_unset_cb), (osso_mime_unset_cb_full):
+	* src/osso-rpc.c: (osso_rpc_unset_cb_f),
+	(osso_rpc_unset_default_cb_f): Attempt to fix const errors and 
+	warnings to fix the build with gcc 3.3.4. However, the use of 
+	a const function pointer does not seem to make any sense, and this 
+	is possibly not the best solution.
+
 2006-04-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Support for language bindings that have trouble calling varargs

@@ -516,7 +516,7 @@ static gboolean add_to_if_hash(osso_context_t *osso,
 
     old = g_hash_table_lookup(osso->if_hash, interface);
     if (old != NULL) {
-        old->handlers = g_list_append(old->handlers, handler);
+        old->handlers = g_list_append(old->handlers, (_osso_handler_t*)handler);
     } else {
         _osso_hash_value_t *new_elem;
         char *new_key;
@@ -535,7 +535,7 @@ static gboolean add_to_if_hash(osso_context_t *osso,
             return FALSE;
         }
 
-        new_elem->handlers = g_list_append(NULL, handler);
+        new_elem->handlers = g_list_append(NULL, (_osso_handler_t*)handler);
 
         g_hash_table_insert(osso->if_hash, new_key, new_elem);
     }
@@ -678,7 +678,7 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
                      gboolean method)
 {   
     char uniq_key[MAX_HASH_KEY_LEN + 1];
-    const _osso_hash_value_t *elem;
+    _osso_hash_value_t *elem;
     const _osso_handler_t *matched_handler = NULL;
     gboolean ret = FALSE;
 

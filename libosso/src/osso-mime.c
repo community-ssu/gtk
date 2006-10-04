@@ -72,7 +72,8 @@ osso_return_t osso_mime_unset_cb(osso_context_t *osso)
                                osso->service,
                                osso->object_path,
                                osso->interface,
-                               _mime_handler, NULL, TRUE);
+                               (const _osso_handler_f*)_mime_handler,
+                               NULL, TRUE);
     return ret ? OSSO_OK : OSSO_INVALID;
 }
 
@@ -96,7 +97,8 @@ osso_return_t osso_mime_unset_cb_full(osso_context_t *osso,
                                osso->service,
                                osso->object_path,
                                osso->interface,
-                               _mime_handler, &mime, TRUE);
+                               (const _osso_handler_f*)_mime_handler,
+                               &mime, TRUE);
     return ret ? OSSO_OK : OSSO_INVALID;
 }
 

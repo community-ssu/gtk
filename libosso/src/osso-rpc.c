@@ -703,7 +703,8 @@ osso_return_t osso_rpc_unset_cb_f(osso_context_t *osso,
     user_data.data = NULL;
 
     _msg_handler_rm_cb_f(osso, service, object_path, interface,
-                         _rpc_handler, &user_data, TRUE);
+                         (const _osso_handler_f*)_rpc_handler,
+                         &user_data, TRUE);
 
     return OSSO_OK;
 }
@@ -726,7 +727,8 @@ osso_return_t osso_rpc_unset_default_cb_f(osso_context_t *osso,
     
     _msg_handler_rm_cb_f(osso, osso->service, osso->object_path,
                          osso->interface,
-                         _rpc_handler, &user_data, TRUE);
+                         (const _osso_handler_f*)_rpc_handler,
+                         &user_data, TRUE);
 
     return OSSO_OK;
 }

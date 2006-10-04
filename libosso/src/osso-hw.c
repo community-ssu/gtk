@@ -328,11 +328,13 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
         _msg_handler_rm_cb_f(osso, USER_LOWMEM_OFF_SIGNAL_SVC,
                              USER_LOWMEM_OFF_SIGNAL_OP,
                              USER_LOWMEM_OFF_SIGNAL_IF,
-                             lowmem_signal_handler, NULL, FALSE);
+                             (const _osso_handler_f*)lowmem_signal_handler,
+                             NULL, FALSE);
         _msg_handler_rm_cb_f(osso, USER_LOWMEM_ON_SIGNAL_SVC,
                              USER_LOWMEM_ON_SIGNAL_OP,
                              USER_LOWMEM_ON_SIGNAL_IF,
-                             lowmem_signal_handler, NULL, FALSE);
+                             (const _osso_handler_f*)lowmem_signal_handler,
+                             NULL, FALSE);
     }
     _unset_state_cb(save_unsaved_data_ind);
     _unset_state_cb(system_inactivity_ind);
@@ -341,7 +343,8 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     if (_state_is_unset()) {
 	_msg_handler_rm_cb_f(osso, MCE_SIGNAL_SVC,
                              MCE_SIGNAL_PATH, MCE_SIGNAL_IF,
-                             signal_handler, NULL, FALSE);
+                             (const _osso_handler_f*)signal_handler,
+                             NULL, FALSE);
     }
     return OSSO_OK;    
 }

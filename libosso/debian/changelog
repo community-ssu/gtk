@@ -1,3 +1,10 @@
+libosso (1.20-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Compilation fixes from Murray Cummings <murrayc@murrayc.com>.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Oct 2006 14:52:59 +0300
+
 libosso (1.19-1) unstable; urgency=low
 
   * Added calling ldconfig to postinst.

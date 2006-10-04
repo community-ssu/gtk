@@ -171,7 +171,7 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
                          osso->service,
                          osso->object_path,
                          osso->interface,
-                         _top_handler, &top, TRUE);
+                         (const _osso_handler_f*)_top_handler, &top, TRUE);
 
     return OSSO_OK;
 }
