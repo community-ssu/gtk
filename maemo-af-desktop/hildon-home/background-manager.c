@@ -604,6 +604,8 @@ load_image_from_uri (const gchar  *uri,
     {
       GnomeVFSFileSize bytes_read;
 
+      gtk_main_iteration ();
+
       result = gnome_vfs_read (handle, buffer, BUFFER_SIZE, &bytes_read);
       if (result == GNOME_VFS_ERROR_IO)
         {
@@ -1253,6 +1255,7 @@ read_pipe_from_child (GIOChannel   *source,
 {
   BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
   BackgroundManagerPrivate *priv = manager->priv;
+  gboolean was_cancelled = FALSE;
   
   /* something arrived from the child pipe: this means that
    * the child fired an error message and (possibly) died; we
@@ -1274,27 +1277,33 @@ read_pipe_from_child (GIOChannel   *source,
 
       g_error_free (error);
 
-      goto finish_up;
-    }
-
-  if (!priv->is_preview_mode)
-    background_manager_write_configuration (manager);
-  
-  g_signal_emit (manager, manager_signals[LOAD_COMPLETE], 0);
-  
-finish_up:
-  if (priv->bg_timeout)
-    {
-      g_source_remove (priv->bg_timeout);
-      priv->bg_timeout = 0;
+      if (priv->loading_note)
+        {
+          gtk_widget_destroy (priv->loading_note);
+          priv->loading_note = NULL;
+        }
+      
+      return FALSE;
     }
 
   if (priv->loading_note)
     {
+      was_cancelled = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (priv->loading_note),
+                                                          "is-cancelled"));
+      if (!was_cancelled)
+        {
+          if (!priv->is_preview_mode)
+            background_manager_write_configuration (manager);
+ 
+          priv->current->has_cache = TRUE;
+  
+          g_signal_emit (manager, manager_signals[LOAD_COMPLETE], 0);
+        }
+
       gtk_widget_destroy (priv->loading_note);
       priv->loading_note = NULL;
     }
-
+  
   return FALSE;
 }
 
@@ -1331,6 +1340,8 @@ loading_image_banner_response (GtkDialog *dialog,
       
       if (manager->priv->child_pid != 0)
         {
+          g_object_set_data (G_OBJECT (dialog),
+                             "is-cancelled", GINT_TO_POINTER (1));
           kill (manager->priv->child_pid, SIGTERM);
 
           g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
@@ -1358,6 +1369,7 @@ show_loading_image_banner (BackgroundManager *manager)
 				 HILDON_HOME_SET_BG_CANCEL, GTK_RESPONSE_CANCEL,
 				 NULL);
   dialog = GTK_DIALOG (priv->loading_note);
+  g_object_set_data (G_OBJECT (dialog), "is-cancelled", GINT_TO_POINTER (0));
   
   label = gtk_label_new (HILDON_HOME_LOADING_IMAGE_TEXT);
   gtk_container_add (GTK_CONTAINER (dialog->vbox), label);
@@ -1380,19 +1392,6 @@ show_loading_image_banner (BackgroundManager *manager)
 		  	      GDK_DECOR_BORDER);
 
   gtk_widget_show_all (priv->loading_note);
-}
-
-static gboolean
-bg_timeout_cb (gpointer data)
-{
-  BackgroundManager *manager = data;
-  
-  show_loading_image_banner (manager);
-
-  /* one-off operation */
-  manager->priv->bg_timeout = 0;
-  
-  return FALSE;
 }
 
 gboolean
@@ -1471,18 +1470,15 @@ background_manager_create_background (BackgroundManager *manager,
    */
   if (first_run)
     {
+      first_run = FALSE;
+      
       if (background_manager_refresh_from_cache (manager))
-        {
-          first_run = FALSE;
-          return;
-        }
-      else
-        first_run = FALSE;
+        return;
     }
 
   if (cancellable)
-    priv->bg_timeout = g_timeout_add (1000, bg_timeout_cb, manager);
-
+    show_loading_image_banner (manager);
+  
   current = priv->current;
   
   g_debug ("Creating background...");
@@ -1503,17 +1499,14 @@ background_manager_create_background (BackgroundManager *manager,
 
       if (cancellable)
         {
-          if (priv->bg_timeout)
-            g_source_remove (priv->bg_timeout);
-          
           if (priv->loading_note)
             gtk_widget_destroy (priv->loading_note);
           
           priv->loading_note = NULL;
         }
-
-      g_signal_emit_by_name (manager, "load-cancel");
-      g_signal_emit_by_name (manager, "load-error", err);
+      
+      g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
+      g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, err);
 
       g_error_free (err);
 
@@ -1603,11 +1596,10 @@ background_manager_create_background (BackgroundManager *manager,
 	}
       else
         {
+          priv->current->has_cache = TRUE;
           g_signal_emit (manager, manager_signals[PREVIEW], 0, pixbuf);
         }
 
-      priv->current->has_cache = TRUE;
-      
       g_object_unref (pixbuf);
     }
   else
@@ -1651,6 +1643,8 @@ background_manager_changed (BackgroundManager *manager,
 
   if (bitmask)
     g_object_unref (bitmask);
+
+  gdk_flush ();
 }
 
 static void
@@ -1687,6 +1681,8 @@ background_manager_preview (BackgroundManager *manager,
 
   if (bitmask)
     g_object_unref (bitmask);
+
+  gdk_flush ();
 }
 
 static void
@@ -1942,7 +1938,7 @@ background_manager_set_image_uri_internal (BackgroundManager *manager,
   if (!priv->is_preview_mode)
     background_manager_create_background (manager, TRUE);
   else
-    priv->current->has_cache = FALSE;
+    priv->preview->has_cache = FALSE;
   
   g_object_notify (G_OBJECT (manager), "image-uri");
 
@@ -2041,7 +2037,7 @@ background_manager_set_mode (BackgroundManager *manager,
       if (!priv->is_preview_mode)
         background_manager_create_background (manager, TRUE);
       else
-        priv->current->has_cache = FALSE;
+        priv->preview->has_cache = FALSE;
 
       g_object_notify (G_OBJECT (manager), "mode");
       g_object_unref (manager);
@@ -2087,7 +2083,7 @@ background_manager_set_color (BackgroundManager *manager,
       if (!priv->is_preview_mode)
         background_manager_create_background (manager, TRUE);
       else
-        priv->current->has_cache = FALSE;
+        priv->preview->has_cache = FALSE;
 
       g_object_notify (G_OBJECT (manager), "color");
       g_object_unref (manager);
