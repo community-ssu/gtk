@@ -194,11 +194,7 @@ static void
 titlebar_set_background_activate_cb (HildonHomeTitlebar *titlebar,
                                      HildonHomeWindow   *window)
 {
-  hildon_home_window_set_desktop_dimmed (window, TRUE);
-
   home_bgd_dialog_run (GTK_WINDOW (window));
-
-  hildon_home_window_set_desktop_dimmed (window, FALSE);
 }
 
 static void
