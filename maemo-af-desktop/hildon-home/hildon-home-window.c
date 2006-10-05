@@ -343,7 +343,13 @@ titlebar_help_activate_cb (HildonHomeTitlebar *titlebar,
   if (!osso_ctx)
     return;
 
-  res = ossohelp_show (osso_ctx, HILDON_HOME_NORMAL_HELP_TOPIC, 0);
+  if (hildon_home_area_get_layout_mode (
+                       HILDON_HOME_AREA (window->priv->applet_area)))
+    res = ossohelp_show (osso_ctx, HILDON_HOME_LAYOUT_HELP_TOPIC,
+                         OSSO_HELP_SHOW_DIALOG);
+  else
+    res = ossohelp_show (osso_ctx, HILDON_HOME_NORMAL_HELP_TOPIC, 0);
+
   switch (res)
     {
     case OSSO_OK:

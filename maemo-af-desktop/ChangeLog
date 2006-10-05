@@ -1,6 +1,11 @@
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-window.c:
+	  - display layout help in layout mode, and in a dialog
+
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-window.c:
 	  - Removed dimming which came back from merging background patch
 	  - Re-change TILED and STRETCHED order (same reason)
 
