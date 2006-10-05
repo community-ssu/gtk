@@ -1,5 +1,9 @@
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-others-button.c: Fixed creation of menus directory
+
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-window.c: CP applets launched from home
 	  are now system-modal. Fixes: NB#23451
 

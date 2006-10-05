@@ -935,8 +935,9 @@ hn_others_button_dnotify_register (HNOthersButton * button)
        * define might contain directory (it does, in fact).
        */
       dir = g_path_get_dirname( conf_file );
+      g_mkdir (dir, 0755);
 
-      if (dir && *dir && g_mkdir (dir, 0755))
+      if (dir && *dir)
 	{
 	  if ( hildon_dnotify_set_cb(
 		(hildon_dnotify_cb_f *)hn_others_button_dnotify_handler,
