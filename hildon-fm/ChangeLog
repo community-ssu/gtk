@@ -1,3 +1,13 @@
+2006-10-04  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.12.
+	
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_close_load_banner): Make sure that the row
+	with the cursor is in the selection. (N42110)
+	(hildon_file_selection_selection_changed): Free current_folder
+	before setting a new one.
+
 2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.11.

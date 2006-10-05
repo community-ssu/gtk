@@ -1,3 +1,11 @@
+hildon-fm (1.12-1) unstable; urgency=low
+
+  * debian/control: Make hildon-fm1-dbg depend on hildon-fm1, with an
+    exact version, and nothing else.
+  * Fixes: NB#42110.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  4 Oct 2006 14:55:21 +0300
+
 hildon-fm (1.11-1) unstable; urgency=low
 
   * debian/control (Build-Depends): Removed osso-bttools-dev.
