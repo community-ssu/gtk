@@ -203,6 +203,21 @@ dump_path (const char *label, GtkTreeModel *model, GtkTreePath *path)
   else
     fprintf (stderr, "%s: <invalid>\n", label);
 }
+
+static void
+dump_selection (const char *label, GtkTreeView *view)
+{
+  GtkTreeSelection *sel = gtk_tree_view_get_selection (view);
+  GtkTreeModel *model;
+  GList *rows = gtk_tree_selection_get_selected_rows (sel, &model);
+
+  fprintf (stderr, "%s:\n", label);
+  while (rows)
+    {
+      dump_path ("", model, rows->data);
+      rows = rows->next;
+    }
+}
 #endif
 
 static void
@@ -1340,7 +1355,18 @@ static void hildon_file_selection_close_load_banner(HildonFileSelection *
 	    gtk_tree_path_free (path);
 	  }
 	else
-	  gtk_tree_path_free (cursor_path);
+	  {
+	    /* XXX - when the selection mode is MULTIPLE, it can
+	             happen that we have a cursor, but the selection
+	             is empty.  Thus, we make sure that the cursor row
+	             is in the selection.
+	    */
+	    gtk_tree_selection_select_path
+	      (gtk_tree_view_get_selection (GTK_TREE_VIEW (view)),
+	       cursor_path);
+
+	    gtk_tree_path_free (cursor_path);
+	  }
       }
 
     priv->force_content_pane = FALSE;
@@ -1549,6 +1575,7 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
                     &main_iter, FALSE);
             }
 
+	    gtk_tree_row_reference_free (priv->current_folder);
             priv->current_folder = gtk_tree_row_reference_new(priv->dir_sort, sort_path);
 
         if (hildon_file_selection_content_pane_visible(priv)) {
@@ -3401,7 +3428,6 @@ void hildon_file_selection_unselect_all(HildonFileSelection * self)
     if (GTK_IS_TREE_VIEW(view))
     {
       GtkTreeSelection *sel;
-
       sel = gtk_tree_view_get_selection(GTK_TREE_VIEW(view));
       gtk_tree_selection_unselect_all(sel);    
     }
@@ -3432,7 +3458,7 @@ void hildon_file_selection_clear_multi_selection(HildonFileSelection * self)
       if (gtk_tree_selection_get_mode(sel) == GTK_SELECTION_MULTIPLE)
       {
         gtk_tree_view_get_cursor(GTK_TREE_VIEW(view), &path, NULL);
-        gtk_tree_selection_unselect_all(sel);    
+	gtk_tree_selection_unselect_all(sel);    
 
         if (path)
         {
