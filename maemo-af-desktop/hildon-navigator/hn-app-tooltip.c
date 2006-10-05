@@ -187,6 +187,9 @@ static void
 hn_app_tooltip_position (HNAppTooltip *tip)
 {
   gint x, y;
+  GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET(tip));
+  gint screen_height = gdk_screen_get_height (screen);
+  GtkRequisition req;
 
   gdk_flush ();
 
@@ -195,6 +198,11 @@ hn_app_tooltip_position (HNAppTooltip *tip)
 
   x += tip->widget->allocation.width + 1;
   y += tip->widget->allocation.y;
+
+
+  gtk_widget_size_request (GTK_WIDGET (tip), &req);
+  if (y + req.height > screen_height)
+    y = screen_height - req.height;
   
   gtk_window_move (GTK_WINDOW (tip), x, y);
 }

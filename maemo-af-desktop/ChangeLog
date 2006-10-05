@@ -1,5 +1,10 @@
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-tooltip.c: Fit the tooltip within the screen
+	  Fixes: NB#42275
+
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.93
 
 2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
