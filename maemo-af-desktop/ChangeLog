@@ -1,3 +1,7 @@
+2006-10-05  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.9.94
+
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-window.c:

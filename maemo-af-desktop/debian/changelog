@@ -1,3 +1,22 @@
+maemo-af-desktop (2.9.94-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-window.c:
+    - display layout help in layout mode, and in a dialog
+
+  * hildon-home/hildon-home-window.c:
+    - Removed dimming which came back from merging background patch
+    - Re-change TILED and STRETCHED order (same reason)
+
+  * hildon-navigator/hn-others-button.c: Fixed creation of menus directory
+
+  * hildon-home/hildon-home-window.c: CP applets launched from home
+    are now system-modal. Fixes: NB#23451
+
+  * hildon-navigator/hn-app-tooltip.c: Fit the tooltip within the screen
+    Fixes: NB#42275
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  5 Oct 2006 13:31:48 +0300
+
 maemo-af-desktop (2.9.93-1) unstable; urgency=low
 
   * hildon-navigator/hn-item-dummy.c: Show the child!!!
@@ -20,7 +39,7 @@ maemo-af-desktop (2.9.93-1) unstable; urgency=low
   HildonNavigatorItem to have dummy buttons.
   * hildon-navigator/hildon-navigator-item.c: Improved GObject
   code and code cleanup.
-  * hildon-navigator/hildon-navigator-panel.c: Created dummy 
+  * hildon-navigator/hildon-navigator-panel.c: Created dummy
   plugins while unloading in order to show the tasknavigator never
   distorted.
   * hildon-navigator/Makefile.am: Added hn-item-dummy.[ch].
@@ -37,7 +56,7 @@ maemo-af-desktop (2.9.93-1) unstable; urgency=low
   * hildon-home/background-manager.c: Stretch only on top of the
     home area (not under TN)
 
-  * hildon-status-bar/hildon-status-bar-main.c: 
+  * hildon-status-bar/hildon-status-bar-main.c:
   - Dimm/Undimm the extension button and SB's plugins when appropiated.
   - Send a Fake Key to Full Screen when extension panel is opened.
   * hildon-navigator/hildon-navigator-window.c:
@@ -49,8 +68,9 @@ maemo-af-desktop (2.9.93-1) unstable; urgency=low
 
   * hildon-home/hildon-home-window.c: Chain the key_press event handler
     to the parent class
+  * 2.9.94-1
 
- -- Johan Bilien <johan.bilien@nokia.com>  Wed,  4 Oct 2006 20:30:50 +0300
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  5 Oct 2006 13:31:41 +0300
 
 maemo-af-desktop (2.9.92.2-1) unstable; urgency=low
 
