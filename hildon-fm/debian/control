@@ -34,7 +34,6 @@ Description: Hildon-fm unit tests.
 Package: hildon-fm1-dbg
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-fm-l10n-mr | hildon-fm-l10n-mr0
+Depends: hildon-fm1 (= ${Source-Version})
 Recommends: hildon-libs0-dbg
-Description: LGPL-licensed file management libraries (with debug symbols).
- LGPL-licensed file management libraries (with debug symbols).
+Description: Debug symbols for hildon-fm1.
