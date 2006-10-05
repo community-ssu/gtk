@@ -178,10 +178,8 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
                                     (GTK_TREE_MODEL (priv->plugin_list),
                                      priv->osso_context);
 
-  hildon_home_window_set_desktop_dimmed (window, TRUE);
   response = gtk_dialog_run (GTK_DIALOG (dialog));
   gtk_widget_destroy (dialog);
-  hildon_home_window_set_desktop_dimmed (window, FALSE);
   
   if (response != GTK_RESPONSE_OK)
     return;

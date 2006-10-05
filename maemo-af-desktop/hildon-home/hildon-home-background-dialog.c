@@ -684,8 +684,8 @@ home_bgd_dialog_run (GtkWindow * parent)
   const gchar     * image_modes[] = { 
     HILDON_HOME_SET_BG_MODE_CENTERED,
     HILDON_HOME_SET_BG_MODE_SCALED,
-    HILDON_HOME_SET_BG_MODE_TILED,
-    HILDON_HOME_SET_BG_MODE_STRETCHED
+    HILDON_HOME_SET_BG_MODE_STRETCHED,
+    HILDON_HOME_SET_BG_MODE_TILED
   };
   
   ResponseData    * resp_data;

@@ -103,8 +103,8 @@ background_mode_get_type (void)
       {
         { BACKGROUND_CENTERED, "BACKGROUND_CENTERED", "centered" },
         { BACKGROUND_SCALED, "BACKGROUND_SCALED", "scaled" },
-        { BACKGROUND_TILED, "BACKGROUND_TILED", "tiled" },
         { BACKGROUND_STRETCHED, "BACKGROUND_STRETCHED", "stretched" },
+        { BACKGROUND_TILED, "BACKGROUND_TILED", "tiled" },
         { 0, NULL, NULL }
       };
       
