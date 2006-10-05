@@ -48,6 +48,9 @@ G_BEGIN_DECLS
 #define HSB_PANEL_DEFAULT_WIDTH  280
 #define HSB_ITEM_SIZE            40
 
+#define HSB_ARROW_ICON_NAME "qgn_stat_more"
+#define HSB_ARROW_ICON_SIZE HSB_ITEM_SIZE
+
 /* hardcoded pixel positions for the icons */
 /* CHECKME: Why isn't y=0 at top? -2 seems to be much better.. */  
 #define HSB_ITEM_Y         0

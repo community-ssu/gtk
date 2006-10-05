@@ -147,7 +147,7 @@ void init_dock( StatusBar *panel )
     gint i;
     Display *dpy;
     Window  win;
-    GtkWidget *arrow;
+    GtkWidget *arrow_image;
     gchar *log_path;
     
     /* Initialize item widgets */
@@ -195,12 +195,13 @@ void init_dock( StatusBar *panel )
     /* Initialize arrow button */
     panel->arrow_button = gtk_toggle_button_new();
     gtk_widget_set_name(panel->arrow_button, "HildonStatusBarItem");
-    arrow = gtk_arrow_new(GTK_ARROW_DOWN, GTK_SHADOW_IN);
     g_object_ref( panel->arrow_button );
     gtk_object_sink( GTK_OBJECT(panel->arrow_button) );
-    gtk_container_add(GTK_CONTAINER(panel->arrow_button), arrow);
     gtk_widget_set_size_request(panel->arrow_button, 
 		                HSB_ITEM_SIZE, HSB_ITEM_SIZE);
+    arrow_image = gtk_image_new_from_icon_name (HSB_ARROW_ICON_NAME,
+                                                HSB_ARROW_ICON_SIZE);
+    gtk_button_set_image (GTK_BUTTON (panel->arrow_button), arrow_image);
     panel->arrow_button_toggled = FALSE; 
     g_signal_connect(panel->arrow_button, "toggled", 
 		     G_CALLBACK(arrow_button_toggled_cb), panel);
