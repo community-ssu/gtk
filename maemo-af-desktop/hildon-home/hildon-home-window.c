@@ -311,9 +311,10 @@ titlebar_applet_activate_cb (HildonHomeTitlebar *titlebar,
 
   g_print ("osso_cp_plugin_execute: %s\n", applet_path);
 
-  res = osso_cp_plugin_execute (osso_ctx, applet_path,
-		                GTK_WIDGET (window),
-				TRUE);
+  res = osso_cp_plugin_execute (osso_ctx,
+                                applet_path,
+		                        NULL,
+                                TRUE);
   switch (res)
     {
     case OSSO_OK:

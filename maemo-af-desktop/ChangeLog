@@ -1,5 +1,10 @@
 2006-10-04  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-window.c: CP applets launched from home
+	  are now system-modal. Fixes: NB#23451
+
+2006-10-04  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-tooltip.c: Fit the tooltip within the screen
 	  Fixes: NB#42275
 
