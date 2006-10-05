@@ -1615,8 +1615,8 @@ background_manager_changed (BackgroundManager *manager,
 {
   BackgroundManagerPrivate *priv;
   GdkColormap *colormap;
-  GdkPixmap *pixmap;
-  GdkBitmap *bitmask;
+  GdkPixmap *pixmap = NULL;
+  GdkBitmap *bitmask = NULL;
   
   if (G_UNLIKELY (!pixbuf))
     return;
