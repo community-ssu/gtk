@@ -38,6 +38,7 @@
 #include <gtk/gtktogglebutton.h>
 #include <gtk/gtkarrow.h>
 #include <gtk/gtkfixed.h>
+#include <gtk/gtkicontheme.h>
 
 /* GDK includes */
 #include <gdk/gdkwindow.h>
@@ -148,6 +149,9 @@ void init_dock( StatusBar *panel )
     Display *dpy;
     Window  win;
     GtkWidget *arrow_image;
+    GtkIconTheme *icon_theme;
+    GdkPixbuf *arrow_pixbuf;
+    GError *error = NULL;
     gchar *log_path;
     
     /* Initialize item widgets */
@@ -199,8 +203,26 @@ void init_dock( StatusBar *panel )
     gtk_object_sink( GTK_OBJECT(panel->arrow_button) );
     gtk_widget_set_size_request(panel->arrow_button, 
 		                HSB_ITEM_SIZE, HSB_ITEM_SIZE);
-    arrow_image = gtk_image_new_from_icon_name (HSB_ARROW_ICON_NAME,
-                                                HSB_ARROW_ICON_SIZE);
+    arrow_image = gtk_image_new();
+    icon_theme = gtk_icon_theme_get_default();
+    arrow_pixbuf = gtk_icon_theme_load_icon(icon_theme,
+                                            HSB_ARROW_ICON_NAME,
+                                            HSB_ARROW_ICON_SIZE,
+                                            GTK_ICON_LOOKUP_NO_SVG,
+                                            &error);
+
+    if( arrow_pixbuf )
+    {
+        gtk_image_set_from_pixbuf(GTK_IMAGE(arrow_image), arrow_pixbuf);
+        gdk_pixbuf_unref(arrow_pixbuf);
+    }
+    else if( error && error->message )
+    {
+        g_warning("Could not load statusbar extension icon: %s",
+                  error->message);
+        g_error_free(error);
+    }
+
     gtk_button_set_image (GTK_BUTTON (panel->arrow_button), arrow_image);
     panel->arrow_button_toggled = FALSE; 
     g_signal_connect(panel->arrow_button, "toggled", 
