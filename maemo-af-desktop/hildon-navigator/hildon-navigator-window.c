@@ -49,6 +49,8 @@ gboolean config_lowmem_notify_leave;
 gboolean config_lowmem_pavlov_dialog;
 gboolean tn_is_sensitive=TRUE;
 
+static GtkWindowClass *parent_class = NULL;
+
 typedef struct _HildonNavigatorWindowPrivate HildonNavigatorWindowPrivate;
 
 struct _HildonNavigatorWindowPrivate
@@ -68,6 +70,7 @@ static gboolean getenv_yesno(const char *env, gboolean def);
 static void set_focus_forall_cb (GtkWidget *widget, gpointer data);
 static void configuration_changed (char *path, gpointer *data);
 static void initialize_navigator_menus (HildonNavigatorWindowPrivate *priv);
+static GObject *hn_window_constructor (GType gtype, guint n_params, GObjectConstructParam *params);
 static void hildon_navigator_window_finalize (GObject *self);
 static void hildon_navigator_window_init (HildonNavigatorWindow *window);
 /* */
@@ -106,9 +109,12 @@ hildon_navigator_window_class_init (HildonNavigatorWindowClass *hnwindow_class)
   GObjectClass      *object_class = G_OBJECT_CLASS   (hnwindow_class);
   /*GtkWidgetClass    *widget_class = GTK_WIDGET_CLASS (hnwindow_class);*/
 
+  parent_class = g_type_class_peek_parent (hnwindow_class);
+  
   g_type_class_add_private (hnwindow_class, sizeof (HildonNavigatorWindowPrivate));
   
   object_class->finalize          = hildon_navigator_window_finalize;
+  object_class->constructor	  = hn_window_constructor;
   hnwindow_class->set_sensitive   = hn_window_set_sensitive;
   hnwindow_class->set_focus       = hn_window_set_focus;
   hnwindow_class->get_others_menu = hn_window_get_others_menu;
@@ -187,59 +193,32 @@ initialize_navigator_menus (HildonNavigatorWindowPrivate *priv)
 #endif
 }
 
-static void 
-hildon_navigator_window_finalize (GObject *self)
+static GObject *
+hn_window_constructor (GType gtype,
+                                     guint n_params,
+				     GObjectConstructParam *params)
 {
-  HildonNavigatorWindow        *window;
-  HildonNavigatorWindowPrivate *priv;
 
-  g_assert (self);
-  g_assert (HILDON_IS_NAVIGATOR_WINDOW (self));
-  
-  window = HILDON_NAVIGATOR_WINDOW (self);
-  priv   = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
-
-  /* deinit dnotify */
-  hildon_dnotify_handler_clear ();
-  
-  gtk_widget_destroy (priv->others_button);
-}
-
-static void 
-hildon_navigator_window_init (HildonNavigatorWindow *window)
-{
+  GObject *self;
+  HildonNavigatorWindow *window;
   HildonNavigatorWindowPrivate *priv;
   gchar *plugin_dir, *config_file, *home_dir;
   gboolean dnotify_ret;
   hildon_return_t dnotify_status;
+
+  self = G_OBJECT_CLASS (parent_class)->constructor (gtype,
+                                                     n_params,
+                                                     params);
+
+  window = HILDON_NAVIGATOR_WINDOW (self);
+  priv   = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
+
+  home_dir = getenv ("HOME");
+
+  gtk_widget_push_composite_child ();
   
-  g_return_if_fail (window);
-
-  GTK_WINDOW (window)->type = GTK_WINDOW_TOPLEVEL;
-
-  home_dir = getenv("HOME");
-
-  priv = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
-
-  /* Get configuration options from the environment.
-     */
-  config_do_bgkill = getenv_yesno("NAVIGATOR_DO_BGKILL", TRUE);
-  config_lowmem_dim = getenv_yesno("NAVIGATOR_LOWMEM_DIM", FALSE);
-  config_lowmem_notify_enter = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY_ENTER", FALSE);
-  config_lowmem_notify_leave = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY_LEAVE", FALSE);
-  config_lowmem_pavlov_dialog = getenv_yesno("NAVIGATOR_LOWMEM_PAVLOV_DIALOG", FALSE);
-
   priv->panel = GTK_WIDGET (hildon_navigator_panel_new ());
 
-  /*FIXME: we inherit from gtk_window!*/
-  gtk_window_set_type_hint( GTK_WINDOW(window),GDK_WINDOW_TYPE_HINT_DOCK);
-  gtk_window_set_accept_focus( GTK_WINDOW(window),TN_DEFAULT_FOCUS);
-
-#if 0 /* This doesn't make sense here but I keep it for further investigation ;) */
-	g_signal_connect (tasknav->main_window, "focus-out-event",
-					  G_CALLBACK (main_window_focus_out_cb),
-					  NULL);
-#endif
   gtk_widget_set_size_request(GTK_WIDGET (priv->panel), 
 		  	      BUTTON_WIDTH,
 		              gdk_screen_height());
@@ -297,6 +276,47 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   g_free (plugin_dir);
   g_free (config_file);
   g_free (home_dir);
+
+  gtk_widget_pop_composite_child (); 
+
+  return self;
+}
+
+static void 
+hildon_navigator_window_finalize (GObject *self)
+{
+  HildonNavigatorWindow        *window;
+  HildonNavigatorWindowPrivate *priv;
+
+  g_assert (self);
+  g_assert (HILDON_IS_NAVIGATOR_WINDOW (self));
+  
+  window = HILDON_NAVIGATOR_WINDOW (self);
+  priv   = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
+
+  /* deinit dnotify */
+  hildon_dnotify_handler_clear ();
+  
+  gtk_widget_destroy (priv->others_button);
+}
+
+static void 
+hildon_navigator_window_init (HildonNavigatorWindow *window)
+{
+  g_assert (HILDON_IS_NAVIGATOR_WINDOW (window));
+
+  /* Get configuration options from the environment.
+     */
+  config_do_bgkill = getenv_yesno("NAVIGATOR_DO_BGKILL", TRUE);
+  config_lowmem_dim = getenv_yesno("NAVIGATOR_LOWMEM_DIM", FALSE);
+  config_lowmem_notify_enter = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY_ENTER", FALSE);
+  config_lowmem_notify_leave = getenv_yesno("NAVIGATOR_LOWMEM_NOTIFY_LEAVE", FALSE);
+  config_lowmem_pavlov_dialog = getenv_yesno("NAVIGATOR_LOWMEM_PAVLOV_DIALOG", FALSE);
+  
+  /*FIXME: we inherit from gtk_window!*/
+  gtk_window_set_type_hint( GTK_WINDOW(window),GDK_WINDOW_TYPE_HINT_DOCK);
+  gtk_window_set_accept_focus( GTK_WINDOW(window),TN_DEFAULT_FOCUS);
+
 }
 
 HildonNavigatorWindow *

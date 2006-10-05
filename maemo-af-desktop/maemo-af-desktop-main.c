@@ -243,6 +243,7 @@ maemo_af_desktop_main(int argc, char* argv[])
     
 
     tasknav = hildon_navigator_window_new ();
+
     gtk_widget_show_all (GTK_WIDGET (tasknav));
 
     keysnooper_id = 0;
@@ -294,10 +295,11 @@ maemo_af_desktop_main(int argc, char* argv[])
 
     /* register the reading end with the event loop */
     g_io_add_watch(g_signal_in, G_IO_IN | G_IO_PRI, deliver_signal, NULL);
+    
     gtk_main();
+    
     home_deinitialize(keysnooper_id);
     status_bar_deinitialize(osso,&panel);
-    /*task_navigator_deinitialize(&tasknav);*/
     
     osso_deinitialize( osso );
       
