@@ -1,5 +1,10 @@
 2006-10-06  Johan Bilien <johan.bilien@nokia.com>
 
+	* maemo-af-desktop.defs: Do not define GTK2_RC_FILES, rely on osso-gtk
+	  Fixes: NB#42035
+
+2006-10-06  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Center the picture to the home
 	  area when scaled. Fixes: NB#42493
 
