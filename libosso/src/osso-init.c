@@ -27,6 +27,12 @@
 #include "osso-init.h"
 #include "osso-log.h"
 #include <assert.h>
+#include "muali.h"
+
+/*  Muali filter is disabled temporarily
+static DBusHandlerResult
+_muali_filter(DBusConnection *conn, DBusMessage *msg, void *data);
+*/
 
 /* for internal use only
  * This function strdups application name and makes it
@@ -288,7 +294,10 @@ static osso_context_t *_init(const gchar *application, const gchar *version)
                                             free, free_uniq_hash_value);
     osso->if_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
                                           free, free_if_hash_value);
-    if (osso->uniq_hash == NULL || osso->if_hash == NULL) {
+    osso->id_hash = g_hash_table_new_full(g_int_hash, g_int_equal,
+                                          NULL, free_uniq_hash_value);
+    if (osso->uniq_hash == NULL || osso->if_hash == NULL
+        || osso->id_hash == NULL) {
         ULOG_ERR_F("g_hash_table_new_full failed");
         free(osso);
         return NULL;
@@ -310,6 +319,9 @@ static void _deinit(osso_context_t *osso)
     }
     if (osso->if_hash != NULL) {
         g_hash_table_destroy(osso->if_hash);
+    }
+    if (osso->id_hash != NULL) {
+        g_hash_table_destroy(osso->id_hash);
     }
     if (osso->cp_plugins != NULL) {
         g_array_free(osso->cp_plugins, TRUE);
@@ -372,6 +384,15 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
         ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error4;
     }
+    /* FIXME: there are two filters because semantics in the new
+     * muali API are slightly different (stricter matching) */
+    /*
+    if (!dbus_connection_add_filter(conn, _muali_filter, osso, NULL))
+    {
+        ULOG_ERR_F("dbus_connection_add_filter failed");
+	goto dbus_conn_error4;
+    }
+    */
     dprint("My base service is '%s'", dbus_bus_get_unique_name(conn));
 
     return conn;
@@ -505,6 +526,134 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
+inline static int muali_convert_msgtype(int t)
+{
+    switch (t) {
+            case DBUS_MESSAGE_TYPE_METHOD_CALL:
+                    return MUALI_EVENT_MESSAGE;
+            case DBUS_MESSAGE_TYPE_SIGNAL:
+                    return MUALI_EVENT_SIGNAL;
+            case DBUS_MESSAGE_TYPE_ERROR:
+                    return MUALI_EVENT_ERROR;
+            case DBUS_MESSAGE_TYPE_METHOD_RETURN:
+                    return MUALI_EVENT_REPLY;
+            default:
+                    ULOG_ERR_F("unknown message type %d", t);
+                    return MUALI_EVENT_NONE;
+    }
+}
+
+inline static int types_match(int a, int b)
+{
+    if (a == b) return 1;
+
+    if (a == MUALI_EVENT_MESSAGE_OR_SIGNAL &&
+        (b == MUALI_EVENT_MESSAGE || b == MUALI_EVENT_SIGNAL))
+            return 1;
+
+    if (a == MUALI_EVENT_REPLY_OR_ERROR &&
+        (b == MUALI_EVENT_REPLY || b == MUALI_EVENT_ERROR))
+            return 1;
+
+    if (b == MUALI_EVENT_MESSAGE_OR_SIGNAL &&
+        (a == MUALI_EVENT_MESSAGE || a == MUALI_EVENT_SIGNAL))
+            return 1;
+
+    if (b == MUALI_EVENT_REPLY_OR_ERROR &&
+        (a == MUALI_EVENT_REPLY || a == MUALI_EVENT_ERROR))
+            return 1;
+
+    return 0;
+}
+
+inline static int str_match(const char *a, const char *b)
+{
+    if (a == NULL || b == NULL) return 1;
+
+    if (strcmp(a, b) == 0) return 1;
+
+    return 0;
+}
+
+#if 0
+/* filter function for muali API */
+static DBusHandlerResult
+_muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
+{
+    muali_context_t *muali;
+    _osso_hash_value_t *elem;
+    int msgtype;
+    const char *interface;
+#ifdef OSSOLOG_COMPILE
+    gboolean found = FALSE;
+#endif
+
+    muali = data;
+
+    assert(muali != NULL);
+
+    msgtype = muali_convert_msgtype(dbus_message_get_type(msg));
+    if (msgtype == MUALI_EVENT_NONE) {
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+
+    /* interface is used as hash key to limit number of initial matches */
+    interface = dbus_message_get_interface(msg);
+
+    if (interface == NULL) {
+        ULOG_DEBUG_F("interface of the message was NULL");
+        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+
+    ULOG_DEBUG_F("key = '%s'", interface);
+    elem = g_hash_table_lookup(muali->if_hash, interface);
+
+    if (elem != NULL) {
+        GList *list;
+
+        muali->cur_conn = conn;
+
+        list = g_list_first(elem->handlers);
+        while (list != NULL) {
+            _osso_handler_t *handler;
+            DBusHandlerResult ret;
+
+            handler = list->data;
+
+            if (types_match(handler->data->event_type, msgtype) &&
+                str_match(handler->data->service,
+                          dbus_message_get_sender(msg)) &&
+                str_match(handler->data->path,
+                          dbus_message_get_path(msg)) &&
+                /* interface has matched already */
+                str_match(handler->data->name,
+                          dbus_message_get_member(msg))) {
+
+                ULOG_DEBUG_F("before calling the handler");
+                ULOG_DEBUG_F(" handler = %p", handler->handler);
+                ULOG_DEBUG_F(" data = %p", handler->data);
+                ret = (*handler->handler)(muali, msg, handler->data);
+                ULOG_DEBUG_F("after calling the handler");
+                if (ret == DBUS_HANDLER_RESULT_HANDLED) {
+                    return ret;
+                }
+#ifdef OSSOLOG_COMPILE
+                found = TRUE;
+#endif
+            }
+
+            list = g_list_next(list);
+        }
+    } 
+#ifdef OSSOLOG_COMPILE
+    if (!found) {
+        ULOG_DEBUG_F("suitable handler not found from the hash table");
+    }
+#endif
+
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+}
+#endif
 
 /************************************************************************/
 
@@ -629,6 +778,57 @@ _msg_handler_set_cb_f(osso_context_t *osso,
 
     set_handler_helper(osso, service, object_path, interface,
                        cb, data, method, FALSE);
+}
+
+gboolean __attribute__ ((visibility("hidden")))
+_muali_set_handler(_muali_context_t *context,
+                   _osso_handler_f *handler,
+                   _osso_callback_data_t *data, 
+                   int handler_id)
+{   
+    _osso_hash_value_t *old;
+    _osso_handler_t *elem;
+
+    assert(context != NULL && handler != NULL && data != NULL);
+    assert(handler_id != 0);
+
+    elem = calloc(1, sizeof(_osso_handler_t));
+    if (elem == NULL) {
+        ULOG_ERR_F("calloc() failed");
+        return FALSE;
+    }
+
+    elem->handler = handler;
+    elem->data = data;
+    elem->handler_id = handler_id;
+    /* other members are not used and left zero */
+
+    old = g_hash_table_lookup(context->id_hash, &handler_id);
+    if (old != NULL) {
+        ULOG_DEBUG_F("registering another handler for id %d", handler_id);
+
+        /* add it to the list of handlers */
+        old->handlers = g_list_append(old->handlers, elem);
+
+    } else {
+        _osso_hash_value_t *new_elem;
+
+        ULOG_DEBUG_F("registering first handler for id %d", handler_id);
+
+        /* we need to allocate a new hash table element */
+        new_elem = calloc(1, sizeof(_osso_hash_value_t));
+        if (new_elem == NULL) {
+            ULOG_ERR_F("calloc() failed");
+            free(elem);
+            return FALSE;
+        }
+
+        new_elem->handlers = g_list_append(NULL, elem);
+
+        g_hash_table_insert(context->id_hash, &handler_id, new_elem);
+    }
+
+    return add_to_if_hash(context, elem, data->interface);
 }
 
 void __attribute__ ((visibility("hidden")))

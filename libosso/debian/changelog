@@ -4,8 +4,9 @@ libosso (1.20-1) unstable; urgency=low
   * Compilation fixes from Murray Cummings <murrayc@murrayc.com>.
     Fixes: MB#795
   * Added content to the README file because of a sudden popular demand.
+  * Added more untested muali code (it's not in use yet).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 04 Oct 2006 14:52:59 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 06 Oct 2006 16:22:26 +0300
 
 libosso (1.19-1) unstable; urgency=low
 

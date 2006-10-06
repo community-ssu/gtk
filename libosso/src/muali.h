@@ -53,7 +53,7 @@ typedef int muali_error_t;
 #define MUALI_ERROR             3       /* generic error code */
 #define MUALI_ERROR_TIMEOUT     4       /* timeout happened */
 
-typedef struct _muali_context_t muali_context_t;
+typedef _muali_context_t muali_context_t;
 
 typedef struct {
   int type;             /* type of argument */
@@ -74,6 +74,7 @@ typedef struct {
 
 /* Values of the type member of muali_arg_t. New definitions may
  * come later. */
+#define MUALI_TYPE_INVALID      0
 #define MUALI_TYPE_BOOL         1
 #define MUALI_TYPE_INT          2
 #define MUALI_TYPE_UINT         3
@@ -90,7 +91,8 @@ typedef struct {
         const char *interface;  /* interface name or NULL */
         const char *name;       /* name of message/signal or NULL */
 
-        /* event type, in case it is one of the pre-defined events */
+        /* Received event type, in case it is one of the
+         * pre-defined events */
         int event_type;
 
         /* This can be ID of the reply or a received message. */
@@ -102,9 +104,10 @@ typedef struct {
         /* muali-internal information, ignore this */
         void *muali_internal;
 
-        /* Arguments (coming or going), or NULL. Note that this is
+        /* Array of arguments (coming or going), terminating to argument
+         * of type MUALI_TYPE_INVALID, or NULL. Note that this is
          * ignored in case of a vararg function. */
-        const muali_arg_t *args[];
+        const muali_arg_t *args;
 } muali_event_info_t;
 
 typedef void (muali_handler_t)(muali_context_t *context,

@@ -42,7 +42,6 @@
 # include <dbus/dbus.h>
 # include <dbus/dbus-glib-lowlevel.h>
 
-
 # define OSSO_BUS_HOME		"home"
 # define OSSO_BUS_TASKNAV	"tasknav"
 # define OSSO_BUS_CTRLPAN	"controlpanel"
@@ -69,6 +68,9 @@
 
 #define MAX_APP_NAME_LEN 50
 #define MAX_VERSION_LEN 30
+
+#define MUALI_MAX_ARGS 256
+#define MUALI_MAX_MATCH_SIZE 256
 
 typedef struct {
     osso_hw_cb_f *cb;
@@ -101,6 +103,12 @@ typedef struct {
     char *match_rule;
     gpointer data;
     int event_type;
+
+    char *service;    /* service name or NULL */
+    char *path;       /* object path or NULL */
+    char *interface;  /* interface name or NULL */
+    char *name;       /* name of message/signal or NULL */
+
 } _osso_callback_data_t;
 
 typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,
@@ -112,6 +120,7 @@ typedef struct {
     _osso_callback_data_t *data;
     gboolean method;
     gboolean can_free_data;
+    int handler_id;
 } _osso_handler_t;
 
 typedef struct {
@@ -124,15 +133,10 @@ typedef struct {
     gchar *svcname;
 } _osso_cp_plugin_t;
 
-typedef struct {
-    _osso_handler_t *handler;
-    gpointer data;
-} _osso_rm_cb_match_t;
-
 /**
  * This structure is used to store library specific stuff
  */
-struct osso_af_context_t {
+typedef struct osso_af_context_t {
     DBusConnection *conn;
     DBusConnection *sys_conn;
     DBusConnection *cur_conn;
@@ -146,6 +150,7 @@ struct osso_af_context_t {
     GHashTable *uniq_hash;  /* handlers hashed by the triplet: service,
                                object path, and interface. */
     GHashTable *if_hash;    /* handlers hashed by interface only */
+    GHashTable *id_hash;    /* handlers hashed by id (muali API) */
     _osso_autosave_t autosave;
 #ifdef LIBOSSO_DEBUG
     guint log_handler;
@@ -154,7 +159,9 @@ struct osso_af_context_t {
     osso_hw_state_t hw_state;
     guint rpc_timeout;
     GArray *cp_plugins;
-};
+} _osso_af_context_t;
+
+typedef _osso_af_context_t _muali_context_t;
 
 # ifdef LIBOSSO_DEBUG
 #  define dprint(f, a...) (fprintf(stderr, "%s:%d %s(): "f"\n", __FILE__, \
@@ -203,6 +210,13 @@ make_default_service(const char *application, char *service);
 
 gboolean __attribute__ ((visibility("hidden")))
 make_default_object_path(const char *application, char *path);
+
+
+gboolean __attribute__ ((visibility("hidden")))
+_muali_set_handler(_muali_context_t *context,
+                   _osso_handler_f *handler,
+                   _osso_callback_data_t *data,
+                   int handler_id);
 
 /* this is only needed by some unit testing code */
 osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
