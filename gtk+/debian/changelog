@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.6.10-2.osso19) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+  * Fixes: NB#41981 GtkTreeSelection does not pick up the initial selection
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  6 Oct 2006 23:54:48 +0300
+
 gtk+2.0 (2:2.6.10-2.osso18) unstable; urgency=low
 
     * Fixes: NB#42165 GtkComboBox prevents parent window from having its
