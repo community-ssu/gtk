@@ -9549,7 +9549,9 @@ gtk_tree_view_focus_to_cursor (GtkTreeView *tree_view)
       gtk_tree_row_reference_free (tree_view->priv->cursor);
       tree_view->priv->cursor = NULL;
 
-      if (tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE)
+      /* Hildon: ensure the cursor row is selected */
+      if (tree_view->priv->selection->type == GTK_SELECTION_MULTIPLE &&
+	  selected_rows)
 	gtk_tree_view_real_set_cursor (tree_view, cursor_path, FALSE, FALSE);
       else
 	gtk_tree_view_real_set_cursor (tree_view, cursor_path, TRUE, FALSE);
