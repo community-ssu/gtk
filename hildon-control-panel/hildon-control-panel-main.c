@@ -986,9 +986,11 @@ hcp_show_window (HCP *hcp)
     hcp->view = hcp_view_new ();
     hcp_view_populate (hcp->view, hcp->al);
     hcp_create_window (hcp);
+ 
+    (hcp->icon_size) ? hcp_large_icons (hcp) : hcp_small_icons (hcp); 
     
     gtk_widget_show_all (GTK_WIDGET(hcp->window));
-    hcp_enforce_state (hcp);           /* realize the saved state */
+    hcp_enforce_state (hcp);           /* realize the saved state mainly for focus*/
 }
 
 static GtkWidget *
