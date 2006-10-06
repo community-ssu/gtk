@@ -98,6 +98,15 @@ static GtkTreeModel *
 hildon_file_selection_create_sort_model(HildonFileSelection *self,
                                         GtkTreeModel *parent_model);
 
+#ifdef HILDON_FM_HPANED
+static void
+position_change_event(GObject *g_object,
+                      GParamSpec *pspec,
+                      gpointer *data);
+#endif
+
+static gint prev_handle_pos;
+
 static guint signal_folder_changed,
              signal_file_activated,
              signal_selection_changed; /* Signal ids */
@@ -2927,6 +2936,18 @@ static void hildon_file_selection_init(HildonFileSelection * self)
       G_CALLBACK(hildon_file_selection_check_scroll), NULL);
 }
 
+#ifdef HILDON_FM_HPANED
+static void
+position_change_event(GObject *g_object, GParamSpec *pspec, gpointer *data)
+{
+    if (gtk_paned_get_position(GTK_PANED(g_object)) != prev_handle_pos)
+    {
+      prev_handle_pos = gtk_paned_get_position(GTK_PANED(g_object));
+      gtk_paned_set_position(GTK_PANED(g_object), prev_handle_pos);
+    }
+}
+#endif
+
 static GObject *hildon_file_selection_constructor(GType type,
                                                   guint
                                                   n_construct_properties,
@@ -2979,6 +3000,9 @@ static GObject *hildon_file_selection_constructor(GType type,
     gtk_widget_show_all(priv->scroll_dir);
 #else
     gtk_widget_show_all(priv->hpaned);
+
+    g_signal_connect (G_OBJECT(priv->hpaned), "notify::position",
+		      G_CALLBACK(position_change_event), NULL);
 #endif
 
     /* Also the views of the navigation pane are trees (and this is
