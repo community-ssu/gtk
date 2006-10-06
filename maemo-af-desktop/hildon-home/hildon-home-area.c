@@ -34,13 +34,6 @@
 
 enum
 {
-  HILDON_HOME_AREA_SIGNAL_LAYOUT_MODE_START = 1,
-  HILDON_HOME_AREA_SIGNAL_LAYOUT_MODE_END,
-  HILDON_HOME_AREA_SIGNAL_APPLET_ADDED
-};
-
-enum
-{
   HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE = 1
 };
 
@@ -145,8 +138,18 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
 
   g_signal_new ("layout-mode-start",
                 G_OBJECT_CLASS_TYPE (object_class),
-                G_SIGNAL_RUN_FIRST,
+                G_SIGNAL_RUN_LAST,
                 G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_start),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__VOID,
+                G_TYPE_NONE,
+                0);
+  
+  g_signal_new ("layout-mode-started",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_started),
                 NULL,
                 NULL,
                 g_cclosure_marshal_VOID__VOID,
@@ -157,6 +160,16 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_FIRST,
                 G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_end),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__VOID,
+                G_TYPE_NONE,
+                0);
+  
+  g_signal_new ("layout-mode-ended",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_LAST,
+                G_STRUCT_OFFSET (HildonHomeAreaClass, layout_mode_ended),
                 NULL,
                 NULL,
                 g_cclosure_marshal_VOID__VOID,
@@ -254,6 +267,8 @@ hildon_home_area_layout_mode_start (HildonHomeArea *area)
   gtk_container_foreach (GTK_CONTAINER (area),
                          (GtkCallback)hildon_home_applet_set_layout_mode,
                          (gpointer)TRUE);
+
+  g_signal_emit_by_name (area, "layout-mode-started");
 }
 
 static void
@@ -262,6 +277,7 @@ hildon_home_area_layout_mode_end (HildonHomeArea *area)
   gtk_container_foreach (GTK_CONTAINER (area),
                         (GtkCallback)hildon_home_applet_set_layout_mode,
                          (gpointer)FALSE);
+  g_signal_emit_by_name (area, "layout-mode-ended");
 }
 
 static void
@@ -607,8 +623,6 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
                           &active,
                           -1);
 
-      fprintf  (stderr, "Iterating %s\n", desktop_file);
-          
       list_element = g_list_find_custom (applets,
                                          desktop_file,
                                          (GCompareFunc)

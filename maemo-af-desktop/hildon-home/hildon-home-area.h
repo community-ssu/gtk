@@ -52,9 +52,11 @@ typedef struct _HildonHomeAreaClass
 {
   GtkFixedClass     parent_class;
 
-  void (* layout_mode_start) (HildonHomeArea *area);
-  void (* layout_mode_end)   (HildonHomeArea *area);
-  void (* layout_changed)    (HildonHomeArea *area);
+  void (* layout_mode_start)    (HildonHomeArea *area);
+  void (* layout_mode_started)  (HildonHomeArea *area);
+  void (* layout_mode_end)      (HildonHomeArea *area);
+  void (* layout_mode_ended)    (HildonHomeArea *area);
+  void (* layout_changed)       (HildonHomeArea *area);
   
   void (* applet_added)           (HildonHomeArea *area, GtkWidget *w);
 

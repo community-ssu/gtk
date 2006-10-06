@@ -369,14 +369,20 @@ static void
 area_layout_mode_start (HildonHomeArea *area,
                         HildonHomeWindow   *window)
 {
+  hildon_home_window_set_desktop_dimmed (window, TRUE);
+
+  hildon_home_window_show_layout_mode_banner (window);
+}
+
+static void
+area_layout_mode_started (HildonHomeArea *area,
+                          HildonHomeWindow   *window)
+{
   HildonHomeWindowPrivate *priv = window->priv;
 
   hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
                                  HILDON_HOME_TITLEBAR_LAYOUT);
 
-  hildon_home_window_set_desktop_dimmed (window, TRUE);
-
-  hildon_home_window_show_layout_mode_banner (window);
 }
 
 static void
@@ -395,14 +401,14 @@ plugin_list_directory_changed_cb (HildonPluginList *list,
 
 
 static void
-area_layout_mode_end (HildonHomeArea *area,
-                      HildonHomeWindow   *window)
+area_layout_mode_ended (HildonHomeArea *area,
+                        HildonHomeWindow   *window)
 {
   HildonHomeWindowPrivate *priv = window->priv;
-  
+
   hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
                                  HILDON_HOME_TITLEBAR_NORMAL);
-  
+
   hildon_home_window_set_desktop_dimmed (window, FALSE);
 
   if (priv->layout_mode_banner_to)
@@ -423,6 +429,8 @@ area_add (HildonHomeArea   *area,
 {
   HildonHomeWindowPrivate *priv = window->priv;
   g_signal_emit_by_name (priv->titlebar, "applet-added", area);
+
+  hildon_home_window_set_desktop_dimmed (window, TRUE);
 }
 
 static void
@@ -541,7 +549,7 @@ hildon_home_window_background (HildonHomeWindow   *window,
       gchar *filename = NULL;
 
       hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
-                                   FALSE);
+                                        FALSE);
 
       user_filename = g_build_filename (g_getenv ("HOME"),
                                         HH_AREA_CONFIGURATION_FILE,
@@ -842,8 +850,11 @@ hildon_home_window_constructor (GType                  gtype,
   g_signal_connect (priv->applet_area, "layout-mode-start",
                     G_CALLBACK (area_layout_mode_start),
                     window);
-  g_signal_connect (priv->applet_area, "layout-mode-end",
-                    G_CALLBACK (area_layout_mode_end),
+  g_signal_connect (priv->applet_area, "layout-mode-started",
+                    G_CALLBACK (area_layout_mode_started),
+                    window);
+  g_signal_connect (priv->applet_area, "layout-mode-ended",
+                    G_CALLBACK (area_layout_mode_ended),
                     window);
 
   g_signal_connect (priv->applet_area, "applet-added",
