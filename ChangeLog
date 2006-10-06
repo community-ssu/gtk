@@ -1,3 +1,8 @@
+2006-10-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_focus_to_cursor): Ensure the cursor
+	row is selected, also in multiple selection mode. NB#41981
+
 2006-10-04  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkcellview.c (gtk_cell_view_class_init): Remove style_set method,
