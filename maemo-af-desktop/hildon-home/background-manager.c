@@ -969,6 +969,7 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
       scaling_ratio = MIN ((gdouble) ((gdouble) (width - HILDON_HOME_TASKNAV_WIDTH) / src_width),
 		           (gdouble) height / src_height);
       dest_x = (gint) (MAX (HILDON_HOME_TASKNAV_WIDTH,
+                HILDON_HOME_TASKNAV_WIDTH +
 			    (width
 			     - HILDON_HOME_TASKNAV_WIDTH
 			     - scaling_ratio
@@ -980,9 +981,10 @@ create_background_from_pixbuf (const GdkPixbuf  *src,
 
       gdk_pixbuf_composite (src, dest,
 			    dest_x, dest_y,
-		            scaling_ratio * src_width,
+		        scaling_ratio * src_width,
 			    scaling_ratio * src_height,
 			    MAX (HILDON_HOME_TASKNAV_WIDTH,
+                 HILDON_HOME_TASKNAV_WIDTH +
 				 (width
 				  - HILDON_HOME_TASKNAV_WIDTH
 				  - scaling_ratio

@@ -1,3 +1,8 @@
+2006-10-06  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/background-manager.c: Center the picture to the home
+	  area when scaled. Fixes: NB#42493
+
 2006-10-06  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hildon-navigator-main.[ch]: 
