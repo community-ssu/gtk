@@ -16,9 +16,6 @@ when calling gnome_init.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_init ##### -->
 <para>
 

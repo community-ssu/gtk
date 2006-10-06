@@ -51,7 +51,7 @@ typedef struct {
 
 static GStaticMutex thread_list_lock = G_STATIC_MUTEX_INIT;
 
-static const int MAX_AVAILABLE_THREADS = 3; 
+static const int MAX_AVAILABLE_THREADS = 20; 
 static GList *available_threads;
 static int thread_count;
 

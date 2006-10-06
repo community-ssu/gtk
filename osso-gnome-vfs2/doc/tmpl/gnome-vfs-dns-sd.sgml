@@ -14,9 +14,6 @@ Gets information about available Zeroconf (aka <trademark>RendezVous</trademark>
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### USER_FUNCTION GnomeVFSDNSSDResolveCallback ##### -->
 <para>
 

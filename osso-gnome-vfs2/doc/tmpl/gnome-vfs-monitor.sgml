@@ -15,9 +15,6 @@ watch files for changes, and get called back if they do
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_monitor_add ##### -->
 <para>
 

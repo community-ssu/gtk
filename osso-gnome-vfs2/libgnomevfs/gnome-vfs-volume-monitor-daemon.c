@@ -25,12 +25,6 @@
 
 #include <string.h>
 #include <stdlib.h>
-/* Nokia patch */
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <unistd.h>
-/* End of Nokia patch */
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <glib/gi18n-lib.h>
 
@@ -832,76 +826,10 @@ modify_volume_name_for_display (const char *unmodified_name)
 	return name;
 }
 
-/* Nokia patch */
-#define MMC_LABEL_FILE "/tmp/.mmc-volume-label"
-#define MMC_LABEL_FILE2 "/tmp/.internal-mmc-volume-label"
-#define MMC_LABEL_LENGTH 11
-#define MMC_LABEL_UNDEFINED_NAME          "mmc-undefined-name"
-#define MMC_LABEL_UNDEFINED_NAME_INTERNAL "mmc-undefined-name-internal"
-
-static char *
-get_mmc_name_from_label_file (const char *label_file,
-			      gboolean    internal)
-{
-	int     fd;
-	ssize_t size_read;
-	char    buf[MMC_LABEL_LENGTH + 1];
-	
-	if (!g_file_test (label_file, G_FILE_TEST_EXISTS)) {
-		goto unknown;
-	}
-
-	fd = open (label_file, O_RDONLY);
-	if (fd < 0) {
-		goto unknown;
-	}
-
-	size_read = read (fd, buf, MMC_LABEL_LENGTH);
-	close (fd);
-	
-	if (size_read > 0) {
-		buf[size_read] = '\0';
-		return g_strndup (buf, size_read);
-	}
-
-unknown:
-	if (internal) {
-		return g_strdup (MMC_LABEL_UNDEFINED_NAME_INTERNAL);
-	} else {
-		return g_strdup (MMC_LABEL_UNDEFINED_NAME);
-	}		
-}
-/* End of Nokia patch */
-
 static char *
 make_volume_name_from_path_and_fs (const char *mount_path, const char *fs_type)
 {
 	const char *name;
-	/* Nokia patch */
-	const char *mmc_mount;
-
-	mmc_mount = g_getenv ("MMC_MOUNTPOINT");
-	if (mmc_mount && g_str_has_prefix (mount_path, mmc_mount)) {
-		gchar *mmc_name;
-		
-		mmc_name = get_mmc_name_from_label_file (MMC_LABEL_FILE, FALSE);
-
-		if (mmc_name) {
-			return mmc_name;
-		}
-	}
- 
-	mmc_mount = g_getenv ("INTERNAL_MMC_MOUNTPOINT");
-	if (mmc_mount && g_str_has_prefix (mount_path, mmc_mount)) {
-		gchar *mmc_name;
-		
-		mmc_name = get_mmc_name_from_label_file (MMC_LABEL_FILE2, TRUE);
-
-		if (mmc_name) {
-			return mmc_name;
-		}
-	}
-	/* End of Nokia patch */
 	
 	if (mount_path[0] == '/' && mount_path[1] == '\0') {
 		return g_strdup (_("Root Volume"));

@@ -14,9 +14,6 @@ gnome-vfs-mime-database-deprecated
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### ENUM GnomeVFSMimeActionType ##### -->
 <para>
 

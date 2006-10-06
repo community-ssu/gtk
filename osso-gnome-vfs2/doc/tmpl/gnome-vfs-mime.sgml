@@ -14,9 +14,6 @@ functions to get a mime-type for a file using its name or its content
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_mime_shutdown ##### -->
 <para>
 

@@ -14,9 +14,6 @@ invoking callbacks from a gnome-vfs module to ask the application for necessary 
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_module_callback_invoke ##### -->
 <para>
 

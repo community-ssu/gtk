@@ -14,9 +14,6 @@ standard callbacks for use by gnome-vfs module writers
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION ##### -->
 <para>
 

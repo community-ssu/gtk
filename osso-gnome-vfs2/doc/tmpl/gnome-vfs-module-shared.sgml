@@ -14,9 +14,6 @@ gnome-vfs-module-shared
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_mime_type_from_mode ##### -->
 <para>
 

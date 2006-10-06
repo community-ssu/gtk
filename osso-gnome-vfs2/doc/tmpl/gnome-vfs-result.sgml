@@ -15,9 +15,6 @@ Result of I/O operations, the equivalent of errno
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### ENUM GnomeVFSResult ##### -->
 <para>
  

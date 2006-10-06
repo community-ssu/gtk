@@ -14,9 +14,6 @@ Generic thread-safe address resolution functions.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_resolve ##### -->
 <para>
 

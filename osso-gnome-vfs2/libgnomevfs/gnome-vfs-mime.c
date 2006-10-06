@@ -99,31 +99,15 @@ gnome_vfs_mime_type_from_name_or_default (const char *filename, const char *defa
 {
 	const char *mime_type;
 	const char *separator;
-	char       *lower;
-	char       *tail;
 
 	if (filename == NULL) {
 		return defaultv;
 	}
 
-	/* Convert to lower case to implement a poor man's case insensitive mime
-         * type lookup.
-         */
- 	lower = g_utf8_strdown (filename, -1);
-
-	/* Strip out any fragments or query strings. */
-        tail = g_utf8_strchr (lower, -1, '?');
-        if (!tail) {
-                tail = g_utf8_strchr (lower, -1, '#');
-        }
-        if (tail) {
-                *tail = '\0';
-        }
-	
-	separator = strrchr (lower, '/');
+	separator = strrchr (filename, '/');
 #ifdef G_OS_WIN32
 	{
-		const char *sep2 = strrchr (lower, '\\');
+		const char *sep2 = strrchr (filename, '\\');
 		if (separator == NULL ||
 		    (sep2 != NULL && sep2 > separator))
 			separator = sep2;
@@ -131,19 +115,15 @@ gnome_vfs_mime_type_from_name_or_default (const char *filename, const char *defa
 #endif
 	if (separator != NULL) {
 		separator++;
-		if (*separator == '\000') {
-			g_free (lower);
+		if (*separator == '\000')
 			return defaultv;
-		}
 	} else {
-		separator = lower;
+		separator = filename;
 	}
 
 	G_LOCK (gnome_vfs_mime_mutex);
 	mime_type = xdg_mime_get_mime_type_from_file_name (separator);
 	G_UNLOCK (gnome_vfs_mime_mutex);
-
- 	g_free (lower);
 
 	if (mime_type)
 		return mime_type;
@@ -168,12 +148,17 @@ gnome_vfs_mime_type_from_name (const gchar * filename)
 static const char *
 gnome_vfs_get_mime_type_from_uri_internal (GnomeVFSURI *uri)
 {
-	const char *path;
+	char *base_name;
 	const char *mime_type;
 
-	path = gnome_vfs_uri_get_path (uri);
-	mime_type = gnome_vfs_mime_type_from_name_or_default (path, NULL);
+	/* Return a mime type based on the file extension or NULL if no match. */
+	base_name = gnome_vfs_uri_extract_short_path_name (uri);
+	if (base_name == NULL) {
+		return NULL;
+	}
 
+	mime_type = gnome_vfs_mime_type_from_name_or_default (base_name, NULL);
+	g_free (base_name);
 	return mime_type;
 }
 

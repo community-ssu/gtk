@@ -22,9 +22,6 @@ or a GnomeVFSSocketBuffer.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_inet_connection_create ##### -->
 <para>
 

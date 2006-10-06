@@ -14,9 +14,6 @@ Container for GnomeVFSVolume (floppy drive, CD reader, ...)
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### ENUM GnomeVFSDeviceType ##### -->
 <para>
 

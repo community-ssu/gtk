@@ -14,9 +14,6 @@ gnome-vfs-transform
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### USER_FUNCTION GnomeVFSTransformInitFunc ##### -->
 <para>
 

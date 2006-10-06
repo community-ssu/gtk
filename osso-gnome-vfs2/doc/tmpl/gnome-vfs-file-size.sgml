@@ -14,9 +14,6 @@ GnomeVFSFileSize
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### MACRO GNOME_VFS_OFFSET_IS_LONG_LONG ##### -->
 <para>
 

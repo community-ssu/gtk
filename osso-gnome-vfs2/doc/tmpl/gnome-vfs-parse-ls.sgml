@@ -14,9 +14,6 @@ convenience functions for modules which want to parse a ls-like directory listin
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_parse_ls_lga ##### -->
 <para>
 

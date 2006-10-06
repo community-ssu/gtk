@@ -9,6 +9,3 @@ the patch as small as possible.
 For more information see:
 
  http://developer.imendio.com/wiki/GnomeVFS_D-BUS
-
-NOTE: This version is patched with some Nokia-specific additions such as
-adding volume monitoring for OBEX devices.

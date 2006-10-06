@@ -19,9 +19,6 @@ through #gnome_vfs_socket_set_timeout.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### USER_FUNCTION GnomeVFSSocketReadFunc ##### -->
 <para>
 

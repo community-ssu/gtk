@@ -15,9 +15,6 @@ Creating and removing directories.
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### FUNCTION gnome_vfs_make_directory ##### -->
 <para>
 

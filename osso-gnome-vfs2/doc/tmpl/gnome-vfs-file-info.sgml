@@ -15,9 +15,6 @@ stores information about files, GnomeVFS equivalent of stat
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### ENUM GnomeVFSFileFlags ##### -->
 <para>
 

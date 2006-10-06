@@ -14,9 +14,6 @@ functions used by apps if they want to answer to callback invocations by gnome-v
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### USER_FUNCTION GnomeVFSModuleCallback ##### -->
 <para>
 

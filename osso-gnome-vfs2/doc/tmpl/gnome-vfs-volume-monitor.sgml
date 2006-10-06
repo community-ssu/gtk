@@ -14,9 +14,6 @@ Monitors volume mounts and unmounts
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### MACRO GNOME_IS_VFS_VOLUME_MONITOR ##### -->
 <para>
 

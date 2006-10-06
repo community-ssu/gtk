@@ -15,9 +15,6 @@ monitor the MIME database for changes (primarily for file browsers)
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### MACRO GNOME_VFS_MIME_MONITOR_TYPE ##### -->
 <para>
 

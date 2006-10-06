@@ -15,9 +15,6 @@ functions for getting information about files based on their MIME type
 
 </para>
 
-<!-- ##### SECTION Stability_Level ##### -->
-
-
 <!-- ##### STRUCT GnomeVFSMimeApplication ##### -->
 <para>
 
