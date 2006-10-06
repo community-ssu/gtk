@@ -429,9 +429,16 @@ area_add (HildonHomeArea   *area,
 {
   HildonHomeWindowPrivate *priv = window->priv;
   g_signal_emit_by_name (priv->titlebar, "applet-added", area);
+}
 
+static void
+area_applet_selected (HildonHomeArea   *area,
+                      GtkWidget        *applet,
+                      HildonHomeWindow *window)
+{
   hildon_home_window_set_desktop_dimmed (window, TRUE);
 }
+
 
 static void
 area_remove (HildonHomeArea   *area,
@@ -859,6 +866,9 @@ hildon_home_window_constructor (GType                  gtype,
 
   g_signal_connect (priv->applet_area, "applet-added",
                     G_CALLBACK (area_add),
+                    window);
+  g_signal_connect (priv->applet_area, "applet-selected",
+                    G_CALLBACK (area_applet_selected),
                     window);
   g_signal_connect (priv->applet_area, "remove",
                     G_CALLBACK (area_remove),

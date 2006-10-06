@@ -1,5 +1,12 @@
 2006-10-06  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-applet.c:
+	  added applet-selected emmitted when a new applet is selected
+	* hildon-home/hildon-home-window.c: Use this signal to trigger the
+	  dimming of desktop instead
+
+2006-10-06  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-area.c: Added layout-mode-started and
 	  layout-mode-ended to do things after we know layout mode has been
 	  applied

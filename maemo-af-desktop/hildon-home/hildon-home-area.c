@@ -187,6 +187,17 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                 1,
                 GTK_TYPE_WIDGET);
   
+  g_signal_new ("applet-selected",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeAreaClass, applet_selected),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__POINTER,
+                G_TYPE_NONE,
+                1,
+                GTK_TYPE_WIDGET);
+  
   g_signal_new ("layout-changed",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_FIRST,
@@ -637,6 +648,7 @@ hildon_home_area_sync_from_list (HildonHomeArea *area, HildonPluginList *list)
 
           if (applet)
             {
+              g_signal_emit_by_name (G_OBJECT (area), "applet-selected", applet);
               if (x + applet->requisition.width >
                   GTK_WIDGET (area)->allocation.width 
                     - LAYOUT_AREA_LEFT_BORDER_PADDING
