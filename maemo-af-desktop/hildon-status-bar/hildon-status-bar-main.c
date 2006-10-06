@@ -210,7 +210,6 @@ void init_dock( StatusBar *panel )
                                             HSB_ARROW_ICON_SIZE,
                                             GTK_ICON_LOOKUP_NO_SVG,
                                             &error);
-
     if( arrow_pixbuf )
     {
         gtk_image_set_from_pixbuf(GTK_IMAGE(arrow_image), arrow_pixbuf);
@@ -295,7 +294,7 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 	    
 	/* Initialize popup window */ 
 	sb_panel->popup = gtk_window_new( GTK_WINDOW_TOPLEVEL );
-	gtk_widget_set_name(sb_panel->popup, "HildonStatusBar");
+	gtk_widget_set_name(sb_panel->popup, "HildonStatusBarExtension");
 	
 	gtk_window_set_type_hint( GTK_WINDOW( sb_panel->popup ),
  				  GDK_WINDOW_TYPE_HINT_DIALOG );
