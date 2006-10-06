@@ -124,6 +124,14 @@ static gboolean
 hildon_home_applet_button_release_event (GtkWidget *applet,
                                          GdkEventButton   *event);
 
+static gboolean
+hildon_home_applet_key_press_event (GtkWidget *applet,
+                                    GdkEventKey *event);
+
+static gboolean
+hildon_home_applet_key_release_event (GtkWidget *applet,
+                                      GdkEventKey *event);
+
 static void
 hildon_home_applet_check_overlap (HildonHomeApplet *applet1,
                                   HildonHomeApplet *applet2);
@@ -220,6 +228,8 @@ hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
   widget_class->button_release_event = hildon_home_applet_button_release_event;
   widget_class->visibility_notify_event = 
       hildon_home_applet_visibility_notify_event;
+  widget_class->key_press_event   = hildon_home_applet_key_press_event;
+  widget_class->key_release_event = hildon_home_applet_key_release_event;
 
   /* We override remove to destroy the applet when it's child is destroyed */
   container_class->remove = hildon_home_applet_remove;
@@ -560,6 +570,8 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
 
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (applet), TRUE);
   gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), TRUE);
+  if (GTK_BIN (applet) && GTK_BIN (applet)->child)
+    gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
   
   /* FIXME */
   gtk_widget_set_name (w, "osso-home-layoutmode-applet");
@@ -570,6 +582,8 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
 static void
 hildon_home_applet_layout_mode_end (HildonHomeApplet *applet)
 {
+  if (GTK_BIN (applet) && GTK_BIN (applet)->child)
+    gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
   gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), FALSE);
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (applet), FALSE);
   gtk_widget_show (GTK_WIDGET (applet));
@@ -892,9 +906,35 @@ hildon_home_applet_button_release_event (GtkWidget *applet,
   return TRUE;
 }
 
+static gboolean
+hildon_home_applet_key_press_event (GtkWidget *widget, GdkEventKey *event)
+{
+  HildonHomeAppletPriv      *priv;
+  priv = HILDON_HOME_APPLET_GET_PRIVATE (HILDON_HOME_APPLET(widget));
 
+  if (priv->layout_mode)
+    return TRUE;
 
+  if (GTK_WIDGET_CLASS (parent_class)->key_press_event)
+    return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
+    
+  return FALSE;
+}
 
+static gboolean
+hildon_home_applet_key_release_event (GtkWidget *widget, GdkEventKey *event)
+{
+  HildonHomeAppletPriv      *priv;
+  priv = HILDON_HOME_APPLET_GET_PRIVATE (HILDON_HOME_APPLET(widget));
+
+  if (priv->layout_mode)
+    return TRUE;
+
+  if (GTK_WIDGET_CLASS (parent_class)->key_release_event)
+    return GTK_WIDGET_CLASS (parent_class)->key_release_event (widget, event);
+    
+  return FALSE;
+}
 
 
 /********************/
