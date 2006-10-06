@@ -61,7 +61,6 @@ modules_LTLIBRARIES =				\
 	libcomputer.la				\
 	libfile.la				\
 	libvfs-test.la				\
-	libbzip2.la				\
 	libgzip.la				\
 	$(SMB_LTLIBS)	                        \
 	libtar.la				\
@@ -70,6 +69,7 @@ modules_LTLIBRARIES =				\
 
 # Not currently supported
 #	libnfs.la
+#	libbzip2.la
 
 modulesconfdir=$(sysconfdir)/gnome-vfs-2.0/modules
 if HAVE_CDDA
@@ -150,9 +150,9 @@ libgzip_la_LIBADD = $(MODULES_LIBS) -lz ../libgnomevfs/libgnomevfs-2.la
 
 ### `bzip2' method
 
-libbzip2_la_SOURCES = bzip2-method.c
-libbzip2_la_LDFLAGS = $(module_flags)
-libbzip2_la_LIBADD = $(MODULES_LIBS) $(BZ2_LIBS) ../libgnomevfs/libgnomevfs-2.la
+#libbzip2_la_SOURCES = bzip2-method.c
+#libbzip2_la_LDFLAGS = $(module_flags)
+#libbzip2_la_LIBADD = $(MODULES_LIBS) $(BZ2_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
 ### `ftp' method
 

@@ -9,8 +9,6 @@ schema_in_files = \
 
 schema_DATA = $(schema_in_files:.schemas.in=.schemas)
 
-@INTLTOOL_SCHEMAS_RULE@
-
 # don't do this if we are building in eg. rpm
 if GCONF_SCHEMAS_INSTALL
 if OS_WIN32

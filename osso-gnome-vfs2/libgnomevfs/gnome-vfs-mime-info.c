@@ -50,6 +50,7 @@ typedef struct {
 	char *description;
 	char *parent_classes;
 	char *aliases;
+	char *category;
 } MimeEntry;
 
 typedef struct {
@@ -94,6 +95,7 @@ mime_entry_free (MimeEntry *entry)
 		return;
 	}
 	
+	g_free (entry->category);
 	g_free (entry->description);
 	g_free (entry->parent_classes);
 	g_free (entry->aliases);
@@ -377,7 +379,23 @@ handle_mime_info (const char *filename, xmlTextReaderPtr reader)
 					entry->aliases = g_strdup (mime_type);
 				}
 				g_free (mime_type);
+			} else {
+				const char *local_name;
+				const char *ns_uri;
+				
+				local_name = (const char *) xmlTextReaderConstLocalName (reader);
+				ns_uri = (const char *) xmlTextReaderConstNamespaceUri (reader);
+
+				if (local_name && ns_uri &&
+				    strcmp (local_name, "category") == 0 &&
+				    strcmp (ns_uri, "http://nokia.com/osso/mime-categories") == 0) {
+					if (entry->category) {
+						g_free (entry->category);
+					}
+					entry->category = handle_attribute (reader, "name");
+				}
 			}
+			
 		}
 		ret = read_next (reader);
 	}
@@ -553,6 +571,8 @@ gnome_vfs_mime_get_value (const char *mime_type, const char *key)
 		if (gnome_vfs_mime_type_get_equivalence (mime_type, "application/x-executable") != GNOME_VFS_MIME_UNRELATED ||
 		    gnome_vfs_mime_type_get_equivalence (mime_type, "text/plain") != GNOME_VFS_MIME_UNRELATED)
 			return "TRUE";
+	} else if (!strcmp (key, "category")) {
+		return entry->category;
 	}
 
 	return NULL;

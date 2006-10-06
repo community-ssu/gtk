@@ -40,7 +40,7 @@
 /* See the comment at job_can_start () for 
    an explanation of the following macros */
 #ifndef DEFAULT_THREAD_COUNT_LIMIT
-#define DEFAULT_THREAD_COUNT_LIMIT 10
+#define DEFAULT_THREAD_COUNT_LIMIT 3
 #endif
 
 #define LIMIT_FUNCTION_LOWER_BOUND 2 /* must NOT be more than DEFAULT_THREAD_COUNT_LIMIT */

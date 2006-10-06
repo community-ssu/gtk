@@ -955,7 +955,8 @@ strip_semicolon (const char *value)
 static void
 set_content_type (GnomeVFSFileInfo *file_info, const char *value)
 {
-	g_free (file_info->mime_type);
+	if (file_info->mime_type)
+		return;
 
 	file_info->mime_type = strip_semicolon (value);
 	file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
@@ -1840,9 +1841,17 @@ http_get_file_info (HttpContext *context, GnomeVFSFileInfo *info)
 	ne_propfind_handler *pfh;
 	ne_request *req;
 	int res;
+	const gchar *mime_type;
 
 	DEBUG_HTTP_CONTEXT (context);
 	
+	/* Let's fill in the mime type first */
+	mime_type = gnome_vfs_mime_type_from_name_or_default (context->path, NULL);
+	if (!mime_type || strcmp (mime_type, "application/octet-stream") != 0) {
+		info->mime_type = g_strdup (mime_type);
+		info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+	}
+
 	/* no dav server */
 	if (context->dav_mode == FALSE || context->dav_class == NO_DAV) 
 		goto head_start;
@@ -1914,9 +1923,19 @@ http_get_file_info (HttpContext *context, GnomeVFSFileInfo *info)
 	
 	if (result == GNOME_VFS_OK) {
 		const char *name;
+		char       *tail;
 		
 		name = gnome_vfs_uri_get_path (context->uri);
 		
+		/* Strip out any fragments or query strings. */
+		tail = g_utf8_strchr (name, -1, '?');
+		if (!tail) {
+			tail = g_utf8_strchr (name, -1, '#');
+		}
+		if (tail) {
+			*tail = '\0';
+		}
+
 		info->name  = g_path_get_basename (name);
 		info->type  = GNOME_VFS_FILE_TYPE_REGULAR;
 		info->flags = GNOME_VFS_FILE_FLAGS_NONE;

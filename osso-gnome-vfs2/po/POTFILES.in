@@ -23,9 +23,3 @@ modules/network-method.c
 modules/sftp-method.c
 modules/test-method.c
 monikers/GNOME_VFS_Moniker_std.server.in.in
-schemas/desktop_default_applications.schemas.in
-schemas/desktop_gnome_url_handlers.schemas.in
-schemas/system_dns_sd.schemas.in
-schemas/system_http_proxy.schemas.in
-schemas/system_smb.schemas.in
-schemas/system_storage.schemas.in

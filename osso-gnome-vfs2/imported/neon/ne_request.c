@@ -1221,6 +1221,17 @@ int ne_begin_request(ne_request *req)
     req->resp.left = req->resp.length;
     req->resp.chunk_left = 0;
 
+    if (st->code == 404) {
+	/* We close the connection here because otherwise if a
+	 * consequent gnome_vfs_open_uri() is called then the socket
+	 * is still open with the http content and the the header read
+	 * picks up the first line of the last request's content. The
+	 * other way around this I guess would be to read the content
+	 * and leave the connection open.
+	 */
+	 ne_close_connection(req->session);
+    }
+
     return NE_OK;
 }
 
