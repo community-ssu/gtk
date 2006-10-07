@@ -81,15 +81,19 @@ open_local_install_instructions (const char *filename)
   cleanup_temp_file ();
 
   gchar *repo_name = g_key_file_get_value (keys, "install", "repo_name", NULL);
-  gchar *repo_deb  = g_key_file_get_value (keys, "install", "repo_deb", NULL);
+  gchar *repo_deb  = g_key_file_get_value (keys, "install", "repo_deb_3", NULL);
   gchar *package   = g_key_file_get_value (keys, "install", "package", NULL);
 
   if (package == NULL && repo_deb == NULL)
     annoy_user (_("ai_ni_operation_failed"));
 
   if (repo_deb)
-    maybe_add_repo (repo_name, repo_deb, package != NULL,
-		    instr_cont2, package);
+    {
+      maybe_add_repo (repo_name, repo_deb, package != NULL,
+		      instr_cont2, package);
+    }
+  else
+    annoy_user (_("ai_ni_error_n770package_incompatible"));
 
   g_free (repo_name);
   g_free (repo_deb);
