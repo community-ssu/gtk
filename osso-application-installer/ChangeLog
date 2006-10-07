@@ -1,3 +1,9 @@
+2006-10-07  Marius Vollmer  <mvo@zagadka.de>
+
+	* src/instr.cc (open_local_install_instructions): Use "repo_deb_3"
+	instead of "repo_deb", to prepare for maemo 3.0.  Annoy user when
+	not found.
+
 2006-10-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.33.
