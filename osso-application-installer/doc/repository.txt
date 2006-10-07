@@ -53,8 +53,8 @@ defined by glib.  An example would look like this:
 
     [install]
     repo_name = Foo Catalogue
-    repo_deb  = deb http://foo.com/maemo ${dist} user
- 
+    repo_deb  = deb http://foo.com/maemo mistral user
+
 Thus, it can contain information about a repository, and opening the
 file will add the repository to /etc/apt/sources.list if it isn't
 there already.  The existence check is based on a simple string
@@ -62,38 +62,34 @@ comparison without any intelligence: if you put two spaces in the
 "deb" line instead of one, the strings are considered different.  This
 test might get smarter in the future.
 
-The repo_deb string can contain variables of the form "${VAR}".  They
-are replaced with values provided by the Application installer.  The
-following variables can be used:
-
- ${dist}: The name of the maemo distribution corresponding to the
-          software installed on the device.  For maemo 2.0, this is
-          "mistral", for example.  You would use this variable in the
-          'dist' part of a 'deb' line, of course, like so:
-
-             repo_deb  = deb http://foo.com/maemo ${dist} user
-
-
 The .install file can also contain the name of a package, like so:
 
     [install]
-    package = foo-app
-
-Opening this file will attempt to install the package named
-"osso-xterm", using the currently configured repositories.
-
-Of course, you can combine both variants:
-
-    [install]
     repo_name = Foo Catalogue
-    repo_deb  = deb http://foo.com/maemo ${dist} user
+    repo_deb  = deb http://foo.com/maemo mistral user
     package   = foo-app
 
-This will first add the repository, and then attempt the installation.
+Opening this file will attempt to install the package named "foo-app",
+after adding the specified repository if it is not already configured.
+There is no guarantee, tho, that the named package will actually be
+downloaded from the given repository.  If the package is available
+with a later version from other repositories that are listed in
+sources.list, then it will be downloaded from there.
 
+The "repo_name" entry is optional.  If you omit it, the repository
+will have no name.  The name of a repository is only used in the UI;
+it has no effect on functionality.
 
-"New repository dialog" defaults
---------------------------------
+The "repo_deb" entry is not optional.  In fact, different releases of
+maemo will use different key names so that you can control what
+repository to use with what maemo release.  If the expected repo_deb
+variant is not found in the .install file, an error message will be
+displayed to the user.
+
+Here is a table of the various key names:
+
+   maemo 2.0:  repo_deb
+   maemo 3.0:  repo_deb_3
 
 
 Disabling repositories
