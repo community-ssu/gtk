@@ -1,3 +1,9 @@
+2006-10-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout,
+	gtk_widget_tap_and_hold_button_press): Clean up some X specifics from
+	pointer handling.
+
 2006-10-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_focus_to_cursor): Ensure the cursor

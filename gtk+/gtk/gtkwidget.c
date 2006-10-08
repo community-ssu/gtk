@@ -8155,9 +8155,7 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
   else
     td->timer_id = 0;
 
-  gdk_display_get_pointer (gdk_x11_lookup_xdisplay (
-			   GDK_WINDOW_XDISPLAY (
-			   td->tah_on_window)),
+  gdk_display_get_pointer (gdk_drawable_get_display (td->tah_on_window),
 			   NULL, &x, &y, NULL);
 
   /* Did we dragged too far from the start point */
@@ -8206,8 +8204,7 @@ static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
 
   if (!gtk_widget_tap_and_hold_query (widget, event) && !td->timer_id)
     {
-      gdk_display_get_pointer (gdk_x11_lookup_xdisplay (
-                               GDK_WINDOW_XDISPLAY (widget->window)),
+      gdk_display_get_pointer (gtk_widget_get_display (widget),
 			       NULL, &td->x, &td->y, NULL);
 
       td->timer_counter = GTK_TAP_AND_HOLD_TIMER_COUNTER;
