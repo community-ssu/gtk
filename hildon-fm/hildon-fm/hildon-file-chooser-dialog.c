@@ -834,10 +834,6 @@ static GString *check_illegal_characters(const gchar * name)
 {
     GString *illegals = NULL;
 
-    /* Handle reserved names as special cases */
-    if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0)
-      return g_string_new(name);
-
     while (*name) {
         gunichar unichar;
 
@@ -1028,10 +1024,16 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                 hildon_file_chooser_dialog_do_autonaming(priv);
                 hildon_file_chooser_dialog_select_text(priv);
                 gtk_infoprint(window, HCS("ckdg_ib_enter_name"));
-            } else {
+            } else if (entry_text[0] == '.') {
+	        /* We don't allow files with a dot as the first character.
+		 */
+                hildon_file_chooser_dialog_select_text(priv);
+	        g_signal_stop_emission_by_name(widget, "response");
+		gtk_infoprint(window, _("sfil_ib_invalid_name_dot"));
+	    } else {
                 GString *illegals = check_illegal_characters(entry_text);
 
-                if (illegals) {
+		if (illegals) {
                     gchar *msg;
 
                     hildon_file_chooser_dialog_select_text(priv);
@@ -1046,9 +1048,7 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                 }
                 else if (self->priv->max_full_path_length >= 0)
                      {  /* Let's check that filename is not too long. 
-                           This normally should not happen, because we 
-                           have limit in entry. However, very long paths 
-                           could cause max input length to be less than 1. */
+			 */
                     gchar *uri;
                     gint path_length;
 
