@@ -1,3 +1,8 @@
+2006-10-09  Johan Bilien <johan.bilien@nokia.com>
+
+	* applet_manager.conf: speeddial is now 150px high
+	* configure.ac: 0.1.5
+
 2006-09-25  Johan Bilien <johan.bilien@nokia.com>
 
 	* applet_manager.conf: isearch applet is now 50px high

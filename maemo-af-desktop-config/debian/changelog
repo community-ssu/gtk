@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.1.5-1) unstable; urgency=low
+
+  * applet_manager.conf: speeddial is now 150px high
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  9 Oct 2006 13:40:58 +0300
+
 maemo-af-desktop-config (0.1.4-1) unstable; urgency=low
 
   * applet_manager.conf: isearch applet is now 50px high
