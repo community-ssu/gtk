@@ -1,5 +1,13 @@
 2006-10-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* debian/rules (CFLAGS), hildon-fm/Makefile.am (INCLUDES): Moved
+	-DHILDON_FM_HPANED to Makefile.am so that it is always defined.
+
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(check_illegal_characters): Do not check for "." and "..", this is
+	now done elsewhere.
+	(response_handler): Reject names that start with a dot. (N42088)
+
 	* hildon-fm/hildon-file-selection.c: Move definition of
 	prev_handle_pos into the HILDON_FM_HPANED conditional.
 
