@@ -1,5 +1,7 @@
 2006-10-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.13.
+	
 	* hildon-fm/hildon-file-system-private.c
 	(_hildon_file_system_search_extension): Don't return immediately
 	when mime is NULL.  We need to consider all registered extensions

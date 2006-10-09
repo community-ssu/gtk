@@ -1,6 +1,6 @@
-hildon-fm (1.13-0unreleased1) unstable; urgency=low
+hildon-fm (1.13-1) unstable; urgency=low
 
-  * Fixes: NB#29728, NB#42088.
+  * Fixes: NB#29728, NB#42088, NB#42601.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  5 Oct 2006 19:34:59 +0300
 
