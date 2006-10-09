@@ -22,8 +22,10 @@ endif
 
 configure: configure-stamp
 configure-stamp:
+	if [ ! -x configure ]; then ./autogen.sh; fi
 	dh_testdir
 	# Add here commands to configure the package.
+	./configure --prefix=/
 
 	touch configure-stamp
 
@@ -34,7 +36,7 @@ build-stamp: configure-stamp
 	dh_testdir
 
 	# Add here commands to compile the package.
-#	$(MAKE)
+	$(MAKE)
 	#/usr/bin/docbook-to-man debian/osso-af-startup.sgml > osso-af-startup.1
 
 	touch build-stamp
@@ -45,7 +47,7 @@ clean:
 	rm -f build-stamp configure-stamp
 
 	# Add here commands to clean up after the build process.
-#	-$(MAKE) clean
+	-$(MAKE) clean
 
 	dh_clean 
 
@@ -56,7 +58,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/osso-af-startup.
-#	$(MAKE) install DESTDIR=$(CURDIR)/debian/osso-af-startup
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/osso-af-startup
 
 
 # Build architecture-independent files here.

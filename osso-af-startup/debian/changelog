@@ -1,3 +1,10 @@
+osso-af-startup (1.27-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added build files. Fixes: MB#796
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 09 Oct 2006 10:40:00 +0300
+
 osso-af-startup (1.26-1) unstable; urgency=low
 
   * Moved the .games directory to be directly under the MyDocs directory.

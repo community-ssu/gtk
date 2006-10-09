@@ -1,2 +1,0 @@
-top-scripts/* /etc/init.d
-services/* /etc/osso-af-init
