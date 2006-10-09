@@ -1,5 +1,10 @@
 2006-10-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_search_extension): Don't return immediately
+	when mime is NULL.  We need to consider all registered extensions
+	in that case. (N42601)
+
 	* debian/rules (CFLAGS), hildon-fm/Makefile.am (INCLUDES): Moved
 	-DHILDON_FM_HPANED to Makefile.am so that it is always defined.
 
