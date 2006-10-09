@@ -47,6 +47,7 @@ fi
 if [ "`cat $SB_PATH|grep \"\[$DESKTOP_FILE\]\"|wc -l`" -gt "0" ];
 then
   echo "Entry already configured"
+  echo "" >> $SB_PATH
   exit 0;
 fi
 
