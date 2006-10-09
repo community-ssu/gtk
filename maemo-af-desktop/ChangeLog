@@ -1,3 +1,8 @@
+2006-10-09  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: Fixed tipical
+	list's memory leak.
+
 2006-10-06  Johan Bilien <johan.bilien@nokia.com>
 
 	* maemo-af-desktop.defs: Do not define GTK2_RC_FILES, rely on osso-gtk

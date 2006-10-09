@@ -39,6 +39,7 @@
 #include <gtk/gtkarrow.h>
 #include <gtk/gtkfixed.h>
 #include <gtk/gtkicontheme.h>
+#include <gtk/gtkwidget.h>
 
 /* GDK includes */
 #include <gdk/gdkwindow.h>
@@ -291,15 +292,15 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
     
     /* Show extension panel */
     if ( sb_panel->arrow_button_toggled ) {
-	    
+
 	/* Initialize popup window */ 
-	sb_panel->popup = gtk_window_new( GTK_WINDOW_TOPLEVEL );
+	sb_panel->popup = gtk_window_new( GTK_WINDOW_TOPLEVEL );	
 	gtk_widget_set_name(sb_panel->popup, "HildonStatusBarExtension");
 	
 	gtk_window_set_type_hint( GTK_WINDOW( sb_panel->popup ),
  				  GDK_WINDOW_TYPE_HINT_DIALOG );
 	gtk_window_set_decorated( GTK_WINDOW( sb_panel->popup ), FALSE);
-	
+
 	/* Add popup fixed into window */
 	sb_panel->popup_fixed = gtk_fixed_new();
 	gtk_container_set_border_width
@@ -529,9 +530,9 @@ GList* get_plugins_from_file( const gchar *file )
     
     /* Load configuration file */ 
     g_key_file_load_from_file(keyfile, file, G_KEY_FILE_NONE, &error);
-    
+   
     /* Could not load the configuration file */
-    if ( error ) {	    
+    if ( error ) { 
         g_key_file_free(keyfile);
 	
 	/* The user wants an empty configuration */
@@ -555,8 +556,8 @@ GList* get_plugins_from_file( const gchar *file )
     /* Get plugin data */
     i = -1;	
     while ( groups[++i] != NULL ) {    
-        
-       	/* get library value */    
+       	
+	/* get library value */    
         library = g_key_file_get_string(keyfile, groups[i], 
 			                HSB_PLUGIN_CONFIG_LIBRARY_KEY, 
 					&error);
@@ -656,7 +657,7 @@ gboolean add_configured_plugins( StatusBar *panel )
 {   	
     gchar *user_dir;
     gchar *plugin_path = NULL;
-    GList *l = NULL;
+    GList *iter = NULL, *l = NULL;
     GList *bad_plugins = NULL;
 
     /* Return if panel fails */
@@ -683,10 +684,12 @@ gboolean add_configured_plugins( StatusBar *panel )
 		    				    HSB_PLUGIN_LOG_KEY_START,
 						    HSB_PLUGIN_LOG_KEY_END,NULL);
 
-    for (; l; l = l->next) {
-        StatusBarPlugin *plugin = (StatusBarPlugin *)l->data;
-
-        if ( plugin ) {
+    for (iter = l; iter ; iter = iter->next) {
+        StatusBarPlugin *plugin = (StatusBarPlugin *)iter->data;
+	g_debug ("%p %p",plugin,plugin_path);
+	plugin_path = NULL;
+	
+        if ( plugin ) { 
             /* Extract name, cut of lib prefix and .so suffix */	
             if ( plugin->library && 
                     g_str_has_prefix(plugin->library, "lib") && 
