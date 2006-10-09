@@ -99,13 +99,15 @@ hildon_file_selection_create_sort_model(HildonFileSelection *self,
                                         GtkTreeModel *parent_model);
 
 #ifdef HILDON_FM_HPANED
+
 static void
 position_change_event(GObject *g_object,
                       GParamSpec *pspec,
                       gpointer *data);
-#endif
 
 static gint prev_handle_pos;
+
+#endif
 
 static guint signal_folder_changed,
              signal_file_activated,
