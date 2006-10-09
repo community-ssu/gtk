@@ -721,3 +721,5 @@ msgstr "Items not found"
 msgid "sfil_ib_no_files_selected"
 msgstr "No files selected"
 
+msgid "sfil_ib_invalid_name_dot"
+msgstr "Name cannot start with '.'"

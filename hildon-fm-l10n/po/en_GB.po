@@ -724,3 +724,6 @@ msgstr "Items not found"
 # Shown if the user tries to accept file open dialog and the multiple selection does not contain any files
 msgid "sfil_ib_no_files_selected"
 msgstr "No files selected"
+
+msgid "sfil_ib_invalid_name_dot"
+msgstr "Name cannot start with '.'"

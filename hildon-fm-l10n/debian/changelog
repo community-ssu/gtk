@@ -1,3 +1,9 @@
+hildon-fm-l10n (3.0-sardine2) unstable; urgency=low
+
+  * Added sfil_ib_invalid_name_dot from UI spec 7.0.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  9 Oct 2006 15:57:38 +0300
+
 hildon-fm-l10n (3.0-sardine1) unstable; urgency=low
 
   * Updated.
