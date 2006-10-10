@@ -30,8 +30,8 @@ if [ -f $DIR/keyboard.defs ]; then
   source $DIR/keyboard.defs
 fi
 source $DIR/keyboard.sh stop
-source $DIR/dbus-sessionbus.sh stop
 sudo /etc/init.d/ke-recv stop
+source $DIR/dbus-sessionbus.sh stop
 
 # wait for the D-BUS session bus to die
 sleep 1
