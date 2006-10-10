@@ -1,4 +1,4 @@
-$Id: INSTALL.txt,v 1.2 2001/11/11 14:07:37 loewis Exp $
+$Id: INSTALL.txt 24230 2001-11-11 14:07:37Z loewis $
 
 Installing Tix.py
 ----------------

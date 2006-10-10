@@ -11,10 +11,11 @@ import, this is no longer necessary (but code that does it still
 works).
 
 This will append site-specific paths to the module search path.  On
-Unix, it starts with sys.prefix and sys.exec_prefix (if different) and
-appends lib/python<version>/site-packages as well as lib/site-python.
-On other platforms (mainly Mac and Windows), it uses just sys.prefix
-(and sys.exec_prefix, if different, but this is unlikely).  The
+Unix (including Mac OSX), it starts with sys.prefix and
+sys.exec_prefix (if different) and appends
+lib/python<version>/site-packages as well as lib/site-python.
+On other platforms (such as Windows), it tries each of the
+prefixes directly, as well as with lib/site-packages appended.  The
 resulting directories, if they exist, are appended to sys.path, and
 also inspected for path configuration files.
 
@@ -26,7 +27,7 @@ sys.path more than once.  Blank lines and lines beginning with
 '#' are skipped. Lines starting with 'import' are executed.
 
 For example, suppose sys.prefix and sys.exec_prefix are set to
-/usr/local and there is a directory /usr/local/lib/python1.5/site-packages
+/usr/local and there is a directory /usr/local/lib/python2.5/site-packages
 with three subdirectories, foo, bar and spam, and two path
 configuration files, foo.pth and bar.pth.  Assume foo.pth contains the
 following:
@@ -43,8 +44,8 @@ and bar.pth contains:
 
 Then the following directories are added to sys.path, in this order:
 
-  /usr/local/lib/python1.5/site-packages/bar
-  /usr/local/lib/python1.5/site-packages/foo
+  /usr/local/lib/python2.5/site-packages/bar
+  /usr/local/lib/python2.5/site-packages/foo
 
 Note that bletch is omitted because it doesn't exist; bar precedes foo
 because bar.pth comes alphabetically before foo.pth; and spam is
@@ -69,6 +70,8 @@ def makepath(*paths):
 def abs__file__():
     """Set all module' __file__ attribute to an absolute path"""
     for m in sys.modules.values():
+        if hasattr(m, '__loader__'):
+            continue   # don't mess with a PEP 302-supplied __file__
         try:
             m.__file__ = os.path.abspath(m.__file__)
         except AttributeError:
@@ -91,6 +94,31 @@ def removeduppaths():
             known_paths.add(dircase)
     sys.path[:] = L
     return known_paths
+
+# XXX This should not be part of site.py, since it is needed even when
+# using the -S option for Python.  See http://www.python.org/sf/586680
+try:
+    from distutils.util import get_platform
+except ImportError, e:
+    def get_platform ():
+        if os.name != "posix" or not hasattr(os, 'uname'):
+            return sys.platform
+        (osname, host, release, version, machine) = os.uname()
+
+        osname = osname.lower()
+        osname = osname.replace('/', '')
+        machine = machine.replace(' ', '_')
+        machine = machine.replace('/', '-')
+        return  "%s-%s" % (osname, machine)
+
+def addbuilddir():
+    """Append ./build/lib.<platform> in case we're running in the build dir
+    (especially for Guido :-)"""
+    s = "build/lib.%s-%.3s" % (get_platform(), sys.version)
+    if os.path.exists(s):
+        s = os.path.join(os.getcwd(), s)
+        sys.path.append(s)
+
 
 def _init_pathinfo():
     """Return a set containing all existing directory entries from sys.path"""
@@ -175,12 +203,27 @@ def setquit():
 
     """
     if os.sep == ':':
-        exit = 'Use Cmd-Q to quit.'
+        eof = 'Cmd-Q'
     elif os.sep == '\\':
-        exit = 'Use Ctrl-Z plus Return to exit.'
+        eof = 'Ctrl-Z plus Return'
     else:
-        exit = 'Use Ctrl-D (i.e. EOF) to exit.'
-    __builtin__.quit = __builtin__.exit = exit
+        eof = 'Ctrl-D (i.e. EOF)'
+
+    class Quitter(object):
+        def __init__(self, name):
+            self.name = name
+        def __repr__(self):
+            return 'Use %s() or %s to exit' % (self.name, eof)
+        def __call__(self, code=None):
+            # Shells like IDLE catch the SystemExit, but listen when their
+            # stdin wrapper is closed.
+            try:
+                sys.stdin.close()
+            except:
+                pass
+            raise SystemExit(code)
+    __builtin__.quit = Quitter('quit')
+    __builtin__.exit = Quitter('exit')
 
 
 class _Printer(object):
@@ -276,6 +319,7 @@ def main():
     setquit()
     setcopyright()
     execsitecustomize()
+    addbuilddir()
     # Remove sys.setdefaultencoding() so that users cannot change the
     # encoding after initialization.  The test for presence is needed when
     # this module is run as a script, because this code is executed twice.

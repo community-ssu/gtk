@@ -3,6 +3,34 @@ import unittest
 
 from test import test_support
 
+class Seq1:
+    def __init__(self, lst):
+        self.lst = lst
+    def __len__(self):
+        return len(self.lst)
+    def __getitem__(self, i):
+        return self.lst[i]
+    def __add__(self, other):
+        return self.lst + other.lst
+    def __mul__(self, other):
+        return self.lst * other
+    def __rmul__(self, other):
+        return other * self.lst
+
+class Seq2(object):
+    def __init__(self, lst):
+        self.lst = lst
+    def __len__(self):
+        return len(self.lst)
+    def __getitem__(self, i):
+        return self.lst[i]
+    def __add__(self, other):
+        return self.lst + other.lst
+    def __mul__(self, other):
+        return self.lst * other
+    def __rmul__(self, other):
+        return other * self.lst
+
 
 class OperatorTestCase(unittest.TestCase):
     def test_lt(self):
@@ -92,6 +120,9 @@ class OperatorTestCase(unittest.TestCase):
         self.failUnlessRaises(TypeError, operator.concat, None, None)
         self.failUnless(operator.concat('py', 'thon') == 'python')
         self.failUnless(operator.concat([1, 2], [3, 4]) == [1, 2, 3, 4])
+        self.failUnless(operator.concat(Seq1([5, 6]), Seq1([7])) == [5, 6, 7])
+        self.failUnless(operator.concat(Seq2([5, 6]), Seq2([7])) == [5, 6, 7])
+        self.failUnlessRaises(TypeError, operator.concat, 13, 29)
 
     def test_countOf(self):
         self.failUnlessRaises(TypeError, operator.countOf)
@@ -246,6 +277,15 @@ class OperatorTestCase(unittest.TestCase):
         self.failUnless(operator.repeat(a, 2) == a+a)
         self.failUnless(operator.repeat(a, 1) == a)
         self.failUnless(operator.repeat(a, 0) == '')
+        a = Seq1([4, 5, 6])
+        self.failUnless(operator.repeat(a, 2) == [4, 5, 6, 4, 5, 6])
+        self.failUnless(operator.repeat(a, 1) == [4, 5, 6])
+        self.failUnless(operator.repeat(a, 0) == [])
+        a = Seq2([4, 5, 6])
+        self.failUnless(operator.repeat(a, 2) == [4, 5, 6, 4, 5, 6])
+        self.failUnless(operator.repeat(a, 1) == [4, 5, 6])
+        self.failUnless(operator.repeat(a, 0) == [])
+        self.failUnlessRaises(TypeError, operator.repeat, 6, 7)
 
     def test_rshift(self):
         self.failUnlessRaises(TypeError, operator.rshift)
@@ -324,7 +364,14 @@ class OperatorTestCase(unittest.TestCase):
         f = operator.attrgetter(2)
         self.assertRaises(TypeError, f, a)
         self.assertRaises(TypeError, operator.attrgetter)
-        self.assertRaises(TypeError, operator.attrgetter, 1, 2)
+
+        # multiple gets
+        record = A()
+        record.x = 'X'
+        record.y = 'Y'
+        record.z = 'Z'
+        self.assertEqual(operator.attrgetter('x','z','y')(record), ('X', 'Z', 'Y'))
+        self.assertRaises(TypeError, operator.attrgetter('x', (), 'y'), record)
 
         class C(object):
             def __getattr(self, name):
@@ -346,7 +393,6 @@ class OperatorTestCase(unittest.TestCase):
         f = operator.itemgetter('name')
         self.assertRaises(TypeError, f, a)
         self.assertRaises(TypeError, operator.itemgetter)
-        self.assertRaises(TypeError, operator.itemgetter, 1, 2)
 
         d = dict(key='val')
         f = operator.itemgetter('key')
@@ -361,9 +407,76 @@ class OperatorTestCase(unittest.TestCase):
         self.assertEqual(sorted(inventory, key=getcount),
             [('orange', 1), ('banana', 2), ('apple', 3), ('pear', 5)])
 
-def test_main():
-    test_support.run_unittest(OperatorTestCase)
+        # multiple gets
+        data = map(str, range(20))
+        self.assertEqual(operator.itemgetter(2,10,5)(data), ('2', '10', '5'))
+        self.assertRaises(TypeError, operator.itemgetter(2, 'x', 5), data)
 
+    def test_inplace(self):
+        class C(object):
+            def __iadd__     (self, other): return "iadd"
+            def __iand__     (self, other): return "iand"
+            def __idiv__     (self, other): return "idiv"
+            def __ifloordiv__(self, other): return "ifloordiv"
+            def __ilshift__  (self, other): return "ilshift"
+            def __imod__     (self, other): return "imod"
+            def __imul__     (self, other): return "imul"
+            def __ior__      (self, other): return "ior"
+            def __ipow__     (self, other): return "ipow"
+            def __irshift__  (self, other): return "irshift"
+            def __isub__     (self, other): return "isub"
+            def __itruediv__ (self, other): return "itruediv"
+            def __ixor__     (self, other): return "ixor"
+            def __getitem__(self, other): return 5  # so that C is a sequence
+        c = C()
+        self.assertEqual(operator.iadd     (c, 5), "iadd")
+        self.assertEqual(operator.iand     (c, 5), "iand")
+        self.assertEqual(operator.idiv     (c, 5), "idiv")
+        self.assertEqual(operator.ifloordiv(c, 5), "ifloordiv")
+        self.assertEqual(operator.ilshift  (c, 5), "ilshift")
+        self.assertEqual(operator.imod     (c, 5), "imod")
+        self.assertEqual(operator.imul     (c, 5), "imul")
+        self.assertEqual(operator.ior      (c, 5), "ior")
+        self.assertEqual(operator.ipow     (c, 5), "ipow")
+        self.assertEqual(operator.irshift  (c, 5), "irshift")
+        self.assertEqual(operator.isub     (c, 5), "isub")
+        self.assertEqual(operator.itruediv (c, 5), "itruediv")
+        self.assertEqual(operator.ixor     (c, 5), "ixor")
+        self.assertEqual(operator.iconcat  (c, c), "iadd")
+        self.assertEqual(operator.irepeat  (c, 5), "imul")
+        self.assertEqual(operator.__iadd__     (c, 5), "iadd")
+        self.assertEqual(operator.__iand__     (c, 5), "iand")
+        self.assertEqual(operator.__idiv__     (c, 5), "idiv")
+        self.assertEqual(operator.__ifloordiv__(c, 5), "ifloordiv")
+        self.assertEqual(operator.__ilshift__  (c, 5), "ilshift")
+        self.assertEqual(operator.__imod__     (c, 5), "imod")
+        self.assertEqual(operator.__imul__     (c, 5), "imul")
+        self.assertEqual(operator.__ior__      (c, 5), "ior")
+        self.assertEqual(operator.__ipow__     (c, 5), "ipow")
+        self.assertEqual(operator.__irshift__  (c, 5), "irshift")
+        self.assertEqual(operator.__isub__     (c, 5), "isub")
+        self.assertEqual(operator.__itruediv__ (c, 5), "itruediv")
+        self.assertEqual(operator.__ixor__     (c, 5), "ixor")
+        self.assertEqual(operator.__iconcat__  (c, c), "iadd")
+        self.assertEqual(operator.__irepeat__  (c, 5), "imul")
+
+def test_main(verbose=None):
+    import sys
+    test_classes = (
+        OperatorTestCase,
+    )
+
+    test_support.run_unittest(*test_classes)
+
+    # verify reference counting
+    if verbose and hasattr(sys, "gettotalrefcount"):
+        import gc
+        counts = [None] * 5
+        for i in xrange(len(counts)):
+            test_support.run_unittest(*test_classes)
+            gc.collect()
+            counts[i] = sys.gettotalrefcount()
+        print counts
 
 if __name__ == "__main__":
-    test_main()
+    test_main(verbose=True)

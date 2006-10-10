@@ -8,7 +8,7 @@
 This module defines names for some object types that are used by
 the standard Python interpreter, but not for the types defined by various
 extension modules.  Also, it does not include some of the types that
-arise during processing such the \code{listiterator} type.
+arise during processing such as the \code{listiterator} type.
 It is safe to use \samp{from types import *} ---
 the module does not export any names besides the ones listed here.
 New names exported by future versions of this module will all end in
@@ -178,6 +178,30 @@ The type of frame objects such as found in \code{tb.tb_frame} if
 \begin{datadesc}{BufferType}
 The type of buffer objects created by the
 \function{buffer()}\bifuncindex{buffer} function.
+\end{datadesc}
+
+\begin{datadesc}{DictProxyType}
+The type of dict proxies, such as \code{TypeType.__dict__}.
+\end{datadesc}
+
+\begin{datadesc}{NotImplementedType}
+The type of \code{NotImplemented}
+\end{datadesc}
+
+\begin{datadesc}{GetSetDescriptorType}
+The type of objects defined in extension modules with \code{PyGetSetDef}, such
+as \code{FrameType.f_locals} or \code{array.array.typecode}.  This constant is
+not defined in implementations of Python that do not have such extension
+types, so for portable code use \code{hasattr(types, 'GetSetDescriptorType')}.
+\versionadded{2.5}
+\end{datadesc}
+
+\begin{datadesc}{MemberDescriptorType}
+The type of objects defined in extension modules with \code{PyMemberDef}, such
+as \code {datetime.timedelta.days}.  This constant is not defined in
+implementations of Python that do not have such extension types, so for
+portable code use \code{hasattr(types, 'MemberDescriptorType')}.
+\versionadded{2.5}
 \end{datadesc}
 
 \begin{datadesc}{StringTypes}

@@ -1,5 +1,5 @@
 """Support functions for loading the reference count data file."""
-__version__ = '$Revision: 1.5 $'
+__version__ = '$Revision: 35267 $'
 
 import os
 import sys

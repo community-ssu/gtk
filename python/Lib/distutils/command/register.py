@@ -5,7 +5,7 @@ Implements the Distutils 'register' command (register with the repository).
 
 # created 2002/10/21, Richard Jones
 
-__revision__ = "$Id: register.py,v 1.7.4.1 2005/03/31 14:16:30 doerwalter Exp $"
+__revision__ = "$Id: register.py 38752 2005-03-31 13:57:38Z doerwalter $"
 
 import sys, os, string, urllib2, getpass, urlparse
 import StringIO, ConfigParser
@@ -231,7 +231,13 @@ Your selection [default 1]: ''',
             'platform': meta.get_platforms(),
             'classifiers': meta.get_classifiers(),
             'download_url': meta.get_download_url(),
+            # PEP 314
+            'provides': meta.get_provides(),
+            'requires': meta.get_requires(),
+            'obsoletes': meta.get_obsoletes(),
         }
+        if data['provides'] or data['requires'] or data['obsoletes']:
+            data['metadata_version'] = '1.1'
         return data
 
     def post_to_server(self, data, auth=None):

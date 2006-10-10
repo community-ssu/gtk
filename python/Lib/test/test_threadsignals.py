@@ -21,7 +21,7 @@ def registerSignals((for_usr1, for_usr2, for_alrm)):
     return usr1, usr2, alrm
 
 
-# The signal handler. Just note that the signal occured and
+# The signal handler. Just note that the signal occurred and
 # from who.
 def handle_signals(sig,frame):
     signal_blackboard[sig]['tripped'] += 1
@@ -49,7 +49,7 @@ class ThreadSignals(unittest.TestCase):
         # and might be out of order.)  If we haven't seen
         # the signals yet, send yet another signal and
         # wait for it return.
-        if signal_blackboard[signal.SIGUSR2]['tripped'] == 0 \
+        if signal_blackboard[signal.SIGUSR1]['tripped'] == 0 \
            or signal_blackboard[signal.SIGUSR2]['tripped'] == 0:
             signal.alarm(1)
             signal.pause()

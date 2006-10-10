@@ -5,7 +5,7 @@ Utility functions for operating on single files.
 
 # This module should be kept compatible with Python 2.1.
 
-__revision__ = "$Id: file_util.py,v 1.17 2004/11/10 22:23:14 loewis Exp $"
+__revision__ = "$Id: file_util.py 37828 2004-11-10 22:23:15Z loewis $"
 
 import os
 from distutils.errors import DistutilsFileError

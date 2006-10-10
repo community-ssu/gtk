@@ -2,7 +2,7 @@
 
 """A variant on webchecker that creates a mirror copy of a remote site."""
 
-__version__ = "$Revision: 1.10 $"
+__version__ = "$Revision: 28654 $"
 
 import os
 import sys

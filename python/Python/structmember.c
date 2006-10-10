@@ -29,7 +29,7 @@ listmembers(struct memberlist *mlist)
 }
 
 PyObject *
-PyMember_Get(char *addr, struct memberlist *mlist, char *name)
+PyMember_Get(const char *addr, struct memberlist *mlist, const char *name)
 {
 	struct memberlist *l;
 
@@ -51,7 +51,7 @@ PyMember_Get(char *addr, struct memberlist *mlist, char *name)
 }
 
 PyObject *
-PyMember_GetOne(char *addr, PyMemberDef *l)
+PyMember_GetOne(const char *addr, PyMemberDef *l)
 {
 	PyObject *v;
 	if ((l->flags & READ_RESTRICTED) &&
@@ -118,6 +118,14 @@ PyMember_GetOne(char *addr, PyMemberDef *l)
 			PyErr_SetString(PyExc_AttributeError, l->name);
 		Py_XINCREF(v);
 		break;
+#ifdef HAVE_LONG_LONG
+	case T_LONGLONG:
+		v = PyLong_FromLongLong(*(PY_LONG_LONG *)addr);
+		break;
+	case T_ULONGLONG:
+		v = PyLong_FromUnsignedLongLong(*(unsigned PY_LONG_LONG *)addr);
+		break;
+#endif /* HAVE_LONG_LONG */
 	default:
 		PyErr_SetString(PyExc_SystemError, "bad memberdescr type");
 		v = NULL;
@@ -126,7 +134,7 @@ PyMember_GetOne(char *addr, PyMemberDef *l)
 }
 
 int
-PyMember_Set(char *addr, struct memberlist *mlist, char *name, PyObject *v)
+PyMember_Set(char *addr, struct memberlist *mlist, const char *name, PyObject *v)
 {
 	struct memberlist *l;
 
@@ -246,6 +254,33 @@ PyMember_SetOne(char *addr, PyMemberDef *l, PyObject *v)
 			return -1;
 		}
 		break;
+#ifdef HAVE_LONG_LONG
+	case T_LONGLONG:
+		if (!PyLong_Check(v)) {
+			PyErr_BadArgument();
+			return -1;
+		} else {
+                        PY_LONG_LONG value;
+                        *(PY_LONG_LONG*)addr = value = PyLong_AsLongLong(v);
+                        if ((value == -1) && PyErr_Occurred()) {
+                                return -1;
+                        }
+                }
+                break;
+	case T_ULONGLONG:
+                if (!PyLong_Check(v)) {
+                        PyErr_BadArgument();
+                        return -1;
+                } else {
+                        unsigned PY_LONG_LONG value;
+                        *(unsigned PY_LONG_LONG*)addr = value = PyLong_AsUnsignedLongLong(v);
+                        if ((value == (unsigned PY_LONG_LONG)-1) &&
+			    PyErr_Occurred()) {
+                                return -1;
+                        }
+                }
+                break;
+#endif /* HAVE_LONG_LONG */
 	default:
 		PyErr_Format(PyExc_SystemError,
 			     "bad memberdescr type for %s", l->name);

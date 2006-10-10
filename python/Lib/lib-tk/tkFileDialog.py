@@ -1,6 +1,6 @@
 #
 # Instant Python
-# $Id: tkFileDialog.py,v 1.13 2004/07/18 06:14:44 tim_one Exp $
+# $Id: tkFileDialog.py 36560 2004-07-18 06:16:08Z tim_one $
 #
 # tk common file dialogues
 #

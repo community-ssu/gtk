@@ -54,7 +54,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
-# ADD LINK32 largeint.lib kernel32.lib user32.lib advapi32.lib shell32.lib /nologo /base:"0x1e000000" /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"libc" /out:"./python24.dll"
+# ADD LINK32 largeint.lib kernel32.lib user32.lib advapi32.lib shell32.lib /nologo /base:"0x1e000000" /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"libc" /out:"./python25.dll"
 # SUBTRACT LINK32 /pdb:none
 
 !ELSEIF  "$(CFG)" == "pythoncore - Win32 Debug"
@@ -82,7 +82,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 largeint.lib kernel32.lib user32.lib advapi32.lib shell32.lib /nologo /base:"0x1e000000" /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"libc" /out:"./python24_d.dll" /pdbtype:sept
+# ADD LINK32 largeint.lib kernel32.lib user32.lib advapi32.lib shell32.lib /nologo /base:"0x1e000000" /subsystem:windows /dll /debug /machine:I386 /nodefaultlib:"libc" /out:"./python25_d.dll" /pdbtype:sept
 # SUBTRACT LINK32 /pdb:none
 
 !ENDIF 
@@ -173,6 +173,14 @@ SOURCE=..\..\Modules\arraymodule.c
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Python\asdl.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Python\ast.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Modules\audioop.c
 # End Source File
 # Begin Source File
@@ -218,6 +226,10 @@ SOURCE=..\..\Objects\cobject.c
 # Begin Source File
 
 SOURCE=..\..\Python\codecs.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Objects\codeobject.c
 # End Source File
 # Begin Source File
 
@@ -298,6 +310,10 @@ SOURCE=..\..\Python\frozen.c
 # Begin Source File
 
 SOURCE=..\..\Objects\funcobject.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Modules\_functoolsmodule.c
 # End Source File
 # Begin Source File
 
@@ -507,19 +523,15 @@ SOURCE=..\python_nt.rc
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\Python\Python-ast.c
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\Python\pythonrun.c
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\Objects\rangeobject.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Modules\regexmodule.c
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\Modules\regexpr.c
 # End Source File
 # Begin Source File
 
@@ -532,6 +544,14 @@ SOURCE=..\..\Objects\setobject.c
 # Begin Source File
 
 SOURCE=..\..\Modules\shamodule.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Modules\sha256module.c
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\Modules\sha512module.c
 # End Source File
 # Begin Source File
 

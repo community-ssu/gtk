@@ -10,7 +10,7 @@
 /*
  * Written by Thomas Heller, May 2000
  *
- * $Id: install.c,v 1.10.4.5 2005/02/03 20:37:04 theller Exp $
+ * $Id: install.c 38414 2005-02-03 20:35:10Z theller $
  */
 
 /*

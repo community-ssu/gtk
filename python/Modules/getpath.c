@@ -91,12 +91,13 @@
  * process to find the installed Python tree.
  */
 
-#ifndef VERSION
-#if defined(__VMS)
-#define VERSION "2_1"
-#else
-#define VERSION "2.1"
+#ifdef __cplusplus
+ extern "C" {
 #endif
+
+
+#ifndef VERSION
+#define VERSION "2.1"
 #endif
 
 #ifndef VPATH
@@ -104,7 +105,11 @@
 #endif
 
 #ifndef PREFIX
-#define PREFIX "/usr/local"
+#  ifdef __VMS
+#    define PREFIX ""
+#  else
+#    define PREFIX "/usr/local"
+#  endif
 #endif
 
 #ifndef EXEC_PREFIX
@@ -394,7 +399,11 @@ calculate_path(void)
     NSModule pythonModule;
 #endif
 #ifdef __APPLE__
+#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_4
+    uint32_t nsexeclength = MAXPATHLEN;
+#else
     unsigned long nsexeclength = MAXPATHLEN;
+#endif
 #endif
 
 	/* If there is no slash in the argv0 path, then we have to
@@ -575,7 +584,7 @@ calculate_path(void)
     bufsz += strlen(exec_prefix) + 1;
 
     /* This is the only malloc call in this file */
-    buf = PyMem_Malloc(bufsz);
+    buf = (char *)PyMem_Malloc(bufsz);
 
     if (buf == NULL) {
         /* We can't exit, so print a warning and limp along */
@@ -637,6 +646,10 @@ calculate_path(void)
     if (pfound > 0) {
         reduce(prefix);
         reduce(prefix);
+	/* The prefix is the root directory, but reduce() chopped
+	 * off the "/". */
+	if (!prefix[0])
+		strcpy(prefix, separator);
     }
     else
         strncpy(prefix, PREFIX, MAXPATHLEN);
@@ -645,6 +658,8 @@ calculate_path(void)
         reduce(exec_prefix);
         reduce(exec_prefix);
         reduce(exec_prefix);
+	if (!exec_prefix[0])
+		strcpy(exec_prefix, separator);
     }
     else
         strncpy(exec_prefix, EXEC_PREFIX, MAXPATHLEN);
@@ -684,3 +699,9 @@ Py_GetProgramFullPath(void)
         calculate_path();
     return progpath;
 }
+
+
+#ifdef __cplusplus
+}
+#endif
+

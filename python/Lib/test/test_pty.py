@@ -11,6 +11,27 @@ else:
     def debug(msg):
         pass
 
+def normalize_output(data):
+    # Some operating systems do conversions on newline.  We could possibly
+    # fix that by doing the appropriate termios.tcsetattr()s.  I couldn't
+    # figure out the right combo on Tru64 and I don't have an IRIX box.
+    # So just normalize the output and doc the problem O/Ses by allowing
+    # certain combinations for some platforms, but avoid allowing other
+    # differences (like extra whitespace, trailing garbage, etc.)
+
+    # This is about the best we can do without getting some feedback
+    # from someone more knowledgable.
+
+    # OSF/1 (Tru64) apparently turns \n into \r\r\n.
+    if data.endswith('\r\r\n'):
+        return data.replace('\r\r\n', '\n')
+
+    # IRIX apparently turns \n into \r\n.
+    if data.endswith('\r\n'):
+        return data.replace('\r\n', '\n')
+
+    return data
+
 # Marginal testing of pty suite. Cannot do extensive 'do or fail' testing
 # because pty code is not too portable.
 
@@ -29,19 +50,16 @@ def test_basic_pty():
     if not os.isatty(slave_fd):
         raise TestFailed, "slave_fd is not a tty"
 
-    # IRIX apparently turns \n into \r\n. Allow that, but avoid allowing other
-    # differences (like extra whitespace, trailing garbage, etc.)
-
     debug("Writing to slave_fd")
     os.write(slave_fd, TEST_STRING_1)
     s1 = os.read(master_fd, 1024)
-    sys.stdout.write(s1.replace("\r\n", "\n"))
+    sys.stdout.write(normalize_output(s1))
 
     debug("Writing chunked output")
     os.write(slave_fd, TEST_STRING_2[:5])
     os.write(slave_fd, TEST_STRING_2[5:])
     s2 = os.read(master_fd, 1024)
-    sys.stdout.write(s2.replace("\r\n", "\n"))
+    sys.stdout.write(normalize_output(s2))
 
     os.close(slave_fd)
     os.close(master_fd)

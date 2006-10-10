@@ -14,10 +14,14 @@ import os
 import posixpath
 import BaseHTTPServer
 import urllib
+import urlparse
 import cgi
 import shutil
 import mimetypes
-from StringIO import StringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 
 class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
@@ -70,17 +74,20 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             else:
                 return self.list_directory(path)
         ctype = self.guess_type(path)
+        if ctype.startswith('text/'):
+            mode = 'r'
+        else:
+            mode = 'rb'
         try:
-            # Always read in binary mode. Opening files in text mode may cause
-            # newline translations, making the actual size of the content
-            # transmitted *less* than the content-length!
-            f = open(path, 'rb')
+            f = open(path, mode)
         except IOError:
             self.send_error(404, "File not found")
             return None
         self.send_response(200)
         self.send_header("Content-type", ctype)
-        self.send_header("Content-Length", str(os.fstat(f.fileno())[6]))
+        fs = os.fstat(f.fileno())
+        self.send_header("Content-Length", str(fs[6]))
+        self.send_header("Last-Modified", self.date_time_string(fs.st_mtime))
         self.end_headers()
         return f
 
@@ -99,8 +106,9 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
             return None
         list.sort(key=lambda a: a.lower())
         f = StringIO()
-        f.write("<title>Directory listing for %s</title>\n" % self.path)
-        f.write("<h2>Directory listing for %s</h2>\n" % self.path)
+        displaypath = cgi.escape(urllib.unquote(self.path))
+        f.write("<title>Directory listing for %s</title>\n" % displaypath)
+        f.write("<h2>Directory listing for %s</h2>\n" % displaypath)
         f.write("<hr>\n<ul>\n")
         for name in list:
             fullname = os.path.join(path, name)
@@ -131,6 +139,8 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         probably be diagnosed.)
 
         """
+        # abandon query parameters
+        path = urlparse.urlparse(path)[2]
         path = posixpath.normpath(urllib.unquote(path))
         words = path.split('/')
         words = filter(None, words)
@@ -182,6 +192,8 @@ class SimpleHTTPRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
         else:
             return self.extensions_map['']
 
+    if not mimetypes.inited:
+        mimetypes.init() # try to read system mime.types
     extensions_map = mimetypes.types_map.copy()
     extensions_map.update({
         '': 'application/octet-stream', # Default

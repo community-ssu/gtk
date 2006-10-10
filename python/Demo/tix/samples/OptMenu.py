@@ -1,6 +1,6 @@
 # -*-mode: python; fill-column: 75; tab-width: 8; coding: iso-latin-1-unix -*-
 #
-# $Id: OptMenu.py,v 1.3 2004/07/18 06:10:36 tim_one Exp $
+# $Id: OptMenu.py 36560 2004-07-18 06:16:08Z tim_one $
 #
 # Tix Demostration Program
 #

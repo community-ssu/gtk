@@ -353,6 +353,12 @@ class QuotingTests(unittest.TestCase):
         self.assertEqual(expect, result,
                          "using quote_plus(): %s != %s" % (expect, result))
 
+    def test_quoting_plus(self):
+        self.assertEqual(urllib.quote_plus('alpha+beta gamma'),
+                         'alpha%2Bbeta+gamma')
+        self.assertEqual(urllib.quote_plus('alpha+beta gamma', '+'),
+                         'alpha+beta+gamma')
+
 class UnquotingTests(unittest.TestCase):
     """Tests for unquote() and unquote_plus()
 
@@ -408,6 +414,10 @@ class UnquotingTests(unittest.TestCase):
         result = urllib.unquote_plus(given)
         self.assertEqual(expect, result,
                          "using unquote_plus(): %s != %s" % (expect, result))
+
+    def test_unquote_with_unicode(self):
+        r = urllib.unquote(u'br%C3%BCckner_sapporo_20050930.doc')
+        self.assertEqual(r, u'br\xc3\xbcckner_sapporo_20050930.doc')
 
 class urlencode_Tests(unittest.TestCase):
     """Tests for urlencode()"""

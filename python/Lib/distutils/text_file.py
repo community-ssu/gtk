@@ -4,7 +4,7 @@ provides the TextFile class, which gives an interface to text files
 that (optionally) takes care of stripping comments, ignoring blank
 lines, and joining lines with backslashes."""
 
-__revision__ = "$Id: text_file.py,v 1.15 2002/11/14 02:25:41 akuchling Exp $"
+__revision__ = "$Id: text_file.py 29687 2002-11-14 02:25:42Z akuchling $"
 
 from types import *
 import sys, os, string

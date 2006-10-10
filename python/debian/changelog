@@ -1,3 +1,10 @@
+python2.5 (2.5c1-1osso1) unstable; urgency=low
+
+  * update to 2.5c1
+  * conflicts with python2.4 packages
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 19 Jul 2006 18:21:33 -0300
+
 python2.4 (2.4.2-1osso13) unstable; urgency=low
 
   * Passing $OPT with CFLAGS contents to ./configure so it honors the flags

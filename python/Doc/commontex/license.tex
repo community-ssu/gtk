@@ -49,6 +49,8 @@ GPL-compatible; the table below summarizes the various releases.
   \linev{2.4}{2.3}{2004}{PSF}{yes}
   \linev{2.4.1}{2.4}{2005}{PSF}{yes}
   \linev{2.4.2}{2.4.1}{2005}{PSF}{yes}
+  \linev{2.4.3}{2.4.2}{2006}{PSF}{yes}
+  \linev{2.5}{2.4}{2006}{PSF}{yes}
 \end{tablev}
 
 \note{GPL-compatible doesn't mean that we're distributing
@@ -79,7 +81,7 @@ license to reproduce, analyze, test, perform and/or display publicly,
 prepare derivative works, distribute, and otherwise use Python
 \version{} alone or in any derivative version, provided, however, that
 PSF's License Agreement and PSF's notice of copyright, i.e.,
-``Copyright \copyright{} 2001-2004 Python Software Foundation; All
+``Copyright \copyright{} 2001-2006 Python Software Foundation; All
 Rights Reserved'' are retained in Python \version{} alone or in any
 derivative version prepared by Licensee.
 
@@ -421,6 +423,58 @@ The source for the \module{fpectl} module includes the following notice:
    |   of  California,  and shall not be used for advertising or product   |
     \  endorsement purposes.                                              / 
      ---------------------------------------------------------------------
+\end{verbatim}
+
+
+
+\subsection{MD5 message digest algorithm}
+
+The source code for the \module{md5} module contains the following notice:
+
+\begin{verbatim}
+  Copyright (C) 1999, 2002 Aladdin Enterprises.  All rights reserved.
+
+  This software is provided 'as-is', without any express or implied
+  warranty.  In no event will the authors be held liable for any damages
+  arising from the use of this software.
+
+  Permission is granted to anyone to use this software for any purpose,
+  including commercial applications, and to alter it and redistribute it
+  freely, subject to the following restrictions:
+
+  1. The origin of this software must not be misrepresented; you must not
+     claim that you wrote the original software. If you use this software
+     in a product, an acknowledgment in the product documentation would be
+     appreciated but is not required.
+  2. Altered source versions must be plainly marked as such, and must not be
+     misrepresented as being the original software.
+  3. This notice may not be removed or altered from any source distribution.
+
+  L. Peter Deutsch
+  ghost@aladdin.com
+
+  Independent implementation of MD5 (RFC 1321).
+
+  This code implements the MD5 Algorithm defined in RFC 1321, whose
+  text is available at
+	http://www.ietf.org/rfc/rfc1321.txt
+  The code is derived from the text of the RFC, including the test suite
+  (section A.5) but excluding the rest of Appendix A.  It does not include
+  any code or documentation that is identified in the RFC as being
+  copyrighted.
+
+  The original and principal author of md5.h is L. Peter Deutsch
+  <ghost@aladdin.com>.  Other authors are noted in the change history
+  that follows (in reverse chronological order):
+
+  2002-04-13 lpd Removed support for non-ANSI compilers; removed
+	references to Ghostscript; clarified derivation from RFC 1321;
+	now handles byte order either statically or dynamically.
+  1999-11-04 lpd Edited comments slightly for automatic TOC extraction.
+  1999-10-18 lpd Fixed typo in header comment (ansi2knr rather than md5);
+	added conditionalization for C++ compilation from Martin
+	Purschke <purschke@bnl.gov>.
+  1999-05-03 lpd Original version.
 \end{verbatim}
 
 

@@ -10,6 +10,10 @@ The \module{dl} module defines an interface to the
 \UNIX{} platforms for handling dynamically linked libraries. It allows
 the program to call arbitrary functions in such a library.
 
+\warning{The \module{dl} module bypasses the Python type system and 
+error handling. If used incorrectly it may cause segmentation faults,
+crashes or other incorrect behaviour.}
+
 \note{This module will not work unless
 \code{sizeof(int) == sizeof(long) == sizeof(char *)}
 If this is not the case, \exception{SystemError} will be raised on
@@ -23,7 +27,7 @@ signifies late binding (\constant{RTLD_LAZY}) or immediate binding
 (\constant{RTLD_NOW}). Default is \constant{RTLD_LAZY}. Note that some
 systems do not support \constant{RTLD_NOW}.
 
-Return value is a \pytype{dlobject}.
+Return value is a \class{dlobject}.
 \end{funcdesc}
 
 The \module{dl} module defines the following constants:

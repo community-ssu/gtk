@@ -1,24 +1,26 @@
-Source: python2.4
+Source: python2.5
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
 Build-Depends: debhelper (>= 4.2), autoconf, zlib1g-dev, libssl-dev, libbz2-dev
 Standards-Version: 3.6.2
 
-Package: python2.4
+Package: python2.5
 Architecture: any
 Depends: ${shlibs:Depends}
-Description: An interactive high-level object-oriented language (version 2.4)
- Version 2.4 of the high-level, interactive object oriented language,
+Conflicts: python2.4
+Description: An interactive high-level object-oriented language
+ Version 2.5 of the high-level, interactive object oriented language,
  includes an extensive class library with lots of goodies for
  network programming, system administration, sounds and graphics.
 
-Package: python2.4-dev
+Package: python2.5-dev
 Architecture: all
-Depends: python2.4 (= ${Source-Version})
-Description: Header files and a static library for Python (v2.4)
+Depends: python2.5 (= ${Source-Version})
+Conflicts: python2.4-dev
+Description: Header files and a static library for Python (v2.5)
  Header files, a static library and development tools for building
- Python (v2.4) modules, extending the Python interpreter or embedding
- Python (v2.4) in applications.
+ Python (v2.5) modules, extending the Python interpreter or embedding
+ Python (v2.5) in applications.
  .
  Maintainers of Python packages should read README.maintainers.

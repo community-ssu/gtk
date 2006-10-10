@@ -10,7 +10,6 @@
 #ifdef WITH_THREAD
 #include "pythread.h"
 #endif /* WITH_THREAD */
-
 static PyObject *TestError;	/* set to exception object in init */
 
 /* Raise TestError with test_name + ": " + msg, and return NULL. */
@@ -115,7 +114,8 @@ test_list_api(PyObject *self)
 static int
 test_dict_inner(int count)
 {
-	int pos = 0, iterations = 0, i;
+	Py_ssize_t pos = 0, iterations = 0;
+	int i;
 	PyObject *dict = PyDict_New();
 	PyObject *v, *k;
 
@@ -234,7 +234,7 @@ raise_test_longlong_error(const char* msg)
 #include "testcapi_long.h"
 
 static PyObject *
-test_longlong_api(PyObject* self)
+test_longlong_api(PyObject* self, PyObject *args)
 {
 	return TESTNAME(raise_test_longlong_error);
 }
@@ -293,6 +293,16 @@ test_L_code(PyObject *self)
 }
 
 #endif	/* ifdef HAVE_LONG_LONG */
+
+/* Test tuple argument processing */
+static PyObject *
+getargs_tuple(PyObject *self, PyObject *args)
+{
+	int a, b, c;
+	if (!PyArg_ParseTuple(args, "i(ii)", &a, &b, &c))
+		return NULL;
+	return Py_BuildValue("iii", a, b, c);
+}
 
 /* Functions to call PyArg_ParseTuple with integer format codes,
    and return the result.
@@ -360,6 +370,15 @@ getargs_l(PyObject *self, PyObject *args)
 	return PyLong_FromLong(value);
 }
 
+static PyObject *
+getargs_n(PyObject *self, PyObject *args)
+{
+	Py_ssize_t value;
+	if (!PyArg_ParseTuple(args, "n", &value))
+	return NULL;
+	return PyInt_FromSsize_t(value);
+}
+
 #ifdef HAVE_LONG_LONG
 static PyObject *
 getargs_L(PyObject *self, PyObject *args)
@@ -404,7 +423,7 @@ test_k_code(PyObject *self)
 
         PyTuple_SET_ITEM(tuple, 0, num);
 
-        value = -1;
+        value = 0;
         if (PyArg_ParseTuple(tuple, "k:test_k_code", &value) < 0)
         	return NULL;
         if (value != ULONG_MAX)
@@ -423,7 +442,7 @@ test_k_code(PyObject *self)
 
         PyTuple_SET_ITEM(tuple, 0, num);
 
-	value = -1;
+	value = 0;
         if (PyArg_ParseTuple(tuple, "k:test_k_code", &value) < 0)
         	return NULL;
         if (value != (unsigned long)-0x42)
@@ -477,6 +496,26 @@ test_u_code(PyObject *self)
 	return Py_None;
 }
 
+static PyObject *
+codec_incrementalencoder(PyObject *self, PyObject *args)
+{
+	const char *encoding, *errors = NULL;
+	if (!PyArg_ParseTuple(args, "s|s:test_incrementalencoder",
+			      &encoding, &errors))
+		return NULL;
+	return PyCodec_IncrementalEncoder(encoding, errors);
+}
+
+static PyObject *
+codec_incrementaldecoder(PyObject *self, PyObject *args)
+{
+	const char *encoding, *errors = NULL;
+	if (!PyArg_ParseTuple(args, "s|s:test_incrementaldecoder",
+			      &encoding, &errors))
+		return NULL;
+	return PyCodec_IncrementalDecoder(encoding, errors);
+}
+
 #endif
 
 /* Simple test of _PyLong_NumBits and _PyLong_Sign. */
@@ -521,6 +560,18 @@ test_long_numbits(PyObject *self)
 	return Py_None;
 }
 
+/* Example passing NULLs to PyObject_Str(NULL) and PyObject_Unicode(NULL). */
+
+static PyObject *
+test_null_strings(PyObject *self)
+{
+	PyObject *o1 = PyObject_Str(NULL), *o2 = PyObject_Unicode(NULL);
+	PyObject *tuple = PyTuple_Pack(2, o1, o2);
+	Py_XDECREF(o1);
+	Py_XDECREF(o2);
+	return tuple;
+}
+
 static PyObject *
 raise_exception(PyObject *self, PyObject *args)
 {
@@ -550,7 +601,17 @@ raise_exception(PyObject *self, PyObject *args)
 
 #ifdef WITH_THREAD
 
-void _make_call(void *callable)
+/* test_thread_state spawns a thread of its own, and that thread releases
+ * `thread_done` when it's finished.  The driver code has to know when the
+ * thread finishes, because the thread uses a PyObject (the callable) that
+ * may go away when the driver finishes.  The former lack of this explicit
+ * synchronization caused rare segfaults, so rare that they were seen only
+ * on a Mac buildbot (although they were possible on any box).
+ */
+static PyThread_type_lock thread_done = NULL;
+
+static void
+_make_call(void *callable)
 {
 	PyObject *rc;
 	PyGILState_STATE s = PyGILState_Ensure();
@@ -559,197 +620,98 @@ void _make_call(void *callable)
 	PyGILState_Release(s);
 }
 
+/* Same thing, but releases `thread_done` when it returns.  This variant
+ * should be called only from threads spawned by test_thread_state().
+ */
+static void
+_make_call_from_thread(void *callable)
+{
+	_make_call(callable);
+	PyThread_release_lock(thread_done);
+}
+
 static PyObject *
 test_thread_state(PyObject *self, PyObject *args)
 {
 	PyObject *fn;
+
 	if (!PyArg_ParseTuple(args, "O:test_thread_state", &fn))
 		return NULL;
-	/* Ensure Python is setup for threading */
+
+	/* Ensure Python is set up for threading */
 	PyEval_InitThreads();
-	/* Start a new thread for our callback. */
-	PyThread_start_new_thread( _make_call, fn);
+	thread_done = PyThread_allocate_lock();
+	if (thread_done == NULL)
+		return PyErr_NoMemory();
+	PyThread_acquire_lock(thread_done, 1);
+
+	/* Start a new thread with our callback. */
+	PyThread_start_new_thread(_make_call_from_thread, fn);
 	/* Make the callback with the thread lock held by this thread */
 	_make_call(fn);
 	/* Do it all again, but this time with the thread-lock released */
 	Py_BEGIN_ALLOW_THREADS
 	_make_call(fn);
+	PyThread_acquire_lock(thread_done, 1);  /* wait for thread to finish */
 	Py_END_ALLOW_THREADS
+
 	/* And once more with and without a thread
-	   XXX - should use a lock and work out exactly what we are trying 
-	   to test <wink> 
+	   XXX - should use a lock and work out exactly what we are trying
+	   to test <wink>
 	*/
 	Py_BEGIN_ALLOW_THREADS
-	PyThread_start_new_thread( _make_call, fn);
+	PyThread_start_new_thread(_make_call_from_thread, fn);
 	_make_call(fn);
+	PyThread_acquire_lock(thread_done, 1);  /* wait for thread to finish */
 	Py_END_ALLOW_THREADS
-	Py_INCREF(Py_None);
-	return Py_None;
+
+	PyThread_free_lock(thread_done);
+	Py_RETURN_NONE;
 }
 #endif
 
-/* a classic-type with copyable instances */
-
-typedef struct {
-	PyObject_HEAD
-	/* instance tag (a string). */
-	PyObject* tag;
-} CopyableObject;
-
-staticforward PyTypeObject Copyable_Type;
-
-#define Copyable_CheckExact(op) ((op)->ob_type == &Copyable_Type)
-
-/* -------------------------------------------------------------------- */
-
-/* copyable constructor and destructor */
-static PyObject*
-copyable_new(PyObject* tag)
+/* Some tests of PyString_FromFormat().  This needs more tests. */
+static PyObject *
+test_string_from_format(PyObject *self, PyObject *args)
 {
-	CopyableObject* self;
+	PyObject *result;
+	char *msg;
 
-	self = PyObject_New(CopyableObject, &Copyable_Type);
-	if (self == NULL)
-		return NULL;
-	Py_INCREF(tag);
-	self->tag = tag;
-	return (PyObject*) self;
+#define CHECK_1_FORMAT(FORMAT, TYPE) 			\
+	result = PyString_FromFormat(FORMAT, (TYPE)1);	\
+	if (result == NULL)				\
+		return NULL;				\
+	if (strcmp(PyString_AsString(result), "1")) {	\
+		msg = FORMAT " failed at 1";		\
+		goto Fail;				\
+	}						\
+	Py_DECREF(result)
+
+	CHECK_1_FORMAT("%d", int);
+	CHECK_1_FORMAT("%ld", long);
+	/* The z width modifier was added in Python 2.5. */
+	CHECK_1_FORMAT("%zd", Py_ssize_t);
+
+	/* The u type code was added in Python 2.5. */
+	CHECK_1_FORMAT("%u", unsigned int);
+	CHECK_1_FORMAT("%lu", unsigned long);
+	CHECK_1_FORMAT("%zu", size_t);
+
+	Py_RETURN_NONE;
+
+ Fail:
+ 	Py_XDECREF(result);
+	return raiseTestError("test_string_from_format", msg);
+
+#undef CHECK_1_FORMAT
 }
 
-static PyObject*
-copyable(PyObject* self, PyObject* args, PyObject* kw)
+/* This is here to provide a docstring for test_descr. */
+static PyObject *
+test_with_docstring(PyObject *self)
 {
-	PyObject* elem;
-	PyObject* tag;
-	if (!PyArg_ParseTuple(args, "O:Copyable", &tag))
-		return NULL;
-	elem = copyable_new(tag);
-	return elem;
+	Py_RETURN_NONE;
 }
-
-static void
-copyable_dealloc(CopyableObject* self)
-{
-	/* discard attributes */
-	Py_DECREF(self->tag);
-	PyObject_Del(self);
-}
-
-/* copyable methods */
-
-static PyObject*
-copyable_copy(CopyableObject* self, PyObject* args)
-{
-	CopyableObject* copyable;
-	if (!PyArg_ParseTuple(args, ":__copy__"))
-		return NULL;
-	copyable = (CopyableObject*)copyable_new(self->tag);
-	if (!copyable)
-		return NULL;
-	return (PyObject*) copyable;
-}
-
-PyObject* _copy_deepcopy;
-
-static PyObject*
-copyable_deepcopy(CopyableObject* self, PyObject* args)
-{
-	CopyableObject* copyable = 0;
-	PyObject* memo;
-	PyObject* tag_copy;
-	if (!PyArg_ParseTuple(args, "O:__deepcopy__", &memo))
-		return NULL;
-
-	tag_copy = PyObject_CallFunctionObjArgs(_copy_deepcopy, self->tag, memo, NULL);
-
-	if(tag_copy) {
-		copyable = (CopyableObject*)copyable_new(tag_copy);
-		Py_DECREF(tag_copy);
-	}
-	return (PyObject*) copyable;
-}
-
-static PyObject*
-copyable_repr(CopyableObject* self)
-{
-	PyObject* repr;
-	char buffer[100];
-	
-	repr = PyString_FromString("<Copyable {");
-
-	PyString_ConcatAndDel(&repr, PyObject_Repr(self->tag));
-
-	sprintf(buffer, "} at %p>", self);
-	PyString_ConcatAndDel(&repr, PyString_FromString(buffer));
-
-	return repr;
-}
-
-static int
-copyable_compare(CopyableObject* obj1, CopyableObject* obj2)
-{
-	return PyObject_Compare(obj1->tag, obj2->tag);
-}
-
-static PyMethodDef copyable_methods[] = {
-	{"__copy__", (PyCFunction) copyable_copy, METH_VARARGS},
-	{"__deepcopy__", (PyCFunction) copyable_deepcopy, METH_VARARGS},
-	{NULL, NULL}
-};
-
-static PyObject*  
-copyable_getattr(CopyableObject* self, char* name)
-{
-	PyObject* res;
-	res = Py_FindMethod(copyable_methods, (PyObject*) self, name);
-	if (res)
-	return res;
-	PyErr_Clear();
-	if (strcmp(name, "tag") == 0) {
-	res = self->tag;
-	} else {
-		PyErr_SetString(PyExc_AttributeError, name);
-		return NULL;
-	}
-	if (!res)
-		return NULL;
-	Py_INCREF(res);
-	return res;
-}
-
-static int
-copyable_setattr(CopyableObject* self, const char* name, PyObject* value)
-{
-	if (value == NULL) {
-		PyErr_SetString(
-			PyExc_AttributeError,
-			"can't delete copyable attributes"
-			);
-		return -1;
-	}
-	if (strcmp(name, "tag") == 0) {
-		Py_DECREF(self->tag);
-		self->tag = value;
-		Py_INCREF(self->tag);
-	} else {
-		PyErr_SetString(PyExc_AttributeError, name);
-		return -1;
-	}
-	return 0;
-}
-
-statichere PyTypeObject Copyable_Type = {
-	PyObject_HEAD_INIT(NULL)
-	0, "Copyable", sizeof(CopyableObject), 0,
-	/* methods */
-	(destructor)copyable_dealloc, /* tp_dealloc */
-	0, /* tp_print */
-	(getattrfunc)copyable_getattr, /* tp_getattr */
-	(setattrfunc)copyable_setattr, /* tp_setattr */
-	(cmpfunc)copyable_compare, /* tp_compare */
-	(reprfunc)copyable_repr, /* tp_repr */
-	0, /* tp_as_number */
-};
 
 static PyMethodDef TestMethods[] = {
 	{"raise_exception",	raise_exception,		 METH_VARARGS},
@@ -759,29 +721,37 @@ static PyMethodDef TestMethods[] = {
 	{"test_long_api",	(PyCFunction)test_long_api,	 METH_NOARGS},
 	{"test_long_numbits",	(PyCFunction)test_long_numbits,	 METH_NOARGS},
 	{"test_k_code",		(PyCFunction)test_k_code,	 METH_NOARGS},
+	{"test_null_strings",	(PyCFunction)test_null_strings,	 METH_NOARGS},
+	{"test_string_from_format", (PyCFunction)test_string_from_format, METH_NOARGS},
+	{"test_with_docstring", (PyCFunction)test_with_docstring, METH_NOARGS,
+	 PyDoc_STR("This is a pretty normal docstring.")},
 
-	{"getargs_b",		(PyCFunction)getargs_b,		 METH_VARARGS},
-	{"getargs_B",		(PyCFunction)getargs_B,		 METH_VARARGS},
-	{"getargs_H",		(PyCFunction)getargs_H,		 METH_VARARGS},
-	{"getargs_I",		(PyCFunction)getargs_I,		 METH_VARARGS},
-	{"getargs_k",		(PyCFunction)getargs_k,		 METH_VARARGS},
-	{"getargs_i",		(PyCFunction)getargs_i,		 METH_VARARGS},
-	{"getargs_l",		(PyCFunction)getargs_l,		 METH_VARARGS},
+	{"getargs_tuple",	getargs_tuple,			 METH_VARARGS},
+	{"getargs_b",		getargs_b,			 METH_VARARGS},
+	{"getargs_B",		getargs_B,			 METH_VARARGS},
+	{"getargs_H",		getargs_H,			 METH_VARARGS},
+	{"getargs_I",		getargs_I,			 METH_VARARGS},
+	{"getargs_k",		getargs_k,			 METH_VARARGS},
+	{"getargs_i",		getargs_i,			 METH_VARARGS},
+	{"getargs_l",		getargs_l,			 METH_VARARGS},
+	{"getargs_n",		getargs_n, 			 METH_VARARGS},
 #ifdef HAVE_LONG_LONG
-	{"getargs_L",		(PyCFunction)getargs_L,		 METH_VARARGS},
-	{"getargs_K",		(PyCFunction)getargs_K,		 METH_VARARGS},
-	{"test_longlong_api",	(PyCFunction)test_longlong_api,	 METH_NOARGS},
+	{"getargs_L",		getargs_L,			 METH_VARARGS},
+	{"getargs_K",		getargs_K,			 METH_VARARGS},
+	{"test_longlong_api",	test_longlong_api,		 METH_NOARGS},
 	{"test_L_code",		(PyCFunction)test_L_code,	 METH_NOARGS},
+	{"codec_incrementalencoder",
+	 (PyCFunction)codec_incrementalencoder,	 METH_VARARGS},
+	{"codec_incrementaldecoder",
+	 (PyCFunction)codec_incrementaldecoder,	 METH_VARARGS},
 #endif
 #ifdef Py_USING_UNICODE
 	{"test_u_code",		(PyCFunction)test_u_code,	 METH_NOARGS},
 #endif
 #ifdef WITH_THREAD
-	{"_test_thread_state",	(PyCFunction)test_thread_state, METH_VARARGS},
+	{"_test_thread_state",  test_thread_state, 		 METH_VARARGS},
 #endif
-	{"make_copyable",	(PyCFunction) copyable,		METH_VARARGS},
 	{NULL, NULL} /* sentinel */
-
 };
 
 #define AddSym(d, n, f, v) {PyObject *o = f(v); PyDict_SetItemString(d, n, o); Py_DECREF(o);}
@@ -790,17 +760,10 @@ PyMODINIT_FUNC
 init_testcapi(void)
 {
 	PyObject *m;
-	PyObject *copy_module;
-
-
-	copy_module = PyImport_ImportModule("copy");
-	if(!copy_module)
-		return;
-	_copy_deepcopy = PyObject_GetAttrString(copy_module, "deepcopy");
-	Py_DECREF(copy_module);
-	Copyable_Type.ob_type = &PyType_Type;
 
 	m = Py_InitModule("_testcapi", TestMethods);
+	if (m == NULL)
+		return;
 
 	PyModule_AddObject(m, "UCHAR_MAX", PyInt_FromLong(UCHAR_MAX));
 	PyModule_AddObject(m, "USHRT_MAX", PyInt_FromLong(USHRT_MAX));
@@ -808,8 +771,10 @@ init_testcapi(void)
 	PyModule_AddObject(m, "ULONG_MAX", PyLong_FromUnsignedLong(ULONG_MAX));
 	PyModule_AddObject(m, "INT_MIN", PyInt_FromLong(INT_MIN));
 	PyModule_AddObject(m, "LONG_MIN", PyInt_FromLong(LONG_MIN));
+	PyModule_AddObject(m, "PY_SSIZE_T_MIN", PyInt_FromSsize_t(PY_SSIZE_T_MIN));
 	PyModule_AddObject(m, "INT_MAX", PyInt_FromLong(INT_MAX));
 	PyModule_AddObject(m, "LONG_MAX", PyInt_FromLong(LONG_MAX));
+	PyModule_AddObject(m, "PY_SSIZE_T_MAX", PyInt_FromSsize_t(PY_SSIZE_T_MAX));
 
 	TestError = PyErr_NewException("_testcapi.error", NULL, NULL);
 	Py_INCREF(TestError);

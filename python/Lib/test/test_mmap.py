@@ -126,7 +126,7 @@ def test_both():
             f.seek(0, 2)
             verify(f.tell() == 512, 'Underlying file not truncated')
             f.close()
-            verify(m.size() == 512, 'New size not reflected in file') 
+            verify(m.size() == 512, 'New size not reflected in file')
 
         m.close()
 
@@ -281,6 +281,14 @@ def test_both():
         except OSError:
             pass
 
+    print '  Try opening a bad file descriptor...'
+    try:
+        mmap.mmap(-2, 4096)
+    except mmap.error:
+        pass
+    else:
+        verify(0, 'expected a mmap.error but did not get it')
+
     # Do a tougher .find() test.  SF bug 515943 pointed out that, in 2.2,
     # searching for data with embedded \0 bytes didn't work.
     f = open(TESTFN, 'w+')
@@ -319,7 +327,69 @@ def test_both():
     finally:
         os.unlink(TESTFN)
 
+    # test mapping of entire file by passing 0 for map length
+    if hasattr(os, "stat"):
+        print "  Ensuring that passing 0 as map length sets map size to current file size."
+        f = open(TESTFN, "w+")
 
-    print ' Test passed'
+        try:
+            f.write(2**16 * 'm') # Arbitrary character
+            f.close()
+
+            f = open(TESTFN, "rb+")
+            mf = mmap.mmap(f.fileno(), 0)
+            verify(len(mf) == 2**16, "Map size should equal file size.")
+            vereq(mf.read(2**16), 2**16 * "m")
+            mf.close()
+            f.close()
+
+        finally:
+            os.unlink(TESTFN)
+
+    # test mapping of entire file by passing 0 for map length
+    if hasattr(os, "stat"):
+        print "  Ensuring that passing 0 as map length sets map size to current file size."
+        f = open(TESTFN, "w+")
+        try:
+            f.write(2**16 * 'm') # Arbitrary character
+            f.close()
+
+            f = open(TESTFN, "rb+")
+            mf = mmap.mmap(f.fileno(), 0)
+            verify(len(mf) == 2**16, "Map size should equal file size.")
+            vereq(mf.read(2**16), 2**16 * "m")
+            mf.close()
+            f.close()
+
+        finally:
+            os.unlink(TESTFN)
+
+    # make move works everywhere (64-bit format problem earlier)
+    f = open(TESTFN, 'w+')
+
+    try:    # unlink TESTFN no matter what
+        f.write("ABCDEabcde") # Arbitrary character
+        f.flush()
+
+        mf = mmap.mmap(f.fileno(), 10)
+        mf.move(5, 0, 5)
+        verify(mf[:] == "ABCDEABCDE", "Map move should have duplicated front 5")
+        mf.close()
+        f.close()
+
+    finally:
+        os.unlink(TESTFN)
+
+def test_anon():
+    print "  anonymous mmap.mmap(-1, PAGESIZE)..."
+    m = mmap.mmap(-1, PAGESIZE)
+    for x in xrange(PAGESIZE):
+        verify(m[x] == '\0', "anonymously mmap'ed contents should be zero")
+
+    for x in xrange(PAGESIZE):
+        m[x] = ch = chr(x & 255)
+        vereq(m[x], ch)
 
 test_both()
+test_anon()
+print ' Test passed'

@@ -377,7 +377,7 @@ right type (but even this is determined by the sliced object).
 \begin{productionlist}
   \production{print_stmt}
              {"print" ( \optional{\token{expression} ("," \token{expression})* \optional{","}}}
-  \productioncont{| ">\code{>}" \token{expression}
+  \productioncont{| ">>" \token{expression}
                   \optional{("," \token{expression})+ \optional{","}} )}
 \end{productionlist}
 
@@ -417,7 +417,7 @@ exception is raised.
 \keyword{print} also has an extended\index{extended print statement}
 form, defined by the second portion of the syntax described above.
 This form is sometimes referred to as ``\keyword{print} chevron.''
-In this form, the first expression after the \code{>}\code{>} must
+In this form, the first expression after the \code{>>} must
 evaluate to a ``file-like'' object, specifically an object that has a
 \method{write()} method as described above.  With this extended form,
 the subsequent expressions are printed to this file object.  If the
@@ -488,11 +488,12 @@ enough information is saved so that the next time \method{next()} is
 invoked, the function can proceed exactly as if the \keyword{yield}
 statement were just another external call.
 
-The \keyword{yield} statement is not allowed in the \keyword{try}
-clause of a \keyword{try} ...\ \keyword{finally} construct.  The
-difficulty is that there's no guarantee the generator will ever be
-resumed, hence no guarantee that the \keyword{finally} block will ever
-get executed.
+As of Python version 2.5, the \keyword{yield} statement is now
+allowed in the \keyword{try} clause of a \keyword{try} ...\ 
+\keyword{finally} construct.  If the generator is not resumed before
+it is finalized (by reaching a zero reference count or by being garbage
+collected), the generator-iterator's \method{close()} method will be
+called, allowing any pending \keyword{finally} clauses to execute.
 
 \begin{notice}
 In Python 2.2, the \keyword{yield} statement is only allowed
@@ -510,6 +511,11 @@ from __future__ import generators
   \seepep{0255}{Simple Generators}
          {The proposal for adding generators and the \keyword{yield}
           statement to Python.}
+
+  \seepep{0342}{Coroutines via Enhanced Generators}
+         {The proposal that, among other generator enhancements,
+          proposed allowing \keyword{yield} to appear inside a
+          \keyword{try} ... \keyword{finally} block.}
 \end{seealso}
 
 
@@ -524,8 +530,9 @@ from __future__ import generators
 
 If no expressions are present, \keyword{raise} re-raises the last
 exception that was active in the current scope.  If no exception is
-active in the current scope, a \exception{Queue.Empty} exception is
-raised indicating this error.
+active in the current scope, a \exception{TypeError} exception is
+raised indicating that this is an error (if running under IDLE, a
+\exception{Queue.Empty} exception is raised instead).
 \index{exception}
 \indexii{raising}{exception}
 
@@ -602,7 +609,7 @@ before really leaving the loop.
 
 \keyword{continue} may only occur syntactically nested in a \keyword{for} or
 \keyword{while} loop, but not nested in a function or class definition or
-\keyword{try} statement within that loop.\footnote{It may
+\keyword{finally} statement within that loop.\footnote{It may
 occur within an \keyword{except} or \keyword{else} clause.  The
 restriction on occurring in the \keyword{try} clause is implementor's
 laziness and will eventually be lifted.}
@@ -802,13 +809,14 @@ import __future__ [as name]
 That is not a future statement; it's an ordinary import statement with
 no special semantics or syntax restrictions.
 
-Code compiled by an exec statement or calls to the builtin functions
+Code compiled by an \keyword{exec} statement or calls to the builtin functions
 \function{compile()} and \function{execfile()} that occur in a module
 \module{M} containing a future statement will, by default, use the new 
 syntax or semantics associated with the future statement.  This can,
 starting with Python 2.2 be controlled by optional arguments to
-\function{compile()} --- see the documentation of that function in the 
-library reference for details.
+\function{compile()} --- see the documentation of that function in the
+\citetitle[../lib/built-in-funcs.html]{Python Library Reference} for
+details.
 
 A future statement typed at an interactive interpreter prompt will
 take effect for the rest of the interpreter session.  If an
@@ -874,7 +882,7 @@ a code object.  If it is a string, the string is parsed as a suite of
 Python statements which is then executed (unless a syntax error
 occurs).  If it is an open file, the file is parsed until \EOF{} and
 executed.  If it is a code object, it is simply executed.  In all
-cases, the code that's executed is expected to be be valid as file
+cases, the code that's executed is expected to be valid as file
 input (see section~\ref{file-input}, ``File input'').  Be aware that
 the \keyword{return} and \keyword{yield} statements may not be used
 outside of function definitions even within the context of code passed

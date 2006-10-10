@@ -47,7 +47,7 @@ cygwin in no-cygwin mode).
 
 # This module should be kept compatible with Python 2.1.
 
-__revision__ = "$Id: cygwinccompiler.py,v 1.29 2004/11/10 22:23:14 loewis Exp $"
+__revision__ = "$Id: cygwinccompiler.py 37828 2004-11-10 22:23:15Z loewis $"
 
 import os,sys,copy
 from distutils.ccompiler import gen_preprocess_options, gen_lib_options

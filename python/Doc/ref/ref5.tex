@@ -22,9 +22,9 @@ are the same as for \code{othername}.
 
 When a description of an arithmetic operator below uses the phrase
 ``the numeric arguments are converted to a common type,'' the
-arguments are coerced using the coercion rules listed at the end of
-chapter \ref{datamodel}.  If both arguments are standard numeric
-types, the following coercions are applied:
+arguments are coerced using the coercion rules listed at
+~\ref{coercion-rules}.  If both arguments are standard numeric types,
+the following coercions are applied:
 
 \begin{itemize}
 \item	If either argument is a complex number, the other is converted
@@ -155,8 +155,7 @@ square brackets:
 
 \begin{productionlist}
   \production{test}
-             {\token{and_test} ( "or" \token{and_test} )*
-              | \token{lambda_form}}
+             {\token{or_test} | \token{lambda_form}}
   \production{testlist}
              {\token{test} ( "," \token{test} )* [ "," ]}
   \production{list_display}
@@ -392,7 +391,8 @@ type but a string of exactly one character.
 
 A slicing selects a range of items in a sequence object (e.g., a
 string, tuple or list).  Slicings may be used as expressions or as
-targets in assignment or del statements.  The syntax for a slicing:
+targets in assignment or \keyword{del} statements.  The syntax for a
+slicing:
 \obindex{sequence}
 \obindex{string}
 \obindex{tuple}
@@ -777,6 +777,13 @@ approximately where \code{x/y} is replaced by \code{floor(x/y)} or
     * y + x \%{} y} be very close to \code{x}.
 }.
 
+In addition to performing the modulo operation on numbers, the \code{\%}
+operator is also overloaded by string and unicode objects to perform
+string formatting (also known as interpolation). The syntax for string
+formatting is described in the
+\citetitle[../lib/typesseq-strings.html]{Python Library Reference},
+section ``Sequence Types''.
+
 \deprecated{2.3}{The floor division operator, the modulo operator,
 and the \function{divmod()} function are no longer defined for complex
 numbers.  Instead, convert to a floating point number using the
@@ -900,7 +907,10 @@ The operators \code{<}, \code{>}, \code{==}, \code{>=}, \code{<=}, and
 the values of two objects.  The objects need not have the same type.
 If both are numbers, they are converted to a common type.  Otherwise,
 objects of different types \emph{always} compare unequal, and are
-ordered consistently but arbitrarily.
+ordered consistently but arbitrarily.  You can control comparison
+behavior of objects of non-builtin types by defining a \code{__cmp__}
+method or rich comparison methods like \code{__gt__}, described in
+section~\ref{specialnames}.
 
 (This unusual definition of comparison was used to simplify the
 definition of operations like sorting and the \keyword{in} and
@@ -945,7 +955,8 @@ otherwise defined.\footnote{Earlier versions of Python used
   a dictionary for emptiness by comparing it to \code{\{\}}.}
 
 \item
-Most other types compare unequal unless they are the same object;
+Most other objects of builtin types compare unequal unless they are
+the same object;
 the choice whether one object is considered smaller or larger than
 another one is made arbitrarily but consistently within one
 execution of a program.
@@ -1010,7 +1021,8 @@ Boolean operations have the lowest priority of all Python operations:
 
 \begin{productionlist}
   \production{expression}
-             {\token{or_test} | \token{lambda_form}}
+             {\token{or_test} [\token{if} \token{or_test} \token{else}
+              \token{test}] | \token{lambda_form}}
   \production{or_test}
              {\token{and_test} | \token{or_test} "or" \token{and_test}}
   \production{and_test}
@@ -1028,6 +1040,11 @@ sets and frozensets).  All other values are interpreted as true.
 The operator \keyword{not} yields \code{True} if its argument is false,
 \code{False} otherwise.
 \opindex{not}
+
+The expression \code{\var{x} if \var{C} else \var{y}} first evaluates
+\var{C} (\emph{not} \var{x}); if \var{C} is true, \var{x} is evaluated and
+its value is returned; otherwise, \var{y} is evaluated and its value is
+returned.  \versionadded{2.5}
 
 The expression \code{\var{x} and \var{y}} first evaluates \var{x}; if
 \var{x} is false, its value is returned; otherwise, \var{y} is
@@ -1146,7 +1163,7 @@ have the same precedence and chain from left to right --- see section
   \hline
     \lineii{\code{\&}}				{Bitwise AND}
   \hline
-    \lineii{\code{<}\code{<}, \code{>}\code{>}}	{Shifts}
+    \lineii{\code{<<}, \code{>>}}		{Shifts}
   \hline
     \lineii{\code{+}, \code{-}}{Addition and subtraction}
   \hline

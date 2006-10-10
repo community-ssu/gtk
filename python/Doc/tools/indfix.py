@@ -16,7 +16,7 @@ becomes
 Note that an item which matches the format of a collapsable item but which
 isn't part of a group of similar items is not modified.
 """
-__version__ = '$Revision: 1.6 $'
+__version__ = '$Revision: 29268 $'
 
 import re
 import StringIO

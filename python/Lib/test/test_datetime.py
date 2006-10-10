@@ -446,9 +446,9 @@ class TestTimeDelta(HarmlessMixedComparison):
     def test_subclass_timedelta(self):
 
         class T(timedelta):
+            @staticmethod
             def from_td(td):
                 return T(td.days, td.seconds, td.microseconds)
-            from_td = staticmethod(from_td)
 
             def as_hours(self):
                 sum = (self.days * 24 +
@@ -1168,6 +1168,17 @@ class TestDateTime(TestDate):
         self.assertEqual(dt2 - dt1, us)
         self.assert_(dt1 < dt2)
 
+    def test_strftime_with_bad_tzname_replace(self):
+        # verify ok if tzinfo.tzname().replace() returns a non-string
+        class MyTzInfo(FixedOffset):
+            def tzname(self, dt):
+                class MyStr(str):
+                    def replace(self, *args):
+                        return None
+                return MyStr('name')
+        t = self.theclass(2005, 3, 2, 0, 0, 0, 0, MyTzInfo(3, 'name'))
+        self.assertRaises(TypeError, t.strftime, '%Z')
+
     def test_bad_constructor_arguments(self):
         # bad years
         self.theclass(MINYEAR, 1, 1)  # no exception
@@ -1389,6 +1400,12 @@ class TestDateTime(TestDate):
         got = self.theclass.utcfromtimestamp(ts)
         self.verify_field_equality(expected, got)
 
+    def test_microsecond_rounding(self):
+        # Test whether fromtimestamp "rounds up" floats that are less
+        # than one microsecond smaller than an integer.
+        self.assertEquals(self.theclass.fromtimestamp(0.9999999),
+                          self.theclass.fromtimestamp(1))
+
     def test_insane_fromtimestamp(self):
         # It's possible that some platform maps time_t to double,
         # and that this test will fail there.  This test should
@@ -1420,6 +1437,15 @@ class TestDateTime(TestDate):
                 break
             # Else try again a few times.
         self.failUnless(abs(from_timestamp - from_now) <= tolerance)
+
+    def test_strptime(self):
+        import time
+
+        string = '2004-12-01 13:02:47'
+        format = '%Y-%m-%d %H:%M:%S'
+        expected = self.theclass(*(time.strptime(string, format)[0:6]))
+        got = self.theclass.strptime(string, format)
+        self.assertEqual(expected, got)
 
     def test_more_timetuple(self):
         # This tests fields beyond those tested by the TestDate.test_timetuple.
@@ -1820,6 +1846,13 @@ class TestTime(HarmlessMixedComparison):
         self.assertEqual(dt2.extra, 7)
         self.assertEqual(dt1.isoformat(), dt2.isoformat())
         self.assertEqual(dt2.newmeth(-7), dt1.hour + dt1.second - 7)
+
+    def test_backdoor_resistance(self):
+        # see TestDate.test_backdoor_resistance().
+        base = '2:59.0'
+        for hour_byte in ' ', '9', chr(24), '\xff':
+            self.assertRaises(TypeError, self.theclass,
+                                         hour_byte + base[1:])
 
 # A mixin for classes with a tzinfo= argument.  Subclasses must define
 # theclass as a class atribute, and theclass(1, 1, 1, tzinfo=whatever)

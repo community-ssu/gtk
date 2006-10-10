@@ -35,15 +35,17 @@ Sample use, command line:
   trace.py --trackcalls spam.py eggs
 
 Sample use, programmatically
-   # create a Trace object, telling it what to ignore, and whether to
-   # do tracing or line-counting or both.
-   trace = trace.Trace(ignoredirs=[sys.prefix, sys.exec_prefix,], trace=0,
-                       count=1)
-   # run the new command using the given trace
-   trace.run('main()')
-   # make a report, telling it where you want output
-   r = trace.results()
-   r.write_results(show_missing=True)
+  import sys
+
+  # create a Trace object, telling it what to ignore, and whether to
+  # do tracing or line-counting or both.
+  tracer = trace.Trace(ignoredirs=[sys.prefix, sys.exec_prefix,], trace=0,
+                    count=1)
+  # run the new command using the given tracer
+  tracer.run('main()')
+  # make a report, placing output in /tmp
+  r = tracer.results()
+  r.write_results(show_missing=True, coverdir="/tmp")
 """
 
 import linecache
@@ -133,7 +135,7 @@ class Ignore:
             # the ignore list
             n = len(mod)
             # (will not overflow since if the first n characters are the
-            # same and the name has not already occured, then the size
+            # same and the name has not already occurred, then the size
             # of "name" is greater than that of "mod")
             if mod == modulename[:n] and modulename[n] == '.':
                 self._ignore[modulename] = 1
@@ -177,9 +179,11 @@ def fullmodname(path):
     # looking in sys.path for the longest matching prefix.  We'll
     # assume that the rest is the package name.
 
+    comparepath = os.path.normcase(path)
     longest = ""
     for dir in sys.path:
-        if path.startswith(dir) and path[len(dir)] == os.path.sep:
+        dir = os.path.normcase(dir)
+        if comparepath.startswith(dir) and comparepath[len(dir)] == os.sep:
             if len(dir) > len(longest):
                 longest = dir
 
@@ -283,7 +287,7 @@ class CoverageResults:
             if filename == "<string>":
                 continue
 
-            if filename.endswith(".pyc") or filename.endswith(".pyo"):
+            if filename.endswith((".pyc", ".pyo")):
                 filename = filename[:-1]
 
             if coverdir is None:

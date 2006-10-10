@@ -889,6 +889,15 @@ def testEncodings():
             and doc.toxml('utf-8') == '<?xml version="1.0" encoding="utf-8"?><foo>\xe2\x82\xac</foo>'
             and doc.toxml('iso-8859-15') == '<?xml version="1.0" encoding="iso-8859-15"?><foo>\xa4</foo>',
             "testEncodings - encoding EURO SIGN")
+
+    # Verify that character decoding errors throw exceptions instead of crashing
+    try:
+        doc = parseString('<fran\xe7ais>Comment \xe7a va ? Tr\xe8s bien ?</fran\xe7ais>')
+    except UnicodeDecodeError:
+        pass
+    else:
+        print 'parsing with bad encoding should raise a UnicodeDecodeError'
+
     doc.unlink()
 
 class UserDataHandler:
@@ -1117,6 +1126,17 @@ def testWholeText():
     elem.removeChild(splitter)
     checkWholeText(text, "cabd")
     checkWholeText(text2, "cabd")
+
+def testPatch1094164 ():
+    doc = parseString("<doc><e/></doc>")
+    elem = doc.documentElement
+    e = elem.firstChild
+    confirm(e.parentNode is elem, "Before replaceChild()")
+    # Check that replacing a child with itself leaves the tree unchanged
+    elem.replaceChild(e, e)
+    confirm(e.parentNode is elem, "After replaceChild()")
+
+
 
 def testReplaceWholeText():
     def setup():

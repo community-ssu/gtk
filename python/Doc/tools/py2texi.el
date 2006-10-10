@@ -3,7 +3,7 @@
 ;; Copyright (C) 1998, 1999, 2001, 2002 Milan Zamazal
 
 ;; Author: Milan Zamazal <pdm@zamazal.org>
-;; Version: $Id: py2texi.el,v 1.10.4.2 2005/03/10 04:59:14 fdrake Exp $
+;; Version: $Id: py2texi.el 38616 2005-03-10 05:02:18Z fdrake $
 ;; Keywords: python
 
 ;; COPYRIGHT NOTICE

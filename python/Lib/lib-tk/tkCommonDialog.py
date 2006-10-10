@@ -1,7 +1,3 @@
-#
-# Instant Python
-# $Id: tkCommonDialog.py,v 1.7 2003/04/06 09:00:53 rhettinger Exp $
-#
 # base class for tk common dialogues
 #
 # this module provides a base class for accessing the common

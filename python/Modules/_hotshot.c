@@ -3,7 +3,7 @@
  */
 
 #include "Python.h"
-#include "compile.h"
+#include "code.h"
 #include "eval.h"
 #include "frameobject.h"
 #include "structmember.h"
@@ -14,7 +14,11 @@
  */
 #ifdef MS_WINDOWS
 #include <windows.h>
+
+#ifdef HAVE_DIRECT_H
 #include <direct.h>    /* for getcwd() */
+#endif
+
 typedef __int64 hs_time;
 #define GETTIMEOFDAY(P_HS_TIME) \
 	{ LARGE_INTEGER _temp; \
@@ -26,7 +30,7 @@ typedef __int64 hs_time;
 #ifndef HAVE_GETTIMEOFDAY
 #error "This module requires gettimeofday() on non-Windows platforms!"
 #endif
-#if (defined(PYOS_OS2) && defined(PYCC_GCC))
+#if (defined(PYOS_OS2) && defined(PYCC_GCC)) || defined(__QNX__)
 #include <sys/time.h>
 #else
 #include <sys/resource.h>
@@ -71,7 +75,7 @@ typedef struct {
     PyObject_HEAD
     PyObject *filemap;
     PyObject *logfilename;
-    int index;
+    Py_ssize_t index;
     unsigned char buffer[BUFFERSIZE];
     FILE *logfp;
     int lineevents;
@@ -308,7 +312,12 @@ unpack_string(LogReaderObject *self, PyObject **pvalue)
     if ((err = unpack_packed_int(self, &len, 0)))
         return err;
 
-    buf = malloc(len);
+    buf = (char *)malloc(len);
+    if (!buf) {
+	PyErr_NoMemory();
+	return ERR_EXCEPTION;
+    }
+
     for (i=0; i < len; i++) {
         ch = fgetc(self->logfp);
 	buf[i] = ch;
@@ -473,6 +482,8 @@ restart:
     }
     else if (!err) {
         result = PyTuple_New(4);
+        if (result == NULL)
+            return NULL;
         PyTuple_SET_ITEM(result, 0, PyInt_FromLong(what));
         PyTuple_SET_ITEM(result, 2, PyInt_FromLong(fileno));
         if (s1 == NULL)
@@ -526,7 +537,7 @@ logreader_dealloc(LogReaderObject *self)
 }
 
 static PyObject *
-logreader_sq_item(LogReaderObject *self, int index)
+logreader_sq_item(LogReaderObject *self, Py_ssize_t index)
 {
     PyObject *result = logreader_tp_iternext(self);
     if (result == NULL && !PyErr_Occurred()) {
@@ -610,13 +621,14 @@ pack_modified_packed_int(ProfilerObject *self, int value,
 }
 
 static int
-pack_string(ProfilerObject *self, const char *s, int len)
+pack_string(ProfilerObject *self, const char *s, Py_ssize_t len)
 {
     if (len + PISIZE + self->index >= BUFFERSIZE) {
         if (flush_data(self) < 0)
             return -1;
     }
-    if (pack_packed_int(self, len) < 0)
+    assert(len < INT_MAX);
+    if (pack_packed_int(self, (int)len) < 0)
         return -1;
     memcpy(self->buffer + self->index, s, len);
     self->index += len;
@@ -626,8 +638,8 @@ pack_string(ProfilerObject *self, const char *s, int len)
 static int
 pack_add_info(ProfilerObject *self, const char *s1, const char *s2)
 {
-    int len1 = strlen(s1);
-    int len2 = strlen(s2);
+    Py_ssize_t len1 = strlen(s1);
+    Py_ssize_t len2 = strlen(s2);
 
     if (len1 + len2 + PISIZE*2 + 1 + self->index >= BUFFERSIZE) {
         if (flush_data(self) < 0)
@@ -643,7 +655,7 @@ pack_add_info(ProfilerObject *self, const char *s1, const char *s2)
 static int
 pack_define_file(ProfilerObject *self, int fileno, const char *filename)
 {
-    int len = strlen(filename);
+    Py_ssize_t len = strlen(filename);
 
     if (len + PISIZE*2 + 1 + self->index >= BUFFERSIZE) {
         if (flush_data(self) < 0)
@@ -660,7 +672,7 @@ static int
 pack_define_func(ProfilerObject *self, int fileno, int lineno,
                  const char *funcname)
 {
-    int len = strlen(funcname);
+    Py_ssize_t len = strlen(funcname);
 
     if (len + PISIZE*3 + 1 + self->index >= BUFFERSIZE) {
         if (flush_data(self) < 0)
@@ -844,38 +856,6 @@ get_tdelta(ProfilerObject *self)
 /* The workhorse:  the profiler callback function. */
 
 static int
-profiler_callback(ProfilerObject *self, PyFrameObject *frame, int what,
-                  PyObject *arg)
-{
-    int tdelta = -1;
-    int fileno;
-
-    if (self->frametimings)
-        tdelta = get_tdelta(self);
-    switch (what) {
-    case PyTrace_CALL:
-        fileno = get_fileno(self, frame->f_code);
-        if (fileno < 0)
-            return -1;
-        if (pack_enter(self, fileno, tdelta,
-                       frame->f_code->co_firstlineno) < 0)
-            return -1;
-        break;
-    case PyTrace_RETURN:
-        if (pack_exit(self, tdelta) < 0)
-            return -1;
-        break;
-    default:
-        /* should never get here */
-        break;
-    }
-    return 0;
-}
-
-
-/* Alternate callback when we want PyTrace_LINE events */
-
-static int
 tracer_callback(ProfilerObject *self, PyFrameObject *frame, int what,
                 PyObject *arg)
 {
@@ -893,7 +873,7 @@ tracer_callback(ProfilerObject *self, PyFrameObject *frame, int what,
     case PyTrace_RETURN:
         return pack_exit(self, get_tdelta(self));
 
-    case PyTrace_LINE:
+    case PyTrace_LINE:  /* we only get these events if we asked for them */
         if (self->linetimings)
             return pack_lineno_tdelta(self, frame->f_lineno,
 				      get_tdelta(self));
@@ -947,7 +927,7 @@ calibrate(void)
 #endif
     }
 #if defined(MS_WINDOWS) || defined(PYOS_OS2) || \
-    defined(__VMS)
+    defined(__VMS) || defined (__QNX__)
     rusage_diff = -1;
 #else
     {
@@ -987,7 +967,7 @@ do_start(ProfilerObject *self)
     if (self->lineevents)
         PyEval_SetTrace((Py_tracefunc) tracer_callback, (PyObject *)self);
     else
-        PyEval_SetProfile((Py_tracefunc) profiler_callback, (PyObject *)self);
+        PyEval_SetProfile((Py_tracefunc) tracer_callback, (PyObject *)self);
 }
 
 static void
@@ -1087,7 +1067,7 @@ profiler_runcall(ProfilerObject *self, PyObject *args)
     PyObject *callkw = NULL;
     PyObject *callable;
 
-    if (PyArg_ParseTuple(args, "O|OO:runcall",
+    if (PyArg_UnpackTuple(args, "runcall", 1, 3,
                          &callable, &callargs, &callkw)) {
         if (is_available(self)) {
             do_start(self);
@@ -1301,7 +1281,7 @@ static PySequenceMethods logreader_as_sequence = {
     0,					/* sq_length */
     0,					/* sq_concat */
     0,					/* sq_repeat */
-    (intargfunc)logreader_sq_item,	/* sq_item */
+    (ssizeargfunc)logreader_sq_item,	/* sq_item */
     0,					/* sq_slice */
     0,					/* sq_ass_item */
     0,					/* sq_ass_slice */
@@ -1423,16 +1403,16 @@ hotshot_logreader(PyObject *unused, PyObject *args)
 static char *
 get_version_string(void)
 {
-    static char *rcsid = "$Revision: 1.37 $";
+    static char *rcsid = "$Revision: 51218 $";
     char *rev = rcsid;
     char *buffer;
     int i = 0;
 
-    while (*rev && !isdigit((int)*rev))
+    while (*rev && !isdigit(Py_CHARMASK(*rev)))
         ++rev;
     while (rev[i] != ' ' && rev[i] != '\0')
         ++i;
-    buffer = malloc(i + 1);
+    buffer = (char *)malloc(i + 1);
     if (buffer != NULL) {
         memmove(buffer, rev, i);
         buffer[i] = '\0';
@@ -1449,7 +1429,7 @@ write_header(ProfilerObject *self)
     char *buffer;
     char cwdbuffer[PATH_MAX];
     PyObject *temp;
-    int i, len;
+    Py_ssize_t i, len;
 
     buffer = get_version_string();
     if (buffer == NULL) {
@@ -1486,6 +1466,10 @@ write_header(ProfilerObject *self)
                   getcwd(cwdbuffer, sizeof cwdbuffer));
 
     temp = PySys_GetObject("path");
+    if (temp == NULL || !PyList_Check(temp)) {
+	PyErr_SetString(PyExc_RuntimeError, "sys.path must be a list");
+    	return -1;
+    }
     len = PyList_GET_SIZE(temp);
     for (i = 0; i < len; ++i) {
         PyObject *item = PyList_GET_ITEM(temp, i);
@@ -1550,9 +1534,11 @@ hotshot_profiler(PyObject *unused, PyObject *args)
             calibrate();
             calibrate();
         }
-        if (write_header(self))
+        if (write_header(self)) {
             /* some error occurred, exception has been set */
+            Py_DECREF(self);
             self = NULL;
+        }
     }
     return (PyObject *) self;
 }
@@ -1598,23 +1584,18 @@ PyDoc_STR(
 ;
 
 static PyObject *
-hotshot_resolution(PyObject *unused, PyObject *args)
+hotshot_resolution(PyObject *self, PyObject *unused)
 {
-    PyObject *result = NULL;
-
-    if (PyArg_ParseTuple(args, ":resolution")) {
-        if (timeofday_diff == 0) {
-            calibrate();
-            calibrate();
-            calibrate();
-        }
-#ifdef MS_WINDOWS
-        result = Py_BuildValue("ii", timeofday_diff, frequency.LowPart);
-#else
-        result = Py_BuildValue("ii", timeofday_diff, rusage_diff);
-#endif
+    if (timeofday_diff == 0) {
+        calibrate();
+        calibrate();
+        calibrate();
     }
-    return result;
+#ifdef MS_WINDOWS
+    return Py_BuildValue("ii", timeofday_diff, frequency.LowPart);
+#else
+    return Py_BuildValue("ii", timeofday_diff, rusage_diff);
+#endif
 }
 
 
@@ -1622,7 +1603,7 @@ static PyMethodDef functions[] = {
     {"coverage",   hotshot_coverage,   METH_VARARGS, coverage__doc__},
     {"profiler",   hotshot_profiler,   METH_VARARGS, profiler__doc__},
     {"logreader",  hotshot_logreader,  METH_VARARGS, logreader__doc__},
-    {"resolution", hotshot_resolution, METH_VARARGS, resolution__doc__},
+    {"resolution", hotshot_resolution, METH_NOARGS,  resolution__doc__},
     {NULL, NULL}
 };
 

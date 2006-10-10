@@ -4,7 +4,7 @@ This includes option parsing code, HTML formatting code, and a couple of
 useful helpers.
 
 """
-__version__ = '$Revision: 1.10 $'
+__version__ = '$Revision: 37764 $'
 
 
 import getopt

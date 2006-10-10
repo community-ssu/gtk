@@ -1,7 +1,3 @@
-#
-# Instant Python
-# $Id: tkColorChooser.py,v 1.6 2003/04/06 09:00:52 rhettinger Exp $
-#
 # tk common colour chooser dialogue
 #
 # this module provides an interface to the native color dialogue

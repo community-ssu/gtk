@@ -7,6 +7,10 @@ import unittest
 from test import test_support
 from weakref import proxy
 import array, cStringIO, math
+from cPickle import loads, dumps
+
+class ArraySubclass(array.array):
+    pass
 
 tests = [] # list to accumulate all tests
 typecodes = "cubBhHiIlLfd"
@@ -57,7 +61,7 @@ class BaseTest(unittest.TestCase):
         bi = a.buffer_info()
         self.assert_(isinstance(bi, tuple))
         self.assertEqual(len(bi), 2)
-        self.assert_(isinstance(bi[0], int))
+        self.assert_(isinstance(bi[0], (int, long)))
         self.assert_(isinstance(bi[1], int))
         self.assertEqual(bi[1], len(a))
 
@@ -80,6 +84,21 @@ class BaseTest(unittest.TestCase):
         b = copy.copy(a)
         self.assertNotEqual(id(a), id(b))
         self.assertEqual(a, b)
+
+    def test_pickle(self):
+        for protocol in (0, 1, 2):
+            a = array.array(self.typecode, self.example)
+            b = loads(dumps(a, protocol))
+            self.assertNotEqual(id(a), id(b))
+            self.assertEqual(a, b)
+
+            a = ArraySubclass(self.typecode, self.example)
+            a.x = 10
+            b = loads(dumps(a, protocol))
+            self.assertNotEqual(id(a), id(b))
+            self.assertEqual(a, b)
+            self.assertEqual(a.x, b.x)
+            self.assertEqual(type(a), type(b))
 
     def test_insert(self):
         a = array.array(self.typecode, self.example)
@@ -186,7 +205,7 @@ class BaseTest(unittest.TestCase):
         self.assert_((a > a) is False)
         self.assert_((a >= a) is True)
 
-        as = array.array(self.typecode, self.smallerexample)
+        al = array.array(self.typecode, self.smallerexample)
         ab = array.array(self.typecode, self.biggerexample)
 
         self.assert_((a == 2*a) is False)
@@ -196,12 +215,12 @@ class BaseTest(unittest.TestCase):
         self.assert_((a > 2*a) is False)
         self.assert_((a >= 2*a) is False)
 
-        self.assert_((a == as) is False)
-        self.assert_((a != as) is True)
-        self.assert_((a < as) is False)
-        self.assert_((a <= as) is False)
-        self.assert_((a > as) is True)
-        self.assert_((a >= as) is True)
+        self.assert_((a == al) is False)
+        self.assert_((a != al) is True)
+        self.assert_((a < al) is False)
+        self.assert_((a <= al) is False)
+        self.assert_((a > al) is True)
+        self.assert_((a >= al) is True)
 
         self.assert_((a == ab) is False)
         self.assert_((a != ab) is True)
@@ -405,6 +424,11 @@ class BaseTest(unittest.TestCase):
 
         self.assertEqual(
             a[-1:-1],
+            array.array(self.typecode)
+        )
+
+        self.assertEqual(
+            a[2:1],
             array.array(self.typecode)
         )
 

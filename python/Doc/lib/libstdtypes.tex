@@ -1,31 +1,30 @@
-\section{Built-in Types \label{types}}
+\chapter{Built-in Types \label{types}}
 
 The following sections describe the standard types that are built into
-the interpreter.  Historically, Python's built-in types have differed
-from user-defined types because it was not possible to use the built-in
-types as the basis for object-oriented inheritance. With the 2.2
-release this situation has started to change, although the intended
-unification of user-defined and built-in types is as yet far from
-complete.
+the interpreter.
+\note{Historically (until release 2.2), Python's built-in types have
+differed from user-defined types because it was not possible to use
+the built-in types as the basis for object-oriented inheritance.
+This limitation does not exist any longer.}
 
-The principal built-in types are numerics, sequences, mappings, files
+The principal built-in types are numerics, sequences, mappings, files,
 classes, instances and exceptions.
 \indexii{built-in}{types}
 
 Some operations are supported by several object types; in particular,
 practically all objects can be compared, tested for truth value,
-and converted to a string (with the \code{`\textrm{\ldots}`} notation,
-the equivalent \function{repr()} function, or the slightly different
+and converted to a string (with
+the \function{repr()} function or the slightly different
 \function{str()} function).  The latter
 function is implicitly used when an object is written by the
 \keyword{print}\stindex{print} statement.
-(Information on \ulink{\keyword{print} statement}{../ref/print.html}
+(Information on the \ulink{\keyword{print} statement}{../ref/print.html}
 and other language statements can be found in the
 \citetitle[../ref/ref.html]{Python Reference Manual} and the
 \citetitle[../tut/tut.html]{Python Tutorial}.)
 
 
-\subsection{Truth Value Testing\label{truth}}
+\section{Truth Value Testing\label{truth}}
 
 Any object can be tested for truth value, for use in an \keyword{if} or
 \keyword{while} condition or as operand of the Boolean operations below.
@@ -72,7 +71,7 @@ return one of their operands.)
 \index{False}
 \index{True}
 
-\subsection{Boolean Operations ---
+\section{Boolean Operations ---
 	    \keyword{and}, \keyword{or}, \keyword{not}
 	    \label{boolean}}
 
@@ -108,7 +107,7 @@ These only evaluate their second argument if needed for their outcome.
 \end{description}
 
 
-\subsection{Comparisons \label{comparisons}}
+\section{Comparisons \label{comparisons}}
 
 Comparison operations are supported by all objects.  They all have the
 same priority (which is higher than that of the Boolean operations).
@@ -175,7 +174,7 @@ Two more operations with the same syntactic priority,
 only by sequence types (below).
 
 
-\subsection{Numeric Types ---
+\section{Numeric Types ---
 	    \class{int}, \class{float}, \class{long}, \class{complex}
 	    \label{typesnumeric}}
 
@@ -185,10 +184,12 @@ There are four distinct numeric types: \dfn{plain integers},
 In addition, Booleans are a subtype of plain integers.
 Plain integers (also just called \dfn{integers})
 are implemented using \ctype{long} in C, which gives them at least 32
-bits of precision.  Long integers have unlimited precision.  Floating
-point numbers are implemented using \ctype{double} in C.  All bets on
-their precision are off unless you happen to know the machine you are
-working with.
+bits of precision (\code{sys.maxint} is always set to the maximum
+plain integer value for the current platform, the minimum value is 
+\code{-sys.maxint - 1}).  Long integers have unlimited precision.
+Floating point numbers are implemented using \ctype{double} in C.
+All bets on their precision are off unless you happen to know the
+machine you are working with.
 \obindex{numeric}
 \obindex{Boolean}
 \obindex{integer}
@@ -249,6 +250,7 @@ comparison operations):
   \hline
   \lineiii{\var{x} * \var{y}}{product of \var{x} and \var{y}}{}
   \lineiii{\var{x} / \var{y}}{quotient of \var{x} and \var{y}}{(1)}
+  \lineiii{\var{x} // \var{y}}{(floored) quotient of \var{x} and \var{y}}{(5)}
   \lineiii{\var{x} \%{} \var{y}}{remainder of \code{\var{x} / \var{y}}}{(4)}
   \hline
   \lineiii{-\var{x}}{\var{x} negated}{}
@@ -299,10 +301,13 @@ Complex floor division operator, modulo operator, and \function{divmod()}.
 \deprecated{2.3}{Instead convert to float using \function{abs()}
 if appropriate.}
 
+\item[(5)]
+Also referred to as integer division.  The resultant value is a whole integer,
+though the result's type is not necessarily int.
 \end{description}
 % XXXJH exceptions: overflow (when? what operations?) zerodivision
 
-\subsubsection{Bit-string Operations on Integer Types \label{bitstring-ops}}
+\subsection{Bit-string Operations on Integer Types \label{bitstring-ops}}
 \nodename{Bit-string Operations}
 
 Plain and long integer types support additional operations that make
@@ -345,7 +350,7 @@ division by \code{pow(2, \var{n})} without overflow check.
 \end{description}
 
 
-\subsection{Iterator Types \label{typeiter}}
+\section{Iterator Types \label{typeiter}}
 
 \versionadded{2.2}
 \index{iterator protocol}
@@ -409,7 +414,7 @@ return an iterator object (technically, a generator object)
 supplying the \method{__iter__()} and \method{next()} methods.
 
 
-\subsection{Sequence Types ---
+\section{Sequence Types ---
 	    \class{str}, \class{unicode}, \class{list},
 	    \class{tuple}, \class{buffer}, \class{xrange}
 	    \label{typesseq}}
@@ -532,9 +537,10 @@ In Python 2.3 and beyond, \var{x} may be a string of any length.
 \item[(4)] The slice of \var{s} from \var{i} to \var{j} is defined as
   the sequence of items with index \var{k} such that \code{\var{i} <=
   \var{k} < \var{j}}.  If \var{i} or \var{j} is greater than
-  \code{len(\var{s})}, use \code{len(\var{s})}.  If \var{i} is omitted,
-  use \code{0}.  If \var{j} is omitted, use \code{len(\var{s})}.  If
-  \var{i} is greater than or equal to \var{j}, the slice is empty.
+  \code{len(\var{s})}, use \code{len(\var{s})}.  If \var{i} is omitted
+  or \code{None}, use \code{0}.  If \var{j} is omitted or \code{None},
+  use \code{len(\var{s})}.  If \var{i} is greater than or equal to \var{j},
+  the slice is empty.
 
 \item[(5)] The slice of \var{s} from \var{i} to \var{j} with step
   \var{k} is defined as the sequence of items with index 
@@ -543,9 +549,9 @@ In Python 2.3 and beyond, \var{x} may be a string of any length.
   are \code{i}, \code{i+k}, \code{i+2*k}, \code{i+3*k} and so on, stopping when
   \var{j} is reached (but never including \var{j}).  If \var{i} or \var{j}
   is greater than \code{len(\var{s})}, use \code{len(\var{s})}.  If
-  \var{i} or \var{j} are omitted then they become ``end'' values
+  \var{i} or \var{j} are omitted or \code{None}, they become ``end'' values
   (which end depends on the sign of \var{k}).  Note, \var{k} cannot
-  be zero.
+  be zero. If \var{k} is \code{None}, it is treated like \code{1}.
 
 \item[(6)] If \var{s} and \var{t} are both strings, some Python
 implementations such as CPython can usually perform an in-place optimization
@@ -560,7 +566,8 @@ linear concatenation performance across versions and implementations.
 \end{description}
 
 
-\subsubsection{String Methods \label{string-methods}}
+\subsection{String Methods \label{string-methods}}
+\indexii{string}{methods}
 
 These are the string methods which both 8-bit strings and Unicode
 objects support:
@@ -590,7 +597,7 @@ may be given to set a different error handling scheme.  The default is
 \code{'strict'}, meaning that encoding errors raise
 \exception{UnicodeError}.  Other possible values are \code{'ignore'},
 \code{'replace'} and any other name registered via
-\function{codecs.register_error}.
+\function{codecs.register_error}, see section~\ref{codec-base-classes}.
 \versionadded{2.2}
 \versionchanged[Support for other error handling schemes added]{2.3}
 \end{methoddesc}
@@ -602,7 +609,8 @@ error handling scheme.  The default for \var{errors} is
 \code{'strict'}, meaning that encoding errors raise a
 \exception{UnicodeError}.  Other possible values are \code{'ignore'},
 \code{'replace'}, \code{'xmlcharrefreplace'}, \code{'backslashreplace'}
-and any other name registered via \function{codecs.register_error}.
+and any other name registered via \function{codecs.register_error},
+see section~\ref{codec-base-classes}.
 For a list of possible encodings, see section~\ref{standard-encodings}.
 \versionadded{2.0}
 \versionchanged[Support for \code{'xmlcharrefreplace'} and
@@ -611,8 +619,11 @@ For a list of possible encodings, see section~\ref{standard-encodings}.
 
 \begin{methoddesc}[string]{endswith}{suffix\optional{, start\optional{, end}}}
 Return \code{True} if the string ends with the specified \var{suffix},
-otherwise return \code{False}.  With optional \var{start}, test beginning at
+otherwise return \code{False}.  \var{suffix} can also be a tuple of
+suffixes to look for.  With optional \var{start}, test beginning at
 that position.  With optional \var{end}, stop comparing at that position.
+
+\versionchanged[Accept tuples as \var{suffix}]{2.5}
 \end{methoddesc}
 
 \begin{methoddesc}[string]{expandtabs}{\optional{tabsize}}
@@ -624,7 +635,7 @@ characters is assumed.
 \begin{methoddesc}[string]{find}{sub\optional{, start\optional{, end}}}
 Return the lowest index in the string where substring \var{sub} is
 found, such that \var{sub} is contained in the range [\var{start},
-\var{end}).  Optional arguments \var{start} and \var{end} are
+\var{end}].  Optional arguments \var{start} and \var{end} are
 interpreted as in slice notation.  Return \code{-1} if \var{sub} is
 not found.
 \end{methoddesc}
@@ -720,6 +731,15 @@ a prefix; rather, all combinations of its values are stripped:
 \versionchanged[Support for the \var{chars} argument]{2.2.2}
 \end{methoddesc}
 
+\begin{methoddesc}[string]{partition}{sep}
+Split the string at the first occurrence of \var{sep}, and return
+a 3-tuple containing the part before the separator, the separator
+itself, and the part after the separator.  If the separator is not
+found, return a 3-tuple containing the string itself, followed by
+two empty strings.
+\versionadded{2.5}
+\end{methoddesc}
+
 \begin{methoddesc}[string]{replace}{old, new\optional{, count}}
 Return a copy of the string with all occurrences of substring
 \var{old} replaced by \var{new}.  If the optional argument
@@ -745,6 +765,15 @@ Padding is done using the specified \var{fillchar} (default is a space).
 The original string is returned if
 \var{width} is less than \code{len(\var{s})}.
 \versionchanged[Support for the \var{fillchar} argument]{2.4}
+\end{methoddesc}
+
+\begin{methoddesc}[string]{rpartition}{sep}
+Split the string at the last occurrence of \var{sep}, and return
+a 3-tuple containing the part before the separator, the separator
+itself, and the part after the separator.  If the separator is not
+found, return a 3-tuple containing two empty strings, followed by
+the string itself.
+\versionadded{2.5}
 \end{methoddesc}
 
 \begin{methoddesc}[string]{rsplit}{\optional{sep \optional{,maxsplit}}}
@@ -804,9 +833,12 @@ boundaries.  Line breaks are not included in the resulting list unless
 \begin{methoddesc}[string]{startswith}{prefix\optional{,
                                        start\optional{, end}}}
 Return \code{True} if string starts with the \var{prefix}, otherwise
-return \code{False}.  With optional \var{start}, test string beginning at
+return \code{False}.  \var{prefix} can also be a tuple of
+suffixes to look for.  With optional \var{start}, test string beginning at
 that position.  With optional \var{end}, stop comparing string at that
 position.
+
+\versionchanged[Accept tuples as \var{prefix}]{2.5}
 \end{methoddesc}
 
 \begin{methoddesc}[string]{strip}{\optional{chars}}
@@ -869,7 +901,7 @@ of length \var{width}. The original string is returned if
 \end{methoddesc}
 
 
-\subsubsection{String Formatting Operations \label{typesseq-strings}}
+\subsection{String Formatting Operations \label{typesseq-strings}}
 
 \index{formatting, string (\%{})}
 \index{interpolation, string (\%{})}
@@ -951,8 +983,8 @@ The conversion flag characters are:
              precede the conversion (overrides a "space" flag).}
 \end{tableii}
 
-The length modifier may be \code{h}, \code{l}, and \code{L} may be
-present, but are ignored as they are not necessary for Python.
+A length modifier (\code{h}, \code{l}, or \code{L}) may be
+present, but is ignored as it is not necessary for Python.
 
 The conversion types are:
 
@@ -963,20 +995,22 @@ The conversion types are:
   \lineiii{u}{Unsigned decimal.}{}
   \lineiii{x}{Unsigned hexadecimal (lowercase).}{(2)}
   \lineiii{X}{Unsigned hexadecimal (uppercase).}{(2)}
-  \lineiii{e}{Floating point exponential format (lowercase).}{}
-  \lineiii{E}{Floating point exponential format (uppercase).}{}
-  \lineiii{f}{Floating point decimal format.}{}
-  \lineiii{F}{Floating point decimal format.}{}
-  \lineiii{g}{Same as \character{e} if exponent is greater than -4 or
-              less than precision, \character{f} otherwise.}{}
-  \lineiii{G}{Same as \character{E} if exponent is greater than -4 or
-              less than precision, \character{F} otherwise.}{}
+  \lineiii{e}{Floating point exponential format (lowercase).}{(3)}
+  \lineiii{E}{Floating point exponential format (uppercase).}{(3)}
+  \lineiii{f}{Floating point decimal format.}{(3)}
+  \lineiii{F}{Floating point decimal format.}{(3)}
+  \lineiii{g}{Floating point format. Uses exponential format
+              if exponent is greater than -4 or less than precision,
+              decimal format otherwise.}{(4)}
+  \lineiii{G}{Floating point format. Uses exponential format
+              if exponent is greater than -4 or less than precision,
+              decimal format otherwise.}{(4)}
   \lineiii{c}{Single character (accepts integer or single character
               string).}{}
   \lineiii{r}{String (converts any python object using
-              \function{repr()}).}{(3)}
+              \function{repr()}).}{(5)}
   \lineiii{s}{String (converts any python object using
-              \function{str()}).}{(4)}
+              \function{str()}).}{(6)}
   \lineiii{\%}{No argument is converted, results in a \character{\%}
                character in the result.}{}
 \end{tableiii}
@@ -996,10 +1030,27 @@ Notes:
     formatting of the number if the leading character of the result is
     not already a zero.
   \item[(3)]
-    The \code{\%r} conversion was added in Python 2.0.
+    The alternate form causes the result to always contain a decimal
+    point, even if no digits follow it.
+
+    The precision determines the number of digits after the decimal
+    point and defaults to 6.
   \item[(4)]
+    The alternate form causes the result to always contain a decimal
+    point, and trailing zeroes are not removed as they would
+    otherwise be.
+
+    The precision determines the number of significant digits before
+    and after the decimal point and defaults to 6.
+  \item[(5)]
+    The \code{\%r} conversion was added in Python 2.0.
+
+    The precision determines the maximal number of characters used.
+  \item[(6)]
     If the object or format provided is a \class{unicode} string,
     the resulting string will also be \class{unicode}.
+
+    The precision determines the maximal number of characters used.
 \end{description}
 
 % XXX Examples?
@@ -1021,7 +1072,7 @@ Additional string operations are defined in standard modules
 \refmodule{re}.\refstmodindex{re}
 
 
-\subsubsection{XRange Type \label{typesseq-xrange}}
+\subsection{XRange Type \label{typesseq-xrange}}
 
 The \class{xrange}\obindex{xrange} type is an immutable sequence which
 is commonly used for looping.  The advantage of the \class{xrange}
@@ -1033,7 +1084,7 @@ XRange objects have very little behavior: they only support indexing,
 iteration, and the \function{len()} function.
 
 
-\subsubsection{Mutable Sequence Types \label{typesseq-mutable}}
+\subsection{Mutable Sequence Types \label{typesseq-mutable}}
 
 List objects support additional operations that allow in-place
 modification of the object.
@@ -1050,7 +1101,8 @@ The following operations are defined on mutable sequence types (where
   \lineiii{\var{s}[\var{i}] = \var{x}}
 	{item \var{i} of \var{s} is replaced by \var{x}}{}
   \lineiii{\var{s}[\var{i}:\var{j}] = \var{t}}
-  	{slice of \var{s} from \var{i} to \var{j} is replaced by \var{t}}{}
+  	{slice of \var{s} from \var{i} to \var{j} 
+         is replaced by the contents of the iterable \var{t}}{}
   \lineiii{del \var{s}[\var{i}:\var{j}]}
 	{same as \code{\var{s}[\var{i}:\var{j}] = []}}{}
   \lineiii{\var{s}[\var{i}:\var{j}:\var{k}] = \var{t}}
@@ -1164,7 +1216,7 @@ Notes:
   that the list has been mutated during a sort.
 \end{description}
 
-\subsection{Set Types ---
+\section{Set Types ---
 	    \class{set}, \class{frozenset}
 	    \label{types-set}}
 \obindex{set}
@@ -1260,23 +1312,24 @@ that do not apply to immutable instances of \class{frozenset}:
 \begin{tableiii}{c|c|l}{code}{Operation}{Equivalent}{Result}
   \lineiii{\var{s}.update(\var{t})}
          {\var{s} |= \var{t}}
-         {return set \var{s} with elements added from \var{t}}
+         {update set \var{s}, adding elements from \var{t}}
   \lineiii{\var{s}.intersection_update(\var{t})}
          {\var{s} \&= \var{t}}
-         {return set \var{s} keeping only elements also found in \var{t}}
+         {update set \var{s}, keeping only elements found in both \var{s} and \var{t}}
   \lineiii{\var{s}.difference_update(\var{t})}
          {\var{s} -= \var{t}}
-         {return set \var{s} after removing elements found in \var{t}}
+         {update set \var{s}, removing elements found in \var{t}}
   \lineiii{\var{s}.symmetric_difference_update(\var{t})}
          {\var{s} \textasciicircum= \var{t}}
-         {return set \var{s} with elements from \var{s} or \var{t}
-          but not both}
+         {update set \var{s}, keeping only elements found in either \var{s} or \var{t}
+          but not in both}
 
   \hline
   \lineiii{\var{s}.add(\var{x})}{}
          {add element \var{x} to set \var{s}}
   \lineiii{\var{s}.remove(\var{x})}{}
-         {remove \var{x} from set \var{s}; raises KeyError if not present}
+         {remove \var{x} from set \var{s}; raises \exception{KeyError}
+	  if not present}
   \lineiii{\var{s}.discard(\var{x})}{}
          {removes \var{x} from set \var{s} if present}
   \lineiii{\var{s}.pop()}{}
@@ -1295,12 +1348,14 @@ The design of the set types was based on lessons learned from the
 \module{sets} module.
      
 \begin{seealso}     
-  \seemodule[comparison-to-builtin-set]{sets}{Differences between
-     the \module{sets} module and the built-in set types.}					      
+  \seelink{comparison-to-builtin-set.html}
+          {Comparison to the built-in set types}
+          {Differences between the \module{sets} module and the
+           built-in set types.}					      
 \end{seealso}
      
 
-\subsection{Mapping Types --- class{dict} \label{typesmapping}}
+\section{Mapping Types --- \class{dict} \label{typesmapping}}
 \obindex{mapping}
 \obindex{dictionary}
 
@@ -1346,7 +1401,7 @@ arbitrary objects):
 
 \begin{tableiii}{c|l|c}{code}{Operation}{Result}{Notes}
   \lineiii{len(\var{a})}{the number of items in \var{a}}{}
-  \lineiii{\var{a}[\var{k}]}{the item of \var{a} with key \var{k}}{(1)}
+  \lineiii{\var{a}[\var{k}]}{the item of \var{a} with key \var{k}}{(1), (10)}
   \lineiii{\var{a}[\var{k}] = \var{v}}
           {set \code{\var{a}[\var{k}]} to \var{v}}
           {}
@@ -1355,15 +1410,15 @@ arbitrary objects):
           {(1)}
   \lineiii{\var{a}.clear()}{remove all items from \code{a}}{}
   \lineiii{\var{a}.copy()}{a (shallow) copy of \code{a}}{}
-  \lineiii{\var{a}.has_key(\var{k})}
+  \lineiii{\var{k} in \var{a}}
           {\code{True} if \var{a} has a key \var{k}, else \code{False}}
-          {}
-  \lineiii{\var{k} \code{in} \var{a}}
-          {Equivalent to \var{a}.has_key(\var{k})}
           {(2)}
   \lineiii{\var{k} not in \var{a}}
-          {Equivalent to \code{not} \var{a}.has_key(\var{k})}
+          {Equivalent to \code{not} \var{k} in \var{a}}
           {(2)}
+  \lineiii{\var{a}.has_key(\var{k})}
+          {Equivalent to \var{k} \code{in} \var{a}, use that form in new code}
+          {}
   \lineiii{\var{a}.items()}
           {a copy of \var{a}'s list of (\var{key}, \var{value}) pairs}
           {(3)}
@@ -1450,9 +1505,20 @@ then is updated with those key/value pairs:
 \versionchanged[Allowed the argument to be an iterable of key/value
                 pairs and allowed keyword arguments]{2.4}
 
+\item[(10)] If a subclass of dict defines a method \method{__missing__},
+if the key \var{k} is not present, the \var{a}[\var{k}] operation calls
+that method with the key \var{k} as argument.  The \var{a}[\var{k}]
+operation then returns or raises whatever is returned or raised by the
+\function{__missing__}(\var{k}) call if the key is not present.
+No other operations or methods invoke \method{__missing__}().
+If \method{__missing__} is not defined, \exception{KeyError} is raised.
+\method{__missing__} must be a method; it cannot be an instance variable.
+For an example, see \module{collections}.\class{defaultdict}.
+\versionadded{2.5}
+
 \end{description}
 
-\subsection{File Objects
+\section{File Objects
             \label{bltin-file-objects}}
 
 File objects\obindex{file} are implemented using C's \code{stdio}
@@ -1480,6 +1546,38 @@ Files have the following methods:
   Any operation which requires that the file be open will raise a
   \exception{ValueError} after the file has been closed.  Calling
   \method{close()} more than once is allowed.
+
+  As of Python 2.5, you can avoid having to call this method explicitly
+  if you use the \keyword{with} statement.  For example, the following
+  code will automatically close \code{f} when the \keyword{with} block
+  is exited:
+
+\begin{verbatim}
+from __future__ import with_statement
+
+with open("hello.txt") as f:
+    for line in f:
+        print line
+\end{verbatim}
+
+  In older versions of Python, you would have needed to do this to get
+  the same effect:
+
+\begin{verbatim}
+f = open("hello.txt")
+try:
+    for line in f:
+        print line
+finally:
+    f.close()
+\end{verbatim}
+
+  \note{Not all ``file-like'' types in Python support use as a context
+  manager for the \keyword{with} statement.  If your code is intended to
+  work with any file-like object, you can use the \function{closing()}
+  function in the \module{contextlib} module instead of using the object
+  directly.  See section~\ref{context-closing} for details.}
+  
 \end{methoddesc}
 
 \begin{methoddesc}[file]{flush}{}
@@ -1585,7 +1683,7 @@ flush the read-ahead buffer.
   file is only opened for writing in append mode (mode \code{'a'}),
   this method is essentially a no-op, but it remains useful for files
   opened in append mode with reading enabled (mode \code{'a+'}).  If the
-  file is opened in text mode (mode \code{'t'}), only offsets returned
+  file is opened in text mode (without \code{'b'}), only offsets returned
   by \method{tell()} are legal.  Use of other offsets causes undefined
   behavior.
 
@@ -1595,6 +1693,10 @@ flush the read-ahead buffer.
 \begin{methoddesc}[file]{tell}{}
   Return the file's current position, like \code{stdio}'s
   \cfunction{ftell()}.
+
+  \note{On Windows, \method{tell()} can return illegal values (after an
+  \cfunction{fgets()}) when reading files with \UNIX{}-style line-endings.
+  Use binary mode (\code{'rb'}) to circumvent this problem.}
 \end{methoddesc}
 
 \begin{methoddesc}[file]{truncate}{\optional{size}}
@@ -1603,7 +1705,7 @@ flush the read-ahead buffer.
   defaults to the current position.  The current file position is
   not changed.  Note that if a specified size exceeds the file's
   current size, the result is platform-dependent:  possibilities
-  include that file may remain unchanged, increase to the specified
+  include that the file may remain unchanged, increase to the specified
   size as if zero-filled, or increase to the specified size with
   undefined new content.
   Availability:  Windows, many \UNIX{} variants.
@@ -1695,13 +1797,94 @@ implemented in C will have to provide a writable
 \end{memberdesc}
 
 
-\subsection{Other Built-in Types \label{typesother}}
+\section{Context Manager Types \label{typecontextmanager}}
+
+\versionadded{2.5}
+\index{context manager}
+\index{context management protocol}
+\index{protocol!context management}
+
+Python's \keyword{with} statement supports the concept of a runtime
+context defined by a context manager.  This is implemented using
+two separate methods that allow user-defined classes to define
+a runtime context that is entered before the statement body is
+executed and exited when the statement ends.
+
+The \dfn{context management protocol} consists of a pair of
+methods that need to be provided for a context manager object to
+define a runtime context:
+
+\begin{methoddesc}[context manager]{__enter__}{}
+  Enter the runtime context and return either this object or another
+  object related to the runtime context. The value returned by this
+  method is bound to the identifier in the \keyword{as} clause of
+  \keyword{with} statements using this context manager.
+
+  An example of a context manager that returns itself is a file object.
+  File objects return themselves from __enter__() to allow
+  \function{open()} to be used as the context expression in a
+  \keyword{with} statement.
+
+  An example of a context manager that returns a related
+  object is the one returned by \code{decimal.Context.get_manager()}.
+  These managers set the active decimal context to a copy of the
+  original decimal context and then return the copy. This allows
+  changes to be made to the current decimal context in the body of
+  the \keyword{with} statement without affecting code outside
+  the \keyword{with} statement.
+\end{methoddesc}
+
+\begin{methoddesc}[context manager]{__exit__}{exc_type, exc_val, exc_tb}
+  Exit the runtime context and return a Boolean flag indicating if any
+  expection that occurred should be suppressed. If an exception
+  occurred while executing the body of the \keyword{with} statement, the
+  arguments contain the exception type, value and traceback information.
+  Otherwise, all three arguments are \var{None}.
+
+  Returning a true value from this method will cause the \keyword{with}
+  statement to suppress the exception and continue execution with the
+  statement immediately following the \keyword{with} statement. Otherwise
+  the exception continues propagating after this method has finished
+  executing. Exceptions that occur during execution of this method will
+  replace any exception that occurred in the body of the \keyword{with}
+  statement.
+
+  The exception passed in should never be reraised explicitly - instead,
+  this method should return a false value to indicate that the method
+  completed successfully and does not want to suppress the raised
+  exception. This allows context management code (such as
+  \code{contextlib.nested}) to easily detect whether or not an
+  \method{__exit__()} method has actually failed.
+\end{methoddesc}
+
+Python defines several context managers to support easy thread
+synchronisation, prompt closure of files or other objects, and
+simpler manipulation of the active decimal arithmetic
+context. The specific types are not treated specially beyond
+their implementation of the context management protocol.
+
+Python's generators and the \code{contextlib.contextfactory} decorator
+provide a convenient way to implement these protocols.  If a generator
+function is decorated with the \code{contextlib.contextfactory}
+decorator, it will return a context manager implementing the necessary
+\method{__enter__()} and \method{__exit__()} methods, rather than the
+iterator produced by an undecorated generator function.
+
+Note that there is no specific slot for any of these methods in the
+type structure for Python objects in the Python/C API. Extension
+types wanting to define these methods must provide them as a normal
+Python accessible method. Compared to the overhead of setting up the
+runtime context, the overhead of a single class dictionary lookup
+is negligible.
+
+
+\section{Other Built-in Types \label{typesother}}
 
 The interpreter supports several other kinds of objects.
 Most of these support only one or two operations.
 
 
-\subsubsection{Modules \label{typesmodules}}
+\subsection{Modules \label{typesmodules}}
 
 The only special operation on a module is attribute access:
 \code{\var{m}.\var{name}}, where \var{m} is a module and \var{name}
@@ -1727,14 +1910,14 @@ written as \code{<module 'os' from
 '/usr/local/lib/python\shortversion/os.pyc'>}.
 
 
-\subsubsection{Classes and Class Instances \label{typesobjects}}
+\subsection{Classes and Class Instances \label{typesobjects}}
 \nodename{Classes and Instances}
 
 See chapters 3 and 7 of the \citetitle[../ref/ref.html]{Python
 Reference Manual} for these.
 
 
-\subsubsection{Functions \label{typesfunctions}}
+\subsection{Functions \label{typesfunctions}}
 
 Function objects are created by function definitions.  The only
 operation on a function object is to call it:
@@ -1748,7 +1931,7 @@ different object types.
 See the \citetitle[../ref/ref.html]{Python Reference Manual} for more
 information.
 
-\subsubsection{Methods \label{typesmethods}}
+\subsection{Methods \label{typesmethods}}
 \obindex{method}
 
 Methods are functions that are called using the attribute notation.
@@ -1770,14 +1953,14 @@ class, respectively.  When a method is unbound, its \code{im_self}
 attribute will be \code{None} and if called, an explicit \code{self}
 object must be passed as the first argument.  In this case,
 \code{self} must be an instance of the unbound method's class (or a
-subclass of that class), otherwise a \code{TypeError} is raised.
+subclass of that class), otherwise a \exception{TypeError} is raised.
 
 Like function objects, methods objects support getting
 arbitrary attributes.  However, since method attributes are actually
 stored on the underlying function object (\code{meth.im_func}),
 setting method attributes on either bound or unbound methods is
 disallowed.  Attempting to set a method attribute results in a
-\code{TypeError} being raised.  In order to set a method attribute,
+\exception{TypeError} being raised.  In order to set a method attribute,
 you need to explicitly set it on the underlying function object:
 
 \begin{verbatim}
@@ -1793,7 +1976,7 @@ See the \citetitle[../ref/ref.html]{Python Reference Manual} for more
 information.
 
 
-\subsubsection{Code Objects \label{bltin-code-objects}}
+\subsection{Code Objects \label{bltin-code-objects}}
 \obindex{code}
 
 Code objects are used by the implementation to represent
@@ -1816,7 +1999,7 @@ See the \citetitle[../ref/ref.html]{Python Reference Manual} for more
 information.
 
 
-\subsubsection{Type Objects \label{bltin-type-objects}}
+\subsection{Type Objects \label{bltin-type-objects}}
 
 Type objects represent the various object types.  An object's type is
 accessed by the built-in function \function{type()}.  There are no special
@@ -1828,7 +2011,7 @@ for all standard built-in types.
 Types are written like this: \code{<type 'int'>}.
 
 
-\subsubsection{The Null Object \label{bltin-null-object}}
+\subsection{The Null Object \label{bltin-null-object}}
 
 This object is returned by functions that don't explicitly return a
 value.  It supports no special operations.  There is exactly one null
@@ -1837,7 +2020,7 @@ object, named \code{None} (a built-in name).
 It is written as \code{None}.
 
 
-\subsubsection{The Ellipsis Object \label{bltin-ellipsis-object}}
+\subsection{The Ellipsis Object \label{bltin-ellipsis-object}}
 
 This object is used by extended slice notation (see the
 \citetitle[../ref/ref.html]{Python Reference Manual}).  It supports no
@@ -1846,7 +2029,7 @@ special operations.  There is exactly one ellipsis object, named
 
 It is written as \code{Ellipsis}.
 
-\subsubsection{Boolean Values}
+\subsection{Boolean Values}
 
 Boolean values are the two constant objects \code{False} and
 \code{True}.  They are used to represent truth values (although other
@@ -1863,14 +2046,14 @@ They are written as \code{False} and \code{True}, respectively.
 \indexii{Boolean}{values}
 
 
-\subsubsection{Internal Objects \label{typesinternal}}
+\subsection{Internal Objects \label{typesinternal}}
 
 See the \citetitle[../ref/ref.html]{Python Reference Manual} for this
 information.  It describes stack frame objects, traceback objects, and
 slice objects.
 
 
-\subsection{Special Attributes \label{specialattrs}}
+\section{Special Attributes \label{specialattrs}}
 
 The implementation adds a few special read-only attributes to several
 object types, where they are relevant.  Some of these are not reported

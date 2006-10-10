@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 #######################################################################
-# Newslist  $Revision: 1.13 $
+# Newslist  $Revision: 37320 $
 #
 # Syntax:
 #    newslist [ -a ]
@@ -105,7 +105,7 @@ for dir in os.curdir, os.environ['HOME']:
 from nntplib import NNTP
 from stat import *
 
-rcsrev = '$Revision: 1.13 $'
+rcsrev = '$Revision: 37320 $'
 rcsrev = string.join(filter(lambda s: '$' not in s, string.split(rcsrev)))
 desc = {}
 

@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-__version__ = '$Revision: 1.15 $'
+__version__ = '$Revision: 36356 $'
 
 import os.path
 import re

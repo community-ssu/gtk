@@ -2,7 +2,6 @@
 #include "structmember.h"
 #include "osdefs.h"
 #include "marshal.h"
-#include "compile.h"
 #include <time.h>
 
 
@@ -41,7 +40,6 @@ struct _zipimporter {
 	PyObject *files;    /* dict with file info {path: toc_entry} */
 };
 
-static PyTypeObject ZipImporter_Type;
 static PyObject *ZipImportError;
 static PyObject *zip_directory_cache = NULL;
 
@@ -63,7 +61,7 @@ static int
 zipimporter_init(ZipImporter *self, PyObject *args, PyObject *kwds)
 {
 	char *path, *p, *prefix, buf[MAXPATHLEN+2];
-	int len;
+	size_t len;
 
 	if (!_PyArg_NoKeywords("zipimporter()", kwds))
 		return -1;
@@ -172,13 +170,7 @@ static int
 zipimporter_traverse(PyObject *obj, visitproc visit, void *arg)
 {
 	ZipImporter *self = (ZipImporter *)obj;
-	int err;
-
-	if (self->files != NULL) {
-		err = visit(self->files, arg);
-		if (err)
-			return err;
-	}
+	Py_VISIT(self->files);
 	return 0;
 }
 
@@ -232,7 +224,7 @@ get_subname(char *fullname)
 static int
 make_filename(char *prefix, char *name, char *path)
 {
-	int len;
+	size_t len;
 	char *p;
 
 	len = strlen(prefix);
@@ -250,7 +242,8 @@ make_filename(char *prefix, char *name, char *path)
 			*p = SEP;
 	}
 	len += strlen(name);
-	return len;
+	assert(len < INT_MAX);
+	return (int)len;
 }
 
 enum zi_module_info {
@@ -408,7 +401,7 @@ zipimporter_get_data(PyObject *obj, PyObject *args)
 	char *p, buf[MAXPATHLEN + 1];
 #endif
 	PyObject *toc_entry;
-	int len;
+	Py_ssize_t len;
 
 	if (!PyArg_ParseTuple(args, "s:zipimporter.get_data", &path))
 		return NULL;
@@ -434,8 +427,7 @@ zipimporter_get_data(PyObject *obj, PyObject *args)
 
 	toc_entry = PyDict_GetItemString(self->files, path);
 	if (toc_entry == NULL) {
-		PyErr_Format(PyExc_IOError, "file not found [%.200s]",
-			     path);
+		PyErr_SetFromErrnoWithFilename(PyExc_IOError, path);
 		return NULL;
 	}
 	return get_data(PyString_AsString(self->archive), toc_entry);
@@ -640,7 +632,8 @@ get_long(unsigned char *buf) {
 
    A toc_entry is a tuple:
 
-       (compress,      # compression kind; 0 for uncompressed
+       (__file__,      # value to use for __file__, available for all files
+        compress,      # compression kind; 0 for uncompressed
         data_size,     # size of compressed data on disk
         file_size,     # size of decompressed data
         file_offset,   # offset of file header from start of archive
@@ -659,7 +652,8 @@ read_directory(char *archive)
 	FILE *fp;
 	long compress, crc, data_size, file_size, file_offset, date, time;
 	long header_offset, name_size, header_size, header_position;
-	long i, l, length, count;
+	long i, l, count;
+	size_t length;
 	char path[MAXPATHLEN + 5];
 	char name[MAXPATHLEN + 5];
 	char *p, endof_central_dir[22];
@@ -807,7 +801,8 @@ get_data(char *archive, PyObject *toc_entry)
 	PyObject *raw_data, *data = NULL, *decompress;
 	char *buf;
 	FILE *fp;
-	int err, bytes_read = 0;
+	int err;
+	Py_ssize_t bytes_read = 0;
 	long l;
 	char *datapath;
 	long compress, data_size, file_size, file_offset;
@@ -907,7 +902,7 @@ unmarshal_code(char *pathname, PyObject *data, time_t mtime)
 {
 	PyObject *code;
 	char *buf = PyString_AsString(data);
-	int size = PyString_Size(data);
+	Py_ssize_t size = PyString_Size(data);
 
 	if (size <= 9) {
 		PyErr_SetString(ZipImportError,
@@ -955,8 +950,11 @@ normalize_line_endings(PyObject *source)
 	char *buf, *q, *p = PyString_AsString(source);
 	PyObject *fixed_source;
 
+	if (!p)
+		return NULL;
+
 	/* one char extra for trailing \n and one for terminating \0 */
-	buf = PyMem_Malloc(PyString_Size(source) + 2);
+	buf = (char *)PyMem_Malloc(PyString_Size(source) + 2);
 	if (buf == NULL) {
 		PyErr_SetString(PyExc_MemoryError,
 				"zipimport: no memory to allocate "
@@ -1023,7 +1021,7 @@ get_mtime_of_source(ZipImporter *self, char *path)
 {
 	PyObject *toc_entry;
 	time_t mtime = 0;
-	int lastchar = strlen(path) - 1;
+	Py_ssize_t lastchar = strlen(path) - 1;
 	char savechar = path[lastchar];
 	path[lastchar] = '\0';  /* strip 'c' or 'o' from *.py[co] */
 	toc_entry = PyDict_GetItemString(self->files, path);
@@ -1131,7 +1129,7 @@ PyDoc_STRVAR(zipimport_doc,
 \n\
 This module exports three objects:\n\
 - zipimporter: a class; its constructor takes a path to a Zip archive.\n\
-- ZipImporterError: exception raised by zipimporter objects. It's a\n\
+- ZipImportError: exception raised by zipimporter objects. It's a\n\
   subclass of ImportError, so it can be caught as ImportError, too.\n\
 - _zip_directory_cache: a dict, mapping archive paths to zip directory\n\
   info dicts, as used in zipimporter._files.\n\
@@ -1165,6 +1163,8 @@ initzipimport(void)
 
 	mod = Py_InitModule4("zipimport", NULL, zipimport_doc,
 			     NULL, PYTHON_API_VERSION);
+	if (mod == NULL)
+		return;
 
 	ZipImportError = PyErr_NewException("zipimport.ZipImportError",
 					    PyExc_ImportError, NULL);

@@ -31,6 +31,9 @@
 #      Colin Kong, Trent Mick, Guido van Rossum
 #
 #    History:
+#
+#    <see CVS and SVN checkin messages for history>
+#
 #    1.0.3 - added normalization of Windows system name
 #    1.0.2 - added more Windows support
 #    1.0.1 - reformatted to make doc.py happy
@@ -104,7 +107,7 @@ __copyright__ = """
 
 """
 
-__version__ = '1.0.2'
+__version__ = '1.0.4'
 
 import sys,string,os,re
 
@@ -217,9 +220,12 @@ def _dist_try_harder(distname,version,id):
 _release_filename = re.compile(r'(\w+)[-_](release|version)')
 _release_version = re.compile(r'([\d.]+)[^(]*(?:\((.+)\))?')
 
+# Note:In supported_dists below we need 'fedora' before 'redhat' as in
+# Fedora redhat-release is a link to fedora-release.
+
 def dist(distname='',version='',id='',
 
-         supported_dists=('SuSE','debian','redhat','mandrake')):
+         supported_dists=('SuSE', 'debian', 'fedora', 'redhat', 'mandrake')):
 
     """ Tries to determine the name of the Linux OS distribution name.
 
@@ -354,7 +360,7 @@ def popen(cmd, mode='r', bufsize=None):
 def _norm_version(version,build=''):
 
     """ Normalize the version and build strings and return a single
-        vesion string using the format major.minor.build (or patchlevel).
+        version string using the format major.minor.build (or patchlevel).
     """
     l = string.split(version,'.')
     if build:
@@ -601,7 +607,8 @@ def mac_ver(release='',versioninfo=('','',''),machine=''):
         versioninfo = (version,stage,nonrel)
     if sysa:
         machine = {0x1: '68k',
-                   0x2: 'PowerPC'}.get(sysa,'')
+                   0x2: 'PowerPC',
+                   0xa: 'i386'}.get(sysa,'')
     return release,versioninfo,machine
 
 def _java_getprop(name,default):
@@ -1086,7 +1093,7 @@ def processor():
 ### Various APIs for extracting information from sys.version
 
 _sys_version_parser = re.compile(r'([\w.+]+)\s*'
-                                  '\(#(\d+),\s*([\w ]+),\s*([\w :]+)\)\s*'
+                                  '\(#?([^,]+),\s*([\w ]+),\s*([\w :]+)\)\s*'
                                   '\[([^\]]+)\]?')
 _sys_version_cache = None
 
@@ -1108,7 +1115,6 @@ def _sys_version():
         return _sys_version_cache
     version, buildno, builddate, buildtime, compiler = \
              _sys_version_parser.match(sys.version).groups()
-    buildno = int(buildno)
     builddate = builddate + ' ' + buildtime
     l = string.split(version, '.')
     if len(l) == 2:

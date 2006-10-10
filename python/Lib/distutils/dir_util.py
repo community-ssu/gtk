@@ -4,7 +4,7 @@ Utility functions for manipulating directories and directory trees."""
 
 # This module should be kept compatible with Python 2.1.
 
-__revision__ = "$Id: dir_util.py,v 1.15.2.1 2005/08/24 14:55:42 loewis Exp $"
+__revision__ = "$Id: dir_util.py 39416 2005-08-26 15:20:46Z tim_one $"
 
 import os, sys
 from types import *
@@ -31,7 +31,7 @@ def mkpath (name, mode=0777, verbose=0, dry_run=0):
     global _path_created
 
     # Detect a common bug -- name is None
-    if not isinstance(name, StringTypes):   
+    if not isinstance(name, StringTypes):
         raise DistutilsInternalError, \
               "mkpath: 'name' must be a string (got %r)" % (name,)
 
