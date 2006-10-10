@@ -117,6 +117,7 @@ struct _HildonHomeWindowPrivate
   guint      layout_mode_banner_to;
 
   guint is_dimmed : 1;
+  guint is_lowmem : 1;
 };
 
 G_DEFINE_TYPE (HildonHomeWindow, hildon_home_window, GTK_TYPE_WINDOW);
@@ -171,6 +172,14 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
   HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("select applets activate\n");
 
+  if (priv->is_lowmem)
+    {
+      hildon_banner_show_information (GTK_WIDGET(window),
+                                      NULL,
+                                      HILDON_HOME_LOWMEM_TEXT);
+      return;
+    }
+
   hildon_home_area_sync_to_list (HILDON_HOME_AREA (priv->applet_area),
                                  priv->plugin_list);
 
@@ -203,6 +212,14 @@ titlebar_layout_mode_activate_cb (HildonHomeTitlebar *titlebar,
 {
   HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("layout mode activate");
+  
+  if (priv->is_lowmem)
+    {
+      hildon_banner_show_information (GTK_WIDGET (window),
+                                      NULL,
+                                      HILDON_HOME_LOWMEM_TEXT);
+      return;
+    }
 
   hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
                                     TRUE);
@@ -219,13 +236,8 @@ titlebar_layout_accept_cb (HildonHomeTitlebar *titlebar,
   
   if (hildon_home_area_get_overlaps (HILDON_HOME_AREA (priv->applet_area)))
     {
-      GtkWidget *note;
-
-      note = hildon_note_new_information
-          (GTK_WINDOW (window),
-           LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT);
-      gtk_dialog_run (GTK_DIALOG (note));
-      gtk_widget_destroy (note);
+      hildon_home_window_show_information_note (window,
+                                                LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT);
       return;
     }
   hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
@@ -237,7 +249,8 @@ titlebar_layout_accept_cb (HildonHomeTitlebar *titlebar,
   
   if (hildon_home_area_save_configuration (HILDON_HOME_AREA (priv->applet_area),
                                        filename) < 0)
-    hildon_home_window_show_flash_full_note (window); 
+    hildon_home_window_show_information_note (window,
+                                              HILDON_HOME_FLASH_FULL_TEXT); 
 
   g_free (filename);
 }
@@ -459,7 +472,8 @@ area_remove (HildonHomeArea   *area,
       if (hildon_home_area_save_configuration (
                                            HILDON_HOME_AREA (priv->applet_area),
                                            filename) < 0 )
-        hildon_home_window_show_flash_full_note (window);
+        hildon_home_window_show_information_note (window,
+                                                  HILDON_HOME_FLASH_FULL_TEXT);
 
       g_free (filename);
     }
@@ -506,14 +520,7 @@ background_manager_load_error_cb (BackgroundManager *manager,
     }
 
   if (text)
-    {
-      GtkWidget *note;
-      
-      note = hildon_note_new_information (NULL, text);
-      gtk_dialog_run (GTK_DIALOG (note));
-      
-      gtk_widget_destroy (note);
-    }
+    hildon_home_window_show_information_note (window, text);
 }
 
 static void
@@ -537,6 +544,18 @@ background_manager_changed_cb (BackgroundManager *manager,
       
       gtk_widget_queue_draw (GTK_WIDGET (window));
     }
+}
+
+static void
+hildon_home_window_lowmem (HildonHomeWindow   *window,
+                           gboolean            is_lowmem)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+
+  g_debug ("HildonHome is lowmem: %i", is_lowmem);
+
+  priv->is_lowmem = is_lowmem;
+
 }
 
 static void
@@ -926,11 +945,23 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
   widget_class->key_press_event = hildon_home_window_key_press_event;
 
   klass->background = hildon_home_window_background;
+  klass->lowmem = hildon_home_window_lowmem;
   
   g_signal_new ("background",
                 G_OBJECT_CLASS_TYPE (gobject_class),
                 G_SIGNAL_RUN_FIRST,
                 G_STRUCT_OFFSET (HildonHomeWindowClass, background),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__BOOLEAN,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_BOOLEAN);
+  
+  g_signal_new ("lowmem",
+                G_OBJECT_CLASS_TYPE (gobject_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeWindowClass, lowmem),
                 NULL,
                 NULL,
                 g_cclosure_marshal_VOID__BOOLEAN,
@@ -1004,18 +1035,20 @@ hildon_home_window_get_main_area (HildonHomeWindow *window)
   return window->priv->main_area;
 }
 
-void
-hildon_home_window_show_flash_full_note (HildonHomeWindow *window)
-{
-  GtkWidget *flash_full_note = NULL;
 
-  flash_full_note =
+void
+hildon_home_window_show_information_note (HildonHomeWindow *window,
+                                          const gchar *text)
+{
+  GtkWidget *note = NULL;
+
+  note =
     hildon_note_new_information (GTK_WINDOW (window), 
-				 HILDON_HOME_FLASH_FULL_TEXT);
+				                 text);
 		    
-  gtk_dialog_run (GTK_DIALOG (flash_full_note));
-  if (flash_full_note) 
-    gtk_widget_destroy (GTK_WIDGET (flash_full_note));
+  gtk_dialog_run (GTK_DIALOG (note));
+  if (note) 
+    gtk_widget_destroy (GTK_WIDGET (note));
 }
 
 void

@@ -53,6 +53,7 @@ struct _HildonHomeWindowClass
   GtkWindowClass parent_class;
 
   void    (* background)    (HildonHomeWindow *window, gboolean is_background);
+  void    (* lowmem)        (HildonHomeWindow *window, gboolean is_lowmem);
 };
 
 GType hildon_home_window_get_type                  (void) G_GNUC_CONST;
@@ -65,7 +66,8 @@ void       hildon_home_window_set_osso_context     (HildonHomeWindow *window,
 GtkWidget *hildon_home_window_get_titlebar         (HildonHomeWindow *window);
 GtkWidget *hildon_home_window_get_main_area        (HildonHomeWindow *window);
 
-void       hildon_home_window_show_flash_full_note (HildonHomeWindow *window);
+void       hildon_home_window_show_information_note(HildonHomeWindow *window,
+                                                    const gchar *text);
 
 void       hildon_home_window_applets_init         (HildonHomeWindow *window);
 

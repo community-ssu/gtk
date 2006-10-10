@@ -1,5 +1,13 @@
 2006-10-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: Added lowmem HW state callback
+	* hildon-home/hildon-home-window.c:
+	  - addded lowmem signal
+	  - temporary disable going to layout mode and selecting applets
+	    if in lowmem situation. Fixes: NB#31081
+
+2006-10-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Avoid clipping the statusbar
 	  background. Fixes: NB#42777
 

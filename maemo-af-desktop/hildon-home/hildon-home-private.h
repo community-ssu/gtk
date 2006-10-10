@@ -42,6 +42,7 @@ G_BEGIN_DECLS
 #define _KE_RECV_STRING(a)       dgettext("ke-recv", (a))
 
 #define HILDON_HOME_FLASH_FULL_TEXT _KE_RECV_STRING("cerm_device_memory_full")
+#define HILDON_HOME_LOWMEM_TEXT _KE_RECV_STRING("memr_ib_operation_disabled")
 #define HILDON_HOME_INTERRUPTED_TEXT    _HN_COMMON_STRING("sfil_ni_cannot_open_no_connection")
 #define HILDON_HOME_CORRUPTED_TEXT _HN_COMMON_STRING("ckct_ni_unable_to_open_file_corrupted")
 #define HILDON_HOME_MMC_OPEN_TEXT  _HN_COMMON_STRING("sfil_ni_cannot_open_mmc_cover_open")

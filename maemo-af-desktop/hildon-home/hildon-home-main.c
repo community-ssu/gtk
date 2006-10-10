@@ -83,6 +83,18 @@ home_get_osso_context ()
 }
 
 static void
+hildon_home_osso_lowmem_cb (osso_hw_state_t *state,
+                            gpointer         window)
+{
+  g_return_if_fail (state);
+  
+  g_signal_emit_by_name (G_OBJECT (window),
+                         "lowmem",
+                         state->memory_low_ind);
+
+}
+
+static void
 hildon_home_osso_hw_cb (osso_hw_state_t *state,
                         gpointer         window)
 {
@@ -228,6 +240,9 @@ hildon_home_main (void)
    */
   hs.system_inactivity_ind = TRUE;
   osso_hw_set_event_cb (osso_home, &hs, hildon_home_osso_hw_cb, window);
+  hs.system_inactivity_ind = FALSE;
+  hs.memory_low_ind = TRUE;
+  osso_hw_set_event_cb (osso_home, &hs, hildon_home_osso_lowmem_cb, window);
   
   hildon_home_window_applets_init (HILDON_HOME_WINDOW (window));
   
