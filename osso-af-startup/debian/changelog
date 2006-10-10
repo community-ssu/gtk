@@ -1,11 +1,10 @@
 osso-af-startup (1.27-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added build files. Fixes: MB#796
   * Swapped order of stopping ke-recv and D-Bus session bus in the
     first boot. Fixes: NB#41548, NB#42158
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 10 Oct 2006 15:36:28 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 10 Oct 2006 16:10:35 +0300
 
 osso-af-startup (1.26-1) unstable; urgency=low
 
