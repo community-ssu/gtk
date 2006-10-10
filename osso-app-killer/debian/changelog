@@ -1,6 +1,5 @@
 osso-app-killer (1.12-1) unstable; urgency=low
 
-  * UNRELEASED
   * Now using the new location for .games folder. Fixes: NB#42525
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 10 Oct 2006 18:06:03 +0300
