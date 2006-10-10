@@ -1097,7 +1097,7 @@ composite_background (const GdkPixbuf  *bg_image,
       
       gdk_pixbuf_composite (compose,
 		            pixbuf,
-			    0, 0,
+			    HILDON_HOME_TASKNAV_WIDTH, 0,
 			    gdk_pixbuf_get_width (compose),
 			    gdk_pixbuf_get_height (compose),
 			    HILDON_HOME_TASKNAV_WIDTH, 0,
