@@ -935,7 +935,6 @@ hildon_home_applet_button_press_event (GtkWidget *w,
         return FALSE;
     }
   
-
   /* Check if we clicked the close button */
   if (event->x > HILDON_MARGIN_DEFAULT && 
       event->x < HILDON_MARGIN_DEFAULT + APPLET_CLOSE_BUTTON_WIDTH &&
@@ -948,6 +947,11 @@ hildon_home_applet_button_press_event (GtkWidget *w,
     
   if (!priv->timeout)
     {
+      if (HILDON_IS_HOME_AREA (w->parent))
+        g_signal_emit_by_name (G_OBJECT (w->parent),
+                               "applet-change-start",
+                               w); 
+
       gdk_window_raise (w->window);
       gdk_pointer_grab (w->window,
                         FALSE,
@@ -1016,6 +1020,11 @@ hildon_home_applet_button_release_event (GtkWidget *applet,
           if (HILDON_IS_HOME_AREA (applet->parent))
             g_signal_emit_by_name (G_OBJECT (applet->parent), "layout-changed"); 
         }
+      
+      if (HILDON_IS_HOME_AREA (applet->parent))
+        g_signal_emit_by_name (G_OBJECT (applet->parent),
+                               "applet-change-end",
+                               applet); 
     }
 
   return TRUE;

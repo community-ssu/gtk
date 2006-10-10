@@ -133,16 +133,19 @@ static gboolean
 destroy_banner (HildonHomeWindow *window)
 {
   HildonHomeWindowPrivate *priv = window->priv;
-  
+
   if (priv->layout_mode_banner)
     {
       gtk_widget_destroy (priv->layout_mode_banner);
       priv->layout_mode_banner = NULL;
-      priv->layout_mode_banner_to = 0;
+      g_signal_handlers_disconnect_by_func (G_OBJECT (priv->applet_area),
+                                            G_CALLBACK (destroy_banner),
+                                            window);
     }
+  priv->layout_mode_banner_to = 0;
+
   return FALSE;
 }
-
 
 static void
 hildon_home_window_show_layout_mode_banner (HildonHomeWindow *window)
@@ -159,6 +162,13 @@ hildon_home_window_show_layout_mode_banner (HildonHomeWindow *window)
           g_timeout_add (LAYOUT_OPENING_BANNER_TIMEOUT,
                          (GSourceFunc)destroy_banner,
                          window);
+
+      g_signal_connect_swapped (G_OBJECT (priv->applet_area),
+                                "applet-change-start",
+                                G_CALLBACK (destroy_banner),
+                                window);
+
+
     }
     
 }

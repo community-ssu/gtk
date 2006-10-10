@@ -57,6 +57,9 @@ typedef struct _HildonHomeAreaClass
   void (* layout_mode_end)      (HildonHomeArea *area);
   void (* layout_mode_ended)    (HildonHomeArea *area);
   void (* layout_changed)       (HildonHomeArea *area);
+
+  void (* applet_change_start)  (HildonHomeArea *area, GtkWidget *w);
+  void (* applet_change_end)    (HildonHomeArea *area, GtkWidget *w);
   
   void (* applet_added)         (HildonHomeArea *area, GtkWidget *w);
   void (* applet_selected)      (HildonHomeArea *area, GtkWidget *w);

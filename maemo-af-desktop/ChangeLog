@@ -1,5 +1,13 @@
 2006-10-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home-area.[ch]: add applet-change-{start,end} signals
+	* hildon-home-applet.c: emit this signal when the applet are touched
+	* hildon-home-window.c: temporary connect banner_destroy to
+	  applet-change-start
+	Fixes: NB#42820
+
+2006-10-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-main.c: Added lowmem HW state callback
 	* hildon-home/hildon-home-window.c:
 	  - addded lowmem signal

@@ -198,6 +198,28 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                 1,
                 GTK_TYPE_WIDGET);
   
+  g_signal_new ("applet-change-start",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeAreaClass, applet_change_start),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__POINTER,
+                G_TYPE_NONE,
+                1,
+                GTK_TYPE_WIDGET);
+  
+  g_signal_new ("applet-change-end",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeAreaClass, applet_change_end),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__POINTER,
+                G_TYPE_NONE,
+                1,
+                GTK_TYPE_WIDGET);
+  
   g_signal_new ("layout-changed",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_FIRST,
