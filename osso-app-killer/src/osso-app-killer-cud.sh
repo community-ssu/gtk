@@ -72,7 +72,7 @@ if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   done
   rm -rf $MYDOCSDIR/*
   rm -rf $MYDOCSDIR/.documents/*
-  rm -rf $MYDOCSDIR/.documents/.games/*
+  rm -rf $MYDOCSDIR/.games/*
   rm -rf $MYDOCSDIR/.images/*
   rm -rf $MYDOCSDIR/.sounds/*
   rm -rf $MYDOCSDIR/.videos/*
