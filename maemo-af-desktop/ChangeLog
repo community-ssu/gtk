@@ -1,3 +1,10 @@
+2006-10-10  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-applet.c:
+	  - do not start a resize if the applet is not resizable
+	  - close button and resize handle and now drawn on their own
+	    shaped window (Closes NB#42549)
+
 2006-10-09  Moises Martinez <moises.martinzes@nokia.com>
 
 	* install_sbapplet.sh: Touch the configuration. Fixes: NB#39131
@@ -35,7 +42,7 @@
 	  layout-mode-ended to do things after we know layout mode has been
 	  applied
 	* hildon-home/hildon-home-window.c: Dim the desktop already when an
-	  applet is added. Fixes NB#
+	  applet is added. Fixes NB#42429
 
 2006-10-06  Johan Bilien <johan.bilien@nokia.com>
 

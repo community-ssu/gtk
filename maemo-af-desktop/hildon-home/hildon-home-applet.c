@@ -76,7 +76,9 @@ typedef struct HildonHomeAppletPriv_
   HomeAppletHandler *handler;
 
   GdkPixbuf    *close_button;
+  GdkWindow    *close_button_window;
   GdkPixbuf    *resize_handle;
+  GdkWindow    *resize_handle_window;
 
   gint          minimum_width;
   gint          minimum_height;
@@ -103,6 +105,10 @@ hildon_home_applet_destroy (GtkObject *applet);
 static gboolean
 hildon_home_applet_expose (GtkWidget * widget,
                            GdkEventExpose * event);
+
+static void
+hildon_home_applet_size_allocate (GtkWidget *widget,
+                                  GtkAllocation *allocation);
 
 static void
 hildon_home_applet_remove (GtkContainer *applet, GtkWidget *child);
@@ -224,6 +230,7 @@ hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
 
   /* Set the widgets virtual functions */
   widget_class->expose_event = hildon_home_applet_expose;
+  widget_class->size_allocate = hildon_home_applet_size_allocate;
   widget_class->button_press_event = hildon_home_applet_button_press_event;
   widget_class->button_release_event = hildon_home_applet_button_release_event;
   widget_class->visibility_notify_event = 
@@ -354,6 +361,9 @@ static void hildon_home_applet_init(HildonHomeApplet * self)
   
   gtk_widget_add_events (GTK_WIDGET (self), GDK_VISIBILITY_NOTIFY_MASK);
 
+  /* FIXME remove this from the theme */
+  gtk_widget_set_name (GTK_WIDGET (self), "osso-home-layoutmode-applet");
+
 }
 
 static void
@@ -364,6 +374,18 @@ hildon_home_applet_destroy (GtkObject *applet)
 
   if (priv->timeout)
     g_source_remove (priv->timeout);
+
+  if (priv->close_button_window)
+    {
+      gdk_window_destroy (priv->close_button_window);
+      priv->close_button_window = NULL;
+    }
+
+  if (priv->resize_handle_window)
+    {
+      gdk_window_destroy (priv->resize_handle_window);
+      priv->resize_handle_window = NULL;
+    }
 
   g_free (priv->desktop_file);
   priv->desktop_file = NULL;
@@ -472,8 +494,6 @@ hildon_home_applet_expose (GtkWidget * w, GdkEventExpose * event)
   
   if (w->parent && priv->layout_mode)
     {
-      GdkGC *gc;
-
       /* Draw the rectangle around */
 
       if (priv->overlaps)
@@ -522,32 +542,27 @@ hildon_home_applet_expose (GtkWidget * w, GdkEventExpose * event)
                               w->allocation.width-LAYOUT_MODE_HIGHLIGHT_WIDTH,
                               w->allocation.height-LAYOUT_MODE_HIGHLIGHT_WIDTH);
         }
-
-      /* Draw the close button and resize handle */
-
-      gc = gdk_gc_new (w->window);
-
-      if (priv->close_button)
-        gdk_draw_pixbuf (w->window, gc,
-                         priv->close_button, 0, 0,
-                         HILDON_MARGIN_DEFAULT, HILDON_MARGIN_DEFAULT,
-                         APPLET_CLOSE_BUTTON_WIDTH, APPLET_CLOSE_BUTTON_HEIGHT,
-                         GDK_RGB_DITHER_NONE, 0, 0);
-
-      if (priv->resize_handle)
-        gdk_draw_pixbuf (w->window, gc,
-                         priv->resize_handle, 0, 0,
-                         w->allocation.width - APPLET_RESIZE_HANDLE_WIDTH,
-                         w->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT,
-                         APPLET_RESIZE_HANDLE_WIDTH,
-                         APPLET_RESIZE_HANDLE_HEIGHT,
-                         GDK_RGB_DITHER_NONE, 0, 0);
-
-      g_object_unref (gc);
     }
 
 
   return FALSE;
+}
+
+static void
+hildon_home_applet_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+{
+  HildonHomeAppletPriv      *priv;
+  priv = HILDON_HOME_APPLET_GET_PRIVATE (HILDON_HOME_APPLET(widget));
+
+  if (priv->layout_mode && priv->resize_handle_window)
+    {
+      gdk_window_move (priv->resize_handle_window,
+                       allocation->width - APPLET_RESIZE_HANDLE_WIDTH,
+                       allocation->height - APPLET_RESIZE_HANDLE_HEIGHT);
+    }
+
+  if (GTK_WIDGET_CLASS (parent_class)->size_allocate)
+    GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
 }
 
 static void
@@ -557,6 +572,68 @@ hildon_home_applet_remove (GtkContainer *applet, GtkWidget *child)
     GTK_CONTAINER_CLASS (parent_class)->remove (applet, child);
 
   gtk_widget_destroy (GTK_WIDGET (applet));
+}
+
+static GdkWindow *
+hildon_home_applet_create_icon_window (HildonHomeApplet *applet,
+                                       GdkPixbuf *icon,
+                                       gint x,
+                                       gint y)
+{
+  HildonHomeAppletPriv      *priv;
+  GdkWindowAttr              attributes;
+  gint                       attributes_mask;
+  GdkBitmap                 *bitmask = NULL;
+  GdkPixmap                 *pixmap = NULL;
+  GdkWindow                 *window;
+  GtkWidget                 *w;
+
+  priv = HILDON_HOME_APPLET_GET_PRIVATE (applet);
+  w = GTK_WIDGET (applet);
+
+  attributes.width = gdk_pixbuf_get_width (icon);
+  attributes.height = gdk_pixbuf_get_height (icon);
+  attributes.window_type = GDK_WINDOW_CHILD;
+  attributes.event_mask = 0;
+  attributes.visual = gtk_widget_get_visual (w);
+  attributes.colormap = gtk_widget_get_colormap (w);
+  attributes.wclass = GDK_INPUT_OUTPUT;
+  
+  attributes_mask = GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  
+  gdk_pixbuf_render_pixmap_and_mask_for_colormap (icon,
+                                                  attributes.colormap,
+                                                  &pixmap,
+                                                  &bitmask,
+                                                  127);
+
+
+  window = gdk_window_new (w->window,
+                           &attributes,
+                           attributes_mask);
+
+  gdk_window_set_user_data (window, w);
+  gdk_window_move (window, x, y);
+
+  if (pixmap)
+    gdk_window_set_back_pixmap (window, pixmap, FALSE);
+  
+  if (bitmask)
+    {
+      gdk_window_shape_combine_mask (window,
+                                     bitmask,
+                                     0,
+                                     0);
+      g_object_unref (bitmask);
+    }
+
+  gdk_window_show (window);
+  gdk_window_raise (window);
+
+  gdk_flush ();
+
+  return window;
+
 }
 
 static void
@@ -570,11 +647,29 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
 
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (applet), TRUE);
   gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), TRUE);
+
+  if (priv->close_button)
+    {
+      priv->close_button_window = hildon_home_applet_create_icon_window 
+          (applet,
+           priv->close_button,
+           HILDON_MARGIN_DEFAULT,
+           HILDON_MARGIN_DEFAULT);
+    }
+
+  if (priv->resize_handle)
+    {
+      priv->resize_handle_window = hildon_home_applet_create_icon_window 
+          (applet,
+           priv->resize_handle,
+           w->allocation.width - APPLET_RESIZE_HANDLE_WIDTH,
+           w->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT);
+    }
+
   if (GTK_BIN (applet) && GTK_BIN (applet)->child)
     gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
   
-  /* FIXME */
-  gtk_widget_set_name (w, "osso-home-layoutmode-applet");
+  gtk_widget_show (w);
 
   priv->layout_mode = TRUE;
 }
@@ -582,6 +677,19 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
 static void
 hildon_home_applet_layout_mode_end (HildonHomeApplet *applet)
 {
+  HildonHomeAppletPriv      *priv;
+  priv = HILDON_HOME_APPLET_GET_PRIVATE (applet);
+
+  if (priv->close_button_window)
+    {
+      gdk_window_destroy (priv->close_button_window);
+      priv->close_button_window = NULL;
+    }
+  if (priv->resize_handle_window)
+    {
+      gdk_window_destroy (priv->resize_handle_window);
+      priv->resize_handle_window = NULL;
+    }
   if (GTK_BIN (applet) && GTK_BIN (applet)->child)
     gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
   gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), FALSE);
@@ -769,6 +877,12 @@ hildon_home_applet_drag_update (HildonHomeApplet *applet)
           - LAYOUT_AREA_BOTTOM_BORDER_PADDING - widget->allocation.y;
 
       gtk_widget_set_size_request (widget, width, height);
+#if 0
+      if (priv->resize_handle_window)
+        gdk_window_move (priv->resize_handle_window,
+                         width - APPLET_RESIZE_HANDLE_WIDTH,
+                         height - APPLET_RESIZE_HANDLE_HEIGHT);
+#endif
     }
   
   used_to_overlap = priv->overlaps;
@@ -844,7 +958,8 @@ hildon_home_applet_button_press_event (GtkWidget *w,
 
       priv->old_allocation = w->allocation;
 
-      if ((w->allocation.width - event->x) < APPLET_RESIZE_HANDLE_WIDTH &&
+      if (priv->resize_type != HILDON_HOME_APPLET_RESIZE_NONE &&
+          (w->allocation.width - event->x) < APPLET_RESIZE_HANDLE_WIDTH &&
           (w->allocation.height - event->y) < APPLET_RESIZE_HANDLE_HEIGHT)
         {
           priv->x_offset = w->allocation.width - event->x;
