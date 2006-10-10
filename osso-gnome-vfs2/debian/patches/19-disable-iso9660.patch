@@ -1,0 +1,38 @@
+--- libgnomevfs/gnome-vfs-volume-monitor-daemon.c-orig	2006-10-10 13:54:05.000000000 +0200
++++ libgnomevfs/gnome-vfs-volume-monitor-daemon.c	2006-10-10 14:03:53.000000000 +0200
+@@ -996,7 +996,7 @@ create_vol_from_mount (GnomeVFSVolumeMon
+ 		case CDS_MIXED:
+ 			/* Get volume name */
+ 			if (fd > 0) {
+-				tmp_name = _gnome_vfs_get_iso9660_volume_name (fd);
++				tmp_name = NULL; /*_gnome_vfs_get_iso9660_volume_name (fd);*/
+ 				display_name = modify_volume_name_for_display (tmp_name);
+ 				g_free (tmp_name);
+ 			}
+Index: libgnomevfs/gnome-vfs-cdrom.c
+===================================================================
+--- libgnomevfs/gnome-vfs-cdrom.c	(revision 7090)
++++ libgnomevfs/gnome-vfs-cdrom.c	(arbetskopia)
+@@ -43,7 +43,7 @@
+ #include <sys/cdio.h>
+ #endif
+ 
+-#include "gnome-vfs-iso9660.h"
++/*#include "gnome-vfs-iso9660.h"*/
+ #include "gnome-vfs-cdrom.h"
+ 
+ 
+@@ -158,6 +158,7 @@ _gnome_vfs_get_cdrom_type (const char *v
+ #endif /* defined(__linux__) */
+ }
+ 
++#ifdef WITH_ISO9660
+ #ifdef __linux__
+ static int
+ get_iso9660_volume_name_data_track_offset (int fd)
+@@ -244,4 +245,4 @@ _gnome_vfs_get_iso9660_volume_name (int 
+ 	}
+ 	return g_strndup (iso_buffer.volume_id, 32);
+ }
+-
++#endif
