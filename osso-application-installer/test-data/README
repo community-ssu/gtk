@@ -177,13 +177,18 @@ from file."
 
 These =.install= files are available:
 
-   * *osso-xterm.install*
+   * *demo.install*
    <p>
-   Installs the =osso-xterm= package from the =demo= distribution.
+   Installs the =demo= package from the =demo= distribution.
 
    * *demo-catalogue.install*
    <p>
    Adds the =demo= distribution to the list of configured sources.
+
+   * *demo-old.install*
+   <p>
+   Installs the =demo= package from the =demo= distribution.  However,
+   it doesn't declare itself to be compatible with maemo 3.0.
 
 
 ---+++ How to break packages to be half-installed
@@ -368,19 +373,19 @@ repository.
    * Make sure that the =demo= distribution is not listed in the
      Application Cataloque.  If it is there, remove it; disabling is
      not enough.
-   * Make sure that osso-xterm is not installed.
-   * Open =osso-xterm.install= with "Package / Install from file"
+   * Make sure that the =demo= package is not installed.
+   * Open =demo.install= with "Package / Install from file"
    * Notice that a new cataloque is getting added, that the list of
-     packages is being refreshed and that osso-xterm is getting
+     packages is being refreshed and that =demo= is getting
      installed successfully
    
 ---++++ Single-click-install with existing repository
 
    * Make sure that the =demo= distribution is listed in the
      Application Cataloque and enabled.
-   * Make sure that osso-xterm is not installed.
-   * Open =osso-xterm.install= with "Package / Install from file"
-   * Verify that osso-xterm is getting installed successfully.
+   * Make sure that the =demo= package is not installed.
+   * Open =demo.install= with "Package / Install from file"
+   * Verify that =demo= is getting installed successfully.
    
 ---++++ Single-click-install with existing repository and package
 
@@ -407,6 +412,13 @@ repository.
    * Open =demo-cataloque.install= with "Package / Install from file"
    * Verify that no new cataloque is getting added with the
      information "Already configured" (or similar).
+
+---++++ Single-click-configure of incompatible distribution
+
+   This test case needs osso-application-installer 4.34 or later.
+
+   * Open =demo-old.install= with "Package / Install from file"
+   * Notice that an error message about incompatible packages appears.
 
 ---++++ Updating to a corrupted package
 
