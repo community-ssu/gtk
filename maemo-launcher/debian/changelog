@@ -1,6 +1,7 @@
 maemo-launcher (0.19~-1) UNRELEASED; urgency=low
 
   * New Upstream Release.
+  * Add a maemo-launcher-dbg package. (Closes: #41746@Nokia)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Thu, 28 Sep 2006 16:50:02 +0300
 
