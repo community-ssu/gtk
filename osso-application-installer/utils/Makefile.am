@@ -1,3 +1,5 @@
+CXXFLAGS = $(CFLAGS)
+
 bin_PROGRAMS = maemo-application-running \
                maemo-confirm-text.launch
 

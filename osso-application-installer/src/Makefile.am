@@ -1,3 +1,5 @@
+CXXFLAGS = $(CFLAGS)
+
 bin_PROGRAMS = osso-application-installer.launch
 noinst_PROGRAMS = osso-application-installer.run
 libexec_PROGRAMS = apt-worker
