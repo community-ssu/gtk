@@ -124,7 +124,8 @@ static void
 hildon_navigator_panel_init (HildonNavigatorPanel *panel)
 {
   HildonNavigatorPanelPrivate *priv;
-  gchar *home, *path;
+  gchar *path;
+  const gchar *home;
   gint i;
   
   g_return_if_fail (panel);

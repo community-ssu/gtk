@@ -1,9 +1,14 @@
 2006-10-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-window.c: Fixed an invalid
+	  free. Fixes: NB#39640
+
+2006-10-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-applet.c:
 	  - do not start a resize if the applet is not resizable
 	  - close button and resize handle and now drawn on their own
-	    shaped window (Closes NB#42549)
+	    shaped window. Fixes: NB#42549
 
 2006-10-09  Moises Martinez <moises.martinzes@nokia.com>
 

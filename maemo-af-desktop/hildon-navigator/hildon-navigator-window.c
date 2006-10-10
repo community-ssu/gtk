@@ -166,7 +166,8 @@ set_focus_forall_cb (GtkWidget *widget, gpointer data)
 static void 
 configuration_changed (char *path, gpointer *data)
 {
-    gchar *config_file, *home_dir; 
+    gchar *config_file; 
+    const char *home_dir;
     HildonNavigatorPanel *panel;
 
     g_assert (data != NULL);
@@ -180,7 +181,6 @@ configuration_changed (char *path, gpointer *data)
     hn_panel_load_plugins_from_file (panel, config_file);
 
     g_free (config_file);
-    g_free (home_dir);
 }
 
 static void
@@ -202,7 +202,8 @@ hn_window_constructor (GType gtype,
   GObject *self;
   HildonNavigatorWindow *window;
   HildonNavigatorWindowPrivate *priv;
-  gchar *plugin_dir, *config_file, *home_dir;
+  gchar *plugin_dir, *config_file;
+  const char *home_dir;
   gboolean dnotify_ret;
   hildon_return_t dnotify_status;
 
@@ -275,7 +276,6 @@ hn_window_constructor (GType gtype,
   /* cleanup */
   g_free (plugin_dir);
   g_free (config_file);
-  g_free (home_dir);
 
   gtk_widget_pop_composite_child (); 
 
