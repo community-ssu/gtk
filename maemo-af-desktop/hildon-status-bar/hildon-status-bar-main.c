@@ -28,7 +28,7 @@
 #endif
  
 /* Hildon includes */
-#include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 
 /* GTK includes */
@@ -134,7 +134,6 @@ static void statusbar_send_signal (DBusConnection *conn,
 	
 /* Global variables */		
 static GHashTable *delayed_banners;
-static gpointer delayed_ib_onscreen;
 static gboolean sb_is_sensitive = TRUE;
 
 static gboolean 
@@ -822,7 +821,7 @@ void show_infoprint( const gchar *msg )
 {     		
     if ( !msg ) return;
 
-    gtk_infoprint( NULL, msg );
+    hildon_banner_show_information( NULL, NULL, msg );
 }
 
 static void statusbar_insensitive_cb( GtkWidget *widget, gpointer data)
@@ -1471,7 +1470,7 @@ gint _delayed_infobanner_add(gint32 pid,
                          GINT_TO_POINTER(pid)),
              NULL);
     }
-    data = g_new(SBDelayedInfobanner, 1);
+    data = g_new0(SBDelayedInfobanner, 1);
 
     data->displaytime = timeout;
     data->text = g_strdup (text);
@@ -1516,15 +1515,11 @@ _delayed_ib_show(gpointer data)
  
     info->timeout_to_show_id = 0;
      
-    delayed_ib_onscreen = data;  
- 
+    info->banner = hildon_banner_show_progress( NULL, NULL, info->text );
     info->timeout_onscreen_id = g_timeout_add(
                        (guint)info->displaytime,
                        _delayed_infobanner_remove,
                        data);
-    
-    gtk_banner_show_animation(NULL, info->text);
-                
 
     return FALSE;
 }
@@ -1543,9 +1538,10 @@ _remove_sb_d_ib_item(gpointer key, gpointer value, gpointer user_data)
         g_source_remove(data->timeout_onscreen_id);
     }
     
-    if ( delayed_ib_onscreen == key ) {
-      gtk_banner_close(NULL);
-      delayed_ib_onscreen = NULL;
+    if ( data->banner )
+    {
+        gtk_widget_destroy( data->banner );
+        data->banner = NULL;
     }
      
     g_hash_table_remove(delayed_banners, (gconstpointer)key);
@@ -1629,7 +1625,6 @@ status_bar_main( osso_context_t *osso, StatusBar **panel )
     }
     
     delayed_banners = g_hash_table_new(g_direct_hash, g_direct_equal);
-    delayed_ib_onscreen = NULL;
     
     TRACE(TDEBUG,"status_bar_main: 8, status bar initialized successfully");
     *panel = sb_panel;

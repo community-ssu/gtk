@@ -1,5 +1,12 @@
 2006-10-10  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-status-bar/hildon-status-bar.c:
+      - replaced gtk_info* with hildon_banner_*
+	  - removed global _onscreen variable, no longer needed.
+	Fixes: NB#42256
+
+2006-10-10  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-window.c: Fixed an invalid
 	  free. Fixes: NB#39640
 
