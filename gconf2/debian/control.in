@@ -38,7 +38,7 @@ Package: libgconf2-6-dbg
 Section: libs
 Priority: optional
 Architecture: any
-Depends: gconf2 (= ${Source-Version})
+Depends: libgconf2-6 (= ${Source-Version})
 Description: libgconf2-6 with debug symbols.
  This package contains libgconf2-6 with debug symbols.
 
