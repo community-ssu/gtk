@@ -1,0 +1,55 @@
+Source: gconf2
+Section: libs
+Priority: optional
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com> 
+Uploaders: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>, Akira TAGOH <tagoh@debian.org>, Andreas Rottmann <rotty@debian.org>, Andrew Lau <netsnipe@users.sourceforge.net>, Carlos Perelló Marín <carlos@pemas.net>, Ed Boraas <ed@debian.org>, Edd Dumbill <ejad@debian.org>, Emil Soleyman-Zomalan <emil@nishra.com>, Gustavo Noronha Silva <kov@debian.org>, J.H.M. Dassen (Ray) <jdassen@debian.org>, Joe Drew <drew@debian.org>, Johannes Rohr <j.rohr@comlink.org>, Jordi Mallach <jordi@debian.org>, Jose Carlos Garcia Sogo <jsogo@debian.org>, Josselin Mouette <joss@debian.org>, Marc 'HE' Brockschmidt <he@debian.org>, Ondřej Surý <ondrej@debian.org>, Rob Bradford <rob@debianplanet.org>, Robert McQueen <robot101@debian.org>, Ross Burton <ross@debian.org>, Sebastien Bacher <seb128@debian.org>, Sjoerd Simons <sjoerd@debian.org>, Takuo KITAME <kitame@debian.org>
+Build-Depends: debhelper (>> 3.0.0), gtk-doc-tools, libdbus-glib-1-dev (>= 0.60), libpopt-dev, libxml2-dev, zlib1g-dev, gettext, dbs, gcc (>= 3:3.2.2), gnome-pkg-tools
+Standards-Version: 3.6.1.0
+
+Package: gconf2
+Section: admin
+Priority: optional
+Architecture: any
+Depends: ${shlibs:Depends}, dbus
+Conflicts: gconf (<< 1.0.6-4), libgconf11 (<< 1.0.9-2.1)
+Replaces: libgconf2-4 (<< 1.1.10-2)
+Description: GNOME configuration database system. (daemon and tools, for GNOME2)
+ GConf is a configuration database system, functionally similar to the
+ Windows registry but lots better. :-) It's being written for the GNOME
+ desktop but does not require GNOME.
+ .
+ This package contains gconfd daemon and gconf tools binaries for GNOME2
+
+Package: libgconf2-6
+Section: libs
+Priority: optional
+Architecture: any
+Replaces: libgconf2-2 (= 1.1.7-1), libgconf2-4 (<< 1.1.10-2)
+Conflicts: libgconf2-2 (= 1.1.7-1), libgconf2-4 (<< 1.1.10-2)
+Depends: ${shlibs:Depends}, gconf2 (>= ${Source-Version})
+Description: GNOME configuration database system libraries (for GNOME2)
+ GConf is a configuration database system, functionally similar to the
+ Windows registry but lots better. :-) It's being written for the GNOME
+ desktop but does not require GNOME.
+ .
+ This package contains shared libraries for GNOME2
+
+Package: libgconf2-6-dbg
+Section: libs
+Priority: optional
+Architecture: any
+Depends: gconf2 (= ${Source-Version})
+Description: libgconf2-6 with debug symbols.
+ This package contains libgconf2-6 with debug symbols.
+
+Package: libgconf2-dev
+Section: devel
+Priority: optional
+Architecture: any
+Depends: libgconf2-6 (= ${Source-Version}), libglib2.0-dev, libpopt-dev, libdbus-glib-1-dev (>= 0.50), gconf2 (>= ${Source-Version})
+Description: GNOME configuration database system development files. (for GNOME2)
+ GConf is a configuration database system, functionally similar to the
+ Windows registry but lots better. :-) It's being written for the GNOME
+ desktop but does not require GNOME
+ .
+ This package contains development files for GNOME2
