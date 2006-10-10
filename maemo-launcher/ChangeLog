@@ -1,3 +1,8 @@
+2006-10-10  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/Makefile.am (maemo_booster_null_so_CFLAGS): New variable.
+	(maemo_booster_gtk_so_CFLAGS): Likewise.
+
 2006-09-28  Guillem Jover  <guillem.jover@nokia.com>
 
 	* launcher/summoner.c: Include <unistd.h>. Remove commented out

@@ -21,9 +21,11 @@ booster_PROGRAMS = maemo-booster-null.so maemo-booster-gtk.so
 MAEMO_BOOSTER_DIR = "\"$(boosterdir)\""
 
 maemo_booster_null_so_SOURCES = booster_null.c
+maemo_booster_null_so_CFLAGS = -fPIC
 maemo_booster_null_so_LDFLAGS = -shared -fPIC
 
 maemo_booster_gtk_so_SOURCES = booster_gtk.c booster_gtk.h
+maemo_booster_gtk_so_CFLAGS = -fPIC
 maemo_booster_gtk_so_LDFLAGS = -shared -fPIC
 maemo_booster_gtk_so_CPPFLAGS = $(BOOSTER_GTK_CFLAGS)
 maemo_booster_gtk_so_LDADD = $(BOOSTER_GTK_LIBS)
