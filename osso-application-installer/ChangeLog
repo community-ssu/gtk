@@ -1,3 +1,10 @@
+2006-10-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 4.34.
+	
+	* src/Makefile.am, utils/Makefile.am (CXXFLAGS): Default to
+	$(CFLAGS). (N41085)
+
 2006-10-07  Marius Vollmer  <mvo@zagadka.de>
 
 	* src/instr.cc (open_local_install_instructions): Use "repo_deb_3"
@@ -39,7 +46,7 @@
 	(BTNAME_SERVICE, BTNAME_REQUEST_IF, BTNAME_SIGNAL_IF,
 	BTNAME_REQUEST_PATH, BTNAME_SIGNAL_PATH, BTNAME_REQ_GET,
 	BTNAME_SIG_CHANGED): New, using the "bluez.org" D-Bus API.
-	* debian/control (Build-Depends): Don't depend on osso-bttools-dev-
+	* debian/control (Build-Depends): Don't depend on osso-bttools-dev
 
 	* src/repo.cc (sources_list_reply): Use ai_ti_add_catalogue
 	instead of ai_ti_add_cataloque, stupid.  (N36147)
