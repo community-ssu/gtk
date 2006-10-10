@@ -27,11 +27,13 @@ DIR=/etc/osso-af-init
 dbus-send --system --dest=org.bluez /org/bluez/hci0 \
   org.bluez.Adapter.SetName string:'Nokia 770'
 
-# restore the original language
-cp -f $DIR/locale.orig $DIR/locale
-USER=`whoami`
-if [ "x$USER" = "xroot" ]; then
-  chown user:users $DIR/locale
+if [ "x$CUD" != "x" ]; then
+  # restore the original language
+  cp -f $DIR/locale.orig $DIR/locale
+  USER=`whoami`
+  if [ "x$USER" = "xroot" ]; then
+    chown user:users $DIR/locale
+  fi
 fi
 
 # ask MCE to reboot the system

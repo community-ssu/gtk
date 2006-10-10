@@ -1,3 +1,10 @@
+osso-app-killer (1.11-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Not resetting language in ROS. Fixes: NB#42802
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 10 Oct 2006 17:28:51 +0300
+
 osso-app-killer (1.10-2) unstable; urgency=low
 
   * Added license reference to debian/copyright.

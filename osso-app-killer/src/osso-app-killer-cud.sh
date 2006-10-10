@@ -90,6 +90,6 @@ if [ "x$USER" = "xroot" ]; then
 fi
 
 # final cleanup and reboot
-source /usr/sbin/osso-app-killer-common.sh
+CUD=foo source /usr/sbin/osso-app-killer-common.sh
 
 exit 0
