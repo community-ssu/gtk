@@ -181,7 +181,7 @@ if [ "$START" = "TRUE" ]; then
   # Create some files to play with
   if [ ! -d $MYDOCSDIR ]; then
     # normally osso-af-startup creates these...
-    mkdir -p $MYDOCSDIR/.documents/.games $MYDOCSDIR/.videos
+    mkdir -p $MYDOCSDIR/.games $MYDOCSDIR/.videos
     mkdir -p $MYDOCSDIR/.images $MYDOCSDIR/.sounds
   fi
   if [ -e $MYDOCSDIR/foo.txt ]; then
