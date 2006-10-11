@@ -54,7 +54,8 @@ enum
   PROP_ADDITIONAL_TAB,
   PROP_ADDITIONAL_TAB_LABEL,
   PROP_MODEL,
-  PROP_ENABLE_READONLY_CHECKBOX
+  PROP_ENABLE_READONLY_CHECKBOX,
+  PROP_SHOW_TYPE_ICON
 };
 
 struct _HildonFileDetailsDialogPrivate {
@@ -65,6 +66,7 @@ struct _HildonFileDetailsDialogPrivate {
     GtkWidget *file_date, *file_time;
     GtkWidget *file_readonly, *file_device;
     GtkWidget *file_location_image, *file_device_image;
+    GtkWidget *file_image;
     GtkWidget *ok_button;
 
     GtkTreeRowReference *active_file;
@@ -309,6 +311,18 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
                  "Enable read-only checkbox", 
                  "Whether or not to enable the read-only checkbox.",
                  TRUE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+  /**
+   * HildonFileDetailsDialog:show-type-icon
+   *
+   * Whether or not to show the file icon next to the file type
+   */
+  g_object_class_install_property(gobject_class,
+                 PROP_SHOW_TYPE_ICON,
+                 g_param_spec_boolean("show-type-icon",
+                 "Show file type icon", 
+                 "Whether or not to show the file icon next to the file type.",
+                 FALSE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
 
 static void
@@ -317,7 +331,7 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     GtkWidget *caption_location, *caption_name, *caption_type;
     GtkWidget *caption_date, *caption_size, *caption_time;
     GtkWidget *caption_read, *caption_device;
-    GtkWidget *hbox_location, *hbox_device;
+    GtkWidget *hbox_location, *hbox_device, *hbox_type;
     GtkWidget *vbox;
     GtkWidget *scroll;
     GtkSizeGroup *group;
@@ -351,11 +365,17 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     priv->file_time = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);
     priv->file_readonly = gtk_check_button_new();
 
+    hbox_type = gtk_hbox_new (FALSE, HILDON_MARGIN_DEFAULT);
     hbox_location = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
     hbox_device = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-
+    
+    priv->file_image = gtk_image_new ();
     priv->file_location_image = gtk_image_new();
     priv->file_device_image = gtk_image_new();
+
+    gtk_box_pack_start(GTK_BOX(hbox_type), priv->file_image,
+                       FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(hbox_type), priv->file_type, TRUE, TRUE, 0);
 
     gtk_box_pack_start(GTK_BOX(hbox_location), priv->file_location_image,
                        FALSE, TRUE, 0);
@@ -367,8 +387,15 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     /* Create captions for the dialog */
     caption_name = hildon_caption_new(group, _("ckdg_fi_properties_name_prompt"), 
       priv->file_name, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_type = hildon_caption_new(group, _("ckdg_fi_properties_type_prompt"), 
-      priv->file_type, NULL, HILDON_CAPTION_OPTIONAL);
+#if 0
+    caption_type = hildon_caption_new(group,
+				      _("ckdg_fi_properties_type_prompt"), 
+				      priv->file_type, NULL, HILDON_CAPTION_OPTIONAL);
+#else
+    caption_type = hildon_caption_new(group,
+				      _("ckdg_fi_properties_type_prompt"), 
+				      hbox_type, NULL, HILDON_CAPTION_OPTIONAL);
+#endif
     caption_location = hildon_caption_new(group,
                                _("sfil_fi_properties_location_prompt"), 
                                hbox_location, NULL, HILDON_CAPTION_OPTIONAL);
@@ -529,6 +556,14 @@ hildon_file_details_dialog_set_property(GObject *object, guint param_id,
                                g_value_get_boolean(value));
       break;
     }
+    case PROP_SHOW_TYPE_ICON:
+    {
+      if (g_value_get_boolean(value))
+	gtk_widget_show (priv->file_image);
+      else
+	gtk_widget_hide (priv->file_image);
+      break;
+    }
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, param_id, pspec);
       break;
@@ -557,6 +592,9 @@ hildon_file_details_dialog_get_property( GObject *object, guint param_id,
       break;
     case PROP_MODEL:
       g_value_set_object(value, priv->model);
+      break;
+    case PROP_SHOW_TYPE_ICON:
+      g_value_set_boolean (value, GTK_WIDGET_VISIBLE (priv->file_image));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID(object, param_id, pspec);
@@ -735,6 +773,21 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   strftime(buffer, sizeof(buffer), fmt, time_struct);
   g_object_set(self->priv->file_date, "label", buffer, NULL);
 
+  {
+    GdkPixbuf *icon;
+
+    gtk_tree_model_get
+      (model, iter,
+       HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON, &icon,
+       -1);
+    if (icon)
+      {
+	gtk_image_set_from_pixbuf (GTK_IMAGE (self->priv->file_image),
+				   icon);
+	g_object_unref (icon);
+      }
+  }
+      
   /* Parent information */
   if (gtk_tree_model_iter_parent(model, &parent_iter, iter))
   {
