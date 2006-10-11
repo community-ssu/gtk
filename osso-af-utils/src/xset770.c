@@ -65,28 +65,41 @@ get_feedback_id (XDevice *device)
 
 /*
  * set_keyrepeat
- *
  */
 static void
 set_keyrepeat (int id, int key, int val)
 {
-  XKbdFeedbackControl *values = (XKbdFeedbackControl *)calloc (sizeof (XKbdFeedbackControl), 1);
-  XDevice *device = XOpenDevice (dpy, id);
+  XKbdFeedbackControl *evalues;
+  XKeyboardControl cvalues;
+  XDevice *device;
+  int feedback_id;
 
-  if (!values || !device)
-    return;
+  if (device > 0) {
+    device = XOpenDevice(dpy, id);
+    evalues = (XKbdFeedbackControl *)calloc(sizeof(XKbdFeedbackControl), 1);
+    if (!device)
+      return;
 
-  values->id = get_feedback_id (device);
-  if (values->id < 0)
-    return;
+    feedback_id = get_feedback_id (device);
+    if (feedback_id < 0)
+      return;
 
-  values->key = key;
-  values->auto_repeat_mode = val;
-  values->class = KbdFeedbackClass;
+    evalues->id = feedback_id;
+    evalues->key = key;
+    evalues->auto_repeat_mode = val;
+    evalues->class = KbdFeedbackClass;
 
-  XChangeFeedbackControl (dpy, device,
-                          DvKey | DvAutoRepeatMode,
-			  (XFeedbackControl *) values);
+    XChangeFeedbackControl (dpy, device,
+                            DvKey | DvAutoRepeatMode,
+                            (XFeedbackControl *) evalues);
+    free(evalues);
+  }
+  else {
+    cvalues.key = key;
+    cvalues.auto_repeat_mode = val;
+    XChangeKeyboardControl (dpy, KBKey | KBAutoRepeatMode,
+                            &cvalues);
+  }
 }
 
 
@@ -159,7 +172,7 @@ int main (int argc, char*argv[])
         for (i = 0; i < n_devices; i++)
         {
           if (devices[i].use == IsXExtensionKeyboard)
-            set_keyrepeat (devices[i].id, key, val);
+            set_keyrepeat (-1, key, val);
         }
       }
 

@@ -1,3 +1,10 @@
+osso-af-utils (1.9-2) unstable; urgency=low
+
+  * new set_keyrepeat function, Fixes NB#38855
+  * unreleased
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 11 Oct 2006 12:43:47 +0300
+
 osso-af-utils (1.9-1) unstable; urgency=low
 
   * Shortened the fb-progress bar. Fixes: NB#35395
