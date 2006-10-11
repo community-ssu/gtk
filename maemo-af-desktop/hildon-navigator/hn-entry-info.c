@@ -251,6 +251,38 @@ hn_entry_info_get_n_children (HNEntryInfo *entry_info)
 }
 
 const gchar *
+hn_entry_info_peek_app_name (HNEntryInfo *entry_info)
+{
+  RealEntryInfo *real;
+  const gchar *retval;
+  
+  g_return_val_if_fail (entry_info != NULL, NULL);
+
+  real = REAL_ENTRY_INFO (entry_info);
+  switch (real->type)
+    {
+    case HN_ENTRY_WATCHED_APP:
+      retval = hn_wm_watchable_app_get_name (real->d.app);
+      break;
+    case HN_ENTRY_WATCHED_WINDOW:
+      retval = hn_wm_watched_window_get_name (real->d.window);
+      break;
+    case HN_ENTRY_WATCHED_VIEW:
+      retval = hn_wm_watched_window_view_get_name (real->d.view);
+      break;
+    case HN_ENTRY_DESKTOP:
+      retval = _("tana_fi_home");
+      break;
+    case HN_ENTRY_INVALID:
+    default:
+      g_assert_not_reached ();
+      retval = NULL;
+      break;
+    }
+ 
+  return retval;
+}
+const gchar *
 hn_entry_info_peek_title (HNEntryInfo *entry_info)
 {
   RealEntryInfo *real;

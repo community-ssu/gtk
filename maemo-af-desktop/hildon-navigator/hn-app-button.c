@@ -801,7 +801,7 @@ hn_app_button_press_event (GtkWidget      *widget,
     priv->tooltip = hn_app_tooltip_new (GTK_WIDGET (app_button));
 
   hn_app_tooltip_set_text (HN_APP_TOOLTIP(app_button->priv->tooltip),
-                           hn_entry_info_peek_title (info));
+                           hn_entry_info_peek_app_name (info));
 
   hn_app_tooltip_install_timer (HN_APP_TOOLTIP(app_button->priv->tooltip),
                                 NULL,
