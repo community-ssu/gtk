@@ -23,4 +23,5 @@ AC_SUBST(GTK_VERSION)
 
 AC_OUTPUT([Makefile
            maemo-theme-tools.pc
-	   cache-generator/Makefile])
+	   cache-generator/Makefile
+           template-tools/Makefile])

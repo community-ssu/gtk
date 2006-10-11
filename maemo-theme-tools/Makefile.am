@@ -1,4 +1,4 @@
-SUBDIRS = cache-generator
+SUBDIRS = cache-generator template-tools
 
 dist_bin_SCRIPTS = maemo-theme-install
 
@@ -12,3 +12,12 @@ deb: dist
 	cd debian-build && \
 	tar zxvf ../$(PACKAGE)-$(VERSION).tar.gz && \
 	cd $(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
+
+
+MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure \
+			  config.h.in compile \
+			  ltmain.sh depcomp missing \
+			  install-sh config.sub \
+			  config.guess intltool-extract.in \
+			  intltool-merge.in intltool-update.in  \
+			  mkinstalldirs build-stamp configure-stamp

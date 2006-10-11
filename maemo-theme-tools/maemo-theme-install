@@ -124,7 +124,7 @@ sub cut_images
 
 sub add_color_substitutions
 {
-    # XXX - hardcoded for now.
+    # Get some default values in
 
     $substitutions{qw{@DefaultTextColor@}}        = "#303030";
     $substitutions{qw{@EmpTextColor@}}            = "#003F93";
@@ -188,8 +188,9 @@ sub add_color_substitutions
 
     $substitutions{qw{@MenuInfoTextColor@}}       = "#303030";
 
-    # XXX - 7 digits?
     $substitutions{qw{@LowLightColor@}}           = "#d4e6fd80";
+
+    # XXX Override with real colors
 }
 
 cut_images;
