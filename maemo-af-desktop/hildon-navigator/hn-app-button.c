@@ -931,7 +931,9 @@ hn_app_button_set_group (HNAppButton *app_button,
 			 GSList      *group)
 {
   g_return_if_fail (HN_IS_APP_BUTTON (app_button));
-  g_return_if_fail (!g_slist_find (group, app_button));
+
+  if (g_slist_find (group, app_button))
+    return;
 
   HN_DBG ("setting group for the button");
 

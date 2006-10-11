@@ -1,3 +1,8 @@
+2006-10-11  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-button.c: Removed a Critical warning
+	  Fixes: NB#39078
+
 2006-10-11  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
