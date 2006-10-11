@@ -1,3 +1,30 @@
+2006-10-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Added "show-type-icon" property.  (N42979)
+
+	* hildon-fm/hildon-file-details-dialog.c (PROP_SHOW_TYPE_ICON):
+	New.
+	(hildon_file_details_dialog_class_init): Install it and default to
+	FALSE.
+	(hildon_file_details_dialog_set_property): Show/hide file_image
+	widget as appropriate for it.
+	(hildon_file_details_dialog_get_property): Return its current
+	value.
+	(hildon_file_details_dialog_init): Use a hbox for the type field
+	and put the newly created file_image widget into it in addition to
+	the label.
+	(hildon_file_details_dialog_set_file_iter): Get the icon of the
+	iter and put it into the file_image widget.
+
+2006-10-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Return the collapsed icon
+	instead of the normal icon for special locations that require
+	access but have not yet been accessed. (N33895)
+	(handle_possibly_finished_node): Call gtk_tree_model_row_changed
+	when the node is now completely loaded. (N38533)
+
 2006-10-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.13.
