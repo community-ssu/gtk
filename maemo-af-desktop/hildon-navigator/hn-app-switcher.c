@@ -824,8 +824,6 @@ main_menu_pop (HNAppSwitcher *app_switcher,
 {
   HNAppSwitcherPrivate *priv;
   gboolean was_blinking;
-  GtkRequisition req;
-  gint width;
 
   g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
   g_return_if_fail (GTK_IS_WIDGET (toggle));
@@ -866,15 +864,6 @@ main_menu_pop (HNAppSwitcher *app_switcher,
     }
   
   main_menu_build (app_switcher);
-
-  /* force the menu size */
-  width = MIN (priv->main_menu->allocation.width,
-	       AS_MENU_ITEM_WIDTH);
-  gtk_widget_set_size_request (priv->main_menu, -1, -1);
-  gtk_widget_size_request (priv->main_menu, &req);
-  gtk_widget_set_size_request (priv->main_menu,
-		               MAX (width, req.width),
-			       -1);
 
   gtk_menu_popup (GTK_MENU (priv->main_menu), NULL, NULL,
                   main_menu_position_func, app_switcher,

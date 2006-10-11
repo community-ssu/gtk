@@ -1,5 +1,13 @@
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-menuitem.c: Apply ellipsis to
+	  thumb label as well
+	* hildon-navigator/hn-app-switcher.c: Removed forced size
+      on the menu
+	Fixes: NB#42554
+
+2006-10-11  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-entry.[ch]: Added _peek_app_name
 	* hildon-navigator/hn-app-tooltip.c: Use the app name as the
 	  tooltip text, instead of the window title. Fixes: NB#32757

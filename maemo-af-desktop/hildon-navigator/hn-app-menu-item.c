@@ -118,6 +118,7 @@ struct _HNAppMenuItemPrivate
 {
   GtkWidget *icon;
   GtkWidget *label;
+  GtkWidget *label2;
   GtkWidget *close;
 
   GtkIconTheme *icon_theme;
@@ -245,7 +246,6 @@ hn_app_menu_item_constructor (GType                  type,
   HNAppMenuItem *menuitem;
   HNAppMenuItemPrivate *priv;
   GtkWidget *hbox, *vbox = NULL;
-  GtkWidget *label2 = NULL;
   
   gobject = G_OBJECT_CLASS (hn_app_menu_item_parent_class)->constructor (type,
 		  							 n_construct_params,
@@ -273,12 +273,12 @@ hn_app_menu_item_constructor (GType                  type,
       gtk_box_pack_start (GTK_BOX (hbox), vbox, TRUE, TRUE, 0);
       gtk_widget_show (vbox);
       
-      label2 = gtk_label_new (NULL);
-      gtk_widget_set_composite_name (GTK_WIDGET (label2),
+      priv->label2 = gtk_label_new (NULL);
+      gtk_widget_set_composite_name (GTK_WIDGET (priv->label2),
                                      "as-app-menu-label-desc");
-      gtk_misc_set_alignment (GTK_MISC (label2), 0.0, 0.5);
-      gtk_box_pack_end (GTK_BOX (vbox), label2, TRUE, TRUE, 0);
-      gtk_widget_show (label2);
+      gtk_misc_set_alignment (GTK_MISC (priv->label2), 0.0, 0.5);
+      gtk_box_pack_end (GTK_BOX (vbox), priv->label2, TRUE, TRUE, 0);
+      gtk_widget_show (priv->label2);
     }
 
   priv->label = gtk_label_new (NULL);
@@ -398,7 +398,7 @@ hn_app_menu_item_constructor (GType                  type,
 	  g_debug ("app_name: %s, win_name: %s", app_name, win_name);
 
 	  if (win_name)
-            gtk_label_set_text (GTK_LABEL (label2), win_name);
+            gtk_label_set_text (GTK_LABEL (priv->label2), win_name);
 	  
 	  gtk_label_set_text (GTK_LABEL (priv->label), app_name);
 
@@ -441,7 +441,7 @@ hn_app_menu_item_size_request (GtkWidget      *widget,
 			       GtkRequisition *requisition)
 {
   HNAppMenuItemPrivate *priv = HN_APP_MENU_ITEM (widget)->priv;
-  GtkRequisition child_req;
+  GtkRequisition child_req, child_req2 = {0};
   gint child_width, child_height;
 
   /* if the width of icon + label (+ close) is too big,
@@ -451,9 +451,11 @@ hn_app_menu_item_size_request (GtkWidget      *widget,
   gtk_widget_size_request (priv->icon, &child_req);
   child_width = child_req.width;
   child_height = child_req.height;  
-  
-  gtk_widget_size_request (priv->label, &child_req);    
-  child_width += child_req.width;
+      
+  gtk_widget_size_request (priv->label,  &child_req);    
+  if (priv->thumbable)
+    gtk_widget_size_request (priv->label2, &child_req2);    
+  child_width += MAX (child_req.width, child_req2.width);
 
   if (priv->show_close)
     {
@@ -470,6 +472,8 @@ hn_app_menu_item_size_request (GtkWidget      *widget,
       requisition->width = AS_MENU_ITEM_WIDTH;
 
       gtk_label_set_ellipsize (GTK_LABEL (priv->label), PANGO_ELLIPSIZE_END);
+      if (priv->thumbable)
+        gtk_label_set_ellipsize (GTK_LABEL (priv->label2), PANGO_ELLIPSIZE_END);
     }
   else
     requisition->width = MAX (requisition->width, child_width);
