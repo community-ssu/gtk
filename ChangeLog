@@ -1,3 +1,8 @@
+2006-10-11  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtklabel.c (get_layout_location): 
+	Don't use the wrap width for the label width unconditionally. NB#42621
+
 2006-10-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_timeout,

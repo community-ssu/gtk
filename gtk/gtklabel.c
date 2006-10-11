@@ -2327,15 +2327,16 @@ get_layout_location (GtkLabel  *label,
       int width;
 
       width = pango_layout_get_width (label->layout);
-      if (width == -1)
+
+      if (width == -1 || req_width < PANGO_PIXELS (width))
 	pango_layout_get_pixel_size (label->layout, &req_width, NULL);
       else
 	req_width = PANGO_PIXELS (width);
     }
 
   x = floor (widget->allocation.x + (gint)misc->xpad +
-	      xalign * (widget->allocation.width - req_width)
-	      + 0.5);
+	     xalign * (widget->allocation.width - req_width)
+	     + 0.5);
 
   if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
     x = MAX (x, widget->allocation.x + misc->xpad);
