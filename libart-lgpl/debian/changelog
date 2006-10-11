@@ -1,3 +1,9 @@
+libart-lgpl (2.3.17-1osso3) unstable; urgency=low
+
+  * Fixes: NB#40238: doesn't provide debug symbols package for debugging
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 11 Oct 2006 13:24:05 +0300
+
 libart-lgpl (2.3.17-1osso2) unstable; urgency=low
 
   * Bugfix (removing .la from -dev package)
