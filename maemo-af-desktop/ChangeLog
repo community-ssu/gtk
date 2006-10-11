@@ -1,3 +1,9 @@
+2006-10-11  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c:
+	- Grab the pointer when extension panel is really mapped so
+          it can behave properly. Fixes: NB#42620
+
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/home-applet-handler.c: Fixed access to a freed

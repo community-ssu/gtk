@@ -28,6 +28,7 @@
 #endif
  
 /* Hildon includes */
+#include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
 
@@ -260,13 +261,13 @@ force_close_popup_cb (GtkWidget *widget, GdkEventKey *event, gpointer data)
   StatusBar *sb_panel = (StatusBar *)data;
 
   KeyCode keycode = 0;
-  KeySym  keysym = GDK_F6;
   
-  if (event->keyval == GDK_F6)
+  if (event->keyval == HILDON_HARDKEY_FULLSCREEN || 
+      event->keyval == HILDON_HARDKEY_MENU)
   {
     close_popup_window( sb_panel );
 
-    if ((keycode = XKeysymToKeycode (GDK_DISPLAY(), keysym)) != 0)
+    if ((keycode = XKeysymToKeycode (GDK_DISPLAY(), event->keyval)) != 0)
     {
       XTestFakeKeyEvent (GDK_DISPLAY(), keycode, TRUE, CurrentTime);
       XTestFakeKeyEvent (GDK_DISPLAY(), keycode, FALSE, CurrentTime);
@@ -275,6 +276,28 @@ force_close_popup_cb (GtkWidget *widget, GdkEventKey *event, gpointer data)
 
   return TRUE;
 }
+
+static gboolean 
+_sb_grab_pointer_cb (GtkWidget *window, GdkEventExpose *event, StatusBar *sb_panel)
+{
+  (void)event;
+
+  if ( ( gdk_pointer_grab (window->window, TRUE, 
+			   GDK_BUTTON_PRESS_MASK |
+	 	           GDK_BUTTON_RELEASE_MASK |
+			   GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK |
+			   GDK_POINTER_MOTION_MASK,
+			   NULL, NULL,
+			   GDK_CURRENT_TIME ) == GDK_GRAB_SUCCESS ) )
+  {
+     return TRUE;
+  }
+  
+  close_popup_window (sb_panel);
+
+  return TRUE;
+}
+
 
 static 
 void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
@@ -297,7 +320,7 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 	gtk_widget_set_name(sb_panel->popup, "HildonStatusBarExtension");
 	
 	gtk_window_set_type_hint( GTK_WINDOW( sb_panel->popup ),
- 				  GDK_WINDOW_TYPE_HINT_DIALOG );
+ 				  GDK_WINDOW_TYPE_HINT_MENU );
 	gtk_window_set_decorated( GTK_WINDOW( sb_panel->popup ), FALSE);
 
 	/* Add popup fixed into window */
@@ -376,20 +399,21 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 			      &sb_x, &sb_y);
 	gtk_window_move(GTK_WINDOW(sb_panel->popup), sb_x, 
 			sb_height + sb_y + HSB_MARGIN_DEFAULT);
+
+	gtk_widget_realize (sb_panel->popup);
+
+	gdk_window_set_transient_for( sb_panel->popup->window,
+  		                      gdk_screen_get_active_window( gtk_widget_get_screen(GTK_WIDGET (sb_panel->arrow_button))));
+	
 	gtk_widget_show_all(sb_panel->popup);
 	
-	/* Set button-release listener */	
-	if ( gdk_pointer_grab(sb_panel->popup->window, TRUE,  
-			      GDK_BUTTON_RELEASE_MASK | 
-			      GDK_LEAVE_NOTIFY_MASK | 
-			      GDK_POINTER_MOTION_MASK, 
-			      NULL, NULL, GDK_CURRENT_TIME) 
-			!= GDK_GRAB_SUCCESS ) { 
-            ULOG_WARN("Could not grab pointer for StatusBar "
-		      "extension window.");
-	} 
+	/* Set button-release listener */
 	
-	gtk_grab_add( sb_panel->popup );	
+	g_signal_connect_after (G_OBJECT (sb_panel->popup), 
+				"map-event", 
+				G_CALLBACK (_sb_grab_pointer_cb), 
+				(gpointer)sb_panel);
+	
 	g_signal_connect(G_OBJECT(sb_panel->popup), "button-release-event", 
 		         G_CALLBACK(popup_window_event_cb), sb_panel);
 
@@ -397,6 +421,8 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 			  "key-press-event",
 			  G_CALLBACK(force_close_popup_cb),
 			  (gpointer)sb_panel);
+
+	gtk_grab_add (sb_panel->popup);
 
     } /* ..if arrow button toggled */ 
  
@@ -685,7 +711,7 @@ gboolean add_configured_plugins( StatusBar *panel )
 
     for (iter = l; iter ; iter = iter->next) {
         StatusBarPlugin *plugin = (StatusBarPlugin *)iter->data;
-	g_debug ("%p %p",plugin,plugin_path);
+	
 	plugin_path = NULL;
 	
         if ( plugin ) { 
