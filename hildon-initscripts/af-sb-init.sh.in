@@ -179,11 +179,10 @@ if [ "$START" = "TRUE" ]; then
   fi
 
   # Create some files to play with
-  if [ ! -d $MYDOCSDIR ]; then
-    # normally osso-af-startup creates these...
-    mkdir -p $MYDOCSDIR/.games $MYDOCSDIR/.videos $MYDOCSDIR/.documents
-    mkdir -p $MYDOCSDIR/.images $MYDOCSDIR/.sounds
-  fi
+
+  # normally osso-af-startup creates these...
+  mkdir -p $MYDOCSDIR/.games $MYDOCSDIR/.videos $MYDOCSDIR/.documents
+  mkdir -p $MYDOCSDIR/.images $MYDOCSDIR/.sounds
   if [ -e $MYDOCSDIR/foo.txt ]; then
     echo "Sample files present."
   else
