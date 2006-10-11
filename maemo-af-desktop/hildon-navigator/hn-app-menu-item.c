@@ -349,7 +349,7 @@ hn_app_menu_item_constructor (GType                  type,
 	  if (hn_entry_info_is_hibernating (priv->info))
             {
               compose = gtk_icon_theme_load_icon (priv->icon_theme,
-			      			  "ggn_indi_bkilled",
+			      			  "qgn_indi_bkilled",
 						  16,
 						  0,
 						  NULL);
