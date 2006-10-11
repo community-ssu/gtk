@@ -1,10 +1,9 @@
 hildon-initscripts (1.7-1) unstable; urgency=low
 
-  * UNRELEASED
   * Now creating the .games folder to (new) correct place in af-sb-init.sh.
     Fixes: NB#42526
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 11 Oct 2006 12:23:30 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 11 Oct 2006 12:45:10 +0300
 
 hildon-initscripts (1.6-1) unstable; urgency=low
 
