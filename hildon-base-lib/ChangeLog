@@ -1,7 +1,12 @@
 2006-10-11  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* configure.ac: release 0.11.1.
+
+2006-10-11  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* debian/control: Adding the debug package, removing the test package
-	-- it's empty anyways!. Removing the outo dependencies. 
+	-- it's empty anyways!. Removing the outo dependencies. Fixes
+	#NB40237. 
 
 	* debian/hildon-base-lib-dev.install: Removing the *.la files.
 

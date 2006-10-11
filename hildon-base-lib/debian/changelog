@@ -1,3 +1,12 @@
+hildon-base-lib (0.11.1-1) unstable; urgency=low
+
+  * Fixes: NB#40237 - hildon-base-lib package doesn't provide debug symbols package for debugging
+
+  * Removing the outo from debian dependencies, it's not being used anyways
+  * Removing the -test package, it's empty anyways.
+  
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 11 Oct 2006 13:00:00 +0300
+
 hildon-base-lib (0.11.0-1) unstable; urgency=low
 
   * Updated header texts on all files
