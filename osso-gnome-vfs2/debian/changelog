@@ -1,6 +1,7 @@
 osso-gnome-vfs2 (2.12.0.16-2osso1) unstable; urgency=low
 
   * FIXME: UNRELEASED
+  * Fixes: NB#40651, gnome-vfs2 2.12.0.12-1: License issues
   * Remove unused sftp module
   * Update two files from upstream that changed from GPL to LGPL
   * Add 19-disable-iso9660.patch that removes one more GPLed file
