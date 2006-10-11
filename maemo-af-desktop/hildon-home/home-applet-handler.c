@@ -421,7 +421,8 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     
     if (!priv->dlhandle)
     {   
-        g_warning ("Unable to open Home Applet %s\n", librarypath);
+        g_warning ("Unable to open Home Applet %s: %s\n", desktoppath,
+                  dlerror ());
         g_free (libraryfile);
         g_object_unref (handler);
 

@@ -1,9 +1,14 @@
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-applet-handler.c: Fixed access to a freed
+	  pointer in a warning message
+
+2006-10-11  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-menuitem.c: Apply ellipsis to
 	  thumb label as well
 	* hildon-navigator/hn-app-switcher.c: Removed forced size
-      on the menu
+	  on the menu
 	Fixes: NB#42554
 
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
@@ -15,7 +20,7 @@
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-menu-item.c: fixed bg-killed icon name
-      Fixes: NB#42906
+	  Fixes: NB#42906
 
 2006-10-10  Johan Bilien <johan.bilien@nokia.com>
 
@@ -41,7 +46,7 @@
 2006-10-10  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar.c:
-      - replaced gtk_info* with hildon_banner_*
+	  - replaced gtk_info* with hildon_banner_*
 	  - removed global _onscreen variable, no longer needed.
 	Fixes: NB#42256
 
