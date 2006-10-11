@@ -178,6 +178,9 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     GNode *node);
 static void setup_node_for_location(GNode *node);
 
+static GtkTreePath *hildon_file_system_model_get_path(GtkTreeModel * model,
+                                                      GtkTreeIter * iter);
+
 #define CAST_GET_PRIVATE(o) \
     ((HildonFileSystemModelPrivate *) HILDON_FILE_SYSTEM_MODEL(o)->priv)
 #define MODEL_FROM_NODE(n) ((HildonFileSystemModelNode *) n->data)->model
@@ -193,28 +196,39 @@ G_DEFINE_TYPE_EXTENDED(HildonFileSystemModel, hildon_file_system_model,
 
 static void handle_possibly_finished_node(GNode *node)
 {
-    GtkTreeIter iter;
-    HildonFileSystemModel *model = MODEL_FROM_NODE(node);
+  GtkTreeIter iter;
+  HildonFileSystemModel *model = MODEL_FROM_NODE(node);
 
-    if (is_node_loaded(model->priv, node))
-  	{
-    	  GNode *child_node = g_node_first_child(node);
+  if (is_node_loaded(model->priv, node))
+    {
+      GNode *child_node = g_node_first_child(node);
+      
+      while (child_node)
+	{
+	  HildonFileSystemModelNode *model_node = child_node->data;
   	 
-    	  while (child_node) {
-    	     HildonFileSystemModelNode *model_node = child_node->data;
-  	 
-           /* We do not want to ever kick off devices by accident */ 
-    	     if (model_node->present_flag || (model_node->location &&
-                !hildon_file_system_special_location_failed_access(model_node->location)))
-    	         child_node = g_node_next_sibling(child_node);
-    	     else
-    	        child_node = hildon_file_system_model_kick_node(child_node, model);
-    	  }
+	  /* We do not want to ever kick off devices by accident */ 
+
+	  if (model_node->present_flag
+	      || (model_node->location
+		  && (!hildon_file_system_special_location_failed_access
+		      (model_node->location))))
+	    child_node = g_node_next_sibling(child_node);
+	  else
+	    child_node = hildon_file_system_model_kick_node(child_node, model);
+	}
 
       iter.stamp = model->priv->stamp;
       iter.user_data = node;
       g_signal_emit(model, signal_finished_loading, 0, &iter);
-  	}
+
+      {
+	GtkTreePath *path =
+	  hildon_file_system_model_get_path (GTK_TREE_MODEL (model), &iter);
+	gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+	gtk_tree_path_free (path);
+      }
+    }
 }
 
 /* This default handler is activated when device tree (mmc/gateway)
@@ -1013,13 +1027,32 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                 HILDON_FILE_SYSTEM_MODEL_FILE));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON:
-        if (!model_node->icon_cache)
-            model_node->icon_cache =
-                hildon_file_system_model_create_image(priv, model_node,
-                                                      TREE_ICON_SIZE);
 
-        g_value_set_object(value, model_node->icon_cache);
-        update_cache_queue(priv, node);
+      /* Special locations get the (+) emblem until they have been
+	 accessed, if that is required.
+      */
+      if (model_node->location == NULL
+	  || model_node->accessed
+	  || (!hildon_file_system_special_location_requires_access 
+	      (model_node->location)))
+	{
+	  if (!model_node->icon_cache)
+            model_node->icon_cache =
+	      hildon_file_system_model_create_image(priv, model_node,
+						    TREE_ICON_SIZE);
+	  
+	  g_value_set_object(value, model_node->icon_cache);
+	  update_cache_queue(priv, node);
+	  break;
+	}
+      /* Fall thru... */
+    case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED:
+        if (!model_node->icon_cache_collapsed)
+            model_node->icon_cache_collapsed =
+                hildon_file_system_model_create_composite_image
+                    (priv, model_node, get_collapsed_emblem(priv));
+
+        g_value_set_object(value, model_node->icon_cache_collapsed);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_EXPANDED:
         if (!model_node->icon_cache_expanded)
@@ -1028,14 +1061,6 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                     (priv, model_node, get_expanded_emblem(priv));
 
         g_value_set_object(value, model_node->icon_cache_expanded);
-        break;
-    case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED:
-        if (!model_node->icon_cache_collapsed)
-            model_node->icon_cache_collapsed =
-                hildon_file_system_model_create_composite_image
-                    (priv, model_node, get_collapsed_emblem(priv));
-
-        g_value_set_object(value, model_node->icon_cache_collapsed);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_THUMBNAIL:
         if (!model_node->thumbnail_cache) {
@@ -1115,6 +1140,26 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         result = FALSE;
       else
         result = gtk_file_info_get_is_hidden(info);
+
+      if (result == TRUE)
+	{
+	  /* When this item is actually hidden, and it is a special
+	     location, we queue it for reload if it hasn't been loaded
+	     at all yet.  Special locations can become visible when
+	     they have children, and we need to scan them to figure
+	     this out.
+	  */
+
+	  if (model_node->location
+	      && model_node->load_time == 0
+	      && (!hildon_file_system_special_location_requires_access
+		  (model_node->location)))
+	    {
+	      fprintf (stderr, "SCANNING FOR VISIBILITY\n");
+	      _hildon_file_system_model_queue_reload
+		(HILDON_FILE_SYSTEM_MODEL(model), iter, FALSE);
+	    }
+	}
 
       g_value_set_boolean(value, result);
       break;
