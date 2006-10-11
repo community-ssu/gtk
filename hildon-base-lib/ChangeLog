@@ -1,7 +1,16 @@
+2006-10-11  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* debian/control: Adding the debug package, removing the test package
+	-- it's empty anyways!. Removing the outo dependencies. 
+
+	* debian/hildon-base-lib-dev.install: Removing the *.la files.
+
+	* debian/rules: Strip debug symbols to debug package.
+
 2006-09-25  Karoliina Salminen <karoliina.t.salminen@nokia.com>
 
-    * configure.ac: released 0.11.0
-    * Updated header texts
+	* configure.ac: released 0.11.0
+	* Updated header texts
 
 2006-09-04  Moises Martinez <moises.martinzes@nokia.com>
 

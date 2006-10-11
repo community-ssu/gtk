@@ -1,4 +1,3 @@
-usr/lib/libhildonbase.la
 usr/lib/libhildonbase.so
 usr/include/hildon-base-lib/
 usr/lib/pkgconfig/hildon-base-lib.pc
