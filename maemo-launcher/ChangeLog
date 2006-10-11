@@ -1,5 +1,9 @@
 2006-10-10  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac: Version 0.19.
+
+2006-10-10  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/Makefile.am (maemo_booster_null_so_CFLAGS): New variable.
 	(maemo_booster_gtk_so_CFLAGS): Likewise.
 
