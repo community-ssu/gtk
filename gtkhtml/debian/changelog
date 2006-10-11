@@ -1,3 +1,9 @@
+gtkhtml (3.9.1-2osso7) unstable; urgency=low
+
+  * Fixes: NB#23889: adding const and static keywords
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 10 Oct 2006 15:13:49 +0300
+
 gtkhtml (3.9.1-2osso6) unstable; urgency=low
 
   * Fixes: NB#41532

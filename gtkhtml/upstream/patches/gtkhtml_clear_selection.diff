@@ -1,7 +1,7 @@
 # Patch for clearing selection so that we don't have poinetrs to freed memory
 #
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the same license as the gtkhtml package
+# This file is distributed under the terms of GNU LGPL license version 2.1
 #
 diff -Nru gtkhtml-3.9.1/src/htmlengine.c gtkhtml-3.9.1-fixed/src/htmlengine.c
 --- gtkhtml-3.9.1/src/htmlengine.c	2006-06-19 13:21:11.216380909 +0300

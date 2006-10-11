@@ -2,7 +2,7 @@
 # it could cause crashes
 #
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the same license as the gtkhtml package
+# This file is distributed under the terms of GNU LGPL license version 2.1
 #
 --- gtkhtml-3.9.1/src/htmlengine.c~	2006-08-23 10:46:46.450790827 +0300
 +++ gtkhtml-3.9.1/src/htmlengine.c	2006-08-23 10:47:10.760372776 +0300

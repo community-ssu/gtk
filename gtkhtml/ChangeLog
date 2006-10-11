@@ -1,3 +1,18 @@
+2006-10-11  Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 3.9.1-2osso7
+	* the const patch:
+	* src/htmlengine.c:  static HTMLDispatchEntry basic_table[];
+	* src/htmltokenizer.c: static const gunichar win1252_to_unicode [32]
+	* src/htmltokenizer.c: picto_chars,picto_states,picto_images declared
+	const
+	* src/gtkhtml.c: static const GtkTargetEntry dnd_link_sources []
+	* src/gtkhtml.c: color tables declared as const
+	* src/gtkhtml-properties.c: static const GEnumValue
+	_gtk_html_cursor_skip_values[]
+	* src/gtkhtml-properties.c: static const GEnumValue _gtk_html_command_values[]
+
+
 2006-09-27 Tomas Junnonen <tomas.junnonen@nokia.com>
 
 	* src/gtkhtml.c: Free the immulticontext

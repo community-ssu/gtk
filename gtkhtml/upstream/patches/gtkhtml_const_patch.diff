@@ -1,0 +1,123 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the terms of GNU LGPL license version 2.1
+#
+--- gtkhtml-3.9.1/src/htmlengine.c	2006-03-08 14:16:06.000000000 +0200
++++ gtkhtml-3.9.1-const/src/htmlengine.c	2006-03-08 17:18:31.000000000 +0200
+@@ -3618,7 +3618,7 @@
+ 	HTMLParseFunc func;
+ } HTMLDispatchEntry;
+ 
+-HTMLDispatchEntry basic_table[] = {
++static HTMLDispatchEntry basic_table[] = {
+ 	{ID_A,                element_parse_a},
+ 	{"area",              element_parse_area},
+ 	{ID_ADDRESS,          element_parse_address},
+--- gtkhtml-3.9.1/src/htmltokenizer.c	2006-03-08 14:23:38.000000000 +0200
++++ gtkhtml-3.9.1-const/src/htmltokenizer.c	2006-03-08 17:05:42.000000000 +0200
+-static gunichar win1252_to_unicode [32] = {
++static const gunichar win1252_to_unicode [32] = {
+ 	0x20ac,
+ 	0x81,
+ 	0x201a,
+--- gtkhtml-3.9.1/src/htmlengine-edit-cut-and-paste.c	2006-03-08 14:21:27.000000000 +0200
++++ gtkhtml-3.9.1-const/src/htmlengine-edit-cut-and-paste.c	2006-03-08 17:05:42.000000000 +0200
+@@ -1224,9 +1224,9 @@
+ 	html_engine_thaw (e);
+ }
+ 
+-static char *picto_chars = "DO)(|/PQ\0:-\0:\0:-\0:\0:;=-\0:;\0:-~\0:\0:\0:-\0:\0:-\0:\0:-\0:\0:-\0:\0";
+-static gint picto_states [] = { 9, 14, 19, 27, 35, 40, 45, 50, 0, -1, 12, 0, -1, 0, -2, 17, 0, -2, 0, -3, -4, -5, 24, 0, -3, -4, 0, -6, 31, 33, 0, -6, 0, -11, 0, -8, 38, 0, -8, 0, -9, 43, 0, -9, 0, -10, 48, 0, -10, 0, -12, 53, 0, -12, 0};
+-static gchar *picto_images [] = {
++static const char *picto_chars = "DO)(|/PQ\0:-\0:\0:-\0:\0:;=-\0:;\0:-~\0:\0:\0:-\0:\0:-\0:\0:-\0:\0:-\0:\0";
++static const gint picto_states [] = { 9, 14, 19, 27, 35, 40, 45, 50, 0, -1, 12, 0, -1, 0, -2, 17, 0, -2, 0, -3, -4, -5, 24, 0, -3, -4, 0, -6, 31, 33, 0, -6, 0, -11, 0, -8, 38, 0, -8, 0, -9, 43, 0, -9, 0, -10, 48, 0, -10, 0, -12, 53, 0, -12, 0};
++static const gchar picto_images [][14] = {
+ 	"smiley-1.png",
+ 	"smiley-2.png",
+ 	"smiley-3.png",
+--- gtkhtml-3.9.1/src/gtkhtml.c	2006-03-08 14:25:40.000000000 +0200
++++ gtkhtml-3.9.1-const/src/gtkhtml.c	2006-03-08 17:05:42.000000000 +0200
+@@ -92,7 +92,7 @@
+ 	DND_TARGET_TYPE_STRING,
+ };
+ 
+-static GtkTargetEntry dnd_link_sources [] = {
++static const GtkTargetEntry dnd_link_sources [] = {
+ 	{ "message/rfc822", 0, DND_TARGET_TYPE_MESSAGE_RFC822 },
+ 	{ "x-uid-list", 0, DND_TARGET_TYPE_X_UID_LIST },
+ 	{ "text/uri-list", 0, DND_TARGET_TYPE_TEXT_URI_LIST },
+--- gtkhtml-3.9.1/src/htmlengine-edit-cursor.c	2006-03-08 14:28:46.000000000 +0200
++++ gtkhtml-3.9.1-const/src/htmlengine-edit-cursor.c	2006-03-08 17:05:42.000000000 +0200
+@@ -35,18 +35,18 @@
+ 
+ #define BLINK_TIMEOUT 500
+ 
+-static GdkColor table_stipple_active_on      = { 0, 0,      0,      0xffff };
+-static GdkColor table_stipple_active_off     = { 0, 0xffff, 0xffff, 0xffff };
+-static GdkColor table_stipple_non_active_on  = { 0, 0xaaaa, 0xaaaa, 0xaaaa };
+-static GdkColor table_stipple_non_active_off = { 0, 0xffff, 0xffff, 0xffff };
+-
+-static GdkColor cell_stipple_active_on      = { 0, 0x7fff, 0x7fff, 0 };
+-static GdkColor cell_stipple_active_off     = { 0, 0xffff, 0xffff, 0xffff };
+-static GdkColor cell_stipple_non_active_on  = { 0, 0x7aaa, 0x7aaa, 0x7aaa };
+-static GdkColor cell_stipple_non_active_off = { 0, 0xffff, 0xffff, 0xffff };
++static const GdkColor table_stipple_active_on      = { 0, 0,      0,      0xffff };
++static const GdkColor table_stipple_active_off     = { 0, 0xffff, 0xffff, 0xffff };
++static const GdkColor table_stipple_non_active_on  = { 0, 0xaaaa, 0xaaaa, 0xaaaa };
++static const GdkColor table_stipple_non_active_off = { 0, 0xffff, 0xffff, 0xffff };
++
++static const GdkColor cell_stipple_active_on      = { 0, 0x7fff, 0x7fff, 0 };
++static const GdkColor cell_stipple_active_off     = { 0, 0xffff, 0xffff, 0xffff };
++static const GdkColor cell_stipple_non_active_on  = { 0, 0x7aaa, 0x7aaa, 0x7aaa };
++static const GdkColor cell_stipple_non_active_off = { 0, 0xffff, 0xffff, 0xffff };
+ 
+-static GdkColor image_stipple_active_on      = { 0, 0xffff, 0,      0 };
+-static GdkColor image_stipple_active_off     = { 0, 0xffff, 0xffff, 0xffff };
++static const GdkColor image_stipple_active_on      = { 0, 0xffff, 0,      0 };
++static const GdkColor image_stipple_active_off     = { 0, 0xffff, 0xffff, 0xffff };
+ 
+ void
+ html_engine_hide_cursor  (HTMLEngine *engine)
+@@ -110,7 +110,7 @@
+ 
+ static void
+ draw_cursor_rectangle (HTMLEngine *e, gint x1, gint y1, gint x2, gint y2,
+-		       GdkColor *on_color, GdkColor *off_color,
++		       const GdkColor *on_color, const GdkColor *off_color,
+ 		       gint offset)
+ {
+ 	GdkGC *gc;
+--- gtkhtml-3.9.1/src/gtkhtml-properties.c	2006-03-08 14:32:52.000000000 +0200
++++ gtkhtml-3.9.1-const/src/gtkhtml-properties.c	2006-03-08 17:05:42.000000000 +0200
+@@ -136,7 +136,7 @@
+ 
+ /* enums */
+ 
+-static GEnumValue _gtk_html_cursor_skip_values[] = {
++static const GEnumValue _gtk_html_cursor_skip_values[] = {
+ 	{ GTK_HTML_CURSOR_SKIP_ONE,  "GTK_HTML_CURSOR_SKIP_ONE",  "one" },
+ 	{ GTK_HTML_CURSOR_SKIP_WORD, "GTK_HTML_CURSOR_SKIP_WORD", "word" },
+ 	{ GTK_HTML_CURSOR_SKIP_PAGE, "GTK_HTML_CURSOR_SKIP_WORD", "page" },
+@@ -155,7 +155,7 @@
+ 	return cursor_skip_type;
+ }
+ 
+-static GEnumValue _gtk_html_command_values[] = {
++static const GEnumValue _gtk_html_command_values[] = {
+ 	{ GTK_HTML_COMMAND_UNDO,  "GTK_HTML_COMMAND_UNDO",  "undo" },
+ 	{ GTK_HTML_COMMAND_REDO,  "GTK_HTML_COMMAND_REDO",  "redo" },
+ 	{ GTK_HTML_COMMAND_COPY,  "GTK_HTML_COMMAND_COPY",  "copy" },
+--- gtkhtml-3.9.1/src/htmlentity.c	2006-03-08 14:34:30.000000000 +0200
++++ gtkhtml-3.9.1-const/src/htmlentity.c	2006-03-08 17:05:42.000000000 +0200
+@@ -36,7 +36,10 @@
+ };
+ typedef struct _EntityEntry EntityEntry;
+ 
+-static EntityEntry entity_table[] = {
++/* FIXME: why not just sort these and use bsearch() instead of creating
++ * an additional glib hash table?
++ */
++static const EntityEntry entity_table[] = {
+ 
+ 	/* Latin1 */
+ 	{ 160,	"nbsp" },
+

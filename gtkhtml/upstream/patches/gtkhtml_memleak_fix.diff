@@ -1,7 +1,7 @@
 # Dependency removal patch
 #
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the same license as the gtkhtml package
+# This file is distributed under the terms of GNU LGPL license version 2.1
 #
 diff -Naur gtkhtml-3.9.1/src/htmlengine.c gtkhtml-3.9.1-memleak-fix/src/htmlengine.c
 --- gtkhtml-3.9.1/src/htmlengine.c	2005-09-11 07:05:25.000000000 +0300

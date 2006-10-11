@@ -3,7 +3,7 @@
 # that
 #
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the same license as the gtkhtml package
+# This file is distributed under the terms of GNU LGPL license version 2.1
 #
 diff -ur gtkhtml-3.9.1.orig/src/gtkhtml.c gtkhtml-3.9.1/src/gtkhtml.c
 --- gtkhtml-3.9.1.orig/src/gtkhtml.c	2006-08-18 10:23:49.351074161 +0300

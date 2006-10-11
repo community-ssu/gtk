@@ -56,6 +56,7 @@ $(SOURCE_DIR)/configure:
 	patch -p0 < upstream/patches/gtkhtml_engine_clear_focus.diff
 	patch -p0 < upstream/patches/gtkhtml_empty_content_search_crash.diff
 	patch -p0 < upstream/patches/gtkhtml_imcontext_leak.diff
+	patch -p0 < upstream/patches/gtkhtml_const_patch.diff
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 
