@@ -1,3 +1,9 @@
+libart-lgpl (2.3.17-1osso4) unstable; urgency=low
+
+  * Looks like libc6 is now an "essential dependency" - removing it.
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu, 12 Oct 2006 09:45:11 +0300
+
 libart-lgpl (2.3.17-1osso3) unstable; urgency=low
 
   * Fixes: NB#40238: doesn't provide debug symbols package for debugging
