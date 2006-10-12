@@ -1,3 +1,7 @@
+2006-10-12  Richard Hult  <richard@imendio.com>
+
+	* Remove ChangeLog.upstream since it was causing confusion.
+
 2006-10-10  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Bump version.
