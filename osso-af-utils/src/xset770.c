@@ -74,7 +74,7 @@ set_keyrepeat (int id, int key, int val)
   XDevice *device;
   int feedback_id;
 
-  if (device > 0) {
+  if (id > 0) {
     device = XOpenDevice(dpy, id);
     evalues = (XKbdFeedbackControl *)calloc(sizeof(XKbdFeedbackControl), 1);
     if (!device)
