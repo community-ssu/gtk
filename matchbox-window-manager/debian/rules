@@ -13,7 +13,7 @@ SOURCE_DIR=./matchbox-window-manager
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
-EXTRA_FLAGS = --enable-alt-input-wins --disable-xrm --enable-xsync --enable-xft
+EXTRA_FLAGS = --enable-alt-input-wins --disable-xrm --enable-xsync
 
 CFLAGS = -Wall -g
 
