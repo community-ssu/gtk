@@ -1,5 +1,11 @@
 2006-10-12  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/close-application-dialog.c:
+	  - Revert to using default icon if not found
+    Fixes: NB#43049
+
+2006-10-12  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-window.[ch]:
 	  - Added "system-inactivity"
 	  - on "system-inactivity", only tell the applets to background

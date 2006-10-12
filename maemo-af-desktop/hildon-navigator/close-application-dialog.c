@@ -52,6 +52,8 @@
 #define HN_CAD_OK               _KE("memr_bd_close_applications_ok")
 #define HN_CAD_CANCEL           _KE("memr_bd_close_applications_cancel")
 
+#define AS_MENU_DEFAULT_APP_ICON "qgn_list_gene_default_app"
+
 /* Hildon headers */
 #include <hildon-widgets/hildon-defines.h>
 
@@ -65,6 +67,7 @@
 /* Include our own header */
 #include "close-application-dialog.h"
 
+#define ICON_SIZE        26
 
 
 
@@ -342,6 +345,8 @@ gboolean tn_close_application_dialog(CADAction action)
       const gchar *icon_name;
       GtkWidget *image;
       GtkWidget *label;
+      GdkPixbuf *icon = NULL;
+      GtkIconTheme *icon_theme;
       HNWMWatchableApp *app;
       CADItem *item = (CADItem *) l->data;
 
@@ -359,19 +364,26 @@ gboolean tn_close_application_dialog(CADAction action)
       
       label = gtk_label_new(_(hn_wm_watchable_app_get_name(app)));
       icon_name = hn_wm_watchable_app_get_icon_name(app);
-      if (g_str_has_prefix(icon_name, "/"))
-        {
-          image = gtk_image_new_from_file(icon_name);
-          gtk_widget_set_size_request(image,
-                                      HILDON_ICON_SIZE_TOOLBAR,
-                                      HILDON_ICON_SIZE_TOOLBAR);
-        }
-      else
-        {
-          image = gtk_image_new_from_icon_name(icon_name,
-                                               HILDON_ICON_SIZE_TOOLBAR);
-        }
+      icon_theme = gtk_icon_theme_get_default ();
+      if (icon_name)
+          icon = gtk_icon_theme_load_icon (icon_theme,
+                                           icon_name,
+                                           ICON_SIZE,
+                                           GTK_ICON_LOOKUP_NO_SVG,
+                                           NULL);
+
+
+      if (!icon)
+          icon = gtk_icon_theme_load_icon (icon_theme,
+                                           AS_MENU_DEFAULT_APP_ICON,
+                                           ICON_SIZE,
+                                           GTK_ICON_LOOKUP_NO_SVG,
+                                           NULL);
       
+
+      image = gtk_image_new_from_pixbuf (icon);
+      if (icon)
+        gdk_pixbuf_unref (icon);
       check = gtk_check_button_new();
       item->button = GTK_TOGGLE_BUTTON(check);
 
