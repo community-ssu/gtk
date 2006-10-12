@@ -81,6 +81,7 @@
 #define MENU_ITEM_SUBMENU_ICON_DIMMED "qgn_list_gene_nonreadable_fldr"
 #define MENU_ITEM_DEFAULT_APP_ICON    "qgn_list_gene_default_app"
 #define MENU_ITEM_ICON_SIZE           26
+#define MENU_ITEM_THUMB_ICON_SIZE     64
 
 #define MENU_ITEM_EMPTY_SUBMENU_STRING _( "tana_li_of_noapps" )
 
@@ -466,7 +467,7 @@ hn_others_menu_get_items (GtkMenu * menu,
 			      GTK_WIDGET(menu_item));
 
 	/* Add the submenu icon */
-	if ( item_icon )
+	if ( item_icon && item_thumb_icon )
 	  {
 	    hildon_thumb_menu_item_set_images(
 				  HILDON_THUMB_MENU_ITEM(menu_item),
@@ -558,7 +559,13 @@ hn_others_menu_get_items (GtkMenu * menu,
 				 MENU_ITEM_ICON_SIZE);
 	  }
 
-	if ( item_icon )
+    if ( !item_thumb_icon )
+	  {
+	    item_thumb_icon = get_icon(MENU_ITEM_DEFAULT_APP_ICON,
+				 MENU_ITEM_THUMB_ICON_SIZE);
+	  }
+
+	if ( item_icon && item_thumb_icon )
 	  {
 	    hildon_thumb_menu_item_set_images(
 				   HILDON_THUMB_MENU_ITEM(menu_item),

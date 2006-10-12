@@ -1,3 +1,10 @@
+2006-10-12  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-others-button.c: Revert to default icon also
+	  for thumb icons
+	* libhildonmenu/libhildonmenu.c: when using same pixbuf for normal and
+	  thumb sizes, we need to increase the refcount. Fixes: NB#40005
+
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-button.c: Removed a Critical warning

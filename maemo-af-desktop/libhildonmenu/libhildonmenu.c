@@ -172,7 +172,6 @@ GdkPixbuf *get_icon_with_fallback(const char *icon_name,
 	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
 
-
 	if (icon_name) {
 		icon_theme = gtk_icon_theme_get_default();
 
@@ -198,6 +197,7 @@ GdkPixbuf *get_icon_with_fallback(const char *icon_name,
 
         if (!found)
         {
+            g_object_ref(fallback);
             return fallback;
         }
     
@@ -678,6 +678,13 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					thumb_icon = get_icon_with_fallback( item->icon,
 					                                     ICON_THUMB_SIZE,
 					                                     app_icon );
+
+                    if ( !thumb_icon )
+                    {
+						/* .. or use the default */
+						thumb_icon = get_icon( ICON_DEFAULT_APP,
+								ICON_THUMB_SIZE );
+					}
 					
 					gtk_tree_store_set(menu_tree,
 							&child_iter,
@@ -868,6 +875,23 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						&item_iter, extras_iter );
 
 				app_icon = get_icon( item->icon, ICON_SIZE );
+                if ( !app_icon ) {
+                  /* .. or use the default */
+                  app_icon = get_icon( ICON_DEFAULT_APP,
+                                       ICON_SIZE );
+                }
+
+                /* Check if we have an thumb sized icon.. */
+                thumb_icon = get_icon_with_fallback( item->icon,
+                                                     ICON_THUMB_SIZE,
+                                                     app_icon );
+
+                if ( !thumb_icon )
+                  {
+                    /* .. or use the default */
+                    thumb_icon = get_icon( ICON_DEFAULT_APP,
+                                           ICON_THUMB_SIZE );
+                  }
 
 				gtk_tree_store_set(menu_tree,
 						&item_iter,
@@ -875,6 +899,8 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						item->name,
 						TREE_MODEL_ICON,
 						app_icon,
+						TREE_MODEL_THUMB_ICON,
+						thumb_icon,
 						TREE_MODEL_EMBLEM_EXPANDER_OPEN,
 						NULL,
 						TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
@@ -892,6 +918,11 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 				if ( app_icon ) {
 					g_object_unref( G_OBJECT ( app_icon ) );
 					app_icon = NULL;
+				}
+				
+                if ( thumb_icon ) {
+					g_object_unref( G_OBJECT ( thumb_icon ) );
+					thumb_icon = NULL;
 				}
 
 				item->allocated = TRUE;
@@ -1582,7 +1613,6 @@ gboolean set_menu_contents( GtkTreeModel *model )
 		return_value = TRUE;
 	}
 
-	fprintf(fp, "%s", (const char *) buffer->content);
 	fclose(fp);
 
 

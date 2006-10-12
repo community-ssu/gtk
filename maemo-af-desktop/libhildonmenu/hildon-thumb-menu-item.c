@@ -493,7 +493,7 @@ hildon_thumb_menu_item_set_thumb_image (HildonThumbMenuItem *thumb_menu_item,
     }
 
     /* If there is an image, add a reference to it */
-    if (image != NULL)
+    if (priv->thumb_image != NULL)
     {
         gtk_widget_ref (priv->thumb_image);
         gtk_object_sink (GTK_OBJECT (priv->thumb_image));
