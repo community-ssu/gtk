@@ -21,7 +21,7 @@ DisabledTextColor=7960,60,30,10
 ProgressTextColor1=7960,72,30,10
 ProgressTextColor2=7960,84,30,10
 SecondaryTextColor=7960,96,30,10
-TitleTextColor=7960,1,108,10
+TitleTextColor=7960,108,30,10
 DialogTitleTextColor=7960,120,30,10
 
 # Calculator
