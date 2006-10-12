@@ -311,7 +311,7 @@ gboolean tn_close_application_dialog(CADAction action)
                                         HN_CAD_OK,
                                         GTK_RESPONSE_ACCEPT,
                                         HN_CAD_CANCEL,
-                                        GTK_RESPONSE_REJECT,
+                                        GTK_RESPONSE_CANCEL,
                                         NULL);                                        
 
   gtk_dialog_set_has_separator(GTK_DIALOG(dialog), FALSE);

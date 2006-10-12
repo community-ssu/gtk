@@ -1,5 +1,11 @@
 2006-10-12  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/close-application-dialog.c: Use _RESPONSE_CANCEL
+	  instead of _REJECT so we close on pressing ESC.
+	Fixes: NB#43121
+
+2006-10-12  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/close-application-dialog.c:
 	  - Revert to using default icon if not found
     Fixes: NB#43049
