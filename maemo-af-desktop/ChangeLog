@@ -1,3 +1,7 @@
+2006-10-12  Moises Martinez <moises.martinzes@nokia.com>
+
+	* install_sbapplet.sh: Improved script.
+
 2006-10-12  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/close-application-dialog.c: Use _RESPONSE_CANCEL

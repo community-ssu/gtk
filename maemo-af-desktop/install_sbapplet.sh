@@ -27,8 +27,15 @@ case $4 in
     ;;
 esac
 
+if [ "`uname -m`" == "armv6l" ];
+then
+  SB_HOME_DIR=/home/user
+else
+  SB_HOME_DIR=$HOME
+fi
+
 SB_CONF=plugins.conf
-SB_USRDIRCONF=/home/user/.osso/hildon-status-bar/$SB_CONF
+SB_USRDIRCONF=$SB_HOME_DIR/.osso/hildon-status-bar/$SB_CONF
 SB_SYSDIRCONF=/etc/hildon-status-bar/$SB_CONF
 SB_PATH=$SB_USRDIRCONF
 
