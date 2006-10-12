@@ -1,7 +1,7 @@
 diff -pur dbus/glib/dbus-gproxy.c dbus.new/glib/dbus-gproxy.c
---- dbus/glib/dbus-gproxy.c	2006-05-05 18:59:24.000000000 +0300
-+++ dbus.new/glib/dbus-gproxy.c	2006-09-12 14:43:24.898241616 +0300
-@@ -713,42 +713,61 @@ dbus_g_proxy_manager_replace_name_owner 
+--- dbus/glib/dbus-gproxy.c	2006-09-18 14:54:25.000000000 +0300
++++ dbus.new/glib/dbus-gproxy.c	2006-10-12 10:12:10.548969568 +0300
+@@ -713,18 +713,21 @@ dbus_g_proxy_manager_replace_name_owner 
  
        names = g_hash_table_lookup (manager->owner_names, prev_owner);
  
@@ -20,76 +20,43 @@ diff -pur dbus/glib/dbus-gproxy.c dbus.new/glib/dbus-gproxy.c
 +	      info = link->data;
  	  
 -	  names = g_slist_delete_link (names, link);
--
++	      names = g_slist_delete_link (names, link);
+ 
 -	  if (names == NULL)
 -	    g_hash_table_remove (manager->owner_names, prev_owner);
 -	}
-+	      names = g_slist_delete_link (names, link);
- 
--      if (new_owner[0] == '\0')
--	{
--	  DBusGProxyUnassociateData data;
--	  GSList *tmp;
--
--	  data.name = name;
--	  data.destroyed = NULL;
--
--	  /* A service went away, we need to unassociate proxies */
--	  g_hash_table_foreach (manager->proxy_lists,
--				unassociate_proxies, &data);
 +	      if (names == NULL)
 +	        g_hash_table_remove (manager->owner_names, prev_owner);
 +	    }
++        }
  
--	  UNLOCK_MANAGER (manager);
-+	  if (new_owner[0] == '\0')
+       if (new_owner[0] == '\0')
+ 	{
+@@ -740,11 +743,27 @@ dbus_g_proxy_manager_replace_name_owner 
+ 
+ 	  UNLOCK_MANAGER (manager);
+ 
++	  /* ref all proxies before destroying them, because
++	   * destroying one proxy may cause client code to
++	   * unref other proxies further down our list, meaning
++	   * that we end up calling the destroy method on
++	   * objects which have already been finalised. using
++	   * weak references would be a neater way to fix this. */
++	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
++	    g_object_ref (tmp->data);
+ 	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
+ 	    dbus_g_proxy_destroy (tmp->data);
++	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
++	    g_object_unref (tmp->data);
+ 	  g_slist_free (data.destroyed);
+ 
+ 	  LOCK_MANAGER (manager);
++
++	  if (info)
 +	    {
-+	      DBusGProxyUnassociateData data;
-+	      GSList *tmp;
- 
--	  for (tmp = data.destroyed; tmp; tmp = tmp->next)
--	    dbus_g_proxy_destroy (tmp->data);
--	  g_slist_free (data.destroyed);
-+	      data.name = name;
-+	      data.destroyed = NULL;
- 
--	  LOCK_MANAGER (manager);
--	}
--      else
--	{
--	  insert_nameinfo (manager, new_owner, info);
-+	      /* A service went away, we need to unassociate proxies */
-+	      g_hash_table_foreach (manager->proxy_lists,
-+	 			    unassociate_proxies, &data);
-+
-+	      UNLOCK_MANAGER (manager);
-+
-+	      /* ref all proxies before destroying them, because
-+	       * destroying one proxy may cause client code to
-+	       * unref other proxies further down our list, meaning
-+	       * that we end up calling the destroy method on
-+	       * objects which have already been finalised. using
-+	       * weak references would be a neater way to fix this. */
-+	      for (tmp = data.destroyed; tmp; tmp = tmp->next)
-+	        g_object_ref (tmp->data);
-+	      for (tmp = data.destroyed; tmp; tmp = tmp->next)
-+	        dbus_g_proxy_destroy (tmp->data);
-+	      for (tmp = data.destroyed; tmp; tmp = tmp->next)
-+	        g_object_unref (tmp->data);
-+	      g_slist_free (data.destroyed);
-+
-+	      LOCK_MANAGER (manager);
-+
-+	      if (info)
-+	        {
-+	          g_free (info->name);
-+	          g_free (info);
-+	        }
-+	    }
-+	  else if (info)
-+	    {
-+	      insert_nameinfo (manager, new_owner, info);
++	      g_free (info->name);
++	      g_free (info);
 +	    }
  	}
-     }
- }
+       else
+ 	{
