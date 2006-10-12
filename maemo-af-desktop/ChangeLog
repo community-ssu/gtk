@@ -1,5 +1,13 @@
 2006-10-12  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-window.[ch]:
+	  - Added "system-inactivity"
+	  - on "system-inactivity", only tell the applets to background
+	  - on "background", don't do anything if system-inacitivty
+	Fixes: NB#42985
+
+2006-10-12  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-others-button.c: Revert to default icon also
 	  for thumb icons
 	* libhildonmenu/libhildonmenu.c: when using same pixbuf for normal and

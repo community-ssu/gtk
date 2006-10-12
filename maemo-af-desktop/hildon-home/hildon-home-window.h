@@ -54,6 +54,8 @@ struct _HildonHomeWindowClass
 
   void    (* background)    (HildonHomeWindow *window, gboolean is_background);
   void    (* lowmem)        (HildonHomeWindow *window, gboolean is_lowmem);
+  void    (* system_inactivity)
+                            (HildonHomeWindow *window, gboolean is_inactive);
 };
 
 GType hildon_home_window_get_type                  (void) G_GNUC_CONST;

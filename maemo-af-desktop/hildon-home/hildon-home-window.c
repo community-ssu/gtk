@@ -118,6 +118,7 @@ struct _HildonHomeWindowPrivate
 
   guint is_dimmed : 1;
   guint is_lowmem : 1;
+  guint is_inactive : 1;
 };
 
 G_DEFINE_TYPE (HildonHomeWindow, hildon_home_window, GTK_TYPE_WINDOW);
@@ -576,35 +577,54 @@ hildon_home_window_background (HildonHomeWindow   *window,
 
   g_debug ("HildonHome is background: %i", is_background);
 
-  /* If we were in layout mode and went to background, we need
-   * to cancel it */
-  if (is_background && 
-      hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
+  if (!priv->is_inactive)
     {
-      gchar *user_filename = NULL; 
-      gchar *filename = NULL;
 
-      hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
-                                        FALSE);
+      /* If we were in layout mode and went to background, we need
+       * to cancel it */
+      if (is_background && 
+          hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
+        {
+          gchar *user_filename = NULL; 
+          gchar *filename = NULL;
 
-      user_filename = g_build_filename (g_getenv ("HOME"),
-                                        HH_AREA_CONFIGURATION_FILE,
-                                        NULL);
+          hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
+                                            FALSE);
 
-      if (g_file_test (user_filename, G_FILE_TEST_EXISTS))
-        filename = user_filename;
-      else
-        filename = HH_AREA_GLOBAL_CONFIGURATION_FILE;
+          user_filename = g_build_filename (g_getenv ("HOME"),
+                                            HH_AREA_CONFIGURATION_FILE,
+                                            NULL);
 
-      hildon_home_area_load_configuration (HILDON_HOME_AREA (priv->applet_area),
-                                           filename);
+          if (g_file_test (user_filename, G_FILE_TEST_EXISTS))
+            filename = user_filename;
+          else
+            filename = HH_AREA_GLOBAL_CONFIGURATION_FILE;
 
-      g_free (user_filename);
+          hildon_home_area_load_configuration (HILDON_HOME_AREA (priv->applet_area),
+                                               filename);
+
+          g_free (user_filename);
+        }
+
+      gtk_container_foreach (GTK_CONTAINER (priv->applet_area),
+                             (GtkCallback)hildon_home_applet_set_is_background,
+                             (gpointer)is_background);
     }
+}
+
+static void
+hildon_home_window_system_inactivity (HildonHomeWindow   *window,
+                                      gboolean            is_inactive)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+
+  g_debug ("HildonHome detected system inactivity: %i", is_inactive);
+
+  priv->is_inactive = is_inactive;
 
   gtk_container_foreach (GTK_CONTAINER (priv->applet_area),
                          (GtkCallback)hildon_home_applet_set_is_background,
-                         (gpointer)is_background);
+                         (gpointer)is_inactive);
 }
 
 
@@ -956,11 +976,23 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
 
   klass->background = hildon_home_window_background;
   klass->lowmem = hildon_home_window_lowmem;
+  klass->system_inactivity = hildon_home_window_system_inactivity;
   
   g_signal_new ("background",
                 G_OBJECT_CLASS_TYPE (gobject_class),
                 G_SIGNAL_RUN_FIRST,
                 G_STRUCT_OFFSET (HildonHomeWindowClass, background),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__BOOLEAN,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_BOOLEAN);
+  
+  g_signal_new ("system-inactivity",
+                G_OBJECT_CLASS_TYPE (gobject_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonHomeWindowClass, system_inactivity),
                 NULL,
                 NULL,
                 g_cclosure_marshal_VOID__BOOLEAN,

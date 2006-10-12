@@ -101,7 +101,7 @@ hildon_home_osso_hw_cb (osso_hw_state_t *state,
   g_return_if_fail (state);
   
   g_signal_emit_by_name (G_OBJECT (window),
-                         "background",
+                         "system-inactivity",
                          state->system_inactivity_ind);
 
 }
