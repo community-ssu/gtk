@@ -2,6 +2,7 @@ osso-af-startup (1.28-1) unstable; urgency=low
 
   * UNRELEASED
   * Reverted back to old building style because the new didn't work.
+  * Fixed invalid e-mail addresses in debian/changelog.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 12 Oct 2006 14:17:07 +0300
 
@@ -702,14 +703,14 @@ osso-af-startup (0.17-2) unstable; urgency=low
 
   * SVN tag version
 
- -- Kimmo Hämäläinen <kihamala@mylly>  Mon, 14 Feb 2005 15:29:01 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 14 Feb 2005 15:29:01 +0200
 
 osso-af-startup (0.17-1) unstable; urgency=low
 
   * ke-recv's not suid anymore (later this might change because of /sys)
   * starting x-server.sh is conditional (temporary)
 
- -- Kimmo Hämäläinen <kihamala@mylly>  Mon, 14 Feb 2005 12:52:09 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 14 Feb 2005 12:52:09 +0200
 
 osso-af-startup (0.16-2) unstable; urgency=low
 
@@ -718,7 +719,7 @@ osso-af-startup (0.16-2) unstable; urgency=low
       in startup)
     - ke-recv's MMC mounting might not work (unless core updates fstab).
 
- -- Kimmo Hämäläinen <kihamala@mylly>  Fri, 11 Feb 2005 15:38:38 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 11 Feb 2005 15:38:38 +0200
 
 osso-af-startup (0.16-1) unstable; urgency=low
 
