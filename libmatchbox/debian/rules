@@ -15,7 +15,7 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 CFLAGS = -Wall -g
 
-EXTRA_FLAGS = --enable-png
+EXTRA_FLAGS = --enable-pango --enable-png
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -O0
