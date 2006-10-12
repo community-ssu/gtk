@@ -1,10 +1,9 @@
 dbus (0.61-osso22) experimental; urgency=low
 
-  * UNRELEASED
   * Fixed bug in dbus-gproxy.c patch, causing problems with proxy
     destruction. Fixes: NB#43055
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 12 Oct 2006 10:14:46 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 12 Oct 2006 15:06:45 +0300
 
 dbus (0.61-osso21) experimental; urgency=low
 
