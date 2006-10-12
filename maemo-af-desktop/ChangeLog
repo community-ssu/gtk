@@ -729,7 +729,7 @@
 
 	* hildon-navigator/hildon-navigator-panel.[ch]:
 	- Removing plugins from panel by removing from his
-	container. Fixes: NB#4005
+	container. Fixes: NB#40005
 	- Changed HNPanelDirection to GtkOrientation
 	* hildon-navigator/hildon-navigator-item.c: Using
 	  parent gtk_widget_destroy implementation.
