@@ -1,7 +1,7 @@
 osso-af-startup (1.28-1) unstable; urgency=low
 
-  * UNRELEASED
   * Reverted back to old building style because the new didn't work.
+    Fixes: NB#41548, NB#42158
   * Fixed invalid e-mail addresses in debian/changelog.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 12 Oct 2006 14:17:07 +0300
