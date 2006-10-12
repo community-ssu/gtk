@@ -4,7 +4,9 @@ osso-gnome-vfs2 (2.12.0.16-2osso1) unstable; urgency=low
   * Fixes: NB#40651, gnome-vfs2 2.12.0.12-1: License issues
   * Remove unused sftp module
   * Update two files from upstream that changed from GPL to LGPL
-  * Add 19-disable-iso9660.patch that removes one more GPLed file
+  * Fixes: NB#38245, UpnP IOP : GnomeVFS HTTP module can't fetch files
+  * Add 19-disable-iso9660.patch for the above
+  * Add 20-workaround-broken-upnp-servers.patch for the above
 
  -- Richard Hult <richard@imendio.com>  Fri, 13 Oct 2006 16:07:47 +0200
 

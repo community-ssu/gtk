@@ -1,0 +1,48 @@
+Index: imported/neon/ne_request.c
+===================================================================
+--- imported/neon/ne_request.c	(revision 7201)
++++ imported/neon/ne_request.c	(working copy)
+@@ -728,20 +728,34 @@ static int read_response_block(ne_reques
+ 	 * bytes left to read in the current chunk.
+ 	 */
+ 	if (resp->chunk_left == 0) {
++	    ssize_t ret;
+ 	    unsigned long int chunk_len;
+ 	    char *ptr;
+ 	    /* We are at the start of a new chunk. */
+ 	    NE_DEBUG(NE_DBG_HTTP, "New chunk.\n");
+-	    SOCK_ERR(req, ne_sock_readline(sock, buffer, *buflen),
+-		     _("Could not read chunk size"));
+-	    NE_DEBUG(NE_DBG_HTTP, "[Chunk Size] < %s", buffer);
+-	    chunk_len = strtoul(buffer, &ptr, 16);
+-	    /* limit chunk size to <= UINT_MAX, so it will probably
+-	     * fit in a size_t. */
+-	    if (ptr == buffer || 
+-		chunk_len == ULONG_MAX || chunk_len > UINT_MAX) {
+-		return aborted(req, _("Could not parse chunk size"), 0);
++
++	    ret = ne_sock_readline(sock, buffer, *buflen);
++	    if (ret == NE_SOCK_CLOSED) {
++		    /* Treat CLOSED as EOF (no chunk size) as the ending
++		     * chunk... this is a workaround for broken libupnp servers
++		     * that doesn't send the last 0 sized chunk.
++		     */
++		    chunk_len = 0;
++	    }
++	    else if (ret < 0) {
++		    aborted(req, "Could not read chunk size", ret);
++	    } else {
++		    NE_DEBUG(NE_DBG_HTTP, "[Chunk Size] < %s", buffer);
++		    chunk_len = strtoul(buffer, &ptr, 16);
++	    
++		    /* limit chunk size to <= UINT_MAX, so it will probably
++		     * fit in a size_t. */
++		    if (ptr == buffer || 
++			chunk_len == ULONG_MAX || chunk_len > UINT_MAX) {
++			    return aborted(req, _("Could not parse chunk size"), 0);
++		    }
+ 	    }
++	    
+ 	    NE_DEBUG(NE_DBG_HTTP, "Got chunk size: %lu\n", chunk_len);
+ 	    if (chunk_len == 0) {
+ 		/* Zero-size chunk == end of response. */
