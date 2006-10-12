@@ -8,7 +8,6 @@
 #   --layout DIR
 #
 #   The layout is defined by the files in DIR.  More details are below.
-#   (XXX - stay tuned)
 #
 #   --theme DIR
 #
@@ -43,13 +42,15 @@ if ($themedir eq "" or $layoutdir eq "" or $template eq "")
 
 if ($name eq "")
 {
-    $name = basename ($themedir);
+    $name = basename(dirname(($themedir . '/crap')));
+    # XXX See comment below
 }
 
 %substitutions = 
     ( qw{@ThemeName@} => $name,
       qw{@ThemeDir@} => $themedir,
-      qw{@ThemeDirBaseName@} => basename ($themedir) );
+      qw{@ThemeDirBaseName@} => basename(dirname($themedir . '/crap')));
+      # XXX Broken perl? basename(/foo/bar/) returns NULL while basename(/foo/bar) returns bar
 
 sub do_substitutions
 {
@@ -86,9 +87,9 @@ sub process_gtkrc
 sub install_gtkrc
 {
     my $name = $_[0];
-    my $target = "$destdir$themedir/gtk-2.0/$name";
+    my $target = "$destdir/$themedir/gtk-2.0/$name";
 
-    mkdir ("$destdir$themedir/gtk-2.0/");
+    mkdir ("$destdir/$themedir/gtk-2.0/");
 
     print STDERR "Installing $name\n";
 
@@ -100,8 +101,9 @@ sub install_gtkrc
 sub install_file
 {
     my $name = $_[0];
+    my $dir = $_[1];
     my $source = "$layoutdir/$name";
-    my $target = "$destdir$themedir/$name";
+    my $target = "$destdir/$themedir/$dir/$name";
 
     print STDERR "Installing $name\n";
 
@@ -119,7 +121,9 @@ sub install_file
 
 sub cut_images
 {
-    # XXX
+        print "Cutting...\n";
+        `maemo-theme-slicer $layoutdir/layout-coordinates.txt $template $destdir/$themedir/images`;
+        print "Done!\n";
 }
 
 sub add_color_substitutions
@@ -190,7 +194,13 @@ sub add_color_substitutions
 
     $substitutions{qw{@LowLightColor@}}           = "#d4e6fd80";
 
-    # XXX Override with real colors
+    # Override with real colors
+   
+    print "Fetching colors...\n";
+    $eval_value =`maemo-theme-colourizer $layoutdir/layout-coordinates.txt $template`;
+    print $eval_value . "\n";
+    eval $eval_value;
+    print "Done!\n";
 }
 
 cut_images;
@@ -198,5 +208,8 @@ add_color_substitutions;
 
 install_gtkrc ("gtkrc");
 install_gtkrc ("gtkrc.maemo_af_desktop");
-install_file ("theme.xml");
+
+mkdir ("$destdir/$themedir/matchbox");
+
+install_file ("theme.xml". "matchbox");
 install_file ("index.theme");
