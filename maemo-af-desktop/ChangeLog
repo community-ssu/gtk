@@ -1,3 +1,8 @@
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/background-manager.c: Do not hardcode hildon home window
+	  size. Fixes: NB#43264
+
 2006-10-13  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Removed g_debug

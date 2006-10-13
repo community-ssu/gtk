@@ -1048,6 +1048,8 @@ composite_background (const GdkPixbuf  *bg_image,
 		      BackgroundMode    mode,
 		      const gchar      *sidebar_path,
 		      const gchar      *titlebar_path,
+              gint              window_width,
+              gint              window_height,
 		      GError          **error)
 {
   GError *bg_error;
@@ -1063,15 +1065,16 @@ composite_background (const GdkPixbuf  *bg_image,
       pixbuf = create_background_from_pixbuf (bg_image,
 					      bg_color,
 					      mode,
-					      HILDON_HOME_WINDOW_WIDTH,
-					      HILDON_HOME_WINDOW_HEIGHT,
+					      window_width,
+					      window_height,
 					      &bg_error);
     }
   else
     {
       pixbuf = create_background_from_color (bg_color,
-					     HILDON_HOME_WINDOW_WIDTH,
-					     HILDON_HOME_WINDOW_HEIGHT);
+					     window_width,
+					     window_height
+                         );
 
       g_return_val_if_fail (pixbuf, NULL);
     }
@@ -1126,7 +1129,7 @@ composite_background (const GdkPixbuf  *bg_image,
       g_debug ("Compositing sidebar (w:%d, h:%d)",
 	       width, height);
       
-      sidebar_height = HILDON_HOME_WINDOW_HEIGHT
+      sidebar_height = window_height
 	               - HILDON_HOME_TITLEBAR_HEIGHT;
       if (height != sidebar_height)
         {
@@ -1461,6 +1464,7 @@ background_manager_create_background (BackgroundManager *manager,
   static gboolean first_run = TRUE;
   GdkPixbuf *image, *pixbuf;
   GError *err;
+  gint width, height;
   
   priv = manager->priv;
 
@@ -1515,10 +1519,14 @@ background_manager_create_background (BackgroundManager *manager,
       return;
     }
 
+  gdk_drawable_get_size (GDK_DRAWABLE (priv->desktop), &width, &height);
+
   pixbuf = composite_background (image, &(current->color),
 				 current->mode,
 				 priv->sidebar,
 				 priv->titlebar,
+                 width,
+                 height,
 				 &err);
   if (err && err->message)
     {
