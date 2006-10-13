@@ -1102,7 +1102,7 @@ compose_app_pixbuf (const GdkPixbuf *src,
       if (n_instances == 1)
         return NULL;
 
-      if (G_LIKELY (n_instances < app_group_n_icons - 1))
+      if (G_LIKELY (n_instances <= app_group_n_icons - 1))
         inst_name = app_group_icons[n_instances - 1];
       else
         inst_name = APP_GROUP_ICON_MORE;

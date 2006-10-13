@@ -1,5 +1,10 @@
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-button.c: fixed display of the "9" emblem
+	Fixes: NB#43201
+
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-menu-item.[ch]: cache the close button
 	  pixbufs in class variables. Fixes: NB#43043
 
