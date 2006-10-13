@@ -1,5 +1,10 @@
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-switcher.c: Apply correct name to
+      the AS menu depending on its thumbable property. Fixes: NB#43294
+
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/background-manager.c: do not run the main
 	  loop when generating the background when we have no cancel
 	  banner (theme change)

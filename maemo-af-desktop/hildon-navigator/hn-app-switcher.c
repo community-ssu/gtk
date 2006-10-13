@@ -681,7 +681,7 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
   else
     gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
                                 priv->main_home_item);
-  
+
   g_object_unref (priv->main_home_item);
 }
 
@@ -864,6 +864,15 @@ main_menu_pop (HNAppSwitcher *app_switcher,
     }
   
   main_menu_build (app_switcher);
+
+  gtk_widget_realize (priv->main_menu);
+
+  if (priv->is_thumbable)
+    gtk_widget_set_name (gtk_widget_get_toplevel (priv->main_menu),
+                         "hildon-menu-window-thumb");
+  else
+    gtk_widget_set_name (gtk_widget_get_toplevel (priv->main_menu),
+                         "hildon-menu-window-normal");
 
   gtk_menu_popup (GTK_MENU (priv->main_menu), NULL, NULL,
                   main_menu_position_func, app_switcher,
