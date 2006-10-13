@@ -1,5 +1,11 @@
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-main.c: do not abort if we could not create
+	.osso/hildon-home
+	Fixes: NB#43067
+
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-button.c: fixed display of the "9" emblem
 	Fixes: NB#43201
 

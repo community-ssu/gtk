@@ -213,7 +213,7 @@ hildon_home_main (void)
     {
       if (errno != EEXIST)
         {
-          g_error ("Unable to create `%s' user configuration directory: %s",
+          g_warning ("Unable to create `%s' user configuration directory: %s",
                    user_path_home,
                    g_strerror (errno));
           return -1;
