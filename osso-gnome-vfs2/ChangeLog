@@ -1,3 +1,7 @@
+2006-10-13  Martyn Russell  <martyn@imendio.com>
+
+	* Release 2.12.0.16.
+
 2006-10-12  Richard Hult  <richard@imendio.com>
 
 	* Remove ChangeLog.upstream since it was causing confusion.
