@@ -37,9 +37,31 @@ sudo $DIR/gconf-daemon.sh stop
 # Remove user-modified settings
 if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
   /usr/sbin/gconf-clean.sh 
-  rm -rf /home/user/.osso/*
 
   OLDDIR=`pwd`
+  if [ -d /home/user/.osso ]; then
+    cd /home/user/.osso
+    TMP=`find | grep -v "\(current-gtk-theme\)\|\(current-gtk-key-theme\)"`
+    for f in $TMP; do 
+      if [ "$f" = "." -o "$f" = ".." ]; then
+        continue
+      fi
+      rm -rf $f
+    done
+    # backup theme files so that they could be restored
+    # in case the flash is full
+    if [ -f current-gtk-theme ]; then
+      mv -f current-gtk-theme current-gtk-theme.bak
+    fi
+    if [ -f current-gtk-theme.maemo_af_desktop ]; then
+      mv -f current-gtk-theme.maemo_af_desktop \
+            current-gtk-theme.maemo_af_desktop.bak
+    fi
+    if [ -f current-gtk-key-theme ]; then
+      mv -f current-gtk-key-theme current-gtk-key-theme.bak
+    fi
+  fi  
+
   cd /etc/osso-rfs-scripts
   for f in `ls *.sh`; do
     ./$f

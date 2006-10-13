@@ -1,3 +1,10 @@
+osso-app-killer (1.13-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Fixed ROS and CUD to work also when the flash is full. Fixes: NB#43067
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 13 Oct 2006 13:58:53 +0300
+
 osso-app-killer (1.12-1) unstable; urgency=low
 
   * Now using the new location for .games folder. Fixes: NB#42525
