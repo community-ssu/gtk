@@ -1115,10 +1115,6 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
   if (!app_switcher->priv->home_info)
      app_switcher->priv->home_info = hn_entry_info_new (HN_ENTRY_DESKTOP);
 
-  g_debug ("home (%s), icon: %s",
-           hn_entry_info_get_title (app_switcher->priv->home_info),
-           hn_entry_info_get_app_icon_name (app_switcher->priv->home_info));
-
   gtk_widget_push_composite_child ();
   
   /* inner box, used for padding */

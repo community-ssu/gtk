@@ -1,3 +1,10 @@
+2006-10-13  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-app-switcher.c: Removed g_debug
+	  leaking memory.
+	* hildon-status-bar/hildon-status-bar-main.c: Fixed potential
+	  double free. Fixes: NB#39673
+
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-main.c: do not abort if we could not create
