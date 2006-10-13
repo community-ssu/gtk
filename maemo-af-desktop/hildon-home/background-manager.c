@@ -519,6 +519,7 @@ load_image_oom_cb (size_t  current_size,
 static GdkPixbuf *
 load_image_from_uri (const gchar  *uri,
                      gboolean      oom_check,
+                     gboolean      cancellable,
                      GError      **error)
 {
   GConfClient *client;
@@ -577,6 +578,10 @@ load_image_from_uri (const gchar  *uri,
 
   g_free (mmc_mount_point);
 
+  /* XXX Run the main loop to update the progress note */
+  if (cancellable)
+    gtk_main_iteration ();
+
   result = gnome_vfs_open (&handle, uri, GNOME_VFS_OPEN_READ);
   if (result != GNOME_VFS_OK)
     {
@@ -604,7 +609,9 @@ load_image_from_uri (const gchar  *uri,
     {
       GnomeVFSFileSize bytes_read;
 
-      gtk_main_iteration ();
+      /* XXX Run the main loop to update the progress note */
+      if (cancellable)
+        gtk_main_iteration ();
 
       result = gnome_vfs_read (handle, buffer, BUFFER_SIZE, &bytes_read);
       if (result == GNOME_VFS_ERROR_IO)
@@ -744,7 +751,8 @@ load_image_from_uri (const gchar  *uri,
 
 static GdkPixbuf *
 load_image_from_file (const gchar  *filename,
-		      GError      **error)
+                      gboolean cancellable,
+                      GError      **error)
 {
   gchar *filename_uri;
   GdkPixbuf *retval;
@@ -766,7 +774,7 @@ load_image_from_file (const gchar  *filename,
     }
 
   load_error = NULL;
-  retval = load_image_from_uri (filename_uri, TRUE, &load_error);
+  retval = load_image_from_uri (filename_uri, TRUE, cancellable, &load_error);
   if (load_error)
     {
       g_propagate_error (error, load_error);
@@ -1050,6 +1058,7 @@ composite_background (const GdkPixbuf  *bg_image,
 		      const gchar      *titlebar_path,
               gint              window_width,
               gint              window_height,
+              gboolean          cancellable,
 		      GError          **error)
 {
   GError *bg_error;
@@ -1086,7 +1095,8 @@ composite_background (const GdkPixbuf  *bg_image,
       return NULL;
     }
 
-  compose = load_image_from_file (titlebar_path, &bg_error);
+  compose = load_image_from_file (titlebar_path, cancellable, &bg_error);
+
   if (bg_error)
     {
       g_warning ("Unable to load titlebar pixbuf: %s", bg_error->message);
@@ -1112,7 +1122,7 @@ composite_background (const GdkPixbuf  *bg_image,
       compose = NULL;
     }
  
-  compose = load_image_from_file (sidebar_path, &bg_error);
+  compose = load_image_from_file (sidebar_path, cancellable, &bg_error);
   if (bg_error)
     {
       g_warning ("Unable to load sidebar pixbuf: %s", bg_error->message);
@@ -1493,7 +1503,7 @@ background_manager_create_background (BackgroundManager *manager,
 
   err = NULL;
   if (current->image_uri)
-    image = load_image_from_uri (current->image_uri, TRUE, &err);
+    image = load_image_from_uri (current->image_uri, TRUE, cancellable, &err);
   else
     image = NULL;
 
@@ -1527,6 +1537,7 @@ background_manager_create_background (BackgroundManager *manager,
 				 priv->titlebar,
                  width,
                  height,
+                 cancellable,
 				 &err);
   if (err && err->message)
     {

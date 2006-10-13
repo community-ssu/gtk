@@ -1,5 +1,11 @@
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/background-manager.c: do not run the main
+	  loop when generating the background when we have no cancel
+	  banner (theme change)
+
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Task Navigator requires full binary path in .desktop file
 	Exec field". Fixes NB#39036
 	* hildon-navigator/hn-others-button.c:use g_find_program_in_path
