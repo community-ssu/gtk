@@ -409,25 +409,17 @@ hn_app_menu_item_constructor (GType                  type,
 
   if (priv->show_close)
     {
-      GdkPixbuf *pixbuf;
-
+      HNAppMenuItemClass *klass = HN_APP_MENU_ITEM_CLASS (G_OBJECT_GET_CLASS (gobject));
       priv->close = gtk_image_new ();
-      pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-                                         "qgn_list_app_close",
-                                         priv->thumbable ?
-                                         AS_CLOSE_BUTTON_THUMB_SIZE :
-                                         AS_CLOSE_BUTTON_SIZE,
-                                         0,
-                                         NULL);
-      if (pixbuf)
-        {
-          HN_DBG ("Icon for the close button found");
-	  
-          gtk_image_set_from_pixbuf (GTK_IMAGE (priv->close), pixbuf);
-          g_object_unref (pixbuf);
-        }
+
+      if (priv->thumbable && klass->thumb_close_button)
+          gtk_image_set_from_pixbuf (GTK_IMAGE (priv->close),
+                                     klass->thumb_close_button);
+      else if (!priv->thumbable && klass->close_button)
+          gtk_image_set_from_pixbuf (GTK_IMAGE (priv->close),
+                                     klass->close_button);
       else
-        HN_DBG ("Icon for the close button not found");
+        g_warning ("Icon missing for close button");
 
       gtk_box_pack_end (GTK_BOX (hbox), priv->close, FALSE, FALSE, 0);
       gtk_widget_show (priv->close);
@@ -589,6 +581,7 @@ hn_app_menu_item_class_init (HNAppMenuItemClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
   GtkMenuItemClass *menuitem_class = GTK_MENU_ITEM_CLASS (klass);
+  GtkIconTheme *icon_theme = gtk_icon_theme_get_default ();
   
   gobject_class->finalize = hn_app_menu_item_finalize;
   gobject_class->set_property = hn_app_menu_item_set_property;
@@ -600,6 +593,18 @@ hn_app_menu_item_class_init (HNAppMenuItemClass *klass)
   widget_class->button_release_event = hn_app_menu_item_button_release_event;
   
   menuitem_class->activate = hn_app_menu_item_activate;
+
+  klass->close_button = gtk_icon_theme_load_icon (icon_theme,
+                                                  "qgn_list_app_close",
+                                                  AS_CLOSE_BUTTON_SIZE,
+                                                  0,
+                                                  NULL);
+
+  klass->thumb_close_button = gtk_icon_theme_load_icon (icon_theme,
+                                                        "qgn_list_app_close",
+                                                        AS_CLOSE_BUTTON_THUMB_SIZE,
+                                                        0,
+                                                        NULL);
   
   g_object_class_install_property (gobject_class,
 		  		   MENU_PROP_SHOW_CLOSE,

@@ -1,3 +1,8 @@
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-menu-item.[ch]: cache the close button
+	  pixbufs in class variables. Fixes: NB#43043
+
 2006-10-12  Moises Martinez <moises.martinzes@nokia.com>
 
 	* install_sbapplet.sh: Improved script.

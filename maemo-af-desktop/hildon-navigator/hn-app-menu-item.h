@@ -58,6 +58,9 @@ struct _HNAppMenuItem
 struct _HNAppMenuItemClass
 {
   GtkImageMenuItemClass parent_class;
+
+  GdkPixbuf *close_button;
+  GdkPixbuf *thumb_close_button;
 };
 
 GType        hn_app_menu_item_get_type        (void) G_GNUC_CONST;
