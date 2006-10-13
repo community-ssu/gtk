@@ -1,5 +1,12 @@
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Task Navigator requires full binary path in .desktop file
+	Exec field". Fixes NB#39036
+	* hildon-navigator/hn-others-button.c:use g_find_program_in_path
+	  to resolve program path
+
+2006-10-13  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Do not hardcode hildon home window
 	  size. Fixes: NB#43264
 

@@ -264,6 +264,7 @@ hn_others_menu_activate_item (GtkMenuItem * item, HNOthersButton * button)
 {
     gchar  * service_field;
     gchar  * exec_field;
+    gchar  * program = NULL;
     GError * error = NULL;
     
     g_return_if_fail(button);
@@ -289,14 +290,36 @@ hn_others_menu_activate_item (GtkMenuItem * item, HNOthersButton * button)
         
 	exec_field = g_object_get_data(G_OBJECT(item),
 				       DESKTOP_ENTRY_EXEC_FIELD);
+
+	if(exec_field)
+	  {
+	    gchar * space = strchr(exec_field, ' ');
+
+	    if(space)
+	      {
+		gchar * cmd = g_strdup(exec_field);
+		cmd[space - exec_field] = 0;
+
+		gchar * exc = g_find_program_in_path(cmd);
+
+		program = g_strconcat(exc, space, NULL);
+
+		g_free(exc);
+		g_free(cmd);
+	      }
+	    else
+	      {
+		program = g_find_program_in_path (exec_field);
+	      }
+	  }
 	
-        if(exec_field != NULL)
+        if(program)
 	  {
             gint     argc;
             gchar ** argv;
             GPid     child_pid;
-
-            if (g_shell_parse_argv (exec_field, &argc, &argv, &error))
+	    
+            if (g_shell_parse_argv (program, &argc, &argv, &error))
               {
 		g_spawn_async(
 			      /* child's current working directory,
@@ -359,6 +382,7 @@ hn_others_menu_activate_item (GtkMenuItem * item, HNOthersButton * button)
     }
     
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), FALSE);
+    g_free(program);
 }
 
 static void
