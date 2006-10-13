@@ -34,8 +34,8 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
-
-#define _(String) dgettext(PACKAGE, String)
+#define TNCPA_PACKAGE "osso-applet-tasknavigator"
+#define _(String) dgettext(TNCPA_PACKAGE, String)
 
 #include "../libdesktop/hildon-log.h"
 

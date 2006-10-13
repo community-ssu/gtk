@@ -1,3 +1,8 @@
+2006-10-13  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hildon-navigator-window.c: Added hardcoced gettext
+	  package for tn-cpa. Fixes: NB#37100
+
 2006-10-13  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Apply correct name to

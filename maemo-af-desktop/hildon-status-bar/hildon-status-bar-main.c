@@ -1582,12 +1582,18 @@ statusbar_send_signal (DBusConnection *conn,
 {
   DBusMessage *message;
   gchar *item_name = NULL;
+  const gchar *short_name;
 
   message = dbus_message_new_signal ("/com/nokia/statusbar",
                                      "com.nokia.statusbar.conditional", 
 				     "update_status");
-  
-  item_name = g_strdup_printf ("lib%s.so",hildon_status_bar_item_get_name (item));
+
+  short_name = hildon_status_bar_item_get_name (item);
+
+  if (short_name)  
+    item_name = g_strdup_printf ("lib%s.so",hildon_status_bar_item_get_name (item));
+  else
+    goto out;
   
   if (item_name)
   { 
@@ -1600,7 +1606,9 @@ statusbar_send_signal (DBusConnection *conn,
     
     dbus_connection_send (conn, message, NULL);
   }
-
+  
+out:
+  
   dbus_message_unref (message);
   g_free (item_name);
 }
