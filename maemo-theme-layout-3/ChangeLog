@@ -1,3 +1,9 @@
+2006-10-13  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* INSTALL: Adding the missing INSTALL file.
+
+	* Makefile.am: Adding maintainer-clean files.
+
 2006-10-12  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* layout-coordinates.txt: Correcting a coordinate mistake for color
