@@ -51,6 +51,14 @@
 #define HILDON_HOME_APPLET_GET_PRIVATE(obj) \
   (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_HOME_APPLET, HildonHomeAppletPriv));
 
+typedef struct 
+{
+  gboolean above_child;
+  GdkWindow *event_window;
+} GtkEventBoxPrivate;
+
+#define GTK_EVENT_BOX_GET_PRIVATE(obj)  G_TYPE_INSTANCE_GET_PRIVATE((obj), GTK_TYPE_EVENT_BOX, GtkEventBoxPrivate)
+
 
 typedef enum 
 {
@@ -336,7 +344,8 @@ hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
 
 }
 
-static void hildon_home_applet_init(HildonHomeApplet * self)
+static void
+hildon_home_applet_init (HildonHomeApplet * self)
 {
   HildonHomeAppletPriv      *priv;
   GtkIconTheme              *icon_theme;
@@ -633,8 +642,44 @@ hildon_home_applet_create_icon_window (HildonHomeApplet *applet,
   gdk_flush ();
 
   return window;
+}
+
+static GdkFilterReturn
+window_event_filter (GdkXEvent *xevent,
+                     GdkEvent *event,
+                     HildonHomeApplet *applet)
+{
+  XAnyEvent *aevent = (XAnyEvent *)xevent;
+
+  if (aevent->type == MapNotify)
+    {
+      HildonHomeAppletPriv *priv = HILDON_HOME_APPLET_GET_PRIVATE (applet); 
+      GtkEventBoxPrivate *eb_priv = GTK_EVENT_BOX_GET_PRIVATE (applet);
+      /* The applet created a child window, we need to make sure that
+       * we remain on top */
+#if 0
+      gtk_event_box_set_above_child (GTK_EVENT_BOX (applet), FALSE);
+      gtk_event_box_set_above_child (GTK_EVENT_BOX (applet), TRUE);
+#endif
+      if (eb_priv->event_window)
+        gdk_window_raise (eb_priv->event_window);
+
+      if (priv->close_button_window)
+          gdk_window_raise (priv->close_button_window);
+      if (priv->resize_handle_window)
+        gdk_window_raise (priv->resize_handle_window);
+
+      if (GTK_BIN (applet) && GTK_BIN (applet)->child)
+        {
+        gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
+        gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
+        }
+    }
+
+  return GDK_FILTER_CONTINUE;
 
 }
+
 
 static void
 hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
@@ -645,8 +690,11 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
   w = GTK_WIDGET (applet);
   priv = HILDON_HOME_APPLET_GET_PRIVATE (applet);
 
-  gtk_event_box_set_visible_window (GTK_EVENT_BOX (applet), TRUE);
+  gtk_widget_realize (w);
+
   gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), TRUE);
+  gtk_event_box_set_visible_window (GTK_EVENT_BOX (applet), TRUE);
+
 
   if (priv->close_button)
     {
@@ -668,6 +716,13 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
 
   if (GTK_BIN (applet) && GTK_BIN (applet)->child)
     gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
+
+  gdk_window_set_events (w->window,
+                         gdk_window_get_events(w->window) |
+                           GDK_SUBSTRUCTURE_MASK);
+  gdk_window_add_filter (w->window,
+                         (GdkFilterFunc)window_event_filter,
+                         applet);
   
   gtk_widget_show (w);
 
@@ -692,8 +747,13 @@ hildon_home_applet_layout_mode_end (HildonHomeApplet *applet)
     }
   if (GTK_BIN (applet) && GTK_BIN (applet)->child)
     gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
-  gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), FALSE);
+
+  gdk_window_remove_filter (GTK_WIDGET (applet)->window,
+                            (GdkFilterFunc)window_event_filter,
+                            applet); 
+
   gtk_event_box_set_visible_window (GTK_EVENT_BOX (applet), FALSE);
+  gtk_event_box_set_above_child    (GTK_EVENT_BOX (applet), FALSE);
   gtk_widget_show (GTK_WIDGET (applet));
 }
 

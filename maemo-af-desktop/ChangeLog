@@ -1,3 +1,10 @@
+2006-10-16  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-applet.c: Keep track of children
+	  creating windows to make sure the close button and resize handle
+	  are always on top, as well as our event window
+	  Fixes: NB#42549
+
 2006-10-13  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-navigator/hildon-navigator-window.c: Added hardcoced gettext
@@ -203,7 +210,7 @@
 
 	* hildon-home/hildon-home-applet.c:
 	  - make the applet's widget unsensitive when in layout mode
-	    Fixes: NB#
+	    Fixes: NB#42428
 	  - added key_press and key_release to discard these events in layout mode
 
 2006-10-05  Johan Bilien <johan.bilien@nokia.com>
@@ -215,11 +222,13 @@
 
 	* hildon-status-bar/hildon-status-bar-main.c: Load the icon from
 	  the icon theme, not from the stock icons
+	Fixes: NB#42430
 
 2006-10-05  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.[ch]: Use a GtkImage instead
 	  of an arrow for the arrow button
+	Fixes: NB#42430
 
 2006-10-05  Moises Martinez <moises.martinzes@nokia.com>
 
