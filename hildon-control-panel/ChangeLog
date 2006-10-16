@@ -1,11 +1,16 @@
 2006-10-11  Johan Bilien <johan.bilien@nokia.com>
 
+	* hcp-rfs.c: Make all infonotes transient to the dialog
+	Fixes: NB#37551
+
+2006-10-11  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.2.9
 
 2006-10-06  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-control-panel-main.c: Force to set the
- 	saved size before showing anything. Fixes: NB#42297
+	saved size before showing anything. Fixes: NB#42297
 
 2006-10-02  Johan Bilien <johan.bilien@nokia.com>
 

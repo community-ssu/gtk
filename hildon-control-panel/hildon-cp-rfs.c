@@ -173,7 +173,7 @@ hcp_rfs_check_lock_code_dialog (HCP *hcp)
 
         if (!password_correct)
         {
-            hildon_banner_show_information (GTK_WIDGET (hcp->window),
+            hildon_banner_show_information (dialog,
                                             NULL,
                                             RESET_FACTORY_SETTINGS_IB_WRONG_LOCKCODE);
             hildon_code_dialog_clear_code (HILDON_CODE_DIALOG (dialog));
