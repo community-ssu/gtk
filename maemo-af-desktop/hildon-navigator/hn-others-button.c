@@ -941,6 +941,23 @@ hn_others_button_dnotify_register (HNOthersButton * button)
 {
   const gchar * home_dir;
   gchar       * dir;
+  gchar	      * file = NULL;
+  gchar       * conf_file;
+
+  home_dir = getenv( "HOME" );
+  
+  conf_file = g_build_filename(home_dir, USER_MENU_FILE, NULL );
+ 
+  /* We copy SYSTEMWIDE_MENU_FILE to always track the changes */
+
+  if (!g_file_test (conf_file, G_FILE_TEST_EXISTS))
+    if (g_file_get_contents (SYSTEMWIDE_MENU_FILE,&file,NULL,NULL))
+    {
+      g_debug ("I couldn't get contents");
+      g_file_set_contents (USER_MENU_FILE,file,-1,NULL);
+    }
+  
+  g_free (file);
   
   /* Watch systemwide menu conf */
   dir = g_path_get_dirname( SYSTEMWIDE_MENU_FILE );
@@ -956,12 +973,9 @@ hn_others_button_dnotify_register (HNOthersButton * button)
   g_free (dir);
   
   /* Watch user specific menu conf */
-  home_dir = getenv( "HOME" );
   
   if( home_dir && *home_dir)
-    {
-      gchar * conf_file = g_build_filename(home_dir, USER_MENU_FILE, NULL );
-
+    {    
       /* have to get the directory from the path because the USER_MENU_FILE
        * define might contain directory (it does, in fact).
        */
@@ -986,8 +1000,9 @@ hn_others_button_dnotify_register (HNOthersButton * button)
 	}
 
       g_free (dir);
-      g_free (conf_file);
     }
+      
+  g_free (conf_file);
   
 
   /* Monitor the .desktop directories, so we can regenerate the menu
