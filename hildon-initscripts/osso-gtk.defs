@@ -27,6 +27,7 @@ fi
 CURRENT_THEME_DIR=$HOME/.osso
 CURRENT_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-theme
 CURRENT_KEY_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-key-theme
+CURRENT_MAEMO_THEME_FILE=$CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop
 
 if [ ! -d $CURRENT_THEME_DIR -a "x$DONOTCREATE" = "x" ]; then
   mkdir -p $CURRENT_THEME_DIR
@@ -34,8 +35,9 @@ fi
 
 if [ ! -f $CURRENT_THEME_FILE -a "x$DONOTCREATE" = "x" ]; then
   cp -f /etc/osso-af-init/current-gtk-theme.default $CURRENT_THEME_FILE
-else
+fi
 
+if [ -f $CURRENT_THEME_FILE ]; then
   # investigate if theme exists
   THEMEFILE=$(cat $CURRENT_THEME_FILE | sed -e "s/include\ \"\/usr\/share\/themes\///" -e 's/\/gtk\-2\.0\/gtkrc\"//'|tr -d '\n')
   DEFAULTMBTHEME=$THEMEFILE
@@ -49,23 +51,27 @@ else
 
       # set MAD theme
       echo "include \"$PREFIX/share/themes/default/gtk-2.0/gtkrc.maemo_af_desktop\"" \
-        > $CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop
+        > $CURRENT_MAEMO_THEME_FILE
     fi
 
     # set MBOX theme
     DEFAULTMBTHEME=default
   fi
+
+  if [ ! -f $CURRENT_MAEMO_THEME_FILE -a "x$DONOTCREATE" = "x" ]; then
+    echo "include \"$PREFIX/share/themes/$THEMEFILE/gtk-2.0/gtkrc.maemo_af_desktop\"" > $CURRENT_MAEMO_THEME_FILE
+  fi 
 fi
 
 if [ ! -f $CURRENT_KEY_THEME_FILE -a "x$DONOTCREATE" = "x" ]; then
   cp -f /etc/osso-af-init/current-gtk-key-theme.default $CURRENT_KEY_THEME_FILE
 fi
 
-if [ -d $CURRENT_THEME_DIR ]; then
+if [ -d $CURRENT_THEME_DIR -a "x$DONOTCREATE" = "x" ]; then
   # workaround for the case that the theme files are missing
   # and the flash is full (could happen after ROS and CUD)
   for f in $CURRENT_THEME_FILE $CURRENT_KEY_THEME_FILE \
-           $CURRENT_THEME_DIR/current-gtk-theme.maemo_af_desktop; do
+           $CURRENT_MAEMO_THEME_FILE; do
     if [ ! -f $f -a -f $f.bak ]; then
       echo "$0: restoring theme file $f"
       mv -f $f.bak $f
