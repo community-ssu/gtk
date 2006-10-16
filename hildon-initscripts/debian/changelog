@@ -1,3 +1,11 @@
+hildon-initscripts (1.8-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added workaround for Gtk theme files when the flash is too full
+    to create them in startup. Fixes: NB#43067
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 13 Oct 2006 15:14:28 +0300
+
 hildon-initscripts (1.7-1) unstable; urgency=low
 
   * Now creating the .games folder to (new) correct place in af-sb-init.sh.
