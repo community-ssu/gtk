@@ -1,3 +1,7 @@
+2006-10-16  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+	* COPYING: Added
+	* locales/an_ES: Removed a GPL file.
+
 2006-06-11  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/da_DK, de_DE, el_GR, en_GB, en_US, es_ES, es_MX, fi_FI, fr_CA, fr_FR, it_IT, nl_NL, no_NO, pt_BR, pt_PT, ru_RU, sv_SE: Updated first_weekday and second field of week. Fixes NB#36804.
