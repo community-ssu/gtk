@@ -45,6 +45,8 @@ if [ "x$OSSO_RFS_DOES_NOT_DESTROY" = "x" ]; then
     FREE=`df | grep " /$" | awk '{print $4}'`
     if [ $FREE -gt 3500 ]; then
       rm -rf *
+    else
+      echo "$0: Not enough free space to safely remove .osso"
     fi
   fi  
 

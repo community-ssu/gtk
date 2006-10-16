@@ -52,24 +52,12 @@ if [ "x$OSSO_CUD_DOES_NOT_DESTROY" = "x" ]; then
   OLDDIR=`pwd`
   if [ -d /home/user/.osso ]; then
     cd /home/user/.osso
-    TMP=`find | grep -v "\(current-gtk-theme\)\|\(current-gtk-key-theme\)"`
-    for f in $TMP; do 
-      if [ "$f" = "." -o "$f" = ".." ]; then
-        continue
-      fi
-      rm -rf $f
-    done
-    # backup theme files so that they could be restored
-    # in case the flash is full
-    if [ -f current-gtk-theme ]; then
-      mv -f current-gtk-theme current-gtk-theme.bak
-    fi
-    if [ -f current-gtk-theme.maemo_af_desktop ]; then
-      mv -f current-gtk-theme.maemo_af_desktop \
-            current-gtk-theme.maemo_af_desktop.bak
-    fi
-    if [ -f current-gtk-key-theme ]; then
-      mv -f current-gtk-key-theme current-gtk-key-theme.bak
+    # only remove if there is certain amount of free space
+    FREE=`df | grep " /$" | awk '{print $4}'`
+    if [ $FREE -gt 3500 ]; then
+      rm -rf *
+    else
+      echo "$0: Not enough free space to safely remove .osso"
     fi
   fi  
 
