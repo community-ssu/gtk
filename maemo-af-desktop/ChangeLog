@@ -1,5 +1,9 @@
 2006-10-16  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.95
+
+2006-10-16  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.c: Use an animation banner,
 	  not a progress banner. Fixes the fix to NB#42256
 

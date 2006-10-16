@@ -1,3 +1,171 @@
+maemo-af-desktop (2.9.95-1) unstable; urgency=low
+
+  * hildon-status-bar/hildon-status-bar-main.c: Use an animation banner,
+    not a progress banner. Fixes the fix to NB#42256
+
+  * hildon-navigator/hn-others-button.c: Copy the 
+  system wide config file if there is no user one. Fixes: NB#42202
+
+  * hildon-home/hildon-home-applet.c: Keep track of children
+    creating windows to make sure the close button and resize handle
+    are always on top, as well as our event window
+    Fixes: NB#42549
+
+  * hildon-navigator/hildon-navigator-window.c: Added hardcoced gettext
+    package for tn-cpa. Fixes: NB#37100
+
+  * hildon-navigator/hn-app-switcher.c: Apply correct name to
+      the AS menu depending on its thumbable property. Fixes: NB#43294
+
+  * hildon-navigator/background-manager.c: do not run the main
+    loop when generating the background when we have no cancel
+    banner (theme change)
+
+  Applied fix to "Task Navigator requires full binary path in .desktop file
+  Exec field". Fixes NB#39036
+  * hildon-navigator/hn-others-button.c:use g_find_program_in_path
+    to resolve program path
+
+  * hildon-home/background-manager.c: Do not hardcode hildon home window
+    size. Fixes: NB#43264
+
+  * hildon-navigator/hn-app-switcher.c: Removed g_debug
+    leaking memory.
+  * hildon-status-bar/hildon-status-bar-main.c: Fixed potential
+    double free. Fixes: NB#39673
+
+  * hildon-home/hildon-home-main.c: do not abort if we could not create
+  .osso/hildon-home
+  Fixes: NB#43067
+
+  * hildon-navigator/hn-app-button.c: fixed display of the "9" emblem
+  Fixes: NB#43201
+
+  * hildon-navigator/hn-app-menu-item.[ch]: cache the close button
+    pixbufs in class variables. Fixes: NB#43043
+
+  * install_sbapplet.sh: Improved script.
+
+  * hildon-navigator/close-application-dialog.c: Use _RESPONSE_CANCEL
+    instead of _REJECT so we close on pressing ESC.
+  Fixes: NB#43121
+
+  * hildon-navigator/close-application-dialog.c:
+    - Revert to using default icon if not found
+    Fixes: NB#43049
+
+  * hildon-home/hildon-home-window.[ch]:
+    - Added "system-inactivity"
+    - on "system-inactivity", only tell the applets to background
+    - on "background", don't do anything if system-inacitivty
+  Fixes: NB#42985
+
+  * hildon-navigator/hn-others-button.c: Revert to default icon also
+    for thumb icons
+  * libhildonmenu/libhildonmenu.c: when using same pixbuf for normal and
+    thumb sizes, we need to increase the refcount. Fixes: NB#40005
+
+  * hildon-navigator/hn-app-button.c: Removed a Critical warning
+    Fixes: NB#39078
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - Grab the pointer when extension panel is really mapped so
+          it can behave properly. Fixes: NB#42620
+
+  * hildon-home/home-applet-handler.c: Fixed access to a freed
+    pointer in a warning message
+
+  * hildon-navigator/hn-app-menuitem.c: Apply ellipsis to
+    thumb label as well
+  * hildon-navigator/hn-app-switcher.c: Removed forced size
+    on the menu
+  Fixes: NB#42554
+
+  * hildon-navigator/hn-entry.[ch]: Added _peek_app_name
+  * hildon-navigator/hn-app-tooltip.c: Use the app name as the
+    tooltip text, instead of the window title. Fixes: NB#32757
+
+  * hildon-navigator/hn-menu-item.c: fixed bg-killed icon name
+    Fixes: NB#42906
+
+  * hildon-home-area.[ch]: add applet-change-{start,end} signals
+  * hildon-home-applet.c: emit this signal when the applet are touched
+  * hildon-home-window.c: temporary connect banner_destroy to
+    applet-change-start
+  Fixes: NB#42820
+
+  * hildon-home/hildon-home-main.c: Added lowmem HW state callback
+  * hildon-home/hildon-home-window.c:
+    - addded lowmem signal
+    - temporary disable going to layout mode and selecting applets
+      if in lowmem situation. Fixes: NB#31081
+
+  * hildon-home/background-manager.c: Avoid clipping the statusbar
+    background. Fixes: NB#42777
+
+  * hildon-status-bar/hildon-status-bar.c:
+    - replaced gtk_info* with hildon_banner_*
+    - removed global _onscreen variable, no longer needed.
+  Fixes: NB#42256
+
+  * hildon-navigator/hildon-navigator-window.c: Fixed an invalid
+    free. Fixes: NB#39640
+
+  * hildon-home/hildon-home-applet.c:
+    - do not start a resize if the applet is not resizable
+    - close button and resize handle and now drawn on their own
+      shaped window. Fixes: NB#42549
+
+  * install_sbapplet.sh: Touch the configuration. Fixes: NB#39131
+
+  * hildon-status-bar/hildon-status-bar-main.c: Fixed tipical
+  list's memory leak. Fixes: NB#42694
+
+  * maemo-af-desktop.defs: Do not define GTK2_RC_FILES, rely on osso-gtk
+    Fixes: NB#42035
+
+  * hildon-home/background-manager.c: Center the picture to the home
+    area when scaled. Fixes: NB#42493
+
+  * hildon-navigator/hildon-navigator-main.[ch]: 
+  - Not needed long time ago.
+
+  * hildon-home/hildon-home-applet.c:
+    added applet-selected emmitted when a new applet is selected
+  * hildon-home/hildon-home-window.c: Use this signal to trigger the
+    dimming of desktop instead
+
+  * hildon-home/hildon-home-area.c: Added layout-mode-started and
+    layout-mode-ended to do things after we know layout mode has been
+    applied
+  * hildon-home/hildon-home-window.c: Dim the desktop already when an
+    applet is added. Fixes NB#42429
+
+  * hildon-status-bar/hildon-status-bar-main.c: Use the correct name for
+    the statusbar extension, so it gets its proper theming
+
+  * hildon-home/hildon-home-applet.c:
+    - make the applet's widget unsensitive when in layout mode
+      Fixes: NB#42428
+    - added key_press and key_release to discard these events in layout mode
+
+  * hildon-home/background-manager.c: Initialize pointers
+    given to gdk_pixbuf_render_pixmap_and_mask_for_colormap to NULL
+
+  * hildon-status-bar/hildon-status-bar-main.c: Load the icon from
+    the icon theme, not from the stock icons
+  Fixes: NB#42430
+
+  * hildon-status-bar/hildon-status-bar-main.[ch]: Use a GtkImage instead
+    of an arrow for the arrow button
+  Fixes: NB#42430
+
+  * maemo-af-desktop-main.c: Cleanup.
+  * hildon-navigator/hildon-navigator-window.c: Moved most part
+  of init to constructor.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 16 Oct 2006 16:12:27 +0300
+
 maemo-af-desktop (2.9.94-1) unstable; urgency=low
 
   * hildon-home/hildon-home-window.c:
