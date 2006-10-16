@@ -1540,7 +1540,7 @@ _delayed_ib_show(gpointer data)
  
     info->timeout_to_show_id = 0;
      
-    info->banner = hildon_banner_show_progress( NULL, NULL, info->text );
+    info->banner = hildon_banner_show_animation( NULL, NULL, info->text );
     info->timeout_onscreen_id = g_timeout_add(
                        (guint)info->displaytime,
                        _delayed_infobanner_remove,
