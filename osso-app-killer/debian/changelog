@@ -1,9 +1,8 @@
 osso-app-killer (1.13-1) unstable; urgency=low
 
   * UNRELEASED
-  * Fixed ROS and CUD to work also when the flash is full. Fixes: NB#43067
-  * Added dependency to hildon-initscripts because of the flash full
-    workaround.
+  * Fixed ROS and CUD to do nothing in case the flash is too full.
+    Fixes: NB#43067
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 16 Oct 2006 10:45:10 +0300
 

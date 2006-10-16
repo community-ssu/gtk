@@ -7,7 +7,7 @@ Standards-Version: 3.6.0
 
 Package: osso-app-killer
 Architecture: all
-Depends: osso-af-startup (>= 1.23), dbus, sudo, hildon-initscripts (>= 1.8)
+Depends: osso-af-startup (>= 1.23), dbus, sudo
 Description: Collection of scripts for RFS/ROS, CUD, restore.
  Scripts to implement the 'cleansing effect' of Restore Original Settings
  and Clear User Data. Also included is a script to run before the restore
