@@ -1,3 +1,11 @@
+2006-10-17  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_popup, gtk_menu_popdown): Revert some maemo
+	breakage back to upstream. Instead of _NET_WM_ACTIVE_WINDOW (which
+	could be another process) as transient parent, use the toplevel of
+	attached widget. This should work exactly the same for applications,
+	and better for maemo-af-desktop menus. NB#43513
+
 2006-10-11  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtklabel.c (get_layout_location): 
