@@ -211,5 +211,5 @@ install_gtkrc ("gtkrc.maemo_af_desktop");
 
 mkdir ("$destdir/$themedir/matchbox");
 
-install_file ("theme.xml". "matchbox");
+install_file ("theme.xml", "matchbox");
 install_file ("index.theme");

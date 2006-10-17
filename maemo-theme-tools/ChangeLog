@@ -1,5 +1,9 @@
 2006-10-17  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
+	* maemo-theme-install (add_color_substitutions): (duh! :-))
+	   -install_file ("theme.xml". "matchbox");
+	   +install_file ("theme.xml", "matchbox");
+
 	* configure.ac: removed -Werror and -ansi, it borked the compile 
 	on ubuntu at least.
 
