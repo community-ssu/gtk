@@ -1,3 +1,8 @@
+2006-10-17  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* configure.ac: removed -Werror and -ansi, it borked the compile 
+	on ubuntu at least.
+
 2006-10-12  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* maemo-theme-install: Changing the script to do the real thing.
