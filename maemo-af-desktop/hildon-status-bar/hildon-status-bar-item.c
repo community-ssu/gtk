@@ -562,6 +562,8 @@ void hildon_status_bar_item_set_position( HildonStatusBarItem *item,
 		                          gint position )
 {
     HildonStatusBarItemPrivate *priv;
+
+    g_return_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item));
     
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
 
@@ -573,6 +575,8 @@ gint hildon_status_bar_item_get_position( HildonStatusBarItem *item )
 {
     HildonStatusBarItemPrivate *priv;
 
+    g_return_val_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item),0);
+    
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
 
     return priv->position;
@@ -582,6 +586,8 @@ gint hildon_status_bar_item_get_position( HildonStatusBarItem *item )
 gint hildon_status_bar_item_get_priority( HildonStatusBarItem *item )
 {
     HildonStatusBarItemPrivate *priv;
+
+    g_return_val_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item),0);
 
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
 
@@ -593,6 +599,8 @@ const gchar *hildon_status_bar_item_get_name( HildonStatusBarItem *item )
 {
     HildonStatusBarItemPrivate *priv;
 
+    g_return_val_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item),NULL);
+
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
 
     return priv->name;
@@ -603,6 +611,8 @@ gboolean hildon_status_bar_item_get_conditional( HildonStatusBarItem *item )
 {
     HildonStatusBarItemPrivate *priv;
 
+    g_return_val_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item),FALSE);
+
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
 
     return priv->conditional;
@@ -612,6 +622,8 @@ gboolean
 hildon_status_bar_item_get_mandatory( HildonStatusBarItem *item )
 {
     HildonStatusBarItemPrivate *priv;
+   
+    g_return_val_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item),FALSE);
     
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
     
@@ -644,6 +656,8 @@ void hildon_status_bar_item_set_button( HildonStatusBarItem *item,
 GtkWidget* hildon_status_bar_item_get_button( HildonStatusBarItem *item )
 {
     HildonStatusBarItemPrivate *priv;
+
+    g_return_val_if_fail (item && HILDON_IS_STATUSBAR_ITEM (item),NULL);
     
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
     

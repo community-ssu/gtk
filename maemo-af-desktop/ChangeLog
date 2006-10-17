@@ -1,3 +1,8 @@
+2006-10-17  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: Added asserts
+	for accesing the private members. Fixes: NB#43321
+
 2006-10-17  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/background-manager.c: Run as many iteration of the
