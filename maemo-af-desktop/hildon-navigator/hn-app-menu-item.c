@@ -385,8 +385,6 @@ hn_app_menu_item_constructor (GType                  type,
 	{
           gchar *app_name = hn_entry_info_get_title (priv->info);
 
-	  g_debug ("app_name: %s", app_name);
-
 	  gtk_label_set_text (GTK_LABEL (priv->label), app_name);
 	  g_free (app_name);
 	}
@@ -394,8 +392,6 @@ hn_app_menu_item_constructor (GType                  type,
 	{
           gchar *app_name = hn_entry_info_get_app_name (priv->info);
 	  gchar *win_name = hn_entry_info_get_window_name (priv->info);
-
-	  g_debug ("app_name: %s, win_name: %s", app_name, win_name);
 
 	  if (win_name)
             gtk_label_set_text (GTK_LABEL (priv->label2), win_name);

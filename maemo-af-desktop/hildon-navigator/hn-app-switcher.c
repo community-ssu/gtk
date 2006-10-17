@@ -765,8 +765,6 @@ main_menu_build (HNAppSwitcher *app_switcher)
   
   if (priv->main_menu)
     {
-      main_menu_ensure_state (app_switcher);
-
       return;
     }
 
@@ -1670,7 +1668,10 @@ hn_app_switcher_real_add_info (HNAppSwitcher *app_switcher,
    * destroying the menu widget will call the detach function
    */
   if (priv->main_menu)
-    gtk_widget_destroy (priv->main_menu);
+    {
+      gtk_widget_destroy (priv->main_menu);
+      priv->main_menu = NULL;
+    }
 }
 
 /* Class closure for the "remove" signal; this is called each time
@@ -1734,7 +1735,10 @@ hn_app_switcher_real_remove_info (HNAppSwitcher *app_switcher,
    * destroying the menu widget will call the detach function
    */
   if (priv->main_menu)
-    gtk_widget_destroy (priv->main_menu);
+    {
+      gtk_widget_destroy (priv->main_menu);
+      priv->main_menu = NULL;
+    }
 
   if (removed_app)
     {
@@ -1786,7 +1790,10 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
    * created on the fly, so we do not have to worry about menu changes there
    */
   if (priv->main_menu)
-    gtk_widget_destroy (priv->main_menu);
+    {
+      gtk_widget_destroy (priv->main_menu);
+      priv->main_menu = NULL;
+    }
 
   /*
    * If we are given an entry info and it of the app type, we just need to
