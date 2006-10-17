@@ -1,3 +1,8 @@
+2006-10-17  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildons-status-bar/hildon-status-bar-main.c:
+	Return value when called event d-bus method. Fixes: NB#43303 
+
 2006-10-17  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hn-app-switcher.c: Only build the menu when it has

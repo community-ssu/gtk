@@ -1025,7 +1025,8 @@ gint rpc_cb( const gchar *interface,
             val[0]->type != DBUS_TYPE_STRING ||
             val[1]->type != DBUS_TYPE_INT32 ||
             val[2]->type != DBUS_TYPE_INT32 ||
-            val[3]->type != DBUS_TYPE_STRING ) {
+            val[3]->type != DBUS_TYPE_STRING )
+	{
             if( arguments->len < 4 ) {
                 retval->value.s = "Not enough arguments to plugin";
             } else {
@@ -1040,26 +1041,32 @@ gint rpc_cb( const gchar *interface,
 	    
             return OSSO_ERROR;
         }
-
+ 	
         if (!panel)
+	{
+	    retval->value.s = "No panel";
             return OSSO_ERROR;
-
-        item = get_item( panel, val[0]->value.s );
+	}
+	
+	item = get_item( panel, val[0]->value.s );
         
-        /* Plugin loading failed */
-        if ( !item ) {
-	    
+	/* Plugin loading failed */
+        if (item == NULL)
+	{
+	    retval->value.s = "Item doesn't exist";
             return OSSO_ERROR;
-        }
+	}
 
         hildon_status_bar_item_update( item, 
                                        val[1]->value.i, 
                                        val[2]->value.i, 
                                        val[3]->value.s );
+
+	return OSSO_OK;
     }	
     /* Check the method delayed infobanner */    
     else if( g_str_equal( "delayed_infobanner", method ) )
-    {
+    {  
         if( arguments->len < 4 ||
 	    arguments->len > 5 ||
             val[0]->type != DBUS_TYPE_INT32 ||
@@ -1077,6 +1084,7 @@ gint rpc_cb( const gchar *interface,
 			  val[2]->type, val[3]->type,
 			  DBUS_TYPE_INT32, DBUS_TYPE_INT32, 
 			  DBUS_TYPE_INT32, DBUS_TYPE_STRING);
+		
             }
 	    ULOG_ERR( retval->value.s );
 	    
@@ -1179,7 +1187,7 @@ HildonStatusBarItem *get_item( StatusBar *panel, const gchar *plugin )
     if ( !panel || !plugin )  return NULL;
 
     /* Go through the array and check if the plugin match */
-    for( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i ) {
+    for( i = 0; i < HSB_MAX_NO_OF_ITEMS; i++ ) {
 	    
         if( panel->items[i] != NULL &&
             g_str_equal( hildon_status_bar_item_get_name(
