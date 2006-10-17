@@ -1,5 +1,10 @@
 2006-10-17  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/background-manager.c: Run as many iteration of the
+	  main loop as necessary between each _read. Fixes NB#42489
+
+2006-10-17  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-window.c: made all info notes
 	  created from home system modal to avoid them ending up
 	  behind another dialog

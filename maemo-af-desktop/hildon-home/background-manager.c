@@ -580,7 +580,10 @@ load_image_from_uri (const gchar  *uri,
 
   /* XXX Run the main loop to update the progress note */
   if (cancellable)
-    gtk_main_iteration ();
+    {
+      while (gtk_events_pending ())
+        gtk_main_iteration ();
+    }
 
   result = gnome_vfs_open (&handle, uri, GNOME_VFS_OPEN_READ);
   if (result != GNOME_VFS_OK)
@@ -611,7 +614,10 @@ load_image_from_uri (const gchar  *uri,
 
       /* XXX Run the main loop to update the progress note */
       if (cancellable)
-        gtk_main_iteration ();
+        {
+          while (gtk_events_pending ())
+            gtk_main_iteration ();
+        }
 
       result = gnome_vfs_read (handle, buffer, BUFFER_SIZE, &bytes_read);
       if (result == GNOME_VFS_ERROR_IO)
