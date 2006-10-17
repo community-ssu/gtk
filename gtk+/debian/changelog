@@ -1,8 +1,14 @@
-gtk+2.0 (2:2.6.10-2.osso20) unstable; urgency=low
+gtk+2.0 (2:2.6.10-2.osso20) UNRELEASED; urgency=low
 
-  * Fixes: NB#42621 Text is not correctly aligned in HildonNote notifications 
+  * NOT RELEASED YET
 
- -- Xan Lopez <xan.lopez@nokia.com>  Wed, 11 Oct 2006 11:31:21 +0300
+  [ Tommi Komulainen ]
+  * Fixes: NB#43513 Menus are set transient to the wrong window
+
+  [ Xan López ]
+  * Fixes: NB#42621 Text is not correctly aligned in HildonNote notifications
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 17 Oct 2006 16:26:52 +0300
 
 gtk+2.0 (2:2.6.10-2.osso19) unstable; urgency=low
 
