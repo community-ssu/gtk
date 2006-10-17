@@ -1,4 +1,8 @@
-2006-10-11  Johan Bilien <johan.bilien@nokia.com>
+2006-10-16  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.10
+
+2006-10-16  Johan Bilien <johan.bilien@nokia.com>
 
 	* hcp-rfs.c: Make all infonotes transient to the dialog
 	Fixes: NB#37551
