@@ -1,3 +1,9 @@
+2006-10-17  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-window.c: made all info notes
+	  created from home system modal to avoid them ending up
+	  behind another dialog
+
 2006-10-16  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.95

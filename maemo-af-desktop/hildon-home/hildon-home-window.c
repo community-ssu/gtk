@@ -185,7 +185,7 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
 
   if (priv->is_lowmem)
     {
-      hildon_banner_show_information (GTK_WIDGET(window),
+      hildon_banner_show_information (NULL,
                                       NULL,
                                       HILDON_HOME_LOWMEM_TEXT);
       return;
@@ -226,7 +226,7 @@ titlebar_layout_mode_activate_cb (HildonHomeTitlebar *titlebar,
   
   if (priv->is_lowmem)
     {
-      hildon_banner_show_information (GTK_WIDGET (window),
+      hildon_banner_show_information (NULL,
                                       NULL,
                                       HILDON_HOME_LOWMEM_TEXT);
       return;
@@ -1085,7 +1085,7 @@ hildon_home_window_show_information_note (HildonHomeWindow *window,
   GtkWidget *note = NULL;
 
   note =
-    hildon_note_new_information (GTK_WINDOW (window), 
+    hildon_note_new_information (NULL, 
 				                 text);
 		    
   gtk_dialog_run (GTK_DIALOG (note));
