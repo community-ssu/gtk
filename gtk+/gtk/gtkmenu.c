@@ -1377,8 +1377,7 @@ gtk_menu_popup (GtkMenu		    *menu,
   gboolean grab_keyboard;
   GtkMenuPrivate *priv = gtk_menu_get_private (menu);
   GdkScreen *screen;
-  GdkWindow *active_window;
-  gint try;
+  GtkWidget *parent_toplevel;
 
   g_return_if_fail (GTK_IS_MENU (menu));
 
@@ -1504,16 +1503,21 @@ gtk_menu_popup (GtkMenu		    *menu,
 
       gtk_menu_reparent (menu, menu->toplevel, FALSE);
     }
- 
-  if (parent_menu_shell) 
-    {
-      GtkWidget *toplevel;
 
-      toplevel = gtk_widget_get_toplevel (parent_menu_shell);
-      if (GTK_IS_WINDOW (toplevel))
-	gtk_window_group_add_window (_gtk_window_get_group (GTK_WINDOW (toplevel)), 
-				     GTK_WINDOW (menu->toplevel));
+  parent_toplevel = NULL;
+  if (parent_menu_shell) 
+    parent_toplevel = gtk_widget_get_toplevel (parent_menu_shell);
+  else if (!g_object_get_data (G_OBJECT (menu), "gtk-menu-explicit-screen"))
+    {
+      GtkWidget *attach_widget = gtk_menu_get_attach_widget (menu);
+      if (attach_widget)
+	parent_toplevel = gtk_widget_get_toplevel (attach_widget);
     }
+
+  /* Set transient for to get the right window group and parent relationship */
+  if (parent_toplevel && GTK_IS_WINDOW (parent_toplevel))
+    gtk_window_set_transient_for (GTK_WINDOW (menu->toplevel),
+				  GTK_WINDOW (parent_toplevel));
   
   menu->parent_menu_item = parent_menu_item;
   menu->position_func = func;
@@ -1565,29 +1569,6 @@ gtk_menu_popup (GtkMenu		    *menu,
                                NULL);
     }
 
-  gtk_widget_realize (menu->toplevel);
-
-  /* Set the window transient for the currently active window, so that the menu
-   * will get deactivated when a different window is put on top. */
-  for (try = 0; try < 10; try++)
-    {
-      active_window = gdk_screen_get_active_window (screen);
-      if (!active_window)
-        break;
-
-      gdk_error_trap_push ();
-      gdk_window_set_transient_for (menu->toplevel->window, active_window);
-      if (gdk_error_trap_pop ())
-        continue; /* The window we tried to parent to disappeared, retry. */
-
-      /* Success. */
-      break;
-    }
-
-  if (xgrab_shell == widget)
-    popup_grab_on_window (widget->window, activate_time, grab_keyboard); /* Should always succeed */
-  gtk_grab_add (GTK_WIDGET (menu));
-
   _gtk_menu_shell_set_first_click (menu_shell);
 
   /* Hildon: if no item is selected, select the first one */
@@ -1598,6 +1579,10 @@ gtk_menu_popup (GtkMenu		    *menu,
      the screen.
    */
   gtk_widget_show (menu->toplevel);
+
+  if (xgrab_shell == widget)
+    popup_grab_on_window (widget->window, activate_time, grab_keyboard); /* Should always succeed */
+  gtk_grab_add (GTK_WIDGET (menu));
 }
 
 void
@@ -1634,7 +1619,7 @@ gtk_menu_popdown (GtkMenu *menu)
   /* The X Grab, if present, will automatically be removed when we hide
    * the window */
   gtk_widget_hide (menu->toplevel);
-  gtk_window_group_add_window (_gtk_window_get_group (NULL), GTK_WINDOW (menu->toplevel));
+  gtk_window_set_transient_for (GTK_WINDOW (menu->toplevel), NULL);
 
   if (menu->torn_off)
     {
