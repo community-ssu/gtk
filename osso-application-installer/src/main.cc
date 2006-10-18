@@ -689,7 +689,7 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
   if (dec == NULL)
     ;
   else if (dec->decode_int () == 0)
-    annoy_user_with_log ("Operation failed");
+    annoy_user_with_log (_("ai_ni_operation_failed"));
   else
     {
       section_info *all_si = new section_info;
