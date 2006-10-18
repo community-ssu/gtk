@@ -91,6 +91,9 @@ Here is a table of the various key names:
    maemo 2.0:  repo_deb
    maemo 3.0:  repo_deb_3
 
+There is also an example shell script for creating .install files in
+the same directory as this document.
+
 
 Disabling repositories
 ----------------------
