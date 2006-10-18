@@ -206,3 +206,14 @@ BUGS
 - https needs to be trusted, even without key.
 - use doubles for sizes, maybe
 
+
+Cleanup
+-------
+
+The code needs a serious cleanup.  For example
+
+- the global package and section list needs to be unglobalized.
+- likewise localize_file_and_keep_it_open.
+- instead of recreating widgets all the time, we should hide/show them.
+- the cps of main.cc is seriously confusing now.  maybe better
+  documentation can help.
