@@ -1,3 +1,15 @@
+2006-10-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (make_global_package_list): Packed icon and package
+	name in a single column to avoid the column separator in the
+	header (N43112).
+
+2006-10-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.cc (get_package_list_reply): Use localized
+	ai_ni_operation_failed instead of literal "Operation
+	failed". (N43144)
+
 2006-10-10  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Released 4.34.
