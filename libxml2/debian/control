@@ -1,0 +1,89 @@
+Source: libxml2
+Priority: optional
+Section: libs
+Maintainer: Debian XML/SGML Group <debian-xml-sgml-pkgs@lists.alioth.debian.org>
+Uploaders: Mike Hommey <glandium@debian.org>
+Standards-Version: 3.6.1
+Build-Depends: debhelper (>= 4.1.67), zlib1g-dev | libz-dev, autotools-dev, xsltproc, docbook-xsl
+
+Package: libxml2
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Recommends: xml-core
+Description: GNOME XML library
+ XML is a metalanguage to let you design your own markup language.
+ A regular markup language defines a way to describe information in
+ a certain class of documents (eg HTML). XML lets you define your
+ own customized markup languages for many classes of document. It
+ can do this because it's written in SGML, the international standard
+ metalanguage for markup languages.
+ .
+ This package provides a library providing an extensive API to handle
+ such XML data files.
+
+Package: libxml2-dbg
+Architecture: any
+Section: libdevel
+Depends: ${shlibs:Depends}, libxml2 (= ${Source-Version}) 
+Recommends: xml-core
+Description: GNOME XML library debug symbols
+ XML is a metalanguage to let you design your own markup language.
+ A regular markup language defines a way to describe information in
+ a certain class of documents (eg HTML). XML lets you define your
+ own customized markup languages for many classes of document. It
+ can do this because it's written in SGML, the international standard
+ metalanguage for markup languages.
+ .
+ This package provides a library providing an extensive API to handle
+ such XML data files.
+
+Package: libxml2-utils
+Architecture: any
+Section: text
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Replaces: libxml2 (<< 2.5.7-1)
+Conflicts: libxml2 (<< 2.5.7-1)
+Description: XML utilities
+ XML is a metalanguage to let you design your own markup language.
+ A regular markup language defines a way to describe information in
+ a certain class of documents (eg HTML). XML lets you define your
+ own customized markup languages for many classes of document. It
+ can do this because it's written in SGML, the international standard
+ metalanguage for markup languages.
+ .
+ This package provides xmllint, a tool for validating and reformatting
+ XML documents, and xmlcatalog, a tool to parse and manipulate XML or
+ SGML catalog files.
+
+Package: libxml2-dev
+Architecture: any
+Section: libdevel
+Depends: libxml2 (= ${Source-Version}), zlib1g-dev | libz-dev
+Replaces: libxml2 (<= 2.6.6-1), libxml2-headers (= 2.6.7-1)
+Conflicts: libxml2 (<= 2.6.6-1), libxml2-headers (= 2.6.7-1)
+Description: Development files for the GNOME XML library
+ XML is a metalanguage to let you design your own markup language.
+ A regular markup language defines a way to describe information in
+ a certain class of documents (eg HTML). XML lets you define your
+ own customized markup languages for many classes of document. It
+ can do this because it's written in SGML, the international standard
+ metalanguage for markup languages.
+ .
+ Install this package if you wish to develop your own programs using
+ the GNOME XML library.
+
+Package: libxml2-doc
+Architecture: all
+Section: doc
+Description: Documentation for the GNOME XML library
+ XML is a metalanguage to let you design your own markup language.
+ A regular markup language defines a way to describe information in
+ a certain class of documents (eg HTML). XML lets you define your
+ own customized markup languages for many classes of document. It
+ can do this because it's written in SGML, the international standard
+ metalanguage for markup languages.
+ .
+ This package contains general information about the GNOME XML library
+ and more specific API references.
+
