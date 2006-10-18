@@ -1736,6 +1736,14 @@ localize_file_and_keep_it_open (const char *uri,
 				void (*cont) (char *local, void *data),
 				void *data)
 {
+  if (copy_cont != NULL)
+    {
+      add_log ("Unexpected reentry\n");
+      if (cont)
+	cont (NULL, data);
+      return;
+    }
+
   copy_cont = cont;
   copy_cont_data = data;
   copy_target = NULL;
@@ -1829,7 +1837,10 @@ cleanup_temp_file ()
   */
 
   if (copy_vfs_handle)
-    gnome_vfs_close (copy_vfs_handle);
+    {
+      gnome_vfs_close (copy_vfs_handle);
+      copy_vfs_handle = NULL;
+    }
 
   if (copy_local)
     {
@@ -1840,6 +1851,8 @@ cleanup_temp_file ()
 
       g_free (copy_local);
       g_free (copy_tempdir);
+      copy_local = NULL;
+      copy_tempdir = NULL;
     }
 }
 
