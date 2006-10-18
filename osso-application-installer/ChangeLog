@@ -3,6 +3,10 @@
 	* src/util.cc (make_global_package_list): Packed icon and package
 	name in a single column to avoid the column separator in the
 	header (N43112).
+	(localize_file_and_keep_it_open): Return with an error when a
+	localization operation is active.
+	(cleanup_temp_file): Guard against closing and freeing things
+	twice.
 
 2006-10-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
