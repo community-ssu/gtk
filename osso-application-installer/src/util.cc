@@ -1079,30 +1079,22 @@ make_global_package_list (GList *packages,
 
   gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree), TRUE);
 
+  column = gtk_tree_view_column_new ();
+
   renderer = gtk_cell_renderer_pixbuf_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      global_icon_func,
-					      tree,
-					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
-  gtk_tree_view_column_set_sizing (column, GTK_TREE_VIEW_COLUMN_FIXED);
-  gtk_tree_view_column_set_expand (column, FALSE);
-  gtk_tree_view_column_set_fixed_width (column, 30);
+  gtk_cell_renderer_set_fixed_size (renderer, 30, -1);
+  gtk_tree_view_column_pack_start (column, renderer, FALSE);
+  gtk_tree_view_column_set_cell_data_func (column, renderer, global_icon_func, tree, NULL);
 
   renderer = gtk_cell_renderer_text_new ();
   g_object_set (renderer, "yalign", 0.0, NULL);
-  gtk_tree_view_insert_column_with_data_func (GTK_TREE_VIEW (tree),
-					      -1,
-					      NULL,
-					      renderer,
-					      global_name_func,
-					      tree,
-					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
+  gtk_tree_view_column_pack_end (column, renderer, TRUE);
+  gtk_tree_view_column_set_cell_data_func (column, renderer, global_name_func, tree, NULL);
+
+  gtk_tree_view_insert_column (GTK_TREE_VIEW (tree), column, -1);
+
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 0);
 
   // Setting the sizing of this columne to FIXED but not specifying
   // the width is a workaround for some bug in GtkTreeView.  If we
@@ -1123,7 +1115,7 @@ make_global_package_list (GList *packages,
 					      global_version_func,
 					      tree,
 					      NULL);
-  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 2);
+  column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree), 1);
   gtk_tree_view_column_set_alignment (column, 1.0);
   gtk_tree_view_column_set_expand (column, FALSE);
 
