@@ -1376,7 +1376,6 @@ gtk_menu_popup (GtkMenu		    *menu,
   GtkMenuShell *menu_shell;
   gboolean grab_keyboard;
   GtkMenuPrivate *priv = gtk_menu_get_private (menu);
-  GdkScreen *screen;
   GtkWidget *parent_toplevel;
 
   g_return_if_fail (GTK_IS_MENU (menu));
@@ -1553,21 +1552,12 @@ gtk_menu_popup (GtkMenu		    *menu,
 
   gtk_menu_scroll_to (menu, menu->scroll_offset);
 
-  screen = gtk_widget_get_screen (widget);
-
+  /* Hildon: save position of the pointer during popup. Not multihead safe. */
   if (priv->context_menu)
-    {
-      /* Save position of the pointer during popup */
-      /* currently not-multihead safe */
-      GdkDisplay *display;
-      
-      display = gdk_screen_get_display (screen);
-  
-      gdk_display_get_pointer (display, NULL,
-                               &priv->popup_pointer_x,
-                               &priv->popup_pointer_y,
-                               NULL);
-    }
+    gdk_display_get_pointer (gtk_widget_get_display (widget), NULL,
+			     &priv->popup_pointer_x,
+			     &priv->popup_pointer_y,
+			     NULL);
 
   _gtk_menu_shell_set_first_click (menu_shell);
 
