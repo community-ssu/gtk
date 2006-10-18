@@ -1,3 +1,9 @@
+xft (2.1.6-1osso12) unstable; urgency=low
+
+  * Build-Depend on libfreetype6-dev.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 18 Oct 2006 21:24:51 +0300
+
 xft (2.1.6-1osso11) unstable; urgency=low
 
   * Fixing a typo in the control file
