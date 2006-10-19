@@ -1,3 +1,39 @@
+maemo-af-desktop (2.9.96-1) unstable; urgency=low
+
+  * hildon-home/backgroun-manager.c: Use SIGKILL to kill the child,
+  to avoid interfering with our own signal handler.
+
+  * libhildonmenu/libhildonmenu.c: (read_menu_conf) Initialized two pointer to
+  null. They were crashing desktop on parsing others menu's bogus XML.
+
+  * hildon-navigator/hn-keys.c, hildon-navigator/hn-wm.c:
+  Relay long press of power key shortcut event to MCE.
+  Fixes: NB#43734
+
+  * hildon-home/hildon-home-applet.c: emit "applet-change-start"
+  also when the applet is closed with the button
+
+  * libhildonmenu/libhildonmenu.c: Fixed accidental removal of
+    a "fprintf"
+
+  * hildons-status-bar/hildon-status-bar-main.c:
+  Return value when called event d-bus method. Fixes: NB#43303 
+
+  * hildon-home/hn-app-switcher.c: Only build the menu when it has
+    changed. Fixes: NB#42748
+
+  * hildon-status-bar/hildon-status-bar-main.c: Added asserts
+  for accesing the private members. Fixes: NB#43321
+
+  * hildon-home/background-manager.c: Run as many iteration of the
+    main loop as necessary between each _read. Fixes NB#42489
+
+  * hildon-home/hildon-home-window.c: made all info notes
+    created from home system modal to avoid them ending up
+    behind another dialog
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 19 Oct 2006 17:46:53 +0300
+
 maemo-af-desktop (2.9.95-1) unstable; urgency=low
 
   * hildon-status-bar/hildon-status-bar-main.c: Use an animation banner,

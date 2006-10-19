@@ -1,5 +1,9 @@
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.96-1
+
+2006-10-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/backgroun-manager.c: Use SIGKILL to kill the child,
 	to avoid interfering with our own signal handler.
 
