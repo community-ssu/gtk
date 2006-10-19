@@ -1098,14 +1098,15 @@ gtk_scrolled_window_get_focus_movement (GtkScrolledWindow *scrolled_window)
       focus_child = GTK_CONTAINER (focus_child)->focus_child;
     }
 
+  if (!gtk_widget_translate_coordinates (focus_child->parent,
+                                         GTK_WIDGET (scrolled_window),
+                                         focus_child->allocation.x,
+                                         focus_child->allocation.y, &x, &y))
+    return 0;
+
   range = GTK_RANGE (scrolled_window->vscrollbar);
   adj = range->adjustment;
   value = gtk_adjustment_get_value (adj);
-
-  gtk_widget_translate_coordinates (focus_child->parent,
-				    GTK_WIDGET (scrolled_window),
-				    focus_child->allocation.x,
-				    focus_child->allocation.y, &x, &y);
 
   border_width = GTK_CONTAINER (scrolled_window)->border_width;
 
