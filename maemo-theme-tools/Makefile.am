@@ -20,4 +20,5 @@ MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure \
 			  install-sh config.sub \
 			  config.guess intltool-extract.in \
 			  intltool-merge.in intltool-update.in  \
-			  mkinstalldirs build-stamp configure-stamp
+			  mkinstalldirs build-stamp configure-stamp \
+			  INSTALL

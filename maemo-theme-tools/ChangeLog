@@ -1,3 +1,10 @@
+2006-10-19  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
+	* INSTALL: Removing from SVN, adding to maintainer-clean files.
+
+	* maemo-theme-install: Adding cache-files generation. 
+
 2006-10-17  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* maemo-theme-install (add_color_substitutions): (duh! :-))
