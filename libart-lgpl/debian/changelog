@@ -1,3 +1,9 @@
+libart-lgpl (2.3.17-1osso5) unstable; urgency=low
+
+  * changed packaging, removed upstream folder, added extracted orig.tar.gz, changed debian/rules
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Thu, 19 Oct 2006 15:27:00 +0300
+
 libart-lgpl (2.3.17-1osso4) unstable; urgency=low
 
   * Looks like libc6 is now an "essential dependency" - removing it.
