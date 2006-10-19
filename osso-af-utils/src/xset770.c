@@ -115,7 +115,7 @@ void usage()
  */
 int main (int argc, char*argv[])
 {
-  int i, n_devices = 0;
+  int i, j, n_devices = 0;
   int key = -1, val = 0; /* for keyrepeat */
   XDeviceInfo *devices = NULL;
 
@@ -169,11 +169,13 @@ int main (int argc, char*argv[])
       }
       else
       {
-        for (i = 0; i < n_devices; i++)
+        for (j = 0; j < n_devices; j++)
         {
-          if (devices[i].use == IsXExtensionKeyboard)
-            set_keyrepeat (-1, key, val);
-        }
+          if (devices[j].use == IsXExtensionKeyboard)
+	  {
+	    set_keyrepeat (-1, key, val);
+	  }
+	}
       }
 
       break;
@@ -184,9 +186,11 @@ int main (int argc, char*argv[])
   }
 
   if (devices)
+  {
     XFreeDeviceList(devices);
+  }
+
   XCloseDisplay (dpy);
 
   return 0;
 }
-
