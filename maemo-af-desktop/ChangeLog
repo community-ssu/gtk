@@ -1,5 +1,12 @@
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-switcher.c: Rebuild the menu
+	  if the thumbable status changed
+	* hildon-navigator/hn-app-menu-item.c: Hopefully fixed
+	  the size_request for good
+
+2006-10-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.96-1
 
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>

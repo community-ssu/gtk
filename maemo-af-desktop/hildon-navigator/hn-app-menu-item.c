@@ -429,28 +429,36 @@ hn_app_menu_item_size_request (GtkWidget      *widget,
 			       GtkRequisition *requisition)
 {
   HNAppMenuItemPrivate *priv = HN_APP_MENU_ITEM (widget)->priv;
-  GtkRequisition child_req, child_req2 = {0};
+  GtkRequisition child_req = {0};
+  GtkRequisition child_req2 = {0};
   gint child_width, child_height;
 
   /* if the width of icon + label (+ close) is too big,
    * we clamp it to AS_MENU_ITEM_WIDTH and ellipsize the
    * label text; the height is set by the icons
    */
+
   gtk_widget_size_request (priv->icon, &child_req);
   child_width = child_req.width;
   child_height = child_req.height;  
-      
+
+  child_req.width = child_req.height = 0;
   gtk_widget_size_request (priv->label,  &child_req);    
   if (priv->thumbable)
+    {
     gtk_widget_size_request (priv->label2, &child_req2);    
+    }
   child_width += MAX (child_req.width, child_req2.width);
 
   if (priv->show_close)
     {
+      child_req.width = child_req.height = 0;
       gtk_widget_size_request (priv->close, &child_req);
       child_width += child_req.width;
       child_height = child_req.height;
     }
+
+  child_width = MAX (child_width, requisition->width);
   
   GTK_WIDGET_CLASS (hn_app_menu_item_parent_class)->size_request (widget,
 		 						  requisition);

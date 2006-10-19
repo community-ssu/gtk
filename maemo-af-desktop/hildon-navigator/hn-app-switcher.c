@@ -267,6 +267,7 @@ struct _HNAppSwitcherPrivate
   /* pointer location */
   guint pointer_on_button : 1;
   guint is_thumbable : 1;
+  guint was_thumbable : 1;
 
   guint menu_button_timeout;
 
@@ -580,7 +581,6 @@ main_menu_detach (GtkWidget *attach_widget,
 
   app_switcher->priv->main_menu = NULL;
   app_switcher->priv->main_home_item = NULL;
-  app_switcher->priv->is_thumbable = FALSE;
 
   GtkToggleButton *button = GTK_TOGGLE_BUTTON(app_switcher->priv->main_button);
   gtk_toggle_button_set_active (button, FALSE);
@@ -682,6 +682,8 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
     gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
                                 priv->main_home_item);
 
+
+  priv->was_thumbable = priv->is_thumbable;
   g_object_unref (priv->main_home_item);
 }
 
@@ -974,7 +976,16 @@ menu_button_pressed_timeout (HNAppSwitcher *app_switcher)
 {
   HNAppSwitcherPrivate *priv = app_switcher->priv;
 
+  g_source_remove (priv->menu_button_timeout);
   priv->menu_button_timeout = 0;
+
+  /* If the thumbable status has changed since last time, we need to
+   * rebuild the menu :( */
+  if (priv->main_menu && priv->is_thumbable != priv->was_thumbable)
+    {
+      gtk_widget_destroy (priv->main_menu);
+      priv->main_menu = NULL;
+    }
   
   hn_app_switcher_toggle_menu_button (app_switcher);
   
