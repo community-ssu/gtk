@@ -1613,6 +1613,7 @@ gboolean set_menu_contents( GtkTreeModel *model )
 		return_value = TRUE;
 	}
 
+    fprintf(fp, "%s", (const char *) buffer->content);
 	fclose(fp);
 
 
