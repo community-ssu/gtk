@@ -38,7 +38,7 @@ major=2
 config.status:
 	dh_testdir
 	# Add here commands to configure the package.
-	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 
 build: build-stamp
@@ -46,7 +46,7 @@ build-stamp:  config.status
 	dh_testdir
 
 	# Add here commands to compile the package.
-	cd $(SOURCE_DIR) && $(MAKE)
+	$(MAKE)
 
 	touch build-stamp
 
@@ -57,7 +57,7 @@ clean:
 	rm -fr $(SOURCE_DIR)
 
 	# untar and patch new & clean directory
-	tar -zxf upstream/tarballs/libart-lgpl_2.3.17.orig.tar.gz
+#	tar -zxf upstream/tarballs/libart-lgpl_2.3.17.orig.tar.gz
 
 #	for f in upstream/patches/*.diff; do \
 #		patch -p0 < $$f; \
@@ -82,7 +82,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/tmp
-	cd $(SOURCE_DIR) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
 
 # Build architecture-independent files here.
@@ -93,7 +93,7 @@ binary-indep: build install
 binary-arch: build install
 	dh_testdir
 	dh_testroot
-	dh_installchangelogs $(SOURCE_DIR)/ChangeLog
+	dh_installchangelogs ChangeLog
 	dh_installdocs
 	dh_installexamples
 	dh_install --sourcedir=debian/tmp -v
