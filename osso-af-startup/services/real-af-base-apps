@@ -33,6 +33,10 @@ start)
   fi
 
   source $AF_INIT_DIR/keyboard.sh start
+  
+  if [ -x /usr/bin/hwkbd-reconfig ]; then
+	  /usr/bin/hwkbd-reconfig
+  fi
 
   if [ -x $AF_INIT_DIR/osso-media-server.sh ]; then
     $AF_INIT_DIR/osso-media-server.sh start &

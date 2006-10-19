@@ -87,10 +87,6 @@ start)
 
   rm -f /tmp/im_disable_tools_menu
 
-  if [ -x /usr/bin/hwkbd-reconfig ]; then
-    /usr/bin/hwkbd-reconfig
-  fi
-
   ;;
 stop)
 

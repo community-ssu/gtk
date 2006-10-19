@@ -1,3 +1,10 @@
+osso-af-startup (1.29-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Moved running of hwkbd-reconfig after MAD startup. Fixes: NB#43511
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 19 Oct 2006 13:24:02 +0300
+
 osso-af-startup (1.28-1) unstable; urgency=low
 
   * Reverted back to old building style because the new didn't work.
