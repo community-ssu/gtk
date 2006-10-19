@@ -789,8 +789,8 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			extras_iter = g_malloc0( sizeof( GtkTreeIter ) );
 
-			GtkTreePath *first_folder;
-			GtkTreePath *last_folder;
+			GtkTreePath *first_folder = NULL;
+			GtkTreePath *last_folder  = NULL;
 
 			find_first_and_last_root_level_folders(
 					GTK_TREE_MODEL( menu_tree ),

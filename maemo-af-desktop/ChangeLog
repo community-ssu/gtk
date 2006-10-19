@@ -1,3 +1,8 @@
+2006-10-19  Moises Martinez <moises.martinzes@nokia.com>
+
+	* libhildonmenu/libhildonmenu.c: (read_menu_conf) Initialized two pointer to
+	null. They were crashing desktop on parsing others menu's bogus XML.
+
 2006-10-19  Tomas Junnonen <tomas.junnonen@nokia.com>
 
 	* hildon-navigator/hn-keys.c, hildon-navigator/hn-wm.c:
