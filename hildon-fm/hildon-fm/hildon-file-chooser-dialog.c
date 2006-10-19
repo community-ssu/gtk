@@ -42,6 +42,7 @@
 #include <string.h>
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-defines.h>
+#include <hildon-widgets/hildon-banner.h>
 #include <libintl.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
@@ -202,6 +203,17 @@ unescape_character (const char *scanner)
   return (first_digit << 4) | second_digit;
 }
 
+static void chooser_entry_invalid_input_cb (GtkEntry *entry,
+                                            GtkInvalidInputType inv_type,
+                                            gpointer user_data)
+{
+  if (inv_type == GTK_INVALID_INPUT_MAX_CHARS_REACHED) {
+    /* show the infoprint "ckdg_ib_maximum_characters_reached" */
+    hildon_banner_show_information (GTK_WIDGET (entry), NULL,
+				    HCS("ckdg_ib_maximum_characters_reached"));
+  }
+}
+
 static gchar *
 g_unescape_uri_string (const char *escaped,
                        int         len,
@@ -310,25 +322,12 @@ hildon_file_chooser_dialog_set_limit(HildonFileChooserDialog *self)
 			    self->priv->max_filename_length);
 }
 
-static void 
-hildon_file_chooser_dialog_check_limit(GtkEditable *editable,
-  gchar *new_text, gint new_text_length,
-  gint *position, gpointer data)
-{
-  GtkEntry *entry = GTK_ENTRY(editable);
-
-  if (entry->text_max_length > 0 && 
-      entry->text_length + new_text_length > entry->text_max_length)
-      gtk_infoprint(GTK_WINDOW(data), 
-          HCS("ckdg_ib_maximum_characters_reached"));  
-}
-
 static void insensitive_button(GtkWidget *widget, gpointer data)
 { 
   HildonFileChooserDialogPrivate *priv =
 	HILDON_FILE_CHOOSER_DIALOG(data)->priv;
 
-  gtk_infoprint(GTK_WINDOW(data), priv->infobanner_message);
+  hildon_banner_show_information(widget, NULL, priv->infobanner_message);
 }
 
 static void file_activated_handler(GtkWidget * widget, gpointer user_data)
@@ -1541,9 +1540,8 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
           g_signal_connect( priv->entry_name, "changed",
 		          G_CALLBACK( hildon_file_chooser_entry_changed ),
 		          self );
-    g_signal_connect(priv->entry_name, "insert-text",
-		          G_CALLBACK( hildon_file_chooser_dialog_check_limit ),
-              self );
+    g_signal_connect(priv->entry_name, "invalid-input",
+		     G_CALLBACK(chooser_entry_invalid_input_cb), self);
 
     priv->hbox_location = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
     priv->hbox_items = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
