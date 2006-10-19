@@ -1,3 +1,9 @@
+2006-10-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkscrolledwindow.c (gtk_scrolled_window_get_focus_movement):
+	Check the return value of gtk_widget_translate_coordinates to avoid
+	using uninitialized variables.
+
 2006-10-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c (gtk_menu_popup): Minor cleanups
