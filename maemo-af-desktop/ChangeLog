@@ -1,3 +1,9 @@
+2006-10-19  Tomas Junnonen <tomas.junnonen@nokia.com>
+
+	* hildon-navigator/hn-keys.c, hildon-navigator/hn-wm.c:
+	Relay long press of power key shortcut event to MCE.
+	Fixes: NB#43734
+
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-applet.c: emit "applet-change-start"

@@ -117,12 +117,12 @@ hn_keys_action_home (HNKeysConfig *keys,
 
 static void 
 hn_keys_action_power (HNKeysConfig *keys,
-		      gpointer     *user_data)
+                      gpointer     *user_data)
 {
   osso_rpc_t       retval;
   osso_context_t * osso_context
     = get_context(osso_manager_singleton_get_instance());
-
+  gboolean long_press = GPOINTER_TO_INT(user_data);
   
   if (!osso_context ||
       OSSO_OK != osso_rpc_run_system (osso_context,
@@ -131,7 +131,7 @@ hn_keys_action_power (HNKeysConfig *keys,
                                       MCE_REQUEST_IF,
                                       MCE_TRIGGER_POWERKEY_EVENT_REQ,
                                       &retval,
-                                      DBUS_TYPE_BOOLEAN, FALSE, /* Long press */
+                                      DBUS_TYPE_BOOLEAN, long_press,
                                       DBUS_TYPE_INVALID))
     {
           g_warning("Unable to toggle Power menu");
@@ -158,7 +158,7 @@ HNKeysActionConfLookup[] =
   { HN_KEYS_GCONF_PATH "/task_launcher",   HN_KEY_ACTION_TASK_LAUNCHER,
     hn_keys_action_tn_activate, GINT_TO_POINTER (HN_TN_ACTIVATE_OTHERS_MENU)},
   { HN_KEYS_GCONF_PATH "/power",           HN_KEY_ACTION_POWER,
-    hn_keys_action_power, NULL },
+    hn_keys_action_power, GINT_TO_POINTER(FALSE) },
   { HN_KEYS_GCONF_PATH "/home",            HN_KEY_ACTION_HOME,
     hn_keys_action_home, NULL },
   { HN_KEYS_GCONF_PATH "/menu",            HN_KEY_ACTION_MENU,

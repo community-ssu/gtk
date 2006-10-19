@@ -36,6 +36,7 @@
 #include <hildon-widgets/hildon-defines.h>
 #include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
+#include <hildon-widgets/hildon-window.h>
 
 #include <hildon-base-lib/hildon-base-dnotify.h>
 
@@ -133,8 +134,9 @@ struct HNWM   /* Our main struct */
   GList        *banner_stack;
 
   /* Key bindings and shortcuts */
-  HNKeysConfig *keys;
+  HNKeysConfig  *keys;
   HNKeyShortcut *shortcut;
+  gulong         power_key_timeout;
 
   /* FIXME: Below memory management related not 100% sure what they do */
 
@@ -1252,6 +1254,19 @@ hn_wm_activate(guint32 what)
     }
 }
 
+static gboolean
+hnwm_power_key_timeout (gpointer data)
+{
+  if (hnwm.shortcut != NULL &&
+      hnwm.shortcut->action == HN_KEY_ACTION_POWER)
+    {
+      hnwm.shortcut->action_func (hnwm.keys, GINT_TO_POINTER(TRUE));
+      hnwm.shortcut = NULL;
+    }
+
+  hnwm.power_key_timeout = 0;
+  return FALSE;  
+}
 
 /* Main event filter  */
 
@@ -1304,10 +1319,26 @@ hn_wm_x_event_filter (GdkXEvent *xevent,
     {
       XKeyEvent *kev = (XKeyEvent *)xevent;
       hnwm.shortcut = hn_keys_handle_keypress (hnwm.keys, kev->keycode, kev->state); 
+
+      if (hnwm.shortcut != NULL &&
+          hnwm.shortcut->action == HN_KEY_ACTION_POWER &&
+          !hnwm.power_key_timeout)
+        {
+          hnwm.power_key_timeout = g_timeout_add
+            (HILDON_WINDOW_LONG_PRESS_TIME,
+             hnwm_power_key_timeout, NULL);
+        }
+
       return GDK_FILTER_CONTINUE;
     }
   else if (((XEvent*)xevent)->type == KeyRelease)
     {
+      if (hnwm.power_key_timeout)
+        {
+          g_source_remove (hnwm.power_key_timeout);
+          hnwm.power_key_timeout = 0;
+        }
+
       if (hnwm.shortcut != NULL)
         {
           if (!hn_wm_modal_windows_present())
