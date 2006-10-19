@@ -565,7 +565,6 @@ hn_entry_info_get_app_icon (HNEntryInfo  *info,
 
   real_info = REAL_ENTRY_INFO (info);
  
-  g_debug (G_STRLOC ": looking for cache entry (size:%d)", size);
   retval = g_hash_table_lookup (real_info->icon_cache,
                                 GINT_TO_POINTER (size));
   if (retval)
