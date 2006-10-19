@@ -1,6 +1,4 @@
-gtk+2.0 (2:2.6.10-2.osso20) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+gtk+2.0 (2:2.6.10-2.osso20) unstable; urgency=low
 
   [ Tommi Komulainen ]
   * Fixes: NB#43513 Menus are set transient to the wrong window
