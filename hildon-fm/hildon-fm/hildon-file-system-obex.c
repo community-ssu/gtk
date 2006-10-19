@@ -69,6 +69,11 @@ hildon_file_system_obex_class_init (HildonFileSystemObexClass *klass)
     gobject_class->finalize = hildon_file_system_obex_finalize;
     location->create_child_location =
                 hildon_file_system_obex_create_child_location;
+
+    /* The root obex folder doesn't require explicit user access since
+       listing it is fast.
+    */
+    location->requires_access = NULL;
 }
 
 static void
