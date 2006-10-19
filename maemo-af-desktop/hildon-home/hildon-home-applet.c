@@ -1001,6 +1001,10 @@ hildon_home_applet_button_press_event (GtkWidget *w,
       event->y > HILDON_MARGIN_DEFAULT &&
       event->y < HILDON_MARGIN_DEFAULT + APPLET_CLOSE_BUTTON_HEIGHT)
     {
+      if (HILDON_IS_HOME_AREA (w->parent))
+        g_signal_emit_by_name (G_OBJECT (w->parent),
+                               "applet-change-start",
+                               w); 
       gtk_widget_destroy (w);
       return TRUE;
     }

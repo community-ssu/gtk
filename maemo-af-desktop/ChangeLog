@@ -1,5 +1,10 @@
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-applet.c: emit "applet-change-start"
+	also when the applet is closed with the button
+
+2006-10-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* libhildonmenu/libhildonmenu.c: Fixed accidental removal of
 	  a "fprintf"
 
