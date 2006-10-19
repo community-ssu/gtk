@@ -1,3 +1,9 @@
+osso-gnomevfs-extra (1.8.0-1) unstable; urgency=low
+
+  * Fixes license problem with inotify code
+
+ -- Richard Hult <richard@imendio.com>  Fre, 20 Oct 2006 16:39:00 +0200
+
 osso-gnomevfs-extra (1.7.2-1) unstable; urgency=low
 
   * Fixes: NB#36554, Missing inotify support

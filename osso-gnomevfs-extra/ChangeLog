@@ -1,3 +1,9 @@
+2006-10-19  Richard Hult  <richard@imendio.com>
+
+	* file-module/src/inotify-kernel.[ch]: 
+	* file-module/src/inotify-path.h: Update from upstream, with LGPL
+	license.
+
 2006-09-15  Richard Hult  <richard@imendio.com>
 
 	* Release 1.7.2.
