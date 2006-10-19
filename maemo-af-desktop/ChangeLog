@@ -1,5 +1,9 @@
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.97
+
+2006-10-19  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Task Navigator re-loads (and re-composites?) all
     of its visible app switcher icons when new application is started
 	* hn-app-item.c: Added cache for the icons pixbuf
@@ -15,7 +19,7 @@
 
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
-	* configure.ac: 2.9.96-1
+	* configure.ac: 2.9.96
 
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
