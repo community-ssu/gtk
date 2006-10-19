@@ -1,4 +1,31 @@
+2006-10-19  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Code cleanups from Kuisma.
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(chooser_entry_invalid_input_cb): New.
+	(hildon_file_chooser_dialog_check_limit): Removed.
+	(hildon_file_chooser_dialog_init): Connect
+	chooser_entry_invalid_input_cb to "invalid-input" signal instead
+	of hildon_file_chooser_dialog_check_limit to "insert-text".
+	(insensitive_button): Use hildon_banner_show_information instead
+	of gtk_infoprint. (N43716)
+
+2006-10-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_real_device_disconnected): Do reset
+	load_time and accessed for MMC locations (N42571).  See also the
+	change from 2006-09-29.
+	
+	* hildon-fm/hildon-file-system-obex.c
+	(hildon_file_system_obex_class_init): Set requires_access method
+	to NULL to get the default behavior.
+
 2006-10-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-obex.c
+	(hildon_file_system_obex_init): Set requires_access to NULL.
 
         Added "show-type-icon" property.  (N42979)
 
