@@ -47,6 +47,8 @@ typedef struct
     HNWMWatchedWindow *window;
     HNWMWatchedWindowView *view;
   } d;
+
+  GHashTable *icon_cache;
   
   guint ignore_urgent : 1;
 } RealEntryInfo;
@@ -65,6 +67,10 @@ hn_entry_info_new (HNEntryInfoType type)
   retval->parent = NULL;
   retval->children = NULL;
   retval->ignore_urgent = FALSE;
+  retval->icon_cache = g_hash_table_new_full (g_direct_hash,
+                                              g_direct_equal,
+                                              NULL,
+                                              (GDestroyNotify) g_object_unref);
   
   return (HNEntryInfo *) retval;
 }
@@ -132,6 +138,8 @@ hn_entry_info_free (HNEntryInfo *entry_info)
     }
   
   g_list_free (real->children);
+
+  g_hash_table_destroy (real->icon_cache);
   
   g_free (real);
 }
@@ -543,6 +551,49 @@ hn_entry_info_get_app_icon_name (HNEntryInfo *info)
     }
   
   return hn_wm_watchable_app_get_icon_name (app);
+}
+
+GdkPixbuf *
+hn_entry_info_get_app_icon (HNEntryInfo  *info,
+                            gint          size,
+                            GError      **error)
+{
+  const gchar *icon_name;
+  GdkPixbuf *retval;
+  GError *load_error;
+  RealEntryInfo *real_info;
+
+  real_info = REAL_ENTRY_INFO (info);
+ 
+  g_debug (G_STRLOC ": looking for cache entry (size:%d)", size);
+  retval = g_hash_table_lookup (real_info->icon_cache,
+                                GINT_TO_POINTER (size));
+  if (retval)
+    return g_object_ref (retval);
+
+  icon_name = hn_entry_info_get_app_icon_name (info);
+  if (!icon_name || icon_name[0] == '\0')
+    return NULL;
+
+  load_error = NULL;
+  retval = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+                                     icon_name,
+                                     size,
+                                     GTK_ICON_LOOKUP_NO_SVG,
+                                     &load_error);
+  if (load_error)
+    {
+      g_propagate_error (error, load_error);
+
+      return NULL;
+    }
+  
+  g_debug (G_STRLOC ": adding cache entry (size:%d)", size);
+  g_hash_table_insert (real_info->icon_cache,
+                       GINT_TO_POINTER (size),
+                       g_object_ref (retval));
+  
+  return retval;  
 }
 
 void

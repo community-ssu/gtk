@@ -1022,33 +1022,21 @@ static GdkPixbuf *
 get_pixbuf_for_entry_info (HNEntryInfo *info)
 {
   GdkPixbuf *retval;
-  const gchar *icon_name;
   GError *error;
 
-  icon_name = hn_entry_info_get_app_icon_name (info);
-  if (!icon_name || icon_name[0] == '\0')
-    icon_name = AS_MENU_DEFAULT_APP_ICON;
-
   error = NULL;
-  retval = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-		  		     icon_name,
-				     AS_ICON_SIZE,
-				     0,
-				     &error);
+  retval = hn_entry_info_get_app_icon (info, AS_ICON_SIZE, &error);
   if (!error)
     return retval;
 
   osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
-            icon_name,
+            hn_entry_info_get_app_icon_name (info),
             error->message);
 
-  g_error_free (error);
-  
   /* Fallback to default icon */
-  icon_name = AS_MENU_DEFAULT_APP_ICON;
-  error = NULL;
+  g_clear_error (&error);
   retval = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-		  		     icon_name,
+		  		     AS_MENU_DEFAULT_APP_ICON,
 				     AS_ICON_SIZE,
 				     0,
 				     &error);
@@ -1056,7 +1044,7 @@ get_pixbuf_for_entry_info (HNEntryInfo *info)
     return retval;
 
   osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
-            icon_name,
+            AS_MENU_DEFAULT_APP_ICON,
             error->message);
 
   g_error_free (error);

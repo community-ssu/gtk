@@ -93,6 +93,9 @@ void         hn_entry_info_set_icon        (HNEntryInfo *info,
 				            GdkPixbuf   *icon);
 
 const gchar *hn_entry_info_get_app_icon_name (HNEntryInfo *info);
+GdkPixbuf *  hn_entry_info_get_app_icon      (HNEntryInfo *info,
+                                              gint         size,
+                                              GError     **error);
 
 void         hn_entry_info_close             (HNEntryInfo *info);
 

@@ -1,5 +1,13 @@
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Task Navigator re-loads (and re-composites?) all
+    of its visible app switcher icons when new application is started
+	* hn-app-item.c: Added cache for the icons pixbuf
+	* hn-app-menu-item-c: Use this cache
+	Fixes: NB#42971
+
+2006-10-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-switcher.c: Rebuild the menu
 	  if the thumbable status changed
 	* hildon-navigator/hn-app-menu-item.c: Hopefully fixed

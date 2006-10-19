@@ -300,31 +300,23 @@ hn_app_menu_item_constructor (GType                  type,
       app_pixbuf = hn_entry_info_get_icon (priv->info);
       if (!app_pixbuf)
         {
-          const gchar *icon_name;
-          GError *error = NULL;
+          gint icon_size;
+          GError *error;
 
-          icon_name = hn_entry_info_get_app_icon_name (priv->info);
-          if (!icon_name)
-            icon_name = AS_MENU_DEFAULT_APP_ICON;
-
-          app_pixbuf =
-            gtk_icon_theme_load_icon (priv->icon_theme,
-                                      icon_name,
-                                      priv->thumbable ?
-                                      AS_ICON_THUMB_SIZE : AS_ICON_SIZE,
-                                      GTK_ICON_LOOKUP_NO_SVG,
-                                      &error);
-
+          icon_size = priv->thumbable ? AS_ICON_THUMB_SIZE : AS_ICON_SIZE;
+          error = NULL;
+          app_pixbuf = hn_entry_info_get_app_icon (priv->info,
+                                                   icon_size,
+                                                   &error);
           if (error)
             {
               g_warning ("Could not load icon %s from theme: %s.",
-                         icon_name,
+                         hn_entry_info_get_app_icon_name (priv->info),
                          error->message);
               g_error_free (error);
               error = NULL;
-              icon_name = AS_MENU_DEFAULT_APP_ICON;
               app_pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-                                                     icon_name,
+                                                     AS_MENU_DEFAULT_APP_ICON,
                                                      priv->thumbable ?
                                                      AS_ICON_THUMB_SIZE : 
                                                      AS_ICON_SIZE,
@@ -334,7 +326,7 @@ hn_app_menu_item_constructor (GType                  type,
               if (error)
                 {
                   g_warning ("Could not load icon %s from theme: %s.",
-                             icon_name,
+                             AS_MENU_DEFAULT_APP_ICON,
                              error->message);
                   g_error_free (error);
                 }
@@ -689,29 +681,23 @@ hn_app_menu_item_set_entry_info (HNAppMenuItem *menuitem,
   pixbuf = hn_entry_info_get_icon (priv->info);
   if (!pixbuf)
     {
-      const gchar *icon_name;
       GError *error = NULL;
+      gint icon_size;
 
-      icon_name = hn_entry_info_get_app_icon_name (priv->info);
-      if (!icon_name)
-        icon_name = AS_MENU_DEFAULT_APP_ICON;
+      icon_size = priv->thumbable ? AS_ICON_THUMB_SIZE : AS_ICON_SIZE;
 
-      pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-                                         icon_name,
-                                         priv->thumbable ?
-                                         AS_ICON_THUMB_SIZE : AS_ICON_SIZE,
-                                         GTK_ICON_LOOKUP_NO_SVG,
-                                         &error);
+      pixbuf = hn_entry_info_get_app_icon (priv->info,
+                                           icon_size,
+                                           &error);
       if (error)
         {
           g_warning ("Could not load icon %s from theme: %s.",
-                     icon_name,
+                     hn_entry_info_get_app_icon_name (priv->info),
                      error->message);
-          g_error_free (error);
-          error = NULL;
-          icon_name = AS_MENU_DEFAULT_APP_ICON;
+          
+          g_clear_error (&error);
           pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
-                                             icon_name,
+                                             AS_MENU_DEFAULT_APP_ICON,
                                              priv->thumbable ?
                                              AS_ICON_THUMB_SIZE : AS_ICON_SIZE,
                                              GTK_ICON_LOOKUP_NO_SVG,
@@ -719,7 +705,7 @@ hn_app_menu_item_set_entry_info (HNAppMenuItem *menuitem,
           if (error)
             {
               g_warning ("Could not load icon %s from theme: %s.",
-                         icon_name,
+                         AS_MENU_DEFAULT_APP_ICON,
                          error->message);
               g_error_free (error);
             }
