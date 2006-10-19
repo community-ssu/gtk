@@ -256,6 +256,18 @@ static void hildon_file_system_model_real_device_disconnected(
   g_return_if_fail(model_node != NULL);
 
   clear_model_node_caches(model_node);
+
+  if (model_node->location
+      && (model_node->location->compatibility_type ==
+	  HILDON_FILE_SYSTEM_MODEL_MMC))
+    {
+      /* When a MMC is disconnected, we assume that the next it gets
+	 connected it is a different MMC.  Thus, we need to reset
+	 load_time and accessed.
+      */
+      model_node->load_time = 0;
+      model_node->accessed = FALSE;
+    }
 }
 
 static void send_device_disconnected(GNode *node)
