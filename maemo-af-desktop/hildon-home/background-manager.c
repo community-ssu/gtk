@@ -1328,14 +1328,6 @@ read_pipe_from_child (GIOChannel   *source,
   return FALSE;
 }
 
-static void
-signal_handler (int sig)
-{
-  signal (sig, SIG_DFL);
-  
-  kill (getpid (), sig);
-}
-
 static gboolean
 loading_image_banner_update_progress (gpointer data)
 {
@@ -1363,7 +1355,9 @@ loading_image_banner_response (GtkDialog *dialog,
         {
           g_object_set_data (G_OBJECT (dialog),
                              "is-cancelled", GINT_TO_POINTER (1));
-          kill (manager->priv->child_pid, SIGTERM);
+          fprintf (stderr, "about to kill %i\n", manager->priv->child_pid);
+          gtk_widget_set_sensitive (GTK_WIDGET (dialog), FALSE);
+          kill (manager->priv->child_pid, SIGKILL);
 
           g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
         }
@@ -1570,9 +1564,6 @@ background_manager_create_background (BackgroundManager *manager,
       GError *save_err = NULL;
 
       g_debug ("Saving background (pid %d)...", getpid ());
-
-      signal (SIGINT, signal_handler);
-      signal (SIGTERM, signal_handler);
 
       close (parent_exit_notify[1]);
       close (pipe_from_child[0]);

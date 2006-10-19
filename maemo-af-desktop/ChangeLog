@@ -1,3 +1,8 @@
+2006-10-19  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/backgroun-manager.c: Use SIGKILL to kill the child,
+	to avoid interfering with our own signal handler.
+
 2006-10-19  Moises Martinez <moises.martinzes@nokia.com>
 
 	* libhildonmenu/libhildonmenu.c: (read_menu_conf) Initialized two pointer to
