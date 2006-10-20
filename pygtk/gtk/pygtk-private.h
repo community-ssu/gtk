@@ -5,6 +5,8 @@
 #include "config.h"
 #endif
 
+#define PYCAIRO_VERSION_HEX ((PYCAIRO_MAJOR_VERSION<<24)|(PYCAIRO_MINOR_VERSION<<16)|(PYCAIRO_MICRO_VERSION<<8))
+
 #ifdef _PYGTK_H_
 #error "don't include pygtk.h and pygtk-private.h together"
 #endif
@@ -32,6 +34,9 @@ gboolean     pygdk_rectangle_from_pyobject(PyObject *object,
 					   GdkRectangle *rectangle);
 
 GdkAtom pygdk_atom_from_pyobject(PyObject *object);
+GdkAtom *pygdk_atom_vector_from_sequence(PyObject *sequence, gint *num);
+PyObject *pygtk_target_list_to_list(GtkTargetList *targets);
+GtkTargetList *pygtk_target_list_from_sequence(PyObject *py_targets);
 
 typedef struct {
     PyObject *func, *data;
@@ -55,5 +60,16 @@ PyObject *_pygtk_tree_model_row_iter_new(GtkTreeModel *model,
 int       _pygtk_tree_model_set_row(GtkTreeModel *model, GtkTreeIter *iter,
 				    PyObject *items);
 int       _pygtk_tree_model_remove_row(GtkTreeModel *model, GtkTreeIter *iter);
+
+/* A boxed type for GdkRegion until one gets into gtk+ itself. */
+#ifdef GDK_TYPE_REGION
+#define PYGDK_TYPE_REGION  GDK_TYPE_REGION 
+#else
+GType pygdk_region_get_type (void) G_GNUC_CONST;
+
+#define PYGDK_TYPE_REGION (pygdk_region_get_type ())
+#endif /* GDK_TYPE_REGION */
+
+void pygtk_boxed_unref_shared(PyObject *boxed);
 
 #endif

@@ -1,17 +1,25 @@
 # -*- Mode: Python; py-indent-offset: 4 -*-
+import copy
 import sys
-from copy import *
 
 def get_valid_scheme_definitions(defs):
     return [x for x in defs if isinstance(x, tuple) and len(x) >= 2]
 
+def unescape(s):
+    s = s.replace('\r\n', '\\r\\n').replace('\t', '\\t')
+    return s.replace('\r', '\\r').replace('\n', '\\n')
+
+def make_docstring(lines):
+    return "(char *) " + '\n'.join(['"%s"' % unescape(s) for s in lines])
+
 # New Parameter class, wich emulates a tuple for compatibility reasons
 class Parameter(object):
-    def __init__(self, ptype, pname, pdflt, pnull, prop=None):
+    def __init__(self, ptype, pname, pdflt, pnull, pdir=None):
         self.ptype = ptype
         self.pname = pname
         self.pdflt = pdflt
         self.pnull = pnull
+        self.pdir = pdir
         
     def __len__(self): return 4
     def __getitem__(self, i):
@@ -38,6 +46,7 @@ class Property(object):
 
 
 class Definition:
+    docstring = "NULL"
     def __init__(self, *args):
 	"""Create a new defs object of this type.  The arguments are the
 	components of the definition"""
@@ -69,9 +78,12 @@ class ObjectDef(Definition):
 	self.fields = []
         self.implements = []
         self.class_init_func = None
+        self.has_new_constructor_api = False
 	for arg in get_valid_scheme_definitions(args):
 	    if arg[0] == 'in-module':
 		self.module = arg[1]
+            elif arg[0] == 'docstring':
+                self.docstring = make_docstring(arg[1:])
 	    elif arg[0] == 'parent':
                 self.parent = arg[1]
 	    elif arg[0] == 'c-name':
@@ -120,6 +132,8 @@ class InterfaceDef(Definition):
 	for arg in get_valid_scheme_definitions(args):
 	    if arg[0] == 'in-module':
 		self.module = arg[1]
+            elif arg[0] == 'docstring':
+                self.docstring = make_docstring(arg[1:])
 	    elif arg[0] == 'c-name':
 		self.c_name = arg[1]
 	    elif arg[0] == 'gtype-id':
@@ -266,6 +280,7 @@ class MethodDefBase(Definition):
 	self.name = name
 	self.ret = None
         self.caller_owns_return = None
+        self.unblock_threads = None
 	self.c_name = None
         self.typecode = None
 	self.of_object = None
@@ -275,6 +290,8 @@ class MethodDefBase(Definition):
 	for arg in get_valid_scheme_definitions(args):
 	    if arg[0] == 'of-object':
                 self.of_object = arg[1]
+            elif arg[0] == 'docstring':
+                self.docstring = make_docstring(arg[1:])
 	    elif arg[0] == 'c-name':
 		self.c_name = arg[1]
 	    elif arg[0] == 'gtype-id':
@@ -283,19 +300,24 @@ class MethodDefBase(Definition):
 		self.ret = arg[1]
             elif arg[0] == 'caller-owns-return':
                 self.caller_owns_return = arg[1] in ('t', '#t')
+            elif arg[0] == 'unblock-threads':
+                self.unblock_threads = arg[1] in ('t', '#t')
 	    elif arg[0] == 'parameters':
                 for parg in arg[1:]:
                     ptype = parg[0]
                     pname = parg[1]
                     pdflt = None
                     pnull = 0
+                    pdir = None
                     for farg in parg[2:]:
                         assert isinstance(farg, tuple)
                         if farg[0] == 'default':
                             pdflt = farg[1]
                         elif farg[0] == 'null-ok':
                             pnull = 1
-                    self.params.append(Parameter(ptype, pname, pdflt, pnull))
+                        elif farg[0] == 'direction':
+                            pdir = farg[1]
+                    self.params.append(Parameter(ptype, pname, pdflt, pnull, pdir))
             elif arg[0] == 'varargs':
                 self.varargs = arg[1] in ('t', '#t')
             elif arg[0] == 'deprecated':
@@ -315,7 +337,7 @@ class MethodDefBase(Definition):
         self.varargs = old.varargs
 	# here we merge extra parameter flags accross to the new object.
         if not parmerge:
-            self.params = deepcopy(old.params)
+            self.params = copy.deepcopy(old.params)
             return
 	for i in range(len(self.params)):
 	    ptype, pname, pdflt, pnull = self.params[i]
@@ -332,6 +354,8 @@ class MethodDefBase(Definition):
 	    fp.write('  (gtype-id "' + self.typecode + '")\n')
         if self.caller_owns_return:
 	    fp.write('  (caller-owns-return #t)\n')
+        if self.unblock_threads:
+            fp.write('  (unblock_threads #t)\n')
 	if self.ret:
 	    fp.write('  (return-type "' + self.ret + '")\n')
 	if self.deprecated:
@@ -374,6 +398,7 @@ class FunctionDef(Definition):
 	self.is_constructor_of = None
 	self.ret = None
         self.caller_owns_return = None
+        self.unblock_threads = None
 	self.c_name = None
         self.typecode = None
 	self.params = [] # of form (type, name, default, nullok)
@@ -382,6 +407,8 @@ class FunctionDef(Definition):
 	for arg in get_valid_scheme_definitions(args):
 	    if arg[0] == 'in-module':
 		self.in_module = arg[1]
+            elif arg[0] == 'docstring':
+                self.docstring = make_docstring(arg[1:])
 	    elif arg[0] == 'is-constructor-of':
 		self.is_constructor_of = arg[1]
 	    elif arg[0] == 'c-name':
@@ -392,6 +419,8 @@ class FunctionDef(Definition):
 		self.ret = arg[1]
             elif arg[0] == 'caller-owns-return':
                 self.caller_owns_return = arg[1] in ('t', '#t')
+            elif arg[0] == 'unblock-threads':
+                self.unblock_threads = arg[1] in ('t', '#t')
 	    elif arg[0] == 'parameters':
                 for parg in arg[1:]:
                     ptype = parg[0]
@@ -442,7 +471,7 @@ class FunctionDef(Definition):
         self.caller_owns_return = old.caller_owns_return
         self.varargs = old.varargs
         if not parmerge:
-            self.params = deepcopy(old.params)
+            self.params = copy.deepcopy(old.params)
             return
 	# here we merge extra parameter flags accross to the new object.
         def merge_param(param):
@@ -452,7 +481,7 @@ class FunctionDef(Definition):
                         # h2def never scans Property's, therefore if
                         # we have one it was manually written, so we
                         # keep it.
-                        return deepcopy(old_param)
+                        return copy.deepcopy(old_param)
                     else:
                         param.merge(old_param)
                         return param
@@ -463,7 +492,7 @@ class FunctionDef(Definition):
         except RuntimeError:
             # parameter names changed and we can't find a match; it's
             # safer to keep the old parameter list untouched.
-            self.params = deepcopy(old.params)
+            self.params = copy.deepcopy(old.params)
         
 	if not self.is_constructor_of:
             try:
@@ -488,6 +517,8 @@ class FunctionDef(Definition):
 	    fp.write('  (gtype-id "' + self.typecode + '")\n')
         if self.caller_owns_return:
 	    fp.write('  (caller-owns-return #t)\n')
+        if self.unblock_threads:
+            fp.write('  (unblock-threads #t)\n')
 	if self.ret:
 	    fp.write('  (return-type "' + self.ret + '")\n')
 	if self.deprecated:

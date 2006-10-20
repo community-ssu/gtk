@@ -1,9 +1,19 @@
 # -*- Mode: Python; py-indent-offset: 4 -*-
-import sys
 import string
-import traceback
 import keyword
 import struct
+
+py_ssize_t_clean = False
+
+class ArgTypeError(Exception):
+    pass
+
+class ArgTypeNotFoundError(ArgTypeError):
+    pass
+
+class ArgTypeConfigurationError(ArgTypeError):
+    pass
+
 
 class VarList:
     """Nicely format a C variable list"""
@@ -120,6 +130,9 @@ class UCharArg(ArgType):
 	    info.varlist.add('guchar', '*' + pname + ' = "' + pdflt + '"')
 	else:
 	    info.varlist.add('guchar', '*' + pname)
+        if py_ssize_t_clean:
+            info.varlist.add('Py_ssize_t', pname + '_len')
+        else:
         info.varlist.add('int', pname + '_len')
 	info.arglist.append(pname)
 	if pnull:
@@ -175,16 +188,36 @@ class IntArg(ArgType):
         info.codeafter.append('    return PyInt_FromLong(ret);')
 
 class UIntArg(ArgType):
+    dflt = ('    if (py_%(name)s) {\n'
+            '        if (PyLong_Check(py_%(name)s))\n'
+            '            %(name)s = PyLong_AsUnsignedLong(py_%(name)s);\n'
+            '        else if (PyInt_Check(py_%(name)s))\n'
+            '            %(name)s = PyInt_AsLong(py_%(name)s);\n'
+            '        else\n'
+            '            PyErr_SetString(PyExc_TypeError, "Parameter \'%(name)s\' must be an int or a long");\n'
+            '        if (PyErr_Occurred())\n'
+            '            return NULL;\n'
+            '    }\n')
+    before = ('    if (PyLong_Check(py_%(name)s))\n'
+              '        %(name)s = PyLong_AsUnsignedLong(py_%(name)s);\n'
+              '    else if (PyInt_Check(py_%(name)s))\n'
+              '        %(name)s = PyInt_AsLong(py_%(name)s);\n'
+              '    else\n'
+              '        PyErr_SetString(PyExc_TypeError, "Parameter \'%(name)s\' must be an int or a long");\n'
+              '    if (PyErr_Occurred())\n'
+              '        return NULL;\n')
     def write_param(self, ptype, pname, pdflt, pnull, info):
-	if pdflt:
+        if not pdflt:
+            pdflt = '0';
+
 	    info.varlist.add(ptype, pname + ' = ' + pdflt)
-	else:
-	    info.varlist.add(ptype, pname)
+        info.codebefore.append(self.dflt % {'name':pname})
+        info.varlist.add('PyObject', "*py_" + pname + ' = NULL')
 	info.arglist.append(pname)
-        info.add_parselist('I', ['&' + pname], [pname])
+        info.add_parselist('O', ['&py_' + pname], [pname])
     def write_return(self, ptype, ownsreturn, info):
         info.varlist.add(ptype, 'ret')
-        info.codeafter.append('    return PyLong_FromUnsignedLong(ret);\n')
+        info.codeafter.append('    return PyLong_FromUnsignedLong(ret);')
 
 class SizeArg(ArgType):
 
@@ -264,22 +297,30 @@ class TimeTArg(ArgType):
         info.codeafter.append('    return PyInt_FromLong(ret);')
 
 class ULongArg(ArgType):
-    dflt = '    if (py_%(name)s)\n' \
-           '        %(name)s = PyLong_AsUnsignedLong(py_%(name)s);\n'
-    before = '    %(name)s = PyLong_AsUnsignedLong(py_%(name)s);\n'
     def write_param(self, ptype, pname, pdflt, pnull, info):
         if pdflt:
-            info.varlist.add('gulong', pname + ' = ' + pdflt)
-            info.codebefore.append(self.dflt % {'name':pname})            
+            info.varlist.add('unsigned long', pname + ' = ' + pdflt)
         else:
-            info.varlist.add('gulong', pname)
-            info.codebefore.append(self.before % {'name':pname})            
-        info.varlist.add('PyObject', "*py_" + pname + ' = NULL')
+            info.varlist.add('unsigned long', pname)
         info.arglist.append(pname)
-        info.add_parselist('O!', ['&PyLong_Type', '&py_' + pname], [pname])
+        info.add_parselist('k', ['&' + pname], [pname])
     def write_return(self, ptype, ownsreturn, info):
-        info.varlist.add('gulong', 'ret')
-        info.codeafter.append('    return PyLong_FromUnsignedLong(ret);')
+        info.varlist.add(ptype, 'ret')
+        info.codeafter.append('    return PyLong_FromUnsignedLong(ret);\n')
+
+class UInt32Arg(ULongArg):
+    def write_param(self, ptype, pname, pdflt, pnull, info):
+        ULongArg.write_param(self, ptype, pname, pdflt, pnull, info)
+        ## if sizeof(unsigned long) > sizeof(unsigned int), we need to
+        ## check the value is within guint32 range
+        if struct.calcsize('L') > struct.calcsize('I'):
+            info.codebefore.append((
+                '    if (%(pname)s > G_MAXUINT32) {\n'
+                '        PyErr_SetString(PyExc_ValueError,\n'
+                '                        "Value out of range in conversion of"\n'
+                '                        " %(pname)s parameter to unsigned 32 bit integer");\n'
+                '        return NULL;\n'
+                '    }\n') % vars())
 
 class Int64Arg(ArgType):
     def write_param(self, ptype, pname, pdflt, pnull, info):
@@ -371,7 +412,7 @@ class FileArg(ArgType):
                               '    return Py_None;')
 
 class EnumArg(ArgType):
-    enum = ('    if (pyg_enum_get_value(%(typecode)s, py_%(name)s, (gint *)&%(name)s))\n'
+    enum = ('    if (pyg_enum_get_value(%(typecode)s, py_%(name)s, (gpointer)&%(name)s))\n'
             '        return NULL;\n')
     def __init__(self, enumname, typecode):
 	self.enumname = enumname
@@ -391,7 +432,7 @@ class EnumArg(ArgType):
         info.codeafter.append('    return pyg_enum_from_gtype(%s, ret);' % self.typecode)
 
 class FlagsArg(ArgType):
-    flag = ('    if (%(default)spyg_flags_get_value(%(typecode)s, py_%(name)s, (gint *)&%(name)s))\n'
+    flag = ('    if (%(default)spyg_flags_get_value(%(typecode)s, py_%(name)s, (gpointer)&%(name)s))\n'
             '        return NULL;\n')
     def __init__(self, flagname, typecode):
 	self.flagname = flagname
@@ -450,7 +491,17 @@ class ObjectArg(ArgType):
 		info.codebefore.append(self.null % {'name':pname,
                                                     'cast':self.cast,
                                                     'type':self.objname}) 
+            if ptype.endswith('*'):
+                typename = ptype[:-1]
+                try:
+                    const, typename = typename.split('const-')
+                except ValueError:
+                    const = ''
+                if typename != ptype:
+                    info.arglist.append('(%s *) %s' % (ptype[:-1], pname))
+                else:
             info.arglist.append(pname)
+
             info.add_parselist('O', ['&py_' + pname], [pname])
 	else:
 	    if pdflt:
@@ -467,8 +518,13 @@ class ObjectArg(ArgType):
                 info.add_parselist('O!', ['&Py%s_Type' % self.objname,
                                           '&' + pname], [pname])
     def write_return(self, ptype, ownsreturn, info):
-        if ptype[-1] == '*': ptype = ptype[:-1]
-        info.varlist.add(ptype, '*ret')
+        if ptype.endswith('*'):
+            typename = ptype[:-1]
+            try:
+                const, typename = typename.split('const-')
+            except ValueError:
+                const = ''
+        info.varlist.add(typename, '*ret')
         if ownsreturn:
             info.varlist.add('PyObject', '*py_ret')
             info.codeafter.append('    py_ret = pygobject_new((GObject *)ret);\n'
@@ -632,7 +688,12 @@ class AtomArg(IntArg):
         info.add_parselist('O', ['&py_' + pname], [pname])
     def write_return(self, ptype, ownsreturn, info):
         info.varlist.add('GdkAtom', 'ret')
-        info.codeafter.append('    return PyString_FromString(gdk_atom_name(ret));')
+        info.varlist.add('PyObject *', 'py_ret')
+        info.varlist.add('gchar *', 'name')
+        info.codeafter.append('    name = gdk_atom_name(ret);\n'
+                              '    py_ret = PyString_FromString(name);\n'
+                              '    g_free(name);\n'
+                              '    return py_ret;')
 
 class GTypeArg(ArgType):
     gtype = ('    if ((%(name)s = pyg_type_from_object(py_%(name)s)) == 0)\n'
@@ -753,13 +814,29 @@ class PyObjectArg(ArgType):
                                   '    Py_INCREF(ret);\n'
                                   '    return ret;')
 
+class CairoArg(ArgType):
+    def write_param(self, ptype, pname, pdflt, pnull, info):
+        info.varlist.add('PycairoContext', '*' + pname)
+        info.add_parselist('O!', ['&PycairoContext_Type', '&' + pname], [pname])
+        info.arglist.append('%s->ctx' % pname)
+    def write_return(self, ptype, ownsreturn, info):
+        info.varlist.add("cairo_t", "*ret")
+        if ownsreturn:
+            info.codeafter.append('    return PycairoContext_FromContext(ret, NULL, NULL);')
+        else:
+            info.codeafter.append('    cairo_reference(ret);\n'
+                                  '    return PycairoContext_FromContext(ret, NULL, NULL);')
+
+
 class ArgMatcher:
     def __init__(self):
 	self.argtypes = {}
 	self.reverse_argtypes = {}
 	self.reverse_rettypes = {}
 
-    def register(self, ptype, handler):
+    def register(self, ptype, handler, overwrite=False):
+        if not overwrite and ptype in self.argtypes:
+            return
 	self.argtypes[ptype] = handler
     def register_reverse(self, ptype, handler):
 	self.reverse_argtypes[ptype] = handler
@@ -768,16 +845,19 @@ class ArgMatcher:
         
     def register_enum(self, ptype, typecode):
         if typecode is None:
-            typecode = "G_TYPE_NONE"
+            self.register(ptype, IntArg())
+        else:
         self.register(ptype, EnumArg(ptype, typecode))
     def register_flag(self, ptype, typecode):
         if typecode is None:
-            typecode = "G_TYPE_NONE"
+            self.register(ptype, IntArg())
+        else:
 	self.register(ptype, FlagsArg(ptype, typecode))
     def register_object(self, ptype, parent, typecode):
         oa = ObjectArg(ptype, parent, typecode)
         self.register(ptype, oa)  # in case I forget the * in the .defs
 	self.register(ptype+'*', oa)
+        self.register('const-'+ptype+'*', oa)
         if ptype == 'GdkPixmap':
             # hack to handle GdkBitmap synonym.
             self.register('GdkBitmap', oa)
@@ -804,7 +884,7 @@ class ArgMatcher:
         except KeyError:
             if ptype[:8] == 'GdkEvent' and ptype[-1] == '*':
                 return self.argtypes['GdkEvent*']
-            raise
+            raise ArgTypeNotFoundError("No ArgType for %s" % (ptype,))
     def _get_reverse_common(self, ptype, registry):
         props = dict(c_type=ptype)
         try:
@@ -816,7 +896,7 @@ class ArgMatcher:
                 if ptype.startswith('GdkEvent') and ptype.endswith('*'):
                     handler = self.argtypes['GdkEvent*']
                 else:
-                    raise
+                    raise ArgTypeNotFoundError("No ArgType for %s" % (ptype,))
             if isinstance(handler, ObjectArg):
                 return registry['GObject*'], props
             elif isinstance(handler, EnumArg):
@@ -832,7 +912,7 @@ class ArgMatcher:
                 props['typename'] = handler.typename
                 return registry['GBoxed'], props
             else:
-                raise
+                raise ArgTypeNotFoundError("No ArgType for %s" % (ptype,))
     def get_reverse(self, ptype):
         return self._get_reverse_common(ptype, self.reverse_argtypes)
     def get_reverse_ret(self, ptype):
@@ -863,6 +943,7 @@ matcher.register('static_string', arg)
 arg = UCharArg()
 matcher.register('unsigned-char*', arg)
 matcher.register('const-guchar*', arg)
+matcher.register('const-guint8*', arg)
 matcher.register('guchar*', arg)
 
 arg = CharArg()
@@ -901,13 +982,7 @@ matcher.register('gboolean', arg)
 arg = TimeTArg()
 matcher.register('time_t', arg)
 
-# If the system maxint is smaller than unsigned int, we need to use
-# Long objects with PyLong_AsUnsignedLong
-if sys.maxint >= (1L << 32):
-    matcher.register('guint32', arg)
-else:
-    arg = ULongArg()
-    matcher.register('guint32', arg)
+matcher.register('guint32', UInt32Arg())
 
 arg = ULongArg()
 matcher.register('gulong', arg)
@@ -948,3 +1023,5 @@ matcher.register('GdkNativeWindow', ULongArg())
 matcher.register_object('GObject', None, 'G_TYPE_OBJECT')
 
 del arg
+
+matcher.register('cairo_t*', CairoArg())

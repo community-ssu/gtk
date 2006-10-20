@@ -14,6 +14,8 @@ struct _PyGtk_FunctionStruct {
     PyObject *(* gdkAtom_new)(GdkAtom atom);
     gboolean  (* rectangle_from_pyobject)(PyObject     *object,
 					  GdkRectangle *rectangle);
+    PyObject    * (*tree_path_to_pyobject) (GtkTreePath *path);
+    GtkTreePath * (*tree_path_from_pyobject) (PyObject *object);
 };
 
 /* structure definitions for the various object types in PyGTK */
@@ -53,11 +55,13 @@ struct _PyGtk_FunctionStruct *_PyGtk_API;
 
 /* public functions */
 #define pygdk_rectangle_from_pyobject (_PyGtk_API->rectangle_from_pyobject)
+#define pygtk_tree_path_to_pyobject (_PyGtk_API->tree_path_to_pyobject)
+#define pygtk_tree_path_from_pyobject (_PyGtk_API->tree_path_from_pyobject)
 
 
 /* a function to initialise the pygtk functions */
-#define init_pygtk() { \
-    PyObject *pygtk = PyImport_ImportModule("gtk._gtk"); \
+#define init_pygtk() G_STMT_START { \
+    PyObject *pygtk = PyImport_ImportModule("gtk"); \
     if (pygtk != NULL) { \
 	PyObject *module_dict = PyModule_GetDict(pygtk); \
 	PyObject *cobject = PyDict_GetItemString(module_dict, "_PyGtk_API"); \
@@ -71,10 +75,10 @@ struct _PyGtk_FunctionStruct *_PyGtk_API;
         } \
     } else { \
         PyErr_SetString(PyExc_ImportError, \
-                        "could not import gtk._gtk"); \
+                        "could not import gtk"); \
         return; \
     } \
-}
+} G_STMT_END
 
 #endif
 

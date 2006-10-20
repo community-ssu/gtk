@@ -257,4 +257,3 @@ trashcan_open_xpm = [
 "                                                                ",
 "                                                                ",
 "                                                                "]
-

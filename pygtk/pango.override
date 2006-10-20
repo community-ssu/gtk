@@ -31,6 +31,45 @@ typedef struct {
     PyObject *func, *data;
 } PyGtkCustomNotify;
 
+#ifndef PANGO_TYPE_LAYOUT_LINE
+# define PANGO_TYPE_LAYOUT_LINE pypango_layout_line_get_type()
+
+static PangoLayoutLine *
+_layout_line_boxed_copy(PangoLayoutLine *line)
+{
+    pango_layout_line_ref(line);
+    return line;
+}
+
+static GType
+pypango_layout_line_get_type(void)
+{
+    static GType our_type = 0;
+  
+    if (our_type == 0)
+        our_type = g_boxed_type_register_static("PangoLayoutLine",
+                                                (GBoxedCopyFunc)_layout_line_boxed_copy,
+                                                (GBoxedFreeFunc)pango_layout_line_unref);
+    return our_type;
+}
+#endif /* #ifndef PANGO_TYPE_LAYOUT_LINE */
+
+#ifndef PANGO_TYPE_ITEM
+# define PANGO_TYPE_ITEM (pypango_item_get_type ())
+
+static GType
+pypango_item_get_type (void)
+{
+  static GType our_type = 0;
+  
+  if (our_type == 0)
+    our_type = g_boxed_type_register_static ("PangoItem",
+                                             (GBoxedCopyFunc) pango_item_copy,
+                                             (GBoxedFreeFunc) pango_item_free);
+  return our_type;
+}
+#endif /* #ifndef PANGO_TYPE_ITEM */
+
 /* ------------- PangoAttribute ------------- */
 
 typedef struct {
@@ -165,6 +204,8 @@ pypango_attr_tp_getattr(PyPangoAttribute *self, char *attr)
     case PANGO_ATTR_STRIKETHROUGH:
     case PANGO_ATTR_RISE:
     case PANGO_ATTR_FALLBACK:
+    case PANGO_ATTR_LETTER_SPACING:
+    case PANGO_ATTR_ABSOLUTE_SIZE:
 	if (!strcmp(attr, "__members__"))
 	    return Py_BuildValue("[s]", "value");
 	if (!strcmp(attr, "value"))
@@ -180,6 +221,8 @@ pypango_attr_tp_getattr(PyPangoAttribute *self, char *attr)
 	break;
     case PANGO_ATTR_FOREGROUND:
     case PANGO_ATTR_BACKGROUND:
+    case PANGO_ATTR_UNDERLINE_COLOR:
+    case PANGO_ATTR_STRIKETHROUGH_COLOR:
 	if (!strcmp(attr, "__members__"))
 	    return Py_BuildValue("[s]", "color");
 	if (!strcmp(attr, "color"))
@@ -479,29 +522,22 @@ modulename pango
 %%
 import gobject.GObject as PyGObject_Type
 %%
-ignore-glob *_get_type
+ignore-glob
+  *_get_type
+  *_ref
+  *_unref
+  *_free
 %%
 ignore
   pango_color_copy
-  pango_color_free
   pango_attribute_copy
   pango_attribute_destroy
   pango_attribute_equal
-  pango_attr_list_ref
-  pango_attr_list_unref
-  pango_coverage_ref
-  pango_coverage_unref
   pango_font_description_equal
-  pango_font_description_free
-  pango_font_descriptions_free
   pango_font_map_free_families
-  pango_font_metrics_ref
-  pango_font_metrics_unref
   pango_font_get_coverage
   pango_font_find_shaper
-  pango_glyph_string_free
   pango_layout_get_log_attrs
-  pango_tab_array_free
 %%
 ignore
   pango_context_new
@@ -509,6 +545,7 @@ ignore
   pango_glyph_string_index_to_x
   pango_glyph_string_x_to_index
   pango_break
+  pango_default_break
   pango_shape
 %%
 override pango_attr_language_new kwargs
@@ -1071,7 +1108,7 @@ _wrap_pango_glyph_string_get_logical_widths(PyObject *self, PyObject *args,
     static char *kwlist[] = { "text", "embedding_level", NULL };
     const char *text;
     gint length, embedding_level, *logical_widths;
-    gint i, slen;
+    Py_ssize_t i, slen;
     PyObject *ret;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
@@ -1099,7 +1136,7 @@ _wrap_pango_layout_set_markup(PyGObject *self, PyObject *args,PyObject *kwargs)
 {
     static char *kwlist[] = { "markup", NULL };
     char *markup;
-    gint length;
+    Py_ssize_t length;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#:PangoLayout.set_markup",
 				     kwlist, &markup, &length))
@@ -1118,7 +1155,7 @@ _wrap_pango_layout_set_markup_with_accel(PyGObject *self, PyObject *args,
 {
     static char *kwlist[] = { "markup", "accel_marker", NULL };
     char *markup;
-    gint length, accel_length;
+    Py_ssize_t length, accel_length;
     Py_UNICODE *accel_marker, pychr;
     gunichar accel_char;
 
@@ -1284,24 +1321,28 @@ _wrap_pango_parse_markup(PyObject *self, PyObject *args, PyObject *kwargs)
 {
     static char *kwlist[] = { "markup_text", "accel_marker", NULL };
     char *markup_text, *text = NULL;
-    gint length;
-    Py_UNICODE *py_accel_marker, py_accel_char;
-    gint py_accel_marker_len;
+    Py_ssize_t length;
+    Py_UNICODE *py_accel_marker = NULL, py_accel_char;
+    Py_ssize_t py_accel_marker_len;
     gunichar accel_marker, accel_char = 0;
     PangoAttrList *attr_list = NULL;
     GError *error = NULL;
     gboolean ret;
     PyObject *py_ret;
 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#u#:pango.parse_markup",
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#|u#:pango.parse_markup",
 				     kwlist, &markup_text, &length,
 				     &py_accel_marker, &py_accel_marker_len))
 	return NULL;
+    if (py_accel_marker != NULL) {
     if (py_accel_marker_len != 1) {
 	PyErr_SetString(PyExc_TypeError, "accel_mark must be one character");
 	return NULL;
     }
     accel_marker = py_accel_marker[0];
+    } else
+	accel_marker = 0;
+
     ret = pango_parse_markup(markup_text, length, accel_marker,
 			     &attr_list, &text, &accel_char, &error);
     if (pyg_error_check(&error))
@@ -1317,7 +1358,7 @@ _wrap_pango_parse_markup(PyObject *self, PyObject *args, PyObject *kwargs)
 
     py_ret = Py_BuildValue("(Nsu#)", pyg_boxed_new(PANGO_TYPE_ATTR_LIST,
 						   attr_list, FALSE, TRUE),
-			   text, &py_accel_char, 1);
+			   text, &py_accel_char, (Py_ssize_t) 1);
     g_free(text);
     return py_ret;
 }
@@ -1357,6 +1398,8 @@ _wrap_pango_tab_array_get_tabs(PyObject *self)
 	item = Py_BuildValue("(ii)", (int)alignments[i], locations[i]);
 	PyTuple_SetItem(ret, i, item);
     }
+    g_free(alignments);
+    g_free(locations);
     return ret;
 }
 %%
@@ -1366,7 +1409,7 @@ _wrap_pango_layout_set_text(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
     static char *kwlist[] = { "text", NULL };
     char *text;
-    gint length;
+    Py_ssize_t length;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "s#:PangoLayout.set_text",
 				     kwlist, &text, &length))
@@ -1805,4 +1848,176 @@ _wrap_pango_layout_iter_get_line_yrange(PyGObject *self)
     pango_layout_iter_get_line_yrange(pyg_boxed_get(self, PangoLayoutIter),
                                       &start, &end);
     return Py_BuildValue("(ii)", start, end);
+}
+%%
+override pango_layout_line_x_to_index kwargs
+static PyObject *
+_wrap_pango_layout_line_x_to_index(PyObject *self, PyObject *args,
+				   PyObject *kwargs)
+{
+    static char *kwlist[] = { "x_pos", NULL };
+    gboolean inside;
+    int x_pos, index, trailing;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "i:PangoLayoutLine.x_to_index",
+				     kwlist, &x_pos))
+	return NULL;
+
+    inside = pango_layout_line_x_to_index(pyg_boxed_get(self, PangoLayoutLine),
+                                          x_pos, &index, &trailing);
+    return Py_BuildValue("Nii", PyBool_FromLong(inside), index, trailing);
+}
+%%
+override pango_layout_line_index_to_x kwargs
+static PyObject *
+_wrap_pango_layout_line_index_to_x(PyObject *self, PyObject *args,
+				   PyObject *kwargs)
+{
+    static char *kwlist[] = { "index", "trailing", NULL };
+    int x_pos, index;
+    PyObject *trailing;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "iO:PangoLayoutLine.index_to_x",
+				     kwlist, &index, &trailing))
+	return NULL;
+    pango_layout_line_index_to_x(pyg_boxed_get(self, PangoLayoutLine),
+                                 index, PyObject_IsTrue(trailing),
+                                 &x_pos);
+    return PyInt_FromLong(x_pos);
+}
+%%
+override pango_layout_line_get_extents noargs
+static PyObject *
+_wrap_pango_layout_line_get_extents(PyGObject *self)
+{
+    PangoRectangle ink_rect, logical_rect;
+
+    pango_layout_line_get_extents(pyg_boxed_get(self, PangoLayoutLine),
+                                  &ink_rect, &logical_rect);
+
+    return Py_BuildValue("((iiii)(iiii))",
+			 ink_rect.x, ink_rect.y,
+			 ink_rect.width, ink_rect.height,
+			 logical_rect.x, logical_rect.y,
+			 logical_rect.width, logical_rect.height);
+}
+%%
+override pango_layout_line_get_pixel_extents noargs
+static PyObject *
+_wrap_pango_layout_line_get_pixel_extents(PyGObject *self)
+{
+    PangoRectangle ink_rect, logical_rect;
+
+    pango_layout_line_get_pixel_extents(pyg_boxed_get(self, PangoLayoutLine),
+                                        &ink_rect, &logical_rect);
+
+    return Py_BuildValue("((iiii)(iiii))",
+			 ink_rect.x, ink_rect.y,
+			 ink_rect.width, ink_rect.height,
+			 logical_rect.x, logical_rect.y,
+			 logical_rect.width, logical_rect.height);
+}
+
+%%
+override-attr PangoLayoutLine.runs
+
+static inline PyObject *
+pypango_glyph_item_new(PangoGlyphItem *gitem)
+{
+    return Py_BuildValue("NN", pyg_boxed_new(PANGO_TYPE_ITEM, gitem->item, TRUE, TRUE),
+                         pyg_boxed_new(PANGO_TYPE_GLYPH_STRING, gitem->glyphs, TRUE, TRUE));
+}
+
+static PyObject *
+_wrap_pango_layout_line__get_runs(PyGObject *self, void *closure)
+{
+    PangoLayoutLine *line = pyg_boxed_get(self, PangoLayoutLine);
+    PyObject *list, *item;
+    GSList *l;
+
+    list = PyList_New(0);
+    for (l = line->runs; l; l = l->next) {
+        item = pypango_glyph_item_new((PangoGlyphItem *) l->data);
+        PyList_Append(list, item);
+        Py_DECREF(item);
+    }
+    return list;
+}
+%%
+override pango_attr_underline_color_new kwargs
+static PyObject *
+_wrap_pango_attr_underline_color_new(PyObject *self, PyObject *args,
+                                     PyObject *kwargs)
+{
+    static char *kwlist[] = { "red", "green", "blue", "start_index",
+			      "end_index", NULL };
+    guint16 red, green, blue;
+    guint start = 0, end = 1;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "HHH|ii:PangoAttrUnderlineColor",
+				     kwlist, &red, &green, &blue,
+				     &start, &end))
+	return NULL;
+
+    return pypango_attr_new(pango_attr_underline_color_new(red, green, blue),
+			    start, end);
+}
+%%
+override pango_attr_strikethrough_color_new kwargs
+static PyObject *
+_wrap_pango_attr_strikethrough_color_new(PyObject *self, PyObject *args,
+                                         PyObject *kwargs)
+{
+    static char *kwlist[] = { "red", "green", "blue", "start_index",
+			      "end_index", NULL };
+    guint16 red, green, blue;
+    guint start = 0, end = 1;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "HHH|ii:PangoAttrStrikethroughColor",
+				     kwlist, &red, &green, &blue,
+				     &start, &end))
+	return NULL;
+
+    return pypango_attr_new(pango_attr_strikethrough_color_new(red, green, blue),
+			    start, end);
+}
+%%
+override pango_attr_size_new_absolute kwargs
+static PyObject *
+_wrap_pango_attr_size_new_absolute(PyObject *self, PyObject *args,
+                                   PyObject *kwargs)
+{
+    static char *kwlist[] = { "size", "start_index", "end_index", NULL };
+    int size;
+    guint start = 0, end = 1;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "i|ii:PangoAttrSizeAbsolute",
+				     kwlist, &size, &start, &end))
+	return NULL;
+
+    return pypango_attr_new(pango_attr_size_new_absolute(size), start, end);
+}
+%%
+override pango_attr_letter_spacing_new kwargs
+static PyObject *
+_wrap_pango_attr_letter_spacing_new(PyObject *self, PyObject *args,
+                                    PyObject *kwargs)
+{
+    static char *kwlist[] = { "letter_spacing", "start_index", "end_index",
+                              NULL };
+    int spacing;
+    guint start = 0, end = 1;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "i|ii:PangoAttrLetterSpacing",
+				     kwlist, &spacing, &start, &end))
+	return NULL;
+
+    return pypango_attr_new(pango_attr_letter_spacing_new(spacing),
+                            start, end);
 }

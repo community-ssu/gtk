@@ -33,17 +33,40 @@ void pypango_register_classes(PyObject *d);
 void pypango_add_constants(PyObject *module, const gchar *strip_prefix);
 extern PyMethodDef pypango_functions[];
 
+#ifndef pyg_add_warning_redirection
+
+static void
+_log_func(const gchar *log_domain,
+          GLogLevelFlags log_level,
+          const gchar *message,
+          gpointer user_data)
+{
+    PyGILState_STATE state;
+    PyObject* warning = user_data;
+
+    state = pyg_gil_state_ensure();
+    PyErr_Warn(warning, (char *) message);
+    pyg_gil_state_release(state);
+}
+
+#endif
+
+
 DL_EXPORT(void)
 initpango(void)
 {
     PyObject *m, *d;
+    PyObject *warning;
 
     /* perform any initialisation required by the library here */
 
     m = Py_InitModule("pango", pypango_functions);
     d = PyModule_GetDict(m);
 
-    init_pygobject();
+    init_pygobject_check(2, 11, 1);
+
+    /* set the default python encoding to utf-8 */
+    PyUnicode_SetDefaultEncoding("utf-8");
 
     pypango_register_classes(d);
     pypango_add_constants(m, "PANGO_");
@@ -59,12 +82,19 @@ initpango(void)
     PyModule_AddObject(m, "SCALE_LARGE",
 		       PyFloat_FromDouble(PANGO_SCALE_LARGE));
     PyModule_AddObject(m, "SCALE_X_LARGE",
-		       PyFloat_FromDouble(PANGO_SCALE_LARGE));
+		       PyFloat_FromDouble(PANGO_SCALE_X_LARGE));
     PyModule_AddObject(m, "SCALE_XX_LARGE",
-		       PyFloat_FromDouble(PANGO_SCALE_LARGE));    
+		       PyFloat_FromDouble(PANGO_SCALE_XX_LARGE));    
     PyModule_AddObject(m, "SCALE",
 		       PyInt_FromLong(PANGO_SCALE));    
 
     /* add anything else to the module dictionary (such as constants) */
-
+    warning = PyErr_NewException("pango.PangoWarning", PyExc_Warning, NULL);
+    PyDict_SetItemString(d, "Warning", warning);
+#ifdef pyg_add_warning_redirection
+    pyg_add_warning_redirection("Pango", warning);
+#else
+    g_log_set_handler("Pango", G_LOG_LEVEL_CRITICAL|G_LOG_LEVEL_WARNING,
+                      _log_func, warning);
+#endif
 }

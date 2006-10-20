@@ -41,4 +41,3 @@ def main():
 # if we're being run normally then call the main function
 if __name__ == '__main__':
     main()
-

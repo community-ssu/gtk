@@ -2,20 +2,20 @@ Source: python-gtk2
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: debhelper (>= 4.1.65), libgtk2.0-dev (>= 2.6.0), libglade2-dev, python2.4, python2.4-dev
+Build-Depends: debhelper (>= 4.1.65), libgtk2.0-dev (>= 2.6.0), libglade2-dev, python2.5, python2.5-dev
 Standards-Version: 3.6.1.0
 
-Package: python2.4-gtk2
+Package: python2.5-gtk2
 Architecture: any
-Depends: python2.4, libgtk2.0-0, ${shlibs:Depends}
+Depends: python2.5, libgtk2.0-0, ${shlibs:Depends}
 Description: Python bindings for the GTK+ widget set
  This archive contains modules that allow you to use GTK+ in Python
  programs. This package contains the bindings for the new version 2.0
  of that toolkit.
 
-Package: python2.4-gtk2-dev
+Package: python2.5-gtk2-dev
 Architecture: all
-Depends: python2.4-gtk2 (= ${Source-Version})
+Depends: python2.5-gtk2 (= ${Source-Version})
 Description: GTK+ bindings: devel files
  This archive contains files that allow you to build wrappers for addon
  that interoperate python-gtk2 (pygtk).

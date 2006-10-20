@@ -66,16 +66,11 @@ ignore
   gtk_tree_view_column_set_attributes
   gtk_tree_view_get_row_separator_func
   gtk_tree_view_get_search_equal_func
-%%
-override gtk_tree_view_get_visible_rect noargs
-static PyObject *
-_wrap_gtk_tree_view_get_visible_rect(PyGObject *self)
-{
-    GdkRectangle visible_rect;
-
-    gtk_tree_view_get_visible_rect(GTK_TREE_VIEW(self->obj), &visible_rect);
-    return pyg_boxed_new(GDK_TYPE_RECTANGLE, &visible_rect, TRUE, TRUE);
-}
+  gtk_tree_view_get_search_position_func
+  gtk_list_store_insert_with_values
+  gtk_list_store_insert_with_valuesv
+  gtk_tree_store_insert_with_values
+  gtk_tree_store_insert_with_valuesv
 %%
 override gtk_tree_view_column_new kwargs
 static int
@@ -85,7 +80,7 @@ _wrap_gtk_tree_view_column_new(PyGObject *self, PyObject*args, PyObject*kwargs)
     GtkTreeViewColumn *tvc;
     gchar *title = NULL;
     GtkCellRenderer *cell = NULL;
-    gint i = 0;
+    Py_ssize_t i = 0;
 
     if (!PyArg_ParseTuple(args, "|zO:GtkTreeViewColumn.__init__", &title,
                           &py_cell))
@@ -127,15 +122,27 @@ _wrap_gtk_tree_view_column_new(PyGObject *self, PyObject*args, PyObject*kwargs)
     return 0;
 }
 %%
-override gtk_tree_view_column_cell_get_size noargs
+override gtk_tree_view_column_cell_get_size kwargs
 static PyObject *
-_wrap_gtk_tree_view_column_cell_get_size(PyGObject *self)
+_wrap_gtk_tree_view_column_cell_get_size(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
-    GdkRectangle cell_area;
-    gint x_offset, y_offset, width, height;
+    static char *kwlist[] = { "cell_area", NULL };
+    PyObject *py_cell_area = Py_None;
+    GdkRectangle cell_area = { 0, 0, 0, 0};
+    gint x_offset = 0, y_offset = 0, width, height;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "|O:GtkTreeViewColumn.cell_get_size",
+				     kwlist, &py_cell_area))
+        return NULL;
+
+    if (py_cell_area != Py_None) {
+        if (!pygdk_rectangle_from_pyobject(py_cell_area, &cell_area))
+            return NULL;
+    }
 
     gtk_tree_view_column_cell_get_size(GTK_TREE_VIEW_COLUMN(self->obj),
-                                       &cell_area,
+                                       (py_cell_area == Py_None) ? NULL : &cell_area,
                                        &x_offset, &y_offset, &width, &height);
 
     return Py_BuildValue("(Niiii)",
@@ -186,7 +193,7 @@ pygtk_cell_data_func_marshal (GtkCellLayout *cell_layout,
     pycell = pygobject_new((GObject *)cell);
     pytreemodel = pygobject_new((GObject *)tree_model);
     pyiter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter,
-                           TRUE, TRUE);
+                           FALSE, FALSE);
     if (cunote->data)
         retobj = PyEval_CallFunction(cunote->func, "(NNNNO)",
                                      pycelllayout, pycell,
@@ -333,7 +340,7 @@ _wrap_gtk_tree_view_insert_column_with_attributes(PyGObject *self, PyObject *arg
     GtkCellRenderer *cell;
     PyObject *py_cell, *key, *item;
     const char *title;
-    gint i = 0;
+    Py_ssize_t i = 0;
 
     if (!PyArg_ParseTuple(args,
                           "isO!:GtkTreeView.insert_column_with_attributes",
@@ -572,6 +579,7 @@ _wrap_gtk_tree_selection_get_selected_rows(PyGObject *self)
 }
 %%
 override gtk_tree_selection_selected_foreach
+
 static void
 pygtk_tree_selection_foreach_marshal(GtkTreeModel *model,
                                      GtkTreePath *path,
@@ -588,19 +596,19 @@ pygtk_tree_selection_foreach_marshal(GtkTreeModel *model,
 
     py_model = pygobject_new((GObject *)model);
     py_path = pygtk_tree_path_to_pyobject(path);
-    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, TRUE, TRUE);
+    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, FALSE, FALSE);
     if (cunote->data)
-        retobj = PyEval_CallFunction(cunote->func, "(NNNO)",
+        retobj = PyEval_CallFunction(cunote->func, "(NNOO)",
                                      py_model, py_path, py_iter,
                                      cunote->data);
     else
-        retobj = PyEval_CallFunction(cunote->func, "(NNN)",
+        retobj = PyEval_CallFunction(cunote->func, "(NNO)",
                                      py_model, py_path, py_iter);
 
     if (retobj == NULL) {
         PyErr_Print();
     }
-
+    pygtk_boxed_unref_shared(py_iter);
     Py_XDECREF(retobj);
 
     pyg_gil_state_release(state);
@@ -625,8 +633,7 @@ _wrap_gtk_tree_selection_selected_foreach(PyGObject *self, PyObject *args)
     return Py_None;
 }
 %%
-override gtk_tree_selection_set_select_function
-
+override gtk_tree_selection_set_select_function kwargs
 static gboolean
 pygtk_tree_selection_marshal(GtkTreeSelection *selection,
                              GtkTreeModel *model,
@@ -645,10 +652,61 @@ pygtk_tree_selection_marshal(GtkTreeSelection *selection,
 
     pypath = pygtk_tree_path_to_pyobject(path);
     if (cunote->data)
-        retobj = PyEval_CallFunction(cunote->func, "(OO)", pypath,
+        retobj = PyEval_CallFunction(cunote->func, "(NO)", pypath,
                                      cunote->data);
     else
-        retobj = PyEval_CallFunction(cunote->func, "(O)", pypath);
+        retobj = PyEval_CallFunction(cunote->func, "(N)", pypath);
+
+    if (retobj == NULL) {
+        PyErr_Print();
+    }
+
+    Py_DECREF(pypath);
+    if (retobj) {
+        if(retobj == Py_None);
+        else if(PyInt_Check(retobj))
+            retval = PyInt_AsLong(retobj) && TRUE;
+        else if(PyLong_Check(retobj))
+            retval = PyLong_AsLongLong(retobj) && TRUE;
+        else if(PyString_Check(retobj))
+            retval = PyString_GET_SIZE(retobj) && TRUE;
+
+        Py_DECREF(retobj);
+    }
+
+
+    pyg_gil_state_release(state);
+
+    return retval;
+}
+static gboolean
+pygtk_tree_selection_marshal_full(GtkTreeSelection *selection,
+                                  GtkTreeModel *model,
+                                  GtkTreePath *path,
+                                  gboolean path_currently_selected,
+                                  gpointer data)
+{
+    PyGILState_STATE state;
+    gboolean retval = FALSE;
+    PyGtkCustomNotify *cunote = data;
+    PyObject *pyselection, *pymodel, *pypath, *retobj;
+
+    g_assert(cunote->func);
+
+    state = pyg_gil_state_ensure();
+
+    pyselection = pygobject_new((GObject*)selection);
+    pymodel = pygobject_new((GObject*)model);
+    pypath = pygtk_tree_path_to_pyobject(path);
+    if (cunote->data)
+        retobj = PyEval_CallFunction(cunote->func, "(NNNNO)", pyselection,
+                                     pymodel, pypath,
+                                     PyBool_FromLong(path_currently_selected),
+                                     cunote->data);
+    else
+        retobj = PyEval_CallFunction(cunote->func, "(NNNN)", pyselection,
+                                     pymodel, pypath,
+                                     PyBool_FromLong(path_currently_selected));
 
     if (retobj == NULL) {
         PyErr_Print();
@@ -673,20 +731,32 @@ pygtk_tree_selection_marshal(GtkTreeSelection *selection,
     return retval;
 }
 static PyObject *
-_wrap_gtk_tree_selection_set_select_function(PyGObject *self, PyObject *args)
+_wrap_gtk_tree_selection_set_select_function(PyGObject *self, PyObject *args,
+                                             PyObject *kwargs)
 {
-    PyObject *pyfunc, *pyarg = NULL;
+    static char *kwlist[] = { "func", "data", "full", NULL };
+    PyObject *pyfunc, *pyarg = NULL, *pyfull = Py_False;
     PyGtkCustomNotify *cunote;
 
-    if(!PyArg_ParseTuple(args, "O|O:GtkTreeSelection.set_select_function",
-                         &pyfunc, &pyarg))
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O|OO:GtkTreeSelection.set_select_function",
+                                     kwlist, &pyfunc, &pyarg, &pyfull))
         return NULL;
 
+    if (!PyCallable_Check(pyfunc)) {
+        PyErr_SetString(PyExc_TypeError, "func must be a callable object");
+        return NULL;
+    }
     cunote = g_new0(PyGtkCustomNotify, 1);
     cunote->func = pyfunc;
     cunote->data = pyarg;
     Py_INCREF(cunote->func);
     Py_XINCREF(cunote->data);
+    if (PyObject_IsTrue(pyfull))
+        gtk_tree_selection_set_select_function(GTK_TREE_SELECTION(self->obj),
+                                               pygtk_tree_selection_marshal_full,
+                                               cunote,
+                                               pygtk_custom_destroy_notify);
+    else
     gtk_tree_selection_set_select_function(GTK_TREE_SELECTION(self->obj),
                                            pygtk_tree_selection_marshal,
                                            cunote,
@@ -909,7 +979,7 @@ static PyNumberMethods _wrap_gtk_tree_model_tp_as_number = {
 };
 %%
 override-slot GtkTreeModel.tp_as_mapping
-static int
+static Py_ssize_t
 _wrap_gtk_tree_model_tp_length(PyGObject *self)
 {
     return gtk_tree_model_iter_n_children(GTK_TREE_MODEL(self->obj), NULL);
@@ -1005,7 +1075,7 @@ _wrap_gtk_tree_model_tp_setitem(PyGObject *self, PyObject *item,
 }
 
 static PyMappingMethods _wrap_gtk_tree_model_tp_as_mapping = {
-    (inquiry)_wrap_gtk_tree_model_tp_length,
+    (lenfunc)_wrap_gtk_tree_model_tp_length,
     (binaryfunc)_wrap_gtk_tree_model_tp_getitem,
     (objobjargproc)_wrap_gtk_tree_model_tp_setitem
 };
@@ -1051,17 +1121,18 @@ pygtk_tree_sortable_sort_cb(GtkTreeModel *model, GtkTreeIter *iter1,
     state = pyg_gil_state_ensure();
 
     py_model = pygobject_new((GObject *)model);
-    py_iter1 = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter1, TRUE, TRUE);
-    py_iter2 = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter2, TRUE, TRUE);
+    py_iter1 = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter1, FALSE, FALSE);
+    py_iter2 = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter2,  FALSE, FALSE);
 
     if (cunote->data) {
-        retobj = PyEval_CallFunction(cunote->func, "(NNNO)", py_model,
+        retobj = PyEval_CallFunction(cunote->func, "(OOOO)", py_model,
                                      py_iter1, py_iter2, cunote->data);
     } else {
-        retobj = PyEval_CallFunction(cunote->func, "(NNN)", py_model,
+        retobj = PyEval_CallFunction(cunote->func, "(OOO)", py_model,
                                      py_iter1, py_iter2);
     }
-
+    pygtk_boxed_unref_shared(py_iter1);
+    pygtk_boxed_unref_shared(py_iter2);
     if (retobj)
         ret = PyInt_AsLong(retobj);
     if (PyErr_Occurred()) {
@@ -1113,6 +1184,14 @@ _wrap_gtk_tree_sortable_set_default_sort_func(PyGObject *self, PyObject *args)
                           &callback, &data))
         return NULL;
 
+    if (callback == Py_None) {
+	gtk_tree_sortable_set_default_sort_func(GTK_TREE_SORTABLE(self->obj),
+						NULL,
+						NULL,
+						NULL);
+	goto beach;
+    }
+    
     if (!PyCallable_Check(callback)) {
         PyErr_SetString(PyExc_TypeError, "callback must be a callable object");
         return NULL;
@@ -1127,7 +1206,7 @@ _wrap_gtk_tree_sortable_set_default_sort_func(PyGObject *self, PyObject *args)
                                             pygtk_tree_sortable_sort_cb,
                                             cunote,
                                             pygtk_custom_destroy_notify);
-
+ beach:
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -1180,7 +1259,7 @@ _wrap_gtk_list_store_set_column_types(PyGObject *self, PyObject *args)
     len = PyTuple_Size(args);
     if (len == 0) {
         PyErr_SetString(PyExc_TypeError,
-                        "GtkListStore set_column_types at least one argument");
+                        "GtkListStore set_column_types requires at least one argument");
         return NULL;
     }
 
@@ -1673,6 +1752,83 @@ ignore
   gtk_tree_store_setv
 %%
 override gtk_tree_store_insert kwargs
+#if GTK_CHECK_VERSION(2, 10, 0)
+static PyObject *
+_wrap_gtk_tree_store_insert(PyGObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "parent", "position", "row", NULL };
+    PyObject *py_parent;
+    GtkTreeIter iter, *parent = NULL;
+    gint position;
+    PyObject *items = NULL;
+    gint n_columns = 0;
+    gint *columns = NULL;
+    GValue *values = NULL;
+    gint i;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Oi|O:GtkTreeStore.insert",
+                                     kwlist, &py_parent, &position, &items))
+        return NULL;
+    if (pyg_boxed_check(py_parent, GTK_TYPE_TREE_ITER))
+        parent = pyg_boxed_get(py_parent, GtkTreeIter);
+    else if (py_parent != Py_None) {
+        PyErr_SetString(PyExc_TypeError,
+                        "parent must be a GtkTreeIter or None");
+        return NULL;
+    }
+    if (items) {
+	if (!PySequence_Check(items)) {
+	    PyErr_SetString(PyExc_TypeError, "expecting a sequence");
+	    return NULL;
+	}
+	
+	n_columns = gtk_tree_model_get_n_columns(GTK_TREE_MODEL(self->obj));
+	if (PySequence_Length(items) != n_columns) {
+	    PyErr_SetString(PyExc_ValueError, "row sequence has wrong length");
+	    return NULL;
+	}
+    }
+
+    columns = g_new0(gint, n_columns);
+    values = g_new0(GValue, n_columns);
+    for (i = 0; i < n_columns; i++) {
+	PyObject *item;
+
+	item = PySequence_GetItem(items, i);
+	if (!item)
+	    return NULL;
+
+	g_value_init(&values[i],
+                     gtk_tree_model_get_column_type(GTK_TREE_MODEL(self->obj),
+                                                    i));
+	
+	if (pyg_value_from_pyobject(&values[i], item)) {
+	    Py_DECREF(item);
+	    PyErr_SetString(PyExc_TypeError,
+			    "value is of wrong type for this column");
+	    return NULL;
+	}
+
+	columns[i] = i;
+	    
+	Py_DECREF(item);
+    }
+    
+    gtk_tree_store_insert_with_valuesv(GTK_TREE_STORE(self->obj), &iter,
+                                       parent, position, columns, values,
+				       n_columns);
+    
+    for (i = 0; i < n_columns; i++) {
+	g_value_unset(&values[i]);
+    }
+    if (values)
+	g_free(values);
+    if (columns)
+	g_free(columns);
+
+    return pyg_boxed_new(GTK_TYPE_TREE_ITER, &iter, TRUE, TRUE);
+}
+#else
 static PyObject *
 _wrap_gtk_tree_store_insert(PyGObject *self, PyObject *args, PyObject *kwargs)
 {
@@ -1701,6 +1857,7 @@ _wrap_gtk_tree_store_insert(PyGObject *self, PyObject *args, PyObject *kwargs)
 
     return pyg_boxed_new(GTK_TYPE_TREE_ITER, &iter, TRUE, TRUE);
 }
+#endif    
 %%
 override gtk_tree_store_insert_before kwargs
 static PyObject *
@@ -1990,7 +2147,7 @@ pygtk_tree_foreach_marshal(GtkTreeModel *model,
 
     py_model = pygobject_new((GObject *)model);
     py_path = pygtk_tree_path_to_pyobject(path);
-    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, TRUE, TRUE);
+    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter,  FALSE, FALSE);
     if (cunote->data)
         retobj = PyEval_CallFunction(cunote->func, "(NNNO)",
                                      py_model, py_path, py_iter,
@@ -2144,98 +2301,6 @@ _wrap_gtk_tree_model_sort_convert_iter_to_child_iter(PyGObject *self,
     gtk_tree_model_sort_convert_iter_to_child_iter(
 	GTK_TREE_MODEL_SORT(self->obj), child_iter, sorted_iter);
     return pyg_boxed_new(GTK_TYPE_TREE_ITER, child_iter, TRUE, TRUE);
-}
-%%
-override gtk_tree_view_enable_model_drag_source kwargs
-static PyObject *
-_wrap_gtk_tree_view_enable_model_drag_source(PyGObject *self, PyObject *args,
-                                             PyObject *kwargs)
-{
-    static char *kwlist[] = { "start_button_mask", "targets", "actions", NULL };
-    PyObject *py_sbmask, *py_targets, *py_actions;
-    GdkModifierType sbmask;
-    GtkTargetEntry *targets;
-    GdkDragAction actions;
-    gint n_targets, i;
- 
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-                                     "OOO:GtkTreeView.enable_model_drag_source",
-                                     kwlist,
-                                     &py_sbmask, &py_targets, &py_actions))
-        return NULL;
-    if (pyg_flags_get_value(GDK_TYPE_MODIFIER_TYPE,
-                             py_sbmask, (gint *)&sbmask))
-        return NULL;
-    if (pyg_flags_get_value(GDK_TYPE_DRAG_ACTION,
-                             py_actions, (gint *)&actions))
-        return NULL;
-    if (!PySequence_Check(py_targets)) {
-        PyErr_SetString(PyExc_TypeError, "targets must be a sequence");
-        return NULL;
-    }
-    n_targets = PySequence_Length(py_targets);
-    targets = g_new(GtkTargetEntry, n_targets);
-    for (i = 0; i < n_targets; i++) {
-        PyObject *item = PySequence_GetItem(py_targets, i);
-        Py_DECREF(item);
-        if (!PyArg_ParseTuple(item, "zii", &targets[i].target,
-                              &targets[i].flags, &targets[i].info)) {
-            PyErr_Clear();
-            PyErr_SetString(PyExc_TypeError,
-                            "list items should be of form (string,int,int)");
-            g_free(targets);
-            return NULL;
-        }
-    }
-    gtk_tree_view_enable_model_drag_source(GTK_TREE_VIEW(self->obj),
-                                           sbmask, targets, n_targets, actions);
-    g_free(targets);
-    Py_INCREF(Py_None);
-    return Py_None;
-}
-%%
-override gtk_tree_view_enable_model_drag_dest kwargs
-static PyObject *
-_wrap_gtk_tree_view_enable_model_drag_dest(PyGObject *self, PyObject *args,
-                                           PyObject *kwargs)
-{
-    static char *kwlist[] = { "targets", "actions", NULL };
-    PyObject *py_targets, *py_actions;
-    GtkTargetEntry *targets;
-    GdkDragAction actions;
-    gint n_targets, i;
-
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-                                     "OO:GtkTreeView.enable_model_drag_dest",
-                                     kwlist,
-                                     &py_targets, &py_actions))
-        return NULL;
-    if (pyg_flags_get_value(GDK_TYPE_DRAG_ACTION,
-                             py_actions, (gint *)&actions))
-        return NULL;
-    if (!PySequence_Check(py_targets)) {
-        PyErr_SetString(PyExc_TypeError, "targets must be a sequence");
-        return NULL;
-    }
-    n_targets = PySequence_Length(py_targets);
-    targets = g_new(GtkTargetEntry, n_targets);
-    for (i = 0; i < n_targets; i++) {
-        PyObject *item = PySequence_GetItem(py_targets, i);
-        Py_DECREF(item);
-        if (!PyArg_ParseTuple(item, "zii", &targets[i].target,
-                              &targets[i].flags, &targets[i].info)) {
-            PyErr_Clear();
-            PyErr_SetString(PyExc_TypeError,
-                            "list items should be of form (string,int,int)");
-            g_free(targets);
-            return NULL;
-        }
-    }
-    gtk_tree_view_enable_model_drag_dest(GTK_TREE_VIEW(self->obj),
-                                         targets, n_targets, actions);
-    g_free(targets);
-    Py_INCREF(Py_None);
-    return Py_None;
 }
 %%
 override gtk_tree_view_enable_model_drag_source kwargs
@@ -2490,7 +2555,7 @@ pygtk_tree_model_filter_visible_cb(GtkTreeModel *model, GtkTreeIter *iter,
     state = pyg_gil_state_ensure();
 
     py_model = pygobject_new((GObject *)model);
-    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, TRUE, TRUE);
+    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter,  FALSE, FALSE);
 
     if (cunote->data) {
         retobj = PyEval_CallFunction(cunote->func, "(NNO)", py_model,
@@ -2823,7 +2888,7 @@ pygtk_filter_modify_func_marshal(GtkTreeModel *model, GtkTreeIter *iter,
     state = pyg_gil_state_ensure();
 
     py_model = pygobject_new((GObject *)model);
-    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, TRUE, TRUE);
+    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter,  FALSE, FALSE);
     if (cunote->data)
         py_value = PyEval_CallFunction(cunote->func, "(NNiO)",
                                      py_model, py_iter, column, cunote->data);
@@ -2997,14 +3062,17 @@ pygtk_set_search_equal_func_marshal(GtkTreeModel *model,
     PyObject *retobj;
     gboolean ret = FALSE;
 
-    g_assert (cunote->func);
+      /* gracefully guard against NULL values */
+    g_return_val_if_fail(cunote->func, TRUE);
+    g_return_val_if_fail(key, TRUE);
+    g_return_val_if_fail(iter, TRUE);
 
     state = pyg_gil_state_ensure();
 
     py_model = pygobject_new((GObject *)model);
     py_column = PyInt_FromLong(column);
     py_key = PyString_FromString(key);
-    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, TRUE, TRUE);
+    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter,  FALSE, FALSE);
 
     if (cunote->data)
         retobj = PyEval_CallFunction(cunote->func, "(NNNNO)",
@@ -3015,7 +3083,7 @@ pygtk_set_search_equal_func_marshal(GtkTreeModel *model,
                                      py_model, py_column, py_key, py_iter);
 
     if (retobj)
-        ret = retobj == Py_True ? TRUE : FALSE;
+        ret = (PyObject_IsTrue(retobj)? TRUE : FALSE);
     if (PyErr_Occurred()) {
         PyErr_Print();
     }
@@ -3081,7 +3149,7 @@ pygtk_set_row_separator_func_marshal(GtkTreeModel *model,
     state = pyg_gil_state_ensure();
 
     py_model = pygobject_new((GObject *)model);
-    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter, TRUE, TRUE);
+    py_iter = pyg_boxed_new(GTK_TYPE_TREE_ITER, iter,  FALSE, FALSE);
 
     if (cunote->data)
         retobj = PyEval_CallFunction(cunote->func, "(NNO)",
@@ -3136,6 +3204,119 @@ _wrap_gtk_tree_view_set_row_separator_func(PyGObject *self, PyObject *args,
                                          pygtk_set_row_separator_func_marshal,
                                          cunote,
                                          pygtk_custom_destroy_notify);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+%%
+override gtk_tree_view_get_visible_range noargs
+static PyObject *
+_wrap_gtk_tree_view_get_visible_range(PyGObject *self)
+{
+    GtkTreePath *start_path, *end_path;
+    gboolean r;
+    
+    r = gtk_tree_view_get_visible_range(GTK_TREE_VIEW(self->obj),
+					&start_path, &end_path);
+    if (r) {
+        PyObject *py_start_path = pygtk_tree_path_to_pyobject(start_path);
+        PyObject *py_end_path = pygtk_tree_path_to_pyobject(end_path);
+        gtk_tree_path_free(start_path);
+        gtk_tree_path_free(end_path); 
+       return Py_BuildValue("(NN)", py_start_path, py_end_path);
+    }
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+%%
+override gtk_tree_view_set_search_position_func
+static void
+pygtk_tree_view_set_search_position_func_cb(GtkTreeView *treeview,
+                                            GtkWidget *search_dialog,
+                                            gpointer data)
+{
+    PyGILState_STATE state;
+    PyGtkCustomNotify *cunote = data;
+    PyObject *retobj;
+
+    g_assert(cunote->func);
+
+    state = pyg_gil_state_ensure();
+
+    if (cunote->data)
+        retobj = PyEval_CallFunction(cunote->func, "(NNO)",
+                                     pygobject_new((GObject*)treeview),
+                                     pygobject_new((GObject*)search_dialog),
+                                     cunote->data);
+    else
+        retobj = PyEval_CallFunction(cunote->func, "(NN)",
+                                     pygobject_new((GObject*)treeview),
+                                     pygobject_new((GObject*)search_dialog));
+
+    if (retobj == NULL) {
+        PyErr_Print();
+    }
+
+    Py_XDECREF(retobj);
+
+    pyg_gil_state_release(state);
+}
+static PyObject *
+_wrap_gtk_tree_view_set_search_position_func(PyGObject *self, PyObject *args)
+{
+    PyObject *pyfunc, *pyarg = NULL;
+    PyGtkCustomNotify *cunote;
+
+    if(!PyArg_ParseTuple(args, "O|O:GtkTreeView.set_search_position_func",
+                         &pyfunc, &pyarg))
+        return NULL;
+
+    if (pyfunc != Py_None) {
+        cunote = g_new0(PyGtkCustomNotify, 1);
+        cunote->func = pyfunc;
+        cunote->data = pyarg;
+        Py_INCREF(cunote->func);
+        Py_XINCREF(cunote->data);
+        gtk_tree_view_set_search_position_func(
+            GTK_TREE_VIEW(self->obj),
+            pygtk_tree_view_set_search_position_func_cb, cunote,
+            pygtk_custom_destroy_notify);
+    } else
+        gtk_tree_view_set_search_position_func(GTK_TREE_VIEW(self->obj),
+                                               NULL, NULL, NULL);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+%%
+override gtk_tree_store_set_column_types args
+static PyObject*
+_wrap_gtk_tree_store_set_column_types(PyGObject *self, PyObject *args)
+{
+    guint len, i;
+    GType *column_types;
+
+    len = PyTuple_Size(args);
+    if (len == 0) {
+        PyErr_SetString(PyExc_TypeError,
+                        "GtkTreeStore set_column_types requires at least one argument");
+        return NULL;
+    }
+
+    column_types = g_new(GType, len);
+    for (i = 0; i < len; i++) {
+        PyObject *item = PyTuple_GetItem(args, i);
+
+        column_types[i] = pyg_type_from_object(item);
+        if (column_types[i] == 0) {
+            g_free(column_types);
+	    return NULL;
+        }
+    }
+    
+    gtk_tree_store_set_column_types(GTK_TREE_STORE(self->obj), len,
+                                    column_types);
+    g_free(column_types);
+
     Py_INCREF(Py_None);
     return Py_None;
 }

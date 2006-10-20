@@ -1,3 +1,9 @@
+python-gtk2 (2.6.3-1osso7) unstable; urgency=low
+
+  * compiled with python2.5
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 20 Oct 2006 17:11:02 -0300
+
 python-gtk2 (2.6.3-1osso6) unstable; urgency=low
 
   * added bindings for g_(set|get)_application_name() glib funcions in gtk

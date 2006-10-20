@@ -1,5 +1,5 @@
 # order is important here (for now)
-import gobject, gtk
+import gtk
 
 # string taken from pango examples directory and converted from utf8
 # to python unicode string escapes
@@ -66,4 +66,3 @@ l.show()
 win.show()
 
 gtk.main()
-

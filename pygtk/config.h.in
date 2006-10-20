@@ -6,6 +6,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
+/* If Gtk 2.10 was found */
+#undef HAVE_GTK_2_10
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -14,6 +17,9 @@
 
 /* whether to include numeric python support */
 #undef HAVE_NUMPY
+
+/* Define to 1 if pycairo is available */
+#undef HAVE_PYCAIRO
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
@@ -53,6 +59,15 @@
 
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
+
+/* pycairo major version */
+#undef PYCAIRO_MAJOR_VERSION
+
+/* pycairo micro version */
+#undef PYCAIRO_MICRO_VERSION
+
+/* pycairo minor version */
+#undef PYCAIRO_MINOR_VERSION
 
 /* PyGtk major version */
 #undef PYGTK_MAJOR_VERSION

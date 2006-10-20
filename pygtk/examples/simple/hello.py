@@ -29,4 +29,3 @@ button.show()
 # as the button is within the window this also shows the window 
 window.show_all()
 gtk.main()
-

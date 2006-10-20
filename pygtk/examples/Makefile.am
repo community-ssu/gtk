@@ -5,22 +5,27 @@ demoimgdir = $(demodir)/images
 
 bin_SCRIPTS = pygtk-demo/pygtk-demo
 pygtk-demo/pygtk-demo: pygtk-demo/pygtk-demo.in
-	-mkdir pygtk-demo
-	sed -e s!\@PYTHON\@!@PYTHON@! \
+	@mkdir -p pygtk-demo
+	@sed -e s!\@PYTHON\@!@PYTHON@! \
 	    -e s!\@libdir\@!@libdir@! \
 		< $< > $@
-	chmod a+x $@
+	@chmod a+x $@
 
 CLEANFILES = pygtk-demo/pygtk-demo
 
 EXTRA_DIST = \
 	pygtk-demo/pygtk-demo.in\
 	atk/atk-demo.py		\
+	gobject/editable-interface.py \
 	gobject/properties.py	\
 	gobject/signal.py	\
+	gtk/bin.py		\
 	gtk/filechooser.py	\
+	gtk/scrollable.py	\
+	gtk/sizegroup.py	\
 	gtk/uimanager.py	\
 	gtk/widget.py		\
+	gtk/testprint.py	\
 	glade/README		\
 	glade/test.glade	\
 	glade/autoconnect.py	\
@@ -43,17 +48,8 @@ EXTRA_DIST = \
 	ide/run.xpm		\
 	ide/step.xpm		\
 	ide/dialogs.py		\
-	neil/README		\
-	neil/TAppli.py		\
-	neil/TAppli2.py		\
-	neil/TAppli3.py		\
-	neil/TAppli4.py		\
-	neil/TAppli5.py		\
-	neil/bomb.xpm		\
-	neil/gtk-logo.xpm	\
-	neil/notebook.py	\
-	neil/question.xpm	\
 	pango/utf8-demo.py	\
+	pango/pangocairo-simple.py \
 	simple/README		\
 	simple/dnd.py		\
 	simple/dndpixmap.py	\
@@ -81,6 +77,7 @@ demo_PYTHON = \
 	pygtk-demo/demos/menu.py		\
 	pygtk-demo/demos/panes.py		\
 	pygtk-demo/demos/pixbufs.py		\
+	pygtk-demo/demos/print_editor.py	\
 	pygtk-demo/demos/sizegroup.py		\
 	pygtk-demo/demos/stock_browser.py	\
 	pygtk-demo/demos/textview.py		\

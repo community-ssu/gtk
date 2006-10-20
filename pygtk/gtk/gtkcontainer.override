@@ -526,7 +526,10 @@ pygtk_container_for_common(PyGObject *self, PyObject *args, unsigned for_index)
             { "O|O:GtkContainer.forall", gtk_container_forall }
     };
 
-    g_assert(for_index < countof(table));
+    if (for_index >= countof(table)) {
+	PyErr_SetString(PyExc_TypeError, "for_index > 2");
+	return NULL;
+    }
 
     if (!PyArg_ParseTuple(args, table[for_index].parse_arg,
                           &pyfunc, &pyarg))
@@ -537,7 +540,6 @@ pygtk_container_for_common(PyGObject *self, PyObject *args, unsigned for_index)
     table[for_index].for_func(GTK_CONTAINER(self->obj),
 			      pygtk_container_for_common_marshal,
 			      &cunote);
-
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -566,6 +568,9 @@ _wrap_gtk_container_class_list_child_properties (PyObject *self, PyObject *args,
     GObjectClass *class;
     guint nprops;
     guint i;
+
+    if (PyErr_Warn(PyExc_DeprecationWarning, "use the gtk.Container.list_child_properties classmethod"))
+        return NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
 				     "O:gtk.container_class_list_child_properties", kwlist,
@@ -605,6 +610,47 @@ _wrap_gtk_container_class_list_child_properties (PyObject *self, PyObject *args,
     return list;
 }
 %%
+define GtkContainer.list_child_properties noargs classmethod
+static PyObject *
+_wrap_gtk_container_list_child_properties (PyObject *self, PyObject *args,
+                                           PyObject*kwargs)
+{
+    GParamSpec **specs;
+    PyObject *list;
+    GType itype;
+    GObjectClass *class;
+    guint nprops;
+    guint i;
+
+    if ((itype = pyg_type_from_object(self)) == 0)
+	return NULL;
+
+    class = g_type_class_ref(itype);
+    if (!class) {
+	PyErr_SetString(PyExc_RuntimeError,
+			"could not get a reference to type class");
+	return NULL;
+    }
+
+    specs = gtk_container_class_list_child_properties(class, &nprops);
+    list = PyList_New(nprops);
+    if (list == NULL) {
+	g_free(specs);
+	g_type_class_unref(class);
+	return NULL;
+    }
+    
+    for (i = 0; i < nprops; i++) {
+	PyList_SetItem(list, i, pyg_param_spec_new(specs[i]));
+    }
+    
+    g_free(specs);
+    g_type_class_unref(class);
+
+    return list;
+}
+
+%%
 override gtk_container_class_install_child_property kwargs
 static PyObject *
 _wrap_gtk_container_class_install_child_property (PyObject *self,
@@ -617,6 +663,9 @@ _wrap_gtk_container_class_install_child_property (PyObject *self,
     GtkContainerClass *class;
     guint property_id;
     GParamSpec *pspec;
+
+    if (PyErr_Warn(PyExc_DeprecationWarning, "use the gtk.Container.install_child_property classmethod"))
+        return NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
 				     "OiO:container_class_install_child_property",
@@ -659,4 +708,383 @@ _wrap_gtk_container_class_install_child_property (PyObject *self,
 
     Py_INCREF(Py_None);
     return Py_None;
+}
+
+%%
+define GtkContainer.install_child_property kwargs classmethod
+static PyObject *
+_wrap_gtk_container_install_child_property (PyObject *self,
+                                            PyObject *args,
+                                            PyObject* kwargs)
+{
+    static char *kwlist[] = { "property_id", "pspec", NULL };
+    PyObject *property;
+    GType itype;
+    GtkContainerClass *class;
+    guint property_id;
+    GParamSpec *pspec;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+				     "iO:container_class_install_child_property",
+				     kwlist,
+				     &property_id, &property))
+	return NULL;
+
+
+    if ((itype = pyg_type_from_object(self)) == 0)
+	return NULL;
+
+    class = g_type_class_ref(itype);
+    if (!class) {
+	PyErr_SetString(PyExc_RuntimeError,
+			"could not get a reference to type class");
+	return NULL;
+    }
+
+    pspec = pyg_param_spec_from_object(property);
+    if(!pspec) {
+	g_type_class_unref(class);
+	return NULL;
+    }
+
+    if (gtk_container_class_find_child_property(G_OBJECT_CLASS(class), pspec->name)) {
+	PyErr_Format(PyExc_TypeError,
+		     "there is already a '%s' property installed", pspec->name);
+	g_type_class_unref(class);
+	return NULL;
+    }
+    
+    gtk_container_class_install_child_property(class, property_id, pspec);
+	
+    g_type_class_unref(class);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+%%
+override-slot GtkContainer.tp_iter
+
+typedef struct {
+    PyObject_HEAD
+    GList *list;
+} PyGContainerIter;
+
+static void
+pyg_container_iter_dealloc(PyGContainerIter *self)
+{
+    g_list_free(self->list);
+    PyObject_Del((PyObject*) self);
+}
+
+static PyObject*
+pygobject_container_iter_next(PyGContainerIter *iter)
+{
+    PyObject *child;
+    
+    if (!iter->list) {
+        PyErr_SetNone(PyExc_StopIteration);
+        return NULL;
+    }
+	
+    child = pygobject_new((GObject*)iter->list->data);
+    iter->list = g_list_next(iter->list);
+    return child;
+}
+
+static PyTypeObject PyGContainerIter_Type = {
+	PyObject_HEAD_INIT(NULL)
+	0,					/* ob_size */
+	"gobject.GContainerIter",		/* tp_name */
+	sizeof(PyGContainerIter),		/* tp_basicsize */
+	0,					/* tp_itemsize */
+	(destructor)pyg_container_iter_dealloc,	/* tp_dealloc */
+	0,					/* tp_print */
+	0,					/* tp_getattr */
+	0,					/* tp_setattr */
+	0,					/* tp_compare */
+	0,					/* tp_repr */
+	0,					/* tp_as_number */
+	0,					/* tp_as_sequence */
+	0,		       			/* tp_as_mapping */
+	0,					/* tp_hash */
+	0,					/* tp_call */
+	0,					/* tp_str */
+	0,					/* tp_getattro */
+	0,					/* tp_setattro */
+	0,					/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT,			/* tp_flags */
+ 	"GtkContainer child iterator",		/* tp_doc */
+	0,					/* tp_traverse */
+ 	0,					/* tp_clear */
+	0,					/* tp_richcompare */
+	0,					/* tp_weaklistoffset */
+	0,					/* tp_iter */
+	(iternextfunc)pygobject_container_iter_next, /* tp_iternext */
+};
+
+static PyObject*
+_wrap_gtk_container_tp_iter(PyGObject *self)
+{
+    PyGContainerIter *iter;
+    iter = PyObject_NEW(PyGContainerIter, &PyGContainerIter_Type);
+    iter->list = gtk_container_get_children(GTK_CONTAINER(self->obj));
+    return (PyObject *) iter;
+}
+%%
+override-slot GtkContainer.tp_as_sequence
+static Py_ssize_t
+_wrap_gtk_container_sq_length(PyGObject *self)
+{
+    return g_list_length(gtk_container_get_children(GTK_CONTAINER(self->obj)));
+}
+
+static PySequenceMethods _wrap_gtk_container_tp_as_sequence = {
+    (lenfunc)_wrap_gtk_container_sq_length,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+};
+%%
+override-slot GtkContainer.tp_as_number
+static int
+_wrap_gtk_container_nb_nonzero(PyGObject *self)
+{
+    return 1;
+}
+
+static PyNumberMethods _wrap_gtk_container_tp_as_number = {
+    (binaryfunc)0,
+    (binaryfunc)0,
+    (binaryfunc)0,
+    (binaryfunc)0,
+    (binaryfunc)0,
+    (binaryfunc)0,
+    (ternaryfunc)0,
+    (unaryfunc)0,
+    (unaryfunc)0,
+    (unaryfunc)0,
+    (inquiry)_wrap_gtk_container_nb_nonzero
+};
+
+%%
+override GtkContainer__proxy_do_forall
+
+typedef struct {
+    GtkCallback    func;
+    gpointer       func_data;
+} PyGtkContainerDataFuncData;
+
+
+static PyObject *
+_wrap_GtkContainerDataFunc(PyObject *self, PyObject *args)
+{
+    PyObject *py_widget;
+    PyObject *py_data;
+    PyGtkContainerDataFuncData *data;
+
+    if (!PyArg_ParseTuple(args, "O!O!",
+			  &PyGtkWidget_Type, &py_widget,
+                          &PyCObject_Type, &py_data))
+        return NULL;
+    
+    data = PyCObject_AsVoidPtr(py_data);
+    data->func(GTK_WIDGET(pygobject_get(py_widget)), data->func_data);
+    
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+static void
+_wrap_GtkContainer__proxy_do_forall (GtkContainer *container,
+				     gboolean      include_internals,
+				     GtkCallback   callback,
+				     gpointer      callback_data)
+{
+    PyGILState_STATE state;
+    PyObject *self, *py_func, *py_func_data;
+    PyMethodDef pyfunc_def = { "GtkContainer.do_forall callback",
+			       (PyCFunction)_wrap_GtkContainerDataFunc,
+                               METH_VARARGS|METH_KEYWORDS };
+    PyGtkContainerDataFuncData *data;
+
+    state = pyg_gil_state_ensure();
+    
+    self = pygobject_new((GObject *)container);
+    py_func = PyCFunction_NewEx(&pyfunc_def, NULL, NULL);
+    
+    data = g_new(PyGtkContainerDataFuncData, 1);
+    data->func = callback;
+    data->func_data = callback_data;
+    PyObject_Repr(self);
+    PyObject_Repr(py_func);
+    py_func_data = PyCObject_FromVoidPtr(data, NULL);
+    if (!PyObject_CallMethod(self, "do_forall", "ONN", 
+			     include_internals ? Py_True : Py_False, py_func,
+			     py_func_data))
+	PyErr_Print();
+    
+    pyg_gil_state_release(state);
+}
+%%
+override GtkContainer__proxy_do_set_child_property
+static void
+_wrap_GtkContainer__proxy_do_set_child_property (GtkContainer *container,
+                                                 GtkWidget *child,
+                                                 guint property_id,
+                                                 const GValue *value,
+                                                 GParamSpec *pspec)
+{
+    PyGILState_STATE state;
+    PyObject *self, *py_ret;
+
+    state = pyg_gil_state_ensure();
+    self = pygobject_new((GObject *) container);
+
+    py_ret = PyObject_CallMethod(self, "do_set_child_property", "NNNN",
+                                 pygobject_new((GObject *) child),
+                                 PyLong_FromUnsignedLong(property_id),
+                                 pyg_value_as_pyobject(value, FALSE),
+                                 pyg_param_spec_new(pspec));
+    if (!py_ret) {
+	PyErr_Print();
+	Py_DECREF(self);
+	pyg_gil_state_release(state);
+	return;
+    }
+    Py_DECREF(self);
+    if (py_ret != Py_None)
+        PyErr_Warn(PyExc_Warning, "do_set_child_property must return None");
+    Py_DECREF(py_ret);
+
+    pyg_gil_state_release(state);
+}
+
+%%
+override GtkContainer__proxy_do_get_child_property
+static void
+_wrap_GtkContainer__proxy_do_get_child_property (GtkContainer *container,
+                                                 GtkWidget *child,
+                                                 guint property_id,
+                                                 GValue *value,
+                                                 GParamSpec *pspec)
+{
+    PyGILState_STATE state;
+    PyObject *self, *py_ret;
+
+    state = pyg_gil_state_ensure();
+
+    self = pygobject_new((GObject*)container);
+    py_ret = PyObject_CallMethod(self, "do_get_child_property", "NNN",
+                                 pygobject_new((GObject *) child),
+                                 PyLong_FromUnsignedLong(property_id),
+                                 pyg_param_spec_new(pspec));
+    if (!py_ret) {
+	PyErr_Print();
+	Py_DECREF(self);
+	pyg_gil_state_release(state);
+	return;
+    }
+    Py_DECREF(self);
+    pyg_value_from_pyobject(value, py_ret);
+    Py_DECREF(py_ret);
+
+    pyg_gil_state_release(state);
+}
+
+%%
+override GtkContainer__do_set_child_property kwargs
+static PyObject *
+_wrap_GtkContainer__do_set_child_property(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+    gpointer klass;
+    static char *kwlist[] = { "self", "child", "property_id", "value", "pspec", NULL };
+    PyGObject *self, *child;
+    PyObject *py_property_id = NULL, *py_value, *py_pspec;
+    guint property_id = 0;
+    GValue value = {0, };
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"O!O!OOO!:GtkContainer.set_child_property",
+                                     kwlist, &PyGtkContainer_Type, &self,
+                                     &PyGtkWidget_Type, &child,
+                                     &py_property_id,
+                                     &py_value,
+                                     &PyGParamSpec_Type, &py_pspec))
+        return NULL;
+
+    if (pyg_value_from_pyobject(&value, py_value)) {
+        PyErr_SetString(PyExc_TypeError, "unable to convert value");
+        return NULL;
+    }
+
+    if (py_property_id) {
+        if (PyLong_Check(py_property_id))
+            property_id = PyLong_AsUnsignedLong(py_property_id);
+        else if (PyInt_Check(py_property_id))
+            property_id = PyInt_AsLong(py_property_id);
+        else
+            PyErr_SetString(PyExc_TypeError, "Parameter 'property_id' must be an int or a long");
+        if (PyErr_Occurred())
+            return NULL;
+    }
+    klass = g_type_class_ref(pyg_type_from_object(cls));
+    if (GTK_CONTAINER_CLASS(klass)->set_child_property)
+        GTK_CONTAINER_CLASS(klass)->set_child_property(GTK_CONTAINER(self->obj), GTK_WIDGET(child->obj), property_id,
+                                                       &value, ((PyGParamSpec *)py_pspec)->pspec);
+    else {
+        PyErr_SetString(PyExc_NotImplementedError, "virtual method GtkContainer.set_child_property not implemented");
+        g_type_class_unref(klass);
+        return NULL;
+    }
+    g_type_class_unref(klass);
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+%%
+override GtkContainer__do_get_child_property kwargs
+static PyObject *
+_wrap_GtkContainer__do_get_child_property(PyObject *cls, PyObject *args, PyObject *kwargs)
+{
+    gpointer klass;
+    static char *kwlist[] = { "self", "child", "property_id", "pspec", NULL };
+    PyGObject *self, *child;
+    PyObject *py_property_id = NULL;
+    guint property_id = 0;
+    GValue value = {0, };
+    PyObject *py_value, *py_pspec;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,"O!O!OO!:GtkContainer.get_child_property", kwlist,
+                                     &PyGtkContainer_Type, &self,
+                                     &PyGtkWidget_Type, &child,
+                                     &py_property_id,
+                                     &PyGParamSpec_Type, &py_pspec))
+        return NULL;
+    if (py_property_id) {
+        if (PyLong_Check(py_property_id))
+            property_id = PyLong_AsUnsignedLong(py_property_id);
+        else if (PyInt_Check(py_property_id))
+            property_id = PyInt_AsLong(py_property_id);
+        else
+            PyErr_SetString(PyExc_TypeError, "Parameter 'property_id' must be an int or a long");
+        if (PyErr_Occurred())
+            return NULL;
+    }
+    klass = g_type_class_ref(pyg_type_from_object(cls));
+    if (GTK_CONTAINER_CLASS(klass)->get_child_property)
+        GTK_CONTAINER_CLASS(klass)->get_child_property(GTK_CONTAINER(self->obj), GTK_WIDGET(child->obj), property_id,
+                                                       &value, ((PyGParamSpec *)py_pspec)->pspec);
+    else {
+        PyErr_SetString(PyExc_NotImplementedError, "virtual method GtkContainer.get_child_property not implemented");
+        g_type_class_unref(klass);
+        return NULL;
+    }
+    g_type_class_unref(klass);
+    
+    py_value = pyg_value_as_pyobject(&value, TRUE);
+    g_value_unset(&value);
+    return py_value;
 }

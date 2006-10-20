@@ -1,6 +1,6 @@
 /* -*- Mode: C; c-basic-offset: 4 -*-
  * pygtk- Python bindings for the GTK toolkit.
- * Copyright (C) 1998-2003  James Henstridge
+ * Copyright (C) 1998-2006  James Henstridge
  *
  *   gtktextview.override: overrides for the gtk.TextView object.
  *
@@ -451,7 +451,8 @@ static PyObject *
 _wrap_gtk_text_buffer_insert_with_tags(PyGObject *self, PyObject *args)
 {
     PyObject *first, *py_iter;
-    gint len, i, text_len, start_offset;
+    gint len, i, start_offset;
+    Py_ssize_t text_len;
     gchar *text;
     GtkTextIter *iter, start;
 
@@ -506,7 +507,8 @@ static PyObject *
 _wrap_gtk_text_buffer_insert_with_tags_by_name(PyGObject *self, PyObject *args)
 {
     PyObject *first, *py_iter;
-    gint len, i, text_len, start_offset;
+    gint len, i, start_offset;
+    Py_ssize_t text_len;
     gchar *text;
     GtkTextIter *iter, start;
 
@@ -587,7 +589,7 @@ _wrap_gtk_text_buffer_create_tag(PyGObject *self, PyObject *args, PyObject *kwar
 
     /* set tag properties if any */
     if (kwargs) {
-        gint i = 0;
+        Py_ssize_t i = 0;
         PyObject *prop, *val;
 
         while (PyDict_Next(kwargs, &i, &prop, &val)) {
@@ -742,7 +744,8 @@ _wrap_gtk_text_buffer_set_text(PyGObject *self, PyObject *args, PyObject *kwargs
 {
     char *text;
     static char *kwlist[] = { "text", "len", NULL };
-    int len, oldlen = -1;
+    Py_ssize_t len;
+    int oldlen = -1;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
                                      "s#|i:GtkTextBuffer.set_text", kwlist,
@@ -787,7 +790,8 @@ _wrap_gtk_text_buffer_insert(PyGObject *self, PyObject *args,
     static char *kwlist[] = { "iter", "text", "len", NULL };
     PyObject *py_iter;
     char *text;
-    int len, oldlen = -1;
+    Py_ssize_t len;
+    int oldlen = -1;
     GtkTextIter *iter = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "Os#|i:GtkTextBuffer.insert",
@@ -821,7 +825,8 @@ _wrap_gtk_text_buffer_insert_at_cursor(PyGObject *self, PyObject *args,
 {
     static char *kwlist[] = { "text", "len", NULL };
     char *text;
-    int len, oldlen = -1;
+    Py_ssize_t len;
+    int oldlen = -1;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
                                      "s#|i:GtkTextBuffer.insert_at_cursor",
@@ -850,7 +855,8 @@ _wrap_gtk_text_buffer_insert_interactive(PyGObject *self, PyObject *args,
     static char *kwlist[] = { "iter", "text", "default_editable", "len", NULL };
     PyObject *py_iter;
     char *text;
-    int len, default_editable, ret, oldlen = -1;
+    int default_editable, ret, oldlen = -1;
+    Py_ssize_t len;
     GtkTextIter *iter = NULL;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
@@ -890,7 +896,8 @@ _wrap_gtk_text_buffer_insert_interactive_at_cursor(PyGObject *self, PyObject *ar
 {
     static char *kwlist[] = { "text", "default_editable", "len", NULL };
     char *text;
-    int len, default_editable, ret, oldlen = -1;
+    Py_ssize_t len;
+    int default_editable, ret, oldlen = -1;
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs,
                                      "s#i|i:GtkTextBuffer.insert_interactive_at_cursor",
@@ -1099,6 +1106,7 @@ pygtk_text_tag_table_foreach_cb(GtkTextTag *tag, gpointer user_data)
     ret = PyObject_CallObject(callback, args);
     if (!ret)
 	PyErr_Print();
+    Py_DECREF(args);
     Py_XDECREF(ret);
     pyg_gil_state_release(state);
 }
@@ -1124,12 +1132,13 @@ _wrap_gtk_text_tag_table_foreach(PyGObject *self, PyObject *args,
     gtk_text_tag_table_foreach(GTK_TEXT_TAG_TABLE(self->obj),
 			       pygtk_text_tag_table_foreach_cb,
 			       (gpointer)data);
+    Py_DECREF(data);
     Py_INCREF(Py_None);
     return Py_None;
 }
 %%
 override gtk_text_iter_forward_find_char kwargs
-gboolean
+static gboolean
 pygtk_find_char_pred(gunichar ch, gpointer user_data)
 {
     PyGILState_STATE state;
@@ -1233,4 +1242,358 @@ _wrap_gtk_text_iter_backward_find_char(PyGObject *self, PyObject *args,
 					   (gpointer)data, limit);
 
     return PyBool_FromLong(ret);
+}
+%%
+override gtk_text_view_get_default_attributes noargs
+/* Workaround gtk bug #317455; moreover, copy_boxed should have been FALSE
+ * in the first place (missing caller-owns-return in the defs) */
+static PyObject *
+_wrap_gtk_text_view_get_default_attributes(PyGObject *self)
+{
+    GtkTextAttributes *ret;
+
+    ret = gtk_text_view_get_default_attributes(GTK_TEXT_VIEW(self->obj));
+    /* pyg_boxed_new handles NULL checking */
+    return pyg_boxed_new(GTK_TYPE_TEXT_ATTRIBUTES, ret, FALSE, TRUE);
+}
+%%
+override gtk_text_view_get_iter_at_position kwargs
+static PyObject *
+_wrap_gtk_text_view_get_iter_at_position(PyGObject *self, PyObject *args,
+                                         PyObject *kwargs)
+{
+    static char *kwlist[] = { "x", "y", NULL };
+    GtkTextIter iter;
+    gint x, y, trailing;
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "ii:GtkTextView.get_iter_at_position",
+                                     kwlist, &x, &y))
+        return NULL;
+    gtk_text_view_get_iter_at_position(GTK_TEXT_VIEW(self->obj),
+                                       &iter, &trailing, x, y);
+    return Py_BuildValue("Oi",
+                          pyg_boxed_new(GTK_TYPE_TEXT_ITER, &iter, TRUE, TRUE),
+                          trailing);
+}
+%%
+override gtk_text_buffer_get_copy_target_list noargs
+static PyObject*
+_wrap_gtk_text_buffer_get_copy_target_list(PyGObject *self)
+{
+    GtkTargetList *targets;
+    PyObject *py_targets;
+
+    targets = gtk_text_buffer_get_copy_target_list(GTK_TEXT_BUFFER(self->obj));
+    py_targets = pygtk_target_list_to_list(targets);
+    gtk_target_list_unref(targets);
+    return py_targets;
+}
+%%
+override gtk_text_buffer_get_paste_target_list noargs
+static PyObject*
+_wrap_gtk_text_buffer_get_paste_target_list(PyGObject *self)
+{
+    GtkTargetList *targets;
+    PyObject *py_targets;
+
+    targets = gtk_text_buffer_get_paste_target_list(GTK_TEXT_BUFFER(self->obj));
+    py_targets = pygtk_target_list_to_list(targets);
+    gtk_target_list_unref(targets);
+    return py_targets;
+}
+%%
+override gtk_text_buffer_deserialize kwargs
+static PyObject *
+_wrap_gtk_text_buffer_deserialize(PyGObject *self, PyObject *args,
+                                  PyObject *kwargs)
+{
+    static char *kwlist[] = { "content_buffer", "format", "iter", "data",
+                              NULL };
+    Py_ssize_t length;
+    PyObject *py_format = NULL, *py_iter;
+    GdkAtom format;
+    GError *error = NULL;
+    int ret;
+    guint8 *data;
+    PyGObject *content_buffer;
+    GtkTextIter *iter = NULL;
+ 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "O!OOs#:GtkTextBuffer.deserialize",
+                                     kwlist, &PyGtkTextBuffer_Type,
+                                     &content_buffer, &py_format, &py_iter,
+                                     &data, &length))
+        return NULL;
+
+    format = pygdk_atom_from_pyobject(py_format);
+    if (PyErr_Occurred())
+        return NULL;
+
+    if (pyg_boxed_check(py_iter, GTK_TYPE_TEXT_ITER))
+        iter = pyg_boxed_get(py_iter, GtkTextIter);
+    else {
+        PyErr_SetString(PyExc_TypeError, "iter should be a GtkTextIter");
+        return NULL;
+    }
+
+    ret = gtk_text_buffer_deserialize(GTK_TEXT_BUFFER(self->obj),
+                                      GTK_TEXT_BUFFER(content_buffer->obj),
+                                      format, iter, data, length, &error);
+    if (pyg_error_check(&error))
+        return NULL;
+    return PyBool_FromLong(ret);
+}
+%%
+override gtk_text_buffer_serialize kwargs
+static PyObject *
+_wrap_gtk_text_buffer_serialize(PyGObject *self, PyObject *args,
+                                  PyObject *kwargs)
+{
+    static char *kwlist[] = { "content_buffer", "format", "start", "end",
+                              NULL };
+    PyObject *py_format = NULL, *py_start, *py_end;
+    GdkAtom format;
+    gsize length;
+    guint8 *ret;
+    PyGObject *content_buffer;
+    GtkTextIter *start = NULL, *end = NULL;
+ 
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "O!OOO:GtkTextBuffer.serialize",
+                                     kwlist, &PyGtkTextBuffer_Type,
+                                     &content_buffer, &py_format, &py_start,
+                                     &py_end))
+        return NULL;
+
+    format = pygdk_atom_from_pyobject(py_format);
+    if (PyErr_Occurred())
+        return NULL;
+
+    if (pyg_boxed_check(py_start, GTK_TYPE_TEXT_ITER))
+        start = pyg_boxed_get(py_start, GtkTextIter);
+    else {
+        PyErr_SetString(PyExc_TypeError, "start should be a GtkTextIter");
+        return NULL;
+    }
+    if (pyg_boxed_check(py_end, GTK_TYPE_TEXT_ITER))
+        end = pyg_boxed_get(py_end, GtkTextIter);
+    else {
+        PyErr_SetString(PyExc_TypeError, "end should be a GtkTextIter");
+        return NULL;
+    }
+
+    ret = gtk_text_buffer_serialize(GTK_TEXT_BUFFER(self->obj),
+                                      GTK_TEXT_BUFFER(content_buffer->obj),
+                                      format, start, end, &length);
+    return PyString_FromStringAndSize((char *) ret, (Py_ssize_t) length);
+}
+%%
+override gtk_text_buffer_register_deserialize_format kwargs
+static gint
+pygtk_text_buffer_register_deserialize_format_cb(GtkTextBuffer *register_buf,
+                                                 GtkTextBuffer *content_buf,
+                                                 GtkTextIter *iter,
+                                                 const guint8 *data,
+                                                 gsize length,
+                                                 gboolean create_tags,
+                                                 gpointer user_data,
+                                                 GError **error)
+{
+    PyGILState_STATE state;
+    PyGtkCustomNotify *cunote = user_data;
+    PyObject *py_register_buf, *py_content_buf, *py_iter, *py_data, *retobj;
+    gboolean ret = FALSE;
+
+    g_assert(cunote->func);
+
+    state = pyg_gil_state_ensure();
+
+    py_register_buf = pygobject_new((GObject*)register_buf);
+    py_content_buf = pygobject_new((GObject*)content_buf);
+    py_iter = pyg_boxed_new(GTK_TYPE_TEXT_ITER, iter, TRUE, TRUE);
+    py_data = PyString_FromStringAndSize((char *) data, length);
+    if (cunote->data) {
+        retobj = PyEval_CallFunction(cunote->func, "(NNNNiO)",
+                                     py_register_buf, py_content_buf,
+                                     py_iter, py_data, create_tags,
+                                     cunote->data);
+    } else {
+        retobj = PyEval_CallFunction(cunote->func, "(NNNNi)", py_register_buf,
+                                     py_content_buf, py_iter, py_data,
+                                     create_tags);
+    }
+
+    if (retobj != NULL) {
+        ret = PyInt_AsLong(retobj);
+        Py_DECREF(retobj);
+    } else {
+        PyErr_Print();
+    }
+
+    pyg_gil_state_release(state);
+    return ret;
+}
+static PyObject *
+_wrap_gtk_text_buffer_register_deserialize_format(PyGObject *self,
+                                                  PyObject *args,
+                                                  PyObject *kwargs)
+{
+    static char *kwlist[] = { "mime_type", "function", "user_data", NULL };
+    PyObject *pyfunc, *pyarg = NULL, *ret;
+    PyGtkCustomNotify *cunote;
+    const gchar *mimetype;
+    GdkAtom atom;
+    gchar *name;
+  
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "sO|O:GtkTextBuffer.register_deserialize_format",
+                                     kwlist, &mimetype, &pyfunc, &pyarg))
+        return NULL;
+
+    if (!PyCallable_Check(pyfunc)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "function must be a callable object");
+        return NULL;
+    }
+    cunote = g_new0(PyGtkCustomNotify, 1);
+    cunote->func = pyfunc;
+    cunote->data = pyarg;
+    Py_INCREF(cunote->func);
+    Py_XINCREF(cunote->data);
+ 
+    atom = gtk_text_buffer_register_deserialize_format(
+        GTK_TEXT_BUFFER(self->obj), mimetype,
+        pygtk_text_buffer_register_deserialize_format_cb, cunote,
+        pygtk_custom_destroy_notify);
+
+    name = gdk_atom_name(atom);
+    ret = PyString_FromString(name);
+    g_free(name);
+    return ret;
+}
+%%
+override gtk_text_buffer_register_serialize_format kwargs
+static guint8*
+pygtk_text_buffer_register_serialize_format_cb(GtkTextBuffer *register_buf,
+                                               GtkTextBuffer *content_buf,
+                                               const GtkTextIter *start,
+                                               const GtkTextIter *end,
+                                               gsize *length,
+                                               gpointer user_data)
+{
+    PyGILState_STATE state;
+    PyGtkCustomNotify *cunote = user_data;
+    PyObject *py_register_buf, *py_content_buf, *py_start, *py_end;
+    PyObject *retobj;
+    guint8 *ret;
+
+    g_assert(cunote->func);
+
+    state = pyg_gil_state_ensure();
+
+    py_register_buf = pygobject_new((GObject*)register_buf);
+    py_content_buf = pygobject_new((GObject*)content_buf);
+    py_start = pyg_boxed_new(GTK_TYPE_TEXT_ITER, (gpointer)start, TRUE, TRUE);
+    py_end = pyg_boxed_new(GTK_TYPE_TEXT_ITER, (gpointer)end, TRUE, TRUE);
+    if (cunote->data) {
+        retobj = PyEval_CallFunction(cunote->func, "(NNNNO)",
+                                     py_register_buf, py_content_buf,
+                                     py_start, py_end,
+                                     cunote->data);
+    } else {
+        retobj = PyEval_CallFunction(cunote->func, "(NNNN)", py_register_buf,
+                                     py_content_buf, py_start, py_end);
+    }
+
+    if (retobj != NULL) {
+        PyString_AsStringAndSize(retobj, (gchar**)&ret, (Py_ssize_t*) length);
+        Py_DECREF(retobj);
+    } else {
+        PyErr_Print();
+    }
+
+    pyg_gil_state_release(state);
+    return ret;
+}
+static PyObject *
+_wrap_gtk_text_buffer_register_serialize_format(PyGObject *self,
+                                                PyObject *args,
+                                                PyObject *kwargs)
+{
+    static char *kwlist[] = { "mime_type", "function", "user_data",
+                              NULL };
+    PyObject *pyfunc, *pyarg = NULL, *ret;
+    PyGtkCustomNotify *cunote;
+    const gchar *mimetype;
+    GdkAtom atom;
+    gchar *name;
+  
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
+                                     "sO|O:GtkTextBuffer.register_serialize_format",
+                                     kwlist, &mimetype, &pyfunc, &pyarg))
+        return NULL;
+
+    if (!PyCallable_Check(pyfunc)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "function must be a callable object");
+        return NULL;
+    }
+    cunote = g_new0(PyGtkCustomNotify, 1);
+    cunote->func = pyfunc;
+    cunote->data = pyarg;
+    Py_INCREF(cunote->func);
+    Py_XINCREF(cunote->data);
+ 
+    atom = gtk_text_buffer_register_serialize_format(
+        GTK_TEXT_BUFFER(self->obj), mimetype,
+        pygtk_text_buffer_register_serialize_format_cb,
+        cunote, pygtk_custom_destroy_notify);
+
+    name = gdk_atom_name(atom);
+    ret = PyString_FromString(name);
+    g_free(name);
+    return ret;
+}
+%%
+override gtk_text_buffer_get_deserialize_formats noargs
+static PyObject *
+_wrap_gtk_text_buffer_get_deserialize_formats(PyGObject *self)
+{
+    GdkAtom *formats;
+    gint n_formats, i;
+    PyObject *py_formats;
+
+    formats = gtk_text_buffer_get_deserialize_formats(
+        GTK_TEXT_BUFFER(self->obj), &n_formats);
+
+    py_formats = PyList_New(n_formats);
+    for (i = 0; i < n_formats; i++) {
+        gchar *name = gdk_atom_name(formats[i]);
+        PyList_SetItem(py_formats, i, PyString_FromString(name));
+        g_free(name);
+    }
+    g_free(formats);
+    return py_formats;
+}
+%%
+override gtk_text_buffer_get_serialize_formats noargs
+static PyObject *
+_wrap_gtk_text_buffer_get_serialize_formats(PyGObject *self)
+{
+    GdkAtom *formats;
+    gint n_formats, i;
+    PyObject *py_formats;
+
+    formats = gtk_text_buffer_get_serialize_formats(
+        GTK_TEXT_BUFFER(self->obj), &n_formats);
+
+    py_formats = PyList_New(n_formats);
+    for (i = 0; i < n_formats; i++) {
+        gchar *name = gdk_atom_name(formats[i]);
+        PyList_SetItem(py_formats, i, PyString_FromString(name));
+        g_free(name);
+    }
+    g_free(formats);
+    return py_formats;
 }

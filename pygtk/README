@@ -1,7 +1,7 @@
 PyGTK
 =====
-Author: James Henstridge <james@daa.com.au>
-
+Original author: James Henstridge <james@daa.com.au>
+Current maintainer: Johan Dahlin <johan@gnome.org>
 
 This archive contains modules that allow you to use gtk in Python
 programs.  At present, it is a fairly complete set of bindings.
@@ -20,6 +20,12 @@ patches is unified diff format (ie. diff -u).  Please don't send me
 diffs which don't have any context, as these make it very difficult to
 see what the patch does.
 
+What's new in PyGTK 2.10
+========================
+
+See the wiki page for an overview of the features in PyGTK 2.10:
+
+http://live.gnome.org/PyGTK/WhatsNew210
 
 New Versions
 ============
@@ -39,11 +45,21 @@ the web interface:
 Requirements
 ============
   * C compiler (GCC and MSVC supported)
-  * Python 2.3 or higher
-  * Glib 2.6.0 or higher
-  * Gtk+ 2.6.0 or higher (optional)
-  * libglade 2.4.0 (optional)
+  * Python 2.3.5 or higher
+  * PyGObject 2.12.1 or higher
+  * Glib 2.8.0 or higher
+  * GTK+ 2.8.0 or higher (optional) or
+    GTK+ 2.10.0 or higher for 2.10 API
+  * libglade 2.5.0 or higher (optional)
+  * pycairo 0.5.0 or higher (optional)
   * Numeric (optional)
+
+This release is supporting the following GTK+ releases:
+
+  2.8.x
+  2.10.x
+
+To include support for the 2.10 API you'll need GTK+ 2.10.0 etc.
 
 Copyright Information
 =====================
@@ -80,8 +96,8 @@ is installed you'll need to set the PYTHONPATH variable to the
 $prefix/lib/pythonX.Y/site-packages directory created by 
 the PyGTK installation.
 
-Upgrading
-=========
+Upgrading from 0.6.x
+====================
 
 The API has changed a fair bit compared to the 0.6.x releases of pygtk
 in response to feedback from the mailing list.  The main changes are:

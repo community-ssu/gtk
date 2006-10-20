@@ -27,4 +27,3 @@ button.connect("clicked", hello)
 
 window.show_all()
 gtk.main()
-

@@ -42,7 +42,7 @@ typedef struct {
 
 static void  pyglade_xml_init (PyGladeXML *self);
 static void  pyglade_xml_class_init (PyGladeXMLClass *class);
-GType        pyglade_xml_get_type            (void);
+static GType        pyglade_xml_get_type            (void);
 static GType pyglade_xml_lookup_type (GladeXML*self, const char *gtypename);
 
 #define PYGLADE_TYPE_XML            (pyglade_xml_get_type())
@@ -52,7 +52,7 @@ static GType pyglade_xml_lookup_type (GladeXML*self, const char *gtypename);
 #define PYGLADE_IS_XML_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((obj), PYGLADE_TYPE_XML))
 #define PYGLADE_XML_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS((obj), PYGLADE_TYPE_XML, PygladeXMLClass))
 
-GType
+static GType
 pyglade_xml_get_type (void)
 {
     static GType xml_type = 0;
@@ -122,7 +122,7 @@ pyglade_xml_lookup_type(GladeXML *glade, const char *gtypename)
     return g_type_from_name(gtypename);
 }
 
-PyGladeXML *
+static PyGladeXML *
 pyglade_xml_new (char * fname, char * root, char *domain, PyObject *dict)
 {
     PyGladeXML *self = g_object_new(PYGLADE_TYPE_XML, NULL);
@@ -142,10 +142,10 @@ pyglade_xml_new (char * fname, char * root, char *domain, PyObject *dict)
 }
 
 %%
-modulename gtk.glade
+modulename glade
 %%
 import gobject.GObject as PyGObject_Type
-import gtk._gtk.Widget as PyGtkWidget_Type
+import gtk.Widget as PyGtkWidget_Type
 %%
 ignore-glob *_get_type
 %%
@@ -261,7 +261,7 @@ connect_many(const gchar *handler_name, GObject *obj,
 	Py_DECREF(tuple);
 	return;
     }
-
+    Py_DECREF(tuple);
     self = pygobject_new(obj);
     g_signal_connect_closure(obj, signal_name, closure, after);
     pygobject_watch_closure(self, closure);
@@ -358,45 +358,6 @@ _wrap_glade_textdomain(PyObject *self, PyObject *args, PyObject *kwargs)
 	return NULL;
     }
     return PyString_FromString(ret);
-}
-%%
-override glade_set_custom_widget_callbacks kwargs
-static GtkWidget * custom_widget_handler (GladeXML *xml,
-                                          gchar *func_name, gchar *name,
-                                          gchar *string1, gchar *string2,
-                                          gint int1, gint int2, gpointer user_data)
-{
-    PyObject *handler_dict = user_data;
-    PyObject *tuple;
-
-    tuple = PyMapping_GetItemString(handler_dict, (gchar *)func_name);
-    if (!tuple) {
-        PyErr_Clear();
-        tuple = PyObject_GetAttrString(handler_dict, (gchar *)func_name);
-        if (!tuple) {
-            PyErr_Clear();
-            return NULL;
-        }
-    }
-    if (PyCallable_Check(tuple)) {
-        PyObject *ret;
-        ret = PyObject_CallFunction(tuple, NULL);
-        return GTK_WIDGET (pygobject_get (ret));
-    }
-    return NULL;
-}
-static PyObject *
-_wrap_glade_set_custom_widget_callbacks(PyObject *self, PyObject *args, PyObject *kwargs)
-{
-    static char *kwlist[] = { "dict", NULL };
-    PyObject *object;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs,
-				     "O:GladeXML.set_custom_widget_callbacks", kwlist,
-				     &object))
-	return NULL;
-    glade_set_custom_handler((GladeXMLCustomWidgetHandler)custom_widget_handler, object);
-    Py_INCREF(Py_None);
-    return Py_None;
 }
 %%
 override glade_set_custom_handler

@@ -19,9 +19,20 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  */
+#define PY_SSIZE_T_CLEAN
+
 #include <gtk/gtk.h>
 #include "pygtk-private.h"
 #include <structmember.h>
+
+#if PY_VERSION_HEX < 0x02050000
+typedef int Py_ssize_t;
+#define PY_SSIZE_T_MAX INT_MAX
+#define PY_SSIZE_T_MIN INT_MIN
+typedef inquiry lenfunc;
+typedef intargfunc ssizeargfunc;
+typedef intobjargproc ssizeobjargproc;
+#endif
 
 #if 0
 PyObject *
@@ -66,9 +77,8 @@ _pygtk_style_helper_new(GtkStyle *style, int type, gpointer array)
 						   &PyGtkStyleHelper_Type);
     if (self == NULL)
 	return NULL;
-    pyg_begin_allow_threads;
+
     self->style = g_object_ref(style);
-    pyg_end_allow_threads;
     self->type = type;
     self->array = array;
     return (PyObject *)self;
@@ -77,20 +87,18 @@ _pygtk_style_helper_new(GtkStyle *style, int type, gpointer array)
 static void
 pygtk_style_helper_dealloc(PyGtkStyleHelper_Object *self)
 {
-    pyg_begin_allow_threads;
     g_object_unref(self->style);
-    pyg_end_allow_threads;
     PyObject_DEL(self);
 }
 
-static int
+static Py_ssize_t
 pygtk_style_helper_length(PyGtkStyleHelper_Object *self)
 {
     return NUM_STATES;
 }
 
 static PyObject *
-pygtk_style_helper_getitem(PyGtkStyleHelper_Object *self, int pos)
+pygtk_style_helper_getitem(PyGtkStyleHelper_Object *self, Py_ssize_t pos)
 {
     if (pos < 0) pos += NUM_STATES;
     if (pos < 0 || pos >= NUM_STATES) {
@@ -111,6 +119,8 @@ pygtk_style_helper_getitem(PyGtkStyleHelper_Object *self, int pos)
     case STYLE_PIXMAP_ARRAY:
 	{
 	    GdkPixmap **array = (GdkPixmap **)self->array;
+	    if ((long)array[pos] == GDK_PARENT_RELATIVE)
+		return PyLong_FromLong(GDK_PARENT_RELATIVE);
 	    return pygobject_new((GObject *)array[pos]);
 	}
     }
@@ -119,7 +129,7 @@ pygtk_style_helper_getitem(PyGtkStyleHelper_Object *self, int pos)
 }
 
 static int
-pygtk_style_helper_setitem(PyGtkStyleHelper_Object *self, int pos,
+pygtk_style_helper_setitem(PyGtkStyleHelper_Object *self, Py_ssize_t pos,
 			   PyObject *value)
 {
     extern PyTypeObject PyGdkGC_Type;
@@ -150,32 +160,38 @@ pygtk_style_helper_setitem(PyGtkStyleHelper_Object *self, int pos,
 		PyErr_SetString(PyExc_TypeError, "can only assign a GdkGC");
 		return -1;
 	    }
-	    pyg_begin_allow_threads;
 	    if (array[pos]) {
 		g_object_unref(array[pos]);
 	    }
 	    array[pos] = GDK_GC(g_object_ref(pygobject_get(value)));
-	    pyg_end_allow_threads;
 	    return 0;
 	}
     case STYLE_PIXMAP_ARRAY:
 	{
 	    GdkPixmap **array = (GdkPixmap **)self->array;
+	    GdkPixmap *cvalue = NULL;
 
-	    if (!pygobject_check(value, &PyGdkPixmap_Type) && value!=Py_None) {
+	    if (pygobject_check(value, &PyGdkPixmap_Type))
+		cvalue = GDK_PIXMAP(g_object_ref(pygobject_get(value)));
+	    else if (PyLong_Check(value)) {
+		if (PyLong_AsLong(value) != GDK_PARENT_RELATIVE) {
 		PyErr_SetString(PyExc_TypeError,
-				"can only assign a GdkPixmap or None");
+				    "can only assign a GdkPixmap, None or "
+				    "GDK_PARENT_RELATIVE");
 		return -1;
 	    }
-	    pyg_begin_allow_threads;
-	    if (array[pos]) {
+		cvalue = (GdkPixmap*)GDK_PARENT_RELATIVE;
+	    } else if (value != Py_None) {
+		PyErr_SetString(PyExc_TypeError,
+				"can only assign a GdkPixmap, None or "
+				"GDK_PARENT_RELATIVE");
+		return -1;
+	    }
+	    
+	    if (array[pos] && (long)array[pos] != GDK_PARENT_RELATIVE) {
 		g_object_unref(array[pos]);
 	    }
-	    if (value != Py_None)
-		array[pos] = GDK_PIXMAP(g_object_ref(pygobject_get(value)));
-	    else
-		array[pos] = NULL;
-	    pyg_end_allow_threads;
+	    array[pos] = cvalue;
 	    return 0;
 	}
     }
@@ -184,13 +200,13 @@ pygtk_style_helper_setitem(PyGtkStyleHelper_Object *self, int pos,
 }
 
 static PySequenceMethods pygtk_style_helper_seqmethods = {
-    (inquiry)pygtk_style_helper_length,
-    (binaryfunc)0,
-    (intargfunc)0,
-    (intargfunc)pygtk_style_helper_getitem,
-    (intintargfunc)0,
-    (intobjargproc)pygtk_style_helper_setitem,
-    (intintobjargproc)0
+    (lenfunc)pygtk_style_helper_length,
+    0,
+    0,
+    (ssizeargfunc)pygtk_style_helper_getitem,
+    0,
+    (ssizeobjargproc)pygtk_style_helper_setitem,
+    0,
 };
 static PyTypeObject PyGtkStyleHelper_Type = {
     PyObject_HEAD_INIT(NULL)
@@ -409,7 +425,7 @@ PyGdkWindow_PropertyGet(PyGdkWindow_Object *self, PyObject *args)
     if (Pyerr_Occurred())
 	return NULL;
 	
-    if (gdk_property_get(self->obj, property, type, 0, 9999,
+    if (gdk_property_get(self->obj, property, type, 0, G_MAXLONG,
 			 pdelete, &atype, &aformat, &alength, &data)) {
 	/* success */
 	PyObject *pdata = NULL;
@@ -856,28 +872,24 @@ _pygtk_tree_model_row_new(GtkTreeModel *model, GtkTreeIter *iter)
 static void
 pygtk_tree_model_row_dealloc(PyGtkTreeModelRow *self)
 {
-    pyg_begin_allow_threads;
     g_object_unref(self->model);
-    pyg_end_allow_threads;
     PyObject_DEL(self);
 }
 
-static int
+static Py_ssize_t
 pygtk_tree_model_row_length(PyGtkTreeModelRow *self)
 {
     return gtk_tree_model_get_n_columns(self->model);
 }
 
 static PyObject *
-pygtk_tree_model_row_getitem(PyGtkTreeModelRow *self, gint column)
+pygtk_tree_model_row_getitem(PyGtkTreeModelRow *self, Py_ssize_t column)
 {
     gint n_columns;
     GValue value = { 0, };
     PyObject *ret;
 
     n_columns = gtk_tree_model_get_n_columns(self->model);
-    if (column < 0)
-	column += n_columns;
     if (column < 0 || column >= n_columns) {
 	PyErr_SetString(PyExc_IndexError, "column index out of range");
         return NULL;
@@ -889,7 +901,7 @@ pygtk_tree_model_row_getitem(PyGtkTreeModelRow *self, gint column)
 }
 
 static int
-pygtk_tree_model_row_setitem(PyGtkTreeModelRow *self, gint column,
+pygtk_tree_model_row_setitem(PyGtkTreeModelRow *self, Py_ssize_t column,
 			     PyObject *pyvalue)
 {
     gint n_columns;
@@ -902,8 +914,6 @@ pygtk_tree_model_row_setitem(PyGtkTreeModelRow *self, gint column,
     }
 
     n_columns = gtk_tree_model_get_n_columns(self->model);
-    if (column < 0)
-	column += n_columns;
     if (column < 0 || column >= n_columns) {
 	PyErr_SetString(PyExc_IndexError, "column index out of range");
         return -1;
@@ -925,13 +935,13 @@ pygtk_tree_model_row_setitem(PyGtkTreeModelRow *self, gint column,
 }
 
 static PySequenceMethods pygtk_tree_model_row_seqmethods = {
-    (inquiry)pygtk_tree_model_row_length,
-    (binaryfunc)0,
-    (intargfunc)0,
-    (intargfunc)pygtk_tree_model_row_getitem,
-    (intintargfunc)0,
-    (intobjargproc)pygtk_tree_model_row_setitem,
-    (intintobjargproc)0
+    (lenfunc)pygtk_tree_model_row_length,
+    0,
+    0,
+    (ssizeargfunc)pygtk_tree_model_row_getitem,
+    0,
+    (ssizeobjargproc)pygtk_tree_model_row_setitem,
+    0
 };
 
 static PyObject *
@@ -1066,20 +1076,18 @@ _pygtk_tree_model_row_iter_new(GtkTreeModel *model, GtkTreeIter *parent_iter)
 static void
 pygtk_tree_model_row_iter_dealloc(PyGtkTreeModelRowIter *self)
 {
-    pyg_begin_allow_threads;
     g_object_unref(self->model);
-    pyg_end_allow_threads;
     PyObject_DEL(self);
 }
 
-PyObject *
+static PyObject *
 pygtk_tree_model_row_iter_getiter(PyGtkTreeModelRowIter *self)
 {
     Py_INCREF(self);
     return (PyObject *)self;
 }
 
-PyObject *
+static PyObject *
 pygtk_tree_model_row_iter_next(PyGtkTreeModelRowIter *self)
 {
     PyObject *row;

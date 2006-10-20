@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-PYVER=2.4
+PYVER=2.5
 PYTHON=python$(PYVER)
 
 p_base=$(PYTHON)-gtk2
