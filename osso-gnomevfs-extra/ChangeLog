@@ -1,4 +1,10 @@
+2006-10-20  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Release 1.8.0.
+
 2006-10-19  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
 
 	* file-module/src/inotify-kernel.[ch]: 
 	* file-module/src/inotify-path.h: Update from upstream, with LGPL
