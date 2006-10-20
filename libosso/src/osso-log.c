@@ -24,6 +24,7 @@
                 
 #include <stdarg.h>
 #include <syslog.h>
+#include <assert.h>
 
 #include "osso-internal.h"
 #include "log-functions.h"
@@ -54,7 +55,7 @@ inline void d_log(const char *file,int line, int level,
 /*    dprint("file [%s], line [%d], format [%s], len [%d]\n",file,line,format,
                     len);*/
     prefix_format = g_malloc(len);
-    g_assert(prefix_format);
+    assert(prefix_format != NULL);
 
     g_snprintf(prefix_format,len,"%s:%d: %s",
                     file,line,format);

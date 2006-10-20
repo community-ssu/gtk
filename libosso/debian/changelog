@@ -1,3 +1,10 @@
+libosso (1.21-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Compilation fixes for the case that LIBOSSO_DEBUG is defined.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 20 Oct 2006 16:30:02 +0300
+
 libosso (1.20-1) unstable; urgency=low
 
   * Compilation fixes from Murray Cummings <murrayc@murrayc.com>.

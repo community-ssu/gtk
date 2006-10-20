@@ -329,7 +329,7 @@ static void _deinit(osso_context_t *osso)
     
 #ifdef LIBOSSO_DEBUG
     g_log_remove_handler(NULL, osso->log_handler);
-    osso->log_handler = NULL;
+    osso->log_handler = 0;
 #endif
     memset(osso, 0, sizeof(osso_context_t));
     free(osso);
