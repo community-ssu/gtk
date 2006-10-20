@@ -1,0 +1,34 @@
+--- modules/default-modules.conf-unmod	2006-10-20 09:53:39.000000000 +0200
++++ modules/default-modules.conf	2006-10-20 09:54:09.000000000 +0200
+@@ -8,9 +8,9 @@
+ 
+ #bzip2: bzip2
+ 
+-cdda: cdda
++#cdda: cdda
+ 
+-computer: computer
++#computer: computer
+ 
+ dns-sd: dns-sd
+ 
+@@ -23,7 +23,7 @@
+ 
+ network: network
+ 
+-nntp: nntp
++#nntp: nntp
+ 
+ gzip ugzip: gzip
+ 
+@@ -37,8 +37,8 @@
+ 
+ #nfs: nfs
+ 
+-sftp: sftp
++#sftp: sftp
+ 
+-ssh: sftp
++#ssh: sftp
+ 
+ tar: tar
