@@ -1,3 +1,9 @@
+maemo-theme-default (0.1.0-1) unstable; urgency=low
+
+  * First official release.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 20 October 2006 14:55:06 +0300
+
 maemo-theme-default (0.0-unreleased1) unstable; urgency=low
 
   * Copied from osso-theme-demo-config 2.1.0-1 and modified a bit.

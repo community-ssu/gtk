@@ -1,3 +1,11 @@
+2006-10-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* AUTHORS:
+	* debian/changelog: Fixes for 0.1.0 release.
+
+	* debian/compat: Changing category to allow the user to install from
+	application installer.
+
 2006-10-03  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* theme-images-template.png: added the logical colours to the 
