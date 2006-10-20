@@ -39,7 +39,7 @@ config.status: $(SOURCE_DIR)/configure
 
 $(SOURCE_DIR)/configure:
 	#inflat upstream and prepare
-	tar -jxf upstream/tarballs/gtkhtml-3.9.1.tar.bz2
+	tar -jxf upstream/tarballs/gtkhtml-3.9.1osso.tar.bz2
 #	for f in upstream/patches/*.diff; do \
 #		patch -p0 < $$f; \
 #	done

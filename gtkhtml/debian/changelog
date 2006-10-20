@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-2osso8) unstable; urgency=low
+
+  * Fixes: NB#40234: Removed source files with GPL license. Copied source
+    files from version 3.13.1 with LGPL license.
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Fri, 20 Oct 2006 17:10:08 +0300
+
 gtkhtml (3.9.1-2osso7) unstable; urgency=low
 
   * Fixes: NB#23889: adding const and static keywords

@@ -1,3 +1,11 @@
+2006-10-20  Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 3.9.1-2osso8
+	* upstream/tarballs/gtkhtml-3.9.1osso.tar.bz2: Replaced files
+	gtkhtml-3.9.1/src/htmlentity.{c.h} from 3.13.1 . Removed files
+	gtkhtml-3.9.1/components/html-editor/e-html-utils.{c,h}
+	Fixes NB#40234
+
 2006-10-11  Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* Version 3.9.1-2osso7
