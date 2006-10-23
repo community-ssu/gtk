@@ -1,3 +1,9 @@
+2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc (annoy_user_with_details): Set close button response
+	id to GTK_RESPONSE_CANCEL, so dialog closes when ESC key is
+	pressed (N43732).
+
 2006-10-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.cc (make_global_package_list): Packed icon and package
