@@ -730,7 +730,10 @@ static bool MakeStatusCacheWithSize (pkgSourceList &List,OpProgress &Progress,
       fchmod(CacheF->Fd(),0644);
       Map = new DynamicMMap(*CacheF,MMap::Public,MapSize);
       if (_error->PendingError() == true)
-	 return false;
+	{
+	  Overfull = Map->IsOverfull ();
+	  return false;
+	}
    }
    else
    {
@@ -748,7 +751,10 @@ static bool MakeStatusCacheWithSize (pkgSourceList &List,OpProgress &Progress,
       FileFd SCacheF(SrcCacheFile,FileFd::ReadOnly);
       if (SCacheF.Read((unsigned char *)Map->Data() + Map->RawAllocate(SCacheF.Size()),
 		       SCacheF.Size()) == false)
-	 return false;
+	{
+	  Overfull = Map->IsOverfull ();
+	  return false;
+	}
 
       TotalSize = ComputeSize(Files.begin()+EndOfSource,Files.end());
       
