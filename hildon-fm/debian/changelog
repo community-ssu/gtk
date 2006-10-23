@@ -1,9 +1,10 @@
-hildon-fm (1.14-0unreleased1) unstable; urgency=low
+hildon-fm (1.14-1) unstable; urgency=low
 
   * Provide symbols in the debug package only.
-  * Fixes: NB#33895, NB#38533, NB#42979, NB#42571, NB#43716, NB#40531.
+  * Fixes: NB#33895, NB#38533, NB#42979, NB#42571, NB#43716, NB#40531,
+           NB#42731.
 
- -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  9 Oct 2006 19:01:42 +0300
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Oct 2006 19:06:56 +0300
 
 hildon-fm (1.13-1) unstable; urgency=low
 

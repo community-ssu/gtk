@@ -1,3 +1,12 @@
+2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.14.
+
+	* hildon-fm/hildon-file-system-mmc.c
+	(hildon_file_system_mmc_get_extra_info): Removed.
+	(hildon_file_system_mmc_class_init): Do not use it.
+	(N42731)
+	
 2006-10-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Code cleanups from Kuisma.
@@ -23,9 +32,6 @@
 	to NULL to get the default behavior.
 
 2006-10-11  Marius Vollmer  <marius.vollmer@nokia.com>
-
-	* hildon-fm/hildon-file-system-obex.c
-	(hildon_file_system_obex_init): Set requires_access to NULL.
 
         Added "show-type-icon" property.  (N42979)
 
