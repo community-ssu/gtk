@@ -47,8 +47,6 @@ hildon_file_system_mmc_volumes_changed (HildonFileSystemSpecialLocation
 static gchar*
 hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
                                                *location);
-static gchar*
-hildon_file_system_mmc_get_extra_info (HildonFileSystemSpecialLocation *location);
 
 G_DEFINE_TYPE (HildonFileSystemMMC,
                hildon_file_system_mmc,
@@ -130,7 +128,6 @@ hildon_file_system_mmc_class_init (HildonFileSystemMMCClass *klass)
     location->volumes_changed = hildon_file_system_mmc_volumes_changed;
     location->get_unavailable_reason =
             hildon_file_system_mmc_get_unavailable_reason;
-    location->get_extra_info = hildon_file_system_mmc_get_extra_info;
 
     g_object_class_install_property (object_class, PROP_INTERNAL_CARD,
         g_param_spec_boolean ("internal-card", "Internal card",
@@ -301,47 +298,3 @@ hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
 
     return NULL;
 }
-
-static gchar*
-hildon_file_system_mmc_get_extra_info (HildonFileSystemSpecialLocation *location)
-{
-    HildonFileSystemMMCPrivate *priv;
-    gchar *local_path;
-    gint64 free_space = 0;
-    gchar buffer[256];
-
-    g_return_val_if_fail (location->basepath, NULL);
-    priv = PRIVATE (location);
-
-    local_path = g_filename_from_uri (location->basepath, NULL, NULL);
-    if (local_path)
-    {
-        struct statfs buf;
-
-        if (statfs (local_path, &buf) == 0)
-        {
-            free_space = ((gint64) buf.f_bavail) * ((gint64) buf.f_bsize);
-        }
-
-        g_free (local_path);
-    }
-
-
-    if (!priv->available)
-    {
-        buffer[0] = 0;
-    }
-    else if (free_space < 1024 * 1024)
-    {
-        g_snprintf (buffer, sizeof (buffer), "%d kB free",
-                (gint) free_space / 1024);
-    }
-    else
-    {
-        g_snprintf (buffer, sizeof (buffer), "%d MB free",
-                (gint) (free_space / (1024 * 1024)));
-    }
-
-    return g_strdup (buffer);
-}
-
