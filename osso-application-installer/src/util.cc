@@ -510,7 +510,7 @@ create_progress (const gchar *title, bool with_cancel)
   //       The "XXXX" is never shown since we set a real title
   //       immediately.
   
-  gchar *longer_title = g_strconcat (title, "XXXXX", NULL);
+  gchar *longer_title = g_strconcat (title, "XXX", NULL);
   progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
   progress_dialog =
     hildon_note_new_cancel_with_progress_bar (get_main_window (),
@@ -2168,8 +2168,6 @@ set_bt_name_from_message (DBusMessage *message)
       return;
     }
   dbus_message_iter_get_basic (&iter, &name);
-
-  add_log ("BT name changed into \"%s\" \n", name);
 
   if (btname) 
     g_free (btname);
