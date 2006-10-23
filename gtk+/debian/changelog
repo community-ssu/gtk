@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.6.10-2.osso21) UNRELEASED; urgency=low
+
+  * Fixes: NB#43257 accounts ; account setup ; "googlemail.co.uk" is cut off
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 23 Oct 2006 11:53:59 +0300
+
 gtk+2.0 (2:2.6.10-2.osso20) unstable; urgency=low
 
   [ Tommi Komulainen ]

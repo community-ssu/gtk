@@ -1,3 +1,8 @@
+2006-10-23  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkcombobox.c: change BONNUS_PADDING from 6 to 8 to fix truncation
+	with long strings in combo boxes. NB#43257
+
 2006-10-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkscrolledwindow.c (gtk_scrolled_window_get_focus_movement):
