@@ -290,7 +290,8 @@ annoy_user_with_details (const gchar *text,
     g_list_free (kids);
 
     gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_details"), 1);
-    gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_close"), 2);
+    gtk_dialog_add_button (GTK_DIALOG (dialog), _("ai_ni_bd_close"),
+			   GTK_RESPONSE_CANCEL);
   }
 
   pi->ref ();
