@@ -1,3 +1,9 @@
+2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* apt-pkg/pkgcachegen.cc (MakeStatusCacheWithSize): Set Overfull
+	output param in two more situations when we fail to create or fill
+	the DynamicMMap. (N31929)
+
 2006-09-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* apt-pkg/contrib/mmap.h (DynamicMMap::IsOverfull): New.

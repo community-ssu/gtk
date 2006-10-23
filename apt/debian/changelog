@@ -1,3 +1,9 @@
+apt (0.6.42.3osso18) unstable; urgency=low
+
+  * Fixes: NB#31929.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Oct 2006 21:00:17 +0300
+
 apt (0.6.42.3osso17) unstable; urgency=low
 
   * Fixes: NB#31929, NB#32959.
