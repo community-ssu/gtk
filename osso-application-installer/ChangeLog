@@ -1,5 +1,7 @@
 2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.35
+
 	* src/util.cc (annoy_user_with_details): Set close button response
 	id to GTK_RESPONSE_CANCEL, so dialog closes when ESC key is
 	pressed (N43732).
