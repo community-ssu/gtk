@@ -1568,6 +1568,8 @@ background_manager_create_background (BackgroundManager *manager,
       close (parent_exit_notify[1]);
       close (pipe_from_child[0]);
 
+      g_unlink (current->cache);
+
       save_image_to_file (pixbuf, current->cache, &save_err);
       if (save_err && save_err->message)
 	{

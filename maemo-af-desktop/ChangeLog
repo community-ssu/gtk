@@ -1,5 +1,11 @@
 2006-10-23  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/background-manager.c: Remove the cache file
+	  before trying to build a new one, so we rebuild the cache
+	  when interupted
+
+2006-10-23  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-menu-item.c: Make a copy of
 	  the pixbuf to avoid modifying the cached icon
 
