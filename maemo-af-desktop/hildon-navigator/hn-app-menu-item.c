@@ -347,30 +347,39 @@ hn_app_menu_item_constructor (GType                  type,
 						  NULL);
 	    }
 
-	  if (compose)
+      if (compose)
+        {
+          GdkPixbuf *tmp;
+          gint dest_width = gdk_pixbuf_get_width (app_pixbuf);
+          gint dest_height = gdk_pixbuf_get_height (app_pixbuf);
+          gint off_x, off_y;
+
+          off_x = dest_width - gdk_pixbuf_get_width (compose);
+          off_y = dest_height - gdk_pixbuf_get_height (compose);
+
+          /* Copy the pixbuf and make sure we have an alpha channel */
+          tmp = gdk_pixbuf_add_alpha (app_pixbuf, FALSE, 255, 255, 255);
+          if (tmp)
             {
-              gint dest_width = gdk_pixbuf_get_width (app_pixbuf);
-	      gint dest_height = gdk_pixbuf_get_height (app_pixbuf);
-	      gint off_x, off_y;
+              g_object_unref (app_pixbuf);
+              app_pixbuf = tmp;
+            }
 
-	      off_x = dest_width - gdk_pixbuf_get_width (compose);
-	      off_y = dest_height - gdk_pixbuf_get_height (compose);
-	      
-              gdk_pixbuf_composite (compose, app_pixbuf,
-			            0, 0,
-				    dest_width, dest_height,
-				    off_x, off_y,
-				    1.0, 1.0,
-				    GDK_INTERP_BILINEAR,
-				    0xff);
-	      g_object_unref (compose);
-	    }
-	  
-          gtk_image_set_from_pixbuf (GTK_IMAGE (priv->icon), app_pixbuf);
-          g_object_unref (app_pixbuf);
+          gdk_pixbuf_composite (compose, app_pixbuf,
+                                0, 0,
+                                dest_width, dest_height,
+                                off_x, off_y,
+                                1.0, 1.0,
+                                GDK_INTERP_BILINEAR,
+                                0xff);
+          g_object_unref (compose);
+        }
 
-          if (priv->is_blinking)
-            hn_app_menu_item_icon_animation (priv->icon, TRUE);
+      gtk_image_set_from_pixbuf (GTK_IMAGE (priv->icon), app_pixbuf);
+      g_object_unref (app_pixbuf);
+
+      if (priv->is_blinking)
+        hn_app_menu_item_icon_animation (priv->icon, TRUE);
         }
 
       if (!priv->thumbable)
