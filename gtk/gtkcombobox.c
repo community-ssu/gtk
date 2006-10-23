@@ -227,7 +227,7 @@ enum {
 static GtkBinClass *parent_class = NULL;
 static guint combo_box_signals[LAST_SIGNAL] = {0,};
 
-#define BONUS_PADDING 6
+#define BONUS_PADDING 8
 #define SCROLL_TIME  100
 #define HILDON_PADDING 25
 
