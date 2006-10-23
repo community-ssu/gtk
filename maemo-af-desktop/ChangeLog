@@ -1,5 +1,9 @@
 2006-10-23  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.98
+
+2006-10-23  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Remove the cache file
 	  before trying to build a new one, so we rebuild the cache
 	  when interupted

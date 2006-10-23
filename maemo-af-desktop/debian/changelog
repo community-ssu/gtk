@@ -1,3 +1,21 @@
+maemo-af-desktop (2.9.98-1) unstable; urgency=low
+
+  * debian/conffiles: Do not declare the IT-2006 backup restoration
+    as a configuration file as it is a symlink. Fixes: MB#810
+
+  * hildon-home/background-manager.c: Remove the cache file
+    before trying to build a new one, so we rebuild the cache
+    when interupted
+
+  * hildon-navigator/hn-app-menu-item.c: Make a copy of
+    the pixbuf to avoid modifying the cached icon
+
+  * hildon-navigator/hildon-navigator-window.c:
+  * hildon-navigator/hildon-navigator-panel.[ch]:
+  - Create the tasknavigator and defer the plugin loading
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 23 Oct 2006 19:04:13 +0300
+
 maemo-af-desktop (2.9.97-1) unstable; urgency=low
 
   Applied fix to "Task Navigator re-loads (and re-composites?) all
