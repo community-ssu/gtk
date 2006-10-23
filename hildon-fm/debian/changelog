@@ -1,3 +1,9 @@
+hildon-fm (2.0-0unreleased1) unstable; urgency=low
+
+  * Branched for development; maintenance continues in 1.x.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Oct 2006 19:12:57 +0300
+
 hildon-fm (1.14-1) unstable; urgency=low
 
   * Provide symbols in the debug package only.

@@ -1,6 +1,6 @@
 2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	Released 1.14.
+	Released 1.14 and started 2.x development series.
 
 	* hildon-fm/hildon-file-system-mmc.c
 	(hildon_file_system_mmc_get_extra_info): Removed.
