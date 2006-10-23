@@ -2,6 +2,12 @@
 
 	Released 4.35
 
+	* src/util.cc (create_progress): Make the longer title shorter by
+	two Xs so that the Dutch downloading message is not truncated.
+	Hackish.  Bug 44440 has been filed for the real issue (N38086).
+
+	* src/util.cc (set_bt_name_from_message): Don't log name changes.
+
 	* src/util.cc (annoy_user_with_details): Set close button response
 	id to GTK_RESPONSE_CANCEL, so dialog closes when ESC key is
 	pressed (N43732).
@@ -14,7 +20,7 @@
 	(localize_file_and_keep_it_open): Return with an error when a
 	localization operation is active.
 	(cleanup_temp_file): Guard against closing and freeing things
-	twice.
+	twice. (N43471)
 
 2006-10-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
