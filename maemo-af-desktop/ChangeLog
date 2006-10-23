@@ -1,3 +1,9 @@
+2006-12-23  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hildon-navigator-window.c:
+	* hildon-navigator/hildon-navigator-panel.[ch]:
+	- Create the tasknavigator and defer the plugin loading
+
 2006-10-19  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.97

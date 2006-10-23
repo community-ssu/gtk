@@ -193,16 +193,39 @@ initialize_navigator_menus (HildonNavigatorWindowPrivate *priv)
 #endif
 }
 
+static void 
+hn_window_load_plugins (HildonNavigatorWindow *window, 
+		        GdkEventExpose *event,
+			gpointer panelptr)
+{
+  gchar *config_file;
+  const char *home_dir;
+  HildonNavigatorPanel *panel = HILDON_NAVIGATOR_PANEL (panelptr);
+
+  home_dir = getenv ("HOME");
+  
+  config_file = g_strdup_printf  ("%s%s", home_dir, NAVIGATOR_USER_PLUGINS);
+
+  /* Initialize Plugins */
+  if (g_file_test (config_file, G_FILE_TEST_EXISTS))
+    hn_panel_load_plugins_from_file (panel, config_file);
+  else
+    hn_panel_load_plugins_from_file (panel, NAVIGATOR_FACTORY_PLUGINS);
+
+  g_free (config_file);
+}
+
+
 static GObject *
 hn_window_constructor (GType gtype,
-                                     guint n_params,
-				     GObjectConstructParam *params)
+                       guint n_params,
+		       GObjectConstructParam *params)
 {
 
   GObject *self;
   HildonNavigatorWindow *window;
   HildonNavigatorWindowPrivate *priv;
-  gchar *plugin_dir, *config_file;
+  gchar *plugin_dir;
   const char *home_dir;
   gboolean dnotify_ret;
   hildon_return_t dnotify_status;
@@ -226,19 +249,17 @@ hn_window_constructor (GType gtype,
   gtk_container_add (GTK_CONTAINER (window),GTK_WIDGET (priv->panel));
 
   plugin_dir  = g_build_filename (home_dir, NAVIGATOR_USER_DIR, NULL);
-  config_file = g_strdup_printf  ("%s%s", home_dir, NAVIGATOR_USER_PLUGINS);
 
   /* Initialize this before any plugin or whatever */
   dnotify_status = hildon_dnotify_handler_init();
-    
-  /* Initialize Plugins */
-  if (g_file_test (config_file, G_FILE_TEST_EXISTS))
-    hn_panel_load_plugins_from_file (HILDON_NAVIGATOR_PANEL (priv->panel), 
-				     config_file);
-  else
-    hn_panel_load_plugins_from_file (HILDON_NAVIGATOR_PANEL (priv->panel), 
-				     NAVIGATOR_FACTORY_PLUGINS);
   
+  hn_panel_load_dummy_buttons (HILDON_NAVIGATOR_PANEL (priv->panel));
+
+  g_signal_connect_after (G_OBJECT (window), 
+		          "map-event", 
+		          G_CALLBACK(hn_window_load_plugins),
+		          priv->panel);
+   
   priv->others_button = hn_others_button_new ();
   
   if (priv->others_button)
@@ -275,7 +296,6 @@ hn_window_constructor (GType gtype,
  
   /* cleanup */
   g_free (plugin_dir);
-  g_free (config_file);
 
   gtk_widget_pop_composite_child (); 
 

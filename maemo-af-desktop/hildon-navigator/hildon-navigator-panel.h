@@ -98,6 +98,9 @@ HildonNavigatorPanel *
 hildon_navigator_panel_new (void);
 
 void 
+hn_panel_load_dummy_buttons (HildonNavigatorPanel *panel);
+
+void 
 hn_panel_load_plugins_from_file (HildonNavigatorPanel *panel, gchar *file);
 
 void 

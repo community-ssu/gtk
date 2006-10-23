@@ -670,26 +670,14 @@ hn_panel_load_plugins_from_file (HildonNavigatorPanel *panel, gchar *file)
 }
 
 void 
-hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
+hn_panel_load_dummy_buttons (HildonNavigatorPanel *panel)
 {
-  GList *loaded_plugins = NULL, *l;
-  HildonNavigatorPanelPrivate   *priv;
   gint i;
+  HildonNavigatorPanelPrivate   *priv;
 
   g_assert (panel);/* is container? box? HNPanel? */
 
   priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
-
-  loaded_plugins = hn_panel_peek_plugins (panel);
-
-  for (l=loaded_plugins ; l != NULL ; l=l->next)
-  {
-    if (!mandatory ||  
-        !hildon_navigator_item_get_mandatory ( HILDON_NAVIGATOR_ITEM (l->data)))
-    {
-      gtk_container_remove (GTK_CONTAINER (panel), GTK_WIDGET (l->data));
-    }
-  }
 
   for (i=0;i<HN_MAX_DEFAULT;i++)
   {
@@ -714,6 +702,31 @@ hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
      
      g_free (name_dummy);
   }
+
+}
+
+void 
+hn_panel_unload_all_plugins (HildonNavigatorPanel *panel, gboolean mandatory)
+{
+  GList *loaded_plugins = NULL, *l;
+  HildonNavigatorPanelPrivate   *priv;
+
+  g_assert (panel);/* is container? box? HNPanel? */
+
+  priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
+
+  loaded_plugins = hn_panel_peek_plugins (panel);
+
+  for (l=loaded_plugins ; l != NULL ; l=l->next)
+  {
+    if (!mandatory ||  
+        !hildon_navigator_item_get_mandatory ( HILDON_NAVIGATOR_ITEM (l->data)))
+    {
+      gtk_container_remove (GTK_CONTAINER (panel), GTK_WIDGET (l->data));
+    }
+  }
+
+  hn_panel_load_dummy_buttons (panel);
 
   g_list_free (loaded_plugins);
 
