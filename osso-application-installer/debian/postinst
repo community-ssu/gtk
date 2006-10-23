@@ -4,7 +4,20 @@ set -e
 
 ## Make sure that sources.list exists.
 
-touch /etc/apt/sources.list
+## If it doesn't exist, we try to rescue the backup made by our
+## preinst.  This allows us to survive a update from a broken package
+## database that doesn't contain conffile information, like the one in
+## IT2006.
+
+if [ ! -f /etc/apt/sources.list ]; then
+  if [ -f /tmp/sources.list-preinst-backup ]; then
+    mv /tmp/sources.list-preinst-backup /etc/apt/sources.list
+  else
+    touch /etc/apt/sources.list
+  fi
+else
+  rm /tmp/sources.list-preinst-backup || true
+fi
 
 add_sudoer ()
 {
