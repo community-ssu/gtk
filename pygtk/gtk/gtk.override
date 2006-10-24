@@ -31,9 +31,13 @@ headers
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixdata.h>
 
-#include <pycairo.h>
+/* INDT: backport */
+/*
+ #include <pycairo.h>
 extern Pycairo_CAPI_t *Pycairo_CAPI;
 extern PyTypeObject PyGdkCairoContext_Type;
+*/
+/* /INDT: backport */
 
 #include "pygtk-private.h"
 

@@ -437,12 +437,16 @@ _wrap_gdk_draw_layout_line(PyGObject *self, PyObject *args, PyObject *kwargs)
 	    kwlist, &PyGdkGC_Type, &gc, &x, &y, &py_line,
 	    &py_foreground, &py_background))
         return NULL;
+/* INDT: backport */
+/*
     if (pyg_boxed_check(py_line, PANGO_TYPE_LAYOUT_LINE))
         line = pyg_boxed_get(py_line, PangoLayoutLine);
     else {
         PyErr_SetString(PyExc_TypeError, "line should be a PangoLayoutLine");
         return NULL;
     }
+*/
+/* /INDT: backport */
     if (pyg_boxed_check(py_foreground, GDK_TYPE_COLOR))
         foreground = pyg_boxed_get(py_foreground, GdkColor);
     else if (py_foreground != Py_None) {

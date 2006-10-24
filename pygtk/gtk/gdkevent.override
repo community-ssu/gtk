@@ -436,6 +436,8 @@ _wrap_gdk_event_tp_setattr(PyObject *self, char *attr, PyObject *value)
 	    event->owner_change.selection_time = PyInt_AsLong(value);
 	}
 	break;
+/* INDT: backport */
+/*
     case GDK_GRAB_BROKEN:
         if (!strcmp(attr, "keyboard")) {
 	    INT_CHECK();
@@ -448,6 +450,8 @@ _wrap_gdk_event_tp_setattr(PyObject *self, char *attr, PyObject *value)
 	    return -1;
 	}
         break;
+*/
+/* /INDT: backport */
     default:
 	break;
     }
@@ -810,6 +814,8 @@ _wrap_gdk_event_tp_getattr(PyObject *self, char *attr)
         if (!strcmp(attr, "selection_time"))
             return PyInt_FromLong(event->owner_change.selection_time);
 	break;
+/* INDT: backport */
+/*
     case GDK_GRAB_BROKEN:
         if (!strcmp(attr, "__members__"))
             return Py_BuildValue("[ssssss]",
@@ -824,6 +830,8 @@ _wrap_gdk_event_tp_getattr(PyObject *self, char *attr)
             return pygobject_new((GObject *)event->grab_broken.grab_window);
         break;
 	
+*/
+/* /INDT: backport */
     default:
         break;
     }

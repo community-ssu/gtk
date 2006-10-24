@@ -10093,27 +10093,28 @@
   )
 )
 
-(define-method get_drag_dest_item
-  (of-object "GtkIconView")
-  (c-name "gtk_icon_view_get_drag_dest_item")
-  (return-type "none")
-  (parameters
-    '("GtkTreePath**" "path")
-    '("GtkIconViewDropPosition*" "pos")
-  )
-)
-
-(define-method get_dest_item_at_pos
-  (of-object "GtkIconView")
-  (c-name "gtk_icon_view_get_dest_item_at_pos")
-  (return-type "gboolean")
-  (parameters
-    '("gint" "drag_x")
-    '("gint" "drag_y")
-    '("GtkTreePath**" "path")
-    '("GtkIconViewDropPosition*" "pos")
-  )
-)
+; INDT: backport
+;(define-method get_drag_dest_item
+;  (of-object "GtkIconView")
+;  (c-name "gtk_icon_view_get_drag_dest_item")
+;  (return-type "none")
+;  (parameters
+;    '("GtkTreePath**" "path")
+;    '("GtkIconViewDropPosition*" "pos")
+;  )
+;)
+;
+;(define-method get_dest_item_at_pos
+;  (of-object "GtkIconView")
+;  (c-name "gtk_icon_view_get_dest_item_at_pos")
+;  (return-type "gboolean")
+;  (parameters
+;    '("gint" "drag_x")
+;    '("gint" "drag_y")
+;    '("GtkTreePath**" "path")
+;    '("GtkIconViewDropPosition*" "pos")
+;  )
+;)
 
 (define-method create_drag_icon
   (of-object "GtkIconView")
@@ -12658,35 +12659,37 @@
   (return-type "GtkWidget*")
 )
 
-(define-method get_pack_direction
-  (of-object "GtkMenuBar")
-  (c-name "gtk_menu_bar_get_pack_direction")
-  (return-type "GtkPackDirection")
-)
 
-(define-method set_pack_direction
-  (of-object "GtkMenuBar")
-  (c-name "gtk_menu_bar_set_pack_direction")
-  (return-type "none")
-  (parameters
-    '("GtkPackDirection" "pack_dir")
-  )
-)
-
-(define-method get_child_pack_direction
-  (of-object "GtkMenuBar")
-  (c-name "gtk_menu_bar_get_child_pack_direction")
-  (return-type "GtkPackDirection")
-)
-
-(define-method set_child_pack_direction
-  (of-object "GtkMenuBar")
-  (c-name "gtk_menu_bar_set_child_pack_direction")
-  (return-type "none")
-  (parameters
-    '("GtkPackDirection" "child_pack_dir")
-  )
-)
+; INDT: backport
+;(define-method get_pack_direction
+;  (of-object "GtkMenuBar")
+;  (c-name "gtk_menu_bar_get_pack_direction")
+;  (return-type "GtkPackDirection")
+;)
+;
+;(define-method set_pack_direction
+;  (of-object "GtkMenuBar")
+;  (c-name "gtk_menu_bar_set_pack_direction")
+;  (return-type "none")
+;  (parameters
+;    '("GtkPackDirection" "pack_dir")
+;  )
+;)
+;
+;(define-method get_child_pack_direction
+;  (of-object "GtkMenuBar")
+;  (c-name "gtk_menu_bar_get_child_pack_direction")
+;  (return-type "GtkPackDirection")
+;)
+;
+;(define-method set_child_pack_direction
+;  (of-object "GtkMenuBar")
+;  (c-name "gtk_menu_bar_set_child_pack_direction")
+;  (return-type "none")
+;  (parameters
+;    '("GtkPackDirection" "child_pack_dir")
+;  )
+;)
 
 
 ;; From /opt/gtk2/include/gtk-2.0/gtk/gtkmenuitem.h
@@ -27188,13 +27191,15 @@
     '("guint" "signal_id")
   )
 )
-(define-virtual grab_broken_event
-  (of-object "GtkWidget")
-  (return-type "gboolean")
-  (parameters
-    '("GdkEventGrabBroken*" "event")
-  )
-)
+
+; INDT: backport
+;(define-virtual grab_broken_event
+;  (of-object "GtkWidget")
+;  (return-type "gboolean")
+;  (parameters
+;    '("GdkEventGrabBroken*" "event")
+;  )
+;)
 
 
 

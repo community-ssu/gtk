@@ -27,10 +27,10 @@ class CodeSink(object):
         if l[-1]:
             l.append('')
         return '\n'.join(l)
-    
+
     def writeln(self, line=''):
         raise NotImplementedError
-    
+
     def indent(self, level=4):
         '''Add a certain ammount of indentation to all lines written
         from now on and until unindent() is called'''
@@ -78,10 +78,10 @@ class ReverseWrapper(object):
         assert isinstance(cname, str)
 
         self.cname = cname
-        ## function object we will call, or object whose method we will call 
+        ## function object we will call, or object whose method we will call
         self.called_pyobj = None
         ## name of method of self.called_pyobj we will call
-        self.method_name = None 
+        self.method_name = None
         self.is_static = is_static
 
         self.parameters = []
@@ -123,8 +123,8 @@ class ReverseWrapper(object):
             self.pyret_parse_items.append((format_specifier, parameter))
 
     def write_code(self, code,
-                 cleanup=None,
-                 failure_expression=None,
+                   cleanup=None,
+                   failure_expression=None,
                    failure_cleanup=None,
                    failure_exception=None,
                    code_sink=None):
@@ -235,7 +235,7 @@ class ReverseWrapper(object):
                 argc = None
 
         self.body.writeln()
-        
+
         if py_args != "NULL":
             self.write_code("py_args = PyTuple_New(%s);" % argc,
                             cleanup="Py_DECREF(py_args);")
@@ -277,7 +277,7 @@ class ReverseWrapper(object):
                             % (py_args,),
                             cleanup="Py_DECREF(py_retval);",
                             failure_expression="!py_retval")
-        
+
         ## -- Handle the return value --
 
         ## we need to check if the return_type object is prepared to cooperate with multiple return values
@@ -544,9 +544,9 @@ class GEnumParam(IntParam):
     def convert_c2py(self):
         self.wrapper.add_declaration("PyObject *py_%s;" % self.name)
         self.wrapper.write_code(code=("py_%s = pyg_enum_from_gtype(%s, %s);" %
-                                      (self.name, self.props['typecode'], self.name)),
-                                cleanup=("Py_DECREF(py_%s);" % self.name),
-                                failure_expression=("!py_%s" % self.name))
+                                (self.name, self.props['typecode'], self.name)),
+                        cleanup=("Py_DECREF(py_%s);" % self.name),
+                        failure_expression=("!py_%s" % self.name))
         self.wrapper.add_pyargv_item("py_%s" % self.name)
 
 argtypes.matcher.register_reverse("GEnum", GEnumParam)
@@ -557,7 +557,7 @@ class GFlagsReturn(IntReturn):
             code=None,
             failure_expression=(
             "pyg_flags_get_value(%s, py_retval, (gint *)&retval)" %
-                                self.props['typecode']))
+            self.props['typecode']))
 
 argtypes.matcher.register_reverse_ret("GFlags", GFlagsReturn)
 
@@ -566,7 +566,7 @@ class GFlagsParam(IntParam):
         self.wrapper.add_declaration("PyObject *py_%s;" % self.name)
         self.wrapper.write_code(code=(
             "py_%s = pyg_flags_from_gtype(%s, %s);" %
-                                      (self.name, self.props['typecode'], self.name)),
+            (self.name, self.props['typecode'], self.name)),
                                 cleanup=("Py_DECREF(py_%s);" % self.name),
                                 failure_expression=("!py_%s" % self.name))
         self.wrapper.add_pyargv_item("py_%s" % self.name)
@@ -579,7 +579,7 @@ class GtkTreePathParam(IntParam):
         self.wrapper.add_declaration("PyObject *py_%s;" % self.name)
         self.wrapper.write_code(code=(
             "py_%s = pygtk_tree_path_to_pyobject(%s);" %
-                                      (self.name, self.name)),
+            (self.name, self.name)),
                                 cleanup=("Py_DECREF(py_%s);" % self.name),
                                 failure_expression=("!py_%s" % self.name))
         self.wrapper.add_pyargv_item("py_%s" % self.name)
@@ -715,7 +715,7 @@ class GBoxedReturn(ReturnType):
                                 (self.props['typecode'],)),
             failure_exception=(
             'PyErr_SetString(PyExc_TypeError, "retval should be a %s");'
-                             % (self.props['typename'],)))
+            % (self.props['typename'],)))
         self.wrapper.write_code('retval = pyg_boxed_get(py_retval, %s);' %
                                 self.props['typename'])
 
@@ -831,21 +831,21 @@ def _test():
     import sys
 
     if 1:
-    wrapper = ReverseWrapper("this_is_the_c_function_name", is_static=True)
-    wrapper.set_return_type(StringReturn(wrapper))
-    wrapper.add_parameter(PyGObjectMethodParam(wrapper, "self", method_name="do_xxx"))
-    wrapper.add_parameter(StringParam(wrapper, "param2", optional=True))
-    wrapper.add_parameter(GObjectParam(wrapper, "param3"))
+        wrapper = ReverseWrapper("this_is_the_c_function_name", is_static=True)
+        wrapper.set_return_type(StringReturn(wrapper))
+        wrapper.add_parameter(PyGObjectMethodParam(wrapper, "self", method_name="do_xxx"))
+        wrapper.add_parameter(StringParam(wrapper, "param2", optional=True))
+        wrapper.add_parameter(GObjectParam(wrapper, "param3"))
         #wrapper.add_parameter(InoutIntParam(wrapper, "param4"))
-    wrapper.generate(FileCodeSink(sys.stderr))
+        wrapper.generate(FileCodeSink(sys.stderr))
 
     if 0:
-    wrapper = ReverseWrapper("this_a_callback_wrapper")
-    wrapper.set_return_type(VoidReturn(wrapper))
-    wrapper.add_parameter(StringParam(wrapper, "param1", optional=False))
-    wrapper.add_parameter(GObjectParam(wrapper, "param2"))
-    wrapper.add_parameter(CallbackInUserDataParam(wrapper, "data", free_it=True))
-    wrapper.generate(FileCodeSink(sys.stderr))
+        wrapper = ReverseWrapper("this_a_callback_wrapper")
+        wrapper.set_return_type(VoidReturn(wrapper))
+        wrapper.add_parameter(StringParam(wrapper, "param1", optional=False))
+        wrapper.add_parameter(GObjectParam(wrapper, "param2"))
+        wrapper.add_parameter(CallbackInUserDataParam(wrapper, "data", free_it=True))
+        wrapper.generate(FileCodeSink(sys.stderr))
 
 if __name__ == '__main__':
     _test()

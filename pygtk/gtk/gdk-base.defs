@@ -1806,10 +1806,11 @@
   )
 )
 
-(define-virtual ref_cairo_surface
-  (of-object "GdkDrawable")
-  (return-type "cairo_surface_t*")
-)
+; INDT: backport
+;(define-virtual ref_cairo_surface
+;  (of-object "GdkDrawable")
+;  (return-type "cairo_surface_t*")
+;)
 
 
 
@@ -6418,48 +6419,49 @@
 
 ;; From /opt/gnome-devel/include/gtk-2.0/gdk/gdkcairo.h
 
-(define-method cairo_create
-  (of-object "GdkDrawable")
-  (c-name "gdk_cairo_create")
-  (return-type "cairo_t*"))
-
-(define-function cairo_set_source_color
-  (c-name "gdk_cairo_set_source_color")
-  (return-type "none")
-  (parameters
-    '("cairo_t*" "cr")
-    '("GdkColor*" "color")
-  )
-)
-
-(define-function cairo_set_source_pixbuf
-  (c-name "gdk_cairo_set_source_pixbuf")
-  (return-type "none")
-  (parameters
-    '("cairo_t*" "cr")
-    '("GdkPixbuf*" "pixbuf")
-    '("double" "pixbuf_x")
-    '("double" "pixbuf_y")
-  )
-)
-
-(define-function cairo_rectangle
-  (c-name "gdk_cairo_rectangle")
-  (return-type "none")
-  (parameters
-    '("cairo_t*" "cr")
-    '("GdkRectangle*" "rectangle")
-  )
-)
-
-(define-function cairo_region
-  (c-name "gdk_cairo_region")
-  (return-type "none")
-  (parameters
-    '("cairo_t*" "cr")
-    '("GdkRegion*" "region")
-  )
-)
+; INDT: backport
+;(define-method cairo_create
+;  (of-object "GdkDrawable")
+;  (c-name "gdk_cairo_create")
+;  (return-type "cairo_t*"))
+;
+;(define-function cairo_set_source_color
+;  (c-name "gdk_cairo_set_source_color")
+;  (return-type "none")
+;  (parameters
+;    '("cairo_t*" "cr")
+;    '("GdkColor*" "color")
+;  )
+;)
+;
+;(define-function cairo_set_source_pixbuf
+;  (c-name "gdk_cairo_set_source_pixbuf")
+;  (return-type "none")
+;  (parameters
+;    '("cairo_t*" "cr")
+;    '("GdkPixbuf*" "pixbuf")
+;    '("double" "pixbuf_x")
+;    '("double" "pixbuf_y")
+;  )
+;)
+;
+;(define-function cairo_rectangle
+;  (c-name "gdk_cairo_rectangle")
+;  (return-type "none")
+;  (parameters
+;    '("cairo_t*" "cr")
+;    '("GdkRectangle*" "rectangle")
+;  )
+;)
+;
+;(define-function cairo_region
+;  (c-name "gdk_cairo_region")
+;  (return-type "none")
+;  (parameters
+;    '("cairo_t*" "cr")
+;    '("GdkRegion*" "region")
+;  )
+;)
 
 
 ;; gdkx.h

@@ -483,11 +483,12 @@
   )
 )
 
-(define-method get_font_map
-  (of-object "PangoContext")
-  (c-name "pango_context_get_font_map")
-  (return-type "PangoFontMap*")
-)
+; INDT:backport
+;(define-method get_font_map
+;  (of-object "PangoContext")
+;  (c-name "pango_context_get_font_map")
+;  (return-type "PangoFontMap*")
+;)
 
 (define-method list_families
   (of-object "PangoContext")
@@ -1242,11 +1243,12 @@
   )
 )
 
-(define-method get_font_map
-  (of-object "PangoFont")
-  (c-name "pango_font_get_font_map")
-  (return-type "PangoFontMap*")
-)
+; INDT: backport
+;(define-method get_font_map
+;  (of-object "PangoFont")
+;  (c-name "pango_font_get_font_map")
+;  (return-type "PangoFontMap*")
+;)
 
 (define-virtual list_faces
   (of-object "PangoFontFamily")
@@ -1326,10 +1328,11 @@
   )
 )
 
-(define-virtual get_font_map
-  (of-object "PangoFont")
-  (return-type "PangoFontMap*")
-)
+; INDT: backport
+;(define-virtual get_font_map
+;  (of-object "PangoFont")
+;  (return-type "PangoFontMap*")
+;)
 
 
 

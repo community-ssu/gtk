@@ -175,7 +175,7 @@ def find_enum_defs(buf, enums=[]):
     buf = strip_comments(buf)
 
     buf = re.sub('\n', ' ', buf)
-    
+
     enum_pat = re.compile(r'enum\s*{([^}]*)}\s*([A-Z][A-Za-z]*)(\s|;)')
     splitter = re.compile(r'\s*,\s', re.MULTILINE)
     pos = 0
@@ -192,7 +192,7 @@ def find_enum_defs(buf, enums=[]):
             entries.append(string.split(val)[0])
         if name != 'GdkCursorType':
             enums.append((name, isflags, entries))
-        
+
         pos = m.end()
 
 # ------------------ Find function definitions -----------------
@@ -207,41 +207,41 @@ def clean_func(buf):
     buf = strip_comments(buf)
 
     # compact continued lines
-    pat = re.compile(r"""\\\n""", re.MULTILINE) 
-    buf=pat.sub('',buf)
+    pat = re.compile(r"""\\\n""", re.MULTILINE)
+    buf = pat.sub('', buf)
 
     # Preprocess directives
-    pat = re.compile(r"""^[#].*?$""", re.MULTILINE) 
-    buf=pat.sub('',buf)
+    pat = re.compile(r"""^[#].*?$""", re.MULTILINE)
+    buf = pat.sub('', buf)
 
     #typedefs, stucts, and enums
     pat = re.compile(r"""^(typedef|struct|enum)(\s|.|\n)*?;\s*""",
                      re.MULTILINE)
-    buf=pat.sub('',buf)
+    buf = pat.sub('', buf)
 
     #strip DECLS macros
-    pat = re.compile(r"""G_BEGIN_DECLS|BEGIN_LIBGTOP_DECLS""", re.MULTILINE) 
-    buf=pat.sub('',buf)
+    pat = re.compile(r"""G_BEGIN_DECLS|BEGIN_LIBGTOP_DECLS""", re.MULTILINE)
+    buf = pat.sub('', buf)
 
     #extern "C"
-    pat = re.compile(r"""^\s*(extern)\s+\"C\"\s+{""", re.MULTILINE) 
-    buf=pat.sub('',buf)
+    pat = re.compile(r"""^\s*(extern)\s+\"C\"\s+{""", re.MULTILINE)
+    buf = pat.sub('', buf)
 
     #multiple whitespace
-    pat = re.compile(r"""\s+""", re.MULTILINE) 
-    buf=pat.sub(' ',buf)
+    pat = re.compile(r"""\s+""", re.MULTILINE)
+    buf = pat.sub(' ', buf)
 
     #clean up line ends
-    pat = re.compile(r""";\s*""", re.MULTILINE) 
-    buf=pat.sub('\n',buf)
+    pat = re.compile(r""";\s*""", re.MULTILINE)
+    buf = pat.sub('\n', buf)
     buf = buf.lstrip()
 
     #associate *, &, and [] with type instead of variable
-    #pat=re.compile(r'\s+([*|&]+)\s*(\w+)')
-    pat=re.compile(r' \s* ([*|&]+) \s* (\w+)',re.VERBOSE)
-    buf=pat.sub(r'\1 \2', buf)
-    pat=re.compile(r'\s+ (\w+) \[ \s* \]',re.VERBOSE)
-    buf=pat.sub(r'[] \1', buf)
+    #pat = re.compile(r'\s+([*|&]+)\s*(\w+)')
+    pat = re.compile(r' \s* ([*|&]+) \s* (\w+)', re.VERBOSE)
+    buf = pat.sub(r'\1 \2', buf)
+    pat = re.compile(r'\s+ (\w+) \[ \s* \]', re.VERBOSE)
+    buf = pat.sub(r'[] \1', buf)
 
     # make return types that are const work.
     buf = string.replace(buf, 'G_CONST_RETURN ', 'const-')
@@ -361,65 +361,65 @@ class DefsWriter:
             fp.write(')\n\n')
 
     def _define_func(self, buf):
-    buf=clean_func(buf)
-    buf=string.split(buf,'\n')
+        buf = clean_func(buf)
+        buf = string.split(buf,'\n')
         filter = self._functions
-    for p in buf:
+        for p in buf:
             if not p:
                 continue
-        m=proto_pat.match(p)
-        if m==None:
+            m = proto_pat.match(p)
+            if m == None:
                 if self.verbose:
-                sys.stderr.write('No match:|%s|\n'%p)
-            continue
-        func = m.group('func')
-        if func[0] == '_':
-            continue
+                    sys.stderr.write('No match:|%s|\n' % p)
+                continue
+            func = m.group('func')
+            if func[0] == '_':
+                continue
             if filter:
                 if func in filter:
                     continue
-        ret = m.group('ret')
-        args=m.group('args')
-        args=arg_split_pat.split(args)
-        for i in range(len(args)):
-            spaces = string.count(args[i], ' ')
-            if spaces > 1:
-                args[i] = string.replace(args[i], ' ', '-', spaces - 1)
-                
+            ret = m.group('ret')
+            args = m.group('args')
+            args = arg_split_pat.split(args)
+            for i in range(len(args)):
+                spaces = string.count(args[i], ' ')
+                if spaces > 1:
+                    args[i] = string.replace(args[i], ' ', '-', spaces - 1)
+
             self._write_func(func, ret, args)
 
     def _write_func(self, name, ret, args):
-    if len(args) >= 1:
-        # methods must have at least one argument
+        if len(args) >= 1:
+            # methods must have at least one argument
             munged_name = name.replace('_', '')
-        m = get_type_pat.match(args[0])
-        if m:
-            obj = m.group(2)
+            m = get_type_pat.match(args[0])
+            if m:
+                obj = m.group(2)
                 if munged_name[:len(obj)] == obj.lower():
                     self._write_method(obj, name, ret, args)
-                return
+                    return
 
         if self.prefix:
             l = len(self.prefix)
             if name[:l] == self.prefix and name[l] == '_':
-            fname = name[l+1:]
+                fname = name[l+1:]
+            else:
+                fname = name
         else:
             fname = name
-    else:
-        fname = name
 
-    # it is either a constructor or normal function
+        # it is either a constructor or normal function
         self.fp.write('(define-function ' + fname + '\n')
         self.fp.write('  (c-name "' + name + '")\n')
 
-    # Hmmm... Let's asume that a constructor function name
-    # ends with '_new' and it returns a pointer.
-    m = func_new_pat.match(name)
-    if pointer_pat.match(ret) and m:
-        cname = ''
-	for s in m.group(1).split ('_'):
-	    cname += s.title()
-	if cname != '':
+        # Hmmm... Let's asume that a constructor function name
+        # ends with '_new' and it returns a pointer.
+        m = func_new_pat.match(name)
+        if pointer_pat.match(ret) and m:
+            cname = ''
+            for s in m.group(1).split ('_'):
+                cname += s.title()
+            if cname != '':
                 self.fp.write('  (is-constructor-of "' + cname + '")\n')
 
         self._write_return(ret)
@@ -439,28 +439,28 @@ class DefsWriter:
         self._write_arguments(args[1:])
 
     def _write_return(self, ret):
-    if ret != 'void':
+        if ret != 'void':
             self.fp.write('  (return-type "' + ret + '")\n')
-    else:
+        else:
             self.fp.write('  (return-type "none")\n')
 
     def _write_arguments(self, args):
-    is_varargs = 0
-    has_args = len(args) > 0
-    for arg in args:
-        if arg == '...':
-            is_varargs = 1
-        elif arg in ('void', 'void '):
-            has_args = 0
-    if has_args:
-            self.fp.write('  (parameters\n')
+        is_varargs = 0
+        has_args = len(args) > 0
         for arg in args:
-            if arg != '...':
-                tupleArg = tuple(string.split(arg))
-                if len(tupleArg) == 2:
+            if arg == '...':
+                is_varargs = 1
+            elif arg in ('void', 'void '):
+                has_args = 0
+        if has_args:
+            self.fp.write('  (parameters\n')
+            for arg in args:
+                if arg != '...':
+                    tupleArg = tuple(string.split(arg))
+                    if len(tupleArg) == 2:
                         self.fp.write('    \'("%s" "%s")\n' % tupleArg)
             self.fp.write('  )\n')
-    if is_varargs:
+        if is_varargs:
             self.fp.write('  (varargs #t)\n')
         self.fp.write(')\n\n')
 
@@ -490,7 +490,7 @@ def main(args):
             modulename = v
         if o in ('-f', '--defsfilter'):
             defsfilter = v
-            
+
     if not args[0:1]:
         print 'Must specify at least one input file name'
         return -1
@@ -507,13 +507,13 @@ def main(args):
     if separate:
         methods = file(separate + '.defs', 'w')
         types = file(separate + '-types.defs', 'w')
-        
+
         dw = DefsWriter(methods, prefix=modulename, verbose=verbose,
                         defsfilter=defsfilter)
         dw.write_obj_defs(objdefs, types)
         dw.write_enum_defs(enums, types)
         print "Wrote %s-types.defs" % separate
-        
+
         for filename in args:
             dw.write_def(filename)
         print "Wrote %s.defs" % separate
@@ -531,6 +531,6 @@ def main(args):
 
             for filename in args:
                 dw.write_def(filename)
-            
+
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

@@ -4,16 +4,17 @@
 
 ;; From gdkcairo.h
 
-(define-function cairo_set_source_pixmap
-  (c-name "gdk_cairo_set_source_pixmap")
-  (return-type "none")
-  (parameters
-    '("cairo_t*" "cr")
-    '("GdkPixmap*" "pixmap")
-    '("double" "pixmap_x")
-    '("double" "pixmap_y")
-  )
-)
+; INDT: backport
+;(define-function cairo_set_source_pixmap
+;  (c-name "gdk_cairo_set_source_pixmap")
+;  (return-type "none")
+;  (parameters
+;    '("cairo_t*" "cr")
+;    '("GdkPixmap*" "pixmap")
+;    '("double" "pixmap_x")
+;    '("double" "pixmap_y")
+;  )
+;)
 
 
 
@@ -149,20 +150,21 @@
   (return-type "gboolean")
 )
 
-(define-method set_font_options
-  (of-object "GdkScreen")
-  (c-name "gdk_screen_set_font_options")
-  (return-type "none")
-  (parameters
-    '("const-cairo_font_options_t*" "options")
-  )
-)
-
-(define-method get_font_options
-  (of-object "GdkScreen")
-  (c-name "gdk_screen_get_font_options")
-  (return-type "const-cairo_font_options_t*")
-)
+; INDT: backport
+;(define-method set_font_options
+;  (of-object "GdkScreen")
+;  (c-name "gdk_screen_set_font_options")
+;  (return-type "none")
+;  (parameters
+;    '("const-cairo_font_options_t*" "options")
+;  )
+;)
+;
+;(define-method get_font_options
+;  (of-object "GdkScreen")
+;  (c-name "gdk_screen_get_font_options")
+;  (return-type "const-cairo_font_options_t*")
+;)
 
 (define-method set_resolution
   (of-object "GdkScreen")
