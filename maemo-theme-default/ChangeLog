@@ -1,4 +1,11 @@
+2006-10-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* debian/control: Changing user/Themes to user/themes not to duplicate
+	entries in the application manager.
+
 2006-10-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.1.0 release]
 
 	* AUTHORS:
 	* debian/changelog: Fixes for 0.1.0 release.

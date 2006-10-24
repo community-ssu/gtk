@@ -1,5 +1,5 @@
 Source: maemo-theme-default
-Section: user/Themes
+Section: user/themes
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), maemo-theme-layout-3
