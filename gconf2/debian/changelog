@@ -1,9 +1,8 @@
 gconf2 (2.6.4.15-osso4) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed gconf_client_get_default_from_schema(). Fixes: NB#44115
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 24 Oct 2006 14:47:32 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 24 Oct 2006 15:21:45 +0300
 
 gconf2 (2.6.4.15-osso3) unstable; urgency=low
 
