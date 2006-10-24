@@ -35,7 +35,7 @@ void                            process (Template *templ, GdkPixbuf *pixbuf)
 
                 if (color->X > templ->Width || 
                     color->Y > templ->Height)
-                        g_print ("WARNING: Color '%s' is out of bounds!", color->Name);
+                        g_warning ("Color '%s' is out of bounds!", color->Name);
                 else {
                         gchar *hex = get_color (color, pixbuf);
                         if (hex != NULL) {
@@ -109,45 +109,32 @@ int                             main (int argc, char **argv)
         }
 
         /* Check the template file... */
-        if (! g_file_test (template_file, G_FILE_TEST_EXISTS)) {
-                g_print ("ERROR: %s not found!\n", template_file);
-                goto Error;
-        }
+        if (! g_file_test (template_file, G_FILE_TEST_EXISTS))
+                g_error ("%s not found!", template_file);
 
         /* Check the image file... */
-        if (! g_file_test (image_file, G_FILE_TEST_EXISTS)) {
-                g_print ("ERROR: %s not found!\n", image_file);
-                goto Error;
-        }
+        if (! g_file_test (image_file, G_FILE_TEST_EXISTS))
+                g_error ("%s not found!", image_file);
 
-        /* Read the template file. That spits out errors too */
+        /* Read the template file. That spits out errorsi/aborts too */
         template = read_template (template_file);
-
-        if (template == NULL)
-                goto Error;
 
         /* Try loading the actual image */
         image = gdk_pixbuf_new_from_file (image_file, NULL);
-        if (image == NULL) {
-                g_print ("ERROR: Failed to load image file!\n");
-                goto Error;
-        }
+        if (image == NULL) 
+                g_error ("Failed to load image file!");
 
         /* Check the color bits */
         if ((gdk_pixbuf_get_n_channels (image) != 3 &&
             gdk_pixbuf_get_n_channels (image) != 4) || 
-            gdk_pixbuf_get_bits_per_sample (image) != 8) {
-                g_print ("ERROR: Only RGB and RGBA images are supported!\n");
-                goto Error;
-        }
+            gdk_pixbuf_get_bits_per_sample (image) != 8) 
+                g_error ("Only RGB and RGBA images are supported!");
 
         process (template, image);
 
-        goto Done;
-
-Error:
+Error:  
         return_val = 128;
-        
+
 Done:
         if (template != NULL)
                 free_template (template);
