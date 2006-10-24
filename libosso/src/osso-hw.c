@@ -732,7 +732,7 @@ inline static muali_error_t _set_handler(muali_context_t *context,
                                          _osso_handler_f *event_cb,
                                          int event_type,
                                          muali_handler_t *user_handler,
-                                         const void *user_data)
+                                         void *user_data)
 {
         DBusError error;
         _osso_callback_data_t *cb_data;
@@ -858,13 +858,14 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                                       const muali_event_info_t *info,
                                       int event_type,
                                       muali_handler_t *handler,
-                                      const void *user_data,
+                                      void *user_data,
                                       int *handler_id)
 {
         muali_error_t error = MUALI_ERROR_SUCCESS;
         _osso_handler_f *event_cb = NULL;
         const char *service = NULL, *object_path = NULL,
-                   *interface = NULL, *match = NULL;
+                   *interface = NULL;
+        char *match = NULL;
 
         ULOG_DEBUG_F("entered");
 

@@ -2,12 +2,14 @@ libosso (1.21-1) unstable; urgency=low
 
   * UNRELEASED
   * Compilation fixes for the case that LIBOSSO_DEBUG is defined.
+  * Const keyword fixes from Murray Cumming <murrayc@murrayc.com>.
+    Fixes: MB#795
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 20 Oct 2006 16:30:02 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 24 Oct 2006 17:20:31 +0300
 
 libosso (1.20-1) unstable; urgency=low
 
-  * Compilation fixes from Murray Cummings <murrayc@murrayc.com>.
+  * Compilation fixes from Murray Cumming <murrayc@murrayc.com>.
     Fixes: MB#795
   * Added content to the README file because of a sudden popular demand.
   * Added more untested muali code (it's not in use yet).

@@ -161,7 +161,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                                       const muali_event_info_t *info,
                                       int event_type,
                                       muali_handler_t *handler,
-                                      const void *user_data,
+                                      void *user_data,
                                       int *handler_id);
 
 /**

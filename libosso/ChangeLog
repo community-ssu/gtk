@@ -1,3 +1,11 @@
+2006-10-23   Murray Cumming  <murrayc@murrayc.com>
+
+	* src/muali.h:
+	* src/osso-hw.c: (_set_handler), (muali_set_event_handler):
+	* src/osso-internal.h:
+	Use a non-const void* for user_data to avoid const build 
+	problems.
+
 2006-10-04  Murray Cumming  <murrayc@murrayc.com>
 
 	* src/osso-application-top.c: (osso_application_unset_top_cb):

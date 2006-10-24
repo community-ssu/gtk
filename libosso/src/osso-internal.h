@@ -100,7 +100,7 @@ typedef struct {
 typedef struct {
     gpointer user_cb;
     gpointer user_data;
-    char *match_rule;
+    const char *match_rule;
     gpointer data;
     int event_type;
 
