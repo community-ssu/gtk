@@ -1,5 +1,11 @@
 2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
 
+	* hildon-status-bar/hildon-status-bar-main.c:
+	- When removing a plugin re-arrange the panel from previous 
+	plugin. Fixes: NB#43110
+
+2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hildon-navigator/hildon-navigator-panel.c: Free the
 	gtk_container_get_children's list.
 	* hildon-status-bar/hildon-status-bar-main.c:

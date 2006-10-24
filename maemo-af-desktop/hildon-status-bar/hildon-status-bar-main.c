@@ -1346,7 +1346,7 @@ void update_conditional_plugin_cb( HildonStatusBarItem *item,
     g_debug ("signal sended %d",conditional_status);
 
     /* Arrange items on visible panel */  
-    arrange_items( panel, slot );
+    arrange_items( panel, (slot == 0) ? 0 : slot-1 ); /* Re-arrange the items from the previous plugin if possible */
 
     /* If the extension panel was opened update */
     if ( panel->popup ) {
