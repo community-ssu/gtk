@@ -461,7 +461,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS ACLOCAL_AMFLAGS PYGTK_MAJOR_VERSION PYGTK_MINOR_VERSION PYGTK_MICRO_VERSION INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os PLATFORM_WIN32_TRUE PLATFORM_WIN32_FALSE OS_WIN32_TRUE OS_WIN32_FALSE EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP LIBTOOL PYTHON PYTHON_VERSION PYTHON_PREFIX PYTHON_EXEC_PREFIX PYTHON_PLATFORM pythondir pkgpythondir pyexecdir pkgpyexecdir PYTHON_INCLUDES XSLTPROC ENABLE_DOCS_TRUE ENABLE_DOCS_FALSE THREADING_CFLAGS PKG_CONFIG GLIB_CFLAGS GLIB_LIBS GLIB_GENMARSHAL GOBJECT_QUERY GLIB_MKENUMS ac_pt_PKG_CONFIG PYGOBJECT_CFLAGS PYGOBJECT_LIBS PYGOBJECT_INCLUDEDIR PYGOBJECT_DATADIR PYGOBJECT_FIXXREF PYGOBJECT_PYGDOCS ATK_CFLAGS ATK_LIBS BUILD_ATK_TRUE BUILD_ATK_FALSE PANGO_CFLAGS PANGO_LIBS BUILD_PANGO_TRUE BUILD_PANGO_FALSE PYGTK_CODEGEN_DEFINES GTK_CFLAGS GTK_LIBS BUILD_GTK_TRUE BUILD_GTK_FALSE GTK210_CFLAGS GTK210_LIBS HAVE_GTK_2_10_TRUE HAVE_GTK_2_10_FALSE HAVE_GTK_2_10 LIBGLADE_CFLAGS LIBGLADE_LIBS BUILD_LIBGLADE_TRUE BUILD_LIBGLADE_FALSE GTKUNIXPRINT_CFLAGS GTKUNIXPRINT_LIBS BUILD_GTKUNIXPRINT_TRUE BUILD_GTKUNIXPRINT_FALSE LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS ACLOCAL_AMFLAGS PYGTK_MAJOR_VERSION PYGTK_MINOR_VERSION PYGTK_MICRO_VERSION INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE build build_cpu build_vendor build_os host host_cpu host_vendor host_os PLATFORM_WIN32_TRUE PLATFORM_WIN32_FALSE OS_WIN32_TRUE OS_WIN32_FALSE EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB DLLTOOL ac_ct_DLLTOOL AS ac_ct_AS OBJDUMP ac_ct_OBJDUMP CPP LIBTOOL PYTHON PYTHON_VERSION PYTHON_PREFIX PYTHON_EXEC_PREFIX PYTHON_PLATFORM pythondir pkgpythondir pyexecdir pkgpyexecdir PYTHON_INCLUDES XSLTPROC ENABLE_DOCS_TRUE ENABLE_DOCS_FALSE THREADING_CFLAGS PKG_CONFIG GLIB_CFLAGS GLIB_LIBS GLIB_GENMARSHAL GOBJECT_QUERY GLIB_MKENUMS PYGOBJECT_CFLAGS PYGOBJECT_LIBS PYGOBJECT_INCLUDEDIR PYGOBJECT_DATADIR PYGOBJECT_FIXXREF PYGOBJECT_PYGDOCS ATK_CFLAGS ATK_LIBS BUILD_ATK_TRUE BUILD_ATK_FALSE PANGO_CFLAGS PANGO_LIBS BUILD_PANGO_TRUE BUILD_PANGO_FALSE PYGTK_CODEGEN_DEFINES GTK_CFLAGS GTK_LIBS BUILD_GTK_TRUE BUILD_GTK_FALSE GTK210_CFLAGS GTK210_LIBS HAVE_GTK_2_10_TRUE HAVE_GTK_2_10_FALSE HAVE_GTK_2_10 LIBGLADE_CFLAGS LIBGLADE_LIBS BUILD_LIBGLADE_TRUE BUILD_LIBGLADE_FALSE GTKUNIXPRINT_CFLAGS GTKUNIXPRINT_LIBS BUILD_GTKUNIXPRINT_TRUE BUILD_GTKUNIXPRINT_FALSE LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -922,66 +922,6 @@ ac_env_CPP_set=${CPP+set}
 ac_env_CPP_value=$CPP
 ac_cv_env_CPP_set=${CPP+set}
 ac_cv_env_CPP_value=$CPP
-ac_env_PKG_CONFIG_set=${PKG_CONFIG+set}
-ac_env_PKG_CONFIG_value=$PKG_CONFIG
-ac_cv_env_PKG_CONFIG_set=${PKG_CONFIG+set}
-ac_cv_env_PKG_CONFIG_value=$PKG_CONFIG
-ac_env_PYGOBJECT_CFLAGS_set=${PYGOBJECT_CFLAGS+set}
-ac_env_PYGOBJECT_CFLAGS_value=$PYGOBJECT_CFLAGS
-ac_cv_env_PYGOBJECT_CFLAGS_set=${PYGOBJECT_CFLAGS+set}
-ac_cv_env_PYGOBJECT_CFLAGS_value=$PYGOBJECT_CFLAGS
-ac_env_PYGOBJECT_LIBS_set=${PYGOBJECT_LIBS+set}
-ac_env_PYGOBJECT_LIBS_value=$PYGOBJECT_LIBS
-ac_cv_env_PYGOBJECT_LIBS_set=${PYGOBJECT_LIBS+set}
-ac_cv_env_PYGOBJECT_LIBS_value=$PYGOBJECT_LIBS
-ac_env_ATK_CFLAGS_set=${ATK_CFLAGS+set}
-ac_env_ATK_CFLAGS_value=$ATK_CFLAGS
-ac_cv_env_ATK_CFLAGS_set=${ATK_CFLAGS+set}
-ac_cv_env_ATK_CFLAGS_value=$ATK_CFLAGS
-ac_env_ATK_LIBS_set=${ATK_LIBS+set}
-ac_env_ATK_LIBS_value=$ATK_LIBS
-ac_cv_env_ATK_LIBS_set=${ATK_LIBS+set}
-ac_cv_env_ATK_LIBS_value=$ATK_LIBS
-ac_env_PANGO_CFLAGS_set=${PANGO_CFLAGS+set}
-ac_env_PANGO_CFLAGS_value=$PANGO_CFLAGS
-ac_cv_env_PANGO_CFLAGS_set=${PANGO_CFLAGS+set}
-ac_cv_env_PANGO_CFLAGS_value=$PANGO_CFLAGS
-ac_env_PANGO_LIBS_set=${PANGO_LIBS+set}
-ac_env_PANGO_LIBS_value=$PANGO_LIBS
-ac_cv_env_PANGO_LIBS_set=${PANGO_LIBS+set}
-ac_cv_env_PANGO_LIBS_value=$PANGO_LIBS
-ac_env_GTK_CFLAGS_set=${GTK_CFLAGS+set}
-ac_env_GTK_CFLAGS_value=$GTK_CFLAGS
-ac_cv_env_GTK_CFLAGS_set=${GTK_CFLAGS+set}
-ac_cv_env_GTK_CFLAGS_value=$GTK_CFLAGS
-ac_env_GTK_LIBS_set=${GTK_LIBS+set}
-ac_env_GTK_LIBS_value=$GTK_LIBS
-ac_cv_env_GTK_LIBS_set=${GTK_LIBS+set}
-ac_cv_env_GTK_LIBS_value=$GTK_LIBS
-ac_env_GTK210_CFLAGS_set=${GTK210_CFLAGS+set}
-ac_env_GTK210_CFLAGS_value=$GTK210_CFLAGS
-ac_cv_env_GTK210_CFLAGS_set=${GTK210_CFLAGS+set}
-ac_cv_env_GTK210_CFLAGS_value=$GTK210_CFLAGS
-ac_env_GTK210_LIBS_set=${GTK210_LIBS+set}
-ac_env_GTK210_LIBS_value=$GTK210_LIBS
-ac_cv_env_GTK210_LIBS_set=${GTK210_LIBS+set}
-ac_cv_env_GTK210_LIBS_value=$GTK210_LIBS
-ac_env_LIBGLADE_CFLAGS_set=${LIBGLADE_CFLAGS+set}
-ac_env_LIBGLADE_CFLAGS_value=$LIBGLADE_CFLAGS
-ac_cv_env_LIBGLADE_CFLAGS_set=${LIBGLADE_CFLAGS+set}
-ac_cv_env_LIBGLADE_CFLAGS_value=$LIBGLADE_CFLAGS
-ac_env_LIBGLADE_LIBS_set=${LIBGLADE_LIBS+set}
-ac_env_LIBGLADE_LIBS_value=$LIBGLADE_LIBS
-ac_cv_env_LIBGLADE_LIBS_set=${LIBGLADE_LIBS+set}
-ac_cv_env_LIBGLADE_LIBS_value=$LIBGLADE_LIBS
-ac_env_GTKUNIXPRINT_CFLAGS_set=${GTKUNIXPRINT_CFLAGS+set}
-ac_env_GTKUNIXPRINT_CFLAGS_value=$GTKUNIXPRINT_CFLAGS
-ac_cv_env_GTKUNIXPRINT_CFLAGS_set=${GTKUNIXPRINT_CFLAGS+set}
-ac_cv_env_GTKUNIXPRINT_CFLAGS_value=$GTKUNIXPRINT_CFLAGS
-ac_env_GTKUNIXPRINT_LIBS_set=${GTKUNIXPRINT_LIBS+set}
-ac_env_GTKUNIXPRINT_LIBS_value=$GTKUNIXPRINT_LIBS
-ac_cv_env_GTKUNIXPRINT_LIBS_set=${GTKUNIXPRINT_LIBS+set}
-ac_cv_env_GTKUNIXPRINT_LIBS_value=$GTKUNIXPRINT_LIBS
 
 #
 # Report the --help message.
@@ -1092,29 +1032,6 @@ Some influential environment variables:
   CPPFLAGS    C/C++ preprocessor flags, e.g. -I<include dir> if you have
               headers in a nonstandard directory <include dir>
   CPP         C preprocessor
-  PKG_CONFIG  path to pkg-config utility
-  PYGOBJECT_CFLAGS
-              C compiler flags for PYGOBJECT, overriding pkg-config
-  PYGOBJECT_LIBS
-              linker flags for PYGOBJECT, overriding pkg-config
-  ATK_CFLAGS  C compiler flags for ATK, overriding pkg-config
-  ATK_LIBS    linker flags for ATK, overriding pkg-config
-  PANGO_CFLAGS
-              C compiler flags for PANGO, overriding pkg-config
-  PANGO_LIBS  linker flags for PANGO, overriding pkg-config
-  GTK_CFLAGS  C compiler flags for GTK, overriding pkg-config
-  GTK_LIBS    linker flags for GTK, overriding pkg-config
-  GTK210_CFLAGS
-              C compiler flags for GTK210, overriding pkg-config
-  GTK210_LIBS linker flags for GTK210, overriding pkg-config
-  LIBGLADE_CFLAGS
-              C compiler flags for LIBGLADE, overriding pkg-config
-  LIBGLADE_LIBS
-              linker flags for LIBGLADE, overriding pkg-config
-  GTKUNIXPRINT_CFLAGS
-              C compiler flags for GTKUNIXPRINT, overriding pkg-config
-  GTKUNIXPRINT_LIBS
-              linker flags for GTKUNIXPRINT, overriding pkg-config
 
 Use these variables to override the choices made by `configure' or to help
 it to find libraries and programs with nonstandard names/locations.
@@ -3597,7 +3514,7 @@ reload_cmds='$LD$reload_flag -o $output$reload_objs'
 case $host_os in
   darwin*)
     if test "$GCC" = yes; then
-      reload_cmds='$LTCC $LTCFLAGS -nostdlib ${wl}-r -o $output$reload_objs'
+      reload_cmds='$CC -nostdlib ${wl}-r -o $output$reload_objs'
     else
       reload_cmds='$LD$reload_flag -o $output$reload_objs'
     fi
@@ -3613,43 +3530,36 @@ else
   # Let the user override the test.
   lt_cv_path_NM="$NM"
 else
-  lt_nm_to_check="${ac_tool_prefix}nm"
-  if test -n "$ac_tool_prefix" && test "$build" = "$host"; then
-    lt_nm_to_check="$lt_nm_to_check nm"
-  fi
-  for lt_tmp_nm in $lt_nm_to_check; do
-    lt_save_ifs="$IFS"; IFS=$PATH_SEPARATOR
-    for ac_dir in $PATH /usr/ccs/bin/elf /usr/ccs/bin /usr/ucb /bin; do
-      IFS="$lt_save_ifs"
-      test -z "$ac_dir" && ac_dir=.
-      tmp_nm="$ac_dir/$lt_tmp_nm"
-      if test -f "$tmp_nm" || test -f "$tmp_nm$ac_exeext" ; then
-	# Check to see if the nm accepts a BSD-compat flag.
-	# Adding the `sed 1q' prevents false positives on HP-UX, which says:
-	#   nm: unknown option "B" ignored
-	# Tru64's nm complains that /dev/null is an invalid object file
-	case `"$tmp_nm" -B /dev/null 2>&1 | sed '1q'` in
-	*/dev/null* | *'Invalid file or object type'*)
-	  lt_cv_path_NM="$tmp_nm -B"
+  lt_save_ifs="$IFS"; IFS=$PATH_SEPARATOR
+  for ac_dir in $PATH /usr/ccs/bin /usr/ucb /bin; do
+    IFS="$lt_save_ifs"
+    test -z "$ac_dir" && ac_dir=.
+    tmp_nm="$ac_dir/${ac_tool_prefix}nm"
+    if test -f "$tmp_nm" || test -f "$tmp_nm$ac_exeext" ; then
+      # Check to see if the nm accepts a BSD-compat flag.
+      # Adding the `sed 1q' prevents false positives on HP-UX, which says:
+      #   nm: unknown option "B" ignored
+      # Tru64's nm complains that /dev/null is an invalid object file
+      case `"$tmp_nm" -B /dev/null 2>&1 | sed '1q'` in
+      */dev/null* | *'Invalid file or object type'*)
+	lt_cv_path_NM="$tmp_nm -B"
+	break
+        ;;
+      *)
+	case `"$tmp_nm" -p /dev/null 2>&1 | sed '1q'` in
+	*/dev/null*)
+	  lt_cv_path_NM="$tmp_nm -p"
 	  break
 	  ;;
 	*)
-	  case `"$tmp_nm" -p /dev/null 2>&1 | sed '1q'` in
-	  */dev/null*)
-	    lt_cv_path_NM="$tmp_nm -p"
-	    break
-	    ;;
-	  *)
-	    lt_cv_path_NM=${lt_cv_path_NM="$tmp_nm"} # keep the first match, but
-	    continue # so that we can try to find one that supports BSD flags
-	    ;;
-	  esac
+	  lt_cv_path_NM=${lt_cv_path_NM="$tmp_nm"} # keep the first match, but
+	  continue # so that we can try to find one that supports BSD flags
 	  ;;
 	esac
-      fi
-    done
-    IFS="$lt_save_ifs"
+      esac
+    fi
   done
+  IFS="$lt_save_ifs"
   test -z "$lt_cv_path_NM" && lt_cv_path_NM=nm
 fi
 fi
@@ -3757,11 +3667,6 @@ hpux10.20* | hpux11*)
   esac
   ;;
 
-interix3*)
-  # PIC code is broken on Interix 3.x, that's why |\.a not |_pic\.a here
-  lt_cv_deplibs_check_method='match_pattern /lib[^/]+(\.so|\.a)$'
-  ;;
-
 irix5* | irix6* | nonstopux*)
   case $LD in
   *-32|*"-32 ") libmagic=32-bit;;
@@ -3807,11 +3712,15 @@ osf3* | osf4* | osf5*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
+sco3.2v5*)
+  lt_cv_deplibs_check_method=pass_all
+  ;;
+
 solaris*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 
-sysv4 | sysv4.3*)
+sysv4 | sysv4.2uw2* | sysv4.3* | sysv5*)
   case $host_vendor in
   motorola)
     lt_cv_deplibs_check_method='file_magic ELF [0-9][0-9]*-bit [ML]SB (shared object|dynamic lib) M[0-9][0-9]* Version [0-9]'
@@ -3832,13 +3741,10 @@ sysv4 | sysv4.3*)
   siemens)
     lt_cv_deplibs_check_method=pass_all
     ;;
-  pc)
-    lt_cv_deplibs_check_method=pass_all
-    ;;
   esac
   ;;
 
-sysv5* | sco3.2v5* | sco5v6* | unixware* | OpenUNIX* | sysv4*uw2*)
+sysv5OpenUNIX8* | sysv5UnixWare7* | sysv5uw[78]* | unixware7* | sysv4*uw2*)
   lt_cv_deplibs_check_method=pass_all
   ;;
 esac
@@ -3855,9 +3761,6 @@ test -z "$deplibs_check_method" && deplibs_check_method=unknown
 
 # If no C compiler was specified, use CC.
 LTCC=${LTCC-"$CC"}
-
-# If no C compiler flags were specified, use CFLAGS.
-LTCFLAGS=${LTCFLAGS-"$CFLAGS"}
 
 # Allow CC to be a program name with arguments.
 compiler=$CC
@@ -3893,7 +3796,7 @@ ia64-*-hpux*)
   ;;
 *-*-irix6*)
   # Find out which ABI we are using.
-  echo '#line 3896 "configure"' > conftest.$ac_ext
+  echo '#line 3799 "configure"' > conftest.$ac_ext
   if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   (eval $ac_compile) 2>&5
   ac_status=$?
@@ -4048,26 +3951,6 @@ echo "${ECHO_T}$lt_cv_cc_needs_belf" >&6
     CFLAGS="$SAVE_CFLAGS"
   fi
   ;;
-sparc*-*solaris*)
-  # Find out which ABI we are using.
-  echo 'int i;' > conftest.$ac_ext
-  if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-    case `/usr/bin/file conftest.o` in
-    *64-bit*)
-      case $lt_cv_prog_gnu_ld in
-      yes*) LD="${LD-ld} -m elf64_sparc" ;;
-      *)    LD="${LD-ld} -64" ;;
-      esac
-      ;;
-    esac
-  fi
-  rm -rf conftest*
-  ;;
-
 *-*-cygwin* | *-*-mingw* | *-*-pw32*)
   if test -n "$ac_tool_prefix"; then
   # Extract the first word of "${ac_tool_prefix}dlltool", so it can be a program name with args.
@@ -4994,12 +4877,6 @@ else
     lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \/ 4`
     lt_cv_sys_max_cmd_len=`expr $lt_cv_sys_max_cmd_len \* 3`
     ;;
-
-  interix*)
-    # We know the value 262144 and hardcode it with a safety zone (like BSD)
-    lt_cv_sys_max_cmd_len=196608
-    ;;
-
   osf*)
     # Dr. Hans Ekkehard Plesser reports seeing a kernel panic running configure
     # due to this test when exec_disable_arg_limit is 1 on Tru64. It is not
@@ -5011,17 +4888,6 @@ else
       case `/sbin/sysconfig -q proc exec_disable_arg_limit` in
         *1*) lt_cv_sys_max_cmd_len=-1 ;;
       esac
-    fi
-    ;;
-  sco3.2v5*)
-    lt_cv_sys_max_cmd_len=102400
-    ;;
-  sysv5* | sco5v6* | sysv4.2uw2*)
-    kargmax=`grep ARG_MAX /etc/conf/cf.d/stune 2>/dev/null`
-    if test -n "$kargmax"; then
-      lt_cv_sys_max_cmd_len=`echo $kargmax | sed 's/.*[ 	]//'`
-    else
-      lt_cv_sys_max_cmd_len=32768
     fi
     ;;
   *)
@@ -5109,17 +4975,8 @@ irix* | nonstopux*)
 osf*)
   symcode='[BCDEGQRST]'
   ;;
-solaris*)
+solaris* | sysv5*)
   symcode='[BDRT]'
-  ;;
-sco3.2v5*)
-  symcode='[DT]'
-  ;;
-sysv4.2uw2*)
-  symcode='[DT]'
-  ;;
-sysv5* | sco5v6* | unixware* | OpenUNIX*)
-  symcode='[ABDT]'
   ;;
 sysv4)
   symcode='[DFNSTU]'
@@ -5586,7 +5443,6 @@ test -z "$AR_FLAGS" && AR_FLAGS=cru
 test -z "$AS" && AS=as
 test -z "$CC" && CC=cc
 test -z "$LTCC" && LTCC=$CC
-test -z "$LTCFLAGS" && LTCFLAGS=$CFLAGS
 test -z "$DLLTOOL" && DLLTOOL=dlltool
 test -z "$LD" && LD=ld
 test -z "$LN_S" && LN_S="ln -s"
@@ -5606,10 +5462,10 @@ old_postuninstall_cmds=
 if test -n "$RANLIB"; then
   case $host_os in
   openbsd*)
-    old_postinstall_cmds="$old_postinstall_cmds~\$RANLIB -t \$oldlib"
+    old_postinstall_cmds="\$RANLIB -t \$oldlib~$old_postinstall_cmds"
     ;;
   *)
-    old_postinstall_cmds="$old_postinstall_cmds~\$RANLIB \$oldlib"
+    old_postinstall_cmds="\$RANLIB \$oldlib~$old_postinstall_cmds"
     ;;
   esac
   old_archive_cmds="$old_archive_cmds~\$RANLIB \$oldlib"
@@ -5808,9 +5664,6 @@ lt_simple_link_test_code='int main(){return(0);}\n'
 # If no C compiler was specified, use CC.
 LTCC=${LTCC-"$CC"}
 
-# If no C compiler flags were specified, use CFLAGS.
-LTCFLAGS=${LTCFLAGS-"$CFLAGS"}
-
 # Allow CC to be a program name with arguments.
 compiler=$CC
 
@@ -5818,15 +5671,80 @@ compiler=$CC
 # save warnings/boilerplate of simple test code
 ac_outfile=conftest.$ac_objext
 printf "$lt_simple_compile_test_code" >conftest.$ac_ext
-eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
+eval "$ac_compile" 2>&1 >/dev/null | $SED '/^$/d' >conftest.err
 _lt_compiler_boilerplate=`cat conftest.err`
 $rm conftest*
 
 ac_outfile=conftest.$ac_objext
 printf "$lt_simple_link_test_code" >conftest.$ac_ext
-eval "$ac_link" 2>&1 >/dev/null | $SED '/^$/d; /^ *+/d' >conftest.err
+eval "$ac_link" 2>&1 >/dev/null | $SED '/^$/d' >conftest.err
 _lt_linker_boilerplate=`cat conftest.err`
 $rm conftest*
+
+
+#
+# Check for any special shared library compilation flags.
+#
+lt_prog_cc_shlib=
+if test "$GCC" = no; then
+  case $host_os in
+  sco3.2v5*)
+    lt_prog_cc_shlib='-belf'
+    ;;
+  esac
+fi
+if test -n "$lt_prog_cc_shlib"; then
+  { echo "$as_me:$LINENO: WARNING: \`$CC' requires \`$lt_prog_cc_shlib' to build shared libraries" >&5
+echo "$as_me: WARNING: \`$CC' requires \`$lt_prog_cc_shlib' to build shared libraries" >&2;}
+  if echo "$old_CC $old_CFLAGS " | grep "[ 	]$lt_prog_cc_shlib[ 	]" >/dev/null; then :
+  else
+    { echo "$as_me:$LINENO: WARNING: add \`$lt_prog_cc_shlib' to the CC or CFLAGS env variable and reconfigure" >&5
+echo "$as_me: WARNING: add \`$lt_prog_cc_shlib' to the CC or CFLAGS env variable and reconfigure" >&2;}
+    lt_cv_prog_cc_can_build_shared=no
+  fi
+fi
+
+
+#
+# Check to make sure the static flag actually works.
+#
+echo "$as_me:$LINENO: checking if $compiler static flag $lt_prog_compiler_static works" >&5
+echo $ECHO_N "checking if $compiler static flag $lt_prog_compiler_static works... $ECHO_C" >&6
+if test "${lt_prog_compiler_static_works+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  lt_prog_compiler_static_works=no
+   save_LDFLAGS="$LDFLAGS"
+   LDFLAGS="$LDFLAGS $lt_prog_compiler_static"
+   printf "$lt_simple_link_test_code" > conftest.$ac_ext
+   if (eval $ac_link 2>conftest.err) && test -s conftest$ac_exeext; then
+     # The linker can only warn and ignore the option if not recognized
+     # So say no if there are warnings
+     if test -s conftest.err; then
+       # Append any errors to the config.log.
+       cat conftest.err 1>&5
+       $echo "X$_lt_linker_boilerplate" | $Xsed > conftest.exp
+       $SED '/^$/d' conftest.err >conftest.er2
+       if diff conftest.exp conftest.er2 >/dev/null; then
+         lt_prog_compiler_static_works=yes
+       fi
+     else
+       lt_prog_compiler_static_works=yes
+     fi
+   fi
+   $rm conftest*
+   LDFLAGS="$save_LDFLAGS"
+
+fi
+echo "$as_me:$LINENO: result: $lt_prog_compiler_static_works" >&5
+echo "${ECHO_T}$lt_prog_compiler_static_works" >&6
+
+if test x"$lt_prog_compiler_static_works" = xyes; then
+    :
+else
+    lt_prog_compiler_static=
+fi
+
 
 
 
@@ -5854,17 +5772,17 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:5857: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:5775: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:5861: \$? = $ac_status" >&5
+   echo "$as_me:5779: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
-     $echo "X$_lt_compiler_boilerplate" | $Xsed -e '/^$/d' >conftest.exp
-     $SED '/^$/d; /^ *+/d' conftest.err >conftest.er2
-     if test ! -s conftest.er2 || diff conftest.exp conftest.er2 >/dev/null; then
+     $echo "X$_lt_compiler_boilerplate" | $Xsed >conftest.exp
+     $SED '/^$/d' conftest.err >conftest.er2
+     if test ! -s conftest.err || diff conftest.exp conftest.er2 >/dev/null; then
        lt_cv_prog_compiler_rtti_exceptions=yes
      fi
    fi
@@ -5923,11 +5841,6 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6
       # PIC is the default on this platform
       # Common symbols not allowed in MH_DYLIB files
       lt_prog_compiler_pic='-fno-common'
-      ;;
-
-    interix3*)
-      # Interix 3.x gcc -fpic/-fPIC options generate broken code.
-      # Instead, we relocate shared libraries at runtime.
       ;;
 
     msdosdjgpp*)
@@ -6044,6 +5957,11 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6
       lt_prog_compiler_static='-non_shared'
       ;;
 
+    sco3.2v5*)
+      lt_prog_compiler_pic='-Kpic'
+      lt_prog_compiler_static='-dn'
+      ;;
+
     solaris*)
       lt_prog_compiler_pic='-KPIC'
       lt_prog_compiler_static='-Bstatic'
@@ -6061,7 +5979,7 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6
       lt_prog_compiler_static='-Bstatic'
       ;;
 
-    sysv4 | sysv4.2uw2* | sysv4.3*)
+    sysv4 | sysv4.2uw2* | sysv4.3* | sysv5*)
       lt_prog_compiler_wl='-Wl,'
       lt_prog_compiler_pic='-KPIC'
       lt_prog_compiler_static='-Bstatic'
@@ -6072,12 +5990,6 @@ echo $ECHO_N "checking for $compiler option to produce PIC... $ECHO_C" >&6
 	lt_prog_compiler_pic='-Kconform_pic'
 	lt_prog_compiler_static='-Bstatic'
       fi
-      ;;
-
-    sysv5* | unixware* | sco3.2v5* | sco5v6* | OpenUNIX*)
-      lt_prog_compiler_wl='-Wl,'
-      lt_prog_compiler_pic='-KPIC'
-      lt_prog_compiler_static='-Bstatic'
       ;;
 
     unicos*)
@@ -6122,17 +6034,17 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6125: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6037: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>conftest.err)
    ac_status=$?
    cat conftest.err >&5
-   echo "$as_me:6129: \$? = $ac_status" >&5
+   echo "$as_me:6041: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s "$ac_outfile"; then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings other than the usual output.
-     $echo "X$_lt_compiler_boilerplate" | $Xsed -e '/^$/d' >conftest.exp
-     $SED '/^$/d; /^ *+/d' conftest.err >conftest.er2
-     if test ! -s conftest.er2 || diff conftest.exp conftest.er2 >/dev/null; then
+     $echo "X$_lt_compiler_boilerplate" | $Xsed >conftest.exp
+     $SED '/^$/d' conftest.err >conftest.er2
+     if test ! -s conftest.err || diff conftest.exp conftest.er2 >/dev/null; then
        lt_prog_compiler_pic_works=yes
      fi
    fi
@@ -6163,48 +6075,6 @@ case $host_os in
     ;;
 esac
 
-#
-# Check to make sure the static flag actually works.
-#
-wl=$lt_prog_compiler_wl eval lt_tmp_static_flag=\"$lt_prog_compiler_static\"
-echo "$as_me:$LINENO: checking if $compiler static flag $lt_tmp_static_flag works" >&5
-echo $ECHO_N "checking if $compiler static flag $lt_tmp_static_flag works... $ECHO_C" >&6
-if test "${lt_prog_compiler_static_works+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  lt_prog_compiler_static_works=no
-   save_LDFLAGS="$LDFLAGS"
-   LDFLAGS="$LDFLAGS $lt_tmp_static_flag"
-   printf "$lt_simple_link_test_code" > conftest.$ac_ext
-   if (eval $ac_link 2>conftest.err) && test -s conftest$ac_exeext; then
-     # The linker can only warn and ignore the option if not recognized
-     # So say no if there are warnings
-     if test -s conftest.err; then
-       # Append any errors to the config.log.
-       cat conftest.err 1>&5
-       $echo "X$_lt_linker_boilerplate" | $Xsed -e '/^$/d' > conftest.exp
-       $SED '/^$/d; /^ *+/d' conftest.err >conftest.er2
-       if diff conftest.exp conftest.er2 >/dev/null; then
-         lt_prog_compiler_static_works=yes
-       fi
-     else
-       lt_prog_compiler_static_works=yes
-     fi
-   fi
-   $rm conftest*
-   LDFLAGS="$save_LDFLAGS"
-
-fi
-echo "$as_me:$LINENO: result: $lt_prog_compiler_static_works" >&5
-echo "${ECHO_T}$lt_prog_compiler_static_works" >&6
-
-if test x"$lt_prog_compiler_static_works" = xyes; then
-    :
-else
-    lt_prog_compiler_static=
-fi
-
-
 echo "$as_me:$LINENO: checking if $compiler supports -c -o file.$ac_objext" >&5
 echo $ECHO_N "checking if $compiler supports -c -o file.$ac_objext... $ECHO_C" >&6
 if test "${lt_cv_prog_compiler_c_o+set}" = set; then
@@ -6226,18 +6096,18 @@ else
    -e 's:.*FLAGS}\{0,1\} :&$lt_compiler_flag :; t' \
    -e 's: [^ ]*conftest\.: $lt_compiler_flag&:; t' \
    -e 's:$: $lt_compiler_flag:'`
-   (eval echo "\"\$as_me:6229: $lt_compile\"" >&5)
+   (eval echo "\"\$as_me:6099: $lt_compile\"" >&5)
    (eval "$lt_compile" 2>out/conftest.err)
    ac_status=$?
    cat out/conftest.err >&5
-   echo "$as_me:6233: \$? = $ac_status" >&5
+   echo "$as_me:6103: \$? = $ac_status" >&5
    if (exit $ac_status) && test -s out/conftest2.$ac_objext
    then
      # The compiler can only warn and ignore the option if not recognized
      # So say no if there are warnings
-     $echo "X$_lt_compiler_boilerplate" | $Xsed -e '/^$/d' > out/conftest.exp
-     $SED '/^$/d; /^ *+/d' out/conftest.err >out/conftest.er2
-     if test ! -s out/conftest.er2 || diff out/conftest.exp out/conftest.er2 >/dev/null; then
+     $echo "X$_lt_compiler_boilerplate" | $Xsed > out/conftest.exp
+     $SED '/^$/d' out/conftest.err >out/conftest.er2
+     if test ! -s out/conftest.err || diff out/conftest.exp out/conftest.er2 >/dev/null; then
        lt_cv_prog_compiler_c_o=yes
      fi
    fi
@@ -6337,10 +6207,6 @@ cc_basename=`$echo "X$cc_temp" | $Xsed -e 's%.*/%%' -e "s%^$host_alias-%%"`
       with_gnu_ld=no
     fi
     ;;
-  interix*)
-    # we just hope/assume this is gcc and not c89 (= MSVC++)
-    with_gnu_ld=yes
-    ;;
   openbsd*)
     with_gnu_ld=no
     ;;
@@ -6425,7 +6291,7 @@ EOF
       export_symbols_cmds='$NM $libobjs $convenience | $global_symbol_pipe | $SED -e '\''/^[BCDGRS] /s/.* \([^ ]*\)/\1 DATA/'\'' | $SED -e '\''/^[AITW] /s/.* //'\'' | sort | uniq > $export_symbols'
 
       if $LD --help 2>&1 | grep 'auto-import' > /dev/null; then
-        archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker $lib'
+        archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--image-base=0x10000000 ${wl}--out-implib,$lib'
 	# If the export-symbols file already is a .def file (1st line
 	# is EXPORTS), use it as is; otherwise, prepend...
 	archive_expsym_cmds='if test "x`$SED 1q $export_symbols`" = xEXPORTS; then
@@ -6434,25 +6300,10 @@ EOF
 	  echo EXPORTS > $output_objdir/$soname.def;
 	  cat $export_symbols >> $output_objdir/$soname.def;
 	fi~
-	$CC -shared $output_objdir/$soname.def $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--enable-auto-image-base -Xlinker --out-implib -Xlinker $lib'
+	$CC -shared $output_objdir/$soname.def $libobjs $deplibs $compiler_flags -o $output_objdir/$soname ${wl}--image-base=0x10000000  ${wl}--out-implib,$lib'
       else
 	ld_shlibs=no
       fi
-      ;;
-
-    interix3*)
-      hardcode_direct=no
-      hardcode_shlibpath_var=no
-      hardcode_libdir_flag_spec='${wl}-rpath,$libdir'
-      export_dynamic_flag_spec='${wl}-E'
-      # Hack: On Interix 3.x, we cannot compile PIC because of a broken gcc.
-      # Instead, shared libraries are loaded at an image base (0x10000000 by
-      # default) and relocated if they conflict, which is a slow very memory
-      # consuming and fragmenting process.  To avoid this, we pick a random,
-      # 256 KiB-aligned image base between 0x50000000 and 0x6FFC0000 at link
-      # time.  Moving up from 0x10000000 also allows more sbrk(2) space.
-      archive_cmds='$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
-      archive_expsym_cmds='sed "s,^,_," $export_symbols >$output_objdir/$soname.expsym~$CC -shared $pic_flag $libobjs $deplibs $compiler_flags ${wl}-h,$soname ${wl}--retain-symbols-file,$output_objdir/$soname.expsym ${wl}--image-base,`expr ${RANDOM-$$} % 4096 / 2 \* 262144 + 1342177280` -o $lib'
       ;;
 
     linux*)
@@ -6496,7 +6347,7 @@ EOF
       fi
       ;;
 
-    solaris*)
+    solaris* | sysv5*)
       if $LD -v 2>&1 | grep 'BFD 2\.8' > /dev/null; then
 	ld_shlibs=no
 	cat <<EOF 1>&2
@@ -6515,33 +6366,6 @@ EOF
       else
 	ld_shlibs=no
       fi
-      ;;
-
-    sysv5* | sco3.2v5* | sco5v6* | unixware* | OpenUNIX*)
-      case `$LD -v 2>&1` in
-        *\ [01].* | *\ 2.[0-9].* | *\ 2.1[0-5].*)
-	ld_shlibs=no
-	cat <<_LT_EOF 1>&2
-
-*** Warning: Releases of the GNU linker prior to 2.16.91.0.3 can not
-*** reliably create shared libraries on SCO systems.  Therefore, libtool
-*** is disabling shared libraries support.  We urge you to upgrade GNU
-*** binutils to release 2.16.91.0.3 or newer.  Another option is to modify
-*** your PATH or compiler configuration so that the native linker is
-*** used, and then restart.
-
-_LT_EOF
-	;;
-	*)
-	  if $LD --help 2>&1 | grep ': supported targets:.* elf' > /dev/null; then
-	    hardcode_libdir_flag_spec='`test -z "$SCOABSPATH" && echo ${wl}-rpath,$libdir`'
-	    archive_cmds='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname,\${SCOABSPATH:+${install_libdir}/}$soname -o $lib'
-	    archive_expsym_cmds='$CC -shared $libobjs $deplibs $compiler_flags ${wl}-soname,\${SCOABSPATH:+${install_libdir}/}$soname,-retain-symbols-file,$export_symbols -o $lib'
-	  else
-	    ld_shlibs=no
-	  fi
-	;;
-      esac
       ;;
 
     sunos4*)
@@ -6577,7 +6401,7 @@ _LT_EOF
       # Note: this linker hardcodes the directories in LIBPATH if there
       # are no directories specified by -L.
       hardcode_minus_L=yes
-      if test "$GCC" = yes && test -z "$lt_prog_compiler_static"; then
+      if test "$GCC" = yes && test -z "$link_static_flag"; then
 	# Neither direct hardcoding nor static linking is supported with a
 	# broken collect2.
 	hardcode_direct=unsupported
@@ -6611,7 +6435,6 @@ _LT_EOF
   	    break
   	  fi
 	  done
-	  ;;
 	esac
 
 	exp_sym_flag='-bexport'
@@ -6649,7 +6472,6 @@ _LT_EOF
   	  hardcode_libdir_flag_spec='-L$libdir'
   	  hardcode_libdir_separator=
 	  fi
-	  ;;
 	esac
 	shared_flag='-shared'
 	if test "$aix_use_runtimelinking" = yes; then
@@ -6662,11 +6484,11 @@ _LT_EOF
   	# chokes on -Wl,-G. The following line is correct:
 	  shared_flag='-G'
 	else
-	  if test "$aix_use_runtimelinking" = yes; then
+  	if test "$aix_use_runtimelinking" = yes; then
 	    shared_flag='${wl}-G'
 	  else
 	    shared_flag='${wl}-bM:SRE'
-	  fi
+  	fi
 	fi
       fi
 
@@ -6730,12 +6552,12 @@ rm -f conftest.err conftest.$ac_objext \
 if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 
        hardcode_libdir_flag_spec='${wl}-blibpath:$libdir:'"$aix_libpath"
-	archive_expsym_cmds="\$CC"' -o $output_objdir/$soname $libobjs $deplibs '"\${wl}$no_entry_flag"' $compiler_flags `if test "x${allow_undefined_flag}" != "x"; then echo "${wl}${allow_undefined_flag}"; else :; fi` '"\${wl}$exp_sym_flag:\$export_symbols $shared_flag"
+	archive_expsym_cmds="\$CC"' -o $output_objdir/$soname $libobjs $deplibs $compiler_flags `if test "x${allow_undefined_flag}" != "x"; then echo "${wl}${allow_undefined_flag}"; else :; fi` '"\${wl}$no_entry_flag \${wl}$exp_sym_flag:\$export_symbols $shared_flag"
        else
 	if test "$host_cpu" = ia64; then
 	  hardcode_libdir_flag_spec='${wl}-R $libdir:/usr/lib:/lib'
 	  allow_undefined_flag="-z nodefs"
-	  archive_expsym_cmds="\$CC $shared_flag"' -o $output_objdir/$soname $libobjs $deplibs '"\${wl}$no_entry_flag"' $compiler_flags ${wl}${allow_undefined_flag} '"\${wl}$exp_sym_flag:\$export_symbols"
+	  archive_expsym_cmds="\$CC $shared_flag"' -o $output_objdir/$soname $libobjs $deplibs $compiler_flags ${wl}${allow_undefined_flag} '"\${wl}$no_entry_flag \${wl}$exp_sym_flag:\$export_symbols"
 	else
 	 # Determine the default libpath from the value encoded in an empty executable.
 	 cat >conftest.$ac_ext <<_ACEOF
@@ -6794,11 +6616,13 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 	  # -berok will link without error, but may produce a broken library.
 	  no_undefined_flag=' ${wl}-bernotok'
 	  allow_undefined_flag=' ${wl}-berok'
+	  # -bexpall does not export symbols beginning with underscore (_)
+	  always_export_symbols=yes
 	  # Exported symbols can be pulled into shared objects from archives
-	  whole_archive_flag_spec='$convenience'
+	  whole_archive_flag_spec=' '
 	  archive_cmds_need_lc=yes
 	  # This is similar to how AIX traditionally builds its shared libraries.
-	  archive_expsym_cmds="\$CC $shared_flag"' -o $output_objdir/$soname $libobjs $deplibs ${wl}-bnoentry $compiler_flags ${wl}-bE:$export_symbols${allow_undefined_flag}~$AR $AR_FLAGS $output_objdir/$libname$release.a $output_objdir/$soname'
+	  archive_expsym_cmds="\$CC $shared_flag"' -o $output_objdir/$soname $libobjs $deplibs $compiler_flags ${wl}-bE:$export_symbols ${wl}-bnoentry${allow_undefined_flag}~$AR $AR_FLAGS $output_objdir/$libname$release.a $output_objdir/$soname'
 	fi
       fi
       ;;
@@ -6939,33 +6763,11 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       export_dynamic_flag_spec='${wl}-E'
       ;;
 
-    hpux10*)
-      if test "$GCC" = yes -a "$with_gnu_ld" = no; then
-	archive_cmds='$CC -shared -fPIC ${wl}+h ${wl}$soname ${wl}+b ${wl}$install_libdir -o $lib $libobjs $deplibs $compiler_flags'
-      else
-	archive_cmds='$LD -b +h $soname +b $install_libdir -o $lib $libobjs $deplibs $linker_flags'
-      fi
-      if test "$with_gnu_ld" = no; then
-	hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
-	hardcode_libdir_separator=:
-
-	hardcode_direct=yes
-	export_dynamic_flag_spec='${wl}-E'
-
-	# hardcode_minus_L: Not really in the search PATH,
-	# but as the default location of the library.
-	hardcode_minus_L=yes
-      fi
-      ;;
-
-    hpux11*)
+    hpux10* | hpux11*)
       if test "$GCC" = yes -a "$with_gnu_ld" = no; then
 	case $host_cpu in
-	hppa*64*)
+	hppa*64*|ia64*)
 	  archive_cmds='$CC -shared ${wl}+h ${wl}$soname -o $lib $libobjs $deplibs $compiler_flags'
-	  ;;
-	ia64*)
-	  archive_cmds='$CC -shared ${wl}+h ${wl}$soname ${wl}+nodefaultrpath -o $lib $libobjs $deplibs $compiler_flags'
 	  ;;
 	*)
 	  archive_cmds='$CC -shared -fPIC ${wl}+h ${wl}$soname ${wl}+b ${wl}$install_libdir -o $lib $libobjs $deplibs $compiler_flags'
@@ -6973,28 +6775,35 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 	esac
       else
 	case $host_cpu in
-	hppa*64*)
-	  archive_cmds='$CC -b ${wl}+h ${wl}$soname -o $lib $libobjs $deplibs $compiler_flags'
-	  ;;
-	ia64*)
-	  archive_cmds='$CC -b ${wl}+h ${wl}$soname ${wl}+nodefaultrpath -o $lib $libobjs $deplibs $compiler_flags'
+	hppa*64*|ia64*)
+	  archive_cmds='$LD -b +h $soname -o $lib $libobjs $deplibs $linker_flags'
 	  ;;
 	*)
-	  archive_cmds='$CC -b ${wl}+h ${wl}$soname ${wl}+b ${wl}$install_libdir -o $lib $libobjs $deplibs $compiler_flags'
+	  archive_cmds='$LD -b +h $soname +b $install_libdir -o $lib $libobjs $deplibs $linker_flags'
 	  ;;
 	esac
       fi
       if test "$with_gnu_ld" = no; then
-	hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
-	hardcode_libdir_separator=:
-
 	case $host_cpu in
-	hppa*64*|ia64*)
+	hppa*64*)
+	  hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
 	  hardcode_libdir_flag_spec_ld='+b $libdir'
+	  hardcode_libdir_separator=:
 	  hardcode_direct=no
 	  hardcode_shlibpath_var=no
 	  ;;
+	ia64*)
+	  hardcode_libdir_flag_spec='-L$libdir'
+	  hardcode_direct=no
+	  hardcode_shlibpath_var=no
+
+	  # hardcode_minus_L: Not really in the search PATH,
+	  # but as the default location of the library.
+	  hardcode_minus_L=yes
+	  ;;
 	*)
+	  hardcode_libdir_flag_spec='${wl}+b ${wl}$libdir'
+	  hardcode_libdir_separator=:
 	  hardcode_direct=yes
 	  export_dynamic_flag_spec='${wl}-E'
 
@@ -7096,6 +6905,14 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       hardcode_libdir_separator=:
       ;;
 
+    sco3.2v5*)
+      archive_cmds='$LD -G -h $soname -o $lib $libobjs $deplibs $linker_flags'
+      hardcode_shlibpath_var=no
+      export_dynamic_flag_spec='${wl}-Bexport'
+      runpath_var=LD_RUN_PATH
+      hardcode_runpath_var=yes
+      ;;
+
     solaris*)
       no_undefined_flag=' -z text'
       if test "$GCC" = yes; then
@@ -7181,45 +6998,36 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
       fi
       ;;
 
-    sysv4*uw2* | sysv5OpenUNIX* | sysv5UnixWare7.[01].[10]* | unixware7*)
-      no_undefined_flag='${wl}-z,text'
-      archive_cmds_need_lc=no
+    sysv4.2uw2*)
+      archive_cmds='$LD -G -o $lib $libobjs $deplibs $linker_flags'
+      hardcode_direct=yes
+      hardcode_minus_L=no
       hardcode_shlibpath_var=no
-      runpath_var='LD_RUN_PATH'
-
-      if test "$GCC" = yes; then
-	archive_cmds='$CC -shared ${wl}-h,$soname -o $lib $libobjs $deplibs $compiler_flags'
-	archive_expsym_cmds='$CC -shared ${wl}-Bexport:$export_symbols ${wl}-h,$soname -o $lib $libobjs $deplibs $compiler_flags'
-      else
-	archive_cmds='$CC -G ${wl}-h,$soname -o $lib $libobjs $deplibs $compiler_flags'
-	archive_expsym_cmds='$CC -G ${wl}-Bexport:$export_symbols ${wl}-h,$soname -o $lib $libobjs $deplibs $compiler_flags'
-      fi
+      hardcode_runpath_var=yes
+      runpath_var=LD_RUN_PATH
       ;;
 
-    sysv5* | sco3.2v5* | sco5v6*)
-      # Note: We can NOT use -z defs as we might desire, because we do not
-      # link with -lc, and that would cause any symbols used from libc to
-      # always be unresolved, which means just about no library would
-      # ever link correctly.  If we're not using GNU ld we use -z text
-      # though, which does catch some bad symbols but isn't as heavy-handed
-      # as -z defs.
-      no_undefined_flag='${wl}-z,text'
-      allow_undefined_flag='${wl}-z,nodefs'
-      archive_cmds_need_lc=no
-      hardcode_shlibpath_var=no
-      hardcode_libdir_flag_spec='`test -z "$SCOABSPATH" && echo ${wl}-R,$libdir`'
-      hardcode_libdir_separator=':'
-      link_all_deplibs=yes
-      export_dynamic_flag_spec='${wl}-Bexport'
-      runpath_var='LD_RUN_PATH'
-
+   sysv5OpenUNIX8* | sysv5UnixWare7* |  sysv5uw[78]* | unixware7*)
+      no_undefined_flag='${wl}-z ${wl}text'
       if test "$GCC" = yes; then
-	archive_cmds='$CC -shared ${wl}-h,\${SCOABSPATH:+${install_libdir}/}$soname -o $lib $libobjs $deplibs $compiler_flags'
-	archive_expsym_cmds='$CC -shared ${wl}-Bexport:$export_symbols ${wl}-h,\${SCOABSPATH:+${install_libdir}/}$soname -o $lib $libobjs $deplibs $compiler_flags'
+	archive_cmds='$CC -shared ${wl}-h ${wl}$soname -o $lib $libobjs $deplibs $compiler_flags'
       else
-	archive_cmds='$CC -G ${wl}-h,\${SCOABSPATH:+${install_libdir}/}$soname -o $lib $libobjs $deplibs $compiler_flags'
-	archive_expsym_cmds='$CC -G ${wl}-Bexport:$export_symbols ${wl}-h,\${SCOABSPATH:+${install_libdir}/}$soname -o $lib $libobjs $deplibs $compiler_flags'
+	archive_cmds='$CC -G ${wl}-h ${wl}$soname -o $lib $libobjs $deplibs $compiler_flags'
       fi
+      runpath_var='LD_RUN_PATH'
+      hardcode_shlibpath_var=no
+      ;;
+
+    sysv5*)
+      no_undefined_flag=' -z text'
+      # $CC -shared without GNU ld will not create a library from C++
+      # object files and a static libstdc++, better avoid it by now
+      archive_cmds='$LD -G${allow_undefined_flag} -h $soname -o $lib $libobjs $deplibs $linker_flags'
+      archive_expsym_cmds='$echo "{ global:" > $lib.exp~cat $export_symbols | $SED -e "s/\(.*\)/\1;/" >> $lib.exp~$echo "local: *; };" >> $lib.exp~
+  		$LD -G${allow_undefined_flag} -M $lib.exp -h $soname -o $lib $libobjs $deplibs $linker_flags~$rm $lib.exp'
+      hardcode_libdir_flag_spec=
+      hardcode_shlibpath_var=no
+      runpath_var='LD_RUN_PATH'
       ;;
 
     uts4*)
@@ -7237,6 +7045,11 @@ if test -z "$aix_libpath"; then aix_libpath="/usr/lib:/lib"; fi
 echo "$as_me:$LINENO: result: $ld_shlibs" >&5
 echo "${ECHO_T}$ld_shlibs" >&6
 test "$ld_shlibs" = no && can_build_shared=no
+
+variables_saved_for_relink="PATH $shlibpath_var $runpath_var"
+if test "$GCC" = yes; then
+  variables_saved_for_relink="$variables_saved_for_relink GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
+fi
 
 #
 # Do we need to explicitly link libc?
@@ -7270,7 +7083,6 @@ echo $ECHO_N "checking whether -lc should be explicitly linked in... $ECHO_C" >&
         libobjs=conftest.$ac_objext
         deplibs=
         wl=$lt_prog_compiler_wl
-	pic_flag=$lt_prog_compiler_pic
         compiler_flags=-v
         linker_flags=-v
         verstring=
@@ -7552,13 +7364,8 @@ freebsd* | dragonfly*)
     shlibpath_overrides_runpath=yes
     hardcode_into_libs=yes
     ;;
-  freebsd3.[2-9]* | freebsdelf3.[2-9]* | \
-  freebsd4.[0-5] | freebsdelf4.[0-5] | freebsd4.1.1 | freebsdelf4.1.1)
+  *) # from 3.2 on
     shlibpath_overrides_runpath=no
-    hardcode_into_libs=yes
-    ;;
-  freebsd*) # from 4.6 on
-    shlibpath_overrides_runpath=yes
     hardcode_into_libs=yes
     ;;
   esac
@@ -7620,18 +7427,6 @@ hpux9* | hpux10* | hpux11*)
   postinstall_cmds='chmod 555 $lib'
   ;;
 
-interix3*)
-  version_type=linux
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major ${libname}${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  dynamic_linker='Interix 3.x ld.so.1 (PE, like ELF)'
-  shlibpath_var=LD_LIBRARY_PATH
-  shlibpath_overrides_runpath=no
-  hardcode_into_libs=yes
-  ;;
-
 irix5* | irix6* | nonstopux*)
   case $host_os in
     nonstopux*) version_type=nonstopux ;;
@@ -7689,31 +7484,10 @@ linux*)
   # before this can be enabled.
   hardcode_into_libs=yes
 
-  # find out which ABI we are using
-  libsuff=
-  case "$host_cpu" in
-  x86_64*|s390x*|powerpc64*)
-    echo '#line 7696 "configure"' > conftest.$ac_ext
-    if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
-  (eval $ac_compile) 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-      case `/usr/bin/file conftest.$ac_objext` in
-      *64-bit*)
-        libsuff=64
-        sys_lib_search_path_spec="/lib${libsuff} /usr/lib${libsuff} /usr/local/lib${libsuff}"
-        ;;
-      esac
-    fi
-    rm -rf conftest*
-    ;;
-  esac
-
   # Append ld.so.conf contents to the search path
   if test -f /etc/ld.so.conf; then
     lt_ld_extra=`awk '/^include / { system(sprintf("cd /etc; cat %s", \$2)); skip = 1; } { if (!skip) print \$0; skip = 0; }' < /etc/ld.so.conf | $SED -e 's/#.*//;s/[:,	]/ /g;s/=[^=]*$//;s/=[^= ]* / /g;/^$/d' | tr '\n' ' '`
-    sys_lib_dlsearch_path_spec="/lib${libsuff} /usr/lib${libsuff} $lt_ld_extra"
+    sys_lib_dlsearch_path_spec="/lib /usr/lib $lt_ld_extra"
   fi
 
   # We used to test for /lib/ld.so.1 and disable shared libraries on
@@ -7774,7 +7548,6 @@ nto-qnx*)
 
 openbsd*)
   version_type=sunos
-  sys_lib_dlsearch_path_spec="/usr/lib"
   need_lib_prefix=no
   # Some older versions of OpenBSD (3.3 at least) *do* need versioned libs.
   case $host_os in
@@ -7818,6 +7591,13 @@ osf3* | osf4* | osf5*)
   sys_lib_dlsearch_path_spec="$sys_lib_search_path_spec"
   ;;
 
+sco3.2v5*)
+  version_type=osf
+  soname_spec='${libname}${release}${shared_ext}$major'
+  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
+  shlibpath_var=LD_LIBRARY_PATH
+  ;;
+
 solaris*)
   version_type=linux
   need_lib_prefix=no
@@ -7843,7 +7623,7 @@ sunos4*)
   need_version=yes
   ;;
 
-sysv4 | sysv4.3*)
+sysv4 | sysv4.2uw2* | sysv4.3* | sysv5*)
   version_type=linux
   library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
   soname_spec='${libname}${release}${shared_ext}$major'
@@ -7876,29 +7656,6 @@ sysv4*MP*)
   fi
   ;;
 
-sysv5* | sco3.2v5* | sco5v6* | unixware* | OpenUNIX* | sysv4*uw2*)
-  version_type=freebsd-elf
-  need_lib_prefix=no
-  need_version=no
-  library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext} $libname${shared_ext}'
-  soname_spec='${libname}${release}${shared_ext}$major'
-  shlibpath_var=LD_LIBRARY_PATH
-  hardcode_into_libs=yes
-  if test "$with_gnu_ld" = yes; then
-    sys_lib_search_path_spec='/usr/local/lib /usr/gnu/lib /usr/ccs/lib /usr/lib /lib'
-    shlibpath_overrides_runpath=no
-  else
-    sys_lib_search_path_spec='/usr/ccs/lib /usr/lib'
-    shlibpath_overrides_runpath=yes
-    case $host_os in
-      sco3.2v5*)
-        sys_lib_search_path_spec="$sys_lib_search_path_spec /lib"
-	;;
-    esac
-  fi
-  sys_lib_dlsearch_path_spec='/usr/lib'
-  ;;
-
 uts4*)
   version_type=linux
   library_names_spec='${libname}${release}${shared_ext}$versuffix ${libname}${release}${shared_ext}$major $libname${shared_ext}'
@@ -7913,11 +7670,6 @@ esac
 echo "$as_me:$LINENO: result: $dynamic_linker" >&5
 echo "${ECHO_T}$dynamic_linker" >&6
 test "$dynamic_linker" = no && can_build_shared=no
-
-variables_saved_for_relink="PATH $shlibpath_var $runpath_var"
-if test "$GCC" = yes; then
-  variables_saved_for_relink="$variables_saved_for_relink GCC_EXEC_PREFIX COMPILER_PATH LIBRARY_PATH"
-fi
 
 echo "$as_me:$LINENO: checking how to hardcode library paths into programs" >&5
 echo $ECHO_N "checking how to hardcode library paths into programs... $ECHO_C" >&6
@@ -8567,7 +8319,7 @@ fi
     test "x$ac_cv_header_dlfcn_h" = xyes && CPPFLAGS="$CPPFLAGS -DHAVE_DLFCN_H"
 
     save_LDFLAGS="$LDFLAGS"
-    wl=$lt_prog_compiler_wl eval LDFLAGS=\"\$LDFLAGS $export_dynamic_flag_spec\"
+    eval LDFLAGS=\"\$LDFLAGS $export_dynamic_flag_spec\"
 
     save_LIBS="$LIBS"
     LIBS="$lt_cv_dlopen_libs $LIBS"
@@ -8583,7 +8335,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8586 "configure"
+#line 8338 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8640,8 +8392,6 @@ int main ()
       else if (dlsym( self,"_fnord")) status = $lt_dlneed_uscore;
       /* dlclose (self); */
     }
-  else
-    puts (dlerror ());
 
     exit (status);
 }
@@ -8656,7 +8406,7 @@ EOF
     case x$lt_status in
       x$lt_dlno_uscore) lt_cv_dlopen_self=yes ;;
       x$lt_dlneed_uscore) lt_cv_dlopen_self=yes ;;
-      x$lt_dlunknown|x*) lt_cv_dlopen_self=no ;;
+      x$lt_unknown|x*) lt_cv_dlopen_self=no ;;
     esac
   else :
     # compilation failed
@@ -8671,7 +8421,7 @@ echo "$as_me:$LINENO: result: $lt_cv_dlopen_self" >&5
 echo "${ECHO_T}$lt_cv_dlopen_self" >&6
 
     if test "x$lt_cv_dlopen_self" = xyes; then
-      wl=$lt_prog_compiler_wl eval LDFLAGS=\"\$LDFLAGS $lt_prog_compiler_static\"
+      LDFLAGS="$LDFLAGS $link_static_flag"
       echo "$as_me:$LINENO: checking whether a statically linked program can dlopen itself" >&5
 echo $ECHO_N "checking whether a statically linked program can dlopen itself... $ECHO_C" >&6
 if test "${lt_cv_dlopen_self_static+set}" = set; then
@@ -8683,7 +8433,7 @@ else
   lt_dlunknown=0; lt_dlno_uscore=1; lt_dlneed_uscore=2
   lt_status=$lt_dlunknown
   cat > conftest.$ac_ext <<EOF
-#line 8686 "configure"
+#line 8436 "configure"
 #include "confdefs.h"
 
 #if HAVE_DLFCN_H
@@ -8740,8 +8490,6 @@ int main ()
       else if (dlsym( self,"_fnord")) status = $lt_dlneed_uscore;
       /* dlclose (self); */
     }
-  else
-    puts (dlerror ());
 
     exit (status);
 }
@@ -8756,7 +8504,7 @@ EOF
     case x$lt_status in
       x$lt_dlno_uscore) lt_cv_dlopen_self_static=yes ;;
       x$lt_dlneed_uscore) lt_cv_dlopen_self_static=yes ;;
-      x$lt_dlunknown|x*) lt_cv_dlopen_self_static=no ;;
+      x$lt_unknown|x*) lt_cv_dlopen_self_static=no ;;
     esac
   else :
     # compilation failed
@@ -8789,7 +8537,7 @@ echo "${ECHO_T}$lt_cv_dlopen_self_static" >&6
 fi
 
 
-# Report which library types will actually be built
+# Report which librarie types wil actually be built
 echo "$as_me:$LINENO: checking if libtool supports shared libraries" >&5
 echo $ECHO_N "checking if libtool supports shared libraries... $ECHO_C" >&6
 echo "$as_me:$LINENO: result: $can_build_shared" >&5
@@ -8839,7 +8587,7 @@ if test -f "$ltmain"; then
   # Now quote all the things that may contain metacharacters while being
   # careful not to overquote the AC_SUBSTed values.  We take copies of the
   # variables and quote the copies for generation of the libtool script.
-  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC LTCFLAGS NM \
+  for var in echo old_CC old_CFLAGS AR AR_FLAGS EGREP RANLIB LN_S LTCC NM \
     SED SHELL STRIP \
     libname_spec library_names_spec soname_spec extract_expsyms_cmds \
     old_striplib striplib file_magic_cmd finish_cmds finish_eval \
@@ -9004,9 +8752,6 @@ AR_FLAGS=$lt_AR_FLAGS
 
 # A C compiler.
 LTCC=$lt_LTCC
-
-# LTCC compiler flags.
-LTCFLAGS=$lt_LTCFLAGS
 
 # A language-specific compiler.
 CC=$lt_compiler
@@ -9996,11 +9741,11 @@ if test -n "$export_dynamic"; then
 fi
 
 
+  succeeded=no
 
-if test "x$ac_cv_env_PKG_CONFIG_set" != "xset"; then
-	if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "${ac_tool_prefix}pkg-config", so it can be a program name with args.
-set dummy ${ac_tool_prefix}pkg-config; ac_word=$2
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
 echo "$as_me:$LINENO: checking for $ac_word" >&5
 echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
 if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
@@ -10025,6 +9770,7 @@ do
 done
 done
 
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
   ;;
 esac
 fi
@@ -10038,179 +9784,60 @@ else
 echo "${ECHO_T}no" >&6
 fi
 
-fi
-if test -z "$ac_cv_path_PKG_CONFIG"; then
-  ac_pt_PKG_CONFIG=$PKG_CONFIG
-  # Extract the first word of "pkg-config", so it can be a program name with args.
-set dummy pkg-config; ac_word=$2
-echo "$as_me:$LINENO: checking for $ac_word" >&5
-echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
-if test "${ac_cv_path_ac_pt_PKG_CONFIG+set}" = set; then
-  echo $ECHO_N "(cached) $ECHO_C" >&6
-else
-  case $ac_pt_PKG_CONFIG in
-  [\\/]* | ?:[\\/]*)
-  ac_cv_path_ac_pt_PKG_CONFIG="$ac_pt_PKG_CONFIG" # Let the user override the test with a path.
-  ;;
-  *)
-  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-  for ac_exec_ext in '' $ac_executable_extensions; do
-  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_path_ac_pt_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
-    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
   fi
-done
-done
 
-  ;;
-esac
-fi
-ac_pt_PKG_CONFIG=$ac_cv_path_ac_pt_PKG_CONFIG
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for pygobject-2.0 >= 2.12.1" >&5
+echo $ECHO_N "checking for pygobject-2.0 >= 2.12.1... $ECHO_C" >&6
 
-if test -n "$ac_pt_PKG_CONFIG"; then
-  echo "$as_me:$LINENO: result: $ac_pt_PKG_CONFIG" >&5
-echo "${ECHO_T}$ac_pt_PKG_CONFIG" >&6
-else
-  echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-fi
-
-  PKG_CONFIG=$ac_pt_PKG_CONFIG
-else
-  PKG_CONFIG="$ac_cv_path_PKG_CONFIG"
-fi
-
-fi
-if test -n "$PKG_CONFIG"; then
-	_pkg_min_version=0.9.0
-	echo "$as_me:$LINENO: checking pkg-config is at least version $_pkg_min_version" >&5
-echo $ECHO_N "checking pkg-config is at least version $_pkg_min_version... $ECHO_C" >&6
-	if $PKG_CONFIG --atleast-pkgconfig-version $_pkg_min_version; then
-		echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "pygobject-2.0 >= 2.12.1" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	else
-		echo "$as_me:$LINENO: result: no" >&5
-echo "${ECHO_T}no" >&6
-		PKG_CONFIG=""
-	fi
+            succeeded=yes
 
-fi
+            echo "$as_me:$LINENO: checking PYGOBJECT_CFLAGS" >&5
+echo $ECHO_N "checking PYGOBJECT_CFLAGS... $ECHO_C" >&6
+            PYGOBJECT_CFLAGS=`$PKG_CONFIG --cflags "pygobject-2.0 >= 2.12.1"`
+            echo "$as_me:$LINENO: result: $PYGOBJECT_CFLAGS" >&5
+echo "${ECHO_T}$PYGOBJECT_CFLAGS" >&6
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for PYGOBJECT" >&5
-echo $ECHO_N "checking for PYGOBJECT... $ECHO_C" >&6
-
-if test -n "$PKG_CONFIG"; then
-    if test -n "$PYGOBJECT_CFLAGS"; then
-        pkg_cv_PYGOBJECT_CFLAGS="$PYGOBJECT_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"pygobject-2.0 >= 2.12.1\"") >&5
-  ($PKG_CONFIG --exists --print-errors "pygobject-2.0 >= 2.12.1") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_PYGOBJECT_CFLAGS=`$PKG_CONFIG --cflags "pygobject-2.0 >= 2.12.1" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$PYGOBJECT_LIBS"; then
-        pkg_cv_PYGOBJECT_LIBS="$PYGOBJECT_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"pygobject-2.0 >= 2.12.1\"") >&5
-  ($PKG_CONFIG --exists --print-errors "pygobject-2.0 >= 2.12.1") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_PYGOBJECT_LIBS=`$PKG_CONFIG --libs "pygobject-2.0 >= 2.12.1" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-
-
-
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        PYGOBJECT_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "pygobject-2.0 >= 2.12.1"`
+            echo "$as_me:$LINENO: checking PYGOBJECT_LIBS" >&5
+echo $ECHO_N "checking PYGOBJECT_LIBS... $ECHO_C" >&6
+            PYGOBJECT_LIBS=`$PKG_CONFIG --libs "pygobject-2.0 >= 2.12.1"`
+            echo "$as_me:$LINENO: result: $PYGOBJECT_LIBS" >&5
+echo "${ECHO_T}$PYGOBJECT_LIBS" >&6
         else
-	        PYGOBJECT_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "pygobject-2.0 >= 2.12.1"`
+            PYGOBJECT_CFLAGS=""
+            PYGOBJECT_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            PYGOBJECT_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "pygobject-2.0 >= 2.12.1"`
+            echo $PYGOBJECT_PKG_ERRORS
         fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$PYGOBJECT_PKG_ERRORS" >&5
 
-	{ { echo "$as_me:$LINENO: error: Package requirements (pygobject-2.0 >= 2.12.1) were not met:
 
-$PYGOBJECT_PKG_ERRORS
 
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
 
-Alternatively, you may set the environment variables PYGOBJECT_CFLAGS
-and PYGOBJECT_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-" >&5
-echo "$as_me: error: Package requirements (pygobject-2.0 >= 2.12.1) were not met:
-
-$PYGOBJECT_PKG_ERRORS
-
-Consider adjusting the PKG_CONFIG_PATH environment variable if you
-installed software in a non-standard prefix.
-
-Alternatively, you may set the environment variables PYGOBJECT_CFLAGS
-and PYGOBJECT_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-" >&2;}
+  if test $succeeded = yes; then
+     :
+  else
+     { { echo "$as_me:$LINENO: error: Library requirements (pygobject-2.0 >= 2.12.1) not met; consider adjusting the PKG_CONFIG_PATH environment variable if your libraries are in a nonstandard prefix so pkg-config can find them." >&5
+echo "$as_me: error: Library requirements (pygobject-2.0 >= 2.12.1) not met; consider adjusting the PKG_CONFIG_PATH environment variable if your libraries are in a nonstandard prefix so pkg-config can find them." >&2;}
    { (exit 1); exit 1; }; }
-elif test $pkg_failed = untried; then
-	{ { echo "$as_me:$LINENO: error: The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
+  fi
 
-Alternatively, you may set the environment variables PYGOBJECT_CFLAGS
-and PYGOBJECT_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
-See \`config.log' for more details." >&5
-echo "$as_me: error: The pkg-config script could not be found or is too old.  Make sure it
-is in your PATH or set the PKG_CONFIG environment variable to the full
-path to pkg-config.
-
-Alternatively, you may set the environment variables PYGOBJECT_CFLAGS
-and PYGOBJECT_LIBS to avoid the need to call pkg-config.
-See the pkg-config man page for more details.
-
-To get pkg-config, see <http://www.freedesktop.org/software/pkgconfig>.
-See \`config.log' for more details." >&2;}
-   { (exit 1); exit 1; }; }
-else
-	PYGOBJECT_CFLAGS=$pkg_cv_PYGOBJECT_CFLAGS
-	PYGOBJECT_LIBS=$pkg_cv_PYGOBJECT_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
-echo "${ECHO_T}yes" >&6
-	:
-fi
 
 PYGOBJECT_INCLUDEDIR=`$PKG_CONFIG --variable=pygtkincludedir pygobject-2.0`
 
@@ -10226,74 +9853,101 @@ PYGOBJECT_PYGDOCS="`$PKG_CONFIG --variable=pygdocs pygobject-2.0`"
 
 
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for ATK" >&5
-echo $ECHO_N "checking for ATK... $ECHO_C" >&6
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
 
 if test -n "$PKG_CONFIG"; then
-    if test -n "$ATK_CFLAGS"; then
-        pkg_cv_ATK_CFLAGS="$ATK_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"atk >= 1.8.1\"") >&5
-  ($PKG_CONFIG --exists --print-errors "atk >= 1.8.1") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_ATK_CFLAGS=`$PKG_CONFIG --cflags "atk >= 1.8.1" 2>/dev/null`
+  echo "$as_me:$LINENO: result: $PKG_CONFIG" >&5
+echo "${ECHO_T}$PKG_CONFIG" >&6
 else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$ATK_LIBS"; then
-        pkg_cv_ATK_LIBS="$ATK_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"atk >= 1.8.1\"") >&5
-  ($PKG_CONFIG --exists --print-errors "atk >= 1.8.1") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_ATK_LIBS=`$PKG_CONFIG --libs "atk >= 1.8.1" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 fi
 
+  fi
 
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for atk >= 1.8.1" >&5
+echo $ECHO_N "checking for atk >= 1.8.1... $ECHO_C" >&6
 
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        ATK_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "atk >= 1.8.1"`
-        else
-	        ATK_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "atk >= 1.8.1"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$ATK_PKG_ERRORS" >&5
-
-	have_atk=false
-elif test $pkg_failed = untried; then
-	have_atk=false
-else
-	ATK_CFLAGS=$pkg_cv_ATK_CFLAGS
-	ATK_LIBS=$pkg_cv_ATK_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "atk >= 1.8.1" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	have_atk=true
-fi
+            succeeded=yes
+
+            echo "$as_me:$LINENO: checking ATK_CFLAGS" >&5
+echo $ECHO_N "checking ATK_CFLAGS... $ECHO_C" >&6
+            ATK_CFLAGS=`$PKG_CONFIG --cflags "atk >= 1.8.1"`
+            echo "$as_me:$LINENO: result: $ATK_CFLAGS" >&5
+echo "${ECHO_T}$ATK_CFLAGS" >&6
+
+            echo "$as_me:$LINENO: checking ATK_LIBS" >&5
+echo $ECHO_N "checking ATK_LIBS... $ECHO_C" >&6
+            ATK_LIBS=`$PKG_CONFIG --libs "atk >= 1.8.1"`
+            echo "$as_me:$LINENO: result: $ATK_LIBS" >&5
+echo "${ECHO_T}$ATK_LIBS" >&6
+        else
+            ATK_CFLAGS=""
+            ATK_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            ATK_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "atk >= 1.8.1"`
+
+        fi
+
+
+
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+
+  if test $succeeded = yes; then
+     have_atk=true
+  else
+     have_atk=false
+  fi
+
 
 
 
@@ -10312,74 +9966,101 @@ fi
 
 
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for PANGO" >&5
-echo $ECHO_N "checking for PANGO... $ECHO_C" >&6
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
 
 if test -n "$PKG_CONFIG"; then
-    if test -n "$PANGO_CFLAGS"; then
-        pkg_cv_PANGO_CFLAGS="$PANGO_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"pango >= 1.8.1\"") >&5
-  ($PKG_CONFIG --exists --print-errors "pango >= 1.8.1") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_PANGO_CFLAGS=`$PKG_CONFIG --cflags "pango >= 1.8.1" 2>/dev/null`
+  echo "$as_me:$LINENO: result: $PKG_CONFIG" >&5
+echo "${ECHO_T}$PKG_CONFIG" >&6
 else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$PANGO_LIBS"; then
-        pkg_cv_PANGO_LIBS="$PANGO_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"pango >= 1.8.1\"") >&5
-  ($PKG_CONFIG --exists --print-errors "pango >= 1.8.1") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_PANGO_LIBS=`$PKG_CONFIG --libs "pango >= 1.8.1" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 fi
 
+  fi
 
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for pango >= 1.8.1" >&5
+echo $ECHO_N "checking for pango >= 1.8.1... $ECHO_C" >&6
 
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        PANGO_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "pango >= 1.8.1"`
-        else
-	        PANGO_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "pango >= 1.8.1"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$PANGO_PKG_ERRORS" >&5
-
-	have_pango=false
-elif test $pkg_failed = untried; then
-	have_pango=false
-else
-	PANGO_CFLAGS=$pkg_cv_PANGO_CFLAGS
-	PANGO_LIBS=$pkg_cv_PANGO_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "pango >= 1.8.1" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	have_pango=true
-fi
+            succeeded=yes
+
+            echo "$as_me:$LINENO: checking PANGO_CFLAGS" >&5
+echo $ECHO_N "checking PANGO_CFLAGS... $ECHO_C" >&6
+            PANGO_CFLAGS=`$PKG_CONFIG --cflags "pango >= 1.8.1"`
+            echo "$as_me:$LINENO: result: $PANGO_CFLAGS" >&5
+echo "${ECHO_T}$PANGO_CFLAGS" >&6
+
+            echo "$as_me:$LINENO: checking PANGO_LIBS" >&5
+echo $ECHO_N "checking PANGO_LIBS... $ECHO_C" >&6
+            PANGO_LIBS=`$PKG_CONFIG --libs "pango >= 1.8.1"`
+            echo "$as_me:$LINENO: result: $PANGO_LIBS" >&5
+echo "${ECHO_T}$PANGO_LIBS" >&6
+        else
+            PANGO_CFLAGS=""
+            PANGO_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            PANGO_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "pango >= 1.8.1"`
+
+        fi
+
+
+
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+
+  if test $succeeded = yes; then
+     have_pango=true
+  else
+     have_pango=false
+  fi
+
 
 
 
@@ -10434,74 +10115,101 @@ PYGTK_CODEGEN_DEFINES=""
 
 
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for GTK" >&5
-echo $ECHO_N "checking for GTK... $ECHO_C" >&6
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
 
 if test -n "$PKG_CONFIG"; then
-    if test -n "$GTK_CFLAGS"; then
-        pkg_cv_GTK_CFLAGS="$GTK_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.6.10\"") >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.6.10") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.6.10" 2>/dev/null`
+  echo "$as_me:$LINENO: result: $PKG_CONFIG" >&5
+echo "${ECHO_T}$PKG_CONFIG" >&6
 else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$GTK_LIBS"; then
-        pkg_cv_GTK_LIBS="$GTK_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.6.10\"") >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.6.10") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_GTK_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.6.10" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 fi
 
+  fi
 
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for gtk+-2.0 >= 2.6.10" >&5
+echo $ECHO_N "checking for gtk+-2.0 >= 2.6.10... $ECHO_C" >&6
 
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        GTK_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "gtk+-2.0 >= 2.6.10"`
-        else
-	        GTK_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "gtk+-2.0 >= 2.6.10"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$GTK_PKG_ERRORS" >&5
-
-	HAVE_GTK="no"
-elif test $pkg_failed = untried; then
-	HAVE_GTK="no"
-else
-	GTK_CFLAGS=$pkg_cv_GTK_CFLAGS
-	GTK_LIBS=$pkg_cv_GTK_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "gtk+-2.0 >= 2.6.10" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	HAVE_GTK="yes"
-fi
+            succeeded=yes
+
+            echo "$as_me:$LINENO: checking GTK_CFLAGS" >&5
+echo $ECHO_N "checking GTK_CFLAGS... $ECHO_C" >&6
+            GTK_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.6.10"`
+            echo "$as_me:$LINENO: result: $GTK_CFLAGS" >&5
+echo "${ECHO_T}$GTK_CFLAGS" >&6
+
+            echo "$as_me:$LINENO: checking GTK_LIBS" >&5
+echo $ECHO_N "checking GTK_LIBS... $ECHO_C" >&6
+            GTK_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.6.10"`
+            echo "$as_me:$LINENO: result: $GTK_LIBS" >&5
+echo "${ECHO_T}$GTK_LIBS" >&6
+        else
+            GTK_CFLAGS=""
+            GTK_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            GTK_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "gtk+-2.0 >= 2.6.10"`
+
+        fi
+
+
+
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+
+  if test $succeeded = yes; then
+     HAVE_GTK="yes"
+  else
+     HAVE_GTK="no"
+  fi
+
 if test "x$HAVE_GTK" = "xyes"; then
 	have_gtk=true
 else
@@ -10527,74 +10235,101 @@ if test -n "$export_dynamic"; then
 fi
 
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for GTK210" >&5
-echo $ECHO_N "checking for GTK210... $ECHO_C" >&6
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
 
 if test -n "$PKG_CONFIG"; then
-    if test -n "$GTK210_CFLAGS"; then
-        pkg_cv_GTK210_CFLAGS="$GTK210_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.10.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.10.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_GTK210_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.10.0" 2>/dev/null`
+  echo "$as_me:$LINENO: result: $PKG_CONFIG" >&5
+echo "${ECHO_T}$PKG_CONFIG" >&6
 else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$GTK210_LIBS"; then
-        pkg_cv_GTK210_LIBS="$GTK210_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"gtk+-2.0 >= 2.10.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-2.0 >= 2.10.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_GTK210_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.10.0" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 fi
 
+  fi
 
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for gtk+-2.0 >= 2.10.0" >&5
+echo $ECHO_N "checking for gtk+-2.0 >= 2.10.0... $ECHO_C" >&6
 
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        GTK210_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "gtk+-2.0 >= 2.10.0"`
-        else
-	        GTK210_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "gtk+-2.0 >= 2.10.0"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$GTK210_PKG_ERRORS" >&5
-
-	HAVE_GTK_210="no"
-elif test $pkg_failed = untried; then
-	HAVE_GTK_210="no"
-else
-	GTK210_CFLAGS=$pkg_cv_GTK210_CFLAGS
-	GTK210_LIBS=$pkg_cv_GTK210_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "gtk+-2.0 >= 2.10.0" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	HAVE_GTK_210="yes"
-fi
+            succeeded=yes
+
+            echo "$as_me:$LINENO: checking GTK210_CFLAGS" >&5
+echo $ECHO_N "checking GTK210_CFLAGS... $ECHO_C" >&6
+            GTK210_CFLAGS=`$PKG_CONFIG --cflags "gtk+-2.0 >= 2.10.0"`
+            echo "$as_me:$LINENO: result: $GTK210_CFLAGS" >&5
+echo "${ECHO_T}$GTK210_CFLAGS" >&6
+
+            echo "$as_me:$LINENO: checking GTK210_LIBS" >&5
+echo $ECHO_N "checking GTK210_LIBS... $ECHO_C" >&6
+            GTK210_LIBS=`$PKG_CONFIG --libs "gtk+-2.0 >= 2.10.0"`
+            echo "$as_me:$LINENO: result: $GTK210_LIBS" >&5
+echo "${ECHO_T}$GTK210_LIBS" >&6
+        else
+            GTK210_CFLAGS=""
+            GTK210_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            GTK210_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "gtk+-2.0 >= 2.10.0"`
+
+        fi
+
+
+
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+
+  if test $succeeded = yes; then
+     HAVE_GTK_210="yes"
+  else
+     HAVE_GTK_210="no"
+  fi
+
 if test "x$HAVE_GTK_210" = "xyes"; then
 	gtk_version="2.10"
 	have_gtk_210=true
@@ -10624,74 +10359,101 @@ _ACEOF
 
 
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for LIBGLADE" >&5
-echo $ECHO_N "checking for LIBGLADE... $ECHO_C" >&6
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
 
 if test -n "$PKG_CONFIG"; then
-    if test -n "$LIBGLADE_CFLAGS"; then
-        pkg_cv_LIBGLADE_CFLAGS="$LIBGLADE_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"libglade-2.0 >= 2.4.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "libglade-2.0 >= 2.4.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_LIBGLADE_CFLAGS=`$PKG_CONFIG --cflags "libglade-2.0 >= 2.4.0" 2>/dev/null`
+  echo "$as_me:$LINENO: result: $PKG_CONFIG" >&5
+echo "${ECHO_T}$PKG_CONFIG" >&6
 else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$LIBGLADE_LIBS"; then
-        pkg_cv_LIBGLADE_LIBS="$LIBGLADE_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"libglade-2.0 >= 2.4.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "libglade-2.0 >= 2.4.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_LIBGLADE_LIBS=`$PKG_CONFIG --libs "libglade-2.0 >= 2.4.0" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 fi
 
+  fi
 
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for libglade-2.0 >= 2.4.0" >&5
+echo $ECHO_N "checking for libglade-2.0 >= 2.4.0... $ECHO_C" >&6
 
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        LIBGLADE_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "libglade-2.0 >= 2.4.0"`
-        else
-	        LIBGLADE_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "libglade-2.0 >= 2.4.0"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$LIBGLADE_PKG_ERRORS" >&5
-
-	have_libglade=false
-elif test $pkg_failed = untried; then
-	have_libglade=false
-else
-	LIBGLADE_CFLAGS=$pkg_cv_LIBGLADE_CFLAGS
-	LIBGLADE_LIBS=$pkg_cv_LIBGLADE_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "libglade-2.0 >= 2.4.0" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	have_libglade=true
-fi
+            succeeded=yes
+
+            echo "$as_me:$LINENO: checking LIBGLADE_CFLAGS" >&5
+echo $ECHO_N "checking LIBGLADE_CFLAGS... $ECHO_C" >&6
+            LIBGLADE_CFLAGS=`$PKG_CONFIG --cflags "libglade-2.0 >= 2.4.0"`
+            echo "$as_me:$LINENO: result: $LIBGLADE_CFLAGS" >&5
+echo "${ECHO_T}$LIBGLADE_CFLAGS" >&6
+
+            echo "$as_me:$LINENO: checking LIBGLADE_LIBS" >&5
+echo $ECHO_N "checking LIBGLADE_LIBS... $ECHO_C" >&6
+            LIBGLADE_LIBS=`$PKG_CONFIG --libs "libglade-2.0 >= 2.4.0"`
+            echo "$as_me:$LINENO: result: $LIBGLADE_LIBS" >&5
+echo "${ECHO_T}$LIBGLADE_LIBS" >&6
+        else
+            LIBGLADE_CFLAGS=""
+            LIBGLADE_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            LIBGLADE_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "libglade-2.0 >= 2.4.0"`
+
+        fi
+
+
+
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+
+  if test $succeeded = yes; then
+     have_libglade=true
+  else
+     have_libglade=false
+  fi
+
 
 
 
@@ -10711,74 +10473,101 @@ fi
 
 
 
-pkg_failed=no
-echo "$as_me:$LINENO: checking for GTKUNIXPRINT" >&5
-echo $ECHO_N "checking for GTKUNIXPRINT... $ECHO_C" >&6
+  succeeded=no
+
+  if test -z "$PKG_CONFIG"; then
+    # Extract the first word of "pkg-config", so it can be a program name with args.
+set dummy pkg-config; ac_word=$2
+echo "$as_me:$LINENO: checking for $ac_word" >&5
+echo $ECHO_N "checking for $ac_word... $ECHO_C" >&6
+if test "${ac_cv_path_PKG_CONFIG+set}" = set; then
+  echo $ECHO_N "(cached) $ECHO_C" >&6
+else
+  case $PKG_CONFIG in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_PKG_CONFIG="$PKG_CONFIG" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+  for ac_exec_ext in '' $ac_executable_extensions; do
+  if $as_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_PKG_CONFIG="$as_dir/$ac_word$ac_exec_ext"
+    echo "$as_me:$LINENO: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+done
+
+  test -z "$ac_cv_path_PKG_CONFIG" && ac_cv_path_PKG_CONFIG="no"
+  ;;
+esac
+fi
+PKG_CONFIG=$ac_cv_path_PKG_CONFIG
 
 if test -n "$PKG_CONFIG"; then
-    if test -n "$GTKUNIXPRINT_CFLAGS"; then
-        pkg_cv_GTKUNIXPRINT_CFLAGS="$GTKUNIXPRINT_CFLAGS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"gtk+-unix-print-2.0 >= 2.9.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-unix-print-2.0 >= 2.9.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_GTKUNIXPRINT_CFLAGS=`$PKG_CONFIG --cflags "gtk+-unix-print-2.0 >= 2.9.0" 2>/dev/null`
+  echo "$as_me:$LINENO: result: $PKG_CONFIG" >&5
+echo "${ECHO_T}$PKG_CONFIG" >&6
 else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
-fi
-if test -n "$PKG_CONFIG"; then
-    if test -n "$GTKUNIXPRINT_LIBS"; then
-        pkg_cv_GTKUNIXPRINT_LIBS="$GTKUNIXPRINT_LIBS"
-    else
-        if test -n "$PKG_CONFIG" && \
-    { (echo "$as_me:$LINENO: \$PKG_CONFIG --exists --print-errors \"gtk+-unix-print-2.0 >= 2.9.0\"") >&5
-  ($PKG_CONFIG --exists --print-errors "gtk+-unix-print-2.0 >= 2.9.0") 2>&5
-  ac_status=$?
-  echo "$as_me:$LINENO: \$? = $ac_status" >&5
-  (exit $ac_status); }; then
-  pkg_cv_GTKUNIXPRINT_LIBS=`$PKG_CONFIG --libs "gtk+-unix-print-2.0 >= 2.9.0" 2>/dev/null`
-else
-  pkg_failed=yes
-fi
-    fi
-else
-	pkg_failed=untried
+  echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6
 fi
 
+  fi
 
+  if test "$PKG_CONFIG" = "no" ; then
+     echo "*** The pkg-config script could not be found. Make sure it is"
+     echo "*** in your path, or set the PKG_CONFIG environment variable"
+     echo "*** to the full path to pkg-config."
+     echo "*** Or see http://www.freedesktop.org/software/pkgconfig to get pkg-config."
+  else
+     PKG_CONFIG_MIN_VERSION=0.9.0
+     if $PKG_CONFIG --atleast-pkgconfig-version $PKG_CONFIG_MIN_VERSION; then
+        echo "$as_me:$LINENO: checking for gtk+-unix-print-2.0 >= 2.9.0" >&5
+echo $ECHO_N "checking for gtk+-unix-print-2.0 >= 2.9.0... $ECHO_C" >&6
 
-if test $pkg_failed = yes; then
-
-if $PKG_CONFIG --atleast-pkgconfig-version 0.20; then
-        _pkg_short_errors_supported=yes
-else
-        _pkg_short_errors_supported=no
-fi
-        if test $_pkg_short_errors_supported = yes; then
-	        GTKUNIXPRINT_PKG_ERRORS=`$PKG_CONFIG --short-errors --errors-to-stdout --print-errors "gtk+-unix-print-2.0 >= 2.9.0"`
-        else
-	        GTKUNIXPRINT_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "gtk+-unix-print-2.0 >= 2.9.0"`
-        fi
-	# Put the nasty error message in config.log where it belongs
-	echo "$GTKUNIXPRINT_PKG_ERRORS" >&5
-
-	have_gtkunixprint=false
-elif test $pkg_failed = untried; then
-	have_gtkunixprint=false
-else
-	GTKUNIXPRINT_CFLAGS=$pkg_cv_GTKUNIXPRINT_CFLAGS
-	GTKUNIXPRINT_LIBS=$pkg_cv_GTKUNIXPRINT_LIBS
-        echo "$as_me:$LINENO: result: yes" >&5
+        if $PKG_CONFIG --exists "gtk+-unix-print-2.0 >= 2.9.0" ; then
+            echo "$as_me:$LINENO: result: yes" >&5
 echo "${ECHO_T}yes" >&6
-	have_gtkunixprint=true
-fi
+            succeeded=yes
+
+            echo "$as_me:$LINENO: checking GTKUNIXPRINT_CFLAGS" >&5
+echo $ECHO_N "checking GTKUNIXPRINT_CFLAGS... $ECHO_C" >&6
+            GTKUNIXPRINT_CFLAGS=`$PKG_CONFIG --cflags "gtk+-unix-print-2.0 >= 2.9.0"`
+            echo "$as_me:$LINENO: result: $GTKUNIXPRINT_CFLAGS" >&5
+echo "${ECHO_T}$GTKUNIXPRINT_CFLAGS" >&6
+
+            echo "$as_me:$LINENO: checking GTKUNIXPRINT_LIBS" >&5
+echo $ECHO_N "checking GTKUNIXPRINT_LIBS... $ECHO_C" >&6
+            GTKUNIXPRINT_LIBS=`$PKG_CONFIG --libs "gtk+-unix-print-2.0 >= 2.9.0"`
+            echo "$as_me:$LINENO: result: $GTKUNIXPRINT_LIBS" >&5
+echo "${ECHO_T}$GTKUNIXPRINT_LIBS" >&6
+        else
+            GTKUNIXPRINT_CFLAGS=""
+            GTKUNIXPRINT_LIBS=""
+            ## If we have a custom action on failure, don't print errors, but
+            ## do set a variable so people can do so.
+            GTKUNIXPRINT_PKG_ERRORS=`$PKG_CONFIG --errors-to-stdout --print-errors "gtk+-unix-print-2.0 >= 2.9.0"`
+
+        fi
+
+
+
+     else
+        echo "*** Your version of pkg-config is too old. You need version $PKG_CONFIG_MIN_VERSION or newer."
+        echo "*** See http://www.freedesktop.org/software/pkgconfig"
+     fi
+  fi
+
+  if test $succeeded = yes; then
+     have_gtkunixprint=true
+  else
+     have_gtkunixprint=false
+  fi
+
 
 
 
@@ -11693,7 +11482,6 @@ s,@GLIB_LIBS@,$GLIB_LIBS,;t t
 s,@GLIB_GENMARSHAL@,$GLIB_GENMARSHAL,;t t
 s,@GOBJECT_QUERY@,$GOBJECT_QUERY,;t t
 s,@GLIB_MKENUMS@,$GLIB_MKENUMS,;t t
-s,@ac_pt_PKG_CONFIG@,$ac_pt_PKG_CONFIG,;t t
 s,@PYGOBJECT_CFLAGS@,$PYGOBJECT_CFLAGS,;t t
 s,@PYGOBJECT_LIBS@,$PYGOBJECT_LIBS,;t t
 s,@PYGOBJECT_INCLUDEDIR@,$PYGOBJECT_INCLUDEDIR,;t t
