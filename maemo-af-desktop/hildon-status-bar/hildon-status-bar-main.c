@@ -1299,7 +1299,7 @@ HildonStatusBarItem *add_item( StatusBar *panel,
     if (!already_loaded) 
     {	    
       /* Catch the event of plugin destroying itself */
-      g_signal_connect( G_OBJECT( item ), "destroy", 
+      g_signal_connect_after( G_OBJECT( item ), "destroy", 
 		        G_CALLBACK( destroy_item ), panel );
       /* Catch the event of plugin updating self conditional status */
       g_signal_connect( G_OBJECT( item ), "hildon_status_bar_update_conditional",
@@ -1474,9 +1474,7 @@ void destroy_item( GtkObject *object, gpointer user_data )
     for( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i ) {
 	    
         if( panel->items[i] == item ) {	
-#if 0
-            gtk_widget_destroy( GTK_WIDGET(item) );
-#endif
+            gtk_widget_destroy (GTK_WIDGET (item));
             panel->items[i] = NULL;
             panel->item_num--; 
             arrange_items( panel, i );
