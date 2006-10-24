@@ -1,5 +1,13 @@
 2006-10-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* template-tools/Makefile.am:
+	* template-tools/regenerator.c:
+	* template-tools/regenerator.h: Adding a new tool - regenerator. It
+	regenerates the original template image from template layout + sliced
+	image files (ie. existing theme).
+
+2006-10-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* template-tools/colourizer.c:
 	* template-tools/common.c:
 	* template-tools/slicer.c: Moving to standard g-error reporting.
