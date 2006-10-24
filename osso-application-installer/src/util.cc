@@ -1548,7 +1548,7 @@ b64decode (const unsigned char *str, GdkPixbufLoader *loader)
 	      break;
             }
 	  dlast = d;
-	  if (loader_ptr > loader_buf + loader_size)
+	  if (loader_ptr == loader_buf + loader_size)
 	    {
 	      gdk_pixbuf_loader_write (loader, loader_buf, loader_size,
 				       &error);
@@ -1558,6 +1558,8 @@ b64decode (const unsigned char *str, GdkPixbufLoader *loader)
 		  g_error_free (error);
 		  return;
 		}
+
+	      loader_ptr = loader_buf;
 	    }
         }
     }
@@ -1593,7 +1595,8 @@ pixbuf_from_base64 (const char *base64)
     }
   
   GdkPixbuf *pixbuf = gdk_pixbuf_loader_get_pixbuf (loader);
-  g_object_ref (pixbuf);
+  if (pixbuf)
+    g_object_ref (pixbuf);
   g_object_unref (loader);
   return pixbuf;
 }
