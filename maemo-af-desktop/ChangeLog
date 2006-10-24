@@ -1,5 +1,13 @@
 2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
 
+	* hildon-navigator/hildon-navigator-panel.c: Free the
+	gtk_container_get_children's list.
+	* hildon-status-bar/hildon-status-bar-main.c:
+	- Free the library & category if we can't allocate the plugin.
+	- (arrange_items) Code cleanup
+
+2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.c: Reverted
  	behavior on event DBus signal when destroying plugin itself.
 

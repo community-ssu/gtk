@@ -416,11 +416,13 @@ hn_panel_exist_plugin (HildonNavigatorPanel *panel, gchar *name)
       if (g_str_equal 
            (name, hildon_navigator_item_get_name (HILDON_NAVIGATOR_ITEM (l->data))))
       {
+	g_list_free (loaded_plugins);
         return TRUE;
       }
     }
   }
 
+  g_list_free (loaded_plugins);
   return FALSE;
 }
 
@@ -819,6 +821,8 @@ hn_panel_get_plugins (HildonNavigatorPanel *panel)
     }
   }
 
+  g_list_free (all_childrens);
+  
   return list;
 }
 
@@ -834,6 +838,8 @@ hn_panel_peek_plugins (HildonNavigatorPanel *panel)
   for (l=all_childrens ; l != NULL ; l=l->next)
     if (HILDON_IS_NAVIGATOR_ITEM (l->data))
       list = g_list_insert (list,l->data,-1);
+
+  g_list_free (all_childrens);
 
   return list;
 }
@@ -852,6 +858,8 @@ hn_panel_get_plugin_by_position (HildonNavigatorPanel *panel, guint position)
     if (HILDON_IS_NAVIGATOR_ITEM (l->data))
       if (hildon_navigator_item_get_position (HILDON_NAVIGATOR_ITEM (l->data)) == position)
 	item = HILDON_NAVIGATOR_ITEM (l->data);
+
+  g_list_free (all_childrens);
 
   return item;
 }

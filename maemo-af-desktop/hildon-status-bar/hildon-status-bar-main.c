@@ -650,11 +650,15 @@ GList* get_plugins_from_file( const gchar *file )
 
 	/* create new Status Bar plugin */
  	plugin = g_new0(StatusBarPlugin, 1);
-        if ( !plugin ) {   
-            ULOG_ERR("FAILURE: Memory exhausted when loading plugin structure");
+        if ( !plugin ) 
+	{   
+            ULOG_ERR ("FAILURE: Memory exhausted when loading plugin structure");
 	    g_strfreev (groups);
 	    g_key_file_free (keyfile);
 	    g_list_free (list);
+	    g_free (library);
+	    g_free (category);
+
             return NULL;
 	}
 	
@@ -1366,93 +1370,88 @@ void arrange_items( StatusBar *panel, gint start )
     prev_place = HSB_MAX_NO_OF_ITEMS;
 
     /* Go through all dynamic items */
-    for ( i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i ) {
+    for (i = 0; i < HSB_MAX_NO_OF_ITEMS; ++i)
+    {
+       if (!panel->items[i]) continue;
+       
+       if (!hildon_status_bar_item_get_conditional (HILDON_STATUS_BAR_ITEM (panel->items[i]))) 
+       {
+         continue;	
+       }
+       
+       if (i < start-1) /* We place the items normally until get here */
+       {
+         place_here++; 
+         continue;
+       }
+       else g_debug ("Start: %d Place here: %d",start,place_here);
 
-        if ( !panel->items[i] ) {	
-            continue;
-        }
+       if (place_here > HSB_VISIBLE_ITEMS_IN_ROW)
+         break;
 
+       /* Remove arrow if exists */
+       if (gtk_widget_get_parent (panel->arrow_button)) 
+         gtk_container_remove( GTK_CONTAINER(panel->fixed), panel->arrow_button);
 
-        if ( !hildon_status_bar_item_get_conditional(
-                    HILDON_STATUS_BAR_ITEM(panel->items[i])) ) {
-            continue;	
-        }
-        if ( i < start-1 ) {	
-            place_here++;
-            continue;
-        }
+       /* If the extension was opened, remove item from it */	
+       if (panel->popup_fixed && 
+	   gtk_widget_get_parent (panel->items[i]) == panel->popup_fixed )
+       {
+         gtk_container_remove (GTK_CONTAINER(panel->popup_fixed), panel->items[i]);
+       }
 
-        if ( place_here > HSB_VISIBLE_ITEMS_IN_ROW )
-            break;
+       /* Save last shown items place */
+       if (place_here == HSB_VISIBLE_ITEMS_IN_ROW - 1)
+         prev_place = i;
 
-        /* Remove arrow if exists */
-        if ( gtk_widget_get_parent( panel->arrow_button ) ) {	    
-            gtk_container_remove( GTK_CONTAINER(panel->fixed), 
-                    panel->arrow_button );
-        }
-
-        /* If the extension was opened, remove item from it */	
-        if ( panel->popup_fixed && gtk_widget_get_parent
-                (panel->items[i]) == panel->popup_fixed ) {
-
-            gtk_container_remove( GTK_CONTAINER(panel->popup_fixed),
-                    panel->items[i] );
-        }
-
-        /* Save last shown items place */
-        if ( place_here == HSB_VISIBLE_ITEMS_IN_ROW - 1 ) {
-            prev_place = i;
-        }
-
-        /* If arrow button is needed add it */
-        if ( place_here == HSB_VISIBLE_ITEMS_IN_ROW ) {
-            if ( gtk_widget_get_parent
-                    ( panel->items[prev_place] ) == panel->fixed ) { 
-                gtk_container_remove( GTK_CONTAINER(panel->fixed), 
-                        panel->items[prev_place] ); 
-            }
-            if ( gtk_widget_get_parent
-                    ( panel->items[i] ) == panel->fixed ) {
-                gtk_container_remove( GTK_CONTAINER(panel->fixed), 
-                        panel->items[i] );
-            }
-
-	    if (sb_is_sensitive)
-      	      gtk_widget_set_sensitive (panel->arrow_button,TRUE);
-    	    else
-	      gtk_widget_set_sensitive (panel->arrow_button,FALSE);
+       /* If arrow button is needed add it */
+       if (place_here == HSB_VISIBLE_ITEMS_IN_ROW)
+       {
+         if ( gtk_widget_get_parent (panel->items[prev_place]) == panel->fixed)
+	   gtk_container_remove( GTK_CONTAINER(panel->fixed), panel->items[prev_place]); 
+         
+	 if ( gtk_widget_get_parent (panel->items[i]) == panel->fixed )
+	   gtk_container_remove( GTK_CONTAINER(panel->fixed), panel->items[i] );
+   
+         if (sb_is_sensitive)
+           gtk_widget_set_sensitive (panel->arrow_button,TRUE);
+         else
+           gtk_widget_set_sensitive (panel->arrow_button,FALSE);
 	    
-            gtk_fixed_put( GTK_FIXED( panel->fixed ), 
-                    panel->arrow_button, 
-                    panel->plugin_pos_x[place_here-1], 
-                    panel->plugin_pos_y[place_here-1] );
+         gtk_fixed_put (GTK_FIXED( panel->fixed ), 
+                        panel->arrow_button, 
+                        panel->plugin_pos_x[place_here-1], 
+                        panel->plugin_pos_y[place_here-1] );
 	
-            break;	     
-        }
+         break;	     
+       }
 
-        /* Add or move item */
-        if ( gtk_widget_get_parent( panel->items[i] ) == panel->fixed ) {
-            gtk_fixed_move( GTK_FIXED( panel->fixed ), 
-                    panel->items[i],
-                    panel->plugin_pos_x[place_here],
-                    panel->plugin_pos_y[place_here] ); 
-        } else if ( !gtk_widget_get_parent( panel->items[i] ) ) {
-            gtk_fixed_put( GTK_FIXED( panel->fixed ), 
-                       panel->items[i], 
-                       panel->plugin_pos_x[place_here],
-                       panel->plugin_pos_y[place_here] );
+       /* Add or move item */
+       if (gtk_widget_get_parent( panel->items[i] ) == panel->fixed )
+       {
+         gtk_fixed_move (GTK_FIXED (panel->fixed), 
+			 panel->items[i],
+			 panel->plugin_pos_x[place_here],
+                         panel->plugin_pos_y[place_here]); 
+       }
+       else 
+       if (!gtk_widget_get_parent (panel->items[i]))
+       {
+         gtk_fixed_put (GTK_FIXED( panel->fixed ), 
+                        panel->items[i], 
+                        panel->plugin_pos_x[place_here],
+                        panel->plugin_pos_y[place_here]);
 
-	    if (sb_is_sensitive)
-      	      gtk_widget_set_sensitive (GTK_WIDGET (panel->items[i]),TRUE);
-    	    else
-              gtk_widget_set_sensitive (GTK_WIDGET (panel->items[i]),FALSE);
-        }
+         if (sb_is_sensitive)
+      	   gtk_widget_set_sensitive (GTK_WIDGET (panel->items[i]),TRUE);
+    	 else
+           gtk_widget_set_sensitive (GTK_WIDGET (panel->items[i]),FALSE);
+       }
 
-        place_here++;
+       place_here++;
     }
 
     gtk_widget_show_all( panel->window );
-    
 }
 
 
