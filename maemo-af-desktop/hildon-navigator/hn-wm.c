@@ -1954,13 +1954,6 @@ hn_wm_compute_watched_window_hibernation_key (Window            xwin,
 }
 
 static void
-hn_wm_shutdown_cb (HNAppSwitcher *app_switcher,
-		   gpointer       user_data)
-{
-  hn_wm_shutdown_func ();
-}
-
-static void
 hn_wm_lowmem_cb (HNAppSwitcher *app_switcher,
 		 gboolean       is_on,
 		 gpointer       user_data)
@@ -2014,7 +2007,6 @@ hn_wm_init (HNAppSwitcher *as)
   application_switcher_set_lowmem_handler (as, &hn_wm_memory_lowmem_func);
   application_switcher_set_bgkill_handler (as, &hn_wm_memory_bgkill_func);
 #endif
-  g_signal_connect (as, "shutdown", G_CALLBACK (hn_wm_shutdown_cb), NULL);
   g_signal_connect (as, "lowmem",   G_CALLBACK (hn_wm_lowmem_cb),   NULL);
   g_signal_connect (as, "bgkill",   G_CALLBACK (hn_wm_bgkill_cb),   NULL);
 

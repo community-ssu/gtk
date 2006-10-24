@@ -72,7 +72,6 @@ struct _HNAppSwitcherClass
 		  	 HNEntryInfo   *entry_info);
   
   /* relay signals from the bus */
-  void (*shutdown) (HNAppSwitcher *app_switcher);
   void (*lowmem)   (HNAppSwitcher *app_switcher,
                     gboolean       is_active);
   void (*bgkill)   (HNAppSwitcher *app_switcher,

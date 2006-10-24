@@ -201,13 +201,7 @@ hn_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
   return 0; 
 }
 
- void 			/* NOTE: callback from app switcher */
-hn_wm_shutdown_func(void)
-{
-    hn_wm_memory_kill_all_watched(FALSE);
-}
-
- void                     /* NOTE: callback from app switcher */
+void                     /* NOTE: callback from app switcher */
 hn_wm_memory_bgkill_func(gboolean is_on) 
 {
   if (!config_do_bgkill) /* NOTE: var extern in hildon-navigator-main.h  */

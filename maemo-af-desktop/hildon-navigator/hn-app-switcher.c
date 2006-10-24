@@ -141,7 +141,6 @@ static const gchar *as_button_pressed_names[] = {
 /* hardware signals */
 #define HOME_LONG_PRESS "sig_home_key_pressed_long_ind"
 #define HOME_PRESS      "sig_home_key_pressed_ind"
-#define SHUTDOWN_IND    "shutdown_ind"
 
 /* lowmem signals */
 #define LOWMEM_ON_SIGNAL_INTERFACE  "com.nokia.ke_recv.lowmem_on"
@@ -232,7 +231,6 @@ enum
   REMOVE_INFO,
   CHANGED_INFO,
   CHANGED_STACK,
-  SHUTDOWN,
   LOWMEM,
   BGKILL,
 
@@ -292,10 +290,7 @@ static HNAppSwitcher *singleton = NULL;
 static guint app_switcher_signals[LAST_SIGNAL] = { 0 };
 
 
-/* MCE signals handler: listens to HOME and SHUTDOWN events; in case of
- * SHUTDOWN event, relays it through the corresponding signal of the
- * HNAppSwitcher widget.
- */
+/* MCE signals handler: listens to HOME events  */
 static DBusHandlerResult
 mce_handler (DBusConnection *conn,
              DBusMessage    *msg,
@@ -372,13 +367,6 @@ mce_handler (DBusConnection *conn,
             }
         }
 
-      return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
-  
-  if (strcmp (SHUTDOWN_IND, member) == 0)
-    {
-      g_signal_emit (app_switcher, app_switcher_signals[SHUTDOWN], 0);
-      
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
   
@@ -2185,15 +2173,6 @@ hn_app_switcher_class_init (HNAppSwitcherClass *klass)
 		  G_TYPE_NONE, 1,
 		  G_TYPE_POINTER);
   
-  app_switcher_signals[SHUTDOWN] =
-    g_signal_new ("shutdown",
-                  G_TYPE_FROM_CLASS (klass),
-                  G_SIGNAL_RUN_FIRST,
-                  G_STRUCT_OFFSET (HNAppSwitcherClass, shutdown),
-                  NULL, NULL,
-                  g_cclosure_marshal_VOID__VOID,
-                  G_TYPE_NONE, 0);
-
   app_switcher_signals[LOWMEM] =
     g_signal_new ("lowmem",
                   G_TYPE_FROM_CLASS (klass),
