@@ -1,0 +1,186 @@
+diff -pur gconf-dbus-2.6.4.15/gconf/gconf-database-dbus.c gconf-dbus-2.6.4.15.new/gconf/gconf-database-dbus.c
+--- gconf-dbus-2.6.4.15/gconf/gconf-database-dbus.c	2006-09-19 15:43:36.000000000 +0300
++++ gconf-dbus-2.6.4.15.new/gconf/gconf-database-dbus.c	2006-10-24 14:51:00.570776664 +0300
+@@ -74,6 +74,9 @@ static void           database_handle_lo
+ static void           database_handle_lookup_ext (DBusConnection  *conn,
+                                                   DBusMessage     *message,
+                                                   GConfDatabaseDBus *db);
++static void           database_handle_lookup_default (DBusConnection    *conn,
++						      DBusMessage       *message,
++						      GConfDatabaseDBus *db);
+ static void           database_handle_set        (DBusConnection  *conn,
+                                                   DBusMessage     *message,
+                                                   GConfDatabaseDBus *db);
+@@ -151,6 +154,11 @@ database_message_func (DBusConnection  *
+   }
+   else if (dbus_message_is_method_call (message,
+ 					GCONF_DBUS_DATABASE_INTERFACE,
++					GCONF_DBUS_DATABASE_LOOKUP_DEFAULT)) {
++    database_handle_lookup_default (connection, message, db);
++  }
++  else if (dbus_message_is_method_call (message,
++					GCONF_DBUS_DATABASE_INTERFACE,
+ 					GCONF_DBUS_DATABASE_SET)) {
+     database_handle_set (connection, message, db);
+   }
+@@ -370,6 +378,49 @@ database_handle_lookup_ext (DBusConnecti
+     gconf_value_free (value);
+ }
+ 
++static void 
++database_handle_lookup_default (DBusConnection    *conn,
++				DBusMessage       *message,
++				GConfDatabaseDBus *db)
++{
++  GConfValue *value;
++  DBusMessage *reply;
++  gchar *key;
++  gchar *locale;
++  GConfLocaleList *locales;
++  GError *gerror = NULL;
++  DBusMessageIter iter;
++  
++  if (!gconfd_dbus_get_message_args (conn, message,
++				     DBUS_TYPE_STRING, &key,
++				     DBUS_TYPE_STRING, &locale,
++				     DBUS_TYPE_INVALID))
++    return;
++
++  locales = gconfd_locale_cache_lookup (locale);
++
++  value = gconf_database_query_default_value (db->db, key, locales->list,
++					      NULL,
++					      &gerror);
++
++  if (gconfd_dbus_set_exception (conn, message, &gerror))
++    goto fail;
++  
++  reply = dbus_message_new_method_return (message);
++
++  dbus_message_iter_init_append (reply, &iter);
++
++  if (value)
++    gconf_dbus_utils_append_value (&iter, value);
++  
++  dbus_connection_send (conn, reply, NULL);
++  dbus_message_unref (reply);
++
++ fail:
++  if (value)
++    gconf_value_free (value);
++}
++
+ static void
+ database_handle_set (DBusConnection *conn,
+                      DBusMessage    *message,
+diff -pur gconf-dbus-2.6.4.15/gconf/gconf-dbus-utils.h gconf-dbus-2.6.4.15.new/gconf/gconf-dbus-utils.h
+--- gconf-dbus-2.6.4.15/gconf/gconf-dbus-utils.h	2005-11-23 13:17:35.000000000 +0200
++++ gconf-dbus-2.6.4.15.new/gconf/gconf-dbus-utils.h	2006-10-24 14:51:00.568776968 +0300
+@@ -38,6 +38,7 @@
+ 
+ #define GCONF_DBUS_DATABASE_LOOKUP          "Lookup"
+ #define GCONF_DBUS_DATABASE_LOOKUP_EXTENDED "LookupExtended" 
++#define GCONF_DBUS_DATABASE_LOOKUP_DEFAULT  "LookupDefault" 
+ #define GCONF_DBUS_DATABASE_SET             "Set"
+ #define GCONF_DBUS_DATABASE_UNSET           "UnSet"
+ #define GCONF_DBUS_DATABASE_RECURSIVE_UNSET "RecursiveUnset"
+diff -pur gconf-dbus-2.6.4.15/gconf/gconf-dbus.c gconf-dbus-2.6.4.15.new/gconf/gconf-dbus.c
+--- gconf-dbus-2.6.4.15/gconf/gconf-dbus.c	2006-04-11 18:31:45.000000000 +0300
++++ gconf-dbus-2.6.4.15.new/gconf/gconf-dbus.c	2006-10-24 14:51:00.568776968 +0300
+@@ -1205,9 +1205,93 @@ gconf_engine_get_default_from_schema (GC
+                                       const gchar* key,
+                                       GError** err)
+ {
+-  return gconf_engine_get_fuller (conf, key, NULL, 
+-				  TRUE, /* use_schema_default */
+-				  NULL, NULL, NULL, err);
++  GConfValue* val;
++  const gchar *db;
++  const gchar *locale;
++  DBusMessage *message, *reply;
++  DBusError error;
++  DBusMessageIter iter;
++  
++  g_return_val_if_fail(conf != NULL, NULL);
++  g_return_val_if_fail(key != NULL, NULL);
++  g_return_val_if_fail(err == NULL || *err == NULL, NULL);
++
++  CHECK_OWNER_USE (conf);
++  
++  if (!gconf_key_check (key, err))
++    return NULL;
++
++  if (gconf_engine_is_local(conf))
++    {
++      gchar** locale_list;
++
++      locale_list = gconf_split_locale(gconf_current_locale());
++      
++      val = gconf_sources_query_default_value(conf->local_sources,
++                                              key,
++                                              (const gchar**)locale_list,
++                                              NULL,
++                                              err);
++
++      if (locale_list != NULL)
++        g_strfreev(locale_list);
++      
++      return val;
++    }
++
++  g_assert (!gconf_engine_is_local (conf));
++
++  db = gconf_engine_get_database (conf, TRUE, err);
++
++  if (db == NULL)
++    {
++      g_return_val_if_fail(err == NULL || *err != NULL, NULL);
++      return NULL;
++    }
++
++  message = dbus_message_new_method_call (GCONF_DBUS_SERVICE,
++					  db,
++					  GCONF_DBUS_DATABASE_INTERFACE,
++					  GCONF_DBUS_DATABASE_LOOKUP_DEFAULT);
++
++  locale = gconf_current_locale();
++  
++  dbus_message_append_args (message,
++			    DBUS_TYPE_STRING, &key,
++			    DBUS_TYPE_STRING, &locale,
++			    DBUS_TYPE_INVALID);
++
++  dbus_error_init (&error);
++  reply = dbus_connection_send_with_reply_and_block (global_conn, message, -1, &error);
++  dbus_message_unref (message);
++
++  if (gconf_handle_dbus_exception (reply, &error, err))
++    return NULL;
++
++  dbus_message_iter_init (reply, &iter);
++
++  /* If there is no struct (entry) here, there is no value. */
++  if (dbus_message_iter_get_arg_type (&iter) != DBUS_TYPE_STRUCT)
++    {
++      dbus_message_unref (reply);
++      return NULL;
++    }
++  
++  val = gconf_dbus_utils_get_value (&iter);
++  
++  dbus_message_unref (reply);
++  
++  if (!val)
++    {
++      if (err)
++	g_set_error (err, GCONF_ERROR,
++		     GCONF_ERROR_FAILED,
++		     _("Couldn't get value"));
++      
++      return NULL;
++    }
++  
++  return val;
+ }
+ 
+ gboolean
