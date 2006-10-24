@@ -1,4 +1,4 @@
-osso-gnome-vfs2 (2.12.0.16-2osso2) unstable; urgency=low
+osso-gnome-vfs2 (2.12.0.16-2osso3) unstable; urgency=low
 
   * Fixes NB#44616: libftp.so is missing or the conf file is not updated
 
