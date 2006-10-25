@@ -4,6 +4,7 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * Compilation fixes for the case that LIBOSSO_DEBUG is defined.
   * Const keyword fixes from Murray Cumming <murrayc@murrayc.com>.
     Fixes: MB#795
+  * Enabled the muali filter and fixed a crash in it.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Oct 2006 14:47:08 +0300
 

@@ -29,10 +29,8 @@
 #include <assert.h>
 #include "muali.h"
 
-/*  Muali filter is disabled temporarily
 static DBusHandlerResult
 _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data);
-*/
 
 /* for internal use only
  * This function strdups application name and makes it
@@ -386,13 +384,11 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     }
     /* FIXME: there are two filters because semantics in the new
      * muali API are slightly different (stricter matching) */
-    /*
     if (!dbus_connection_add_filter(conn, _muali_filter, osso, NULL))
     {
         ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error4;
     }
-    */
     dprint("My base service is '%s'", dbus_bus_get_unique_name(conn));
 
     return conn;
@@ -426,6 +422,7 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
         osso->conn = NULL;
     }
     dbus_connection_remove_filter(conn, _msg_handler, osso);
+    dbus_connection_remove_filter(conn, _muali_filter, osso);
 #ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
 #endif
@@ -575,7 +572,6 @@ inline static int str_match(const char *a, const char *b)
     return 0;
 }
 
-#if 0
 /* filter function for muali API */
 static DBusHandlerResult
 _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
@@ -620,7 +616,8 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
 
             handler = list->data;
 
-            if (types_match(handler->data->event_type, msgtype) &&
+            if (handler->data != NULL &&
+                types_match(handler->data->event_type, msgtype) &&
                 str_match(handler->data->service,
                           dbus_message_get_sender(msg)) &&
                 str_match(handler->data->path,
@@ -653,7 +650,6 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
-#endif
 
 /************************************************************************/
 
