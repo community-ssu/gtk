@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.12.0.16-2osso4) unstable; urgency=low
+
+  * Fixes build, revert accidental commit of the 05, 17 and 21 patches
+
+ -- Richard Hult <richard@imendio.com>  Wed, 25 Oct 2006 14:26:22 +0200
+
 osso-gnome-vfs2 (2.12.0.16-2osso3) unstable; urgency=low
 
   * Fixes NB#44616: libftp.so is missing or the conf file is not updated
