@@ -1,3 +1,8 @@
+2006-10-25  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-applet.[ch]: Moved close button and
+	  resize handle Pixbuf to be class variables. Fixes: NB#45325
+
 2006-10-25  Moises Martinez <moises.martinzes@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: Changed again the extension

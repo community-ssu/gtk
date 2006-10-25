@@ -222,6 +222,8 @@ static void
 hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
 {
   GParamSpec *pspec;
+  GtkIconTheme              *icon_theme;
+  GError                    *error = NULL;
 
   /* Get convenience variables */
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (applet_class);
@@ -342,30 +344,59 @@ hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
                                    HILDON_HOME_APPLET_PROPERTY_MINIMUM_HEIGHT,
                                    pspec);
 
+  /* FIXME: Make these configurable, maybe from the theme */
+  icon_theme = gtk_icon_theme_get_default();
+  applet_class->close_button = gtk_icon_theme_load_icon (icon_theme,
+                                                  APPLET_CLOSE_BUTTON_ICON,
+                                                  APPLET_CLOSE_BUTTON_WIDTH,
+                                                  GTK_ICON_LOOKUP_NO_SVG,
+                                                  &error);
+  if (error)
+    {
+      g_warning ("Could not load close button icon: %s", error->message);
+      applet_class->close_button = NULL;
+      g_error_free (error);
+      error = NULL;
+    }
+  
+  applet_class->resize_handle = gtk_icon_theme_load_icon (icon_theme,
+                                                   APPLET_RESIZE_HANDLE_ICON,
+                                                   APPLET_RESIZE_HANDLE_WIDTH,
+                                                   GTK_ICON_LOOKUP_NO_SVG,
+                                                   &error);
+  if (error)
+    {
+      g_warning ("Could not load resize handle icon: %s", error->message);
+      applet_class->resize_handle = NULL;
+      g_error_free (error);
+      error = NULL;
+    }
 }
 
 static void
 hildon_home_applet_init (HildonHomeApplet * self)
 {
   HildonHomeAppletPriv      *priv;
-  GtkIconTheme              *icon_theme;
-  GError                    *error = NULL;
+  HildonHomeAppletClass     *klass;
+
+  klass = G_TYPE_INSTANCE_GET_CLASS ((self),
+                                     HILDON_TYPE_HOME_APPLET,
+                                     HildonHomeAppletClass);
   
   priv = HILDON_HOME_APPLET_GET_PRIVATE (self);
 
   priv->layout_mode = FALSE;
   
-  icon_theme = gtk_icon_theme_get_default();
-  priv->close_button = gtk_icon_theme_load_icon (icon_theme,
-                                                 APPLET_CLOSE_BUTTON_ICON,
-                                                 APPLET_CLOSE_BUTTON_WIDTH,
-                                                 GTK_ICON_LOOKUP_NO_SVG,
-                                                 &error);
-
-  if (error)
+  if (klass->close_button)
     {
-      g_warning ("Could not load close button icon: %s", error->message);
-      priv->close_button = NULL;
+      g_object_ref (klass->close_button);
+      priv->close_button = klass->close_button;
+    }
+
+  if (klass->resize_handle)
+    {
+      g_object_ref (klass->resize_handle);
+      priv->resize_handle = klass->resize_handle;
     }
   
   gtk_widget_add_events (GTK_WIDGET (self), GDK_VISIBILITY_NOTIFY_MASK);
@@ -400,11 +431,11 @@ hildon_home_applet_destroy (GtkObject *applet)
   priv->desktop_file = NULL;
   
   if (priv->close_button)
-    gdk_pixbuf_unref (priv->close_button);
+    g_object_unref (priv->close_button);
   priv->close_button = NULL;
   
   if (priv->resize_handle)
-    gdk_pixbuf_unref (priv->resize_handle);
+    g_object_unref (priv->resize_handle);
   priv->resize_handle = NULL;
 
   if (GTK_OBJECT_CLASS (parent_class)->destroy)
@@ -705,7 +736,8 @@ hildon_home_applet_layout_mode_start (HildonHomeApplet *applet)
            HILDON_MARGIN_DEFAULT);
     }
 
-  if (priv->resize_handle)
+  if (priv->resize_handle &&
+      priv->resize_type != HILDON_HOME_APPLET_RESIZE_NONE)
     {
       priv->resize_handle_window = hildon_home_applet_create_icon_window 
           (applet,
@@ -1216,25 +1248,6 @@ hildon_home_applet_set_resize_type (HildonHomeApplet *applet,
     {
       g_object_notify (G_OBJECT (applet), "resize-type");
       priv->resize_type = resize_type;
-      if (resize_type != HILDON_HOME_APPLET_RESIZE_NONE && !priv->resize_handle)
-        {
-          GtkIconTheme              *icon_theme;
-          GError                    *error = NULL;
-
-          icon_theme = gtk_icon_theme_get_default();
-          priv->resize_handle = 
-              gtk_icon_theme_load_icon (icon_theme,
-                                        APPLET_RESIZE_HANDLE_ICON,
-                                        APPLET_RESIZE_HANDLE_WIDTH,
-                                        GTK_ICON_LOOKUP_NO_SVG,
-                                        &error);
-
-          if (error)
-            {
-              g_warning ("Could not load resize handle icon: %s", error->message);
-              priv->resize_handle = NULL;
-            }
-        }
     }
 }
 

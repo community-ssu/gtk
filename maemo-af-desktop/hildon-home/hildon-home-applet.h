@@ -83,6 +83,9 @@ struct _HildonHomeAppletClass {
   void (* layout_mode_end)      (HildonHomeApplet *applet);
   void (* desktop_file_changed) (HildonHomeApplet *applet);
 
+  GdkPixbuf                     *close_button;
+  GdkPixbuf                     *resize_handle;
+
 };
 
 GType hildon_home_applet_resize_type_get_type (void);
