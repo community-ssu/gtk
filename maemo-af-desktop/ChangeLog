@@ -1,3 +1,8 @@
+2006-10-25  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: Changed again the extension
+	panel to DIALOG window and set transient for root window.
+
 2006-10-25  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Also update the menu

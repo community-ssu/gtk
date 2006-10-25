@@ -320,7 +320,7 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 	gtk_widget_set_name(sb_panel->popup, "HildonStatusBarExtension");
 	
 	gtk_window_set_type_hint( GTK_WINDOW( sb_panel->popup ),
- 				  GDK_WINDOW_TYPE_HINT_MENU );
+ 				  GDK_WINDOW_TYPE_HINT_DIALOG );
 	gtk_window_set_decorated( GTK_WINDOW( sb_panel->popup ), FALSE);
 
 	/* Add popup fixed into window */
@@ -403,7 +403,7 @@ void arrow_button_toggled_cb( GtkToggleButton *togglebutton,
 	gtk_widget_realize (sb_panel->popup);
 
 	gdk_window_set_transient_for( sb_panel->popup->window,
-  		                      gdk_screen_get_active_window( gtk_widget_get_screen(GTK_WIDGET (sb_panel->arrow_button))));
+  		                      gdk_get_default_root_window());
 	
 	gtk_widget_show_all(sb_panel->popup);
 	
