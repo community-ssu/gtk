@@ -2267,6 +2267,8 @@ do_move (GnomeVFSMethod  *method,
 {
 	gchar          *old_full_name;
 	gchar          *new_full_name;
+	GnomeVFSURI    *new_parent_uri;
+	gchar          *new_parent_name;
 	gchar          *new_full_name_ondisk;
 	GnomeVFSResult  result;
 	gboolean        new_exists;
@@ -2286,17 +2288,50 @@ do_move (GnomeVFSMethod  *method,
 		old_full_name = dfm_fetch_and_free_old_path (old_full_name);
 	}
 
+	/* Get the on disk representation of the parent of the target URI, and
+	 * construct the new full name by appending the basename to that. We can
+	 * only affect the basename and if we don't use the on-disk rep of the
+	 * parent, we can't move a file from one directory to another if the
+	 * case doesn't match.
+	 */
+	new_parent_uri = gnome_vfs_uri_get_parent (new_uri);
+	new_parent_name = get_path_from_uri (new_parent_uri);
+	if (!uri_exists_case_sensitive (new_parent_uri)) {
+		gchar *base;
+
+		new_parent_name = dfm_fetch_and_free_old_path (new_parent_name);
+		base = g_path_get_basename (new_full_name);
+		g_free (new_full_name);
+		new_full_name = g_build_filename (new_parent_name, base, NULL);
+	}
+
+	gnome_vfs_uri_unref (new_parent_uri);
+	g_free (new_parent_name);
+	
 	if (dfo_is_file_open (new_full_name) || 
 	    dfo_is_file_open (old_full_name)) {
 		g_free (old_full_name);
+		g_free (new_full_name);
 		return GNOME_VFS_ERROR_LOCKED;
+	}
+
+	/* Short-cut if we move a file to the same name, to simplify the code
+	 * below.
+	 */
+	if (strcmp (old_full_name, new_full_name) == 0) {
+		g_free (old_full_name);
+		g_free (new_full_name);
+		return GNOME_VFS_OK;
 	}
 
 	/* If the new URI is just a case variant of the old ("foo" -> "Foo"),
 	 * just do the rename. We assume that there is no "third" (e.g. FoO")
 	 * variant on disk of this URI (that would break all the
 	 * case-insensitivity code). If there is and it's in the way, we will
-	 * just return an error.
+	 * just return an error. The reason we do this is because rename_helper
+	 * does the move by moving to a temp file first if the only difference
+	 * is the case (otherwise moving "Foo" to "foo" would fail on real case
+	 * insensitive file systems like FAT memory cards).
 	 */
 	if (g_ascii_strcasecmp (old_full_name, new_full_name) == 0 &&
 	    strcmp (old_full_name, new_full_name) != 0) {
@@ -2311,12 +2346,12 @@ do_move (GnomeVFSMethod  *method,
 	}
 
 	/* The move is a "real" move ("foo" -> "bar"). Get the on-disk
-	 * representation of the destination URI. If there already is a
-	 * case-variant, we remove it when force_replace is set, otherwise we
-	 * get an error returned.
+	 * representation of the destination URI to see if the path exists. If
+	 * there already is a case-variant, we remove it when force_replace is
+	 * set, otherwise we get an error returned.
 	 */
 	new_full_name_ondisk = g_strdup (new_full_name);
-	if (uri_exists_case_sensitive (new_uri)) {
+	if (g_file_test (new_full_name_ondisk, G_FILE_TEST_EXISTS)) {
 		new_exists = TRUE;
 	} else {
 		new_full_name_ondisk = dfm_fetch_and_free_old_path (new_full_name_ondisk);

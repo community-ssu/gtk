@@ -1,3 +1,11 @@
+2006-10-25  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* file-module/src/dbus-file-method.c: (do_move): Make this work
+	when a parent dir of the source or target have the "wrong" case,
+	NB#43361.
+
 2006-10-20  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Release 1.8.0.

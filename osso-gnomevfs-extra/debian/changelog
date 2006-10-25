@@ -1,3 +1,9 @@
+osso-gnomevfs-extra (1.8.1-1) unstable; urgency=low
+
+  * Fixes NB#43361, Moving a file to a directory with other case fails in
+
+ -- Richard Hult <richard@imendio.com>  Fre, 27 Oct 2006 16:22:42 +0200
+
 osso-gnomevfs-extra (1.8.0-1) unstable; urgency=low
 
   * Fixes license problem with inotify code
