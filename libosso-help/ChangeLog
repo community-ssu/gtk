@@ -1,5 +1,14 @@
 2006-10-25 Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* configure.ac: Generate also doc/Doxyfile
+	* src/osso-helplib.h: Added file tag so that doxygen documentation
+               will be generated for the file
+	* doc/Doxyfile.in: Configuration for doxygen
+	* doc/README: Short readme for document generation
+
+
+2006-10-25 Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* src/osso-helplib.c: Removed linefeed characters from source file.
 	        Call osso_rpc_free_val for retval
 	Fixes NB#42988

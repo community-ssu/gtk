@@ -20,6 +20,9 @@
  * 02110-1301 USA
  *
  */
+/**
+    @file osso-helplib.h
+*/
 #ifndef OSSO_HELPLIB_H
 #define OSSO_HELPLIB_H
 

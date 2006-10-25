@@ -75,6 +75,7 @@ AC_CONFIG_FILES([
   src/Makefile
   src/libossohelp.pc
   helptest/Makefile
+  doc/Doxyfile
 ])
 
 # Mandatory, produce output

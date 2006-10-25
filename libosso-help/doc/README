@@ -1,0 +1,13 @@
+Readme file for generating Doxygen documentation for OSSO HelpLib
+
+1. The Doxyfile configuration file is generated from Doxyfile.in by
+autogen.sh in the main source directory.  It puts the correct version
+into the documentation.
+cd ..;./autogen.sh;cd -
+
+2. Before generating the documentation it is good to clean up the old
+one so that there won't be a mixup of old and new files.
+rm -r html
+
+3. Generate the documentation, the result will be in the directory html
+doxygen Doxyfile
