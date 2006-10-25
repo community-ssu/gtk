@@ -1977,6 +1977,12 @@ hn_app_switcher_real_changed_stack (HNAppSwitcher *app_switcher,
   gboolean               active_found = FALSE;
   
   HN_DBG ("In hn_app_switcher_real_changed_stack");
+
+  if (priv->main_menu)
+    {
+      gtk_widget_destroy (priv->main_menu);
+      priv->main_menu = NULL;
+    }
   
   if (!entry_info || !hn_entry_info_is_active (entry_info))
     {
