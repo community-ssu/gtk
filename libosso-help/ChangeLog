@@ -1,3 +1,9 @@
+2006-10-25 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/osso-helplib.c: Removed linefeed characters from source file.
+	        Call osso_rpc_free_val for retval
+	Fixes NB#42988
+
 2006-08-31 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* version 2.0.6

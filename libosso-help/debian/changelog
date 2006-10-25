@@ -1,3 +1,9 @@
+libosso-help (2.0.7-1) unstable; urgency=low
+
+  * Fixes NB#42988
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 25 Oct 2006 11:21:37 +0300
+
 libosso-help (2.0.6-2) unstable; urgency=low
 
   * Adding the dbg package. Fixes: NB#40270

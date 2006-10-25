@@ -72,7 +72,7 @@ char* strcpy_safe_max( char* buf, const char* src, size_t buflen, int max )
         buflen= max+1;
     
     /* Make sure the buffer is always terminated, even at fill-ups: */
-    buf[buflen-1]= '\0';
+    buf[buflen-1]= '\0';
     return strncpy( buf, src, buflen-1 /*max charcount*/ );
 }
 
@@ -94,7 +94,9 @@ char* strcat_safe_max( char* buf, const char* src, size_t buflen, int max )
     if ((max>=0) && (max<n))
         n= max;
 
-    /* 'strncat()' always terminates the buffer but the size param       is charcount of 'src', not the size of the buffer! */    return strncat( buf, src, n );}
+    /* 'strncat()' always terminates the buffer but the size param
+       is charcount of 'src', not the size of the buffer! */
+    return strncat( buf, src, n );}
 
 
 /* Returns a localized text string ("Close" or "Help"), using
@@ -447,6 +449,7 @@ osso_return_t ossohelp_show( osso_context_t* osso,
 {
     osso_return_t rc;
     osso_rpc_t retval;
+    osso_return_t ret;
 
     if (!help_id) return OSSO_INVALID;
 
@@ -497,6 +500,7 @@ osso_return_t ossohelp_show( osso_context_t* osso,
                 ULOG_CRIT( "HelpLib: DBUS call to HelpUI failed: '%s'\n", 
                            retval.value.s );
             }
+            osso_rpc_free_val(&retval);
             return OSSO_RPC_ERROR;
 
         case OSSO_RPC_ERROR:    /* Unable to reach? */
@@ -504,11 +508,13 @@ osso_return_t ossohelp_show( osso_context_t* osso,
                 ULOG_CRIT( "HelpLib: DBUS call to HelpUI failed: '%s'\n", 
                            retval.value.s );
             }
+            osso_rpc_free_val(&retval);
             return OSSO_RPC_ERROR;
 
         case OSSO_INVALID:  /* Invalid parameter (shouldn't happen) */
         default:
             ULOG_CRIT( "HelpLib: Unknown rc from HelpUI DBUS: %d\n", (int)rc );
+            osso_rpc_free_val(&retval);
             return OSSO_RPC_ERROR;  /* g_assert(FALSE); */
 
         case OSSO_OK:
@@ -525,11 +531,13 @@ osso_return_t ossohelp_show( osso_context_t* osso,
   } 
               
   #ifdef RPC_NOWAIT
-    return OSSO_OK;     /* always returns success */
+    ret = OSSO_OK;     /* always returns success */
   #else
-    g_assert( retval.type == DBUS_TYPE_BOOLEAN );
-    return (retval.value.b) ? OSSO_OK : OSSO_ERROR;   /* was the URL found? */
+    ret = (( retval.type == DBUS_TYPE_BOOLEAN ) && retval.value.b)
+        ? OSSO_OK : OSSO_ERROR;   /* was the URL found? */
   #endif
+    osso_rpc_free_val(&retval);
+    return ret;
 }
 
 
