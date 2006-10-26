@@ -1,5 +1,9 @@
 2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* === Release 2.43 ===
+
+2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-render.c (theme_pixbuf_render): Limit the mask to
 	clip_rect size to avoid allocating huge pixmaps.
 

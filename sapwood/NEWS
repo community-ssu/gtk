@@ -1,3 +1,11 @@
+sapwood 2.43 - 2006-10-26
+=========================
+
+Bugs fixed
+----------
+NB#35602 - Application crash when past 1000 line notes in to new mail.
+
+
 sapwood 2.24 - 2006-06-13
 =========================
 
