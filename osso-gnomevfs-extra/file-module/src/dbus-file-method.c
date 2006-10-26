@@ -478,7 +478,9 @@ do_create (GnomeVFSMethod *method,
 		file_name = dfm_fetch_and_free_old_path (file_name);
 	}
 
-	tmp_uri = gnome_vfs_uri_new (file_name);
+	tmp_real_dir = gnome_vfs_get_uri_from_local_path (file_name);
+	tmp_uri = gnome_vfs_uri_new (tmp_real_dir);
+	g_free (tmp_real_dir);
 	tmp_real_dir = gnome_vfs_uri_extract_dirname (tmp_uri);
 	gnome_vfs_uri_unref (tmp_uri);
 
