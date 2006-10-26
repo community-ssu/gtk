@@ -1,3 +1,11 @@
+osso-application-installer (4.36.1) unstable; urgency=low
+
+  * preinst: Do not fail when /etc/apt/sources.list doesn't exist.
+  * prerm: Correctly modify "/etc/sudoers", not "/etc/sudoers.".  Set
+    permissions to 0440 after replacing it.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 26 Oct 2006 18:48:31 +0300
+
 osso-application-installer (4.36) unstable; urgency=low
 
   * Fixes: NB43737.
