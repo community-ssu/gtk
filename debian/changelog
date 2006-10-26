@@ -1,8 +1,13 @@
 gtk+2.0 (2:2.6.10-2.osso21) UNRELEASED; urgency=low
 
+  [ Tommi Komulainen ]
+  * Fixes: NB#37295 Scrolling through calendar is too fast using hardkeys
+  * Help sapwood to fix NB#35602
+
+  [ Xan López ]
   * Fixes: NB#43257 accounts ; account setup ; "googlemail.co.uk" is cut off
 
- -- Xan Lopez <xan.lopez@nokia.com>  Mon, 23 Oct 2006 11:53:59 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 26 Oct 2006 15:00:18 +0300
 
 gtk+2.0 (2:2.6.10-2.osso20) unstable; urgency=low
 
