@@ -1000,10 +1000,18 @@ void SDL_UpdateRect(SDL_Surface *screen, Sint32 x, Sint32 y, Uint32 w, Uint32 h)
 			w = screen->w;
 		if ( h == 0 )
 			h = screen->h;
+		if ( x < 0 ) {
+			w += x;
+			x = 0;
+		}
+		if ( y < 0 ) {
+			h += y;
+			y = 0;
+		}
 		if ( (int)(x+w) > screen->w )
-			return;
+			w = screen->w - x;
 		if ( (int)(y+h) > screen->h )
-			return;
+			h = screen->h - y;
 
 		/* Fill the rectangle */
 		rect.x = x;
