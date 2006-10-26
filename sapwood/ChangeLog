@@ -1,5 +1,10 @@
 2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-render.c (theme_pixbuf_render): Limit the mask to
+	clip_rect size to avoid allocating huge pixmaps.
+
+2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-render.c (theme_pixbuf_render): Trap X errors to avoid
 	BadAlloc when trying to allocate *huge* bitmaps (600x33000 GtkFrame
 	in a viewport) NB#35602

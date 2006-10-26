@@ -320,10 +320,25 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 	  mask_y = 0;
 	  mask_required = FALSE;
 
-	  /* watch out for BadAlloc from X when trying to allocate *huge*
-	   * bitmaps
-	   * FIXME: limit the mask to clip_rect size
-	   */
+	  if (clip_rect)
+	    {
+	      /* limit the mask to clip_rect size to avoid allocating huge
+	       * pixmaps and getting BadAlloc from X
+	       */
+	      if (clip_rect->width < width)
+		{
+		  LOG("width: %d -> %d", width, clip_rect->width);
+		  x      = clip_rect->x;
+		  width  = clip_rect->width;
+		}
+	      if (clip_rect->height < height)
+		{
+		  LOG("height: %d -> %d", height, clip_rect->height);
+		  y      = clip_rect->y;
+		  height = clip_rect->height;
+		}
+	    }
+
 	  gdk_error_trap_push ();
 
 	  mask = gdk_pixmap_new (NULL, width, height, 1);
@@ -331,6 +346,12 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 	  /* gdk_flush (); */
 	  if (gdk_error_trap_pop ())
 	    {
+	      if (clip_rect)
+		g_warning ("theme_pixbuf_render(clip_rect={x: %d,y: %d, width: %d, height: %d}: gdk_pixmap_new(width: %d, height: %d) failed",
+			   clip_rect->x, clip_rect->y, clip_rect->width, clip_rect->height, width, height);
+	      else
+		g_warning ("theme_pixbuf_render(clip_rect=(null)}: gdk_pixmap_new(width: %d, height: %d) failed", width, height);
+
 	      /* pretend that we drew things successfully, there should be a
 	       * new paint call coming to allow us to paint the thing properly
 	       */
