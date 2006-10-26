@@ -1,3 +1,15 @@
+2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkentry.c (gtk_entry_expose)
+	* gtk/gtkdnd.c (gtk_drag_highlight_expose)
+	* gtk/gtkmenu.c (gtk_menu_paint)
+	* gtk/gtktreeview.c (draw_drop_indicator)
+	* gtk/gtkcheckbutton.c (gtk_check_button_paint)
+	* gtk/gtkviewport.c (gtk_viewport_paint)
+	* gtk/gtkframe.c (gtk_frame_paint): Pass GdkEventExpose::area to
+	gtk_paint_* functions so that the theme engine has better chance
+	to limit painting using the clip rectangle. Relates to NB#35602
+
 2006-10-23  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkcombobox.c: change BONNUS_PADDING from 6 to 8 to fix truncation

@@ -271,12 +271,12 @@ gtk_check_button_paint (GtkWidget    *widget,
 		  
 	      gtk_paint_focus (widget->style, widget->window, 
 			       GTK_WIDGET_STATE (widget),
-			       NULL, widget, "checkbutton", x, y, w, h);
+			       area, widget, "checkbutton", x, y, w, h);
 	    }
 	  else
 	    gtk_paint_focus (widget->style, widget->window, 
                              GTK_WIDGET_STATE (widget), 
-			     NULL, widget, "checkbutton", x, y, w, h);
+			     area, widget, "checkbutton", x, y, w, h);
 	}
       gtk_check_button_draw_indicator (check_button, area);
     }

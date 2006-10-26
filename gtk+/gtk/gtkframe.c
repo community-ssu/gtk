@@ -572,7 +572,7 @@ gtk_frame_paint (GtkWidget    *widget,
 			     widget->window,
 			     GTK_WIDGET_STATE( widget ),
 			     GTK_SHADOW_OUT,
-			     NULL, widget, "frame",
+			     area, widget, "frame",
 			     x, y, width, height);
       }
       else if (frame->label_widget)
