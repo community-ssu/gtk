@@ -7,7 +7,7 @@ rem_sudoer ()
     line="$1"
     grep -v -F "$line" /etc/sudoers >/etc/sudoers.tmp || true
     mv /etc/sudoers.tmp /etc/sudoers
-    chmod u-w /etc/sudoers
+    chmod 0440 /etc/sudoers
 }
 
 ## Remove the sudoer line
