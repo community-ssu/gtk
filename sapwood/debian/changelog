@@ -1,3 +1,9 @@
+sapwood (2.43-1) unstable; urgency=low
+
+  * Fixes: NB#35602 Application crash when past 1000 line notes in to new mail.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 26 Oct 2006 17:27:24 +0300
+
 sapwood (2.24-3) unstable; urgency=low
 
   * debian/sapwood-server.sh:
