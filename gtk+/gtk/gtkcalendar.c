@@ -2940,12 +2940,11 @@ gtk_calendar_mark_day (GtkCalendar *calendar,
      {
         calendar->marked_date[day - 1] = TRUE;
         calendar->num_marked_dates++;
+
+        if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (calendar)))
+          gtk_calendar_paint_day_num (GTK_WIDGET (calendar), day-1);
      }
-   if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (calendar)))
-     {
-        gtk_calendar_paint_main (GTK_WIDGET (calendar));
-     }
-  
+
   return TRUE;
 }
 
@@ -2959,13 +2958,11 @@ gtk_calendar_unmark_day (GtkCalendar *calendar,
     {
       calendar->marked_date[day - 1] = FALSE;
       calendar->num_marked_dates--;
+
+      if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (calendar)))
+        gtk_calendar_paint_day_num (GTK_WIDGET (calendar), day-1);
     }
-  
-  if (GTK_WIDGET_DRAWABLE (GTK_WIDGET (calendar)))
-    {
-      gtk_calendar_paint_main (GTK_WIDGET (calendar));
-    }
-  
+ 
   return TRUE;
 }
 

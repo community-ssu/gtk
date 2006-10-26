@@ -1,5 +1,10 @@
 2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkcalendar.c (gtk_calendar_mark_day, gtk_calendar_unmark_day):
+	Repaint only single day, not the whole calendar. NB#37295
+
+2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkentry.c (gtk_entry_expose)
 	* gtk/gtkdnd.c (gtk_drag_highlight_expose)
 	* gtk/gtkmenu.c (gtk_menu_paint)
