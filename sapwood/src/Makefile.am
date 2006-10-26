@@ -19,6 +19,7 @@ libsapwood_la_SOURCES = 	\
 
 libsapwood_la_LDFLAGS = -avoid-version -module -Wl,-z,defs
 libsapwood_la_LIBADD = $(GTK_LIBS)
+libsapwood_la_CFLAGS = -DG_LOG_DOMAIN=\"sapwood\" $(AM_CFLAGS)
 
 daemondir = $(libdir)/sapwood
 daemon_PROGRAMS = sapwood-server

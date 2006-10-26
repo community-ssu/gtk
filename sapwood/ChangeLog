@@ -1,3 +1,7 @@
+2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/Makefile.am (libsapwood_la_CFLAGS): Added to define G_LOG_DOMAIN
+
 2006-06-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* === Release 2.24 ===
