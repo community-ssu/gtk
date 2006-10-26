@@ -1,0 +1,94 @@
+libsdl1.2 (1.2.8-13) unstable; urgency=low
+
+  * Backend changed to ALSA instead of ESD. Fixes: NB#37873
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed, 16 Aug 2006 10:33:43 +0300
+
+libsdl1.2 (1.2.8-12) unstable; urgency=low
+
+  * No longer fails to create primary surface if bpp > 16 and SDL_ANYFORMAT is
+    set.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Tue,  4 Jul 2006 17:05:21 +0300
+
+libsdl1.2 (1.2.8-11) unstable; urgency=low
+
+  * Dummy version.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Fri, 16 Jun 2006 14:17:24 +0300
+
+libsdl1.2 (1.2.8-10) unstable; urgency=low
+
+  * Disabled framebuffer backend.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed, 22 Feb 2006 13:58:53 +0200
+
+
+libsdl1.2 (1.2.8-9) unstable; urgency=low
+
+  * Emptied contents of src/hermes/mmxp2_32.asm.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon,  5 Sep 2005 16:28:32 +0300
+
+
+libsdl1.2 (1.2.8-8) unstable; urgency=medium
+
+  * Key event bug fixed.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Fri, 22 Jul 2005 16:24:32 +0300
+
+
+libsdl1.2 (1.2.8-7) unstable; urgency=medium
+
+  * Grabbing is now disabled.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Thu, 21 Jul 2005 15:50:01 +0300
+
+
+libsdl1.2 (1.2.8-6) unstable; urgency=low
+
+  * bitmodes over 16 will instantly abort SDL_SetVideoMode() and will return
+    NULL.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Fri, 17 Jun 2005 13:01:29 +0300
+
+
+libsdl1.2 (1.2.8-5) unstable; urgency=low
+
+  * Changed fullscreen behavior: uses now WM fullscreen property instead of
+    OverrideRedirect.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Thu, 09 Jun 2005 14:10:46 +0200
+
+
+libsdl1.2 (1.2.8-4) unstable; urgency=high
+
+  * Runs aclocal before configuring
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Tue, 10 apr 2005 12:27:00 +0200
+
+
+libsdl1.2 (1.2.8-3) unstable; urgency=high
+
+  * Fixed automake dependency to version 1.8
+  * Added esd configure options and dependencies to enable ESD audio.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed, 23 Mar 2005 14:00:00 +0200
+
+
+libsdl1.2 (1.2.8-2) unstable; urgency=low
+
+  * Added automake build dependency.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 21 Feb 2005 16:00:00 +0200
+
+
+libsdl1.2 (1.2.8) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed, 19 Jan 2005 13:09:27 +0200
+
+Local variables:
+mode: debian-changelog
+End:
