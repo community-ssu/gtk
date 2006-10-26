@@ -2,6 +2,7 @@ osso-gnomevfs-extra (1.8.1-1) unstable; urgency=low
 
   * Fixes: NB#43361, Moving a file to a directory with other case fails in
   * Fixes: NB#45255, File copied to parent folder if the destination folder
+  * Fixes: ????, Add dependency on osso-uri-l10n-{mr0,mr1}
 
  -- Richard Hult <richard@imendio.com>  Fre, 27 Oct 2006 16:22:42 +0200
 
