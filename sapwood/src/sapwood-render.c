@@ -316,10 +316,26 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 
       if (!mask)
         {
-	  mask = gdk_pixmap_new (NULL, width, height, 1);
 	  mask_x = 0;
 	  mask_y = 0;
 	  mask_required = FALSE;
+
+	  /* watch out for BadAlloc from X when trying to allocate *huge*
+	   * bitmaps
+	   * FIXME: limit the mask to clip_rect size
+	   */
+	  gdk_error_trap_push ();
+
+	  mask = gdk_pixmap_new (NULL, width, height, 1);
+
+	  /* gdk_flush (); */
+	  if (gdk_error_trap_pop ())
+	    {
+	      /* pretend that we drew things successfully, there should be a
+	       * new paint call coming to allow us to paint the thing properly
+	       */
+	      return TRUE;
+	    }
 	}
       else
 	{
