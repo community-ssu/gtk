@@ -4212,7 +4212,7 @@ draw_drop_indicator (GtkWidget *widget,
       gtk_paint_focus (widget->style,
                        tree_view->priv->bin_window,
                        GTK_WIDGET_STATE (widget),
-                       NULL,
+                       &event->area,
                        widget,
                        (is_first
                         ? (is_last

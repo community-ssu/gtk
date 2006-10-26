@@ -1732,7 +1732,7 @@ gtk_entry_expose (GtkWidget      *widget,
 #else
       gtk_paint_box (widget->style, widget->window,
                      GTK_WIDGET_STATE (widget), GTK_SHADOW_NONE,
-                     NULL, widget, "entry_frame",
+                     &event->area, widget, "entry_frame",
                      0, 0, area_width, area_height);
 #endif
     }
