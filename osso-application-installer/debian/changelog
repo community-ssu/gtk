@@ -8,7 +8,7 @@ osso-application-installer (4.36.1) unstable; urgency=low
 
 osso-application-installer (4.36) unstable; urgency=low
 
-  * Fixes: NB43737.
+  * Fixes: NB#43737.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Oct 2006 21:27:14 +0300
 
