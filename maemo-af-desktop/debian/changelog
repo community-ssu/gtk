@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.98-2) unstable; urgency=low
+
+  * Added dependency to maemo-launcher when in DEB_BUILD_OPTIONS
+    Fixes: NB#45586 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 27 Oct 2006 13:09:59 +0300
+
 maemo-af-desktop (2.9.98-1) unstable; urgency=low
 
   * debian/conffiles: Do not declare the IT-2006 backup restoration
