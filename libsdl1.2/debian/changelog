@@ -1,9 +1,8 @@
-libsdl1.2 (1.2.8-14unreleased) unstable; urgency=low
+libsdl1.2 (1.2.8-14) unstable; urgency=low
 
   * src/video/SDL_video.c: SDL_UpdateRect() clips now the rect to the screen.
   * debian/rules: ESD configured back in as it's on lower priority than ALSA
     audio backend so it will be used only if ALSA is unavailable.
-  * UNRELEASED
 
  -- Kuisma Salonen <kuisma.salonen@nokia.com>  Thu, 26 Sep 2006 12:47:32 +0300
 
