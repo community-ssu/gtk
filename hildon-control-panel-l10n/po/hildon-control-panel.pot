@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: hildon-control-panel 6.0\n"
+"Project-Id-Version: hildon-control-panel 5.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.05.15 16:35+0300\n"
-"PO-Revision-Date: 2006.05.15 16:35+0300\n"
+"POT-Creation-Date: 2006.06.22 12:40+0300\n"
+"PO-Revision-Date: 2006.06.22 12:40+0300\n"
 "Last-Translator:\n"
 "Language-Team: Engineering English\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +17,22 @@ msgstr ""
 # Application name of Control panel
 msgid "copa_ap_cp_name"
 msgstr "Control panel"
+
+# Title for the group separator: General 
+msgid "copa_ia_general"
+msgstr "General"
+
+# Title for the group separator: Connectivity
+msgid "copa_ia_connectivity"
+msgstr "Connectivity"
+
+# Title for the group separator: Personalisation
+msgid "copa_ia_personalisation"
+msgstr "Personalisation"
+
+# Title for the group separator: Extras
+msgid "copa_ia_extras"
+msgstr "Extras"
 
 # Main title of application menu: Open 
 msgid "copa_me_open"
@@ -59,12 +75,12 @@ msgid "copa_me_tools_help"
 msgstr "Help"
 
 # Accounts
-msgid "accounts_ap_accounts"
+msgid "accounts_ti_accounts"
 msgstr "Accounts"
 
-# Backup/restore
-msgid "back_ti_dia001_title"
-msgstr "Backup/Restore"
+# Bluetooth
+msgid "conn_ti_bluetooth_cpa"
+msgstr "Bluetooth"
 
 # Certificate manager
 msgid "cema_ap_application_title"
@@ -72,31 +88,35 @@ msgstr "Certificate manager"
 
 # Connectivity settings
 msgid "conn_set_ti_conn_set"
-msgstr "Connectivity settings"
+msgstr "Connectivity"
 
 # Date & time
 msgid "dati_ap_application_title"
 msgstr "Date and time"
 
-# Device
+# About product (was: Device)
 msgid "devi_ap_application_title"
-msgstr "Device"
+msgstr "About product"
 
 # Display
-msgid "disp_ti_display"
+msgid "disp_ap_application_title"
 msgstr "Display"
 
+# Hardware keyboard
+msgid "hwkb_ap_feature_name"
+msgstr "Hardware keyboard"
+
 # Language and Regional settings
-msgid "capl_ti_language_and_regional_title"
-msgstr "Language and regional settings"
+msgid "cpal_ti_language_and_regional_title"
+msgstr "Language and region"
 
 # Memory
 msgid "memo_ti_memory"
 msgstr "Memory"
 
-# Personalisation
+# Themes (was: Personalization)
 msgid "pers_ti_personalization"
-msgstr "Personalisation"
+msgstr "Themes"
 
 # Screen calibration
 msgid "ctrp_ti_screen_calibration"
@@ -124,7 +144,7 @@ msgstr "Presence"
 
 # Task navigator
 msgid "tncpa_ap_task_navigator"
-msgstr "Task navigator"
+msgstr "Navigation"
 
 # Title in the Restore original settings -dialog
 msgid "rfs_ti_restore"
@@ -133,9 +153,9 @@ msgstr "Restore original settings"
 # Informative text in the Restore original settings -dialog
 msgid "refs_ia_text"
 msgstr ""
-"Original settings will be restored. The user created content will not be "
+"Original settings will be restored. User-created content will not be "
 "affected.\n"
-"All applications will be closed and device will restart."
+"All applications will be closed and the device will restart."
 
 # OK-button
 msgid "rfs_bd_ok"
@@ -152,8 +172,8 @@ msgstr "Clear user data"
 # Informative text in the Clear user data -dialog
 msgid "cud_ia_text"
 msgstr ""
-"All settings and user created content will be deleted.\n"
-"All applications will be closed and device will restart. "
+"All settings and user-created content will be deleted.\n"
+"All applications will be closed and the device will restart. "
 
 # OK-button
 msgid "cud_bd_ok"
