@@ -1,0 +1,50 @@
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the same license as the osso-uri package
+#
+
+
+msgid ""
+msgstr ""
+"Project-Id-Version: osso-uri 1.0\n"
+"Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
+"POT-Creation-Date: 2006.10.09 17:34+0300\n"
+"PO-Revision-Date: 2006.10.09 17:34+0300\n"
+"Last-Translator:\n"
+"Language-Team: Engineering English\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
+
+# Menu command
+msgid "uri_link_open_link"
+msgstr "Open link…"
+
+# Menu command
+msgid "uri_link_compose_email"
+msgstr "Compose e-mail message…"
+
+# Menu command
+msgid "uri_link_add_to_contacts"
+msgstr "Add to Contacts…"
+
+# Menu command
+msgid "uri_link_make_call"
+msgstr "Make Internet call…"
+
+# Menu command
+msgid "uri_link_start_new_chat"
+msgstr "Start new chat…"
+
+# Menu command
+msgid "uri_link_copy_link_location"
+msgstr "Copy link location"
+
+# Information note where %s is the whole URI 
+msgid "uri_link_error_invalid_protocol"
+msgstr "Unable to open.\nAddress type not supported.\n%s"
+
+# Information note
+msgid "uri_link_error_missing_protocol"
+msgstr "Unable to open.\nInvalid address."
+
