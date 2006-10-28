@@ -5,10 +5,10 @@
 
 msgid ""
 msgstr ""
-"Project-Id-Version: hildon-libs 6.1\n"
+"Project-Id-Version: hildon-libs 6.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.05.15 16:35+0300\n"
-"PO-Revision-Date: 2006.05.15 16:35+0300\n"
+"POT-Creation-Date: 2006.08.29 11:02+0300\n"
+"PO-Revision-Date: 2006.08.29 11:02+0300\n"
 "Last-Translator:\n"
 "Language-Team: Engineering English\n"
 "MIME-Version: 1.0\n"
@@ -16,45 +16,29 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n == 1 ? 0 : 1;\n"
 
-# Title for default palette
+# Default title text for GtkAboutDialog
+msgid "ecdg_ti_aboutdialog_title"
+msgstr "About application"
+
+# Text for the closing button
+msgid "ecdg_bd_aboutdialog_close"
+msgstr "Close"
+
+# Title for dialog
 msgid "ecdg_ti_colour_selector"
 msgstr "Colour Selector"
 
-# Confirmation button for default palette
+# Confirmation button for dialog
 msgid "ecdg_bd_colour_selector_ok"
 msgstr "OK"
 
-# Cancel button for default palette
+# Cancel button for dialog
 msgid "ecdg_bd_colour_selector_cancel"
 msgstr "Cancel"
 
-# 5-bit palette opening button
-msgid "ecdg_bd_colour_selector_modify"
-msgstr "Modify"
-
-# Title for 5-bit palette
-msgid "ecdg_ti_5bit_colour_selector"
-msgstr "Modify colour"
-
-# Confirmation button for 5-bit palette
-msgid "ecdg_bd_5bit_colour_selector_ok"
-msgstr "OK"
-
-# Cancel button for 5-bit palette
-msgid "ecdg_bd_5bit_colour_selector_cancel"
-msgstr "Cancel"
-
-# R indicator text for 5-bit palette
-msgid "ecdg_fi_5bit_colour_selector_red"
-msgstr "Red"
-
-# G indicator text for 5-bit palette
-msgid "ecdg_fi_5bit_colour_selector_green"
-msgstr "Green"
-
-# B indicator text for 5-bit palette
-msgid "ecdg_fi_5bit_colour_selector_blue"
-msgstr "Blue"
+# Information banner displayed when user taps on dimmed Color selection area
+msgid "ecdg_ib_colour_selector_predefined"
+msgstr "This color cannot be modified"
 
 # Confirmation button for pop-up
 msgid "ecdg_bd_calendar_popout_done"
@@ -92,10 +76,6 @@ msgstr "Minimum value is %d"
 msgid "ckct_wi_range_separator"
 msgstr "-"
 
-# Separator character for time string
-msgid "ecdg_ti_time_editor_separator"
-msgstr ":"
-
 # Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
 msgid "ckct_ib_min_allowed_duration_hts"
 msgstr "Minimum allowed duration is %02d:%02d:%02d"
@@ -128,10 +108,6 @@ msgstr ":"
 msgid "ckct_ib_date_does_not_exist"
 msgstr "Invalid date"
 
-# Separator character for date string
-msgid "ecdg_ti_date_editor_separator"
-msgstr "/"
-
 # Text string for the "Find" label
 msgid "ecdg_ti_find_toolbar_label"
 msgstr "Find"
@@ -158,15 +134,15 @@ msgstr "%s step 1/%d: Welcome"
 
 # Default descriptive text string for wizard’s welcome screen, where first %s is the name of the wizard and second the summary.
 msgid "ecdg_fi_wizard_description"
-msgstr "Welcome to the %s wizard.\n\nThis wizard allows you to %s.\n\nTap ‘Next’ to proceed."
+msgstr "%s wizard allows you to %s.\n\nTap 'Next' to continue."
 
 # Default title text for wizard steps, where first %s is the name of the wizard and second %s the name of step.
 msgid "ecdg_ti_wizard_step"
 msgstr "%s step %d/%d: %s"
 
-# Next button
-msgid "ecdg_bd_wizard_next"
-msgstr "Next"
+# Finish button
+msgid "ecdg_bd_wizard_finish"
+msgstr "Finish"
 
 # Previous button
 msgid "ecdg_bd_wizard_previous"
@@ -176,17 +152,9 @@ msgstr "Previous"
 msgid "ecdg_bd_wizard_cancel"
 msgstr "Cancel"
 
-# Finish button
-msgid "ecdg_bd_wizard_finish"
-msgstr "Finish"
-
-# Default title text for GtkAboutDialog
-msgid "ecdg_ti_aboutdialog_title"
-msgstr "About application"
-
-# Text for the closing button
-msgid "ecdg_bd_aboutdialog_close"
-msgstr "Close"
+# Next button
+msgid "ecdg_bd_wizard_next"
+msgstr "Next"
 
 # Default confirmation button label
 msgid "ecdg_bd_information_note_ok"
@@ -207,6 +175,34 @@ msgstr "Cancel"
 # Default confirmation button label
 msgid "ecdg_bd_system_note_ok"
 msgstr "OK"
+
+# 5-bit palette opening button
+msgid "ecdg_bd_colour_selector_modify"
+msgstr "Modify"
+
+# Title for 5-bit palette
+msgid "ecdg_ti_5bit_colour_selector"
+msgstr "Modify colour"
+
+# Confirmation button for 5-bit palette
+msgid "ecdg_bd_5bit_colour_selector_ok"
+msgstr "OK"
+
+# Cancel button for 5-bit palette
+msgid "ecdg_bd_5bit_colour_selector_cancel"
+msgstr "Cancel"
+
+# R indicator text for 5-bit palette
+msgid "ecdg_fi_5bit_colour_selector_red"
+msgstr "Red"
+
+# G indicator text for 5-bit palette
+msgid "ecdg_fi_5bit_colour_selector_green"
+msgstr "Green"
+
+# B indicator text for 5-bit palette
+msgid "ecdg_fi_5bit_colour_selector_blue"
+msgstr "Blue"
 
 #  Title for Rename <object> dialog
 msgid "ckdg_ti_rename_default"
@@ -280,7 +276,7 @@ msgstr "Cancel"
 msgid "ckdg_fi_rename_name"
 msgstr "Name:"
 
-#  Title for New <object> dialog
+# Title for New <object> dialog
 msgid "ckdg_ti_new_default"
 msgstr "New"
 
@@ -518,7 +514,7 @@ msgstr "Font size:"
 
 #  Trailer text for Choicelist in Font - dialog
 msgid "ecdg_va_font_size_trailer"
-msgstr "pt."
+msgstr " pt"
 
 #  Colour Selector in Font - dialog
 msgid "ecdg_fi_font_colour_selector"
