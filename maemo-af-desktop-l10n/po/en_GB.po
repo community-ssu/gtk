@@ -3,16 +3,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: maemo-af-desktop 6.0\n"
+"Project-Id-Version: maemo-af-desktop 5.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.05.15 16:36+0300\n"
-"PO-Revision-Date: 2006.05.15 16:36+0300\n"
+"POT-Creation-Date: 2006.06.22 12:40+0300\n"
+"PO-Revision-Date: 2006.06.22 12:40+0300\n"
 "Last-Translator:\n"
 "Language-Team: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n!=1;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 # Launching new application progress banner 
 msgid "ckct_ib_application_loading"
@@ -63,12 +63,8 @@ msgid "weba_ap_bookmarks_manager"
 msgstr "Bookmarks"
 
 # Application
-msgid "vide_ap_video_player_name"
-msgstr "Video player"
-
-# Application
-msgid "audi_ap_audio_player_name"
-msgstr "Audio player"
+msgid "medi_ap_mediaplayer_name"
+msgstr "Media player"
 
 # Application
 msgid "imag_ap_image_viewer_name"
@@ -98,6 +94,10 @@ msgstr "Clock"
 msgid "game_ap_chess_name"
 msgstr "Chess"
 
+# Application 
+msgid "game_ap_blocks_name"
+msgstr "Blocks"
+
 # Application
 msgid "game_ap_lmarbles_name"
 msgstr "Marbles"
@@ -120,7 +120,7 @@ msgstr "Contacts"
 
 # Application
 msgid "chat_ap_chat"
-msgstr "Chat"
+msgstr "IM"
 
 # Application
 msgid "voip_ap_feature_name"
@@ -150,13 +150,125 @@ msgstr "Help"
 msgid "srch_ap_search"
 msgstr "Search"
 
+# Application
+msgid "back_ap_feature_name"
+msgstr "Backup/Restore"
+
 # Empty folder
 msgid "tana_li_of_noapps"
 msgstr "(no applications)"
 
+# E-mail
+msgid "mcen_ap_name_thumb"
+msgstr "Send e-mails"
+
+# Web
+msgid "weba_ap_web_browser_thumb"
+msgstr "Browse web"
+
+# Bookmarks
+msgid "weba_ap_bookmarks_manager_thumb"
+msgstr "Manage bookmarks"
+
+# Media player
+msgid "medi_ap_mediaplayer_name_thumb"
+msgstr "Play audio/video"
+
+# Images
+msgid "imag_ap_image_viewer_name_thumb"
+msgstr "View images"
+
+# File manager
+msgid "sfil_ap_file_manager_thumb"
+msgstr "Manage files"
+
+# Notes
+msgid "note_ap_notes_name_thumb"
+msgstr "Create text documents"
+
+# Sketch
+msgid "sket_ap_sketch_title_thumb"
+msgstr "Create pictures"
+
+# Calculator
+msgid "calc_ap_calculator_thumb"
+msgstr "Make calculations"
+
+# Clock
+msgid "cloc_ap_application_title_thumb"
+msgstr "See world clock"
+
+# Chess
+msgid "game_ap_chess_name_thumb"
+msgstr "Play Chess"
+
+# Blocks
+msgid "game_ap_blocks_name_thumb"
+msgstr "Play Blocks"
+
+# Marbles
+msgid "game_ap_lmarbles_name_thumb"
+msgstr "Play Mahjong"
+
+# Mahjong
+msgid "game_ap_mahjong_name_thumb"
+msgstr "Play Marbles"
+
+# PDF reader
+msgid "pdvi_ap_application_title_thumb"
+msgstr "View PDF documents"
+
+# News reader
+msgid "rss_ap_news_reader_thumb"
+msgstr "View feeds"
+
+# Address book
+msgid "addr_ap_address_book_thumb"
+msgstr "View/manage contact details"
+
+# Chat
+msgid "chat_ap_chat_thumb"
+msgstr "Start new chat"
+
+# Call
+msgid "voip_ap_feature_name_thumb"
+msgstr "Start audio/video call"
+
+# Application installer
+msgid "ai_ap_application_installer_thumb"
+msgstr "Manage applications"
+
+# Control panel
+msgid "copa_ap_cp_name_thumb"
+msgstr "Control device settings"
+
+# Connection manager
+msgid "conn_ap_connmanager_thumb"
+msgstr "Manage connections"
+
+# Teach handwriting
+msgid "inpu_ap_hwr_training_title_thumb"
+msgstr "Teach personal handwriting"
+
+# Help
+msgid "help_ap_help_application_thumb"
+msgstr "Get help"
+
+# Search
+msgid "srch_ap_search_thumb"
+msgstr "Search documents"
+
+# Backup/Restore
+msgid "back_ap_feature_name_thumb"
+msgstr "Preserve data"
+
 # Menu item
 msgid "tana_fi_home"
 msgstr "Home"
+
+# Home
+msgid "tana_fi_home_thumb"
+msgstr "Return to Home"
 
 # Confirmation note text
 msgid "qgn_nc_apkil_notresponding"
@@ -194,7 +306,7 @@ msgstr "Clock"
 msgid "ws_ap_web_shortcut"
 msgstr "Web shortcut"
 
-# Internet radio applet name
+# Internet radio name
 msgid "iradio_ia_label"
 msgstr "Internet radio"
 
@@ -202,7 +314,7 @@ msgstr "Internet radio"
 msgid "addr_me_home_dial"
 msgstr "Speed contacts"
 
-# Internet search applet name
+# Internet search
 msgid "srch_ti_applet_internet_search"
 msgstr "Internet search"
 
@@ -232,7 +344,7 @@ msgstr "Set background image…"
 
 # Home menu item
 msgid "home_me_tools_personalisation"
-msgstr "Personalisation…"
+msgstr "Themes…"
 
 # Home menu item
 msgid "home_me_tools_screen_calibration"
@@ -336,7 +448,7 @@ msgstr "Preview"
 
 # Button in Set background image –dialog
 msgid "home_bd_set_backgr_image"
-msgstr "Image"
+msgstr "Browse"
 
 # Button in Set background image –dialog
 msgid "home_bd_set_backgr_cancel"
@@ -354,30 +466,36 @@ msgstr "Select"
 msgid "home_li_no_images"
 msgstr "(no images)"
 
-# Progress banner (with animation) shown to user when the view is changed to layout mode. The banner will be shown for at least 2.5 seconds or if the operation takes longer, then as long as the operation takes. 
-msgid "home_ib_layout_mode"
+# Progress banner (with animation) shown to user when the view is changed to layout mode. 
+msgid "home_pb_layout_mode"
 msgstr "Opening layout mode"
 
 # Information note shown to user when some of the applets are overlapping and accepting layout is not possible
 msgid "home_ni_overlapping_applets"
-msgstr "Some of the applets are overlapping. Try closing or moving them."
+msgstr ""
+"Some of the applets are overlapping.\n"
+"Try closing or moving them."
 
 # Confirmation note shown to user when s/he has tapped cancel in layout mode
 msgid "home_nc_cancel_layout"
 msgstr "Discard the layout you have created?"
 
-# Yes-button in Cancel-layout note
+# OK-button in Cancel-layout note
 msgid "home_bd_cancel_layout_yes"
-msgstr "Yes"
+msgstr "OK"
 
-# No-button in Cancel-layout note
+# Cancel-button in Cancel-layout note
 msgid "home_bd_cancel_layout_no"
-msgstr "No"
+msgstr "Cancel"
 
 # Cancel note shown to the user when the background image is loaded
 msgid "home_nw_loading_image"
 msgstr "Loading image"
 
-# Information banner shown to the user when the user tries to select a menu item that is dimmed
+# Information banner shown to the user when the user tries to select dimmed ‘Applets settings’ command
 msgid "home_ib_not_available"
-msgstr "Not available"
+msgstr "No settings available"
+
+# Information banner shown to the user when the user tries to select dimmed ‘Edit layout’ command
+msgid "home_ib_select_applets"
+msgstr "Select applets first"
