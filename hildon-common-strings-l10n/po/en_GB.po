@@ -3,16 +3,16 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: hildon-common-strings 6.0\n"
+"Project-Id-Version: hildon-common-strings 7.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.05.15 16:36+0300\n"
-"PO-Revision-Date: 2006.05.15 16:36+0300\n"
+"POT-Creation-Date: 2006.10.09 17:33+0300\n"
+"PO-Revision-Date: 2006.10.09 17:33+0300\n"
 "Last-Translator:\n"
 "Language-Team: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n!=1;\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #  Displayed if the user tries to accept a dialog while a field that requires to be filled is missing. The focus is moved to the empty field.
 msgid "ckct_ib_enter_a_value"
@@ -23,18 +23,6 @@ msgstr "Enter value first"
 # NOTE: Fields that require text are generally not empty by default, but are pre-seeded with suitable text. This notification is displayed where the user deletes this default text and does not supply an alternative. Text is required since the platform does not support saving unnamed entries.
 msgid "ckct_ib_enter_some_text"
 msgstr "Enter text first"
-
-# Displayed if the user tries move focus away from a number editor field or tries to accept a dialog immediately after deleting contents of a number editor.
-msgid "ckct_ib_set_a_value_within_range"
-msgstr "Set a value between %d and %d"
-
-# Displayed if the user tries to enter too large a value to a number-based field, such as Integer Field or Date Field.
-msgid "ckct_ib_maximum_value"
-msgstr "Maximum value is %d"
-
-# Displayed if the user tries to enter too small a value to a number-based field, such as Integer Field or Date Field.
-msgid "ckct_ib_minimum_value"
-msgstr "Minimum value is %d"
 
 #  Text in 'Maximum characters reached' information banner - various dialogs
 msgid "ckdg_ib_maximum_characters_reached"
@@ -59,10 +47,6 @@ msgstr " Start date must be earlier than end date "
 #  Displayed where two time fields are used to specify a time range, and the start time defined by the user is later than the end time. Focus is returned to the field and characters in the field are highlighted.
 msgid "ckct_ib_set_start_before_end_time"
 msgstr "Start time must be earlier than end time"
-
-# Displayed when the user enters a date where the values of the fields of the Date Field are all within their value range, but the combination does not exist as a date, e.g. 31.02.2002. Focus is returned to the first date ‘fieldlet’ (i.e. day number in UK date format) and characters in the field are highlighted. Field contents are reset to the nearest valid value to what the user input.
-msgid "ckct_ib_date_does_not_exist"
-msgstr "Invalid date"
 
 #  Displayed if the user selects a copy command and the copying is done successfully.
 msgid "ecoc_ib_edwin_copied"
@@ -312,7 +296,11 @@ msgstr "Enter the text to be found"
 msgid "ckdg_pb_updating"
 msgstr "Updating"
 
-# Displayed, if the name of the file copied from other systems (e.g. from PC through USB) is too long for the Sputnik+/OSSO file system.
+# Displayed when the user attempts to select and open command when nothing has been selected to topen, e.g. there are no files in a list view and consequently nothing is in focus to open.
+msgid "ckct_ib_nothing_to_open"
+msgstr "Nothing to open"
+
+# Displayed, if the name of the file copied from other systems (e.g. from PC through USB) is too long for the Gagarin/OSSO file system.
 msgid "file_ib_name_too_long"
 msgstr "Name too long"
 
@@ -336,10 +324,6 @@ msgstr "Unable to copy or move a subfolder within the original folder"
 msgid "ckdg_ib_unable_to_copy_folder_into_itself"
 msgstr "Unable to copy folder into itself"
 
-# This information banner is shown when the user tries to replace a folder with a folder it already contains
-msgid "ckdg_ib_unable_to_replace_folder_with_folder_it_contains"
-msgstr "Unable to replace a folder with a folder it contains"
-
 # This information banner is shown when the user tries to move a folder into current location.
 msgid "ckdg_ib_unable_to_move_to_current_location"
 msgstr "Unable to move to current location"
@@ -348,6 +332,10 @@ msgstr "Unable to move to current location"
 msgid "ckdg_ib_nothing_to_rename"
 msgstr "Nothing to rename"
 
+# Displayed if the user selects the Duplicate command when the view is empty (no item is selected).
+msgid "ckdg_ib_nothing_duplicate"
+msgstr "Nothing to duplicate"
+
 # Displayed if the user selects the Sort command when the view is empty (no item is selected).
 msgid "ckdg_ib_nothing_to_sort"
 msgstr "Nothing to sort"
@@ -355,30 +343,6 @@ msgstr "Nothing to sort"
 # Displayed  if the user attempts to paste a file or files in the clipboard to the location from which they were cut.
 msgid "ckdg_ib_unable_to_paste_to_same_location"
 msgstr "Unable to paste in original location"
-
-# Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
-msgid "ckct_ib_min_allowed_duration_hts"
-msgstr "Minimum allowed duration is %02d:%02d:%02d"
-
-# Displayed if the user attempts to enter a duration that is larger than the maximum value of a Date Editor widget.
-msgid "ckct_ib_max_allowed_duration_hts"
-msgstr "Maximum allowed duration is %02d:%02d:%02d "
-
-# Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
-msgid "ckct_ib_min_allowed_duration_ddd"
-msgstr "Minimum allowed duration is %02d:%02d:%02d"
-
-# Displayed if the user attempts to enter a duration that is larger than the maximum value of a Date Editor widget.
-msgid "ckct_ib_max_allowed_duration_ddd"
-msgstr "Maximum allowed duration is %02d:%02d:%02d"
-
-# Displayed if the user attempts to enter a duration that is smaller than the minimum value of a Date Editor widget.
-msgid "ckct_ib_min_allowed_duration_d"
-msgstr "Minimum allowed duration is %d"
-
-# Displayed if the user attempts to enter a duration that is larger than the maximum value of a Date Editor widget.
-msgid "ckct_ib_max_allowed_duration_d"
-msgstr "Maximum allowed duration is %d"
 
 # Displayed if the user selects the Clear all Marks command when no item already marked.
 msgid "ckdg_ib_no_marks_to_clear"
@@ -450,6 +414,10 @@ msgstr ""
 # 
 msgid "sfil_ib_nothing_to_view"
 msgstr "Nothing to view"
+
+# Presented when user tries to send data via Bluetooth or Email, but the operation cannot be completed
+msgid "sfil_ib_unable_to_send"
+msgstr "Unable to send"
 
 #  this is a cancel note displayed if a pasting operation will take a significant amount of time
 msgid "ckct_nw_pasting"
