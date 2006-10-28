@@ -3,10 +3,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: osso-application-installer 6.0\n"
+"Project-Id-Version: osso-application-installer 7.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.08.29 11:02+0300\n"
-"PO-Revision-Date: 2006.08.29 11:02+0300\n"
+"POT-Creation-Date: 2006.10.09 17:33+0300\n"
+"PO-Revision-Date: 2006.10.09 17:33+0300\n"
 "Last-Translator:\n"
 "Language-Team: en_GB\n"
 "MIME-Version: 1.0\n"
@@ -580,9 +580,9 @@ msgstr "Add catalogue"
 # Informative text in Add catalogue –dialog, where %s is the name of the catalogue
 msgid "ai_ia_add_catalogue_text"
 msgstr ""
-"In order to install software from this source a catalogue must be added. "
-"Add catalogue now?\n"
-"Catalogue name: %s"
+"In order to install software from this source a catalogue must be added. Add "
+"catalogue now?\n"
+"%s"
 
 # Informative text in Add catalogue –dialog, where %s is the name of the catalogue
 msgid "ai_ia_add_catalogue_text2"
@@ -933,7 +933,7 @@ msgstr ""
 "Unknown certificate error.\n"
 "Connection will be refused."
 
-# Updating the list of packages fails because:
+# Updating the whole list of packages fails because:
 # The server is not available
 # The package list is not available
 # Verifying the signature fails -> the package list is considered as corrupted
@@ -941,6 +941,10 @@ msgid "ai_ni_update_list_not_successful"
 msgstr ""
 "Unable to refresh list.\n"
 "Last refreshed list is shown."
+
+# Updating the list of packages fails partly, because eg. one of the catalogues is not available. But the list of packages can be partly refreshed.
+msgid "ai_ni_update_partly_successful"
+msgstr "Unable to refresh all catalogues"
 
 # Downloading the package fails (eg. connection is lost)
 msgid "ai_ni_error_download_failed"
@@ -1066,6 +1070,7 @@ msgstr ""
 "Unable to cancel.\n"
 "Please wait."
 
-# The user tries to install the same package again
+# The user tries to single-click-install the same package and catalogue again
+# 
 msgid "ai_ni_package_installed"
-msgstr "%s already installed."
+msgstr "%s already installed"

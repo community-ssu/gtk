@@ -5,10 +5,10 @@
 
 msgid ""
 msgstr ""
-"Project-Id-Version: osso-application-installer 6.0\n"
+"Project-Id-Version: osso-application-installer 7.0\n"
 "Report-Msgid-Bugs-To: rami.abbad@nokia.com\n"
-"POT-Creation-Date: 2006.08.29 11:02+0300\n"
-"PO-Revision-Date: 2006.08.29 11:02+0300\n"
+"POT-Creation-Date: 2006.10.09 17:33+0300\n"
+"PO-Revision-Date: 2006.10.09 17:33+0300\n"
 "Last-Translator:\n"
 "Language-Team: Engineering English\n"
 "MIME-Version: 1.0\n"
@@ -903,12 +903,16 @@ msgstr "Certificate version not supported.\nConnection will be refused."
 msgid "ai_ni_secure_connection_error"
 msgstr "Unknown certificate error.\nConnection will be refused."
 
-# Updating the list of packages fails because:
+# Updating the whole list of packages fails because:
 # The server is not available
 # The package list is not available
 # Verifying the signature fails -> the package list is considered as corrupted
 msgid "ai_ni_update_list_not_successful"
 msgstr "Unable to refresh list.\nLast refreshed list is shown."
+
+# Updating the list of packages fails partly, because eg. one of the catalogues is not available. But the list of packages can be partly refreshed.
+msgid "ai_ni_update_partly_successful"
+msgstr "Unable to refresh all catalogues"
 
 # Downloading the package fails (eg. connection is lost)
 msgid "ai_ni_error_download_failed"
@@ -1006,7 +1010,8 @@ msgstr "Unable to install.\n Application package is incompatible with current so
 msgid "ai_ib_unable_cancel"
 msgstr "Unable to cancel.\nPlease wait."
 
-# The user tries to install the same package again
+# The user tries to single-click-install the same package and catalogue again
+# 
 msgid "ai_ni_package_installed"
-msgstr "%s already installed."
+msgstr "%s already installed"
 
