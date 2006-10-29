@@ -99,8 +99,9 @@ using namespace std;
 
    COMMUNICATING WITH THE FRONTEND
 
-   COMMAND DISPATCHER
+   STARTUP AND COMMAND DISPATCHER
 
+   CACHE HANDLING
 */
 
 
@@ -229,8 +230,8 @@ drain_fd (int fd)
     ;
 }
 
-/* Get a lock as with GetLock, breaking it if needed and allowed
-   by flag_break_locks.
+/* Get a lock as with GetLock from libapt-pkg, breaking it if needed
+   and allowed by flag_break_locks.
 
    We do this so that the users can not lock themselves out.  We break
    locks instead of not locking since noisily breaking a lock is
@@ -259,9 +260,9 @@ ForceLock (string File, bool Errors = true)
 /** COMMUNICATING WITH THE FRONTEND.
  
    The communication with the frontend happens over four
-   unidirectional fifos: requests are read from INPUT_FD and
-   responses are sent back via OUTPUT_FD.  No new requests is read
-   until the response to the current one has been completely sent.
+   unidirectional fifos: requests are read from INPUT_FD and responses
+   are sent back via OUTPUT_FD.  No new request is read until the
+   response to the current one has been completely sent.
 
    The data read from INPUT_FD must follow the request format
    specified in <apt-worker-proto.h>.  The data written to OUTPUT_FD
@@ -272,12 +273,12 @@ ForceLock (string File, bool Errors = true)
    currently no meaning defined for the actual bytes that are sent,
    the mere arrival of a byte triggers the abort.
 
-   When using the apt-pkg PackageManager, it is configured in such a
-   way that it sends it "pmstatus:" message lines to STATUS_FD.
+   When using the libapt-pkg PackageManager, it is configured in such
+   a way that it sends it "pmstatus:" message lines to STATUS_FD.
    Other asynchronous status reports are sent as spontaneous
    APTCMD_STATUS responses via OUTPUT_FD.  'Spontaneous' should mean
-   that no request is required to receive APTCMD_STATUS responses.
-   In fact, APTCMD_STATUS requests are treated as an error by the
+   that no request is required to receive APTCMD_STATUS responses.  In
+   fact, APTCMD_STATUS requests are treated as an error by the
    apt-worker.
 
    Logging and debug output, and output from dpkg and the maintainer
@@ -408,6 +409,17 @@ void cmd_remove_package ();
 void cmd_clean ();
 void cmd_get_file_details ();
 void cmd_install_file ();
+
+/* Commands can request the package cache to be refreshed by calling
+   NEED_CACHE_INIT before they return.  The cache will then be
+   reconstructed after sending the response and before starting to
+   handle the next command.  In this way, the cache reconstruction
+   happens in the background.
+
+   XXX - However, APTCMD_STATUS messages are still being sent when the
+         cache is reconstructed in the background and the UI has some
+         ugly logic to deal with that.
+*/
 
 static bool init_cache_after_request;
 
@@ -557,7 +569,51 @@ main (int argc, char **argv)
     handle_request ();
 }
 
-/** COMMAND HANDLERS
+/** CACHE HANDLING
+
+    This section contains some general purpose functions to maintain
+    the cache of the package database.
+
+    The package cache can represent both the 'current' situation
+    (i.e., the union of the information from /var/lib/dpkg/status and
+    the various Packages files downloaded from repositories) and a
+    'desired' situation.
+
+    A operation such as installing a package is performed by modifying
+    the 'desired' situation in the cache and if that leads to a
+    consistent configuration, the 'current' situation is brought in
+    line with the 'desired' one by downloading the needed archives and
+    running dpkg in an approriate way.
+
+    We have our own idea of what should happen when a new package (or
+    a new version of a package) is installed, for example, and the
+    functions in this section implement this idea.  These principal
+    functions are available:
+
+    - cache_init
+
+    This function creates or recreates the cache from
+    /var/lib/dpkg/status and the various Packages file from the
+    repositories.
+
+    - cache_reset ()
+
+    This function resets the 'desired' state of the cache to be
+    identical to the 'current' one.
+
+    - mark_for_install ()
+
+    This function modifies the 'desired' state of the cache to reflect
+    the installation of the given package.  It will try to achieve a
+    consistent 'desired' configuration by installing mising
+    dependencies etc.  In general, it implements our own installation
+    smartness.
+
+    - mark_for_remove ()
+
+    This function modifies the 'desired' state of the cache to reflect
+    the removal of the given package.  As with mark_for_install,
+    mark_for_removal implements our own removal smartness.
  */
 
 /* We only report real progress information when reconstructing the
@@ -1091,6 +1147,9 @@ mark_for_remove (pkgCache::PkgIterator &pkg, bool only_maybe = false)
 	}
     }
 }
+
+/** COMMAND HANDLERS
+ */
 
 /* APTCMD_GET_PACKAGE_LIST 
 
