@@ -74,12 +74,12 @@ struct view {
   GtkWidget *(*maker) (view *);
 };
 
-GtkWidget *main_vbox;
-GtkWidget *main_trail;
+GtkWidget *main_vbox = NULL;
+GtkWidget *main_trail = NULL;
 GtkWidget *device_label = NULL;
 GtkWidget *cur_view = NULL;
-view *cur_view_struct;
-GList *cur_path;
+view *cur_view_struct = NULL;
+GList *cur_path = NULL;
 
 static GList *
 make_view_path (view *v)
@@ -94,7 +94,10 @@ void
 show_view (view *v)
 {
   if (cur_view)
-    gtk_widget_destroy (cur_view);
+    {
+      gtk_container_remove(GTK_CONTAINER(main_vbox), cur_view);
+      cur_view = NULL;
+    }
 
   set_details_callback (NULL, NULL);
   set_operation_label (NULL, NULL);
@@ -110,6 +113,7 @@ show_view (view *v)
   hildon_bread_crumb_trail_set_path (main_trail, cur_path);
   
   gtk_box_pack_start (GTK_BOX (main_vbox), cur_view, TRUE, TRUE, 10);
+  gtk_widget_show(main_vbox);
 }
 
 static void
@@ -330,6 +334,7 @@ make_main_view (view *v)
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
 
   gtk_widget_show_all (view);
+  g_object_unref(btn_group);
 
   get_package_list_info (NULL);
 
@@ -713,9 +718,9 @@ get_package_list_reply (int cmd, apt_proto_decoder *dec, void *data)
 	  info->available_short_description = dec->decode_string_dup ();
 	  available_icon = dec->decode_string_in_place ();
 
-	  info->installed_icon = pixbuf_from_base64 (installed_icon);
-	  if (available_icon)
-	    info->available_icon = pixbuf_from_base64 (available_icon);
+          info->installed_icon = pixbuf_from_base64 (installed_icon);
+          if (available_icon)
+            info->available_icon = pixbuf_from_base64 (available_icon);
 	  else
 	    {
 	      info->available_icon = info->installed_icon;
@@ -935,7 +940,10 @@ get_intermediate_package_info (package_info *pi,
       intermediate_data = data;
     }
   else
-    printf ("package info request already pending.\n");
+    {
+      printf ("package info request already pending.\n");
+      pi->unref();
+    }
 
   if (cur_packages_for_info == NULL && old_intermediate_info == NULL)
     get_next_package_info (NULL, NULL, false);
@@ -2486,7 +2494,7 @@ window_destroy (GtkWidget* widget, gpointer data)
 }
 
 static void
-main_window_realized (GtkWidget* widget, gpointer data)
+main_window_realized (GtkWidget* widget, gpointer unused)
 {
   GdkWindow *win = widget->window;
 

@@ -501,7 +501,12 @@ static void
 create_progress (const gchar *title, bool with_cancel)
 {
   if (progress_dialog)
-    gtk_widget_destroy (progress_dialog);
+    {
+      gtk_widget_destroy (progress_dialog);
+      progress_dialog = NULL;
+      progress_bar = NULL;
+    }
+
 
   // XXX - we make the title slightly longer so that there is a bit
   //       room to grow without having to resize the dialog or risking
@@ -644,8 +649,10 @@ hide_progress ()
   if (progress_dialog)
     {
       stop_pulsing ();
+      gtk_widget_destroy (GTK_WIDGET(progress_bar));
       gtk_widget_destroy (progress_dialog);
       progress_dialog = NULL;
+      progress_bar = NULL;
     }
   current_status_operation = op_general;
 }
@@ -1004,7 +1011,7 @@ static void set_global_package_list (GList *packages,
 				     package_info_callback *selected,
 				     package_info_callback *activated);
 
-static GList *global_packages;
+static GList *global_packages = NULL;
 
 static gboolean
 global_package_list_key_pressed (GtkWidget * widget,
@@ -1209,7 +1216,6 @@ set_global_package_list (GList *packages,
   int pos = 0;
   for (GList *p = global_packages; p; p = p->next)
     {
-      GtkTreeIter iter;
       package_info *pi = (package_info *)p->data;
       pi->model = GTK_TREE_MODEL (global_list_store);
       gtk_list_store_insert_with_values (global_list_store, &pi->iter,
@@ -1233,7 +1239,7 @@ global_package_info_changed (package_info *pi)
     global_row_changed (&pi->iter);
 }
 
-static GtkWidget *global_section_list;
+static GtkWidget *global_section_list = NULL;
 static section_activated *global_section_activated;
 
 static void
@@ -2055,7 +2061,7 @@ get_http_proxy ()
     {
       char *user = NULL;
       char *password = NULL;
-      char *host;
+      char *host = NULL;
       gint port;
 
       if (gconf_client_get_bool (conf, "/system/http_proxy/use_authentication",
@@ -2082,6 +2088,10 @@ get_http_proxy ()
 	}
       else
 	proxy = g_strdup_printf ("http://%s:%d", host, port);
+
+      g_free (user);
+      g_free (password);
+      g_free (host);
     }
   else
     proxy = g_strdup (getenv ("http_proxy"));
@@ -2112,12 +2122,13 @@ get_https_proxy ()
   */
   gconf_client_clear_cache (conf);
 
-  const char *host =
+  char *host =
     gconf_client_get_string (conf, "/system/proxy/secure_host", NULL);
   int port = gconf_client_get_int (conf, "/system/proxy/secure_port", NULL);
 
   if (host && host[0])
     proxy = g_strdup_printf ("http://%s:%d", host, port);
+  g_free(host);
 
   g_object_unref (conf);
 
