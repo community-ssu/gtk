@@ -1,3 +1,15 @@
+2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Disable dialog separator (N43342) for:
+
+        * src/util.cc (ask_yes_no_with_details, 
+	ask_yes_no_with_arbitrary_details, scare_user_with_legalese).
+	* src/details.cc (show_with_details).
+	* src/log.cc (show_log).
+	* src/repo.cc (show_repo_edit_dialog, sources_list_reply).
+	* src/search.cc	(show_search_dialog).
+	* src/settings.cc (show_settings_dialog).
+
 2006-10-26  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.36.1

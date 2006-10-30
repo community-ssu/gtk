@@ -414,6 +414,7 @@ show_with_details (package_info *pi, bool show_problems)
 					GTK_RESPONSE_OK,
 					NULL);
 
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   set_dialog_help (dialog, AI_TOPIC ("packagedetailsview"));
   respond_on_escape (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 

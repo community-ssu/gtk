@@ -175,6 +175,7 @@ ask_yes_no_with_details (const gchar *title,
      _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
 
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
 		     gtk_label_new (question));
 
@@ -206,6 +207,7 @@ ask_yes_no_with_arbitrary_details (const gchar *title,
      _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
 
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   GtkWidget *label = gtk_label_new (question);
   gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
@@ -408,6 +410,7 @@ scare_user_with_legalese (bool sure,
      _("ai_bd_notice_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
 
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   const char *text = (sure
 		      ? _("ai_nc_non_verified_package")
 		      : _("ai_nc_unsure_package"));

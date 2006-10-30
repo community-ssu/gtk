@@ -171,6 +171,7 @@ show_log ()
 					NULL);
   respond_on_escape (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   set_dialog_help (dialog, AI_TOPIC ("log"));
 
   text_view = make_small_text_view (log_text? log_text->str : "");

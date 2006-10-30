@@ -282,6 +282,7 @@ show_settings_dialog ()
 					_("ai_bd_settings_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   set_dialog_help (dialog, AI_TOPIC ("settings"));
 
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG(dialog)->vbox),

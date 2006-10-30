@@ -138,6 +138,7 @@ show_search_dialog ()
 					_("ai_bd_search_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   set_dialog_help (dialog, AI_TOPIC ("search"));
   //gtk_widget_set_usize (dialog, 400, -1);
   vbox = GTK_DIALOG (dialog)->vbox;

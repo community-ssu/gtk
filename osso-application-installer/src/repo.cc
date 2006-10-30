@@ -386,6 +386,8 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
 					  GTK_RESPONSE_CANCEL,
 					  NULL);
 
+  gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
+
   // XXX - there is no help for the "edit" version of this dialog.
   //
   if (isnew)
@@ -903,6 +905,7 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
       gtk_window_set_transient_for (GTK_WINDOW (dialog), get_main_window ());
       gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
       
+      gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
       gtk_dialog_add_button (GTK_DIALOG (dialog), 
 			     _("ai_bd_repository_new"), REPO_RESPONSE_NEW);
       c->edit_button = 
