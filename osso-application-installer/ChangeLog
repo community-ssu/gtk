@@ -1,5 +1,16 @@
 2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (get_small_font): Changes the way get_small_label is
+	calculated. Instead of using osso-SmallFont, it uses
+	PANGO_SCALE_SMALL with osso-SystemFont. Should make fonts in show
+	details dialog and log bigger (N32242, N32249).
+
+	* src/details.cc (add_table_field): Added ellipsize mode parameter
+	and use it for the value label.  Don't line wrap value label.
+	(show_with_details): Ellipsize from start for the maintainer.
+
+2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
 	Disable dialog separator (N43342) for:
 
         * src/util.cc (ask_yes_no_with_details, 
