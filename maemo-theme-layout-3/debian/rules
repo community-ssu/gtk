@@ -96,7 +96,7 @@ binary-indep: build install
 binary-arch: build install
 	# Make sure that dpkg-genchanges will not fail,
 	# but there is nothing else to do.
-	touch >debian/files
+	touch debian/files
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install 
