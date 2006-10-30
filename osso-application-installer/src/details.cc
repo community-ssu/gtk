@@ -185,7 +185,8 @@ decode_summary (apt_proto_decoder *dec, package_info *pi, detail_kind kind)
 
 static void
 add_table_field (GtkWidget *table, int row,
-		 const char *field, const char *value)
+		 const char *field, const char *value,
+		 PangoEllipsizeMode em = PANGO_ELLIPSIZE_END)
 {
   GtkWidget *label;
 
@@ -201,7 +202,9 @@ add_table_field (GtkWidget *table, int row,
 
       label = make_small_label (value);
       gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.0);
-      gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
+      gtk_label_set_line_wrap (GTK_LABEL (label), FALSE);
+      gtk_label_set_ellipsize (GTK_LABEL (label), em);
+
       gtk_table_attach (GTK_TABLE (table), label, 1, 2, row, row+1,
 			GtkAttachOptions (GTK_EXPAND | GTK_FILL), GTK_FILL,
 			0, 0);
@@ -308,7 +311,8 @@ show_with_details (package_info *pi, bool show_problems)
     short_description = pi->installed_short_description;
   add_table_field (table, 1, "", short_description);
 
-  add_table_field (table, 2, _("ai_fi_details_maintainer"), pi->maintainer);
+  add_table_field (table, 2, _("ai_fi_details_maintainer"),
+		   pi->maintainer, PANGO_ELLIPSIZE_START);
 
   add_table_field (table, 3, _("ai_fi_details_status"), status);
 

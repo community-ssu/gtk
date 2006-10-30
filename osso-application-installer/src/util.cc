@@ -724,19 +724,25 @@ static PangoFontDescription *
 get_small_font (GtkWidget *widget)
 {
   static PangoFontDescription *small_font = NULL;
+  gint size = 0;
 
   if (small_font == NULL)
     {
       GtkStyle *fontstyle = NULL;
 
       fontstyle = gtk_rc_get_style_by_paths (gtk_widget_get_settings (GTK_WIDGET(widget)),
-                                             "osso-SmallFont", NULL,
+                                             "osso-SystemFont", NULL,
                                              G_TYPE_NONE);
   
-      if (fontstyle)
+      if (fontstyle) {
         small_font = pango_font_description_copy (fontstyle->font_desc);
-      else
-        small_font = pango_font_description_from_string ("Nokia Sans 11.625");
+      } else {
+        small_font = pango_font_description_from_string ("Nokia Sans 16.75");
+      }
+      size = pango_font_description_get_size(small_font);
+      size *= PANGO_SCALE_SMALL;
+      pango_font_description_set_size(small_font, size);
+       
     }
 
   return small_font;
