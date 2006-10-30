@@ -1,4 +1,20 @@
 2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
+ 
+ 	* src/main.cc: initialize lots of global vars to NULL.
+ 	* src/main.cc (show_view): now the previous child is removed
+ 	with gtk_container_remove. Should be cleaner.
+ 	* src/main.cc (make_main_view): unref the buttons size group
+ 	after setting it up.  (N38397)
+ 	* src/main.cc (get_intermediate_package_info): unref a new 
+ 	package info reference if it's already being loaded.  (N38397)
+ 	* src/util.cc (create_progress, set_progress): nullify global
+ 	references to widgets of progress dialog when destroyed.
+ 	* src/util.cc (get_https_proxy): don't leak the gconf client
+ 	response.
+	(get_http_proxy): Free strings gotten from
+	gconf_client_get_string.
+
+2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.cc (get_small_font): Changes the way get_small_label is
 	calculated. Instead of using osso-SmallFont, it uses
