@@ -1307,7 +1307,7 @@ read_pipe_from_child (GIOChannel   *source,
       return FALSE;
     }
 
-  if (priv->loading_note)
+  if (priv->loading_note && GTK_IS_WIDGET (priv->loading_note))
     {
       was_cancelled = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (priv->loading_note),
                                                           "is-cancelled"));
@@ -1347,7 +1347,8 @@ loading_image_banner_response (GtkDialog *dialog,
 			       gint       response,
 			       gpointer   user_data)
 {
-  if (response == GTK_RESPONSE_CANCEL)
+  if (response == GTK_RESPONSE_CANCEL ||
+      response == GTK_RESPONSE_DELETE_EVENT)
     {
       BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
       
@@ -1423,6 +1424,9 @@ background_manager_refresh_from_cache (BackgroundManager *manager)
     {
       g_warning ("Unable to load background from cache: %s",
                  load_error->message);
+
+      g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, load_error);
+
       g_error_free (load_error);
 
       return FALSE;
@@ -1430,8 +1434,14 @@ background_manager_refresh_from_cache (BackgroundManager *manager)
   else
     {
       g_debug ("Background loaded from cache");
+     
+      g_signal_emit (manager, manager_signals[LOAD_COMPLETE], 0);
       
-      g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+      if (priv->current->is_preview)
+        g_signal_emit (manager, manager_signals[PREVIEW], 0, pixbuf);
+      else
+        g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
+
       g_object_unref (pixbuf);
 
       return TRUE;
@@ -1521,7 +1531,6 @@ background_manager_create_background (BackgroundManager *manager,
           priv->loading_note = NULL;
         }
       
-      g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
       g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, err);
 
       g_error_free (err);
@@ -2360,7 +2369,8 @@ background_manager_discard_preview (BackgroundManager *manager,
       if (pixbuf)
         {
           g_debug (G_STRLOC ": reloading old background");
-
+        
+          g_signal_emit (manager, manager_signals[LOAD_COMPLETE], 0);
           g_signal_emit (manager, manager_signals[CHANGED], 0, pixbuf);
 
           g_object_unref (pixbuf);

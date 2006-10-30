@@ -83,9 +83,11 @@ typedef struct
   GtkWidget *mode_combo;
   GtkWidget *color_button;
   
-  guint applied     : 1;
-  guint built_in    : 1;
-  guint has_preview : 1;
+  guint applied         : 1;
+  guint built_in        : 1;
+  guint has_preview     : 1;
+  guint discard_preview : 1;
+  guint apply_preview   : 1;
 } ResponseData;
 
 static gchar *
@@ -405,6 +407,8 @@ home_bgd_apply (ResponseData *resp_data)
 
   if (!resp_data->has_preview)
     background_manager_update_preview (manager);
+  else
+    background_manager_refresh_from_cache (manager);
 }
 
 static void
@@ -480,17 +484,23 @@ home_bgd_load_error_cb (BackgroundManager *manager,
                         gpointer           data)
 {
   ResponseData *resp_data = data;
+  if (!resp_data)
+    return;
   
   g_debug (G_STRLOC ": load error: %s", error->message);
 
-  background_manager_discard_preview (manager, TRUE);
-
   if (resp_data->dialog && !GTK_WIDGET_VISIBLE (resp_data->dialog))
     {
+      resp_data->discard_preview = TRUE;
+      
       gtk_widget_destroy (resp_data->dialog);
     }
   else
-    resp_data->has_preview = FALSE;
+    {
+      background_manager_discard_preview (manager, TRUE);
+      
+      resp_data->has_preview = FALSE;
+    }
 }
 
 static void
@@ -498,17 +508,23 @@ home_bgd_load_cancel_cb (BackgroundManager *manager,
                          gpointer           data)
 {
   ResponseData *resp_data = data;
+  if (!resp_data)
+    return;
   
   g_debug (G_STRLOC ": load cancelled");
 
-  background_manager_discard_preview (manager, TRUE);
-
   if (resp_data->dialog && !GTK_WIDGET_VISIBLE (resp_data->dialog))
     {
+      resp_data->discard_preview = TRUE;
+      
       gtk_widget_destroy (resp_data->dialog);
     }
   else
-    resp_data->has_preview = FALSE;
+    {
+      background_manager_discard_preview (manager, TRUE);
+      
+      resp_data->has_preview = FALSE;
+    }
 }
 
 static void
@@ -516,6 +532,8 @@ home_bgd_load_complete_cb (BackgroundManager *manager,
                            gpointer           data)
 {
   ResponseData *resp_data = data;
+  if (!resp_data)
+    return;
   
   g_debug (G_STRLOC ": load complete");
 
@@ -524,7 +542,8 @@ home_bgd_load_complete_cb (BackgroundManager *manager,
    */
   if (resp_data->dialog && !GTK_WIDGET_VISIBLE (resp_data->dialog))
     {
-      background_manager_apply_preview (manager);
+      resp_data->apply_preview = TRUE;
+      
       gtk_widget_destroy (resp_data->dialog);
     }
   else
@@ -537,6 +556,8 @@ home_bgd_destroy_cb (GtkWidget *widget,
 {
   BackgroundManager *manager;
   ResponseData *resp_data = data;
+  if (!resp_data)
+    return;
 
   g_debug (G_STRLOC ": background selection dialog destroyed");
 
@@ -551,6 +572,12 @@ home_bgd_destroy_cb (GtkWidget *widget,
   g_signal_handlers_disconnect_by_func (manager,
                                         G_CALLBACK (home_bgd_load_error_cb),
                                         resp_data);
+  
+  if (resp_data->discard_preview)
+    background_manager_discard_preview (manager, TRUE);
+
+  if (resp_data->apply_preview)
+    background_manager_apply_preview (manager);
   
   background_manager_pop_preview_mode (manager);
 
@@ -567,7 +594,6 @@ home_bgd_show_cb (GtkWidget *widget,
   
   manager = background_manager_get_default ();
   background_manager_push_preview_mode (manager);
-
 }
 
 /**
@@ -588,6 +614,7 @@ home_bgd_response_cb (GtkWidget *dialog,
   ResponseData *d = data;
   GtkComboBox *img_combo;
 
+#if 0
   g_debug ("response_data = {\n"
            "  img_combo    .= %s\n"
            "  mode_combo   .= %s\n"
@@ -602,7 +629,8 @@ home_bgd_response_cb (GtkWidget *dialog,
            d->applied ? "<true>" : "<false>",
            d->built_in ? "<true>" : "<false>",
            d->has_preview ? "<true>" : "<false>");
-  
+#endif
+
   switch (arg) 
     {
     case HILDON_HOME_SET_BG_RESPONSE_IMAGE:
@@ -701,6 +729,8 @@ home_bgd_dialog_run (GtkWindow * parent)
   resp_data->applied = FALSE;
   resp_data->built_in = FALSE;
   resp_data->has_preview = FALSE;
+  resp_data->discard_preview = FALSE;
+  resp_data->apply_preview = FALSE;
   
   bg_image_desc_base_dir = g_dir_open (HILDON_HOME_BG_DEFAULT_IMG_INFO_DIR,
 				       0,

@@ -1,5 +1,14 @@
 2006-10-30  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Desktop doesn't remember the background picture,
+	if preview used". Fixes: NB#45673
+	* hildon-home/background-manager.c: Also react to _RESPONSE_DELETE
+	from the cancel note
+	* hildon-home/hidon-home-background-dialog.c: Added
+	{discard,apply}_preview flags
+
+2006-10-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-restore-background-always.sh:
 	added backup restore script which removes the background
 	cache always after a restore. Fixes: NB#45950
