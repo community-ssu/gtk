@@ -1,3 +1,10 @@
+osso-gnomevfs-extra (UNRELEASED) unstable; urgency=low
+
+  * Added osso-uri-l10n-mr as an alternative of osso-uri-l10n-mr0 to
+    libossomime0 dependencies (M819).
+
+ -- 
+
 osso-gnomevfs-extra (1.8.1-1) unstable; urgency=low
 
   * Fixes: NB#43361, Moving a file to a directory with other case fails in

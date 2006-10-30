@@ -40,7 +40,7 @@ Description: OSSO GnomeVFS Extra debugging symbols
 Package: libossomime0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, osso-update-category-database (= ${Source-Version}), osso-uri-l10n-mr0
+Depends: ${shlibs:Depends}, osso-update-category-database (= ${Source-Version}), osso-uri-l10n-mr0 | osso-uri-l10n-mr
 Description: Library for activating an application to handle a certain mime type
  This package contains a library for activating an application to handle
  a certain mime type.
