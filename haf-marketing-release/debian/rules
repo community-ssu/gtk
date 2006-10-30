@@ -42,5 +42,9 @@ binary-indep: build install
 	dh_md5sums
 	dh_builddeb
 
+# Make it so that 'dpkg-genchanges -B' doesn't fail
+binary-arch:
+	touch debian/files
+
 binary: binary-indep
 .PHONY: clean binary-indep binary install 

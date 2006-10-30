@@ -1,3 +1,10 @@
+haf-marketing-release (0.3.3) unstable; urgency=low
+
+  * Added binary-arch target to debian/rules so that 'dpkg-buildpackage
+    -B' succeeds.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Oct 2006 16:50:30 +0200
+
 haf-marketing-release (0.3.2) unstable; urgency=low
 
   * Removed all mr0 packages, they are not for Sardine.
