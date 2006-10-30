@@ -94,7 +94,9 @@ binary-indep: build install
 
 # Build architecture-dependent files here.
 binary-arch: build install
-# Nothing to do here
+	# Make sure that dpkg-genchanges will not fail,
+	# but there is nothing else to do.
+	echo '' >debian/files
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install 
