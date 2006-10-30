@@ -1,3 +1,46 @@
+maemo-af-desktop (2.9.99-1) unstable; urgency=low
+
+  Applied fix to "Desktop doesn't remember the background picture,
+  if preview used". Fixes: NB#45673
+  * hildon-home/background-manager.c: Also react to _RESPONSE_DELETE
+  from the cancel note
+  * hildon-home/hidon-home-background-dialog.c: Added
+  {discard,apply}_preview flags
+
+  * hildon-home/hildon-home-restore-background-always.sh:
+  added backup restore script which removes the background
+  cache always after a restore. Fixes: NB#45950
+
+  * hildon-home/hildon-home-applet.[ch]: Moved close button and
+    resize handle Pixbuf to be class variables. Fixes: NB#45325
+
+  * hildon-status-bar/hildon-status-bar-main.c: Changed again the extension
+  panel to DIALOG window and set transient for root window.
+
+  * hildon-navigator/hn-app-switcher.c: Also update the menu
+    after a change in the stack
+
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - When removing a plugin re-arrange the panel from previous 
+  plugin. Fixes: NB#43110
+
+  * hildon-navigator/hildon-navigator-panel.c: Free the
+  gtk_container_get_children's list.
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - Free the library & category if we can't allocate the plugin.
+  - (arrange_items) Code cleanup
+
+  * hildon-status-bar/hildon-status-bar-main.c: Reverted
+   behavior on event DBus signal when destroying plugin itself.
+
+  * hildon-navigator/hn-app-switcher.c: Removed shutdown_ind DBus
+    signal handler and widget signal
+  * hildon-navigator/{hn-wm.c,hn-wm-memory.[ch]}: Removed
+    hn_wm_shutdown callback
+  Fixes: NB#43779
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 30 Oct 2006 16:05:58 +0200
+
 maemo-af-desktop (2.9.98-2) unstable; urgency=low
 
   * Added dependency to maemo-launcher when in DEB_BUILD_OPTIONS
