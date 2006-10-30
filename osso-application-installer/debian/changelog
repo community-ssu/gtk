@@ -1,3 +1,9 @@
+osso-application-installer (4.37) unstable; urgency=low
+
+  * Fixes: NB#43342, NB#32242, NB#32249.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Oct 2006 18:21:09 +0200
+
 osso-application-installer (4.36.1) unstable; urgency=low
 
   * preinst: Do not fail when /etc/apt/sources.list doesn't exist.
