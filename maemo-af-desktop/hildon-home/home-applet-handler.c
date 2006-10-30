@@ -531,8 +531,10 @@ GtkWidget *home_applet_handler_settings(HomeAppletHandler *handler,
     
     if (priv->applet_data)
     {
+      /* Temporary set the settings dialog as
+       * system-modal */
         return
-            priv->settings(priv->applet_data, parent);
+            priv->settings(priv->applet_data, /*parent*/NULL);
     }
     return NULL;
 }

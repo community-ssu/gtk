@@ -1,5 +1,10 @@
 2006-10-30  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-applet-handler.c: Temporary make
+	  home applet settings dialogs system-modal. Fixes: NB#37594
+
+2006-10-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.99
 
 2006-10-30  Johan Bilien <johan.bilien@nokia.com>
