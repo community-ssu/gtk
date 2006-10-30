@@ -1,3 +1,9 @@
+haf-marketing-release (0.3.2) unstable; urgency=low
+
+  * Removed all mr0 packages, they are not for Sardine.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Oct 2006 16:26:54 +0200
+
 haf-marketing-release (0.3.1) unstable; urgency=low
 
   * Added osso-uri-l10n
