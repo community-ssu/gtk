@@ -1,5 +1,6 @@
 /etc/osso-backup/applications/hildon-navigator-backup.conf
 /etc/osso-backup/restore.d/it2007/hildon-home-restore-background.sh
+/etc/osso-backup/restore.d/always/hildon-home-restore-background-always.sh
 /etc/osso-af-init/init.d/maemo-af-desktop-launch.sh
 /etc/osso-af-init/maemo-af-desktop.sh
 /etc/osso-af-init/maemo-af-desktop.defs

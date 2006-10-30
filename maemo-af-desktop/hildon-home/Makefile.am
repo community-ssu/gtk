@@ -85,4 +85,7 @@ hildon_home_pluginincludeinst_DATA = hildon-home-plugin-interface.h
 hildon_home_backup_script_SCRIPTS=hildon-home-restore-background.sh
 hildon_home_backup_scriptdir=$(sysconfdir)/osso-backup/restore.d/it2007
 
+hildon_home_backup_script_always_SCRIPTS=hildon-home-restore-background-always.sh
+hildon_home_backup_script_alwaysdir=$(sysconfdir)/osso-backup/restore.d/always
+
 CLEANFILES = *~
