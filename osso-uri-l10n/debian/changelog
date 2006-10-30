@@ -1,3 +1,10 @@
+osso-uri-l10n (3.0-2r4401.sardine1) unstable; urgency=low
+
+  * Added binary-arch target to debian/rules so that 'dpkg-buildpackage
+    -B' succeeds.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 30 Oct 2006 16:53:36 +0200
+
 osso-uri-l10n (3.0-2r4401) unstable; urgency=low
 
 
