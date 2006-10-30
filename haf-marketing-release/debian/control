@@ -101,6 +101,18 @@ Description: hildon-libs marketing release 0 locales
   "hildon-libs-l10n-mr0 | hildon-libs-l10n-mr" 
  to ensure correct locales are getting installed.
 
+Package: osso-uri-l10n-mr0
+Architecture: all
+Provides: osso-uri-l10n-mr
+Conflicts: osso-uri-l10n-mr
+Depends: osso-uri-l10n-dede, osso-uri-l10n-engb, osso-uri-l10n-enus, osso-uri-l10n-eses, osso-uri-l10n-esmx, osso-uri-l10n-frfr, osso-uri-l10n-itit, osso-uri-l10n-frca, osso-uri-l10n-ptbr, 
+Description: osso-uri marketing release 0 locales
+ This is a metapackage for osso-uri depending on the 
+ locales needed on marketing release 0. Application
+ developers of osso-uri should depend on:
+  "osso-uri-l10n-mr0 | osso-uri-l10n-mr" 
+ to ensure correct locales are getting installed.
+
 Package: hildon-control-panel-l10n-mr1
 Architecture: all
 Provides: hildon-control-panel-l10n-mr
@@ -195,4 +207,16 @@ Description: hildon-libs marketing release 0 locales
  locales needed on marketing release 1. Application
  developers of hildon-libs should depend on:
   "hildon-libs-l10n-mr0 | hildon-libs-l10n-mr" 
+ to ensure correct locales are getting installed.
+
+Package: osso-uri-l10n-mr1
+Architecture: all
+Provides: osso-uri-l10n-mr
+Conflicts: osso-uri-l10n-mr
+Depends: osso-uri-l10n-engb, 
+Description: osso-uri marketing release 0 locales
+ This is a metapackage for osso-uri depending on the 
+ locales needed on marketing release 1. Application
+ developers of osso-uri should depend on:
+  "osso-uri-l10n-mr0 | osso-uri-l10n-mr" 
  to ensure correct locales are getting installed.

@@ -1,3 +1,9 @@
+haf-marketing-release (0.3.1) unstable; urgency=low
+
+  * Added osso-uri-l10n
+
+ -- Carlos Guerreiro <carlos.guerreiro@nokia.com>  Mon, 30 Oct 2006 13:16:02 +0300
+	
 haf-marketing-release (0.3) unstable; urgency=low
 
   * Created from marketing-release, for the Hildon Application Framework only
