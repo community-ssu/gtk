@@ -1,9 +1,8 @@
-osso-gnomevfs-extra (UNRELEASED) unstable; urgency=low
+osso-gnomevfs-extra (1.8.1-2) unstable; urgency=low
 
-  * Added osso-uri-l10n-mr as an alternative of osso-uri-l10n-mr0 to
-    libossomime0 dependencies (M819).
+  * Fixes: M819, Added osso-uri-l10n-mr as an alternative of osso-uri-l10n-mr0
 
- -- 
+ -- Richard Hult <richard@imendio.com>  Tue, 31 Oct 2006 11:35:03 +0200
 
 osso-gnomevfs-extra (1.8.1-1) unstable; urgency=low
 
