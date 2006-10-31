@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@prefix@
+libdir=@libdir@
+includedir=@includedir@
+localedir=@localedir@
+pluginlibdir=@hildonhomelibdir@
+desktopentrydir=@hildonhomedesktopentrydir@
+
+Name: hildon-home
+Description: Teema Hildon Home
+Requires: hildon-libs >= 0.7.1
+Version: @VERSION@

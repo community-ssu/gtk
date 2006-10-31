@@ -1,0 +1,286 @@
+maemo-af-desktop (1.32.0-1) unstable; urgency=low
+
+  * Fixed #13749 (Home background not ready during first boot)
+  * debian/maemo-af-desktop.postinst: usage of image loader
+  * hildon-home/hildon-home-main.c: symlinks to pregenerated image files
+
+ -- Nokia <nokia>  Mon, 18 Jul 2005 17:10:24 +0300
+
+maemo-af-desktop (1.31.0-1) unstable; urgency=low
+
+  * Fixed #14798 ((Program names not truncated correctly in task
+    navigator)
+  * application-switcher.h: Changed incorrect menu width max value to
+    comply with the current specifications
+  * application-switcher.c:
+  *  - AS menu fixed to check for the max. allocatable width.
+  *  - AS menu button gets activated when opened with long home press
+  * windowmanager.c:
+  *  - Moved often-done check for the subname property to its own
+    function
+  *  - Now we actually _always_ read the whole subname property
+  * Added support for the maemo launcher as an compile-time option
+
+ -- nokia <nokia>  Mon, 11 Jul 2005 15:32:06 +0300
+
+maemo-af-desktop (1.30.0-1) unstable; urgency=low
+
+  * Fixed #13372 (When looping through the menuitems set  pointers to
+    NULL before assigning new values.)
+  * Fixed #15459 (Home application seems to load and have in RAM two
+    backgrounds at the same time)
+  * hildon-home-main.c: Setting widget name removed
+  * others-menu.c: When looping through the menuitems set  pointers to
+    NULL before assigning new values.
+
+ -- nokia <nokia>  Fri,  8 Jul 2005 15:53:05 +0300
+
+maemo-af-desktop (1.29.0-1) unstable; urgency=low
+
+  * Fixed #14901 (Application Switcher menu item names end with a hyphen
+    ( - ))
+  * Fixed #14975 (Status bar: tapping on connectivity icons steels focus
+    from application switcher)
+  * Fixed #14976 (Focus indicator is lost if tooltip is shown for the
+    topmost application in Application switcher.)
+  * Fixed #14185 (Improvements to background killing)
+  * windowmanager.c: Use _NET_SHOWING_DESKTOP property instead of
+    combination of _NET_ACTIVE_WINDOW and WM_CLASS to determine whether
+    the desktop is topped.
+  * - Fixes to killed application handling
+  * - Supports lowmem_on / lowmem off signals
+  * application-switcher.c: Fixed a flawed string test.
+  * - Listen for lowmem on/off signals
+
+ -- nokia <nokia>  Mon,  4 Jul 2005 15:46:50 +0300
+
+maemo-af-desktop (1.28.0-1) unstable; urgency=low
+
+  * Fixed #11084: Code review comments for hildon-home-main.c
+  * Fixed #11088: Code review comments for hildon-home-plugin-loader.c
+  * Fixed #11090: Code review comments for hildon-home-image-loader.c
+  * hildon-home-main.c:
+  * - strcmp to g_str functions.
+  * - Extra checks removed before doing g_free.
+  * maemo-af-desktop/hildon-home/hildon-home-main.h
+  * - order of declarations changed
+  * maemo-af-desktop/hildon-home/hildon-home-plugin-loader.c
+  * - plugin path construction made better to maintain by define format
+  * string
+  * maemo-af-desktop/hildon-home/hildon-home-image-loader.c
+  * - handle from gnome_vfs_init closed with gnome_vfs_close
+  * - main() argument handling simplified and strcmp calls removed
+  * fixed #14574: Home - Set background image - truncation
+  * hildon-home-main.c:
+  * - Set the size request for the combo of background selection dialog
+    to make it fill the available space
+  * Fixed #13742: Selecting Home from the Task Navigator Application
+    Swither menu starts the previously accessed application.
+  * windowmanager.c:
+  * - Fixed application switcher menu behaviour
+  * Fixed #11126: Code review comments for hildon-status-bar-item.c
+  * Fixed #11127: Code review comments for hildon-status-bar-lib.c
+  * Fixed #11131: Code review comments for hildon-status-bar-main.c
+  * - Modified: hildon-status-bar-item.h hildon-status-bar-item.c
+    hildon-status-bar-lib.h hildon-status-bar-lib.c hildon-status-bar-
+    main.c hildon-status-bar-main.h
+
+ -- nokia <nokia>  Mon,  4 Jul 2005 15:36:57 +0300
+
+maemo-af-desktop (1.27.0-2) unstable; urgency=low
+
+  * Added shared-mime-info dependencty to maemo-af-desktop binary
+    package
+
+ -- nokia <nokia>  Mon, 20 Jun 2005 16:05:52 +0300
+
+maemo-af-desktop (1.27.0-1) unstable; urgency=low
+
+  * Fixed #13388 (Whole device hangs while dragging in Others menu)
+  * hildon-home-main.[ch]:
+  * - Added a break check in to a while loop
+  * Fixed #14547: Home Application (maemo-af-desktop): Applet sizes
+    incorrect
+  * hildon-home-main.h:
+  * - Applet sizes and layout change
+
+ -- Nokia <nokia>  Fri, 17 Jun 2005 09:55:47 +0300
+
+maemo-af-desktop (1.26.0-1) unstable; urgency=low
+
+  * windowmanager.c:
+  * - memory handling correction to Task Navigator
+  * Fixed #14249: libosso broadcasts private signal to everybody
+  * windowmanager.c:
+  * - Launch banner changed to use method call instead of signal.
+  * Fixed #11100 ("Code review comments for application-switcher.c")
+  * Fixed #11102 ("Code review comments for hildon-navigator-main.c")
+  * Fixed #11105 ("Code review comments for hildon-navigator.c")
+  * Fixed #11119 ("Code review comments for osso-manager.c")
+  * Fixed #11121 ("Code review comments for others-menu.c")
+  * Fixed #11125 ("Code review comments for windowmanager.c")
+  * maemo-af-desktop/hildon-navigator/application-switcher.c
+  * maemo-af-desktop/hildon-navigator/application-switcher.h
+  * - moved defines to header
+  * - strcmp to glib functions
+  * - logging with osso_log
+  * - defines for magic numebers
+  * maemo-af-desktop/hildon-navigator/hildon-navigator-main.c
+  * - TRACE debug removed
+  * maemo-af-desktop/hildon-navigator/hildon-navigator.h
+  * - enumerated defines
+  * maemo-af-desktop/hildon-navigator/osso-manager.c
+  * maemo-af-desktop/hildon-navigator/osso-manager.h
+  * - moved defines to header
+  * - logging with osso_log
+  * - defines for magic numebers
+  * maemo-af-desktop/hildon-navigator/others-menu.c
+  * maemo-af-desktop/hildon-navigator/others-menu.h
+  * - moved defines to header
+  * - strcmp to glib functions
+  * - logging with osso_log
+  * - defines for magic numebers
+  * - function declarations to start of file
+  * - others_menu_get_items()
+  * -- checks for correct directory name added for creating submenu
+    labels
+  * maemo-af-desktop/hildon-navigator/windowmanager.c
+  * maemo-af-desktop/hildon-navigator/windowmanager.h
+  * - moved defines to header
+  * - strcmp to glib functions
+  * - logging with osso_log
+  * - defines for magic numebers
+  * - create_notify_handler()
+  * -- initiliazation of attrs.override_redirect added
+  * Cleaned up forbidden words
+  * - Modified: hildon-home-plugin-interface.h hildon-navigator-lib.h
+    hildon-navigator-main.h de_DE.po en_EN.po en_GB.po en_US.po es_ES.po
+    es_MX.po fi_FI.po fr_CA.po fr_FR.po it_IT.po pt_BR.po ru_RU.po
+
+ -- Nokia <nokia>  Thu, 16 Jun 2005 19:03:17 +0300
+
+maemo-af-desktop (1.25.0-1) unstable; urgency=low
+
+  * Fixed #13753 Application switcher arrows shown in dimmed state when
+    device is booted
+  * hildon-navigator-main.c,maemo-af-desktop-main.c:
+  * - Initial display of TN GUI is again done by TN itself, not by the
+    maemo initialization.
+
+ -- Nokia <nokia>  Tue, 14 Jun 2005 12:41:00 +0300
+
+maemo-af-desktop (1.24.0-1) unstable; urgency=low
+
+  * Image mime support for Home image loading.
+  * maemo-af-desktop/Makefile.am:
+  * - added maemo-af-desktop.postinst and maemo-af-desktop.xml to
+    EXTRA_DIST
+  * maemo-af-desktop/debian/control:
+  * - depency to mimetype database
+  * maemo-af-desktop/debian/maemo-af-desktop.install:
+  * - directory to be installed and containing maemo-af-desktop.xml
+  * maemo-af-desktop/debian/maemo-af-desktop.postinst:
+  * - new, script to update mime database
+  * maemo-af-desktop/debian/maemo-af-desktop.xml:
+  * - new, defination of required image mimetypes
+  * maemo-af-desktop/debian/rules:
+  * - rules to install mime types
+  * --
+  * hildon-navigator/windowmanager.c:
+  * - Improved the handling of view registrations for situations where
+    the asynchronity of X and hildonapp changes caused problems.
+  * Fixed #10558: FR_CA Home memory card cover: no message when open
+  * hildon-home-image-loader.c:
+  * - uri prefix comparision changed in function load_image_from_uri()
+  * hildon-home-image-loader.h:
+  * - mmc uri prefix defined
+  * Fixed #10062: Plugin API issues
+  * hildon-navigator-dev.install:
+  * - installs navigators interface header and package config
+  * control:
+  * - Added -dev package
+
+ -- Nokia <nokia>  Mon, 13 Jun 2005 15:33:45 +0300
+
+maemo-af-desktop (1.23.0-1) unstable; urgency=low
+
+  * Fixed #12273: de-DE Notes, Teach Handwriting: application name in
+    loading banner still in English
+  * en_GB.po:
+  * - Added teach localisation
+
+ -- Nokia <nokia>  Mon,  6 Jun 2005 10:37:45 +0300
+
+maemo-af-desktop (1.22.0-1) unstable; urgency=low
+
+  * hildon-home-main.h:
+  * - new layout guide values for applet area
+  * hildon-home-image-viewer.h:
+  * - updated apple area size
+  * Fixed #9309: Minor code review comment for Hildon-Status-Bar
+  * hildon-status-bar-main.c:
+  * - some includes removed duplicates included headers.
+  * - Renamed a variable.
+  * - Added logging and improved message clarity
+  * - Fixed a real bug and another real bug.
+  * - Clarified logic.
+  * hildon-status-bar-item.c:
+  * - config.h included first
+  * - unnecessary include removed.
+  * hildon-status-bar-lib.c:
+  * - removed g_print
+  * Fixed #5424: AF SYTE: Icon for a minimized application remains in
+    depressed state on the Task Navigator when Control Panel application
+    is active.
+  * Fixed #4459: AF SYTE: Icons on the Application Switcher area of the
+    Task Navigator do not get re-arranged when we move between
+    applications.
+  * Fixed #8806: When a file is opened from the filemanager, the app.
+    icons are not stacked in the right order in the task panel.
+  * Fixed #9655: When a search result is opened, the icons in the
+    application switcher area donot get re-ordered
+  * Fixed #8075: Application switcher icons have bad behaviour
+  * Fixed #7128: The task navigator does not notice (an application)
+    raising a window
+  * Fixed #3671: TN - Application Switcher & Bookmark Manager
+  * -- Lots of modifications: application-switcher.[ch],windowmanager.c
+  
+ -- Nokia <nokia>  Fri,  3 Jun 2005 13:22:30 +0300
+
+maemo-af-desktop (1.21.0-1) unstable; urgency=low
+
+  * Changed to use LAUNCHWRAPPER_NICE
+
+ -- Nokia <nokia>  Fri, 27 May 2005 11:59:09 +0300
+
+maemo-af-desktop (1.20.0-1) unstable; urgency=low
+
+  * Updated menu structure to meet 2.5 spec
+  * Added support for launching CP plugins from menu
+  * Fixed #10607: Application titles are implemented using a wrong font
+    and placed incorrectly
+  * hildon-home-main.h:
+  * - Changed the fixed value for title alignment
+  * Fixed #10443: Switching themes leaks pixmaps
+
+ -- Nokia <nokia>  Tue, 24 May 2005 19:44:10 +0300
+
+maemo-af-desktop (1.19.0-1) unstable; urgency=low
+
+  * Fixed some packaging errors
+
+ -- Nokia <nokia>  Thu, 19 May 2005 17:51:01 +0300
+
+maemo-af-desktop (1.18.0-1) unstable; urgency=low
+
+  * Update to match CVS HEAD
+
+ -- Nokia <nokia>  Tue, 17 May 2005 15:15:05 +0300
+
+maemo-af-desktop (1.17.0) unstable; urgency=low
+
+  * initial version of maemo-af-desktop, week 17 release
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 29 Apr 2005 10:58:41 +0300
+
+

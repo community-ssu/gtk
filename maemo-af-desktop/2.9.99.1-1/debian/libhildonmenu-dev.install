@@ -1,0 +1,4 @@
+usr/lib/libhildonmenu.so
+usr/include/libhildonmenu/libhildonmenu.h
+usr/include/libhildonmenu/hildon-thumb-menu-item.h
+usr/lib/pkgconfig/libhildonmenu.pc
