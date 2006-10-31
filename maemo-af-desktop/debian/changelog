@@ -1,3 +1,14 @@
+maemo-af-desktop (2.9.99.1-1) unstable; urgency=low
+
+  * hildon-home/hildon-home-window.c:
+  background_manager_load_error_cb (): Check for the error domain
+  as well as the error code.
+
+  * hildon-home/home-applet-handler.c: Temporary make
+  home applet settings dialogs system-modal. Fixes: NB#37594
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 31 Oct 2006 10:29:06 +0200
+
 maemo-af-desktop (2.9.99-1) unstable; urgency=low
 
   Applied fix to "Desktop doesn't remember the background picture,

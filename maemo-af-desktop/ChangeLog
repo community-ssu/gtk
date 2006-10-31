@@ -1,5 +1,9 @@
 2006-10-31  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.1
+
+2006-10-31  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-window.c:
 	background_manager_load_error_cb (): Check for the error domain
 	as well as the error code.
