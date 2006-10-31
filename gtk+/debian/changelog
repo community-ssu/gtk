@@ -1,4 +1,4 @@
-gtk+2.0 (2:2.6.10-2.osso21) UNRELEASED; urgency=low
+gtk+2.0 (2:2.6.10-2.osso21) unstable; urgency=low
 
   [ Tommi Komulainen ]
   * Fixes: NB#37295 Scrolling through calendar is too fast using hardkeys
