@@ -513,22 +513,27 @@ background_manager_load_error_cb (BackgroundManager *manager,
   
   g_return_if_fail (error);
   
-  switch (error->code)
+  if (error->domain == background_manager_error_quark ())
     {
-    case BACKGROUND_MANAGER_ERROR_IO:
-      text = HILDON_HOME_INTERRUPTED_TEXT;
-      break;
-    case BACKGROUND_MANAGER_ERROR_CORRUPT:
-      text = HILDON_HOME_CORRUPTED_TEXT;
-      break;
-    case BACKGROUND_MANAGER_ERROR_MMC_OPEN:
-      text = HILDON_HOME_MMC_OPEN_TEXT;
-      break;
-    case BACKGROUND_MANAGER_ERROR_MEMORY:
-    default:
-      text = NULL;
-      break;
+      switch (error->code)
+        {
+          case BACKGROUND_MANAGER_ERROR_IO:
+              text = HILDON_HOME_INTERRUPTED_TEXT;
+              break;
+          case BACKGROUND_MANAGER_ERROR_CORRUPT:
+              text = HILDON_HOME_CORRUPTED_TEXT;
+              break;
+          case BACKGROUND_MANAGER_ERROR_MMC_OPEN:
+              text = HILDON_HOME_MMC_OPEN_TEXT;
+              break;
+          case BACKGROUND_MANAGER_ERROR_MEMORY:
+          default:
+              text = NULL;
+              break;
+        }
     }
+  else
+    text = NULL;
 
   if (text)
     hildon_home_window_show_information_note (window, text);

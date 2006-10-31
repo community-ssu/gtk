@@ -1,3 +1,9 @@
+2006-10-31  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-window.c:
+	background_manager_load_error_cb (): Check for the error domain
+	as well as the error code.
+
 2006-10-30  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/home-applet-handler.c: Temporary make
