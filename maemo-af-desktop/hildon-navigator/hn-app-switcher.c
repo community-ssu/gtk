@@ -562,11 +562,13 @@ hn_app_switcher_get_app_icon_for_entry_info (HNAppSwitcher *app_switcher,
 #endif
 
 static void
-main_menu_detach (GtkWidget *attach_widget,
-		  GtkMenu   *menu)
+#if 0
+main_menu_detach  (HNAppSwitcher *app_switcher,
+#else
+main_menu_destroy (HNAppSwitcher *app_switcher,
+#endif
+                  GtkMenu   *menu)
 {
-  HNAppSwitcher *app_switcher = HN_APP_SWITCHER (attach_widget);
-
   app_switcher->priv->main_menu = NULL;
   app_switcher->priv->main_home_item = NULL;
 
@@ -768,9 +770,15 @@ main_menu_build (HNAppSwitcher *app_switcher)
   g_signal_connect (priv->main_menu, "button-release-event",
 		    G_CALLBACK (hn_app_switcher_menu_button_release_cb),
 		    NULL);
+#if 0
   gtk_menu_attach_to_widget (GTK_MENU (priv->main_menu),
-		             GTK_WIDGET (app_switcher),
-			     main_menu_detach);
+                             GTK_WIDGET (app_switcher),
+                             (GtkMenuDetachFunc)main_menu_detach);
+#else
+  g_signal_connect_swapped (priv->main_menu, "destroy",
+                            G_CALLBACK (main_menu_destroy),
+                            app_switcher);
+#endif
 
   main_menu_ensure_state (app_switcher);
 }

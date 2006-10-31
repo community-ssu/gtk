@@ -1,5 +1,12 @@
 2006-10-31  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-switcher.c: do not attach the AS menu
+	to its button because the behavior of menu transient to DOCK
+	windows is undefined
+	* configure.ac: 2.9.99.2
+
+2006-10-31  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.99.1
 
 2006-10-31  Johan Bilien <johan.bilien@nokia.com>
