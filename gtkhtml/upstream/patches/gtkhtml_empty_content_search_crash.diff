@@ -2,7 +2,8 @@
 # added to gtkhtml
 #
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the terms of GNU LGPL license version 2.1
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
 #
 diff -Nru gtkhtml-3.9.1.orig/src/htmlengine-search.c gtkhtml-3.9.1/src/htmlengine-search.c
 --- gtkhtml-3.9.1.orig/src/htmlengine-search.c	2002-11-01 17:06:53.000000000 +0200

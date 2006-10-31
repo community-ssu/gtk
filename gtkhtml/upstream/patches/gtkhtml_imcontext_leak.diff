@@ -1,5 +1,6 @@
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the terms of GNU LGPL license version 2.1
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
 #
 --- gtkhtml-3.9.1/src/gtkhtml.c	2006-09-27 12:48:45.000000000 +0300
 +++ gtkhtml-imcontext-leak-fix/src/gtkhtml.c	2006-09-27 12:47:57.000000000 +0300

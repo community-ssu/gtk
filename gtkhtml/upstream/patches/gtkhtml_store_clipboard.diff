@@ -1,7 +1,8 @@
 # Saving clipboard patch
 #
 # Copyright (C) 2006 Nokia Corporation.
-# This file is distributed under the terms of GNU LGPL license version 2.1
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
 #
 diff -Nru gtkhtml-3.9.1/src/gtkhtml.c gtkhtml-3.9.1-fixed/src/gtkhtml.c
 --- gtkhtml-3.9.1/src/gtkhtml.c	2006-06-19 13:21:06.000000000 +0300

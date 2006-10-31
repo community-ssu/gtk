@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-2osso9) unstable; urgency=low
+
+  * Updated the license references in Nokia patches to reflect the main
+    package lincese better. Fixes: NB#40234
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 31 Oct 2006 11:29:06 +0200
+
 gtkhtml (3.9.1-2osso8) unstable; urgency=low
 
   * Fixes: NB#40234: Removed source files with GPL license. Copied source
