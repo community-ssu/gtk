@@ -106,7 +106,10 @@ pkgconfigDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(defs_DATA) $(pkgconfig_DATA)
 ETAGS = etags
 CTAGS = ctags
-DIST_SUBDIRS = codegen . gtk examples tests docs
+# INDT: backport
+# remove docs build (sdk doesn't have xsltproc) 
+DIST_SUBDIRS = codegen . gtk examples tests #docs
+# /INDT: backport
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -274,7 +277,9 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = 1.7
 @BUILD_GTK_TRUE@GTK_SUBDIR = gtk
-SUBDIRS = codegen . $(GTK_SUBDIR) examples tests docs
+# INDT: backport
+SUBDIRS = codegen . $(GTK_SUBDIR) examples tests #docs
+# /INDT: backport
 PLATFORM_VERSION = 2.0
 CLEANFILES = atk.c pango.c
 EXTRA_DIST = \

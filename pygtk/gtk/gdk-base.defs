@@ -561,20 +561,21 @@
   (return-type "none")
 )
 
-(define-function cursor_new_from_name
-  (c-name "gdk_cursor_new_from_name")
-  (return-type "GdkCursor*")
-  (parameters
-    '("GdkDisplay*" "display")
-    '("const-gchar*" "name")
-  )
-)
-
-(define-method get_image
-  (of-object "GdkCursor")
-  (c-name "gdk_cursor_get_image")
-  (return-type "GdkPixbuf*")
-)
+; INDT: backport (2.8)
+;(define-function cursor_new_from_name
+;  (c-name "gdk_cursor_new_from_name")
+;  (return-type "GdkCursor*")
+;  (parameters
+;    '("GdkDisplay*" "display")
+;    '("const-gchar*" "name")
+;  )
+;)
+;
+;(define-method get_image
+;  (of-object "GdkCursor")
+;  (c-name "gdk_cursor_get_image")
+;  (return-type "GdkPixbuf*")
+;)
 
 
 (define-function cursor_new
@@ -885,16 +886,17 @@
   (return-type "GdkWindow*")
 )
 
-(define-method warp_pointer
-  (of-object "GdkDisplay")
-  (c-name "gdk_display_warp_pointer")
-  (return-type "none")
-  (parameters
-    '("GdkScreen*" "screen")
-    '("gint" "x")
-    '("gint" "y")
-  )
-)
+; INDT: backport (2.8)
+;(define-method warp_pointer
+;  (of-object "GdkDisplay")
+;  (c-name "gdk_display_warp_pointer")
+;  (return-type "none")
+;  (parameters
+;    '("GdkScreen*" "screen")
+;    '("gint" "x")
+;    '("gint" "y")
+;  )
+;)
 
 (define-virtual get_display_name
   (of-object "GdkDisplay")
@@ -3740,11 +3742,12 @@
   (return-type "GdkColormap*")
 )
 
-(define-method get_rgba_colormap
-  (of-object "GdkScreen")
-  (c-name "gdk_screen_get_rgba_colormap")
-  (return-type "GdkColormap*")
-)
+; INDT: backport (2.8)
+;(define-method get_rgba_colormap
+;  (of-object "GdkScreen")
+;  (c-name "gdk_screen_get_rgba_colormap")
+;  (return-type "GdkColormap*")
+;)
 
 (define-method get_rgb_visual
   (of-object "GdkScreen")
@@ -3752,11 +3755,12 @@
   (return-type "GdkVisual*")
 )
 
-(define-method get_rgba_visual
-  (of-object "GdkScreen")
-  (c-name "gdk_screen_get_rgba_visual")
-  (return-type "GdkVisual*")
-)
+; INDT: backport (2.8)
+;(define-method get_rgba_visual
+;  (of-object "GdkScreen")
+;  (c-name "gdk_screen_get_rgba_visual")
+;  (return-type "GdkVisual*")
+;)
 
 (define-method get_root_window
   (of-object "GdkScreen")
@@ -4971,14 +4975,15 @@
   (return-type "none")
 )
 
-(define-method set_urgency_hint
-  (of-object "GdkWindow")
-  (c-name "gdk_window_set_urgency_hint")
-  (return-type "none")
-  (parameters
-    '("gboolean" "urgent")
-  )
-)
+; INDT: backport (2.8)
+;(define-method set_urgency_hint
+;  (of-object "GdkWindow")
+;  (c-name "gdk_window_set_urgency_hint")
+;  (return-type "none")
+;  (parameters
+;    '("gboolean" "urgent")
+;  )
+;)
 
 ;; From /mondo/local/gtk-2.10/include/gtk-2.0/gdk/gdkwindow.h
 
@@ -4988,16 +4993,17 @@
   (return-type "none")
 )
 
-(define-method move_region
-  (of-object "GdkWindow")
-  (c-name "gdk_window_move_region")
-  (return-type "none")
-  (parameters
-    '("GdkRegion*" "region")
-    '("gint" "dx")
-    '("gint" "dy")
-  )
-)
+; INDT: backport (2.8)
+;(define-method move_region
+;  (of-object "GdkWindow")
+;  (c-name "gdk_window_move_region")
+;  (return-type "none")
+;  (parameters
+;    '("GdkRegion*" "region")
+;    '("gint" "dx")
+;    '("gint" "dy")
+;  )
+;)
 
 (define-method shape_combine_region
   (of-object "GdkWindow")
@@ -5081,16 +5087,17 @@
   (return-type "none")
 )
 
-(define-method set_icon_name
-  (of-object "GdkDragContext")
-  (c-name "gtk_drag_set_icon_name")
-  (return-type "none")
-  (parameters
-    '("const-gchar*" "icon_name")
-    '("gint" "hot_x")
-    '("gint" "hot_y")
-  )
-)
+; INDT: backport (2.8)
+;(define-method set_icon_name
+;  (of-object "GdkDragContext")
+;  (c-name "gtk_drag_set_icon_name")
+;  (return-type "none")
+;  (parameters
+;    '("const-gchar*" "icon_name")
+;    '("gint" "hot_x")
+;    '("gint" "hot_y")
+;  )
+;)
 
 
 ;; From /opt/gtk2/include/gtk-2.0/gdk-pixbuf/gdk-pixbuf.h
@@ -6561,11 +6568,12 @@
   )
 )
 
-(define-method move_to_current_desktop
-  (of-object "GdkWindow")
-  (c-name "gdk_x11_window_move_to_current_desktop")
-  (return-type "none")
-)
+; INDT: backport (2.8)
+;(define-method move_to_current_desktop
+;  (of-object "GdkWindow")
+;  (c-name "gdk_x11_window_move_to_current_desktop")
+;  (return-type "none")
+;)
 
 (define-method get_window_manager_name
   (of-object "GdkScreen")
@@ -6640,21 +6648,22 @@
   )
 )
 
-(define-method get_user_time
-  (of-object "GdkDisplay")
-  (c-name "gdk_x11_display_get_user_time")
-  (return-type "guint32")
-)
-
-(define-method set_cursor_theme
-  (of-object "GdkDisplay")
-  (c-name "gdk_x11_display_set_cursor_theme")
-  (return-type "none")
-  (parameters
-    '("const-gchar*" "theme")
-    '("const-gint" "size")
-  )
-)
+; INDT: backport (2.8)
+;(define-method get_user_time
+;  (of-object "GdkDisplay")
+;  (c-name "gdk_x11_display_get_user_time")
+;  (return-type "guint32")
+;)
+;
+;(define-method set_cursor_theme
+;  (of-object "GdkDisplay")
+;  (c-name "gdk_x11_display_set_cursor_theme")
+;  (return-type "none")
+;  (parameters
+;    '("const-gchar*" "theme")
+;    '("const-gint" "size")
+;  )
+;)
 
 (define-method supports_net_wm_hint
   (of-object "GdkScreen")

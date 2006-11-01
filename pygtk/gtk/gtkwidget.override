@@ -30,6 +30,7 @@ ignore
   gtk_widget_setv
   gtk_widget_style_get_valist
   gtk_widget_class_install_style_property_parser
+  gtk_drag_source_set_icon_name
 %%
 override gtk_widget_translate_coordinates kwargs
 static PyObject *

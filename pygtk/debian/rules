@@ -35,6 +35,8 @@ clean:
 	rm -f build-stamp
 	-rm -rf $(d_base) $(d_dev)
 	-$(MAKE) distclean
+	-rm -rf docs/reference/builddate.xml
+	-rm -rf docs/Makefile
 	find -name "*.pyc" -exec rm -f {} \;
 	find -name "*.pyo" -exec rm -f {} \;
 	dh_clean codegen/*.pyc

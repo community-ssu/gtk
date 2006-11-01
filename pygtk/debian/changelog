@@ -1,3 +1,9 @@
+python-gtk2 (2.10.3-1osso1) unstable; urgency=low
+
+  * upgrade to 2.10.3 release with adaptations to compile with gtk+-2.6
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 24 Oct 2006 16:38:57 -0300
+
 python-gtk2 (2.6.3-1osso7) unstable; urgency=low
 
   * compiled with python2.5

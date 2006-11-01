@@ -9,12 +9,12 @@
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
 # version 2.1 of the License, or (at your option) any later version.
-#                                                                             
+#
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 # Lesser General Public License for more details.
-#                                                                             
+#
 # You should have received a copy of the GNU Lesser General Public
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
@@ -44,9 +44,9 @@ if ver < (2, 11, 1):
 
 if 'gtk._gtk' in sys.modules:
     _gtk = sys.modules['gtk._gtk']
-        else:
+else:
     from gtk import _gtk
-            
+
 import gdk
 
 if ltihooks:
@@ -61,7 +61,7 @@ def _init():
 
     try:
         sys_path = sys.path[:]
-    
+
         try:
             _gtk.init_check()
         except RuntimeError, e:
@@ -86,7 +86,7 @@ _PyGtk_API = _gtk._PyGtk_API
 gdk.INPUT_READ      = _gobject.IO_IN | _gobject.IO_HUP | _gobject.IO_ERR
 gdk.INPUT_WRITE     = _gobject.IO_OUT | _gobject.IO_HUP
 gdk.INPUT_EXCEPTION = _gobject.IO_PRI
-    
+
 # old names compatibility ...
 idle_add       = _Deprecated(_gobject, 'idle_add', 'idle_add', 'gobject')
 idle_remove    = _Deprecated(_gobject, 'source_remove', 'idle_remove', 'gobject')
@@ -117,7 +117,7 @@ threads_leave = _Deprecated(gdk, 'threads_leave', 'threads_leave', 'gtk.gdk')
 
 TRUE = _DeprecatedConstant(True, 'gtk.TRUE', 'True')
 FALSE = _DeprecatedConstant(False, 'gtk.FALSE', 'False')
-	    
+
 # Can't figure out how to deprecate gdk.Warning
 gdk.Warning = Warning
 

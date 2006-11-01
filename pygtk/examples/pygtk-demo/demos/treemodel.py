@@ -53,9 +53,9 @@ class MyTreeModel(gtk.GenericTreeModel):
     def on_iter_next(self, node):
         '''returns the next node at this level of the tree'''
         if node != None:
-        if node[-1] == self.TREE_SIBLINGS - 1: # last node at level
-            return None
-        return node[:-1] +(node[-1]+1,)
+            if node[-1] == self.TREE_SIBLINGS - 1: # last node at level
+                return None
+            return node[:-1] +(node[-1]+1,)
     def on_iter_children(self, node):
         '''returns the first child of this node'''
         if node == None: # top of tree
