@@ -1,3 +1,9 @@
+2006-11-01  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-wm.c: Accept windows which have not set
+	  the WM_WINDOW_TYPE property, if they are not transient to anything
+	  (dialogs). Fixes: NB#46122
+
 2006-10-31  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: do not attach the AS menu
