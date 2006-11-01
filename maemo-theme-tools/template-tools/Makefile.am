@@ -1,4 +1,4 @@
-bin_PROGRAMS = maemo-theme-slicer maemo-theme-colourizer maemo-theme-regenerator
+bin_PROGRAMS = maemo-theme-slicer maemo-theme-colourizer maemo-theme-regenerator maemo-theme-outliner
 
 # Slicer
 maemo_theme_slicer_CFLAGS = $(GTK_CFLAGS)
@@ -17,5 +17,11 @@ maemo_theme_regenerator_CFLAGS = $(GTK_CFLAGS)
 maemo_theme_regenerator_LDADD = $(GTK_LIBS)
 
 maemo_theme_regenerator_SOURCES = regenerator.c common.c
+
+# Outliner
+maemo_theme_outliner_CFLAGS = $(GTK_CFLAGS)
+maemo_theme_outliner_LDADD = $(GTK_LIBS)
+
+maemo_theme_outliner_SOURCES = outliner.c common.c
 
 MAINTAINERCLEANFILES = Makefile.in

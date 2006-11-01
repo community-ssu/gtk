@@ -1,3 +1,13 @@
+2006-11-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* template-tools/Makefile.am:
+	* template-tools/outliner.c:
+	* template-tools/outliner.h: Adding the outliner tool that can be used
+	to generate the outlines to be used as guides when drawing the theme.
+
+	* template-tools/regenerator.c: Correcting a bug resulting in extra
+	critical warnings about unreffing (when image missing). 
+
 2006-10-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* template-tools/Makefile.am:
