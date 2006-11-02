@@ -1,5 +1,9 @@
 2006-11-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-navigator-item.c: Fixed small memory leak
+
+2006-11-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-others-button.c: Initialize the menu after
 	  the first press. Fixes: NB#46240
 

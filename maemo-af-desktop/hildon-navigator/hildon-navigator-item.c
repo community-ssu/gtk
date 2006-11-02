@@ -128,6 +128,7 @@ hildon_navigator_item_finalize (GObject *object)
   if (priv->dlhandler)
     dlclose (priv->dlhandler);
 
+  g_free (priv->name);
   g_free (priv->api);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
