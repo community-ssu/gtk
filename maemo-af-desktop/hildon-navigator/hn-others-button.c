@@ -193,7 +193,6 @@ hn_others_button_init (HNOthersButton *button)
   priv->thumb_pressed          = FALSE;
   priv->dnotify_update_timeout = 0;
   
-  hn_others_button_create_menu (button);
 }
 
 GtkWidget *
@@ -782,7 +781,7 @@ static void
 hn_others_button_menu_show (HNOthersButton * button)
 {
   g_return_if_fail (button);
-  
+
   gtk_menu_popup(GTK_MENU(button->priv->menu),
 		 NULL,
 		 NULL,
@@ -858,6 +857,9 @@ hn_others_button_press_collapser (HNOthersButton * button)
     }
 
   gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(button), TRUE);
+  
+  if (!button->priv->menu)
+    hn_others_button_create_menu (button);
 
   if (button->priv->thumb_pressed)
     {
