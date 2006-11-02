@@ -1,5 +1,9 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* ./: Housekeeping, reorganizing dirs.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* ChangeLog.osso-themes-config:
 	* debian/changelog.osso-themes-config:
 	* themeMakefile.mk: Removing, it doesn't make much sense in this

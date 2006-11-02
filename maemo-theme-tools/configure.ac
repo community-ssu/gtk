@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-theme-tools, 0.0)
+AM_INIT_AUTOMAKE(maemo-theme-tools, 0.1.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -23,5 +23,4 @@ AC_SUBST(GTK_VERSION)
 
 AC_OUTPUT([Makefile
            maemo-theme-tools.pc
-	   cache-generator/Makefile
-           template-tools/Makefile])
+	   src/Makefile])

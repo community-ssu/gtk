@@ -1,4 +1,4 @@
-SUBDIRS = cache-generator template-tools
+SUBDIRS = src
 
 dist_bin_SCRIPTS = maemo-theme-install
 

@@ -131,6 +131,7 @@ int                             main (int argc, char **argv)
                 g_error ("Only RGB and RGBA images are supported!");
 
         process (template, image);
+	goto Done;
 
 Error:  
         return_val = 128;
