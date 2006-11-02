@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.6.10-2.osso22) unstable; urgency=low
+
+  * Fixes: NB#45767 Wrong assertion in GtkTreeModelFilter
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  2 Nov 2006 16:22:28 +0200
+
 gtk+2.0 (2:2.6.10-2.osso21) unstable; urgency=low
 
   [ Tommi Komulainen ]
