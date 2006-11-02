@@ -1,5 +1,9 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* debian/rules: Adjusting the rules for new autogen and package name. 
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* README:
 	* configure.ac:
 	* debian/changelog:

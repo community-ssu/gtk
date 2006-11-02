@@ -25,10 +25,8 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 config.status:
-	if [ ! -x configure ]; then ./autogen.sh; fi
+	CFLAGS="$(CFLAGS)" ./autogen.sh --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --with-doc-dir=\$${prefix}/share/doc
 	dh_testdir
-	# Add here commands to configure the package.
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info --with-doc-dir=\$${prefix}/share/doc
 
 build: build-stamp
 build-stamp: config.status
@@ -56,7 +54,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/build
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/maemo-theme-tools
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/hildon-theme-tools
 
 # Build architecture-independent files here.
 binary-indep: build install
