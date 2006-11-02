@@ -1,3 +1,10 @@
+2006-11-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreemodelfilter.c
+	(gtk_tree_model_filter_row_has_child_toggled): Temporarily change
+	g_assert() to g_return_if_fail() to avoid crashing. Need better
+	solution. NB#45767
+
 2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkcalendar.c (gtk_calendar_mark_day, gtk_calendar_unmark_day):
