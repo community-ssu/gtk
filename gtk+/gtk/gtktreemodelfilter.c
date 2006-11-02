@@ -1636,7 +1636,8 @@ gtk_tree_model_filter_row_has_child_toggled (GtkTreeModel *c_model,
   level = FILTER_LEVEL (iter.user_data);
   elt = FILTER_ELT (iter.user_data2);
 
-  g_assert (elt->visible);
+  /* FIXME: see NB#45767 */
+  g_return_if_fail (elt->visible);
 
   /* If this node is referenced and has children, build the level so we
    * can monitor it for changes.
