@@ -1,5 +1,13 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* Makefile.am:
+	* configure.ac:
+	* maemo-theme-install:
+	* scripts:
+	* scripts/Makefile.am: Moving the scrips into separate dir.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* src/cacher.c:
 	* src/colourizer.c:
 	* src/colourizer.h:

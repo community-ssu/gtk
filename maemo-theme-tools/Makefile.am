@@ -1,6 +1,4 @@
-SUBDIRS = src
-
-dist_bin_SCRIPTS = maemo-theme-install
+SUBDIRS = src scripts
 
 EXTRA_DIST = debian/changelog			\
 	     debian/control			\

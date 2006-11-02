@@ -21,6 +21,7 @@ AC_SUBST(GTK_LIBS)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_VERSION)
 
-AC_OUTPUT([Makefile
-           maemo-theme-tools.pc
+AC_OUTPUT([Makefile \
+           scripts/Makefile \
+           maemo-theme-tools.pc \
 	   src/Makefile])
