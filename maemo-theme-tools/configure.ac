@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-theme-tools, 0.1.0)
+AM_INIT_AUTOMAKE(hildon-theme-tools, 0.1.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -19,6 +19,6 @@ AC_SUBST(GTK_VERSION)
 
 AC_OUTPUT([Makefile \
            scripts/Makefile \
-           pkgconfig/maemo-theme-tools.pc \
+           pkgconfig/hildon-theme-tools.pc \
            pkgconfig/Makefile \
 	   src/Makefile])

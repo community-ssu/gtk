@@ -1,5 +1,17 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* README:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* pkgconfig/Makefile.am:
+	* pkgconfig/maemo-theme-tools.pc.in:
+	* scripts/Makefile.am:
+	* scripts/maemo-theme-install:
+	* src/Makefile.am: maemo-theme-tools => hildon-theme-tools.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* Makefile.am:
 	* NEWS: Adding some news. 
 

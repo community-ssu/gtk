@@ -1,6 +1,6 @@
 #! /usr/bin/perl
 
-# This program installs a maemo theme into a directory.  The theme is
+# This program installs a hildon theme into a directory.  The theme is
 # created based on a 'layout' and on a template image.
 #
 # The following options are accepted:
@@ -37,7 +37,7 @@ GetOptions ( "layout=s" => \$layoutdir,
 
 if ($themedir eq "" or $layoutdir eq "" or $template eq "")
 {
-    die "usage: maemo-install-theme --layout DIR --theme DIR --template FILE\n";
+    die "usage: hildon-install-theme --layout DIR --theme DIR --template FILE\n";
 }
 
 if ($name eq "")
@@ -122,14 +122,14 @@ sub install_file
 sub cut_images
 {
         print "Cutting...\n";
-        `maemo-theme-slicer $layoutdir/layout-coordinates.txt $template $destdir/$themedir/images`;
+        `hildon-theme-slicer $layoutdir/layout-coordinates.txt $template $destdir/$themedir/images`;
         print "Done!\n";
 }
 
 sub generate_cache
 {
         print "Generating rc cache...\n";
-        `maemo-theme-cacher "$destdir/$themedir/"`;
+        `hildon-theme-cacher "$destdir/$themedir/"`;
 }
 
 sub add_color_substitutions
@@ -203,7 +203,7 @@ sub add_color_substitutions
     # Override with real colors
    
     print "Fetching colors...\n";
-    $eval_value =`maemo-theme-colourizer $layoutdir/layout-coordinates.txt $template`;
+    $eval_value =`hildon-theme-colourizer $layoutdir/layout-coordinates.txt $template`;
     print $eval_value . "\n";
     eval $eval_value;
     print "Done!\n";

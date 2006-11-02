@@ -1,10 +1,10 @@
-Source: maemo-theme-tools
+Source: hildon-theme-tools
 Section: x11
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), pkg-config, libgtk2.0-dev (>= 1:2.6.0), gtk2-engines-sapwood (>= 2.14)
 Standards-Version: 3.6.0
 
-Package: maemo-theme-tools
+Package: hildon-theme-tools
 Architecture: any
-Description: Tools for developing maemo themes.
+Description: Tools for developing hildon themes.
