@@ -1,5 +1,10 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* src/Makefile.am:
+	* src/cache-generator.c: Unifying the file naming.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* ./: Housekeeping, reorganizing dirs.
 
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 

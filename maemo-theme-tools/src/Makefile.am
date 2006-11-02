@@ -23,6 +23,6 @@ maemo_theme_outliner_SOURCES = outliner.c common.c
 # Cacher
 maemo_theme_cacher_CFLAGS = $(GTK_CFLAGS)
 maemo_theme_cacher_LDADD = $(GTK_LIBS)
-maemo_theme_cacher_SOURCES = cache-generator.c
+maemo_theme_cacher_SOURCES = cacher.c
 
 MAINTAINERCLEANFILES = Makefile.in
