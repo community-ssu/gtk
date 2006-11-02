@@ -11,7 +11,6 @@ deb: dist
 	tar zxvf ../$(PACKAGE)-$(VERSION).tar.gz && \
 	cd $(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
 
-
 MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure \
 			  config.h.in compile \
 			  ltmain.sh depcomp missing \

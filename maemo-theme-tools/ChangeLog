@@ -1,5 +1,13 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* Makefile.am:
+	* NEWS: Adding some news. 
+
+	* scripts/maemo-theme-install: Correcting the cache-generation
+	routine.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* src/outliner.c:
 	* src/regenerator.c: Fixing some compilation warnings.
 

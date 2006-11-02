@@ -129,7 +129,7 @@ sub cut_images
 sub generate_cache
 {
         print "Generating rc cache...\n";
-        `maemo-theme-cache-generator "$destdir/$themedir/"`;
+        `maemo-theme-cacher "$destdir/$themedir/"`;
 }
 
 sub add_color_substitutions
