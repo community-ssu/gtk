@@ -2,6 +2,16 @@
 
 	* Makefile.am:
 	* configure.ac:
+	* maemo-theme-tools.pc.in:
+	* pkgconfig:
+	* pkgconfig/Makefile.am:
+	* scripts/Makefile.am: Moving the pkg-config stuff into a separate
+	directory.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
+	* configure.ac:
 	* maemo-theme-install:
 	* scripts:
 	* scripts/Makefile.am: Moving the scrips into separate dir.

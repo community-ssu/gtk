@@ -1,4 +1,4 @@
-SUBDIRS = src scripts
+SUBDIRS = src scripts pkgconfig
 
 EXTRA_DIST = debian/changelog			\
 	     debian/control			\
