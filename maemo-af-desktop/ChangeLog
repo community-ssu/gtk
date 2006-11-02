@@ -1,5 +1,10 @@
 2006-11-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-switcher.c: Keep a pointer to the active
+	  menu item. Fixes: NB#46305
+
+2006-11-02  Johan Bilien <johan.bilien@nokia.com>
+
 	Applied fix to "Glib CRITICAL errors from Task Navigator"
 	Fixes: NB#41105
 	* hildon-navigator/hn-app-switcher.c: Check we have a button

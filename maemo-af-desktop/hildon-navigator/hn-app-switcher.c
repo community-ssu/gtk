@@ -248,6 +248,7 @@ struct _HNAppSwitcherPrivate
   GtkWidget *main_button;
   GtkWidget *main_menu;
   GtkWidget *main_home_item;
+  GtkWidget *active_menu_item;
   HNEntryInfo *home_info;
 
   GtkWidget *tooltip;
@@ -571,6 +572,7 @@ main_menu_destroy (HNAppSwitcher *app_switcher,
 {
   app_switcher->priv->main_menu = NULL;
   app_switcher->priv->main_home_item = NULL;
+  app_switcher->priv->active_menu_item = NULL;
 
   GtkToggleButton *button = GTK_TOGGLE_BUTTON(app_switcher->priv->main_button);
   gtk_toggle_button_set_active (button, FALSE);
@@ -591,7 +593,6 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
   HNAppSwitcherPrivate *priv = app_switcher->priv;
   GList *menu_children, *l;
   GtkWidget *separator;
-  GtkWidget *active_menu_item = NULL;
   
   /* we must dispose the old contents of the menu first */
   menu_children = gtk_container_get_children (GTK_CONTAINER (priv->main_menu));
@@ -629,7 +630,7 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
 					    priv->is_thumbable);
 
           if (hn_entry_info_is_active (entry))
-            active_menu_item = menu_item;
+            priv->active_menu_item = menu_item;
           
           gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu), menu_item);
           gtk_widget_show (menu_item);
@@ -664,13 +665,6 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
   gtk_widget_show (priv->main_home_item);
   
   g_object_ref (priv->main_home_item);
-
-  if (active_menu_item)
-    gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
-                                active_menu_item);
-  else
-    gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
-                                priv->main_home_item);
 
 
   priv->was_thumbable = priv->is_thumbable;
@@ -869,6 +863,14 @@ main_menu_pop (HNAppSwitcher *app_switcher,
   else
     gtk_widget_set_name (gtk_widget_get_toplevel (priv->main_menu),
                          "hildon-menu-window-normal");
+  
+  if (priv->active_menu_item)
+    gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
+                                priv->active_menu_item);
+  else
+    gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
+                                priv->main_home_item);
+
 
   gtk_menu_popup (GTK_MENU (priv->main_menu), NULL, NULL,
                   main_menu_position_func, app_switcher,
