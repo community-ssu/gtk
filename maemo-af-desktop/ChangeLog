@@ -1,5 +1,12 @@
 2006-11-02  Johan Bilien <johan.bilien@nokia.com>
 
+	Applied fix to "Glib CRITICAL errors from Task Navigator"
+	Fixes: NB#41105
+	* hildon-navigator/hn-app-switcher.c: Check we have a button
+	  before calling hn_app_button_force_update_icon().
+	  
+2006-11-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-navigator-item.c: Fixed small memory leak
 
 2006-11-02  Johan Bilien <johan.bilien@nokia.com>

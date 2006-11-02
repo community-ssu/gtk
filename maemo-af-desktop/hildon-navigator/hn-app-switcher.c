@@ -1848,20 +1848,20 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
       g_return_if_fail (entry_info->type != HN_ENTRY_INVALID);
       HN_DBG ("HNEntryInfo present, with child entry");
 
-      parent = hn_entry_info_get_parent(entry_info);
+      parent = hn_entry_info_get_parent (entry_info);
 
       if (!parent)
         {
-          g_critical("Attempting to change orphan child item.");
+          g_critical ("Attempting to change orphan child item.");
           return;
         }
 
-      /* if the info is urgent but has an ingore flag, we know that it was not
+      /* if the info is urgent but has an ignore flag, we know that it was not
        * causing the button to blink, and will not cause the button to blink,
        * so we do not need to update the buttons
        */
-      if(hn_entry_info_is_urgent(entry_info) &&
-         hn_entry_info_get_ignore_urgent(entry_info))
+      if (hn_entry_info_is_urgent (entry_info) &&
+          hn_entry_info_get_ignore_urgent (entry_info))
         {
           return;
         }
@@ -1871,10 +1871,10 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
        * button to blink (it was being ingored), so we do not need to update
        * the button.
        */
-      if(!hn_entry_info_is_urgent(entry_info) &&
-         hn_entry_info_get_ignore_urgent(entry_info))
+      if (!hn_entry_info_is_urgent (entry_info) &&
+          hn_entry_info_get_ignore_urgent (entry_info))
         {
-          hn_entry_info_set_ignore_urgent(entry_info, FALSE);
+          hn_entry_info_set_ignore_urgent (entry_info, FALSE);
           return;
         }
 
@@ -1894,43 +1894,46 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
               continue;
             }
 
-          if(entry == parent)
+          if (entry == parent)
             {
               button = priv->buttons[pos];
               break;
             }
         }
 
-      HN_DBG ("Force the button's icon to update itself");
-      hn_app_button_force_update_icon (HN_APP_BUTTON (button));
+      if (button)
+        {
+          HN_DBG ("Force the button's icon to update itself");
+          hn_app_button_force_update_icon (HN_APP_BUTTON (button));
+        }
 
       HN_MARK();
 
       /* if the current info is urgent and not to be ignored, we know the app
        * button should blink; make sure it does
        */
-      if(hn_entry_info_is_urgent(entry_info) &&
-         !hn_entry_info_get_ignore_urgent(entry_info))
+      if (hn_entry_info_is_urgent (entry_info) &&
+          !hn_entry_info_get_ignore_urgent (entry_info))
         {
-          if(button)
+          if (button)
             {
               /* child of one of the app buttons */
-              if(!hn_app_button_get_is_blinking(HN_APP_BUTTON(button)))
-                {
-                  hn_app_button_set_is_blinking(HN_APP_BUTTON(button),TRUE);
-                }
+              if (!hn_app_button_get_is_blinking (HN_APP_BUTTON (button)))
+                hn_app_button_set_is_blinking (HN_APP_BUTTON (button), TRUE);
+              
             }
           else
             {
               /* the child belongs to the main menu button */
-              if(!get_main_button_is_blinking(priv->main_button))
+              if (!get_main_button_is_blinking (priv->main_button))
                 {
-                  GtkWidget *app_image
-                    = gtk_bin_get_child (GTK_BIN (priv->main_button));
+                  GtkWidget *app_image =
+                    gtk_bin_get_child (GTK_BIN (priv->main_button));
 
                   HN_DBG("Setting menu button urgency to %d", TRUE);
-                  hn_app_image_animation(app_image, TRUE);
-                  set_main_button_is_blinking(priv->main_button, TRUE);
+                  
+                  hn_app_image_animation (app_image, TRUE);
+                  set_main_button_is_blinking (priv->main_button, TRUE);
                 }
             }
           
@@ -1941,11 +1944,11 @@ hn_app_switcher_real_changed_info (HNAppSwitcher *app_switcher,
        * associated button is not blinking, we know that it was not urgent
        * previously, so we do not need to update the button
        */
-      if(!hn_entry_info_is_urgent(entry_info) &&
-         !hn_entry_info_get_ignore_urgent(entry_info))
+      if (!hn_entry_info_is_urgent (entry_info) &&
+          !hn_entry_info_get_ignore_urgent (entry_info))
         {
-          if((button && !hn_app_button_get_is_blinking(HN_APP_BUTTON(button))) ||
-             (!button && !get_main_button_is_blinking(priv->main_button)))
+          if((button && !hn_app_button_get_is_blinking (HN_APP_BUTTON (button))) ||
+             (!button && !get_main_button_is_blinking (priv->main_button)))
             {
               return;
             }
