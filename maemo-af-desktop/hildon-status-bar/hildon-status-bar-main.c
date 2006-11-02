@@ -203,7 +203,7 @@ void init_dock( StatusBar *panel )
     g_object_ref( panel->arrow_button );
     gtk_object_sink( GTK_OBJECT(panel->arrow_button) );
     gtk_widget_set_size_request(panel->arrow_button, 
-		                HSB_ITEM_SIZE, HSB_ITEM_SIZE);
+		                HSB_ITEM_WIDTH, HSB_ITEM_HEIGHT);
     arrow_image = gtk_image_new();
     icon_theme = gtk_icon_theme_get_default();
     arrow_pixbuf = gtk_icon_theme_load_icon(icon_theme,

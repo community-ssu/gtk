@@ -46,10 +46,11 @@ G_BEGIN_DECLS
 #define HSB_MARGIN_DEFAULT       6
 /* FIXME: Fetched from matchbox theme, should be asked from the panel */
 #define HSB_PANEL_DEFAULT_WIDTH  280
-#define HSB_ITEM_SIZE            40
+#define HSB_ITEM_HEIGHT          50
+#define HSB_ITEM_WIDTH           40
 
 #define HSB_ARROW_ICON_NAME "qgn_stat_more"
-#define HSB_ARROW_ICON_SIZE HSB_ITEM_SIZE
+#define HSB_ARROW_ICON_SIZE HSB_ITEM_WIDTH
 
 /* hardcoded pixel positions for the icons */
 /* CHECKME: Why isn't y=0 at top? -2 seems to be much better.. */  

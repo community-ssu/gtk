@@ -347,6 +347,11 @@ hildon_status_bar_item_initialize (HildonStatusBarItem *item)
         g_object_set(G_OBJECT(priv->button), "can-focus", FALSE, NULL);
         gtk_widget_set_parent(priv->button, GTK_WIDGET( item ));
         gtk_widget_set_name(priv->button, "HildonStatusBarItem");
+        if (GTK_IS_BUTTON (priv->button))
+          {
+            gtk_button_set_alignment (GTK_BUTTON (priv->button), 0.5, 0.5);
+            gtk_container_set_border_width (GTK_CONTAINER (priv->button), 0);
+          }
     }
     
     /* Get the priority for this item */
@@ -481,16 +486,14 @@ static void hildon_status_bar_item_size_request( GtkWidget *widget,
 {
     HildonStatusBarItem *item;
     HildonStatusBarItemPrivate *priv;
-    GtkRequisition req;
 
     item = HILDON_STATUS_BAR_ITEM( widget );
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item ); 
 
     if ( priv->button  ) { 
-        gtk_widget_size_request( priv->button, &req );
-
-        requisition->width = req.width;
-        requisition->height = req.height;
+        /* XXX Force button size */
+        requisition->width = HSB_ITEM_WIDTH;
+        requisition->height = HSB_ITEM_HEIGHT ;
     } 
 
 }
@@ -502,7 +505,6 @@ static void hildon_status_bar_item_size_allocate( GtkWidget *widget,
     HildonStatusBarItem *item;
     HildonStatusBarItemPrivate *priv;
     GtkAllocation alloc;
-    GtkRequisition req;
 
     item = HILDON_STATUS_BAR_ITEM( widget );
     priv = HILDON_STATUS_BAR_ITEM_GET_PRIVATE( item );
@@ -510,13 +512,12 @@ static void hildon_status_bar_item_size_allocate( GtkWidget *widget,
     widget->allocation = *allocation;
 
     if( priv->button && GTK_WIDGET_VISIBLE( priv->button ) ) {
-	    
-	gtk_widget_size_request( priv->button, &req );
 
 	alloc.x = allocation->x;
 	alloc.y = allocation->y;
-	alloc.width = req.width;
-	alloc.height = req.height;
+    /* XXX Force button size */
+	alloc.width = HSB_ITEM_WIDTH;
+	alloc.height = HSB_ITEM_HEIGHT;
 
 	gtk_widget_size_allocate( priv->button, &alloc );
     }
@@ -649,6 +650,11 @@ void hildon_status_bar_item_set_button( HildonStatusBarItem *item,
         g_object_set(G_OBJECT(priv->button), "can-focus", FALSE, NULL);
         gtk_widget_set_parent(priv->button, GTK_WIDGET( item ));
         gtk_widget_set_name(priv->button, "HildonStatusBarItem");
+        if (GTK_IS_BUTTON (priv->button))
+          {
+            gtk_button_set_alignment (GTK_BUTTON (priv->button), 0.5, 0.5);
+            gtk_container_set_border_width (GTK_CONTAINER (priv->button), 0);
+          }
     }    
 }
 
