@@ -1,5 +1,19 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* src/cacher.c:
+	* src/colourizer.c:
+	* src/colourizer.h:
+	* src/common.c:
+	* src/common.h:
+	* src/outliner.c:
+	* src/outliner.h:
+	* src/regenerator.c:
+	* src/regenerator.h:
+	* src/slicer.c:
+	* src/slicer.h: Unifying the licenses, codeing style, etc.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* src/Makefile.am:
 	* src/cache-generator.c: Unifying the file naming.
 
