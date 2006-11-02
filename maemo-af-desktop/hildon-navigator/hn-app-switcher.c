@@ -610,6 +610,7 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
     }
   g_list_free (menu_children);
 
+  priv->active_menu_item = NULL;
   /* rebuild the menu */
   for (l = priv->applications; l != NULL; l = l->next)
     {
