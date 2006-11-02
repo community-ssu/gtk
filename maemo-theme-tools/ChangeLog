@@ -1,5 +1,10 @@
 2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* autogen.sh:
+	* configure.ac: Adding a more recent/sane autogen.sh.
+
+2006-11-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* Makefile.am:
 	* configure.ac:
 	* maemo-theme-tools.pc.in:

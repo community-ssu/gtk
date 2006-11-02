@@ -5,11 +5,7 @@ AM_CONFIG_HEADER(config.h)
 AC_CANONICAL_HOST
 
 AC_PROG_CC
-AC_PROG_CPP
-AC_PROG_CXX
 AC_PROG_INSTALL
-AC_PROG_LIBTOOL
-
 AC_HEADER_STDC
 
 CFLAGS="$CFLAGS -Wall -pedantic -Wmissing-prototypes -Wmissing-declarations"
