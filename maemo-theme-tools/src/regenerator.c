@@ -141,7 +141,7 @@ int                             main (int argc, char **argv)
         show_template (template);
 
         output_image = process (template, directory);
-        g_printf ("\n");
+        g_print ("\n");
 
         /* Save the resulting image */
         if (output_image != NULL) {
