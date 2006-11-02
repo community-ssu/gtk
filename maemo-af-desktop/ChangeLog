@@ -1,5 +1,9 @@
 2006-11-02  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.3
+
+2006-11-02  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-switcher.c: Keep a pointer to the active
 	  menu item. Fixes: NB#46305
 
