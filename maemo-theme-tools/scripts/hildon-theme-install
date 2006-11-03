@@ -65,7 +65,7 @@ sub do_substitutions
 
 sub process_gtkrc
 {
-    my $source = "$layoutdir/gtkrc-files/$_[0]";
+    my $source = "$layoutdir/rc/$_[0]";
     my $file;
 
     open ($file, "< $source");
@@ -122,7 +122,7 @@ sub install_file
 sub cut_images
 {
         print "Cutting...\n";
-        `hildon-theme-slicer $layoutdir/layout-coordinates.txt $template $destdir/$themedir/images`;
+        `hildon-theme-slicer $layoutdir/layout.txt $template $destdir/$themedir/images`;
         print "Done!\n";
 }
 
@@ -203,7 +203,7 @@ sub add_color_substitutions
     # Override with real colors
    
     print "Fetching colors...\n";
-    $eval_value =`hildon-theme-colourizer $layoutdir/layout-coordinates.txt $template`;
+    $eval_value =`hildon-theme-colourizer $layoutdir/layout.txt $template`;
     print $eval_value . "\n";
     eval $eval_value;
     print "Done!\n";
