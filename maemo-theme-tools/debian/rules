@@ -41,9 +41,13 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+	rm -f install-stamp
+	rm -f debian/files
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
+	-$(MAKE) maintainer-clean
+	
+	rm -rf debian/hildon-theme-tools
 
 	dh_clean 
 
@@ -55,6 +59,8 @@ install: build
 
 	# Add here commands to install the package into debian/build
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/hildon-theme-tools
+	
+	touch install-stamp
 
 # Build architecture-independent files here.
 binary-indep: build install
