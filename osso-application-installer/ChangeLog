@@ -1,3 +1,13 @@
+2006-11-03  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/apt-worker.cc (must_open): Put in proper return statment.
+	D'Oh.
+	(cache_init): Added with_status parameter.
+	(UpdateProgress::Update): Only send status message when requested.
+	(handle_request): Don't request status messages when updating in
+	the background.
+	(main): Likewise.
+
 2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
  
  	* src/main.cc: initialize lots of global vars to NULL.
@@ -27,7 +37,7 @@
 
 2006-10-30  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	Disable dialog separator (N43342) for:
+	Disable dialog separator (N43352) for:
 
         * src/util.cc (ask_yes_no_with_details, 
 	ask_yes_no_with_arbitrary_details, scare_user_with_legalese).
