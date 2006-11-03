@@ -1,3 +1,8 @@
+2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* ./: House keeping, changing directory structure. Abstracting the
+	theme directory and theme name variables into configure.ac
+
 2006-10-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* debian/control: Changing user/Themes to user/themes not to duplicate

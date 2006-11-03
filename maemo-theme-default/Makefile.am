@@ -1,9 +1,18 @@
+SUBDIRS = template
+
 install:
-	$(mkinstalldirs) $(DESTDIR)$(datadir)/themes/maemo-default
+	$(mkinstalldirs) $(DESTDIR)$(datadir)/themes/$(THEMEDIR)/
 	maemo-theme-install-3					\
-            --name "Default Theme"				\
-            --template $(srcdir)/theme-images-template.png	\
-            --theme $(datadir)/themes/maemo-default/		\
+            --name $(THEMENAME)					\
+            --template $(srcdir)/template/template.png		\
+            --theme $(datadir)/themes/$(THEMEDIR)/		\
             --destdir $(DESTDIR)
 
-EXTRA_DIST = theme-images-template.png
+MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure \
+			  config.h.in compile \
+			  ltmain.sh depcomp missing \
+			  install-sh config.sub \
+			  config.guess intltool-extract.in \
+			  intltool-merge.in intltool-update.in  \
+			  mkinstalldirs build-stamp install-stamp configure-stamp
+
