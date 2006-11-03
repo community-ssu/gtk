@@ -1,6 +1,11 @@
 2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* Makefile.am:
+	* configure.ac: Tiny corrections, all works now.
+
+2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
 	* NEWS:
 	* README:
 	* configure.ac:
