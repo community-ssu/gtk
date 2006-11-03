@@ -1,5 +1,7 @@
 2006-11-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.37
+	
 	* src/details.cc (show_with_details): Don't line wrap the summary
 	line, but ellipsize in the middle.  Otherwise we seem to trigger a
 	bug in GtkLabel that produces an extra blank line.
@@ -32,7 +34,7 @@
 
 	* src/util.cc (get_small_font): Changes the way get_small_label is
 	calculated. Instead of using osso-SmallFont, it uses
-	PANGO_SCALE_SMALL with osso-SystemFont. Should make fonts in show
+	PANGO_SCALE_SMALL with osso-SystemFont. Should make fonts in
 	details dialog and log bigger (N32242, N32249).
 
 	* src/details.cc (add_table_field): Added ellipsize mode parameter
