@@ -1,5 +1,3 @@
-dist_bin_SCRIPTS = maemo-theme-install-3
-
 templatedir = ${datadir}/maemo-theme-layout-3/
 nobase_dist_template_DATA =			\
      gtkrc-files/afterincludes			\
@@ -76,5 +74,5 @@ MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure \
 			  install-sh config.sub \
 			  config.guess intltool-extract.in \
 			  intltool-merge.in intltool-update.in  \
-			  mkinstalldirs build-stamp configure-stamp
+			  mkinstalldirs build-stamp install-stamp configure-stamp
 
