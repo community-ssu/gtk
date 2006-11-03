@@ -6,4 +6,5 @@ AC_PROG_INSTALL
 
 AC_OUTPUT([Makefile \
            scripts/Makefile \
-	   rc/Makefile])
+	   rc/Makefile \
+           scripts/maemo-theme-install-3])

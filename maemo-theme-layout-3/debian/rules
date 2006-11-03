@@ -25,10 +25,8 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 endif
 
 config.status:
-	if [ ! -x configure ]; then ./autogen.sh; fi
 	dh_testdir
-	# Add here commands to configure the package.
-	CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	CFLAGS="$(CFLAGS)" ./autogen.sh --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 
 build: build-stamp
@@ -45,9 +43,13 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+	rm -f install-stamp
+	rm -f debian/files
 
 	# Add here commands to clean up after the build process.
-	-$(MAKE) distclean
+	-$(MAKE) maintainer-clean
+
+	rm -rf debian/maemo-theme-layout-3
 
 	dh_clean 
 

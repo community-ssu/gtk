@@ -1,5 +1,10 @@
 2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* ./: House keeping, part 3, making the debian rules work with the
+	new autogen.
+
+2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* ./: House keeping, part 2.
 
 2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
