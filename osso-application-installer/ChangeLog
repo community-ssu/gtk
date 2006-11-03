@@ -1,6 +1,10 @@
 2006-11-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
-	* src/apt-worker.cc (must_open): Put in proper return statment.
+	* src/details.cc (show_with_details): Don't line wrap the summary
+	line, but ellipsize in the middle.  Otherwise we seem to trigger a
+	bug in GtkLabel that produces an extra blank line.
+	
+	* src/apt-worker.cc (must_open): Put in proper return statement.
 	D'Oh.
 	(cache_init): Added with_status parameter.
 	(UpdateProgress::Update): Only send status message when requested.
