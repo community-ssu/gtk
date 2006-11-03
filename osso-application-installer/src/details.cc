@@ -370,7 +370,8 @@ show_with_details (package_info *pi, bool show_problems)
 
   GtkWidget *header_label = make_small_label (pi->summary);
   gtk_misc_set_alignment (GTK_MISC (header_label), 0.0, 0.0);
-  gtk_label_set_line_wrap (GTK_LABEL (header_label), TRUE);
+  gtk_label_set_line_wrap (GTK_LABEL (header_label), FALSE);
+  gtk_label_set_ellipsize (GTK_LABEL (header_label), PANGO_ELLIPSIZE_MIDDLE);
   gtk_table_attach (GTK_TABLE (summary_table), header_label, 0, 2, 0, 1,
 		    GtkAttachOptions (GTK_EXPAND | GTK_FILL), GTK_FILL,
 		    0, 0);
