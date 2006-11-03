@@ -192,6 +192,7 @@ must_open (char *filename, int flags)
       perror (filename);
       exit (1);
     }
+  return fd;
 }
 
 /* MAYBE_READ_BYTE reads a byte from FD if one is available without
@@ -423,7 +424,7 @@ void cmd_install_file ();
 
 static bool init_cache_after_request;
 
-void cache_init ();
+void cache_init (bool with_status = true);
 
 void
 need_cache_init ()
@@ -523,7 +524,7 @@ handle_request ()
   free_buf (reqbuf, stack_reqbuf);
 
   if (init_cache_after_request)
-    cache_init ();
+    cache_init (false);
 }
 
 void read_certified_conf ();
@@ -562,7 +563,7 @@ main (int argc, char **argv)
   if (nice (20) == -1 && errno != 0)
     log_stderr ("nice: %m");
 
-  cache_init ();
+  cache_init (false);
   read_certified_conf ();
 
   while (true)
@@ -627,11 +628,17 @@ main (int argc, char **argv)
 
 class UpdateProgress : public OpProgress
 {
+  bool with_status;
+
   virtual void
   Update ()
   {
-    send_status (op_updating_cache, (int)Percent, 100, 5);
+    if (with_status)
+      send_status (op_updating_cache, (int)Percent, 100, 5);
   }
+
+public:
+  UpdateProgress (bool ws) : with_status (ws) { }
 };
 
 class DownloadStatus : public pkgAcquireStatus
@@ -911,7 +918,7 @@ void cache_reset ();
    set to NULL and an appropriate message is output.
 */
 void
-cache_init ()
+cache_init (bool with_status)
 {
   static bool global_initialized = false;
 
@@ -946,7 +953,7 @@ cache_init ()
    */
   clear_dpkg_updates ();
 	  
-  UpdateProgress progress;
+  UpdateProgress progress (with_status);
   package_cache = new pkgCacheFile;
 
   DBG ("init.");
