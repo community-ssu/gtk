@@ -1,4 +1,4 @@
 #! /bin/sh
 
 prefix=@prefix@
-exec maemo-theme-install --layout @datadir@/maemo-theme-layout-3/ "$@"
+exec hildon-theme-install --layout @datadir@/hildon-theme-layout-3/ "$@"
