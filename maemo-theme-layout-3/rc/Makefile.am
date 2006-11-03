@@ -1,4 +1,4 @@
-templatedir = ${datadir}/maemo-theme-layout-3/
+templatedir = ${datadir}/hildon-theme-layout-3/
 
 nobase_dist_template_DATA =		\
      afterincludes			\

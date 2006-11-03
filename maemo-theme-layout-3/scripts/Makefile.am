@@ -1,3 +1,3 @@
 MAINTAINERCLEANFILES = Makefile.in
 
-dist_bin_SCRIPTS = maemo-theme-install-3
+dist_bin_SCRIPTS = hildon-theme-install-3

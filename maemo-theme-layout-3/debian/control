@@ -1,14 +1,14 @@
-Source: maemo-theme-layout-3
+Source: hildon-theme-layout-3
 Section: x11
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.0
 
-Package: maemo-theme-layout-3
+Package: hildon-theme-layout-3
 Architecture: all
-Depends: maemo-theme-tools
-Description: Support tools for making themes for the maemo 3 platform
+Depends: hildon-theme-tools
+Description: A layout file for making themes for the maemo 3 platform
  This package contains tools that can help you create a theme for
  the maemo platform version 3.
  .

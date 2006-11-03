@@ -1,5 +1,16 @@
 2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* README:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* debian/rules:
+	* rc/Makefile.am:
+	* scripts/Makefile.am:
+	* scripts/maemo-theme-install-3.in: maemo-layout-3 => hildon-layout-3.
+
+2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* ./: House keeping, part 3, making the debian rules work with the
 	new autogen.
 
