@@ -2,7 +2,7 @@ SUBDIRS = template
 
 install:
 	$(mkinstalldirs) $(DESTDIR)$(datadir)/themes/$(THEMEDIR)/
-	maemo-theme-install-3					\
+	hildon-theme-install-3					\
             --name $(THEMENAME)					\
             --template $(srcdir)/template/template.png		\
             --theme $(datadir)/themes/$(THEMEDIR)/		\

@@ -1,11 +1,11 @@
-Source: maemo-theme-default
+Source: hildon-theme-default
 Section: user/themes
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), maemo-theme-layout-3
+Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-3
 Standards-Version: 3.6.0
 
-Package: maemo-theme-default
+Package: hildon-theme-default
 Architecture: all
 Depends: gtk2-engines-sapwood, ui-fonts, osso-icons
-Description: Default maemo theme
+Description: A maemo/hildon theme. 

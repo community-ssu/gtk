@@ -48,7 +48,7 @@ clean:
 	# Add here commands to clean up after the build process.
 	-$(MAKE) maintainer-clean
 
-	rm -rf debian/maemo-theme-default
+	rm -rf debian/hildon-theme-default
 
 	dh_clean 
 
@@ -59,7 +59,7 @@ install: build
 	dh_installdirs
 
 	# Add here commands to install the package into debian/build
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/maemo-theme-default
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/hildon-theme-default
 
 # Build architecture-independent files here.
 binary-indep: build install

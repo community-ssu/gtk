@@ -1,5 +1,15 @@
 2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* Makefile.am:
+	* NEWS:
+	* README:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* debian/rules: maemo-theme-default -> hildon-theme-default.
+
+2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* ./: House keeping, changing directory structure. Abstracting the
 	theme directory and theme name variables into configure.ac
 

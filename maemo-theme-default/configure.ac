@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-theme-default, 0.1.0)
+AM_INIT_AUTOMAKE(hildon-theme-default, 0.1.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
