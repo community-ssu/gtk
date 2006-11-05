@@ -83,6 +83,13 @@ void
 hn_wm_watched_window_set_name (HNWMWatchedWindow *win,
 			       const gchar       *name);
 
+void
+hn_wm_watched_window_set_gdk_wrapper_win (HNWMWatchedWindow *win,
+                                          GdkWindow         *wrapper_win);
+
+GdkWindow *
+hn_wm_watched_window_get_gdk_wrapper_win (HNWMWatchedWindow *win);
+
 const gchar*
 hn_wm_watched_window_get_hibernation_key (HNWMWatchedWindow *win);
 

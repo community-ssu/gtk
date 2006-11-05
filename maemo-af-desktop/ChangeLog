@@ -1,3 +1,11 @@
+2006-11-05  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-wm-watched-window.c: Add gdk_window_wrapper
+	member used to keep the window on which the filter was set
+	* hildon-navigator/hn-wm.c: Add StructureNotify to the event mask of each
+	window, so GDK can remove the GdkWindow from the XID list when the window
+	is gone. Fixes: NB#46255
+
 2006-11-02  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-item.c: Force the item

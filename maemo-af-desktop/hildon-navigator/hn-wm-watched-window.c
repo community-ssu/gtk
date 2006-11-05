@@ -99,6 +99,7 @@ struct HNWMWatchedWindow
   gchar                  *hibernation_key;
   HNWMWatchedWindowFlags  flags;
   HNEntryInfo            *info;
+  GdkWindow              *gdk_wrapper_win;
 };
 
 struct xwinv
@@ -783,6 +784,19 @@ hn_wm_watched_window_set_name (HNWMWatchedWindow *win,
   win->name = g_strdup(name);
 }
 
+void
+hn_wm_watched_window_set_gdk_wrapper_win (HNWMWatchedWindow *win,
+                                          GdkWindow         *wrapper_win)
+{
+  if (win->gdk_wrapper_win) g_object_unref (win->gdk_wrapper_win);
+  win->gdk_wrapper_win = wrapper_win;
+}
+
+GdkWindow *
+hn_wm_watched_window_get_gdk_wrapper_win (HNWMWatchedWindow *win)
+{
+  return win->gdk_wrapper_win;
+}
 
 GtkWidget*
 hn_wm_watched_window_get_menu (HNWMWatchedWindow *win)
@@ -1062,6 +1076,9 @@ hn_wm_watched_window_destroy (HNWMWatchedWindow *win)
 
   if(hn_wm_get_last_active_window() == win)
     hn_wm_reset_last_active_window();
+
+  if(win->gdk_wrapper_win)
+    g_object_unref (win->gdk_wrapper_win);
 
   g_free(win);
 }

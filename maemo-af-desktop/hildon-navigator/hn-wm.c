@@ -975,6 +975,7 @@ client_list_steal_foreach_func (gpointer key,
 {
   HNWMWatchedWindow   *win;
   struct xwinv *xwins;
+  GdkWindow *gdk_win_wrapper = NULL;
   int    i;
   
   xwins = (struct xwinv*)userdata;
@@ -1025,6 +1026,15 @@ client_list_steal_foreach_func (gpointer key,
   /* not on the list and not hibernating, we have to explicitely destroy the
    * hash entry and its key, since we are using a steal function
    */
+
+  /* Explicitely remove the event filter */
+  gdk_win_wrapper = hn_wm_watched_window_get_gdk_wrapper_win (win);
+
+  if (gdk_win_wrapper)
+    gdk_window_remove_filter (gdk_win_wrapper, 
+                              hn_wm_x_event_filter,
+                              NULL);
+
   hn_wm_watched_window_destroy (win);
   g_free (key);
 
@@ -1151,26 +1161,33 @@ hn_wm_add_watched_window (HNWMWatchedWindow *win)
   
   gdk_error_trap_push();
   
-  gdk_wrapper_win = gdk_window_foreign_new (hn_wm_watched_window_get_x_win(win));
+  gdk_wrapper_win = gdk_window_foreign_new (*key);
   
   if (gdk_wrapper_win != NULL)
     {
-      /* Monitor the window for prop changes */
-      gdk_window_set_events(gdk_wrapper_win,
-			    gdk_window_get_events(gdk_wrapper_win)
-			    | GDK_PROPERTY_CHANGE_MASK);
-      
-      gdk_window_add_filter(gdk_wrapper_win,
-			    hn_wm_x_event_filter,
-			    NULL);
+      XWindowAttributes attributes;
+
+      XGetWindowAttributes (GDK_DISPLAY (),
+                            GDK_WINDOW_XID (gdk_wrapper_win),
+                            &attributes);
+
+      XSelectInput (GDK_DISPLAY (),
+                    GDK_WINDOW_XID (gdk_wrapper_win),
+                    attributes.your_event_mask 
+                        | StructureNotifyMask
+                        | PropertyChangeMask);
+
+      gdk_window_add_filter (gdk_wrapper_win,
+                             hn_wm_x_event_filter,
+                             NULL);
     }
   
-  XSync(GDK_DISPLAY(), False);  /* FIXME: Check above does not sync */
+  XSync (GDK_DISPLAY(), False);  /* FIXME: Check above does not sync */
   
-  if (gdk_error_trap_pop() || gdk_wrapper_win == NULL)
+  if (gdk_error_trap_pop () || gdk_wrapper_win == NULL)
     goto abort;
   
-  g_object_unref(gdk_wrapper_win);
+  hn_wm_watched_window_set_gdk_wrapper_win (win, gdk_wrapper_win);
 
   g_hash_table_insert (hnwm.watched_windows, key, (gpointer)win);
 
@@ -1187,7 +1204,7 @@ hn_wm_add_watched_window (HNWMWatchedWindow *win)
     hn_wm_watched_window_destroy (win);
 
   if (gdk_wrapper_win)
-    g_object_unref(gdk_wrapper_win);
+    g_object_unref (gdk_wrapper_win);
   
   return FALSE;
 }
