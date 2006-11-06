@@ -1,3 +1,10 @@
+dbus (0.61-osso23) experimental; urgency=low
+
+  * UNRELEASED
+  * Fixed failing assert in dbus-gproxy.c. Fixes: NB#31796
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 06 Nov 2006 14:19:48 +0200
+
 dbus (0.61-osso22) experimental; urgency=low
 
   * Fixed bug in dbus-gproxy.c patch, causing problems with proxy
