@@ -1,0 +1,18 @@
+diff -pur dbus/glib/dbus-gproxy.c dbus.new/glib/dbus-gproxy.c
+--- dbus/glib/dbus-gproxy.c	2006-09-18 14:54:25.000000000 +0300
++++ dbus.new/glib/dbus-gproxy.c	2006-11-06 14:35:07.653816192 +0200
+@@ -655,8 +655,12 @@ unassociate_proxies (gpointer key, gpoin
+ 	{
+ 	  if (!priv->for_owner)
+ 	    {
+-	      g_assert (priv->associated);
+-	      g_assert (priv->name_call == NULL);
++              if (priv->name_call != NULL)
++                {
++                  dbus_g_proxy_cancel_call (manager->bus_proxy,
++                                            priv->name_call);
++                  priv->name_call = NULL;
++                }
+ 
+ 	      priv->associated = FALSE;
+ 	      manager->unassociated_proxies = g_slist_prepend (manager->unassociated_proxies, proxy);
