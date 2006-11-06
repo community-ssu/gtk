@@ -115,5 +115,8 @@ libhildonnavigatorincludeinstdir=$(includedir)/hildon-navigator-dev
 libhildonnavigatorincludeinst_DATA = \
 	hildon-navigator-lib.h
 
+hildon_navigator_backup_script_SCRIPTS=hildon-navigator-reset-menu.sh
+hildon_navigator_backup_scriptdir=$(sysconfdir)/osso-backup/restore.d/it2007
+
 
 CLEANFILES = *~

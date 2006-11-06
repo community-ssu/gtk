@@ -1,3 +1,9 @@
+2006-11-06  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hildon-navigator-reset-menu.sh: Added backup
+	restore script to reset the menu to the default layout
+	when restoring from an old release
+
 2006-11-05  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm-watched-window.c: Add gdk_window_wrapper
