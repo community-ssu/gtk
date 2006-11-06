@@ -13,7 +13,7 @@ maemo-af-desktop (2.9.99.4-1) unstable; urgency=low
   * hildon-status-bar/hildon-status-bar-item.c: Force the item
     buttons to be exacty 50px height. Fixes: NB#40907
 
- -- Johan Bilien <jobi@localhost.localdomain>  Mon,  6 Nov 2006 14:35:43 +0200
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  6 Nov 2006 14:35:43 +0200
 
 maemo-af-desktop (2.9.99.3-1) unstable; urgency=low
 
@@ -34,7 +34,7 @@ maemo-af-desktop (2.9.99.3-1) unstable; urgency=low
     the WM_WINDOW_TYPE property, if they are not transient to anything
     (dialogs). Fixes: NB#46122
 
- -- Johan Bilien <jobi@localhost.localdomain>  Thu,  2 Nov 2006 15:14:37 +0200
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  2 Nov 2006 15:14:37 +0200
 
 maemo-af-desktop (2.9.99.2-1) unstable; urgency=low
 
@@ -42,7 +42,7 @@ maemo-af-desktop (2.9.99.2-1) unstable; urgency=low
   to its button because the behavior of menu transient to DOCK
   windows is undefined
 
- -- Johan Bilien <jobi@localhost.localdomain>  Tue, 31 Oct 2006 17:31:35 +0200
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 31 Oct 2006 17:31:35 +0200
 
 maemo-af-desktop (2.9.99.1-1) unstable; urgency=low
 
