@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ACLOCAL_FLAGS="$ACLOCAL_FLAGS"
+ACLOCAL_FLAGS="$ACLOCAL_FLAGS -I m4"
 DIE=0
 
 srcdir=`dirname $0`

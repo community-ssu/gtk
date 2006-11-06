@@ -2,7 +2,7 @@ Source: hildon-theme-default
 Section: user/themes
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-3
+Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-3, hildon-theme-tools
 Standards-Version: 3.6.0
 
 Package: hildon-theme-default
