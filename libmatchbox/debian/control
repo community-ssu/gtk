@@ -2,13 +2,13 @@ Source: libmatchbox1
 Section: libs
 Priority: optional
 Maintainer: Tapani Palli <tapani.palli@nokia.com>
-Build-Depends: cdbs (>= 0.4.21), debhelper (>= 4.1.0), pkg-config, libx11-dev, x-dev, libxext-dev, libxt-dev, libglib2.0-dev, libpng12-dev, libjpeg62-dev, libxft-dev (>= 2.1.0), libxrender-dev
+Build-Depends: cdbs (>= 0.4.21), debhelper (>= 4.1.0), pkg-config, libx11-dev, x-dev, libxext-dev, libxt-dev, libglib2.0-dev, libpng12-dev, libjpeg62-dev, libxft-dev (>= 2.1.0), libxrender-dev, libpango1.0-dev
 Standards-Version: 3.6.1
 
 Package: libmatchbox-dev
 Section: devel
 Architecture: any
-Depends: libmatchbox1 (= ${Source-Version}), pkg-config, libglib2.0-dev,libpng12-dev, libjpeg62-dev, libxft-dev (>= 2.1.0), libxext-dev, libx11-dev, libxau-dev
+Depends: libmatchbox1 (= ${Source-Version}), pkg-config, libglib2.0-dev,libpng12-dev, libjpeg62-dev, libxft-dev (>= 2.1.0), libxext-dev, libx11-dev, libxau-dev, libpango1.0-dev
 Replaces: matchbox (<< 1:0.8.2)
 Description: shared library for Matchbox Project applications [development]
  Matchbox is a base environment for the X Window System running on non-desktop
@@ -34,3 +34,10 @@ Description: shared library for Matchbox Project applications [runtime]
  applications.
  .
  This package contains the libmatchbox runtime library.
+
+Package: libmatchbox1-dbg
+Section: devel
+Architecture: any
+Depends: ${shlibs:Depends}, libmatchbox1 (= ${Source-Version})
+Description: debug symbols for libmatchbox
+ This package contains debug symbols for libmatchbox.
