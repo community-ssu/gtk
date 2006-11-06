@@ -1,3 +1,10 @@
+libmatchbox1 (2:1.7-osso6) unstable; urgency=low
+
+  * use logical_rect instead of ink_rect in titletext rendering
+  * Fixes : NB#41691
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 17 Oct 2006 09:22:49 +0300
+
 libmatchbox1 (2:1.7-osso5) unstable; urgency=low
 
   * fixed debug symbol package 
