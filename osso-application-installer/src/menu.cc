@@ -73,22 +73,6 @@ add_check (GtkMenu *menu, const gchar *label, void (*func)())
 }
 
 static GtkWidget *
-add_radio (GtkMenu *menu, const gchar *label, void (*func)(), GtkWidget *group)
-{
-  GtkWidget *item;
-  if (group)
-    item = gtk_radio_menu_item_new_with_label_from_widget 
-      (GTK_RADIO_MENU_ITEM (group), label);
-  else
-    item = gtk_radio_menu_item_new_with_label (NULL, label);
-
-  gtk_menu_append (menu, item);
-  if (func)
-    g_signal_connect (item, "activate", G_CALLBACK (func), NULL);
-  return item;
-}
-
-static GtkWidget *
 add_sep (GtkMenu *menu)
 {
   GtkWidget *item = gtk_separator_menu_item_new ();
@@ -199,7 +183,7 @@ create_menu (GtkMenu *main)
   GtkMenu *packages = add_menu (main, _("ai_me_package"));
   GtkMenu *view = add_menu (main, _("ai_me_view"));
   GtkMenu *tools = add_menu (main, _("ai_me_tools"));
-  GtkWidget *fullscreen_group, *item;
+  GtkWidget *item;
 
   operation_menu_item = add_item (packages, "", NULL, do_current_operation);
   g_signal_connect (operation_menu_item, "insensitive_press",

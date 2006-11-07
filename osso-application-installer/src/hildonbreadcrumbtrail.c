@@ -2,7 +2,6 @@
 
 static hildon_bread_crumb_trail_get_label *get_label;
 static hildon_bread_crumb_trail_clicked *clicked;
-static GList *path;
 
 GtkWidget *
 hildon_bread_crumb_trail_new (hildon_bread_crumb_trail_get_label *gl,

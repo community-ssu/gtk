@@ -1578,18 +1578,10 @@ make_package_list_view (GtkWidget *list_widget,
   return view;
 }
 
-static void
-set_install_section_name (const char *name)
-{
-  g_free ((gchar *)install_section_view.label);
-  install_section_view.label = g_strdup (nicify_section_name (name));
-}
-
 GtkWidget *
 make_install_section_view (view *v)
 {
   GtkWidget *view;
-  GList *packages;
 
   set_operation_label (_("ai_me_package_install"),
 		       _("ai_ib_nothing_to_install"));
@@ -1939,7 +1931,6 @@ GtkWidget *
 make_uninstall_applications_view (view *v)
 {
   GtkWidget *view;
-  GList *packages;
 
   set_operation_label (_("ai_me_package_uninstall"),
 		       _("ai_ib_nothing_to_uninstall"));
@@ -2019,19 +2010,6 @@ search_package_list (GList **result,
 	}
 
       packages = packages->next;
-    }
-}
-
-static void
-search_section_list (GList **result,
-		     GList *sections, const char *pattern)
-{
-  while (sections)
-    {
-      section_info *si = (section_info *)sections->data;
-      search_package_list (result, si->packages, pattern);
-
-      sections = sections->next;
     }
 }
 
@@ -2512,7 +2490,6 @@ apt_status_callback (int cmd, apt_proto_decoder *dec, void *unused)
   if (dec == NULL)
     return;
 
-  const char *label;
   int op = dec->decode_int ();
   int already = dec->decode_int ();
   int total = dec->decode_int ();

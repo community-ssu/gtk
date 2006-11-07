@@ -72,8 +72,6 @@ extern "C" {
 #define BTNAME_MATCH_RULE "type='signal',interface='" BTNAME_SIGNAL_IF \
                           "',member='" BTNAME_SIG_CHANGED "'"
 
-#define BTNAME_DEFAULT "Nokia 770"
-
 struct ayn_closure {
   package_info *pi;
   detail_kind kind;
@@ -273,10 +271,8 @@ annoy_user_with_details (const gchar *text,
   if (currently_annoying_user)
     return;
 
-  GtkWidget *dialog, *action_area;
-  GtkWidget *details_button;
+  GtkWidget *dialog;
   auwd_closure *c = new auwd_closure;
-  gint response;
 
   dialog = hildon_note_new_information (get_main_window (), text);
 
@@ -327,8 +323,7 @@ annoy_user_with_log (const gchar *text)
   if (currently_annoying_user)
     return;
 
-  GtkWidget *dialog, *action_area;
-  GtkWidget *details_button;
+  GtkWidget *dialog;
 
   dialog = hildon_note_new_information (get_main_window (), text);
 #if 0
@@ -747,7 +742,7 @@ get_small_font (GtkWidget *widget)
         small_font = pango_font_description_from_string ("Nokia Sans 16.75");
       }
       size = pango_font_description_get_size(small_font);
-      size *= PANGO_SCALE_SMALL;
+      size = gint (size * PANGO_SCALE_SMALL);
       pango_font_description_set_size(small_font, size);
        
     }
@@ -2161,10 +2156,6 @@ gettext_alt (const char *id, const char *english)
     return tr;
 }
 
-/* XXX - There must be a better way.  Also, we don't track changes to
-         the device name.
- */
-
 static char *btname = NULL;
 
 const char *
@@ -2173,7 +2164,7 @@ device_name ()
   if (btname != NULL)
     return btname;
   else
-    return BTNAME_DEFAULT;
+    return dgettext ("hildon-fm", "sfil_li_folder_root");
 }
 
 static void

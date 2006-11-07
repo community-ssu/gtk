@@ -226,7 +226,7 @@ add_log_no_fmt (const gchar *str, size_t n)
   g_string_append_len (log_text, str, n);
 }
 
-static int log_start = 0;
+static guint log_start = 0;
 
 void
 set_log_start ()
