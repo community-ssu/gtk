@@ -1,5 +1,10 @@
 2006-11-07  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac (HILDON_DEPENDS): Add libgtkhtml-3.8, libosso,
+	libossomime, hildon-base-lib and hildon-fm.
+
+2006-11-07  Guillem Jover  <guillem.jover@nokia.com>
+
 	* configure.ac: Bump version to 0.20~.
 
 2006-10-10  Guillem Jover  <guillem.jover@nokia.com>

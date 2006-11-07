@@ -1,6 +1,10 @@
 maemo-launcher (0.20~-1) UNRELEASED; urgency=low
 
   * New Upstream Release.
+  * Make the hildon enabled booster link against even more libraries, so
+    that we can "preload" and share them across the childs. Added to
+    Build-Depends gtkhtml-dev, libosso-dev, libossomime-dev, hildon-fm-dev
+    and hildon-base-lib-dev.
 
  -- Guillem Jover <guillem.jover@nokia.com>  Tue,  7 Nov 2006 17:19:26 +0200
 

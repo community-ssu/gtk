@@ -69,6 +69,11 @@ GTK_DEPENDS="
 "
 HILDON_DEPENDS="$GTK_DEPENDS
 	gnome-vfs-2.0 >= 2.8.0
+	libgtkhtml-3.8
+	libosso
+	libossomime
+	hildon-base-lib
+	hildon-fm
 	hildon-libs >= 0.7.5
 "
 
