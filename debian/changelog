@@ -1,10 +1,8 @@
-gtk+2.0 (2:2.6.10-2.osso23) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+gtk+2.0 (2:2.6.10-2.osso23) unstable; urgency=low
 
   * Fixes: NB#46445 Enabling extension events gives negative coords
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  7 Nov 2006 12:36:13 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  7 Nov 2006 14:32:34 +0200
 
 gtk+2.0 (2:2.6.10-2.osso22) unstable; urgency=low
 
