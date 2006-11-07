@@ -455,10 +455,17 @@ gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
 	}
     }
   
-  device_width = gdkdev->axes[x_axis].max_value - 
-		   gdkdev->axes[x_axis].min_value;
-  device_height = gdkdev->axes[y_axis].max_value - 
-                    gdkdev->axes[y_axis].min_value;
+  /* Xi spec allows max_value be unset (0 or -1 usually) meaning bounded to screen size */
+  if (gdkdev->axes[x_axis].max_value <= 0)
+    device_width = gdk_screen_get_width (gdk_drawable_get_screen (input_window->window));
+  else
+    device_width = gdkdev->axes[x_axis].max_value - 
+		     gdkdev->axes[x_axis].min_value;
+  if (gdkdev->axes[y_axis].max_value <= 0)
+    device_height = gdk_screen_get_height (gdk_drawable_get_screen (input_window->window));
+  else
+    device_height = gdkdev->axes[y_axis].max_value - 
+		      gdkdev->axes[y_axis].min_value;
 
   if (gdkdev->info.mode == GDK_MODE_SCREEN) 
     {
