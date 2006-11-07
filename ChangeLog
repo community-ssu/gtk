@@ -1,3 +1,9 @@
+2006-11-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gdk/x11/gdkinput-x11.c (gdk_input_translate_coordinates): When
+	maximum value for x/y axis is -1 or 0 use the screen size. NB#46445,
+	#371930
+
 2006-11-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreemodelfilter.c
