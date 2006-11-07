@@ -1363,8 +1363,9 @@ gtk_rc_reset_widgets (GtkSettings *settings)
       if (gtk_widget_get_screen (list->data) == settings->screen)
 	{
 	  gtk_widget_reset_rc_styles (list->data);
-	  g_object_unref (list->data);
 	}
+
+      g_object_unref (list->data);
     }
   g_list_free (toplevels);
 }
@@ -1375,8 +1376,11 @@ gtk_rc_clear_realized_style (gpointer key,
 			     gpointer data)
 {
   GSList *rc_styles = key;
+  GtkStyle *style = value;
   GSList *tmp_list = rc_styles;
 
+  g_object_unref (style);
+ 
   while (tmp_list)
     {
       GtkRcStyle *rc_style = tmp_list->data;
