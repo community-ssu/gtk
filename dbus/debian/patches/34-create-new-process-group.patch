@@ -1,0 +1,20 @@
+diff -pur dbus/dbus/dbus-spawn.c dbus.new/dbus/dbus-spawn.c
+--- dbus/dbus/dbus-spawn.c	2006-05-05 18:59:22.000000000 +0300
++++ dbus.new/dbus/dbus-spawn.c	2006-11-07 16:50:12.135736256 +0200
+@@ -1140,6 +1140,16 @@ _dbus_spawn_async_with_babysitter (DBusB
+ 	}
+       else if (grandchild_pid == 0)
+ 	{
++	  int p;
++          /* put the child into a new session and process group, so that
++           * killpg() can be used safely */
++          if (setsid () == -1)
++            _dbus_warn ("setsid() failed: %s\n", _dbus_strerror (errno));
++          errno = 0;
++          p = getpriority(PRIO_PROCESS, 0);
++          if (!errno && p < 0) {
++            setpriority(PRIO_PROCESS, 0, 0);
++          }
+ 	  do_exec (child_err_report_pipe[WRITE_END],
+ 		   argv,
+ 		   child_setup, user_data);

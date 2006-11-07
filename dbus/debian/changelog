@@ -1,3 +1,10 @@
+dbus (0.61-osso24) experimental; urgency=low
+
+  * UNRELEASED
+  * Activated process now creates its own process group. Fixes: NB#46383
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 07 Nov 2006 16:53:39 +0200
+
 dbus (0.61-osso23) experimental; urgency=low
 
   * Fixed failing assert in dbus-gproxy.c. Fixes: NB#31796
