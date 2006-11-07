@@ -10,7 +10,7 @@ libosso_la_LIBADD = -ldl -lc $(GTHREAD_LIBS) $(GLIB_LIBS) $(DBUS_LIBS) $(GNOMEVF
 libosso_la_LDFLAGS = -version-info 4:0:3
 
 ossoincludedir=$(includedir)
-ossoinclude_HEADERS = libosso.h osso-log.h log-functions.h osso-mem.h
+ossoinclude_HEADERS = libosso.h osso-log.h log-functions.h osso-mem.h muali.h
 
 libosso_la_SOURCES = \
 	osso-state.c \

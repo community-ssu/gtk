@@ -53,7 +53,7 @@ typedef int muali_error_t;
 #define MUALI_ERROR             3       /* generic error code */
 #define MUALI_ERROR_TIMEOUT     4       /* timeout happened */
 
-typedef _muali_context_t muali_context_t;
+typedef struct _muali_context_t muali_context_t;
 
 typedef struct {
   int type;             /* type of argument */

@@ -540,24 +540,41 @@ inline static int muali_convert_msgtype(int t)
     }
 }
 
+inline static int get_msg_type(int t)
+{
+    switch (t) {
+            case MUALI_EVENT_LOWMEM_ON:
+            case MUALI_EVENT_LOWMEM_OFF:
+            case MUALI_EVENT_LOWMEM_BOTH:
+                    return MUALI_EVENT_SIGNAL;
+            default:
+                    return t;
+    }
+}
+
 inline static int types_match(int a, int b)
 {
-    if (a == b) return 1;
+    int ca, cb;
 
-    if (a == MUALI_EVENT_MESSAGE_OR_SIGNAL &&
-        (b == MUALI_EVENT_MESSAGE || b == MUALI_EVENT_SIGNAL))
+    ca = get_msg_type(a);
+    cb = get_msg_type(b);
+
+    if (ca == cb) return 1;
+
+    if (ca == MUALI_EVENT_MESSAGE_OR_SIGNAL &&
+        (cb == MUALI_EVENT_MESSAGE || cb == MUALI_EVENT_SIGNAL))
             return 1;
 
-    if (a == MUALI_EVENT_REPLY_OR_ERROR &&
-        (b == MUALI_EVENT_REPLY || b == MUALI_EVENT_ERROR))
+    if (ca == MUALI_EVENT_REPLY_OR_ERROR &&
+        (cb == MUALI_EVENT_REPLY || cb == MUALI_EVENT_ERROR))
             return 1;
 
-    if (b == MUALI_EVENT_MESSAGE_OR_SIGNAL &&
-        (a == MUALI_EVENT_MESSAGE || a == MUALI_EVENT_SIGNAL))
+    if (cb == MUALI_EVENT_MESSAGE_OR_SIGNAL &&
+        (ca == MUALI_EVENT_MESSAGE || ca == MUALI_EVENT_SIGNAL))
             return 1;
 
-    if (b == MUALI_EVENT_REPLY_OR_ERROR &&
-        (a == MUALI_EVENT_REPLY || a == MUALI_EVENT_ERROR))
+    if (cb == MUALI_EVENT_REPLY_OR_ERROR &&
+        (ca == MUALI_EVENT_REPLY || ca == MUALI_EVENT_ERROR))
             return 1;
 
     return 0;
@@ -576,7 +593,7 @@ inline static int str_match(const char *a, const char *b)
 static DBusHandlerResult
 _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
 {
-    muali_context_t *muali;
+    osso_context_t *muali;
     _osso_hash_value_t *elem;
     int msgtype;
     const char *interface;
@@ -607,19 +624,46 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
     if (elem != NULL) {
         GList *list;
 
+        ULOG_DEBUG_F("found from if_hash");
         muali->cur_conn = conn;
 
         list = g_list_first(elem->handlers);
         while (list != NULL) {
             _osso_handler_t *handler;
             DBusHandlerResult ret;
+            gboolean match_sender = TRUE;
 
             handler = list->data;
 
+            if (handler) {
+                    ULOG_DEBUG_F("found handler");
+                    if (handler->data != NULL) {
+                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
+                                handler->data->service,
+                                handler->data->path,
+                                handler->data->name);
+
+                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
+                                dbus_message_get_sender(msg),
+                                dbus_message_get_path(msg),
+                                dbus_message_get_member(msg));
+
+                            ULOG_DEBUG_F("types: %d %d",
+                                handler->data->event_type, msgtype);
+                    }
+            }
+
+            if (msgtype == MUALI_EVENT_SIGNAL) {
+                    /* does not make sense to match sender in case
+                     * of D-Bus signal, because D-Bus uses the unique
+                     * bus name as the sender */
+                    match_sender = FALSE;
+            }
+
             if (handler->data != NULL &&
                 types_match(handler->data->event_type, msgtype) &&
-                str_match(handler->data->service,
-                          dbus_message_get_sender(msg)) &&
+                (!match_sender || str_match(handler->data->service,
+                                      dbus_message_get_sender(msg))) &&
                 str_match(handler->data->path,
                           dbus_message_get_path(msg)) &&
                 /* interface has matched already */

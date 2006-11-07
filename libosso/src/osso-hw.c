@@ -788,7 +788,7 @@ inline static muali_error_t _set_handler(muali_context_t *context,
                 return MUALI_ERROR;
         }
 
-        _msg_handler_set_cb_f(context,
+        _msg_handler_set_cb_f((osso_context_t*)context,
                               service,
                               object_path,
                               interface,
@@ -869,9 +869,13 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
 
         ULOG_DEBUG_F("entered");
 
+        if (context == NULL || handler == NULL) {
+                ULOG_ERR_F("invalid arguments");
+                return MUALI_ERROR_INVALID;
+        }
+
         if (info == NULL && event_type == 0) {
                 ULOG_ERR_F("info or event_type must be provided");
-                *handler_id = 0;
                 return MUALI_ERROR_INVALID;
         }
 
@@ -905,7 +909,9 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                 case MUALI_EVENT_LOWMEM_BOTH:
                 case MUALI_EVENT_LOWMEM_OFF:
                         event_cb = lowmem_signal_handler;
-                        service = USER_LOWMEM_OFF_SIGNAL_SVC;
+                        /* service is NULL because D-Bus signals only
+                         * give the unique bus name as the sender */
+                        service = NULL;
                         object_path = USER_LOWMEM_OFF_SIGNAL_OP;
                         interface = USER_LOWMEM_OFF_SIGNAL_IF;
                         match = "type='signal',interface='"
@@ -932,7 +938,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         break;
                 case MUALI_EVENT_LOWMEM_ON:
                         event_cb = lowmem_signal_handler;
-                        service = USER_LOWMEM_ON_SIGNAL_SVC;
+                        service = NULL;
                         object_path = USER_LOWMEM_ON_SIGNAL_OP;
                         interface = USER_LOWMEM_ON_SIGNAL_IF;
                         match = "type='signal',interface='"

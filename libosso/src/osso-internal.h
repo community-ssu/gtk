@@ -159,9 +159,32 @@ typedef struct osso_af_context_t {
     osso_hw_state_t hw_state;
     guint rpc_timeout;
     GArray *cp_plugins;
-} _osso_af_context_t;
+} _osso_af_context_t, _muali_context_t;
 
-typedef _osso_af_context_t _muali_context_t;
+typedef struct _muali_context_t {
+    DBusConnection *conn;
+    DBusConnection *sys_conn;
+    DBusConnection *cur_conn;
+    gchar application[MAX_APP_NAME_LEN + 1];
+    gchar version[MAX_VERSION_LEN + 1];
+    char object_path[MAX_OP_LEN + 1];
+    char interface[MAX_IF_LEN + 1];
+    char service[MAX_SVC_LEN + 1];
+    gboolean systembus_service_registered;
+    gboolean sessionbus_service_registered;
+    GHashTable *uniq_hash;  /* handlers hashed by the triplet: service,
+                               object path, and interface. */
+    GHashTable *if_hash;    /* handlers hashed by interface only */
+    GHashTable *id_hash;    /* handlers hashed by id (muali API) */
+    _osso_autosave_t autosave;
+#ifdef LIBOSSO_DEBUG
+    guint log_handler;
+#endif
+    _osso_hw_cb_t hw_cbs;
+    osso_hw_state_t hw_state;
+    guint rpc_timeout;
+    GArray *cp_plugins;
+} _muali_this_type_is_not_used_t;
 
 # ifdef LIBOSSO_DEBUG
 #  define dprint(f, a...) (fprintf(stderr, "%s:%d %s(): "f"\n", __FILE__, \
