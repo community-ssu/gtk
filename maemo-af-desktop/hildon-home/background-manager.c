@@ -199,6 +199,7 @@ struct _BackgroundManagerPrivate
   GdkWindow *desktop;
   
   guint bg_timeout;
+  guint loading_note_update_timeout;
   GtkWidget *loading_note;
 };
 
@@ -1343,6 +1344,17 @@ loading_image_banner_update_progress (gpointer data)
 }
 
 static void
+loading_image_banner_destroy (BackgroundManager *manager,
+                              GtkDialog *dialog)
+{
+  if (manager->priv->loading_note_update_timeout)
+    {
+      g_source_remove (manager->priv->loading_note_update_timeout);
+      manager->priv->loading_note_update_timeout = 0;
+    }
+}
+
+static void
 loading_image_banner_response (GtkDialog *dialog,
 			       gint       response,
 			       gpointer   user_data)
@@ -1395,13 +1407,18 @@ show_loading_image_banner (BackgroundManager *manager)
   gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR (prog_bar), 0.2);
   gtk_container_add (GTK_CONTAINER (dialog->vbox), prog_bar);
 
-  g_timeout_add (500, loading_image_banner_update_progress, prog_bar);
+  priv->loading_note_update_timeout =
+      g_timeout_add (500, loading_image_banner_update_progress, prog_bar);
 
   gtk_dialog_set_has_separator (dialog, FALSE);
   
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (loading_image_banner_response),
 		    manager);
+
+  g_signal_connect_swapped (dialog, "destroy",
+                            G_CALLBACK (loading_image_banner_destroy),
+                            manager);
 
   gtk_widget_realize (priv->loading_note);
   gdk_window_set_decorations (priv->loading_note->window,

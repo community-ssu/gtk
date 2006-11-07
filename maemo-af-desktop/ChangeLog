@@ -1,4 +1,10 @@
-2006-11-06  Johan Bilien <johan.bilien@nokia.com>
+2006-11-07  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/background-manager.c: Make sure to remove
+	the timeout updating the progress bar when the loading
+	note is destroyed. Fixes: NB#46655
+
+2006-11-07  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-background-dialog.c: Also react to
 	the _RESPONSE_DELETE_EVENT. Fixes: NB#42484 (comment 3)
