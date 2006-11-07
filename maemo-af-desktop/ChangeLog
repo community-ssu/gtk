@@ -1,5 +1,10 @@
 2006-11-06  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-background-dialog.c: Also react to
+	the _RESPONSE_DELETE_EVENT. Fixes: NB#42484 (comment 3)
+
+2006-11-06  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.99.4
 
 2006-11-06  Johan Bilien <johan.bilien@nokia.com>

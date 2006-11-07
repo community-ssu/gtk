@@ -647,6 +647,7 @@ home_bgd_response_cb (GtkWidget *dialog,
       home_bgd_apply (d);
       break;
     case GTK_RESPONSE_CANCEL:
+    case GTK_RESPONSE_DELETE_EVENT:
       gtk_widget_hide (dialog);
       home_bgd_cancel (dialog);
       break;
