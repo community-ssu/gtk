@@ -1667,6 +1667,7 @@ hn_app_switcher_real_add_info (HNAppSwitcher *app_switcher,
   if (hn_as_sound_play_sample (priv->esd_socket, priv->start_sample) == -1)
     {
       /* Connection to esd was probably closed */
+      hn_as_sound_deinit (priv->esd_socket);
       hn_app_switcher_init_sound_samples (app_switcher);
       hn_as_sound_play_sample (priv->esd_socket, priv->start_sample);
     }
@@ -1731,6 +1732,7 @@ hn_app_switcher_real_remove_info (HNAppSwitcher *app_switcher,
   if (hn_as_sound_play_sample (priv->esd_socket, priv->end_sample) == -1)
     {
       /* Connection to esd was probably closed */
+      hn_as_sound_deinit (priv->esd_socket);
       hn_app_switcher_init_sound_samples (app_switcher);
       hn_as_sound_play_sample (priv->esd_socket, priv->start_sample);
     }

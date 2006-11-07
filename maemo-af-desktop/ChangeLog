@@ -1,5 +1,10 @@
 2006-11-07  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-app-switcher.c: close the previous
+	socket when we detect that esd was restarted. Fixes: NB#46338
+
+2006-11-07  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Make sure to remove
 	the timeout updating the progress bar when the loading
 	note is destroyed. Fixes: NB#46655
