@@ -1,3 +1,14 @@
+2006-11-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc, src/menu.cc, src/main.cc, src/log.cc,
+	src/hildonbreadcrumbtrail.c, src/apt-worker.cc: Removed unused
+	variables and static functions. Use unsigned ints when
+	appropriate.
+
+	* src/util.cc (BTNAME_DEFAULT): Removed.
+	(device_name): Use translated sfil_li_folder_root instead of
+	BTNAME_DEFAULT.
+	
 2006-11-03  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.37
