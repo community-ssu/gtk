@@ -1,5 +1,9 @@
 2006-11-07  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.5-1
+
+2006-11-07  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-switcher.c: close the previous
 	socket when we detect that esd was restarted. Fixes: NB#46338
 

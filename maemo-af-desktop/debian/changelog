@@ -1,3 +1,17 @@
+maemo-af-desktop (2.9.99.5-1) unstable; urgency=low
+
+  * hildon-navigator/hn-app-switcher.c: close the previous
+  socket when we detect that esd was restarted. Fixes: NB#46338
+
+  * hildon-home/background-manager.c: Make sure to remove
+  the timeout updating the progress bar when the loading
+  note is destroyed. Fixes: NB#46655
+
+  * hildon-home/hildon-home-background-dialog.c: Also react to
+  the _RESPONSE_DELETE_EVENT. Fixes: NB#42484 (comment 3)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  7 Nov 2006 16:12:02 +0200
+
 maemo-af-desktop (2.9.99.4-1) unstable; urgency=low
 
   * hildon-navigator/hildon-navigator-reset-menu.sh: Added backup
