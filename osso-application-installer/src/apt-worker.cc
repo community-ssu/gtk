@@ -324,7 +324,7 @@ must_read (void *buf, size_t n)
 }
 
 static void
-must_write (void *buf, size_t n)
+must_write (void *buf, ssize_t n)
 {
   if (n > 0 && write (output_fd, buf, n) != n)
     {
@@ -757,7 +757,7 @@ load_auto_flags ()
   if (package_cache == NULL)
     return;
 
-  for (int i = 0; i < package_count; i++)
+  for (unsigned int i = 0; i < package_count; i++)
     package_flags[i].autoinst = false;
 
   FILE *f = fopen ("/var/lib/osso-application-installer/autoinst", "r");
@@ -825,8 +825,6 @@ mydebSystem::Lock ()
   /* This is a modified copy of debSystem::Lock, which in turn is a
      copy of the behavior of dpkg.
   */
-
-  bool tried_to_rescue_already = false;
 
   // Disable file locking
   if (_config->FindB("Debug::NoLocking",false) == true || LockCount > 1)
@@ -1120,7 +1118,9 @@ mark_for_remove (pkgCache::PkgIterator &pkg, bool only_maybe = false)
 {
   pkgDepCache &cache = *package_cache;
 
-  int n_broken = cache.BrokenCount ();
+  /* 'unsigned', so that we can handle more than 2^31 broken packages.
+   */
+  unsigned int n_broken = cache.BrokenCount ();
 
   cache.MarkDelete (pkg);
   cache[pkg].Flags &= ~pkgCache::Flag::Auto;
@@ -1493,7 +1493,7 @@ cmd_get_package_info ()
 
       // simulate install
       
-      int old_broken_count = cache.BrokenCount();
+      unsigned int old_broken_count = cache.BrokenCount();
       mark_named_package_for_install (package);
       if (cache.BrokenCount() > old_broken_count)
 	info.installable_status = installable_status ();
@@ -1710,8 +1710,6 @@ encode_remove_summary (pkgCache::PkgIterator &want)
        pkg.end() != true;
        pkg++)
     {
-      apt_proto_sumtype type;
-
       if (cache[pkg].Delete())
 	{
 	  response.encode_int (sumtype_removing);
@@ -2251,8 +2249,6 @@ operation (bool check_only)
 	 }
      }
 
-   bool Fail = false;
-   
    if (Cache->DelCount() == 0 && Cache->InstCount() == 0 &&
        Cache->BadCount() == 0)
       return rescode_success;
