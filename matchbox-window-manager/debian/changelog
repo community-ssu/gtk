@@ -1,3 +1,24 @@
+matchbox-window-manager (2:1.1-osso12) unstable; urgency=low
+
+  * rolled back the patch, reopens NB#40684
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 27 Oct 2006 14:45:15 +0300
+
+matchbox-window-manager (2:1.1-osso11) unstable; urgency=low
+
+  * applied patch for window grouping and dialogs considering stacking
+  * Fixes: NB#40684 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 24 Oct 2006 14:31:15 +0300
+
+matchbox-window-manager (2:1.1-osso10) unstable; urgency=low
+
+  * rollback 'Set modal indicator desktop hint for all modal dialogs' change
+  * applied patch for wm.c:wm_handle_button_event
+  * Fixes: NB#43743
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 24 Oct 2006 14:17:31 +0300
+
 matchbox-window-manager (2:1.1-osso9) unstable; urgency=low
 
   * merge a change to 'modal indicator desktop hint' from upstream, helps with
@@ -9,19 +30,19 @@ matchbox-window-manager (2:1.1-osso8) unstable; urgency=low
 
   * reverted part of patch to NB#35001
     (dialog_client.c:dialog_get_available_area)
-  * Fixes : NB#42203, NB#42576
+  * Fixes: NB#42203, NB#42576
 
  -- Tapani Palli <tapani.palli@nokia.com>  Wed, 11 Oct 2006 10:07:50 +0300
 
 matchbox-window-manager (2:1.1-osso7) unstable; urgency=low
 
-  * Fixes : NB#40724 
+  * Fixes: NB#40724 
 
  -- Tapani Palli <tapani.palli@nokia.com>  Thu,  5 Oct 2006 10:03:43 +0300
 
 matchbox-window-manager (2:1.1-osso6) unstable; urgency=low
 
-  * Fixes : NB#40455, NB#40723
+  * Fixes: NB#40455, NB#40723
 
  -- Tapani Palli <tapani.palli@nokia.com>  Tue,  3 Oct 2006 11:31:40 +0300
 
