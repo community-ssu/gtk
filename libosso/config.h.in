@@ -143,6 +143,15 @@
    slash. */
 #undef LSTAT_FOLLOWS_SLASHED_SYMLINK
 
+/* Compile OSSO logging macros */
+#undef OSSOLOG_COMPILE
+
+/* Log to the stderr */
+#undef OSSOLOG_STDERR
+
+/* Log to the syslog */
+#undef OSSOLOG_SYSLOG
+
 /* Name of package */
 #undef PACKAGE
 

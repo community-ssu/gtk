@@ -15,6 +15,26 @@ AC_ARG_ENABLE([debug],
               [Compile with extra debug code (default=no)])], 
               [libosso_use_debug=yes], [libosso_use_debug=no])
 
+AC_ARG_ENABLE([syslog-logging], 
+              [AS_HELP_STRING([--enable-syslog-logging],
+              [Compile with logging to the syslog (default=no)])], 
+              [libosso_log_syslog=yes], [libosso_log_syslog=no])
+
+AC_ARG_ENABLE([stderr-logging], 
+              [AS_HELP_STRING([--enable-stderr-logging],
+              [Compile with logging to the stderr (default=no)])], 
+              [libosso_log_stderr=yes], [libosso_log_stderr=no])
+
+if test x${libosso_log_syslog} = xyes; then
+    AC_DEFINE([OSSOLOG_COMPILE],1,[Compile OSSO logging macros])
+    AC_DEFINE([OSSOLOG_SYSLOG],1,[Log to the syslog])
+fi
+
+if test x${libosso_log_stderr} = xyes; then
+    AC_DEFINE([OSSOLOG_COMPILE],1,[Compile OSSO logging macros])
+    AC_DEFINE([OSSOLOG_STDERR],1,[Log to the stderr])
+fi
+
 ## GCC 3.3.4, used in scratchbox 0.9.8.5, has bugs with
 ## -Wunreachable-code, so we don't use that warning option for now.
 ## 
@@ -218,6 +238,8 @@ Dependencies:
 Options:
 	Include debug code:.... $libosso_use_debug
 	Build unit tests:...... $build_unit_tests
+	Log to syslog:......... $libosso_log_syslog
+	Log to stderr:......... $libosso_log_stderr
 
 Directories:
 	D-Bus root:............. $DBUS_ROOT

@@ -8,6 +8,7 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * Did fixes to configure.ac and Makefile.ams.
   * The unit tests are not built if outo is not present -> outo is now
     optional. Fixes: MB#824
+  * Added super-cool syslog-logging and stderr-logging configure options.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 08 Nov 2006 16:41:22 +0200
 
