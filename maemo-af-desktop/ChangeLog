@@ -1,5 +1,9 @@
 2006-11-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.6-1
+
+2006-11-08  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Unref the pixmap after setting
 	it as background. Fixes: NB#46798
 

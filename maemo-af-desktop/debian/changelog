@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.6-1) unstable; urgency=low
+
+  * hildon-home/background-manager.c: Unref the pixmap after setting
+  it as background. Fixes: NB#46798
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  8 Nov 2006 17:18:42 +0200
+
 maemo-af-desktop (2.9.99.5-1) unstable; urgency=low
 
   * hildon-navigator/hn-app-switcher.c: close the previous
