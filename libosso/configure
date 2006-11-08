@@ -463,7 +463,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot OSSO_CFLAGS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL PKG_CONFIG DOXYGEN OSSO_AF_SETTINGS_CFLAGS OSSO_AF_SETTINGS_LIBS DBUS_ROOT DBUS_ETC DBUS_VAR DBUS_SVC_DIR DBUS_CONF_DIR GLIB_CFLAGS GLIB_LIBS GTHREAD_CFLAGS GTHREAD_LIBS DBUS_CFLAGS DBUS_LIBS OUTO_CFLAGS OUTO_LIBS BUILD_UNIT_TESTS_TRUE BUILD_UNIT_TESTS_FALSE LIBOBJS docdir localedir outomoduledir HTML_DIR API_DIR whoami LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO AMTAR install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot OSSO_CFLAGS CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL PKG_CONFIG DOXYGEN OSSO_AF_SETTINGS_CFLAGS OSSO_AF_SETTINGS_LIBS DBUS_ROOT DBUS_ETC DBUS_VAR DBUS_SVC_DIR DBUS_CONF_DIR GLIB_CFLAGS GLIB_LIBS GTHREAD_CFLAGS GTHREAD_LIBS DBUS_CFLAGS DBUS_LIBS OUTO_CFLAGS OUTO_LIBS BUILD_UNIT_TESTS_TRUE BUILD_UNIT_TESTS_FALSE LIBOBJS docdir localedir outomoduledir HTML_DIR API_DIR LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -23346,8 +23346,6 @@ eval "API_DIR=${top_srcdir}${docdir}/libosso/API"
 eval "HTML_DIR=${API_DIR}/html"
 eval "localedir=${datadir}/locale"
 eval "outomoduledir=${prefix}/lib/outo"
-whoami=`whoami`
-
 
 
 
@@ -24124,7 +24122,6 @@ s,@localedir@,$localedir,;t t
 s,@outomoduledir@,$outomoduledir,;t t
 s,@HTML_DIR@,$HTML_DIR,;t t
 s,@API_DIR@,$API_DIR,;t t
-s,@whoami@,$whoami,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF
 

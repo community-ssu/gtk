@@ -203,7 +203,6 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-whoami = @whoami@
 SUBDIRS = src ut
 
 #clean-generic:

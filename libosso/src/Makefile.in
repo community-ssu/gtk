@@ -209,7 +209,6 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-whoami = @whoami@
 AM_CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) $(GNOMEVFS_CFLAGS) \
 	    -I$(top_srcdir) -I$(top_srcdir)/src
 

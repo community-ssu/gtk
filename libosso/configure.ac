@@ -163,14 +163,12 @@ eval "API_DIR=${top_srcdir}${docdir}/libosso/API"
 eval "HTML_DIR=${API_DIR}/html"
 eval "localedir=${datadir}/locale"
 eval "outomoduledir=${prefix}/lib/outo"
-whoami=`whoami`
 
 AC_SUBST(docdir)
 AC_SUBST(localedir)
 AC_SUBST(outomoduledir)
 AC_SUBST(HTML_DIR)
 AC_SUBST(API_DIR)
-AC_SUBST(whoami)
 
 AC_CONFIG_FILES(Makefile \
 		Doxyfile \
