@@ -253,6 +253,7 @@ There are some utilities available that you can use in your maintainer
 scripts to interact with the user:
 
 - maemo-select-menu-location <app>.desktop [default-folder]
+  maemo-select-menu-location --remove folder
 
   When your package contains a .desktop file and consequently has an
   entry in the Desktop menu for this file, it can call
@@ -297,6 +298,10 @@ scripts to interact with the user:
 
   You might want to skip calling maemo-select-menu-location when
   merely upgrading as opposed to installing from scratch.
+
+  You can use the "--remove" option to remove a folder from the menu.
+  It will only be removed when it is empty.  The "folder" parameter is
+  interpeted in the same way as the "default folder", see above.
 
 
 - maemo-application-running -x executable-file
