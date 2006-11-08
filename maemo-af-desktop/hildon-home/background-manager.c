@@ -1685,7 +1685,10 @@ background_manager_changed (BackgroundManager *manager,
                                                   &bitmask,
                                                   0);
   if (pixmap)
-    gdk_window_set_back_pixmap (priv->desktop, pixmap, FALSE);
+    {
+      gdk_window_set_back_pixmap (priv->desktop, pixmap, FALSE);
+      g_object_unref (pixmap);
+    }
 
   if (bitmask)
     g_object_unref (bitmask);
