@@ -1,4 +1,4 @@
-AM_CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) $(GNOMEVFS_CFLAGS) \
+AM_CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) \
 	    -I$(top_srcdir) -I$(top_srcdir)/src
 
 AM_CPPFLAGS = \
@@ -7,7 +7,7 @@ AM_CPPFLAGS = \
 
 lib_LTLIBRARIES = libosso.la
 
-libosso_la_LIBADD = -ldl -lc $(GTHREAD_LIBS) $(GLIB_LIBS) $(DBUS_LIBS) $(GNOMEVFS_LIBS)
+libosso_la_LIBADD = -ldl -lc $(GTHREAD_LIBS) $(GLIB_LIBS) $(DBUS_LIBS)
 libosso_la_LDFLAGS = -version-info 4:0:3
 
 ossoincludedir=$(includedir)
