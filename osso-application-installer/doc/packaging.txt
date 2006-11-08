@@ -231,7 +231,7 @@ Application installer will run the program named
 
     /var/lib/osso-application-installer/info/PACKAGE.checkrm
 
-if it exists.  When this program exist with code 111, the operation is
+if it exists.  When this program exits with code 111, the operation is
 cancelled.  In all other cases, including when the program terminates
 with a signal, the operation is carried out.
 
