@@ -1,6 +1,12 @@
 2006-11-08  Johan Bilien <johan.bilien@nokia.com>
 
-	* configure.ac: 2.9.99.6-1
+	* hildon-home/background-manager.c: Unref the pixmap after setting
+	it as background _everywhere_
+	* configure.ac: 2.9.99.7
+
+2006-11-08  Johan Bilien <johan.bilien@nokia.com>
+
+	* configure.ac: 2.9.99.6
 
 2006-11-08  Johan Bilien <johan.bilien@nokia.com>
 
@@ -9,7 +15,7 @@
 
 2006-11-07  Johan Bilien <johan.bilien@nokia.com>
 
-	* configure.ac: 2.9.99.5-1
+	* configure.ac: 2.9.99.5
 
 2006-11-07  Johan Bilien <johan.bilien@nokia.com>
 
