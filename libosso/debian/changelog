@@ -5,8 +5,11 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * Const keyword fixes from Murray Cumming <murrayc@murrayc.com>.
     Fixes: MB#795
   * Enabled the muali filter and fixed a crash in it.
+  * Did fixes to configure.ac and Makefile.ams.
+  * The unit tests are not built if outo is not present -> outo is now
+    optional. Fixes: MB#824
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Oct 2006 14:47:08 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 08 Nov 2006 16:41:22 +0200
 
 libosso (1.20-1) unstable; urgency=low
 

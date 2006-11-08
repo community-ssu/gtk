@@ -4,8 +4,8 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: libosso
-Description: OSSO Application Framework (AF)
-Requires: dbus-glib-1 >= 0.21
+Description: D-Bus interface library for the Maemo platform
+Requires: dbus-glib-1 >= 0.61
 Version: @VERSION@
 Libs: -L${libdir} -losso
 Cflags: -I${includedir}

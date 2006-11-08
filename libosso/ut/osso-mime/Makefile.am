@@ -1,12 +1,12 @@
 outomodule_LTLIBRARIES = libossomime.la
 
-INCLUDES = $(CFLAGS) $(OSSO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src \
+AM_CPPFLAGS = $(CFLAGS) $(OSSO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src \
 	   $(GLIB_CFLAGS) $(OUTO_CFLAGS) -DPREFIX='"$(prefix)"' \
 	   $(DBUS_CFLAGS) -DTESTFILE='"$(prefix)/lib/outo/dummy.doc"'
 
 EXTRA_DIST = mimedummy.doc
 
-LDFLAGS = -module -avoid-version
+AM_LDFLAGS = -module -avoid-version
 
 libossomime_la_LIBADD = -L../../src -lc -losso
 libossomime_la_SOURCES = test-osso-mime.c

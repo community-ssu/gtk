@@ -1,10 +1,10 @@
 outomodule_LTLIBRARIES = libossosbevent.la
 
-INCLUDES = $(OSSO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src \
+AM_CPPFLAGS = $(OSSO_CFLAGS) -I$(top_srcdir)/src -I$(top_srcdir)/src \
 	   $(GLIB_CFLAGS) $(OUTO_CFLAGS) -DPREFIX='"$(prefix)"' \
 	   $(DBUS_CFLAGS)
 
-LDFLAGS = -module -avoid-version
+AM_LDFLAGS = -module -avoid-version
 
 libossosbevent_la_LIBADD = -L../../src -lc -losso
 libossosbevent_la_SOURCES = test-osso-sbevent.c

@@ -502,7 +502,7 @@ static void _get_byte_array(DBusMessageIter *iter, muali_arg_t *arg)
 
 static muali_arg_t *_get_muali_args(DBusMessageIter *iter)
 {
-    int type, index = 0;
+    int type, idx = 0;
     muali_arg_t *arg_array;
 
     arg_array = calloc(1, sizeof(muali_arg_t) * (MUALI_MAX_ARGS + 1));
@@ -523,60 +523,60 @@ static muali_arg_t *_get_muali_args(DBusMessageIter *iter)
 
             switch (type) {
                     case DBUS_TYPE_BOOLEAN:
-                            arg_array[index].type = MUALI_TYPE_BOOL; 
+                            arg_array[idx].type = MUALI_TYPE_BOOL; 
                             dbus_message_iter_get_basic(iter, &i);
-                            arg_array[index].value.b = i ? 1 : 0;
-                            ++index;
+                            arg_array[idx].value.b = i ? 1 : 0;
+                            ++idx;
                             break;
                     case DBUS_TYPE_INT32:
-                            arg_array[index].type = MUALI_TYPE_INT; 
+                            arg_array[idx].type = MUALI_TYPE_INT; 
                             dbus_message_iter_get_basic(iter, &i);
-                            arg_array[index].value.i = i;
-                            ++index;
+                            arg_array[idx].value.i = i;
+                            ++idx;
                             break;
                     case DBUS_TYPE_UINT32:
-                            arg_array[index].type = MUALI_TYPE_UINT; 
+                            arg_array[idx].type = MUALI_TYPE_UINT; 
                             dbus_message_iter_get_basic(iter, &u);
-                            arg_array[index].value.u = u;
-                            ++index;
+                            arg_array[idx].value.u = u;
+                            ++idx;
                             break;
                     case DBUS_TYPE_INT64:
-                            arg_array[index].type = MUALI_TYPE_LONG; 
+                            arg_array[idx].type = MUALI_TYPE_LONG; 
                             dbus_message_iter_get_basic(iter, &l);
-                            arg_array[index].value.l = l;
-                            ++index;
+                            arg_array[idx].value.l = l;
+                            ++idx;
                             break;
                     case DBUS_TYPE_UINT64:
-                            arg_array[index].type = MUALI_TYPE_ULONG; 
+                            arg_array[idx].type = MUALI_TYPE_ULONG; 
                             dbus_message_iter_get_basic(iter, &ul);
-                            arg_array[index].value.ul = ul;
-                            ++index;
+                            arg_array[idx].value.ul = ul;
+                            ++idx;
                             break;
                     case DBUS_TYPE_DOUBLE:
-                            arg_array[index].type = MUALI_TYPE_DOUBLE; 
+                            arg_array[idx].type = MUALI_TYPE_DOUBLE; 
                             dbus_message_iter_get_basic(iter, &d);
-                            arg_array[index].value.d = d;
-                            ++index;
+                            arg_array[idx].value.d = d;
+                            ++idx;
                             break;
                     case DBUS_TYPE_BYTE:
-                            arg_array[index].type = MUALI_TYPE_CHAR; 
+                            arg_array[idx].type = MUALI_TYPE_CHAR; 
                             dbus_message_iter_get_basic(iter, &c);
-                            arg_array[index].value.c = c;
-                            ++index;
+                            arg_array[idx].value.c = c;
+                            ++idx;
                             break;
                     case DBUS_TYPE_STRING:
-                            arg_array[index].type = MUALI_TYPE_STRING; 
+                            arg_array[idx].type = MUALI_TYPE_STRING; 
                             dbus_message_iter_get_basic(iter, &s);
-                            arg_array[index].value.s = s;
-                            ++index;
+                            arg_array[idx].value.s = s;
+                            ++idx;
                             break;
                     case DBUS_TYPE_ARRAY:
                             /* only byte arrays are supported */
                             if (dbus_message_iter_get_element_type(iter)
                                 == DBUS_TYPE_BYTE) {
                                     _get_byte_array(iter,
-                                                    &arg_array[index]);
-                                    ++index;
+                                                    &arg_array[idx]);
+                                    ++idx;
                             } else {
                                     ULOG_ERR_F("arrays of type %d not"
                                                " supported",
@@ -591,7 +591,7 @@ static muali_arg_t *_get_muali_args(DBusMessageIter *iter)
             dbus_message_iter_next(iter);
     }
 
-    arg_array[index].type = MUALI_TYPE_INVALID;
+    arg_array[idx].type = MUALI_TYPE_INVALID;
 
     return arg_array;
 }

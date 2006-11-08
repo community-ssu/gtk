@@ -1,8 +1,9 @@
-CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) $(GNOMEVFS_CFLAGS) -I$(top_srcdir) -I$(top_srcdir)/src \
-		 -DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
+AM_CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) $(GNOMEVFS_CFLAGS) \
+	    -I$(top_srcdir) -I$(top_srcdir)/src
 
-INCLUDES = \
-	-DPREFIX=\"${prefix}\"
+AM_CPPFLAGS = \
+	-DPREFIX=\"${prefix}\" \
+       	-DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
 
 lib_LTLIBRARIES = libosso.la
 
