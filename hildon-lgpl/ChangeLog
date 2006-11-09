@@ -1,3 +1,7 @@
+2006-11-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* debian/copyright: Fixing the license copyright. Fixes NB#46699.
+
 2006-02-21  Luc Pionchon  <luc.pionchon@nokia.com>
 
 	* configure.ac: 0.12.1
