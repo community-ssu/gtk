@@ -9,9 +9,9 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * The unit tests are not built if outo is not present -> outo is now
     optional. Fixes: MB#824
   * Added super-cool syslog-logging and stderr-logging configure options.
-  * Added libosso1-doc documentation package.
+  * Added libosso1-doc documentation package (and dependency to doxygen).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 08 Nov 2006 16:41:22 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 09 Nov 2006 18:46:08 +0200
 
 libosso (1.20-1) unstable; urgency=low
 
