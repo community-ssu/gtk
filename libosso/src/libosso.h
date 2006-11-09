@@ -124,13 +124,13 @@ osso_rpc_t;
 
 /**
  * This function frees the contents of the #osso_rpc_t structure
- * pointed to be #rpc.  (It does not free the structure itself.)  You
+ * pointed to by rpc.  (It does not free the structure itself.)  You
  * need to call this for structures filled by #osso_rpc_run and
  * related functions.
  *
  * This function will call #g_free to free the memory pointed to by
- * #rpc->value.s when #rpc->type is #DBUS_TYPE_STRING.  This guarantee
- * allows you to use this function as the #retval_free parameter for
+ * rpc->value.s when rpc->type is #DBUS_TYPE_STRING.  This guarantee
+ * allows you to use this function as the retval_free parameter for
  * #osso_rpc_set_cb_f, etc, when you get that string from #g_strdup,
  * #g_strdup_printf, etc.
  *
@@ -148,7 +148,7 @@ void osso_rpc_free_val (osso_rpc_t *rpc);
  * returns.
  * @param retval The return value of the method. This should be set to
  * DBUS_TYPE_INVALID for no reply.  See #osso_rpc_set_cb_f and
- * #osso_rpc_free_val for how the memory associated with #retval is
+ * #osso_rpc_free_val for how the memory associated with retval is
  * managed.
  * @param data An application specific pointer.
  * @return #OSSO_OK if the function executed successfully. retval is set to
@@ -167,7 +167,7 @@ typedef gint (osso_rpc_cb_f)(const gchar *interface, const gchar *method,
  * @param interface The interface of the remote object.
  * @param method The RPC function that was called.
  * @param retval The value that was returned.  The structure pointed
- * to by #retval and its contents are only valid until the callback
+ * to by retval and its contents are only valid until the callback
  * returns.
  * @param data An application specific pointer specified when the callback
  * was registered.
@@ -423,7 +423,7 @@ osso_return_t osso_rpc_async_run_with_defaults (osso_context_t * osso,
 
 /**
  * The type for functions that free the contents of a #osso_rpc_t
- * structure that is used as a #retval with an RPC callback.  See
+ * structure that is used as a retval with an RPC callback.  See
  * #osso_rpc_set_cb_f_with_free.
  */
 typedef void osso_rpc_retval_free_f (osso_rpc_t *retval);
@@ -441,9 +441,9 @@ typedef void osso_rpc_retval_free_f (osso_rpc_t *retval);
  * @param retval_free A function that is called with the #osso_rpc_t
  * structure that has been filled by #cb when that structure is no
  * longer needed by libosso.  In particular, you should pass
- * #osso_rpc_free_val here when you set #retval->value.s to a string
- * that should be freed with #g_free.  Likewise, you should pass #NULL
- * here when you set #retval->value.s to a string that should not be
+ * #osso_rpc_free_val here when you set retval->value.s to a string
+ * that should be freed with #g_free.  Likewise, you should pass NULL
+ * here when you set retval->value.s to a string that should not be
  * freed.
  * @return #OSSO_OK on success, #OSSO_INVALID if a parameter is
  * invalid, and #OSSO_ERROR if an error occurred.
@@ -454,8 +454,8 @@ osso_return_t osso_rpc_set_cb_f_with_free (osso_context_t * osso, const gchar * 
 					   gpointer data,
 					   osso_rpc_retval_free_f *retval_free);
 
-/** Equivalent to #osso_rpc_set_cb_f_with_free when passing #NULL for
-    #retval_free.
+/** Equivalent to #osso_rpc_set_cb_f_with_free when passing NULL for
+    retval_free.
  */
 osso_return_t osso_rpc_set_cb_f (osso_context_t * osso, const gchar * service,
 				 const gchar * object_path,
@@ -479,7 +479,7 @@ osso_return_t osso_rpc_set_default_cb_f_with_free (osso_context_t * osso,
 						   osso_rpc_retval_free_f *retval_free);
 
 /** Equivalent to #osso_rpc_set_default_cb_f_with_free when passing
-    #NULL for #retval_free.
+    NULL for retval_free.
  */
 osso_return_t osso_rpc_set_default_cb_f (osso_context_t * osso,
 					 osso_rpc_cb_f * cb, gpointer data);
