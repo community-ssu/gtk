@@ -128,7 +128,7 @@ osso_rpc_t;
  * need to call this for structures filled by #osso_rpc_run and
  * related functions.
  *
- * This function will call #g_free to free the memory pointed to by
+ * This function will call g_free to free the memory pointed to by
  * rpc->value.s when rpc->type is #DBUS_TYPE_STRING.  This guarantee
  * allows you to use this function as the retval_free parameter for
  * #osso_rpc_set_cb_f, etc, when you get that string from #g_strdup,
@@ -241,13 +241,13 @@ typedef void osso_rpc_argfill (DBusMessage *msg, void *data);
 /**
  * This function is like #osso_rpc_run but instead of passing the
  * arguments for the DBUS message as a variable length argument list,
- * you provide a function in the #argfill parameter that will provide
- * the arguments.  The #argfill function is called with the
+ * you provide a function in the argfill parameter that will provide
+ * the arguments.  The argfill function is called with the
  * #DBusMessage object that is going to be sent and should append all
  * arguments to that object with #dbus_message_append_args, or
  * similar.
  *
- * The parameter #argfill_data will be passed to #argfill.
+ * The parameter argfill_data will be passed to argfill.
  *
  * WARNING: Using this function is not recommended, because it will
  * make your program more dependent on the DBus API due to the
@@ -363,13 +363,13 @@ osso_return_t osso_rpc_async_run (osso_context_t * osso,
 /**
  * This function is like #osso_rpc_async_run but instead of passing
  * the arguments for the DBUS message as a variable length argument
- * list, you provide a function in the #argfill parameter that will
- * provide the arguments.  The #argfill function is called with the
+ * list, you provide a function in the argfill parameter that will
+ * provide the arguments.  The argfill function is called with the
  * #DBusMessage object that is going to be sent and should append all
  * arguments to that object with #dbus_message_append_args, or
  * similar.
  *
- * The parameter #argfill_data will be passed to #argfill.
+ * The parameter argfill_data will be passed to argfill.
  *
  * WARNING: Using this function is not recommended, because it will
  * make your program more dependent on the DBus API due to the
@@ -439,10 +439,10 @@ typedef void osso_rpc_retval_free_f (osso_rpc_t *retval);
  * @param data Arbitrary application specific pointer that will be passed
  * to the callback and ignored by Libosso.
  * @param retval_free A function that is called with the #osso_rpc_t
- * structure that has been filled by #cb when that structure is no
+ * structure that has been filled by cb when that structure is no
  * longer needed by libosso.  In particular, you should pass
  * #osso_rpc_free_val here when you set retval->value.s to a string
- * that should be freed with #g_free.  Likewise, you should pass NULL
+ * that should be freed with g_free.  Likewise, you should pass NULL
  * here when you set retval->value.s to a string that should not be
  * freed.
  * @return #OSSO_OK on success, #OSSO_INVALID if a parameter is
@@ -672,7 +672,7 @@ osso_return_t osso_application_unset_top_cb(osso_context_t *osso,
 /**
  * \defgroup Autosave Autosaving
  *
- * How to use autosave:<br />
+ * How to use autosave:<br>
  * The application registers callback function(s) that is/are called by
  * Libosso to save the user data (such as an unsaved document). Whenever
  * the user data changes, the
@@ -1244,7 +1244,7 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
  * @param data The data pointer that was set with #osso_mime_set_cb.
  * @param argc The number of files to open.
  * @param argv An array of file URIs.  The strings
- * pointed to by the #argv array are only valid until the callback
+ * pointed to by the argv array are only valid until the callback
  * function returns.
  */
 typedef void (osso_mime_cb_f)(gpointer data, int argc, gchar **argv);
