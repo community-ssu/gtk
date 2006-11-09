@@ -1,3 +1,9 @@
+matchbox-window-manager (2:1.1-osso13) unstable; urgency=low
+
+  * added libgconf2-dev dependecy for gconf related aclocal macros
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu,  9 Nov 2006 12:51:14 +0200
+
 matchbox-window-manager (2:1.1-osso12) unstable; urgency=low
 
   * rolled back the patch, reopens NB#40684

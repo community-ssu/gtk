@@ -2,7 +2,7 @@ Source: matchbox-window-manager
 Section: embedded
 Priority: optional
 Maintainer: Tapani Palli <tapani.palli@nokia.com>
-Build-Depends: debhelper (>= 4.1.0), pkg-config, libmatchbox-dev (>= 1.5-2), libxrender-dev
+Build-Depends: cdbs (>= 0.4.21), debhelper (>= 4.1.0), pkg-config, libmatchbox-dev (>= 1.5-2), libxrender-dev, libgconf2-dev
 Standards-Version: 3.6.1
 
 Package: matchbox-window-manager
@@ -15,3 +15,9 @@ Description: window manager for resource-limited systems
  for which screen space, input mechanisms or system resources are limited.
  .
  This package contains the Matchbox window manager.
+
+Package: matchbox-window-manager-dbg
+Architecture: any
+Depends: matchbox-window-manager (= ${Source-Version})
+Description: debug symbols matchbox-window-manager
+ This package contains debug symbols for matchbox-window-manager.
