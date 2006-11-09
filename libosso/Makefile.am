@@ -27,8 +27,8 @@ deb: dist
 	cd $(top_builddir)/debian-build/$(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
 
 doxygen:
-	$(DOXYGEN)
 	mkdir -p $(top_builddir)/doc/html
+	$(DOXYGEN)
 
 clean-local:
 	-rm -rf $(top_builddir)/doc
