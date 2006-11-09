@@ -1,14 +1,5 @@
 SUBDIRS = src ut
 
-install-data-local:
-	mkdir -p $(DESTDIR)$(API_DIR)
-
-uninstall-local:
-	$(RM) -r $(DESTDIR)$(API_DIR)
-
-#clean-generic:
-
-
 EXTRA_DIST = \
 	debian/changelog \
 	debian/control \
@@ -34,3 +25,19 @@ deb: dist
 	-mkdir $(top_builddir)/debian-build
 	cd $(top_builddir)/debian-build && tar zxf ../$(top_builddir)/$(PACKAGE)-$(VERSION).tar.gz
 	cd $(top_builddir)/debian-build/$(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
+
+doxygen:
+	$(DOXYGEN)
+	mkdir -p $(top_builddir)/doc/html
+
+clean-local:
+	-rm -rf $(top_builddir)/doc
+
+install-data-local:
+	if test -d doc/html; then \
+	  mkdir -p $(DESTDIR)$(docdir)/libosso/html; \
+	  for F in `find $(top_builddir)/doc/html -type f`; do \
+	    B=`basename $$F`; \
+	    $(INSTALL_DATA) $$F $(DESTDIR)$(docdir)/libosso/html/$$B; \
+	  done \
+	fi

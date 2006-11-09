@@ -48,6 +48,7 @@ build-stamp:  config.status
 
 	# Add here commands to compile the package.
 	$(MAKE)
+	$(MAKE) doxygen
 
 	touch build-stamp
 

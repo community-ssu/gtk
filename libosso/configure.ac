@@ -179,16 +179,12 @@ AC_CHECK_FUNCS([memset mkdir strdup strncasecmp opendir closedir])
 AC_CHECK_FUNCS([rmdir strchr strerror strstr strtol strtoul])
 
 #other
-eval "API_DIR=${top_srcdir}${docdir}/libosso/API"
-eval "HTML_DIR=${API_DIR}/html"
 eval "localedir=${datadir}/locale"
 eval "outomoduledir=${prefix}/lib/outo"
 
 AC_SUBST(docdir)
 AC_SUBST(localedir)
 AC_SUBST(outomoduledir)
-AC_SUBST(HTML_DIR)
-AC_SUBST(API_DIR)
 
 AC_CONFIG_FILES(Makefile \
 		Doxyfile \
@@ -246,8 +242,6 @@ Directories:
 	D-Bus (services):....... $DBUS_SVC_DIR
 	D-Bus (configuration):.. $DBUS_CONF_DIR
 	documentation:.......... $docdir
-	documentation (API):.... $API_DIR
-	documentation (HTML):... $HTML_DIR
 	Unit test modules:...... $outomoduledir
 	Locales dir:............ $localedir
 "

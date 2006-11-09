@@ -15,7 +15,7 @@ Description: Libosso development files
 Package: libosso1
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libosso-dbus-conf
+Depends: ${shlibs:Depends}, libosso-dbus-conf
 Description: Libosso library
  Libosso contains D-Bus-related functionality for Maemo applications.
 
@@ -41,6 +41,12 @@ Description: Libosso D-Bus configuration settings for Scratchbox.
 Package: libosso1-dbg
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libosso1 (= ${Source-Version})
+Depends: libosso1 (= ${Source-Version})
 Description: Libosso library debug info
  Debug symbols and stuff for the Libosso library.
+
+Package: libosso1-doc
+Section: doc
+Architecture: any
+Description: Libosso API documentation
+ Libosso API documentation.
