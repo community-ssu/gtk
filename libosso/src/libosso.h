@@ -623,8 +623,8 @@ osso_return_t osso_application_top(osso_context_t *osso,
 
 /**
  * This is the type for the top callback function.
- * @deprecated {This feature will be removed from Libosso soon, use
- * osso_rpc functions instead}
+ * @deprecated This feature could be removed from Libosso soon, use
+ * osso_rpc functions instead.
  * 
  * @param arguments This string lists some extra parameters for the
  * application. It can be used to give the names of the files to open, etc.
@@ -637,8 +637,8 @@ typedef void(osso_application_top_cb_f)(const gchar *arguments,
 
 /**
  * This function registers a top event callback function.
- * @deprecated {This feature will be removed from Libosso soon, use
- * osso_rpc functions instead}
+ * @deprecated This feature could be removed from Libosso soon, use
+ * osso_rpc functions instead.
  * 
  * @param osso The library context as returned by #osso_initialize.
  * @param cb The callback function.
@@ -653,8 +653,8 @@ osso_return_t osso_application_set_top_cb(osso_context_t *osso,
 
 /**
  * This function unregisters a top event callback function.
- * @deprecated {This feature will be removed from Libosso soon, use
- * osso_rpc functions instead}
+ * @deprecated This feature could be removed from Libosso soon, use
+ * osso_rpc functions instead.
  * 
  * @param osso The library context as returned by #osso_initialize.
  * @param cb The callback function.
@@ -1313,12 +1313,13 @@ gpointer osso_get_sys_dbus_connection(osso_context_t *osso);
 /* @{*/
 
 /**
+ * @deprecated Obsolete type -- do not use.
  * Obsolete type -- do not use.
  */
 typedef void (osso_application_exit_cb)(gboolean die_now, gpointer data);
 
 /**
- * This function is obsolete and does nothing. Do not use it.
+ * @deprecated This function is obsolete and does nothing. Do not use it.
  */
 osso_return_t osso_application_set_exit_cb(osso_context_t *osso,
 					   osso_application_exit_cb *cb,
@@ -1357,6 +1358,9 @@ void osso_state_close(osso_context_t *osso, gint fd);
 
 /** This function adds a mail to be displayed in the
  *      mail popup of the tasknavigator.
+ *
+ * @deprecated This function will be removed.
+ *
  *      @param osso The osso library context returned by #osso_initialize
  *      @param id unique identifier for the mail
  *      @param subject the subject string of the email
@@ -1374,6 +1378,8 @@ osso_return_t osso_tasknav_mail_add(osso_context_t *osso, guint id,
 
 /** This function removes an email message from the navigator.
  *
+ * @deprecated This function will be removed.
+ *
  *      @param osso The osso library context returned by #osso_initialize
  *      @param id unique identifier of the mail to be destroyed
  *
@@ -1386,6 +1392,8 @@ osso_return_t osso_tasknav_mail_del(osso_context_t *osso, guint id);
 
 /** This function updates the outbox message count in the task
  *      navigator mail window.
+ *
+ * @deprecated This function will be removed.
  *
  *      @param osso The osso library context returned by #osso_initialize
  *      @param count New number of messages in outbox
@@ -1402,6 +1410,7 @@ osso_return_t osso_tasknav_mail_set_outbox_count(osso_context_t *osso,
  *  This ensures that the environment variables are transferred
  *  correctly before the gtk_init();
  *
+ * @deprecated This function will be removed, use osso_initialize() instead.
  * 
  * @param application The name that this application is known as. This is  
  * not the name that a user sees, but rather the name that other
