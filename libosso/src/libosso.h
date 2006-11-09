@@ -234,7 +234,7 @@ osso_return_t osso_rpc_run (osso_context_t * osso, const gchar * service,
  * This is the type of the function used with
  * #osso_rpc_run_with_argfill, #osso_rpc_run_system_with_argfill, and
  * #osso_rpc_async_run_with_argfill to append the arguments to the
- * DBUS message #msg.
+ * D-Bus message msg.
  */
 typedef void osso_rpc_argfill (DBusMessage *msg, void *data);
 
@@ -1418,6 +1418,7 @@ osso_context_t * osso_application_initialize(const gchar *application,
 					     gpointer callback_data);
 
 
+/*@}*/
 G_END_DECLS
 
 #endif /* LIBOSSO_H_*/
