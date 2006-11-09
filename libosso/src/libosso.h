@@ -1314,7 +1314,6 @@ gpointer osso_get_sys_dbus_connection(osso_context_t *osso);
 
 /**
  * @deprecated Obsolete type -- do not use.
- * Obsolete type -- do not use.
  */
 typedef void (osso_application_exit_cb)(gboolean die_now, gpointer data);
 
