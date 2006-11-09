@@ -1163,7 +1163,8 @@ typedef struct {
                                     user data (see Autosaving functions) */
   gboolean memory_low_ind; /**<The system is low on memory */
   gboolean system_inactivity_ind; /**<The application should reduce
-                                       its activity */
+                                      its activity. This also means that
+                                      the display went off/on. */
   osso_devmode_t sig_device_mode_ind; /**<The mode of the device */
 } osso_hw_state_t;
 
