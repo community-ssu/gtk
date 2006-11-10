@@ -1298,6 +1298,7 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->queued_select_row = NULL;
   tree_view->priv->queued_activate_row = NULL;
   tree_view->priv->pen_focus = TRUE;
+  tree_view->priv->passive_focus_style = NULL;
 
   /* Hildon: cursor should follow when selection changes */
   g_signal_connect (tree_view->priv->selection, "changed",
@@ -1636,6 +1637,12 @@ gtk_tree_view_destroy (GtkObject *object)
       tree_view->priv->vadjustment = NULL;
     }
 
+  if (tree_view->priv->passive_focus_style)
+    {
+      g_object_unref (tree_view->priv->passive_focus_style);
+      tree_view->priv->passive_focus_style = NULL;
+    }
+
   if (GTK_OBJECT_CLASS (parent_class)->destroy)
     (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
 }
@@ -1793,6 +1800,11 @@ gtk_tree_view_realize (GtkWidget *widget)
   gdk_window_set_background (tree_view->priv->bin_window, &widget->style->base[widget->state]);
   gtk_style_set_background (widget->style, tree_view->priv->header_window, GTK_STATE_NORMAL);
 
+  /* separate style for passive focus */
+  if (tree_view->priv->passive_focus_style)
+    tree_view->priv->passive_focus_style =
+      gtk_style_attach (tree_view->priv->passive_focus_style, widget->window);
+
   tmp_list = tree_view->priv->children;
   while (tmp_list)
     {
@@ -1890,6 +1902,9 @@ gtk_tree_view_unrealize (GtkWidget *widget)
       gdk_window_destroy (tree_view->priv->drag_highlight_window);
       tree_view->priv->drag_highlight_window = NULL;
     }
+
+  if (tree_view->priv->passive_focus_style)
+    gtk_style_detach (tree_view->priv->passive_focus_style);
 
   /* GtkWidget::unrealize destroys children and widget->window */
   if (GTK_WIDGET_CLASS (parent_class)->unrealize)
@@ -4613,12 +4628,10 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
           else if (node == cursor && passivefocus &&
                   !GTK_WIDGET_HAS_FOCUS (widget))
             {
-              GtkStyle *style = gtk_rc_get_style_by_paths (gtk_widget_get_settings (widget),
-                                                           "hildon-focus",
-                                                            NULL,
-                                                            G_TYPE_NONE);
-              if (style != NULL)
-                gtk_style_attach (style, event->window);
+	      GtkStyle *style;
+
+	      if (tree_view->priv->passive_focus_style)
+		style = tree_view->priv->passive_focus_style;
               else
                 style = widget->style;
                          
@@ -7888,10 +7901,29 @@ gtk_tree_view_style_set (GtkWidget *widget,
 
   tree_view = GTK_TREE_VIEW (widget);
 
+  if (tree_view->priv->passive_focus_style)
+    {
+      if (GTK_WIDGET_REALIZED (widget))
+	gtk_style_detach (tree_view->priv->passive_focus_style);
+      g_object_unref (tree_view->priv->passive_focus_style);
+    }
+
+  tree_view->priv->passive_focus_style = 
+    gtk_rc_get_style_by_paths (gtk_widget_get_settings (widget),
+			       "hildon-focus",
+			       NULL,
+			       G_TYPE_NONE);
+  if (tree_view->priv->passive_focus_style)
+    g_object_ref (tree_view->priv->passive_focus_style);
+
   if (GTK_WIDGET_REALIZED (widget))
     {
       gdk_window_set_background (widget->window, &widget->style->base[widget->state]);
       gdk_window_set_background (tree_view->priv->bin_window, &widget->style->base[widget->state]);
+
+      if (tree_view->priv->passive_focus_style)
+	tree_view->priv->passive_focus_style =
+	  gtk_style_attach (tree_view->priv->passive_focus_style, widget->window);
     }
 
   gtk_widget_style_get (widget,
