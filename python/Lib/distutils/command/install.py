@@ -601,7 +601,7 @@ class install (Command):
                     ('install_headers', has_headers),
                     ('install_scripts', has_scripts),
                     ('install_data',    has_data),
-                    ('install_egg_info', lambda self:True),
+                    ('install_egg_info', lambda self:False),
                    ]
 
 # class install
