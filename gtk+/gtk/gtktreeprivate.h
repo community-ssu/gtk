@@ -268,6 +268,9 @@ struct _GtkTreeViewPrivate
 
   /* Hildon treeview can_focus hack */
   guint check_if_can_focus_idle_id;
+
+  /* Hildon passive focus style */
+  GtkStyle *passive_focus_style;
 };
 
 #ifdef __GNUC__

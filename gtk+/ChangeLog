@@ -1,3 +1,13 @@
+2006-11-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeprivate.h (GtkTreeViewPrivate)
+	* gtk/gtktreeview.c (gtk_tree_view_init, gtk_tree_view_style_set,
+	gtk_tree_view_destroy, gtk_tree_view_realize, gtk_tree_view_unrealize,
+	gtk_tree_view_bin_expose): Don't leak the passive focus style.
+	Allocate and handle theme changes in style-set, free in destroy, and
+	do the attach/detach dance in (un)realize. Based on patch from José
+	Dapena Paz. NB#45984
+
 2006-11-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge from upstream. NB#45984
