@@ -35,6 +35,7 @@
 #define _(x) gettext (x)
 
 struct spd_closure {
+  GtkWindow *parent;
   package_info *pi;
   detail_kind kind;
   bool show_problems;
@@ -255,7 +256,8 @@ details_response (GtkDialog *dialog, gint response, gpointer clos)
 }
 
 static void
-show_with_details (package_info *pi, bool show_problems)
+show_with_details (GtkWindow *parent, 
+		   package_info *pi, bool show_problems)
 {
   GtkWidget *dialog, *notebook;
   GtkWidget *table, *common;
@@ -413,7 +415,7 @@ show_with_details (package_info *pi, bool show_problems)
 				  GTK_POLICY_AUTOMATIC);
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_details"),
-					get_main_window (),
+					parent,
 					GTK_DIALOG_MODAL,
 					_("ai_bd_details_close"),
 					GTK_RESPONSE_OK,
@@ -498,6 +500,7 @@ static void
 get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 {
   spd_closure *c = (spd_closure *)clos;
+  GtkWindow *parent = c->parent;
   package_info *pi = c->pi;
   detail_kind kind = c->kind;
   bool show_problems = c->show_problems;
@@ -529,7 +532,7 @@ get_package_details_reply (int cmd, apt_proto_decoder *dec, void *clos)
 
   pi->have_detail_kind = kind;
 
-  show_with_details (pi, show_problems);
+  show_with_details (parent, pi, show_problems);
 }
 
 void
@@ -546,18 +549,21 @@ spd_cont (package_info *pi, void *data, bool changed)
 				    data);
   else
     {
+      GtkWindow *parent = c->parent;
       bool show_problems = c->show_problems;
       delete c;
 
-      show_with_details (pi, show_problems);
+      show_with_details (parent, pi, show_problems);
     }
 }
 
 void
-show_package_details (package_info *pi, detail_kind kind,
+show_package_details (GtkWindow *parent,
+		      package_info *pi, detail_kind kind,
 		      bool show_problems)
 {
   spd_closure *c = new spd_closure;
+  c->parent = parent;
   c->pi = pi;
   c->kind = kind;
   c->show_problems = show_problems;

@@ -88,7 +88,7 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
   if (response == 1)
     {
       if (c->pi)
-	show_package_details (c->pi, c->kind, false);
+	show_package_details (GTK_WINDOW (dialog), c->pi, c->kind, false);
       else if (c->details)
 	c->details (c->data);
       return;
@@ -253,7 +253,7 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
 
   if (response == 1)
     {
-      show_package_details (c->pi, c->kind, true);
+      show_package_details (GTK_WINDOW (dialog), c->pi, c->kind, true);
     }
   else
     {
