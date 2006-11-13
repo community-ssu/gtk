@@ -1,5 +1,13 @@
 2006-11-13  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (OOM_ENABLE): New macro.
+	(oom_unprotect): New function.
+	(launch_process): Invert the logic and call oom_unprotect instead
+	of rise_oom_defense and only for processes with positive or zero
+	priority.
+
+2006-11-13  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/defender.c (OOM_ADJ_VALUE): Rename to ...
 	(OOM_DISABLE): ... this. Stringify.
 	(set_oom_adj): Use file descriptor based functions instead of FILE

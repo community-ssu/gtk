@@ -70,6 +70,32 @@ static volatile bool sigchild_catched = false;
 static volatile bool sighup_catched = false;
 static bool send_app_died = false;
 
+#define OOM_ENABLE "0"
+
+static void
+oom_unprotect(void)
+{
+  const char *filename = "/proc/self/oom_adj";
+  int fd;
+
+  fd = open(filename, O_WRONLY);
+  if (fd < 0)
+  {
+    error("opening file '%s'\n", filename);
+    return;
+  }
+
+  if (write(fd, OOM_ENABLE, strlen(OOM_ENABLE)) < 0)
+  {
+    if (errno == EPERM)
+      error("kernel w/o support for user processes rising the oom value\n");
+    else
+      error("could not write to file '%s'\n", filename);
+  }
+
+  close(fd);
+}
+
 static bool
 rise_oom_defense(pid_t pid)
 {
@@ -110,9 +136,9 @@ launch_process(prog_t *prog)
   if (!errno && cur_prio < prog->prio)
     setpriority(PRIO_PROCESS, 0, prog->prio);
 
-  /* Protect our special childs from the oom monster. */
-  if (prog->prio < 0)
-    rise_oom_defense(getpid());
+  /* Unprotect our worthless childs from the oom monster. */
+  if (prog->prio >= 0)
+    oom_unprotect();
 
   print_prog_env_argv(prog);
 
