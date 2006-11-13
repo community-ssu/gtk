@@ -68,6 +68,7 @@ struct repo_closure {
   GtkTreeView *tree;
   GtkListStore *store;
 
+  GtkWindow *dialog;
   GtkWidget *edit_button;
   GtkWidget *delete_button;
 
@@ -340,7 +341,8 @@ add_entry (GtkWidget *box, GtkSizeGroup *group,
 }
 
 static void
-show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
+show_repo_edit_dialog (GtkWindow *parent,
+		       repo_line *r, bool isnew, bool readonly)
 {
   GtkWidget *dialog, *vbox, *caption;
   GtkSizeGroup *group;
@@ -364,8 +366,7 @@ show_repo_edit_dialog (repo_line *r, bool isnew, bool readonly)
     {
       GtkWidget *button;
 
-      dialog = gtk_dialog_new_with_buttons (title,
-					    get_main_window (),
+      dialog = gtk_dialog_new_with_buttons (title, parent,
 					    GTK_DIALOG_MODAL,
 					    NULL);
 
@@ -473,7 +474,7 @@ add_new_repo (repo_closure *c)
   *c->lastp = r;
   c->lastp = &r->next;
 
-  show_repo_edit_dialog (r, true, false);
+  show_repo_edit_dialog (c->dialog, r, true, false);
 }
 
 static void
@@ -572,7 +573,7 @@ repo_response (GtkDialog *dialog, gint response, gpointer clos)
 
       if (r->essential)
 	irritate_user (_("ai_ib_unable_edit"));
-      show_repo_edit_dialog (r, false, r->essential);
+      show_repo_edit_dialog (c->dialog, r, false, r->essential);
 
       return;
     }
@@ -659,6 +660,7 @@ repo_row_activated (GtkTreeView *treeview,
 		    GtkTreeViewColumn *column,
 		    gpointer data)
 {
+  repo_closure *c = (repo_closure *)data;
   GtkTreeModel *model = gtk_tree_view_get_model (treeview);
   GtkTreeIter iter;
 
@@ -671,7 +673,7 @@ repo_row_activated (GtkTreeView *treeview,
 
       if (r->essential)
 	irritate_user (_("ai_ib_unable_edit"));
-      show_repo_edit_dialog (r, false, r->essential);
+      show_repo_edit_dialog (c->dialog, r, false, r->essential);
     }
 }
 
@@ -748,7 +750,7 @@ make_repo_list (repo_closure *c)
 					      NULL);
 
   g_signal_connect (c->tree, "row-activated", 
-		    G_CALLBACK (repo_row_activated), NULL);
+		    G_CALLBACK (repo_row_activated), c);
 
   g_signal_connect
     (G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (c->tree))),
@@ -805,7 +807,8 @@ maybe_add_new_repo_details (void *data)
 {
   repo_add_closure *ac = (repo_add_closure *)data;
 
-  show_repo_edit_dialog (ac->new_repo, true, true);
+  show_repo_edit_dialog (get_main_window (),
+			 ac->new_repo, true, true);
 }
 
 static void
@@ -900,6 +903,8 @@ sources_list_reply (int cmd, apt_proto_decoder *dec, void *data)
   else
     {
       GtkWidget *dialog = gtk_dialog_new ();
+
+      c->dialog = GTK_WINDOW (dialog);
 
       gtk_window_set_title (GTK_WINDOW (dialog), _("ai_ti_repository"));
       gtk_window_set_transient_for (GTK_WINDOW (dialog), get_main_window ());
