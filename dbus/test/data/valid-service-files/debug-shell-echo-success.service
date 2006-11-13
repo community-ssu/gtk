@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.freedesktop.DBus.TestSuiteShellEchoServiceSuccess
-Exec=/usr/src/johnp/dbus/test/test-shell-service -test "that" 'we get' back --what "we put in"

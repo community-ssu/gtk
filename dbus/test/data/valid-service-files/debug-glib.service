@@ -1,3 +1,0 @@
-[D-BUS Service]
-Name=org.freedesktop.DBus.TestSuiteGLibService
-Exec=/usr/src/johnp/dbus/test/glib/test-service-glib
