@@ -7,6 +7,8 @@ dbus (1.0.0-osso1) experimental; urgency=low
   * Added patch to system.conf to enable starting services by the system bus.
   * Added patch to system.conf to not fork the daemon, because of dsmetool.
   * Added patch to session.conf to have static address for the session bus.
+  * Added patch to disable the GCC __noreturn__ attribute because of ARM
+    debugging problems caused by it.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 13:54:45 +0200
 
