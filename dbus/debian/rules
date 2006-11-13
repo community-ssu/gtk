@@ -1,0 +1,40 @@
+#!/usr/bin/make -f
+# Copyright © 2002,2003 Colin Walters <walters@verbum.org>
+# Copyright © 2003 Daniel Stone <daniels@debian.org>
+# Copyright © 2006 Sjoerd Simons <sjoerd@debian.org>
+# Copyright © 2006 Nokia Corporation. All rights reserved.
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/rules/utils.mk
+
+DEB_TAR_SRCDIR := dbus-1.0.0
+include /usr/share/cdbs/1/rules/tarball.mk
+
+# List any files which are not installed
+common-binary-post-install-arch:: list-missing
+
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-xml-docs --enable-doxygen-docs \
+                             --without-x --disable-xml-docs
+
+DEB_SHLIBDEPS_INCLUDE_dbus-1-utils := debian/libdbus-1-3/usr/lib/ 
+
+binary-post-install/dbus::
+	mkdir -p debian/dbus/etc/dbus-1/event.d
+#	mkdir -p debian/dbus/etc/X11/Xsession.d
+#	cp debian/dbus-Xsession debian/dbus/etc/X11/Xsession.d/75dbus_dbus-launch
+
+# this is needed because we patch doc/Makefile.am
+makebuilddir/dbus-1-doc::
+	autoreconf
+
+doxygen-stamp:
+	cd $(DEB_BUILDDIR); doxygen Doxyfile
+	touch doxygen-stamp
+
+build/dbus-1-doc:: doxygen-stamp
+
+clean::
+	rm -f doxygen-stamp
+	rm -rf $(DEB_BUILDDIR)/doc/api
