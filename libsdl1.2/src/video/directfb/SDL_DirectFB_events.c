@@ -52,7 +52,7 @@ static int DirectFB_TranslateButton (DFBInputEvent *ev);
 static int posted = 0;
 
 
-void DirectFB_PumpEvents (_THIS)
+void DirectFB_PumpEvents (_THIS, int wait_for_event)
 {
   DFBInputEvent evt;
 

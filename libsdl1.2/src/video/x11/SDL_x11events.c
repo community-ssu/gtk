@@ -433,7 +433,7 @@ printf("Unhandled event %d\n", xevent.type);
 }
 
 /* Ack!  XPending() actually performs a blocking read if no events available */
-int X11_Pending(Display *display)
+int X11_Pending(Display *display, int wait_for_event)
 {
 	/* Flush the display connection and look to see if events are queued */
 	XFlush(display);
@@ -443,14 +443,15 @@ int X11_Pending(Display *display)
 
 	/* More drastic measures are required -- see if X is ready to talk */
 	{
-		static struct timeval zero_time;	/* static == 0 */
+		struct timeval zero = { 0, 0 };
+		struct timeval *timeout = ((wait_for_event) ? NULL : &zero);
 		int x11_fd;
 		fd_set fdset;
 
 		x11_fd = ConnectionNumber(display);
 		FD_ZERO(&fdset);
 		FD_SET(x11_fd, &fdset);
-		if ( select(x11_fd+1, &fdset, NULL, NULL, &zero_time) == 1 ) {
+		if ( select(x11_fd+1, &fdset, NULL, NULL, timeout) == 1 ) {
 			return(XPending(display));
 		}
 	}
@@ -459,14 +460,20 @@ int X11_Pending(Display *display)
 	return(0);
 }
 
-void X11_PumpEvents(_THIS)
+void X11_PumpEvents(_THIS, int wait_for_event)
 {
 	int pending;
 
 	/* Keep processing pending events */
 	pending = 0;
-	while ( X11_Pending(SDL_Display) ) {
+
+	if ( switch_waiting ) {
+		wait_for_event = 0;  /* just flush out what's waiting this time. */
+	}
+
+	while ( X11_Pending(SDL_Display, wait_for_event) ) {
 		X11_DispatchEvent(this);
+		wait_for_event = 0;  /* don't wait for more events if none left. */
 		++pending;
 	}
 	if ( switch_waiting ) {

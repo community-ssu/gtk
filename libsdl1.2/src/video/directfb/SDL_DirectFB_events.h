@@ -29,5 +29,5 @@ static char rcsid =
 
 /* Functions to be exported */
 extern void DirectFB_InitOSKeymap(_THIS);
-extern void DirectFB_PumpEvents(_THIS);
+extern void DirectFB_PumpEvents(_THIS, int wait_for_event);
 

@@ -533,11 +533,13 @@ printf("The '%s' key has been %s\n", SDL_GetKeyName(keysym->sym),
 /*
  * jk 991215 - Added
  */
-void SDL_CheckKeyRepeat(void)
+int SDL_CheckKeyRepeat(void)
 {
+	int enabled = 0;
 	if ( SDL_KeyRepeat.timestamp ) {
 		Uint32 now, interval;
 
+		enabled = 1;
 		now = SDL_GetTicks();
 		interval = (now - SDL_KeyRepeat.timestamp);
 		if ( SDL_KeyRepeat.firsttime ) {
@@ -554,6 +556,8 @@ void SDL_CheckKeyRepeat(void)
 			}
 		}
 	}
+
+	return(enabled);
 }
 
 int SDL_EnableKeyRepeat(int delay, int interval)

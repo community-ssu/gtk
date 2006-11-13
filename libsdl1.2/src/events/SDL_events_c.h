@@ -69,7 +69,7 @@ extern void SDL_ResetMouse(void);
 extern void SDL_ResetKeyboard(void);
 
 /* Used by the event loop to queue pending keyboard repeat events */
-extern void SDL_CheckKeyRepeat(void);
+extern int SDL_CheckKeyRepeat(void);
 
 /* Used by the OS keyboard code to detect whether or not to do UNICODE */
 #ifndef DEFAULT_UNICODE_TRANSLATION

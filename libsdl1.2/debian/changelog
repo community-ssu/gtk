@@ -1,3 +1,11 @@
+libsdl1.2 (1.2.8-15unreleased) unstable; urgency=low
+
+  * Applied patch from http://bugzilla.libsdl.org/show_bug.cgi?id=323 to allow
+    SDL_WaitEvents() to sleep. Affects multiple files.
+  * UNRELEASED
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 13 Nov 2006 16:10:21 +0200
+
 libsdl1.2 (1.2.8-14) unstable; urgency=low
 
   * src/video/SDL_video.c: SDL_UpdateRect() clips now the rect to the screen.
