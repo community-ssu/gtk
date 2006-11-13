@@ -38,3 +38,4 @@ build/dbus-1-doc:: doxygen-stamp
 clean::
 	rm -f doxygen-stamp
 	rm -rf $(DEB_BUILDDIR)/doc/api
+	rm -f *.cdbs-config_list
