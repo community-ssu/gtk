@@ -5,6 +5,7 @@ dbus (1.0.0-osso1) experimental; urgency=low
   * Ported the initgroups() patch for the new upstream.
   * Added patch to session.conf to allow all users to connect the session bus.
   * Added patch to system.conf to enable starting services by the system bus.
+  * Added patch to system.conf to not fork the daemon, because of dsmetool.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 13:54:45 +0200
 
