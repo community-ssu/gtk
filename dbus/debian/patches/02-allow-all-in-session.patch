@@ -1,0 +1,11 @@
+--- bus/session.conf.in	2005-05-04 20:01:15.140494464 +0300
++++ bus/session.conf.in.new	2005-05-04 20:04:02.448059848 +0300
+@@ -19,6 +19,8 @@
+     <allow eavesdrop="true"/>
+     <!-- Allow anyone to own anything -->
+     <allow own="*"/>
++    <!-- allow all users to connect -->
++    <allow user="*"/>
+   </policy>
+ 
+   <!-- This is included last so local configuration can override what's 

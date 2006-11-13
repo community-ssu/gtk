@@ -3,6 +3,7 @@ dbus (1.0.0-osso1) experimental; urgency=low
   * UNRELEASED
   * Upstream upgraded to 1.0.0.
   * Ported the initgroups() patch for the new upstream.
+  * Added patch to allow all users to connect the session bus.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 13:54:45 +0200
 
