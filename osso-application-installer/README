@@ -205,7 +205,8 @@ BUGS
 - don't rely on apt-worker startup being successful.
 - https needs to be trusted, even without key.
 - use doubles for sizes, maybe
-
+- dialogs need to be more careful about their parents since Matchbox
+  doesn't preserve the stacking order when switching between windows.
 
 Cleanup
 -------

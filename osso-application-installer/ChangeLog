@@ -1,3 +1,12 @@
+2006-11-13  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/details.cc, src/details.h, src/utils.cc, src/main.cc
+	(show_package_details): Added parent parameter so that the
+	stacking order of dialogs can be preserved.  Updated all callers
+	to provide it.
+	* src/repo.cc (show_repo_edit_dialog): Likewise: added parent
+	parameter for the dialog, updated all callers.  (N46824)
+
 2006-11-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/util.cc, src/menu.cc, src/main.cc, src/log.cc,
