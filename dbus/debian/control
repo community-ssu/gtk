@@ -1,9 +1,8 @@
 Source: dbus
 Section: devel
 Priority: optional
-Maintainer: Utopia Maintenance Team <pkg-utopia-maintainers@lists.alioth.debian.org>
-Uploaders: Sjoerd Simons <sjoerd@debian.org>, Sebastian Dröge <slomo@ubuntu.com>
-Build-Depends: cdbs (>= 0.4.43), debhelper (>= 5.0.37.2), libexpat-dev, doxygen, docbook-utils, xmlto, libx11-dev
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: cdbs, debhelper, libexpat-dev, doxygen, docbook-utils
 Standards-Version: 3.7.2
 
 Package: dbus
