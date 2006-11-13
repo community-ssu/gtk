@@ -1,3 +1,10 @@
+2006-11-13  Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/defender.c (OOM_ADJ_VALUE): Rename to ...
+	(OOM_DISABLE): ... this. Stringify.
+	(set_oom_adj): Use file descriptor based functions instead of FILE
+	based ones.
+
 2006-11-07  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac (HILDON_DEPENDS): Add libgtkhtml-3.8, libosso,

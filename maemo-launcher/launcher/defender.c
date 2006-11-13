@@ -24,29 +24,31 @@
 #include <stdbool.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <unistd.h>
 
 #include "report.h"
 
-#define OOM_ADJ_VALUE -17
+/* From <linux/mm.h>.  */
+#define OOM_DISABLE "-17"
 
 static void
 set_oom_adj(char *pid)
 {
-  FILE *file;
+  int fd;
   char filename[128];
 
   if (snprintf(filename, sizeof(filename), "/proc/%s/oom_adj", pid) < 0)
     die(20, "generating filename string: '%s'\n", filename);
 
-  file = fopen(filename, "w");
-  if (!file)
+  fd = open(filename, O_WRONLY);
+  if (fd < 0)
     die(21, "opening file '%s'\n", filename);
 
-  if (fprintf(file, "%d", OOM_ADJ_VALUE) < 0)
+  if (write(fd, OOM_DISABLE, strlen(OOM_DISABLE)) < 0)
     die(22, "writting oom adjust value to file: '%s'\n", filename);
 
-  fclose(file);
+  close(fd);
 }
 
 static bool
