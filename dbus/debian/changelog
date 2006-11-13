@@ -13,6 +13,7 @@ dbus (1.0.0-osso1) experimental; urgency=low
   * Replaced the D-Bus v0.94-1 init script with our old one.
   * Added the 'open match' detection patch.
   * Added patch to allow using killpg() for the D-Bus-started process. 
+  * Added debug package for the library.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 13:54:45 +0200
 

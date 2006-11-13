@@ -20,6 +20,8 @@ DEB_CONFIGURE_EXTRA_FLAGS := --enable-xml-docs --enable-doxygen-docs \
 
 DEB_SHLIBDEPS_INCLUDE_dbus-1-utils := debian/libdbus-1-3/usr/lib/ 
 
+DEB_DH_STRIP_ARGS := --dbg-package=libdbus-1-3
+
 binary-post-install/dbus::
 	mkdir -p debian/dbus/etc/dbus-1/event.d
 #	mkdir -p debian/dbus/etc/X11/Xsession.d
