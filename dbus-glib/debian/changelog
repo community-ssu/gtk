@@ -6,6 +6,7 @@ dbus-glib (0.72-osso1) experimental; urgency=low
   * Removed 00_unref_crash.patch from debian/patches because it's in the
     upstream tarball.
   * Added old patch to fix an old crash in dbus-gproxy.
+  * Added patch for increasing gsource priority.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Nov 2006 15:13:51 +0200
 
