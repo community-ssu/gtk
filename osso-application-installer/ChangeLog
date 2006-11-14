@@ -1,10 +1,17 @@
 2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.41
+	
+	* src/repo.cc (add_new_repo): Default to "bora" instead of
+	"mistral".  (N47458).
+
 	Released 4.40
 	
 	* src/util.h, src/util.cc, src/log.cc
 	(show_file_chooser_for_save): Added parent parameter.  Updated
 	callers.
+
+	Released 4.39
 
 	* src/repo.cc (show_repo_edit_dialog): Also use the right parent
 	for the non-readonly version of the dialog, stupid.
