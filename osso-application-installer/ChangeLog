@@ -1,3 +1,8 @@
+2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/repo.cc (show_repo_edit_dialog): Also use the right parent
+	for the non-readonly version of the dialog, stupid.
+
 2006-11-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.38
