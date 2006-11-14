@@ -468,7 +468,7 @@ show_repo_edit_dialog (GtkWindow *parent,
 static void
 add_new_repo (repo_closure *c)
 {
-  repo_line *r = new repo_line (c, "deb http:// mistral user", false, NULL);
+  repo_line *r = new repo_line (c, "deb http:// bora user", false, NULL);
   r->next = NULL;
   *c->lastp = r;
   c->lastp = &r->next;
