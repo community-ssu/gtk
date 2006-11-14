@@ -1,15 +1,15 @@
-maemo-launcher (0.20~-1) UNRELEASED; urgency=low
+maemo-launcher (0.20-1) unstable; urgency=low
 
   * New Upstream Release.
     - Unprotect non-essential user processes from the OOM killer.
-      (Closes: #46702@Nokia)
+      (Fixes: NB#46702)
   * Make the hildon enabled booster link against even more libraries, so
     that we can "preload" and share them across the childs. Added to
     Build-Depends gtkhtml-dev, libosso-dev, libossomime-dev, libosso-help-dev,
     hildon-fm-dev, libhildonmenu-dev hildon-status-bar-lib-dev and
-    hildon-base-lib-dev. (Closes: #17937@Nokia)
+    hildon-base-lib-dev. (Fixes: NB#17937)
 
- -- Guillem Jover <guillem.jover@nokia.com>  Tue,  7 Nov 2006 17:19:26 +0200
+ -- Guillem Jover <guillem.jover@nokia.com>  Tue, 14 Nov 2006 15:50:46 +0200
 
 maemo-launcher (0.19-1) unstable; urgency=low
 
