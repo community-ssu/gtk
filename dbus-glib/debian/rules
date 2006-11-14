@@ -19,3 +19,6 @@ DEB_DH_STRIP_ARGS := --dbg-package=libdbus-glib-1-2
 
 common-configure-impl::
 	cp $(CURDIR)/debian/dbus-bus-introspect.xml $(DEB_BUILDDIR)/tools/
+
+clean::
+	rm -f *.cdbs-config_list
