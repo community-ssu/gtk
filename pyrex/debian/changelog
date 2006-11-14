@@ -1,3 +1,9 @@
+pyrex (0.9.4-1osso1) unstable; urgency=low
+
+  * upgraded to pyrex v0.9.4.1 
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Tue,  14 Nov 2006 15:53:00 -0300
+
 pyrex (0.9.3-1osso6) unstable; urgency=low
 
   * debian/rules refactored
