@@ -1,7 +1,13 @@
+osso-application-installer (4.39) unstable; urgency=low
+
+  * Fixes: NB#46824.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 14 Nov 2006 17:05:23 +0200
+
 osso-application-installer (4.38) unstable; urgency=low
 
   * debian/rules: Added -Wno-format to CFLAGS.
-  * Fixes: NB#46824.
+  * Fixes: NB#47440.
   
  -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 13 Nov 2006 16:36:04 +0200
 
