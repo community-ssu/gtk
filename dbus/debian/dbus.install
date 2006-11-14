@@ -1,7 +1,6 @@
 debian/tmp/var/run/dbus
 debian/tmp/etc/dbus-1/system.conf
 debian/tmp/etc/dbus-1/system.d
-debian/session.conf etc/dbus-1
 debian/tmp/usr/bin/dbus-daemon
 debian/tmp/usr/bin/dbus-cleanup-sockets
 debian/tmp/usr/bin/dbus-launch

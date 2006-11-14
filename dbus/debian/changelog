@@ -14,6 +14,7 @@ dbus (1.0.0-osso1) experimental; urgency=low
   * Added the 'open match' detection patch.
   * Added patch to allow using killpg() for the D-Bus-started process. 
   * Added debug package for the library.
+  * Removed installing debian/session.conf (patching upstream is better).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 13:54:45 +0200
 
