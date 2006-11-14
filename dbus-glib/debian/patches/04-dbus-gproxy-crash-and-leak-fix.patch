@@ -1,0 +1,50 @@
+diff -pur dbus-glib-0.72/dbus/dbus-gproxy.c dbus-glib-0.72.new/dbus/dbus-gproxy.c
+--- dbus-glib-0.72/dbus/dbus-gproxy.c	2006-10-25 22:59:07.000000000 +0300
++++ dbus-glib-0.72.new/dbus/dbus-gproxy.c	2006-11-14 16:15:11.082313384 +0200
+@@ -717,18 +717,21 @@ dbus_g_proxy_manager_replace_name_owner 
+ 
+       names = g_hash_table_lookup (manager->owner_names, prev_owner);
+ 
+-      link = g_slist_find_custom (names, name, find_name_in_info);
+-
+       info = NULL;
+-      if (link != NULL)
+-	{
+-	  info = link->data;
++      if (names != NULL)
++        {
++	  link = g_slist_find_custom (names, name, find_name_in_info);
++
++	  if (link != NULL)
++	    {
++	      info = link->data;
+ 	  
+-	  names = g_slist_delete_link (names, link);
++	      names = g_slist_delete_link (names, link);
+ 
+-	  if (names == NULL)
+-	    g_hash_table_remove (manager->owner_names, prev_owner);
+-	}
++	      if (names == NULL)
++	        g_hash_table_remove (manager->owner_names, prev_owner);
++	    }
++        }
+ 
+       if (new_owner[0] == '\0')
+ 	{
+@@ -757,8 +760,14 @@ dbus_g_proxy_manager_replace_name_owner 
+ 	  g_slist_free (data.destroyed);
+ 
+ 	  LOCK_MANAGER (manager);
++
++	  if (info)
++	    {
++	      g_free (info->name);
++	      g_free (info);
++	    }
+ 	}
+-      else
++      else if (info)
+ 	{
+ 	  insert_nameinfo (manager, new_owner, info);
+ 	}

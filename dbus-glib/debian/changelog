@@ -8,6 +8,8 @@ dbus-glib (0.72-osso1) experimental; urgency=low
   * Added old patch to fix an old crash in dbus-gproxy.
   * Added patch for increasing gsource priority.
   * Added patch to allow compiling with -Wshadow without warnings.
+  * Ported patch for adding NULL guards and fix for memory leak to
+    dbus-gproxy.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Nov 2006 15:13:51 +0200
 
