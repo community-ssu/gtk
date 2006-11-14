@@ -1,10 +1,5 @@
 2006-11-14  Guillem Jover  <guillem.jover@nokia.com>
 
-	* launcher/prog.c (set_progname): Use memmove instead of strncpy to
-	be able to handle overlapping strings.
-
-2006-11-14  Guillem Jover  <guillem.jover@nokia.com>
-
 	* configure.ac (HILDON_DEPENDS): Add libossohelp, libhildonmenu and
 	hildon-status-bar-lib.
 
