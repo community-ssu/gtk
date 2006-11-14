@@ -1,0 +1,43 @@
+Source: dbus-glib
+Section: devel
+Priority: optional
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: cdbs, debhelper, libglib2.0-dev, libdbus-1-dev (>= 0.91), libexpat-dev 
+Standards-Version: 3.7.2
+
+Package: libdbus-glib-1-dev
+Section: libdevel
+Architecture: any
+Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (>= 0.91), libglib2.0-dev, ${shlibs:Depends}
+Conflicts: libdbus-glib-dev, dbus-glib-1-dev, dbus-1-utils (<< 0.50-2)
+Replaces: libdbus-glib0-dev, dbus-glib-1-dev, libdbus-1-dev (<< 0.90)
+Description: simple interprocess messaging system (GLib interface)
+ D-Bus is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ This package provides a GLib-style interface to D-Bus.
+ .
+ See the dbus description for more information about D-Bus in general.
+
+Package: libdbus-glib-1-2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: simple interprocess messaging system (GLib-based shared library)
+ D-Bus is a message bus, used for sending messages between applications.
+ Conceptually, it fits somewhere in between raw sockets and CORBA in
+ terms of complexity.
+ .
+ This package provides the GLib-based shared library for applications using the
+ GLib interface to D-Bus.
+ .
+ See the dbus description for more information about D-Bus in general.
+
+Package: libdbus-glib-1-2-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: libdbus-glib-1-2 (= ${Source-Version})
+Description: libdbus-glib-1-2 debug symbols
+ libdbus-glib-1-2 debug symbols
