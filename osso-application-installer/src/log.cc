@@ -146,6 +146,7 @@ log_response (GtkDialog *dialog, gint response, gpointer clos)
 
   if (response == RESPONSE_SAVE)
     show_file_chooser_for_save (_("ai_ti_save_log"),
+				GTK_WINDOW (dialog),
 				_("ai_li_save_log_default_name"),
  				save_log, NULL);
 

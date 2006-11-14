@@ -1466,6 +1466,7 @@ show_deb_file_chooser (void (*cont) (char *uri, void *data),
 
 void
 show_file_chooser_for_save (const char *title,
+			    GtkWindow *parent,
 			    const char *default_filename,
 			    void (*cont) (char *uri, void *data),
 			    void *data)
@@ -1477,7 +1478,7 @@ show_file_chooser_for_save (const char *title,
   GtkWidget *fcd;
 
   fcd = hildon_file_chooser_dialog_new_with_properties
-    (get_main_window (),
+    (parent,
      "action",            GTK_FILE_CHOOSER_ACTION_SAVE,
      "title",             title,
      NULL);
