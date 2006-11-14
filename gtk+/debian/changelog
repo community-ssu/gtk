@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.6.10-2.osso25) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * debian/control:
+    - Bump libxfixes-dev Build-Deps to pick up libXfixes.so.3, and add
+    versioned libxfixes3 Conflicts to not break on upgrade. (Thanks Daniel)
+    - Removed obsolete Conflicts cruft
+  * Fixes: MB#848 libgtk2.0-bin doesn't upgrade if an old version of libXfixes
+    is present
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 14 Nov 2006 16:08:00 +0200
+
 gtk+2.0 (2:2.6.10-2.osso24) unstable; urgency=low
 
   * Fixes: NB#45984: Two patches against memory leaks
