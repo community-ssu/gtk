@@ -378,8 +378,7 @@ show_repo_edit_dialog (GtkWindow *parent,
       gtk_widget_grab_focus (button);
     }
   else
-    dialog = gtk_dialog_new_with_buttons (title,
-					  get_main_window (),
+    dialog = gtk_dialog_new_with_buttons (title, parent,
 					  GTK_DIALOG_MODAL,
 					  _("ai_bd_new_repository_ok"),
 					  GTK_RESPONSE_OK,
