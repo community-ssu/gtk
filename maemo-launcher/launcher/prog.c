@@ -94,7 +94,7 @@ set_progname(char *progname, int argc, char **argv)
     argvlen += strlen(argv[i]) + 1;
 
   memset(argv[0], 0, argvlen);
-  strncpy(argv[0], progname, argvlen - 1);
+  memmove(argv[0], progname, argvlen - 1);
 
   set_process_name(progname);
 
