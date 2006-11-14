@@ -269,3 +269,16 @@ Variable declarations inside inner code blocks?
 Initial values when declaring variables?
 
 Do something about __stdcall.
+
+Support class methods in extension types using METH_CLASS flag.
+
+Disallow defaulting types to 'object' in C declarations?
+
+C globals with static initialisers.
+
+Find a way of providing C-only initialisers for extension types.
+
+Metaclasses for extension types?
+
+Make extension types use Py_TPFLAGS_HEAPTYPE so their __module__
+will get set dynamically?

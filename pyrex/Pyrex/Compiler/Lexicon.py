@@ -19,7 +19,6 @@ def make_lexicon():
     hexdigit = Any("0123456789ABCDEFabcdef")
     indentation = Bol + Rep(Any(" \t"))
     
-    #resword = apply(Str, reserved_words)
     decimal = Rep1(digit)
     dot = Str(".")
     exponent = Any("Ee") + Opt(Any("+-")) + decimal
@@ -27,6 +26,7 @@ def make_lexicon():
     
     name = letter + Rep(letter | digit)
     intconst = decimal | (Str("0x") + Rep1(hexdigit))
+    longconst = intconst + Str("L")
     fltconst = (decimal_fract + Opt(exponent)) | (decimal + exponent)
     imagconst = (intconst | fltconst) + Any("jJ")
     
@@ -73,9 +73,9 @@ def make_lexicon():
     lineterm = Eol + Opt(Str("\n"))
     
     return Lexicon([
-        #(resword, TEXT),
         (name, 'IDENT'),
         (intconst, 'INT'),
+        (longconst, 'LONG'),
         (fltconst, 'FLOAT'),
         (imagconst, 'IMAG'),
         (punct | diphthong, TEXT),

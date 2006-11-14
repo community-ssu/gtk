@@ -1,9 +1,9 @@
 #!/usr/bin/make -f
 
-PYVER=2.4
+PYVER=2.5
 PYTHON=python$(PYVER)
 
-p_base = python2.4-pyrex
+p_base = python2.5-pyrex
 d_base = debian/$(p_base)
 
 filename=pyrexc
@@ -34,7 +34,7 @@ install: build
 	$(PYTHON) setup.py install --root=$(d_base)
 	$(PYTHON) -OO -m compileall -f $(d_base)
 
-	sed -i "s|#!/usr/bin/python.*|#!/usr/bin/python2.4|" $(d_base)/usr/bin/$(filename)
+	sed -i "s|#!/usr/bin/python.*|#!/usr/bin/python2.5|" $(d_base)/usr/bin/$(filename)
 	mv $(d_base)/usr/bin/$(filename) $(d_base)/usr/bin/$(fullfilename)
 	install -d $(d_base)/usr/share/man/man1
 	install -p -m644 debian/$(fullfilename).1 $(d_base)/usr/share/man/man1/$(fullfilename).1

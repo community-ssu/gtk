@@ -1,32 +1,24 @@
 <!DOCTYPE doctype PUBLIC "-//w3c//dtd html 4.0 transitional//en">
-<html>
-<head>
-       
-  <meta http-equiv="Content-Type"
- content="text/html; charset=iso-8859-1">
-       
-  <meta name="GENERATOR"
- content="Mozilla/4.61 (Macintosh; I; PPC) [Netscape]">
-  <title>Special Methods of Extenstion Types</title>
-</head>
-  <body>
-   
-<h1>  
-<hr width="100%">Special Methods of Extension Types  
+<html><head>
+         <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+         <meta name="GENERATOR" content="Mozilla/4.61 (Macintosh; I; PPC) [Netscape]"><title>Special Methods of Extenstion Types</title></head>
+<body>
+   <h1>  <hr width="100%">Special Methods of Extension Types  
 <hr width="100%"></h1>
   This page describes the special methods currently supported by Pyrex extension
  types. A complete list of all the special methods appears in the table at 
 the bottom. Some of these methods behave differently from their Python counterparts 
 or have no direct Python counterparts, and require special mention.  
-<p><i>Note: Everything said on this page applies only to </i>extension<i>
-types, defined with the </i>cdef class<i> statement. It doesn't apply&nbsp;
-to classes defined with the Python </i>class<i> statement, where the normal
+<p><span style="font-weight: bold;">Note:</span><i> Everything said on this page applies only to </i><span style="font-weight: bold;">extension</span><i style="font-weight: bold;">
+</i><span style="font-weight: bold;">types</span><i>, defined with the </i><span style="font-weight: bold; font-family: monospace;">cdef class</span><i> statement. It doesn't apply&nbsp;
+to classes defined with the Python </i><span style="font-family: monospace;">class</span><i><span style="font-family: monospace;"> </span>statement, where the normal
  Python rules apply.</i> </p>
- 
-<h2> <font size="+1">Docstrings</font></h2>
+ <h2><small>Declaration</small></h2>Special methods of extension types must be declared with <span style="font-family: monospace; font-weight: bold;">def</span>, <span style="font-style: italic;">not</span> <span style="font-family: monospace;">cdef</span>.<br>
+<h2><font size="+1">Docstrings</font></h2>
+
   Currently, docstrings are not fully supported in special methods of extension
  types. You can place a docstring in the source to serve as a comment, but
- it won't show up in the corresponding __doc__ attribute at run time. (This
+ it won't show up in the corresponding <span style="font-family: monospace;">__doc__</span> attribute at run time. (This
  is a Python limitation -- there's nowhere in the PyTypeObject data structure
  to put such docstrings.)  
 <h2> <font size="+1">Initialisation methods: <tt>__new__</tt> and <tt>__init__</tt></font></h2>
@@ -37,8 +29,7 @@ that your object will own. You need to be careful what you do in the __new__
 method, because the object may not yet be a valid Python object when it is 
 called. Therefore, you must not invoke any Python operations which might touch
 the object; in particular, do not try to call any of its methods. </p>
- 
-<p>Unlike the corresponding method in Python, your <tt>__new__</tt> method
+ <p>Unlike the corresponding method in Python, your <tt>__new__</tt> method
  is <i>not</i> responsible for <i>creating</i> the object. By the time your
  <tt>__new__</tt> method is called, memory has been allocated for the object 
 and any C attributes it has have been initialised to 0 or null. (Any Python 
@@ -53,18 +44,15 @@ If you need to pass a modified argument list to the base type, you will have
 to do the relevant part of the initialisation in the <tt>__init__</tt> method
 instead (where the normal rules for calling inherited methods apply).<br>
  </p>
- 
-<p>Note that the first parameter of the <tt>__new__</tt> method is the object 
+ <p>Note that the first parameter of the <tt>__new__</tt> method is the object 
 to be initialised, not the class of the object as it is in Python. </p>
- 
-<p>Any initialisation which cannot safely be done in the <tt>__new__</tt>
+ <p>Any initialisation which cannot safely be done in the <tt>__new__</tt>
 method should be done in the <b><tt>__init__</tt></b> method. By the time
  <tt>__init__</tt> is called, the object is a fully valid Python object and 
 all operations are safe. Under some circumstances it is possible for <tt>__init__</tt>
 to be called more than once or not to be called at all, so your other methods
  should be designed to be robust in such situations. </p>
- 
-<p>Keep in mind that any arguments passed to the constructor will be passed
+ <p>Keep in mind that any arguments passed to the constructor will be passed
  to the <tt>__new__</tt> method as well as the <tt>__init__</tt> method.
 If you anticipate subclassing your extension type in Python, you may find
 it useful to give the <tt>__new__</tt> method * and ** arguments so that
@@ -72,8 +60,7 @@ it can accept and ignore extra arguments. Otherwise, any Python subclass
 which has an <tt>__init__</tt> with a different signature will have to override 
 <tt>__new__</tt> as well as <tt>__init__</tt>, which the writer of a Python 
 class wouldn't expect to have to do. </p>
- 
-<h2> <font size="+1">Finalization method: <tt>__dealloc__</tt><tt></tt></font></h2>
+ <h2> <font size="+1">Finalization method: <tt>__dealloc__</tt><tt></tt></font></h2>
   The counterpart to the <tt>__new__</tt> method is the <b><tt>__dealloc__</tt></b>
 method, which should perform the inverse of the <tt>__new__</tt> method.
 Any C data structures that you allocated in your <tt>__new__</tt> method
@@ -85,8 +72,7 @@ is concerned, so you should avoid invoking any Python operations which might
 touch the object. In particular, don't call any other methods of the object 
 or do anything which might cause the object to be resurrected. It's best if
 you stick to just deallocating C data. </p>
- 
-<p>You don't need to worry about deallocating Python attributes of your object, 
+ <p>You don't need to worry about deallocating Python attributes of your object, 
 because that will be done for you by Pyrex after your <tt>__dealloc__</tt>
 method returns.<br>
  <br>
@@ -94,8 +80,7 @@ method returns.<br>
 versions of the Pyrex documentation stated that there was, but this turned 
 out to be incorrect.)<br>
   </p>
- 
-<h2><font size="+1">Arithmetic methods</font></h2>
+ <h2><font size="+1">Arithmetic methods</font></h2>
   Arithmetic operator methods, such as <tt>__add__</tt>, behave differently
  from their Python counterparts. There are no separate "reversed" versions
  of these methods (<tt>__radd__</tt>, etc.) Instead, if the first operand
@@ -105,71 +90,56 @@ is called, with the operands in the <i>same order</i>.
  being "self", and you should test the types of both operands before deciding
  what to do. If you can't handle the combination of types you've been given,
  you should return <tt>NotImplemented</tt>. </p>
- 
-<p>This also applies to the in-place arithmetic method <tt>__ipow__</tt>.
+ <p>This also applies to the in-place arithmetic method <tt>__ipow__</tt>.
  It doesn't apply to any of the <i>other</i> in-place methods (<tt>__iadd__</tt>,
  etc.) which always take self as the first argument. </p>
- 
-<h2> <font size="+1">Rich comparisons</font></h2>
+ <h2> <font size="+1">Rich comparisons</font></h2>
   There are no separate methods for the individual rich comparison operations
  (<tt>__eq__</tt>, <tt>__le__</tt>, etc.) Instead there is a single method
  <tt>__richcmp__</tt> which takes an integer indicating which operation is 
 to be performed, as follows:  
 <ul>
-    
-  <ul>
- &nbsp;     
-    <table border="0" cellspacing="0" cellpadding="5" nosave="">
+      <ul>
+ &nbsp;         <table nosave="" border="0" cellpadding="5" cellspacing="0">
   <tbody>
          <tr nosave="">
-  <td width="30" bgcolor="#ffcc33" nosave="">           
-          <div align="right">&lt;</div>
+  <td nosave="" bgcolor="#ffcc33" width="30">                     <div align="right">&lt;</div>
   </td>
-   <td width="30" bgcolor="#66ffff" nosave="">0</td>
+   <td nosave="" bgcolor="#66ffff" width="30">0</td>
    <td><br>
            </td>
-   <td width="30" bgcolor="#ffcc33" nosave="">           
-          <div align="right">==</div>
+   <td nosave="" bgcolor="#ffcc33" width="30">                     <div align="right">==</div>
   </td>
-   <td width="30" bgcolor="#66ffff" nosave="">2</td>
+   <td nosave="" bgcolor="#66ffff" width="30">2</td>
    <td><br>
            </td>
-   <td width="30" bgcolor="#ffcc33" nosave="">           
-          <div align="right">&gt;</div>
+   <td nosave="" bgcolor="#ffcc33" width="30">                     <div align="right">&gt;</div>
   </td>
-   <td width="30" bgcolor="#66ffff" nosave="">4</td>
+   <td nosave="" bgcolor="#66ffff" width="30">4</td>
   </tr>
    <tr nosave="">
-  <td bgcolor="#ffcc33" nosave="">           
-          <div align="right">&lt;=</div>
+  <td nosave="" bgcolor="#ffcc33">                     <div align="right">&lt;=</div>
   </td>
-   <td bgcolor="#66ffff" nosave="">1</td>
+   <td nosave="" bgcolor="#66ffff">1</td>
    <td><br>
            </td>
-   <td bgcolor="#ffcc33" nosave="">           
-          <div align="right">!=</div>
+   <td nosave="" bgcolor="#ffcc33">                     <div align="right">!=</div>
   </td>
-   <td bgcolor="#66ffff" nosave="">3</td>
+   <td nosave="" bgcolor="#66ffff">3</td>
    <td><br>
            </td>
-   <td bgcolor="#ffcc33" nosave="">           
-          <div align="right">&gt;=</div>
+   <td nosave="" bgcolor="#ffcc33">                     <div align="right">&gt;=</div>
   </td>
-   <td bgcolor="#66ffff" nosave="">5</td>
+   <td nosave="" bgcolor="#66ffff">5</td>
   </tr>
-        
-      </tbody>     
-    </table>
-    
+              </tbody>         </table>
+      </ul>
   </ul>
-  
-</ul>
-   
-<h2> <font size="+1">The __new__ method</font></h2>
+   <h2> <font size="+1">The __next__ method</font></h2>
   Extension types wishing to implement the iterator interface should define
- a method called <b><tt>__new__</tt></b>, <i>not</i> <tt>new</tt>. The Python
- system will automatically supply a <tt>new</tt> method which calls your
-__new__.  <b>Do NOT explicitly give your type a <tt>new</tt> method</b>,
+ a method called <b><tt>__next__</tt></b>, <i>not</i> <tt>next</tt>. The Python
+ system will automatically supply a <tt>next</tt> method which calls your
+<span style="font-family: monospace;">__next__</span>.  <b>Do NOT explicitly give your type a <tt>next</tt> method</b>,
 or bad things could happen (see note 3).  
 <h2> <font size="+1">Special Method Table</font></h2>
   This table lists all of the special methods together with their parameter
@@ -178,17 +148,15 @@ or bad things could happen (see note 3).
 <p>You don't have to declare your method as taking these parameter types.
  If you declare different types, conversions will be performed as necessary.
  <br>
- &nbsp; 
-<table border="1" cellspacing="0" cellpadding="5" bgcolor="#ccffff"
- nosave="">
+ &nbsp; <table nosave="" bgcolor="#ccffff" border="1" cellpadding="5" cellspacing="0">
   <tbody>
-     <tr bgcolor="#ffcc33" nosave="">
+     <tr nosave="" bgcolor="#ffcc33">
   <td nosave=""><b>Name</b></td>
    <td><b>Parameters</b></td>
    <td><b>Return type</b></td>
    <td><b>Description</b></td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>General</b></td>
   </tr>
    <tr>
@@ -269,7 +237,7 @@ or bad things could happen (see note 3).
    <td>&nbsp;</td>
    <td>Delete attribute</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>Arithmetic operators</b></td>
   </tr>
    <tr>
@@ -386,7 +354,7 @@ or bad things could happen (see note 3).
    <td>object</td>
    <td>^ operator</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>Numeric conversions</b></td>
   </tr>
    <tr>
@@ -419,7 +387,7 @@ or bad things could happen (see note 3).
    <td>object</td>
    <td>Convert to hexadecimal</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>In-place arithmetic operators</b></td>
   </tr>
    <tr>
@@ -500,7 +468,7 @@ or bad things could happen (see note 3).
    <td>object</td>
    <td>^= operator</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>Sequences and mappings</b></td>
   </tr>
    <tr>
@@ -551,7 +519,7 @@ or bad things could happen (see note 3).
    <td>int</td>
    <td>x in self</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>Iterators</b></td>
   </tr>
    <tr>
@@ -560,7 +528,7 @@ or bad things could happen (see note 3).
    <td>object</td>
    <td>Get next item (called <tt>next</tt> in Python)</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>Buffer interface</b>&nbsp; (no Python equivalents
  - see note 1)</td>
   </tr>
@@ -588,7 +556,7 @@ or bad things could happen (see note 3).
    <td>&nbsp;</td>
    <td>&nbsp;</td>
   </tr>
-   <tr bgcolor="#66ffff" nosave="">
+   <tr nosave="" bgcolor="#66ffff">
   <td colspan="4" nosave=""><b>Descriptor objects</b>&nbsp; (no Python equivalents
  - see note 2)</td>
   </tr>
@@ -605,38 +573,26 @@ or bad things could happen (see note 3).
    <td>Set value of attribute</td>
   </tr>
    <tr>
-  <td>__delete__</td>
+  <td style="font-family: monospace;">__delete__</td>
    <td>self, instance</td>
    <td>&nbsp;</td>
    <td>Delete attribute</td>
   </tr>
-    
-  </tbody> 
-</table>
+      </tbody> </table>
    </p>
- 
-<p>Note 1: The buffer interface is intended for use by C code and is not
-directly accessible from Python. It is described in the <a
- href="http://www.python.org/doc/current/api/api.html">Python/C API Reference 
-Manual</a> under sections <a
- href="http://www.python.org/doc/current/api/abstract-buffer.html">6.6</a>
+ <p>Note 1: The buffer interface is intended for use by C code and is not
+directly accessible from Python. It is described in the <a href="http://www.python.org/doc/current/api/api.html">Python/C API Reference 
+Manual</a> under sections <a href="http://www.python.org/doc/current/api/abstract-buffer.html">6.6</a>
 and <a href="http://www.python.org/doc/current/api/buffer-structs.html">10.6</a>.
  </p>
- 
-<p>Note 2: Descriptor objects are part of the support mechanism for new-style
- Python classes. See the <a
- href="http://www.python.org/doc/2.2.1/whatsnew/sect-rellinks.html#SECTION000320000000000000000">discussion
- of descriptors in the Python documentation</a>. See also <a
- href="http://www.python.org/peps/pep-0252.html">PEP 252, "Making Types Look 
-More Like Classes"</a>, and <a
- href="http://www.python.org/peps/pep-0253.html">PEP 253, "Subtyping Built-In 
+ <p>Note 2: Descriptor objects are part of the support mechanism for new-style
+ Python classes. See the <a href="http://www.python.org/doc/2.2.1/whatsnew/sect-rellinks.html#SECTION000320000000000000000">discussion
+ of descriptors in the Python documentation</a>. See also <a href="http://www.python.org/peps/pep-0252.html">PEP 252, "Making Types Look 
+More Like Classes"</a>, and <a href="http://www.python.org/peps/pep-0253.html">PEP 253, "Subtyping Built-In 
 Types"</a>. </p>
- 
-<p>Note 3: If your type defines a <tt>__new__</tt> method, any method called
+ <p>Note 3: If your type defines a <tt>__new__</tt> method, any method called
  <tt>new</tt> that you define will be overwritten with the system-supplied
  <tt>new</tt> at module import time. </p>
  <br>
  <br>
-</body>
-</html>
-
+</body></html>

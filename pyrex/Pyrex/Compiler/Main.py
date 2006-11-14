@@ -2,7 +2,7 @@
 #   Pyrex Top Level
 #
 
-import sys
+import os, sys
 if sys.version_info[:2] < (2, 2):
     print >>sys.stderr, "Sorry, Pyrex requires Python 2.2 or later"
     sys.exit(1)
@@ -132,7 +132,7 @@ class Context:
 
     def parse(self, source_filename, type_names, pxd):
         # Parse the given source file and return a parse tree.
-        f = open(source_filename, "r")
+        f = open(source_filename, "rU")
         s = PyrexScanner(f, source_filename, 
             type_names = type_names, context = self)
         try:
@@ -166,23 +166,39 @@ class Context:
         if options.output_file:
             result.c_file = os.path.join(cwd, options.output_file)
         else:
-            result.c_file = replace_suffix(source, ".c")
+            if options.cplus:
+                c_suffix = ".cpp"
+            else:
+                c_suffix = ".c"
+            result.c_file = replace_suffix(source, c_suffix)
         module_name = self.extract_module_name(source)
         initial_pos = (source, 1, 0)
         scope = self.find_module(module_name, pos = initial_pos, need_pxd = 0)
+        errors_occurred = False
         try:
             tree = self.parse(source, scope.type_names, pxd = 0)
             tree.process_implementation(scope, result)
         except CompileError:
-            result.c_file = None
+            errors_occurred = True
         Errors.close_listing_file()
         result.num_errors = Errors.num_errors
         if result.num_errors > 0:
+            errors_occurred = True
+        if errors_occurred:
+            try:
+                os.unlink(result.c_file)
+            except EnvironmentError:
+                pass
             result.c_file = None
         if result.c_file and not options.c_only and c_compile:
-            result.object_file = c_compile(result.c_file)
+            result.object_file = c_compile(result.c_file,
+                verbose_flag = options.show_version,
+                cplus = options.cplus)
             if not options.obj_only and c_link:
-                result.extension_file = c_link(result.object_file)
+                result.extension_file = c_link(result.object_file,
+                    extra_objects = options.objects,
+                    verbose_flag = options.show_version,
+                    cplus = options.cplus)
         return result
 
 #------------------------------------------------------------------------
@@ -200,10 +216,18 @@ class CompilationOptions:
     errors_to_stderr  boolean   Echo errors to stderr when using .lis
     include_path      [string]  Directories to search for include files
     output_file       string    Name of generated .c file
+    
+    Following options are experimental and only used on MacOSX:
+    
+    c_only            boolean   Stop after generating C file (default)
+    obj_only          boolean   Stop after compiling to .o file
+    objects           [string]  Extra .o files to link with
+    cplus             boolean   Compile as c++ code
     """
     
     def __init__(self, defaults = None, **kw):
         self.include_path = []
+        self.objects = []
         if defaults:
             self.__dict__.update(defaults.__dict__)
         self.__dict__.update(kw)
@@ -289,6 +313,7 @@ default_options = CompilationOptions(
     errors_to_stderr = 1,
     c_only = 1,
     obj_only = 1,
+    cplus = 0,
     output_file = None)
     
 if sys.platform == "mac":

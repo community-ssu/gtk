@@ -212,9 +212,10 @@ class TypeFlagsSlot(SlotDescriptor):
     #  Descriptor for the type flags slot.
     
     def slot_code(self, scope):
-        value = "Py_TPFLAGS_DEFAULT|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_BASETYPE"
-        if scope.has_pyobject_attrs:
-            value += "|Py_TPFLAGS_HAVE_GC"
+        # Always add Py_TPFLAGS_HAVE_GC -- PyType_Ready doesn't seem to inherit it
+        value = "Py_TPFLAGS_DEFAULT|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_HAVE_GC"
+        #if scope.has_pyobject_attrs:
+        #	value += "|Py_TPFLAGS_HAVE_GC"
         return value
         
 
@@ -471,7 +472,7 @@ PySequenceMethods = (
 PyMappingMethods = (
     MethodSlot(inquiry, "mp_length", "__len__"),
     MethodSlot(objargfunc, "mp_subscript", "__getitem__"),
-    SyntheticSlot("mp_ass_subscript", ["__setitem__"], "0"),
+    SyntheticSlot("mp_ass_subscript", ["__setitem__", "__delitem__"], "0"),
 )
 
 PyBufferProcs = (

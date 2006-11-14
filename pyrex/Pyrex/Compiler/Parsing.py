@@ -422,13 +422,15 @@ def p_atom(s):
             value = int(s.systring)
         s.next()
         return ExprNodes.IntNode(pos, value = value)
+    elif sy == 'LONG':
+        value = s.systring
+        s.next()
+        return ExprNodes.LongNode(pos, value = value)
     elif sy == 'FLOAT':
-        #value = float(s.systring)
         value = s.systring
         s.next()
         return ExprNodes.FloatNode(pos, value = value)
     elif sy == 'IMAG':
-        #value = float(s.systring[:-1])
         value = s.systring[:-1]
         s.next()
         return ExprNodes.ImagNode(pos, value = value)
@@ -500,6 +502,10 @@ def p_string_literal(s):
             if kind == 'r':
                 if systr == '\\\n':
                     chars.append(r'\\\n')
+                elif systr == r'\"':
+                    chars.append(r'\\\"')
+                elif systr == r'\\':
+                    chars.append(r'\\\\')
                 else:
                     chars.append('\\' + systr)
             else:
@@ -1041,7 +1047,7 @@ def p_include_statement(s, level):
     s.expect_newline("Syntax error in include statement")
     include_file_path = s.context.find_include_file(include_file_name, pos)
     if include_file_path:
-        f = open(include_file_path, "r")
+        f = open(include_file_path, "rU")
         s2 = PyrexScanner(f, include_file_path, s)
         try:
             tree = p_statement_list(s2, level)
@@ -1377,7 +1383,7 @@ def p_exception_value(s):
     if s.sy == "-":
         sign = "-"
         s.next()
-    if s.sy in ('INT', 'FLOAT', 'NULL'):
+    if s.sy in ('INT', 'LONG', 'FLOAT', 'NULL'):
         s.systring = sign + s.systring
         return p_atom(s)
     else:
@@ -1575,6 +1581,8 @@ def p_c_func_or_var_declaration(s, level, pos, visibility = 'private'):
         declarators = [declarator]
         while s.sy == ',':
             s.next()
+            if s.sy == 'NEWLINE':
+                break
             declarator = p_c_declarator(s, cmethod_flag = cmethod_flag)
             declarators.append(declarator)
         s.expect_newline("Syntax error in C variable declaration")

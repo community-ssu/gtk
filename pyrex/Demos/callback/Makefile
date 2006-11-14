@@ -1,8 +1,8 @@
 all:
-	python2.4 Setup.py build_ext --inplace
+	python2.5 Setup.py build_ext --inplace
 
 test:	all
-	python2.4 run_cheese.py
+	python2.5 run_cheese.py
 
 clean:
 	@echo Cleaning Demos/callback

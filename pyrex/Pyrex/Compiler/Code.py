@@ -4,6 +4,7 @@
 
 import Naming
 from Pyrex.Utils import open_new_file
+from PyrexTypes import py_object_type, typecast
 
 class CCodeWriter:
     # f                file            output file
@@ -137,17 +138,37 @@ class CCodeWriter:
     def put_label(self, lbl):
         self.putln("%s:;" % lbl)
     
-    def put_var_declarations(self, entries, static = 0, dll_linkage = None):
+    def put_var_declarations(self, entries, static = 0, dll_linkage = None,
+            definition = True):
         for entry in entries:
             if not entry.in_cinclude:
-                self.put_var_declaration(entry, static, dll_linkage)
+                self.put_var_declaration(entry, static, dll_linkage, definition)
     
-    def put_var_declaration(self, entry, static = 0, dll_linkage = None):
-        if entry.visibility == 'extern':
-            self.put("extern ")
-        elif static and entry.visibility <> 'public':
-            self.put("static ")
-        if entry.visibility <> 'public':
+    def put_var_declaration(self, entry, static = 0, dll_linkage = None,
+            definition = True):
+        #print "Code.put_var_declaration:", entry.name, "definition =", definition
+        visibility = entry.visibility
+        if visibility == 'private' and not definition:
+            return
+        if visibility == 'extern':
+            storage_class = Naming.extern_c_macro
+        elif visibility == 'public':
+            if definition:
+                storage_class = ""
+            else:
+                storage_class = Naming.extern_c_macro
+        elif visibility == 'private':
+            if static:
+                storage_class = "static"
+            else:
+                storage_class = ""
+        if storage_class:
+            self.put("%s " % storage_class)
+        #if visibility == 'extern' or visibility == 'public' and not definition:
+        #	self.put("%s " % Naming.extern_c_macro)
+        #elif static and visibility <> 'public':
+        #	self.put("static ")
+        if visibility <> 'public':
             dll_linkage = None
         self.put(entry.type.declaration_code(entry.cname,
             dll_linkage = dll_linkage))
@@ -164,10 +185,11 @@ class CCodeWriter:
             return entry.cname
     
     def as_pyobject(self, cname, type):
-        if type.is_extension_type and type.base_type:
-            return "(PyObject *)" + cname
-        else:
-            return cname
+        return typecast(py_object_type, type, cname)
+        #if type.is_extension_type and type.base_type:
+        #	return "(PyObject *)" + cname
+        #else:
+        #	return cname
     
     def put_incref(self, cname, type):
         self.putln("Py_INCREF(%s);" % self.as_pyobject(cname, type))
@@ -181,7 +203,8 @@ class CCodeWriter:
     
     def put_decref_clear(self, cname, type):
         self.putln("Py_DECREF(%s); %s = 0;" % (
-            self.as_pyobject(cname, type), cname))
+            typecast(py_object_type, type, cname), cname))
+            #self.as_pyobject(cname, type), cname))
     
     def put_xdecref(self, cname, type):
         self.putln("Py_XDECREF(%s);" % self.as_pyobject(cname, type))
@@ -193,6 +216,11 @@ class CCodeWriter:
     def put_var_decref(self, entry):
         if entry.type.is_pyobject:
             self.putln("Py_DECREF(%s);" % self.entry_as_pyobject(entry))
+    
+    def put_var_decref_clear(self, entry):
+        if entry.type.is_pyobject:
+            self.putln("Py_DECREF(%s); %s = 0;" % (
+                self.entry_as_pyobject(entry), entry.cname))
     
     def put_var_xdecref(self, entry):
         if entry.type.is_pyobject:
@@ -218,19 +246,15 @@ class CCodeWriter:
         for entry in entries:
             self.put_var_xdecref_clear(entry)
     
-    def put_init_to_py_none(self, cast, cname):
-        if cast:
-            self.putln("%s = Py_None; Py_INCREF(%s %s);" % (cname, cast, cname))
-        else:
-            self.putln("%s = Py_None; Py_INCREF(%s);" % (cname, cname))            
+    def put_init_to_py_none(self, cname, type):
+        py_none = typecast(type, py_object_type, "Py_None")
+        self.putln("%s = %s; Py_INCREF(Py_None);" % (cname, py_none))
     
     def put_init_var_to_py_none(self, entry, template = "%s"):
         code = template % entry.cname
-        if entry.type.is_extension_type:
-            cast = "(PyObject *)"
-        else:
-            cast = None
-        self.put_init_to_py_none(cast, code)
+        #if entry.type.is_extension_type:
+        #	code = "((PyObject*)%s)" % code
+        self.put_init_to_py_none(code, entry.type)
 
     def put_pymethoddef(self, entry, term):
         if entry.doc:

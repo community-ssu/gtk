@@ -22,7 +22,6 @@ class Entry:
     # cname            string     C name of entity
     # type             PyrexType  Type of entity
     # doc              string     Doc string
-    # #borrowed         bool       Is a borrowed reference
     # init             string     Initial value
     # visibility       'private' or 'public' or 'extern'
     # is_builtin       boolean    Is a Python builtin name
@@ -171,7 +170,6 @@ class Scope:
         return self.global_scope().intern(name)
     
     def qualifying_scope(self):
-        #return self.outer_scope
         return self.parent_scope
     
     def mangle(self, prefix, name = None):
@@ -207,9 +205,6 @@ class Scope:
     
     def qualify_name(self, name):
         return "%s.%s" % (self.qualified_name, name)
-    
-    #def undeclare(self, name):
-    #	del self.entries[name]
     
     def declare_const(self, name, type, value, pos, cname = None):
         # Add an entry for a named constant.
@@ -420,17 +415,23 @@ class Scope:
                 % cname)
         self.free_temp_entries.append(entry)
     
-    def recycle_pending_temps(self):
-        # Obsolete
-        pass
+    def temps_in_use(self):
+        # Return a new list of temp entries currently in use.
+        return [entry for entry in self.temp_entries
+            if entry not in self.free_temp_entries]
+    
+    #def recycle_pending_temps(self):
+    #	# Obsolete
+    #	pass
 
     def use_utility_code(self, new_code):
         self.global_scope().use_utility_code(new_code)
     
     def generate_library_function_declarations(self, code):
         # Generate extern decls for C library funcs used.
-        if self.pow_function_used:
-            code.putln("extern double pow(double, double);")
+        #if self.pow_function_used:
+        #	code.putln("%s double pow(double, double);" % Naming.extern_c_macro)
+        pass
         
     def defines_any(self, names):
         # Test whether any of the given names are
@@ -885,8 +886,8 @@ class PyClassScope(ClassScope):
     def release_temp(self, cname):
         self.outer_scope.release_temp(cname)
 
-    def recycle_pending_temps(self):
-        self.outer_scope.recycle_pending_temps()
+    #def recycle_pending_temps(self):
+    #	self.outer_scope.recycle_pending_temps()
 
     def add_default_value(self, type):
         return self.outer_scope.add_default_value(type)
@@ -977,6 +978,8 @@ class CClassScope(ClassScope):
             
     def declare_cfunction(self, name, type, pos,
             cname = None, visibility = 'private', defining = 0):
+        if get_special_method_signature(name):
+            error(pos, "Special methods must be declared with 'def', not 'cdef'")
         args = type.args
         if not args:
             error(pos, "C method has no self argument")

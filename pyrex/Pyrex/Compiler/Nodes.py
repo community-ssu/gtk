@@ -44,7 +44,7 @@ class Node:
     #         'type' attribute of each ExprNode. Insert coercion nodes into the
     #         tree where needed to convert to and from Python objects. 
     #         Allocate temporary locals for intermediate results. Fill
-    #         in the 'result' attribute of each ExprNode with a C code
+    #         in the 'result_code' attribute of each ExprNode with a C code
     #         fragment.
     #
     #   (3) generate_code
@@ -71,7 +71,6 @@ class BlockNode:
     def generate_const_definitions(self, env, code):
         if env.const_entries:
             code.putln("")
-            #code.put_var_declarations(env.const_entries, static = 1)
             for entry in env.const_entries:
                 if not entry.is_interned:
                     code.put_var_declaration(entry, static = 1)
@@ -127,38 +126,41 @@ class ModuleNode(Node, BlockNode):
             if entry.visibility == 'public':
                 public_extension_types.append(entry)
         if public_vars_and_funcs or public_extension_types:
-            #import os
-            #outname_base, _ = os.path.splitext(result.c_file)
-            #result.h_file = outname_base + ".h"
-            #result.i_file = outname_base + ".pxi"
             result.h_file = replace_suffix(result.c_file, ".h")
             result.i_file = replace_suffix(result.c_file, ".pxi")
             h_code = Code.CCodeWriter(result.h_file)
             i_code = Code.PyrexCodeWriter(result.i_file)
+            self.generate_extern_c_macro_definition(h_code)
             for entry in public_vars_and_funcs:
-                h_code.putln("extern %s;" % 
+                h_code.putln("%s %s;" % (
+                    Naming.extern_c_macro,
                     entry.type.declaration_code(
-                        entry.cname, dll_linkage = "DL_IMPORT"))
+                        entry.cname, dll_linkage = "DL_IMPORT")))
                 i_code.putln("cdef extern %s" % 
                     entry.type.declaration_code(entry.cname, pyrex = 1))
             for entry in public_extension_types:
                 self.generate_cclass_header_code(entry.type, h_code)
                 self.generate_cclass_include_code(entry.type, i_code)
-            h_code.putln("extern DL_IMPORT(void) init%s(void);" % env.module_name)
-            #result.h_file_generated = 1
-            #result.i_file_generated = 1
+            h_code.putln("PyMODINIT_FUNC init%s(void);" % env.module_name)
     
     def generate_cclass_header_code(self, type, h_code):
-        h_code.putln("extern DL_IMPORT(PyTypeObject) %s;" % type.typeobj_cname)
+        #h_code.putln("extern DL_IMPORT(PyTypeObject) %s;" % type.typeobj_cname)
+        h_code.putln("%s DL_IMPORT(PyTypeObject) %s;" % (
+            Naming.extern_c_macro,
+            type.typeobj_cname))
         self.generate_obj_struct_definition(type, h_code)
     
     def generate_cclass_include_code(self, type, i_code):
         i_code.putln("cdef extern class %s.%s:" % (
             type.module_name, type.name))
         i_code.indent()
-        for entry in type.scope.var_entries:
-            i_code.putln("cdef %s" % 
-                entry.type.declaration_code(entry.cname, pyrex = 1))
+        var_entries = type.scope.var_entries
+        if var_entries:
+            for entry in var_entries:
+                i_code.putln("cdef %s" % 
+                    entry.type.declaration_code(entry.cname, pyrex = 1))
+        else:
+            i_code.putln("pass")
         i_code.dedent()
     
     def generate_c_code(self, env, result):
@@ -168,7 +170,8 @@ class ModuleNode(Node, BlockNode):
         code.init_labels()
         self.generate_module_preamble(env, modules, code)
         for module in modules:
-            self.generate_declarations_for_module(module, code)
+            self.generate_declarations_for_module(module, code,
+                definition = module is env)
         code.putln("")
         code.putln("/* Implementation of %s */" % env.qualified_name)
         self.generate_const_definitions(env, code)
@@ -179,17 +182,18 @@ class ModuleNode(Node, BlockNode):
         self.generate_py_string_table(env, code)
         self.generate_typeobj_definitions(env, code)
         self.generate_method_table(env, code)
+        self.generate_filename_init_prototype(code)
         self.generate_module_init_func(modules[:-1], env, code)
         self.generate_filename_table(code)
         self.generate_utility_functions(env, code)
         result.c_file_generated = 1
     
     def find_referenced_modules(self, env, module_list, modules_seen):
-        for imported_module in env.cimported_modules:
-            if imported_module not in modules_seen:
-                modules_seen[imported_module] = 1
+        if env not in modules_seen:
+            modules_seen[env] = 1
+            for imported_module in env.cimported_modules:
                 self.find_referenced_modules(imported_module, module_list, modules_seen)
-        module_list.append(env)
+            module_list.append(env)
         
     def generate_module_preamble(self, env, cimported_modules, code):
         code.putln('/* Generated by Pyrex %s on %s */' % (
@@ -200,6 +204,8 @@ class ModuleNode(Node, BlockNode):
         code.putln("#ifndef PY_LONG_LONG")
         code.putln("  #define PY_LONG_LONG LONG_LONG")
         code.putln("#endif")
+        self.generate_extern_c_macro_definition(code)
+        code.putln("%s double pow(double, double);" % Naming.extern_c_macro)
         self.generate_includes(env, cimported_modules, code)
         #for filename in env.include_files:
         #	code.putln('#include "%s"' % filename)
@@ -214,11 +220,19 @@ class ModuleNode(Node, BlockNode):
         code.putln('static PyObject *%s;' % Naming.builtins_cname)
         code.putln('static int %s;' % Naming.lineno_cname)
         code.putln('static char *%s;' % Naming.filename_cname)
-        code.putln('staticforward char **%s;' % Naming.filetable_cname)
+        code.putln('static char **%s;' % Naming.filetable_cname)
         if env.doc:
             code.putln('')
             code.putln('static char %s[] = "%s";' % (env.doc_cname, env.doc))
     
+    def generate_extern_c_macro_definition(self, code):
+        name = Naming.extern_c_macro
+        code.putln("#ifdef __cplusplus")
+        code.putln('#define %s extern "C"' % name)
+        code.putln("#else")
+        code.putln("#define %s extern" % name)
+        code.putln("#endif")
+
     def generate_includes(self, env, cimported_modules, code):
         includes = env.include_files[:]
         for module in cimported_modules:
@@ -241,15 +255,13 @@ class ModuleNode(Node, BlockNode):
             # Some C compilers don't like an empty array
             code.putln("0")
         code.putln("};")
-        code.putln("statichere char **%s = %s;" % 
-            (Naming.filetable_cname, Naming.filenames_cname))
     
-    def generate_declarations_for_module(self, env, code):
+    def generate_declarations_for_module(self, env, code, definition):
         code.putln("")
         code.putln("/* Declarations from %s */" % env.qualified_name)
         self.generate_type_predeclarations(env, code)
         self.generate_type_definitions(env, code)
-        self.generate_global_declarations(env, code)
+        self.generate_global_declarations(env, code, definition)
         self.generate_cfunction_predeclarations(env, code)
 
     def generate_type_predeclarations(self, env, code):
@@ -329,11 +341,17 @@ class ModuleNode(Node, BlockNode):
         name = entry.type.typeobj_cname
         if name:
             if entry.visibility == 'extern' and not entry.in_cinclude:
-                code.putln("extern DL_IMPORT(PyTypeObject) %s;" % name)
+                code.putln("%s DL_IMPORT(PyTypeObject) %s;" % (
+                    Naming.extern_c_macro,
+                    name))
             elif entry.visibility == 'public':
-                code.putln("DL_EXPORT(PyTypeObject) %s;" % name)
-            else:
-                code.putln("staticforward PyTypeObject %s;" % name)
+                #code.putln("DL_EXPORT(PyTypeObject) %s;" % name)
+                code.putln("%s DL_EXPORT(PyTypeObject) %s;" % (
+                    Naming.extern_c_macro,
+                    name))
+            # ??? Do we really need the rest of this? ???
+            #else:
+            #	code.putln("staticforward PyTypeObject %s;" % name)
     
     def generate_exttype_vtable_struct(self, entry, code):
         # Generate struct declaration for an extension type's vtable.
@@ -393,13 +411,13 @@ class ModuleNode(Node, BlockNode):
                     attr.type.declaration_code(attr.cname))
         code.putln(footer)
 
-    def generate_global_declarations(self, env, code):
+    def generate_global_declarations(self, env, code, definition):
         code.putln("")
         for entry in env.c_class_entries:
             code.putln("static PyTypeObject *%s = 0;" % 
                 entry.type.typeptr_cname)
         code.put_var_declarations(env.var_entries, static = 1, 
-            dll_linkage = "DL_EXPORT")
+            dll_linkage = "DL_EXPORT", definition = definition)
         code.put_var_declarations(env.default_entries, static = 1)
     
     def generate_cfunction_predeclarations(self, env, code):
@@ -412,7 +430,7 @@ class ModuleNode(Node, BlockNode):
                 header = entry.type.declaration_code(entry.cname, 
                     dll_linkage = dll_linkage)
                 if entry.visibility <> 'private':
-                    storage_class = ""
+                    storage_class = "%s " % Naming.extern_c_macro
                 else:
                     storage_class = "static "
                 code.putln("%s%s; /*proto*/" % (
@@ -420,7 +438,7 @@ class ModuleNode(Node, BlockNode):
                     header))
     
     def generate_typeobj_definitions(self, env, code):
-        modname = env.module_name
+        full_module_name = env.qualified_name
         for entry in env.c_class_entries:
             #print "generate_typeobj_definitions:", entry.name
             #print "...visibility =", entry.visibility
@@ -451,7 +469,7 @@ class ModuleNode(Node, BlockNode):
                     self.generate_method_table(scope, code)
                     self.generate_member_table(scope, code)
                     self.generate_getset_table(scope, code)
-                    self.generate_typeobj_definition(modname, entry, code)
+                    self.generate_typeobj_definition(full_module_name, entry, code)
     
     def generate_exttype_vtable(self, scope, code):
         # Generate the definition of an extension type's vtable.
@@ -484,9 +502,9 @@ class ModuleNode(Node, BlockNode):
         self.generate_self_cast(scope, code)
         type = scope.parent_type
         if type.vtabslot_cname:
-            code.putln("p->%s = (struct %s *)%s;" % (
-                type.vtabslot_cname,
+            code.putln("*(struct %s **)&p->%s = %s;" % (
                 type.vtabstruct_cname,
+                type.vtabslot_cname,
                 type.vtabptr_cname))
         for entry in scope.var_entries:
             if entry.type.is_pyobject:
@@ -559,7 +577,7 @@ class ModuleNode(Node, BlockNode):
         self.generate_self_cast(scope, code)
         if base_type:
             code.putln(
-                    "%s->tp_traverse(o, v, a);" %
+                    "e = %s->tp_traverse(o, v, a); if (e) return e;" %
                         base_type.typeptr_cname)
         for entry in scope.var_entries:
             if entry.type.is_pyobject:
@@ -944,7 +962,8 @@ class ModuleNode(Node, BlockNode):
         if entry.visibility == 'public':
             header = "DL_EXPORT(PyTypeObject) %s = {"
         else:
-            header = "statichere PyTypeObject %s = {"
+            #header = "statichere PyTypeObject %s = {"
+            header = "PyTypeObject %s = {"
         #code.putln(header % scope.parent_type.typeobj_cname)
         code.putln(header % type.typeobj_cname)
         code.putln(
@@ -1063,27 +1082,43 @@ class ModuleNode(Node, BlockNode):
             code.putln(
                 "};")
     
+    def generate_filename_init_prototype(self, code):
+        code.putln("");
+        code.putln("static void %s(void); /*proto*/" % Naming.fileinit_cname)
+
     def generate_module_init_func(self, imported_modules, env, code):
         code.putln("")
-        header = "DL_EXPORT(void) init%s(void)" % env.module_name
+        header = "PyMODINIT_FUNC init%s(void)" % env.module_name
         code.putln("%s; /*proto*/" % header)
         code.putln("%s {" % header)
         code.put_var_declarations(env.temp_entries)
+        #code.putln("/*--- Libary function declarations ---*/")
         env.generate_library_function_declarations(code)
+        self.generate_filename_init_call(code)
+        #code.putln("/*--- Module creation code ---*/")
         self.generate_module_creation_code(env, code)
+        #code.putln("/*--- Intern code ---*/")
         self.generate_intern_code(env, code)
+        #code.putln("/*--- String init code ---*/")
         self.generate_string_init_code(env, code)
+        #code.putln("/*--- Global init code ---*/")
         self.generate_global_init_code(env, code)
+        #code.putln("/*--- Type import code ---*/")
         for module in imported_modules:
             self.generate_type_import_code_for_module(module, env, code)
+        #code.putln("/*--- Type init code ---*/")
         self.generate_type_init_code(env, code)
+        #code.putln("/*--- Execution code ---*/")
         self.body.generate_execution_code(code)
         code.putln("return;")
         code.put_label(code.error_label)
         code.put_var_xdecrefs(env.temp_entries)
-        code.putln('__Pyx_AddTraceback("%s");' % (env.module_name))
+        code.putln('__Pyx_AddTraceback("%s");' % (env.qualified_name))
         env.use_utility_code(traceback_utility_code)
         code.putln('}')
+    
+    def generate_filename_init_call(self, code):
+        code.putln("%s();" % Naming.fileinit_cname)
     
     def generate_module_creation_code(self, env, code):
         # Generate code to create the module object and
@@ -1214,6 +1249,17 @@ class ModuleNode(Node, BlockNode):
                         scope.class_name,
                         typeobj_cname,
                         code.error_goto(entry.pos)))
+                weakref_entry = scope.lookup_here("__weakref__")
+                if weakref_entry:
+                    if weakref_entry.type is py_object_type:
+                        tp_weaklistoffset = "%s.tp_weaklistoffset" % typeobj_cname
+                        code.putln("if (%s == 0) %s = offsetof(struct %s, %s);" % (
+                            tp_weaklistoffset,
+                            tp_weaklistoffset,
+                            type.objstruct_cname,
+                            weakref_entry.cname))
+                    else:
+                        error(weakref_entry.pos, "__weakref__ slot must be of type 'object'")
     
     def generate_exttype_vtable_init_code(self, entry, code):
         # Generate code to initialise the C method table of an
@@ -1231,10 +1277,9 @@ class ModuleNode(Node, BlockNode):
                         Naming.obj_base_cname,
                         type.base_type.vtabptr_cname))
             for meth_entry in type.scope.cfunc_entries:
-                #if not meth_entry.is_inherited:
                 if meth_entry.func_cname:
                     code.putln(
-                        "%s.%s = (void *)%s;" % (
+                        "*(void **)&%s.%s = (void *)%s;" % (
                             type.vtable_cname,
                             meth_entry.cname,
                             meth_entry.func_cname))
@@ -1251,6 +1296,11 @@ class ModuleNode(Node, BlockNode):
     def generate_utility_functions(self, env, code):
         code.putln("")
         code.putln("/* Runtime support code */")
+        code.putln("")
+        code.putln("static void %s(void) {" % Naming.fileinit_cname)
+        code.putln("%s = %s;" % 
+            (Naming.filetable_cname, Naming.filenames_cname))
+        code.putln("}")
         for utility_code in env.utility_code_used:
             code.put(utility_code)
 
@@ -1362,7 +1412,7 @@ class CArrayDeclaratorNode(CDeclaratorNode):
             if not self.dimension.type.is_int:
                 error(self.dimension.pos, "Array dimension not integer")
             #size = self.dimension.value
-            size = self.dimension.result
+            size = self.dimension.result_code
         else:
             size = None
         if not base_type.is_complete():
@@ -1409,7 +1459,7 @@ class CFuncDeclaratorNode(CDeclaratorNode):
         else:
             if self.exception_value:
                 self.exception_value.analyse_const_expression(env)
-                exc_val = self.exception_value.result
+                exc_val = self.exception_value.result_code
                 if not return_type.assignable_from(self.exception_value.type):
                     error(self.exception_value.pos,
                         "Exception value incompatible with function return type")
@@ -1593,7 +1643,7 @@ class CEnumDefItemNode(StatNode):
     def analyse_declarations(self, env, enum_entry):
         if self.value:
             self.value.analyse_const_expression(env)
-            value = self.value.result
+            value = self.value.result_code
         else:
             value = self.name
         entry = env.declare_const(self.name, enum_entry.type, 
@@ -1684,12 +1734,11 @@ class FuncDefNode(StatNode, BlockNode):
         # ----- Default return value
         code.putln("")
         if self.return_type.is_pyobject:
-            if self.return_type.is_extension_type:
-                cast = "(PyObject *)"
-            else:
-                cast = None
+            #if self.return_type.is_extension_type:
+            #	lhs = "(PyObject *)%s" % Naming.retval_cname
+            #else:
             lhs = Naming.retval_cname
-            code.put_init_to_py_none(cast, lhs)
+            code.put_init_to_py_none(lhs, self.return_type)
         else:
             val = self.return_type.default_value
             if val:
@@ -1721,10 +1770,10 @@ class FuncDefNode(StatNode, BlockNode):
         self.put_stararg_decrefs(code)
         if not self.return_type.is_void:
             retval_code = Naming.retval_cname
-            if self.return_type.is_extension_type:
-                retval_code = "((%s)%s) " % (
-                    self.return_type.declaration_code(""),
-                    retval_code)
+            #if self.return_type.is_extension_type:
+            #	retval_code = "((%s)%s) " % (
+            #		self.return_type.declaration_code(""),
+            #		retval_code)
             code.putln("return %s;" % retval_code)
         code.putln("}")
     
@@ -1806,7 +1855,7 @@ class CFuncDefNode(FuncDefNode):
         header = self.return_type.declaration_code(entity,
             dll_linkage = dll_linkage)
         if self.visibility <> 'private':
-            storage_class = ""
+            storage_class = "%s " % Naming.extern_c_macro
         else:
             storage_class = "static "
         code.putln("%s%s {" % (
@@ -2230,11 +2279,11 @@ class DefNode(FuncDefNode):
                 code.putln(
                     "%s = %s;" % (
                         arg.default_entry.cname,
-                        default.result))
+                        default.result_as(arg.default_entry.type)))
                 if default.is_temp and default.type.is_pyobject:
                     code.putln(
                         "%s = 0;" %
-                            default.result)
+                            default.result_code)
         # For Python class methods, create and store function object
         if self.assmt:
             self.assmt.generate_execution_code(code)
@@ -2285,8 +2334,8 @@ class PyClassDefNode(StatNode, BlockNode):
         self.classobj.analyse_expressions(env)
         genv = env.global_scope()
         cenv = PyClassScope(name = self.name, outer_scope = genv)
-        cenv.class_dict_cname = self.dict.result
-        cenv.class_obj_cname = self.classobj.result
+        cenv.class_dict_cname = self.dict.result_code
+        cenv.class_obj_cname = self.classobj.result_code
         self.scope = cenv
         self.body.analyse_declarations(cenv)
         self.body.analyse_expressions(cenv)
@@ -2294,7 +2343,7 @@ class PyClassDefNode(StatNode, BlockNode):
         self.dict.release_temp(env)
         self.classobj.release_temp(env)
         self.target.release_target_temp(env)
-        env.recycle_pending_temps()
+        #env.recycle_pending_temps()
     
     def generate_function_definitions(self, env, code):
         self.generate_py_string_decls(self.scope, code)
@@ -2439,12 +2488,12 @@ class ExprStatNode(StatNode):
     def analyse_expressions(self, env):
         self.expr.analyse_expressions(env)
         self.expr.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
     
     def generate_execution_code(self, code):
         self.expr.generate_evaluation_code(code)
-        if not self.expr.is_temp and self.expr.result:
-            code.putln("%s;" % self.expr.result)
+        if not self.expr.is_temp and self.expr.result_code:
+            code.putln("%s;" % self.expr.result_code)
         self.expr.generate_disposal_code(code)
 
 
@@ -2489,15 +2538,6 @@ class SingleAssignmentNode(AssignmentNode):
         self.lhs.allocate_target_temps(env)
         self.lhs.release_target_temp(env)
         self.rhs.release_temp(env)		
-    
-#	def analyse_assignment(self, env, lhs, rhs):
-#		# Returns coerced RHS.
-#		rhs.analyse_types(env)
-#		lhs.analyse_target_types(env)
-#		rhs = rhs.coerce_to(lhs.type, env)
-#		rhs.allocate_temps(env)
-#		lhs.allocate_target_temps(env)
-#		return rhs
 
     def generate_rhs_evaluation_code(self, code):
         self.rhs.generate_evaluation_code(code)
@@ -2627,7 +2667,7 @@ class PrintStatNode(StatNode):
             arg.allocate_temps(env)
             arg.release_temp(env)
             self.args[i] = arg
-            env.recycle_pending_temps() # TEMPORARY
+            #env.recycle_pending_temps() # TEMPORARY
         env.use_utility_code(printing_utility_code)
     
     def generate_execution_code(self, code):
@@ -2635,7 +2675,7 @@ class PrintStatNode(StatNode):
             arg.generate_evaluation_code(code)
             code.putln(
                 "if (__Pyx_PrintItem(%s) < 0) %s" % (
-                    arg.result,
+                    arg.py_result(),
                     code.error_goto(self.pos)))
             arg.generate_disposal_code(code)
         if not self.ends_with_comma:
@@ -2658,7 +2698,7 @@ class DelStatNode(StatNode):
             arg.analyse_target_expression(env)
             if not arg.type.is_pyobject:
                 error(arg.pos, "Deletion of non-Python object")
-            env.recycle_pending_temps() # TEMPORARY
+            #env.recycle_pending_temps() # TEMPORARY
     
     def generate_execution_code(self, code):
         for arg in self.args:
@@ -2712,10 +2752,12 @@ class ReturnStatNode(StatNode):
     #
     #  value         ExprNode or None
     #  return_type   PyrexType
+    #  temps_in_use  [Entry]            Temps in use at time of return
     
     def analyse_expressions(self, env):
         return_type = env.return_type
         self.return_type = return_type
+        self.temps_in_use = env.temps_in_use()
         if not return_type:
             error(self.pos, "Return not inside a function body")
             return
@@ -2738,26 +2780,19 @@ class ReturnStatNode(StatNode):
         if not self.return_type:
             # error reported earlier
             return
+        for entry in self.temps_in_use:
+            code.put_var_decref_clear(entry)
         if self.value:
             self.value.generate_evaluation_code(code)
-            if self.value.type.is_pyobject and not self.value.is_temp:
-                code.put_incref(self.value.result, self.value.type)
-            if self.return_type.is_extension_type:
-                cast = "(%s)" % self.return_type.declaration_code("")
-            else:
-                cast = ""
+            self.value.make_owned_reference(code)
             code.putln(
-                "%s = %s%s;" % (
+                "%s = %s;" % (
                     Naming.retval_cname,
-                    cast,
-                    self.value.result))
+                    self.value.result_as(self.return_type)))
             self.value.generate_post_assignment_code(code)
         else:
             if self.return_type.is_pyobject:
-                code.putln(
-                    "%s = Py_None; Py_INCREF(%s);" % (
-                        Naming.retval_cname,
-                        Naming.retval_cname))
+                code.put_init_to_py_none(Naming.retval_cname, self.return_type)
             elif self.return_type.is_returncode:
                 code.putln(
                     "%s = %s;" % (
@@ -2794,7 +2829,7 @@ class RaiseStatNode(StatNode):
             self.exc_value.release_temp(env)
         if self.exc_tb:
             self.exc_tb.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
         if not (self.exc_type or self.exc_value or self.exc_tb):
             env.use_utility_code(reraise_utility_code)
         else:
@@ -2803,17 +2838,17 @@ class RaiseStatNode(StatNode):
     def generate_execution_code(self, code):
         if self.exc_type:
             self.exc_type.generate_evaluation_code(code)
-            type_code = self.exc_type.result
+            type_code = self.exc_type.py_result()
         else:
             type_code = 0
         if self.exc_value:
             self.exc_value.generate_evaluation_code(code)
-            value_code = self.exc_value.result
+            value_code = self.exc_value.py_result()
         else:
             value_code = "0"
         if self.exc_tb:
             self.exc_tb.generate_evaluation_code(code)
-            tb_code = self.exc_tb.result
+            tb_code = self.exc_tb.py_result()
         else:
             tb_code = "0"
         if self.exc_type or self.exc_value or self.exc_tb:
@@ -2850,7 +2885,7 @@ class AssertStatNode(StatNode):
         self.cond.release_temp(env)
         if self.value:
             self.value.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
     
     def generate_execution_code(self, code):
         self.cond.generate_evaluation_code(code)
@@ -2858,11 +2893,11 @@ class AssertStatNode(StatNode):
             self.value.generate_evaluation_code(code)
         code.putln(
             "if (!%s) {" %
-                self.cond.result)
+                self.cond.result_code)
         if self.value:
             code.putln(
                 "PyErr_SetObject(PyExc_AssertionError, %s);" %
-                    self.value.result)
+                    self.value.py_result())
         else:
             code.putln(
                 "PyErr_SetNone(PyExc_AssertionError);")
@@ -2918,14 +2953,14 @@ class IfClauseNode(Node):
         self.condition = \
             self.condition.analyse_temp_boolean_expression(env)
         self.condition.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
         self.body.analyse_expressions(env)
     
     def generate_execution_code(self, code, end_label):
         self.condition.generate_evaluation_code(code)
         code.putln(
             "if (%s) {" %
-                self.condition.result)
+                self.condition.result_code)
         self.body.generate_execution_code(code)
         code.putln(
             "goto %s;" %
@@ -2949,7 +2984,7 @@ class WhileStatNode(StatNode):
         self.condition = \
             self.condition.analyse_temp_boolean_expression(env)
         self.condition.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
         self.body.analyse_expressions(env)
         if self.else_clause:
             self.else_clause.analyse_expressions(env)
@@ -2962,7 +2997,7 @@ class WhileStatNode(StatNode):
         self.condition.generate_evaluation_code(code)
         code.putln(
             "if (!%s) break;" %
-                self.condition.result)
+                self.condition.result_code)
         self.body.generate_execution_code(code)
         code.putln("}")
         break_label = code.break_label
@@ -2999,13 +3034,13 @@ class ForInStatNode(StatNode):
         self.target.allocate_target_temps(env)
         self.item.release_temp(env)
         self.target.release_target_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
         self.body.analyse_expressions(env)
-        self.iterator.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
         if self.else_clause:
             self.else_clause.analyse_expressions(env)
-    
+        self.iterator.release_temp(env)
+
     def generate_execution_code(self, code):
         old_loop_labels = code.new_loop_labels()
         self.iterator.generate_evaluation_code(code)
@@ -3070,7 +3105,7 @@ class ForFromStatNode(StatNode):
             c_loopvar_node = ExprNodes.TempNode(self.pos, 
                 PyrexTypes.c_long_type, env)
             c_loopvar_node.allocate_temps(env)
-            self.loopvar_name = c_loopvar_node.result
+            self.loopvar_name = c_loopvar_node.result_code
             self.py_loopvar_node = \
                 ExprNodes.CloneNode(c_loopvar_node).coerce_to_pyobject(env)
         self.bound1.allocate_temps(env)
@@ -3088,7 +3123,7 @@ class ForFromStatNode(StatNode):
             self.else_clause.analyse_expressions(env)
         self.bound1.release_temp(env)
         self.bound2.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
             
     def generate_execution_code(self, code):
         old_loop_labels = code.new_loop_labels()
@@ -3098,8 +3133,8 @@ class ForFromStatNode(StatNode):
         code.putln(
             "for (%s = %s%s; %s %s %s; %s%s) {" % (
                 self.loopvar_name,
-                self.bound1.result, offset,
-                self.loopvar_name, self.relation2, self.bound2.result,
+                self.bound1.result_code, offset,
+                self.loopvar_name, self.relation2, self.bound2.result_code,
                 incop, self.loopvar_name))
         if self.py_loopvar_node:
             self.py_loopvar_node.generate_evaluation_code(code)
@@ -3217,7 +3252,7 @@ class ExceptClauseNode(Node):
         self.exc_value.release_temp(env)
         if self.target:
             self.target.release_target_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
         self.body.analyse_expressions(env)
     
     def generate_handling_code(self, code, end_label):
@@ -3227,7 +3262,7 @@ class ExceptClauseNode(Node):
             code.putln(
                 "%s = PyErr_ExceptionMatches(%s);" % (
                     self.match_flag,
-                    self.pattern.result))
+                    self.pattern.py_result()))
             self.pattern.generate_disposal_code(code)
             code.putln(
                 "if (%s) {" %
@@ -3471,7 +3506,7 @@ class FromImportStatNode(StatNode):
             target.release_temp(env)
         self.module.release_temp(env)
         self.item.release_temp(env)
-        env.recycle_pending_temps() # TEMPORARY
+        #env.recycle_pending_temps() # TEMPORARY
     
     def generate_execution_code(self, code):
         self.module.generate_evaluation_code(code)
@@ -3479,20 +3514,20 @@ class FromImportStatNode(StatNode):
             for cname, target in self.interned_items:
                 code.putln(
                     '%s = PyObject_GetAttr(%s, %s); if (!%s) %s' % (
-                        self.item.result, 
-                        self.module.result,
+                        self.item.result_code, 
+                        self.module.py_result(),
                         cname,
-                        self.item.result,
+                        self.item.result_code,
                         code.error_goto(self.pos)))
                 target.generate_assignment_code(self.item, code)
         else:
             for name, target in self.items:
                 code.putln(
                     '%s = PyObject_GetAttrString(%s, "%s"); if (!%s) %s' % (
-                        self.item.result, 
-                        self.module.result,
+                        self.item.result_code, 
+                        self.module.py_result(),
                         name,
-                        self.item.result,
+                        self.item.result_code,
                         code.error_goto(self.pos)))
                 target.generate_assignment_code(self.item, code)
         self.module.generate_disposal_code(code)

@@ -21,7 +21,6 @@ plex_version = getattr(Plex, '_version', None)
 
 debug_scanner = 0
 trace_scanner = 0
-#scanner_dump_file = open("Lexicon_dump.txt", "w")
 scanner_debug_flags = 0
 scanner_dump_file = None
 binary_lexicon_pickle = 1
@@ -39,7 +38,7 @@ def hash_source_file(path):
     import md5
     try:
         try:
-            f = open(path)
+            f = open(path, "rU")
             text = f.read()
         except IOError, e:
             print "Unable to hash scanner source file (%s)" % e
@@ -150,11 +149,6 @@ class Method:
     
     def __call__(self, stream, text):
         return getattr(stream, self.name)(text)
-        
-
-#def make_lexicon():
-#	import Lexicon
-#	return Lexicon.lexicon
 
 #------------------------------------------------------------------
 

@@ -35,8 +35,8 @@ class PyrexType:
     #    of this type, given a code fragment for the entity.
     #    * If for_display, this is for reading by a human in an error
     #      message; otherwise it must be valid C code.
-    #    * If dll_linkage is not None, it must be 'DL_IMPORT' or
-    #      'DL_EXPORT', and will be added to the base type part of
+    #    * If dll_linkage is not None, it must be 'DL_EXPORT' or
+    #      'DL_IMPORT', and will be added to the base type part of
     #      the declaration.
     #    * If pyrex = 1, this is for use in a 'cdef extern'
     #      statement of a Pyrex include file.
@@ -111,6 +111,9 @@ class PyrexType:
         # A type is incomplete if it is an unsized array,
         # a struct whose attributes are not defined, etc.
         return 1
+    
+    def cast_code(self, expr_code):
+        return "((%s)%s)" % (self.declaration_code(""), expr_code)
 
 
 class CTypedefType:
@@ -289,11 +292,15 @@ class CNumericType(CType):
     is_numeric = 1
     default_value = "0"
     
-    parsetuple_formats = "chilLfd?" # rank -> format
+    parsetuple_formats = ( # rank -> format
+        "?HIkK???", # unsigned
+        "chilLfd?", # signed
+    )
     
-    def __init__(self, rank, pymemberdef_typecode = None):
+    def __init__(self, rank, signed = 1, pymemberdef_typecode = None):
         self.rank = rank
-        ptf = self.parsetuple_formats[rank]
+        self.signed = signed
+        ptf = self.parsetuple_formats[signed][rank]
         if ptf == '?':
             ptf = None
         self.parsetuple_format = ptf
@@ -329,36 +336,43 @@ class CIntType(CNumericType):
     from_py_function = "PyInt_AsLong"
 
     def __init__(self, rank, signed, pymemberdef_typecode = None, is_returncode = 0):
-        CNumericType.__init__(self, rank, pymemberdef_typecode)
-        self.signed = signed
+        CNumericType.__init__(self, rank, signed, pymemberdef_typecode)
         self.is_returncode = is_returncode
+
+
+class CUIntType(CIntType):
+
+    to_py_function = "PyLong_FromUnsignedLong"
+    from_py_function = "PyInt_AsUnsignedLongMask"
 
 
 class CULongType(CIntType):
 
     to_py_function = "PyLong_FromUnsignedLong"
-    from_py_function = "PyLong_AsUnsignedLong"
+    from_py_function = "PyInt_AsUnsignedLongMask"
 
 
 class CLongLongType(CIntType):
 
     to_py_function = "PyLong_FromLongLong"
-    from_py_function = "PyLong_AsLongLong"
+    from_py_function = "PyInt_AsUnsignedLongLongMask"
 
 
 class CULongLongType(CIntType):
 
     to_py_function = "PyLong_FromUnsignedLongLong"
-    from_py_function = "PyLong_AsUnsignedLongLong"
+    from_py_function = "PyInt_AsUnsignedLongLongMask"
 
 
 class CFloatType(CNumericType):
 
     is_float = 1
-    signed = 1
     to_py_function = "PyFloat_FromDouble"
     from_py_function = "PyFloat_AsDouble"
-
+    
+    def __init__(self, rank, pymemberdef_typecode = None):
+        CNumericType.__init__(self, rank, 1, pymemberdef_typecode)
+    
 
 class CArrayType(CType):
     #  base_type     CType              Element type
@@ -423,6 +437,7 @@ class CPtrType(CType):
     
     def declaration_code(self, entity_code, 
             for_display = 0, dll_linkage = None, pyrex = 0):
+        #print "CPtrType.declaration_code: pointer to", self.base_type ###
         return self.base_type.declaration_code(
             "(*%s)" % entity_code,
             for_display, dll_linkage, pyrex)
@@ -521,7 +536,7 @@ class CFuncType(CType):
         if not arg_decl_code and not pyrex:
             arg_decl_code = "void"
         exc_clause = ""
-        if for_display:
+        if pyrex or for_display:
             if self.exception_value and self.exception_check:
                 exc_clause = " except? %s" % self.exception_value
             elif self.exception_value:
@@ -683,13 +698,13 @@ c_char_type =     CIntType(0, 1, "T_CHAR")
 c_short_type =    CIntType(1, 1, "T_SHORT")
 c_int_type =      CIntType(2, 1, "T_INT")
 c_long_type =     CIntType(3, 1, "T_LONG")
-c_longlong_type = CLongLongType(4, 1)
+c_longlong_type = CLongLongType(4, 1, "T_LONGLONG")
 
 c_uchar_type =     CIntType(0, 0, "T_UBYTE")
 c_ushort_type =    CIntType(1, 0, "T_USHORT")
-c_uint_type =      CIntType(2, 0, "T_UINT")
+c_uint_type =      CUIntType(2, 0, "T_UINT")
 c_ulong_type =     CULongType(3, 0, "T_ULONG")
-c_ulonglong_type = CULongLongType(4, 0)
+c_ulonglong_type = CULongLongType(4, 0, "T_ULONGLONG")
 
 c_float_type =      CFloatType(5, "T_FLOAT")
 c_double_type =     CFloatType(6, "T_DOUBLE")
@@ -788,3 +803,19 @@ def public_decl(base, dll_linkage):
     else:
         return base
 
+def same_type(type1, type2):
+    return type1.same_as(type2)
+    
+def assignable_from(type1, type2):
+    return type1.assignable_from(type2)
+
+def typecast(to_type, from_type, expr_code):
+    #  Return expr_code cast to a C type which can be
+    #  assigned to to_type, assuming its existing C type
+    #  is from_type.
+    if to_type is from_type or \
+        (not to_type.is_pyobject and assignable_from(to_type, from_type)):
+            return expr_code
+    else:
+        #print "typecast: to", to_type, "from", from_type ###
+        return to_type.cast_code(expr_code)
