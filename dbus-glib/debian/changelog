@@ -10,6 +10,7 @@ dbus-glib (0.72-osso1) experimental; urgency=low
   * Added patch to allow compiling with -Wshadow without warnings.
   * Ported patch for adding NULL guards and fix for memory leak to
     dbus-gproxy.
+  * Added patch for fixing a rare failing assert in dbus-gproxy.
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Nov 2006 15:13:51 +0200
 
