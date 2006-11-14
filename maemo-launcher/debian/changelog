@@ -1,6 +1,8 @@
 maemo-launcher (0.20~-1) UNRELEASED; urgency=low
 
   * New Upstream Release.
+    - Unprotect non-essential user processes from the OOM killer.
+      (Closes: #46702@Nokia)
   * Make the hildon enabled booster link against even more libraries, so
     that we can "preload" and share them across the childs. Added to
     Build-Depends gtkhtml-dev, libosso-dev, libossomime-dev, libosso-help-dev,
