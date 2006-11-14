@@ -1,4 +1,5 @@
 debian/tmp/var/run/dbus
+debian/tmp/etc/dbus-1/session.conf
 debian/tmp/etc/dbus-1/system.conf
 debian/tmp/etc/dbus-1/system.d
 debian/tmp/usr/bin/dbus-daemon
