@@ -11,6 +11,8 @@ dbus-glib (0.72-osso1) experimental; urgency=low
   * Ported patch for adding NULL guards and fix for memory leak to
     dbus-gproxy.
   * Added patch for fixing a rare failing assert in dbus-gproxy.
+  * Added package for API documentation (should be changed to gtk-doc when
+    it does not segfault).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Nov 2006 15:13:51 +0200
 

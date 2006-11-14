@@ -41,3 +41,10 @@ Architecture: any
 Depends: libdbus-glib-1-2 (= ${Source-Version})
 Description: libdbus-glib-1-2 debug symbols
  libdbus-glib-1-2 debug symbols
+
+Package: libdbus-glib-1-doc
+Section: doc
+Priority: extra
+Architecture: all
+Description: libdbus-glib-1-2 API documentation
+ libdbus-glib-1-2 API documentation

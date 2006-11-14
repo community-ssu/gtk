@@ -17,8 +17,20 @@ DEB_DH_MAKESHLIBS_ARGS_ALL := -V
 
 DEB_DH_STRIP_ARGS := --dbg-package=libdbus-glib-1-2
 
+# this is needed because we patch Makefile.ams in the tarball
+makebuilddir/libdbus-glib-1-doc::
+	cd $(DEB_BUILDDIR); autoreconf
+
 common-configure-impl::
 	cp $(CURDIR)/debian/dbus-bus-introspect.xml $(DEB_BUILDDIR)/tools/
 
+doxygen-stamp:
+	cd $(DEB_BUILDDIR); doxygen Doxyfile
+	touch doxygen-stamp
+
+build/libdbus-glib-1-doc:: doxygen-stamp
+
 clean::
+	rm -f doxygen-stamp
+	rm -rf $(DEB_BUILDDIR)/doc/api
 	rm -f *.cdbs-config_list
