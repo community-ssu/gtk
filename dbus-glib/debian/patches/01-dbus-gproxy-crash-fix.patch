@@ -1,0 +1,13 @@
+Index: dbus/dbus-gproxy.c
+===================================================================
+--- dbus/dbus-gproxy.c	(.../ags/dbus/0.61-osso2)	(revision 2887)
++++ dbus/dbus-gproxy.c	(.../runk/dbus)	(revision 2887)
+@@ -493,6 +493,8 @@
+   const DBusGProxyNameOwnerInfo *info = a;
+   const char *name = b;
+ 
++  if (info == NULL || info->name == NULL)
++    return 1;
+   return strcmp (info->name, name);
+ }
+ 
