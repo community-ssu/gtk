@@ -7,7 +7,7 @@ maemo-launcher (0.20~-1) UNRELEASED; urgency=low
     that we can "preload" and share them across the childs. Added to
     Build-Depends gtkhtml-dev, libosso-dev, libossomime-dev, libosso-help-dev,
     hildon-fm-dev, libhildonmenu-dev hildon-status-bar-lib-dev and
-    hildon-base-lib-dev.
+    hildon-base-lib-dev. (Closes: #17937@Nokia)
 
  -- Guillem Jover <guillem.jover@nokia.com>  Tue,  7 Nov 2006 17:19:26 +0200
 
