@@ -1,7 +1,6 @@
 
-                        Pygame Readme
-   Version 1.6
-   October 23, 2003 Python Game Development
+   Pygame Readme
+   Version 1.7.1 Python Game Development
    by Pete Shinners http://www.pygame.org
    pete@shinners.org
 
@@ -67,11 +66,12 @@
      Thanks to those sending in patches and fixes: Niki Spahiev, Gordon
    Tyler, Nathaniel Pryce, Dave Wallace, John Popplewell, Michael Urman,
    Andrew Straw, Michael Hudson, Ole Martin Bjoerndalen, Hervé Cauwelier,
-   James Mazer, Lalo Martins, Timothy Stranex
+   James Mazer, Lalo Martins, Timothy Stranex, Chad Lester, Matthias
+   Spiller, Bo Jangeborg, Dmitry Borisov
 
      And our bug hunters above and beyond: Angus, Guillaume Proux, Frank
    Raiser, Austin Henry, Kaweh Kazemi, Arturo Aldama, Mike Mulcheck, Rene
-   Dudfield, Michael Benfield
+   Dudfield, Michael Benfield, David Lau
 
    There's many more folks out there who've submitted helpful ideas, kept
    this project going, and basically made my life easer, Thanks!
@@ -91,7 +91,6 @@
      Numeric package for its multidimensional numeric arrays.
 
    Todo / Ideas (feel free to submit)
-     * unify more types/classes for python 2.2
      * transform.skew() function
      * transform.scroll() function
      * image filtering (colors,blurs,etc)
@@ -100,6 +99,10 @@
      * surfarrays should be able to do RGBA along with RGB
      * draw with transparancy
      * draw large sets of primitives with a single call
+     * drawing offsets, perhaps as subsurfaces
+     * new scale2x, scale3x, and scale4x from hiend3d
+     * switch Numeric to numarray (see docs on how to do both)
+     * audio resampling
 
    License
 

@@ -17,6 +17,7 @@ NUMERIC = -I/usr/include/python2.0/Numeric
 
 
 
+
 #the following modules are optional. you will want to compile
 #everything you can, but you can ignore ones you don't have
 #dependencies for, just comment them out
@@ -25,10 +26,13 @@ imageext src/imageext.c $(SDL) $(IMAGE)
 font src/font.c $(SDL) $(FONT)
 mixer src/mixer.c $(SDL) $(MIXER)
 mixer_music src/music.c $(SDL) $(MIXER)
-movie src/movie.c $(SDL) $(SMPEG)
 surfarray src/surfarray.c $(SDL) $(NUMERIC)
 sndarray src/sndarray.c $(SDL) $(NUMERIC) $(MIXER)
+movie src/movie.c $(SDL) $(SMPEG)
 
+#experimental new movie movie. requires libavcodec and libavformat.
+#add any necessary compile flags to this line and uncomment.
+#movieext src/movie.c  src/ffmovie.c $(SDL) -lavcodec -lavformat
 
 
 #these modules are required for pygame to run. they only require
@@ -39,6 +43,7 @@ cdrom src/cdrom.c $(SDL)
 constants src/constants.c $(SDL)
 display src/display.c $(SDL)
 event src/event.c $(SDL)
+fastevent src/fastevent.c src/fastevents.c $(SDL)
 key src/key.c $(SDL)
 mouse src/mouse.c $(SDL)
 rect src/rect.c $(SDL)
@@ -49,6 +54,7 @@ time src/time.c $(SDL)
 joystick src/joystick.c $(SDL)
 draw src/draw.c $(SDL)
 image src/image.c $(SDL)
+overlay src/overlay.c $(SDL)
 transform src/transform.c src/rotozoom.c src/scale2x.c $(SDL)
 
 

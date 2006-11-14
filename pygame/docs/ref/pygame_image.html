@@ -18,28 +18,30 @@
 || <a href=pygame.html>pygame</a> || 
 <a href=pygame_cdrom.html>cdrom</a> || 
 <a href=pygame_constants.html>constants</a> || 
+<a href=pygame_cursor.html>cursor</a> || 
 <a href=pygame_display.html>display</a> || 
-<a href=pygame_draw.html>draw</a> || 
-<a href=pygame_event.html>event</a> ||<br>
-|| <a href=pygame_font.html>font</a> || 
+<a href=pygame_draw.html>draw</a> ||<br>
+|| <a href=pygame_event.html>event</a> || 
+<a href=pygame_font.html>font</a> || 
 <a href=pygame_image.html>image</a> || 
 <a href=pygame_joystick.html>joystick</a> || 
 <a href=pygame_key.html>key</a> || 
-<a href=pygame_mixer.html>mixer</a> || 
-<a href=pygame_mixer_music.html>mixer_music</a> ||<br>
-|| <a href=pygame_mouse.html>mouse</a> || 
+<a href=pygame_mixer.html>mixer</a> ||<br>
+|| <a href=pygame_mixer_music.html>mixer_music</a> || 
+<a href=pygame_mouse.html>mouse</a> || 
 <a href=pygame_movie.html>movie</a> || 
 <a href=pygame_sndarray.html>sndarray</a> || 
 <a href=pygame_surfarray.html>surfarray</a> || 
-<a href=pygame_time.html>time</a> || 
-<a href=pygame_transform.html>transform</a> ||<br>
+<a href=pygame_time.html>time</a> ||<br>
+|| <a href=pygame_transform.html>transform</a> ||<br>
 &nbsp;<br>|| <a href=CD.html>CD</a> || 
 <a href=Channel.html>Channel</a> || 
 <a href=Clock.html>Clock</a> || 
 <a href=Font.html>Font</a> || 
 <a href=Joystick.html>Joystick</a> || 
 <a href=Movie.html>Movie</a> ||<br>
-|| <a href=Rect.html>Rect</a> || 
+|| <a href=Overlay.html>Overlay</a> || 
+<a href=Rect.html>Rect</a> || 
 <a href=Sound.html>Sound</a> || 
 <a href=Surface.html>Surface</a> ||<br>
 &nbsp;<br>|| <a href=pygame_color.html>color</a> || 
@@ -51,7 +53,7 @@
 <br>
 <h2 align=center>pygame.image</h2>
 This module contains functions to transfer images in and out
-of Surfaces. At the minimum the included <a href=pygame_mixer_music.html#load>load()</a> function will
+of Surfaces. At the minimum the included <a href=#load>load()</a> function will
 support BMP files. If SDL_image is properly installed when
 pygame is installed, it will support all the formats included
 with SDL_image. You can call the <a href=#get_extended>get_extended()</a> function to test
@@ -64,6 +66,10 @@ function can only save OPENGL surfaces if pyopengl is available.
 <hr>
 
 <table>
+<tr><td><a href=#frombuffer>frombuffer</a></td><td> -
+create a surface from a python memory buffer</td></tr>
+
+
 <tr><td><a href=#fromstring>fromstring</a></td><td> -
 create a surface from a raw string buffer</td></tr>
 
@@ -88,6 +94,18 @@ create a raw string buffer of the surface data</td></tr>
 
 <hr>
 
+<a name=frombuffer><font size=+2><b>frombuffer
+</b></font><br><font size=+1><tt>
+pygame.image.frombuffer(string, size, format) -> Surface
+</tt></font><ul>
+This works like the <a href=#fromstring>fromstring()</a> method, but uses Python
+buffer objects. It is about 20 times faster than <a href=#fromstring>fromstring()</a>.
+Strings and memory maps are examples of buffers in Python.
+<br>&nbsp;<br>
+See the <a href=#fromstring>fromstring()</a> function for information about the size
+and format arguments.
+</ul><br>&nbsp;<br>
+
 <a name=fromstring><font size=+2><b>fromstring
 </b></font><br><font size=+1><tt>
 pygame.image.fromstring(string, size, format, flipped=0) -> Surface
@@ -95,6 +113,9 @@ pygame.image.fromstring(string, size, format, flipped=0) -> Surface
 This will create a new Surface from a copy of raw data in
 a string. This can be used to transfer images from other
 libraries like PIL's <u>fromstring()</u>. 
+<br>&nbsp;<br>
+In most cases you can use the <a href=#frombuffer>frombuffer()</a> which accepts strings
+and is about 20 times faster.
 <br>&nbsp;<br>
 The flipped argument should be set to true if the image in
 the string is.

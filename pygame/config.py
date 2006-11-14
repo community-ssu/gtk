@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.5
 
 """Quick tool to help setup the needed paths and flags
 in your Setup file. This will call the appropriate sub-config
@@ -17,12 +17,21 @@ cflags: extra compile flags
 
 import sys, os, shutil, string
 
+def is_msys_mingw():
+    if os.environ.has_key("MSYSTEM"):
+        if os.environ["MSYSTEM"] == "MINGW32":
+            return 1
+    return 0
 
 
-if sys.platform == 'win32':
+if sys.platform == 'win32' and not is_msys_mingw():
     print 'Using WINDOWS configuration...\n'
     import config_win
     CFG = config_win
+elif sys.platform == 'win32' and is_msys_mingw():
+    print 'Using WINDOWS mingw/msys configuration...\n'
+    import config_msys
+    CFG = config_msys
 elif sys.platform == 'darwin':
     print 'Using Darwin configuration...\n'
     import config_darwin
@@ -37,7 +46,6 @@ else:
 
 def confirm(message):
     "ask a yes/no question, return result"
-    return 1
     reply = raw_input('\n' + message + ' [y/N]:')
     if reply and string.lower(reply[0]) == 'y':
         return 1
@@ -106,9 +114,9 @@ def writesetupfile(deps, basepath):
 
 def main():
     if os.path.isfile('Setup'):
-        if confirm('Backup existing "Setup" file'):
+        if "-auto" in sys.argv or confirm('Backup existing "Setup" file'):
             shutil.copyfile('Setup', 'Setup.bak')
-    if os.path.isdir('build'):
+    if not "-auto" in sys.argv and os.path.isdir('build'):
         if confirm('Remove old build directory (force recompile)'):
             shutil.rmtree('build', 0)
 

@@ -53,6 +53,12 @@ void initconstants(void)
 
 	module = Py_InitModule3("constants", builtins, doc_pygame_constants_MODULE);
 
+	DEC_CONST(YV12_OVERLAY);
+	DEC_CONST(IYUV_OVERLAY);
+	DEC_CONST(YUY2_OVERLAY);
+	DEC_CONST(UYVY_OVERLAY);
+	DEC_CONST(YVYU_OVERLAY);
+
 	DEC_CONST(SWSURFACE);
 	DEC_CONST(HWSURFACE);
 	DEC_CONST(RESIZABLE);
@@ -96,6 +102,8 @@ void initconstants(void)
 	PyModule_AddIntConstant(module, "GL_MULTISAMPLESAMPLES", -1);
 #endif
 
+	DEC_CONSTN(TIMER_RESOLUTION);
+    
 	DEC_CONSTN(AUDIO_U8);
 	DEC_CONSTN(AUDIO_S8);
 	DEC_CONSTN(AUDIO_U16LSB);
@@ -120,11 +128,7 @@ void initconstants(void)
 	DEC_CONST(JOYBUTTONDOWN);
 	DEC_CONST(JOYBUTTONUP);
 	DEC_CONST(VIDEORESIZE);
-#if SDL_VERSIONNUM(1, 2, 2) <= SDL_VERSIONNUM(SDL_MAJOR_VERSION, SDL_MINOR_VERSION, SDL_PATCHLEVEL)
 	DEC_CONST(VIDEOEXPOSE);
-#else
-	PyModule_AddIntConstant(module, "VIDEOEXPOSE", 0);
-#endif
 	DEC_CONST(QUIT);
 	DEC_CONST(SYSWMEVENT);
 	DEC_CONST(USEREVENT);
@@ -322,6 +326,13 @@ void initconstants(void)
     /*DOC*/    "NOFRAME - no window decorations<br>\n"
     /*DOC*/ ;
 
+	/*DOC*/ static char doc_time[] =
+    /*DOC*/    "pygame.constants.time (constants)\n"
+    /*DOC*/    "These constants define the various time constants\n"
+    /*DOC*/    "\n"
+    /*DOC*/    "TIMER_RESOLUTION - minimum timer resolution in milliseconds<br>\n"
+    /*DOC*/    ;
+
     /*DOC*/ static char doc_events[] =
     /*DOC*/    "pygame.constants.events (constants)\n"
     /*DOC*/    "These constants define the various event types\n"
@@ -500,22 +511,5 @@ void initconstants(void)
     /*DOC*/    "KMOD_LCTRL, KMOD_RCTRL, KMOD_CTRL, KMOD_LALT, KMOD_RALT,<br>\n"
     /*DOC*/    "KMOD_ALT, KMOD_LMETA, KMOD_RMETA, KMOD_META, KMOD_NUM, KMOD_MODE<br>\n"
     /*DOC*/ ;
-
-    /*DOC*/ static char doc_zdeprecated[] =
-    /*DOC*/    "pygame.constants.zdepracated (constants)\n"
-    /*DOC*/    "The following constants are made available, but generally not needed\n"
-    /*DOC*/    "\n"
-    /*DOC*/    "The flags labeled as readonly should never be used,\n"
-    /*DOC*/    "except when comparing checking flags against Surface.get_flags().\n"
-    /*DOC*/    "\n"
-    /*DOC*/    "SWSURFACE - not really usable as a surface flag, equates to 0 and\n"
-    /*DOC*/    "is always default<br>\n"
-    /*DOC*/    "ANYFORMAT - creates a display with in best possible bit depth<br>\n"
-    /*DOC*/    "HWACCEL - surface is hardware accelerated, readonly<br>\n"
-    /*DOC*/    "SRCCOLORKEY- surface has a colorkey for blits, readonly<br>\n"
-    /*DOC*/    "SRCALPHA - surface has alpha enabled, readonly<br>\n"
-    /*DOC*/    "RLEACCELOK - surface is rle accelrated but uncompiled, readonly\n"
-    /*DOC*/ ;
-
 
 #endif

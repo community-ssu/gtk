@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python2.5
 
 """A simple starfield example. Note you can move the 'center' of
 the starfield by leftclicking in the window. This example show
@@ -42,6 +42,7 @@ def initialize_stars():
 def draw_stars(surface, stars, color):
 	"used to draw (and clear) the stars"
 	for vel, pos in stars:
+                pos = (int(pos[0]), int(pos[1]))
 		surface.set_at(pos, color)
 
 
@@ -62,7 +63,7 @@ def main():
 	#create our starfield
 	random.seed()
 	stars = initialize_stars()
-
+        clock = pygame.time.Clock()
 	#initialize and prepare screen
 	pygame.init()
 	screen = pygame.display.set_mode(WINSIZE)
@@ -84,7 +85,7 @@ def main():
 				break
 			elif e.type == MOUSEBUTTONDOWN and e.button == 1:
 				WINCENTER[:] = list(e.pos)
-
+                clock.tick(50)
 
 
 # if python says run, then we should run

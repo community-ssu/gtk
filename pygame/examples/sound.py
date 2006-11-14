@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 
 """extremely simple demonstration playing a soundfile
 and waiting for it to finish. you'll need the pygame.mixer

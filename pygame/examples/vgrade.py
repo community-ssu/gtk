@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 
 """This example demonstrates creating an image with Numeric
 python, and displaying that through SDL. You can look at the

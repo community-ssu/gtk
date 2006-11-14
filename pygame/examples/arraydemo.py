@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import os
 try:
     import pygame
@@ -16,7 +18,7 @@ print 'Press the "s" key to save the current image.'
 
 def surfdemo_show(array_img, name):
     "displays a surface, waits for user to continue"
-    screen = pygame.display.set_mode(array_img.shape[:2], 0, 16)
+    screen = pygame.display.set_mode(array_img.shape[:2], 0, 32)
     surfarray.blit_array(screen, array_img)
     pygame.display.flip()
     pygame.display.set_caption(name)

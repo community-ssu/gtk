@@ -26,6 +26,12 @@
 #define PYGAMEAPI_EVENT_INTERNAL
 #include "pygame.h"
 
+// FIXME: The system message code is only tested on windows, so only
+//          include it there for now.
+#ifdef WIN32
+#include <SDL_syswm.h>
+#endif
+
 
 /*this user event object is for safely passing
  *objects through the event queue.
@@ -104,7 +110,17 @@ static void user_event_cleanup(void)
 	}
 }
 
+static int PyEvent_FillUserEvent(PyEventObject *e, SDL_Event *event) {
+	UserEventObject *userobj = user_event_addobject(e->dict);
+	if(!userobj)
+		return -1;
 
+	event->type = e->type;
+	event->user.code = USEROBJECT_CHECK1;
+	event->user.data1 = (void*)USEROBJECT_CHECK2;
+	event->user.data2 = userobj;
+    return 0;
+}
 
 staticforward PyTypeObject PyEvent_Type;
 static PyObject* PyEvent_New(SDL_Event*);
@@ -283,6 +299,16 @@ static PyObject* dict_from_event(SDL_Event* event)
 	case SDL_VIDEORESIZE:
 		obj = Py_BuildValue("(ii)", event->resize.w, event->resize.h);
 		insobj(dict, "size", obj);
+		insobj(dict, "w", PyInt_FromLong(event->resize.w));
+		insobj(dict, "h", PyInt_FromLong(event->resize.h));
+		break;
+	case SDL_SYSWMEVENT:
+	        #ifdef WIN32
+		insobj(dict, "hwnd", PyInt_FromLong((long)(event-> syswm.msg->hwnd)));
+		insobj(dict, "msg", PyInt_FromLong(event-> syswm.msg->msg));
+		insobj(dict, "wparam", PyInt_FromLong(event-> syswm.msg->wParam));
+		insobj(dict, "lparam", PyInt_FromLong(event-> syswm.msg->lParam));
+		#endif
 		break;
 /* SDL_VIDEOEXPOSE and SDL_QUIT have no attributes */
 	}
@@ -609,7 +635,7 @@ static PyObject* get_grab(PyObject* self, PyObject* arg)
     /*DOC*/    "queue for too long, the system may decide your program has locked up.\n"
     /*DOC*/ ;
 
-static PyObject* pump(PyObject* self, PyObject* args)
+static PyObject* pygame_pump(PyObject* self, PyObject* args)
 {
 	if(!PyArg_ParseTuple(args, ""))
 		return NULL;
@@ -664,7 +690,7 @@ static PyObject* pygame_wait(PyObject* self, PyObject* args)
     /*DOC*/    "queue, this will return an event with type NOEVENT.\n"
     /*DOC*/ ;
 
-static PyObject* poll(PyObject* self, PyObject* args)
+static PyObject* pygame_poll(PyObject* self, PyObject* args)
 {
 	SDL_Event event;
 
@@ -879,21 +905,14 @@ static PyObject* event_post(PyObject* self, PyObject* args)
 {
 	PyEventObject* e;
 	SDL_Event event;
-	UserEventObject* userobj;
 
 	if(!PyArg_ParseTuple(args, "O!", &PyEvent_Type, &e))
 		return NULL;
 
 	VIDEO_INIT_CHECK();
 
-	userobj = user_event_addobject(e->dict);
-	if(!userobj)
+    if (PyEvent_FillUserEvent(e, &event))
 		return NULL;
-
-	event.type = e->type;
-	event.user.code = USEROBJECT_CHECK1;
-	event.user.data1 = (void*)USEROBJECT_CHECK2;
-	event.user.data2 = userobj;
 
 	if(SDL_PushEvent(&event) == -1)
 		return RAISE(PyExc_SDLError, "Event queue full");
@@ -1040,9 +1059,9 @@ static PyMethodDef event_builtins[] =
 	{ "set_grab", set_grab, 1, doc_set_grab },
 	{ "get_grab", get_grab, 1, doc_get_grab },
 
-	{ "pump", pump, 1, doc_pump },
+	{ "pump", pygame_pump, 1, doc_pump },
 	{ "wait", pygame_wait, 1, doc_wait },
-	{ "poll", poll, 1, doc_poll },
+	{ "poll", pygame_poll, 1, doc_poll },
 	{ "clear", event_clear, 1, doc_event_clear },
 	{ "get", event_get, 1, doc_event_get },
 	{ "peek", event_peek, 1, doc_peek },
@@ -1064,8 +1083,8 @@ static PyMethodDef event_builtins[] =
     /*DOC*/    "the display has not been initialized and a video mode not set,\n"
     /*DOC*/    "the event queue will not really work.\n"
     /*DOC*/    "\n"
-    /*DOC*/    "The queue is a stack of Event objects, there are a variety of\n"
-    /*DOC*/    "ways to access the data on the queue. From simply checking for\n"
+    /*DOC*/    "The queue is a regular queue of Event objects, there are a variety of\n"
+    /*DOC*/    "ways to access the events it contains. From simply checking for\n"
     /*DOC*/    "the existance of events, to grabbing them directly off the stack.\n"
     /*DOC*/    "\n"
     /*DOC*/    "All events have a type identifier. This event type is in between\n"
@@ -1111,6 +1130,8 @@ void initevent(void)
 	/* export the c api */
 	c_api[0] = &PyEvent_Type;
 	c_api[1] = PyEvent_New;
+	c_api[2] = PyEvent_New2;
+	c_api[3] = PyEvent_FillUserEvent;
 	apiobj = PyCObject_FromVoidPtr(c_api, NULL);
 	PyDict_SetItemString(dict, PYGAMEAPI_LOCAL_ENTRY, apiobj);
 	Py_DECREF(apiobj);

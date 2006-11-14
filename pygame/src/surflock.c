@@ -97,16 +97,11 @@ static int PySurface_Lock(PyObject* surfobj)
 	PySurfaceObject* surf = (PySurfaceObject*)surfobj;
 	if(surf->subsurface)
 		PySurface_Prep(surfobj);
-	if(!surf->lockcount && (surf->subsurface || !surf->surf->pixels))
+	if(SDL_LockSurface(surf->surf) == -1)
 	{
-		if(SDL_LockSurface(surf->surf) == -1)
-		{
-			PyErr_SetString(PyExc_RuntimeError, "error locking surface");
-			return 0;
-		}
-		surf->didlock = 1;
+		PyErr_SetString(PyExc_RuntimeError, "error locking surface");
+		return 0;
 	}
-	surf->lockcount++;
 	return 1;
 }
 
@@ -114,17 +109,7 @@ static int PySurface_Lock(PyObject* surfobj)
 static int PySurface_Unlock(PyObject* surfobj)
 {
 	PySurfaceObject* surf = (PySurfaceObject*)surfobj;
-	surf->lockcount--;
-	if(!surf->lockcount && surf->didlock)
-	{
-		surf->didlock = 0;
-		SDL_UnlockSurface(surf->surf);
-	}
-	if(surf->lockcount < 0)
-	{
-		PyErr_SetString(PyExc_RuntimeError, "attempt to unlock an unlocked surface");
-		return 0;
-	}
+	SDL_UnlockSurface(surf->surf);
 	if(surf->subsurface)
 		PySurface_Unprep(surfobj);
 	return 1;
@@ -148,17 +133,17 @@ static void lifelock_dealloc(PyObject* self)
 	PySurface_Unlock(lifelock->surface);
 	Py_DECREF(lifelock->surface);
 
-	PyObject_DEL(self);	
+	PyObject_DEL(self);
 }
 
 static PyTypeObject PyLifetimeLock_Type =
 {
 	PyObject_HEAD_INIT(NULL)
-	0,						     /*size*/
+	0,                           /*size*/
 	"SurfLifeLock",              /*name*/
 	sizeof(PyLifetimeLockObject),/*basic size*/
-	0,						     /*itemsize*/
-	lifelock_dealloc,		     /*dealloc*/
+	0,                           /*itemsize*/
+	lifelock_dealloc,            /*dealloc*/
 };
 
 

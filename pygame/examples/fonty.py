@@ -1,3 +1,4 @@
+#!/usr/bin/env python2.5
 
 """Here we load a .TTF font file, and display it in
 a basic pygame window. It demonstrates several of the

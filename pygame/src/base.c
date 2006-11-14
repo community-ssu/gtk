@@ -52,6 +52,7 @@ static void atexit_quit(void);
 
 
 static int PyGame_Video_AutoInit(void);
+static void PyGame_Video_AutoQuit(void);
 
 
 
@@ -164,7 +165,12 @@ static PyObject* init(PyObject* self,PyObject* args)
 
 
 	/*nice to initialize timer, so startup time will reflec init() time*/
-	SDL_Init(SDL_INIT_TIMER|SDL_INIT_NOPARACHUTE);
+	SDL_Init(
+#if defined(WITH_THREAD) && !defined(MS_WIN32) && defined(SDL_INIT_EVENTTHREAD)
+		SDL_INIT_EVENTTHREAD |
+#endif
+		SDL_INIT_TIMER |
+		SDL_INIT_NOPARACHUTE);
 
 
 /* initialize all pygame modules */
@@ -232,7 +238,25 @@ static void atexit_quit(void)
 		}
 	}
 	Py_DECREF(privatefuncs);
+
+        PyGame_Video_AutoQuit();
 	SDL_Quit();
+}
+
+
+    /*DOC*/ static char doc_get_sdl_version[] =
+    /*DOC*/    "pygame.get_sdl_version() -> (major, minor, patchlevel)\n"
+    /*DOC*/    "get the version of the linked SDL runtime\n"
+    /*DOC*/ ;
+
+static PyObject* get_sdl_version(PyObject* self, PyObject* args)
+{
+	const SDL_version *v;
+	if(!PyArg_ParseTuple(args, ""))
+		return NULL;
+	
+	v = SDL_Linked_Version();
+	return Py_BuildValue("iii", v->major, v->minor, v->patch);
 }
 
 
@@ -273,9 +297,17 @@ static int IntFromObj(PyObject* obj, int* val)
 	if(PyNumber_Check(obj))
 	{
 		if(!(intobj = PyNumber_Int(obj)))
+                {
+                        PyErr_Clear();
 			return 0;
+                }
 		*val = PyInt_AsLong(intobj);
 		Py_DECREF(intobj);
+                if(PyErr_Occurred())
+                {
+                    PyErr_Clear();
+                    return 0;
+                }
 		return 1;
 	}
 	return 0;
@@ -448,19 +480,37 @@ static int PyGame_Video_AutoInit(void)
 {
 	if(!SDL_WasInit(SDL_INIT_VIDEO))
 	{
-		int status = SDL_InitSubSystem(SDL_INIT_VIDEO);
+		int status;
+#if defined(__APPLE__) && defined(darwin)
+		PyObject *module;
+		PyObject *rval;
+		module = PyImport_ImportModule("pygame.macosx");
+		if (!module) {
+			return -1;
+		}
+		rval = PyObject_CallMethod(module, "init", "");
+		Py_DECREF(module);
+		if (!rval) {
+			return -1;
+		}
+		status = PyObject_IsTrue(rval);
+		Py_DECREF(rval);
+		if (status != 1) {
+			return 0;
+		}
+#endif
+		status = SDL_InitSubSystem(SDL_INIT_VIDEO);
 		if(status)
 			return 0;
 		SDL_EnableUNICODE(1);
-		PyGame_RegisterQuit(PyGame_Video_AutoQuit);
+                /*we special case the video quit to last now*/
+		/*PyGame_RegisterQuit(PyGame_Video_AutoQuit);*/
 	}
 	return 1;
 }
 
 
-#if PY_MAJOR_VERSION >= 2 && PY_MINOR_VERSION >= 2
-#define DO_CRASH_TRACEBACK
-
+#if 0
 #include<pystate.h>
 #include<compile.h>
 #include<frameobject.h>
@@ -506,18 +556,16 @@ static void print_traceback(PyObject *tb)
 }
 #endif
 
-
-
 /*error signal handlers (replacing SDL parachute)*/
 static void pygame_parachute(int sig)
 {
 	char* signaltype;
-#ifdef DO_CRASH_TRACEBACK
+#if 0
 	PyThreadState* thread;
 	PyInterpreterState *interp;
 	int thread_id;
 #endif
-
+    
 	signal(sig, SIG_DFL);
 	switch (sig)
 	{
@@ -537,16 +585,12 @@ static void pygame_parachute(int sig)
 		case SIGQUIT:
 			signaltype = "(pygame parachute) Keyboard Abort"; break;
 #endif
-#ifdef SIGPIPE
-		case SIGPIPE:
-			signaltype = "(pygame parachute) Broken Pipe"; break;
-#endif
 		default:
 			signaltype = "(pygame parachute) Unknown Signal"; break;
 	}
 
-
-#ifdef DO_CRASH_TRACEBACK
+#if 0
+/*this traceback hacking has gotten a bit treacherous*/
 	printf("Pygame Parachute Traceback:\n");
 	interp = PyInterpreterState_Head();
 	thread=PyInterpreterState_ThreadHead(interp);
@@ -565,10 +609,7 @@ static void pygame_parachute(int sig)
 	    Py_INCREF(thread->curexc_traceback);
 	    print_traceback(thread->curexc_traceback);
 	}
-#else
-	printf("  (No Traceback Without Python2.2)\n");
 #endif
-
 	atexit_quit();
 	Py_FatalError(signaltype);
 }
@@ -585,11 +626,6 @@ static int fatal_signals[] =
 #endif
 #ifdef SIGQUIT
 	SIGQUIT,
-#endif
-#if 0 /*lets disable sigpipe for now, games are likely not piping*/
-#ifdef SIGPIPE
-	SIGPIPE,
-#endif
 #endif
 	0 /*end of list*/
 };
@@ -664,8 +700,9 @@ static PyMethodDef init__builtins__[] =
 	{ "quit", quit, 1, doc_quit },
 	{ "register_quit", register_quit, 1, doc_register_quit },
 	{ "get_error", get_error, 1, doc_get_error },
+	{ "get_sdl_version", get_sdl_version, 1, doc_get_sdl_version },
 
-{ "segfault", do_segfault, 1, "crash" },
+	{ "segfault", do_segfault, 1, "crash" },
 	{ NULL, NULL }
 };
 

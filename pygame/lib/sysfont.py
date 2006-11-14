@@ -47,44 +47,68 @@ def initsysfonts_win32():
     mods = 'demibold', 'narrow', 'light', 'unicode', 'bt', 'mt'
     fontdir = os.path.join(os.environ['WINDIR'], "Fonts")
 
-    #find the right place in registry
-    try:
-        key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
-                    r"SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts")
-    except WindowsError:
+    #this is a list of registry keys containing information
+    #about fonts installed on the system.
+    keys = []
+
+    #find valid registry keys containing font information.
+    possible_keys = [
+        r"SOFTWARE\Microsoft\Windows\CurrentVersion\Fonts",
+        r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts"
+        ]
+
+    for key_name in possible_keys:
         try:
-            key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE,
-                        r"SOFTWARE\Microsoft\Windows NT\CurrentVersion\Fonts")
+            key = _winreg.OpenKey(_winreg.HKEY_LOCAL_MACHINE, key_name)
+            keys.append(key)
         except WindowsError:
-            return fonts
+            pass
 
-    fontdict = {}
-    for i in range(_winreg.QueryInfoKey(key)[1]):
-        try: name, font, t = _winreg.EnumValue(key,i)
-        except EnvironmentError: break
-        font = str(font)
-        if font[-4:].lower() != ".ttf":
-            continue
-        if os.sep not in font:
-            font = os.path.join(fontdir, font)
+    for key in keys:
+        fontdict = {}
+        for i in range(_winreg.QueryInfoKey(key)[1]):
+            try: name, font, t = _winreg.EnumValue(key,i)
+            except EnvironmentError: break
 
-        if name[-10:] == '(TrueType)':
+            # try and handle windows unicode strings for some file names.
+            
+            # here are two documents with some information about it:
+            # http://www.python.org/peps/pep-0277.html
+            # https://www.microsoft.com/technet/archive/interopmigration/linux/mvc/lintowin.mspx#ECAA
+            try:
+                font = str(font)
+            except UnicodeEncodeError:
+                # MBCS is the windows encoding for unicode file names.
+                try:
+                    font = font.encode('MBCS')
+                except:
+                    # no goodness with str or MBCS encoding... skip this font.
+                    continue
+   
+            if font[-4:].lower() not in [".ttf", ".ttc"]:
+                continue
+            if os.sep not in font:
+                font = os.path.join(fontdir, font)
+
+            if name[-10:] == '(TrueType)':
                 name = name[:-11]
-        name = name.lower().split()
+            name = name.lower().split()
 
-        bold = italic = 0
-        for m in mods:
-            if m in name:
-                name.remove(m)
-        if 'bold' in name:
-            name.remove('bold')
-            bold = 1
-        if 'italic' in name:
-            name.remove('italic')
-            italic = 1
-        name = ''.join(name)
+            bold = italic = 0
+            for m in mods:
+                if m in name:
+                    name.remove(m)
+            if 'bold' in name:
+                name.remove('bold')
+                bold = 1
+            if 'italic' in name:
+                name.remove('italic')
+                italic = 1
+            name = ''.join(name)
 
-        _addfont(name, bold, italic, font, fonts)
+            name=_simplename(name)
+
+            _addfont(name, bold, italic, font, fonts)
     return fonts
 
 
@@ -112,7 +136,7 @@ def read_unix_fontscache(dir, file, fonts):
         except ValueError:
             continue
         font = font.replace('"', '')
-        if font[-4:].lower() != '.ttf':
+        if font[-4:].lower() not in [".ttf", ".ttc"]:
             continue
         font = os.path.join(dir, font)
         vals = vals.split(':')
@@ -127,8 +151,9 @@ def read_unix_fontsdir(dir, file, fonts):
     file = open(os.path.join(dir, file))
     numfonts = int(file.readline())
     for line in file.readlines():
-        font, descr = line.split(' ', 1)
-        if font[-4:].lower() != ".ttf":
+        font, descr = (line.split(' ', 1) + ['', ''])[:2]
+        if font[-4:].lower() not in [".ttf", ".ttc"]:
+
             continue
         font = os.path.join(dir, font)
         descr = descr.split('-', 13)
@@ -206,8 +231,8 @@ def initsysfonts():
 
 #the exported functions
 
-def SysFont(name, size, bold=0, italic=0):
-    """pygame.font.SysFont(name, size, bold=0, italic=0) -> Font
+def SysFont(name, size, bold=False, italic=False):
+    """pygame.font.SysFont(name, size, bold=False, italic=False) -> Font
        create a pygame Font from system font resources
 
        This will search the system fonts for the given font
@@ -228,39 +253,32 @@ def SysFont(name, size, bold=0, italic=0):
 
     if not Sysfonts:
         initsysfonts()
-
+    
+    gotbold = gotitalic = False
     fontname = None
     if name:
         allnames = name
         for name in allnames.split(','):
-            origbold = bold
-            origitalic = italic
             name = _simplename(name)
             styles = Sysfonts.get(name)
             if not styles:
                 styles = Sysalias.get(name)
             if styles:
                 while not fontname:
+                    plainname = styles.get((False, False))
                     fontname = styles.get((bold, italic))
-                    if italic:
-                        italic = 0
-                    elif bold:
-                        bold = 0
+                    if plainname != fontname:
+                        gotbold = bold
+                        gotitalic = italic
                     elif not fontname:
-                        fontname = styles.values()[0]
+                        fontname = plainname
             if fontname: break
 
     font = pygame.font.Font(fontname, size)
-    if name:
-        if origbold and not bold:
-            font.set_bold(1)
-        if origitalic and not italic:
-            font.set_italic(1)
-    else:
-        if bold:
-            font.set_bold(1)
-        elif italic:
-            font.set_italic(1)
+    if bold and not gotbold:
+        font.set_bold(1)
+    if italic and not gotitalic:
+        font.set_italic(1)
 
     return font
 
@@ -311,3 +329,5 @@ def match_font(name, bold=0, italic=0):
                     fontname = styles.values()[0]
         if fontname: break
     return fontname
+
+

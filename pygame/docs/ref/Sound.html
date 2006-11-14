@@ -18,28 +18,30 @@
 || <a href=pygame.html>pygame</a> || 
 <a href=pygame_cdrom.html>cdrom</a> || 
 <a href=pygame_constants.html>constants</a> || 
+<a href=pygame_cursor.html>cursor</a> || 
 <a href=pygame_display.html>display</a> || 
-<a href=pygame_draw.html>draw</a> || 
-<a href=pygame_event.html>event</a> ||<br>
-|| <a href=pygame_font.html>font</a> || 
+<a href=pygame_draw.html>draw</a> ||<br>
+|| <a href=pygame_event.html>event</a> || 
+<a href=pygame_font.html>font</a> || 
 <a href=pygame_image.html>image</a> || 
 <a href=pygame_joystick.html>joystick</a> || 
 <a href=pygame_key.html>key</a> || 
-<a href=pygame_mixer.html>mixer</a> || 
-<a href=pygame_mixer_music.html>mixer_music</a> ||<br>
-|| <a href=pygame_mouse.html>mouse</a> || 
+<a href=pygame_mixer.html>mixer</a> ||<br>
+|| <a href=pygame_mixer_music.html>mixer_music</a> || 
+<a href=pygame_mouse.html>mouse</a> || 
 <a href=pygame_movie.html>movie</a> || 
 <a href=pygame_sndarray.html>sndarray</a> || 
 <a href=pygame_surfarray.html>surfarray</a> || 
-<a href=pygame_time.html>time</a> || 
-<a href=pygame_transform.html>transform</a> ||<br>
+<a href=pygame_time.html>time</a> ||<br>
+|| <a href=pygame_transform.html>transform</a> ||<br>
 &nbsp;<br>|| <a href=CD.html>CD</a> || 
 <a href=Channel.html>Channel</a> || 
 <a href=Clock.html>Clock</a> || 
 <a href=Font.html>Font</a> || 
 <a href=Joystick.html>Joystick</a> || 
 <a href=Movie.html>Movie</a> ||<br>
-|| <a href=Rect.html>Rect</a> || 
+|| <a href=Overlay.html>Overlay</a> || 
+<a href=Rect.html>Rect</a> || 
 <a href=Sound.html>Sound</a> || 
 <a href=Surface.html>Surface</a> ||<br>
 &nbsp;<br>|| <a href=pygame_color.html>color</a> || 
@@ -64,6 +66,10 @@ pygame.mixer module's initialization.
 <table>
 <tr><td><a href=#fadeout>fadeout</a></td><td> -
 fadeout all channels playing this sound</td></tr>
+
+
+<tr><td><a href=#get_length>get_length</a></td><td> -
+get the length of the Sound in seconds.</td></tr>
 
 
 <tr><td><a href=#get_num_channels>get_num_channels</a></td><td> -
@@ -97,6 +103,14 @@ Sound.fadeout(millisec) -> None
 Fade out all the playing channels playing this sound over the.
 All channels playing this sound will be stopped after the given
 milliseconds.
+</ul><br>&nbsp;<br>
+
+<a name=get_length><font size=+2><b>get_length
+</b></font><br><font size=+1><tt>
+Sound.get_length() -> float
+</tt></font><ul>
+Returns the number of seconds this Sound file has
+of data.
 </ul><br>&nbsp;<br>
 
 <a name=get_num_channels><font size=+2><b>get_num_channels

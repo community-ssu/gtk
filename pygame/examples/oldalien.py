@@ -1,4 +1,4 @@
-#! /usr/bin/env python2.4
+#! /usr/bin/env python
 
 """This is a much simpler version of the aliens.py
 example. It makes a good place for beginners to get

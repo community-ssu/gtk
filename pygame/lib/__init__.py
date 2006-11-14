@@ -25,6 +25,17 @@ Windows, MacOS, OS X, BeOS, FreeBSD, IRIX, and Linux.
 """
 
 import sys, os, string
+def _check_darwin():
+    try:
+        from objc import loadBundleFunctions
+        import AppKit
+        import Foundation
+    except ImportError:
+        raise ImportError("PyObjC 1.2 or later is required to use pygame on Mac OS X")
+
+if sys.platform == 'darwin':
+    _check_darwin()
+
 class MissingModule:
     def __init__(self, name, info='', urgent=0):
         self.name = name
@@ -106,6 +117,9 @@ except (ImportError,IOError), msg:sprite=MissingModule("sprite", msg, 1)
 try: from pygame.surface import *
 except (ImportError,IOError):Surface = lambda:Missing_Function
 
+try: from pygame.overlay import *
+except (ImportError,IOError):Overlay = lambda:Missing_Function
+
 try: import pygame.time
 except (ImportError,IOError), msg:time=MissingModule("time", msg, 1)
 
@@ -127,11 +141,17 @@ except (ImportError,IOError), msg:mixer=MissingModule("mixer", msg, 0)
 try: import pygame.movie
 except (ImportError,IOError), msg:movie=MissingModule("movie", msg, 0)
 
+try: import pygame.movieext
+except (ImportError,IOError), msg:movieext=MissingModule("movieext", msg, 0)
+
 try: import pygame.surfarray
 except (ImportError,IOError), msg:surfarray=MissingModule("surfarray", msg, 0)
 
 try: import pygame.sndarray
 except (ImportError,IOError), msg:sndarray=MissingModule("sndarray", msg, 0)
+
+try: import pygame.fastevent
+except (ImportError,IOError), msg:fastevent=MissingModule("fastevent", msg, 0)
 
 #there's also a couple "internal" modules not needed
 #by users, but putting them here helps "dependency finder"
@@ -142,6 +162,13 @@ except (ImportError,IOError):pass
 try: import pygame.mixer_music; del pygame.mixer_music
 except (ImportError,IOError):pass
 
+def packager_imports():
+    """
+    Some additional things that py2app/py2exe will want to see
+    """
+    import pygame.macosx
+    import Numeric
+    import OpenGL.GL
 
 #make Rects pickleable
 import copy_reg
@@ -151,23 +178,6 @@ def __rect_reduce(r):
 	assert type(r) == Rect
 	return __rect_constructor, (r.x, r.y, r.w, r.h)
 copy_reg.pickle(Rect, __rect_reduce, __rect_constructor)
-
-if sys.platform == 'darwin':
-    import MacOS
-    if not MacOS.WMAvailable():
-        raise ImportError, "Can not access the window manager, use bundlebuilder or execute with the pythonw script"
-    del MacOS
-    if (os.getcwd() == '/') and len(sys.argv):
-        os.chdir(os.path.split(sys.argv[0])[0])
-    def init(_init=init):
-        try:
-            import AppKit
-        except ImportError:
-            raise ImportError, "PyObjC is required for pygame on OS X"
-        if not AppKit.NSApp():
-            # Set up application
-            import macosx
-        _init()
 
 #cleanup namespace
 del pygame, os, sys, rwobject, surflock, MissingModule, copy_reg

@@ -18,28 +18,30 @@
 || <a href=pygame.html>pygame</a> || 
 <a href=pygame_cdrom.html>cdrom</a> || 
 <a href=pygame_constants.html>constants</a> || 
+<a href=pygame_cursor.html>cursor</a> || 
 <a href=pygame_display.html>display</a> || 
-<a href=pygame_draw.html>draw</a> || 
-<a href=pygame_event.html>event</a> ||<br>
-|| <a href=pygame_font.html>font</a> || 
+<a href=pygame_draw.html>draw</a> ||<br>
+|| <a href=pygame_event.html>event</a> || 
+<a href=pygame_font.html>font</a> || 
 <a href=pygame_image.html>image</a> || 
 <a href=pygame_joystick.html>joystick</a> || 
 <a href=pygame_key.html>key</a> || 
-<a href=pygame_mixer.html>mixer</a> || 
-<a href=pygame_mixer_music.html>mixer_music</a> ||<br>
-|| <a href=pygame_mouse.html>mouse</a> || 
+<a href=pygame_mixer.html>mixer</a> ||<br>
+|| <a href=pygame_mixer_music.html>mixer_music</a> || 
+<a href=pygame_mouse.html>mouse</a> || 
 <a href=pygame_movie.html>movie</a> || 
 <a href=pygame_sndarray.html>sndarray</a> || 
 <a href=pygame_surfarray.html>surfarray</a> || 
-<a href=pygame_time.html>time</a> || 
-<a href=pygame_transform.html>transform</a> ||<br>
+<a href=pygame_time.html>time</a> ||<br>
+|| <a href=pygame_transform.html>transform</a> ||<br>
 &nbsp;<br>|| <a href=CD.html>CD</a> || 
 <a href=Channel.html>Channel</a> || 
 <a href=Clock.html>Clock</a> || 
 <a href=Font.html>Font</a> || 
 <a href=Joystick.html>Joystick</a> || 
 <a href=Movie.html>Movie</a> ||<br>
-|| <a href=Rect.html>Rect</a> || 
+|| <a href=Overlay.html>Overlay</a> || 
+<a href=Rect.html>Rect</a> || 
 <a href=Sound.html>Sound</a> || 
 <a href=Surface.html>Surface</a> ||<br>
 &nbsp;<br>|| <a href=pygame_color.html>color</a> || 
@@ -56,6 +58,8 @@ hardware memory, which can be hardware accelerated. Surfaces that
 are 8 bits per pixel use a colormap to represent their color
 values. All Surfaces with higher bits per pixel use a packed
 pixels to store their color values.
+<br>&nbsp;<br>
+Creating a new <a href=pygame.html#Surface>Surface()</a>.
 <br>&nbsp;<br>
 Surfaces can have many extra attributes like alpha planes,
 colorkeys, source rectangle clipping. These functions mainly
@@ -113,6 +117,10 @@ new copy of surface with different format</td></tr>
 
 <tr><td><a href=#convert_alpha>convert_alpha</a></td><td> -
 new copy of surface with different format and per pixel alpha</td></tr>
+
+
+<tr><td><a href=#copy>copy</a></td><td> -
+creates a new copy of a Surface</td></tr>
 
 
 <tr><td><a href=#fill>fill</a></td><td> -
@@ -318,6 +326,17 @@ will not be exactly the same as the requested source, but it will
 be optimized for fast alpha blitting to the destination.
 </ul><br>&nbsp;<br>
 
+<a name=copy><font size=+2><b>copy
+</b></font><br><font size=+1><tt>
+Surface.copy() -> Surface
+</tt></font><ul>
+Creates an exact duplicate of the Surface. The new Surface will
+get the same palette and surface flags as the original.
+<br>&nbsp;<br>
+If the Surface is a subsurface this will return a copy of
+the pixel data. The new copy will not reference pixel data.
+</ul><br>&nbsp;<br>
+
 <a name=fill><font size=+2><b>fill
 </b></font><br><font size=+1><tt>
 Surface.fill(color, [rectstyle])) -> Rect
@@ -488,11 +507,17 @@ any special-case debugging.
 
 <a name=get_rect><font size=+2><b>get_rect
 </b></font><br><font size=+1><tt>
-Surface.get_rect() -> rect
+Surface.get_rect(**kwargs) -> rect
 </tt></font><ul>
 Returns a new rectangle covering the entire surface.
 This rectangle will always start at 0, 0 with a width.
 and height the same size as the image.
+<br>&nbsp;<br>
+You can pass keyword argument values to this function.
+These named values will be applied to the attributes of
+the Rect before it is returned. An example would be
+'mysurf.get_rect(center=(100,100))' to create a rectangle
+for the Surface centered at a given position.
 </ul><br>&nbsp;<br>
 
 <a name=get_shifts><font size=+2><b>get_shifts
@@ -577,7 +602,7 @@ If your surface has a pixel alpha channel, it will override the
 overall surface transparency. You'll need to change the actual
 pixel transparency to make changes.
 <br>&nbsp;<br>
-If your image also has pixel alpha values, will be used repeatedly, you
+If your image also has pixel alpha values, or will be used repeatedly, you
 will probably want to pass the RLEACCEL flag to the call. This
 will take a short time to compile your surface, and increase the
 blitting speed.

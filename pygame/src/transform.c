@@ -354,17 +354,22 @@ static PyObject* surf_scale(PyObject* self, PyObject* arg)
 	if(!PyArg_ParseTuple(arg, "O!(ii)", &PySurface_Type, &surfobj, &width, &height))
 		return NULL;
 	surf = PySurface_AsSurface(surfobj);
-
+	if(width < 0 || height < 0)
+		return RAISE(PyExc_ValueError, "Cannot scale to negative size");
+	
 	newsurf = newsurf_fromsurf(surf, width, height);
 	if(!newsurf) return NULL;
 
-	SDL_LockSurface(newsurf);
-	PySurface_Lock(surfobj);
-
-	stretch(surf, newsurf);
-
-	PySurface_Unlock(surfobj);
-	SDL_UnlockSurface(newsurf);
+	if(width && height)
+	{
+		SDL_LockSurface(newsurf);
+		PySurface_Lock(surfobj);
+	
+		stretch(surf, newsurf);
+	
+		PySurface_Unlock(surfobj);
+		SDL_UnlockSurface(newsurf);
+	}
 
 	return PySurface_New(newsurf);
 }
@@ -686,6 +691,11 @@ static PyObject* surf_rotozoom(PyObject* self, PyObject* arg)
 	if(!PyArg_ParseTuple(arg, "O!ff", &PySurface_Type, &surfobj, &angle, &scale))
 		return NULL;
 	surf = PySurface_AsSurface(surfobj);
+	if(scale == 0.0)
+	{
+		newsurf = newsurf_fromsurf(surf, surf->w, surf->h);
+		return PySurface_New(newsurf);
+	}
 
 	if(surf->format->BitsPerPixel == 32)
 	{
@@ -699,11 +709,7 @@ static PyObject* surf_rotozoom(PyObject* self, PyObject* arg)
 		SDL_BlitSurface(surf, NULL, surf32, NULL);
 	}
 
-/* don't special case the 90 degrees, makes the rotating image pop
-	if(scale == 1.0 && !(((int)angle)%90))
-		newsurf = rotate90(surf32, (int)angle);
-	else
-*/		newsurf = rotozoomSurface(surf32, angle, scale, 1);
+	newsurf = rotozoomSurface(surf32, angle, scale, 1);
 
 	if(surf32 == surf)
 		PySurface_Unlock(surfobj);
@@ -713,6 +719,109 @@ static PyObject* surf_rotozoom(PyObject* self, PyObject* arg)
 }
 
 
+static SDL_Surface* chop(SDL_Surface *src, int x, int y, int width, int height)
+{
+  SDL_Surface* dst;
+  int dstwidth,dstheight;
+  char *srcpix, *dstpix, *srcrow, *dstrow;
+  int srcstepx, srcstepy, dststepx, dststepy;
+  int loopx,loopy;
+
+  if((x+width) > src->w)
+    width=src->w-x;
+  if((y+height) > src->h)
+    height=src->h-y;
+  if(x < 0)
+    {
+      width-=(-x);
+      x=0;
+    }
+  if(y < 0)
+    {
+      height-=(-y);
+      y=0;
+    }
+
+  dstwidth=src->w-width;
+  dstheight=src->h-height;
+
+  dst=newsurf_fromsurf(src,dstwidth,dstheight);
+  if(!dst)
+    return NULL;
+  SDL_LockSurface(dst);
+  srcrow=(char*)src->pixels;
+  dstrow=(char*)dst->pixels;
+  srcstepx=dststepx=src->format->BytesPerPixel;
+  srcstepy=src->pitch;
+  dststepy=dst->pitch;
+
+  for(loopy=0; loopy < src->h; loopy++)
+    {
+      if((loopy < y) || (loopy >= (y+height)))
+	{
+	  dstpix=dstrow;
+	  srcpix=srcrow;
+	  for(loopx=0; loopx < src->w; loopx++)
+	    {
+	      if((loopx < x) || (loopx>= (x+width)))
+		{
+		  switch(src->format->BytesPerPixel)
+		    {
+		    case 1:
+		      *dstpix=*srcpix;
+		      break;
+		    case 2:
+		      *(Uint16*) dstpix=*(Uint16*) srcpix;
+		      break;
+		    case 3:
+		      dstpix[0] = srcpix[0];
+		      dstpix[1] = srcpix[1];
+		      dstpix[2] = srcpix[2];    
+		      break;
+		    case 4:
+		      *(Uint32*) dstpix=*(Uint32*) srcpix;
+		      break;
+		    }
+		  dstpix+=dststepx;
+		}
+	      srcpix+=srcstepx;
+	    }
+	  dstrow+=dststepy;
+	}
+      srcrow+=srcstepy;
+    }
+  SDL_UnlockSurface(dst);
+  return dst;
+}
+
+
+    /*DOC*/ static char doc_chop[] =
+    /*DOC*/    "pygame.transform.chop(Surface, rectstyle) -> Surface\n"
+    /*DOC*/    "remove a region of an surface\n"
+    /*DOC*/    "\n"
+    /*DOC*/    "Removes an interior set of columns and rows from a Surface.\n"
+    /*DOC*/    "All vertical and horizontal pixels surrounding the given\n"
+    /*DOC*/    "rectangle area are removed. The resulting image is shrunken\n"
+    /*DOC*/    "by the size of pixels removed.\n"
+    /*DOC*/ ;
+
+static PyObject* surf_chop(PyObject* self, PyObject* arg)
+{
+  PyObject *surfobj, *rectobj;
+  SDL_Surface* surf, *newsurf;
+  GAME_Rect* rect, temp;
+	
+  if(!PyArg_ParseTuple(arg, "O!O", &PySurface_Type, &surfobj, &rectobj))
+    return NULL;
+  if(!(rect = GameRect_FromObject(rectobj, &temp)))
+    return RAISE(PyExc_TypeError, "Rect argument is invalid");
+
+  surf=PySurface_AsSurface(surfobj);
+  newsurf=chop(surf, rect->x, rect->y, rect->w, rect->h);
+
+  return PySurface_New(newsurf);
+}
+
 
 static PyMethodDef transform_builtins[] =
 {
@@ -720,6 +829,7 @@ static PyMethodDef transform_builtins[] =
 	{ "rotate", surf_rotate, 1, doc_rotate },
 	{ "flip", surf_flip, 1, doc_flip },
 	{ "rotozoom", surf_rotozoom, 1, doc_rotozoom},
+	{ "chop", surf_chop, 1, doc_chop},
 	{ "scale2x", surf_scale2x, 1, doc_scale2x},
 		
 	{ NULL, NULL }

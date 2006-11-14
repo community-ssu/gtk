@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python
 
 """Draw a cube on the screen. every frame we orbit
 the camera around by a small amount and it appears

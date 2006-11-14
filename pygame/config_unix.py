@@ -4,17 +4,20 @@ import os, sys, string
 from glob import glob
 from distutils.sysconfig import get_python_inc
 
-debian = 1
-
 configcommand = os.environ.get('SDL_CONFIG', 'sdl-config',)
 configcommand = configcommand + ' --version --cflags --libs'
-localbase = os.environ.get('LOCALBASE', '') #do we still need this?
+localbase = os.environ.get('LOCALBASE', '')
+
+#these get prefixes with '/usr' and '/usr/local' or the $LOCALBASE
+origincdirs = ['/include', '/include/SDL', '/include/SDL11',
+               '/include/smpeg' ]
+origlibdirs = ['/lib']
+
 
 
 
 def confirm(message):
     "ask a yes/no question, return result"
-    return 1
     reply = raw_input('\n' + message + ' [Y/n]:')
     if reply and string.lower(reply[0]) == 'n':
         return 0
@@ -85,7 +88,7 @@ class Dependency:
         for dir in libdirs:
             for name in libnames:
                 path = os.path.join(dir, name)
-                if os.path.isfile(path):
+                if filter(os.path.isfile, glob(path+'*')):
                     self.lib_dir = dir
                 
         if self.lib_dir and self.inc_dir:
@@ -116,7 +119,7 @@ class DependencyPython:
         if self.found and self.header:
             fullpath = os.path.join(get_python_inc(0), self.header)
             if not os.path.isfile(fullpath):
-                found = 0
+                self.found = 0
             else:
                 self.inc_dir = os.path.split(fullpath)[0]
         if self.found:
@@ -124,12 +127,11 @@ class DependencyPython:
         else:
             print self.name + '        '[len(self.name):] + ': not found'
 
-debian = 1
 
 
 sdl_lib_name = 'SDL'
 if sys.platform.find('bsd') != -1:
-    sdl_lib_name = 'SDL-1.2'
+    sdl_lib_name = 'SDL-1.1'
 
 
 def main():
@@ -146,37 +148,34 @@ def main():
     if not DEPS[0].found:
         print 'Unable to run "sdl-config". Please make sure a development version of SDL is installed.'
         raise SystemExit
-		
-    if debian:
-        incdirs = [
-		'/usr/include/SDL',
-		'/usr/include/smpeg',
-	]
-        libdirs = ['/usr/lib']
-        print '[Using Debian defaults]'
-    elif localbase: #unneeded?
-        incdirs = [localbase + '/include/SDL']
-        libdirs = [localbase + '/lib']
+
+    if localbase:
+        incdirs = [localbase+d for d in origincdirs]
+        libdirs = [localbase+d for d in origlibdirs]
     else:
         incdirs = []
         libdirs = []
-        for arg in string.split(DEPS[0].cflags):
-            if arg[:2] == '-I':
-                incdirs.append(arg[2:])
-            elif arg[:2] == '-L':
-                libdirs.append(arg[2:])
+    incdirs += ["/usr"+d for d in origincdirs]
+    libdirs += ["/usr"+d for d in origlibdirs]
+    incdirs += ["/usr/local"+d for d in origincdirs]
+    libdirs += ["/usr/local"+d for d in origlibdirs]
+    for arg in string.split(DEPS[0].cflags):
+        if arg[:2] == '-I':
+            incdirs.append(arg[2:])
+        elif arg[:2] == '-L':
+            libdirs.append(arg[2:])
     for d in DEPS:
         d.configure(incdirs, libdirs)
 
 
     for d in DEPS[1:]:
-	if not d.found:
-		if not confirm("""
+        if not d.found:
+            if not confirm("""
 Warning, some of the pygame dependencies were not found. Pygame can still
-compile and install, but games that require on those missing dependencies
+compile and install, but games that depend on those missing dependencies
 will not run. Would you like to continue the configuration?"""):
-			raise SystemExit
-		break
+                raise SystemExit
+            break
 
     return DEPS
 
