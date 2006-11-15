@@ -2771,7 +2771,8 @@ gtk_tree_view_button_press (GtkWidget      *widget,
                  GTK_TREE_MODEL_LIST_ONLY is not set (to fix file tree) */
               g_object_get (widget, "force_list_kludge",
                             &force_list_kludge, NULL);
-              if ((force_list_kludge ||
+              if (!column_handled_click &&
+                  (force_list_kludge ||
                    (gtk_tree_model_get_flags (tree_view->priv->model) &
                     GTK_TREE_MODEL_LIST_ONLY)) &&
                   gtk_tree_row_reference_valid (tree_view->priv->cursor))
@@ -2883,6 +2884,8 @@ gtk_tree_view_button_press (GtkWidget      *widget,
             gtk_tree_row_reference_new (tree_view->priv->model, path);
         }
 
+      /* Hildon doesn't support double clicks */
+#if 0
       /* Test if a double click happened on the same row. */
       if (event->button == 1)
         {
@@ -2904,8 +2907,6 @@ gtk_tree_view_button_press (GtkWidget      *widget,
                 }
             }
 
-          /* Hildon doesn't support double clicks */
-#if 0
           if (row_double_click)
             {
               if (tree_view->priv->last_button_press)
@@ -2916,7 +2917,6 @@ gtk_tree_view_button_press (GtkWidget      *widget,
               tree_view->priv->last_button_press_2 = NULL;
             }
           else
-#endif
             {
               if (tree_view->priv->last_button_press)
                 gtk_tree_row_reference_free (tree_view->priv->last_button_press);
@@ -2924,6 +2924,7 @@ gtk_tree_view_button_press (GtkWidget      *widget,
               tree_view->priv->last_button_press_2 = gtk_tree_row_reference_new_proxy (G_OBJECT (tree_view), tree_view->priv->model, path);
             }
         }
+#endif
 
       if (row_double_click)
 	{
