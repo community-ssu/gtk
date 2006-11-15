@@ -1,5 +1,30 @@
 2006-11-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Merge from GNOME CVS. NB#47124
+
+    2006-10-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreeselection.c (gtk_tree_selection_get_selected_rows):
+	Set model in all cases.  (#357791, Andreas Köhler)
+
+    2005-11-29  Matthias Clasen  <mclasen@redhat.com>
+
+	Properly handle model changes in GtkTreeSelection: (#322569,
+	Milosz Derezynski)
+
+	* gtk/gtktreeselection.c (gtk_tree_selection_selected_foreach):
+	Get a reference to the model, and stop the iteration if the model
+	of the treeview is changed on the way.
+
+	* gtk/gtktreeprivate.h:
+	* gtk/gtktreeselection.c (_gtk_tree_selection_emit_changed): New
+	private function to emit the GtkTreeSelection::changed signal.
+
+	* gtk/gtktreeview.c (gtk_tree_view_set_model): Call
+	_gtk_tree_selection_emit_changed() when the model changes.
+
+2006-11-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktreeview.c (gtk_tree_view_button_press): Do not emit
 	row-activated when a column (checkbox) handles the click. Ignore
 	double-clicking more thoroughly. NB#46176
