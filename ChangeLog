@@ -1,3 +1,9 @@
+2006-11-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_button_press): Do not emit
+	row-activated when a column (checkbox) handles the click. Ignore
+	double-clicking more thoroughly. NB#46176
+
 2006-11-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtktreeprivate.h (GtkTreeViewPrivate)
