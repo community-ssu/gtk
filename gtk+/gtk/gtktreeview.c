@@ -8567,7 +8567,7 @@ gtk_tree_view_row_deleted (GtkTreeModel *model,
   gtk_widget_queue_resize (GTK_WIDGET (tree_view));
 
   if (selection_changed)
-    g_signal_emit_by_name (tree_view->priv->selection, "changed");
+    _gtk_tree_selection_emit_changed (tree_view->priv->selection);
 
   /* FIXME whacky hack to work around the treeview not being in a clean state
    * when in a tree a row has been removed, but has_child_toggled not been
@@ -10781,6 +10781,9 @@ gtk_tree_view_set_model (GtkTreeView  *tree_view,
 
   g_object_notify (G_OBJECT (tree_view), "model");
 
+  if (tree_view->priv->selection)
+    _gtk_tree_selection_emit_changed (tree_view->priv->selection);
+
   if (GTK_WIDGET_REALIZED (tree_view))
     gtk_widget_queue_resize (GTK_WIDGET (tree_view));
 }
@@ -12245,7 +12248,7 @@ gtk_tree_view_real_collapse_row (GtkTreeView *tree_view,
   if (gtk_tree_view_unref_and_check_selection_tree (tree_view, node->children))
     {
       _gtk_rbtree_remove (node->children);
-      g_signal_emit_by_name (tree_view->priv->selection, "changed");
+      _gtk_tree_selection_emit_changed (tree_view->priv->selection);
     }
   else
     _gtk_rbtree_remove (node->children);
