@@ -1,6 +1,4 @@
-gtk+2.0 (2:2.6.10-2.osso25) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+gtk+2.0 (2:2.6.10-2.osso25) unstable; urgency=low
 
   * debian/control:
     - Bump libxfixes-dev Build-Deps to pick up libXfixes.so.3, and add
@@ -10,8 +8,10 @@ gtk+2.0 (2:2.6.10-2.osso25) UNRELEASED; urgency=low
     is present
   * Fixes: NB#46176 Conflicting signals emitted when tapping a focused
     GtkCellRendererToggle
+  * Fixes: NB#47124 Tree doesn't signal changed selection when replacing the
+    model
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 15 Nov 2006 11:56:21 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 15 Nov 2006 12:04:53 +0200
 
 gtk+2.0 (2:2.6.10-2.osso24) unstable; urgency=low
 
