@@ -1,3 +1,7 @@
+2006-11-15  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/sv_SE:  Amended t_fmt to display colons rather than decimal points. Fixes NB#43263. 
+
 2006-10-16  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 	* COPYING: Added
 	* locales/an_ES: Removed a GPL file.
