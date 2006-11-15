@@ -30,7 +30,7 @@ Index: imported/neon/ne_request.c
 +		    chunk_len = 0;
 +	    }
 +	    else if (ret < 0) {
-+		    aborted(req, "Could not read chunk size", ret);
++		    return aborted(req, "Could not read chunk size", ret);
 +	    } else {
 +		    NE_DEBUG(NE_DBG_HTTP, "[Chunk Size] < %s", buffer);
 +		    chunk_len = strtoul(buffer, &ptr, 16);
