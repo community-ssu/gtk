@@ -21,6 +21,7 @@ clean:
 	-rm -rf build
 	-rm -rf $(d_base)
 	-rm -rf $(d_dev)
+	find . -name "*.py[co]" | xargs rm -f
 
 build: build-stamp
 build-stamp:
