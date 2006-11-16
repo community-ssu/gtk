@@ -67,7 +67,7 @@ def shift_right(cells):
 	return transpose(shift_down(transpose(cells)))
 
 def randomcells(width, height, chance = 5):
-	from whrandom import randint
+	from random import randint
 	cells = zeros((height, width), Int8)
 
 	_range = range
@@ -83,7 +83,7 @@ def printcells(cells):
 	thing = "+" + y * "-" + "+"
 	lines = [thing]
 	for i in range(x):
-		list = map(lambda x: " O"[x], cells[i])
+		list = map(lambda x: "O ", cells[i])
 		lines.append("|"+string.join(list, "")+"|")
 	lines.append(thing)
 	print string.join(lines, "\n")

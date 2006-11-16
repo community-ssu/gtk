@@ -1,4 +1,4 @@
-/usr/bin/python2.4 setup.py install --root=$RPM_BUILD_ROOT
+/usr/bin/python2.5 setup.py install --root=$RPM_BUILD_ROOT
 
 cat >INSTALLED_FILES <<EOF
 %doc Demo

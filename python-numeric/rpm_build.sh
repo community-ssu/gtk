@@ -1,1 +1,1 @@
-env CFLAGS="$RPM_OPT_FLAGS" /usr/bin/python2.4 setup.py build
+env CFLAGS="$RPM_OPT_FLAGS" /usr/bin/python2.5 setup.py build

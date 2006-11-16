@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-PYVER=2.4
+PYVER=2.5
 PYTHON=python$(PYVER)
 
 p_base	= python$(PYVER)-numeric
@@ -70,7 +70,7 @@ install: build
 	
 	# fix interpreter
 	for i in `find $(d_dev) $(d_base) -type f`; do \
-	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/python2.4\1,' \
+	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/python2.5\1,' \
 		$$i > $$i.temp; \
 	  if cmp --quiet $$i $$i.temp; then \
 	    rm -f $$i.temp; \

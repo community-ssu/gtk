@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.5
 #
 # Mandelbrot ASCII-art using Numeric Python 1.0beta1
 #

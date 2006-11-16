@@ -3,11 +3,11 @@ Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
 Standards-Version: 3.6.1
-Build-Depends: python2.4-dev, debhelper (>= 4.1.67), g77-3.4
+Build-Depends: python2.5-dev, debhelper (>= 4.1.67), g77-3.4
 
-Package: python2.4-numeric
+Package: python2.5-numeric
 Architecture: any
-Depends: python2.4, ${shlibs:Depends}
+Depends: python2.5, ${shlibs:Depends}
 Description: Numerical (matrix-oriented) Mathematics for Python
  The Numeric Extensions to Python (NumPy) add powerful
  multi-dimensional array objects to the wonderful general purpose
@@ -34,7 +34,7 @@ Description: Numerical (matrix-oriented) Mathematics for Python
     * Independent Random Streams (RNG, ranf)
     * Masked Arrays (MA)
 
-Package: python2.4-numeric-dev
+Package: python2.5-numeric-dev
 Architecture: all
-Depends: python2.4-numeric (= ${Source-Version})
+Depends: python2.5-numeric (= ${Source-Version})
 Description: Development files for Numeric Python
