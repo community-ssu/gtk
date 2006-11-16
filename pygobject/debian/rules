@@ -17,11 +17,11 @@ endif
 
 clean:
 	dh_clean
-	-make clean
-	-rm -rf build
-	-rm -rf $(d_base)
-	-rm -rf $(d_dev)
+	rm -rf build
+	rm -rf $(CURDIR)/$(d_base)
+	rm -rf $(CURDIR)/$(d_dev)
 	find . -name "*.py[co]" | xargs rm -f
+	rm -f *-stamp
 
 build: build-stamp
 build-stamp:
@@ -43,7 +43,9 @@ install: build
 	dh_testdir
 	dh_testroot
 	dh_clean -k
-	dh_installdirs
+
+	mkdir -p $(CURDIR)/$(d_base)
+	mkdir -p $(CURDIR)/$(d_dev)
 
 	$(MAKE) -C build install DESTDIR=$(CURDIR)/$(d_base)
 	$(PYTHON) -OO -m compileall -f $(d_base)
