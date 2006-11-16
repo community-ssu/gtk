@@ -1,0 +1,42 @@
+#!/usr/bin/make -f
+
+p_base=libffi4
+p_dev=$(p_base)-dev
+d_base=debian/$(p_base)
+d_dev=debian/$(p_dev)
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp 
+	dh_clean 
+
+build:
+	dh_testdir
+	./configure --prefix=/usr
+	make
+
+install: build
+	dh_testdir
+	dh_clean -k 
+	dh_installdirs
+
+	make install DESTDIR=$(CURDIR)/$(d_base)
+
+	mkdir -p $(CURDIR)/$(d_dev)/usr/lib
+	mv $(CURDIR)/$(d_base)/usr/include $(CURDIR)/$(d_dev)/usr
+	mv $(CURDIR)/$(d_base)/usr/lib/*.{la,so,a} $(CURDIR)/$(d_dev)/usr/lib
+
+binary-indep: build install
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install 

@@ -1,0 +1,28 @@
+Source: libffi4
+Section: libs
+Priority: optional
+Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
+Build-Depends: debhelper (>= 4.0.0)
+Standards-Version: 3.6.1
+
+Package: libffi4
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: Foreign Function Interface library runtime
+ A foreign function interface is the popular name for the interface that
+ allows code written in one language to call code written in another
+ language.
+
+Package: libffi4-dev
+Section: libsdevel
+Architecture: any
+Depends: libffi4 (= ${Source-Version})
+Description: Foreign Function Interface library (development files)
+ This package contains the headers and static library files necessary for
+ building programs which use libffi.
+ .
+ A foreign function interface is the popular name for the interface that
+ allows code written in one language to call code written in another
+ language.
+
