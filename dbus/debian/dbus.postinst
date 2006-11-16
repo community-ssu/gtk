@@ -3,16 +3,17 @@
 # Post-installation script for D-BUS
 # Copyright © 2003 Colin Walters <walters@debian.org>
 # Copyright © 2006 Sjoerd Simons <sjoerd@debian.org>
+# Copyright (C) 2006 Nokia Corporation. All rights reserved.
 
 set -e
 
 MESSAGEUSER=messagebus
 MESSAGEHOME=/var/run/dbus
 
-
-chgrp "$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || addgroup --system "$MESSAGEUSER"
-chown "$MESSAGEUSER"."$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || \
-	adduser --system --home "$MESSAGEHOME" --no-create-home --disabled-password --ingroup "$MESSAGEUSER" "$MESSAGEUSER"
+chgrp "$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || groupadd  "$MESSAGEUSER"
+chown "$MESSAGEUSER":"$MESSAGEUSER" "$MESSAGEHOME" 2>/dev/null || \
+useradd -d "$MESSAGEHOME" -g $MESSAGEUSER $MESSAGEUSER
+usermod -G dialout $MESSAGEUSER
 
 # Do not restart dbus on upgrades, only on fresh installations
 if [ "$1" = "configure" ]; then

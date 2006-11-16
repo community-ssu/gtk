@@ -7,7 +7,7 @@ Standards-Version: 3.7.2
 
 Package: dbus
 Architecture: any
-Depends: ${shlibs:Depends}, adduser, debianutils
+Depends: ${shlibs:Depends}, debianutils
 Conflicts: libdbus0, dbus-1, dbus-1-utils (<< 0.50-2), libdbus-1-1
 Replaces: libdbus0, dbus-1
 Description: simple interprocess messaging system
