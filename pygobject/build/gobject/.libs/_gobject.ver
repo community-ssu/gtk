@@ -1,3 +1,0 @@
-{ global:
-init_gobject;
-local: *; };

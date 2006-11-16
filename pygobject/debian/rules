@@ -15,6 +15,13 @@ else
     CFLAGS=-Os -Wall -Wstrict-prototypes
 endif
 
+clean:
+	dh_clean
+	-make clean
+	-rm -rf build
+	-rm -rf $(d_base)
+	-rm -rf $(d_dev)
+
 build: build-stamp
 build-stamp:
 	dh_testdir
