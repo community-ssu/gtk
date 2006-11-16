@@ -1,6 +1,5 @@
 dbus-glib (0.72-osso1) experimental; urgency=low
 
-  * UNRELEASED
   * Upstream upgraded to 0.72 (used debian scripts from 0.71-3 as the
     starting point).
   * Removed 00_unref_crash.patch from debian/patches because it's in the
@@ -14,7 +13,7 @@ dbus-glib (0.72-osso1) experimental; urgency=low
   * Added package for API documentation (should be changed to gtk-doc when
     it does not segfault).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 14 Nov 2006 15:13:51 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 16 Nov 2006 15:22:47 +0200
 
 dbus-glib (0.71-3) unstable; urgency=low
 
