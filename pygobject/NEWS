@@ -1,0 +1,75 @@
+2.12.2 3-october-2006
+       - Make PyGObject 64-bit safe for Python 2.5 (Gustavo)
+       - All headers are now LGPL and not GPL (Johan)
+       - Remove a couple of GCC warnings (Gustavo)
+       - Revive distutils support (Cedric Gustin)
+       - Emission hook reference count bugfix (Gustavo)
+       - MSVC/ANSI C compilation fix (John Ehresman)
+       - Bump Ctrl-C timeout handler from 100ms to 1000 (Johan)
+
+2.12.1 4-september-2006
+       - Corrected version check (Sebastian Dröge, #354364)
+
+2.12.0 4-september-2006
+      - Install the html files even when using --disable-docs (#353159, Johan,
+        Matthias Clasen)
+
+2.11.4 27-august-2006
+      - Include pre-generated html docs in the tarball  (Johan)
+      - Fix bug in do_set_property called from constructor (Gustavo, #353039)
+      - Fix type registration involving interfaces with signals and/or
+        properties (Gustavo)
+
+2.11.3 21-august-2006
+      - Documentation updates (John)
+      - Documentation build fixes (Johan, John, Gian Mario Tagliaretti)
+      - PyGObject can now be compiled using a C++ compiler (Murray Cumming)
+      - Type registration bug fix (Gustavo)
+
+2.11.2 8-august-2006
+      - Add fixxref.py from PyGTK (Johan)
+      - Fix parallel build (#350225, Ed Catmur)
+
+2.11.1 4-august-2006
+      - Add John Finlay's reference manual (Johan, John)
+      - Fix GOption mem leak (Gustavo)
+      - Infrastructure for lazy type registration (Johan)
+      - Enum/Flags fixes (Gustavo, John)
+      - Eliminate some GCC warnings (Johan)
+
+2.11.0 12-july-2006
+      - Add GOption support (#163645, Johannes Hölzl)
+      - GObject metaclass converted to Python code (Gustavo)
+      - Register GType constants from Python-land (Johan)
+      - Distutils updates (John Ehresman, Cedric Gustin)
+      - Add support for signal emission hooks (#154845, Johan)
+      - g_spawn_close_pid support (Gustavo)
+      - Add new APIs do add or disable log redirections (Muntyan, #323786)
+      - "sub-sub-type" bug fixed (Gustavo)
+      - Coverity report code fixes (Johan)
+      - Support retrieving signal and property info from interfaces (Finlay)
+      - Support parameters of type G_TYPE_GSTRING in signals (Gustavo)
+      - Wrap a few g_filename_* APIs (Gustavo)
+
+2.10.1 11-april-2006
+      - uint64 property bug fix (Andy Wingo)
+      - Hard code path to 2.0 (Gustavo)
+      - Allow only tuples and lists in strv to value (Gustavo)
+      - Include dsextras.py in the dist (Johan)
+
+2.10.0 13-march-2006
+      - enum/leak fix (Michael Smith)
+
+2.9.0 16-january-2006
+      - Signal accumulator support (Gustavo)
+      - GObject doc string generation improvements (Gustavo)
+      - Discover GInterfaces in runtime (Gustavo)
+      - Warn if return value in iowatch callback is not bool (Gustavo)
+      - Convert string arrays properly (Christopher Aillon)
+
+2.8.0 9-january-2006
+      - Initial release, split of from PyGTK.
+      - Updates for Python 2.5's richcompare (Manish Yosh)
+      - PyFlags bug fixes (Gustavo)
+      - Fix leak in pygobject_new_with_interfaces (Johan)
+      - Undeprecate gobject.type_register (Johan)

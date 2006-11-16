@@ -1,0 +1,20 @@
+python-gobject (2.12.2-1osso1) maemo; urgency=low
+
+  * Adopted by Maemo Platform
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 10 Oct 2006 16:03:00 -0300
+
+pygobject (2.10.1-0ubuntu1) dapper; urgency=low
+
+  * New upstream version:
+    - uint64 property bug fix
+    - Hard code path to 2.0 
+    - Allow only tuples and lists in strv to value 
+    - Include dsextras.py in the dist (Ubuntu: #37093)
+  * debian/control.in:
+    - Build-Depends on xvfb
+  * debian/rules:
+    - run "make check" on build (Ubuntu: #28787)
+
+ -- Sebastien Bacher <seb128@canonical.com>  Tue, 11 Apr 2006 19:04:20 +0200
+

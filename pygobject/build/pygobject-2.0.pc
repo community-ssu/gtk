@@ -1,0 +1,18 @@
+prefix=/usr
+exec_prefix=${prefix}
+includedir=${prefix}/include
+datarootdir=@datarootdir@
+datadir=${prefix}/share
+
+# you can use the --variable=pygtkincludedir argument to
+# pkg-config to get this value.  You might want to use this to
+# install additional headers.
+pygtkincludedir=${includedir}/pygtk-2.0
+fixxref=${datadir}/pygobject/xsl/fixxref.py
+pygdocs=${datadir}/gtk-doc/html/pygobject
+
+Name: PyGObject
+Description: Python bindings for GObject
+Requires: gobject-2.0
+Version: 2.12.2
+Cflags: -I${pygtkincludedir}
