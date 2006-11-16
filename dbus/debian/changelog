@@ -15,8 +15,10 @@ dbus (1.0.0-osso1) experimental; urgency=low
   * Added patch to allow using killpg() for the D-Bus-started process. 
   * Added debug package for the library.
   * Removed installing debian/session.conf (patching upstream is better).
+  * Added patch to remove the max. matches limit.
+  * Removed some inconvenient dependencies (e.g. lsb-base).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 13:54:45 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 16 Nov 2006 12:50:49 +0200
 
 dbus (0.94-1) unstable; urgency=low
 
