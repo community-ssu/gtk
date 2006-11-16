@@ -9,10 +9,13 @@ clean:
 	dh_testdir
 	dh_testroot
 	rm -f build-stamp 
+	-make distclean
+	rm -rf .deps
 	dh_clean 
 
 build:
 	dh_testdir
+	./autogen.sh
 	./configure --prefix=/usr
 	make
 
