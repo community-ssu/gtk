@@ -30,7 +30,7 @@ clean:
 	-rm -rf build dist
 	-rm -rf $(d_base) $(d_dev)
 	-$(PYTHON) setup.py clean
-	-rm -f *.pyc *.pyo
+	find . -name "*.py[co]" | xargs rm -f
 	-rm -f Setup
 	dh_clean
 
