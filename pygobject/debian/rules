@@ -36,7 +36,8 @@ build-stamp:
 		../configure \
 			--prefix=/usr \
 			--enable-thread \
-			--disable-numpy
+			--disable-numpy \
+			--disable-docs
 	$(MAKE) -C build
 	touch build-stamp
 
