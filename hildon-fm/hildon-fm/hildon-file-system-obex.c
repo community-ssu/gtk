@@ -334,7 +334,6 @@ static gchar *_obex_addr_to_display_name(gchar *obex_addr)
 
     escape:
 
-    dbus_connection_disconnect (conn);
     dbus_connection_unref (conn);
 
 
