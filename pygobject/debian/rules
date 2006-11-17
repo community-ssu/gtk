@@ -21,6 +21,7 @@ clean:
 	rm -rf $(CURDIR)/$(d_base)
 	rm -rf $(CURDIR)/$(d_dev)
 	find . -name "*.py[co]" | xargs rm -f
+	rm -f configure
 	rm -f *-stamp
 
 build: build-stamp
