@@ -1,3 +1,9 @@
+python-dbus (0.71-1osso1) unstable; urgency=low
+
+  * upgraded to python-dbus-0.71 
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Fri, 17 Nov 2006 18:27:00 -0300
+
 python-dbus (0.61-1osso6) unstable; urgency=low
 
   * fixed a bug related conflicting module names with pygtk

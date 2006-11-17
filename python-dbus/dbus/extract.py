@@ -224,10 +224,14 @@ def main(filename, flags, output=None):
 
     fd = open(filename)
     for line in fd:
-        if line.startswith('#include'):
-            filename = line.split('"')[-2]
+        match = re.match('#include [<"]([^">]+)[">]$', line)
+
+        if match:
+            filename = match.group(1)
+            print >>sys.stderr, "matched %s" % (filename)
             command = "echo '%s'|cpp %s" % (line, cppflags)
             output = commands.getoutput(command)
+            print >>sys.stderr, "output %s" % (output)
             do_buffer(filename, output)
         else:
             print line[:-1]

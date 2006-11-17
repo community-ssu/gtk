@@ -2,15 +2,15 @@ Source: python-dbus
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: debhelper (>= 4.0.0), python2.4 (>= 2.4-1), python2.4-dev (>= 2.4-1), libdbus-1-dev (>= 0.61), libdbus-glib-1-dev (>= 0.61), python2.4-pyrex, pkg-config
+Build-Depends: debhelper (>= 4.0.0), python2.5 (>= 2.5-0), python2.5-dev (>= 2.5-0), libdbus-1-dev (>= 0.61), libdbus-glib-1-dev (>= 0.61), python2.5-pyrex, pkg-config
 Standards-Version: 3.6.1
 
-Package: python2.4-dbus
+Package: python2.5-dbus
 Architecture: any
-Depends: python2.4, libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), ${shlibs:Depends}
+Depends: python2.5, libdbus-1-2 (>= 0.61), libdbus-glib-1-2 (>= 0.61), ${shlibs:Depends}
 Description: Python wrappers around D-Bus.
 
-Package: python2.4-dbus-dev
+Package: python2.5-dbus-dev
 Architecture: all
-Depends: python2.4-dbus (= ${Source-Version})
+Depends: python2.5-dbus (= ${Source-Version})
 Description: Development files for Python wrappers around D-Bus.

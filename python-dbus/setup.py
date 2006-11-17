@@ -1,13 +1,17 @@
 import os
 import sys
 
+sys.path.append("dbus")
+
 from distutils.core import setup
 from distutils.extension import Extension
 from distutils.command.clean import clean
 from Pyrex.Distutils import build_ext
 
-sys.path.append("dbus")
 import extract
+
+sys.path.append("test")
+from dbus_python_check import dbus_python_check
 
 def remove(filename):
     if os.path.exists(filename):
@@ -20,8 +24,9 @@ class full_clean(clean):
         remove("dbus/dbus_bindings.pxd")
         remove("dbus/dbus_bindings.c")
         remove("dbus/dbus_glib_bindings.c")
+        remove("ChangeLog")
 
-includedirs_flag = ['-I.', '-Idbus/']
+includedirs_flag = ['-I.']
 dbus_includes = ['.']
 dbus_glib_includes = ['.']
 
@@ -47,7 +52,48 @@ if error:
 includedirs_flag.extend(output.split())
 dbus_glib_includes.extend([ x.replace("-I", "") for x in output.split() ])
 
+#create ChangeLog only if this is a git repo
+if os.path.exists(".git"):
+    pipe = os.popen3("git-log --stat")
+    output = pipe[1].read().strip()
+    error = pipe[2].read().strip()
+
+    for p in pipe:
+        p.close()
+
+    if error:
+        print "ERROR: running git-log (%s)" % (error)
+        raise SystemExit
+
+    file = open("ChangeLog", "w")
+    file.writelines(output)
+    file.close()
+
+dbus_libs = []
+dbus_glib_libs = []
+
+pipe = os.popen3("pkg-config --libs-only-L dbus-1")
+output = pipe[1].read().strip()
+error = pipe[2].read().strip()
+for p in pipe:
+    p.close()
+if error:
+    print "ERROR: running pkg-config (%s)" % (error)
+    raise SystemExit
+dbus_libs.extend([ x.replace("-L", "") for x in output.split() ])
+
+pipe = os.popen3("pkg-config --libs-only-L dbus-glib-1")
+output = pipe[1].read().strip()
+error = pipe[2].read().strip()
+for p in pipe:
+    p.close()
+if error:
+    print "ERROR: running pkg-config (%s)" % (error)
+    raise SystemExit
+dbus_glib_libs.extend([ x.replace("-L", "") for x in output.split() ])
+
 output = open("dbus/dbus_bindings.pxd", 'w')
+includedirs_flag.append('-Idbus/')
 extract.main("dbus/dbus_bindings.pxd.in", includedirs_flag, output)
 output.close()
 
@@ -63,14 +109,16 @@ Currently the communicating applications are on one computer, but TCP/IP option
 is available and remote support planned.'''
 
 setup(
-    name='dbus',
-    version='0.61',
-    description='D-Bus Python bindings.',
+    name='dbus-python',
+    version='0.71',
+    description='D-Bus Python bindings',
     long_description=long_desc,
     url='http://dbus.freedesktop.org/',
     author='John (J5) Palmieri',
     author_email='johnp@redhat.com',
-    packages=['dbus'],
+    maintainer='John (J5) Palmieri',
+    maintainer_email='johnp@redhat.com',
+    package_dir={'dbus':'dbus'},
     py_modules=[
         "dbus/_dbus",
         "dbus/exceptions",
@@ -83,22 +131,24 @@ setup(
         "dbus/introspect_parser",
         "dbus/proxies",
         "dbus/_util",
-    ], 
-	ext_modules=[
-        Extension("dbus_bindings", ["dbus/dbus_bindings.pyx"],
+    ],
+    ext_modules=[
+        Extension("dbus/dbus_bindings", ["dbus/dbus_bindings.pyx"],
             include_dirs=dbus_includes,
+            library_dirs=dbus_libs,
             libraries=["dbus-1"],
 
         ),
-        Extension("dbus_glib_bindings", ["dbus/dbus_glib_bindings.pyx"],
+        Extension("dbus/dbus_glib_bindings", ["dbus/dbus_glib_bindings.pyx"],
             include_dirs=dbus_glib_includes,
+            library_dirs=dbus_glib_libs,
             libraries=["dbus-glib-1", "dbus-1", "glib-2.0"],
             define_macros=[
                 ('DBUS_API_SUBJECT_TO_CHANGE', '1')
             ],
         ),
-	],
-    cmdclass={'build_ext': build_ext, 'clean': full_clean}
+    ],
+    cmdclass={'build_ext': build_ext, 'clean': full_clean, 'check': dbus_python_check}
 )
 
 # vim:ts=4:sw=4:tw=80:si:ai:showmatch:et
