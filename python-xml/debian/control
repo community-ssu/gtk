@@ -2,12 +2,12 @@ Source: python-xml
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: python2.4, python2.4-dev, debhelper (>= 4.2.5), python2.4
+Build-Depends: python2.5, python2.5-dev, debhelper (>= 4.2.5)
 Standards-Version: 3.6.1
 
-Package: python2.4-xml
+Package: python2.5-xml
 Architecture: any
-Depends: python2.4, ${shlibs:Depends}
+Depends: python2.5, ${shlibs:Depends}
 Description: XML tools for Python
  The Python/XML distribution contains the basic tools required for
  processing XML data using the Python programming language, assembled
@@ -29,7 +29,7 @@ Description: XML tools for Python
  This package is an empty dummy package that always depends on
  a package built for Debian's default Python version.
 
-Package: python2.4-xml-dev
+Package: python2.5-xml-dev
 Architecture: all
-Depends: python2.4-xml (= ${Source-Version})
-Description: Development files for XML tools for Python (2.4.x)
+Depends: python2.5-xml (= ${Source-Version})
+Description: Development files for XML tools for Python (2.5.x)
