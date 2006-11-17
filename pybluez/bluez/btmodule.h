@@ -4,6 +4,7 @@
 #include "Python.h"
 #include <bluetooth/bluetooth.h>
 #include <bluetooth/sdp.h>
+#include <bluetooth/sdp_lib.h>
 #include <stdint.h>
 
 #ifdef __cplusplus

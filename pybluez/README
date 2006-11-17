@@ -1,37 +1,51 @@
 PyBluez
 
+Python extension module allowing access to system Bluetooth resources.
+
 http://org.csail.mit.edu/pybluez
 
-REQUIREMENTS:
- - python 2.3
- - python-dev
- - BlueZ libraries
+BUILD REQUIREMENTS:
+
+  GNU/Linux:
+     - Python 2.3 or Python 2.4
+     - Python distutils (standard in most Python distros, separate package
+                         python-dev in Debian)
+     - BlueZ libraries and header files
+
+  Windows XP:
+    - Microsoft Windows XP SP1
+    - Microsoft Visual Studio
+    - Microsoft Windows Platform SDK
+    - Python 2.3 or more recent version
 
 
 INSTALLATION:
+  from a command shell:
 
   # python setup.py install
 
-  When building on iPAQs for Familiar Linux, you'll need to munge setup.py and
-  have it link against libsdp.  This is because Familiar uses a super-old
-  version of bluez.
-
 DOCUMENTATION:
+  from a command shell:
+
   # doc/gendoc
 
   API documentation will then be located at doc/bluetooth.html and
   doc/_bluetooth.html for low-level access
 
 EXAMPLES:
+  GNU/Linux and Windows XP:
+
   # examples/simple/inquiry.py
-  # exmaples/simple/l2capserver.py
-  # exmaples/simple/l2capclient.py
-  # examples/simple/asynchronous-inquiry.py
   # examples/simple/sdp-browse.py
   # examples/simple/rfcomm-server.py
   # examples/simple/rfcomm-client.py
 
-  # examples/bluezchat
+  GNU/Linux only:
+
+  # exmaples/simple/l2capserver.py
+  # exmaples/simple/l2capclient.py
+  # examples/simple/asynchronous-inquiry.py
+  # examples/bluezchat   (requires PyGTK)
 
   # examples/advanced/inquiry-with-rssi.py
   # examples/l2-unreliable-server.py

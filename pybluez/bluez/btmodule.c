@@ -2147,9 +2147,39 @@ Converts a bluetooth address string into a packed bluetooth address.  The\n\
 string should be of the form \"XX:XX:XX:XX:XX:XX\"");
     
 /*
- * ----------------------------------------------------------------------
- *  End of HCI section  (Calvin)
- * ----------------------------------------------------------------------
+ * params:  (string) device address
+ * effect: -
+ * return: Device id
+ */
+static PyObject *
+bt_hci_devid(PyObject *self, PyObject *args)
+{
+    char *devaddr=NULL;
+    int devid;
+
+    if ( !PyArg_ParseTuple(args, "|s", &devaddr) )
+    {
+        return NULL;
+    }
+
+	if (devaddr)
+		devid=hci_devid(devaddr);
+
+	else
+		devid=hci_get_route(NULL);
+
+    return Py_BuildValue("i",devid);
+}
+PyDoc_STRVAR( bt_hci_devid_doc,
+"hci_devid(address)\n\
+\n\
+get the device id for the local device with specified address.\n\
+");
+
+/*
+ * -------------------
+ *  End of HCI section
+ * -------------------
  */
 
 
@@ -2159,8 +2189,11 @@ PyObject *
 bt_sdp_advertise_service( PyObject *self, PyObject *args )
 {
     PySocketSockObject *socko = NULL;
-    char *name = NULL, *service_id_str = NULL, *provider = NULL, *description = NULL;
-    PyObject *service_classes, *profiles;
+    char *name = NULL, 
+         *service_id_str = NULL, 
+         *provider = NULL, 
+         *description = NULL;
+    PyObject *service_classes, *profiles, *protocols;
     int namelen = 0, provlen = 0, desclen = 0;
     uuid_t svc_uuid = { 0 };
     int i;
@@ -2182,10 +2215,10 @@ bt_sdp_advertise_service( PyObject *self, PyObject *args )
     sdp_session_t *session = 0;
     int err = 0;
 
-
-    if (!PyArg_ParseTuple(args, "O!s#sOOs#s#", &sock_type, &socko, &name,
+    if (!PyArg_ParseTuple(args, "O!s#sOOs#s#O", &sock_type, &socko, &name,
                 &namelen, &service_id_str, &service_classes, 
-                &profiles, &provider, &provlen, &description, &desclen)) {
+                &profiles, &provider, &provlen, &description, &desclen,
+                &protocols)) {
         return 0;
     }
     if( provlen == 0 ) provider = NULL;
@@ -2243,6 +2276,24 @@ bt_sdp_advertise_service( PyObject *self, PyObject *args )
              ) {
             PyErr_SetString(PyExc_ValueError, 
                     "Each profile must be a ('uuid', version) tuple");
+            return 0;
+        }
+    }
+    
+    // protocols must be a list / sequence
+    if (! PySequence_Check(protocols)) {
+        PyErr_SetString(PyExc_ValueError, 
+                "protocols must be a sequence");
+        return 0;
+    }
+    // make sure each item in the list is a valid UUID
+    for(i = 0; i < PySequence_Length(protocols); ++i) {
+        PyObject *item = PySequence_GetItem(protocols, i);
+        if( ! str2uuid( PyString_AsString( item ), NULL ) ) {
+            PyErr_SetString(PyExc_ValueError, 
+                    "protocols must be a list of "
+                    "strings, each either of the form XXXX or "
+                    "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX");
             return 0;
         }
     }
@@ -2316,6 +2367,24 @@ bt_sdp_advertise_service( PyObject *self, PyObject *args )
         psm = sdp_data_alloc(SDP_UINT16, &l2cap_psm);
         sdp_list_append(l2cap_list, psm);
     }
+    
+    // add additional protocols, if any
+    sdp_list_t *extra_protos_array[PySequence_Length(protocols)];
+    if (PySequence_Length(protocols) > 0) {
+        for(i = 0; i < PySequence_Length(protocols); i++) {
+            uuid_t *proto_uuid = (uuid_t*) malloc( sizeof( uuid_t ) );
+            PyObject *item = PySequence_GetItem(protocols, i);
+            str2uuid( PyString_AsString( item ), proto_uuid );
+            
+            sdp_list_t *new_list;
+            new_list = sdp_list_append( 0, proto_uuid );
+            proto_list = sdp_list_append( proto_list, new_list );
+            
+            // keep track, to free the list later
+            extra_protos_array[i] = new_list;
+        }
+    }
+    
     access_proto_list = sdp_list_append( 0, proto_list );
     sdp_set_access_protos( &record, access_proto_list );
 
@@ -2361,6 +2430,9 @@ bt_sdp_advertise_service( PyObject *self, PyObject *args )
     if( channel ) sdp_data_free( channel );
     sdp_list_free( l2cap_list, 0 );
     sdp_list_free( rfcomm_list, 0 );
+    for(i = 0; i < PySequence_Length(protocols); i++) {
+        sdp_list_free( extra_protos_array[i], free );
+    }
     sdp_list_free( root_list, 0 );
     sdp_list_free( access_proto_list, 0 );
     sdp_list_free( svc_class_list, free );
@@ -2370,7 +2442,6 @@ bt_sdp_advertise_service( PyObject *self, PyObject *args )
         PyErr_SetFromErrno(bluetooth_error);
         return 0;
     }
-
     socko->sdp_record_handle = record.handle;
 
     Py_INCREF(Py_None);
@@ -2434,6 +2505,7 @@ stop advertising services associated with this socket\n\
 { #name, (PyCFunction)bt_ ##name, argtype, bt_ ## name ## _doc }
 
 static PyMethodDef bt_methods[] = {
+    DECL_BT_METHOD( hci_devid, METH_VARARGS ),
     DECL_BT_METHOD( hci_open_dev, METH_VARARGS ),
     DECL_BT_METHOD( hci_close_dev, METH_VARARGS ),
     DECL_BT_METHOD( hci_send_cmd, METH_VARARGS ),
@@ -3050,6 +3122,7 @@ init_bluetooth(void)
 	ADD_INT_CONST(m, SOL_L2CAP);
 	ADD_INT_CONST(m, SOL_RFCOMM);
 	ADD_INT_CONST(m, SOL_SCO);
+	ADD_INT_CONST(m, SCO_OPTIONS);
 	ADD_INT_CONST(m, L2CAP_OPTIONS);
 
     /* ioctl */

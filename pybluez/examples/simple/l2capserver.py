@@ -1,9 +1,11 @@
 # file: l2capclient.py
 # auth: Calvin On <calvinon@csail.mit.edu>
 # desc: Demo L2CAP server for pybluez.
-# $Id: l2capserver.py,v 1.3 2006/02/24 20:30:15 albert Exp $
+# $Id: l2capserver.py,v 1.4 2006/05/06 00:39:50 albert Exp $
 # 
 # 03/31/2005: albert - modified to work with new API
+#
+# XXX Linux only (5/5/2006)
 
 import bluetooth
 

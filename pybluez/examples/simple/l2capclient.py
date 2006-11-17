@@ -1,10 +1,12 @@
 # file: l2capclient.py
 # auth: Calvin On <calvinon@csail.mit.edu>
 # desc: Demo L2CAP client for bluetooth module.
-# $Id: l2capclient.py,v 1.4 2006/02/24 20:30:15 albert Exp $
+# $Id: l2capclient.py,v 1.5 2006/05/06 00:39:50 albert Exp $
 #
 # 03/31/2005: albert - modified to work with new API
 # 02/24/2006: albert - removed cruft
+#
+# XXX Linux only (5/5/2006)
 
 import sys
 import bluetooth

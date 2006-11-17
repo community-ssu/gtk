@@ -1,3 +1,9 @@
+pybluez (0.9.1-1osso1) unstable; urgency=low
+
+  * moved to version 0.9.1
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Fri,  17 Nov 2006 15:42:00 -0300
+
 pybluez (0.6.1-1osso5) unstable; urgency=low
 
   * debian/rules refactored

@@ -264,7 +264,9 @@ sess_connect(PySDPSessionObject *s, PyObject *args, PyObject *kwds)
         // XXX
     }
 
+	Py_BEGIN_ALLOW_THREADS
     s->session = sdp_connect( &src, &dst, flags );
+	Py_END_ALLOW_THREADS
     if( s->session == NULL ) 
         return PyErr_SetFromErrno( bluetooth_error );
 
@@ -288,7 +290,9 @@ static PyObject *
 sess_close(PySDPSessionObject *s)
 {
     if( s->session != NULL ) {
+        Py_BEGIN_ALLOW_THREADS
         sdp_close( s->session );
+        Py_END_ALLOW_THREADS
         s->session = NULL;
     }
     Py_INCREF(Py_None);

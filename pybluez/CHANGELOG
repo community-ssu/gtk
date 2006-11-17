@@ -1,7 +1,63 @@
 PyBluez CHANGELOG file
 
-this file contains a (probably incomplete) list of changes through the
-different versions of PyBluez.
+this file contains a list of changes through the different versions of PyBluez.
+
+changes from 0.9 to 0.9.1 (Sep 14, 2006)
+----------------------------------------
+GNU/Linux:
+    fixed missing #include that prevents PyBluez from compiling with
+    newer version of BlueZ (reported by Priyank Gosalia)
+
+changes from 0.8 to 0.9 (Sep 9, 2006)
+----------------------------------------
+added protocols optional parameter to advertise_service (bluez: Bea Lam)
+refactor:  merged bluez/bluetooth.py and msbt/bluetooth.py
+
+GNU/Linux:
+  added _bluetooth.hci_devid (Mikael Lindqvist)
+  added _bluetooth.SCO_OPTIONS constant
+  added Py_{BEGIN,END}_ALLOW_THREADS guards around sdp_connect
+          (spotted by Rostislav Belov)
+win32:
+  send() now returns the number of bytes sent (spotted by Keith O'Hara)
+  sdp search no longer raises an exception when no records are found and no 
+      other error occurred.
+
+changes from 0.7.1 to 0.8 (July 31, 2006)
+----------------------------------------
+win32:
+  added settimeout, gettimeout, setblocking methods (David Conolly)
+GNU/Linux:
+  fixed DeviceDiscoverer device class byte swap bug (spotted by Bea Lam)
+
+changes from 0.7 to 0.7.1 (May 13, 2006)
+---------------------------------------
+win32:
+  discover_devices() no longer raises an IOError when no devices are detected
+  lookup_name() sort of works (consistently on some machines, 
+                               not at all on others)
+  advertise_service() fully supported
+
+
+changes from 0.6.1 to 0.7 (May 5, 2006)
+---------------------------------------
+- fixed some docstring errors
+- added lookup_names parameter to discover_devices()  If set to True,
+  discover_devices() returns a list of (address, name) pairs.  If set to False
+  (default), returns a list of addresses
+- added constant PORT_ANY.  bind to port PORT_ANY for dynamic port 
+  assignment.  
+  get_available_port() is now deprecated.
+- added support for Microsoft Windows Bluetooth API.  This comes standard on
+  Windows XP SP1, and Windows Vista.  The following features are supported:
+    RFCOMM sockets (bind, listen, connect, accept, send, recv, close,
+            getsockname, fileno)
+    discover_devices()
+    find_service()
+    advertise_service()  - with limitations.  See code for details
+  The following features are not yet supported in Windows XP:
+    DeviceDiscoverer class
+    lookup_name()
 
 
 changes from 0.6 to 0.6.1 (Feb 24, 2006)
