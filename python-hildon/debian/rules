@@ -1,6 +1,6 @@
 #!/usr/bin/make -f
 
-PYVER=2.4
+PYVER=2.5
 PYGTKVER=2.0
 
 DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
