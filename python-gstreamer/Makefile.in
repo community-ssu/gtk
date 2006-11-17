@@ -40,15 +40,19 @@ build_triplet = @build@
 host_triplet = @host@
 DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/config.h.in \
-	$(srcdir)/gst-python.spec.in $(top_srcdir)/common/release.mak \
-	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
-	TODO compile config.guess config.sub depcomp install-sh \
-	ltmain.sh missing py-compile
+	$(srcdir)/gst-python.spec.in \
+	$(top_srcdir)/common/coverage/lcov.mak \
+	$(top_srcdir)/common/release.mak $(top_srcdir)/configure \
+	AUTHORS COPYING ChangeLog INSTALL NEWS TODO compile \
+	config.guess config.sub depcomp install-sh ltmain.sh missing \
+	py-compile
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/common/m4/as-ac-expand.m4 \
 	$(top_srcdir)/common/m4/as-compiler-flag.m4 \
 	$(top_srcdir)/common/m4/as-version.m4 \
+	$(top_srcdir)/common/m4/gst-args.m4 \
+	$(top_srcdir)/common/m4/gst-error.m4 \
 	$(top_srcdir)/common/m4/gst-valgrind.m4 \
 	$(top_srcdir)/common/m4/pkg.m4 $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -92,6 +96,7 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
@@ -108,10 +113,15 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ERROR_CFLAGS = @ERROR_CFLAGS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GCOV = @GCOV@
+GCOV_CFLAGS = @GCOV_CFLAGS@
+GCOV_LIBS = @GCOV_LIBS@
 GLIB_REQ = @GLIB_REQ@
+GREP = @GREP@
 GSTPB_REQ = @GSTPB_REQ@
 GST_BASE_CFLAGS = @GST_BASE_CFLAGS@
 GST_BASE_LIBS = @GST_BASE_LIBS@
@@ -120,19 +130,26 @@ GST_CONTROLLER_CFLAGS = @GST_CONTROLLER_CFLAGS@
 GST_CONTROLLER_LIBS = @GST_CONTROLLER_LIBS@
 GST_DP_CFLAGS = @GST_DP_CFLAGS@
 GST_DP_LIBS = @GST_DP_LIBS@
+GST_GCOV_ENABLED_FALSE = @GST_GCOV_ENABLED_FALSE@
+GST_GCOV_ENABLED_TRUE = @GST_GCOV_ENABLED_TRUE@
 GST_LIBS = @GST_LIBS@
 GST_MAJORMINOR = @GST_MAJORMINOR@
 GST_NET_CFLAGS = @GST_NET_CFLAGS@
 GST_NET_LIBS = @GST_NET_LIBS@
+GST_OPTION_CFLAGS = @GST_OPTION_CFLAGS@
+GST_OPTION_LIBS = @GST_OPTION_LIBS@
 GST_PLUGINS_BASE_CFLAGS = @GST_PLUGINS_BASE_CFLAGS@
 GST_PLUGINS_BASE_LIBS = @GST_PLUGINS_BASE_LIBS@
 GST_REQ = @GST_REQ@
 GTK_REQ = @GTK_REQ@
 HAVE_VALGRIND_FALSE = @HAVE_VALGRIND_FALSE@
 HAVE_VALGRIND_TRUE = @HAVE_VALGRIND_TRUE@
+IGNORE_GST_0_10_10 = @IGNORE_GST_0_10_10@
 IGNORE_GST_0_10_3 = @IGNORE_GST_0_10_3@
 IGNORE_GST_0_10_4 = @IGNORE_GST_0_10_4@
 IGNORE_GST_0_10_5 = @IGNORE_GST_0_10_5@
+IGNORE_GST_0_10_6 = @IGNORE_GST_0_10_6@
+IGNORE_GST_0_10_7 = @IGNORE_GST_0_10_7@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -162,7 +179,6 @@ PACKAGE_VERSION_RELEASE = @PACKAGE_VERSION_RELEASE@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PYEXECDIR = @PYEXECDIR@
-PYGST_CFLAGS = @PYGST_CFLAGS@
 PYGTK_CFLAGS = @PYGTK_CFLAGS@
 PYGTK_CODEGEN = @PYGTK_CODEGEN@
 PYGTK_DEFSDIR = @PYGTK_DEFSDIR@
@@ -184,13 +200,9 @@ VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
 VALGRIND_LIBS = @VALGRIND_LIBS@
 VALGRIND_PATH = @VALGRIND_PATH@
 VERSION = @VERSION@
-ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
-ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -207,25 +219,32 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 pkgpyexecdir = @pkgpyexecdir@
 pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pyexecdir = @pyexecdir@
 pythondir = @pythondir@
 sbindir = @sbindir@
@@ -241,7 +260,7 @@ EXTRA_DIST = \
 	RELEASE
 
 BUILT_SOURCES = pygst.py
-CLEANFILES = pygst.py
+CLEANFILES = pygst.py pygst.pyc
 
 # make bz2 as well
 AUTOMAKE_OPTIONS = dist-bzip2
@@ -251,7 +270,7 @@ all: $(BUILT_SOURCES) config.h
 .SUFFIXES:
 am--refresh:
 	@:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/common/release.mak $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(top_srcdir)/common/release.mak $(top_srcdir)/common/coverage/lcov.mak $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -447,7 +466,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/common $(distdir)/common/m4 $(distdir)/gst $(distdir)/pkgconfig
+	$(mkdir_p) $(distdir)/. $(distdir)/common $(distdir)/common/coverage $(distdir)/common/m4 $(distdir)/gst $(distdir)/pkgconfig
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -735,6 +754,36 @@ check-valgrind:
 
 check-torture:
 	@true
+
+# run lcov from scratch, always
+lcov-reset:
+	make lcov-run
+	make lcov-report
+
+# run lcov from scratch if the dir is not there
+lcov:
+	make lcov-reset
+
+# reset run coverage tests
+lcov-run:
+	@-rm -rf lcov
+	find . -name "*.gcda" -exec rm {} \;
+	if test -d tests/check; then make -C tests/check inspect; fi
+	make check
+
+# generate report based on current coverage data
+lcov-report:
+	mkdir lcov
+	lcov --directory . --capture --output-file lcov/lcov.info
+	lcov -l lcov/lcov.info | grep -v "`cd $(top_srcdir) && pwd`" | cut -d: -f1 > lcov/remove
+	lcov -l lcov/lcov.info | grep "tests/check/" | cut -d: -f1 >> lcov/remove
+	lcov -r lcov/lcov.info `cat lcov/remove` > lcov/lcov.cleaned.info
+	rm lcov/remove
+	mv lcov/lcov.cleaned.info lcov/lcov.info
+	genhtml -t "$(PACKAGE_STRING)" -o lcov lcov/lcov.info
+
+lcov-upload: lcov
+	rsync -rvz -e ssh --delete lcov/* gstreamer.freedesktop.org:/srv/gstreamer.freedesktop.org/www/data/coverage/lcov/$(PACKAGE)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

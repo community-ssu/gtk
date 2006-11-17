@@ -45,6 +45,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/common/m4/as-ac-expand.m4 \
 	$(top_srcdir)/common/m4/as-compiler-flag.m4 \
 	$(top_srcdir)/common/m4/as-version.m4 \
+	$(top_srcdir)/common/m4/gst-args.m4 \
+	$(top_srcdir)/common/m4/gst-error.m4 \
 	$(top_srcdir)/common/m4/gst-valgrind.m4 \
 	$(top_srcdir)/common/m4/pkg.m4 $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -64,12 +66,11 @@ am__installdirs = "$(DESTDIR)$(pygstexecdir)" "$(DESTDIR)$(pygstdir)" \
 pygstexecLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pygstexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1)
+am__DEPENDENCIES_2 = $(am__DEPENDENCIES_1) $(am__DEPENDENCIES_1)
 _gst_la_DEPENDENCIES = $(am__DEPENDENCIES_2) $(am__DEPENDENCIES_1)
 am__gst_la_OBJECTS = _gst_la-gst-argtypes.lo _gst_la-gstmodule.lo \
 	_gst_la-pygstiterator.lo _gst_la-pygstminiobject.lo \
-	_gst_la-pygstobject.lo _gst_la-pygstvalue.lo \
-	_gst_la-pygstexception.lo
+	_gst_la-pygstvalue.lo _gst_la-pygstexception.lo
 nodist__gst_la_OBJECTS = _gst_la-gst.lo
 _gst_la_OBJECTS = $(am__gst_la_OBJECTS) $(nodist__gst_la_OBJECTS)
 interfaces_la_DEPENDENCIES = $(am__DEPENDENCIES_2)
@@ -117,6 +118,7 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
@@ -133,10 +135,15 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ERROR_CFLAGS = @ERROR_CFLAGS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GCOV = @GCOV@
+GCOV_CFLAGS = @GCOV_CFLAGS@
+GCOV_LIBS = @GCOV_LIBS@
 GLIB_REQ = @GLIB_REQ@
+GREP = @GREP@
 GSTPB_REQ = @GSTPB_REQ@
 GST_BASE_CFLAGS = @GST_BASE_CFLAGS@
 GST_BASE_LIBS = @GST_BASE_LIBS@
@@ -145,19 +152,26 @@ GST_CONTROLLER_CFLAGS = @GST_CONTROLLER_CFLAGS@
 GST_CONTROLLER_LIBS = @GST_CONTROLLER_LIBS@
 GST_DP_CFLAGS = @GST_DP_CFLAGS@
 GST_DP_LIBS = @GST_DP_LIBS@
+GST_GCOV_ENABLED_FALSE = @GST_GCOV_ENABLED_FALSE@
+GST_GCOV_ENABLED_TRUE = @GST_GCOV_ENABLED_TRUE@
 GST_LIBS = @GST_LIBS@
 GST_MAJORMINOR = @GST_MAJORMINOR@
 GST_NET_CFLAGS = @GST_NET_CFLAGS@
 GST_NET_LIBS = @GST_NET_LIBS@
+GST_OPTION_CFLAGS = @GST_OPTION_CFLAGS@
+GST_OPTION_LIBS = @GST_OPTION_LIBS@
 GST_PLUGINS_BASE_CFLAGS = @GST_PLUGINS_BASE_CFLAGS@
 GST_PLUGINS_BASE_LIBS = @GST_PLUGINS_BASE_LIBS@
 GST_REQ = @GST_REQ@
 GTK_REQ = @GTK_REQ@
 HAVE_VALGRIND_FALSE = @HAVE_VALGRIND_FALSE@
 HAVE_VALGRIND_TRUE = @HAVE_VALGRIND_TRUE@
+IGNORE_GST_0_10_10 = @IGNORE_GST_0_10_10@
 IGNORE_GST_0_10_3 = @IGNORE_GST_0_10_3@
 IGNORE_GST_0_10_4 = @IGNORE_GST_0_10_4@
 IGNORE_GST_0_10_5 = @IGNORE_GST_0_10_5@
+IGNORE_GST_0_10_6 = @IGNORE_GST_0_10_6@
+IGNORE_GST_0_10_7 = @IGNORE_GST_0_10_7@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -187,7 +201,6 @@ PACKAGE_VERSION_RELEASE = @PACKAGE_VERSION_RELEASE@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PYEXECDIR = @PYEXECDIR@
-PYGST_CFLAGS = @PYGST_CFLAGS@
 PYGTK_CFLAGS = @PYGTK_CFLAGS@
 PYGTK_CODEGEN = @PYGTK_CODEGEN@
 PYGTK_DEFSDIR = @PYGTK_DEFSDIR@
@@ -209,13 +222,9 @@ VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
 VALGRIND_LIBS = @VALGRIND_LIBS@
 VALGRIND_PATH = @VALGRIND_PATH@
 VERSION = @VERSION@
-ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
-ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -232,33 +241,40 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 pkgpyexecdir = $(pyexecdir)/gst-$(GST_MAJORMINOR)/gst
 pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pyexecdir = @pyexecdir@
 pythondir = @pythondir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-common_cflags = $(PYGTK_CFLAGS) $(GST_CFLAGS) $(PYGST_CFLAGS) -fno-strict-aliasing
-common_libadd = $(GST_LIBS)
+common_cflags = $(PYGTK_CFLAGS) $(GST_CFLAGS) $(GST_OPTION_CFLAGS) -fno-strict-aliasing
+common_libadd = $(GST_LIBS) $(GST_OPTION_LIBS)
 common_ldflags = -module -avoid-version
 
 # we install everything in pyexecdir; otherwise you end up with a mess for
@@ -274,11 +290,14 @@ defs_DATA = gst-types.defs \
 	base.defs
 
 defsdir = $(pkgdatadir)/$(GST_MAJORMINOR)/defs
-noinst_HEADERS = common.h pygstvalue.h pygstminiobject.h pygstobject.h pygstexception.h
+noinst_HEADERS = common.h pygstvalue.h pygstminiobject.h pygstexception.h
 versioned_overrides = \
 	gst-0.10.3.ignore	\
 	gst-0.10.4.ignore	\
-	gst-0.10.5.ignore
+	gst-0.10.5.ignore	\
+	gst-0.10.6.ignore	\
+	gst-0.10.7.ignore	\
+	gst-0.10.10.ignore
 
 INCLUDES = $(PYTHON_INCLUDES)
 EXTRA_DIST = $(defs_DATA) $(versioned_overrides) common.h arg-types.py \
@@ -297,7 +316,6 @@ _gst_la_SOURCES = \
 	gstmodule.c 		\
 	pygstiterator.c		\
 	pygstminiobject.c 	\
-	pygstobject.c		\
 	pygstvalue.c 		\
 	pygstexception.c
 
@@ -412,7 +430,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gst_la-pygstexception.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gst_la-pygstiterator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gst_la-pygstminiobject.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gst_la-pygstobject.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gst_la-pygstvalue.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interfaces_la-interfaces.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/interfaces_la-interfacesmodule.Plo@am__quote@
@@ -465,13 +482,6 @@ _gst_la-pygstminiobject.lo: pygstminiobject.c
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygstminiobject.c' object='_gst_la-pygstminiobject.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gst_la_CFLAGS) $(CFLAGS) -c -o _gst_la-pygstminiobject.lo `test -f 'pygstminiobject.c' || echo '$(srcdir)/'`pygstminiobject.c
-
-_gst_la-pygstobject.lo: pygstobject.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gst_la_CFLAGS) $(CFLAGS) -MT _gst_la-pygstobject.lo -MD -MP -MF "$(DEPDIR)/_gst_la-pygstobject.Tpo" -c -o _gst_la-pygstobject.lo `test -f 'pygstobject.c' || echo '$(srcdir)/'`pygstobject.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gst_la-pygstobject.Tpo" "$(DEPDIR)/_gst_la-pygstobject.Plo"; else rm -f "$(DEPDIR)/_gst_la-pygstobject.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygstobject.c' object='_gst_la-pygstobject.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gst_la_CFLAGS) $(CFLAGS) -c -o _gst_la-pygstobject.lo `test -f 'pygstobject.c' || echo '$(srcdir)/'`pygstobject.c
 
 _gst_la-pygstvalue.lo: pygstvalue.c
 @am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gst_la_CFLAGS) $(CFLAGS) -MT _gst_la-pygstvalue.lo -MD -MP -MF "$(DEPDIR)/_gst_la-pygstvalue.Tpo" -c -o _gst_la-pygstvalue.lo `test -f 'pygstvalue.c' || echo '$(srcdir)/'`pygstvalue.c; \

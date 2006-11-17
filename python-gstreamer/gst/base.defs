@@ -105,6 +105,15 @@
   )
 )
 
+(define-method take_buffer
+  (of-object "GstAdapter")
+  (c-name "gst_adapter_take_buffer")
+  (return-type "GstBuffer*")
+  (parameters
+   '("guint" "nbytes")
+  )
+)
+
 (define-method available
   (of-object "GstAdapter")
   (c-name "gst_adapter_available")
@@ -617,6 +626,15 @@
   (of-object "GstCollectPads")
   (c-name "gst_collect_pads_stop")
   (return-type "none")
+)
+
+(define-method set_flushing
+  (of-object "GstCollectPads")
+  (c-name "gst_collect_pads_set_flushing")
+  (return-type "none")
+  (parameters
+    '("gboolean" "flushing")
+  )
 )
 
 (define-method peek

@@ -1,5 +1,5 @@
-common_cflags = $(PYGTK_CFLAGS) $(GST_CFLAGS) $(PYGST_CFLAGS) -fno-strict-aliasing
-common_libadd = $(GST_LIBS)
+common_cflags = $(PYGTK_CFLAGS) $(GST_CFLAGS) $(GST_OPTION_CFLAGS) -fno-strict-aliasing
+common_libadd = $(GST_LIBS) $(GST_OPTION_LIBS)
 common_ldflags = -module -avoid-version
 
 pkgpyexecdir = $(pyexecdir)/gst-$(GST_MAJORMINOR)/gst
@@ -20,12 +20,15 @@ defs_DATA = gst-types.defs \
 	base.defs
 defsdir = $(pkgdatadir)/$(GST_MAJORMINOR)/defs
 
-noinst_HEADERS = common.h pygstvalue.h pygstminiobject.h pygstobject.h pygstexception.h
+noinst_HEADERS = common.h pygstvalue.h pygstminiobject.h pygstexception.h
 
 versioned_overrides = \
 	gst-0.10.3.ignore	\
 	gst-0.10.4.ignore	\
-	gst-0.10.5.ignore
+	gst-0.10.5.ignore	\
+	gst-0.10.6.ignore	\
+	gst-0.10.7.ignore	\
+	gst-0.10.10.ignore
 
 INCLUDES = $(PYTHON_INCLUDES)
 EXTRA_DIST = $(defs_DATA) $(versioned_overrides) common.h arg-types.py
@@ -42,7 +45,6 @@ _gst_la_SOURCES = 		\
 	gstmodule.c 		\
 	pygstiterator.c		\
 	pygstminiobject.c 	\
-	pygstobject.c		\
 	pygstvalue.c 		\
 	pygstexception.c
 

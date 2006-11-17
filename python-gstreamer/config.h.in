@@ -1,5 +1,8 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Defined if gcov is enabled to force a rebuild due to config.h changing */
+#undef GST_GCOV_ENABLED
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

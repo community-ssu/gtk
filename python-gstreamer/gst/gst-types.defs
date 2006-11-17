@@ -66,6 +66,12 @@
   (parent "GstObject")
   (c-name "GstPadTemplate")
   (gtype-id "GST_TYPE_PAD_TEMPLATE")
+  (fields
+   '("const-gchar*" "name_template")
+   '("GstPadDirection" "direction")
+   '("GstPadPresence" "presence")
+   '("GstCaps*" "caps")
+   )
 )
 
 (define-object Pipeline
@@ -302,6 +308,14 @@
   (fields
    '("GstCaps" "caps")
    '("const-gchar*" "string")
+  )
+)
+
+(define-pointer TypeFind
+  (in-module "Gst")
+  (c-name "GstTypeFind")
+  (gtype-id "GST_TYPE_TYPE_FIND")
+  (fields
   )
 )
 
@@ -769,6 +783,7 @@
   (c-name "GstFlowReturn")
   (gtype-id "GST_TYPE_FLOW_RETURN")
   (values
+    '("custom-success" "GST_FLOW_CUSTOM_SUCCESS")
     '("resend" "GST_FLOW_RESEND")
     '("ok" "GST_FLOW_OK")
     '("not-linked" "GST_FLOW_NOT_LINKED")
@@ -777,6 +792,7 @@
     '("not-negotiated" "GST_FLOW_NOT_NEGOTIATED")
     '("error" "GST_FLOW_ERROR")
     '("not-supported" "GST_FLOW_NOT_SUPPORTED")
+    '("custom-error" "GST_FLOW_CUSTOM_ERROR")
   )
 )
 
@@ -1028,6 +1044,7 @@
    (in-module "Gst")
    (c-name "GstURIHandler")
    (gtype-id "GST_TYPE_URI_HANDLER")
+   (vtable "GstURIHandlerInterface")
 )
 
 (define-interface TagSetter
@@ -1040,5 +1057,6 @@
    (in-module "Gst")
    (c-name "GstImplementsInterface")
    (gtype-id "GST_TYPE_IMPLEMENTS_INTERFACE")
+   (vtable "GstImplementsInterfaceClass")
 )
 

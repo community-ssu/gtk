@@ -3,7 +3,7 @@ AC_PREREQ(2.52)
 dnl initialize autoconf
 dnl when going to/from release please set the nano (fourth number) right !
 dnl releases only do Wall, cvs and prerelease does Werror too
-AC_INIT(GStreamer Python Bindings, 0.10.4,
+AC_INIT(GStreamer Python Bindings, 0.10.5,
     http://bugzilla.gnome.org/enter_bug.cgi?product=GStreamer,
     gst-python)
 
@@ -35,14 +35,15 @@ AC_SUBST(ACLOCAL_AMFLAGS, "-I common/m4")
 
 dnl required versions of other packages
 AC_SUBST(PYGTK_REQ, 2.6.3)
-AC_SUBST(GLIB_REQ,  2.6.0)
+AC_SUBST(GLIB_REQ,  2.8.0)
 AC_SUBST(GTK_REQ,   2.6.0)
 AC_SUBST(GST_REQ,   0.10.2)
 AC_SUBST(GSTPB_REQ, 0.10.0.2)
 
-
 AC_DISABLE_STATIC
 AC_PROG_LIBTOOL
+
+GST_ARG_GCOV
 
 dnl check for python
 dnl AM_PATH_PYTHON(2.2)
@@ -106,14 +107,46 @@ then
   else
     IGNORE_GST_0_10_5=""
   fi
+
+  if test $GST_MINOR_VERSION -lt "6"
+  then
+    IGNORE_GST_0_10_6="gst-0.10.6.ignore"
+  else
+    IGNORE_GST_0_10_6=""
+  fi
+
+  dnl 0.10.8 was a brown paperbag release
+
+  if test $GST_MINOR_VERSION -lt "8"
+  then
+    IGNORE_GST_0_10_7="gst-0.10.7.ignore"
+  else
+    IGNORE_GST_0_10_7=""
+  fi
+
+  dnl 0.10.9 didn't bring any new wrappable API
+
+  if test $GST_MINOR_VERSION -lt "10"
+  then
+    IGNORE_GST_0_10_10="gst-0.10.10.ignore"
+  else
+    IGNORE_GST_0_10_10=""
+  fi
+
 else
   IGNORE_GST_0_10_3=""
   IGNORE_GST_0_10_4=""
   IGNORE_GST_0_10_5=""
+  IGNORE_GST_0_10_6=""
+  IGNORE_GST_0_10_7=""
+  IGNORE_GST_0_10_10=""
 fi
 AC_SUBST(IGNORE_GST_0_10_3)
 AC_SUBST(IGNORE_GST_0_10_4)
 AC_SUBST(IGNORE_GST_0_10_5)
+AC_SUBST(IGNORE_GST_0_10_6)
+AC_SUBST(IGNORE_GST_0_10_7)
+AC_SUBST(IGNORE_GST_0_10_10)
 
 dnl check for gstreamer-base; uninstalled is selected preferentially
 PKG_CHECK_MODULES(GST_BASE, gstreamer-base-$GST_MAJORMINOR >= $GST_REQ,
@@ -192,19 +225,13 @@ dnl PYGTK_CODEGEN="$PYTHON \$(top_srcdir)/codegen/codegen.py"
 AC_SUBST(PYGTK_CODEGEN)
 AC_MSG_RESULT($PYGTK_CODEGEN)
 
-dnl decide on error flags
-dnl if we support -Wall, set it unconditionally
-AS_COMPILER_FLAG(-Wall,
-                 PYGST_ERROR_CFLAGS="-Wall",
-                 PYGST_ERROR_CFLAGS="")
-dnl if we're in nano >= 1, add -Werror if supported
-if test "x$GST_CVS" = "xyes"
-then
-  AS_COMPILER_FLAG(-Werror, PYGST_ERROR_CFLAGS="$PYGST_ERROR_CFLAGS -Werror")
-fi
+dnl define an ERROR_CFLAGS Makefile variable
+GST_SET_ERROR_CFLAGS($GST_CVS)
 
-PYGST_CFLAGS="$PYGST_ERROR_CFLAGS"
-AC_SUBST(PYGST_CFLAGS)
+GST_OPTION_CFLAGS="\$(ERROR_CFLAGS) \$(GCOV_CFLAGS)"
+AC_SUBST(GST_OPTION_CFLAGS)
+GST_OPTION_LIBS="\$(GCOV_LIBS)"
+AC_SUBST(GST_OPTION_LIBS)
 
 dnl full installation path
 AS_AC_EXPAND(PYTHONDIR, $pythondir)

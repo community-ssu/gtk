@@ -21,7 +21,6 @@ class GstPlayer:
         self.playing = False
         self.player = gst.element_factory_make("playbin", "player")
         self.videowidget = videowidget
-        self.on_eos = False
 
         bus = self.player.get_bus()
         bus.enable_sync_message_emission()
@@ -50,6 +49,7 @@ class GstPlayer:
             self.playing = False
 
     def set_location(self, location):
+        self.player.set_state(gst.STATE_NULL)
         self.player.set_property('uri', location)
 
     def get_location(self):
@@ -187,6 +187,9 @@ class TimeControl(gtk.HBox):
         self.pack_start(goto, False, False, 0)
         set.connect('clicked', lambda *x: self.set_now())
         goto.connect('clicked', lambda *x: self.activated())
+        pad = gtk.Label("")
+        pad.show()
+        self.pack_start(pad, True, False, 0)
 
     def get_time(self):
         time = 0
@@ -198,7 +201,7 @@ class TimeControl(gtk.HBox):
                 val = int(text)
             except ValueError:
                 val = 0
-            w.set_text(val and str(val) or '')
+            w.set_text(val and str(val) or '0')
             time += val * multiplier
         return time
 
@@ -248,6 +251,8 @@ class ProgressDialog(gtk.Dialog):
         vbox.pack_start(label, False)
         
         label = gtk.Label(description)
+        label.set_use_markup(True)
+        label.set_alignment(0.0, 0.0)
         label.set_line_wrap(True)
         label.set_padding(0, 12)
         label.show()
@@ -258,6 +263,7 @@ class ProgressDialog(gtk.Dialog):
         vbox.pack_start(progress, False)
 
         self.progresstext = label = gtk.Label('')
+        label.set_line_wrap(True)
         label.set_use_markup(True)
         label.set_alignment(0.0, 0.0)
         label.show()
@@ -273,12 +279,12 @@ FAILURE = 2
 CANCELLED = 3
 
 class RemuxProgressDialog(ProgressDialog):
-    def __init__(self, parent, start, stop):
+    def __init__(self, parent, start, stop, fromname, toname):
         ProgressDialog.__init__(self,
                                 "Writing to disk",
-                                ('Writing the selected segment of your '
-                                 'media file to disk. This may take some '
-                                 'time depending on the file size.'),
+                                ('Writing the selected segment of <b>%s</b> '
+                                 'to <b>%s</b>. This may take some time.'
+                                 % (fromname, toname)),
                                 'Starting media pipeline',
                                 parent,
                                 gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT,
@@ -290,7 +296,6 @@ class RemuxProgressDialog(ProgressDialog):
         self.set_completed(False)
         
     def update_position(self, pos):
-        print pos
         pos = min(max(pos, self.start), self.stop)
         remaining = self.stop - pos
         minutes = remaining // (gst.SECOND * 60)
@@ -344,50 +349,54 @@ class Remuxer(gst.Pipeline):
         assert start >= 0
         assert stop > start
 
-        self.src = gst.element_make_from_uri(gst.URI_SRC, fromuri)
-        self.remuxbin = RemuxBin(start, stop)
-        self.sink = gst.element_make_from_uri(gst.URI_SINK, touri)
+        self.fromuri = fromuri
+        self.touri = None
+        self.start_time = start
+        self.stop_time = stop
+
+        self.src = self.remuxbin = self.sink = None
+        self.resolution = UNKNOWN
+
+        self.window = None
+        self.pdialog = None
+
+        self._query_id = -1
+
+    def do_setup_pipeline(self):
+        self.src = gst.element_make_from_uri(gst.URI_SRC, self.fromuri)
+        self.remuxbin = RemuxBin(self.start_time, self.stop_time)
+        self.sink = gst.element_make_from_uri(gst.URI_SINK, self.touri)
         self.resolution = UNKNOWN
 
         if gobject.signal_lookup('allow-overwrite', self.sink.__class__):
-            self.sink.connect('allow-overwrite', self._allow_overwrite)
+            self.sink.connect('allow-overwrite', lambda *x: True)
 
         self.add(self.src, self.remuxbin, self.sink)
 
         self.src.link(self.remuxbin)
         self.remuxbin.link(self.sink)
 
-        self.window = None
-        self.pdialog = None
+    def do_get_touri(self):
+        chooser = gtk.FileChooserDialog('Save as...',
+                                        self.window,
+                                        action=gtk.FILE_CHOOSER_ACTION_SAVE,
+                                        buttons=(gtk.STOCK_CANCEL,
+                                                 CANCELLED,
+                                                 gtk.STOCK_SAVE,
+                                                 SUCCESS))
+        chooser.set_uri(self.fromuri) # to select the folder
+        chooser.unselect_all()
+        chooser.set_do_overwrite_confirmation(True)
+        name = self.fromuri.split('/')[-1][:-4] + '-remuxed.ogg'
+        chooser.set_current_name(name)
+        resp = chooser.run()
+        uri = chooser.get_uri()
+        chooser.destroy()
 
-        self.start_time = start
-        self.stop_time = stop
-
-        self._query_id = -1
-
-    def _allow_overwrite(self, sink, uri):
-        name = self.sink.get_uri()
-        name = (gst.uri_has_protocol(name, 'file')
-                and gst.uri_get_location(name)
-                or name)
-        m = gtk.MessageDialog(self.window,
-                              gtk.DIALOG_MODAL|gtk.DIALOG_DESTROY_WITH_PARENT,
-                              gtk.MESSAGE_QUESTION,
-                              gtk.BUTTONS_NONE,
-                              ("The file %s already exists. Would you "
-                               "like to replace it?") % name)
-        b = gtk.Button(stock=gtk.STOCK_CANCEL)
-        b.show()
-        m.add_action_widget(b, CANCELLED)
-        b = gtk.Button('Replace')
-        b.show()
-        m.add_action_widget(b, SUCCESS)
-        txt = ('If you replace an existing file, its contents will be '
-               'overwritten.')
-        m.format_secondary_text(txt)
-        resp = m.run()
-        m.destroy()
-        return resp == SUCCESS
+        if resp == SUCCESS:
+            return uri
+        else:
+            return None
 
     def _start_queries(self):
         def do_query():
@@ -401,8 +410,8 @@ class Remuxer(gst.Pipeline):
                 pos, duration = pad.query_position(gst.FORMAT_TIME)
                 if pos != gst.CLOCK_TIME_NONE:
                     self.pdialog.update_position(pos)
-            except gst.QueryError:
-                print 'query failed'
+            except:
+                # print 'query failed'
                 pass
             return True
         if self._query_id == -1:
@@ -433,14 +442,16 @@ class Remuxer(gst.Pipeline):
         elif message.type == gst.MESSAGE_WARNING:
             print 'warning', message
         elif message.type == gst.MESSAGE_SEGMENT_DONE:
-            print 'eos, woot', message.src
-            self.pdialog.set_task('Finished')
+            # print 'eos, woot', message.src
+            name = self.touri
+            if name.startswith('file://'):
+                name = name[7:]
+            self.pdialog.set_task('Finished writing %s' % name)
             self.pdialog.update_position(self.stop_time)
             self._stop_queries()
             self.pdialog.set_completed(True)
         elif message.type == gst.MESSAGE_STATE_CHANGED:
             if message.src == self:
-                print message
                 old, new, pending = message.parse_state_changed()
                 if ((old, new, pending) ==
                     (gst.STATE_READY, gst.STATE_PAUSED,
@@ -460,25 +471,34 @@ class Remuxer(gst.Pipeline):
         self.emit('done', response)
 
     def start(self, main_window):
+        self.window = main_window
+        self.touri = self.do_get_touri()
+        if not self.touri:
+            return False
+        self.do_setup_pipeline()
         bus = self.get_bus()
         bus.add_signal_watch()
         bus.connect('message', self._bus_watch)
-        self.window = main_window
         if self.window:
             # can be None if we are debugging...
             self.window.set_sensitive(False)
+        fromname = self.fromuri.split('/')[-1]
+        toname = self.touri.split('/')[-1]
         self.pdialog = RemuxProgressDialog(main_window, self.start_time,
-                                           self.stop_time)
+                                           self.stop_time, fromname, toname)
         self.pdialog.show()
         self.pdialog.connect('response', lambda w, r: self.response(r))
 
         self.set_state(gst.STATE_PAUSED)
+        return True
         
     def run(self, main_window):
-        self.start(main_window)
-        loop = gobject.MainLoop()
-        self.connect('done', lambda *x: gobject.idle_add(loop.quit))
-        loop.run()
+        if self.start(main_window):
+            loop = gobject.MainLoop()
+            self.connect('done', lambda *x: gobject.idle_add(loop.quit))
+            loop.run()
+        else:
+            self.resolution = CANCELLED
         return self.resolution
         
 class RemuxBin(gst.Bin):
@@ -573,7 +593,14 @@ class PlayerWindow(gtk.Window):
         self.connect('delete-event', lambda *x: on_delete_event())
 
     def load_file(self, location):
+        filename = location.split('/')[-1]
+        self.set_title('%s munger' % filename)
         self.player.set_location(location)
+        if self.videowidget.flags() & gtk.REALIZED:
+            self.play_toggled()
+        else:
+            self.videowidget.connect_after('realize',
+                                           lambda *x: self.play_toggled())
                                   
     def create_ui(self):
         vbox = gtk.VBox()
@@ -599,32 +626,33 @@ class PlayerWindow(gtk.Window):
         hscale.show()
         self.hscale = hscale
 
-        self.videowidget.connect_after('realize',
-                                       lambda *x: self.play_toggled())
-
         table = gtk.Table(2,3)
         table.show()
         vbox.pack_start(table, fill=False, expand=False, padding=6)
 
-        self.pause_image = gtk.image_new_from_stock(gtk.STOCK_MEDIA_PAUSE,
-                                                    gtk.ICON_SIZE_LARGE_TOOLBAR)
-        self.pause_image.show()
-        self.play_image = gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,
-                                                   gtk.ICON_SIZE_LARGE_TOOLBAR)
-        self.play_image.show()
-        self.button = button = gtk.Button()
-        button.add(self.play_image)
+        self.button = button = gtk.Button(stock=gtk.STOCK_MEDIA_PLAY)
         button.set_property('can-default', True)
         button.set_focus_on_click(False)
         button.show()
-        aspect = gtk.AspectFrame(obey_child=False, xalign=0.0)
-        aspect.set_property('shadow_type', gtk.SHADOW_NONE)
-        aspect.show()
-        aspect.add(button)
-        table.attach(aspect, 0, 1, 0, 2, gtk.EXPAND|gtk.FILL, gtk.EXPAND|gtk.FILL)
+
+        # problem: play and paused are of different widths and cause the
+        # window to re-layout
+        # "solution": add more buttons to a vbox so that the horizontal
+        # width is enough
+        bvbox = gtk.VBox()
+        bvbox.add(button)
+        bvbox.add(gtk.Button(stock=gtk.STOCK_MEDIA_PLAY))
+        bvbox.add(gtk.Button(stock=gtk.STOCK_MEDIA_PAUSE))
+        sizegroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        for kid in bvbox.get_children():
+            sizegroup.add_widget(kid)
+        bvbox.show()
+        table.attach(bvbox, 0, 1, 0, 2, gtk.FILL, gtk.FILL)
+        
+        # can't set this property before the button has a window
         button.set_property('has-default', True)
         button.connect('clicked', lambda *args: self.play_toggled())
-        
+
         self.cutin = cut = TimeControl(self, "Cut in time")
         cut.show()
         table.attach(cut, 1, 2, 0, 1, gtk.EXPAND, 0, 12)
@@ -633,21 +661,21 @@ class PlayerWindow(gtk.Window):
         cut.show()
         table.attach(cut, 1, 2, 1, 2, gtk.EXPAND, 0, 12)
 
-        buttonbox = gtk.HButtonBox()
-        buttonbox.set_layout(gtk.BUTTONBOX_END)
-        buttonbox.show()
-        table.attach(buttonbox, 2, 3, 1, 2, 0, 0)
+        button = gtk.Button("_Open other movie...")
+        button.show()
+        button.connect('clicked', lambda *x: self.do_choose_file())
+        table.attach(button, 2, 3, 0, 1, gtk.FILL, gtk.FILL)
 
         button = gtk.Button("_Write to disk")
         button.set_property('image',
                             gtk.image_new_from_stock(gtk.STOCK_SAVE_AS,
                                                      gtk.ICON_SIZE_BUTTON))
+        button.connect('clicked', lambda *x: self.do_remux())
         button.show()
-        buttonbox.pack_start(button, False)
+        table.attach(button, 2, 3, 1, 2, gtk.FILL, gtk.FILL)
 
         self.cutin.connect('notify::time', lambda *x: self.check_cutout())
         self.cutout.connect('notify::time', lambda *x: self.check_cutin())
-        button.connect('clicked', lambda *x: self.do_remux())
 
     def do_remux(self):
         if self.player.is_playing():
@@ -658,6 +686,42 @@ class PlayerWindow(gtk.Window):
                     self.cutin.get_time(), self.cutout.get_time())
         r.run(self)
 
+    def do_choose_file(self):
+        if self.player.is_playing():
+            self.play_toggled()
+        chooser = gtk.FileChooserDialog('Choose a movie to cut cut cut',
+                                        self,
+                                        buttons=(gtk.STOCK_CANCEL,
+                                                 CANCELLED,
+                                                 gtk.STOCK_OPEN,
+                                                 SUCCESS))
+        chooser.set_local_only(False)
+        chooser.set_select_multiple(False)
+        f = gtk.FileFilter()
+        f.set_name("All files")
+        f.add_pattern("*")
+        chooser.add_filter(f)
+        f = gtk.FileFilter()
+        f.set_name("Ogg files")
+        f.add_pattern("*.ogg") # as long as this is the only thing we
+                               # support...
+        chooser.add_filter(f)
+        chooser.set_filter(f)
+        
+        prev = self.player.get_location()
+        if prev:
+            chooser.set_uri(prev)
+
+        resp = chooser.run()
+        uri = chooser.get_uri()
+        chooser.destroy()
+
+        if resp == SUCCESS:
+            self.load_file(uri)
+            return True
+        else:
+            return False
+        
     def check_cutout(self):
         if self.cutout.get_time() <= self.cutin.get_time():
             pos, dur = self.player.query_position()
@@ -668,16 +732,15 @@ class PlayerWindow(gtk.Window):
             self.cutin.set_time(0)
 
     def play_toggled(self):
-        self.button.remove(self.button.child)
         if self.player.is_playing():
             self.player.pause()
-            self.button.add(self.play_image)
+            self.button.set_label(gtk.STOCK_MEDIA_PLAY)
         else:
             self.player.play()
             if self.update_id == -1:
                 self.update_id = gobject.timeout_add(self.UPDATE_INTERVAL,
                                                      self.update_scale_cb)
-            self.button.add(self.pause_image)
+            self.button.set_label(gtk.STOCK_MEDIA_PAUSE)
 
     def scale_format_value_cb(self, scale, value):
         if self.p_duration == -1:
@@ -737,29 +800,33 @@ class PlayerWindow(gtk.Window):
                 self.update_scale_cb)
 
     def update_scale_cb(self):
+        had_duration = self.p_duration != gst.CLOCK_TIME_NONE
         self.p_position, self.p_duration = self.player.query_position()
         if self.p_position != gst.CLOCK_TIME_NONE:
             value = self.p_position * 100.0 / self.p_duration
             self.adjustment.set_value(value)
-
+            if not had_duration:
+                self.cutin.set_time(0)
         return True
 
 def main(args):
     def usage():
-        sys.stderr.write("usage: %s URI-OF-MEDIA-FILE\n" % args[0])
-        sys.exit(1)
+        sys.stderr.write("usage: %s [URI-OF-MEDIA-FILE]\n" % args[0])
+        return 1
 
     w = PlayerWindow()
-
-    if len(args) != 2:
-        usage()
-
-    if not gst.uri_is_valid(args[1]):
-        sys.stderr.write("Error: Invalid URI: %s\n" % args[1])
-        sys.exit(1)
-
-    w.load_file(args[1])
     w.show()
+
+    if len(args) == 1:
+        if not w.do_choose_file():
+            return 1
+    elif len(args) == 2:
+        if not gst.uri_is_valid(args[1]):
+            sys.stderr.write("Error: Invalid URI: %s\n" % args[1])
+            return 1
+        w.load_file(args[1])
+    else:
+        return usage()
 
     gtk.main()
 

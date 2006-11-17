@@ -204,6 +204,7 @@ static PyObject *
 pygst_debug_log (PyObject *pyobject, PyObject *string, GstDebugLevel level,
     gboolean isgstobject)
 {
+#ifndef GST_DISABLE_GST_DEBUG
     gchar	*str;
     gchar	*function;
     gchar	*filename;
@@ -223,12 +224,11 @@ pygst_debug_log (PyObject *pyobject, PyObject *string, GstDebugLevel level,
     /* gst_debug_log : category, level, file, function, line, object, format, va_list */
     if (isgstobject)
       object = G_OBJECT (pygobject_get (pyobject));
-    /* XXX
     gst_debug_log (python_debug, level, filename, function, lineno, object, "%s", str);
-    */
     if (filename)
 	g_free(filename);
     Py_INCREF (Py_None);
+#endif
     return Py_None;    
 }
 
@@ -310,43 +310,6 @@ ignore
   gst_plugin_get_module
   gst_object_sink
   gst_version
-%%
-/*
-  Magic to be able to use bugfixes of new releases without having to use
-  newer core/base
-*/
-#warn your mom !
-ignore
-#if (GST_VERSION_MICRO < 5)
-# if (GST_VERSION_MICRO < 4)
-#  if (GST_VERSION_MICRO < 3)
-#warning Version smaller than .3
-/* API added between 0.10.2 and 0.10.3 */
-  gst_bin_iterate_sources
-  gst_bin_find_unconnected_pad
-  gst_buffer_is_metadata_writable
-  gst_buffer_make_metadata_writable
-  gst_parse_bin_from_description
-#  endif
-#warning Version smaller than .4
-/* API added between 0.10.3 and 0.10.4 */
-  gst_bus_enable_sync_message_emission
-  gst_bus_disable_sync_message_emission
-  gst_pipeline_set_auto_flush_bus
-  gst_pipeline_get_auto_flush_bus
-  gst_query_set_formats
-  gst_query_new_formats
-  gst_query_parse_formats_length
-  gst_query_parse_formats_nth
-  gst_type_find_helper_for_buffer
-  gst_uri_has_protocol
-  GstBaseSrc__do_check_get_range
-  GstBaseSrc__proxy_do_check_get_range
-# endif
-#warning Version smaller than .5
-/* API Added between 0.10.4 and 0.10.5 */
-
-#endif
 %%
 override-slot GstPluginFeature.tp_repr
 static PyObject *
@@ -512,7 +475,7 @@ _wrap_gst_registry_get_plugin_list (PyGObject *self)
 	list = PyList_New (g_list_length(plugins));
 	for (l = plugins, i = 0; l; l = l->next, ++i) {
 		GstPlugin *plugin = (GstPlugin *) l->data;
-		PyObject *object = pygstobject_new (G_OBJECT (plugin));
+		PyObject *object = pygobject_new (G_OBJECT (plugin));
 		gst_object_unref (plugin);
 
 		PyList_SetItem (list, i, object);
@@ -590,6 +553,8 @@ _wrap_gst_registry_get_feature_list_by_plugin (PyGObject *self, PyObject *args, 
 }
 
 %%
+new-constructor GST_TYPE_XML
+%%
 override gst_xml_new noargs
 
 extern PyObject * libxml_xmlDocPtrWrap(xmlDocPtr doc);
@@ -643,7 +608,7 @@ _wrap_gst_xml_get_topelements(PyGObject *self)
     py_list = PyList_New(g_list_length(xml_elements));
     for (l = xml_elements, i = 0; l; l = l->next, ++i) {
         GstElement *element = (GstElement*)l->data;
-        PyList_SetItem(py_list, i, pygstobject_new(G_OBJECT(element)));
+        PyList_SetItem(py_list, i, pygobject_new(G_OBJECT(element)));
         gst_object_unref (element);
     }
        
@@ -907,7 +872,7 @@ _wrap_gst_type_find_factory_get_list (PyObject *self)
 	GstTypeFindFactory *fact = (GstTypeFindFactory*) l->data;
 
 	PyList_SetItem(py_list, i,
-		       pygstobject_new (G_OBJECT (fact)));
+		       pygobject_new (G_OBJECT (fact)));
     }
     g_list_free (list);
 
@@ -1003,4 +968,169 @@ _wrap_gst_type_find_helper_for_buffer (PyObject *self, PyObject *args, PyObject 
     }
     
     return py_ret;
+}
+%%
+override gst_type_find_new kwargs
+
+static guint8 *
+gst_type_find_peek_handler (gpointer data, gint64 offset, guint size)
+{
+    PyGILState_STATE state;
+    guint8 * ret = NULL;
+    PyObject *py_data;
+    PyObject *callback, *args;
+    PyObject *py_ret;
+
+    GST_DEBUG ("mkay");
+
+    g_return_val_if_fail (data != NULL, NULL);
+    py_data = (PyObject *) data;
+    g_assert (PyTuple_Check (py_data));
+
+    state = pyg_gil_state_ensure ();
+
+    /* Figure out the callback and create the arguments */
+    if (!(callback = PyTuple_GetItem(py_data, 1)))
+	goto beach;
+
+    args = Py_BuildValue ("(OLI)", 
+			  PyTuple_GetItem(py_data, 0),
+			  offset, size);
+    if (!args)
+	goto beach;
+
+    /* Call python method */
+    py_ret = PyObject_CallObject (callback, args);
+    
+    /* transform return value (a string) */
+    if (!py_ret) {
+	Py_DECREF (args);
+	goto beach;
+    }
+    if (!PyString_Check(py_ret)) {
+	Py_DECREF (py_ret);
+	Py_DECREF (args);
+	goto beach;
+    } else {
+	gchar *str;
+	int len;
+
+	if ((PyString_AsStringAndSize(py_ret, &str, &len)) == -1) {
+	    Py_DECREF (py_ret);
+	    Py_DECREF (args);
+	    goto beach;
+	}
+	GST_DEBUG ("got string of len %d", len);
+	if (len)
+	    ret = g_memdup((gconstpointer) str, (guint) len);
+    }
+    Py_DECREF (py_ret);
+    Py_DECREF (args);
+
+ beach:
+    pyg_gil_state_release (state);
+    return ret;
+}
+
+static void
+gst_type_find_suggest_handler (gpointer data, guint probability, const GstCaps * caps)
+{
+    PyGILState_STATE state;
+    PyObject *py_data;
+    PyObject *callback, *args;
+
+    GST_DEBUG ("mkay");
+
+    if (!data)
+	return;
+    py_data = (PyObject *) data;
+    g_assert (PyTuple_Check (py_data));
+
+    state = pyg_gil_state_ensure ();
+
+    /* Figure out the callback and create the arguments */
+    if (!(callback = PyTuple_GetItem(py_data, 2)))
+	goto beach;
+
+    args = Py_BuildValue ("(OIN)", 
+			  PyTuple_GetItem(py_data, 0),
+			  probability, pyg_boxed_new (GST_TYPE_CAPS, (GstCaps*) caps, FALSE, TRUE));
+    if (!args)
+	goto beach;
+
+    /* Call python method */
+    PyObject_CallObject (callback, args);
+    
+    Py_DECREF (args);
+
+ beach:
+    pyg_gil_state_release (state);
+    return;
+}
+
+static guint64
+gst_type_find_get_length_handler (gpointer data)
+{
+    guint64 ret = 0;
+
+    /* Call python method */
+    return ret;
+}
+
+static PyObject *
+_wrap_gst_type_find_new (PyObject *self, PyObject *args, PyObject *kwargs)
+{
+    static char *kwlist[] = { "data", "peekfunction", "suggestfunction", "getlengthfunction", NULL };
+    PyObject *py_data;
+    gpointer data;
+    PyObject *peekfunction;
+    PyObject *suggestfunction;
+    PyObject *getlengthfunction = NULL;
+    PyObject *pytypefind = NULL;
+    GstTypeFind *typefind = NULL;
+
+    GST_DEBUG ("poeut");
+
+    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "OOO|O:type_find_new",
+				     kwlist, &py_data, &peekfunction,
+				     &suggestfunction, &getlengthfunction)) {
+	PyErr_SetString (PyExc_TypeError, "Error parsing values ...");
+	return NULL;
+    }
+
+    if (!PyCallable_Check(peekfunction)) {
+	PyErr_SetString (PyExc_TypeError, "peekfunction is not callable");
+	return NULL;
+    }
+    if (!PyCallable_Check(suggestfunction)) {
+	PyErr_SetString (PyExc_TypeError, "suggestfunction is not callable");
+	return NULL;
+    }
+    if (getlengthfunction && (!PyCallable_Check(suggestfunction))) {
+	PyErr_SetString (PyExc_TypeError, "getlengthfunction is not callable");
+	return NULL;
+    }
+
+    /* Create a python list to put in typefind->data */
+    if (getlengthfunction)
+	data = Py_BuildValue("(OOOO)", py_data, peekfunction, suggestfunction, getlengthfunction);
+    else
+	data = Py_BuildValue("(OOO)", py_data, peekfunction, suggestfunction);
+    
+    typefind = g_new0(GstTypeFind, 1);
+    typefind->peek = gst_type_find_peek_handler;
+    typefind->suggest = gst_type_find_suggest_handler;
+    typefind->data = data;
+    if (getlengthfunction)
+	typefind->get_length = gst_type_find_get_length_handler;
+
+    pytypefind = pyg_pointer_new (GST_TYPE_TYPE_FIND, typefind);
+
+    if (!pytypefind) {
+	PyErr_SetString (PyExc_TypeError, "pyg_pointer_new failed");
+    }
+
+    GST_DEBUG ("poeut : %p", pytypefind);
+
+    return pytypefind;
 }

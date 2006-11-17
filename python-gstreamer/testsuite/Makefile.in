@@ -42,6 +42,8 @@ ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/common/m4/as-ac-expand.m4 \
 	$(top_srcdir)/common/m4/as-compiler-flag.m4 \
 	$(top_srcdir)/common/m4/as-version.m4 \
+	$(top_srcdir)/common/m4/gst-args.m4 \
+	$(top_srcdir)/common/m4/gst-error.m4 \
 	$(top_srcdir)/common/m4/gst-valgrind.m4 \
 	$(top_srcdir)/common/m4/pkg.m4 $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -81,6 +83,7 @@ AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
 CC = @CC@
+CCASFLAGS = @CCASFLAGS@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
 CPP = @CPP@
@@ -97,10 +100,15 @@ ECHO_C = @ECHO_C@
 ECHO_N = @ECHO_N@
 ECHO_T = @ECHO_T@
 EGREP = @EGREP@
+ERROR_CFLAGS = @ERROR_CFLAGS@
 EXEEXT = @EXEEXT@
 F77 = @F77@
 FFLAGS = @FFLAGS@
+GCOV = @GCOV@
+GCOV_CFLAGS = @GCOV_CFLAGS@
+GCOV_LIBS = @GCOV_LIBS@
 GLIB_REQ = @GLIB_REQ@
+GREP = @GREP@
 GSTPB_REQ = @GSTPB_REQ@
 GST_BASE_CFLAGS = @GST_BASE_CFLAGS@
 GST_BASE_LIBS = @GST_BASE_LIBS@
@@ -109,19 +117,26 @@ GST_CONTROLLER_CFLAGS = @GST_CONTROLLER_CFLAGS@
 GST_CONTROLLER_LIBS = @GST_CONTROLLER_LIBS@
 GST_DP_CFLAGS = @GST_DP_CFLAGS@
 GST_DP_LIBS = @GST_DP_LIBS@
+GST_GCOV_ENABLED_FALSE = @GST_GCOV_ENABLED_FALSE@
+GST_GCOV_ENABLED_TRUE = @GST_GCOV_ENABLED_TRUE@
 GST_LIBS = @GST_LIBS@
 GST_MAJORMINOR = @GST_MAJORMINOR@
 GST_NET_CFLAGS = @GST_NET_CFLAGS@
 GST_NET_LIBS = @GST_NET_LIBS@
+GST_OPTION_CFLAGS = @GST_OPTION_CFLAGS@
+GST_OPTION_LIBS = @GST_OPTION_LIBS@
 GST_PLUGINS_BASE_CFLAGS = @GST_PLUGINS_BASE_CFLAGS@
 GST_PLUGINS_BASE_LIBS = @GST_PLUGINS_BASE_LIBS@
 GST_REQ = @GST_REQ@
 GTK_REQ = @GTK_REQ@
 HAVE_VALGRIND_FALSE = @HAVE_VALGRIND_FALSE@
 HAVE_VALGRIND_TRUE = @HAVE_VALGRIND_TRUE@
+IGNORE_GST_0_10_10 = @IGNORE_GST_0_10_10@
 IGNORE_GST_0_10_3 = @IGNORE_GST_0_10_3@
 IGNORE_GST_0_10_4 = @IGNORE_GST_0_10_4@
 IGNORE_GST_0_10_5 = @IGNORE_GST_0_10_5@
+IGNORE_GST_0_10_6 = @IGNORE_GST_0_10_6@
+IGNORE_GST_0_10_7 = @IGNORE_GST_0_10_7@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -151,7 +166,6 @@ PACKAGE_VERSION_RELEASE = @PACKAGE_VERSION_RELEASE@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 PKG_CONFIG = @PKG_CONFIG@
 PYEXECDIR = @PYEXECDIR@
-PYGST_CFLAGS = @PYGST_CFLAGS@
 PYGTK_CFLAGS = @PYGTK_CFLAGS@
 PYGTK_CODEGEN = @PYGTK_CODEGEN@
 PYGTK_DEFSDIR = @PYGTK_DEFSDIR@
@@ -173,13 +187,9 @@ VALGRIND_CFLAGS = @VALGRIND_CFLAGS@
 VALGRIND_LIBS = @VALGRIND_LIBS@
 VALGRIND_PATH = @VALGRIND_PATH@
 VERSION = @VERSION@
-ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
-ac_pt_PKG_CONFIG = @ac_pt_PKG_CONFIG@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
 am__fastdepCXX_FALSE = @am__fastdepCXX_FALSE@
@@ -196,25 +206,32 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 pkgpyexecdir = @pkgpyexecdir@
 pkgpythondir = @pkgpythondir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 pyexecdir = @pyexecdir@
 pythondir = @pythondir@
 sbindir = @sbindir@
@@ -250,7 +267,7 @@ tests = \
         test_struct.py \
 	test_xml.py
 
-EXTRA_DIST = $(tests) common.py runtests.py test-object.h python.supp gstpython.supp
+EXTRA_DIST = $(tests) common.py cleanup.py runtests.py test-object.h python.supp gstpython.supp
 GSTSUPP = $(top_srcdir)/common/gst.supp
 PYTHONSUPP = $(top_srcdir)/testsuite/python.supp
 GSTPYTHONSUPP = $(top_srcdir)/testsuite/gstpython.supp
@@ -511,14 +528,17 @@ testhelper.la: $(testhelper_la_OBJECTS) $(testhelper_la_DEPENDENCIES)
 	$(LINK) -rpath $(pkgpyexecdir) $(testhelper_la_LDFLAGS) $(testhelper_la_OBJECTS) $(testhelper_la_LIBADD) $(LIBS)
 
 check-local: testhelper.la
+	@PYTHONPATH=$(top_builddir):$(top_builddir)/gst/.libs:`pwd`:$(top_srcdir):$(PYTHONPATH) $(PYTHON) $(srcdir)/cleanup.py
 	@PYTHONPATH=$(top_builddir):$(top_builddir)/gst/.libs:`pwd`:$(top_srcdir):$(PYTHONPATH) $(PYTHON) $(srcdir)/runtests.py
 	@rm -fr *.pyc
 
 check-verbose: testhelper.la
+	@VERBOSE=yes PYTHONPATH=$(top_builddir):$(top_builddir)/gst/.libs:`pwd`:$(top_srcdir):$(PYTHONPATH) $(PYTHON) $(srcdir)/cleanup.py
 	@VERBOSE=yes PYTHONPATH=$(top_builddir):$(top_builddir)/gst/.libs:`pwd`:$(top_srcdir):$(PYTHONPATH) $(PYTHON) $(srcdir)/runtests.py
 	@rm -fr *.pyc
 
 @HAVE_VALGRIND_TRUE@check-valgrind:
+@HAVE_VALGRIND_TRUE@	$(PYTHON) cleanup.py
 @HAVE_VALGRIND_TRUE@	make valgrind
 @HAVE_VALGRIND_FALSE@check-valgrind:
 @HAVE_VALGRIND_FALSE@	@true
@@ -533,12 +553,13 @@ check-verbose: testhelper.la
 # valgrind any given test_x.py by running make test_x.py.valgrind
 %.valgrind: %
 	$(TESTS_ENVIRONMENT)                                    \
+	G_DEBUG=gc-friendly G_SLICE=always-malloc					\
 	$(VALGRIND_PATH) -q					\
 	--suppressions=$(GSTSUPP)				\
 	--suppressions=$(PYTHONSUPP)				\
 	--suppressions=$(GSTPYTHONSUPP)				\
-	--tool=memcheck --leak-check=yes --trace-children=yes  \
-	--leak-resolution=med --num-callers=50		\
+	--tool=memcheck --leak-check=full --trace-children=yes  \
+	--leak-resolution=high --num-callers=50		\
 	$(PYTHON)						\
 	$* 2>&1 | tee valgrind.log
 	@if grep "tely lost" valgrind.log; then                 \

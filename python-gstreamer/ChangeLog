@@ -1,3 +1,392 @@
+=== release 0.10.5 ===
+
+2006-07-20   <>
+
+	* configure.ac:
+	  releasing 0.10.5, "My Little Poney wants some Funk"
+
+2006-07-19  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac: 0.10.4.2 pre-release
+
+2006-07-18  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/gst-0.10.10.ignore:
+	* gst/gstversion.override.in:
+	Add new ignore for 0.10.10 API additions
+	* gst/gst.defs:
+	Added definitions for new segtrap functions
+	
+
+2006-07-05  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmodule.c: (init_gst): 
+	Added gst.BUFFER_OFFSET_NONE for proper (guint64) -1 conversion between
+	python and C.
+
+2006-07-03  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstelement.override:
+	* gst/gstevent.override:
+	* gst/gstmessage.override:
+	* gst/gstquery.override:
+	Repeat 100 times : "I shouldn't commit patches without checking
+	them thoroughly, especially if they come from someone I trust".
+	Fix the broken Py_BuildValue.
+
+2006-07-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* Makefile.am:
+	* configure.ac:
+	* gst/Makefile.am:
+	  add gcov stuff
+
+2006-07-03  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* gst/gstmodule.c: (init_gst):
+	  don't crash when error is NULL
+
+2006-07-03  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmessage.override:
+	State change is a list and not a tuple
+	* gst/gstpad.override:
+	query_position() got busted in previous commit.
+
+2006-07-03  Johan Dahlin  <jdahlin@async.com.br>
+
+	reviewed by: Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstelement.override:
+	* gst/gstevent.override:
+	* gst/gstmessage.override:
+	* gst/gstpad.override:
+	* gst/gstquery.override:
+	Use Py_BuildValue to construct tuples.
+	Use tuples for collection of different objects.
+	See http://www.python.org/doc/faq/general/#why-are-there-separate-tuple-and-list-data-types
+	* testsuite/test_event.py:
+	[message|query|event].parse_* now return tuples and not list.
+
+	Fixes #334548
+
+2006-07-02  Edward Hervey  <edward@fluendo.com>
+
+	Removal of all glib < 2.8 cruft since GStreamer core now requires
+	glib >= 2.8
+
+	* codegen/argtypes.py:
+	remove gstobject cruft from ObjectArg
+	* configure.ac:
+	Require glib >= 2.8.0
+	* gst/Makefile.am:
+	* gst/pygstobject.c:
+	* gst/pygstobject.h:
+	Remove pygstobject.[ch]
+	* gst/common.h:
+	Don't include removed header file.
+	* gst/gst.override:
+	* gst/gstbin.override:
+	* gst/gstbus.override:
+	* gst/gstelement.override:
+	* gst/gstelementfactory.override:
+	* gst/gstmessage.override:
+	* gst/gstobject.override:
+	* gst/gstpad.override:
+	* gst/interfaces.override:
+	* gst/pygstiterator.c: (pygst_iterator_iter_next):
+	Switch from using pygstobject* functions to using pygobject* functions.
+	* gst/gstmodule.c: (sink_gstobject), (init_gst):
+	Move GstObject sink function here and use standard gobject refcounting.
+
+2006-06-22  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac: (GST_LIBS): 
+	0.10.7 ignore file is for 0.10.7 AND 0.10.8 (due to brown paperbag
+	release).
+
+2006-06-15  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/codegen.py:
+	Always unblock threads when going to C.
+	* gst/gst.defs:
+	Revert unblock-threads noise.
+
+2006-06-14  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst-types.defs:
+	Added fields for GstPadTemplate.
+	* gst/gst.defs:
+	Made gst_element_class_get_template_list a GstElement method.
+	* gst/gstelement.override:
+	Override for gst.Element.get_template_list()
+	* gst/gstpad.override:
+	Override getter for GstStaticPadTemplate.static_caps so that it uses
+	the correct pointer.
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/gstpython.supp: 
+	Keeping suppresions
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/gstpython.supp: 
+	Tim might have fixed this suppression. Commenting it.
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/gstpython.supp: 
+	One more suppression added to bug #344761
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* .cvsignore:
+	Ignore more files
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/gstpython.supp: 
+	Added suppresion for leaks of bug #344761.
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* .cvsignore:
+	* testsuite/.cvsignore:
+	Ignore log files.
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* Makefile.am: (CLEANFILES): 
+	Cleanup pygst.pyc file.
+
+2006-06-13  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.defs:
+	Add 'unblock-threads #t' for critical functions/methods.
+
+2006-06-12  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/Makefile.am:
+	* testsuite/runtests.py:
+	* testsuite/cleanup.py:
+	Added cleanup file to initialize registry before running checks.
+	Added G_DEBUG=gc-friendly to valgrinding
+	Only test test_*.py files
+
+2006-06-11  Edward Hervey  <edward@fluendo.com>
+
+	* .cvsignore:
+	more files to ignore
+
+2006-06-09  Edward Hervey  <edward@fluendo.com>
+
+	* pygst.py.in:
+	Raise RequiredVersionError(ValueError, AssertionError) wherever
+	applicable. This makes the new system (raising an error) compatible
+	with the old system (assertions).
+	Fixes #341114
+
+2006-06-09  Edward Hervey  <edward@fluendo.com>
+
+	* pygst.py.in:
+	Don't import non-used modules
+	* testsuite/Makefile.am:
+	Heavy valgrinding por favor !
+	(%.valgrind): with always-malloc for GSlice
+
+2006-06-09  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/Makefile.am:
+	* codegen/argtypes.py:
+	* codegen/codegen.py:
+	* codegen/definitions.py:
+	* codegen/defsconvert.py:
+	* codegen/defsparser.py:
+	* codegen/docextract.py:
+	* codegen/docextract_to_xml.py:
+	* codegen/docgen.py:
+	* codegen/h2def.py:
+	* codegen/mergedefs.py:
+	* codegen/missingdefs.py:
+	* codegen/mkskel.py:
+	* codegen/override.py:
+	* codegen/reversewrapper.py:
+	Updated codegenerator to current pygtk one.
+	* gst/gst.defs:
+	* gst/gst.override:
+	* gst/gstpad.override:
+	Update defs for new constructor definition.
+	* testsuite/test_bin.py:
+	With new constructors, pygobject will try to convert the argument to the
+	proper GType (here a string).
+
+2006-06-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/base.defs:
+	* gst/gst-0.10.7.ignore:
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	* gst/gstbase.override:
+	* gst/libs.defs:
+	Update for API additions.
+	* gst/gstmodule.c: (init_gst):
+	Added new GST_TAG_IMAGE and GST_TAG_PREVIEW_IMAGE
+
+2006-05-27  Yuri Pankov <yuri.pankov@gmail.com>
+
+	reviewed by: Edward Hervey <edward@fluendo.com>
+
+	* gst/__init__.py:
+	Make gst-python work on OS without dl.so
+	Fixes #341799
+
+2006-04-27  Johan Rydberg  <jrydberg@gnu.org>
+
+	reviewed by: Edward Hervey <edward@fluendo.com>
+	
+	* examples/filesrc.py: Port to 0.10.
+
+2006-05-27  Edward Hervey  <edward@fluendo.com>
+
+	* examples/audio-controller.py:
+	Make it work with 0.10, still had cruft from 0.9
+
+2006-05-19  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/gst-0.10.7.ignore:
+	* gst/gstversion.override.in:
+	Added ignore file for core 0.10.7
+	* gst/base.defs:
+	Added gst_adapter_take_buffer
+	* gst/gst-0.10.6.ignore:
+	Filed API addition for 0.10.6
+	* gst/gst-types.defs:
+	Added GstTypeFind pointer definition
+	* gst/gst.defs:
+	* gst/gst.override:
+	Added fake function gst_type_find_new() to create a GstTypeFind that can
+	be used in all typefinding function.
+	GstTypeFind * 
+	gst_type_find_new(data, peekfunction, suggestfunction [, getlenghtfunction])
+
+2006-05-09  Edward Hervey  <edward@fluendo.com>
+
+	* configure.ac:
+	* gst/Makefile.am:
+	* gst/gst-0.10.6.ignore:
+	* gst/gst.defs:
+	* gst/gstversion.override.in:
+	Update for API changes.
+	Added ignore files for core 0.10.6 API additions.
+
+2006-05-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	Reverting previous patches for conditional ignore.
+	It can't be done from within override files.
+	The only one left is the python gst_debug_log function
+	which will do nothing #ifdef GST_DISABLE_GST_DEBUG.
+	Also removed the conditional ignore for API changes since it didn't
+	have any effect either.
+
+2006-05-09  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gst.override:
+	Better conditional ignore for types and methods.
+
+2006-05-09  Edward Hervey  <edward@fluendo.com>
+
+	* codegen/codegen.py:
+	* codegen/override.py:
+	Added code to ignore type and the function/methods/classes that use
+	them.
+	* gst/gst.override:
+	ignore methods/classes/types depending on how GStreamer core was built:
+	_ GST_DISABLE_GST_DEBUG
+	_ GST_DISABLE_LOADSAVE
+	_ GST_DISABLE_PARSE
+
+2006-05-09  Edward Hervey  <edward@fluendo.com>
+
+	* testsuite/python.supp: 
+	Added suppressions for FC5 64 bit
+
+2006-05-08  Edward Hervey  <edward@fluendo.com>
+
+	* autogen.sh: (CONFIGURE_DEF_OPT): 
+	libtoolize on Darwin/MacOSX is called glibtoolize
+
+2006-05-05  Andy Wingo  <wingo@pobox.com>
+
+	* examples/remuxer.py (PlayerWindow.update_scale_cb): Fix a race
+	condition getting the initial cutin time via inserting whitespace.
+	(all over): UI fixes to make Mike happy.
+	
+	* examples/remuxer.py: Updates! Nothing gstreamery, it's all ui,
+	so I won't bother you with the details.
+	
+2006-04-29  Edward Hervey  <edward@fluendo.com>
+
+	* examples/gstfile.py:
+	Threaded application, we NEED gobject.threads_init().
+	This should finally gets rid of the crashes when used on single files.
+	* gst/extend/discoverer.py:
+	Re-order the imports.
+
+2006-04-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/arg-types.py:
+	Caps used as arguments of virtual methods should keep their initial
+	refcount when calling the python methods.
+	This is similar to the patch done for GstMiniObjects.
+	* gst/gstbase.override:
+	Adjust the gst.BaseTransform.get_unit_size() virtual method for above
+	fix.
+
+2006-04-28  Артём Попов  <artfwo@gmail.com>
+
+	reviewed by: Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstbase.override:
+	gst.BaseTransform.get_unit_size() virtual method override.
+	Closes #339248
+
+2006-04-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/arg-types.py:
+	GstMiniObject used as virtual methods parameters should be unreffed
+	before calling the method and the ref-ed.
+	Added Params and Returns for const-gchar*, GType and gulong so the
+	code generator can generate more virtual methods handlers/proxys.
+	* gst/gst-types.defs:
+	* gst/gst.defs:
+	* gst/interfaces.defs:
+	Added vtable and virtual method definition for interfaces so we can properly use virtual
+	methods from those interfaces in python.
+
+2006-04-28  Edward Hervey  <edward@fluendo.com>
+
+	* gst/gstmodule.c: (init_gst):
+	Wrap the gstreamer error domains quark.
+	Fixes #339040
+
+2006-04-19  Andy Wingo  <wingo@pobox.com>
+
+	* gst/gstpad.override: (pad_block_callback_marshal) 
+	(_wrap_gst_pad_set_blocked_async): Fix refcounting problems and
+	indent.
+	Fixes #338982
+
+2006-04-28  Thomas Vander Stichele  <thomas at apestaart dot org>
+
+	* configure.ac:
+	  back to HEAD
+
 === release 0.10.4 ===
 
 2006-04-28  Thomas Vander Stichele <thomas at apestaart dot org>

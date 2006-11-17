@@ -97,6 +97,15 @@ pygstminiobject_to_gvalue(GValue *value, PyObject *obj)
      return 0;
 }
 
+static void
+sink_gstobject(GObject *object)
+{
+    if (GST_OBJECT_IS_FLOATING(object)) {
+	g_object_ref(object);
+	gst_object_sink(GST_OBJECT(object));
+    }
+}
+
 DL_EXPORT(void)
 init_gst (void)
 {
@@ -131,7 +140,7 @@ init_gst (void)
 	       g_free (argv);
 	  }
           errstr = g_strdup_printf ("can't initialize module gst: %s",
-              GST_STR_NULL (error->message));
+              error ? GST_STR_NULL (error->message) : "no error given");
 	  PyErr_SetString (PyExc_RuntimeError, errstr);
           g_free (errstr);
 	  g_error_free (error);
@@ -152,9 +161,8 @@ init_gst (void)
      GST_DEBUG_CATEGORY_INIT (python_debug, "python", 
          GST_DEBUG_FG_GREEN, "python code using gst-python");
 
-/*      _pygst_register_boxed_types (NULL); */
-     pygobject_register_sinkfunc(GST_TYPE_OBJECT, pygstobject_sink);
-
+     pygobject_register_sinkfunc(GST_TYPE_OBJECT, sink_gstobject);
+     
      m = Py_InitModule ("_gst", pygst_functions);
      d = PyModule_GetDict (m);
 
@@ -176,6 +184,7 @@ init_gst (void)
      PyModule_AddIntConstant(m, "NSECOND", GST_NSECOND);
 
      PyModule_AddObject(m, "CLOCK_TIME_NONE", PyLong_FromUnsignedLongLong(GST_CLOCK_TIME_NONE));
+     PyModule_AddObject(m, "BUFFER_OFFSET_NONE", PyLong_FromUnsignedLongLong(GST_BUFFER_OFFSET_NONE));
 
      pygst_exceptions_register_classes (d);
      
@@ -235,6 +244,18 @@ init_gst (void)
      PyModule_AddStringConstant (m, "TAG_ALBUM_GAIN", GST_TAG_ALBUM_GAIN);
      PyModule_AddStringConstant (m, "TAG_ALBUM_PEAK", GST_TAG_ALBUM_PEAK);
      PyModule_AddStringConstant (m, "TAG_LANGUAGE_CODE", GST_TAG_LANGUAGE_CODE);
+#if (GST_VERSION_MAJOR == 0 && GST_VERSION_MINOR == 10 && \
+     ((GST_VERSION_MICRO >= 6) || (GST_VERSION_MICRO == 5 && GST_VERSION_NANO > 0)))
+     PyModule_AddStringConstant (m, "TAG_IMAGE", GST_TAG_IMAGE);
+#if ((GST_VERSION_MICRO >= 7) || (GST_VERSION_MICRO == 6 && GST_VERSION_NANO > 0 ))
+     PyModule_AddStringConstant (m, "TAG_PREVIEW_IMAGE", GST_TAG_PREVIEW_IMAGE);
+#endif
+#endif
+
+     PyModule_AddStringConstant (m, "LIBRARY_ERROR", (gchar *) g_quark_to_string(GST_LIBRARY_ERROR));
+     PyModule_AddStringConstant (m, "RESOURCE_ERROR",(gchar *)  g_quark_to_string(GST_RESOURCE_ERROR));
+     PyModule_AddStringConstant (m, "CORE_ERROR", (gchar *) g_quark_to_string(GST_CORE_ERROR));
+     PyModule_AddStringConstant (m, "STREAM_ERROR", (gchar *) g_quark_to_string(GST_STREAM_ERROR));
 
      g_timeout_add_full (0, 100, python_do_pending_calls, NULL, NULL);
 

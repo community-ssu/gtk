@@ -52,6 +52,18 @@
   (return-type "gchar*")
 )
 
+(define-function segtrap_is_enabled
+  (c-name "gst_segtrap_is_enabled")
+  (return-type "gboolean")
+)
+
+(define-function segtrap_set_enabled
+  (c-name "gst_segtrap_set_enabled")
+  (return-type "none")
+  (parameters
+    '("gboolean" "enabled")
+  )
+)
 (define-function get_gst_version
   (c-name "gst_get_gst_version")
   (return-type "none")
@@ -74,8 +86,8 @@
   (c-name "gst_bin_new")
   (is-constructor-of "GstBin")
   (return-type "GstElement*")
-  (parameters
-    '("const-gchar*" "name" (null-ok) (default "NULL"))
+  (properties
+    '("name" (argname "name") (optional))
   )
 )
 
@@ -118,6 +130,7 @@
   )
   (varargs #t)
 )
+
 (define-method get_by_name
   (of-object "GstBin")
   (c-name "gst_bin_get_by_name")
@@ -961,9 +974,10 @@
   )
 )
 
+; 14 Jun 06 - Changed to be a method on elements and not classes - bilboed
 (define-method get_pad_template_list
-  (of-object "GstElementClass")
-  (c-name "gst_element_class_get_pad_template_list")
+  (of-object "GstElement")
+  (c-name "gst_element_get_pad_template_list")
   (return-type "GList*")
 )
 
@@ -1837,6 +1851,21 @@
   )
 )
 
+(define-function event_new_new_segment_full
+  (c-name "gst_event_new_new_segment_full")
+  (return-type "GstEvent*")
+  (caller-owns-return #t)
+  (parameters
+    '("gboolean" "update")
+    '("gdouble" "rate")
+    '("gdouble" "applied_rate")
+    '("GstFormat" "format")
+    '("gint64" "start")
+    '("gint64" "stop")
+    '("gint64" "position")
+  )
+)
+
 (define-method parse_new_segment
   (of-object "GstEvent")
   (c-name "gst_event_parse_new_segment")
@@ -1857,6 +1886,21 @@
   (caller-owns-return #t)
   (parameters
     '("GstTagList*" "taglist")
+  )
+)
+
+(define-method parse_new_segment_full
+  (of-object "GstEvent")
+  (c-name "gst_event_parse_new_segment_full")
+  (return-type "none")
+  (parameters
+    '("gboolean*" "update")
+    '("gdouble*" "rate")
+    '("gdouble*" "applied_rate")
+    '("GstFormat*" "format")
+    '("gint64*" "start")
+    '("gint64*" "stop")
+    '("gint64*" "position")
   )
 )
 
@@ -2312,10 +2356,10 @@
   (c-name "gst_index_factory_new")
   (is-constructor-of "GstIndexFactory")
   (return-type "GstIndexFactory*")
-  (parameters
-    '("const-gchar*" "name")
-    '("const-gchar*" "longdesc")
-    '("GType" "type")
+  (properties
+    '("name" (argname "name"))
+    '("longdesc" (argname "longdesc"))
+    '("type" (argname "type"))
   )
 )
 
@@ -2596,6 +2640,14 @@
   (parameters
     '("gpointer" "from")
     '("GType" "type")
+  )
+)
+
+(define-virtual supported
+  (of-object "GstImplementsInterface")
+  (return-type "gboolean")
+  (parameters
+   '("GType" "iface_type")
   )
 )
 
@@ -3286,9 +3338,9 @@
   (c-name "gst_pad_new")
   (is-constructor-of "GstPad")
   (return-type "GstPad*")
-  (parameters
-    '("const-gchar*" "name")
-    '("GstPadDirection" "direction")
+  (properties
+    '("name" (argname "name"))
+    '("direction" (argname "direction"))
   )
 )
 
@@ -4005,8 +4057,8 @@
   (c-name "gst_pipeline_new")
   (is-constructor-of "GstPipeline")
   (return-type "GstElement*")
-  (parameters
-    '("const-gchar*" "name" (null-ok) (default "NULL"))
+  (properties
+    '("name" (argname "name") (optional))
   )
 )
 
@@ -4809,6 +4861,21 @@
   (parameters
     '("gboolean" "update")
     '("gdouble" "rate")
+    '("GstFormat" "format")
+    '("gint64" "start")
+    '("gint64" "stop")
+    '("gint64" "time")
+  )
+)
+
+(define-method set_newsegment_full
+  (of-object "GstSegment")
+  (c-name "gst_segment_set_newsegment_full")
+  (return-type "none")
+  (parameters
+    '("gboolean" "update")
+    '("gdouble" "rate")
+    '("gdouble" "applied_rate")
     '("GstFormat" "format")
     '("gint64" "start")
     '("gint64" "stop")
@@ -6036,6 +6103,11 @@
 
 ;; From ../gstreamer/gst/gsttypefind.h
 
+(define-function type_find_new
+  (c-name "gst_type_find_new")
+  (return-type "GstTypeFind*")
+)
+
 (define-method peek
   (of-object "GstTypeFind")
   (c-name "gst_type_find_peek")
@@ -6207,6 +6279,29 @@
   (of-object "GstURIHandler")
   (c-name "gst_uri_handler_new_uri")
   (return-type "none")
+  (parameters
+    '("const-gchar*" "uri")
+  )
+)
+
+(define-virtual get_type
+  (of-object "GstURIHandler")
+  (return-type "guint")
+)
+
+(define-virtual get_protocols
+  (of-object "GstURIHandler")
+  (return-type "gchar**")
+)
+
+(define-virtual get_uri
+  (of-object "GstURIHandler")
+  (return-type "const-gchar*")
+)
+
+(define-virtual set_uri
+  (of-object "GstURIHandler")
+  (return-type "gboolean")
   (parameters
     '("const-gchar*" "uri")
   )
@@ -6426,6 +6521,17 @@
     '("GstElement*" "dest")
     '("const-gchar*" "destpadname")
     '("GstCaps*" "filter")
+  )
+)
+
+(define-method seek_simple
+  (of-object "GstElement")
+  (c-name "gst_element_seek_simple")
+  (return-type "gboolean")
+  (parameters
+    '("GstFormat" "format")
+    '("GstSeekFlags" "seek_flags")
+    '("gint64" "seek_pos")
   )
 )
 

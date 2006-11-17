@@ -1,3 +1,9 @@
+python-gstreamer (0.10.5-0osso1) unstable; urgency=low
+
+  * Using new version (0.10.5) 
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Fri, 17 Nov 2006 17:49:00 -0300
+
 python-gstreamer (0.10.4-0osso1) unstable; urgency=low
 
   * added shlib dependencies

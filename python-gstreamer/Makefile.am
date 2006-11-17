@@ -8,7 +8,7 @@ EXTRA_DIST = \
 	RELEASE
 
 BUILT_SOURCES = pygst.py
-CLEANFILES = pygst.py
+CLEANFILES = pygst.py pygst.pyc
 
 include $(top_srcdir)/common/release.mak
 
@@ -38,3 +38,5 @@ check-valgrind:
 
 check-torture:
 	@true
+
+include $(top_srcdir)/common/coverage/lcov.mak
