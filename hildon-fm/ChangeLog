@@ -1,5 +1,9 @@
 2006-11-17  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-system-obex.c
+	(_obex_addr_to_display_name): Do not call
+	dbus_connection_disconnect.
+
     Merged changes from 1.14 to 1.16:
 
 >     2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
