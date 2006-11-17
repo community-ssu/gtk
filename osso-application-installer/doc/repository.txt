@@ -36,7 +36,13 @@ Repository HOWTO".
 "Single-click install"
 ----------------------
 
-THIS FEATURE IS NOT SUPPORTED IN THE IT 2006 RELEASE.
+* THIS FEATURE IS NOT SUPPORTED IN THE IT 2006 RELEASE:
+* 
+* You get some useful reaction out of the Application Manager when you
+* give it a .install file, but the associated dialogs are not
+* localized, for example, and the IT 2006 Application Manager doesn't
+* handle .install files very gracefully.
+
 
 When you want users to be able to browse your repositories using the
 Application installer, you need to provide instructions to the user
