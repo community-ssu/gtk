@@ -41,7 +41,7 @@ Repository HOWTO".
 * You get some useful reaction out of the Application Manager when you
 * give it a .install file, but the associated dialogs are not
 * localized, for example, and the IT 2006 Application Manager doesn't
-* handle .install files very gracefully.
+* handle .install files very gracefully.  But feel free to try anyway.
 
 
 When you want users to be able to browse your repositories using the
