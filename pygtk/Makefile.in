@@ -106,10 +106,7 @@ pkgconfigDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(defs_DATA) $(pkgconfig_DATA)
 ETAGS = etags
 CTAGS = ctags
-# INDT: backport
-# remove docs build (sdk doesn't have xsltproc) 
-DIST_SUBDIRS = codegen . gtk examples tests #docs
-# /INDT: backport
+DIST_SUBDIRS = codegen . gtk examples tests
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 distdir = $(PACKAGE)-$(VERSION)
 top_distdir = $(distdir)
@@ -277,9 +274,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = 1.7
 @BUILD_GTK_TRUE@GTK_SUBDIR = gtk
-# INDT: backport
-SUBDIRS = codegen . $(GTK_SUBDIR) examples tests #docs
-# /INDT: backport
+SUBDIRS = codegen . $(GTK_SUBDIR) examples tests
 PLATFORM_VERSION = 2.0
 CLEANFILES = atk.c pango.c
 EXTRA_DIST = \
@@ -1044,7 +1039,7 @@ doc-dist:
 	cp -r docs/html/*.html pygtk
 	cp -r docs/html/*.sgml pygtk
 	cp -r docs/html/*.devhelp pygtk
-	cp -r $(PYGOBJECT_PYGDOCS)/style.css pygtk
+	-cp -r $(PYGOBJECT_PYGDOCS)/style.css pygtk
 	tar cfz $(PACKAGE)-docs.tar.gz pygtk
 	rm -fr pygtk
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

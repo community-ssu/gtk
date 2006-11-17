@@ -4,7 +4,7 @@ if BUILD_GTK
   GTK_SUBDIR = gtk
 endif
 
-SUBDIRS = codegen . $(GTK_SUBDIR) examples tests docs
+SUBDIRS = codegen . $(GTK_SUBDIR) examples tests
 
 PLATFORM_VERSION = 2.0
 
@@ -123,6 +123,6 @@ doc-dist:
 	cp -r docs/html/*.html pygtk
 	cp -r docs/html/*.sgml pygtk
 	cp -r docs/html/*.devhelp pygtk
-	cp -r $(PYGOBJECT_PYGDOCS)/style.css pygtk
+	-cp -r $(PYGOBJECT_PYGDOCS)/style.css pygtk
 	tar cfz $(PACKAGE)-docs.tar.gz pygtk
 	rm -fr pygtk

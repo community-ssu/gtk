@@ -44,7 +44,7 @@ host_triplet = @host@
 @HAVE_GTK_2_10_TRUE@am__append_4 = gtk-2.10-types.defs
 @BUILD_GTK_TRUE@am__append_5 = _gtk.la
 @BUILD_GTK_TRUE@am__append_6 = $(GDK_DEFS) $(GDK_TYPES_DEFS) $(GTK_DEFS) $(GTK_TYPES_DEFS) \
-@BUILD_GTK_TRUE@	gdk.defs gtk.defs gdk-types.defs gtk-types.defs
+@BUILD_GTK_TRUE@	gdk.defs gtk.defs gdk-types.defs gtk-types.defs gtk-extrafuncs.defs
 
 @BUILD_LIBGLADE_TRUE@am__append_7 = glade.la
 @BUILD_LIBGLADE_TRUE@am__append_8 = $(LIBGLADE_DEFS)

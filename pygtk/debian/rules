@@ -19,12 +19,14 @@ build: build-stamp
 build-stamp:
 	dh_testdir
 
+	automake
 	autoconf
 	CFLAGS="$(CFLAGS)" \
 	PYTHON=`which $(PYTHON)` \
 		./configure \
 			--prefix=/usr \
 			--enable-thread \
+			--disable-docs \
 			--disable-numpy
 	$(MAKE)
 	touch build-stamp
