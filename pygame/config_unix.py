@@ -18,7 +18,8 @@ origlibdirs = ['/lib']
 
 def confirm(message):
     "ask a yes/no question, return result"
-    reply = raw_input('\n' + message + ' [Y/n]:')
+#    reply = raw_input('\n' + message + ' [Y/n]:')
+    reply = "y" #dont ask anything	
     if reply and string.lower(reply[0]) == 'n':
         return 0
     return 1
