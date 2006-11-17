@@ -28,6 +28,7 @@ build-stamp:
 	dh_testdir
 
 	mkdir -p build
+	automake
 	autoconf
 	cd build && \
 	CFLAGS="$(CFLAGS)" \

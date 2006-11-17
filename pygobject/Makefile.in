@@ -242,7 +242,7 @@ noinst_PYTHON = ltihooks.py
 # linker flags
 common_ldflags = -module -avoid-version $(am__append_1)
 EGG_NAME = $(PACKAGE)-$(PACKAGE_VERSION)-py$(PYTHON_VERSION)-$(PLATFORM).egg
-TMPDIR = `pwd`/$(PACKAGE)-$(PACKAGE_VERSION)
+TMPDIR = `pwd`/$(PACKAGE)
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 

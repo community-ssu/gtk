@@ -47,7 +47,7 @@ uninstall-local:
 	rm -f $(DESTDIR)$(pythondir)/pygtk.pth $(DESTDIR)$(pyexecdir)/pygtk.pth
 
 EGG_NAME = $(PACKAGE)-$(PACKAGE_VERSION)-py$(PYTHON_VERSION)-$(PLATFORM).egg
-TMPDIR = `pwd`/$(PACKAGE)-$(PACKAGE_VERSION)
+TMPDIR = `pwd`/$(PACKAGE)
 
 egg: $(top_srcdir)/gobject/gobject.la PKG-INFO
 	rm -fr $(TMPDIR)
