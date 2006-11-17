@@ -1,3 +1,9 @@
+python-runtime (0.4-1) unstable; urgency=low
+
+  * new python release (2.5)
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 19 Jul 2006 17:23:57 -0300
+
 python-runtime (0.3-2) unstable; urgency=low
 
   * fixed the target 'binary' in debian/rules
