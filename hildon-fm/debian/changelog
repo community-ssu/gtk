@@ -1,4 +1,4 @@
-hildon-fm (2.0-0unreleased1) unstable; urgency=low
+hildon-fm (2.0-1) unstable; urgency=low
 
   * Branched for development; maintenance continues in 1.x.
   * Merged branch changes from 1.14 to 1.16.
