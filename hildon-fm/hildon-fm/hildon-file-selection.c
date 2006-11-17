@@ -96,6 +96,7 @@ hildon_file_selection_disable_cursor_magic (HildonFileSelection *self,
 
 static GtkTreeModel *
 hildon_file_selection_create_sort_model(HildonFileSelection *self,
+					GtkTreeIterCompareFunc sort_function,
                                         GtkTreeModel *parent_model);
 
 #ifdef HILDON_FM_HPANED
@@ -589,6 +590,12 @@ static void hildon_file_selection_finalize(GObject * obj)
 
     ULOG_DEBUG_F("(%p)", (gpointer) obj);
 
+    if (priv->banner_timeout_id)
+      g_source_remove (priv->banner_timeout_id);
+
+    if (priv->banner_close_timeout_id)
+      g_source_remove (priv->banner_close_timeout_id);
+
     if (priv->content_pane_changed_id)
       g_source_remove(priv->content_pane_changed_id);
 
@@ -763,28 +770,17 @@ static gboolean filter_func(GtkTreeModel * model, GtkTreeIter * iter,
     return result;
 }
 
-static gint sort_function(GtkTreeModel * model, GtkTreeIter * a,
-                          GtkTreeIter * b, gpointer data)
+static gint
+sort_function (GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
+	       HildonFileSelectionSortKey key, GtkSortType order)
 {
     gint value, weight_a, weight_b, diff;
-    HildonFileSelectionSortKey key;
-    GtkSortType order;
     char *mime_a, *mime_b;
-
-    g_assert(HILDON_IS_FILE_SELECTION(data));
 
     gtk_tree_model_get(model, a, HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_WEIGHT,
                        &weight_a, -1);
     gtk_tree_model_get(model, b, HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_WEIGHT,
                        &weight_b, -1);
-
-    hildon_file_selection_get_sort_key(HILDON_FILE_SELECTION(data), &key,
-                                       &order);
-
-    if (key == GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID) {
-        key = HILDON_FILE_SELECTION_SORT_NAME;
-        order = GTK_SORT_ASCENDING;
-    }
 
     /* If the items are in different sorting groups, we can determine
        the order directly by checking the weights. */
@@ -865,6 +861,40 @@ static gint sort_function(GtkTreeModel * model, GtkTreeIter * a,
     g_free(mime_b);
 
     return value;
+}
+
+static gint
+content_pane_sort_function (GtkTreeModel *model,
+			    GtkTreeIter *a, GtkTreeIter *b,
+			    gpointer data)
+{
+    HildonFileSelectionSortKey key;
+    GtkSortType order;
+
+    g_assert(HILDON_IS_FILE_SELECTION(data));
+
+    hildon_file_selection_get_sort_key (HILDON_FILE_SELECTION(data),
+					&key, &order);
+
+    if (key == GTK_TREE_SORTABLE_DEFAULT_SORT_COLUMN_ID)
+      {
+	key = HILDON_FILE_SELECTION_SORT_NAME;
+	order = GTK_SORT_ASCENDING;
+      }
+
+    return sort_function (model, a, b, key, order);
+}
+
+static gint
+navigation_pane_sort_function (GtkTreeModel *model,
+			       GtkTreeIter *a, GtkTreeIter *b,
+			       gpointer data)
+{
+  g_assert (HILDON_IS_FILE_SELECTION(data));
+
+  return sort_function (model, a, b,
+			HILDON_FILE_SELECTION_SORT_NAME,
+			GTK_SORT_ASCENDING);
 }
 
 static void hildon_file_selection_set_property(GObject * object,
@@ -1602,7 +1632,8 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
             priv->view_filter =
                 gtk_tree_model_filter_new(priv->main_model, sort_path);
 
-            priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
+            priv->sort_model = hildon_file_selection_create_sort_model 
+	      (self, content_pane_sort_function, priv->view_filter);
 
 	    hildon_file_selection_enable_cursor_magic (self, priv->sort_model);
 
@@ -2420,9 +2451,11 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
         navigation_pane_filter_func, self->priv,
         NULL);
 
-    self->priv->dir_sort = hildon_file_selection_create_sort_model(self, self->priv->dir_filter);
+    self->priv->dir_sort = hildon_file_selection_create_sort_model
+      (self, navigation_pane_sort_function, self->priv->dir_filter);
 #else
-    self->priv->dir_sort = hildon_file_selection_create_sort_model(self, self->priv->main_model);
+    self->priv->dir_sort = hildon_file_selection_create_sort_model
+      (self, navigation_pane_sort_function, self->priv->main_model);
 
     self->priv->dir_filter =
         gtk_tree_model_filter_new(self->priv->dir_sort, NULL);
@@ -2981,7 +3014,11 @@ static GObject *hildon_file_selection_constructor(GType type,
     priv->view_filter = gtk_tree_model_filter_new(priv->main_model, temp_path);
     gtk_tree_path_free (temp_path);
 
-    priv->sort_model = hildon_file_selection_create_sort_model(self, priv->view_filter);
+    gtk_tree_model_filter_set_visible_func 
+      (GTK_TREE_MODEL_FILTER (priv->view_filter), filter_func, priv, NULL);
+
+    priv->sort_model = hildon_file_selection_create_sort_model
+      (self, content_pane_sort_function, priv->view_filter);
     hildon_file_selection_enable_cursor_magic (self, priv->sort_model);
 
     hildon_file_selection_create_dir_view(self);
@@ -4399,8 +4436,9 @@ hildon_file_selection_move_cursor_to_uri (HildonFileSelection * self,
 }
 
 static GtkTreeModel *
-hildon_file_selection_create_sort_model(HildonFileSelection *self,
-                                        GtkTreeModel *parent_model)
+hildon_file_selection_create_sort_model (HildonFileSelection *self,
+					 GtkTreeIterCompareFunc sort_function,
+					 GtkTreeModel *parent_model)
 {
   GtkTreeModel *ret;
   GtkTreeSortable *sortable;

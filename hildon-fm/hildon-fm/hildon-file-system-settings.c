@@ -42,11 +42,11 @@
 #include <libintl.h>
 #include <string.h>
 
-
 #define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
 
+#include <osso-ic-dbus.h>
 
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-settings.h"
@@ -61,7 +61,8 @@ enum {
   PROP_MMC_COVER_OPEN,
   PROP_MMC_USED,
   PROP_MMC_CORRUPTED,
-  PROP_INTERNAL_MMC_CORRUPTED
+  PROP_INTERNAL_MMC_CORRUPTED,
+  PROP_IAP_CONNECTED
 };
 
 #define PRIVATE(obj) HILDON_FILE_SYSTEM_SETTINGS(obj)->priv
@@ -78,6 +79,9 @@ enum {
 
 #define MCE_MATCH_RULE "type='signal',interface='" MCE_SIGNAL_IF \
                        "',member='" MCE_DEVICE_MODE_SIG "'"
+
+#define ICD_MATCH_RULE "type='signal',interface='" ICD_DBUS_INTERFACE \
+                       "',member='" ICD_STATUS_CHANGED_SIG "'"
 
 /* For getting and tracking the Bluetooth name
  */
@@ -104,6 +108,7 @@ struct _HildonFileSystemSettingsPrivate
   gchar *btname;
   gchar *gateway;
   gboolean gateway_ftp;
+  gboolean iap_connected;
 
   gboolean gconf_ready;
   gboolean flightmode_ready;
@@ -154,6 +159,9 @@ hildon_file_system_settings_get_property(GObject *object,
       break;
     case PROP_MMC_CORRUPTED:
       g_value_set_boolean(value, priv->mmc_is_corrupted);
+      break;
+    case PROP_IAP_CONNECTED:
+      g_value_set_boolean(value, priv->iap_connected);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -327,6 +335,33 @@ set_flight_mode_from_message(HildonFileSystemSettings *self,
   }
 }
 
+static void 
+set_icd_status_from_message (HildonFileSystemSettings *self,
+                             DBusMessage *message)
+{
+  gchar *name, *type, *status, *uierr;
+  gboolean new_value = self->priv->iap_connected;
+
+  if (dbus_message_get_args (message, NULL,
+			     DBUS_TYPE_STRING, &name,
+			     DBUS_TYPE_STRING, &type,
+			     DBUS_TYPE_STRING, &status,
+			     DBUS_TYPE_STRING, &uierr,
+			     DBUS_TYPE_INVALID))
+    {
+      if (strcmp (status, "IDLE") == 0)
+	new_value = FALSE;
+      else if (strcmp (status, "CONNECTED") == 0)
+	new_value = TRUE;
+    }
+
+  if (new_value != self->priv->iap_connected)
+    {
+      self->priv->iap_connected = new_value;
+      g_object_notify (G_OBJECT(self), "iap-connected");
+    }
+}
+
 static DBusHandlerResult
 hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn,
                                                DBusMessage *msg,
@@ -342,7 +377,12 @@ hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn,
   {
     set_bt_name_from_message(HILDON_FILE_SYSTEM_SETTINGS(data), msg);
   }
-
+  else if (dbus_message_is_signal (msg, ICD_DBUS_INTERFACE,
+				   ICD_STATUS_CHANGED_SIG))
+  {
+    set_icd_status_from_message (HILDON_FILE_SYSTEM_SETTINGS (data), msg);
+  }
+				   
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
@@ -465,6 +505,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
   dbus_message_unref(request);
 
   dbus_connection_setup_with_g_main(conn, NULL);
+  dbus_error_init (&error);
   dbus_bus_add_match(conn, MCE_MATCH_RULE, &error);
   if (dbus_error_is_set(&error))
   {
@@ -472,12 +513,21 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
     dbus_error_free(&error);
   }
 
+  dbus_error_init (&error);
   dbus_bus_add_match(conn, BTNAME_MATCH_RULE, &error);
   if (dbus_error_is_set(&error))
   {
     ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
     dbus_error_free(&error);
   }
+
+  dbus_error_init (&error);
+  dbus_bus_add_match (conn, ICD_MATCH_RULE, &error);
+  if (dbus_error_is_set(&error))
+    {
+      ULOG_ERR_F("dbus_bus_add_match failed: %s\n", error.message);
+      dbus_error_free (&error);
+    }
 
   if (!dbus_connection_add_filter(conn,
       hildon_file_system_settings_handle_dbus_signal, self, NULL))
@@ -546,6 +596,7 @@ hildon_file_system_settings_finalize(GObject *obj)
   {
     dbus_bus_remove_match(priv->dbus_conn, MCE_MATCH_RULE, NULL);
     dbus_bus_remove_match(priv->dbus_conn, BTNAME_MATCH_RULE, NULL);
+    dbus_bus_remove_match(priv->dbus_conn, ICD_MATCH_RULE, NULL);
     dbus_connection_remove_filter(priv->dbus_conn,
       hildon_file_system_settings_handle_dbus_signal, obj);
     dbus_connection_unref(priv->dbus_conn);
@@ -602,6 +653,10 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
   g_object_class_install_property(object_class, PROP_MMC_COVER_OPEN,
     g_param_spec_boolean("mmc-cover-open", "MMC cover open",
 	                 "Whether or not the MMC cover is open",
+			 FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_IAP_CONNECTED,
+    g_param_spec_boolean("iap-connected", "IAP Connected",
+	                 "Whether or not we have a internet connection",
 			 FALSE, G_PARAM_READABLE));
 }
 
@@ -726,6 +781,7 @@ hildon_file_system_settings_init(HildonFileSystemSettings *self)
     HILDON_TYPE_FILE_SYSTEM_SETTINGS, HildonFileSystemSettingsPrivate); 
  
   self->priv->flightmode = TRUE;
+  self->priv->iap_connected = TRUE;
 
   /* This ugly stuff blocks the execution, so let's do it
      only after we are in idle */

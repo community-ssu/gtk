@@ -46,6 +46,9 @@ hildon_file_system_obex_init (HildonFileSystemObex *device);
 HildonFileSystemSpecialLocation*
 hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *location, gchar *uri);
 
+static gboolean
+hildon_file_system_obex_is_visible (HildonFileSystemSpecialLocation *location);
+
 G_DEFINE_TYPE (HildonFileSystemObex,
                hildon_file_system_obex,
                HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
@@ -74,6 +77,8 @@ hildon_file_system_obex_class_init (HildonFileSystemObexClass *klass)
        listing it is fast.
     */
     location->requires_access = NULL;
+
+    location->is_visible = hildon_file_system_obex_is_visible;
 }
 
 static void
@@ -86,6 +91,8 @@ hildon_file_system_obex_init (HildonFileSystemObex *device)
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
     location->fixed_title = g_strdup (_("sfil_li_bluetooth"));
     location->failed_access_message = NULL;
+    
+    device->has_children = FALSE;
 }
 
 static void
@@ -130,10 +137,18 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
         }
         child->basepath = new_uri;
         child->failed_access_message = _("sfil_ib_cannot_connect_device");
+
+	HILDON_FILE_SYSTEM_OBEX(location)->has_children = TRUE;
     }
 
 
     return child;
+}
+
+static gboolean
+hildon_file_system_obex_is_visible (HildonFileSystemSpecialLocation *location)
+{
+  return HILDON_FILE_SYSTEM_OBEX (location)->has_children;
 }
 
 /* very dependant on how things work now */

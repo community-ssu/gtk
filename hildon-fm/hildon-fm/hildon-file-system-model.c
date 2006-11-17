@@ -1039,24 +1039,14 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                 HILDON_FILE_SYSTEM_MODEL_FILE));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON:
-
-      /* Special locations get the (+) emblem until they have been
-	 accessed, if that is required.
-      */
-      if (model_node->location == NULL
-	  || model_node->accessed
-	  || (!hildon_file_system_special_location_requires_access 
-	      (model_node->location)))
-	{
-	  if (!model_node->icon_cache)
-            model_node->icon_cache =
-	      hildon_file_system_model_create_image(priv, model_node,
-						    TREE_ICON_SIZE);
-	  
-	  g_value_set_object(value, model_node->icon_cache);
-	  update_cache_queue(priv, node);
-	  break;
-	}
+      if (!model_node->icon_cache)
+	model_node->icon_cache =
+	  hildon_file_system_model_create_image(priv, model_node,
+						TREE_ICON_SIZE);
+      
+      g_value_set_object(value, model_node->icon_cache);
+      update_cache_queue(priv, node);
+      break;
       /* Fall thru... */
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED:
         if (!model_node->icon_cache_collapsed)
@@ -2712,6 +2702,7 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
                                             const GtkFilePath * path,
                                             GtkTreeIter * iter)
 {
+    const GtkFilePath *real_path;
     GtkFilePath *parent_path;
     GtkTreeIter parent_iter;
 
@@ -2719,8 +2710,17 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
     g_return_val_if_fail(path != NULL, FALSE);
     g_return_val_if_fail(iter != NULL, FALSE);
 
+    /* XXX - if we are trying to load "upnpav:///", we change it to
+             "upnpav://", since upnpav:/// will not be found. Urks.
+    */
+    if (strcmp (gtk_file_path_get_string (path), "upnpav:///") == 0)
+      real_path = gtk_file_path_new_steal ("upnpav://");
+    else
+      real_path = (GtkFilePath *)path;
+
     /* Let's see if given path is already in the tree */
-    if (hildon_file_system_model_search_path(model, path, iter, NULL, TRUE))
+    if (hildon_file_system_model_search_path(model, real_path, iter,
+					     NULL, TRUE))
     {
       /* In case of gateway, we may need this to allow accessing contents */
       (void) _hildon_file_system_model_mount_device_iter(model, iter, NULL);
@@ -2729,12 +2729,33 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 
     /* No, path was not found. Let's try go one level up and loading more
        contents */
-    if (!gtk_file_system_get_parent
-        (model->priv->filesystem, path, &parent_path, NULL) || parent_path == NULL) {
-        ULOG_ERR_F("Attempt to select folder that is not in user visible area");
-        return FALSE; /* Very BAD. We reached the real root. Given
-                         folder was probably not under any of our roots */
-    }
+    if (!gtk_file_system_get_parent (model->priv->filesystem,
+				     real_path, &parent_path, NULL)
+	|| parent_path == NULL)
+      {
+        /* Let's check a special case: We want remote servers to report
+           the used protocol as their parent uri: 
+               obex://mac/ => obex://
+         */
+        const gchar *s;
+        gint i;
+
+        s = gtk_file_path_get_string(real_path);
+        i = strlen(s) - 1;
+
+        /* Skip tailing slashes */
+        while (i >= 0 && s[i] == G_DIR_SEPARATOR) i--;
+        /* Skip characters backwards until we encounter next slash */
+        while (i >= 0 && s[i] != G_DIR_SEPARATOR) i--;
+
+        if (i >= 0)
+            parent_path = gtk_file_path_new_steal(g_strndup(s, i + 1));
+        else {
+            ULOG_ERR_F("Attempt to select folder that is not in user visible area");
+            return FALSE; /* Very BAD. We reached the real root. Given
+                             folder was probably not under any of our roots */
+        }
+      }
 
     if (hildon_file_system_model_load_path(model, parent_path, &parent_iter))
     {
@@ -2750,18 +2771,15 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
       gtk_file_path_free(parent_path);    
       parent_folder = parent_model_node->folder;
 
-      if (!parent_folder)
-        return FALSE;
-
       /* Ok, if we reached this point we had located "parent_folder". We
          have to add our path to this folder. This is a blocking function,
          but MUCH FASTER than the previous approach that loaded whole levels
          for each folder. */
       iter->user_data = hildon_file_system_model_add_node(GTK_TREE_MODEL(model),
                                   parent_node, parent_folder,
-                                  path);
+                                  real_path);
       iter->stamp = model->priv->stamp;
-    
+
       return iter->user_data != NULL;
     }
 
@@ -3049,6 +3067,7 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
   GtkFilePath *folder = NULL;
   GtkFilePath * uri_path = NULL;
   gchar *file = NULL;
+  gboolean is_folder = FALSE;
   gchar *result = NULL;
   GtkTreeIter iter;
   
@@ -3070,8 +3089,11 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
 
       if ( hildon_file_system_model_search_uri(model, uri, &ret_iter, &iter, FALSE) ) 
       {
-	 gtk_tree_model_get(GTK_TREE_MODEL(model), &ret_iter,
-			    HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME, &file ,-1); 
+	 gtk_tree_model_get 
+	   (GTK_TREE_MODEL(model), &ret_iter,
+	    HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME, &file, 
+	    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER, &is_folder, 
+	    -1); 
       }
   }
    
@@ -3085,7 +3107,7 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
     
   gchar *extension = NULL, *dot, *autonamed;
 
-  dot = _hildon_file_system_search_extension(file, NULL);
+  dot = _hildon_file_system_search_extension (file, FALSE, is_folder);
   if (dot && dot != file) {
      extension = g_strdup(dot);
      *dot = '\0';

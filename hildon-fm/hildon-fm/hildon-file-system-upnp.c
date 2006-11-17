@@ -39,6 +39,12 @@ HildonFileSystemSpecialLocation*
 hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
                                                *location, gchar *uri);
 
+static gboolean
+hildon_file_system_upnp_is_visible (HildonFileSystemSpecialLocation *location);
+
+static gboolean
+hildon_file_system_upnp_is_available (HildonFileSystemSpecialLocation *location);
+
 G_DEFINE_TYPE (HildonFileSystemUpnp,
                hildon_file_system_upnp,
                HILDON_TYPE_FILE_SYSTEM_REMOTE_DEVICE);
@@ -53,23 +59,60 @@ hildon_file_system_upnp_class_init (HildonFileSystemUpnpClass *klass)
     gobject_class->finalize = hildon_file_system_upnp_finalize;
     location->create_child_location =
             hildon_file_system_upnp_create_child_location;
+
+    location->requires_access = FALSE;
+    location->is_visible = hildon_file_system_upnp_is_visible;
+    location->is_available = hildon_file_system_upnp_is_available;
+}
+
+static void
+iap_connected_changed (GObject *settings, GParamSpec *param, gpointer data)
+{
+  HildonFileSystemUpnp *upnp = HILDON_FILE_SYSTEM_UPNP (data);
+
+  upnp->has_children = FALSE;
+  g_signal_emit_by_name (data, "connection-state");
 }
 
 static void
 hildon_file_system_upnp_init (HildonFileSystemUpnp *device)
 {
+    HildonFileSystemSettings *fs_settings;
     HildonFileSystemSpecialLocation *location;
+    HildonFileSystemUpnp *upnp;
+
+    fs_settings = _hildon_file_system_settings_get_instance ();
 
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
     location->fixed_title = g_strdup (_("sfil_li_shared_media"));
     location->failed_access_message = NULL;
+
+    upnp = HILDON_FILE_SYSTEM_UPNP (location);
+    upnp->connected_handler_id =
+      g_signal_connect (fs_settings,
+			"notify::iap-connected",
+			G_CALLBACK (iap_connected_changed),
+			upnp);
 }
 
 static void
 hildon_file_system_upnp_finalize (GObject *obj)
 {
+    HildonFileSystemUpnp *upnp;
+    HildonFileSystemSettings *fs_settings;
+    
+    upnp = HILDON_FILE_SYSTEM_UPNP (obj);
+
+    fs_settings = _hildon_file_system_settings_get_instance ();
+    if (g_signal_handler_is_connected (fs_settings,
+				       upnp->connected_handler_id))
+      {
+        g_signal_handler_disconnect (fs_settings, 
+				     upnp->connected_handler_id);
+      }
+
     G_OBJECT_CLASS (hildon_file_system_upnp_parent_class)->finalize (obj);
 }
 
@@ -97,8 +140,29 @@ hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
       hildon_file_system_special_location_set_icon (child,
                                                    "qgn_list_filesys_divc_cls");
       child->failed_access_message = _("sfil_ib_cannot_connect_device");
+
+      HILDON_FILE_SYSTEM_UPNP (location)->has_children = TRUE;
     }
 
     return child;
 }
 
+static gboolean
+hildon_file_system_upnp_is_visible (HildonFileSystemSpecialLocation *location)
+{
+  if (!HILDON_FILE_SYSTEM_UPNP (location)->has_children)
+    return FALSE;
+  else
+    return hildon_file_system_upnp_is_available (location);
+}
+
+static gboolean
+hildon_file_system_upnp_is_available (HildonFileSystemSpecialLocation *location)
+{
+  HildonFileSystemSettings *fs_settings;
+  gboolean connected;
+  
+  fs_settings = _hildon_file_system_settings_get_instance ();
+  g_object_get (fs_settings, "iap-connected", &connected, NULL);
+  return connected;
+}

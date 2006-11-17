@@ -67,7 +67,10 @@ GtkFileSystemVolume *
 _hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
     HildonFileSystemSpecialLocation *location);
 
-gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime);
+gchar *_hildon_file_system_search_extension(gchar *name,
+					    gboolean only_known,
+					    gboolean is_folder);
+gboolean _hildon_file_system_is_known_extension (const gchar *ext);
 long _hildon_file_system_parse_autonumber(const char *start);
 void _hildon_file_system_remove_autonumber(char *name);
 

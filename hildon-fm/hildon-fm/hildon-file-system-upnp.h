@@ -43,6 +43,8 @@ typedef struct _HildonFileSystemUpnpClass HildonFileSystemUpnpClass;
 struct _HildonFileSystemUpnp
 {
     HildonFileSystemRemoteDevice parent_instance;
+    gboolean has_children;
+    gint connected_handler_id;
 };
 
 struct _HildonFileSystemUpnpClass

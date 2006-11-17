@@ -352,6 +352,137 @@ hildon_file_chooser_dialog_save_multiple_set(HildonFileChooserDialogPrivate *pri
 }
 
 static void
+set_entry (GtkWidget *entry, const char *name, const char *ext)
+{
+  if (name == NULL)
+    return;
+  
+  gtk_entry_set_text (GTK_ENTRY(entry), name);
+
+  /* Include the extension in the name when it is not recognized.  EXT
+     always includes the starting '.'.
+   */
+
+  if (ext && !_hildon_file_system_is_known_extension (ext))
+    {
+      fprintf (stderr, "'%s' not known\n", ext);
+
+      gint position = strlen (name);
+      gtk_editable_insert_text (GTK_EDITABLE (entry),
+				ext, strlen (ext), 
+				&position);
+    }
+}
+
+static gchar *
+get_entry (GtkWidget *entry, const char *ext)
+{
+  gchar *name;
+  g_object_get (entry, "text", &name, NULL);
+  g_strstrip(name);
+
+  /* If the original extension was not recognized, then it was offered
+     to the user for editing, and whatever we have in the entry now is
+     the full filename.  It the extension was recognized, we add it
+     back now.
+  */
+  
+  if (ext && _hildon_file_system_is_known_extension (ext))
+    {
+       gchar *ext_name = g_strconcat (name, ext, NULL);
+       g_free (name);
+       name = ext_name;
+    }
+
+  return name;
+}
+
+/* Set PRIV->stub_name and PRIV->ext_name from NAME so that stub_name
+   contains everything before any potential autonaming token and
+   ext_name everything after it.
+
+   Concretely, this means that ext_name gets the extension of NAME,
+   including unrecognized ones.  SET_ENTRY and GET_ENTRY make sure
+   that the user can edit unrecognized extensions.
+*/
+static void
+set_stub_and_ext (HildonFileChooserDialogPrivate *priv, 
+		  const char *name)
+{
+  char *dot;
+  gboolean is_folder;
+
+  /* XXX - We do not always reset the extension here since the old
+           code didn't do it and some code out there might rely on it
+           not being done.
+  */
+  g_free (priv->stub_name);
+  priv->stub_name = g_strdup (name);
+
+  /* Determine whether we are talking about a folder here.  If
+     action is CREATE_FOLDER, we need to ask our GtkFilesystem
+     whether NAME refers to a folder, since the CREATE_FOLDER action
+     is also used for the "Rename <object>" dialog...
+
+     The following is about the right amount of code one should have
+     to write for figuring out whether a file is a directory, I'd say.
+  */
+  if (priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
+    {
+      is_folder = TRUE;
+
+      if (priv->model)
+	{
+	  GtkFileSystem *filesystem =
+	    _hildon_file_system_model_get_file_system (priv->model);
+	  if (filesystem)
+	    {
+	      GtkFilePath *cur_folder_path;
+	      cur_folder_path =
+		hildon_file_selection_get_current_folder (priv->filetree);
+	      if (cur_folder_path)
+		{
+		  GtkFileFolder *cur_folder =
+		    gtk_file_system_get_folder (filesystem, cur_folder_path,
+						0, NULL);
+		  if (cur_folder)
+		    {
+		      GtkFilePath *path = gtk_file_path_new_steal
+			(g_strdup_printf ("%s/%s",
+					  gtk_file_path_get_string (cur_folder_path),
+					  name));
+		      GtkFileInfo *info =
+			gtk_file_folder_get_info (cur_folder, path, NULL);
+		      if (info)
+			{
+			  is_folder = gtk_file_info_get_is_folder (info);
+			  gtk_file_info_free (info);
+			}
+		      gtk_file_path_free (path);
+		      g_object_unref (cur_folder);
+		    }
+		  gtk_file_path_free (cur_folder_path);
+		}
+	    }
+	}
+    }
+  else
+    is_folder = FALSE;
+
+  dot = _hildon_file_system_search_extension (priv->stub_name,
+					      FALSE, is_folder);
+  
+  /* Is there a dot, but not as first character */
+  if (dot && dot != priv->stub_name) { 
+    g_free(priv->ext_name);
+    priv->ext_name = g_strdup(dot);
+    *dot = '\0';
+  }
+
+  set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
+}
+
+static void
 hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
                                          priv)
 {
@@ -388,7 +519,7 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
         {
 	  gboolean edited = !selection && 
 		  	     (pos != g_utf8_strlen (gtk_entry_get_text(GTK_ENTRY(priv->entry_name)), -1));
-          gtk_entry_set_text(GTK_ENTRY(priv->entry_name), name);
+	  set_entry (priv->entry_name, name, priv->ext_name);
           g_free(name);
           if (!edited)
             gtk_editable_select_region(GTK_EDITABLE(priv->entry_name), 0, -1);
@@ -398,7 +529,7 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
             gtk_editable_set_position(GTK_EDITABLE(priv->entry_name), pos);
         }
         else
-          gtk_entry_set_text(GTK_ENTRY(priv->entry_name), priv->stub_name);
+          set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
 
         g_signal_handler_unblock(priv->entry_name, priv->changed_handler);
     }
@@ -479,6 +610,7 @@ hildon_file_chooser_dialog_set_current_folder(GtkFileChooser * chooser,
                                               const GtkFilePath * path,
                                               GError ** error)
 {
+    char *name;
     HildonFileChooserDialog *self;
     gboolean result;
 
@@ -486,6 +618,18 @@ hildon_file_chooser_dialog_set_current_folder(GtkFileChooser * chooser,
     result = hildon_file_selection_set_current_folder(
         self->priv->filetree, path, error);
     hildon_file_chooser_dialog_set_limit(self);
+
+    /* Now resplit the name into stub and ext parts since now the
+       situation might have as to whether it is a folder or not.
+    */
+    if (self->priv->ext_name)
+      name = g_strconcat (self->priv->stub_name,
+			  self->priv->ext_name);
+    else
+      name = g_strdup (self->priv->stub_name);
+
+    set_stub_and_ext (self->priv, name);
+    g_free (name);
 
     return result;
 }
@@ -504,20 +648,10 @@ static void hildon_file_chooser_dialog_set_current_name(GtkFileChooser *
                                                         chooser,
                                                         const gchar * name)
 {
-    gchar *dot;
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
 
-    g_free(priv->stub_name);
-    priv->stub_name = g_strdup(name);
-    dot = _hildon_file_system_search_extension(priv->stub_name, NULL);
-
-    /* Is there a dot, but not as first character */
-    if (dot && dot != priv->stub_name) { 
-        g_free(priv->ext_name);
-        priv->ext_name = g_strdup(dot);
-        *dot = '\0';
-    }
+    set_stub_and_ext (priv, name);
 
     /* If we have autonaming enabled, we try to remove possible
        autonumber from stub part. We do not want to do this
@@ -587,15 +721,7 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
     if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN)
         return _hildon_file_selection_get_selected_files(priv->filetree);
 
-    g_object_get(priv->entry_name, "text", &name, NULL);
-    g_strstrip(name);
-
-    if (priv->ext_name) {
-        /* Dot is part of the extension */
-       gchar *ext_name = g_strconcat(name, priv->ext_name, NULL);
-       g_free(name);
-       name = ext_name;
-    }
+    name = get_entry (priv->entry_name, priv->ext_name);
 
     name_without_dot_prefix = name;
     while (*name_without_dot_prefix == '.')

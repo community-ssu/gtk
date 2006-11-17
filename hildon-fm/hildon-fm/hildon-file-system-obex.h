@@ -51,6 +51,7 @@ typedef struct _HildonFileSystemObexClass HildonFileSystemObexClass;
 struct _HildonFileSystemObex
 {
     HildonFileSystemRemoteDevice parent_instance;
+    gboolean has_children;
 };
 
 struct _HildonFileSystemObexClass

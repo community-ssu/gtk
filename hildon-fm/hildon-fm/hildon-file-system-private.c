@@ -469,16 +469,49 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
   const GtkFilePath *path, HildonFileSystemSpecialLocation *location, 
   GtkFileInfo *info)
 {
+  gboolean only_known, is_folder;
+  const gchar *mime_type;
   gchar *str, *dot;
 
   str = _hildon_file_system_create_file_name(fs, path, location, info);   
 
-  if (info && !gtk_file_info_get_is_folder(info))
+  if (info)
   {
-      dot = _hildon_file_system_search_extension(str, 
-                gtk_file_info_get_mime_type(info));
-      if (dot && dot != str)
-        *dot = 0;
+    only_known = TRUE;
+    is_folder = (location != NULL) || gtk_file_info_get_is_folder (info);
+    mime_type = gtk_file_info_get_mime_type (info);
+
+    /* XXX - This is a very special hack for the GtkFileSystemMemory
+             that is used to handle bookmarks.
+
+       Bookmarks in that filesystem have display names like
+       "Google.bm" but we want to display them as "Google", of course.
+       Unfortunately, ".bm" is not a registered extension and so our
+       normal rules tell us to show that extension.
+
+       The old rules would suppress the extension of any file that has
+       a mime type other than application/octet-stream, and it turns
+       out that bookmarks do have a different mime type:
+       x-directory-normal.  (Doesn't make any sense, but nothing does
+       in this universe.)
+       
+       So, until we beat some sense into the bookmark backend, we
+       catch the special case of items that are not a folder according
+       to gtk_file_info_get_is_folder, but have a mime-type of
+       x-directory/normal.
+
+       This is a VERY gross hack and I appologize formally.  My only
+       defense is that I don't want to mess with the
+       GtkFileSystemMemory itself at this point.  I only feel
+       comfortable changing what is displayed and not what the
+       filesystem tells is stored in it.
+    */
+    if (!is_folder && strcmp (mime_type, "x-directory/normal") == 0)
+      only_known = FALSE;
+
+    dot = _hildon_file_system_search_extension (str, only_known, is_folder);
+    if (dot && dot != str)
+      *dot = 0;
   }
 
   return str;
@@ -590,17 +623,13 @@ static gint mime_list_insert(gconstpointer a, gconstpointer b)
          strlen(((MimeType *) a)->extension);
 }
 
-gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
+static GSList *
+get_known_mime_types ()
 {
   static GSList *types = NULL;
   MimeType *type;
-  GSList *iter;
   gint len;
-
-  /* Unrecognized types are not touched */
-  if (mime && g_ascii_strcasecmp(mime, "application/octet-stream") == 0)
-    return NULL;
-
+  
   /* Initialize suffix hash table from /usr/share/mime/globs */
   if (!types)
   {
@@ -637,27 +666,79 @@ gchar *_hildon_file_system_search_extension(gchar *name, const gchar *mime)
     }
   }
 
-  /* Now we must search possible extensions from the list that match
-     suffix of the given name. If mime type is given, it also has to match */
-  len = strlen(name);
-  for (iter = types; iter; iter = iter->next)
-  {
-    type = iter->data;
+  return types;
+}
 
-    if (!mime || g_ascii_strcasecmp(mime, type->mime) == 0)
+gchar *
+_hildon_file_system_search_extension (gchar *name,
+				      gboolean only_known,
+				      gboolean is_folder)
+{
+  if (name == NULL)
+    return NULL;
+  
+  if (is_folder)
     {
-      gchar *candidate = name + len - strlen(type->extension);
-
-      if (name <= candidate && 
-          g_ascii_strcasecmp(candidate, type->extension) == 0)
-	return candidate;
+      /* Folders don't have extensions; any dot is part of the name.
+       */
+      return NULL;
     }
-  }
+  else
+    {
+      GSList *types;
+      gint len;
+      MimeType *type;
+      GSList *iter;
 
-  /* If we didn't find a match, then we just return the part after
-     last dot.
-  */
-  return g_strrstr(name, ".");
+      /* We must search possible extensions from the list that match a
+	 suffix of the given name.  The list is sorted from longest to
+	 shortest extension so that we are guaranteed to find the
+	 longest matching extension.
+      */
+
+      types = get_known_mime_types ();
+      len = strlen(name);
+      for (iter = types; iter; iter = iter->next)
+	{
+	  gchar *candidate;
+	  type = iter->data;
+	  
+	  candidate = name + len - strlen(type->extension);
+	  if (name <= candidate
+	      && g_ascii_strcasecmp (candidate, type->extension) == 0)
+	    return candidate;
+	}
+      
+      /* If we haven't found any known extension, we use the part
+	 after the last dot as the extension, but only if that is
+	 wanted.
+      */
+      if (only_known)
+	return NULL;
+      else
+	return g_strrstr (name, ".");
+    }
+}
+
+gboolean
+_hildon_file_system_is_known_extension (const gchar *ext)
+{
+  GSList *types = get_known_mime_types ();
+  GSList *iter;
+  MimeType *type;
+
+  if (ext == NULL)
+    return FALSE;
+
+  for (iter = types; iter; iter = iter->next)
+    {
+      type = iter->data;
+      
+      if (g_ascii_strcasecmp (ext, type->extension) == 0)
+	return TRUE;
+    }
+
+  return FALSE;
 }
 
 enum {

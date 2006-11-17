@@ -1,3 +1,146 @@
+2006-11-17  Marius Vollmer  <marius.vollmer@nokia.com>
+
+    Merged changes from 1.14 to 1.16:
+
+>     2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    Released 1.16
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c
+> 	    (hildon_file_chooser_dialog_set_current_folder): Be careful not to
+> 	    pass stub_name directly to set_stub_and_ext since it will be freed
+> 	    immediately.  (N44784)
+> 
+> 	    Released 1.15
+> 
+> 	    * hildon-fm/hildon-file-system-model.c
+> 	    (hildon_file_system_model_get_value): Removed hack from 2006-10-10
+> 	    and return the normal icon always for COLUMN_ICON.  Otherwise the
+> 	    (+) emblem might appear in the wrong place like in the details
+> 	    dialog.
+> 	    (hildon_file_system_model_load_path): Canonicalize "upnpav:///" to
+> 	    "upnpav://" so that we can find the UPnP root when going up the
+> 	    hierachy.  If gtk_file_system_get_parent doesn't work, do our own
+> 	    filename acrobatics.  Do no insist on having a monitor active for
+> 	    the parent node. (N37687)
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c (set_entry): Be robust
+> 	    against NULL names.
+> 
+>     2006-11-13  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-system-upnp.c
+> 	    (hildon_file_system_upnp_is_visible,
+> 	    hildon_file_system_upnp_is_available): New methods.
+> 	    (hildon_file_system_upnp_class_init): Install them.
+> 	    (hildon_file_system_upnp_init): Listen to changes to the
+> 	    "iap-connected" property and cause ourselves to be rescanned when
+> 	    it changes.  (N42105)
+> 
+> 	    Make it possible to include <osso-ic-dbus.h>
+> 	    * configure.ac (OSSOIC_CFLAGS, OSSOIC_LIBS): Added, for "osso-ic".
+> 	    * hildon-fm/Makefile.am (INCLUDES): Added OSSOIC_CFLAGS.
+> 
+> 	    * hildon-fm/hildon-file-system-settings.c: Added "iap-connected"
+> 	    property that listens to the "status_changed" signal from
+> 	    "com.nokia.icd".
+> 
+>     2006-11-10  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c
+> 	    (hildon_file_chooser_dialog_set_current_folder): Be careful not to
+> 	    call g_strconcat with a NULL string.
+> 
+> 	    * hildon-fm/hildon-file-system-obex.c,
+> 	    hildon-fm/hildon-file-system-obex.h (struct
+> 	    _HildonFileSystemObex): Added has_children member.
+> 	    (hildon_file_system_obex_create_child_location): Set has_children
+> 	    to true after adding one.
+> 	    (hildon_file_system_obex_is_visible): New, to make the bluetooth
+> 	    root folder disappear when it is empty.
+> 	    (hildon_file_system_obex_init): Set it. (N40395)
+> 
+> 	    * hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_search_extension): Handle NULL names.
+> 	    (_hildon_file_system_create_display_name): Consider all special
+> 	    locations to be folders regardless of what 'info' says.
+> 
+>     2006-11-08  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-selection.c
+> 	    (hildon_file_selection_finalize): Remove banner_timeout_id and
+> 	    banner_close_timeout_id sources. (N46676)
+> 
+> 	    * hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_create_display_name): Added a gross hack to
+> 	    hide extensions of bookmarks in the GtkFileSystemMemory backend.
+> 
+> 	    * hildon-fm/hildon-file-selection.c: Refactored the sorting
+> 	    function so that the sorting of the navigation pane can be
+> 	    controlled more precisely. (N45910)
+> 	    (sort_function): Added explicit key and order parameters.  Do not
+> 	    retrieve them with hildon_file_selection_get_sort_key since that
+> 	    function always looks at the content pane sorting parameters.
+> 	    (navigation_pane_sort_function): New, use sort_function to sort
+> 	    always by name and ascending.
+> 	    (content_pane_sort_function): New, use sort_function to sort
+> 	    according to hildon_file_selection_get_sort_key.
+> 	    (hildon_file_selection_create_sort_model): Added sort_function
+> 	    parameter.  Updated all callers accordingly to pass either
+> 	    navigation_pane_sort_function or content_pane_sort_function, as
+> 	    appropriate.
+> 
+> 	    * hildon-fm/hildon-file-selection.c
+> 	    (hildon_file_selection_constructor): Set the visible_func of the
+> 	    content pane filter model.  Thanks to José Dapena Paz and Tommi
+> 	    Komulainen! (M841, N45877)
+> 
+> 	    Be smarter about dots in file and folder names (N44784).
+> 
+> 	    * hildon-fm/hildon-file-system-private.h,
+> 	    hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_search_extension): Added is_folder parameter
+> 	    and behave accordingly.  Updated all callers.  Always search for
+> 	    the longest known extension, even when only_known is FALSE.
+> 	    (_hildon_file_system_create_display_name): Treat folders specially
+> 	    again by setting the is_folder parameter of
+> 	    _hildon_file_system_search_extension correctly.
+> 
+> 	    * hildon-fm/hildon-file-system-model.c
+> 	    (hildon_file_system_model_autoname_uri): Get is_folder property
+> 	    from model and pass to _hildon_file_system_search_extension.
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): New.
+> 	    (hildon_file_chooser_dialog_set_current_folder): Call it so that
+> 	    the idea of the file chooser whether we are handling a file or
+> 	    folder is uptodate.
+> 	    (hildon_file_chooser_dialog_set_current_name): Call
+> 	    set_stub_and_ext instead of using explicit code.
+> 
+>     2006-11-06  Marius Vollmer  <marius.vollmer@nokia.com>
+> 
+> 	    * hildon-fm/hildon-file-chooser-dialog.c (set_entry, get_entry):
+> 	    New, to concentrate the extension handling magic in one place.
+> 	    (hildon_file_chooser_dialog_do_autonaming): Use set_entry.
+> 	    (hildon_file_chooser_dialog_get_paths): Use get_entry.
+> 	    (hildon_file_chooser_dialog_set_current_name): Free ext_name and
+> 	    reset it to NULL before setting it anew (maybe).
+> 
+> 	    * hildon-fm/hildon-file-system-private.h,
+> 	    hildon-fm/hildon-file-system-private.c
+> 	    (_hildon_file_system_create_display_name): Also strip known
+> 	    extensions from folders to be consistent with the rename dialog.
+> 	    (get_known_mime_types): Factored out of
+> 	    _hildon_file_system_search_extension.
+> 	    (_hildon_file_system_search_extension): Use it.  Removed mime_type
+> 	    parameter, added only_known parameter.  When only_known is true,
+> 	    only consider registered extensions.  Updated all callers.
+> 	    (_hildon_file_system_is_known_extension): New.
+> 
+> 	    * hildon-fm/hildon-file-system-model.c
+> 	    (hildon_file_system_model_autoname_uri): Updated for change in
+> 	    _hildon_file_system_search_extension.
+ 
 2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.14 and started 2.x development series.
