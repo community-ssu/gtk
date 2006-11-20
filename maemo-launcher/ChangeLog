@@ -1,5 +1,9 @@
 2006-11-20  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/defender.c: Include <string.h>.
+
+2006-11-20  Guillem Jover  <guillem.jover@nokia.com>
+
 	* configure.ac: Bump version to 0.21~.
 
 2006-11-14  Guillem Jover  <guillem.jover@nokia.com>
