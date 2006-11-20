@@ -1,3 +1,9 @@
+fontconfig (2.4.1-1osso2) unstable; urgency=low
+
+  * Fixes: NB#46649 
+
+ -- Richard Sun <Richard.Sun@nokia.com>  Mon, 20 Nov 2006 12:59:33 +0200
+
 fontconfig (2.4.1-1osso1) unstable; urgency=low
 
   * Updated to upstream version 2.4.1

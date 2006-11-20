@@ -6,8 +6,17 @@ PV = 2.4.1
 
 SHELL = /bin/bash
 
-CFLAGS = -g0 -O2
+CFLAGS = -Wall -g
 
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
 
 # Use soft-float and thumb mode if it enabled.
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
