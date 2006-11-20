@@ -37,6 +37,7 @@
 #include "settings.h"
 #include "apt-worker-client.h"
 #include "util.h"
+#include "log.h"
 
 #define _(x)       gettext (x)
 
@@ -185,6 +186,9 @@ repo_closure::~repo_closure ()
 repo_line *
 repo_closure::find_repo (const char *deb)
 {
+  if (deb == NULL)
+    return NULL;
+
   for (repo_line *r = lines; r; r = r->next)
     if (r->deb_line && !strcmp (r->deb_line, deb))
       return r;
@@ -952,6 +956,16 @@ maybe_add_repo (const char *name, const char *deb_line,	bool for_install,
 		void (*cont) (bool res, void *data), void *data)
 {
   repo_line *n = new repo_line (NULL, deb_line, false, g_strdup (name));
+  
+  if (n->deb_line == NULL)
+    {
+      add_log ("Malformed deb line: '%s'\n", deb_line);
+      annoy_user (_("ai_ni_operation_failed"));
+      delete n;
+      cont (FALSE, data);
+      return;
+    }
+
   repo_add_closure *ac = new repo_add_closure;
   ac->clos = NULL;
   ac->new_repo = n;
