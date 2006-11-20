@@ -5,7 +5,7 @@
 	* src/repo.cc (find_repo): Be robust against NULL deb lines as
 	parameter.
 	(maybe_add_repo): Catch malformed deb_line parameters and abort
-	installation in that case.
+	installation in that case. (N47858)
 
 2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
