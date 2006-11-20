@@ -1,5 +1,13 @@
 2006-11-20  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.42
+	
+	* src/apt-worker.cc (handle_request): Dump errors after calling
+	cache_init.
+	(ensure_cache): New, to retry creating the cache when needed.  Use
+	it everywhere instead of testing package_cache for NULLness.
+	(N46125)
+	
 	* src/main.cc (show_help): Don't log unavailable help topics.
 
 	* src/repo.cc (find_repo): Be robust against NULL deb lines as
