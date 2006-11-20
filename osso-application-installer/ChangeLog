@@ -1,3 +1,12 @@
+2006-11-20  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/main.cc (show_help): Don't log unavailable help topics.
+
+	* src/repo.cc (find_repo): Be robust against NULL deb lines as
+	parameter.
+	(maybe_add_repo): Catch malformed deb_line parameters and abort
+	installation in that case.
+
 2006-11-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.41
