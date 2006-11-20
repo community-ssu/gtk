@@ -44,7 +44,7 @@ install: build
 
 	# dev
 	find $(d_dev)/usr/lib/$(PYTHON) -not -name "*.py" -type f | xargs rm -f 
-	dh_installexamples -p$(p_dev) examples/*
+	dh_installexamples -p$(p_dev) dbus/examples/*
 
 	# cleanup
 	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
