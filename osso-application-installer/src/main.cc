@@ -2718,10 +2718,7 @@ void
 set_dialog_help (GtkWidget *dialog, const char *topic)
 {
   if (osso_ctxt)
-    {
-      if (!ossohelp_dialog_help_enable (GTK_DIALOG (dialog), topic, osso_ctxt))
-	add_log ("no help for %s", topic);
-    }
+    ossohelp_dialog_help_enable (GTK_DIALOG (dialog), topic, osso_ctxt);
 }
 
 static const char *current_topic;
