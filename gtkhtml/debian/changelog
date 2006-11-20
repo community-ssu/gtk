@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-2osso10) unstable; urgency=low
+
+  * Updated the IM leak patch to protect from recurrent freeing
+  * Fixes: NB#47494
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 20 Nov 2006 15:13:19 +0200
+
 gtkhtml (3.9.1-2osso9) unstable; urgency=low
 
   * Updated the license references in Nokia patches to reflect the main
