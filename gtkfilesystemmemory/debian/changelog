@@ -1,3 +1,11 @@
+gtkfilesystemmemory (0.13-1) unstable; urgency=low
+
+  * Removed "or later" option from license statement.  Updated copyright
+    years.
+  * Fixes: NB#45910.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  8 Nov 2006 21:36:35 +0200
+
 gtkfilesystemmemory (0.12-1) unstable; urgency=low
 
   * Code refactoring.
