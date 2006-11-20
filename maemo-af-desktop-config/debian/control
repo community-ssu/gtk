@@ -8,6 +8,7 @@ Standards-Version: 3.6.0
 Package: maemo-af-desktop-config
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: maemo-af-desktop (<< 2.9.99.8)
 Description: Configuration files for the maemo-af-desktop
  This package holds the configuration files (default menu layout) for
  the maemo-af-desktop.

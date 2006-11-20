@@ -5,4 +5,7 @@ hildon_home_applet_configurationdir = $(sysconfdir)/hildon-home/
 hildon_home_applet_configuration_DATA = applet_manager.conf
 
 hildon_status_bar_plugin_configurationdir = $(sysconfdir)/hildon-status-bar/
-hildon_status_bar_plugin_configuration_DATA = plugins.conf
+hildon_status_bar_plugin_configuration_DATA = hildon-status-bar/plugins.conf
+
+hildon_navigator_plugin_configurationdir = $(sysconfdir)/hildon-navigator/
+hildon_navigator_plugin_configuration_DATA = hildon-navigator/plugins.conf
