@@ -524,7 +524,10 @@ handle_request ()
   free_buf (reqbuf, stack_reqbuf);
 
   if (init_cache_after_request)
-    cache_init (false);
+    {
+      cache_init (false);
+      _error->DumpErrors ();
+    }
 }
 
 void read_certified_conf ();
@@ -596,6 +599,16 @@ main (int argc, char **argv)
     This function creates or recreates the cache from
     /var/lib/dpkg/status and the various Packages file from the
     repositories.
+
+    - ensure_cache
+
+    This function tries to make sure that there is a valid
+    PACKAGE_CACHE to work with.  It returns true when it succeeds and
+    PACKAGE_CACHE is non-NULL then.  The idea is that if the cache
+    couldn't be created in the past because of some transient error,
+    it might be able to create it now.  Thus, every command handler
+    that needs a cache should call ensure_cache.  When ensure_cache
+    actually does some work, it will send STATUS messages.
 
     - cache_reset ()
 
@@ -974,6 +987,15 @@ cache_init (bool with_status)
   cache_reset ();
 }
 
+bool
+ensure_cache ()
+{
+  if (package_cache == NULL)
+    cache_init (true);
+
+  return package_cache != NULL;
+}
+
 /* Determine whether a package was installed automatically to satisfy
    a dependency.
 */
@@ -1269,7 +1291,7 @@ cmd_get_package_list ()
   const char *pattern = request.decode_string_in_place ();
   bool show_magic_sys = request.decode_int ();
 
-  if (package_cache == NULL)
+  if (!ensure_cache ())
     {
       response.encode_int (0);
       return;
@@ -1486,7 +1508,7 @@ cmd_get_package_info ()
   info.removable_status = status_unknown;
   info.remove_user_size_delta = 0;
 
-  if (package_cache)
+  if (ensure_cache ())
     {
       pkgDepCache &cache = *package_cache;
       pkgCache::PkgIterator pkg = cache.FindPkg (package);
@@ -1954,7 +1976,7 @@ cmd_install_check ()
   const char *package = request.decode_string_in_place ();
   int result_code = rescode_failure;
 
-  if (package_cache)
+  if (ensure_cache ())
     {
       mark_named_package_for_install (package);
       result_code = operation (true);
@@ -1984,7 +2006,7 @@ cmd_install_package ()
       DBG ("https_proxy: %s", https_proxy);
     }
 
-  if (package_cache)
+  if (ensure_cache ())
     {
       mark_named_package_for_install (package);
       result_code = operation (false);
@@ -1999,7 +2021,7 @@ cmd_get_packages_to_remove ()
 {
   const char *package = request.decode_string_in_place ();
 
-  if (package_cache)
+  if (ensure_cache ())
     {
       pkgDepCache &cache = *package_cache;
       pkgCache::PkgIterator pkg = cache.FindPkg (package);
@@ -2029,7 +2051,7 @@ cmd_remove_package ()
   const char *package = request.decode_string_in_place ();
   int result_code = rescode_failure;
 
-  if (package_cache)
+  if (ensure_cache ())
     {
       pkgDepCache &cache = *package_cache;
       pkgCache::PkgIterator pkg = cache.FindPkg (package);
@@ -2135,7 +2157,7 @@ encode_prep_summary (pkgAcquire& Fetcher)
 static void
 encode_upgrades ()
 {
-  if (package_cache)
+  if (ensure_cache ())
     {
       pkgDepCache &cache = *package_cache;
 
@@ -2429,7 +2451,8 @@ cmd_clean ()
 
   // As a special case, we try to init the cache again.  Chances are
   // good that it will now succeed because there might be more space
-  // available now.
+  // available now.  We don't use ensure_cache for this since we want
+  // it to happen silently.
 
   if (package_cache == NULL)
     need_cache_init ();
@@ -2525,7 +2548,7 @@ get_deb_record (const char *filename)
 static bool
 check_dependency (string &package, string &version, unsigned int op)
 {
-  if (package_cache == NULL)
+  if (!ensure_cache ())
     return false;
 
   pkgDepCache &cache = (*package_cache);
@@ -2759,7 +2782,7 @@ cmd_get_file_details ()
   const char *installed_version = NULL;
   int installed_size = 0;
 
-  if (package_cache)
+  if (ensure_cache ())
     {
       pkgDepCache &cache = *package_cache;
       pkgCache::PkgIterator pkg = cache.FindPkg (section.FindS ("Package"));
