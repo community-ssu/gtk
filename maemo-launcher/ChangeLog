@@ -1,5 +1,10 @@
 2006-11-20  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac (BOOSTER_GTK_LIBS) [hildon_booster]: Link against
+	libstdc++.
+
+2006-11-20  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/defender.c: Include <string.h>.
 
 2006-11-20  Guillem Jover  <guillem.jover@nokia.com>

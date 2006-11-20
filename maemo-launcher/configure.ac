@@ -91,6 +91,13 @@ PKG_CHECK_MODULES([BOOSTER_GTK], [
 	$BOOSTER_GTK_DEPENDS
 ])
 
+if test x$hildon_booster = xtrue
+then
+  # This is ugly, should be done by g++, but it gives us quite some speed
+  # by forcing to pre-resolve the C++ mangled symbols.
+  BOOSTER_GTK_LIBS="$BOOSTER_GTK_LIBS -lstdc++"
+fi
+
 AC_SUBST([BOOSTER_GTK_CFLAGS])
 AC_SUBST([BOOSTER_GTK_LIBS])
 
