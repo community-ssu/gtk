@@ -5,4 +5,3 @@
 /etc/osso-af-init/init.d/maemo-af-desktop-launch.sh
 /etc/osso-af-init/maemo-af-desktop.sh
 /etc/osso-af-init/maemo-af-desktop.defs
-/etc/hildon-navigator/plugins.conf

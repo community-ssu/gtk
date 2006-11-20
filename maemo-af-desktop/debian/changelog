@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.8-1) unstable; urgency=low
+
+  * hildon-navigator/plugins.conf: Removed (moved to
+  maemo-af-desktop-config)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Nov 2006 10:54:37 +0200
+
 maemo-af-desktop (2.9.99.7-1) unstable; urgency=low
 
   * hildon-home/background-manager.c: Unref the pixmap after setting
