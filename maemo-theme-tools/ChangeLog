@@ -1,5 +1,20 @@
 2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* INSTALL: Adding missing.
+
+	* src/Makefile.am:
+	* src/colourizer.c:
+	* src/colourizer.h:
+	* src/outliner.c:
+	* src/outliner.h:
+	* src/regenerator.c:
+	* src/regenerator.h:
+	* src/slicer.c:
+	* src/slicer.h: Abstracting the tool name into Makefile.am (executable
+	name).
+
+2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* COPYING:
 	* Makefile.am:
 	* configure.ac:
