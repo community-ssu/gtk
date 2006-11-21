@@ -1,3 +1,21 @@
+2006-11-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-upnp.c
+	(hildon_file_system_upnp_create_child_location): Use
+	qgn_list_filesys_mediaserver icon instead of
+	qgn_list_filesys_divc_cls. (N45114)
+
+        From Murray Cumming  <murrayc@murrayc.com>.  Thanks!
+   
+ 	* configure.ac: Add a check for perl and and a --disable-rebuilds
+	option, to control whether the hildon-fm-enums-types.[h|c] will be
+	built.  This matches the same build files stuff in hildon-libs.
+
+ 	* hildon-fm/Makefile.am: Generate hildon-fm-enums-types.[h|c],
+	containing GType declarations for hildon-fm enums, so we can use
+	them, for instance, in GValues, and so that enum properties can be
+	declared properly, instead of using ints.
+
 2006-11-17  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.0
