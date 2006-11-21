@@ -8,7 +8,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_HEADER_STDC
 
-CFLAGS="$CFLAGS -Wall -pedantic -Wmissing-prototypes -Wmissing-declarations"
+CFLAGS="$CFLAGS -Wall -pedantic -Wmissing-prototypes -Wmissing-declarations -Werror"
 
 GTK_VERSION=2.6.4
 
@@ -17,8 +17,8 @@ AC_SUBST(GTK_LIBS)
 AC_SUBST(GTK_CFLAGS)
 AC_SUBST(GTK_VERSION)
 
-AC_OUTPUT([Makefile \
-           scripts/Makefile \
-           pkgconfig/hildon-theme-tools.pc \
-           pkgconfig/Makefile \
+AC_OUTPUT([Makefile                             \
+           scripts/Makefile                     \
+           pkgconfig/hildon-theme-tools.pc      \
+           pkgconfig/Makefile                   \
 	   src/Makefile])
