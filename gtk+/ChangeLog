@@ -1,3 +1,8 @@
+2006-11-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* gtk/gtkmenu.c (gtk_menu_attach_to_widget, gtk_menu_detach): Allow
+	detach function to be NULL.
+
 2006-11-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge from GNOME CVS. NB#47124
