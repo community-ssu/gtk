@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.6.10-2.osso26) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * Fixes: NB#46971 Wrong transiency for tap-and-hold menus
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 21 Nov 2006 11:17:00 +0200
+
 gtk+2.0 (2:2.6.10-2.osso25) unstable; urgency=low
 
   * debian/control:
