@@ -1,5 +1,10 @@
 2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* configure.ac: Check the existance of the layout using pkgconfig,
+	instead of the directory check.
+
+2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* Makefile.am:
 	* NEWS:
 	* template/Makefile.am: Minor cosmetics.

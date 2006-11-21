@@ -22,14 +22,7 @@ AS_AC_EXPAND(LAYOUT_DIR, "${datadir}/$LAYOUT_NAME")
 AS_AC_EXPAND(THEME_FULL_DIR, "${datadir}/$THEME_DIR")
 
 dnl check the layout installation
-AC_MSG_CHECKING([if the layout specification exists])
-if test ! -d "$LAYOUT_DIR" ; then     
-        AC_MSG_RESULT(no)
-        echo
-        AC_MSG_ERROR([You need the $LAYOUT_DIR layout specification package installed!])
-else
-        AC_MSG_RESULT(yes)
-fi
+PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME")
 
 dnl check the tools installation
 PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.1.0)
