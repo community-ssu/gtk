@@ -114,6 +114,8 @@ libhildonwidgets_la_SOURCES = \
 	hildon-color-chooser-dialog.h \
 	hildon-color-chooser-button.c \
 	hildon-color-chooser-button.h \
+	hildon-finger.c \
+	hildon-finger.h \
 	$(hildonlibs_built_headers) \
 	$(hildonlibs_built_cfiles)
 
@@ -175,7 +177,8 @@ hildonwidgetsincludeinst_DATA = \
 	hildon-plugin-widget.h \
 	hildon-color-chooser.h \
 	hildon-color-chooser-dialog.h \
-	hildon-color-chooser-button.h
+	hildon-color-chooser-button.h \
+	hildon-finger.h
 
 headers_to_scan_for_enums = $(hildonwidgetsincludeinst_DATA)
  
