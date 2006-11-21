@@ -1,3 +1,11 @@
+2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
+	* NEWS:
+	* configure.ac:
+	* rc/Makefile.am:
+	* scripts/Makefile.am: Minor cleanups.
+
 2006-11-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* Makefile.am:

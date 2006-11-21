@@ -69,4 +69,5 @@ nobase_dist_template_DATA =		\
      theme.xml				\
      index.theme
 
-MAINTAINERCLEANFILES	= Makefile.in 
+MAINTAINERCLEANFILES			= Makefile.in 
+

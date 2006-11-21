@@ -4,7 +4,7 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
 
-AC_OUTPUT([Makefile \
-           scripts/Makefile \
-	   rc/Makefile \
+AC_OUTPUT([Makefile                             \
+           scripts/Makefile                     \
+	   rc/Makefile                          \
            scripts/hildon-theme-install-3])
