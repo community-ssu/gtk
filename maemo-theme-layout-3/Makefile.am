@@ -1,4 +1,4 @@
-SUBDIRS				= scripts rc
+SUBDIRS				= scripts rc pkgconfig
 
 MAINTAINERCLEANFILES		= Makefile.in aclocal.m4 configure 	\
 			  	  config.h.in compile 			\

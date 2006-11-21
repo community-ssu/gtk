@@ -1,0 +1,9 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+pkgdatadir=@datadir@/hildon-theme-layout-3/
+commonrcfilesdir=@datadir@/hildon-theme-layout-3/commonrcfiles
+
+Name: hildon-theme-layout-3
+Description: Hildon theme layout version 3
+Version: @VERSION@

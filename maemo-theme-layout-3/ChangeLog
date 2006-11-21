@@ -1,6 +1,15 @@
 2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* Makefile.am:
+	* configure.ac:
+	* pkgconfig:
+	* pkgconfig/Makefile.am:
+	* pkgconfig/hildon-theme-layout-3.pc.in: Adding a pkgconfig file so
+	that installed layouts can be spotted.
+
+2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
 	* NEWS:
 	* configure.ac:
 	* rc/Makefile.am:
