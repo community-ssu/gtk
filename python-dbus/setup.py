@@ -56,7 +56,8 @@ def check_package(names, parms):
 
     output, error = run(cmd)
 
-    if error:
+    #Workaround to avoid libfakeroot-tcp error inside scratchbox
+    if error and not 'fakeroot' in error:
         print >>sys.stderr, "ERROR: checking %s:\n%s" % (names, error)
         raise SystemExit
 
