@@ -1,3 +1,10 @@
+2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.14.9-1 release]
+
+	* configure.ac:
+	* debian/changelog: Updating. 
+
 2006-11-21  Tomas Junnonen <tomas.junnonen@nokia.com>
 
 	* hildon-widgets/Makefile.am:

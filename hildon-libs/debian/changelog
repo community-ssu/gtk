@@ -1,3 +1,10 @@
+hildon-libs (0.14.9-1) unstable; urgency=low
+
+  * Fixes: NB#41059 - After retaining focus, couldn't enter numbers in day and month field using HW keyboard.
+  * Fixes: NB#46761 - Add function to check for finger events
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 21 Nov 2006 12:58:00 +0300
+
 hildon-libs (0.14.8-1) unstable; urgency=low
 
   * Fixes: NB#39585 - Hildon_set_password dialog has auto-capitalization active
