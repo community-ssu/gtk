@@ -102,6 +102,22 @@ endif
 #defs_DATA += $(PANGOCAIRO_DEFS)
 #endif
 
+# libglade module
+# XXX: Move libglade to
+LIBGLADE_DEFS = gtk/libglade.defs
+CLEANFILES += gtk/libglade.c
+EXTRA_DIST += $(LIBGLADE_DEFS) gtk/libglade.override
+libglade.c: $(LIBGLADE_DEFS) gtk/libglade.override
+_glade_la_CFLAGS = $(LIBGLADE_CFLAGS)
+_glade_la_LIBADD = $(LIBGLADE_LIBS)
+_glade_la_LDFLAGS = $(common_ldflags) -export-symbols-regex init_glade
+_glade_la_SOURCES = gtk/libglademodule.c
+nodist__glade_la_SOURCES = gtk/libglade.c
+if BUILD_LIBGLADE
+pkgpyexec_LTLIBRARIES += _glade.la
+defs_DATA += $(LIBGLADE_DEFS)
+endif
+
 # code generator
 .defs.c:
 	(cd $(srcdir)\

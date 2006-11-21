@@ -15,7 +15,7 @@
 @SET_MAKE@
 
 
-SOURCES = $(atk_la_SOURCES) $(nodist_atk_la_SOURCES) $(pango_la_SOURCES) $(nodist_pango_la_SOURCES)
+SOURCES = $(_glade_la_SOURCES) $(nodist__glade_la_SOURCES) $(atk_la_SOURCES) $(nodist_atk_la_SOURCES) $(pango_la_SOURCES) $(nodist_pango_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -43,6 +43,8 @@ host_triplet = @host@
 @BUILD_ATK_TRUE@am__append_3 = $(ATK_DEFS)
 @BUILD_PANGO_TRUE@am__append_4 = pango.la
 @BUILD_PANGO_TRUE@am__append_5 = $(PANGO_DEFS)
+@BUILD_LIBGLADE_TRUE@am__append_6 = _glade.la
+@BUILD_LIBGLADE_TRUE@am__append_7 = $(LIBGLADE_DEFS)
 DIST_COMMON = README $(am__configure_deps) $(noinst_PYTHON) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/PKG-INFO.in $(srcdir)/config.h.in \
@@ -68,6 +70,11 @@ pkgpyexecLTLIBRARIES_INSTALL = $(INSTALL)
 pyexecLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkgpyexec_LTLIBRARIES) $(pyexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
+_glade_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__glade_la_OBJECTS = _glade_la-libglademodule.lo
+nodist__glade_la_OBJECTS = _glade_la-libglade.lo
+_glade_la_OBJECTS = $(am__glade_la_OBJECTS) \
+	$(nodist__glade_la_OBJECTS)
 atk_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_atk_la_OBJECTS = atk_la-atkmodule.lo
 nodist_atk_la_OBJECTS = atk_la-atk.lo
@@ -79,7 +86,9 @@ pango_la_OBJECTS = $(am_pango_la_OBJECTS) $(nodist_pango_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I.
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/atk_la-atk.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/_glade_la-libglade.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_glade_la-libglademodule.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/atk_la-atk.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/atk_la-atkmodule.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/pango_la-pango.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/pango_la-pangomodule.Plo
@@ -91,9 +100,11 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(atk_la_SOURCES) $(nodist_atk_la_SOURCES) \
-	$(pango_la_SOURCES) $(nodist_pango_la_SOURCES)
-DIST_SOURCES = $(atk_la_SOURCES) $(pango_la_SOURCES)
+SOURCES = $(_glade_la_SOURCES) $(nodist__glade_la_SOURCES) \
+	$(atk_la_SOURCES) $(nodist_atk_la_SOURCES) $(pango_la_SOURCES) \
+	$(nodist_pango_la_SOURCES)
+DIST_SOURCES = $(_glade_la_SOURCES) $(atk_la_SOURCES) \
+	$(pango_la_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -276,7 +287,7 @@ AUTOMAKE_OPTIONS = 1.7
 @BUILD_GTK_TRUE@GTK_SUBDIR = gtk
 SUBDIRS = codegen . $(GTK_SUBDIR) examples tests
 PLATFORM_VERSION = 2.0
-CLEANFILES = atk.c pango.c
+CLEANFILES = atk.c pango.c gtk/libglade.c
 EXTRA_DIST = \
 	ChangeLog.pre-2-0		\
 	ChangeLog.pre-2-6		\
@@ -291,7 +302,7 @@ EXTRA_DIST = \
 	PKG-INFO.in 			\
 	setup.py 			\
 	THREADS\
-$(ATK_DEFS) $(ATK_OVERRIDES) $(PANGO_DEFS) pango.override
+$(ATK_DEFS) $(ATK_OVERRIDES) $(PANGO_DEFS) pango.override $(LIBGLADE_DEFS) gtk/libglade.override
 INCLUDES = \
 	$(PYTHON_INCLUDES) \
 	$(PYGOBJECT_CFLAGS)		\
@@ -305,12 +316,12 @@ pkgconfig_DATA = pygtk-$(PLATFORM_VERSION).pc
 
 # defs files
 defsdir = $(pkgdatadir)/$(PLATFORM_VERSION)/defs
-defs_DATA = $(am__append_3) $(am__append_5)
+defs_DATA = $(am__append_3) $(am__append_5) $(am__append_7)
 
 # python
 pyexec_LTLIBRARIES = 
 noinst_PYTHON = ltihooks.py
-pkgpyexec_LTLIBRARIES = $(am__append_2) $(am__append_4)
+pkgpyexec_LTLIBRARIES = $(am__append_2) $(am__append_4) $(am__append_6)
 
 # linker flags
 common_ldflags = -module -avoid-version $(am__append_1)
@@ -331,6 +342,30 @@ pango_la_LIBADD = $(PANGO_LIBS)
 pango_la_LDFLAGS = $(common_ldflags) -export-symbols-regex initpango
 pango_la_SOURCES = pangomodule.c
 nodist_pango_la_SOURCES = pango.c
+
+# pangocairo module
+#PANGOCAIRO_DEFS = pangocairo.defs pangocairo.override
+#CLEANFILES += pangocairo.c
+#EXTRA_DIST += $(PANGOCAIRO_DEFS) pangocairo.override
+#pangocairo.c: $(PANGOCAIRO_DEFS) pangocairo.override
+#pangocairo_la_CFLAGS = $(PYCAIRO_CFLAGS) $(PANGOCAIRO_CFLAGS)
+#pangocairo_la_LDFLAGS = $(common_ldflags) -export-symbols-regex initpangocairo
+#pangocairo_la_LIBADD = $(PANGOCAIRO_LIBS)
+#pangocairo_la_SOURCES = pangocairomodule.c
+#nodist_pangocairo_la_SOURCES = pangocairo.c
+#if BUILD_PANGOCAIRO
+#pkgpyexec_LTLIBRARIES += pangocairo.la
+#defs_DATA += $(PANGOCAIRO_DEFS)
+#endif
+
+# libglade module
+# XXX: Move libglade to
+LIBGLADE_DEFS = gtk/libglade.defs
+_glade_la_CFLAGS = $(LIBGLADE_CFLAGS)
+_glade_la_LIBADD = $(LIBGLADE_LIBS)
+_glade_la_LDFLAGS = $(common_ldflags) -export-symbols-regex init_glade
+_glade_la_SOURCES = gtk/libglademodule.c
+nodist__glade_la_SOURCES = gtk/libglade.c
 all: config.h
 	$(MAKE) $(AM_MAKEFLAGS) all-recursive
 
@@ -448,6 +483,8 @@ clean-pyexecLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+_glade.la: $(_glade_la_OBJECTS) $(_glade_la_DEPENDENCIES) 
+	$(LINK) -rpath $(pkgpyexecdir) $(_glade_la_LDFLAGS) $(_glade_la_OBJECTS) $(_glade_la_LIBADD) $(LIBS)
 atk.la: $(atk_la_OBJECTS) $(atk_la_DEPENDENCIES) 
 	$(LINK) -rpath $(pkgpyexecdir) $(atk_la_LDFLAGS) $(atk_la_OBJECTS) $(atk_la_LIBADD) $(LIBS)
 pango.la: $(pango_la_OBJECTS) $(pango_la_DEPENDENCIES) 
@@ -459,6 +496,8 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_glade_la-libglade.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_glade_la-libglademodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atk_la-atk.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/atk_la-atkmodule.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/pango_la-pango.Plo@am__quote@
@@ -487,6 +526,54 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+_glade_la-libglademodule.o: gtk/libglademodule.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -MT _glade_la-libglademodule.o -MD -MP -MF "$(DEPDIR)/_glade_la-libglademodule.Tpo" -c -o _glade_la-libglademodule.o `test -f 'gtk/libglademodule.c' || echo '$(srcdir)/'`gtk/libglademodule.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_glade_la-libglademodule.Tpo" "$(DEPDIR)/_glade_la-libglademodule.Po"; else rm -f "$(DEPDIR)/_glade_la-libglademodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk/libglademodule.c' object='_glade_la-libglademodule.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_glade_la-libglademodule.Po' tmpdepfile='$(DEPDIR)/_glade_la-libglademodule.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -c -o _glade_la-libglademodule.o `test -f 'gtk/libglademodule.c' || echo '$(srcdir)/'`gtk/libglademodule.c
+
+_glade_la-libglademodule.obj: gtk/libglademodule.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -MT _glade_la-libglademodule.obj -MD -MP -MF "$(DEPDIR)/_glade_la-libglademodule.Tpo" -c -o _glade_la-libglademodule.obj `if test -f 'gtk/libglademodule.c'; then $(CYGPATH_W) 'gtk/libglademodule.c'; else $(CYGPATH_W) '$(srcdir)/gtk/libglademodule.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_glade_la-libglademodule.Tpo" "$(DEPDIR)/_glade_la-libglademodule.Po"; else rm -f "$(DEPDIR)/_glade_la-libglademodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk/libglademodule.c' object='_glade_la-libglademodule.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_glade_la-libglademodule.Po' tmpdepfile='$(DEPDIR)/_glade_la-libglademodule.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -c -o _glade_la-libglademodule.obj `if test -f 'gtk/libglademodule.c'; then $(CYGPATH_W) 'gtk/libglademodule.c'; else $(CYGPATH_W) '$(srcdir)/gtk/libglademodule.c'; fi`
+
+_glade_la-libglademodule.lo: gtk/libglademodule.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -MT _glade_la-libglademodule.lo -MD -MP -MF "$(DEPDIR)/_glade_la-libglademodule.Tpo" -c -o _glade_la-libglademodule.lo `test -f 'gtk/libglademodule.c' || echo '$(srcdir)/'`gtk/libglademodule.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_glade_la-libglademodule.Tpo" "$(DEPDIR)/_glade_la-libglademodule.Plo"; else rm -f "$(DEPDIR)/_glade_la-libglademodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk/libglademodule.c' object='_glade_la-libglademodule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_glade_la-libglademodule.Plo' tmpdepfile='$(DEPDIR)/_glade_la-libglademodule.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -c -o _glade_la-libglademodule.lo `test -f 'gtk/libglademodule.c' || echo '$(srcdir)/'`gtk/libglademodule.c
+
+_glade_la-libglade.o: gtk/libglade.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -MT _glade_la-libglade.o -MD -MP -MF "$(DEPDIR)/_glade_la-libglade.Tpo" -c -o _glade_la-libglade.o `test -f 'gtk/libglade.c' || echo '$(srcdir)/'`gtk/libglade.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_glade_la-libglade.Tpo" "$(DEPDIR)/_glade_la-libglade.Po"; else rm -f "$(DEPDIR)/_glade_la-libglade.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk/libglade.c' object='_glade_la-libglade.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_glade_la-libglade.Po' tmpdepfile='$(DEPDIR)/_glade_la-libglade.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -c -o _glade_la-libglade.o `test -f 'gtk/libglade.c' || echo '$(srcdir)/'`gtk/libglade.c
+
+_glade_la-libglade.obj: gtk/libglade.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -MT _glade_la-libglade.obj -MD -MP -MF "$(DEPDIR)/_glade_la-libglade.Tpo" -c -o _glade_la-libglade.obj `if test -f 'gtk/libglade.c'; then $(CYGPATH_W) 'gtk/libglade.c'; else $(CYGPATH_W) '$(srcdir)/gtk/libglade.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_glade_la-libglade.Tpo" "$(DEPDIR)/_glade_la-libglade.Po"; else rm -f "$(DEPDIR)/_glade_la-libglade.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk/libglade.c' object='_glade_la-libglade.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_glade_la-libglade.Po' tmpdepfile='$(DEPDIR)/_glade_la-libglade.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -c -o _glade_la-libglade.obj `if test -f 'gtk/libglade.c'; then $(CYGPATH_W) 'gtk/libglade.c'; else $(CYGPATH_W) '$(srcdir)/gtk/libglade.c'; fi`
+
+_glade_la-libglade.lo: gtk/libglade.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -MT _glade_la-libglade.lo -MD -MP -MF "$(DEPDIR)/_glade_la-libglade.Tpo" -c -o _glade_la-libglade.lo `test -f 'gtk/libglade.c' || echo '$(srcdir)/'`gtk/libglade.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_glade_la-libglade.Tpo" "$(DEPDIR)/_glade_la-libglade.Plo"; else rm -f "$(DEPDIR)/_glade_la-libglade.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk/libglade.c' object='_glade_la-libglade.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_glade_la-libglade.Plo' tmpdepfile='$(DEPDIR)/_glade_la-libglade.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_glade_la_CFLAGS) $(CFLAGS) -c -o _glade_la-libglade.lo `test -f 'gtk/libglade.c' || echo '$(srcdir)/'`gtk/libglade.c
 
 atk_la-atkmodule.o: atkmodule.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(atk_la_CFLAGS) $(CFLAGS) -MT atk_la-atkmodule.o -MD -MP -MF "$(DEPDIR)/atk_la-atkmodule.Tpo" -c -o atk_la-atkmodule.o `test -f 'atkmodule.c' || echo '$(srcdir)/'`atkmodule.c; \
@@ -751,7 +838,7 @@ distclean-tags:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/codegen $(distdir)/docs/reference $(distdir)/m4
+	$(mkdir_p) $(distdir)/. $(distdir)/codegen $(distdir)/docs/reference $(distdir)/gtk $(distdir)/m4
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
@@ -1002,21 +1089,7 @@ uninstall-info: uninstall-info-recursive
 
 atk.c: $(ATK_DEFS) $(ATK_OVERRIDES)
 pango.c: $(PANGO_DEFS) pango.override
-
-# pangocairo module
-#PANGOCAIRO_DEFS = pangocairo.defs pangocairo.override
-#CLEANFILES += pangocairo.c
-#EXTRA_DIST += $(PANGOCAIRO_DEFS) pangocairo.override
-#pangocairo.c: $(PANGOCAIRO_DEFS) pangocairo.override
-#pangocairo_la_CFLAGS = $(PYCAIRO_CFLAGS) $(PANGOCAIRO_CFLAGS)
-#pangocairo_la_LDFLAGS = $(common_ldflags) -export-symbols-regex initpangocairo
-#pangocairo_la_LIBADD = $(PANGOCAIRO_LIBS)
-#pangocairo_la_SOURCES = pangocairomodule.c
-#nodist_pangocairo_la_SOURCES = pangocairo.c
-#if BUILD_PANGOCAIRO
-#pkgpyexec_LTLIBRARIES += pangocairo.la
-#defs_DATA += $(PANGOCAIRO_DEFS)
-#endif
+libglade.c: $(LIBGLADE_DEFS) gtk/libglade.override
 
 # code generator
 .defs.c:

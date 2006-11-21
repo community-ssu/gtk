@@ -35,18 +35,7 @@ class LazyModule(object):
             return dir(module)
         return getattr(module, attr)
 
-class _NotLoadedMarker:
-    pass
-_marker = _NotLoadedMarker()
-
-class LazyDict(dict):
-    def __init__(self, module):
-        self._module = module
-        dict.__init__(self)
-
-    def __getitem__(self, name):
-        print name
-        return getattr(self._module, name)
+_marker = object()
 
 class LazyNamespace(ModuleType):
     def __init__(self, module, locals):
@@ -60,7 +49,7 @@ class LazyNamespace(ModuleType):
         for symbol in module._get_symbol_names():
             lazy_symbols[symbol] = ns[symbol] = _marker
 
-        ns.update(__dict__=LazyDict(self),
+        ns.update(__dict__=ns,
                   __bases__=(ModuleType,),
                   add_submodule=self.add_submodule)
 

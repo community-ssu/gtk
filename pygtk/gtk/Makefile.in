@@ -16,7 +16,7 @@
 
 
 
-SOURCES = $(_gtk_la_SOURCES) $(nodist__gtk_la_SOURCES) $(glade_la_SOURCES) $(nodist_glade_la_SOURCES) $(gtkunixprint_la_SOURCES) $(nodist_gtkunixprint_la_SOURCES)
+SOURCES = $(_gtkimpl_la_SOURCES) $(nodist__gtkimpl_la_SOURCES) $(gtkunixprint_la_SOURCES) $(nodist_gtkunixprint_la_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -42,14 +42,12 @@ host_triplet = @host@
 @HAVE_GTK_2_10_TRUE@am__append_2 = gdk-2.10.defs 
 @HAVE_GTK_2_10_TRUE@am__append_3 = gtk-2.10.defs 
 @HAVE_GTK_2_10_TRUE@am__append_4 = gtk-2.10-types.defs
-@BUILD_GTK_TRUE@am__append_5 = _gtk.la
+@BUILD_GTK_TRUE@am__append_5 = _gtkimpl.la
 @BUILD_GTK_TRUE@am__append_6 = $(GDK_DEFS) $(GDK_TYPES_DEFS) $(GTK_DEFS) $(GTK_TYPES_DEFS) \
 @BUILD_GTK_TRUE@	gdk.defs gtk.defs gdk-types.defs gtk-types.defs gtk-extrafuncs.defs
 
-@BUILD_LIBGLADE_TRUE@am__append_7 = glade.la
-@BUILD_LIBGLADE_TRUE@am__append_8 = $(LIBGLADE_DEFS)
-@BUILD_GTKUNIXPRINT_TRUE@am__append_9 = $(GTKUNIXPRINT_DEFS)
-@PLATFORM_WIN32_TRUE@am__append_10 = -DPLATFORM_WIN32
+@BUILD_GTKUNIXPRINT_TRUE@am__append_7 = $(GTKUNIXPRINT_DEFS)
+@PLATFORM_WIN32_TRUE@am__append_8 = -DPLATFORM_WIN32
 subdir = gtk
 DIST_COMMON = $(pkginclude_HEADERS) $(pygtk_PYTHON) \
 	$(srcdir)/Makefile.am $(srcdir)/Makefile.in
@@ -66,16 +64,13 @@ pkgpyexecLTLIBRARIES_INSTALL = $(INSTALL)
 pygtkexecLTLIBRARIES_INSTALL = $(INSTALL)
 LTLIBRARIES = $(pkgpyexec_LTLIBRARIES) $(pygtkexec_LTLIBRARIES)
 am__DEPENDENCIES_1 =
-_gtk_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am__gtk_la_OBJECTS = _gtk_la-gtk-types.lo _gtk_la-gtkmodule.lo \
-	_gtk_la-gtkobject-support.lo _gtk_la-pygtkcellrenderer.lo \
-	_gtk_la-pygtktreemodel.lo
-nodist__gtk_la_OBJECTS = _gtk_la-gtk.lo _gtk_la-gdk.lo
-_gtk_la_OBJECTS = $(am__gtk_la_OBJECTS) $(nodist__gtk_la_OBJECTS)
-glade_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
-am_glade_la_OBJECTS = glade_la-libglademodule.lo
-nodist_glade_la_OBJECTS = glade_la-libglade.lo
-glade_la_OBJECTS = $(am_glade_la_OBJECTS) $(nodist_glade_la_OBJECTS)
+_gtkimpl_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
+am__gtkimpl_la_OBJECTS = _gtkimpl_la-gtk-types.lo \
+	_gtkimpl_la-gtkmodule.lo _gtkimpl_la-gtkobject-support.lo \
+	_gtkimpl_la-pygtkcellrenderer.lo _gtkimpl_la-pygtktreemodel.lo
+nodist__gtkimpl_la_OBJECTS = _gtkimpl_la-gtk.lo _gtkimpl_la-gdk.lo
+_gtkimpl_la_OBJECTS = $(am__gtkimpl_la_OBJECTS) \
+	$(nodist__gtkimpl_la_OBJECTS)
 gtkunixprint_la_DEPENDENCIES = $(am__DEPENDENCIES_1)
 am_gtkunixprint_la_OBJECTS = gtkunixprint_la-gtkunixprintmodule.lo
 nodist_gtkunixprint_la_OBJECTS = gtkunixprint_la-gtkunixprint.lo
@@ -84,15 +79,13 @@ gtkunixprint_la_OBJECTS = $(am_gtkunixprint_la_OBJECTS) \
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/_gtk_la-gdk.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/_gtk_la-gtk-types.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/_gtk_la-gtk.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/_gtk_la-gtkmodule.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/_gtk_la-gtkobject-support.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/_gtk_la-pygtkcellrenderer.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/_gtk_la-pygtktreemodel.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/glade_la-libglade.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/glade_la-libglademodule.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/_gtkimpl_la-gdk.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_gtkimpl_la-gtk-types.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_gtkimpl_la-gtk.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_gtkimpl_la-gtkmodule.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_gtkimpl_la-gtkobject-support.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gtkunixprint_la-gtkunixprint.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/gtkunixprint_la-gtkunixprintmodule.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
@@ -103,11 +96,9 @@ LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(_gtk_la_SOURCES) $(nodist__gtk_la_SOURCES) \
-	$(glade_la_SOURCES) $(nodist_glade_la_SOURCES) \
+SOURCES = $(_gtkimpl_la_SOURCES) $(nodist__gtkimpl_la_SOURCES) \
 	$(gtkunixprint_la_SOURCES) $(nodist_gtkunixprint_la_SOURCES)
-DIST_SOURCES = $(_gtk_la_SOURCES) $(glade_la_SOURCES) \
-	$(gtkunixprint_la_SOURCES)
+DIST_SOURCES = $(_gtkimpl_la_SOURCES) $(gtkunixprint_la_SOURCES)
 pygtkPYTHON_INSTALL = $(INSTALL_DATA)
 py_compile = $(top_srcdir)/py-compile
 defsDATA_INSTALL = $(INSTALL_DATA)
@@ -281,7 +272,7 @@ CLEANFILES = \
 	gtk-types.defs 		\
 	gdk.defs 		\
 	gdk-types.defs\
-libglade.c gtkunixprint.c
+gtkunixprint.c
 EXTRA_DIST = \
 	gtk-extrafuncs.defs	\
 	$(GDK_DEFS) 		\
@@ -291,7 +282,7 @@ EXTRA_DIST = \
 	$(GTK_TYPES_DEFS)	\
 	$(GTK_2_10_DEFS)	\
 	$(GTK_OVERRIDES)\
-$(LIBGLADE_DEFS) libglade.override $(GTKUNIXPRINT_DEFS) gtkunixprint.override
+$(GTKUNIXPRINT_DEFS) gtkunixprint.override
 INCLUDES = \
 	$(PYTHON_INCLUDES) \
 	$(PYGOBJECT_CFLAGS) \
@@ -300,16 +291,17 @@ INCLUDES = \
 
 # defs files
 defsdir = $(pkgdatadir)/$(PLATFORM_VERSION)/defs
-defs_DATA = $(am__append_6) $(am__append_8) $(am__append_9)
+defs_DATA = $(am__append_6) $(am__append_7)
 
 # gtk python extension modules
 pygtkexecdir = $(pkgpyexecdir)/gtk
-pygtkexec_LTLIBRARIES = $(am__append_5) $(am__append_7)
+pygtkexec_LTLIBRARIES = $(am__append_5)
 
 # gtk python scripts
 pygtkdir = $(pkgpythondir)/gtk
 pygtk_PYTHON = \
 	__init__.py 		\
+	_gtk.py			\
 	_lazyutils.py		\
 	compat.py			\
 	deprecation.py		\
@@ -351,10 +343,10 @@ GTK_OVERRIDES = \
 	gtkwidget.override 	\
 	gtkwindow.override
 
-_gtk_la_CFLAGS = $(PYCAIRO_CFLAGS) $(GTK_CFLAGS) $(am__append_10)
-_gtk_la_LDFLAGS = $(common_ldflags) -export-symbols-regex init_gtk
-_gtk_la_LIBADD = $(GTK_LIBS)
-_gtk_la_SOURCES = \
+_gtkimpl_la_CFLAGS = $(PYCAIRO_CFLAGS) $(GTK_CFLAGS) $(am__append_8)
+_gtkimpl_la_LDFLAGS = $(common_ldflags) -export-symbols-regex init_gtk
+_gtkimpl_la_LIBADD = $(GTK_LIBS)
+_gtkimpl_la_SOURCES = \
 	gtk-types.c 		\
   gtkmodule.c \
   gtkobject-support.c \
@@ -365,15 +357,21 @@ _gtk_la_SOURCES = \
 	pygtktreemodel.h 	\
 	pygtktreemodel.c
 
-nodist__gtk_la_SOURCES = gtk.c gdk.c
+nodist__gtkimpl_la_SOURCES = gtk.c gdk.c
 
-# libglade module
-LIBGLADE_DEFS = libglade.defs
-glade_la_CFLAGS = $(LIBGLADE_CFLAGS)
-glade_la_LIBADD = $(LIBGLADE_LIBS)
-glade_la_LDFLAGS = $(common_ldflags) -export-symbols-regex initglade
-glade_la_SOURCES = libglademodule.c
-nodist_glade_la_SOURCES = libglade.c
+#LIBGLADE_DEFS = libglade.defs
+#CLEANFILES += libglade.c
+#EXTRA_DIST += $(LIBGLADE_DEFS) libglade.override
+#libglade.c: $(LIBGLADE_DEFS) libglade.override gdk-types.defs gtk-types.defs
+#_glade_la_CFLAGS = $(LIBGLADE_CFLAGS)
+#_glade_la_LIBADD = $(LIBGLADE_LIBS)
+#_glade_la_LDFLAGS = $(common_ldflags) -export-symbols-regex initglade
+#_glade_la_SOURCES = libglademodule.c
+#nodist__glade_la_SOURCES = libglade.c
+#if BUILD_LIBGLADE
+#pygtkexec_LTLIBRARIES += _glade.la
+#defs_DATA += $(LIBGLADE_DEFS)
+#endif
 
 # gtkunixprint module
 GTKUNIXPRINT_DEFS = gtkunixprint.defs
@@ -470,10 +468,8 @@ clean-pygtkexecLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
-_gtk.la: $(_gtk_la_OBJECTS) $(_gtk_la_DEPENDENCIES) 
-	$(LINK) -rpath $(pygtkexecdir) $(_gtk_la_LDFLAGS) $(_gtk_la_OBJECTS) $(_gtk_la_LIBADD) $(LIBS)
-glade.la: $(glade_la_OBJECTS) $(glade_la_DEPENDENCIES) 
-	$(LINK) -rpath $(pygtkexecdir) $(glade_la_LDFLAGS) $(glade_la_OBJECTS) $(glade_la_LIBADD) $(LIBS)
+_gtkimpl.la: $(_gtkimpl_la_OBJECTS) $(_gtkimpl_la_DEPENDENCIES) 
+	$(LINK) -rpath $(pygtkexecdir) $(_gtkimpl_la_LDFLAGS) $(_gtkimpl_la_OBJECTS) $(_gtkimpl_la_LIBADD) $(LIBS)
 gtkunixprint.la: $(gtkunixprint_la_OBJECTS) $(gtkunixprint_la_DEPENDENCIES) 
 	$(LINK) -rpath $(pkgpyexecdir) $(gtkunixprint_la_LDFLAGS) $(gtkunixprint_la_OBJECTS) $(gtkunixprint_la_LIBADD) $(LIBS)
 
@@ -483,15 +479,13 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-gdk.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-gtk-types.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-gtk.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-gtkmodule.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-gtkobject-support.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-pygtkcellrenderer.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtk_la-pygtktreemodel.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glade_la-libglade.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/glade_la-libglademodule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-gdk.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-gtk-types.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-gtk.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-gtkmodule.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-gtkobject-support.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkunixprint_la-gtkunixprint.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkunixprint_la-gtkunixprintmodule.Plo@am__quote@
 
@@ -519,221 +513,173 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
-_gtk_la-gtk-types.o: gtk-types.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtk-types.o -MD -MP -MF "$(DEPDIR)/_gtk_la-gtk-types.Tpo" -c -o _gtk_la-gtk-types.o `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtk-types.Tpo" "$(DEPDIR)/_gtk_la-gtk-types.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtk-types.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk-types.c' object='_gtk_la-gtk-types.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtk-types.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtk-types.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtk-types.o: gtk-types.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtk-types.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo" -c -o _gtkimpl_la-gtk-types.o `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo" "$(DEPDIR)/_gtkimpl_la-gtk-types.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk-types.c' object='_gtkimpl_la-gtk-types.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtk-types.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtk-types.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtk-types.o `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtk-types.o `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c
 
-_gtk_la-gtk-types.obj: gtk-types.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtk-types.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-gtk-types.Tpo" -c -o _gtk_la-gtk-types.obj `if test -f 'gtk-types.c'; then $(CYGPATH_W) 'gtk-types.c'; else $(CYGPATH_W) '$(srcdir)/gtk-types.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtk-types.Tpo" "$(DEPDIR)/_gtk_la-gtk-types.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtk-types.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk-types.c' object='_gtk_la-gtk-types.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtk-types.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtk-types.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtk-types.obj: gtk-types.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtk-types.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo" -c -o _gtkimpl_la-gtk-types.obj `if test -f 'gtk-types.c'; then $(CYGPATH_W) 'gtk-types.c'; else $(CYGPATH_W) '$(srcdir)/gtk-types.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo" "$(DEPDIR)/_gtkimpl_la-gtk-types.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk-types.c' object='_gtkimpl_la-gtk-types.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtk-types.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtk-types.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtk-types.obj `if test -f 'gtk-types.c'; then $(CYGPATH_W) 'gtk-types.c'; else $(CYGPATH_W) '$(srcdir)/gtk-types.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtk-types.obj `if test -f 'gtk-types.c'; then $(CYGPATH_W) 'gtk-types.c'; else $(CYGPATH_W) '$(srcdir)/gtk-types.c'; fi`
 
-_gtk_la-gtk-types.lo: gtk-types.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtk-types.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-gtk-types.Tpo" -c -o _gtk_la-gtk-types.lo `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtk-types.Tpo" "$(DEPDIR)/_gtk_la-gtk-types.Plo"; else rm -f "$(DEPDIR)/_gtk_la-gtk-types.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk-types.c' object='_gtk_la-gtk-types.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtk-types.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-gtk-types.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtk-types.lo: gtk-types.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtk-types.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo" -c -o _gtkimpl_la-gtk-types.lo `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo" "$(DEPDIR)/_gtkimpl_la-gtk-types.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtk-types.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk-types.c' object='_gtkimpl_la-gtk-types.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtk-types.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtk-types.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtk-types.lo `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtk-types.lo `test -f 'gtk-types.c' || echo '$(srcdir)/'`gtk-types.c
 
-_gtk_la-gtkmodule.o: gtkmodule.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtkmodule.o -MD -MP -MF "$(DEPDIR)/_gtk_la-gtkmodule.Tpo" -c -o _gtk_la-gtkmodule.o `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtkmodule.Tpo" "$(DEPDIR)/_gtk_la-gtkmodule.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtkmodule.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkmodule.c' object='_gtk_la-gtkmodule.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtkmodule.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtkmodule.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtkmodule.o: gtkmodule.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtkmodule.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo" -c -o _gtkimpl_la-gtkmodule.o `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo" "$(DEPDIR)/_gtkimpl_la-gtkmodule.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkmodule.c' object='_gtkimpl_la-gtkmodule.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtkmodule.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtkmodule.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtkmodule.o `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtkmodule.o `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c
 
-_gtk_la-gtkmodule.obj: gtkmodule.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtkmodule.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-gtkmodule.Tpo" -c -o _gtk_la-gtkmodule.obj `if test -f 'gtkmodule.c'; then $(CYGPATH_W) 'gtkmodule.c'; else $(CYGPATH_W) '$(srcdir)/gtkmodule.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtkmodule.Tpo" "$(DEPDIR)/_gtk_la-gtkmodule.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtkmodule.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkmodule.c' object='_gtk_la-gtkmodule.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtkmodule.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtkmodule.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtkmodule.obj: gtkmodule.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtkmodule.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo" -c -o _gtkimpl_la-gtkmodule.obj `if test -f 'gtkmodule.c'; then $(CYGPATH_W) 'gtkmodule.c'; else $(CYGPATH_W) '$(srcdir)/gtkmodule.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo" "$(DEPDIR)/_gtkimpl_la-gtkmodule.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkmodule.c' object='_gtkimpl_la-gtkmodule.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtkmodule.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtkmodule.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtkmodule.obj `if test -f 'gtkmodule.c'; then $(CYGPATH_W) 'gtkmodule.c'; else $(CYGPATH_W) '$(srcdir)/gtkmodule.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtkmodule.obj `if test -f 'gtkmodule.c'; then $(CYGPATH_W) 'gtkmodule.c'; else $(CYGPATH_W) '$(srcdir)/gtkmodule.c'; fi`
 
-_gtk_la-gtkmodule.lo: gtkmodule.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtkmodule.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-gtkmodule.Tpo" -c -o _gtk_la-gtkmodule.lo `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtkmodule.Tpo" "$(DEPDIR)/_gtk_la-gtkmodule.Plo"; else rm -f "$(DEPDIR)/_gtk_la-gtkmodule.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkmodule.c' object='_gtk_la-gtkmodule.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtkmodule.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-gtkmodule.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtkmodule.lo: gtkmodule.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtkmodule.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo" -c -o _gtkimpl_la-gtkmodule.lo `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo" "$(DEPDIR)/_gtkimpl_la-gtkmodule.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtkmodule.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkmodule.c' object='_gtkimpl_la-gtkmodule.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtkmodule.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtkmodule.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtkmodule.lo `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtkmodule.lo `test -f 'gtkmodule.c' || echo '$(srcdir)/'`gtkmodule.c
 
-_gtk_la-gtkobject-support.o: gtkobject-support.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtkobject-support.o -MD -MP -MF "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo" -c -o _gtk_la-gtkobject-support.o `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo" "$(DEPDIR)/_gtk_la-gtkobject-support.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkobject-support.c' object='_gtk_la-gtkobject-support.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtkobject-support.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtkobject-support.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtkobject-support.o: gtkobject-support.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtkobject-support.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo" -c -o _gtkimpl_la-gtkobject-support.o `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo" "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkobject-support.c' object='_gtkimpl_la-gtkobject-support.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtkobject-support.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtkobject-support.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtkobject-support.o `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtkobject-support.o `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c
 
-_gtk_la-gtkobject-support.obj: gtkobject-support.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtkobject-support.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo" -c -o _gtk_la-gtkobject-support.obj `if test -f 'gtkobject-support.c'; then $(CYGPATH_W) 'gtkobject-support.c'; else $(CYGPATH_W) '$(srcdir)/gtkobject-support.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo" "$(DEPDIR)/_gtk_la-gtkobject-support.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkobject-support.c' object='_gtk_la-gtkobject-support.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtkobject-support.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtkobject-support.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtkobject-support.obj: gtkobject-support.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtkobject-support.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo" -c -o _gtkimpl_la-gtkobject-support.obj `if test -f 'gtkobject-support.c'; then $(CYGPATH_W) 'gtkobject-support.c'; else $(CYGPATH_W) '$(srcdir)/gtkobject-support.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo" "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkobject-support.c' object='_gtkimpl_la-gtkobject-support.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtkobject-support.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtkobject-support.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtkobject-support.obj `if test -f 'gtkobject-support.c'; then $(CYGPATH_W) 'gtkobject-support.c'; else $(CYGPATH_W) '$(srcdir)/gtkobject-support.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtkobject-support.obj `if test -f 'gtkobject-support.c'; then $(CYGPATH_W) 'gtkobject-support.c'; else $(CYGPATH_W) '$(srcdir)/gtkobject-support.c'; fi`
 
-_gtk_la-gtkobject-support.lo: gtkobject-support.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtkobject-support.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo" -c -o _gtk_la-gtkobject-support.lo `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo" "$(DEPDIR)/_gtk_la-gtkobject-support.Plo"; else rm -f "$(DEPDIR)/_gtk_la-gtkobject-support.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkobject-support.c' object='_gtk_la-gtkobject-support.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtkobject-support.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-gtkobject-support.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtkobject-support.lo: gtkobject-support.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtkobject-support.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo" -c -o _gtkimpl_la-gtkobject-support.lo `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo" "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtkobject-support.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkobject-support.c' object='_gtkimpl_la-gtkobject-support.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtkobject-support.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtkobject-support.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtkobject-support.lo `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtkobject-support.lo `test -f 'gtkobject-support.c' || echo '$(srcdir)/'`gtkobject-support.c
 
-_gtk_la-pygtkcellrenderer.o: pygtkcellrenderer.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-pygtkcellrenderer.o -MD -MP -MF "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo" -c -o _gtk_la-pygtkcellrenderer.o `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo" "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Po"; else rm -f "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtkcellrenderer.c' object='_gtk_la-pygtkcellrenderer.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-pygtkcellrenderer.Po' tmpdepfile='$(DEPDIR)/_gtk_la-pygtkcellrenderer.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-pygtkcellrenderer.o: pygtkcellrenderer.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-pygtkcellrenderer.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo" -c -o _gtkimpl_la-pygtkcellrenderer.o `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo" "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtkcellrenderer.c' object='_gtkimpl_la-pygtkcellrenderer.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-pygtkcellrenderer.o `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-pygtkcellrenderer.o `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c
 
-_gtk_la-pygtkcellrenderer.obj: pygtkcellrenderer.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-pygtkcellrenderer.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo" -c -o _gtk_la-pygtkcellrenderer.obj `if test -f 'pygtkcellrenderer.c'; then $(CYGPATH_W) 'pygtkcellrenderer.c'; else $(CYGPATH_W) '$(srcdir)/pygtkcellrenderer.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo" "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Po"; else rm -f "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtkcellrenderer.c' object='_gtk_la-pygtkcellrenderer.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-pygtkcellrenderer.Po' tmpdepfile='$(DEPDIR)/_gtk_la-pygtkcellrenderer.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-pygtkcellrenderer.obj: pygtkcellrenderer.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-pygtkcellrenderer.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo" -c -o _gtkimpl_la-pygtkcellrenderer.obj `if test -f 'pygtkcellrenderer.c'; then $(CYGPATH_W) 'pygtkcellrenderer.c'; else $(CYGPATH_W) '$(srcdir)/pygtkcellrenderer.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo" "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtkcellrenderer.c' object='_gtkimpl_la-pygtkcellrenderer.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-pygtkcellrenderer.obj `if test -f 'pygtkcellrenderer.c'; then $(CYGPATH_W) 'pygtkcellrenderer.c'; else $(CYGPATH_W) '$(srcdir)/pygtkcellrenderer.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-pygtkcellrenderer.obj `if test -f 'pygtkcellrenderer.c'; then $(CYGPATH_W) 'pygtkcellrenderer.c'; else $(CYGPATH_W) '$(srcdir)/pygtkcellrenderer.c'; fi`
 
-_gtk_la-pygtkcellrenderer.lo: pygtkcellrenderer.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-pygtkcellrenderer.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo" -c -o _gtk_la-pygtkcellrenderer.lo `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo" "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Plo"; else rm -f "$(DEPDIR)/_gtk_la-pygtkcellrenderer.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtkcellrenderer.c' object='_gtk_la-pygtkcellrenderer.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-pygtkcellrenderer.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-pygtkcellrenderer.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-pygtkcellrenderer.lo: pygtkcellrenderer.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-pygtkcellrenderer.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo" -c -o _gtkimpl_la-pygtkcellrenderer.lo `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo" "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtkcellrenderer.c' object='_gtkimpl_la-pygtkcellrenderer.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-pygtkcellrenderer.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-pygtkcellrenderer.lo `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-pygtkcellrenderer.lo `test -f 'pygtkcellrenderer.c' || echo '$(srcdir)/'`pygtkcellrenderer.c
 
-_gtk_la-pygtktreemodel.o: pygtktreemodel.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-pygtktreemodel.o -MD -MP -MF "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo" -c -o _gtk_la-pygtktreemodel.o `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo" "$(DEPDIR)/_gtk_la-pygtktreemodel.Po"; else rm -f "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtktreemodel.c' object='_gtk_la-pygtktreemodel.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-pygtktreemodel.Po' tmpdepfile='$(DEPDIR)/_gtk_la-pygtktreemodel.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-pygtktreemodel.o: pygtktreemodel.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-pygtktreemodel.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo" -c -o _gtkimpl_la-pygtktreemodel.o `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo" "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtktreemodel.c' object='_gtkimpl_la-pygtktreemodel.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-pygtktreemodel.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-pygtktreemodel.o `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-pygtktreemodel.o `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c
 
-_gtk_la-pygtktreemodel.obj: pygtktreemodel.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-pygtktreemodel.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo" -c -o _gtk_la-pygtktreemodel.obj `if test -f 'pygtktreemodel.c'; then $(CYGPATH_W) 'pygtktreemodel.c'; else $(CYGPATH_W) '$(srcdir)/pygtktreemodel.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo" "$(DEPDIR)/_gtk_la-pygtktreemodel.Po"; else rm -f "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtktreemodel.c' object='_gtk_la-pygtktreemodel.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-pygtktreemodel.Po' tmpdepfile='$(DEPDIR)/_gtk_la-pygtktreemodel.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-pygtktreemodel.obj: pygtktreemodel.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-pygtktreemodel.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo" -c -o _gtkimpl_la-pygtktreemodel.obj `if test -f 'pygtktreemodel.c'; then $(CYGPATH_W) 'pygtktreemodel.c'; else $(CYGPATH_W) '$(srcdir)/pygtktreemodel.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo" "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtktreemodel.c' object='_gtkimpl_la-pygtktreemodel.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-pygtktreemodel.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-pygtktreemodel.obj `if test -f 'pygtktreemodel.c'; then $(CYGPATH_W) 'pygtktreemodel.c'; else $(CYGPATH_W) '$(srcdir)/pygtktreemodel.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-pygtktreemodel.obj `if test -f 'pygtktreemodel.c'; then $(CYGPATH_W) 'pygtktreemodel.c'; else $(CYGPATH_W) '$(srcdir)/pygtktreemodel.c'; fi`
 
-_gtk_la-pygtktreemodel.lo: pygtktreemodel.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-pygtktreemodel.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo" -c -o _gtk_la-pygtktreemodel.lo `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo" "$(DEPDIR)/_gtk_la-pygtktreemodel.Plo"; else rm -f "$(DEPDIR)/_gtk_la-pygtktreemodel.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtktreemodel.c' object='_gtk_la-pygtktreemodel.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-pygtktreemodel.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-pygtktreemodel.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-pygtktreemodel.lo: pygtktreemodel.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-pygtktreemodel.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo" -c -o _gtkimpl_la-pygtktreemodel.lo `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo" "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='pygtktreemodel.c' object='_gtkimpl_la-pygtktreemodel.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-pygtktreemodel.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-pygtktreemodel.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-pygtktreemodel.lo `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-pygtktreemodel.lo `test -f 'pygtktreemodel.c' || echo '$(srcdir)/'`pygtktreemodel.c
 
-_gtk_la-gtk.o: gtk.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtk.o -MD -MP -MF "$(DEPDIR)/_gtk_la-gtk.Tpo" -c -o _gtk_la-gtk.o `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtk.Tpo" "$(DEPDIR)/_gtk_la-gtk.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk.c' object='_gtk_la-gtk.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtk.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtk.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtk.o: gtk.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtk.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtk.Tpo" -c -o _gtkimpl_la-gtk.o `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtk.Tpo" "$(DEPDIR)/_gtkimpl_la-gtk.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtk.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk.c' object='_gtkimpl_la-gtk.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtk.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtk.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtk.o `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtk.o `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c
 
-_gtk_la-gtk.obj: gtk.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtk.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-gtk.Tpo" -c -o _gtk_la-gtk.obj `if test -f 'gtk.c'; then $(CYGPATH_W) 'gtk.c'; else $(CYGPATH_W) '$(srcdir)/gtk.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtk.Tpo" "$(DEPDIR)/_gtk_la-gtk.Po"; else rm -f "$(DEPDIR)/_gtk_la-gtk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk.c' object='_gtk_la-gtk.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtk.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gtk.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtk.obj: gtk.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtk.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtk.Tpo" -c -o _gtkimpl_la-gtk.obj `if test -f 'gtk.c'; then $(CYGPATH_W) 'gtk.c'; else $(CYGPATH_W) '$(srcdir)/gtk.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtk.Tpo" "$(DEPDIR)/_gtkimpl_la-gtk.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtk.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk.c' object='_gtkimpl_la-gtk.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtk.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtk.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtk.obj `if test -f 'gtk.c'; then $(CYGPATH_W) 'gtk.c'; else $(CYGPATH_W) '$(srcdir)/gtk.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtk.obj `if test -f 'gtk.c'; then $(CYGPATH_W) 'gtk.c'; else $(CYGPATH_W) '$(srcdir)/gtk.c'; fi`
 
-_gtk_la-gtk.lo: gtk.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gtk.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-gtk.Tpo" -c -o _gtk_la-gtk.lo `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gtk.Tpo" "$(DEPDIR)/_gtk_la-gtk.Plo"; else rm -f "$(DEPDIR)/_gtk_la-gtk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk.c' object='_gtk_la-gtk.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gtk.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-gtk.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-gtk.lo: gtk.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gtk.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gtk.Tpo" -c -o _gtkimpl_la-gtk.lo `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gtk.Tpo" "$(DEPDIR)/_gtkimpl_la-gtk.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-gtk.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtk.c' object='_gtkimpl_la-gtk.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gtk.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gtk.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gtk.lo `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gtk.lo `test -f 'gtk.c' || echo '$(srcdir)/'`gtk.c
 
-_gtk_la-gdk.o: gdk.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gdk.o -MD -MP -MF "$(DEPDIR)/_gtk_la-gdk.Tpo" -c -o _gtk_la-gdk.o `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gdk.Tpo" "$(DEPDIR)/_gtk_la-gdk.Po"; else rm -f "$(DEPDIR)/_gtk_la-gdk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gdk.c' object='_gtk_la-gdk.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gdk.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gdk.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gdk.o: gdk.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gdk.o -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gdk.Tpo" -c -o _gtkimpl_la-gdk.o `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gdk.Tpo" "$(DEPDIR)/_gtkimpl_la-gdk.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gdk.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gdk.c' object='_gtkimpl_la-gdk.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gdk.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gdk.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gdk.o `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gdk.o `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c
 
-_gtk_la-gdk.obj: gdk.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gdk.obj -MD -MP -MF "$(DEPDIR)/_gtk_la-gdk.Tpo" -c -o _gtk_la-gdk.obj `if test -f 'gdk.c'; then $(CYGPATH_W) 'gdk.c'; else $(CYGPATH_W) '$(srcdir)/gdk.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gdk.Tpo" "$(DEPDIR)/_gtk_la-gdk.Po"; else rm -f "$(DEPDIR)/_gtk_la-gdk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gdk.c' object='_gtk_la-gdk.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gdk.Po' tmpdepfile='$(DEPDIR)/_gtk_la-gdk.TPo' @AMDEPBACKSLASH@
+_gtkimpl_la-gdk.obj: gdk.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gdk.obj -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gdk.Tpo" -c -o _gtkimpl_la-gdk.obj `if test -f 'gdk.c'; then $(CYGPATH_W) 'gdk.c'; else $(CYGPATH_W) '$(srcdir)/gdk.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gdk.Tpo" "$(DEPDIR)/_gtkimpl_la-gdk.Po"; else rm -f "$(DEPDIR)/_gtkimpl_la-gdk.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gdk.c' object='_gtkimpl_la-gdk.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gdk.Po' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gdk.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gdk.obj `if test -f 'gdk.c'; then $(CYGPATH_W) 'gdk.c'; else $(CYGPATH_W) '$(srcdir)/gdk.c'; fi`
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gdk.obj `if test -f 'gdk.c'; then $(CYGPATH_W) 'gdk.c'; else $(CYGPATH_W) '$(srcdir)/gdk.c'; fi`
 
-_gtk_la-gdk.lo: gdk.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -MT _gtk_la-gdk.lo -MD -MP -MF "$(DEPDIR)/_gtk_la-gdk.Tpo" -c -o _gtk_la-gdk.lo `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtk_la-gdk.Tpo" "$(DEPDIR)/_gtk_la-gdk.Plo"; else rm -f "$(DEPDIR)/_gtk_la-gdk.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gdk.c' object='_gtk_la-gdk.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtk_la-gdk.Plo' tmpdepfile='$(DEPDIR)/_gtk_la-gdk.TPlo' @AMDEPBACKSLASH@
+_gtkimpl_la-gdk.lo: gdk.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -MT _gtkimpl_la-gdk.lo -MD -MP -MF "$(DEPDIR)/_gtkimpl_la-gdk.Tpo" -c -o _gtkimpl_la-gdk.lo `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/_gtkimpl_la-gdk.Tpo" "$(DEPDIR)/_gtkimpl_la-gdk.Plo"; else rm -f "$(DEPDIR)/_gtkimpl_la-gdk.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gdk.c' object='_gtkimpl_la-gdk.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/_gtkimpl_la-gdk.Plo' tmpdepfile='$(DEPDIR)/_gtkimpl_la-gdk.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtk_la_CFLAGS) $(CFLAGS) -c -o _gtk_la-gdk.lo `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c
-
-glade_la-libglademodule.o: libglademodule.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -MT glade_la-libglademodule.o -MD -MP -MF "$(DEPDIR)/glade_la-libglademodule.Tpo" -c -o glade_la-libglademodule.o `test -f 'libglademodule.c' || echo '$(srcdir)/'`libglademodule.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/glade_la-libglademodule.Tpo" "$(DEPDIR)/glade_la-libglademodule.Po"; else rm -f "$(DEPDIR)/glade_la-libglademodule.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libglademodule.c' object='glade_la-libglademodule.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/glade_la-libglademodule.Po' tmpdepfile='$(DEPDIR)/glade_la-libglademodule.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -c -o glade_la-libglademodule.o `test -f 'libglademodule.c' || echo '$(srcdir)/'`libglademodule.c
-
-glade_la-libglademodule.obj: libglademodule.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -MT glade_la-libglademodule.obj -MD -MP -MF "$(DEPDIR)/glade_la-libglademodule.Tpo" -c -o glade_la-libglademodule.obj `if test -f 'libglademodule.c'; then $(CYGPATH_W) 'libglademodule.c'; else $(CYGPATH_W) '$(srcdir)/libglademodule.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/glade_la-libglademodule.Tpo" "$(DEPDIR)/glade_la-libglademodule.Po"; else rm -f "$(DEPDIR)/glade_la-libglademodule.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libglademodule.c' object='glade_la-libglademodule.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/glade_la-libglademodule.Po' tmpdepfile='$(DEPDIR)/glade_la-libglademodule.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -c -o glade_la-libglademodule.obj `if test -f 'libglademodule.c'; then $(CYGPATH_W) 'libglademodule.c'; else $(CYGPATH_W) '$(srcdir)/libglademodule.c'; fi`
-
-glade_la-libglademodule.lo: libglademodule.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -MT glade_la-libglademodule.lo -MD -MP -MF "$(DEPDIR)/glade_la-libglademodule.Tpo" -c -o glade_la-libglademodule.lo `test -f 'libglademodule.c' || echo '$(srcdir)/'`libglademodule.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/glade_la-libglademodule.Tpo" "$(DEPDIR)/glade_la-libglademodule.Plo"; else rm -f "$(DEPDIR)/glade_la-libglademodule.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libglademodule.c' object='glade_la-libglademodule.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/glade_la-libglademodule.Plo' tmpdepfile='$(DEPDIR)/glade_la-libglademodule.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -c -o glade_la-libglademodule.lo `test -f 'libglademodule.c' || echo '$(srcdir)/'`libglademodule.c
-
-glade_la-libglade.o: libglade.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -MT glade_la-libglade.o -MD -MP -MF "$(DEPDIR)/glade_la-libglade.Tpo" -c -o glade_la-libglade.o `test -f 'libglade.c' || echo '$(srcdir)/'`libglade.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/glade_la-libglade.Tpo" "$(DEPDIR)/glade_la-libglade.Po"; else rm -f "$(DEPDIR)/glade_la-libglade.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libglade.c' object='glade_la-libglade.o' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/glade_la-libglade.Po' tmpdepfile='$(DEPDIR)/glade_la-libglade.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -c -o glade_la-libglade.o `test -f 'libglade.c' || echo '$(srcdir)/'`libglade.c
-
-glade_la-libglade.obj: libglade.c
-@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -MT glade_la-libglade.obj -MD -MP -MF "$(DEPDIR)/glade_la-libglade.Tpo" -c -o glade_la-libglade.obj `if test -f 'libglade.c'; then $(CYGPATH_W) 'libglade.c'; else $(CYGPATH_W) '$(srcdir)/libglade.c'; fi`; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/glade_la-libglade.Tpo" "$(DEPDIR)/glade_la-libglade.Po"; else rm -f "$(DEPDIR)/glade_la-libglade.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libglade.c' object='glade_la-libglade.obj' libtool=no @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/glade_la-libglade.Po' tmpdepfile='$(DEPDIR)/glade_la-libglade.TPo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -c -o glade_la-libglade.obj `if test -f 'libglade.c'; then $(CYGPATH_W) 'libglade.c'; else $(CYGPATH_W) '$(srcdir)/libglade.c'; fi`
-
-glade_la-libglade.lo: libglade.c
-@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -MT glade_la-libglade.lo -MD -MP -MF "$(DEPDIR)/glade_la-libglade.Tpo" -c -o glade_la-libglade.lo `test -f 'libglade.c' || echo '$(srcdir)/'`libglade.c; \
-@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/glade_la-libglade.Tpo" "$(DEPDIR)/glade_la-libglade.Plo"; else rm -f "$(DEPDIR)/glade_la-libglade.Tpo"; exit 1; fi
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='libglade.c' object='glade_la-libglade.lo' libtool=yes @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/glade_la-libglade.Plo' tmpdepfile='$(DEPDIR)/glade_la-libglade.TPlo' @AMDEPBACKSLASH@
-@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
-@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(glade_la_CFLAGS) $(CFLAGS) -c -o glade_la-libglade.lo `test -f 'libglade.c' || echo '$(srcdir)/'`libglade.c
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(_gtkimpl_la_CFLAGS) $(CFLAGS) -c -o _gtkimpl_la-gdk.lo `test -f 'gdk.c' || echo '$(srcdir)/'`gdk.c
 
 gtkunixprint_la-gtkunixprintmodule.o: gtkunixprintmodule.c
 @am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(gtkunixprint_la_CFLAGS) $(CFLAGS) -MT gtkunixprint_la-gtkunixprintmodule.o -MD -MP -MF "$(DEPDIR)/gtkunixprint_la-gtkunixprintmodule.Tpo" -c -o gtkunixprint_la-gtkunixprintmodule.o `test -f 'gtkunixprintmodule.c' || echo '$(srcdir)/'`gtkunixprintmodule.c; \
@@ -1044,7 +990,6 @@ gtk-types.defs: $(GTK_TYPES_DEFS)
 
 gdk.c: gdk-types.defs gdk.defs $(GDK_OVERRIDES)
 gtk.c: gdk-types.defs gtk-types.defs gtk.defs gdk-types.defs $(GTK_OVERRIDES)
-libglade.c: $(LIBGLADE_DEFS) libglade.override gdk-types.defs gtk-types.defs
 gtkunixprint.c: $(GTKUNIXPRINT_DEFS) gtkunixprint.override gdk-types.defs \
 	gtk-types.defs
 
