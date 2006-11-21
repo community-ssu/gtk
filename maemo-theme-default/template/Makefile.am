@@ -1,3 +1,3 @@
-MAINTAINERCLEANFILES = Makefile.in
+MAINTAINERCLEANFILES 		= Makefile.in
 
-EXTRA_DIST = template.png
+EXTRA_DIST 			= template.png

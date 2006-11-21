@@ -1,3 +1,9 @@
+2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
+	* NEWS:
+	* template/Makefile.am: Minor cosmetics.
+
 2006-11-06  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* autogen.sh:
