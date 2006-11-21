@@ -85,7 +85,7 @@ hildon_file_system_upnp_init (HildonFileSystemUpnp *device)
 
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
-    location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
+    location->fixed_icon = g_strdup ("qgn_list_filesys_mediaserver");
     location->fixed_title = g_strdup (_("sfil_li_shared_media"));
     location->failed_access_message = NULL;
 
@@ -137,8 +137,8 @@ hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
       child = g_object_new(HILDON_TYPE_FILE_SYSTEM_DYNAMIC_DEVICE, NULL);
       HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
           HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
-      hildon_file_system_special_location_set_icon (child,
-                                                   "qgn_list_filesys_divc_cls");
+      hildon_file_system_special_location_set_icon 
+	(child, "qgn_list_filesys_mediaserver");
       child->failed_access_message = _("sfil_ib_cannot_connect_device");
 
       HILDON_FILE_SYSTEM_UPNP (location)->has_children = TRUE;
