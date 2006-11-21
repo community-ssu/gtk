@@ -1,5 +1,6 @@
 import os
 import sys
+from subprocess import *
 
 sys.path.append("dbus")
 
@@ -24,42 +25,71 @@ class full_clean(clean):
         remove("dbus/dbus_bindings.pxd")
         remove("dbus/dbus_bindings.c")
         remove("dbus/dbus_glib_bindings.c")
+        remove("test/dbus_python_check.pyo")
         remove("ChangeLog")
 
-includedirs_flag = ['-I.']
+
+def run(cmd):
+    try:
+        p = Popen(' '.join(cmd), shell=True,
+                stdin=PIPE, stdout=PIPE, stderr=PIPE,
+                close_fds=True
+            )
+    except Exception, e:
+        print >>sys.stderr, "ERROR: running %s (%s)" % (' '.join(cmd), e)
+        raise SystemExit
+
+    return p.stdout.read().strip(), p.stderr.read().strip()
+
+
+def check_package(names, parms):
+    cmd = [ "pkg-config" ]
+    if isinstance(parms, list):
+        cmd += parms
+    else:
+        cmd.append(parms)
+
+    if isinstance(names, list):
+        cmd += names
+    else:
+        cmd.append(names)
+
+    output, error = run(cmd)
+
+    if error:
+        print >>sys.stderr, "ERROR: checking %s:\n%s" % (names, error)
+        raise SystemExit
+
+    return output
+
+
+includedirs_flag = ['-I.', '-Idbus/']
 dbus_includes = ['.']
 dbus_glib_includes = ['.']
+dbus_libs = []
+dbus_glib_libs = []
 
-pipe = os.popen3("pkg-config --cflags dbus-1")
-output = pipe[1].read().strip()
-error = pipe[2].read().strip()
-for p in pipe:
-    p.close()
-if error:
-    print "ERROR: running pkg-config (%s)" % (error)
-    raise SystemExit
-includedirs_flag.extend(output.split())
-dbus_includes.extend([ x.replace("-I", "") for x in output.split() ])
+output = check_package("dbus-1", "--cflags").split()
+dbus_includes.extend([ x.replace("-I", "") for x in output ])
+includedirs_flag.extend(output)
 
-pipe = os.popen3("pkg-config --cflags dbus-glib-1")
-output = pipe[1].read().strip()
-error = pipe[2].read().strip()
-for p in pipe:
-    p.close()
-if error:
-    print "ERROR: running pkg-config (%s)" % (error)
-    raise SystemExit
-includedirs_flag.extend(output.split())
-dbus_glib_includes.extend([ x.replace("-I", "") for x in output.split() ])
+output = check_package("dbus-1", "--libs-only-L").split()
+dbus_libs.extend([ x.replace("-L", "") for x in output ])
+
+output = check_package("dbus-glib-1", "--cflags").split()
+dbus_glib_includes.extend([ x.replace("-I", "") for x in output ])
+includedirs_flag.extend(output)
+
+output = check_package("dbus-glib-1", "--libs-only-L").split()
+dbus_glib_libs.extend([ x.replace("-L", "") for x in output ])
+
+output = open("dbus/dbus_bindings.pxd", 'w')
+extract.main("dbus/dbus_bindings.pxd.in", includedirs_flag, output)
+output.close()
 
 #create ChangeLog only if this is a git repo
 if os.path.exists(".git"):
-    pipe = os.popen3("git-log --stat")
-    output = pipe[1].read().strip()
-    error = pipe[2].read().strip()
-
-    for p in pipe:
-        p.close()
+    output, error = run(["git-log", "--stat"])
 
     if error:
         print "ERROR: running git-log (%s)" % (error)
@@ -68,34 +98,6 @@ if os.path.exists(".git"):
     file = open("ChangeLog", "w")
     file.writelines(output)
     file.close()
-
-dbus_libs = []
-dbus_glib_libs = []
-
-pipe = os.popen3("pkg-config --libs-only-L dbus-1")
-output = pipe[1].read().strip()
-error = pipe[2].read().strip()
-for p in pipe:
-    p.close()
-if error:
-    print "ERROR: running pkg-config (%s)" % (error)
-    raise SystemExit
-dbus_libs.extend([ x.replace("-L", "") for x in output.split() ])
-
-pipe = os.popen3("pkg-config --libs-only-L dbus-glib-1")
-output = pipe[1].read().strip()
-error = pipe[2].read().strip()
-for p in pipe:
-    p.close()
-if error:
-    print "ERROR: running pkg-config (%s)" % (error)
-    raise SystemExit
-dbus_glib_libs.extend([ x.replace("-L", "") for x in output.split() ])
-
-output = open("dbus/dbus_bindings.pxd", 'w')
-includedirs_flag.append('-Idbus/')
-extract.main("dbus/dbus_bindings.pxd.in", includedirs_flag, output)
-output.close()
 
 long_desc = '''D-BUS is a message bus system, a simple way for applications to
 talk to one another.

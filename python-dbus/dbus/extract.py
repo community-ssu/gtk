@@ -138,31 +138,31 @@ def find_functions(buf):
     return functions
 
 class Writer:
-    def __init__(self, filename, enums, typedefs, functions):
+    def __init__(self, filename, enums, typedefs, functions, output):
         if not (enums or typedefs or functions):
             return
-        print 'cdef extern from "%s":' % filename
+	self.output = output
+        self.output.write('cdef extern from "%s":\n' % filename)
 
         self.output_enums(enums)
         self.output_typedefs(typedefs)
         self.output_functions(functions)        
         
-        print '    pass'
-        print
+        self.output.write('    pass\n\n')
         
     def output_enums(self, enums):
         for enum in enums:
-            print '    ctypedef enum %s:' % enum[0]
+            self.output.write('    ctypedef enum %s:\n' % enum[0])
             if enum[1] == 0:
                 for item in enum[2]:
-                    print '        %s' % item
+                    self.output.write('        %s\n' % item)
             else:
                 i = 0
                 for item in enum[2]:
-                    print '        %s' % item                    
-#                    print '        %s = 1 << %d' % (item, i)
+                    self.output.write('        %s\n' % item)
                     i += 1
-            print
+            self.output.write('\n')
+
     def output_typedefs(self, typedefs):
         for typedef in typedefs:
             if typedef.find('va_list') != -1:
@@ -172,9 +172,9 @@ class Writer:
             if parts[0] == 'struct':
                 if parts[-2] == parts[-1]:
                     parts = parts[:-1]
-                print '    ctypedef %s' % ' '.join(parts)
+                self.output.write('    ctypedef %s\n' % ' '.join(parts))
             else:
-                print '    ctypedef %s' % typedef
+                self.output.write('    ctypedef %s\n' % typedef)
 
     def output_functions(self, functions):
         for func, ret, args in functions:
@@ -188,36 +188,28 @@ class Writer:
                 continue
             if str.strip() == 'void':
                 continue
-            print '    %-20s %s (%s)' % (ret, func, str)
+            self.output.write('    %-20s %s (%s)\n' % (ret, func, str))
 
-def do_buffer(name, buffer):
+def do_buffer(name, buffer, output):
     functions = find_functions(buffer)
     typedefs = find_typedefs(buffer)
     enums = find_enums(buffer)
 
-    Writer(name, enums, typedefs, functions)
+    Writer(name, enums, typedefs, functions, output)
     
-def do_header(filename, name=None):
-    if name == None:
-        name = filename
-        
+def do_header(name, output):
     buffer = ""
-    for line in open(filename).readlines():
+    for line in open(name).readlines():
         if line[0] == '#':
             continue
         buffer += line
 
-    print '# -- %s -- ' % filename
-    do_buffer(name, buffer)
+    output.write('# -- %s --\n' % filename)
+    do_buffer(name, buffer, output)
     
 def main(filename, flags, output=None):
-    old_stdout = None
-    if output is not None:
-        old_stdout = sys.stdout
-        sys.stdout = output
-
     if filename.endswith('.h'):
-        do_header(filename)
+        do_header(filename, output)
         return
 
     cppflags = ' '.join(flags)
@@ -228,17 +220,12 @@ def main(filename, flags, output=None):
 
         if match:
             filename = match.group(1)
-            print >>sys.stderr, "matched %s" % (filename)
             command = "echo '%s'|cpp %s" % (line, cppflags)
-            output = commands.getoutput(command)
-            print >>sys.stderr, "output %s" % (output)
-            do_buffer(filename, output)
+            buffer = commands.getoutput(command)
+            do_buffer(filename, buffer, output)
         else:
-            print line[:-1]
+            output.write("%s\n" % (line.rstrip()))
     fd.close()
-
-    if old_stdout is not None:
-         sys.stdout = old_stdout
 
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2:])
