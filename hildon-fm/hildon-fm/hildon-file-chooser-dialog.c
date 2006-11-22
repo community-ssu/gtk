@@ -157,6 +157,9 @@ struct _HildonFileChooserDialogPrivate {
 
     GtkWidget *mode_list, *mode_thumbnails;
     GSList *filters;
+    GtkWidget *filters_separator;
+    GSList *filter_menu_items;
+    GSList * filter_item_menu_toggle_handlers;
 
     gchar *stub_name;   /* Set by call to set_current_name */
     gchar *ext_name;
@@ -765,11 +768,25 @@ static GtkFileSystem
     return _hildon_file_system_model_get_file_system(priv->model);
 }
 
+static void hildon_file_chooser_toggle_filter (GtkCheckMenuItem * item,
+					       gpointer data)
+{
+  HildonFileChooserDialog *chooser = HILDON_FILE_CHOOSER_DIALOG(data);
+  HildonFileChooserDialogPrivate *priv = HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
+  gint filter_index = 0;
+
+  filter_index = g_slist_index(priv->filter_menu_items, item);
+  hildon_file_selection_set_filter(priv->filetree, g_slist_nth_data(priv->filters, filter_index));
+  
+}
+
 static void hildon_file_chooser_dialog_add_filter(GtkFileChooser * chooser,
                                                   GtkFileFilter * filter)
 {
+    GtkWidget * menu_item = NULL;
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
+    gulong * signal_handler = NULL;
 
     if (g_slist_find(priv->filters, filter)) {
         ULOG_WARN_L("gtk_file_chooser_add_filter() called on filter "
@@ -780,6 +797,36 @@ static void hildon_file_chooser_dialog_add_filter(GtkFileChooser * chooser,
     g_object_ref(filter);
     gtk_object_sink(GTK_OBJECT(filter));
     priv->filters = g_slist_append(priv->filters, filter);
+    if (priv->filters_separator == NULL) {
+      priv->filters_separator = gtk_separator_menu_item_new();
+      gtk_menu_shell_append(GTK_MENU_SHELL(priv->popup), priv->filters_separator);
+    }
+    if (gtk_file_filter_get_name(filter) != NULL) {
+      GSList * node = NULL;
+      node = priv->filter_menu_items;
+      while (node) {
+	if (node->data) {
+	  break;
+	} else {
+	  node = g_slist_next(node);
+	}
+      }
+      if (node) {
+	menu_item = gtk_radio_menu_item_new_with_label_from_widget (node->data, gtk_file_filter_get_name(filter));
+      } else {
+	menu_item = gtk_radio_menu_item_new_with_label (NULL, gtk_file_filter_get_name(filter));
+      }
+      gtk_menu_shell_append(GTK_MENU_SHELL(priv->popup), menu_item);
+      if (hildon_file_selection_get_filter(priv->filetree) == filter) {
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
+      }
+      signal_handler = g_malloc0(sizeof(gulong));
+      *signal_handler =   
+	g_signal_connect(G_OBJECT(menu_item), "toggled", G_CALLBACK(hildon_file_chooser_toggle_filter), chooser);
+      gtk_widget_show_all(priv->popup);
+    }
+    priv->filter_menu_items = g_slist_append(priv->filter_menu_items, menu_item);
+    priv->filter_item_menu_toggle_handlers = g_slist_append(priv->filter_item_menu_toggle_handlers, signal_handler);
 }
 
 static void hildon_file_chooser_dialog_remove_filter(GtkFileChooser *
@@ -790,8 +837,18 @@ static void hildon_file_chooser_dialog_remove_filter(GtkFileChooser *
     gint filter_index;
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
-
+    GSList * menu_item_node = NULL;
+    GSList * signal_handlers_node = NULL;
     filter_index = g_slist_index(priv->filters, filter);
+
+    menu_item_node = g_slist_nth(priv->filter_menu_items, filter_index);
+    if (menu_item_node->data != NULL) 
+      gtk_container_remove(GTK_CONTAINER(priv->popup), menu_item_node->data);
+    priv->filter_menu_items = g_slist_delete_link(priv->filter_menu_items, menu_item_node);
+
+    signal_handlers_node = g_slist_nth(priv->filter_item_menu_toggle_handlers, filter_index);
+    g_free(signal_handlers_node->data);
+    priv->filter_item_menu_toggle_handlers = g_slist_delete_link(priv->filter_item_menu_toggle_handlers, signal_handlers_node);
 
     if (filter_index < 0) {
         ULOG_WARN_L("gtk_file_chooser_remove_filter() called on filter "
@@ -804,7 +861,13 @@ static void hildon_file_chooser_dialog_remove_filter(GtkFileChooser *
     if (filter == hildon_file_selection_get_filter(priv->filetree))
         hildon_file_selection_set_filter(priv->filetree, NULL);
 
+    if (priv->filters == NULL) {
+      gtk_container_remove(GTK_CONTAINER(priv->popup), priv->filters_separator);
+      priv->filters_separator = NULL;
+    }
+
     g_object_unref(filter);
+    gtk_widget_show_all(priv->popup);
 }
 
 static GSList *hildon_file_chooser_dialog_list_filters(GtkFileChooser *
@@ -1470,6 +1533,9 @@ static void hildon_file_chooser_dialog_finalize(GObject * obj)
 
     g_slist_foreach(priv->filters, (GFunc) g_object_unref, NULL);
     g_slist_free(priv->filters);
+    g_slist_free(priv->filter_menu_items);
+    g_slist_foreach(priv->filter_item_menu_toggle_handlers, (GFunc) g_free, NULL);
+    g_slist_free(priv->filter_item_menu_toggle_handlers);
     g_object_unref(priv->popup);
 
     ULOG_DEBUG(__FUNCTION__);
@@ -1604,12 +1670,29 @@ static void hildon_file_chooser_dialog_context(GtkWidget * widget,
 {
     HildonFileChooserDialogPrivate *priv = data;
     guint32 time;
+    gint filter_index = 0;
+    GtkFileFilter * filter = NULL;
+    GtkWidget * menu_item = NULL;
 
     /* We are not handling an event currently, so gtk_get_current_event_*
        don't do any good */
     time = gdk_x11_get_server_time(widget->window);
     gtk_menu_shell_select_first(GTK_MENU_SHELL(priv->popup), TRUE);
     gtk_menu_popup(GTK_MENU(priv->popup), NULL, NULL, NULL, NULL, 0, time);
+
+    /* Updates the radio button of filters, if any */
+    filter = hildon_file_selection_get_filter(priv->filetree);
+    if (filter != NULL) {
+      filter_index = g_slist_index(priv->filters, filter);
+      menu_item = g_slist_nth_data(priv->filter_menu_items, filter_index);
+      if (filter != NULL) {
+	gulong *signal_handler = NULL;
+	signal_handler = g_slist_nth_data(priv->filter_item_menu_toggle_handlers, filter_index);
+	g_signal_handler_block(G_OBJECT(menu_item), *signal_handler);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
+	g_signal_handler_unblock(G_OBJECT(menu_item), *signal_handler);
+      }
+    }
 }
 
 static void
@@ -1732,6 +1815,10 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
                                                        _("sfil_me_view_thumbnails"));
     gtk_check_menu_item_set_active(
         GTK_CHECK_MENU_ITEM(priv->mode_thumbnails), TRUE);
+
+    priv->filters_separator = NULL;
+    priv->filter_menu_items = NULL;
+    priv->filter_item_menu_toggle_handlers = NULL;
 
     gtk_menu_shell_append(shell, priv->sort_type);
     gtk_menu_shell_append(shell, priv->sort_name);
