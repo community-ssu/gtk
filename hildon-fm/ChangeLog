@@ -10,6 +10,13 @@
 	sort model, not from filter model since the view shows the sort
 	model.
 
+        From José Dapena Paz <jdapena@igalia.com>.  Thanks! (M842)
+	
+ 	* hildon-fm/hildon-file-chooser.c: Add available filters to pane
+	context menu. The filters are added with method add_filter (and
+	removed with remove_filter). Only filters with name are shown, and
+	that name is the one used in the context menu.
+
 2006-11-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-upnp.c
