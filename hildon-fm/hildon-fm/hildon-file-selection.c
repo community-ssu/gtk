@@ -3603,7 +3603,7 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
           /* Setting cursor is a hack, but it ensures that we do not
              end up having old cursor value selected as well 
              if we are in the multiselection mode... */
-          path = gtk_tree_model_get_path(priv->view_filter, &filter_iter);
+          path = gtk_tree_model_get_path(priv->sort_model, &sort_iter);
       
           if (path)
           {
@@ -3622,7 +3622,7 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
               g_list_free(selected);
             }
           }
-
+	  
           gtk_tree_selection_select_iter(selection, &sort_iter);
         }
         else
