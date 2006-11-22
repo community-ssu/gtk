@@ -1,0 +1,7 @@
+* UI ideas
+
+Some stuff gathered on the road that should not be forgotten:
+
+- Giving Filters a name with gtk_file_filter_set_name will show them
+  in the Context Menu of the Content Pane.  Applications might want to
+  use it.
