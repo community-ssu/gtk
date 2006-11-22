@@ -365,8 +365,6 @@ set_entry (GtkWidget *entry, const char *name, const char *ext)
 
   if (ext && !_hildon_file_system_is_known_extension (ext))
     {
-      fprintf (stderr, "'%s' not known\n", ext);
-
       gint position = strlen (name);
       gtk_editable_insert_text (GTK_EDITABLE (entry),
 				ext, strlen (ext), 
@@ -672,7 +670,17 @@ static gboolean hildon_file_chooser_dialog_select_path(GtkFileChooser *
 {
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
-    return hildon_file_selection_select_path(priv->filetree, path, error);
+
+    if (hildon_file_selection_select_path(priv->filetree, path, error))
+      {
+	if (priv->action == GTK_FILE_CHOOSER_ACTION_SAVE
+	    || priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
+	  set_stub_and_ext (priv,
+			    basename (gtk_file_path_get_string (path)));
+	return TRUE;
+      }
+
+    return FALSE;
 }
 
 static void hildon_file_chooser_dialog_unselect_path(GtkFileChooser *
