@@ -1,3 +1,24 @@
+2006-11-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/Makefile.am: Adding the mediaplayer styles.
+
+	* rc/defaultarrows:
+	* rc/gtkcalendar:
+	* rc/gtkexpander:
+	* rc/gtkmenu:
+	* rc/gtknotebook:
+	* rc/gtkrc:
+	* rc/gtkseparator:
+	* rc/gtktreeview:
+	* rc/hildondateeditor:
+	* rc/hildonkeyboard:
+	* rc/hildonnavigator:
+	* rc/hildonstatusbar:
+	* rc/hildontimeeditor:
+	* rc/ossoglobalsearch:
+	* rc/ossomediaplayer:
+	* rc/ossortc: Updating to bleeding edge.
+
 2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* Makefile.am:

@@ -20,9 +20,19 @@ style "osso-hitentry" = "osso-logical-colors"
       border = { 2, 2, 2, 2 } 
       stretch = TRUE 
     } 
+
+    image
+    {
+      function = FOCUS
+      detail = "eventbox"
+      file = "../images/qgn_plat_focus_active.png"
+      border = { 2, 2, 2, 2 }
+      stretch = TRUE
+    }
   } 
 } 
 
-widget_class "*.OgsHitEntry*" style "osso-hitentry" 
-widget_class "*.OgsBookmarkEntry*" style "osso-hitentry" 
-widget_class "*.OgsContactEntry*" style "osso-hitentry" 
+widget_class "*.OgsHitEntry" style "osso-hitentry" 
+widget_class "*.OgsFileEntry" style "osso-hitentry" 
+widget_class "*.OgsBookmarkEntry" style "osso-hitentry" 
+widget_class "*.OgsContactEntry" style "osso-hitentry" 

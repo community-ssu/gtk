@@ -28,27 +28,24 @@ style "osso-time-editor-button"
 
 style "osso-time-editor-ampm-button"
 {
-  GtkButton::default_border = { 0, 0, 0, 0 }
-  GtkButton::default_outside_border = { 0, 0, 0, 0 }
-  GtkButton::child-displacement-y = 0
-  GtkButton::child-displacement-x = 0
-  GtkWidget::focus-width = 0
-  GtkButton::interior_focus = 1
-  GtkWidget::focus-padding = 0
-  GtkWidget::focus-line-width = 0
-  GtkButton::child_spacing = 0
-  xthickness = 0
-  ythickness = 0
+  xthickness = 1
+  ythickness = 1
 
   engine "sapwood"
     {
-      image
-        {
-	  function = BOX
-	  border = { 0, 0, 0, 0}
-	  stretch = TRUE
-	}
+    image {
+        function = FOCUS
+        file     = "../images/qgn_plat_single_line_input.png"
+        border   = {2, 2, 2, 2}
+        stretch  = TRUE
     }
+    image {
+        function = BOX
+        border = { 2, 2, 2, 2 }
+        file     = "../images/qgn_plat_single_line_input.png"
+        stretch  = TRUE
+    }
+  }
 }
 
 style "osso-time-editor"

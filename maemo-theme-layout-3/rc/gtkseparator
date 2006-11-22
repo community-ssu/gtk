@@ -9,7 +9,7 @@
 
 style "osso-separator"
 {
-  GtkSeparator::hildonlike = 1
+  GtkSeparator::hildonlike-drawing = 1
   ythickness = 3
   xthickness = 3
   
@@ -20,7 +20,7 @@ style "osso-separator"
 	  function    = BOX
 	  detail      = "hseparator"
 	  file        = "../images/qgn_plat_separator_horizontal.png"
-	  border      = { 5, 5, 0, 0 }
+	  border      = { 12, 12, 0, 0 }
 	  stretch     = TRUE
 	}
       image
@@ -28,7 +28,7 @@ style "osso-separator"
 	  function    = BOX
 	  detail      = "vseparator"
 	  file        = "../images/qgn_plat_separator_vertical.png"
-	  border      = { 0, 0, 5, 5 }
+	  border      = { 0, 0, 12, 12 }
 	  stretch     = TRUE
 	}
     }

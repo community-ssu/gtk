@@ -13,7 +13,7 @@ style "osso-rtc-window"
     {
         image {
             function = FLAT_BOX
-                file     = "../images/qgn_plat_application_voip_background.png"
+                file     = "../images/qgn_plat_application_chat_background.jpg"
                 stretch  = TRUE
         }
     }

@@ -59,6 +59,7 @@ nobase_dist_template_DATA =		\
      ossoapplicationinstaller		\
      ossoclock				\
      ossoglobalsearch			\
+     ossomediaplayer			\
      ossointernetsearchapplet		\
      ossoiradioapplet			\
      ossorssfeedreader			\

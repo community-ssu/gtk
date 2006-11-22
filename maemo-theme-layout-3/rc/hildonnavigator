@@ -10,7 +10,7 @@ style "osso-task-navigator-tooltip"
         {
             function = FLAT_BOX
             state = NORMAL
-            file = "../images/qgn_plat_task_navigation_menu_frame.png"	
+            file = "../images/qgn_plat_tool_tip.png"	
 	    border = { 20, 20, 20, 20 }
             stretch = TRUE
         }
@@ -64,6 +64,12 @@ style "osso-navigator-button-one"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+		        function = FOCUS
+        		file = "../images/qgn_plat_task_navigation_button_01_focused.png"
+        		border = { 0, 0, 0, 0 }
+        		stretch = TRUE
+                }
 	}
 }
 widget "*.hildon-navigator-button-one" style "osso-navigator-button-one"
@@ -109,6 +115,12 @@ style "osso-navigator-button-two"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+		        function = FOCUS
+        		file = "../images/qgn_plat_task_navigation_button_02_focused.png"
+        		border = { 0, 0, 0, 0 }
+        		stretch = TRUE
+                }	
 	}
 }
 widget "*.hildon-navigator-button-two" style "osso-navigator-button-two"
@@ -154,6 +166,12 @@ style "osso-navigator-button-three"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+		        function = FOCUS
+        		file = "../images/qgn_plat_task_navigation_button_03_focused.png"
+        		border = { 0, 0, 0, 0 }
+        		stretch = TRUE
+                }
 	}
 }
 widget "*.hildon-navigator-button-three" style "osso-navigator-button-three"
@@ -200,6 +218,12 @@ style "osso-navigator-small-button1"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+			file = "../images/qgn_plat_task_navigation_application_switcher_01_focused.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -217,6 +241,12 @@ style "osso-navigator-small-button2"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+			file = "../images/qgn_plat_task_navigation_application_switcher_02_focused.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -234,6 +264,12 @@ style "osso-navigator-small-button3"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+			file = "../images/qgn_plat_task_navigation_application_switcher_03_focused.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -251,6 +287,12 @@ style "osso-navigator-small-button4"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+			file = "../images/qgn_plat_task_navigation_application_switcher_04_focused.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -297,7 +339,12 @@ style "osso-navigator-small-button5"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
-		
+		image {
+			function = FOCUS
+			file = "../images/qgn_plat_task_navigation_application_switcher_05_focused.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -318,6 +365,13 @@ style "osso-navigator-small-button1-pressed"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+            state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -335,6 +389,13 @@ style "osso-navigator-small-button2-pressed"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+            state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -352,6 +413,13 @@ style "osso-navigator-small-button3-pressed"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+            state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 
@@ -369,6 +437,13 @@ style "osso-navigator-small-button4-pressed"
 			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
+		image {
+			function = FOCUS
+            state = ACTIVE
+			file = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
+			border = { 0, 0, 0, 0 }
+			stretch = TRUE
+		}	
 	}
 }
 

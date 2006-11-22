@@ -15,6 +15,7 @@ style "osso-listview" = "osso-logical-colors"
   GtkTreeView::vertical-separator = 2	  
   GtkTreeView::hildonlike = 1
   GtkTreeView::passive_focus = 1
+  GtkTreeView::separator-height = 15
 
   engine "sapwood"
   {

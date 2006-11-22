@@ -61,6 +61,9 @@ style "osso-default"
 # (and truncating) in dialogs.
 #  GtkLabel::hildonlike = 1
 
+  GtkWidget::scroll-arrow-hlength = 20
+  GtkWidget::scroll-arrow-vlength = 20
+
   GtkToggleButton::hildonlike = 1
   GtkCalendar::hildonlike = 1
 
@@ -219,6 +222,7 @@ include "ossoclock"
 include "ossortc"
 include "ossoglobalsearch"
 include "ossoapplicationinstaller"
+include "ossomediaplayer"
 
 # Maemo af desktop widgets included in gtkrc.maemo_af_desktop
 #include "hildonhome"

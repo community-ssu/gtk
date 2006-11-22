@@ -33,3 +33,35 @@ style "osso-date-editor-button"
 
 widget_class "*.HildonDateEditor.GtkButton" style "osso-date-editor-button"
 
+style "osso-date-editor-frame"
+{
+  GtkFrame::hildonlike = 1
+
+  ythickness = 1
+  xthickness = 1
+
+  engine "sapwood"
+    {
+      image
+        {
+          function = BOX
+          state = INSENSITIVE
+          file = "../images/qgn_plat_single_line_input_disabled.png"
+          border = { 2, 2, 2, 2 }
+          stretch = TRUE
+        }
+    }
+
+  engine "sapwood"
+    {
+      image
+        {
+          function = BOX
+          file = "../images/qgn_plat_single_line_input.png"
+          border = { 2, 2, 2, 2 }
+          stretch = TRUE
+        }
+    }
+}
+
+widget_class "*.HildonDateEditor.GtkFrame" style "osso-date-editor-frame"

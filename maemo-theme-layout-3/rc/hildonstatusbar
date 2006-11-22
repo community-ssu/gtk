@@ -7,6 +7,21 @@ style "osso-status-bar-background" {
 }
 widget "HildonStatusBar" style "osso-status-bar-background"
 
+style "osso-status-bar-extension-background" {
+    engine "sapwood" 
+    {
+        image 
+        {
+            function = FLAT_BOX
+            state = NORMAL
+            file = "../images/qgn_plat_status_bar_second_level_background.png"
+	        border = { 0, 0, 39, 9 }
+            stretch = TRUE
+        }
+    }
+}
+widget "HildonStatusBarExtension" style "osso-status-bar-extension-background"
+
 style "osso-status-bar-button" {
   GtkButton::default_border = { 0, 0, 0, 0 }
   GtkButton::default_outside_border = { 0, 0, 0, 0 }

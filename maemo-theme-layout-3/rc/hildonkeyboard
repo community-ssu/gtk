@@ -63,8 +63,12 @@ widget "*.OssoIMSideCloseButton" style "osso-input-method-side-close-button"
 
 
 #common control buttons
-style "osso-input-method-side-button"
+style "osso-input-method-side-button" = "osso-logical-colors"
 {
+    fg[NORMAL] = "VKBButtonTextColor"
+    fg[ACTIVE] = "VKBButtonTextColor"
+    fg[PRELIGHT] = "VKBButtonTextColor"
+
     engine "sapwood"
     {
         image
@@ -120,10 +124,15 @@ style "osso-input-method-side-button"
     }
 }
 widget "*.OssoIMSideButton" style "osso-input-method-side-button"
+widget "*.OssoIMSideButton.GtkLabel" style "osso-input-method-side-button"
 
 #common control toggle buttons
-style "osso-input-method-side-toggle-button"
+style "osso-input-method-side-toggle-button" = "osso-logical-colors"
 {
+    fg[NORMAL] = "VKBButtonTextColor"
+    fg[ACTIVE] = "VKBButtonTextColor"
+    fg[PRELIGHT] = "VKBButtonTextColor"
+
     engine "sapwood"
     {
         image
@@ -160,10 +169,13 @@ style "osso-input-method-side-toggle-button"
     }
 }
 widget "*.OssoIMSideToggleButton" style "osso-input-method-side-toggle-button"
+widget "*.OssoIMSideToggleButton.GtkLabel" style "osso-input-method-side-toggle-button"
 
 #ordinary keys in vkb and special character view
-style "osso-input-method-vkb-key" 
+style "osso-input-method-vkb-key" = "osso-logical-colors"
 {
+    fg[NORMAL] = "VKBButtonTextColor"
+
     GtkButton::child_spacing = 0
     engine "sapwood"
     {
@@ -210,8 +222,10 @@ widget "*.osso-im-tele" style "osso-input-method-vkb-key"
 widget "*.osso-im-dim" style "osso-input-method-vkb-key"
 			  
 #accent dead keys in vkb
-style "osso-input-method-accent-key"
+style "osso-input-method-accent-key" = "osso-logical-colors"
 {
+    fg[NORMAL] = "VKBButtonTextColor"
+
     engine "sapwood"
     {
         image
@@ -262,45 +276,107 @@ widget "*.osso-im-accent" style "osso-input-method-accent-key"
 #special character view tabs
 style "osso-input-special-character-view-tabs"
 {
+  GtkNotebook::inner_left_border = 0
+  GtkNotebook::inner_right_border = 0
+  GtkNotebook::tab-overlap = 0
+  GtkNotebook::arrow-spacing = 16
+  GtkNotebook::label-padding = 12
+  GtkWidget::scroll-arrow-hlength = 20
+  GtkWidget::scroll-arrow-vlength = 30
+
+  # Themings for images on different sides of the notebook.
   engine "sapwood"
   {
+    # Top theming.
     image 
       {
-        function = BOX
-	state    = NORMAL
-	file     = "../images/qgn_plat_inputmet_tab_special_character_normal.png"
-	border   = { 5, 5, 0, 0 }
-	stretch  = TRUE
-      }
-    image
-      {
-        function = BOX
-        state = PRELIGHT
-        shadow = IN
-	file     = "../images/qgn_plat_inputmet_tab_special_character_selected.png"
-        border = { 5, 5, 0, 0 }
-        stretch = TRUE
-      }
-    image
-      {
-        function = BOX
-        state = PRELIGHT
-        shadow = OUT
-	file     = "../images/qgn_plat_inputmet_tab_special_character_normal.png"
-        border = { 5, 5, 0, 0 }
-        stretch = TRUE
-      }
-    image
-      {
-        function = BOX
+        function = EXTENSION
 	state    = ACTIVE
+	file     = "../images/qgn_plat_inputmet_tab_special_character_normal.png"
+	border   = { 5, 5, 0, 0 }
+	stretch  = TRUE
+	gap_side = BOTTOM
+      }
+    image
+      {
+        function = EXTENSION
 	file     = "../images/qgn_plat_inputmet_tab_special_character_selected.png"
 	border   = { 5, 5, 0, 0 }
 	stretch  = TRUE
+	gap_side = BOTTOM
+      }
+    # Content area theming when arrows are not present.
+    image
+      {
+        function = BOX_GAP
+	detail   = "notebook" 
+      }
+    # Content area theming when arrows are present.
+    image
+      {
+        function = BOX_GAP
+	detail   = "notebook_show_arrow"
+      }
+      
+    # Arrows left
+    image
+      {
+        function        = ARROW
+        state           = INSENSITIVE
+	arrow_direction = LEFT
+	overlay_file    = "../images/qgn_plat_notebook_button_previous_disabled.png"
+	overlay_border  = { 0, 0, 0, 0 }
+	overlay_stretch = TRUE
+      }
+    image
+      {
+        function        = ARROW
+        shadow          = IN
+	arrow_direction = LEFT
+	overlay_file    = "../images/qgn_plat_notebook_button_previous_pressed.png"
+	overlay_border  = { 0, 0, 0, 0 }
+	overlay_stretch = TRUE
+      }
+    image
+      {
+        function        = ARROW
+        shadow          = OUT
+	arrow_direction = LEFT
+	overlay_file    = "../images/qgn_plat_notebook_button_previous.png"
+	overlay_border  = { 0, 0, 0, 0 }
+	overlay_stretch = TRUE
+      }
+    
+    # Arrows right
+    image
+      {
+        function        = ARROW
+        state           = INSENSITIVE
+	arrow_direction = RIGHT
+	overlay_file    = "../images/qgn_plat_notebook_button_next_disabled.png"
+	overlay_border  = { 0, 0, 0, 0 }
+	overlay_stretch = TRUE
+      }
+    image
+      {
+        function        = ARROW
+        shadow          = IN
+	arrow_direction = RIGHT
+	overlay_file    = "../images/qgn_plat_notebook_button_next_pressed.png"
+	overlay_border  = { 0, 0, 0, 0 }
+	overlay_stretch = TRUE
+      }
+    image
+      {
+        function        = ARROW
+        shadow          = OUT
+	arrow_direction = RIGHT
+	overlay_file    = "../images/qgn_plat_notebook_button_next.png"
+	overlay_border  = { 0, 0, 0, 0 }
+	overlay_stretch = TRUE
       }
   }
 }
-
 widget "*.osso-im-scv-tab" style "osso-input-special-character-view-tabs"
 
 #hwr area logical colors
@@ -479,8 +555,10 @@ style "osso-input-method-fkb-common-button" {
 widget "*.osso-im-fkb-common-button" style "osso-input-method-fkb-common-button"
 
 #finger keyboard input keys
-style "osso-input-method-fkb-key" 
+style "osso-input-method-fkb-key" = "osso-logical-colors"
 {
+    fg[NORMAL] = "VKBButtonTextColor"
+
     GtkButton::child_spacing = 0
     engine "sapwood"
     {
@@ -579,8 +657,10 @@ style "osso-input-method-fkb-whitespace-key" {
 widget "*osso-im-fkb-whitespace-key" style "osso-input-method-fkb-whitespace-key"
 
 #accent dead keys in fkb
-style "osso-input-method-fkb-accent-key"
+style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
 {
+    fg[NORMAL] = "VKBButtonTextColor"
+
     engine "sapwood"
     {
         image

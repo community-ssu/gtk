@@ -71,7 +71,7 @@ style "osso-notebook"
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous_disabled.png"
 	overlay_border  = { 0, 0, 0, 0 }
-	overlay_stretch = TRUE
+	overlay_stretch = FALSE
       }
     image
       {
@@ -80,7 +80,7 @@ style "osso-notebook"
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous_pressed.png"
 	overlay_border  = { 0, 0, 0, 0 }
-	overlay_stretch = TRUE
+	overlay_stretch = FALSE
       }
     image
       {
@@ -89,7 +89,7 @@ style "osso-notebook"
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous.png"
 	overlay_border  = { 0, 0, 0, 0 }
-	overlay_stretch = TRUE
+	overlay_stretch = FALSE
       }
     
     # Arrows right
@@ -100,7 +100,7 @@ style "osso-notebook"
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next_disabled.png"
 	overlay_border  = { 0, 0, 0, 0 }
-	overlay_stretch = TRUE
+	overlay_stretch = FALSE
       }
     image
       {
@@ -109,7 +109,7 @@ style "osso-notebook"
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next_pressed.png"
 	overlay_border  = { 0, 0, 0, 0 }
-	overlay_stretch = TRUE
+	overlay_stretch = FALSE
       }
     image
       {
@@ -118,7 +118,7 @@ style "osso-notebook"
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next.png"
 	overlay_border  = { 0, 0, 0, 0 }
-	overlay_stretch = TRUE
+	overlay_stretch = FALSE
       }
   }
 }
