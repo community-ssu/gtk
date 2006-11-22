@@ -1,3 +1,15 @@
+2006-11-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (set_entry): Removed
+	debugging output.
+	(hildon_file_chooser_dialog_select_path): Update name entry widget
+	as required by GtkFileChooser behavior. (M469)
+
+	* hildon-fm/hildon-file-selection.c
+	(hildon_file_selection_select_unselect_main_iter): Get path from
+	sort model, not from filter model since the view shows the sort
+	model.
+
 2006-11-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-upnp.c
