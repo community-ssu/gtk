@@ -1,0 +1,12 @@
+Source: hildon-theme-cacher
+Section: x11
+Priority: optional
+Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libgtk2.0-dev (>= 1:2.6.0)
+Standards-Version: 3.6.0
+
+Package: hildon-theme-cacher
+Architecture: any
+Description: Tool to generate gtkrc cache files on fly
+Depends: ${shlibs:Depends}
+

@@ -1,0 +1,6 @@
+2006-11-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* ./: Initially deriving from cache tool from hildon-theme-tools.
+	Modyfying to recursively scan all sub-directories. Adding a script to
+	scan everything.
+
