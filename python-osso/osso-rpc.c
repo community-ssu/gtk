@@ -109,7 +109,7 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	if (!_check_context(self->context)) return 0;
 
 	if (!PyArg_ParseTupleAndKeywords(args, kwds,
-				"ss|Ob:Context.run_with_defaults", kwlist, &application,
+				"ss|Obb:Context.run_with_defaults", kwlist, &application,
 				&method, &py_rpc_args, &wait_reply, &use_system_bus)) {
 		return NULL;
 	}

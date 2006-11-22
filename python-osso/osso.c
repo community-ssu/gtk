@@ -97,7 +97,7 @@ static struct PyMethodDef Context_methods[] = {
 		"Usage example:\n\n"
 		"\tc.rpc_run('com.nokia.backup', '/com/nokia/backup', 'com.nokia.backup', 'backup_finish', True)\n"},
 	{"rpc_run_with_defaults", (PyCFunction)Context_rpc_run_with_defaults, METH_VARARGS | METH_KEYWORDS,
-		"c.rpc_run_with_defaults(application, method[, rpc_args, wait_reply]) -> object\n"
+		"c.rpc_run_with_defaults(application, method[, rpc_args, wait_reply, system_bus]) -> object\n"
 		"\n"
 		"Run a RPC method using default parameters.\n"
 		"\n"
