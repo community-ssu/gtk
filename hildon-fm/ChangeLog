@@ -1,5 +1,11 @@
 2006-11-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-details-dialog.c
+	(hildon_file_details_dialog_init): Set default title here.
+	(hildon_file_details_dialog_new)
+	(hildon_file_details_dialog_new_with_model): Don't set it here.
+	(M874)
+	
 	* hildon-fm/hildon-file-chooser-dialog.c (set_entry): Removed
 	debugging output.
 	(hildon_file_chooser_dialog_select_path): Update name entry widget
