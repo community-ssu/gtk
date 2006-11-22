@@ -466,6 +466,8 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
 				  GTK_WIDGET(priv->notebook), &geometry,
 				  GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
 
+    gtk_window_set_title (GTK_WINDOW (self), _("sfil_ti_file_details"));
+			  
     gtk_widget_show_all(GTK_WIDGET(priv->notebook));
 
     priv->ok_button = gtk_dialog_add_button(GTK_DIALOG(self),
@@ -651,8 +653,7 @@ GtkWidget *hildon_file_details_dialog_new(GtkWindow * parent,
 
   dialog =
         g_object_new(HILDON_TYPE_FILE_DETAILS_DIALOG, 
-          "has-separator", FALSE, "title", _("sfil_ti_file_details"), 
-          "model", model, NULL);
+          "has-separator", FALSE, "model", model, NULL);
 
   if (filename && filename[0] && 
     hildon_file_system_model_load_local_path(dialog->priv->model, filename, &iter))
@@ -681,8 +682,7 @@ GtkWidget *hildon_file_details_dialog_new_with_model(GtkWindow *parent,
   GtkWidget *dialog;
 
   dialog = g_object_new(HILDON_TYPE_FILE_DETAILS_DIALOG,
-    "has-separator", FALSE, "title", _("sfil_ti_file_details"), 
-    "model", model, NULL);
+    "has-separator", FALSE, "model", model, NULL);
 
   if (parent)
     gtk_window_set_transient_for(GTK_WINDOW(dialog), parent);
