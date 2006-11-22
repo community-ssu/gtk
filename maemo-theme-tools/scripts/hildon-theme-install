@@ -126,12 +126,6 @@ sub cut_images
         print "Done!\n";
 }
 
-sub generate_cache
-{
-        print "Generating rc cache...\n";
-        `hildon-theme-cacher "$destdir/$themedir/"`;
-}
-
 sub add_color_substitutions
 {
     # Get some default values in
@@ -220,4 +214,3 @@ mkdir ("$destdir/$themedir/matchbox");
 install_file ("theme.xml", "matchbox");
 install_file ("index.theme");
 
-generate_cache;

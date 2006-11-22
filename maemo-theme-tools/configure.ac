@@ -8,7 +8,7 @@ AC_PROG_CC
 AC_PROG_INSTALL
 AC_HEADER_STDC
 
-CFLAGS="$CFLAGS -Wall -pedantic -Wmissing-prototypes -Wmissing-declarations -Werror"
+CFLAGS="$CFLAGS -Wall -Wmissing-prototypes -Wmissing-declarations -Werror"
 
 GTK_VERSION=2.6.4
 

@@ -1,3 +1,15 @@
+2006-11-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* configure.ac: Removing pedantic flag.
+
+	* scripts/Makefile.am:
+	* scripts/hildon-theme-install: Removing the caching step (not needed
+	now, will be moved to theme install postinst).
+
+	* src/Makefile.am:
+	* src/cacher.c: Removing the cacher from the build (moved to
+	hildon-theme-cacher)
+
 2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* INSTALL: Adding missing.

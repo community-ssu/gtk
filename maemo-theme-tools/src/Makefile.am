@@ -1,8 +1,7 @@
 bin_PROGRAMS 				= hildon-theme-slicer 		\
 					  hildon-theme-colourizer 	\
 					  hildon-theme-regenerator 	\
-					  hildon-theme-outliner 	\
-					  hildon-theme-cacher
+					  hildon-theme-outliner
 
 # Slicer
 hildon_theme_slicer_CFLAGS 		= $(GTK_CFLAGS) -DEXEC_NAME=\"hildon-theme-slicer\"
@@ -23,11 +22,5 @@ hildon_theme_regenerator_SOURCES 	= regenerator.c common.c
 hildon_theme_outliner_CFLAGS 		= $(GTK_CFLAGS) -DEXEC_NAME=\"hildon-theme-outliner\"
 hildon_theme_outliner_LDADD 		= $(GTK_LIBS)
 hildon_theme_outliner_SOURCES 		= outliner.c common.c
-
-# Cacher
-# FIXME: Add "EXEC_NAME" here too
-hildon_theme_cacher_CFLAGS 		= $(GTK_CFLAGS)
-hildon_theme_cacher_LDADD 		= $(GTK_LIBS)
-hildon_theme_cacher_SOURCES 		= cacher.c
 
 MAINTAINERCLEANFILES 			= Makefile.in
