@@ -1,3 +1,9 @@
+hildon-libs (0.14.10-1) unstable; urgency=low
+
+  * Fixes: NB#47762 - The hildon_number_editor doesn't work properly when gdk_threads_init was called.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 23 Nov 2006 14:40:00 +0300
+
 hildon-libs (0.14.9-1) unstable; urgency=low
 
   * Fixes: NB#41059 - After retaining focus, couldn't enter numbers in day and month field using HW keyboard.

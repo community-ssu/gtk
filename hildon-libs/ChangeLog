@@ -1,5 +1,12 @@
 2006-11-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[0.14.10-1 release]
+
+	* configure.ac:
+	* debian/changelog: Updating.
+
+2006-11-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* hildon-widgets/hildon-number-editor.c: Fixing a threads_enter
 	problem when trying to enter threads from signal. Fixes NB#47762.
 
