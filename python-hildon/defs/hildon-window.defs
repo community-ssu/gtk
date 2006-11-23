@@ -1,5 +1,4 @@
-;; -*- HildonWindow -*-
-
+;; -*- scheme -*-
 ; object definitions ...
 (define-object Window
   (in-module "Hildon")
@@ -11,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/hildon-window.h
+;; From hildon-window.h
 
 (define-function hildon_window_get_type
   (c-name "hildon_window_get_type")

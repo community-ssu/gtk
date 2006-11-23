@@ -14,6 +14,7 @@
   (c-name "HildonDateEditorErrorType")
   (gtype-id "HILDON_TYPE_DATE_EDITOR_ERROR_TYPE")
   (values
+    '("no-error" "NO_ERROR")
     '("max-day" "MAX_DAY")
     '("max-month" "MAX_MONTH")
     '("max-year" "MAX_YEAR")
@@ -28,7 +29,7 @@
 )
 
 
-;; From /usr/include/hildon-widgets/hildon-date-editor.h
+;; From hildon-date-editor.h
 
 (define-function hildon_date_editor_get_type
   (c-name "hildon_date_editor_get_type")
@@ -38,13 +39,6 @@
 (define-function hildon_date_editor_new
   (c-name "hildon_date_editor_new")
   (is-constructor-of "HildonDateEditor")
-  (properties
-    '("year" (optional))
-    '("month" (optional))
-    '("day" (optional))
-    '("min-year" (optional))
-    '("max-year" (optional))
-  )
   (return-type "GtkWidget*")
 )
 
@@ -68,6 +62,51 @@
     '("guint*" "month")
     '("guint*" "day")
   )
+)
+
+(define-method set_year
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_set_year")
+  (return-type "gboolean")
+  (parameters
+    '("guint" "year")
+  )
+)
+
+(define-method set_month
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_set_month")
+  (return-type "gboolean")
+  (parameters
+    '("guint" "month")
+  )
+)
+
+(define-method set_day
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_set_day")
+  (return-type "gboolean")
+  (parameters
+    '("guint" "day")
+  )
+)
+
+(define-method get_year
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_get_year")
+  (return-type "guint")
+)
+
+(define-method get_month
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_get_month")
+  (return-type "guint")
+)
+
+(define-method get_day
+  (of-object "HildonDateEditor")
+  (c-name "hildon_date_editor_get_day")
+  (return-type "guint")
 )
 
 

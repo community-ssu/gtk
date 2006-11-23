@@ -1,10 +1,16 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object Controlbar
   (in-module "Hildon")
   (parent "GtkScale")
   (c-name "HildonControlbar")
   (gtype-id "HILDON_TYPE_CONTROLBAR")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-controlbar.h
 
 (define-function hildon_controlbar_get_type
   (c-name "hildon_controlbar_get_type")
@@ -14,11 +20,6 @@
 (define-function hildon_controlbar_new
   (c-name "hildon_controlbar_new")
   (is-constructor-of "HildonControlbar")
-  (properties
-    '("min" (optional))
-    '("max" (optional))
-    '("value" (optional))
-  )
   (return-type "GtkWidget*")
 )
 

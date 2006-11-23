@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/python2.5
 
 '''
   Hildon Demonstration - ripped from pygtk-demo.py

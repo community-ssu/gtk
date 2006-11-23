@@ -1,0 +1,58 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From hildon-window-private.h
+
+(define-method set_program
+  (of-object "HildonWindow")
+  (c-name "hildon_window_set_program")
+  (return-type "none")
+  (parameters
+    '("GObject*" "program")
+  )
+)
+
+(define-method unset_program
+  (of-object "HildonWindow")
+  (c-name "hildon_window_unset_program")
+  (return-type "none")
+)
+
+(define-method set_can_hibernate_property
+  (of-object "HildonWindow")
+  (c-name "hildon_window_set_can_hibernate_property")
+  (return-type "none")
+  (parameters
+    '("gpointer" "can_hibernate")
+  )
+)
+
+(define-method take_common_toolbar
+  (of-object "HildonWindow")
+  (c-name "hildon_window_take_common_toolbar")
+  (return-type "none")
+)
+
+(define-method update_topmost
+  (of-object "HildonWindow")
+  (c-name "hildon_window_update_topmost")
+  (return-type "none")
+  (parameters
+    '("Window" "window_id")
+  )
+)
+
+(define-function hildon_window_get_active_window
+  (c-name "hildon_window_get_active_window")
+  (return-type "Window")
+)
+
+(define-method update_title
+  (of-object "HildonWindow")
+  (c-name "hildon_window_update_title")
+  (return-type "none")
+)
+
+

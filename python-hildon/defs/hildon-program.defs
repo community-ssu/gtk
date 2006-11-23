@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/hildon-program.h
+;; From hildon-program.h
 
 (define-function hildon_program_get_type
   (c-name "hildon_program_get_type")

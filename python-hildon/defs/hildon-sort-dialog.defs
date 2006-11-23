@@ -1,10 +1,16 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object SortDialog
   (in-module "Hildon")
   (parent "GtkDialog")
   (c-name "HildonSortDialog")
   (gtype-id "HILDON_TYPE_SORT_DIALOG")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-sort-dialog.h
 
 (define-function hildon_sort_dialog_get_type
   (c-name "hildon_sort_dialog_get_type")

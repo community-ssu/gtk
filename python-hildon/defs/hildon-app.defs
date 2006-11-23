@@ -1,21 +1,42 @@
-;;; HildonApp
-
+;; -*- scheme -*-
+; object definitions ...
 (define-object App
   (in-module "Hildon")
   (parent "GtkWindow")
   (c-name "HildonApp")
-  (gtype-id "HILDON_TYPE_APP"))
+  (gtype-id "HILDON_TYPE_APP")
+)
+
+;; Enumerations and flags ...
+
+;(define-enum ZoomLevel
+;  (in-module "Hildon")
+;  (c-name "HildonZoomLevel")
+;  (gtype-id "HILDON_TYPE_ZOOM_LEVEL")
+;  (values
+;    '("small" "HILDON_ZOOM_SMALL")
+;    '("medium" "HILDON_ZOOM_MEDIUM")
+;    '("large" "HILDON_ZOOM_LARGE")
+;  )
+;)
+
+
+;; From hildon-app.h
+
+;(define-function hildon_zoom_level_get_type
+;  (c-name "hildon_zoom_level_get_type")
+;  (return-type "GType")
+;)
+
+(define-function hildon_app_get_type
+  (c-name "hildon_app_get_type")
+  (return-type "GType")
+)
 
 (define-function hildon_app_new
   (c-name "hildon_app_new")
   (is-constructor-of "HildonApp")
   (return-type "GtkWidget*")
-  (properties
-    '("scroll-control" (optional))
-    '("two-part-title" (optional))
-    '("app-title" (optional))
-    '("killable" (optional))
-  )
 )
 
 (define-function hildon_app_new_with_appview
@@ -23,169 +44,159 @@
   (is-constructor-of "HildonApp")
   (return-type "GtkWidget*")
   (parameters
-    '("HildonAppView*" "appview")))
-	
+    '("HildonAppView*" "appview")
+  )
+)
+
 (define-method set_appview
   (of-object "HildonApp")
   (c-name "hildon_app_set_appview")
   (return-type "none")
   (parameters
-    '("HildonAppView*" "appview")))
+    '("HildonAppView*" "appview")
+  )
+)
 
 (define-method get_appview
   (of-object "HildonApp")
   (c-name "hildon_app_get_appview")
-  (return-type "HildonAppView*"))
+  (return-type "HildonAppView*")
+)
 
 (define-method set_title
   (of-object "HildonApp")
   (c-name "hildon_app_set_title")
   (return-type "none")
   (parameters
-    '("const-gchar*" "title")))
+    '("const-gchar*" "newtitle")
+  )
+)
 
 (define-method get_title
   (of-object "HildonApp")
   (c-name "hildon_app_get_title")
-  (return-type "const-gchar*"))
+  (return-type "const-gchar*")
+)
 
 ;(define-method set_zoom
 ;  (of-object "HildonApp")
 ;  (c-name "hildon_app_set_zoom")
 ;  (return-type "none")
 ;  (parameters
-;    '("HildonZoomLevel" "zoom")))
+;    '("HildonZoomLevel" "newzoom")
+;  )
+;)
+
 ;(define-method get_zoom
 ;  (of-object "HildonApp")
 ;  (c-name "hildon_app_get_zoom")
-;  (return-type "HildonZoomLevel"))
-;
-;(define-method get_default_font
-;  (of-object "HildonApp")
-;  (c-name "hildon_app_get_default_font")
-;  (return-type "PangoFontDescription*"))
-;
+;  (return-type "HildonZoomLevel")
+;)
+
+(define-method get_default_font
+  (of-object "HildonApp")
+  (c-name "hildon_app_get_default_font")
+  (return-type "PangoFontDescription*")
+)
+
 ;(define-method get_zoom_font
 ;  (of-object "HildonApp")
 ;  (c-name "hildon_app_get_zoom_font")
-;  (return-type "PangoFontDescription*"))
+;  (return-type "PangoFontDescription*")
+;)
 
 (define-method set_two_part_title
   (of-object "HildonApp")
   (c-name "hildon_app_set_two_part_title")
   (return-type "none")
   (parameters
-   '("gboolean" "istwoparttitle")))
+    '("gboolean" "istwoparttitle")
+  )
+)
 
 (define-method get_two_part_title
   (of-object "HildonApp")
   (c-name "hildon_app_get_two_part_title")
-  (return-type "gboolean"))
+  (return-type "gboolean")
+)
 
 (define-method set_autoregistration
   (of-object "HildonApp")
   (c-name "hildon_app_set_autoregistration")
   (return-type "none")
   (parameters
-   '("gboolean" "auto_reg")))
+    '("gboolean" "auto_reg")
+  )
+)
+
+(define-method register_view
+  (of-object "HildonApp")
+  (c-name "hildon_app_register_view")
+  (return-type "none")
+  (parameters
+    '("gpointer" "view_ptr")
+  )
+)
+
+(define-method register_view_with_id
+  (of-object "HildonApp")
+  (c-name "hildon_app_register_view_with_id")
+  (return-type "gboolean")
+  (parameters
+    '("gpointer" "view_ptr")
+    '("unsigned-long" "view_id")
+  )
+)
+
+(define-method unregister_view
+  (of-object "HildonApp")
+  (c-name "hildon_app_unregister_view")
+  (return-type "none")
+  (parameters
+    '("gpointer" "view_ptr")
+  )
+)
+
+(define-method unregister_view_with_id
+  (of-object "HildonApp")
+  (c-name "hildon_app_unregister_view_with_id")
+  (return-type "none")
+  (parameters
+    '("unsigned-long" "view_id")
+  )
+)
+
+(define-method notify_view_changed
+  (of-object "HildonApp")
+  (c-name "hildon_app_notify_view_changed")
+  (return-type "none")
+  (parameters
+    '("gpointer" "view_ptr")
+  )
+)
 
 (define-method set_killable
   (of-object "HildonApp")
   (c-name "hildon_app_set_killable")
   (return-type "none")
   (parameters
-   '("gboolean" "killability")))
+    '("gboolean" "killability")
+  )
+)
 
-
-;;; HildonAppView
-
-(define-object AppView
-  (in-module "Hildon")
-  (parent "GtkBin")
-  (c-name "HildonAppView")
-  (gtype-id "HILDON_TYPE_APPVIEW"))
-
-(define-function hildon_appview_new
-  (c-name "hildon_appview_new")
-  (is-constructor-of "HildonAppView")
-  (return-type "GtkWidget*")
-  (parameters
-    '("const-gchar*" "title" (null-ok))))
-
-(define-method add_with_scrollbar
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_add_with_scrollbar")
-  (return-type "none")
-  (parameters
-   '("GtkWidget*" "child")))
-
-(define-method set_fullscreen_key_allowed
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_set_fullscreen_key_allowed")
-  (return-type "none")
-  (parameters
-   '("gboolean" "allow")))
-
-(define-method get_fullscreen_key_allowed
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_get_fullscreen_key_allowed")
-  (return-type "gboolean"))
-
-(define-method set_fullscreen
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_set_fullscreen")
-  (return-type "none")
-  (parameters
-   '("gboolean" "fullscreen")))
-
-(define-method get_fullscreen
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_get_fullscreen")
-  (return-type "gboolean"))
-
-(define-method get_menu
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_get_menu")
-  (return-type "GtkMenu*"))
-
-(define-method set_title
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_set_title")
-  (return-type "none")
-  (parameters
-   '("const-gchar*" "newname")))
-
-(define-method get_title
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_get_title")
-  (return-type "const-gchar*"))
-
-(define-method set_connected_adjustment
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_set_connected_adjustment")
-  (return-type "none")
-  (parameters
-   '("GtkAdjustment*" "adjustment")))
-
-(define-method get_connected_adjustment
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_get_connected_adjustment")
-  (return-type "GtkAdjustment*"))
-
-;(define-method set_toolbar
-;  (of-object "HildonAppView")
-;  (c-name "hildon_appview_set_toolbar")
+;(define-method set_ui_manager
+;  (of-object "HildonApp")
+;  (c-name "hildon_app_set_ui_manager")
 ;  (return-type "none")
 ;  (parameters
-;   '("GtkToolbar*" "toolbar")))
-;
-;(define-method get_toolbar
-;  (of-object "HildonAppView")
-;  (c-name "hildon_appview_get_toolbar")
-;  (return-type "GtkToolbar*"))
+;    '("GtkUIManager*" "uim")
+;  )
+;)
 
-(define-method get_vbox
-  (of-object "HildonAppView")
-  (c-name "hildon_appview_get_vbox")
-  (return-type "GtkWidget*")
-)
+;(define-method get_ui_manager
+;  (of-object "HildonApp")
+;  (c-name "hildon_app_get_ui_manager")
+;  (return-type "GtkUIManager*")
+;)
+
+

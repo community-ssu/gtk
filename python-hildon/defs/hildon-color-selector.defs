@@ -1,9 +1,20 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object ColorSelector
   (in-module "Hildon")
   (parent "GtkDialog")
   (c-name "HildonColorSelector")
   (gtype-id "HILDON_TYPE_COLOR_SELECTOR")
+)
+
+;; Enumerations and flags ...
+
+
+;; From hildon-color-selector.h
+
+(define-function hildon_color_selector_get_type
+  (c-name "hildon_color_selector_get_type")
+  (return-type "GType")
 )
 
 (define-function hildon_color_selector_get_type
@@ -34,3 +45,5 @@
     '("GdkColor*" "color")
   )
 )
+
+

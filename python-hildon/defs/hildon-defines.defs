@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/hildon-defines.h
+;; From hildon-defines.h
 
 (define-function hildon_icon_sizes_init
   (c-name "hildon_icon_sizes_init")
@@ -15,7 +15,7 @@
   (return-type "gulong")
   (parameters
     '("GtkWidget*" "widget")
-    '("gchar*" "logicalfontname")
+    '("const-gchar*" "logicalfontname")
   )
 )
 
@@ -26,7 +26,7 @@
     '("GtkWidget*" "widget")
     '("GtkRcFlags" "rcflags")
     '("GtkStateType" "state")
-    '("gchar*" "logicalcolorname")
+    '("const-gchar*" "logicalcolorname")
   )
 )
 

@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/hildon-color-popup.h
+;; From hildon-color-popup.h
 
 (define-function hildon_color_popup_new
   (c-name "hildon_color_popup_new")
@@ -11,7 +11,7 @@
   (return-type "GtkWidget*")
   (parameters
     '("GtkWindow*" "parent")
-    '("GdkColor*" "initial_color")
+    '("const-GdkColor*" "initial_color")
     '("HildonColorPopup*" "popupdata")
   )
 )

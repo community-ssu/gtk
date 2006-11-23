@@ -1,4 +1,5 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object Volumebar
   (in-module "Hildon")
   (parent "GtkContainer")
@@ -6,9 +7,20 @@
   (gtype-id "HILDON_TYPE_VOLUMEBAR")
 )
 
+;; Enumerations and flags ...
+
+
+;; From hildon-volumebar.h
+
 (define-function hildon_volumebar_get_type
   (c-name "hildon_volumebar_get_type")
   (return-type "GType")
+)
+
+(define-method get_level
+  (of-object "HildonVolumebar")
+  (c-name "hildon_volumebar_get_level")
+  (return-type "double")
 )
 
 (define-method set_level
@@ -20,10 +32,10 @@
   )
 )
 
-(define-method get_level
+(define-method get_mute
   (of-object "HildonVolumebar")
-  (c-name "hildon_volumebar_get_level")
-  (return-type "double")
+  (c-name "hildon_volumebar_get_mute")
+  (return-type "gboolean")
 )
 
 (define-method set_mute
@@ -33,12 +45,6 @@
   (parameters
     '("gboolean" "mute")
   )
-)
-
-(define-method get_mute
-  (of-object "HildonVolumebar")
-  (c-name "hildon_volumebar_get_mute")
-  (return-type "gboolean")
 )
 
 (define-method level_change

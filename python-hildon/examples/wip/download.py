@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python2.5
 # vim:ts=4:et:sw=4:tw=80
 
 import hildon

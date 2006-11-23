@@ -1,0 +1,26 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+;(define-enum InputModeHint
+;  (in-module "Hildon")
+;  (c-name "HildonInputModeHint")
+;  (gtype-id "HILDON_TYPE_INPUT_MODE_HINT")
+;  (values
+;    '("alphanumericspecial" "HILDON_INPUT_MODE_HINT_ALPHANUMERICSPECIAL")
+;    '("numeric" "HILDON_INPUT_MODE_HINT_NUMERIC")
+;    '("alpha" "HILDON_INPUT_MODE_HINT_ALPHA")
+;    '("numericspecial" "HILDON_INPUT_MODE_HINT_NUMERICSPECIAL")
+;    '("alphaspecial" "HILDON_INPUT_MODE_HINT_ALPHASPECIAL")
+;    '("alphanumeric" "HILDON_INPUT_MODE_HINT_ALPHANUMERIC")
+;    '("hexa" "HILDON_INPUT_MODE_HINT_HEXA")
+;    '("hexaspecial" "HILDON_INPUT_MODE_HINT_HEXASPECIAL")
+;    '("tele" "HILDON_INPUT_MODE_HINT_TELE")
+;    '("telespecial" "HILDON_INPUT_MODE_HINT_TELESPECIAL")
+;  )
+;)
+
+
+;; From hildon-input-mode-hint.h
+
+

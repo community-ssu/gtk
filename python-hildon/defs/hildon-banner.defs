@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/hildon-banner.h
+;; From hildon-banner.h
 
 (define-function hildon_banner_get_type
   (c-name "hildon_banner_get_type")
@@ -24,6 +24,16 @@
     '("GtkWidget*" "widget")
     '("const-gchar*" "icon_name")
     '("const-gchar*" "text")
+  )
+)
+
+(define-function hildon_banner_show_information_with_markup
+  (c-name "hildon_banner_show_information_with_markup")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+    '("const-gchar*" "icon_name")
+    '("const-gchar*" "markup")
   )
 )
 
@@ -53,6 +63,15 @@
   (return-type "none")
   (parameters
     '("const-gchar*" "text")
+  )
+)
+
+(define-method set_markup
+  (of-object "HildonBanner")
+  (c-name "hildon_banner_set_markup")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "markup")
   )
 )
 

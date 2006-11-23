@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4
+#!/usr/bin/python2.5
 '''Application
 
 Demonstrates a typical application window, with menubar, toolbar, statusbar.'''

@@ -1,0 +1,33 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From hildon-plugin-widget.h
+
+(define-function hildon_plugin_info_initialize
+  (c-name "hildon_plugin_info_initialize")
+  (return-type "HildonPluginWidgetInfo*")
+  (parameters
+    '("GType" "base_type")
+    '("const-gchar*" "name")
+  )
+)
+
+(define-function hildon_plugin_info_construct_widget
+  (c-name "hildon_plugin_info_construct_widget")
+  (return-type "GtkWidget*")
+  (parameters
+    '("HildonPluginWidgetInfo*" "info")
+  )
+)
+
+(define-function hildon_plugin_info_kill
+  (c-name "hildon_plugin_info_kill")
+  (return-type "none")
+  (parameters
+    '("HildonPluginWidgetInfo*" "info")
+  )
+)
+
+

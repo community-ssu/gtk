@@ -1,10 +1,16 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object VVolumebar
   (in-module "Hildon")
   (parent "HildonVolumebar")
   (c-name "HildonVVolumebar")
   (gtype-id "HILDON_TYPE_VVOLUMEBAR")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-vvolumebar.h
 
 (define-function hildon_vvolumebar_get_type
   (c-name "hildon_vvolumebar_get_type")
@@ -15,8 +21,6 @@
   (c-name "hildon_vvolumebar_new")
   (is-constructor-of "HildonVvolumebar")
   (return-type "GtkWidget*")
-  (properties
-    '("can-focus" (optional))
-    '("has-mute" (optional))
-  )
 )
+
+

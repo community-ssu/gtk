@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/hildon-scroll-area.h
+;; From hildon-scroll-area.h
 
 (define-function hildon_scroll_area_new
   (c-name "hildon_scroll_area_new")

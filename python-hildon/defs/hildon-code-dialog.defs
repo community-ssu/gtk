@@ -1,0 +1,47 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object CodeDialog
+  (in-module "Hildon")
+  (parent "GtkDialog")
+  (c-name "HildonCodeDialog")
+  (gtype-id "HILDON_TYPE_CODE_DIALOG")
+)
+
+;; Enumerations and flags ...
+
+
+;; From hildon-code-dialog.h
+
+(define-function hildon_code_dialog_get_type
+  (c-name "hildon_code_dialog_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_code_dialog_new
+  (c-name "hildon_code_dialog_new")
+  (is-constructor-of "HildonCodeDialog")
+  (return-type "GtkWidget*")
+)
+
+(define-method get_code
+  (of-object "HildonCodeDialog")
+  (c-name "hildon_code_dialog_get_code")
+  (return-type "const-gchar*")
+)
+
+(define-method clear_code
+  (of-object "HildonCodeDialog")
+  (c-name "hildon_code_dialog_clear_code")
+  (return-type "none")
+)
+
+(define-method set_help_text
+  (of-object "HildonCodeDialog")
+  (c-name "hildon_code_dialog_set_help_text")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "text")
+  )
+)
+
+

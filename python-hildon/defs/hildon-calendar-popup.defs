@@ -1,10 +1,16 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object CalendarPopup
   (in-module "Hildon")
   (parent "GtkDialog")
   (c-name "HildonCalendarPopup")
   (gtype-id "HILDON_TYPE_CALENDAR_POPUP")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-calendar-popup.h
 
 (define-function hildon_calendar_popup_get_type
   (c-name "hildon_calendar_popup_get_type")

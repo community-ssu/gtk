@@ -1,10 +1,16 @@
-;;
+;; -*- scheme -*-
+; object definitions ...
 (define-object Seekbar
   (in-module "Hildon")
   (parent "GtkScale")
   (c-name "HildonSeekbar")
   (gtype-id "HILDON_TYPE_SEEKBAR")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-seekbar.h
 
 (define-function hildon_seekbar_get_type
   (c-name "hildon_seekbar_get_type")
@@ -15,11 +21,6 @@
   (c-name "hildon_seekbar_new")
   (is-constructor-of "HildonSeekbar")
   (return-type "GtkWidget*")
-  (properties
-    '("total-time" (argname "total_time") (optional))
-    '("position" (optional))
-    '("fraction" (optional))
-  )
 )
 
 (define-method get_total_time

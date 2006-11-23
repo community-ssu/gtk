@@ -1,10 +1,16 @@
-;; TODO: verify properties
+;; -*- scheme -*-
+; object definitions ...
 (define-object TimePicker
   (in-module "Hildon")
   (parent "GtkDialog")
   (c-name "HildonTimePicker")
   (gtype-id "HILDON_TYPE_TIME_PICKER")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-time-picker.h
 
 (define-function hildon_time_picker_get_type
   (c-name "hildon_time_picker_get_type")

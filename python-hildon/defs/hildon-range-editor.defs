@@ -1,9 +1,28 @@
-;; TODO: verify other constructors
+;; -*- scheme -*-
+; object definitions ...
 (define-object RangeEditor
   (in-module "Hildon")
   (parent "GtkContainer")
   (c-name "HildonRangeEditor")
   (gtype-id "HILDON_TYPE_RANGE_EDITOR")
+)
+
+;; Enumerations and flags ...
+
+
+;; From hildon-range-editor.h
+
+(define-function hildon_range_editor_get_type
+  (c-name "hildon_range_editor_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_range_editor_new_with_separator
+  (c-name "hildon_range_editor_new_with_separator")
+  (return-type "GtkWidget*")
+  (parameters
+    '("const-gchar*" "separator")
+  )
 )
 
 (define-function hildon_range_editor_new
@@ -116,3 +135,5 @@
   (c-name "hildon_range_editor_get_separator")
   (return-type "const-gchar*")
 )
+
+

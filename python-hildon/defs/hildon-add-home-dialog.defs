@@ -1,9 +1,16 @@
+;; -*- scheme -*-
+; object definitions ...
 (define-object AddHomeDialog
   (in-module "Hildon")
   (parent "GtkDialog")
   (c-name "HildonAddHomeDialog")
   (gtype-id "HILDON_TYPE_ADD_HOME_DIALOG")
 )
+
+;; Enumerations and flags ...
+
+
+;; From hildon-add-home-dialog.h
 
 (define-function hildon_add_home_dialog_get_type
   (c-name "hildon_add_home_dialog_get_type")

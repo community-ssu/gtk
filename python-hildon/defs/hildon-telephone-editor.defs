@@ -1,4 +1,5 @@
-;; TODO: verify other constructors
+;; -*- scheme -*-
+; object definitions ...
 (define-object TelephoneEditor
   (in-module "Hildon")
   (parent "GtkContainer")
@@ -6,16 +7,26 @@
   (gtype-id "HILDON_TYPE_TELEPHONE_EDITOR")
 )
 
-(define-enum TelephoneEditorFormat
-  (in-module "Hildon")
-  (c-name "HildonTelephoneEditorFormat")
-  (gtype-id "HILDON_TYPE_TELEPHONE_EDITOR_FORMAT")
-  (values
-    '("free" "HILDON_TELEPHONE_EDITOR_FORMAT_FREE")
-    '("coerce" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE")
-    '("coerce-country" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_COUNTRY")
-    '("coerce-area" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_AREA")
-  )
+;; Enumerations and flags ...
+
+;(define-enum TelephoneEditorFormat
+;  (in-module "Hildon")
+;  (c-name "HildonTelephoneEditorFormat")
+;  (gtype-id "HILDON_TYPE_TELEPHONE_EDITOR_FORMAT")
+;  (values
+;    '("free" "HILDON_TELEPHONE_EDITOR_FORMAT_FREE")
+;    '("coerce" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE")
+;    '("coerce-country" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_COUNTRY")
+;    '("coerce-area" "HILDON_TELEPHONE_EDITOR_FORMAT_COERCE_AREA")
+;  )
+;)
+
+
+;; From hildon-telephone-editor.h
+
+(define-function hildon_telephone_editor_get_type
+  (c-name "hildon_telephone_editor_get_type")
+  (return-type "GType")
 )
 
 (define-function hildon_telephone_editor_new
@@ -24,6 +35,17 @@
   (return-type "GtkWidget*")
   (parameters
     '("HildonTelephoneEditorFormat" "format")
+  )
+)
+
+(define-function hildon_telephone_editor_new_with_strings
+  (c-name "hildon_telephone_editor_new_with_strings")
+  (return-type "GtkWidget*")
+  (parameters
+    '("HildonTelephoneEditorFormat" "format")
+    '("const-gchar*" "country")
+    '("const-gchar*" "area")
+    '("const-gchar*" "number")
   )
 )
 
@@ -123,4 +145,5 @@
     '("const-gchar*" "number")
   )
 )
+
 

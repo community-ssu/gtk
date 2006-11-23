@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.4
+#!/usr/bin/env python2.5
 
 # vim:ts=4:et:sw=4:tw=80
 import hildon
@@ -239,9 +239,9 @@ class PyGtkDemo(hildon.Program):
         obj.connect("clicked", self.onTest)
         self.vboxTests[0].pack_start(obj)
         
-        self.vboxTests[1].pack_start(hildon.Controlbar(0, 50, 25))
+        self.vboxTests[1].pack_start(hildon.Controlbar())
         
-        self.vboxTests[2].pack_start(hildon.DateEditor(2004, 9, 1))
+        self.vboxTests[2].pack_start(hildon.DateEditor())
         
         obj = gtk.Button ("File Selector")
         obj.connect("clicked", self.onTest)
@@ -282,7 +282,9 @@ class PyGtkDemo(hildon.Program):
         obj.set_range(-5, 12)
         obj.set_limits(-100, 100)
         
-        obj = hildon.Seekbar(total_time = 180, fraction = 100)
+        obj = hildon.Seekbar()
+        obj.set_total_time(180)
+        obj.set_fraction(100)
         obj.set_position(30)
         self.vboxTests[0].pack_start(obj)
         

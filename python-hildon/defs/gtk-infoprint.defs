@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From /usr/include/hildon-widgets/gtk-infoprint.h
+;; From gtk-infoprint.h
 
 (define-function gtk_infoprint
   (c-name "gtk_infoprint")
@@ -34,15 +34,15 @@
   )
 )
 
-;(define-function gtk_infoprintf
-;  (c-name "gtk_infoprintf")
-;  (return-type "none")
-;  (parameters
-;    '("GtkWindow*" "parent")
-;    '("const-gchar*" "format")
-;  )
-;  (varargs #t)
-;)
+(define-function gtk_infoprintf
+  (c-name "gtk_infoprintf")
+  (return-type "none")
+  (parameters
+    '("GtkWindow*" "parent")
+    '("const-gchar*" "format")
+  )
+  (varargs #t)
+)
 
 (define-function gtk_infoprint_temporarily_disable_wrap
   (c-name "gtk_infoprint_temporarily_disable_wrap")

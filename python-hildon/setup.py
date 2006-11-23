@@ -17,9 +17,11 @@ class PyHildonBuild(build):
 		HILDON_TYPE_FILES = includedir+'/hildon-fm/hildon-widgets/hildon-file-system-model.h	\
 			'+includedir+'/hildon-widgets/hildon-date-editor.h	\
 			'+includedir+'/hildon-widgets/hildon-font-selection-dialog.h	\
-			'+includedir+'/hildon-widgets/hildon-time-editor.h	\
 			'+includedir+'/hildon-widgets/hildon-grid-item.h	\
+			'+includedir+'/hildon-widgets/hildon-input-mode-hint.h	\
+			'+includedir+'/hildon-widgets/hildon-number-editor.h	\
 			'+includedir+'/hildon-widgets/hildon-telephone-editor.h	\
+			'+includedir+'/hildon-widgets/hildon-time-editor.h	\
 			'+includedir+'/hildon-base-lib/hildon-base-types.h	\
 			'+includedir+'/glib-2.0/glib/gdate.h'
 		
@@ -39,7 +41,6 @@ class PyHildonBuild(build):
 			    --register '+defsdir+'/gtk.defs \
 			    --register '+defsdir+'/pango-types.defs \
         		    --register defs/hildon-grid-item.defs \
-        		    --register defs/hildon-file-system-model.defs \
 			    --override '+filename+'.override \
 			    --prefix py'+filename+' '+filename+'.defs > gen-'+filename+'.c \
 			&& cp gen-'+filename+'.c '+filename+'.c \

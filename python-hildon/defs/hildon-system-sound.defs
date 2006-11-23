@@ -1,0 +1,16 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From hildon-system-sound.h
+
+(define-function hildon_play_system_sound
+  (c-name "hildon_play_system_sound")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "sample")
+  )
+)
+
+
