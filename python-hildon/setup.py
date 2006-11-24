@@ -15,6 +15,8 @@ class PyHildonBuild(build):
 		-hildon-types.c.in"""
 		# Generate enum/flags run-time information
 		HILDON_TYPE_FILES = includedir+'/hildon-fm/hildon-widgets/hildon-file-system-model.h	\
+			'+includedir+'/hildon-fm/hildon-widgets/hildon-file-system-common.h	\
+			'+includedir+'/hildon-fm/hildon-widgets/hildon-file-selection.h	\
 			'+includedir+'/hildon-widgets/hildon-date-editor.h	\
 			'+includedir+'/hildon-widgets/hildon-font-selection-dialog.h	\
 			'+includedir+'/hildon-widgets/hildon-grid-item.h	\
@@ -39,6 +41,7 @@ class PyHildonBuild(build):
 			    --register '+defsdir+'/gdk.defs \
 			    --register '+defsdir+'/gtk-types.defs \
 			    --register '+defsdir+'/gtk.defs \
+			    --register '+defsdir+'/gtk-base.defs \
 			    --register '+defsdir+'/pango-types.defs \
         		    --register defs/hildon-grid-item.defs \
 			    --override '+filename+'.override \

@@ -1,0 +1,286 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object FileSelection
+  (in-module "Hildon")
+  (parent "GtkContainer")
+  (c-name "HildonFileSelection")
+  (gtype-id "HILDON_TYPE_FILE_SELECTION")
+)
+
+;; Enumerations and flags ...
+
+;(define-enum FileSelectionMode
+;  (in-module "Hildon")
+;  (c-name "HildonFileSelectionMode")
+;  (gtype-id "HILDON_TYPE_FILE_SELECTION_MODE")
+;  (values
+;    '("list" "HILDON_FILE_SELECTION_MODE_LIST")
+;    '("thumbnails" "HILDON_FILE_SELECTION_MODE_THUMBNAILS")
+;  )
+;)
+
+;(define-enum FileSelectionSortKey
+;  (in-module "Hildon")
+;  (c-name "HildonFileSelectionSortKey")
+;  (gtype-id "HILDON_TYPE_FILE_SELECTION_SORT_KEY")
+;  (values
+;    '("name" "HILDON_FILE_SELECTION_SORT_NAME")
+;    '("type" "HILDON_FILE_SELECTION_SORT_TYPE")
+;    '("modified" "HILDON_FILE_SELECTION_SORT_MODIFIED")
+;    '("size" "HILDON_FILE_SELECTION_SORT_SIZE")
+;  )
+;)
+
+;(define-enum FileSelectionPane
+;  (in-module "Hildon")
+;  (c-name "HildonFileSelectionPane")
+;  (gtype-id "HILDON_TYPE_FILE_SELECTION_PANE")
+;  (values
+;    '("navigation" "HILDON_FILE_SELECTION_PANE_NAVIGATION")
+;    '("content" "HILDON_FILE_SELECTION_PANE_CONTENT")
+;  )
+;)
+
+;(define-enum FileSelectionVisibleColumns
+;  (in-module "Hildon")
+;  (c-name "HildonFileSelectionVisibleColumns")
+;  (gtype-id "HILDON_TYPE_FILE_SELECTION_VISIBLE_COLUMNS")
+;  (values
+;    '("name" "HILDON_FILE_SELECTION_SHOW_NAME")
+;    '("modified" "HILDON_FILE_SELECTION_SHOW_MODIFIED")
+;    '("size" "HILDON_FILE_SELECTION_SHOW_SIZE")
+;    '("all" "HILDON_FILE_SELECTION_SHOW_ALL")
+;  )
+;)
+
+
+;; From hildon-file-selection.h
+
+(define-function hildon_file_selection_get_type
+  (c-name "hildon_file_selection_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_file_selection_new_with_model
+  (c-name "hildon_file_selection_new_with_model")
+  (return-type "GtkWidget*")
+  (parameters
+    '("HildonFileSystemModel*" "model")
+  )
+)
+
+(define-method set_mode
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_mode")
+  (return-type "none")
+  (parameters
+    '("HildonFileSelectionMode" "mode")
+  )
+)
+
+(define-method get_mode
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_mode")
+  (return-type "HildonFileSelectionMode")
+)
+
+(define-method set_sort_key
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_sort_key")
+  (return-type "none")
+  (parameters
+    '("HildonFileSelectionSortKey" "key")
+    '("GtkSortType" "order")
+  )
+)
+
+(define-method get_sort_key
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_sort_key")
+  (return-type "none")
+  (parameters
+    '("HildonFileSelectionSortKey*" "key")
+    '("GtkSortType*" "order")
+  )
+)
+
+(define-method set_current_folder
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_current_folder")
+  (return-type "gboolean")
+  (parameters
+    '("const-GtkFilePath*" "folder")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_current_folder
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_current_folder")
+  (return-type "GtkFilePath*")
+)
+
+;(define-method get_current_content_iter
+;  (of-object "HildonFileSelection")
+;  (c-name "hildon_file_selection_get_current_content_iter")
+;  (return-type "gboolean")
+;  (parameters
+;    '("GtkTreeIter*" "iter")
+;  )
+;)
+
+;(define-method get_current_folder_iter
+;  (of-object "HildonFileSelection")
+;  (c-name "hildon_file_selection_get_current_folder_iter")
+;  (return-type "gboolean")
+;  (parameters
+;    '("GtkTreeIter*" "iter")
+;  )
+;)
+
+;(define-method get_active_content_iter
+;  (of-object "HildonFileSelection")
+;  (c-name "hildon_file_selection_get_active_content_iter")
+;  (return-type "gboolean")
+;  (parameters
+;    '("GtkTreeIter*" "iter")
+;  )
+;)
+
+;(define-method content_iter_is_selected
+;  (of-object "HildonFileSelection")
+;  (c-name "hildon_file_selection_content_iter_is_selected")
+;  (return-type "gboolean")
+;  (parameters
+;    '("GtkTreeIter*" "iter")
+;  )
+;)
+
+(define-method select_path
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_select_path")
+  (return-type "gboolean")
+  (parameters
+    '("const-GtkFilePath*" "path")
+    '("GError**" "error")
+  )
+)
+
+(define-method unselect_path
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_unselect_path")
+  (return-type "none")
+  (parameters
+    '("const-GtkFilePath*" "path")
+  )
+)
+
+(define-method select_all
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_select_all")
+  (return-type "none")
+)
+
+(define-method unselect_all
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_unselect_all")
+  (return-type "none")
+)
+
+(define-method clear_multi_selection
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_clear_multi_selection")
+  (return-type "none")
+)
+
+(define-method get_selected_paths
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_selected_paths")
+  (return-type "GSList*")
+)
+
+(define-method set_select_multiple
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_select_multiple")
+  (return-type "none")
+  (parameters
+    '("gboolean" "select_multiple")
+  )
+)
+
+(define-method get_select_multiple
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_select_multiple")
+  (return-type "gboolean")
+)
+
+(define-method set_column_headers_visible
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_column_headers_visible")
+  (return-type "none")
+  (parameters
+    '("gboolean" "visible")
+  )
+)
+
+(define-method get_column_headers_visible
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_column_headers_visible")
+  (return-type "gboolean")
+)
+
+;(define-method set_filter
+;  (of-object "HildonFileSelection")
+;  (c-name "hildon_file_selection_set_filter")
+;  (return-type "none")
+;  (parameters
+;    '("GtkFileFilter*" "filter")
+;  )
+;)
+
+(define-method get_filter
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_filter")
+  (return-type "GtkFileFilter*")
+)
+
+(define-method dim_current_selection
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_dim_current_selection")
+  (return-type "none")
+)
+
+(define-method undim_all
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_undim_all")
+  (return-type "none")
+)
+
+(define-method get_active_pane
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_active_pane")
+  (return-type "HildonFileSelectionPane")
+)
+
+(define-method hide_content_pane
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_hide_content_pane")
+  (return-type "none")
+)
+
+(define-method show_content_pane
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_show_content_pane")
+  (return-type "none")
+)
+
+(define-method move_cursor_to_uri
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_move_cursor_to_uri")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "uri")
+  )
+)
+
+

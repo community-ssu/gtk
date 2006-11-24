@@ -18,7 +18,6 @@
 (include "defs/hildon-defines.defs")
 (include "defs/hildon-dialoghelp.defs")
 ;;(include "defs/hildon-file-handling-note.defs")
-(include "defs/hildon-file-system-model.defs")
 (include "defs/hildon-find-toolbar.defs")
 (include "defs/hildon-font-selection-dialog.defs")
 (include "defs/hildon-get-password-dialog.defs")
@@ -47,3 +46,9 @@
 (include "defs/hildon-window.defs")
 (include "defs/hildon-wizard-dialog.defs")
 
+(include "defs/hildon-file-chooser-dialog.defs")
+(include "defs/hildon-file-details-dialog.defs")
+(include "defs/hildon-file-selection.defs")
+(include "defs/hildon-file-system-common.defs")
+(include "defs/hildon-file-system-info.defs")
+(include "defs/hildon-file-system-model.defs")

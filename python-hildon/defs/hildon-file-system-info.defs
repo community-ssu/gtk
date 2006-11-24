@@ -1,0 +1,68 @@
+;; -*- scheme -*-
+; object definitions ...
+;; Enumerations and flags ...
+
+
+;; From hildon-file-system-info.h
+
+(define-function hildon_file_system_info_async_new
+  (c-name "hildon_file_system_info_async_new")
+  (is-constructor-of "HildonFileSystemInfoAsync")
+  (return-type "HildonFileSystemInfoHandle*")
+  (parameters
+    '("const-gchar*" "uri")
+    '("HildonFileSystemInfoCallback" "callback")
+    '("gpointer" "data")
+  )
+)
+
+(define-method get_display_name
+  (of-object "HildonFileSystemInfo")
+  (c-name "hildon_file_system_info_get_display_name")
+  (return-type "const-gchar*")
+)
+
+(define-method get_icon
+  (of-object "HildonFileSystemInfo")
+  (c-name "hildon_file_system_info_get_icon")
+  (return-type "GdkPixbuf*")
+  (parameters
+    '("GtkWidget*" "ref_widget")
+  )
+)
+
+(define-method get_icon_at_size
+  (of-object "HildonFileSystemInfo")
+  (c-name "hildon_file_system_info_get_icon_at_size")
+  (return-type "GdkPixbuf*")
+  (parameters
+    '("GtkWidget*" "ref_widget")
+    '("gint" "size")
+  )
+)
+
+(define-function hildon_file_system_info_async_cancel
+  (c-name "hildon_file_system_info_async_cancel")
+  (return-type "none")
+  (parameters
+    '("HildonFileSystemInfoHandle*" "handle")
+  )
+)
+
+;(define-function hildon_file_system_info_new
+;  (c-name "hildon_file_system_info_new")
+;  (is-constructor-of "HildonFileSystemInfo")
+;  (return-type "HildonFileSystemInfo*")
+;  (parameters
+;    '("const-gchar*" "uri")
+;    '("GError**" "error")
+;  )
+;)
+
+;(define-method free
+;  (of-object "HildonFileSystemInfo")
+;  (c-name "hildon_file_system_info_free")
+;  (return-type "none")
+;)
+
+

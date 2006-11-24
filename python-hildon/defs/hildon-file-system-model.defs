@@ -1,44 +1,62 @@
+;; -*- scheme -*-
+; object definitions ...
 (define-object FileSystemModel
   (in-module "Hildon")
+  (parent "GObject")
   (c-name "HildonFileSystemModel")
   (gtype-id "HILDON_TYPE_FILE_SYSTEM_MODEL")
 )
 
-(define-enum FileSystemModelColumns
-  (in-module "Hildon")
-  (c-name "HildonFileSystemModelColumns")
-  (gtype-id "HILDON_TYPE_FILE_SYSTEM_MODEL_COLUMNS")
-  (values
-    '("column-gtk-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH")
-    '("column-local-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH")
-    '("column-uri" "HILDON_FILE_SYSTEM_MODEL_COLUMN_URI")
-    '("column-file-name" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME")
-    '("column-display-name" "HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME")
-    '("column-sort-key" "HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_KEY")
-    '("column-mime-type" "HILDON_FILE_SYSTEM_MODEL_COLUMN_MIME_TYPE")
-    '("column-file-size" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_SIZE")
-    '("column-file-time" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_TIME")
-    '("column-is-folder" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER")
-    '("column-is-available" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE")
-    '("column-has-local-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH")
-    '("column-type" "HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE")
-    '("column-icon" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON")
-    '("column-icon-expanded" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_EXPANDED")
-    '("column-icon-collapsed" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED")
-    '("column-thumbnail" "HILDON_FILE_SYSTEM_MODEL_COLUMN_THUMBNAIL")
-    '("column-load-ready" "HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY")
-    '("column-free-space" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FREE_SPACE")
-    '("column-title" "HILDON_FILE_SYSTEM_MODEL_COLUMN_TITLE")
-    '("column-author" "HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR")
-    '("column-is-hidden" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN")
-    '("num-columns" "HILDON_FILE_SYSTEM_MODEL_NUM_COLUMNS")
-  )
-)
+;; Enumerations and flags ...
+
+;(define-enum FileSystemModelColumns
+;  (in-module "Hildon")
+;  (c-name "HildonFileSystemModelColumns")
+;  (gtype-id "HILDON_TYPE_FILE_SYSTEM_MODEL_COLUMNS")
+;  (values
+;    '("column-gtk-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH")
+;    '("column-local-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH")
+;    '("column-uri" "HILDON_FILE_SYSTEM_MODEL_COLUMN_URI")
+;    '("column-file-name" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME")
+;    '("column-display-name" "HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME")
+;    '("column-sort-key" "HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_KEY")
+;    '("column-mime-type" "HILDON_FILE_SYSTEM_MODEL_COLUMN_MIME_TYPE")
+;    '("column-file-size" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_SIZE")
+;    '("column-file-time" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_TIME")
+;    '("column-is-folder" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER")
+;    '("column-is-available" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE")
+;    '("column-has-local-path" "HILDON_FILE_SYSTEM_MODEL_COLUMN_HAS_LOCAL_PATH")
+;    '("column-type" "HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE")
+;    '("column-icon" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON")
+;    '("column-icon-expanded" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_EXPANDED")
+;    '("column-icon-collapsed" "HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON_COLLAPSED")
+;    '("column-thumbnail" "HILDON_FILE_SYSTEM_MODEL_COLUMN_THUMBNAIL")
+;    '("column-load-ready" "HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY")
+;    '("column-free-space" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FREE_SPACE")
+;    '("column-title" "HILDON_FILE_SYSTEM_MODEL_COLUMN_TITLE")
+;    '("column-author" "HILDON_FILE_SYSTEM_MODEL_COLUMN_AUTHOR")
+;    '("column-is-hidden" "HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_HIDDEN")
+;    '("column-unavailable-reason" "HILDON_FILE_SYSTEM_MODEL_COLUMN_UNAVAILABLE_REASON")
+;    '("column-failed-access-message" "HILDON_FILE_SYSTEM_MODEL_COLUMN_FAILED_ACCESS_MESSAGE")
+;    '("column-sort-weight" "HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_WEIGHT")
+;    '("column-extra-info" "HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO")
+;    '("num-columns" "HILDON_FILE_SYSTEM_MODEL_NUM_COLUMNS")
+;  )
+;)
+
+
+;; From hildon-file-system-model.h
 
 (define-function hildon_file_system_model_get_type
   (c-name "hildon_file_system_model_get_type")
   (return-type "GType")
 )
+
+;(define-method finished_loading
+;  (of-object "HildonFileSystemModel")
+;  (c-name "hildon_file_system_model_finished_loading")
+;  (return-type "gboolean")
+;)
 
 (define-method search_local_path
   (of-object "HildonFileSystemModel")
@@ -69,7 +87,7 @@
   (c-name "hildon_file_system_model_search_path")
   (return-type "gboolean")
   (parameters
-    '("GtkFilePath*" "path")
+    '("const-GtkFilePath*" "path")
     '("GtkTreeIter*" "iter")
     '("GtkTreeIter*" "start_iter")
     '("gboolean" "recursive")
@@ -101,7 +119,7 @@
   (c-name "hildon_file_system_model_load_path")
   (return-type "gboolean")
   (parameters
-    '("GtkFilePath*" "path")
+    '("const-GtkFilePath*" "path")
     '("GtkTreeIter*" "iter")
   )
 )
