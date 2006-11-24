@@ -25,6 +25,7 @@
 #define HILDON_TYPES_H
 
 #include <glib.h>
+#include <glib/gtypes.h>
 #include <gtk/gtkuimanager.h>
 #include <hildon-base-lib/hildon-base-dnotify.h>
 #include <hildon-base-lib/hildon-base-types.h>

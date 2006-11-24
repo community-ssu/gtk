@@ -93,11 +93,11 @@
 ;  (return-type "HildonZoomLevel")
 ;)
 
-(define-method get_default_font
-  (of-object "HildonApp")
-  (c-name "hildon_app_get_default_font")
-  (return-type "PangoFontDescription*")
-)
+;(define-method get_default_font
+;  (of-object "HildonApp")
+;  (c-name "hildon_app_get_default_font")
+;  (return-type "PangoFontDescription*")
+;)
 
 ;(define-method get_zoom_font
 ;  (of-object "HildonApp")

@@ -239,7 +239,10 @@ class PyGtkDemo(hildon.Program):
         obj.connect("clicked", self.onTest)
         self.vboxTests[0].pack_start(obj)
         
-        self.vboxTests[1].pack_start(hildon.Controlbar())
+        obj = hildon.Controlbar()
+        obj.set_range(0,40)
+        obj.set_value(18)
+        self.vboxTests[1].pack_start(obj)
         
         self.vboxTests[2].pack_start(hildon.DateEditor())
         
