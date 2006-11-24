@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(maemo-af-desktop-config, 0.1.8)
+AM_INIT_AUTOMAKE(maemo-af-desktop-config, 0.1.9)
 
 
 AC_OUTPUT(Makefile)

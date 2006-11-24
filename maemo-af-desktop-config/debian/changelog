@@ -1,3 +1,9 @@
+maemo-af-desktop-config (0.1.9-1) unstable; urgency=low
+
+  * License adjustment 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 24 Nov 2006 12:57:27 +0200
+
 maemo-af-desktop-config (0.1.8-1) unstable; urgency=low
 
   * hildon-navigator/plugins.conf: Added Hildon Navigator configuration
