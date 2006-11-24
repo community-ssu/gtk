@@ -1,3 +1,20 @@
+maemo-af-desktop (2.9.99.9-1) unstable; urgency=low
+
+  * hildon-navigator/hn-keys.[ch]: Replaced XKeysymToKeycode with
+  gdk_keymap_get_entries_for_keyval, to get all the possible
+  keycodes. Fixes: NB#43855, Fixes: NB#38950
+
+  * hildon-navigator/hn-app-button.[ch]: Cache the button emblems
+  as class variable. Fixes: NB#42971
+
+  * hildon-navigator/hn-app-switcher.c,
+    hildon-navigator/hn-others-button.c:
+    - enable extension events on the button widget
+    - use the hildon-finger commodity to detect finger press.
+  Fixes: NB#47370
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 24 Nov 2006 13:08:52 +0200
+
 maemo-af-desktop (2.9.99.8-1) unstable; urgency=low
 
   * hildon-navigator/plugins.conf: Removed (moved to
