@@ -63,6 +63,8 @@
 #include <libosso.h>
 
 #include <hildon-widgets/gtk-infoprint.h>
+#include <hildon-widgets/hildon-finger.h>
+
 #include "hildon-pixbuf-anim-blinker.h"
 
 
@@ -1006,10 +1008,8 @@ menu_button_pressed_cb (GtkWidget      *widget,
 
 /*  hn_wm_activate (HN_TN_DEACTIVATE_KEY_FOCUS);*/
 
-  if (event->button == APP_BUTTON_THUMBABLE || event->button == 2)
-    {
-      priv->is_thumbable = TRUE;
-    }
+  if (hildon_button_event_is_finger (event))
+    priv->is_thumbable = TRUE;
   else if (!priv->menu_button_timeout)
     priv->is_thumbable = FALSE;
 
@@ -1036,6 +1036,7 @@ create_menu_button (HNAppSwitcher *app_switcher)
   gtk_widget_set_name (button, AS_MENU_BUTTON_NAME);
   gtk_widget_set_sensitive (button, FALSE);
   gtk_widget_set_size_request (button, -1, AS_MENU_BUTTON_HEIGHT);
+  gtk_widget_set_extension_events (button, GDK_EXTENSION_EVENTS_ALL);
 
   g_object_set (G_OBJECT (button),
                 "can-focus", TN_DEFAULT_FOCUS,

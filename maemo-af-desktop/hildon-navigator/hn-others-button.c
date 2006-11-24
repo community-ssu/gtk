@@ -67,6 +67,9 @@
 /* For menu conf dir monitoring */
 #include <hildon-base-lib/hildon-base-dnotify.h>
 
+/* For finger detection */
+#include <hildon-widgets/hildon-finger.h>
+
 #define NAVIGATOR_BUTTON_THREE "hildon-navigator-button-three"
 
 /* Button icon */
@@ -169,6 +172,9 @@ hn_others_button_init (HNOthersButton *button)
   button->priv = priv;
 
   gtk_widget_set_name(GTK_WIDGET(button), NAVIGATOR_BUTTON_THREE);
+
+  gtk_widget_set_extension_events (GTK_WIDGET (button),
+                                   GDK_EXTENSION_EVENTS_ALL);
 
   icon = gtk_image_new_from_pixbuf(get_icon( OTHERS_MENU_ICON_NAME,
 					     OTHERS_MENU_ICON_SIZE ));
@@ -897,11 +903,8 @@ hn_others_button_button_release(HNOthersButton * button,
 		       button);
     }
 
-  if (event->button == THUMB_BUTTON_ID ||
-      event->button == 2)
-    {
-      button->priv->thumb_pressed = TRUE;
-    }
+  if (hildon_button_event_is_finger (event))
+    button->priv->thumb_pressed = TRUE;
 
   return TRUE;
 }
