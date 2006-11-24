@@ -161,6 +161,73 @@ hn_app_button_focus (GtkWidget        *widget,
 }
 #endif
 
+static GdkPixbuf *
+hn_app_button_class_get_bkilled_emblem (HNAppButtonClass *button_class)
+{
+  GError *error = NULL;
+
+  if (button_class->bkilled_emblem)
+    return g_object_ref (button_class->bkilled_emblem);
+
+  button_class->bkilled_emblem = gtk_icon_theme_load_icon (
+                                           gtk_icon_theme_get_default (),
+                                           "qgn_indi_bkilled",
+                                           APP_GROUP_ICON_SIZE,
+                                           0,
+                                           &error);
+
+  if (error)
+    {
+      g_warning ("Could not load icon qgn_indi_bkilled: %s",
+                 error->message);
+      g_error_free (error);
+    }
+  
+  if (button_class->bkilled_emblem)
+    return g_object_ref (button_class->bkilled_emblem);
+
+  return NULL;
+}
+
+static GdkPixbuf *
+hn_app_button_class_get_groupped_emblem (HNAppButtonClass *button_class,
+                                         guint n_instances)
+{
+  if (n_instances > app_group_n_icons)
+    n_instances = app_group_n_icons;
+
+  if (button_class->groupped_emblems[n_instances - 1])
+    return g_object_ref (button_class->groupped_emblems[n_instances - 1]);
+
+  else if (app_group_icons[n_instances - 1])
+    {
+      GError *error = NULL;
+      GtkIconTheme *icon_theme = gtk_icon_theme_get_default ();
+      
+      button_class->groupped_emblems[n_instances - 1] =
+          gtk_icon_theme_load_icon (icon_theme,
+                                    app_group_icons[n_instances - 1],
+                                    APP_GROUP_ICON_SIZE,
+                                    0,
+                                    &error);
+
+      if (error)
+        {
+          g_warning ("Could not load icon %s: %s",
+                     app_group_icons[n_instances - 1],
+                     error->message);
+          g_error_free (error);
+          button_class->groupped_emblems[n_instances] = NULL;
+          return NULL;
+        }
+
+      if (button_class->groupped_emblems[n_instances - 1])
+        return g_object_ref (button_class->groupped_emblems[n_instances - 1]);
+    }
+
+  return NULL;
+}
+
 static void
 hn_app_button_icon_animation (GtkWidget *icon, gboolean   turn_on);
 
@@ -897,6 +964,9 @@ hn_app_button_class_init (HNAppButtonClass *klass)
 							 G_PARAM_READWRITE));
 
   g_type_class_add_private (gobject_class, sizeof (HNAppButtonPrivate));
+
+  klass->groupped_emblems = g_new0 (GdkPixbuf *, app_group_n_icons);
+  klass->bkilled_emblem = NULL;
 }
 
 static void
@@ -1053,11 +1123,11 @@ get_pixbuf_for_entry_info (HNEntryInfo *info)
 }
 
 static GdkPixbuf *
-compose_app_pixbuf (const GdkPixbuf *src,
-		    HNEntryInfo     *info)
+hn_app_button_compose_app_pixbuf (HNAppButton     *button,
+                                  const GdkPixbuf *src,
+                                  HNEntryInfo     *info)
 {
-  GdkPixbuf *retval, *inst_pixbuf;
-  const gchar *inst_name;
+  GdkPixbuf *retval, *inst_pixbuf = NULL;
   GError *error;
   gint dest_width, dest_height;
   gint off_x, off_y;
@@ -1069,53 +1139,44 @@ compose_app_pixbuf (const GdkPixbuf *src,
 
   /* first of all, see if this app is hibernated */
   if (hn_entry_info_is_hibernating (info))
-    {
-      inst_name = "qgn_indi_bkilled";
-    }
+    inst_pixbuf = hn_app_button_class_get_bkilled_emblem 
+        (HN_APP_BUTTON_GET_CLASS (button));
   else if (hn_entry_info_has_extra_icon (info))
     {
-      inst_name = hn_entry_info_get_extra_icon (info);
+      const char *inst_name = hn_entry_info_get_extra_icon (info);
+
+      if (inst_name)
+        {
+          error = NULL;
+          inst_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+                                                  inst_name,
+                                                  APP_GROUP_ICON_SIZE,
+                                                  0,
+                                                  &error);
+          if (error)
+            {
+              g_warning ("unable to find icon '%s' in current theme: %s",
+                         inst_name,
+                         error->message);
+
+              g_error_free (error);
+
+              return NULL;
+            }
+        }
     }
   else
     {
-      gint n_instances = hn_entry_info_get_n_children (info);
+      guint n_instances = hn_entry_info_get_n_children (info);
       
-      if (!n_instances)
-        {
-          g_warning ("top-level item '%s' has no instances",
-                     hn_entry_info_peek_title (info));
-          return NULL;
-        }
+      inst_pixbuf = hn_app_button_class_get_groupped_emblem 
+          (HN_APP_BUTTON_GET_CLASS (button),
+           n_instances);
 
-      if (n_instances == 1)
-        return NULL;
-
-      if (G_LIKELY (n_instances <= app_group_n_icons - 1))
-        inst_name = app_group_icons[n_instances - 1];
-      else
-        inst_name = APP_GROUP_ICON_MORE;
     }
-  
-  HN_DBG ("Compositing icon for '%s' with icon name '%s'",
-	  hn_entry_info_peek_title (info),
-	  inst_name);
-
-  error = NULL;
-  inst_pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-		  			  inst_name,
-					  APP_GROUP_ICON_SIZE,
-					  0,
-					  &error);
-  if (error)
-    {
-      g_warning ("unable to find icon '%s' in current theme: %s",
-		 inst_name,
-		 error->message);
-
-      g_error_free (error);
-
-      return NULL;
-    }
+      
+  if (!inst_pixbuf)
+    return NULL;
 
   /* make a copy of the source pixbuf, and also make
    * sure that it has an alpha channel
@@ -1163,7 +1224,7 @@ hn_app_button_set_entry_info (HNAppButton *button,
 	  /* compose the application icon with the number of
 	   * instances running
 	   */
-	  pixbuf = compose_app_pixbuf (app_pixbuf, info);
+	  pixbuf = hn_app_button_compose_app_pixbuf (button, app_pixbuf, info);
 	  if (pixbuf)
             {
               gtk_image_set_from_pixbuf (GTK_IMAGE (button->priv->icon),
@@ -1229,7 +1290,7 @@ hn_app_button_force_update_icon (HNAppButton *button)
 	  /* compose the application icon with the number of
 	   * instances running
 	   */
-	  pixbuf = compose_app_pixbuf (app_pixbuf, info);
+	  pixbuf = hn_app_button_compose_app_pixbuf (button, app_pixbuf, info);
 	  if (pixbuf)
             {
               gtk_image_set_from_pixbuf (GTK_IMAGE (button->priv->icon),
@@ -1327,3 +1388,4 @@ hn_app_button_set_is_blinking (HNAppButton *button,
       button->priv->is_blinking = is_blinking;
     }
 }
+

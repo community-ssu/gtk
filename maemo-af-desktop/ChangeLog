@@ -1,4 +1,9 @@
-2006-11-22  Johan Bilien <johan.bilien@nokia.com>
+2006-11-24  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-app-button.[ch]: Cache the button emblems
+	as class variable. Fixes: NB#42971
+
+2006-11-24  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c,
 	  hildon-navigator/hn-others-button.c:

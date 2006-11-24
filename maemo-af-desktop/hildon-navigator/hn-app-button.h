@@ -65,6 +65,9 @@ struct _HNAppButton
 struct _HNAppButtonClass
 {
   GtkToggleButtonClass parent_class;
+
+  GdkPixbuf **groupped_emblems;
+  GdkPixbuf *bkilled_emblem;
 };
 
 GType hn_app_button_get_type (void) G_GNUC_CONST;
