@@ -1,5 +1,11 @@
 2006-11-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hn-keys.[ch]: Replaced XKeysymToKeycode with
+	gdk_keymap_get_entries_for_keyval, to get all the possible
+	keycodes. Fixes: NB#43855, Fixes: NB#38950
+
+2006-11-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-button.[ch]: Cache the button emblems
 	as class variable. Fixes: NB#42971
 

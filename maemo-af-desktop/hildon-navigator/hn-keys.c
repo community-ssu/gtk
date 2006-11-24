@@ -436,13 +436,23 @@ hn_keys_shortcut_new (HNKeysConfig *keys,
     = HNKeysActionConfLookup[conf_index].action_func_data;
   shortcut->mod_mask = mask;
   shortcut->keysym   = ks;
-  shortcut->keycode  = XKeysymToKeycode(GDK_DISPLAY(), ks);
+  gdk_keymap_get_entries_for_keyval (NULL /* default keymap */,
+                                     ks,
+                                     &shortcut->keycodes,
+                                     &shortcut->n_keycodes);
   shortcut->index    = index;
 
   HN_DBG("'%s' to new shortcut with ks:%li, mask:%i",
 	 keystr, ks, mask);
 
   return shortcut;
+}
+
+static void
+hn_keys_shortcut_free (HNKeyShortcut *shortcut)
+{
+  g_free (shortcut->keycodes);
+  g_free (shortcut);
 }
 
 
@@ -452,64 +462,72 @@ hn_key_shortcut_grab (HNKeysConfig  *keys,
 		      gboolean       ungrab)
 {
   int ignored_mask = 0;
+  gint i_keycode;
+
+  if (!shortcut->keycodes)
+    return FALSE;
 
   /* Needed to grab all ignored combo's too if num of scroll lock are on */
-  while (ignored_mask < (int) keys->lock_mask)
-    {                                       
-      if (ignored_mask & ~(keys->lock_mask))
-	{
-	  ++ignored_mask;
-	  continue;
-	}
+  for (i_keycode = 0; i_keycode < shortcut->n_keycodes; i_keycode++)
+    {
+      while (ignored_mask < (int) keys->lock_mask)
+        {                                       
+          if (ignored_mask & ~(keys->lock_mask))
+            {
+              ++ignored_mask;
+              continue;
+            }
 
-      if (ungrab)
-	{
-	  XUngrabKey(GDK_DISPLAY(),
-		     shortcut->keycode, 
-		     shortcut->mod_mask | ignored_mask,
-		     GDK_ROOT_WINDOW());
-	} 
-      else 
-	{
-	  int result; 
+          if (ungrab)
+            {
+              XUngrabKey(GDK_DISPLAY(),
+                         shortcut->keycodes[i_keycode].keycode, 
+                         shortcut->mod_mask | ignored_mask,
+                         GDK_ROOT_WINDOW());
+            } 
+          else 
+            {
+              int result; 
 
-	  gdk_error_trap_push();	  
-	  
-	  XGrabKey (GDK_DISPLAY(), 
-                    shortcut->keycode, 
-		    shortcut->mod_mask | ignored_mask,
-		    GDK_ROOT_WINDOW(), 
-		    False, 
-		    GrabModeAsync, 
-		    GrabModeAsync);
-	  
-	  XSync(GDK_DISPLAY(), False);
-	  result = gdk_error_trap_pop();
+              gdk_error_trap_push();	  
 
-	  if (result)
-	    {
-	      /* FIXME: Log below somewhere */
-	      if (result == BadAccess)
-		{
-		  fprintf(stderr, 
-			  "Some other program is already using the key %s "
-			  "with modifiers %x as a binding\n",  
-			  (XKeysymToString (shortcut->keysym)) ? 
-			    XKeysymToString (shortcut->keysym) : "unknown", 
-			    shortcut->mod_mask | ignored_mask );
-		}
-	      else
-		{
-		  fprintf(stderr, 
-			  "Unable to grab the key %s with modifiers %x"
-			  "as a binding\n",  
-			  (XKeysymToString (shortcut->keysym)) ? 
-			    XKeysymToString (shortcut->keysym) : "unknown", 
-			    shortcut->mod_mask | ignored_mask );
-		}
-	    }
-	}
-      ++ignored_mask;
+              XGrabKey (GDK_DISPLAY(), 
+                        shortcut->keycodes[i_keycode].keycode, 
+                        shortcut->mod_mask | ignored_mask,
+                        GDK_ROOT_WINDOW(), 
+                        False, 
+                        GrabModeAsync, 
+                        GrabModeAsync);
+
+              XSync(GDK_DISPLAY(), False);
+              result = gdk_error_trap_pop();
+
+              if (result)
+                {
+                  /* FIXME: Log below somewhere */
+                  if (result == BadAccess)
+                    {
+                      fprintf(stderr, 
+                              "Some other program is already using the key %s "
+                              "with modifiers %x as a binding\n",  
+                              (XKeysymToString (shortcut->keysym)) ? 
+                              XKeysymToString (shortcut->keysym) : "unknown", 
+                              shortcut->mod_mask | ignored_mask );
+                    }
+                  else
+                    {
+                      fprintf(stderr, 
+                              "Unable to grab the key %s with modifiers %x"
+                              "as a binding\n",  
+                              (XKeysymToString (shortcut->keysym)) ? 
+                              XKeysymToString (shortcut->keysym) : "unknown", 
+                              shortcut->mod_mask | ignored_mask );
+                    }
+                }
+            }
+          ++ignored_mask;
+        }
+      ignored_mask = 0;
     }
   
   return TRUE;
@@ -593,7 +611,7 @@ gconf_key_changed_callback (GConfClient *client,
 	      HN_DBG("removing exisiting action %i", sc->action);
 	      hn_key_shortcut_grab (keys, sc, TRUE); 
 	      keys->shortcuts = g_slist_remove (keys->shortcuts, item->data);
-	      g_free (sc);
+	      hn_keys_shortcut_free (sc);
 	      break;
 	    }
 	  item = g_slist_next(item);
@@ -660,7 +678,7 @@ hn_keys_reload (GdkKeymap *keymap, HNKeysConfig *keys)
       gpointer data = shortcut->data;
       hn_key_shortcut_grab (keys, shortcut->data, TRUE);
       shortcut = g_slist_remove (shortcut, shortcut->data);
-      g_free (data);
+      hn_keys_shortcut_free (data);
     }
 
   keys->shortcuts = NULL;

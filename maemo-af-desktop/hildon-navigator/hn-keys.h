@@ -62,7 +62,8 @@ typedef struct HNKeyShortcut
 {
   HNKeyAction       action;
   KeySym            keysym;
-  KeyCode           keycode;
+  GdkKeymapKey     *keycodes;
+  gint              n_keycodes;
   gint              mod_mask;
   gint              index;
   HNKeysActionFunc  action_func;
