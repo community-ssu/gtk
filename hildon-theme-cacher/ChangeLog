@@ -1,3 +1,7 @@
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* configure.ac: Removing the -Werror flag as it breaks on Ubuntu.
+
 2006-11-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* ./: Initially deriving from cache tool from hildon-theme-tools.
