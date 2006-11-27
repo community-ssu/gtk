@@ -1,8 +1,7 @@
-bin_PROGRAMS = xset770 ageoffile
+bin_PROGRAMS = xset770 ageoffile play-sound
 sbin_PROGRAMS = waitdbus waitx runas fb-progress temp-reaper anim-shower
 
-INCLUDES = `pkg-config --cflags gdk-2.0` \
-	   `pkg-config --cflags dbus-1`
+INCLUDES = `pkg-config --cflags gdk-2.0 dbus-1` 
 
 xset770_INCLUDES = \
 	`pkg-config --cflags x11 xsp xi xproto inputproto`
@@ -11,7 +10,7 @@ xset770_LDFLAGS = \
 	`pkg-config --libs x11 xsp xi xproto inputproto`
 
 fb_progress_LDFLAGS = \
-	`pkg-config --libs libpng12`
+	`pkg-config --libs libpng12` -ljpeg
 
 anim_shower_LDFLAGS = \
 	`pkg-config --cflags --libs gdk-2.0`
@@ -49,6 +48,15 @@ xset770_SOURCES = \
 
 temp_reaper_SOURCES = \
 	temp-reaper.c
+
+play_sound_LDFLAGS = \
+     `pkg-config --libs gconf-2.0 esound`
+
+play_sound_CFLAGS = \
+     `pkg-config --cflags gconf-2.0 esound`
+
+play_sound_SOURCES = \
+	play-sound.c
 
 CURSOR_NAMES = \
 	00008160000006810000408080010102 \

@@ -90,6 +90,7 @@
 #include <linux/vt.h>
 #include <linux/kd.h>
 #include <png.h>
+#include <jpeglib.h>
 /* stuff needed by fb_flush().
  */
 #include "omapfb.h"
@@ -637,6 +638,7 @@ static void fb_clear_with_image(void)
 	/* image and screen same size */
 	if (Fb.wd == image.wd && Fb.ht == image.ht) {
 		memcpy(Fb.mem, image.pixel_buffer, Fb.size);
+		fb_dirty(0, 0, Fb.wd, Fb.ht);
 		return;
 	}
 
@@ -697,6 +699,74 @@ static void fb_clear_with_image(void)
 	return;
 }
 
+static void rgb_to_16(uint8_t *buf, uint16_t *result, const unsigned int width)
+{
+	uint16_t *end=result+width;
+        for (; result < end; result++) {
+		uint8_t red, green, blue;
+		red = (*buf++ >> 3);
+		green = (*buf++ >> 2);
+		blue = (*buf++ >> 3);
+		*result = red << 11 | green << 5 | blue;
+        }
+}
+
+/* based on jpeglib.h example.c */
+static image_info_t *decompress_jpeg(const char *filename)
+{
+	struct jpeg_decompress_struct cinfo;
+        struct jpeg_error_mgr jerr;
+	uint16_t *tmp;
+	FILE *fp;
+	image_info_t image, *ret;
+	uint8_t *buf;
+	int a;
+	
+	cinfo.err = jpeg_std_error(&jerr);
+	jpeg_create_decompress(&cinfo);
+
+	fp = fopen(filename, "rb");
+
+	if (!fp){
+		perror("JPEG file open");
+		return NULL;
+	}
+	
+	jpeg_stdio_src(&cinfo,fp);
+	jpeg_read_header(&cinfo, TRUE);
+	jpeg_start_decompress(&cinfo);
+
+	/* If we need scaling, implement it here*/
+        image.wd = cinfo.output_width;
+        image.ht = cinfo.output_height;
+	
+	buf = malloc(cinfo.output_width * cinfo.output_components * sizeof(char));
+	if (!buf) {
+		return NULL;
+	}
+	
+	image.pixel_buffer = malloc(image.wd * image.ht *  sizeof(uint16_t));
+        if (!image.pixel_buffer) {
+                return NULL;
+	}
+	tmp=image.pixel_buffer;
+	for (a = 0; a < cinfo.output_height; a++) {
+		jpeg_read_scanlines(&cinfo, (JSAMPARRAY) &buf, 1);
+		rgb_to_16(buf, tmp, cinfo.output_width );
+		tmp+=cinfo.output_width;
+	}
+	
+	jpeg_finish_decompress(&cinfo);
+	jpeg_destroy_decompress(&cinfo);
+	fclose(fp);
+
+	free(buf);
+
+        ret = malloc (sizeof(image_info_t));
+        *ret = image;
+	return ret;
+}
+
 static image_info_t *decompress_png(const char *filename)
 {
 	FILE *fp;
@@ -713,7 +783,6 @@ static image_info_t *decompress_png(const char *filename)
 	fread(header, 1, 8, fp);
 	int is_png = !png_sig_cmp(header, 0, 8);
 	if (!is_png) {
-		fprintf(stderr, "image is not a PNG!\n");
 		return NULL;
 	}
 	
@@ -838,7 +907,7 @@ static void usage(const char *name, const char *error)
 	       "-t <vt>\t\tswitch to given virtual terminal while showing the progress\n"
 	       "-i <step>\tinitial seconds (< all secs)\n\n"
 	       "Examples:\n"
-	       "\t%s -s -c -t 3 -b ffffff -l logo.png 30\n"
+	       "\t%s -c -t 3 -b ffffff -l logo.png 30\n"
 	       "\tsleep 30\n"
 	       "\t%s -n -i 1 3\n\n"
 	       "NOTE: this program need to be run as root (for VT ioctls)!\n",
@@ -897,12 +966,16 @@ int main(int argc, const char *argv[])
 			}
 			Options.img_logo = decompress_png(argv[i]);
 			if (!Options.img_logo) {
-				usage(*argv, "logo image loading failed");
+				/* If png fails, try jpeg */
+				Options.img_logo = decompress_jpeg(argv[i]);
+				if (!Options.img_logo) {
+					usage(*argv, "logo image loading failed");
+				}
 			}
 			break;
 		case 'g':
 			if (++i >= argc) {
-				usage(*argv, "-l <progressbar image> image file name missing");
+				usage(*argv, "-g <progressbar image> image file name missing");
 			}
 			Options.img_progress = decompress_png(argv[i]);
 			if (!Options.img_progress) {
