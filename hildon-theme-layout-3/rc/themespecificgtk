@@ -68,6 +68,8 @@ style "osso-logical-colors" {
 	logical_color["HomeFrameReject"]         = "@HomeFrameReject@"
 	
 	logical_color["MenuInfoTextColor"]       = "@MenuInfoTextColor@"
+	logical_color["MenuInfoTextColor"]       = "@MenuInfoTextColor@"
+        logical_color["VKBButtonTextColor"]      = "@VKBButtonTextColor@"
 }
 
 ##############################

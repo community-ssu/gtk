@@ -1,5 +1,9 @@
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/themespecificgtk: Adding the missing VKBButtonTextColor. 
+
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/layout.txt: Updating to new layout coordinates.
 
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
