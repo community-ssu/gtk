@@ -1,3 +1,10 @@
+dbus (1.0.0-osso4) experimental; urgency=low
+
+  * UNRELEASED
+  * Added patch from Kuisma Salonen to add dbus_bus_get_activated_service.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 27 Nov 2006 14:06:26 +0200
+
 dbus (1.0.0-osso3) experimental; urgency=low
 
   * Added support for building with thumb instructions.
