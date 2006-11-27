@@ -1,3 +1,10 @@
+gtkhtml (3.9.1-2osso11) unstable; urgency=low
+
+  * Unrealize fix - added gtkhtml_unrealize_fix.diff
+  * Fixes: NB#46236
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon, 27 Nov 2006 12:30:44 +0200
+
 gtkhtml (3.9.1-2osso10) unstable; urgency=low
 
   * Updated the IM leak patch to protect from recurrent freeing

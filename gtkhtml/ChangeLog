@@ -1,3 +1,7 @@
+2006-11-27  Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* added gtkhtml_unrealize_fix.diff to get rid of glib critical
+
 2006-11-20  Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* 3.9.1-2osso10
