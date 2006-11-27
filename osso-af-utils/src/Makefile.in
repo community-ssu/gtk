@@ -14,7 +14,7 @@
 
 @SET_MAKE@
 
-SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) $(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
+SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) $(fb_progress_SOURCES) $(play_sound_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
 
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
@@ -36,7 +36,7 @@ POST_INSTALL = :
 NORMAL_UNINSTALL = :
 PRE_UNINSTALL = :
 POST_UNINSTALL = :
-bin_PROGRAMS = xset770$(EXEEXT) ageoffile$(EXEEXT)
+bin_PROGRAMS = xset770$(EXEEXT) ageoffile$(EXEEXT) play-sound$(EXEEXT)
 sbin_PROGRAMS = waitdbus$(EXEEXT) waitx$(EXEEXT) runas$(EXEEXT) \
 	fb-progress$(EXEEXT) temp-reaper$(EXEEXT) anim-shower$(EXEEXT)
 subdir = src
@@ -60,6 +60,9 @@ anim_shower_LDADD = $(LDADD)
 am_fb_progress_OBJECTS = fb-progress.$(OBJEXT)
 fb_progress_OBJECTS = $(am_fb_progress_OBJECTS)
 fb_progress_LDADD = $(LDADD)
+am_play_sound_OBJECTS = play_sound-play-sound.$(OBJEXT)
+play_sound_OBJECTS = $(am_play_sound_OBJECTS)
+play_sound_LDADD = $(LDADD)
 am_runas_OBJECTS = runas.$(OBJEXT)
 runas_OBJECTS = $(am_runas_OBJECTS)
 runas_LDADD = $(LDADD)
@@ -80,19 +83,23 @@ depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/ageoffile.Po \
 @AMDEP_TRUE@	./$(DEPDIR)/anim-shower.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/fb-progress.Po ./$(DEPDIR)/runas.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/temp-reaper.Po ./$(DEPDIR)/waitdbus.Po \
-@AMDEP_TRUE@	./$(DEPDIR)/waitx.Po ./$(DEPDIR)/xset770.Po
+@AMDEP_TRUE@	./$(DEPDIR)/fb-progress.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/play_sound-play-sound.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/runas.Po ./$(DEPDIR)/temp-reaper.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/waitdbus.Po ./$(DEPDIR)/waitx.Po \
+@AMDEP_TRUE@	./$(DEPDIR)/xset770.Po
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 CCLD = $(CC)
 LINK = $(CCLD) $(AM_CFLAGS) $(CFLAGS) $(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) \
-	$(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) \
-	$(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
+	$(fb_progress_SOURCES) $(play_sound_SOURCES) $(runas_SOURCES) \
+	$(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) \
+	$(xset770_SOURCES)
 DIST_SOURCES = $(ageoffile_SOURCES) $(anim_shower_SOURCES) \
-	$(fb_progress_SOURCES) $(runas_SOURCES) $(temp_reaper_SOURCES) \
-	$(waitdbus_SOURCES) $(waitx_SOURCES) $(xset770_SOURCES)
+	$(fb_progress_SOURCES) $(play_sound_SOURCES) $(runas_SOURCES) \
+	$(temp_reaper_SOURCES) $(waitdbus_SOURCES) $(waitx_SOURCES) \
+	$(xset770_SOURCES)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -163,9 +170,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-INCLUDES = `pkg-config --cflags gdk-2.0` \
-	   `pkg-config --cflags dbus-1`
-
+INCLUDES = `pkg-config --cflags gdk-2.0 dbus-1` 
 xset770_INCLUDES = \
 	`pkg-config --cflags x11 xsp xi xproto inputproto`
 
@@ -173,7 +178,7 @@ xset770_LDFLAGS = \
 	`pkg-config --libs x11 xsp xi xproto inputproto`
 
 fb_progress_LDFLAGS = \
-	`pkg-config --libs libpng12`
+	`pkg-config --libs libpng12` -ljpeg
 
 anim_shower_LDFLAGS = \
 	`pkg-config --cflags --libs gdk-2.0`
@@ -211,6 +216,15 @@ xset770_SOURCES = \
 
 temp_reaper_SOURCES = \
 	temp-reaper.c
+
+play_sound_LDFLAGS = \
+     `pkg-config --libs gconf-2.0 esound`
+
+play_sound_CFLAGS = \
+     `pkg-config --cflags gconf-2.0 esound`
+
+play_sound_SOURCES = \
+	play-sound.c
 
 CURSOR_NAMES = \
 	00008160000006810000408080010102 \
@@ -387,6 +401,9 @@ anim-shower$(EXEEXT): $(anim_shower_OBJECTS) $(anim_shower_DEPENDENCIES)
 fb-progress$(EXEEXT): $(fb_progress_OBJECTS) $(fb_progress_DEPENDENCIES) 
 	@rm -f fb-progress$(EXEEXT)
 	$(LINK) $(fb_progress_LDFLAGS) $(fb_progress_OBJECTS) $(fb_progress_LDADD) $(LIBS)
+play-sound$(EXEEXT): $(play_sound_OBJECTS) $(play_sound_DEPENDENCIES) 
+	@rm -f play-sound$(EXEEXT)
+	$(LINK) $(play_sound_LDFLAGS) $(play_sound_OBJECTS) $(play_sound_LDADD) $(LIBS)
 runas$(EXEEXT): $(runas_OBJECTS) $(runas_DEPENDENCIES) 
 	@rm -f runas$(EXEEXT)
 	$(LINK) $(runas_LDFLAGS) $(runas_OBJECTS) $(runas_LDADD) $(LIBS)
@@ -412,6 +429,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/ageoffile.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/anim-shower.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/fb-progress.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/play_sound-play-sound.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/runas.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/temp-reaper.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/waitdbus.Po@am__quote@
@@ -433,6 +451,22 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Po' tmpdepfile='$(DEPDIR)/$*.TPo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(COMPILE) -c `$(CYGPATH_W) '$<'`
+
+play_sound-play-sound.o: play-sound.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(play_sound_CFLAGS) $(CFLAGS) -MT play_sound-play-sound.o -MD -MP -MF "$(DEPDIR)/play_sound-play-sound.Tpo" -c -o play_sound-play-sound.o `test -f 'play-sound.c' || echo '$(srcdir)/'`play-sound.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/play_sound-play-sound.Tpo" "$(DEPDIR)/play_sound-play-sound.Po"; else rm -f "$(DEPDIR)/play_sound-play-sound.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='play-sound.c' object='play_sound-play-sound.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/play_sound-play-sound.Po' tmpdepfile='$(DEPDIR)/play_sound-play-sound.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(play_sound_CFLAGS) $(CFLAGS) -c -o play_sound-play-sound.o `test -f 'play-sound.c' || echo '$(srcdir)/'`play-sound.c
+
+play_sound-play-sound.obj: play-sound.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(play_sound_CFLAGS) $(CFLAGS) -MT play_sound-play-sound.obj -MD -MP -MF "$(DEPDIR)/play_sound-play-sound.Tpo" -c -o play_sound-play-sound.obj `if test -f 'play-sound.c'; then $(CYGPATH_W) 'play-sound.c'; else $(CYGPATH_W) '$(srcdir)/play-sound.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/play_sound-play-sound.Tpo" "$(DEPDIR)/play_sound-play-sound.Po"; else rm -f "$(DEPDIR)/play_sound-play-sound.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='play-sound.c' object='play_sound-play-sound.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/play_sound-play-sound.Po' tmpdepfile='$(DEPDIR)/play_sound-play-sound.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(play_sound_CFLAGS) $(CFLAGS) -c -o play_sound-play-sound.obj `if test -f 'play-sound.c'; then $(CYGPATH_W) 'play-sound.c'; else $(CYGPATH_W) '$(srcdir)/play-sound.c'; fi`
 uninstall-info-am:
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
