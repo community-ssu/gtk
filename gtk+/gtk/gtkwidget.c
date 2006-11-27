@@ -2484,7 +2484,18 @@ gtk_widget_set_extension_events_internal (GtkWidget        *widget,
 					  GdkExtensionMode  mode,
 					  GList            *window_list)
 {
+  GList *free_list = NULL;
   GList *l;
+
+  if (window_list == NULL)
+    {
+      if (!GTK_WIDGET_NO_WINDOW (widget))
+	window_list = g_list_prepend (NULL, widget->window);
+      else
+	window_list = gdk_window_get_children (widget->window);
+
+      free_list = window_list;
+    }
 
   for (l = window_list; l != NULL; l = l->next)
     {
@@ -2501,10 +2512,14 @@ gtk_widget_set_extension_events_internal (GtkWidget        *widget,
 					  mode);
 
 	  children = gdk_window_get_children (window);
-	  gtk_widget_set_extension_events_internal (widget, mode, children);
+	  if (children)
+	    gtk_widget_set_extension_events_internal (widget, mode, children);
 	  g_list_free (children);
 	}
     }
+
+  if (free_list)
+    g_list_free (free_list);
 }
 /**
  * gtk_widget_realize:
@@ -2571,17 +2586,7 @@ gtk_widget_realize (GtkWidget *widget)
       
       mode = gtk_widget_get_extension_events (widget);
       if (mode != GDK_EXTENSION_EVENTS_NONE)
-	{
-	  GList *window_list;
-
-	  if (!GTK_WIDGET_NO_WINDOW (widget))
-	    window_list = g_list_prepend (NULL, widget->window);
-	  else
-	    window_list = gdk_window_get_children (widget->window);
-
-	  gtk_widget_set_extension_events_internal (widget, mode, window_list);
-	  g_list_free (window_list);
-	}
+	gtk_widget_set_extension_events_internal (widget, mode, NULL);
     }
 }
 
@@ -6150,7 +6155,10 @@ gtk_widget_set_extension_events (GtkWidget *widget,
   
   if (!modep)
     modep = g_new (GdkExtensionMode, 1);
-  
+
+  if (GTK_WIDGET_REALIZED (widget))
+    gtk_widget_set_extension_events_internal (widget, mode, NULL);
+
   *modep = mode;
   g_object_set_qdata (G_OBJECT (widget), quark_extension_event_mode, modep);
   g_object_notify (G_OBJECT (widget), "extension-events");
