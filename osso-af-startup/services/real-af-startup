@@ -28,7 +28,7 @@ start)
 
   echo "Running xset770 -- the future of xset!"
   # disable keyrepeat for select, menu, plus, minus, escape
-  xset770 -r 36 0 -r 70 0 -r 73 0 -r 74 0 -r 9 0
+  xset770 -r 36 0 -r 70 0 -r 73 0 -r 74 0 -r 9 0 -r 72 0
 
   # block here if device lock is on
   if [ -x /sbin/devlock-blocker ]; then
