@@ -1,5 +1,4 @@
 # Theming for both GtkTreeView and GtkListView.
-include "themespecificgtk"
 
 style "osso-listview" = "osso-logical-colors"
 {

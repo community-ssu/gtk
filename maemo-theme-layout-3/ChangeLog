@@ -1,3 +1,13 @@
+2006-11-27  Michael Dominic K.  <mdk@mdk.am> 
+
+	* rc/gtkrc.maemo_af_desktop: Removing the gtkrc include.
+
+	* rc/gtktreeview: Removing themespecific include.
+
+	* rc/hildonnavigatorpopuplist: Removing themespecific include.
+
+	* scripts/hildon-theme-install-3.in: Fixing the installation paths.
+
 2006-11-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/Makefile.am: Adding the mediaplayer styles.

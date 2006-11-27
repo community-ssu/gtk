@@ -1,4 +1,3 @@
 #! /bin/sh
 
-prefix=@prefix@
-exec hildon-theme-install --layout @datadir@/hildon-theme-layout-3/ "$@"
+exec hildon-theme-install --layout @prefix@/share/hildon-theme-layout-3/ "$@"

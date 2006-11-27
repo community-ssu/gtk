@@ -1,5 +1,4 @@
 # Hildon Navigator Popup List
-include "themespecificgtk"
 
 class "GtkWidget" style "osso-logical-colors"
 
