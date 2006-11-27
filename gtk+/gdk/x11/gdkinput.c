@@ -287,12 +287,6 @@ _gdk_input_window_find(GdkWindow *window)
   return NULL;      /* Not found */
 }
 
-/* FIXME: this routine currently needs to be called between creation
-   and the corresponding configure event (because it doesn't get the
-   root_relative_geometry).  This should work with
-   gtk_window_set_extension_events, but will likely fail in other
-   cases */
-
 void
 gdk_input_set_extension_events (GdkWindow *window, gint mask,
 				GdkExtensionMode mode)
@@ -315,23 +309,35 @@ gdk_input_set_extension_events (GdkWindow *window, gint mask,
 
   if (mask != 0)
     {
-      iw = g_new(GdkInputWindow,1);
+      iw = _gdk_input_window_find (window);
+      if (!iw)
+	{
+	  iw = g_new(GdkInputWindow,1);
 
-      iw->window = window;
-      iw->mode = mode;
+	  iw->window = window;
+	  iw->mode = mode;
 
-      iw->obscuring = NULL;
-      iw->num_obscuring = 0;
-      iw->grabbed = FALSE;
+	  iw->obscuring = NULL;
+	  iw->num_obscuring = 0;
+	  iw->grabbed = FALSE;
 
-      display_x11->input_windows = g_list_append(display_x11->input_windows,iw);
+	  display_x11->input_windows = g_list_append(display_x11->input_windows,iw);
+	}
       window_private->extension_events = mask;
 
+#ifdef XINPUT_XFREE
       /* Add enter window events to the event mask */
-      /* FIXME, this is not needed for XINPUT_NONE */
+      /* this is not needed for XINPUT_NONE */
       gdk_window_set_events (window,
 			     gdk_window_get_events (window) | 
 			     GDK_ENTER_NOTIFY_MASK);
+
+      /* we might not receive ConfigureNotify so get the root_relative_geometry
+       * now, just in case */
+      _gdk_input_get_root_relative_geometry (GDK_WINDOW_XDISPLAY (window),
+					     GDK_WINDOW_XWINDOW (window),
+					     &iw->root_x, &iw->root_y, NULL, NULL);
+#endif
     }
   else
     {
