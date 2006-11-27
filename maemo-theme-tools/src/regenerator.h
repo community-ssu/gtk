@@ -25,10 +25,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifndef                         EXEC_NAME
-#define                         EXEC_NAME "regenerator"
-#endif
-
 int                             main (int argc, char **argv);
 
 void                            show_usage (void);

@@ -37,7 +37,7 @@ GetOptions ( "layout=s" => \$layoutdir,
 
 if ($themedir eq "" or $layoutdir eq "" or $template eq "")
 {
-    die "usage: hildon-install-theme --layout DIR --theme DIR --template FILE\n";
+    die "usage: hildon-theme-install --layout DIR --theme DIR --template FILE\n";
 }
 
 if ($name eq "")
@@ -65,7 +65,7 @@ sub do_substitutions
 
 sub process_gtkrc
 {
-    my $source = "$layoutdir/rc/$_[0]";
+    my $source = "$layoutdir/$_[0]";
     my $file;
 
     open ($file, "< $source");

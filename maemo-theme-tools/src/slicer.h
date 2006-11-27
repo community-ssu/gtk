@@ -27,10 +27,6 @@
 
 #define                         JPEG_QUALITY "99"
 
-#ifndef                         EXEC_NAME
-#define                         EXEC_NAME "slicer"
-#endif
-
 int                             main (int argc, char **argv);
 
 void                            show_usage (void);

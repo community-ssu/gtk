@@ -1,3 +1,19 @@
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* scripts/hildon-theme-install: Fixes to match the latest layout
+	semantics. 
+
+	* src/Makefile.am:
+	* src/colourizer.c:
+	* src/colourizer.h:
+	* src/outliner.c:
+	* src/outliner.h:
+	* src/regenerator.c:
+	* src/regenerator.h:
+	* src/slicer.c:
+	* src/slicer.h: Removing the silly EXEC_ thing and sticking to default
+	g_get_prgname (). Makes more sense.
+
 2006-11-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* configure.ac: Removing pedantic flag.

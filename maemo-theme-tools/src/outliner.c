@@ -86,7 +86,7 @@ void                            show_banner (void)
 /* Show some info about basic usage of the tool */
 void                            show_usage (void)
 {
-        g_print ("Usage: %s <template> <outputimage>\n\n", EXEC_NAME);
+        g_print ("Usage: %s <template> <outputimage>\n\n", g_get_prgname ());
         g_print ("This tool will create an outline image that shows the slicing guides. \n"
                  "You can use this image in your graphics program to check if your drawings\n"
                  "fit the proper areas. \n\n");

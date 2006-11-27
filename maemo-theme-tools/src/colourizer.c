@@ -75,7 +75,7 @@ void                            show_banner (void)
 /* Show some info about basic usage of the tool */
 void                            show_usage (void)
 {
-        g_print ("Usage: %s <template> <image>\n\n", EXEC_NAME);
+        g_print ("Usage: %s <template> <image>\n\n", g_get_prgname ());
         g_print ("This tool will output a Perl substitution array. \n"
                   "It should be used to substitute the Gtk Stock colors in various RC files.\n\n");
 }

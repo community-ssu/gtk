@@ -23,10 +23,6 @@
 #include <glib.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
-#ifndef                         EXEC_NAME
-#define                         EXEC_NAME "colourizer"
-#endif
-
 int                             main (int argc, char **argv);
 
 void                            show_usage (void);

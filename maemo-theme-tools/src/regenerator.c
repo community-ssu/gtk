@@ -88,7 +88,7 @@ void                            show_banner (void)
 /* Show some info about basic usage of the tool */
 void                            show_usage (void)
 {
-        g_print ("Usage: %s <template> <outputimage> [inputdir]\n\n", EXEC_NAME);
+        g_print ("Usage: %s <template> <outputimage> [inputdir]\n\n", g_get_prgname ());
         g_print ("This tool will combine individual images (ie. previously sliced) into one huge\n"
                  "image template as specified by the layout template. Optionally you can specify an\n"
                  "input directory. The tool can load in PNG and JPEG formats.\n\n");
