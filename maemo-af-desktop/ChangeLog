@@ -1,5 +1,11 @@
 2006-11-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: added test on GTK+ for more fine-grained linking
+	* libhildonmenu/Makefile.am: Link against GTK+ and libxml2.
+	Fixes: NB#48504
+
+2006-11-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-window.c:
 	- move acting on the select applets dialog from _dialog_run
 	to a _run signal handler

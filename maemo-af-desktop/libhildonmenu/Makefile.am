@@ -10,7 +10,7 @@ lib_LTLIBRARIES = libhildonmenu.la
 
 EXTRA_DIST =
 
-libhildonmenu_la_LIBADD = -ldl -lc $(GLIB_LIBS)
+libhildonmenu_la_LIBADD = -ldl -lc $(GLIB_LIBS) $(GTK_LIBS) $(LIBXML_LIBS)
 #libhildonmenu_la_LDFLAGS = -version-info 0:0:1
 
 pkgconfigdir = $(libdir)/pkgconfig
