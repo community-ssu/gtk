@@ -274,6 +274,7 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 		} else if (S_ISREG(buf.st_mode) &&
 				g_str_has_suffix(current_path,
 					DESKTOP_FILE_SUFFIX)) {
+            gchar *type = NULL;
 
 			key_file = g_key_file_new();
 
@@ -293,11 +294,11 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 			}
 						
 
-			gchar *type = g_key_file_get_string(
-					key_file,
-					DESKTOP_ENTRY_GROUP,
-					DESKTOP_ENTRY_TYPE_FIELD,
-					NULL);
+			type = g_key_file_get_string(
+                                         key_file,
+                                         DESKTOP_ENTRY_GROUP,
+                                         DESKTOP_ENTRY_TYPE_FIELD,
+                                         NULL);
 
 			/* We're only interested in apps */
 			if ( !type || strcmp(type, "Application") != 0 ) {

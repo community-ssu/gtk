@@ -1,5 +1,10 @@
 2006-11-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* libhildonmenu/libhildonmenu.c: Fixed a potential crash when
+	no Type = is provided in the .desktop file. Fixed: NB#48428
+
+2006-11-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.99.9
 
 2006-11-24  Johan Bilien <johan.bilien@nokia.com>
