@@ -13,7 +13,7 @@ diff -ru dbus-1.0.0/bus/activation.c dbus-1.0.0_modified/bus/activation.c
      }
  
    _dbus_verbose ("Spawning %s ...\n", argv[0]);
-+  putenv("_DBUS_ACTIVATED_SERVICE", service_name, 1);
++  setenv ("_DBUS_ACTIVATED_SERVICE", service_name, 1);
    if (!_dbus_spawn_async_with_babysitter (&pending_activation->babysitter, argv,
                                            child_setup, activation, 
                                            error))
@@ -42,7 +42,7 @@ diff -ru dbus-1.0.0/dbus/dbus-bus.c dbus-1.0.0_modified/dbus/dbus-bus.c
 +const char*
 +dbus_bus_get_activated_service ()
 +{
-+  return getenv("_DBUS_ACTIVATED_SERVICE");
++  return getenv ("_DBUS_ACTIVATED_SERVICE");
 +}
 +
  /** @} */
