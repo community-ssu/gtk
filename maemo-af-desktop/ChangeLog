@@ -1,4 +1,9 @@
-2006-11-24  Johan Bilien <johan.bilien@nokia.com>
+2006-11-27  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-navigator/hn-others-button.c: Systematically check
+	if the menu has been generated before showing. Fixes: NB#48403
+
+2006-11-27  Johan Bilien <johan.bilien@nokia.com>
 
 	* libhildonmenu/libhildonmenu.c: Fixed a potential crash when
 	no Type = is provided in the .desktop file. Fixed: NB#48428

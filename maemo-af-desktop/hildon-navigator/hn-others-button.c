@@ -787,6 +787,9 @@ static void
 hn_others_button_menu_show (HNOthersButton * button)
 {
   g_return_if_fail (button);
+  
+  if (!button->priv->menu)
+    hn_others_button_create_menu (button);
 
   gtk_menu_popup(GTK_MENU(button->priv->menu),
 		 NULL,
