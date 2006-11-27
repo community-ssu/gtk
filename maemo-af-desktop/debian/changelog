@@ -1,3 +1,13 @@
+maemo-af-desktop (2.9.99.10-1) unstable; urgency=low
+
+  * hildon-navigator/hn-others-button.c: Systematically check
+  if the menu has been generated before showing. Fixes: NB#48403
+
+  * libhildonmenu/libhildonmenu.c: Fixed a potential crash when
+  no Type = is provided in the .desktop file. Fixed: NB#48428
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 27 Nov 2006 13:46:36 +0200
+
 maemo-af-desktop (2.9.99.9-1) unstable; urgency=low
 
   * hildon-navigator/hn-keys.[ch]: Replaced XKeysymToKeycode with

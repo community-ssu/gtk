@@ -1,5 +1,9 @@
 2006-11-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.10
+
+2006-11-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-others-button.c: Systematically check
 	if the menu has been generated before showing. Fixes: NB#48403
 
