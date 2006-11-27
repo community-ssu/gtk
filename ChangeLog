@@ -1,5 +1,11 @@
 2006-11-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gdk/x11/gdkinput.c (gdk_input_set_extension_events): Stop leaking
+	memory when called multiple times to enable extension events. Get the
+	root relative geometry in case we're called after ConfigureNotify.
+
+2006-11-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gdk/x11/gdkinput-xfree.c (_gdk_input_other_event,
 	_gdk_input_configure_event, _gdk_input_enter_event): Check the right
 	variable with g_return_if_fail.
