@@ -169,7 +169,7 @@ wait_for_esd_server_to_quiesce (int esd_fd)
     }
 }
 
-static gpointer 
+static int 
 play_sound(gchar *sound_filename,
            gchar *data) 
 {
@@ -207,7 +207,7 @@ play_sound(gchar *sound_filename,
 
     esd_close(sock);
 
-    return NULL;
+    return 0;
 }
 
 int main(int argc, char **argv) {
