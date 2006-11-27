@@ -184,19 +184,19 @@
   )
 )
 
-;(define-method set_ui_manager
-;  (of-object "HildonApp")
-;  (c-name "hildon_app_set_ui_manager")
-;  (return-type "none")
-;  (parameters
-;    '("GtkUIManager*" "uim")
-;  )
-;)
+(define-method set_ui_manager
+  (of-object "HildonApp")
+  (c-name "hildon_app_set_ui_manager")
+  (return-type "none")
+  (parameters
+    '("GtkUIManager*" "uim")
+  )
+)
 
-;(define-method get_ui_manager
-;  (of-object "HildonApp")
-;  (c-name "hildon_app_get_ui_manager")
-;  (return-type "GtkUIManager*")
-;)
+(define-method get_ui_manager
+  (of-object "HildonApp")
+  (c-name "hildon_app_get_ui_manager")
+  (return-type "GtkUIManager*")
+)
 
 

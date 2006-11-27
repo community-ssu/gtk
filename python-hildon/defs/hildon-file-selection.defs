@@ -229,14 +229,14 @@
   (return-type "gboolean")
 )
 
-;(define-method set_filter
-;  (of-object "HildonFileSelection")
-;  (c-name "hildon_file_selection_set_filter")
-;  (return-type "none")
-;  (parameters
-;    '("GtkFileFilter*" "filter")
-;  )
-;)
+(define-method set_filter
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_filter")
+  (return-type "none")
+  (parameters
+    '("GtkFileFilter*" "filter")
+  )
+)
 
 (define-method get_filter
   (of-object "HildonFileSelection")

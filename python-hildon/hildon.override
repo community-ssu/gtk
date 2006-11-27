@@ -42,6 +42,7 @@ import gtk.Button as PyGtkButton_Type
 import gtk.Container as PyGtkContainer_Type
 import gtk.Dialog as PyGtkDialog_Type
 import gtk.EventBox as PyGtkEventBox_Type
+import gtk.FileFilter as PyGtkFileFilter_Type
 import gtk.ListStore as PyGtkListStore_Type
 import gtk.Menu as PyGtkMenu_Type
 import gtk.Notebook as PyGtkNotebook_Type
@@ -50,6 +51,7 @@ import gtk.Scale as PyGtkScale_Type
 import gtk.SizeGroup as PyGtkSizeGroup_Type
 import gtk.TextBuffer as PyGtkTextBuffer_Type
 import gtk.Toolbar as PyGtkToolbar_Type
+import gtk.UIManager as PyGtkUIManager_Type
 import gtk.Window as PyGtkWindow_Type
 import gtk.Widget as PyGtkWidget_Type
 import pango.FontDescription as PyPangoFontDescription_Type
@@ -159,7 +161,8 @@ _wrap_hildon_file_chooser_dialog_new(PyGObject *self, PyObject *args, PyObject *
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O!O:HildonFileChooserDialog.__init__", kwlist, &PyGtkWindow_Type, &parent, &py_action))
         return -1;
-    if (pyg_enum_get_value(GTK_TYPE_FILE_CHOOSER_ACTION, py_action, (gint *)&action))
+    /* void * */
+    if (pyg_enum_get_value(GTK_TYPE_FILE_CHOOSER_ACTION, py_action, (gint *)(void *)&action))
         return -1;
     self->obj = (GObject *)hildon_file_chooser_dialog_new(GTK_WINDOW(parent->obj), action);
 
@@ -350,7 +353,8 @@ _wrap_hildon_weekday_picker_set_day(PyGObject *self, PyObject *args, PyObject *k
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.set_day", kwlist, &py_day))
         return NULL;
-    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+    /* void * */
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)(void *)&day))
         return NULL;
     hildon_weekday_picker_set_day(HILDON_WEEKDAY_PICKER(self->obj), day);
     Py_INCREF(Py_None);
@@ -368,7 +372,8 @@ _wrap_hildon_weekday_picker_unset_day(PyGObject *self, PyObject *args, PyObject 
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.unset_day", kwlist, &py_day))
         return NULL;
-    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+    /* void * */
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)(void *)&day))
         return NULL;
     hildon_weekday_picker_unset_day(HILDON_WEEKDAY_PICKER(self->obj), day);
     Py_INCREF(Py_None);
@@ -386,7 +391,8 @@ _wrap_hildon_weekday_picker_toggle_day(PyGObject *self, PyObject *args, PyObject
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.toggle_day", kwlist, &py_day))
         return NULL;
-    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+    /* void * */
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)(void *)&day))
         return NULL;
     hildon_weekday_picker_toggle_day(HILDON_WEEKDAY_PICKER(self->obj), day);
     Py_INCREF(Py_None);
@@ -405,7 +411,8 @@ _wrap_hildon_weekday_picker_isset_day(PyGObject *self, PyObject *args, PyObject 
 
     if (!PyArg_ParseTupleAndKeywords(args, kwargs, "O:HildonWeekdayPicker.isset_day", kwlist, &py_day))
         return NULL;
-    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)&day))
+    /* void * */
+    if (pyg_enum_get_value(HILDON_TYPE_DATE_WEEKDAY, py_day, (gint *)(void *)&day))
         return NULL;
     ret = hildon_weekday_picker_isset_day(HILDON_WEEKDAY_PICKER(self->obj), day);
     return PyBool_FromLong(ret);

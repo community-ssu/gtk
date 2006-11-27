@@ -36,6 +36,7 @@
 (include "defs/hildon-set-password-dialog.defs")
 (include "defs/hildon-sort-dialog.defs")
 (include "defs/hildon-system-sound.defs")
+;;Wrong name in hildon-telephone-editor.h
 ;;(include "defs/hildon-telephone-editor.defs")
 (include "defs/hildon-time-editor.defs")
 (include "defs/hildon-time-picker.defs")
