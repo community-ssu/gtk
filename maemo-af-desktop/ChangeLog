@@ -1,5 +1,13 @@
 2006-11-27  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/hildon-home-window.c:
+	- move acting on the select applets dialog from _dialog_run
+	to a _run signal handler
+	- send RESPONSE_CANCEL to that dialog if home ends up in the
+	background. Fixes: NB#48438
+
+2006-11-27  Johan Bilien <johan.bilien@nokia.com>
+
 	* configure.ac: 2.9.99.10
 
 2006-11-27  Johan Bilien <johan.bilien@nokia.com>

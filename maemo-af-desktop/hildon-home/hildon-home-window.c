@@ -113,6 +113,8 @@ struct _HildonHomeWindowPrivate
   GtkWidget *applet_area;
   GtkWidget *main_area;
 
+  GtkWidget *select_applet_dialog;
+
   GtkWidget *layout_mode_banner;
   guint      layout_mode_banner_to;
 
@@ -175,11 +177,26 @@ hildon_home_window_show_layout_mode_banner (HildonHomeWindow *window)
 }
 
 static void
+hildon_home_window_select_applets_response (HildonHomeWindow *window,
+                                            gint response)
+{
+  HildonHomeWindowPrivate *priv = window->priv;
+
+  gtk_widget_destroy (priv->select_applet_dialog);
+  priv->select_applet_dialog = NULL;
+  
+  if (response != GTK_RESPONSE_OK)
+    return;
+
+  hildon_home_area_sync_from_list (
+                          HILDON_HOME_AREA (priv->applet_area),
+                          priv->plugin_list);
+}
+
+static void
 titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
                                      HildonHomeWindow   *window)
 {
-  GtkWidget *dialog;
-  gint response;
   HildonHomeWindowPrivate *priv = window->priv;
   g_debug ("select applets activate\n");
 
@@ -194,19 +211,15 @@ titlebar_select_applets_activate_cb (HildonHomeTitlebar *titlebar,
   hildon_home_area_sync_to_list (HILDON_HOME_AREA (priv->applet_area),
                                  priv->plugin_list);
 
-  dialog = hildon_home_select_applets_dialog_new_with_model 
-                                    (GTK_TREE_MODEL (priv->plugin_list),
-                                     priv->osso_context);
+  priv->select_applet_dialog = hildon_home_select_applets_dialog_new_with_model 
+      (GTK_TREE_MODEL (priv->plugin_list),
+       priv->osso_context);
 
-  response = gtk_dialog_run (GTK_DIALOG (dialog));
-  gtk_widget_destroy (dialog);
-  
-  if (response != GTK_RESPONSE_OK)
-    return;
+  g_signal_connect_swapped (priv->select_applet_dialog, "response",
+                            G_CALLBACK (hildon_home_window_select_applets_response),
+                            window);
 
-  hildon_home_area_sync_from_list (
-                          HILDON_HOME_AREA (priv->applet_area),
-                          priv->plugin_list);
+  gtk_widget_show_all (priv->select_applet_dialog);
 
 }
 
@@ -610,6 +623,10 @@ hildon_home_window_background (HildonHomeWindow   *window,
 
           g_free (user_filename);
         }
+
+      if (priv->select_applet_dialog)
+        gtk_dialog_response (GTK_DIALOG (priv->select_applet_dialog),
+                             GTK_RESPONSE_CANCEL);
 
       gtk_container_foreach (GTK_CONTAINER (priv->applet_area),
                              (GtkCallback)hildon_home_applet_set_is_background,
