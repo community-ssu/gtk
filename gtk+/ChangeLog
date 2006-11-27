@@ -1,3 +1,9 @@
+2006-11-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gdk/x11/gdkinput-xfree.c (_gdk_input_other_event,
+	_gdk_input_configure_event, _gdk_input_enter_event): Check the right
+	variable with g_return_if_fail.
+
 2006-11-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_tap_and_hold_setup_real): Attach the
