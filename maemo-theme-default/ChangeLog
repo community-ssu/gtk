@@ -1,3 +1,12 @@
+2006-11-27  Michael Dominic K.  <mdk@mdk.am> 
+
+	* Makefile.am:
+	* configure.ac: Fixes.
+
+	* debian/control: Adding cacher as a dependency.
+
+	* debian/postinst: Adding a postinst script to run the cacher.
+
 2006-11-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* configure.ac: Check the existance of the layout using pkgconfig,

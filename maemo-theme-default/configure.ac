@@ -19,7 +19,7 @@ LAYOUT_NAME="hildon-theme-layout-3"
 AC_SUBST(THEME_DIR)
 AC_SUBST(THEME_NAME)
 AS_AC_EXPAND(LAYOUT_DIR, "${datadir}/$LAYOUT_NAME")
-AS_AC_EXPAND(THEME_FULL_DIR, "${datadir}/$THEME_DIR")
+AS_AC_EXPAND(THEME_FULL_DIR, "${datadir}/themes/$THEME_DIR")
 
 dnl check the layout installation
 PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME")

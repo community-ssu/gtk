@@ -15,7 +15,7 @@ install:
 	hildon-theme-install-3					\
             --name $(THEME_NAME)				\
             --template $(srcdir)/template/template.png		\
-            --theme $(datadir)/themes/$(THEME_DIR)/		\
+            --theme $(THEME_FULL_DIR)/				\
             --destdir $(DESTDIR)
 
 

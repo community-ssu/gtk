@@ -7,5 +7,5 @@ Standards-Version: 3.6.0
 
 Package: hildon-theme-default
 Architecture: all
-Depends: gtk2-engines-sapwood, ui-fonts, osso-icons
+Depends: gtk2-engines-sapwood, ui-fonts, osso-icons, hildon-theme-cacher
 Description: A maemo/hildon theme. 
