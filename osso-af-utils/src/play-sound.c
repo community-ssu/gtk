@@ -153,6 +153,9 @@ wait_for_esd_server_to_quiesce (int esd_fd)
             buf = malloc (available_bytes) ;
             while (TRUE)
             {
+                struct timeval tv;
+                int first_time = 1;
+                
                 ioctl (monitor_fd, FIONREAD, &available_bytes) ;
                 if (available_bytes > max_avail)
                 {
@@ -160,9 +163,21 @@ wait_for_esd_server_to_quiesce (int esd_fd)
 					max_avail = available_bytes ;
                 }
                 read_return = read (monitor_fd, &buf, available_bytes) ;
-                if (read_return <= 0) break ;
+                if (read_return < 0)
+                {
+                    break ;
+                }
+                else if (read_return == 0 && !first_time)
+                {
+                    break ;
+                }
+
+                tv.tv_sec = 0;
+                tv.tv_usec = 200000;
+                select (0, NULL, NULL, NULL, &tv); /* avoid tight loop */
+                first_time = 0;
             }
-			free (buf) ;
+            free (buf) ;
             close (monitor_fd) ;
         }
         esd_free_server_info (esd_server_info) ;
