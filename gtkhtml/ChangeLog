@@ -1,6 +1,12 @@
 2006-11-27  Jakub Pavelek <jakub.pavelek@nokia.com>
 
+	* added gtkhtml_image_magnification.diff to scale images with text
+	* Fixes: NB#47404
+
+2006-11-27  Jakub Pavelek <jakub.pavelek@nokia.com>
+
 	* added gtkhtml_unrealize_fix.diff to get rid of glib critical
+	* Fixes: NB#46236
 
 2006-11-20  Jakub Pavelek <jakub.pavelek@nokia.com>
 

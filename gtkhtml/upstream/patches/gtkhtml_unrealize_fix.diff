@@ -1,3 +1,10 @@
+# Do not give me window that is going to be destroyed the next moment!
+#
+# Copyright (C) 2006 Nokia Corporation.
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
+#
+
 diff -ru gtkhtml-3.9.1/src/gtkhtml.c gtkhtml-3.9.1-unref-fix/src/gtkhtml.c
 --- gtkhtml-3.9.1/src/gtkhtml.c	2006-11-22 19:57:01.000000000 +0200
 +++ gtkhtml-3.9.1-unref-fix/src/gtkhtml.c	2006-11-22 19:59:42.000000000 +0200
