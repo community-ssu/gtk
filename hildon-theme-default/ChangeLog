@@ -1,4 +1,8 @@
-2006-11-27  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* template/template.png: Updating to the latest template image.
+
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* Makefile.am:
 	* configure.ac: Fixes.
