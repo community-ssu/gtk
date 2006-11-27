@@ -1,4 +1,8 @@
-2006-11-27  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/layout.txt: Updating to new layout coordinates.
+
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkrc.maemo_af_desktop: Removing the gtkrc include.
 
