@@ -1,5 +1,13 @@
 2006-11-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkwidget.c (gtk_widget_set_extension_events_internal): Accept
+	NULL as window list in which case the list is taken from the widget. 
+	(gtk_widget_realize): simplify accordingly
+	(gtk_widget_set_extension_events): Update the extension events on
+	GdkWindows if the widget is already realized.
+
+2006-11-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gdk/x11/gdkinput.c (gdk_input_set_extension_events): Stop leaking
 	memory when called multiple times to enable extension events. Get the
 	root relative geometry in case we're called after ConfigureNotify.
