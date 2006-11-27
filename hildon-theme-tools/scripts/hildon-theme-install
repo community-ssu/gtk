@@ -193,6 +193,7 @@ sub add_color_substitutions
     $substitutions{qw{@MenuInfoTextColor@}}       = "#303030";
 
     $substitutions{qw{@LowLightColor@}}           = "#d4e6fd80";
+    $substitutions{qw{@VKBButtonTextColor@}}      = "#000000";
 
     # Override with real colors
    

@@ -1,5 +1,10 @@
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* scripts/hildon-theme-install: Adding the default text color for
+	VKBButtonTextColor.
+
+2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* configure.ac: Removing -Werror flag. Breaks on ubuntu, etc. 
 
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
