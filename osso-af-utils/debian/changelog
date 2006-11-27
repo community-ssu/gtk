@@ -1,10 +1,9 @@
 osso-af-utils (1.12-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added play-sound utility and JPEG loading to fb-progress. Fixes: NB#47604
     (Patches from Riku Voipio and Gabriel Schulhof.)
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 27 Nov 2006 15:40:56 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 27 Nov 2006 17:21:10 +0200
 
 osso-af-utils (1.11-1) unstable; urgency=low
 
