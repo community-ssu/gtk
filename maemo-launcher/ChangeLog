@@ -1,5 +1,9 @@
 2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	* configure.ac (HILDON_DEPENDS): Add clinkc and clinkcav.
+
+2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.c (clean_childs): Do not use asprintf, and print
 	the strings directly instead.
 	* launcher/summoner.c (main): Check for asprintf errors.
