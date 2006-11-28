@@ -28,5 +28,5 @@ static char rcsid =
 #include "SDL_dgavideo.h"
 
 /* Functions to be exported */
-extern void DGA_PumpEvents(_THIS, int wait_for_event);
+extern void DGA_PumpEvents(_THIS);
 extern void DGA_InitOSKeymap(_THIS);

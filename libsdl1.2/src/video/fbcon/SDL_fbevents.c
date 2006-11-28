@@ -928,12 +928,11 @@ static void handle_keyboard(_THIS)
 	}
 }
 
-void FB_PumpEvents(_THIS, int wait_for_event)
+void FB_PumpEvents(_THIS)
 {
 	fd_set fdset;
 	int max_fd;
-	struct timeval zero = { 0, 0 };
-	struct timeval *timeout = ((wait_for_event) ? NULL : &zero);
+	static struct timeval zero;
 
 	do {
 		posted = 0;
@@ -952,7 +951,7 @@ void FB_PumpEvents(_THIS, int wait_for_event)
 				max_fd = mouse_fd;
 			}
 		}
-		if ( select(max_fd+1, &fdset, NULL, NULL, timeout) > 0 ) {
+		if ( select(max_fd+1, &fdset, NULL, NULL, &zero) > 0 ) {
 			if ( keyboard_fd >= 0 ) {
 				if ( FD_ISSET(keyboard_fd, &fdset) ) {
 					handle_keyboard(this);

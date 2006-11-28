@@ -37,7 +37,7 @@ static char rcsid =
 #include "SDL_dgaevents_c.h"
 
 /* Heheh we're using X11 event code */
-extern int X11_Pending(Display *display, int wait_for_event);
+extern int X11_Pending(Display *display);
 extern void X11_InitKeymap(void);
 extern SDL_keysym *X11_TranslateKey(Display *display, XKeyEvent *xkey,
 				    KeyCode kc, SDL_keysym *keysym);
@@ -94,13 +94,12 @@ static int DGA_DispatchEvent(_THIS)
 	return(posted);
 }
 
-void DGA_PumpEvents(_THIS, int wait_for_event)
+void DGA_PumpEvents(_THIS)
 {
 	/* Keep processing pending events */
 	LOCK_DISPLAY();
-	while ( X11_Pending(DGA_Display, wait_for_event) ) {
+	while ( X11_Pending(DGA_Display) ) {
 		DGA_DispatchEvent(this);
-		wait_for_event = 0;
 	}
 	UNLOCK_DISPLAY();
 }

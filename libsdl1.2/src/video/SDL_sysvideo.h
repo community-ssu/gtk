@@ -269,14 +269,8 @@ struct SDL_VideoDevice {
 	/* Initialize keyboard mapping for this driver */
 	void (*InitOSKeymap)(_THIS);
 
-	/* Handle any queued OS events
-	   wait_for_event is an optimization...drivers can ignore it and return
-	   immediately even if no new events are available, but if the system
-	   can put the process to sleep until an event arrives, they should
-	   do so if this variable is non-zero. Otherwise, SDL_WaitEvent() will
-	   poll and sleep in a loop to simulate the behaviour.
-	*/
-	void (*PumpEvents)(_THIS, int wait_for_event);
+	/* Handle any queued OS events */
+	void (*PumpEvents)(_THIS);
 
 	/* * * */
 	/* Data common to all drivers */

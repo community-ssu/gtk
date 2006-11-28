@@ -96,26 +96,21 @@ static int SDL_GobbleEvents(void *unused)
 	while ( SDL_EventQ.active ) {
 		SDL_VideoDevice *video = current_video;
 		SDL_VideoDevice *this  = current_video;
-		int wait_for_event = 0;  /* !!! FIXME: sanity check, then set to 1. */
-
-#ifndef DISABLE_JOYSTICK
-		/* Check for joystick state change */
-		/* !!! FIXME: Check for OPEN sticks, not existing ones... */
-		if ( SDL_numjoysticks && (SDL_eventstate & SDL_JOYEVENTMASK) ) {
-			wait_for_event = 0;  /* !!! FIXME: We can't block twice in here! */
-			SDL_JoystickUpdate();
-		}
-#endif
-
-		/* Queue pending key-repeat events */
-		if (SDL_CheckKeyRepeat()) {
-			wait_for_event = 0;  /* can't block until key is unpressed. */
-		}
 
 		/* Get events from the video subsystem */
 		if ( video ) {
-			video->PumpEvents(this, wait_for_event);
+			video->PumpEvents(this);
 		}
+
+		/* Queue pending key-repeat events */
+		SDL_CheckKeyRepeat();
+
+#ifndef DISABLE_JOYSTICK
+		/* Check for joystick state change */
+		if ( SDL_numjoysticks && (SDL_eventstate & SDL_JOYEVENTMASK) ) {
+			SDL_JoystickUpdate();
+		}
+#endif
 
 		/* Give up the CPU for the rest of our timeslice */
 		SDL_EventLock.safe = 1;
@@ -348,35 +343,34 @@ int SDL_PeepEvents(SDL_Event *events, int numevents, SDL_eventaction action,
 }
 
 /* Run the system dependent event loops */
-static void pump_events(int wait_for_event)
+void SDL_PumpEvents(void)
 {
 	if ( !SDL_EventThread ) {
 		SDL_VideoDevice *video = current_video;
 		SDL_VideoDevice *this  = current_video;
 
+		/* Get events from the video subsystem */
+		if ( video ) {
+			video->PumpEvents(this);
+		}
+
+		/* Queue pending key-repeat events */
+		SDL_CheckKeyRepeat();
+
 #ifndef DISABLE_JOYSTICK
 		/* Check for joystick state change */
-		/* !!! FIXME: Check for OPEN sticks, not existing ones... */
 		if ( SDL_numjoysticks && (SDL_eventstate & SDL_JOYEVENTMASK) ) {
-			wait_for_event = 0;  /* !!! FIXME: We can't block twice in here! */
 			SDL_JoystickUpdate();
 		}
 #endif
 	}
 }
 
-
-void SDL_PumpEvents(void)
-{
-	pump_events(0);
-}
-
-
 /* Public functions */
 
 int SDL_PollEvent (SDL_Event *event)
 {
-	pump_events(0);
+	SDL_PumpEvents();
 
 	/* We can't return -1, just return 0 (no event) on error */
 	if ( SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_ALLEVENTS) <= 0 )
@@ -387,7 +381,7 @@ int SDL_PollEvent (SDL_Event *event)
 int SDL_WaitEvent (SDL_Event *event)
 {
 	while ( 1 ) {
-		pump_events(1);
+		SDL_PumpEvents();
 		switch(SDL_PeepEvents(event, 1, SDL_GETEVENT, SDL_ALLEVENTS)) {
 		    case -1: return 0;
 		    case 1: return 1;
