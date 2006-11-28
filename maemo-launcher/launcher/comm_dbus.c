@@ -95,7 +95,7 @@ main()
 {
   info("testing comm-dbus layer ... ");
 
-  comm_dbus_send_app_died("/usr/bin/maemo-launcher", 1000, 150);
+  comm_dbus_send_app_died(LAUNCHER, 1000, 150);
 
   info("done.\n");
 

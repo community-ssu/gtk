@@ -36,7 +36,7 @@ booster_module_load(booster_t *booster)
   char *booster_sym;
   char *error_s;
 
-  asprintf(&booster_path, BOOSTER_DIR "/maemo-booster-%s.so", booster->name);
+  asprintf(&booster_path, BOOSTER_DIR "/booster-%s.so", booster->name);
   if (!booster_path)
     die(40, "allocating booster module path\n");
 

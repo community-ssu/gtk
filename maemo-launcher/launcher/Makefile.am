@@ -4,31 +4,31 @@
 #
 
 helperdir = $(libdir)/maemo-launcher
-helper_PROGRAMS = maemo-defender
+helper_PROGRAMS = defender
 
-DEFENDER = "\"$(helperdir)/maemo-defender\""
+DEFENDER = "\"$(helperdir)/defender\""
 LAUNCHER = "\"$(bindir)/maemo-launcher\""
 
-maemo_defender_SOURCES = defender.c report.c report.h
-maemo_defender_CPPFLAGS = \
-	-DPROG_NAME="\"maemo-defender\"" \
+defender_SOURCES = defender.c report.c report.h
+defender_CPPFLAGS = \
+	-DPROG_NAME="\"defender\"" \
 	-DLAUNCHER=$(LAUNCHER) \
 	-DDEFENDER=$(DEFENDER)
 
 boosterdir =  $(libdir)/maemo-launcher
-booster_PROGRAMS = maemo-booster-null.so maemo-booster-gtk.so
+booster_PROGRAMS = booster-null.so booster-gtk.so
 
 BOOSTER_DIR = "\"$(boosterdir)\""
 
-maemo_booster_null_so_SOURCES = booster_null.c
-maemo_booster_null_so_CFLAGS = -fPIC
-maemo_booster_null_so_LDFLAGS = -shared -fPIC
+booster_null_so_SOURCES = booster_null.c
+booster_null_so_CFLAGS = -fPIC
+booster_null_so_LDFLAGS = -shared -fPIC
 
-maemo_booster_gtk_so_SOURCES = booster_gtk.c booster_gtk.h
-maemo_booster_gtk_so_CFLAGS = -fPIC
-maemo_booster_gtk_so_LDFLAGS = -shared -fPIC
-maemo_booster_gtk_so_CPPFLAGS = $(BOOSTER_GTK_CFLAGS)
-maemo_booster_gtk_so_LDADD = $(BOOSTER_GTK_LIBS)
+booster_gtk_so_SOURCES = booster_gtk.c booster_gtk.h
+booster_gtk_so_CFLAGS = -fPIC
+booster_gtk_so_LDFLAGS = -shared -fPIC
+booster_gtk_so_CPPFLAGS = $(BOOSTER_GTK_CFLAGS)
+booster_gtk_so_LDADD = $(BOOSTER_GTK_LIBS)
 
 bin_PROGRAMS = maemo-launcher maemo-invoker maemo-summoner
 

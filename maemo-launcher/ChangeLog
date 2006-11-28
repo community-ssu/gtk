@@ -1,5 +1,39 @@
 2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	Unbranding (second part).
+
+	* launcher/comm_dbus.c (main): Replace explicit maemo-launcher string
+	path with the LAUNCHER macro.
+	* launcher/booster.c (booster_module_load): Rename booster modules
+	from 'maemo-booster-NAME.so' to 'booster-NAME.so'.
+	* launcher/Makefile.am (helper_PROGRAMS): Rename maemo-defender to
+	defender.
+	(DEFENDER): Likewise.
+	(maemo_defender_SOURCES): Renamed to ...
+	(defender_SOURCES): ... this.
+	(maemo_defender_CPPFLAGS): Renamed to ...
+	(defender_CPPFLAGS): ... this.
+	(booster_PROGRAMS): Rename booster modules from 'maemo-booster-NAME.so'
+	to 'booster-NAME.so'.
+	(maemo_booster_null_so_SOURCES): Renamed to ...
+	(booster_null_so_SOURCES): ... this.
+	(maemo_booster_null_so_CFLAGS): Renamed to ...
+	(booster_null_so_CFLAGS): ... this.
+	(maemo_booster_null_so_LDFLAGS): Renamed to ...
+	(booster_null_so_LDFLAGS): ... this.
+	(maemo_booster_gtk_so_SOURCES): Renamed to ...
+	(booster_gtk_so_SOURCES): ... this.
+	(maemo_booster_gtk_so_CFLAGS): Renamed to ...
+	(booster_gtk_so_CFLAGS): ... this.
+	(maemo_booster_gtk_so_LDFLAGS): Renamed to ...
+	(booster_gtk_so_LDFLAGS): ... this.
+	(maemo_booster_gtk_so_CPPFLAGS): Renamed to ...
+	(booster_gtk_so_CPPFLAGS): ... this.
+	(maemo_booster_gtk_so_LDADD): Renamed to ...
+	(booster_gtk_so_LDADD): ... this.
+
+2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	Unbranding (first part).
 
 	* launcher/comm_dbus.h (MAEMO_LAUNCHER_PATH): Renamed to ...
