@@ -2041,7 +2041,7 @@ gtk_entry_motion_notify (GtkWidget      *widget,
     return TRUE;
 
   if (event->is_hint || (entry->text_area != event->window))
-    gdk_window_get_pointer (entry->text_area, NULL, NULL, NULL);
+    gdk_device_get_state (event->device, event->window, NULL, NULL);
 
   if (entry->in_drag)
     {

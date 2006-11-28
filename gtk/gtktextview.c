@@ -4306,18 +4306,16 @@ gtk_text_view_motion_event (GtkWidget *widget, GdkEventMotion *event)
 
   gtk_text_view_unobscure_mouse_cursor (text_view);
 
+  if (event->is_hint)
+    gdk_device_get_state (event->device, event->window, NULL, NULL);
+
   if (event->window == text_view->text_window->bin_window &&
       text_view->drag_start_x >= 0)
     {
-      gint x, y;
-
-      gdk_window_get_pointer (text_view->text_window->bin_window,
-                              &x, &y, NULL);
-
       if (gtk_drag_check_threshold (widget,
 				    text_view->drag_start_x, 
 				    text_view->drag_start_y,
-				    x, y))
+				    event->x, event->y))
         {
           GtkTextIter iter;
           gint buffer_x, buffer_y;
@@ -5742,14 +5740,15 @@ selection_motion_event_handler (GtkTextView *text_view, GdkEventMotion *event, g
 {
   SelectionGranularity granularity = GPOINTER_TO_INT (data);
 
+  if (event->is_hint)
+    gdk_device_get_state (event->device, event->window, NULL, NULL);
+
   if (granularity == SELECT_CHARACTERS) 
     {
       move_mark_to_pointer_and_scroll (text_view, "insert");
     }
   else 
     {
-      gint x, y;
-      GdkModifierType state;
       GtkTextIter start, end;
       GtkTextIter old_start, old_end;    
       GtkTextIter ins, bound;    
@@ -5757,9 +5756,6 @@ selection_motion_event_handler (GtkTextView *text_view, GdkEventMotion *event, g
       
       buffer = get_buffer (text_view);
 
-      gdk_window_get_pointer (text_view->text_window->bin_window,
-			      &x, &y, &state);
-      
       gtk_text_layout_get_iter_at_pixel (text_view->layout,
 					 &start,
 					 event->x + text_view->xoffset,
