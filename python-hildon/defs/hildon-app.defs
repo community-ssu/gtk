@@ -20,7 +20,6 @@
 ;  )
 ;)
 
-
 ;; From hildon-app.h
 
 ;(define-function hildon_zoom_level_get_type
@@ -144,7 +143,7 @@
   (return-type "gboolean")
   (parameters
     '("gpointer" "view_ptr")
-    '("unsigned-long" "view_id")
+    '("unsigned long" "view_id")
   )
 )
 
@@ -162,7 +161,7 @@
   (c-name "hildon_app_unregister_view_with_id")
   (return-type "none")
   (parameters
-    '("unsigned-long" "view_id")
+    '("unsigned long" "view_id")
   )
 )
 

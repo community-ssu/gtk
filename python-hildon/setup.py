@@ -38,12 +38,13 @@ class PyHildonBuild(build):
 		filenames = ['hildon',]
 		for filename in filenames:
 			cmdtoexec = 'pygtk-codegen-2.0 \
-			    --register '+defsdir+'/gdk.defs \
+                            --register '+defsdir+'/gdk.defs \
 			    --register '+defsdir+'/gtk-types.defs \
 			    --register '+defsdir+'/gtk.defs \
 			    --register '+defsdir+'/gtk-base.defs \
 			    --register '+defsdir+'/pango-types.defs \
-        		    --register defs/hildon-grid-item.defs \
+                            --register defs/missing-types.defs \
+                            --register defs/hildon-grid-item.defs \
 			    --override '+filename+'.override \
 			    --prefix py'+filename+' '+filename+'.defs > gen-'+filename+'.c \
 			&& cp gen-'+filename+'.c '+filename+'.c \

@@ -1,0 +1,7 @@
+(define-pointer Gpointer
+  (c-name "gpointer")
+)
+
+(define-pointer Ulong
+  (c-name "unsigned long")
+)
