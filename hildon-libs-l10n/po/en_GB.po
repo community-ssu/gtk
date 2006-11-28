@@ -515,7 +515,7 @@ msgstr "Font size:"
 
 #  Trailer text for Choicelist in Font - dialog
 msgid "ecdg_va_font_size_trailer"
-msgstr "  pt"
+msgstr " pt"
 
 #  Colour Selector in Font - dialog
 msgid "ecdg_fi_font_colour_selector"
