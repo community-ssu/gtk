@@ -136,7 +136,7 @@ getenv_yesno(const char *env, gboolean def)
 static void
 set_focus_forall_cb (GtkWidget *widget, gpointer data)
 {
-  gboolean focus = GPOINTER_TO_INT(data);
+  gboolean focus = TRUE;
   static int depth = 0;
 
   depth++;
@@ -201,7 +201,9 @@ hn_window_load_plugins (HildonNavigatorWindow *window,
   gchar *config_file;
   const char *home_dir;
   HildonNavigatorPanel *panel = HILDON_NAVIGATOR_PANEL (panelptr);
-
+  HildonNavigatorWindowPrivate *priv = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
+  gboolean focus = TRUE;
+  
   home_dir = getenv ("HOME");
   
   config_file = g_strdup_printf  ("%s%s", home_dir, NAVIGATOR_USER_PLUGINS);
@@ -211,6 +213,10 @@ hn_window_load_plugins (HildonNavigatorWindow *window,
     hn_panel_load_plugins_from_file (panel, config_file);
   else
     hn_panel_load_plugins_from_file (panel, NAVIGATOR_FACTORY_PLUGINS);
+
+  gtk_container_forall (GTK_CONTAINER (priv->panel), 
+			set_focus_forall_cb,
+                        GINT_TO_POINTER (focus));
 
   g_free (config_file);
 }
@@ -261,7 +267,6 @@ hn_window_constructor (GType gtype,
 		          priv->panel);
    
   priv->others_button = hn_others_button_new ();
-  
   if (priv->others_button)
     hn_panel_add_button ( HILDON_NAVIGATOR_PANEL (priv->panel),
 			  priv->others_button);
@@ -384,12 +389,6 @@ hn_window_set_focus (HildonNavigatorWindow *window,
 
   gtk_window_set_accept_focus (GTK_WINDOW (window), focus);
 
-#ifndef TN_ALWAYS_FOCUSABLE
-  gtk_container_forall (GTK_CONTAINER (priv->panel), 
-			set_focus_forall_cb,
-                        GINT_TO_POINTER (focus));
-#endif
-
   if (focus)
     gtk_window_present   (GTK_WINDOW (window));
   else
@@ -442,6 +441,10 @@ hn_window_get_button_focus (HildonNavigatorWindow *window, gint what)
 
   priv = HILDON_NAVIGATOR_WINDOW_GET_PRIVATE (window);
 
+  plugins = 
+   hn_panel_peek_plugins (HILDON_NAVIGATOR_PANEL (priv->panel));
+
+
   switch (what)
   {
     case HN_TN_ACTIVATE_OTHERS_MENU:
@@ -449,16 +452,17 @@ hn_window_get_button_focus (HildonNavigatorWindow *window, gint what)
      break;
     case HN_TN_ACTIVATE_MAIN_MENU:
      break;
-    default:
-     plugins = 
-       hn_panel_peek_plugins (HILDON_NAVIGATOR_PANEL (priv->panel));
-
+    case HN_TN_ACTIVATE_PLUGIN1_MENU:
      if (plugins)
-       ret = GTK_WIDGET (plugins->data);
-
-     g_list_free (plugins);
+       ret = GTK_BIN (plugins->data)->child;
+     break;
+    case HN_TN_ACTIVATE_PLUGIN2_MENU:
+     if (plugins && plugins->next)
+       ret = GTK_BIN ((plugins->next)->data)->child;
      break;
   }
+     
+  g_list_free (plugins);
 
   return ret;
 }
