@@ -315,6 +315,10 @@ hn_app_menu_item_constructor (GType                  type,
                          error->message);
               g_error_free (error);
               error = NULL;
+            }
+
+          if (!app_pixbuf)
+            {
               app_pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
                                                      AS_MENU_DEFAULT_APP_ICON,
                                                      priv->thumbable ?

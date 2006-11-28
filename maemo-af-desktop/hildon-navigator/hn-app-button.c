@@ -1096,12 +1096,13 @@ get_pixbuf_for_entry_info (HNEntryInfo *info)
 
   error = NULL;
   retval = hn_entry_info_get_app_icon (info, AS_ICON_SIZE, &error);
-  if (!error)
+  if (retval && !error)
     return retval;
 
-  osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
-            hn_entry_info_get_app_icon_name (info),
-            error->message);
+  if (error && error->message)
+    osso_log (LOG_ERR, "Could not load icon '%s': %s\n",
+              hn_entry_info_get_app_icon_name (info),
+              error->message);
 
   /* Fallback to default icon */
   g_clear_error (&error);
