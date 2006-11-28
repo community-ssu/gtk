@@ -36,8 +36,7 @@ booster_module_load(booster_t *booster)
   char *booster_sym;
   char *error_s;
 
-  asprintf(&booster_path, MAEMO_BOOSTER_DIR "/maemo-booster-%s.so",
-	   booster->name);
+  asprintf(&booster_path, BOOSTER_DIR "/maemo-booster-%s.so", booster->name);
   if (!booster_path)
     die(40, "allocating booster module path\n");
 
@@ -61,7 +60,7 @@ booster_module_load(booster_t *booster)
 
   free(booster_sym);
 
-  if (booster->api->booster_version != MAEMO_LAUNCHER_BOOSTER_API_VERSION)
+  if (booster->api->booster_version != BOOSTER_API_VERSION)
     die(43, "cannot handle booster module version %d.\n",
         booster->api->booster_version);
 }

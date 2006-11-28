@@ -110,7 +110,7 @@ rise_oom_defense(pid_t pid)
     char pidstr[20];
 
     snprintf(pidstr, sizeof(pidstr), "%d", pid);
-    execl(MAEMO_DEFENDER, MAEMO_DEFENDER, pidstr, NULL);
+    execl(DEFENDER, DEFENDER, pidstr, NULL);
     _exit(1);
   }
 
@@ -674,7 +674,7 @@ usage(int status)
 	 "Use the invoker to start a <shared object> from the launcher.\n"
 	 "Where <shared object> is a binary including a 'main' symbol.\n"
 	 "Note that the binary needs to be linked with -shared or -pie.\n",
-	 PROG_NAME, LAUNCHER_PIDFILE, MAEMO_BOOSTER_DEFAULT);
+	 PROG_NAME, LAUNCHER_PIDFILE, BOOSTER_DEFAULT);
 
   exit(status);
 }
@@ -682,7 +682,7 @@ usage(int status)
 int
 main(int argc, char *argv[])
 {
-  booster_t booster = { .name = MAEMO_BOOSTER_DEFAULT };
+  booster_t booster = { .name = BOOSTER_DEFAULT };
   kindergarten_t *childs;
   const int initial_child_slots = 64;
   int i;

@@ -76,7 +76,7 @@ have_valid_parent(void)
   if (snprintf(filename, sizeof(filename), "/proc/%d/exe", ppid) < 0)
     die(30, "generating filename string: '%s'\n", filename);
 
-  return is_same_file(filename, MAEMO_LAUNCHER);
+  return is_same_file(filename, LAUNCHER);
 }
 
 int

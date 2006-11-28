@@ -23,9 +23,9 @@
 #ifndef COMM_DBUS_H
 #define COMM_DBUS_H
 
-#define MAEMO_LAUNCHER_PATH			"/org/maemo/launcher"
-#define MAEMO_LAUNCHER_IFACE			"org.maemo.launcher"
-#define MAEMO_LAUNCHER_SIGNAL_APP_DIED		"ApplicationDied"
+#define LAUNCHER_PATH			"/org/maemo/launcher"
+#define LAUNCHER_IFACE			"org.maemo.launcher"
+#define LAUNCHER_SIGNAL_APP_DIED	"ApplicationDied"
 
 void comm_send_app_died(char *filename, int pid, int status);
 

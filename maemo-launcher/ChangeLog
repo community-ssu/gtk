@@ -1,5 +1,27 @@
 2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	Unbranding (first part).
+
+	* launcher/comm_dbus.h (MAEMO_LAUNCHER_PATH): Renamed to ...
+	(LAUNCHER_PATH): ... this. Fixed all users.
+	(MAEMO_LAUNCHER_IFACE): Renamed to ...
+	(LAUNCHER_IFACE): ... this. Fixed all users.
+	(MAEMO_LAUNCHER_SIGNAL_APP_DIED): Renamed to ...
+	(LAUNCHER_SIGNAL_APP_DIED): ... this. Fixed all users.
+	* launcher/booster.h (MAEMO_LAUNCHER_BOOSTER_API_VERSION): Renamed
+	to ...
+	(BOOSTER_API_VERSION): ... this. Fixed all users.
+	* launcher/Makefile.am (MAEMO_DEFENDER): Renamed to ...
+	(DEFENDER): ... this. Fixed all users.
+	(MAEMO_LAUNCHER): Renamed to ...
+	(LAUNCHER): ... this. Fixed all users.
+	(MAEMO_BOOSTER_DIR): Renamed to ...
+	(BOOSTER_DIR): ... this. Fixed all users.
+	(MAEMO_BOOSTER_DEFAULT): Renamed to ...
+	(BOOSTER_DEFAULT): ... this. Fixed all users.
+
+2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	* configure.ac (GTK_DEPENDS): Add xft.
 	* launcher/booster_gtk.c (booster_gtk_preinit): Call XftInit and
 	XftInitFtLibrary.

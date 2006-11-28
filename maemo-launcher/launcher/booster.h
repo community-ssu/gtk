@@ -32,7 +32,7 @@ typedef struct {
   void (*booster_reload)(booster_state_t state);
 } booster_api_t;
 
-#define MAEMO_LAUNCHER_BOOSTER_API_VERSION 0
+#define BOOSTER_API_VERSION 0
 
 typedef struct {
   booster_state_t	state;

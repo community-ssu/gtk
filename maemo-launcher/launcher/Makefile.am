@@ -6,19 +6,19 @@
 helperdir = $(libdir)/maemo-launcher
 helper_PROGRAMS = maemo-defender
 
-MAEMO_DEFENDER = "\"$(helperdir)/maemo-defender\""
-MAEMO_LAUNCHER = "\"$(bindir)/maemo-launcher\""
+DEFENDER = "\"$(helperdir)/maemo-defender\""
+LAUNCHER = "\"$(bindir)/maemo-launcher\""
 
 maemo_defender_SOURCES = defender.c report.c report.h
 maemo_defender_CPPFLAGS = \
 	-DPROG_NAME="\"maemo-defender\"" \
-	-DMAEMO_LAUNCHER=$(MAEMO_LAUNCHER) \
-	-DMAEMO_DEFENDER=$(MAEMO_DEFENDER)
+	-DLAUNCHER=$(LAUNCHER) \
+	-DDEFENDER=$(DEFENDER)
 
 boosterdir =  $(libdir)/maemo-launcher
 booster_PROGRAMS = maemo-booster-null.so maemo-booster-gtk.so
 
-MAEMO_BOOSTER_DIR = "\"$(boosterdir)\""
+BOOSTER_DIR = "\"$(boosterdir)\""
 
 maemo_booster_null_so_SOURCES = booster_null.c
 maemo_booster_null_so_CFLAGS = -fPIC
@@ -39,9 +39,9 @@ maemo_launcher_SOURCES = \
 maemo_launcher_CPPFLAGS = \
 	$(DBUS_CFLAGS) \
 	-DPROG_NAME="\"maemo-launcher\"" \
-	-DMAEMO_BOOSTER_DIR=$(MAEMO_BOOSTER_DIR) \
-	-DMAEMO_BOOSTER_DEFAULT="\"null\"" \
-	-DMAEMO_DEFENDER=$(MAEMO_DEFENDER)
+	-DBOOSTER_DIR=$(BOOSTER_DIR) \
+	-DBOOSTER_DEFAULT="\"null\"" \
+	-DDEFENDER=$(DEFENDER)
 maemo_launcher_LDADD = -ldl $(DBUS_LIBS)
 # FIXME: Use rdynamic for now until the boosters do not use the report
 #        functions.

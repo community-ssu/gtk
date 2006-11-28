@@ -57,9 +57,9 @@ comm_dbus_send_app_died(char *filename, int pid, int status)
   if (!conn)
     comm_dbus_init();
 
-  msg = dbus_message_new_signal(MAEMO_LAUNCHER_PATH,
-				MAEMO_LAUNCHER_IFACE,
-				MAEMO_LAUNCHER_SIGNAL_APP_DIED);
+  msg = dbus_message_new_signal(LAUNCHER_PATH,
+				LAUNCHER_IFACE,
+				LAUNCHER_SIGNAL_APP_DIED);
 
   dbus_message_append_args(msg, DBUS_TYPE_STRING, &filename,
 				DBUS_TYPE_INT32, &pid,
