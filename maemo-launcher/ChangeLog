@@ -1,5 +1,13 @@
 2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.c (clean_childs): Do not use asprintf, and print
+	the strings directly instead.
+	* launcher/summoner.c (main): Check for asprintf errors.
+	* launcher/invoker.c (main): Likewise.
+	* launcher/booster.c (booster_module_load): Likewise.
+
+2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
+
 	Unbranding (second part).
 
 	* launcher/comm_dbus.c (main): Replace explicit maemo-launcher string

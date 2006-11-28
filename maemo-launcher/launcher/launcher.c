@@ -518,7 +518,6 @@ static void
 clean_childs(kindergarten_t *childs)
 {
   int status;
-  char *cause;
   pid_t childpid;
 
   while ((childpid = waitpid(-1, &status, WNOHANG)) > 0)
@@ -526,13 +525,13 @@ clean_childs(kindergarten_t *childs)
     release_child_slot(childs, childpid, status);
 
     if (WIFEXITED(status))
-      asprintf(&cause, "exit()=%d", WEXITSTATUS(status));
+      info("child (pid=%d) terminated due to exit()=%d\n", childpid,
+	   WEXITSTATUS(status));
     else if (WIFSIGNALED(status))
-      asprintf(&cause, "signal=%d", WTERMSIG(status));
-
-    info("child (pid=%d) exited due to %s\n", childpid, cause);
-
-    free(cause);
+      info("child (pid=%d) terminated due to signal=%d\n", childpid,
+	   WTERMSIG(status));
+    else
+      info("child (pid=%d) terminated due to unknown status=%d\n", status);
   }
 }
 
