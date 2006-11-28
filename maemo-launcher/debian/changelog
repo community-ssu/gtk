@@ -1,13 +1,14 @@
-maemo-launcher (0.21~-1) UNRELEASED; urgency=low
+maemo-launcher (0.21-1) unstable; urgency=low
 
   * New Upstream Release.
-    - Link against libstdc++, clinkc and clinkcav. (Fixes: NB#47726)
+    - Link against libstdc++, clinkc and clinkcav (add build dependencies
+      on clinkc-dev and clinkc-av-dev). (Fixes: NB#47726)
     - Initialize Xft by calling its constructors (add a build dependency
       on libxft-dev). (Fixes: NB#17937)
     - Check for asprintf errors. (Fixes: NB#45396)
   * Fix chmod instance following upstream maemo-defender to defender rename.
 
- -- Guillem Jover <guillem.jover@nokia.com>  Mon, 20 Nov 2006 15:21:39 +0200
+ -- Guillem Jover <guillem.jover@nokia.com>  Wed, 29 Nov 2006 00:00:32 +0200
 
 maemo-launcher (0.20-1) unstable; urgency=low
 
