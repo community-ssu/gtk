@@ -35,14 +35,11 @@ booster_module_load(booster_t *booster)
   char *booster_path;
   char *booster_sym;
   char *error_s;
-  int err;
 
-  err = asprintf(&booster_path, BOOSTER_DIR "/booster-%s.so", booster->name);
-  if (err)
+  if (asprintf(&booster_path, BOOSTER_DIR "/booster-%s.so", booster->name) < 0)
     die(40, "allocating booster module path\n");
 
-  err = asprintf(&booster_sym, "booster_%s_api", booster->name);
-  if (err)
+  if (asprintf(&booster_sym, "booster_%s_api", booster->name) < 0)
     die(40, "allocating booster symbol path\n");
 
   /* Load the booster module. */

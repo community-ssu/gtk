@@ -104,7 +104,7 @@ main(int argc, char *argv[])
 
     /* Called with a different name. Add the proper extension and launch it.
      * Do not try to parse any arguments. */
-    if (asprintf(&launch, "%s.launch", argv[0]) == -1)
+    if (asprintf(&launch, "%s.launch", argv[0]) < 0)
       die(1, "allocating program name buffer");
     prog.filename = launch;
     prog.argc = argc;
