@@ -65,6 +65,7 @@ AC_ARG_ENABLE([hildon-booster],
 GTK_DEPENDS="
 	gtk+-2.0 >= 2.6.4
 	fontconfig
+	xft
 	pangoxft
 "
 HILDON_DEPENDS="$GTK_DEPENDS

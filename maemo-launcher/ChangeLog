@@ -1,3 +1,9 @@
+2006-11-28  Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac (GTK_DEPENDS): Add xft.
+	* launcher/booster_gtk.c (booster_gtk_preinit): Call XftInit and
+	XftInitFtLibrary.
+
 2006-11-20  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac (BOOSTER_GTK_LIBS) [hildon_booster]: Link against

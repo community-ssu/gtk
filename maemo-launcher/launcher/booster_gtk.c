@@ -31,6 +31,7 @@
 #include <gtk/gtk.h>
 #include <fontconfig/fontconfig.h>
 #include <pango/pangoxft.h>
+#include <X11/Xft/Xft.h>
 
 #include "booster.h"
 #include "booster_gtk.h"
@@ -141,10 +142,22 @@ booster_gtk_preinit(int *argc, char ***argv)
   timer = g_timer_new();
 #endif
 
+  /* This one is actually called from XftInit, but we should not assume
+     indirect dependencies. */
   if (!FcInit())
     error("FcInit() failed");
 
   debug("FcInit() took %f seconds\n", g_timer_elapsed(timer, NULL));
+
+  if (!XftInit(0))
+    error("XftInit() failed");
+
+  debug("XftInit() took %f seconds\n", g_timer_elapsed(timer, NULL));
+
+  if (!XftInitFtLibrary())
+    error("XftInitFtLibrary() failed");
+
+  debug("XftInitFtLibrary() took %f seconds\n", g_timer_elapsed(timer, NULL));
 
   if (!gtk_parse_args(argc, argv))
     error("gtk_parse_args() failed");
