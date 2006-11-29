@@ -1,3 +1,13 @@
+2006-11-29  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+	
+	* src/hildon-theme-rc-parser:
+	* src/Makefile.am: Adding the new perl script to parse the rc files.
+	
+	* src/colourizer.c:
+	* src/outliner.c:
+	* src/regenerator.c:
+	* src/slicer.c: Some more error info.
+
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* scripts/hildon-theme-install: Adding the default text color for

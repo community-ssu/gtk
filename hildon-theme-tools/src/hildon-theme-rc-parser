@@ -1,0 +1,86 @@
+#! /usr/bin/perl
+
+# GPL license, Copyright (c) 2006 by Nokia Corporation                       
+#                                                                            
+# Authors:                                                                   
+#      Michael Dominic K. <michael.kostrzewa@nokia.com>
+#      Marius Vollmer <marius.vollmer@nokia.com>
+#                                                                            
+# This program is free software; you can redistribute it and/or modify it    
+# under the terms of the GNU General Public License as published by the      
+# Free Software Foundation, version 2.                                                                   
+#                                                                            
+# This program is distributed in the hope that it will be useful, but        
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   
+# for more details.                                                          
+#                                                                            
+# You should have received a copy of the GNU General Public License along    
+# with this program; if not, write to the Free Software Foundation, Inc., 59 
+# Temple Place - Suite 330, Boston, MA 02111-1307, USA.                      
+
+use File::Basename;
+
+sub show_banner 
+{
+        print "RC processor tool by Michael Dominic K. and Marius Vollmer\n";
+        print "Copyright 2006 by Nokia Corporation.\n\n";
+}
+
+sub show_usage 
+{
+        my $program_name = basename($0);
+        print "Usage: $program_name <input rc file> <output rc file>\n\n";
+        print "This tool will process the supplied input rc file and include all\n";
+        print "the sub-rc files referrenced from it - producing a flat gtkrc.\n\n";
+}
+
+sub process_gtkrc
+{
+        my $file_name = "$_[0]";
+        my $file;
+
+        if (not open ($file, "< $file_name")) {
+                print STDERR "ERROR: Failed to open \"$file_name\" rc file.\n";
+                return 0;
+        }
+    
+        while (<$file>)
+        {
+                if (/^include "(.*)"$/) {
+                        if (not process_gtkrc ($1)) {
+                                print STDERR ("ERROR: Failed to include \"$1\" in \"$file_name\"\n");
+                                return 0;
+                        }
+                } else {
+                        print TARGET $_;
+                }
+        }
+
+        close ($file);
+        return 1;
+}
+
+# Show our nice welcome info
+show_banner;
+
+# Check if we have enough arguments
+if ($#ARGV + 1 < 2) {
+        show_usage ();
+        print STDERR "ERROR: Not enough arguments specified.";
+        exit 128;
+}
+
+# Open the output file
+if (not open (TARGET, "> $ARGV[1]")) {
+        print STDERR "ERROR: Could not open the output file \"$ARGV[1]\"\n";
+        exit 128;
+}
+
+
+# Recursively process the rc file
+if (not process_gtkrc ($ARGV[0])) {
+        exit 128;
+} else {
+        exit 0;
+}

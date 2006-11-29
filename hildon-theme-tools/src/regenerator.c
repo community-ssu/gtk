@@ -120,7 +120,7 @@ int                             main (int argc, char **argv)
 
         if (template_file == NULL || output_image_file == NULL) {
                 show_usage ();
-                goto Error;
+                g_error ("Not enough arguments given!");
         }
 
         /* Check the template file... */
