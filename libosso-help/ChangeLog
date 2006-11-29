@@ -1,3 +1,8 @@
+2006-11-29  Jakub Pavelek <jakub.pavelek@nokia.com>
+	
+	* Version 2.0.8
+	* src/graphics.c: changed the scaling of images in contents
+
 2006-10-25 Jakub Pavelek <jakub.pavelek@nokia.com>
 
 	* configure.ac: Generate also doc/Doxyfile

@@ -1,3 +1,9 @@
+libosso-help (2.0.8-1) unstable; urgency=low
+
+  * Fixes: NB#47404 - zooming of images in help content
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Wed, 29 Nov 2006 15:34:13 +0200
+
 libosso-help (2.0.7-1) unstable; urgency=low
 
   * Fixes NB#42988

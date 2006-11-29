@@ -34,7 +34,7 @@
  *
  * This should be around the size of 'normal' Help text in browser.
  */
-#define NORMAL_HEIGHT   13
+#define FORCED_IMAGE_HEIGHT 26
 gboolean dialog_mode; /*internal.h*/
 
 /*---( HelpLib portion -- HTML conversion )---*/
@@ -186,31 +186,14 @@ gboolean graphic_tag( char *buf, size_t bufsize, const char *fname)
         }
     }
 
-    /* If we don't know the height, or it is low enough, 
-       just pass on the picture. */
-    if (h <= NORMAL_HEIGHT) {
-        snprintf( buf, bufsize, "<img src=\"file://%s\"/>", fname );
-    } else {
-        /* TBD: This size reducement needs adjusting, based on needs
-         *      of Help material.
-         *
-         * If <= 2*NORMAL_HEIGHT, reduce to normal height (maintaining
-         * aspect ratio).
-         *
-         * If higher, reduce to 2*NORMAL_HEIGHT (maintaining aspect ratio)
-         */
-        if (h <= 2*NORMAL_HEIGHT) {
-            w /= ((float)h) / NORMAL_HEIGHT;
-            h= NORMAL_HEIGHT;
-        } else {
-            w /= ((float)h) / (2*NORMAL_HEIGHT);
-            h= 2*NORMAL_HEIGHT;
-        }
-
-        snprintf( buf, bufsize,
-                  "<img src=\"file://%s\" width=%d height=%d/>",
-                  fname, w, h );
+    /* Force image height to 26 pixels */
+    if (h != FORCED_IMAGE_HEIGHT) {
+        w /= ((float)h) / (FORCED_IMAGE_HEIGHT);
+        h= FORCED_IMAGE_HEIGHT;
     }
+    snprintf( buf, bufsize,
+              "<img src=\"file://%s\" width=%d height=%d/>",
+              fname, w, h );
 
     return TRUE;
 }
