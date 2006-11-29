@@ -1,5 +1,11 @@
 2006-11-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gdk/x11/gdkinput-x11.c (_gdk_input_common_other_event): Call
+	_gdk_event_button_generate to get GDK_2BUTTON_PRESS events properly
+	synthesized. NB#48648
+
+2006-11-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtktextview.c (gtk_text_view_motion_event,
 	selection_motion_event_handler)
 	* gtk/gtkentry.c (gtk_entry_motion_notify): When extension events are
