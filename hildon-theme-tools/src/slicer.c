@@ -21,6 +21,77 @@
 
 #include "slicer.h"
 
+/* Check if image actually uses alpha by scanning the pixels */
+gboolean                        check_if_pixbuf_needs_alpha (GdkPixbuf *pixbuf)
+{
+        guchar *pixels = gdk_pixbuf_get_pixels (pixbuf);
+        int bytes_per_pixel = gdk_pixbuf_get_n_channels (pixbuf);
+        int width = gdk_pixbuf_get_width (pixbuf);
+        int height = gdk_pixbuf_get_height (pixbuf);
+        long rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+        int x = 0;
+        int y = 0;
+
+        g_return_val_if_fail (pixbuf != NULL, FALSE);
+        g_return_val_if_fail (bytes_per_pixel == 4, FALSE);
+
+        for (y = 0; y < height; y++) {
+                for (x = 0; x < width; x++) {
+                        if (pixels [(y * rowstride) + (x * bytes_per_pixel) + 3] != 255)
+                                return TRUE;
+                }
+        }
+
+        return FALSE;
+}
+
+/* Create a copy of the pixbuf with alpha removed */
+GdkPixbuf*                      strip_alpha_from_pixbuf (GdkPixbuf *pixbuf)
+{
+        GdkPixbuf *new = NULL;
+        guchar *new_pixels = NULL;
+        guchar *pixels = gdk_pixbuf_get_pixels (pixbuf);
+        int bytes_per_pixel = gdk_pixbuf_get_n_channels (pixbuf);
+        int width = gdk_pixbuf_get_width (pixbuf);
+        int height = gdk_pixbuf_get_height (pixbuf);
+        long rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+        int x = 0;
+        int y = 0;
+        int new_x = 0;
+        int new_y = 0;
+
+        g_return_val_if_fail (width > 0, NULL);
+        g_return_val_if_fail (height > 0, NULL);
+        g_return_val_if_fail (bytes_per_pixel == 4, NULL);
+        g_return_val_if_fail (rowstride > 0, NULL);
+
+        new_pixels = g_malloc (width * height * 3);
+        g_return_val_if_fail (new_pixels != NULL, NULL);
+
+        for (y = 0; y < height; y++) {
+                for (x = 0; x < width; x++) {
+                        new_pixels [(new_y * width * 3) + (new_x * 3)] = pixels [(y * rowstride) + (x * bytes_per_pixel)];
+                        new_pixels [(new_y * width * 3) + (new_x * 3) + 1] = pixels [(y * rowstride) + (x * bytes_per_pixel) + 1];
+                        new_pixels [(new_y * width * 3) + (new_x * 3) + 2] = pixels [(y * rowstride) + (x * bytes_per_pixel) + 2];
+                        new_x++;
+                }
+                new_y++;
+                new_x = 0;
+        }
+
+        new = gdk_pixbuf_new_from_data (new_pixels, 
+                                        GDK_COLORSPACE_RGB, 
+                                        FALSE, 
+                                        8, 
+                                        width, 
+                                        height,
+                                        width * 3, 
+                                        g_free,
+                                        new_pixels);
+
+        return new;
+}
+
 /* A helper function to save a png file */
 void                            save_png (GdkPixbuf *pixbuf, gchar *filename)
 {
@@ -63,7 +134,13 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                                 g_warning ("Failed to process '%s'!", element->Name);
                         else {
                                 gchar *fname = g_build_filename (directory, element->Name, NULL);
-                                
+                              
+                                if (gdk_pixbuf_get_n_channels (sub) == 4 && check_if_pixbuf_needs_alpha (sub) == FALSE) {
+                                        GdkPixbuf *oldy = sub;
+                                        sub = strip_alpha_from_pixbuf (oldy);
+                                        gdk_pixbuf_unref (oldy);
+                                }
+  
                                 if ((strlen (fname) >= 4 && strcmp (fname + (strlen (fname) - 4), ".jpg") == 0) ||
                                     (strlen (fname) >= 5 && strcmp (fname + (strlen (fname) - 5), ".jpeg") == 0))
                                         save_jpeg (sub, fname);

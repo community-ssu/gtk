@@ -38,3 +38,8 @@ void                            save_png (GdkPixbuf *pixbuf, gchar *filename);
 void                            save_jpeg (GdkPixbuf *pixbuf, gchar *filename);
 
 void                            process (Template *templ, GdkPixbuf *pixbuf, gchar *directory);
+
+gboolean                        check_if_pixbuf_needs_alpha (GdkPixbuf *pixbuf);
+
+GdkPixbuf*                      strip_alpha_from_pixbuf (GdkPixbuf *pixbuf);
+
