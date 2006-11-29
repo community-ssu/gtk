@@ -49,10 +49,10 @@ def get(using=None):
 # It is recommended one does "import webbrowser" and uses webbrowser.open(url)
 # instead of "from webbrowser import *".
 
-def open(url, new=0, autoraise=1):
+def open(url, new=0, autoraise=1, context=None):
     for name in _tryorder:
         browser = get(name)
-        if browser.open(url, new, autoraise):
+        if browser.open(url, new, autoraise, context):
             return True
     return False
 
@@ -138,7 +138,7 @@ class BaseBrowser(object):
         self.name = name
         self.basename = name
 
-    def open(self, url, new=0, autoraise=1):
+    def open(self, url, new=0, autoraise=1, context=None):
         raise NotImplementedError
 
     def open_new(self, url):
@@ -161,7 +161,7 @@ class GenericBrowser(BaseBrowser):
             self.args = name[1:]
         self.basename = os.path.basename(self.name)
 
-    def open(self, url, new=0, autoraise=1):
+    def open(self, url, new=0, autoraise=1, context=None):
         cmdline = [self.name] + [arg.replace("%s", url)
                                  for arg in self.args]
         try:
@@ -175,7 +175,7 @@ class BackgroundBrowser(GenericBrowser):
     """Class for all browsers which are to be started in the
        background."""
 
-    def open(self, url, new=0, autoraise=1):
+    def open(self, url, new=0, autoraise=1, context=None):
         cmdline = [self.name] + [arg.replace("%s", url)
                                  for arg in self.args]
         setsid = getattr(os, 'setsid', None)
@@ -243,7 +243,7 @@ class UnixBrowser(BaseBrowser):
         else:
             return not p.wait()
 
-    def open(self, url, new=0, autoraise=1):
+    def open(self, url, new=0, autoraise=1, context=None):
         if new == 0:
             action = self.remote_action
         elif new == 1:
@@ -327,7 +327,7 @@ class Konqueror(BaseBrowser):
     for more information on the Konqueror remote-control interface.
     """
 
-    def open(self, url, new=0, autoraise=1):
+    def open(self, url, new=0, autoraise=1, context=None):
         # XXX Currently I know no way to prevent KFM from opening a new win.
         if new == 2:
             action = "newTab"
@@ -376,6 +376,16 @@ class Konqueror(BaseBrowser):
         else:
             return (p.poll() is None)
 
+class MaemoBrowser(BaseBrowser):
+    """Controller for the Maemo Browser.
+    """
+
+    def open(self, url, new=0, autoraise=1, context=None):
+        if context is None:
+            raise Error("Missing OSSO Context parameter. Please, read the\n"\
+                        "Python for Maemo documentation for more "\
+                        "information.")
+        context.rpc_run_with_defaults('osso_browser', 'open_new_window', (url,))
 
 class Grail(BaseBrowser):
     # There should be a way to maintain a connection to Grail, but the
@@ -415,7 +425,7 @@ class Grail(BaseBrowser):
         s.close()
         return 1
 
-    def open(self, url, new=0, autoraise=1):
+    def open(self, url, new=0, autoraise=1, context=None):
         if new:
             ok = self._remote("LOADNEW " + url)
         else:
@@ -431,6 +441,8 @@ class Grail(BaseBrowser):
 # a console terminal or an X display to run.
 
 def register_X_browsers():
+    register("maemobrowser", MaemoBroser())
+
     # The default Gnome browser
     if _iscommand("gconftool-2"):
         # get the web browser string from gconftool
@@ -476,6 +488,7 @@ def register_X_browsers():
     # Grail, the Python browser. Does anybody still use it?
     if _iscommand("grail"):
         register("grail", Grail, None)
+
 
 # Prefer X browsers if present
 if os.environ.get("DISPLAY"):
