@@ -1,5 +1,9 @@
 2006-11-29  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.11
+
+2006-11-29  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hn-app-button.c: Removed thumbed menu.
 	Fixes: NB#48665
 

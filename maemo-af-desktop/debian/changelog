@@ -1,3 +1,31 @@
+maemo-af-desktop (2.9.99.11-1) unstable; urgency=low
+
+  * hildon-navigator/hn-app-button.c: Removed thumbed menu.
+  Fixes: NB#48665
+
+  * hildon-home/background-manager.c: Check if the operation
+  was cancelled during loading and compositing. Fixes: NB#42484
+
+  * hildon-navigator/hn-wm.c
+  * hildon-navigator/hildon-navigator-window.c: Set all the items in 
+  TaskNavigator focusable.
+
+  * hildon-navigator/hn-app-menu-item.c,
+    hildon-navigator/hn-app-button.c: Fall back to default application
+    icon if not specified. Fixes: NB#47396
+
+  * configure.ac: added test on GTK+ for more fine-grained linking
+  * libhildonmenu/Makefile.am: Link against GTK+ and libxml2.
+  Fixes: NB#48504
+
+  * hildon-home/hildon-home-window.c:
+  - move acting on the select applets dialog from _dialog_run
+  to a _run signal handler
+  - send RESPONSE_CANCEL to that dialog if home ends up in the
+  background. Fixes: NB#48438
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 29 Nov 2006 11:09:07 +0200
+
 maemo-af-desktop (2.9.99.10-1) unstable; urgency=low
 
   * hildon-navigator/hn-others-button.c: Systematically check
