@@ -181,17 +181,18 @@
   (return-type "gdouble")
 )
 
-(define-method get_active_window
-  (of-object "GdkScreen")
-  (c-name "gdk_screen_get_active_window")
-  (return-type "GdkWindow*")
-)
-
-(define-method get_window_stack
-  (of-object "GdkScreen")
-  (c-name "gdk_screen_get_window_stack")
-  (return-type "GList*")
-)
+; INDT: moved to gdk-base.defs
+;(define-method get_active_window
+;  (of-object "GdkScreen")
+;  (c-name "gdk_screen_get_active_window")
+;  (return-type "GdkWindow*")
+;)
+;
+;(define-method get_window_stack
+;  (of-object "GdkScreen")
+;  (c-name "gdk_screen_get_window_stack")
+;  (return-type "GList*")
+;)
 
 (define-virtual composited_changed
   (of-object "GdkScreen")
@@ -252,11 +253,12 @@
   (return-type "none")
 )
 
-(define-method get_type_hint
-  (of-object "GdkWindow")
-  (c-name "gdk_window_get_type_hint")
-  (return-type "GdkWindowTypeHint")
-)
+; INDT: moved to gdk-base.defs
+;(define-method get_type_hint
+;  (of-object "GdkWindow")
+;  (c-name "gdk_window_get_type_hint")
+;  (return-type "GdkWindowTypeHint")
+;)
 
 
 

@@ -3742,6 +3742,20 @@
   (return-type "GdkColormap*")
 )
 
+; INDT: moved from gdk-2.10.defs
+(define-method get_active_window
+  (of-object "GdkScreen")
+  (c-name "gdk_screen_get_active_window")
+  (return-type "GdkWindow*")
+)
+
+(define-method get_window_stack
+  (of-object "GdkScreen")
+  (c-name "gdk_screen_get_window_stack")
+  (return-type "GList*")
+)
+; /INDT: moved from gdk-2.10.defs
+
 ; INDT: backport (2.8)
 ;(define-method get_rgba_colormap
 ;  (of-object "GdkScreen")
@@ -3956,6 +3970,14 @@
     '("gint*" "prop_format")
   )
 )
+
+; INDT: moved from gdk-2.10.defs
+(define-method get_type_hint
+  (of-object "GdkWindow")
+  (c-name "gdk_window_get_type_hint")
+  (return-type "GdkWindowTypeHint")
+)
+; /INDT: moved from gdk-2.10.defs
 
 (define-function selection_send_notify
   (c-name "gdk_selection_send_notify")
@@ -4975,15 +4997,14 @@
   (return-type "none")
 )
 
-; INDT: backport (2.8)
-;(define-method set_urgency_hint
-;  (of-object "GdkWindow")
-;  (c-name "gdk_window_set_urgency_hint")
-;  (return-type "none")
-;  (parameters
-;    '("gboolean" "urgent")
-;  )
-;)
+(define-method set_urgency_hint
+  (of-object "GdkWindow")
+  (c-name "gdk_window_set_urgency_hint")
+  (return-type "none")
+  (parameters
+    '("gboolean" "urgent")
+  )
+)
 
 ;; From /mondo/local/gtk-2.10/include/gtk-2.0/gdk/gdkwindow.h
 

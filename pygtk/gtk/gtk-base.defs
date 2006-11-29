@@ -1795,6 +1795,26 @@
   (return-type "GtkWidget*")
 )
 
+; INDT: hildon extension
+(define-method set_depressed
+  (of-object "GtkButton")
+  (c-name "hildon_gtk_button_set_depressed")
+  (return-type "none")
+  (parameters
+    '("gboolean" "depressed")
+  )
+)
+
+(define-method set_detail_from_attach_flags
+  (of-object "GtkButton")
+  (c-name "osso_gtk_button_set_detail_from_attach_flags")
+  (return-type "none")
+  (parameters
+    '("OssoGtkButtonAttachFlags" "flags")
+  )
+)
+; /INDT: hildon extension
+
 (define-virtual pressed
   (of-object "GtkButton")
   (return-type "none")
@@ -2509,6 +2529,12 @@
   (parameters
     '("const-GdkColor*" "color")
   )
+)
+
+(define-method set_cell_data
+  (of-object "GtkCellView")
+  (c-name "gtk_cell_view_set_cell_data")
+  (return-type "none")
 )
 
 (define-method get_cell_renderers
@@ -5732,15 +5758,14 @@
   )
 )
 
-; INDT: backport (2.8)
-;(define-method get_response_for_widget
-;  (of-object "GtkDialog")
-;  (c-name "gtk_dialog_get_response_for_widget")
-;  (return-type "gint")
-;  (parameters
-;    '("GtkWidget*" "widget")
-;  )
-;)
+(define-method get_response_for_widget
+  (of-object "GtkDialog")
+  (c-name "gtk_dialog_get_response_for_widget")
+  (return-type "gint")
+  (parameters
+    '("GtkWidget*" "widget")
+  )
+)
 
 (define-method set_has_separator
   (of-object "GtkDialog")
@@ -6114,6 +6139,52 @@
   (c-name "gtk_drag_source_add_uri_targets")
   (return-type "none")
 )
+
+; INDT: maemo extensions...
+;(define-method set_hildon_focus_handling
+;  (of-object "GtkWidget")
+;  (c-name "gtk_widget_set_hildon_focus_handling")
+;  (return-type "none")
+;  (parameters
+;    '("gboolean" "hildon_like")
+;  )
+;)
+;
+;(define-method get_hildon_focus_handling
+;  (of-object "GtkWidget")
+;  (c-name "gtk_widget_get_hildon_focus_handling")
+;  (return-type "gboolean")
+;)
+
+(define-method tap_and_hold_menu_position_top
+  (of-object "GtkWidget")
+  (c-name "gtk_widget_tap_and_hold_menu_position_top")
+  (return-type "none")
+  (parameters
+    '("gint*" "x")
+    '("gint*" "y")
+    '("gboolean*" "push_in")
+    '("GtkWidget*" "widget")
+  )
+)
+
+(define-method insensitive_press
+  (of-object "GtkWidget")
+  (c-name "gtk_widget_insensitive_press")
+  (return-type "none")
+)
+
+(define-method tap_and_hold_setup
+  (of-object "GtkWidget")
+  (c-name "gtk_widget_tap_and_hold_setup")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "menu")
+    '("GtkCallback" "func")
+    '("GtkWidgetTapAndHoldFlags" "flags")
+  )
+)
+; /INDT: maemo extensions...
 
 (define-function target_list_add_text_targets
   (c-name "gtk_target_list_add_text_targets")
@@ -6615,6 +6686,23 @@
   )
 )
 
+; INDT: hildon extensions
+(define-method set_input_mode
+  (of-object "GtkEntry")
+  (c-name "hildon_gtk_entry_set_input_mode")
+  (return-type "none")
+  (parameters
+    '("HildonGtkInputMode" "input_mode")
+  )
+)
+
+(define-method get_input_mode
+  (of-object "GtkEntry")
+  (c-name "hildon_gtk_entry_get_input_mode")
+  (return-type "HildonGtkInputMode")
+)
+; /INDT: hildon extensions
+
 (define-virtual populate_popup
   (of-object "GtkEntry")
   (return-type "none")
@@ -6679,6 +6767,17 @@
   (of-object "GtkEntry")
   (return-type "none")
 )
+
+; INDT: maemo extension...
+(define-virtual invalid_input
+  (of-object "GtkEntry")
+  (return-type "none")
+  (parameters
+    '("GtkInvalidInputType" "type")
+  )
+)
+; /INDT: maemo extension...
+
 
 ;; From /opt/gtk2/include/gtk-2.0/gtk/gtkentrycompletion.h
 
@@ -8038,6 +8137,17 @@
     '("GError**" "error")
   )
 )
+
+; INDT: maemo extensions...
+(define-method create
+  (of-object "GtkFileSystem")
+  (c-name "hildon_gtk_file_system_create")
+  (return-type "GtkFileSystem*")
+  (parameters
+    '("const-gchar*" "file_system_name")
+  )
+)
+; /INDT: maemo extensions...
 
 (define-method remove_bookmark
   (of-object "GtkFileSystem")
@@ -10510,6 +10620,65 @@
   )
 )
 
+; INDT: hildon extensions
+(define-method filter_event
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_filter_event")
+  (return-type "gboolean")
+  (parameters
+    '("GdkEvent*" "event")
+  )
+)
+
+(define-method show
+  (of-object "GtkIMContext")
+  (c-name "gtk_im_context_show")
+  (return-type "none")
+)
+
+(define-method hide
+  (of-object "GtkIMContext")
+  (c-name "gtk_im_context_hide")
+  (return-type "none")
+)
+
+(define-method copy
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_copy")
+  (return-type "none")
+)
+
+(define-method cut
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_cut")
+  (return-type "none")
+)
+
+(define-method paste
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_paste")
+  (return-type "none")
+)
+
+(define-method hildon_show
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_show")
+  (return-type "none")
+)
+
+(define-method hildon_hide
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_hide")
+  (return-type "none")
+)
+
+(define-method has_selection
+  (of-object "GtkIMContext")
+  (c-name "hildon_gtk_im_context_has_selection")
+  (return-type "gboolean")
+)
+; /INDT: hildon extensions
+
 (define-method focus_in
   (of-object "GtkIMContext")
   (c-name "gtk_im_context_focus_in")
@@ -10674,6 +10843,39 @@
     '("gint*" "cursor_index")
   )
 )
+
+; INDT: maemo extensions...
+(define-virtual show
+  (of-object "GtkIMContext")
+  (return-type "none")
+)
+
+(define-virtual hide
+  (of-object "GtkIMContext")
+  (return-type "none")
+)
+
+(define-virtual has_selection
+  (of-object "GtkIMContext")
+  (return-type "gboolean")
+)
+
+(define-virtual clipboard_operation
+  (of-object "GtkIMContext")
+  (return-type "none")
+  (parameters
+    '("GtkIMContextClipboardOperation" "operation")
+  )
+)
+
+(define-virtual filter_event
+  (of-object "GtkIMContext")
+  (return-type "gboolean")
+  (parameters
+    '("GdkEvent*" "event")
+  )
+)
+; /INDT: maemo extensions...
 
 
 ;; From /opt/gtk2/include/gtk-2.0/gtk/gtkimcontextsimple.h
@@ -12972,21 +13174,25 @@
   (return-type "gint")
 )
 
-; INDT: backport (2.8)
-;(define-method get_take_focus
-;  (of-object "GtkMenuShell")
-;  (c-name "gtk_menu_shell_get_take_focus")
-;  (return-type "gboolean")
-;)
-;
-;(define-method set_take_focus
-;  (of-object "GtkMenuShell")
-;  (c-name "gtk_menu_shell_set_take_focus")
-;  (return-type "none")
-;  (parameters
-;    '("gboolean" "take_focus")
-;  )
-;)
+(define-virtual close
+  (of-object "GtkMenuShell")
+  (return-type "none")
+)
+
+(define-method get_take_focus
+  (of-object "GtkMenuShell")
+  (c-name "gtk_menu_shell_get_take_focus")
+  (return-type "gboolean")
+)
+
+(define-method set_take_focus
+  (of-object "GtkMenuShell")
+  (c-name "gtk_menu_shell_set_take_focus")
+  (return-type "none")
+  (parameters
+    '("gboolean" "take_focus")
+  )
+)
 
 
 ;; From /opt/gnome-2.10/include/gtk-2.0/gtk/gtkmenutoolbutton.h
@@ -15063,6 +15269,34 @@
   (return-type "gdouble")
 )
 
+; INDT: maemo extensions...
+(define-method set_stream_indicator
+  (of-object "GtkRange")
+  (c-name "osso_gtk_range_set_stream_indicator")
+  (return-type "none")
+  (parameters
+    '("gboolean" "stream_indicator")
+  )
+)
+(define-method get_stream_indicator
+  (of-object "GtkRange")
+  (c-name "osso_gtk_range_get_stream_indicator")
+  (return-type "gboolean")
+)
+
+(define-method set_stream_position
+  (of-object "GtkRange")
+  (c-name "osso_gtk_range_set_stream_position")
+  (return-type "none")
+  (parameters
+    '("gdouble" "position")
+  )
+)
+(define-method get_stream_position
+  (of-object "GtkRange")
+  (c-name "osso_gtk_range_get_stream_position")
+  (return-type "gdouble")
+)
 
 (define-virtual value_changed
   (of-object "GtkRange")
@@ -16781,6 +17015,18 @@
     '("gint" "height")
   )
 )
+
+; INDT: maemo extensions...
+(define-method lookup_logical_color
+  (of-object "GtkStyle")
+  (c-name "gtk_style_lookup_logical_color")
+  (return-type "gboolean")
+  (parameters
+    '("const-gchar*" "color_name")
+    '("GdkColor*" "color")
+  )
+)
+; /INDT: maemo extensions...
 
 (define-method lookup_icon_set
   (of-object "GtkStyle")
@@ -18783,6 +19029,38 @@
   (c-name "gtk_text_buffer_end_user_action")
   (return-type "none")
 )
+
+; INDT: maemo extensions...
+(define-method set_can_paste_rich_text
+  (of-object "GtkTextBuffer")
+  (c-name "gtk_text_buffer_set_can_paste_rich_text")
+  (return-type "none")
+  (parameters
+    '("gboolean" "can_paste_rich_text")
+  )
+)
+
+(define-method get_can_paste_rich_text
+  (of-object "GtkTextBuffer")
+  (c-name "gtk_text_buffer_get_can_paste_rich_text")
+  (return-type "gboolean")
+)
+
+(define-method set_rich_text_format
+  (of-object "GtkTextBuffer")
+  (c-name "gtk_text_buffer_set_rich_text_format")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "format")
+  )
+)
+
+(define-method get_rich_text_format
+  (of-object "GtkTextBuffer")
+  (c-name "gtk_text_buffer_get_rich_text_format")
+  (return-type "const-gchar*")
+)
+; /INDT: maemo extensions...
 
 (define-virtual insert_text
   (of-object "GtkTextBuffer")
@@ -20814,6 +21092,22 @@
   (c-name "gtk_text_view_get_tabs")
   (return-type "PangoTabArray*")
 )
+
+; INDT: maemo extensions...
+(define-method get_input_mode
+  (of-object "GtkTextView")
+  (c-name "hildon_gtk_text_view_get_input_mode")
+  (return-type "HildonGtkInputMode")
+)
+(define-method set_input_mode
+  (of-object "GtkTextView")
+  (c-name "hildon_gtk_text_view_set_input_mode")
+  (return-type "none")
+  (parameters
+    '("HildonGtkInputMode" "mode")
+  )
+)
+; /INDT: maemo extensions...
 
 (define-method get_default_attributes
   (of-object "GtkTextView")
@@ -24358,6 +24652,15 @@
   (return-type "gboolean")
 )
 
+; INDT: maemo extensions...
+(define-virtual row_insensitive
+  (of-object "GtkTreeView")
+  (return-type "none")
+  (parameters
+    '("GtkTreePath*" "path")
+  )
+)
+; /INDT: maemo extensions...
 
 ;; From /opt/gtk2/include/gtk-2.0/gtk/gtktreeviewcolumn.h
 
@@ -27212,6 +27515,36 @@
   )
 )
 
+; INDT: maemo extensions...
+(define-virtual tap_and_hold
+  (of-object "GtkWidget")
+  (return-type "none")
+)
+
+(define-virtual tap_and_hold_setup
+  (of-object "GtkWidget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "menu")
+    '("GtkCallback" "func")
+    '("GtkWidgetTapAndHoldFlags" "flags")
+  )
+)
+
+(define-virtual tap_and_hold_query
+  (of-object "GtkWidget")
+  (return-type "gboolean")
+  (parameters
+    '("GdkEvent*" "event")
+  )
+)
+
+(define-virtual insensitive_press
+  (of-object "GtkWidget")
+  (return-type "none")
+)
+; /INDT: maemo extensions...
+
 ; INDT: backport
 ;(define-virtual grab_broken_event
 ;  (of-object "GtkWidget")
@@ -27422,22 +27755,20 @@
   (return-type "gboolean")
 )
 
+(define-method set_urgency_hint
+  (of-object "GtkWindow")
+  (c-name "gtk_window_set_urgency_hint")
+  (return-type "none")
+  (parameters
+    '("gboolean" "setting")
+  )
+)
 
-; INDT: backport (2.8)
-;(define-method set_urgency_hint
-;  (of-object "GtkWindow")
-;  (c-name "gtk_window_set_urgency_hint")
-;  (return-type "none")
-;  (parameters
-;    '("gboolean" "setting")
-;  )
-;)
-;
-;(define-method get_urgency_hint
-;  (of-object "GtkWindow")
-;  (c-name "gtk_window_get_urgency_hint")
-;  (return-type "gboolean")
-;)
+(define-method get_urgency_hint
+  (of-object "GtkWindow")
+  (c-name "gtk_window_get_urgency_hint")
+  (return-type "gboolean")
+)
 
 (define-method set_accept_focus
   (of-object "GtkWindow")
@@ -27630,6 +27961,23 @@
   (c-name "gtk_window_get_icon")
   (return-type "GdkPixbuf*")
 )
+
+; INDT: maemo extensions...
+(define-method set_prev_focus_widget
+  (of-object "GtkWindow")
+  (c-name "gtk_window_set_prev_focus_widget")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+  )
+)
+
+(define-method get_prev_focus_widget
+  (of-object "GtkWindow")
+  (c-name "gtk_window_get_prev_focus_widget")
+  (return-type "GtkWidget*")
+)
+; /INDT: maemo extensions...
 
 (define-function window_set_default_icon_list
   (c-name "gtk_window_set_default_icon_list")

@@ -382,6 +382,10 @@
     '("button" "GTK_ICON_SIZE_BUTTON")
     '("dnd" "GTK_ICON_SIZE_DND")
     '("dialog" "GTK_ICON_SIZE_DIALOG")
+    '("hildon-size-26" "HILDON_ICON_SIZE_26")
+    '("hildon-size-40" "HILDON_ICON_SIZE_40")
+    '("hildon-size-50" "HILDON_ICON_SIZE_50")
+    '("hildon-size-64" "HILDON_ICON_SIZE_64")
   )
 )
 
@@ -690,6 +694,7 @@
     '("stock" "GTK_RC_TOKEN_STOCK")
     '("ltr" "GTK_RC_TOKEN_LTR")
     '("rtl" "GTK_RC_TOKEN_RTL")
+    '("logical-color" "GTK_RC_TOKEN_LOGICAL_COLOR")
     '("last" "GTK_RC_TOKEN_LAST")
   )
 )
@@ -2734,5 +2739,58 @@
     '("bad-filename" "GTK_FILE_SYSTEM_ERROR_BAD_FILENAME")
     '("failed" "GTK_FILE_SYSTEM_ERROR_FAILED")
     '("already-exists" "GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS")
+    '("timeout" "GTK_FILE_SYSTEM_ERROR_TIMEOUT")
   )
 )
+
+(define-flags InputMode
+  (in-module "Gtk")
+  (c-name "HildonGtkInputMode")
+  (gtype-id "GTK_TYPE_GTK_INPUT_MODE")
+  (values
+    '("alpha"     "HILDON_GTK_INPUT_MODE_ALPHA")
+    '("numeric"   "HILDON_GTK_INPUT_MODE_NUMERIC")
+    '("special"   "HILDON_GTK_INPUT_MODE_SPECIAL")
+    '("hexa"      "HILDON_GTK_INPUT_MODE_HEXA")
+    '("tele"      "HILDON_GTK_INPUT_MODE_TELE")
+    '("full"      "HILDON_GTK_INPUT_MODE_FULL")
+    '("invisible" "HILDON_GTK_INPUT_MODE_INVISIBLE")
+    '("autocap"   "HILDON_GTK_INPUT_MODE_AUTOCAP")
+  )
+)
+
+(define-flags TapAndHoldFlags
+  (in-module "Gtk")
+  (c-name "GtkWidgetTapAndHoldFlags")
+  (gtype-id "GTK_TYPE_WIDGET_TAP_AND_HOLD_FLAGS")
+  (values
+    '("none" "GTK_TAP_AND_HOLD_NONE")
+    '("pass-press" "GTK_TAP_AND_HOLD_PASS_PRESS")
+    '("no-signals" "GTK_TAP_AND_HOLD_NO_SIGNALS")
+    '("no-internals" "GTK_TAP_AND_HOLD_NO_INTERNALS")
+  )
+)
+
+(define-flags InvalidInputType
+  (in-module "Gtk")
+  (c-name "GtkInvalidInputType")
+  (gtype-id "GTK_TYPE_INVALID_INPUT_TYPE")
+  (values
+    '("max-chars-reached" "GTK_INVALID_INPUT_MAX_CHARS_REACHED")
+    '("mode-restriction" "GTK_INVALID_INPUT_MODE_RESTRICTION")
+  )
+)
+
+(define-flags ButtonAttachFlags
+  (in-module "Gtk")
+  (c-name "OssoGtkButtonAttachFlags")
+  (gtype-id "GTK_TYPE_GTK_BUTTON_ATTACH_FLAGS")
+  (values
+    '("attach-north" "OSSO_GTK_BUTTON_ATTACH_NORTH")
+    '("attach-east" "OSSO_GTK_BUTTON_ATTACH_EAST")
+    '("attach-south" "OSSO_GTK_BUTTON_ATTACH_SOUTH")
+    '("attach-west" "OSSO_GTK_BUTTON_ATTACH_WEST")
+    '("attach-enum-end" "OSSO_GTK_BUTTON_ATTACH_ENUM_END")
+  )
+)
+
