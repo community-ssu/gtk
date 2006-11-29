@@ -1,6 +1,6 @@
 #
 # Adding all non-maemo_af_desktop widgets into maemo_af_desktop 
-# include "gtkrc"
+include "base"
 
 # Adding maemo_af_desktop specific widgets 
 include "hildonhome"

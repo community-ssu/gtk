@@ -1,3 +1,10 @@
+2006-11-29  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/base:
+	* rc/gtkrc:
+	* rc/gtkrc.maemo_af_desktop: Updating the rc files to reproduce the old
+	osso-themes-config behaviour.
+
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/themespecificgtk: Adding the missing VKBButtonTextColor. 
