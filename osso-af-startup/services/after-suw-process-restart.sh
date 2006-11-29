@@ -22,6 +22,7 @@
 
 DIR=$AF_INIT_DIR
 
+sudo /etc/init.d/alarmd stop
 if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh stop
 fi
@@ -58,5 +59,6 @@ if [ -x $DIR/osso-connectivity-ui.sh ]; then
   source $DIR/osso-connectivity-ui.sh start
 fi
 source $DIR/keyboard.sh start
+sudo /etc/init.d/alarmd start
 # give VKB some time to start
 sleep 3
