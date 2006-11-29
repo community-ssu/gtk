@@ -6,6 +6,6 @@ Encoding=UTF-8
 
 [X-Hildon-Metatheme]
 GtkTheme=@ThemeDirBaseName@
-IconTheme=@ThemeDirBaseName@
+IconTheme=default
 X-MatchboxTheme=@ThemeDirBaseName@
 X-AdditionalRCFiles=maemo_af_desktop

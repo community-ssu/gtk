@@ -1,3 +1,9 @@
+2006-11-29  Michael Dominic K.  <mdk@mdk.am> 
+
+	* rc/index.theme: Always used default icon theme (for now).
+
+	* rc/theme.xml: Updates for matchbox theme.
+
 2006-11-29  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/Makefile.am: Adding base to installable files.

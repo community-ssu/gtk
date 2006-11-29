@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="@ThemeDirBaseName@" author="Nokia"
+<theme name="theme4" author="Nokia"
        desc="" version="1.0" engine_version="1" cache="false" >
 
 <!-- List Resources, defined by an id and then a definition -->
@@ -79,16 +79,16 @@
 
   <!-- Define the status bar applet panel -->
 
-  <panel x="-372" y="2" w="280" h="40" />
+  <panel x="-373" y="0" w="280" h="50" />
 
   <!-- Define minimize and close buttons -->
   
-  <button x="-80" y="2" w="40" h="40" action="minimize" >
+  <button x="-80" y="0" w="40" h="50" action="minimize" >
     <active pixmap="titlebarminimizebuttonpressed"/>
     <inactive pixmap="titlebarminimizebutton"/>
   </button>
  
-  <button x="-40" y="2" w="40" h="40" action="close" >
+  <button x="-40" y="0" w="40" h="50" action="close" >
     <active pixmap="titlebarclosebuttonpressed" />
     <inactive pixmap="titlebarclosebutton"/>
   </button>
