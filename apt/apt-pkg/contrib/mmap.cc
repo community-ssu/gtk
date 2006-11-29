@@ -328,16 +328,18 @@ unsigned long DynamicMMap::WriteString(const char *String,
 				       unsigned long Len)
 {
    unsigned long Result = iSize;
+
+   if (Len == (unsigned long)-1)
+      Len = strlen(String);
+   iSize += Len + 1;
+
    // Just in case error check
-   if (Result + Len > WorkSpace)
+   if (iSize > WorkSpace)
    {
       _error->Error("Dynamic MMap ran out of room");
       return 0;
    }   
    
-   if (Len == (unsigned long)-1)
-      Len = strlen(String);
-   iSize += Len + 1;
    memcpy((char *)Base + Result,String,Len);
    ((char *)Base)[Result + Len] = 0;
    return Result;
