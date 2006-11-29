@@ -31,6 +31,10 @@ start)
         #
         /etc/init.d/fb-progress.sh stop
 
+        if [ -x /etc/init.d/startup-greeting.sh ]; then
+          /etc/init.d/startup-greeting.sh start
+        fi
+
         su - user $SCRIPT start
         ;;
 
