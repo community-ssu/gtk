@@ -1572,7 +1572,48 @@ background_manager_create_background (BackgroundManager *manager,
     {
       image = load_image_from_uri (current->image_uri, TRUE, cancellable, &err);
 
-      if (!image)
+      if (err)
+        {
+          if (err->domain == BACKGROUND_MANAGER_ERROR
+              && err->code == BACKGROUND_MANAGER_ERROR_UNREADABLE)
+            {
+              /* If the file doesn't exist, we revert to using a plain
+               * color background */
+
+              g_warning ("Image file could not be opened. Reverting to"
+                         "plain color background");
+              g_free (current->image_uri);
+              current->image_uri = NULL;
+
+              image = NULL;
+              g_clear_error (&err);
+
+            }
+          else
+            {
+              /* Unrecoverable error :( */
+              if (err->message)
+                g_warning ("Unable to load background from `%s': %s",
+                           current->image_uri,
+                           err->message);
+
+              if (cancellable)
+                {
+                  if (priv->loading_note)
+                    gtk_widget_destroy (priv->loading_note);
+
+                  priv->loading_note = NULL;
+                }
+
+              g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, err);
+
+              g_error_free (err);
+
+              return;
+            }
+        }
+
+      else if (!image)
         {
           g_debug ("No image, no error. Assuming loading was cancelled");
           if (cancellable)
@@ -1584,27 +1625,7 @@ background_manager_create_background (BackgroundManager *manager,
             }
           return;
         }
-
-      if (err && err->message)
-        {
-          g_warning ("Unable to load background from `%s': %s",
-                     current->image_uri,
-                     err->message);
-
-          if (cancellable)
-            {
-              if (priv->loading_note)
-                gtk_widget_destroy (priv->loading_note);
-
-              priv->loading_note = NULL;
-            }
-
-          g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, err);
-
-          g_error_free (err);
-
-          return;
-        }
+        
     }
   else
     image = NULL;
