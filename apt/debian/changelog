@@ -1,6 +1,6 @@
 apt (0.6.42.3osso19) unstable; urgency=low
 
-  * 
+  * Fixes: NB#48705.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 29 Nov 2006 15:35:37 +0200
 
