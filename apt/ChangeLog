@@ -1,3 +1,9 @@
+2006-11-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* apt-pkg/contrib/mmap.cc (WriteString): Set iSize before checking
+	if there is still room so that IsOverfull can detect the overflow.
+	Also, check with the real length of the string when Len is -1.
+
 2006-10-23  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* apt-pkg/pkgcachegen.cc (MakeStatusCacheWithSize): Set Overfull
