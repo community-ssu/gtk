@@ -1,3 +1,10 @@
+osso-af-startup (1.31-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Removed clean-tmp-dirs. Fixes: NB#47646
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 29 Nov 2006 15:41:36 +0200
+
 osso-af-startup (1.30-1) unstable; urgency=low
 
   * xset770 now disables keyrepeat for the full screen key. Fixes: NB#46298
