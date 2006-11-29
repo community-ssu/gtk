@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.6.10-2.osso27) unstable; urgency=low
+
+  * Fixes: NB#48648 Enabling extension events stops GDK_2BUTTON_PRESS
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 29 Nov 2006 10:56:52 +0200
+
 gtk+2.0 (2:2.6.10-2.osso26) unstable; urgency=low
 
   * Fixes: NB#46971 Wrong transiency for tap-and-hold menus
