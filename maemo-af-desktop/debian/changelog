@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.12-1) unstable; urgency=low
+
+  * hildon-home/background-manager.c: Revert to plain color
+  background if the image file is not found. Fixes: NB#47053
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 29 Nov 2006 17:20:51 +0200
+
 maemo-af-desktop (2.9.99.11-1) unstable; urgency=low
 
   * hildon-navigator/hn-app-button.c: Removed thumbed menu.

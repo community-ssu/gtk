@@ -1,5 +1,9 @@
 2006-11-29  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.12
+
+2006-11-29  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Revert to plain color
 	background if the image file is not found. Fixes: NB#47053
 
