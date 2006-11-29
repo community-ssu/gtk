@@ -144,7 +144,6 @@ struct _HNAppButtonPrivate
   GtkWidget *menu;
 
   guint is_blinking  : 1;
-  guint is_thumbable : 1;
 };
 
 
@@ -425,7 +424,7 @@ hn_app_button_create_menu (HNAppButton *app_button)
       GtkWidget *menu_item;
 
       menu_item =
-        hn_app_menu_item_new(l->data, FALSE, app_button->priv->is_thumbable);
+        hn_app_menu_item_new(l->data, FALSE, FALSE);
 
       /* the G spec says the first item should be selected */
       if (!active_item)
@@ -787,11 +786,6 @@ hn_app_button_release_event (GtkWidget      *widget,
   hn_app_button_pop_menu (app_button);
 
  out:
-  /* reset the thumbable flag, to avoid problems if the menu is raised
-   * some other way than via pointer (should really only be an issue for
-   * the main menu button, but does us no harm to do it here too)
-   */
-  priv->is_thumbable = FALSE;
 
 #if 0
   /*
@@ -829,11 +823,6 @@ hn_app_button_press_event (GtkWidget      *widget,
   HN_DBG("App button pressed using button %d", event->button);
 
   hn_wm_activate(HN_TN_DEACTIVATE_KEY_FOCUS);
-
-  if (event->button == APP_BUTTON_THUMBABLE)
-    priv->is_thumbable = TRUE;
-  else
-    priv->is_thumbable = FALSE;
   
   HN_DBG ("choosing");
 
@@ -989,7 +978,6 @@ hn_app_button_init (HNAppButton *app_button)
   priv->info = NULL;
   
   priv->is_blinking = FALSE;
-  priv->is_thumbable = FALSE;
 
   gtk_widget_set_size_request (GTK_WIDGET (app_button), -1, BUTTON_HEIGHT);
   gtk_widget_set_sensitive (GTK_WIDGET (app_button), FALSE);
