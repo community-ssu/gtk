@@ -1,3 +1,10 @@
+dbus-glib (0.72-osso2) experimental; urgency=low
+
+  * UNRELEASED
+  * Added support for compiling with thumb instructions.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 29 Nov 2006 12:59:47 +0200
+
 dbus-glib (0.72-osso1) experimental; urgency=low
 
   * Upstream upgraded to 0.72 (used debian scripts from 0.71-3 as the

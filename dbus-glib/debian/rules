@@ -12,6 +12,11 @@ include /usr/share/cdbs/1/class/autotools.mk
 DEB_TAR_SRCDIR := dbus-glib-0.72
 include /usr/share/cdbs/1/rules/tarball.mk
 
+# Use soft-float and thumb mode if it is enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -mthumb
+endif
+
 # Strict library versioning
 DEB_DH_MAKESHLIBS_ARGS_ALL := -V
 
