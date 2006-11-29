@@ -1,6 +1,5 @@
 osso-af-startup (1.31-1) unstable; urgency=low
 
-  * UNRELEASED
   * Removed clean-tmp-dirs. Fixes: NB#47646
   * Added restarting of alarmd to after-suw-process-restart.sh.
     Fixes: NB#46456
