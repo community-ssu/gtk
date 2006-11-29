@@ -1,3 +1,10 @@
+libsdl1.2 (1.2.8-15) unstable; urgency=low
+
+  * src/video/x11/: Both windows get WM classname and unused is unmapped.
+    Fixes: NB#47798
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed, 29 Nov 2006 12:28:32 +0200
+
 libsdl1.2 (1.2.8-14) unstable; urgency=low
 
   * src/video/SDL_video.c: SDL_UpdateRect() clips now the rect to the screen.

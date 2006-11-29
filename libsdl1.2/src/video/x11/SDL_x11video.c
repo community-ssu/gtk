@@ -371,6 +371,7 @@ static void create_aux_windows(_THIS)
 	    classhints->res_name = classname;
 	    classhints->res_class = classname;
 	    XSetClassHint(SDL_Display, WMwindow, classhints);
+            XSetClassHint(SDL_Display, FSwindow, classhints);
 	    XFree(classhints);
 	}
     }

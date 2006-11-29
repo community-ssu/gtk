@@ -751,6 +751,8 @@ int X11_EnterFullScreen(_THIS)
     if ( ! okay ) {
         X11_LeaveFullScreen(this);
     }
+
+    XUnmapWindow(SDL_Display, WMwindow);
     /* Set the colormap */
     if ( SDL_XColorMap ) {
         XInstallColormap(SDL_Display, SDL_XColorMap);
@@ -812,6 +814,9 @@ int X11_LeaveFullScreen(_THIS)
        explicitly grabbed.
      */
     X11_GrabInputNoLock(this, this->input_grab & ~SDL_GRAB_FULLSCREEN);
+
+    XMapWindow(SDL_Display, WMwindow);
+    X11_WaitMapped(this, WMwindow);
 
     /* We may need to refresh the screen at this point (no backing store)
        We also don't get an event, which is why we explicitly refresh. */
