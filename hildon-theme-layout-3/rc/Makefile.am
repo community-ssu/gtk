@@ -68,7 +68,8 @@ nobase_dist_template_DATA =		\
      themespecificgtk			\
      layout.txt				\
      theme.xml				\
-     index.theme
+     index.theme			\
+     base
 
 MAINTAINERCLEANFILES			= Makefile.in 
 
