@@ -533,11 +533,18 @@ load_image_from_uri (const gchar  *uri,
   gboolean image_from_mmc = FALSE;
   gboolean mmc_cover_open = FALSE;
   gboolean oom = FALSE;
+  BackgroundManager *bm;
+  BackgroundManagerPrivate *priv;
 
   g_return_val_if_fail (uri != NULL, NULL);
 
   client = gconf_client_get_default ();
   g_assert (GCONF_IS_CLIENT (client));
+
+  bm = background_manager_get_default ();
+  g_assert (IS_BACKGROUND_MANAGER (bm));
+
+  priv = BACKGROUND_MANAGER_GET_PRIVATE (bm);
 
   mmc_mount_point = g_strconcat ("file://",
                                  hildon_home_get_mmc_mount_point (),
@@ -582,8 +589,17 @@ load_image_from_uri (const gchar  *uri,
   /* XXX Run the main loop to update the progress note */
   if (cancellable)
     {
+      gboolean is_cancelled = TRUE;
       while (gtk_events_pending ())
         gtk_main_iteration ();
+
+      if (GTK_IS_DIALOG (priv->loading_note))
+          is_cancelled = 
+              GPOINTER_TO_INT (g_object_get_data (G_OBJECT (priv->loading_note),
+                                                  "is-cancelled"));
+
+      if (is_cancelled)
+        return NULL;
     }
 
   result = gnome_vfs_open (&handle, uri, GNOME_VFS_OPEN_READ);
@@ -616,8 +632,17 @@ load_image_from_uri (const gchar  *uri,
       /* XXX Run the main loop to update the progress note */
       if (cancellable)
         {
+          gboolean is_cancelled = TRUE;
           while (gtk_events_pending ())
             gtk_main_iteration ();
+
+          if (GTK_IS_DIALOG (priv->loading_note))
+            is_cancelled = 
+                GPOINTER_TO_INT (g_object_get_data (G_OBJECT (priv->loading_note),
+                                                    "is-cancelled"));
+
+          if (is_cancelled)
+            return NULL;
         }
 
       result = gnome_vfs_read (handle, buffer, BUFFER_SIZE, &bytes_read);
@@ -1111,6 +1136,13 @@ composite_background (const GdkPixbuf  *bg_image,
       g_error_free (bg_error);
       bg_error = NULL;
     }
+  else if (!compose)
+    {
+      g_debug ("Assuming loading of titlebar cancelled");
+      if (pixbuf)
+        g_object_unref (pixbuf);
+      return NULL;
+    }
   else
     {
       g_debug ("Compositing titlebar");
@@ -1136,6 +1168,13 @@ composite_background (const GdkPixbuf  *bg_image,
       
       g_error_free (bg_error);
       bg_error = NULL;
+    }
+  else if (!compose)
+    {
+      g_debug ("Assuming loading of sidebar cancelled");
+      if (pixbuf)
+        g_object_unref (pixbuf);
+      return NULL;
     }
   else
     {
@@ -1363,17 +1402,17 @@ loading_image_banner_response (GtkDialog *dialog,
       response == GTK_RESPONSE_DELETE_EVENT)
     {
       BackgroundManager *manager = BACKGROUND_MANAGER (user_data);
+      gtk_widget_set_sensitive (GTK_WIDGET (dialog), FALSE);
       
       if (manager->priv->child_pid != 0)
         {
-          g_object_set_data (G_OBJECT (dialog),
-                             "is-cancelled", GINT_TO_POINTER (1));
-          fprintf (stderr, "about to kill %i\n", manager->priv->child_pid);
-          gtk_widget_set_sensitive (GTK_WIDGET (dialog), FALSE);
+          g_debug ("about to kill %i\n", manager->priv->child_pid);
           kill (manager->priv->child_pid, SIGKILL);
 
-          g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
         }
+      g_object_set_data (G_OBJECT (dialog),
+                         "is-cancelled", GINT_TO_POINTER (1));
+      g_signal_emit (manager, manager_signals[LOAD_CANCEL], 0);
     }
 }
 
@@ -1530,30 +1569,45 @@ background_manager_create_background (BackgroundManager *manager,
 
   err = NULL;
   if (current->image_uri)
-    image = load_image_from_uri (current->image_uri, TRUE, cancellable, &err);
+    {
+      image = load_image_from_uri (current->image_uri, TRUE, cancellable, &err);
+
+      if (!image)
+        {
+          g_debug ("No image, no error. Assuming loading was cancelled");
+          if (cancellable)
+            {
+              if (priv->loading_note)
+                gtk_widget_destroy (priv->loading_note);
+
+              priv->loading_note = NULL;
+            }
+          return;
+        }
+
+      if (err && err->message)
+        {
+          g_warning ("Unable to load background from `%s': %s",
+                     current->image_uri,
+                     err->message);
+
+          if (cancellable)
+            {
+              if (priv->loading_note)
+                gtk_widget_destroy (priv->loading_note);
+
+              priv->loading_note = NULL;
+            }
+
+          g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, err);
+
+          g_error_free (err);
+
+          return;
+        }
+    }
   else
     image = NULL;
-
-  if (err && err->message)
-    {
-      g_warning ("Unable to load background from `%s': %s",
-                 current->image_uri,
-                 err->message);
-
-      if (cancellable)
-        {
-          if (priv->loading_note)
-            gtk_widget_destroy (priv->loading_note);
-          
-          priv->loading_note = NULL;
-        }
-      
-      g_signal_emit (manager, manager_signals[LOAD_ERROR], 0, err);
-
-      g_error_free (err);
-
-      return;
-    }
 
   gdk_drawable_get_size (GDK_DRAWABLE (priv->desktop), &width, &height);
 
@@ -1576,10 +1630,24 @@ background_manager_create_background (BackgroundManager *manager,
 
       return;
     }
-  else if (image)
+  else if (!pixbuf)
     {
-      g_object_unref (image);
+      g_debug ("Assuming compositing cancelled");
+      if (image)
+        g_object_unref (image);
+
+      if (cancellable)
+        {
+          if (priv->loading_note)
+            gtk_widget_destroy (priv->loading_note);
+
+          priv->loading_note = NULL;
+        }
+      return;
     }
+  
+  if (image)
+    g_object_unref (image);
 
   pipe (parent_exit_notify);
   pipe (pipe_from_child);
