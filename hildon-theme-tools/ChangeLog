@@ -1,3 +1,7 @@
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* src/Makefile.am: Wrong category.
+
 2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/Makefile.am:
