@@ -76,7 +76,6 @@ hildon = Extension('hildon',
                 'pango-1.0',
                 'gdk-x11-2.0',
                 'gdk_pixbuf-2.0',
-                'gdk-x11-2.0',
 	],
 	include_dirs=[
                 '/usr/include',

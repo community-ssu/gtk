@@ -40,6 +40,7 @@
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-code-dialog.h>
 #include <hildon-widgets/hildon-color-button.h>
+#include <hildon-widgets/hildon-color-chooser-button.h>
 #include <hildon-widgets/hildon-color-chooser-dialog.h>
 #include <hildon-widgets/hildon-color-chooser.h>
 #include <hildon-widgets/hildon-color-selector.h>
