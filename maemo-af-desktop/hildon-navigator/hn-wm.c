@@ -1284,7 +1284,6 @@ hn_wm_activate(guint32 what)
             g_signal_emit_by_name(button, "toggled");
         }
 	hnwm.has_focus = TRUE;
-        hn_window_set_focus (tasknav,TRUE);
     }
 }
 

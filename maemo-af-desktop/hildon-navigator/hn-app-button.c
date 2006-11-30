@@ -562,9 +562,9 @@ menu_keypress_cb (GtkWidget *menu, GdkEventKey *event, HNAppButton * app_button)
               gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);
               gtk_toggle_button_toggled (app_button->priv->prev_button);
             }
-
-		  hn_wm_activate(HN_TN_ACTIVATE_KEY_FOCUS);
-		  gtk_widget_grab_focus (GTK_WIDGET (app_button));
+	  
+	  gtk_widget_grab_focus (GTK_WIDGET (app_button));
+	  hn_wm_activate(HN_TN_ACTIVATE_KEY_FOCUS);
         }
       
       return TRUE;

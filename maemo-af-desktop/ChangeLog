@@ -1,3 +1,9 @@
+2006-11-30  Moises Martinez <moises.martinzes@nokia.com>
+
+	* hildon-navigator/hn-wm.c
+	* hildon-navigator/hn-app-button.c:
+	- Set the focus properly. 
+
 2006-11-30  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/hildon-home-applet.c: unref the close button and
