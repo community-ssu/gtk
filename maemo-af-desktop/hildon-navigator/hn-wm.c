@@ -1283,7 +1283,6 @@ hn_wm_activate(guint32 what)
             gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button), TRUE);
             g_signal_emit_by_name(button, "toggled");
         }
-	hnwm.has_focus = TRUE;
     }
 }
 

@@ -1,3 +1,14 @@
+maemo-af-desktop (2.9.99.13-1) unstable; urgency=low
+
+  * hildon-navigator/hn-wm.c
+  * hildon-navigator/hn-app-button.c:
+  - Set the focus properly. 
+
+  * hildon-home/hildon-home-applet.c: unref the close button and
+  resize handler pixmaps. Fixes: NB#48743
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 30 Nov 2006 18:47:03 +0200
+
 maemo-af-desktop (2.9.99.12-1) unstable; urgency=low
 
   * hildon-home/background-manager.c: Revert to plain color
