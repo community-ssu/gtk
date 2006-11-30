@@ -161,9 +161,6 @@ class "GtkWidget" style "osso-default"
 
 # Maemo af desktop widgets included in gtkrc.maemo_af_desktop
 
-
-#include "../../../sapwoods/hildon-icons/stockrc"
-
 ##################
 # THESE HAVE MISSING IMAGES BUT ARE HERE BECAUSE OF STYLE PROPERTIES
 ##################

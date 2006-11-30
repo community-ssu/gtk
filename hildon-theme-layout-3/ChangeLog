@@ -1,3 +1,8 @@
+2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+
+	* rc/: Renaming files to .rc and making it build (include) gtkrc and
+	gtkrc.maemo_af_desktop. Currently all broken.
+
 2006-11-29  Michael Dominic K.  <mdk@mdk.am> 
 
 	* rc/index.theme: Always used default icon theme (for now).
