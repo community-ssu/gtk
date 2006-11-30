@@ -9,4 +9,5 @@ AC_OUTPUT([Makefile                             \
 	   rc/Makefile                          \
            scripts/hildon-theme-install-3       \
            pkgconfig/hildon-theme-layout-3.pc   \
-           pkgconfig/Makefile])
+           pkgconfig/Makefile                   \
+           data/Makefile])

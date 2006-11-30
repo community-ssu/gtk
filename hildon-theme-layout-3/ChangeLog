@@ -1,3 +1,14 @@
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* Makefile.am:
+	* configure.ac:
+	* data:
+	* data/Makefile.am: Introducing the data directory.
+	
+	* rc/index.theme:
+	* rc/layout.txt:
+	* rc/theme.xml: Moving to the data directory.
+
 2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
 
 	* rc/: Renaming files to .rc and making it build (include) gtkrc and
