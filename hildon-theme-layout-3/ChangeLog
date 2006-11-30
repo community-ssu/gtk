@@ -1,3 +1,9 @@
+2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+
+	* configure.ac: Removing scripts directory from processing.
+
+	* data/index.theme: Changing the replacement char from @ to _.
+
 2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* autogen.sh: Adding the executable property.

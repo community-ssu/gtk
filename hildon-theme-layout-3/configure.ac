@@ -8,7 +8,6 @@ AC_PROG_INSTALL
 PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.1.0)
 
 AC_OUTPUT([Makefile                             \
-           scripts/Makefile                     \
 	   rc/Makefile                          \
            pkgconfig/hildon-theme-layout-3.pc   \
            pkgconfig/Makefile                   \
