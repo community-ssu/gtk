@@ -1,7 +1,8 @@
 bin_PROGRAMS 				= hildon-theme-slicer 		\
 					  hildon-theme-colourizer 	\
 					  hildon-theme-regenerator 	\
-					  hildon-theme-outliner
+					  hildon-theme-outliner		\
+					  hildon-theme-subst
 
 dist_bin_SCRIPTS			= hildon-theme-rc-parser
 

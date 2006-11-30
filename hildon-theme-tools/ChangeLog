@@ -1,3 +1,14 @@
+2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+
+	* src/Makefile.am:
+	* src/colourizer.c:
+	* src/hildon-theme-rc-parser:
+	* src/hildon-theme-subst:
+	* src/outliner.c:
+	* src/regenerator.c:
+	* src/slicer.c: Adding the subst tool. Fixing the error reporting in
+	other tools.
+
 2006-11-29  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* src/slicer.c:

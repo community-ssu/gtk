@@ -103,12 +103,11 @@ int                             main (int argc, char **argv)
 
 	g_type_init ();
 
-        show_banner ();
-
         /* Check the args... */
         if (argc < 3) {
+                show_banner ();
                 show_usage ();
-                goto Error;
+                g_error ("Not enough arguments given!");
         }
 
         /* Get file vals */
@@ -116,8 +115,9 @@ int                             main (int argc, char **argv)
         output_image_file = argv [2];
 
         if (template_file == NULL || output_image_file == NULL) {
+                show_banner ();
                 show_usage ();
-                g_error ("Not enough arguments given!");
+                g_error ("Bad arguments given!");
         }
 
         /* Check the template file... */

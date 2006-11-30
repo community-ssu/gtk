@@ -4,7 +4,6 @@
 #                                                                            
 # Authors:                                                                   
 #      Michael Dominic K. <michael.kostrzewa@nokia.com>
-#      Marius Vollmer <marius.vollmer@nokia.com>
 #                                                                            
 # This program is free software; you can redistribute it and/or modify it    
 # under the terms of the GNU General Public License as published by the      
@@ -23,19 +22,30 @@ use File::Basename;
 
 sub show_banner 
 {
-        print "RC processor tool by Michael Dominic K. and Marius Vollmer\n";
+        print "Substitution tool by Michael Dominic K.\n";
         print "Copyright 2006 by Nokia Corporation.\n\n";
 }
 
 sub show_usage 
 {
         my $program_name = basename($0);
-        print "Usage: $program_name <input rc file> <output rc file>\n\n";
-        print "This tool will process the supplied input rc file and include all\n";
-        print "the sub-rc files referrenced from it - producing a flat gtkrc.\n\n";
+        print "Usage: $program_name <layout> <template> <input file> <output file>\n\n";
+        print "This tool will process the supplied input file and substitute\n";
+        print "the color values with real colors fetched from the layout.\n\n";
 }
 
-sub process_gtkrc
+sub do_substitutions
+{
+        my $line = $_[0];
+        foreach $pat (keys(%substitutions))
+        {
+                $subst = $substitutions{$pat};
+                $line =~ s/$pat/$subst/g;
+        }
+        return $line;
+}
+
+sub process_file
 {
         my $file_name = "$_[0]";
         my $file;
@@ -47,14 +57,7 @@ sub process_gtkrc
     
         while (<$file>)
         {
-                if (/^include "(.*)"$/) {
-                        if (not process_gtkrc ($1)) {
-                                print STDERR ("ERROR: Failed to include \"$1\" in \"$file_name\"\n");
-                                return 0;
-                        }
-                } else {
-                        print TARGET $_;
-                }
+                print TARGET do_substitutions ($_);
         }
 
         close ($file);
@@ -62,21 +65,35 @@ sub process_gtkrc
 }
 
 # Check if we have enough arguments
-if ($#ARGV + 1 < 2) {
+if ($#ARGV + 1 < 4) {
         show_banner;
         show_usage ();
         print STDERR "ERROR: Not enough arguments specified.\n";
         exit 128;
 }
 
-# Open the output file
-if (not open (TARGET, "> $ARGV[1]")) {
-        print STDERR "ERROR: Could not open the output file \"$ARGV[1]\"\n";
+%substitutions = 
+    ( qw{@ThemeName@} => "ThemeName" );
+
+# Get the colors
+print "Fetching colors...\n";
+$eval_value =`hildon-theme-colourizer $ARGV[0] $ARGV[1]`;
+if ($? != 0) {
+        print STDERR "ERROR: Could not fetch colors\n";
         exit 128;
 }
 
-# Recursively process the rc file
-if (not process_gtkrc ($ARGV[0])) {
+eval $eval_value;
+
+# Open the output file
+if (not open (TARGET, "> $ARGV[3]")) {
+        print STDERR "ERROR: Could not open the output file \"$ARGV[3]\"\n";
+        exit 128;
+}
+
+# Process the file
+print "Processing $ARGV[2]...\n";
+if (not process_file ($ARGV[2])) {
         exit 128;
 } else {
         exit 0;
