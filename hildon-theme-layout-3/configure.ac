@@ -4,6 +4,9 @@ AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
 
+# Check the tools installation
+PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.1.0)
+
 AC_OUTPUT([Makefile                             \
            scripts/Makefile                     \
 	   rc/Makefile                          \

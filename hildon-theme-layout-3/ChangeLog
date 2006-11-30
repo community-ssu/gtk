@@ -1,5 +1,11 @@
 2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* autogen.sh: Adding the executable property.
+
+	* configure.ac: Adding an extra check for hildon-theme-tools. 
+
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* data/layout.txt: Updating with VKB key (forgoten merge from tigert).
 
 	* pkgconfig/hildon-theme-layout-3.pc.in: More subst stuff.
