@@ -1,4 +1,4 @@
-SUBDIRS 		= template
+SUBDIRS 		= template data
 
 MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure 	\
 			  config.h.in compile 			\
@@ -9,13 +9,5 @@ MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure 	\
 			  mkinstalldirs build-stamp 		\
 			  install-stamp configure-stamp		\
 			  config.status 
-
-install:
-	$(mkinstalldirs) $(DESTDIR)$(datadir)/themes/$(THEME_DIR)/
-	hildon-theme-install-3					\
-            --name $(THEME_NAME)				\
-            --template $(srcdir)/template/template.png		\
-            --theme $(THEME_FULL_DIR)/				\
-            --destdir $(DESTDIR)
 
 

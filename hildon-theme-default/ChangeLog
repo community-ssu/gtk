@@ -1,3 +1,12 @@
+2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+
+	* Makefile.am:
+	* configure.ac:
+	* data: 
+	* data/Makefile.am: Do substitutions locally.
+
+	* template/Makefile.am: Build images locally.
+
 2006-11-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* template/template.png: Updating to the latest template image.
