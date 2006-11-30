@@ -1,3 +1,8 @@
+2006-11-30  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/hildon-home-applet.c: unref the close button and
+	resize handler pixmaps. Fixes: NB#48743
+
 2006-11-29  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.99.12

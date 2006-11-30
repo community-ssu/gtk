@@ -656,7 +656,10 @@ hildon_home_applet_create_icon_window (HildonHomeApplet *applet,
   gdk_window_move (window, x, y);
 
   if (pixmap)
-    gdk_window_set_back_pixmap (window, pixmap, FALSE);
+    {
+      gdk_window_set_back_pixmap (window, pixmap, FALSE);
+      g_object_unref (pixmap);
+    }
   
   if (bitmask)
     {
