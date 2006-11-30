@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4 -u
+#!/usr/bin/python2.5 -u
 import osso
 
 c = osso.Context("test_system_note", "0.0.0", True)

@@ -1,4 +1,4 @@
-#!/usr/bin/python2.4 -u
+#!/usr/bin/python2.5 -u
 import time
 import gtk
 import hildon
@@ -8,7 +8,7 @@ def handler_test(*args):
     print "CALLBACK handler_test with args:", args
 
 def handler_test_application_top(widget, c):
-    c.application_top("osso_global_search")
+    c.application_top("maemopad")
     c.userdata_changed()
 
 def handler_test_force_autosave(widget, c):
