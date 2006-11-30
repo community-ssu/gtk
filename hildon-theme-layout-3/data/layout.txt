@@ -77,6 +77,9 @@ HomeFrameNormal=7960,756,30,10
 HomeFrameResize=7960,768,30,10
 HomeFrameReject=7960,780,30,10
 
+# Virtual keyboard
+VKBButtonTextColor=7607,13,30,10
+
 [Elements]
 qgn_plat_view_button.png=7496,55,30,30
 qgn_plat_view_button_w.png=7526,55,30,30

@@ -1,3 +1,0 @@
-#! /bin/sh
-
-exec hildon-theme-install --layout @prefix@/share/hildon-theme-layout-3/ "$@"

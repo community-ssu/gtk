@@ -1,5 +1,15 @@
 2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* data/layout.txt: Updating with VKB key (forgoten merge from tigert).
+
+	* pkgconfig/hildon-theme-layout-3.pc.in: More subst stuff.
+
+	* Makefile.am:
+	* configure.ac: 
+	* scripts: Removing.
+
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* Makefile.am:
 	* configure.ac:
 	* data:
