@@ -1,10 +1,9 @@
 osso-af-startup (1.32-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added new startup greeting. Fixes: NB#47055
   * Updated osso-af-utils dependency to a newer version.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 01 Dec 2006 15:40:48 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 01 Dec 2006 16:05:06 +0200
 
 osso-af-startup (1.31-1) unstable; urgency=low
 
