@@ -138,12 +138,11 @@ stamp-install: stamp-build
 
 	# shared library
 	ln -sf lib$(PYTHON).so.1 $(d_dev)/usr/lib/lib$(PYTHON).so
-	#ln -sf ../../lib$(PYTHON).so $(d_dev)/$(scriptdir)/config # TODO
+	ln -sf ../../lib$(PYTHON).so $(d_dev)/$(scriptdir)/config
 
 	# remove unused items
 	rm -f $(d_dev)/usr/bin/python \
 	      $(d_dev)/usr/bin/idle
-	
 
 	# install the Makefile inside development package
 	sed -e 's,^CXX *=,CXX=		g++ -pthread,' \
@@ -159,14 +158,14 @@ stamp-install: stamp-build
 	# default python TODO
 	# ============== 
 
-	# ln -sf $(PYTHON).1 $(d_dev)/usr/share/man/man1/python.1 # TODO: put in postinst script
-	# (cd $(d_base)/usr/bin && ln -sf python$(PYVER) python) # TODO: put in postinst script
-	# ln -sf /usr/lib/python$(PYVER)/pdb.py $(d_dev)/usr/bin/pdb$(PYVER)
-	# ln -sf pdb$(PYVER) $(d_dev)/usr/bin/pdb # TODO: put in postinst script
-	# ln -sf /usr/lib/python$(PYVER)/pydoc.py $(d_dev)/usr/bin/pydoc$(PYVER)
-	# ln -sf pydoc$(PYVER) $(d_dev)/usr/bin/pydoc # TODO: put in postinst script
-	# cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(PYVER)
-	# ln -sf pygettext$(PYVER) $(d_dev)/usr/bin/pygettext # TODO: put in postinst script
+	ln -sf $(PYTHON).1 $(d_dev)/usr/share/man/man1/python.1 # TODO: put in postinst script
+	(cd $(d_base)/usr/bin && ln -sf python$(PYVER) python) # TODO: put in postinst script
+	ln -sf /usr/lib/python$(PYVER)/pdb.py $(d_dev)/usr/bin/pdb$(PYVER)
+	ln -sf pdb$(PYVER) $(d_dev)/usr/bin/pdb # TODO: put in postinst script
+	ln -sf /usr/lib/python$(PYVER)/pydoc.py $(d_dev)/usr/bin/pydoc$(PYVER)
+	ln -sf pydoc$(PYVER) $(d_dev)/usr/bin/pydoc # TODO: put in postinst script
+	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(PYVER)
+	ln -sf pygettext$(PYVER) $(d_dev)/usr/bin/pygettext # TODO: put in postinst script
 
 	for i in `find $(d_base) $(d_dev) -type f`; do \
 	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/env $(PYTHON)\1,' $$i > $$i.temp; \
