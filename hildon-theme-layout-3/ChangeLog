@@ -1,3 +1,7 @@
+2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/layout.txt: Adding info about the forced alpha images.
+
 2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
 
 	* data/theme.xml: Temporarily hardfixing the LowLightColor at #000000.
