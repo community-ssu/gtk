@@ -1,9 +1,8 @@
 Source: atk1.0
 Section: libs
 Priority: optional
-Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
-Uploaders: Andrew Lau <netsnipe@users.sourceforge.net>, Clément Stenac <zorglub@debian.org>, Dafydd Harries <daf@debian.org>, Guilherme de S. Pastore <gpastore@debian.org>, Gustavo Franco <stratus@debian.org>, Gustavo Noronha Silva <kov@debian.org>, J.H.M. Dassen (Ray) <jdassen@debian.org>, Jordi Mallach <jordi@debian.org>, Jose Carlos Garcia Sogo <jsogo@debian.org>, Josselin Mouette <joss@debian.org>, Loic Minier <lool@dooz.org>, Marc 'HE' Brockschmidt <he@debian.org>, Marco Cabizza <marco87@gmail.com>, Oystein Gisnas <oystein@gisnas.net>, Ondřej Surý <ondrej@debian.org>, Ross Burton <ross@debian.org>, Sebastien Bacher <seb128@debian.org>, Sjoerd Simons <sjoerd@debian.org>
-Build-Depends: debhelper (>= 5.0.22), pkg-config, libglib2.0-dev (>= 2.5.7), gnome-pkg-tools (>= 0.7), cdbs, gtk-doc-tools, docbook-xml
+Maintainer: Tommi Komulainen <tommi.komulainen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libglib2.0-dev (>= 2.5.7), cdbs, gtk-doc-tools, docbook-xml
 Standards-Version: 3.7.2
 
 Package: libatk1.0-0
@@ -38,7 +37,7 @@ Description: The ATK accessibility toolkit
 Package: libatk1.0-data
 Section: misc
 Architecture: all
-Depends: ${misc:Depends}, libatk1.0-0 (>= ${source:Version})
+Depends: ${misc:Depends}, libatk1.0-0 (>= ${Source-Version})
 Description: Common files for the ATK accessibility toolkit
  ATK is a toolkit providing accessibility interfaces for applications or
  other toolkits. By implementing these interfaces, those other toolkits or
@@ -50,7 +49,7 @@ Description: Common files for the ATK accessibility toolkit
 Package: libatk1.0-dev
 Section: libdevel
 Architecture: any
-Depends: ${misc:Depends}, libatk1.0-0 (= ${binary:Version}), pkg-config, libglib2.0-dev (>= 2.4.1-2)
+Depends: ${misc:Depends}, libatk1.0-0 (= ${Source-Version}), pkg-config, libglib2.0-dev (>= 2.4.1-2)
 Replaces: libatk0-dev, libatk-dev
 Conflicts: libatk0-dev, libatk-dev
 Description: Development files for the ATK accessibility toolkit
@@ -62,24 +61,18 @@ Description: Development files for the ATK accessibility toolkit
  These are the development files for ATK, needed for compilation of
  programs or toolkits which use it.
 
-Package: libatk1.0-dbg
+Package: libatk1.0-0-dbg
 Section: libdevel
 Priority: extra
 Architecture: any
-Depends: ${misc:Depends}, libatk1.0-0 (= ${binary:Version})
-Replaces: libatk1.0-0 (<< 1.11.4-3)
-Description: The ATK libraries and debugging symbols
+Depends: ${misc:Depends}, libatk1.0-0 (= ${Source-Version})
+Description: The ATK accessibility toolkit, debugging symbols
  ATK is a toolkit providing accessibility interfaces for applications or
  other toolkits. By implementing these interfaces, those other toolkits or
  applications can be used with tools such as screen readers, magnifiers, and
  other alternative input devices.
  .
- This package contains unstripped shared libraries. it is provided
- primarily to provide a backtrace with names in a debugger, this makes
- it somewhat easier to interpret core dumps. The libraries are installed
- in /usr/lib/debug and can be used by placing that directory in
- LD_LIBRARY_PATH.
- Most people will not need this package.
+ This package contains symbol tables for debugging.
 
 Package: libatk1.0-doc
 Section: doc

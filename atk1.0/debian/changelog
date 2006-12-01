@@ -1,3 +1,26 @@
+atk1.0 (1.12.3-1osso1) unstable; urgency=low
+
+  * Set myself as maintainer,
+  * Remove gnome-pkg-tools from Build-Depends
+    - debian/control: remove Uploaders
+    - debian/rules: remove uploaders, clean-la
+  * Lower debhelper dependency to (>> 4.0.0) (and cdbs?)
+    - debian/compat: 4
+    - debian/control:
+      + update Build-Depends
+      + change ${binary:Version} and ${source:Version} to ${Source-Version}
+      + rename libatk1.0-dbg to libatk1.0-0-dbg and package only symbols
+    - debian/rules:
+      + drop --add-udeb from dh_makeshlibs
+      + replace DEB_DBG_PACKAGE_ALL with DEB_DH_STRIP_ARGS
+    - debian/libatk1.0-dbg.dirs: removed
+  * Update compiler flags
+    - debian/rules:
+      + remove redundant LDFLAGS
+      + support thumb option for DEB_BUILD_OPTIONS (CFLAGS += -mthumb)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  3 Nov 2006 14:59:56 +0200
+
 atk1.0 (1.12.3-1) unstable; urgency=low
 
   * Set Maintainer to the Debian GNOME Maintainers.
