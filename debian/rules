@@ -1,160 +1,275 @@
 #!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
 
-# debian/rules file for gtk+ Debian package
-# written April 1998 by Ben Gertzfield <che@debian.org
+SOURCE_DIR=$(CURDIR)
+BUILD_SHARED_DIR=$(SOURCE_DIR)
 
-build: build-stamp
-build-stamp:
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+CFLAGS = -Wall -g
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0
+else
+	CFLAGS += -O2
+endif
+
+# Use soft-float and thumb mode if it enabled. 
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+endif
+
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+ifneq (,$(findstring parallel,$(DEB_BUILD_OPTIONS)))
+    PARALLEL_JOBS := $(shell echo $(DEB_BUILD_OPTIONS) | \
+        sed -e 's/.*parallel=\([0-9]\+\).*/\1/')
+    ifeq ($(DEB_BUILD_OPTIONS),$(PARALLEL_JOBS))
+        PARALLEL_JOBS := $(shell if [ -f /proc/cpuinfo ]; \
+            then echo `cat /proc/cpuinfo | grep 'processor' | wc -l`; \
+            else echo 1; fi)
+    endif
+    NJOBS := -j$(PARALLEL_JOBS)
+endif
+
+# Ensure the build aborts when there are still references to undefined
+# symbols.
+### Disabled for now as gtk is actually broken currently
+###LDFLAGS += -Wl,-z,defs
+
+# Make the linker work a bit harder so dynamic loading can be done faster
+LDFLAGS += -Wl,-O1
+
+# Disable all locales to save footprint
+export LINGUAS = 
+
+##
+version_with_epoch=$(shell dpkg-parsechangelog | grep '^Version: ' | sed -e 's/^Version: //' -e 's/-[A-Za-z0-9\.\+]*$$//g' -e 's/+[A-Za-z0-9\.]*$$//g')
+version=$(shell echo ${version_with_epoch} | sed -e 's/^[0-9]*://')
+major=$(shell echo ${version} | sed -e 's/\(^[0-9]*\)\.[0-9]*\.[0-9]*$$/\1/')
+minor=$(shell echo ${version} | sed -e 's/^[0-9]*\.\([0-9]*\)\.[0-9]*$$/\1/')
+rel=$(shell echo ${version} | sed -e 's/^[0-9]*\.[0-9]*\.\([0-9]*\)$$/\1/')
+shortver=$(major).$(minor)
+apiver=2.0
+soname=0
+suffix=
+modver=$(major).$(minor).0
+glibver=2.0
+atkver=1.0
+pangover=1.0
+libpath=$(BUILD_SHARED_DIR)/gdk-pixbuf/.libs:$(BUILD_SHARED_DIR)/gdk/.libs:$(BUILD_SHARED_DIR)/gtk/.libs
+
+
+debian/control:
 	dh_testdir
-	./autogen.sh --prefix=/usr --with-xinput=xfree
-	$(MAKE)
-	cd docs && make distdocs
-	cd ..
-	touch build-stamp
 
-build-dbg: build-dbg-stamp
-build-dbg-stamp:
+	sed -e 's/@SONAME@/${soname}${suffix}/g' -e 's/@VERSION@/${version}/g' $@.in > $@
+
+$(SOURCE_DIR)/configure:
+	AUTOGEN_SUBDIR_MODE=1 $(SOURCE_DIR)/autogen.sh
+
+configure-shared: $(BUILD_SHARED_DIR)/config.status
+$(BUILD_SHARED_DIR)/config.status: $(SOURCE_DIR)/configure
 	dh_testdir
-	./configure --prefix=/usr --with-xinput=xfree --enable-debug=yes
-	$(MAKE)
-	touch build-dbg-stamp
 
-clean:
+	# Add here commands to configure the package.
+	cd $(BUILD_SHARED_DIR) && \
+	env CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" $(SOURCE_DIR)/configure \
+			--host=$(DEB_HOST_GNU_TYPE) \
+			--build=$(DEB_BUILD_GNU_TYPE) \
+			--prefix=/usr \
+			--mandir=\$${prefix}/share/man \
+			--infodir=\$${prefix}/share/info \
+			--sysconfdir=/etc \
+			--with-html-dir=\$${prefix}/share/doc/libgtk$(apiver)-doc \
+			--with-xinput=yes \
+			--enable-shared \
+			--disable-static \
+			--disable-dependency-tracking \
+			--disable-gtk-doc
+
+	cd $(BUILD_SHARED_DIR) && \
+	sed < libtool > libtool-2 \
+	 -e 's/^hardcode_libdir_flag_spec.*$$/hardcode_libdir_flag_spec=" -D__LIBTOOL_IS_A_FOOL__ "/' \
+	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
+	mv libtool-2 libtool
+
+
+configure: configure-shared
+
+build-shared: debian/control configure-shared $(BUILD_SHARED_DIR)/build-stamp
+$(BUILD_SHARED_DIR)/build-stamp:
+	dh_testdir
+
+	-rm -f $(SOURCE_DIR)/install-test-stamp
+
+	# Add here commands to compile the package.
+	$(MAKE) $(NJOBS) -C $(BUILD_SHARED_DIR) \
+		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
+
+	# The FAQ and tutorial are normally built only during 'make dist'
+	$(MAKE) -C $(BUILD_SHARED_DIR)/docs/faq html
+	$(MAKE) -C $(BUILD_SHARED_DIR)/docs/tutorial html
+
+	touch $@
+
+build: build-shared
+
+clean: debian/control
 	dh_testdir
 	dh_testroot
-	rm -f build-stamp build-dbg-stamp install-stamp install-dbg-stamp
+
 	# Add here commands to clean up after the build process.
-	-$(MAKE) clean
-	cd docs 
-	-$(MAKE) maintainer-clean
-	cd ..
-	-$(MAKE) distclean
-	find . -name '*.o' -o -name '_libs' -o -name '*.lo' -o -name '*.a' -o -name '.deps' | xargs rm -rf
+	-make maintainer-clean
+	-rm -f $(SOURCE_DIR)/install-test-stamp
+	-rm -f $(SOURCE_DIR)/build-stamp
+
 	dh_clean
 
-clean-dbg:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp build-dbg-stamp install-stamp install-dbg-stamp
-	# Add here commands to clean up after the build process.
-	-$(MAKE) clean
-	cd docs
-	-$(MAKE) maintainer-clean
-	cd ..
-	-$(MAKE) distclean
-	find . -name '*.o' -o -name '_libs' -o -name '*.lo' -o -name '*.a' -o -name '.deps' | xargs rm -rf
-	dh_clean -k
-
-install: install-stamp
-install-stamp: build
-	dh_testdir
-	dh_testroot
-	dh_clean
-	$(MAKE) prefix=`pwd`/debian/tmp/usr install
-	touch install-stamp
-
-install-dbg: install-dbg-stamp
-install-dbg-stamp: build-dbg
+install-test: $(SOURCE_DIR)/install-test-stamp
+$(SOURCE_DIR)/install-test-stamp:
 	dh_testdir
 	dh_testroot
 	dh_clean -k
-	$(MAKE) prefix=`pwd`/debian/libgtk-cvs-dbg/usr install
-	touch install-dbg-stamp
+	dh_installdirs
+
+	touch $@
+
+install-shared: build-shared install-test
+	# Add here commands to install the package into debian/tmp
+	$(MAKE) -C $(BUILD_SHARED_DIR) install \
+		DESTDIR=$(CURDIR)/debian/tmp
+
+install: install-shared
+	# generating debian files from .in
+	for f in `find debian/ -name "[^c]*.in"`; do \
+		sed -e "s/@VERSION@/${version}/g" -e "s/@MODVER@/${modver}/g" -e "s/@APIVER@/${apiver}/g" $$f > `echo $$f | sed -e "s/\.in//"`; \
+	done
+
+	# for -doc
+	# (disabled pending on tools update)
+	#cp -a $(BUILD_SHARED_DIR)/docs/faq/html debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-faq/
+	#cp -a $(CURDIR)/debian/gtk-faq.devhelp debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-faq/
+
+	# (disabled pending on tools update)
+	#cp -a $(BUILD_SHARED_DIR)/docs/tutorial/html debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-tutorial/
+	#cp $(CURDIR)/debian/gtk-tutorial.devhelp debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc/gtk-tutorial/
+
+	cp $(BUILD_SHARED_DIR)/docs/*.txt debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc
+
+	# examples (without .svn)
+	mkdir -p $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
+	find examples -name .svn -prune -o \
+		-not \( -type d -o -name .svn -o -name Makefile.am -o -name find-examples.sh \) -print | \
+		tar cf - -T- | \
+		tar xf - -C $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
+
+	# debian files
+	install -m 755 $(CURDIR)/debian/update-gtk-immodules \
+		       $(CURDIR)/debian/libgtk$(apiver)-bin/usr/sbin/
+	install -m 755 $(CURDIR)/debian/update-gdkpixbuf-loaders \
+		       $(CURDIR)/debian/libgtk$(apiver)-bin/usr/sbin/
+
+	# don't need executable attribute
+	for f in `find $(CURDIR)/debian/tmp/usr/share/themes -type f`; do \
+		chmod a-x $$f; \
+	done
+
+	# clean the unnecessary files up
+	rm -rf debian/tmp/usr/share/gtk-doc
+
+	dh_movefiles --sourcedir=debian/tmp
+	-find $(CURDIR)/debian/ -type d -empty | xargs rmdir -p > /dev/null 2>&1
+
+	# don't delete /etc/gtk-2.0
+	install -d $(CURDIR)/debian/libgtk$(apiver)-bin/etc/gtk-$(apiver)
 
 # Build architecture-independent files here.
-binary-indep: build install libgtk-cvs-doc
-# We have nothing to do by default.
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+
+	dh_installdocs -i
+
+	rm -rf $(CURDIR)/debian/libgtk$(apiver)-common/usr/share/doc/libgtk$(apiver)-common
+
+	dh_link -plibgtk$(apiver)-doc				\
+		usr/share/doc/libglib$(glibver)-doc/glib	\
+		usr/share/doc/libgtk$(apiver)-doc/glib
+	dh_link -plibgtk$(apiver)-doc				\
+		usr/share/doc/libglib$(glibver)-doc/gobject	\
+		usr/share/doc/libgtk$(apiver)-doc/gobject
+	dh_link -plibgtk$(apiver)-doc				\
+		usr/share/doc/libatk$(atkver)-doc/atk		\
+		usr/share/doc/libgtk$(apiver)-doc/atk
+	dh_link -plibgtk$(apiver)-doc				\
+		usr/share/doc/libpango$(pangover)-doc/pango	\
+		usr/share/doc/libgtk$(apiver)-doc/pango
+	dh_link -plibgtk$(apiver)-common			\
+		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
+		usr/share/doc/libgtk$(apiver)-common
+
+# create symlinks in /usr/share/gtk-doc/html
+	for i in gdk gdk-pixbuf gtk gtk-faq gtk-tutorial; do	\
+		dh_link -plibgtk$(apiver)-doc			\
+			usr/share/doc/libgtk$(apiver)-doc/$$i	\
+			usr/share/gtk-doc/html/$$i;		\
+	done
+
+	dh_installinfo -i
+	dh_installchangelogs -i $(SOURCE_DIR)/ChangeLog
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
 
 # Build architecture-dependent files here.
-binary-arch: build install libgtk-cvs-dev libgtk-cvs-1.1 libgtk-cvs-dbg
+binary-arch: build install
+	dh_testdir -a
+	dh_testroot -a
 
-libgtk-cvs-1.1: build
-	dh_testdir -plibgtk-cvs-1.1 
-	dh_testroot -plibgtk-cvs-1.1
-	dh_installdirs -plibgtk-cvs-1.1
-	# Add here commands to install the files into debian/tmp
-	rm -rf debian/tmp/usr/bin debian/tmp/usr/include debian/tmp/usr/info debian/tmp/usr/lib/glib debian/tmp/usr/share/aclocal debian/tmp/usr/man debian/tmp/usr/lib/*.la
-	dh_installdocs -plibgtk-cvs-1.1
-	dh_installchangelogs -plibgtk-cvs-1.1
-	dh_strip -plibgtk-cvs-1.1
-	dh_compress -plibgtk-cvs-1.1
-	dh_fixperms -plibgtk-cvs-1.1
-	dh_installdeb -plibgtk-cvs-1.1
-	dh_shlibdeps -plibgtk-cvs-1.1
-	dh_gencontrol -plibgtk-cvs-1.1
-	dh_makeshlibs -plibgtk-cvs-1.1 -V 'libgtk-cvs-1.1 (='`cat debian/version`')'
-	dh_md5sums -plibgtk-cvs-1.1
-	dh_builddeb -plibgtk-cvs-1.1
+#	dh_installdebconf	
+	dh_installdocs -a
 
-libgtk-cvs-dev: build
-	dh_testdir -plibgtk-cvs-dev
-	dh_testroot -plibgtk-cvs-dev
-	dh_clean -plibgtk-cvs-dev -k
-	dh_installdirs -plibgtk-cvs-dev
-	# Add here commands to install the files into debian/tmp
-	dh_movefiles -plibgtk-cvs-dev
-	cp gtk-config debian/tmp/usr/bin
-	dh_installdocs -plibgtk-cvs-dev 
-	dh_installchangelogs -plibgtk-cvs-dev
-	dh_strip -plibgtk-cvs-dev
-	dh_compress -plibgtk-cvs-dev
-	dh_fixperms -plibgtk-cvs-dev
-	dh_installdeb -plibgtk-cvs-dev
-	dh_shlibdeps -plibgtk-cvs-dev
-	dh_gencontrol -plibgtk-cvs-dev
-	dh_md5sums -plibgtk-cvs-dev
-	dh_builddeb -plibgtk-cvs-dev
+	rm -rf $(CURDIR)/debian/libgtk$(apiver)-$(soname)-dbg/usr/share/doc/libgtk$(apiver)-$(soname)-dbg
+	rm -rf $(CURDIR)/debian/libgtk$(apiver)-dev/usr/share/doc/libgtk$(apiver)-dev
+	rm -rf $(CURDIR)/debian/libgtk$(apiver)-bin/usr/share/doc/libgtk$(apiver)-bin
 
-libgtk-cvs-doc:
-	dh_testdir -plibgtk-cvs-doc
-	dh_testroot -plibgtk-cvs-doc
-	dh_clean -plibgtk-cvs-doc -k
-	dh_installdirs -plibgtk-cvs-doc usr/doc/libgtk-cvs-doc/faq-html \
-	  usr/doc/libgtk-cvs-doc/tutorial-html usr/doc/libgtk-cvs-doc/italian-tutorial-html usr/doc/libgtk-cvs-doc/french-tutorial-html usr/doc/libgtk-cvs-doc/gdk-html
-	dh_movefiles -plibgtk-cvs-doc
-	cp docs/html/gtkfaq*.html debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/faq-html
-	cp docs/html/gtk_tut-*.html debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/tutorial-html
-	cp docs/html/*.gif debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/tutorial-html
-	cp docs/html/gtk_tut.html debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/tutorial-html
-	cp docs/html/gtk_tut_it*.html debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/italian-tutorial-html
-	cp docs/html/*.gif debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/italian-tutorial-html
-	cp docs/html/gtk_tut_fr*.html debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/french-tutorial-html
-	cp docs/html/*.gif debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/french-tutorial-html
-	cp docs/html/gdk* debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/gdk-html
-	cp docs/text/*.txt debian/libgtk-cvs-doc/usr/doc/libgtk-cvs-doc/
+	dh_link -plibgtk$(apiver)-$(soname)-dbg \
+		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
+		usr/share/doc/libgtk$(apiver)-$(soname)-dbg
+	dh_link -plibgtk$(apiver)-dev \
+		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
+		usr/share/doc/libgtk$(apiver)-dev
+	dh_link -plibgtk$(apiver)-bin \
+		usr/share/doc/libgtk$(apiver)-$(soname)$(suffix) \
+		usr/share/doc/libgtk$(apiver)-bin
 
-	dh_installdocs -plibgtk-cvs-doc docs/{debugging,developers,styles,text_widget,widget_system,gtk-config,refcounting}.txt TODO NEWS
-	dh_installchangelogs -plibgtk-cvs-doc
-	dh_strip -plibgtk-cvs-doc
-	dh_compress -plibgtk-cvs-doc
-	dh_fixperms -plibgtk-cvs-doc
-	dh_installdeb -plibgtk-cvs-doc
-	dh_shlibdeps -plibgtk-cvs-doc
-	dh_gencontrol -plibgtk-cvs-doc
-	dh_md5sums -plibgtk-cvs-doc
-	dh_builddeb -plibgtk-cvs-doc
-
-libgtk-cvs-dbg: clean-dbg install-dbg
-	dh_testdir -plibgtk-cvs-dbg
-	dh_testroot -plibgtk-cvs-dbg
-	dh_installdirs -plibgtk-cvs-dbg
-	# Add here commands to install the files into debian/libgtk-cvs-dbg
-	rm -rf debian/libgtk-cvs-dbg/usr/bin debian/libgtk-cvs-dbg/usr/include debian/libgtk-cvs-dbg/usr/info debian/libgtk-cvs-dbg/usr/lib/glib debian/libgtk-cvs-dbg/usr/man debian/libgtk-cvs-dbg/usr/share debian/libgtk-cvs-dbg/usr/lib/*.{la,so*}
-	for file in `find debian/libgtk-cvs-dbg/usr/lib -name '*.a'` ; do \
-	  mv $$file debian/libgtk-cvs-dbg/usr/lib/`basename $$file .a`_g.a; \
-        done
-	dh_installdocs -plibgtk-cvs-dbg
-	dh_installchangelogs -plibgtk-cvs-dbg
-	dh_compress -plibgtk-cvs-dbg
-	dh_fixperms -plibgtk-cvs-dbg
-	dh_installdeb -plibgtk-cvs-dbg
-	dh_shlibdeps -plibgtk-cvs-dbg
-	dh_gencontrol -plibgtk-cvs-dbg
-	dh_md5sums -plibgtk-cvs-dbg
-	dh_builddeb -plibgtk-cvs-dbg
-
-source diff:                                                                  
-	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+	dh_installman -a
+	dh_installinfo -a
+	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
+	dh_strip -a --dbg-package=libgtk2.0-$(soname)
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -a -Nlibgtk$(apiver)-$(soname)-dbg
+	dh_makeshlibs -n -X usr/lib/gtk-$(apiver) -plibgtk$(apiver)-$(soname)$(suffix) -V "libgtk${apiver}-${soname}${suffix} (>= 2:2.10.6)"
+	dh_installdeb -a
+	dh_shlibdeps -l$(libpath) -a
+	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
 
 binary: binary-indep binary-arch
-.PHONY: build clean binary-indep binary-arch binary
+.PHONY: build build-shared build-static clean binary-indep binary-arch binary install install-shared install-static configure configure-shared configure-static debian/control test-shared

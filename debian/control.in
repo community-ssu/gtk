@@ -6,7 +6,7 @@ Build-Depends: debhelper (>> 4.0.0), gettext, pkg-config, libglib2.0-dev (>= 2.1
 Build-Depends-Indep: gtk-doc-tools
 Standards-Version: 3.6.1.0
 
-Package: libgtk2.0-0
+Package: libgtk2.0-@SONAME@
 Section: libs
 Architecture: any
 Depends: libgtk2.0-common (>= ${Source-Version}), libgtk2.0-bin (>= ${Source-Version}), ${shlibs:Depends}
@@ -23,7 +23,7 @@ Description: The GTK+ graphical user interface library
 Package: libgtk2.0-common
 Section: misc
 Architecture: all
-Depends: libgtk2.0-0, ${misc:Depends}
+Depends: libgtk2.0-@SONAME@, ${misc:Depends}
 Replaces: libgtk1.3-common, libgtk2.0-data
 Conflicts: libgtk1.3-common, libgtk2.0-data
 Description: Common files for the GTK+ graphical user interface library
@@ -52,7 +52,7 @@ Description: The programs for the GTK+ graphical user interface library
 Package: libgtk2.0-dev
 Section: libdevel
 Architecture: any
-Depends: libgtk2.0-0 (= ${Source-Version}), libglib2.0-dev (>= 2.12.0), libpango1.0-dev (>= 1.12.0), libatk1.0-dev (>= 1.9.0), libcairo2-dev (>= 1.2.0), libx11-dev, libxext-dev, pkg-config
+Depends: libgtk2.0-@SONAME@ (= ${Source-Version}), libglib2.0-dev (>= 2.12.0), libpango1.0-dev (>= 1.12.0), libatk1.0-dev (>= 1.9.0), libcairo2-dev (>= 1.2.0), libx11-dev, libxext-dev, pkg-config
 Suggests: libgtk2.0-doc
 Replaces: libgtk1.3-dev
 Conflicts: libgtk1.3-dev
@@ -65,11 +65,11 @@ Description: Development files for the GTK+ library
  This package contains the header files and static libraries which is
  needed for developing the GTK+ applications.
 
-Package: libgtk2.0-0-dbg
+Package: libgtk2.0-@SONAME@-dbg
 Section: libdevel
 Priority: extra
 Architecture: any
-Depends: libgtk2.0-0 (= ${Source-Version})
+Depends: libgtk2.0-@SONAME@ (= ${Source-Version})
 Conflicts: libgtk2.0-dbg
 Replaces: libgtk2.0-dbg
 Description: The GTK+ graphical user interface library, debugging symbols
