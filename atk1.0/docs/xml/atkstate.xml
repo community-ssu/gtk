@@ -1,0 +1,359 @@
+<refentry id="atk-AtkState">
+<refmeta>
+<refentrytitle role="top_of_page">AtkState</refentrytitle>
+<manvolnum>3</manvolnum>
+<refmiscinfo>ATK Library</refmiscinfo>
+</refmeta>
+
+<refnamediv>
+<refname>AtkState</refname>
+<refpurpose>An AtkState describes a component's particular state.</refpurpose>
+<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+</refnamediv>
+
+<refsynopsisdiv role="synopsis">
+<title role="synopsis.title">Synopsis</title>
+
+<synopsis>
+
+
+
+enum        <link linkend="AtkStateType">AtkStateType</link>;
+typedef     <link linkend="AtkState">AtkState</link>;
+<link linkend="AtkStateType">AtkStateType</link> <link linkend="atk-state-type-register">atk_state_type_register</link>        (const <link linkend="gchar">gchar</link> *name);
+const <link linkend="gchar">gchar</link>* <link linkend="atk-state-type-get-name">atk_state_type_get_name</link>        (<link linkend="AtkStateType">AtkStateType</link> type);
+<link linkend="AtkStateType">AtkStateType</link> <link linkend="atk-state-type-for-name">atk_state_type_for_name</link>        (const <link linkend="gchar">gchar</link> *name);
+
+</synopsis>
+</refsynopsisdiv>
+
+
+
+
+
+
+
+
+
+<refsect1 role="desc">
+<title role="desc.title">Description</title>
+<para>
+An AtkState describes a component's particular state. The actual state of
+an component is described by its AtkStateSet, which is a set of AtkStates.
+</para>
+</refsect1>
+
+<refsect1 role="details">
+<title role="details.title">Details</title>
+<refsect2>
+<title><anchor id="AtkStateType" role="enum"/>enum AtkStateType</title>
+<indexterm><primary>AtkStateType</primary></indexterm><programlisting>typedef enum
+{
+  ATK_STATE_INVALID,
+  ATK_STATE_ACTIVE,
+  ATK_STATE_ARMED,
+  ATK_STATE_BUSY,
+  ATK_STATE_CHECKED,
+  ATK_STATE_DEFUNCT,
+  ATK_STATE_EDITABLE,
+  ATK_STATE_ENABLED,
+  ATK_STATE_EXPANDABLE,
+  ATK_STATE_EXPANDED,
+  ATK_STATE_FOCUSABLE,
+  ATK_STATE_FOCUSED,
+  ATK_STATE_HORIZONTAL,
+  ATK_STATE_ICONIFIED,
+  ATK_STATE_MODAL,
+  ATK_STATE_MULTI_LINE,
+  ATK_STATE_MULTISELECTABLE,
+  ATK_STATE_OPAQUE,
+  ATK_STATE_PRESSED,
+  ATK_STATE_RESIZABLE,
+  ATK_STATE_SELECTABLE,
+  ATK_STATE_SELECTED,
+  ATK_STATE_SENSITIVE,
+  ATK_STATE_SHOWING,
+  ATK_STATE_SINGLE_LINE,
+  ATK_STATE_STALE,
+  ATK_STATE_TRANSIENT,
+  ATK_STATE_VERTICAL,
+  ATK_STATE_VISIBLE,
+  ATK_STATE_MANAGES_DESCENDANTS,
+  ATK_STATE_INDETERMINATE,
+  ATK_STATE_TRUNCATED,
+  ATK_STATE_REQUIRED,
+  ATK_STATE_INVALID_ENTRY,
+  ATK_STATE_SUPPORTS_AUTOCOMPLETION,
+  ATK_STATE_SELECTABLE_TEXT,
+  ATK_STATE_DEFAULT,
+  ATK_STATE_ANIMATED,
+  ATK_STATE_VISITED,
+	
+  ATK_STATE_LAST_DEFINED
+} AtkStateType;
+</programlisting>
+<para>
+The possible types of states of an object</para>
+<para>
+
+</para><variablelist role="enum">
+<varlistentry>
+<term><anchor id="ATK-STATE-INVALID:CAPS" role="constant"/><literal>ATK_STATE_INVALID</literal></term>
+<listitem><simpara> Indicates an invalid state
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-ACTIVE:CAPS" role="constant"/><literal>ATK_STATE_ACTIVE</literal></term>
+<listitem><simpara> Indicates a window is currently the active window
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-ARMED:CAPS" role="constant"/><literal>ATK_STATE_ARMED</literal></term>
+<listitem><simpara> Indicates that the object is armed.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-BUSY:CAPS" role="constant"/><literal>ATK_STATE_BUSY</literal></term>
+<listitem><simpara> Indicates the current object is busy.  This state may be used by implementors of Document to indicate that content loading is in process.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-CHECKED:CAPS" role="constant"/><literal>ATK_STATE_CHECKED</literal></term>
+<listitem><simpara> Indicates this object is currently checked
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-DEFUNCT:CAPS" role="constant"/><literal>ATK_STATE_DEFUNCT</literal></term>
+<listitem><simpara> Indicates the user interface object corresponding to this object no longer exists
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-EDITABLE:CAPS" role="constant"/><literal>ATK_STATE_EDITABLE</literal></term>
+<listitem><simpara> Indicates the user can change the contents of this object
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-ENABLED:CAPS" role="constant"/><literal>ATK_STATE_ENABLED</literal></term>
+<listitem><simpara> Indicates that this object is enabled. An inconsistent GtkToggleButton is an example of an object which is sensitive but not enabled.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-EXPANDABLE:CAPS" role="constant"/><literal>ATK_STATE_EXPANDABLE</literal></term>
+<listitem><simpara> Indicates this object allows progressive disclosure of its children
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-EXPANDED:CAPS" role="constant"/><literal>ATK_STATE_EXPANDED</literal></term>
+<listitem><simpara> Indicates this object its expanded
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-FOCUSABLE:CAPS" role="constant"/><literal>ATK_STATE_FOCUSABLE</literal></term>
+<listitem><simpara> Indicates this object can accept keyboard focus, which means all events resulting from typing on the keyboard will normally be passed to it when it has focus
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-FOCUSED:CAPS" role="constant"/><literal>ATK_STATE_FOCUSED</literal></term>
+<listitem><simpara> Indicates this object currently has the keyboard focus
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-HORIZONTAL:CAPS" role="constant"/><literal>ATK_STATE_HORIZONTAL</literal></term>
+<listitem><simpara> Indicates the orientation of this object is horizontal
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-ICONIFIED:CAPS" role="constant"/><literal>ATK_STATE_ICONIFIED</literal></term>
+<listitem><simpara> Indicates this object is minimized and is represented only by an icon
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-MODAL:CAPS" role="constant"/><literal>ATK_STATE_MODAL</literal></term>
+<listitem><simpara> Indicates something must be done with this object before the user can interact with an object in a different window
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-MULTI-LINE:CAPS" role="constant"/><literal>ATK_STATE_MULTI_LINE</literal></term>
+<listitem><simpara> Indicates this (text) object can contain multiple lines of text
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-MULTISELECTABLE:CAPS" role="constant"/><literal>ATK_STATE_MULTISELECTABLE</literal></term>
+<listitem><simpara> Indicates this object allows more than one of its children to be selected at the same time
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-OPAQUE:CAPS" role="constant"/><literal>ATK_STATE_OPAQUE</literal></term>
+<listitem><simpara> Indicates this object paints every pixel within its rectangular region.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-PRESSED:CAPS" role="constant"/><literal>ATK_STATE_PRESSED</literal></term>
+<listitem><simpara> Indicates this object is currently pressed
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-RESIZABLE:CAPS" role="constant"/><literal>ATK_STATE_RESIZABLE</literal></term>
+<listitem><simpara> Indicates the size of this object is not fixed
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SELECTABLE:CAPS" role="constant"/><literal>ATK_STATE_SELECTABLE</literal></term>
+<listitem><simpara> Indicates this object is the child of an object that allows its children to be selected and that this child is one of those children that can be selected
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SELECTED:CAPS" role="constant"/><literal>ATK_STATE_SELECTED</literal></term>
+<listitem><simpara> Indicates this object is the child of an object that allows its children to be selected and that this child is one of those children that has been selected
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SENSITIVE:CAPS" role="constant"/><literal>ATK_STATE_SENSITIVE</literal></term>
+<listitem><simpara> Indicates this object is sensitive
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SHOWING:CAPS" role="constant"/><literal>ATK_STATE_SHOWING</literal></term>
+<listitem><simpara> Indicates this object, the object's parent, the object's parent's parent, and so on, are all visible
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SINGLE-LINE:CAPS" role="constant"/><literal>ATK_STATE_SINGLE_LINE</literal></term>
+<listitem><simpara> Indicates this (text) object can contain only a single line of text
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-STALE:CAPS" role="constant"/><literal>ATK_STATE_STALE</literal></term>
+<listitem><simpara> Indicates that the index associated with this object has changed since the user accessed the object.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-TRANSIENT:CAPS" role="constant"/><literal>ATK_STATE_TRANSIENT</literal></term>
+<listitem><simpara> Indicates this object is transient
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-VERTICAL:CAPS" role="constant"/><literal>ATK_STATE_VERTICAL</literal></term>
+<listitem><simpara> Indicates the orientation of this object is vertical
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-VISIBLE:CAPS" role="constant"/><literal>ATK_STATE_VISIBLE</literal></term>
+<listitem><simpara> Indicates this object is visible
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-MANAGES-DESCENDANTS:CAPS" role="constant"/><literal>ATK_STATE_MANAGES_DESCENDANTS</literal></term>
+<listitem><simpara> Indicates that "active-descendant-changed" event
+is sent when children become 'active' (i.e. are selected or navigated to onscreen).
+Used to prevent need to enumerate all children in very large containers, like tables.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-INDETERMINATE:CAPS" role="constant"/><literal>ATK_STATE_INDETERMINATE</literal></term>
+<listitem><simpara> Indicates that a check box is in a state other than checked or not checked.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-TRUNCATED:CAPS" role="constant"/><literal>ATK_STATE_TRUNCATED</literal></term>
+<listitem><simpara> Indicates that an object is truncated, e.g. a text value in a speradsheet cell.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-REQUIRED:CAPS" role="constant"/><literal>ATK_STATE_REQUIRED</literal></term>
+<listitem><simpara> Indicates that explicit user interaction with an object is required by the user interface, e.g. a required field in a "web-form" interface.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-INVALID-ENTRY:CAPS" role="constant"/><literal>ATK_STATE_INVALID_ENTRY</literal></term>
+<listitem><simpara> Indicates that the object has encountered an error condition due to failure of input validation. For instance, a form control may acquire this state in response to invalid or malformed user input.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SUPPORTS-AUTOCOMPLETION:CAPS" role="constant"/><literal>ATK_STATE_SUPPORTS_AUTOCOMPLETION</literal></term>
+<listitem><simpara> Indicates that the object may exhibit "typeahead" behavior in response to user keystrokes, e.g. one keystroke may result in the insertion of several characters into an entry, or result in the auto-selection of an item in a list.  This state supplants <parameter>ATK_ROLE_AUTOCOMPLETE</parameter>.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-SELECTABLE-TEXT:CAPS" role="constant"/><literal>ATK_STATE_SELECTABLE_TEXT</literal></term>
+<listitem><simpara>Indicates that the object in question supports text selection. It should only be exposed on objects which implement the Text interface, in order to distinguish this state from <parameter>ATK_STATE_SELECTABLE</parameter>, which infers that the object in question is a selectable child of an object which implements Selection. While similar, text selection and subelement selection are distinct operations.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-DEFAULT:CAPS" role="constant"/><literal>ATK_STATE_DEFAULT</literal></term>
+<listitem><simpara> Indicates that the object is the "default" active component, i.e. the object which is activated by an end-user press of the "Enter" or "Return" key.  Typically a "close" or "submit" button.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-ANIMATED:CAPS" role="constant"/><literal>ATK_STATE_ANIMATED</literal></term>
+<listitem><simpara> Indicates that the object changes its appearance dynamically as an inherent part of its presentation.  This state may come and go if an object is only temporarily animated on the way to a 'final' onscreen presentation.
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-VISITED:CAPS" role="constant"/><literal>ATK_STATE_VISITED</literal></term>
+<listitem><simpara> Indicates that the object (typically a hyperlink) has already been 'activated', and/or its backing data has already been downloaded, rendered, or otherwise "visited".
+</simpara></listitem>
+</varlistentry>
+<varlistentry>
+<term><anchor id="ATK-STATE-LAST-DEFINED:CAPS" role="constant"/><literal>ATK_STATE_LAST_DEFINED</literal></term>
+<listitem><simpara> Not a valid state, used for finding end of enumeration
+</simpara></listitem>
+</varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="AtkState" role="typedef"/>AtkState</title>
+<indexterm><primary>AtkState</primary></indexterm><programlisting>typedef guint64      AtkState;
+</programlisting>
+<para>
+The AtkState value should not be referenceed directly.
+
+</para></refsect2>
+<refsect2>
+<title><anchor id="atk-state-type-register" role="function"/>atk_state_type_register ()</title>
+<indexterm><primary>atk_state_type_register</primary></indexterm><programlisting><link linkend="AtkStateType">AtkStateType</link> atk_state_type_register        (const <link linkend="gchar">gchar</link> *name);</programlisting>
+<para>
+Register a new object state.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>name</parameter>&nbsp;:</term>
+<listitem><simpara> a character string describing the new state.
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> an <link linkend="AtkState"><type>AtkState</type></link> value for the new state.
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="atk-state-type-get-name" role="function"/>atk_state_type_get_name ()</title>
+<indexterm><primary>atk_state_type_get_name</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_state_type_get_name        (<link linkend="AtkStateType">AtkStateType</link> type);</programlisting>
+<para>
+Gets the description string describing the <link linkend="AtkStateType"><type>AtkStateType</type></link> <parameter>type</parameter>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>type</parameter>&nbsp;:</term>
+<listitem><simpara> The <link linkend="AtkStateType"><type>AtkStateType</type></link> whose name is required
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> the string describing the AtkStateType
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+<refsect2>
+<title><anchor id="atk-state-type-for-name" role="function"/>atk_state_type_for_name ()</title>
+<indexterm><primary>atk_state_type_for_name</primary></indexterm><programlisting><link linkend="AtkStateType">AtkStateType</link> atk_state_type_for_name        (const <link linkend="gchar">gchar</link> *name);</programlisting>
+<para>
+Gets the <link linkend="AtkStateType"><type>AtkStateType</type></link> corresponding to the description string <parameter>name</parameter>.</para>
+<para>
+
+</para><variablelist role="params">
+<varlistentry><term><parameter>name</parameter>&nbsp;:</term>
+<listitem><simpara> a character string state name
+</simpara></listitem></varlistentry>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> an <link linkend="AtkStateType"><type>AtkStateType</type></link> corresponding to <parameter>name</parameter> 
+</simpara></listitem></varlistentry>
+</variablelist></refsect2>
+
+</refsect1>
+
+
+
+
+</refentry>

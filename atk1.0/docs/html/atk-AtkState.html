@@ -1,0 +1,480 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
+<title>AtkState</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
+<link rel="up" href="atk.html" title="ATK Library">
+<link rel="prev" href="AtkSelection.html" title="AtkSelection">
+<link rel="next" href="atk-AtkStateSet.html" title="AtkStateSet">
+<meta name="generator" content="GTK-Doc V1.7 (XML mode)">
+<link rel="stylesheet" href="style.css" type="text/css">
+<link rel="chapter" href="atk.html" title="ATK Library">
+<link rel="index" href="ix01.html" title="Index">
+<link rel="index" href="ix02.html" title="Index of deprecated symbols">
+<link rel="index" href="ix03.html" title="Index of new symbols in ATK 1.3">
+<link rel="index" href="ix04.html" title="Index of new symbols in ATK 1.4">
+<link rel="index" href="ix05.html" title="Index of new symbols in ATK 1.6">
+<link rel="index" href="ix06.html" title="Index of new symbols in ATK 1.9">
+<link rel="index" href="ix07.html" title="Index of new symbols in ATK 1.12">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
+<tr valign="middle">
+<td><a accesskey="p" href="AtkSelection.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="atk.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
+<th width="100%" align="center">ATK - Accessibility Toolkit</th>
+<td><a accesskey="n" href="atk-AtkStateSet.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+</tr>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2576111" class="shortcut">Top</a>
+                  &#160;|&#160;
+                  <a href="#id2576207" class="shortcut">Description</a></nobr></td></tr>
+</table>
+<div class="refentry" lang="en">
+<a name="atk-AtkState"></a><div class="titlepage"></div>
+<div class="refnamediv"><table width="100%"><tr>
+<td valign="top">
+<h2>
+<a name="id2576111"></a><span class="refentrytitle">AtkState</span>
+</h2>
+<p>AtkState &#8212; An AtkState describes a component's particular state.</p>
+</td>
+<td valign="top" align="right"></td>
+</tr></table></div>
+<div class="refsynopsisdiv">
+<h2>Synopsis</h2>
+<pre class="synopsis">
+
+
+
+enum        <a href="atk-AtkState.html#AtkStateType">AtkStateType</a>;
+typedef     <a href="atk-AtkState.html#AtkState">AtkState</a>;
+<a href="atk-AtkState.html#AtkStateType">AtkStateType</a> <a href="atk-AtkState.html#atk-state-type-register">atk_state_type_register</a>        (const <a
+href="../glib/glib-Basic-Types.html#gchar"
+>gchar</a> *name);
+const <a
+href="../glib/glib-Basic-Types.html#gchar"
+>gchar</a>* <a href="atk-AtkState.html#atk-state-type-get-name">atk_state_type_get_name</a>        (<a href="atk-AtkState.html#AtkStateType">AtkStateType</a> type);
+<a href="atk-AtkState.html#AtkStateType">AtkStateType</a> <a href="atk-AtkState.html#atk-state-type-for-name">atk_state_type_for_name</a>        (const <a
+href="../glib/glib-Basic-Types.html#gchar"
+>gchar</a> *name);
+
+</pre>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2576207"></a><h2>Description</h2>
+<p>
+An AtkState describes a component's particular state. The actual state of
+an component is described by its AtkStateSet, which is a set of AtkStates.
+</p>
+</div>
+<div class="refsect1" lang="en">
+<a name="id2576224"></a><h2>Details</h2>
+<div class="refsect2" lang="en">
+<a name="id2576234"></a><h3>
+<a name="AtkStateType"></a>enum AtkStateType</h3>
+<a class="indexterm" name="id2576247"></a><pre class="programlisting">typedef enum
+{
+  ATK_STATE_INVALID,
+  ATK_STATE_ACTIVE,
+  ATK_STATE_ARMED,
+  ATK_STATE_BUSY,
+  ATK_STATE_CHECKED,
+  ATK_STATE_DEFUNCT,
+  ATK_STATE_EDITABLE,
+  ATK_STATE_ENABLED,
+  ATK_STATE_EXPANDABLE,
+  ATK_STATE_EXPANDED,
+  ATK_STATE_FOCUSABLE,
+  ATK_STATE_FOCUSED,
+  ATK_STATE_HORIZONTAL,
+  ATK_STATE_ICONIFIED,
+  ATK_STATE_MODAL,
+  ATK_STATE_MULTI_LINE,
+  ATK_STATE_MULTISELECTABLE,
+  ATK_STATE_OPAQUE,
+  ATK_STATE_PRESSED,
+  ATK_STATE_RESIZABLE,
+  ATK_STATE_SELECTABLE,
+  ATK_STATE_SELECTED,
+  ATK_STATE_SENSITIVE,
+  ATK_STATE_SHOWING,
+  ATK_STATE_SINGLE_LINE,
+  ATK_STATE_STALE,
+  ATK_STATE_TRANSIENT,
+  ATK_STATE_VERTICAL,
+  ATK_STATE_VISIBLE,
+  ATK_STATE_MANAGES_DESCENDANTS,
+  ATK_STATE_INDETERMINATE,
+  ATK_STATE_TRUNCATED,
+  ATK_STATE_REQUIRED,
+  ATK_STATE_INVALID_ENTRY,
+  ATK_STATE_SUPPORTS_AUTOCOMPLETION,
+  ATK_STATE_SELECTABLE_TEXT,
+  ATK_STATE_DEFAULT,
+  ATK_STATE_ANIMATED,
+  ATK_STATE_VISITED,
+	
+  ATK_STATE_LAST_DEFINED
+} AtkStateType;
+</pre>
+<p>
+The possible types of states of an object</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-INVALID:CAPS"></a><code class="literal">ATK_STATE_INVALID</code></span></td>
+<td> Indicates an invalid state
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-ACTIVE:CAPS"></a><code class="literal">ATK_STATE_ACTIVE</code></span></td>
+<td> Indicates a window is currently the active window
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-ARMED:CAPS"></a><code class="literal">ATK_STATE_ARMED</code></span></td>
+<td> Indicates that the object is armed.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-BUSY:CAPS"></a><code class="literal">ATK_STATE_BUSY</code></span></td>
+<td> Indicates the current object is busy.  This state may be used by implementors of Document to indicate that content loading is in process.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-CHECKED:CAPS"></a><code class="literal">ATK_STATE_CHECKED</code></span></td>
+<td> Indicates this object is currently checked
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-DEFUNCT:CAPS"></a><code class="literal">ATK_STATE_DEFUNCT</code></span></td>
+<td> Indicates the user interface object corresponding to this object no longer exists
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-EDITABLE:CAPS"></a><code class="literal">ATK_STATE_EDITABLE</code></span></td>
+<td> Indicates the user can change the contents of this object
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-ENABLED:CAPS"></a><code class="literal">ATK_STATE_ENABLED</code></span></td>
+<td> Indicates that this object is enabled. An inconsistent GtkToggleButton is an example of an object which is sensitive but not enabled.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-EXPANDABLE:CAPS"></a><code class="literal">ATK_STATE_EXPANDABLE</code></span></td>
+<td> Indicates this object allows progressive disclosure of its children
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-EXPANDED:CAPS"></a><code class="literal">ATK_STATE_EXPANDED</code></span></td>
+<td> Indicates this object its expanded
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-FOCUSABLE:CAPS"></a><code class="literal">ATK_STATE_FOCUSABLE</code></span></td>
+<td> Indicates this object can accept keyboard focus, which means all events resulting from typing on the keyboard will normally be passed to it when it has focus
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-FOCUSED:CAPS"></a><code class="literal">ATK_STATE_FOCUSED</code></span></td>
+<td> Indicates this object currently has the keyboard focus
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-HORIZONTAL:CAPS"></a><code class="literal">ATK_STATE_HORIZONTAL</code></span></td>
+<td> Indicates the orientation of this object is horizontal
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-ICONIFIED:CAPS"></a><code class="literal">ATK_STATE_ICONIFIED</code></span></td>
+<td> Indicates this object is minimized and is represented only by an icon
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-MODAL:CAPS"></a><code class="literal">ATK_STATE_MODAL</code></span></td>
+<td> Indicates something must be done with this object before the user can interact with an object in a different window
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-MULTI-LINE:CAPS"></a><code class="literal">ATK_STATE_MULTI_LINE</code></span></td>
+<td> Indicates this (text) object can contain multiple lines of text
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-MULTISELECTABLE:CAPS"></a><code class="literal">ATK_STATE_MULTISELECTABLE</code></span></td>
+<td> Indicates this object allows more than one of its children to be selected at the same time
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-OPAQUE:CAPS"></a><code class="literal">ATK_STATE_OPAQUE</code></span></td>
+<td> Indicates this object paints every pixel within its rectangular region.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-PRESSED:CAPS"></a><code class="literal">ATK_STATE_PRESSED</code></span></td>
+<td> Indicates this object is currently pressed
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-RESIZABLE:CAPS"></a><code class="literal">ATK_STATE_RESIZABLE</code></span></td>
+<td> Indicates the size of this object is not fixed
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SELECTABLE:CAPS"></a><code class="literal">ATK_STATE_SELECTABLE</code></span></td>
+<td> Indicates this object is the child of an object that allows its children to be selected and that this child is one of those children that can be selected
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SELECTED:CAPS"></a><code class="literal">ATK_STATE_SELECTED</code></span></td>
+<td> Indicates this object is the child of an object that allows its children to be selected and that this child is one of those children that has been selected
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SENSITIVE:CAPS"></a><code class="literal">ATK_STATE_SENSITIVE</code></span></td>
+<td> Indicates this object is sensitive
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SHOWING:CAPS"></a><code class="literal">ATK_STATE_SHOWING</code></span></td>
+<td> Indicates this object, the object's parent, the object's parent's parent, and so on, are all visible
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SINGLE-LINE:CAPS"></a><code class="literal">ATK_STATE_SINGLE_LINE</code></span></td>
+<td> Indicates this (text) object can contain only a single line of text
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-STALE:CAPS"></a><code class="literal">ATK_STATE_STALE</code></span></td>
+<td> Indicates that the index associated with this object has changed since the user accessed the object.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-TRANSIENT:CAPS"></a><code class="literal">ATK_STATE_TRANSIENT</code></span></td>
+<td> Indicates this object is transient
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-VERTICAL:CAPS"></a><code class="literal">ATK_STATE_VERTICAL</code></span></td>
+<td> Indicates the orientation of this object is vertical
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-VISIBLE:CAPS"></a><code class="literal">ATK_STATE_VISIBLE</code></span></td>
+<td> Indicates this object is visible
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-MANAGES-DESCENDANTS:CAPS"></a><code class="literal">ATK_STATE_MANAGES_DESCENDANTS</code></span></td>
+<td> Indicates that "active-descendant-changed" event
+is sent when children become 'active' (i.e. are selected or navigated to onscreen).
+Used to prevent need to enumerate all children in very large containers, like tables.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-INDETERMINATE:CAPS"></a><code class="literal">ATK_STATE_INDETERMINATE</code></span></td>
+<td> Indicates that a check box is in a state other than checked or not checked.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-TRUNCATED:CAPS"></a><code class="literal">ATK_STATE_TRUNCATED</code></span></td>
+<td> Indicates that an object is truncated, e.g. a text value in a speradsheet cell.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-REQUIRED:CAPS"></a><code class="literal">ATK_STATE_REQUIRED</code></span></td>
+<td> Indicates that explicit user interaction with an object is required by the user interface, e.g. a required field in a "web-form" interface.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-INVALID-ENTRY:CAPS"></a><code class="literal">ATK_STATE_INVALID_ENTRY</code></span></td>
+<td> Indicates that the object has encountered an error condition due to failure of input validation. For instance, a form control may acquire this state in response to invalid or malformed user input.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SUPPORTS-AUTOCOMPLETION:CAPS"></a><code class="literal">ATK_STATE_SUPPORTS_AUTOCOMPLETION</code></span></td>
+<td> Indicates that the object may exhibit "typeahead" behavior in response to user keystrokes, e.g. one keystroke may result in the insertion of several characters into an entry, or result in the auto-selection of an item in a list.  This state supplants <em class="parameter"><code>ATK_ROLE_AUTOCOMPLETE</code></em>.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-SELECTABLE-TEXT:CAPS"></a><code class="literal">ATK_STATE_SELECTABLE_TEXT</code></span></td>
+<td>Indicates that the object in question supports text selection. It should only be exposed on objects which implement the Text interface, in order to distinguish this state from <em class="parameter"><code>ATK_STATE_SELECTABLE</code></em>, which infers that the object in question is a selectable child of an object which implements Selection. While similar, text selection and subelement selection are distinct operations.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-DEFAULT:CAPS"></a><code class="literal">ATK_STATE_DEFAULT</code></span></td>
+<td> Indicates that the object is the "default" active component, i.e. the object which is activated by an end-user press of the "Enter" or "Return" key.  Typically a "close" or "submit" button.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-ANIMATED:CAPS"></a><code class="literal">ATK_STATE_ANIMATED</code></span></td>
+<td> Indicates that the object changes its appearance dynamically as an inherent part of its presentation.  This state may come and go if an object is only temporarily animated on the way to a 'final' onscreen presentation.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-VISITED:CAPS"></a><code class="literal">ATK_STATE_VISITED</code></span></td>
+<td> Indicates that the object (typically a hyperlink) has already been 'activated', and/or its backing data has already been downloaded, rendered, or otherwise "visited".
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><a name="ATK-STATE-LAST-DEFINED:CAPS"></a><code class="literal">ATK_STATE_LAST_DEFINED</code></span></td>
+<td> Not a valid state, used for finding end of enumeration
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2577264"></a><h3>
+<a name="AtkState"></a>AtkState</h3>
+<a class="indexterm" name="id2577277"></a><pre class="programlisting">typedef guint64      AtkState;
+</pre>
+<p>
+The AtkState value should not be referenceed directly.
+
+</p>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2577292"></a><h3>
+<a name="atk-state-type-register"></a>atk_state_type_register ()</h3>
+<a class="indexterm" name="id2577306"></a><pre class="programlisting"><a href="atk-AtkState.html#AtkStateType">AtkStateType</a> atk_state_type_register        (const <a
+href="../glib/glib-Basic-Types.html#gchar"
+>gchar</a> *name);</pre>
+<p>
+Register a new object state.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>name</code></em>&#160;:</span></td>
+<td> a character string describing the new state.
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> an <a href="atk-AtkState.html#AtkState"><span class="type">AtkState</span></a> value for the new state.
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2577375"></a><h3>
+<a name="atk-state-type-get-name"></a>atk_state_type_get_name ()</h3>
+<a class="indexterm" name="id2577388"></a><pre class="programlisting">const <a
+href="../glib/glib-Basic-Types.html#gchar"
+>gchar</a>* atk_state_type_get_name        (<a href="atk-AtkState.html#AtkStateType">AtkStateType</a> type);</pre>
+<p>
+Gets the description string describing the <a href="atk-AtkState.html#AtkStateType"><span class="type">AtkStateType</span></a> <em class="parameter"><code>type</code></em>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
+<td> The <a href="atk-AtkState.html#AtkStateType"><span class="type">AtkStateType</span></a> whose name is required
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> the string describing the AtkStateType
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+<hr>
+<div class="refsect2" lang="en">
+<a name="id2577473"></a><h3>
+<a name="atk-state-type-for-name"></a>atk_state_type_for_name ()</h3>
+<a class="indexterm" name="id2577486"></a><pre class="programlisting"><a href="atk-AtkState.html#AtkStateType">AtkStateType</a> atk_state_type_for_name        (const <a
+href="../glib/glib-Basic-Types.html#gchar"
+>gchar</a> *name);</pre>
+<p>
+Gets the <a href="atk-AtkState.html#AtkStateType"><span class="type">AtkStateType</span></a> corresponding to the description string <em class="parameter"><code>name</code></em>.</p>
+<p>
+
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td>
+<span class="term"><em class="parameter"><code>name</code></em>&#160;:</span></td>
+<td> a character string state name
+</td>
+</tr>
+<tr>
+<td>
+<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> an <a href="atk-AtkState.html#AtkStateType"><span class="type">AtkStateType</span></a> corresponding to <em class="parameter"><code>name</code></em> 
+</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+</div>
+</div>
+</body>
+</html>

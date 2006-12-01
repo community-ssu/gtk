@@ -1,0 +1,99 @@
+Source: atk1.0
+Section: libs
+Priority: optional
+Maintainer: Debian GNOME Maintainers <pkg-gnome-maintainers@lists.alioth.debian.org>
+Uploaders: @GNOME_TEAM@
+Build-Depends: debhelper (>= 5.0.22), pkg-config, libglib2.0-dev (>= 2.5.7), gnome-pkg-tools (>= 0.7), cdbs, gtk-doc-tools, docbook-xml
+Standards-Version: 3.7.2
+
+Package: libatk1.0-0
+Section: libs
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Recommends: libatk1.0-data
+Description: The ATK accessibility toolkit
+ ATK is a toolkit providing accessibility interfaces for applications or
+ other toolkits. By implementing these interfaces, those other toolkits or
+ applications can be used with tools such as screen readers, magnifiers, and
+ other alternative input devices.
+ .
+ This is the runtime part of ATK, needed to run applications built with it.
+
+Package: libatk1.0-udeb
+XC-Package-Type: udeb
+Section: debian-installer
+Priority: optional
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: The ATK accessibility toolkit
+ This is a udeb, or a microdeb, for the debian-installer.
+ .
+ ATK is a toolkit providing accessibility interfaces for applications or
+ other toolkits. By implementing these interfaces, those other toolkits or
+ applications can be used with tools such as screen readers, magnifiers, and
+ other alternative input devices.
+ .
+ This is a stripped down version of the runtime part of ATK.
+
+Package: libatk1.0-data
+Section: misc
+Architecture: all
+Depends: ${misc:Depends}, libatk1.0-0 (>= ${source:Version})
+Description: Common files for the ATK accessibility toolkit
+ ATK is a toolkit providing accessibility interfaces for applications or
+ other toolkits. By implementing these interfaces, those other toolkits or
+ applications can be used with tools such as screen readers, magnifiers, and
+ other alternative input devices.
+ .
+ This contains the common files which the runtime libraries need.
+
+Package: libatk1.0-dev
+Section: libdevel
+Architecture: any
+Depends: ${misc:Depends}, libatk1.0-0 (= ${binary:Version}), pkg-config, libglib2.0-dev (>= 2.4.1-2)
+Replaces: libatk0-dev, libatk-dev
+Conflicts: libatk0-dev, libatk-dev
+Description: Development files for the ATK accessibility toolkit
+ ATK is a toolkit providing accessibility interfaces for applications or
+ other toolkits. By implementing these interfaces, those other toolkits or
+ applications can be used with tools such as screen readers, magnifiers, and
+ other alternative input devices.
+ .
+ These are the development files for ATK, needed for compilation of
+ programs or toolkits which use it.
+
+Package: libatk1.0-dbg
+Section: libdevel
+Priority: extra
+Architecture: any
+Depends: ${misc:Depends}, libatk1.0-0 (= ${binary:Version})
+Replaces: libatk1.0-0 (<< 1.11.4-3)
+Description: The ATK libraries and debugging symbols
+ ATK is a toolkit providing accessibility interfaces for applications or
+ other toolkits. By implementing these interfaces, those other toolkits or
+ applications can be used with tools such as screen readers, magnifiers, and
+ other alternative input devices.
+ .
+ This package contains unstripped shared libraries. it is provided
+ primarily to provide a backtrace with names in a debugger, this makes
+ it somewhat easier to interpret core dumps. The libraries are installed
+ in /usr/lib/debug and can be used by placing that directory in
+ LD_LIBRARY_PATH.
+ Most people will not need this package.
+
+Package: libatk1.0-doc
+Section: doc
+Architecture: all
+Depends: ${misc:Depends}, lynx | www-browser
+Replaces: libatk-doc
+Conflicts: libatk-doc
+Suggests: libglib2.0-doc, libgtk2.0-doc
+Description: Documentation files for the ATK toolkit
+ ATK is a toolkit providing accessibility interfaces for applications or
+ other toolkits. By implementing these interfaces, those other toolkits or
+ applications can be used with tools such as screen readers, magnifiers, and
+ other alternative input devices.
+ .
+ This contains the HTML documentation for the ATK library in
+ /usr/share/doc/libatk1.0-doc/ .
+

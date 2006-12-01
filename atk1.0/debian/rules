@@ -1,0 +1,23 @@
+#! /usr/bin/make -f
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/class/gnome.mk
+include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
+include /usr/share/gnome-pkg-tools/1/rules/clean-la.mk
+
+DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,-O1 -Wl,-z,defs -Wl,--as-needed"
+
+# Speed up loading.
+LDFLAGS += -Wl,-O1
+
+# build static stuff:
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-gtk-doc --enable-static
+
+SHLIB_VERSION=1.12.2
+DEB_DH_MAKESHLIBS_ARGS_libatk1.0-0 := -V"libatk1.0-0 (>= $(SHLIB_VERSION))" --add-udeb="libatk1.0-udeb"
+
+DEB_DBG_PACKAGE_ALL := libatk1.0-dbg
+
+install/libatk1.0-udeb::
+	cp debian/tmp/usr/lib/libatk-1.0.so.0 debian/libatk1.0-udeb/usr/lib/
