@@ -22,6 +22,7 @@ from xml.xpath import CoreFunctions, Conversions
 from xml.xpath import Util
 from xml.xpath import ParsedStep
 from xml.xpath import ParsedAxisSpecifier
+from xml.utils import boolean
 import Set
 
 class NodeSet(UserList.UserList):
@@ -436,11 +437,11 @@ class ParsedEqualityExpr:
 
     def evaluate(self, context):
         if self._op == '=':
-            true = True
-            false = False
+            true = boolean.true
+            false = boolean.false
         else:
-            true = False
-            false = True
+            true = boolean.false
+            false = boolean.true
 
         lrt = self._left.evaluate(context)
         rrt = self._right.evaluate(context)
@@ -464,7 +465,7 @@ class ParsedEqualityExpr:
                 val = lrt
             if type(val) in NumberTypes:
                 func = Conversions.NumberValue
-            elif isinstance(val,bool):
+            elif boolean.IsBooleanType(val):
                 func = Conversions.BooleanValue
             elif type(val) == types.StringType:
                 func = Conversions.StringValue
@@ -477,7 +478,7 @@ class ParsedEqualityExpr:
                     return true
             return false
 
-        if isinstance(lrt, bool) or isinstance(rrt, bool):
+        if boolean.IsBooleanType(lrt) or boolean.IsBooleanType(rrt):
             rt = Conversions.BooleanValue(lrt) == Conversions.BooleanValue(rrt)
         elif lType in NumberTypes or rType in NumberTypes:
             rt = Conversions.NumberValue(lrt) == Conversions.NumberValue(rrt)
@@ -542,7 +543,7 @@ class ParsedRelationalExpr:
             rt = (lrt > rrt)
         elif self._op == 3:
             rt = (lrt >= rrt)
-        return rt and True or False
+        return rt and boolean.true or boolean.false
 
     def pprint(self, indent=''):
         print indent + str(self)

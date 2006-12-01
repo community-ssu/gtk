@@ -14,6 +14,7 @@ See  http://4suite.org/COPYRIGHT  for license and copyright information
 import sys, re, string, urllib
 from xml.dom import Node, EMPTY_NAMESPACE
 from xml.dom.Text import Text
+from xml.utils import boolean
 from xml.xpath import CoreFunctions, Conversions, FT_EXT_NAMESPACE, FT_OLD_EXT_NAMESPACE
 
 def Version(context):
@@ -40,7 +41,7 @@ def Match(context, pattern, arg=None):
     if not arg:
         arg = context.node
     arg = Conversions.StringValue(arg)
-    bool = re.match(pattern, arg) and True or False
+    bool = re.match(pattern, arg) and boolean.true or boolean.false
     return bool
 
 

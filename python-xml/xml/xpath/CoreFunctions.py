@@ -20,6 +20,7 @@ from xml.xpath import NaN, Inf
 from xml.xpath import Util, Conversions
 from xml.xpath import NAMESPACE_NODE
 from xml.xpath import CompiletimeException, RuntimeException
+from xml.utils import boolean
 
 from xml.FtCore import get_translator
 
@@ -153,7 +154,7 @@ def StartsWith(context, outer, inner):
     """Function: <string> starts-with(<string>, <string>)"""
     outer = Conversions.StringValue(outer)
     inner = Conversions.StringValue(inner)
-    return outer[:len(inner)] == inner and True or False
+    return outer[:len(inner)] == inner and boolean.true or boolean.false
 
 
 def Contains(context, outer, inner):
@@ -161,9 +162,9 @@ def Contains(context, outer, inner):
     outer = Conversions.StringValue(outer)
     inner = Conversions.StringValue(inner)
     if len(inner) == 1:
-        return inner in outer and True or False
+        return inner in outer and boolean.true or boolean.false
     else:
-        return string.find(outer, inner) != -1 and True or False
+        return string.find(outer, inner) != -1 and boolean.true or boolean.false
 
 
 def SubstringBefore(context, outer, inner):
@@ -244,17 +245,17 @@ def _Boolean(context, object):
 
 def Not(context, object):
     """Function: <boolean> not(<boolean>)"""
-    return (not Conversions.BooleanValue(object) and True) or False
+    return (not Conversions.BooleanValue(object) and boolean.true) or boolean.false
 
 
-def True_(context):
+def True(context):
     """Function: <boolean> true()"""
-    return True
+    return boolean.true
 
 
-def False_(context):
+def False(context):
     """Function: <boolean> false()"""
-    return False
+    return boolean.false
 
 
 def Lang(context, lang):
@@ -270,9 +271,9 @@ def Lang(context, lang):
             if index != -1:
                 value = value[:index]
             value = string.upper(value)
-            return value == lang and True or False
+            return value == lang and boolean.true or boolean.false
         node = node.nodeType == Node.ATTRIBUTE_NODE and node.ownerElement or node.parentNode
-    return False
+    return boolean.false
 
 ### Number Functions ###
 
@@ -351,8 +352,8 @@ CoreFunctions = {
     (EMPTY_NAMESPACE, 'translate'): Translate,
     (EMPTY_NAMESPACE, 'boolean'): _Boolean,
     (EMPTY_NAMESPACE, 'not'): Not,
-    (EMPTY_NAMESPACE, 'true'): True_,
-    (EMPTY_NAMESPACE, 'false'): False_,
+    (EMPTY_NAMESPACE, 'true'): True,
+    (EMPTY_NAMESPACE, 'false'): False,
     (EMPTY_NAMESPACE, 'lang'): Lang,
     (EMPTY_NAMESPACE, 'number'): Number,
     (EMPTY_NAMESPACE, 'sum'): Sum,
