@@ -1,0 +1,63 @@
+#! /usr/bin/perl
+
+# GPL license, Copyright (c) 2006 by Nokia Corporation                       
+#                                                                            
+# Authors:                                                                   
+#      Michael Dominic K. <michael.kostrzewa@nokia.com>
+#                                                                            
+# This program is free software; you can redistribute it and/or modify it    
+# under the terms of the GNU General Public License as published by the      
+# Free Software Foundation, version 2.                                                                   
+#                                                                            
+# This program is distributed in the hope that it will be useful, but        
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   
+# for more details.                                                          
+#                                                                            
+# You should have received a copy of the GNU General Public License along    
+# with this program; if not, write to the Free Software Foundation, Inc., 59 
+# Temple Place - Suite 330, Boston, MA 02111-1307, USA.                      
+
+use File::Basename;
+
+sub show_banner 
+{
+        print "Theme bundle tool by Michael Dominic K.\n";
+        print "Copyright 2006 by Nokia Corporation.\n\n";
+}
+
+sub show_usage 
+{
+        my $program_name = basename($0);
+        print "Usage: $program_name <layout name>\n\n";
+        print "This tool will bundle an installed theme layout into\n";
+        print "a portable zip file.\n\n";
+}
+
+# Check if we have enough arguments
+if ($#ARGV + 1 < 1) {
+        show_banner;
+        show_usage ();
+        print STDERR "ERROR: Not enough arguments specified.\n";
+        exit 128;
+}
+
+$layoutdir = `pkg-config --variable=pkgdatadir $ARGV[0]`;
+if ($? != 0) {
+        print STDERR "ERROR: $ARGV[0] layout was not found in pkgconfig.\n";
+        exit 128;
+}
+
+# Try removing the end of lne char
+$layoutdir =~ s/\n//g;
+
+# Remember current directory
+$currentdir = `pwd`;
+$currentdir =~ s/\n//g;
+
+print "Bundling $ARGV[0] to $ARGV[0].tar.gz\n";
+chdir ($layoutdir);
+`tar czf $currentdir/$ARGV[0].tar.gz *`;
+print "Done!\n\n";
+
+exit 0;
