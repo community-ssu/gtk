@@ -1,5 +1,9 @@
 2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* data/layout.txt: A slightly different format for forced alpha.
+
+2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* data/layout.txt: Adding info about the forced alpha images.
 
 2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
