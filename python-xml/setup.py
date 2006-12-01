@@ -147,11 +147,11 @@ ext_modules.append(
               ))
 
 # Build boolean
-ext_modules.append(
-    Extension(xml('.utils.boolean'),
-              extra_link_args=LDFLAGS,
-              sources=['extensions/boolean.c'],
-              ))
+#ext_modules.append(
+#    Extension(xml('.utils.boolean'),
+#              extra_link_args=LDFLAGS,
+#              sources=['extensions/boolean.c'],
+#              ))
 
 
 # On Windows, install the documentation into a directory xmldoc, along

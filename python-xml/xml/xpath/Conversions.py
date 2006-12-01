@@ -19,7 +19,6 @@ from xml.xpath import NamespaceNode
 from xml.xpath import NaN, Inf
 from xml.xpath import Util
 from xml.xpath import NAMESPACE_NODE
-from xml.utils import boolean
 
 import types
 try:
@@ -91,7 +90,7 @@ def CoreNumberValue(object):
     """Get the number value of any object"""
     if type(object) in [type(1), type(2.3), type(4L)]:
         return 1, object
-    elif boolean.IsBooleanType(object):
+    elif isinstance(object, bool):
         return 1, int(object)
     #FIXME: This can probably be optimized
     object = StringValue(object)
@@ -107,7 +106,7 @@ def CoreNumberValue(object):
     return 1, object
 
 
-CoreBooleanValue = lambda obj: (1, boolean.BooleanValue(obj, StringValue))
+CoreBooleanValue = lambda obj: (1, bool(StringValue(obj)))
 
 g_stringConversions = [CoreStringValue]
 g_numberConversions = [CoreNumberValue]
@@ -153,7 +152,7 @@ _strConversions = {
     types.IntType : str,
     types.LongType : lambda l: repr(l)[:-1],
     types.FloatType : lambda f: f is NaN and 'NaN' or '%g' % f,
-    boolean.BooleanType : str,
+    bool : str,
     types.InstanceType : _strInstance,
     types.ListType : lambda x: x and _strConversions.get(type(x[0]), _strUnknown)(x[0]) or '',
 }
