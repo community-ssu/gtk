@@ -1,3 +1,24 @@
+libcairo (1.2.4-4osso1) unstable; urgency=low
+
+  * Set myself as Maintainer
+  * Drop the directfb and the udeb
+    - debian/control:
+      + remove libdirectfb-dev from Build-Depends
+      + remove *directfb* packages
+    - debian/rules:
+      + remove rules for udeb and mentions of directfb
+    - debian/libcairo-directfb2*: removed
+  * Lower debhelper dependency to (>> 4.0.0)
+    - debian/control: update Build-Depends
+    - debian/rules: DH_COMPAT=4
+  * Lower pkg-config dependency to (>= 0.17)
+    - NOTE: this might break cairo.pc using Require.private
+    - debian/control: update Build-Depends
+  * Remove dependency to xutils-dev
+    - debian/control: update Build-Depends
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  3 Nov 2006 15:02:02 +0200
+
 libcairo (1.2.4-4) unstable; urgency=medium
 
   * Acknowledge NMU.
