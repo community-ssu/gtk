@@ -1,0 +1,49 @@
+The ``osso`` package
+====================
+
+Using ``StateSaving``
+---------------------
+
+State saving functionality is provided for applications as
+a convenient way of storing and retrieving GUI state
+information (e.g. the view to the last open document, scroll
+bar position). The information saved by using these
+functions does not survive over power off of the device,
+so other means need to be used to save e.g. the document
+that the user was writing (see Autosaving methods). The
+application should load the state information during
+startup in order to present the user with the previous GUI
+state from the start. No automatic saving of GUI state is
+done; it is left as responsibility of the application to
+call the appropriate Libosso function to do it.
+
+The new osso.StateSaving.state_read() and 
+osso.StateSaving.state_write() methods take care of state
+data reading and writing. The only limitation is that only
+a fixed-size contiguous memory area can be stored.
+
+One particular version (the version is given to osso.Context
+constructor) of the application can have only one state file.
+
+Methods
+-------
+*state_write*
+
+  This method writes a state object to disk. Any existing
+  files will be overwritten.
+
+  ``osso.StateSaving.state_write(object)``
+
+  - ``object: State object to be written to disk.``
+
+*state_read*
+
+  This method reads a state object from disk.
+
+  ``osso.StateSaving.state_write()``
+
+  - ``Returns: State object that has been written to disk.``
+
+Example
+-------
+**TODO**

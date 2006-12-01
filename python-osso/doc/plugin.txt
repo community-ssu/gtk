@@ -1,0 +1,44 @@
+The ``osso`` package
+====================
+
+Using ``Plugin``
+----------------
+
+Methods
+-------
+*plugin_execute*
+
+  Calls the execute() function of a plugin.
+
+  ``osso.Plugin.plugin_execute(filename, user_activated,
+  user_data = None)``
+
+  - ``filename: The shared object (.so) file of the plugin.
+    It should include the ".so" prefix, but not a path.``
+  - ``user_activated: If the plugin was activated by a user
+    (as opposed to activated by restoring software state),
+    set to True, else to False.``
+  - ``user_data (optional): The GTK top-level widget. It is
+    needed so that the widgets created by the plugin can be
+    made a child of the main application that utilizes the
+    plugin.``
+
+*plugin_save_state*
+
+  This method is used to tell a plugin to save its state.
+
+  ``osso.Plugin.plugin_save_state(filename, user_activated,
+  user_data = None)``
+
+  - ``filename: The shared object (.so) file of the plugin.
+    It should include the ".so" prefix, but not a path.``
+  - ``user_activated: If the plugin was activated by a user
+    (as opposed to activated by restoring software state),
+    set to True, else to False.``
+  - ``user_data (optional): Arbitrary application specific
+    object that will be passed to the callback and ignored
+    by LibOSSO.``
+
+Example
+-------
+**TODO**

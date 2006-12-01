@@ -1,0 +1,48 @@
+The ``osso`` package
+====================
+
+Using ``DeviceState``
+---------------------
+
+Methods in this group offer a convenient way to receive
+device status information from lower levels of the system.
+
+Methods
+-------
+*display_state_on*
+
+  Request to turn on the display as if the user had pressed
+  a key or the touch screen. This can be used after completing
+  a long operation such as downloading a large file or after
+  retrieving e-mails.
+
+  ``osso.DeviceState.display_state_on()``
+
+*display_blanking_pause*
+
+  Request not to blank the display. This method must be called
+  again within 60 seconds to renew the request. The method is
+  used, for example, by the video player during video playback.
+  Also prevents suspending the device.
+
+  ``osso.DeviceState.display_blanking_pause()``
+
+*set_device_state_callback*
+  **TODO**
+
+Example
+-------
+::
+
+  import osso
+
+  def cbfunc(parameter):
+    print parameter
+
+  c = osso.Context("TestDeviceState", "0.0.1", False)
+  devstat = osso.DeviceState(c)
+  devstat.set_device_state_callback(cbfunc, 0, 0, 0, 1, "normal", "Inactivity")
+  devstat.display_blanking_pause()
+  devstat.display_state_on()
+
+  c.close()

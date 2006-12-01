@@ -48,10 +48,10 @@ install: build
 
 	# dev
 	mkdir -p $(d_dev)/usr/include/python-osso
-	cp osso.h $(d_dev)/usr/include/python-osso
+	cp src/osso.h $(d_dev)/usr/include/python-osso
 	mkdir -p $(d_dev)/usr/share/doc/$(p_dev)
-	cp test_*.{py,desktop,service} $(d_dev)/usr/share/doc/$(p_dev)
-	cp install_dev_env.sh $(d_dev)/usr/share/doc/$(p_dev)
+	cp examples/test_*.{py,desktop,service} $(d_dev)/usr/share/doc/$(p_dev)
+	cp examples/install_dev_env.sh $(d_dev)/usr/share/doc/$(p_dev)
 
 	# finish
 	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf

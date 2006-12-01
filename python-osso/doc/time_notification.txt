@@ -1,0 +1,50 @@
+The ``osso`` package
+====================
+
+Using ``TimeNotification``
+--------------------------
+
+Methods
+-------
+*set_time_notification_callback*
+
+  This method registers a callback that is called whenever
+  the time is changed with this library.
+
+  ``osso.TimeNotification.set_time_notification_callback(callback,
+  user_data = None)``
+
+  - ``callback:  Function that is called when the system time
+    is changed.``
+  - ``user_data: Arbitrary application specific object that
+    will be passed to the callback and ignored by LibOSSO.``
+
+*set_time*
+
+  This method sets the system and hardware time, and notifies
+  about the changing of time over the D-BUS system bus. Notice:
+  does not currently change the time. The time_sequence parameter
+  is a sequence with 9 elements (like sequences returned by time
+  standard Python module). These elements are (year, month,
+  month_day, hour, min, sec, week_day, year_day,
+  is_daylight_saving).
+
+  ``osso.TimeNotification.set_time(time_sequence)``
+
+  - ``time_sequence: A time sequence``
+
+Example
+-------
+::
+
+  import osso
+
+  def cbfunc(c, parameter):
+    sysnote = osso.SystemNote(c)
+    sysnote.system_note_dialog(parameter, 'notice')
+
+  c = osso.Context('TestTimeNotification', '0.0.1', False)
+  timenote = osso.TimeNotification(c)
+  timenote.set_time_notification_callback(cbfunc, (c, 'Callback called!'))
+  timenote.set_time((2006, 1, 1, 12, 00, 00, 1, 1, False))
+  c.close()

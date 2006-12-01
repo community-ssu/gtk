@@ -1,0 +1,30 @@
+The ``osso`` package
+======================
+
+Using ``Statusbar``
+-------------------
+
+Methods
+-------
+*statusbar_send_event*
+
+  This method sends a statusbar event notification over
+  the D-BUS. If the applet is not loaded, the statusbar
+  application will load it.
+
+  *osso.Statusbar.statusbar_send_event(name, int_arg1,
+  int_arg2, string_arg3)*
+
+  - ``name:        The name of the applet that should receive
+    the event.``
+  - ``int_arg1:    This is the first argument of the event.
+    It's interpretation depends on event_type.``
+  - ``int_arg2:    This is the second argument of the event.
+    It's interpretation depends on event_type.``
+  - ``string_arg3: This is the third argument of the event.
+    It's interpretation depends on event_type. None can be
+    used here.``
+
+Example
+-------
+**TODO**

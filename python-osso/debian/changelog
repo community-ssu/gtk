@@ -1,3 +1,9 @@
+python-osso (0.2-1osso1) unstable; urgency=low
+
+  * Osso split in small modules
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Fri, 1 Dec 2006 17:54:00 -0300
+
 python-osso (0.1-1osso4) unstable; urgency=low
 
   * added shlib dependencies

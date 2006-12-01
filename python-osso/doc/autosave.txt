@@ -1,0 +1,93 @@
+The ``osso`` package 
+====================
+
+Using ``Autosave``
+------------------
+
+The application registers callback function(s) that is/are
+called by LibOSSO to save the user data (such as an unsaved
+document). Whenever the user data changes, the application
+calls osso.autosave.userdata_changed() to tell LibOSSO that
+the callback(s) should be called in the future.
+
+LibOSSO will call the callback(s) when:
+
+- A "dirty data" timer in LibOSSO expires.
+- LibOSSO gets a message from the system that unsaved
+  user data should be saved (e.g. at shutdown).
+
+The application should call osso.autosave.force_autosave()
+whenever it is switched to the background (untopped).
+
+After the autosave callback(s) have been called, the timer
+inside LibOSSO is reset and the application needs to call
+osso.autosave.userdata_changed() again when it has new "dirty"
+user data.
+
+Methods
+-------
+*set_autosave_callback*
+
+  This method registers an autosave callback function.
+
+  ``osso.Autosave.set_autosave_callback(callback, user_data = None)``
+
+  - ``callback:             The callback function.``
+  - ``user_data (optional): Arbitrary application specific object
+    that will be passed to the callback and ignored by
+    LibOSSO.``
+
+*userdata_changed*
+
+  This method is called by the application when the user data
+  has been changed, so that LibOSSO knows that a call to the
+  autosave callback is needed in the future to save the user
+  data. The dirty state will be cleared every time the application's
+  autosave callback function is called.
+
+  ``osso.Autosave.userdata_changed()``
+
+*force_autosave*
+
+  This method forces a call to the application's autosave
+  function, and resets the autosave timeout. The application
+  should call this method whenever it is switched to background
+  (untopped).
+
+  ``osso.Autosave.force_autosave()``
+
+*get_name*
+
+  Returns the application name.
+
+  ``osso.Autosave.get_name()``
+
+  - ``Returns: Application's name.``
+
+*get_version*
+
+  Returns the application version.
+
+  ``osso.Autosave.get_version()``
+
+  ``Returns: Application's version.``
+
+Example
+-------
+::
+
+  import osso
+
+  def cbfunc(parameter):
+    print parameter
+
+  c = osso.Context('TestAutosave', '0.0.1', False)
+  as = osso.Autosave(c)
+  as.set_autosave_callback(cbfunc, 'Callback called!')
+  print 'App Name:', as.get_name()
+  print 'App Version:', as.get_version()
+  print 'Now a call to the callback function'
+  as.force_autosave()
+
+  c.close()
+

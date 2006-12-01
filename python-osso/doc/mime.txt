@@ -1,0 +1,28 @@
+The ``osso`` package
+====================
+
+Using ``Mime``
+--------------
+
+Methods
+-------
+*set_mime_callback*
+
+  This method registers a MIME callback function that LibOSSO
+  calls when the user wants the application to open file(s)
+  of a MIME type handled by the application.
+
+  The callback function will receive a parameter with a list
+  of URIs and user_data.
+
+  ``osso.Mime.set_mime_callback(callback, user_data = None)``
+
+  - ``callback:             The callback function to call. None
+    unsets the callback.``
+  - ``user_data (optional): Arbitrary application specific
+    object that will be passed to the callback and ignored by
+    LibOSSO.``
+
+Example
+-------
+**TODO**

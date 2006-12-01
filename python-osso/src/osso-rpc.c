@@ -27,6 +27,188 @@
 static PyObject *set_rpc_callback = NULL;
 static PyObject *rpc_async_callback = NULL;
 
+/* ----------------------------------------------- */
+/* Context type default methods                    */
+/* ----------------------------------------------- */
+
+PyObject *
+Rpc_new(PyTypeObject *type, PyObject *args, PyObject *kwds)
+{
+	Context *self;
+
+	self = (Context *)type->tp_alloc(type, 0);
+	if (self != NULL) {
+		self->context = NULL;
+	}
+
+	return (PyObject *)self;
+}
+
+
+int
+Rpc_init(Context *self, PyObject *args, PyObject *kwds)
+{
+	PyObject *ossocontext = NULL;
+	Context *fullcontext = NULL;
+	
+	if (!PyArg_ParseTuple(args, "O", &ossocontext))
+		return -1;
+
+	fullcontext = (Context *)ossocontext;
+	self->context = fullcontext->context;
+	
+	if (self->context == NULL) {
+		PyErr_SetString(OssoException, "Context not initialize yet.");
+		return -1;
+	}
+
+	return 0;
+}
+
+
+PyObject *
+Rpc_close(Context *self)
+{
+	if (!_check_context(self->context)) return 0;
+	self->context = NULL;
+	Py_RETURN_NONE;
+}
+
+
+void
+Rpc_dealloc(Context *self)
+{
+	if (self->context == NULL)
+		return;
+
+	self->context = NULL;
+	return;
+}
+
+
+static struct PyMethodDef Rpc_methods[] = {
+	/* RPC */
+	{"rpc_run", (PyCFunction)Context_rpc_run, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc.rpc_run(service, object_path, interface, method[, rpc_args[, wait_reply[, system_bus]]]) -> object\n\n"
+		"Run a RPC method with arguments inside rpc_args tuple.\n\n"
+		"Usage example:\n\n"
+		"\tc.rpc_run('com.nokia.backup', '/com/nokia/backup', 'com.nokia.backup', 'backup_finish', True)\n"},
+	{"rpc_run_with_defaults", (PyCFunction)Context_rpc_run_with_defaults, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc.rpc_run_with_defaults(application, method[, rpc_args, wait_reply]) -> object\n"
+		"\n"
+		"Run a RPC method using default parameters.\n"
+		"\n"
+		"Usage example:\n\n"
+		"\tc.rpc_run_with_defaults('tn_mail', 'send_recv_button_focus', (status,)) # status is a int var\n"},
+	{"rpc_async_run", (PyCFunction)Context_rpc_async_run, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc.rpc_async_run(service, object_path, interface, method, callback[, user_data[, rpc_args]])\n\n"
+		"Run a RPC method and call 'callback' after finished.\n\n"
+		"Usage example:\n\n"
+		"\tdef my_func(interface, method, user_data=None):\n"
+		"\t\tpass\n\n"
+		"\tc.rpc_async_run('com.nokia.backup', '/com/nokia/backup', 'com.nokia.backup', 'backup_finish', my_func, 'hello!', (True,))\n"},
+	{"rpc_async_run_with_defaults", (PyCFunction)Context_rpc_async_run_with_defaults, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc.rpc_async_run_with_defaults(application, method, callback[, user_data[, rpc_args]])\n\n"
+		"Run a RPC method using default parameters and call 'callback' after finished.\n\n"
+		"Usage example:\n\n"
+		"\tdef my_func(interface, method, user_data=None):\n"
+		"\t\tpass\n\n"
+		"\tc.rpc_async_run_with_defaults('tn_mail', 'send_recv_button_focus', my_func, 'hello!', (True,))\n"},
+	{"set_rpc_callback", (PyCFunction)Context_set_rpc_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc.set_rpc_callback(service, object_path, interface, callback[, user_data])\n\n"
+		"This method registers a callback function for handling RPC calls to a\n"
+		"given object of a service. Use None in callback parameter to unset this\n"
+		"callback. The callback will receive the parameters: interface, method,\n"
+		"arguments, user_data.\n"},
+	{"set_rpc_default_callback", (PyCFunction)Context_set_rpc_default_callback, METH_VARARGS | METH_KEYWORDS,
+		"c.rpc.set_rpc_default_callback(callback[, user_data])\n\n"
+		"This method registers a callback function for handling RPC calls to\n"
+		"the default service of the application. The default service is\n"
+		"'"OSSO_BUS_ROOT".A' where A is the application's name of the context.\n"
+		"Use None in callback parameter to unset this callback. The callback\n"
+		"will receive the parameters: interface, method, arguments,\n"
+		"user_data.\n"},
+	{"get_rpc_timeout", (PyCFunction)Context_get_rpc_timeout, METH_NOARGS,
+		"c.rpc.get_rpc_timeout() -> int\n\nReturn the timeout value used by RPC methods."},
+	{"set_rpc_timeout", (PyCFunction)Context_set_rpc_timeout, METH_VARARGS,
+		"c.rpc.set_rpc_timeout(timeout)\n\nSet the timeout value used by RPC methods."},
+	/* Default */
+	{"close", (PyCFunction)Rpc_close, METH_NOARGS, "Close Rpc context."},
+	{0, 0, 0, 0}
+};
+
+static PyTypeObject RpcType = {
+	PyObject_HEAD_INIT(NULL)
+	0,																/* ob_size */
+	"osso.Rpc",														/* tp_name */
+	sizeof(Context),												/* tp_basicsize */
+	0,																/* tp_itemsize */
+	(destructor)Rpc_dealloc,										/* tp_dealloc */
+	0,																/* tp_print */
+	0,																/* tp_getattr */
+	0,																/* tp_setattr */
+	0,																/* tp_compare */
+	0,																/* tp_repr */
+	0,																/* tp_as_number */
+	0,																/* tp_as_sequence */
+	0,																/* tp_as_mapping */
+	0,																/* tp_hash */
+	0,																/* tp_call */
+	0,																/* tp_str */
+	0,																/* tp_getattro */
+	0,																/* tp_setattro */
+	0,																/* tp_as_buffer */
+	Py_TPFLAGS_DEFAULT|Py_TPFLAGS_CHECKTYPES|Py_TPFLAGS_BASETYPE,	/* tp_flags */
+	"OSSO Rpc class",												/* tp_doc */
+	0,																/* tp_traverse */
+	0,																/* tp_clear */
+	0,																/* tp_richcompare */
+	0,																/* tp_weaklistoffset */
+	0,																/* tp_iter */
+	0,																/* tp_iternext */
+	Rpc_methods,													/* tp_methods */
+	0,																/* tp_members */
+	0,																/* tp_getset */
+	0,																/* tp_base */
+	0,																/* tp_dict */
+	0,																/* tp_descr_get */
+	0,																/* tp_descr_set */
+	0,																/* tp_dictoffset */
+	(initproc)Rpc_init,												/* tp_init */
+	0,																/* tp_alloc */
+	Rpc_new,														/* tp_new */
+};
+
+static struct PyMethodDef osso_methods[] = {
+	{0, 0, 0, 0}
+};
+
+PyMODINIT_FUNC
+initrpc(void)
+{
+	PyObject *module;
+
+	/* prepare types */
+	RpcType.tp_new = PyType_GenericNew;
+	if (PyType_Ready(&RpcType) < 0) {
+		return;
+	}
+
+	/* initialize module */
+	module = Py_InitModule3("rpc", osso_methods,
+			"FIXME: put documentation about RPC module.");
+
+	/* add types */
+	Py_INCREF(&RpcType);
+	PyModule_AddObject(module, "Rpc", (PyObject *)&RpcType);
+
+	/* add contants */
+	/* : */
+	/* : */
+	/* : */
+}
+
+	
 PyObject *
 Context_rpc_run(Context *self, PyObject *args, PyObject *kwds)
 {
@@ -97,23 +279,22 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	char object_path[MAX_OP_LEN] = {0};
 	char interface[MAX_IF_LEN] = {0};
 	char wait_reply = FALSE;
-	char use_system_bus = FALSE;
 	char *copy = NULL;
 	PyObject *py_rpc_args = NULL;
 	osso_rpc_t retval;
 	osso_return_t ret;
 
 	static char *kwlist[] = { "application", "method", "rpc_args",
-								"wait_reply", "use_system_bus", 0 };
+								"wait_reply", 0 };
 
 	if (!_check_context(self->context)) return 0;
-
+	
 	if (!PyArg_ParseTupleAndKeywords(args, kwds,
-				"ss|Obb:Context.run_with_defaults", kwlist, &application,
-				&method, &py_rpc_args, &wait_reply, &use_system_bus)) {
+				"ss|Ob:Context.run_with_defaults", kwlist, &application,
+				&method, &py_rpc_args, &wait_reply)) {
 		return NULL;
 	}
-
+	
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
 			PyErr_SetString(PyExc_TypeError,
@@ -123,7 +304,6 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	} else {
 		py_rpc_args = PyTuple_New(0);
 	}
-
 	g_snprintf(service, MAX_SVC_LEN, OSSO_BUS_ROOT ".%s", application);
     copy = appname_to_valid_path_component(application);
     if (copy == NULL) {
@@ -135,25 +315,14 @@ Context_rpc_run_with_defaults(Context *self, PyObject *args, PyObject *kwds)
 	copy = NULL;
     g_snprintf(interface, MAX_IF_LEN, "%s", service);
 
-	if (use_system_bus) {
-		ret = osso_rpc_run_system_with_argfill(self->context,
-					service,
-					object_path,
-					interface,
-					method,
-					(wait_reply ?  &retval : NULL),
-					_argfill,
-					py_rpc_args);
-	} else {
-		ret = osso_rpc_run_with_argfill(self->context,
-					service,
-					object_path,
-					interface,
-					method,
-					(wait_reply ?  &retval : NULL),
-					_argfill,
-					py_rpc_args);
-	}
+	ret = osso_rpc_run_with_argfill(self->context,
+				service,
+				object_path,
+				interface,
+				method,
+				(wait_reply ?  &retval : NULL),
+				_argfill,
+				py_rpc_args);
 
 	if (ret != OSSO_OK) {
 		_set_exception(ret, ((wait_reply) ? &retval : NULL));

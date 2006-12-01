@@ -1,0 +1,49 @@
+The ``osso`` package
+====================
+
+Using ``SystemNote``
+--------------------
+
+Methods
+-------
+*system_note_dialog*
+
+  This method will request that a system note (a window that
+  is modal to the whole system) is shown. The note has a
+  single OK button. This function enables non-GUI programs
+  to show some information to the user. Applications that do
+  have a GUI should not use this function but the hildon.Note
+  widget directly.
+
+  ``osso.SystemNote.system_note_dialog(message, type = 'notice')``
+
+  - ``message:         The contents for the system note.``
+  - ``type (optional): The type of system note. Can be 'warning',
+    'error', 'wait' or 'notice'.``
+
+*system_note_infoprint*
+
+  This function requests that the statusbar shows an infoprint
+  (aka information banner). This allows non-GUI applications
+  to display some information to the user. Applications that
+  do have a GUI should not use this function.
+
+  ``osso.SystemNote.system_note_infoprint(message)``
+
+  - ``message: The text to display on the infoprint.``
+
+Example
+-------
+::
+
+  import osso
+
+  c = osso.Context('TestSystemNote', '0.0.1', False)
+  sysnote = osso.SystemNote(c)
+  sysnote.system_note_dialog('Notice message', 'notice')
+  sysnote.system_note_dialog('Wait message', 'wait')
+  sysnote.system_note_dialog('Warning message', 'warning')
+  sysnote.system_note_dialog('Error message', 'error')
+  sysnote.system_note_infoprint('SystemNote Message')
+
+  c.close()

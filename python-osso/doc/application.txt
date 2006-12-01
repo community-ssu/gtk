@@ -1,0 +1,57 @@
+The ``osso`` package 
+====================
+
+Using ``Application``
+---------------------
+
+Methods
+-------
+*application_top*
+
+  This method tops an application (i.e. brings it to the
+  foreground). If the application is not already running,
+  D-BUS will launch it via the auto-activation mechanism.
+  By using this method, only one instance of the application
+  will be running at any given time. If the application is
+  already running, this method will only bring it to the
+  foreground.
+
+  ``osso.Application.application_top(application, arguments)``
+
+  - ``application: The name of the application to top.``
+  - ``arguments:   This string lists some parameters for the
+    application. It can be used to give the names of the
+    files to open, etc. If no arguments are to be passed,
+    this can be None.``
+
+Example
+-------
+::
+
+  import hildon
+  import gtk
+  import osso
+
+  def handler_test_application_top (widget, applic):
+    applic.application_top("maemopad")
+
+  applic = osso.Application(c)
+  app = hildon.App()
+  view = hildon.AppView("Client")
+  app.set_title("Test")
+  app.set_appview(view)
+  app.connect("destroy", gtk.main_quit)
+
+  c = osso.Context("TestApplication", "0.0.1", False)
+
+  vbox = gtk.VBox()
+  label = gtk.Label("Open Maemopad on top")
+  vbox.add(label)
+  test_application_top = gtk.Button("Click to open Maemopad")
+  test_application_top.connect("clicked", handler_test_application_top, applic)
+  vbox.add(test_application_top)
+  view.add(vbox)
+
+  app.show_all()
+  gtk.main()
+  c.close()
