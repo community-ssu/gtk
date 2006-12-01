@@ -134,8 +134,13 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                                 g_warning ("Failed to process '%s'!", element->Name);
                         else {
                                 gchar *fname = g_build_filename (directory, element->Name, NULL);
-                              
-                                if (gdk_pixbuf_get_n_channels (sub) == 4 && check_if_pixbuf_needs_alpha (sub) == FALSE) {
+                             
+                                // FIXME This only covers one case (nnot stripping alpha when 
+                                // forced alpha == TRUE). We should also support a case when 
+                                // alpha needs to be added.
+                                if (gdk_pixbuf_get_n_channels (sub) == 4 && 
+                                    check_if_pixbuf_needs_alpha (sub) == FALSE &&
+                                    element->ForcedAlpha == FALSE) {
                                         GdkPixbuf *oldy = sub;
                                         sub = strip_alpha_from_pixbuf (oldy);
                                         gdk_pixbuf_unref (oldy);

@@ -1,5 +1,11 @@
 2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* src/common.c:
+	* src/common.h:
+	* src/slicer.c: Adding correct parsing for forced-alpha elements.
+
+2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* scripts/Makefile.am:
 	* src/Makefile.am:
 	* src/hildon-theme-mk-bundle:

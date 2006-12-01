@@ -20,6 +20,8 @@
  */
 
 #include <glib.h>
+#include <math.h>
+#include <string.h>
 
 struct                          _Template 
 {
@@ -36,6 +38,7 @@ struct                          _Element
         gint Y;
         gint Width;
         gint Height;
+        gboolean ForcedAlpha;
 } typedef                       Element;
 
 struct                          _Color

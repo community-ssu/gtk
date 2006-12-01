@@ -161,7 +161,7 @@ Element*                        new_element_from_key (GKeyFile *key_file, gchar 
 {
         Element *element = NULL;
         guint size = 0;
-        gint *vals = NULL;
+        gchar **vals = NULL;
         
         g_return_val_if_fail (key_file != NULL, NULL);
 
@@ -172,21 +172,26 @@ Element*                        new_element_from_key (GKeyFile *key_file, gchar 
                 goto Done;
 
         size = 0;
-        vals = g_key_file_get_integer_list (key_file, "Elements", name, &size, NULL);
+        vals = g_key_file_get_string_list (key_file, "Elements", name, &size, NULL);
 
-        if (size != 4 || vals == NULL)
+        if (size < 4 || vals == NULL)
                 goto Done;
 
         element = g_new0 (Element, 1);
-        element->X = vals [0];
-        element->Y = vals [1];
-        element->Width = vals [2];
-        element->Height = vals [3];
+        element->X = atoi (vals [0]);
+        element->Y = atoi (vals [1]);
+        element->Width = atoi (vals [2]);
+        element->Height = atoi (vals [3]);
         element->Name = g_strdup (name);
+
+        if (size >= 5 && strcmp (vals [4], "alpha") == 0) {
+                element->ForcedAlpha = TRUE;
+        } else
+                element->ForcedAlpha = FALSE;
 
 Done:
         if (vals != NULL)
-                g_free (vals);
+                g_strfreev (vals);
 
         return element;
 }
