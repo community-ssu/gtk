@@ -1,3 +1,13 @@
+2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* scripts/Makefile.am:
+	* src/Makefile.am:
+	* src/hildon-theme-mk-bundle:
+	* src/hildon-theme-rc-parser:
+	* src/hildon-theme-subst: Moving scripts from /src to /scripts.
+
+	* scripts/hildon-theme-install: Removing.
+	
 2006-12-01  Michael Dominic K.  <mdk@mdk.am> 
 
 	* src/Makefile.am:

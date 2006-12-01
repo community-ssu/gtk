@@ -3,10 +3,6 @@ bin_PROGRAMS 				= hildon-theme-slicer 		\
 					  hildon-theme-regenerator 	\
 					  hildon-theme-outliner		
 
-dist_bin_SCRIPTS			= hildon-theme-rc-parser	\
-					  hildon-theme-subst		\
-					  hildon-theme-mk-bundle
-
 # Slicer
 hildon_theme_slicer_CFLAGS 		= $(GTK_CFLAGS)
 hildon_theme_slicer_LDADD 		= $(GTK_LIBS)
