@@ -934,6 +934,13 @@ connection_handle_close (DaemonConnection *conn,
 	result = gnome_vfs_close_cancellable (handle->vfs_handle,
 					      context);
 
+	/* Clear the handle so we don't close it twice. If close is not
+	 * successful, all modules destroy their internal handle data anyway so
+	 * we can't call close twice on a handle even if it fails the first
+	 * time.
+	 */
+	handle->vfs_handle = NULL;
+	
 	if (cancellation) {
 		connection_remove_cancellation (conn, cancellation);
 	}
@@ -942,9 +949,6 @@ connection_handle_close (DaemonConnection *conn,
 		return;
 	}
 
-	/* Clear the handle so we don't close it twice. */
-	handle->vfs_handle = NULL;
-	
 	connection_remove_file_handle (conn, handle);
 
 	connection_reply_ok (conn, message);

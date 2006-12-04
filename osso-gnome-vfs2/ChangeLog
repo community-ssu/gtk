@@ -1,7 +1,12 @@
-2006-11-15  Martyn Russell  <martyn@imendio.com>
+2006-12-04  Richard Hult  <richard@imendio.com>
 
-	* debian/patches/20-workaround-broken-upnp-servers.patch: Make sure we
-	return the aborted() value, fixes NB#45468. 
+	* Release 2.12.0.17.
+
+	* configure.in: Bump version.
+
+	* dbus-daemon/daemon-connection.c: (connection_handle_close): NULL
+	the vfs handle unconditionally, since most modules will destroy
+	their internal data even when closing fails. Fixes NB#47756.
 
 2006-10-13  Martyn Russell  <martyn@imendio.com>
 
