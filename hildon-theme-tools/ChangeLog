@@ -1,4 +1,14 @@
-2006-12-04  Michael Dominic K.  <mdk@mdk.am> 
+2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.2.0 release]
+
+	* configure.ac:
+	* debian/changelog:
+	* debian/control: Updating to 0.2.0.
+
+	* src/slicer.c: Removing "WARNING" from "Processed" message. 
+
+2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* README: Typo fix. 
 
@@ -27,7 +37,7 @@
 
 	* scripts/hildon-theme-install: Removing.
 	
-2006-12-01  Michael Dominic K.  <mdk@mdk.am> 
+2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* src/Makefile.am:
 	* src/hildon-theme-mk-bundle: Adding the tool to build layout bundles.
@@ -36,7 +46,7 @@
 
 	* src/Makefile.am: Wrong category.
 
-2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* src/Makefile.am:
 	* src/colourizer.c:

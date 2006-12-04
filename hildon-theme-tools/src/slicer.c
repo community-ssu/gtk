@@ -155,7 +155,7 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                                 g_free (fname);
 
                                 gdk_pixbuf_unref (sub);
-                                g_printerr ("WARNING: Processed %s\n", element->Name);
+                                g_print ("Processed %s\n", element->Name);
                         }
                 }
         }
