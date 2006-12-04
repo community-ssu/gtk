@@ -789,7 +789,8 @@ inline static muali_error_t _set_handler(muali_context_t *context,
                 return MUALI_ERROR;
         }
 
-        if (_muali_set_handler(context, event_cb, cb_data, handler_id)) {
+        if (_muali_set_handler((_muali_context_t*)context, event_cb,
+                               cb_data, handler_id)) {
                 return MUALI_ERROR_SUCCESS;
         } else {
                 return MUALI_ERROR;
