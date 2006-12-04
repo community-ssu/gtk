@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-default, 0.1.0)
+AM_INIT_AUTOMAKE(hildon-theme-default, 0.2.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
@@ -11,7 +11,7 @@ dnl theme directory name, ie: default
 THEME_DIR="hildon-default"
 
 dnl user-friendly theme name, ie: My default theme
-THEME_NAME="Default hildon theme"
+THEME_NAME="Default"
 
 dnl a layout this theme is based on
 LAYOUT_NAME="hildon-theme-layout-3"
@@ -28,7 +28,7 @@ AS_AC_EXPAND(IMAGES_FULL_DIR, "${datadir}/themes/$THEME_DIR/images")
 AS_AC_EXPAND(GTK_FULL_DIR, "${datadir}/themes/$THEME_DIR/gtk-2.0")
 
 dnl check the tools installation
-PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.1.0)
+PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.2.0)
 
 AC_OUTPUT([Makefile             \
            template/Makefile    \
