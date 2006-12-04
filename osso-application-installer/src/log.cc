@@ -151,9 +151,11 @@ log_response (GtkDialog *dialog, gint response, gpointer clos)
  				save_log, NULL);
 
   if (response == GTK_RESPONSE_CLOSE)
-    gtk_widget_destroy (GTK_WIDGET (dialog));
+    {
+      pop_dialog_parent ();
+      gtk_widget_destroy (GTK_WIDGET (dialog));
+    }
 }
-
 
 void
 show_log ()
@@ -161,7 +163,7 @@ show_log ()
   GtkWidget *dialog, *text_view;
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_log"),
-					get_main_window (),
+					get_dialog_parent (),
 					GTK_DIALOG_MODAL,
 					_("ai_bd_log_save_as"),
 					RESPONSE_SAVE,
@@ -170,6 +172,7 @@ show_log ()
 					_("ai_bd_log_close"),
 					GTK_RESPONSE_CLOSE,
 					NULL);
+  push_dialog_parent (dialog);
   respond_on_escape (GTK_DIALOG (dialog), GTK_RESPONSE_CLOSE);
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);

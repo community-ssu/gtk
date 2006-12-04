@@ -1494,7 +1494,7 @@ static void
 available_package_details (gpointer data)
 {
   package_info *pi = (package_info *)data;
-  show_package_details (get_main_window (), pi, install_details, false);
+  show_package_details (pi, install_details, false);
 }
 
 void
@@ -1517,7 +1517,7 @@ static void
 installed_package_details (gpointer data)
 {
   package_info *pi = (package_info *)data;
-  show_package_details (get_main_window (), pi, remove_details, false);
+  show_package_details (pi, remove_details, false);
 }
 
 static void uninstall_package (package_info *);
@@ -2772,6 +2772,7 @@ main (int argc, char **argv)
 
   window = hildon_window_new ();
   gtk_window_set_title (GTK_WINDOW (window), _("ai_ap_application_installer"));
+  push_dialog_parent (window);
 
   main_window = GTK_WINDOW (window);
 

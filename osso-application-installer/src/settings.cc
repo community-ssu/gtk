@@ -275,13 +275,14 @@ show_settings_dialog ()
   settings_closure *c = new settings_closure;
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_settings"),
-					get_main_window (),
+					get_dialog_parent (),
 					GTK_DIALOG_MODAL,
 					_("ai_bd_settings_ok"),
 					GTK_RESPONSE_OK,
 					_("ai_bd_settings_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  push_dialog_parent (dialog);
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   set_dialog_help (dialog, AI_TOPIC ("settings"));
 
@@ -311,6 +312,7 @@ sort_settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
       sort_all_packages ();
     }
 
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
@@ -319,7 +321,8 @@ show_sort_settings_dialog ()
 {
   GtkWidget *dialog;
 
-  dialog = hildon_sort_dialog_new (get_main_window ());
+  dialog = hildon_sort_dialog_new (get_dialog_parent ());
+  push_dialog_parent (dialog);
 
   hildon_sort_dialog_add_sort_key (HILDON_SORT_DIALOG (dialog),
 				   _("ai_va_sort_name"));

@@ -72,6 +72,34 @@ extern "C" {
 #define BTNAME_MATCH_RULE "type='signal',interface='" BTNAME_SIGNAL_IF \
                           "',member='" BTNAME_SIG_CHANGED "'"
 
+static GSList *dialog_parents = NULL;
+
+GtkWindow *
+get_dialog_parent ()
+{
+  if (dialog_parents)
+    return GTK_WINDOW (dialog_parents->data);
+  else
+    return NULL;
+}
+
+void
+push_dialog_parent (GtkWidget *w)
+{
+  dialog_parents = g_slist_prepend (dialog_parents, w);
+}
+
+void
+pop_dialog_parent ()
+{
+  if (dialog_parents)
+    {
+      GSList *old = dialog_parents;
+      dialog_parents = dialog_parents->next;
+      g_slist_free_1 (old);
+    }
+}
+
 struct ayn_closure {
   package_info *pi;
   detail_kind kind;
@@ -88,7 +116,7 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
   if (response == 1)
     {
       if (c->pi)
-	show_package_details (GTK_WINDOW (dialog), c->pi, c->kind, false);
+	show_package_details (c->pi, c->kind, false);
       else if (c->details)
 	c->details (c->data);
       return;
@@ -100,6 +128,7 @@ yes_no_response (GtkDialog *dialog, gint response, gpointer clos)
     c->pi->unref ();
   delete c;
 
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
   cont (response == GTK_RESPONSE_OK, data);
 }
@@ -166,12 +195,13 @@ ask_yes_no_with_details (const gchar *title,
 
   dialog = gtk_dialog_new_with_buttons
     (title,
-     get_main_window (),
+     get_dialog_parent (),
      GTK_DIALOG_MODAL,
      _("ai_bd_confirm_ok"),      GTK_RESPONSE_OK,
      _("ai_bd_confirm_details"), 1,
      _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
+  push_dialog_parent (dialog);
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox),
@@ -198,12 +228,13 @@ ask_yes_no_with_arbitrary_details (const gchar *title,
 
   dialog = gtk_dialog_new_with_buttons
     (title,
-     get_main_window (),
+     get_dialog_parent (),
      GTK_DIALOG_MODAL,
      _("ai_bd_confirm_ok"),      GTK_RESPONSE_OK,
      _("ai_bd_confirm_details"), 1,
      _("ai_bd_confirm_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
+  push_dialog_parent (dialog);
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   GtkWidget *label = gtk_label_new (question);
@@ -253,7 +284,7 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
 
   if (response == 1)
     {
-      show_package_details (GTK_WINDOW (dialog), c->pi, c->kind, true);
+      show_package_details (c->pi, c->kind, true);
     }
   else
     {
@@ -399,11 +430,12 @@ scare_user_with_legalese (bool sure,
 
   dialog = gtk_dialog_new_with_buttons
     (_("ai_ti_notice"),
-     get_main_window (),
+     get_dialog_parent (),
      GTK_DIALOG_MODAL,
      _("ai_bd_notice_ok"),      GTK_RESPONSE_OK,
      _("ai_bd_notice_cancel"),  GTK_RESPONSE_CANCEL,
      NULL);
+  push_dialog_parent (dialog);
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   const char *text = (sure
@@ -1423,6 +1455,7 @@ fcd_response (GtkDialog *dialog, gint response, gpointer clos)
 
   char *uri = gtk_file_chooser_get_uri (GTK_FILE_CHOOSER (dialog));
 
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
 
   if (response == GTK_RESPONSE_OK)
@@ -1443,13 +1476,14 @@ show_deb_file_chooser (void (*cont) (char *uri, void *data),
   GtkFileFilter *filter;
 
   fcd = hildon_file_chooser_dialog_new_with_properties
-    (get_main_window (),
+    (get_dialog_parent (),
      "action",            GTK_FILE_CHOOSER_ACTION_OPEN,
      "title",             _("ai_ti_select_package"),
      "empty_text",        _("ai_ia_select_package_no_packages"),
      "open_button_text",  _("ai_bd_select_package"),
      NULL);
   gtk_window_set_modal (GTK_WINDOW (fcd), TRUE);
+  push_dialog_parent (fcd);
 
   filter = gtk_file_filter_new ();
   gtk_file_filter_add_mime_type (filter, "application/x-deb");
@@ -1478,10 +1512,11 @@ show_file_chooser_for_save (const char *title,
   GtkWidget *fcd;
 
   fcd = hildon_file_chooser_dialog_new_with_properties
-    (parent,
+    (get_dialog_parent (),
      "action",            GTK_FILE_CHOOSER_ACTION_SAVE,
      "title",             title,
      NULL);
+  push_dialog_parent (fcd);
   gtk_window_set_modal (GTK_WINDOW (fcd), TRUE);
 
   gtk_file_chooser_set_current_name (GTK_FILE_CHOOSER (fcd), default_filename);

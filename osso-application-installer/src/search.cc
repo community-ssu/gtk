@@ -108,6 +108,7 @@ search_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
       search_packages (pattern, in_descriptions);
     }
 
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
   delete c;
 }
@@ -131,13 +132,14 @@ show_search_dialog ()
   search_dialog_closure *c = new search_dialog_closure;
 
   dialog = gtk_dialog_new_with_buttons (_("ai_ti_search"),
-					get_main_window (),
+					get_dialog_parent (),
 					GTK_DIALOG_MODAL,
 					_("ai_bd_search_ok"),
 					GTK_RESPONSE_OK,
 					_("ai_bd_search_cancel"),
 					GTK_RESPONSE_CANCEL,
 					NULL);
+  push_dialog_parent (dialog);
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
   set_dialog_help (dialog, AI_TOPIC ("search"));
   //gtk_widget_set_usize (dialog, 400, -1);

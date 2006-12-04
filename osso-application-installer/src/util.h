@@ -40,6 +40,10 @@
 
   The dialogs are application modal.
 
+  PUSH_DIALOG_PARENT and POP_DIALOG_PARENT are used to keep track of
+  the top-most window to be used as the parent for new dialogs.
+  GET_DIALOG_PARENT returns that window.
+
   ASK_YES_NO shows QUESTION in a confirmation note.  The result RES
   passed to the continuation CONT is true when the user clicks "Ok",
   of course, and false otherwise.
@@ -85,6 +89,10 @@
   uncertified software.
 
 */
+
+void push_dialog_parent (GtkWidget *window);
+void pop_dialog_parent ();
+GtkWindow *get_dialog_parent ();
 
 void ask_yes_no (const gchar *question,
 		 void (*cont) (bool res, void *data), void *data);

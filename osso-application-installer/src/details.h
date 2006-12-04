@@ -26,8 +26,7 @@
 
 #include "main.h"
 
-void show_package_details (GtkWindow *parent,
-			   package_info *p, detail_kind kind,
+void show_package_details (package_info *p, detail_kind kind,
 			   bool show_problems);
 
 void decode_summary (apt_proto_decoder *dec,
