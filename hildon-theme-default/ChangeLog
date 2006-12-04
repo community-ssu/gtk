@@ -1,5 +1,15 @@
 2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[0.2.0 release]
+
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* debian/postinst:
+	* debian/rules: hildon-theme-default => hildon-theme-plankton-3.
+
+2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* configure.ac:
 	* debian/changelog:
 	* debian/control: Updating to 0.2.0.

@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-default, 0.2.0)
+AM_INIT_AUTOMAKE(hildon-theme-plankton-3, 0.2.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
@@ -8,10 +8,10 @@ dnl Add parameters for aclocal
 AC_SUBST(ACLOCAL_FLAGS, "-I m4") 
 
 dnl theme directory name, ie: default
-THEME_DIR="hildon-default"
+THEME_DIR="plankton"
 
 dnl user-friendly theme name, ie: My default theme
-THEME_NAME="Default"
+THEME_NAME="Plankton"
 
 dnl a layout this theme is based on
 LAYOUT_NAME="hildon-theme-layout-3"
