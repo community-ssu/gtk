@@ -57,3 +57,13 @@ Description: Documentation for the Cairo Multi-platform 2D graphics library
  This package contains the HTML documentation for the Cairo library
  in /usr/share/doc/libcairo2-doc/ .
 
+Package: libcairo2-dbg
+Section: libdevel
+Architecture: any
+Depends: libcairo2 (= ${Source-Version})
+Description: Debugging symbols for the Cairo 2D graphics library
+ Cairo is a multi-platform library providing anti-aliased
+ vector-based rendering for multiple target backends.
+ .
+ This package contains symbol tables for debugging.
+

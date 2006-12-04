@@ -139,7 +139,7 @@ binary-arch: build install
 	dh_installman
 	dh_installexamples
 	dh_link
-	dh_strip
+	dh_strip -a --dbg-package=libcairo2
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -plibcairo2 -V
