@@ -36,40 +36,54 @@ Template*                       read_template (gchar *template_file)
         g_return_val_if_fail (templ != NULL, NULL);
         g_return_val_if_fail (key_file != NULL, NULL);
 
-        if (! g_key_file_load_from_file (key_file, template_file, G_KEY_FILE_NONE, NULL)) 
-                g_error ("Failed to load and parse template file!");
+        if (! g_key_file_load_from_file (key_file, template_file, G_KEY_FILE_NONE, NULL)) {
+                g_printerr ("ERROR: Failed to load and parse template file!\n");
+                exit (128);
+        }
 
         g_key_file_set_list_separator (key_file, ',');
 
         /* Do some basic checks... */
-        if (! g_key_file_has_group (key_file, "Main")) 
-                g_error ("[Main] group not present, invalid template file!");
+        if (! g_key_file_has_group (key_file, "Main")) { 
+                g_printerr ("ERROR: [Main] group not present, invalid template file!\n");
+                exit (128);
+        }
 
-        if (! g_key_file_has_group (key_file, "Elements")) 
-                g_error ("[Elements] group not present, invalid template file!");
+        if (! g_key_file_has_group (key_file, "Elements")) {
+                g_printerr ("ERROR: [Elements] group not present, invalid template file!\n");
+                exit (128);
+        }
 
         /* More specific checks... */
-        if (! g_key_file_has_key (key_file, "Main", "TemplateWidth", NULL)) 
-                g_error ("No TemplateWidth specified!");
+        if (! g_key_file_has_key (key_file, "Main", "TemplateWidth", NULL)) {
+                g_printerr ("ERROR: No TemplateWidth specified!\n");
+                exit (128);
+        }
 
-        if (! g_key_file_has_key (key_file, "Main", "TemplateHeight", NULL)) 
-                g_error ("No TemplateHeight specified!");
+        if (! g_key_file_has_key (key_file, "Main", "TemplateHeight", NULL)) {
+                g_printerr ("ERROR: No TemplateHeight specified!\n");
+                exit (128);
+        }
 
         /* Extract our basic params */
         templ->Width = g_key_file_get_integer (key_file, "Main", "TemplateWidth", NULL);
         templ->Height = g_key_file_get_integer (key_file, "Main", "TemplateHeight", NULL);
-        if (templ->Width == 0 || templ->Height == 0) 
-                g_error ("Bad template dimensions!");
+        if (templ->Width == 0 || templ->Height == 0) {
+                g_printerr ("ERROR: Bad template dimensions!\n");
+                exit (128);
+        }
 
         /* Get all the elements */
         element_keys = g_key_file_get_keys (key_file, "Elements", &element_count, NULL);
-        if (element_keys == NULL || element_count == 0) 
-                g_error ("No elements found!");
+        if (element_keys == NULL || element_count == 0) {
+                g_printerr ("ERROR: No elements found!\n");
+                exit (128);
+        }
 
         for (i = 0; i < element_count; i++) {
                 Element *element = new_element_from_key (key_file, element_keys [i]);
                 if (element == NULL) 
-                        g_warning ("Failed to parse '%s'!", element_keys [i]);
+                        g_printerr ("WARNING: Failed to parse '%s'!\n", element_keys [i]);
                 else 
                         templ->ElementList = g_slist_append (templ->ElementList, 
                                                              element);
@@ -84,7 +98,7 @@ Template*                       read_template (gchar *template_file)
                         for (i = 0; i < color_count; i++) {
                                 Color *color = new_color_from_key (key_file, color_keys [i]);
                                 if (color == NULL) 
-                                        g_warning ("Failed to parse '%s'!", color_keys [i]);
+                                        g_printerr ("WARNING: Failed to parse '%s'!\n", color_keys [i]);
                                 else 
                                         templ->ColorList = g_slist_append (templ->ColorList, 
                                                                            color);

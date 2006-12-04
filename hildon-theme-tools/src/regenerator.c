@@ -29,8 +29,10 @@ GdkPixbuf*                      process (Template *templ, gchar *directory)
         
         g_return_val_if_fail (templ != NULL, NULL);
 
-        if (composite_image == NULL)
-                g_error ("Failed to allocate memory for new image (%d x %d)!", templ->Width, templ->Height);
+        if (composite_image == NULL) {
+                g_printerr ("ERROR: Failed to allocate memory for new image (%d x %d)!\n", templ->Width, templ->Height);
+                exit (128);
+        }
 
         /* Reset the pixbuf to transparent white */
         gdk_pixbuf_fill (composite_image, 0xffffff00);
@@ -49,24 +51,24 @@ GdkPixbuf*                      process (Template *templ, gchar *directory)
                     element->Y > templ->Height ||
                     element->X + element->Width > templ->Width ||
                     element->Y + element->Height > templ->Height) {
-                        g_warning ("Element '%s' is out of bounds (%d %d %d %d)!", element->Name,  
-                                   element->X, element->Y, element->Width, element->Height);
+                        g_printerr ("WARNING: Element '%s' is out of bounds (%d %d %d %d)!\n", element->Name,  
+                                    element->X, element->Y, element->Width, element->Height);
                 } else if (! g_file_test (fname, G_FILE_TEST_EXISTS)) {
-                        g_warning ("Element file name '%s' not found, using PINK!", element->Name);
+                        g_printerr ("WARNING: Element file name '%s' not found, using PINK!\n", element->Name);
                         image = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, element->Width, element->Height);
                         gdk_pixbuf_fill (image, 0xff00ffff);
                 } else { 
                         image = gdk_pixbuf_new_from_file (fname, NULL);
                         if (image == NULL) 
-                                g_warning ("Failed to load element image '%s', ignoring!", 
-                                           element->Name);
+                                g_printerr ("WARNING: Failed to load element image '%s', ignoring!\n", 
+                                            element->Name);
                 }
 
                 if (image != NULL) {
                         /* Draw the stuff over the composite image */
                         gdk_pixbuf_copy_area (image, 0, 0, element->Width, element->Height, 
                                               composite_image, element->X, element->Y);
-                        g_print ("PROCESSED %s\n", element->Name);
+                        g_print ("Processed %s\n", element->Name);
                         gdk_pixbuf_unref (image);
                 }
 
@@ -110,7 +112,8 @@ int                             main (int argc, char **argv)
         if (argc < 3) {
                 show_banner ();
                 show_usage ();
-                g_error ("Not enough arguments given!");
+                g_printerr ("Not enough arguments given!\n");
+                goto Error;
         }
 
         /* Get file vals */
@@ -120,12 +123,15 @@ int                             main (int argc, char **argv)
         if (template_file == NULL || output_image_file == NULL) {
                 show_banner ();
                 show_usage ();
-                g_error ("Bad arguments given!");
+                g_printerr ("Bad arguments given!\n");
+                goto Error;
         }
 
         /* Check the template file... */
-        if (! g_file_test (template_file, G_FILE_TEST_EXISTS)) 
-                g_error ("%s not found!", template_file);
+        if (! g_file_test (template_file, G_FILE_TEST_EXISTS)) {
+                g_printerr ("ERROR: %s not found!\n", template_file);
+                goto Error;
+        }
 
         /* Check the optional directory argument */
         if (argc >= 4 && argv [3] != NULL) 

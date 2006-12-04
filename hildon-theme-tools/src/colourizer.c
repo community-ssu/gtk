@@ -34,7 +34,7 @@ void                            process (Template *templ, GdkPixbuf *pixbuf)
 
                 if (color->X > templ->Width || 
                     color->Y > templ->Height)
-                        g_warning ("Color '%s' is out of bounds!", color->Name);
+                        g_printerr ("WARNING: Color '%s' is out of bounds!\n", color->Name);
                 else {
                         gchar *hex = get_color (color, pixbuf);
                         if (hex != NULL) {
@@ -95,7 +95,8 @@ int                             main (int argc, char **argv)
         if (argc != 3) {
                 show_banner ();
                 show_usage ();
-                g_error ("Not enough arguments given!");
+                g_printerr ("Not enough arguments given!\n");
+                goto Error;
         }
 
         /* Get file vals */
@@ -105,30 +106,39 @@ int                             main (int argc, char **argv)
         if (template_file == NULL || image_file == NULL) {
                 show_banner ();
                 show_usage ();
-                g_error ("Bad arguments given!");
+                g_printerr ("Bad arguments given!\n");
+                goto Error;
         }
 
         /* Check the template file... */
-        if (! g_file_test (template_file, G_FILE_TEST_EXISTS))
-                g_error ("%s not found!", template_file);
+        if (! g_file_test (template_file, G_FILE_TEST_EXISTS)) {
+                g_printerr ("ERROR: %s not found!\n", template_file);
+                goto Error;
+        }
 
         /* Check the image file... */
-        if (! g_file_test (image_file, G_FILE_TEST_EXISTS))
-                g_error ("%s not found!", image_file);
+        if (! g_file_test (image_file, G_FILE_TEST_EXISTS)) {
+                g_printerr ("ERROR: %s not found!\n", image_file);
+                goto Error;
+        }
 
         /* Read the template file. That spits out errorsi/aborts too */
         template = read_template (template_file);
 
         /* Try loading the actual image */
         image = gdk_pixbuf_new_from_file (image_file, NULL);
-        if (image == NULL) 
-                g_error ("Failed to load image file!");
+        if (image == NULL) {
+                g_printerr ("ERROR: Failed to load image file!\n");
+                goto Error;
+        }
 
         /* Check the color bits */
         if ((gdk_pixbuf_get_n_channels (image) != 3 &&
             gdk_pixbuf_get_n_channels (image) != 4) || 
-            gdk_pixbuf_get_bits_per_sample (image) != 8) 
-                g_error ("Only RGB and RGBA images are supported!");
+            gdk_pixbuf_get_bits_per_sample (image) != 8) {
+                g_printerr ("ERROR: Only RGB and RGBA images are supported!\n");
+                goto Error;
+        }
 
         process (template, image);
 	goto Done;

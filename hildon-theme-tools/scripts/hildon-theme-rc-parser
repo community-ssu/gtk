@@ -65,7 +65,7 @@ sub process_gtkrc
 if ($#ARGV + 1 < 2) {
         show_banner;
         show_usage ();
-        print STDERR "ERROR: Not enough arguments specified.\n";
+        print STDERR "Not enough arguments specified.\n";
         exit 128;
 }
 

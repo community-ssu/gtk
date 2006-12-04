@@ -87,7 +87,7 @@ GdkPixbuf*                      strip_alpha_from_pixbuf (GdkPixbuf *pixbuf)
                                         height,
                                         width * 3, 
                                         g_free,
-                                        new_pixels);
+                                        (gpointer) new_pixels);
 
         return new;
 }
@@ -121,8 +121,8 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                     element->Y > templ->Height ||
                     element->X + element->Width > templ->Width ||
                     element->Y + element->Height > templ->Height) {
-                        g_warning ("Element '%s' is out of bounds (%d %d %d %d)!", element->Name,  
-                                   element->X, element->Y, element->Width, element->Height);
+                        g_printerr ("WARNING: Element '%s' is out of bounds (%d %d %d %d)!\n", element->Name,  
+                                    element->X, element->Y, element->Width, element->Height);
                 } else {
 
                         /* Create the sub-pixbuf representing the extracted bit */
@@ -131,7 +131,7 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                                                                    element->Width, element->Height);
 
                         if (sub == NULL)
-                                g_warning ("Failed to process '%s'!", element->Name);
+                                g_printerr ("WARNING: Failed to process '%s'!\n", element->Name);
                         else {
                                 gchar *fname = g_build_filename (directory, element->Name, NULL);
                              
@@ -155,7 +155,7 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                                 g_free (fname);
 
                                 gdk_pixbuf_unref (sub);
-                                g_print ("PROCESSED %s\n", element->Name);
+                                g_printerr ("WARNING: Processed %s\n", element->Name);
                         }
                 }
         }
@@ -194,7 +194,8 @@ int                             main (int argc, char **argv)
         if (argc < 3) {
                 show_banner ();
                 show_usage ();
-                g_error ("Not enough arguments given!");
+                g_printerr ("Not enough arguments given!\n");
+                goto Error;
         }
 
         /* Get file vals */
@@ -204,24 +205,31 @@ int                             main (int argc, char **argv)
         if (template_file == NULL || image_file == NULL) {
                 show_banner ();
                 show_usage ();
-                g_error ("Bad arguments given!");
+                g_printerr ("Bad arguments given!\n");
+                goto Error;
         }
 
         /* Check the template file... */
-        if (! g_file_test (template_file, G_FILE_TEST_EXISTS)) 
-                g_error ("%s not found!", template_file);
+        if (! g_file_test (template_file, G_FILE_TEST_EXISTS)) {
+                g_printerr ("ERROR: %s not found!\n", template_file);
+                goto Error;
+        }
 
         /* Check the image file... */
-        if (! g_file_test (image_file, G_FILE_TEST_EXISTS)) 
-                g_error ("%s not found!", image_file);
+        if (! g_file_test (image_file, G_FILE_TEST_EXISTS)) {
+                g_printerr ("ERROR: %s not found!\n", image_file);
+                goto Error;
+        }
 
         /* Check the optional directory argument */
         if (argc >= 4 && argv [3] != NULL) {
                 directory = argv [3];
                 if (! g_file_test (directory, G_FILE_TEST_IS_DIR || G_FILE_TEST_EXISTS)) {
                         g_print ("Creating directory %s\n", directory);
-                        if (g_mkdir_with_parents (directory, 493) != 0) 
-                                g_error ("Failed to create directory!");
+                        if (g_mkdir_with_parents (directory, 493) != 0) {
+                                g_printerr ("ERROR: Failed to create directory!\n");
+                                goto Error;
+                        }
                 }
         }
 
@@ -236,8 +244,10 @@ int                             main (int argc, char **argv)
 
         /* Try loading the actual image */
         image = gdk_pixbuf_new_from_file (image_file, NULL);
-        if (image == NULL) 
-                g_error ("Failed to load image file!");
+        if (image == NULL) { 
+                g_printerr ("ERROR: Failed to load image file!\n");
+                goto Error;
+        }
 
         process (template, image, directory);
 
