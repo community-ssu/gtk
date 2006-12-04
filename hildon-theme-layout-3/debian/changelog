@@ -1,3 +1,9 @@
+hildon-theme-layout-3 (0.2.0-2) unstable; urgency=low
+
+  * Fixing a dependency problem. 
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 04 Dec 2006 16:00:00 +0300
+
 hildon-theme-layout-3 (0.2.0-1) unstable; urgency=low
 
   * Second official release.
