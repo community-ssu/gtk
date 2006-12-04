@@ -1,3 +1,9 @@
+hildon-theme-cacher (0.2.0-1) unstable; urgency=low
+
+  * Second release. Now works as expected.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Mon, 04 Dec 2006 14:30:06 +0300
+
 hildon-theme-cacher (0.1.0-1) unstable; urgency=low
 
   * First official release.

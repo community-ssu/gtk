@@ -40,7 +40,7 @@ GSList*                         parse_dir (const gchar *dir_name, GSList *list, 
         
         dir = g_dir_open (dir_name, 0, NULL);
         if (dir == NULL) {
-                g_warning ("Failed to read '%s' directory!", dir_name);
+                g_printerr ("WARNING: Failed to read '%s' directory!\n", dir_name);
                 return list;
         }
 
@@ -80,13 +80,15 @@ int                             main (int argc, char **argv)
         GSList *rc_list = NULL;
         GSList *iterator = NULL;
 
-        show_banner ();
-        gtk_init_check (&argc, &argv);
-
         if (argc < 2) {
+                show_banner ();
                 show_usage ();
                 return 1;
         }
+
+        g_unsetenv ("DISPLAY");
+
+        gtk_init_check (&argc, &argv);
 
         g_setenv ("GSCANNERCACHE_CREATE", "1", TRUE);
 
