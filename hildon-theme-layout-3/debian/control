@@ -2,12 +2,12 @@ Source: hildon-theme-layout-3
 Section: x11
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
-Build-Depends: debhelper (>= 4.0.0)
+Build-Depends: debhelper (>= 4.0.0), pkg-config
 Standards-Version: 3.6.0
 
 Package: hildon-theme-layout-3
 Architecture: all
-Depends: hildon-theme-tools
+Depends: hildon-theme-tools (>= 0.2.0)
 Description: A layout file for making themes for the maemo 3 platform
  This package contains tools that can help you create a theme for
  the maemo platform version 3.

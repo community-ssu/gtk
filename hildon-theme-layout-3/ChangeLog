@@ -1,3 +1,13 @@
+2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.2.0 release]
+
+	* configure.ac:
+	* debian/changelog:
+	* debian/control: Updating for 0.2.0 release.
+
+	* rc/Makefile.am: Adding the .rc files to EXTRA_DIST.
+
 2006-12-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* data/layout.txt: A slightly different format for forced alpha.
@@ -6,11 +16,11 @@
 
 	* data/layout.txt: Adding info about the forced alpha images.
 
-2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* data/theme.xml: Temporarily hardfixing the LowLightColor at #000000.
 
-2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* configure.ac: Removing scripts directory from processing.
 
@@ -43,12 +53,12 @@
 	* rc/layout.txt:
 	* rc/theme.xml: Moving to the data directory.
 
-2006-11-30  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/: Renaming files to .rc and making it build (include) gtkrc and
 	gtkrc.maemo_af_desktop. Currently all broken.
 
-2006-11-29  Michael Dominic K.  <mdk@mdk.am> 
+2006-11-29  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/index.theme: Always used default icon theme (for now).
 

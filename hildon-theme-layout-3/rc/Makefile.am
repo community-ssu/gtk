@@ -75,5 +75,8 @@ gtkrc: $(RC_FILES)
 gtkrc.maemo_af_desktop: $(RC_FILES)
 	hildon-theme-rc-parser gtkrc.maemo_af_desktop.rc gtkrc.maemo_af_desktop
 
-MAINTAINERCLEANFILES			= Makefile.in gtkrc gtkrc.maemo_af_desktop
+CLEANFILES				= gtkrc gtkrc.maemo_af_desktop
 
+MAINTAINERCLEANFILES			= Makefile.in 
+
+EXTRA_DIST				= $(RC_FILES)
