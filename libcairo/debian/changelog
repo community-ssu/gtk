@@ -1,3 +1,9 @@
+libcairo (1.2.4-4osso3) unstable; urgency=low
+
+  * debian/libcairo2-dev.install: remove the .la files
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  4 Dec 2006 12:20:41 +0200
+
 libcairo (1.2.4-4osso2) unstable; urgency=low
 
   * Add debugging symbols
