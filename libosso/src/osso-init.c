@@ -302,6 +302,7 @@ static osso_context_t *_init(const gchar *application, const gchar *version)
     }
     osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
     osso->rpc_timeout = -1;
+    osso->next_handler_id = 1;
     return osso;
 }
 
@@ -731,7 +732,7 @@ static gboolean add_to_if_hash(osso_context_t *osso,
     return TRUE;
 }
 
-static gboolean set_handler_helper(osso_context_t *osso,
+static int set_handler_helper(osso_context_t *osso,
                                    const char *service,
                                    const char *object_path,
                                    const char *interface,
@@ -749,13 +750,14 @@ static gboolean set_handler_helper(osso_context_t *osso,
     handler = calloc(1, sizeof(_osso_handler_t));
     if (handler == NULL) {
         ULOG_ERR_F("calloc() failed");
-        return FALSE;
+        return 0;
     }
 
     handler->handler = cb;
     handler->data = data;
     handler->method = method;
     handler->can_free_data = can_free_data;
+    handler->handler_id = osso->next_handler_id++;
 
     /* warn about the old element if it exists */
     old = g_hash_table_lookup(osso->uniq_hash, uniq_key);
@@ -783,7 +785,7 @@ static gboolean set_handler_helper(osso_context_t *osso,
         if (new_elem == NULL) {
             ULOG_ERR_F("calloc() failed");
             free(handler);
-            return FALSE;
+            return 0;
         }
 
         new_key = strdup(uniq_key);
@@ -791,14 +793,19 @@ static gboolean set_handler_helper(osso_context_t *osso,
             ULOG_ERR_F("strdup() failed");
             free(handler);
             free(new_elem);
-            return FALSE;
+            return 0;
         }
 
         new_elem->handlers = g_list_append(NULL, handler);
 
         g_hash_table_insert(osso->uniq_hash, new_key, new_elem);
     }
-    return add_to_if_hash(osso, handler, interface);
+
+    if (add_to_if_hash(osso, handler, interface)) {
+        return handler->handler_id;
+    } else {
+        return 0;
+    }
 }
 
 void __attribute__ ((visibility("hidden")))

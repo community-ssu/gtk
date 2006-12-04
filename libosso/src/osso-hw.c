@@ -732,7 +732,8 @@ inline static muali_error_t _set_handler(muali_context_t *context,
                                          _osso_handler_f *event_cb,
                                          int event_type,
                                          muali_handler_t *user_handler,
-                                         void *user_data)
+                                         void *user_data,
+                                         int handler_id)
 {
         DBusError error;
         _osso_callback_data_t *cb_data;
@@ -788,14 +789,11 @@ inline static muali_error_t _set_handler(muali_context_t *context,
                 return MUALI_ERROR;
         }
 
-        _msg_handler_set_cb_f((osso_context_t*)context,
-                              service,
-                              object_path,
-                              interface,
-                              event_cb,
-                              cb_data, FALSE);
-
-        return MUALI_ERROR_SUCCESS;
+        if (_muali_set_handler(context, event_cb, cb_data, handler_id)) {
+                return MUALI_ERROR_SUCCESS;
+        } else {
+                return MUALI_ERROR;
+        }
 
 _set_handler_oom1:
         free(cb_data->interface);
@@ -866,6 +864,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
         const char *service = NULL, *object_path = NULL,
                    *interface = NULL;
         char *match = NULL;
+        int new_handler_id;
 
         ULOG_DEBUG_F("entered");
 
@@ -878,6 +877,8 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                 ULOG_ERR_F("info or event_type must be provided");
                 return MUALI_ERROR_INVALID;
         }
+
+        new_handler_id = context->next_handler_id++;
 
         if (info != NULL) {
                 muali_error_t ret;
@@ -897,11 +898,12 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                                      event_cb,
                                      0, /* event_type ignored */
                                      handler,
-                                     user_data);
+                                     user_data,
+                                     new_handler_id);
                 } else {
                         error = ret;
                 }
-                *handler_id = 0;  /* TODO */
+                *handler_id = new_handler_id;
                 return error;
         }
 
@@ -925,15 +927,28 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                                              event_cb,
                                              event_type,
                                              handler,
-                                             user_data);
+                                             user_data,
+                                             new_handler_id);
+
                         if (event_type == MUALI_EVENT_LOWMEM_BOTH
                             && error == MUALI_ERROR_SUCCESS) {
-                                error = muali_set_event_handler(context,
-                                                NULL,
-                                                MUALI_EVENT_LOWMEM_ON,
-                                                handler,
-                                                user_data,
-                                                handler_id);
+                                /* set lowmem_on handler with the same
+                                 * handler id */
+                                object_path = USER_LOWMEM_ON_SIGNAL_OP;
+                                interface = USER_LOWMEM_ON_SIGNAL_IF;
+                                match = "type='signal',interface='"
+                                        USER_LOWMEM_ON_SIGNAL_IF "'";
+                                error = _set_handler(context,
+                                                     service,
+                                                     object_path,
+                                                     interface,
+                                                     NULL,
+                                                     match,
+                                                     event_cb,
+                                                     event_type,
+                                                     handler,
+                                                     user_data,
+                                                     new_handler_id);
                         }
                         break;
                 case MUALI_EVENT_LOWMEM_ON:
@@ -952,12 +967,13 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                                              event_cb,
                                              event_type,
                                              handler,
-                                             user_data);
+                                             user_data,
+                                             new_handler_id);
                         break;
                 default:
                         ULOG_ERR_F("unknown event type %d", event_type);
                         error = MUALI_ERROR_INVALID;
         }
-        *handler_id = 0;  /* TODO */
+        *handler_id = new_handler_id;
         return error;
 }

@@ -159,6 +159,8 @@ typedef struct osso_af_context_t {
     osso_hw_state_t hw_state;
     guint rpc_timeout;
     GArray *cp_plugins;
+    int next_handler_id;    /* next available handler id, unique in this
+                               context */
 } _osso_af_context_t, _muali_context_t;
 
 typedef struct _muali_context_t {
@@ -184,6 +186,8 @@ typedef struct _muali_context_t {
     osso_hw_state_t hw_state;
     guint rpc_timeout;
     GArray *cp_plugins;
+    int next_handler_id;    /* next available handler id, unique in this
+                               context */
 } _muali_this_type_is_not_used_t;
 
 # ifdef LIBOSSO_DEBUG
