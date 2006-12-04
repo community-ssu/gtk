@@ -1,12 +1,11 @@
-libcairo (1.2.4-4osso2) UNRELEASED; urgency=low
-
-  * NOT RELEASED YET
+libcairo (1.2.4-4osso2) unstable; urgency=low
 
   * Add debugging symbols
     - debian/control: Add libcairo2-dbg package
     - debian/rules: update call to dh_strip
+  * debian/rules: always pass --host and --build to configure
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  4 Dec 2006 11:52:08 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  4 Dec 2006 11:54:50 +0200
 
 libcairo (1.2.4-4osso1) unstable; urgency=low
 

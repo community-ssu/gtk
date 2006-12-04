@@ -44,13 +44,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-# For autoconf 2.13 only
-CONFFLAGS=
-ifeq ($(DEB_BUILD_GNU_TYPE), $(DEB_HOST_GNU_TYPE))
-	CONFFLAGS += $(DEB_HOST_GNU_TYPE)
-else
-	CONFFLAGS += --host $(DEB_BUILD_GNU_TYPE) --build $(DEB_HOST_GNU_TYPE)
-endif
+CONFFLAGS = --host=$(DEB_BUILD_GNU_TYPE) --build=$(DEB_HOST_GNU_TYPE)
 
 package := tmp
 destdir := $(PWD)/debian/$(package)
