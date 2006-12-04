@@ -119,6 +119,12 @@ _gtk_file_chooser_install_properties (GObjectClass *klass)
 				    "do-overwrite-confirmation");
 }
 
+void
+hildon_gtk_file_chooser_install_properties (GObjectClass *klass)
+{
+  _gtk_file_chooser_install_properties (klass);
+}
+
 /**
  * _gtk_file_chooser_delegate_iface_init:
  * @iface: a #GtkFileChoserIface structure
@@ -360,3 +366,6 @@ delegate_confirm_overwrite (GtkFileChooser    *chooser,
   g_signal_emit_by_name (data, "confirm-overwrite", &conf);
   return conf;
 }
+
+#define __GTK_FILE_CHOOSER_UTILS_C__
+#include "gtkaliasdef.c"

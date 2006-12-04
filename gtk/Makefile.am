@@ -33,6 +33,7 @@ INCLUDES =						\
 	-I$(top_srcdir)/gdk-pixbuf -I../gdk-pixbuf	\
 	-DGDK_PIXBUF_DISABLE_DEPRECATED			\
 	-DGDK_DISABLE_DEPRECATED			\
+	-DGTK_FILE_CHOOSER_ENABLE_UNSUPPORTED		\
 	-DGTK_FILE_SYSTEM_ENABLE_UNSUPPORTED		\
 	-DGTK_PRINT_BACKEND_ENABLE_UNSUPPORTED		\
 	$(GTK_DEBUG_FLAGS)				\
@@ -328,7 +329,10 @@ gtk_unix_print_public_h_sources =    \
 # that are not included in gtk/gtk.h
 gtk_semi_private_h_sources =    \
 	gtktextlayout.h		\
-	gtkfilesystem.h
+	gtkfilesystem.h		\
+	gtkfilesystemmodel.h	\
+	gtkfilechooserprivate.h	\
+	gtkfilechooserutils.h
 
 # GTK+ header files that don't get installed
 gtk_private_h_sources =		\
@@ -337,10 +341,7 @@ gtk_private_h_sources =		\
 	gtkfilechooserdefault.h	\
 	gtkfilechooserembed.h	\
 	gtkfilechooserentry.h	\
-	gtkfilechooserprivate.h	\
 	gtkfilechoosersettings.h \
-	gtkfilechooserutils.h	\
-	gtkfilesystemmodel.h	\
 	gtkfilesystemunix.h	\
 	gtkhsv.h		\
 	gtkiconcache.h		\

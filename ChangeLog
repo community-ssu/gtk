@@ -1,0 +1,22 @@
+2006-12-04  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Export enough symbols for implementing GtkFileChooser interface
+	outside gtk.
+
+	* gtk/gtk.symbols: add hildon_gtk_file_chooser_install_properties
+	* gtk/Makefile.am (INCLUDES): add -DGTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
+	(gtk_private_h_sources, gtk_semi_private_h_sources): export
+	gtkfilesystemmodel.h, gtkfilechooserprivate.h, and
+	gtkfilechooserutils.h as semi-private
+	* gtk/gtkfilechooserutils.c
+	(hildon_gtk_file_chooser_install_properties): add exported version of 
+	_gtk_file_chooser_install_properties
+	* gtk/gtkfilesystemmodel.h: add GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
+	#ifdef guard
+	* gtk/gtkfilechooserprivate.h: add GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
+	#ifdef guard
+	* gtk/gtkfilechooserutils.h: add GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
+	#ifdef guard, declare hildon_gtk_file_chooser_install_properties
+
+	* tests/autotestfilechooser.c: build with
+	GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED

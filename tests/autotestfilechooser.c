@@ -30,6 +30,7 @@
  */
 
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
+#define GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
 
 #include <config.h>
 #include <string.h>
