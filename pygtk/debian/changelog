@@ -1,3 +1,16 @@
+python-gtk2 (2.10.3-1osso3) unstable; urgency=low
+
+  * python-gtk2 requires python2.5-gobject-2.12.2
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 5 Dec 2006 14:50:00 -0300
+
+python-gtk2 (2.10.3-1osso2) unstable; urgency=low
+
+  * added support for Maemo/OSSO extensions
+  * added lazy_init patch to speed up module import
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 5 Dec 2006 14:50:00 -0300
+
 python-gtk2 (2.10.3-1osso1) unstable; urgency=low
 
   * upgrade to 2.10.3 release with adaptations to compile with gtk+-2.6

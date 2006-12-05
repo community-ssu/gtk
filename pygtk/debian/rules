@@ -49,9 +49,14 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
+	mkdir -p $(CURDIR)/$(d_base)
+	mkdir -p $(CURDIR)/$(d_dev)
+
 	$(MAKE) install DESTDIR=$(CURDIR)/$(d_base)
 	$(PYTHON) -OO -m compileall -f $(d_base)
-	cp -a $(d_base)/* $(d_dev)
+	cp -a $(CURDIR)/$(d_base)/* $(CURDIR)/$(d_dev)
+
+	find $(CURDIR)/$(d_base) > /home/osantana/lista.txt
 
 	# base
 	rm -rf $(d_base)/usr/lib/pygtk
@@ -66,7 +71,6 @@ install: build
 	# dev
 	find $(d_dev) -name "*.pyo" | grep -v codegen | xargs rm -f
 	find $(d_dev) -name "*.so" -exec rm -f {} \;
-	find $(d_dev) -name "*.pth" -exec rm -f {} \;
 
 	# cleanup
 	find $(d_base) $(d_dev) -name ".svn" | xargs rm -rf
