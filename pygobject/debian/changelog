@@ -1,3 +1,9 @@
+python-gobject (2.12.2-1osso2) maemo; urgency=low
+
+  * fixed pygtk.pth file creation
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 5 Dec 2006 14:49:00 -0300
+
 python-gobject (2.12.2-1osso1) maemo; urgency=low
 
   * Adopted by Maemo Platform
