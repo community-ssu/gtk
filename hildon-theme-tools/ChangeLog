@@ -1,6 +1,13 @@
+2006-12-05  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.2.0-2 release]
+
+	* debian/changelog:
+	* debian/control: Fixing a dependancy problem.
+
 2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
-	[0.2.0 release]
+	[0.2.0-1 release]
 
 	* configure.ac:
 	* debian/changelog:
