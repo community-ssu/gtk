@@ -1,3 +1,14 @@
+maemo-af-desktop (2.9.99.14-1) unstable; urgency=low
+
+  * maemo-af-desktop-main.c: Start statusbar in an idle loop
+  * hildon-navigator/hildon-navigator-window.c: Set the background
+  to NULL (None)
+  * hildon-home-area.c: When the widget is mapped, set all the
+  children's windows' background to ParentRelative.
+  Fixes: NB#48344
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  5 Dec 2006 11:25:43 +0200
+
 maemo-af-desktop (2.9.99.13-1) unstable; urgency=low
 
   * hildon-navigator/hn-wm.c
