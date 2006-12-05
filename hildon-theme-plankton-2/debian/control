@@ -1,0 +1,11 @@
+Source: hildon-theme-plankton-2
+Section: user/themes
+Priority: optional
+Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-2 (>= 0.1.0) (<= 0.2.0), hildon-theme-tools
+Standards-Version: 3.6.0
+
+Package: hildon-theme-plankton-2
+Architecture: all
+Depends: gtk2-engines-sapwood, ui-fonts, osso-icons, hildon-theme-cacher
+Description: A hildon theme. 

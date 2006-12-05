@@ -1,0 +1,8 @@
+#! /bin/sh
+
+hildon-theme-cacher /usr/share/themes/plankton
+
+#DEBHELPER#
+
+exit 0
+
