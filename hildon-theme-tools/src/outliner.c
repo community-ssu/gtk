@@ -38,6 +38,7 @@ GdkPixbuf*                      process (Template *templ)
         /* Reset the pixbuf to transparent white */
         gdk_pixbuf_fill (composite_image, 0xffffff00);
 
+        /* Process all the images */
         for (iterator = templ->ElementList; iterator; iterator = g_slist_next (iterator)) {
                 Element *element = (Element *) iterator->data;
                 GdkPixbuf *image = NULL;
@@ -52,15 +53,15 @@ GdkPixbuf*                      process (Template *templ)
                         image = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, element->Width, element->Height);
 
                         if (counter % 5 == 0) 
-                                gdk_pixbuf_fill (image, 0x00ff00aa);
+                                gdk_pixbuf_fill (image, 0x00ff00ff);
                         else if (counter % 5 == 1)
-                                gdk_pixbuf_fill (image, 0x00ee00aa);
+                                gdk_pixbuf_fill (image, 0x00ee00ff);
                         else if (counter % 5 == 2)
-                                gdk_pixbuf_fill (image, 0x00dd00aa);
+                                gdk_pixbuf_fill (image, 0x00dd00ff);
                         else if (counter % 5 == 3)
-                                gdk_pixbuf_fill (image, 0x00cc00aa);
+                                gdk_pixbuf_fill (image, 0x00cc00ff);
                         else
-                                gdk_pixbuf_fill (image, 0x00bb00aa);
+                                gdk_pixbuf_fill (image, 0x00bb00ff);
                 }
 
                 if (image != NULL) {
@@ -68,6 +69,45 @@ GdkPixbuf*                      process (Template *templ)
                         gdk_pixbuf_copy_area (image, 0, 0, element->Width, element->Height, 
                                               composite_image, element->X, element->Y);
                         g_print ("Outlined %s\n", element->Name);
+                        
+                        gdk_pixbuf_unref (image);
+                }
+
+                counter++;
+        }
+
+        /* Process all the colors */
+        for (iterator = templ->ColorList; iterator; iterator = g_slist_next (iterator)) {
+        
+                Color *color = (Color *) iterator->data;
+                GdkPixbuf *image = NULL;
+
+                if (color->X - 4 > templ->Width || 
+                    color->Y - 4 > templ->Height ||
+                    color->X + 4 > templ->Width ||
+                    color->Y + 4 > templ->Height) {
+                        g_printerr ("WARNING: Color '%s' is out of bounds (%d %d)!\n", color->Name,  
+                                    color->X, color->Y);
+                } else { 
+                        image = gdk_pixbuf_new (GDK_COLORSPACE_RGB, TRUE, 8, 8, 8);
+
+                        if (counter % 5 == 0) 
+                                gdk_pixbuf_fill (image, 0xffff00ff);
+                        else if (counter % 5 == 1)
+                                gdk_pixbuf_fill (image, 0xffee00ff);
+                        else if (counter % 5 == 2)
+                                gdk_pixbuf_fill (image, 0xffdd00ff);
+                        else if (counter % 5 == 3)
+                                gdk_pixbuf_fill (image, 0xffcc00ff);
+                        else
+                                gdk_pixbuf_fill (image, 0xffbb00ff);
+                }
+
+                if (image != NULL) {
+                        /* Draw the stuff over the composite image */
+                        gdk_pixbuf_copy_area (image, 0, 0, 8, 8, 
+                                              composite_image, color->X - 4, color->Y - 4);
+                        g_print ("Outlined color %s\n", color->Name);
                         
                         gdk_pixbuf_unref (image);
                 }
@@ -88,7 +128,7 @@ void                            show_banner (void)
 /* Show some info about basic usage of the tool */
 void                            show_usage (void)
 {
-        g_print ("Usage: %s <template> <outputimage>\n\n", g_get_prgname ());
+        g_print ("Usage: %s <layout> <outputimage>\n\n", g_get_prgname ());
         g_print ("This tool will create an outline image that shows the slicing guides. \n"
                  "You can use this image in your graphics program to check if your drawings\n"
                  "fit the proper areas. \n\n");
