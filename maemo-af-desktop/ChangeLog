@@ -1,7 +1,7 @@
 2006-12-05  Moises Martinez <moises.martinzes@nokia.com>
 
 	* install_sbapplet.sh: If user config doesn't exist, set 
-	the right owner (not root).
+	the right owner (not root). Fixes: NB#47811
 
 2006-12-05  Johan Bilien <johan.bilien@nokia.com>
 	
