@@ -1,4 +1,11 @@
-2006-12-05  Michael Dominic K.  <mdk@mdk.am> 
+2006-12-05  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* src/colourizer.c:
+	* src/outliner.c:
+	* src/regenerator.c:
+	* src/slicer.c: Fixing the prg_name brokeness.
+
+2006-12-05  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* NEWS:
 	* src/outliner.c: Outliner tool will also now outline colors. The

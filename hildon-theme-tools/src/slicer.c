@@ -171,7 +171,7 @@ void                            show_banner (void)
 /* Show some info about basic usage of the tool */
 void                            show_usage (void)
 {
-        g_print ("Usage: %s <template> <image> [outputdir]\n\n", g_get_prgname ());
+        g_print ("Usage: %s <layout> <image> [outputdir]\n\n", g_get_prgname ());
         g_print ("This tool will slice the input image into individual graphic pieces,\n"
                   "as specified by the template. Optionally you can specify an output directory.\n"
                   "If the directory is not present, it'll be created.\n\n");
@@ -189,6 +189,7 @@ int                             main (int argc, char **argv)
         GdkPixbuf *image = NULL;
 
 	g_type_init ();
+        g_set_prgname (g_basename (argv [0]));
 
         /* Check the args... */
         if (argc < 3) {

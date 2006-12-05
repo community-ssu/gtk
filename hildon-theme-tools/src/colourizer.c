@@ -75,7 +75,7 @@ void                            show_banner (void)
 /* Show some info about basic usage of the tool */
 void                            show_usage (void)
 {
-        g_print ("Usage: %s <template> <image>\n\n", g_get_prgname ());
+        g_print ("Usage: %s <layout> <image>\n\n", g_get_prgname ());
         g_print ("This tool will output a Perl substitution array. \n"
                   "It should be used to substitute the Gtk Stock colors in various RC files.\n\n");
 }
@@ -90,6 +90,7 @@ int                             main (int argc, char **argv)
         GdkPixbuf *image = NULL;
         
         g_type_init ();
+        g_set_prgname (g_basename (argv [0]));
 
         /* Check the args... */
         if (argc != 3) {

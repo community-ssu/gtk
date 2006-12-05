@@ -144,6 +144,7 @@ int                             main (int argc, char **argv)
         GdkPixbuf *output_image = NULL;
 
 	g_type_init ();
+        g_set_prgname (g_basename (argv [0]));
 
         /* Check the args... */
         if (argc < 3) {
