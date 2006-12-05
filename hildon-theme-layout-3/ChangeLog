@@ -1,5 +1,9 @@
 2006-12-05  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* README: Stripping, not to confuse people with outdated stuff.
+
+2006-12-05  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* NEWS:
 	* rc/themespecificgtk.rc: Fixing a double occurence of
 	MenuInfoTextColor.
