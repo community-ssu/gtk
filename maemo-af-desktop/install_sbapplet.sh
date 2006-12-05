@@ -30,8 +30,10 @@ esac
 if [ "`uname -m`" == "armv6l" ];
 then
   SB_HOME_DIR=/home/user
+  USER=user
 else
   SB_HOME_DIR=$HOME
+  USER=`basename $HOME`
 fi
 
 SB_CONF=plugins.conf
@@ -50,6 +52,8 @@ then
   echo "Can't access configuration"
   exit 0
 fi
+
+chown $USER:$USER $SB_USRDIRCONF && echo "Setting owner"
 
 if [ "`cat $SB_PATH|grep \"\[$DESKTOP_FILE\]\"|wc -l`" -gt "0" ];
 then
