@@ -244,9 +244,42 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                 
 }
 
+/* Hack to enhance the startup look & feel */
+static void
+set_null_background (GdkWindow *window)
+{
+  GList *children, *i;
+
+  children = gdk_window_get_children (window);
+
+  for (i = children; i ; i = g_list_next (i))
+    {
+      if (! ((GdkWindowObject *)i->data)->input_only)
+        {
+          XSetWindowBackgroundPixmap (GDK_WINDOW_XDISPLAY (GDK_WINDOW (i->data)),
+                                      GDK_WINDOW_XID (GDK_WINDOW (i->data)),
+                                      ParentRelative);
+
+        }
+      set_null_background (GDK_WINDOW (i->data));
+    }
+  
+  g_list_free (children);
+}
+
+static void
+after_map (GtkWidget *widget)
+{
+  if (GDK_IS_WINDOW (widget->window))
+    set_null_background (GDK_WINDOW (widget->window));
+}
+
 static void
 hildon_home_area_init (HildonHomeArea *area)
 {
+  g_signal_connect_after (G_OBJECT (area), "map",
+                          G_CALLBACK (after_map),
+                          NULL);
 }
 
 static void

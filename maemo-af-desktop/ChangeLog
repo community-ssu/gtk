@@ -1,3 +1,12 @@
+2006-12-05  Johan Bilien <johan.bilien@nokia.com>
+
+	* maemo-af-desktop-main.c: Start statusbar in an idle loop
+	* hildon-navigator/hildon-navigator-window.c: Set the background
+	to NULL (None)
+	* hildon-home-area.c: When the widget is mapped, set all the
+	children's windows' background to ParentRelative.
+	Fixes: NB#48344
+
 2006-11-30  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.99.13

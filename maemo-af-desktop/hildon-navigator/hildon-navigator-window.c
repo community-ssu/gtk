@@ -66,6 +66,8 @@ struct _HildonNavigatorWindowPrivate
 static void hildon_navigator_window_class_init (HildonNavigatorWindowClass 
 						*hnwindow_class);
 
+static void hildon_navigator_window_realize (GtkWidget *widget);
+
 static gboolean getenv_yesno(const char *env, gboolean def);
 static void set_focus_forall_cb (GtkWidget *widget, gpointer data);
 static void configuration_changed (char *path, gpointer *data);
@@ -107,7 +109,7 @@ static void
 hildon_navigator_window_class_init (HildonNavigatorWindowClass *hnwindow_class)
 {
   GObjectClass      *object_class = G_OBJECT_CLASS   (hnwindow_class);
-  /*GtkWidgetClass    *widget_class = GTK_WIDGET_CLASS (hnwindow_class);*/
+  GtkWidgetClass    *widget_class = GTK_WIDGET_CLASS (hnwindow_class);
 
   parent_class = g_type_class_peek_parent (hnwindow_class);
   
@@ -118,6 +120,16 @@ hildon_navigator_window_class_init (HildonNavigatorWindowClass *hnwindow_class)
   hnwindow_class->set_sensitive   = hn_window_set_sensitive;
   hnwindow_class->set_focus       = hn_window_set_focus;
   hnwindow_class->get_others_menu = hn_window_get_others_menu;
+  widget_class->realize           = hildon_navigator_window_realize;
+}
+
+static void
+hildon_navigator_window_realize (GtkWidget *widget)
+{
+  if (GTK_WIDGET_CLASS (parent_class)->realize)
+    GTK_WIDGET_CLASS (parent_class)->realize (widget);
+
+  gdk_window_set_back_pixmap (widget->window, NULL, FALSE);
 }
 
 /*FIXME: what do we do with this? */
@@ -340,6 +352,7 @@ hildon_navigator_window_init (HildonNavigatorWindow *window)
   
   /*FIXME: we inherit from gtk_window!*/
   gtk_window_set_type_hint( GTK_WINDOW(window),GDK_WINDOW_TYPE_HINT_DOCK);
+  gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
   gtk_window_set_accept_focus( GTK_WINDOW(window),TN_DEFAULT_FOCUS);
 
 }

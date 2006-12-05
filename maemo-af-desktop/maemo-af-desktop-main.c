@@ -191,6 +191,13 @@ deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
     return (TRUE);		/* keep the event source */
 }
 
+static gboolean
+start_status_bar (void)
+{
+    status_bar_main(osso, &panel);
+    return FALSE;
+}
+
 
 int 
 maemo_af_desktop_main(int argc, char* argv[])
@@ -242,14 +249,14 @@ maemo_af_desktop_main(int argc, char* argv[])
     }
     
 
+    keysnooper_id = 0;
+    keysnooper_id=hildon_home_main();
+
     tasknav = hildon_navigator_window_new ();
 
     gtk_widget_show_all (GTK_WIDGET (tasknav));
 
-    keysnooper_id = 0;
-    keysnooper_id=hildon_home_main();
-
-    status_bar_main(osso, &panel);
+    g_idle_add ((GSourceFunc)start_status_bar, NULL);
 
     if(pipe(signal_pipe)) 
     {

@@ -744,6 +744,24 @@ hildon_home_window_style_set (GtkWidget *widget,
                                      TRUE);
 }
 
+static void
+hildon_home_window_show (GtkWidget *widget)
+{
+  HildonHomeWindowPrivate *priv = HILDON_HOME_WINDOW (widget)->priv;
+
+  fprintf (stderr, "Showing window\n");
+
+  if (GTK_IS_WIDGET (priv->applet_area))
+    gtk_widget_show_all (priv->applet_area);
+
+  if (GTK_WIDGET_CLASS (hildon_home_window_parent_class)->show)
+    GTK_WIDGET_CLASS (hildon_home_window_parent_class)->show (widget);
+  
+  fprintf (stderr, "Window shown: %i\n", GDK_IS_WINDOW (widget->window));
+}
+
+
+
 static gboolean
 hildon_home_window_key_press_event (GtkWidget *widget,
                                     GdkEventKey *event)
@@ -995,6 +1013,7 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
   
   widget_class->style_set = hildon_home_window_style_set;
   widget_class->key_press_event = hildon_home_window_key_press_event;
+  widget_class->show = hildon_home_window_show;
 
   klass->background = hildon_home_window_background;
   klass->lowmem = hildon_home_window_lowmem;
