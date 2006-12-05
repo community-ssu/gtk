@@ -1,0 +1,59 @@
+####################################################  
+# Hildon Time Picker
+#
+#
+#################################################### 
+
+style "osso-time-picker-arrows" {
+
+  engine "sapwood" {
+    image {
+      function = BOX
+      detail = "osso_button_n"
+      state = ACTIVE
+      file = "../images/qgn_plat_arrow_up_pressed.png"
+    }
+    image {
+      function = BOX
+      detail = "osso_button_n"
+      file = "../images/qgn_plat_arrow_up_normal.png"
+    }
+    image {
+      function = BOX
+      detail = "osso_button_s"
+      state = ACTIVE
+      file = "../images/qgn_plat_arrow_down_pressed.png"
+    }
+    image {
+      function = BOX
+      detail = "osso_button_s"
+      file = "../images/qgn_plat_arrow_down_normal.png"
+    }
+  }
+}
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkButton" style "osso-time-picker-arrows"
+
+style "osso-time-picker-ebox" {
+      xthickness = 0
+      ythickness = 0
+
+      engine "sapwood" {
+         image {
+            function = FLAT_BOX
+	    state = SELECTED
+            file = "../images/qgn_plat_focus_active.png"
+            border = { 2, 2, 2, 2 }
+            stretch = TRUE
+         }
+         image {
+            function = FLAT_BOX
+         }
+      }
+}
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkFrame.GtkEventBox" style "osso-time-picker-ebox"
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkAlignment.GtkFrame.GtkEventBox" style "osso-time-picker-ebox"
+
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkLabel" style "osso-LargeFont"
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkFrame.GtkEventBox.GtkLabel" style "osso-LargeFont"
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkHButtonBox.GtkButton.GtkLabel" style "osso-ButtonFont"
+widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkAlignment.GtkFrame.GtkEventBox.GtkLabel" style "osso-SystemFont"

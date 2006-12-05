@@ -1,0 +1,117 @@
+#################################################### 
+# OSSO app pictures
+#################################################### 
+
+style "osso-window-background" {
+   HildonAppview::border-width = 0
+   HildonWindow::borders = { 24, 24, 0, 24 }
+   HildonWindow::toolbar-borders = { 24, 24, 9, 9 }
+   engine "sapwood" {
+	image {
+	 	function = BOX
+		state = NORMAL
+		detail = "left-border"
+		file = "../images/qgn_plat_application_frame_left.png"
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "right-border"
+		file = "../images/qgn_plat_application_frame_right.png"
+		stretch = TRUE
+	}
+	image {
+	 	function = BOX
+		state = NORMAL
+		detail = "bottom-border"
+		file = "../images/qgn_plat_application_frame_bottom.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+        }
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-frame-top"
+		file = "../images/qgn_plat_toolbar_frame_top.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-frame-middle"
+		file = "../images/qgn_plat_toolbar_frame_middle.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-frame-bottom"
+		file = "../images/qgn_plat_toolbar_frame_bottom.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "findtoolbar"
+		file = "../images/qgn_plat_toolbar_find.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar"
+		file = "../images/qgn_plat_toolbar.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-top"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_top.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-middle"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_middle.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen-frame-bottom"
+		file = "../images/qgn_plat_toolbar_fullscreen_frame_bottom.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "findtoolbar-fullscreen"
+		file = "../images/qgn_plat_toolbar_fullscreen_find.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+	image {
+		function = BOX
+		state = NORMAL
+		detail = "toolbar-fullscreen"
+		file = "../images/qgn_plat_toolbar_fullscreen.png"
+		border = { 24, 24, 0, 0 }
+		stretch = TRUE
+	}
+   }
+}
+
+class "HildonAppView" style "osso-window-background"
+class "HildonWindow" style "osso-window-background"

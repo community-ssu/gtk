@@ -1,0 +1,23 @@
+#################################################### 
+# GTK HORIZONTAL BUTTON BOX
+#
+# Following style is for switching on hildon theming
+# for GtkHButtonBox. 
+# Assign this style to all GtkHbuttonBoxes 
+#################################################### 
+
+style "osso-hbuttonbox" {
+
+  GtkHButtonBox::hildonlike = 1
+  GtkHButtonBox::child_min_height = 47
+  GtkHButtonBox::child_min_width = 105
+}
+class "GtkHButtonBox" style "osso-hbuttonbox"
+
+style "osso-vbuttonbox" {
+
+  GtkVButtonBox::child_min_height = 47
+  GtkVButtonBox::child_min_width = 105
+
+}
+class "GtkVButtonBox" style "osso-vbuttonbox"

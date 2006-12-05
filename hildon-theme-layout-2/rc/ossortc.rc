@@ -1,0 +1,93 @@
+####################################################
+# OSSO Real Time Communication theming
+#
+# Copyright 2006 Nokia Oyj
+#
+#
+####################################################
+
+
+style "osso-rtc-window"
+{
+    engine "sapwood"
+    {
+        image {
+            function = FLAT_BOX
+                file     = "../images/qgn_plat_application_voip_background.png"
+                stretch  = TRUE
+        }
+    }
+}
+widget "*.ChavoWindow" style "osso-rtc-window"
+
+
+style "osso-rtc-button"
+{
+  engine "sapwood"
+    {
+        image {
+            function = FOCUS
+                state    = ACTIVE
+                file     = "../images/qgn_plat_button_voip_pressed.png"
+                border   = { 38, 38, 0, 0 }
+                stretch  = TRUE
+        }
+        image {
+            function = FOCUS
+                file     = "../images/qgn_plat_button_voip_focused.png"
+                border   = { 38, 38, 0, 0 }
+                stretch  = TRUE
+        }
+        image {
+            function = BOX
+                state    = ACTIVE
+                file     = "../images/qgn_plat_button_voip_pressed.png"
+                border   = { 38, 38, 0, 0 }
+                stretch  = TRUE
+        }
+        image {
+            function = BOX
+                state    = INSENSITIVE
+                file     = "../images/qgn_plat_button_voip_disabled.png"
+                border   = { 38, 38, 0, 0 }
+                stretch  = TRUE
+        }
+        image {
+            function = BOX
+                file     = "../images/qgn_plat_button_voip_normal.png"
+                border   = { 38, 38, 0, 0 }
+                stretch  = TRUE
+        }
+    }
+}
+
+
+widget "*.ChavoButton" style "osso-rtc-button"
+
+style "osso-rtc-frame"
+{
+  GtkFrame::hildonlike = 1
+  engine "sapwood"
+    {
+        image {
+            function = BOX
+                file     = "../images/qgn_plat_application_call_handling_frame_block.png"
+                border   = { 12, 12, 12, 12 }
+                stretch  = TRUE
+        }
+    }
+}
+widget "*.ChavoFrame" style "osso-rtc-frame"
+
+
+style "osso-ChavoSystemFont" {
+    font_name = "Nokia Sans 22.11"
+}
+widget "*.ChavoLabel" style "osso-ChavoSystemFont"
+
+
+style "osso-ChavoButtonFont" {
+    font_name = "Nokia Sans 30.15"
+}
+widget "*.ChavoButton.GtkLabel" style "osso-ChavoButtonFont"
+

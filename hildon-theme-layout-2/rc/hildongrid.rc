@@ -1,0 +1,127 @@
+# Likely to change
+#
+style "osso-grid-small-icons"
+{
+    HildonGrid::item_height = 30
+    HildonGrid::item_hspacing = 12
+    HildonGrid::item_vspacing = 0
+    
+    HildonGrid::label_hspacing = 6
+    HildonGrid::label_vspacing = 6
+    HildonGrid::label_height = 30
+
+    HildonGrid::icon_size = 26
+    HildonGrid::n_columns = 2
+    HildonGrid::label_pos = 2
+}
+
+style "osso-grid-big-icons"
+{
+    HildonGrid::item_height = 96
+    HildonGrid::item_hspacing = 12
+    HildonGrid::item_vspacing = 6
+    
+    HildonGrid::label_hspacing = 6
+    HildonGrid::label_vspacing = 6
+    HildonGrid::label_height = 30
+
+    HildonGrid::icon_size = 64
+    HildonGrid::n_columns = 3
+    HildonGrid::label_pos = 1
+}
+
+class "HildonGrid" style "osso-grid-big-icons"
+
+widget "*.smallicons" style "osso-grid-small-icons"
+
+style "osso-grid-item-label" {
+    engine "sapwood" {
+        image {
+            function = BOX
+            state = SELECTED
+            file = "../images/qgn_plat_focus_active.png"
+            border = {2, 2, 2, 2}
+            stretch = TRUE
+        }
+    }
+}
+widget "*.hildon-grid-item-label" style "osso-grid-item-label"
+
+
+# Control Panel grid styles
+
+style "osso-grid-big-icons-cp"
+{
+    HildonGrid::item_height = 96
+    HildonGrid::item_hspacing = 12
+    HildonGrid::item_vspacing = 6
+    
+    HildonGrid::label_hspacing = 6
+    HildonGrid::label_vspacing = 6
+    HildonGrid::label_height = 30
+
+    HildonGrid::icon_size = 64
+    HildonGrid::n_columns = 3
+    HildonGrid::label_pos = 1
+}
+
+
+style "osso-grid-small-icons-cp"
+{
+    HildonGrid::item_height = 30
+    HildonGrid::item_hspacing = 12
+    HildonGrid::item_vspacing = 0
+    
+    HildonGrid::label_hspacing = 6
+    HildonGrid::label_vspacing = 6
+    HildonGrid::label_height = 30
+
+    HildonGrid::icon_size = 26
+    HildonGrid::n_columns = 2
+    HildonGrid::label_pos = 2
+}
+
+widget "*.smallicons-cp" style "osso-grid-small-icons-cp"
+widget "*.largeicons-cp" style "osso-grid-big-icons-cp"
+
+# Home grid styles
+
+# Just copied from the control panel style, because no up-to-date
+# specification for this supposedly exists. Fix as soon as
+# information becomes available!
+
+style "osso-grid-large-icons-home"
+{
+    HildonGrid::item_width = 212
+    HildonGrid::item_height = 88
+    HildonGrid::item_hspacing = 0
+    HildonGrid::item_vspacing = 5
+    
+    HildonGrid::label_hspacing = 1
+    HildonGrid::label_vspacing = 5
+
+    HildonGrid::icon_size = 64
+    HildonGrid::emblem_size = 16
+    HildonGrid::n_columns = 2
+    HildonGrid::label_pos = 1
+}
+
+
+style "osso-grid-small-icons-home"
+{
+    HildonGrid::item_width = 320
+    HildonGrid::item_height = 25
+    HildonGrid::item_hspacing = 8
+    HildonGrid::item_vspacing = 5
+    
+    HildonGrid::label_hspacing = 0
+    HildonGrid::label_vspacing = 10
+
+    HildonGrid::icon_size = 25
+    HildonGrid::emblem_size = 6
+    HildonGrid::n_columns = 1
+    HildonGrid::label_pos = 2
+}
+
+widget "*.smallicons-home" style "osso-grid-small-icons-home"
+widget "*.largeicons-home" style "osso-grid-large-icons-home"
