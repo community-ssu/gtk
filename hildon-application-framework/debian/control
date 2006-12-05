@@ -10,6 +10,7 @@ Architecture: all
 Depends: bluez-utils,
  evolution-data-server,
  hildon-control-panel,
+ hildon-theme-plankton-3,
  libxfixes3 (>= 1:3.0.1.2-3), 
  maemo-af-desktop,
  maemo-af-desktop-config,

@@ -1,3 +1,9 @@
+hildon-application-framework (0.2) unstable; urgency=low
+
+  * Added hildon-theme-plankton-3 as a dependency
+
+ -- Carlos Guerreiro <carlos@maemo.org>  Tue, 05 Dec 2006 17:41:00 +0200
+
 hildon-application-framework (0.1) unstable; urgency=low
 
   * First release
