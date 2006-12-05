@@ -1,3 +1,16 @@
+python2.5 (2.5.0-1osso2) unstable; urgency=low
+
+  * removing readline dependency
+  * removing curses dependency
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 5 Dec 2006 14:52:00 -0300
+
+python2.5 (2.5.0-1osso1) unstable; urgency=low
+
+  * update to 2.5.0
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Mon, 4 Dec 2006 18:19:00 -0300
+
 python2.5 (2.5c1-1osso1) unstable; urgency=low
 
   * update to 2.5c1

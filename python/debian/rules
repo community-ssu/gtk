@@ -44,6 +44,7 @@ common_configure_args = \
 		--srcdir=..
 
 stamp-configure:
+	autoconf
 	mkdir -p build
 	cd build && \
 	  CFLAGS="$(CFLAGS)" \
