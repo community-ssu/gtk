@@ -31,7 +31,6 @@ robotparser
 smtpd
 statvfs
 stringold
-subprocess
 symtable
 tabnanny
 telnetlib
