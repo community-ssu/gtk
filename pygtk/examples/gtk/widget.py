@@ -74,8 +74,8 @@ class PyGtkWidget(gtk.Widget):
         # In this case, we say that we want to be as big as the
         # text is, plus a little border around it.
         width, height = self._layout.get_size()
-	    requisition.width = width // pango.SCALE + BORDER_WIDTH*4
-	    requisition.height = height // pango.SCALE + BORDER_WIDTH*4
+	requisition.width = width // pango.SCALE + BORDER_WIDTH*4
+	requisition.height = height // pango.SCALE + BORDER_WIDTH*4
 
     def do_size_allocate(self, allocation):
         # The do_size_allocate is called by when the actual size is known
@@ -114,20 +114,20 @@ class PyGtkWidget(gtk.Widget):
 gobject.type_register(PyGtkWidget)
 
 def main(args):
-win = gtk.Window()
+    win = gtk.Window()
     win.set_border_width(5)
     win.set_title('Widget test')
-win.connect('delete-event', gtk.main_quit)
+    win.connect('delete-event', gtk.main_quit)
 
-frame = gtk.Frame("Example frame")
-win.add(frame)
+    frame = gtk.Frame("Example frame")
+    win.add(frame)
 
     w = PyGtkWidget(TEXT)
-frame.add(w)
+    frame.add(w)
 
-win.show_all()
+    win.show_all()
 
-gtk.main()
+    gtk.main()
 
 if __name__ == '__main__':
     sys.exit(main(sys.argv))

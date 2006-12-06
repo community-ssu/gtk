@@ -56,8 +56,6 @@ install: build
 	$(PYTHON) -OO -m compileall -f $(d_base)
 	cp -a $(CURDIR)/$(d_base)/* $(CURDIR)/$(d_dev)
 
-	find $(CURDIR)/$(d_base) > /home/osantana/lista.txt
-
 	# base
 	rm -rf $(d_base)/usr/lib/pygtk
 	rm -rf $(d_base)/usr/lib/pkgconfig
