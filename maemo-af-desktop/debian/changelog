@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.15-1) unstable; urgency=low
+
+  * install_sbapplet.sh: If user config doesn't exist, set 
+  the right owner (not root). Fixes: NB#47811
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  7 Dec 2006 13:30:25 +0200
+
 maemo-af-desktop (2.9.99.14-1) unstable; urgency=low
 
   * maemo-af-desktop-main.c: Start statusbar in an idle loop
