@@ -53,7 +53,7 @@ then
   exit 0
 fi
 
-chown $USER:$USER $SB_USRDIRCONF && echo "Setting owner"
+chown $USER $SB_USRDIRCONF && echo "Setting owner"
 
 if [ "`cat $SB_PATH|grep \"\[$DESKTOP_FILE\]\"|wc -l`" -gt "0" ];
 then
