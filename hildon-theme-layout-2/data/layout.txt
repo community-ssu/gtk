@@ -42,17 +42,12 @@ DefaultBackgrdColor=7822,346,18,15
 PaintedBackgrdColor=7822,361,18,15
 ImageBackgrdColor=7822,374,18,15
 
+# Input method stuff
 InputBackgrdColor=7822,403,18,15
 HWRAlphaBackgrdColor=7822,417,18,15
 HWRPunctBackgrdColor=7822,431,18,15
 HWRContBackgrdColor=7822,445,18,15
 HWRHyphBackgrdColor=7822,459,18,15
-
-HWRBaselineColor=7822,627,18,15
-HWRRecogColor=7822,641,18,15
-HWRUserColor=7822,655,18,15
-HWRUserBackgrdColor=7822,,18,15
-HWRHintColor=7822,360,18,15
 
 WebBackgrdColor=7822,487,18,15
 
@@ -65,6 +60,11 @@ SelectionColor=7822,543,18,15
 MapTopLeftColor=7822,571,18,15
 MapBottomRightColor=7822,585,18,15
 ClockHandColor=7822,599,18,15
+
+# some more input method stuff..
+HWRBaselineColor=7822,627,18,15
+HWRRecogColor=7822,641,18,15
+HWRUserColor=7822,655,18,15
 
 # Chat and voip
 ChatUserNameColor=7822,683,18,15
