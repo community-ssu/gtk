@@ -144,11 +144,8 @@ typedef void (muali_handler_t)(muali_context_t *context,
  * This function registers a handler for event, message, or signal.
  *
  * @param context Muali context.
- * @param info Structure specifying the type of events to handle,
- *             or #NULL if the event_type argument is provided.
- *             Providing this or the event_type argument is mandatory.
- * @param event_type Specifies the event to handle. Providing this or
- *                   the info argument is mandatory.
+ * @param event_type Specifies the event to handle (should be one of the
+ *                   MUALI_EVENT_* values).
  * @param handler The handler function to call when the event happens.
  * @param user_data Optional user data to pass to the handler when it
  *                  is called.
@@ -158,11 +155,29 @@ typedef void (muali_handler_t)(muali_context_t *context,
  * @return #MUALI_ERROR_SUCCESS on success.
  */
 muali_error_t muali_set_event_handler(muali_context_t *context,
-                                      const muali_event_info_t *info,
                                       int event_type,
                                       muali_handler_t *handler,
                                       void *user_data,
                                       int *handler_id);
+
+/**
+ * This function registers a handler for event, message, or signal.
+ *
+ * @param context Muali context.
+ * @param info Structure specifying the type of events to handle.
+ * @param handler The handler function to call when the event happens.
+ * @param user_data Optional user data to pass to the handler when it
+ *                  is called.
+ * @param handler_id Return location for the handler ID, which is used
+ *                   to unregister the handler.
+ *
+ * @return #MUALI_ERROR_SUCCESS on success.
+ */
+muali_error_t muali_set_event_handler_custom(muali_context_t *context,
+                                             const muali_event_info_t *info,
+                                             muali_handler_t *handler,
+                                             void *user_data,
+                                             int *handler_id);
 
 /**
  * This function unregisters a handler for event, message, or signal.

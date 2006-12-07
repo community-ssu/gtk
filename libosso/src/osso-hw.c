@@ -854,7 +854,6 @@ static muali_error_t compose_match(const muali_event_info_t *info,
 }
 
 muali_error_t muali_set_event_handler(muali_context_t *context,
-                                      const muali_event_info_t *info,
                                       int event_type,
                                       muali_handler_t *handler,
                                       void *user_data,
@@ -874,39 +873,12 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                 return MUALI_ERROR_INVALID;
         }
 
-        if (info == NULL && event_type == 0) {
-                ULOG_ERR_F("info or event_type must be provided");
+        if (event_type == MUALI_EVENT_NONE) {
+                ULOG_ERR_F("event_type must be provided");
                 return MUALI_ERROR_INVALID;
         }
 
         new_handler_id = context->next_handler_id++;
-
-        if (info != NULL) {
-                muali_error_t ret;
-
-                event_cb = generic_signal_handler;
-
-                ret = compose_match(info, &match);
-                ULOG_DEBUG_F("match='%s'", match);
-
-                if (ret == MUALI_ERROR_SUCCESS) {
-                        error = _set_handler(context,
-                                     info->service,
-                                     info->path,
-                                     info->interface,
-                                     info->name,
-                                     match,
-                                     event_cb,
-                                     0, /* event_type ignored */
-                                     handler,
-                                     user_data,
-                                     new_handler_id);
-                } else {
-                        error = ret;
-                }
-                *handler_id = new_handler_id;
-                return error;
-        }
 
         switch (event_type) {
                 case MUALI_EVENT_LOWMEM_BOTH:
@@ -975,6 +947,62 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         ULOG_ERR_F("unknown event type %d", event_type);
                         error = MUALI_ERROR_INVALID;
         }
-        *handler_id = new_handler_id;
+
+        if (handler_id != NULL) {
+                *handler_id = new_handler_id;
+        }
+        return error;
+}
+
+muali_error_t muali_set_event_handler_custom(muali_context_t *context,
+                                      const muali_event_info_t *info,
+                                      muali_handler_t *handler,
+                                      void *user_data,
+                                      int *handler_id)
+{
+        muali_error_t error = MUALI_ERROR_SUCCESS;
+        _osso_handler_f *event_cb = NULL;
+        char *match = NULL;
+        int new_handler_id;
+        muali_error_t ret;
+
+        ULOG_DEBUG_F("entered");
+
+        if (context == NULL || handler == NULL) {
+                ULOG_ERR_F("invalid arguments");
+                return MUALI_ERROR_INVALID;
+        }
+
+        if (info == NULL) {
+                ULOG_ERR_F("info structure must be provided");
+                return MUALI_ERROR_INVALID;
+        }
+
+        new_handler_id = context->next_handler_id++;
+
+        event_cb = generic_signal_handler;
+
+        ret = compose_match(info, &match);
+        ULOG_DEBUG_F("match='%s'", match);
+
+        if (ret == MUALI_ERROR_SUCCESS) {
+                error = _set_handler(context,
+                                     info->service,
+                                     info->path,
+                                     info->interface,
+                                     info->name,
+                                     match,
+                                     event_cb,
+                                     0, /* event_type ignored */
+                                     handler,
+                                     user_data,
+                                     new_handler_id);
+        } else {
+                error = ret;
+        }
+
+        if (handler_id != NULL) {
+                *handler_id = new_handler_id;
+        }
         return error;
 }
