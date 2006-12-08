@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-plankton-3, 0.2.0)
+AM_INIT_AUTOMAKE(hildon-theme-plankton-3, 0.3.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
@@ -17,7 +17,7 @@ dnl a layout this theme is based on
 LAYOUT_NAME="hildon-theme-layout-3"
 
 dnl check the layout installation
-PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME")
+PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME" >= 0.3.0)
 
 AC_SUBST(THEME_DIR)
 AC_SUBST(THEME_NAME)

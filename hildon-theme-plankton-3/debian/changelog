@@ -1,3 +1,11 @@
+hildon-theme-plankton-3 (0.3.0-1) unstable; urgency=low
+
+  * Adding hardfixed dependency to layout.
+  * Adjusting to new substing (@_@).
+  * Adding actual plankton theme images.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 08 December 2006 14:00:00 +0300
+
 hildon-theme-plankton-3 (0.2.0-1) unstable; urgency=low
 
   * Second official release.

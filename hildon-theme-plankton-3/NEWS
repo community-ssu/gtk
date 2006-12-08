@@ -1,5 +1,13 @@
+[0.3.0 release]
+* Adding hardfixed dependency to layout.
+* Adjusting to new substing (@_@).
+* Adding actual plankton theme images.
+
+[0.2.0 release]
+* Second official release.
+
 [0.1.0 release]
-* First official release
+* First official release.
 
 [0.0.0]
 * Shiny shiny!
