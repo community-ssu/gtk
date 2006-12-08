@@ -19,12 +19,15 @@ gtkrc.maemo_af_desktop:
 
 theme.xml: 
 	hildon-theme-subst $(LAYOUT_DIR)/layout.txt $(srcdir)/../template/template.png $(LAYOUT_DIR)/theme.xml theme.xml
+	sed -i -e 's:@THEME_DIR\@:@THEME_DIR@:' theme.xml
+	sed -i -e 's:@THEME_FULL_DIR\@:@THEME_FULL_DIR@:' theme.xml
+	sed -i -e 's:@THEME_NAME\@:@THEME_NAME@:' theme.xml
 
 index.theme: 
 	hildon-theme-subst $(LAYOUT_DIR)/layout.txt $(srcdir)/../template/template.png $(LAYOUT_DIR)/index.theme index.theme
-	sed -i -e 's:_THEME_DIR_:@THEME_DIR@:' index.theme
-	sed -i -e 's:_THEME_FULL_DIR_:@THEME_FULL_DIR@:' index.theme
-	sed -i -e 's:_THEME_NAME_:@THEME_NAME@:' index.theme
+	sed -i -e 's:@THEME_DIR\@:@THEME_DIR@:' index.theme
+	sed -i -e 's:@THEME_FULL_DIR\@:@THEME_FULL_DIR@:' index.theme
+	sed -i -e 's:@THEME_NAME\@:@THEME_NAME@:' index.theme
 
 MAINTAINERCLEANFILES			= Makefile.in
 
