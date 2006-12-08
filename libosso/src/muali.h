@@ -135,6 +135,15 @@ typedef void (muali_handler_t)(muali_context_t *context,
 #define MUALI_EVENT_LOWMEM_OFF          8 /* low memory state over */
 #define MUALI_EVENT_LOWMEM_BOTH         9 /* both low memory events */
 
+#define MUALI_EVENT_INACTIVITY_ON      10 /* system inactive */
+#define MUALI_EVENT_INACTIVITY_OFF     11 /* system no longer inactive */
+#define MUALI_EVENT_INACTIVITY_BOTH    12 /* both inactivity signals */
+
+#define MUALI_EVENT_DISPLAY_ON         13 /* display on */
+#define MUALI_EVENT_DISPLAY_DIMMED     14 /* display dimmed */
+#define MUALI_EVENT_DISPLAY_OFF        15 /* display off */
+#define MUALI_EVENT_DISPLAY_ALL        16 /* all display signals */
+
 
 /**********************************/
 /*          FUNCTIONS             */

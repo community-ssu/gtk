@@ -878,6 +878,61 @@ _muali_set_handler(_muali_context_t *context,
     return add_to_if_hash(context, elem, data->interface);
 }
 
+static void remove_from_if_hash(_muali_context_t *context,
+                                int handler_id,
+                                const char *interface)
+{
+    _osso_hash_value_t *elem;
+
+    elem = g_hash_table_lookup(context->if_hash, interface);
+    if (elem != NULL) {
+        GList *list;
+
+        list = g_list_first(elem->handlers);
+        while (list != NULL) {
+            _osso_handler_t *h = list->data;
+
+            if (h->handler_id == handler_id) {
+                ULOG_DEBUG_F("found handler_id %d from if_hash", handler_id);
+                elem->handlers = g_list_remove_link(elem->handlers, list);
+                g_list_free(list); /* free the removed link */
+
+                /* if this was the last element in the list, free the
+                 * list and the hash element */
+                if (g_list_length(elem->handlers) == 0) {
+                    g_hash_table_remove(context->if_hash, interface);
+                    return;
+                }
+            }
+            list = g_list_next(list);
+        }
+    }
+}
+
+gboolean __attribute__ ((visibility("hidden")))
+_muali_unset_handler(_muali_context_t *context, int handler_id)
+{
+    _osso_handler_t *elem;
+    const char *interface;
+
+    /* first get the interface */
+    elem = g_hash_table_lookup(context->id_hash, &handler_id);
+    if (elem == NULL) {
+        ULOG_ERR_F("couldn't find handler_id %d from id_hash", handler_id);
+        return FALSE;
+    }
+    interface = elem->data->interface;
+
+    remove_from_if_hash(context, handler_id, interface);
+
+    if (!g_hash_table_remove(context->id_hash, &handler_id)) {
+        ULOG_ERR_F("couldn't find handler_id %d from id_hash", handler_id);
+        assert(0); /* this is a bug */
+    }
+
+    return TRUE;
+}
+
 void __attribute__ ((visibility("hidden")))
 _msg_handler_set_cb_f_free_data(osso_context_t *osso,
                                 const gchar *service,

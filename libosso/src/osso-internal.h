@@ -245,6 +245,9 @@ _muali_set_handler(_muali_context_t *context,
                    _osso_callback_data_t *data,
                    int handler_id);
 
+gboolean __attribute__ ((visibility("hidden")))
+_muali_unset_handler(_muali_context_t *context, int handler_id);
+
 /* this is only needed by some unit testing code */
 osso_return_t _test_rpc_set_cb_f(osso_context_t *osso, const gchar *service,
                                 const gchar *object_path,
