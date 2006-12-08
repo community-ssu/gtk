@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<theme name="theme4" author="Nokia"
+<theme name="@THEME_DIR@" author="Nokia"
        desc="" version="1.0" engine_version="1" cache="false" >
 
 <!-- List Resources, defined by an id and then a definition -->

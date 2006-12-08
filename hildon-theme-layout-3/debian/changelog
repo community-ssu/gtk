@@ -1,3 +1,12 @@
+hildon-theme-layout-3 (0.3.0-1) unstable; urgency=low
+
+  * Fixing double mention of MenuInfoTextColor
+  * Removing some olf stuff that just causes run-time warnings from theme parsing
+  * Correcting matchbox theme name
+  * Using more standard (@BLAH@) expansion variables
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 08 Dec 2006 15:00:00 +0300
+
 hildon-theme-layout-3 (0.2.0-2) unstable; urgency=low
 
   * Fixing a dependency problem. 

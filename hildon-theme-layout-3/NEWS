@@ -1,5 +1,8 @@
-[UNRELEASE]
+[0.3.0 release]
 * Fixing double mention of MenuInfoTextColor
+* Removing some olf stuff that just causes run-time warnings from theme parsing
+* Correcting matchbox theme name
+* Using more standard (@BLAH@) expansion variables
 
 [0.2.0 release]
 * Second release, lots of cool new stuff. Fixed for now.

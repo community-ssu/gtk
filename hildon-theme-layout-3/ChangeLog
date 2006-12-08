@@ -1,4 +1,15 @@
-2006-12-08  Michael Dominic K.  <mdk@mdk.am> 
+2006-12-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.3.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog: Bumping release.
+
+	* data/index.theme:
+	* data/theme.xml: Adding the new-style @_@ substitutions.
+
+2006-12-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonhome.rc:
 	* rc/hildonnavigator.rc: Removing old stuff (skin and layout).
