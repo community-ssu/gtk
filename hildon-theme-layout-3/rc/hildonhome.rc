@@ -30,21 +30,6 @@ style "osso-home-layoutmode-applet" = "osso-logical-colors"
 # Resize border
   fg[ACTIVE]   = "HomeFrameResize"
 
-  engine "sapwood"
-    {
-      image
-        {
-          function = BOX
-          detail   = "close_button"
-          file     = "../images/qgn_home_layoutmode_close.png"
-        }
-      image
-        {
-          function = BOX
-          detail   = "resize_handle"
-          file     = "../images/qgn_home_layoutmode_resize.png"
-        }
-    }
 }
 
 widget "*.osso-home-layoutmode-applet" style "osso-home-layoutmode-applet"

@@ -176,36 +176,6 @@ style "osso-navigator-button-three"
 }
 widget "*.hildon-navigator-button-three" style "osso-navigator-button-three"
 
-style "osso-navigator-upper-separator"
-{
-  engine "sapwood"
-    {
-      image
-        {
-	  function = BOX
-	  file     = "../images/qgn_plat_task_navigation_skin_01.png"
-	  border   = { 0, 0, 0, 0 }
-	  stretch  = TRUE
-	}
-    }
-}
-widget "*.hildon-navigator-upper-separator" style "osso-navigator-upper-separator"
-
-style "osso-navigator-lower-separator"
-{
-  engine "sapwood"
-    {
-      image
-        {
-	  function = BOX
-	  file     = "../images/qgn_plat_task_navigation_skin_02.png"
-	  border   = { 0, 0, 0, 0 }
-	  stretch  = TRUE
-	}
-    }
-}
-widget "*.hildon-navigator-lower-separator" style "osso-navigator-lower-separator"
-
 style "osso-navigator-small-button1"
 {
    GtkButton::child_displacement_x = 0
