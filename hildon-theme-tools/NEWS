@@ -1,5 +1,6 @@
-[UNRELEASED]
+[0.2.1 release]
 * Outliner tool now outlines colors as well. 
+* Fixing prg name brokeness.
 
 [0.2.0 release]
 * Second release, lots of new tools and stuff.

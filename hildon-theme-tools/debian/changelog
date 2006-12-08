@@ -1,3 +1,10 @@
+hildon-theme-tools (0.2.1-1) unstable; urgency=low
+
+  * Outliner tool now outlines colors as well. 
+  * Fixing prg name brokeness.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 08 December 2006 15:00:06 +0300
+
 hildon-theme-tools (0.2.0-2) unstable; urgency=low
 
   * Fixing a dependancy problem.
