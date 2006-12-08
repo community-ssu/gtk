@@ -1,3 +1,6 @@
+[UNRELEASED]
+* Fixing a tiny dep problem in debian package
+
 [0.2.1 release]
 * Outliner tool now outlines colors as well. 
 * Fixing prg name brokeness.
