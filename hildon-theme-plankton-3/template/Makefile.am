@@ -2,7 +2,9 @@ MAINTAINERCLEANFILES 		= Makefile.in
 
 CLEANFILES			= slice.stamp
 
-EXTRA_DIST 			= template.png slice.stamp
+EXTRA_DIST 			= template.png 		\
+				  slice.stamp		\
+				  template.xcf.gz
 
 all: slice.stamp
 
