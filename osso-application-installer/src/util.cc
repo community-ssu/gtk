@@ -145,7 +145,8 @@ ask_yes_no (const gchar *question,
   c->details = NULL;
   c->data = data;
 
-  dialog = hildon_note_new_confirmation (get_main_window (), question);
+  dialog = hildon_note_new_confirmation (get_dialog_parent (), question);
+  push_dialog_parent (dialog);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
@@ -166,11 +167,12 @@ ask_custom (const gchar *question,
   c->data = data;
 
   dialog = hildon_note_new_confirmation_add_buttons 
-    (get_main_window (),
+    (get_dialog_parent (),
      question,
      ok_label, GTK_RESPONSE_OK,
      cancel_label, GTK_RESPONSE_CANCEL,
      NULL);
+  push_dialog_parent (dialog);
 
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (yes_no_response), c);
@@ -252,6 +254,7 @@ static bool currently_annoying_user = false;
 static void
 annoy_user_response (GtkDialog *dialog, gint response, gpointer data)
 {
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
   currently_annoying_user = false;
 }
@@ -264,7 +267,8 @@ annoy_user (const gchar *text)
 
   GtkWidget *dialog;
 
-  dialog = hildon_note_new_information (get_main_window (), text);
+  dialog = hildon_note_new_information (get_dialog_parent (), text);
+  push_dialog_parent (dialog);
   g_signal_connect (dialog, "response", 
 		    G_CALLBACK (annoy_user_response), NULL);
   gtk_widget_show_all (dialog);
@@ -288,6 +292,7 @@ annoy_user_with_details_response (GtkDialog *dialog, gint response,
     }
   else
     {
+      pop_dialog_parent ();
       gtk_widget_destroy (GTK_WIDGET (dialog));
       currently_annoying_user = false;
       c->pi->unref ();
@@ -305,7 +310,8 @@ annoy_user_with_details (const gchar *text,
   GtkWidget *dialog;
   auwd_closure *c = new auwd_closure;
 
-  dialog = hildon_note_new_information (get_main_window (), text);
+  dialog = hildon_note_new_information (get_dialog_parent (), text);
+  push_dialog_parent (dialog);
 
   {
     // XXX - the buttons should be "Details" "Close", so we remove the
@@ -341,6 +347,7 @@ static void
 annoy_user_with_log_response (GtkDialog *dialog, gint response,
 			      gpointer data)
 {
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
   currently_annoying_user = false;
 
@@ -356,7 +363,8 @@ annoy_user_with_log (const gchar *text)
 
   GtkWidget *dialog;
 
-  dialog = hildon_note_new_information (get_main_window (), text);
+  dialog = hildon_note_new_information (get_dialog_parent (), text);
+  push_dialog_parent (dialog);
 #if 0
   gtk_dialog_add_button (GTK_DIALOG (dialog), "Log", 1);
 #endif
@@ -529,6 +537,7 @@ create_progress (const gchar *title, bool with_cancel)
 {
   if (progress_dialog)
     {
+      pop_dialog_parent ();
       gtk_widget_destroy (progress_dialog);
       progress_dialog = NULL;
       progress_bar = NULL;
@@ -548,9 +557,10 @@ create_progress (const gchar *title, bool with_cancel)
   gchar *longer_title = g_strconcat (title, "XXX", NULL);
   progress_bar = GTK_PROGRESS_BAR (gtk_progress_bar_new ());
   progress_dialog =
-    hildon_note_new_cancel_with_progress_bar (get_main_window (),
+    hildon_note_new_cancel_with_progress_bar (get_dialog_parent (),
 					      longer_title,
 					      progress_bar);
+  push_dialog_parent (progress_dialog);
   g_free (longer_title);
   g_object_set (progress_dialog, "description", title, NULL);
 

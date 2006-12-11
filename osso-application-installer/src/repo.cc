@@ -978,6 +978,7 @@ maybe_add_repo (const char *name, const char *deb_line,	bool for_install,
 static void
 pill_response (GtkDialog *dialog, gint response, gpointer unused)
 {
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));
 
   if (red_pill_mode != (response == GTK_RESPONSE_YES))
@@ -994,11 +995,12 @@ ask_the_pill_question ()
   GtkWidget *dialog;
 
   dialog =
-    hildon_note_new_confirmation_add_buttons (get_main_window (), 
+    hildon_note_new_confirmation_add_buttons (get_dialog_parent (), 
 					      "Which pill?",
 					      "Red", GTK_RESPONSE_YES,
 					      "Blue", GTK_RESPONSE_NO,
 					      NULL);
+  push_dialog_parent (dialog);
   g_signal_connect (dialog, "response",
 		    G_CALLBACK (pill_response), NULL);
   gtk_widget_show_all (dialog);
