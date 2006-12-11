@@ -1,5 +1,9 @@
 2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/util.cc (create_progress): Use respond_on_escape to set up
+	our own Escape handler.  The default one seems to destroy the
+	dialog.  (N47877).
+
 	* src/settings.cc (settings_dialog_response): Add missing
 	pop_dialog_parent.
 
