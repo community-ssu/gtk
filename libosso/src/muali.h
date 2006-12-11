@@ -112,9 +112,6 @@ typedef struct {
         /* received error message, or NULL */
         const char *error;
 
-        /* muali-internal information, ignore this */
-        void *muali_internal;
-
         /* Array of arguments (coming or going), terminating to
          * argument of type MUALI_TYPE_INVALID. args is NULL if the
          * message has no arguments.
