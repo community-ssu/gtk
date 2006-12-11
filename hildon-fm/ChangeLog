@@ -1,3 +1,17 @@
+2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added
+	hildon-file-common-private.h so that it gets distributed. (N49099)
+
+2006-11-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	From Daniel Elstner <danielk@openismus.com> for the benefit of
+	language bindings.
+
+	* hildon-fm/hildon-file-system-model.h
+	(HildonFileSystemModelClass): Hide this struct by prefixing an
+	underscore.  (M182).
+	
 2006-11-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-details-dialog.c
