@@ -85,6 +85,13 @@ typedef struct {
 #define MUALI_TYPE_STRING       8
 #define MUALI_TYPE_DATA         9
 
+typedef enum {
+        MUALI_BUS_IRRELEVANT = 0,
+        MUALI_BUS_SYSTEM,
+        MUALI_BUS_SESSION,
+        MUALI_BUS_BOTH
+} muali_bus_type;
+
 typedef struct {
         const char *service;    /* service name or NULL */
         const char *path;       /* object path or NULL */
@@ -95,6 +102,10 @@ typedef struct {
          * pre-defined events */
         int event_type;
 
+        /* Message bus type. The type may be MUALI_BUS_IRRELEVANT
+         * for e.g. pre-defined events. */
+        muali_bus_type bus_type;
+
         /* This can be ID of the reply or a received message. */
         long message_id;
 
@@ -104,9 +115,10 @@ typedef struct {
         /* muali-internal information, ignore this */
         void *muali_internal;
 
-        /* Array of arguments (coming or going), terminating to argument
-         * of type MUALI_TYPE_INVALID, or NULL. Note that this is
-         * ignored in case of a vararg function. */
+        /* Array of arguments (coming or going), terminating to
+         * argument of type MUALI_TYPE_INVALID. args is NULL if the
+         * message has no arguments.
+         * Note that this is ignored in case of a vararg function. */
         const muali_arg_t *args;
 } muali_event_info_t;
 
@@ -148,6 +160,35 @@ typedef void (muali_handler_t)(muali_context_t *context,
 /**********************************/
 /*          FUNCTIONS             */
 /**********************************/
+
+
+/**
+ * This function initialises the library, connects to both the D-Bus session
+ * and system busses, integrates with the GLib main loop, and
+ * initialises the library for use. #muali_init should be called
+ * only once by the program.
+ * @param program_name The name of the program.
+ * This name forms the last part of the default (D-Bus) service name of the
+ * program. Note that the D-Bus service name will be
+ * 'com.nokia.program_name', where 'program_name' is the value you gave as the
+ * parameter. Note also that this argument must be identical to the
+ * X-Osso-Service value in the desktop file, or the D-Bus daemon will kill
+ * your program after the program has been auto-started by the daemon.
+ * The only valid characters that the name may contain are letters a-z and
+ * the underscore '_'.
+ * However, you can give a name such as 'org.foo.bar' to
+ * have 'bar' as your program's name and 'org.foo.bar' as the D-Bus service
+ * name.
+ * @param program_version The version string of the application. This will
+ * be used to determine if a saved UI state is still valid for the program.
+ * @param context The GLib main loop context to connect to, or NULL for
+ * the default context.
+ * @return A context to use in later calls to this library, or NULL if an
+ * error happened.
+ */
+muali_context_t *muali_init(const char *program_name,
+                            const char *program_version,
+                            GMainContext *context);
 
 /**
  * This function registers a handler for event, message, or signal.

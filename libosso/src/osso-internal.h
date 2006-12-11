@@ -41,6 +41,7 @@
 # include "osso-log.h"
 # include <dbus/dbus.h>
 # include <dbus/dbus-glib-lowlevel.h>
+#include "muali.h"
 
 # define OSSO_BUS_HOME		"home"
 # define OSSO_BUS_TASKNAV	"tasknav"
@@ -59,6 +60,9 @@
 # define OSSO_BUS_TOP_REQUEST   "top_request"
 
 # define OSSO_RPC_REPLY_TIMEOUT -1
+
+/* magic value to represent any interface */
+#define MUALI_INTERFACE_MATCH_ALL "muali_interface_match_all"
 
 /* DBus interface, service, and object path maximum lengths */
 #define MAX_IF_LEN 255
@@ -103,6 +107,7 @@ typedef struct {
     const char *match_rule;
     gpointer data;
     int event_type;
+    muali_bus_type bus_type;
 
     char *service;    /* service name or NULL */
     char *path;       /* object path or NULL */
@@ -113,13 +118,15 @@ typedef struct {
 
 typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,
 				            DBusMessage *msg,
-					    _osso_callback_data_t *data);
+					    _osso_callback_data_t *data,
+                                            muali_bus_type bus_type);
 
 typedef struct {
     _osso_handler_f *handler;
     _osso_callback_data_t *data;
     gboolean method;
     gboolean can_free_data;
+    gboolean call_once_per_handler_id;
     int handler_id;
 } _osso_handler_t;
 
@@ -243,7 +250,8 @@ gboolean __attribute__ ((visibility("hidden")))
 _muali_set_handler(_muali_context_t *context,
                    _osso_handler_f *handler,
                    _osso_callback_data_t *data,
-                   int handler_id);
+                   int handler_id,
+                   gboolean call_once_per_handler_id);
 
 gboolean __attribute__ ((visibility("hidden")))
 _muali_unset_handler(_muali_context_t *context, int handler_id);

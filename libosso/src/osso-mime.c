@@ -27,7 +27,8 @@
 
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
-				       _osso_callback_data_t *mime);
+				       _osso_callback_data_t *mime,
+                                       muali_bus_type dbus_type);
 static char * _get_arg(DBusMessageIter *iter);
 
 osso_return_t osso_mime_set_cb(osso_context_t *osso,
@@ -118,7 +119,8 @@ static int get_message_arg_count(DBusMessage *m)
 
 static DBusHandlerResult _mime_handler(osso_context_t *osso,
 				       DBusMessage *msg,
-				       _osso_callback_data_t *mime)
+				       _osso_callback_data_t *mime,
+                                       muali_bus_type dbus_type)
 {
     if (dbus_message_is_method_call(msg, osso->interface,
                                     OSSO_BUS_MIMEOPEN)) {

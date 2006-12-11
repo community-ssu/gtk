@@ -31,6 +31,9 @@
 #include <unistd.h>
 #include <pwd.h>
 
+/* magic value to represent any interface */
+#define MUALI_INTERFACE_MATCH_ALL "muali_interface_match_all"
+
 /**
  * This internal function performs a simple validation for the application
  * and version information of the osso_context regarding their validity
@@ -49,6 +52,8 @@ static gboolean _validate(const gchar *application, const gchar* version);
  * is an error.
  */
 static osso_context_t * _init(const gchar *application, const gchar *version);
+static osso_context_t *_muali_init(const char *application,
+                                   const char *version);
 
 /**
  * This function deinitializes the #osso_type_t  structure, but does not touch
@@ -70,6 +75,9 @@ static void _deinit(osso_context_t *osso);
 static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 						DBusBusType bus_type,
 						GMainContext *context);
+static DBusConnection *_muali_dbus_setup(osso_context_t *osso,
+                                         DBusBusType bus_type,
+                                         GMainContext *context);
 
 /**
  * This function deregisters with the D-BUS daemon, and unreferences

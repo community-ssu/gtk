@@ -30,7 +30,14 @@
 #include "muali.h"
 
 static DBusHandlerResult
-_muali_filter(DBusConnection *conn, DBusMessage *msg, void *data);
+_muali_filter_session(DBusConnection *conn, DBusMessage *msg, void *data);
+
+static DBusHandlerResult
+_muali_filter_system(DBusConnection *conn, DBusMessage *msg, void *data);
+
+inline static DBusHandlerResult
+_muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
+              muali_bus_type dbus_type);
 
 /* for internal use only
  * This function strdups application name and makes it
@@ -137,6 +144,36 @@ osso_context_t * osso_initialize(const gchar *application,
     }
     osso->cur_conn = NULL;
     return osso;
+}
+
+muali_context_t *muali_init(const char *program_name,
+                            const char *program_version,
+                            GMainContext *context)
+{
+    osso_context_t *osso;
+    ULOG_DEBUG_F("program '%s', version '%s'", program_name,
+                 program_version);
+
+    osso = _muali_init(program_name, program_version);
+    if (osso == NULL) {
+        ULOG_CRIT_F("initialisation failed: out of memory");
+        return NULL;
+    }
+
+    osso->conn = _muali_dbus_setup(osso, DBUS_BUS_SESSION, context);
+    if (osso->conn == NULL) {
+        ULOG_CRIT_F("connecting to the session bus failed");
+        _deinit(osso);
+        return NULL;
+    }
+    osso->sys_conn = _muali_dbus_setup(osso, DBUS_BUS_SYSTEM, context);
+    if (osso->sys_conn == NULL) {
+        ULOG_CRIT_F("connecting to the system bus failed");
+        _deinit(osso);
+        return NULL;
+    }
+    osso->cur_conn = NULL;
+    return (muali_context_t*)osso;
 }
 
 /************************************************************************/
@@ -306,6 +343,49 @@ static osso_context_t *_init(const gchar *application, const gchar *version)
     return osso;
 }
 
+static osso_context_t *_muali_init(const char *application,
+                                   const char *version)
+{
+    osso_context_t *osso;
+    
+    if (!_validate(application, version)) {
+	ULOG_ERR_F("invalid arguments");
+	return NULL;
+    }
+
+    osso = calloc(1, sizeof(osso_context_t));
+    if (osso == NULL) {
+	ULOG_ERR_F("calloc failed");
+	return NULL;
+    }	
+
+    g_snprintf(osso->application, MAX_APP_NAME_LEN, "%s", application);
+    g_snprintf(osso->version, MAX_VERSION_LEN, "%s", version);
+    make_default_interface((const char*)application, osso->interface);
+    make_default_service((const char*)application, osso->service);
+
+    if (!make_default_object_path((const char*)application,
+        osso->object_path)) {
+        ULOG_ERR_F("make_default_object_path() failed");
+        free(osso);
+        return NULL;
+    }
+
+    osso->if_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+                                          free, free_if_hash_value);
+    osso->id_hash = g_hash_table_new_full(g_direct_hash, g_direct_equal,
+                                          NULL, free_uniq_hash_value);
+    if (osso->if_hash == NULL || osso->id_hash == NULL) {
+        ULOG_ERR_F("g_hash_table_new_full failed");
+        free(osso);
+        return NULL;
+    }
+    osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
+    osso->rpc_timeout = -1;
+    osso->next_handler_id = 1;
+    return osso;
+}
+
 /*************************************************************************/
 
 static void _deinit(osso_context_t *osso)
@@ -385,11 +465,20 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
     }
     /* FIXME: there are two filters because semantics in the new
      * muali API are slightly different (stricter matching) */
-    if (!dbus_connection_add_filter(conn, _muali_filter, osso, NULL))
-    {
-        ULOG_ERR_F("dbus_connection_add_filter failed");
-	goto dbus_conn_error4;
+    if (bus_type == DBUS_BUS_SESSION) {
+        if (!dbus_connection_add_filter(conn, _muali_filter_session, osso,
+                                        NULL)) {
+            ULOG_ERR_F("dbus_connection_add_filter failed");
+	    goto dbus_conn_error4;
+        }
+    } else {
+        if (!dbus_connection_add_filter(conn, _muali_filter_system, osso,
+                                        NULL)) {
+            ULOG_ERR_F("dbus_connection_add_filter failed");
+	    goto dbus_conn_error4;
+        }
     }
+
     dprint("My base service is '%s'", dbus_bus_get_unique_name(conn));
 
     return conn;
@@ -409,6 +498,56 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
 
     return NULL;
 }
+
+static DBusConnection *_muali_dbus_setup(osso_context_t *osso,
+                                         DBusBusType bus_type,
+                                         GMainContext *context)
+{
+    DBusConnection *conn;
+    DBusError err;
+    int ret;
+    
+    dbus_error_init(&err);
+
+    /* TODO: add dbus_connection_unref calls when the fixed D-Bus
+     * is available */
+    conn = dbus_bus_get(bus_type, &err);
+    if (conn == NULL) {
+        ULOG_ERR_F("Unable to connect to the D-Bus %s bus: %s",
+                   bus_type == DBUS_BUS_SESSION ? "session" : "system",
+                   err.message);
+        dbus_error_free(&err);
+        return NULL;
+    }
+    dbus_connection_setup_with_g_main(conn, context);
+
+    ret = dbus_bus_request_name(conn, osso->service,
+                                DBUS_NAME_FLAG_ALLOW_REPLACEMENT, &err);
+    if (ret == -1) {
+        ULOG_ERR_F("dbus_bus_request_name failed: %s", err.message);
+	dbus_error_free(&err);
+	return NULL;
+    }
+
+    dbus_connection_set_exit_on_disconnect(conn, FALSE);
+
+    if (bus_type == DBUS_BUS_SESSION) {
+        if (!dbus_connection_add_filter(conn, _muali_filter_session,
+                                        osso, NULL)) {
+            ULOG_ERR_F("dbus_connection_add_filter failed");
+	    return NULL;
+        }
+    } else {
+        if (!dbus_connection_add_filter(conn, _muali_filter_system,
+                                        osso, NULL)) {
+            ULOG_ERR_F("dbus_connection_add_filter failed");
+	    return NULL;
+        }
+    }
+
+    return conn;
+}
+
 /*************************************************************************/
 
 static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
@@ -423,7 +562,8 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
         osso->conn = NULL;
     }
     dbus_connection_remove_filter(conn, _msg_handler, osso);
-    dbus_connection_remove_filter(conn, _muali_filter, osso);
+    dbus_connection_remove_filter(conn, _muali_filter_session, osso);
+    dbus_connection_remove_filter(conn, _muali_filter_system, osso);
 #ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
 #endif
@@ -484,7 +624,7 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
                 ULOG_DEBUG_F("before calling the handler");
                 ULOG_DEBUG_F(" handler = %p", handler->handler);
                 ULOG_DEBUG_F(" data = %p", handler->data);
-                ret = (*handler->handler)(osso, msg, handler->data);
+                ret = (*handler->handler)(osso, msg, handler->data, 0);
                 ULOG_DEBUG_F("after calling the handler");
                 if (ret == DBUS_HANDLER_RESULT_HANDLED) {
                     return ret;
@@ -590,9 +730,22 @@ inline static int str_match(const char *a, const char *b)
     return 0;
 }
 
-/* filter function for muali API */
 static DBusHandlerResult
-_muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
+_muali_filter_session(DBusConnection *conn, DBusMessage *msg, void *data)
+{
+    return _muali_filter(conn, msg, data, MUALI_BUS_SESSION);
+}
+
+static DBusHandlerResult
+_muali_filter_system(DBusConnection *conn, DBusMessage *msg, void *data)
+{
+    return _muali_filter(conn, msg, data, MUALI_BUS_SYSTEM);
+}
+
+/* filter function for muali API */
+inline static DBusHandlerResult
+_muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
+              muali_bus_type dbus_type)
 {
     osso_context_t *muali;
     _osso_hash_value_t *elem;
@@ -605,6 +758,7 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
     muali = data;
 
     assert(muali != NULL);
+    muali->cur_conn = conn;
 
     msgtype = muali_convert_msgtype(dbus_message_get_type(msg));
     if (msgtype == MUALI_EVENT_NONE) {
@@ -624,9 +778,9 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
 
     if (elem != NULL) {
         GList *list;
+        int last_id = 0;
 
-        ULOG_DEBUG_F("found from if_hash");
-        muali->cur_conn = conn;
+        ULOG_DEBUG_F("found '%s' from if_hash", interface);
 
         list = g_list_first(elem->handlers);
         while (list != NULL) {
@@ -636,6 +790,7 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
 
             handler = list->data;
 
+            /*
             if (handler) {
                     ULOG_DEBUG_F("found handler");
                     if (handler->data != NULL) {
@@ -653,10 +808,28 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
                                 handler->data->event_type, msgtype);
                     }
             }
+            */
+
+            /* Note: this relies on the fact that the handlers with the
+             * same id are adjacent in the list */
+            if (handler->call_once_per_handler_id
+                && handler->handler_id == last_id) {
+                    /* do not call the callback this time, workaround for
+                     * MUALI_EVENT_MESSAGE_OR_SIGNAL etc. implementation */
+                    list = g_list_next(list);
+                    continue;
+            }
+
+            if (handler->data && handler->data->bus_type != MUALI_BUS_BOTH
+                && handler->data->bus_type != dbus_type) {
+                    /* handler is not for this bus type */
+                    list = g_list_next(list);
+                    continue;
+            }
 
             if (msgtype == MUALI_EVENT_SIGNAL) {
                     /* does not make sense to match sender in case
-                     * of D-Bus signal, because D-Bus uses the unique
+                     * of a D-Bus signal, because D-Bus uses the unique
                      * bus name as the sender */
                     match_sender = FALSE;
             }
@@ -671,25 +844,116 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data)
                 str_match(handler->data->name,
                           dbus_message_get_member(msg))) {
 
-                ULOG_DEBUG_F("before calling the handler");
-                ULOG_DEBUG_F(" handler = %p", handler->handler);
-                ULOG_DEBUG_F(" data = %p", handler->data);
-                ret = (*handler->handler)(muali, msg, handler->data);
+                ULOG_DEBUG_F("before calling the handler at %p, data=%p",
+                             handler->handler, handler->data);
+                ret = (*handler->handler)(muali, msg, handler->data,
+                                          dbus_type);
                 ULOG_DEBUG_F("after calling the handler");
+                /* cannot do this because the library context could
+                 * be shared with independent code, having independent
+                 * handler functions 
                 if (ret == DBUS_HANDLER_RESULT_HANDLED) {
                     return ret;
                 }
+                */
 #ifdef OSSOLOG_COMPILE
                 found = TRUE;
 #endif
             }
 
+            last_id = handler->handler_id;
             list = g_list_next(list);
         }
-    } 
+    }
+
+    /* check the magical match-'em-all interface */
+    elem = g_hash_table_lookup(muali->if_hash, MUALI_INTERFACE_MATCH_ALL);
+
+    if (elem != NULL) {
+        GList *list;
+        int last_id = 0;
+
+        list = g_list_first(elem->handlers);
+        while (list != NULL) {
+            _osso_handler_t *handler;
+            DBusHandlerResult ret;
+            gboolean match_sender = TRUE;
+
+            handler = list->data;
+
+            /*
+            if (handler) {
+                    ULOG_DEBUG_F("found a match-'em-all handler");
+                    if (handler->data != NULL) {
+                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
+                                handler->data->service,
+                                handler->data->path,
+                                handler->data->name);
+
+                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
+                                dbus_message_get_sender(msg),
+                                dbus_message_get_path(msg),
+                                dbus_message_get_member(msg));
+
+                            ULOG_DEBUG_F("types: %d %d",
+                                handler->data->event_type, msgtype);
+                    }
+            }
+            */
+
+            /* Note: this relies on the fact that the handlers with the
+             * same id are adjacent in the list */
+            if (handler->call_once_per_handler_id
+                && handler->handler_id == last_id) {
+                    /* do not call the callback this time, workaround for
+                     * MUALI_EVENT_MESSAGE_OR_SIGNAL etc. implementation */
+                    list = g_list_next(list);
+                    continue;
+            }
+
+            if (msgtype == MUALI_EVENT_SIGNAL) {
+                    /* does not make sense to match sender in case
+                     * of a D-Bus signal, because D-Bus uses the unique
+                     * bus name as the sender */
+                    match_sender = FALSE;
+            }
+
+            if (handler->data != NULL &&
+                types_match(handler->data->event_type, msgtype) &&
+                (!match_sender || str_match(handler->data->service,
+                                      dbus_message_get_sender(msg))) &&
+                str_match(handler->data->path,
+                          dbus_message_get_path(msg)) &&
+                /* interface has matched already */
+                str_match(handler->data->name,
+                          dbus_message_get_member(msg))) {
+
+                ULOG_DEBUG_F("before calling the handler at %p, data=%p",
+                             handler->handler, handler->data);
+                ret = (*handler->handler)(muali, msg, handler->data,
+                                          dbus_type);
+                ULOG_DEBUG_F("after calling the match-'em-all handler");
+                /* cannot do this because the library context could
+                 * be shared with independent code, having independent
+                 * handler functions 
+                if (ret == DBUS_HANDLER_RESULT_HANDLED) {
+                    return ret;
+                }
+                */
+#ifdef OSSOLOG_COMPILE
+                found = TRUE;
+#endif
+            }
+
+            last_id = handler->handler_id;
+            list = g_list_next(list);
+        }
+    }
+
 #ifdef OSSOLOG_COMPILE
     if (!found) {
-        ULOG_DEBUG_F("suitable handler not found from the hash table");
+        ULOG_DEBUG_F("suitable handler not found for '%s' from if_hash",
+                     interface);
     }
 #endif
 
@@ -831,7 +1095,8 @@ gboolean __attribute__ ((visibility("hidden")))
 _muali_set_handler(_muali_context_t *context,
                    _osso_handler_f *handler,
                    _osso_callback_data_t *data, 
-                   int handler_id)
+                   int handler_id,
+                   gboolean call_once_per_handler_id)
 {   
     _osso_hash_value_t *old;
     _osso_handler_t *elem;
@@ -848,9 +1113,10 @@ _muali_set_handler(_muali_context_t *context,
     elem->handler = handler;
     elem->data = data;
     elem->handler_id = handler_id;
+    elem->call_once_per_handler_id = call_once_per_handler_id;
     /* other members are not used and left zero */
 
-    old = g_hash_table_lookup(context->id_hash, &handler_id);
+    old = g_hash_table_lookup(context->id_hash, (gconstpointer)handler_id);
     if (old != NULL) {
         ULOG_DEBUG_F("registering another handler for id %d", handler_id);
 
@@ -872,7 +1138,8 @@ _muali_set_handler(_muali_context_t *context,
 
         new_elem->handlers = g_list_append(NULL, elem);
 
-        g_hash_table_insert(context->id_hash, &handler_id, new_elem);
+        g_hash_table_insert(context->id_hash, (gconstpointer)handler_id,
+                            new_elem);
     }
 
     return add_to_if_hash(context, elem, data->interface);
@@ -912,20 +1179,62 @@ static void remove_from_if_hash(_muali_context_t *context,
 gboolean __attribute__ ((visibility("hidden")))
 _muali_unset_handler(_muali_context_t *context, int handler_id)
 {
-    _osso_handler_t *elem;
-    const char *interface;
+    _osso_hash_value_t *elem;
+    GList *list;
 
-    /* first get the interface */
-    elem = g_hash_table_lookup(context->id_hash, &handler_id);
+    ULOG_DEBUG_F("context=%p", context);
+    elem = g_hash_table_lookup(context->id_hash, (gconstpointer)handler_id);
     if (elem == NULL) {
         ULOG_ERR_F("couldn't find handler_id %d from id_hash", handler_id);
         return FALSE;
     }
-    interface = elem->data->interface;
 
-    remove_from_if_hash(context, handler_id, interface);
+    /* remove handlers from the interface hash */
+    list = g_list_first(elem->handlers);
+    while (list != NULL) {
+        const char *interface;
+        DBusError err;
+        _osso_handler_t *h = list->data;
 
-    if (!g_hash_table_remove(context->id_hash, &handler_id)) {
+        interface = h->data->interface;
+        remove_from_if_hash(context, handler_id, interface);
+
+        dbus_error_init(&err);
+
+        if (h->data->bus_type == MUALI_BUS_SYSTEM
+            || h->data->bus_type == MUALI_BUS_BOTH) {
+            dbus_bus_remove_match(context->sys_conn, h->data->match_rule,
+                                  &err);
+            if (dbus_error_is_set(&err)) {
+                ULOG_WARN_F("dbus_bus_remove_match failed for %s: %s",
+                            h->data->match_rule, err.message);
+                dbus_error_free(&err);
+                dbus_error_init(&err);
+            }
+        }
+
+        if (h->data->bus_type == MUALI_BUS_SESSION
+            || h->data->bus_type == MUALI_BUS_BOTH) {
+            dbus_bus_remove_match(context->conn, h->data->match_rule,
+                                  &err);
+            if (dbus_error_is_set(&err)) {
+                ULOG_WARN_F("dbus_bus_remove_match failed for %s: %s",
+                            h->data->match_rule, err.message);
+                dbus_error_free(&err);
+            }
+        }
+
+        free(h->data->service);
+        free(h->data->path);
+        free(h->data->interface);
+        free(h->data->name);
+        free(h->data);
+        h->data = NULL;
+
+        list = g_list_next(list);
+    }
+
+    if (!g_hash_table_remove(context->id_hash, (gconstpointer)handler_id)) {
         ULOG_ERR_F("couldn't find handler_id %d from id_hash", handler_id);
         assert(0); /* this is a bug */
     }

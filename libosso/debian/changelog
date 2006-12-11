@@ -12,8 +12,9 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * Added libosso1-doc documentation package (and dependency to doxygen).
   * Split muali_set_event_handler to two functions to make API more easy
     to use.
+  * Made lot of muali development, design fixes, and tested code.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 09 Nov 2006 18:46:08 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 11 Dec 2006 18:22:56 +0200
 
 libosso (1.20-1) unstable; urgency=low
 

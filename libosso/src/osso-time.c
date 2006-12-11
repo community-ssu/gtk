@@ -31,7 +31,8 @@
 
 static DBusHandlerResult _time_handler(osso_context_t *osso,
                                        DBusMessage *msg,
-                                       _osso_callback_data_t *ot);
+                                       _osso_callback_data_t *ot,
+                                       muali_bus_type dbus_type);
 
 static gboolean _validate_time(time_t time_candidate)
 {
@@ -128,7 +129,8 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time)
 /************************************************************************/
 static DBusHandlerResult _time_handler(osso_context_t *osso,
                                        DBusMessage *msg,
-                                       _osso_callback_data_t *ot)
+                                       _osso_callback_data_t *ot,
+                                       muali_bus_type dbus_type)
 {
     if (dbus_message_is_signal(msg, TIME_INTERFACE, (char*)ot->data)) {
         osso_time_cb_f *handler = ot->user_cb;

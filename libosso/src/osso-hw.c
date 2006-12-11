@@ -65,11 +65,13 @@ static gboolean first_hw_set_cb_call = TRUE;
 
 static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
                                                DBusMessage *msg,
-                                               _osso_callback_data_t *data);
+                                               _osso_callback_data_t *data,
+                                               muali_bus_type dbus_type);
 
 static DBusHandlerResult signal_handler(osso_context_t *osso,
                                         DBusMessage *msg,
-                                        _osso_callback_data_t *data);
+                                        _osso_callback_data_t *data,
+                                        muali_bus_type dbus_type);
 
 osso_return_t osso_display_state_on(osso_context_t *osso)
 {
@@ -423,7 +425,8 @@ static void read_device_state_from_file(osso_context_t *osso)
 
 static DBusHandlerResult lowmem_signal_handler(osso_context_t *osso,
                                                DBusMessage *msg,
-                                               _osso_callback_data_t *data)
+                                               _osso_callback_data_t *data,
+                                               muali_bus_type dbus_type)
 {
     ULOG_DEBUG_F("entered");
     assert(osso != NULL);
@@ -599,7 +602,8 @@ static muali_arg_t *_get_muali_args(DBusMessageIter *iter)
 
 static DBusHandlerResult generic_signal_handler(osso_context_t *osso,
                                                 DBusMessage *msg,
-                                                _osso_callback_data_t *data)
+                                                _osso_callback_data_t *data,
+                                                muali_bus_type dbus_type)
 {
     muali_event_info_t info;
     DBusMessageIter iter;
@@ -614,6 +618,9 @@ static DBusHandlerResult generic_signal_handler(osso_context_t *osso,
     info.path = dbus_message_get_path(msg);
     info.interface = dbus_message_get_interface(msg);
     info.name = dbus_message_get_member(msg);
+    info.event_type = data->event_type;
+    info.bus_type = dbus_type;
+
     if ((dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_CALL
         && !dbus_message_get_no_reply(msg)) ||
         dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_RETURN) {
@@ -641,7 +648,8 @@ static DBusHandlerResult generic_signal_handler(osso_context_t *osso,
 
 static DBusHandlerResult signal_handler(osso_context_t *osso,
                                         DBusMessage *msg,
-                                        _osso_callback_data_t *data)
+                                        _osso_callback_data_t *data,
+                                        muali_bus_type dbus_type)
 {
     ULOG_DEBUG_F("entered");
     assert(osso != NULL);
@@ -732,7 +740,8 @@ static DBusHandlerResult signal_handler(osso_context_t *osso,
 inline static void _muali_call_cb(osso_context_t *osso,
                                   DBusMessage *msg,
                                   _osso_callback_data_t *data,
-                                  int event_type)
+                                  int event_type,
+                                  muali_bus_type dbus_type)
 {
         muali_event_info_t info;
         DBusMessageIter iter;
@@ -745,6 +754,7 @@ inline static void _muali_call_cb(osso_context_t *osso,
         info.interface = dbus_message_get_interface(msg);
         info.name = dbus_message_get_member(msg);
         info.event_type = event_type;
+        info.bus_type = dbus_type;
 
         if (dbus_message_iter_init(msg, &iter)) {
                 info.args = _get_muali_args(&iter);
@@ -761,7 +771,8 @@ inline static void _muali_call_cb(osso_context_t *osso,
 
 static DBusHandlerResult inactivity_signal_handler(osso_context_t *osso,
                                                    DBusMessage *msg,
-                                                   _osso_callback_data_t *data)
+                                                   _osso_callback_data_t *data,
+                                                   muali_bus_type dbus_type)
 {
         int call_cb = 0, event_type = 0;
 
@@ -809,7 +820,8 @@ static DBusHandlerResult inactivity_signal_handler(osso_context_t *osso,
         }
 
         if (call_cb) {
-                _muali_call_cb(osso, msg, data, event_type);
+                _muali_call_cb(osso, msg, data, event_type,
+                               MUALI_BUS_IRRELEVANT);
         }
 
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -817,7 +829,8 @@ static DBusHandlerResult inactivity_signal_handler(osso_context_t *osso,
 
 static DBusHandlerResult muali_lowmem_signal_handler(osso_context_t *osso,
                                                    DBusMessage *msg,
-                                                   _osso_callback_data_t *data)
+                                                   _osso_callback_data_t *data,
+                                                   muali_bus_type dbus_type)
 {
         int call_cb = 0, event_type = 0;
 
@@ -847,7 +860,8 @@ static DBusHandlerResult muali_lowmem_signal_handler(osso_context_t *osso,
         }
 
         if (call_cb) {
-                _muali_call_cb(osso, msg, data, event_type);
+                _muali_call_cb(osso, msg, data, event_type,
+                               MUALI_BUS_IRRELEVANT);
         }
 
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -855,7 +869,8 @@ static DBusHandlerResult muali_lowmem_signal_handler(osso_context_t *osso,
 
 static DBusHandlerResult display_signal_handler(osso_context_t *osso,
                                                 DBusMessage *msg,
-                                                _osso_callback_data_t *data)
+                                                _osso_callback_data_t *data,
+                                                muali_bus_type dbus_type)
 {
         int call_cb = 0, event_type = 0;
 
@@ -908,7 +923,8 @@ static DBusHandlerResult display_signal_handler(osso_context_t *osso,
         }
 
         if (call_cb) {
-                _muali_call_cb(osso, msg, data, event_type);
+                _muali_call_cb(osso, msg, data, event_type,
+                               MUALI_BUS_IRRELEVANT);
         }
 
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
@@ -924,7 +940,9 @@ inline static muali_error_t _set_handler(muali_context_t *context,
                                          int event_type,
                                          muali_handler_t *user_handler,
                                          void *user_data,
-                                         int handler_id)
+                                         int handler_id,
+                                         gboolean call_once_per_handler_id,
+                                         muali_bus_type bus_type)
 {
         DBusError error;
         _osso_callback_data_t *cb_data;
@@ -939,6 +957,7 @@ inline static muali_error_t _set_handler(muali_context_t *context,
         cb_data->user_data = user_data;
         cb_data->match_rule = match;
         cb_data->event_type = event_type;
+        cb_data->bus_type = bus_type;
         cb_data->data = cb_data;
 
         if (service != NULL) {
@@ -967,21 +986,38 @@ inline static muali_error_t _set_handler(muali_context_t *context,
         }
 
         dbus_error_init(&error);
-        dbus_bus_add_match(context->sys_conn, match, &error);
 
-        if (dbus_error_is_set(&error)) {
-                ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
-                dbus_error_free(&error);
-                free(cb_data->name);
-                free(cb_data->interface);
-                free(cb_data->path);
-                free(cb_data->service);
-                free(cb_data);
-                return MUALI_ERROR;
+        if (bus_type == MUALI_BUS_SYSTEM || bus_type == MUALI_BUS_BOTH) {
+                dbus_bus_add_match(context->sys_conn, match, &error);
+
+                if (dbus_error_is_set(&error)) {
+                        ULOG_ERR_F("dbus_bus_add_match failed: %s",
+                                   error.message);
+                        dbus_error_free(&error);
+                        goto _set_handler_failed_match;
+                }
+        }
+
+        if (bus_type == MUALI_BUS_SESSION || bus_type == MUALI_BUS_BOTH) {
+                dbus_bus_add_match(context->conn, match, &error);
+
+                if (dbus_error_is_set(&error)) {
+                        ULOG_ERR_F("dbus_bus_add_match failed: %s",
+                                   error.message);
+                        dbus_error_free(&error);
+
+                        if (bus_type == MUALI_BUS_BOTH) {
+                                dbus_bus_remove_match(context->sys_conn,
+                                                      match, NULL);
+                        }
+
+                        goto _set_handler_failed_match;
+                }
         }
 
         if (_muali_set_handler((_muali_context_t*)context, event_cb,
-                               cb_data, handler_id)) {
+                               cb_data, handler_id,
+                               call_once_per_handler_id)) {
                 return MUALI_ERROR_SUCCESS;
         } else {
                 return MUALI_ERROR;
@@ -996,6 +1032,14 @@ _set_handler_oom3:
 _set_handler_oom4:
         free(cb_data);
         return MUALI_ERROR_OOM;
+
+_set_handler_failed_match:
+        free(cb_data->name);
+        free(cb_data->interface);
+        free(cb_data->path);
+        free(cb_data->service);
+        free(cb_data);
+        return MUALI_ERROR;
 }
 
 static muali_error_t compose_match(const muali_event_info_t *info,
@@ -1044,7 +1088,7 @@ static muali_error_t compose_match(const muali_event_info_t *info,
         return MUALI_ERROR_SUCCESS;
 }
 
-#define _SET_HANDLER_CALL _set_handler(context, \
+#define _SET_HANDLER_CALL(X, Y) _set_handler(context, \
                                        service, \
                                        object_path, \
                                        interface, \
@@ -1054,7 +1098,7 @@ static muali_error_t compose_match(const muali_event_info_t *info,
                                        event_type, \
                                        handler, \
                                        user_data, \
-                                       new_handler_id)
+                                       new_handler_id, X, Y)
 
 muali_error_t muali_set_event_handler(muali_context_t *context,
                                       int event_type,
@@ -1083,29 +1127,64 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
         new_handler_id = context->next_handler_id++;
 
         switch (event_type) {
+                case MUALI_EVENT_MESSAGE:
+                        event_cb = generic_signal_handler;
+                        /* service is NULL because D-Bus signals only
+                         * give the unique bus name as the sender */
+                        service = NULL;
+                        object_path = NULL;
+                        interface = MUALI_INTERFACE_MATCH_ALL;
+                        match = "type='method_call'";
+                        error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_BOTH);
+                        break;
+                case MUALI_EVENT_SIGNAL:
+                case MUALI_EVENT_MESSAGE_OR_SIGNAL:
+                        event_cb = generic_signal_handler;
+                        service = NULL;
+                        object_path = NULL;
+                        interface = MUALI_INTERFACE_MATCH_ALL;
+                        match = "type='signal'";
+                        error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_BOTH);
+
+                        if (event_type == MUALI_EVENT_MESSAGE_OR_SIGNAL
+                            && error == MUALI_ERROR_SUCCESS) {
+                                /* set method call handler with the same
+                                 * handler id */
+                                match = "type='method_call'";
+                                error = _SET_HANDLER_CALL(TRUE,
+                                                          MUALI_BUS_BOTH);
+                                if (error != MUALI_ERROR_SUCCESS) {
+                                        /* unset the previous handler */
+                                        muali_unset_event_handler(
+                                            context, new_handler_id);
+                                }
+                        }
+                        break;
                 case MUALI_EVENT_LOWMEM_BOTH:
                 case MUALI_EVENT_LOWMEM_OFF:
                         event_cb = muali_lowmem_signal_handler;
-                        /* service is NULL because D-Bus signals only
-                         * give the unique bus name as the sender */
                         service = NULL;
                         object_path = USER_LOWMEM_OFF_SIGNAL_OP;
                         interface = USER_LOWMEM_OFF_SIGNAL_IF;
                         match = "type='signal',interface='"
                                 USER_LOWMEM_OFF_SIGNAL_IF "'";
-                        error = _SET_HANDLER_CALL;
+                        error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_SYSTEM);
 
                         if (event_type == MUALI_EVENT_LOWMEM_BOTH
                             && error == MUALI_ERROR_SUCCESS) {
-                                /* TODO: in case there was error, unset
-                                 * the previous handler */
                                 /* set lowmem_on handler with the same
                                  * handler id */
                                 object_path = USER_LOWMEM_ON_SIGNAL_OP;
                                 interface = USER_LOWMEM_ON_SIGNAL_IF;
                                 match = "type='signal',interface='"
                                         USER_LOWMEM_ON_SIGNAL_IF "'";
-                                error = _SET_HANDLER_CALL;
+                                error = _SET_HANDLER_CALL(TRUE,
+                                                          MUALI_BUS_SYSTEM);
+                                if (error != MUALI_ERROR_SUCCESS) {
+                                        /* unset the previous handler */
+                                        muali_unset_event_handler(
+                                            context, new_handler_id);
+                                }
                         }
                         break;
                 case MUALI_EVENT_LOWMEM_ON:
@@ -1115,7 +1194,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         interface = USER_LOWMEM_ON_SIGNAL_IF;
                         match = "type='signal',interface='"
                                 USER_LOWMEM_ON_SIGNAL_IF "'";
-                        error = _SET_HANDLER_CALL;
+                        error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_SYSTEM);
                         break;
                 case MUALI_EVENT_INACTIVITY_ON:
                 case MUALI_EVENT_INACTIVITY_OFF:
@@ -1126,7 +1205,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         interface = MCE_SIGNAL_IF;
                         match = "type='signal',interface='" MCE_SIGNAL_IF
                                 "',member='" INACTIVITY_SIG "'";
-                        error = _SET_HANDLER_CALL;
+                        error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_SYSTEM);
                         break;
                 case MUALI_EVENT_DISPLAY_ON:
                 case MUALI_EVENT_DISPLAY_OFF:
@@ -1138,7 +1217,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         interface = MCE_SIGNAL_IF;
                         match = "type='signal',interface='" MCE_SIGNAL_IF
                                 "',member='" DISPLAY_STATUS_SIG "'";
-                        error = _SET_HANDLER_CALL;
+                        error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_SYSTEM);
                         break;
                 default:
                         ULOG_ERR_F("unknown event type %d", event_type);
@@ -1166,6 +1245,7 @@ muali_error_t muali_set_event_handler_custom(muali_context_t *context,
         char *match = NULL;
         int new_handler_id;
         muali_error_t ret;
+        muali_bus_type bus_type;
 
         ULOG_DEBUG_F("entered");
 
@@ -1177,6 +1257,12 @@ muali_error_t muali_set_event_handler_custom(muali_context_t *context,
         if (info == NULL) {
                 ULOG_ERR_F("info structure must be provided");
                 return MUALI_ERROR_INVALID;
+        }
+
+        if (info->bus_type == MUALI_BUS_IRRELEVANT) {
+                bus_type = MUALI_BUS_BOTH;
+        } else {
+                bus_type = info->bus_type;
         }
 
         new_handler_id = context->next_handler_id++;
@@ -1197,7 +1283,8 @@ muali_error_t muali_set_event_handler_custom(muali_context_t *context,
                                      0, /* event_type ignored */
                                      handler,
                                      user_data,
-                                     new_handler_id);
+                                     new_handler_id,
+                                     FALSE, bus_type);
         } else {
                 error = ret;
         }

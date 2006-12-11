@@ -92,7 +92,8 @@ osso_return_t osso_application_top(osso_context_t *osso,
 
 static DBusHandlerResult _top_handler(osso_context_t *osso,
                                       DBusMessage *msg,
-                                      _osso_callback_data_t *top)
+                                      _osso_callback_data_t *top,
+                                      muali_bus_type dbus_type)
 {
     if (dbus_message_is_method_call(msg, osso->interface, OSSO_BUS_TOP))
     {	

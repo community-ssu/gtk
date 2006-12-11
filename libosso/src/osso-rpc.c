@@ -38,7 +38,8 @@
 
 static DBusHandlerResult _rpc_handler (osso_context_t * osso,
                                        DBusMessage * msg,
-                                       _osso_callback_data_t *data);
+                                       _osso_callback_data_t *data,
+                                       muali_bus_type dbus_type);
 static void _append_args(DBusMessage *msg, int type, va_list var_args);
 static void _append_arg (DBusMessage * msg, osso_rpc_t * arg);
 static void _get_arg (DBusMessageIter * iter, osso_rpc_t * retval);
@@ -753,7 +754,8 @@ osso_return_t osso_rpc_set_timeout(osso_context_t *osso, gint timeout)
 /************************************************************************/
 
 static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
-                                      _osso_callback_data_t *rpc)
+                                      _osso_callback_data_t *rpc,
+                                      muali_bus_type dbus_type)
 {
     DBusMessageIter iter;
     GArray *arguments;
