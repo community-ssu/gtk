@@ -1,5 +1,8 @@
 2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/settings.cc (settings_dialog_response): Add missing
+	pop_dialog_parent.
+
 	* src/util.cc, src/repo.cc: Use get_dialog_parent,
 	push_dialog_parent, and pop_dialog_parent for the rest of the
 	dialogs.

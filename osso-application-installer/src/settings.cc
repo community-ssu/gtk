@@ -265,6 +265,7 @@ settings_dialog_response (GtkDialog *dialog, gint response, gpointer clos)
 
   delete c;
 
+  pop_dialog_parent ();
   gtk_widget_destroy (GTK_WIDGET (dialog));  
 }
 
