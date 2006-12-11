@@ -1,3 +1,9 @@
+2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* src/util.cc, src/repo.cc: Use get_dialog_parent,
+	push_dialog_parent, and pop_dialog_parent for the rest of the
+	dialogs.
+
 2006-12-04  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Keep track of dialog stacking order in a general way. (N48797)
@@ -6,7 +12,7 @@
 	src/repo.cc, src/search.cc, src/settings.cc, src/util.cc,
 	src/util.h
 	(push_dialog_parent, pop_dialog_parent, get_dialog_parent): New,
-	Use them for all dialogs by pushing nerwly created ones and
+	Use them for all dialogs by pushing newly created ones and
 	popping when they are destroyed.
 	* src/main.cc (main): Push the main window as the default dialog
 	parent.
