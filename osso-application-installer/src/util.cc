@@ -573,8 +573,11 @@ create_progress (const gchar *title, bool with_cancel)
       g_list_free (kids);
     }
   else
-    g_signal_connect (progress_dialog, "response",
-		      G_CALLBACK (cancel_response), NULL);
+    {
+      respond_on_escape (GTK_DIALOG (progress_dialog), GTK_RESPONSE_CANCEL);
+      g_signal_connect (progress_dialog, "response",
+			G_CALLBACK (cancel_response), NULL);
+    }
 
   gtk_widget_show (progress_dialog);
 }
@@ -686,6 +689,7 @@ hide_progress ()
   if (progress_dialog)
     {
       stop_pulsing ();
+      pop_dialog_parent ();
       gtk_widget_destroy (GTK_WIDGET(progress_bar));
       gtk_widget_destroy (progress_dialog);
       progress_dialog = NULL;
