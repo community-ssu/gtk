@@ -9,16 +9,16 @@
 
 ;; Enumerations and flags ...
 
-(define-enum NumberEditorErrorType
-  (in-module "Hildon")
-  (c-name "HildonNumberEditorErrorType")
-  (gtype-id "HILDON_TYPE_NUMBER_EDITOR_ERROR_TYPE")
-  (values
-    '("maximum-value-exceed" "MAXIMUM_VALUE_EXCEED")
-    '("minimum-value-exceed" "MINIMUM_VALUE_EXCEED")
-    '("erroneous-value" "ERRONEOUS_VALUE")
-  )
-)
+;(define-enum NumberEditorErrorType
+;  (in-module "Hildon")
+;  (c-name "HildonNumberEditorErrorType")
+;  (gtype-id "HILDON_TYPE_NUMBER_EDITOR_ERROR_TYPE")
+;  (values
+;    '("maximum-value-exceed" "MAXIMUM_VALUE_EXCEED")
+;    '("minimum-value-exceed" "MINIMUM_VALUE_EXCEED")
+;    '("erroneous-value" "ERRONEOUS_VALUE")
+;  )
+;)
 
 
 ;; From hildon-number-editor.h

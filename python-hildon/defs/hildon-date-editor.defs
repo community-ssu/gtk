@@ -9,24 +9,24 @@
 
 ;; Enumerations and flags ...
 
-(define-enum DateEditorErrorType
-  (in-module "Hildon")
-  (c-name "HildonDateEditorErrorType")
-  (gtype-id "HILDON_TYPE_DATE_EDITOR_ERROR_TYPE")
-  (values
-    '("no-error" "NO_ERROR")
-    '("max-day" "MAX_DAY")
-    '("max-month" "MAX_MONTH")
-    '("max-year" "MAX_YEAR")
-    '("min-day" "MIN_DAY")
-    '("min-month" "MIN_MONTH")
-    '("min-year" "MIN_YEAR")
-    '("empty-day" "EMPTY_DAY")
-    '("empty-month" "EMPTY_MONTH")
-    '("empty-year" "EMPTY_YEAR")
-    '("invalid-date" "INVALID_DATE")
-  )
-)
+;(define-enum DateEditorErrorType
+;  (in-module "Hildon")
+;  (c-name "HildonDateEditorErrorType")
+;  (gtype-id "HILDON_TYPE_DATE_EDITOR_ERROR_TYPE")
+;  (values
+;    '("no-error" "NO_ERROR")
+;    '("max-day" "MAX_DAY")
+;    '("max-month" "MAX_MONTH")
+;    '("max-year" "MAX_YEAR")
+;    '("min-day" "MIN_DAY")
+;    '("min-month" "MIN_MONTH")
+;    '("min-year" "MIN_YEAR")
+;    '("empty-day" "EMPTY_DAY")
+;    '("empty-month" "EMPTY_MONTH")
+;    '("empty-year" "EMPTY_YEAR")
+;    '("invalid-date" "INVALID_DATE")
+;  )
+;)
 
 
 ;; From hildon-date-editor.h

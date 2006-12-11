@@ -1,11 +1,12 @@
 ;; -*- scheme -*-
+; Waiting for corrections. Doesn't work.
 ; object definitions ...
-(define-object ColorButton
-  (in-module "Hildon")
-  (parent "GtkButton")
-  (c-name "HildonColorButton")
-  (gtype-id "HILDON_TYPE_COLOR_BUTTON")
-)
+;(define-object ColorButton
+;  (in-module "Hildon")
+;  (parent "GtkButton")
+;  (c-name "HildonColorButton")
+;  (gtype-id "HILDON_TYPE_COLOR_BUTTON")
+;)
 
 ;; Enumerations and flags ...
 
