@@ -52,6 +52,7 @@ struct _HildonFileSystemObex
 {
     HildonFileSystemRemoteDevice parent_instance;
     gboolean has_children;
+    gint bonding_handler_id;
 };
 
 struct _HildonFileSystemObexClass

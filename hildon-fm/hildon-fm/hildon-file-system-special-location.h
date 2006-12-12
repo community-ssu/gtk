@@ -89,6 +89,7 @@ struct _HildonFileSystemSpecialLocationClass
     /* signals */
     void (*changed) (GObject *obj);
     void (*connection_state) (GObject *obj);
+    void (*rescan) (GObject *obj);
 };
 
 GType hildon_file_system_special_location_get_type (void) G_GNUC_CONST;

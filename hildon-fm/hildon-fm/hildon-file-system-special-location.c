@@ -29,6 +29,7 @@ enum HildonFileSystemSpecialLocationSignals
 {
     SIGNAL_CHANGED,
     SIGNAL_CONNECTION_STATE,
+    SIGNAL_RESCAN,
     LAST_SIGNAL
 };
 
@@ -74,6 +75,16 @@ hildon_file_system_special_location_class_init (
                 G_SIGNAL_RUN_FIRST,
                 G_STRUCT_OFFSET (HildonFileSystemSpecialLocationClass,
                     connection_state),
+                NULL, NULL,
+                g_cclosure_marshal_VOID__VOID,
+                G_TYPE_NONE, 0);
+
+    special_location_signals[SIGNAL_RESCAN] =
+                g_signal_new ("rescan",
+                G_TYPE_FROM_CLASS (gobject_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HildonFileSystemSpecialLocationClass,
+                    rescan),
                 NULL, NULL,
                 g_cclosure_marshal_VOID__VOID,
                 G_TYPE_NONE, 0);

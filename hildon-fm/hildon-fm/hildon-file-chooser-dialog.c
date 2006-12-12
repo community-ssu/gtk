@@ -25,6 +25,9 @@
   * HildonFileChooserDialog widget
   */
 
+#define _GNU_SOURCE  /* To get the GNU version of basename. */
+#include <string.h>
+
 #include "hildon-file-selection.h"
 #include "hildon-file-chooser-dialog.h"
 #include "hildon-file-system-private.h"
@@ -320,7 +323,6 @@ hildon_file_chooser_dialog_set_limit(HildonFileChooserDialog *self)
      length when the user hits "Ok".
   */
 
-  ULOG_DEBUG ("Setting maximum length to %d", max_length);
   gtk_entry_set_max_length (GTK_ENTRY (self->priv->entry_name),
 			    self->priv->max_filename_length);
 }
@@ -479,8 +481,6 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
     priv->ext_name = g_strdup(dot);
     *dot = '\0';
   }
-
-  set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
 }
 
 static void
@@ -530,7 +530,7 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
             gtk_editable_set_position(GTK_EDITABLE(priv->entry_name), pos);
         }
         else
-          set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
+	  set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
 
         g_signal_handler_unblock(priv->entry_name, priv->changed_handler);
     }
@@ -621,11 +621,11 @@ hildon_file_chooser_dialog_set_current_folder(GtkFileChooser * chooser,
     hildon_file_chooser_dialog_set_limit(self);
 
     /* Now resplit the name into stub and ext parts since now the
-       situation might have as to whether it is a folder or not.
+       situation might have changed as to whether it is a folder or
+       not.
     */
     if (self->priv->ext_name)
-      name = g_strconcat (self->priv->stub_name,
-			  self->priv->ext_name);
+      name = g_strconcat (self->priv->stub_name, self->priv->ext_name, NULL);
     else
       name = g_strdup (self->priv->stub_name);
 
@@ -651,7 +651,7 @@ static void hildon_file_chooser_dialog_set_current_name(GtkFileChooser *
 {
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
-
+    
     set_stub_and_ext (priv, name);
 
     /* If we have autonaming enabled, we try to remove possible

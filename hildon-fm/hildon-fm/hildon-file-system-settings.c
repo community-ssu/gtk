@@ -62,7 +62,8 @@ enum {
   PROP_MMC_USED,
   PROP_MMC_CORRUPTED,
   PROP_INTERNAL_MMC_CORRUPTED,
-  PROP_IAP_CONNECTED
+  PROP_IAP_CONNECTED,
+  PROP_BONDING_CHANGED
 };
 
 #define PRIVATE(obj) HILDON_FILE_SYSTEM_SETTINGS(obj)->priv
@@ -82,6 +83,14 @@ enum {
 
 #define ICD_MATCH_RULE "type='signal',interface='" ICD_DBUS_INTERFACE \
                        "',member='" ICD_STATUS_CHANGED_SIG "'"
+
+#define BT_BONDING_CREATED_RULE "type='signal',"                 \
+                                "interface='org.bluez.Adapter'," \
+                                "member='BondingCreated'"
+
+#define BT_BONDING_REMOVED_RULE "type='signal',"                 \
+                                "interface='org.bluez.Adapter'," \
+                                "member='BondingRemoved'"
 
 /* For getting and tracking the Bluetooth name
  */
@@ -162,6 +171,9 @@ hildon_file_system_settings_get_property(GObject *object,
       break;
     case PROP_IAP_CONNECTED:
       g_value_set_boolean(value, priv->iap_connected);
+      break;
+    case PROP_BONDING_CHANGED:
+      g_value_set_boolean(value, TRUE);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -370,18 +382,24 @@ hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn,
   g_assert(HILDON_IS_FILE_SYSTEM_SETTINGS(data));
 
   if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, MCE_DEVICE_MODE_SIG))
-  {
-    set_flight_mode_from_message(HILDON_FILE_SYSTEM_SETTINGS(data), msg);
-  }
+    {
+      set_flight_mode_from_message(HILDON_FILE_SYSTEM_SETTINGS(data), msg);
+    }
   else if (dbus_message_is_signal(msg, BTNAME_SIGNAL_IF, BTNAME_SIG_CHANGED))
-  {
-    set_bt_name_from_message(HILDON_FILE_SYSTEM_SETTINGS(data), msg);
-  }
+    {
+      set_bt_name_from_message(HILDON_FILE_SYSTEM_SETTINGS(data), msg);
+    }
+  else if (dbus_message_is_signal(msg, "org.bluez.Adapter", "BondingCreated")
+	   || dbus_message_is_signal(msg, "org.bluez.Adapter",
+				     "BondingRemoved"))
+    {
+      g_object_notify (data, "bonding-changed");
+    }
   else if (dbus_message_is_signal (msg, ICD_DBUS_INTERFACE,
 				   ICD_STATUS_CHANGED_SIG))
-  {
-    set_icd_status_from_message (HILDON_FILE_SYSTEM_SETTINGS (data), msg);
-  }
+    {
+      set_icd_status_from_message (HILDON_FILE_SYSTEM_SETTINGS (data), msg);
+    }
 				   
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
@@ -465,7 +483,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
     dbus_error_free(&error);
     return;
   }
-  dbus_connection_ref(self->priv->dbus_conn);
+  dbus_connection_set_exit_on_disconnect (self->priv->dbus_conn, FALSE);
 
   /* Let's query initial state. These calls are async, so they do not
      consume too much startup time */
@@ -523,6 +541,22 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
 
   dbus_error_init (&error);
   dbus_bus_add_match (conn, ICD_MATCH_RULE, &error);
+  if (dbus_error_is_set(&error))
+    {
+      ULOG_ERR_F("dbus_bus_add_match failed: %s\n", error.message);
+      dbus_error_free (&error);
+    }
+
+  dbus_error_init (&error);
+  dbus_bus_add_match (conn, BT_BONDING_CREATED_RULE, &error);
+  if (dbus_error_is_set(&error))
+    {
+      ULOG_ERR_F("dbus_bus_add_match failed: %s\n", error.message);
+      dbus_error_free (&error);
+    }
+
+  dbus_error_init (&error);
+  dbus_bus_add_match (conn, BT_BONDING_REMOVED_RULE, &error);
   if (dbus_error_is_set(&error))
     {
       ULOG_ERR_F("dbus_bus_add_match failed: %s\n", error.message);
@@ -599,6 +633,7 @@ hildon_file_system_settings_finalize(GObject *obj)
     dbus_bus_remove_match(priv->dbus_conn, ICD_MATCH_RULE, NULL);
     dbus_connection_remove_filter(priv->dbus_conn,
       hildon_file_system_settings_handle_dbus_signal, obj);
+    dbus_connection_close(priv->dbus_conn);
     dbus_connection_unref(priv->dbus_conn);
   }
   
@@ -657,6 +692,10 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
   g_object_class_install_property(object_class, PROP_IAP_CONNECTED,
     g_param_spec_boolean("iap-connected", "IAP Connected",
 	                 "Whether or not we have a internet connection",
+			 FALSE, G_PARAM_READABLE));
+  g_object_class_install_property(object_class, PROP_BONDING_CHANGED,
+    g_param_spec_boolean("bonding-changed", "Bluetooth bondings changed",
+	                 "Hack: only used for notify signals...",
 			 FALSE, G_PARAM_READABLE));
 }
 

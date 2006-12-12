@@ -1,4 +1,80 @@
-2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
+2006-12-12  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Merged changes from 1.16 to 1.19.
+
+>    2006-12-08  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.19.
+>
+>	    * hildon-fm/hildon-file-system-private.c (hex_digit_to_int,
+>	    unescape_string): New.
+>	    (_hildon_file_system_create_file_name): Use them to unescape the
+>	    fallback display name that is directly extracted from the URI.
+>	    (N47877)
+>
+>    2006-11-30  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.18.
+>
+>	    Make it possible for special locations to request a rescan, and
+>	    use it to keep the obex root folder uptodate.  (N40395)
+>
+>	    * hildon-fm/hildon-file-system-model.c (location_rescan): New.
+>	    (setup_node_for_location): Connect it.
+>	    (hildon_file_system_model_destroy_model_node): Expect three
+>	    signals to be disconnected.
+>	    (hildon_file_system_model_queue_node_reload): Refactored out of
+>	    _hildon_file_system_model_queue_reload in order to be able to
+>	    reload nodes directly without having to construct a iter first.
+>
+>	    * hildon-fm/hildon-file-system-obex.h (struct
+>	    _HildonFileSystemObex): Added binding_id member.
+>	    * hildon-fm/hildon-file-system-obex.c (bonding_changed): New, for
+>	    triggering a rescan.
+>	    (hildon_file_system_obex_init): Connect it to the file system
+>	    settings.
+>	    (hildon_file_system_obex_finalize): Disconnect it.
+>
+>	    * hildon-fm/hildon-file-system-settings.c
+>	    (hildon_file_system_settings_get_property,
+>	    hildon_file_system_settings_class_init): Added "bonding-changed"
+>	    property.
+>	    (hildon_file_system_settings_setup_dbus): Catch bonding signals
+>	    from Bluez.
+>	    (hildon_file_system_settings_handle_dbus_signal): Handle them.
+>
+>	    * hildon-fm/hildon-file-system-special-location.h (struct
+>	    _HildonFileSystemSpecialLocationClass): Added 'rescan' signal.
+>	    * hildon-fm/hildon-file-system-special-location.c (enum
+>	    HildonFileSystemSpecialLocationSignals,
+>	    hildon_file_system_special_location_class_init): Register it.
+>
+>    2006-11-29  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    * hildon-fm/hildon-file-system-upnp.c
+>	    (hildon_file_system_upnp_init): Use 'device' directly instead of
+>	    casting it; it is already the right type.
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Do
+>	    not set entry widget, that was confusing the internal state
+>	    related to autonaming somehow. (N48902)
+>	    (hildon_file_chooser_dialog_set_current_folder): Terminate
+>	    g_strconcat argument list with NULL, stupid. (N48903)
+>
+>    2006-11-21  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.17
+>
+>	    * hildon-fm/hildon-file-system-obex.c
+>	    (_obex_addr_to_display_name): Do not call
+>	    dbus_connection_disconnect.
+>
+>	    * hildon-fm/hildon-file-system-upnp.c
+>	    (hildon_file_system_upnp_create_child_location): Use
+>	    qgn_list_filesys_mediaserver icon instead of
+>	    qgn_list_filesys_divc_cls. (N45114)
+
+2006-12-08  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added
 	hildon-file-common-private.h so that it gets distributed. (N49099)

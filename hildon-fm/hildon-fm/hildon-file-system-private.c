@@ -447,10 +447,52 @@ static const gchar *get_custom_root_name(const GtkFilePath *path)
   }
 }
 
+static int
+hex_digit_to_int (char d)
+{
+  if (d >= '0' && d <= '9')
+    return d - '0';
+  if (d >= 'a' && d <= 'f')
+    return d - 'a' + 10;
+  if (d >= 'A' && d <= 'F')
+    return d - 'A' + 10;
+  return -1;
+}
+ 
+static char *
+unescape_string (const char *escaped)
+{
+  char *result = g_strdup (escaped);
+  char *a, *b;
+  
+  a = b = result;
+  while (*a)
+    {
+      if (a[0] == '%' && a[1] != '\0' && a[2] != '\0')
+	{
+	  int d1 = hex_digit_to_int (a[1]), d2 = hex_digit_to_int (a[2]);
+	  int c = 16*d1 + d2;
+
+	  if (d1 >= 0 && d2 >= 0 && c != 0)
+	    {
+	      a += 3;
+	      *b++ = c;
+	      continue;
+	    }
+	}
+
+      *b++ = *a++;
+    }
+  *b = '\0';
+
+  return result;
+}
+
 gchar *
-_hildon_file_system_create_file_name(GtkFileSystem *fs,
-  const GtkFilePath *path, HildonFileSystemSpecialLocation *location, 
-  GtkFileInfo *info)
+_hildon_file_system_create_file_name (GtkFileSystem *fs,
+				      const GtkFilePath *path,
+				      HildonFileSystemSpecialLocation *location, 
+				      GtkFileInfo *info)
 {
   if (location) {
     char *name;
@@ -461,7 +503,7 @@ _hildon_file_system_create_file_name(GtkFileSystem *fs,
   if (info)  
     return g_strdup(gtk_file_info_get_display_name(info));
 
-  return g_strdup(get_custom_root_name(path));
+  return unescape_string (get_custom_root_name (path));
 }
 
 gchar *

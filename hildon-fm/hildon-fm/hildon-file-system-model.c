@@ -176,7 +176,13 @@ location_changed(HildonFileSystemSpecialLocation *location, GNode *node);
 static void 
 location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     GNode *node);
+static void 
+location_rescan (HildonFileSystemSpecialLocation *location, GNode *node);
 static void setup_node_for_location(GNode *node);
+static void
+hildon_file_system_model_queue_node_reload (HildonFileSystemModel *model,
+					    GNode *node,
+					    gboolean force);
 
 static GtkTreePath *hildon_file_system_model_get_path(GtkTreeModel * model,
                                                       GtkTreeIter * iter);
@@ -1616,7 +1622,7 @@ static gboolean hildon_file_system_model_destroy_model_node(GNode * node,
              Ensure that all expected handlers were disconnected. */
           gint check = g_signal_handlers_disconnect_matched(
             model_node->location, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, node);
-          g_assert(check == 2);
+          g_assert(check == 3);
           g_object_unref(model_node->location);
       }
 
@@ -2325,6 +2331,24 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     }
 }
 
+static void 
+location_rescan(HildonFileSystemSpecialLocation *location, GNode *node)
+{
+    HildonFileSystemModelNode *model_node;
+    HildonFileSystemModel *model;
+
+    g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
+    g_assert(node != NULL && node->data != NULL);
+
+    ULOG_INFO("LOCATION RESCAN: %s", location->basepath);
+
+    model_node = node->data;
+    model = model_node->model;
+
+    hildon_file_system_model_queue_node_reload
+      (HILDON_FILE_SYSTEM_MODEL(model), node, TRUE);
+}
+
 static HildonFileSystemModelNode * 
 create_model_node_for_location(HildonFileSystemModel *self,
     HildonFileSystemSpecialLocation *location)
@@ -2385,6 +2409,8 @@ static void setup_node_for_location(GNode *node)
                 G_CALLBACK(location_changed), node);
             g_signal_connect(location, "connection-state",
                 G_CALLBACK(location_connection_state_changed), node);    
+            g_signal_connect(location, "rescan",
+                G_CALLBACK(location_rescan), node);
         }
         else
             (void) link_file_folder(node, model_node->path, &error);
@@ -2789,6 +2815,23 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
     return FALSE;
 }
 
+static void
+hildon_file_system_model_queue_node_reload (HildonFileSystemModel *model,
+					    GNode *node,
+					    gboolean force)
+{
+  g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
+
+  if (!node_needs_reload (model, node, force))
+    return;
+
+  if (g_queue_find(model->priv->reload_list, node) == NULL)
+    {
+      hildon_file_system_model_ensure_idle(model);
+      g_queue_push_tail(model->priv->reload_list, node);
+    }
+}
+
 void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
   GtkTreeIter *parent_iter, gboolean force)
 {
@@ -2800,14 +2843,7 @@ void _hildon_file_system_model_queue_reload(HildonFileSystemModel *model,
 
   node = parent_iter->user_data;
 
-  if (!node_needs_reload (model, node, force))
-    return;
-
-  if (g_queue_find(model->priv->reload_list, node) == NULL)
-    {
-      hildon_file_system_model_ensure_idle(model);
-      g_queue_push_tail(model->priv->reload_list, node);
-    }
+  hildon_file_system_model_queue_node_reload (model, node, force);
 }
 
 static void

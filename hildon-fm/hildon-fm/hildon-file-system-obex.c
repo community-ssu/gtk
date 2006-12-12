@@ -82,9 +82,21 @@ hildon_file_system_obex_class_init (HildonFileSystemObexClass *klass)
 }
 
 static void
+bonding_changed (GObject *settings, GParamSpec *param, gpointer data)
+{
+  HildonFileSystemObex *obex = HILDON_FILE_SYSTEM_OBEX (data);
+
+  obex->has_children = FALSE;
+  g_signal_emit_by_name (data, "rescan");
+}
+
+static void
 hildon_file_system_obex_init (HildonFileSystemObex *device)
 {
+    HildonFileSystemSettings *fs_settings;
     HildonFileSystemSpecialLocation *location;
+
+    fs_settings = _hildon_file_system_settings_get_instance ();
 
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (device);
     location->compatibility_type = HILDON_FILE_SYSTEM_MODEL_GATEWAY;
@@ -93,11 +105,29 @@ hildon_file_system_obex_init (HildonFileSystemObex *device)
     location->failed_access_message = NULL;
     
     device->has_children = FALSE;
+
+    device->bonding_handler_id =
+      g_signal_connect (fs_settings,
+			"notify::bonding-changed",
+			G_CALLBACK (bonding_changed),
+			device);
 }
 
 static void
 hildon_file_system_obex_finalize (GObject *obj)
 {
+    HildonFileSystemObex *obex;
+    HildonFileSystemSettings *fs_settings;
+    
+    obex = HILDON_FILE_SYSTEM_OBEX (obj);
+    fs_settings = _hildon_file_system_settings_get_instance ();
+    if (g_signal_handler_is_connected (fs_settings,
+				       obex->bonding_handler_id))
+      {
+        g_signal_handler_disconnect (fs_settings, 
+				     obex->bonding_handler_id);
+      }
+
     G_OBJECT_CLASS (hildon_file_system_obex_parent_class)->finalize (obj);
 }
 
@@ -287,13 +317,14 @@ static gchar *_obex_addr_to_display_name(gchar *obex_addr)
 
     dbus_error_init(&error);
     conn = dbus_bus_get_private (DBUS_BUS_SYSTEM, &error);
-
+    
     if (!conn) {
         dbus_error_free(&error);
 
         return NULL;
     }
 
+    dbus_connection_set_exit_on_disconnect (conn, FALSE);
 
     msg = dbus_message_new_method_call ("org.bluez", "/org/bluez/hci0",
                                         "org.bluez.Adapter", "GetRemoteName");
@@ -334,8 +365,8 @@ static gchar *_obex_addr_to_display_name(gchar *obex_addr)
 
     escape:
 
+    dbus_connection_close (conn);
     dbus_connection_unref (conn);
-
 
     return ret_str;
 }
