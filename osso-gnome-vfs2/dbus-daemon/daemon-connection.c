@@ -321,7 +321,7 @@ connection_unref (DaemonConnection *conn)
 	d(g_print ("Last unref\n"));
 
 	if (dbus_connection_get_is_connected (conn->conn)) {
-		dbus_connection_disconnect (conn->conn);
+		dbus_connection_close (conn->conn);
 	}
 	dbus_connection_unref (conn->conn);
 

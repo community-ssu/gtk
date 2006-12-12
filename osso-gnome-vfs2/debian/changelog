@@ -1,3 +1,10 @@
+osso-gnome-vfs2 (2.12.0.18-2osso1) unstable; urgency=low
+
+  * Remove unsed osso-gwconnect dependency
+  * Port to new D-Bus 1.0 API
+
+ -- Richard Hult <richard@imendio.com>  Tue, 12 Dec 2006 08:58:27 +0100
+
 osso-gnome-vfs2 (2.12.0.17-2osso1) unstable; urgency=low
 
   * Fixes NB#47756: dbus-vfs-daemon segmentation fault.
