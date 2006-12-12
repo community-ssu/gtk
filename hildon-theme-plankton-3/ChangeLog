@@ -1,10 +1,19 @@
+2006-12-12  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.3.0-2 release]
+
+	* NEWS:
+	* debian/changelog:
+	* debian/control: Removing the ui-fonts and osso-icons from
+	dependencies for a little while.
+
 2006-12-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* template/Makefile.am: Adding the xcf file to EXTRA_DIST.
 
 2006-12-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
-	[0.3.0 release]
+	[0.3.0-1 release]
 
 	* AUTHORS: Making it more explicit that tigert is the author of the
 	artwork.
@@ -18,7 +27,7 @@
 
 2006-12-04  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
-	[0.2.0 release]
+	[0.2.0-1 release]
 
 	* configure.ac:
 	* debian/changelog:

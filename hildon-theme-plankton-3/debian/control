@@ -7,5 +7,5 @@ Standards-Version: 3.6.0
 
 Package: hildon-theme-plankton-3
 Architecture: all
-Depends: gtk2-engines-sapwood, ui-fonts, osso-icons, hildon-theme-cacher
+Depends: gtk2-engines-sapwood, hildon-theme-cacher
 Description: A hildon theme. 

@@ -1,12 +1,15 @@
-[0.3.0 release]
+[0.3.0-2 release]
+* Removing the ui-fonts and osso-icons dependencies for the time being
+
+[0.3.0-1 release]
 * Adding hardfixed dependency to layout.
 * Adjusting to new substing (@_@).
 * Adding actual plankton theme images.
 
-[0.2.0 release]
+[0.2.0-1 release]
 * Second official release.
 
-[0.1.0 release]
+[0.1.0-1 release]
 * First official release.
 
 [0.0.0]
