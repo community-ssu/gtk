@@ -9,6 +9,7 @@ Package: python2.5
 Architecture: any
 Depends: ${shlibs:Depends}
 Conflicts: python2.4
+Provides: python-termios
 Description: An interactive high-level object-oriented language
  Version 2.5 of the high-level, interactive object oriented language,
  includes an extensive class library with lots of goodies for
