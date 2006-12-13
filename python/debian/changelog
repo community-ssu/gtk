@@ -1,3 +1,9 @@
+python2.5 (2.5.0-1osso4) unstable; urgency=low
+
+  * put the readline module in -dev package
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 13 Dec 2006 10:16:11 -0300
+
 python2.5 (2.5.0-1osso3) unstable; urgency=low
 
   * moving the subprocess module to runtime package

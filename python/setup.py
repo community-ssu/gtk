@@ -467,43 +467,42 @@ class PyBuildExt(build_ext):
             # Read SGI RGB image files (but coded portably)
             exts.append( Extension('rgbimg', ['rgbimgmodule.c']) )
 
-# INdT
-#        # readline
-#        do_readline = self.compiler.find_library_file(lib_dirs, 'readline')
-#        if platform == 'darwin':
-#            # MacOSX 10.4 has a broken readline. Don't try to build
-#            # the readline module unless the user has installed a fixed
-#            # readline package
-#            if find_file('readline/rlconf.h', inc_dirs, []) is None:
-#                do_readline = False
-#        if do_readline:
-#            if sys.platform == 'darwin':
-#                # In every directory on the search path search for a dynamic
-#                # library and then a static library, instead of first looking
-#                # for dynamic libraries on the entiry path.
-#                # This way a staticly linked custom readline gets picked up
-#                # before the (broken) dynamic library in /usr/lib.
-#                readline_extra_link_args = ('-Wl,-search_paths_first',)
-#            else:
-#                readline_extra_link_args = ()
-#
-#            readline_libs = ['readline']
-#            if self.compiler.find_library_file(lib_dirs,
-#                                                 'ncursesw'):
-#                readline_libs.append('ncursesw')
-#            elif self.compiler.find_library_file(lib_dirs,
-#                                                 'ncurses'):
-#                readline_libs.append('ncurses')
-#            elif self.compiler.find_library_file(lib_dirs, 'curses'):
-#                readline_libs.append('curses')
-#            elif self.compiler.find_library_file(lib_dirs +
-#                                               ['/usr/lib/termcap'],
-#                                               'termcap'):
-#                readline_libs.append('termcap')
-#            exts.append( Extension('readline', ['readline.c'],
-#                                   library_dirs=['/usr/lib/termcap'],
-#                                   extra_link_args=readline_extra_link_args,
-#                                   libraries=readline_libs) )
+        # readline
+        do_readline = self.compiler.find_library_file(lib_dirs, 'readline')
+        if platform == 'darwin':
+            # MacOSX 10.4 has a broken readline. Don't try to build
+            # the readline module unless the user has installed a fixed
+            # readline package
+            if find_file('readline/rlconf.h', inc_dirs, []) is None:
+                do_readline = False
+        if do_readline:
+            if sys.platform == 'darwin':
+                # In every directory on the search path search for a dynamic
+                # library and then a static library, instead of first looking
+                # for dynamic libraries on the entiry path.
+                # This way a staticly linked custom readline gets picked up
+                # before the (broken) dynamic library in /usr/lib.
+                readline_extra_link_args = ('-Wl,-search_paths_first',)
+            else:
+                readline_extra_link_args = ()
+
+            readline_libs = ['readline']
+            if self.compiler.find_library_file(lib_dirs,
+                                                 'ncursesw'):
+                readline_libs.append('ncursesw')
+            elif self.compiler.find_library_file(lib_dirs,
+                                                 'ncurses'):
+                readline_libs.append('ncurses')
+            elif self.compiler.find_library_file(lib_dirs, 'curses'):
+                readline_libs.append('curses')
+            elif self.compiler.find_library_file(lib_dirs +
+                                               ['/usr/lib/termcap'],
+                                               'termcap'):
+                readline_libs.append('termcap')
+            exts.append( Extension('readline', ['readline.c'],
+                                   library_dirs=['/usr/lib/termcap'],
+                                   extra_link_args=readline_extra_link_args,
+                                   libraries=readline_libs) )
         if platform not in ['mac']:
             # crypt module.
 

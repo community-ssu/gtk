@@ -25,9 +25,7 @@ clean:
 	dh_testroot
 	rm -f stamp-*
 	-$(MAKE) clean
-	rm -rf Lib/test/db_home
-	rm -rf build
-	rm -rf locales
+	-rm -rf config.log Lib/test/db_home build locales
 	-find -name '*.py[co]' | xargs -n 50 rm -f
 	dh_clean
 
@@ -114,8 +112,13 @@ stamp-install: stamp-build
 	mv $(d_dev)/$(scriptdir)/sre_constants.pyo $(d_base)/$(scriptdir)
 	mv $(d_dev)/$(scriptdir)/sre_parse.pyo     $(d_base)/$(scriptdir)
 	mv $(d_dev)/$(scriptdir)/site-packages     $(d_base)/$(scriptdir)
-	mv $(d_dev)/$(scriptdir)/lib-dynload       $(d_base)/$(scriptdir)
 	mv $(d_dev)/$(scriptdir)/plat-linux2/*.pyo $(d_base)/$(scriptdir)/plat-linux2
+
+	mkdir $(d_base)/$(scriptdir)/lib-dynload
+	for i in `find $(d_dev)/$(scriptdir)/lib-dynload -type f | grep -v -f $(only_dev_list)`; do \
+	    mv $$i $(d_base)/$(scriptdir)/lib-dynload; \
+	done
+
 	(cd $(d_dev)/$(scriptdir) && \
 		find . -name "*.pyo" -type f | \
 		grep -v -f $(only_dev_list) | \
@@ -156,17 +159,17 @@ stamp-install: stamp-build
 	find $(d_base) $(d_dev) -name .cvsignore | xargs rm -f
 	find $(d_base) $(d_dev) -name "*.exe" | xargs rm -f
 
-	# default python TODO
+	# default python
 	# ============== 
 
-	ln -sf $(PYTHON).1 $(d_dev)/usr/share/man/man1/python.1 # TODO: put in postinst script
-	(cd $(d_base)/usr/bin && ln -sf python$(PYVER) python) # TODO: put in postinst script
+	ln -sf $(PYTHON).1 $(d_dev)/usr/share/man/man1/python.1
+	(cd $(d_base)/usr/bin && ln -sf python$(PYVER) python)
 	ln -sf /usr/lib/python$(PYVER)/pdb.py $(d_dev)/usr/bin/pdb$(PYVER)
-	ln -sf pdb$(PYVER) $(d_dev)/usr/bin/pdb # TODO: put in postinst script
+	ln -sf pdb$(PYVER) $(d_dev)/usr/bin/pdb
 	ln -sf /usr/lib/python$(PYVER)/pydoc.py $(d_dev)/usr/bin/pydoc$(PYVER)
-	ln -sf pydoc$(PYVER) $(d_dev)/usr/bin/pydoc # TODO: put in postinst script
+	ln -sf pydoc$(PYVER) $(d_dev)/usr/bin/pydoc
 	cp -p Tools/i18n/pygettext.py $(d_dev)/usr/bin/pygettext$(PYVER)
-	ln -sf pygettext$(PYVER) $(d_dev)/usr/bin/pygettext # TODO: put in postinst script
+	ln -sf pygettext$(PYVER) $(d_dev)/usr/bin/pygettext
 
 	for i in `find $(d_base) $(d_dev) -type f`; do \
 	  sed '1s,#!.*python[^ ]*\(.*\),#!/usr/bin/env $(PYTHON)\1,' $$i > $$i.temp; \
