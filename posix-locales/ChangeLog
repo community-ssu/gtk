@@ -1,3 +1,7 @@
+2006-12-13  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
+
+	* locales/pt_BR: Amended first_weekday to 1 rather than 2 (Sunday rather than Monday). Fixes NB#48669
+
 2006-11-15  Mohammad Anwari  <Mohammad.Anwari@nokia.com>
 
 	* locales/sv_SE:  Amended t_fmt to display colons rather than decimal points. Fixes NB#43263. 
