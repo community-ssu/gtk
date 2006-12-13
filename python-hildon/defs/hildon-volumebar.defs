@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-volumebar.h
+;; From /usr/include/hidon-widgets/hildon-volumebar.h
 
 (define-function hildon_volumebar_get_type
   (c-name "hildon_volumebar_get_type")

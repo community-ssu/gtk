@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-color-popup.h
+;; From /usr/include/hildon-widgets/hildon-color-popup.h
 
 (define-function hildon_color_popup_new
   (c-name "hildon_color_popup_new")

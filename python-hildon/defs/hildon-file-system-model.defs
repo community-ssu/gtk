@@ -45,13 +45,14 @@
 ;)
 
 
-;; From hildon-file-system-model.h
+;; From /usr/include/hildon-widgets/hildon-file-system-model.h
 
 (define-function hildon_file_system_model_get_type
   (c-name "hildon_file_system_model_get_type")
   (return-type "GType")
 )
 
+; Deprecated
 ;(define-method finished_loading
 ;  (of-object "HildonFileSystemModel")
 ;  (c-name "hildon_file_system_model_finished_loading")

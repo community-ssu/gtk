@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-range-editor.h
+;; From /usr/include/hildon-widgets/hildon-range-editor.h
 
 (define-function hildon_range_editor_get_type
   (c-name "hildon_range_editor_get_type")

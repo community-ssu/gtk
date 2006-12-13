@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From gtk-infoprint.h
+;; From /usr/include/hildon-widgets/gtk-infoprint.h
 
 (define-function gtk_infoprint
   (c-name "gtk_infoprint")

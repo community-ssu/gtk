@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-weekday-picker.h
+;; From /usr/include/hildon-widgets/hildon-weekday-picker.h
 
 (define-function hildon_weekday_picker_get_type
   (c-name "hildon_weekday_picker_get_type")

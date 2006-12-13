@@ -2,27 +2,27 @@
 ; object definitions ...
 ;; Enumerations and flags ...
 
-(define-enum FileSystemModelItemType
-  (in-module "Hildon")
-  (c-name "HildonFileSystemModelItemType")
-  (gtype-id "HILDON_TYPE_FILE_SYSTEM_MODEL_ITEM_TYPE")
-  (values
-    '("unknown" "HILDON_FILE_SYSTEM_MODEL_UNKNOWN")
-    '("file" "HILDON_FILE_SYSTEM_MODEL_FILE")
-    '("folder" "HILDON_FILE_SYSTEM_MODEL_FOLDER")
-    '("safe-folder-images" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_IMAGES")
-    '("safe-folder-videos" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_VIDEOS")
-    '("safe-folder-sounds" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_SOUNDS")
-    '("safe-folder-documents" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_DOCUMENTS")
-    '("safe-folder-games" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES")
-    '("mmc" "HILDON_FILE_SYSTEM_MODEL_MMC")
-    '("gateway" "HILDON_FILE_SYSTEM_MODEL_GATEWAY")
-    '("local-device" "HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE")
-  )
-)
+;(define-enum FileSystemModelItemType
+;  (in-module "Hildon")
+;  (c-name "HildonFileSystemModelItemType")
+;  (gtype-id "HILDON_TYPE_FILE_SYSTEM_MODEL_ITEM_TYPE")
+;  (values
+;    '("unknown" "HILDON_FILE_SYSTEM_MODEL_UNKNOWN")
+;    '("file" "HILDON_FILE_SYSTEM_MODEL_FILE")
+;    '("folder" "HILDON_FILE_SYSTEM_MODEL_FOLDER")
+;    '("safe-folder-images" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_IMAGES")
+;    '("safe-folder-videos" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_VIDEOS")
+;    '("safe-folder-sounds" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_SOUNDS")
+;    '("safe-folder-documents" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_DOCUMENTS")
+;    '("safe-folder-games" "HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES")
+;    '("mmc" "HILDON_FILE_SYSTEM_MODEL_MMC")
+;    '("gateway" "HILDON_FILE_SYSTEM_MODEL_GATEWAY")
+;    '("local-device" "HILDON_FILE_SYSTEM_MODEL_LOCAL_DEVICE")
+;  )
+;)
 
 
-;; From hildon-file-system-common.h
+;; From /usr/include/hildon-widgets/hildon-file-system-common.h
 
 (define-function hildon_file_system_create_backend
   (c-name "hildon_file_system_create_backend")

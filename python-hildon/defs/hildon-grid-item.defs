@@ -9,28 +9,28 @@
 
 ;; Enumerations and flags ...
 
-(define-enum GridPositionType
-  (in-module "Hildon")
-  (c-name "HildonGridPositionType")
-  (gtype-id "HILDON_TYPE_GRID_POSITION_TYPE")
-  (values
-    '("bottom" "HILDON_GRID_ITEM_LABEL_POS_BOTTOM")
-    '("right" "HILDON_GRID_ITEM_LABEL_POS_RIGHT")
-  )
-)
+;(define-enum GridPositionType
+;  (in-module "Hildon")
+;  (c-name "HildonGridPositionType")
+;  (gtype-id "HILDON_TYPE_GRID_POSITION_TYPE")
+;  (values
+;    '("bottom" "HILDON_GRID_ITEM_LABEL_POS_BOTTOM")
+;    '("right" "HILDON_GRID_ITEM_LABEL_POS_RIGHT")
+;  )
+;)
 
-(define-enum GridItemIconSizeType
-  (in-module "Hildon")
-  (c-name "HildonGridItemIconSizeType")
-  (gtype-id "HILDON_TYPE_GRID_ITEM_ICON_SIZE_TYPE")
-  (values
-    '("27x27" "HILDON_GRID_ITEM_ICON_27x27")
-    '("128x128" "HILDON_GRID_ITEM_ICON_128x128")
-  )
-)
+;(define-enum GridItemIconSizeType
+;  (in-module "Hildon")
+;  (c-name "HildonGridItemIconSizeType")
+;  (gtype-id "HILDON_TYPE_GRID_ITEM_ICON_SIZE_TYPE")
+;  (values
+;    '("27x27" "HILDON_GRID_ITEM_ICON_27x27")
+;    '("128x128" "HILDON_GRID_ITEM_ICON_128x128")
+;  )
+;)
 
 
-;; From hildon-grid-item.h
+;; From /usr/include/hildon-widgets/hildon-grid-item.h
 
 (define-function hildon_grid_item_get_type
   (c-name "hildon_grid_item_get_type")

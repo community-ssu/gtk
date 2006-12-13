@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-window.h
+;; From /usr/include/hildon-widgets/hildon-window.h
 
 (define-function hildon_window_get_type
   (c-name "hildon_window_get_type")

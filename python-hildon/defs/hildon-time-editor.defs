@@ -31,7 +31,7 @@
 ;)
 
 
-;; From hildon-time-editor.h
+;; From /usr/include/hildon-widgets/hildon-time-editor.h
 
 (define-function hildon_time_editor_get_type
   (c-name "hildon_time_editor_get_type")
@@ -66,6 +66,7 @@
   )
 )
 
+;Deprecated
 ;(define-method show_seconds
 ;  (of-object "HildonTimeEditor")
 ;  (c-name "hildon_time_editor_show_seconds")

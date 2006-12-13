@@ -20,7 +20,7 @@
 )
 
 
-;; From hildon-caption.h
+;; From /usr/include/hildon-widgets/hildon-caption.h
 
 (define-function hildon_caption_status_get_type
   (c-name "hildon_caption_status_get_type")
@@ -45,6 +45,7 @@
   )
 )
 
+; Deprecated
 ;(define-method get_sizegroup
 ;  (of-object "HildonCaption")
 ;  (c-name "hildon_caption_get_sizegroup")
@@ -141,6 +142,7 @@
   (return-type "gfloat")
 )
 
+; Deprecated
 ;(define-method get_control
 ;  (of-object "HildonCaption")
 ;  (c-name "hildon_caption_get_control")

@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-plugin-widget.h
+;; From /usr/include/hildon-widgets/hildon-plugin-widget.h
 
 (define-function hildon_plugin_info_initialize
   (c-name "hildon_plugin_info_initialize")

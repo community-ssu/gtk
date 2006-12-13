@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-code-dialog.h
+;; From /usr/include/hildon-widgets/hildon-code-dialog.h
 
 (define-function hildon_code_dialog_get_type
   (c-name "hildon_code_dialog_get_type")

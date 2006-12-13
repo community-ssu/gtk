@@ -23,7 +23,7 @@
 ;)
 
 
-;; From hildon-note.h
+;; From /usr/include/hildon-widgets/hildon-note.h
 
 ; There is no "hildon_note_new" function. That declaration is here just to be overrided.
 (define-function hildon_note_new

@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-appview.h
+;; From /usr/include/hildon-widgets/hildon-appview.h
 
 (define-function hildon_appview_get_type
   (c-name "hildon_appview_get_type")

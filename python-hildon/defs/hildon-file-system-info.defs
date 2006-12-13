@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-file-system-info.h
+;; From /usr/include/hildon-widgets/hildon-file-system-info.h
 
 (define-function hildon_file_system_info_async_new
   (c-name "hildon_file_system_info_async_new")

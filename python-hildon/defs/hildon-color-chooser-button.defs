@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-color-chooser-button.h
+;; From /usr/include/hildon-widgets/hildon-color-chooser-button.h
 
 (define-function hildon_color_chooser_button_get_type
   (c-name "hildon_color_chooser_button_get_type")

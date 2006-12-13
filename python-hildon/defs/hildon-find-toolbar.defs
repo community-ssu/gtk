@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-find-toolbar.h
+;; From /usr/include/hildon-widgets/hildon-find-toolbar.h
 
 (define-function hildon_find_toolbar_get_type
   (c-name "hildon_find_toolbar_get_type")

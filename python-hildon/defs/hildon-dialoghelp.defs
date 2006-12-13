@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-dialoghelp.h
+;; From /usr/include/hildon-widgets/hildon-dialoghelp.h
 
 (define-method help_enable
   (of-object "GtkDialog")

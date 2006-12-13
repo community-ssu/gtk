@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-add-home-dialog.h
+;; From /usr/include/hildon-widgets/hildon-add-home-dialog.h
 
 (define-function hildon_add_home_dialog_get_type
   (c-name "hildon_add_home_dialog_get_type")

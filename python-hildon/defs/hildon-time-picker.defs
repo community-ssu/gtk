@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-time-picker.h
+;; From /usr/include/hildon-widgets/hildon-time-picker.h
 
 (define-function hildon_time_picker_get_type
   (c-name "hildon_time_picker_get_type")

@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-file-handling-note.h
+;; From /usr/include/hildon-widgets/hildon-file-handling-note.h
 
 (define-function hildon_file_handling_note_new_moving
   (c-name "hildon_file_handling_note_new_moving")

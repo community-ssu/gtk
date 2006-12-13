@@ -21,7 +21,7 @@
 ;)
 
 
-;; From hildon-number-editor.h
+;; From /usr/include/hildon-widgets/hildon-number-editor.h
 
 (define-function hildon_number_editor_get_type
   (c-name "hildon_number_editor_get_type")

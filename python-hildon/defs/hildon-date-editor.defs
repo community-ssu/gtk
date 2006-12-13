@@ -29,7 +29,7 @@
 ;)
 
 
-;; From hildon-date-editor.h
+;; From /usr/include/hildon-widgets/hildon-date-editor.h
 
 (define-function hildon_date_editor_get_type
   (c-name "hildon_date_editor_get_type")

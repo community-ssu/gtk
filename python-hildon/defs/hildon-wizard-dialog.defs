@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-wizard-dialog.h
+;; From /usr/include/hildon-widgets/hildon-wizard-dialog.h
 
 (define-function hildon_wizard_dialog_get_type
   (c-name "hildon_wizard_dialog_get_type")

@@ -10,8 +10,9 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-font-selection-dialog.h
+;; From /usr/include/hildon-widgets/hildon-font-selection-dialog.h
 
+; Deprecated
 ;(define-method get_font
 ;  (of-object "HildonFontSelectionDialog")
 ;  (c-name "hildon_font_selection_dialog_get_font")

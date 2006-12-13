@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-sort-dialog.h
+;; From /usr/include/hildon-widgets/hildon-sort-dialog.h
 
 (define-function hildon_sort_dialog_get_type
   (c-name "hildon_sort_dialog_get_type")

@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-banner.h
+;; From /usr/include/hildon-widgets/hildon-banner.h
 
 (define-function hildon_banner_get_type
   (c-name "hildon_banner_get_type")

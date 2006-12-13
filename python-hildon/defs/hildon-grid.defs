@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-grid.h
+;; From /usr/include/hildon-widgets/hildon-grid.h
 
 (define-function hildon_grid_get_type
   (c-name "hildon_grid_get_type")

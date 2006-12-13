@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-defines.h
+;; From /usr/include/hildon-widgets/hildon-defines.h
 
 (define-function hildon_icon_sizes_init
   (c-name "hildon_icon_sizes_init")

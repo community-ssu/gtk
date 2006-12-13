@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-seekbar.h
+;; From /usr/include/hildon-widgets/hildon-seekbar.h
 
 (define-function hildon_seekbar_get_type
   (c-name "hildon_seekbar_get_type")

@@ -3,7 +3,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-window-private.h
+;; From /usr/include/hildon-widgets/hildon-window-private.h
 
 (define-method set_program
   (of-object "HildonWindow")

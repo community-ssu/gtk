@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-controlbar.h
+;; From /usr/include/hildon-widgets/hildon-controlbar.h
 
 (define-function hildon_controlbar_get_type
   (c-name "hildon_controlbar_get_type")

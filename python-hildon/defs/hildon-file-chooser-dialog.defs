@@ -10,7 +10,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-file-chooser-dialog.h
+;; From /usr/include/hildon-widgets/hildon-file-chooser-dialog.h
 
 (define-function hildon_file_chooser_dialog_get_type
   (c-name "hildon_file_chooser_dialog_get_type")
@@ -29,6 +29,7 @@
 
 (define-function hildon_file_chooser_dialog_new_with_properties
   (c-name "hildon_file_chooser_dialog_new_with_properties")
+  (is-constructor-of "HildonFileChooserDialog")
   (return-type "GtkWidget*")
   (parameters
     '("GtkWindow*" "parent")

@@ -11,7 +11,7 @@
 ;; Enumerations and flags ...
 
 
-;; From hildon-color-button.h
+;; From /usr/include/hildon-widgets/hildon-color-button.h
 
 (define-function hildon_color_button_get_type
   (c-name "hildon_color_button_get_type")
