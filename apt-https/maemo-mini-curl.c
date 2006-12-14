@@ -9,8 +9,10 @@
  * modify it under the terms of the GNU General Public License version
  * 2 as published by the Free Software Foundation.
  *
- * As a special exception, linking this program with OpenSSL is
- * allowed.
+ * As a special exception to the GNU General Public License, you may
+ * link this software with OpenSSL. This means, that no provision of
+ * the GPL restricting you in linking this work with OpenSSL shall
+ * apply to such a combination.
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
