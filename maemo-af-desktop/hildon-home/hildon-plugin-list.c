@@ -423,6 +423,7 @@ hildon_plugin_list_set_directory (HildonPluginList *list,
       (!directory && priv->directory) ||
       strcmp (directory, priv->directory))
     {
+      hildon_return_t ret;
       g_object_notify (G_OBJECT (list), "directory");
 
       if (priv->directory)
@@ -430,10 +431,13 @@ hildon_plugin_list_set_directory (HildonPluginList *list,
       
       g_free (priv->directory);
       priv->directory = g_strdup (directory);
-      hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)
+      ret = hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)
                                 hildon_plugin_list_dnotify_callback,
                              priv->directory,
                              list);
+
+      if (ret != HILDON_OK)
+        g_warning ("Could not add dnotify watch on %s", priv->directory);
 
       g_signal_emit_by_name (G_OBJECT (list), "directory-changed");
     }

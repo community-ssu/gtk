@@ -246,7 +246,6 @@ hn_window_constructor (GType gtype,
   gchar *plugin_dir;
   const char *home_dir;
   gboolean dnotify_ret;
-  hildon_return_t dnotify_status;
 
   self = G_OBJECT_CLASS (parent_class)->constructor (gtype,
                                                      n_params,
@@ -267,9 +266,6 @@ hn_window_constructor (GType gtype,
   gtk_container_add (GTK_CONTAINER (window),GTK_WIDGET (priv->panel));
 
   plugin_dir  = g_build_filename (home_dir, NAVIGATOR_USER_DIR, NULL);
-
-  /* Initialize this before any plugin or whatever */
-  dnotify_status = hildon_dnotify_handler_init();
   
   hn_panel_load_dummy_buttons (HILDON_NAVIGATOR_PANEL (priv->panel));
 
@@ -297,19 +293,14 @@ hn_window_constructor (GType gtype,
   if (!g_file_test(plugin_dir, G_FILE_TEST_IS_DIR))
     g_mkdir(plugin_dir, 0755); /* THIS WILL CHANGE! CREATE IT ANYWAY! */
 
-  if (dnotify_status == HILDON_OK)
-  { 
-    dnotify_ret =
+  dnotify_ret =
       hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)configuration_changed,
-		            plugin_dir,
-			    priv->panel);
-      
-    hn_others_button_dnotify_register (HN_OTHERS_BUTTON (priv->others_button));
+                             plugin_dir,
+                             priv->panel);
 
-    hn_wm_dnotify_register ();
-  }
-  else
-    g_debug ("failed to initialize dnotify");
+  hn_others_button_dnotify_register (HN_OTHERS_BUTTON (priv->others_button));
+
+  hn_wm_dnotify_register ();
  
   /* cleanup */
   g_free (plugin_dir);

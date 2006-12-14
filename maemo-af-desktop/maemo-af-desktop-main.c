@@ -80,8 +80,8 @@
 #include <hildon-widgets/gtk-infoprint.h>
 #include <hildon-widgets/hildon-note.h>
 
-#include <libmb/mbutil.h>
-#include "libmb/mbdotdesktop.h"
+#include <hildon-base-lib/hildon-base-dnotify.h>
+
 /* log include */
 #include <log-functions.h>
 
@@ -248,6 +248,10 @@ maemo_af_desktop_main(int argc, char* argv[])
         return 1;
     }
     
+
+    /* Initialize hildon-base-lib (for dnotify) */
+    if (hildon_dnotify_handler_init () != HILDON_OK)
+      g_warning ("Could not initialize hildon-base-lib dnotify handler");
 
     keysnooper_id = 0;
     keysnooper_id=hildon_home_main();
