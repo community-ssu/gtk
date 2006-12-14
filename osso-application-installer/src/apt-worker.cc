@@ -2353,6 +2353,8 @@ operation (bool check_only)
        }
    }
    
+   send_status (op_downloading, 0, (int)(FetchBytes - FetchPBytes), 0);
+
    if (Fetcher.Run() == pkgAcquire::Failed)
      return rescode_failure;
       
