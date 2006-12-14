@@ -11,4 +11,5 @@ AC_OUTPUT([Makefile                             \
 	   rc/Makefile                          \
            pkgconfig/hildon-theme-layout-3.pc   \
            pkgconfig/Makefile                   \
-           data/Makefile])
+           data/Makefile                        \
+           data/bundle.ini])
