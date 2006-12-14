@@ -1,3 +1,12 @@
+maemo-af-desktop (2.9.99.16-1) unstable; urgency=low
+
+  * maemo-af-desktop-main.c: Initialize dnotify stuff here
+  * hildon-navigator/hildon-navigator-window.c: Do not
+  initialize dnotify stuff here
+  Fixes: NB#49753, NB#37765
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 14 Dec 2006 14:56:44 +0200
+
 maemo-af-desktop (2.9.99.15-1) unstable; urgency=low
 
   * install_sbapplet.sh: If user config doesn't exist, set 
