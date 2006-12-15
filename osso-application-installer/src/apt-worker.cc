@@ -2353,7 +2353,12 @@ operation (bool check_only)
        }
    }
    
-   send_status (op_downloading, 0, (int)(FetchBytes - FetchPBytes), 0);
+   /* Send a status report now if we are going to download something.
+      This makes sure that the progress dialog is shown even if the
+      first pulse of the fetcher takes a long time to arrive.
+   */
+   if ((int)(FetchBytes - FetchPBytes) > 0)
+     send_status (op_downloading, 0, (int)(FetchBytes - FetchPBytes), 0);
 
    if (Fetcher.Run() == pkgAcquire::Failed)
      return rescode_failure;
