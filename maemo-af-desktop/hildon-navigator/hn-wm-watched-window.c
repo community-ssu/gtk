@@ -1256,7 +1256,7 @@ hn_wm_watched_window_close (HNWMWatchedWindow *win)
       ev.xclient.message_type = hn_wm_get_atom(HN_ATOM_NET_CLOSE_WINDOW);
       ev.xclient.format       = 32;
       ev.xclient.data.l[0]    = CurrentTime;
-      ev.xclient.data.l[1]    = GDK_WINDOW_XID(gtk_widget_get_parent_window (GTK_WIDGET (tasknav)));
+      ev.xclient.data.l[1]    = GDK_WINDOW_XID(gtk_widget_get_toplevel (GTK_WIDGET (tasknav))->window);
   
       gdk_error_trap_push();
       XSendEvent(GDK_DISPLAY(), GDK_ROOT_WINDOW(), False,
