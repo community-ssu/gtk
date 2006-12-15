@@ -1,3 +1,11 @@
+2006-12-15  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 4.45
+	
+	* src/apt-worker.cc (operation): Only send the status reply before
+	fetching when there is actually something to fetch.  Otherwise the
+	Download dialog is also shown during uninstalling, stupid.
+
 2006-12-14  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.44
