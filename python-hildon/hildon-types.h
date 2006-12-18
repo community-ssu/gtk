@@ -40,9 +40,12 @@
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-code-dialog.h>
 #include <hildon-widgets/hildon-color-button.h>
+#if 0
 #include <hildon-widgets/hildon-color-chooser-button.h>
 #include <hildon-widgets/hildon-color-chooser-dialog.h>
 #include <hildon-widgets/hildon-color-chooser.h>
+#include <hildon-widgets/hildon-plugin-widget.h>
+#endif
 #include <hildon-widgets/hildon-color-selector.h>
 #include <hildon-widgets/hildon-color-popup.h>
 #include <hildon-widgets/hildon-controlbar.h>
@@ -60,7 +63,6 @@
 #include <hildon-widgets/hildon-name-password-dialog.h>
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-number-editor.h>
-#include <hildon-widgets/hildon-plugin-widget.h>
 #include <hildon-widgets/hildon-program.h>
 #include <hildon-widgets/hildon-range-editor.h>
 #include <hildon-widgets/hildon-scroll-area.h>
