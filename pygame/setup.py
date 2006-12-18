@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 #
 # This is the distutils setup script for pygame.
 # Full instructions are in "install.txt" or "install.html"

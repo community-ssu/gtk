@@ -18,8 +18,7 @@ origlibdirs = ['/lib']
 
 def confirm(message):
     "ask a yes/no question, return result"
-#    reply = raw_input('\n' + message + ' [Y/n]:')
-    reply = "y" #dont ask anything	
+    reply = raw_input('\n' + message + ' [Y/n]:')
     if reply and string.lower(reply[0]) == 'n':
         return 0
     return 1
@@ -168,15 +167,20 @@ def main():
     for d in DEPS:
         d.configure(incdirs, libdirs)
 
+# INdT
+    # Ugly hack to fix the sdl-config return in Maemo platform
+    DEPS[0].cflags = "-I/usr/X11R6/include -L/usr/X11R6/lib " + DEPS[0].cflags
 
-    for d in DEPS[1:]:
-        if not d.found:
-            if not confirm("""
-Warning, some of the pygame dependencies were not found. Pygame can still
-compile and install, but games that depend on those missing dependencies
-will not run. Would you like to continue the configuration?"""):
-                raise SystemExit
-            break
+    # Remove the manual intervention requirement
+#    for d in DEPS[1:]:
+#        if not d.found:
+#            if not confirm("""
+#Warning, some of the pygame dependencies were not found. Pygame can still
+#compile and install, but games that depend on those missing dependencies
+#will not run. Would you like to continue the configuration?"""):
+#                raise SystemExit
+#            break
+# /INdT
 
     return DEPS
 

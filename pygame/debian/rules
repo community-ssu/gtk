@@ -40,6 +40,7 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
+	$(PYTHON) config.py -auto
 	$(PYTHON) setup.py install --no-compile --root=$(d_base)
 	$(PYTHON) -OO -m compileall -f $(d_base)
 	cp -a $(d_base)/* $(d_dev)

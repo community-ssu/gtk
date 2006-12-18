@@ -1,4 +1,4 @@
-#!/usr/bin/env python2.5
+#!/usr/bin/env python
 
 """Quick tool to help setup the needed paths and flags
 in your Setup file. This will call the appropriate sub-config
