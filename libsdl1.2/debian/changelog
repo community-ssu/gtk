@@ -1,3 +1,11 @@
+libsdl1.2 (1.2.8-16un) unstable; urgency=low
+
+  * src/SDL_fatal.c: fatals will raise invoking signal after SDL_Quit().
+    Fixes: NB#48789
+  * UNRELEASED
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 18 Dec 2006 19:08:21 +0200
+
 libsdl1.2 (1.2.8-15) unstable; urgency=low
 
   * src/video/x11/: Both windows get WM classname and unused is unmapped.

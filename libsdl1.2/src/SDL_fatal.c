@@ -75,13 +75,6 @@ static void SDL_Parachute(int sig)
 		case SIGSEGV:
 			print_msg("Segmentation Fault");
 			break;
-#ifdef SIGBUS
-#if SIGBUS != SIGSEGV
-		case SIGBUS:
-			print_msg("Bus Error");
-			break;
-#endif
-#endif /* SIGBUS */
 #ifdef SIGFPE
 		case SIGFPE:
 			print_msg("Floating Point Exception");
@@ -105,7 +98,8 @@ static void SDL_Parachute(int sig)
 	}
 	print_msg(" (SDL Parachute Deployed)\n");
 	SDL_Quit();
-	exit(-sig);
+	signal(sig, SIG_DFL);
+	raise(sig);
 }
 
 static int SDL_fatal_signals[] = {
