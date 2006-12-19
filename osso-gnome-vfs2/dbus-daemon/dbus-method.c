@@ -223,7 +223,7 @@ ensure_connection (void)
 	if (!dbus_connection_add_filter (dbus_conn, message_handler,
 					 NULL, NULL)) {
 		g_warning ("Failed to add filter to the connection.");
-		dbus_connection_close (dbus_conn);
+		dbus_connection_disconnect (dbus_conn);
 		dbus_connection_unref (dbus_conn);
 
 		dbus_conn = NULL;
@@ -1702,7 +1702,7 @@ void
 vfs_module_shutdown (GnomeVFSMethod* method)
 {
 	if (dbus_conn) {
-		dbus_connection_close (dbus_conn);
+		dbus_connection_disconnect (dbus_conn);
 		dbus_connection_unref (dbus_conn);
 
 		dbus_conn = NULL;

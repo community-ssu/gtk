@@ -1,3 +1,14 @@
+2006-12-19  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Bump version.
+
+	* dbus-daemon/daemon-connection.c: (connection_unref):
+	* dbus-daemon/dbus-method.c: (ensure_connection),
+	(vfs_module_shutdown):
+	* dbus-daemon/vfs-daemon.c: (daemon_get_connection),
+	(daemon_shutdown): Revert the last commit since we don't want that
+	in this branch.
+
 2006-12-12  Richard Hult  <richard@imendio.com>
 
 	* Release 2.12.0.18
@@ -34,7 +45,7 @@
 	* configure.in: Bump version.
 
 	* libgnomevfs/gnome-vfs-mime-monitor.h: 
-	* libgnomevfs/gnome-vfs-mime-monitor.c: Upstream relicensed those
+	* libgnomevfs/gnome-vfs-mime-monitor.c: Upstream relicense those
 	files to LGPL, do the same here.
 
 2006-10-06  Richard Hult  <richard@imendio.com>
