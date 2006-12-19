@@ -1,5 +1,6 @@
 from distutils.core import setup, Extension
 from distutils.command.build import build
+import subprocess
 import os
 import sys
 
@@ -8,7 +9,13 @@ defsdir = datadir+'/pygtk/2.0/defs'
 includedir = '/usr/include'
 
 def get_hildon_version():
-    cmdinput, cmdresult, error = os.popen3("pkg-config --modversion hildon-libs")
+    proc = subprocess.Popen(
+	["/usr/bin/pkg-config","--modversion","hildon-libs"],
+	stdout=subprocess.PIPE,
+	stderr=subprocess.PIPE
+    )
+    cmdresult = proc.stdout
+    error = proc.stderr
     print >>sys.stderr, error.read()
     raw_version = cmdresult.read().strip()
     hildon_version = tuple([ int(x) for x in raw_version.split('.') ])
