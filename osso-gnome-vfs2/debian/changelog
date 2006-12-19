@@ -1,6 +1,7 @@
 osso-gnome-vfs2 (2.12.0.19-2osso1) unstable; urgency=low
 
   * Revert the change in .18 since we don't want that in this branch
+  * Fixes NB#43533, Media player failed to play some user added radio
 
  -- Richard Hult <richard@imendio.com>  Tue, 19 Dec 2006 09:59:57 +0100
 
