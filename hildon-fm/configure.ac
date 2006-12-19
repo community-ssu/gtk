@@ -76,6 +76,13 @@ ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 
+# Temporary configure option for the Gtk+ migration
+
+AC_ARG_WITH(gtk-2-10, [  --with-gtk-2-10         compile for Gtk+ 2.10 instead of 2.6 ])
+
+if test "x$with_gtk_2_10" = "xyes" ; then
+  AC_DEFINE(WITH_GTK_2_10, 1, [Define when compiling for Gtk+ 2.10])
+fi
 
 ##################################################
 # Check for gtk-doc.
