@@ -400,88 +400,6 @@ get_entry (GtkWidget *entry, const char *ext)
   return name;
 }
 
-/* Set PRIV->stub_name and PRIV->ext_name from NAME so that stub_name
-   contains everything before any potential autonaming token and
-   ext_name everything after it.
-
-   Concretely, this means that ext_name gets the extension of NAME,
-   including unrecognized ones.  SET_ENTRY and GET_ENTRY make sure
-   that the user can edit unrecognized extensions.
-*/
-static void
-set_stub_and_ext (HildonFileChooserDialogPrivate *priv, 
-		  const char *name)
-{
-  char *dot;
-  gboolean is_folder;
-
-  /* XXX - We do not always reset the extension here since the old
-           code didn't do it and some code out there might rely on it
-           not being done.
-  */
-  g_free (priv->stub_name);
-  priv->stub_name = g_strdup (name);
-
-  /* Determine whether we are talking about a folder here.  If
-     action is CREATE_FOLDER, we need to ask our GtkFilesystem
-     whether NAME refers to a folder, since the CREATE_FOLDER action
-     is also used for the "Rename <object>" dialog...
-
-     The following is about the right amount of code one should have
-     to write for figuring out whether a file is a directory, I'd say.
-  */
-  if (priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
-    {
-      is_folder = TRUE;
-
-      if (priv->model)
-	{
-	  GtkFileSystem *filesystem =
-	    _hildon_file_system_model_get_file_system (priv->model);
-	  if (filesystem)
-	    {
-	      GtkFilePath *cur_folder_path;
-	      cur_folder_path =
-		hildon_file_selection_get_current_folder (priv->filetree);
-	      if (cur_folder_path)
-		{
-		  GtkFileFolder *cur_folder =
-		    gtk_file_system_get_folder (filesystem, cur_folder_path,
-						0, NULL);
-		  if (cur_folder)
-		    {
-		      GtkFilePath *path = gtk_file_path_new_steal
-			(g_strdup_printf ("%s/%s",
-					  gtk_file_path_get_string (cur_folder_path),
-					  name));
-		      GtkFileInfo *info =
-			gtk_file_folder_get_info (cur_folder, path, NULL);
-		      if (info)
-			{
-			  is_folder = gtk_file_info_get_is_folder (info);
-			  gtk_file_info_free (info);
-			}
-		      gtk_file_path_free (path);
-		      g_object_unref (cur_folder);
-		    }
-		  gtk_file_path_free (cur_folder_path);
-		}
-	    }
-	}
-    }
-  else
-    is_folder = FALSE;
-
-  dot = _hildon_file_system_search_extension (priv->stub_name,
-					      FALSE, is_folder);
-  
-  /* Is there a dot, but not as first character */
-  if (dot && dot != priv->stub_name) { 
-    g_free(priv->ext_name);
-    priv->ext_name = g_strdup(dot);
-    *dot = '\0';
-  }
-}
 
 static void
 hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
@@ -534,6 +452,117 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
 
         g_signal_handler_unblock(priv->entry_name, priv->changed_handler);
     }
+}
+
+/* Set PRIV->stub_name and PRIV->ext_name from NAME so that stub_name
+   contains everything before any potential autonaming token and
+   ext_name everything after it.
+
+   Concretely, this means that ext_name gets the extension of NAME,
+   including unrecognized ones.  SET_ENTRY and GET_ENTRY make sure
+   that the user can edit unrecognized extensions.
+*/
+static void
+set_stub_and_ext (HildonFileChooserDialogPrivate *priv, 
+		  const char *name)
+{
+  char *dot;
+  gboolean is_folder;
+
+  /* XXX - We do not always reset the extension here since the old
+           code didn't do it and some code out there might rely on it
+           not being done.
+  */
+  g_free (priv->stub_name);
+  priv->stub_name = g_strdup (name);
+
+  /* XXX - Determine whether we are talking about a folder here.  If
+           action is CREATE_FOLDER, the dialog might actually be used
+           for the "Rename <object>" dialog.  We distinguish between
+           these two cases by looking at the "show-location" property,
+           which is false for Rename dialogs.  But a Rename dialog
+           might still be used for a folder, of course, so we really
+           have to ask the filesystem.
+
+           The following is about the right amount of code one should
+           have to write for figuring out whether a file is a
+           directory, I'd say.
+  */
+  if (priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
+    {
+      if (priv->should_show_location)
+	{
+	  /* A "Create Folder" dialog.
+	   */
+	  is_folder = TRUE;
+	}
+      else
+	{
+	  /* A "Rename" dialog.  Let's see whether we are renaming a
+	     folder.
+	  */
+
+	  is_folder = FALSE;
+
+	  if (priv->model)
+	    {
+	      GtkFileSystem *filesystem =
+		_hildon_file_system_model_get_file_system (priv->model);
+	      if (filesystem)
+		{
+		  GtkFilePath *cur_folder_path;
+		  cur_folder_path =
+		    hildon_file_selection_get_current_folder (priv->filetree);
+		  if (cur_folder_path)
+		    {
+		      GtkFileFolder *cur_folder =
+			gtk_file_system_get_folder (filesystem,
+						    cur_folder_path,
+						    0, NULL);
+		      if (cur_folder)
+			{
+			  GtkFilePath *path =
+			    gtk_file_system_make_path (filesystem,
+						       cur_folder_path,
+						       name, NULL);
+			  if (path)
+			    {
+			      GtkFileInfo *info =
+				gtk_file_folder_get_info (cur_folder, path,
+							  NULL);
+			      if (info)
+				{
+				  is_folder = gtk_file_info_get_is_folder (info);
+				  gtk_file_info_free (info);
+				}
+			      gtk_file_path_free (path);
+			    }
+			  g_object_unref (cur_folder);
+			}
+		      gtk_file_path_free (cur_folder_path);
+		    }
+		}
+	    }
+	}
+    }
+  else
+    { 
+      /* Other actions are never about folders.
+       */
+      is_folder = FALSE;
+    }
+
+  dot = _hildon_file_system_search_extension (priv->stub_name,
+					      FALSE, is_folder);
+  
+  /* Is there a dot, but not as first character */
+  if (dot && dot != priv->stub_name) { 
+    g_free(priv->ext_name);
+    priv->ext_name = g_strdup(dot);
+    *dot = '\0';
+  }
+
+  hildon_file_chooser_dialog_do_autonaming (priv);
 }
 
 static void
