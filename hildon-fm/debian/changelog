@@ -1,6 +1,8 @@
 hildon-fm (2.1-0unreleased1) unstable; urgency=low
 
-  * Merged changes from 1.16-1 to 1.19-1.
+  * Merged changes from 1.16-1 to 1.21-1.
+    Fixes: NB#49936, NB#49932.
+    Fixes: NB#49798, NB#49799.
     Fixes: NB#48902, NB#48903, NB#40395.
     Fixes: NB#45114, NB#36627, NB#47133, NB#44985, NB#46601.
   * Fixes: MB#469, MB#874.

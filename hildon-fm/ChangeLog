@@ -3,6 +3,39 @@
 	* configure.ac: Added --with-gtk-2-10 argument for the Gtk+
 	migration.
 
+	Merged changes from 1.19 to 1.21.
+	
+>    2006-12-18  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.21.
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Be
+>	    'smarter' about recognizing Rename dialogs in order to get the
+>	    is_folder attribute more right (N49932).
+>
+>    2006-12-15  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Call
+>	    hildon_file_chooser_dialog_do_autonaming instead of set_entry so
+>	    that the new stub name gets the required autonaming treatment.
+>	    That took a while... (N49936).
+>
+>    2006-12-13  Marius Vollmer  <marius.vollmer@nokia.com>
+>
+>	    Released 1.20.
+>
+>	    * hildon-fm/hildon-file-chooser-dialog.c (set_stub_and_ext): Use
+>	    gtk_file_system_make_path instead of rolling our own to get URI
+>	    escaping right. (N49798) Call set_entry so that the name entry is
+>	    updated when the knowledge about whether it is a folder or not
+>	    changes but retain the value of 'edited' so that autonaming still
+>	    works. (N49799)
+
+2006-12-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added
+	hildon-file-common-private.h so that it gets distributed. (N49099)
+	
 2006-12-12  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Merged changes from 1.16 to 1.19.
@@ -15,7 +48,7 @@
 >	    unescape_string): New.
 >	    (_hildon_file_system_create_file_name): Use them to unescape the
 >	    fallback display name that is directly extracted from the URI.
->	    (N47877)
+>	    (N48904)
 >
 >    2006-11-30  Marius Vollmer  <marius.vollmer@nokia.com>
 >
