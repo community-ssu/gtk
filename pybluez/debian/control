@@ -2,7 +2,7 @@ Source: pybluez
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: debhelper (>= 4.0.0), python2.5 (>= 2.5-0), python2.5-dev (>= 2.5-0), libbluetooth2 (>= 2.11-1), libbluetooth2-dev (>= 2.11-1)
+Build-Depends: debhelper (>= 4.0.0), python2.5 (>= 2.5-0), python2.5-dev (>= 2.5-0), libbluetooth2-dev (>= 2.11-1) | libbluetooth1-dev (>= 2.25-cvs20060428)
 Standards-Version: 3.6.1
 
 Package: python2.5-bluez
