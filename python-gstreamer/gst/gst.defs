@@ -2643,13 +2643,15 @@
   )
 )
 
-(define-virtual supported
-  (of-object "GstImplementsInterface")
-  (return-type "gboolean")
-  (parameters
-   '("GType" "iface_type")
-  )
-)
+; INdT
+;(define-virtual supported
+;  (of-object "GstImplementsInterface")
+;  (return-type "gboolean")
+;  (parameters
+;   '("GType" "iface_type")
+;  )
+;)
+; /INdT
 
 ;; From ../gstreamer/gst/gstiterator.h
 
@@ -6171,14 +6173,16 @@
   (return-type "GstCaps*")
 )
 
-(define-method call_function
-  (of-object "GstTypeFindFactory")
-  (c-name "gst_type_find_factory_call_function")
-  (return-type "none")
-  (parameters
-    '("GstTypeFind*" "find")
-  )
-)
+; INdT
+;(define-method call_function
+;  (of-object "GstTypeFindFactory")
+;  (c-name "gst_type_find_factory_call_function")
+;  (return-type "none")
+;  (parameters
+;    '("GstTypeFind*" "find")
+;  )
+;)
+; /INdT
 
 
 ;; From ../gstreamer/gst/gsturi.h

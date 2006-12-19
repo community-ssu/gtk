@@ -311,13 +311,15 @@
   )
 )
 
-(define-pointer TypeFind
-  (in-module "Gst")
-  (c-name "GstTypeFind")
-  (gtype-id "GST_TYPE_TYPE_FIND")
-  (fields
-  )
-)
+; INdT
+;(define-pointer TypeFind
+;  (in-module "Gst")
+;  (c-name "GstTypeFind")
+;  (gtype-id "GST_TYPE_TYPE_FIND")
+;  (fields
+;  )
+;)
+; /INdT
 
 ;; Enumerations and flags ...
 
@@ -1053,10 +1055,12 @@
    (gtype-id "GST_TYPE_TAG_SETTER")
 )
 
-(define-interface ImplementsInterface
-   (in-module "Gst")
-   (c-name "GstImplementsInterface")
-   (gtype-id "GST_TYPE_IMPLEMENTS_INTERFACE")
-   (vtable "GstImplementsInterfaceClass")
-)
+; INdT
+;(define-interface ImplementsInterface
+;   (in-module "Gst")
+;   (c-name "GstImplementsInterface")
+;   (gtype-id "GST_TYPE_IMPLEMENTS_INTERFACE")
+;   (vtable "GstImplementsInterfaceClass")
+;)
+; /INdT
 
