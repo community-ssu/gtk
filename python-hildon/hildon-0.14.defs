@@ -1,0 +1,50 @@
+(include "hildon.defs")
+(include "defs/hildon-color-chooser-button.defs")
+(include "defs/hildon-color-chooser-dialog.defs")
+(include "defs/hildon-color-chooser.defs")
+(include "defs/hildon-plugin-widget.defs")
+
+
+; hildon-file-chooser-dialog.defs
+(define-method set_show_upnp
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_set_show_upnp")
+  (return-type "none")
+  (parameters
+    '("gboolean" "value")
+  )
+)
+
+(define-method get_show_upnp
+  (of-object "HildonFileChooserDialog")
+  (c-name "hildon_file_chooser_dialog_get_show_upnp")
+  (return-type "gboolean")
+)
+
+; hildon-file-selection.defs
+(define-method move_cursor_to_uri
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_move_cursor_to_uri")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "uri")
+  )
+)
+
+; hildon-file-selection.defs
+(define-method set_column_headers_visible
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_set_column_headers_visible")
+  (return-type "none")
+  (parameters
+    '("gboolean" "visible")
+  )
+)
+
+(define-method get_column_headers_visible
+  (of-object "HildonFileSelection")
+  (c-name "hildon_file_selection_get_column_headers_visible")
+  (return-type "gboolean")
+)
+
+

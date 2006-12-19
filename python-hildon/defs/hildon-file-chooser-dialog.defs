@@ -74,19 +74,3 @@
   (return-type "gchar*")
 )
 
-(define-method set_show_upnp
-  (of-object "HildonFileChooserDialog")
-  (c-name "hildon_file_chooser_dialog_set_show_upnp")
-  (return-type "none")
-  (parameters
-    '("gboolean" "value")
-  )
-)
-
-(define-method get_show_upnp
-  (of-object "HildonFileChooserDialog")
-  (c-name "hildon_file_chooser_dialog_get_show_upnp")
-  (return-type "gboolean")
-)
-
-

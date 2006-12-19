@@ -214,21 +214,6 @@
   (return-type "gboolean")
 )
 
-(define-method set_column_headers_visible
-  (of-object "HildonFileSelection")
-  (c-name "hildon_file_selection_set_column_headers_visible")
-  (return-type "none")
-  (parameters
-    '("gboolean" "visible")
-  )
-)
-
-(define-method get_column_headers_visible
-  (of-object "HildonFileSelection")
-  (c-name "hildon_file_selection_get_column_headers_visible")
-  (return-type "gboolean")
-)
-
 (define-method set_filter
   (of-object "HildonFileSelection")
   (c-name "hildon_file_selection_set_filter")
@@ -272,15 +257,6 @@
   (of-object "HildonFileSelection")
   (c-name "hildon_file_selection_show_content_pane")
   (return-type "none")
-)
-
-(define-method move_cursor_to_uri
-  (of-object "HildonFileSelection")
-  (c-name "hildon_file_selection_move_cursor_to_uri")
-  (return-type "none")
-  (parameters
-    '("const-gchar*" "uri")
-  )
 )
 
 
