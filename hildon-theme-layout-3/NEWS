@@ -1,3 +1,6 @@
+[UNRELEASED]
+* Fixing the painted menu backgroudnd color
+
 [0.3.0 release]
 * Fixing double mention of MenuInfoTextColor
 * Removing some olf stuff that just causes run-time warnings from theme parsing
