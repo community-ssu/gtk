@@ -14,6 +14,15 @@ Functions to send and receive encrypted data over a socket.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF GnomeVFSSSL ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### FUNCTION gnome_vfs_ssl_enabled ##### -->
 <para>
 

@@ -62,14 +62,14 @@
 
 /**
  * gnome_vfs_format_file_size_for_display:
- * @size:
+ * @size: a #GnomeVFSFileSize (a #guint64 value).
  * 
- * Formats the file size passed in @bytes in a way that is easy for
+ * Formats the file @size passed so that it is easy for
  * the user to read. Gives the size in bytes, kilobytes, megabytes or
  * gigabytes, choosing whatever is appropriate.
  * 
  * Returns: a newly allocated string with the size ready to be shown.
- **/
+ */
 
 gchar*
 gnome_vfs_format_file_size_for_display (GnomeVFSFileSize size)
@@ -98,18 +98,18 @@ gnome_vfs_format_file_size_for_display (GnomeVFSFileSize size)
 typedef enum {
 	UNSAFE_ALL        = 0x1,  /* Escape all unsafe characters   */
 	UNSAFE_ALLOW_PLUS = 0x2,  /* Allows '+'  */
-	UNSAFE_PATH       = 0x4,  /* Allows '/' and '?' and '&' and '='  */
-	UNSAFE_DOS_PATH   = 0x8,  /* Allows '/' and '?' and '&' and '=' and ':' */
+	UNSAFE_PATH       = 0x4,  /* Allows '/' and '&' and '='  */
+	UNSAFE_DOS_PATH   = 0x8,  /* Allows '/' and '&' and '=' and ':' */
 	UNSAFE_HOST       = 0x10, /* Allows '/' and ':' and '@' */
 	UNSAFE_SLASHES    = 0x20  /* Allows all characters except for '/' and '%' */
 } UnsafeCharacterSet;
 
 static const guchar acceptable[96] =
 { /*  X0   X1   X2   X3   X4   X5   X6   X7   X8   X9   XA   XB   XC   XD   XE   XF */
-  /*   !    "    #    $    %    &    '    (    )    *    +    ,         -    .    / */
+  /* spc    !    "    #    $    %    &    '    (    )    *    +    ,    -    .    / */
     0x00,0x3F,0x20,0x20,0x20,0x00,0x2C,0x3F,0x3F,0x3F,0x3F,0x22,0x20,0x3F,0x3F,0x1C, 
   /*   0    1    2    3    4    5    6    7    8    9    :    ;    <    =    >    ? */
-    0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x38,0x20,0x20,0x2C,0x20,0x2C, 
+    0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x38,0x20,0x20,0x2C,0x20,0x20, 
   /*   @    A    B    C    D    E    F    G    H    I    J    K    L    M    N    O */
     0x30,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F,0x3F, 
   /*   P    Q    R    S    T    U    V    W    X    Y    Z    [    \    ]    ^    _ */
@@ -245,14 +245,14 @@ gnome_vfs_escape_string_internal (const gchar *string,
 
 /**
  * gnome_vfs_escape_string:
- * @string: string to be escaped
+ * @string: string to be escaped.
  *
  * Escapes @string, replacing any and all special characters 
  * with equivalent escape sequences.
  *
  * Return value: a newly allocated string equivalent to @string
- * but with all special characters escaped
- **/
+ * but with all special characters escaped.
+ */
 gchar *
 gnome_vfs_escape_string (const gchar *string)
 {
@@ -261,15 +261,15 @@ gnome_vfs_escape_string (const gchar *string)
 
 /**
  * gnome_vfs_escape_path_string:
- * @path: string to be escaped
+ * @path: string to be escaped.
  *
  * Escapes @path, replacing only special characters that would not
- * be found in paths (so '/', '&', '=', and '?' will not be escaped by
+ * be found in paths (so '/', '&', and '=' will not be escaped by
  * this function).
  *
  * Return value: a newly allocated string equivalent to @path but
- * with non-path characters escaped
- **/
+ * with non-path characters escaped.
+ */
 gchar *
 gnome_vfs_escape_path_string (const gchar *path)
 {
@@ -305,15 +305,15 @@ gnome_vfs_escape_path_string (const gchar *path)
 
 /**
  * gnome_vfs_escape_host_and_path_string:
- * @path: string to be escaped
+ * @path: string to be escaped.
  *
  * Escapes @path, replacing only special characters that would not
- * be found in paths or host name (so '/', '&', '=', ':', '@' 
- * and '?' will not be escaped by this function).
+ * be found in paths or host name (so '/', '&', '=', ':' and '@'
+ * will not be escaped by this function).
  *
  * Return value: a newly allocated string equivalent to @path but
- * with non-path/host characters escaped
- **/
+ * with non-path/host characters escaped.
+ */
 gchar *
 gnome_vfs_escape_host_and_path_string (const gchar *path)
 {
@@ -322,14 +322,14 @@ gnome_vfs_escape_host_and_path_string (const gchar *path)
 
 /**
  * gnome_vfs_escape_slashes:
- * @string: string to be escaped
+ * @string: string to be escaped.
  *
  * Escapes only '/' and '%' characters in @string, replacing
  * them with their escape sequence equivalents.
  *
  * Return value: a newly allocated string equivalent to @string,
- * but with no unescaped '/' or '%' characters
- **/
+ * but with no unescaped '/' or '%' characters.
+ */
 gchar *
 gnome_vfs_escape_slashes (const gchar *string)
 {
@@ -338,13 +338,14 @@ gnome_vfs_escape_slashes (const gchar *string)
 
 /**
  * gnome_vfs_escape_set:
- * @string: string to be escaped
+ * @string: string to be escaped.
  * @match_set: a string containing all characters to be escaped in @string. 
  *  
  * Escapes all characters in @string which are listed in @match_set.  
  * 
- * Return value: a newly allocated and escaped string.
- **/
+ * Return value: a newly allocated string equivalent to @string but 
+ * with characters in @match_string escaped.
+ */
 char *
 gnome_vfs_escape_set (const char *string,
 	              const char *match_set)
@@ -402,14 +403,14 @@ gnome_vfs_escape_set (const char *string,
 
 /**
  * gnome_vfs_expand_initial_tilde:
- * @path: a local file path which may start with a '~'
+ * @path: a local file path which may start with a '~'.
  *
  * If @path starts with a ~, representing the user's home
  * directory, expand it to the actual path location.
  *
  * Return value: a newly allocated string with the initial
- * tilde (if there was one) converted to an actual path
- **/
+ * tilde (if there was one) converted to an actual path.
+ */
 char *
 gnome_vfs_expand_initial_tilde (const char *path)
 {
@@ -479,7 +480,7 @@ unescape_character (const char *scanner)
 
 /**
  * gnome_vfs_unescape_string:
- * @escaped_string: an escaped URI, path, or other string
+ * @escaped_string: an escaped uri, path, or other string.
  * @illegal_characters: a string containing a sequence of characters
  * considered "illegal" to be escaped, '\0' is automatically in this list.
  *
@@ -490,7 +491,7 @@ unescape_character (const char *scanner)
  * Return value: a newly allocated string with the unescaped
  * equivalents, or %NULL if @escaped_string contained an escaped
  * encoding of one of the characters in @illegal_characters.
- **/
+ */
 char *
 gnome_vfs_unescape_string (const gchar *escaped_string, 
 			   const gchar *illegal_characters)
@@ -531,22 +532,22 @@ gnome_vfs_unescape_string (const gchar *escaped_string,
 
 /**
  * gnome_vfs_unescape_string_for_display:
- * @escaped: The string encoded with escaped sequences
+ * @escaped: a string encoded with escaped sequences.
  * 
  * Similar to gnome_vfs_unescape_string, but it returns something
  * semi-intelligable to a user even upon receiving traumatic input
  * such as %00 or URIs in bad form.
  * 
- * See also: gnome_vfs_unescape_string.
+ * See also: gnome_vfs_unescape_string().
  * 
- * Return value: A pointer to a g_malloc'd string with all characters
- *               replacing their escaped hex values
- *
  * WARNING: You should never use this function on a whole URI!  It
  * unescapes reserved characters, and can result in a mangled URI
  * that can not be re-entered.  For example, it unescapes "#" "&" and "?",
  * which have special meanings in URI strings.
- **/
+
+ * Return value: a pointer to a g_malloc'd string with all characters
+ * replacing their escaped hex values.
+ */
 gchar *
 gnome_vfs_unescape_string_for_display (const gchar *escaped)
 {
@@ -609,14 +610,14 @@ gnome_vfs_unescape_string_for_display (const gchar *escaped)
 
 /**
  * gnome_vfs_remove_optional_escapes:
- * @uri: an escaped uri
+ * @uri: an escaped uri.
  * 
- * Scans the uri and converts characters that do not have to be 
+ * Scans the @uri and converts characters that do not have to be 
  * escaped into an un-escaped form. The characters that get treated this
  * way are defined as unreserved by the RFC.
  * 
- * Return value: an error value if the uri is found to be malformed.
- **/
+ * Return value: an error value if the @uri is found to be malformed.
+ */
 GnomeVFSResult
 gnome_vfs_remove_optional_escapes (char *uri)
 {
@@ -690,13 +691,13 @@ gnome_vfs_make_uri_canonical_old (const char *original_uri_text)
 
 /**
  * gnome_vfs_make_path_name_canonical:
- * @path: a file path, relative or absolute
+ * @path: a file path, relative or absolute.
  * 
- * Calls _gnome_vfs_canonicalize_pathname, allocating storage for the 
+ * Calls _gnome_vfs_canonicalize_pathname(), allocating storage for the 
  * result and providing for a cleaner memory management.
  * 
- * Return value: a canonical version of @path
- **/
+ * Return value: a canonical version of @path.
+ */
 gchar *
 gnome_vfs_make_path_name_canonical (const gchar *path)
 {
@@ -715,10 +716,10 @@ gnome_vfs_make_path_name_canonical (const gchar *path)
 
 /**
  * gnome_vfs_list_deep_free:
- * @list: list to be freed
+ * @list: list to be freed.
  *
- * Free @list, and call g_free() on all data members.
- **/
+ * Free @list and call g_free() on all data members.
+ */
 void
 gnome_vfs_list_deep_free (GList *list)
 {
@@ -735,15 +736,15 @@ gnome_vfs_list_deep_free (GList *list)
 
 /**
  * gnome_vfs_get_local_path_from_uri:
- * @uri: URI to convert to a local path
+ * @uri: uri to convert to a local path.
  * 
- * Create a local path for a file:/// URI. Do not use with URIs
+ * Create a local path for a file:/// uri. Do not use with uris
  * of other methods.
  *
- * Return value: a newly allocated string containing the local path 
- * NULL is returned on error or if the uri isn't a file: URI
- * without a fragment identifier (or chained URI).
- **/
+ * Return value: a newly allocated string containing the local path.
+ * %NULL is returned on error or if the uri isn't a file: uri
+ * without a fragment identifier (or chained uri).
+ */
 char *
 gnome_vfs_get_local_path_from_uri (const char *uri)
 {
@@ -769,15 +770,18 @@ gnome_vfs_get_local_path_from_uri (const char *uri)
 
 /**
  * gnome_vfs_get_uri_from_local_path:
- * @local_full_path: a full local filesystem path (i.e. not relative). 
- *                   On Windows this should be in the UTF-8 encoding, and
- *		     can start with a drive letter, but doesn't have to.
+ * @local_full_path: a full local filesystem path (i.e. not relative).
  * 
- * Returns a file:/// URI for the local path @local_full_path.
+ * Returns a file:/// URI for the local path @local_full_path, 
+ * such as a path provided by gtk_file_chooser_get_filename().
+ * The resulting URI may be provided, for instance, to gnome_vfs_uri_new().
  *
- * Return value: a newly allocated string containing the URI corresponding 
- * to @local_full_path (NULL for some bad errors).
- **/
+ * On Windows @local_full_path should be in the UTF-8 encoding, and can start with a drive
+ * letter, but doesn't have to.
+ *
+ * Return value: a newly allocated string containing the uri corresponding 
+ * to @local_full_path (%NULL for some bad errors).
+ */
 char *
 gnome_vfs_get_uri_from_local_path (const char *local_full_path)
 {
@@ -798,14 +802,14 @@ gnome_vfs_get_uri_from_local_path (const char *local_full_path)
 
 /**
  * gnome_vfs_get_volume_free_space:
- * @vfs_uri: 
- * @size: 
+ * @vfs_uri: a #GnomeVFSURI.
+ * @size: a #GnomeVFSFileSize.
  * 
  * Stores the amount of free space in bytes on @vfs-uri's
  * volume in @size.
  *
- * Returns: GNOME_VFS_OK on success, otherwise an
- *          GNOME_VFS_ERROR_* code
+ * Returns: %GNOME_VFS_OK on success, otherwise an
+ * %GNOME_VFS_ERROR_* code.
  */
 GnomeVFSResult
 gnome_vfs_get_volume_free_space (const GnomeVFSURI *vfs_uri, 
@@ -817,16 +821,24 @@ gnome_vfs_get_volume_free_space (const GnomeVFSURI *vfs_uri,
 	return vfs_uri->method->get_volume_free_space (vfs_uri->method, vfs_uri, size);
 }
 
+/**
+ * gnome_vfs_icon_path_from_filename:
+ * @filename: path to a file. Could be relative or absolute path.
+ *
+ * Return value: Returns the icon path for the @filename. Example:
+ * gnome_vfs_icon_path_from_filename ("nautilus/nautilus-desktop.png") will return a string 
+ * forming the full path of the file nautilus-desktop.png ie $PREFIX/share/pixmaps/nautilus/nautilus-desktop.png.
+ */
 char *
-gnome_vfs_icon_path_from_filename (const char *relative_filename)
+gnome_vfs_icon_path_from_filename (const char *filename)
 {
 	const char *gnome_var;
 	char *full_filename;
 	char **paths, **temp_paths;
 
-	if (g_path_is_absolute (relative_filename) &&
-	    g_file_test (relative_filename, G_FILE_TEST_EXISTS))
-		return g_strdup (relative_filename);
+	if (g_path_is_absolute (filename) &&
+	    g_file_test (filename, G_FILE_TEST_EXISTS))
+		return g_strdup (filename);
 
 	gnome_var = g_getenv ("GNOME_PATH");
 
@@ -840,7 +852,7 @@ gnome_vfs_icon_path_from_filename (const char *relative_filename)
 		full_filename = g_build_filename (*temp_paths,
 						  "share",
 						  "pixmaps",
-						  relative_filename,
+						  filename,
 						  NULL);
 		if (g_file_test (full_filename, G_FILE_TEST_EXISTS)) {
 			g_strfreev (paths);
@@ -933,13 +945,13 @@ get_executable_name_from_command_string (const char *command_string)
 
 /**
  * gnome_vfs_is_executable_command_string:
- * @command_string:
+ * @command_string: a string representing a command ie "xterm -bg white".
  * 
  * Checks if @command_string starts with the full path of an executable file
  * or an executable in $PATH.
  *
- * Returns: TRUE if command_string started with and executable file, 
- * FALSE otherwise.
+ * Returns: %TRUE if @command_string started with an executable file, and is in $PATH,
+ * %FALSE otherwise.
  */
 gboolean
 gnome_vfs_is_executable_command_string (const char *command_string)
@@ -982,21 +994,20 @@ gnome_vfs_is_executable_command_string (const char *command_string)
 
 /**
  * gnome_vfs_read_entire_file:
- * @uri: URI of the file to read
- * @file_size: after reading the file, contains the size of the file read
+ * @uri: uri of the file to read.
+ * @file_size: after reading the file, contains the size of the file read.
  * @file_contents: contains the file_size bytes, the contents of the file at @uri.
  * 
  * Reads an entire file into memory for convenience. Beware accidentally
  * loading large files into memory with this function.
  *
- * Since version 2.10 the string stored in @file_contents will be nul-terminated,
+ * Since version 2.10 the string stored in @file_contents will be null-terminated,
  * so for text files you can use result as a normal string.
  *
- * Return value: An integer representing the result of the operation
+ * Return value: an integer representing the result of the operation.
  *
  * Since: 2.2
  */
-
 GnomeVFSResult
 gnome_vfs_read_entire_file (const char *uri,
 			    int *file_size,
@@ -1220,22 +1231,21 @@ gnome_vfs_format_uri_for_display_internal (const char *uri,
 
 /**
  * gnome_vfs_format_uri_for_display:
+ * @uri: uri to be displayed.
  *
- * Filter, modify, unescape and change URIs to make them appropriate
- * to display to users. The conversion is done such that the roundtrip
+ * Filter, modify, unescape and change @uri to make it appropriate
+ * for display to users. The conversion is done such that the roundtrip
  * to UTF-8 is reversible.
  * 
  * Rules:
- * 	file: URI's without fragments should appear as local paths
- * 	file: URI's with fragments should appear as file: URI's
- * 	All other URI's appear as expected
+ * 	file: uri without fragments should appear as local paths.
+ * 	file: uri with fragments should appear as file:uri.
+ * 	All other uri appear as expected.
  *
- * @uri: a URI
- *
- * Returns: a newly allocated UTF-8 string
+ * Return value: a string which represents @uri and can be displayed.
  *
  * Since: 2.2
- **/
+ */
 
 char *
 gnome_vfs_format_uri_for_display (const char *uri) 
@@ -1419,7 +1429,7 @@ gnome_vfs_make_uri_from_input_internal (const char *text,
 			g_free (escaped);
 		} else {
 			escaped = gnome_vfs_escape_high_chars ((guchar *)stripped);
-			uri = g_strconcat ("file://", escaped, NULL);
+			uri = g_strconcat ("file:///", escaped, NULL);
 			g_free (escaped);
 		}
 	}
@@ -1432,18 +1442,18 @@ gnome_vfs_make_uri_from_input_internal (const char *text,
 
 /**
  * gnome_vfs_make_uri_from_input:
- * @location: a possibly mangled "uri", in UTF8
+ * @location: a possibly mangled "uri", in UTF-8.
  *
- * Takes a user input path/URI and makes a valid URI out of it.
+ * Takes a user input path/uri and makes a valid uri out of it.
  *
- * This function is the reverse of gnome_vfs_format_uri_for_display
+ * This function is the reverse of gnome_vfs_format_uri_for_display()
  * but it also handles the fact that the user could have typed
- * arbitrary UTF8 in the entry showing the string.
+ * arbitrary UTF-8 in the entry showing the string.
  *
  * Returns: a newly allocated uri.
  *
  * Since: 2.2
- **/
+ */
 char *
 gnome_vfs_make_uri_from_input (const char *location)
 {
@@ -1457,17 +1467,17 @@ gnome_vfs_make_uri_from_input (const char *location)
 
 /**
  * gnome_vfs_make_uri_from_input_with_trailing_ws:
- * @location: a possibly mangled "uri", in UTF8
+ * @location: a possibly mangled uri, in UTF-8.
  *
- * Takes a user input path/URI and makes a valid URI out of it.
+ * Takes a user input path/uri and makes a valid uri out of it.
  *
- * This function is indentical to #gnome_vfs_make_uri_from_input except
+ * This function is indentical to gnome_vfs_make_uri_from_input() except
  * that this version won't strip any trailing slashes.
  *
  * Returns: a newly allocated uri.
  *
  * Since: 2.12
- **/
+ */
 char *
 gnome_vfs_make_uri_from_input_with_trailing_ws (const char *location)
 {
@@ -1481,15 +1491,15 @@ gnome_vfs_make_uri_from_input_with_trailing_ws (const char *location)
 
 /**
  * gnome_vfs_make_uri_from_input_with_dirs:
- * @location: a relative or absolute path
+ * @location: a relative or absolute path.
  * @dirs: directory to use as a base directory if @location is a relative path.
  *
- * Determines a fully qualified URL from a relative or absolute input path.
- * Basically calls gnome_vfs_make_uri_from_input except it specifically
+ * Determines a fully qualified uri from a relative or absolute input path.
+ * Basically calls gnome_vfs_make_uri_from_input() except it specifically
  * tries to support paths relative to the specified directories (can be homedir
  * and/or current directory). See #GnomeVFSMakeURIDirs for more information.
  *
- * Return value: a newly allocated string containing the fully qualified URL
+ * Return value: a newly allocated string containing the fully qualified uri.
  *
  * Since: 2.4
  */
@@ -1547,15 +1557,15 @@ gnome_vfs_make_uri_from_input_with_dirs (const char *location,
 
 /**
  * gnome_vfs_make_uri_canonical_strip_fragment:
- * @uri:
+ * @uri: a #GnomeVFSURI.
  *
- * If the @uri passed contains a fragment (anything after a '#') strips if,
- * then makes the URI canonical.
+ * Returns a canonicalized uri. If @uri contains a fragment (anything after a '#') strips off that and
+ * then makes the @uri canonical.
  *
- * Returns: a newly allocated string containing a canonical URI.
+ * Returns: a newly allocated string containing a canonical @uri.
  *
  * Since: 2.2
- **/
+ */
 
 char *
 gnome_vfs_make_uri_canonical_strip_fragment (const char *uri)
@@ -1598,41 +1608,21 @@ uris_match (const char *uri_1, const char *uri_2, gboolean ignore_fragments)
 
 /**
  * gnome_vfs_uris_match:
- * @uri_1: stringified URI to compare with @uri_2.
- * @uri_2: stringified URI to compare with @uri_1.
+ * @uri_1: stringified uri to compare with @uri_2.
+ * @uri_2: stringified uri to compare with @uri_1.
  * 
- * Compare two URIs.
+ * Compare two uris.
  *
- * Return value: TRUE if they are the same, FALSE otherwise.
+ * Return value: %TRUE if they are the same, %FALSE otherwise.
  *
  * Since: 2.2
- **/
+ */
 
 gboolean
 gnome_vfs_uris_match (const char *uri_1, const char *uri_2)
 {
 	return uris_match (uri_1, uri_2, FALSE);
 }
-
-static gboolean
-gnome_vfs_str_has_prefix (const char *haystack, const char *needle)
-{
-        const char *h, *n;
-
-        /* Eat one character at a time. */
-        h = haystack == NULL ? "" : haystack;
-        n = needle == NULL ? "" : needle;
-        do {
-                if (*n == '\0') {
-                        return TRUE;
-                }
-                if (*h == '\0') {
-                        return FALSE;
-                }
-        } while (*h++ == *n++);
-        return FALSE;
-}
-
 
 static gboolean
 gnome_vfs_uri_is_local_scheme (const char *uri)
@@ -1724,16 +1714,16 @@ gnome_vfs_handle_trailing_slashes (const char *uri)
 
 /**
  * gnome_vfs_make_uri_canonical:
- * @uri: and absolute or relative URI, it might have scheme.
+ * @uri: an absolute or relative stringified uri. It might have scheme.
  *
- * Standarizes the format of the uri being passed, so that it can be used
- * later in other functions that expect a canonical URI.
+ * Standardizes the format of the @uri, so that it can be used
+ * later in other functions that expect a canonical uri.
  *
  * Returns: a newly allocated string that contains the canonical 
  * representation of @uri.
  *
  * Since: 2.2
- **/
+ */
 
 char *
 gnome_vfs_make_uri_canonical (const char *uri)
@@ -1818,8 +1808,9 @@ gnome_vfs_make_uri_canonical (const char *uri)
 	 * typing "foo" into location bar does not crash and returns an error
 	 * rather than displaying the contents of /
 	 */
-	if (gnome_vfs_str_has_prefix (canonical_uri, "file://")
-	    && !gnome_vfs_str_has_prefix (canonical_uri, "file:///")) {
+	if (canonical_uri != NULL
+	    && g_str_has_prefix (canonical_uri, "file://")
+	    && !g_str_has_prefix (canonical_uri, "file:///")) {
 		old_uri = canonical_uri;
 		canonical_uri = g_strconcat ("file:/", old_uri + 5, NULL);
 		g_free (old_uri);
@@ -1830,15 +1821,15 @@ gnome_vfs_make_uri_canonical (const char *uri)
 
 /**
  * gnome_vfs_get_uri_scheme:
- * @uri: a stringified URI
+ * @uri: a stringified uri.
  *
- * Retrieve the scheme used in @uri 
+ * Retrieve the scheme used in @uri.
  *
- * Return value: A newly allocated string containing the scheme, NULL
- * if @uri it doesn't seem to contain a scheme
+ * Return value: a newly allocated string containing the scheme, %NULL
+ * if @uri doesn't contain a scheme.
  *
  * Since: 2.2
- **/
+ */
 
 char *
 gnome_vfs_get_uri_scheme (const char *uri)
@@ -1886,18 +1877,18 @@ file_uri_from_local_relative_path (const char *location)
 
 /**
  * gnome_vfs_make_uri_from_shell_arg:
- * @uri: a possibly mangled "uri"
+ * @uri: path to make the uri from.
  *
- * Similar to gnome_vfs_make_uri_from_input, except that:
+ * Similar to gnome_vfs_make_uri_from_input(), except that:
  * 
- * 1) guesses relative paths instead of http domains
- * 2) doesn't bother stripping leading/trailing white space
- * 3) doesn't bother with ~ expansion--that's done by the shell
+ * 1) guesses relative paths instead of http domains.
+ * 2) doesn't bother stripping leading/trailing white space.
+ * 3) doesn't bother with ~ expansion--that's done by the shell.
  *
- * Returns: a newly allocated uri
+ * Returns: a newly allocated string representing @uri.
  *
  * Since: 2.2
- **/
+ */
 
 char *
 gnome_vfs_make_uri_from_shell_arg (const char *location)
@@ -1925,19 +1916,20 @@ gnome_vfs_make_uri_from_shell_arg (const char *location)
 
 /**
  * gnome_vfs_make_uri_full_from_relative:
- * @base_uri: uri to use as the base for the full uri
- * @relative_uri: full or relative path to append to the base uri
+ * @base_uri: path to use as the base for the full uri.
+ * @relative_uri: full or relative path to be appended to the @base_uri.
  *
- * Returns a full URI given a full base URI, and a secondary URI which may
- * be relative.
+ * Returns a string representing the full uri given a full @base_uri and a 
+ * secondary uri which may be relative.
  *
- * This function is deprecated, please use 
- * gnome_vfs_uri_make_full_from_relative from gnome-vfs-uri.h
+ * Deprecated: This function is deprecated, please use 
+ * gnome_vfs_uri_make_full_from_relative() from gnome-vfs-uri.h .
  *
- * Return value: the URI (NULL for some bad errors).
+ * Return value: a newly allocated string containing the uri.
+ * (%NULL for some bad errors).
  *
  * Since: 2.2
- **/
+ */
 
 char *
 gnome_vfs_make_uri_full_from_relative (const char *base_uri, 
@@ -1953,6 +1945,7 @@ _gnome_vfs_uri_resolve_all_symlinks_uri (GnomeVFSURI *uri,
 	GnomeVFSURI *new_uri, *resolved_uri;
 	GnomeVFSFileInfo *info;
 	GnomeVFSResult res;
+	char *escaped_symlink;
 	char *p;
 	int n_followed_symlinks;
 
@@ -1989,12 +1982,19 @@ _gnome_vfs_uri_resolve_all_symlinks_uri (GnomeVFSURI *uri,
 				gnome_vfs_uri_unref (new_uri);
 				goto out;
 			}
-			resolved_uri = gnome_vfs_uri_resolve_relative (new_uri,
-								       info->symlink_name);
+			escaped_symlink = gnome_vfs_escape_path_string (info->symlink_name);
+			resolved_uri = gnome_vfs_uri_resolve_symbolic_link (new_uri, escaped_symlink);
+			g_assert (resolved_uri != NULL);
+
 			if (*p != 0) {
+				gnome_vfs_uri_unref (new_uri);
+
+				new_uri = gnome_vfs_uri_append_string (resolved_uri, p);
+
 				gnome_vfs_uri_unref (uri);
-				uri = gnome_vfs_uri_append_path (resolved_uri, p);
 				gnome_vfs_uri_unref (resolved_uri);
+
+				uri = gnome_vfs_uri_ref (new_uri);
 			} else {
 				gnome_vfs_uri_unref (uri);
 				uri = resolved_uri;
@@ -2040,6 +2040,72 @@ _gnome_vfs_uri_resolve_all_symlinks (const char *text_uri,
 	}
 	gnome_vfs_uri_unref (uri);
 	return res;
+}
+
+char *
+gnome_vfs_resolve_symlink (const char *path,
+			   const char *symlink)
+{
+	char *p, *filename;
+	char **strs;
+	int i, j, n;
+	GString *res_path;
+
+	g_assert (path != NULL);
+	g_assert (symlink != NULL);
+
+	p = strrchr (path, '/');
+	
+	if (symlink[0] == '/' || p == NULL) {
+		return g_strdup (symlink);
+	}
+
+	/* either use whole path as base (if it ends in '/'),
+	 * or chop its filename part */
+	p = g_strndup (path, p - path);
+		
+	filename = g_build_filename (p, symlink, NULL);
+	g_free (p);
+
+	strs = g_strsplit (filename, "/", -1);
+
+	g_free (filename);
+
+	n = g_strv_length (strs);
+
+	for (i = 0; i < n; i++) {
+		if (!strcmp (strs[i], "") ||
+		    !strcmp (strs[i], ".")) {
+			g_free (strs[i]);
+			strs[i] = NULL;
+		} else if (!strcmp (strs[i], "..")) {
+			g_free (strs[i]);
+			strs[i] = NULL;
+
+			for (j = i; strs[j] == NULL && j > 0; j--)
+				;
+
+			g_free (strs[j]);
+			strs[j] = NULL;
+		}
+	}
+
+	res_path = g_string_new (NULL);
+
+	for (i = 0; i < n; i++)
+		if (strs[i] != NULL) {
+			g_string_append_c (res_path, '/');
+			g_string_append (res_path, strs[i]);
+			g_free (strs[i]);
+		}
+
+	/* TODO also re-append '/' if the symlink ends in '/'? */ 
+	if (res_path->len == 0)
+		g_string_append_c (res_path, '/');
+
+	g_free (strs);
+
+	return g_string_free (res_path, FALSE);
 }
 
 gboolean 
@@ -2117,14 +2183,15 @@ _gnome_vfs_uri_is_in_subdir (GnomeVFSURI *uri, GnomeVFSURI *dir)
 
 /**
  * gnome_vfs_url_show:
+ * @url: url to be shown.
  * 
- * Launches the default application or component associated with the given url.
+ * Launches the default application or component associated with the given @url.
  *
- * Return value: GNOME_VFS_OK if the default action was launched,
- * GNOME_VFS_ERROR_BAD_PARAMETERS for an invalid or non-existant url,
- * GNOME_VFS_ERROR_NOT_SUPPORTED if no default action is associated with the URL.
- * Also error codes from gnome_vfs_mime_action_launch and
- * gnome_vfs_url_show_using_handler for other errors.
+ * Return value: %GNOME_VFS_OK if the default action was launched,
+ * %GNOME_VFS_ERROR_BAD_PARAMETERS for an invalid or non-existant @url,
+ * %GNOME_VFS_ERROR_NO_DEFAULT if no default action is associated with the @url.
+ * Also error codes from gnome_vfs_mime_action_launch()
+ * or gnome_vfs_mime_action_launch_with_env().
  *
  * Since: 2.4
  */
@@ -2136,11 +2203,17 @@ gnome_vfs_url_show (const char *url)
 
 /**
  * gnome_vfs_url_show_with_env:
+ * @url: url to be shown.
+ * @envp: environment data.
  * 
- * Like gnome_vfs_url_show except that the default action will be launched
+ * Like gnome_vfs_url_show() except that the default action will be launched
  * with the given environment.
  *
- * Return value: GNOME_VFS_OK if the default action was launched.
+ * Return value: %GNOME_VFS_OK if the default action was launched.
+ * %GNOME_VFS_ERROR_BAD_PARAMETERS for an invalid or non-existant @url,
+ * %GNOME_VFS_ERROR_NO_DEFAULT if no default action is associated with the @url.
+ * Also error codes from gnome_vfs_mime_application_launch_with_env()
+ * or gnome_vfs_mime_action_launch_with_env().
  *
  * Since: 2.4
  */
@@ -2171,10 +2244,9 @@ gnome_vfs_url_show_with_env (const char  *url,
 	
 	g_free (scheme);
 
-	type = _gnome_vfs_get_slow_mime_type (url);
-
-	if (type == NULL) {
-		return GNOME_VFS_ERROR_NO_DEFAULT;
+	result = _gnome_vfs_get_slow_mime_type_internal (url, &type);
+	if (result != GNOME_VFS_OK) {
+		return result;
 	}
 	
 	params.data = (char *) url;

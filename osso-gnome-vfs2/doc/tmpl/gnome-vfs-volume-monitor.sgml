@@ -14,6 +14,9 @@ Monitors volume mounts and unmounts
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### MACRO GNOME_IS_VFS_VOLUME_MONITOR ##### -->
 <para>
 
@@ -117,15 +120,6 @@ Monitors volume mounts and unmounts
 </para>
 
 @Returns: 
-
-
-<!-- ##### FUNCTION gnome_vfs_volume_monitor_emit_pre_unmount ##### -->
-<para>
-
-</para>
-
-@volume_monitor: 
-@volume: 
 
 
 <!-- ##### FUNCTION gnome_vfs_volume_monitor_get_connected_drives ##### -->

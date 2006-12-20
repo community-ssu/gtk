@@ -30,6 +30,7 @@
 #include <libgnomevfs/gnome-vfs-file-size.h>
 #include <libgnomevfs/gnome-vfs-result.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
+#include <libgnomevfs/gnome-vfs-acl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -83,16 +84,17 @@ typedef enum {
 
 /**
  * GnomeVFSFileType:
- * @GNOME_VFS_FILE_TYPE_UNKNOWN:
- * @GNOME_VFS_FILE_TYPE_REGULAR:
- * @GNOME_VFS_FILE_TYPE_DIRECTORY:
- * @GNOME_VFS_FILE_TYPE_FIFO:
- * @GNOME_VFS_FILE_TYPE_SOCKET:
- * @GNOME_VFS_FILE_TYPE_CHARACTER_DEVICE:
- * @GNOME_VFS_FILE_TYPE_BLOCK_DEVICE:
- * @GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK:
+ * @GNOME_VFS_FILE_TYPE_UNKNOWN: The file type is unknown (none of the types below matches).
+ * @GNOME_VFS_FILE_TYPE_REGULAR: The file is a regular file (stat: %S_ISREG).
+ * @GNOME_VFS_FILE_TYPE_DIRECTORY: The file is a directory (stat: %S_ISDIR).
+ * @GNOME_VFS_FILE_TYPE_FIFO: The file is a FIFO (stat: %S_ISFIFO).
+ * @GNOME_VFS_FILE_TYPE_SOCKET: The file is a socket (stat: %S_ISSOCK).
+ * @GNOME_VFS_FILE_TYPE_CHARACTER_DEVICE: The file is a character device (stat: %S_ISCHR).
+ * @GNOME_VFS_FILE_TYPE_BLOCK_DEVICE: The file is a block device (stat: %S_ISBLK).
+ * @GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK: The file is a symbolic link (stat: %S_ISLNK).
  *
- * Identifies the kind of file represented by a #GnomeVFSFileInfo struct. 
+ * Maps to a %stat mode, and identifies the kind of file represented by a
+ * #GnomeVFSFileInfo struct, stored in the %type field.
  **/
 
 typedef enum {
@@ -125,8 +127,11 @@ typedef enum {
  * @GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE: Mime type field is valid
  * @GNOME_VFS_FILE_INFO_FIELDS_ACCESS: Access bits of the permissions
  * bitfield are valid
+ * @GNOME_VFS_FILE_INFO_FIELDS_IDS: UID and GID information are valid
+ * @GNOME_VFS_FILE_INFO_FIELDS_ACL: ACL field is valid
+ * @GNOME_VFS_FILE_INFO_FIELDS_SELINUX_CONTEXT: SELinux Security context is valid
  *
- * Flags indicating what fields in a GnomeVFSFileInfo struct are valid. 
+ * Flags indicating what fields in a #GnomeVFSFileInfo struct are valid. 
  * Name is always assumed valid (how else would you have gotten a
  * FileInfo struct otherwise?)
  **/
@@ -147,7 +152,10 @@ typedef enum {
 	GNOME_VFS_FILE_INFO_FIELDS_CTIME = 1 << 11,
 	GNOME_VFS_FILE_INFO_FIELDS_SYMLINK_NAME = 1 << 12,
 	GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE = 1 << 13,
-	GNOME_VFS_FILE_INFO_FIELDS_ACCESS = 1 << 14
+	GNOME_VFS_FILE_INFO_FIELDS_ACCESS = 1 << 14,
+	GNOME_VFS_FILE_INFO_FIELDS_IDS = 1 << 15,
+	GNOME_VFS_FILE_INFO_FIELDS_ACL = 1 << 16,
+	GNOME_VFS_FILE_INFO_FIELDS_SELINUX_CONTEXT = 1 << 17
 } GnomeVFSFileInfoFields;
 
 /* FIXME: It's silly to use the symbolic constants for POSIX here.
@@ -164,24 +172,33 @@ typedef enum {
  * @GNOME_VFS_PERM_SUID: UID bit
  * @GNOME_VFS_PERM_SGID: GID bit
  * @GNOME_VFS_PERM_STICKY: Sticky bit.
- * @GNOME_VFS_PERM_USER_READ: Owner has read permission
- * @GNOME_VFS_PERM_USER_WRITE: Owner has write permission
- * @GNOME_VFS_PERM_USER_EXEC: Owner has execution permission
- * @GNOME_VFS_PERM_USER_ALL: Owner has all permissions
- * @GNOME_VFS_PERM_GROUP_READ: Group has read permission
- * @GNOME_VFS_PERM_GROUP_WRITE: Group has write permission
- * @GNOME_VFS_PERM_GROUP_EXEC: Group has execution permission
- * @GNOME_VFS_PERM_GROUP_ALL: Group has all permissions
- * @GNOME_VFS_PERM_OTHER_READ: Others have read permission
- * @GNOME_VFS_PERM_OTHER_WRITE: Others have write permission
- * @GNOME_VFS_PERM_OTHER_EXEC: Others have execution permission
- * @GNOME_VFS_PERM_OTHER_ALL: Others have all permissions
- * @GNOME_VFS_PERM_ACCESS_READABLE:
- * @GNOME_VFS_PERM_ACCESS_WRITABLE:
- * @GNOME_VFS_PERM_ACCESS_EXECUTABLE:
+ * @GNOME_VFS_PERM_USER_READ: Owner has read permission.
+ * @GNOME_VFS_PERM_USER_WRITE: Owner has write permission.
+ * @GNOME_VFS_PERM_USER_EXEC: Owner has execution permission.
+ * @GNOME_VFS_PERM_USER_ALL: Owner has all permissions.
+ * @GNOME_VFS_PERM_GROUP_READ: Group has read permission.
+ * @GNOME_VFS_PERM_GROUP_WRITE: Group has write permission.
+ * @GNOME_VFS_PERM_GROUP_EXEC: Group has execution permission.
+ * @GNOME_VFS_PERM_GROUP_ALL: Group has all permissions.
+ * @GNOME_VFS_PERM_OTHER_READ: Others have read permission.
+ * @GNOME_VFS_PERM_OTHER_WRITE: Others have write permission.
+ * @GNOME_VFS_PERM_OTHER_EXEC: Others have execution permission.
+ * @GNOME_VFS_PERM_OTHER_ALL: Others have all permissions.
+ * @GNOME_VFS_PERM_ACCESS_READABLE: This file is readable for the current client.
+ * @GNOME_VFS_PERM_ACCESS_WRITABLE: This file is writable for the current client.
+ * @GNOME_VFS_PERM_ACCESS_EXECUTABLE: This file is executable for the current client.
  *
- * File permissions. These are the same as the Unix ones, but we wrap them
- * into a nicer VFS-like enum.  
+ * File permissions. Some of these fields correspond to traditional
+ * UNIX semantics, others provide more abstract concepts.
+ *
+ * <note>
+ *   Some network file systems don't support traditional UNIX semantics but
+ *   still provide file access control. Thus, if you want to modify the
+ *   permissions (i.e. do a chmod), you should rely on the traditional
+ *   fields, but if you just want to determine whether a file or directory
+ *   can be read from or written to, you should rely on the more
+ *   abstract %GNOME_VFS_PERM_ACCESS_* fields.
+ * </note>
  **/
 typedef enum {
 	GNOME_VFS_PERM_SUID = S_ISUID,
@@ -209,66 +226,110 @@ typedef enum {
 
 /**
  * GnomeVFSFileInfo:
+ * @name: A char * specifying the base name of the file (without any path string).
+ * @valid_fields: #GnomeVFSFileInfoFields specifying which fields of
+ * 		  #GnomeVFSFileInfo are valid. Note that @name is always
+ * 		  assumed to be valid, i.e. clients may assume that it is not NULL.
+ * @type: The #GnomeVFSFileType of the file (i.e. regular, directory, block device, ...)
+ * 	  if @valid_fields provides GNOME_VFS_FILE_INFO_FIELDS_TYPE.
+ * @permissions: The #GnomeVFSFilePermissions corresponding to the UNIX-like
+ * 		 permissions of the file, if @valid_fields provides
+ * 		 #GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS, and the
+ * 		 #GnomeVFSFilePermissions corresponding to abstract access
+ * 		 concepts (#GNOME_VFS_PERM_ACCESS_READABLE, #GNOME_VFS_PERM_ACCESS_WRITABLE,
+ * 		 and #GNOME_VFS_PERM_ACCESS_EXECUTABLE) if @valid_fields
+ * 		 provides #GNOME_VFS_FILE_INFO_FIELDS_PERMISSIONS.
+ * @flags: #GnomeVFSFileFlags providing additional information about the file,
+ * 	   for instance whether it is local or a symbolic link, if
+ * 	   @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_FLAGS.
+ * @device: Identifies the device the file is located on, if
+ * 	    @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_DEVICE.
+ * @inode: Identifies the inode corresponding to the file, if
+ * 	    @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_INODE.
+ * @link_count: Counts the number of hard links to the file, if
+ * 		@valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_LINK_COUNT.
+ * @uid: The user owning the file, if @valid_fields provides
+ * 	 GNOME_VFS_FILE_INFO_FIELDS_IDS.
+ * @gid: The user owning the file, if @valid_fields provides
+ * 	 GNOME_VFS_FILE_INFO_FIELDS_IDS.
+ * @size: The size of the file in bytes (a #GnomeVFSFileSize),
+ * 	  if @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_SIZE.
+ * @block_count: The size of the file in file system blocks (a #GnomeVFSFileSize),
+ * 		 if @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_BLOCK_COUNT.
+ * @io_block_size: The optimal buffer size for reading/writing the file, if
+ * 		   @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_IO_BLOCK_SIZE.
+ * @atime: The time of the last file access, if @valid_fields provides
+ * 	   #GNOME_VFS_FILE_INFO_FIELDS_ATIME.
+ * @mtime: The time of the last file contents modification, if @valid_fields
+ * 	   provides #GNOME_VFS_FILE_INFO_FIELDS_MTIME.
+ * @ctime: The time of the last inode change, if @valid_fields provides
+ * 	   #GNOME_VFS_FILE_INFO_FIELDS_CTIME.
+ * @symlink_name: This is the name of the file this link points to, @type
+ * 		  is #GNOME_VFS_FILE_FLAGS_SYMLINK, and @valid_fields
+ * 		  provides #GNOME_VFS_FILE_INFO_FIELDS_SYMLINK_NAME.
+ * @mime_type: This is a char * identifying the type of the file, if
+ * 	       @valid_fields provides #GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE.
+ * @refcount: The reference count of this file info, which is one by default, and
+ * 	      that can be increased using gnome_vfs_file_info_ref() and decreased
+ * 	      using gnome_vfs_file_info_unref(). When it drops to zero, the file info
+ * 	      is freed and its memory is invalid. Make sure to keep your own
+ * 	      reference to a file info if you received it from GnomeVFS, i.e.
+ * 	      if you didn't call gnome_vfs_file_info_new() yourself.
+ *
+ * <note>
+ *   When doing massive I/O, it is suggested to adhere @io_block_size if applicable.
+ *   For network file systems, this may be set to very big values allowing
+ *   parallelization.
+ * </note>
  * 
  * The GnomeVFSFileInfo structure contains information about a file.
  **/
 typedef struct {
-	/* Base name of the file (no path).  */
+	/*< public >*/
 	char *name;
 
-	/* Fields which are actually valid in this structure. */
 	GnomeVFSFileInfoFields valid_fields;
-
-	/* File type (i.e. regular, directory, block device...).  */
 	GnomeVFSFileType type;
-
-	/* File permissions.  */
 	GnomeVFSFilePermissions permissions;
 
-	/* Flags for this file.  */
 	GnomeVFSFileFlags flags;
 
-	/* These are only valid if `is_local' is TRUE (see below).  */
 	dev_t device;
 	GnomeVFSInodeNumber inode;
 
-	/* Link count.  */
 	guint link_count;
 
-	/* UID, GID.  */
 	guint uid;
 	guint gid;
 
-	/* Size in bytes.  */
 	GnomeVFSFileSize size;
 
-	/* Size measured in units of 512-byte blocks.  */
 	GnomeVFSFileSize block_count;
 
-	/* Optimal buffer size for reading/writing the file.  */
 	guint io_block_size;
 
-	/* Access, modification and change times.  */
 	time_t atime;
 	time_t mtime;
 	time_t ctime;
 
-	/* If the file is a symlink (see `flags'), this specifies the file the
-           link points to.  */
 	char *symlink_name;
 
-	/* MIME type.  -- ascii string */
 	char *mime_type;
 
 	guint refcount;
 
+	/* File ACLs */
+	GnomeVFSACL *acl;
+
+	/* SELinux security context. -- ascii string, raw format. */
+	char* selinux_context;
+
+	/*< private >*/
 	/* Reserved for future expansions to GnomeVFSFileInfo without having
 	   to break ABI compatibility */
 	void *reserved1;
 	void *reserved2;
 	void *reserved3;
-	void *reserved4;
-	void *reserved5;
 } GnomeVFSFileInfo;
 
 /**
@@ -285,6 +346,10 @@ typedef struct {
  * to what would return access(2) on a local file system (ie is the 
  * file readable, writable and/or executable). Can be really slow on 
  * remote file systems
+ * @GNOME_VFS_FILE_INFO_NAME_ONLY: When reading a directory, only
+ * get the filename (if doing so is faster). Useful to e.g. count
+ * the number of files.
+ * @GNOME_VFS_FILE_INFO_GET_ACL: get ACLs for the file
  *
  * Packed boolean bitfield representing options that can
  * be passed into a gnome_vfs_get_file_info() call (or other
@@ -298,7 +363,10 @@ typedef enum {
 	GNOME_VFS_FILE_INFO_FORCE_FAST_MIME_TYPE = 1 << 1,
 	GNOME_VFS_FILE_INFO_FORCE_SLOW_MIME_TYPE = 1 << 2,
 	GNOME_VFS_FILE_INFO_FOLLOW_LINKS = 1 << 3,
-	GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS = 1 << 4
+	GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS = 1 << 4,
+	GNOME_VFS_FILE_INFO_NAME_ONLY = 1 << 5,
+	GNOME_VFS_FILE_INFO_GET_ACL = 1 << 6,
+	GNOME_VFS_FILE_INFO_GET_SELINUX_CONTEXT = 1 << 7
 } GnomeVFSFileInfoOptions;
 
 /**
@@ -308,6 +376,8 @@ typedef enum {
  * @GNOME_VFS_SET_FILE_INFO_PERMISSIONS: change the permissions
  * @GNOME_VFS_SET_FILE_INFO_OWNER: change the file's owner
  * @GNOME_VFS_SET_FILE_INFO_TIME: change the file's time stamp(s)
+ * @GNOME_VFS_SET_FILE_INFO_ACL: change the file's ACLs
+ * @GNOME_VFS_SET_FILE_INFO_SYMLINK_NAME: change the file's symlink name
  *
  * Packed boolean bitfield representing the aspects of the file
  * to be changed in a gnome_vfs_set_file_info() call.
@@ -318,10 +388,24 @@ typedef enum {
 	GNOME_VFS_SET_FILE_INFO_NAME = 1 << 0,
 	GNOME_VFS_SET_FILE_INFO_PERMISSIONS = 1 << 1,
 	GNOME_VFS_SET_FILE_INFO_OWNER = 1 << 2,
-	GNOME_VFS_SET_FILE_INFO_TIME = 1 << 3
+	GNOME_VFS_SET_FILE_INFO_TIME = 1 << 3,
+	GNOME_VFS_SET_FILE_INFO_ACL = 1 << 4,
+	GNOME_VFS_SET_FILE_INFO_SELINUX_CONTEXT = 1 << 5,
+	GNOME_VFS_SET_FILE_INFO_SYMLINK_NAME = 1 << 6
 } GnomeVFSSetFileInfoMask;
 
 
+/**
+ * GnomeVFSGetFileInfoResult:
+ * @uri: The #GnomeVFSURI the file info was requested for.
+ * @result: The #GnomeVFSResult of the file info request.
+ * @file_info: The #GnomeVFSFileInfo that was retrieved.
+ *
+ * This data structure encapsulates the details of an individual file
+ * info request that was part of a mass file info request launched
+ * through gnome_vfs_async_get_file_info(), and is passed to a
+ * #GnomeVFSAsyncGetFileInfoCallback.
+ **/
 struct _GnomeVFSGetFileInfoResult {
 	GnomeVFSURI *uri;
 	GnomeVFSResult result;
@@ -350,10 +434,11 @@ void                       gnome_vfs_get_file_info_result_free (GnomeVFSGetFileI
  *
  * Set the symbolic link field in @info to @value.
  */
-#define GNOME_VFS_FILE_INFO_SET_SYMLINK(info, value)			\
-	(value ? ((info)->flags |= GNOME_VFS_FILE_FLAGS_SYMLINK)	\
-	       : ((info)->flags &= ~GNOME_VFS_FILE_FLAGS_SYMLINK))
-
+ #define GNOME_VFS_FILE_INFO_SET_SYMLINK(info, value) \
+       ((info)->flags = (value ? \
+       ((info)->flags | GNOME_VFS_FILE_FLAGS_SYMLINK) : \
+       ((info)->flags & ~GNOME_VFS_FILE_FLAGS_SYMLINK)))
+       
 /**
  * GNOME_VFS_FILE_INFO_LOCAL:
  * @info: GnomeVFSFileInfo struct
@@ -370,10 +455,10 @@ void                       gnome_vfs_get_file_info_result_free (GnomeVFSGetFileI
  *
  * Set the "local file" field in @info to @value.
  */
-#define GNOME_VFS_FILE_INFO_SET_LOCAL(info, value)			\
-	(value ? ((info)->flags |= GNOME_VFS_FILE_FLAGS_LOCAL)		\
-	       : ((info)->flags &= ~GNOME_VFS_FILE_FLAGS_LOCAL))
-
+ #define GNOME_VFS_FILE_INFO_SET_LOCAL(info, value) \
+       ((info)->flags = (value ? \
+       ((info)->flags | GNOME_VFS_FILE_FLAGS_LOCAL) : \
+       ((info)->flags & ~GNOME_VFS_FILE_FLAGS_LOCAL)))
 
 /**
  * GNOME_VFS_FILE_INFO_SUID:
@@ -410,8 +495,9 @@ void                       gnome_vfs_get_file_info_result_free (GnomeVFSGetFileI
  * Set the SUID field in @info to @value.
  */
 #define GNOME_VFS_FILE_INFO_SET_SUID(info, value)		\
-	(value ? ((info)->permissions |= GNOME_VFS_PERM_SUID)	\
-	       : ((info)->permissions &= ~GNOME_VFS_PERM_SUID))
+       ((info)->flags = (value ? \
+       ((info)->flags | GNOME_VFS_PERM_SUID) : \
+       ((info)->flags & ~GNOME_VFS_PERM_SUID)))
 
 /**
  * GNOME_VFS_FILE_INFO_SET_SGID:
@@ -421,8 +507,10 @@ void                       gnome_vfs_get_file_info_result_free (GnomeVFSGetFileI
  * Set the SGID field in @info to @value.
  */
 #define GNOME_VFS_FILE_INFO_SET_SGID(info, value)		\
-	(value ? ((info)->permissions |= GNOME_VFS_PERM_SGID)	\
-	       : ((info)->permissions &= ~GNOME_VFS_PERM_SGID))
+		((info)->flags = (value ? \
+		((info)->flags | GNOME_VFS_PERM_SGID) : \
+		((info)->flags & ~GNOME_VFS_PERM_SGID)))      
+	       
 /**
  * GNOME_VFS_FILE_INFO_SET_STICKY:
  * @info: GnomeVFSFileInfo struct

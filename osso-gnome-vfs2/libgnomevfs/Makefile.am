@@ -11,22 +11,22 @@ INCLUDES =					\
 	$(LIBGNOMEVFS_CFLAGS)			\
 	$(LIBGNOMEVFSDAEMON_CFLAGS)		\
 	$(VFS_CFLAGS)				\
-	$(MONIKERS_CFLAGS)			\
 	$(FNMATCH_CFLAGS)			\
-	$(LIBGNOMEVFS_IPC_CFLAGS)               \
 	-DXDG_PREFIX=_gnome_vfs_xdg		\
+	-DDBUS_API_SUBJECT_TO_CHANGE		\
 	-D_FILE_OFFSET_BITS=64			\
 	-D_BSD_SOURCE				\
 	-D_LARGEFILE64_SOURCE                   \
 	-D_POSIX_PTHREAD_SEMANTICS		\
 	-D_REENTRANT				\
 	-DG_DISABLE_DEPRECATED			\
-	-DG_LOG_DOMAIN=\"libgnomevfs\"		\
 	-DGNOME_VFS_PREFIX=\"$(prefix)\"	\
+	-DGNOME_VFS_BINDIR=\"$(bindir)\"	\
 	-DGNOME_VFS_DATADIR=\"$(datadir)\"	\
 	-DGNOME_VFS_LIBDIR=\"$(libdir)\"	\
 	-DGNOME_VFS_LOCALEDIR=\"$(prefix)/@DATADIRNAME@/locale\" \
 	-DGNOME_VFS_SYSCONFDIR=\"$(sysconfdir)\"\
+	-DG_LOG_DOMAIN=\"libgnomevfs\"		\
 	$(NULL)
 
 libgnomevfs_headers_to_scan_for_enums = 	\
@@ -66,8 +66,11 @@ libgnomevfs_headers_to_scan_for_enums = 	\
 libgnomevfs_headers = 				\
 	$(libgnomevfs_headers_to_scan_for_enums)\
 	gnome-vfs-dns-sd.h			\
+	gnome-vfs-version.h			\
 	gnome-vfs-uri.h				\
 	$(NULL)
+
+export_symbols = $(LIBTOOL_EXPORT_OPTIONS)
 
 # Generate the enums source code, with glib-mkenums:
 # This is based on the same Makefile.am stuff in pango:
@@ -77,52 +80,28 @@ libgnomevfs_built_cfiles = gnome-vfs-enum-types.c
 # Don't build the library until we have built the header that it needs:
 $(OBJECTS) $(libgnomevfs_2_la_OBJECTS): $(libgnomevfs_built_headers)
 
-gnome-vfs-enum-types.h: s-enum-types-h
-	@true
-
-s-enum-types-h: @REBUILD@ $(libgnomevfs_headers_to_scan_for_enums) Makefile
-	( cd $(srcdir) && glib-mkenums \
+gnome-vfs-enum-types.h: @REBUILD@ $(libgnomevfs_headers_to_scan_for_enums) Makefile
+	(cd $(srcdir) && glib-mkenums \
 			--fhead "#ifndef __LIBGNOMEVFS_ENUM_TYPES_H__\n#define __LIBGNOMEVFS_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void);\n#define GNOME_VFS_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" 	\
 			--ftail "G_END_DECLS\n\n#endif /* __LIBGNOMEVFS_ENUM_TYPES_H__ */" \
-		$(libgnomevfs_headers_to_scan_for_enums) ) > tmp-gnome-vfs-enum-types.h \
-	&& (cmp -s tmp-gnome-vfs-enum-types.h $(srcdir)/gnome-vfs-enum-types.h || cp tmp-gnome-vfs-enum-types.h $(srcdir)/gnome-vfs-enum-types.h ) \
-	&& rm -f tmp-gnome-vfs-enum-types.h	\
-	&& echo timestamp > $(@F)
+		$(libgnomevfs_headers_to_scan_for_enums)) > $@
 
-gnome-vfs-enum-types.c: s-enum-types-c
-	@true
-
-s-enum-types-c: @REBUILD@ $(libgnomevfs_headers_to_scan_for_enums) Makefile
-	( cd $(srcdir) && glib-mkenums \
+gnome-vfs-enum-types.c: @REBUILD@ $(libgnomevfs_headers_to_scan_for_enums) Makefile
+	(cd $(srcdir) && glib-mkenums \
 			--fhead "#include <libgnomevfs/gnome-vfs.h>\n" \
 			--fhead "#include <libgnomevfs/gnome-vfs-mime-handlers.h>\n" \
 			--fhead "#include <glib-object.h>" \
-      --fprod "\n/* enumerations from \"@filename@\" */" \
+		      	--fprod "\n/* enumerations from \"@filename@\" */" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" 	\
 			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
 			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
-		$(libgnomevfs_headers_to_scan_for_enums) ) > tmp-gnome-vfs-enum-types.c \
-	&& (cmp -s tmp-gnome-vfs-enum-types.c $(srcdir)/gnome-vfs-enum-types.c || cp tmp-gnome-vfs-enum-types.c $(srcdir)/gnome-vfs-enum-types.c ) \
-	&& rm -f tmp-gnome-vfs-enum-types.c \
-	&& echo timestamp > $(@F)
-
-
-# %.c %.h: %.gob
-#	$(top_srcdir)/gob/src/gob2 $<
-#
-# GOB_SRCLIST = 					\
-#	gnome-vfs-metadata.c			\
-#	gnome-vfs-metadata.h			\
-#	gnome-vfs-metadata-private.h		\
-#	$(NULL)
-# GOB_FILES =					\
-#	gnome-vfs-metadata.gob			\
-#	$(NULL)
+		$(libgnomevfs_headers_to_scan_for_enums)) > $@
 
 
 lib_LTLIBRARIES = libgnomevfs-2.la
+
 if OS_WIN32
 SOCKET_LIBS = -lws2_32
 else
@@ -131,20 +110,20 @@ endif
 
 libgnomevfs_2_la_LIBADD =			\
 	$(LIBGNOMEVFS_LIBS)			\
-	$(LIBGNOMEVFS_IPC_LIBS)                 \
 	$(FNMATCH_LIBS)				\
 	$(SOCKET_LIBS)				\
 	$(INTLLIBS)				\
+	$(SELINUX_LIBS)				\
 	$(NULL)
 
 libgnomevfs_2_la_LDFLAGS =			\
 	-version-info $(LIBGNOMEVFS_CURRENT):$(LIBGNOMEVFS_REVISION):$(LIBGNOMEVFS_AGE) \
 	-no-undefined \
+	$(export_symbols) \
 	$(NULL)
 
 libgnomevfsdaemon_2_la_LIBADD =			\
 	$(LIBGNOMEVFS_LIBS)			\
-	$(LIBGNOMEVFS_IPC_LIBS)                 \
 	$(LIBGNOMEVFSDAEMON_LIBS)		\
 	libgnomevfs-2.la			\
 	$(NULL)
@@ -155,19 +134,19 @@ libgnomevfsmoduleincludedir = $(includedir)/gnome-vfs-module-2.0/libgnomevfs
 
 # mime-sniff-buffers and cancellabe-ops are used by modules
 noinst_HEADERS =				\
-	gnome-vfs-dbus-utils.h                  \
 	gnome-vfs-async-job-map.h		\
 	gnome-vfs-backend.h			\
 	gnome-vfs-cancellable-ops.h		\
 	gnome-vfs-cancellation-private.h	\
 	gnome-vfs-cdrom.h			\
 	gnome-vfs-configuration.h		\
+	gnome-vfs-daemon-method.h		\
+	gnome-vfs-dbus-utils.h                  \
 	gnome-vfs-filesystem-type.h		\
 	gnome-vfs-handle-private.h		\
 	gnome-vfs-hal-mounts.h			\
 	gnome-vfs-iso9660.h			\
 	gnome-vfs-job-queue.h			\
-	gnome-vfs-job-slave.h			\
 	gnome-vfs-job.h				\
 	gnome-vfs-mime-magic.h			\
 	gnome-vfs-mime-private.h		\
@@ -177,8 +156,6 @@ noinst_HEADERS =				\
 	gnome-vfs-monitor-private.h		\
 	gnome-vfs-private-utils.h		\
 	gnome-vfs-private.h			\
-	gnome-vfs-ssl-private.h			\
-	gnome-vfs-thread-pool.h			\
 	gnome-vfs-unix-mounts.h 		\
 	gnome-vfs-volume-monitor-client.h	\
 	gnome-vfs-volume-monitor-daemon.h	\
@@ -198,7 +175,6 @@ libgnomevfsmoduleinclude_HEADERS =		\
 	gnome-vfs-cancellable-ops.h		\
 	gnome-vfs-inet-connection.h		\
 	gnome-vfs-method.h			\
-	gnome-vfs-mime.h			\
 	gnome-vfs-mime-info.h			\
 	gnome-vfs-module-callback-module-api.h	\
 	gnome-vfs-module-shared.h		\
@@ -208,10 +184,13 @@ libgnomevfsmoduleinclude_HEADERS =		\
 	gnome-vfs-transform.h			\
 	gnome-vfs-socket-buffer.h		\
 	gnome-vfs-socket.h			\
+	gnome-vfs-pty.h				\
 	$(NULL)
 
 
 libgnomevfsinclude_HEADERS =			\
+	gnome-vfs-ace.h						\
+	gnome-vfs-acl.h						\
 	gnome-vfs-application-registry.h	\
 	gnome-vfs-address.h			\
 	gnome-vfs-async-ops.h			\
@@ -227,6 +206,7 @@ libgnomevfsinclude_HEADERS =			\
 	gnome-vfs-handle.h			\
 	gnome-vfs-init.h			\
 	gnome-vfs-job-limit.h			\
+	gnome-vfs-mime.h			\
 	gnome-vfs-mime-deprecated.h		\
 	gnome-vfs-mime-handlers.h		\
 	gnome-vfs-mime-info-cache.h		\
@@ -241,6 +221,7 @@ libgnomevfsinclude_HEADERS =			\
 	gnome-vfs-types.h			\
 	gnome-vfs-uri.h				\
 	gnome-vfs-utils.h			\
+	gnome-vfs-version.h			\
 	gnome-vfs-volume-monitor.h		\
 	gnome-vfs-volume.h			\
 	gnome-vfs-xfer.h			\
@@ -255,6 +236,7 @@ libgnomevfs_unix_sources =			\
 	gnome-vfs-cdrom.c			\
 	gnome-vfs-dns-sd.c			\
 	gnome-vfs-parse-ls.c			\
+	gnome-vfs-pty.c				\
 	$(NULL)
 
 if OS_WIN32
@@ -264,7 +246,8 @@ libgnomevfs_platform_sources = $(libgnomevfs_unix_sources)
 endif
 
 libgnomevfs_2_la_SOURCES =			\
-	gnome-vfs-dbus-utils.c                  \
+	gnome-vfs-ace.c						\
+	gnome-vfs-acl.c						\
 	gnome-vfs-application-registry.c	\
 	gnome-vfs-address.c			\
 	gnome-vfs-async-job-map.c		\
@@ -273,6 +256,8 @@ libgnomevfs_2_la_SOURCES =			\
 	gnome-vfs-cancellation.c		\
 	gnome-vfs-configuration.c		\
 	gnome-vfs-context.c			\
+	gnome-vfs-daemon-method.c		\
+	gnome-vfs-dbus-utils.c			\
 	gnome-vfs-directory.c			\
 	gnome-vfs-drive.c			\
 	gnome-vfs-file-info.c			\
@@ -282,7 +267,6 @@ libgnomevfs_2_la_SOURCES =			\
 	gnome-vfs-inet-connection.c		\
 	gnome-vfs-init.c			\
 	gnome-vfs-job-queue.c			\
-	gnome-vfs-job-slave.c			\
 	gnome-vfs-job.c				\
 	gnome-vfs-method.c			\
 	gnome-vfs-mime-handlers.c		\
@@ -292,9 +276,10 @@ libgnomevfs_2_la_SOURCES =			\
 	gnome-vfs-mime-sniff-buffer.c		\
 	gnome-vfs-mime.c			\
 	gnome-vfs-mime-magic.c			\
-	gnome-vfs-module-callback.c		\
+	gnome-vfs-module-callback-marshall.c	\
 	gnome-vfs-module-callback-module-api.c	\
 	gnome-vfs-module-callback-private.c	\
+	gnome-vfs-module-callback.c		\
 	gnome-vfs-module-shared.c		\
 	gnome-vfs-module.c			\
 	gnome-vfs-monitor.c			\
@@ -307,7 +292,6 @@ libgnomevfs_2_la_SOURCES =			\
 	gnome-vfs-socket-buffer.c		\
 	gnome-vfs-socket.c			\
 	gnome-vfs-ssl.c				\
-	gnome-vfs-thread-pool.c			\
 	gnome-vfs-transform.c			\
 	gnome-vfs-uri.c				\
 	gnome-vfs-utils.c			\
@@ -327,7 +311,14 @@ libgnomevfs_2_la_SOURCES =			\
 	$(libgnomevfs_platform_sources)		\
 	$(NULL)
 
+
+# The daemon uses all interfaces in gnome-vfs-cdrom
+# and uses _gnome_vfs_filesystem_volume_name, which all
+# only use static data.
+#
 libgnomevfsdaemon_2_la_SOURCES =		\
+	gnome-vfs-filesystem-type.c		\
+	gnome-vfs-cdrom.c			\
 	gnome-vfs-hal-mounts.c			\
 	gnome-vfs-volume-monitor-daemon.c	\
 	gnome-vfs-volume-monitor.c	 	\
@@ -339,12 +330,13 @@ libgnomevfsplatformincludedir = $(libdir)/gnome-vfs-2.0/include
 libgnomevfsplatforminclude_HEADERS =		\
 	gnome-vfs-file-size.h
 
-EXTRA_DIST = check-headers.pl
+# TESTS = check-headers.pl
+EXTRA_DIST = check-headers.pl $(libgnomevfs_win32_sources)
 
-BUILT_SOURCES = 				\
+BUILT_SOURCES = \
 	gnome-vfs-enum-types.h			\
-	s-enum-types-h				\
 	gnome-vfs-enum-types.c			\
-	s-enum-types-c
-
+	gnome-vfs-version.h			\
+	$(NULL)
 CLEANFILES = $(BUILT_SOURCES)
+

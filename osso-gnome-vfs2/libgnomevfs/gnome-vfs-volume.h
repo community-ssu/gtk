@@ -41,6 +41,55 @@ G_BEGIN_DECLS
 
 typedef struct _GnomeVFSVolumePrivate GnomeVFSVolumePrivate;
 
+typedef struct _GnomeVFSVolume GnomeVFSVolume;
+
+struct _GnomeVFSVolume {
+	GObject parent;
+
+	/*< private >*/
+        GnomeVFSVolumePrivate *priv;
+};
+
+typedef struct _GnomeVFSVolumeClass GnomeVFSVolumeClass;
+
+struct _GnomeVFSVolumeClass {
+	GObjectClass parent_class;
+};
+
+/**
+ * GnomeVFSDeviceType:
+ * @GNOME_VFS_DEVICE_TYPE_UNKNOWN: the type of this #GnomeVFSVolume or #GnomeVFSDrive is not known.
+ * @GNOME_VFS_DEVICE_TYPE_AUDIO_CD: only used for #GnomeVFSVolume objects. Denotes that this
+ * volume is an audio CD.
+ * @GNOME_VFS_DEVICE_TYPE_VIDEO_DVD: only used for #GnomeVFSVolume objects. Denotes that this
+ * volume is a video DVD.
+ * @GNOME_VFS_DEVICE_TYPE_HARDDRIVE: this is a mount point refering to a harddisk partition that
+ * neither has a Microsoft file system (FAT, VFAT, NTFS) nor an Apple file system (HFS, HFS+).
+ * @GNOME_VFS_DEVICE_TYPE_CDROM: this may either be a mount point or a HAL drive/volume. Either way,
+ * it refers to a CD-ROM device respectively volume.
+ * @GNOME_VFS_DEVICE_TYPE_FLOPPY: the volume or drive referenced by this #GnomeVFSVolume or
+ * #GnomeVFSDrive is a floppy disc respectively a floppy drive.
+ * @GNOME_VFS_DEVICE_TYPE_ZIP: the volume or drive referenced by this #GnomeVFSVolume or
+ * #GnomeVFSDrive is a ZIP disc respectively a ZIP drive.
+ * @GNOME_VFS_DEVICE_TYPE_JAZ: the volume or drive referenced by this #GnomeVFSVolume or
+ * #GnomeVFSDrive is a JAZ disc respectively a JAZ drive.
+ * @GNOME_VFS_DEVICE_TYPE_NFS: this is a mount point having an NFS file system.
+ * @GNOME_VFS_DEVICE_TYPE_AUTOFS: this is a mount point having an AutoFS file system.
+ * @GNOME_VFS_DEVICE_TYPE_CAMERA: only used for #GnomeVFSVolume objects. Denotes that this volume is a camera.
+ * @GNOME_VFS_DEVICE_TYPE_MEMORY_STICK: only used for #GnomeVFSVolume objects. Denotes that this volume is a memory stick.
+ * @GNOME_VFS_DEVICE_TYPE_SMB: this is a mount point having a Samba file system.
+ * @GNOME_VFS_DEVICE_TYPE_APPLE: this is a mount point refering to a harddisk partition, that has an
+ * Apple file system (HFS, HFS+).
+ * @GNOME_VFS_DEVICE_TYPE_MUSIC_PLAYER: only used for #GnomeVFSVolume objects. Denotes that this
+ * volume is a music player.
+ * @GNOME_VFS_DEVICE_TYPE_WINDOWS: this is a mount point refering to a harddisk partition, that has a
+ * Microsoft file system (FAT, VFAT, NTFS).
+ * @GNOME_VFS_DEVICE_TYPE_LOOPBACK: this is a mount point refering to a loopback device.
+ * @GNOME_VFS_DEVICE_TYPE_NETWORK: only used for #GnomeVFSVolume objects, denoting that this volume
+ * refers to a network mount that is not managed by the kernel VFS but exclusively known to GnomeVFS.
+ *
+ * Identifies the device type of a #GnomeVFSVolume or a #GnomeVFSDrive.
+ **/
 typedef enum {
 	GNOME_VFS_DEVICE_TYPE_UNKNOWN,
 	GNOME_VFS_DEVICE_TYPE_AUDIO_CD,
@@ -62,30 +111,43 @@ typedef enum {
 	GNOME_VFS_DEVICE_TYPE_NETWORK 
 } GnomeVFSDeviceType;
 
+/**
+ * @GNOME_VFS_VOLUME_TYPE_MOUNTPOINT: this is a mount point managed by the kernel.
+ * @GNOME_VFS_VOLUME_TYPE_VFS_MOUNT: this is a special volume only known to GnomeVFS,
+ * for instance a blank disk or an audio CD.
+ * @GNOME_VFS_VOLUME_TYPE_CONNECTED_SERVER: this is a special volume only known
+ * GnomeVFS, referring to a GnomeVFSURI network location, for instance a location
+ * on an http, an ftp or an sftp server.
+ *
+ * Identifies the volume type of a #GnomeVFSVolume.
+ **/
 typedef enum {
 	GNOME_VFS_VOLUME_TYPE_MOUNTPOINT,
 	GNOME_VFS_VOLUME_TYPE_VFS_MOUNT,
 	GNOME_VFS_VOLUME_TYPE_CONNECTED_SERVER
 } GnomeVFSVolumeType;
 
-typedef struct _GnomeVFSVolume GnomeVFSVolume;
-
-struct _GnomeVFSVolume {
-	GObject parent;
-
-        GnomeVFSVolumePrivate *priv;
-};
-
-typedef struct _GnomeVFSVolumeClass GnomeVFSVolumeClass;
-
-struct _GnomeVFSVolumeClass {
-	GObjectClass parent_class;
-};
-
+/**
+ * GnomeVFSVolumeOpCallback: 
+ * @succeeded: whether the volume operation succeeded
+ * @error: a string identifying the error that occurred, if
+ * @succeeded is %FALSE. Otherwise %NULL.
+ * @detailed_error: a string more specifically identifying
+ * the error that occurred, if @succeeded is %FALSE.
+ * Otherwise %NULL.
+ * @user_data: the user data that was passed when registering
+ * the callback.
+ *
+ * Note that if succeeded is FALSE and error, detailed_error are both
+ * empty strings the client is not supposed to display a dialog as an
+ * external mount/umount/eject helper will have done so.
+ *
+ * Since: 2.6
+ **/
 typedef void (*GnomeVFSVolumeOpCallback) (gboolean succeeded,
 					  char *error,
 					  char *detailed_error,
-					  gpointer data);
+					  gpointer user_data);
 
 
 /* Need to declare this here due to cross use in gnome-vfs-drive.h */
@@ -123,9 +185,9 @@ void gnome_vfs_volume_unmount    (GnomeVFSVolume           *volume,
 void gnome_vfs_volume_eject      (GnomeVFSVolume           *volume,
 				  GnomeVFSVolumeOpCallback  callback,
 				  gpointer                  user_data);
-void gnome_vfs_connect_to_server (char                     *uri,
-				  char                     *display_name,
-				  char                     *icon);
+void gnome_vfs_connect_to_server (const char               *uri,
+				  const char               *display_name,
+				  const char               *icon);
 
 G_END_DECLS
 

@@ -64,6 +64,11 @@ _gnome_vfs_sniff_buffer_looks_like_text (GnomeVFSMimeSniffBuffer *sniff_buffer)
 	if (sniff_buffer->buffer_length == 0) {
 		return TRUE;
 	}
+
+	/* Don't allow embedded zeros in textfiles. */
+	if (memchr (sniff_buffer->buffer, 0, sniff_buffer->buffer_length) != NULL) {
+		return FALSE;
+	}
 	
 	if (g_utf8_validate ((gchar *)sniff_buffer->buffer, 
 			     sniff_buffer->buffer_length, (const gchar**)&end))
@@ -77,9 +82,10 @@ _gnome_vfs_sniff_buffer_looks_like_text (GnomeVFSMimeSniffBuffer *sniff_buffer)
 		gint remaining_bytes = sniff_buffer->buffer_length;
 
 		remaining_bytes -= (end-((gchar *)sniff_buffer->buffer));
-	
- 		if (g_utf8_get_char_validated(end, remaining_bytes) == -2)
+
+ 		if (g_utf8_get_char_validated(end, remaining_bytes) == -2) {
 			return TRUE;
+		}
 #if defined(HAVE_WCTYPE_H) && defined (HAVE_MBRTOWC)
 		else {
 			size_t wlen;
@@ -92,10 +98,6 @@ _gnome_vfs_sniff_buffer_looks_like_text (GnomeVFSMimeSniffBuffer *sniff_buffer)
 			
 			memset (&state, 0, sizeof (state));
 			while (src < end) {
-				/* Don't allow embedded zeros in textfiles */
-				if (*src == 0)
-					return FALSE;
-				
 				wlen = mbrtowc(&wc, (gchar *)src, end - src, &state);
 
 				if (wlen == (size_t)(-1)) {
@@ -129,12 +131,12 @@ _gnome_vfs_sniff_buffer_looks_like_text (GnomeVFSMimeSniffBuffer *sniff_buffer)
 	return FALSE;
 }
 
-static int bitrates[2][15] = {
+static const int bitrates[2][15] = {
 	{ 0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320},
 	{ 0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160 }
 };	
 
-static int frequencies[2][3] = {
+static const int frequencies[2][3] = {
 	{ 44100, 48000, 32000 },
 	{ 22050, 24000, 16000 }	
 };	

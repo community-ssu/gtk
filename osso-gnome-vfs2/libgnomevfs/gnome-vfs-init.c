@@ -24,37 +24,29 @@
 #include <config.h>
 #include "gnome-vfs-init.h"
 
-#include "gnome-vfs-ssl-private.h"
 #include "gnome-vfs-mime.h"
 
 #include "gnome-vfs-configuration.h"
-
-#ifndef USE_DBUS_DAEMON
-#include "gnome-vfs-client.h"
-#endif
-
 #include "gnome-vfs-method.h"
 #include "gnome-vfs-utils.h"
 #include "gnome-vfs-private-utils.h"
 
 #include "gnome-vfs-async-job-map.h"
-#include "gnome-vfs-thread-pool.h"
 #include "gnome-vfs-job-queue.h"
 #include "gnome-vfs-volume-monitor-private.h"
+#include "gnome-vfs-module-callback-private.h"
 
 #include <errno.h>
-
-#ifndef USE_DBUS_DAEMON
-#include <bonobo-activation/bonobo-activation.h>
-#include <bonobo/bonobo-main.h>
-#endif
-
 #include <glib/gmessages.h>
 #include <glib/gfileutils.h>
 #include <glib/gi18n-lib.h>
 #include <glib/gtypes.h>
 #include <glib/gstdio.h>
-#include <libgnomevfs/gnome-vfs-job-slave.h>
+
+#ifndef DBUS_API_SUBJECT_TO_CHANGE
+#define DBUS_API_SUBJECT_TO_CHANGE 1
+#endif
+#include <dbus/dbus-glib.h>
 
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -93,31 +85,30 @@ gnome_vfs_thread_init (void)
 {
 	private_is_primary_thread = g_private_new (NULL);
 	g_private_set (private_is_primary_thread, GUINT_TO_POINTER (1));
-
+	
 	_gnome_vfs_module_callback_private_init ();
 	
 	_gnome_vfs_async_job_map_init ();
-	_gnome_vfs_thread_pool_init ();
 	_gnome_vfs_job_queue_init ();
 }
 
 /**
  * gnome_vfs_init:
  *
- * If GnomeVFS is not already initialized, initialize it. This must be
- * called prior to performing any other GnomeVFS operations, and may
+ * If gnome-vfs is not already initialized, initialize it. This must be
+ * called prior to performing any other gnome-vfs operations, and may
  * be called multiple times without error.
  * 
- * Return value: %TRUE if GnomeVFS is successfully initialized (or was
- * already initialized)
- **/
+ * Return value: %TRUE if gnome-vfs is successfully initialized (or was
+ * already initialized).
+ */
 gboolean 
 gnome_vfs_init (void)
 {
 	gboolean retval;
-#ifndef USE_DBUS_DAEMON
+	/*
 	char *bogus_argv[2] = { "dummy", NULL };
-#endif
+	*/
 	
 	if (!ensure_dot_gnome_exists ()) {
 		return FALSE;
@@ -135,19 +126,9 @@ gnome_vfs_init (void)
 #endif   
 		gnome_vfs_thread_init ();
 
-#ifndef USE_DBUS_DAEMON
-		if (bonobo_activation_orb_get() == NULL) {
-			bonobo_activation_init (0, bogus_argv);
-		}
-		bonobo_init (NULL, bogus_argv);
-#else
-		/*dbus_g_thread_init ();*/
-
-		/* Make sure the type system is inited. */
+		dbus_g_thread_init ();
+ 		/* Make sure the type system is inited. */
 		g_type_init ();
-#endif
-		
-		_gnome_vfs_ssl_init ();
 
 		retval = gnome_vfs_method_init ();
 
@@ -173,11 +154,11 @@ gnome_vfs_init (void)
 /**
  * gnome_vfs_initialized:
  *
- * Detects if GnomeVFS has already been initialized (GnomeVFS must be
+ * Detects if gnome-vfs has already been initialized (gnome-vfs must be
  * initialized prior to using any methods or operations).
  * 
- * Return value: %TRUE if GnomeVFS has already been initialized
- **/
+ * Return value: %TRUE if gnome-vfs has already been initialized.
+ */
 gboolean
 gnome_vfs_initialized (void)
 {
@@ -192,23 +173,18 @@ gnome_vfs_initialized (void)
 /**
  * gnome_vfs_shutdown:
  *
- * Cease all active GnomeVFS operations and unload the MIME
+ * Cease all active gnome-vfs operations and unload the MIME
  * database from memory.
  * 
- **/
+ */
 void
 gnome_vfs_shutdown (void)
 {
-	_gnome_vfs_thread_backend_shutdown ();
 	gnome_vfs_mime_shutdown ();
 #ifndef G_OS_WIN32
 	_gnome_vfs_volume_monitor_shutdown ();
 #endif
-
-#ifndef USE_DBUS_DAEMON
-	_gnome_vfs_client_shutdown ();
-	bonobo_debug_shutdown ();
-#endif
+	_gnome_vfs_method_shutdown ();
 }
 
 void
@@ -245,8 +221,8 @@ gnome_vfs_postinit (gpointer app, gpointer modinfo)
  * Check if the current thread is the thread with the main glib event loop.
  *
  * Return value: %TRUE if the current thread is the thread with the 
- * main glib event loop
- **/
+ * main glib event loop.
+ */
 gboolean
 gnome_vfs_is_primary_thread (void)
 {

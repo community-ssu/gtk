@@ -40,6 +40,7 @@ typedef struct _GnomeVFSDrivePrivate GnomeVFSDrivePrivate;
 struct _GnomeVFSDrive {
 	GObject parent;
 
+	/*< private >*/
         GnomeVFSDrivePrivate *priv;
 };
 
@@ -79,6 +80,7 @@ char *             gnome_vfs_drive_get_hal_udi         (GnomeVFSDrive *drive);
 gboolean           gnome_vfs_drive_is_user_visible     (GnomeVFSDrive *drive);
 gboolean           gnome_vfs_drive_is_connected        (GnomeVFSDrive *drive);
 gboolean           gnome_vfs_drive_is_mounted          (GnomeVFSDrive *drive);
+gboolean           gnome_vfs_drive_needs_eject         (GnomeVFSDrive *drive);
 
 gint               gnome_vfs_drive_compare             (GnomeVFSDrive *a,
 							GnomeVFSDrive *b);

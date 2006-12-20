@@ -14,6 +14,9 @@ Conveniently copy/move/delete files en masse
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM GnomeVFSXferOptions ##### -->
 <para>
 
@@ -125,31 +128,14 @@ Conveniently copy/move/delete files en masse
 @duplicate_name: 
 @duplicate_count: 
 @top_level_item: 
-@reserved1: 
-@reserved2: 
 
 <!-- ##### USER_FUNCTION GnomeVFSXferProgressCallback ##### -->
 <para>
-This is the prototype for functions called during a transfer operation to
-report progress.  If the return value is `FALSE' (0), the operation is
-interrupted immediately: the transfer function returns with the value of
-`vfs_status' if it is different from `GNOME_VFS_OK', or with
-`GNOME_VFS_ERROR_INTERRUPTED' otherwise.  The effect of other values depend
-on the value of `info->status':
 
- - If the status is `GNOME_VFS_XFER_PROGRESS_STATUS_OK', the transfer
-   operation is resumed normally.
-
- - If the status is `GNOME_VFS_XFER_PROGRESS_STATUS_VFSERROR', the return
-   value is interpreted as a `GnomeVFSXferErrorAction' and operation is
-   interrupted, continued or retried accordingly.
-
- - If the status is `GNOME_VFS_XFER_PROGRESS_STATUS_OVERWRITE', the return
-   value is interpreted as a `GnomeVFSXferOverwriteAction'. 
 </para>
 
 @info: 
-@data: 
+@user_data: 
 @Returns: 
 
 

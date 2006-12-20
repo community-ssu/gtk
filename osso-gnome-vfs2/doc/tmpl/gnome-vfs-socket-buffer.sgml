@@ -25,6 +25,15 @@ You can manually force all internally buffered data to get written with
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF GnomeVFSSocketBuffer ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### FUNCTION gnome_vfs_socket_buffer_new ##### -->
 <para>
 
@@ -90,8 +99,6 @@ You can manually force all internally buffered data to get written with
 @socket_buffer: 
 @cancellation: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@buffer: 
 
 
 <!-- ##### FUNCTION gnome_vfs_socket_buffer_read_until ##### -->

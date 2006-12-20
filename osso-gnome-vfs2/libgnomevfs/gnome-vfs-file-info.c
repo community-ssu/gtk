@@ -51,12 +51,12 @@ gnome_vfs_file_info_get_type (void) {
 
 
 /**
- * gnome_vfs_file_info_new
+ * gnome_vfs_file_info_new:
  * 
- * Allocate and initialize a new file information struct.
+ * Allocate and initialize a new #GnomeVFSFileInfo struct.
  * 
- * Returns: A pointer to the new file information struct.
- **/
+ * Returns: a pointer to the newly allocated file information struct.
+ */
 GnomeVFSFileInfo *
 gnome_vfs_file_info_new (void)
 {
@@ -74,11 +74,11 @@ gnome_vfs_file_info_new (void)
 
 
 /**
- * gnome_vfs_file_info_ref
- * @info: Pointer to a file information struct
+ * gnome_vfs_file_info_ref:
+ * @info: pointer to a file information struct.
  * 
- * Increment reference count
- **/
+ * Increment refcount of @info by 1.
+ */
 void
 gnome_vfs_file_info_ref (GnomeVFSFileInfo *info)
 {
@@ -92,11 +92,11 @@ gnome_vfs_file_info_ref (GnomeVFSFileInfo *info)
 }
 
 /**
- * gnome_vfs_file_info_unref
- * @info: Pointer to a file information struct
+ * gnome_vfs_file_info_unref:
+ * @info: pointer to a file information struct.
  * 
- * Destroy @info
- **/
+ * Decreases the refcount of @info by 1. Frees the struct @info if refcount becomes 0.
+ */
 void
 gnome_vfs_file_info_unref (GnomeVFSFileInfo *info)
 {
@@ -115,13 +115,13 @@ gnome_vfs_file_info_unref (GnomeVFSFileInfo *info)
 
 
 /**
- * gnome_vfs_file_info_clear
- * @info: Pointer to a file information struct
+ * gnome_vfs_file_info_clear:
+ * @info: pointer to a file information struct.
  * 
  * Clear @info so that it's ready to accept new data. This is
  * supposed to be used when @info already contains meaningful information which
  * we want to replace.
- **/
+ */
 void
 gnome_vfs_file_info_clear (GnomeVFSFileInfo *info)
 {
@@ -132,6 +132,7 @@ gnome_vfs_file_info_clear (GnomeVFSFileInfo *info)
 	g_free (info->name);
 	g_free (info->symlink_name);
 	g_free (info->mime_type);
+	g_free (info->selinux_context);
 
 	/* Ensure the ref count is maintained correctly */
 	g_static_mutex_lock (&file_info_ref_lock);
@@ -145,14 +146,14 @@ gnome_vfs_file_info_clear (GnomeVFSFileInfo *info)
 
 
 /**
- * gnome_vfs_file_info_get_mime_type
- * @info: A pointer to a file information struct
+ * gnome_vfs_file_info_get_mime_type:
+ * @info: a pointer to a file information struct.
  * 
  * Retrieve MIME type from @info. There is no need to free the return
  * value.
  * 
- * Returns: A pointer to a string representing the MIME type.
- **/
+ * Returns: a pointer to a string representing the MIME type.
+ */
 const gchar *
 gnome_vfs_file_info_get_mime_type (GnomeVFSFileInfo *info)
 {
@@ -162,12 +163,12 @@ gnome_vfs_file_info_get_mime_type (GnomeVFSFileInfo *info)
 }
 
 /**
- * gnome_vfs_file_info_copy
- * @dest: Pointer to a struct to copy @src's information into
- * @src: Pointer to the information to be copied into @dest
+ * gnome_vfs_file_info_copy:
+ * @dest: pointer to a struct to copy @src's information into.
+ * @src: pointer to the information to be copied into @dest.
  * 
  * Copy information from @src into @dest.
- **/
+ */
 void
 gnome_vfs_file_info_copy (GnomeVFSFileInfo *dest,
 			  const GnomeVFSFileInfo *src)
@@ -196,6 +197,7 @@ gnome_vfs_file_info_copy (GnomeVFSFileInfo *dest,
 	dest->name = g_strdup (src->name);
 	dest->symlink_name = g_strdup (src->symlink_name);
 	dest->mime_type = g_strdup (src->mime_type);
+	dest->selinux_context = g_strdup (src->selinux_context);
 
 	dest->refcount = old_refcount;
 
@@ -205,12 +207,12 @@ gnome_vfs_file_info_copy (GnomeVFSFileInfo *dest,
 
 /**
  * gnome_vfs_file_info_dup:
- * @orig: Pointer to a file information structure to duplicate
+ * @orig: pointer to a file information structure to duplicate.
  * 
  * Duplicates @orig and returns it.
  * 
  * Returns: a new file information struct that duplicates the information in @orig.
- **/
+ */
 GnomeVFSFileInfo *
 gnome_vfs_file_info_dup (const GnomeVFSFileInfo *orig)
 {
@@ -254,16 +256,22 @@ symlink_name_matches (char *a, char *b)
 	}
 }
 
+static gboolean
+selinux_context_matches (char *a, char*b) 
+{
+	return symlink_name_matches (a, b);
+}
+
 /**
- * gnome_vfs_file_info_matches
- * @a: first GnomeVFSFileInfo struct to compare
- * @b: second GnomeVFSFileInfo struct to compare
+ * gnome_vfs_file_info_matches:
+ * @a: first #GnomeVFSFileInfo struct to compare.
+ * @b: second #GnomeVFSFileInfo struct to compare.
  *
- * Compare the two file info structs, return TRUE if they match exactly
+ * Compare the two file info structs, return %TRUE if they match exactly
  * the same file data.
  *
- * Returns: TRUE if the two GnomeVFSFileInfos match, otherwise return FALSE.
- **/
+ * Returns: %TRUE if the two #GnomeVFSFileInfos match, otherwise return %FALSE.
+ */
 gboolean
 gnome_vfs_file_info_matches (const GnomeVFSFileInfo *a,
 			     const GnomeVFSFileInfo *b)
@@ -295,6 +303,7 @@ gnome_vfs_file_info_matches (const GnomeVFSFileInfo *a,
 	    || a->uid != b->uid
 	    || a->gid != b->gid
 	    || strcmp (a->name, b->name) != 0
+	    || !selinux_context_matches (a->selinux_context, b->selinux_context)
 	    || !mime_matches (a->mime_type, b->mime_type)
 	    || !symlink_name_matches (a->symlink_name, b->symlink_name)) {
 		return FALSE;
@@ -305,12 +314,12 @@ gnome_vfs_file_info_matches (const GnomeVFSFileInfo *a,
 
 /**
  * gnome_vfs_file_info_list_ref:
- * @list: list of GnomeVFSFileInfo elements
+ * @list: list of #GnomeVFSFileInfo elements.
  *
- * Increments the reference count of the items in @list by one.
+ * Increments the refcount of the items in @list by one.
  *
- * Return value: @list
- **/
+ * Return value: @list.
+ */
 GList *
 gnome_vfs_file_info_list_ref (GList *list)
 {
@@ -320,14 +329,13 @@ gnome_vfs_file_info_list_ref (GList *list)
 
 /**
  * gnome_vfs_file_info_list_unref:
- * @list: list of GnomeVFSFileInfo elements
+ * @list: list of #GnomeVFSFileInfo elements.
  *
- * Decrements the reference count of the items in @list by one.
+ * Decrements the refcount of the items in @list by one.
  * Note that the list is *not freed* even if each member of the list
  * is freed.
- *
- * Return value: @list
- **/
+ * Return value: @list.
+ */
 GList *
 gnome_vfs_file_info_list_unref (GList *list)
 {
@@ -337,13 +345,13 @@ gnome_vfs_file_info_list_unref (GList *list)
 
 /**
  * gnome_vfs_file_info_list_copy:
- * @list: list of GnomeVFSFileInfo elements
+ * @list: list of #GnomeVFSFileInfo elements.
  *
  * Creates a duplicate of @list, and references each member of
  * that list.
  *
- * Return value: a newly referenced duplicate of @list
- **/
+ * Return value: a newly referenced duplicate of @list.
+ */
 GList *
 gnome_vfs_file_info_list_copy (GList *list)
 {
@@ -352,11 +360,11 @@ gnome_vfs_file_info_list_copy (GList *list)
 
 /**
  * gnome_vfs_file_info_list_free:
- * @list: list of GnomeVFSFileInfo elements
+ * @list: list of #GnomeVFSFileInfo elements.
  *
- * Decrements the reference count of each member of @list by one,
+ * Decrements the refcount of each member of @list by one,
  * and frees the list itself.
- **/
+ */
 void
 gnome_vfs_file_info_list_free (GList *list)
 {
@@ -380,14 +388,14 @@ gnome_vfs_get_file_info_result_get_type (void)
 }
 /**
  * gnome_vfs_get_file_info_result_dup:
- * @result: A #GnomeVFSGetFileInfoResult.
+ * @result: a #GnomeVFSGetFileInfoResult.
  * 
  * Duplicate @result.
  *
- * Note: The internal uri and file_ info objects are not duplicated
+ * Note: The internal uri and fileinfo objects are not duplicated
  * but their refcount is incremented by 1.
  *
- * Return value: A duplicated version of @result.
+ * Return value: a duplicated version of @result.
  *
  * Since: 2.12
  */
@@ -414,13 +422,13 @@ gnome_vfs_get_file_info_result_dup (GnomeVFSGetFileInfoResult *result)
 
 /**
  * gnome_vfs_get_file_info_result_free:
- * @result: A #GnomeVFSGetFileInfoResult.
+ * @result: a #GnomeVFSGetFileInfoResult.
  *
- * Unrefs the internal uri and file_info objects and frees the
- * memory  allocated for @result.
+ * Unrefs the internal uri and fileinfo objects and frees the
+ * memory allocated for @result.
  * 
  * Since: 2.12
- **/
+ */
 void
 gnome_vfs_get_file_info_result_free (GnomeVFSGetFileInfoResult *result)
 {

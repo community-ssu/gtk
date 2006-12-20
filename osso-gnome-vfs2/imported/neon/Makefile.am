@@ -1,6 +1,14 @@
 NULL =
 
+if HAVE_SSL
+SSL_DEFINES = -DNE_HAVE_SSL
+else
+SSL_DEFINES =
+endif
+
 INCLUDES =					\
+	-DNE_HAVE_DAV				\
+	$(SSL_DEFINES)                          \
 	$(NEON_CFLAGS)				\
 	$(LIBGNOMEVFS_CFLAGS)			\
 	$(GSSAPI_CFLAGS)			\
@@ -19,7 +27,6 @@ NEON_INCLUDES = \
 	ne_auth.h	\
 	ne_basic.h	\
 	ne_compress.h	\
-	ne_cookies.h	\
 	ne_dates.h	\
 	ne_defs.h	\
 	ne_i18n.h	\
@@ -36,6 +43,7 @@ NEON_INCLUDES = \
 	ne_uri.h	\
 	ne_utils.h	\
 	ne_xml.h	\
+	ne_xmlreq.h	\
 	ne_gnomevfs.h	\
 	$(NULL)
 
@@ -44,13 +52,13 @@ NEON_BASE_SOURCES = ne_request.c ne_session.c 	\
 	ne_basic.c  ne_string.c	 		\
 	ne_uri.c ne_dates.c ne_alloc.c  	\
 	ne_md5.c ne_utils.c    			\
-	ne_auth.c 					\
-	ne_cookies.c ne_redirect.c		\
+	ne_auth.c 				\
+	ne_redirect.c		\
 	ne_compress.c
 
 NEON_DAV_SOURCES = \
 	ne_207.c ne_xml.c \
-	ne_props.c ne_locks.c
+	ne_props.c ne_locks.c ne_xmlreq.c
 
 NEON_EXTRA_SOURCES = ne_acl.c ne_gnomevfs.c
 
@@ -65,6 +73,7 @@ libneon_la_LDFLAGS =			\
 libneon_la_SOURCES = \
 	$(NEON_INCLUDES)	\
 	$(NEON_BASE_SOURCES) 	\
+	$(NEON_SSL_SOURCES)	\
 	$(NEON_DAV_SOURCES) 	\
 	$(NEON_EXTRA_SOURCES)	\
         $(NULL)

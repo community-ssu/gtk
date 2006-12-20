@@ -622,7 +622,8 @@ do_get_file_info (GnomeVFSMethod *method,
 			   	  GNOME_VFS_FILE_INFO_FIELDS_ATIME |
 			   	  GNOME_VFS_FILE_INFO_FIELDS_MTIME |
 			   	  GNOME_VFS_FILE_INFO_FIELDS_CTIME |
-			   	  GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+			   	  GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE |
+				  GNOME_VFS_FILE_INFO_FIELDS_IDS;
 
 	g_free (name);
 	tar_file_unref (tar);

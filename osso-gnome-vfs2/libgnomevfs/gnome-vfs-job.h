@@ -38,9 +38,9 @@
 
 #include <libgnomevfs/gnome-vfs-async-ops.h>
 #include <libgnomevfs/gnome-vfs-module-callback.h>
-#include <libgnomevfs/gnome-vfs-module-callback-private.h>
 
 typedef struct GnomeVFSJob GnomeVFSJob;
+typedef struct GnomeVFSModuleCallbackStackInfo GnomeVFSModuleCallbackStackInfo;
 
 #define GNOME_VFS_JOB_DEBUG 0
 
@@ -68,8 +68,6 @@ G_STMT_START{					\
 
 #if GNOME_VFS_JOB_DEBUG
 #include <sys/time.h>
-
-extern char *job_debug_types[];
 
 #define JOB_DEBUG(x) JOB_DEBUG_PRINT(x)
 #define JOB_DEBUG_ONLY(x) x
@@ -416,17 +414,17 @@ struct GnomeVFSJob {
 GnomeVFSJob 	*_gnome_vfs_job_new      	  (GnomeVFSOpType  	 type,
 						   int			 priority,
 				      		   GFunc           	 callback,
-				      		   gpointer        	 callback_data);
-void         	 _gnome_vfs_job_destroy  	  (GnomeVFSJob     	*job);
+				      		   gpointer        	 callback_data) G_GNUC_INTERNAL;
+void         	 _gnome_vfs_job_destroy  	  (GnomeVFSJob     	*job) G_GNUC_INTERNAL;
 void         	 _gnome_vfs_job_set	  	  (GnomeVFSJob     	*job,
 				      		   GnomeVFSOpType  	 type,
 				      		   GFunc           	 callback,
-				      		   gpointer        	 callback_data);
-void         	 _gnome_vfs_job_go       	  (GnomeVFSJob     	*job);
-void     	 _gnome_vfs_job_execute  	  (GnomeVFSJob     	*job);
-void         	 _gnome_vfs_job_module_cancel  	  (GnomeVFSJob	 	*job);
+				      		   gpointer        	 callback_data) G_GNUC_INTERNAL;
+void         	 _gnome_vfs_job_go       	  (GnomeVFSJob     	*job) G_GNUC_INTERNAL;
+void     	 _gnome_vfs_job_execute  	  (GnomeVFSJob     	*job) G_GNUC_INTERNAL;
+void         	 _gnome_vfs_job_module_cancel  	  (GnomeVFSJob	 	*job) G_GNUC_INTERNAL;
 int          	 gnome_vfs_job_get_count 	  (void);
 
-gboolean	 _gnome_vfs_job_complete	  (GnomeVFSJob 		*job);
+gboolean	 _gnome_vfs_job_complete	  (GnomeVFSJob 		*job) G_GNUC_INTERNAL;
 
 #endif /* GNOME_VFS_JOB_H */

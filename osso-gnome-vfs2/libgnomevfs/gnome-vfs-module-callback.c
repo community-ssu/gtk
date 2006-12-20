@@ -411,11 +411,17 @@ stack_table_destroy (gpointer specific)
 	stack_table = specific;
 
 	g_static_mutex_lock (&callback_table_lock);
-	g_hash_table_remove (stack_tables_to_free, stack_table);
+	if (stack_tables_to_free != NULL) {
+		g_hash_table_remove (stack_tables_to_free, stack_table);
+	} else {
+		stack_table = NULL;
+	}
 	g_static_mutex_unlock (&callback_table_lock);
 
-	clear_stack_table (stack_table);
-	g_hash_table_destroy (stack_table);
+	if (stack_table) {
+		clear_stack_table (stack_table);
+		g_hash_table_destroy (stack_table);
+	}
 }
 
 static gboolean
@@ -440,6 +446,7 @@ free_stack_tables_to_free (void)
 	g_static_mutex_lock (&callback_table_lock);
 	g_hash_table_foreach_remove (stack_tables_to_free, stack_table_free_hr_func , NULL);
 	g_hash_table_destroy (stack_tables_to_free);
+	stack_tables_to_free = NULL;
 	g_static_mutex_unlock (&callback_table_lock);
 }
 
@@ -512,12 +519,12 @@ initialize_per_thread_if_needed (void)
 /* -- Public entry points -- */
 
 /**
- * GnomeVFSModuleCallback
- * @in: The in argument for this callback; the exact type depends on the specific callback
- * @in_size: Size of the in argument; useful for sanity-checking
- * @out: The out argument for this callback; the exact type depends on the specific callback
- * @out_size: Size of the out argument; useful for sanity-checking
- * @callback_data: The @callback_data specified when this callback was set
+ * GnomeVFSModuleCallback:
+ * @in: in argument for this callback; the exact type depends on the specific callback.
+ * @in_size: size of the in argument; useful for sanity-checking.
+ * @out: out argument for this callback; the exact type depends on the specific callback.
+ * @out_size: size of the out argument; useful for sanity-checking.
+ * @callback_data: callback data specified when this callback was set.
  *
  * This is the type of a callback function that gets set for a module
  * callback. 
@@ -527,18 +534,17 @@ initialize_per_thread_if_needed (void)
  * callback. It is generally a pointer to a struct with several fields
  * that provide information to the callback.
  *
- * The @out argument is used to return a values from the
+ * The @out argument is used to return a value from the
  * callback. Once again the exact type depends on the specific
  * callback. It is generally a pointer to a pre-allocated struct with
  * several fields that the callback function should fill in before
  * returning.
- *    
  */
 
 
 /**
- * GnomeVFSModuleCallbackResponse
- * @response_data: Pass the @response_data argument originally passed to the async callback
+ * GnomeVFSModuleCallbackResponse:
+ * @response_data: pass the response data argument originally passed to the async callback.
  *
  * This is the type of the response function passed to a
  * GnomeVFSAsyncModuleCallback(). It should be called when the async
@@ -547,14 +553,14 @@ initialize_per_thread_if_needed (void)
 
 
 /**
- * GnomeVFSAsyncModuleCallback
- * @in: The in argument for this callback; the exact type depends on the specific callback
- * @in_size: Size of the in argument; useful for sanity-checking
- * @out: The out argument for this callback; the exact type depends on the specific callback
- * @out_size: Size of the out argument; useful for sanity-checking
- * @callback_data: The @callback_data specified when this callback was set
- * @response: Response function to call when the callback is completed
- * @response_data: Argument to pass to @response
+ * GnomeVFSAsyncModuleCallback:
+ * @in: in argument for this callback; the exact type depends on the specific callback.
+ * @in_size: size of the in argument; useful for sanity-checking.
+ * @out: out argument for this callback; the exact type depends on the specific callback.
+ * @out_size: size of the out argument; useful for sanity-checking.
+ * @callback_data: The @callback_data specified when this callback was set.
+ * @response: response function to call when the callback is completed.
+ * @response_data: argument to pass to @response.
  *
  * This is the type of a callback function that gets set for an async
  * module callback. 
@@ -574,7 +580,6 @@ initialize_per_thread_if_needed (void)
  *
  * The @in and @out arguments are guaranteed to remain valid until the
  * @response function is called.
- * 
  */
 
 
@@ -582,11 +587,11 @@ initialize_per_thread_if_needed (void)
 
 
 /**
- * gnome_vfs_module_callback_set_default
- * @callback_name: The name of the module callback to set
- * @callback: The function to call when the callback is invoked
- * @callback_data: Pointer to pass as the @callback_data argument to @callback
- * @destroy_notify: Function to call when @callback_data is to be freed.
+ * gnome_vfs_module_callback_set_default:
+ * @callback_name: name of the module callback to set.
+ * @callback: function to call when the @callback is invoked.
+ * @callback_data: data to pass to @callback.
+ * @destroy_notify: function to call when @callback_data is to be freed.
  * 
  * Set the default callback for @callback_name to
  * @callback. @callback will be called with @callback_data on the
@@ -602,8 +607,7 @@ initialize_per_thread_if_needed (void)
  *
  * Note: @destroy_notify may be called on any thread - it is not
  * guaranteed to be called on the main thread.
- *
- **/
+ */
 void
 gnome_vfs_module_callback_set_default (const char *callback_name,
 				       GnomeVFSModuleCallback callback,
@@ -625,11 +629,11 @@ gnome_vfs_module_callback_set_default (const char *callback_name,
 }
 
 /**
- * gnome_vfs_module_callback_push
- * @callback_name: The name of the module callback to set temporarily
- * @callback: The function to call when the callback is invoked
- * @callback_data: Pointer to pass as the @callback_data argument to @callback
- * @destroy_notify: Function to call when @callback_data is to be freed.
+ * gnome_vfs_module_callback_push:
+ * @callback_name: name of the module callback to set temporarily.
+ * @callback: function to call when the @callback is invoked.
+ * @callback_data: data to pass to @callback.
+ * @destroy_notify: function to call when @callback_data is to be freed.
  * 
  * Set @callback as a temprary handler for @callback_name. @callback
  * will be called with @callback_data on the same thread as the
@@ -648,8 +652,7 @@ gnome_vfs_module_callback_set_default (const char *callback_name,
  *
  * Note: @destroy_notify may be called on any thread - it is not
  * guaranteed to be called on the main thread.
- *
- **/
+ */
 void
 gnome_vfs_module_callback_push (const char *callback_name,
 				GnomeVFSModuleCallback callback,
@@ -668,8 +671,8 @@ gnome_vfs_module_callback_push (const char *callback_name,
 }
 
 /**
- * gnome_vfs_module_callback_pop
- * @callback_name: The name of the module callback to remove a temporary handler for
+ * gnome_vfs_module_callback_pop.
+ * @callback_name: name of the module callback to remove a temporary handler for.
  * 
  * Remove the temporary handler for @callback_name most recently set
  * with gnome_vfs_module_callback_push().  If another temporary
@@ -679,8 +682,7 @@ gnome_vfs_module_callback_push (const char *callback_name,
  *
  * The temporary handlers are treated as a first-in first-out
  * stack.
- *
- **/
+ */
 void
 gnome_vfs_module_callback_pop (const char *callback_name)
 {
@@ -691,11 +693,11 @@ gnome_vfs_module_callback_pop (const char *callback_name)
 
 
 /**
- * gnome_vfs_async_module_callback_set_default
- * @callback_name: The name of the async module callback to set
- * @callback: The function to call when the callback is invoked
- * @callback_data: Pointer to pass as the @callback_data argument to @callback
- * @destroy_notify: Function to call when @callback_data is to be freed.
+ * gnome_vfs_async_module_callback_set_default:
+ * @callback_name: name of the async module callback to set.
+ * @callback: function to call when @callback is invoked.
+ * @callback_data: data to pass to @callback.
+ * @destroy_notify: function to call when @callback_data is to be freed.
  * 
  * Set the default async callback for @callback_name to
  * @callback. @callback will be called with @callback_data
@@ -717,8 +719,7 @@ gnome_vfs_module_callback_pop (const char *callback_name)
  *
  * Note: @destroy_notify may be called on any thread - it is not
  * guaranteed to be called on the main thread.
- *
- **/
+ */
 void
 gnome_vfs_async_module_callback_set_default (const char *callback_name,
 					     GnomeVFSAsyncModuleCallback callback,
@@ -740,13 +741,13 @@ gnome_vfs_async_module_callback_set_default (const char *callback_name,
 }
 
 /**
- * gnome_vfs_async_module_callback_push
- * @callback_name: The name of the module callback to set temporarily
- * @callback: The function to call when the callback is invoked
- * @callback_data: Pointer to pass as the @callback_data argument to @callback
- * @destroy_notify: Function to call when @callback_data is to be freed.
+ * gnome_vfs_async_module_callback_push:
+ * @callback_name: name of the module callback to set temporarily.
+ * @callback: function to call when @callback is invoked.
+ * @callback_data: data to pass to @callback.
+ * @destroy_notify: function to call when @callback_data is to be freed.
  * 
- * Set @callback_func as a temprary async handler for
+ * Set @callback as a temprary async handler for
  * @callback_name. @callback will be called with @callback_data
  * from a callback on the main thread. It will be passed a response
  * function which should be called to signal completion of the
@@ -755,7 +756,7 @@ gnome_vfs_async_module_callback_set_default (const char *callback_name,
  * The temporary async handler is set per-thread.
  *
  * gnome_vfs_async_module_callback_pop() removes the most recently set
- * temporary temporary handler. The temporary async handlers are
+ * temporary handler. The temporary async handlers are
  * treated as a first-in first-out stack.
  *
  * Use this function to set a temporary async callback handler for a
@@ -766,8 +767,7 @@ gnome_vfs_async_module_callback_set_default (const char *callback_name,
  *
  * Note: @destroy_notify may be called on any thread - it is not
  * guaranteed to be called on the main thread.
- *
- **/
+ */
 void
 gnome_vfs_async_module_callback_push (const char *callback_name,
 				      GnomeVFSAsyncModuleCallback callback,
@@ -788,8 +788,8 @@ gnome_vfs_async_module_callback_push (const char *callback_name,
 }
 
 /**
- * gnome_vfs_async_module_callback_pop
- * @callback_name: The name of the module callback to remove a temporary handler for
+ * gnome_vfs_async_module_callback_pop:
+ * @callback_name: name of the module callback to remove a temporary handler for.
  * 
  * Remove the temporary async handler for @callback_name most recently
  * set with gnome_vfs_async_module_callback_push().  If another
@@ -799,8 +799,7 @@ gnome_vfs_async_module_callback_push (const char *callback_name,
  *
  * The temporary async handlers are treated as a first-in first-out
  * stack.
- *
- **/
+ */
 void
 gnome_vfs_async_module_callback_pop (const char *callback_name)
 {
@@ -812,12 +811,12 @@ gnome_vfs_async_module_callback_pop (const char *callback_name)
 /* -- Module-only entry points -- */
 
 /**
- * gnome_vfs_module_callback_invoke
- * @callback_name: The name of the module callback to set
- * @in: In argument - type dependent on the specific callback
- * @in_size: Size of the in argument
- * @out: Out argument - type dependent on the specific callback
- * @out_size: Size of the out argument
+ * gnome_vfs_module_callback_invoke:
+ * @callback_name: name of the module callback to set.
+ * @in: in argument for this callback; the exact type depends on the specific callback.
+ * @in_size: size of the in argument; useful for sanity-checking.
+ * @out: out argument for this callback; the exact type depends on the specific callback.
+ * @out_size: size of the out argument; useful for sanity-checking.
  * 
  * Invoke a default callback for @callback_name, with in arguments
  * specified by @in and @in_size, and out arguments specified by @out
@@ -830,10 +829,9 @@ gnome_vfs_async_module_callback_pop (const char *callback_name)
  * handler is set, or the function is not called from an async job
  * thread, the regular handler, if any, will be invoked instead. If no
  * handler at all is found for @callback_name, the function returns
- * FALSE.
+ * %FALSE.
  *
- * Returns: TRUE if a callback was invoked, FALSE if none was set.
- *
+ * Returns: %TRUE if a callback was invoked, %FALSE if none was set.
  */
 gboolean
 gnome_vfs_module_callback_invoke (const char    *callback_name,
@@ -849,11 +847,9 @@ gnome_vfs_module_callback_invoke (const char    *callback_name,
 	callback = NULL;
 
 	if (gnome_vfs_get_is_daemon()) {
-#ifndef USE_DBUS_DAEMON
 		return _gnome_vfs_module_callback_marshal_invoke (callback_name,
 								  in, in_size,
 								  out, out_size);
-#endif
 	}
 	
 	initialize_per_thread_if_needed ();

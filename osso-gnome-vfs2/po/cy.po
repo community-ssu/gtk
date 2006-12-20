@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-vfs\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2005-08-17 23:49+0100\n"
-"PO-Revision-Date: 2005-08-16 17:39-0000\n"
+"POT-Creation-Date: 2006-06-29 19:58+0100\n"
+"PO-Revision-Date: 2006-06-29 19:58+0100\n"
 "Last-Translator: Rhys Jones <rhys@sucs.org>\n"
 "Language-Team: Welsh <gnome-cy@pengwyn.linux.org.uk>\n"
 "MIME-Version: 1.0\n"
@@ -36,231 +36,435 @@ msgstr "Methwyd ymgychwyn gnome vfs"
 msgid "ISO 9660 Volume"
 msgstr "Cyfrol ISO 9660"
 
-#: ../libgnomevfs/gnome-vfs-configuration.c:221
+#: ../libgnomevfs/gnome-vfs-configuration.c:225
 #, c-format
-msgid "%s:%d contains NUL characters."
-msgstr "Mae %s:%d yn cynnwys nodau NUL."
+msgid "%s:%u contains NUL characters."
+msgstr "Mae %s:%u yn cynnwys nodau NUL."
 
-#: ../libgnomevfs/gnome-vfs-configuration.c:238
+#: ../libgnomevfs/gnome-vfs-configuration.c:242
 #, c-format
-msgid "%s:%d contains no method name."
-msgstr "Nid yw %s:%d yn cynnwys enw modd."
+msgid "%s:%u contains no method name."
+msgstr "Nid yw %s:%u yn cynnwys enw dull."
 
-#: ../libgnomevfs/gnome-vfs-configuration.c:278
+#: ../libgnomevfs/gnome-vfs-configuration.c:282
 #, c-format
-msgid "%s:%d has no options endmarker."
-msgstr "Nid yw %s:%d yn cynnwys marc i ddynodi diwedd yr opsiynau."
+msgid "%s:%u has no options endmarker."
+msgstr "Nid yw %s:%u yn cynnwys marc i ddynodi diwedd yr opsiynau."
 
-#: ../libgnomevfs/gnome-vfs-configuration.c:289
+#: ../libgnomevfs/gnome-vfs-configuration.c:293
 #, c-format
-msgid "%s:%d has unknown options %s."
-msgstr "Mae gan %s:%d yr opsiynau anhysbys %s."
+msgid "%s:%u has unknown options %s."
+msgstr "Mae gan %s:%u yr opsiynau anhysbys %s."
 
-#: ../libgnomevfs/gnome-vfs-configuration.c:308
+#: ../libgnomevfs/gnome-vfs-configuration.c:312
 #, c-format
-msgid "%s:%d contains no module name."
-msgstr "Nid yw %s:%d yn cynnwys enw modiwl."
+msgid "%s:%u contains no module name."
+msgstr "Nid yw %s:%u yn cynnwys enw modiwl."
 
-#: ../libgnomevfs/gnome-vfs-configuration.c:362
+#: ../libgnomevfs/gnome-vfs-configuration.c:363
 #, c-format
 msgid "Configuration file `%s' was not found: %s"
 msgstr "Ni chanfuwyd y ffeil cyfluniad `%s': %s"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:37
+#. stop parsing if we failed
+#: ../libgnomevfs/gnome-vfs-configuration.c:382
+#, c-format
+msgid "%s:%d aborted parsing."
+msgstr "%s: %d wedi diddymu'r gramadegu."
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:39
 msgid "AFFS Volume"
 msgstr "Cyfrol AFFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:38
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:40
 msgid "AFS Network Volume"
 msgstr "Cyfrol Rhwydwaith AFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:39
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:41
 msgid "Auto-detected Volume"
 msgstr "Cyfrol a Ganfuwyd yn Awtomatig"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:40
 #: ../libgnomevfs/gnome-vfs-filesystem-type.c:42
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:44
 msgid "CD-ROM Drive"
 msgstr "Chwaraewr CD-ROM"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:41
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:43
 msgid "CD Digital Audio"
 msgstr "CD Sain Ddigidol"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:43
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:45
 msgid "Hardware Device Volume"
 msgstr "Cyfrol Dyfais Caledwedd"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:44
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:45
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:46
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:47
 msgid "Ext2 Linux Volume"
 msgstr "Cyfrol Linux Ext2"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:46
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:48
 msgid "Ext3 Linux Volume"
 msgstr "Cyfrol Linux Ext3"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:47
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:57
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:58
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:49
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:59
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:60
 msgid "MSDOS Volume"
 msgstr "Cyfrol MSDOS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:48
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:49
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:50
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:51
 msgid "MacOS Volume"
 msgstr "Cyfrol MacOS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:50
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:52
 msgid "CDROM Volume"
 msgstr "Cyfrol CDROM"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:51
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:53
 msgid "Hsfs CDROM Volume"
 msgstr "Cyfrol CDROM Hsfs"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:52
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:54
 msgid "JFS Volume"
 msgstr "Cyfrol JFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:53
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:60
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:55
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:62
 msgid "Windows NT Volume"
 msgstr "Cyfrol Windows NT"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:54
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:62
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:63
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:56
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:64
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:65
 msgid "System Volume"
 msgstr "Cyfrol System"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:55
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:57
 msgid "Memory Volume"
 msgstr "Cyfrol Cof"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:56
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:58
 msgid "Minix Volume"
 msgstr "Cyfrol Minix"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:59
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:61
 msgid "NFS Network Volume"
 msgstr "Cyfrol Rhwydwaith NFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:61
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:63
 msgid "Netware Volume"
 msgstr "Cyfrol Netware"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:64
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:66
 msgid "Reiser4 Linux Volume"
 msgstr "Cyfrol Linux Reiser4"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:65
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:67
 msgid "ReiserFS Linux Volume"
 msgstr "Cyfrol Linux ReiserFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:66
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:68
 msgid "Windows Shared Volume"
 msgstr "Cyfrol Rhannu Windows"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:67
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:69
 msgid "SuperMount Volume"
 msgstr "Cyfrol SuperMount"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:68
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:70
 msgid "DVD Volume"
 msgstr "Cyfrol DVD"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:69
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:71
 msgid "Solaris/BSD Volume"
 msgstr "Cyfrol Solaris/BSD"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:70
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:72
 msgid "Udfs Solaris Volume"
 msgstr "Cyfrol Solaris Udfs"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:71
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:73
 msgid "Pcfs Solaris Volume"
 msgstr "Cyfrol Solaris Pcfs"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:72
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:74
 msgid "Sun SAM-QFS Volume"
 msgstr "Cyfrol SAM-QFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:73
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:75
 msgid "Enhanced DOS Volume"
 msgstr "Cyfrol DOS Gwell"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:74
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:76
 msgid "Windows VFAT Volume"
 msgstr "Cyfrol Windows VFAT"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:75
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:77
 msgid "Xenix Volume"
 msgstr "Cyfrol Xenix"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:76
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:78
 msgid "XFS Linux Volume"
 msgstr "Cyfrol Linux XFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:77
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:79
 msgid "XIAFS Volume"
 msgstr "Cyfrol XIAFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:78
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:80
 msgid "CIFS Volume"
 msgstr "Cyfrol CIFS"
 
-#: ../libgnomevfs/gnome-vfs-filesystem-type.c:106
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:108
 msgid "Unknown"
 msgstr "Anhysbys"
 
-#: ../libgnomevfs/gnome-vfs-job.c:734
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:354
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:580
+#, c-format
+msgid "%s Volume"
+msgstr "Cyfrol %s"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:370
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:565
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:623
+msgid "CD-ROM"
+msgstr "CD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:372
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-R"
+msgstr "CD-R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:374
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "CD-RW"
+msgstr "CD-RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:378
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "DVD-ROM"
+msgstr "DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:380
+msgid "DVD+R"
+msgstr "DVD+R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:382
+msgid "DVD+RW"
+msgstr "DVD+RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:384
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "DVD-R"
+msgstr "DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:386
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:572
+msgid "DVD-RW"
+msgstr "DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:388
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "DVD-RAM"
+msgstr "DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:391
+msgid "DVD±R"
+msgstr "DVD±R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:394
+msgid "DVD±RW"
+msgstr "DVD±RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:397
+#, c-format
+msgid "%s/%s Drive"
+msgstr "Gyriant %s/%s"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:399
+#, c-format
+msgid "%s Drive"
+msgstr "Gyriant %s"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:404
+msgid "Floppy Drive"
+msgstr "Gyriant Disg Hyblyg"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:407
+msgid "Compact Flash Drive"
+msgstr "Gyriant Compact Flash"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:409
+msgid "Memory Stick Drive"
+msgstr "Gyriant Tocyn Cof"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:411
+msgid "Smart Media Drive"
+msgstr "Gyriant Smart Media"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:413
+msgid "SD/MMC Drive"
+msgstr "Gyriant SD/MMC"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:415
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:594
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:626
+msgid "Zip Drive"
+msgstr "Gyriant Zip"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:418
+msgid "Jaz Drive"
+msgstr "Gyriant Jaz"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:421
+msgid "Pen Drive"
+msgstr "Gyriant Pen"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:427
+#, c-format
+msgid "%s %s Music Player"
+msgstr "Chwaraeydd Cerddoriaeth %s %s"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:435
+#, c-format
+msgid "%s %s Digital Camera"
+msgstr "Camera Digidol %s %s"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:465
+msgid "Drive"
+msgstr "Gyriant"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:470
+#, c-format
+msgid "External %s"
+msgstr "%s Allanol"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:506
+msgid "CD-ROM Disc"
+msgstr "Disg CD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:511
+msgid "Blank CD-R Disc"
+msgstr "Disg CD-R Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:513
+msgid "CD-R Disc"
+msgstr "Disg CD-R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:518
+msgid "Blank CD-RW Disc"
+msgstr "Disg CD-RW Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:520
+msgid "CD-RW Disc"
+msgstr "Disg CD-RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:524
+msgid "DVD-ROM Disc"
+msgstr "Disg DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:529
+msgid "Blank DVD-RAM Disc"
+msgstr "Disg DVD-RAM Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:531
+msgid "DVD-RAM Disc"
+msgstr "Disg DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:536
+msgid "Blank DVD-R Disc"
+msgstr "Disg DVD-R Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:538
+msgid "DVD-R Disc"
+msgstr "Disg DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:543
+msgid "Blank DVD-RW Disc"
+msgstr "Disg DVD-RW Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:545
+msgid "DVD-RW Disc"
+msgstr "Disg DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:551
+msgid "Blank DVD+R Disc"
+msgstr "Disg DVD+R Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:553
+msgid "DVD+R Disc"
+msgstr "Disg DVD+R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:558
+msgid "Blank DVD+RW Disc"
+msgstr "Disg DVD+RW Gwag"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:560
+msgid "DVD+RW Disc"
+msgstr "Disg DVD+RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:567
+msgid "Audio Disc"
+msgstr "Disg Sain"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:578
+#, c-format
+msgid "%s Removable Volume"
+msgstr "Cyfrol %s y Gellir ei Thynnu"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:589
+msgid "Volume"
+msgstr "Cyfrol"
+
+#: ../libgnomevfs/gnome-vfs-job.c:733
 #, c-format
 msgid "Unknown operation type %u"
 msgstr "Math gweithred anhysbys %u"
 
-#: ../libgnomevfs/gnome-vfs-job.c:1025 ../libgnomevfs/gnome-vfs-job.c:1176
+#: ../libgnomevfs/gnome-vfs-job.c:1024 ../libgnomevfs/gnome-vfs-job.c:1175
 #, c-format
 msgid "Cannot create pipe for open GIOChannel: %s"
 msgstr "Ni ellir creu pibell ar gyfer GIOChannel agored: %s"
 
-#: ../libgnomevfs/gnome-vfs-job.c:1699
+#: ../libgnomevfs/gnome-vfs-job.c:1691
 #, c-format
 msgid "Unknown job kind %u"
 msgstr "Tasg anhysbys, math %u"
 
-#: ../libgnomevfs/gnome-vfs-job.c:1732
+#: ../libgnomevfs/gnome-vfs-job.c:1724
 msgid "Operation stopped"
 msgstr "Ataliwyd y gweithrediad"
 
 #: ../libgnomevfs/gnome-vfs-mime-handlers.c:108
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:275
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:326
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:622
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:643
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:663
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:684
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:705
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:856
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:880
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:901
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:922
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:979
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:998
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1017
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1037
-#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1057
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:268
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:319
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:615
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:636
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:656
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:677
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:698
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:848
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:872
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:893
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:914
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:971
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:990
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1009
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1029
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:1049
+#: ../libgnomevfs/gnome-vfs-mime-info.c:624
+#: ../libgnomevfs/gnome-vfs-mime-info.c:631
+#: ../libgnomevfs/gnome-vfs-mime-info.c:639
 #: ../libgnomevfs/gnome-vfs-mime-info.c:646
-#: ../libgnomevfs/gnome-vfs-mime-info.c:653
-#: ../libgnomevfs/gnome-vfs-mime-info.c:661
-#: ../libgnomevfs/gnome-vfs-mime-info.c:668
-#: ../libgnomevfs/gnome-vfs-mime-info.c:676
-#: ../libgnomevfs/gnome-vfs-mime-info.c:693
+#: ../libgnomevfs/gnome-vfs-mime-info.c:654
+#: ../libgnomevfs/gnome-vfs-mime-info.c:671
+#: ../libgnomevfs/gnome-vfs-mime-info.c:678
+#: ../libgnomevfs/gnome-vfs-mime-info.c:685
+#: ../libgnomevfs/gnome-vfs-mime-info.c:692
 #: ../libgnomevfs/gnome-vfs-mime-info.c:700
 #: ../libgnomevfs/gnome-vfs-mime-info.c:707
-#: ../libgnomevfs/gnome-vfs-mime-info.c:714
-#: ../libgnomevfs/gnome-vfs-mime-info.c:722
-#: ../libgnomevfs/gnome-vfs-mime-info.c:729
 msgid ""
 "Deprecated function.  User modifications to the MIME database are no longer "
 "supported."
@@ -268,12 +472,12 @@ msgstr ""
 "Ffwythiant a anargymhellir. Ni chynhelir newidiadau defnyddiwr i'r gronfa "
 "ddata MIME bellach."
 
-#: ../libgnomevfs/gnome-vfs-parse-ls.c:666
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:708
 #, c-format
 msgid "Could not parse: %s"
 msgstr "Methu gramadegu: %s"
 
-#: ../libgnomevfs/gnome-vfs-parse-ls.c:668
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:710
 msgid "More parsing errors will be ignored."
 msgstr "Anwybyddir gwallau gramadegu pellach."
 
@@ -508,7 +712,7 @@ msgid "Error launching command"
 msgstr "Gwall wrth weithredu'r gorchymyn"
 
 #. GNOME_VFS_ERROR_TIMEOUT
-#: ../libgnomevfs/gnome-vfs-result.c:88 ../libgnomevfs/gnome-vfs-result.c:90
+#: ../libgnomevfs/gnome-vfs-result.c:88
 msgid "Timeout reached"
 msgstr "Cyrhaeddwyd goramser"
 
@@ -518,16 +722,16 @@ msgid "Nameserver error"
 msgstr "Gwall gweinydd enw"
 
 #. GNOME_VFS_ERROR_LOCKED
-#: ../libgnomevfs/gnome-vfs-result.c:91
+#: ../libgnomevfs/gnome-vfs-result.c:90
 msgid "The resource is locked"
 msgstr "Mae'r adnodd wedi ei gloi"
 
 #. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
-#: ../libgnomevfs/gnome-vfs-result.c:92
+#: ../libgnomevfs/gnome-vfs-result.c:91
 msgid "Function call deprecated"
 msgstr "Dirmygir y galwad ffwythiant"
 
-#: ../libgnomevfs/gnome-vfs-result.c:217
+#: ../libgnomevfs/gnome-vfs-result.c:214
 msgid "Unknown error"
 msgstr "Gwall anhysbys"
 
@@ -555,164 +759,130 @@ msgstr "%.1f MB"
 msgid "%.1f GB"
 msgstr "%.1f GB"
 
-#: ../libgnomevfs/gnome-vfs-utils.c:1096
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:381
+#: ../libgnomevfs/gnome-vfs-utils.c:1108
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:382
 msgid " (invalid Unicode)"
 msgstr " (Unicode annilys)"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:563
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:619
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:620
 msgid "Floppy"
 msgstr "Disg hyblyg"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:622
-msgid "CD-ROM"
-msgstr "CD-ROM"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:566
-msgid "CD-R"
-msgstr "CD-R"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
-msgid "CD-RW"
-msgstr "CD-RW"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
-msgid "DVD-ROM"
-msgstr "DVD-ROM"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
-msgid "DVD-RAM"
-msgstr "DVD-RAM"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
-msgid "DVD-R"
-msgstr "DVD-R"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
-msgid "DVD-RW"
-msgstr "DVD-RW"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:572
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
 msgid "CD-ROM/DVD-ROM"
 msgstr "CD-ROM/DVD-ROM"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
 msgid "CD-ROM/DVD-RAM"
 msgstr "CD-ROM/DVD-RAM"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
 msgid "CD-ROM/DVD-R"
 msgstr "CD-ROM/DVD-R"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
 msgid "CD-ROM/DVD-RW"
 msgstr "CD-ROM/DVD-RW"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
 msgid "CD-R/DVD-ROM"
 msgstr "CD-R/DVD-ROM"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
 msgid "CD-R/DVD-RAM"
 msgstr "CD-R/DVD-RAM"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
 msgid "CD-R/DVD-R"
 msgstr "CD-R/DVD-R"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:580
 msgid "CD-R/DVD-RW"
 msgstr "CD-R/DVD-RW"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:580
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
 msgid "CD-RW/DVD-ROM"
 msgstr "CD-RW/DVD-ROM"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
 msgid "CD-RW/DVD-RAM"
 msgstr "CD-RW/DVD-RAM"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
 msgid "CD-RW/DVD-R"
 msgstr "CD-RW/DVD-R"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:584
 msgid "CD-RW/DVD-RW"
 msgstr "CD-RW/DVD-RW"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:585
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:586
 msgid "Disk"
 msgstr "Disg"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:586
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:587
 msgid "USB Drive"
 msgstr "Gyriant USB"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:587
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:588
 msgid "IEEE1394 Drive"
 msgstr "Gyriant IEEE 1394"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:588
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:589
 msgid "CF"
 msgstr "Fflach Cryno"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:589
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:590
 msgid "SD/MMC"
 msgstr "SD/MMC"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:590
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:594
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:591
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:595
 msgid "Memory Stick"
 msgstr "Tocyn Cof"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:591
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:592
 msgid "Smart Media"
 msgstr "Smart Media"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:593
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:625
-msgid "Zip Drive"
-msgstr "Gyriant Zip"
-
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:595
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:596
 msgid "Camera"
 msgstr "Camera"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:596
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:597
 msgid "DVD"
 msgstr "DVD"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:836
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:846
 msgid "Root Volume"
 msgstr "Cyfrol Gwraidd"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:917
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:927
 msgid "Audio CD"
 msgstr "CD Sain"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:950
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:960
 msgid "Unknown volume"
 msgstr "Cyfrol anhysbys"
 
-#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1155
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1172
 msgid "Network server"
 msgstr "Gweinydd rhwydwaith"
 
 #. Handle floppy case
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:125
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:181
 msgid ""
 "Unable to mount the floppy drive. There is probably no floppy in the drive."
 msgstr ""
 "Methu rhagosod y gyriant disg hyblyg. Hwyrach nad oes disg yn y gyriant."
 
 #. All others
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:129
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:185
 msgid "Unable to mount the volume. There is probably no media in the device."
 msgstr "Methu rhagosod y gyfrol. Hwyrach nad oes dim yn y ddyfais."
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:135
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:191
 msgid ""
 "Unable to mount the floppy drive. The floppy is probably in a format that "
 "cannot be mounted."
@@ -720,7 +890,16 @@ msgstr ""
 "Methu rhagosod y gyriant disg hyblyg. Hwyrach fod y disg hyblyg mewn ffurf "
 "na ellir ei osod."
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:138
+#. Probably a wrong password
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:195
+msgid ""
+"Unable to mount the volume. If this is an encrypted drive, then the wrong "
+"password or key was used."
+msgstr ""
+"Methu gosod y gyfrol. Os yw hwn yn yriant wedi ei amgryptio, defnyddiwyd y "
+"cyfrinair neu'r allwedd anghywir."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:198
 msgid ""
 "Unable to mount the selected volume. The volume is probably in a format that "
 "cannot be mounted."
@@ -728,44 +907,76 @@ msgstr ""
 "Methu a gosod y gyfrol a ddewiswyd. Hwyrach ei fod mewn ffurf na ellir ei "
 "osod."
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:143
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:203
 msgid "Unable to mount the selected floppy drive."
 msgstr "Methu gosod y gyriant disg hyblyg ddewiswyd."
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:145
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:205
 msgid "Unable to mount the selected volume."
 msgstr "Methu gosod y gyfrol a ddewiswyd."
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:157
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:218
+msgid ""
+"Unable to unmount the selected volume. The volume is in use by one or more "
+"programs."
+msgstr ""
+"Methu gosod y gyfrol a ddewiswyd. Hwyrach fod un neu fwy o raglenni yn ei "
+"defnyddio."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:221
 msgid "Unable to unmount the selected volume."
 msgstr "Methu dadosod y gyfrol a ddewiswyd."
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:290
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:357
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:387
+#, c-format
+msgid "Failed to read data from child process %d (%s)"
+msgstr "Methwyd darllen data o'r broses blentyn %d (%s)"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:431
+msgid "Couldn't run mount process in a pty"
+msgstr "Methwyd rhedeg y broses osod mewn pty"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:476
+#, c-format
+msgid "Unexpected error in select() reading data from a child process (%s)"
+msgstr ""
+"Gwall annisgwyl o fewn select() wrth ddarllen data o broses blentyn (%s)"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:530
+msgid "Couldn't send password to mount process."
+msgstr "Methu anfon cyfrinair at y broses osod."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:569
+#, c-format
+msgid "Unexpected error in waitpid() (%s)"
+msgstr "Gwall annisgwyl o fewn waitpid() (%s)"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:679
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:765
 msgid "Failed to start command"
 msgstr "Methwyd a chychwyn y gorchymyn"
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:345
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:752
 msgid "Unable to eject media"
 msgstr "Methu allfwrw'r disg neu'r modd"
 
-#: ../libgnomevfs/gnome-vfs-volume-ops.c:573
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:1006
 msgid "Unable to unmount connected server"
 msgstr "Methu dadosod y gweinydd sy'n gysylltiedig"
 
-#: ../modules/computer-method.c:546
+#: ../modules/computer-method.c:542
 msgid "Network"
 msgstr "Rhwydwaith"
 
-#: ../modules/computer-method.c:564
+#: ../modules/computer-method.c:560
 msgid "Home"
 msgstr "Cartref"
 
-#: ../modules/computer-method.c:582
+#: ../modules/computer-method.c:578
 msgid "Filesystem"
 msgstr "System Ffeil"
 
-#: ../modules/file-method.c:536
+#: ../modules/file-method.c:491
 #, c-format
 msgid "Unknown GnomeVFSSeekPosition %d"
 msgstr "GnomeVFSSeekPosition anhysbys %d"
@@ -774,12 +985,12 @@ msgstr "GnomeVFSSeekPosition anhysbys %d"
 msgid "Windows Network"
 msgstr "Rhwydwaith Windows"
 
-#: ../modules/sftp-method.c:1314
+#: ../modules/sftp-method.c:1346
 #, c-format
 msgid "The identity of the remote computer (%s) is unknown."
 msgstr "Nid yw hunaniaeth y cyfrifiadur pell (%s) yn hysbys."
 
-#: ../modules/sftp-method.c:1315
+#: ../modules/sftp-method.c:1347
 #, c-format
 msgid ""
 "This happens when you log in to a computer the first time.\n"
@@ -792,11 +1003,11 @@ msgstr ""
 "bod yn hollol siŵr ei bod hi'n ddiogel i fynd ymlaen, cysylltwch â gweinydd "
 "y system."
 
-#: ../modules/sftp-method.c:1323
+#: ../modules/sftp-method.c:1355
 msgid "Log In Anyway"
 msgstr "Mewngofnodi Fodd Bynnag"
 
-#: ../modules/sftp-method.c:1324
+#: ../modules/sftp-method.c:1356
 msgid "Cancel Login"
 msgstr "Diddymu Mewngofnodi"
 
@@ -826,6 +1037,38 @@ msgstr "moniker Gnome VFS generig"
 #: ../monikers/GNOME_VFS_Moniker_std.server.in.in.h:4
 msgid "generic file moniker"
 msgstr "moniker ffeil generig"
+
+#: ../programs/authentication.c:106
+#, c-format
+msgid "Your HTTP Proxy requires you to log in.\n"
+msgstr "Mae gofyn i chi fewngofnodi i'ch Dirprwy HTTP.\n"
+
+#: ../programs/authentication.c:107
+#, c-format
+msgid ""
+"You must log in to access \"%s\".\n"
+"%s"
+msgstr ""
+"Rhaid i chi fewngofnodi cyn cael mynediad at \"%s\".\n"
+"%s"
+
+#: ../programs/authentication.c:110
+msgid "Your password will be transmitted unencrypted."
+msgstr "Bydd eich cyfrinair yn cael ei anfon heb ei amgryptio."
+
+#: ../programs/authentication.c:111
+msgid "Your password will be transmitted encrypted."
+msgstr "Bydd eich cyfrinair yn cael ei anfon wedi ei amgryptio."
+
+#: ../programs/authentication.c:156
+#, c-format
+msgid "You must log in to access %s domain %s\n"
+msgstr "Rhaid i chi fewngofnodi cyn cael mynediad at %s ym mharth %s\n"
+
+#: ../programs/authentication.c:158
+#, c-format
+msgid "You must log in to access %s\n"
+msgstr "Rhaid i chi fewngofnodi cyn cael mynediad at %s\n"
 
 #: ../schemas/desktop_default_applications.schemas.in.h:1
 msgid "Default component viewer application"
@@ -1264,136 +1507,66 @@ msgstr ""
 "ohono. Cyn i grŵp gwaith newydd ddod i rym, efallai bydd rhaid i'r "
 "defnyddiwr allgofnodi a mewngofnodi eto."
 
-#: ../schemas/system_storage.schemas.in.h:1
-msgid "Display SCSI drives"
-msgstr "Dangos gyriannau SCSI"
+#~ msgid "Display SCSI drives"
+#~ msgstr "Dangos gyriannau SCSI"
 
-#: ../schemas/system_storage.schemas.in.h:2
-msgid "Display SCSI optical drives"
-msgstr "Dangos gyriannau optegol SCSI"
+#~ msgid "Display SCSI optical drives"
+#~ msgstr "Dangos gyriannau optegol SCSI"
 
-#: ../schemas/system_storage.schemas.in.h:3
-msgid "Display drives with removable media"
-msgstr "Dangos gyriannau gyda disgiau a ellir eu tynnu"
+#~ msgid "Display drives with removable media"
+#~ msgstr "Dangos gyriannau gyda disgiau a ellir eu tynnu"
 
-#: ../schemas/system_storage.schemas.in.h:4
-msgid "Display external drives"
-msgstr "Dangos gyriannau allanol"
+#~ msgid "Display external drives"
+#~ msgstr "Dangos gyriannau allanol"
 
-#: ../schemas/system_storage.schemas.in.h:5
-msgid "Display internal hard drives"
-msgstr "Dangos gyriannau caled mewnol"
+#~ msgid "Display internal hard drives"
+#~ msgstr "Dangos gyriannau caled mewnol"
 
-#: ../schemas/system_storage.schemas.in.h:6
-msgid ""
-"Whether to display SCSI optical drives even if /system/storage/"
-"display_scsi_drives is set to FALSE."
-msgstr ""
-"P'un ai i ddangos gyriannau optegol SCSI hyd yn oed os yw /system/storage/"
-"display_scsi_drives wedi ei osod yn FFALS."
+#~ msgid ""
+#~ "Whether to display SCSI optical drives even if /system/storage/"
+#~ "display_scsi_drives is set to FALSE."
+#~ msgstr ""
+#~ "P'un ai i ddangos gyriannau optegol SCSI hyd yn oed os yw /system/storage/"
+#~ "display_scsi_drives wedi ei osod yn FFALS."
 
-#: ../schemas/system_storage.schemas.in.h:7
-msgid "Whether to display drives and mountable volumes from SCSI drives."
-msgstr ""
-"P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau SCSI."
+#~ msgid "Whether to display drives and mountable volumes from SCSI drives."
+#~ msgstr ""
+#~ "P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau SCSI."
 
-#: ../schemas/system_storage.schemas.in.h:8
-msgid ""
-"Whether to display drives and mountable volumes from drives with removable "
-"media (e.g. drives where media can be inserted and removed)."
-msgstr ""
-"P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau gyda "
-"disgiau a ellir eu tynnu."
+#~ msgid ""
+#~ "Whether to display drives and mountable volumes from drives with "
+#~ "removable media (e.g. drives where media can be inserted and removed)."
+#~ msgstr ""
+#~ "P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau gyda "
+#~ "disgiau a ellir eu tynnu."
 
-#: ../schemas/system_storage.schemas.in.h:9
-msgid ""
-"Whether to display drives and mountable volumes from external drives (e.g. "
-"drives that are hotpluggable; e.g. drives that can be attached and detached "
-"while the system is running)."
-msgstr ""
-"P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau allanol "
-"(e.e. gyriannau y gellir eu tynnu a'u gosod tra'u bod nhw, neu'r system, yn "
-"rhedeg)"
+#~ msgid ""
+#~ "Whether to display drives and mountable volumes from external drives (e."
+#~ "g. drives that are hotpluggable; e.g. drives that can be attached and "
+#~ "detached while the system is running)."
+#~ msgstr ""
+#~ "P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau "
+#~ "allanol (e.e. gyriannau y gellir eu tynnu a'u gosod tra'u bod nhw, neu'r "
+#~ "system, yn rhedeg)"
 
-#: ../schemas/system_storage.schemas.in.h:10
-msgid ""
-"Whether to display drives and mountable volumes from internal hard drives "
-"(non-SCSI optical drives are always shown)."
-msgstr ""
-"P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau mewnol "
-"(dangosir bob amser yriannau optegol sydd ddim yn rai SCSI)."
+#~ msgid ""
+#~ "Whether to display drives and mountable volumes from internal hard drives "
+#~ "(non-SCSI optical drives are always shown)."
+#~ msgstr ""
+#~ "P'un ai i ddangos gyriannau a chyfrolau a ellir eu gosod o yriannau "
+#~ "mewnol (dangosir bob amser yriannau optegol sydd ddim yn rai SCSI)."
 
 #~ msgid "The window workgroup the user is part of"
 #~ msgstr "Y grŵp Windows mae'r defnyddiwr yn rhan ohoni"
 
-#~ msgid "CD-ROM Disc"
-#~ msgstr "Disg CD-ROM"
-
-#~ msgid "Blank CD-R Disc"
-#~ msgstr "Disg CD-R Gwag"
-
-#~ msgid "CD-R Disc"
-#~ msgstr "Disg CD-R"
-
-#~ msgid "Blank CD-RW Disc"
-#~ msgstr "Disg CD-RW Gwag"
-
-#~ msgid "CD-RW Disc"
-#~ msgstr "Disg CD-RW"
-
-#~ msgid "DVD-ROM Disc"
-#~ msgstr "Disg DVD-ROM"
-
-#~ msgid "Blank DVD-R Disc"
-#~ msgstr "Disg DVD-R Gwag"
-
-#~ msgid "DVD-R Disc"
-#~ msgstr "Disg DVD-R"
-
-#~ msgid "Blank DVD-RAM Disc"
-#~ msgstr "Disg DVD-RAM Gwag"
-
-#~ msgid "DVD-RAM Disc"
-#~ msgstr "Disg DVD-RAM"
-
-#~ msgid "Blank DVD-RW Disc"
-#~ msgstr "Disg DVD-RW Gwag"
-
-#~ msgid "DVD-RW Disc"
-#~ msgstr "Disg DVD-RW"
-
-#~ msgid "Blank DVD+RW Disc"
-#~ msgstr "Disg DVD+RW Gwag"
-
-#~ msgid "DVD+RW Disc"
-#~ msgstr "Disg DVD+RW"
-
-#~ msgid "Blank DVD+R Disc"
-#~ msgstr "Disg DVD+R Gwag"
-
-#~ msgid "DVD+R Disc"
-#~ msgstr "Disg DVD+R"
-
 #~ msgid "Optical Disc"
 #~ msgstr "Disg Optig"
-
-#~ msgid "Audio Disc"
-#~ msgstr "Disg Sain"
-
-#~ msgid "Compact Flash Media"
-#~ msgstr "Cyfrwng Fflach Cryno"
 
 #~ msgid "Memory Stick Media"
 #~ msgstr "Cyfrwng Tocyn Cof"
 
 #~ msgid "Smart Media Media"
 #~ msgstr "Cyfrwng Smart Media"
-
-#~ msgid "SD/MMC Media"
-#~ msgstr "Cyfrwng SD/MMC"
-
-#~ msgid "Floppy Disk"
-#~ msgstr "Disgen Hyblyg"
 
 #~ msgid "Mac OS disk"
 #~ msgstr "Disg Mac OS"
@@ -1415,9 +1588,6 @@ msgstr ""
 
 #~ msgid "File is empty"
 #~ msgstr "Mae'r ffeil yn wag"
-
-#~ msgid "Failed to read from file '%s': %s"
-#~ msgstr "Methwyd darllen o'r ffeil '%s': %s"
 
 #~ msgid ""
 #~ "desktop entries contain line '%s' which is not an entry, group, or comment"

@@ -26,14 +26,13 @@
 
 #include "gnome-vfs-configuration.h"
 #include "gnome-vfs-private.h"
+#ifdef G_OS_WIN32
+#include "gnome-vfs-private-utils.h"
+#endif
 #include <gmodule.h>
 #include <libgnomevfs/gnome-vfs-module.h>
 #include <libgnomevfs/gnome-vfs-transform.h>
-
-#ifndef USE_DBUS_DAEMON
 #include "gnome-vfs-daemon-method.h"
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -48,7 +47,7 @@ struct _ModuleElement {
 	const char *args;
 	GnomeVFSMethod *method;
 	GnomeVFSTransform *transform;
-	int nusers;
+	GnomeVFSMethodShutdownFunc shutdown_function;
 	gboolean run_in_daemon;
 };
 typedef struct _ModuleElement ModuleElement;
@@ -83,7 +82,7 @@ gnome_vfs_get_is_daemon (void)
 }
 
 GType
-_gnome_vfs_get_daemon_volume_monitor_type (void)
+gnome_vfs_get_daemon_volume_monitor_type (void)
 {
 	return daemon_volume_monitor_type;
 }
@@ -94,10 +93,24 @@ _gnome_vfs_get_daemon_force_probe_callback (void)
 	return daemon_force_probe_callback;
 }
 
+static void
+module_element_free (gpointer elementp)
+{
+	ModuleElement *element = (ModuleElement *) elementp;
+	if (element->shutdown_function != NULL) {
+		(* element->shutdown_function) (element->method);
+	}
+
+	/* NB: this is the key */
+	g_free (element->name);
+	g_free (element);
+}
+
 static gboolean
 init_hash_table (void)
 {
-	module_hash = g_hash_table_new (g_str_hash, g_str_equal);
+	module_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+					     NULL, module_element_free);
 
 	return TRUE;
 }
@@ -162,6 +175,14 @@ init_path_list (void)
 	return TRUE;
 }
 
+/**
+ * gnome_vfs_method_init:
+ *
+ * Initializes the gnome-vfs methods. If already initialized then will simply return
+ * %TRUE.
+ *
+ * Return value: Returns %TRUE.
+ */
 gboolean
 gnome_vfs_method_init (void)
 {
@@ -185,7 +206,8 @@ gnome_vfs_method_init (void)
 
 static void
 load_module (const gchar *module_name, const char *method_name, const char *args,
-	     GnomeVFSMethod **method, GnomeVFSTransform **transform)
+	     GnomeVFSMethod **method, GnomeVFSTransform **transform,
+	     GnomeVFSMethodShutdownFunc *shutdown_function)
 {
 	GModule *module;
 	GnomeVFSMethod *temp_method = NULL;
@@ -193,12 +215,12 @@ load_module (const gchar *module_name, const char *method_name, const char *args
 	
 	GnomeVFSMethodInitFunc init_function = NULL;
 	GnomeVFSTransformInitFunc transform_function = NULL;
-	GnomeVFSMethodShutdownFunc shutdown_function = NULL;
 
 	*method = NULL;
 	*transform = NULL;
+	*shutdown_function = NULL;
 
-	module = g_module_open (module_name, G_MODULE_BIND_LAZY);
+	module = g_module_open (module_name, G_MODULE_BIND_LAZY | G_MODULE_BIND_LOCAL);
 	if (module == NULL) {
 		g_warning ("Cannot load module `%s' (%s)", module_name, g_module_error ());
 		return;
@@ -209,11 +231,11 @@ load_module (const gchar *module_name, const char *method_name, const char *args
 	g_module_symbol (module, GNOME_VFS_MODULE_TRANSFORM,
 			 (gpointer *) &transform_function);
 	g_module_symbol (module, GNOME_VFS_MODULE_SHUTDOWN,
-			 (gpointer *) &shutdown_function);
+			 (gpointer *) shutdown_function);
 	
-	if ((init_function == NULL || shutdown_function == NULL) &&
+	if ((init_function == NULL || *shutdown_function == NULL) &&
 	    (transform_function == NULL)) {
-		g_warning ("module '%s' has no init function; may be an out-of-date module", module_name);
+		g_warning ("module '%s' does not have init, transform and shutfown functions; may be an out-of-date module", module_name);
 		return;
 	}
 
@@ -278,7 +300,8 @@ load_module (const gchar *module_name, const char *method_name, const char *args
 
 static void
 load_module_in_path_list (const gchar *base_name, const char *method_name, const char *args,
-			  GnomeVFSMethod **method, GnomeVFSTransform **transform)
+			  GnomeVFSMethod **method, GnomeVFSTransform **transform,
+			  GnomeVFSMethodShutdownFunc *shutdown_function)
 {
 	GList *p;
 
@@ -292,7 +315,7 @@ load_module_in_path_list (const gchar *base_name, const char *method_name, const
 		path = p->data;
 		name = g_module_build_path (path, base_name);
 
-		load_module (name, method_name, args, method, transform);
+		load_module (name, method_name, args, method, transform, shutdown_function);
 		g_free (name);
 
 		if (*method != NULL || *transform != NULL)
@@ -300,40 +323,12 @@ load_module_in_path_list (const gchar *base_name, const char *method_name, const
 	}
 }
 
-#ifdef USE_DBUS_DAEMON
-static GnomeVFSMethod *
-dbus_method_get (void)
-{
-	static GnomeVFSMethod *method;
-	const gchar           *module_name;
-	const char            *args;
-	gboolean               run_in_daemon;
-	GnomeVFSTransform     *transform;
-	
-	if (method)
-		return method;
-
-	module_name = _gnome_vfs_configuration_get_module_path ("dbus", &args, &run_in_daemon);
-	if (module_name == NULL)
-		return NULL;
-
-	if (run_in_daemon)
-		return NULL;
-
-	if (g_path_is_absolute (module_name))
-		load_module (module_name, "dbus", args, &method, &transform);
-	else
-		load_module_in_path_list (module_name, "dbus", args, &method, &transform);
-
-	return method;
-}
-#endif
-
 static ModuleElement *
 gnome_vfs_add_module_to_hash_table (const gchar *name)
 {
 	GnomeVFSMethod *method = NULL;
 	GnomeVFSTransform *transform = NULL;
+	GnomeVFSMethodShutdownFunc shutdown_function = NULL;
 	ModuleElement *module_element;
 	const char *module_name;
 #if defined (HAVE_SETEUID) || defined (HAVE_SETRESUID)
@@ -378,9 +373,9 @@ gnome_vfs_add_module_to_hash_table (const gchar *name)
 #endif
 		
 		if (g_path_is_absolute (module_name))
-			load_module (module_name, name, args, &method, &transform);
+			load_module (module_name, name, args, &method, &transform, &shutdown_function);
 		else
-			load_module_in_path_list (module_name, name, args, &method, &transform);
+			load_module_in_path_list (module_name, name, args, &method, &transform, &shutdown_function);
 		
 #if defined(HAVE_SETEUID)
 		seteuid (saved_uid);
@@ -393,11 +388,7 @@ gnome_vfs_add_module_to_hash_table (const gchar *name)
 		setresgid (-1, saved_gid, -1);
 #endif
 	} else {
-#ifndef USE_DBUS_DAEMON
 		method = _gnome_vfs_daemon_method_get ();
-#else
-		method = dbus_method_get ();
-#endif
 	}
 
 	if (method == NULL && transform == NULL)
@@ -406,6 +397,7 @@ gnome_vfs_add_module_to_hash_table (const gchar *name)
 	module_element->name = g_strdup (name);
 	module_element->method = method;
 	module_element->transform = transform;
+	module_element->shutdown_function = shutdown_function;
 	module_element->run_in_daemon = run_in_daemon;
 
 	g_hash_table_insert (module_hash, module_element->name, module_element);
@@ -416,6 +408,13 @@ gnome_vfs_add_module_to_hash_table (const gchar *name)
 	return module_element;
 }
 
+/**
+ * gnome_vfs_method_get:
+ * @name: name of the protocol.
+ *
+ * Returns the method handle for the given protocol @name. @name could be any protocol
+ * which gnome-vfs implements. Like ftp, http, smb etc..
+ */
 GnomeVFSMethod *
 gnome_vfs_method_get (const gchar *name)
 {
@@ -427,6 +426,15 @@ gnome_vfs_method_get (const gchar *name)
 	return module_element ? module_element->method : NULL;
 }
 
+/**
+ * gnome_vfs_transform_get:
+ * @name: name of the method to get the transform of.
+ *
+ * Get the transform for the method @name.
+ *
+ * Return value: a #GnomeVFSTransform handle for @name.
+ */
+
 GnomeVFSTransform *
 gnome_vfs_transform_get (const gchar *name)
 {
@@ -436,4 +444,19 @@ gnome_vfs_transform_get (const gchar *name)
 
 	module_element = gnome_vfs_add_module_to_hash_table (name);
 	return module_element ? module_element->transform : NULL;
+}
+
+void
+_gnome_vfs_method_shutdown (void)
+{
+	G_LOCK (gnome_vfs_method_init);
+
+	if (module_hash != NULL) {
+		g_hash_table_destroy (module_hash);
+		module_hash = NULL;
+	}
+
+	method_already_initialized = FALSE;
+
+	G_UNLOCK (gnome_vfs_method_init);
 }

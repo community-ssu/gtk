@@ -15,6 +15,9 @@ Result of I/O operations, the equivalent of errno
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM GnomeVFSResult ##### -->
 <para>
  
@@ -70,6 +73,8 @@ Result of I/O operations, the equivalent of errno
 @GNOME_VFS_ERROR_NAMESERVER: 
 @GNOME_VFS_ERROR_LOCKED: 
 @GNOME_VFS_ERROR_DEPRECATED_FUNCTION: 
+@GNOME_VFS_ERROR_INVALID_FILENAME: 
+@GNOME_VFS_ERROR_NOT_A_SYMBOLIC_LINK: 
 @GNOME_VFS_NUM_ERRORS: 
 
 <!-- ##### FUNCTION gnome_vfs_result_to_string ##### -->

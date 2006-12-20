@@ -64,8 +64,8 @@ gnome_vfs_mime_monitor_init (GnomeVFSMIMEMonitor *monitor)
  *
  * Get access to the single global monitor. 
  *
- * Return value: the global #GnomeVFSMIMEMonitor
- **/
+ * Returns: the global #GnomeVFSMIMEMonitor.
+ */
 GnomeVFSMIMEMonitor *
 gnome_vfs_mime_monitor_get (void)
 {

@@ -7,6 +7,7 @@ INCLUDES =					\
 	$(MODULES_XML_GCONF_CFLAGS)		\
 	$(MODULES_FILE_CFLAGS) 			\
 	$(HOWL_CFLAGS)				\
+	$(AVAHI_CFLAGS)				\
 	$(LIBEFS_CFLAGS)			\
 	$(SAMBA_CFLAGS)				\
 	$(GSSAPI_CFLAGS)			\
@@ -27,14 +28,26 @@ INCLUDES =					\
 
 EXTRA_DIST =					\
 	$(HTTP_NEON_SOURCES)			\
-	$(HTTP_OLD_SOURCES)			\
 	default-modules.conf			\
 	smb-module.conf				\
 	cdda-module.conf			\
-	ssl-modules.conf
+	ssl-modules.conf			\
+	inotify-helper.c			\
+	inotify-helper.h			\
+	inotify-kernel.h			\
+	inotify-kernel.c			\
+	inotify-missing.h			\
+	inotify-missing.c			\
+	inotify-sub.h				\
+	inotify-sub.c				\
+	inotify-path.h				\
+	inotify-path.c				\
+	inotify-diag.h				\
+	inotify-diag.c				\
+	local_inotify.h				\
+	local_inotify_syscalls.h
 
 ###  Module setup
-
 if HAVE_CDDA
 CDDA_LTLIBS = libcdda.la
 else
@@ -50,7 +63,7 @@ endif
 if OS_WIN32
 PLATFROM_SPECIFIC_LTLIBS =
 else
-PLATFROM_SPECIFIC_LTLIBS = libdns-sd.la libnetwork.la libnntp.la libsftp.la $(HTTP_LTLIBS) libftp.la
+PLATFROM_SPECIFIC_LTLIBS = libdns-sd.la libnetwork.la libnntp.la libsftp.la libhttp.la libftp.la
 endif
 
 module_flags = -export_dynamic -avoid-version -module -no-undefined
@@ -60,8 +73,8 @@ modules_LTLIBRARIES =				\
 	$(CDDA_LTLIBS)				\
 	libcomputer.la				\
 	libfile.la				\
+	libcaselessfile.la			\
 	libvfs-test.la				\
-	libbzip2.la				\
 	libgzip.la				\
 	$(SMB_LTLIBS)	                        \
 	libtar.la				\
@@ -70,6 +83,7 @@ modules_LTLIBRARIES =				\
 
 # Not currently supported
 #	libnfs.la
+#	libbzip2.la
 
 modulesconfdir=$(sysconfdir)/gnome-vfs-2.0/modules
 if HAVE_CDDA
@@ -104,13 +118,43 @@ libcomputer_la_LIBADD = $(MODULES_FILE_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
 libdns_sd_la_SOURCES = dns-sd-method.c
 libdns_sd_la_LDFLAGS = $(module_flags)
-libdns_sd_la_LIBADD = $(MODULES_LIBS) $(HOWL_LIBS) ../libgnomevfs/libgnomevfs-2.la
+libdns_sd_la_LIBADD = $(MODULES_LIBS) $(HOWL_LIBS) $(AVAHI_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
 ###  `file' method
 
-libfile_la_SOURCES = file-method.c fstype.c
+if HAVE_INOTIFY
+FILE_ADD_SOURCES = inotify-kernel.c inotify-missing.c inotify-path.c inotify-sub.c inotify-helper.c inotify-diag.c
+else
+FILE_ADD_SOURCES = 
+endif
+
+libfile_la_SOURCES =           \
+        file-method.c          \
+	fstype.c               \
+	file-method-acl.h      \
+	file-method-acl.c      \
+	$(FILE_ADD_SOURCES)    \
+	$(NULL)
+
 libfile_la_LDFLAGS = $(module_flags)
-libfile_la_LIBADD = $(FAM_LIBS) $(MODULES_FILE_LIBS) ../libgnomevfs/libgnomevfs-2.la
+libfile_la_LIBADD = $(ACL_LIBS) $(FAM_LIBS) $(MODULES_FILE_LIBS) ../libgnomevfs/libgnomevfs-2.la
+
+### `file' method - but case insensitive.
+
+libcaselessfile_la_SOURCES =         \
+        caseless-file-method.c       \
+	fstype.c                     \
+	file-method-acl.h            \
+	file-method-acl.c      	     \
+	caseless-file-method-utils.h \
+	caseless-file-method-utils.c \
+	osso_case_in.h               \
+	osso_case_in.c               \
+	$(FILE_ADD_SOURCES)          \
+	$(NULL)
+
+libcaselessfile_la_LDFLAGS = $(module_flags)
+libcaselessfile_la_LIBADD = $(ACL_LIBS) $(FAM_LIBS) $(MODULES_FILE_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
 ###  `network' method
 
@@ -132,7 +176,7 @@ libsmb_la_LIBADD = $(SAMBA_LIBS) $(MODULES_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
 ###  `sftp' method
 
-libsftp_la_SOURCES = sftp-method.c pty-open.c sftp.h pty-open.h
+libsftp_la_SOURCES = sftp-method.c sftp.h
 libsftp_la_LDFLAGS = $(module_flags)
 libsftp_la_LIBADD = $(MODULES_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
@@ -150,9 +194,9 @@ libgzip_la_LIBADD = $(MODULES_LIBS) -lz ../libgnomevfs/libgnomevfs-2.la
 
 ### `bzip2' method
 
-libbzip2_la_SOURCES = bzip2-method.c
-libbzip2_la_LDFLAGS = $(module_flags)
-libbzip2_la_LIBADD = $(MODULES_LIBS) $(BZ2_LIBS) ../libgnomevfs/libgnomevfs-2.la
+#libbzip2_la_SOURCES = bzip2-method.c
+#libbzip2_la_LDFLAGS = $(module_flags)
+#libbzip2_la_LIBADD = $(MODULES_LIBS) $(BZ2_LIBS) ../libgnomevfs/libgnomevfs-2.la
 
 ### `ftp' method
 
@@ -172,48 +216,17 @@ libftp_la_LIBADD = $(MODULES_LIBS) $(GSSAPI_LIBS) ../libgnomevfs/libgnomevfs-2.l
 #libnfs_la_LDFLAGS = $(module_flags)
 
 ### `http' method
-
-HTTP_LTLIBS = libhttp.la
-
-## The old module
-HTTP_OLD_SOURCES = 				\
-	http-method.c				\
-	http-method.h				\
-	http-authn.c				\
-	http-authn.h				\
-	http-cache.c				\
-	http-cache.h				
-
-HTTP_OLD_LIBADD =				\
-	$(MODULES_GCONF_LIBS) 		\
-	$(MODULES_XML_LIBS) 		\
-	../libgnomevfs/libgnomevfs-2.la
-
-## The neon module
-HTTP_NEON_SOURCES = 			\
+libhttp_la_SOURCES =			\
 	http-neon-method.c		\
 	http-proxy.h			\
 	http-proxy.c
-
-HTTP_NEON_LIBADD =				\
-		$(MODULES_GCONF_LIBS) 	\
-	../imported/neon/libneon.la   \
-	../libgnomevfs/libgnomevfs-2.la
-
-if USE_HTTP_NEON
-HTTP_SOURCES = $(HTTP_NEON_SOURCES)
-HTTP_LIBS = $(HTTP_NEON_LIBADD)
-else
-HTTP_SOURCES = $(HTTP_OLD_SOURCES)
-HTTP_LIBS = $(HTTP_OLD_LIBADD)
-endif
-
-libhttp_la_SOURCES =			\
-	$(HTTP_SOURCES)			\
 	$(NULL)
 
 libhttp_la_LDFLAGS = $(module_flags)
-libhttp_la_LIBADD  = $(HTTP_LIBS)
+libhttp_la_LIBADD  = 			\
+	$(MODULES_GCONF_LIBS) 	\
+	../imported/neon/libneon.la   \
+	../libgnomevfs/libgnomevfs-2.la
 
 libtar_la_SOURCES = tar-method.c tarpet.h 
 libtar_la_LDFLAGS = $(module_flags)

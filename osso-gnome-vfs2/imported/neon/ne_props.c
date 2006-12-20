@@ -1,6 +1,6 @@
 /* 
    WebDAV property manipulation
-   Copyright (C) 2000-2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2000-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -33,9 +33,12 @@
 #include "ne_props.h"
 #include "ne_basic.h"
 #include "ne_locks.h"
+#include "ne_i18n.h"
 
 /* don't store flat props with a value > 10K */
 #define MAX_FLATPROP_LEN (102400)
+
+#define EOL "\r\n"
 
 struct ne_propfind_handler_s {
     ne_session *sess;
@@ -83,11 +86,12 @@ struct propstat {
 /* Results set. */
 struct ne_prop_result_set_s {
     struct propstat *pstats;
-    int numpstats;
+    int numpstats, counter;
     void *private;
     char *href;
 };
 
+#define MAX_PROP_COUNTER (1024)
 
 static int 
 startelm(void *userdata, int state, const char *name, const char *nspace,
@@ -141,7 +145,7 @@ static int propfind(ne_propfind_handler *handler,
 
     if (ret == NE_OK && ne_get_status(req)->klass != 2) {
 	ret = NE_ERROR;
-    } else if (!ne_xml_valid(handler->parser)) {
+    } else if (ne_xml_failed(handler->parser)) {
 	ne_set_error(handler->sess, "%s", ne_xml_get_error(handler->parser));
 	ret = NE_ERROR;
     }
@@ -220,7 +224,7 @@ int ne_proppatch(ne_session *sess, const char *uri,
     ne_set_request_body_buffer(req, body->data, ne_buffer_size(body));
     ne_add_request_header(req, "Content-Type", NE_XML_MEDIA_TYPE);
     
-#ifdef USE_DAV_LOCKS
+#ifdef NE_HAVE_DAV
     ne_lock_using_resource(req, uri, NE_DEPTH_ZERO);
 #endif
 
@@ -360,9 +364,15 @@ static void *start_response(void *userdata, const char *href)
 static void *start_propstat(void *userdata, void *response)
 {
     ne_prop_result_set *set = response;
-    int n;
+    ne_propfind_handler *hdl = userdata;
     struct propstat *pstat;
+    int n;
 
+    if (++hdl->current->counter == MAX_PROP_COUNTER) {
+        ne_xml_set_error(hdl->parser, _("Response exceeds maximum property count"));
+        return NULL;
+    }
+    
     n = set->numpstats;
     set->pstats = ne_realloc(set->pstats, sizeof(struct propstat) * (n+1));
     set->numpstats = n+1;
@@ -395,6 +405,13 @@ static int startelm(void *userdata, int parent,
             ne_buffer_concat(hdl->value, "<", name, ">", NULL);
         return ELM_flatprop;
     }        
+
+    /* Enforce maximum number of properties per resource to prevent a
+     * memory exhaustion attack by a hostile server. */
+    if (++hdl->current->counter == MAX_PROP_COUNTER) {
+        ne_xml_set_error(hdl->parser, _("Response exceeds maximum property count"));
+        return NE_XML_ABORT;
+    }
 
     /* Add a property to this propstat */
     n = pstat->numprops;

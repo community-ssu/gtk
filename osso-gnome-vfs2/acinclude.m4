@@ -188,6 +188,41 @@ dnl end of Autoconf macros for libgnutls
 dnl macros for the neon bundeled build
 # Copyright (C) 1998-2004 Joe Orton <joe@manyfish.co.uk>  
 # Modifications by Christian Kellner <gicmo@gnome-de.org>
+AC_DEFUN([NE_DEFINE_VERSIONS], [
+
+NEON_VERSION="${NE_VERSION_MAJOR}.${NE_VERSION_MINOR}.${NE_VERSION_PATCH}${NE_VERSION_TAG}"
+
+AC_DEFINE_UNQUOTED([NEON_VERSION], ["${NEON_VERSION}"],
+                   [Define to be the neon version string])
+AC_DEFINE_UNQUOTED([NE_VERSION_MAJOR], [(${NE_VERSION_MAJOR})],
+                   [Define to be neon library major version])
+AC_DEFINE_UNQUOTED([NE_VERSION_MINOR], [(${NE_VERSION_MINOR})],
+                   [Define to be neon library minor version])
+AC_DEFINE_UNQUOTED([NE_VERSION_PATCH], [(${NE_VERSION_PATCH})],
+                   [Define to be neon library patch version])
+])
+
+AC_DEFUN([NE_VERSIONS], [
+
+# Define the current versions.
+NE_VERSION_MAJOR=0
+NE_VERSION_MINOR=25
+NE_VERSION_PATCH=4
+NE_VERSION_TAG=
+
+# libtool library interface versioning.  Release policy dictates that
+# for neon 0.x.y, each x brings an incompatible interface change, and
+# each y brings no interface change, and since this policy has been
+# followed since 0.1, x == CURRENT, y == RELEASE, 0 == AGE.  For
+# 1.x.y, this will become N + x == CURRENT, y == RELEASE, x == AGE,
+# where N is constant (and equal to CURRENT + 1 from the final 0.x
+# release)
+
+NEON_INTERFACE_VERSION="${NE_VERSION_MINOR}:${NE_VERSION_PATCH}:0"
+
+NE_DEFINE_VERSIONS
+
+])
 
 AC_DEFUN([VFS_NEON_BUNDLED],[
 
@@ -195,7 +230,7 @@ neon_bundled_srcdir=$1
 neon_bundled_builddir=$1
 
 # INLINED This was NEON_COMMON
-NEON_VERSIONS
+NE_VERSIONS
 
 AC_MSG_NOTICE([using bundled neon ($NEON_VERSION)])
 NEON_BUILD_BUNDLED="yes"
@@ -304,33 +339,6 @@ AC_SUBST(NEON_LTLIBS)
 #copied and pasted unchanged form the neon macros files
 # Copyright (C) 1998-2004 Joe Orton <joe@manyfish.co.uk> 
 
-AC_DEFUN([NEON_VERSIONS], [
-
-# Define the current versions.
-NEON_VERSION_MAJOR=0
-NEON_VERSION_MINOR=24
-NEON_VERSION_RELEASE=7
-NEON_VERSION_TAG=
-
-NEON_VERSION="${NEON_VERSION_MAJOR}.${NEON_VERSION_MINOR}.${NEON_VERSION_RELEASE}${NEON_VERSION_TAG}"
-
-# libtool library interface versioning.  Release policy dictates that
-# for neon 0.x.y, each x brings an incompatible interface change, and
-# each y brings no interface change, and since this policy has been
-# followed since 0.1, x == CURRENT, y == RELEASE, 0 == AGE.  For
-# 1.x.y, this will become N + x == CURRENT, y == RELEASE, x == AGE,
-# where N is constant (and equal to CURRENT + 1 from the final 0.x
-# release)
-NEON_INTERFACE_VERSION="${NEON_VERSION_MINOR}:${NEON_VERSION_RELEASE}:0"
-
-AC_DEFINE_UNQUOTED(NEON_VERSION, "${NEON_VERSION}", 
-	[Define to be the neon version string])
-AC_DEFINE_UNQUOTED(NEON_VERSION_MAJOR, [(${NEON_VERSION_MAJOR})],
-	[Define to be major number of neon version])
-AC_DEFINE_UNQUOTED(NEON_VERSION_MINOR, [(${NEON_VERSION_MINOR})],
-	[Define to be minor number of neon version])
-
-])
 
 dnl AC_SEARCH_LIBS done differently. Usage:
 dnl   NE_SEARCH_LIBS(function, libnames, [extralibs], [actions-if-not-found],

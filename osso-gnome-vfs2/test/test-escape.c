@@ -199,7 +199,7 @@ main (int argc, char **argv)
 	test_escape_path ("\x01\x02\x03\x04\x05\x06\x07", "%01%02%03%04%05%06%07");
 	test_escape_path ("\x08\x09\x0A\x0B\x0C\x0D\x0E\x0F", "%08%09%0A%0B%0C%0D%0E%0F");
 	test_escape_path (" \"#$%&+,", "%20%22%23%24%25&%2B%2C");
-	test_escape_path (":;<=>?@", "%3A%3B%3C=%3E?%40");
+	test_escape_path (":;<=>?@", "%3A%3B%3C=%3E%3F%40");
 	test_escape_path ("[\\]^`", "%5B%5C%5D%5E%60");
 	test_escape_path ("{|}\x7F", "%7B%7C%7D%7F");
 

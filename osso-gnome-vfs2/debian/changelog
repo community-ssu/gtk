@@ -1,57 +1,43 @@
-osso-gnome-vfs2 (2.12.0.19-2osso1) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso5) unstable; urgency=low
 
-  * Revert the change in .18 since we don't want that in this branch
-  * Fixes NB#43533, Media player failed to play some user added radio
+  * FIXME: UNRELEASED
+  * Update inotify headers from upstream GNOME CVS to get the right license
+  * Update caseless-file-method from the normal file-method
+  * Merge from stable, NB#43533, to work around broken http servers
 
- -- Richard Hult <richard@imendio.com>  Tue, 19 Dec 2006 09:59:57 +0100
+ -- Richard Hult <richard@imendio.com>  Fri, 15 Dec 2006 09:46:01 +0100
 
-osso-gnome-vfs2 (2.12.0.18-2osso1) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso4) unstable; urgency=low
 
-  * Remove unsed osso-gwconnect dependency
-  * Port to new D-Bus 1.0 API
+  * Fixes: NB#49259, libosso-gnomevfs2-common package doesn't provide debug
+  * Remove osso-gwconnect-dev, it's not used anymore
 
- -- Richard Hult <richard@imendio.com>  Tue, 12 Dec 2006 08:58:27 +0100
+ -- Richard Hult <richard@imendio.com>  Fri, 07 Dec 2006 14:49:54 +0100
 
-osso-gnome-vfs2 (2.12.0.17-2osso1) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso3) unstable; urgency=low
 
-  * Fixes NB#47756: dbus-vfs-daemon segmentation fault.
+  * Add libsmbclient-dev dependency
+  * Add patch merged from stable for handling failed close()
 
- -- Richard Hult <richard@imendio.com>  Mon,  4 Dec 2006 09:59:13 +0100
+ -- Richard Hult <richard@imendio.com>  Tue, 05 Dec 2006 15:52:16 +0100
 
-osso-gnome-vfs2 (2.12.0.16-2osso5) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso2) unstable; urgency=low
 
-  * Fixes NB#45468: Compilation warning in imported neon.
+  * Added artificial monitors to the Samba module as patch 25
 
- -- Martyn Russell <martyn@imendio.com>  Fri, 17 Nov 2006 15:16:22 +0000
+ -- Martyn Russell <martyn@imendio.com>  Fri, 01 Dec 2006 16:54:00 +0000
 
-osso-gnome-vfs2 (2.12.0.16-2osso4) unstable; urgency=low
+osso-gnome-vfs2 (2.16.3-1osso1) unstable; urgency=low
 
-  * Fixes build, revert accidental commit of the 05, 17 and 21 patches
+  * Merged changes from GnomeVFS 2.16.1 --> 2.16.3.
+ 
+ -- Martyn Russell <martyn@imendio.com>  Fri, 24 Nov 2006 16:03:24 +0000
 
- -- Richard Hult <richard@imendio.com>  Wed, 25 Oct 2006 14:26:22 +0200
+osso-gnome-vfs2 (2.16.1-1osso1) unstable; urgency=low
 
-osso-gnome-vfs2 (2.12.0.16-2osso3) unstable; urgency=low
+  * Initial release of 2.16 version
 
-  * Fixes NB#44616: libftp.so is missing or the conf file is not updated
-
- -- Richard Hult <richard@imendio.com>  Fri, 20 Oct 2006 16:27:19 +0200
-
-osso-gnome-vfs2 (2.12.0.16-2osso1) unstable; urgency=low
-
-  * Fixes: NB#40651, gnome-vfs2 2.12.0.12-1: License issues
-  * Fixes: NB#38245, UpnP IOP : GnomeVFS HTTP module can't fetch files
-  * Add 19-disable-iso9660.patch for the above
-  * Add 20-workaround-broken-upnp-servers.patch for the above
-  * Remove unused sftp module
-  * Update two files from upstream that changed from GPL to LGPL
-
- -- Richard Hult <richard@imendio.com>  Fri, 13 Oct 2006 16:07:47 +0200
-
-osso-gnome-vfs2 (2.12.0.15-2osso1) unstable; urgency=low
-
-  * Fixes: NB#41602, AF-BAT:File manager view is not refreshed after
-
- -- Richard Hult <richard@imendio.com>  Fri,  6 Oct 2006 16:07:47 +0200
+ -- Richard Hult <richard@imendio.com>  Fri,  6 Oct 2006 16:03:24 +0200
 
 osso-gnome-vfs2 (2.12.0.14-2osso2) unstable; urgency=low
 
@@ -324,7 +310,7 @@ osso-gnome-vfs2 (2.8.3-3) unstable; urgency=low
 
   * Make all mounts in /media user visible, fixes imendio bug #72.
 
- -- Richard Hult <richard@imendio.com>  Tis, 11 Jan 2005 21:30:23 +0100
+ -- Richard Hult <richard@imendio.com>  Tue, 11 Jan 2005 21:30:23 +0100
 
 osso-gnome-vfs2 (2.8.3-2) unstable; urgency=low
 

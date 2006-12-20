@@ -5,4 +5,3 @@ debian/tmp/usr/lib/libgnomevfs-2.la
 debian/tmp/usr/lib/libgnomevfs-2.a
 debian/tmp/usr/lib/pkgconfig
 debian/tmp/usr/lib/gnome-vfs-2.0/include
-debian/tmp/usr/share/gtk-doc/html/gnome-vfs-2.0/* usr/share/doc/libgnomevfs2-common/html/

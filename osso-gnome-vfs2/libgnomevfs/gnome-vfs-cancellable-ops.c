@@ -29,6 +29,7 @@
 #include "gnome-vfs-cancellable-ops.h"
 #include "gnome-vfs-method.h"
 #include "gnome-vfs-private-utils.h"
+#include "gnome-vfs-utils.h"
 #include "gnome-vfs-handle-private.h"
 
 #include <glib/gmessages.h>
@@ -115,6 +116,7 @@ gnome_vfs_read_cancellable (GnomeVFSHandle *handle,
 			    GnomeVFSContext *context)
 {
 	GnomeVFSFileSize dummy_bytes_read;
+	GnomeVFSResult res;
 
 	g_return_val_if_fail (handle != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
@@ -129,9 +131,14 @@ gnome_vfs_read_cancellable (GnomeVFSHandle *handle,
 		*bytes_read = 0;
 		return GNOME_VFS_OK;
 	}
-	
-	return _gnome_vfs_handle_do_read (handle, buffer, bytes, bytes_read,
+
+	res = _gnome_vfs_handle_do_read (handle, buffer, bytes, bytes_read,
 					 context);
+	if (res != GNOME_VFS_OK) {
+		*bytes_read = 0;
+	}
+
+	return res;
 }
 
 GnomeVFSResult
@@ -184,6 +191,7 @@ gnome_vfs_get_file_info_uri_cancellable (GnomeVFSURI *uri,
 	GnomeVFSResult result;
 
 	g_return_val_if_fail (uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	g_return_val_if_fail (info != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 	
 	if (gnome_vfs_context_check_cancellation (context))
 		return GNOME_VFS_ERROR_CANCELLED;
@@ -281,14 +289,34 @@ gnome_vfs_find_directory_cancellable (GnomeVFSURI *near_uri,
 
 	g_return_val_if_fail (result_uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
+	*result_uri = NULL;
+
 	if (gnome_vfs_context_check_cancellation (context))
 		return GNOME_VFS_ERROR_CANCELLED;
 
 	if (near_uri != NULL) {
 		gnome_vfs_uri_ref (near_uri);
 	} else {
+		char *text_uri;
+
+		text_uri = gnome_vfs_get_uri_from_local_path (g_get_home_dir ());
+		g_assert (text_uri != NULL);
 		/* assume file: method and the home directory */
-		near_uri = gnome_vfs_uri_new (g_get_home_dir());
+		near_uri = gnome_vfs_uri_new (text_uri);
+		g_free (text_uri);
+	}
+
+	g_assert (near_uri != NULL);
+
+	if (!VFS_METHOD_HAS_FUNC (near_uri->method, find_directory)) {
+		/* skip file systems not supporting find_directory.
+		 *
+		 * TODO if we decide to introduce cross-method links (e.g. http allows
+		 * arbitrary URIs), this could be slightly wrong, because the target
+		 * method may support find_directory, so we'd also have to make sure
+		 * that a method doesn't support cross-method links.
+		 **/
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
 	}
 
 	/* Need to expand the final symlink, since if the directory is a symlink

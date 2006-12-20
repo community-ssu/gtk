@@ -27,6 +27,11 @@
 
 G_BEGIN_DECLS
 
+/**
+ * DESKTOP_ENTRY_GROUP:
+ *
+ * The #GKeyFile group used for desktop entries.
+ **/
 #define DESKTOP_ENTRY_GROUP "Desktop Entry"
 	
 GList              *gnome_vfs_mime_get_all_desktop_entries (const char *mime_type);

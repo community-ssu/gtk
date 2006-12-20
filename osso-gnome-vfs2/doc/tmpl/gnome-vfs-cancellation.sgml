@@ -15,6 +15,9 @@ halt in-progress operations
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### FUNCTION gnome_vfs_cancellation_new ##### -->
 <para>
 

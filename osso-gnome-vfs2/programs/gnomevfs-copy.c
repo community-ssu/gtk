@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "authentication.c"
 
 int
 main (int argc, char **argv)
@@ -46,6 +47,8 @@ main (int argc, char **argv)
 		fprintf (stderr, "Cannot initialize gnome-vfs.\n");
 		return 1;
 	}
+
+	command_line_authentication_init ();
 	
 	text_uri = gnome_vfs_make_uri_from_shell_arg (argv[1]);
 

@@ -231,6 +231,7 @@ main (int argc, char **argv)
 
 	result = gnome_vfs_close (handle);
 	show_result (result, "gnome_vfs_close", argv[1]);
+	fclose (ref);
 	
 	return 0;
 }

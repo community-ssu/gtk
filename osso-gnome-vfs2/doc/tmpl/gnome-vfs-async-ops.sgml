@@ -33,6 +33,9 @@ POSIX-style file operations that run outside your main loop
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### MACRO GNOME_VFS_PRIORITY_MIN ##### -->
 <para>
 
@@ -54,6 +57,12 @@ POSIX-style file operations that run outside your main loop
 
 
 
+<!-- ##### TYPEDEF GnomeVFSAsyncHandle ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### USER_FUNCTION GnomeVFSAsyncCallback ##### -->
 <para>
 
@@ -64,28 +73,56 @@ POSIX-style file operations that run outside your main loop
 @callback_data: 
 
 
-<!-- ##### TYPEDEF GnomeVFSAsyncOpenCallback ##### -->
+<!-- ##### USER_FUNCTION GnomeVFSAsyncOpenCallback ##### -->
 <para>
 
 </para>
 
+@handle: 
+@result: 
+@callback_data: 
 
-<!-- ##### TYPEDEF GnomeVFSAsyncCreateCallback ##### -->
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncOpenAsChannelCallback ##### -->
 <para>
 
 </para>
 
+@handle: 
+@channel: 
+@result: 
+@callback_data: 
 
-<!-- ##### TYPEDEF GnomeVFSAsyncCreateAsChannelCallback ##### -->
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncCreateCallback ##### -->
 <para>
 
 </para>
 
+@handle: 
+@result: 
+@callback_data: 
 
-<!-- ##### TYPEDEF GnomeVFSAsyncCloseCallback ##### -->
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncCreateAsChannelCallback ##### -->
 <para>
 
 </para>
+
+@handle: 
+@channel: 
+@result: 
+@callback_data: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncCloseCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@result: 
+@callback_data: 
 
 
 <!-- ##### USER_FUNCTION GnomeVFSAsyncReadCallback ##### -->
@@ -114,15 +151,36 @@ POSIX-style file operations that run outside your main loop
 @callback_data: 
 
 
-<!-- ##### STRUCT GnomeVFSFindDirectoryResult ##### -->
+<!-- ##### USER_FUNCTION GnomeVFSAsyncSeekCallback ##### -->
 <para>
 
 </para>
 
-@uri: 
+@handle: 
 @result: 
-@reserved1: 
-@reserved2: 
+@callback_data: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncGetFileInfoCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@results: 
+@callback_data: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncSetFileInfoCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@result: 
+@file_info: 
+@callback_data: 
+
 
 <!-- ##### USER_FUNCTION GnomeVFSAsyncFileControlCallback ##### -->
 <para>
@@ -135,7 +193,54 @@ POSIX-style file operations that run outside your main loop
 @callback_data: 
 
 
-<!-- ##### TYPEDEF GnomeVFSAsyncSeekCallback ##### -->
+<!-- ##### USER_FUNCTION GnomeVFSAsyncDirectoryLoadCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@result: 
+@list: 
+@entries_read: 
+@callback_data: 
+
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncFindDirectoryCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@results: 
+@data: 
+
+
+<!-- ##### STRUCT GnomeVFSFindDirectoryResult ##### -->
+<para>
+
+</para>
+
+@uri: 
+@result: 
+
+<!-- ##### USER_FUNCTION GnomeVFSAsyncXferProgressCallback ##### -->
+<para>
+
+</para>
+
+@handle: 
+@info: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### TYPEDEF GnomeVFSCancellation ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### TYPEDEF GnomeVFSContext ##### -->
 <para>
 
 </para>

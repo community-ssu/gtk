@@ -56,8 +56,10 @@ typedef struct {
 	char *path;
 } MimeDirectory;
 
+#if 0
 /* These ones are used to automatically reload mime info on demand */
 static time_t last_checked;
+#endif
 
 /* To initialize the module automatically */
 static gboolean gnome_vfs_mime_inited = FALSE;
@@ -68,6 +70,8 @@ static gboolean gnome_vfs_mime_inited = FALSE;
 static GList *mime_directories = NULL;
 
 static GHashTable *mime_entries = NULL;
+/* Used to mean "no entry" in cache for negative caching */
+static MimeEntry mime_entries_no_entry;
 
 G_LOCK_EXTERN (gnome_vfs_mime_mutex);
 
@@ -134,8 +138,9 @@ gnome_vfs_mime_init (void)
 	     xdg_data_dirs++) {
 		add_data_dir (*xdg_data_dirs);
 	}
-
+#if 0
 	last_checked = time (NULL);
+#endif
 	gnome_vfs_mime_inited = TRUE;
 }
 
@@ -191,7 +196,7 @@ _gnome_vfs_mime_info_shutdown (void)
  *
  * Reload the MIME database from disk and notify any listeners
  * holding active #GnomeVFSMIMEMonitor objects.
- **/
+ */
 void
 gnome_vfs_mime_info_reload (void)
 {
@@ -208,8 +213,8 @@ gnome_vfs_mime_info_reload (void)
  * gnome_vfs_mime_freeze:
  *
  * Freezes the mime data so that you can do multiple
- * updates to the dat in one batch without needing
- * to back the files to disk or readind them
+ * updates to the data in one batch without needing
+ * to back the files to disk or reading them.
  */
 void
 gnome_vfs_mime_freeze (void)
@@ -223,8 +228,8 @@ gnome_vfs_mime_freeze (void)
  * gnome_vfs_mime_thaw:
  *
  * UnFreezes the mime data so that you can do multiple
- * updates to the dat in one batch without needing
- * to back the files to disk or readind them
+ * updates to the data in one batch without needing
+ * to back the files to disk or reading them.
  */
 void
 gnome_vfs_mime_thaw (void)
@@ -317,12 +322,9 @@ handle_mime_info (const char *filename, xmlTextReaderPtr reader)
 {
 	MimeEntry *entry;
 	int ret;
-	int depth;
 	int previous_lang_level = INT_MAX;
 	
 	entry = g_new0 (MimeEntry, 1);
-
-	depth = xmlTextReaderDepth (reader);
 
 	ret = xmlTextReaderRead (reader);
 	while (ret == 1) {
@@ -479,6 +481,8 @@ get_entry (const char *mime_type)
 	entry = g_hash_table_lookup (mime_entries, umime);
 	
 	if (entry) {
+		if (entry == &mime_entries_no_entry)
+			return NULL;
 		return entry;
 	}
 	
@@ -492,24 +496,25 @@ get_entry (const char *mime_type)
 		g_free (path);
 		return entry;
 	} else {
+		g_hash_table_insert (mime_entries, 
+				     g_strdup (umime), 
+				     &mime_entries_no_entry);
 		return NULL;
 	}
 }
 
 /**
- * gnome_vfs_mime_set_value
+ * gnome_vfs_mime_set_value:
  * @mime_type: a mime type.
  * @key: a key to store the value in.
- * @value: the value to store in the key.
+ * @value: the value to store in the @key.
  *
- * This function is going to set the value
- * associated to the key and it will save it
+ * This function will set the @value for the @key and it will save it
  * to the user' file if necessary.
- * You should not free the key/values passed to
- * this function. They are used internally.
+ * You should not free the @key/@value passed to this function.
+ * They are used internally.
  *
- * Returns: GNOME_VFS_OK if the operation succeeded, otherwise an error code
- *
+ * Returns: %GNOME_VFS_OK if the operation succeeded, otherwise an error code.
  */
 GnomeVFSResult
 gnome_vfs_mime_set_value (const char *mime_type, const char *key, const char *value)
@@ -521,13 +526,13 @@ gnome_vfs_mime_set_value (const char *mime_type, const char *key, const char *va
 /**
  * gnome_vfs_mime_get_value:
  * @mime_type: a mime type.
- * @key: A key to lookup for the given mime-type
+ * @key: a key to lookup for the given @mime_type.
  *
  * This function retrieves the value associated with @key in
- * the given GnomeMimeContext.  The string is private, you
+ * the given #GnomeMimeContext.  The string is private, you
  * should not free the result.
  *
- * Returns: GNOME_VFS_OK if the operation succeeded, otherwise an error code
+ * Returns: %GNOME_VFS_OK if the operation succeeded, otherwise an error code.
  */
 const char *
 gnome_vfs_mime_get_value (const char *mime_type, const char *key)
@@ -562,9 +567,9 @@ gnome_vfs_mime_get_value (const char *mime_type, const char *key)
  * gnome_vfs_mime_type_is_known:
  * @mime_type: a mime type.
  *
- * This function returns TRUE if @mime_type is in the MIME database at all.
+ * This function returns %TRUE if @mime_type is in the MIME database at all.
  *
- * Returns: TRUE if anything is known about @mime_type, otherwise FALSE
+ * Returns: %TRUE if anything is known about @mime_type, otherwise %FALSE.
  */
 gboolean
 gnome_vfs_mime_type_is_known (const char *mime_type)
@@ -590,12 +595,12 @@ gnome_vfs_mime_type_is_known (const char *mime_type)
 
 /**
  * gnome_vfs_mime_get_extensions_list:
- * @mime_type: type to get the extensions of
+ * @mime_type: mime type to get the extensions of.
  *
  * Get the file extensions associated with mime type @mime_type.
  *
- * Return value: a GList of char *s
- **/
+ * Return value: a #GList of char *s.
+ */
 GList *
 gnome_vfs_mime_get_extensions_list (const char *mime_type)
 {
@@ -605,11 +610,11 @@ gnome_vfs_mime_get_extensions_list (const char *mime_type)
 
 /**
  * gnome_vfs_mime_extensions_list_free:
- * @list: the extensions list
+ * @list: the extensions list.
  *
- * Call this function on the list returned by gnome_vfs_mime_extensions
- * to free the list and all of its elements.
- **/
+ * Call this function on the list returned by gnome_vfs_mime_get_extensions_list()
+ * to free the @list and all of its elements.
+ */
 void
 gnome_vfs_mime_extensions_list_free (GList *list)
 {

@@ -1,3 +1,191 @@
+gnome-vfs 2.16.3
+	  * http: Fix crash on HTTP redirects
+	  * Support Path key in desktop files
+	  * Don't use deprecated dbus functions
+	  * Fix possible crash on shutdown
+
+gnome-vfs 2.16.2
+	  * Add a "--replace" commandline argument to gnome-vfs-daemon 
+	    to replace the current daemon. (Mostly for debugging use)
+	  * Make translations work in gnome-vfs-daemon
+	  * Handle IPv6 addresses when creating dav uris (DNS-SD)
+	  * Don't crash if there is no session dbus
+	  * Support sun ssh server
+	  * Don't fail getting selinux context
+	  * Allow operations on file handles that were created in another
+	    DaemonConnection. (This fixes e.g. smb browsing)
+	  * Fixes to gnome_vfs_xfer and monitoring
+
+gnome-vfs 2.16.1
+	  * Fix some leaks
+	  * Upgrade to latest xdgmime version
+	  * Fix crash on shutdown in http module
+	  * Fix sftp crash
+
+gnome-vfs 2.16.0
+	  * http: Fix crash on some redirects
+	  * http: Ignore fragment identifiers in URIs
+	  * support --disable-selinux
+	  * Fix gnome_vfs_mime_type_is_equal
+	  * inotify monitoring fixes
+	  
+gnome-vfs 2.15.92
+	  * Remove old unused code
+	  * Better sniffing of text files
+	  * Tweak xfer callbacks for better performance
+
+gnome-vfs 2.15.91
+
+	* Avoid slow I/O looking for trash on remote shares
+	* Inotify updates to avoid polling as much.
+	* Build fix
+
+gnome-vfs 2.15.90
+
+	* Don't use deprectated dbus calls
+	* Always dispatch monitor events
+	* Add gnome_vfs_drive_needs_eject function.
+	* Add support for compile time version checking.
+	* Add GNOME_VFS_ERROR_INVALID_FILENAME error
+	* Handle ENAMETOOLONG when converting from errno
+	* Initialize SSL lazily
+	* Fix error reporting in dns resolver code
+	* Robustness fixes
+	* Clean up code and fix warnings
+	* dav fixes
+	* ftp: fixes for IIS virtual directories
+	* sftp: Support setting symlinks
+	
+gnome-vfs 2.15.3 'Kill the monkeys'
+	
+	Note: The moniker code was moved to a seperate module
+	called gnome-vfs-monikers. We need to keep that in the
+	platform to be API/ABI compatible.
+	Also note that bonobo mime related functions have been 
+	moved to libbonobo.
+	This relase is free of Bonobos :) 
+
+	* Replace bonobo by DBus as IPC mechanism between clients 
+	  and the daemon: Remove all references and dependencies 
+          on bonobo. (Initial work done by Richard Hult and Mikael 
+	  Hallendal from Imendio)
+
+	* Massive API documentation update.
+	* INotify: fixes for remote (i.e. NFS) filesystems
+	* INotify: Updates to the timers used (see ChangeLog)
+	* Convert all use of pop to GOption
+	* Fix non ACL file method build	
+	* OSX fix for GnomeVFSAddress	
+	* Handle %% escaping % in desktop files. (#343632)
+	* Check for later version of libselinux. (#344349)
+
+gnome-vfs 2.15.2
+	* win32 fixes
+	* Don't hide smb shares that end with $
+	* ACL support
+	* Support for reading selinux context
+	* Fix bug in gnome_vfs_uri_hash
+	
+gnome-vfs 2.15.1
+	* Fix sftp symlink support
+	* Fix smb connecting many times to the server
+	* Add authentication to command line utils
+	* Escape "?" in paths, as this is a special char in uris
+	* Fix up symlink resolving in some cases
+	* Portability fixes for the cdda method
+	* Fix up locking around the xdg mime code where missing
+	* Better handling of existing files in create/makedir for ftp
+	* Shut down vfs backends on shutdown
+	* Handle ftp anon login failure better
+	* Handle more % expansions in Exec lines in desktop files
+	* Make GnomeVFSDrive user_visible only if it supports media check
+	* Fix ftp handling of large files
+	
+gnome-vfs 2.14.1
+	* Some performance fixes for sftp
+	* Mark CD volumes as readonly (HAL)
+	* Portability and build fixes
+
+gnome-vfs 2.14.0
+	* Fix circular dependency on gnome-mount
+	* Fix some details in gnome_vfs_xfer callbacks
+	* Avoid crash with symlinks that has ':' in them
+	* Update hal volume manager policies
+	* Fix leaks
+	* Better smb authentication code
+	* Fix permission reading bug introduced in 2.13.92
+
+gnome-vfs 2.13.92
+	* Build fixes
+	* Fix memory leaks
+	* Some optimizations
+	* New readdir option GNOME_VFS_FILE_INFO_NAME_ONLY that only returns
+	  filenames (not stat info).
+	* use pmount in /media if not using gnome-mount or hal-mount
+	* Fixes for encrypted drives/volumes in hal backend
+	* Mime detection fix for multiple magic matches of same prio
+	* HAL volume operation fixes
+	* More robust gnome_vfs_make_uri_from_input_internal
+	* Fix Avahi resolving of non-local hostnames
+	
+gnome-vfs 2.13.91
+	* Eject fixes for volume manager
+	* Windows 2000 portability fixes
+	* Revert overwrite error dialog change that caused problems
+	* ssh fixes for newer BSD and OSX releases
+	
+gnome-vfs 2.13.4
+	* Add support for gnome-mount
+	* Re-add thread prioritizing
+	* Add gnome_vfs_get_mime_type_for_name_and_data () and
+          gnome_vfs_get_mime_type_for_name () 
+	* Deprecate gnome_vfs_mime_type_from_name ()
+	* Skip attempts to overwrite a file onto itself in 
+          gnome_vfs_xfer and friends.
+	* Retrun GNOME_VFS_ERROR_INTERRUPTED when aborting transfers
+	* inotify: Fix various crashers and bugs
+	* ftp-method: Basic support for proxies
+	* http-method: Fix SSL support
+	* http-mehtod: Fix bugs introduced during the neon upgrade
+	* Various hal related volume fixes
+	* Hide some more private functions
+	* Some documentation updates
+	* Translation updates
+
+gnome-vfs 2.13.3
+        * load modules with BIND_LOCAL
+	* inotify fix
+	
+gnome-vfs 2.13.2
+	* Support Avahi 0.6
+	* Support passwords in mount
+	* Inotify support
+	* Update neon import to 0.25
+	* Leak fixes
+	* Win32 fixes
+	* Add GNOME_VFS_FILE_INFO_FIELDS_IDS to see if uid/gid are valid
+	* Update to lates xdgmime
+	* Use the glib GThreadPool code instead of our own threadpool
+
+gnome-vfs 2.13.1
+	* Support for recent samba
+	* Fix bug when resolving nested symlinks
+	* Sync to upstream xdg-mime code
+	* Various fixes to gnomevfs-* apps
+	* New functions gnome_vfs_exists, gnome_vfs_get_slow_mime
+	* Better ls parsing for ftp
+	* Return GNOME_VFS_ERROR_CANCELLED when authentication is cancelled
+	* Add avahi support
+	* Fix problem when mounting cd multiple times
+	* Hide private symbols
+	* Better docs
+	* Fix metadata removal issue with deletion in Nautilus
+
+gnome-vfs 2.12.1
+	* Fix gnome_vfs_uri_resolve_all_symlinks in some cases
+	* win32 fixes
+	* add gobject-2.0 dependency to .pc file
+	
 gnome-vfs 2.12
 	* Fix problem with trash dissapearing on some volumes when
 	  using HAL.

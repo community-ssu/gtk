@@ -29,6 +29,10 @@
 #include <glib/gstdio.h>
 #include <glib/gi18n-lib.h>
 #include "gnome-vfs-private.h"
+#ifdef G_OS_WIN32
+#include "gnome-vfs-private-utils.h"
+#endif
+
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -218,7 +222,7 @@ parse_line (Configuration *configuration,
 	
 	string_len = strlen (line_buffer);
 	if (string_len != line_len) {
-		g_warning (_("%s:%d contains NUL characters."),
+		g_warning (_("%s:%u contains NUL characters."),
 			   file_name, line_number);
 		return FALSE;
 	}
@@ -235,7 +239,7 @@ parse_line (Configuration *configuration,
 			gchar *method_name;
 
 			if (p == method_start) {
-				g_warning (_("%s:%d contains no method name."),
+				g_warning (_("%s:%u contains no method name."),
 					   file_name, line_number);
 				retval = FALSE;
 				goto cleanup;
@@ -275,7 +279,7 @@ parse_line (Configuration *configuration,
 			}
 			
 			if (*p == '\0') {
-				g_warning (_("%s:%d has no options endmarker."),
+				g_warning (_("%s:%u has no options endmarker."),
 						   file_name, line_number);
 				retval = FALSE;
 				goto cleanup;
@@ -286,7 +290,7 @@ parse_line (Configuration *configuration,
 				if (strcmp (option, "daemon") == 0) {
 					daemon = TRUE;
 				} else {
-					g_warning (_("%s:%d has unknown options %s."),
+					g_warning (_("%s:%u has unknown options %s."),
 						   file_name, line_number, option);
 				}
 				g_free (option);
@@ -305,7 +309,7 @@ parse_line (Configuration *configuration,
 	
 	if (*p == '\0') {
 		if (method_list != NULL) {
-			g_warning (_("%s:%d contains no module name."),
+			g_warning (_("%s:%u contains no module name."),
 				   file_name, line_number);
 			retval = FALSE;
 		} else {
@@ -345,10 +349,7 @@ parse_line (Configuration *configuration,
 	return retval;
 }
 
-/* FIXME bugzilla.eazel.com 1139:
-   maybe we should return FALSE if any errors during parsing happen so
-   that we abort immediately, but this sounds a bit too overkill.  */
-static gboolean
+static void
 parse_file (Configuration *configuration,
 	    const gchar *file_name)
 {
@@ -361,7 +362,7 @@ parse_file (Configuration *configuration,
 	if (f == NULL) {
 		g_warning (_("Configuration file `%s' was not found: %s"),
 			   file_name, strerror (errno));
-		return FALSE;
+		return;
 	}
 
 	line_buffer = NULL;
@@ -375,16 +376,18 @@ parse_file (Configuration *configuration,
 				      &lines_read);
 		if (line_len == -1)
 			break;	/* EOF */
-		parse_line (configuration, line_buffer, line_len, file_name,
-			    line_number);
+
+		if (!parse_line (configuration, line_buffer, line_len, file_name,
+				 line_number)) /* stop parsing if we failed */ {
+			g_warning (_("%s:%d aborted parsing."), file_name, line_number);
+			break;
+		}
+
 		line_number += lines_read;
 	}
 
 	g_free (line_buffer);
-
 	fclose (f);
-
-	return TRUE;
 }
 
 static void
@@ -423,7 +426,6 @@ configuration_load (void)
 
 	/* Now read these cfg files */
 	for(i = 0; file_names[i]; i++) {
-		/* FIXME: should we try to catch errors? */
 		parse_file (configuration, file_names[i]);
 		g_free (file_names[i]);
 	}

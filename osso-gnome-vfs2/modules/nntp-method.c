@@ -1677,9 +1677,9 @@ add_file_to_folder (GHashTable *folders, nntp_file *file)
 	
 	folder_contents = g_hash_table_lookup (folders, file->folder_name);
 	if (folder_contents != NULL) {
-		g_list_append(folder_contents, file);
+		folder_contents = g_list_append (folder_contents, file);
 	} else {
-		folder_contents = g_list_append(NULL, file);
+		folder_contents = g_list_append (NULL, file);
 		g_hash_table_insert (folders, g_strdup(file->folder_name), folder_contents);
 	}
 }
@@ -1689,7 +1689,6 @@ static void
 remove_file_from_list (gpointer key, gpointer value, gpointer callback_data)
 {
 	GList *element_list;
-	nntp_file* file;
 	GList** file_list_ptr;
 		
 	file_list_ptr = (GList**) callback_data;
@@ -1698,7 +1697,6 @@ remove_file_from_list (gpointer key, gpointer value, gpointer callback_data)
 	/* if there is more than one element in the list, remove all of them from the file list */	
 	if (element_list != NULL && g_list_length(element_list) > 1) {
 		while (element_list != NULL) {
-			file = (nntp_file*) element_list->data;
 			*file_list_ptr = g_list_remove(*file_list_ptr, element_list->data);
 			element_list = element_list->next;
 		}
@@ -2056,7 +2054,6 @@ do_open_directory (GnomeVFSMethod *method,
 		   GnomeVFSFileInfoOptions options,
 		   GnomeVFSContext *context)
 {
-	const char *newsgroup_server;
 	char *newsgroup_name;
 	char *directory_name, *mapped_dirname;
 	
@@ -2065,7 +2062,6 @@ do_open_directory (GnomeVFSMethod *method,
 	nntp_file *file;
 	GList *file_list;
 	
-	newsgroup_server = gnome_vfs_uri_get_host_name (uri);
 	newsgroup_name = gnome_vfs_uri_extract_dirname (uri);
 	directory_name = g_strdup (gnome_vfs_uri_extract_short_name (uri));
 	

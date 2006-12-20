@@ -393,7 +393,7 @@ get_open_mode (gint filedes)
 }
 
 /**
- * gnome_vfs_open_fs:
+ * gnome_vfs_open_fd:
  * @handle: A pointer to a pointer to a GnomeVFSHandle object
  * @filedes: a UNIX file descriptor
  * 

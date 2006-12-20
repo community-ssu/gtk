@@ -68,7 +68,7 @@ static void 	CDDBProcessLine(char *inbuffer,DiscData *data, int numtracks);
 static void CDDBWriteLine(char *header,int num,char *data,FILE *outfile);
 #endif
 
-static char *cddb_genres[] = {"unknown","blues","classical","country",
+static const char *cddb_genres[] = {"unknown","blues","classical","country",
 			      "data","folk","jazz","misc","newage",
 			      "reggae","rock","soundtrack"};
 

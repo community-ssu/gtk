@@ -3,14 +3,13 @@ NULL =
 INCLUDES =					\
 	-I$(top_srcdir)				\
 	-I$(top_builddir)			\
-	$(PROGRAMS_CFLAGS)			\
+	$(TEST_CFLAGS)				\
 	$(VFS_CFLAGS)				\
 	-DG_DISABLE_DEPRECATED
 
 libraries =						\
 	$(top_builddir)/libgnomevfs/libgnomevfs-2.la	\
-	$(PROGRAMS_LIBS)				\
-	$(POPT_LIBS)					\
+	$(TEST_LIBS)					\
 	$(LIBEFS_LIBS)
 
 bin_PROGRAMS =						\
@@ -22,6 +21,7 @@ bin_PROGRAMS =						\
 	gnomevfs-mkdir					\
 	gnomevfs-mv					\
 	gnomevfs-rm					\
+	gnomevfs-df					\
 	$(NULL)
 
 gnomevfs_cat_SOURCES = gnomevfs-cat.c
@@ -48,3 +48,7 @@ gnomevfs_mv_LDADD = $(libraries)
 gnomevfs_rm_SOURCES = gnomevfs-rm.c
 gnomevfs_rm_LDADD = $(libraries)
 
+gnomevfs_df_SOURCES = gnomevfs-df.c
+gnomevfs_df_LDADD = $(libraries)
+
+EXTRA_DIST = authentication.c

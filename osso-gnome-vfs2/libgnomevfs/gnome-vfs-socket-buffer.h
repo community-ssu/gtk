@@ -33,6 +33,12 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GnomeVFSSocketBuffer:
+ *
+ * A handle to a socket buffer. A socket buffer is a temporary in-memory storage for data
+ * that is read from or written to a #GnomeVFSSocket.
+ **/
 typedef struct GnomeVFSSocketBuffer GnomeVFSSocketBuffer;
 
 

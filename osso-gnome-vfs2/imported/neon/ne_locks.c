@@ -1,6 +1,6 @@
 /* 
    WebDAV Class 2 locking operations
-   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -45,8 +45,11 @@
 #include "ne_props.h"
 #include "ne_207.h"
 #include "ne_i18n.h"
+#include "ne_xmlreq.h"
 
 #define HOOK_ID "http://webdav.org/neon/hooks/webdav-locking"
+
+#define EOL "\r\n"
 
 /* A list of lock objects. */
 struct lock_list {
@@ -75,6 +78,7 @@ struct discover_ctx {
 /* Context for handling LOCK response */
 struct lock_ctx {
     struct ne_lock active; /* activelock */
+    ne_request *req; /* the request in question */
     char *token; /* the token we're after. */
     int found;
     ne_buffer *cdata;
@@ -373,8 +377,14 @@ struct ne_lock *ne_lock_create(void)
 void ne_lock_free(struct ne_lock *lock)
 {
     ne_uri_free(&lock->uri);
-    NE_FREE(lock->owner);
-    NE_FREE(lock->token);
+    if (lock->owner) {
+        ne_free(lock->owner);
+        lock->owner = NULL;
+    }
+    if (lock->token) {
+        ne_free(lock->token);
+        lock->token = NULL;
+    }
 }
 
 void ne_lock_destroy(struct ne_lock *lock)
@@ -398,9 +408,7 @@ int ne_unlock(ne_session *sess, const struct ne_lock *lock)
 
     ret = ne_request_dispatch(req);
     
-    if (ret == NE_OK && ne_get_status(req)->klass == 2) {
-	ret = NE_OK;    
-    } else {
+    if (ret == NE_OK && ne_get_status(req)->klass != 2) {
 	ret = NE_ERROR;
     }
 
@@ -570,11 +578,26 @@ static int lk_startelm(void *userdata, int parent,
     id = ne_xml_mapid(element_map, NE_XML_MAPLEN(element_map), nspace, name);
 
     NE_DEBUG(NE_DBG_LOCKS, "lk_startelm: %s => %d\n", name, id);
+    
+    if (id == 0)
+        return NE_XML_DECLINE;    
 
-    /* Lock-Token header is a MUST requirement: if the token
-     * is not known, bail out. */
-    if (id == 0 || ctx->token == NULL)
-	return NE_XML_DECLINE;
+    if (parent == 0 && ctx->token == NULL) {
+        const char *token = ne_get_response_header(ctx->req, "Lock-Token");
+        /* at the root element; retrieve the Lock-Token header,
+         * and bail if it wasn't given. */
+        if (token == NULL) {
+            ne_set_error(ne_get_session(ctx->req), "%s",
+                         _("LOCK response missing Lock-Token header"));
+            return NE_XML_ABORT;
+        }
+
+        if (token[0] == '<') token++;
+        ctx->token = ne_strdup(token);
+        ne_shave(ctx->token, ">");
+        NE_DEBUG(NE_DBG_LOCKS, "lk_startelm: Finding token %s\n",
+                 ctx->token);
+    }
 
     /* TODO: only accept 'prop' as root for LOCK response */
     if (!can_accept(parent, id))
@@ -584,6 +607,7 @@ static int lk_startelm(void *userdata, int parent,
 	/* a new activelock */
 	ne_lock_free(&ctx->active);
 	memset(&ctx->active, 0, sizeof ctx->active);
+        ctx->active.timeout = NE_TIMEOUT_INVALID;
     }
 
     ne_buffer_clear(ctx->cdata);
@@ -667,16 +691,6 @@ static void add_timeout_header(ne_request *req, long timeout)
     /* just ignore it if timeout == 0 or invalid. */
 }
 
-/* Parse a Lock-Token response header. */
-static void get_ltoken_hdr(void *ud, const char *value)
-{
-    struct lock_ctx *ctx = ud;
-    
-    if (value[0] == '<') value++;
-    ctx->token = ne_strdup(value);
-    ne_shave(ctx->token, ">");
-}
-
 int ne_lock(ne_session *sess, struct ne_lock *lock) 
 {
     ne_request *req = ne_request_create(sess, "LOCK", lock->uri.path);
@@ -687,6 +701,7 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
 
     memset(&ctx, 0, sizeof ctx);
     ctx.cdata = ne_buffer_create();    
+    ctx.req = req;
 
     ne_xml_push_handler(parser, lk_startelm, lk_cdata, lk_endelm, &ctx);
     
@@ -704,14 +719,10 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
     ne_buffer_zappend(body, "</lockinfo>" EOL);
 
     ne_set_request_body_buffer(req, body->data, ne_buffer_size(body));
-    ne_add_response_body_reader(req, ne_accept_2xx, 
-				ne_xml_parse_v, parser);
     ne_add_request_header(req, "Content-Type", NE_XML_MEDIA_TYPE);
     ne_add_depth_header(req, lock->depth);
     add_timeout_header(req, lock->timeout);
     
-    ne_add_response_header_handler(req, "Lock-Token", get_ltoken_hdr, &ctx);
-
     /* TODO: 
      * By 2518, we need this only if we are creating a lock-null resource.
      * Since we don't KNOW whether the lock we're given is a lock-null
@@ -721,11 +732,11 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
     /* This one is clearer from 2518 sec 8.10.4. */
     ne_lock_using_resource(req, lock->uri.path, lock->depth);
 
-    ret = ne_request_dispatch(req);
+    ret = ne_xml_dispatch_request(req, parser);
 
     ne_buffer_destroy(body);
     ne_buffer_destroy(ctx.cdata);
-    parse_failed = !ne_xml_valid(parser);
+    parse_failed = ne_xml_failed(parser);
     
     if (ret == NE_OK && ne_get_status(req)->klass == 2) {
 	if (ctx.token == NULL) {
@@ -742,9 +753,9 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
 	}
 	else if (ctx.found) {
 	    /* it worked: copy over real lock details if given. */
-	    NE_FREE(lock->token);
+            if (lock->token) ne_free(lock->token);
 	    lock->token = ctx.token;
-	    ctx.token = NULL;
+            ctx.token = NULL;
 	    if (ctx.active.timeout != NE_TIMEOUT_INVALID)
 		lock->timeout = ctx.active.timeout;
 	    lock->scope = ctx.active.scope;
@@ -752,7 +763,7 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
 	    if (ctx.active.depth >= 0)
 		lock->depth = ctx.active.depth;
 	    if (ctx.active.owner) {
-		NE_FREE(lock->owner);
+		if (lock->owner) ne_free(lock->owner);
 		lock->owner = ctx.active.owner;
 		ctx.active.owner = NULL;
 	    }
@@ -761,14 +772,12 @@ int ne_lock(ne_session *sess, struct ne_lock *lock)
 	    ne_set_error(sess, _("Response missing activelock for %s"), 
 			 ctx.token);
 	}
-    } else {
+    } else if (ret == NE_OK /* && status != 2xx */) {
 	ret = NE_ERROR;
     }
 
-    if (ctx.token)
-	ne_free(ctx.token);
     ne_lock_free(&ctx.active);
-
+    if (ctx.token) ne_free(ctx.token);
     ne_request_destroy(req);
     ne_xml_destroy(parser);
 
@@ -779,39 +788,42 @@ int ne_lock_refresh(ne_session *sess, struct ne_lock *lock)
 {
     ne_request *req = ne_request_create(sess, "LOCK", lock->uri.path);
     ne_xml_parser *parser = ne_xml_create();
-    int ret, parse_failed;
+    int ret;
+    struct lock_ctx ctx;
+
+    memset(&ctx, 0, sizeof ctx);
+    ctx.cdata = ne_buffer_create();
+    ctx.req = req;
+    ctx.token = lock->token;
 
     /* Handle the response and update *lock appropriately. */
-    ne_xml_push_handler(parser, lk_startelm, NULL, lk_endelm, lock);
+    ne_xml_push_handler(parser, lk_startelm, lk_cdata, lk_endelm, &ctx);
     
-    ne_add_response_body_reader(req, ne_accept_2xx, 
-				ne_xml_parse_v, parser);
-
-    /* Probably don't need to submit any other lock-tokens for this
-     * resource? If it's an exclusive lock, then there can be no other
-     * locks covering the resource. If it's a shared lock, then this
-     * lock (which is being refreshed) is sufficient to modify the
-     * resource state? */
+    /* For a lock refresh, submitting only this lock token must be
+     * sufficient. */
     ne_print_request_header(req, "If", "(<%s>)", lock->token);
     add_timeout_header(req, lock->timeout);
 
-    ret = ne_request_dispatch(req);
+    ret = ne_xml_dispatch_request(req, parser);
 
-    parse_failed = !ne_xml_valid(parser);
-    
-    if (ret == NE_OK && ne_get_status(req)->klass == 2) {
-	if (parse_failed) {
+    if (ret == NE_OK) {
+        if (ne_get_status(req)->klass != 2) {
+            ret = NE_ERROR; /* and use default session error */
+        } else if (ne_xml_failed(parser)) {
 	    ret = NE_ERROR;
 	    ne_set_error(sess, "%s", ne_xml_get_error(parser));
-	}
-	else if (ne_get_status(req)->code == 207) {
-	    ret = NE_ERROR;
-	    /* TODO: set the error string appropriately */
-	}
-    } else {
-	ret = NE_ERROR;
+	} else if (!ctx.found) {
+            ne_set_error(sess, _("No activelock for <%s> returned in "
+                                 "LOCK refresh response"), lock->token);
+            ret = NE_ERROR;
+        } else /* success! */ {
+            /* update timeout for passed-in lock structure. */
+            lock->timeout = ctx.active.timeout;
+        }
     }
 
+    ne_lock_free(&ctx.active);
+    ne_buffer_destroy(ctx.cdata);
     ne_request_destroy(req);
     ne_xml_destroy(parser);
 

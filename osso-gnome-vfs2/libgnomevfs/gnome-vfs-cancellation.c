@@ -25,17 +25,9 @@
 
 #include "gnome-vfs-cancellation-private.h"
 
-#ifndef USE_DBUS_DAEMON
-#include "GNOME_VFS_Daemon.h"
-#endif
-
 #include "gnome-vfs-utils.h"
 #include "gnome-vfs-private-utils.h"
-
-#ifndef USE_DBUS_DAEMON
-#include "gnome-vfs-client.h"
-#include "gnome-vfs-client-call.h"
-#endif
+#include <gnome-vfs-dbus-utils.h>
 
 #include <unistd.h>
 
@@ -50,38 +42,27 @@
    be allowed to call `gnome_vfs_cancellation_cancel()'.  *All* the code is
    based on this assumption.  */
 
-
 struct GnomeVFSCancellation {
 	gboolean cancelled;
 	gint pipe_in;
 	gint pipe_out;
 
-#ifndef USE_DBUS_DAEMON
-	GnomeVFSClientCall *client_call;
-#else
-	GnomeVFSCancellationCallback callback;
-	gpointer                     callback_data;
-#endif
+	/* daemon handle */
+	gint32 handle;
+	gint32 connection;
 };
 
 G_LOCK_DEFINE_STATIC (pipes);
-
-#ifndef USE_DBUS_DAEMON
-G_LOCK_DEFINE_STATIC (client_call);
-#else
 G_LOCK_DEFINE_STATIC (callback);
-#endif
 
-
-
 /**
  * gnome_vfs_cancellation_new:
  * 
- * Create a new GnomeVFSCancellation object for reporting cancellation to a
- * GNOME VFS module.
+ * Create a new #GnomeVFSCancellation object for reporting cancellation to a
+ * gnome-vfs module.
  * 
  * Return value: A pointer to the new GnomeVFSCancellation object.
- **/
+ */
 GnomeVFSCancellation *
 gnome_vfs_cancellation_new (void)
 {
@@ -91,22 +72,18 @@ gnome_vfs_cancellation_new (void)
 	new->cancelled = FALSE;
 	new->pipe_in = -1;
 	new->pipe_out = -1;
-#ifndef USE_DBUS_DAEMON
-	new->client_call = NULL;
-#else
-	new->callback = NULL;
-	new->callback_data = NULL;
-#endif
+	new->connection = 0;
+	new->handle = 0;
 	
 	return new;
 }
 
 /**
  * gnome_vfs_cancellation_destroy:
- * @cancellation: A GnomeVFSCancellation object
+ * @cancellation: a #GnomeVFSCancellation object.
  * 
  * Destroy @cancellation.
- **/
+ */
 void
 gnome_vfs_cancellation_destroy (GnomeVFSCancellation *cancellation)
 {
@@ -116,73 +93,39 @@ gnome_vfs_cancellation_destroy (GnomeVFSCancellation *cancellation)
 		close (cancellation->pipe_in);
 		close (cancellation->pipe_out);
 	}
-	/* Can't have outstanding calls when destroying the cancellation */
-#ifndef USE_DBUS_DAEMON
-	g_assert (cancellation->client_call == NULL);
-#endif
 	
 	g_free (cancellation);
 }
 
-#ifndef USE_DBUS_DAEMON
 void
-_gnome_vfs_cancellation_add_client_call (GnomeVFSCancellation *cancellation,
-					 GnomeVFSClientCall *client_call)
-{
-	G_LOCK (client_call);
-	/* Each client call uses its own context/cancellation */
-	g_assert (cancellation->client_call == NULL);
-	
-	cancellation->client_call = client_call;
-	G_UNLOCK (client_call);
-}
-
-void
-_gnome_vfs_cancellation_remove_client_call (GnomeVFSCancellation *cancellation,
-					    GnomeVFSClientCall *client_call)
-{
-	G_LOCK (client_call);
-	g_assert (cancellation->client_call == client_call);
-	
-	cancellation->client_call = NULL;
-	G_UNLOCK (client_call);
-}
-#endif
-
-#ifdef USE_DBUS_DAEMON
-void
-_gnome_vfs_cancellation_set_callback (GnomeVFSCancellation *cancellation,
-				      GnomeVFSCancellationCallback func,
-				      gpointer user_data)
+_gnome_vfs_cancellation_set_handle (GnomeVFSCancellation *cancellation,
+				    gint32 connection, gint32 handle)
 {
 	G_LOCK (callback);
 
 	/* Each client call uses its own context/cancellation */
-	g_assert (cancellation->callback == NULL);
+	g_assert (cancellation->handle == 0);
 
-	/*g_print ("cancellation %p, callback %p\n", cancellation, func);*/
-	
-	cancellation->callback = func;
-	cancellation->callback_data = user_data;
+	cancellation->connection = connection;
+	cancellation->handle = handle;
 
 	G_UNLOCK (callback);
 }
 
 void
-_gnome_vfs_cancellation_unset_callback (GnomeVFSCancellation *cancellation)
+_gnome_vfs_cancellation_unset_handle (GnomeVFSCancellation *cancellation)
 {
 	G_LOCK (callback);
 	
-	cancellation->callback = NULL;
-	cancellation->callback_data = NULL;
+	cancellation->connection = 0;
+	cancellation->handle = 0;
 
 	G_UNLOCK (callback);
 }
-#endif
 
 /**
  * gnome_vfs_cancellation_cancel:
- * @cancellation: A GnomeVFSCancellation object
+ * @cancellation: a #GnomeVFSCancellation object.
  * 
  * Send a cancellation request through @cancellation.
  *
@@ -190,20 +133,13 @@ _gnome_vfs_cancellation_unset_callback (GnomeVFSCancellation *cancellation)
  * callbacks, there is a small race condition where the
  * operation finished callback will be called even if you
  * cancelled the operation. Its the apps responsibility
- * to handle this. See gnome_vfs_async_cancel for more
+ * to handle this. See gnome_vfs_async_cancel() for more
  * discussion about this.
- **/
+ */
 void
 gnome_vfs_cancellation_cancel (GnomeVFSCancellation *cancellation)
 {
-#ifndef USE_DBUS_DAEMON
-	GNOME_VFS_AsyncDaemon daemon;
-	GnomeVFSClient *client;
-	GnomeVFSClientCall *client_call;
-#else
-	GnomeVFSCancellationCallback callback;
-	gpointer user_data;
-#endif
+	gint32 handle, connection_id;
 	
 	g_return_if_fail (cancellation != NULL);
 
@@ -213,65 +149,60 @@ gnome_vfs_cancellation_cancel (GnomeVFSCancellation *cancellation)
 	if (cancellation->pipe_out >= 0)
 		write (cancellation->pipe_out, "c", 1);
 
-#ifndef USE_DBUS_DAEMON
-	client_call = CORBA_OBJECT_NIL;
-	G_LOCK (client_call);
-	if (cancellation->client_call != NULL) {
-		/* We need to delay the finishing of the client call to avoid
-		 * the cancel call below to cancel the next call in the job thread
-		 * if the job finishes after we drop the lock.
-		 */
-		_gnome_vfs_client_call_delay_finish (cancellation->client_call);
-		client_call = cancellation->client_call;
-		bonobo_object_ref (client_call);
-	}
-	G_UNLOCK (client_call);
-#else
-
-	callback = NULL;
-	user_data = NULL;
+	handle = 0;
+	connection_id = 0;
 	
 	G_LOCK (callback);
-	if (cancellation->callback) {
-		/*_gnome_vfs_client_call_delay_finish (cancellation->client_call);*/
-		
-		callback = cancellation->callback;
-		user_data = cancellation->callback_data;
+	if (cancellation->handle) {
+		handle = cancellation->handle;
+		connection_id = cancellation->connection;
 	}
 	G_UNLOCK (callback);
-#endif
 	
 	cancellation->cancelled = TRUE;
 
-#ifndef USE_DBUS_DAEMON
-	if (client_call != NULL) {
-		CORBA_Environment ev;
-		client = _gnome_vfs_get_client ();
-		daemon = _gnome_vfs_client_get_async_daemon (client);
+	if (handle != 0) {
+		DBusConnection *conn;
+		DBusMessage *message;
+		DBusError error;
 
-		CORBA_exception_init (&ev);
-		GNOME_VFS_AsyncDaemon_Cancel (daemon, BONOBO_OBJREF (client_call), &ev);
-		CORBA_exception_free (&ev);
-		_gnome_vfs_client_call_delay_finish_done (client_call);
-		bonobo_object_unref (client_call);
-		CORBA_Object_release (daemon, NULL);
+		dbus_error_init (&error);
+        
+		conn = _gnome_vfs_get_main_dbus_connection ();
+
+		if (conn != NULL) {
+					
+			message = dbus_message_new_method_call (DVD_DAEMON_SERVICE,
+								DVD_DAEMON_OBJECT,
+								DVD_DAEMON_INTERFACE,
+								DVD_DAEMON_METHOD_CANCEL);
+			dbus_message_set_auto_start (message, TRUE);
+			if (!message) {
+				g_error ("Out of memory");
+			}
+
+			if (!dbus_message_append_args (message,
+						       DBUS_TYPE_INT32, &handle,
+						       DBUS_TYPE_INT32, &connection_id,
+						       DBUS_TYPE_INVALID)) {
+				g_error ("Out of memory");
+			}
+
+			dbus_connection_send (conn, message, NULL);
+			dbus_connection_flush (conn);
+			dbus_message_unref (message);
+		}
 	}
-#else
-	if (callback) {
-		callback (user_data);
-		/*_gnome_vfs_client_call_delay_finish_done (client_call);*/
-	}
-#endif
 }
 
 /**
  * gnome_vfs_cancellation_check:
- * @cancellation: A GnomeVFSCancellation object
+ * @cancellation: a #GnomeVFSCancellation object.
  * 
  * Check for pending cancellation.
  * 
  * Return value: %TRUE if the operation should be interrupted.
- **/
+ */
 gboolean
 gnome_vfs_cancellation_check (GnomeVFSCancellation *cancellation)
 {
@@ -283,13 +214,13 @@ gnome_vfs_cancellation_check (GnomeVFSCancellation *cancellation)
 
 /**
  * gnome_vfs_cancellation_ack:
- * @cancellation: A GnomeVFSCancellation object
+ * @cancellation: a #GnomeVFSCancellation object.
  * 
  * Acknowledge a cancellation.  This should be called if
- * `gnome_vfs_cancellation_check()' returns %TRUE or if `select()' reports that
+ * gnome_vfs_cancellation_check() returns %TRUE or if select() reports that
  * input is available on the file descriptor returned by
- * `gnome_vfs_cancellation_get_fd()'.
- **/
+ * gnome_vfs_cancellation_get_fd().
+ */
 void
 gnome_vfs_cancellation_ack (GnomeVFSCancellation *cancellation)
 {
@@ -312,21 +243,21 @@ gnome_vfs_cancellation_ack (GnomeVFSCancellation *cancellation)
 
 /**
  * gnome_vfs_cancellation_get_fd:
- * @cancellation: A GnomeVFSCancellation object
+ * @cancellation: a #GnomeVFSCancellation object.
  * 
  * Get a file descriptor -based notificator for @cancellation.  When
  * @cancellation receives a cancellation request, a character will be made
  * available on the returned file descriptor for input.
  *
  * This is very useful for detecting cancellation during I/O operations: you
- * can use the `select()' call to check for available input/output on the file
+ * can use the select() call to check for available input/output on the file
  * you are reading/writing, and on the notificator's file descriptor at the
  * same time.  If a data is available on the notificator's file descriptor, you
  * know you have to cancel the read/write operation.
  * 
  * Return value: the notificator's file descriptor, or -1 if starved of
  *               file descriptors.
- **/
+ */
 gint
 gnome_vfs_cancellation_get_fd (GnomeVFSCancellation *cancellation)
 {

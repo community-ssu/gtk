@@ -28,6 +28,7 @@
 #include <unistd.h>
 #include <signal.h>
 
+#include "authentication.c"
 
 static void  
 monitor_event (GnomeVFSMonitorHandle *handle,
@@ -101,7 +102,9 @@ main (int argc, char **argv)
 		fprintf (stderr, "Cannot initialize gnome-vfs.\n");
 		return 1;
 	}
-	
+
+	command_line_authentication_init ();
+
 	text_uri = gnome_vfs_make_uri_from_shell_arg (argv[1]);
 
 	if (text_uri == NULL) {

@@ -1,0 +1,78 @@
+--- modules/http-neon-method.c-unmod	2006-12-19 10:44:47.000000000 +0100
++++ modules/http-neon-method.c	2006-12-19 10:45:49.000000000 +0100
+@@ -1817,6 +1817,41 @@ http_follow_redirect (HttpContext *conte
+ /* ************************************************************************** */
+ /* Http operations */
+ 
++/* Sends a HEAD/GET request where we are not interested in any information
++ * except headers. Some broken servers send the content for HEAD requests, so we
++ * always try to read to get rid of that by closing the connection, and for the
++ * case where this is used with GET as fallback for HEAD, we are also not
++ * interested in the data.
++ */
++static int
++dispatch_head_request (ne_request *req)
++{
++	gboolean must_close = FALSE;
++	char buffer[1];
++	size_t len;
++	int res;
++	
++	do {
++		res = ne_begin_request (req);
++		
++		if (NE_OK == res) {
++			len = ne_read_response_block (req, buffer, sizeof buffer);
++			must_close = (len > 0);
++		}
++
++		if (NE_OK == res) {
++			res = ne_end_request (req);
++		}
++	} while (NE_RETRY == res);
++
++	if (must_close) {
++		DEBUG_HTTP ("explictly closing connection");
++		ne_close_connection (ne_get_session (req));
++	}
++
++	return res;
++}
++
+ static GnomeVFSResult
+ http_get_file_info (HttpContext *context, GnomeVFSFileInfo *info)
+ {
+@@ -1903,9 +1938,18 @@ http_get_file_info (HttpContext *context
+ 
+  head_start:
+ 	req  = ne_request_create (context->session, "HEAD", context->path);
++	res = dispatch_head_request (req);
++	result = resolve_result (res, req);
+ 
+-	res = ne_request_dispatch (req);
+-
++	if (res == NE_ERROR || result == GNOME_VFS_ERROR_NOT_SUPPORTED) {
++		/* Assume that there was a broken server... fallback to GET. */
++		DEBUG_HTTP ("Fall back to GET request");
++		
++		ne_request_destroy (req);
++		req = ne_request_create (context->session, "GET", context->path);
++		res = dispatch_head_request (req);
++	}
++	
+ 	if (res == NE_REDIRECT) {
+ 		ne_request_destroy (req);
+ 		req = NULL;
+@@ -1947,12 +1991,6 @@ http_get_file_info (HttpContext *context
+ 		info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_TYPE;
+ 
+ 		std_headers_to_file_info (req, info);
+-		
+-		/* work-around for broken icecast server */
+-		if (info->valid_fields & GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE
+-		    && ! g_ascii_strcasecmp (info->mime_type, "audio/mpeg")) {
+-			ne_close_connection (ne_get_session (req));
+-		}
+ 	}
+ 	
+ 	ne_request_destroy (req);

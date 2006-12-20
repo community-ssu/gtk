@@ -14,6 +14,9 @@ gnome-vfs-method
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### USER_FUNCTION GnomeVFSMethodInitFunc ##### -->
 <para>
 
@@ -80,6 +83,12 @@ gnome-vfs-method
 
 @name: 
 @Returns: 
+
+
+<!-- ##### TYPEDEF GnomeVFSTransform ##### -->
+<para>
+
+</para>
 
 
 <!-- ##### FUNCTION gnome_vfs_transform_get ##### -->

@@ -23,67 +23,26 @@
 
 #include <config.h>
 
-#include <glib/gstrfuncs.h>
-#include <glib/gtimer.h>
-#include <glib/gmain.h>
+#include <glib.h>
+#include <glib/gprintf.h>
 #include <libgnomevfs/gnome-vfs-async-ops.h>
 #include <libgnomevfs/gnome-vfs-init.h>
-#include <popt.h>
 #include <stdio.h>
 
 static GMainLoop *main_loop;
 
-static int measure_speed = 0;
-static int sort = 0;
-static int items_per_notification = 1;
-static int read_files = 0;
+static gint items_per_notification = 1;
+static gboolean measure_speed = FALSE;
+static gboolean read_files = FALSE;
 
-static struct poptOption options[] = {
-	{
-		"chunk-size",
-		'c',
-		POPT_ARG_INT,
-		&items_per_notification,
-		0,
-		"Number of items to send for every notification",
-	        "NUM_ITEMS"
-	},
-	{
-		"measure-speed",
-		'm',
-		POPT_ARG_NONE,
-		&measure_speed,
-		0,
-		"Measure speed without displaying anything",
-		NULL
-	},
-	{
-		"sort",
-		's',
-		POPT_ARG_NONE,
-		&sort,
-		0,
-		"Sort entries",
-		NULL
-	},
-	{
-		"read-files",
-		'r',
-		POPT_ARG_NONE,
-		&read_files,
-		0,
-		"Test file reading",
-		NULL
-	},
-	{
-		NULL,
-		0,
-		0,
-		NULL,
-		0,
-		NULL,
-		NULL
-	}
+static GOptionEntry options[] = {
+	{ "chunk-size", 'c', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_INT, &items_per_notification, "Number of items to send for every notification", "NUM_ITEMS" },
+	{ "measure-speed", 'm', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &measure_speed, "Meaure speed without displaying anything", NULL },
+	{ "read-files", 'r', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &read_files, "Test file reading", NULL },
+	{ NULL }
 };
 
 static const gchar *
@@ -265,30 +224,37 @@ directory_load_callback (GnomeVFSAsyncHandle *handle,
 }
 
 int
-main (int argc, const char **argv)
+main (int argc, char **argv)
 {
 	GnomeVFSAsyncHandle *handle;
-	poptContext popt_context;
-	const char **args;
 	gchar *text_uri;
 	GTimer *timer;
 	CallbackData callback_data;
 
-	puts ("Initializing gnome-libs...");
-	popt_context = poptGetContext ("test-vfs", argc, argv,
-				       options, 0);
+	GOptionContext *ctx = NULL;
+	GError *error = NULL;
 
-	while (poptGetNextOpt (popt_context) != -1)
-		;
+	g_printf("Initializing gnome-libs...");
 
-	args = poptGetArgs (popt_context);
-	if (args == NULL || args[1] != NULL) {
-		fprintf (stderr, "Usage: %s [<options>] <uri>\n", argv[0]);
+	ctx = g_option_context_new("test-vfs");
+	g_option_context_add_main_entries(ctx, options, NULL);
+
+	if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
+		g_printerr("main: %s\n", error->message);
+
+		g_error_free(error);
+		g_option_context_free(ctx);
 		return 1;
 	}
 
-	text_uri = g_strdup (args[0]);
-	poptFreeContext (popt_context);
+	g_option_context_free(ctx);
+
+	if (argc != 2 || argv[1] == NULL) {
+		g_printerr("Usage: %s [<options>] <uri>\n", argv[0]);
+		return 1;
+	}
+
+	text_uri = g_strdup(argv[1]);
 
 	puts ("Initializing gnome-vfs...");
 	gnome_vfs_init ();

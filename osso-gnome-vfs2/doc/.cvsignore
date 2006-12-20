@@ -1,0 +1,15 @@
+xml
+html
+gnome-vfs-2.0-unused.txt
+gnome-vfs-2.0-decl-list.txt
+gnome-vfs-2.0-decl.txt
+gnome-vfs-2.0.prerequisites
+gnome-vfs-2.0.interfaces
+gnome-vfs-2.0.signals
+gnome-vfs-2.0.args
+gnome-vfs-2.0.hierarchy
+gnome-vfs-2.0-undocumented.txt
+version.xml
+*.stamp
+Makefile.in
+Makefile

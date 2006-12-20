@@ -33,6 +33,8 @@
 
 #include <sys/time.h>
 #include <arpa/inet.h>
+
+#include <gconf/gconf-client.h>
 #include <libgnomevfs/gnome-vfs-context.h>
 #include <libgnomevfs/gnome-vfs-inet-connection.h>
 #include <libgnomevfs/gnome-vfs-socket-buffer.h>
@@ -43,6 +45,7 @@
 #include <libgnomevfs/gnome-vfs-module-callback-module-api.h>
 #include <libgnomevfs/gnome-vfs-module.h>
 #include <libgnomevfs/gnome-vfs-module-shared.h>
+#include <libgnomevfs/gnome-vfs-ops.h>
 #include <libgnomevfs/gnome-vfs-parse-ls.h>
 #include <libgnomevfs/gnome-vfs-utils.h>
 #include <stdio.h> /* for sscanf */
@@ -142,8 +145,11 @@ typedef struct {
 	GnomeVFSFileInfoOptions file_info_options;
 } FtpDirHandle;
 
-
+/* Gconf key's "use_http_proxy" is for FTP as well, it should be renamed */
 static const char USE_PROXY_KEY[] = "/system/http_proxy/use_http_proxy";
+
+static const char PROXY_FTP_HOST_KEY[] = "/system/proxy/ftp_host";
+static const char PROXY_FTP_PORT_KEY[] = "/system/proxy/ftp_port";
 
 
 static GnomeVFSResult do_open	         (GnomeVFSMethod               *method,
@@ -179,6 +185,9 @@ static GnomeVFSResult get_list_command (FtpConnection   *conn,
 
 static const int   control_port = 21;
 
+/* FTP Proxy */
+static gchar *proxy_host = NULL;
+static int proxy_port = 0;
 
 /* A GHashTable of FtpConnectionPool */
 
@@ -274,7 +283,7 @@ ftp_response_to_vfs_result (FtpConnection *conn)
 }
 
 #ifdef HAVE_GSSAPI
-static char *radixN =
+static const char *radixN =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 static char pad = '=';
@@ -588,22 +597,43 @@ do_path_command (FtpConnection *conn,
 		 GnomeVFSURI *uri,
 		 GnomeVFSCancellation *cancellation) 
 {
-	char *path;
-	char *actual_command;
+	char *unescaped;
+	gchar *basename,
+	      *path,
+	      *actual_command,
+	      *cwd_command;
 	GnomeVFSResult result;
+	int end;
 
-	/* as some point we may need to make this execute a CD and then
-  	 * a command using the basename rather than the full path. I am yet
-	 * to come across such a system.
-	 */
-	path = gnome_vfs_unescape_string (uri->text, G_DIR_SEPARATOR_S);
-
-	if (path == NULL || path[0] == '\0') {
-		actual_command = g_strconcat (command, " /", NULL);
-	} else {
-		actual_command = g_strconcat (command, " ", path, NULL);
+	/* Execute a CD and then a command using the basename rather
+	 * than the full path. Useful for some (buggy?) systems. */
+	unescaped = gnome_vfs_unescape_string (uri->text, G_DIR_SEPARATOR_S);
+	if (unescaped == NULL || unescaped[0] == '\0') {
+		g_free (unescaped);
+		unescaped = g_strdup ("/");
 	}
+
+	/* Remove trailing slashes */
+	end = strlen(unescaped) - 1;
+	if (end > 0 && unescaped[end] == '/') {
+		unescaped[end] = 0;
+	}
+	
+	basename = g_path_get_basename (unescaped);
+	path = g_path_get_dirname (unescaped);
+	g_free (unescaped);
+
+	cwd_command = g_strconcat ("CWD ", path, NULL);
 	g_free (path);
+	result = do_basic_command (conn, cwd_command, cancellation);
+	g_free (cwd_command);
+	if (result != GNOME_VFS_OK) {
+		g_free (basename);
+		return result;
+	}
+
+	actual_command = g_strconcat (command, " ", basename, NULL);
+	g_free (basename);
 
 	result = do_basic_command (conn, actual_command, cancellation);
 	g_free (actual_command);
@@ -736,22 +766,42 @@ do_transfer_command (FtpConnection *conn, gchar *command, GnomeVFSContext *conte
 static GnomeVFSResult
 do_path_transfer_command (FtpConnection *conn, gchar *command, GnomeVFSURI *uri, GnomeVFSContext *context) 
 {
-	char *path;
-	char *actual_command;
+	char *unescaped;
+	gchar *basename,
+	      *path,
+	      *cwd_command,
+	      *actual_command;
 	GnomeVFSResult result;
+	int end;
 
-	/* as some point we may need to make this execute a CD and then
-  	 * a command using the basename rather than the full path. I am yet
-	 * to come across such a system.
-	 */
-	path = gnome_vfs_unescape_string (uri->text, G_DIR_SEPARATOR_S);
-
-	if (path == NULL || path[0] == '\0') {
-		actual_command = g_strconcat (command, " /", NULL);
-	} else {
-		actual_command = g_strconcat (command, " ", path, NULL);
+	unescaped = gnome_vfs_unescape_string (uri->text, G_DIR_SEPARATOR_S);
+	if (unescaped == NULL || unescaped[0] == '\0') {
+		g_free (unescaped);
+		unescaped = g_strdup ("/");
 	}
+
+	/* Remove trailing slashes */
+	end = strlen(unescaped) - 1;
+	if (end > 0 && unescaped[end] == '/') {
+		unescaped[end] = 0;
+	}
+
+	basename = g_path_get_basename (unescaped);
+	path = g_path_get_dirname (unescaped);
+	g_free (unescaped);
+
+	cwd_command = g_strconcat ("CWD ", path, NULL);
 	g_free (path);
+	result = do_basic_command (conn, cwd_command,
+				   get_cancellation (context));
+	g_free (cwd_command);
+	if (result != GNOME_VFS_OK) {
+		g_free (basename);
+		return result;
+	}
+
+	actual_command = g_strconcat (command, " ", basename, NULL);
+	g_free (basename);
 
 	result = do_transfer_command (conn, actual_command, context);
 	g_free (actual_command);
@@ -807,16 +857,24 @@ save_authn_info (GnomeVFSURI *uri,
         g_free (in_args.uri);
 }
 
+/*
+ * Returns FALSE if callback was not handled (*aborted
+ *   will be FALSE, user will be "anonymous")
+ *
+ * Returns TRUE if callback invocation succeeded, *aborted
+ *   will be set to TRUE only if the user didn't cancel
+ */
 static gboolean
 query_user_for_authn_info (GnomeVFSURI *uri, 
-			   char **user, char **pass, char **keyring, gboolean *save,
+			   char **user, char **pass, char **keyring,
+			   gboolean *save, gboolean *aborted,
 			   gboolean no_username)
 {
 	GnomeVFSModuleCallbackFullAuthenticationIn in_args;
         GnomeVFSModuleCallbackFullAuthenticationOut out_args;
 	gboolean ret;
 
-	ret = FALSE;
+	ret = *aborted = FALSE;
 	
 	memset (&in_args, 0, sizeof (in_args));
         memset (&out_args, 0, sizeof (out_args));
@@ -844,16 +902,15 @@ query_user_for_authn_info (GnomeVFSURI *uri,
                                                 &out_args, sizeof (out_args));
 
 	if (!ret) {
-		ret = TRUE;
 		/* No callback, try anon login */
 		*user = g_strdup ("anonymous");
 		*pass = g_strdup ("nobody@gnome.org");
                 goto error;
         }
-	
-        ret = !out_args.abort_auth;
-	
-        if (!ret) {
+
+	*aborted = out_args.abort_auth;
+
+	if (out_args.abort_auth) {
                 goto error;
         }
 	
@@ -882,7 +939,7 @@ query_user_for_authn_info (GnomeVFSURI *uri,
        	g_free (out_args.domain);
        	g_free (out_args.password);
        	g_free (out_args.keyring);
-	
+
 	return ret;
 } 
 
@@ -954,9 +1011,7 @@ ftp_kerberos_login (FtpConnection *conn,
 	char *encoded_token;
 	int len;
 	GnomeVFSResult result;
-	gboolean auth_ok;
 
-	auth_ok = FALSE;
 	result = do_basic_command (conn, "AUTH GSSAPI", cancellation);
 	if (result != GNOME_VFS_OK) {
 		return result;
@@ -1070,7 +1125,15 @@ ftp_login (FtpConnection *conn,
 	gchar *tmpstring;
 	GnomeVFSResult result;
 	
-	tmpstring = g_strdup_printf ("USER %s", user);
+	if (!proxy_host) {
+		tmpstring = g_strdup_printf ("USER %s", user);
+	} else {
+		/* Using FTP proxy */
+		tmpstring = g_strdup_printf ("USER %s@%s",
+					     user,
+					     gnome_vfs_uri_get_host_name (conn->uri));
+	}
+
 	result = do_basic_command (conn, tmpstring, cancellation);
 	g_free (tmpstring);
 
@@ -1094,7 +1157,9 @@ try_connection (GnomeVFSURI *uri,
 	gint port = control_port;
 	const char *host;
 	
-	if (gnome_vfs_uri_get_host_port (uri)) {
+	if (proxy_host) {
+		port = proxy_port;
+	} else if (gnome_vfs_uri_get_host_port (uri)) {
                 port = gnome_vfs_uri_get_host_port (uri);
         }
 
@@ -1102,7 +1167,12 @@ try_connection (GnomeVFSURI *uri,
 	if (*saved_ip != NULL) {
 		host = *saved_ip;
 	} else {
-		host = gnome_vfs_uri_get_host_name (uri);
+		if (!proxy_host) {
+			host = gnome_vfs_uri_get_host_name (uri);
+		} else  {
+			/* Use FTP proxy */
+			host = proxy_host;
+		}
 	}
 
 	if (host == NULL) {
@@ -1249,6 +1319,7 @@ ftp_connection_create (FtpConnectionPool *pool,
 	gboolean got_connection;
 	gboolean ret;
 	gboolean connection_failed;
+	gboolean aborted = FALSE;
 	
 	cancellation = get_cancellation (context);
 	
@@ -1320,17 +1391,18 @@ ftp_connection_create (FtpConnectionPool *pool,
 				pool->num_connections++;
 				G_UNLOCK (connection_pools);
 				ret = query_user_for_authn_info (uri, &user, &pass, &keyring, &save_authn, 
-								 !uri_has_username); 
+								 &aborted, !uri_has_username); 
 				G_LOCK (connection_pools);
 				pool->num_connections--;
-				if (!ret) {
+				if (aborted) {
 					gnome_vfs_uri_unref (conn->uri);
 					g_string_free (conn->response_buffer, TRUE);
 					g_free (conn);
 					g_free (user);
 					g_free (pass);
 					g_free (keyring);
-                                	return GNOME_VFS_ERROR_LOGIN_FAILED;
+
+					return GNOME_VFS_ERROR_CANCELLED;
 				}
 				g_string_free (conn->response_buffer, TRUE);
                         	conn->response_buffer = g_string_new ("");
@@ -1340,7 +1412,9 @@ ftp_connection_create (FtpConnectionPool *pool,
 				if (result == GNOME_VFS_OK) {
 					break;
 				}
-				if (result != GNOME_VFS_ERROR_LOGIN_FAILED) {
+				if (result != GNOME_VFS_ERROR_LOGIN_FAILED ||
+				    !ret /* if callback was not handled, and anonymous
+					    login failed, don't run into endless loop */) {
 					gnome_vfs_uri_unref (conn->uri);
 					g_string_free (conn->response_buffer, TRUE);
 					g_free (conn);
@@ -1549,7 +1623,7 @@ invalidate_dirlist_cache (GnomeVFSURI *uri)
 	G_LOCK (connection_pools);
 	pool = ftp_connection_pool_lookup (uri);
 	g_hash_table_remove (pool->cached_dirlists,
-			     uri->text);
+			     uri->text != NULL ? uri->text : "/");
 	G_UNLOCK (connection_pools);
 }
 
@@ -1792,7 +1866,52 @@ do_create (GnomeVFSMethod *method,
 	   guint perm,
 	   GnomeVFSContext *context)
 {
-	return do_open(method, method_handle, uri, mode, context);
+	GnomeVFSResult result;
+	FtpConnection *conn;
+	gchar *chmod_command;
+
+	if ((mode & GNOME_VFS_OPEN_READ) && (mode & GNOME_VFS_OPEN_WRITE)) {
+		return GNOME_VFS_ERROR_INVALID_OPEN_MODE;
+	}
+
+	if (!(mode & GNOME_VFS_OPEN_READ) && !(mode & GNOME_VFS_OPEN_WRITE)) {
+		return GNOME_VFS_ERROR_INVALID_OPEN_MODE;
+	}
+
+	result = ftp_connection_acquire (uri, &conn, context);
+	if (result != GNOME_VFS_OK)
+		return result;
+
+	/* Exclusive set: we have to fail if the file exists */
+	if (exclusive) {
+		conn->operation = FTP_READ;
+		result = do_path_transfer_command (conn, "RETR", uri, context);
+
+		/* File exists or an error occurred */
+		if (result != GNOME_VFS_ERROR_NOT_FOUND) {
+			ftp_connection_release (conn, TRUE);
+
+			/* Return the error if there is one, otherwise the file exists */
+			return (result == GNOME_VFS_OK) ? GNOME_VFS_ERROR_FILE_EXISTS
+		                                        : result;
+		}
+	}
+
+	result = do_open(method, method_handle, uri, mode, context);
+	if (result != GNOME_VFS_OK) {
+		ftp_connection_release (conn, TRUE);
+		return result;
+	}
+
+	/* This is a not-standard command and FTP server may not support it,
+	 * so eventual errors will be ignored */
+	chmod_command = g_strdup_printf("SITE CHMOD %o", perm);
+	do_path_command (conn, chmod_command, uri, get_cancellation (context));
+
+	g_free (chmod_command);
+	ftp_connection_release (conn, TRUE);
+
+	return result;
 }
 
 static GnomeVFSResult 
@@ -2116,10 +2235,14 @@ unix_ls_to_file_info (gchar *ls, GnomeVFSFileInfo *file_info,
 
 		if (file_info->type == GNOME_VFS_FILE_TYPE_REGULAR) {
 			mime_type = gnome_vfs_mime_type_from_name_or_default (file_info->name, GNOME_VFS_MIME_TYPE_UNKNOWN);
-			/*ftp_debug (conn, g_strdup_printf ("mimetype = %s", mime_type));*/
 		} else {
-			mime_type = gnome_vfs_mime_type_from_mode (s.st_mode);
+			/* TODO replace this by gnome_vfs_mime_type_from_mode_or_default call, #330625 */
+			mime_type = gnome_vfs_mime_type_from_mode (file_info->permissions);
+			if (mime_type == NULL) {
+				mime_type = GNOME_VFS_MIME_TYPE_UNKNOWN;
+			}
 		}
+		/*ftp_debug (conn, g_strdup_printf ("mimetype = %s", mime_type));*/
 		file_info->mime_type = g_strdup (mime_type);
 		file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
 
@@ -2273,6 +2396,38 @@ do_get_file_info (GnomeVFSMethod *method,
 		}
 		g_free (name);
 		do_close_directory (method, method_handle, context);
+
+		/* maybe it was a hidden directory not included in ls output
+		 * (IIS virtual directory), so try to CWD to it. */
+		if (result == GNOME_VFS_ERROR_NOT_FOUND) {
+			FtpConnection *connection;
+
+			if (ftp_connection_acquire (uri, &connection, context) == GNOME_VFS_OK) {
+				result = do_path_command (connection, "CWD", uri, get_cancellation (context));
+				ftp_connection_release (connection, FALSE);
+			}
+
+			if (result == GNOME_VFS_OK) {
+				char *unescaped;
+				char *basename;
+
+				unescaped = gnome_vfs_unescape_string (uri->text, G_DIR_SEPARATOR_S);
+				basename = g_path_get_basename (unescaped);
+				g_free (unescaped);
+
+				if (basename != NULL) {
+					file_info->name = basename;
+					file_info->type = GNOME_VFS_FILE_TYPE_DIRECTORY;
+					file_info->mime_type = g_strdup ("x-directory/normal");
+					file_info->valid_fields = GNOME_VFS_FILE_INFO_FIELDS_TYPE |
+						GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+				} else {
+					result = GNOME_VFS_ERROR_NOT_FOUND;
+				}
+			} else {
+				result = GNOME_VFS_ERROR_NOT_FOUND;
+			}
+		}
 	}
 
 	return result;
@@ -2363,7 +2518,7 @@ do_open_directory (GnomeVFSMethod *method,
 	G_LOCK (connection_pools);
 	pool = ftp_connection_pool_lookup (uri);
 	cached_dirlist = g_hash_table_lookup (pool->cached_dirlists,
-					      uri->text);
+					      uri->text != NULL ? uri->text : "/");
 	if (cached_dirlist != NULL) {
 		gettimeofday (&tv, NULL);
 
@@ -2444,7 +2599,7 @@ do_open_directory (GnomeVFSMethod *method,
 	cached_dirlist->read_time = tv.tv_sec;
 	
 	g_hash_table_replace (pool->cached_dirlists,
-			      g_strdup (uri->text),
+			      g_strdup (uri->text != NULL ? uri->text : "/"),
 			      cached_dirlist);
 	
 	G_UNLOCK (connection_pools);
@@ -2528,7 +2683,7 @@ do_read_directory (GnomeVFSMethod *method,
 					break;
 				}
 				
-				symlink_name = g_strdup (symlink_info->symlink_name);
+				symlink_name = gnome_vfs_escape_path_string (symlink_info->symlink_name);
 				gnome_vfs_file_info_clear (symlink_info);
 				
 				link_uri = gnome_vfs_uri_resolve_relative (uri, symlink_name);
@@ -2566,7 +2721,7 @@ do_read_directory (GnomeVFSMethod *method,
 
 				GNOME_VFS_FILE_INFO_SET_SYMLINK (file_info, TRUE);
 				file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_SYMLINK_NAME;
-				file_info->symlink_name = gnome_vfs_unescape_string (uri->text, "/");
+				file_info->symlink_name = gnome_vfs_unescape_string (uri->text != NULL ? uri->text : "/", "/");
 				
 				g_free (file_info->name);
 				file_info->name = real_name;
@@ -2619,6 +2774,15 @@ do_make_directory (GnomeVFSMethod *method,
 	GnomeVFSResult result;
 	gchar *chmod_command;
 
+	result = do_path_command_completely ("CWD", uri, context,
+			/* If the directory doesn't exist @result will be !GNOME_VFS_OK,
+			* in this case we don't return and proceed with MKD */
+			!GNOME_VFS_OK);
+
+	if (result == GNOME_VFS_OK) {
+		return GNOME_VFS_ERROR_FILE_EXISTS;
+	}
+
 	result = do_path_command_completely ("MKD", uri, context, 
 		GNOME_VFS_ERROR_ACCESS_DENIED);
 
@@ -2631,6 +2795,9 @@ do_make_directory (GnomeVFSMethod *method,
 		do_path_command_completely (chmod_command, uri, context,
 			GNOME_VFS_ERROR_ACCESS_DENIED);
 		g_free(chmod_command);
+	} else if (result != GNOME_VFS_ERROR_CANCELLED &&
+		   gnome_vfs_uri_exists (uri)) {
+		result = GNOME_VFS_ERROR_FILE_EXISTS;
 	}
 
 	return result;
@@ -2813,12 +2980,37 @@ GnomeVFSMethod *
 vfs_module_init (const char *method_name, 
 		 const char *args)
 {
+	GConfClient *gclient;
+
 	connection_pools = g_hash_table_new (ftp_connection_uri_hash, 
 					     ftp_connection_uri_equal);
+
+	gclient = gconf_client_get_default ();
+	if (gclient) {
+		if (gconf_client_get_bool (gclient, USE_PROXY_KEY, NULL)) {
+			/* Using FTP proxy */
+			proxy_host = gconf_client_get_string (gclient,
+							      PROXY_FTP_HOST_KEY,
+							      NULL);
+			/* Don't use blank hostname */
+			if (proxy_host &&
+			    *proxy_host == 0) {
+				g_free (proxy_host);
+				proxy_host = NULL;
+			}
+			proxy_port = gconf_client_get_int (gclient,
+							   PROXY_FTP_PORT_KEY,
+							   NULL);
+		} else proxy_host = NULL;
+	}
+
 	return &method;
 }
 
 void
 vfs_module_shutdown (GnomeVFSMethod *method)
 {
+	if (proxy_host) {
+		g_free (proxy_host);
+	}
 }

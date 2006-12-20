@@ -22,7 +22,6 @@
 */
 
 #include <config.h>
-#include <bonobo-activation/bonobo-activation.h>
 #include <libgnomevfs/gnome-vfs-init.h>
 #include <libgnomevfs/gnome-vfs-mime-magic.h>
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
@@ -172,5 +171,5 @@ main (int argc, char **argv)
 		gnome_vfs_uri_unref (uri);
 	}
 	
-	return bonobo_activation_debug_shutdown ();
+	return 0;
 }

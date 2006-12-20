@@ -41,15 +41,6 @@ gboolean gnome_vfs_cancellation_check   (GnomeVFSCancellation *cancellation);
 void     gnome_vfs_cancellation_ack	(GnomeVFSCancellation *cancellation);
 gint	 gnome_vfs_cancellation_get_fd  (GnomeVFSCancellation *cancellation);
 
-#ifdef USE_DBUS_DAEMON
-typedef void (*GnomeVFSCancellationCallback) (gpointer user_data);
-
-void _gnome_vfs_cancellation_set_callback   (GnomeVFSCancellation *cancellation,
-					     GnomeVFSCancellationCallback func,
-					     gpointer user_data);
-void _gnome_vfs_cancellation_unset_callback (GnomeVFSCancellation *cancellation);
-#endif
-
 G_END_DECLS
 
 #endif /* GNOME_VFS_CANCELLATION_H */

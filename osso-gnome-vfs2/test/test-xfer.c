@@ -23,74 +23,30 @@
 
 #include <config.h>
 
+#include <glib.h>
 #include <libgnomevfs/gnome-vfs-init.h>
 #include <libgnomevfs/gnome-vfs-xfer.h>
-#include <popt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-static int recursive = 0;
-static int replace = 0;
-static int remove_source = 0;
-static int follow_symlinks = 0;
-static int follow_symlinks_recursive = 0;
+static gboolean remove_source = FALSE;
+static gboolean recursive = FALSE;
+static gboolean follow_symlinks = FALSE;
+static gboolean replace = FALSE;
+static gboolean follow_symlinks_recursive = FALSE;
 
-static const struct poptOption options[] = {
-	POPT_AUTOHELP
-	{
-		"recursive",
-		'r',
-		POPT_ARG_NONE,
-		&recursive,
-		0,
-		"Copy directories recursively",
-		NULL
-	},
-	{
-		"follow-symlinks",
-		'L',
-		POPT_ARG_NONE,
-		&follow_symlinks,
-		0,
-		"Follow symlinks",
-		NULL
-	},
-	{
-		"recursive-symlinks",
-		'Z',
-		POPT_ARG_NONE,
-		&follow_symlinks_recursive,
-		0,
-		"Follow symlinks",
-		NULL
-	},
-	{
-		"replace",
-		'R',
-		POPT_ARG_NONE,
-		&replace,
-		0,
-		"Replace files automatically",
-		NULL
-	},
-	{
-		"delete-source",
-		'd',
-		POPT_ARG_NONE,
-		&remove_source,
-		0,
-		"Delete source files",
-		NULL
-	},
-	{
-		NULL,
-		0,
-		0,
-		NULL,
-		0,
-		NULL,
-		NULL
-	}
+static GOptionEntry options[] = {
+	{ "delete-source", 'd', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &remove_source, "Delete source files", NULL },
+	{ "recursive", 'r', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &recursive, "Copy directories recursively", NULL },
+	{ "follow-symlinks", 'L', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &follow_symlinks, "Follow symlinks", NULL },
+	{ "replace", 'R', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &replace, "Replace files automatically", NULL },
+	{ "recursive-symlinks", 'Z', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &follow_symlinks_recursive, "Follow symlinks", NULL },
+	{ NULL }
 };
 
 static void
@@ -172,15 +128,29 @@ xfer_progress_callback (GnomeVFSXferProgressInfo *info,
 }
 
 int
-main (int argc, const char **argv)
+main (int argc, char **argv)
 {
-	const char **args;
-	poptContext popt_context;
 	GnomeVFSURI *src_uri, *dest_uri;
 	GList *src_uri_list, *dest_uri_list;
 	GnomeVFSResult result;
 	GnomeVFSXferOptions xfer_options;
 	GnomeVFSXferOverwriteMode overwrite_mode;
+
+	GOptionContext *ctx = NULL;
+	GError *error = NULL;
+
+	ctx = g_option_context_new("test-directory");
+	g_option_context_add_main_entries(ctx, options, NULL);
+
+	if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
+		g_printerr("main: %s\n", error->message);
+
+		g_error_free(error);
+		g_option_context_free(ctx);
+		return 1;
+	}
+
+	g_option_context_free(ctx);
 
 	if (! gnome_vfs_init ()) {
 		fprintf (stderr,
@@ -188,32 +158,22 @@ main (int argc, const char **argv)
 		return 1;
 	}
 
-	popt_context = poptGetContext ("test-directory", argc, argv,
-				       options, 0);
-
-	while (poptGetNextOpt (popt_context) != -1)
-		;
-
-	args = poptGetArgs (popt_context);
-	if (args == NULL || args[1] == NULL || args[2] != NULL) {
-		fprintf (stderr, "Usage: %s [<options>] <src> <target>\n",
-			 argv[0]);
+	if (argc != 3 || argv[1] == NULL || argv[2] != NULL) {
+		g_printerr("Usage: %s [<options>] <src> <target>\n", argv[0]);
 		return 1;
 	}
 
-	src_uri = gnome_vfs_uri_new (args[0]);
+	src_uri = gnome_vfs_uri_new(argv[1]);
 	if (src_uri == NULL) {
-		fprintf (stderr, "%s: invalid URI\n", args[0]);
+		fprintf (stderr, "%s: invalid URI\n", argv[0]);
 		return 1;
 	}
-	dest_uri = gnome_vfs_uri_new (args[1]);
+
+	dest_uri = gnome_vfs_uri_new(argv[2]);
 	if (dest_uri == NULL) {
-		fprintf (stderr, "%s: invalid URI\n", args[1]);
+		fprintf (stderr, "%s: invalid URI\n", argv[1]);
 		return 1;
 	}
-
-	poptFreeContext (popt_context);
-
 
 	xfer_options = 0;
 	overwrite_mode = GNOME_VFS_XFER_OVERWRITE_MODE_QUERY;

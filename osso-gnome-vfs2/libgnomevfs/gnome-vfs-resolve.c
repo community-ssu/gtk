@@ -172,9 +172,11 @@ _gnome_vfs_result_from_gai_error (int error)
 			 
 	   case EAI_NONAME: return GNOME_VFS_ERROR_HOST_NOT_FOUND;
 #ifdef EAI_ADDRFAMILY
-	   case EAI_ADDRFAMILY:		
+	   case EAI_ADDRFAMILY: return GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS;
 #endif
+#ifdef EAI_NODATA
 	   case EAI_NODATA: return GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS;
+#endif
 #ifdef EAI_SYSTEM
 	   case EAI_SYSTEM: return gnome_vfs_result_from_errno ();
 #endif
@@ -198,18 +200,17 @@ _gnome_vfs_result_from_gai_error (int error)
 
 /**
  * gnome_vfs_resolve:
- * @hostname: The hostname you want to resolve.
- * @handle: A pointer to a pointer to a #GnomeVFSResolveHandle.
+ * @hostname: hostname you want to resolve.
+ * @handle: pointer to a pointer to a #GnomeVFSResolveHandle.
  *
  * Tries to resolve @hostname. If the operation was successful you can
  * get the resolved addresses in form of #GnomeVFSAddress by calling
- * gnome_vfs_resolve_next_address.
- * 
+ * gnome_vfs_resolve_next_address().
  * 
  * Return value: A #GnomeVFSResult indicating the success of the operation.
  *
  * Since: 2.8
- **/
+ */
 GnomeVFSResult
 gnome_vfs_resolve (const char              *hostname,
 			    GnomeVFSResolveHandle  **handle)
@@ -384,13 +385,13 @@ restart:
 
 /**
  * gnome_vfs_resolve_reset_to_beginning:
- * @handle: A #GnomeVFSResolveHandle.
+ * @handle: a #GnomeVFSResolveHandle.
  *
- * Reset @handle so that a following call to gnome_vfs_resolve_next_address
+ * Reset @handle so that a following call to gnome_vfs_resolve_next_address()
  * will return the first resolved address.
  *
  * Since: 2.8
- **/
+ */
 void
 gnome_vfs_resolve_reset_to_beginning (GnomeVFSResolveHandle *handle)
 {
@@ -401,8 +402,8 @@ gnome_vfs_resolve_reset_to_beginning (GnomeVFSResolveHandle *handle)
 
 /**
  * gnome_vfs_resolve_next_address:
- * @handle: A #GnomeVFSResolveHandle.
- * @address: A pointer to a pointer to a #GnomeVFSAddress.
+ * @handle: a #GnomeVFSResolveHandle.
+ * @address: a pointer to a pointer to a #GnomeVFSAddress.
  * 
  * Stores the next #GnomeVFSAddress available in @handle of the
  * former lookup in @address.
@@ -411,7 +412,7 @@ gnome_vfs_resolve_reset_to_beginning (GnomeVFSResolveHandle *handle)
  * %FALSE if no other address is available.
  *
  * Since: 2.8
- **/
+ */
 gboolean
 gnome_vfs_resolve_next_address (GnomeVFSResolveHandle  *handle,
 				GnomeVFSAddress       **address)
@@ -444,13 +445,13 @@ gnome_vfs_resolve_next_address (GnomeVFSResolveHandle  *handle,
 
 /**
  * gnome_vfs_resolve_free:
- * @handle: A #GnomeVFSResolveHandle.
+ * @handle: a #GnomeVFSResolveHandle.
  *
  * Use this function to free a #GnomeVFSResolveHandle returned by
- * gnome_vfs_resolve.
+ * gnome_vfs_resolve().
  * 
  * Since: 2.8
- **/
+ */
 void
 gnome_vfs_resolve_free (GnomeVFSResolveHandle  *handle)
 {

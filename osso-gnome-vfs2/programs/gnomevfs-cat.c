@@ -30,6 +30,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#include "authentication.c"
+
 static void
 show_result (GnomeVFSResult result, const gchar *what, const gchar *text_uri)
 {
@@ -60,8 +62,11 @@ main (int argc, char **argv)
 		return 1;
 	}
 
+	command_line_authentication_init ();
+
 	text_uri = gnome_vfs_make_uri_from_shell_arg (argv[1]);
 	
+	g_message ("opening %s", text_uri);
 	if (text_uri == NULL) {
 		fprintf (stderr, "Could not guess URI from %s\n", argv[1]);
 	}

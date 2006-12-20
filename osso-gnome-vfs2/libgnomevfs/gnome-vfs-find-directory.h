@@ -33,6 +33,14 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GnomeVFSFindDirectoryKind:
+ * @GNOME_VFS_DIRECTORY_KIND_DESKTOP: Desktop directory.
+ * @GNOME_VFS_DIRECTORY_KIND_TRASH: Trash directory.
+ *
+ * Specifies what directory gnome_vfs_find_directory() or
+ * gnome_vfs_find_directory_cancellable() should find.
+ **/
 typedef enum {
 	GNOME_VFS_DIRECTORY_KIND_DESKTOP = 1000,
 	GNOME_VFS_DIRECTORY_KIND_TRASH = 1001

@@ -4,8 +4,7 @@
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
 
-PKG_NAME="gnome-vfs-dbus"
-REQUIRED_AUTOMAKE_VERSION=1.7
+PKG_NAME="OSSO GNOME VFS"
 
 (test -f $srcdir/configure.in \
   && test -f $srcdir/HACKING \
@@ -19,4 +18,4 @@ which gnome-autogen.sh || {
     echo "You need to install gnome-common from the GNOME CVS"
     exit 1
 }
-USE_GNOME2_MACROS=1 . gnome-autogen.sh
+REQUIRED_AUTOMAKE_VERSION=1.8 USE_GNOME2_MACROS=1 . gnome-autogen.sh

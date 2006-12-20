@@ -38,6 +38,7 @@ G_BEGIN_DECLS
 typedef struct _GnomeVFSMIMEMonitorPrivate GnomeVFSMIMEMonitorPrivate;
 
 typedef struct {
+	/*< private >*/
 	GObject object;
 
 	GnomeVFSMIMEMonitorPrivate *priv;

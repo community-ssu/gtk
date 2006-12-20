@@ -92,11 +92,12 @@ gnome_vfs_volume_init (GnomeVFSVolume *volume)
 
 /** 
  * gnome_vfs_volume_ref:
- * @volume:
+ * @volume: a #GnomeVFSVolume, or %NULL.
  *
+ * Increases the refcount of the @volume by 1, if it is not %NULL.
  *
- *
- * Returns:
+ * Returns: the @volume with its refcount increased by one,
+ * 	    or %NULL if @volume is NULL.
  *
  * Since: 2.6
  */
@@ -115,9 +116,9 @@ gnome_vfs_volume_ref (GnomeVFSVolume *volume)
 
 /** 
  * gnome_vfs_volume_unref:
- * @volume:
+ * @volume: a #GnomeVFSVolume, or %NULL.
  *
- *
+ * Decreases the refcount of the @volume by 1, if it is not %NULL.
  *
  * Since: 2.6
  */
@@ -152,6 +153,7 @@ gnome_vfs_volume_finalize (GObject *object)
 	g_free (priv->activation_uri);
 	g_free (priv->filesystem_type);
 	g_free (priv->display_name);
+	g_free (priv->display_name_key);
 	g_free (priv->icon);
 	g_free (priv->gconf_id);
 	g_free (priv->hal_udi);
@@ -166,60 +168,67 @@ gnome_vfs_volume_finalize (GObject *object)
 
 /** 
  * gnome_vfs_volume_get_volume_type:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the #GnomeVFSVolumeType of the @volume.
  *
- *
- * Returns:
+ * Returns: the volume type for @volume.
  *
  * Since: 2.6
  */
 GnomeVFSVolumeType
 gnome_vfs_volume_get_volume_type (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, GNOME_VFS_VOLUME_TYPE_MOUNTPOINT);
+
 	return volume->priv->volume_type;
 }
 
 
 /** 
  * gnome_vfs_volume_get_device_type:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the #GnomeVFSDeviceType of the @volume.
  *
- *
- * Returns:
+ * Returns: the device type for @volume.
  *
  * Since: 2.6
  */
 GnomeVFSDeviceType
 gnome_vfs_volume_get_device_type (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, GNOME_VFS_DEVICE_TYPE_UNKNOWN);
+
 	return volume->priv->device_type;
 }
 
 /** 
  * gnome_vfs_volume_get_id:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the ID of the @volume,
  *
+ * Two #GnomeVFSVolumes are guaranteed to refer
+ * to the same volume if they have the same ID.
  *
- * Returns:
+ * Returns: the id for the @volume.
  *
  * Since: 2.6
  */
 gulong
 gnome_vfs_volume_get_id (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, 0);
+
 	return volume->priv->id;
 }
 
 /** 
  * gnome_vfs_volume_get_drive:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
- *
- *
- * Returns:
+ * Returns: the drive for the @volume.
  *
  * Since: 2.6
  */
@@ -227,7 +236,9 @@ GnomeVFSDrive *
 gnome_vfs_volume_get_drive (GnomeVFSVolume *volume)
 {
 	GnomeVFSDrive *drive;
-	
+
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	G_LOCK (volumes);
 	drive = gnome_vfs_drive_ref (volume->priv->drive);
 	G_UNLOCK (volumes);
@@ -236,8 +247,8 @@ gnome_vfs_volume_get_drive (GnomeVFSVolume *volume)
 }
 
 void
-_gnome_vfs_volume_unset_drive (GnomeVFSVolume     *volume,
-			       GnomeVFSDrive      *drive)
+gnome_vfs_volume_unset_drive_private (GnomeVFSVolume     *volume,
+				      GnomeVFSDrive      *drive)
 {
 	G_LOCK (volumes);
 	g_assert (volume->priv->drive == drive);
@@ -246,8 +257,8 @@ _gnome_vfs_volume_unset_drive (GnomeVFSVolume     *volume,
 }
 
 void
-_gnome_vfs_volume_set_drive           (GnomeVFSVolume     *volume,
-				       GnomeVFSDrive      *drive)
+gnome_vfs_volume_set_drive_private (GnomeVFSVolume     *volume,
+				    GnomeVFSDrive      *drive)
 {
 	G_LOCK (volumes);
 	g_assert (volume->priv->drive == NULL);
@@ -257,161 +268,295 @@ _gnome_vfs_volume_set_drive           (GnomeVFSVolume     *volume,
 
 /** 
  * gnome_vfs_volume_get_device_path:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the device path of a #GnomeVFSVolume.
  *
+ * For HAL volumes, this returns the value of the
+ * volume's "block.device" key. For UNIX mounts,
+ * it returns the %mntent's %mnt_fsname entry.
  *
- * Returns: a newly allocated string
+ * Otherwise, it returns %NULL.
+ *
+ * Returns: a newly allocated string for device path of @volume.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_volume_get_device_path (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	return g_strdup (volume->priv->device_path);
 }
 
 /** 
  * gnome_vfs_volume_get_activation_uri:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the activation URI of a #GnomeVFSVolume.
  *
+ * The returned URI usually refers to a valid location. You can check the
+ * validity of the location by calling gnome_vfs_uri_new() with the URI,
+ * and checking whether the return value is not %NULL.
  *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for activation uri of @volume.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_volume_get_activation_uri (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	return g_strdup (volume->priv->activation_uri);
 }
 
 /** 
  * gnome_vfs_volume_get_hal_udi:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the HAL UDI of a #GnomeVFSVolume.
  *
+ * For HAL volumes, this matches the value of the "info.udi" key,
+ * for other volumes it is %NULL.
  *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for unique device id of @volume, or %NULL.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_volume_get_hal_udi (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	return g_strdup (volume->priv->hal_udi);
 }
 
 /** 
  * gnome_vfs_volume_get_filesystem_type:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns a string describing the file system on @volume,
+ * or %NULL if no information on the underlying file system is
+ * available.
  *
+ * The file system may be used to provide special functionality
+ * that depends on the file system type, for instance to determine
+ * whether trashing is supported (cf. gnome_vfs_volume_handles_trash()).
  *
- * Returns: a newly allocated string
+ * For HAL mounts, this returns the value of the "volume.fstype"
+ * key, for traditional UNIX mounts it is set to the %mntent's 
+ * %mnt_type key, for connected servers, %NULL is returned.
+ *
+ * As of GnomeVFS 2.15.4, the following file systems are recognized
+ * by GnomeVFS:
+ *
+ * <table frame="none">
+ *  <title>Recognized File Systems</title>
+ *  <tgroup cols="3" align="left">
+ *   <?dbhtml cellpadding="10" ?>
+ *   <colspec colwidth="1*"/>
+ *   <colspec colwidth="1*"/>
+ *   <colspec colwidth="1*"/>
+ *   <thead>
+ *    <row>
+ *     <entry>File System</entry>
+ *     <entry>Display Name</entry>
+ *     <entry>Supports Trash</entry>
+ *    </row>
+ *   </thead>
+ *   <tbody>
+ *    <row><entry>affs</entry><entry>AFFS Volume</entry><entry>No</entry></row>
+ *    <row><entry>afs</entry><entry>AFS Network Volume</entry><entry>No</entry></row>
+ *    <row><entry>auto</entry><entry>Auto-detected Volume</entry><entry>No</entry></row>
+ *    <row><entry>cd9660</entry><entry>CD-ROM Drive</entry><entry>No</entry></row>
+ *    <row><entry>cdda</entry><entry>CD Digital Audio</entry><entry>No</entry></row>
+ *    <row><entry>cdrom</entry><entry>CD-ROM Drive</entry><entry>No</entry></row>
+ *    <row><entry>devfs</entry><entry>Hardware Device Volume</entry><entry>No</entry></row>
+ *    <row><entry>encfs</entry><entry>EncFS Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>ext2</entry><entry>Ext2 Linux Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>ext2fs</entry><entry>Ext2 Linux Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>ext3</entry><entry>Ext3 Linux Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>fat</entry><entry>MSDOS Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>ffs</entry><entry>BSD Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>hfs</entry><entry>MacOS Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>hfsplus</entry><entry>MacOS Volume</entry><entry>No</entry></row>
+ *    <row><entry>iso9660</entry><entry>CDROM Volume</entry><entry>No</entry></row>
+ *    <row><entry>hsfs</entry><entry>Hsfs CDROM Volume</entry><entry>No</entry></row>
+ *    <row><entry>jfs</entry><entry>JFS Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>hpfs</entry><entry>Windows NT Volume</entry><entry>No</entry></row>
+ *    <row><entry>kernfs</entry><entry>System Volume</entry><entry>No</entry></row>
+ *    <row><entry>lfs</entry><entry>BSD Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>linprocfs</entry><entry>System Volume</entry><entry>No</entry></row>
+ *    <row><entry>mfs</entry><entry>Memory Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>minix</entry><entry>Minix Volume</entry><entry>No</entry></row>
+ *    <row><entry>msdos</entry><entry>MSDOS Volume</entry><entry>No</entry></row>
+ *    <row><entry>msdosfs</entry><entry>MSDOS Volume</entry><entry>No</entry></row>
+ *    <row><entry>nfs</entry><entry>NFS Network Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>ntfs</entry><entry>Windows NT Volume</entry><entry>No</entry></row>
+ *    <row><entry>nwfs</entry><entry>Netware Volume</entry><entry>No</entry></row>
+ *    <row><entry>proc</entry><entry>System Volume</entry><entry>No</entry></row>
+ *    <row><entry>procfs</entry><entry>System Volume</entry><entry>No</entry></row>
+ *    <row><entry>ptyfs</entry><entry>System Volume</entry><entry>No</entry></row>
+ *    <row><entry>reiser4</entry><entry>Reiser4 Linux Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>reiserfs</entry><entry>ReiserFS Linux Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>smbfs</entry><entry>Windows Shared Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>supermount</entry><entry>SuperMount Volume</entry><entry>No</entry></row>
+ *    <row><entry>udf</entry><entry>DVD Volume</entry><entry>No</entry></row>
+ *    <row><entry>ufs</entry><entry>Solaris/BSD Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>udfs</entry><entry>Udfs Solaris Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>pcfs</entry><entry>Pcfs Solaris Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>samfs</entry><entry>Sun SAM-QFS Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>tmpfs</entry><entry>Temporary Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>umsdos</entry><entry>Enhanced DOS Volume</entry><entry>No</entry></row>
+ *    <row><entry>vfat</entry><entry>Windows VFAT Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>xenix</entry><entry>Xenix Volume</entry><entry>No</entry></row>
+ *    <row><entry>xfs</entry><entry>XFS Linux Volume</entry><entry>Yes</entry></row>
+ *    <row><entry>xiafs</entry><entry>XIAFS Volume</entry><entry>No</entry></row>
+ *    <row><entry>cifs</entry><entry>CIFS Volume</entry><entry>Yes</entry></row>
+ *   </tbody>
+ *  </tgroup>
+ * </table>
+ *
+ * Returns: a newly allocated string for filesystem type of @volume.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_volume_get_filesystem_type (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	return g_strdup (volume->priv->filesystem_type);
 }
 
 /** 
  * gnome_vfs_volume_get_display_name:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns the display name of the @volume.
  *
- *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for display name of @volume.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_volume_get_display_name (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	return g_strdup (volume->priv->display_name);
 }
 
 /** 
  * gnome_vfs_volume_get_icon:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
- *
- *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for the icon filename of @volume.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_volume_get_icon (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, NULL);
+
 	return g_strdup (volume->priv->icon);
 }
 
 /** 
  * gnome_vfs_volume_is_user_visible:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns whether the @volume is visible to the user. This
+ * should be used by applications to determine whether it
+ * is included in user interfaces listing available volumes.
  *
- *
- * Returns:
+ * Returns: %TRUE if @volume is visible to the user, %FALSE otherwise.
  *
  * Since: 2.6
  */
 gboolean
 gnome_vfs_volume_is_user_visible (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, FALSE);
+
 	return volume->priv->is_user_visible;
 }
 
 /** 
  * gnome_vfs_volume_is_read_only:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns whether the file system on a @volume is read-only.
  *
+ * For HAL volumes, the "volume.is_mounted_read_only" key
+ * is authoritative, for traditional UNIX mounts it returns
+ * %TRUE if the mount was done with the "ro" option.
+ * For servers, %FALSE is returned.
  *
- * Returns:
+ * Returns: %TRUE if the @volume is read-only to the user, %FALSE otherwise.
  *
  * Since: 2.6
  */
 gboolean
 gnome_vfs_volume_is_read_only (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, FALSE);
+
 	return volume->priv->is_read_only;
 }
 
 /** 
  * gnome_vfs_volume_is_mounted:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns whether the file system on a @volume is currently mounted.
  *
+ * For HAL volumes, this reflects the value of the "volume.is_mounted"
+ * key, for traditional UNIX mounts and connected servers, %TRUE
+ * is returned, because their existence implies that they are
+ * mounted.
  *
- * Returns:
+ * Returns: %TRUE if the @volume is mounted, %FALSE otherwise.
  *
  * Since: 2.6
  */
 gboolean
 gnome_vfs_volume_is_mounted (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, FALSE);
+
 	return volume->priv->is_mounted;
 }
 
 /** 
  * gnome_vfs_volume_handles_trash:
- * @volume:
+ * @volume: a #GnomeVFSVolume.
  *
+ * Returns whether the file system on a @volume supports trashing of files.
  *
+ * If the @volume has an AutoFS file system (i.e. gnome_vfs_volume_get_device_type()
+ * returns #GNOME_VFS_DEVICE_TYPE_AUTOFS), or if the @volume is mounted read-only
+ * (gnome_vfs_volume_is_read_only() returns %TRUE), it is assumed
+ * to not support trashing of files.
  *
- * Returns:
+ * Otherwise, if the @volume provides file system information, it is
+ * determined whether the file system supports trashing of files.
+ * See gnome_vfs_volume_get_filesystem_type() for details which
+ * volumes provide file system information, and which file systems
+ * currently support a trash.
+ *
+ * Returns: %TRUE if @volume handles trash, %FALSE otherwise.
  *
  * Since: 2.6
  */
 gboolean
 gnome_vfs_volume_handles_trash (GnomeVFSVolume *volume)
 {
+	g_return_val_if_fail (volume != NULL, FALSE);
+
 	if (volume->priv->device_type == GNOME_VFS_DEVICE_TYPE_AUTOFS) {
 		return FALSE;
 	}
@@ -455,12 +600,41 @@ _gnome_vfs_device_type_get_sort_group (GnomeVFSDeviceType type)
 
 /** 
  * gnome_vfs_volume_compare:
- * @a:
- * @b:
+ * @a: a #GnomeVFSVolume.
+ * @b: a #GnomeVFSVolume.
  *
+ * Compares two #GnomeVFSVolume objects @a and @b. Two
+ * #GnomeVFSVolume objects referring to different volumes
+ * are guaranteed to not return 0 when comparing them,
+ * if they refer to the same volume 0 is returned.
  *
+ * The resulting #gint should be used to determine the
+ * order in which @a and @b are displayed in graphical
+ * user interfces.
  *
- * Returns:
+ * The comparison algorithm first of all peeks the device
+ * type of @a and @b, they will be sorted in the following
+ * order:
+ * <itemizedlist>
+ * <listitem><para>Magnetic and opto-magnetic volumes (ZIP, floppy)</para></listitem>
+ * <listitem><para>Optical volumes (CD, DVD)</para></listitem>
+ * <listitem><para>External volumes (USB sticks, music players)</para></listitem>
+ * <listitem><para>Mounted hard disks</para></listitem>
+ * <listitem><para>Network mounts</para></listitem>
+ * <listitem><para>Other volumes</para></listitem>
+ * </itemizedlist>
+ *
+ * Afterwards, the display name of @a and @b is compared
+ * using a locale-sensitive sorting algorithm, which
+ * involves g_utf8_collate_key().
+ *
+ * If two volumes have the same display name, their
+ * unique ID is compared which can be queried using
+ * gnome_vfs_volume_get_id().
+ *
+ * Returns: 0 if the volumes refer to the same @GnomeVFSVolume,
+ * a negative value if @a should be displayed before @b,
+ * or a positive value if @a should be displayed after @b.
  *
  * Since: 2.6
  */
@@ -470,7 +644,11 @@ gnome_vfs_volume_compare (GnomeVFSVolume *a,
 {
 	GnomeVFSVolumePrivate *priva, *privb;
 	gint res;
-	
+
+	if (a == b) {
+		return 0;
+	}
+
 	priva = a->priv;
 	privb = b->priv;
 	res = privb->volume_type - priva->volume_type;
@@ -483,7 +661,7 @@ gnome_vfs_volume_compare (GnomeVFSVolume *a,
 		return res;
 	}
 
-	res = strcmp (priva->display_name, privb->display_name);
+	res = strcmp (priva->display_name_key, privb->display_name_key);
 	if (res != 0) {
 		return res;
 	}
@@ -491,21 +669,24 @@ gnome_vfs_volume_compare (GnomeVFSVolume *a,
 	return privb->id - priva->id;
 }
 
-#ifndef USE_DBUS_DAEMON
-static CORBA_char *
-corba_string_or_null_dup (char *str)
+
+static void
+utils_append_string_or_null (DBusMessageIter *iter,
+			     const gchar     *str)
 {
-	if (str != NULL) {
-		return CORBA_string_dup (str);
-	} else {
-		return CORBA_string_dup ("");
-	}
+	if (str == NULL)
+		str = "";
+	
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &str);
 }
 
-/* empty string interpreted as NULL */
-static char *
-decode_corba_string_or_null (CORBA_char *str, gboolean empty_is_null)
+static gchar *
+utils_get_string_or_null (DBusMessageIter *iter, gboolean empty_is_null)
 {
+	const gchar *str;
+
+	dbus_message_iter_get_basic (iter, &str);
+
 	if (empty_is_null && *str == 0) {
 		return NULL;
 	} else {
@@ -513,79 +694,157 @@ decode_corba_string_or_null (CORBA_char *str, gboolean empty_is_null)
 	}
 }
 
-/** 
- * gnome_vfs_volume_to_corba:
- * @volume:
- *
- *
- *
- * Since: 2.6
- */
-void
-gnome_vfs_volume_to_corba (GnomeVFSVolume *volume,
-			   GNOME_VFS_Volume *corba_volume)
+gboolean
+gnome_vfs_volume_to_dbus (DBusMessageIter *iter,
+			  GnomeVFSVolume  *volume)
 {
-	GnomeVFSDrive *drive;
+	GnomeVFSVolumePrivate *priv;
+	DBusMessageIter        struct_iter;
+	GnomeVFSDrive         *drive;
+	gint32                 i;
 
-	corba_volume->id = volume->priv->id;
-	corba_volume->volume_type = volume->priv->volume_type;
-	corba_volume->device_type = volume->priv->device_type;
+	g_return_val_if_fail (iter != NULL, FALSE);
+	g_return_val_if_fail (volume != NULL, FALSE);
+
+	priv = volume->priv;
+
+	if (!dbus_message_iter_open_container (iter,
+					       DBUS_TYPE_STRUCT,
+					       NULL, /* for struct */
+					       &struct_iter)) {
+		return FALSE;
+	}
+
+	i = priv->id;
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
+
+	i = priv->volume_type;
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
+
+	i = priv->device_type;
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
+
 	drive = gnome_vfs_volume_get_drive (volume);
 	if (drive != NULL) {
-		corba_volume->drive = drive->priv->id;
+		i = drive->priv->id;
 		gnome_vfs_drive_unref (drive);
 	} else {
-		corba_volume->drive = 0;
+		i = 0;
 	}
-	corba_volume->device_path = corba_string_or_null_dup (volume->priv->device_path);
-	corba_volume->unix_device = volume->priv->unix_device;
-	corba_volume->activation_uri = corba_string_or_null_dup (volume->priv->activation_uri);
-	corba_volume->filesystem_type = corba_string_or_null_dup (volume->priv->filesystem_type);
-	corba_volume->display_name = corba_string_or_null_dup (volume->priv->display_name);
-	corba_volume->icon = corba_string_or_null_dup (volume->priv->icon);
-	corba_volume->gconf_id = corba_string_or_null_dup (volume->priv->gconf_id);
-	corba_volume->hal_udi = corba_string_or_null_dup (volume->priv->hal_udi);
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
+
+	utils_append_string_or_null (&struct_iter, priv->activation_uri);
+	utils_append_string_or_null (&struct_iter, priv->filesystem_type);
+	utils_append_string_or_null (&struct_iter, priv->display_name);
+	utils_append_string_or_null (&struct_iter, priv->icon);
+
+	dbus_message_iter_append_basic (&struct_iter,
+					DBUS_TYPE_BOOLEAN,
+					&priv->is_user_visible);
+	dbus_message_iter_append_basic (&struct_iter,
+					DBUS_TYPE_BOOLEAN,
+					&priv->is_read_only);
+	dbus_message_iter_append_basic (&struct_iter,
+					DBUS_TYPE_BOOLEAN,
+					&priv->is_mounted);
 	
-	corba_volume->is_user_visible = volume->priv->is_user_visible;
-	corba_volume->is_read_only = volume->priv->is_read_only;
-	corba_volume->is_mounted = volume->priv->is_mounted;
+	utils_append_string_or_null (&struct_iter, priv->device_path);
+
+	i = priv->unix_device;
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
+
+	utils_append_string_or_null (&struct_iter, priv->hal_udi);
+	utils_append_string_or_null (&struct_iter, priv->gconf_id);
+
+	dbus_message_iter_close_container (iter, &struct_iter);
+	
+	return TRUE;
 }
 
 GnomeVFSVolume *
-_gnome_vfs_volume_from_corba (const GNOME_VFS_Volume *corba_volume,
-			      GnomeVFSVolumeMonitor *volume_monitor)
+_gnome_vfs_volume_from_dbus (DBusMessageIter       *iter,
+			     GnomeVFSVolumeMonitor *volume_monitor)
 {
-	GnomeVFSVolume *volume;
+	GnomeVFSVolumePrivate *priv;
+	DBusMessageIter        struct_iter;
+	GnomeVFSVolume        *volume;
+	gint32                 i;
+
+	g_return_val_if_fail (iter != NULL, NULL);
+	g_return_val_if_fail (volume_monitor != NULL, NULL);
+	
+	g_assert (dbus_message_iter_get_arg_type (iter) == DBUS_TYPE_STRUCT);
 
 	volume = g_object_new (GNOME_VFS_TYPE_VOLUME, NULL);
-	
-	volume->priv->id = corba_volume->id;
-	volume->priv->volume_type = corba_volume->volume_type;
-	volume->priv->device_type = corba_volume->device_type;
 
-	if (corba_volume->drive != 0) {
-		volume->priv->drive = gnome_vfs_volume_monitor_get_drive_by_id (volume_monitor,
-										corba_volume->drive);
-		if (volume->priv->drive != NULL) {
-			_gnome_vfs_drive_add_mounted_volume (volume->priv->drive, volume);
+	priv = volume->priv;
+
+	dbus_message_iter_recurse (iter, &struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &i);
+	priv->id = i;
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &i);
+	priv->volume_type = i;
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &i);
+	priv->device_type = i;
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &i);
+	if (i != 0) {
+		priv->drive = gnome_vfs_volume_monitor_get_drive_by_id (
+			volume_monitor, i);
+		
+		if (priv->drive != NULL) {
+			gnome_vfs_drive_add_mounted_volume_private (priv->drive, volume);
+			
 			/* The drive reference is weak */
-			gnome_vfs_drive_unref (volume->priv->drive);
+			gnome_vfs_drive_unref (priv->drive);
 		}
 	}
-								  
-	volume->priv->device_path = decode_corba_string_or_null (corba_volume->device_path, TRUE);
-	volume->priv->unix_device = corba_volume->unix_device;
-	volume->priv->activation_uri = decode_corba_string_or_null (corba_volume->activation_uri, TRUE);
-	volume->priv->filesystem_type = decode_corba_string_or_null (corba_volume->filesystem_type, TRUE);
-	volume->priv->display_name = decode_corba_string_or_null (corba_volume->display_name, TRUE);
-	volume->priv->icon = decode_corba_string_or_null (corba_volume->icon, TRUE);
-	volume->priv->gconf_id = decode_corba_string_or_null (corba_volume->gconf_id, TRUE);
-	volume->priv->hal_udi = decode_corba_string_or_null (corba_volume->hal_udi, TRUE);
-	
-	volume->priv->is_user_visible = corba_volume->is_user_visible;
-	volume->priv->is_read_only = corba_volume->is_read_only;
-	volume->priv->is_mounted = corba_volume->is_mounted;
 
+	dbus_message_iter_next (&struct_iter);
+	priv->activation_uri = utils_get_string_or_null (&struct_iter, TRUE);
+
+	dbus_message_iter_next (&struct_iter);
+	priv->filesystem_type = utils_get_string_or_null (&struct_iter, TRUE);
+
+	dbus_message_iter_next (&struct_iter);
+	priv->display_name = utils_get_string_or_null (&struct_iter, TRUE);
+
+	if (volume->priv->display_name != NULL) {
+		char *tmp = g_utf8_casefold (volume->priv->display_name, -1);
+		volume->priv->display_name_key = g_utf8_collate_key (tmp, -1);
+		g_free (tmp);
+	} else {
+		volume->priv->display_name_key = NULL;
+	}
+	
+	dbus_message_iter_next (&struct_iter);
+	priv->icon = utils_get_string_or_null (&struct_iter, TRUE);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->is_user_visible);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->is_read_only);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->is_mounted);
+
+	dbus_message_iter_next (&struct_iter);
+	priv->device_path = utils_get_string_or_null (&struct_iter, TRUE);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->unix_device);
+
+	dbus_message_iter_next (&struct_iter);
+	priv->hal_udi = utils_get_string_or_null (&struct_iter, TRUE);
+	
+	dbus_message_iter_next (&struct_iter);
+	priv->gconf_id = utils_get_string_or_null (&struct_iter, TRUE);
+	
 	return volume;
 }
-#endif

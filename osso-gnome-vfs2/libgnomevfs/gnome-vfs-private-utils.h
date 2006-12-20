@@ -85,6 +85,9 @@ GnomeVFSResult _gnome_vfs_uri_resolve_all_symlinks_uri (GnomeVFSURI *uri,
 							GnomeVFSURI **result_uri);
 GnomeVFSResult  _gnome_vfs_uri_resolve_all_symlinks (const char *text_uri,
 						     char **resolved_text_uri);
+char *          gnome_vfs_resolve_symlink          (const char *path,
+						    const char *symlink);
+
 
 gboolean  _gnome_vfs_uri_is_in_subdir (GnomeVFSURI *uri, GnomeVFSURI *dir);
 

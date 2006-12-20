@@ -2,17 +2,26 @@
 Deprecated Application Registry API
 
 <!-- ##### SECTION Short_Description ##### -->
-do not use in new code
+formerly used for managing applications.  Replaced by
+<link linkend="gnome-vfs-20-gnome-vfs-mime-database"><type>GnomeVFS MIME Database</type> API</link>
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+This API was formerly used to manage the applications known
+to GnomeVFS, providing editing capabilities. The system was
+overengineered and not very performant, so it has been
+replaced by a new API, described in the
+<link linkend="gnome-vfs-20-gnome-vfs-mime-database"><type>GnomeVFS MIME Database</type></link>
+section.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-
+<link linkend="gnome-vfs-20-gnome-vfs-mime-database"><type>GnomeVFS MIME Database API</type></link>
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### MACRO GNOME_VFS_APPLICATION_REGISTRY_COMMAND ##### -->
 <para>

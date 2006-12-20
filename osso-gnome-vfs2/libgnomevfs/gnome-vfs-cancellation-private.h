@@ -27,23 +27,11 @@
 
 #include "gnome-vfs-cancellation.h"
 
-#ifndef USE_DBUS_DAEMON
-#include "gnome-vfs-client-call.h"
-#include "GNOME_VFS_Daemon.h"
-#endif
-
 G_BEGIN_DECLS
 
-#ifndef USE_DBUS_DAEMON
-void _gnome_vfs_cancellation_add_client_call    (GnomeVFSCancellation *cancellation,
-						 GnomeVFSClientCall   *client_call);
-void _gnome_vfs_cancellation_remove_client_call (GnomeVFSCancellation *cancellation,
-						 GnomeVFSClientCall   *client_call);
-#else
-/* The versions for dbus is in gnome-vfs-cancellation.h to be usable for the
- * dbus-method outside of gnome-vfs.
- */
-#endif
+void _gnome_vfs_cancellation_set_handle   (GnomeVFSCancellation *cancellation,
+					   gint32 connection, gint32 handle);
+void _gnome_vfs_cancellation_unset_handle (GnomeVFSCancellation *cancellation);
 
 G_END_DECLS
 

@@ -36,7 +36,7 @@ void gnome_vfs_set_is_daemon (GType volume_monitor_type,
 			      GnomeVFSDaemonForceProbeCallback force_probe);
 gboolean gnome_vfs_get_is_daemon (void);
 
-GType _gnome_vfs_get_daemon_volume_monitor_type (void);
+GType gnome_vfs_get_daemon_volume_monitor_type (void);
 GnomeVFSDaemonForceProbeCallback _gnome_vfs_get_daemon_force_probe_callback (void);
 
 

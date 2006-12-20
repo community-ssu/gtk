@@ -15,26 +15,13 @@ watch files for changes, and get called back if they do
 
 </para>
 
-<!-- ##### FUNCTION gnome_vfs_monitor_add ##### -->
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF GnomeVFSMonitorHandle ##### -->
 <para>
 
 </para>
-
-@handle: 
-@text_uri: 
-@monitor_type: 
-@callback: 
-@user_data: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gnome_vfs_monitor_cancel ##### -->
-<para>
-
-</para>
-
-@handle: 
-@Returns: 
 
 
 <!-- ##### ENUM GnomeVFSMonitorType ##### -->
@@ -67,5 +54,37 @@ watch files for changes, and get called back if they do
 @info_uri: 
 @event_type: 
 @user_data: 
+
+
+<!-- ##### FUNCTION gnome_vfs_monitor_add ##### -->
+<para>
+
+</para>
+
+@handle: 
+@text_uri: 
+@monitor_type: 
+@callback: 
+@user_data: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_monitor_cancel ##### -->
+<para>
+
+</para>
+
+@handle: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_monitor_callback ##### -->
+<para>
+
+</para>
+
+@method_handle: 
+@info_uri: 
+@event_type: 
 
 

@@ -14,6 +14,9 @@ various utilities functions to manipulate uris
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM GnomeVFSMakeURIDirs ##### -->
 <para>
 
@@ -150,8 +153,6 @@ various utilities functions to manipulate uris
 
 @location: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@uri: 
 
 
 <!-- ##### FUNCTION gnome_vfs_make_uri_from_input_with_dirs ##### -->
@@ -162,8 +163,6 @@ various utilities functions to manipulate uris
 @location: 
 @dirs: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@uri: 
 
 
 <!-- ##### FUNCTION gnome_vfs_make_uri_from_shell_arg ##### -->
@@ -296,6 +295,16 @@ various utilities functions to manipulate uris
 
 </para>
 
+
+
+<!-- ##### FUNCTION gnome_vfs_open_fd ##### -->
+<para>
+
+</para>
+
+@handle: 
+@filedes: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gnome_vfs_read_entire_file ##### -->

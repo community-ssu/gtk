@@ -25,12 +25,7 @@
 #ifndef GNOME_VFS_MIME_HANDLERS_H
 #define GNOME_VFS_MIME_HANDLERS_H
 
-#define DISABLE_ORBIT 1
-
 #include <libgnomevfs/gnome-vfs-result.h>
-#ifndef DISABLE_ORBIT
-#include <bonobo-activation/bonobo-activation-server-info.h>
-#endif
 #include <libgnomevfs/gnome-vfs-mime-utils.h>
 #include <libgnomevfs/gnome-vfs-uri.h>
 
@@ -44,9 +39,25 @@ typedef enum {
 
 typedef struct _GnomeVFSMimeApplicationPrivate GnomeVFSMimeApplicationPrivate;
 
+/**
+ * GnomeVFSMimeApplication:
+ * @id: The desktop ID of the application.
+ * @name: The user-visible name of the application.
+ *
+ * A struct encapsulating information about an
+ * application known to the MIME database.
+ *
+ * Only very few fields of this information are actually
+ * public, most of them must be queried using the
+ * <literal>gnome_vfs_mime_application_*()</literal>
+ * API.
+ **/
 typedef struct {
-	char *id; /* PRIVATE */
+	/*< public > */
+	char *id;
 	char *name;
+
+	/*< private > */
 #ifndef GNOME_VFS_DISABLE_DEPRECATED
 	char *command;
 	gboolean can_open_multiple_files;
@@ -74,13 +85,6 @@ GnomeVFSMimeApplication *gnome_vfs_mime_get_default_application_for_uri         
 GList *                  gnome_vfs_mime_get_all_applications                      (const char              *mime_type);
 GList *			 gnome_vfs_mime_get_all_applications_for_uri	          (const char              *uri,
 									           const char              *mime_type);
-#ifndef DISABLE_ORBIT
-Bonobo_ServerInfo *      gnome_vfs_mime_get_default_component                     (const char              *mime_type);
-#else
-gpointer                 gnome_vfs_mime_get_default_component                     (const char              *mime_type);
-#endif
-GList *                  gnome_vfs_mime_get_all_components                        (const char              *mime_type);
-
 /* MIME types */
 
 const char 	        *gnome_vfs_mime_get_description   		          (const char              *mime_type);
@@ -105,15 +109,14 @@ gboolean		 gnome_vfs_mime_application_supports_uris	          (GnomeVFSMimeAppli
 gboolean		 gnome_vfs_mime_application_requires_terminal             (GnomeVFSMimeApplication *app);
 gboolean		 gnome_vfs_mime_application_supports_startup_notification (GnomeVFSMimeApplication *app);
 const char		*gnome_vfs_mime_application_get_startup_wm_class          (GnomeVFSMimeApplication *app);
-GnomeVFSMimeApplication *gnome_vfs_mime_application_copy                          (GnomeVFSMimeApplication *app);
+GnomeVFSMimeApplication *gnome_vfs_mime_application_copy                          (GnomeVFSMimeApplication *application);
 gboolean		 gnome_vfs_mime_application_equal		          (GnomeVFSMimeApplication *app_a,
 									           GnomeVFSMimeApplication *app_b);
-void                     gnome_vfs_mime_application_free                          (GnomeVFSMimeApplication *app);
+void                     gnome_vfs_mime_application_free                          (GnomeVFSMimeApplication *application);
 
 /* Lists */
 
 void                     gnome_vfs_mime_application_list_free                     (GList                   *list);
-void                     gnome_vfs_mime_component_list_free                       (GList                   *list);
 
 G_END_DECLS
 

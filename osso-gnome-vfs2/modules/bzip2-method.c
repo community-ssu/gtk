@@ -435,7 +435,7 @@ do_read (GnomeVFSMethod *method,
 
 	if (bzip2_handle->last_bz_result != BZ_OK) {
 		if (bzip2_handle->last_bz_result == BZ_STREAM_END)
-			return GNOME_VFS_OK;
+			return GNOME_VFS_ERROR_EOF;
 		else
 			return result_from_bz_result (bzip2_handle->last_bz_result);
 	} else if (bzip2_handle->last_vfs_result != GNOME_VFS_OK) {

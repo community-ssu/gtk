@@ -1,0 +1,36 @@
+This document describes the changes that are done compared to the
+upstream version, through direct commits instead of patches.
+
+autogen.sh:
+
+  Changed PKG_NAME to "OSSO GNOME VFS"
+
+
+configure.in:
+
+  Change name: AM_INIT_AUTOMAKE(osso-gnome-vfs, $LIBGNOMEVFS_VERSION)
+  Remove intltool check
+  Change glib version check to 2.8.6
+  Remove bzip2 check
+  Remove gnome-mime-data check
+  Remove po/Makefile.in
+
+
+Makefile.am:
+
+  Remove intltool setup
+  Don't add po to SUBDIRS
+
+
+modules:
+
+  Makefile.am: Remove bzip2 module from build
+  Added caseless file module and support files
+  default-modules.conf: Comment out bzip2, computer, sftp, add caselessfile
+
+  
+schemas:
+
+  Makefile.am: Remove intltool and schemas.in->schemas generation
+  Copy *.schemas.in to *.schemas
+

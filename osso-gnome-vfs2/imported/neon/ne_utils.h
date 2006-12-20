@@ -1,6 +1,6 @@
 /* 
    HTTP utility functions
-   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -41,20 +41,19 @@ const char *ne_version_string(void);
 
 /* Returns non-zero if library version is not of major version
  * 'major', or if minor version is not greater than or equal to
- * 'minor'. */
+ * 'minor'.  For neon versions with major == 0, all minor versions are
+ * presumed to be incompatible.  */
 int ne_version_match(int major, int minor);
 
-/* Returns non-zero if neon has support for SSL. */
-int ne_supports_ssl(void);
+#define NE_FEATURE_SSL (1) /* SSL/TLS support */
+#define NE_FEATURE_ZLIB (2) /* zlib compression in compress interface */
+#define NE_FEATURE_IPV6 (3) /* IPv6 is supported in resolver */
+#define NE_FEATURE_LFS (4) /* large file support */
+#define NE_FEATURE_SOCKS (5) /* SOCKSv5 support */
 
-/* Use glibs snprintf implementation */
-#define ne_snprintf g_snprintf
-#define ne_vsnprintf g_vsnprintf
-
-#ifndef WIN32
-#undef min
-#define min(a,b) ((a)<(b)?(a):(b))
-#endif
+/* Returns non-zero if neon has support for given feature code
+ * NE_FEATURE_*. */
+int ne_has_support(int feature);
 
 /* CONSIDER: mutt has a nicer way of way of doing debugging output... maybe
  * switch to like that. */

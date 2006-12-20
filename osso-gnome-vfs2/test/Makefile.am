@@ -10,12 +10,13 @@ INCLUDES =					\
 	-DMODULES_PATH=\"$(libdir)/vfs/modules\"
 
 if OS_WIN32
-platform_only_programs =
 else
-platform_only_programs = test-dns-sd test-symlinks
+platform_only_programs = test-dns-sd test-symlinks test-parse-ls-lga
 endif
 
 noinst_PROGRAMS =				\
+	test-acl				\
+	test-address				\
 	test-async				\
 	test-async-cancel                       \
 	test-async-directory			\
@@ -26,7 +27,11 @@ noinst_PROGRAMS =				\
 	test-escape				\
 	test-find-directory			\
 	test-info				\
+	test-long-cancel			\
+	test-mime				\
+	test-mime-handlers			\
 	test-mime-info-cache			\
+	test-mime-handlers-set			\
 	test-monitor				\
 	test-performance			\
 	test-seek				\
@@ -55,19 +60,32 @@ TESTS_ENVIRONMENT = GNOME_VFS_MODULE_PATH=$(top_builddir)/modules/.libs \
 		GNOME_VFS_MODULE_CONFIG_PATH=$(top_srcdir)/modules \
 		GNOME_VFS_TEST_CONFIG_FILE=$(top_srcdir)/test/queue-test-config.xml \
 		SRCDIR=$(srcdir)
-TESTS = test-async-cancel test-escape test-uri test-queue $(srcdir)/auto-test
+TESTS = test-acl	  \
+	test-address      \
+	test-async-cancel \
+	test-escape       \
+	test-uri       	  \
+	$(srcdir)/auto-test	
 
 libraries =						\
 	$(top_builddir)/libgnomevfs/libgnomevfs-2.la	\
 	$(TEST_LIBS)					\
-	$(POPT_LIBS)					\
 	$(LIBEFS_LIBS)
+
+test_acl_SOURCES = test-acl.c
+test_acl_LDADD = $(libraries)
+
+test_address_SOURCES = test-address.c
+test_address_LDADD = $(libraries)
 
 test_async_SOURCES = test-async.c
 test_async_LDADD = $(libraries)
 
 test_performance_SOURCES = test-performance.c
 test_performance_LDADD = $(libraries)
+
+test_parse_ls_lga_SOURCES = test-parse-ls-lga.c
+test_parse_ls_lga_LDADD = $(libraries)
 
 #test_resolv_SOURCES = test-resolv.c
 #test_resolv_LDADD = $(libraries)
@@ -89,6 +107,18 @@ test_shell_LDADD = $(libraries)
 
 test_info_SOURCES = test-info.c
 test_info_LDADD = $(libraries)
+
+test_long_cancel_SOURCES = test-long-cancel.c
+test_long_cancel_LDADD = $(libraries)
+
+test_mime_SOURCES = test-mime.c
+test_mime_LDADD = $(libraries)
+
+test_mime_handlers_SOURCES = test-mime-handlers.c
+test_mime_handlers_LDADD = $(libraries)
+
+test_mime_handlers_set_SOURCES = test-mime-handlers-set.c
+test_mime_handlers_set_LDADD = $(libraries)
 
 test_mime_info_cache_SOURCES = test-mime-info-cache.c
 test_mime_info_cache_LDADD = $(libraries)

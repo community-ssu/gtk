@@ -48,7 +48,9 @@ struct _GnomeVFSVolumeMonitor {
 
 struct _GnomeVFSVolumeMonitorClass {
 	GObjectClass parent_class;
-	
+
+	/*< public >*/
+	/* signals */
 	void (* volume_mounted)	  	(GnomeVFSVolumeMonitor *volume_monitor,
 				   	 GnomeVFSVolume	       *volume);
 	void (* volume_pre_unmount)	(GnomeVFSVolumeMonitor *volume_monitor,

@@ -312,14 +312,12 @@ drive_connected (GnomeVFSVolumeMonitor *volume_monitor,
 	char *name;
 	
 	G_LOCK (root_dir);
-	if (gnome_vfs_drive_is_user_visible (drive)) {
-		file = computer_file_new (COMPUTER_DRIVE);
-		name = gnome_vfs_drive_get_display_name (drive);
-		file->file_name = build_file_name (name, ".drive");
-		g_free (name);
-		file->drive = gnome_vfs_drive_ref (drive);
-		computer_file_add (dir, file);
-	}
+	file = computer_file_new (COMPUTER_DRIVE);
+	name = gnome_vfs_drive_get_display_name (drive);
+	file->file_name = build_file_name (name, ".drive");
+	g_free (name);
+	file->drive = gnome_vfs_drive_ref (drive);
+	computer_file_add (dir, file);
 	G_UNLOCK (root_dir);
 }
 
@@ -370,14 +368,12 @@ fill_root (ComputerDir *dir)
 	
 	for (l = drives; l != NULL; l = l->next) {
 		drive = l->data;
-		if (gnome_vfs_drive_is_user_visible (drive)) {
-			file = computer_file_new (COMPUTER_DRIVE);
-			name = gnome_vfs_drive_get_display_name (drive);
-			file->file_name = build_file_name (name, ".drive");
-			g_free (name);
-			file->drive = gnome_vfs_drive_ref (drive);
-			computer_file_add (dir, file);
-		}
+		file = computer_file_new (COMPUTER_DRIVE);
+		name = gnome_vfs_drive_get_display_name (drive);
+		file->file_name = build_file_name (name, ".drive");
+		g_free (name);
+		file->drive = gnome_vfs_drive_ref (drive);
+		computer_file_add (dir, file);
 	}
 	
 	for (l = volumes; l != NULL; l = l->next) {
@@ -469,7 +465,7 @@ get_data_for_volume (GnomeVFSVolume *volume)
 				"Type=FSDevice\n"
 				"Icon=%s\n"
 				"URL=%s\n"
-				"X-Gnome-Volume=%ld",
+				"X-Gnome-Volume=%ld\n",
 				name,
 				icon,
 				uri,
@@ -514,16 +510,17 @@ get_data_for_drive (GnomeVFSDrive *drive)
 		name = gnome_vfs_drive_get_display_name (drive);
 		icon = gnome_vfs_drive_get_icon (drive);
 	}
+	
 	data = g_strdup_printf ("[Desktop Entry]\n"
 				"Encoding=UTF-8\n"
 				"Name=%s\n"
 				"Type=FSDevice\n"
 				"Icon=%s\n"
 				"URL=%s\n"
-				"X-Gnome-Drive=%ld",
+				"X-Gnome-Drive=%ld\n",
 				name,
 				icon,
-				uri,
+				(uri != NULL) ? uri : "",
 				gnome_vfs_drive_get_id (drive));
 	g_free (uri);
 	g_free (name);

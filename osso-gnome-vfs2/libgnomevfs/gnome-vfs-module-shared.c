@@ -13,14 +13,14 @@
 
 /**
  * gnome_vfs_mime_type_from_mode:
- * @mode:
+ * @mode: value as the st_mode field in the system stat structure.
  *
- * Returns a MIME type based on the mode passed. It only works when mode
- * references a special file (directory, device, fifo, socket or symlink)
+ * Returns a MIME type based on the @mode. It only works when @mode
+ * references a special file (directory, device, fifo, socket or symlink).
  *
  * Returns: a string containing the MIME type, if @mode is a normal file
- * returns NULL.
- **/
+ * returns %NULL.
+ */
 
 const gchar *
 gnome_vfs_mime_type_from_mode (mode_t mode)
@@ -53,15 +53,15 @@ gnome_vfs_mime_type_from_mode (mode_t mode)
 
 /**
  * gnome_vfs_get_special_mime_type:
- * @uri:
+ * @uri: a #GnomeVFSURI to get the mime type for.
  *
  * Gets the MIME type for @uri, this function only returns the type
- * when the URI points to a file that can't be sniffed (sockets, 
+ * when the uri points to a file that can't be sniffed (sockets, 
  * directories, devices, and fifos).
  *
- * Returns: a string containing the mime type, NULL if the @uri doesn't 
- * present an special file.
- **/
+ * Returns: a string containing the mime type or %NULL if the @uri doesn't 
+ * present a special file.
+ */
 
 const char *
 gnome_vfs_get_special_mime_type (GnomeVFSURI *uri)
@@ -113,6 +113,13 @@ gnome_vfs_get_special_mime_type (GnomeVFSURI *uri)
 	return type;	
 }
 
+/**
+ * gnome_vfs_stat_to_file_info:
+ * @file_info: a #GnomeVFSFileInfo which will be filled.
+ * @statptr: pointer to a 'stat' structure.
+ *
+ * Fills the @file_info structure with the values from @statptr structure.
+ */
 void
 gnome_vfs_stat_to_file_info (GnomeVFSFileInfo *file_info,
 			     const struct stat *statptr)
@@ -180,7 +187,7 @@ gnome_vfs_stat_to_file_info (GnomeVFSFileInfo *file_info,
 	  GNOME_VFS_FILE_INFO_FIELDS_LINK_COUNT | GNOME_VFS_FILE_INFO_FIELDS_SIZE |
 	  GNOME_VFS_FILE_INFO_FIELDS_BLOCK_COUNT | GNOME_VFS_FILE_INFO_FIELDS_IO_BLOCK_SIZE |
 	  GNOME_VFS_FILE_INFO_FIELDS_ATIME | GNOME_VFS_FILE_INFO_FIELDS_MTIME |
-	  GNOME_VFS_FILE_INFO_FIELDS_CTIME;
+	  GNOME_VFS_FILE_INFO_FIELDS_CTIME | GNOME_VFS_FILE_INFO_FIELDS_IDS;
 }
 
 

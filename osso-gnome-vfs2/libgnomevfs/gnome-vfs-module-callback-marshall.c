@@ -24,32 +24,33 @@
 
 #include <config.h>
 #include <string.h>
-#include <libbonobo.h>
 #include "gnome-vfs-module-callback.h"
 
 #include "gnome-vfs-module-callback-module-api.h"
 #include "gnome-vfs-module-callback-private.h"
 #include "gnome-vfs-backend.h"
 #include "gnome-vfs-private.h"
-#include "gnome-vfs-client-call.h"
 #include "gnome-vfs-standard-callbacks.h"
-#include <GNOME_VFS_Daemon.h>
+#include "gnome-vfs-dbus-utils.h"
 
 
-static CORBA_char *
-corba_string_or_null_dup (char *str)
+static void
+utils_append_string_or_null (DBusMessageIter *iter,
+			     const gchar     *str)
 {
-	if (str != NULL) {
-		return CORBA_string_dup (str);
-	} else {
-		return CORBA_string_dup ("");
-	}
+	if (str == NULL)
+		str = "";
+	
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &str);
 }
 
-/* empty string interpreted as NULL */
-static char *
-decode_corba_string_or_null (CORBA_char *str, gboolean empty_is_null)
+static gchar *
+utils_get_string_or_null (DBusMessageIter *iter, gboolean empty_is_null)
 {
+	const gchar *str;
+
+	dbus_message_iter_get_basic (iter, &str);
+
 	if (empty_is_null && *str == 0) {
 		return NULL;
 	} else {
@@ -58,102 +59,229 @@ decode_corba_string_or_null (CORBA_char *str, gboolean empty_is_null)
 }
 
 
-
-static CORBA_any *
-auth_marshal_in (gconstpointer in, gsize in_size)
+static gboolean
+fill_auth_marshal_in (gconstpointer in, gsize in_size, DBusMessageIter *iter)
 {
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackAuthenticationIn *ret_in;
-	const GnomeVFSModuleCallbackAuthenticationIn *auth_in;
+	const GnomeVFSModuleCallbackFillAuthenticationIn *auth_in;
+	gint32 i;
 	
-	if (in_size != sizeof (GnomeVFSModuleCallbackAuthenticationIn)) {
-		return NULL;
+	if (in_size != sizeof (GnomeVFSModuleCallbackFillAuthenticationIn)) {
+		return FALSE;
 	}
 	auth_in = in;
 
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackAuthenticationIn;
-	retval->_value = GNOME_VFS_ModuleCallbackAuthenticationIn__alloc ();
-	ret_in = retval->_value;
-
-	ret_in->uri = corba_string_or_null_dup (auth_in->uri);
-	ret_in->realm = corba_string_or_null_dup (auth_in->realm);
-	ret_in->previous_attempt_failed = auth_in->previous_attempt_failed;
-	ret_in->auth_type = auth_in->auth_type;
-
-	return retval;
-}
-
-static gboolean
-auth_demarshal_in (const CORBA_any *any_in,
-		   gpointer *in, gsize *in_size,
-		   gpointer *out, gsize *out_size)
-{
-	GNOME_VFS_ModuleCallbackAuthenticationIn *corba_in;
-	GnomeVFSModuleCallbackAuthenticationIn *auth_in;
-	GnomeVFSModuleCallbackAuthenticationOut *auth_out;
-	
-	if (!CORBA_TypeCode_equal (any_in->_type, TC_GNOME_VFS_ModuleCallbackAuthenticationIn, NULL)) {
-		return FALSE;
-	}
-	
-	auth_in = *in = g_new0 (GnomeVFSModuleCallbackAuthenticationIn, 1);
-	*in_size = sizeof (GnomeVFSModuleCallbackAuthenticationIn);
-	auth_out = *out = g_new0 (GnomeVFSModuleCallbackAuthenticationOut, 1);
-	*out_size = sizeof (GnomeVFSModuleCallbackAuthenticationOut);
-
-	corba_in = (GNOME_VFS_ModuleCallbackAuthenticationIn *)any_in->_value;
-
-	auth_in->uri = decode_corba_string_or_null (corba_in->uri, TRUE);
-	auth_in->realm = decode_corba_string_or_null (corba_in->realm, TRUE);
-	auth_in->previous_attempt_failed = corba_in->previous_attempt_failed;
-	auth_in->auth_type = corba_in->auth_type;
+	utils_append_string_or_null (iter, auth_in->uri);
+	utils_append_string_or_null (iter, auth_in->protocol);
+	utils_append_string_or_null (iter, auth_in->server);
+	utils_append_string_or_null (iter, auth_in->object);
+	i = auth_in->port;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_INT32, &i);
+	utils_append_string_or_null (iter, auth_in->username);
+	utils_append_string_or_null (iter, auth_in->authtype);
+	utils_append_string_or_null (iter, auth_in->domain);
 	
 	return TRUE;
 }
 
-static CORBA_any *
-auth_marshal_out (gconstpointer out, gsize out_size)
+static gboolean
+fill_auth_demarshal_in (DBusMessageIter *iter,
+			gpointer *in, gsize *in_size,
+			gpointer *out, gsize *out_size)
 {
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackAuthenticationOut *ret_out;
-	const GnomeVFSModuleCallbackAuthenticationOut *auth_out;
+	GnomeVFSModuleCallbackFillAuthenticationIn *auth_in;
+	gint32 i;
+	
+	auth_in = *in = g_new0 (GnomeVFSModuleCallbackFillAuthenticationIn, 1);
+	*in_size = sizeof (GnomeVFSModuleCallbackFillAuthenticationIn);
+	*out = g_new0 (GnomeVFSModuleCallbackFillAuthenticationOut, 1);
+	*out_size = sizeof (GnomeVFSModuleCallbackFillAuthenticationOut);
 
-	if (out_size != sizeof (GnomeVFSModuleCallbackAuthenticationOut)) {
-		return NULL;
-	}
-	auth_out = out;
-
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackAuthenticationOut;
-	retval->_value = GNOME_VFS_ModuleCallbackAuthenticationOut__alloc ();
-	ret_out = retval->_value;
-
-	ret_out->username = corba_string_or_null_dup (auth_out->username);
-	ret_out->no_username = auth_out->username == NULL;
-	ret_out->password = corba_string_or_null_dup (auth_out->password);
-
-	return retval;
+	auth_in->uri = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->protocol = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->server = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->object = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	dbus_message_iter_get_basic (iter, &i);
+	auth_in->port = i;
+	dbus_message_iter_next (iter);
+	auth_in->username = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->authtype = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->domain = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	
+	return TRUE;
 }
 
 static gboolean
-auth_demarshal_out (CORBA_any *any_out, gpointer out, gsize out_size)
+fill_auth_marshal_out (gconstpointer out, gsize out_size, DBusMessageIter *iter)
 {
-	GNOME_VFS_ModuleCallbackAuthenticationOut *corba_out;
-	GnomeVFSModuleCallbackAuthenticationOut *auth_out;
+	const GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
+	gboolean b;
 
-	if (!CORBA_TypeCode_equal (any_out->_type, TC_GNOME_VFS_ModuleCallbackAuthenticationOut, NULL) ||
-	    out_size != sizeof (GnomeVFSModuleCallbackAuthenticationOut)) {
+	if (out_size != sizeof (GnomeVFSModuleCallbackFillAuthenticationOut)) {
+		return FALSE;
+	}
+
+	auth_out = out;
+	
+	b = auth_out->valid;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_BOOLEAN, &b);
+	utils_append_string_or_null (iter, auth_out->username);
+	utils_append_string_or_null (iter, auth_out->domain);
+	utils_append_string_or_null (iter, auth_out->password);
+
+	return TRUE;
+}
+
+static gboolean
+fill_auth_demarshal_out (DBusMessageIter *iter, gpointer out, gsize out_size)
+{
+	GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
+	gboolean b;
+
+	if (out_size != sizeof (GnomeVFSModuleCallbackFillAuthenticationOut)) {
 		return FALSE;
 	}
 	auth_out = out;
 
-	corba_out = (GNOME_VFS_ModuleCallbackAuthenticationOut *)any_out->_value;
-
-	auth_out->username = decode_corba_string_or_null (corba_out->username,
-							  corba_out->no_username);
-	auth_out->password = decode_corba_string_or_null (corba_out->password, TRUE);
+	dbus_message_iter_get_basic (iter, &b);
+	auth_out->valid = b;
+	dbus_message_iter_next (iter);
+	auth_out->username = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_out->domain = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_out->password = utils_get_string_or_null (iter, TRUE);
 	
+	return TRUE;
+}
+
+static void
+fill_auth_free_in (gpointer in)
+{
+	GnomeVFSModuleCallbackFillAuthenticationIn *auth_in;
+
+	auth_in = in;
+
+	g_free (auth_in->uri);
+	g_free (auth_in->protocol);
+	g_free (auth_in->server);
+	g_free (auth_in->object);
+	g_free (auth_in->authtype);
+	g_free (auth_in->username);
+	g_free (auth_in->domain);
+
+	g_free (auth_in);
+}
+
+static void
+fill_auth_free_out (gpointer out)
+{
+	GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
+
+	auth_out = out;
+	g_free (auth_out->username);
+	g_free (auth_out->domain);
+	g_free (auth_out->password);
+	g_free (auth_out);
+}
+
+
+static gboolean
+auth_marshal_in (gconstpointer in, gsize in_size, DBusMessageIter *iter)
+{
+	const GnomeVFSModuleCallbackAuthenticationIn *auth_in;
+	gboolean b;
+	gint32 i;
+	
+	if (in_size != sizeof (GnomeVFSModuleCallbackAuthenticationIn)) {
+		return FALSE;
+	}
+	auth_in = in;
+
+	utils_append_string_or_null (iter, auth_in->uri);
+	utils_append_string_or_null (iter, auth_in->realm);
+	b = auth_in->previous_attempt_failed;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_BOOLEAN, &b);
+	i = auth_in->auth_type;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_INT32, &i);
+	
+	return TRUE;
+}
+
+static gboolean
+auth_demarshal_in (DBusMessageIter *iter,
+		   gpointer *in, gsize *in_size,
+		   gpointer *out, gsize *out_size)
+{
+	GnomeVFSModuleCallbackAuthenticationIn *auth_in;
+	gboolean b;
+	gint32 i;
+	
+	auth_in = *in = g_new0 (GnomeVFSModuleCallbackAuthenticationIn, 1);
+	*in_size = sizeof (GnomeVFSModuleCallbackAuthenticationIn);
+	*out = g_new0 (GnomeVFSModuleCallbackAuthenticationOut, 1);
+	*out_size = sizeof (GnomeVFSModuleCallbackAuthenticationOut);
+
+	auth_in->uri = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->realm = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	dbus_message_iter_get_basic (iter, &b);
+	auth_in->previous_attempt_failed = b;
+	dbus_message_iter_next (iter);
+	dbus_message_iter_get_basic (iter, &i);
+	auth_in->auth_type = i;
+	dbus_message_iter_next (iter);
+	
+	return TRUE;
+}
+
+static gboolean
+auth_marshal_out (gconstpointer out, gsize out_size, DBusMessageIter *iter)
+{
+	const GnomeVFSModuleCallbackAuthenticationOut *auth_out;
+	gboolean b;
+
+	if (out_size != sizeof (GnomeVFSModuleCallbackAuthenticationOut)) {
+		return FALSE;
+	}
+	auth_out = out;
+
+	b = auth_out->username == NULL;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_BOOLEAN, &b);
+	utils_append_string_or_null (iter, auth_out->username);
+	utils_append_string_or_null (iter, auth_out->password);
+
+	return TRUE;
+}
+
+static gboolean
+auth_demarshal_out (DBusMessageIter *iter, gpointer out, gsize out_size)
+{
+	GnomeVFSModuleCallbackAuthenticationOut *auth_out;
+	gboolean b;
+
+	if (out_size != sizeof (GnomeVFSModuleCallbackAuthenticationOut)) {
+		return FALSE;
+	}
+	auth_out = out;
+
+
+	dbus_message_iter_get_basic (iter, &b);
+	dbus_message_iter_next (iter);
+	
+	auth_out->username = utils_get_string_or_null (iter, b);
+	dbus_message_iter_next (iter);
+
+	auth_out->password = utils_get_string_or_null (iter, b);
+	dbus_message_iter_next (iter);
+
 	return TRUE;
 }
 
@@ -181,122 +309,122 @@ auth_free_out (gpointer out)
 	g_free (auth_out);
 }
 
-static CORBA_any *
-full_auth_marshal_in (gconstpointer in, gsize in_size)
+static gboolean
+full_auth_marshal_in (gconstpointer in, gsize in_size, DBusMessageIter *iter)
 {
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackFullAuthenticationIn *ret_in;
 	const GnomeVFSModuleCallbackFullAuthenticationIn *auth_in;
+	gint32 i;
 	
 	if (in_size != sizeof (GnomeVFSModuleCallbackFullAuthenticationIn)) {
-		return NULL;
+		return FALSE;
 	}
 	auth_in = in;
 
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackFullAuthenticationIn;
-	retval->_value = GNOME_VFS_ModuleCallbackFullAuthenticationIn__alloc ();
-	ret_in = retval->_value;
+	i = auth_in->flags;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_INT32, &i);
+	utils_append_string_or_null (iter, auth_in->uri);
+	utils_append_string_or_null (iter, auth_in->protocol);
+	utils_append_string_or_null (iter, auth_in->server);
+	utils_append_string_or_null (iter, auth_in->object);
+	i = auth_in->port;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_INT32, &i);
+	utils_append_string_or_null (iter, auth_in->username);
+	utils_append_string_or_null (iter, auth_in->authtype);
+	utils_append_string_or_null (iter, auth_in->domain);
+	utils_append_string_or_null (iter, auth_in->default_user);
+	utils_append_string_or_null (iter, auth_in->default_domain);
 
-	ret_in->flags = auth_in->flags;
-	ret_in->uri = corba_string_or_null_dup (auth_in->uri);
-	ret_in->protocol = corba_string_or_null_dup (auth_in->protocol);
-	ret_in->server = corba_string_or_null_dup (auth_in->server);
-	ret_in->object = corba_string_or_null_dup (auth_in->object);
-	ret_in->port = auth_in->port;
-	ret_in->username = corba_string_or_null_dup (auth_in->username);
-	ret_in->authtype = corba_string_or_null_dup (auth_in->authtype);
-	ret_in->domain = corba_string_or_null_dup (auth_in->domain);
-	ret_in->default_user = corba_string_or_null_dup (auth_in->default_user);
-	ret_in->default_domain = corba_string_or_null_dup (auth_in->default_domain);
-
-	return retval;
+	return TRUE;
 }
 
 static gboolean
-full_auth_demarshal_in (const CORBA_any *any_in,
+full_auth_demarshal_in (DBusMessageIter *iter,
 			gpointer *in, gsize *in_size,
 			gpointer *out, gsize *out_size)
 {
-	GNOME_VFS_ModuleCallbackFullAuthenticationIn *corba_in;
 	GnomeVFSModuleCallbackFullAuthenticationIn *auth_in;
-	GnomeVFSModuleCallbackFullAuthenticationOut *auth_out;
-	
-	if (!CORBA_TypeCode_equal (any_in->_type, TC_GNOME_VFS_ModuleCallbackFullAuthenticationIn, NULL)) {
-		return FALSE;
-	}
+	gint32 i;
 	
 	auth_in = *in = g_new0 (GnomeVFSModuleCallbackFullAuthenticationIn, 1);
 	*in_size = sizeof (GnomeVFSModuleCallbackFullAuthenticationIn);
-	auth_out = *out = g_new0 (GnomeVFSModuleCallbackFullAuthenticationOut, 1);
+	*out = g_new0 (GnomeVFSModuleCallbackFullAuthenticationOut, 1);
 	*out_size = sizeof (GnomeVFSModuleCallbackFullAuthenticationOut);
 
-	corba_in = (GNOME_VFS_ModuleCallbackFullAuthenticationIn *)any_in->_value;
 
-	auth_in->flags = corba_in->flags;
-	auth_in->uri = decode_corba_string_or_null (corba_in->uri, TRUE);
-	auth_in->protocol = decode_corba_string_or_null (corba_in->protocol, TRUE);
-	auth_in->server = decode_corba_string_or_null (corba_in->server, TRUE);
-	auth_in->object = decode_corba_string_or_null (corba_in->object, TRUE);
-	auth_in->port = corba_in->port;
-	auth_in->username = decode_corba_string_or_null (corba_in->username, TRUE);
-	auth_in->authtype = decode_corba_string_or_null (corba_in->authtype, TRUE);
-	auth_in->domain = decode_corba_string_or_null (corba_in->domain, TRUE);
-	auth_in->default_user = decode_corba_string_or_null (corba_in->default_user, TRUE);
-	auth_in->default_domain = decode_corba_string_or_null (corba_in->default_domain, TRUE);
+	dbus_message_iter_get_basic (iter, &i);
+	auth_in->flags = i;
+	dbus_message_iter_next (iter);
+	auth_in->uri = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->protocol = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->server = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->object = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	dbus_message_iter_get_basic (iter, &i);
+	auth_in->port = i;
+	dbus_message_iter_next (iter);
+	auth_in->username = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->authtype = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->domain = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->default_user = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->default_domain = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
 	
 	return TRUE;
 }
 
-static CORBA_any *
-full_auth_marshal_out (gconstpointer out, gsize out_size)
+static gboolean
+full_auth_marshal_out (gconstpointer out, gsize out_size, DBusMessageIter *iter)
 {
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackFullAuthenticationOut *ret_out;
 	const GnomeVFSModuleCallbackFullAuthenticationOut *auth_out;
+	gboolean b;
 
 	if (out_size != sizeof (GnomeVFSModuleCallbackFullAuthenticationOut)) {
-		return NULL;
-	}
-	auth_out = out;
-
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackFullAuthenticationOut;
-	retval->_value = GNOME_VFS_ModuleCallbackFullAuthenticationOut__alloc ();
-	ret_out = retval->_value;
-
-	ret_out->abort_auth = auth_out->abort_auth;
-	ret_out->username = corba_string_or_null_dup (auth_out->username);
-	ret_out->domain = corba_string_or_null_dup (auth_out->domain);
-	ret_out->password = corba_string_or_null_dup (auth_out->password);
-
-	ret_out->save_password = auth_out->save_password;
-	ret_out->keyring = corba_string_or_null_dup (auth_out->keyring);
-	
-	return retval;
-}
-
-static gboolean
-full_auth_demarshal_out (CORBA_any *any_out, gpointer out, gsize out_size)
-{
-	GNOME_VFS_ModuleCallbackFullAuthenticationOut *corba_out;
-	GnomeVFSModuleCallbackFullAuthenticationOut *auth_out;
-
-	if (!CORBA_TypeCode_equal (any_out->_type, TC_GNOME_VFS_ModuleCallbackFullAuthenticationOut, NULL) ||
-	    out_size != sizeof (GnomeVFSModuleCallbackFullAuthenticationOut)) {
 		return FALSE;
 	}
 	auth_out = out;
 
-	corba_out = (GNOME_VFS_ModuleCallbackFullAuthenticationOut *)any_out->_value;
-
-	auth_out->abort_auth = corba_out->abort_auth;
-	auth_out->username = decode_corba_string_or_null (corba_out->username, TRUE);
-	auth_out->domain = decode_corba_string_or_null (corba_out->domain, TRUE);
-	auth_out->password = decode_corba_string_or_null (corba_out->password, TRUE);
+	b = auth_out->abort_auth;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_BOOLEAN, &b);
+	utils_append_string_or_null (iter, auth_out->username);
+	utils_append_string_or_null (iter, auth_out->domain);
+	utils_append_string_or_null (iter, auth_out->password);
+	b = auth_out->save_password;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_BOOLEAN, &b);
+	utils_append_string_or_null (iter, auth_out->keyring);
 	
-	auth_out->save_password = corba_out->save_password;
-	auth_out->keyring = decode_corba_string_or_null (corba_out->keyring, TRUE);
+	return TRUE;
+}
+
+static gboolean
+full_auth_demarshal_out (DBusMessageIter *iter, gpointer out, gsize out_size)
+{
+	GnomeVFSModuleCallbackFullAuthenticationOut *auth_out;
+	gboolean b;
+	
+	if (out_size != sizeof (GnomeVFSModuleCallbackFullAuthenticationOut)) {
+		return FALSE;
+	}
+	auth_out = out;
+
+	dbus_message_iter_get_basic (iter, &b);
+	auth_out->abort_auth = b;
+	dbus_message_iter_next (iter);
+	auth_out->username = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_out->domain = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_out->password = utils_get_string_or_null (iter, TRUE);
+
+	dbus_message_iter_get_basic (iter, &b);
+	auth_out->save_password = b;
+	auth_out->keyring = utils_get_string_or_null (iter, TRUE);
 	
 	return TRUE;
 }
@@ -334,243 +462,98 @@ full_auth_free_out (gpointer out)
 	g_free (auth_out);
 }
 
-static CORBA_any *
-fill_auth_marshal_in (gconstpointer in, gsize in_size)
-{
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackFillAuthenticationIn *ret_in;
-	const GnomeVFSModuleCallbackFillAuthenticationIn *auth_in;
-	
-	if (in_size != sizeof (GnomeVFSModuleCallbackFillAuthenticationIn)) {
-		return NULL;
-	}
-	auth_in = in;
-
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackFillAuthenticationIn;
-	retval->_value = GNOME_VFS_ModuleCallbackFillAuthenticationIn__alloc ();
-	ret_in = retval->_value;
-
-	ret_in->uri = corba_string_or_null_dup (auth_in->uri);
-	ret_in->protocol = corba_string_or_null_dup (auth_in->protocol);
-	ret_in->server = corba_string_or_null_dup (auth_in->server);
-	ret_in->object = corba_string_or_null_dup (auth_in->object);
-	ret_in->port = auth_in->port;
-	ret_in->username = corba_string_or_null_dup (auth_in->username);
-	ret_in->authtype = corba_string_or_null_dup (auth_in->authtype);
-	ret_in->domain = corba_string_or_null_dup (auth_in->domain);
-
-	return retval;
-}
-
 static gboolean
-fill_auth_demarshal_in (const CORBA_any *any_in,
-			gpointer *in, gsize *in_size,
-			gpointer *out, gsize *out_size)
+save_auth_marshal_in (gconstpointer in, gsize in_size, DBusMessageIter *iter)
 {
-	GNOME_VFS_ModuleCallbackFillAuthenticationIn *corba_in;
-	GnomeVFSModuleCallbackFillAuthenticationIn *auth_in;
-	GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
-	
-	if (!CORBA_TypeCode_equal (any_in->_type, TC_GNOME_VFS_ModuleCallbackFillAuthenticationIn, NULL)) {
-		return FALSE;
-	}
-	
-	auth_in = *in = g_new0 (GnomeVFSModuleCallbackFillAuthenticationIn, 1);
-	*in_size = sizeof (GnomeVFSModuleCallbackFillAuthenticationIn);
-	auth_out = *out = g_new0 (GnomeVFSModuleCallbackFillAuthenticationOut, 1);
-	*out_size = sizeof (GnomeVFSModuleCallbackFillAuthenticationOut);
-
-	corba_in = (GNOME_VFS_ModuleCallbackFillAuthenticationIn *)any_in->_value;
-
-	auth_in->uri = decode_corba_string_or_null (corba_in->uri, TRUE);
-	auth_in->protocol = decode_corba_string_or_null (corba_in->protocol, TRUE);
-	auth_in->server = decode_corba_string_or_null (corba_in->server, TRUE);
-	auth_in->object = decode_corba_string_or_null (corba_in->object, TRUE);
-	auth_in->port = corba_in->port;
-	auth_in->username = decode_corba_string_or_null (corba_in->username, TRUE);
-	auth_in->authtype = decode_corba_string_or_null (corba_in->authtype, TRUE);
-	auth_in->domain = decode_corba_string_or_null (corba_in->domain, TRUE);
-	
-	return TRUE;
-}
-
-static CORBA_any *
-fill_auth_marshal_out (gconstpointer out, gsize out_size)
-{
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackFillAuthenticationOut *ret_out;
-	const GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
-
-	if (out_size != sizeof (GnomeVFSModuleCallbackFillAuthenticationOut)) {
-		return NULL;
-	}
-	auth_out = out;
-
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackFillAuthenticationOut;
-	retval->_value = GNOME_VFS_ModuleCallbackFillAuthenticationOut__alloc ();
-	ret_out = retval->_value;
-
-	ret_out->valid = auth_out->valid;
-	ret_out->username = corba_string_or_null_dup (auth_out->username);
-	ret_out->domain = corba_string_or_null_dup (auth_out->domain);
-	ret_out->password = corba_string_or_null_dup (auth_out->password);
-	
-	return retval;
-}
-
-static gboolean
-fill_auth_demarshal_out (CORBA_any *any_out, gpointer out, gsize out_size)
-{
-	GNOME_VFS_ModuleCallbackFillAuthenticationOut *corba_out;
-	GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
-
-	if (!CORBA_TypeCode_equal (any_out->_type, TC_GNOME_VFS_ModuleCallbackFillAuthenticationOut, NULL) ||
-	    out_size != sizeof (GnomeVFSModuleCallbackFillAuthenticationOut)) {
-		return FALSE;
-	}
-	auth_out = out;
-
-	corba_out = (GNOME_VFS_ModuleCallbackFillAuthenticationOut *)any_out->_value;
-
-	auth_out->valid = corba_out->valid;
-	auth_out->username = decode_corba_string_or_null (corba_out->username, TRUE);
-	auth_out->domain = decode_corba_string_or_null (corba_out->domain, TRUE);
-	auth_out->password = decode_corba_string_or_null (corba_out->password, TRUE);
-	
-	return TRUE;
-}
-
-static void
-fill_auth_free_in (gpointer in)
-{
-	GnomeVFSModuleCallbackFillAuthenticationIn *auth_in;
-
-	auth_in = in;
-
-	g_free (auth_in->uri);
-	g_free (auth_in->protocol);
-	g_free (auth_in->server);
-	g_free (auth_in->object);
-	g_free (auth_in->authtype);
-	g_free (auth_in->username);
-	g_free (auth_in->domain);
-
-	g_free (auth_in);
-}
-
-static void
-fill_auth_free_out (gpointer out)
-{
-	GnomeVFSModuleCallbackFillAuthenticationOut *auth_out;
-
-	auth_out = out;
-	g_free (auth_out->username);
-	g_free (auth_out->domain);
-	g_free (auth_out->password);
-	g_free (auth_out);
-}
-
-static CORBA_any *
-save_auth_marshal_in (gconstpointer in, gsize in_size)
-{
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackSaveAuthenticationIn *ret_in;
 	const GnomeVFSModuleCallbackSaveAuthenticationIn *auth_in;
+	gint32 i;
 	
 	if (in_size != sizeof (GnomeVFSModuleCallbackSaveAuthenticationIn)) {
-		return NULL;
+		return FALSE;
 	}
 	auth_in = in;
 
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackSaveAuthenticationIn;
-	retval->_value = GNOME_VFS_ModuleCallbackSaveAuthenticationIn__alloc ();
-	ret_in = retval->_value;
+	
+	utils_append_string_or_null (iter, auth_in->keyring);
+	utils_append_string_or_null (iter, auth_in->uri);
+	utils_append_string_or_null (iter, auth_in->protocol);
+	utils_append_string_or_null (iter, auth_in->server);
+	utils_append_string_or_null (iter, auth_in->object);
+	i = auth_in->port;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_INT32, &i);
+	utils_append_string_or_null (iter, auth_in->username);
+	utils_append_string_or_null (iter, auth_in->authtype);
+	utils_append_string_or_null (iter, auth_in->domain);
+	utils_append_string_or_null (iter, auth_in->password);
 
-	ret_in->keyring = corba_string_or_null_dup (auth_in->keyring);
-	ret_in->uri = corba_string_or_null_dup (auth_in->uri);
-	ret_in->protocol = corba_string_or_null_dup (auth_in->protocol);
-	ret_in->server = corba_string_or_null_dup (auth_in->server);
-	ret_in->object = corba_string_or_null_dup (auth_in->object);
-	ret_in->port = auth_in->port;
-	ret_in->username = corba_string_or_null_dup (auth_in->username);
-	ret_in->authtype = corba_string_or_null_dup (auth_in->authtype);
-	ret_in->domain = corba_string_or_null_dup (auth_in->domain);
-	ret_in->password = corba_string_or_null_dup (auth_in->password);
-
-	return retval;
+	return TRUE;
 }
 
 static gboolean
-save_auth_demarshal_in (const CORBA_any *any_in,
+save_auth_demarshal_in (DBusMessageIter *iter,
 			gpointer *in, gsize *in_size,
 			gpointer *out, gsize *out_size)
 {
-	GNOME_VFS_ModuleCallbackSaveAuthenticationIn *corba_in;
 	GnomeVFSModuleCallbackSaveAuthenticationIn *auth_in;
-	GnomeVFSModuleCallbackSaveAuthenticationOut *auth_out;
-	
-	if (!CORBA_TypeCode_equal (any_in->_type, TC_GNOME_VFS_ModuleCallbackSaveAuthenticationIn, NULL)) {
-		return FALSE;
-	}
+	gint32 i;
 	
 	auth_in = *in = g_new0 (GnomeVFSModuleCallbackSaveAuthenticationIn, 1);
 	*in_size = sizeof (GnomeVFSModuleCallbackSaveAuthenticationIn);
-	auth_out = *out = g_new0 (GnomeVFSModuleCallbackSaveAuthenticationOut, 1);
+	*out = g_new0 (GnomeVFSModuleCallbackSaveAuthenticationOut, 1);
 	*out_size = sizeof (GnomeVFSModuleCallbackSaveAuthenticationOut);
 
-	corba_in = (GNOME_VFS_ModuleCallbackSaveAuthenticationIn *)any_in->_value;
-
-	auth_in->keyring = decode_corba_string_or_null (corba_in->keyring, TRUE);
-	auth_in->uri = decode_corba_string_or_null (corba_in->uri, TRUE);
-	auth_in->protocol = decode_corba_string_or_null (corba_in->protocol, TRUE);
-	auth_in->server = decode_corba_string_or_null (corba_in->server, TRUE);
-	auth_in->object = decode_corba_string_or_null (corba_in->object, TRUE);
-	auth_in->port = corba_in->port;
-	auth_in->username = decode_corba_string_or_null (corba_in->username, TRUE);
-	auth_in->authtype = decode_corba_string_or_null (corba_in->authtype, TRUE);
-	auth_in->domain = decode_corba_string_or_null (corba_in->domain, TRUE);
-	auth_in->password = decode_corba_string_or_null (corba_in->password, FALSE);
+	auth_in->keyring = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->uri = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->protocol = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->server = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->object = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	dbus_message_iter_get_basic (iter, &i);
+	auth_in->port = i;
+	dbus_message_iter_next (iter);
+	auth_in->username = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->authtype = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->domain = utils_get_string_or_null (iter, TRUE);
+	dbus_message_iter_next (iter);
+	auth_in->password = utils_get_string_or_null (iter, FALSE);
+	dbus_message_iter_next (iter);
 	
 	return TRUE;
 }
 
-static CORBA_any *
-save_auth_marshal_out (gconstpointer out, gsize out_size)
+static gboolean
+save_auth_marshal_out (gconstpointer out, gsize out_size, DBusMessageIter *iter)
 {
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackSaveAuthenticationOut *ret_out;
-	const GnomeVFSModuleCallbackSaveAuthenticationOut *auth_out;
+	gboolean b;
 
 	if (out_size != sizeof (GnomeVFSModuleCallbackSaveAuthenticationOut)) {
-		return NULL;
+		return FALSE;
 	}
-	auth_out = out;
 
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackSaveAuthenticationOut;
-	retval->_value = GNOME_VFS_ModuleCallbackSaveAuthenticationOut__alloc ();
-	ret_out = retval->_value;
+	/* Must marshal something */
+	b = TRUE;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_BOOLEAN, &b);
 
-	return retval;
+	return TRUE;
 }
 
 static gboolean
-save_auth_demarshal_out (CORBA_any *any_out, gpointer out, gsize out_size)
+save_auth_demarshal_out (DBusMessageIter *iter, gpointer out, gsize out_size)
 {
-	GNOME_VFS_ModuleCallbackSaveAuthenticationOut *corba_out;
-	GnomeVFSModuleCallbackSaveAuthenticationOut *auth_out;
-
-	if (!CORBA_TypeCode_equal (any_out->_type, TC_GNOME_VFS_ModuleCallbackSaveAuthenticationOut, NULL) ||
-	    out_size != sizeof (GnomeVFSModuleCallbackSaveAuthenticationOut)) {
+	gboolean b;
+	
+	if (out_size != sizeof (GnomeVFSModuleCallbackSaveAuthenticationOut)) {
 		return FALSE;
 	}
-	auth_out = out;
 
-	corba_out = (GNOME_VFS_ModuleCallbackSaveAuthenticationOut *)any_out->_value;
-
+	dbus_message_iter_get_basic (iter, &b);
+	
 	return TRUE;
 }
 
@@ -603,115 +586,125 @@ save_auth_free_out (gpointer out)
 	g_free (auth_out);
 }
 
-static CORBA_any *
-question_marshal_in (gconstpointer in, gsize in_size)
+static gboolean
+question_marshal_in (gconstpointer in, gsize in_size, DBusMessageIter *iter)
 {
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackQuestionIn *ret_in;
 	const GnomeVFSModuleCallbackQuestionIn *question_in;
+	DBusMessageIter array_iter;
 	int cnt;
 
 	if (in_size != sizeof (GnomeVFSModuleCallbackQuestionIn)) {
-		return NULL;
+		return FALSE;
 	}
 	question_in = in;
 
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackQuestionIn;
-	retval->_value = GNOME_VFS_ModuleCallbackQuestionIn__alloc ();
-	ret_in = retval->_value;
+	utils_append_string_or_null (iter, question_in->primary_message);
+	utils_append_string_or_null (iter, question_in->secondary_message);
+	
+	if (!dbus_message_iter_open_container (iter,
+					       DBUS_TYPE_ARRAY,
+					       DBUS_TYPE_STRING_AS_STRING,
+					       &array_iter)) {
+		return FALSE;
+	}
 
-	ret_in->primary_message = corba_string_or_null_dup (question_in->primary_message);
-	ret_in->secondary_message = corba_string_or_null_dup (question_in->secondary_message);
 	if (question_in->choices) {
-		
-		/* Just count the number of elements and allocate the memory */
-		for (cnt=0; question_in->choices[cnt] != NULL; cnt++);
-		ret_in->choices._maximum = cnt; 
-		ret_in->choices._length = cnt;
-		ret_in->choices._buffer = CORBA_sequence_CORBA_string_allocbuf (cnt);
-		CORBA_sequence_set_release (&ret_in->choices, TRUE);
-		
-		/* Insert the strings into the sequence */
 		for (cnt=0; question_in->choices[cnt] != NULL; cnt++) {
-			ret_in->choices._buffer[cnt] = corba_string_or_null_dup (question_in->choices[cnt]);
+			utils_append_string_or_null (&array_iter,
+						     question_in->choices[cnt]);
 		}
 	}
-	return retval;
-}
 
-static gboolean
-question_demarshal_in (const CORBA_any *any_in,
-			gpointer *in, gsize *in_size,
-			gpointer *out, gsize *out_size)
-{
-	GNOME_VFS_ModuleCallbackQuestionIn *corba_in;
-	GnomeVFSModuleCallbackQuestionIn *question_in;
-	GnomeVFSModuleCallbackQuestionOut *question_out;
-	int cnt;
-
-	if (!CORBA_TypeCode_equal (any_in->_type, TC_GNOME_VFS_ModuleCallbackQuestionIn, NULL)) {
+	
+	if (!dbus_message_iter_close_container (iter, &array_iter)) {
 		return FALSE;
 	}
 	
-	question_in = *in = g_new0 (GnomeVFSModuleCallbackQuestionIn, 1);
-	*in_size = sizeof (GnomeVFSModuleCallbackQuestionIn);
-	question_out = *out = g_new0 (GnomeVFSModuleCallbackQuestionOut, 1);
-	*out_size = sizeof (GnomeVFSModuleCallbackQuestionOut);
-
-	corba_in = (GNOME_VFS_ModuleCallbackQuestionIn *)any_in->_value;
-
-	if (corba_in) {
-		question_in->primary_message = decode_corba_string_or_null (corba_in->primary_message, FALSE);	
-		question_in->secondary_message = decode_corba_string_or_null (corba_in->secondary_message, FALSE);	
-		question_in->choices = g_new (char *, corba_in->choices._length+1);
-		for (cnt=0; cnt<corba_in->choices._length; cnt++){
-			question_in->choices[cnt] = g_strdup (corba_in->choices._buffer[cnt]);
-		}
-		question_in->choices[corba_in->choices._length] = NULL;
-		
-		return TRUE;
-	}
-	return FALSE;
-}
-
-static CORBA_any *
-question_marshal_out (gconstpointer out, gsize out_size)
-{
-	CORBA_any *retval;
-	GNOME_VFS_ModuleCallbackQuestionOut *ret_out;
-	const GnomeVFSModuleCallbackQuestionOut *question_out;
-
-	if (out_size != sizeof (GnomeVFSModuleCallbackQuestionOut)) {
-		return NULL;
-	}
-	question_out = out;
-
-	retval = CORBA_any_alloc ();
-	retval->_type = TC_GNOME_VFS_ModuleCallbackQuestionOut;
-	retval->_value = GNOME_VFS_ModuleCallbackQuestionOut__alloc ();
-	ret_out = retval->_value;
-
-	ret_out->answer = question_out->answer;
-
-	return retval;
+	return TRUE;
 }
 
 static gboolean
-question_demarshal_out (CORBA_any *any_out, gpointer out, gsize out_size)
+question_demarshal_in (DBusMessageIter *iter,
+		       gpointer *in, gsize *in_size,
+		       gpointer *out, gsize *out_size)
 {
-	GNOME_VFS_ModuleCallbackQuestionOut *corba_out;
-	GnomeVFSModuleCallbackQuestionOut *question_out;
+	GnomeVFSModuleCallbackQuestionIn *question_in;
+	DBusMessageIter array_iter;
+	int cnt;
 
-	if (!CORBA_TypeCode_equal (any_out->_type, TC_GNOME_VFS_ModuleCallbackQuestionOut, NULL) ||
-	    out_size != sizeof (GnomeVFSModuleCallbackQuestionOut)) {
+	question_in = *in = g_new0 (GnomeVFSModuleCallbackQuestionIn, 1);
+	*in_size = sizeof (GnomeVFSModuleCallbackQuestionIn);
+	*out = g_new0 (GnomeVFSModuleCallbackQuestionOut, 1);
+	*out_size = sizeof (GnomeVFSModuleCallbackQuestionOut);
+
+	question_in->primary_message = utils_get_string_or_null (iter, FALSE);
+        dbus_message_iter_next (iter);
+	question_in->secondary_message = utils_get_string_or_null (iter, FALSE);
+        dbus_message_iter_next (iter);
+	
+        if (dbus_message_iter_get_arg_type (iter) == DBUS_TYPE_ARRAY) {
+                dbus_message_iter_recurse (iter, &array_iter);
+
+		cnt = 0;
+                while (dbus_message_iter_get_arg_type (&array_iter) == DBUS_TYPE_STRING) {
+			cnt++;
+                        if (!dbus_message_iter_has_next (&array_iter)) {
+                                break;
+                        }
+                        dbus_message_iter_next (&array_iter);
+		}
+
+		
+		question_in->choices = g_new (char *, cnt + 1);
+
+                dbus_message_iter_recurse (iter, &array_iter);
+		
+		cnt = 0;
+                while (dbus_message_iter_get_arg_type (&array_iter) == DBUS_TYPE_STRING) {
+			question_in->choices[cnt++] = utils_get_string_or_null (&array_iter, FALSE);
+                        if (!dbus_message_iter_has_next (&array_iter)) {
+                                break;
+                        }
+                        dbus_message_iter_next (&array_iter);
+                }
+		question_in->choices[cnt++] = NULL;
+        }
+        dbus_message_iter_next (iter);
+		
+	return TRUE;
+}
+
+static gboolean
+question_marshal_out (gconstpointer out, gsize out_size, DBusMessageIter *iter)
+{
+	const GnomeVFSModuleCallbackQuestionOut *question_out;
+	gint32 i;
+	
+	if (out_size != sizeof (GnomeVFSModuleCallbackQuestionOut)) {
 		return FALSE;
 	}
 	question_out = out;
 
-	corba_out = (GNOME_VFS_ModuleCallbackQuestionOut *)any_out->_value;
+	i = question_out->answer;
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_INT32, &i);
 
-	question_out->answer = corba_out->answer;
+	return TRUE;
+}
+
+static gboolean
+question_demarshal_out (DBusMessageIter *iter, gpointer out, gsize out_size)
+{
+	GnomeVFSModuleCallbackQuestionOut *question_out;
+	gint32 i;
+
+	if (out_size != sizeof (GnomeVFSModuleCallbackQuestionOut)) {
+		return FALSE;
+	}
+	question_out = out;
+
+	dbus_message_iter_get_basic (iter, &i);
+	question_out->answer = i;
+	dbus_message_iter_next (iter);
 
 	return TRUE;
 }
@@ -740,10 +733,10 @@ question_free_out (gpointer out)
 
 struct ModuleCallbackMarshaller {
 	char *name;
-	CORBA_any *(*marshal_in)(gconstpointer in, gsize in_size);
-	gboolean (*demarshal_in)(const CORBA_any *any_in, gpointer *in, gsize *in_size, gpointer *out, gsize *out_size);
-	CORBA_any *(*marshal_out)(gconstpointer out, gsize out_size);
-	gboolean (*demarshal_out)(CORBA_any *any_out, gpointer out, gsize out_size);
+	gboolean (*marshal_in)(gconstpointer in, gsize in_size, DBusMessageIter *message);
+	gboolean (*demarshal_in)(DBusMessageIter *iter, gpointer *in, gsize *in_size, gpointer *out, gsize *out_size);
+	gboolean (*marshal_out)(gconstpointer out, gsize out_size, DBusMessageIter *iter);
+	gboolean (*demarshal_out)(DBusMessageIter *iter, gpointer out, gsize out_size);
 	void (*free_in)(gpointer in);
 	void (*free_out)(gpointer out);
 };
@@ -822,69 +815,87 @@ _gnome_vfs_module_callback_marshal_invoke (const char    *callback_name,
 					   gpointer       out,
 					   gsize          out_size)
 {
-	CORBA_Environment ev;
-	CORBA_any *any_in;
-	CORBA_any *any_out;
-	gboolean res;
+	DBusMessage *message;
+	DBusMessage *reply;
+	DBusConnection *conn;
 	struct ModuleCallbackMarshaller *marshaller;
+	DBusError error;
+	DBusMessageIter iter;
 
+	conn = _gnome_vfs_daemon_get_current_connection ();
+	if (conn == NULL) {
+		return FALSE;
+	}
+	
 	marshaller = lookup_marshaller (callback_name);
 	if (marshaller == NULL) {
 		return FALSE;
 	}
 
-	any_in = (marshaller->marshal_in)(in, in_size);
-	if (any_in == NULL) {
-		return FALSE;
-	}
-
-	CORBA_exception_init (&ev);
-	any_out = NULL;
-	res = GNOME_VFS_ClientCall_ModuleCallbackInvoke (_gnome_vfs_daemon_get_current_daemon_client_call (),
-							 callback_name,
-							 any_in,
-							 &any_out,
-							 &ev);
-	CORBA_free (any_in);
-	if (BONOBO_EX (&ev)) {
-		CORBA_exception_free (&ev);
-		return FALSE;
-	}
-
-	if (!res) {
-		CORBA_free (any_out);
+	message = dbus_message_new_method_call (NULL,
+						DVD_CLIENT_OBJECT,
+						DVD_CLIENT_INTERFACE,
+						DVD_CLIENT_METHOD_CALLBACK);
+	dbus_message_append_args (message,
+				  DBUS_TYPE_STRING, &callback_name,
+				  DBUS_TYPE_INVALID);
+        dbus_message_iter_init_append (message, &iter);
+	
+	if (!(marshaller->marshal_in)(in, in_size, &iter)) {
+		dbus_message_unref (message);
 		return FALSE;
 	}
 	
-	if (!(marshaller->demarshal_out)(any_out, out, out_size)) {
-		CORBA_free (any_out);
+	dbus_error_init (&error);
+	reply = dbus_connection_send_with_reply_and_block (conn, message,
+							   -1, &error);
+	dbus_message_unref (message);
+
+
+	if (reply == NULL) {
 		return FALSE;
 	}
-	CORBA_free (any_out);
+
+	if (!dbus_message_iter_init (reply, &iter)) {
+		dbus_message_unref (reply);
+		return FALSE;
+	}
+
+	if (dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_INVALID) {
+		dbus_message_unref (reply);
+		return FALSE;
+	}
+	
+	if (!(marshaller->demarshal_out)(&iter, out, out_size)) {
+		dbus_message_unref (reply);
+		return FALSE;
+	}
+	
+	dbus_message_unref (reply);
 	return TRUE;
 }
 
 
 
 gboolean
-_gnome_vfs_module_callback_demarshal_invoke (const char    *callback_name,
-					     const CORBA_any * module_in,
-					     CORBA_any ** module_out)
+_gnome_vfs_module_callback_demarshal_invoke (const char  *callback_name,
+					     DBusMessageIter *iter_in,
+					     DBusMessage *reply)
 {
 	gboolean res;
 	gpointer in, out;
 	gsize in_size, out_size;
 	struct ModuleCallbackMarshaller *marshaller;
-	CORBA_any *empty_any;
+	DBusMessageIter iter_out;
 
 	marshaller = lookup_marshaller (callback_name);
 	if (marshaller == NULL) {
 		return FALSE;
 	}
-	
-	if (!(marshaller->demarshal_in)(module_in,
-					&in, &in_size,
-					&out, &out_size)) {
+
+	if (!(marshaller->demarshal_in) (iter_in,
+					 &in, &in_size,
+					 &out, &out_size)) {
 		return FALSE;
 	}
 
@@ -894,25 +905,14 @@ _gnome_vfs_module_callback_demarshal_invoke (const char    *callback_name,
 	if (!res) {
 		(marshaller->free_in) (in);
 		g_free (out); /* only shallow free necessary */
-		empty_any = CORBA_any_alloc ();
-		empty_any->_type = TC_null;
-		empty_any->_value = NULL;
-		*module_out = empty_any;
-
 		return FALSE;
 	}
 	(marshaller->free_in) (in);
 
-	*module_out = (marshaller->marshal_out)(out, out_size);
+        dbus_message_iter_init_append (reply, &iter_out);
+	
+	res = (marshaller->marshal_out)(out, out_size, &iter_out);
 	(marshaller->free_out) (out);
 
-	if (*module_out == NULL) {
-		empty_any = CORBA_any_alloc ();
-		empty_any->_type = TC_null;
-		empty_any->_value = NULL;
-		*module_out = empty_any;
-		return FALSE;
-	}
-	
-	return TRUE;
+	return res;
 }

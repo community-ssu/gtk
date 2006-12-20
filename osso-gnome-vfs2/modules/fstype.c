@@ -41,8 +41,6 @@
 #include <errno.h>
 #ifdef STDC_HEADERS
 #include <stdlib.h>
-#else
-extern int errno;
 #endif
 #include <string.h>
 #include <glib.h>

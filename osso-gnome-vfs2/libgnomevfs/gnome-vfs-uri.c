@@ -491,14 +491,18 @@ parse_uri_substring (const gchar *substring, GnomeVFSURI *parent)
 
 /**
  * gnome_vfs_uri_new:
- * @text_uri: A string representing a URI.
+ * @text_uri: an escaped string representing a uri.
  * 
- * Create a new URI from @text_uri. Unsupported and unsafe methods
- * are not allowed and will result in %null% being returned. URL
+ * Create a new uri from @text_uri. Unsupported and unsafe methods
+ * are not allowed and will result in %NULL being returned. URL
  * transforms are allowed.
+ *
+ * The @a text_uri must be an escaped URI string such as returned by 
+ * gnome_vfs_get_uri_from_local_path(), gnome_vfs_make_uri_from_input(), 
+ * or gtk_file_chooser_get_uri().
  * 
- * Return value: The new URI.
- **/
+ * Return value: The new uri.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_new (const gchar *text_uri)
 {
@@ -508,26 +512,22 @@ gnome_vfs_uri_new (const gchar *text_uri)
 
 	rest = get_method_string (text_uri, &method_string);
 	if (strcmp (method_string, "file") == 0) {
-		/* Use gnome_vfs_escape_path_string() to replace
-		 * backslashes with slashes etc. Be careful not to
-		 * pass the colon after the method string (if
-		 * present), or the colon after a drive letter to
-		 * gnome_vfs_escape_path_string().
-		 */
-		const gchar *past_root = g_path_skip_root (rest);
-		gchar *escaped = gnome_vfs_escape_path_string (past_root);
-		gchar *root = g_strndup (rest, past_root - rest);
-		gchar *full = g_strconcat (method_string,
-					   ":",
-					   root,
-					   escaped,
-					   NULL);
-		GnomeVFSURI *result =
-			gnome_vfs_uri_new_private (full, FALSE, FALSE, TRUE);
+		gchar *slashified, *p, *full;
+		GnomeVFSURI *result;
 
+		if (g_ascii_strncasecmp (text_uri, "file://", 7) == 0)
+			rest += 2;
+		slashified = g_strdup (rest);
+		for (p = slashified; *p; p++)
+			if (*p == '\\')
+				*p = '/';
+		if (*slashified == '/')
+			full = g_strconcat ("file://", slashified, NULL);
+		else
+			full = g_strconcat ("file:///", slashified, NULL);
+		result = gnome_vfs_uri_new_private (full, FALSE, FALSE, TRUE);
 		g_free (full);
-		g_free (escaped);
-		g_free (root);
+		g_free (slashified);
 		g_free (method_string);
 
 		return result;
@@ -844,6 +844,12 @@ make_full_uri_from_relative (const char *base_uri, const char *uri)
 				char *tmp = separator - 1;
 				if ((separator != mutable_base_uri) && (*tmp != '/')) {
 					*separator = '\0';
+				} else {
+					/* Maybe there is no domain part and this is a toplevel URI's child */
+					char *tmp2 = strstr (mutable_base_uri, ":///");
+					if (tmp2 != NULL && tmp2 + 3 == separator) {
+						*(separator + 1) = '\0';
+					}
 				}
 			}
 		}
@@ -886,14 +892,36 @@ make_full_uri_from_relative (const char *base_uri, const char *uri)
 }
 
 /**
- * gnome_vfs_uri_resolve_relative
- * @base: The base URI.
- * @relative_reference: A string representing a possibly relative URI reference
+ * gnome_vfs_uri_resolve_relative:
+ * @base: base uri.
+ * @relative_reference: a string representing a possibly relative uri reference.
  * 
- * Create a new URI from @relative_reference, relative to @base.
+ * Create a new uri from @relative_reference, relative to @base. The resolution
+ * algorithm in some aspects follows <ulink url="http://www.ietf.org/rfc/rfc2396.txt">RFC
+ * 2396</ulink>, section 5.2, but is not identical due to some extra assumptions GnomeVFS
+ * makes about URIs.
  *
- * Return value: The new URI.
- **/
+ * If @relative_reference begins with a valid scheme identifier followed by ':',
+ * it is assumed to refer to an absolute URI, and a #GnomeVFSURI is created from
+ * it using gnome_vfs_uri_new(). 
+ *
+ * Otherwise, depending on its precise syntax, it inherits some aspects of the parent URI,
+ * but the parents' fragment and query components are ignored.
+ *
+ * If @relative_reference begins with "//", it only inherits the @base scheme,
+ * if it begins with '/' (i.e. is an absolute path reference), it inherits everything
+ * ecxept the @base path. Otherwise, it replaces the part of @base after the last '/'.
+ *
+ * <note>
+ *  This function should not be used by application authors unless they expect very
+ *  distinct semantics. Instead, authors should use gnome_vfs_uri_append_file_name(),
+ *  gnome_vfs_uri_append_path(), gnome_vfs_uri_append_string() or
+ *  gnome_vfs_uri_resolve_symbolic_link().
+ * </note>
+ *
+ * Return value: A #GnomeVFSURI referring to @relative_reference, or %NULL
+ * if @relative_reference was malformed.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_resolve_relative (const GnomeVFSURI *base,
 				const gchar *relative_reference)
@@ -902,7 +930,7 @@ gnome_vfs_uri_resolve_relative (const GnomeVFSURI *base,
 	char *text_new;
 	GnomeVFSURI *uri;
 
-	g_assert (relative_reference != NULL);
+	g_return_val_if_fail (relative_reference != NULL, NULL);
 
 	if (base == NULL) {
 		text_base = g_strdup ("");
@@ -926,13 +954,45 @@ gnome_vfs_uri_resolve_relative (const GnomeVFSURI *base,
 }
 
 /**
+ * gnome_vfs_uri_resolve_symbolic_link:
+ * @base: base uri.
+ * @symbolic_link: a string representing a possibly relative or absolute path reference.
+ * 
+ * Create a new uri from @symbolic_link, relative to @base.
+ *
+ * If @symbolic_link begins with a '/', it replaces the path of @base,
+ * otherwise it is appended after the last '/' character of @base.
+ *
+ * Return value: A new #GnomeVFSURI referring to @symbolic_link.
+ *
+ * Since: 2.16
+ */
+GnomeVFSURI *
+gnome_vfs_uri_resolve_symbolic_link (const GnomeVFSURI *base,
+				     const gchar *symbolic_link)
+{
+	GnomeVFSURI *uri;
+
+	g_return_val_if_fail (base != NULL, NULL);
+	g_return_val_if_fail (symbolic_link != NULL, NULL);
+
+	uri = gnome_vfs_uri_dup (base);
+	g_free (uri->text);
+	uri->text = gnome_vfs_resolve_symlink (gnome_vfs_uri_get_path (base) != NULL ?
+					       gnome_vfs_uri_get_path (base) : "/",
+					       symbolic_link);
+
+	return uri;
+}
+
+/**
  * gnome_vfs_uri_ref:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Increment @uri's reference count.
  * 
  * Return value: @uri.
- **/
+ */
 GnomeVFSURI *
 gnome_vfs_uri_ref (GnomeVFSURI *uri)
 {
@@ -948,11 +1008,11 @@ gnome_vfs_uri_ref (GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_unref:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Decrement @uri's reference count.  If the reference count reaches zero,
  * @uri is destroyed.
- **/
+ */
 void
 gnome_vfs_uri_unref (GnomeVFSURI *uri)
 {
@@ -972,12 +1032,12 @@ gnome_vfs_uri_unref (GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_dup:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Duplicate @uri.
  * 
- * Return value: A pointer to a new URI that is exactly the same as @uri.
- **/
+ * Return value: a pointer to a new uri that is exactly the same as @uri.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_dup (const GnomeVFSURI *uri)
 {
@@ -1031,15 +1091,15 @@ gnome_vfs_uri_dup (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_append_string:
- * @uri: A GnomeVFSURI.
- * @uri_fragment: A piece of a URI (ie a fully escaped partial path)
+ * @uri: a #GnomeVFSURI.
+ * @uri_fragment: a piece of a uri (ie a fully escaped partial path).
  * 
- * Create a new URI obtained by appending @path to @uri.  This will take care
+ * Create a new uri obtained by appending @uri_fragment to @uri.  This will take care
  * of adding an appropriate directory separator between the end of @uri and
- * the start of @path if necessary.
+ * the start of @uri_fragment if necessary.
  * 
- * Return value: The new URI obtained by combining @uri and @path.
- **/
+ * Return value: The new uri obtained by combining @uri and @uri_fragment.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_append_string (const GnomeVFSURI *uri,
 			     const gchar *uri_fragment)
@@ -1085,22 +1145,25 @@ gnome_vfs_uri_append_string (const GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_append_path:
- * @uri: A GnomeVFSURI.
- * @path: A non-escaped file path
+ * @uri: a #GnomeVFSURI.
+ * @path: a non-escaped file path.
  * 
- * Create a new URI obtained by appending @path to @uri.  This will take care
+ * Create a new uri obtained by appending @path to @uri.  This will take care
  * of adding an appropriate directory separator between the end of @uri and
  * the start of @path if necessary as well as escaping @path as necessary.
  * 
- * Return value: The new URI obtained by combining @uri and @path.
- **/
+ * Return value: The new uri obtained by combining @uri and @path.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_append_path (const GnomeVFSURI *uri,
 			   const gchar *path)
 {
 	gchar *escaped_string;
 	GnomeVFSURI *new_uri;
-	
+
+	g_return_val_if_fail (uri != NULL, NULL);
+	g_return_val_if_fail (path != NULL, NULL);
+
 	escaped_string = gnome_vfs_escape_path_string (path);
 	new_uri = gnome_vfs_uri_append_string (uri, escaped_string);
 	g_free (escaped_string);
@@ -1109,21 +1172,25 @@ gnome_vfs_uri_append_path (const GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_append_file_name:
- * @uri: A GnomeVFSURI.
- * @filename: any "regular" file name (can include #, /, etc)
+ * @uri: a #GnomeVFSURI.
+ * @filename: any "regular" file name (can include #, /, etc) in the file system encoding. This is not an escaped URI.
  * 
- * Create a new URI obtained by appending @file_name to @uri.  This will take care
+ * Create a new uri obtained by appending @file_name to @uri.  This will take care
  * of adding an appropriate directory separator between the end of @uri and
- * the start of @file_name if necessary.
+ * the start of @file_name if necessary. @file_name might, for instance, be the 
+ * result of a call to g_dir_read_name().
  * 
- * Return value: The new URI obtained by combining @uri and @path.
- **/
+ * Return value: The new uri obtained by combining @uri and @path.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_append_file_name (const GnomeVFSURI *uri,
 				const gchar *filename)
 {
 	gchar *escaped_string;
 	GnomeVFSURI *new_uri;
+
+	g_return_val_if_fail (uri != NULL, NULL);
+	g_return_val_if_fail (filename != NULL, NULL);
 	
 	escaped_string = gnome_vfs_escape_string (filename);
 	new_uri = gnome_vfs_uri_append_string (uri, escaped_string);
@@ -1134,21 +1201,33 @@ gnome_vfs_uri_append_file_name (const GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_to_string:
- * @uri: A GnomeVFSURI.
- * @hide_options: Bitmask specifying what URI elements (e.g. password,
+ * @uri: a #GnomeVFSURI.
+ * @hide_options: bitmask specifying what uri elements (e.g. password,
  * user name etc.) should not be represented in the returned string.
  * 
- * Translate @uri into a printable string.  The string will not contain the
- * URI elements specified by @hide_options.
+ * Translate @uri into a printable string.  The string will not
+ * contain the uri elements specified by @hide_options.
+ *
+ * A file: URI on Win32 might look like file:///x:/foo/bar.txt. Note
+ * that the part after file:// is not a legal file name, you need to
+ * remove the / in front of the drive letter. This function does that
+ * automatically if @hide_options specifies that the toplevel method,
+ * user name, password, host name and host port should be hidden.
+ *
+ * On the other hand, a file: URI for a UNC path looks like
+ * file:////server/share/foo/bar.txt, and in that case the part after
+ * file:// is the correct file name.
  * 
- * Return value: A malloced printable string representing @uri.
- **/
+ * Return value: a malloc'd printable string representing @uri.
+ */
 gchar *
 gnome_vfs_uri_to_string (const GnomeVFSURI *uri,
 			 GnomeVFSURIHideOptions hide_options)
 {
 	GString *string;
 	gchar *result, *tmp;
+
+	g_return_val_if_fail (uri != NULL, NULL);
 
 	string = g_string_new (uri->method_string);
 	g_string_append_c (string, ':');
@@ -1206,15 +1285,29 @@ gnome_vfs_uri_to_string (const GnomeVFSURI *uri,
 		
 		if (top_level_uri->host_port > 0 
 			&& (hide_options & GNOME_VFS_URI_HIDE_HOST_PORT) == 0) {
-			gchar tmp[128];
-			sprintf (tmp, ":%d", top_level_uri->host_port);
-			g_string_append (string, tmp);
+			gchar temp[128];
+			sprintf (temp, ":%u", top_level_uri->host_port);
+			g_string_append (string, temp);
 		}
 
 	}
 	
 	if (uri->text != NULL) {
+#ifndef G_OS_WIN32
 		g_string_append (string, uri->text);
+#else
+		if (uri->text[0] == '/' &&
+		    g_ascii_isalpha (uri->text[1]) &&
+		    uri->text[2] == ':' &&
+		    (hide_options & GNOME_VFS_URI_HIDE_TOPLEVEL_METHOD) &&
+		    (hide_options & GNOME_VFS_URI_HIDE_USER_NAME) &&
+		    (hide_options & GNOME_VFS_URI_HIDE_PASSWORD) &&
+		    (hide_options & GNOME_VFS_URI_HIDE_HOST_NAME) &&
+		    (hide_options & GNOME_VFS_URI_HIDE_HOST_PORT))
+			g_string_append (string, uri->text + 1);
+		else
+			g_string_append (string, uri->text);
+#endif
 	}
 
 	if (uri->fragment_id != NULL 
@@ -1239,12 +1332,17 @@ gnome_vfs_uri_to_string (const GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_is_local:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
- * Check if @uri is a local (native) file system.
+ * Check if @uri is a local URI. Note that the return value of this
+ * function entirely depends on the #GnomeVFSMethod associated with the
+ * URI. It is up to the method author to distinguish between remote URIs
+ * add URIs referring to entities on the local computer.
+ *
+ * Warning, this can be slow, as it does i/o to detect things like NFS mounts.
  * 
- * Return value: %FALSE if @uri is not a local file system, %TRUE otherwise.
- **/
+ * Return value: %TRUE if @uri refers to a local entity, %FALSE otherwise.
+ */
 gboolean
 gnome_vfs_uri_is_local (const GnomeVFSURI *uri)
 {
@@ -1261,16 +1359,18 @@ gnome_vfs_uri_is_local (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_has_parent:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
- * Check if URI has a parent or not.
+ * Check if uri has a parent or not.
  * 
  * Return value: %TRUE if @uri has a parent, %FALSE otherwise.
- **/
+ */
 gboolean
 gnome_vfs_uri_has_parent (const GnomeVFSURI *uri)
 {
 	GnomeVFSURI *parent;
+
+	g_return_val_if_fail (uri != NULL, FALSE);
 
 	parent = gnome_vfs_uri_get_parent (uri);
 	if (parent == NULL) {
@@ -1283,12 +1383,12 @@ gnome_vfs_uri_has_parent (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_parent:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
- * Retrieve @uri's parent URI.
+ * Retrieve @uri's parent uri.
  * 
- * Return value: A pointer to @uri's parent URI.
- **/
+ * Return value: a pointer to @uri's parent uri.
+ */
 GnomeVFSURI *
 gnome_vfs_uri_get_parent (const GnomeVFSURI *uri)
 {
@@ -1346,12 +1446,12 @@ gnome_vfs_uri_get_parent (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_toplevel:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
- * Retrieve the toplevel URI in @uri.
+ * Retrieve the toplevel uri in @uri.
  * 
- * Return value: A pointer to the toplevel URI object.
- **/
+ * Return value: a pointer to the toplevel uri object.
+ */
 GnomeVFSToplevelURI *
 gnome_vfs_uri_get_toplevel (const GnomeVFSURI *uri)
 {
@@ -1367,12 +1467,12 @@ gnome_vfs_uri_get_toplevel (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_host_name:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve the host name for @uri.
  * 
- * Return value: A string representing the host name.
- **/
+ * Return value: a string representing the host name.
+ */
 const gchar *
 gnome_vfs_uri_get_host_name (const GnomeVFSURI *uri)
 {
@@ -1386,27 +1486,29 @@ gnome_vfs_uri_get_host_name (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_scheme:
- * @uri: A GnomeVFSURI
+ * @uri: a #GnomeVFSURI.
  *
- * Retrieve the scheme used for @uri
+ * Retrieve the scheme used for @uri.
  *
- * Return value: A string representing the scheme
- **/
+ * Return value: a string representing the scheme.
+ */
 const gchar *
 gnome_vfs_uri_get_scheme (const GnomeVFSURI *uri)
 {
+	g_return_val_if_fail (uri != NULL, NULL);
+
 	return uri->method_string;
 }
 
 /**
  * gnome_vfs_uri_get_host_port:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve the host port number in @uri.
  * 
  * Return value: The host port number used by @uri.  If the value is zero, the
  * default port value for the specified toplevel access method is used.
- **/
+ */
 guint
 gnome_vfs_uri_get_host_port (const GnomeVFSURI *uri)
 {
@@ -1420,12 +1522,12 @@ gnome_vfs_uri_get_host_port (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_user_name:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve the user name in @uri.
  * 
- * Return value: A string representing the user name in @uri.
- **/
+ * Return value: a string representing the user name in @uri.
+ */
 const gchar *
 gnome_vfs_uri_get_user_name (const GnomeVFSURI *uri)
 {
@@ -1439,12 +1541,12 @@ gnome_vfs_uri_get_user_name (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_password:
- * @uri: A GnomeVFSURI.
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve the password for @uri.
  * 
  * Return value: The password for @uri.
- **/
+ */
 const gchar *
 gnome_vfs_uri_get_password (const GnomeVFSURI *uri)
 {
@@ -1458,11 +1560,11 @@ gnome_vfs_uri_get_password (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_set_host_name:
- * @uri: A GnomeVFSURI.
- * @host_name: A string representing a host name.
+ * @uri: a #GnomeVFSURI.
+ * @host_name: a string representing a host name.
  * 
  * Set @host_name as the host name accessed by @uri.
- **/
+ */
 void
 gnome_vfs_uri_set_host_name (GnomeVFSURI *uri,
 			     const gchar *host_name)
@@ -1479,12 +1581,12 @@ gnome_vfs_uri_set_host_name (GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_set_host_port:
- * @uri: A GnomeVFSURI.
- * @host_port: A TCP/IP port number.
+ * @uri: a #GnomeVFSURI.
+ * @host_port: a TCP/IP port number.
  * 
  * Set the host port number in @uri.  If @host_port is zero, the default port
  * for @uri's toplevel access method is used.
- **/
+ */
 void
 gnome_vfs_uri_set_host_port (GnomeVFSURI *uri,
 			     guint host_port)
@@ -1500,11 +1602,11 @@ gnome_vfs_uri_set_host_port (GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_set_user_name:
- * @uri: A GnomeVFSURI.
- * @user_name: A string representing a user name on the host accessed by @uri.
+ * @uri: a #GnomeVFSURI.
+ * @user_name: a string representing a user name on the host accessed by @uri.
  * 
  * Set @user_name as the user name for @uri.
- **/
+ */
 void
 gnome_vfs_uri_set_user_name (GnomeVFSURI *uri,
 			     const gchar *user_name)
@@ -1521,11 +1623,11 @@ gnome_vfs_uri_set_user_name (GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_uri_set_password:
- * @uri: A GnomeVFSURI.
- * @password: A password string.
+ * @uri: a #GnomeVFSURI.
+ * @password: a password string.
  * 
  * Set @password as the password for @uri.
- **/
+ */
 void
 gnome_vfs_uri_set_password (GnomeVFSURI *uri,
 			    const gchar *password)
@@ -1567,17 +1669,17 @@ compare_elements (const GnomeVFSURI *a,
 
 /**
  * gnome_vfs_uri_equal:
- * @a: A GnomeVFSURI.
- * @b: A GnomeVFSURI.
+ * @a: a #GnomeVFSURI.
+ * @b: a #GnomeVFSURI.
  * 
  * Compare @a and @b.
  * 
- * Return value: %TRUE if @a and @b are equal, %FALSE otherwise.
- *
  * FIXME: This comparison should take into account the possiblity
  * that unreserved characters may be escaped.
- * ...or perhaps gnome_vfs_uri_new should unescape unreserved characters?
- **/
+ * ...or perhaps gnome_vfs_uri_new() should unescape unreserved characters?
+ *
+ * Return value: %TRUE if @a and @b are equal, %FALSE otherwise.
+ */
 gboolean
 gnome_vfs_uri_equal (const GnomeVFSURI *a,
 		     const GnomeVFSURI *b)
@@ -1587,6 +1689,9 @@ gnome_vfs_uri_equal (const GnomeVFSURI *a,
 
 	g_return_val_if_fail (a != NULL, FALSE);
 	g_return_val_if_fail (b != NULL, FALSE);
+
+	if (a == b)
+		return TRUE;
 
 	/* First check non-toplevel elements.  */
 	while (a->parent != NULL && b->parent != NULL) {
@@ -1642,16 +1747,16 @@ uri_matches_as_parent (const GnomeVFSURI *possible_parent, const GnomeVFSURI *pa
 
 /**
  * gnome_vfs_uri_is_parent:
- * @possible_parent: A GnomeVFSURI.
- * @possible_child: A GnomeVFSURI.
+ * @possible_parent: a #GnomeVFSURI.
+ * @possible_child: a #GnomeVFSURI.
  * @recursive: a flag to turn recursive check on.
  * 
  * Check if @possible_child is contained by @possible_parent.
- * If @recursive is FALSE, just try the immediate parent directory, else
+ * If @recursive is %FALSE, just try the immediate parent directory, else
  * search up through the hierarchy.
  * 
- * Return value: %TRUE if @possible_child is contained in  @possible_child.
- **/
+ * Return value: %TRUE if @possible_child is contained in  @possible_parent.
+ */
 gboolean
 gnome_vfs_uri_is_parent (const GnomeVFSURI *possible_parent,
 			 const GnomeVFSURI *possible_child,
@@ -1660,6 +1765,9 @@ gnome_vfs_uri_is_parent (const GnomeVFSURI *possible_parent,
 	gboolean result;
 	GnomeVFSURI *item_parent_uri;
 	GnomeVFSURI *item;
+
+	g_return_val_if_fail (possible_parent != NULL, FALSE);
+	g_return_val_if_fail (possible_child != NULL, FALSE);
 
 	if (!recursive) {
 		item_parent_uri = gnome_vfs_uri_get_parent (possible_child);
@@ -1698,14 +1806,14 @@ gnome_vfs_uri_is_parent (const GnomeVFSURI *possible_parent,
 
 /**
  * gnome_vfs_uri_get_path:
- * @uri: A GnomeVFSURI
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve full path name for @uri.
  * 
- * Return value: A pointer to the full path name in @uri.  Notice that the
- * pointer points to the name store in @uri, so the name returned must not
+ * Return value: a pointer to the full path name in @uri.  Notice that the
+ * pointer points to the path name stored in @uri, so the path name returned must not
  * be modified nor freed.
- **/
+ */
 const gchar *
 gnome_vfs_uri_get_path (const GnomeVFSURI *uri)
 {
@@ -1720,12 +1828,12 @@ gnome_vfs_uri_get_path (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_get_fragment_id:
- * @uri: A GnomeVFSURI
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve the optional fragment identifier for @uri.
  * 
- * Return value: A pointer to the fragment identifier for the uri or NULL.
- **/
+ * Return value: a pointer to the fragment identifier for the @uri or %NULL.
+ */
 const gchar *
 gnome_vfs_uri_get_fragment_identifier (const GnomeVFSURI *uri)
 {
@@ -1736,15 +1844,15 @@ gnome_vfs_uri_get_fragment_identifier (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_extract_dirname:
- * @uri: A GnomeVFSURI
+ * @uri: a #GnomeVFSURI.
  * 
  * Extract the name of the directory in which the file pointed to by @uri is
  * stored as a newly allocated string.  The string will end with a
- * GNOME_VFS_URI_PATH_CHR.
+ * %GNOME_VFS_URI_PATH_CHR.
  * 
- * Return value: A pointer to the newly allocated string representing the
+ * Return value: a pointer to the newly allocated string representing the
  * parent directory.
- **/
+ */
 gchar *
 gnome_vfs_uri_extract_dirname (const GnomeVFSURI *uri)
 {
@@ -1767,25 +1875,27 @@ gnome_vfs_uri_extract_dirname (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_extract_short_name:
- * @uri: A GnomeVFSURI
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve base file name for @uri, ignoring any trailing path separators.
  * This matches the XPG definition of basename, but not g_basename. This is
  * often useful when you want the name of something that's pointed to by a
  * uri, and don't care whether the uri has a directory or file form.
  * If @uri points to the root of a domain, returns the host name. If there's
- * no host name, returns GNOME_VFS_URI_PATH_STR.
+ * no host name, returns %GNOME_VFS_URI_PATH_STR.
  * 
- * See also: gnome_vfs_uri_extract_short_path_name.
+ * See also: gnome_vfs_uri_extract_short_path_name().
  * 
- * Return value: A pointer to the newly allocated string representing the
+ * Return value: a pointer to the newly allocated string representing the
  * unescaped short form of the name.
- **/
+ */
 gchar *
 gnome_vfs_uri_extract_short_name (const GnomeVFSURI *uri)
 {
 	gchar *escaped_short_path_name, *short_path_name;
 	const gchar *host_name;
+
+	g_return_val_if_fail (uri != NULL, NULL);
 
 	escaped_short_path_name = gnome_vfs_uri_extract_short_path_name (uri);
 	short_path_name = gnome_vfs_unescape_string (escaped_short_path_name, "/");
@@ -1810,20 +1920,20 @@ gnome_vfs_uri_extract_short_name (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_extract_short_path_name:
- * @uri: A GnomeVFSURI
+ * @uri: a #GnomeVFSURI.
  * 
  * Retrieve base file name for @uri, ignoring any trailing path separators.
  * This matches the XPG definition of basename, but not g_basename. This is
  * often useful when you want the name of something that's pointed to by a
  * uri, and don't care whether the uri has a directory or file form.
  * If @uri points to the root (including the root of any domain),
- * returns GNOME_VFS_URI_PATH_STR.
+ * returns %GNOME_VFS_URI_PATH_STR.
  * 
- * See also: gnome_vfs_uri_extract_short_name.
+ * See also: gnome_vfs_uri_extract_short_name(). 
  * 
- * Return value: A pointer to the newly allocated string representing the
+ * Return value: a pointer to the newly allocated string representing the
  * escaped short form of the name.
- **/
+ */
 gchar *
 gnome_vfs_uri_extract_short_path_name (const GnomeVFSURI *uri)
 {
@@ -1870,14 +1980,14 @@ gnome_vfs_uri_extract_short_path_name (const GnomeVFSURI *uri)
 
 /**
  * gnome_vfs_uri_hequal:
- * @a: a pointer to a GnomeVFSURI
- * @b: a pointer to a GnomeVFSURI
+ * @a: a pointer to a #GnomeVFSURI.
+ * @b: a pointer to a #GnomeVFSURI.
  *
  * Function intended for use as a hash table "are these two items
- * the same" comparison. Useful for creating a hash table of URIs.
+ * the same" comparison. Useful for creating a hash table of uris.
  *
- * Return value: %TRUE if the URIs are the same
- **/
+ * Return value: %TRUE if the uris are the same.
+ */
 gint
 gnome_vfs_uri_hequal (gconstpointer a,
 		      gconstpointer b)
@@ -1887,13 +1997,13 @@ gnome_vfs_uri_hequal (gconstpointer a,
 
 /**
  * gnome_vfs_uri_hash:
- * @p: a pointer to a GnomeVFSURI
+ * @p: a pointer to a #GnomeVFSURI.
  *
- * Creates an integer value from a GnomeVFSURI, appropriate
+ * Creates an integer value from a #GnomeVFSURI, appropriate
  * for using as the key to a hash table entry.
  *
- * Return value: a hash key corresponding to @p
- **/
+ * Return value: a hash key corresponding to @p.
+ */
 guint
 gnome_vfs_uri_hash (gconstpointer p)
 {
@@ -1915,7 +2025,7 @@ gnome_vfs_uri_hash (gconstpointer p)
 		HASH_STRING (hash_value, uri_p->text);
 		HASH_STRING (hash_value, uri_p->method_string);
 
-		if (uri_p->parent != NULL) {
+		if (uri_p->parent == NULL) {
 			const GnomeVFSToplevelURI *toplevel;
 
 			toplevel = (const GnomeVFSToplevelURI *) uri_p;
@@ -1935,12 +2045,12 @@ gnome_vfs_uri_hash (gconstpointer p)
 
 /**
  * gnome_vfs_uri_list_ref:
- * @list: list of GnomeVFSURI elements
+ * @list: list of #GnomeVFSURI elements.
  *
  * Increments the reference count of the items in @list by one.
  *
- * Return value: @list
- **/
+ * Return value: @list.
+ */
 GList *
 gnome_vfs_uri_list_ref (GList *list)
 {
@@ -1950,14 +2060,14 @@ gnome_vfs_uri_list_ref (GList *list)
 
 /**
  * gnome_vfs_uri_list_unref:
- * @list: list of GnomeVFSURI elements
+ * @list: list of #GnomeVFSURI elements.
  *
  * Decrements the reference count of the items in @list by one.
  * Note that the list is *not freed* even if each member of the list
  * is freed.
  *
- * Return value: @list
- **/
+ * Return value: @list.
+ */
 GList *
 gnome_vfs_uri_list_unref (GList *list)
 {
@@ -1967,13 +2077,13 @@ gnome_vfs_uri_list_unref (GList *list)
 
 /**
  * gnome_vfs_uri_list_copy:
- * @list: list of GnomeVFSURI elements
+ * @list: list of #GnomeVFSURI elements.
  *
  * Creates a duplicate of @list, and references each member of
  * that list.
  *
- * Return value: a newly referenced duplicate of @list
- **/
+ * Return value: a newly referenced duplicate of @list.
+ */
 GList *
 gnome_vfs_uri_list_copy (GList *list)
 {
@@ -1982,11 +2092,11 @@ gnome_vfs_uri_list_copy (GList *list)
 
 /**
  * gnome_vfs_uri_list_free:
- * @list: list of GnomeVFSURI elements
+ * @list: list of #GnomeVFSURI elements.
  *
  * Decrements the reference count of each member of @list by one,
  * and frees the list itself.
- **/
+ */
 void
 gnome_vfs_uri_list_free (GList *list)
 {
@@ -1995,15 +2105,15 @@ gnome_vfs_uri_list_free (GList *list)
 
 /**
  * gnome_vfs_uri_make_full_from_relative:
- * @base_uri: a string representing the base URI
- * @relative_uri: a URI fragment/reference to be appended to @base_uri
+ * @base_uri: a string representing the base uri.
+ * @relative_uri: a uri fragment/reference to be appended to @base_uri.
  * 
- * Returns a full URI given a full base URI, and a secondary URI which may
+ * Returns a full uri given a full base uri, and a secondary uri which may
  * be relative.
  *
- * Return value: a newly allocated string containing the URI 
- * (NULL for some bad errors).
- **/
+ * Return value: a newly allocated string containing the uri 
+ * (%NULL for some bad errors).
+ */
 char *
 gnome_vfs_uri_make_full_from_relative (const char *base_uri,
 				       const char *relative_uri)
@@ -2029,14 +2139,14 @@ gnome_vfs_uri_make_full_from_relative (const char *base_uri,
 
 /**
  * gnome_vfs_uri_list_parse:
- * @uri_list:
+ * @uri_list: string consists of #GnomeVFSURIs and/or paths seperated by newline character.
  * 
  * Extracts a list of #GnomeVFSURI objects from a standard text/uri-list,
  * such as one you would get on a drop operation.  Use
- * #gnome_vfs_uri_list_free when you are done with the list.
+ * gnome_vfs_uri_list_free() when you are done with the list.
  *
- * Return value: A GList of GnomeVFSURIs
- **/
+ * Return value: a #GList of #GnomeVFSURIs.
+ */
 GList*
 gnome_vfs_uri_list_parse (const gchar* uri_list)
 {

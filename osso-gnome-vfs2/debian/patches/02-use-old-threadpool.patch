@@ -1,0 +1,1157 @@
+? compile
+? gnome-vfs-zip
+? index.html
+? old-thread-pools.diff
+? threadpool-backout.sh
+Index: libgnomevfs/Makefile.am
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/libgnomevfs/Makefile.am,v
+retrieving revision 1.155
+diff -u -p -r1.155 Makefile.am
+--- libgnomevfs/Makefile.am	14 Aug 2006 10:44:42 -0000	1.155
++++ libgnomevfs/Makefile.am	12 Oct 2006 13:03:14 -0000
+@@ -147,6 +147,7 @@ noinst_HEADERS =				\
+ 	gnome-vfs-hal-mounts.h			\
+ 	gnome-vfs-iso9660.h			\
+ 	gnome-vfs-job-queue.h			\
++	gnome-vfs-job-slave.h			\
+ 	gnome-vfs-job.h				\
+ 	gnome-vfs-mime-magic.h			\
+ 	gnome-vfs-mime-private.h		\
+@@ -156,6 +157,7 @@ noinst_HEADERS =				\
+ 	gnome-vfs-monitor-private.h		\
+ 	gnome-vfs-private-utils.h		\
+ 	gnome-vfs-private.h			\
++	gnome-vfs-thread-pool.h			\
+ 	gnome-vfs-unix-mounts.h 		\
+ 	gnome-vfs-volume-monitor-client.h	\
+ 	gnome-vfs-volume-monitor-daemon.h	\
+@@ -267,6 +269,7 @@ libgnomevfs_2_la_SOURCES =			\
+ 	gnome-vfs-inet-connection.c		\
+ 	gnome-vfs-init.c			\
+ 	gnome-vfs-job-queue.c			\
++	gnome-vfs-job-slave.c			\
+ 	gnome-vfs-job.c				\
+ 	gnome-vfs-method.c			\
+ 	gnome-vfs-mime-handlers.c		\
+@@ -292,6 +295,7 @@ libgnomevfs_2_la_SOURCES =			\
+ 	gnome-vfs-socket-buffer.c		\
+ 	gnome-vfs-socket.c			\
+ 	gnome-vfs-ssl.c				\
++	gnome-vfs-thread-pool.c			\
+ 	gnome-vfs-transform.c			\
+ 	gnome-vfs-uri.c				\
+ 	gnome-vfs-utils.c			\
+Index: libgnomevfs/gnome-vfs-init.c
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/libgnomevfs/gnome-vfs-init.c,v
+retrieving revision 1.44
+diff -u -p -r1.44 gnome-vfs-init.c
+--- libgnomevfs/gnome-vfs-init.c	23 Jul 2006 16:30:48 -0000	1.44
++++ libgnomevfs/gnome-vfs-init.c	12 Oct 2006 13:03:14 -0000
+@@ -32,6 +32,7 @@
+ #include "gnome-vfs-private-utils.h"
+ 
+ #include "gnome-vfs-async-job-map.h"
++#include "gnome-vfs-thread-pool.h"
+ #include "gnome-vfs-job-queue.h"
+ #include "gnome-vfs-volume-monitor-private.h"
+ #include "gnome-vfs-module-callback-private.h"
+@@ -42,6 +43,7 @@
+ #include <glib/gi18n-lib.h>
+ #include <glib/gtypes.h>
+ #include <glib/gstdio.h>
++#include <libgnomevfs/gnome-vfs-job-slave.h>
+ 
+ #ifndef DBUS_API_SUBJECT_TO_CHANGE
+ #define DBUS_API_SUBJECT_TO_CHANGE 1
+@@ -89,6 +91,7 @@ gnome_vfs_thread_init (void)
+ 	_gnome_vfs_module_callback_private_init ();
+ 	
+ 	_gnome_vfs_async_job_map_init ();
++	_gnome_vfs_thread_pool_init ();
+ 	_gnome_vfs_job_queue_init ();
+ }
+ 
+@@ -180,6 +183,7 @@ gnome_vfs_initialized (void)
+ void
+ gnome_vfs_shutdown (void)
+ {
++	_gnome_vfs_thread_backend_shutdown ();
+ 	gnome_vfs_mime_shutdown ();
+ #ifndef G_OS_WIN32
+ 	_gnome_vfs_volume_monitor_shutdown ();
+Index: libgnomevfs/gnome-vfs-job-queue.c
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/libgnomevfs/gnome-vfs-job-queue.c,v
+retrieving revision 1.10
+diff -u -p -r1.10 gnome-vfs-job-queue.c
+--- libgnomevfs/gnome-vfs-job-queue.c	17 Jan 2006 00:10:43 -0000	1.10
++++ libgnomevfs/gnome-vfs-job-queue.c	12 Oct 2006 13:03:14 -0000
+@@ -1,8 +1,9 @@
+ /* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
+ /* gnome-vfs-job-queue.c - Job queue for asynchronous GnomeVFSJobs
+-   
+-   Copyright (C) 2005 Christian Kellner
+-   
++   (version for POSIX threads).
++
++   Copyright (C) 2001 Free Software Foundation
++
+    The Gnome Library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public License as
+    published by the Free Software Foundation; either version 2 of the
+@@ -18,157 +19,307 @@
+    write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+    Boston, MA 02111-1307, USA.
+ 
+-   Author: Christian Kellner <gicmo@gnome.org>
+-*/
++   Author: L�szl� P�ter <laca@ireland.sun.com> */
+ 
+ #include <config.h>
+ #include "gnome-vfs-job-queue.h"
+-#include "gnome-vfs-async-job-map.h"
++#include "gnome-vfs-job-slave.h"
+ #include <libgnomevfs/gnome-vfs-job-limit.h>
+ 
++#include <glib/gtree.h>
++#include <unistd.h>
++
++#undef QUEUE_DEBUG
++
++#ifdef QUEUE_DEBUG
++#define Q_DEBUG(x) g_print x
++#else
++#define Q_DEBUG(x)
++#endif
++
++/* See the comment at job_can_start () for 
++   an explanation of the following macros */
+ #ifndef DEFAULT_THREAD_COUNT_LIMIT
+ #define DEFAULT_THREAD_COUNT_LIMIT 10
+ #endif
+ 
+-#ifndef MIN_THREADS
+-#define MIN_THREADS 2
++#define LIMIT_FUNCTION_LOWER_BOUND 2 /* must NOT be more than DEFAULT_THREAD_COUNT_LIMIT */
++#define LIMIT_FUNCTION_SPEED 7       /* must be more than 0 */
++
++#if LIMIT_FUNCTION_LOWER_BOUND > DEFAULT_THREAD_COUNT_LIMIT
++#error LIMIT_FUNCTION_LOWER_BOUND must not be more than DEFAULT_THREAD_COUNT_LIMIT
+ #endif
+ 
+-static GThreadPool *thread_pool = NULL;
++#if LIMIT_FUNCTION_SPEED <= 0
++#error LIMIT_FUNCTION_SPEED must be more than 0
++#endif
+ 
+-static volatile gboolean gnome_vfs_quitting = FALSE;
++/* The maximum number of threads to use for async ops */
++static int thread_count_limit;
+ 
+-static void
+-thread_entry_point (gpointer data, gpointer user_data)
+-{
+-	GnomeVFSJob *job;
+-	gboolean complete;
++/* This is the maximum number of threads reserved for higher priority jobs */
++static float max_decrease;
+ 
+-	job = (GnomeVFSJob *) data;
+-	/* job map must always be locked before the job_lock
+-	 * if both locks are needed */
+-	_gnome_vfs_async_job_map_lock ();
+-	
+-	if (_gnome_vfs_async_job_map_get_job (job->job_handle) == NULL) {
+-		JOB_DEBUG (("job already dead, bail %p",
+-			    job->job_handle));
+-		_gnome_vfs_async_job_map_unlock ();
+-		g_print ("baling out\n");
++typedef GTree JobQueueType;
+ 
+-		/* FIXME: doesn't that leak here? */
+-		return;
++/* This mutex protects these */
++static GStaticMutex job_queue_lock = G_STATIC_MUTEX_INIT;
++static JobQueueType *job_queue;
++static int running_job_count;
++static int job_id;
++#ifdef QUEUE_DEBUG
++  static int job_queue_length;
++#endif
++/* end mutex guard */
++
++typedef struct JobQueueKey {
++	int job_id;
++	int priority;
++} JobQueueKey;
++
++static int
++key_compare (gconstpointer cast_to_key1, gconstpointer cast_to_key2, gpointer user_data)
++{
++	JobQueueKey *key1 = (JobQueueKey *)cast_to_key1;
++	JobQueueKey *key2 = (JobQueueKey *)cast_to_key2;
++
++	/* Lower priority job comes first */
++	if (key1->priority > key2->priority) {
++		return 1;
+ 	}
+-	
+-	JOB_DEBUG (("locking job_lock %p", job->job_handle));
+-	g_mutex_lock (job->job_lock);
+-	_gnome_vfs_async_job_map_unlock ();
+-
+-	_gnome_vfs_job_execute (job);
+-	complete = _gnome_vfs_job_complete (job);
+-	
+-	JOB_DEBUG (("Unlocking access lock %p", job->job_handle));
+-	g_mutex_unlock (job->job_lock);
+-
+-	if (complete) {
+-		_gnome_vfs_async_job_map_lock ();
+-		JOB_DEBUG (("job %p done, removing from map and destroying", 
+-			    job->job_handle));
+-		_gnome_vfs_async_job_completed (job->job_handle);
+-		_gnome_vfs_job_destroy (job);
+-		_gnome_vfs_async_job_map_unlock ();
++
++	if (key1->priority < key2->priority) {
++		return -1;
+ 	}
++
++	/* If the 2 priorities are the same then the
++	   job with the lower job_id comes first.
++
++	   job_ids are positive so this won't overflow.
++	*/
++	return key1->job_id - key2->job_id;
+ }
+ 
+-static gint
+-prioritize_threads (gconstpointer a,
+-		    gconstpointer b,
+-		    gpointer      user_data)
+-{
+-	GnomeVFSJob *job_a;
+-	GnomeVFSJob *job_b;
+-	int          prio_a;
+-	int          prio_b;
+-	int          retval;
+-	
+-	job_a = (GnomeVFSJob *) a;
+-	job_b = (GnomeVFSJob *) b;
+-
+-	prio_a = job_a->priority;
+-	prio_b = job_b->priority;
+-
+-	/* From glib gtk-doc:
+-	 * 
+-	 * a negative value if the first task should be processed 
+-	 * before the second or a positive value if the 
+-	 * second task should be processed first. 
+-	 *
+-	 */
+-	
+-	if (prio_a > prio_b) {
+-		return -1;
+-	} else if (prio_a < prio_b) {
+-		return 1;
++static void
++value_destroy (gpointer cast_to_job)
++{
++	_gnome_vfs_job_destroy ((GnomeVFSJob *)cast_to_job);
++}
++
++static JobQueueType *
++job_queue_new (void)
++{
++	return g_tree_new_full (key_compare, NULL, g_free, value_destroy);
++}
++
++static void
++job_queue_destroy (void)
++{
++	g_tree_destroy (job_queue);
++	job_queue = NULL;
++}
++
++static void
++job_queue_add (GnomeVFSJob *job)
++{
++	JobQueueKey *key = g_new (JobQueueKey, 1);
++	key->job_id = ++job_id;
++	key->priority = job->priority;
++
++	g_tree_insert (job_queue, key, job);
++#ifdef QUEUE_DEBUG
++	job_queue_length++;
++#endif
++}
++
++static int
++find_first_value (gpointer key, gpointer value, gpointer data)
++{
++	*((GnomeVFSJob **)data) = value;
++	return TRUE;
++}
++
++static GnomeVFSJob *
++job_queue_get_first (void)
++{
++	GnomeVFSJob *job = NULL;
++
++	if (job_queue) {
++		g_tree_foreach (job_queue, find_first_value, &job);
+ 	}
+ 
+-	/* Since job_handles are just increasing u-ints
+-	 * we return a negative value if job_a->job_handle >
+-	 * job_b->job_handle so we have sort the old job
+-	 * before the newer one  */
+-	retval = GPOINTER_TO_UINT (job_a->job_handle) -
+-		 GPOINTER_TO_UINT (job_b->job_handle);
++	return job;
++}
+ 
+-	return retval;
++static int
++find_first_key (gpointer key, gpointer value, gpointer data)
++{
++	*((JobQueueKey **)data) = key;
++	return TRUE;
+ }
+ 
+-void
++static void
++job_queue_delete_first (void)
++{
++	JobQueueKey *key = NULL;
++
++	g_tree_foreach (job_queue, find_first_key, &key);
++	g_tree_steal (job_queue, key);
++
++	g_free (key);
++#ifdef QUEUE_DEBUG
++	job_queue_length--;
++#endif
++}
++
++void 
+ _gnome_vfs_job_queue_init (void)
+ {
+-	GError *err = NULL;
++	static gboolean queue_initialized = FALSE;
+ 
+-	thread_pool = g_thread_pool_new (thread_entry_point,
+-					 NULL,
+-					 DEFAULT_THREAD_COUNT_LIMIT,
+-					 FALSE,
+-					 &err);
+-
+-	if (G_UNLIKELY (thread_pool == NULL)) {
+-		g_error ("Could not create threadpool: %s",
+-			 err->message);
+-	}
+-	
+-	g_thread_pool_set_sort_function (thread_pool,
+-					 prioritize_threads,
+-					 NULL);
++	if (queue_initialized != TRUE) {
++		Q_DEBUG (("initializing the job queue (thread limit: %d)\n", DEFAULT_THREAD_COUNT_LIMIT));
++		thread_count_limit = DEFAULT_THREAD_COUNT_LIMIT;
++		max_decrease = (float)thread_count_limit - LIMIT_FUNCTION_LOWER_BOUND;
++		job_queue = job_queue_new ();
++		queue_initialized = TRUE;
++	}
+ }
+ 
++/* This function implements a scheduling policy where a certain number
++   of threads is reserved for high priority jobs so they can start
++   immediately if needed.  The lower the priority of the running jobs
++   the more threads are reserved.  So the actual limit on running jobs
++   is a function of the priority of the job to be started.
++   This function converges to LIMIT_FUNCTION_LOWER_BOUND (i.e. this
++   will be the limit belonging to the lowest priority jobs.)
++   The speed of convergence is determined by LIMIT_FUNCTION_SPEED.
++   For negative priority jobs the limit equals to thread_count_limit.
++
++   Note that thread_count_limit can be queried/set runtime using the
++   gnome_vfs_async_job_{get,set}_limit functions.
++
++   The formula is as follows:
++
++   max_decrease = thread_count_limit - LIMIT_FUNCTION_LOWER_BOUND
++
++   This is the maximum difference between the limit function and the
++   thread_count_limit.
++
++                                                max_decrease * p
++   max jobs = thread_count_limit  - floor (--------------------------)
++                                            LIMIT_FUNCTION_SPEED + p
++
++   This table shows some limits belonging to the default parameters:
++
++   priority of the  | max number
++   job to start     | of jobs
++   -----------------+-----------
++   <1               | 10
++   1                | 9
++   2                | 9
++   3                | 8
++   5                | 7
++   10               | 6
++   20               | 5
++   50               | 3
++   1000             | 3
+ 
+-gboolean
+-_gnome_vfs_job_schedule (GnomeVFSJob *job)
++   For example a job with a priority of 3 will NOT be started if
++   there are at least 8 jobs already running.
++*/
++static gboolean
++job_can_start (int priority)
+ {
+-	GError *err = NULL;
+-	
+-	if (G_UNLIKELY (gnome_vfs_quitting)) {
+-		/* The application is quitting, the threadpool might already
+-		 * be dead, just return FALSE 
+-		 * We are also not calling _gnome_vfs_async_job_completed 
+-		 * because the job map might also be dead */
+-		g_warning ("Starting of GnomeVFS async calls after quit.");
++	int transformed_priority;
++	int actual_limit;
++
++	/* Move the highest priority to the zero point */
++	transformed_priority = priority + GNOME_VFS_PRIORITY_MIN;
++
++	if (running_job_count >= thread_count_limit) {
++		/* Max number of jobs are already running */
+ 		return FALSE;
++        } else if (transformed_priority >= 0) {
++		/* Let's not allow low (i.e. positive) priority jobs to use up all the threads.
++		   We reserve some threads for higher priority jobs.
++		   The lower the priority to more threads are reserved.
++
++		   The actual limit should the the thread count limit less a proportion
++		   of the maximum decrease.
++		*/
++
++		actual_limit = thread_count_limit - (int)(max_decrease * transformed_priority /
++							  (LIMIT_FUNCTION_SPEED + transformed_priority));
++		
++		if (actual_limit <= running_job_count) {
++			return FALSE;
++		}
+ 	}
++	return TRUE;
++}
+ 
+-	g_thread_pool_push (thread_pool, job, &err);
++void
++_gnome_vfs_job_queue_run (void)
++{
++	GnomeVFSJob *job_to_run;
+ 
+-	if (G_UNLIKELY (err != NULL)) {
+-		g_warning ("Could not push thread %s into pool\n",
+-			   err->message);
++	g_static_mutex_lock (&job_queue_lock);
+ 
+-		/* thread did not start up, remove the job from the hash table */
+-		_gnome_vfs_async_job_completed (job->job_handle);
+-		
+-		return FALSE;
++	running_job_count--;
++	Q_DEBUG (("job finished;\t\t\t\t       %d jobs running, %d waiting\n",
++		 running_job_count,
++		 job_queue_length));
++
++	job_to_run = job_queue_get_first ();
++	if (job_to_run != NULL) {
++		/* The queue is not empty */
++		if (job_can_start (job_to_run->priority)) {
++			running_job_count++;
++			job_queue_delete_first ();
++			Q_DEBUG (("taking a %2d priority job from the queue;"
++				 "       %d jobs running, %d waiting\n",
++				 job_to_run->priority,
++				 running_job_count,
++				 job_queue_length));
++			g_static_mutex_unlock (&job_queue_lock);
++			_gnome_vfs_job_create_slave (job_to_run);
++		} else {
++			g_static_mutex_unlock (&job_queue_lock);
++			Q_DEBUG (("waiting job is too low priority (%2d) to start;"
++				 " %d jobs running, %d waiting\n",
++				 job_to_run->priority,
++				 running_job_count,
++				 job_queue_length));
++		}
++	} else {
++		g_static_mutex_unlock (&job_queue_lock);
++		Q_DEBUG (("the queue is empty;\t\t\t       %d jobs running\n", running_job_count));
+ 	}
++}
+ 
+-	return TRUE;	
++gboolean
++_gnome_vfs_job_schedule (GnomeVFSJob *job)
++{
++	g_static_mutex_lock (&job_queue_lock);
++      	if (!job_can_start (job->priority)) {
++	  	job_queue_add (job);
++		Q_DEBUG (("adding a %2d priority job to the queue;"
++			 "\t       %d jobs running, %d waiting\n",
++			 job->priority,
++			 running_job_count,
++			 job_queue_length));
++		g_static_mutex_unlock (&job_queue_lock);
++	} else {
++		running_job_count++;
++		Q_DEBUG (("starting a %2d priority job;\t\t       %d jobs running, %d waiting\n",
++			job->priority,
++			running_job_count,
++			job_queue_length));
++		g_static_mutex_unlock (&job_queue_lock);
++		_gnome_vfs_job_create_slave (job);
++	}
++	return TRUE;
+ }
+ 
+ /**
+@@ -181,13 +332,16 @@ _gnome_vfs_job_schedule (GnomeVFSJob *jo
+ void
+ gnome_vfs_async_set_job_limit (int limit)
+ {
+-	if (limit < MIN_THREADS) {
++	if (limit < LIMIT_FUNCTION_LOWER_BOUND) {
+ 		g_warning ("Attempt to set the thread_count_limit below %d", 
+-			   MIN_THREADS);
++			   LIMIT_FUNCTION_LOWER_BOUND);
+ 		return;
+ 	}
+-
+-	g_thread_pool_set_max_threads (thread_pool, limit, NULL);
++	g_static_mutex_lock (&job_queue_lock);
++	thread_count_limit = limit;
++	max_decrease = (float)thread_count_limit - LIMIT_FUNCTION_LOWER_BOUND;
++	Q_DEBUG (("changing the thread count limit to %d\n", limit));
++	g_static_mutex_unlock (&job_queue_lock);
+ }
+ 
+ /**
+@@ -201,23 +355,15 @@ gnome_vfs_async_set_job_limit (int limit
+ int
+ gnome_vfs_async_get_job_limit (void)
+ {
+-	return g_thread_pool_get_max_threads (thread_pool);
++	return thread_count_limit;
+ }
+ 
+ void
+ _gnome_vfs_job_queue_shutdown (void)
+ {
+-	g_thread_pool_free (thread_pool, FALSE, FALSE);
++	g_static_mutex_lock (&job_queue_lock);
+ 
+-	gnome_vfs_quitting = TRUE;
++	job_queue_destroy ();
+ 
+-	while (gnome_vfs_job_get_count () != 0) {
+-		
+-		g_main_context_iteration (NULL, FALSE);
+-		g_usleep (20000);
+-
+-	}
+-
+-	_gnome_vfs_async_job_map_shutdown ();
++	g_static_mutex_unlock (&job_queue_lock);
+ }
+-
+Index: libgnomevfs/gnome-vfs-job-queue.h
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/libgnomevfs/gnome-vfs-job-queue.h,v
+retrieving revision 1.3
+diff -u -p -r1.3 gnome-vfs-job-queue.h
+--- libgnomevfs/gnome-vfs-job-queue.h	2 Dec 2005 18:25:17 -0000	1.3
++++ libgnomevfs/gnome-vfs-job-queue.h	12 Oct 2006 13:03:14 -0000
+@@ -28,8 +28,9 @@
+ 
+ #include "gnome-vfs-job.h"
+ 
+-void          _gnome_vfs_job_queue_init       (void) G_GNUC_INTERNAL;
+-void          _gnome_vfs_job_queue_shutdown   (void) G_GNUC_INTERNAL;
+-gboolean      _gnome_vfs_job_schedule         (GnomeVFSJob       *job) G_GNUC_INTERNAL;
++void          _gnome_vfs_job_queue_init       (void);
++void          _gnome_vfs_job_queue_shutdown   (void);
++gboolean      _gnome_vfs_job_schedule         (GnomeVFSJob       *job);
++void          _gnome_vfs_job_queue_run        (void);
+ 
+ #endif /* GNOME_VFS_JOB_QUEUE_H */
+Index: libgnomevfs/gnome-vfs-job-slave.c
+===================================================================
+RCS file: libgnomevfs/gnome-vfs-job-slave.c
+diff -N libgnomevfs/gnome-vfs-job-slave.c
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ libgnomevfs/gnome-vfs-job-slave.c	12 Oct 2006 13:03:15 -0000
+@@ -0,0 +1,149 @@
++/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
++/* gnome-vfs-job-slave.c - Thread for asynchronous GnomeVFSJobs
++   (version for POSIX threads).
++
++   Copyright (C) 1999 Free Software Foundation
++
++   The Gnome Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Library General Public License as
++   published by the Free Software Foundation; either version 2 of the
++   License, or (at your option) any later version.
++
++   The Gnome Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Library General Public License for more details.
++
++   You should have received a copy of the GNU Library General Public
++   License along with the Gnome Library; see the file COPYING.LIB.  If not,
++   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++   Boston, MA 02111-1307, USA.
++
++   Author: Ettore Perazzoli <ettore@comm2000.it> */
++
++#include <config.h>
++#include "gnome-vfs-job-slave.h"
++
++#include "gnome-vfs-async-job-map.h"
++#include "gnome-vfs-thread-pool.h"
++#include "gnome-vfs-job-queue.h"
++#include <glib/gmessages.h>
++#include <unistd.h>
++
++static volatile gboolean gnome_vfs_quitting = FALSE;
++static volatile gboolean gnome_vfs_done_quitting = FALSE;
++
++
++static void *
++thread_routine (void *data)
++{
++	guint id;
++	GnomeVFSJob *job;
++	GnomeVFSAsyncHandle *job_handle;
++	gboolean complete;
++
++	job_handle = (GnomeVFSAsyncHandle *) data;
++
++	id = GPOINTER_TO_UINT (job_handle);
++	/* job map must always be locked before the job_lock
++	 * if both locks are needed */
++	_gnome_vfs_async_job_map_lock ();
++	
++	job = _gnome_vfs_async_job_map_get_job (job_handle);
++	
++	if (job == NULL) {
++		JOB_DEBUG (("job already dead, bail %u", id));
++		_gnome_vfs_async_job_map_unlock ();
++		return NULL;
++	}
++	
++	JOB_DEBUG (("locking job_lock %u", id));
++	g_mutex_lock (job->job_lock);
++	_gnome_vfs_async_job_map_unlock ();
++
++	_gnome_vfs_job_execute (job);
++	complete = _gnome_vfs_job_complete (job);
++	
++	JOB_DEBUG (("Unlocking access lock %u", id));
++	g_mutex_unlock (job->job_lock);
++
++	if (complete) {
++		_gnome_vfs_async_job_map_lock ();
++		JOB_DEBUG (("job %u done, removing from map and destroying", id));
++		_gnome_vfs_async_job_completed (job_handle);
++		_gnome_vfs_job_destroy (job);
++		_gnome_vfs_async_job_map_unlock ();
++	}
++
++	return NULL;
++}
++
++gboolean
++_gnome_vfs_job_create_slave (GnomeVFSJob *job)
++{
++	g_return_val_if_fail (job != NULL, FALSE);
++
++	if (gnome_vfs_quitting) {
++		g_warning ("Someone still starting up GnomeVFS async calls after quit.");
++	}
++
++	if (gnome_vfs_done_quitting) {
++		/* The application is quitting, we have already returned from
++		 * gnome_vfs_wait_for_slave_threads, we can't start any more threads
++		 * because they would potentially block indefinitely and prevent the
++		 * app from quitting.
++		 */
++		return FALSE;
++	}
++	
++	if (_gnome_vfs_thread_create (thread_routine, job->job_handle) != 0) {
++		g_warning ("Impossible to allocate a new GnomeVFSJob thread.");
++		
++		/* thread did not start up, remove the job from the hash table */
++		_gnome_vfs_async_job_completed (job->job_handle);
++		_gnome_vfs_job_destroy (job);
++		return FALSE;
++	}
++
++	return TRUE;
++}
++
++void
++_gnome_vfs_thread_backend_shutdown (void)
++{
++	gboolean done;
++	int count;
++	
++	done = FALSE;
++
++	gnome_vfs_quitting = TRUE;
++
++	JOB_DEBUG (("###### shutting down"));
++
++	_gnome_vfs_job_queue_shutdown();
++
++	for (count = 0; ; count++) {
++		/* Check if it is OK to quit. Originally we used a
++		 * count of slave threads, but now we use a count of
++		 * outstanding jobs instead to make sure that the job
++		 * is cleanly destroyed.
++		 */
++		if (gnome_vfs_job_get_count () == 0) {
++			done = TRUE;
++			gnome_vfs_done_quitting = TRUE;
++		}
++
++		if (done) {
++			break;
++		}
++
++		/* Some threads are still trying to quit, wait a bit until they
++		 * are done.
++		 */
++		g_main_context_iteration (NULL, FALSE);
++		g_usleep (20000);
++	}
++
++	_gnome_vfs_thread_pool_shutdown ();
++	_gnome_vfs_async_job_map_shutdown ();
++}
+Index: libgnomevfs/gnome-vfs-job-slave.h
+===================================================================
+RCS file: libgnomevfs/gnome-vfs-job-slave.h
+diff -N libgnomevfs/gnome-vfs-job-slave.h
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ libgnomevfs/gnome-vfs-job-slave.h	12 Oct 2006 13:03:15 -0000
+@@ -0,0 +1,36 @@
++/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
++/* gnome-vfs-job-slave.h - Slave thread for asynchronous GnomeVFSJobs
++   (version for POSIX threads).
++
++   Copyright (C) 1999 Free Software Foundation
++
++   The Gnome Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Library General Public License as
++   published by the Free Software Foundation; either version 2 of the
++   License, or (at your option) any later version.
++
++   The Gnome Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Library General Public License for more details.
++
++   You should have received a copy of the GNU Library General Public
++   License along with the Gnome Library; see the file COPYING.LIB.  If not,
++   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++   Boston, MA 02111-1307, USA.
++
++   Author: Ettore Perazzoli <ettore@comm2000.it> */
++
++#ifndef GNOME_VFS_JOB_SLAVE_H
++#define GNOME_VFS_JOB_SLAVE_H
++
++#include "gnome-vfs-job.h"
++
++gboolean _gnome_vfs_job_create_slave        (GnomeVFSJob *job);
++
++/* Call this before taking down the idle task in the master thread to
++ * give pending slave threads a chance to finish cleanly.
++ */
++void     _gnome_vfs_thread_backend_shutdown (void);
++
++#endif /* GNOME_VFS_JOB_SLAVE_H */
+Index: libgnomevfs/gnome-vfs-job.c
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/libgnomevfs/gnome-vfs-job.c,v
+retrieving revision 1.108
+diff -u -p -r1.108 gnome-vfs-job.c
+--- libgnomevfs/gnome-vfs-job.c	6 Jul 2006 11:32:47 -0000	1.108
++++ libgnomevfs/gnome-vfs-job.c	12 Oct 2006 13:03:16 -0000
+@@ -31,6 +31,7 @@ System (version for POSIX threads).
+ #include "gnome-vfs-job.h"
+ 
+ #include "gnome-vfs-async-job-map.h"
++#include "gnome-vfs-job-slave.h"
+ #include "gnome-vfs-job-queue.h"
+ #include "gnome-vfs-private-utils.h"
+ #include "gnome-vfs-module-callback-private.h"
+Index: libgnomevfs/gnome-vfs-pthread.c
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/libgnomevfs/gnome-vfs-pthread.c,v
+retrieving revision 1.6
+diff -u -p -r1.6 gnome-vfs-pthread.c
+--- libgnomevfs/gnome-vfs-pthread.c	2 Dec 2005 18:25:17 -0000	1.6
++++ libgnomevfs/gnome-vfs-pthread.c	12 Oct 2006 13:03:16 -0000
+@@ -2,7 +2,6 @@
+ #include "gnome-vfs-async-job-map.h"
+ #include "gnome-vfs-thread-pool.h"
+ #include "gnome-vfs-job-queue.h"
+-#include "gnome-vfs-job-slave.h"
+ 
+ gboolean
+ gnome_vfs_pthread_init (gboolean init_deps)
+@@ -12,6 +11,7 @@ gnome_vfs_pthread_init (gboolean init_de
+ 	}
+ 	
+ 	_gnome_vfs_async_job_map_init ();
++	_gnome_vfs_thread_pool_init ();
+ 	_gnome_vfs_job_queue_init ();
+ 	return TRUE;
+ }
+Index: libgnomevfs/gnome-vfs-thread-pool.c
+===================================================================
+RCS file: libgnomevfs/gnome-vfs-thread-pool.c
+diff -N libgnomevfs/gnome-vfs-thread-pool.c
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ libgnomevfs/gnome-vfs-thread-pool.c	12 Oct 2006 13:03:16 -0000
+@@ -0,0 +1,279 @@
++/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
++/* gnome-vfs-thread-pool.c - Simple thread pool implementation
++
++   Copyright (C) 2000 Eazel, Inc.
++
++   The Gnome Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Library General Public License as
++   published by the Free Software Foundation; either version 2 of the
++   License, or (at your option) any later version.
++
++   The Gnome Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Library General Public License for more details.
++
++   You should have received a copy of the GNU Library General Public
++   License along with the Gnome Library; see the file COPYING.LIB.  If not,
++   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++   Boston, MA 02111-1307, USA.
++
++   Author: Pavel Cisler <pavel@eazel.com>
++*/
++
++#include <config.h>
++#include "gnome-vfs-thread-pool.h"
++#include "gnome-vfs-job-queue.h"
++#include <libgnomevfs/gnome-vfs-job-limit.h>
++#include <glib/glist.h>
++#include <glib/gmessages.h>
++
++#undef DEBUG_PRINT
++
++#define GNOME_VFS_THREAD_STACK_SIZE 256*1024
++
++#if 0
++#define DEBUG_PRINT(x) g_print x
++#else
++#define DEBUG_PRINT(x)
++#endif
++
++typedef struct {
++	GThread *thread;
++	GMutex *waiting_for_work_lock;
++	GCond *waiting_for_work_lock_condition;
++	
++	void *(* entry_point) (void *);
++	void *entry_data;
++	
++	volatile gboolean exit_requested;
++} GnomeVFSThreadState;
++
++static GStaticMutex thread_list_lock = G_STATIC_MUTEX_INIT;
++
++static const int MAX_AVAILABLE_THREADS = 20; 
++static GList *available_threads;
++static int thread_count;
++
++static void *thread_entry (void *cast_to_state);
++static void destroy_thread_state (GnomeVFSThreadState *state);
++
++void 
++_gnome_vfs_thread_pool_init (void)
++{
++}
++
++static GnomeVFSThreadState *
++new_thread_state (void)
++{
++	GnomeVFSThreadState *state;
++	GError *error;
++	
++	state = g_new0 (GnomeVFSThreadState, 1);
++
++	state->waiting_for_work_lock = g_mutex_new ();
++	state->waiting_for_work_lock_condition = g_cond_new ();
++
++	error = NULL;
++
++	/* spawn a new thread, call the entry point immediately -- it will block
++	 * until it receives a new entry_point for the first job to execute
++	 */
++	state->thread = g_thread_create_full (thread_entry, state,
++					      GNOME_VFS_THREAD_STACK_SIZE,
++					      FALSE, FALSE,
++					      G_THREAD_PRIORITY_NORMAL, &error);
++
++	DEBUG_PRINT (("new thread %p\n", state->thread));
++	
++	if (error != NULL || !state->thread) {
++		g_error_free (error);
++		return NULL;
++	}
++	
++	return state;
++}
++
++static void
++destroy_thread_state (GnomeVFSThreadState *state)
++{
++	g_mutex_free (state->waiting_for_work_lock);
++	g_cond_free (state->waiting_for_work_lock_condition);
++	g_free (state);
++}
++
++static gboolean
++make_thread_available (GnomeVFSThreadState *state)
++{
++	/* thread is done with it's work, add it to the available pool */
++	gboolean delete_thread = TRUE;
++	int job_limit;
++
++	g_mutex_lock (state->waiting_for_work_lock);
++	/* we are done with the last task, clear it out */
++	state->entry_point = NULL;
++	g_mutex_unlock (state->waiting_for_work_lock);
++
++	g_static_mutex_lock (&thread_list_lock);
++
++	job_limit = gnome_vfs_async_get_job_limit();
++	if (thread_count < MIN(MAX_AVAILABLE_THREADS, job_limit)) {
++		/* haven't hit the max thread limit yet, add the now available
++		 * thread to the pool
++		 */
++		available_threads = g_list_prepend (available_threads, state);
++		thread_count++;
++		delete_thread = FALSE;
++		DEBUG_PRINT (("adding thread %p the pool, %d threads\n",
++			      state->thread, thread_count));
++	}
++
++	g_static_mutex_unlock (&thread_list_lock);
++	
++	return !delete_thread;
++}
++
++static void
++gnome_vfs_thread_pool_wait_for_work (GnomeVFSThreadState *state)
++{
++	/* FIXME: The Eazel profiler should be taught about this call
++	 * and ignore any timings it collects from the program hanging out
++	 * in here.
++	 */
++
++	/* Wait to get scheduled to do some work. */
++	DEBUG_PRINT (("thread %p getting ready to wait for work \n",
++		      state->thread));
++
++	g_mutex_lock (state->waiting_for_work_lock);
++	if (state->entry_point != NULL) {
++		DEBUG_PRINT (("thread %p ready to work right away \n",
++			      state->thread));
++	} else {
++		while (state->entry_point == NULL && !state->exit_requested) {
++			/* Don't have any work yet, wait till we get some. */
++			DEBUG_PRINT (("thread %p waiting for work \n", state->thread));
++			g_cond_wait (state->waiting_for_work_lock_condition,
++				     state->waiting_for_work_lock);
++		}
++	}
++
++	g_mutex_unlock (state->waiting_for_work_lock);
++	DEBUG_PRINT (("thread %p woken up\n", state->thread));
++}
++
++static void *
++thread_entry (void *cast_to_state)
++{
++	GnomeVFSThreadState *state = (GnomeVFSThreadState *)cast_to_state;
++
++	for (;;) {
++		if (state->exit_requested) {
++			/* We have been explicitly asked to expire */
++			break;
++		}
++
++		gnome_vfs_thread_pool_wait_for_work (state);
++		
++		if (state->exit_requested) {
++			/* We have been explicitly asked to expire */
++			break;
++		}
++		
++		g_assert (state->entry_point);
++
++		/* Enter the actual thread entry point. */
++		(*state->entry_point) (state->entry_data);
++
++		if (!make_thread_available (state)) {
++			/* Available thread pool is full of threads, just let this one
++			 * expire.
++			 */
++			break;
++		}
++
++		/* We're finished with this job so run the job queue scheduler 
++		 * to start a new job if the queue is not empty
++		 */
++		_gnome_vfs_job_queue_run ();
++	}
++
++	destroy_thread_state (state);
++	return NULL;
++}
++
++int 
++_gnome_vfs_thread_create (void *(* thread_routine) (void *),
++			 void *thread_arguments)
++{
++	GnomeVFSThreadState *available_thread;
++	
++	g_static_mutex_lock (&thread_list_lock);
++	if (available_threads == NULL) {
++		/* Thread pool empty, create a new thread. */
++		available_thread = new_thread_state ();
++	} else {
++		/* Pick the next available thread from the list. */
++		available_thread = (GnomeVFSThreadState *)available_threads->data;
++		available_threads = g_list_remove (available_threads, available_thread);
++		thread_count--;
++		DEBUG_PRINT (("got thread %p from the pool, %d threads left\n",
++			      available_thread->thread, thread_count));
++	}
++	g_static_mutex_unlock (&thread_list_lock);
++	
++	if (available_thread == NULL) {
++		/* Failed to allocate a new thread. */
++		return -1;
++	}
++	
++	/* Lock it so we can condition-signal it next. */
++	g_mutex_lock (available_thread->waiting_for_work_lock);
++
++	/* Prepare work for the thread. */
++	available_thread->entry_point = thread_routine;
++	available_thread->entry_data = thread_arguments;
++
++	/* Unleash the thread. */
++	DEBUG_PRINT (("waking up thread %p\n", available_thread->thread));
++	g_cond_signal (available_thread->waiting_for_work_lock_condition);
++	g_mutex_unlock (available_thread->waiting_for_work_lock);
++
++	return 0;
++}
++
++void 
++_gnome_vfs_thread_pool_shutdown (void)
++{
++	GnomeVFSThreadState *thread_state;
++
++	for (;;) {
++		thread_state = NULL;
++		
++		g_static_mutex_lock (&thread_list_lock);
++		if (available_threads != NULL) {
++			/* Pick the next thread from the list. */
++			thread_state = (GnomeVFSThreadState *)available_threads->data;
++			available_threads = g_list_remove (available_threads, thread_state);
++		}
++		g_static_mutex_unlock (&thread_list_lock);
++
++		if (thread_state == NULL) {
++			break;
++		}
++		
++		g_mutex_lock (thread_state->waiting_for_work_lock);
++		/* Tell the thread to expire. */
++		thread_state->exit_requested = TRUE;
++		g_cond_signal (thread_state->waiting_for_work_lock_condition);
++		g_mutex_unlock (thread_state->waiting_for_work_lock);
++
++		/* Give other thread a chance to quit.
++		 * This isn't guaranteed to work due to scheduler uncertainties and
++		 * the fact that the thread might be doing some work. But at least there
++		 * is a large chance that idle threads quit.
++		 */
++		g_thread_yield ();
++	}
++}
++
+Index: libgnomevfs/gnome-vfs-thread-pool.h
+===================================================================
+RCS file: libgnomevfs/gnome-vfs-thread-pool.h
+diff -N libgnomevfs/gnome-vfs-thread-pool.h
+--- /dev/null	1 Jan 1970 00:00:00 -0000
++++ libgnomevfs/gnome-vfs-thread-pool.h	12 Oct 2006 13:03:16 -0000
+@@ -0,0 +1,34 @@
++/* -*- Mode: C; indent-tabs-mode: t; c-basic-offset: 8; tab-width: 8 -*- */
++/* gnome-vfs-thread-pool.h - Simple thread pool implementation
++
++   Copyright (C) 2000 Eazel, Inc.
++
++   The Gnome Library is free software; you can redistribute it and/or
++   modify it under the terms of the GNU Library General Public License as
++   published by the Free Software Foundation; either version 2 of the
++   License, or (at your option) any later version.
++
++   The Gnome Library is distributed in the hope that it will be useful,
++   but WITHOUT ANY WARRANTY; without even the implied warranty of
++   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++   Library General Public License for more details.
++
++   You should have received a copy of the GNU Library General Public
++   License along with the Gnome Library; see the file COPYING.LIB.  If not,
++   write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
++   Boston, MA 02111-1307, USA.
++
++   Author: Pavel Cisler <pavel@eazel.com>
++*/
++
++#ifndef GNOME_VFS_THREAD_POOL
++#define GNOME_VFS_THREAD_POOL
++
++int  _gnome_vfs_thread_create (void *(* thread_routine) (void *),
++			      void *thread_arguments);
++
++void _gnome_vfs_thread_pool_init     (void);
++void _gnome_vfs_thread_pool_shutdown (void);
++/* called during app shutdown, quit all the threads from the pool */
++
++#endif

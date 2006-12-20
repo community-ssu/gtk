@@ -49,7 +49,6 @@ G_STMT_START{						\
 		return GNOME_VFS_ERROR_NOT_SUPPORTED;	\
 }G_STMT_END
 
-
 static GnomeVFSDirectoryHandle *
 gnome_vfs_directory_handle_new (GnomeVFSURI *uri,
 				GnomeVFSMethodHandle *method_handle,
@@ -81,7 +80,6 @@ gnome_vfs_directory_handle_destroy (GnomeVFSDirectoryHandle *handle)
 	g_free (handle);
 }
 
-
 static GnomeVFSResult
 open_from_uri (GnomeVFSDirectoryHandle **handle,
 	       GnomeVFSURI *uri,
@@ -119,9 +117,6 @@ do_open (GnomeVFSDirectoryHandle **handle,
 	GnomeVFSURI *uri;
 	GnomeVFSResult result;
 
-	g_return_val_if_fail (handle != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
-	g_return_val_if_fail (text_uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
-
 	uri = gnome_vfs_uri_new (text_uri);
 	if (uri == NULL)
 		return GNOME_VFS_ERROR_INVALID_URI;
@@ -135,46 +130,48 @@ do_open (GnomeVFSDirectoryHandle **handle,
 }
 
 /**
- * gnome_vfs_directory_open
- * @handle: A pointer to a pointer to a GnomeVFSDirectoryHandle object
- * @text_uri: String representing the URI to open
- * @options: Options for reading file information
+ * gnome_vfs_directory_open:
+ * @handle: pointer to a pointer to a #GnomeVFSDirectoryHandle object.
+ * @text_uri: string representing the uri to open.
+ * @options: options for reading file information.
  * 
  * Open directory @text_uri for reading.  On return, @*handle will point to
- * a %GnomeVFSDirectoryHandle object which can be used to read the directory
+ * a #GnomeVFSDirectoryHandle object which can be used to read the directory
  * entries one by one.
  * 
- * Returns: An integer representing the result of the operation
- **/
+ * Returns: an integer representing the result of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_directory_open (GnomeVFSDirectoryHandle **handle,
 			  const gchar *text_uri,
 			  GnomeVFSFileInfoOptions options)
 {
 	g_return_val_if_fail (handle != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	*handle = NULL;
 	g_return_val_if_fail (text_uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
 	return do_open (handle, text_uri, options, NULL);
 }
 
 /**
- * gnome_vfs_directory_open_from_uri
- * @handle: A pointer to a pointer to a GnomeVFSDirectoryHandle object
- * @uri: URI to open
- * @options: Options for reading file information
+ * gnome_vfs_directory_open_from_uri:
+ * @handle: pointer to a pointer to a #GnomeVFSDirectoryHandle object.
+ * @uri: uri to open.
+ * @options: options for reading file information.
  * 
  * Open directory @text_uri for reading.  On return, @*handle will point to
- * a %GnomeVFSDirectoryHandle object which can be used to read the directory
+ * a #GnomeVFSDirectoryHandle object which can be used to read the directory
  * entries one by one.
  * 
- * Returns: An integer representing the result of the operation.
- **/
+ * Returns: an integer representing the result of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_directory_open_from_uri (GnomeVFSDirectoryHandle **handle,
 				   GnomeVFSURI *uri,
 				   GnomeVFSFileInfoOptions options)
 {
 	g_return_val_if_fail (handle != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	*handle = NULL;
 	g_return_val_if_fail (uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
 	return open_from_uri (handle, uri, options, NULL);
@@ -187,6 +184,7 @@ gnome_vfs_directory_open_from_uri_cancellable (GnomeVFSDirectoryHandle **handle,
 				   GnomeVFSContext *context)
 {
 	g_return_val_if_fail (handle != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	*handle = NULL;
 	g_return_val_if_fail (uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
 	return open_from_uri (handle, uri, options, context);
@@ -194,14 +192,14 @@ gnome_vfs_directory_open_from_uri_cancellable (GnomeVFSDirectoryHandle **handle,
 
 /**
  * gnome_vfs_directory_read_next:
- * @handle: A directory handle
- * @file_info: Pointer to a %GnomeVFSFileInfo struct where the data about
- * the entry will be stored
+ * @handle: a directory handle.
+ * @file_info: pointer to a #GnomeVFSFileInfo struct where the data about
+ * the directory at @handle will be stored.
  * 
  * Read the next directory entry from @handle.
  * 
- * Returns: An integer value representing the result of the operation.
- **/
+ * Returns: an integer value representing the result of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_directory_read_next (GnomeVFSDirectoryHandle *handle,
 			       GnomeVFSFileInfo *file_info)
@@ -214,6 +212,17 @@ gnome_vfs_directory_read_next (GnomeVFSDirectoryHandle *handle,
 						    file_info, NULL);
 }
 
+/**
+ * gnome_vfs_directory_read_next_cancellable:
+ * @handle: a directory handle.
+ * @file_info: pointer to a #GnomeVFSFileInfo struct where the data about 
+ * the directory at @handle will be stored.
+ * @context: a #GnomeVFSContext.
+ *
+ * Read the next directory entry from @handle.
+ *
+ * Returns: an integer value representing the result of the operation.
+ */
 GnomeVFSResult 
 gnome_vfs_directory_read_next_cancellable (GnomeVFSDirectoryHandle *handle,
 					   GnomeVFSFileInfo *file_info,
@@ -230,11 +239,11 @@ gnome_vfs_directory_read_next_cancellable (GnomeVFSDirectoryHandle *handle,
 
 /**
  * gnome_vfs_directory_close:
- * @handle: A directory handle.
+ * @handle: a directory handle.
  * 
  * Close @handle.
  * 
- * Returns: An integer representing the result of the operation.
+ * Returns: an integer representing the result of the operation.
  */
 GnomeVFSResult
 gnome_vfs_directory_close (GnomeVFSDirectoryHandle *handle)
@@ -391,6 +400,8 @@ directory_visit_internal (GnomeVFSURI *uri,
 		recurse = FALSE;
 		stop = ! (* callback) (rel_path, info, recursing_will_loop,
 				       data, &recurse);
+		if (stop)
+			result = GNOME_VFS_ERROR_INTERRUPTED;
 
 		if (! stop
 		    && recurse
@@ -454,17 +465,21 @@ directory_visit_internal (GnomeVFSURI *uri,
 }
 
 /**
- * gnome_vfs_directory_visit_uri
- * @uri: URI to start from
- * @info_options: Options specifying what kind of file information must be
- * retrieved
- * @visit_options: Options specifying the type of visit
- * @callback: Callback to be called for every visited file
- * @data: Data to be passed to @callback at each iteration
+ * gnome_vfs_directory_visit_uri:
+ * @uri: #GnomeVFSURI of a directory to visit the files in.
+ * @info_options: #GnomeVFSFileInfoOptions specifying what kind of file information must be
+ * retrieved about the contents of the directory referenced by @uri.
+ * @visit_options: #GnomeVFSDirectoryVisitOptions controlling e.g. loop prevention,
+ * and filesystem checks. These affect the way visiting is done.
+ * @callback: #GnomeVFSDirectoryVisitFunc callback to be called for every visited file.
+ * @data: data to be passed to @callback at each iteration.
  * 
  * Visit @uri, retrieving information as specified by @info_options. 
+ *
+ * This function is identical to gnome_vfs_directory_visit(), except
+ * that it takes a #GnomeVFSURI instead of a text URI.
  * 
- * Returns: A result code indicating whether the operation succeeded. 
+ * Returns: a #GnomeVFSResult indicating whether the operation succeeded.
  *
  */
 GnomeVFSResult
@@ -475,6 +490,7 @@ gnome_vfs_directory_visit_uri (GnomeVFSURI *uri,
 			       gpointer data)
 {
 	g_return_val_if_fail (uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	g_return_val_if_fail (callback != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
 	return directory_visit_internal (uri, NULL, NULL,
 					 info_options,
@@ -483,17 +499,21 @@ gnome_vfs_directory_visit_uri (GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_directory_visit:
- * @text_uri: URI to start from
- * @info_options: Options specifying what kind of file information must be
- * retrieved
- * @visit_options: Options specifying the type of visit
- * @callback: Callback to be called for every visited file
- * @data: Data to be passed to @callback at each iteration
+ * @text_uri: uri string representation of a directory to visit the files in.
+ * @info_options: #GnomeVFSFileInfoOptions specifying what kind of file information must be
+ * retrieved about the contents of the directory referenced by @uri.
+ * @visit_options: #GnomeVFSDirectoryVisitOptions controlling e.g. loop prevention,
+ * and filesystem checks. These affect the way visiting is done.
+ * @callback: #GnomeVFSDirectoryVisitFunc callback to be called for every visited file.
+ * @data: data to be passed to @callback at each iteration.
  * 
  * Visit @text_uri, retrieving information as specified by @info_options.
+ *
+ * This function is identical to gnome_vfs_directory_visit_uri(), except
+ * that it takes a text URI instead of a #GnomeVFSURI.
  * 
- * Return value:  a GnomeVFSResult indication the success of the operation 
- **/
+ * Return value: a #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_directory_visit (const gchar *text_uri,
 			   GnomeVFSFileInfoOptions info_options,
@@ -505,6 +525,7 @@ gnome_vfs_directory_visit (const gchar *text_uri,
 	GnomeVFSResult result;
 
 	g_return_val_if_fail (text_uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	g_return_val_if_fail (callback != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
 	uri = gnome_vfs_uri_new (text_uri);
 	if (uri == NULL) {
@@ -522,18 +543,26 @@ gnome_vfs_directory_visit (const gchar *text_uri,
 
 /**
  * gnome_vfs_directory_visit_files_at_uri:
- * @uri: URI of a directory to "visit" the files in
- * @file_list: GList of char *s of file names in @uri to visit
- * @info_options: bitmask controlling the type of information to fetch
- * @visit_options: options controlling e.g. loop prevention, and filesystem checks.
- * Affects the way visiting is done.
- * @callback: function to call with the file info structs
+ * @uri: #GnomeVFSURI of a directory to visit the files in.
+ * @file_list: #GList of char *s of file names in @uri to visit.
+ * @info_options: #GnomeVFSFileInfoOptions specifying what kind of file information must be
+ * retrieved about the contents of the directory referenced by @uri.
+ * @visit_options: #GnomeVFSDirectoryVisitOptions controlling e.g. loop prevention,
+ * and filesystem checks. These affect the way visiting is done.
+ * @callback: #GnomeVFSDirectoryVisitFunc callback to call with the file info structs.
  * @data: data to pass to @callback.
  *
- * Fetches information about a list of files in a base URI @uri.
+ * Fetches information about a list of files in a base uri @uri.
  *
- * Return value: a GnomeVFSResult indication the success of the operation
- **/
+ * This function is identical to gnome_vfs_directory_visit_files_at_uri(),
+ * except that it takes a #GnomeVFSURI instead of a text URI.
+ *
+ * If any of the files refers to a directory, and the @callback requests
+ * recursion for the specified file, gnome_vfs_directory_visit_uri() will
+ * be called for the directory.
+ *
+ * Return value: a #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_directory_visit_files_at_uri (GnomeVFSURI *uri,
 					GList *file_list,
@@ -548,6 +577,7 @@ gnome_vfs_directory_visit_files_at_uri (GnomeVFSURI *uri,
 
 	g_return_val_if_fail (uri != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 	g_return_val_if_fail (file_list != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
+	g_return_val_if_fail (callback != NULL, GNOME_VFS_ERROR_BAD_PARAMETERS);
 
 	info = gnome_vfs_file_info_new ();
 	result = GNOME_VFS_OK;
@@ -588,18 +618,25 @@ gnome_vfs_directory_visit_files_at_uri (GnomeVFSURI *uri,
 
 /**
  * gnome_vfs_directory_visit_files:
- * @text_uri: string representing the URI of a directory to "visit" the files in
- * @file_list: GList of char *s of file names in @uri to visit
- * @info_options: bitmask controlling the type of information to fetch
- * @visit_options: options controlling e.g. loop prevention, and filesystem checks.
- * Affects the way visiting is done.
- * @callback: function to call with the file info structs
+ * @text_uri: string representing the uri of a directory to visit the files in.
+ * @file_list: #GList of char *s of file names in @uri to visit.
+ * @info_options: bitmask controlling the type of information to fetch.
+ * @visit_options: #GnomeVFSDirectoryVisitOptions controlling e.g. loop prevention,
+ * and filesystem checks. These affect the way visiting is done.
+ * @callback: #GnomeVFSDirectoryVisitFunc callback to call with the file info structs.
  * @data: data to pass to @callback.
  *
- * Fetches information about a list of files in a base URI @uri.
+ * Fetches information about a list of files in a base uri @uri.
  *
- * Return value: a GnomeVFSResult indication the success of the operation
- **/
+ * If any of the files refers to a directory, and the @callback requests
+ * recursion for the specified file, gnome_vfs_directory_visit_uri() will
+ * be called for the directory.
+ *
+ * This function is identical to gnome_vfs_directory_visit_files_at_uri(),
+ * except that it takes a text URI instead of a #GnomeVFSURI.
+ *
+ * Return value: a #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_directory_visit_files (const gchar *text_uri,
 				 GList *file_list,
@@ -612,6 +649,9 @@ gnome_vfs_directory_visit_files (const gchar *text_uri,
 	GnomeVFSResult result;
 
 	uri = gnome_vfs_uri_new (text_uri);
+	if (uri == NULL) {
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
 
 	result = gnome_vfs_directory_visit_files_at_uri (uri, file_list,
 							 info_options,
@@ -654,15 +694,15 @@ load_from_handle (GList **list,
 
 /**
  * gnome_vfs_directory_list_load:
- * @list: An address of a pointer to a list of GnomeVFSFileInfo
- * @text_uri: A text URI
- * @options: Options for loading the directory 
+ * @list: address of a pointer to a list of #GnomeVFSFileInfo.
+ * @text_uri: a string representing the uri of the directory.
+ * @options: options for loading the directory.
  * 
  * Load a directory from @text_uri with the specified @options
  * into a list.
  * 
- * Return value: An integer representing the result of the operation.
- **/
+ * Return value: an integer representing the result of the operation.
+ */
 GnomeVFSResult 
 gnome_vfs_directory_list_load (GList **list,
 			       const gchar *text_uri,

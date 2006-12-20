@@ -40,16 +40,16 @@ struct GnomeVFSSocket {
 
 /**
  * gnome_vfs_socket_new:
- * @impl: an implementation of a socket, e.g. GnomeVFSSSL
- * @connection: pointer to a connection object used by @impl to track
+ * @impl: an implementation of socket, e.g. #GnomeVFSSSL.
+ * @connection: pointer to a connection object used by @impl to track.
  * state (the exact nature of @connection varies from implementation to
- * implementation)
+ * implementation).
  *
- * Creates a new GnomeVFS Socket using the specific implementation
+ * Creates a new #GnomeVFSSocket using the specific implementation
  * @impl.
  *
- * Return value: a newly created socket
- **/
+ * Return value: a newly created socket.
+ */
 GnomeVFSSocket* gnome_vfs_socket_new (GnomeVFSSocketImpl *impl, 
 				      void               *connection) 
 {
@@ -64,17 +64,17 @@ GnomeVFSSocket* gnome_vfs_socket_new (GnomeVFSSocketImpl *impl,
 
 /**
  * gnome_vfs_socket_write:
- * @socket: socket to write data to
- * @buffer: data to write to the socket
- * @bytes: number of bytes from @buffer to write to @socket
- * @bytes_written: pointer to a GnomeVFSFileSize, will contain
- * the number of bytes actually written to the socket on return.
- * @cancellation: optional cancellation object
+ * @socket: socket to write data to.
+ * @buffer: data to write to the socket.
+ * @bytes: number of bytes from @buffer to write to @socket.
+ * @bytes_written: pointer to a #GnomeVFSFileSize, will contain
+ * the number of bytes actually written to the @socket on return.
+ * @cancellation: optional cancellation object.
  *
  * Write @bytes bytes of data from @buffer to @socket.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult  
 gnome_vfs_socket_write (GnomeVFSSocket *socket, 
 			gconstpointer buffer,
@@ -98,13 +98,13 @@ gnome_vfs_socket_write (GnomeVFSSocket *socket,
 
 /**
  * gnome_vfs_socket_close:
- * @socket: the socket to be closed
- * @cancellation: optional cancellation object
+ * @socket: the socket to be closed.
+ * @cancellation: optional cancellation object.
  *
  * Close @socket, freeing any resources it may be using.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult  
 gnome_vfs_socket_close (GnomeVFSSocket *socket,
 			GnomeVFSCancellation *cancellation)
@@ -116,17 +116,17 @@ gnome_vfs_socket_close (GnomeVFSSocket *socket,
 
 /**
  * gnome_vfs_socket_read:
- * @socket: socket to read data from
- * @buffer: allocated buffer of at least @bytes bytes to be read into
- * @bytes: number of bytes to read from @socket into @buffer
- * @bytes_read: pointer to a GnomeVFSFileSize, will contain
+ * @socket: socket to read data from.
+ * @buffer: allocated buffer of at least @bytes bytes to be read into.
+ * @bytes: number of bytes to read from @socket into @buffer.
+ * @bytes_read: pointer to a #GnomeVFSFileSize, will contain
  * the number of bytes actually read from the socket on return.
- * @cancellation: optional cancellation object
+ * @cancellation: optional cancellation object.
  *
  * Read @bytes bytes of data from the @socket into @buffer.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult  
 gnome_vfs_socket_read  (GnomeVFSSocket *socket, 
 			gpointer buffer, 
@@ -150,21 +150,21 @@ gnome_vfs_socket_read  (GnomeVFSSocket *socket,
 
 /**
  * gnome_vfs_socket_set_timeout:
- * @socket: socket to set the timeout of
- * @timeout: the timeout
- * @cancellation: optional cancellation object
+ * @socket: socket to set the timeout of.
+ * @timeout: the timeout.
+ * @cancellation: optional cancellation object.
  *
- * Set a timeout of @timeout. If @timeout is NULL following operations
+ * Set a timeout of @timeout. If @timeout is %NULL, following operations
  * will block indefinitely).
  *
  * Note if you set @timeout to 0 (means tv_sec and tv_usec are both 0)
  * every following operation will return immediately. (This can be used
  * for polling.)
  *
- * Return value: GnomeVFSResult indicating the success of the operation
+ * Return value: #GnomeVFSResult indicating the success of the operation.
  *
  * Since: 2.8
- **/
+ */
 
 GnomeVFSResult
 gnome_vfs_socket_set_timeout (GnomeVFSSocket *socket,
@@ -185,7 +185,7 @@ gnome_vfs_socket_set_timeout (GnomeVFSSocket *socket,
  * not call any #GnomeVFSSocketImpl function.
  *
  * Since: 2.8
- **/
+ */
 void
 gnome_vfs_socket_free (GnomeVFSSocket *socket)
 {

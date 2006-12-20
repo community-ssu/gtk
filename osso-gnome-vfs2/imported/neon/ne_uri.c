@@ -1,6 +1,6 @@
 /* 
-   HTTP URI handling
-   Copyright (C) 1999-2003, Joe Orton <joe@manyfish.co.uk>
+   URI manipulation routines.
+   Copyright (C) 1999-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -34,9 +34,10 @@
 #include <stdlib.h>
 #endif
 
+#include <stdio.h>
+
 #include <ctype.h>
 
-#include "ne_utils.h" /* for 'min' */
 #include "ne_string.h" /* for ne_buffer */
 #include "ne_alloc.h"
 #include "ne_uri.h"
@@ -178,75 +179,71 @@ char *ne_path_unescape(const char *uri)
     return ret;
 }
 
-/* RFC2396 spake:
- * "Data must be escaped if it does not have a representation 
- * using an unreserved character".
- */
+/* ABNF definitions derived from RFC3986, except with "/" removed from
+ * gen-delims since it's special: */
 
-/* Lookup table: character classes from 2396. (This is overkill) */
+#define GD (1) /* gen-delims    = ":" / "?" / "#" / "[" / "]" / "@" */
+#define SD (1) /* sub-delims    = "!" / "$" / "&" / "'" / "(" / ")"
+                               / "*" / "+" / "," / ";" / "=" */
 
-#define SP 0   /* space    = <US-ASCII coded character 20 hexadecimal>                 */
-#define CO 0   /* control  = <US-ASCII coded characters 00-1F and 7F hexadecimal>      */
-#define DE 0   /* delims   = "<" | ">" | "#" | "%" | <">                               */
-#define UW 0   /* unwise   = "{" | "}" | "|" | "\" | "^" | "[" | "]" | "`"             */
-#define MA 1   /* mark     = "-" | "_" | "." | "!" | "~" | "*" | "'" | "(" | ")"       */
-#define AN 2   /* alphanum = alpha | digit                                             */
-#define RE 2   /* reserved = ";" | "/" | "?" | ":" | "@" | "&" | "=" | "+" | "$" | "," */
+#define SL (0) /* forward-slash = "/" */
+#define UN (0) /* unreserved = ALPHA / DIGIT / "-" / "." / "_" / "~" */
 
-static const char uri_chars[128] = {
-/*                +2      +4      +6      +8     +10     +12     +14     */
-/*   0 */ CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO,
-/*  16 */ CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO, CO,
-/*  32 */ SP, MA, DE, DE, RE, DE, RE, MA, MA, MA, MA, RE, RE, MA, MA, RE,
-/*  48 */ AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, RE, RE, DE, RE, DE, RE,
-/*  64 */ RE, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN,
-/*  80 */ AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, UW, UW, UW, UW, MA,
-/*  96 */ UW, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN,
-/* 112 */ AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, AN, UW, UW, UW, MA, CO 
+#define OT (1) /* others */
+
+/* Lookup table for percent-encoding logic: value is non-zero if
+ * character should be percent-encoded. */
+static const unsigned char uri_chars[128] = {
+/* 0xXX    x0      x2      x4      x6      x8      xA      xC      xE     */
+/*   0x */ OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT,
+/*   1x */ OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT, OT,
+/*   2x */ OT, SD, OT, GD, SD, OT, SD, SD, SD, SD, SD, SD, SD, UN, UN, SL,
+/*   3x */ UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, GD, SD, OT, SD, OT, GD,
+/*   4x */ GD, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN,
+/*   5x */ UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, GD, OT, GD, OT, OT,
+/*   6x */ OT, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN,
+/*   7x */ UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, UN, OT, OT, OT, UN, OT 
 };
 
-#define ESCAPE(ch) (((const signed char)(ch) < 0 || \
-		uri_chars[(unsigned int)(ch)] == 0))
+#undef SD
+#undef GD
+#undef SL
+#undef UN
+#undef OT
 
-#undef SP
-#undef CO
-#undef DE
-#undef UW
-#undef MA
-#undef AN
-#undef RE
+/* CH must be an unsigned char; evaluates to 1 if CH should be
+ * percent-encoded. */
+#define path_escape_ch(ch) ((ch) > 127 || uri_chars[(ch)])
 
-char *ne_path_escape(const char *abs_path) 
+char *ne_path_escape(const char *path) 
 {
-    const char *pnt;
-    char *ret, *retpos;
-    int count = 0;
-    for (pnt = abs_path; *pnt != '\0'; pnt++) {
-	if (ESCAPE(*pnt)) {
-	    count++;
-	}
+    const unsigned char *pnt;
+    char *ret, *p;
+    size_t count = 0;
+
+    for (pnt = (const unsigned char *)path; *pnt != '\0'; pnt++) {
+        count += path_escape_ch(*pnt);
     }
+
     if (count == 0) {
-	return ne_strdup(abs_path);
+	return ne_strdup(path);
     }
-    /* An escaped character is "%xx", i.e., two MORE
-     * characters than the original string */
-    retpos = ret = ne_malloc(strlen(abs_path) + 2*count + 1);
-    for (pnt = abs_path; *pnt != '\0'; pnt++) {
-	if (ESCAPE(*pnt)) {
+
+    p = ret = ne_malloc(strlen(path) + 2 * count + 1);
+    for (pnt = (const unsigned char *)path; *pnt != '\0'; pnt++) {
+	if (path_escape_ch(*pnt)) {
 	    /* Escape it - %<hex><hex> */
-	    sprintf(retpos, "%%%02x", (unsigned char) *pnt);
-	    retpos += 3;
+	    sprintf(p, "%%%02x", (unsigned char) *pnt);
+	    p += 3;
 	} else {
-	    /* It's cool */
-	    *retpos++ = *pnt;
+	    *p++ = *pnt;
 	}
     }
-    *retpos = '\0';
+    *p = '\0';
     return ret;
 }
 
-#undef ESCAPE
+#undef path_escape_ch
 
 #define CASECMP(field) do { \
 n = strcasecmp(u1->field, u2->field); if (n) return n; } while(0)
@@ -276,6 +273,11 @@ int ne_uri_cmp(const ne_uri *u1, const ne_uri *u2)
 
 #undef CMP
 #undef CASECMP
+
+#ifndef WIN32
+#undef min
+#define min(a,b) ((a)<(b)?(a):(b))
+#endif
 
 /* TODO: implement properly */
 int ne_path_compare(const char *a, const char *b) 

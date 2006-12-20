@@ -32,6 +32,19 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GnomeVFSModuleCallback:
+ * @in: data passed from module to application.
+ * @in_size: size of @in bytes.
+ * @out: data passed from application to module.
+ * @out_size: size of @out in bytes.
+ * @callback_data: user data passed when connecting the callback.
+ *
+ * Modules use a #GnomeVFSModuleCallback to send data to
+ * client applications and request data from them synchronously.
+ *
+ * The format of @in and @out is determined by the callback name.
+ **/
 typedef void (* GnomeVFSModuleCallback) (gconstpointer in,
 					 gsize         in_size,
 					 gpointer      out,
@@ -40,6 +53,24 @@ typedef void (* GnomeVFSModuleCallback) (gconstpointer in,
 
 typedef void (* GnomeVFSModuleCallbackResponse) (gpointer response_data);
 
+/**
+ * GnomeVFSAsyncModuleCallback:
+ * @in: data passed from module to application.
+ * @in_size: size of @in bytes.
+ * @out: data passed from application to module.
+ * @out_size: size of @out in bytes.
+ * @response: #GnomeVFSModuleCallbackResponse that must be invoked when the request is satisfied.
+ * @response_data: data that must be passed to @response when the request is satisfied.
+ * @callback_data: user data passed when connecting the callback.
+ *
+ * Modules use a #GnomeVFSModuleCallback to send data to
+ * client applications and request data from them asynchronously.
+ *
+ * The application is expected to invoke the @response with @response_data
+ * when it is able to satisfy the request.
+ *
+ * The format of @in and @out is determined by the callback name.
+ **/
 typedef void (* GnomeVFSAsyncModuleCallback) (gconstpointer                  in,
 					      gsize                          in_size,
 					      gpointer                       out,

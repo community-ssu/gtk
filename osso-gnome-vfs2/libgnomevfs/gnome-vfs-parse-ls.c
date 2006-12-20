@@ -360,16 +360,35 @@ vfs_parse_filemode (const char *p)
 	return res;
 }
 
+static gboolean
+is_last_column (int idx,
+		int num_cols,
+		const char *carbon,
+		int column_ptr[])
+{
+	const char *p;
+
+	if (idx + 1 == num_cols) {
+		return TRUE;
+	}
+
+	p = carbon + column_ptr[idx + 1] - 1;
+	return *p == '\r' || *p == '\n';
+}
+
 static int
 vfs_parse_filedate (int idx,
 		    char *columns[],
+		    int num_cols,
+		    const char *carbon,
+		    int column_ptr[],
 		    time_t *t)
 {	/* This thing parses from idx in columns[] array */
 
 	char *p;
 	struct tm tim;
 	int d[3];
-	int	got_year = 0;
+	int got_year = 0, got_time = 0;
 	int current_mon;
 	time_t now;
     
@@ -439,14 +458,20 @@ vfs_parse_filedate (int idx,
 	}
 
 	/* Here we expect to find time and/or year */
-    
+
 	if (is_num (columns[idx])) {
-		if (is_time (columns[idx], &tim) || (got_year = is_year (columns[idx], &tim))) {
+		if ((got_time = is_time (columns[idx], &tim)) ||
+		    (got_year = is_year (columns[idx], &tim))) {
 			idx++;
 
 			/* This is a special case for ctime () or Mon DD YYYY hh:mm */
 			if (is_num (columns[idx]) && 
-			   ((got_year = is_year (columns[idx], &tim)) || is_time (columns[idx], &tim)))
+			    !is_last_column (idx, num_cols, carbon, column_ptr) && /* ensure that we don't eat two lines at once,
+										      where the first line provides a year-like
+										      filename but no year, or a time-like filename
+										      but no time */
+			    ((!got_year && (got_year = is_year (columns[idx], &tim))) ||
+			     (!got_time && (got_time = is_time (columns[idx], &tim)))))
 				idx++; /* time & year or reverse */
 		} /* only time or date */
 	}
@@ -470,6 +495,18 @@ vfs_parse_filedate (int idx,
 	return idx;
 }
 
+/**
+ * gnome_vfs_parse_ls_lga:
+ * @p: string containing the data in the form same as 'ls -al'.
+ * @s: pointer to stat structure.
+ * @filename: filename, will be filled here.
+ * @linkname: linkname, will be filled here.
+ *
+ * Parses the string @p which is in the form same as the 'ls -al' output and fills
+ * in the details in the struct @s, @filename and @linkname.
+ *
+ * Return value: 0 if cannot parse @p, 1 if successful.
+ */
 int
 gnome_vfs_parse_ls_lga (const char *p,
 			struct stat *s,
@@ -489,6 +526,7 @@ gnome_vfs_parse_ls_lga (const char *p,
 		return 0;
 
 	p_copy = g_strdup (p);
+
 	if ((i = vfs_parse_filetype (*(p++))) == -1)
 		goto error;
 
@@ -569,7 +607,7 @@ gnome_vfs_parse_ls_lga (const char *p,
 		    || sscanf (columns [idx2], " %d", &min) != 1)
 			goto error;
 	
-#ifdef HAVE_ST_RDEV
+#ifdef HAVE_STRUCT_STAT_ST_RDEV
 		/* Starting from linux 2.6, minor number is split between bits 
 		 * 0-7 and 20-31 of dev_t. This calculation is also valid
 		 * on older kernel with 8 bit minor and major numbers 
@@ -585,24 +623,28 @@ gnome_vfs_parse_ls_lga (const char *p,
 		/* Common file size */
 		if (!is_num (columns[idx2]))
 			goto error;
-	
-		s->st_size = (gsize) atol (columns [idx2]);
-#ifdef HAVE_ST_RDEV
+
+#ifdef HAVE_ATOLL
+		s->st_size = (off_t) atoll (columns [idx2]);
+#else
+		s->st_size = (off_t) atof (columns [idx2]);
+#endif
+#ifdef HAVE_STRUCT_STAT_ST_RDEV
 		s->st_rdev = 0;
 #endif
 	}
 
-	idx = vfs_parse_filedate (idx, columns, &s->st_mtime);
+	idx = vfs_parse_filedate (idx, columns, num_cols, p, column_ptr, &s->st_mtime);
 	if (!idx)
 		goto error;
 	/* Use resulting time value */
 	s->st_atime = s->st_ctime = s->st_mtime;
 	s->st_dev = 0;
 	s->st_ino = 0;
-#ifdef HAVE_ST_BLKSIZE
+#ifdef HAVE_STRUCT_STAT_ST_BLKSIZE
 	s->st_blksize = 512;
 #endif
-#ifdef HAVE_ST_BLOCKS
+#ifdef HAVE_STRUCT_STAT_ST_BLOCKS
 	s->st_blocks = (s->st_size + 511) / 512;
 #endif
 

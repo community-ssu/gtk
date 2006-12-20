@@ -51,8 +51,8 @@ static const GnomeVFSContext sync_context = {NULL};
  * Creates a new context and cancellation object. Must be called
  * from the main glib event loop.
  *
- * Return value: a newly allocated #GnomeVFSContext
- **/
+ * Return value: a newly allocated #GnomeVFSContext.
+ */
 GnomeVFSContext*
 gnome_vfs_context_new (void)
 {
@@ -67,10 +67,10 @@ gnome_vfs_context_new (void)
 
 /**
  * gnome_vfs_context_free:
- * @ctx: context to be freed
+ * @ctx: context to be freed.
  *
  * Free @ctx and destroy the associated #GnomeVFSCancellation.
- **/
+ */
 void
 gnome_vfs_context_free (GnomeVFSContext *ctx)
 {
@@ -83,12 +83,12 @@ gnome_vfs_context_free (GnomeVFSContext *ctx)
 
 /**
  * gnome_vfs_context_get_cancellation:
- * @ctx: context to get the #GnomeVFSCancellation from
+ * @ctx: context to get the #GnomeVFSCancellation from.
  *
  * Retrieve the #GnomeVFSCancellation associated with @ctx.
  *
- * Return value: @ctx 's #GnomeVFSCancellation
- **/
+ * Return value: @ctx 's #GnomeVFSCancellation.
+ */
 GnomeVFSCancellation*
 gnome_vfs_context_get_cancellation (const GnomeVFSContext *ctx)
 {
@@ -100,11 +100,11 @@ gnome_vfs_context_get_cancellation (const GnomeVFSContext *ctx)
  * gnome_vfs_context_peek_current:
  *
  * Get the currently active context. It shouldn't be
- * manipulated but can be compared to context's the module
+ * manipulated but can be compared to contexts module
  * holds to determine whether they are active.
  *
- * Return value: the currently active #GnomeVFSContext
- **/
+ * Return value: the currently active #GnomeVFSContext.
+ */
 const GnomeVFSContext *
 gnome_vfs_context_peek_current		  (void)
 {
@@ -125,8 +125,8 @@ gnome_vfs_context_peek_current		  (void)
  * 
  * Check to see if the currently active context has been cancelled.
  *
- * Return value: %TRUE if the currently active context has been cancelled, otherwise %FALSE
- **/
+ * Return value: %TRUE if the currently active context has been cancelled, otherwise %FALSE.
+ */
 gboolean
 gnome_vfs_context_check_cancellation_current (void)
 {

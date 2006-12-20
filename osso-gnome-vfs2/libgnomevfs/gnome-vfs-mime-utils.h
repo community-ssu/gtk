@@ -37,23 +37,40 @@ G_BEGIN_DECLS
  **/
 #define GNOME_VFS_MIME_TYPE_UNKNOWN "application/octet-stream"
 
-/* Comparison of mime types */
+/**
+ * GnomeVFSMimeEquivalence:
+ * @GNOME_VFS_MIME_UNRELATED: The two MIME types are not related.
+ * @GNOME_VFS_MIME_IDENTICAL: The two MIME types are identical.
+ * @GNOME_VFS_MIME_PARENT: One of the two MIME types is a parent of the other one.
+ * 			   Note that this relationship is transient, i.e. if
+ * 			   %a is a parent of %b and %b is a parent of %c,
+ * 			   %a is also considered a parent of %c.
+ *
+ * Describes the possible relationship between two MIME types, returned by
+ * gnome_vfs_mime_type_get_equivalence().
+ */
 typedef enum {
   GNOME_VFS_MIME_UNRELATED,
   GNOME_VFS_MIME_IDENTICAL,
   GNOME_VFS_MIME_PARENT
 } GnomeVFSMimeEquivalence;
 
-GnomeVFSMimeEquivalence gnome_vfs_mime_type_get_equivalence (const char    *mime_type,
-							     const char    *base_mime_type);
-gboolean                gnome_vfs_mime_type_is_equal        (const char    *a,
-							     const char    *b);
+GnomeVFSMimeEquivalence gnome_vfs_mime_type_get_equivalence   (const char    *mime_type,
+							       const char    *base_mime_type);
+gboolean                gnome_vfs_mime_type_is_equal          (const char    *a,
+							       const char    *b);
 
-const char             *gnome_vfs_get_mime_type_for_data    (gconstpointer  data,
-							     int            data_size);
-char                   *gnome_vfs_get_mime_type             (const char    *text_uri);
+const char             *gnome_vfs_get_mime_type_for_name      (const char *filename);
+const char             *gnome_vfs_get_mime_type_for_data      (gconstpointer  data,
+							       int            data_size);
+const char             *gnome_vfs_get_mime_type_for_name_and_data (const char    *filename,
+							           gconstpointer  data,
+							           gssize         data_size);
+
+char                   *gnome_vfs_get_mime_type               (const char    *text_uri);
+char                   *gnome_vfs_get_slow_mime_type          (const char    *text_uri);
 
 
 G_END_DECLS
 
-#endif
+#endif /* GNOME_VFS_MIME_UTILS_H */

@@ -1,6 +1,6 @@
 /* 
    neon SSL/TLS support using OpenSSL
-   Copyright (C) 2002-2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2002-2005, Joe Orton <joe@manyfish.co.uk>
    Portions are:
    Copyright (C) 1999-2000 Tommi Komulainen <Tommi.Komulainen@iki.fi>
 
@@ -72,6 +72,50 @@ struct ne_ssl_client_cert_s {
     char *friendly_name;
 };
 
+/* Append an ASN.1 DirectoryString STR to buffer BUF as UTF-8.
+ * Returns zero on success or non-zero on error. */
+static int append_dirstring(ne_buffer *buf, ASN1_STRING *str)
+{
+    unsigned char *tmp = (unsigned char *)""; /* initialize to workaround 0.9.6 bug */
+    int len;
+
+    switch (str->type) {
+    case V_ASN1_UTF8STRING:
+    case V_ASN1_IA5STRING: /* definitely ASCII */
+    case V_ASN1_VISIBLESTRING: /* probably ASCII */
+    case V_ASN1_PRINTABLESTRING: /* subset of ASCII */
+        ne_buffer_append(buf, (char *)str->data, str->length);
+        break;
+    case V_ASN1_UNIVERSALSTRING:
+    case V_ASN1_T61STRING: /* let OpenSSL convert it as ISO-8859-1 */
+    case V_ASN1_BMPSTRING: 
+        len = ASN1_STRING_to_UTF8(&tmp, str);
+        if (len > 0) {
+            ne_buffer_append(buf, (char *)tmp, len);
+            OPENSSL_free(tmp);
+            break;
+        } else {
+            ERR_clear_error();
+            return -1;
+        }
+        break;
+    default:
+        NE_DEBUG(NE_DBG_SSL, "Could not convert DirectoryString type %d\n",
+                 str->type);
+        return -1;
+    }
+    return 0;
+}
+
+/* Returns a malloc-allocate version of IA5 string AS.  Really only
+ * here to prevent char * vs unsigned char * type mismatches without
+ * losing all hope at type-safety. */
+static char *dup_ia5string(const ASN1_IA5STRING *as)
+{
+    unsigned char *data = as->data;
+    return ne_strndup((char *)data, as->length);
+}
+
 char *ne_ssl_readable_dname(const ne_ssl_dname *name)
 {
     int n, flag = 0;
@@ -89,33 +133,8 @@ char *ne_ssl_readable_dname(const ne_ssl_dname *name)
  	    if (flag++)
 		ne_buffer_append(dump, ", ", 2);
 
-            switch (ent->value->type) {
-            case V_ASN1_UTF8STRING:
-            case V_ASN1_IA5STRING: /* definitely ASCII */
-            case V_ASN1_VISIBLESTRING: /* probably ASCII */
-            case V_ASN1_PRINTABLESTRING: /* subset of ASCII */
-                ne_buffer_append(dump, ent->value->data, ent->value->length);
-                break;
-            case V_ASN1_UNIVERSALSTRING:
-            case V_ASN1_T61STRING: /* let OpenSSL convert it as ISO-8859-1 */
-            case V_ASN1_BMPSTRING: {
-                unsigned char *tmp = ""; /* initialize to workaround 0.9.6 bug */
-                int len;
-
-                len = ASN1_STRING_to_UTF8(&tmp, ent->value);
-                if (len > 0) {
-                    ne_buffer_append(dump, tmp, len);
-                    OPENSSL_free(tmp);
-                    break;
-                } else {
-                    ERR_clear_error();
-                    /* and fall through */
-                }
-            }
-            default:
-                ne_buffer_zappend(dump, "???");
-                break;
-            }                
+            if (append_dirstring(dump, ent->value))
+                ne_buffer_czappend(dump, "???");
 	}
     }
 
@@ -218,10 +237,8 @@ static int match_hostname(char *cn, const char *hostname)
 /* Check certificate identity.  Returns zero if identity matches; 1 if
  * identity does not match, or <0 if the certificate had no identity.
  * If 'identity' is non-NULL, store the malloc-allocated identity in
- * *identity.  If 'server' is non-NULL, it must be the network address
- * of the server in use, and identity must be NULL. */
-static int check_identity(const char *hostname, X509 *cert, char **identity,
-                          const ne_inet_addr *server)
+ * *identity. */
+static int check_identity(const char *hostname, X509 *cert, char **identity)
 {
     STACK_OF(GENERAL_NAME) *names;
     int match = 0, found = 0;
@@ -236,12 +253,12 @@ static int check_identity(const char *hostname, X509 *cert, char **identity,
 	    
             /* handle dNSName and iPAddress name extensions only. */
 	    if (nm->type == GEN_DNS) {
-		char *name = ne_strndup(nm->d.ia5->data, nm->d.ia5->length);
+		char *name = dup_ia5string(nm->d.ia5);
                 if (identity && !found) *identity = ne_strdup(name);
 		match = match_hostname(name, hostname);
 		ne_free(name);
 		found = 1;
-            } else if (nm->type == GEN_IPADD && server) {
+            } else if (nm->type == GEN_IPADD) {
                 /* compare IP address with server IP address. */
                 ne_inet_addr *ia;
                 if (nm->d.ip->length == 4)
@@ -252,7 +269,10 @@ static int check_identity(const char *hostname, X509 *cert, char **identity,
                     ia = NULL;
                 /* ne_iaddr_make returns NULL if address type is unsupported */
                 if (ia != NULL) { /* address type was supported. */
-                    match = ne_iaddr_cmp(server, ia) == 0;
+                    char buf[128];
+
+                    match = strcmp(hostname, 
+                                   ne_iaddr_print(ia, buf, sizeof buf)) == 0;
                     found = 1;
                     ne_iaddr_free(ia);
                 } else {
@@ -272,9 +292,8 @@ static int check_identity(const char *hostname, X509 *cert, char **identity,
     if (!found) {
 	X509_NAME *subj = X509_get_subject_name(cert);
 	X509_NAME_ENTRY *entry;
-	ASN1_STRING *str;
+	ne_buffer *cname = ne_buffer_ncreate(30);
 	int idx = -1, lastidx;
-	char *name;
 
 	/* find the most specific commonName attribute. */
 	do {
@@ -282,20 +301,25 @@ static int check_identity(const char *hostname, X509 *cert, char **identity,
 	    idx = X509_NAME_get_index_by_NID(subj, NID_commonName, lastidx);
 	} while (idx >= 0);
 	
-	if (lastidx < 0)
+	if (lastidx < 0) {
+            /* no commonNmae attributes at all. */
+            ne_buffer_destroy(cname);
 	    return -1;
+        }
 
 	/* extract the string from the entry */
-	entry = X509_NAME_get_entry(subj, lastidx);
-	str = X509_NAME_ENTRY_get_data(entry);
-
-	name = ne_strndup(str->data, str->length);
-        if (identity) *identity = ne_strdup(name);
-	match = match_hostname(name, hostname);
-	ne_free(name);
+        entry = X509_NAME_get_entry(subj, lastidx);
+        if (append_dirstring(cname, X509_NAME_ENTRY_get_data(entry))) {
+            ne_buffer_destroy(cname);
+            return -1;
+        }
+        if (identity) *identity = ne_strdup(cname->data);
+        match = match_hostname(cname->data, hostname);
+        ne_buffer_destroy(cname);
     }
 
-    NE_DEBUG(NE_DBG_SSL, "Identity match: %s\n", match ? "good" : "bad");
+    NE_DEBUG(NE_DBG_SSL, "Identity match for '%s': %s\n", hostname, 
+             match ? "good" : "bad");
     return match ? 0 : 1;
 }
 
@@ -308,7 +332,7 @@ static ne_ssl_certificate *populate_cert(ne_ssl_certificate *cert, X509 *x5)
     cert->subject = x5;
     /* Retrieve the cert identity; pass a dummy hostname to match. */
     cert->identity = NULL;
-    check_identity("", x5, &cert->identity, NULL);
+    check_identity("", x5, &cert->identity);
     return cert;
 }
 
@@ -323,7 +347,7 @@ static ne_ssl_certificate *make_chain(STACK_OF(X509) *chain)
     for (n = 0; n < count; n++) {
         ne_ssl_certificate *cert = ne_malloc(sizeof *cert);
         populate_cert(cert, X509_dup(sk_X509_value(chain, n)));
-#if NE_DEBUGGING
+#ifdef NE_DEBUGGING
         if (ne_debug_mask & NE_DBG_SSL) {
             fprintf(ne_debug_stream, "Cert #%d:\n", n);
             X509_print_fp(ne_debug_stream, cert->subject);
@@ -357,8 +381,7 @@ static int check_certificate(ne_session *sess, SSL *ssl, ne_ssl_certificate *cha
 
     /* Check certificate was issued to this server; pass network
      * address of server if a proxy is not in use. */
-    ret = check_identity(sess->server.hostname, cert, NULL, 
-                         sess->use_proxy ? NULL : sess->server.current);
+    ret = check_identity(sess->server.hostname, cert, NULL);
     if (ret < 0) {
         ne_set_error(sess, _("Server certificate was missing commonName "
                              "attribute in subject name"));
@@ -433,8 +456,7 @@ static ne_ssl_client_cert *dup_client_cert(const ne_ssl_client_cert *cc)
 /* Callback invoked when the SSL server requests a client certificate.  */
 static int provide_client_cert(SSL *ssl, X509 **cert, EVP_PKEY **pkey)
 {
-    ne_ssl_context *ctx = SSL_get_app_data(ssl);
-    ne_session *sess = SSL_CTX_get_app_data(ctx->ctx);
+    ne_session *const sess = SSL_get_app_data(ssl);
 
     if (!sess->client_cert && sess->ssl_provide_fn) {
 	ne_ssl_dname **dnames = NULL;
@@ -481,16 +503,54 @@ void ne_ssl_set_clicert(ne_session *sess, const ne_ssl_client_cert *cc)
     sess->client_cert = dup_client_cert(cc);
 }
 
-ne_ssl_context *ne_ssl_context_create(void)
+ne_ssl_context *ne_ssl_context_create(int mode)
 {
-    ne_ssl_context *ctx = ne_malloc(sizeof *ctx);
-    ctx->ctx = SSL_CTX_new(SSLv23_client_method());
-    ctx->sess = NULL;
-    /* set client cert callback. */
-    SSL_CTX_set_client_cert_cb(ctx->ctx, provide_client_cert);
-    /* enable workarounds for buggy SSL server implementations */
-    SSL_CTX_set_options(ctx->ctx, SSL_OP_ALL);
+    ne_ssl_context *ctx = ne_calloc(sizeof *ctx);
+    if (mode == NE_SSL_CTX_CLIENT) {
+        ctx->ctx = SSL_CTX_new(SSLv23_client_method());
+        ctx->sess = NULL;
+        /* set client cert callback. */
+        SSL_CTX_set_client_cert_cb(ctx->ctx, provide_client_cert);
+        /* enable workarounds for buggy SSL server implementations */
+        SSL_CTX_set_options(ctx->ctx, SSL_OP_ALL);
+    } else if (mode == NE_SSL_CTX_SERVER) {
+        ctx->ctx = SSL_CTX_new(SSLv23_server_method());
+    } else {
+        ctx->ctx = SSL_CTX_new(SSLv2_server_method());
+    }
     return ctx;
+}
+
+int ne_ssl_context_keypair(ne_ssl_context *ctx, const char *cert,
+                           const char *key)
+{
+    int ret;
+
+    ret = SSL_CTX_use_PrivateKey_file(ctx->ctx, key, SSL_FILETYPE_PEM);
+    if (ret == 1) {
+        ret = SSL_CTX_use_certificate_file(ctx->ctx, cert, SSL_FILETYPE_PEM);
+    }
+
+    return ret == 1 ? 0 : -1;
+}
+
+int ne_ssl_context_set_verify(ne_ssl_context *ctx, 
+                              int required,
+                              const char *ca_names,
+                              const char *verify_cas)
+{
+    if (required) {
+        SSL_CTX_set_verify(ctx->ctx, SSL_VERIFY_PEER | 
+                           SSL_VERIFY_FAIL_IF_NO_PEER_CERT, NULL);
+    }
+    if (ca_names) {
+        SSL_CTX_set_client_CA_list(ctx->ctx, 
+                                   SSL_load_client_CA_file(ca_names));
+    }
+    if (verify_cas) {
+        SSL_CTX_load_verify_locations(ctx->ctx, verify_cas, NULL);
+    }
+    return 0;
 }
 
 void ne_ssl_context_destroy(ne_ssl_context *ctx)
@@ -502,21 +562,17 @@ void ne_ssl_context_destroy(ne_ssl_context *ctx)
 }
 
 /* For internal use only. */
-int ne_negotiate_ssl(ne_request *req)
+int ne__negotiate_ssl(ne_request *req)
 {
     ne_session *sess = ne_get_session(req);
     ne_ssl_context *ctx = sess->ssl_context;
-    ne_ssl_socket *sock;
+    SSL *ssl;
     STACK_OF(X509) *chain;
     int freechain = 0; /* non-zero if chain should be free'd. */
 
     NE_DEBUG(NE_DBG_SSL, "Doing SSL negotiation.\n");
 
-    /* Rather a hack: link the ssl_context back to the ne_session, so
-     * provide_client_cert can get to the ne_session. */
-    SSL_CTX_set_app_data(ctx->ctx, sess);
-
-    if (ne_sock_connect_ssl(sess->socket, ctx)) {
+    if (ne_sock_connect_ssl(sess->socket, ctx, sess)) {
 	if (ctx->sess) {
 	    /* remove cached session. */
 	    SSL_SESSION_free(ctx->sess);
@@ -527,15 +583,16 @@ int ne_negotiate_ssl(ne_request *req)
 	return NE_ERROR;
     }	
     
-    sock = ne_sock_sslsock(sess->socket);
+    ssl = ne__sock_sslsock(sess->socket);
 
-    chain = SSL_get_peer_cert_chain(sock->ssl);
+    chain = SSL_get_peer_cert_chain(ssl);
     /* For an SSLv2 connection, the cert chain will always be NULL. */
     if (chain == NULL) {
-        X509 *cert = SSL_get_peer_certificate(sock->ssl);
+        X509 *cert = SSL_get_peer_certificate(ssl);
         if (cert) {
             chain = sk_X509_new_null();
             sk_X509_push(chain, cert);
+            freechain = 1;
         }
     }
 
@@ -561,7 +618,7 @@ int ne_negotiate_ssl(ne_request *req)
 
         if (freechain) sk_X509_free(chain); /* no longer need the chain */
 
-	if (check_certificate(sess, sock->ssl, cert)) {
+	if (check_certificate(sess, ssl, cert)) {
 	    NE_DEBUG(NE_DBG_SSL, "SSL certificate checks failed: %s\n",
 		     sess->error);
 	    ne_ssl_cert_free(cert);
@@ -571,14 +628,21 @@ int ne_negotiate_ssl(ne_request *req)
         sess->server_cert = cert;
     }
     
-    if (!ctx->sess) {
-	/* store the session. */
-	ctx->sess = SSL_get1_session(sock->ssl);
+    if (ctx->sess) {
+        SSL_SESSION *newsess = SSL_get0_session(ssl);
+        /* Replace the session if it has changed. */ 
+        if (newsess != ctx->sess || SSL_SESSION_cmp(ctx->sess, newsess)) {
+            SSL_SESSION_free(ctx->sess);
+            ctx->sess = SSL_get1_session(ssl); /* bumping the refcount */
+        }
+    } else {
+	/* Store the session. */
+	ctx->sess = SSL_get1_session(ssl);
     }
 
     if (sess->notify_cb) {
 	sess->notify_cb(sess->notify_ud, ne_conn_secure,
-                        SSL_get_version(sock->ssl));
+                        SSL_get_version(ssl));
     }
 
     return NE_OK;
@@ -604,7 +668,7 @@ const char *ne_ssl_cert_identity(const ne_ssl_certificate *cert)
     return cert->identity;
 }
 
-void ne_ssl_ctx_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cert)
+void ne_ssl_context_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cert)
 {
     X509_STORE *store = SSL_CTX_get_cert_store(ctx->ctx);
     
@@ -676,13 +740,13 @@ ne_ssl_client_cert *ne_ssl_clicert_read(const char *filename)
     /* Try parsing with no password. */
     if (PKCS12_parse(p12, NULL, &pkey, &cert, NULL) == 1) {
         /* Success - no password needed for decryption. */
-        unsigned int len = 0;
+        int len = 0;
         unsigned char *name = X509_alias_get0(cert, &len);
         
         cc = ne_calloc(sizeof *cc);
         cc->pkey = pkey;
         cc->decrypted = 1;
-        if (name && len)
+        if (name && len > 0)
             cc->friendly_name = ne_strndup((char *)name, len);
         populate_cert(&cc->cert, cert);
         PKCS12_free(p12);
@@ -734,7 +798,7 @@ const ne_ssl_certificate *ne_ssl_clicert_owner(const ne_ssl_client_cert *cc)
     return &cc->cert;
 }
 
-const char *ne_ssl_clicert_name(ne_ssl_client_cert *ccert)
+const char *ne_ssl_clicert_name(const ne_ssl_client_cert *ccert)
 {
     return ccert->friendly_name;
 }
@@ -821,6 +885,7 @@ char *ne_ssl_cert_export(const ne_ssl_certificate *cert)
 {
     int len;
     unsigned char *der, *p;
+    char *ret;
     
     /* find the length of the DER encoding. */
     len = i2d_X509(cert->subject, NULL);
@@ -828,9 +893,9 @@ char *ne_ssl_cert_export(const ne_ssl_certificate *cert)
     p = der = ne_malloc(len);
     i2d_X509(cert->subject, &p); /* p is incremented */
 
-    p = ne_base64(der, len);
+    ret = ne_base64(der, len);
     ne_free(der);
-    return p;
+    return ret;
 }
 
 #if SHA_DIGEST_LENGTH != 20
@@ -854,6 +919,6 @@ int ne_ssl_cert_digest(const ne_ssl_certificate *cert, char *digest)
         *p++ = ':';
     }
 
-    *--p = '\0';
+    p[-1] = '\0';
     return 0;
 }

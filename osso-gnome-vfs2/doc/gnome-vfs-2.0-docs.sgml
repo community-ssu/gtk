@@ -38,6 +38,7 @@
 <!ENTITY gnome-vfs-module-callback-module-api SYSTEM "xml/gnome-vfs-module-callback-module-api.xml">
 <!ENTITY gnome-vfs-init SYSTEM "xml/gnome-vfs-init.xml">
 <!ENTITY gnome-vfs-mime SYSTEM "xml/gnome-vfs-mime.xml">
+<!ENTITY gnome-vfs-mime-utils SYSTEM "xml/gnome-vfs-mime-utils.xml">
 <!ENTITY gnome-vfs-cancellation SYSTEM "xml/gnome-vfs-cancellation.xml">
 <!ENTITY gnome-vfs-xfer SYSTEM "xml/gnome-vfs-xfer.xml">
 <!ENTITY gnome-vfs-socket-buffer SYSTEM "xml/gnome-vfs-socket-buffer.xml">
@@ -72,6 +73,15 @@
 	  </address>
 	</affiliation>
       </author>
+      <author>
+	<firstname>Christian</firstname>
+	<surname>Neumair</surname>
+	<affiliation>
+	  <address>
+	    <email>chris@gnome-de.org</email>
+	  </address>
+	</affiliation>
+      </author>
     </authorgroup>
 
     <legalnotice>
@@ -92,6 +102,10 @@
       <year>2004</year>
       <holder>Christophe Fergeau</holder>
     </copyright>
+    <copyright>
+      <year>2006</year>
+      <holder>Christian Neumair</holder>
+    </copyright>
 
   </bookinfo>
 
@@ -107,52 +121,33 @@
     &gnome-vfs-file-size;
   </chapter>
 
-  <chapter id="gnome-vfs-file-and-dirs-ops">
-    <title>Files and Directories Manipulation</title>
-
-    <sect1 id="gnome-vfs-file-operations">
-      <title>File Handling</title>
-      <para>
-	GnomeVFS file operations are, for the most part, patterned after
-	their POSIX equivalents, with the systematic difference that they
-	accept URIs rather than paths on the local filesystem. This makes
-	them easy to learn as if you are already familiar with basic commands
-	such as open(), seek(), write(), etc you will feel right at home
-	with GnomeVFS after learning a little about URIs.
-      </para>
-      
-      <para>
-	GnomeVFS also provides asynchronous versions of these basic operations 
-	for allowing application developers to provide non-blocking file I/O 
-	without the use of threads.
-      </para>
-      
+  <chapter id="gnome-vfs-basic-file-ops">
+    <title>File Operations</title>
       &gnome-vfs-file-basic-ops;
       &gnome-vfs-file-rw-ops;
-      &gnome-vfs-file-info-ops;
-      &gnome-vfs-xfer;
       &gnome-vfs-file-trunc-ops;
-      &gnome-vfs-file-advanced-ops;
-      &gnome-vfs-file-async-ops;
-    </sect1>
+      &gnome-vfs-file-info-ops;
+  </chapter>
 
-    <sect1 id="gnome-vfs-directory-operations">
-      <title>Directory Handling</title>
-      <para>
-	Functions for creating, removing, and listing directories.
-      </para>
-
+  <chapter id="gnome-vfs-directory-ops">
+    <title>Directory-Specific Operations</title>
       &gnome-vfs-directory-basic-ops;
       &gnome-vfs-directory-list-ops;
       &gnome-vfs-directory-find-ops;
-    </sect1>
+  </chapter>
 
 
-    <sect1 id="advanced-operations">
-      <title>Advanced Operations</title>
+  <chapter id="gnome-vfs-file-and-dirs-ops">
+    <title>Advanced File/Directory Operations</title>
+      &gnome-vfs-xfer;
       &gnome-vfs-monitor;
+      &gnome-vfs-file-advanced-ops;
+  </chapter>
+
+  <chapter id="gnome-vfs-file-async-ops">
+    <title>Asynchronous Operations</title>
+      &gnome-vfs-file-async-ops;
       &gnome-vfs-cancellation;
-    </sect1>
   </chapter>
 
   <chapter id="volumes">
@@ -185,6 +180,8 @@
       appropriate actions when files are activated. 
     </para>
 
+    &gnome-vfs-mime;
+    &gnome-vfs-mime-utils;
     &gnome-vfs-mime-database;
     &gnome-vfs-mime-monitor;
     &gnome-vfs-mime-database-deprecated; 
@@ -202,7 +199,6 @@
     </para>
 
     &gnome-vfs-writing-modules;
-    &gnome-vfs-mime;
     &gnome-vfs-method;
     &gnome-vfs-module;
     &gnome-vfs-module-shared;

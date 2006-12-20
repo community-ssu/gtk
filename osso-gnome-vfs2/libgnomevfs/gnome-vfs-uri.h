@@ -29,55 +29,68 @@
 
 G_BEGIN_DECLS
 
-/* This describes a URI element.  */
+/**
+ * GnomeVFSURI:
+ * @ref_count: Reference count. The URI is freed when it drops to zero.
+ * @text: A canonical representation of the path associated with this resource.
+ * @fragment_id: Extra data identifying this resource.
+ * @method_string: The @method's method associated with this resource.
+ * One #GnomeVFSMethod can be used for multiple method strings.
+ * @method: The #GnomeVFSMethod associated with this resource.
+ * @parent: Pointer to the parent element, or %NULL for #GnomeVFSURI that
+ * have no enclosing #GnomeVFSURI. The process of encapsulating one
+ * URI in another one is called URI chaining.
+ *
+ * Holds information about the location of a particular resource.
+ **/
 typedef struct GnomeVFSURI {
-	/* Reference count.  */
+	/*< public >*/
 	guint ref_count;
 
-	/* Text for the element: eg. some/path/name.  */
 	gchar *text;
-
-	/* Text for uri fragment: eg, #anchor  */
 	gchar *fragment_id;
-	
-	/* Method string: eg. `gzip', `tar', `http'.  This is necessary as
-	   one GnomeVFSMethod can be used for different method strings
-	   (e.g. extfs handles zip, rar, zoo and several other ones).  */
-	gchar *method_string;
 
-	/* VFS method to access the element.  */
+	gchar *method_string;
 	struct GnomeVFSMethod *method;
 
-	/* Pointer to the parent element, or NULL for toplevel elements.  */
 	struct GnomeVFSURI *parent;
 
+	/*< private >*/
 	/* Reserved to avoid future breaks in ABI compatibility */
 	void *reserved1;
 	void *reserved2;
 } GnomeVFSURI;
 
-/* This is the toplevel URI element.  A toplevel method implementations should
-   cast the `GnomeVFSURI' argument to this type to get the additional host/auth
-   information.  If any of the elements is 0, it is unspecified.  */
+/**
+ * GnomeVFSToplevelURI:
+ * @host_name: The name of the host used to access this resource, o %NULL.
+ * @host_port: The port used to access this resource, or %0.
+ * @user_name: Unescaped user name used to access this resource, or %NULL.
+ * @password: Unescaped password used to access this resource, or %NULL.
+ * @urn: The parent URN, or %NULL if it doesn't exist.
+ *
+ * This is the toplevel URI element used to access ressources stored on
+ * a remote server. Toplevel method implementations should cast the #GnomeVFSURI
+ * argument to this type to get the additional host and authentication information.
+ *
+ * If any of the elements is 0 respectively %NULL, it is unspecified.
+ **/
 typedef struct {
-	/* Base object.  */
 	GnomeVFSURI uri;
 
-	/* Server location information.  */
+	/*< public >*/
 	gchar *host_name;
 	guint host_port;
 
-	/* Authorization information. (unescaped) */
 	gchar *user_name;
 	gchar *password;
 
-	/* The parent URN, if it exists */
 	gchar *urn;
 
+	/*< private >*/
 	/* Reserved to avoid future breaks in ABI compatibility */
 	void *reserved1;
 	void *reserved2;
-
 } GnomeVFSToplevelURI;
 
 
@@ -92,7 +105,8 @@ typedef struct {
  * @GNOME_VFS_URI_HIDE_FRAGMENT_IDENTIFIER: hide the fragment identifier
  *
  * Packed boolean bitfield controlling hiding of various elements
- * of a GnomeVFSURI when it is converted to a string.
+ * of a #GnomeVFSURI when it is converted to a string using
+ * gnome_vfs_uri_to_string().
  **/
 typedef enum
 {
@@ -140,6 +154,8 @@ GType gnome_vfs_uri_hide_options_get_type (void);
 /* FUNCTIONS */
 GnomeVFSURI 	     *gnome_vfs_uri_new                   (const gchar *text_uri);
 GnomeVFSURI 	     *gnome_vfs_uri_resolve_relative      (const GnomeVFSURI *base,
+							   const gchar *relative_reference);
+GnomeVFSURI 	     *gnome_vfs_uri_resolve_symbolic_link (const GnomeVFSURI *base,
 							   const gchar *relative_reference);
 GnomeVFSURI 	     *gnome_vfs_uri_ref                   (GnomeVFSURI *uri);
 void        	      gnome_vfs_uri_unref                 (GnomeVFSURI *uri);

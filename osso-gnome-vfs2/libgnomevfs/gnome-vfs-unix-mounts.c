@@ -906,6 +906,14 @@ _gnome_vfs_get_unix_mount_table (GList **return_list)
 		mib[1] = VFS_USERMOUNT;
 		sysctl (mib, 2, &usermnt, &len, NULL, 0);
 	}
+#elif defined(CTL_KERN) && defined(KERN_USERMOUNT)
+	{
+		int mib[2];
+
+		mib[0] = CTL_KERN;
+		mib[1] = KERN_USERMOUNT;
+		sysctl (mib, 2, &usermnt, &len, NULL, 0);
+	}
 #endif
 #endif
 

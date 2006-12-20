@@ -14,6 +14,9 @@ gnome-vfs-mime-database-deprecated
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM GnomeVFSMimeActionType ##### -->
 <para>
 
@@ -175,6 +178,26 @@ gnome-vfs-mime-database-deprecated
 @Returns: 
 
 
+<!-- ##### FUNCTION gnome_vfs_mime_set_default_application ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@application_id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_set_default_component ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@component_iid: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gnome_vfs_mime_add_extension ##### -->
 <para>
 
@@ -221,6 +244,27 @@ gnome-vfs-mime-database-deprecated
 </para>
 
 @id: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_action_launch ##### -->
+<para>
+
+</para>
+
+@action: 
+@uris: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_action_launch_with_env ##### -->
+<para>
+
+</para>
+
+@action: 
+@uris: 
+@envp: 
 @Returns: 
 
 

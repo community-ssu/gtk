@@ -23,37 +23,19 @@
 
 #include <config.h>
 
-#include <glib/gstrfuncs.h>
-#include <glib/gtimer.h>
+#include <glib.h>
 #include <libgnomevfs/gnome-vfs-directory.h>
 #include <libgnomevfs/gnome-vfs-init.h>
-#include <popt.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-static int measure_speed = 0;
+static gboolean measure_speed = 0;
 
-static struct poptOption options[] = {
-	{
-		"measure-speed",
-		'm',
-		POPT_ARG_NONE,
-		&measure_speed,
-		0,
-		"Measure speed without displaying anything",
-		NULL
-	},
-	{
-		NULL,
-		0,
-		0,
-		NULL,
-		0,
-		NULL,
-		NULL
-	}
+static GOptionEntry options[] = {
+	{ "measure-speed", 'm', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, &measure_speed, "Measure speed without displaying anything", NULL },
+	{ NULL }
 };
-
 
 static void
 show_result (GnomeVFSResult result, const gchar *what, const gchar *text_uri)
@@ -126,30 +108,35 @@ print_list (GList *list)
 }
 
 int
-main (int argc, const char **argv)
+main (int argc, char **argv)
 {
 	GList *list;
 	GnomeVFSResult result;
 	GTimer *timer;
-	const char **args;
 	gchar *text_uri;
-	poptContext popt_context;
 
-	popt_context = poptGetContext ("test-directory", argc, 
-				       (const char **) argv, options, 0);
+	GOptionContext *ctx = NULL;
+	GError *error = NULL;
 
-	while (poptGetNextOpt (popt_context) != -1)
-		;
+	ctx = g_option_context_new("test-directory");
+	g_option_context_add_main_entries(ctx, options, NULL);
 
-	args = poptGetArgs (popt_context);
-	if (args == NULL || args[1] != NULL) {
-		fprintf (stderr, "Usage: %s [<options>] <uri>\n", argv[0]);
+	if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
+		g_printerr("main: %s\n", error->message);
+
+		g_error_free(error);
+		g_option_context_free(ctx);
 		return 1;
 	}
 
-	text_uri = g_strdup (args[0]);
+	g_option_context_free(ctx);
 
-	poptFreeContext (popt_context);
+	if (argc != 2 || argv[1] == NULL) {
+		g_printerr("Usage: %s [<options>] <uri>\n", argv[0]);
+		return 1;
+	}
+
+	text_uri = g_strdup(argv[1]);
 
 	gnome_vfs_init ();
 

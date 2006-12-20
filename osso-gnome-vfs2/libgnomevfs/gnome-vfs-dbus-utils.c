@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+ * Copyright (C) 2004-2006 Nokia Corporation.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -18,6 +18,7 @@
  * Boston, MA 02111-1307, USA.
  *
  * Author: Richard Hult <richard@imendio.com>
+ *         Alexander Larsson <alexl@redhat.com>
  */
 
 #include <config.h>
@@ -27,410 +28,175 @@
 #include "gnome-vfs-volume.h"
 #include "gnome-vfs-drive.h"
 #include "gnome-vfs-volume-monitor-private.h"
+#include "gnome-vfs-volume-monitor-client.h"
 #include "gnome-vfs-dbus-utils.h"
+
+#ifndef DBUS_API_SUBJECT_TO_CHANGE
+#define DBUS_API_SUBJECT_TO_CHANGE 1
+#endif
+#include <dbus/dbus-glib-lowlevel.h>
 
 #define d(x)
 
-/*
- * Utilities
- */
+static DBusConnection *main_dbus;
 
+#define DAEMON_SIGNAL_RULE \
+  "type='signal',sender='org.gnome.GnomeVFS.Daemon',interface='org.gnome.GnomeVFS.Daemon'"
+
+#define NAME_OWNER_CHANGED_SIGNAL_RULE \
+  "type='signal',sender='" DBUS_SERVICE_DBUS "',interface='" DBUS_INTERFACE_DBUS "',member='NameOwnerChanged',arg0='org.gnome.GnomeVFS.Daemon'"
+
+static guint retry_timeout_id = 0;
+
+/* Should only be called from the main thread. */
+static gboolean
+dbus_try_activate_daemon_helper (void)
+{
+	DBusError error;
+
+	d(g_print ("Try activating daemon.\n"));
+
+	dbus_error_init (&error);
+	if (!dbus_bus_start_service_by_name (main_dbus,
+					     DVD_DAEMON_SERVICE,
+					     0,
+					     NULL,
+					     &error)) {
+		g_warning ("Failed to re-activate daemon: %s", error.message);
+		dbus_error_free (&error);
+	} else {
+		/* Succeeded, reload drives/volumes. */
+		_gnome_vfs_volume_monitor_client_daemon_died (gnome_vfs_get_volume_monitor ());
+
+		return TRUE;
+	}
+
+	return FALSE;
+}
+
+static gboolean 
+dbus_try_activate_daemon_timeout_func (gpointer data)
+{
+
+	if (dbus_try_activate_daemon_helper ()) {
+		retry_timeout_id = 0;
+		return FALSE;
+	}
+
+	/* Try again. */
+	return TRUE;
+}
+
+/* Will re-try every 5 seconds until succeeding. */
 static void
-utils_append_string_or_null (DBusMessageIter *iter,
-			     const gchar     *str)
+dbus_try_activate_daemon (void)
 {
-	if (!str) {
-		str = "";
+	if (retry_timeout_id != 0) {
+		return;
 	}
 	
-	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &str);
+	if (dbus_try_activate_daemon_helper ()) {
+		return;
+	}
+
+	/* We failed to activate the daemon. This should only happen if the
+	 * daemon has been explicitly killed by the user or some OOM
+	 * functionality just after we tried to activate it. We try again in 5
+	 * seconds.
+	 */
+	retry_timeout_id = g_timeout_add (5000, dbus_try_activate_daemon_timeout_func, NULL);
 }
 
-static gchar *
-utils_get_string_or_null (DBusMessageIter *iter)
+static DBusHandlerResult
+dbus_filter_func (DBusConnection *connection,
+		  DBusMessage    *message,
+		  void           *data)
 {
-	const gchar *str;
-	
-	dbus_message_iter_get_basic (iter, &str);
-	
-	if (str && strcmp (str, "") == 0) {
-		return NULL;
-	}
+	if (dbus_message_is_signal (message,
+				    DBUS_INTERFACE_DBUS,
+				    "NameOwnerChanged")) {
+		gchar *service, *old_owner, *new_owner;
 
-	return g_strdup (str);
-}
+		dbus_message_get_args (message,
+				       NULL,
+				       DBUS_TYPE_STRING, &service,
+				       DBUS_TYPE_STRING, &old_owner,
+				       DBUS_TYPE_STRING, &new_owner,
+				       DBUS_TYPE_INVALID);
 
-gboolean
-_gnome_vfs_dbus_utils_append_volume (DBusMessageIter *iter,
-				     GnomeVFSVolume  *volume)
-{
-	GnomeVFSVolumePrivate *priv;
-	DBusMessageIter        struct_iter;
-	GnomeVFSDrive         *drive;
-	gint32                 i;
-
-	g_return_val_if_fail (iter != NULL, FALSE);
-	g_return_val_if_fail (volume != NULL, FALSE);
-
-	priv = volume->priv;
-
-	if (!dbus_message_iter_open_container (iter,
-					       DBUS_TYPE_STRUCT,
-					       NULL, /* for struct */
-					       &struct_iter)) {
-		return FALSE;
-	}
-
-	i = priv->id;
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	i = priv->volume_type;
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	i = priv->volume_type;
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	drive = gnome_vfs_volume_get_drive (volume);
-	if (drive != NULL) {
-		i = drive->priv->id;
-		gnome_vfs_drive_unref (drive);
-	} else {
-		i = 0;
-	}
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	utils_append_string_or_null (&struct_iter, priv->activation_uri);
-	utils_append_string_or_null (&struct_iter, priv->filesystem_type);
-	utils_append_string_or_null (&struct_iter, priv->display_name);
-	utils_append_string_or_null (&struct_iter, priv->icon);
-
-	dbus_message_iter_append_basic (&struct_iter,
-					DBUS_TYPE_BOOLEAN,
-					&priv->is_user_visible);
-	dbus_message_iter_append_basic (&struct_iter,
-					DBUS_TYPE_BOOLEAN,
-					&priv->is_read_only);
-	dbus_message_iter_append_basic (&struct_iter,
-					DBUS_TYPE_BOOLEAN,
-					&priv->is_mounted);
-	
-	utils_append_string_or_null (&struct_iter, priv->device_path);
-
-	i = priv->unix_device;
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	utils_append_string_or_null (&struct_iter, priv->gconf_id);
-
-	dbus_message_iter_close_container (iter, &struct_iter);
-	
-	return TRUE;
-}
-
-GnomeVFSVolume *
-_gnome_vfs_dbus_utils_get_volume (DBusMessageIter       *iter,
-				  GnomeVFSVolumeMonitor *volume_monitor)
-{
-	GnomeVFSVolumePrivate *priv;
-	DBusMessageIter        struct_iter;
-	GnomeVFSVolume        *volume;
-	gint32                 i;
-
-	g_return_val_if_fail (iter != NULL, NULL);
-	g_return_val_if_fail (volume_monitor != NULL, NULL);
-	
-	g_assert (dbus_message_iter_get_arg_type (iter) == DBUS_TYPE_STRUCT);
-
-	/* Note: the volumes lock is locked in _init. */
-	volume = g_object_new (GNOME_VFS_TYPE_VOLUME, NULL);
-
-	priv = volume->priv;
-
-	dbus_message_iter_recurse (iter, &struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	priv->id = i;
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	priv->volume_type = i;
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	priv->device_type = i;
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	if (i != 0) {
-		priv->drive = gnome_vfs_volume_monitor_get_drive_by_id (
-			volume_monitor, i);
+		d(g_print ("NameOwnerChanged %s %s->%s\n", service, old_owner, new_owner));
 		
-		if (priv->drive != NULL) {
-			_gnome_vfs_drive_add_mounted_volume (priv->drive, volume);
-			
-			/* The drive reference is weak */
-			gnome_vfs_drive_unref (priv->drive);
-		}
-	}
-
-	dbus_message_iter_next (&struct_iter);
-	priv->activation_uri = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->filesystem_type = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->display_name = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->icon = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->is_user_visible);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->is_read_only);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->is_mounted);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->device_path = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->unix_device);
-	
-	dbus_message_iter_next (&struct_iter);
-	priv->gconf_id = utils_get_string_or_null (&struct_iter);
-	
-	return volume;
-}
-
-gboolean
-_gnome_vfs_dbus_utils_append_drive (DBusMessageIter *iter,
-				    GnomeVFSDrive   *drive)
-{
-	GnomeVFSDrivePrivate *priv;
-	DBusMessageIter       struct_iter;
-	GnomeVFSVolume       *volume;
-	gint32                i;
-
-	g_return_val_if_fail (iter != NULL, FALSE);
-	g_return_val_if_fail (drive != NULL, FALSE);
-
-	priv = drive->priv;
-
-	if (!dbus_message_iter_open_container (iter,
-					       DBUS_TYPE_STRUCT,
-					       NULL, /* for struct */
-					       &struct_iter)) {
-		return FALSE;
-	}
-
-	i = priv->id;
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	i = priv->device_type;
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-	
-	volume = gnome_vfs_drive_get_mounted_volume (drive);
-	if (volume != NULL) {
-		i = volume->priv->id;
-		gnome_vfs_volume_unref (volume);
-	} else {
-		i = 0;
-	}
-	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
-
-	utils_append_string_or_null (&struct_iter, priv->device_path);
-	utils_append_string_or_null (&struct_iter, priv->activation_uri);
-	utils_append_string_or_null (&struct_iter, priv->display_name);
-	utils_append_string_or_null (&struct_iter, priv->icon);
-
-	dbus_message_iter_append_basic (&struct_iter,
-					DBUS_TYPE_BOOLEAN,
-					&priv->is_user_visible);
-	dbus_message_iter_append_basic (&struct_iter,
-					DBUS_TYPE_BOOLEAN,
-					&priv->is_connected);
-	dbus_message_iter_append_basic (&struct_iter,
-					DBUS_TYPE_BOOLEAN,
-					&priv->must_eject_at_unmount);
-
-	if (!dbus_message_iter_close_container (iter, &struct_iter)) {
-		return FALSE;
-	}
-	    
-	return TRUE;
-}
-
-GnomeVFSDrive *
-_gnome_vfs_dbus_utils_get_drive (DBusMessageIter       *iter,
-				 GnomeVFSVolumeMonitor *volume_monitor)
-{
-	DBusMessageIter       struct_iter;
-	GnomeVFSDrive        *drive;
-	GnomeVFSDrivePrivate *priv;
-	gint32                i;
-
-	g_return_val_if_fail (iter != NULL, NULL);
-	g_return_val_if_fail (volume_monitor != NULL, NULL);
-	
-	g_assert (dbus_message_iter_get_arg_type (iter) == DBUS_TYPE_STRUCT);
-	
-	/* Note: the drives lock is locked in _init. */
-	drive = g_object_new (GNOME_VFS_TYPE_DRIVE, NULL);
-
-	priv = drive->priv;
-
-	dbus_message_iter_recurse (iter, &struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	priv->id = i;
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	priv->device_type = i;
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &i);
-	if (i != 0) {
-		GnomeVFSVolume *mounted_volume;
-
-		mounted_volume = gnome_vfs_volume_monitor_get_volume_by_id (
-			volume_monitor, i);
-		
-		if (mounted_volume) {
-			priv->volumes = g_list_append (priv->volumes,
-						       mounted_volume);
-			_gnome_vfs_volume_set_drive (mounted_volume, drive);
-		}
-	}
-	
-	dbus_message_iter_next (&struct_iter);
-	priv->device_path = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->activation_uri = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->display_name = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	priv->icon = utils_get_string_or_null (&struct_iter);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->is_user_visible);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->is_connected);
-
-	dbus_message_iter_next (&struct_iter);
-	dbus_message_iter_get_basic (&struct_iter, &priv->must_eject_at_unmount);
-
-	return drive;
-}
-
-GList *
-_gnome_vfs_dbus_utils_get_drives (DBusConnection        *dbus_conn,
-				  GnomeVFSVolumeMonitor *volume_monitor)
-{
-	DBusMessage     *message, *reply;
-	GList           *list;
-	DBusMessageIter  iter, array_iter;
-	GnomeVFSDrive   *drive;
-
-	message = dbus_message_new_method_call (DVD_DAEMON_SERVICE,
- 						DVD_DAEMON_OBJECT,
-						DVD_DAEMON_INTERFACE,
-						DVD_DAEMON_METHOD_GET_DRIVES);
-
-	reply = dbus_connection_send_with_reply_and_block (dbus_conn, 
-							   message,
-							   -1,
-							   NULL);
-	if (!reply) {
-		d(g_print ("Error while getting drives from daemon.\n"));
-		dbus_message_unref (message);
-		return NULL;
-	}
-
-	list = NULL;	
-
-	dbus_message_iter_init (reply, &iter);
-
-	/* We can't recurse if there is no array. */
-	if (dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_ARRAY) {
-		dbus_message_iter_recurse (&iter, &array_iter);
-		
-		while (dbus_message_iter_get_arg_type (&array_iter) == DBUS_TYPE_STRUCT) {
-			drive = _gnome_vfs_dbus_utils_get_drive (&array_iter, volume_monitor);
-			
-			list = g_list_prepend (list, drive);
-			
-			if (!dbus_message_iter_has_next (&array_iter)) {
-				break;
+		if (strcmp (service, DVD_DAEMON_SERVICE) == 0) {
+			if (strcmp (old_owner, "") != 0 &&
+			    strcmp (new_owner, "") == 0) {
+				/* No new owner, try to restart it. */
+				dbus_try_activate_daemon ();
 			}
-			
-			dbus_message_iter_next (&array_iter);
 		}
-		
-		list = g_list_reverse (list);
 	}
 	
-	dbus_message_unref (message);
-	dbus_message_unref (reply);
-
-	return list;
+	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-GList *
-_gnome_vfs_dbus_utils_get_volumes (DBusConnection        *dbus_conn,
-				   GnomeVFSVolumeMonitor *volume_monitor)
+/* Gets the main client dbus connection. Do not use in server */
+DBusConnection *
+_gnome_vfs_get_main_dbus_connection (void)
 {
-	DBusMessage     *message, *reply;
-	GList           *list;
-	DBusMessageIter  iter, array_iter;
-	GnomeVFSVolume  *volume;
+	DBusError error;
 
-	message = dbus_message_new_method_call (DVD_DAEMON_SERVICE,
- 						DVD_DAEMON_OBJECT,
-						DVD_DAEMON_INTERFACE,
-						DVD_DAEMON_METHOD_GET_VOLUMES);
-
-	reply = dbus_connection_send_with_reply_and_block (dbus_conn, 
-							   message,
-							   -1,
-							   NULL);
-	if (!reply) {
-		d(g_print ("Error while getting volumes from daemon.\n"));
-		dbus_message_unref (message);
+	if (main_dbus != NULL)
+		return main_dbus;
+	
+	dbus_error_init (&error);
+	main_dbus = dbus_bus_get (DBUS_BUS_SESSION, &error);
+	if (dbus_error_is_set (&error)) {
+		/*g_warning ("Failed to open session DBUS connection: %s\n"
+			   "Volume monitoring will not work.", error.message);*/
+		dbus_error_free (&error);
+		main_dbus = NULL;
 		return NULL;
 	}
-
-	list = NULL;	
-
-	dbus_message_iter_init (reply, &iter);
-
-	/* We can't recurse if there is no array. */
-	if (dbus_message_iter_get_arg_type (&iter) == DBUS_TYPE_ARRAY) {
-		dbus_message_iter_recurse (&iter, &array_iter);
-		
-		while (dbus_message_iter_get_arg_type (&array_iter) == DBUS_TYPE_STRUCT) {
-			volume = _gnome_vfs_dbus_utils_get_volume (&array_iter, volume_monitor);
-			
-			list = g_list_prepend (list, volume);
-			
-			if (!dbus_message_iter_has_next (&array_iter)) {
-				break;
-			}
-			
-			dbus_message_iter_next (&array_iter);
-		}
-		
-		list = g_list_reverse (list);
+	
+	/* We pass an error here to make this block (otherwise it just
+	 * sends off the match rule when flushing the connection. This
+	 * way we are sure to receive signals as soon as possible).
+	 */
+	dbus_bus_add_match (main_dbus, DAEMON_SIGNAL_RULE, NULL);
+	dbus_bus_add_match (main_dbus, NAME_OWNER_CHANGED_SIGNAL_RULE, &error);
+	if (dbus_error_is_set (&error)) {
+		g_warning ("Couldn't add match rule.");
+		dbus_error_free (&error);
 	}
 	
-	dbus_message_unref (message);
-	dbus_message_unref (reply);
+	if (!dbus_bus_start_service_by_name (main_dbus,
+					     DVD_DAEMON_SERVICE,
+					     0,
+					     NULL,
+					     &error)) {
+		g_warning ("Failed to activate daemon: %s", error.message);
+		dbus_error_free (&error);
+	}
+	
+	dbus_connection_setup_with_g_main (main_dbus, NULL);
+	
+	dbus_connection_add_filter (main_dbus,
+				    dbus_filter_func,
+				    NULL,
+				    NULL);
 
-	return list;
+	return main_dbus;
 }
 
+static GStaticPrivate  daemon_connection_private = G_STATIC_PRIVATE_INIT;
+
+DBusConnection *
+_gnome_vfs_daemon_get_current_connection (void)
+{
+	return g_static_private_get (&daemon_connection_private);
+}
+
+void
+gnome_vfs_daemon_set_current_connection (DBusConnection *conn)
+{
+	g_static_private_set (&daemon_connection_private, conn, NULL);
+}

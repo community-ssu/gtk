@@ -1,12 +1,12 @@
 <!-- ##### SECTION Title ##### -->
-Reading and Writing
+Reading and Writing Files
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Reading from and writing to open file handles.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-  Reading and writing operations are explained, also @gnome_vfs_seek, which
+  Reading and writing operations are explained, also gnome_vfs_seek(), which
   is used to move the file pointer inside the file.
 </para>
 
@@ -14,6 +14,9 @@ Reading and Writing
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### ENUM GnomeVFSSeekPosition ##### -->
 <para>
@@ -66,6 +69,17 @@ Reading and Writing
 
 @handle: 
 @offset_return: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_forget_cache ##### -->
+<para>
+
+</para>
+
+@handle: 
+@offset: 
+@size: 
 @Returns: 
 
 

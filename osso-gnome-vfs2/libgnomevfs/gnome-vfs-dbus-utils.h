@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+ * Copyright (C) 2004 Nokia Corporation.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
@@ -27,19 +27,22 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
-#define DBUS_API_SUBJECT_TO_CHANGE
-#include <dbus/dbus-glib-lowlevel.h>
+#include <dbus/dbus.h>
 
 G_BEGIN_DECLS
 
 #define DVD_DAEMON_SERVICE                          "org.gnome.GnomeVFS.Daemon"
 #define DVD_DAEMON_OBJECT                           "/org/gnome/GnomeVFS/Daemon"
 #define DVD_DAEMON_INTERFACE                        "org.gnome.GnomeVFS.Daemon"
+#define DVD_CLIENT_OBJECT                           "/org/gnome/GnomeVFS/Client"
+#define DVD_CLIENT_INTERFACE                        "org.gnome.GnomeVFS.Client"
 
 /* File monitoring signal. */
 #define DVD_DAEMON_MONITOR_SIGNAL                   "MonitorSignal"
 
 #define DVD_DAEMON_METHOD_GET_CONNECTION            "GetConnection"
+
+#define DVD_CLIENT_METHOD_CALLBACK                  "Callback"
 
 /* File ops methods. */
 #define DVD_DAEMON_METHOD_OPEN                      "Open"
@@ -97,6 +100,88 @@ G_BEGIN_DECLS
 /* Errors. */
 #define DVD_ERROR_FAILED            "org.gnome.GnomeVFS.Daemon.Error.Failed"
 #define DVD_ERROR_SOCKET_FAILED     "org.gnome.GnomeVFS.Error.SocketFailed"
+
+#define GNOME_VFS_VOLUME_DBUS_TYPE \
+	DBUS_STRUCT_BEGIN_CHAR_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_BOOLEAN_AS_STRING \
+	DBUS_TYPE_BOOLEAN_AS_STRING \
+	DBUS_TYPE_BOOLEAN_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_STRUCT_END_CHAR_AS_STRING
+
+#define GNOME_VFS_DRIVE_DBUS_TYPE \
+	DBUS_STRUCT_BEGIN_CHAR_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_ARRAY_AS_STRING \
+	 DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_BOOLEAN_AS_STRING \
+	DBUS_TYPE_BOOLEAN_AS_STRING \
+	DBUS_TYPE_BOOLEAN_AS_STRING \
+	DBUS_STRUCT_END_CHAR_AS_STRING
+
+
+#define GNOME_VFS_FILE_INFO_DBUS_TYPE \
+	DBUS_STRUCT_BEGIN_CHAR_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT64_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_UINT32_AS_STRING \
+	DBUS_TYPE_UINT32_AS_STRING \
+	DBUS_TYPE_INT64_AS_STRING \
+	DBUS_TYPE_INT64_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_INT32_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_TYPE_STRING_AS_STRING \
+	DBUS_STRUCT_END_CHAR_AS_STRING
+
+
+
+
+/* Note: It could make sense to have DVD_TYPE_FILE_SIZE and FILE_OFFSET instead
+ * of the 64 bits variants.
+ */
+typedef enum {
+	DVD_TYPE_LAST = -1,
+	DVD_TYPE_URI,
+	DVD_TYPE_STRING,
+	DVD_TYPE_INT32,
+	DVD_TYPE_INT64,
+	DVD_TYPE_UINT64,
+	DVD_TYPE_FILE_INFO,
+	DVD_TYPE_BOOL,
+	DVD_TYPE_BYTE_ARRAY
+} DvdArgumentType;
+
+/* Main thread client connection: */
+DBusConnection *_gnome_vfs_get_main_dbus_connection (void);
+
+/* daemon per-thread connections: */
+DBusConnection *_gnome_vfs_daemon_get_current_connection (void);
+void            gnome_vfs_daemon_set_current_connection  (DBusConnection *conn);
 
 G_END_DECLS
 

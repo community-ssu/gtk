@@ -933,14 +933,15 @@ do_handleinfo (void)
 
 static GMainLoop *main_loop = NULL;
 
-static int interactive = 0;
-static int noninteractive = 0;
-static const struct poptOption options [] = {
-	{ "interactive", 'i', POPT_ARG_NONE, &interactive, 0,
-	  "Allow interactive input", NULL  },
-	{ "noninteractive", 'n', POPT_ARG_NONE, &noninteractive, 0,
- 	  "Disallow interactive input", NULL  },
-	{ NULL, '\0', 0, NULL, 0 }
+static gboolean interactive = FALSE;
+static gboolean noninteractive = FALSE;
+
+static GOptionEntry options[] = {
+	{ "interactive", 'i', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, "Allow interactive input", NULL },
+	{ "noninteractive", 'n', G_OPTION_FLAG_IN_MAIN,
+	  G_OPTION_ARG_NONE, "Disallow interactive input", NULL },
+	{ NULL }
 };
 
 static gboolean
@@ -1005,28 +1006,35 @@ authentication_callback (gconstpointer in, gsize in_size,
 }
 
 int
-main (int argc, const char **argv)
+main (int argc, char **argv)
 {
-	poptContext popt_context;
 	int exit = 0;
 	char *buffer = g_new (char, 1024) ;
-	const char **args;
 	GIOChannel *ioc;
 	guint watch_id = 0;
+	GOptionContext *ctx = NULL;
+	GError *error = NULL;
 
 	/* default to interactive on a terminal */
 	interactive = isatty (0);
 
+	ctx = g_option_context_new("test-vfs");
+	g_option_context_add_main_entries(ctx, options, NULL);
+
+	if (!g_option_context_parse(ctx, &argc, &argv, &error)) {
+		g_printerr("main: %s\n", error->message);
+
+		g_error_free(error);
+		g_option_context_free(ctx);
+		return 1;
+	}
+
+	g_option_context_free(ctx);
+
 	files = g_hash_table_new (g_str_hash, g_str_equal);
 
-	popt_context = poptGetContext ("test-vfs", argc, argv,
-				       options, 0);
-
-	while (poptGetNextOpt (popt_context) != -1)
-		;
-
 	if (noninteractive)
-		interactive = 0;
+		interactive = FALSE;
 
 	if (interactive)
 		vfserr = stderr;
@@ -1041,18 +1049,15 @@ main (int argc, const char **argv)
 		(GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION,
 		 authentication_callback, NULL, NULL);
 
-	args = poptGetArgs (popt_context);
-	if (!args)
+	if (argc == 1)
 		cur_dir = g_get_current_dir ();
 	else
-		cur_dir = g_strdup (args [0]);
+		cur_dir = g_strdup(argv[1]);
 
 	if (cur_dir && !G_IS_DIR_SEPARATOR (cur_dir [strlen (cur_dir) - 1]))
 		cur_dir = g_strconcat (cur_dir, G_DIR_SEPARATOR_S, NULL);
-		
-	poptFreeContext (popt_context);
 
-	if (interactive) {
+	if (interactive == TRUE) {
 		main_loop = g_main_loop_new (NULL, TRUE);
 		ioc = g_io_channel_unix_new (0 /* stdin */);
 		g_io_channel_set_encoding (ioc, NULL, NULL);

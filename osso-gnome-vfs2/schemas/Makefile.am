@@ -1,15 +1,10 @@
 schemadir   = $(GCONF_SCHEMA_FILE_DIR)
-schema_in_files = \
-	system_http_proxy.schemas.in \
-	system_smb.schemas.in \
-	system_dns_sd.schemas.in \
-	system_storage.schemas.in \
-	desktop_default_applications.schemas.in \
-	desktop_gnome_url_handlers.schemas.in
-
-schema_DATA = $(schema_in_files:.schemas.in=.schemas)
-
-@INTLTOOL_SCHEMAS_RULE@
+schema_DATA = \
+	system_http_proxy.schemas \
+	system_smb.schemas \
+	system_dns_sd.schemas \
+	desktop_default_applications.schemas \
+	desktop_gnome_url_handlers.schemas
 
 # don't do this if we are building in eg. rpm
 if GCONF_SCHEMAS_INSTALL
@@ -39,6 +34,4 @@ else
 install-data-local:
 endif
 
-EXTRA_DIST = $(schema_in_files) $(schema_DATA)
-
-DISTCLEANFILES = $(schema_DATA)
+EXTRA_DIST = $(schema_DATA)

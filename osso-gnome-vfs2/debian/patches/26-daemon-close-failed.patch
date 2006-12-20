@@ -1,0 +1,31 @@
+Index: daemon/daemon-connection.c
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/daemon/daemon-connection.c,v
+retrieving revision 1.6
+diff -u -B -p -r1.6 daemon-connection.c
+--- daemon/daemon-connection.c	10 Nov 2006 10:09:48 -0000	1.6
++++ daemon/daemon-connection.c	4 Dec 2006 10:01:48 -0000
+@@ -788,6 +788,13 @@ connection_handle_close (DaemonConnectio
+ 					      context);
+ 	gnome_vfs_daemon_set_current_connection (NULL);
+ 
++	/* Clear the handle so we don't close it twice. If close is not
++	 * successful, all modules destroy their internal handle data anyway so
++	 * we can't call close twice on a handle even if it fails the first
++	 * time.
++	 */
++	handle->vfs_handle = NULL;
++
+ 	if (cancellation) {
+ 		connection_remove_cancellation (conn, cancellation);
+ 	}
+@@ -796,9 +803,6 @@ connection_handle_close (DaemonConnectio
+ 		return;
+ 	}
+ 
+-	/* Clear the handle so we don't close it twice. */
+-	handle->vfs_handle = NULL;
+-	
+ 	remove_file_handle (handle);
+ 
+ 	connection_reply_ok (conn, message);

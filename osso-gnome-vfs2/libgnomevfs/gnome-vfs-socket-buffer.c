@@ -62,15 +62,15 @@ buffer_init (Buffer *buffer)
 
 /**
  * gnome_vfs_socket_buffer_new:
- * @socket: socket to be buffered
+ * @socket: socket to be buffered.
  *
  * Create a socket buffer around @socket. A buffered
  * socket allows data to be poked at without reading it
  * as it will be buffered. A future read will retrieve
  * the data again.
  *
- * Return value: a newly allocated GnomeVFSSocketBuffer
- **/
+ * Return value: a newly allocated #GnomeVFSSocketBuffer.
+ */
 GnomeVFSSocketBuffer*  
 gnome_vfs_socket_buffer_new (GnomeVFSSocket *socket)
 {
@@ -90,13 +90,13 @@ gnome_vfs_socket_buffer_new (GnomeVFSSocket *socket)
 /**
  * gnome_vfs_socket_buffer_destroy:
  * @socket_buffer: buffered socket to destroy.
- * @close_socket: if %TRUE the socket being buffered will be closed too.
+ * @close_socket: if %TRUE, the socket being buffered will be closed.
  * @cancellation: handle allowing cancellation of the operation.
  *
  * Free the socket buffer.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult   
 gnome_vfs_socket_buffer_destroy  (GnomeVFSSocketBuffer *socket_buffer, 
 				  gboolean close_socket,
@@ -159,15 +159,15 @@ refill_input_buffer (GnomeVFSSocketBuffer *socket_buffer,
  * gnome_vfs_socket_buffer_read:
  * @socket_buffer: buffered socket to read data from.
  * @buffer: allocated buffer of at least @bytes bytes to be read into.
- * @bytes: number of bytes to read from @socket into @socket_buffer.
- * @bytes_read: pointer to a GnomeVFSFileSize, will contain
- * the number of bytes actually read from the socket on return.
+ * @bytes: number of bytes to read from @socket_buffer into @buffer.
+ * @bytes_read: pointer to a #GnomeVFSFileSize, will contain
+ * the number of bytes actually read from the @socket_buffer on return.
  * @cancellation: handle allowing cancellation of the operation.
  *
  * Read @bytes bytes of data from the @socket into @socket_buffer.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult   
 gnome_vfs_socket_buffer_read (GnomeVFSSocketBuffer *socket_buffer,
 			      gpointer buffer,
@@ -225,27 +225,27 @@ gnome_vfs_socket_buffer_read (GnomeVFSSocketBuffer *socket_buffer,
  * gnome_vfs_socket_buffer_read_until:
  * @socket_buffer: buffered socket to read data from.
  * @buffer: allocated buffer of at least @bytes bytes to be read into.
- * @bytes: maximum number of bytes to read from @socket into @socket_buffer.
- * @boundary: the boundary until wich is read.
- * @boundary_len: the length of the boundary.
- * @bytes_read: pointer to a GnomeVFSFileSize, will contain
- * the number of bytes actually read from the socket on return.
- * @got_boundary: pointer to a gboolean  which will be %TRUE if the boundary
- * was found or FALSE otherwise.
+ * @bytes: maximum number of bytes to read from @socket_buffer into @buffer.
+ * @boundary: the boundary until which is read.
+ * @boundary_len: the length of the @boundary.
+ * @bytes_read: pointer to a #GnomeVFSFileSize, will contain
+ * the number of bytes actually read from the @socket_buffer on return.
+ * @got_boundary: pointer to a #gboolean  which will be %TRUE if the boundary
+ * was found or %FALSE otherwise.
  * @cancellation: handle allowing cancellation of the operation.
  *
- * Read up to @bytes bytes of data from the @socket into @socket_buffer 
+ * Read up to @bytes bytes of data from the @socket_buffer into @buffer 
  * until boundary is reached. @got_boundary will be set accordingly.
  *
  * Note that if @bytes is smaller than @boundary_len there is no way
  * to detected the boundary! So if you want to make sure that every boundary
- * is found (in a loop maybe) asure that @bytes is at least as big as 
+ * is found (in a loop maybe) assure that @bytes is at least as big as 
  * @boundary_len.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
+ * Return value: #GnomeVFSResult indicating the success of the operation.
  *
  * Since: 2.8
- **/
+ */
 GnomeVFSResult
 gnome_vfs_socket_buffer_read_until (GnomeVFSSocketBuffer *socket_buffer,
 				    gpointer buffer,
@@ -357,8 +357,8 @@ gnome_vfs_socket_buffer_read_until (GnomeVFSSocketBuffer *socket_buffer,
  * the character in. The next read will retrieve @c (as well as any following
  * data if requested).
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult
 gnome_vfs_socket_buffer_peekc (GnomeVFSSocketBuffer *socket_buffer,
 			       gchar *character,
@@ -424,17 +424,17 @@ flush (GnomeVFSSocketBuffer *socket_buffer,
 
 /**
  * gnome_vfs_socket_buffer_write:
- * @socket_buffer: buffered socket to write data to
- * @buffer: data to write to the socket
- * @bytes: number of bytes from @buffer to write to @socket_buffer
- * @bytes_written: pointer to a GnomeVFSFileSize, will contain
- * the number of bytes actually written to the socket on return.
- * @cancellation: handle allowing cancellation of the operation
+ * @socket_buffer: buffered socket to write data to.
+ * @buffer: data to write to the @socket_buffer.
+ * @bytes: number of bytes to write from @buffer to @socket_buffer.
+ * @bytes_written: pointer to a #GnomeVFSFileSize, will contain
+ * the number of bytes actually written to the @socket_buffer on return.
+ * @cancellation: handle allowing cancellation of the operation.
  *
  * Write @bytes bytes of data from @buffer to @socket_buffer.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/ 
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */ 
 GnomeVFSResult   
 gnome_vfs_socket_buffer_write (GnomeVFSSocketBuffer *socket_buffer, 
 			       gconstpointer buffer,
@@ -486,13 +486,13 @@ gnome_vfs_socket_buffer_write (GnomeVFSSocketBuffer *socket_buffer,
 
 /**
  * gnome_vfs_socket_buffer_flush:
- * @socket_buffer: buffer to flush
- * @cancellation: handle allowing cancellation of the operation
+ * @socket_buffer: buffer to flush.
+ * @cancellation: handle allowing cancellation of the operation.
  *
  * Write all outstanding data to @socket_buffer.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: #GnomeVFSResult indicating the success of the operation.
+ */
 GnomeVFSResult   
 gnome_vfs_socket_buffer_flush (GnomeVFSSocketBuffer *socket_buffer,
 			       GnomeVFSCancellation *cancellation)

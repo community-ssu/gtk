@@ -581,7 +581,6 @@ language_level (const char *lang)
 	return -1;
 }
 
-
 static void
 application_add_key (Application *application, const char *key,
 		     const char *lang, const char *value)
@@ -1483,9 +1482,6 @@ gnome_vfs_application_registry_set_bool_value (const char *app_id,
  * deprecated. Use the functions available in gnome-mime-handlers
  * instead.
  * 
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  */
 
 void
@@ -1533,9 +1529,6 @@ cb_application_collect (gpointer key, gpointer value, gpointer user_data)
  * deprecated. Use the functions available in gnome-mime-handlers
  * instead.
  *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  */
 
 GList *
@@ -1598,10 +1591,6 @@ gnome_vfs_application_registry_get_applications (const char *mime_type)
  * deprecated. Use the functions available in gnome-mime-handlers
  * instead.
  *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
- *
  */
 
 GList *
@@ -1647,10 +1636,6 @@ gnome_vfs_application_registry_get_mime_types (const char *app_id)
  * uri scheme will given is supported.
  *
  * Returns: TRUE if @app_id supports @uri_scheme, otherwise FALSE
- *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  *
  * Deprecated: All application registry functions have been
  * deprecated. Use the functions available in gnome-mime-handlers
@@ -1782,10 +1767,6 @@ gnome_vfs_application_registry_supports_mime_type (const char *app_id,
  * deprecated. Use the functions available in gnome-mime-handlers
  * instead.
  *
- *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  */
 
 void
@@ -1813,10 +1794,6 @@ gnome_vfs_application_registry_clear_mime_types (const char *app_id)
  * application registry id and the mime type.  Changes are not realized until
  * the gnome_vfs_application_registry_sync function is called to save the
  * changes to the file.
- *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  *
  * Deprecated: All application registry functions have been
  * deprecated. Use the functions available in gnome-mime-handlers
@@ -1851,10 +1828,6 @@ gnome_vfs_application_registry_add_mime_type (const char *app_id,
  * Given the application registry id and the mime type.  Changes are not
  * realized until the gnome_vfs_application_registry_sync function is called to
  * save the changes to the file.
- *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  *
  * Deprecated: All application registry functions have been
  * deprecated. Use the functions available in gnome-mime-handlers
@@ -1912,10 +1885,6 @@ application_sync_foreach (gpointer key, gpointer value, gpointer user_data)
  * deprecated. Use the functions available in gnome-mime-handlers
  * instead.
  *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
- *
  */
 
 GnomeVFSResult
@@ -1967,10 +1936,6 @@ gnome_vfs_application_registry_sync (void)
  * the mime type associated by the application referred by app_id.
  *
  * Returns: GnomeVFSMimeApplication
- *
- * Deprecated: All application registry functions have been
- * deprecated. Use the functions available in gnome-mime-handlers
- * instead.
  *
  * Deprecated: All application registry functions have been
  * deprecated. Use the functions available in gnome-mime-handlers

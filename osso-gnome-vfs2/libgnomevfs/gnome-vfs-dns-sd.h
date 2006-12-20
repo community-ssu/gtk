@@ -149,8 +149,8 @@ gnome_vfs_dns_sd_resolve_sync (const char *name,
 			       int timeout_msec,
 			       char **host, int *port,
 			       GHashTable **text,
-			       int *text_raw_len,
-			       char **text_raw);
+			       int *text_raw_len_out,
+			       char **text_raw_out);
 
 void
 gnome_vfs_dns_sd_service_list_free (GnomeVFSDNSSDService *services,

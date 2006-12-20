@@ -124,7 +124,9 @@ print_file_info (const GnomeVFSFileInfo *info)
              printf ("Executable        : %s\n", 
                      (info->permissions&GNOME_VFS_PERM_ACCESS_EXECUTABLE?"YES":"NO"));
      }
-     
+
+	if (info->valid_fields&GNOME_VFS_FILE_INFO_FIELDS_SELINUX_CONTEXT)
+		printf ("SELinux Context   : %s\n", info->selinux_context);     
 
 #undef FLAG_STRING
 }
@@ -162,7 +164,9 @@ main (int argc,
 						  info,
 						  (GNOME_VFS_FILE_INFO_GET_MIME_TYPE
 						   | GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS
+						   | GNOME_VFS_FILE_INFO_GET_SELINUX_CONTEXT
 						   | GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
+
 		if (result != GNOME_VFS_OK) {
 			fprintf (stderr, "%s: %s: %s\n",
 				 argv[0], uri, gnome_vfs_result_to_string (result));

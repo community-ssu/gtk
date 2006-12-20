@@ -29,6 +29,8 @@
 #include <gconf/gconf-client.h>
 #include "gnome-vfs-volume-monitor.h"
 
+#include <dbus/dbus.h>
+
 G_BEGIN_DECLS
 
 #define GNOME_VFS_TYPE_VOLUME_MONITOR_CLIENT        (gnome_vfs_volume_monitor_client_get_type ())
@@ -43,6 +45,7 @@ typedef struct _GnomeVFSVolumeMonitorClientClass GnomeVFSVolumeMonitorClientClas
 struct _GnomeVFSVolumeMonitorClient {
 	GnomeVFSVolumeMonitor parent;
 	gboolean is_shutdown;
+	DBusConnection *dbus_conn;
 };
 
 struct _GnomeVFSVolumeMonitorClientClass {
@@ -51,19 +54,15 @@ struct _GnomeVFSVolumeMonitorClientClass {
 
 GType gnome_vfs_volume_monitor_client_get_type (void) G_GNUC_CONST;
 
-void _gnome_vfs_volume_monitor_client_daemon_died (GnomeVFSVolumeMonitorClient *volume_monitor_client);
-void _gnome_vfs_volume_monitor_client_shutdown (GnomeVFSVolumeMonitorClient *volume_monitor_client);
-
-#ifdef USE_DBUS_DAEMON
-
-void _gnome_vfs_volume_monitor_client_dbus_force_probe (GnomeVFSVolumeMonitorClient *volume_monitor_client);
-
-void _gnome_vfs_volume_monitor_client_dbus_emit_pre_unmount (GnomeVFSVolumeMonitorClient *volume_monitor_client,
-							     GnomeVFSVolume              *volume);
-
+void _gnome_vfs_volume_monitor_client_daemon_died            (GnomeVFSVolumeMonitor *volume_monitor);
+void gnome_vfs_volume_monitor_client_shutdown_private        (GnomeVFSVolumeMonitorClient *volume_monitor_client);
+void _gnome_vfs_volume_monitor_client_dbus_force_probe       (GnomeVFSVolumeMonitorClient *volume_monitor_client);
+void _gnome_vfs_volume_monitor_client_dbus_emit_pre_unmount  (GnomeVFSVolumeMonitorClient *volume_monitor_client,
+							      GnomeVFSVolume              *volume);
 void _gnome_vfs_volume_monitor_client_dbus_emit_mtab_changed (GnomeVFSVolumeMonitorClient *volume_monitor_client);
-
-#endif
+void _gnome_vfs_volume_monitor_client_dbus_force_probe       (GnomeVFSVolumeMonitorClient *volume_monitor_client);
+void _gnome_vfs_volume_monitor_client_dbus_emit_pre_unmount  (GnomeVFSVolumeMonitorClient *volume_monitor_client,
+							      GnomeVFSVolume              *volume);
 
 G_END_DECLS
 

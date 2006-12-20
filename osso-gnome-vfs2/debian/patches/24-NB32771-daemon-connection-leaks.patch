@@ -1,0 +1,21 @@
+Index: daemon/daemon-connection.c
+===================================================================
+--- daemon/daemon-connection.c	(revision 7519)
++++ daemon/daemon-connection.c	(working copy)
+@@ -1468,6 +1468,8 @@
+ 		uri, perm, context);
+ 	gnome_vfs_daemon_set_current_connection (NULL);
+ 
++	gnome_vfs_uri_unref (uri);
++
+ 	if (cancellation) {
+ 		connection_remove_cancellation (conn, cancellation);
+ 	}
+@@ -1726,6 +1728,7 @@
+ 	}
+ 
+ 	gnome_vfs_uri_unref (uri);
++	gnome_vfs_file_info_unref (info);
+ 
+ 	connection_reply_result (conn, message, result);
+ }

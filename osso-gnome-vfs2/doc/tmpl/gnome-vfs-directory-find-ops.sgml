@@ -15,6 +15,9 @@ Utilities for locating standard directories such as the desktop and trash
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
 <!-- ##### ENUM GnomeVFSFindDirectoryKind ##### -->
 <para>
 

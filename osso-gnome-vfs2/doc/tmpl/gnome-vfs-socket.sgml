@@ -19,6 +19,25 @@ through #gnome_vfs_socket_set_timeout.
 
 </para>
 
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### TYPEDEF GnomeVFSSocket ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### STRUCT GnomeVFSSocketImpl ##### -->
+<para>
+
+</para>
+
+@read: 
+@write: 
+@close: 
+@set_timeout: 
+
 <!-- ##### USER_FUNCTION GnomeVFSSocketReadFunc ##### -->
 <para>
 
@@ -27,7 +46,7 @@ through #gnome_vfs_socket_set_timeout.
 @connection: 
 @buffer: 
 @bytes: 
-@bytes_read: 
+@bytes_read_out: 
 @cancellation: 
 @Returns: 
 
@@ -40,7 +59,7 @@ through #gnome_vfs_socket_set_timeout.
 @connection: 
 @buffer: 
 @bytes: 
-@bytes_written: 
+@bytes_written_out: 
 @cancellation: 
 @Returns: 
 
@@ -54,15 +73,16 @@ through #gnome_vfs_socket_set_timeout.
 @cancellation: 
 
 
-<!-- ##### STRUCT GnomeVFSSocketImpl ##### -->
+<!-- ##### USER_FUNCTION GnomeVFSSocketSetTimeoutFunc ##### -->
 <para>
 
 </para>
 
-@read: 
-@write: 
-@close: 
-@set_timeout: 
+@connection: 
+@timeout: 
+@cancellation: 
+@Returns: 
+
 
 <!-- ##### FUNCTION gnome_vfs_socket_new ##### -->
 <para>

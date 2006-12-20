@@ -1,0 +1,14 @@
+.deps
+.libs
+Makefile
+Makefile.in
+gnomevfs-cat
+gnomevfs-copy
+gnomevfs-df
+gnomevfs-info
+gnomevfs-ls
+gnomevfs-monitor
+gnomevfs-mkdir
+gnomevfs-mv
+gnomevfs-rm
+gnomevfs-xfer

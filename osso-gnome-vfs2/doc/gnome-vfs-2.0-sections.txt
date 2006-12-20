@@ -57,6 +57,7 @@ gnome_vfs_get_uri_scheme
 gnome_vfs_uris_match
 GNOME_VFS_ASSERT_PRIMARY_THREAD
 GNOME_VFS_ASSERT_SECONDARY_THREAD
+gnome_vfs_open_fd
 gnome_vfs_read_entire_file
 </SECTION>
 
@@ -109,6 +110,7 @@ gnome_vfs_remove_directory_from_uri
 
 <SECTION>
 <FILE>gnome-vfs-directory-list-ops</FILE>
+GnomeVFSDirectoryHandle
 GnomeVFSDirectoryVisitOptions
 GnomeVFSDirectoryVisitFunc
 gnome_vfs_directory_open
@@ -140,16 +142,25 @@ GnomeVFSTransformFunc
 GNOME_VFS_PRIORITY_MIN
 GNOME_VFS_PRIORITY_MAX
 GNOME_VFS_PRIORITY_DEFAULT
+GnomeVFSAsyncHandle
 GnomeVFSAsyncCallback
 GnomeVFSAsyncOpenCallback
+GnomeVFSAsyncOpenAsChannelCallback
 GnomeVFSAsyncCreateCallback
 GnomeVFSAsyncCreateAsChannelCallback
 GnomeVFSAsyncCloseCallback
 GnomeVFSAsyncReadCallback
 GnomeVFSAsyncWriteCallback
-GnomeVFSFindDirectoryResult
-GnomeVFSAsyncFileControlCallback
 GnomeVFSAsyncSeekCallback
+GnomeVFSAsyncGetFileInfoCallback
+GnomeVFSAsyncSetFileInfoCallback
+GnomeVFSAsyncFileControlCallback
+GnomeVFSAsyncDirectoryLoadCallback
+GnomeVFSAsyncFindDirectoryCallback
+GnomeVFSFindDirectoryResult
+GnomeVFSAsyncXferProgressCallback
+GnomeVFSCancellation
+GnomeVFSContext
 gnome_vfs_async_set_job_limit
 gnome_vfs_async_get_job_limit
 gnome_vfs_async_cancel
@@ -202,6 +213,7 @@ gnome_vfs_read
 gnome_vfs_write
 gnome_vfs_seek
 gnome_vfs_tell
+gnome_vfs_forget_cache
 </SECTION>
 
 <SECTION>
@@ -223,16 +235,17 @@ gnome_vfs_set_file_info
 <SECTION>
 <FILE>gnome-vfs-file-advanced-ops</FILE>
 gnome_vfs_file_control
-gnome_vfs_forget_cache
 </SECTION>
 
 <SECTION>
 <FILE>gnome-vfs-ops</FILE>
 GnomeVFSMethodHandle
+GnomeVFSHandle
 </SECTION>
 
 <SECTION>
 <FILE>gnome-vfs-ssl</FILE>
+GnomeVFSSSL
 gnome_vfs_ssl_enabled
 gnome_vfs_ssl_create
 gnome_vfs_ssl_create_from_fd
@@ -245,6 +258,7 @@ gnome_vfs_ssl_set_timeout
 
 <SECTION>
 <FILE>gnome-vfs-uri</FILE>
+GnomeVFSURI
 GnomeVFSToplevelURI
 GnomeVFSURIHideOptions
 GNOME_VFS_URI_MAGIC_CHR
@@ -253,6 +267,7 @@ GNOME_VFS_URI_PATH_CHR
 GNOME_VFS_URI_PATH_STR
 gnome_vfs_uri_new
 gnome_vfs_uri_resolve_relative
+gnome_vfs_uri_resolve_symbolic_link
 gnome_vfs_uri_ref
 gnome_vfs_uri_unref
 gnome_vfs_uri_append_string
@@ -292,23 +307,39 @@ gnome_vfs_uri_make_full_from_relative
 
 <SECTION>
 <FILE>gnome-vfs-standard-callbacks</FILE>
-GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION
-GNOME_VFS_MODULE_CALLBACK_HTTP_PROXY_AUTHENTICATION
-GnomeVFSModuleCallbackAuthenticationIn
-GnomeVFSModuleCallbackAuthenticationOut
+GNOME_VFS_MODULE_CALLBACK_FILL_AUTHENTICATION
+GnomeVFSModuleCallbackFillAuthenticationIn
+GnomeVFSModuleCallbackFillAuthenticationOut
+GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION
+GnomeVFSModuleCallbackFullAuthenticationFlags
+GnomeVFSModuleCallbackFullAuthenticationIn
+GnomeVFSModuleCallbackFullAuthenticationOut
+GnomeVFSModuleCallbackFullAuthenticationOutFlags
+GNOME_VFS_MODULE_CALLBACK_SAVE_AUTHENTICATION
+GnomeVFSModuleCallbackSaveAuthenticationIn
+GnomeVFSModuleCallbackSaveAuthenticationOut
+GNOME_VFS_MODULE_CALLBACK_QUESTION
+GnomeVFSModuleCallbackQuestionIn
+GnomeVFSModuleCallbackQuestionOut
+GNOME_VFS_MODULE_CALLBACK_STATUS_MESSAGE
+GnomeVFSModuleCallbackStatusMessageIn
+GnomeVFSModuleCallbackStatusMessageOut
 GNOME_VFS_MODULE_CALLBACK_HTTP_SEND_ADDITIONAL_HEADERS
 GnomeVFSModuleCallbackAdditionalHeadersIn
 GnomeVFSModuleCallbackAdditionalHeadersOut
 GNOME_VFS_MODULE_CALLBACK_HTTP_RECEIVED_HEADERS
 GnomeVFSModuleCallbackReceivedHeadersIn
 GnomeVFSModuleCallbackReceivedHeadersOut
-GNOME_VFS_MODULE_CALLBACK_STATUS_MESSAGE
-GnomeVFSModuleCallbackStatusMessageIn
-GnomeVFSModuleCallbackStatusMessageOut
+GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION
+GNOME_VFS_MODULE_CALLBACK_HTTP_PROXY_AUTHENTICATION
+GnomeVFSModuleCallbackAuthenticationAuthType
+GnomeVFSModuleCallbackAuthenticationIn
+GnomeVFSModuleCallbackAuthenticationOut
 </SECTION>
 
 <SECTION>
 <FILE>gnome-vfs-inet-connection</FILE>
+GnomeVFSInetConnection
 gnome_vfs_inet_connection_create
 gnome_vfs_inet_connection_destroy
 gnome_vfs_inet_connection_free
@@ -322,10 +353,12 @@ gnome_vfs_inet_connection_get_ip
 
 <SECTION>
 <FILE>gnome-vfs-socket</FILE>
+GnomeVFSSocket
+GnomeVFSSocketImpl
 GnomeVFSSocketReadFunc
 GnomeVFSSocketWriteFunc
 GnomeVFSSocketCloseFunc
-GnomeVFSSocketImpl
+GnomeVFSSocketSetTimeoutFunc
 gnome_vfs_socket_new
 gnome_vfs_socket_write
 gnome_vfs_socket_close
@@ -408,6 +441,7 @@ GnomeVFSMethodTruncateHandleFunc
 VFS_METHOD_HAS_FUNC
 gnome_vfs_method_init
 gnome_vfs_method_get
+GnomeVFSTransform
 gnome_vfs_transform_get
 </SECTION>
 
@@ -447,15 +481,31 @@ gnome_vfs_module_callback_invoke
 
 <SECTION>
 <FILE>gnome-vfs-mime</FILE>
-gnome_vfs_mime_shutdown
 gnome_vfs_mime_type_from_name
 gnome_vfs_mime_type_from_name_or_default
 gnome_vfs_get_mime_type_common
 gnome_vfs_get_mime_type_from_uri
 gnome_vfs_get_mime_type_from_file_data
+gnome_vfs_get_file_mime_type_fast
 gnome_vfs_get_file_mime_type
 gnome_vfs_mime_type_is_supertype
 gnome_vfs_get_supertype_from_mime_type
+gnome_vfs_mime_info_cache_reload
+gnome_vfs_mime_reload
+gnome_vfs_mime_shutdown
+</SECTION>
+
+<SECTION>
+<FILE>gnome-vfs-mime-utils</FILE>
+GNOME_VFS_MIME_TYPE_UNKNOWN
+GnomeVFSMimeEquivalence
+gnome_vfs_mime_type_get_equivalence
+gnome_vfs_mime_type_is_equal
+gnome_vfs_get_mime_type_for_name
+gnome_vfs_get_mime_type_for_data
+gnome_vfs_get_mime_type_for_name_and_data
+gnome_vfs_get_mime_type
+gnome_vfs_get_slow_mime_type
 </SECTION>
 
 <SECTION>
@@ -464,6 +514,9 @@ GnomeVFSMimeApplication
 gnome_vfs_mime_get_default_application
 gnome_vfs_mime_get_default_application_for_uri
 gnome_vfs_mime_get_all_applications
+gnome_vfs_mime_get_all_applications_for_uri
+gnome_vfs_mime_get_all_desktop_entries
+gnome_vfs_mime_get_default_desktop_entry
 gnome_vfs_mime_get_default_component
 gnome_vfs_mime_get_all_components
 gnome_vfs_mime_get_icon
@@ -478,19 +531,16 @@ gnome_vfs_mime_application_get_name
 gnome_vfs_mime_application_get_generic_name
 gnome_vfs_mime_application_get_icon
 gnome_vfs_mime_application_get_exec
-gnome_vfs_mime_application_accepts_uris
-gnome_vfs_mime_application_requires_terminal
-gnome_vfs_mime_application_get_startup_wm_class
-gnome_vfs_mime_application_supports_startup_notification
 gnome_vfs_mime_application_get_binary_name
+gnome_vfs_mime_application_requires_terminal
 gnome_vfs_mime_application_supports_uris
+gnome_vfs_mime_application_supports_startup_notification
+gnome_vfs_mime_application_get_startup_wm_class
+gnome_vfs_mime_application_equal
 gnome_vfs_mime_application_copy
 gnome_vfs_mime_application_free
 gnome_vfs_mime_application_list_free
 gnome_vfs_mime_component_list_free
-GNOME_VFS_MIME_TYPE_UNKNOWN
-gnome_vfs_get_mime_type_for_data
-gnome_vfs_get_mime_type
 </SECTION>
 
 <SECTION>
@@ -512,11 +562,15 @@ gnome_vfs_mime_add_application_to_short_list
 gnome_vfs_mime_remove_application_from_short_list
 gnome_vfs_mime_add_component_to_short_list
 gnome_vfs_mime_remove_component_from_short_list
+gnome_vfs_mime_set_default_application
+gnome_vfs_mime_set_default_component
 gnome_vfs_mime_add_extension
 gnome_vfs_mime_remove_extension
 gnome_vfs_mime_extend_all_applications
 gnome_vfs_mime_remove_from_all_applications
 gnome_vfs_mime_application_new_from_id
+gnome_vfs_mime_action_launch
+gnome_vfs_mime_action_launch_with_env
 gnome_vfs_mime_action_free
 gnome_vfs_mime_id_in_application_list
 gnome_vfs_mime_id_in_component_list
@@ -545,7 +599,9 @@ gnome_vfs_mime_reset
 </SECTION>
 
 <SECTION>
-<FILE>gnome-vfs</FILE>
+<FILE>gnome-vfs-mime-monitor</FILE>
+GnomeVFSMIMEMonitor
+gnome_vfs_mime_monitor_get
 </SECTION>
 
 <SECTION>
@@ -576,6 +632,7 @@ gnome_vfs_xfer_delete_list
 
 <SECTION>
 <FILE>gnome-vfs-socket-buffer</FILE>
+GnomeVFSSocketBuffer
 gnome_vfs_socket_buffer_new
 gnome_vfs_socket_buffer_destroy
 gnome_vfs_socket_buffer_read
@@ -587,11 +644,13 @@ gnome_vfs_socket_buffer_read_until
 
 <SECTION>
 <FILE>gnome-vfs-monitor</FILE>
-gnome_vfs_monitor_add
-gnome_vfs_monitor_cancel
+GnomeVFSMonitorHandle
 GnomeVFSMonitorType
 GnomeVFSMonitorEventType
 GnomeVFSMonitorCallback
+gnome_vfs_monitor_add
+gnome_vfs_monitor_cancel
+gnome_vfs_monitor_callback
 </SECTION>
 
 <SECTION>
@@ -671,7 +730,6 @@ GNOME_VFS_VOLUME_MONITOR_CLASS
 GnomeVFSVolumeMonitor
 GnomeVFSVolumeMonitorClass
 gnome_vfs_get_volume_monitor
-gnome_vfs_volume_monitor_emit_pre_unmount
 gnome_vfs_volume_monitor_get_connected_drives
 gnome_vfs_volume_monitor_get_drive_by_id
 gnome_vfs_volume_monitor_get_mounted_volumes

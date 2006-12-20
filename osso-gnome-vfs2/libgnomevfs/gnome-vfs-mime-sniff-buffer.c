@@ -160,14 +160,9 @@ _gnome_vfs_mime_sniff_buffer_get (GnomeVFSMimeSniffBuffer *buffer,
 				   bytes_to_read,
 				   &bytes_read);
 	if (result == GNOME_VFS_ERROR_EOF) {
-		/* only happens with 0-byte files, due to other logic */
 		buffer->read_whole_file = TRUE;
-	}
-	if (result != GNOME_VFS_OK) {
+	} else if (result != GNOME_VFS_OK) {
 		return result;
-	}
-	if (bytes_read < bytes_to_read) {
-		buffer->read_whole_file = TRUE;
 	}
 	buffer->buffer_length += bytes_read;
 

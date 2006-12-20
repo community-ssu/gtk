@@ -33,6 +33,8 @@ struct FSInfo {
 	gboolean use_trash;
 };
 
+/* NB: Keep in sync with gnome_vfs_volume_get_filesystem_type()
+ * documentation! */
 static struct FSInfo fs_data[] = {
 	{ "affs"     , N_("AFFS Volume"), 0},
 	{ "afs"      , N_("AFS Network Volume"), 0 },
@@ -41,16 +43,20 @@ static struct FSInfo fs_data[] = {
 	{ "cdda"     , N_("CD Digital Audio"), 0 },
 	{ "cdrom"    , N_("CD-ROM Drive"), 0 },
 	{ "devfs"    , N_("Hardware Device Volume"), 0 },
+	{ "encfs"    , N_("EncFS Volume"), 1 },
 	{ "ext2"     , N_("Ext2 Linux Volume"), 1 },
 	{ "ext2fs"   , N_("Ext2 Linux Volume"), 1 },
 	{ "ext3"     , N_("Ext3 Linux Volume"), 1 },
 	{ "fat"      , N_("MSDOS Volume"), 1 },
+	{ "ffs"      , N_("BSD Volume"), 1 },
 	{ "hfs"	     , N_("MacOS Volume"), 1 },
 	{ "hfsplus"  , N_("MacOS Volume"), 0 },
 	{ "iso9660"  , N_("CDROM Volume"), 0 },
 	{ "hsfs"     , N_("Hsfs CDROM Volume"), 0 },
 	{ "jfs"      , N_("JFS Volume"), 1 },
 	{ "hpfs"     , N_("Windows NT Volume"), 0 },
+	{ "kernfs"   , N_("System Volume"), 0 },
+	{ "lfs"      , N_("BSD Volume"), 1 },
 	{ "linprocfs", N_("System Volume"), 0 },
 	{ "mfs"      , N_("Memory Volume"), 1 },
 	{ "minix"    , N_("Minix Volume"), 0 },
@@ -61,6 +67,7 @@ static struct FSInfo fs_data[] = {
 	{ "nwfs"     , N_("Netware Volume"), 0 },
 	{ "proc"     , N_("System Volume"), 0 },
 	{ "procfs"   , N_("System Volume"), 0 },
+	{ "ptyfs"    , N_("System Volume"), 0 },
 	{ "reiser4"  , N_("Reiser4 Linux Volume"), 1 },
 	{ "reiserfs" , N_("ReiserFS Linux Volume"), 1 },
 	{ "smbfs"    , N_("Windows Shared Volume"), 1 },
@@ -70,6 +77,7 @@ static struct FSInfo fs_data[] = {
 	{ "udfs"     , N_("Udfs Solaris Volume"), 1 },
 	{ "pcfs"     , N_("Pcfs Solaris Volume"), 1 },
 	{ "samfs"    , N_("Sun SAM-QFS Volume"), 1 },
+	{ "tmpfs"    , N_("Temporary Volume"), 1 },
 	{ "umsdos"   , N_("Enhanced DOS Volume"), 0 },
 	{ "vfat"     , N_("Windows VFAT Volume"), 1 },
 	{ "xenix"    , N_("Xenix Volume"), 0 },

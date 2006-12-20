@@ -1,0 +1,1749 @@
+# Georgian translation of gnome-vfs.
+# Copyright (C) 2006 THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# Giasher <giasher@telenet.ge>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-vfs\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2006-08-27 08:29+0200\n"
+"PO-Revision-Date: 2006-09-08 04:14+0200\n"
+"Last-Translator: Giasher <giasher@telenet.ge>\n"
+"Language-Team: Georgian <www.gia.ge>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;"
+
+#: ../libgnomevfs/gnome-vfs-cdrom.c:237
+msgid "ISO 9660 Volume"
+msgstr "ISO 9660 ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:225
+#, c-format
+msgid "%s:%u contains NUL characters."
+msgstr "%s:%u შეიცავს NUL სიმბოლოს."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:242
+#, c-format
+msgid "%s:%u contains no method name."
+msgstr ""
+"%s:%u არ შეიცავს მეთოდის სახელს."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:282
+#, c-format
+msgid "%s:%u has no options endmarker."
+msgstr ""
+"%s:%u არ შეიცავს პარამეტრის "
+"დაბოლოების ნიშნულს."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:293
+#, c-format
+msgid "%s:%u has unknown options %s."
+msgstr ""
+"%s:%u შეიცავს უცნობ პარამეტრებს - %s."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:312
+#, c-format
+msgid "%s:%u contains no module name."
+msgstr "%s:%u არ შეიცავს მოდულის სახელს."
+
+#: ../libgnomevfs/gnome-vfs-configuration.c:363
+#, c-format
+msgid "Configuration file `%s' was not found: %s"
+msgstr ""
+"კონფიგურაციის ფაილი `%s' ვერ "
+"მოიძებნა: %s"
+
+#. stop parsing if we failed
+#: ../libgnomevfs/gnome-vfs-configuration.c:382
+#, c-format
+msgid "%s:%d aborted parsing."
+msgstr "%s:%d დამუშავება შეწყდა."
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:39
+msgid "AFFS Volume"
+msgstr "AFFS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:40
+msgid "AFS Network Volume"
+msgstr "AFS ქსელის ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:41
+msgid "Auto-detected Volume"
+msgstr "თვითამოცნობადი ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:42
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:44
+msgid "CD-ROM Drive"
+msgstr "CD-ROM წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:43
+msgid "CD Digital Audio"
+msgstr "CD ციფრული აუდიო"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:45
+msgid "Hardware Device Volume"
+msgstr ""
+"აპარატული მოწყობილობის "
+"ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:46
+msgid "EncFS Volume"
+msgstr "EncFS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:47
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:48
+msgid "Ext2 Linux Volume"
+msgstr "Ext2 Linux ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:49
+msgid "Ext3 Linux Volume"
+msgstr "Ext3 Linux ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:50
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:63
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:64
+msgid "MSDOS Volume"
+msgstr "MSDOS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:51
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:59
+msgid "BSD Volume"
+msgstr "BSD ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:52
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:53
+msgid "MacOS Volume"
+msgstr "MacOS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:54
+msgid "CDROM Volume"
+msgstr "CDROM ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:55
+msgid "Hsfs CDROM Volume"
+msgstr "Hsfs CDROM ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:56
+msgid "JFS Volume"
+msgstr "JFS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:57
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:66
+msgid "Windows NT Volume"
+msgstr "Windows NT ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:58
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:60
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:68
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:69
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:70
+msgid "System Volume"
+msgstr "სისტემური ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:61
+msgid "Memory Volume"
+msgstr "მეხსიერების ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:62
+msgid "Minix Volume"
+msgstr "Minix ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:65
+msgid "NFS Network Volume"
+msgstr "NFS ქსელის ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:67
+msgid "Netware Volume"
+msgstr "Netware ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:71
+msgid "Reiser4 Linux Volume"
+msgstr "Reiser4 Linux ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:72
+msgid "ReiserFS Linux Volume"
+msgstr "ReiserFS Linux ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:73
+msgid "Windows Shared Volume"
+msgstr "Windows საზიარო ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:74
+msgid "SuperMount Volume"
+msgstr "SuperMount ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:75
+msgid "DVD Volume"
+msgstr "DVD ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:76
+msgid "Solaris/BSD Volume"
+msgstr "Solaris/BSD ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:77
+msgid "Udfs Solaris Volume"
+msgstr "Udfs Solaris ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:78
+msgid "Pcfs Solaris Volume"
+msgstr "Pcfs Solaris ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:79
+msgid "Sun SAM-QFS Volume"
+msgstr "Sun SAM-QFS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:80
+msgid "Temporary Volume"
+msgstr "დროებითი მეხსიერების ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:81
+msgid "Enhanced DOS Volume"
+msgstr "გაფართოებული DOS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:82
+msgid "Windows VFAT Volume"
+msgstr "Windows VFAT ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:83
+msgid "Xenix Volume"
+msgstr "Xenix ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:84
+msgid "XFS Linux Volume"
+msgstr "XFS Linux ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:85
+msgid "XIAFS Volume"
+msgstr "XIAFS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:86
+msgid "CIFS Volume"
+msgstr "CIFS ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-filesystem-type.c:114
+msgid "Unknown"
+msgstr "უცნობი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:354
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:580
+#, c-format
+msgid "%s Volume"
+msgstr "%s ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:370
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:565
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:623
+msgid "CD-ROM"
+msgstr "CD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:372
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:567
+msgid "CD-R"
+msgstr "CD-R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:374
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:568
+msgid "CD-RW"
+msgstr "CD-RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:378
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:569
+msgid "DVD-ROM"
+msgstr "DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:380
+msgid "DVD+R"
+msgstr "DVD+R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:382
+msgid "DVD+RW"
+msgstr "DVD+RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:384
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:571
+msgid "DVD-R"
+msgstr "DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:386
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:572
+msgid "DVD-RW"
+msgstr "DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:388
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:570
+msgid "DVD-RAM"
+msgstr "DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:391
+msgid "DVD±R"
+msgstr "DVD±R"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:394
+msgid "DVD±RW"
+msgstr "DVD±RW"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:397
+#, c-format
+msgid "%s/%s Drive"
+msgstr "%s/%s წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:399
+#, c-format
+msgid "%s Drive"
+msgstr "%s წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:404
+msgid "Floppy Drive"
+msgstr "ფლოპის წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:407
+msgid "Compact Flash Drive"
+msgstr ""
+"კომპაქტური ფლეშის წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:409
+msgid "Memory Stick Drive"
+msgstr ""
+"კომპაქტური მეხსიერების "
+"წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:411
+msgid "Smart Media Drive"
+msgstr "სხარტი მედია წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:413
+msgid "SD/MMC Drive"
+msgstr "SD/MMC ცარიელი "
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:415
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:594
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:626
+msgid "Zip Drive"
+msgstr "Zip ცარიელი "
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:418
+msgid "Jaz Drive"
+msgstr "Jaz ცარიელი "
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:421
+msgid "Pen Drive"
+msgstr "Pen ცარიელი "
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:427
+#, c-format
+msgid "%s %s Music Player"
+msgstr "%s %s მუსიკის დამკვრელი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:435
+#, c-format
+msgid "%s %s Digital Camera"
+msgstr "%s %s ციფრული კამერა"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:465
+msgid "Drive"
+msgstr "წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:470
+#, c-format
+msgid "External %s"
+msgstr "გარე %s"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:506
+msgid "CD-ROM Disc"
+msgstr "CD-ROM დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:511
+msgid "Blank CD-R Disc"
+msgstr "ცარიელი CD-R დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:513
+msgid "CD-R Disc"
+msgstr "CD-R დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:518
+msgid "Blank CD-RW Disc"
+msgstr "ცარიელი CD-RW დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:520
+msgid "CD-RW Disc"
+msgstr "CD-RW დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:524
+msgid "DVD-ROM Disc"
+msgstr "DVD-ROM დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:529
+msgid "Blank DVD-RAM Disc"
+msgstr "ცარიელი DVD-RAM დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:531
+msgid "DVD-RAM Disc"
+msgstr "DVD-RAM დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:536
+msgid "Blank DVD-R Disc"
+msgstr "ცარიელი DVD-R დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:538
+msgid "DVD-R Disc"
+msgstr "DVD-R დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:543
+msgid "Blank DVD-RW Disc"
+msgstr "ცარიელი DVD-RW დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:545
+msgid "DVD-RW Disc"
+msgstr "DVD-RW დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:551
+msgid "Blank DVD+R Disc"
+msgstr "ცარიელი DVD+R დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:553
+msgid "DVD+R Disc"
+msgstr "DVD+R დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:558
+msgid "Blank DVD+RW Disc"
+msgstr "ცარიელი DVD+RW დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:560
+msgid "DVD+RW Disc"
+msgstr "DVD+RW დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:567
+msgid "Audio Disc"
+msgstr "აუდიო დისკი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:578
+#, c-format
+msgid "%s Removable Volume"
+msgstr "%s ამოღებადი ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-hal-mounts.c:589
+msgid "Volume"
+msgstr "ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-job.c:734
+#, c-format
+msgid "Unknown operation type %u"
+msgstr "ოპერაციის უცნობი ტიპი %u"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1025 ../libgnomevfs/gnome-vfs-job.c:1176
+#, c-format
+msgid "Cannot create pipe for open GIOChannel: %s"
+msgstr ""
+"ვერ ხერხდება არხის შექმნა "
+"ღია GIOChannel-ისთვის: %s"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1692
+#, c-format
+msgid "Unknown job kind %u"
+msgstr "დავალების უცნობი ტიპი %u"
+
+#: ../libgnomevfs/gnome-vfs-job.c:1725
+msgid "Operation stopped"
+msgstr "ოპერაცია შეჩერდა"
+
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:102
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:230
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:281
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:364
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:385
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:405
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:426
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:447
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:540
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:564
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:585
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:606
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:627
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:646
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:665
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:685
+#: ../libgnomevfs/gnome-vfs-mime-handlers.c:705
+#: ../libgnomevfs/gnome-vfs-mime-info.c:631
+#: ../libgnomevfs/gnome-vfs-mime-info.c:638
+#: ../libgnomevfs/gnome-vfs-mime-info.c:646
+#: ../libgnomevfs/gnome-vfs-mime-info.c:653
+#: ../libgnomevfs/gnome-vfs-mime-info.c:661
+#: ../libgnomevfs/gnome-vfs-mime-info.c:678
+#: ../libgnomevfs/gnome-vfs-mime-info.c:685
+#: ../libgnomevfs/gnome-vfs-mime-info.c:692
+#: ../libgnomevfs/gnome-vfs-mime-info.c:699
+#: ../libgnomevfs/gnome-vfs-mime-info.c:707
+#: ../libgnomevfs/gnome-vfs-mime-info.c:714
+msgid ""
+"Deprecated function.  User modifications to the MIME database are no longer "
+"supported."
+msgstr ""
+"ფუნქცია მოძველებულია.  "
+"მომხმარებლის მიერ MIME "
+"მონაცემთა ბაზის ცვლილებები "
+"აღარ მიიღება."
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:708
+#, c-format
+msgid "Could not parse: %s"
+msgstr "ვერ მუშავდება: %s"
+
+#: ../libgnomevfs/gnome-vfs-parse-ls.c:710
+msgid "More parsing errors will be ignored."
+msgstr ""
+"დამუშავების სხვა შეცდომები "
+"გამოიტოვება."
+
+#. GNOME_VFS_OK
+#: ../libgnomevfs/gnome-vfs-result.c:42
+msgid "No error"
+msgstr "შეცდომის გარეშე"
+
+#. GNOME_VFS_ERROR_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:43
+msgid "File not found"
+msgstr "ფაილი ვერ მოიძებნა"
+
+#. GNOME_VFS_ERROR_GENERIC
+#: ../libgnomevfs/gnome-vfs-result.c:44
+msgid "Generic error"
+msgstr "საზოგადო შეცდომა"
+
+#. GNOME_VFS_ERROR_INTERNAL
+#: ../libgnomevfs/gnome-vfs-result.c:45
+msgid "Internal error"
+msgstr "შიდა შეცდომა"
+
+#. GNOME_VFS_ERROR_BAD_PARAMETERS
+#: ../libgnomevfs/gnome-vfs-result.c:46
+msgid "Invalid parameters"
+msgstr "მცდარი პარამეტრები"
+
+#. GNOME_VFS_ERROR_NOT_SUPPORTED
+#: ../libgnomevfs/gnome-vfs-result.c:47
+msgid "Unsupported operation"
+msgstr ""
+"ოპერაცია მხარდაჭერის გარეშე"
+
+#. GNOME_VFS_ERROR_IO
+#: ../libgnomevfs/gnome-vfs-result.c:48
+msgid "I/O error"
+msgstr "I/O შეცდომა"
+
+#. GNOME_VFS_ERROR_CORRUPTED_DATA
+#: ../libgnomevfs/gnome-vfs-result.c:49
+msgid "Data corrupted"
+msgstr "მონაცემები დაზიანებულია"
+
+#. GNOME_VFS_ERROR_WRONG_FORMAT
+#: ../libgnomevfs/gnome-vfs-result.c:50
+msgid "Format not valid"
+msgstr "ფორმატი მცდარია"
+
+#. GNOME_VFS_ERROR_BAD_FILE
+#: ../libgnomevfs/gnome-vfs-result.c:51
+msgid "Bad file handle"
+msgstr ""
+"ფაილის დამმუშავებელი "
+"მცდარია"
+
+#. GNOME_VFS_ERROR_TOO_BIG
+#: ../libgnomevfs/gnome-vfs-result.c:52
+msgid "File too big"
+msgstr "ფაილი მეტისმეტად დიდია"
+
+#. GNOME_VFS_ERROR_NO_SPACE
+#: ../libgnomevfs/gnome-vfs-result.c:53
+msgid "No space left on device"
+msgstr ""
+"მოწყობილობაზე ადგილი აღარაა"
+
+#. GNOME_VFS_ERROR_READ_ONLY
+#: ../libgnomevfs/gnome-vfs-result.c:54
+msgid "Read-only file system"
+msgstr ""
+"მხოლოდ კითხვადი ფაილური "
+"სისტემა"
+
+#. GNOME_VFS_ERROR_INVALID_URI
+#: ../libgnomevfs/gnome-vfs-result.c:55
+msgid "Invalid URI"
+msgstr "მცდარი URI"
+
+#. GNOME_VFS_ERROR_NOT_OPEN
+#: ../libgnomevfs/gnome-vfs-result.c:56
+msgid "File not open"
+msgstr "ფაილი არ გახსნილა"
+
+#. GNOME_VFS_ERROR_INVALID_OPEN_MODE
+#: ../libgnomevfs/gnome-vfs-result.c:57
+msgid "Open mode not valid"
+msgstr "გახსნის რეჟიმი მცდარია"
+
+#. GNOME_VFS_ERROR_ACCESS_DENIED
+#: ../libgnomevfs/gnome-vfs-result.c:58
+msgid "Access denied"
+msgstr "წვდომა აკრძალულია"
+
+#. GNOME_VFS_ERROR_TOO_MANY_OPEN_FILES
+#: ../libgnomevfs/gnome-vfs-result.c:59
+msgid "Too many open files"
+msgstr "მეტისმეტი გახსნილი ფაილი"
+
+#. GNOME_VFS_ERROR_EOF
+#: ../libgnomevfs/gnome-vfs-result.c:60
+msgid "End of file"
+msgstr "ფაილის ბოლო"
+
+#. GNOME_VFS_ERROR_NOT_A_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:61
+msgid "Not a directory"
+msgstr "დასტა არაა"
+
+#. GNOME_VFS_ERROR_IN_PROGRESS
+#: ../libgnomevfs/gnome-vfs-result.c:62
+msgid "Operation in progress"
+msgstr "ოპერაცია მიმდინარეობს"
+
+#. GNOME_VFS_ERROR_INTERRUPTED
+#: ../libgnomevfs/gnome-vfs-result.c:63
+msgid "Operation interrupted"
+msgstr "ოპერაცია შეწყდა"
+
+#. GNOME_VFS_ERROR_FILE_EXISTS
+#: ../libgnomevfs/gnome-vfs-result.c:64
+msgid "File exists"
+msgstr "ფაილი არსებობს"
+
+#. GNOME_VFS_ERROR_LOOP
+#: ../libgnomevfs/gnome-vfs-result.c:65
+msgid "Looping links encountered"
+msgstr "დაიმზირება ბმების ციკლი"
+
+#. GNOME_VFS_ERROR_NOT_PERMITTED
+#: ../libgnomevfs/gnome-vfs-result.c:66
+msgid "Operation not permitted"
+msgstr "ოპერაცია დაუშვებელია"
+
+#. GNOME_VFS_ERROR_IS_DIRECTORY
+#: ../libgnomevfs/gnome-vfs-result.c:67
+msgid "Is a directory"
+msgstr "დასტაა"
+
+#. GNOME_VFS_ERROR_NO_MEMORY
+#: ../libgnomevfs/gnome-vfs-result.c:68
+msgid "Not enough memory"
+msgstr "მეხსიერების უკმარისობა"
+
+#. GNOME_VFS_ERROR_HOST_NOT_FOUND
+#: ../libgnomevfs/gnome-vfs-result.c:69
+msgid "Host not found"
+msgstr "ჰოსტი ვერ მოიძებნა"
+
+#. GNOME_VFS_ERROR_INVALID_HOST_NAME
+#: ../libgnomevfs/gnome-vfs-result.c:70
+msgid "Host name not valid"
+msgstr "ჰოსტის სახელი მცდარია"
+
+#. GNOME_VFS_ERROR_HOST_HAS_NO_ADDRESS
+#: ../libgnomevfs/gnome-vfs-result.c:71
+msgid "Host has no address"
+msgstr ""
+"ჰოსტს მისამართი არ გააჩნია"
+
+#. GNOME_VFS_ERROR_LOGIN_FAILED
+#: ../libgnomevfs/gnome-vfs-result.c:72
+msgid "Login failed"
+msgstr "შესვლა არ შედგა"
+
+#. GNOME_VFS_ERROR_CANCELLED
+#: ../libgnomevfs/gnome-vfs-result.c:73
+msgid "Operation cancelled"
+msgstr "ოპერაცია გაუქმდა"
+
+#. GNOME_VFS_ERROR_DIRECTORY_BUSY
+#: ../libgnomevfs/gnome-vfs-result.c:74
+msgid "Directory busy"
+msgstr "დასტა დაკავებულია"
+
+#. GNOME_VFS_ERROR_DIRECTORY_NOT_EMPTY
+#: ../libgnomevfs/gnome-vfs-result.c:75
+msgid "Directory not empty"
+msgstr "დასტა ცარიელი არაა"
+
+#. GNOME_VFS_ERROR_TOO_MANY_LINKS
+#: ../libgnomevfs/gnome-vfs-result.c:76
+msgid "Too many links"
+msgstr "მეტისმეტი ბმები"
+
+#. GNOME_VFS_ERROR_READ_ONLY_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:77
+msgid "Read only file system"
+msgstr ""
+"მხოლოდ კითხვადი ფაილური "
+"სისტემა"
+
+#. GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM
+#: ../libgnomevfs/gnome-vfs-result.c:78
+msgid "Not on the same file system"
+msgstr ""
+"არაა იგივე ფაილურ სისტემაში"
+
+#. GNOME_VFS_ERROR_NAME_TOO_LONG
+#: ../libgnomevfs/gnome-vfs-result.c:79
+msgid "Name too long"
+msgstr ""
+"სახელი მეტისმეტად გრძელია"
+
+#. GNOME_VFS_ERROR_SERVICE_NOT_AVAILABLE
+#: ../libgnomevfs/gnome-vfs-result.c:80
+msgid "Service not available"
+msgstr "მომსახურება მიუწვდომელია"
+
+#. GNOME_VFS_ERROR_SERVICE_OBSOLETE
+#: ../libgnomevfs/gnome-vfs-result.c:81
+msgid "Request obsoletes service's data"
+msgstr ""
+"მოთხოვნა აუქმებს სერვისის "
+"მონაცემებს"
+
+#. GNOME_VFS_ERROR_PROTOCOL_ERROR
+#: ../libgnomevfs/gnome-vfs-result.c:82
+msgid "Protocol error"
+msgstr "ოქმის შეცდომა"
+
+#. GNOME_VFS_ERROR_NO_MASTER_BROWSER
+#: ../libgnomevfs/gnome-vfs-result.c:83
+msgid "Could not find master browser"
+msgstr ""
+"ძირითადი გზამკვლევი ვერ "
+"მოიძებნა"
+
+#. GNOME_VFS_ERROR_NO_DEFAULT
+#: ../libgnomevfs/gnome-vfs-result.c:84
+msgid "No default action associated"
+msgstr ""
+"ნაგულისხმები ქმედება არ "
+"უკავშირდება"
+
+#. GNOME_VFS_ERROR_NO_HANDLER
+#: ../libgnomevfs/gnome-vfs-result.c:85
+msgid "No handler for URL scheme"
+msgstr ""
+"URL სქემის დამმუშავებელი არაა"
+
+#. GNOME_VFS_ERROR_PARSE
+#: ../libgnomevfs/gnome-vfs-result.c:86
+msgid "Error parsing command line"
+msgstr ""
+"ბრძანების დამუშავების "
+"შეცდომა"
+
+#. GNOME_VFS_ERROR_LAUNCH
+#: ../libgnomevfs/gnome-vfs-result.c:87
+msgid "Error launching command"
+msgstr ""
+"ბრძანების შესრულების "
+"შეცდომა"
+
+#. GNOME_VFS_ERROR_TIMEOUT
+#: ../libgnomevfs/gnome-vfs-result.c:88
+msgid "Timeout reached"
+msgstr "ვადის გავიდა"
+
+#. GNOME_VFS_ERROR_NAMESERVER
+#: ../libgnomevfs/gnome-vfs-result.c:89
+msgid "Nameserver error"
+msgstr "სახელთა სერვერის შეცდომა"
+
+#. GNOME_VFS_ERROR_LOCKED
+#: ../libgnomevfs/gnome-vfs-result.c:90
+msgid "The resource is locked"
+msgstr "რესურსი დაბლოკილია"
+
+#. GNOME_VFS_ERROR_DEPRECATED_FUNCTION
+#: ../libgnomevfs/gnome-vfs-result.c:91
+msgid "Function call deprecated"
+msgstr "ფუნქცია მოძველებულია"
+
+#. GNOME_VFS_ERROR_INVALID_FILENAME
+#: ../libgnomevfs/gnome-vfs-result.c:92
+msgid "Invalid filename"
+msgstr "მცდარი ფაილსახელი"
+
+#. GNOME_VFS_ERROR_NOT_A_SYMBOLIC_LINK
+#: ../libgnomevfs/gnome-vfs-result.c:93
+msgid "Not a symbolic link"
+msgstr "არაა სიმბოლური ბმა"
+
+#: ../libgnomevfs/gnome-vfs-result.c:217
+msgid "Unknown error"
+msgstr "უცნობი შეცდომა"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:78
+#, c-format
+msgid "%u byte"
+msgid_plural "%u bytes"
+msgstr[0] "%u ბაიტი"
+msgstr[1] "%u ბაიტი"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:84
+#, c-format
+msgid "%.1f KB"
+msgstr "%.1f კბ"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:88
+#, c-format
+msgid "%.1f MB"
+msgstr "%.1f მბ"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:92
+#, c-format
+msgid "%.1f GB"
+msgstr "%.1f გბ"
+
+#: ../libgnomevfs/gnome-vfs-utils.c:1108
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:382
+msgid " (invalid Unicode)"
+msgstr "(უმართებლო უნიკოდი)"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:564
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:620
+msgid "Floppy"
+msgstr "ფლოპი"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:573
+msgid "CD-ROM/DVD-ROM"
+msgstr "CD-ROM/DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:574
+msgid "CD-ROM/DVD-RAM"
+msgstr "CD-ROM/DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:575
+msgid "CD-ROM/DVD-R"
+msgstr "CD-ROM/DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:576
+msgid "CD-ROM/DVD-RW"
+msgstr "CD-ROM/DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:577
+msgid "CD-R/DVD-ROM"
+msgstr "CD-R/DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:578
+msgid "CD-R/DVD-RAM"
+msgstr "CD-R/DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:579
+msgid "CD-R/DVD-R"
+msgstr "CD-R/DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:580
+msgid "CD-R/DVD-RW"
+msgstr "CD-R/DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:581
+msgid "CD-RW/DVD-ROM"
+msgstr "CD-RW/DVD-ROM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:582
+msgid "CD-RW/DVD-RAM"
+msgstr "CD-RW/DVD-RAM"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:583
+msgid "CD-RW/DVD-R"
+msgstr "CD-RW/DVD-R"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:584
+msgid "CD-RW/DVD-RW"
+msgstr "CD-RW/DVD-RW"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:586
+msgid "Disk"
+msgstr "დისკი"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:587
+msgid "USB Drive"
+msgstr "USB წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:588
+msgid "IEEE1394 Drive"
+msgstr "IEEE1394 წამყვანი"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:589
+msgid "CF"
+msgstr "CF"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:590
+msgid "SD/MMC"
+msgstr "SD/MMC"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:591
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:595
+msgid "Memory Stick"
+msgstr "კომპაქტური მეხსიერება"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:592
+msgid "Smart Media"
+msgstr "სხარტი მედია"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:596
+msgid "Camera"
+msgstr "კამერა"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:597
+msgid "DVD"
+msgstr "DVD"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:846
+msgid "Root Volume"
+msgstr "ძირეული ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:927
+msgid "Audio CD"
+msgstr "აუდიო CD"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:960
+msgid "Unknown volume"
+msgstr "უცნობი ნაწილი"
+
+#: ../libgnomevfs/gnome-vfs-volume-monitor-daemon.c:1172
+msgid "Network server"
+msgstr "ქსელის სერვერი"
+
+#. Handle floppy case
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:184
+msgid ""
+"Unable to mount the floppy drive. There is probably no floppy in the drive."
+msgstr ""
+"ვერ ხერხდება ფლოპის "
+"წამყვანის ჩადგმა. როგორც "
+"ჩანს წამყვანში ფლოპი არაა."
+
+#. All others
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:188
+msgid "Unable to mount the volume. There is probably no media in the device."
+msgstr ""
+"ვერ ხერხდება ნაწილის ჩადგმა. "
+"როგორც ჩანს მოწყობილობაში "
+"მედია არაა."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:194
+msgid ""
+"Unable to mount the floppy drive. The floppy is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"ვერ ხერხდება ფლოპის "
+"წამყვანის ჩადგმა. როგორც "
+"ჩანს ფლოპის ფორმატი "
+"ჩადგმისთვის მიუღებელია."
+
+#. Probably a wrong password
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:198
+msgid ""
+"Unable to mount the volume. If this is an encrypted drive, then the wrong "
+"password or key was used."
+msgstr ""
+"ნაწილის ჩადგმა ვერ ხერხდება. "
+"თუ ეს დაშიფრული წამყვანია, "
+"მაშინ გამოყენებულია მცდარი "
+"პაროლი ან კოდი."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:201
+msgid ""
+"Unable to mount the selected volume. The volume is probably in a format that "
+"cannot be mounted."
+msgstr ""
+"შერჩეული ნაწილის ჩადგმა ვერ "
+"ხერხდება. როგორც ჩანს "
+"ნაწილის ფორმატი "
+"ჩადგმისთვის მიუღებელია."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:206
+msgid "Unable to mount the selected floppy drive."
+msgstr ""
+"ვერ ხერხდება ფლოპის "
+"შერჩეული წამყვანის ჩადგმა."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:208
+msgid "Unable to mount the selected volume."
+msgstr ""
+"ვერ ხერხდება შერჩეული "
+"ნაწილის ჩადგმა."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:221
+msgid ""
+"Unable to unmount the selected volume. The volume is in use by one or more "
+"programs."
+msgstr ""
+"შერჩეული ნაწილის ამოღება "
+"ვერ ხერხდება. ნაწილი "
+"გამოიყენება ერთი ან "
+"რამდენიმე პროგრამის მიერ."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:224
+msgid "Unable to unmount the selected volume."
+msgstr ""
+"შერჩეული ნაწილის ამოღება "
+"ვერ ხერხდება."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:377
+#, c-format
+msgid "Failed to read data from child process %d (%s)"
+msgstr ""
+"შეცდომა მონაცემთა "
+"კითხვისას ქვეპროცესიდან %d (%s)"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:421
+msgid "Couldn't run mount process in a pty"
+msgstr ""
+"ჩადგმის პროცესის შესრულება "
+"ფსევდოტერმინალში ვერ "
+"ხერხდება"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:466
+#, c-format
+msgid "Unexpected error in select() reading data from a child process (%s)"
+msgstr ""
+"გაუთვალისწინებელი შეცდომა - "
+"select() მონაცემთა კითხვისას "
+"ქვეპროცესიდან (%s)"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:520
+msgid "Couldn't send password to mount process."
+msgstr ""
+"ჩადგმის პროცესისთვის "
+"პაროლის გაგზავნა ვერ "
+"ხერხდება."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:559
+#, c-format
+msgid "Unexpected error in waitpid() (%s)"
+msgstr "მოულოდნელი შეცდომა waitpid() (%s)"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:669
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:755
+msgid "Failed to start command"
+msgstr ""
+"ბრძანების შესრულების "
+"დაწყება ვერ შედგა"
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:742
+msgid "Unable to eject media"
+msgstr ""
+"ვერ ხერხდება მედიის "
+"ამოგდება."
+
+#: ../libgnomevfs/gnome-vfs-volume-ops.c:983
+msgid "Unable to unmount connected server"
+msgstr ""
+"დაკავშირებული სერვერის "
+"ამოღება ვერ ხერხდება."
+
+#: ../modules/computer-method.c:543
+msgid "Network"
+msgstr "ქსელი"
+
+#: ../modules/computer-method.c:561
+msgid "Home"
+msgstr "თავფურცელი"
+
+#: ../modules/computer-method.c:579
+msgid "Filesystem"
+msgstr "ფაილური სისტემა"
+
+#: ../modules/file-method.c:494
+#, c-format
+msgid "Unknown GnomeVFSSeekPosition %d"
+msgstr "უცნობი GnomeVFSSeekPosition %d"
+
+#: ../modules/network-method.c:1399
+msgid "Windows Network"
+msgstr "Windows ქსელი"
+
+#: ../modules/sftp-method.c:1346
+#, c-format
+msgid "The identity of the remote computer (%s) is unknown."
+msgstr ""
+"დაშორებული კომპიუტერის (%s) "
+"იდენტურობა უცნობია."
+
+#: ../modules/sftp-method.c:1347
+#, c-format
+msgid ""
+"This happens when you log in to a computer the first time.\n"
+"\n"
+"The identity sent by the remote computer is %s. If you want to be absolutely "
+"sure it is safe to continue, contact the system administrator."
+msgstr ""
+"ეს ხდება პირველი შესვლისას.\n"
+"\n"
+"დაშორებული კომპიუტერის "
+"გამოგზავნილი "
+"იდენტიფიკაციის კოდია %s. თუ "
+"გსურთ სრულად დარწმუნებული "
+"იყოთ უსაფრთხოებაში, "
+"დაუკავშირდით "
+"ადმინისტრატორს."
+
+#: ../modules/sftp-method.c:1355
+msgid "Log In Anyway"
+msgstr "გასვლა მაინც"
+
+#: ../modules/sftp-method.c:1356
+msgid "Cancel Login"
+msgstr "შესვლის გაუქმება"
+
+#. FIXME: we probably shouldn't use printf to output the message
+#: ../modules/test-method.c:587
+#, c-format
+msgid "Didn't find a valid settings file at %s\n"
+msgstr ""
+"მართებული პარამეტრების "
+"ფაილი ვერ მოიძებნა - %s\n"
+
+#: ../modules/test-method.c:589
+#, c-format
+msgid "Use the %s environment variable to specify a different location.\n"
+msgstr ""
+"გამოიყენეთ %s გარემოს ცვლადი "
+"განსხვავებული მისამართის "
+"მისათითებლად.\n"
+
+#: ../programs/authentication.c:106
+#, c-format
+msgid "Your HTTP Proxy requires you to log in.\n"
+msgstr ""
+"თქვენი HTTP პროქსი ითხოვს "
+"შესვლას.\n"
+
+#: ../programs/authentication.c:107
+#, c-format
+msgid ""
+"You must log in to access \"%s\".\n"
+"%s"
+msgstr ""
+"უნდა შეხვიდეთ \"%s\" "
+"წვდომისთვის.\n"
+"%s"
+
+#: ../programs/authentication.c:110
+msgid "Your password will be transmitted unencrypted."
+msgstr ""
+"თქვენი პაროლი დაუშიფრავად "
+"გადაიცემა."
+
+#: ../programs/authentication.c:111
+msgid "Your password will be transmitted encrypted."
+msgstr ""
+"თქვენი პაროლი დაშიფრულად "
+"გადაიცემა."
+
+#: ../programs/authentication.c:156
+#, c-format
+msgid "You must log in to access %s domain %s\n"
+msgstr ""
+"უნდა შეხვიდეთ \"%s\" დომეინის \"%s\" "
+"წვდომისთვის\n"
+
+#: ../programs/authentication.c:158
+#, c-format
+msgid "You must log in to access %s\n"
+msgstr ""
+"უნდა შეხვიდეთ \"%s\" "
+"წვდომისთვის.\n"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:1
+msgid "Default component viewer application"
+msgstr ""
+"კომპონენტების ჩვენების "
+"ნაგულისხმები პროგრამა"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:2
+msgid "Default terminal application"
+msgstr ""
+"ტერმინალის ნაგულისხმები "
+"პროგრამა"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:3
+msgid "Exec argument for default terminal"
+msgstr ""
+"Exec ნაგულისხმები არგუმენტი "
+"ტერმინალისთვის"
+
+#: ../schemas/desktop_default_applications.schemas.in.h:5
+#, no-c-format
+msgid ""
+"The application to use for viewing files that require a component to view "
+"them. The parameter %s will be replaced by the file's URIs, the parameter %c "
+"will be replaced by the component IID."
+msgstr ""
+"პროგრამა ამ ფაილის "
+"საჩვენებლად საჭიროებს "
+"დამატებით კომპონენტს. "
+"პარამეტრი %s შეიცვლება "
+"ფაილის URI-თ, პარამეტრი %c "
+"შეიცვლება კომპონენტის IID-ით."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:6
+msgid ""
+"The default terminal application to use for applications that require a "
+"terminal."
+msgstr ""
+"ტერმინალის ნაგულისხმები "
+"პროგრამა, რომელიც "
+"ტერმინალის საჭიროებისთვის "
+"გამოიყენება."
+
+#: ../schemas/desktop_default_applications.schemas.in.h:7
+msgid "The exec argument to use for the default terminal application."
+msgstr ""
+"exec არგუმენტი, რომელიც "
+"ტერმინალის ნაგულისხმები "
+"პროგრამისთვის გამოიყენება."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:1
+msgid "Run the command in a terminal"
+msgstr ""
+"ბრძანების ტერმინალში "
+"შესრულება"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:2
+msgid "The command used to handle \"aim\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"aim\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:3
+msgid "The command used to handle \"callto\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"callto\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:4
+msgid "The command used to handle \"ghelp\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"ghelp\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:5
+msgid "The command used to handle \"h323\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"h323\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:6
+msgid "The command used to handle \"http\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"http\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:7
+msgid "The command used to handle \"https\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"https\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:8
+msgid "The command used to handle \"info\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"info\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:9
+msgid "The command used to handle \"mailto\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"mailto\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:10
+msgid "The command used to handle \"man\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"man\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:11
+msgid "The command used to handle \"trash\" URLs, if enabled."
+msgstr ""
+"დამუშავების ბრძანება \"trash\" "
+"URL-ებისთვის, თუ ჩართულია."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:12
+msgid "The handler for \"aim\" URLs"
+msgstr ""
+"დამმუშავებელი \"aim\" URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:13
+msgid "The handler for \"callto\" URLs"
+msgstr ""
+"დამმუშავებელი \"callto\" "
+"URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:14
+msgid "The handler for \"ghelp\" URLs"
+msgstr ""
+"დამმუშავებელი \"ghelp\" "
+"URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:15
+msgid "The handler for \"h323\" URLs"
+msgstr ""
+"დამმუშავებელი \"h323\" URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:16
+msgid "The handler for \"http\" URLs"
+msgstr ""
+"დამმუშავებელი \"http\" URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:17
+msgid "The handler for \"https\" URLs"
+msgstr ""
+"დამმუშავებელი \"https\" "
+"URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:18
+msgid "The handler for \"info\" URLs"
+msgstr ""
+"დამმუშავებელი \"info\" URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:19
+msgid "The handler for \"mailto\" URLs"
+msgstr ""
+"დამმუშავებელი \"mailto\" "
+"URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:20
+msgid "The handler for \"man\" URLs"
+msgstr ""
+"დამმუშავებელი \"man\" URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:21
+msgid "The handler for \"trash\" URLs"
+msgstr ""
+"დამმუშავებელი \"trash\" "
+"URL-ებისთვის"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:22
+msgid ""
+"True if the command specified in the \"command\" key should handle \"aim\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"aim\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:23
+msgid ""
+"True if the command specified in the \"command\" key should handle "
+"\"callto\" URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"callto\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:24
+msgid ""
+"True if the command specified in the \"command\" key should handle \"ghelp\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"ghelp\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:25
+msgid ""
+"True if the command specified in the \"command\" key should handle \"h323\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"h323\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:26
+msgid ""
+"True if the command specified in the \"command\" key should handle \"http\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"http\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:27
+msgid ""
+"True if the command specified in the \"command\" key should handle \"https\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"https\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:28
+msgid ""
+"True if the command specified in the \"command\" key should handle \"info\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"info\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:29
+msgid ""
+"True if the command specified in the \"command\" key should handle "
+"\"mailto\" URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"mailto\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:30
+msgid ""
+"True if the command specified in the \"command\" key should handle \"man\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"man\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:31
+msgid ""
+"True if the command specified in the \"command\" key should handle \"trash\" "
+"URLs."
+msgstr ""
+"ჭეშმარიტია თუ მითითებული "
+"ბრძანება \"command\" კოდში "
+"ამუშავებს \"trash\" URL-ებს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:32
+msgid ""
+"True if the command used to handle this type of URL should be run in a "
+"terminal."
+msgstr ""
+"ჭეშმარიტია თუ ბრძანება ამ "
+"ტიპის URL-ების დასამუშავებლად "
+"ტერმინალში უნდა შესრულდეს."
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:33
+msgid "Whether the specified command should handle \"aim\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"aim\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:34
+msgid "Whether the specified command should handle \"callto\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"callto\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:35
+msgid "Whether the specified command should handle \"ghelp\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"ghelp\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:36
+msgid "Whether the specified command should handle \"h323\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"h323\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:37
+msgid "Whether the specified command should handle \"http\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"http\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:38
+msgid "Whether the specified command should handle \"https\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"https\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:39
+msgid "Whether the specified command should handle \"info\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"info\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:40
+msgid "Whether the specified command should handle \"mailto\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"mailto\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:41
+msgid "Whether the specified command should handle \"man\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"man\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/desktop_gnome_url_handlers.schemas.in.h:42
+msgid "Whether the specified command should handle \"trash\" URLs"
+msgstr ""
+"დაამუშავებს თუ არა "
+"მითითებული ბრძანება \"trash\" "
+"ტიპის URL-ებს"
+
+#: ../schemas/system_dns_sd.schemas.in.h:1
+msgid ""
+"Comma separated list of DNS-SD domains that should be visible in the "
+"\"network:///\" location."
+msgstr ""
+"მძიმით გამოყოფილი DNS-SD "
+"დომენები, რომლებიც უნდა "
+"ჩანდეს \"network:///\" მისამართზე."
+
+#: ../schemas/system_dns_sd.schemas.in.h:2
+msgid "Extra domains to look for DNS-SD services in"
+msgstr ""
+"დამატებითი დომენები DNS-SD "
+"მომსახურების მოსაძებნად"
+
+#: ../schemas/system_dns_sd.schemas.in.h:3
+msgid "How to display local DNS-SD service"
+msgstr ""
+"როგორ იქნება ნაჩვენები "
+"ლოკალური DNS-SD მომსახურება"
+
+#: ../schemas/system_dns_sd.schemas.in.h:4
+msgid "Possible values are \"merged\", \"separate\" and \"disabled\"."
+msgstr ""
+"შესაძლო მნიშვნელობებია \"merged\" "
+"(\"შერწყმული\"), \"separate\" "
+"(\"დაყოფილი\") და \"disabled\" "
+"(\"ამორთული\")."
+
+#: ../schemas/system_http_proxy.schemas.in.h:1
+msgid "Authenticate proxy server connections"
+msgstr ""
+"პროქსი სერვერის კავშირების "
+"აუთენტიფიკაცია"
+
+#: ../schemas/system_http_proxy.schemas.in.h:2
+msgid "Automatic proxy configuration URL"
+msgstr ""
+"პროქსის თვითკონფიგურაციის URL"
+
+#: ../schemas/system_http_proxy.schemas.in.h:3
+msgid "Enables the proxy settings when accessing HTTP over the Internet."
+msgstr ""
+"პროქსის პარამეტრების "
+"ჩართვა ინტერნეტით HTTP "
+"წვდომისას."
+
+#: ../schemas/system_http_proxy.schemas.in.h:4
+msgid "FTP proxy host name"
+msgstr "FTP პროქსის ჰოსტის სახელი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:5
+msgid "FTP proxy port"
+msgstr "FTP პროქსის პორტი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:6
+msgid "HTTP proxy host name"
+msgstr "HTTP პროქსის ჰოსტის სახელი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:7
+msgid "HTTP proxy password"
+msgstr "HTTP პროქსის პაროლი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:8
+msgid "HTTP proxy port"
+msgstr "HTTP პროქსის პორტი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:9
+msgid "HTTP proxy username"
+msgstr ""
+"HTTP პროქსის მომხმარებლის "
+"სახელი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:10
+msgid ""
+"If true, then connections to the proxy server require authentication. The "
+"username/password combo is defined by "
+"\"/system/http_proxy/authentication_user\" and "
+"\"/system/http_proxy/authentication_password\"."
+msgstr ""
+"თუ ჭეშმარიტია, პროქსი "
+"სერვერთან კავშირი "
+"აუთენტიფიკაციას საჭიროებს. "
+"username/password combo მითითებულია "
+"\"/system/http_proxy/authentication_user\" და "
+"\"/system/http_proxy/authentication_password\" "
+"საშუალებით."
+
+#: ../schemas/system_http_proxy.schemas.in.h:11
+msgid "Non-proxy hosts"
+msgstr "არა პროქსი ჰოსტები"
+
+#: ../schemas/system_http_proxy.schemas.in.h:12
+msgid "Password to pass as authentication when doing HTTP proxying."
+msgstr ""
+"აუთენტიფიკაციის პაროლი HTTP "
+"პროქსი სერვერისთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:13
+msgid "Proxy configuration mode"
+msgstr ""
+"პროქსის კონფიგურაციის "
+"რეჟიმი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:14
+msgid "SOCKS proxy host name"
+msgstr "SOCKS პროქსის ჰოსტის სახელი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:15
+msgid "SOCKS proxy port"
+msgstr "SOCKS პროქსის პორტი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:16
+msgid "Secure HTTP proxy host name"
+msgstr ""
+"უსაფრთხო HTTP პროქსის ჰოსტის "
+"სახელი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:17
+msgid "Secure HTTP proxy port"
+msgstr "უსაფრთხო HTTP პროქსის პორტი"
+
+#: ../schemas/system_http_proxy.schemas.in.h:18
+msgid ""
+"Select the proxy configuration mode. Supported values are \"none\", "
+"\"manual\", \"auto\"."
+msgstr ""
+"პროქსის კონფიგურაციის "
+"რეჟიმის მითითება. შესაძლო "
+"მნიშვნელობებია \"none\" (\"არა\"), "
+"\"manual\" (\"ხელით\"), \"auto\" "
+"(\"ავტომატური\")."
+
+#: ../schemas/system_http_proxy.schemas.in.h:19
+msgid "The machine name to proxy FTP through."
+msgstr ""
+"პროქსი სერვერის მანქანური "
+"სახელი FTP-სთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:20
+msgid "The machine name to proxy HTTP through."
+msgstr ""
+"პროქსი სერვერის მანქანური "
+"სახელი HTTP-სთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:21
+msgid "The machine name to proxy secure HTTP through."
+msgstr ""
+"პროქსი სერვერის მანქანური "
+"სახელი უსაფრთხო HTTP-სთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:22
+msgid "The machine name to proxy socks through."
+msgstr ""
+"მანქანური სახელი პროქსი "
+"არხისთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:23
+msgid ""
+"The port on the machine defined by \"/system/http_proxy/host\" that you "
+"proxy through."
+msgstr ""
+"\"/system/http_proxy/host\" კოდით "
+"განსაზღვრული მანქანური "
+"პორტი პროქსისთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:24
+msgid ""
+"The port on the machine defined by \"/system/proxy/ftp_host\" that you proxy "
+"through."
+msgstr ""
+"\"/system/proxy/ftp_host\" კოდით "
+"განსაზღვრული მანქანური "
+"პორტი პროქსისთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:25
+msgid ""
+"The port on the machine defined by \"/system/proxy/secure_host\" that you "
+"proxy through."
+msgstr ""
+"\"/system/proxy/secure_host\" კოდით "
+"განსაზღვრული მანქანური "
+"პორტი პროქსისთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:26
+msgid ""
+"The port on the machine defined by \"/system/proxy/socks_host\" that you "
+"proxy through."
+msgstr ""
+"\"/system/proxy/socks_host\" კოდით "
+"განსაზღვრული მანქანური "
+"პორტი პროქსისთვის."
+
+#: ../schemas/system_http_proxy.schemas.in.h:27
+msgid ""
+"This key contains a list of hosts which are connected to directly, rather "
+"than via the proxy (if it is active). The values can be hostnames, domains "
+"(using an initial wildcard like *.foo.com), IP host addresses (both IPv4 and "
+"IPv6) and network addresses with a netmask (something like 192.168.0.0/24)."
+msgstr ""
+"ეს კოდი შეიცავს ჰოსტების "
+"სიას, რომელიც პირდაპირაა "
+"დაკავშირებული და არა "
+"პროქსის საშუალებით (თუ "
+"აქტიურია). მნიშვნელობები "
+"შესაძლოა იყოს ჰოსტის "
+"სახელები, დომენები "
+"(სპეცსიმბოლოების "
+"გამოყენებით, მაგ., *.foo.com), "
+"ჰოსტის IP მისამართები (ორივე, "
+"IPv4 და IPv6) და ქსელური "
+"მისამართები ქსელის თარგით "
+"(მაგალითად 192.168.0.0/24)."
+
+#: ../schemas/system_http_proxy.schemas.in.h:28
+msgid "URL that provides proxy configuration values."
+msgstr ""
+"URL რომელშიც მოცემულია "
+"პროქსის კონფიგურაციის "
+"მნიშვნელობები."
+
+#: ../schemas/system_http_proxy.schemas.in.h:29
+msgid "Use HTTP proxy"
+msgstr "HTTP პროქსის გამოყენება"
+
+#: ../schemas/system_http_proxy.schemas.in.h:30
+msgid "User name to pass as authentication when doing HTTP proxying."
+msgstr ""
+"მომხმარებლის სახელი HTTP "
+"პროქსი სერვერისთვის."
+
+#: ../schemas/system_smb.schemas.in.h:1
+msgid "SMB workgroup"
+msgstr "SMB სამუშაო ჯგუფი"
+
+#: ../schemas/system_smb.schemas.in.h:2
+msgid ""
+"The Windows networking workgroup or domain that the user is part of. In "
+"order for a new workgroup to fully take effect the user may need to log out "
+"and log back in."
+msgstr ""
+"Windows ქსელის სამუშაო ჯგუფი ან "
+"დომენი რომელშიც "
+"მომხმარებელია "
+"გაერთიანებული. სამუშაო "
+"ჯგუფის შეცვლის ძალაში "
+"შესასვლელად აუცილებელია "
+"სისტემიდან გამოსვლა და "
+"ხელახალი შესვლა."
+

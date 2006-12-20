@@ -46,14 +46,21 @@ GType            gnome_vfs_address_get_type          (void);
 GnomeVFSAddress *gnome_vfs_address_new_from_string   (const char      *address);
 GnomeVFSAddress *gnome_vfs_address_new_from_ipv4     (guint32          ipv4_address);
 GnomeVFSAddress *gnome_vfs_address_new_from_sockaddr (struct sockaddr *sa,
-										    int              len);
+						      int              len);
 
 int              gnome_vfs_address_get_family_type   (GnomeVFSAddress *address);
 char *           gnome_vfs_address_to_string         (GnomeVFSAddress *address);
 guint32          gnome_vfs_address_get_ipv4          (GnomeVFSAddress *address);
 struct sockaddr *gnome_vfs_address_get_sockaddr      (GnomeVFSAddress *address,
-										    guint16          port,
-										    int             *len);
+						      guint16          port,
+						      int             *len);
+
+gboolean         gnome_vfs_address_equal             (const GnomeVFSAddress *a,
+						      const GnomeVFSAddress *b);
+
+gboolean         gnome_vfs_address_match             (const GnomeVFSAddress *a,
+						      const GnomeVFSAddress *b,
+						      guint             prefix);
 
 GnomeVFSAddress *gnome_vfs_address_dup               (GnomeVFSAddress *address);
 void             gnome_vfs_address_free              (GnomeVFSAddress *address);

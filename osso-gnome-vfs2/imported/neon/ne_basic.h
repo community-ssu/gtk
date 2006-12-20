@@ -1,6 +1,6 @@
 /* 
    HTTP/1.1 methods
-   Copyright (C) 1999-2002, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -36,12 +36,9 @@ int ne_get(ne_session *sess, const char *path, int fd);
  * body to submit from 'fd'. */
 int ne_put(ne_session *sess, const char *path, int fd);
 
-#ifndef NEON_NODAV
-
 #define NE_DEPTH_ZERO (0)
 #define NE_DEPTH_ONE (1)
 #define NE_DEPTH_INFINITE (2)
-
 
 /* For ne_copy and ne_move:
  * 
@@ -70,17 +67,6 @@ int ne_mkcol(ne_session *sess, const char *path);
 /* Adds a Depth: header to a request */
 void ne_add_depth_header(ne_request *req, int depth);
 
-#endif /* NEON_NODAV */
-
-/* PUT resource at location as above, only if it has not been modified
- * since given modtime. If server is HTTP/1.1, uses If-Unmodified-Since
- * header; guaranteed failure if resource is modified after 'modtime'.
- * If server is HTTP/1.0, HEAD's the resource first to fetch current
- * modtime; race condition if resource is modified between HEAD and PUT.
- */
-int ne_put_if_unmodified(ne_session *sess,
-			 const char *path, int fd, time_t modtime);
-
 /* Retrieve modification time of resource at location 'path', place in
  * *modtime.  (uses HEAD) */
 int ne_getmodtime(ne_session *sess, const char *path, time_t *modtime);
@@ -91,9 +77,11 @@ typedef struct {
     char *value;
 } ne_content_type;
 
-/* Sets (*ne_content_type)userdata appropriately. 
- * Caller must free ->value after use */
-void ne_content_type_handler(void *userdata, const char *value);
+/* Retrieve the content-type of the response; returns zero if response
+ * had valid content-type, in which case all fields in *ctype are set
+ * (and never NULL); the caller must free(ctype->value) after use.
+ * Returns non-zero on error, in which case *ctype is not altered. */
+int ne_get_content_type(ne_request *req, ne_content_type *ctype);
 
 /* Server capabilities: */
 typedef struct {

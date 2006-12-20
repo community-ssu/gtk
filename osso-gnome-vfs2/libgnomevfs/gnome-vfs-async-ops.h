@@ -77,10 +77,12 @@ typedef void	(* GnomeVFSAsyncCallback)	(GnomeVFSAsyncHandle *handle,
  * an error code.
  * @callback_data: user data defined when the callback was established
  *
- * Basic callback from an async operation that passes no data back,
+ * Callback for the gnome_vfs_async_open() function,
  * informing the user of the @result of the operation.
  **/
-typedef GnomeVFSAsyncCallback GnomeVFSAsyncOpenCallback;
+typedef void	(* GnomeVFSAsyncOpenCallback)	(GnomeVFSAsyncHandle *handle,
+						 GnomeVFSResult result,
+						 gpointer callback_data);
 
 /**
  * GnomeVFSAsyncCreateCallback:
@@ -89,10 +91,12 @@ typedef GnomeVFSAsyncCallback GnomeVFSAsyncOpenCallback;
  * an error code.
  * @callback_data: user data defined when the callback was established
  *
- * Basic callback from an async operation that passes no data back,
+ * Callback for the gnome_vfs_async_create() function,
  * informing the user of the @result of the operation.
  **/
-typedef GnomeVFSAsyncCallback GnomeVFSAsyncCreateCallback;
+typedef void	(* GnomeVFSAsyncCreateCallback)	(GnomeVFSAsyncHandle *handle,
+						 GnomeVFSResult result,
+						 gpointer callback_data);
 
 /**
  * GnomeVFSAsyncCloseCallback:
@@ -101,41 +105,47 @@ typedef GnomeVFSAsyncCallback GnomeVFSAsyncCreateCallback;
  * an error code.
  * @callback_data: user data defined when the callback was established
  *
- * Basic callback from an async operation that passes no data back,
+ * Callback for the gnome_vfs_async_close() function,
  * informing the user of the @result of the operation.
  **/
-typedef GnomeVFSAsyncCallback GnomeVFSAsyncCloseCallback;
+typedef void	(* GnomeVFSAsyncCloseCallback)	(GnomeVFSAsyncHandle *handle,
+						 GnomeVFSResult result,
+						 gpointer callback_data);
 
 #ifndef GNOME_VFS_DISABLE_DEPRECATED
 /**
  * GnomeVFSAsyncOpenAsChannelCallback:
- * @handle: handle of the operation generating the callback
+ * @handle: handle of the operation generating the callback.
  * @channel: a #GIOChannel corresponding to the file opened
  * @result: %GNOME_VFS_OK if the operation was successful, otherwise
  * an error code.
- * @callback_data: user data defined when the callback was established
+ * @callback_data: user data defined when the callback was established.
  *
- * Callback for the gnome_vfs_async_open_as_channel() function.
+ * Callback for the gnome_vfs_async_open_as_channel() function,
+ * informing the user of the @result of the operation.
  **/
-typedef void	(* GnomeVFSAsyncOpenAsChannelCallback)
-						(GnomeVFSAsyncHandle *handle,
-						 GIOChannel *channel,
-						 GnomeVFSResult result,
-						 gpointer callback_data);
+typedef void	(* GnomeVFSAsyncOpenAsChannelCallback) (GnomeVFSAsyncHandle *handle,
+							GIOChannel *channel,
+							GnomeVFSResult result,
+							gpointer callback_data);
 #endif
 
 #ifndef GNOME_VFS_DISABLE_DEPRECATED
 /**
  * GnomeVFSAsyncCreateAsChannelCallback:
- * @handle: handle of the operation generating the callback
+ * @handle: handle of the operation generating the callback.
  * @channel: a #GIOChannel corresponding to the file created
  * @result: %GNOME_VFS_OK if the operation was successful, otherwise
  * an error code.
- * @callback_data: user data defined when the callback was established
+ * @callback_data: user data defined when the callback was established.
  *
- * Callback for the gnome_vfs_async_create_as_channel() function.
+ * Callback for the gnome_vfs_async_create_as_channel() function,
+ * informing the user of the @result of the operation.
  **/
-typedef GnomeVFSAsyncOpenAsChannelCallback GnomeVFSAsyncCreateAsChannelCallback;
+typedef void	(* GnomeVFSAsyncCreateAsChannelCallback) (GnomeVFSAsyncHandle *handle,
+							  GIOChannel *channel,
+							  GnomeVFSResult result,
+							  gpointer callback_data);
 #endif
 
 /**
@@ -149,7 +159,8 @@ typedef GnomeVFSAsyncOpenAsChannelCallback GnomeVFSAsyncCreateAsChannelCallback;
  * @bytes_read: the number of bytes actually read from @handle into @buffer.
  * @callback_data: user data defined when the callback was established
  *
- * Callback for the gnome_vfs_async_read() function.
+ * Callback for the gnome_vfs_async_read() function,
+ * informing the user of the @result of the operation.
  **/
 typedef void	(* GnomeVFSAsyncReadCallback)	(GnomeVFSAsyncHandle *handle,
 						 GnomeVFSResult result,
@@ -167,9 +178,10 @@ typedef void	(* GnomeVFSAsyncReadCallback)	(GnomeVFSAsyncHandle *handle,
  * @bytes_requested: the number of bytes asked to write in the call to
  * gnome_vfs_async_write().
  * @bytes_written: the number of bytes actually written to @handle from @buffer.
- * @callback_data: user data defined when the callback was established
+ * @callback_data: user data defined when the callback was established.
  *
- * Callback for the gnome_vfs_async_write() function.
+ * Callback for the gnome_vfs_async_write() function,
+ * informing the user of the @result of the operation.
  **/
 typedef void	(* GnomeVFSAsyncWriteCallback)	(GnomeVFSAsyncHandle *handle,
 						 GnomeVFSResult result,
@@ -184,12 +196,14 @@ typedef void	(* GnomeVFSAsyncWriteCallback)	(GnomeVFSAsyncHandle *handle,
  * @handle: handle of the operation generating the callback
  * @result: %GNOME_VFS_OK if the operation was successful, otherwise
  * an error code.
- * @callback_data: user data defined when the callback was established
+ * @callback_data: user data defined when the callback was established.
  *
- * Basic callback from an async operation that passes no data back,
+ * Callback for the gnome_vfs_async_seek() function,
  * informing the user of the @result of the operation.
  **/
-typedef GnomeVFSAsyncCallback GnomeVFSAsyncSeekCallback;
+typedef void	(* GnomeVFSAsyncSeekCallback)	(GnomeVFSAsyncHandle *handle,
+						 GnomeVFSResult result,
+						 gpointer callback_data);
 
 
 /**
@@ -197,79 +211,117 @@ typedef GnomeVFSAsyncCallback GnomeVFSAsyncSeekCallback;
  * @handle: handle of the operation generating the callback
  * @results: #GList of #GnomeVFSFileInfoResult * items representing
  * the success of each gnome_vfs_get_file_info() and the data retrieved.
- * @callback_data: user data defined when the callback was established
+ * @callback_data: user data defined when the callback was established.
  *
- * Callback for the gnome_vfs_async_get_file_info() function.
+ * Callback for the gnome_vfs_async_get_file_info() function,
+ * informing the user of the @results of the operation.
  **/
-typedef void    (* GnomeVFSAsyncGetFileInfoCallback)
-                                                (GnomeVFSAsyncHandle *handle,
-						 GList *results, /* GnomeVFSGetFileInfoResult* items */
-						 gpointer callback_data);
+typedef void    (* GnomeVFSAsyncGetFileInfoCallback) (GnomeVFSAsyncHandle *handle,
+						      GList *results,
+						      gpointer callback_data);
 
 /**
  * GnomeVFSAsyncSetFileInfoCallback:
  * @handle: handle of the operation generating the callback
  * @result: %GNOME_VFS_OK if the operation was successful, otherwise a
- * #GnomeVFSResult error code
+ * #GnomeVFSResult error code.
  * @file_info: if @result is %GNOME_VFS_OK, a #GnomeVFSFileInfo struct containing
- * requested information about the file
+ * information about the file.
  * @callback_data: user data defined when the callback was established
  *
- * Callback for th egnome_vfs_async_set_file_info() function.
+ * Callback for the gnome_vfs_async_set_file_info() function,
+ * informing the user of the @result of the operation and
+ * returning the new @file_info.
+ *
+ * <note>
+ *  <para>
+ *   Setting the file info sometimes changes more information than the
+ *   caller specified; for example, if the name changes the MIME type might
+ *   change, and if the owner changes the SUID & SGID bits might change. 
+ *   Therefore the callback returns the new @file_info for the caller's
+ *   convenience. The GnomeVFSFileInfoOptions passed here are those used 
+ *   for the returned file info; they are not used when setting.
+ *  </para>
+ * </note>
  **/
-typedef void	(* GnomeVFSAsyncSetFileInfoCallback)	
-						(GnomeVFSAsyncHandle *handle,
-						 GnomeVFSResult result,
-						 GnomeVFSFileInfo *file_info,
-						 gpointer callback_data);
+typedef void	(* GnomeVFSAsyncSetFileInfoCallback) (GnomeVFSAsyncHandle *handle,
+						      GnomeVFSResult result,
+						      GnomeVFSFileInfo *file_info,
+						      gpointer callback_data);
 
 
 /**
  * GnomeVFSAsyncDirectoryLoadCallback:
- * @handle: handle of the operation generating the callback
+ * @handle: handle of the operation generating the callback.
  * @result: %GNOME_VFS_OK if the operation was sucessful, 
  * %GNOME_VFS_ERROR_EOF if the last file in the directory 
  * has been read, otherwise a #GnomeVFSResult error code
  * @list: a #GList of #GnomeVFSFileInfo structs representing 
- * information about the files just loaded
+ * information about the files just loaded.
  * @entries_read: number of entries read from @handle for this instance of
  * the callback.
- * @callback_data: user data defined when the callback was established
+ * @callback_data: user data defined when the callback was established.
  *
  * Callback for the gnome_vfs_async_directory_load() function.
+ * informing the user of the @result of the operation and
+ * providing a file @list if the @result is %GNOME_VFS_OK.
  **/
-typedef void	(* GnomeVFSAsyncDirectoryLoadCallback)
-						(GnomeVFSAsyncHandle *handle,
-						 GnomeVFSResult result,
-						 GList *list,
-						 guint entries_read,
-						 gpointer callback_data);
+typedef void	(* GnomeVFSAsyncDirectoryLoadCallback) (GnomeVFSAsyncHandle *handle,
+							GnomeVFSResult result,
+							GList *list,
+							guint entries_read,
+							gpointer callback_data);
 
 /**
  * GnomeVFSAsyncXferProgressCallback:
- * @handle: handle of the xfer operation generating the callback
- * @info: information on the current progress in the transfer
- * @data: user data defined when the transfer was established
+ * @handle: Handle of the Xfer operation generating the callback.
+ * @info: Information on the current progress in the transfer.
+ * @user_data: The user data that was passed to gnome_vfs_async_xfer().
  *
- * Callback for the gnome_vfs_async_xfer() function. Called periodically
- * to update the caller about the status of the transfer (percent complete,
- * phase of the operation, etc). If @info->status is not %GNOME_VFS_XFER_PROGRESS_STATUS_OK
- * then the callback is expected to make a "decision" about some problem / query
- * during the operation. The appropriate #GnomeVFSXferErrorAction or #GnomeVFSOverwriteAction
- * (depending on the particular state of @info->status) should be returned
- * informing the transfer engine how to proceed.
+ * This callback is passed to gnome_vfs_async_xfer() and should
+ * be used for user interaction. That said, it serves two purposes:
+ * Informing the user about the progress of the operation, and
+ * making decisions.
  *
- * Return value: 0 or an item from #GnomeVFSXferErrorAction or #GnomeVFSOverwriteAction
+ * On the one hand, when the transfer progresses normally,
+ * i.e. when the @info's status is %GNOME_VFS_XFER_PROGRESS_STATUS_OK
+ * it is called periodically whenever new progress information
+ * is available, and it wasn't called already within the last
+ * 100 milliseconds.
+ *
+ * On the other hand, it is called whenever a decision is
+ * requested from the user, i.e. whenever the @info's %status
+ * is not %GNOME_VFS_XFER_PROGRESS_STATUS_OK.
+ *
+ * Either way, it acts like #GnomeVFSXferProgressCallback
+ * would act in non-asynchronous mode. The differences in
+ * invocation are explained in the gnome_vfs_async_xfer()
+ * documentation.
+ *
+ * Returns: %gint depending on the #GnomeVFSXferProgressInfo.
+ * 	    Please consult #GnomeVFSXferProgressCallback for details.
+ *
  **/
-typedef gint    (* GnomeVFSAsyncXferProgressCallback)
-						(GnomeVFSAsyncHandle *handle,
-						 GnomeVFSXferProgressInfo *info,
-						 gpointer data);
+typedef gint    (* GnomeVFSAsyncXferProgressCallback) (GnomeVFSAsyncHandle *handle,
+						       GnomeVFSXferProgressInfo *info,
+						       gpointer user_data);
 
+/**
+ * GnomeVFSFindDirectoryResult:
+ * @uri: The #GnomeVFSURI that was found.
+ * @result: The #GnomeVFSResult that was obtained when finding @uri.
+ *
+ * This structure is passed to a #GnomeVFSAsyncFindDirectoryCallback
+ * by gnome_vfs_async_find_directory() and contains the information
+ * associated with a single #GnomeVFSURI matching the specified
+ * find request.
+ **/
 struct _GnomeVFSFindDirectoryResult {
+	/*< public >*/
 	GnomeVFSURI *uri;
 	GnomeVFSResult result;
 
+	/*< private >*/
 	/* Reserved to avoid future breaks in ABI compatibility */
 	void *reserved1;
 	void *reserved2;
@@ -288,13 +340,26 @@ void                         gnome_vfs_find_directory_result_free     (GnomeVFSF
  * special directories matching the find criteria.
  * @data: user data defined when the operation was established
  *
- * Callback for the gnome_vfs_async_find_directory() function.
+ * Callback for the gnome_vfs_async_find_directory() function,
+ * informing the user of the @results of the operation.
  **/
-typedef void    (* GnomeVFSAsyncFindDirectoryCallback)
-						(GnomeVFSAsyncHandle *handle,
-						 GList *results /* GnomeVFSFindDirectoryResult */,
-						 gpointer data);
+typedef void    (* GnomeVFSAsyncFindDirectoryCallback) (GnomeVFSAsyncHandle *handle,
+							GList *results,
+							gpointer data);
 
+/**
+ * GnomeVFSAsyncFileControlCallback:
+ * @handle: handle of the operation generating the callback
+ * @result: %GNOME_VFS_OK if the operation was successful, otherwise a
+ * #GnomeVFSResult error code.
+ * @operation_data: The data requested from the module if @result
+ * is %GNOME_VFS_OK.
+ * @callback_data: User data defined when the operation was established.
+ *
+ * Callback for the gnome_vfs_async_find_directory() function.
+ * informing the user of the @result of the operation, and
+ * providing the requested @operation_data.
+ **/
 typedef void	(* GnomeVFSAsyncFileControlCallback)	(GnomeVFSAsyncHandle *handle,
 							 GnomeVFSResult result,
 							 gpointer operation_data,
@@ -397,14 +462,6 @@ void           gnome_vfs_async_get_file_info          (GnomeVFSAsyncHandle      
 						       int				      priority,
 						       GnomeVFSAsyncGetFileInfoCallback       callback,
 						       gpointer                               callback_data);
-
-/* Setting the file info sometimes changes more info than the
- * caller specified; for example, if the name changes the MIME type might
- * change, and if the owner changes the SUID & SGID bits might change. 
- * Therefore the callback returns the new file info for the caller's
- * convenience. The GnomeVFSFileInfoOptions passed here are those used 
- * for the returned file info; they are not used when setting.
- */
 void           gnome_vfs_async_set_file_info          (GnomeVFSAsyncHandle                  **handle_return,
 						       GnomeVFSURI                           *uri,
 						       GnomeVFSFileInfo                      *info,

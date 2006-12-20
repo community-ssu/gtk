@@ -29,12 +29,12 @@
 
 /**
  * gnome_vfs_find_directory:
- * @near_uri: find a well known directory on the same volume as @near_uri
- * @kind: kind of well known directory
- * @result: newly created URI of the directory we found
- * @create_if_needed: If directory we are looking for does not exist, try to create it
- * @find_if_needed: If we don't know where trash is yet, look for it.
- * @permissions: If creating, use these permissions
+ * @near_uri: find a well known directory on the same volume as @near_uri.
+ * @kind: kind of well known directory.
+ * @result: newly created uri of the directory we found.
+ * @create_if_needed: if directory we are looking for does not exist, try to create it.
+ * @find_if_needed: if we don't know where directory is yet, look for it.
+ * @permissions: if creating, use these permissions.
  * 
  * Used to return well known directories such as Trash, Desktop, etc. from different
  * file systems.
@@ -44,14 +44,14 @@
  * Finding the Trash the first time when using the file method may be pretty 
  * expensive. A cache file is used to store the location of that Trash file
  * for next time.
- * If @ceate_if_needed is specified without @find_if_needed, you may end up
+ * If @create_if_needed is specified without @find_if_needed, you may end up
  * creating a Trash file when there already is one. Your app should start out
- * by doing a gnome_vfs_find_directory with the @find_if_needed to avoid this
+ * by doing a gnome_vfs_find_directory() with the @find_if_needed to avoid this
  * and then use the @create_if_needed flag to create Trash lazily when it is
  * needed for throwing away an item on a given disk.
  * 
- * Returns: An integer representing the result of the operation
- **/
+ * Returns: an integer representing the result of the operation.
+ */
 GnomeVFSResult	
 gnome_vfs_find_directory (GnomeVFSURI 			*near_uri,
 			  GnomeVFSFindDirectoryKind 	kind,

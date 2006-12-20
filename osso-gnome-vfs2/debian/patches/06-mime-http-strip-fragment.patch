@@ -1,0 +1,36 @@
+--- modules/http-neon-method.c-unmod	2006-10-18 12:46:15.000000000 +0200
++++ modules/http-neon-method.c	2006-10-18 12:46:24.000000000 +0200
+@@ -1923,10 +1923,21 @@ http_get_file_info (HttpContext *context
+ 	result = resolve_result (res, req);	
+ 	
+ 	if (result == GNOME_VFS_OK) {
+-		const char *name;	
+-		
+-		name = gnome_vfs_uri_get_path (context->uri);
+-	
++		const gchar *name;	
++		gchar *tail;
++
++		name = gnome_vfs_uri_get_path (context->uri); 
++
++		/* Strip out any fragments or query strings. */
++		tail = g_utf8_strchr (name, -1, '?');
++		if (!tail) {
++			tail = g_utf8_strchr (name, -1, '#');
++		}
++
++		if (tail) {
++			*tail = '\0';
++		}
++
+ 		gnome_vfs_file_info_clear (info);
+ 		
+ 		info->name  = g_path_get_basename (name);
+@@ -1942,7 +1953,6 @@ http_get_file_info (HttpContext *context
+ 		    && ! g_ascii_strcasecmp (info->mime_type, "audio/mpeg")) {
+ 			ne_close_connection (ne_get_session (req));
+ 		}
+-		
+ 	}
+ 	
+ 	ne_request_destroy (req);

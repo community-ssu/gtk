@@ -31,9 +31,9 @@ System (version for POSIX threads).
 #include "gnome-vfs-job.h"
 
 #include "gnome-vfs-async-job-map.h"
-#include "gnome-vfs-job-slave.h"
 #include "gnome-vfs-job-queue.h"
 #include "gnome-vfs-private-utils.h"
+#include "gnome-vfs-module-callback-private.h"
 #include <errno.h>
 #include <glib/gmessages.h>
 #include <glib/gstrfuncs.h>
@@ -48,7 +48,7 @@ static GStaticPrivate job_private = G_STATIC_PRIVATE_INIT;
 
 #if GNOME_VFS_JOB_DEBUG
 
-char *job_debug_types[] = {
+static const char *job_debug_types[] = {
 	"open", "open as channel",
 	"create", "create symbolic link",
 	"create as channel", "close",
@@ -1200,10 +1200,7 @@ execute_create_as_channel (GnomeVFSJob *job)
 static void
 execute_close (GnomeVFSJob *job)
 {
-	GnomeVFSCloseOp *close_op;
 	GnomeVFSNotifyResult *notify_result;
-
-	close_op = &job->op->specifics.close;
 
 	notify_result = g_new0 (GnomeVFSNotifyResult, 1);
 	notify_result->job_handle = job->job_handle;
@@ -1520,10 +1517,6 @@ load_directory_details (GnomeVFSJob *job)
 static void
 execute_load_directory (GnomeVFSJob *job)
 {
-	GnomeVFSLoadDirectoryOp *load_directory_op;
-
-	load_directory_op = &job->op->specifics.load_directory;
-
 	load_directory_details (job);
 }
 

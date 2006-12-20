@@ -60,6 +60,15 @@
 #include <fam.h>
 #endif
 
+#ifdef HAVE_SELINUX
+#include <selinux/selinux.h>
+#endif
+
+#if defined(HAVE_LINUX_INOTIFY_H) || defined(HAVE_SYS_INOTIFY_H)
+#define USE_INOTIFY 1
+#include "inotify-helper.h"
+#endif
+
 #if HAVE_SYS_STATVFS_H
 #include <sys/statvfs.h>
 #endif
@@ -68,6 +77,8 @@
 #elif HAVE_SYS_MOUNT_H
 #include <sys/mount.h>
 #endif
+
+#include "file-method-acl.h"
 
 #ifdef G_OS_WIN32
 #include <windows.h>
@@ -79,62 +90,9 @@
 #define DIR_SEPARATORS "/"
 #endif
 
-#if !GLIB_CHECK_VERSION (2,7,0)
-/* g_access lifted from GLib */
-#ifndef G_OS_WIN32
-#define g_access(filename, mode) access (filename, mode)
-#else
-static int
-g_access (const gchar *filename,
-	  int          mode)
-{
-#ifdef G_OS_WIN32
-  if (G_WIN32_HAVE_WIDECHAR_API ())
-    {
-      wchar_t *wfilename = g_utf8_to_utf16 (filename, -1, NULL, NULL, NULL);
-      int retval;
-      int save_errno;
-      
-      if (wfilename == NULL)
-	{
-	  errno = EINVAL;
-	  return -1;
-	}
-
-      retval = _waccess (wfilename, mode);
-      save_errno = errno;
-
-      g_free (wfilename);
-
-      errno = save_errno;
-      return retval;
-    }
-  else
-    {    
-      gchar *cp_filename = g_locale_from_utf8 (filename, -1, NULL, NULL, NULL);
-      int retval;
-      int save_errno;
-
-      if (cp_filename == NULL)
-	{
-	  errno = EINVAL;
-	  return -1;
-	}
-
-      retval = access (cp_filename, mode);
-      save_errno = errno;
-
-      g_free (cp_filename);
-
-      errno = save_errno;
-      return retval;
-    }
-#else
-  return access (filename, mode);
-#endif
-}
-#endif
-#endif
+typedef struct {
+	GnomeVFSMethodMonitorCancelFunc cancel_func;  /* Must be first */
+} AnyFileMonitorHandle;
 
 #ifdef HAVE_FAM
 static FAMConnection *fam_connection = NULL;
@@ -142,11 +100,11 @@ static gint fam_watch_id = 0;
 G_LOCK_DEFINE_STATIC (fam_connection);
 
 typedef struct {
-	FAMRequest request;
+	GnomeVFSMethodMonitorCancelFunc cancel_func;  /* Must be first */
 	GnomeVFSURI *uri;
+	FAMRequest request;
 	gboolean     cancelled;
 } FileMonitorHandle;
-
 #endif
 
 #ifdef PATH_MAX
@@ -773,31 +731,134 @@ read_link (const gchar *full_name)
 }
 #endif
 
+#ifdef HAVE_SELINUX
+/* convert a SELinux scurity context string to a g_malloc() compatible string */
+static char *sec_con2g_str(char *tmp)
+{
+        char *ret = tmp;
+  
+	if (tmp) {
+	         ret = g_strdup(tmp);
+		 freecon(tmp);
+	}
+
+	return ret;
+}
+#endif
+
+/* Get the SELinux security context */
+static int
+get_selinux_context (
+	GnomeVFSFileInfo *info,
+	const char *full_name,
+	GnomeVFSFileInfoOptions options)
+{
+#ifdef HAVE_SELINUX
+	if (is_selinux_enabled()) {
+	  
+		if ((options & GNOME_VFS_FILE_INFO_FOLLOW_LINKS) == 0
+			&& (info->type == GNOME_VFS_FILE_TYPE_SYMBOLIC_LINK)) {
+
+			/* we are a symlink and aren't asked to follow -
+			 * return the type for a symlink */
+						
+			if (lgetfilecon_raw(full_name, &info->selinux_context) < 0)
+				return gnome_vfs_result_from_errno ();
+		} else {
+
+			if (getfilecon_raw(full_name, &info->selinux_context) < 0)
+				return gnome_vfs_result_from_errno ();
+		}
+
+		info->selinux_context = sec_con2g_str(info->selinux_context);
+		
+		info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_SELINUX_CONTEXT;
+		return GNOME_VFS_OK;
+	}
+#endif
+	return GNOME_VFS_OK;
+}
+
+/* Get the SELinux security context from handle */
+static int 
+get_selinux_context_from_handle (
+	GnomeVFSFileInfo *info,
+	FileHandle *handle)
+{
+#ifdef HAVE_SELINUX
+	if (is_selinux_enabled()) {
+		if (fgetfilecon_raw(handle->fd, &info->selinux_context) >= 0) 
+			return gnome_vfs_result_from_errno ();	
+
+		info->selinux_context = sec_con2g_str(info->selinux_context);
+		
+		info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_SELINUX_CONTEXT;
+		return GNOME_VFS_OK;
+	}	
+#endif
+	return GNOME_VFS_OK;
+}
+
+/* Set the SELinux security context */
+static int 
+set_selinux_context (
+	const GnomeVFSFileInfo *info,
+	const char *full_name) 
+{
+#ifdef HAVE_SELINUX
+	if (is_selinux_enabled()) {
+		if (setfilecon_raw(full_name, info->selinux_context) < 0)
+			return gnome_vfs_result_from_errno ();
+
+		return GNOME_VFS_OK;
+	}
+#endif
+	return GNOME_VFS_OK;
+}
+
 static void
 get_access_info (GnomeVFSFileInfo *file_info,
-              const gchar *full_name)
+		 const gchar *full_name)
 {
      /* FIXME: should check errno after calling access because we don't
       * want to set valid_fields if something bad happened during one
       * of the access calls
       */
-     if (g_access (full_name, R_OK) == 0) {
-             file_info->permissions |= GNOME_VFS_PERM_ACCESS_READABLE;
-     }
-
-     if (g_access (full_name, W_OK) == 0) {
-             file_info->permissions |= GNOME_VFS_PERM_ACCESS_WRITABLE;
-     }
-
 #ifdef G_OS_WIN32
-     if (g_file_test (full_name, G_FILE_TEST_IS_EXECUTABLE)) {
-             file_info->permissions |= GNOME_VFS_PERM_ACCESS_EXECUTABLE;
-     }
-#else 
-     if (g_access (full_name, X_OK) == 0) {
-             file_info->permissions |= GNOME_VFS_PERM_ACCESS_EXECUTABLE;
-     }
-#endif 
+	if (g_access (full_name, R_OK) == 0) {
+		file_info->permissions |= GNOME_VFS_PERM_ACCESS_READABLE;
+	}
+	if (g_access (full_name, W_OK) == 0) {
+		file_info->permissions |= GNOME_VFS_PERM_ACCESS_WRITABLE;
+	}
+	if (g_file_test (full_name, G_FILE_TEST_IS_EXECUTABLE)) {
+		file_info->permissions |= GNOME_VFS_PERM_ACCESS_EXECUTABLE;
+	}
+#else
+	/* Try to minimize the nr of access calls. We rely on read almost
+	 * always being allowed in normal cases to keep down the number of
+	 * calls needed
+	 */
+	if (g_access (full_name, R_OK|W_OK) == 0) {
+		file_info->permissions |= GNOME_VFS_PERM_ACCESS_READABLE | GNOME_VFS_PERM_ACCESS_WRITABLE;
+		if (g_access (full_name, X_OK) == 0) {
+			file_info->permissions |= GNOME_VFS_PERM_ACCESS_EXECUTABLE;
+		}
+	} else if (g_access (full_name, R_OK|X_OK) == 0) {
+		file_info->permissions |= GNOME_VFS_PERM_ACCESS_READABLE | GNOME_VFS_PERM_ACCESS_EXECUTABLE;
+	} else {
+		if (g_access (full_name, R_OK) == 0) {
+			file_info->permissions |= GNOME_VFS_PERM_ACCESS_READABLE;
+		} else {
+			if (g_access (full_name, W_OK) == 0) {
+				file_info->permissions |= GNOME_VFS_PERM_ACCESS_WRITABLE;
+			}
+			if (g_access (full_name, X_OK) == 0) {
+				file_info->permissions |= GNOME_VFS_PERM_ACCESS_EXECUTABLE;
+			}
+		}
+	}
+#endif
 
      file_info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_ACCESS;
 }
@@ -809,7 +870,6 @@ get_stat_info (GnomeVFSFileInfo *file_info,
 	       struct stat *statptr)
 {
 	struct stat statbuf;
-	gboolean followed_symlink;
 #ifndef G_OS_WIN32
 	gboolean is_symlink;
 	char *link_file_path;
@@ -818,8 +878,6 @@ get_stat_info (GnomeVFSFileInfo *file_info,
 	char *newpath;
 #endif
 	gboolean recursive;
-	
-	followed_symlink = FALSE;
 	
 	recursive = FALSE;
 
@@ -851,7 +909,6 @@ get_stat_info (GnomeVFSFileInfo *file_info,
 			}
 		}
 		GNOME_VFS_FILE_INFO_SET_SYMLINK (file_info, TRUE);
-		followed_symlink = TRUE;
 	}
 #endif
 	gnome_vfs_stat_to_file_info (file_info, statptr);
@@ -1054,6 +1111,16 @@ do_read_directory (GnomeVFSMethod *method,
 #endif
 	full_name = handle->name_buffer;
 
+	if (handle->options & GNOME_VFS_FILE_INFO_NAME_ONLY) {
+		return GNOME_VFS_OK;
+	}
+
+	if (handle->options & GNOME_VFS_FILE_INFO_GET_SELINUX_CONTEXT) {
+
+		/* Attempt to get selinux contet, ignore error (see below) */
+		get_selinux_context(file_info, full_name, handle->options);
+	}
+		
 	if (get_stat_info (file_info, full_name, handle->options, &statbuf) != GNOME_VFS_OK) {
 		/* Return OK - this should not terminate the directory iteration
 		 * and we will know from the valid_fields that we don't have the
@@ -1061,9 +1128,17 @@ do_read_directory (GnomeVFSMethod *method,
 		 */
 		return GNOME_VFS_OK;
 	}
+
+	if (handle->options & GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS) {
+		get_access_info (file_info, full_name);
+	}
 	
 	if (handle->options & GNOME_VFS_FILE_INFO_GET_MIME_TYPE) {
 		get_mime_type (file_info, full_name, handle->options, &statbuf);
+	}
+
+	if (handle->options & GNOME_VFS_FILE_INFO_GET_ACL) {
+		file_get_acl (full_name, file_info, &statbuf, context);
 	}
 
 	return GNOME_VFS_OK;
@@ -1095,12 +1170,20 @@ do_get_file_info (GnomeVFSMethod *method,
 		return result;
 	}
 
+	if (options & GNOME_VFS_FILE_INFO_GET_SELINUX_CONTEXT) {
+		get_selinux_context (file_info, full_name, options);
+	} 
+
 	if (options & GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS) {
 		get_access_info (file_info, full_name);
 	}
 
 	if (options & GNOME_VFS_FILE_INFO_GET_MIME_TYPE) {
 		get_mime_type (file_info, full_name, options, &statbuf);
+	}
+	
+	if (options & GNOME_VFS_FILE_INFO_GET_ACL) {
+		file_get_acl (full_name, file_info, &statbuf, context);	
 	}
 
 	g_free (full_name);
@@ -1139,8 +1222,20 @@ do_get_file_info_from_handle (GnomeVFSMethod *method,
 		return result;
 	}
 
+	if (options & GNOME_VFS_FILE_INFO_GET_SELINUX_CONTEXT) {
+		result = get_selinux_context_from_handle (file_info, file_handle);
+		if (result != GNOME_VFS_OK) {
+			g_free (full_name);
+			return result;
+		}
+	}
+
 	if (options & GNOME_VFS_FILE_INFO_GET_MIME_TYPE) {
 		get_mime_type (file_info, full_name, options, &statbuf);
+	}
+
+	if (options & GNOME_VFS_FILE_INFO_GET_ACL) {
+		file_get_acl (full_name, file_info, &statbuf, context);	
 	}
 
 	g_free (full_name);
@@ -1148,16 +1243,17 @@ do_get_file_info_from_handle (GnomeVFSMethod *method,
 	return GNOME_VFS_OK;
 }
 
-GHashTable *fstype_hash = NULL;
-G_LOCK_DEFINE_STATIC (fstype_hash);
 extern char *filesystem_type (char *path, char *relpath, struct stat *statp);
+
+G_LOCK_DEFINE_STATIC (fstype);
 
 static gboolean
 do_is_local (GnomeVFSMethod *method,
 	     const GnomeVFSURI *uri)
 {
+	struct stat statbuf;
+	gboolean is_local;
 	gchar *path;
-	gpointer local = NULL;
 
 	g_return_val_if_fail (uri != NULL, FALSE);
 
@@ -1165,30 +1261,23 @@ do_is_local (GnomeVFSMethod *method,
 	if (path == NULL)
 		return TRUE; /* GNOME_VFS_ERROR_INVALID_URI */
 
-	G_LOCK (fstype_hash);
-	if (fstype_hash == NULL)
-		fstype_hash = g_hash_table_new_full (
-			g_str_hash, g_str_equal, g_free, NULL);
-	else
-		local = g_hash_table_lookup (fstype_hash, path);
-
-	if (local == NULL) {
-		struct stat statbuf;
-		if (g_stat (path, &statbuf) == 0) {
-			char *type = filesystem_type (path, path, &statbuf);
-			gboolean is_local = ((strcmp (type, "nfs") != 0) && 
-					     (strcmp (type, "afs") != 0) &&
-					     (strcmp (type, "autofs") != 0) &&
-					     (strcmp (type, "unknown") != 0) &&
-					     (strcmp (type, "ncpfs") != 0));
-			local = GINT_TO_POINTER (is_local ? 1 : -1);
-			g_hash_table_insert (fstype_hash, path, local);
-		}
-	} else
-		g_free (path);
-
-	G_UNLOCK (fstype_hash);
-	return GPOINTER_TO_INT (local) > 0;
+	if (g_stat (path, &statbuf) == 0) {
+		char *type;
+		
+		G_LOCK (fstype);
+		type = filesystem_type (path, path, &statbuf);
+		is_local = ((strcmp (type, "nfs") != 0) && 
+			    (strcmp (type, "afs") != 0) &&
+			    (strcmp (type, "autofs") != 0) &&
+			    (strcmp (type, "unknown") != 0) &&
+			    (strcmp (type, "ncpfs") != 0));
+		G_UNLOCK (fstype);
+	} else {
+		/* Assume non-existent files are local */
+		is_local = TRUE;
+	}
+	g_free (path);
+	return is_local;
 }
 
 
@@ -1889,9 +1978,6 @@ do_find_directory (GnomeVFSMethod *method,
 			/* This volume does not contain our home, we have to find/create the Trash
 			 * elsewhere on the volume. Use a heuristic to find a good place.
 			 */
-			FindByDeviceIDParameters tmp;
-			tmp.device_id = near_item_stat.st_dev;
-
 			if (gnome_vfs_context_check_cancellation (context))
 				return GNOME_VFS_ERROR_CANCELLED;
 
@@ -2003,8 +2089,14 @@ rename_helper (const gchar *old_full_name,
 	if (gnome_vfs_context_check_cancellation (context))
 		return GNOME_VFS_ERROR_CANCELLED;
 
+#ifdef G_OS_WIN32
+	if (force_replace && old_exists)
+		g_remove (new_full_name);
+#endif
+
 	retval = g_rename (old_full_name, new_full_name);
 
+#ifndef G_OS_WIN32
 	/* FIXME bugzilla.eazel.com 1186: The following assumes that,
 	 * if `new_uri' and `old_uri' are on different file systems,
 	 * `rename()' will always return `EXDEV' instead of `EISDIR',
@@ -2031,12 +2123,47 @@ rename_helper (const gchar *old_full_name,
 			retval = g_rename (old_full_name, new_full_name);
 		}
 	}
-
+#endif
 	if (retval != 0) {
 		return gnome_vfs_result_from_errno ();
 	}
 
 	return GNOME_VFS_OK;
+}
+
+static GnomeVFSResult
+set_symlink_name_helper (const gchar *full_name,
+			 const GnomeVFSFileInfo *info)
+{
+#ifndef G_OS_WIN32
+	struct stat statbuf;
+
+	if (info->symlink_name == NULL) {
+		return GNOME_VFS_ERROR_BAD_PARAMETERS;
+	}
+
+	if (g_lstat (full_name, &statbuf) != 0) {
+		return gnome_vfs_result_from_errno ();
+	}
+
+	if (!S_ISLNK (statbuf.st_mode)) {
+		return GNOME_VFS_ERROR_NOT_A_SYMBOLIC_LINK;
+	}
+
+	if (g_unlink (full_name) != 0) {
+		return gnome_vfs_result_from_errno ();
+	}
+
+	if (symlink (info->symlink_name, full_name) != 0) {
+		/* TODO should we try to restore the old symlink? */
+		return gnome_vfs_result_from_errno ();
+	}
+
+	return GNOME_VFS_OK;
+#else
+	return GNOME_VFS_ERROR_NOT_SUPPORTED;
+#endif
+
 }
 
 static GnomeVFSResult
@@ -2222,12 +2349,21 @@ do_set_file_info (GnomeVFSMethod *method,
 		new_name = g_build_filename (dir, info->name, NULL);
 
 		result = rename_helper (full_name, new_name, FALSE, context);
-
+		
 		g_free (dir);
-		g_free (new_name);
+		g_free (full_name);
+		full_name = new_name;
 
 		if (result != GNOME_VFS_OK) {
 			g_free (full_name);
+			return result;
+		}
+	}
+
+	if (mask & GNOME_VFS_SET_FILE_INFO_SELINUX_CONTEXT) {
+		GnomeVFSResult result = set_selinux_context(info, full_name);
+		if (result < 0) {
+			g_free(full_name);
 			return result;
 		}
 	}
@@ -2259,6 +2395,7 @@ do_set_file_info (GnomeVFSMethod *method,
 		g_warning ("Not implemented: GNOME_VFS_SET_FILE_INFO_OWNER");
 #endif
 	}
+	
 	if (gnome_vfs_context_check_cancellation (context)) {
 		g_free (full_name);
 		return GNOME_VFS_ERROR_CANCELLED;
@@ -2273,6 +2410,31 @@ do_set_file_info (GnomeVFSMethod *method,
 		if (utime (full_name, &utimbuf) != 0) {
 			g_free (full_name);
 			return gnome_vfs_result_from_errno ();
+		}
+	}
+
+	if (gnome_vfs_context_check_cancellation (context)) {
+		g_free (full_name);
+		return GNOME_VFS_ERROR_CANCELLED;
+	}
+	
+	if (mask & GNOME_VFS_SET_FILE_INFO_ACL) {
+		GnomeVFSResult result;
+
+		result = file_set_acl (full_name, info, context);
+		if (result != GNOME_VFS_OK) {
+			g_free (full_name);
+			return result;	
+		}
+	}
+
+	if (mask & GNOME_VFS_SET_FILE_INFO_SYMLINK_NAME) {
+		GnomeVFSResult result;
+
+		result = set_symlink_name_helper (full_name, info);
+		if (result != GNOME_VFS_OK) {
+			g_free (full_name);
+			return result;	
 		}
 	}
 
@@ -2408,65 +2570,11 @@ monitor_setup (void)
 }
 #endif
 
-static GnomeVFSResult
-do_monitor_add (GnomeVFSMethod *method,
-		GnomeVFSMethodHandle **method_handle_return,
-		GnomeVFSURI *uri,
-		GnomeVFSMonitorType monitor_type)
-{
 #ifdef HAVE_FAM
-	FileMonitorHandle *handle;
-	char *filename;
-
-	if (!monitor_setup ()) {
-		return GNOME_VFS_ERROR_NOT_SUPPORTED;
-	}
-
-	filename = get_path_from_uri (uri);
-	if (filename == NULL) {
-		return GNOME_VFS_ERROR_INVALID_URI;
-	}
-	
-	handle = g_new0 (FileMonitorHandle, 1);
-	handle->uri = uri;
-	handle->cancelled = FALSE;
-	gnome_vfs_uri_ref (uri);
-
-	G_LOCK (fam_connection);
-	/* We need to queue up incoming messages to avoid blocking on write
-	   if there are many monitors being added */
-	fam_do_iter_unlocked ();
-
-	if (fam_connection == NULL) {
-		G_UNLOCK (fam_connection);
-		return GNOME_VFS_ERROR_NOT_SUPPORTED;
-	}
-	
-	if (monitor_type == GNOME_VFS_MONITOR_FILE) {
-		FAMMonitorFile (fam_connection, filename, 
-			&handle->request, handle);
-	} else {
-		FAMMonitorDirectory (fam_connection, filename, 
-			&handle->request, handle);
-	}
-
-	G_UNLOCK (fam_connection);
-	
-	*method_handle_return = (GnomeVFSMethodHandle *)handle;
-
-	g_free (filename);
-
-	return GNOME_VFS_OK;
-#else
-	return GNOME_VFS_ERROR_NOT_SUPPORTED;
-#endif
-}
-
 static GnomeVFSResult
-do_monitor_cancel (GnomeVFSMethod *method,
-		   GnomeVFSMethodHandle *method_handle)
+fam_monitor_cancel (GnomeVFSMethod *method,
+		    GnomeVFSMethodHandle *method_handle)
 {
-#ifdef HAVE_FAM
 	FileMonitorHandle *handle = (FileMonitorHandle *)method_handle;
 
 	if (!monitor_setup ()) {
@@ -2492,9 +2600,136 @@ do_monitor_cancel (GnomeVFSMethod *method,
 	G_UNLOCK (fam_connection);
 
 	return GNOME_VFS_OK;
-#else
-	return GNOME_VFS_ERROR_NOT_SUPPORTED;
+}
+
+
+static GnomeVFSResult
+fam_monitor_add (GnomeVFSMethod *method,
+		 GnomeVFSMethodHandle **method_handle_return,
+		 GnomeVFSURI *uri,
+		 GnomeVFSMonitorType monitor_type)
+{
+	FileMonitorHandle *handle;
+	char *filename;
+
+	if (!monitor_setup ()) {
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+
+	filename = get_path_from_uri (uri);
+	if (filename == NULL) {
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
+	
+	handle = g_new0 (FileMonitorHandle, 1);
+	handle->cancel_func = fam_monitor_cancel;
+	handle->uri = uri;
+	handle->cancelled = FALSE;
+	gnome_vfs_uri_ref (uri);
+
+	G_LOCK (fam_connection);
+	/* We need to queue up incoming messages to avoid blocking on write
+	   if there are many monitors being added */
+	fam_do_iter_unlocked ();
+
+	if (fam_connection == NULL) {
+		G_UNLOCK (fam_connection);
+		g_free (handle);
+		gnome_vfs_uri_unref (uri);
+		g_free (filename);
+		return GNOME_VFS_ERROR_NOT_SUPPORTED;
+	}
+	
+	if (monitor_type == GNOME_VFS_MONITOR_FILE) {
+		FAMMonitorFile (fam_connection, filename, 
+			&handle->request, handle);
+	} else {
+		FAMMonitorDirectory (fam_connection, filename, 
+			&handle->request, handle);
+	}
+
+	G_UNLOCK (fam_connection);
+	
+	*method_handle_return = (GnomeVFSMethodHandle *)handle;
+
+	g_free (filename);
+
+	return GNOME_VFS_OK;
+
+}
 #endif
+
+#ifdef USE_INOTIFY
+
+static GnomeVFSResult
+inotify_monitor_cancel (GnomeVFSMethod *method,
+			GnomeVFSMethodHandle *method_handle)
+{
+	ih_sub_t *sub = (ih_sub_t *)method_handle;
+
+	if (sub->cancelled)
+		return GNOME_VFS_OK;
+
+	ih_sub_cancel (sub);
+	ih_sub_free (sub);
+	return GNOME_VFS_OK;
+
+}
+
+static GnomeVFSResult
+inotify_monitor_add (GnomeVFSMethod *method,
+		     GnomeVFSMethodHandle **method_handle_return,
+		     GnomeVFSURI *uri,
+		     GnomeVFSMonitorType monitor_type)
+{
+	ih_sub_t *sub;
+
+	sub = ih_sub_new (uri, monitor_type);
+	if (sub == NULL) {
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
+	sub->cancel_func = inotify_monitor_cancel;
+	if (ih_sub_add (sub) == FALSE) {
+		ih_sub_free (sub);
+		*method_handle_return = NULL;
+		return GNOME_VFS_ERROR_INVALID_URI;
+	}
+
+	*method_handle_return = (GnomeVFSMethodHandle *)sub;
+	return GNOME_VFS_OK;
+
+}
+#endif
+
+static GnomeVFSResult
+do_monitor_add (GnomeVFSMethod *method,
+		GnomeVFSMethodHandle **method_handle_return,
+		GnomeVFSURI *uri,
+		GnomeVFSMonitorType monitor_type)
+{
+#ifdef USE_INOTIFY
+	/* For remote files, always prefer FAM */
+	if (do_is_local (method, uri) && ih_startup ()) {
+		return inotify_monitor_add (method, method_handle_return, uri, monitor_type);
+	}
+#endif
+#ifdef HAVE_FAM
+	return fam_monitor_add (method, method_handle_return, uri, monitor_type);
+#endif
+	return GNOME_VFS_ERROR_NOT_SUPPORTED;
+}
+
+static GnomeVFSResult
+do_monitor_cancel (GnomeVFSMethod *method,
+		   GnomeVFSMethodHandle *method_handle)
+{
+	AnyFileMonitorHandle *handle;
+
+	handle = (AnyFileMonitorHandle *)method_handle;
+	if (handle != NULL) {
+		return (handle->cancel_func) (method, method_handle);
+	}
+	return GNOME_VFS_ERROR_NOT_SUPPORTED;
 }
 
 static GnomeVFSResult
@@ -2531,7 +2766,7 @@ do_get_volume_free_space (GnomeVFSMethod *method,
  	*free_space = 0;
 
 	path = gnome_vfs_uri_get_path (uri);
-	if (path == NULL || !_gnome_vfs_istr_has_prefix (path, "/")) {
+	if (path == NULL || *path != '/') {
 		return GNOME_VFS_ERROR_INVALID_URI;
 	}
 
@@ -2591,7 +2826,7 @@ do_get_volume_free_space (GnomeVFSMethod *method,
 	*free_space = block_size * free_blocks;
 	
 	return GNOME_VFS_OK;
-#else // G_OS_WIN32
+#else /* G_OS_WIN32 */
 	g_warning ("Not implemented for WIN32: file-method.c:do_get_volume_free_space()");
 	return GNOME_VFS_ERROR_NOT_SUPPORTED;
 #endif

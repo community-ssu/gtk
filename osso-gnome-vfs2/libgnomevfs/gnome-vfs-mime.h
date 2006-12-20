@@ -36,7 +36,10 @@ struct stat;
 void 	     gnome_vfs_mime_shutdown 				(void);
 #endif
 
+#ifndef GNOME_VFS_DISABLE_DEPRECATED
 const char  *gnome_vfs_mime_type_from_name			(const char        *filename);
+#endif
+
 const char  *gnome_vfs_mime_type_from_name_or_default	        (const char        *filename,
 								 const char        *defaultv);
 

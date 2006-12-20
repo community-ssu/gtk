@@ -83,6 +83,19 @@ gnome_vfs_drive_class_init (GnomeVFSDriveClass *class)
 	/* GObject signals */
 	o_class->finalize = gnome_vfs_drive_finalize;
 
+	/**
+	 * GnomeVFSDrive::volume-mounted:
+	 * @drive: the #GnomeVFSDrive which received the signal.
+	 * @volume: the #GnomeVFSVolume that has been mounted.
+	 *
+	 * This signal is emitted after the #GnomeVFSVolume @volume has been mounted.
+	 *
+	 * When the @volume is mounted, it is added to the @drive's list of mounted
+	 * volumes, which can be queried using gnome_vfs_drive_get_mounted_volumes().
+	 *
+	 * It is also added to the list of the #GnomeVFSVolumeMonitor's list of mounted
+	 * volumes, which can be queried using gnome_vfs_volume_monitor_get_mounted_volumes().
+	 **/
 	drive_signals[VOLUME_MOUNTED] =
 		g_signal_new ("volume_mounted",
 			      G_TYPE_FROM_CLASS (o_class),
@@ -93,6 +106,24 @@ gnome_vfs_drive_class_init (GnomeVFSDriveClass *class)
 			      G_TYPE_NONE, 1,
 			      GNOME_VFS_TYPE_VOLUME);
 
+	/**
+	 * GnomeVFSDrive::volume-pre-unmount:
+	 * @drive: the #GnomeVFSDrive which received the signal.
+	 * @volume: the #GnomeVFSVolume that is about to be unmounted.
+	 *
+	 * This signal is emitted when the #GnomeVFSVolume @volume, which has been present in
+	 * the #GnomeVFSDrive @drive, is about to be unmounted.
+	 *
+	 * When the @volume is unmounted, it is removed from the @drive's list of mounted
+	 * volumes, which can be queried using gnome_vfs_drive_get_mounted_volumes().
+	 *
+	 * It is also removed from the #GnomeVFSVolumeMonitor's list of mounted volumes,
+	 * which can be queried using gnome_vfs_volume_monitor_get_mounted_volumes().
+	 *
+	 * When a client application receives this signal, it must free all resources
+	 * associated with the @volume, for instance cancel all pending file operations
+	 * on the @volume, and cancel all pending file monitors using gnome_vfs_monitor_cancel().
+	 **/
 	drive_signals[VOLUME_PRE_UNMOUNT] =
 		g_signal_new ("volume_pre_unmount",
 			      G_TYPE_FROM_CLASS (o_class),
@@ -103,6 +134,20 @@ gnome_vfs_drive_class_init (GnomeVFSDriveClass *class)
 			      G_TYPE_NONE, 1,
 			      GNOME_VFS_TYPE_VOLUME);
 
+	/**
+	 * GnomeVFSDrive::volume-unmounted:
+	 * @drive: the #GnomeVFSDrive which received the signal.
+	 * @volume: the #GnomeVFSVolume that has been unmounted.
+	 *
+	 * This signal is emitted after the #GnomeVFSVolume @volume, which had been present in
+	 * the #GnomeVFSDrive @drive, has been unmounted.
+	 *
+	 * When the @volume is unmounted, it is removed from the @drive's list of mounted
+	 * volumes, which can be queried using gnome_vfs_drive_get_mounted_volumes().
+	 *
+	 * It is also removed from the #GnomeVFSVolumeMonitor's list of mounted volumes,
+	 * which can be queried using gnome_vfs_volume_monitor_get_mounted_volumes().
+	 **/
 	drive_signals[VOLUME_UNMOUNTED] =
 		g_signal_new ("volume_unmounted",
 			      G_TYPE_FROM_CLASS (o_class),
@@ -128,11 +173,12 @@ gnome_vfs_drive_init (GnomeVFSDrive *drive)
 
 /** 
  * gnome_vfs_drive_ref:
- * @drive:
+ * @drive: a #GnomeVFSDrive, or %NULL.
  *
+ * Increases the refcount of the @drive by 1, if it is not %NULL.
  *
- *
- * Returns:
+ * Returns: the @drive with its refcount increased by one,
+ * 	    or %NULL if @drive is %NULL.
  *
  * Since: 2.6
  */
@@ -151,9 +197,9 @@ gnome_vfs_drive_ref (GnomeVFSDrive *drive)
 
 /** 
  * gnome_vfs_drive_unref:
- * @drive:
+ * @drive: a #GnomeVFSDrive, or %NULL.
  *
- *
+ * Decreases the refcount of the @drive by 1, if it is not %NULL.
  *
  * Since: 2.6
  */
@@ -185,8 +231,7 @@ gnome_vfs_drive_finalize (GObject *object)
 		GnomeVFSVolume *vol;
 		vol = GNOME_VFS_VOLUME (current_vol->data);
 
-		_gnome_vfs_volume_unset_drive (vol,
-					       drive);
+		gnome_vfs_volume_unset_drive_private (vol, drive);
 		gnome_vfs_volume_unref (vol);
 	}
 
@@ -194,9 +239,11 @@ gnome_vfs_drive_finalize (GObject *object)
 	g_free (priv->device_path);
 	g_free (priv->activation_uri);
 	g_free (priv->display_name);
+	g_free (priv->display_name_key);
 	g_free (priv->icon);
 	g_free (priv->hal_udi);
 	g_free (priv->hal_drive_udi);
+	g_free (priv->hal_backing_crypto_volume_udi);
 	g_free (priv);
 	drive->priv = NULL;
 	
@@ -206,52 +253,54 @@ gnome_vfs_drive_finalize (GObject *object)
 
 /** 
  * gnome_vfs_drive_get_id:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns:
+ * Returns: drive id, a #gulong value.
  *
  * Since: 2.6
  */
 gulong 
 gnome_vfs_drive_get_id (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, 0);
+
 	return drive->priv->id;
 }
 
 /** 
  * gnome_vfs_drive_get_device_type:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns:
+ * Returns: device type, a #GnomeVFSDeviceType value.
  *
  * Since: 2.6
  */
 GnomeVFSDeviceType
 gnome_vfs_drive_get_device_type (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, GNOME_VFS_DEVICE_TYPE_UNKNOWN);
+
 	return drive->priv->device_type;
 }
 
 /** 
  * gnome_vfs_drive_get_mounted_volume:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
+ * Returns the first mounted volume for the @drive.
  *
- *
- * Returns:
+ * Returns: a #GnomeVFSVolume.
  *
  * Since: 2.6
- * Deprecated: Use gnome_vfs_drive_get_mounted_volumes() instead
+ * Deprecated: Use gnome_vfs_drive_get_mounted_volumes() instead.
  */
 GnomeVFSVolume *
 gnome_vfs_drive_get_mounted_volume (GnomeVFSDrive *drive)
 {
 	GnomeVFSVolume *vol;
 	GList *first_vol;
+
+	g_return_val_if_fail (drive != NULL, NULL);
 
 	G_LOCK (drives);
 	first_vol = g_list_first (drive->priv->volumes);
@@ -269,9 +318,9 @@ gnome_vfs_drive_get_mounted_volume (GnomeVFSDrive *drive)
 
 /** 
  * gnome_vfs_drive_volume_list_free:
- * @volumes:
+ * @volumes: list of #GnomeVFSVolumes to be freed, or %NULL.
  *
- *
+ * Frees the list @volumes, if it is not %NULL.
  *
  * Since: 2.8
  */
@@ -289,11 +338,9 @@ gnome_vfs_drive_volume_list_free (GList *volumes)
 
 /** 
  * gnome_vfs_drive_get_mounted_volumes:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns:
+ * Returns: list of mounted volumes for the @drive.
  *
  * Since: 2.8
  */
@@ -301,7 +348,9 @@ GList *
 gnome_vfs_drive_get_mounted_volumes (GnomeVFSDrive *drive)
 {
 	GList *return_list;
-	
+
+	g_return_val_if_fail (drive != NULL, NULL);
+
 	G_LOCK (drives);
 	return_list = g_list_copy (drive->priv->volumes);
 	g_list_foreach (return_list, 
@@ -315,11 +364,9 @@ gnome_vfs_drive_get_mounted_volumes (GnomeVFSDrive *drive)
 
 /** 
  * gnome_vfs_drive_is_mounted:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns:
+ * Returns: %TRUE if the @drive is mounted, %FALSE otherwise.
  *
  * Since: 2.6
  */
@@ -327,7 +374,9 @@ gboolean
 gnome_vfs_drive_is_mounted (GnomeVFSDrive *drive)
 {
 	gboolean res;
-	
+
+	g_return_val_if_fail (drive != NULL, FALSE);
+
 	G_LOCK (drives);
 	res = drive->priv->volumes != NULL;
 	G_UNLOCK (drives);
@@ -335,9 +384,31 @@ gnome_vfs_drive_is_mounted (GnomeVFSDrive *drive)
 	return res;
 }
 
+/** 
+ * gnome_vfs_drive_needs_eject:
+ * @drive: a #GnomeVFSDrive.
+ *
+ * Returns: %TRUE if the @drive needs to be ejected, %FALSE otherwise.
+ *
+ * Since: 2.16
+ */
+gboolean
+gnome_vfs_drive_needs_eject (GnomeVFSDrive *drive)
+{
+	gboolean res;
+
+	g_return_val_if_fail (drive != NULL, FALSE);
+
+	G_LOCK (drives);
+	res = drive->priv->must_eject_at_unmount;
+	G_UNLOCK (drives);
+	
+	return res;
+}
+
 void
-_gnome_vfs_drive_remove_volume (GnomeVFSDrive      *drive,
-			       GnomeVFSVolume     *volume)
+gnome_vfs_drive_remove_volume_private (GnomeVFSDrive      *drive,
+				       GnomeVFSVolume     *volume)
 {
 	G_LOCK (drives);
 	g_assert ((g_list_find (drive->priv->volumes,
@@ -350,8 +421,8 @@ _gnome_vfs_drive_remove_volume (GnomeVFSDrive      *drive,
 }
 
 void
-_gnome_vfs_drive_add_mounted_volume  (GnomeVFSDrive      *drive,
-				      GnomeVFSVolume     *volume)
+gnome_vfs_drive_add_mounted_volume_private (GnomeVFSDrive      *drive,
+					    GnomeVFSVolume     *volume)
 {
 	G_LOCK (drives);
 
@@ -366,124 +437,175 @@ _gnome_vfs_drive_add_mounted_volume  (GnomeVFSDrive      *drive,
 
 /** 
  * gnome_vfs_drive_get_device_path:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
+ * Returns the device path of a #GnomeVFSDrive.
  *
+ * For HAL drives, this returns the value of the
+ * drives's "block.device" key. For UNIX mounts,
+ * it returns the %mntent's %mnt_fsname entry.
  *
- * Returns: a newly allocated string
+ * Otherwise, it returns %NULL.
+ *
+ * Returns: a newly allocated string for the device path of the #drive.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_drive_get_device_path (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, NULL);
+
 	return g_strdup (drive->priv->device_path);
 }
 
 /** 
  * gnome_vfs_drive_get_activation_uri:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
+ * Returns the activation URI of a #GnomeVFSDrive.
  *
+ * The returned URI usually refers to a valid location. You can check the
+ * validity of the location by calling gnome_vfs_uri_new() with the URI,
+ * and checking whether the return value is not %NULL.
  *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for the activation uri of the #drive.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_drive_get_activation_uri (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, NULL);
+
 	return g_strdup (drive->priv->activation_uri);
 }
 
 /** 
  * gnome_vfs_drive_get_hal_udi:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
+ * Returns the HAL UDI of a #GnomeVFSDrive.
  *
+ * For HAL drives, this matches the value of the "info.udi" key,
+ * for other drives it is %NULL.
  *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for the unique device id of the @drive, or %NULL.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_drive_get_hal_udi (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, NULL);
+
 	return g_strdup (drive->priv->hal_udi);
 }
 
 /** 
  * gnome_vfs_drive_get_display_name:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for the display name of the @drive.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_drive_get_display_name (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, NULL);
+
 	return g_strdup (drive->priv->display_name);
 }
 
 /** 
  * gnome_vfs_drive_get_icon:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns: a newly allocated string
+ * Returns: a newly allocated string for the icon filename of the @drive.
  *
  * Since: 2.6
  */
 char *
 gnome_vfs_drive_get_icon (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, NULL);
+
 	return g_strdup (drive->priv->icon);
 }
 
 /** 
  * gnome_vfs_drive_is_user_visible:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
+ * Returns whether the @drive is visible to the user. This
+ * should be used by applications to determine whether it
+ * is included in user interfaces listing available drives.
  *
- *
- * Returns:
+ * Returns: %TRUE if the @drive is visible to the user, %FALSE otherwise.
  *
  * Since: 2.6
  */
 gboolean
 gnome_vfs_drive_is_user_visible (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, FALSE);
+
 	return drive->priv->is_user_visible;
 }
 
 /** 
  * gnome_vfs_drive_is_connected:
- * @drive:
+ * @drive: a #GnomeVFSDrive.
  *
- *
- *
- * Returns:
+ * Returns: %TRUE if the @drive is connected, %FALSE otherwise.
  *
  * Since: 2.6
  */
 gboolean
 gnome_vfs_drive_is_connected (GnomeVFSDrive *drive)
 {
+	g_return_val_if_fail (drive != NULL, FALSE);
+
 	return drive->priv->is_connected;
 }
 
 /** 
  * gnome_vfs_drive_compare:
- * @a:
- * @b:
+ * @a: a #GnomeVFSDrive.
+ * @b: a #GnomeVFSDrive.
  *
+ * Compares two #GnomeVFSDrive objects @a and @b. Two
+ * #GnomeVFSDrive objects referring to different drives
+ * are guaranteed to not return 0 when comparing them,
+ * if they refer to the same drive 0 is returned.
  *
+ * The resulting #gint should be used to determine the
+ * order in which @a and @b are displayed in graphical
+ * user interfces.
  *
- * Returns:
+ * The comparison algorithm first of all peeks the device
+ * type of @a and @b, they will be sorted in the following
+ * order:
+ * <itemizedlist>
+ * <listitem><para>Magnetic and opto-magnetic drives (ZIP, floppy)</para></listitem>
+ * <listitem><para>Optical drives (CD, DVD)</para></listitem>
+ * <listitem><para>External drives (USB sticks, music players)</para></listitem>
+ * <listitem><para>Mounted hard disks<</para></listitem>
+ * <listitem><para>Other drives<</para></listitem>
+ * </itemizedlist>
+ *
+ * Afterwards, the display name of @a and @b is compared
+ * using a locale-sensitive sorting algorithm, which
+ * involves g_utf8_collate_key().
+ *
+ * If two drives have the same display name, their
+ * unique ID is compared which can be queried using
+ * gnome_vfs_drive_get_id().
+ *
+ * Returns: 0 if the drives refer to the same @GnomeVFSDrive,
+ * a negative value if @a should be displayed before @b,
+ * or a positive value if @a should be displayed after @b.
  *
  * Since: 2.6
  */
@@ -493,7 +615,11 @@ gnome_vfs_drive_compare (GnomeVFSDrive *a,
 {
 	GnomeVFSDrivePrivate *priva, *privb;
 	gint res;
-	
+
+	if (a == b) {
+		return 0;
+	}
+
 	priva = a->priv;
 	privb = b->priv;
 
@@ -502,7 +628,7 @@ gnome_vfs_drive_compare (GnomeVFSDrive *a,
 		return res;
 	}
 
-	res = strcmp (priva->display_name, privb->display_name);
+	res = strcmp (priva->display_name_key, privb->display_name_key);
 	if (res != 0) {
 		return res;
 	}
@@ -510,21 +636,23 @@ gnome_vfs_drive_compare (GnomeVFSDrive *a,
 	return privb->id - priva->id;
 }
 
-#ifndef USE_DBUS_DAEMON
-static CORBA_char *
-corba_string_or_null_dup (char *str)
+static void
+utils_append_string_or_null (DBusMessageIter *iter,
+			     const gchar     *str)
 {
-	if (str != NULL) {
-		return CORBA_string_dup (str);
-	} else {
-		return CORBA_string_dup ("");
-	}
+	if (str == NULL)
+		str = "";
+	
+	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &str);
 }
 
-/* empty string interpreted as NULL */
-static char *
-decode_corba_string_or_null (CORBA_char *str, gboolean empty_is_null)
+static gchar *
+utils_get_string_or_null (DBusMessageIter *iter, gboolean empty_is_null)
 {
+	const gchar *str;
+
+	dbus_message_iter_get_basic (iter, &str);
+
 	if (empty_is_null && *str == 0) {
 		return NULL;
 	} else {
@@ -532,97 +660,153 @@ decode_corba_string_or_null (CORBA_char *str, gboolean empty_is_null)
 	}
 }
 
-/** 
- * gnome_vfs_drive_to_corba:
- * @drive:
- * @corba_drive:
- *
- *
- *
- * Since: 2.6
- */
-void
-gnome_vfs_drive_to_corba (GnomeVFSDrive *drive,
-			  GNOME_VFS_Drive *corba_drive)
+gboolean
+gnome_vfs_drive_to_dbus (DBusMessageIter *iter,
+			 GnomeVFSDrive   *drive)
 {
-	CORBA_sequence_CORBA_long corba_volumes;
+	GnomeVFSDrivePrivate *priv;
+	DBusMessageIter       struct_iter;
+        DBusMessageIter       array_iter;
+	GnomeVFSVolume       *volume;
+	gint32                i;
+	GList *l;
+		
+	g_return_val_if_fail (iter != NULL, FALSE);
+	g_return_val_if_fail (drive != NULL, FALSE);
 
-	corba_drive->id = drive->priv->id;
-	corba_drive->device_type = drive->priv->device_type;
+	priv = drive->priv;
 
-	if (drive->priv->volumes != NULL) {
-		guint i;
-		guint length;
-		GList *current_vol;
-
-		length = g_list_length (drive->priv->volumes);
-		current_vol = drive->priv->volumes;
-
-		corba_volumes._maximum = length;
-		corba_volumes._length = length;
-		corba_volumes._buffer = CORBA_sequence_CORBA_long_allocbuf (length);
-		CORBA_sequence_set_release (&corba_volumes, TRUE);
-
-		for (i = 0; i < length; i++) {
-			GnomeVFSVolume *volume;
-
-			volume = GNOME_VFS_VOLUME(current_vol->data);
-			corba_volumes._buffer[i] = volume->priv->id; 
-			current_vol = current_vol->next;
-		}
-
-		corba_drive->volumes = corba_volumes;
-	} else {
-		corba_drive->volumes._maximum = 0;
-		corba_drive->volumes._length = 0;
+	if (!dbus_message_iter_open_container (iter,
+					       DBUS_TYPE_STRUCT,
+					       NULL, /* for struct */
+					       &struct_iter)) {
+		return FALSE;
 	}
 
-	corba_drive->device_path = corba_string_or_null_dup (drive->priv->device_path);
-	corba_drive->activation_uri = corba_string_or_null_dup (drive->priv->activation_uri);
-	corba_drive->display_name = corba_string_or_null_dup (drive->priv->display_name);
-	corba_drive->icon = corba_string_or_null_dup (drive->priv->icon);
-	corba_drive->hal_udi = corba_string_or_null_dup (drive->priv->hal_udi);
-	
-	corba_drive->is_user_visible = drive->priv->is_user_visible;
-	corba_drive->is_connected = drive->priv->is_connected;
+	i = priv->id;
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
 
-	corba_drive->must_eject_at_unmount = drive->priv->must_eject_at_unmount;
+	i = priv->device_type;
+	dbus_message_iter_append_basic (&struct_iter, DBUS_TYPE_INT32, &i);
+
+
+        if (!dbus_message_iter_open_container (&struct_iter,
+                                               DBUS_TYPE_ARRAY,
+                                               DBUS_TYPE_INT32_AS_STRING,
+                                               &array_iter)) {
+                return FALSE;
+        }
+	for (l = drive->priv->volumes; l != NULL; l = l->next) {
+		volume = GNOME_VFS_VOLUME (l->data);
+		i = volume->priv->id;
+		dbus_message_iter_append_basic (&array_iter, DBUS_TYPE_INT32, &i);
+	}
+        if (!dbus_message_iter_close_container (&struct_iter, &array_iter)) {
+                return FALSE;
+        }
+
+	utils_append_string_or_null (&struct_iter, priv->device_path);
+	utils_append_string_or_null (&struct_iter, priv->activation_uri);
+	utils_append_string_or_null (&struct_iter, priv->display_name);
+	utils_append_string_or_null (&struct_iter, priv->icon);
+	utils_append_string_or_null (&struct_iter, priv->hal_udi);
+
+	dbus_message_iter_append_basic (&struct_iter,
+					DBUS_TYPE_BOOLEAN,
+					&priv->is_user_visible);
+	dbus_message_iter_append_basic (&struct_iter,
+					DBUS_TYPE_BOOLEAN,
+					&priv->is_connected);
+	dbus_message_iter_append_basic (&struct_iter,
+					DBUS_TYPE_BOOLEAN,
+					&priv->must_eject_at_unmount);
+
+	if (!dbus_message_iter_close_container (iter, &struct_iter)) {
+		return FALSE;
+	}
+	    
+	return TRUE;
 }
 
 GnomeVFSDrive *
-_gnome_vfs_drive_from_corba (const GNOME_VFS_Drive *corba_drive,
-			     GnomeVFSVolumeMonitor *volume_monitor)
+_gnome_vfs_drive_from_dbus (DBusMessageIter       *iter,
+			    GnomeVFSVolumeMonitor *volume_monitor)
 {
-	GnomeVFSDrive *drive;
+	DBusMessageIter       struct_iter;
+	DBusMessageIter       array_iter;
+	GnomeVFSDrive        *drive;
+	GnomeVFSDrivePrivate *priv;
+	gint32                i;
 
-	drive = g_object_new (GNOME_VFS_TYPE_DRIVE, NULL);
+	g_return_val_if_fail (iter != NULL, NULL);
+	g_return_val_if_fail (volume_monitor != NULL, NULL);
 	
-	drive->priv->id = corba_drive->id;
-	drive->priv->device_type = corba_drive->device_type;
+	g_assert (dbus_message_iter_get_arg_type (iter) == DBUS_TYPE_STRUCT);
+	
+	/* Note: the drives lock is locked in _init. */
+	drive = g_object_new (GNOME_VFS_TYPE_DRIVE, NULL);
+	priv = drive->priv;
 
-	if (corba_drive->volumes._length != 0) {
-		int i;
+	dbus_message_iter_recurse (iter, &struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &i);
+	priv->id = i;
 
-		for (i = 0; i < corba_drive->volumes._length; i++) {
-			GnomeVFSVolume *volume = gnome_vfs_volume_monitor_get_volume_by_id (volume_monitor,
-										 corba_drive->volumes._buffer[i]);
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &i);
+	priv->device_type = i;
+
+
+	dbus_message_iter_next (&struct_iter);
+	if (dbus_message_iter_get_arg_type (&struct_iter) == DBUS_TYPE_ARRAY) {
+		dbus_message_iter_recurse (&struct_iter, &array_iter);
+		while (dbus_message_iter_get_arg_type (&array_iter) == DBUS_TYPE_INT32) {
+			GnomeVFSVolume *volume;
+			dbus_message_iter_get_basic (&array_iter, &i);
+
+			volume = gnome_vfs_volume_monitor_get_volume_by_id (volume_monitor,
+									    i);
 			if (volume != NULL) {
-				_gnome_vfs_drive_add_mounted_volume (drive, volume);
-				_gnome_vfs_volume_set_drive (volume, drive);
+				gnome_vfs_drive_add_mounted_volume_private (drive, volume);
+				gnome_vfs_volume_set_drive_private (volume, drive);
 			}
+			
+			if (!dbus_message_iter_has_next (&array_iter)) {
+				break;
+			}
+			dbus_message_iter_next (&array_iter);
 		}
 	}
-								  
-	drive->priv->device_path = decode_corba_string_or_null (corba_drive->device_path, TRUE);
-	drive->priv->activation_uri = decode_corba_string_or_null (corba_drive->activation_uri, TRUE);
-	drive->priv->display_name = decode_corba_string_or_null (corba_drive->display_name, TRUE);
-	drive->priv->icon = decode_corba_string_or_null (corba_drive->icon, TRUE);
-	drive->priv->hal_udi = decode_corba_string_or_null (corba_drive->hal_udi, TRUE);
 	
-	drive->priv->is_user_visible = corba_drive->is_user_visible;
-	drive->priv->is_connected = corba_drive->is_connected;
+	dbus_message_iter_next (&struct_iter);
+	priv->device_path = utils_get_string_or_null (&struct_iter, TRUE);
 
-	drive->priv->must_eject_at_unmount = corba_drive->must_eject_at_unmount;
+	dbus_message_iter_next (&struct_iter);
+	priv->activation_uri = utils_get_string_or_null (&struct_iter, TRUE);
+
+	dbus_message_iter_next (&struct_iter);
+	priv->display_name = utils_get_string_or_null (&struct_iter, TRUE);
+	if (drive->priv->display_name != NULL) {
+		char *tmp = g_utf8_casefold (drive->priv->display_name, -1);
+		drive->priv->display_name_key = g_utf8_collate_key (tmp, -1);
+		g_free (tmp);
+	} else {
+		drive->priv->display_name_key = NULL;
+	}
+	
+	dbus_message_iter_next (&struct_iter);
+	priv->icon = utils_get_string_or_null (&struct_iter, TRUE);
+	
+	dbus_message_iter_next (&struct_iter);
+	priv->hal_udi = utils_get_string_or_null (&struct_iter, TRUE);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->is_user_visible);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->is_connected);
+
+	dbus_message_iter_next (&struct_iter);
+	dbus_message_iter_get_basic (&struct_iter, &priv->must_eject_at_unmount);
+
 	return drive;
 }
-#endif

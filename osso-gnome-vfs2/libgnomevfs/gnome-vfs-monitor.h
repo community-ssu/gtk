@@ -28,8 +28,9 @@
 
 /**
  * GnomeVFSMonitorType:
- * @GNOME_VFS_MONITOR_FILE: 
- * @GNOME_VFS_MONITOR_DIRECTORY: 
+ * @GNOME_VFS_MONITOR_FILE: the monitor is registered for a single file.
+ * @GNOME_VFS_MONITOR_DIRECTORY: the monitor is registered for all files in a directory,
+ * 				 and the directory itself.
  *
  * Type of resources that can be monitored.
  **/
@@ -41,12 +42,12 @@ typedef enum {
 
 /**
  * GnomeVFSMonitorEventType:
- * @GNOME_VFS_MONITOR_EVENT_CHANGED: file data changed
- * @GNOME_VFS_MONITOR_EVENT_DELETED: file deleted event
- * @GNOME_VFS_MONITOR_EVENT_STARTEXECUTING:  
- * @GNOME_VFS_MONITOR_EVENT_STOPEXECUTING: 
- * @GNOME_VFS_MONITOR_EVENT_CREATED: file created event
- * @GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED: file metadata changed
+ * @GNOME_VFS_MONITOR_EVENT_CHANGED: file data changed (FAM, inotify).
+ * @GNOME_VFS_MONITOR_EVENT_DELETED: file deleted event (FAM, inotify).
+ * @GNOME_VFS_MONITOR_EVENT_STARTEXECUTING: file was executed (FAM only).
+ * @GNOME_VFS_MONITOR_EVENT_STOPEXECUTING: executed file isn't executed anymore (FAM only).
+ * @GNOME_VFS_MONITOR_EVENT_CREATED: file created event (FAM, inotify).
+ * @GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED: file metadata changed (inotify only).
  * 
  * Types of events that can be monitored.
  **/
@@ -60,6 +61,13 @@ typedef enum {
   GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED
 } GnomeVFSMonitorEventType;
 
+/**
+ * GnomeVFSMonitorHandle:
+ *
+ * a handle representing a file or directory monitor that
+ * was registered using gnome_vfs_monitor_add() and that
+ * can be cancelled using gnome_vfs_monitor_cancel().
+ **/
 typedef struct GnomeVFSMonitorHandle GnomeVFSMonitorHandle;
 
 /**

@@ -56,17 +56,17 @@ struct GnomeVFSInetConnection {
 
 /**
  * gnome_vfs_inet_connection_create:
- * @connection_return: Pointer to a GnomeVFSInetConnection, which will.
- * contain an allocated GnomeVFSInetConnection object on return.
- * @host_name: String indicating the host to establish an internet connection with.
- * @host_port: The port number to connect to.
+ * @connection_return: pointer to a pointer to a #GnomeVFSInetConnection, which will
+ * contain an allocated #GnomeVFSInetConnection object on return.
+ * @host_name: string indicating the host to establish an internet connection with.
+ * @host_port: port number to connect to.
  * @cancellation: handle allowing cancellation of the operation.
  *
  * Creates a connection at @connection_return to @host_name using
  * port @port.
  *
  * Return value: #GnomeVFSResult indicating the success of the operation.
- **/
+ */
 GnomeVFSResult
 gnome_vfs_inet_connection_create (GnomeVFSInetConnection **connection_return,
 				  const gchar             *host_name,
@@ -135,11 +135,11 @@ gnome_vfs_inet_connection_create (GnomeVFSInetConnection **connection_return,
 
 /**
  * gnome_vfs_inet_connection_create_from_address:
- * @connection_return: Pointer to a GnomeVFSInetConnection, which will.
- * contain An allocated GnomeVFSInetConnection object on return.
- * @address: A valid #GnomeVFSAddress.
- * @host_port: The port number to connect to.
- * @cancellation: Handle allowing cancellation of the operation.
+ * @connection_return: pointer to a pointer to a #GnomeVFSInetConnection, which will 
+ * contain an allocated #GnomeVFSInetConnection object on return.
+ * @address: a valid #GnomeVFSAddress.
+ * @host_port: port number to connect to.
+ * @cancellation: handle allowing cancellation of the operation.
  *
  * Creates a connection at @connection_return to @address using
  * port @port.
@@ -147,7 +147,7 @@ gnome_vfs_inet_connection_create (GnomeVFSInetConnection **connection_return,
  * Return value: #GnomeVFSResult indicating the success of the operation.
  *
  * Since: 2.8
- **/
+ */
 GnomeVFSResult
 gnome_vfs_inet_connection_create_from_address (GnomeVFSInetConnection **connection_return,
 					       GnomeVFSAddress         *address,
@@ -195,11 +195,11 @@ gnome_vfs_inet_connection_create_from_address (GnomeVFSInetConnection **connecti
 
 /**
  * gnome_vfs_inet_connection_destroy:
- * @connection: Connection to destroy.
- * @cancellation: Handle for cancelling the operation.
+ * @connection: connection to destroy.
+ * @cancellation: handle for cancelling the operation.
  *
  * Closes/Destroys @connection.
- **/
+ */
 void
 gnome_vfs_inet_connection_destroy (GnomeVFSInetConnection *connection,
 				   GnomeVFSCancellation   *cancellation)
@@ -214,11 +214,11 @@ gnome_vfs_inet_connection_destroy (GnomeVFSInetConnection *connection,
 
 /**
  * gnome_vfs_inet_connection_free:
- * @connection: Connection to free.
- * @cancellation: Handle for cancelling the operation.
+ * @connection: connection to free.
+ * @cancellation: handle for cancelling the operation.
  *
  * Frees @connection without closing the socket.
- **/
+ */
 void
 gnome_vfs_inet_connection_free (GnomeVFSInetConnection *connection,
 				GnomeVFSCancellation *cancellation)
@@ -237,11 +237,12 @@ gnome_vfs_inet_connection_free (GnomeVFSInetConnection *connection,
 
 /**
  * gnome_vfs_inet_connection_close:
- * @connection: connection to close
- * @cancellation: handle allowing cancellation of the operation
+ * @connection: connection to close.
+ * @cancellation: handle allowing cancellation of the operation.
  *
  * Closes @connection, freeing all used resources.
- **/
+ * Same as gnome_vfs_inet_connection_destroy().
+ */
 static void
 gnome_vfs_inet_connection_close (GnomeVFSInetConnection *connection,
 				 GnomeVFSCancellation *cancellation)
@@ -251,12 +252,12 @@ gnome_vfs_inet_connection_close (GnomeVFSInetConnection *connection,
 
 /**
  * gnome_vfs_inet_connection_get_fd:
- * @connection: Connection to get the file descriptor from
+ * @connection: connection to get the file descriptor from.
  *
  * Retrieve the UNIX file descriptor corresponding to @connection.
  *
- * Return value: file descriptor
- **/
+ * Return value: file descriptor.
+ */
 gint 
 gnome_vfs_inet_connection_get_fd (GnomeVFSInetConnection *connection)
 {
@@ -266,14 +267,14 @@ gnome_vfs_inet_connection_get_fd (GnomeVFSInetConnection *connection)
 
 /**
  * gnome_vfs_inet_connection_get_ip:
- * @connection: Connection to get the ip from.
+ * @connection: connection to get the ip from.
  *
  * Retrieve the ip address of the other side of a connected @connection.
  *
- * Return value: String version of the ip.
+ * Return value: string version of the ip.
  *
  * Since: 2.8
- **/
+ */
 char *
 gnome_vfs_inet_connection_get_ip (GnomeVFSInetConnection *connection)
 {
@@ -282,14 +283,14 @@ gnome_vfs_inet_connection_get_ip (GnomeVFSInetConnection *connection)
 
 /**
  * gnome_vfs_inet_connection_get_address:
- * @connection: Connection to get the address from. 
+ * @connection: connection to get the address from. 
  *
  * Retrieve the address of the other side of a connected @connection.
  * 
- * Return Value: A #GnomeVFSAddress containing the address.
+ * Return Value: a #GnomeVFSAddress containing the address.
  *
  * Since 2.8
- **/
+ */
 GnomeVFSAddress *
 gnome_vfs_inet_connection_get_address (GnomeVFSInetConnection *connection)
 {
@@ -300,17 +301,17 @@ gnome_vfs_inet_connection_get_address (GnomeVFSInetConnection *connection)
 
 /**
  * gnome_vfs_inet_connection_read:
- * @connection: Connection to read data from.
- * @buffer: Allocated buffer of at least @bytes bytes to be read into.
- * @bytes: Number of bytes to read from @socket into @buffer.
- * @bytes_read: Pointer to a GnomeVFSFileSize, will contain
+ * @connection: connection to read data from.
+ * @buffer: allocated buffer of at least @bytes bytes to be read into.
+ * @bytes: number of bytes to read from socket into @buffer.
+ * @bytes_read: pointer to a #GnomeVFSFileSize, will contain
  * the number of bytes actually read from the socket on return.
- * @cancellation: Handle allowing cancellation of the operation.
+ * @cancellation: handle allowing cancellation of the operation.
  *
  * Read @bytes bytes of data from @connection into @buffer.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: a #GnomeVFSResult indicating the success of the operation.
+ */
 static GnomeVFSResult 
 gnome_vfs_inet_connection_read (GnomeVFSInetConnection *connection,
 		                gpointer buffer,
@@ -396,17 +397,17 @@ read_loop:
 
 /**
  * gnome_vfs_inet_connection_write:
- * @connection: Connection to write data to.
- * @buffer: Data to write to the connection.
- * @bytes: Number of bytes from @buffer to write to @socket.
- * @bytes_written: Pointer to a GnomeVFSFileSize, will contain
- * the number of bytes actually written to the connection on return.
- * @cancellation: Handle allowing cancellation of the operation.
+ * @connection: connection to write data to.
+ * @buffer: data to write to the connection.
+ * @bytes: number of bytes to write from @buffer to socket.
+ * @bytes_written: pointer to a #GnomeVFSFileSize, will contain
+ * the number of bytes actually written to the @connection on return.
+ * @cancellation: handle allowing cancellation of the operation.
  *
  * Write @bytes bytes of data from @buffer to @connection.
  *
- * Return value: GnomeVFSResult indicating the success of the operation
- **/
+ * Return value: a #GnomeVFSResult indicating the success of the operation.
+ */
 static GnomeVFSResult 
 gnome_vfs_inet_connection_write (GnomeVFSInetConnection *connection,
 			         gconstpointer buffer,
@@ -496,21 +497,21 @@ write_loop:
 
 /**
  * gnome_vfs_inet_connection_set_timeout:
- * @connection: Connection to set the timeout of.
- * @timeout: The timeout to set.
- * @cancellation: Optional cancellation object.
+ * @connection: connection to set the timeout of.
+ * @timeout: timeout to set.
+ * @cancellation: optional cancellation object.
  *
- * Set a timeout of @timeout. If @timeout is NULL following operations
+ * Set a timeout of @timeout. If @timeout is %NULL following operations
  * will block indefinitely).
  *
  * Note if you set @timeout to 0 (means tv_sec and tv_usec are both 0)
  * every following operation will return immediately. (This can be used
  * for polling.)
  *
- * Return value: GnomeVFSResult indicating the success of the operation
+ * Return value: a #GnomeVFSResult indicating the success of the operation.
  *
  * Since: 2.8
- **/
+ */
 
 
 static GnomeVFSResult
@@ -543,12 +544,12 @@ static GnomeVFSSocketImpl inet_connection_socket_impl = {
 
 /**
  * gnome_vfs_inet_connection_to_socket:
- * @connection: Connection to convert to wrapper in a GnomeVFSSocket.
+ * @connection: connection to be wrapped into a #GnomeVFSSocket.
  *
- * Wrapper @connection inside a standard GnomeVFSSocket for convenience.
+ * Wrap @connection inside a standard #GnomeVFSSocket for convenience.
  *
- * Return value: a newly created GnomeVFSSocket around @connection.
- **/
+ * Return value: a newly created #GnomeVFSSocket around @connection.
+ */
 GnomeVFSSocket *
 gnome_vfs_inet_connection_to_socket (GnomeVFSInetConnection *connection)
 {
@@ -557,12 +558,12 @@ gnome_vfs_inet_connection_to_socket (GnomeVFSInetConnection *connection)
 
 /**
  * gnome_vfs_inet_connection_to_socket_buffer:
- * @connection: Connection to convert to wrapper in a GnomeVFSSocketBuffer.
+ * @connection: connection to be wrapped into a #GnomeVFSSocketBuffer.
  *
- * Wrapper @connection inside a standard GnomeVFSSocketBuffer for convenience.
+ * Wrap @connection inside a standard #GnomeVFSSocketBuffer for convenience.
  *
- * Return value: a newly created GnomeVFSSocketBuffer around @connection.
- **/
+ * Return value: a newly created #GnomeVFSSocketBuffer around @connection.
+ */
 GnomeVFSSocketBuffer *
 gnome_vfs_inet_connection_to_socket_buffer (GnomeVFSInetConnection *connection)
 {

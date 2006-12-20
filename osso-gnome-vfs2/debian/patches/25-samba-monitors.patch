@@ -1,0 +1,477 @@
+Index: modules/smb-method.c
+===================================================================
+--- modules/smb-method.c	(revision 8453)
++++ modules/smb-method.c	(working copy)
+@@ -82,6 +82,16 @@
+         time_t stamp;
+ } SmbCachedUser;
+ 
++typedef struct {
++	GnomeVFSURI *uri;
++	GnomeVFSMonitorType monitor_type;
++} SmbMonitorHandle;
++
++/* A list of monitors are kept for each URI. */
++typedef struct {
++	GList *handles; /* list of MonitorHandle* */
++} SmbMonitorList;
++
+ static GMutex *smb_lock;
+ 
+ static SMBCCTX *smb_context = NULL;
+@@ -111,6 +121,10 @@
+ static GHashTable *workgroups = NULL;
+ static time_t workgroups_timestamp = 0;
+ 
++/* File monitoring. */
++static GHashTable *monitor_hash = NULL;
++static GMutex *monitor_mutex = NULL;
++
+ /* Authentication ----------------------------------------------------------- */
+ 
+ #define SMB_AUTH_STATE_PREFILLED	0x00000010 	/* Have asked gnome-auth for prefilled auth */
+@@ -155,6 +169,10 @@
+ 		     	   char *domain, int domainmaxlen,
+ 		     	   char *username, int unmaxlen,
+ 		     	   char *password, int pwmaxlen);
++
++static GnomeVFSURI *create_uri_without_trailing_slash (const GnomeVFSURI *uri);
++static void notify_monitor (GnomeVFSURI              *uri,
++			    GnomeVFSMonitorEventType  event);
+ 		     	   
+ #if 0
+ #define DEBUG_SMB_ENABLE
+@@ -709,6 +727,12 @@
+ 	user_cache = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                             g_free, (GDestroyNotify)user_free);
+ 	
++	monitor_mutex = g_mutex_new ();
++	monitor_hash = g_hash_table_new_full (gnome_vfs_uri_hash,
++					      gnome_vfs_uri_equal,
++					      (GDestroyNotify) gnome_vfs_uri_unref,
++					      NULL);
++
+ 	UNLOCK_SMB();
+ 
+ 	if (smb_context == NULL) {
+@@ -1451,6 +1475,7 @@
+ 	int fnum;
+ 	GnomeVFSFileOffset offset;
+ 	GnomeVFSFileOffset file_size;
++	GnomeVFSURI *uri;
+ } FileHandle;
+ 
+ static GnomeVFSResult
+@@ -1494,6 +1519,7 @@
+ 		name = gnome_vfs_uri_extract_short_path_name (uri);
+ 		handle->file_data = get_workgroup_data (unescaped_name, name);
+ 		handle->file_size = strlen (handle->file_data);
++		handle->uri = gnome_vfs_uri_ref (uri);
+ 		g_free (unescaped_name);
+ 		g_free (name);
+ 		
+@@ -1513,6 +1539,7 @@
+ 		name = gnome_vfs_uri_extract_short_path_name (uri);
+ 		handle->file_data = get_computer_data (unescaped_name, name);
+ 		handle->file_size = strlen (handle->file_data);
++		handle->uri = gnome_vfs_uri_ref (uri);
+ 		g_free (unescaped_name);
+ 		g_free (name);
+ 		
+@@ -1560,6 +1587,7 @@
+ 	handle = g_new (FileHandle, 1);
+ 	handle->is_data = FALSE;
+ 	handle->file = file;
++	handle->uri = gnome_vfs_uri_ref (uri);
+ 
+ 	*method_handle = (GnomeVFSMethodHandle *)handle;
+ 
+@@ -1599,9 +1627,13 @@
+ 
+ 		res = actx.res;		
+ 		UNLOCK_SMB();
++
++		notify_monitor (handle->uri, GNOME_VFS_MONITOR_EVENT_CHANGED);
+ 	}
+ 
++	gnome_vfs_uri_unref (handle->uri);
+ 	g_free (handle);
++
+ 	return res;
+ }
+ 
+@@ -1682,6 +1714,11 @@
+ 	UNLOCK_SMB();
+ 
+ 	*bytes_written = (written < 0) ? 0 : written;
++
++	if (actx.res == GNOME_VFS_OK) {
++		notify_monitor (handle->uri, GNOME_VFS_MONITOR_EVENT_CHANGED);
++	}
++
+ 	return actx.res;
+ }
+ 
+@@ -1754,8 +1791,13 @@
+ 	handle = g_new (FileHandle, 1);
+ 	handle->is_data = FALSE;
+ 	handle->file = file;
++	handle->uri = gnome_vfs_uri_ref (uri);
+ 
+ 	*method_handle = (GnomeVFSMethodHandle *)handle;
++
++	if (actx.res == GNOME_VFS_OK) {
++		notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_CREATED);
++	}
+ 	
+ 	return GNOME_VFS_OK;
+ }
+@@ -2352,6 +2394,10 @@
+ 	
+ 	UNLOCK_SMB();
+ 
++	if (actx.res == GNOME_VFS_OK) {
++		notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_DELETED);
++	}
++
+ 	g_free (path);
+ 	
+ 	return actx.res;
+@@ -2488,6 +2534,9 @@
+ 				actx.res = GNOME_VFS_ERROR_FILE_EXISTS;
+ 			}
+ 		}
++	} else if (err == GNOME_VFS_OK) {
++		notify_monitor (old_uri, GNOME_VFS_MONITOR_EVENT_DELETED);
++		notify_monitor (new_uri, GNOME_VFS_MONITOR_EVENT_CREATED);
+ 	}
+ 
+ 	g_free (old_path);
+@@ -2546,6 +2595,10 @@
+ 
+ 	UNLOCK_SMB();
+ 
++	if (actx.res == GNOME_VFS_OK) {
++		notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_CREATED);
++	}
++
+ 	g_free (path);
+ 
+ 	return actx.res;
+@@ -2587,6 +2640,10 @@
+ 	}
+ 	UNLOCK_SMB();
+ 
++	if (actx.res == GNOME_VFS_OK) {
++		notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_DELETED);
++	}
++
+ 	g_free (path);
+ 
+ 	return actx.res;
+@@ -2630,9 +2687,7 @@
+ 		new_uri = gnome_vfs_uri_append_file_name (parent, info->name);
+ 		gnome_vfs_uri_unref (parent);
+ 		new_path = gnome_vfs_uri_to_string (new_uri, GNOME_VFS_URI_HIDE_USER_NAME | GNOME_VFS_URI_HIDE_PASSWORD);
+-		gnome_vfs_uri_unref (new_uri);
+ 
+-
+ 		LOCK_SMB();
+ 		init_authentication (&actx, uri);
+ 		
+@@ -2644,6 +2699,13 @@
+ 		
+ 		UNLOCK_SMB();
+ 
++		if (actx.res == GNOME_VFS_OK) {
++			notify_monitor (uri, GNOME_VFS_MONITOR_EVENT_DELETED);
++			notify_monitor (new_uri, GNOME_VFS_MONITOR_EVENT_CREATED);
++		}
++		
++		gnome_vfs_uri_unref (new_uri);
++
+ 		if (err < 0 && errnox == EXDEV)
+ 			actx.res = GNOME_VFS_ERROR_NOT_SAME_FILE_SYSTEM;
+ 		
+@@ -2680,7 +2742,250 @@
+ 	return GNOME_VFS_OK;
+ }
+ 
++#ifdef DEBUG_SMB_ENABLE
++/* Used for debugging: */
++static const gchar *
++event_to_string (GnomeVFSMonitorEventType event)
++{
++	switch (event) {
++	case GNOME_VFS_MONITOR_EVENT_CHANGED:
++		return "changed";
++		
++	case GNOME_VFS_MONITOR_EVENT_DELETED:
++		return "deleted";
++		
++	case GNOME_VFS_MONITOR_EVENT_CREATED:
++		return "created";
+ 
++	case GNOME_VFS_MONITOR_EVENT_STARTEXECUTING:
++	case GNOME_VFS_MONITOR_EVENT_STOPEXECUTING:
++	case GNOME_VFS_MONITOR_EVENT_METADATA_CHANGED:
++		break;
++	}
++	
++	return "<not supported>";
++}
++#endif
++
++static GnomeVFSURI *
++create_uri_without_trailing_slash (const GnomeVFSURI *uri)
++{
++	GnomeVFSURI *new_uri;
++	GnomeVFSURI *p;
++
++	new_uri = gnome_vfs_uri_dup (uri);
++	
++	for (p = new_uri; p; p = p->parent) {
++		if (p->text) {
++			gsize len;
++
++			len = strlen (p->text);
++			if (len > 0 && p->text[len-1] == '/') {
++				p->text[len-1] = 0;
++			}
++		}
++	}
++
++	return new_uri;
++}
++
++static void
++notify_monitor (GnomeVFSURI              *uri,
++		GnomeVFSMonitorEventType  event_type)
++{
++	SmbMonitorList   *monitors;
++	GList            *l;
++	SmbMonitorHandle *handle;
++	GnomeVFSURI      *parent;
++	GnomeVFSURI      *grand_parent;
++	GnomeVFSURI      *tmp_uri;
++
++	g_mutex_lock (monitor_mutex);
++
++	/* Note: gnome_vfs_monitor_callback may be called from any thread, so
++	 * there are no threading issues here.
++	 */
++	tmp_uri = create_uri_without_trailing_slash (uri);
++	monitors = g_hash_table_lookup (monitor_hash, tmp_uri);
++
++	DEBUG_SMB (("notify_monitor: found %d monitors for uri:'%s' (original uri)\n",
++		    monitors ? g_list_length (monitors->handles) : 0,
++		    gnome_vfs_uri_to_string (tmp_uri, 0)));
++
++	gnome_vfs_uri_unref (tmp_uri);
++
++	if (monitors) {
++		for (l = monitors->handles; l; l = l->next) {
++			handle = l->data;
++
++			DEBUG_SMB (("notify_monitor: emit %s event (direct) for %s\n",
++				    event_to_string (event_type),
++				    gnome_vfs_uri_to_string (uri, 0)));
++
++			gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) handle,
++						    uri,
++						    event_type);
++		}
++	}
++	
++	parent = gnome_vfs_uri_get_parent (uri);
++	if (!parent) {
++		DEBUG_SMB (("notify_monitor: no parent for %s, returning...\n",
++			    gnome_vfs_uri_to_string (uri, 0)));
++		g_mutex_unlock (monitor_mutex);
++		return;
++	}
++	
++	tmp_uri = create_uri_without_trailing_slash (parent);
++	monitors = g_hash_table_lookup (monitor_hash, tmp_uri);
++
++	DEBUG_SMB (("notify_monitor: found %d monitors for uri:'%s' (parent uri)\n",
++		    monitors ? g_list_length (monitors->handles) : 0,
++		    gnome_vfs_uri_to_string (tmp_uri, 0)));
++
++	gnome_vfs_uri_unref (tmp_uri);
++
++	if (monitors) {
++		for (l = monitors->handles; l; l = l->next) {
++			handle = l->data;
++
++			if (handle->monitor_type == GNOME_VFS_MONITOR_DIRECTORY) {
++				DEBUG_SMB (("notify_monitor: emit %s event (parent) for %s\n",
++					    event_to_string (event_type),
++					    gnome_vfs_uri_to_string (uri, 0)));
++				gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) handle,
++							    uri,
++							    event_type);
++			}
++		}
++	}
++
++	if (event_type != GNOME_VFS_MONITOR_EVENT_CREATED &&
++	    event_type != GNOME_VFS_MONITOR_EVENT_DELETED) {
++		DEBUG_SMB (("notify_monitor: event type:%d (%s) is not CREATED or DELETED "
++			    "for %s, returning...\n",
++			    event_type,
++			    event_to_string (event_type),
++			    gnome_vfs_uri_to_string (parent, 0)));
++		gnome_vfs_uri_unref (parent);
++		g_mutex_unlock (monitor_mutex);
++		return;
++	}
++	
++	grand_parent = gnome_vfs_uri_get_parent (parent);
++	if (!grand_parent) {
++		DEBUG_SMB (("notify_monitor: no parent for %s, returning...\n",
++			    gnome_vfs_uri_to_string (parent, 0)));
++		gnome_vfs_uri_unref (parent);
++		g_mutex_unlock (monitor_mutex);
++		return;
++	}
++	
++
++	tmp_uri = create_uri_without_trailing_slash (grand_parent);
++	monitors = g_hash_table_lookup (monitor_hash, tmp_uri);
++
++	DEBUG_SMB (("notify_monitor: found %d monitors for uri:'%s' (grand parent uri)\n",
++		    monitors ? g_list_length (monitors->handles) : 0,
++		    gnome_vfs_uri_to_string (tmp_uri, 0)));
++
++	gnome_vfs_uri_unref (tmp_uri);
++
++	if (monitors) {
++		for (l = monitors->handles; l; l = l->next) {
++			handle = l->data;
++
++			if (handle->monitor_type == GNOME_VFS_MONITOR_DIRECTORY) {
++				DEBUG_SMB (("notify_monitor: emit changed event (grand parent) for %s\n",
++					    gnome_vfs_uri_to_string (uri, 0)));
++				gnome_vfs_monitor_callback ((GnomeVFSMethodHandle *) handle,
++							    parent,
++							    GNOME_VFS_MONITOR_EVENT_CHANGED);
++			}
++		}
++	}
++	
++	DEBUG_SMB (("notify_monitor: cleaning up...\n"));
++
++	gnome_vfs_uri_unref (parent);
++	gnome_vfs_uri_unref (grand_parent);
++
++	g_mutex_unlock (monitor_mutex);
++}
++
++static GnomeVFSResult
++do_monitor_add (GnomeVFSMethod        *method,
++		GnomeVFSMethodHandle **method_handle,
++		GnomeVFSURI           *uri,
++		GnomeVFSMonitorType    monitor_type)
++{
++	SmbMonitorHandle *handle;
++	SmbMonitorList *monitors;
++
++	DEBUG_SMB (("do_monitor_add: for uri:'%s'\n",
++		    gnome_vfs_uri_to_string (uri, 0)));
++
++	handle = g_new0 (SmbMonitorHandle, 1);
++	handle->uri = create_uri_without_trailing_slash (uri);
++	handle->monitor_type = monitor_type;
++
++	g_mutex_lock (monitor_mutex);
++	
++	monitors = g_hash_table_lookup (monitor_hash, handle->uri);
++	if (!monitors) {
++		DEBUG_SMB (("do_monitor_add: no current monitors for uri:'%s'\n",
++			    gnome_vfs_uri_to_string (handle->uri, 0)));
++
++		monitors = g_new0 (SmbMonitorList, 1);
++		g_hash_table_insert (monitor_hash,
++				     gnome_vfs_uri_ref (handle->uri),
++				     monitors);
++	}
++
++	monitors->handles = g_list_prepend (monitors->handles, handle); 
++
++	DEBUG_SMB (("do_monitor_add: now have %d monitors for uri:'%s'\n",
++		    g_list_length (monitors->handles), 
++		    gnome_vfs_uri_to_string (handle->uri, 0)));
++
++	g_mutex_unlock (monitor_mutex);
++
++	*method_handle = (GnomeVFSMethodHandle *) handle;
++			
++	return GNOME_VFS_OK;
++}
++
++static GnomeVFSResult
++do_monitor_cancel (GnomeVFSMethod       *method,
++		   GnomeVFSMethodHandle *method_handle)
++{
++	SmbMonitorHandle *handle;
++	SmbMonitorList *monitors;
++
++	handle = (SmbMonitorHandle *) method_handle;
++
++	DEBUG_SMB (("do_monitor_cancel: for uri:'%s'\n",
++		    gnome_vfs_uri_to_string (handle->uri, 0)));
++
++	g_mutex_lock (monitor_mutex);
++	
++	monitors = g_hash_table_lookup (monitor_hash, handle->uri);
++	if (monitors) {
++		monitors->handles = g_list_remove (monitors->handles, handle);
++		if (!monitors->handles) {
++			g_hash_table_remove (monitor_hash, handle->uri);
++			g_free (monitors);
++		}
++	}
++
++	gnome_vfs_uri_unref (handle->uri);
++	g_free (handle);
++	
++	g_mutex_unlock (monitor_mutex);
++
++	return GNOME_VFS_OK;
++}
++
+ static GnomeVFSMethod method = {
+ 	sizeof (GnomeVFSMethod),
+ 	do_open,
+@@ -2703,9 +3008,14 @@
+ 	do_unlink,
+ 	do_check_same_fs,
+ 	do_set_file_info,
+-	NULL, /* do_truncate */
+-	NULL, /* do_find_directory */
+-	NULL  /* do_create_symbolic_link */
++	NULL,                         /* truncate */
++	NULL,                         /* find_directory */
++	NULL,                         /* create_symbolic_link */
++        do_monitor_add,               /* monitor_add */
++        do_monitor_cancel,            /* monitor_cancel */
++        NULL,                         /* file_control */
++	NULL,                         /* forget_cache */
++	NULL                          /* get_volume_free_space */
+ };
+ 
+ GnomeVFSMethod *
+@@ -2738,6 +3048,12 @@
+ 	
+ 	g_mutex_free (smb_lock);
+ 
++	g_mutex_lock (monitor_mutex);
++	g_hash_table_destroy (monitor_hash);
++	monitor_hash = NULL;
++	g_mutex_unlock (monitor_mutex);
++	g_mutex_free (monitor_mutex);
++
+ 	DEBUG_SMB (("<-- smb module shutdown called -->\n"));
+ }
+ 

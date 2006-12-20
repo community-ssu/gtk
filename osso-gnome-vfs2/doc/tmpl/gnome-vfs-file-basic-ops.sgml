@@ -2,17 +2,25 @@
 Basic File Operations
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Essential VFS operations. This includes creating, moving and deleting files, opening and closing file handles.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+GnomeVFS file operations are, for the most part, patterned after
+their POSIX equivalents, with the systematic difference that they
+accept URIs rather than paths on the local filesystem. This makes
+them easy to learn as if you are already familiar with basic commands
+such as open(), seek(), write(), etc you will feel right at home
+with GnomeVFS after learning a little about URIs.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### ENUM GnomeVFSOpenMode ##### -->
 <para>

@@ -47,11 +47,11 @@ static void update_mtab_volumes (GnomeVFSVolumeMonitorDaemon *volume_monitor_dae
 
 static void update_connected_servers (GnomeVFSVolumeMonitorDaemon *volume_monitor_daemon);
 
-
 typedef struct {
 	char *id;
 	char *uri;
 	char *display_name;
+	char *display_name_key;
 	char *icon;
 } GnomeVFSConnectedServer;
 
@@ -152,6 +152,7 @@ connected_servers_changed (GConfClient* client,
 	update_connected_servers (volume_monitor);
 }
 
+
 static void
 gnome_vfs_volume_monitor_daemon_init (GnomeVFSVolumeMonitorDaemon *volume_monitor_daemon)
 {
@@ -215,26 +216,27 @@ gnome_vfs_volume_monitor_daemon_finalize (GObject *object)
 	GnomeVFSVolumeMonitorDaemon *volume_monitor_daemon;
 
 	volume_monitor_daemon = GNOME_VFS_VOLUME_MONITOR_DAEMON (object);
-	
+		
 	_gnome_vfs_stop_monitoring_unix_mounts ();
-	
+
 	g_list_foreach (volume_monitor_daemon->last_mtab,
 			(GFunc)_gnome_vfs_unix_mount_free, NULL);
 	g_list_free (volume_monitor_daemon->last_mtab);
-
+	
 	g_list_foreach (volume_monitor_daemon->last_fstab,
 			(GFunc)_gnome_vfs_unix_mount_point_free, NULL);
-	g_list_free (volume_monitor_daemon->last_fstab);
+	g_list_free (volume_monitor_daemon->last_fstab);	
 
 	gconf_client_notify_remove (volume_monitor_daemon->gconf_client,
 				    volume_monitor_daemon->connected_id);
+
 
 #ifdef USE_HAL
 	if (!dont_use_hald) {
 		_gnome_vfs_hal_mounts_shutdown (volume_monitor_daemon);
 	}
 #endif /* USE_HAL */
-
+	
 	g_object_unref (volume_monitor_daemon->gconf_client);
 	
 	if (G_OBJECT_CLASS (parent_class)->finalize)
@@ -637,7 +639,7 @@ create_drive_from_mount_point (GnomeVFSVolumeMonitor *volume_monitor,
 {
 	GnomeVFSDrive *drive;
 	GnomeVFSVolume *mounted_volume;
-	char *uri;
+	char *name, *uri;
 	
 	if (mount->is_loopback ||
 	    !(mount->is_user_mountable ||
@@ -683,11 +685,20 @@ create_drive_from_mount_point (GnomeVFSVolumeMonitor *volume_monitor,
 		if (drive->priv->device_type == GNOME_VFS_DEVICE_TYPE_UNKNOWN) {
 			drive->priv->device_type = GNOME_VFS_DEVICE_TYPE_WINDOWS;
 		}
+	} else if ((strcmp (mount->filesystem_type, "smbfs") == 0) ||
+		   (strcmp (mount->filesystem_type, "cifs") == 0)) {
+		drive->priv->device_type = GNOME_VFS_DEVICE_TYPE_SMB;
+	} else if (mount->is_loopback) {
+		drive->priv->device_type = GNOME_VFS_DEVICE_TYPE_LOOPBACK;
 	}
 
 	drive->priv->icon = get_drive_icon_from_type (drive->priv->device_type, mount->mount_path);
 
 	drive->priv->display_name = get_drive_name (volume_monitor, drive, mount);
+
+	name = g_utf8_casefold (drive->priv->display_name, -1);
+	drive->priv->display_name_key = g_utf8_collate_key (name, -1);
+	g_free (name);
 	
 	drive->priv->is_user_visible = TRUE;
 	drive->priv->volumes = NULL;
@@ -698,8 +709,8 @@ create_drive_from_mount_point (GnomeVFSVolumeMonitor *volume_monitor,
 
 	if (mounted_volume != NULL &&
 	    mounted_volume->priv->drive == NULL) {
-		_gnome_vfs_drive_add_mounted_volume (drive, mounted_volume);
-		_gnome_vfs_volume_set_drive (mounted_volume, drive);
+		gnome_vfs_drive_add_mounted_volume_private (drive, mounted_volume);
+		gnome_vfs_volume_set_drive_private (mounted_volume, drive);
 	}
 
 	return drive;
@@ -953,7 +964,11 @@ create_vol_from_mount (GnomeVFSVolumeMonitor *volume_monitor, GnomeVFSUnixMount 
 	vol->priv->display_name = _gnome_vfs_volume_monitor_uniquify_volume_name (volume_monitor, utf8_name);
 	g_free (display_name);
 	g_free (utf8_name);
-	
+
+	display_name = g_utf8_casefold (vol->priv->display_name, -1);
+	vol->priv->display_name_key = g_utf8_collate_key (display_name, -1);
+	g_free (display_name);
+
 	vol->priv->icon = get_icon_from_type (vol->priv->device_type, mount->mount_path);
 
 	vol->priv->is_user_visible = 0;
@@ -967,11 +982,6 @@ create_vol_from_mount (GnomeVFSVolumeMonitor *volume_monitor, GnomeVFSUnixMount 
 		vol->priv->is_user_visible = 1;
 		break;
 	default:
-		/* Force mounts under /media to become user visible. */
-		if (g_str_has_prefix (mount->mount_path, "/media/")) {
-			vol->priv->is_user_visible = 1;
-		}
-
 		break;
 	}
 	
@@ -989,7 +999,7 @@ create_vol_from_mount (GnomeVFSVolumeMonitor *volume_monitor, GnomeVFSUnixMount 
 		}
 		
 		vol->priv->drive = containing_drive;
-		_gnome_vfs_drive_add_mounted_volume (containing_drive, vol);
+		gnome_vfs_drive_add_mounted_volume_private (containing_drive, vol);
 	}
 
 	return vol;
@@ -1082,6 +1092,7 @@ connected_server_free (GnomeVFSConnectedServer *server)
 	g_free (server->id);
 	g_free (server->uri);
 	g_free (server->display_name);
+	g_free (server->display_name_key);
 	g_free (server->icon);
 	g_free (server);
 }
@@ -1100,7 +1111,7 @@ connected_server_compare (GnomeVFSConnectedServer *a,
 	if (res != 0) {
 		return res;
 	}
-	res = strcmp (a->display_name, b->display_name);
+	res = strcmp (a->display_name_key, b->display_name_key);
 	if (res != 0) {
 		return res;
 	}
@@ -1155,9 +1166,16 @@ get_connected_servers (GnomeVFSVolumeMonitorDaemon *volume_monitor_daemon)
 				g_free (server->icon);
 				g_free (server);
 			} else {
+				char *name;
+
 				if (server->display_name == NULL) {
 					server->display_name = g_strdup (_("Network server"));
 				}
+
+				name = g_utf8_casefold (server->display_name, -1);
+				server->display_name_key = g_utf8_collate_key (name, -1);
+				g_free (name);
+
 				if (server->icon == NULL) {
 					server->icon = g_strdup ("gnome-fs-share");
 				}
@@ -1179,13 +1197,18 @@ create_volume_from_connected_server (GnomeVFSVolumeMonitor *volume_monitor,
 				     GnomeVFSConnectedServer *server)
 {
 	GnomeVFSVolume *vol;
-
+	char *name;
 	
 	vol = g_object_new (GNOME_VFS_TYPE_VOLUME, NULL);
 
 	vol->priv->volume_type = GNOME_VFS_VOLUME_TYPE_CONNECTED_SERVER;
 	vol->priv->activation_uri = g_strdup (server->uri);
 	vol->priv->display_name = _gnome_vfs_volume_monitor_uniquify_volume_name (volume_monitor, server->display_name);
+
+	name = g_utf8_casefold (vol->priv->display_name, -1);
+	vol->priv->display_name_key = g_utf8_collate_key (name, -1);
+	g_free (name);
+
 	vol->priv->icon = g_strdup (server->icon);
 	vol->priv->gconf_id = g_strdup (server->id);
 	vol->priv->is_mounted = 1;

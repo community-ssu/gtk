@@ -10,13 +10,11 @@ include /usr/share/cdbs/1/class/gnome.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 include /usr/share/cdbs/1/rules/utils.mk
 
-DEB_INSTALL_DOCS_libosso-gnomevfs2-common := README.dbus doc/dbus-protocol.txt
-
 # debug lib
-DEB_DH_STRIP_ARGS := --dbg-package=libosso-gnomevfs2-0
+DEB_DH_STRIP_ARGS := --dbg-package=libosso-gnomevfs2-0 --dbg-package=libosso-gnomevfs2-common
 
-DEB_CONFIGURE_EXTRA_FLAGS := --disable-samba --disable-gnutls --disable-openssl \
-	--enable-gtk-doc --libexecdir=/usr/libexec --enable-more-warnings=no
+DEB_CONFIGURE_EXTRA_FLAGS := --enable-samba --disable-gnutls --disable-openssl \
+	--disable-gtk-doc --libexecdir=/usr/libexec --enable-more-warnings=no
 
 DEB_DH_INSTALL_ARGS := -Xlibextfs -Xlibnntp -Xlibvfs-pipe -Xlibcomputer -Xlibfile -Xlibvfolder-desktop
 
@@ -30,8 +28,7 @@ endif
 post-patches:: debian/stamp-autothings-update
 debian/stamp-autothings-update:
 	NOCONFIGURE=1 ./autogen.sh
-	# Not that nice, but it works; strip out i18n from schemas.
-	for f in `ls schemas/*.schemas.in`; do cp $$f `echo $$f | sed -e "s/\.in//"`; done
+	# Can add things here that need to be ran after autogen.sh
 	touch $@
 
 clean::

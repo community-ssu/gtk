@@ -1,6 +1,6 @@
 /* 
    HTTP utility functions
-   Copyright (C) 1999-2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 1999-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -30,10 +30,16 @@
 #include <stdio.h>
 #include <ctype.h> /* isdigit() for ne_parse_statusline */
 
-#if (defined (NEON_SSL) && defined (HAVE_OPENSSL))
+#ifdef NE_HAVE_ZLIB
+#include <zlib.h>
+#endif
+
+#ifdef HAVE_OPENSSL
 #include <openssl/opensslv.h>
-#else
-#undef NEON_SSL
+#endif
+
+#ifdef HAVE_GNUTLS
+#include <gnutls/gnutls.h>
 #endif
 
 /* libxml2: pick up the version string. */
@@ -41,10 +47,6 @@
 #include <libxml/xmlversion.h>
 #elif defined(HAVE_EXPAT) && !defined(HAVE_XMLPARSE_H)
 #include <expat.h>
-#endif
-
-#ifdef NEON_ZLIB
-#include <zlib.h>
 #endif
 
 #include "ne_utils.h"
@@ -80,11 +82,14 @@ void ne_debug(int ch, const char *template, ...)
 #define NE_STRINGIFY(x) # x
 #define NE_EXPAT_VER(x,y,z) NE_STRINGIFY(x) "." NE_STRINGIFY(y) "." NE_STRINGIFY(z)
 
-static const char *version_string = "neon " NEON_VERSION ": " 
+static const char version_string[] = "neon " NEON_VERSION ": " 
 #ifdef NEON_IS_LIBRARY
   "Library build"
 #else
   "Bundled build"
+#endif
+#ifdef NE_HAVE_IPV6
+   ", IPv6"
 #endif
 #ifdef HAVE_EXPAT
   ", Expat"
@@ -97,19 +102,22 @@ static const char *version_string = "neon " NEON_VERSION ": "
   ", libxml " LIBXML_DOTTED_VERSION
 #endif /* HAVE_LIBXML */
 #endif /* !HAVE_EXPAT */
-#if defined(NEON_ZLIB) && defined(ZLIB_VERSION)
+#if defined(NE_HAVE_ZLIB) && defined(ZLIB_VERSION)
   ", zlib " ZLIB_VERSION
-#endif /* NEON_ZLIB && ... */
-#ifdef NEON_SOCKS
+#endif /* NE_HAVE_ZLIB && ... */
+#ifdef NE_HAVE_SOCKS
    ", SOCKSv5"
 #endif
-#ifdef NEON_SSL
+#ifdef HAVE_OPENSSL
 #ifdef OPENSSL_VERSION_TEXT
     ", " OPENSSL_VERSION_TEXT
 #else
    "OpenSSL (unknown version)"
 #endif /* OPENSSL_VERSION_TEXT */
-#endif
+#endif /* HAVE_OPENSSL */
+#ifdef HAVE_GNUTLS
+    ", GNU TLS " LIBGNUTLS_VERSION
+#endif /* HAVE_GNUTLS */
    "."
 ;
 
@@ -120,16 +128,35 @@ const char *ne_version_string(void)
 
 int ne_version_match(int major, int minor)
 {
-    return (NEON_VERSION_MAJOR != major) || (NEON_VERSION_MINOR < minor);
+    return NE_VERSION_MAJOR != major || NE_VERSION_MINOR < minor
+        || (NE_VERSION_MAJOR == 0 && NE_VERSION_MINOR != minor);
 }
 
-int ne_supports_ssl(void)
+int ne_has_support(int feature)
 {
-#ifdef NEON_SSL
-    return 1;
-#else
-    return 0;
+    switch (feature) {
+#if defined(NE_HAVE_SSL) || defined(NE_HAVE_ZLIB) || defined(NE_HAVE_IPV6) \
+    || defined(NE_HAVE_SOCKS) || defined(NE_HAVE_LFS)
+#ifdef NE_HAVE_SSL
+    case NE_FEATURE_SSL:
 #endif
+#ifdef NE_HAVE_ZLIB
+    case NE_FEATURE_ZLIB:
+#endif
+#ifdef NE_HAVE_IPV6
+    case NE_FEATURE_IPV6:
+#endif
+#ifdef NE_HAVE_SOCKS
+    case NE_FEATURE_SOCKS:
+#endif
+#ifdef NE_HAVE_LFS
+    case NE_FEATURE_LFS:
+#endif
+        return 1;
+#endif /* NE_HAVE_* */
+    default:
+        return 0;
+    }
 }
 
 int ne_parse_statusline(const char *status_line, ne_status *st)

@@ -3,17 +3,37 @@ GnomeVFSURI
 
 <!-- ##### SECTION Short_Description ##### -->
 
-Functions for manipulating URIs
+A uniform resource identifier.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+  A #GnomeVFSURI is a semi-textual representation
+  of a uniform resource identifier. It contains the
+  information about a resource location encoded
+  as canononicalized text, but also holds extra
+  information about the context in which the
+  URI is used.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### STRUCT GnomeVFSURI ##### -->
+<para>
+
+</para>
+
+@ref_count: 
+@text: 
+@fragment_id: 
+@method_string: 
+@method: 
+@parent: 
 
 <!-- ##### STRUCT GnomeVFSToplevelURI ##### -->
 <para>
@@ -26,8 +46,6 @@ Functions for manipulating URIs
 @user_name: 
 @password: 
 @urn: 
-@reserved1: 
-@reserved2: 
 
 <!-- ##### ENUM GnomeVFSURIHideOptions ##### -->
 <para>
@@ -80,6 +98,16 @@ Functions for manipulating URIs
 
 
 <!-- ##### FUNCTION gnome_vfs_uri_resolve_relative ##### -->
+<para>
+
+</para>
+
+@base: 
+@relative_reference: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_uri_resolve_symbolic_link ##### -->
 <para>
 
 </para>

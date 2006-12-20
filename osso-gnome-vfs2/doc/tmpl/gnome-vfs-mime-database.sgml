@@ -1,19 +1,28 @@
 <!-- ##### SECTION Title ##### -->
-File Types
+MIME Database
 
 <!-- ##### SECTION Short_Description ##### -->
 
-functions for getting information about files based on their MIME type
+functions for getting information about applications and components associated with MIME types.
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
+This API can be used to query the applications and components associated with particular MIME types,
+and to collect extra information about them, and also provides a convenience function for launching
+them.
 
+Applications can register themselves for particular MIME types by adhering to the
+<ulink url="http://standards.freedesktop.org/desktop-entry-spec/latest">
+Freedesktop.Org Desktop Entry Specification</ulink>.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### STRUCT GnomeVFSMimeApplication ##### -->
 <para>
@@ -22,14 +31,6 @@ functions for getting information about files based on their MIME type
 
 @id: 
 @name: 
-@can_open_multiple_files: 
-@expects_uris: 
-@supported_uri_schemes: 
-@_can_open_multiple_files: 
-@_expects_uris: 
-@_supported_uri_schemes: 
-@reserved1: 
-@priv: 
 
 <!-- ##### FUNCTION gnome_vfs_mime_get_default_application ##### -->
 <para>
@@ -51,6 +52,34 @@ functions for getting information about files based on their MIME type
 
 
 <!-- ##### FUNCTION gnome_vfs_mime_get_all_applications ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_all_applications_for_uri ##### -->
+<para>
+
+</para>
+
+@uri: 
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_all_desktop_entries ##### -->
+<para>
+
+</para>
+
+@mime_type: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_get_default_desktop_entry ##### -->
 <para>
 
 </para>
@@ -188,34 +217,16 @@ functions for getting information about files based on their MIME type
 @Returns: 
 
 
-<!-- ##### FUNCTION gnome_vfs_mime_application_requires_terminal ##### -->
-<para>
-
-</para>
-
-@app: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gnome_vfs_mime_application_get_startup_wm_class ##### -->
-<para>
-
-</para>
-
-@app: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gnome_vfs_mime_application_supports_startup_notification ##### -->
-<para>
-
-</para>
-
-@app: 
-@Returns: 
-
-
 <!-- ##### FUNCTION gnome_vfs_mime_application_get_binary_name ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_requires_terminal ##### -->
 <para>
 
 </para>
@@ -233,15 +244,41 @@ functions for getting information about files based on their MIME type
 @Returns: 
 
 
-<!-- ##### FUNCTION gnome_vfs_mime_application_copy ##### -->
+<!-- ##### FUNCTION gnome_vfs_mime_application_supports_startup_notification ##### -->
 <para>
 
 </para>
 
 @app: 
 @Returns: 
-<!-- # Unused Parameters # -->
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_get_startup_wm_class ##### -->
+<para>
+
+</para>
+
+@app: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_equal ##### -->
+<para>
+
+</para>
+
+@app_a: 
+@app_b: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gnome_vfs_mime_application_copy ##### -->
+<para>
+
+</para>
+
 @application: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gnome_vfs_mime_application_free ##### -->
@@ -249,8 +286,6 @@ functions for getting information about files based on their MIME type
 
 </para>
 
-@app: 
-<!-- # Unused Parameters # -->
 @application: 
 
 
@@ -268,31 +303,5 @@ functions for getting information about files based on their MIME type
 </para>
 
 @list: 
-
-
-<!-- ##### MACRO GNOME_VFS_MIME_TYPE_UNKNOWN ##### -->
-<para>
-
-</para>
-
-
-
-<!-- ##### FUNCTION gnome_vfs_get_mime_type_for_data ##### -->
-<para>
-
-</para>
-
-@data: 
-@data_size: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gnome_vfs_get_mime_type ##### -->
-<para>
-
-</para>
-
-@text_uri: 
-@Returns: 
 
 

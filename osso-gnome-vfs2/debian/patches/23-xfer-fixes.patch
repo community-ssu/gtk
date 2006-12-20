@@ -1,0 +1,23 @@
+--- libgnomevfs/gnome-vfs-xfer.c-unmod	2006-10-19 11:05:22.000000000 +0200
++++ libgnomevfs/gnome-vfs-xfer.c	2006-10-19 11:05:28.000000000 +0200
+@@ -1359,6 +1359,9 @@ xfer_create_target (GnomeVFSHandle **tar
+ 
+ 	exclusive = (*overwrite_mode != GNOME_VFS_XFER_OVERWRITE_MODE_REPLACE);
+ 
++	/* Maemo patch, added 20050905 */
++        call_progress (progress, GNOME_VFS_XFER_PHASE_OPENTARGET);
++
+ 	*skip = FALSE;
+ 	do {
+ 		retry = FALSE;
+@@ -2199,6 +2202,10 @@ gnome_vfs_xfer_delete_items_common (cons
+ 		}
+ 
+ 		gnome_vfs_file_info_unref (info);
++
++		if (result != GNOME_VFS_OK) {
++			break;
++		}
+ 	}
+ 
+ 	return result;

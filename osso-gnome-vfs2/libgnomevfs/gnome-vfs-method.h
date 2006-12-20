@@ -274,6 +274,8 @@ gboolean	   gnome_vfs_method_init   (void);
 GnomeVFSMethod    *gnome_vfs_method_get    (const gchar *name);
 GnomeVFSTransform *gnome_vfs_transform_get (const gchar *name);
 
+void              _gnome_vfs_method_shutdown (void);
+
 G_END_DECLS
 
 #endif /* GNOME_VFS_METHOD_H */

@@ -1,0 +1,13 @@
+--- libgnomevfs/gnome-vfs-volume-monitor-daemon.c-unmod	2006-10-18 13:39:34.000000000 +0200
++++ libgnomevfs/gnome-vfs-volume-monitor-daemon.c	2006-10-18 13:40:52.000000000 +0200
+@@ -1054,6 +1054,10 @@ create_vol_from_mount (GnomeVFSVolumeMon
+ 		vol->priv->is_user_visible = 1;
+ 		break;
+ 	default:
++		/* Force mounts under /media to become user visible. */
++		if (g_str_has_prefix (mount->mount_path, "/media/")) {
++			vol->priv->is_user_visible = 1;
++		}
+ 		break;
+ 	}
+ 	

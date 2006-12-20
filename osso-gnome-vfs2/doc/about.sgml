@@ -110,8 +110,9 @@
       <para>
 	<programlisting>
 <![CDATA[
+#include <stdio.h>
 #include <libgnomevfs/gnome-vfs.h>
-#include <gnome.h>
+#include <libgnomevfs/gnome-vfs-utils.h>
 
 #define BYTES_TO_PROCESS 256
 
@@ -121,8 +122,8 @@ int
 main (int argc, char **argv)
 {
   GnomeVFSHandle *read_handle, *write_handle;
-  const char *input_uri_string = argv[1];
-  const char *output_uri_string = argv[2];
+  char *input_uri_string;
+  char *output_uri_string = argv[2];
   GnomeVFSFileSize bytes_read, bytes_written;
   guint buffer[BYTES_TO_PROCESS];
   GnomeVFSResult result;
@@ -132,6 +133,10 @@ main (int argc, char **argv)
     printf ("Could not initialize GnomeVFS\n");
     return 1;
   }
+
+  /* Convert the user supplied filenames into proper GnomeVFS URIs */
+  input_uri_string = gnome_vfs_make_uri_from_shell_arg (argv[1]);
+  output_uri_string = gnome_vfs_make_uri_from_shell_arg (argv[2]);
 
   /* open the input file for read access */
   result = gnome_vfs_open (&read_handle, input_uri_string, GNOME_VFS_OPEN_READ);
@@ -156,6 +161,9 @@ main (int argc, char **argv)
   result = gnome_vfs_write (write_handle, buffer, bytes_read, &bytes_written);
   if (result != GNOME_VFS_OK) return print_error (result, output_uri_string);
 
+  g_free (input_uri_string);
+  g_free (output_uri_string);
+
   return 0;
 }
 
@@ -168,7 +176,6 @@ print_error (GnomeVFSResult result, const char *uri_string)
   printf ("Error %s occured opening location %s\n", error_string, uri_string);
   return 1;
 }
-
 ]]>
 	</programlisting>
 </para>

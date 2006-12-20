@@ -1,6 +1,6 @@
 /* 
    SSL/TLS abstraction layer for neon
-   Copyright (C) 2003-2004, Joe Orton <joe@manyfish.co.uk>
+   Copyright (C) 2003-2005, Joe Orton <joe@manyfish.co.uk>
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -65,7 +65,7 @@ ne_ssl_certificate *ne_ssl_cert_import(const char *data);
 
 /* Returns the identity of the certificate, or NULL if none is given.
  * For a server certificate this will be the hostname of the server to
- * whom the cert was issued. */
+ * whom the cert was issued.  String returned is UTF-8-encoded. */
 const char *ne_ssl_cert_identity(const ne_ssl_certificate *cert);
 
 /* Return the certificate of the entity which signed certificate
@@ -114,8 +114,8 @@ ne_ssl_client_cert *ne_ssl_clicert_read(const char *filename);
 
 /* Returns the "friendly name" given for the client cert, or NULL if
  * none given.  This can be called before or after the client cert has
- * been decrypted.  Returns a NUL-terminated string. */
-const char *ne_ssl_clicert_name(ne_ssl_client_cert *ccert);
+ * been decrypted.  Returns a NUL-terminated, UTF-8-encoded string. */
+const char *ne_ssl_clicert_name(const ne_ssl_client_cert *ccert);
 
 /* Returns non-zero if client cert is encrypted. */
 int ne_ssl_clicert_encrypted(const ne_ssl_client_cert *ccert);
@@ -133,14 +133,31 @@ const ne_ssl_certificate *ne_ssl_clicert_owner(const ne_ssl_client_cert *ccert);
 /* Deallocate memory associated with a client certificate. */
 void ne_ssl_clicert_free(ne_ssl_client_cert *ccert);
 
-/* An SSL context; only necessary when interfacing with ne_socket.h. */
+
+/* SSL context object.  The interfaces to manipulate an SSL context
+ * are only needed when interfacing directly with ne_socket.h. */
 typedef struct ne_ssl_context_s ne_ssl_context;
 
-/* Create an SSL context. */
-ne_ssl_context *ne_ssl_context_create(void);
+/* Context creation modes: */
+#define NE_SSL_CTX_CLIENT (0) /* client context */
+#define NE_SSL_CTX_SERVER (1) /* default server context */
+#define NE_SSL_CTX_SERVERv2 (2) /* SSLv2-specific server context */
 
-/* Trust the given certificate 'cert' in context 'ctx'. */
-void ne_ssl_ctx_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cert);
+/* Create an SSL context. */
+ne_ssl_context *ne_ssl_context_create(int mode);
+
+/* Client mode: trust the given certificate 'cert' in context 'ctx'. */
+void ne_ssl_context_trustcert(ne_ssl_context *ctx, const ne_ssl_certificate *cert);
+
+/* Server mode: use given cert and key (filenames to PEM certificates). */
+int ne_ssl_context_keypair(ne_ssl_context *ctx,
+                           const char *cert, const char *key);
+
+/* Server mode: set client cert verification options: required is non-zero if 
+ * a client cert is required, if ca_names is non-NULL it is a filename containing
+ * a set of PEM certs from which CA names are sent in the ccert request. */
+int ne_ssl_context_set_verify(ne_ssl_context *ctx, int required,
+                              const char *ca_names, const char *verify_cas);
 
 /* Destroy an SSL context. */
 void ne_ssl_context_destroy(ne_ssl_context *ctx);

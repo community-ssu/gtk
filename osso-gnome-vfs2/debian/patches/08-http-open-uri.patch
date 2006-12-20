@@ -1,0 +1,27 @@
+? compile
+? gnome-vfs-zip
+Index: imported/neon/ne_request.c
+===================================================================
+RCS file: /cvs/gnome/gnome-vfs/imported/neon/ne_request.c,v
+retrieving revision 1.1.1.3
+diff -u -r1.1.1.3 ne_request.c
+--- imported/neon/ne_request.c	26 Nov 2005 10:46:49 -0000	1.1.1.3
++++ imported/neon/ne_request.c	6 Oct 2006 13:35:26 -0000
+@@ -1332,6 +1332,17 @@
+     for (rdr = req->body_readers; rdr != NULL; rdr=rdr->next) {
+ 	rdr->use = rdr->accept_response(rdr->userdata, req, st);
+     }
++
++    if (st->code == 404) {
++       /* We close the connection here because otherwise if a
++        * consequent gnome_vfs_open_uri() is called then the socket
++        * is still open with the http content and the the header read
++        * picks up the first line of the last request's content. The
++        * other way around this I guess would be to read the content
++        * and leave the connection open.
++        */
++        ne_close_connection(req->session);
++    }
+     
+     return NE_OK;
+ }

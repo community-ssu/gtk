@@ -4,16 +4,16 @@
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs-mime-monitor.h>
 
-void mime_cache_info_reload (void);
+static void mime_cache_info_reload (void);
 
-gpointer foo (const char *mime_type);
+static gpointer foo (const char *mime_type);
 
-void mime_cache_info_reload (void)
+static void mime_cache_info_reload (void)
 {
         g_print ("mime cache reloaded...\n");
 }
 
-gpointer foo (const char *mime_type) {
+static gpointer foo (const char *mime_type) {
         GList *desktop_file_apps, *tmp; 
 
         while (1) {
@@ -33,8 +33,6 @@ gpointer foo (const char *mime_type) {
                 }
                 g_usleep (1000000);
         }
-
-        return NULL;
 }
 
 int main (int argc, char **argv)

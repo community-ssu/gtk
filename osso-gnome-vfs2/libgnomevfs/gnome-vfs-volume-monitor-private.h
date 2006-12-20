@@ -26,15 +26,7 @@
 
 #include <glib/gthread.h>
 #include "gnome-vfs-volume-monitor.h"
-
-#ifndef USE_DBUS_DAEMON
-#include "GNOME_VFS_Daemon.h"
-#else
-#ifndef DBUS_API_SUBJECT_TO_CHANGE
-#define DBUS_API_SUBJECT_TO_CHANGE
-#endif
-#include <dbus/dbus-glib-lowlevel.h>
-#endif
+#include <dbus/dbus.h>
 
 #define CONNECTED_SERVERS_DIR "/desktop/gnome/connected_servers"
 
@@ -58,6 +50,7 @@ struct _GnomeVFSVolumePrivate {
 	char *activation_uri;
 	char *filesystem_type;
 	char *display_name;
+	char *display_name_key;
 	char *icon;
 	
 	gboolean is_user_visible;
@@ -87,28 +80,27 @@ struct _GnomeVFSDrivePrivate {
 	
 	char *activation_uri;
 	char *display_name;
+	char *display_name_key;
 	char *icon;
 	
 	gboolean is_user_visible;
 	gboolean is_connected;
 
-	/* RH: is this needed upstream? */
-	gboolean is_vfs_drive;
-
 	/* Only for HAL devices: */
 	char *hal_udi;
 	char *hal_drive_udi; /* only available to daemon; not exported */
+	char *hal_backing_crypto_volume_udi; /* only available to daemon; not exported */
 
 	gboolean must_eject_at_unmount;
 };
 
-void _gnome_vfs_volume_set_drive                (GnomeVFSVolume        *volume,
+void gnome_vfs_volume_set_drive_private         (GnomeVFSVolume        *volume,
 						 GnomeVFSDrive         *drive);
-void _gnome_vfs_drive_add_mounted_volume        (GnomeVFSDrive         *drive,
+void gnome_vfs_drive_add_mounted_volume_private (GnomeVFSDrive         *drive,
 						 GnomeVFSVolume        *volume);
-void _gnome_vfs_drive_remove_volume             (GnomeVFSDrive         *drive,
+void gnome_vfs_drive_remove_volume_private      (GnomeVFSDrive         *drive,
 						 GnomeVFSVolume        *volume);
-void _gnome_vfs_volume_unset_drive              (GnomeVFSVolume        *volume,
+void gnome_vfs_volume_unset_drive_private       (GnomeVFSVolume        *volume,
 						 GnomeVFSDrive         *drive);
 void _gnome_vfs_volume_monitor_mounted          (GnomeVFSVolumeMonitor *volume_monitor,
 						 GnomeVFSVolume        *volume);
@@ -129,16 +121,14 @@ void _gnome_vfs_volume_monitor_shutdown (void);
 
 int _gnome_vfs_device_type_get_sort_group (GnomeVFSDeviceType type);
 
-#ifndef USE_DBUS_DAEMON
-void            gnome_vfs_volume_to_corba   (GnomeVFSVolume         *volume,
-					     GNOME_VFS_Volume       *corba_volume);
-GnomeVFSVolume *_gnome_vfs_volume_from_corba (const GNOME_VFS_Volume *corba_volume,
-					      GnomeVFSVolumeMonitor  *volume_monitor);
-void            gnome_vfs_drive_to_corba    (GnomeVFSDrive          *drive,
-					     GNOME_VFS_Drive        *corba_drive);
-GnomeVFSDrive * _gnome_vfs_drive_from_corba  (const GNOME_VFS_Drive  *corba_drive,
-					      GnomeVFSVolumeMonitor  *volume_monitor);
-#endif
+GnomeVFSVolume *_gnome_vfs_volume_from_dbus (DBusMessageIter       *iter,
+					     GnomeVFSVolumeMonitor *volume_monitor);
+gboolean        gnome_vfs_volume_to_dbus    (DBusMessageIter       *iter,
+					     GnomeVFSVolume        *volume);
+gboolean        gnome_vfs_drive_to_dbus     (DBusMessageIter       *iter,
+					     GnomeVFSDrive         *drive);
+GnomeVFSDrive * _gnome_vfs_drive_from_dbus  (DBusMessageIter       *iter,
+					     GnomeVFSVolumeMonitor *volume_monitor);
 
 GnomeVFSVolume *_gnome_vfs_volume_monitor_find_mtab_volume_by_activation_uri (GnomeVFSVolumeMonitor *volume_monitor,
 									      const char            *activation_uri);
@@ -166,43 +156,12 @@ GnomeVFSDrive *_gnome_vfs_volume_monitor_find_drive_by_device_path   (GnomeVFSVo
 								      const char            *device_path);
 
 
-GnomeVFSDrive * _gnome_vfs_volume_monitor_find_vfs_drive_by_activation_uri (GnomeVFSVolumeMonitor *volume_monitor,
-									    const char            *activation_uri);
-
-GnomeVFSVolume * _gnome_vfs_volume_monitor_find_vfs_volume_by_activation_uri (GnomeVFSVolumeMonitor *volume_monitor,
-									      const char            *activation_uri);
 
 char *_gnome_vfs_volume_monitor_uniquify_volume_name (GnomeVFSVolumeMonitor *volume_monitor,
 						      const char            *name);
 char *_gnome_vfs_volume_monitor_uniquify_drive_name  (GnomeVFSVolumeMonitor *volume_monitor,
 						      const char            *name);
 
-#ifdef USE_DBUS_DAEMON
 
-/*
- * DBUS daemon support functions.
- */
-
-GnomeVFSVolume * _gnome_vfs_volume_dbus_message_iter_get    (DBusMessageIter       *dict,
-							     GnomeVFSVolumeMonitor *volume_monitor);
-gboolean         _gnome_vfs_volume_dbus_message_iter_append (DBusMessageIter       *iter,
-							     GnomeVFSVolume        *volume);
-
-gboolean         _gnome_vfs_dbus_utils_append_volume        (DBusMessageIter       *iter,
-							     GnomeVFSVolume        *volume);
-GnomeVFSVolume * _gnome_vfs_dbus_utils_get_volume           (DBusMessageIter       *dict,
-							     GnomeVFSVolumeMonitor *volume_monitor);
-
-gboolean         _gnome_vfs_dbus_utils_append_drive         (DBusMessageIter       *iter,
-							     GnomeVFSDrive         *drive);
-GnomeVFSDrive *  _gnome_vfs_dbus_utils_get_drive            (DBusMessageIter       *dict,
-							     GnomeVFSVolumeMonitor *volume_monitor);
-
-GList * _gnome_vfs_dbus_utils_get_drives (DBusConnection        *conn,
-					  GnomeVFSVolumeMonitor *volume_monitor);
-GList * _gnome_vfs_dbus_utils_get_volumes (DBusConnection        *conn,
-					   GnomeVFSVolumeMonitor *volume_monitor);
-
-#endif
 
 #endif /* GNOME_VFS_VOLUME_MONITOR_PRIVATE_H */

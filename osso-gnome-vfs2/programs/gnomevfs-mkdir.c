@@ -24,6 +24,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "authentication.c"
+
 static GnomeVFSResult
 make_directory_with_parents_for_uri (GnomeVFSURI * uri,
 		guint perm)
@@ -88,8 +90,6 @@ main (int argc, char *argv[])
 	GnomeVFSResult result;
 	gboolean with_parents;
 
-	gnome_vfs_init ();
-
 	if (argc > 1) {
 		if (strcmp (argv[1], "-p") == 0) {
 			directory = argv[2];
@@ -103,6 +103,13 @@ main (int argc, char *argv[])
 		fprintf (stderr, "   -p: Create parents of the directory if needed\n");
 		return 0;
 	}
+
+	if (!gnome_vfs_init ()) {
+		fprintf (stderr, "Cannot initialize gnome-vfs.\n");
+		return 1;
+	}
+
+	command_line_authentication_init ();
 
 	text_uri = gnome_vfs_make_uri_from_shell_arg (directory);
 

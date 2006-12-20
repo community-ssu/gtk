@@ -16,7 +16,7 @@ SCAN_OPTIONS=--deprecated-guards="GNOME_VFS_DISABLE_DEPRECATED"
 DOC_SOURCE_DIR=../libgnomevfs
 
 # Extra options to supply to gtkdoc-mkdb
-MKDB_OPTIONS=--output-format=xml
+MKDB_OPTIONS=--sgml-mode --output-format=xml
 
 # Extra options to supply to gtkdoc-fixref
 FIXXREF_OPTIONS=
@@ -25,22 +25,21 @@ FIXXREF_OPTIONS=
 HFILE_GLOB=$(top_srcdir)/libgnomevfs/*.h
 CFILE_GLOB=$(top_srcdir)/libgnomevfs/*.c
 
-
-
-
 # Headers to ignore
 IGNORE_HFILES=					\
 	GNOME_VFS_Daemon.h			\
 	gnome-vfs-async-job-map.h		\
 	gnome-vfs-backend.h			\
 	gnome-vfs-cancellable-ops.h		\
+	gnome-vfs-cdrom.h			\
 	gnome-vfs-client.h			\
 	gnome-vfs-client-call.h			\
 	gnome-vfs-cancellation-private.h	\
 	gnome-vfs-configuration.h		\
 	gnome-vfs-daemon-method.h		\
+	gnome-vfs-hal-mounts.h			\
 	gnome-vfs-handle-private.h		\
-	gnome-vfs-i18n.h			\
+	gnome-vfs-iso9660.h			\
 	gnome-vfs-job-queue.h			\
 	gnome-vfs-job-slave.h			\
 	gnome-vfs-job.h				\
@@ -56,7 +55,16 @@ IGNORE_HFILES=					\
 	gnome-vfs-process.h			\
 	gnome-vfs-pthread.h			\
 	gnome-vfs-ssl-private.h			\
-	gnome-vfs-thread-pool.h
+	gnome-vfs-thread-pool.h			\
+	gnome-vfs-unix-mounts.h			\
+	gnome-vfs-volume-monitor-private.h	\
+	xdgmime.h				\
+	xdgmimecache.h				\
+	xdgmimeglob.h				\
+	xdgmimemagic.h				\
+	xdgmimeint.h				\
+	xdgmimealias.h				\
+	xdgmimeparent.h				\
 	$(NULL)
 
 # Images to copy into HTML directory
@@ -66,8 +74,7 @@ HTML_IMAGES =
 content_files = 		\
 	writing-modules.sgml 	\
 	about.sgml  		\
-	version.xml		\
-	dbus-protocol.txt
+	version.xml
 
 extra_files = version.xml.in
 

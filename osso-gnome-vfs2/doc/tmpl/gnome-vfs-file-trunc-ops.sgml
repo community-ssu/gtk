@@ -2,17 +2,22 @@
 Truncating Files
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Force files to a particular length
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+Truncation of files is used to force them to a particular length.
+If a file longer than specified, the trailing bytes are discarded,
+if it is shorter than specified it is padded with zeros.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### FUNCTION gnome_vfs_truncate ##### -->
 <para>

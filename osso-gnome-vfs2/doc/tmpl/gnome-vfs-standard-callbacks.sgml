@@ -14,80 +14,147 @@ standard callbacks for use by gnome-vfs module writers
 
 </para>
 
-<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION ##### -->
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_FILL_AUTHENTICATION ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_PROXY_AUTHENTICATION ##### -->
+<!-- ##### STRUCT GnomeVFSModuleCallbackFillAuthenticationIn ##### -->
 <para>
 
 </para>
 
-
-
-<!-- ##### STRUCT GnomeVFSModuleCallbackAuthenticationOut ##### -->
-<para>
-
-</para>
-
+@uri: 
+@protocol: 
+@server: 
+@object: 
+@port: 
+@authtype: 
 @username: 
+@domain: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackFillAuthenticationOut ##### -->
+<para>
+
+</para>
+
+@valid: 
+@username: 
+@domain: 
 @password: 
-@reserved1: 
-@reserved2: 
 
-<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_SEND_ADDITIONAL_HEADERS ##### -->
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### STRUCT GnomeVFSModuleCallbackAdditionalHeadersIn ##### -->
+<!-- ##### ENUM GnomeVFSModuleCallbackFullAuthenticationFlags ##### -->
 <para>
 
 </para>
 
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_PREVIOUS_ATTEMPT_FAILED: 
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_NEED_PASSWORD: 
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_NEED_USERNAME: 
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_NEED_DOMAIN: 
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_SAVING_SUPPORTED: 
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_ANON_SUPPORTED: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackFullAuthenticationIn ##### -->
+<para>
+
+</para>
+
+@flags: 
 @uri: 
-@reserved1: 
-@reserved2: 
+@protocol: 
+@server: 
+@object: 
+@port: 
+@authtype: 
+@username: 
+@domain: 
+@default_user: 
+@default_domain: 
 
-<!-- ##### STRUCT GnomeVFSModuleCallbackAdditionalHeadersOut ##### -->
+<!-- ##### STRUCT GnomeVFSModuleCallbackFullAuthenticationOut ##### -->
 <para>
 
 </para>
 
-@headers: 
-@reserved1: 
-@reserved2: 
+@abort_auth: 
+@username: 
+@domain: 
+@password: 
+@save_password: 
+@keyring: 
+@out_flags: 
 
-<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_RECEIVED_HEADERS ##### -->
+<!-- ##### ENUM GnomeVFSModuleCallbackFullAuthenticationOutFlags ##### -->
+<para>
+
+</para>
+
+@GNOME_VFS_MODULE_CALLBACK_FULL_AUTHENTICATION_OUT_ANON_SELECTED: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_SAVE_AUTHENTICATION ##### -->
 <para>
 
 </para>
 
 
 
-<!-- ##### STRUCT GnomeVFSModuleCallbackReceivedHeadersIn ##### -->
+<!-- ##### STRUCT GnomeVFSModuleCallbackSaveAuthenticationIn ##### -->
 <para>
 
 </para>
 
+@keyring: 
 @uri: 
-@headers: 
-@reserved1: 
-@reserved2: 
+@protocol: 
+@server: 
+@object: 
+@port: 
+@authtype: 
+@username: 
+@domain: 
+@password: 
 
-<!-- ##### STRUCT GnomeVFSModuleCallbackReceivedHeadersOut ##### -->
+<!-- ##### STRUCT GnomeVFSModuleCallbackSaveAuthenticationOut ##### -->
 <para>
 
 </para>
 
-@dummy: 
-@reserved1: 
-@reserved2: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_QUESTION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackQuestionIn ##### -->
+<para>
+
+</para>
+
+@primary_message: 
+@secondary_message: 
+@choices: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackQuestionOut ##### -->
+<para>
+
+</para>
+
+@answer: 
 
 <!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_STATUS_MESSAGE ##### -->
 <para>
@@ -104,8 +171,6 @@ standard callbacks for use by gnome-vfs module writers
 @uri: 
 @message: 
 @percentage: 
-@reserved1: 
-@reserved2: 
 
 <!-- ##### STRUCT GnomeVFSModuleCallbackStatusMessageOut ##### -->
 <para>
@@ -113,6 +178,87 @@ standard callbacks for use by gnome-vfs module writers
 </para>
 
 @dummy: 
-@reserved1: 
-@reserved2: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_SEND_ADDITIONAL_HEADERS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAdditionalHeadersIn ##### -->
+<para>
+
+</para>
+
+@uri: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAdditionalHeadersOut ##### -->
+<para>
+
+</para>
+
+@headers: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_RECEIVED_HEADERS ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackReceivedHeadersIn ##### -->
+<para>
+
+</para>
+
+@uri: 
+@headers: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackReceivedHeadersOut ##### -->
+<para>
+
+</para>
+
+@dummy: 
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_AUTHENTICATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO GNOME_VFS_MODULE_CALLBACK_HTTP_PROXY_AUTHENTICATION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### ENUM GnomeVFSModuleCallbackAuthenticationAuthType ##### -->
+<para>
+
+</para>
+
+@AuthTypeBasic: 
+@AuthTypeDigest: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAuthenticationIn ##### -->
+<para>
+
+</para>
+
+@uri: 
+@realm: 
+@previous_attempt_failed: 
+@auth_type: 
+
+<!-- ##### STRUCT GnomeVFSModuleCallbackAuthenticationOut ##### -->
+<para>
+
+</para>
+
+@username: 
+@password: 
 

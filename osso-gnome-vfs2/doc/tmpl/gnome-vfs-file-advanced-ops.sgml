@@ -1,18 +1,24 @@
 <!-- ##### SECTION Title ##### -->
-Advanced File Operations
+Backend-Specific Operations
 
 <!-- ##### SECTION Short_Description ##### -->
-
+Execute backend-specific operations
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-   
+  Advanced file operations allow you to execute backend-specific commands.
+  Currently, none of the #GnomeVFSModules shipped with GnomeVFS includes
+  useful operations, but they allow sophisticated module-specific code
+  that can not be added to GnomeVFS because it would break abstraction.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
 
 </para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
 
 <!-- ##### FUNCTION gnome_vfs_file_control ##### -->
 <para>
@@ -22,17 +28,6 @@ Advanced File Operations
 @handle: 
 @operation: 
 @operation_data: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gnome_vfs_forget_cache ##### -->
-<para>
-
-</para>
-
-@handle: 
-@offset: 
-@size: 
 @Returns: 
 
 
