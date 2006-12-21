@@ -1,6 +1,7 @@
 2006-12-21  Richard Hult  <richard@imendio.com>
 
-	* configure.in: 
+	* configure.in: Require GnomeVFS 2.16.3.
+
 	* Makefile.am: 
 	* file-module: Remove file-module, since it lives in GnomeVFS
 	now (caseless file module).

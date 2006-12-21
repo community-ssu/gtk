@@ -1,3 +1,10 @@
+osso-gnomevfs-extra (1.9.0-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Start new development branch
+
+ -- Richard Hult <richard@imendio.com>  Thu, 21 Dec 2006 09:49:20 +0100
+
 osso-gnomevfs-extra (1.8.1-2) unstable; urgency=low
 
   * Fixes: M819, Added osso-uri-l10n-mr as an alternative of osso-uri-l10n-mr0
