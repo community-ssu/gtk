@@ -46,6 +46,7 @@ GNOME_VFS_REQUIRED=2.16.3
 DBUS_REQUIRED=0.60
 GLIB_REQUIRED=2.6.0
 GTK_REQUIRED=2.6.0
+LIBXML_REQUIRED=2.4
 
 dnl =======================================
 dnl libossomime
@@ -89,4 +90,5 @@ AC_OUTPUT([
         libossomime/Makefile
         tests/Makefile
         data/Makefile
+	docs/Makefile
 ])
