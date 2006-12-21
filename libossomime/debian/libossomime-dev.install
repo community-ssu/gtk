@@ -1,0 +1,4 @@
+usr/lib/libossomime.so
+usr/lib/libossomime.la
+usr/lib/pkgconfig/libossomime.pc
+usr/include/*.h

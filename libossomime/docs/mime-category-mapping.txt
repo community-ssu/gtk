@@ -1,0 +1,99 @@
+MIME/Category Mapping
+=====================
+
+Note: This document assumes familiarity with adding MIME types to the
+system, using the shared-mime-info specification. The specification can
+be found at:
+
+  http://standards.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-0.13.html
+
+
+The platform has a notion of file categories for the user's data
+files. The available categories are:
+
+ * Bookmarks 	
+ * Contacts 	
+ * Documents 	
+ * Emails 	
+ * Images 	
+ * Audio 	
+ * Video 	
+ * Other
+
+A mapping is setup between categories and MIME types, so that the MIME
+type of a file decides which category it is in. The MIME type setup is
+handled by the shared-mime-info infrastructure, and the category
+information is added to that same framework.
+
+There is also a category API in libossomime that is used to get the
+category of a certain MIME type and a list of MIME types in a certain
+category.
+
+See the API documentation for libossomime for more details on this.
+
+
+Adding mappings
+---------------
+
+Adding a mapping between a category and a number of MIME types is done
+much like adding or editing the supported MIME types in the system.
+
+Each application or library that adds a category mapping should add a
+file in:
+
+  /usr/share/mime/packages/
+
+The file format is the same XML format used for MIME types, with an
+added tag "<osso:category>". An example follows:
+
+
+  <mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info"
+             xmlns:osso="http://nokia.com/osso/mime-categories">
+
+    <mime-type type="application/pdf">
+      <osso:category name="documents"/>
+    </mime-type>
+
+    <mime-type type="image/jpeg">
+      <osso:category name="images"/>
+    </mime-type>
+
+    <mime-type type="image/png">
+      <osso:category name="images"/>
+    </mime-type>
+
+  </mime-info>
+
+
+The example sets up three mappings, between PDF files and the Document
+category, and between JPEG and PNG images and the Images category.
+
+The valid category names are:
+
+  audio, bookmarks, contacts, documents, emails, images, video
+
+MIME types that does not have a category set up automatically are
+treated as members in the category Other.
+
+If the application also adds the MIME type in question, the MIME
+information and category information can be put in the same file:
+
+
+    <mime-type type="image/png">
+      <comment>PNG image</comment>
+      <magic priority="50">
+        <match value="\x89PNG" type="string" offset="0"/>
+      </magic>
+      <glob pattern="*.png"/>
+      <osso:category name="images"/>
+    </mime-type>
+
+
+As when adding MIME types, a special program needs to be run to update
+the MIME information:
+
+  osso-update-category-database /usr/share/mime
+
+Like update-mime-database, this is usually done in the post-inst phase
+in a Debian package, in addition to "make install" in the makefile
+target.
