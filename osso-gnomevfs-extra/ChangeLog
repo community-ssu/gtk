@@ -1,3 +1,10 @@
+2006-12-21  Richard Hult  <richard@imendio.com>
+
+	* configure.in: 
+	* Makefile.am: 
+	* file-module: Remove file-module, since it lives in GnomeVFS
+	now (caseless file module).
+
 2006-10-26  Richard Hult  <richard@imendio.com>
 
 	* file-module/src/dbus-file-method.c: (do_create): Don't use

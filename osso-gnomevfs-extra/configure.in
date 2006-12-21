@@ -391,9 +391,6 @@ AC_OUTPUT([
 	file-chooser/Makefile
 	file-chooser/src/Makefile
 	file-chooser/tests/Makefile
-	file-module/Makefile
-	file-module/src/Makefile
-	file-module/tests/Makefile
         libossomime/Makefile
         libossomime/libossomime.pc
         libossomime/data/Makefile
@@ -409,5 +406,3 @@ AC_OUTPUT([
 	obex-utils/tests/invalid-files/Makefile
 	obex-utils/obex-vfs-utils.pc
 ])
-
-#	libossomime/Doxyfile
