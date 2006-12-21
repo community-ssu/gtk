@@ -1,3 +1,47 @@
+2006-12-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Make hildon-fm compile with Gtk+ 2.10.  (Gtk+ 2.6 is broken now.
+	Stay tuned.)
+	
+	* hildon-fm/hildon-file-system-info.c: Rewritten to be
+	asynchronous.
+
+	* hildon-fm/hildon-file-chooser-dialog.c: Removed literal copy of
+	GtkFileChooserIFace et al for Gtk+ 2.10.  Include
+	<gtk/gtkfilechooserutils.h> instead.
+	(chooser_entry_invalid_input_cb, hildon_file_chooser_dialog_init):
+	Do not use "invalid-input" signal for Gtk+ 2.10.
+	(set_stub_and_ext): Do not ask the filesystem for the is_folder
+	attribute for now.
+	(create_folder_callback, handle_folder_popup): Use the
+	asynchronous version of gtk_file_system_create_folder.
+	
+	* hildon-fm/hildon-file-selection.c: Do not use the tap&hold
+	machinery since it is not in Gtk+ 2.10 yet.
+	(hildon_file_selection_selection_changed): Expect
+	_hildon_file_system_mount_device_iter to return immediately
+	without useful error information.
+	(thumbnail_data_func): Do not call gtk_style_lookup_logical_color
+	for Gtk 2.10 since it doesn't exist there.
+
+	* hildon-fm/hildon-file-system-model.h,
+	hildon-fm/hildon-file-system-model.c
+	(get_folder_callback): New, factored out of link_folder.
+	(link_folder): Made asynchronous by using new asynchronous
+	gtk_file_system_get_folder call. Removed 'error' argument, updated
+	all callers.
+	(_hildon_file_system_mount_device_iter): Removed 'error' argument,
+	updated all callers.
+
+	* hildon-fm/hildon-file-system-private.c
+	(hildon_file_system_create_backend): Use gtk_file_system_create
+	instead of hildon_gtk_file_system_create for Gtk 2.10.
+
+	* hildon-fm/hildon-file-system-private.h
+	(_hildon_file_system_create_image): Replace 'path' argument with
+	'info' and use gtk_file_info_render_icon instead of
+	gtk_file_system_render_icon.  Updated all callers.
+
 2006-12-19  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* configure.ac: Added --with-gtk-2-10 argument for the Gtk+

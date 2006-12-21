@@ -181,8 +181,7 @@ GtkFileSystem
                                                model);
 gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
                                                      * model,
-                                                     GtkTreeIter * iter,
-                                                     GError ** error);
+                                                     GtkTreeIter * iter);
 
 void _hildon_file_system_model_prioritize_folder(HildonFileSystemModel *model,
                                                  GtkTreeIter *folder_iter);

@@ -25,8 +25,19 @@
   * HildonFileChooserDialog widget
   */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #define _GNU_SOURCE  /* To get the GNU version of basename. */
 #include <string.h>
+
+#if WITH_GTK_2_10
+#define GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
+#define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
+#include <gtk/gtkfilechooserutils.h>
+#include <gtk/gtkfilesystem.h>
+#endif
 
 #include "hildon-file-selection.h"
 #include "hildon-file-chooser-dialog.h"
@@ -52,6 +63,7 @@
 
 #include "hildon-file-common-private.h"
 #define HILDON_RESPONSE_FOLDER_BUTTON 12345
+#define HILDON_RESPONSE_FOLDER_CREATED 54321
 /* Common height for filetrees. About 8 lines. Filetree sets default margins, 
     so we need to take them into account. See #9962. */
 #define FILE_SELECTION_HEIGHT (8 * 30 + 2 * HILDON_MARGIN_DEFAULT)  
@@ -59,6 +71,8 @@
                                            mode */
 #define FILE_SELECTION_WIDTH_TOTAL 590  /* Width for full filetree (both
                                            content and navigation pane) */
+
+#if !WITH_GTK_2_10
 
 /* Copy paste from gtkfilechooserprivate.h to make implementation of
    file chooser interface possible */
@@ -119,6 +133,12 @@ typedef enum {
     GTK_FILE_CHOOSER_PROP_LAST = GTK_FILE_CHOOSER_PROP_SHOW_HIDDEN
 } GtkFileChooserProp;
 
+/* CopyPaste ends */
+
+#endif /* !WITH_GTK_2_10 */
+
+void hildon_gtk_file_chooser_install_properties(GObjectClass * klass);
+
 enum {
     PROP_EMPTY_TEXT = 0x2000,
     PROP_FILE_SYSTEM_MODEL,
@@ -130,10 +150,6 @@ enum {
     PROP_MAX_NAME_LENGTH,
     PROP_MAX_FULL_PATH_LENGTH
 };
-
-void hildon_gtk_file_chooser_install_properties(GObjectClass * klass);
-
-/* CopyPaste ends */
 
 struct _HildonFileChooserDialogPrivate {
     GtkWidget *action_button;
@@ -154,6 +170,7 @@ struct _HildonFileChooserDialogPrivate {
     gint max_filename_length;
     gboolean popup_protect;
     gchar *infobanner_message;
+    GtkFileSystemHandle *create_folder_handle;
 
     /* Popup menu contents */
     GtkWidget *sort_type, *sort_name, *sort_date, *sort_size;
@@ -209,6 +226,9 @@ unescape_character (const char *scanner)
   return (first_digit << 4) | second_digit;
 }
 
+#if !WITH_GTK_2_10
+/* XXX - Is the "invalid-input" signal supported in Gtk+ 2.10?
+ */
 static void chooser_entry_invalid_input_cb (GtkEntry *entry,
                                             GtkInvalidInputType inv_type,
                                             gpointer user_data)
@@ -219,6 +239,7 @@ static void chooser_entry_invalid_input_cb (GtkEntry *entry,
 				    HCS("ckdg_ib_maximum_characters_reached"));
   }
 }
+#endif
 
 static gchar *
 g_unescape_uri_string (const char *escaped,
@@ -504,6 +525,10 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
 
 	  is_folder = FALSE;
 
+#if !WITH_GTK_2_10
+	  /* XXX - Do it asyncronously for Gtk+ 2.10.
+	   */
+
 	  if (priv->model)
 	    {
 	      GtkFileSystem *filesystem =
@@ -543,6 +568,7 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
 		    }
 		}
 	    }
+#endif
 	}
     }
   else
@@ -1123,10 +1149,46 @@ static GtkWidget
     return dialog;
 }
 
+static void create_folder_callback(GtkFileSystemHandle *handle, 
+    const GtkFilePath *path, const GError *error, gpointer data)
+{
+    HildonFileChooserDialog *self;
+    GtkDialog *dialog;
+    const gchar *message;
+
+    g_assert(HILDON_IS_FILE_CHOOSER_DIALOG(data));
+    self = HILDON_FILE_CHOOSER_DIALOG(data);
+    g_assert(self->priv->create_folder_handle == handle);
+
+    self->priv->create_folder_handle = NULL;
+    dialog = GTK_DIALOG(self);
+
+    if (error) {
+        if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,  
+              GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
+            message = _("ckdg_ib_folder_already_exists");
+        else
+            message = _("sfil_ni_operation_failed");
+
+        ULOG_ERR(error->message);
+        gtk_infoprint(GTK_WINDOW(self), message);
+        hildon_file_chooser_dialog_select_text(self->priv);
+        gtk_dialog_set_response_sensitive(dialog, GTK_RESPONSE_OK, TRUE);
+    } else {
+        /* Fake response to close the dialog after folder is created */
+        gtk_dialog_response(dialog, HILDON_RESPONSE_FOLDER_CREATED);
+    }
+
+    /* This reference was added while setting up the callback */
+    g_object_unref(self);
+}
+
+
 static void handle_folder_popup(HildonFileChooserDialog *self)
 {
   GtkFileSystem *backend;
   GtkWidget *dialog;
+  gint response;
 
   g_return_if_fail(HILDON_IS_FILE_CHOOSER_DIALOG(self));
 
@@ -1152,52 +1214,53 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
 
   if (self->priv->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER)
   {
+    GtkFilePath *file_path = NULL;
+
     dialog = hildon_file_chooser_dialog_create_sub_dialog(self,
                GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER);
 
-    while (gtk_dialog_run(GTK_DIALOG(dialog)) == GTK_RESPONSE_OK)
+    while ((response = gtk_dialog_run(GTK_DIALOG(dialog))) == GTK_RESPONSE_OK)
     {
-      GtkFilePath *file_path;
-      gboolean success;
-      GError *error = NULL;
-      const gchar *message;
       gchar *uri;
 
       uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(dialog));
       ULOG_INFO_F("About to create folder %s", uri);
 
-      file_path = gtk_file_system_uri_to_path(backend, uri);
-      success = gtk_file_system_create_folder(backend, file_path, &error);
-      gtk_file_path_free(file_path);
+      if (file_path)
+        gtk_file_path_free(file_path);
 
-      if (success) 
-      {
-        gtk_file_chooser_set_current_folder_uri(GTK_FILE_CHOOSER(self), uri);
-        g_free(uri);
-        break;
-      }
+      file_path = gtk_file_system_uri_to_path(backend, uri);
+
+      /* There shouldn't be a way to invoke two simultaneous folder
+         creating actions */
+      g_assert(self->priv->create_folder_handle == NULL);
+
+      /* Callback is quaranteed to be called, it unrefs the object data */
+      self->priv->create_folder_handle = 
+	gtk_file_system_create_folder (backend, file_path, 
+				       create_folder_callback,
+				       g_object_ref(dialog));
 
       g_free(uri);
-      g_assert(error != NULL);
-      
-      /* GtkFileSystemModelGnomeVFS returns ERROR_FAILED and
-       * GtkFileSystemUnix returns ERROR_NONEXISTENT (!!!) if we try to
-       * create a folder that already exists. We report other errors
-       * normally. GnomeVFS has been changed to return ALREADY EXISTS
-       * accordingly. We now support this only. */
 
-      if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,  
-                          GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
-        message = HCS("ckdg_ib_folder_already_exists");
-      else
-        message = _("sfil_ib_create_folder_not_allowed");
-
-      ULOG_ERR_F("%s", error->message);
-      gtk_infoprint(GTK_WINDOW(dialog), message);
-      g_error_free(error);
-
-      hildon_file_chooser_dialog_select_text(self->priv);
+      /* Make OK button insensitive while folder operation is going */
+      gtk_dialog_set_response_sensitive
+	(GTK_DIALOG(dialog), GTK_RESPONSE_OK, FALSE);
     }
+
+    /* If user cancelled the operation, we still can have handle
+     */
+    if (self->priv->create_folder_handle)
+      gtk_file_system_cancel_operation (self->priv->create_folder_handle);
+
+    /* If we created a folder, change into it */
+    if (response == HILDON_RESPONSE_FOLDER_CREATED)
+      {
+        g_assert(file_path != NULL);
+        hildon_file_chooser_dialog_set_current_folder
+	  (GTK_FILE_CHOOSER(self), file_path, NULL);
+      }
+    gtk_file_path_free(file_path);
   }
   else
   {
@@ -1796,8 +1859,12 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
           g_signal_connect( priv->entry_name, "changed",
 		          G_CALLBACK( hildon_file_chooser_entry_changed ),
 		          self );
+#if !WITH_GTK_2_10
+    /* XXX - Is the "invalid-input" signal supported in Gtk+ 2.10?
+     */
     g_signal_connect(priv->entry_name, "invalid-input",
 		     G_CALLBACK(chooser_entry_invalid_input_cb), self);
+#endif
 
     priv->hbox_location = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
     priv->hbox_items = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);

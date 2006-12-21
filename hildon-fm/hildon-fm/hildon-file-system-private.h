@@ -48,9 +48,11 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs);
 HildonFileSystemSpecialLocation *
 _hildon_file_system_get_special_location(GtkFileSystem *fs, const GtkFilePath *path);
 
-GdkPixbuf *_hildon_file_system_create_image(GtkFileSystem *fs, 
-      GtkWidget *ref_widget, GtkFilePath *path, 
-      HildonFileSystemSpecialLocation *location, gint size);
+GdkPixbuf *_hildon_file_system_create_image (GtkFileSystem *fs, 
+					     GtkWidget *ref_widget,
+					     GtkFileInfo *info, 
+					     HildonFileSystemSpecialLocation *location,
+					     gint size);
 
 gchar *_hildon_file_system_create_file_name(GtkFileSystem *fs, 
   const GtkFilePath *path, HildonFileSystemSpecialLocation *location,  

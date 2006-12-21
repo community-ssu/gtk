@@ -29,6 +29,10 @@
  * applications.
  */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <libintl.h>
 #include <stdlib.h>
 #include <string.h>
@@ -409,9 +413,11 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
 }
 
 GdkPixbuf *
-_hildon_file_system_create_image(GtkFileSystem *fs, 
-      GtkWidget *ref_widget, GtkFilePath *path, 
-      HildonFileSystemSpecialLocation *location, gint size)
+_hildon_file_system_create_image (GtkFileSystem *fs, 
+				  GtkWidget *ref_widget,
+				  GtkFileInfo *info,
+				  HildonFileSystemSpecialLocation *location,
+				  gint size)
 {
     if (!ref_widget)
         return NULL;
@@ -423,7 +429,7 @@ _hildon_file_system_create_image(GtkFileSystem *fs,
         if (pixbuf) return pixbuf;
     }
 
-    return gtk_file_system_render_icon(fs, path, ref_widget, size, NULL);
+    return gtk_file_info_render_icon (info, ref_widget, size, NULL);
 }
 
 static const gchar *get_custom_root_name(const GtkFilePath *path)
@@ -634,7 +640,11 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
         name = default_name;
     }
     if (name) {
-        result = hildon_gtk_file_system_create(name);
+#if WITH_GTK_2_10
+        result = gtk_file_system_create (name);
+#else
+        result = hildon_gtk_file_system_create (name);
+#endif
         if (!GTK_IS_FILE_SYSTEM(result))
             ULOG_WARN("Cannot create \"%s\" backend", name);
     }

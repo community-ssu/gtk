@@ -33,6 +33,10 @@
  *  * This comes also to the last column => Looks wery bad in all trees.
  */
 
+#ifdef HAVE_CONFIG_H
+#include <config.h>
+#endif
+
 #include <gtk/gtk.h>
 #include <glib/gprintf.h>
 #include <gdk/gdkkeysyms.h>
@@ -1580,8 +1584,6 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
 
         GtkTreeIter sort_iter, main_iter;
         GtkTreePath *sort_path;
-        GError *error = NULL;
-        gboolean success;
 
         g_assert(model == priv->dir_filter
           && GTK_IS_TREE_MODEL_FILTER(model));
@@ -1680,18 +1682,18 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
                                                 load_banner_timeout, data);
         }
 
-        /* Force all pending exposes to be handled, so the selection is 
-           redrawn. This hack can be removed once the mount_device_iter 
-           doesn't block any more */
-        gdk_window_process_all_updates();
-
         /* This can invalidate non-persisting iterators, so we need to do
            mounting as last action. */
 	
-        success =
-            _hildon_file_system_model_mount_device_iter
-            (HILDON_FILE_SYSTEM_MODEL(priv->main_model), &main_iter,
-             &error);
+	_hildon_file_system_model_mount_device_iter
+	  (HILDON_FILE_SYSTEM_MODEL(priv->main_model), &main_iter);
+	
+#if 0
+	/* XXX - mount_device_iter is asyncronous and doesn't return
+	         error messages.  We need to find another way to show
+	         that message.
+	*/
+
         if (!success && error)
         {
             char *message;
@@ -1708,6 +1710,7 @@ static void hildon_file_selection_selection_changed(GtkTreeSelection *
             ULOG_ERR("Mount failed (error #%d): %s", error->code, error->message);
             g_error_free(error);
         }
+#endif
 
         gtk_tree_path_free(sort_path);
 
@@ -1951,10 +1954,17 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
      * So this is only for active cells */
     if (sensitive)  
     {
+#if WITH_GTK_2_10
+      /* XXX - gtk_style_lookup_logical_color is not in Gtk+ 2.10.  Is
+               it Hildon specific?  Will it appear in Maemo-Gtk 2.10?
+      */
+      found1 = found2 = FALSE;
+#else
       found1 = gtk_style_lookup_logical_color(GTK_WIDGET(data)->style, 
                                               "DefaultTextColor", &color1);
       found2 = gtk_style_lookup_logical_color(GTK_WIDGET(data)->style, 
-                                              "SecondaryTextColor", &color2);
+					      "SecondaryTextColor", &color2);
+#endif
 
       attrs = pango_attr_list_new();
       bytes1 = strlen(title);
@@ -2057,6 +2067,10 @@ static void list_size_data_func(GtkTreeViewColumn * tree_column,
     g_object_set(cell, "text", buffer, "sensitive", sensitive, NULL);
 }
 
+#if !WITH_GTK_2_10
+/* XXX - the tap-and-hold machinery will eventually appear in
+   Maemo-Gtk 2.10.
+*/
 static void hildon_file_selection_navigation_pane_context(GtkWidget *
                                                           widget,
                                                           gpointer data)
@@ -2073,6 +2087,7 @@ static void hildon_file_selection_content_pane_context(GtkWidget * widget,
     ULOG_DEBUG(__FUNCTION__);
     g_signal_emit(data, signal_content_pane_context_menu, 0);
 }
+#endif
 
 static gboolean hildon_file_selection_on_content_pane_key(GtkWidget *
                                                           widget,
@@ -2221,6 +2236,11 @@ content_pane_focus(GObject *object, GParamSpec *pspec, gpointer data)
   }
 }
 
+#if !WITH_GTK_2_10
+/* XXX - the tap-and-hold machinery will eventually appear in
+   Maemo-Gtk 2.10.
+*/
+
 static gboolean
 tap_and_hold_query (gpointer self, guint signal_id)
 {
@@ -2245,6 +2265,7 @@ navigation_pane_tap_and_hold_query (GtkWidget *widget,
 {
   return tap_and_hold_query (self, signal_navigation_pane_context_menu);
 }
+#endif
 
 static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
                                                         * self)
@@ -2301,6 +2322,10 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
     g_signal_connect_object(tree, "key-press-event",
                      G_CALLBACK(hildon_file_selection_on_content_pane_key),
                      self, 0);
+#if !WITH_GTK_2_10
+    /* XXX - the tap-and-hold machinery will eventually appear in
+             Maemo-Gtk 2.10.
+     */
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(tree), NULL, NULL,
                                   GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
     g_signal_connect_object (tree, "tap-and-hold-query",
@@ -2309,6 +2334,7 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
     g_signal_connect_object(tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_content_pane_context), self, 0);
+#endif
     g_signal_connect_object(tree, "notify::has-focus",
                      G_CALLBACK(content_pane_focus), self, 0);
 }
@@ -2418,6 +2444,12 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
         (selection, "changed",
          G_CALLBACK (hildon_file_selection_content_pane_selection_changed),
          self, 0);
+
+#if !WITH_GTK_2_10
+    /* XXX - the tap-and-hold machinery will eventually appear in
+             Maemo-Gtk 2.10.
+     */
+
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(tree), NULL, NULL,
                                   GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
     g_signal_connect_object (tree, "tap-and-hold-query",
@@ -2426,6 +2458,8 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     g_signal_connect_object(tree, "tap-and-hold",
                      G_CALLBACK
                      (hildon_file_selection_content_pane_context), self, 0);
+#endif
+
     g_signal_connect_object(tree, "key-press-event",
                      G_CALLBACK(hildon_file_selection_on_content_pane_key),
                      self, 0);
@@ -2511,6 +2545,12 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
     g_signal_connect_object(selection, "changed",
                      G_CALLBACK(hildon_file_selection_selection_changed),
                      self, 0);
+
+#if !WITH_GTK_2_10
+    /* XXX - the tap-and-hold machinery will eventually appear in
+             Maemo-Gtk 2.10.
+     */
+
     gtk_widget_tap_and_hold_setup(GTK_WIDGET(self->priv->dir_tree), NULL,
                                   NULL, GTK_TAP_AND_HOLD_NONE | GTK_TAP_AND_HOLD_NO_INTERNALS);
     g_signal_connect_object (self->priv->dir_tree, "tap-and-hold-query",
@@ -2520,6 +2560,8 @@ static void hildon_file_selection_create_dir_view(HildonFileSelection *
                      G_CALLBACK
                      (hildon_file_selection_navigation_pane_context),
                      self, 0);
+#endif
+
     g_signal_connect_object(self->priv->dir_tree, "key-press-event",
                      G_CALLBACK
                      (hildon_file_selection_on_navigation_pane_key), self, 0);
