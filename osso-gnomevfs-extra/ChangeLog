@@ -1,5 +1,8 @@
 2006-12-21  Richard Hult  <richard@imendio.com>
 
+	* obex-utils/obex-vfs-utils/ovu-xfer.h (ovu_async_xfer): Make the
+	comment more clear about the deprecated state of this function.
+
 	* configure.in: Require GnomeVFS 2.16.3.
 
 	* Makefile.am: 

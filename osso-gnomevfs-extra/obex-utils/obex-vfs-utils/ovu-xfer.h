@@ -24,10 +24,10 @@
 #include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
 
-/* This function is a wrapper around gnome_vfs_async_xfer and works exactly like
- * it, but makes it works for OBEX sources/targets as well. Note that this
- * function now only directly calls gnome_vfs_async_xfer, so there is no need to
- * use this function.
+/*
+ * NOTE: This is deprecated and not needed anymore. Don't use this, use
+ * gnome_vfs_async_xfer directly instead.
+ *
  */
 GnomeVFSResult ovu_async_xfer (GnomeVFSAsyncHandle               **handle_return,
 			       GList                              *source_uri_list,
