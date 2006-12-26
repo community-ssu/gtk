@@ -11,10 +11,9 @@ fullfilename=$(PYTHON)-$(filename)
 
 build: build-stamp
 build-stamp:
+	dh_testdir
 	find . -name .DS_Store -exec rm -rf {} \;
 	find [DPTCs]* -type f -exec chmod -x {} \;
-	dh_testdir
-	$(PYTHON) setup.py build
 	touch build-stamp
 
 clean:

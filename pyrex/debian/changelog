@@ -1,3 +1,9 @@
+pyrex (0.9.4.1-1osso2) unstable; urgency=low
+
+  * workaround the _tls assertion bug in package build
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Wed, 20 Dec 2006 13:50:49 -0300
+
 pyrex (0.9.4.1-1osso1) unstable; urgency=low
 
   * fix the package version
