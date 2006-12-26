@@ -31,10 +31,7 @@ class full_clean(clean):
 
 def run(cmd):
     try:
-        p = Popen(' '.join(cmd), shell=True,
-                stdin=PIPE, stdout=PIPE, stderr=PIPE,
-                close_fds=True
-            )
+        p = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, close_fds=True)
     except Exception, e:
         print >>sys.stderr, "ERROR: running %s (%s)" % (' '.join(cmd), e)
         raise SystemExit
@@ -47,12 +44,12 @@ def check_package(names, parms):
     if isinstance(parms, list):
         cmd += parms
     else:
-        cmd.append(parms)
+        cmd += parms.split()
 
     if isinstance(names, list):
         cmd += names
     else:
-        cmd.append(names)
+        cmd += names.split()
 
     output, error = run(cmd)
 

@@ -2,6 +2,7 @@ python-dbus (0.71-1osso2) unstable; urgency=low
 
   * applied the patch in https://bugs.freedesktop.org/show_bug.cgi?id=6943 to
     remove the libxml2 dependency
+  * create a workaround to the missing libfakeroot bug in build process
 
  -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 26 Dec 2006 15:58:48 -0300
 
