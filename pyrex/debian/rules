@@ -23,6 +23,7 @@ clean:
 	rm -rf $(d_base)
 	$(PYTHON) setup.py clean --all
 	find . -name "*.py[co]" -exec rm -rf {} \;
+	find . -name "Makefile" -exec rm -rf {} \;
 	dh_clean
 
 install: build
