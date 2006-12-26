@@ -1,3 +1,10 @@
+python-dbus (0.71-1osso2) unstable; urgency=low
+
+  * applied the patch in https://bugs.freedesktop.org/show_bug.cgi?id=6943 to
+    remove the libxml2 dependency
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 26 Dec 2006 15:58:48 -0300
+
 python-dbus (0.71-1osso1) unstable; urgency=low
 
   * upgraded to python-dbus-0.71 
