@@ -1,3 +1,10 @@
+python2.5 (2.5.0-1osso6) unstable; urgency=low
+
+  * changed "all" to "any" in -dev package (readline.so and other binary
+    modules are platform dependent)
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 27 Dec 2006 10:59:00 -0300
+
 python2.5 (2.5.0-1osso5) unstable; urgency=low
 
   * added "Replaces: python2.4" to the debian/control file

@@ -17,7 +17,7 @@ Description: An interactive high-level object-oriented language
  network programming, system administration, sounds and graphics.
 
 Package: python2.5-dev
-Architecture: all
+Architecture: any
 Depends: python2.5 (= ${Source-Version})
 Conflicts: python2.4-dev
 Description: Header files and a static library for Python (v2.5)
