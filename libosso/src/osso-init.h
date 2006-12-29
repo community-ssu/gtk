@@ -31,9 +31,6 @@
 #include <unistd.h>
 #include <pwd.h>
 
-/* magic value to represent any interface */
-#define MUALI_INTERFACE_MATCH_ALL "muali_interface_match_all"
-
 /**
  * This internal function performs a simple validation for the application
  * and version information of the osso_context regarding their validity

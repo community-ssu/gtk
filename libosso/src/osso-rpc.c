@@ -36,10 +36,10 @@
 #include "osso-internal.h"
 #include <assert.h>
 
-static DBusHandlerResult _rpc_handler (osso_context_t * osso,
-                                       DBusMessage * msg,
-                                       _osso_callback_data_t *data,
-                                       muali_bus_type dbus_type);
+static void _rpc_handler (osso_context_t * osso,
+                          DBusMessage * msg,
+                          _osso_callback_data_t *data,
+                          muali_bus_type dbus_type);
 static void _append_args(DBusMessage *msg, int type, va_list var_args);
 static void _append_arg (DBusMessage * msg, osso_rpc_t * arg);
 static void _get_arg (DBusMessageIter * iter, osso_rpc_t * retval);
@@ -324,12 +324,7 @@ osso_return_t osso_rpc_run_with_defaults(osso_context_t *osso,
 	return OSSO_INVALID;
 
     make_default_service(application, service);
-
-    if (!make_default_object_path(application, path)) {
-        ULOG_ERR_F("make_default_object_path() failed");
-        return OSSO_ERROR;
-    }
-
+    make_default_object_path(application, path);
     make_default_interface(application, interface);
     
     data.argument_type = argument_type;
@@ -516,12 +511,7 @@ osso_return_t osso_rpc_async_run_with_defaults(osso_context_t *osso,
 	return OSSO_INVALID;
 
     make_default_service(application, service);
-
-    if (!make_default_object_path(application, path)) {
-        ULOG_ERR_F("make_default_object_path() failed");
-        return OSSO_ERROR;
-    }
-
+    make_default_object_path(application, path);
     make_default_interface(application, interface);
     
     argfill_data.argument_type = argument_type;
@@ -753,9 +743,9 @@ osso_return_t osso_rpc_set_timeout(osso_context_t *osso, gint timeout)
 
 /************************************************************************/
 
-static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
-                                      _osso_callback_data_t *rpc,
-                                      muali_bus_type dbus_type)
+static void _rpc_handler(osso_context_t *osso, DBusMessage *msg,
+                         _osso_callback_data_t *rpc,
+                         muali_bus_type dbus_type)
 {
     DBusMessageIter iter;
     GArray *arguments;
@@ -802,7 +792,7 @@ static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
     if(ret == OSSO_INVALID) {
 	if (retval_free != NULL)
 	    (*retval_free)(&retval);
-	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+	return;
     }
     
     if(!dbus_message_get_no_reply(msg)) {
@@ -837,7 +827,6 @@ static DBusHandlerResult _rpc_handler(osso_context_t *osso, DBusMessage *msg,
     }
     if (retval_free)
         (*retval_free)(&retval);
-    return DBUS_HANDLER_RESULT_HANDLED;
 }
 
 /************************************************************************/
@@ -1028,5 +1017,267 @@ static void _async_return_handler(DBusPendingCall *pending, void *data)
     dprint("rpc->method = '%s'",rpc->method);
     free_osso_rpc_async_t(rpc);
     return;
+}
+
+
+/******************************************************
+ * NEW API DEVELOPMENT - THESE ARE SUBJECT TO CHANGE!
+ * muali = maemo user application library
+ ******************************************************/
+
+
+static void muali_reply_handler(osso_context_t *osso,
+                                DBusMessage *msg,
+                                _osso_callback_data_t *cb_data,
+                                muali_bus_type dbus_type)
+{
+        muali_event_info_t info;
+        DBusMessageIter iter;
+        muali_handler_t *cb;
+        int msgtype;
+
+        ULOG_DEBUG_F("entered");
+
+        assert(cb_data->message_id == dbus_message_get_reply_serial(msg));
+        assert(cb_data->bus_type == dbus_type);
+        assert(cb_data->data == osso);
+
+        /* create a dummy reply message for later use (workaround for
+         * D-Bus library API) */
+        if (osso->reply_dummy == NULL) {
+                DBusMessage *reply;
+                reply = dbus_message_new_method_return(msg);
+                if (reply == NULL) {
+                        ULOG_WARN_F("could not create reply_dummy");
+                } else {
+                        osso->reply_dummy = reply;
+                }
+        }
+
+        memset(&info, 0, sizeof(info));
+
+        info.service = dbus_message_get_sender(msg);
+        info.path = dbus_message_get_path(msg);
+        info.interface = dbus_message_get_interface(msg);
+        info.name = dbus_message_get_member(msg);
+        info.bus_type = dbus_type;
+        info.message_id = dbus_message_get_serial(msg);
+
+        msgtype = dbus_message_get_type(msg);
+        info.event_type = muali_convert_msgtype(msgtype);
+
+        if (msgtype == DBUS_MESSAGE_TYPE_ERROR) {
+                info.error = dbus_message_get_error_name(msg);
+        }
+
+        if (dbus_message_iter_init(msg, &iter)) {
+                info.args = _get_muali_args(&iter);
+        }
+
+        cb = cb_data->user_cb;
+        assert(cb != NULL);
+
+        (*cb)((muali_context_t*)osso, &info, cb_data->user_data);
+
+        if (info.args != NULL) {
+                free(info.args);
+                info.args = NULL;
+        }
+}
+
+muali_error_t muali_send_string(muali_context_t *context,
+                                muali_handler_t *reply_handler,
+                                const void *user_data,
+                                muali_bus_type bus_type,
+                                const char *destination,
+                                const char *message_name,
+                                const char *string_to_send,
+                                long *message_id)
+{
+        char service[MAX_SVC_LEN + 1], path[MAX_OP_LEN + 1],
+             interface[MAX_IF_LEN + 1];
+        _osso_callback_data_t *cb_data;
+        DBusMessage *msg;
+        DBusConnection *conn;
+        int msg_serial = 0, handler_id;
+
+        if (context == NULL) {
+                return MUALI_ERROR_INVALID;
+        }
+
+        if (destination == NULL || message_name == NULL) {
+                ULOG_ERR_F("destination and message_name must be provided");
+                return MUALI_ERROR_INVALID;
+        }
+
+        if (bus_type != MUALI_BUS_SESSION && bus_type != MUALI_BUS_SYSTEM) {
+                ULOG_ERR_F("bus_type must be either MUALI_BUS_SESSION "
+                           "or MUALI_BUS_SYSTEM");
+                return MUALI_ERROR_INVALID;
+        }
+
+        if (reply_handler == NULL && (user_data != NULL
+                                      || message_id != NULL)) {
+                ULOG_WARN_F("reply_handler == NULL: ignoring user_data and "
+                            "message_id arguments");
+                fprintf(stderr, "Warning: reply_handler is NULL: ignoring"
+                        " user_data and message_id arguments");
+        }
+
+        if (bus_type == MUALI_BUS_SESSION) {
+                conn = context->conn;
+        } else {
+                conn = context->sys_conn;
+        }
+
+        if (!dbus_connection_get_is_connected(conn)) {
+                ULOG_ERR_F("connection %p is not open", conn);
+                return MUALI_ERROR_INVALID;
+        }
+
+        make_default_service(destination, service);
+        make_default_object_path(destination, path);
+        make_default_interface(destination, interface);
+
+        msg = dbus_message_new_method_call(service, path, interface,
+                                           message_name);
+        if (msg == NULL) {
+                ULOG_ERR_F("dbus_message_new_method_call failed");
+	        goto _muali_send_oom;
+        }
+
+        dbus_message_append_args(msg, DBUS_TYPE_STRING, &string_to_send,
+                                 DBUS_TYPE_INVALID);
+
+        if (reply_handler == NULL) {
+                dbus_message_set_no_reply(msg, TRUE);
+        }
+
+        if (!dbus_connection_send(conn, msg, &msg_serial)) {
+                ULOG_ERR_F("dbus_connection_send failed");
+                dbus_message_unref(msg);
+	        goto _muali_send_oom;
+        }
+        dbus_message_unref(msg);
+
+        if (reply_handler == NULL) {
+                /* the caller does not want to handle the reply, so
+                 * let's not put any handler for it */
+                return MUALI_ERROR_SUCCESS;
+        }
+
+        cb_data = calloc(1, sizeof(_osso_callback_data_t));
+        if (cb_data == NULL) {
+                ULOG_ERR_F("calloc failed");
+                goto _muali_send_oom;
+        }
+        /* this is used to recognise the reply for this message */
+        cb_data->message_id = (long)msg_serial;
+
+        cb_data->user_cb = reply_handler;
+        cb_data->user_data = user_data;
+        cb_data->match_rule = NULL;
+        cb_data->event_type = 0;
+        cb_data->bus_type = bus_type;
+        cb_data->data = context;
+
+        cb_data->service = NULL;
+        cb_data->path = MUALI_PATH_MATCH_ALL;
+        cb_data->interface = NULL;
+        cb_data->name = MUALI_MEMBER_MATCH_ALL;
+
+        /* (muali_filter removes the handler, otherwise this would need
+         * to be saved somewhere) */
+        handler_id = context->next_handler_id++;
+
+        if (_muali_set_handler((_muali_context_t*)context,
+                               muali_reply_handler, cb_data, handler_id,
+                               FALSE)) {
+
+                if (message_id != NULL) {
+                        /* the caller can use message_id to track
+                         * the reply */
+                        *message_id = (long)msg_serial;
+                }
+
+                return MUALI_ERROR_SUCCESS;
+        } else {
+                ULOG_ERR_F("_muali_set_handler failed");
+                free(cb_data);
+                return MUALI_ERROR;
+        }
+
+_muali_send_oom:
+
+        return MUALI_ERROR_OOM;
+}
+
+muali_error_t muali_reply_string(muali_context_t *context,
+                                 muali_bus_type bus_type,
+                                 const char *dest,
+                                 long message_id,
+                                 const char *string)
+{
+        DBusConnection *conn;
+        DBusMessage *reply;
+        dbus_bool_t ret;
+
+        if (context == NULL || string == NULL || dest == NULL) {
+                return MUALI_ERROR_INVALID;
+        }
+        if (context->reply_dummy == NULL) {
+                /* OOM has happened earlier in the handler, or
+                 * the context is invalid */
+                ULOG_ERR_F("reply_dummy has not been created");
+                return MUALI_ERROR;
+        }
+        if (bus_type != MUALI_BUS_SYSTEM && bus_type != MUALI_BUS_SESSION) {
+                ULOG_ERR_F("bus type must be either MUALI_BUS_SYSTEM or"
+                           " MUALI_BUS_SESSION");
+                return MUALI_ERROR_INVALID;
+        }
+        if (bus_type == MUALI_BUS_SYSTEM) {
+                conn = context->sys_conn;
+        } else {
+                conn = context->conn;
+        }
+        if (!dbus_connection_get_is_connected(conn)) {
+                ULOG_ERR_F("connection %p is not open", conn);
+                return MUALI_ERROR_INVALID;
+        }
+
+        /* make a copy of the reply_dummy */
+        reply = dbus_message_copy(context->reply_dummy);
+        if (reply == NULL) {
+                ULOG_ERR_F("dbus_message_copy failed");
+	        return MUALI_ERROR_OOM;
+        }
+        if (!dbus_message_set_destination(reply, dest)) {
+                ULOG_ERR_F("dbus_message_set_destination failed");
+                goto unref_and_exit;
+        }
+        if (!dbus_message_set_reply_serial(reply,
+                                           (dbus_uint32_t)message_id)) {
+                ULOG_ERR_F("dbus_message_set_reply_serial failed");
+                goto unref_and_exit;
+        }
+
+        ret = dbus_message_append_args(reply, DBUS_TYPE_STRING, &string,
+                                       DBUS_TYPE_INVALID);
+        if (!ret) {
+                ULOG_ERR_F("dbus_message_append_args failed");
+                goto unref_and_exit;
+        }
+
+        if (!dbus_connection_send(conn, reply, NULL)) {
+                ULOG_ERR_F("dbus_connection_send failed");
+                goto unref_and_exit;
+        }
+        dbus_message_unref(reply);
+        return MUALI_ERROR_SUCCESS;
+
+unref_and_exit:
+        dbus_message_unref(reply);
+        return MUALI_ERROR_OOM;
 }
 

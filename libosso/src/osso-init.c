@@ -39,29 +39,6 @@ inline static DBusHandlerResult
 _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
               muali_bus_type dbus_type);
 
-/* for internal use only
- * This function strdups application name and makes it
- * suitable for being part of an object path, or returns NULL.
- * Currently needed for allowing '.' in application name. */
-static gchar* appname_to_valid_path_component(const gchar *application)
-{
-    gchar *copy, *p;
-
-    assert(application != NULL);
-
-    copy = g_strdup(application);
-    if (copy == NULL) {
-        return NULL;
-    }
-
-    for (p = copy; *p != '\0'; ++p) {
-         if (*p == '.') {
-             *p = '/';
-         }
-    }
-    return copy;
-}
-
 static void
 compose_hash_key(const char *service, const char *object_path,
                  const char *interface, char *key)
@@ -71,6 +48,28 @@ compose_hash_key(const char *service, const char *object_path,
     strncat(key, object_path, MAX_OP_LEN);
     if (service != NULL) {
         strncat(key, service, MAX_SVC_LEN);
+    }
+}
+
+static const char *opm_match_all_key = MUALI_PATH_MATCH_ALL
+                                       MUALI_MEMBER_MATCH_ALL;
+
+inline static void
+compose_opm_hash_key(const char *object_path, const char *member,
+                     char *key)
+{
+    key[0] = '\0';
+    if (object_path == NULL && member == NULL) {
+        strncat(key, opm_match_all_key, MAX_OP_LEN + MAX_MEMBER_LEN);
+    } else if (object_path == NULL) {
+        strncat(key, MUALI_PATH_MATCH_ALL, MAX_OP_LEN);
+        strncat(key, member, MAX_MEMBER_LEN);
+    } else if (member == NULL) {
+        strncat(key, object_path, MAX_OP_LEN);
+        strncat(key, MUALI_MEMBER_MATCH_ALL, MAX_MEMBER_LEN);
+    } else {
+        strncat(key, object_path, MAX_OP_LEN);
+        strncat(key, member, MAX_MEMBER_LEN);
     }
 }
 
@@ -235,25 +234,28 @@ make_default_service(const char *application, char *service)
     }
 }
 
-gboolean __attribute__ ((visibility("hidden")))
+void __attribute__ ((visibility("hidden")))
 make_default_object_path(const char *application, char *path)
 {
-    char *copy;
+    char component[MAX_OP_LEN + 1], *p;
 
     assert(application != NULL);
     assert(path != NULL);
 
-    copy = appname_to_valid_path_component(application);
-    if (copy == NULL) {
-        return FALSE;
+    strncpy(component, application, MAX_OP_LEN);
+    component[MAX_OP_LEN] = '\0';
+
+    for (p = component; *p != '\0'; ++p) {
+         if (*p == '.') {
+             *p = '/';
+         }
     }
-    if (g_strrstr(application, ".") != NULL) {
-        g_snprintf(path, MAX_OP_LEN, "/%s", copy);
+
+    if (strchr(application, '.') != NULL) {
+        g_snprintf(path, MAX_OP_LEN, "/%s", component);
     } else {
-        g_snprintf(path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", copy);
+        g_snprintf(path, MAX_OP_LEN, OSSO_BUS_ROOT_PATH "/%s", component);
     }
-    g_free(copy);
-    return TRUE;
 }
 
 /************************************************************************/
@@ -277,8 +279,8 @@ static void free_uniq_hash_value(gpointer data)
 
     if (elem != NULL) {
         if (elem->handlers != NULL) {
-            g_list_foreach(elem->handlers, free_handler, NULL);
-            g_list_free(elem->handlers);
+            g_slist_foreach(elem->handlers, free_handler, NULL);
+            g_slist_free(elem->handlers);
             elem->handlers = NULL;
         }
         free(elem);
@@ -291,7 +293,7 @@ static void free_if_hash_value(gpointer data)
 
     if (elem != NULL) {
         if (elem->handlers != NULL) {
-            g_list_free(elem->handlers);
+            g_slist_free(elem->handlers);
             elem->handlers = NULL;
         }
         free(elem);
@@ -317,13 +319,7 @@ static osso_context_t *_init(const gchar *application, const gchar *version)
     g_snprintf(osso->version, MAX_VERSION_LEN, "%s", version);
     make_default_interface((const char*)application, osso->interface);
     make_default_service((const char*)application, osso->service);
-
-    if (!make_default_object_path((const char*)application,
-        osso->object_path)) {
-        ULOG_ERR_F("make_default_object_path() failed");
-        free(osso);
-        return NULL;
-    }
+    make_default_object_path((const char*)application, osso->object_path);
 
     osso->uniq_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
                                             free, free_uniq_hash_value);
@@ -363,19 +359,13 @@ static osso_context_t *_muali_init(const char *application,
     g_snprintf(osso->version, MAX_VERSION_LEN, "%s", version);
     make_default_interface((const char*)application, osso->interface);
     make_default_service((const char*)application, osso->service);
+    make_default_object_path((const char*)application, osso->object_path);
 
-    if (!make_default_object_path((const char*)application,
-        osso->object_path)) {
-        ULOG_ERR_F("make_default_object_path() failed");
-        free(osso);
-        return NULL;
-    }
-
-    osso->if_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+    osso->opm_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
                                           free, free_if_hash_value);
     osso->id_hash = g_hash_table_new_full(g_direct_hash, g_direct_equal,
                                           NULL, free_uniq_hash_value);
-    if (osso->if_hash == NULL || osso->id_hash == NULL) {
+    if (osso->id_hash == NULL || osso->opm_hash == NULL) {
         ULOG_ERR_F("g_hash_table_new_full failed");
         free(osso);
         return NULL;
@@ -398,6 +388,9 @@ static void _deinit(osso_context_t *osso)
     }
     if (osso->if_hash != NULL) {
         g_hash_table_destroy(osso->if_hash);
+    }
+    if (osso->opm_hash != NULL) {
+        g_hash_table_destroy(osso->opm_hash);
     }
     if (osso->id_hash != NULL) {
         g_hash_table_destroy(osso->id_hash);
@@ -609,14 +602,13 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     elem = g_hash_table_lookup(osso->if_hash, interface);
 
     if (elem != NULL) {
-        GList *list;
+        GSList *list;
 
         osso->cur_conn = conn;
 
-        list = g_list_first(elem->handlers);
+        list = elem->handlers;
         while (list != NULL) {
             _osso_handler_t *handler;
-            DBusHandlerResult ret;
 
             handler = list->data;
 
@@ -624,17 +616,14 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
                 ULOG_DEBUG_F("before calling the handler");
                 ULOG_DEBUG_F(" handler = %p", handler->handler);
                 ULOG_DEBUG_F(" data = %p", handler->data);
-                ret = (*handler->handler)(osso, msg, handler->data, 0);
+                (*handler->handler)(osso, msg, handler->data, 0);
                 ULOG_DEBUG_F("after calling the handler");
-                if (ret == DBUS_HANDLER_RESULT_HANDLED) {
-                    return ret;
-                }
 #ifdef OSSOLOG_COMPILE
                 found = TRUE;
 #endif
             }
 
-            list = g_list_next(list);
+            list = g_slist_next(list);
         }
     } 
 #ifdef OSSOLOG_COMPILE
@@ -664,7 +653,8 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
-inline static int muali_convert_msgtype(int t)
+inline int __attribute__ ((visibility("hidden")))
+muali_convert_msgtype(int t)
 {
     switch (t) {
             case DBUS_MESSAGE_TYPE_METHOD_CALL:
@@ -742,15 +732,60 @@ _muali_filter_system(DBusConnection *conn, DBusMessage *msg, void *data)
     return _muali_filter(conn, msg, data, MUALI_BUS_SYSTEM);
 }
 
+inline static void opm_match_helper(const char *object_path,
+                                    const char *member,
+                                    char *key)
+{
+    key[0] = '\0';
+    strncat(key, object_path, MAX_OP_LEN);
+    strncat(key, member, MAX_MEMBER_LEN);
+}
+
+/* Returns a GSList of _osso_hash_value_t pointers */
+inline static GSList *opm_match(osso_context_t *muali,
+                                const char *path,
+                                const char *member)
+{
+    GSList *list = NULL;
+    _osso_hash_value_t *elem;
+    char opm_key[MAX_OPM_HASH_KEY_LEN + 1];
+
+    if (path != NULL && member != NULL) {
+        /* direct match? */
+        opm_match_helper(path, member, opm_key);
+        elem = g_hash_table_lookup(muali->opm_hash, opm_key);
+        if (elem != NULL) list = g_slist_prepend(list, elem);
+    }
+
+    /* return list of match-'em-all handlers */
+    elem = g_hash_table_lookup(muali->opm_hash, opm_match_all_key);
+    if (elem != NULL) list = g_slist_prepend(list, elem);
+
+    if (member != NULL) {
+        /* any path + member? */
+        opm_match_helper(MUALI_PATH_MATCH_ALL, member, opm_key);
+        elem = g_hash_table_lookup(muali->opm_hash, opm_key);
+        if (elem != NULL) list = g_slist_prepend(list, elem);
+    }
+
+    if (path != NULL) {
+        /* path + any member? */
+        opm_match_helper(path, MUALI_MEMBER_MATCH_ALL, opm_key);
+        elem = g_hash_table_lookup(muali->opm_hash, opm_key);
+        if (elem != NULL) list = g_slist_prepend(list, elem);
+    }
+
+    return list;
+}
+
 /* filter function for muali API */
 inline static DBusHandlerResult
 _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
               muali_bus_type dbus_type)
 {
     osso_context_t *muali;
-    _osso_hash_value_t *elem;
-    int msgtype;
-    const char *interface;
+    GSList *elem_list, *elem_list_p, *rm_list = NULL, *rm_list_p;
+    int msgtype, reply_to;
 #ifdef OSSOLOG_COMPILE
     gboolean found = FALSE;
 #endif
@@ -764,196 +799,148 @@ _muali_filter(DBusConnection *conn, DBusMessage *msg, void *data,
     if (msgtype == MUALI_EVENT_NONE) {
         return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
+    reply_to = dbus_message_get_reply_serial(msg);
 
-    /* interface is used as hash key to limit number of initial matches */
-    interface = dbus_message_get_interface(msg);
+    elem_list = opm_match(muali, dbus_message_get_path(msg),
+                          dbus_message_get_member(msg));
 
-    if (interface == NULL) {
-        ULOG_DEBUG_F("interface of the message was NULL");
-        return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
+    elem_list_p = elem_list;
+    while (elem_list_p != NULL) {
+        _osso_hash_value_t *elem;
 
-    ULOG_DEBUG_F("key = '%s'", interface);
-    elem = g_hash_table_lookup(muali->if_hash, interface);
+        elem = elem_list_p->data;
 
-    if (elem != NULL) {
-        GList *list;
-        int last_id = 0;
+        if (elem != NULL) {
+            GSList *list;
+            int last_id = 0;
 
-        ULOG_DEBUG_F("found '%s' from if_hash", interface);
+            list = elem->handlers;
+            while (list != NULL) {
+                _osso_handler_t *handler;
+                _osso_callback_data_t *cb_data;
+                gboolean match_sender = TRUE;
 
-        list = g_list_first(elem->handlers);
-        while (list != NULL) {
-            _osso_handler_t *handler;
-            DBusHandlerResult ret;
-            gboolean match_sender = TRUE;
+                handler = list->data;
 
-            handler = list->data;
+                /*
+                if (handler) {
+                        ULOG_DEBUG_F("found handler");
+                        if (handler->data != NULL) {
+                                ULOG_DEBUG_F("s/p/n: %s/%s/%s",
+                                    handler->data->service,
+                                    handler->data->path,
+                                    handler->data->name);
 
-            /*
-            if (handler) {
-                    ULOG_DEBUG_F("found handler");
-                    if (handler->data != NULL) {
-                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
-                                handler->data->service,
-                                handler->data->path,
-                                handler->data->name);
+                                ULOG_DEBUG_F("s/p/n: %s/%s/%s",
+                                    dbus_message_get_sender(msg),
+                                    dbus_message_get_path(msg),
+                                    dbus_message_get_member(msg));
 
-                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
-                                dbus_message_get_sender(msg),
-                                dbus_message_get_path(msg),
-                                dbus_message_get_member(msg));
-
-                            ULOG_DEBUG_F("types: %d %d",
-                                handler->data->event_type, msgtype);
-                    }
-            }
-            */
-
-            /* Note: this relies on the fact that the handlers with the
-             * same id are adjacent in the list */
-            if (handler->call_once_per_handler_id
-                && handler->handler_id == last_id) {
-                    /* do not call the callback this time, workaround for
-                     * MUALI_EVENT_MESSAGE_OR_SIGNAL etc. implementation */
-                    list = g_list_next(list);
-                    continue;
-            }
-
-            if (handler->data && handler->data->bus_type != MUALI_BUS_BOTH
-                && handler->data->bus_type != dbus_type) {
-                    /* handler is not for this bus type */
-                    list = g_list_next(list);
-                    continue;
-            }
-
-            if (msgtype == MUALI_EVENT_SIGNAL) {
-                    /* does not make sense to match sender in case
-                     * of a D-Bus signal, because D-Bus uses the unique
-                     * bus name as the sender */
-                    match_sender = FALSE;
-            }
-
-            if (handler->data != NULL &&
-                types_match(handler->data->event_type, msgtype) &&
-                (!match_sender || str_match(handler->data->service,
-                                      dbus_message_get_sender(msg))) &&
-                str_match(handler->data->path,
-                          dbus_message_get_path(msg)) &&
-                /* interface has matched already */
-                str_match(handler->data->name,
-                          dbus_message_get_member(msg))) {
-
-                ULOG_DEBUG_F("before calling the handler at %p, data=%p",
-                             handler->handler, handler->data);
-                ret = (*handler->handler)(muali, msg, handler->data,
-                                          dbus_type);
-                ULOG_DEBUG_F("after calling the handler");
-                /* cannot do this because the library context could
-                 * be shared with independent code, having independent
-                 * handler functions 
-                if (ret == DBUS_HANDLER_RESULT_HANDLED) {
-                    return ret;
+                                ULOG_DEBUG_F("types: %d %d",
+                                    handler->data->event_type, msgtype);
+                        }
                 }
                 */
-#ifdef OSSOLOG_COMPILE
-                found = TRUE;
-#endif
-            }
 
-            last_id = handler->handler_id;
-            list = g_list_next(list);
+                /* Note: this relies on the fact that the handlers with the
+                 * same id are adjacent in the list */
+                if (handler->call_once_per_handler_id
+                    && handler->handler_id == last_id) {
+                        /* do not call the callback this time, workaround for
+                         * MUALI_EVENT_MESSAGE_OR_SIGNAL etc. implementation */
+                        list = g_slist_next(list);
+                        continue;
+                }
+
+                cb_data = handler->data;
+
+                if (cb_data != NULL && cb_data->message_id != 0
+                    && cb_data->message_id == reply_to) {
+                        /* this (one-shot) handler was created for this
+                         * (reply) message */
+                        ULOG_DEBUG_F("calling one-shot handler at %p,"
+                                     " data=%p", handler->handler, cb_data);
+                        (*handler->handler)(muali, msg, cb_data, dbus_type);
+                        ULOG_DEBUG_F("after calling handler at %p",
+                                     handler->handler);
+#ifdef OSSOLOG_COMPILE
+                        found = TRUE;
+#endif
+                        /* The handler is one-shot (because the serial is
+                         * supposed to be unique). Add it to list to remove
+                         * it later safely outside this loop. */
+                        rm_list = g_slist_prepend(rm_list,
+                                      (gpointer)handler->handler_id);
+
+                        list = g_slist_next(list);
+                        continue;
+                }
+
+                if (cb_data != NULL && cb_data->bus_type != MUALI_BUS_BOTH
+                    && cb_data->bus_type != dbus_type) {
+                        /* handler is not for this bus type */
+                        list = g_slist_next(list);
+                        continue;
+                }
+
+                if (msgtype == MUALI_EVENT_SIGNAL) {
+                        /* does not make sense to match sender in case
+                         * of a D-Bus signal, because D-Bus uses the
+                         * (practically random) unique bus name as the
+                         * sender */
+                        match_sender = FALSE;
+                }
+
+                if (cb_data != NULL &&
+                    types_match(cb_data->event_type, msgtype) &&
+                    (!match_sender || str_match(cb_data->service,
+                                          dbus_message_get_sender(msg))) &&
+                    str_match(cb_data->interface,
+                              dbus_message_get_interface(msg))) {
+                    /* object path and member have matched already */
+
+                    ULOG_DEBUG_F("before calling the handler at %p, data=%p",
+                                 handler->handler, cb_data);
+                    (*handler->handler)(muali, msg, cb_data, dbus_type);
+                    ULOG_DEBUG_F("after calling handler at %p",
+                                 handler->handler);
+#ifdef OSSOLOG_COMPILE
+                    found = TRUE;
+#endif
+                }
+
+                last_id = handler->handler_id;
+                list = g_slist_next(list);
+            }
         }
+
+        elem_list_p = g_slist_next(elem_list_p);
+    }
+    
+    if (elem_list != NULL) {
+        g_slist_free(elem_list);
     }
 
-    /* check the magical match-'em-all interface */
-    elem = g_hash_table_lookup(muali->if_hash, MUALI_INTERFACE_MATCH_ALL);
+    if (rm_list != NULL) {
+        rm_list_p = rm_list;
+        do {
+            gboolean ret;
+            int handler_id = (int)rm_list_p->data;
 
-    if (elem != NULL) {
-        GList *list;
-        int last_id = 0;
+            assert(handler_id != 0);
+            ret = _muali_unset_handler(muali, handler_id);
+            assert(ret);
 
-        list = g_list_first(elem->handlers);
-        while (list != NULL) {
-            _osso_handler_t *handler;
-            DBusHandlerResult ret;
-            gboolean match_sender = TRUE;
-
-            handler = list->data;
-
-            /*
-            if (handler) {
-                    ULOG_DEBUG_F("found a match-'em-all handler");
-                    if (handler->data != NULL) {
-                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
-                                handler->data->service,
-                                handler->data->path,
-                                handler->data->name);
-
-                            ULOG_DEBUG_F("s/p/n: %s/%s/%s",
-                                dbus_message_get_sender(msg),
-                                dbus_message_get_path(msg),
-                                dbus_message_get_member(msg));
-
-                            ULOG_DEBUG_F("types: %d %d",
-                                handler->data->event_type, msgtype);
-                    }
-            }
-            */
-
-            /* Note: this relies on the fact that the handlers with the
-             * same id are adjacent in the list */
-            if (handler->call_once_per_handler_id
-                && handler->handler_id == last_id) {
-                    /* do not call the callback this time, workaround for
-                     * MUALI_EVENT_MESSAGE_OR_SIGNAL etc. implementation */
-                    list = g_list_next(list);
-                    continue;
-            }
-
-            if (msgtype == MUALI_EVENT_SIGNAL) {
-                    /* does not make sense to match sender in case
-                     * of a D-Bus signal, because D-Bus uses the unique
-                     * bus name as the sender */
-                    match_sender = FALSE;
-            }
-
-            if (handler->data != NULL &&
-                types_match(handler->data->event_type, msgtype) &&
-                (!match_sender || str_match(handler->data->service,
-                                      dbus_message_get_sender(msg))) &&
-                str_match(handler->data->path,
-                          dbus_message_get_path(msg)) &&
-                /* interface has matched already */
-                str_match(handler->data->name,
-                          dbus_message_get_member(msg))) {
-
-                ULOG_DEBUG_F("before calling the handler at %p, data=%p",
-                             handler->handler, handler->data);
-                ret = (*handler->handler)(muali, msg, handler->data,
-                                          dbus_type);
-                ULOG_DEBUG_F("after calling the match-'em-all handler");
-                /* cannot do this because the library context could
-                 * be shared with independent code, having independent
-                 * handler functions 
-                if (ret == DBUS_HANDLER_RESULT_HANDLED) {
-                    return ret;
-                }
-                */
-#ifdef OSSOLOG_COMPILE
-                found = TRUE;
-#endif
-            }
-
-            last_id = handler->handler_id;
-            list = g_list_next(list);
-        }
+            rm_list_p = g_slist_next(rm_list_p);
+        } while (rm_list_p != NULL);
+        g_slist_free(rm_list);
     }
 
 #ifdef OSSOLOG_COMPILE
     if (!found) {
-        ULOG_DEBUG_F("suitable handler not found for '%s' from if_hash",
-                     interface);
+        ULOG_DEBUG_F("suitable handler not found for '%s%s'",
+                     dbus_message_get_path(msg),
+                     dbus_message_get_member(msg));
     }
 #endif
 
@@ -970,7 +957,8 @@ static gboolean add_to_if_hash(osso_context_t *osso,
 
     old = g_hash_table_lookup(osso->if_hash, interface);
     if (old != NULL) {
-        old->handlers = g_list_append(old->handlers, (_osso_handler_t*)handler);
+        old->handlers = g_slist_append(old->handlers,
+                                       (_osso_handler_t*)handler);
     } else {
         _osso_hash_value_t *new_elem;
         char *new_key;
@@ -983,15 +971,50 @@ static gboolean add_to_if_hash(osso_context_t *osso,
         }
 
         new_key = strdup(interface);
-        if (new_elem == NULL) {
+        if (new_key == NULL) {
             ULOG_ERR_F("calloc() failed");
             free(new_elem);
             return FALSE;
         }
 
-        new_elem->handlers = g_list_append(NULL, (_osso_handler_t*)handler);
+        new_elem->handlers = g_slist_append(NULL, (_osso_handler_t*)handler);
 
         g_hash_table_insert(osso->if_hash, new_key, new_elem);
+    }
+    return TRUE;
+}
+
+static gboolean add_to_opm_hash(osso_context_t *osso,
+                                const _osso_handler_t *handler,
+                                const char *opm_key)
+{
+    _osso_hash_value_t *old;
+
+    old = g_hash_table_lookup(osso->opm_hash, opm_key);
+    if (old != NULL) {
+        old->handlers = g_slist_append(old->handlers,
+                                       (_osso_handler_t*)handler);
+    } else {
+        _osso_hash_value_t *new_elem;
+        char *new_key;
+
+        /* we need to allocate a new hash table element */
+        new_elem = calloc(1, sizeof(_osso_hash_value_t));
+        if (new_elem == NULL) {
+            ULOG_ERR_F("calloc() failed");
+            return FALSE;
+        }
+
+        new_key = strdup(opm_key);
+        if (new_key == NULL) {
+            ULOG_ERR_F("calloc() failed");
+            free(new_elem);
+            return FALSE;
+        }
+
+        new_elem->handlers = g_slist_append(NULL, (_osso_handler_t*)handler);
+
+        g_hash_table_insert(osso->opm_hash, new_key, new_elem);
     }
     return TRUE;
 }
@@ -1038,7 +1061,7 @@ static int set_handler_helper(osso_context_t *osso,
         fprintf(stderr, " interface: %s\n", interface);
 
         /* add it to the list of handlers */
-        old->handlers = g_list_append(old->handlers, handler);
+        old->handlers = g_slist_append(old->handlers, handler);
 
     } else {
         _osso_hash_value_t *new_elem;
@@ -1060,7 +1083,7 @@ static int set_handler_helper(osso_context_t *osso,
             return 0;
         }
 
-        new_elem->handlers = g_list_append(NULL, handler);
+        new_elem->handlers = g_slist_append(NULL, handler);
 
         g_hash_table_insert(osso->uniq_hash, new_key, new_elem);
     }
@@ -1098,11 +1121,14 @@ _muali_set_handler(_muali_context_t *context,
                    int handler_id,
                    gboolean call_once_per_handler_id)
 {   
+    char opm_key[MAX_OPM_HASH_KEY_LEN + 1];
     _osso_hash_value_t *old;
     _osso_handler_t *elem;
 
     assert(context != NULL && handler != NULL && data != NULL);
     assert(handler_id != 0);
+
+    compose_opm_hash_key(data->path, data->name, opm_key);
 
     elem = calloc(1, sizeof(_osso_handler_t));
     if (elem == NULL) {
@@ -1121,7 +1147,7 @@ _muali_set_handler(_muali_context_t *context,
         ULOG_DEBUG_F("registering another handler for id %d", handler_id);
 
         /* add it to the list of handlers */
-        old->handlers = g_list_append(old->handlers, elem);
+        old->handlers = g_slist_append(old->handlers, elem);
 
     } else {
         _osso_hash_value_t *new_elem;
@@ -1136,42 +1162,45 @@ _muali_set_handler(_muali_context_t *context,
             return FALSE;
         }
 
-        new_elem->handlers = g_list_append(NULL, elem);
+        new_elem->handlers = g_slist_append(NULL, elem);
 
         g_hash_table_insert(context->id_hash, (gconstpointer)handler_id,
                             new_elem);
     }
 
-    return add_to_if_hash(context, elem, data->interface);
+    return add_to_opm_hash(context, elem, opm_key);
 }
 
-static void remove_from_if_hash(_muali_context_t *context,
-                                int handler_id,
-                                const char *interface)
+static void remove_from_opm_hash(_muali_context_t *context,
+                                 int handler_id,
+                                 const char *opm_key)
 {
     _osso_hash_value_t *elem;
 
-    elem = g_hash_table_lookup(context->if_hash, interface);
+    elem = g_hash_table_lookup(context->opm_hash, opm_key);
     if (elem != NULL) {
-        GList *list;
+        GSList *list;
 
-        list = g_list_first(elem->handlers);
+        list = elem->handlers;
         while (list != NULL) {
             _osso_handler_t *h = list->data;
+            GSList *next_elem;
+
+            next_elem = g_slist_next(list);
 
             if (h->handler_id == handler_id) {
                 ULOG_DEBUG_F("found handler_id %d from if_hash", handler_id);
-                elem->handlers = g_list_remove_link(elem->handlers, list);
-                g_list_free(list); /* free the removed link */
+                elem->handlers = g_slist_remove_link(elem->handlers, list);
+                g_slist_free_1(list); /* free the removed link */
 
                 /* if this was the last element in the list, free the
                  * list and the hash element */
-                if (g_list_length(elem->handlers) == 0) {
-                    g_hash_table_remove(context->if_hash, interface);
+                if (g_slist_length(elem->handlers) == 0) {
+                    g_hash_table_remove(context->opm_hash, opm_key);
                     return;
                 }
             }
-            list = g_list_next(list);
+            list = next_elem;
         }
     }
 }
@@ -1180,7 +1209,7 @@ gboolean __attribute__ ((visibility("hidden")))
 _muali_unset_handler(_muali_context_t *context, int handler_id)
 {
     _osso_hash_value_t *elem;
-    GList *list;
+    GSList *list;
 
     ULOG_DEBUG_F("context=%p", context);
     elem = g_hash_table_lookup(context->id_hash, (gconstpointer)handler_id);
@@ -1190,19 +1219,19 @@ _muali_unset_handler(_muali_context_t *context, int handler_id)
     }
 
     /* remove handlers from the interface hash */
-    list = g_list_first(elem->handlers);
+    list = elem->handlers;
     while (list != NULL) {
-        const char *interface;
+        char opm_key[MAX_OPM_HASH_KEY_LEN + 1];
         DBusError err;
         _osso_handler_t *h = list->data;
 
-        interface = h->data->interface;
-        remove_from_if_hash(context, handler_id, interface);
+        compose_opm_hash_key(h->data->path, h->data->name, opm_key);
+        remove_from_opm_hash(context, handler_id, opm_key);
 
         dbus_error_init(&err);
 
-        if (h->data->bus_type == MUALI_BUS_SYSTEM
-            || h->data->bus_type == MUALI_BUS_BOTH) {
+        if (h->data->match_rule && (h->data->bus_type == MUALI_BUS_SYSTEM
+            || h->data->bus_type == MUALI_BUS_BOTH)) {
             dbus_bus_remove_match(context->sys_conn, h->data->match_rule,
                                   &err);
             if (dbus_error_is_set(&err)) {
@@ -1213,8 +1242,8 @@ _muali_unset_handler(_muali_context_t *context, int handler_id)
             }
         }
 
-        if (h->data->bus_type == MUALI_BUS_SESSION
-            || h->data->bus_type == MUALI_BUS_BOTH) {
+        if (h->data->match_rule && (h->data->bus_type == MUALI_BUS_SESSION
+            || h->data->bus_type == MUALI_BUS_BOTH)) {
             dbus_bus_remove_match(context->conn, h->data->match_rule,
                                   &err);
             if (dbus_error_is_set(&err)) {
@@ -1224,14 +1253,19 @@ _muali_unset_handler(_muali_context_t *context, int handler_id)
             }
         }
 
-        free(h->data->service);
-        free(h->data->path);
-        free(h->data->interface);
-        free(h->data->name);
-        free(h->data);
-        h->data = NULL;
+        free(h->data->service); h->data->service = NULL;
+        if (h->data->path != NULL
+            && strcmp(MUALI_PATH_MATCH_ALL, h->data->path) != 0) {
+            free(h->data->path); h->data->path = NULL;
+        }
+        free(h->data->interface); h->data->interface = NULL;
+        if (h->data->name != NULL
+            && strcmp(MUALI_MEMBER_MATCH_ALL, h->data->name) != 0) {
+            free(h->data->name); h->data->name = NULL;
+        }
+        free(h->data); h->data = NULL;
 
-        list = g_list_next(list);
+        list = g_slist_next(list);
     }
 
     if (!g_hash_table_remove(context->id_hash, (gconstpointer)handler_id)) {
@@ -1303,9 +1337,9 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
 
     elem = g_hash_table_lookup(osso->uniq_hash, uniq_key);
     if (elem != NULL) {
-        GList *list;
+        GSList *list;
 
-        list = g_list_first(elem->handlers);
+        list = elem->handlers;
         while (list != NULL) {
             _osso_handler_t *handler;
 
@@ -1316,45 +1350,45 @@ _msg_handler_rm_cb_f(osso_context_t *osso,
                     ULOG_DEBUG_F("found from uniq_hash");
                     ret = TRUE;
 
-                    elem->handlers = g_list_remove_link(elem->handlers,
-                                                        list);
+                    elem->handlers = g_slist_remove_link(elem->handlers,
+                                                         list);
                     free_handler(handler, NULL);
-                    g_list_free(list); /* free the removed link */
+                    g_slist_free_1(list); /* free the removed link */
 
                     /* if this was the last element in the list, free the
                      * list and the hash element */
-                    if (g_list_length(elem->handlers) == 0) {
+                    if (g_slist_length(elem->handlers) == 0) {
                         g_hash_table_remove(osso->uniq_hash, interface);
                     }
                     matched_handler = handler;
                     break;
                 }
             }
-            list = g_list_next(list);
+            list = g_slist_next(list);
         }
     }
 
     if (matched_handler != NULL) {
         elem = g_hash_table_lookup(osso->if_hash, interface);
         if (elem != NULL) {
-            GList *list;
+            GSList *list;
 
-            list = g_list_first(elem->handlers);
+            list = elem->handlers;
             while (list != NULL) {
                 if (list->data == matched_handler) {
                     ULOG_DEBUG_F("found from if_hash");
-                    elem->handlers = g_list_remove_link(elem->handlers,
-                                                        list);
-                    g_list_free(list); /* free the removed link */
+                    elem->handlers = g_slist_remove_link(elem->handlers,
+                                                         list);
+                    g_slist_free_1(list); /* free the removed link */
 
                     /* if this was the last element in the list, free the
                      * list and the hash element */
-                    if (g_list_length(elem->handlers) == 0) {
+                    if (g_slist_length(elem->handlers) == 0) {
                         g_hash_table_remove(osso->if_hash, interface);
                     }
                     return TRUE;
                 }
-                list = g_list_next(list);
+                list = g_slist_next(list);
             }
         }
     }

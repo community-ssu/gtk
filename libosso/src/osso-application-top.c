@@ -47,12 +47,7 @@ osso_return_t osso_application_top(osso_context_t *osso,
 	         application, arguments);
     
     make_default_service(application, service);
-
-    if (!make_default_object_path(application, path)) {
-        ULOG_ERR_F("make_default_object_path() failed");
-        return OSSO_ERROR;
-    }
-
+    make_default_object_path(application, path);
     make_default_interface(application, interface);
 
     ULOG_DEBUG_F("New method: %s:%s:%s:" OSSO_BUS_TOP, service, path,
@@ -90,10 +85,10 @@ osso_return_t osso_application_top(osso_context_t *osso,
 
 /************************************************************************/
 
-static DBusHandlerResult _top_handler(osso_context_t *osso,
-                                      DBusMessage *msg,
-                                      _osso_callback_data_t *top,
-                                      muali_bus_type dbus_type)
+static void _top_handler(osso_context_t *osso,
+                         DBusMessage *msg,
+                         _osso_callback_data_t *top,
+                         muali_bus_type dbus_type)
 {
     if (dbus_message_is_method_call(msg, osso->interface, OSSO_BUS_TOP))
     {	
@@ -103,7 +98,7 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
 
         if(!dbus_message_iter_init(msg, &iter)) {
             ULOG_ERR_F("Message has no arguments");
-            return DBUS_HANDLER_RESULT_HANDLED;
+            return;
         }
         if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
             dbus_message_iter_get_basic(&iter, &arguments);
@@ -115,9 +110,7 @@ static DBusHandlerResult _top_handler(osso_context_t *osso,
 
         handler = top->user_cb;
 	(*handler)(arguments, top->user_data);
-	return DBUS_HANDLER_RESULT_HANDLED;
     }
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
 /************************************************************************/

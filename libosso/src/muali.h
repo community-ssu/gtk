@@ -259,12 +259,14 @@ muali_error_t muali_set_default_prefix(muali_context_t *context,
 /**************************/
 
 /* asyncronous */
-muali_error_t muali_send(muali_context_t *context,
-                         muali_handler_t *reply_handler,
-                         const void *user_data,
-                         long *reply_id,
-                         const char *service,
-                         const char *string);
+muali_error_t muali_send_string(muali_context_t *context,
+                                muali_handler_t *reply_handler,
+                                const void *user_data,
+                                muali_bus_type bus_type,
+                                const char *destination,
+                                const char *message_name,
+                                const char *string,
+                                long *message_id);
 
 muali_error_t muali_send_varargs(muali_context_t *context,
                                  muali_handler_t *reply_handler,
@@ -274,10 +276,11 @@ muali_error_t muali_send_varargs(muali_context_t *context,
                                  int arg_type, ...);
 
 /* blocking */
-muali_error_t muali_send_and_wait(muali_context_t *context,
-                                  muali_event_info_t *reply,
-                                  const char *service,
-                                  const char *string);
+muali_error_t muali_send_string_and_wait(muali_context_t *context,
+                                         muali_event_info_t *reply,
+                                         const char *destination,
+                                         const char *message_name,
+                                         const char *string);
 
 muali_error_t muali_send_and_wait_varargs(muali_context_t *context,
                                           muali_event_info_t *reply,
@@ -316,9 +319,11 @@ muali_error_t muali_send_any_and_wait_varargs(muali_context_t *context,
 /* reply to a message */
 /**********************/
 
-muali_error_t muali_reply(muali_context_t *context,
-                          long message_id,
-                          const char *string);
+muali_error_t muali_reply_string(muali_context_t *context,
+                                 muali_bus_type bus_type,
+                                 const char *dest,
+                                 long message_id,
+                                 const char *string);
 
 muali_error_t muali_reply_varargs(muali_context_t *context,
                                   long message_id,

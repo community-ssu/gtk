@@ -61,14 +61,16 @@
 
 # define OSSO_RPC_REPLY_TIMEOUT -1
 
-/* magic value to represent any interface */
-#define MUALI_INTERFACE_MATCH_ALL "muali_interface_match_all"
+#define MUALI_PATH_MATCH_ALL "muali_path_match_all"
+#define MUALI_MEMBER_MATCH_ALL "muali_member_match_all"
 
 /* DBus interface, service, and object path maximum lengths */
 #define MAX_IF_LEN 255
 #define MAX_SVC_LEN 255
 #define MAX_OP_LEN 255
+#define MAX_MEMBER_LEN 255
 #define MAX_HASH_KEY_LEN (MAX_IF_LEN + MAX_SVC_LEN + MAX_OP_LEN)
+#define MAX_OPM_HASH_KEY_LEN (MAX_OP_LEN + MAX_MEMBER_LEN)
 
 #define MAX_APP_NAME_LEN 50
 #define MAX_VERSION_LEN 30
@@ -108,6 +110,7 @@ typedef struct {
     gpointer data;
     int event_type;
     muali_bus_type bus_type;
+    long message_id;
 
     char *service;    /* service name or NULL */
     char *path;       /* object path or NULL */
@@ -116,10 +119,10 @@ typedef struct {
 
 } _osso_callback_data_t;
 
-typedef DBusHandlerResult (_osso_handler_f)(osso_context_t *osso,
-				            DBusMessage *msg,
-					    _osso_callback_data_t *data,
-                                            muali_bus_type bus_type);
+typedef void (_osso_handler_f)(osso_context_t *osso,
+                               DBusMessage *msg,
+                               _osso_callback_data_t *data,
+                               muali_bus_type bus_type);
 
 typedef struct {
     _osso_handler_f *handler;
@@ -131,7 +134,7 @@ typedef struct {
 } _osso_handler_t;
 
 typedef struct {
-    GList *handlers;
+    GSList *handlers;
 } _osso_hash_value_t;
 
 typedef struct {
@@ -158,6 +161,7 @@ typedef struct osso_af_context_t {
                                object path, and interface. */
     GHashTable *if_hash;    /* handlers hashed by interface only */
     GHashTable *id_hash;    /* handlers hashed by id (muali API) */
+    GHashTable *opm_hash;   /* handlers hashed by object path + member */
     _osso_autosave_t autosave;
 #ifdef LIBOSSO_DEBUG
     guint log_handler;
@@ -168,6 +172,7 @@ typedef struct osso_af_context_t {
     GArray *cp_plugins;
     int next_handler_id;    /* next available handler id, unique in this
                                context */
+    const DBusMessage *reply_dummy;
 } _osso_af_context_t, _muali_context_t;
 
 typedef struct _muali_context_t {
@@ -185,6 +190,7 @@ typedef struct _muali_context_t {
                                object path, and interface. */
     GHashTable *if_hash;    /* handlers hashed by interface only */
     GHashTable *id_hash;    /* handlers hashed by id (muali API) */
+    GHashTable *opm_hash;   /* handlers hashed by object path + member */
     _osso_autosave_t autosave;
 #ifdef LIBOSSO_DEBUG
     guint log_handler;
@@ -195,6 +201,7 @@ typedef struct _muali_context_t {
     GArray *cp_plugins;
     int next_handler_id;    /* next available handler id, unique in this
                                context */
+    const DBusMessage *reply_dummy;
 } _muali_this_type_is_not_used_t;
 
 # ifdef LIBOSSO_DEBUG
@@ -204,6 +211,10 @@ typedef struct _muali_context_t {
 #  define dprint(f, a...)
 # endif /* LIBOSSO_DEBUG */
 
+inline int __attribute__ ((visibility("hidden")))
+muali_convert_msgtype(int t);
+
+muali_arg_t* _get_muali_args(DBusMessageIter *iter);
 
 DBusHandlerResult __attribute__ ((visibility("hidden")))
 _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data);
@@ -242,7 +253,7 @@ make_default_interface(const char *application, char *interface);
 void __attribute__ ((visibility("hidden")))
 make_default_service(const char *application, char *service);
 
-gboolean __attribute__ ((visibility("hidden")))
+void __attribute__ ((visibility("hidden")))
 make_default_object_path(const char *application, char *path);
 
 

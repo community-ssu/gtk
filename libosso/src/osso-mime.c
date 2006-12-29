@@ -25,10 +25,10 @@
 #include "osso-internal.h"
 #include <assert.h>
 
-static DBusHandlerResult _mime_handler(osso_context_t *osso,
-				       DBusMessage *msg,
-				       _osso_callback_data_t *mime,
-                                       muali_bus_type dbus_type);
+static void _mime_handler(osso_context_t *osso,
+                          DBusMessage *msg,
+                          _osso_callback_data_t *mime,
+                          muali_bus_type dbus_type);
 static char * _get_arg(DBusMessageIter *iter);
 
 osso_return_t osso_mime_set_cb(osso_context_t *osso,
@@ -117,10 +117,10 @@ static int get_message_arg_count(DBusMessage *m)
     return count;
 }
 
-static DBusHandlerResult _mime_handler(osso_context_t *osso,
-				       DBusMessage *msg,
-				       _osso_callback_data_t *mime,
-                                       muali_bus_type dbus_type)
+static void _mime_handler(osso_context_t *osso,
+                          DBusMessage *msg,
+                          _osso_callback_data_t *mime,
+                          muali_bus_type dbus_type)
 {
     if (dbus_message_is_method_call(msg, osso->interface,
                                     OSSO_BUS_MIMEOPEN)) {
@@ -133,20 +133,20 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
         argc = get_message_arg_count(msg);
         if (argc == 0) {
             ULOG_ERR_F("No arguments in message");
-            return DBUS_HANDLER_RESULT_HANDLED;
+            return;
         }
         
         argv = (gchar**)calloc(argc + 1, sizeof(gchar*));
         if (argv == NULL) {
             ULOG_ERR_F("Not enough memory");
-            return DBUS_HANDLER_RESULT_HANDLED;
+            return;
         }
 	
         if (!dbus_message_iter_init(msg, &iter)) {
             ULOG_ERR_F("No arguments - should not happen since"
                        " it was already checked");
             free(argv);
-            return DBUS_HANDLER_RESULT_HANDLED;
+            return;
         }
 	while ((arg = _get_arg(&iter)) != NULL) {
 	    argv[idx++] = arg;
@@ -159,9 +159,6 @@ static DBusHandlerResult _mime_handler(osso_context_t *osso,
 	(*handler)(mime->user_data, argc, argv);
         free(argv);
     }
-    /* have to return this, because there could be more
-     * MIME callbacks */
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
 static char * _get_arg(DBusMessageIter *iter)
