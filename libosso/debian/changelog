@@ -13,8 +13,10 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * Split muali_set_event_handler to two functions to make API more easy
     to use.
   * Made lot of muali development, design fixes, and tested code.
+  * Implemented muali_reply_string (not sure if *_string functions make
+    sense...)
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 11 Dec 2006 18:22:56 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 29 Dec 2006 16:35:39 +0200
 
 libosso (1.20-1) unstable; urgency=low
 
