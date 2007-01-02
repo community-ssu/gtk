@@ -1,0 +1,18 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=random-app
+X-Osso-Service=random_app
+X-Osso-URI-Actions=test-action-fields;test-action-fields2;
+
+[X-Osso-URI-Action Handler test-action-fields]
+Method=method_foo_bar
+Name=name_of_this_foo_bar_test
+TranslationDomain=foo_bar_domain
+
+[X-Osso-URI-Action Handler test-action-fields2]
+Method=method_foo_bar2
+Name=name_of_this_foo_bar_test2
+X-Osso-Service=another_service
+TranslationDomain=foo_bar_domain

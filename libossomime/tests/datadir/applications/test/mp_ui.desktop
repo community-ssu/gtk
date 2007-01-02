@@ -1,0 +1,22 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=medi_ap_mediaplayer_name
+Exec=/usr/bin/mediaplayer-ui
+Icon=qgn_list_medi
+X-Icon-path=/usr/share/pixmaps/
+X-Window-Icon=tn-bookmarks-link
+X-Window-Icon-Dimmed=tn-bookmarks-link-dimmed
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Service=mediaplayer
+X-Osso-Type=application/x-executable
+X-Osso-URI-Actions=rtsp
+MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
+Comment=medi_ap_mediaplayer_name_thumb
+
+[X-Osso-URI-Action Handler rtsp]
+Method=mime_open
+Name=medi_ap_mediaplayer_name
+TranslationDomain=mediaplayer
+

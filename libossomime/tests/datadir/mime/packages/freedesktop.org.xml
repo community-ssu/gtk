@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mime-info [
+  <!ELEMENT mime-info (mime-type)+>
+  <!ATTLIST mime-info xmlns CDATA #FIXED "http://www.freedesktop.org/standards/shared-mime-info">
+
+  <!ELEMENT mime-type (comment|glob|magic|root-XML|alias|sub-class-of)*>
+  <!ATTLIST mime-type type CDATA #REQUIRED>
+
+  <!ELEMENT comment (#PCDATA)>
+  <!ATTLIST comment xml:lang CDATA #IMPLIED>
+
+  <!ELEMENT glob EMPTY>
+  <!ATTLIST glob pattern CDATA #REQUIRED>
+
+  <!ELEMENT magic (match)+>
+  <!ATTLIST magic priority CDATA #IMPLIED>
+
+  <!ELEMENT match (match)*>
+  <!ATTLIST match offset CDATA #REQUIRED>
+  <!ATTLIST match type (string|big16|big32|little16|little32|host16|host32|byte) #REQUIRED>
+  <!ATTLIST match value CDATA #REQUIRED>
+  <!ATTLIST match mask CDATA #IMPLIED>
+
+  <!ELEMENT root-XML EMPTY>
+  <!ATTLIST root-XML
+  	namespaceURI CDATA #REQUIRED
+	localName CDATA #REQUIRED>
+
+  <!ELEMENT alias EMPTY>
+  <!ATTLIST alias
+  	type CDATA #REQUIRED>
+
+  <!ELEMENT sub-class-of EMPTY>
+  <!ATTLIST sub-class-of
+  	type CDATA #REQUIRED>
+]>
+
+<!-- 
+The freedesktop.org shared MIME database (this file) was created by merging
+several existing MIME databases (all released under the GPL).
+
+It comes with ABSOLUTELY NO WARRANTY, to the extent permitted by law. You may
+redistribute copies of update-mime-database under the terms of the GNU General
+Public License. For more information about these matters, see the file named
+COPYING.
+
+The latest version is available from:
+
+	http://www.freedesktop.org/standards/shared-mime-info.html
+
+To extend this database, users and applications should create additional
+XML files in the 'packages' directory and run the update-mime-database
+command to generate the output files.
+-->
+
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info">
+</mime-info>

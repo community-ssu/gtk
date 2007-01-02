@@ -1,0 +1,9 @@
+[Default Actions]
+http=test-browser.desktop
+https=test-browser.desktop
+jabberto=test-osso-addressbook.desktop
+voipto=test-browser.desktop
+ftp=test-browser.desktop
+sipto=test-osso-addressbook.desktop
+mailto=test-email-engine.desktop
+chatto=test-chat-ui.desktop

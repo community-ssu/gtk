@@ -1,0 +1,17 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=test-plugin
+Comment=test-plugin
+Exec=/usr/bin/test-plugin
+Icon=test_plugin
+X-Osso-Service=test_app
+X-Osso-Type=application/x-executable
+X-Osso-URI-Actions=testplugin
+
+[X-Osso-URI-Action Handler testplugin]
+Method=test_plugin_method
+Name=test-plugin-method
+TranslationDomain=foo
+

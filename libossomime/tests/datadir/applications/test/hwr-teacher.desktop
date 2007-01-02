@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=inpu_ap_hwr_training_title
+StartupWMClass=hwr-teacher
+Exec=/usr/bin/hwr-teacher
+Icon=qgn_list_cp_peninput
+X-Window-Icon=tn-bookmarks-link
+X-HildonDesk-ShowInToolbar=false
+X-Hildon-Service=hwr_teacher
+X-Osso-Service=hwr_teacher
+X-Osso-Type=application/x-executable
+Comment=inpu_ap_hwr_training_title_thumb

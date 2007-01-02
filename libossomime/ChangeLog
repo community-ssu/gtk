@@ -1,3 +1,36 @@
+2007-01-02  Martyn Russell  <martyn@imendio.com>
+
+	* docs/mime-desktop-file-mapping.txt:
+	* libossomime/Makefile.am:
+	* libossomime/osso-uri.[ch]:
+	* libossomime/test-mime-category.c:
+	* libossomime/test-mime-icon.c:
+	* libossomime/test-mime-patterns.c:
+	* libossomime/test-mime-types.c:
+	* libossomime/test-open.c:
+	* libossomime/test-service.c:
+	* libossomime/test-uri.c:
+	* tests/Makefile.am:
+	* tests/datadir/applications/test/action_fields.desktop:
+	* tests/datadir/applications/test/browser.desktop:
+	* tests/datadir/applications/test/hildon-control-panel.desktop:
+	* tests/datadir/applications/test/hwr-teacher.desktop:
+	* tests/datadir/applications/test/image-viewer.desktop:
+	* tests/datadir/applications/test/mp_ui.desktop:
+	* tests/datadir/applications/test/osso-backup.desktop:
+	* tests/datadir/applications/test/osso-global-search.desktop:
+	* tests/datadir/applications/test/test-app.desktop:
+	* tests/datadir/applications/test/test-plugin.desktop:
+	* tests/datadir/applications/test/webimages.desktop:
+	* tests/datadir/applications/uri-action-defaults.list:
+	* tests/datadir/mime/packages/freedesktop.org.xml:
+	* tests/datadir/mime/packages/image-viewer.xml:
+	* tests/datadir/mime/packages/maemo-af-desktop.xml:
+	* tests/datadir/mime/packages/mediaplayer-ui.xml:
+	* tests/test-all.c: Initial merge from the internal 1.0 branch we
+	started recently. New osso-uri API and tests included and basic 1.0
+	proposal described in docs/mime-desktop-file-mapping.txt.
+
 2006-12-21  Richard Hult  <richard@imendio.com>
 
 	* obex-utils/obex-vfs-utils/ovu-xfer.h (ovu_async_xfer): Make the

@@ -1,0 +1,17 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=test-app
+Comment=test-app
+Exec=/usr/bin/test-app
+Icon=test_app
+X-Osso-Service=test_app
+X-Osso-Type=application/x-executable
+X-Osso-URI-Actions=testapp
+
+[X-Osso-URI-Action Handler testapp]
+Method=test_app_method
+Name=test-app-method
+TranslationDomain=foo
+

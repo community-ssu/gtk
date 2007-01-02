@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info"
+           xmlns:osso="http://nokia.com/osso/mime-categories">
+  <mime-type type="video/x-msvideo">
+        <comment>AVI video file</comment>
+            <glob pattern="*.avi"/>
+        <osso:category name="video"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-mp3">
+      <comment>MP3 audio</comment>
+      <magic priority="50">
+          <match value="0xfffb" type="big32" offset="0"/>
+          <match value="ID3" type="string" offset="0"/>
+          <match value="0xfff0" type="big32" offset="0" mask="0xfff0"/>
+      </magic>
+      <glob pattern="*.mp3"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="video/mpeg">
+      <comment>MPEG video file</comment>
+      <glob pattern="*.mpe"/>
+      <glob pattern="*.mpeg"/>
+      <glob pattern="*.mpg"/>
+      <glob pattern="*.m2v"/>
+      <glob pattern="*.mpv"/>
+      <osso:category name="video"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-wav">
+      <comment>WAV audio</comment>
+      <magic priority="50">
+          <match value="WAVE" type="string" offset="8"/>
+          <match value="WAV " type="string" offset="8"/>
+      </magic>
+      <glob pattern="*.wav"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-real">
+      <comment>RealAudio</comment>
+      <glob pattern="*.ra"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="video/x-real">
+      <comment>RealMedia</comment>
+      <glob pattern="*.rm"/>
+      <glob pattern="*.rmj"/>
+      <glob pattern="*.rmm"/>
+      <glob pattern="*.rmvb"/>
+      <glob pattern="*.rv"/>
+      <glob pattern="*.sdp"/>
+      <osso:category name="video"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-m4a">
+      <comment>AAC audio file</comment>
+      <magic priority="50">
+          <match value="ftypM4A " type="string" offset="0"/>
+          <match value="ADIF" type="string" offset="0"/>
+          <match value="0xFFF00000" type="little32" offset="0" mask="0xFFF60000"/>
+      </magic>
+      <glob pattern="*.aac"/>
+      <glob pattern="*.m4a"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-amr">
+      <comment>AMR audio file</comment>
+      <magic priority="50">
+          <match value="#!AMR" type="string" offset="0"/>
+      </magic>
+      <glob pattern="*.amr"/>
+      <glob pattern="*.awb"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="video/x-mp4">
+      <comment>MP4 video file</comment>
+      <glob pattern="*.mp4"/>
+      <glob pattern="*.mpg4"/>
+      <glob pattern="*.mpeg4"/>
+      <osso:category name="video"/>
+  </mime-type>
+  
+  <mime-type type="video/3gpp">
+      <comment>3GPP media file</comment>
+      <glob pattern="*.3gp"/>
+      <glob pattern="*.3gpp"/>
+      <osso:category name="video"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-mp2">
+      <comment>MPEG1 layer 2 audio file</comment>
+      <magic priority="50">
+          <match value="0xfffc" type="big32" offset="0" mask="0xfffe"/>
+      </magic>
+      <glob pattern="*.mp2"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-ms-wma">
+      <comment>Microsoft audio file</comment>
+      <glob pattern="*.wma"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-mpegurl">
+      <comment>MP3 audio (streamed)</comment>
+      <magic priority="50">
+          <match value="#EXTM3U" type="string" offset="0"/>
+          <match value="http://" type="string" offset="0"/>
+          <match value="file://" type="string" offset="0"/>
+      </magic>
+      <glob pattern="*.m3u"/>
+      <osso:category name="audio"/>
+  </mime-type>
+
+  <mime-type type="audio/x-scpls">
+    <comment>MP3 ShoutCast playlist</comment>
+    <magic priority="50">
+      <match value="[playlist]" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.pls"/>
+    <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-pn-realaudio">
+      <comment>RAM playlist</comment>
+      <glob pattern="*.ram"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-pn-realaudio-plugin">
+      <comment>RPM playlist</comment>
+      <glob pattern="*.rpm"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="video/x-ms-asf">
+      <comment>ASX playlist</comment>
+      <glob pattern="*.asx"/>
+      <osso:category name="video"/>
+  </mime-type>
+  
+  <mime-type type="audio/x-ms-wax">
+      <comment>WAX playlist</comment>
+      <glob pattern="*.wax"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="application/vnd.ms-wpl">
+      <comment>WPL playlist</comment>
+      <glob pattern="*.wpl"/>
+      <osso:category name="audio"/>
+  </mime-type>
+  
+  <mime-type type="video/x-ms-wvx">
+      <comment>WVX playlist</comment>
+      <glob pattern="*.wvx"/>
+      <osso:category name="video"/>
+  </mime-type>
+
+</mime-info>

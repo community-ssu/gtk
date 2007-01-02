@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=browser
+X-Osso-Service=browser
+MimeType=image/png;
+X-Osso-URI-Actions=http;
+
+[X-Osso-URI-Action Handler http]
+Method=browser_open
+Name=browser_open
+TranslationDomain=foo_bar_domain

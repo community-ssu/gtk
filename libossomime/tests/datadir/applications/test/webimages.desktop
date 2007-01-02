@@ -1,0 +1,13 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=my image viewer
+X-Osso-Service=my_image_viewer
+MimeType=image/png;
+X-Osso-URI-Actions=http;
+
+[X-Osso-URI-Action Handler http]
+Method=image_viewer_open
+Name=image_viewer_open
+TranslationDomain=foo_bar_domain

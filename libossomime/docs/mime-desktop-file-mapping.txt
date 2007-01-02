@@ -1,0 +1,340 @@
+Basic Proposal for Maemo 1.0:
+=============================
+https://projects.maemo.org/trac/af/wiki/LibOssoMimeURIMIMEIntProposal2
+
+Current Issues:
+===============
+- No neutral actions.
+- No actions for unknown mime types.
+- No way to use actions on a per mime type basis.
+
+Current Approach:
+=================
+For the moment we have:
+
+	[Desktop Entry]
+	X-Osso-URI-Actions=<method1>;<method2>;...
+
+	[X-Osso-URI-Action-Handler <method>]
+	Name=<nice name>
+	Method=<dbus method>
+	TranslationDomain=<translation domain>
+	X-Osso-Service=<dbus service>
+
+Detailed Proposal:
+==================
+We would leave the original group name of "[X-Osso-URI-Action-Handler
+<method>]" in so that older applications can still work with the newer
+specification. 
+
+Instead now, we will use a new group name of "[X-Osso-URI-Actions]"
+which will be used to list all actions corresponding to schemes, for
+example: 
+
+	[X-Osso-URI-Actions]
+	http=X-Osso-URI-Action-Add-Bookmark;
+	X-Osso-URI-Action-Open-Browser; X-Osso-URI-Action-Open-Media;
+	X-Osso-URI-Action-Add-To-Media-Library; 
+	ftp=X-Osso-URI-Action-Open-Browser;
+
+You can also make all actions available for all schemes where the
+"All" scheme would be uniquely available for ALL schemes: 
+
+	[X-Osso-URI-Actions]
+	http=X-Osso-URI-Action-Add-Bookmark; X-Osso-URI-Action-Open-Browser;
+	https=X-Osso-URI-Action-Add-Bookmark; X-Osso-URI-Action-Open-Browser;
+	ftp=X-Osso-URI-Action-Add-Bookmark; X-Osso-URI-Action-Open-Browser;
+
+The actions would all be a group in themselves:
+
+	[X-Osso-URI-Action-Add-Bookmark]
+	Type=Neutral
+	MimeType=text/html;...
+	Name=Add Bookmark
+	X-Osso-Service=com.nokia.browser
+	Method=add_bookmark
+	TranslationDomain=browser
+
+Where Type, Service, MimeType, and TranslationDomain are completely optional. 
+
+The X-Osso-Service and MimeType both inherit from the [Desktop Entry]
+and are overwritten if specified. 
+
+Type can be one of three values.
+
+	Normal (default if the Type is not specified).
+	Neutral (applies to ALL mime types).
+	Fallback (applies exclusively when the mime type is unknown).
+
+For the moment the distinction between the old and the new .desktop
+files is made by the existence of the X-Osso-URI-Actions key in the
+[Desktop Entry] group. 
+
+The schemeinfo.cache file which has a scheme (like http, https, ftp,
+etc) to desktop file conversion will remain unchanged. 
+
+The uri-default-action.list has updated but should still be compatible
+for older desktop file. It will look like this (showing old and new
+formats together): 
+
+	[X-Osso-URI-Scheme <mime type>]
+	<scheme>=<desktop file>:<action name>
+
+An example of new and old formats together would look like:
+
+	# For supporting older actions
+	[Default Actions]
+	https=hildon-browser;
+
+	# For new actions
+	[X-Osso-URI-Scheme http]
+	image-png=hildon-browser:X-Osso-URI-Action-Open
+	image-jpeg=hildon-image-viewer:X-Osso-URI-Action-Open
+
+Examples:
+=========
+
+Current VOIP desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=1.0
+	Type=Application
+	Name=voip_ap_feature_name
+	Comment=voip_ap_feature_name_thumb
+	Exec=/usr/bin/osso-voip-ui
+	Icon=qgn_list_voip
+	X-Osso-Service=osso_voip_ui
+	X-Osso-Type=application/x-executable
+	X-Osso-URI-Actions=voipto;callto;videovoip
+	
+	[X-Osso-URI-Action Handler voipto]
+	Method=voip_to
+	Name=tana_fi_new_call
+	TranslationDomain=osso-contact-plugin
+
+	[X-Osso-URI-Action Handler callto]
+	Method=voip_to
+	Name=tana_fi_new_call
+	TranslationDomain=osso-contact-plugin
+	
+	[X-Osso-URI-Action Handler videovoip]
+	Method=video_voip
+	Name=tana_fi_new_call
+	TranslationDomain=osso-contact-plugin
+
+New VOIP desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=1.0
+	Type=Application
+	Name=voip_ap_feature_name
+	Comment=voip_ap_feature_name_thumb
+	Exec=/usr/bin/osso-voip-ui
+	Icon=qgn_list_voip
+	X-Osso-Service=osso_voip_ui
+	X-Osso-Type=application/x-executable
+	
+	[X-Osso-URI-Actions]
+	voipto=X-Osso-URI-Action-Voip-To;
+	callto=X-Osso-URI-Action-Voip-To;
+	videovoip=X-Osso-URI-Action-Video-Voip-To;
+
+	[X-Osso-URI-Action-Voip-To]
+	Method=voip_to
+	Name=tana_fi_new_call
+	TranslationDomain=osso-contact-plugin
+
+	[X-Osso-URI-Action-Video-Voip-To]
+	Method=video_voip
+	Name=tana_fi_new_call
+	TranslationDomain=osso-contact-plugin
+
+Current address book desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=1.0
+	Type=Application
+	Name=addr_ap_address_book
+	Comment=addr_ap_address_book_thumb
+	Exec=/usr/bin/osso-addressbook
+	X-Osso-Service=osso_addressbook
+	Icon=qgn_list_addressbook
+	StartupWMClass=osso-addressbook
+	X-Osso-URI-Actions=mailto;xmpp;sipto;
+	MimeType=text/x-vcard
+	
+	[X-Osso-URI-Action Handler mailto]
+	Method=add_account
+	Name=addr_me_cs_addtocontacts
+	TranslationDomain=osso-addressbook
+	
+	[X-Osso-URI-Action Handler xmpp]
+	Method=add_account
+	Name=addr_ap_address_book
+	TranslationDomain=osso-addressbook
+	
+	[X-Osso-URI-Action Handler sipto]
+	Method=add_account
+	Name=addr_ap_address_book
+	TranslationDomain=osso-addressbook
+
+New address book desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=1.0
+	Type=Application
+	Name=addr_ap_address_book
+	Comment=addr_ap_address_book_thumb
+	Exec=/usr/bin/osso-addressbook
+	X-Osso-Service=osso_addressbook
+	Icon=qgn_list_addressbook
+	StartupWMClass=osso-addressbook
+	MimeType=text/x-vcard
+	
+	[X-Osso-URI-Actions]
+	mailto=X-Osso-URI-Action-Add-Contact;
+	xmpp=X-Osso-URI-Action-Add-Account;
+	sipto=X-Osso-URI-Action-Add-Account;
+
+	[X-Osso-URI-Action-Add-Contact]
+	Method=add_account
+	Name=addr_me_cs_addtocontacts
+	TranslationDomain=osso-addressbook
+	
+	[X-Osso-URI-Action-Add-Account]
+	Method=add_account
+	Name=addr_ap_address_book
+	TranslationDomain=osso-addressbook
+
+Current browser desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=0.1
+	Type=Application
+	Name=weba_ap_web_browser
+	Comment=weba_ap_web_browser_thumb
+	Exec=/usr/bin/browser
+	Icon=qgn_list_browser
+	X-Window-Icon=qgn_list_browser
+	X-Window-Icon-Dimmed=qgn_list_browser
+	X-Osso-Service=osso_browser
+	X-HildonDesk-ShowInToolbar=true
+	X-Osso-Type=application/x-executable
+	MimeType=text/html;text/css;text/sgml;text/x-dtd;application/x-javascript;image/gif;image/jpeg;image/png;image/vnd.wap.wbmp;image/pjpeg;image/bmp;image/x-windows-bmp;image/x-ms-bmp;image/xbm;image/ico;image/x-ico;image/x-xbitmap;text/plain;application/x-shockwave-flash;
+
+	X-Osso-URI-Actions=http;https;ftp;file;
+
+	[X-Osso-URI-Action Handler http]
+	Method=load_url
+	Name=uri_link_open_link
+	TranslationDomain=osso-uri
+	
+	[X-Osso-URI-Action Handler https]
+	Method=load_url
+	Name=uri_link_open_link
+	TranslationDomain=osso-uri
+	
+	[X-Osso-URI-Action Handler ftp]
+	Method=load_url
+	Name=uri_link_open_link
+	TranslationDomain=osso-uri
+	
+	[X-Osso-URI-Action Handler file]
+	Method=load_url
+	Name=uri_link_open_link
+	TranslationDomain=osso-uri
+	
+New browser desktop file (with new "neutral" and "fallback" features):
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=0.1
+	Type=Application
+	Name=weba_ap_web_browser
+	Comment=weba_ap_web_browser_thumb
+	Exec=/usr/bin/browser
+	Icon=qgn_list_browser
+	X-Window-Icon=qgn_list_browser
+	X-Window-Icon-Dimmed=qgn_list_browser
+	X-Osso-Service=osso_browser
+	X-HildonDesk-ShowInToolbar=true
+	X-Osso-Type=application/x-executable
+	MimeType=text/html;text/css;text/sgml;text/x-dtd;application/x-javascript;image/gif;image/jpeg;image/png;image/vnd.wap.wbmp;image/pjpeg;image/bmp;image/x-windows-bmp;image/x-ms-bmp;image/xbm;image/ico;image/x-ico;image/x-xbitmap;text/plain;application/x-shockwave-flash;
+
+	[X-Osso-URI-Actions]
+	http=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+	https=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+	ftp=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+	file=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+
+	[X-Osso-URI-Action-Open]
+	Method=load_url
+	Name=uri_link_open_link
+	TranslationDomain=osso-uri
+
+	[X-Osso-URI-Action-Save]
+	Type=Neutral
+	Method=save_url
+	Name=uri_link_save_link
+	TranslationDomain=osso-uri
+
+	[X-Osso-URI-Action-Fallback]
+	Type=Fallback
+	Method=load_url_fallback
+	Name=uri_link_open_link_fallback
+	TranslationDomain=osso-uri
+
+Current media player desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=1.0
+	Type=Application
+	Name=medi_ap_mediaplayer_name
+	Exec=/usr/bin/mediaplayer-ui
+	Icon=qgn_list_medi
+	X-Icon-path=/usr/share/pixmaps/
+	X-Window-Icon=tn-bookmarks-link
+	X-Window-Icon-Dimmed=tn-bookmarks-link-dimmed
+	X-HildonDesk-ShowInToolbar=true
+	X-Osso-Service=mediaplayer
+	X-Osso-Type=application/x-executable
+	X-Osso-URI-Actions=rtsp
+	MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
+	Comment=medi_ap_mediaplayer_name_thumb
+
+	[X-Osso-URI-Action Handler rtsp]
+	Method=mime_open
+	Name=medi_ap_mediaplayer_name
+	TranslationDomain=mediaplayer
+
+New media player desktop file:
+
+	[Desktop Entry]
+	Encoding=UTF-8
+	Version=1.0
+	Type=Application
+	Name=medi_ap_mediaplayer_name
+	Exec=/usr/bin/mediaplayer-ui
+	Icon=qgn_list_medi
+	X-Icon-path=/usr/share/pixmaps/
+	X-Window-Icon=tn-bookmarks-link
+	X-Window-Icon-Dimmed=tn-bookmarks-link-dimmed
+	X-HildonDesk-ShowInToolbar=true
+	X-Osso-Service=mediaplayer
+	X-Osso-Type=application/x-executable
+	MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
+	Comment=medi_ap_mediaplayer_name_thumb
+
+	[X-Osso-URI-Actions]
+	rtsp=X-Osso-URI-Action-Open;
+
+	[X-Osso-URI-Action-Open]
+	Method=mime_open
+	Name=medi_ap_mediaplayer_name
+	TranslationDomain=mediaplayer

@@ -1,0 +1,14 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=imag_ap_image_viewer_name
+Comment=imag_ap_image_viewer_name_thumb
+Exec=/usr/bin/image-viewer
+Icon=qgn_list_images
+X-Icon-path=/usr/share/pixmaps/
+X-Window-Icon=qgn_list_images
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Service=image_viewer
+X-Osso-Type=application/x-executable
+MimeType=image/bmp;image/gif;image/jpeg;image/png;image/svg+xml;image/tiff;image/x-ico;image/wbmp

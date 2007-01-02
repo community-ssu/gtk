@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mime-info xmlns="http://www.freedesktop.org/standards/shared-mime-info"
+           xmlns:osso="http://nokia.com/osso/mime-categories">
+  <mime-type type="image/bmp">
+    <comment>Windows BMP image</comment>
+    <magic priority="50">
+      <match value="BMxxxx\000\000" type="string" offset="0" mask="0xffff00000000ffff"/>
+      <match value="BM" type="string" offset="0">
+        <match value="12" type="byte" offset="14"/>
+        <match value="64" type="byte" offset="14"/>
+        <match value="40" type="byte" offset="14"/>
+      </match>
+    </magic>
+    <glob pattern="*.bmp"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/gif">
+    <comment>GIF image</comment>
+    <magic priority="50">
+      <match value="GIF" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.gif"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/jpeg">
+    <comment>JPEG image</comment>
+    <magic priority="50">
+      <match value="\377\330\377" type="string" offset="0"/>
+      <match value="0xffd8" type="big16" offset="0"/>
+    </magic>
+    <glob pattern="*.jpeg"/>
+    <glob pattern="*.jpg"/>
+    <glob pattern="*.jpe"/>
+    <glob pattern="*.jfif"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/png">
+    <comment>PNG image</comment>
+    <magic priority="50">
+      <match value="\x89PNG" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.png"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/svg+xml">
+    <comment>scalable SVG image</comment>
+    <magic priority="80">
+      <match value="&lt;!DOCTYPE svg" type="string" offset="0:256"/>
+      <match value="&lt;svg" type="string" offset="0:64"/>
+    </magic>
+    <glob pattern="*.svg"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/tiff">
+    <comment>TIFF image</comment>
+    <magic priority="50">
+      <match value="MM\x00\x2a" type="string" offset="0"/>
+      <match value="II\x2a\x00" type="string" offset="0"/>
+    </magic>
+    <glob pattern="*.tif"/>
+    <glob pattern="*.tiff"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/x-ico">
+    <comment>Microsoft Windows icon</comment>
+    <glob pattern="*.ico"/>
+    <osso:category name="images"/>
+  </mime-type>
+  <mime-type type="image/wbmp">
+    <comment>WAP bitmap</comment>
+    <glob pattern="*.wbmp"/>
+    <osso:category name="images"/>
+  </mime-type>
+</mime-info>
