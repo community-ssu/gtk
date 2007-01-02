@@ -354,10 +354,6 @@ AC_OUTPUT([
 	file-chooser/Makefile
 	file-chooser/src/Makefile
 	file-chooser/tests/Makefile
-        libossomime/Makefile
-        libossomime/libossomime.pc
-        libossomime/data/Makefile
-        libossomime/src/Makefile
 	obex-module/Makefile
 	obex-module/docs/Makefile
 	obex-module/src/Makefile

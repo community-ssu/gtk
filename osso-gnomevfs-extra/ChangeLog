@@ -1,3 +1,38 @@
+2007-01-02  Martyn Russell  <martyn@imendio.com>
+
+	* Makefile.am:
+	* configure.in:
+	* libossomime/Doxyfile.in:
+	* libossomime/Makefile.am:
+	* libossomime/data/Makefile.am:
+	* libossomime/data/categories.xml:
+	* libossomime/data/uri-action-defaults.list:
+	* libossomime/libossomime.pc.in:
+	* libossomime/mime-category-mapping.txt:
+	* libossomime/mime-dbus-mapping.txt:
+	* libossomime/src/Makefile.am:
+	* libossomime/src/osso-mime-application.c:
+	* libossomime/src/osso-mime-categories.c:
+	* libossomime/src/osso-mime-icon.c:
+	* libossomime/src/osso-mime-open.c:
+	* libossomime/src/osso-mime-patterns.c:
+	* libossomime/src/osso-mime-patterns.h:
+	* libossomime/src/osso-mime.h:
+	* libossomime/src/osso-uri.c:
+	* libossomime/src/osso-uri.h:
+	* libossomime/src/test-mime-category.c:
+	* libossomime/src/test-mime-default-app.c:
+	* libossomime/src/test-mime-icon.c:
+	* libossomime/src/test-mime-patterns.c:
+	* libossomime/src/test-mime-types.c:
+	* libossomime/src/test-open.c:
+	* libossomime/src/test-service.c:
+	* libossomime/src/test-uri.c:
+	* libossomime/src/update-category-database.c:
+	* libossomime/ut/Makefile.am:
+	* libossomime/ut/test-ossomime.c: Removed libossomime, now it has
+	its own module we don't need it here any more.
+
 2006-12-21  Richard Hult  <richard@imendio.com>
 
 	* obex-utils/obex-vfs-utils/ovu-xfer.h (ovu_async_xfer): Make the
