@@ -1,5 +1,17 @@
 2007-01-02  Martyn Russell  <martyn@imendio.com>
 
+	* libossomime/osso-uri.c: Fixed a problem with
+	uri_action_type_to_string() only being used with debugging
+	enabled. 
+	
+	* tests/Makefile.am: Fix the location of the .la file we use with
+	the test cases.
+	
+	* tests/test-all.c: Fix the location of the
+	osso-update-category-database application we run.
+
+2007-01-02  Martyn Russell  <martyn@imendio.com>
+
 	* docs/mime-desktop-file-mapping.txt:
 	* libossomime/Makefile.am:
 	* libossomime/osso-uri.[ch]:

@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
 
-/* #define DEBUG_MSG(x)   */
-#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");
+#define DEBUG_MSG(x)  
+/*#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");*/
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -216,19 +216,21 @@ uri_action_type_to_string (OssoURIActionType type)
 static OssoURIActionType 
 uri_action_type_from_string (const gchar *type_str)
 {
-	OssoURIActionType type;
-
-	type = OSSO_URI_ACTION_NORMAL;
-
 	if (type_str) {
-		if (g_ascii_strcasecmp (type_str, "Neutral") == 0) {
-			type = OSSO_URI_ACTION_NEUTRAL;
-		} else if (g_ascii_strcasecmp (type_str, "Fallback") == 0) {
-			type = OSSO_URI_ACTION_FALLBACK;
+		const gchar *str;
+
+		str = uri_action_type_to_string (OSSO_URI_ACTION_NEUTRAL);
+		if (g_ascii_strcasecmp (type_str, str) == 0) {
+			return OSSO_URI_ACTION_NEUTRAL;
+		} 
+
+		str = uri_action_type_to_string (OSSO_URI_ACTION_FALLBACK);
+		if (g_ascii_strcasecmp (type_str, str) == 0) {
+			return OSSO_URI_ACTION_FALLBACK;
 		}
 	}
 
-	return type;
+	return OSSO_URI_ACTION_NORMAL;
 }
 
 /*

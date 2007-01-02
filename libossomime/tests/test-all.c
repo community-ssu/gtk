@@ -260,12 +260,12 @@ main (int argc, char **argv)
 	g_setenv ("XDG_DATA_DIRS", TEST_DATADIR, TRUE);
 	g_setenv ("XDG_DATA_HOME", TEST_DATADIR "-local", TRUE);
 
-	tmp = g_strdup_printf ("../src/osso-update-category-database %s",
+	tmp = g_strdup_printf ("../libossomime/osso-update-category-database %s",
 			       TEST_DATADIR "/mime");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
 	if (!ret) {
-		g_print ("Couldn't launch ../src/osso-update-category-database: %s\n",
+		g_print ("Couldn't launch ../libossomime/osso-update-category-database: %s\n",
 			 error->message);
 		g_clear_error (&error);
 		return 1;
