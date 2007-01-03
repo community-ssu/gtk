@@ -1,3 +1,9 @@
+libsdl-image1.2 (1.2.5-4) unstable; urgency=medium
+
+  * Ran autoconf (quickfix for NOT building without SDL 1.2.10).
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Wed,  3 Jan 2007 18:06:53 +0200
+
 libsdl-image1.2 (1.2.5-3) unstable; urgency=low
 
   * Added shlibs.
