@@ -2,7 +2,7 @@
 #
 # This file is part of osso-af-startup.
 #
-# Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+# Copyright (C) 2004-2007 Nokia Corporation. All rights reserved.
 #
 # Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 #
@@ -22,7 +22,9 @@
 
 DIR=$AF_INIT_DIR
 
-sudo /etc/init.d/alarmd stop
+if [ -x /etc/init.d/alarmd ]; then
+  sudo /etc/init.d/alarmd stop
+fi
 if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh stop
 fi
@@ -31,7 +33,9 @@ if [ -f $DIR/keyboard.defs ]; then
   source $DIR/keyboard.defs
 fi
 source $DIR/keyboard.sh stop
-sudo /etc/init.d/ke-recv stop
+if [ -x /etc/init.d/ke-recv ]; then
+  sudo /etc/init.d/ke-recv stop
+fi
 source $DIR/dbus-sessionbus.sh stop
 
 # wait for the D-BUS session bus to die
@@ -50,8 +54,12 @@ source $DIR/af-defines.sh ;# re-read session bus address
 if [ -x /etc/init.d/maemo-launcher ]; then
   /etc/init.d/maemo-launcher restart
 fi
-sudo /etc/init.d/ke-recv start
-sudo /etc/init.d/osso-systemui restart
+if [ -x /etc/init.d/ke-recv ]; then
+  sudo /etc/init.d/ke-recv start
+fi
+if [ -x /etc/init.d/osso-systemui ]; then
+  sudo /etc/init.d/osso-systemui restart
+fi
 if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh start &
 fi
@@ -59,6 +67,8 @@ if [ -x $DIR/osso-connectivity-ui.sh ]; then
   source $DIR/osso-connectivity-ui.sh start
 fi
 source $DIR/keyboard.sh start
-sudo /etc/init.d/alarmd start
+if [ -x /etc/init.d/alarmd ]; then
+  sudo /etc/init.d/alarmd start
+fi
 # give VKB some time to start
 sleep 3

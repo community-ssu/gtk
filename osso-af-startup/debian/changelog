@@ -1,3 +1,11 @@
+osso-af-startup (1.33-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Fixed problem with /etc/sudoers when installing to Sardine.
+  * Fixed startup problem when alarmd is not available. Fixes: MB#910
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 03 Jan 2007 09:49:17 +0200
+
 osso-af-startup (1.32-1) unstable; urgency=low
 
   * Added new startup greeting. Fixes: NB#47055
