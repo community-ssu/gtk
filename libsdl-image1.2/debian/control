@@ -1,0 +1,20 @@
+Source: libsdl-image1.2
+Priority: optional
+Maintainer: Kuisma Salonen <kuisma.salonen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libsdl1.2-dev (>= 1.2.4), libpng12-dev, libjpeg62-dev, libtiff4-dev
+Standards-Version: 3.6.0
+
+Package: libsdl-image1.2-dev
+Section: devel
+Architecture: any
+Depends: libsdl-image1.2 (= ${Source-Version}), libsdl1.2-dev, libtiff4-dev
+Description: Development files for libsdl-image1.2.
+ Development headers for libsdl-image1.2
+
+Package: libsdl-image1.2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Image loading library for SDL.
+ Library to wrap existing image loading libraries to help loading images from
+ varying formats to be used as SDL surfaces.
