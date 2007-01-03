@@ -22,6 +22,20 @@ def get_hildon_version():
     return hildon_version
 hildon_version = get_hildon_version()
 
+def gen_hildon_types(filename, subproc_args):
+    proc = subprocess.Popen(
+        subproc_args,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    cmdresult = proc.stdout
+    error = proc.stderr
+    print >>sys.stderr, error.read()
+    if cmdresult:
+        new_file = open(filename, 'w')
+        new_file.write(cmdresult.read())
+	new_file.close()
+
 class PyHildonBuild(build):
     def run(self):
         """Create the temporary files used to compile the hildon module:
@@ -29,26 +43,24 @@ class PyHildonBuild(build):
         -hildon-types.h.in
         -hildon-types.c.in"""
         # Generate enum/flags run-time information
-        HILDON_TYPE_FILES = includedir+'/hildon-fm/hildon-widgets/hildon-file-system-model.h    \
-            '+includedir+'/hildon-fm/hildon-widgets/hildon-file-system-common.h    \
-            '+includedir+'/hildon-fm/hildon-widgets/hildon-file-selection.h    \
-            '+includedir+'/hildon-widgets/hildon-date-editor.h    \
-            '+includedir+'/hildon-widgets/hildon-font-selection-dialog.h    \
-            '+includedir+'/hildon-widgets/hildon-grid-item.h    \
-            '+includedir+'/hildon-widgets/hildon-input-mode-hint.h    \
-            '+includedir+'/hildon-widgets/hildon-number-editor.h    \
-            '+includedir+'/hildon-widgets/hildon-telephone-editor.h    \
-            '+includedir+'/hildon-widgets/hildon-time-editor.h    \
-            '+includedir+'/hildon-base-lib/hildon-base-types.h    \
-            '+includedir+'/glib-2.0/glib/gdate.h'
+        HILDON_TYPE_FILES = [
+	    includedir+'/hildon-fm/hildon-widgets/hildon-file-system-model.h',
+            includedir+'/hildon-fm/hildon-widgets/hildon-file-system-common.h',
+            includedir+'/hildon-fm/hildon-widgets/hildon-file-selection.h',
+            includedir+'/hildon-widgets/hildon-date-editor.h',
+            includedir+'/hildon-widgets/hildon-font-selection-dialog.h',
+            includedir+'/hildon-widgets/hildon-grid-item.h',
+            includedir+'/hildon-widgets/hildon-input-mode-hint.h',
+            includedir+'/hildon-widgets/hildon-number-editor.h',
+            includedir+'/hildon-widgets/hildon-telephone-editor.h',
+            includedir+'/hildon-widgets/hildon-time-editor.h',
+            includedir+'/hildon-base-lib/hildon-base-types.h',
+            includedir+'/glib-2.0/glib/gdate.h',
+	]
         
-        filename = 'hildon-types.h.in'
-        cmdinput, cmdresult, error = os.popen3('./gen-enum-h '+HILDON_TYPE_FILES+' >'+filename+'.tmp && mv '+filename+'.tmp '+filename)
-        print >>sys.stderr, error.read()
-        filename = 'hildon-types.c.in'
-        cmdinput, cmdresult, error = os.popen3('./gen-enum-c '+HILDON_TYPE_FILES+' >'+filename+'.tmp && mv '+filename+'.tmp '+filename)
-        print >>sys.stderr, error.read()
-        
+	gen_hildon_types('hildon-types.h.in', ['/bin/sh', './gen-enum-h']+HILDON_TYPE_FILES)
+	gen_hildon_types('hildon-types.c.in', ['/bin/sh', './gen-enum-c']+HILDON_TYPE_FILES)
+
         # Creation of ".c" files, using pygtk-codegen-2.0
         prefix = "hildon"
         override_filename = 'hildon.override'
