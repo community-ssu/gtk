@@ -60,6 +60,7 @@ $(SOURCE_DIR)/configure:
 	patch -p0 < upstream/patches/gtkhtml_unrealize_fix.diff
 	patch -p0 < upstream/patches/gtkhtml_image_magnification.diff
 	patch -p0 < upstream/patches/gtkhtml_get_motion_hints.diff
+	patch -p0 < upstream/patches/gtkhtml_better_spacing.diff
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 

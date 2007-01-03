@@ -1,0 +1,53 @@
+diff -Nru gtkhtml-3.9.1/src/htmlengine.c gtkhtml-3.9.1+better_spacing/src/htmlengine.c
+--- gtkhtml-3.9.1/src/htmlengine.c	2007-01-02 15:06:33.000000000 +0200
++++ gtkhtml-3.9.1+better_spacing/src/htmlengine.c	2007-01-02 15:08:07.000000000 +0200
+@@ -629,8 +629,8 @@
+ 		span = item->data;
+ 
+ 		/* we track the max display level here because an alignment on
+-		 * an inline block should not change change the block alignment 
+-		 * unless the block is nested in the inline element
++		 * an inline block should not change the block alignment unless 
++		 * the block is nested in the inline element
+ 		 */
+ 		maxLevel = MAX (maxLevel, span->style->display);
+ 		
+@@ -875,6 +875,7 @@
+ 	gboolean create_link;
+ 	gint last_pos = 0;
+ 	gint last_bytes = 0;
++	gboolean prev_text_ends_in_space = FALSE ;
+ 
+ 	if (text [0] == ' ' && text [1] == 0) {
+ 		if (e->eat_space)
+@@ -894,18 +895,24 @@
+ 	color = current_color (e);
+ 	face = current_font_face (e);
+ 
+-	if ((create_link || e->flow == NULL || HTML_CLUE (e->flow)->head == NULL) && !e->inPre) {
++	if (e->flow == NULL)
++		prev = NULL;
++	else
++		prev = HTML_CLUE (e->flow)->tail;
++
++	if (NULL != prev)
++	    if (HTML_IS_TEXT (prev))
++	        if (HTML_TEXT (prev)->text_bytes > 0)
++	            if (' ' == (HTML_TEXT (prev)->text)[HTML_TEXT (prev)->text_bytes - 1])
++	                prev_text_ends_in_space = TRUE ;
++
++	if (e->flow == NULL || ((prev == NULL || prev_text_ends_in_space) && !e->inPre)) {
+ 		while (*text == ' ')
+ 			text++;
+ 		if (*text == 0)
+ 			return;
+ 	}
+ 
+-	if (e->flow == NULL)
+-		prev = NULL;
+-	else
+-		prev = HTML_CLUE (e->flow)->tail;
+-
+ 	if (!prev || !HTML_IS_TEXT (prev)) {
+ 		prev = text_new (e, text, font_style, color);
+ 		append_element (e, clue, prev);
