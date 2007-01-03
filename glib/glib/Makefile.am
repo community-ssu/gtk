@@ -24,7 +24,7 @@ galiasdef.c: glib.symbols
 
 if OS_LINUX
 if HAVE_GNUC_VISIBILITY
-TESTS = abicheck.sh
+TESTS = abicheck.sh pltcheck.sh
 endif
 endif
 
@@ -42,6 +42,7 @@ EXTRA_DIST = 			\
 	gen-unicode-tables.pl	\
 	makegalias.pl		\
 	abicheck.sh		\
+	pltcheck.sh		\
 	glib.symbols		\
 	$(MIRRORING_TAB_SOURCES)
 
@@ -72,6 +73,8 @@ libglib_2_0_la_SOURCES = 	\
 	gasyncqueue.c		\
 	gatomic.c		\
 	gbacktrace.c		\
+	gbase64.c		\
+	gbookmarkfile.c 	\
 	gbsearcharray.h		\
 	gcache.c		\
 	gcompletion.c		\
@@ -110,7 +113,7 @@ libglib_2_0_la_SOURCES = 	\
 	gstrfuncs.c		\
 	gstring.c		\
 	gthread.c       	\
-	gthreadinit.h		\
+	gthreadprivate.h	\
 	gthreadpool.c   	\
 	gtimer.c		\
 	gtree.c			\
@@ -148,6 +151,8 @@ glibsubinclude_HEADERS =   \
 	gasyncqueue.h	\
 	gatomic.h	\
 	gbacktrace.h	\
+	gbase64.h	\
+	gbookmarkfile.h \
 	gcache.h	\
 	gcompletion.h	\
 	gconvert.h	\

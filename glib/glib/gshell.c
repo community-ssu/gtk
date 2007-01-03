@@ -25,21 +25,18 @@
 #include <string.h>
 
 #include "glib.h"
-#include "galias.h"
 
 #ifdef _
 #warning "FIXME remove gettext hack"
 #endif
 
 #include "glibintl.h"
+#include "galias.h"
 
 GQuark
 g_shell_error_quark (void)
 {
-  static GQuark quark = 0;
-  if (quark == 0)
-    quark = g_quark_from_static_string ("g-shell-error-quark");
-  return quark;
+  return g_quark_from_static_string ("g-shell-error-quark");
 }
 
 /* Single quotes preserve the literal string exactly. escape

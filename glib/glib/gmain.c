@@ -11,7 +11,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the GNU
  * Lesser General Public License for more details.
  *
  * You should have received a copy of the GNU Lesser General Public
@@ -37,7 +37,7 @@
 /* #define G_MAIN_POLL_DEBUG */
 
 #include "glib.h"
-#include "gthreadinit.h"
+#include "gthreadprivate.h"
 #include <signal.h>
 #include <sys/types.h>
 #include <time.h>
@@ -101,6 +101,14 @@ struct _GMainWaiter
   GMutex *mutex;
 };
 #endif  
+
+typedef struct _GMainDispatch GMainDispatch;
+
+struct _GMainDispatch
+{
+  gint depth;
+  GSList *source; /* stack of current sources */
+};
 
 struct _GMainContext
 {
@@ -1227,6 +1235,29 @@ g_source_set_callback (GSource        *source,
   g_source_set_callback_indirect (source, new_callback, &g_source_callback_funcs);
 }
 
+
+/**
+ * g_source_set_funcs:
+ * @source: a #GSource
+ * @funcs: the new #GSourceFuncs
+ * 
+ * Sets the source functions (can be used to override 
+ * default implementations) of an unattached source.
+ * 
+ * Since: 2.12
+ */
+void
+g_source_set_funcs (GSource     *source,
+	           GSourceFuncs *funcs)
+{
+  g_return_if_fail (source != NULL);
+  g_return_if_fail (source->context == NULL);
+  g_return_if_fail (source->ref_count > 0);
+  g_return_if_fail (funcs != NULL);
+
+  source->source_funcs = funcs;
+}
+
 /**
  * g_source_set_priority:
  * @source: a #GSource
@@ -1688,21 +1719,26 @@ g_get_current_time (GTimeVal *result)
 #endif
 }
 
+static void
+g_main_dispatch_free (gpointer dispatch)
+{
+  g_slice_free (GMainDispatch, dispatch);
+}
+
 /* Running the main loop */
 
-static gint *
-get_depth_pointer (void)
+static GMainDispatch *
+get_dispatch (void)
 {
   static GStaticPrivate depth_private = G_STATIC_PRIVATE_INIT;
-  gint *depth_pointer = g_static_private_get (&depth_private);
-  if (!depth_pointer)
+  GMainDispatch *dispatch = g_static_private_get (&depth_private);
+  if (!dispatch)
     {
-      depth_pointer = g_new (gint, 1);
-      *depth_pointer = 0;
-      g_static_private_set (&depth_private, depth_pointer, g_free);
+      dispatch = g_slice_new0 (GMainDispatch);
+      g_static_private_set (&depth_private, dispatch, g_main_dispatch_free);
     }
 
-  return depth_pointer;
+  return dispatch;
 }
 
 /**
@@ -1824,9 +1860,101 @@ get_depth_pointer (void)
 int
 g_main_depth (void)
 {
-  gint *depth = get_depth_pointer ();
-  return *depth;
+  GMainDispatch *dispatch = get_dispatch ();
+  return dispatch->depth;
 }
+
+/**
+ * g_main_current_source:
+ *
+ * Returns the currently firing source for this thread.
+ * 
+ * Return value: The currently firing source or %NULL.
+ *
+ * Since: 2.12
+ */
+GSource *
+g_main_current_source (void)
+{
+  GMainDispatch *dispatch = get_dispatch ();
+  return dispatch->source ? dispatch->source->data : NULL;
+}
+
+/**
+ * g_source_is_destroyed:
+ * @source: a #GSource
+ *
+ * Returns whether @source has been destroyed.
+ *
+ * This is important when you operate upon your objects 
+ * from within idle handlers, but may have freed the object 
+ * before the dispatch of your idle handler.
+ *
+ * <informalexample><programlisting>
+ * static gboolean 
+ * idle_callback (gpointer data)
+ * {
+ *   SomeWidget *self = data;
+ *    
+ *   GDK_THREADS_ENTER (<!-- -->);
+ *   /<!-- -->* do stuff with self *<!-- -->/
+ *   self->idle_id = 0;
+ *   GDK_THREADS_LEAVE (<!-- -->);
+ *    
+ *   return FALSE;
+ * }
+ *  
+ * static void 
+ * some_widget_do_stuff_later (SomeWidget *self)
+ * {
+ *   self->idle_id = g_idle_add (idle_callback, self);
+ * }
+ *  
+ * static void 
+ * some_widget_finalize (GObject *object)
+ * {
+ *   SomeWidget *self = SOME_WIDGET (object);
+ *    
+ *   if (self->idle_id)
+ *     g_source_remove (self->idle_id);
+ *    
+ *   G_OBJECT_CLASS (parent_class)->finalize (object);
+ * }
+ * </programlisting></informalexample>
+ *
+ * This will fail in a multi-threaded application if the 
+ * widget is destroyed before the idle handler fires due 
+ * to the use after free in the callback. A solution, to 
+ * this particular problem, is to check to if the source
+ * has already been destroy within the callback.
+ *
+ * <informalexample><programlisting>
+ * static gboolean 
+ * idle_callback (gpointer data)
+ * {
+ *   SomeWidget *self = data;
+ *   
+ *   GDK_THREADS_ENTER ();
+ *   if (!g_source_is_destroyed (g_main_current_source ()))
+ *     {
+ *       /<!-- -->* do stuff with self *<!-- -->/
+ *     }
+ *   GDK_THREADS_LEAVE ();
+ *   
+ *   return FALSE;
+ * }
+ * </programlisting></informalexample>
+ *
+ * Return value: %TRUE if the source has been destroyed
+ *
+ * Since: 2.12
+ */
+gboolean
+g_source_is_destroyed (GSource *source)
+{
+  return SOURCE_DESTROYED (source);
+}
+
 
 /* Temporarily remove all this source's file descriptors from the
  * poll(), so that if data comes available for one of the file descriptors
@@ -1869,7 +1997,7 @@ unblock_source (GSource *source)
 static void
 g_main_dispatch (GMainContext *context)
 {
-  gint *depth = get_depth_pointer ();
+  GMainDispatch *current = get_dispatch ();
   guint i;
 
   for (i = 0; i < context->pending_dispatches->len; i++)
@@ -1912,11 +2040,13 @@ g_main_dispatch (GMainContext *context)
 
 	  UNLOCK_CONTEXT (context);
 
-	  (*depth)++;
+	  current->depth++;
+	  current->source = g_slist_prepend (current->source, source);
 	  need_destroy = ! dispatch (source,
 				     callback,
 				     user_data);
-	  (*depth)--;
+	  current->source = g_slist_remove (current->source, source);
+	  current->depth--;
 	  
 	  if (cb_funcs)
 	    cb_funcs->unref (cb_data);
@@ -3654,7 +3784,7 @@ g_child_watch_source_init (void)
  * <literal>g_spawn...</literal> when the %G_SPAWN_DO_NOT_REAP_CHILD
  * flag is used.
  *
- * Note that on platforms where #GPid must be explicitely closed
+ * Note that on platforms where #GPid must be explicitly closed
  * (see g_spawn_close_pid()) @pid must not be closed while the
  * source is still active. Typically, you will want to call
  * g_spawn_close_pid() in the callback function for the source.
@@ -3700,7 +3830,7 @@ g_child_watch_source_new (GPid pid)
  * Sets a function to be called when the child indicated by @pid exits, at a
  * default priority, #G_PRIORITY_DEFAULT.
  * 
- * Note that on platforms where #GPid must be explicitely closed
+ * Note that on platforms where #GPid must be explicitly closed
  * (see g_spawn_close_pid()) @pid must not be closed while the
  * source is still active. Typically, you will want to call
  * g_spawn_close_pid() in the callback function for the source.
@@ -3744,7 +3874,7 @@ g_child_watch_add_full (gint            priority,
  * Sets a function to be called when the child indicated by @pid exits, at a
  * default priority, #G_PRIORITY_DEFAULT.
  * 
- * Note that on platforms where #GPid must be explicitely closed
+ * Note that on platforms where #GPid must be explicitly closed
  * (see g_spawn_close_pid()) @pid must not be closed while the
  * source is still active. Typically, you will want to call
  * g_spawn_close_pid() in the callback function for the source.

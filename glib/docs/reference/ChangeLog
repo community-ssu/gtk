@@ -1,15 +1,177 @@
+2006-10-01  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.12.4 ===
+
+2006-10-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/option.sgml: Improve example.  (#367625, Ross Burton)
+
+2006-08-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.3 ===
+
+2006-08-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/compiling.sgml: Add a note about G_DISABLE_DEPRECATED.
+	(#353172, Matt Barnes)
+
+Wed Aug 16 13:55:39 2006  Tim Janik  <timj@imendio.com>
+
+	* glib/tmpl/trash_stack.sgml: added notes about complexity.
+
+2006-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.2 ===
+
+2006-08-10  Josh Parsons  <josh.parsons@stonebow.otago.ac.nz>
+
+	* gobject/tmpl/gtype.sgml:
+	* glib/tmpl/threads.sgml: Style and grammar fixes.
+
+2006-08-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/messages.sgml: Add some hints
+	about making warnings fatal.  (#348785, Matt
+	Barnes)
+
+2006-07-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.1 ===
+
+2006-07-20  Tor Lillqvist  <tml@novell.com>
+
+	* glib/tmpl/date.sgml: Improve doc for
+	g_date_strftime(). (#346197)
+
+2006-07-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/base64.sgml: Remove bogus reference
+	to nonexisting function.  (#346660, Mark Drago)
+	
+2006-07-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.0 ===
+
+2006-06-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.4 ===
+
+2006-06-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.3 ===
+
+2006-06-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.2 ===
+
+2006-06-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: Add new hash table functions.
+	Add new g_source functions.
+
+Wed May 31 11:35:48 2006  Tim Janik  <timj@gtk.org>
+
+	* gobject/tmpl/gtype.sgml (Note): amend G_TYPE_CHAR according to #303622.
+
+2006-05-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/markup.sgml: Document G_MARKUP_TREAT_CDATA_AS_TEXT.
+
+2006-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: Add g_ascii_strtoll
+
+2006-05-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.1 ===
+
+2006-05-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt: Document new api.
+
+2006-05-11  Bastien Nocera  <hadess@hadess.net>
+
+	* glib/tmpl/option.sgml: add documentation for G_OPTION_ARG_INT64
+
+2006-05-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/gtype.sgml: Updates
+
+2006-05-02  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.11.0 ===
+
+2006-05-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/gtypemodule.sgml: Document a little
+	pitfall with the last unref for an object.
+
+2006-04-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/unicode.sgml: Mention that GLib 2.12 will
+	support UCD 5.0.
+
+2006-04-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/gobject-sections.txt:
+	* gobject/tmpl/objects.sgml: 
+	* gobject/tmpl/gtype.sgml: Additions
+
+	* glib/glib-docs.sgml:
+	* gobject/gobject-docs.sgml: Add 2.12 indices.
+
+	* gobject/tmpl/gtype.sgml: Document g_type_register_static_simple
+
 2006-04-19  Matthias Clasen  <mclasen@redhat.com>
 
 	* gobject/tmpl/objects.sgml: Add some missing Since: 2.8 tags
 
 2006-04-18  Matthias Clasen  <mclasen@redhat.com>
 
+	* glib/glib-sections.txt: Add new keyfile api
+
+2006-04-18  Matthias Clasen  <mclasen@redhat.com>
+
 	* gobject/tut_gobject.xml: Say that ref/unref are thread-safe now.  
 	(#322883, Christophe Fergeau)
-
-2006-04-07  Matthias Clasen  <mclasen@redhat.com>
 	
-	* === Released 2.10.2 ===
+2006-04-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/signals.sgml: Document class_offset 0.
+	and that class_closure may be NULL.
+
+2006-04-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/glib-sections.txt:
+	* glib/glib-docs.sgml: Add Base64 section
+
+2006-04-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/objects.sgml: Add some verbiage to 
+	g_object_ref_sink_docs.  (#336677)
+
+2006-03-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gobject/tmpl/objects.sgml: Update the floating docs wrt
+	to GInitiallyUnowned.
+
+	* gobject/tmpl/param_value_types.sgml: 
+	* gobject/tmpl/objects.sgml: 
+	* gobject/tmpl/gtype.sgml: Additions
+
+	* glib/tmpl/messages.sgml: Cleanup
+
+	* glib/tmpl/memory_slices.sgml: Adapt to a parameter name change
+
+	* glib/tmpl/linked_lists_double.sgml: Document g_list_free1
+
+2006-03-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/tmpl/option.sgml: Document floating point arguments
+
+Fri Mar 24 15:22:04 2006  Tim Janik  <timj@imendio.com>
+
+	* glib/tmpl/atomic_operations.sgml: some wording fixups.
 
 2006-03-20  Matthias Clasen  <mclasen@redhat.com>
 

@@ -50,6 +50,8 @@ typedef struct
     gint integer;
     gchar *str;
     gchar **array;
+    gdouble dbl;
+    gint64 int64;
   } prev;
   union 
   {
@@ -70,39 +72,45 @@ typedef struct
 
 struct _GOptionContext
 {
-  GList *groups;
+  GList           *groups;
 
-  gchar *parameter_string;
+  gchar           *parameter_string;
+  gchar           *summary;
+  gchar           *description;
 
-  gboolean help_enabled;
-  gboolean ignore_unknown;
+  GTranslateFunc   translate_func;
+  GDestroyNotify   translate_notify;
+  gpointer	   translate_data;
+
+  guint            help_enabled   : 1;
+  guint            ignore_unknown : 1;
   
-  GOptionGroup *main_group;
+  GOptionGroup    *main_group;
 
   /* We keep a list of change so we can revert them */
-  GList *changes;
+  GList           *changes;
   
-  /* We also keep track of all argv elements that should be NULLed or
-   * modified.
+  /* We also keep track of all argv elements 
+   * that should be NULLed or modified.
    */
-  GList *pending_nulls;
+  GList           *pending_nulls;
 };
 
 struct _GOptionGroup
 {
-  gchar *name;
-  gchar *description;
-  gchar *help_description;
+  gchar           *name;
+  gchar           *description;
+  gchar           *help_description;
 
-  GDestroyNotify  destroy_notify;
-  gpointer        user_data;
+  GDestroyNotify   destroy_notify;
+  gpointer         user_data;
 
-  GTranslateFunc  translate_func;
-  GDestroyNotify  translate_notify;
-  gpointer	  translate_data;
+  GTranslateFunc   translate_func;
+  GDestroyNotify   translate_notify;
+  gpointer	   translate_data;
 
-  GOptionEntry *entries;
-  gint         n_entries;
+  GOptionEntry    *entries;
+  gint             n_entries;
 
   GOptionParseFunc pre_parse_func;
   GOptionParseFunc post_parse_func;
@@ -117,37 +125,34 @@ static void free_pending_nulls (GOptionContext *context,
 GQuark
 g_option_error_quark (void)
 {
-  static GQuark q = 0;
-  
-  if (q == 0)
-    q = g_quark_from_static_string ("g-option-context-error-quark");
-
-  return q;
+  return g_quark_from_static_string ("g-option-context-error-quark");
 }
 
 /**
  * g_option_context_new:
  * @parameter_string: a string which is displayed in
- *    the first line of <option>--help</option> output, after the 
+ *    the first line of <option>--help</option> output, after the
  *    usage summary 
- *    <literal><replaceable>programname</replaceable> [OPTION...]</literal>.
+ *    <literal><replaceable>programname</replaceable> [OPTION...]</literal>
  *
  * Creates a new option context. 
  *
- * The @parameter_text can serve multiple purposes. It can be used
- * to add descriptions for "rest" arguments, which are not parsed by 
- * the #GOptionContext, typically something like "FILES" or 
- * "FILE1 FILE2...". (If you are using #G_OPTION_REMAINING for 
- * collecting "rest" arguments, GLib handles this automatically by 
- * using the @arg_description of the corresponding #GOptionEntry in 
- * the usage summary.)
+ * The @parameter_string can serve multiple purposes. It can be used
+ * to add descriptions for "rest" arguments, which are not parsed by
+ * the #GOptionContext, typically something like "FILES" or
+ * "FILE1 FILE2...". If you are using #G_OPTION_REMAINING for
+ * collecting "rest" arguments, GLib handles this automatically by
+ * using the @arg_description of the corresponding #GOptionEntry in
+ * the usage summary.
  *
- * Another common usage is to give a summary of the program
- * functionality. This can be a short summary on the same line, 
- * like " - frob the strings", or a longer description in a paragraph 
- * below the usage summary. In this case, @parameter_string should start 
- * with two newlines, to separate the description from the usage summary:
- * "\n\nA program to frob strings, which will..."
+ * Another usage is to give a short summary of the program
+ * functionality, like " - frob the strings", which will be displayed
+ * in the same line as the usage. For a longer description of the
+ * program functionality that should be displayed as a paragraph
+ * below the usage line, use g_option_context_set_summary().
+ *
+ * Note that the @parameter_string is translated (see 
+ * g_option_context_set_translate_func()).
  *
  * Returns: a newly created #GOptionContext, which must be
  *    freed with g_option_context_free() after use.
@@ -192,7 +197,12 @@ void g_option_context_free (GOptionContext *context)
   free_pending_nulls (context, FALSE);
   
   g_free (context->parameter_string);
+  g_free (context->summary);
+  g_free (context->description);
   
+  if (context->translate_notify)
+    (* context->translate_notify) (context->translate_data);
+
   g_free (context);
 }
 
@@ -469,23 +479,27 @@ print_help (GOptionContext *context,
   rest_description = NULL;
   if (context->main_group)
     {
+
       for (i = 0; i < context->main_group->n_entries; i++)
 	{
 	  entry = &context->main_group->entries[i];
 	  if (entry->long_name[0] == 0)
 	    {
-	      rest_description = entry->arg_description;
+	      rest_description = TRANSLATE (context->main_group, entry->arg_description);
 	      break;
 	    }
 	}
     }
-  
+
   g_print ("%s\n  %s %s%s%s%s%s\n\n", 
 	   _("Usage:"), g_get_prgname(), _("[OPTION...]"),
 	   rest_description ? " " : "",
 	   rest_description ? rest_description : "",
 	   context->parameter_string ? " " : "",
-	   context->parameter_string ? context->parameter_string : "");
+	   context->parameter_string ? TRANSLATE (context, context->parameter_string) : "");
+
+  if (context->summary)
+    g_print ("%s\n\n", TRANSLATE (context, context->summary));
 
   memset (seen, 0, sizeof (gboolean) * 256);
   shadow_map = g_hash_table_new (g_str_hash, g_str_equal);
@@ -646,7 +660,10 @@ print_help (GOptionContext *context,
 
       g_print ("\n");
     }
-  
+ 
+  if (context->description)
+    g_print ("%s\n", TRANSLATE (context, context->description));
+ 
   exit (0);
 }
 
@@ -683,6 +700,77 @@ parse_int (const gchar *arg_name,
 
   return TRUE;
 }
+
+
+static gboolean
+parse_double (const gchar *arg_name,
+	   const gchar *arg,
+	   gdouble        *result,
+	   GError     **error)
+{
+  gchar *end;
+  gdouble tmp;
+
+  errno = 0;
+  tmp = g_strtod (arg, &end);
+  
+  if (*arg == '\0' || *end != '\0')
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR, G_OPTION_ERROR_BAD_VALUE,
+		   _("Cannot parse double value '%s' for %s"),
+		   arg, arg_name);
+      return FALSE;
+    }
+  if (errno == ERANGE)
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR, G_OPTION_ERROR_BAD_VALUE,
+		   _("Double value '%s' for %s out of range"),
+		   arg, arg_name);
+      return FALSE;
+    }
+
+  *result = tmp;
+  
+  return TRUE;
+}
+
+
+static gboolean
+parse_int64 (const gchar *arg_name,
+	     const gchar *arg,
+	     gint64      *result,
+	     GError     **error)
+{
+  gchar *end;
+  gint64 tmp;
+
+  errno = 0;
+  tmp = g_ascii_strtoll (arg, &end, 0);
+
+  if (*arg == '\0' || *end != '\0')
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR, G_OPTION_ERROR_BAD_VALUE,
+		   _("Cannot parse integer value '%s' for %s"),
+		   arg, arg_name);
+      return FALSE;
+    }
+  if (errno == ERANGE)
+    {
+      g_set_error (error,
+		   G_OPTION_ERROR, G_OPTION_ERROR_BAD_VALUE,
+		   _("Integer value '%s' for %s out of range"),
+		   arg, arg_name);
+      return FALSE;
+    }
+
+  *result = tmp;
+  
+  return TRUE;
+}
+
 
 static Change *
 get_change (GOptionContext *context,
@@ -735,7 +823,9 @@ parse_arg (GOptionContext *context,
      
 {
   Change *change;
-  
+
+  g_assert (value || OPTIONAL_ARG (entry) || NO_ARG (entry));
+
   switch (entry->arg)
     {
     case G_OPTION_ARG_NONE:
@@ -900,6 +990,40 @@ parse_arg (GOptionContext *context,
 	
 	return retval;
 	
+	break;
+      }
+    case G_OPTION_ARG_DOUBLE:
+      {
+	gdouble data;
+
+	if (!parse_double (option_name, value,
+ 			&data,
+			error))
+	  {
+	    return FALSE;
+	  }
+
+	change = get_change (context, G_OPTION_ARG_DOUBLE,
+			     entry->arg_data);
+	change->prev.dbl = *(gdouble *)entry->arg_data;
+	*(gdouble *)entry->arg_data = data;
+	break;
+      }
+    case G_OPTION_ARG_INT64:
+      {
+        gint64 data;
+
+	if (!parse_int64 (option_name, value,
+ 			 &data,
+			 error))
+	  {
+	    return FALSE;
+	  }
+
+	change = get_change (context, G_OPTION_ARG_INT64,
+			     entry->arg_data);
+	change->prev.int64 = *(gint64 *)entry->arg_data;
+	*(gint64 *)entry->arg_data = data;
 	break;
       }
     default:
@@ -1165,6 +1289,12 @@ free_changes_list (GOptionContext *context,
 	    case G_OPTION_ARG_FILENAME_ARRAY:
 	      g_strfreev (change->allocated.array.data);
 	      *(gchar ***)change->arg_data = change->prev.array;
+	      break;
+	    case G_OPTION_ARG_DOUBLE:
+	      *(gdouble *)change->arg_data = change->prev.dbl;
+	      break;
+	    case G_OPTION_ARG_INT64:
+	      *(gint64 *)change->arg_data = change->prev.int64;
 	      break;
 	    default:
 	      g_assert_not_reached ();
@@ -1783,6 +1913,154 @@ g_option_group_set_translation_domain (GOptionGroup *group,
 				     g_strdup (domain),
 				     g_free);
 } 
+
+/**
+ * g_option_context_set_translate_func:
+ * @context: a #GOptionContext
+ * @func: the #GTranslateFunc, or %NULL 
+ * @data: user data to pass to @func, or %NULL
+ * @destroy_notify: a function which gets called to free @data, or %NULL
+ * 
+ * Sets the function which is used to translate the contexts 
+ * user-visible strings, for <option>--help</option> output. 
+ * If @func is %NULL, strings are not translated.
+ *
+ * Note that option groups have their own translation functions, 
+ * this function only affects the @parameter_string (see g_option_context_nex()), 
+ * the summary (see g_option_context_set_summary()) and the description 
+ * (see g_option_context_set_description()).
+ *
+ * If you are using gettext(), you only need to set the translation
+ * domain, see g_context_group_set_translation_domain().
+ *
+ * Since: 2.12
+ **/
+void
+g_option_context_set_translate_func (GOptionContext *context,
+				     GTranslateFunc func,
+				     gpointer       data,
+				     GDestroyNotify destroy_notify)
+{
+  g_return_if_fail (context != NULL);
+  
+  if (context->translate_notify)
+    context->translate_notify (context->translate_data);
+      
+  context->translate_func = func;
+  context->translate_data = data;
+  context->translate_notify = destroy_notify;
+}
+
+/**
+ * g_option_context_set_translation_domain:
+ * @context: a #GOptionContext
+ * @domain: the domain to use
+ * 
+ * A convenience function to use gettext() for translating
+ * user-visible strings. 
+ * 
+ * Since: 2.12
+ **/
+void
+g_option_context_set_translation_domain (GOptionContext *context,
+					 const gchar     *domain)
+{
+  g_return_if_fail (context != NULL);
+
+  g_option_context_set_translate_func (context, 
+				       (GTranslateFunc)dgettext_swapped,
+				       g_strdup (domain),
+				       g_free);
+}
+
+/**
+ * g_option_context_set_summary:
+ * @context: a #GOptionContext
+ * @summary: a string to be shown in <option>--help</option> output 
+ *  before the list of options, or %NULL
+ * 
+ * Adds a string to be displayed in <option>--help</option> output
+ * before the list of options. This is typically a summary of the
+ * program functionality. 
+ *
+ * Note that the summary is translated (see 
+ * g_option_context_set_translate_func()).
+ *
+ * Since: 2.12
+ */
+void
+g_option_context_set_summary (GOptionContext *context,
+			      const gchar    *summary)
+{
+  g_return_if_fail (context != NULL);
+
+  g_free (context->summary);
+  context->summary = g_strdup (summary);
+}
+
+
+/**
+ * g_option_context_get_summary:
+ * @context: a #GOptionContext
+ * 
+ * Returns the summary. See g_option_context_set_summary().
+ *
+ * Returns: the summary
+ *
+ * Since: 2.12
+ */
+G_CONST_RETURN gchar *
+g_option_context_get_summary (GOptionContext *context)
+{
+  g_return_val_if_fail (context != NULL, NULL);
+
+  return context->summary;
+}
+
+/**
+ * g_option_context_set_description:
+ * @context: a #GOptionContext
+ * @description: a string to be shown in <option>--help</option> output 
+ *   after the list of options, or %NULL
+ * 
+ * Adds a string to be displayed in <option>--help</option> output
+ * after the list of options. This text often includes a bug reporting
+ * address.
+ *
+ * Note that the summary is translated (see 
+ * g_option_context_set_translate_func()).
+ *
+ * Since: 2.12
+ */
+void
+g_option_context_set_description (GOptionContext *context,
+			          const gchar    *description)
+{
+  g_return_if_fail (context != NULL);
+
+  g_free (context->description);
+  context->description = g_strdup (description);
+}
+
+
+/**
+ * g_option_context_get_description:
+ * @context: a #GOptionContext
+ * 
+ * Returns the description. See g_option_context_set_description().
+ *
+ * Returns: the description
+ *
+ * Since: 2.12
+ */
+G_CONST_RETURN gchar *
+g_option_context_get_description (GOptionContext *context)
+{
+  g_return_val_if_fail (context != NULL, NULL);
+
+  return context->description;
+}
+
 
 #define __G_OPTION_C__
 #include "galiasdef.c"

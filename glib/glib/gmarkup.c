@@ -27,19 +27,13 @@
 #include <errno.h>
 
 #include "glib.h"
-#include "galias.h"
-
 #include "glibintl.h"
+#include "galias.h"
 
 GQuark
 g_markup_error_quark (void)
 {
-  static GQuark error_quark = 0;
-
-  if (error_quark == 0)
-    error_quark = g_quark_from_static_string ("g-markup-error-quark");
-
-  return error_quark;
+  return g_quark_from_static_string ("g-markup-error-quark");
 }
 
 typedef enum
@@ -1629,18 +1623,27 @@ g_markup_parse_context_parse (GMarkupParseContext *context,
 	      if (*context->iter == '<') 
 		context->balance++;
               if (*context->iter == '>') 
-		{
+		{				
+		  gchar *str;
+		  gsize len;
+
 		  context->balance--;
 		  add_to_partial (context, context->start, context->iter);
 		  context->start = context->iter;
-		  if ((g_str_has_prefix (context->partial_chunk->str, "<?")
-		       && g_str_has_suffix (context->partial_chunk->str, "?")) ||
-		      (g_str_has_prefix (context->partial_chunk->str, "<!--")
-		       && g_str_has_suffix (context->partial_chunk->str, "--")) ||
-		      (g_str_has_prefix (context->partial_chunk->str, "<![CDATA[") 
-		       && g_str_has_suffix (context->partial_chunk->str, "]]")) ||
-		      (g_str_has_prefix (context->partial_chunk->str, "<!DOCTYPE")
-		       && context->balance == 0)) 
+
+		  str = context->partial_chunk->str;
+		  len = context->partial_chunk->len;
+
+		  if (str[1] == '?' && str[len - 1] == '?')
+		    break;
+		  if (strncmp (str, "<!--", 4) == 0 && 
+		      strcmp (str + len - 2, "--") == 0)
+		    break;
+		  if (strncmp (str, "<![CDATA[", 9) == 0 && 
+		      strcmp (str + len - 2, "]]") == 0)
+		    break;
+		  if (strncmp (str, "<!DOCTYPE", 9) == 0 &&
+		      context->balance == 0)
 		    break;
 		}
             }
@@ -1651,7 +1654,7 @@ g_markup_parse_context_parse (GMarkupParseContext *context,
               /* The passthrough hasn't necessarily ended. Merge with
                * partial chunk, leave state unchanged.
                */
-              add_to_partial (context, context->start, context->iter);
+               add_to_partial (context, context->start, context->iter);
             }
           else
             {
@@ -1665,7 +1668,17 @@ g_markup_parse_context_parse (GMarkupParseContext *context,
               advance_char (context); /* advance past close angle */
               add_to_partial (context, context->start, context->iter);
 
-              if (context->parser->passthrough)
+	      if (context->flags & G_MARKUP_TREAT_CDATA_AS_TEXT &&
+		  strncmp (context->partial_chunk->str, "<![CDATA[", 9) == 0)
+		{
+		  if (context->parser->text)
+		    (*context->parser->text) (context,
+					      context->partial_chunk->str + 9,
+					      context->partial_chunk->len - 12,
+					      context->user_data,
+					      &tmp_error);
+		}
+	      else if (context->parser->passthrough)
                 (*context->parser->passthrough) (context,
                                                  context->partial_chunk->str,
                                                  context->partial_chunk->len,
@@ -2158,9 +2171,11 @@ g_markup_vprintf_escaped (const char *format,
   G_VA_COPY (args2, args);
   
   output1 = g_strdup_vprintf (format1->str, args);
-  va_end (args);
   if (!output1)
-    goto cleanup;
+    {
+      va_end (args2);
+      goto cleanup;
+    }
   
   output2 = g_strdup_vprintf (format2->str, args2);
   va_end (args2);

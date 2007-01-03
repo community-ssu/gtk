@@ -1721,6 +1721,15 @@ Casts a #GParamSpec into a #GParamSpecGType.
 @Since: 2.10
 
 
+<!-- ##### MACRO G_VALUE_HOLDS_GTYPE ##### -->
+<para>
+Returns whether the given #GValue can hold values of type %G_TYPE_GTYPE.
+</para>
+
+@value:  a valid #GValue structure
+@Since: 2.12
+
+
 <!-- ##### MACRO G_TYPE_PARAM_GTYPE ##### -->
 <para>
 The #GType of #GParamSpecGType.
@@ -1755,5 +1764,25 @@ See g_param_spec_internal() for details on property names.
 @flags:         flags for the property specified
 @Returns: a newly created parameter specification
 @Since: 2.10
+
+
+<!-- ##### FUNCTION g_value_get_gtype ##### -->
+<para>
+Get the contents of a %G_TYPE_GTYPE #GValue.
+</para>
+
+@value: a valid #GValue of type %G_TYPE_GTYPE
+@Returns: the #GType stored in @value
+@Since: 2.12
+
+
+<!-- ##### FUNCTION g_value_set_gtype ##### -->
+<para>
+Set the contents of a %G_TYPE_GTYPE #GValue to @v_gtype.
+</para>
+
+@value: a valid #GValue of type %G_TYPE_GTYPE
+@v_gtype: #GType to be set
+@Since: 2.12
 
 

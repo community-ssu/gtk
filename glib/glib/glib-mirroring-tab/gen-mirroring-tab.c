@@ -1,10 +1,10 @@
 /* gen-mirroring-tab.c - generate gmirroringtable.h for glib
  * copied from FriBidi.
  *
- * $Id: gen-mirroring-tab.c,v 1.1 2005/11/04 22:26:16 matthiasc Exp $
- * $Author: matthiasc $
- * $Date: 2005/11/04 22:26:16 $
- * $Revision: 1.1 $
+ * $Id: gen-mirroring-tab.c,v 1.2 2006/04/05 14:43:33 behdad Exp $
+ * $Author: behdad $
+ * $Date: 2006/04/05 14:43:33 $
+ * $Revision: 1.2 $
  * $Source: /cvs/gnome/glib/glib/glib-mirroring-tab/gen-mirroring-tab.c,v $
  *
  * Author:
@@ -213,7 +213,7 @@ main (
   const char *data_file_type = "BidiMirroring.txt";
 
   if (argc < 3)
-    die2 ("usage:\n  " appname " max-depth /path/to/%s [junk...]",
+    die2 ("usage:\n  " appname " max-lookups /path/to/%s [junk...]",
 	  data_file_type);
 
   {

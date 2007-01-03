@@ -432,6 +432,7 @@ GPollFunc
 g_main_context_add_poll
 g_main_context_remove_poll
 g_main_depth
+g_main_current_source
 g_main_set_poll_func
 
 <SUBSECTION>
@@ -462,8 +463,10 @@ GSourceCallbackFuncs
 g_source_new
 g_source_ref
 g_source_unref
+g_source_set_funcs
 g_source_attach
 g_source_destroy
+g_source_is_destroyed
 g_source_set_priority
 g_source_get_priority
 g_source_set_can_recurse
@@ -954,6 +957,13 @@ G_OPTION_ERROR
 GOptionArgFunc
 GOptionContext
 g_option_context_new
+g_option_context_set_summary
+g_option_context_get_summary
+g_option_context_set_description
+g_option_context_get_description
+GTranslateFunc
+g_option_context_set_translate_func
+g_option_context_set_translation_domain
 g_option_context_free
 g_option_context_parse
 g_option_context_set_help_enabled
@@ -976,7 +986,6 @@ GOptionParseFunc
 g_option_group_set_parse_hooks
 GOptionErrorFunc
 g_option_group_set_error_hook
-GTranslateFunc
 g_option_group_set_translate_func
 g_option_group_set_translation_domain
 <SUBSECTION Private>
@@ -1113,6 +1122,7 @@ g_strncasecmp
 g_strreverse
 
 <SUBSECTION>
+g_ascii_strtoll
 g_ascii_strtoull
 G_ASCII_DTOSTR_BUF_SIZE
 g_ascii_strtod
@@ -1155,6 +1165,8 @@ GTimeVal
 g_get_current_time
 g_usleep
 g_time_val_add
+g_time_val_from_iso8601
+g_time_val_to_iso8601
 
 <SUBSECTION>
 GDate
@@ -1462,10 +1474,12 @@ g_key_file_get_string
 g_key_file_get_locale_string
 g_key_file_get_boolean
 g_key_file_get_integer
+g_key_file_get_double
 g_key_file_get_string_list
 g_key_file_get_locale_string_list
 g_key_file_get_boolean_list
 g_key_file_get_integer_list
+g_key_file_get_double_list
 g_key_file_get_comment
 
 <SUBSECTION>
@@ -1474,10 +1488,12 @@ g_key_file_set_string
 g_key_file_set_locale_string
 g_key_file_set_boolean
 g_key_file_set_integer
+g_key_file_set_double
 g_key_file_set_string_list
 g_key_file_set_locale_string_list
 g_key_file_set_boolean_list
 g_key_file_set_integer_list
+g_key_file_set_double_list
 g_key_file_set_comment
 g_key_file_remove_group
 g_key_file_remove_key
@@ -1485,6 +1501,60 @@ g_key_file_remove_comment
 
 <SUBSECTION Private>
 g_key_file_error_quark
+</SECTION>
+
+<SECTION>
+<TITLE>Bookmark file parser</TITLE>
+<FILE>bookmarkfile</FILE>
+GBookmarkFile
+G_BOOKMARK_FILE_ERROR
+GBookmarkFileError
+g_bookmark_file_new
+g_bookmark_file_free
+g_bookmark_file_load_from_file
+g_bookmark_file_load_from_data
+g_bookmark_file_load_from_data_dirs
+g_bookmark_file_to_data
+g_bookmark_file_to_file
+g_bookmark_file_has_item
+g_bookmark_file_has_group
+g_bookmark_file_has_application
+g_bookmark_file_get_size
+g_bookmark_file_get_uris G_GNUC_MALLOC
+
+<SUBSECTION>
+g_bookmark_file_get_title
+g_bookmark_file_get_description
+g_bookmark_file_get_mime_type
+g_bookmark_file_get_is_private
+g_bookmark_file_get_icon
+g_bookmark_file_get_added
+g_bookmark_file_get_modified
+g_bookmark_file_get_visited
+g_bookmark_file_get_groups
+g_bookmark_file_get_applications
+g_bookmark_file_get_app_info
+
+<SUBSECTION>
+g_bookmark_file_set_title
+g_bookmark_file_set_description
+g_bookmark_file_set_mime_type
+g_bookmark_file_set_is_private
+g_bookmark_file_set_icon
+g_bookmark_file_set_added
+g_bookmark_file_set_groups
+g_bookmark_file_set_modified
+g_bookmark_file_set_visited
+g_bookmark_file_set_app_info
+g_bookmark_file_add_group
+g_bookmark_file_add_application
+g_bookmark_file_remove_group
+g_bookmark_file_remove_application
+g_bookmark_file_remove_item
+g_bookmark_file_move_item
+
+<SUBSECTION Private>
+g_bookmark_file_error_quark
 </SECTION>
 
 <SECTION>
@@ -1777,6 +1847,8 @@ g_hash_table_remove
 g_hash_table_steal
 g_hash_table_foreach_remove
 g_hash_table_foreach_steal
+g_hash_table_remove_all
+g_hash_table_steal_all
 GHRFunc
 g_hash_table_freeze
 g_hash_table_thaw
@@ -2188,6 +2260,7 @@ g_unichar_isxdigit
 g_unichar_istitle
 g_unichar_isdefined
 g_unichar_iswide
+g_unichar_iswide_cjk
 g_unichar_toupper
 g_unichar_tolower
 g_unichar_totitle
@@ -2248,4 +2321,14 @@ N_
 g_strip_context
 <SUBSECTION>
 g_get_language_names
+</SECTION>
+
+<SECTION>
+<TITLE>Base64 Encoding</TITLE>
+<FILE>base64</FILE>
+g_base64_encode_step
+g_base64_encode_close
+g_base64_encode
+g_base64_decode_step
+g_base64_decode
 </SECTION>

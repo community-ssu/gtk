@@ -1,12 +1,48 @@
+2006-10-01  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.12.4 ===
+
+2006-08-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.3 ===
+
+2006-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.2 ===
+
+2006-07-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.1 ===
+
+2006-07-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.12.0 ===
+
+2006-06-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.4 ===
+
+2006-06-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.3 ===
+
+2006-06-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.2 ===
+
+2006-05-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.11.1 ===
+
 2006-05-03  Tor Lillqvist  <tml@novell.com>
 
 	* gthread-win32.c (g_thread_exit_win32_impl): Free with free() and
 	not g_free() what has been allocated with calloc(). (#340530, Jake
 	Goulding)
 
-2006-04-07  Matthias Clasen  <mclasen@redhat.com>
+2006-05-02  Matthias Clasen  <mclasen@redhat.com>
 	
-	* === Released 2.10.2 ===
+	* === Released 2.11.0 ===
 
 2006-03-11  Tor Lillqvist  <tml@novell.com>
 

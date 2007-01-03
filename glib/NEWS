@@ -1,34 +1,218 @@
-Overview of Changes from GLib 2.10.1 to GLib 2.10.2
+Overview of Changes from GLib 2.12.3 to GLib 2.12.4
 ===================================================
 
-* Bugs fixed:
- 322476 Missing check for .dylib                      [Anders Carlsson]
- 332841 Segmentation Fault when %llu is passed to 
-        vasnprintf and HAVE_SNPRINTF is not defined  [Michael McDonald]
- 333098 Add support for write FDs to GIOChannel      [Markus Brinkmann]
- 334519 Memleak in goption.c::parse_short_option         [Chris Wilson]
- 334471 g_parse_debug_string reads beyond buffer      [Morten Welinder]
- 334611 g_option_context_parse() should not set program 
-        name to '<Unknown>' if it is already set      [Chong Kai Xiong]
- 335207 g_main_context_unref calls g_source_destroy_internal 
-        with incorrect arguments                         [Chris Wilson]
- 335216 Slight performance gains (GList, GAsyncQueue)    [Chris Wilson]
- 335209 Use of unitialised memory in g_mem_profile       [Chris Wilson]
- 334943 make check FAIL: threadpool-test  
- 336085 g_option_context_new parameter lacks better 
-        explanation                                  [Claudio Saavedra]
- 335215 Some breakages with GThreadPool                  [Chris Wilson]
- 333879	gthread/gthread-win32.c: IsDebuggerPresent needs 
-        '#define _WIN32_WINDOWS 0x0401'                [Kazuki Iwamoto]
- 334440 dlerror() portability issue causes crash on (old) 
-        a.out NetBSD platform                           [ITOH Yasufumi]
- 333916 g_timer_elapsed docs should mention that 
-        microseconds may be NULL                    [Christian Neumair]
- 334646 goption + error out params                   [Christian Persch]
- 335294 Documentation should not reference G_HAVE_GINT64, 
-        as it's deprecated.                            [Richard Laager]
+* Fix build problems related to Posix timers.
 
-* Translation updates (dz,et,he,hi,ka,or,pt_BR,ro,tr)
+* Bugs fixed
+ 321974 nanosleep on AIX / g_timer API using high 
+        resolution timers
+ 353584 va_end called on caller supplied va_list
+ 353580 va_copy detection breaks if user sets 
+        CFLAGS=-Werror-implicit-function-declaration
+ 354522 Small problem with PLT hiding 6 symbols
+ 358421 typos in gmain.c
+
+* New and updated translations (bn,bn_IN,dz,el,en_GB,
+  et,fa,hi,hy,it,ka,nn,pt_BR,ro,sl,sr,sr@Latn,ta)
+
+
+Overview of Changes from GLib 2.12.2 to GLib 2.12.3
+===================================================
+
+* Use Posix monotonic clocks instead of gettimeofday() 
+  for GTimer when available.
+
+* Make the construction of singleton objects work
+  witout warnings.
+
+* Bugs fixed
+ 351583 API documentation issues with 2.15 release
+ 336114 desktop locks immediately after changing 
+        the system clock
+ 351853 GKeyFile creates non-UTF-8 error messages
+
+* Translation updates (fr,hu,ja,ku,lt,lv,ml,or,
+  pt,ru,sv,vi,zh_CN)
+
+
+Overview of Changes from GLib 2.12.1 to GLib 2.12.2
+===================================================
+
+* Unicode updates:
+ - Normalization is following Unicode TR #29
+ - g_unichar_isxdigit() only accept characters
+   for which g_unichar_xdigit_value() returns a value
+ - g_unichar_toupper and g_unichar_tolower leave
+   unconvertable characters in place instead of
+   replacing them by NUL
+
+* Bugs fixed
+ 348491 g_utf8_strup() and g_utf8_strdown() returns 
+        string with NUL bytes
+ 349825	GKeyFile always inserts a newline before a group
+ 347842	g_unichar_isxdigit() is too general about what 
+        it considers a digit
+ 348694	g_utf8_normalize() hasn't been updated to PR #29
+ 348785	Hint about G_DEBUG in Message Logging docs
+ 349792	Wrong english string (UI)
+ 349952	gparamspecs.c uses gcc feature
+
+* Translation updates (ca,cs,de,dz,es,eu,fi,gu,ko,
+  nl,pl,tr,uk,zh_HK,zh_TW)
+
+
+Overview of Changes from GLib 2.12.0 to GLib 2.12.1
+===================================================
+
+* Update to final Unicode Character Database 5.0.0
+
+* Bugs fixed:
+ 346660 issues with base64 api documentation / g_base64_decode_cl...
+ 348136 Coverity reports allocation of wrong size CID #2839
+ 336281 Update to UCD 5.0
+ 346197 g_date_strftime %F option doesnt work for win32
+ 348011 Small optimization to real_toupper()
+ 246494 prototype mismatch in glib/gconvert.c
+
+* New and updated translations (bg,bn_IN,ca,dz,eu,fi,
+  fr,he,it,ja,mk,or,pt)
+
+
+Overview of Changes from GLib 2.11.4 to GLib 2.12
+=================================================
+
+* Bugs fixed:
+ 344905 leap-year bug in g_time_val_from_iso8601 w/o HAVE_TIMEGM
+
+* Updated translations (cy,nb,nl)
+
+
+Overview of Changes from GLib 2.11.3 to GLib 2.11.4
+===================================================
+
+* GBookmarkFile:
+ - g_bookmark_file_remove_item returns a boolean
+ 
+* g_mkstemp accepts the XXXXXX in the middle of
+  the template
+ 
+* Bugs fixed:
+ 344868 g_key_file_to_data should separate groups 
+
+* Updated translations (de,es,fr,gu,hi,ko,th)
+
+
+Overview of Changes from GLib 2.11.2 to GLib 2.11.3
+===================================================
+
+* GBookmarkFile:
+  - g_bookmark_file_move_item: Return TRUE in case of
+    an empty target
+
+* Bugs fixed: 
+ 343919 gunicollate.c: strxfrm bug on VC8
+
+* Updated translations (fi)
+
+Overview of Changes from GLib 2.11.1 to GLib 2.11.2
+===================================================
+
+* Add g_ascii_stroll to parse signed 64bit integers
+
+* GMarkup: add a flag to treat CDATA as text
+
+* GHashTable: add functions to remove all entries
+
+* GMainLoop: add functions to find the currently
+  running source, and determine if it is destroyed
+
+* Bug fixes:
+ 342563  g_atomic_thread_init() needs to be called before 
+         other _g_*_thread_init() functions
+ 343548  Potential use after free in callers of g_string_free() 
+ 168538  Wish: Clearing contents of GHashTables
+ 321886  GTK+ cannot be reliably used in multi-threaded 
+         applications
+ 341826  goption.c: 'strtoll' is C99's function
+ 343899  g_ascii_formatd dosn't work as expected for all 
+         format strings
+ 317793  Make GEnumValue strings const
+ 337129  Compile warnings in G_IMPLEMENT_INTERFACE
+ 303622  What is G_TYPE_CHAR?
+
+* Updated translations (bg,dz,eu,gl,ja,ko,nl,th,vi)
+ 
+
+Overview of Changes from GLib 2.11.0 to GLib 2.11.1
+===================================================
+
+* GOption  
+  - Support 64-bit integers 
+  - Allow optional text before and after the options
+    in help output
+
+* Bug fixes:
+ 340538 gbase64-test writes OOB 
+ 340816 GKeyFile set_string_list invalid memory reads 
+ 339105 g_key_file_parse_value_as_double
+ 340434 convert-test.c fails (function test_one_half)
+ 311043 Memory leaks (and potential infinite loops) 
+        when using G_ERRORCHECK_MUTEXES
+ 335198 Error checking mutexes are fubar  
+ 341237 Add a G_OPTION_ARG_INT64
+ 341192 g_io_channel_set_flags not implemented on win32
+ 336120 Allow adding description before/after GOption 
+        --help output body
+ 341191 misplaced check in g_relation_delete
+ 340530 mismatched calloc / g_free in win32 threads
+
+* Updated translation (es)
+
+Overview of Changes from GLib 2.10.x to GLib 2.11.0
+===================================================
+
+* GBookmarkFile: a parser for files containing bookmarks
+  stored using the Desktop Bookmark specification.
+
+* Base64 encoding support
+	
+* Unicode 5.0 support
+
+* GOption supports floating point numbers 
+
+* GKeyFile supports floating point numbers
+
+* Bug fixes:
+ 155884 gatomic.c should be based on new SDK
+ 157877 update-desktop-database doesn't handle duplicate entries
+ 164719 keyfile parser doesn't support floats
+ 327662 Import BookmarkFile from libegg
+ 329548 Add G_OPTION_ARG_DOUBLE
+ 329789 option-test.c type confusion
+ 332841 Segmentation Fault when %llu is passed to vasnprintf and 
+        HAVE_SNPRINTF is not defined
+ 333879 gthread/gthread-win32.c: IsDebuggerPresent needs '#define 
+        _WIN32_WINDOWS 0x0401'
+ 333916 g_timer_elapsed docs should mention that microseconds 
+        may be NULL
+ 334440 dlerror() portability issue causes crash on (old) a.out 
+        NetBSD platform
+ 334646 goption + error out params
+ 334799 g_remove() must check return value of remove()
+ 334943 make check FAIL: threadpool-test
+ 335215 Some breakages with GThreadPool
+ 336085 g_option_context_new parameter lacks better explanation
+ 336677 Documentation for g_object_ref_sink() is incorrect
+ 337027 gbookmarkfile.c: sys/time.h include error
+ 337553 Wrong escaping of URIs
+ 338572 Dereferencing NULL value in g_key_file_get_group_comment
+ 338845 g_completion_complete_utf8 crashes when NULL is passed to it
+ 339337 g_bookmark_file_set_description
+ 339338 gbookmarkfile.c, function expand_exec_line
+ 339340 gbookmarkfile.c, function bookmark_app_info_dump
+
+* Translation updates (bg,en_GB,et,gl,gu,he,hi,ka,nb,nl,nn,
+                       or,pt_BR,ro,tr,vi,zh_CN)
 
 
 Overview of Changes from GLib 2.10.0 to GLib 2.10.1

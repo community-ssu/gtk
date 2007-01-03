@@ -136,6 +136,7 @@ gboolean g_unichar_isxdigit  (gunichar c) G_GNUC_CONST;
 gboolean g_unichar_istitle   (gunichar c) G_GNUC_CONST;
 gboolean g_unichar_isdefined (gunichar c) G_GNUC_CONST;
 gboolean g_unichar_iswide    (gunichar c) G_GNUC_CONST;
+gboolean g_unichar_iswide_cjk(gunichar c) G_GNUC_CONST;
 
 /* More <ctype.h> functions.  These convert between the three cases.
  * See the Unicode book to understand title case.  */
@@ -167,14 +168,6 @@ void g_unicode_canonical_ordering (gunichar *string,
    length of the string.  */
 gunichar *g_unicode_canonical_decomposition (gunichar  ch,
 					     gsize    *result_len) G_GNUC_MALLOC;
-
-/* Compute canonical decomposition of a character.  Fills buffer with a
-   string of Unicode characters.  RESULT_LEN is set to the resulting
-   length of the string.  */
-gboolean g_unicode_canonical_decomposition_to_buffer (gunichar  ch,
-                                                      gunichar *out,
-                                                      gsize     out_len,
-				                      gsize    *result_len);
 
 /* Array of skip-bytes-per-initial character.
  */
@@ -298,6 +291,11 @@ gchar *g_utf8_collate_key_for_filename (const gchar *str,
 
 gboolean g_unichar_get_mirror_char (gunichar ch,
                                     gunichar *mirrored_ch);
+
+/* private */
+
+gchar *_g_utf8_make_valid (const gchar *name);
+
 
 G_END_DECLS
 

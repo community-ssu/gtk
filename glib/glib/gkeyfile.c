@@ -152,6 +152,9 @@ static gint                  g_key_file_parse_value_as_integer (GKeyFile        
 								GError                **error);
 static gchar                *g_key_file_parse_integer_as_value (GKeyFile               *key_file,
 								gint                    value);
+static gdouble               g_key_file_parse_value_as_double  (GKeyFile               *key_file,
+                                                                const gchar            *value,
+                                                                GError                **error);
 static gboolean              g_key_file_parse_value_as_boolean (GKeyFile               *key_file,
 								const gchar            *value,
 								GError                **error);
@@ -185,12 +188,7 @@ static void                  g_key_file_flush_parse_buffer     (GKeyFile        
 GQuark
 g_key_file_error_quark (void)
 {
-  static GQuark error_quark = 0;
-
-  if (error_quark == 0)
-    error_quark = g_quark_from_static_string ("g-key-file-error-quark");
-
-  return error_quark;
+  return g_quark_from_static_string ("g-key-file-error-quark");
 }
 
 static void
@@ -692,10 +690,14 @@ g_key_file_parse_line (GKeyFile     *key_file,
 				     &parse_error);
   else
     {
+      gchar *line_utf8 = _g_utf8_make_valid (line);
       g_set_error (error, G_KEY_FILE_ERROR,
                    G_KEY_FILE_ERROR_PARSE,
                    _("Key file contains line '%s' which is not "
-                     "a key-value pair, group, or comment"), line);
+                     "a key-value pair, group, or comment"), 
+		   line_utf8);
+      g_free (line_utf8);
+
       return;
     }
 
@@ -803,9 +805,12 @@ g_key_file_parse_key_value_pair (GKeyFile     *key_file,
     {
       if (g_ascii_strcasecmp (value, "UTF-8") != 0)
         {
+	  gchar *value_utf8 = _g_utf8_make_valid (value);
           g_set_error (error, G_KEY_FILE_ERROR,
                        G_KEY_FILE_ERROR_UNKNOWN_ENCODING,
-                       _("Key file contains unsupported encoding '%s'"), value);
+                       _("Key file contains unsupported "
+			 "encoding '%s'"), value_utf8);
+	  g_free (value_utf8);
 
           g_free (key);
           g_free (value);
@@ -931,7 +936,6 @@ g_key_file_to_data (GKeyFile  *key_file,
 		    GError   **error)
 {
   GString *data_string;
-  gchar *data;
   GList *group_node, *key_file_node;
 
   g_return_val_if_fail (key_file != NULL, NULL);
@@ -948,6 +952,9 @@ g_key_file_to_data (GKeyFile  *key_file,
 
       if (group->comment != NULL)
         g_string_append_printf (data_string, "%s\n", group->comment->value);
+      else if (group_node->next) /* separate groups by at least an empty line */
+        g_string_append_c (data_string, '\n');
+
       if (group->name != NULL)
         g_string_append_printf (data_string, "[%s]\n", group->name);
 
@@ -969,11 +976,7 @@ g_key_file_to_data (GKeyFile  *key_file,
   if (length)
     *length = data_string->len;
 
-  data = data_string->str;
-
-  g_string_free (data_string, FALSE);
-
-  return data;
+  return g_string_free (data_string, FALSE);
 }
 
 /**
@@ -1284,11 +1287,14 @@ g_key_file_get_string (GKeyFile     *key_file,
 
   if (!g_utf8_validate (value, -1, NULL))
     {
+      gchar *value_utf8 = _g_utf8_make_valid (value);
       g_set_error (error, G_KEY_FILE_ERROR,
                    G_KEY_FILE_ERROR_UNKNOWN_ENCODING,
                    _("Key file contains key '%s' with value '%s' "
-                     "which is not UTF-8"), key, value);
+                     "which is not UTF-8"), key, value_utf8);
+      g_free (value_utf8);
       g_free (value);
+
       return NULL;
     }
 
@@ -1393,11 +1399,14 @@ g_key_file_get_string_list (GKeyFile     *key_file,
 
   if (!g_utf8_validate (value, -1, NULL))
     {
+      gchar *value_utf8 = _g_utf8_make_valid (value);
       g_set_error (error, G_KEY_FILE_ERROR,
                    G_KEY_FILE_ERROR_UNKNOWN_ENCODING,
                    _("Key file contains key '%s' with value '%s' "
-                     "which is not UTF-8"), key, value);
+                     "which is not UTF-8"), key, value_utf8);
+      g_free (value_utf8);
       g_free (value);
+
       return NULL;
     }
 
@@ -1448,8 +1457,8 @@ g_key_file_get_string_list (GKeyFile     *key_file,
  * If @key cannot be found then it is created.  If @group_name 
  * cannot be found then it is created.
  *
- * Since: 2.6 
- */
+ * Since: 2.6
+ **/
 void
 g_key_file_set_string_list (GKeyFile            *key_file,
 			    const gchar         *group_name,
@@ -1591,7 +1600,7 @@ g_key_file_get_locale_string (GKeyFile     *key_file,
 						candidate_key, NULL);
       g_free (candidate_key);
 
-      if (translated_value && g_utf8_validate (translated_value, -1, NULL))
+      if (translated_value)
 	break;
 
       g_free (translated_value);
@@ -2152,6 +2161,218 @@ g_key_file_set_integer_list (GKeyFile     *key_file,
       g_string_append_c (values, ';');
 
       g_free (value);
+    }
+
+  g_key_file_set_value (key_file, group_name, key, values->str);
+  g_string_free (values, TRUE);
+}
+
+/**
+ * g_key_file_get_double:
+ * @key_file: a #GKeyFile
+ * @group_name: a group name
+ * @key: a key
+ * @error: return location for a #GError
+ *
+ * Returns the value associated with @key under @group_name as an
+ * integer. If @group_name is %NULL, the start_group is used.
+ *
+ * If @key cannot be found then the return value is undefined and
+ * @error is set to #G_KEY_FILE_ERROR_KEY_NOT_FOUND. Likewise, if
+ * the value associated with @key cannot be interpreted as a double
+ * then the return value is also undefined and @error is set to
+ * #G_KEY_FILE_ERROR_INVALID_VALUE.
+ *
+ * Return value: the value associated with the key as a double.
+ *
+ * Since: 2.12
+ **/
+gdouble
+g_key_file_get_double  (GKeyFile     *key_file,
+                        const gchar  *group_name,
+                        const gchar  *key,
+                        GError      **error)
+{
+  GError *key_file_error;
+  gchar *value;
+  gdouble double_value;
+
+  g_return_val_if_fail (key_file != NULL, -1);
+  g_return_val_if_fail (group_name != NULL, -1);
+  g_return_val_if_fail (key != NULL, -1);
+
+  key_file_error = NULL;
+
+  value = g_key_file_get_value (key_file, group_name, key, &key_file_error);
+
+  if (key_file_error)
+    {
+      g_propagate_error (error, key_file_error);
+      return 0;
+    }
+
+  double_value = g_key_file_parse_value_as_double (key_file, value,
+                                                  &key_file_error);
+  g_free (value);
+
+  if (key_file_error)
+    {
+      if (g_error_matches (key_file_error,
+                           G_KEY_FILE_ERROR,
+                           G_KEY_FILE_ERROR_INVALID_VALUE))
+        {
+          g_set_error (error, G_KEY_FILE_ERROR,
+                       G_KEY_FILE_ERROR_INVALID_VALUE,
+                       _("Key file contains key '%s' in group '%s' "
+                         "which has value that cannot be interpreted."), key,
+                       group_name);
+          g_error_free (key_file_error);
+        }
+      else
+        g_propagate_error (error, key_file_error);
+    }
+
+  return double_value;
+}
+
+/**
+ * g_key_file_set_double:
+ * @key_file: a #GKeyFile
+ * @group_name: a group name
+ * @key: a key
+ * @value: an double value
+ *
+ * Associates a new double value with @key under @group_name.
+ * If @key cannot be found then it is created. If @group_name
+ * is %NULL, the start group is used.
+ *
+ * Since: 2.12
+ **/
+void
+g_key_file_set_double  (GKeyFile    *key_file,
+                        const gchar *group_name,
+                        const gchar *key,
+                        gdouble      value)
+{
+  gchar result[G_ASCII_DTOSTR_BUF_SIZE];
+
+  g_return_if_fail (key_file != NULL);
+  g_return_if_fail (group_name != NULL);
+  g_return_if_fail (key != NULL);
+
+  g_ascii_dtostr ( result, sizeof (result), value );
+  g_key_file_set_value (key_file, group_name, key, result);
+}
+
+/**
+ * g_key_file_get_double_list:
+ * @key_file: a #GKeyFile
+ * @group_name: a group name
+ * @key: a key
+ * @length: the number of doubles returned
+ * @error: return location for a #GError
+ *
+ * Returns the values associated with @key under @group_name as
+ * doubles. If @group_name is %NULL, the start group is used.
+ *
+ * If @key cannot be found then the return value is undefined and
+ * @error is set to #G_KEY_FILE_ERROR_KEY_NOT_FOUND. Likewise, if
+ * the values associated with @key cannot be interpreted as doubles
+ * then the return value is also undefined and @error is set to
+ * #G_KEY_FILE_ERROR_INVALID_VALUE.
+ *
+ * Return value: the values associated with the key as a double
+ *
+ * Since: 2.12
+ **/
+gdouble *
+g_key_file_get_double_list  (GKeyFile     *key_file,
+                             const gchar  *group_name,
+                             const gchar  *key,
+                             gsize        *length,
+                             GError      **error)
+{
+  GError *key_file_error = NULL;
+  gchar **values;
+  gdouble *double_values;
+  gsize i, num_doubles;
+
+  g_return_val_if_fail (key_file != NULL, NULL);
+  g_return_val_if_fail (group_name != NULL, NULL);
+  g_return_val_if_fail (key != NULL, NULL);
+
+  values = g_key_file_get_string_list (key_file, group_name, key,
+                                       &num_doubles, &key_file_error);
+
+  if (key_file_error)
+    g_propagate_error (error, key_file_error);
+
+  if (!values)
+    return NULL;
+
+  double_values = g_new0 (gdouble, num_doubles);
+
+  for (i = 0; i < num_doubles; i++)
+    {
+      double_values[i] = g_key_file_parse_value_as_double (key_file,
+							   values[i],
+							   &key_file_error);
+
+      if (key_file_error)
+        {
+          g_propagate_error (error, key_file_error);
+          g_strfreev (values);
+          g_free (double_values);
+
+          return NULL;
+        }
+    }
+  g_strfreev (values);
+
+  if (length)
+    *length = num_doubles;
+
+  return double_values;
+}
+
+/**
+ * g_key_file_set_double_list:
+ * @key_file: a #GKeyFile
+ * @group_name: a group name
+ * @key: a key
+ * @list: an array of double values
+ * @length: number of double values in @list
+ *
+ * Associates a list of double values with @key under
+ * @group_name.  If @key cannot be found then it is created.
+ * If @group_name is %NULL the start group is used.
+ *
+ * Since: 2.12
+ **/
+void
+g_key_file_set_double_list (GKeyFile     *key_file,
+			    const gchar  *group_name,
+			    const gchar  *key,
+			    gdouble       list[],
+			    gsize         length)
+{
+  GString *values;
+  gsize i;
+
+  g_return_if_fail (key_file != NULL);
+  g_return_if_fail (group_name != NULL);
+  g_return_if_fail (key != NULL);
+  g_return_if_fail (list != NULL);
+
+  values = g_string_sized_new (length * 16);
+  for (i = 0; i < length; i++)
+    {
+      gchar result[G_ASCII_DTOSTR_BUF_SIZE];
+
+      g_ascii_dtostr( result, sizeof (result), list[i] );
+
+      g_string_append (values, result);
+      g_string_append_c (values, ';');
     }
 
   g_key_file_set_value (key_file, group_name, key, values->str);
@@ -3224,19 +3445,27 @@ g_key_file_parse_value_as_integer (GKeyFile     *key_file,
 
   if (*value == '\0' || *end_of_valid_int != '\0')
     {
+      gchar *value_utf8 = _g_utf8_make_valid (value);
       g_set_error (error, G_KEY_FILE_ERROR,
 		   G_KEY_FILE_ERROR_INVALID_VALUE,
-		   _("Value '%s' cannot be interpreted as a number."), value);
+		   _("Value '%s' cannot be interpreted "
+		     "as a number."), value_utf8);
+      g_free (value_utf8);
+
       return 0;
     }
 
   int_value = long_value;
   if (int_value != long_value || errno == ERANGE)
     {
+      gchar *value_utf8 = _g_utf8_make_valid (value);
       g_set_error (error,
 		   G_KEY_FILE_ERROR, 
 		   G_KEY_FILE_ERROR_INVALID_VALUE,
-		   _("Integer value '%s' out of range"), value);
+		   _("Integer value '%s' out of range"), 
+		   value_utf8);
+      g_free (value_utf8);
+
       return 0;
     }
   
@@ -3251,11 +3480,37 @@ g_key_file_parse_integer_as_value (GKeyFile *key_file,
   return g_strdup_printf ("%d", value);
 }
 
+static gdouble
+g_key_file_parse_value_as_double  (GKeyFile     *key_file,
+                                   const gchar  *value,
+                                   GError      **error)
+{
+  gchar *end_of_valid_d;
+  gdouble double_value = 0;
+
+  double_value = g_ascii_strtod (value, &end_of_valid_d);
+
+  if (*end_of_valid_d != '\0' || end_of_valid_d == value)
+    {
+      gchar *value_utf8 = _g_utf8_make_valid (value);
+      g_set_error (error, G_KEY_FILE_ERROR,
+		   G_KEY_FILE_ERROR_INVALID_VALUE,
+		   _("Value '%s' cannot be interpreted "
+		     "as a float number."), 
+		   value_utf8);
+      g_free (value_utf8);
+    }
+
+  return double_value;
+}
+
 static gboolean
 g_key_file_parse_value_as_boolean (GKeyFile     *key_file,
 				   const gchar  *value,
 				   GError      **error)
 {
+  gchar *value_utf8;
+
   if (value)
     {
       if (strcmp (value, "true") == 0 || strcmp (value, "1") == 0)
@@ -3264,9 +3519,12 @@ g_key_file_parse_value_as_boolean (GKeyFile     *key_file,
         return FALSE;
     }
 
+  value_utf8 = _g_utf8_make_valid (value);
   g_set_error (error, G_KEY_FILE_ERROR,
                G_KEY_FILE_ERROR_INVALID_VALUE,
-               _("Value '%s' cannot be interpreted as a boolean."), value);
+               _("Value '%s' cannot be interpreted "
+		 "as a boolean."), value_utf8);
+  g_free (value_utf8);
 
   return FALSE;
 }
@@ -3286,7 +3544,7 @@ g_key_file_parse_value_as_comment (GKeyFile    *key_file,
                                    const gchar *value)
 {
   GString *string;
-  gchar **lines, *comment;
+  gchar **lines;
   gsize i;
 
   string = g_string_sized_new (512);
@@ -3302,11 +3560,7 @@ g_key_file_parse_value_as_comment (GKeyFile    *key_file,
     }
   g_strfreev (lines);
 
-  comment = string->str;
-
-  g_string_free (string, FALSE);
-
-  return comment;
+  return g_string_free (string, FALSE);
 }
 
 static gchar *
@@ -3314,7 +3568,7 @@ g_key_file_parse_comment_as_value (GKeyFile      *key_file,
                                    const gchar   *comment)
 {
   GString *string;
-  gchar **lines, *value;
+  gchar **lines;
   gsize i;
 
   string = g_string_sized_new (512);
@@ -3326,11 +3580,7 @@ g_key_file_parse_comment_as_value (GKeyFile      *key_file,
                             lines[i + 1] == NULL? "" : "\n");
   g_strfreev (lines);
 
-  value = string->str;
-
-  g_string_free (string, FALSE);
-
-  return value;
+  return g_string_free (string, FALSE);
 }
 
 #define __G_KEY_FILE_C__

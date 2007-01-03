@@ -1,3 +1,9 @@
+glib2.0 (2.12.4-1osso1) unstable; urgency=low
+
+  * upgrade to version 2.12.4 
+
+ -- Tapani Pälli <tapani.palli@nokia.com>  Wed,  1 Nov 2006 15:05:42 +0200
+
 glib2.0 (2.10.2-1osso2) unstable; urgency=low
 
   * shlibs change -> package version bump 

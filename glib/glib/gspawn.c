@@ -36,9 +36,8 @@
 #endif /* HAVE_SYS_SELECT_H */
 
 #include "glib.h"
-#include "galias.h"
-
 #include "glibintl.h"
+#include "galias.h"
 
 static gint g_execute (const gchar  *file,
                        gchar **argv,
@@ -68,10 +67,7 @@ static gboolean fork_exec_with_pipes (gboolean              intermediate_child,
 GQuark
 g_spawn_error_quark (void)
 {
-  static GQuark quark = 0;
-  if (quark == 0)
-    quark = g_quark_from_static_string ("g-exec-error-quark");
-  return quark;
+  return g_quark_from_static_string ("g-exec-error-quark");
 }
 
 /**

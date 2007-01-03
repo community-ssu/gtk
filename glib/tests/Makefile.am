@@ -53,12 +53,13 @@ endif
 if ENABLE_TIMELOOP
 timeloop = timeloop timeloop-closure
 endif
-noinst_PROGRAMS = testglib testgdate testgdateparser unicode-normalize unicode-collate $(timeloop)
+noinst_PROGRAMS = testglib testgdate testgdateparser unicode-normalize unicode-collate $(timeloop) errorcheck-mutex-test
 testglib_LDADD = $(libglib)
 patterntest_LDADD = $(libglib)
 testgdate_LDADD = $(libglib)
 testgdateparser_LDADD = $(libglib)
 unicode_normalize_LDADD = $(libglib)
+errorcheck_mutex_test_LDADD = $(libglib) $(libgthread)
 if ENABLE_TIMELOOP
 timeloop_LDADD = $(libglib)
 timeloop_closure_LDADD = $(libglib) $(libgobject)
@@ -67,6 +68,7 @@ endif
 test_programs =					\
 	atomic-test				\
 	array-test				\
+	base64-test				\
 	$(CXX_TEST)				\
 	child-test				\
 	completion-test				\
@@ -102,6 +104,7 @@ test_programs =					\
 	strfunc-test				\
 	string-test				\
 	strtod-test				\
+	strtoll-test				\
 	thread-test				\
 	threadpool-test				\
 	tree-test				\
@@ -112,9 +115,9 @@ test_programs =					\
 	utf8-pointer				\
 	uri-test
 
-test_scripts = run-markup-tests.sh run-collate-tests.sh
+test_scripts = run-markup-tests.sh run-collate-tests.sh run-bookmark-test.sh
 
-test_script_support_programs = markup-test unicode-collate
+test_script_support_programs = markup-test unicode-collate bookmarkfile-test
 
 check_PROGRAMS = $(test_programs) $(test_script_support_programs)
 
@@ -130,6 +133,8 @@ module_ldadd = $(libgmodule) $(G_MODULE_LIBS) $(progs_ldadd)
 
 atomic_test_LDADD = $(progs_ldadd)
 array_test_LDADD = $(progs_ldadd)
+base64_test_LDADD = $(progs_ldadd)
+bookmarkfile_test_LDADD = $(progs_ldadd)
 child_test_LDADD = $(thread_ldadd)
 completion_test_LDADD = $(progs_ldadd)
 convert_test_LDADD = $(progs_ldadd)
@@ -166,6 +171,7 @@ spawn_test_LDADD = $(progs_ldadd)
 strfunc_test_LDADD = $(progs_ldadd)
 string_test_LDADD = $(progs_ldadd)
 strtod_test_LDADD = $(progs_ldadd) -lm
+strtoll_test_LDADD = $(progs_ldadd) -lm
 thread_test_LDADD = $(thread_ldadd)
 threadpool_test_LDADD = $(thread_ldadd)
 tree_test_LDADD = $(progs_ldadd)
@@ -202,6 +208,9 @@ dist-hook: $(BUILT_EXTRA_DIST)
 	mkdir $(distdir)/collate;          \
 	for f in $(srcdir)/collate/* ; do  \
           if test -f $$f; then cp $$f $(distdir)/collate; fi; done
+	mkdir $(distdir)/bookmarks;          \
+	for f in $(srcdir)/bookmarks/* ; do  \
+	  cp $$f $(distdir)/bookmarks; done 
 
 DISTCLEANFILES = iochannel-test-outfile \
 		file-test-get-contents \

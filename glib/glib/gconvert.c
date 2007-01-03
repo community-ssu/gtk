@@ -30,7 +30,8 @@
 
 #include "glib.h"
 #include "gprintfint.h"
-#include "gthreadinit.h"
+#include "gthreadprivate.h"
+#include "gunicode.h"
 
 #ifdef G_PLATFORM_WIN32
 #define STRICT
@@ -52,11 +53,7 @@
 GQuark 
 g_convert_error_quark (void)
 {
-  static GQuark quark;
-  if (!quark)
-    quark = g_quark_from_static_string ("g_convert_error");
-
-  return quark;
+  return g_quark_from_static_string ("g_convert_error");
 }
 
 static gboolean
@@ -92,7 +89,7 @@ try_to_aliases (const char **to_aliases,
   return FALSE;
 }
 
-extern const char **_g_charset_get_aliases (const char *canonical_name) G_GNUC_INTERNAL;
+extern const char ** G_GNUC_INTERNAL _g_charset_get_aliases (const char *canonical_name);
 
 /**
  * g_iconv_open:
@@ -1835,7 +1832,8 @@ g_filename_from_uri (const gchar *uri,
  * @error: location to store the error occuring, or %NULL to ignore
  *         errors. Any of the errors in #GConvertError may occur.
  * 
- * Converts an absolute filename to an escaped ASCII-encoded URI.
+ * Converts an absolute filename to an escaped ASCII-encoded URI, with the path
+ * component following Section 3.3. of RFC 2396.
  * 
  * Return value: a newly-allocated string holding the resulting
  *               URI, or %NULL on an error.
@@ -1975,44 +1973,6 @@ g_uri_list_extract_uris (const gchar *uri_list)
   return result;
 }
 
-static gchar *
-make_valid_utf8 (const gchar *name)
-{
-  GString *string;
-  const gchar *remainder, *invalid;
-  gint remaining_bytes, valid_bytes;
-  
-  string = NULL;
-  remainder = name;
-  remaining_bytes = strlen (name);
-  
-  while (remaining_bytes != 0) 
-    {
-      if (g_utf8_validate (remainder, remaining_bytes, &invalid)) 
-	break;
-      valid_bytes = invalid - remainder;
-    
-      if (string == NULL) 
-	string = g_string_sized_new (remaining_bytes);
-
-      g_string_append_len (string, remainder, valid_bytes);
-      /* append U+FFFD REPLACEMENT CHARACTER */
-      g_string_append (string, "\357\277\275");
-      
-      remaining_bytes -= valid_bytes + 1;
-      remainder = invalid + 1;
-    }
-  
-  if (string == NULL)
-    return g_strdup (name);
-  
-  g_string_append (string, remainder);
-
-  g_assert (g_utf8_validate (string->str, -1, NULL));
-  
-  return g_string_free (string, FALSE);
-}
-
 /**
  * g_filename_display_basename:
  * @filename: an absolute pathname in the GLib file name encoding
@@ -2113,7 +2073,7 @@ g_filename_display_name (const gchar *filename)
    * by a question mark
    */
   if (!display_name) 
-    display_name = make_valid_utf8 (filename);
+    display_name = _g_utf8_make_valid (filename);
 
   return display_name;
 }

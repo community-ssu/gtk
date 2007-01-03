@@ -13,11 +13,12 @@ property access methods, and signal support.
 Signals are described in detail in <xref linkend="gobject-Signals"/>.
 </para>
 <para id="floating-ref">
-The initial reference a #GObject is created with is flagged as a
-<firstterm>floating</firstterm> reference.
+#GInitiallyUnowned is derived from #GObject. The only difference between
+the two is that the initial reference of a #GInitiallyUnowned is flagged 
+as a <firstterm>floating</firstterm> reference.
 This means that it is not specifically claimed to be "owned" by
 any code portion. The main motivation for providing floating references is
-C convenience. In particular, it allowes code to be written as:
+C convenience. In particular, it allows code to be written as:
 <example><programlisting>
   container = create_container();
   container_add_child (container, create_child());
@@ -39,7 +40,7 @@ an ordinary reference by calling g_object_ref_sink().
 For already sunken objects (objects that don't have a floating reference
 anymore), g_object_ref_sink() is equivalent to g_object_ref() and returns
 a new reference.
-Since floating references are useful allmost exclusively for C convenience,
+Since floating references are useful almost exclusively for C convenience,
 language bindings that provide automated reference and memory ownership
 maintenance (such as smart pointers or garbage collection) therefore don't
 need to expose floating references in their API.
@@ -85,8 +86,8 @@ value of the property has actually changed, it may also be emitted when
 the setter for the property is called to reinstate the previous value.
 </para>
 
-@gobject: the object which received the signal.
 @pspec: the #GParamSpec of the property which changed
+@gobject: the object which received the signal.
 
 <!-- ##### STRUCT GObjectClass ##### -->
 <para>
@@ -442,13 +443,14 @@ Increases the reference count of @object.
 </para>
 
 @object: a #GObject
-@Returns: @object
+@Returns: the same @object
 
 
 <!-- ##### FUNCTION g_object_unref ##### -->
 <para>
-Decreases the reference count if @object.
-When its reference count drops to 0, the object is finalized (i.e. its memory is freed).
+Decreases the reference count of @object.
+When its reference count drops to 0, the object is finalized 
+(i.e. its memory is freed).
 </para>
 
 @object: a #GObject
@@ -460,10 +462,38 @@ Increase the reference count of @object, and possibly remove the
 <link linkend="floating-ref">floating</link> reference, if @object
 has a floating reference.
 </para>
+<para>
+In other words, if the object is floating, then this call "assumes 
+ownership" of the floating reference, converting it to a normal reference 
+by clearing the floating flag while leaving the reference count unchanged. 
+If the object is not floating, then this call adds a new normal reference 
+increasing the reference count by one.
+</para>
 
 @object: a #GObject
 @Returns: @object
 @Since: 2.10
+
+
+<!-- ##### TYPEDEF GInitiallyUnowned ##### -->
+<para>
+All the fields in the <structname>GInitiallyUnowned</structname> structure 
+are private to the #GInitiallyUnowned implementation and should never be 
+accessed directly.
+</para>
+
+
+<!-- ##### TYPEDEF GInitiallyUnownedClass ##### -->
+<para>
+The class structure for the <structname>GInitiallyUnowned</structname> type.
+</para>
+
+
+<!-- ##### MACRO G_TYPE_INITIALLY_UNOWNED ##### -->
+<para>
+The type for #GInitiallyUnowned.
+</para>
+
 
 
 <!-- ##### FUNCTION g_object_is_floating ##### -->
@@ -482,8 +512,8 @@ reference.
 This function is intended for #GObject implementations to re-enforce a
 <link linkend="floating-ref">floating</link> object reference.
 Doing this is seldomly required, all
-#GObject<!-- -->s are created with a floating reference which usually
-just needs to be sunken by calling g_object_ref_sink().
+#GInitiallyUnowned<!-- -->s are created with a floating reference which 
+usually just needs to be sunken by calling g_object_ref_sink().
 </para>
 
 @object: a #GObject

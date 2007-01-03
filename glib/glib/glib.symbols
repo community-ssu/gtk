@@ -103,6 +103,61 @@ g_on_error_stack_trace
 #endif
 #endif
 
+#if IN_HEADER(__G_BASE64_H__)
+#if IN_FILE(__G_BASE64_C__)
+g_base64_encode_step
+g_base64_encode_close
+g_base64_encode G_GNUC_MALLOC
+g_base64_decode_step
+g_base64_decode G_GNUC_MALLOC
+#endif
+#endif
+
+#if IN_HEADER(__G_BOOKMARK_FILE_H__)
+#if IN_FILE(__G_BOOKMARK_FILE_C__)
+g_bookmark_file_error_quark
+g_bookmark_file_new
+g_bookmark_file_free
+g_bookmark_file_load_from_file
+g_bookmark_file_load_from_data
+g_bookmark_file_load_from_data_dirs
+g_bookmark_file_to_data
+g_bookmark_file_to_file
+g_bookmark_file_set_title
+g_bookmark_file_get_title G_GNUC_MALLOC
+g_bookmark_file_set_description
+g_bookmark_file_get_description G_GNUC_MALLOC
+g_bookmark_file_set_mime_type
+g_bookmark_file_get_mime_type G_GNUC_MALLOC
+g_bookmark_file_set_groups
+g_bookmark_file_add_group
+g_bookmark_file_has_group
+g_bookmark_file_get_groups G_GNUC_MALLOC
+g_bookmark_file_add_application
+g_bookmark_file_has_application
+g_bookmark_file_get_applications G_GNUC_MALLOC
+g_bookmark_file_set_app_info
+g_bookmark_file_get_app_info
+g_bookmark_file_set_is_private
+g_bookmark_file_get_is_private
+g_bookmark_file_set_icon
+g_bookmark_file_get_icon
+g_bookmark_file_set_added
+g_bookmark_file_get_added
+g_bookmark_file_set_modified
+g_bookmark_file_get_modified
+g_bookmark_file_set_visited
+g_bookmark_file_get_visited
+g_bookmark_file_has_item
+g_bookmark_file_get_size
+g_bookmark_file_get_uris G_GNUC_MALLOC
+g_bookmark_file_remove_group
+g_bookmark_file_remove_application
+g_bookmark_file_remove_item
+g_bookmark_file_move_item
+#endif
+#endif
+
 #if IN_HEADER(__G_CACHE_H__)
 #if IN_FILE(__G_CACHE_C__)
 g_cache_destroy
@@ -307,9 +362,11 @@ g_hash_table_lookup_extended
 g_hash_table_new
 g_hash_table_new_full
 g_hash_table_remove
+g_hash_table_remove_all
 g_hash_table_replace
 g_hash_table_size
 g_hash_table_steal
+g_hash_table_steal_all
 #endif
 #endif
 
@@ -420,6 +477,8 @@ g_key_file_get_boolean
 g_key_file_get_boolean_list G_GNUC_MALLOC
 g_key_file_get_comment G_GNUC_MALLOC
 g_key_file_get_groups G_GNUC_MALLOC
+g_key_file_get_double
+g_key_file_get_double_list G_GNUC_MALLOC
 g_key_file_get_integer
 g_key_file_get_integer_list G_GNUC_MALLOC
 g_key_file_get_keys G_GNUC_MALLOC
@@ -441,6 +500,8 @@ g_key_file_remove_key
 g_key_file_set_boolean
 g_key_file_set_boolean_list
 g_key_file_set_comment
+g_key_file_set_double
+g_key_file_set_double_list
 g_key_file_set_integer
 g_key_file_set_integer_list
 g_key_file_set_list_separator
@@ -522,6 +583,7 @@ g_main_context_unref
 g_main_context_wait
 g_main_context_wakeup
 g_main_depth
+g_main_current_source
 g_main_loop_get_context
 g_main_loop_is_running
 g_main_loop_new
@@ -546,6 +608,8 @@ g_source_remove_poll
 g_source_set_callback
 g_source_set_callback_indirect
 g_source_set_can_recurse
+g_source_set_funcs
+g_source_is_destroyed
 g_source_set_priority
 g_source_unref
 g_idle_add
@@ -686,14 +750,20 @@ g_option_context_add_group
 g_option_context_add_main_entries
 g_option_error_quark
 g_option_context_free
+g_option_context_get_description
 g_option_context_get_help_enabled
 g_option_context_get_ignore_unknown_options
 g_option_context_get_main_group
+g_option_context_get_summary
 g_option_context_new
 g_option_context_parse
+g_option_context_set_description
 g_option_context_set_help_enabled
 g_option_context_set_ignore_unknown_options
 g_option_context_set_main_group
+g_option_context_set_summary
+g_option_context_set_translate_func
+g_option_context_set_translation_domain
 g_option_group_add_entries
 g_option_group_free
 g_option_group_new
@@ -947,6 +1017,7 @@ g_ascii_formatd
 g_ascii_strdown G_GNUC_MALLOC
 g_ascii_strtod
 g_ascii_strtoull
+g_ascii_strtoll
 g_ascii_strup G_GNUC_MALLOC
 g_ascii_tolower G_GNUC_CONST
 g_ascii_toupper G_GNUC_CONST
@@ -1032,6 +1103,7 @@ g_string_down
 g_string_up
 #endif
 #ifdef INCLUDE_INTERNAL_SYMBOLS
+ /* these are not internal, but we don't want to alias them */
 g_string_append_c
 #endif
 g_str_equal
@@ -1111,6 +1183,8 @@ g_timer_reset
 g_timer_start
 g_timer_stop
 g_time_val_add
+g_time_val_from_iso8601
+g_time_val_to_iso8601 G_GNUC_MALLOC
 g_usleep
 #endif
 #endif
@@ -1174,6 +1248,7 @@ g_unichar_isspace G_GNUC_CONST
 g_unichar_istitle G_GNUC_CONST
 g_unichar_isupper G_GNUC_CONST
 g_unichar_iswide G_GNUC_CONST
+g_unichar_iswide_cjk G_GNUC_CONST
 g_unichar_isxdigit G_GNUC_CONST
 g_unichar_tolower G_GNUC_CONST
 g_unichar_totitle G_GNUC_CONST

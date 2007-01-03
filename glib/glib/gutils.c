@@ -38,6 +38,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include <string.h>
+#include <ctype.h>		/* For tolower() */
 #include <errno.h>
 #ifdef HAVE_PWD_H
 #include <pwd.h>
@@ -56,7 +57,7 @@
 #define	__G_UTILS_C__
 #include "glib.h"
 #include "gprintfint.h"
-#include "gthreadinit.h"
+#include "gthreadprivate.h"
 #include "galias.h"
 
 #ifdef	MAXPATHLEN
@@ -552,16 +553,33 @@ g_find_program_in_path (const gchar *program)
   return NULL;
 }
 
+static gboolean
+debug_key_matches (const gchar *key,
+		   const gchar *token,
+		   guint        length)
+{
+  for (; length; length--, key++, token++)
+    {
+      char k = (*key   == '_') ? '-' : tolower (*key  );
+      char t = (*token == '_') ? '-' : tolower (*token);
+
+      if (k != t)
+        return FALSE;
+    }
+
+  return *key == '\0';
+}
+
 /**
  * g_parse_debug_string:
- * @string: a list of debug options separated by ':' or "all" 
- *     to set all flags.
+ * @string: a list of debug options separated by colons, spaces, or
+ * commas; or the string "all" to set all flags.
  * @keys: pointer to an array of #GDebugKey which associate 
  *     strings with bit flags.
  * @nkeys: the number of #GDebugKey<!-- -->s in the array.
  *
- * Parses a string containing debugging options separated 
- * by ':' into a %guint containing bit flags. This is used 
+ * Parses a string containing debugging options
+ * into a %guint containing bit flags. This is used 
  * within GDK and GTK+ to parse the debug options passed on the
  * command line or through environment variables.
  *
@@ -594,17 +612,16 @@ g_parse_debug_string  (const gchar     *string,
       
       while (*p)
 	{
-	  q = strchr (p, ':');
+	  q = strpbrk (p, ":;, \t");
 	  if (!q)
 	    q = p + strlen(p);
 	  
 	  for (i = 0; i < nkeys; i++)
-	    if (g_ascii_strncasecmp (keys[i].key, p, q - p) == 0 &&
-		keys[i].key[q - p] == '\0')
+	    if (debug_key_matches (keys[i].key, p, q - p))
 	      result |= keys[i].value;
 	  
 	  p = q;
-	  if (*p == ':')
+	  if (*p)
 	    p++;
 	}
     }
@@ -1398,6 +1415,13 @@ g_unsetenv (const gchar *variable)
  * 
  * Returns: a %NULL-terminated list of strings which must be freed
  * with g_strfreev().
+ *
+ * Programs that want to be portable to Windows should typically use
+ * this function and g_getenv() instead of using the environ array
+ * from the C library directly. On Windows, the strings in the environ
+ * array are in system codepage encoding, while in most of the typical
+ * use cases for environment variables in GLib-using programs you want
+ * the UTF-8 encoding that this function and g_getenv() provide.
  *
  * Since: 2.8
  */

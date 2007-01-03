@@ -1,5 +1,7 @@
-#include <glib.h>
+#include <stdio.h>
 #include <string.h>
+#include <locale.h>
+#include <glib.h>
 
 int error_test1_int;
 char *error_test2_string;
@@ -8,9 +10,13 @@ gboolean error_test3_boolean;
 int arg_test1_int;
 gchar *arg_test2_string;
 gchar *arg_test3_filename;
+gdouble arg_test4_double;
+gdouble arg_test5_double;
+gint64 arg_test6_int64;
+gint64 arg_test6_int64_2;
 
 gchar *callback_test1_string;
-gboolean callback_test2_int;
+int callback_test2_int;
 
 gchar *callback_test_optional_string;
 gboolean callback_test_optional_boolean;
@@ -326,6 +332,109 @@ arg_test3 (void)
 
   g_free (arg_test3_filename);
   
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+
+void
+arg_test4 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 0, 0, G_OPTION_ARG_DOUBLE, &arg_test4_double, NULL, NULL },
+      { NULL } };
+
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test 20.0 --test 30.03", &argc);
+
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  /* Last arg specified is the one that should be stored */
+  g_assert (arg_test4_double == 30.03);
+
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+arg_test5 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  char *old_locale, *current_locale;
+  const char *locale = "de_DE";
+  GOptionEntry entries [] =
+    { { "test", 0, 0, G_OPTION_ARG_DOUBLE, &arg_test5_double, NULL, NULL },
+      { NULL } };
+
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test 20,0 --test 30,03", &argc);
+
+  /* set it to some locale that uses commas instead of decimal points */
+  
+  old_locale = g_strdup (setlocale (LC_NUMERIC, locale));
+  current_locale = setlocale (LC_NUMERIC, NULL);
+  if (strcmp (current_locale, locale) != 0)
+    {
+      fprintf (stderr, "Cannot set locale to %s, skipping\n", locale);
+      goto cleanup; 
+    }
+
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  /* Last arg specified is the one that should be stored */
+  g_assert (arg_test5_double == 30.03);
+
+ cleanup:
+  setlocale (LC_NUMERIC, old_locale);
+  g_free (old_locale);
+
+  g_strfreev (argv);
+  g_option_context_free (context);
+}
+
+void
+arg_test6 (void)
+{
+  GOptionContext *context;
+  gboolean retval;
+  GError *error = NULL;
+  gchar **argv;
+  int argc;
+  GOptionEntry entries [] =
+    { { "test", 0, 0, G_OPTION_ARG_INT64, &arg_test6_int64, NULL, NULL },
+      { "test2", 0, 0, G_OPTION_ARG_INT64, &arg_test6_int64_2, NULL, NULL },
+      { NULL } };
+
+  context = g_option_context_new (NULL);
+  g_option_context_add_main_entries (context, entries, NULL);
+
+  /* Now try parsing */
+  argv = split_string ("program --test 4294967297 --test 4294967296 --test2 0xfffffffff", &argc);
+
+  retval = g_option_context_parse (context, &argc, &argv, &error);
+  g_assert (retval);
+
+  /* Last arg specified is the one that should be stored */
+  g_assert (arg_test6_int64 == 4294967296LL);
+  g_assert (arg_test6_int64_2 == 0xfffffffffLL);
+
   g_strfreev (argv);
   g_option_context_free (context);
 }
@@ -839,16 +948,17 @@ empty_test1 (void)
   GOptionContext *context;
   GOptionEntry entries [] =
     { { NULL } };
+  char *prgname;
 
   g_set_prgname (NULL);
-
   context = g_option_context_new (NULL);
 
   g_option_context_add_main_entries (context, entries, NULL);
   
   g_option_context_parse (context, NULL, NULL, NULL);
 
-  g_assert (strcmp (g_get_prgname (), "<unknown>") == 0);
+  prgname = g_get_prgname ();
+  g_assert (prgname && strcmp (prgname, "<unknown>") == 0);
   
   g_option_context_free (context);
 }
@@ -1290,6 +1400,9 @@ main (int argc, char **argv)
   arg_test1 ();
   arg_test2 ();
   arg_test3 ();
+  arg_test4 ();
+  arg_test5 ();
+  arg_test6 ();
 
   /* Test string arrays */
   array_test1 ();

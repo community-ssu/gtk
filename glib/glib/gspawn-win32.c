@@ -42,10 +42,11 @@
 /* Define this to get some logging all the time */
 /* #define G_SPAWN_WIN32_DEBUG */
 
-#include <config.h>
+#include "config.h"
 
 #include "glib.h"
 #include "gprintfint.h"
+#include "glibintl.h"
 #include "galias.h"
 
 #include <string.h>
@@ -66,8 +67,6 @@ int _wspawnvp (int, const wchar_t *, const wchar_t **);
 int _wspawnve (int, const wchar_t *, const wchar_t **, const wchar_t **);
 int _wspawnv (int, const wchar_t *, const wchar_t **);
 #endif
-
-#include "glibintl.h"
 
 #ifdef G_SPAWN_WIN32_DEBUG
   static int debug = 1;
@@ -199,10 +198,7 @@ protect_argv (gchar  **argv,
 GQuark
 g_spawn_error_quark (void)
 {
-  static GQuark quark = 0;
-  if (quark == 0)
-    quark = g_quark_from_static_string ("g-exec-error-quark");
-  return quark;
+  return g_quark_from_static_string ("g-exec-error-quark");
 }
 
 gboolean

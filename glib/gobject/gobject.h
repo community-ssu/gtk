@@ -178,6 +178,8 @@ void        g_object_freeze_notify            (GObject        *object);
 void        g_object_notify                   (GObject        *object,
 					       const gchar    *property_name);
 void        g_object_thaw_notify              (GObject        *object);
+gboolean    g_object_is_floating    	      (gpointer        object);
+gpointer    g_object_ref_sink       	      (gpointer	       object);
 gpointer    g_object_ref                      (gpointer        object);
 void        g_object_unref                    (gpointer        object);
 void	    g_object_weak_ref		      (GObject	      *object,
@@ -243,6 +245,7 @@ gulong	    g_signal_connect_object           (gpointer	       instance,
 					       GConnectFlags   connect_flags);
 
 /*< protected >*/
+void        g_object_force_floating           (GObject        *object);
 void        g_object_run_dispose	      (GObject	      *object);
 
 
@@ -253,19 +256,10 @@ void        g_value_set_object_take_ownership (GValue         *value,
 					       gpointer        v_object);
 #endif
 
-/* start maemo mod */
-#if 0
-gboolean    g_object_is_floating    	      (gpointer        object);
-gpointer    g_object_ref_sink       	      (gpointer	       object);
-void        g_object_force_floating           (GObject        *object);
-/* end maemo mod */
 #if !defined(G_DISABLE_DEPRECATED) || defined(GTK_COMPILATION)
 gsize	    g_object_compat_control	      (gsize	       what,
 					       gpointer	       data);
 #endif
-/* start maemo mod */
-#endif
-/* end maemo mod */
 
 /* --- implementation macros --- */
 #define G_OBJECT_WARN_INVALID_PSPEC(object, pname, property_id, pspec) \

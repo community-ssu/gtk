@@ -31,9 +31,9 @@
 #include <string.h>
 #include <errno.h>
 #include "gmem.h"               /* gslice.h */
-#include "gthreadinit.h"
-#include "galias.h"
+#include "gthreadprivate.h"
 #include "glib.h"
+#include "galias.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>             /* sysconf() */
 #endif

@@ -18,7 +18,6 @@
  */
 #include        <config.h>
 #include	"gtype.h"
-#include	"gobjectalias.h"
 
 /*
  * MT safe
@@ -29,6 +28,7 @@
 #include	"gbsearcharray.h"
 #include	<string.h>
 
+#include	"gobjectalias.h"
 
 /* NOTE: some functions (some internal variants and exported ones)
  * invalidate data portions of the TypeNodes. if external functions/callbacks
@@ -2204,6 +2204,31 @@ g_type_register_fundamental (GType                       type_id,
 }
 
 GType
+g_type_register_static_simple (GType             parent_type,
+			       const gchar      *type_name,
+			       guint             class_size,
+			       GClassInitFunc    class_init,
+			       guint             instance_size,
+			       GInstanceInitFunc instance_init,
+			       GTypeFlags	 flags)
+{
+  GTypeInfo info;
+
+  info.class_size = class_size;
+  info.base_init = NULL;
+  info.base_finalize = NULL;
+  info.class_init = class_init;
+  info.class_finalize = NULL;
+  info.class_data = NULL;
+  info.instance_size = instance_size;
+  info.n_preallocs = 0;
+  info.instance_init = instance_init;
+  info.value_table = NULL;
+
+  return g_type_register_static (parent_type, type_name, &info, flags);
+}
+
+GType
 g_type_register_static (GType            parent_type,
 			const gchar     *type_name,
 			const GTypeInfo *info,
@@ -3532,7 +3557,7 @@ g_type_instance_get_private (GTypeInstance *instance,
 
       if (G_UNLIKELY (private_node->data->instance.private_size == parent_node->data->instance.private_size))
 	{
-	  g_warning ("g_type_get_private() requires a prior call to g_type_add_private()");
+	  g_warning ("g_type_instance_get_private() requires a prior call to g_type_class_add_private()");
 	  return NULL;
 	}
 
