@@ -221,6 +221,21 @@ make_default_interface(const char *application, char *interface)
 }
 
 void __attribute__ ((visibility("hidden")))
+make_default_error_name(const char *service, const char *name,
+                        char *ready_name)
+{
+    assert(service != NULL);
+    assert(name != NULL);
+    assert(ready_name != NULL);
+
+    if (g_strrstr(name, ".") != NULL) {
+        g_snprintf(ready_name, MAX_ERROR_LEN, "%s", name);
+    } else {
+        g_snprintf(ready_name, MAX_ERROR_LEN, "%s.%s", service, name);
+    }
+}
+
+void __attribute__ ((visibility("hidden")))
 make_default_service(const char *application, char *service)
 {
     assert(application != NULL);

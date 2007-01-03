@@ -607,6 +607,7 @@ static void generic_signal_handler(osso_context_t *osso,
     muali_event_info_t info;
     DBusMessageIter iter;
     muali_handler_t *cb;
+    char id_buf[MAX_MSGID_LEN + 1];
 
     ULOG_DEBUG_F("entered");
     assert(osso != NULL && data != NULL);
@@ -632,11 +633,23 @@ static void generic_signal_handler(osso_context_t *osso,
             osso->reply_dummy = reply;
         }
     }
+    if (osso->error_dummy == NULL &&
+        dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_CALL) {
+        DBusMessage *reply;
+        reply = dbus_message_new_error(msg, "org.foo.dummy", NULL);
+        if (reply == NULL) {
+            ULOG_WARN_F("could not create error_dummy");
+        } else { 
+            osso->error_dummy = reply;
+        }
+    }
 
     if ((dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_CALL
         && !dbus_message_get_no_reply(msg)) ||
         dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_METHOD_RETURN) {
-            info.message_id = dbus_message_get_serial(msg);
+            _muali_make_id(dbus_type, dbus_message_get_sender(msg),
+                           dbus_message_get_serial(msg), id_buf);
+            info.message_id = id_buf;
     }
 
     if (dbus_message_get_type(msg) == DBUS_MESSAGE_TYPE_ERROR) {

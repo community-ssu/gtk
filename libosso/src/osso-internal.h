@@ -69,8 +69,10 @@
 #define MAX_SVC_LEN 255
 #define MAX_OP_LEN 255
 #define MAX_MEMBER_LEN 255
+#define MAX_ERROR_LEN 255
 #define MAX_HASH_KEY_LEN (MAX_IF_LEN + MAX_SVC_LEN + MAX_OP_LEN)
 #define MAX_OPM_HASH_KEY_LEN (MAX_OP_LEN + MAX_MEMBER_LEN)
+#define MAX_MSGID_LEN (MAX_SVC_LEN + 20 + 20 + 2)
 
 #define MAX_APP_NAME_LEN 50
 #define MAX_VERSION_LEN 30
@@ -172,7 +174,7 @@ typedef struct osso_af_context_t {
     GArray *cp_plugins;
     int next_handler_id;    /* next available handler id, unique in this
                                context */
-    const DBusMessage *reply_dummy;
+    const DBusMessage *reply_dummy, *error_dummy;
 } _osso_af_context_t, _muali_context_t;
 
 typedef struct _muali_context_t {
@@ -201,7 +203,7 @@ typedef struct _muali_context_t {
     GArray *cp_plugins;
     int next_handler_id;    /* next available handler id, unique in this
                                context */
-    const DBusMessage *reply_dummy;
+    const DBusMessage *reply_dummy, *error_dummy;
 } _muali_this_type_is_not_used_t;
 
 # ifdef LIBOSSO_DEBUG
@@ -256,6 +258,9 @@ make_default_service(const char *application, char *service);
 void __attribute__ ((visibility("hidden")))
 make_default_object_path(const char *application, char *path);
 
+void __attribute__ ((visibility("hidden")))
+make_default_error_name(const char *service, const char *name,
+                        char *ready_name);
 
 gboolean __attribute__ ((visibility("hidden")))
 _muali_set_handler(_muali_context_t *context,
@@ -291,5 +296,12 @@ gboolean validate_osso_context(const osso_context_t * osso);
 				   OSSO_BUS_ACTIVATE, NULL, NULL);
 
 void _close_all_plugins(osso_context_t *osso);
+
+inline void __attribute__ ((visibility("hidden")))
+_muali_parse_id(const char *id, muali_bus_type *bus, char *sender,
+                int *serial);
+
+inline void __attribute__ ((visibility("hidden")))
+_muali_make_id(muali_bus_type bus, const char *sender, int serial, char *id);
 
 #endif /* OSSO_INTERNAL_H_ */

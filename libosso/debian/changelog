@@ -14,9 +14,9 @@ libosso (2.0-1unreleased1) unstable; urgency=low
     to use.
   * Made lot of muali development, design fixes, and tested code.
   * Implemented muali_reply_string (not sure if *_string functions make
-    sense...)
+    sense...) and muali_reply_error.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 29 Dec 2006 16:35:39 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 03 Jan 2007 09:43:15 +0200
 
 libosso (1.20-1) unstable; urgency=low
 

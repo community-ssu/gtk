@@ -106,8 +106,8 @@ typedef struct {
          * for e.g. pre-defined events. */
         muali_bus_type bus_type;
 
-        /* This can be ID of the reply or a received message. */
-        long message_id;
+        /* This can be an ID string of the reply or a received message. */
+        const char *message_id;
 
         /* received error message, or NULL */
         const char *error;
@@ -265,14 +265,14 @@ muali_error_t muali_send_string(muali_context_t *context,
                                 muali_bus_type bus_type,
                                 const char *destination,
                                 const char *message_name,
-                                const char *string,
-                                long *message_id);
+                                const char *string);
 
 muali_error_t muali_send_varargs(muali_context_t *context,
                                  muali_handler_t *reply_handler,
                                  const void *user_data,
-                                 long *reply_id,
-                                 const char *service,
+                                 muali_bus_type bus_type,
+                                 const char *destination,
+                                 const char *message_name,
                                  int arg_type, ...);
 
 /* blocking */
@@ -287,16 +287,23 @@ muali_error_t muali_send_and_wait_varargs(muali_context_t *context,
                                           const char *service,
                                           int arg_type, ...);
 
+/* signals */
+muali_error_t muali_send_signal(muali_context_t *context,
+                                muali_bus_type bus_type,
+                                const char *signal_name,
+                                const char *argument);
+
+muali_error_t muali_send_signal_full(muali_context_t *context,
+                                     muali_bus_type bus_type,
+                                     const char *signal_path,
+                                     const char *signal_interface,
+                                     const char *signal_name,
+                                     int arg_type, ...);
+
+
 /****************************************/
 /* 'advanced' message or signal sending */
 /****************************************/
-
-/* asyncronous */
-muali_error_t muali_send_any(muali_context_t *context,
-                             muali_handler_t *reply_handler,
-                             const void *user_data,
-                             long *reply_id,
-                             const muali_event_info_t *info);
 
 muali_error_t muali_send_any_varargs(muali_context_t *context,
                                      muali_handler_t *reply_handler,
@@ -320,19 +327,17 @@ muali_error_t muali_send_any_and_wait_varargs(muali_context_t *context,
 /**********************/
 
 muali_error_t muali_reply_string(muali_context_t *context,
-                                 muali_bus_type bus_type,
-                                 const char *dest,
-                                 long message_id,
+                                 const char *message_id,
                                  const char *string);
 
 muali_error_t muali_reply_varargs(muali_context_t *context,
-                                  long message_id,
+                                  const char *message_id,
                                   int arg_type, ...);
 
 muali_error_t muali_reply_error(muali_context_t *context,
-                                long message_id,
-                                const char *name,
-                                const char *message);
+                                const char *message_id,
+                                const char *error_name,
+                                const char *error_message);
 
 
 #ifdef __cplusplus
