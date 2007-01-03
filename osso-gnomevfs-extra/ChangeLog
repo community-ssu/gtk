@@ -1,3 +1,14 @@
+2007-01-03  Martyn Russell  <martyn@imendio.com>
+
+	* debian/Makefile.am:
+	* debian/control:
+	* debian/libossomime-dev.install:
+	* debian/libossomime0.install:
+	* debian/osso-update-category-database.install:
+	* debian/osso-update-category-database.postinst:
+	* debian/rules: Removed all debian build code for the old
+	libossomime and osso-update-category-database.
+
 2007-01-02  Martyn Russell  <martyn@imendio.com>
 
 	* Makefile.am:

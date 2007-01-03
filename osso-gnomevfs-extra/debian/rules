@@ -70,9 +70,9 @@ binary-arch: install
 	dh_testroot
 	dh_install --sourcedir=debian/tmp
 	dh_installchangelogs 
-	dh_installdocs README obex-module/README.unsupported obex-module/docs/*.txt libossomime/mime-category-mapping.txt libossomime/mime-dbus-mapping.txt
+	dh_installdocs README obex-module/README.unsupported obex-module/docs/*.txt
 	dh_link
-	dh_strip --dbg-package=osso-gnomevfs-extra --dbg-package=libossomime0
+	dh_strip --dbg-package=osso-gnomevfs-extra
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -V
