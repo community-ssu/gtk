@@ -43,6 +43,8 @@
 
 /*---=== Generic helpers (private interface) ===---*/
 
+static gboolean ossohelp_file2_private( const char *basename, int basename_len,
+                         char *fn_buf, size_t fn_buflen, char *language ) ;
 /**
   Returns the last character of a string, or '\0' if NULL/empty.
   
@@ -254,13 +256,52 @@ const gchar *helplib_str_title(void)
 extern
 const gchar *ossohelp_getpath( const gchar *lang )
 {
+    static gchar *last_lang = NULL ;
     static gchar *ret = NULL;
 
-    /* Initialize the path only once (optimization)
-     *
-     * We expect the language to remain the same throughout 
-     * the lifespan of this library; change this if not so.
+    /* Initialize the path only once (optimization) for each language change,
+     * which is expected to occur only infrequently
      */
+    if (NULL == last_lang)
+    {
+        if (NULL != lang)
+        {
+            last_lang = g_strdup (lang) ;
+            if (NULL != ret)
+            {
+                g_free (ret) ;
+                ret = NULL ;
+            }
+        }
+        /* else we're fine */
+    }
+    else /* NULL != last_lang */
+    {
+        if (NULL == lang)
+        {
+            g_free (last_lang) ;
+            last_lang = NULL ;
+            if (NULL != ret)
+            {
+                g_free (ret) ;
+                ret = NULL ;
+            }
+        }
+        else
+        {
+            if (strcmp (lang, last_lang))
+            {
+                g_free (last_lang) ;
+                last_lang = g_strdup (lang) ;
+                if (NULL != ret)
+                {
+                    g_free (ret) ;
+                    ret = NULL ;
+                }
+            }
+        }
+    }
+
     if (!ret) {
         const gchar *base= help_basepath();
 
@@ -407,11 +448,19 @@ const char *ossohelp_file( const char *branch, char *fn_buf, size_t fn_buflen )
 gboolean ossohelp_file2( const char *basename, int basename_len,
                          char *fn_buf, size_t fn_buflen )
 {
+    if (!ossohelp_file2_private (basename, basename_len, fn_buf, fn_buflen, NULL))
+        return ossohelp_file2_private (basename, basename_len, fn_buf, fn_buflen, "en_GB") ;
+    return TRUE ;
+}
+
+static gboolean ossohelp_file2_private( const char *basename, int basename_len,
+                         char *fn_buf, size_t fn_buflen, char *language )
+{
     char *p;
 
     g_assert( fn_buf );
         
-    strcpy_safe( fn_buf, ossohelp_getpath(NULL), fn_buflen );   
+    strcpy_safe( fn_buf, ossohelp_getpath(language), fn_buflen );   
     strcat_safe_max( fn_buf, basename, fn_buflen, basename_len );
     
     p= strchr( fn_buf, '\0' );  /* current end of the string (no ext) */
