@@ -1497,7 +1497,7 @@ int Mix_SetPosition(int channel, Sint16 angle, Uint8 distance)
     Uint16 format;
     int channels;
     position_args *args = NULL;
-    Sint16 room_angle;
+    Sint16 room_angle = 0;
 
     Mix_QuerySpec(NULL, &format, &channels);
     f = get_position_effect_func(format, channels);
