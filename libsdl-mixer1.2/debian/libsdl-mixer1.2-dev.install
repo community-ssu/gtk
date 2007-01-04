@@ -1,0 +1,3 @@
+usr/include/SDL/*.h
+usr/lib/*.so
+usr/lib/*.a

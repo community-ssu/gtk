@@ -1,0 +1,18 @@
+libsdl-mixer1.2 (1.2.6-3) unstable; urgency=low
+
+  * Removed .la file from devel package installation. Fixes: NB#34320
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 10 Jul 2006 16:55:32 +0300
+
+libsdl-mixer1.2 (1.2.6-2) unstable; urgency=low
+
+  * Enabled mikmod.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon,  5 Jun 2006 14:41:21 +0300
+
+
+libsdl-mixer1.2 (1.2.6) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Fri, 21 Jan 2005 15:18:12 +0200

@@ -1,0 +1,19 @@
+Source: libsdl-mixer1.2
+Priority: optional
+Maintainer: Kuisma Salonen <kuisma.salonen@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), libsdl1.2-dev
+Standards-Version: 3.6.0
+
+Package: libsdl-mixer1.2-dev
+Section: devel
+Architecture: any
+Depends: libsdl-mixer1.2 (= ${Source-Version})
+Description: Development files for libSDL_Mixer
+ f00b34r
+
+Package: libsdl-mixer1.2
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Mixer library for libSDL
+ f00b34r
