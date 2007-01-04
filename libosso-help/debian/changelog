@@ -1,3 +1,10 @@
+libosso-help (2.0.9-1) unstable; urgency=low
+
+  * When translation unavailable, fall back to en_GB
+  * Fixes: NB#50011
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Thu,  4 Jan 2007 11:19:20 +0200
+
 libosso-help (2.0.8-1) unstable; urgency=low
 
   * Fixes: NB#47404 - zooming of images in help content

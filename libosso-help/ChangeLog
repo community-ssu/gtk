@@ -1,3 +1,9 @@
+2007-01-04  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+	
+	* Version 2.0.9
+	* libosso-help.c: When translation unavailable, fall back to en_GB
+	* Fixes: NB#50011
+
 2006-11-29  Jakub Pavelek <jakub.pavelek@nokia.com>
 	
 	* Version 2.0.8
