@@ -1,0 +1,26 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Name=addr_ap_address_book
+Comment=addr_ap_address_book_thumb
+Exec=/usr/bin/osso-addressbook
+X-Osso-Service=osso_addressbook
+Icon=qgn_list_addressbook
+StartupWMClass=osso-addressbook
+MimeType=text/x-vcard
+
+[X-Osso-URI-Actions]
+mailto=X-Osso-URI-Action-Add-Contact;
+xmpp=X-Osso-URI-Action-Add-Account;
+sipto=X-Osso-URI-Action-Add-Account;
+
+[X-Osso-URI-Action-Add-Contact]
+Method=add_account
+Name=addr_me_cs_addtocontacts
+TranslationDomain=osso-addressbook
+
+[X-Osso-URI-Action-Add-Account]
+Method=add_account
+Name=addr_ap_address_book
+TranslationDomain=osso-addressbook

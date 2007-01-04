@@ -1,3 +1,28 @@
+2007-01-04  Martyn Russell  <martyn@imendio.com>
+
+	* libossomime/osso-uri.c: Don't error if NULL is given for
+	osso_uri_free_actions(), just silently return. Fixed
+	osso_uri_get_actions_by_uri() which wasn't using the action type
+	parameter to filter the actions returned.
+	
+	* tests/datadir/applications/test/browser.desktop:
+	* tests/datadir/applications/test/osso-addressbook.desktop: Added
+	2 of the new format desktop files for testing with.
+	
+	* tests/test-all.c: Added tests for osso_uri_get_actions_by_uri()
+	and test the types of actions which we would expect to be returned.
+
+2007-01-03  Martyn Russell  <martyn@imendio.com>
+
+	* tests/test-all.c:
+	* tests/datadir/applications/test/osso-addressbook.desktop: 
+	* tests/datadir/applications/test/browser.desktop: Add 2 new tests
+	for the new desktop file format. 
+
+	* libossomime/osso-uri.c (uri_get_desktop_file_actions_filtered):
+	Fix this function so we actually filter on the action type, before
+	we didn't do this which made the type in _get_actions() useless.
+
 2007-01-02  Martyn Russell  <martyn@imendio.com>
 
 	* libossomime/osso-uri.c: Fixed a problem with

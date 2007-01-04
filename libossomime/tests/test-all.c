@@ -108,8 +108,8 @@ test_get_actions (void)
 
 	/* Test with more than 1 action. */
 	g_print ("For http\n");
-	actions = osso_uri_get_actions ("http", NULL);
-	assert_int (g_slist_length (actions), 2);
+	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", -1, NULL);
+	assert_int (g_slist_length (actions), 3);
 	action = actions->data;
 	osso_uri_free_actions (actions);
 
@@ -173,20 +173,50 @@ test_system_default_actions (void)
 
 	/* The browser should be the default for http. */
 	g_print ("For http\n");
-
-	actions = osso_uri_get_actions ("http", NULL);
-	assert_int (g_slist_length (actions), 2);
+	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", -1, NULL);
+	assert_int (g_slist_length (actions), 3);
 
 	/* The default. */
-	assert_bool (is_default_action (actions, "browser_open"));
+	assert_bool (is_default_action (actions, "uri_link_open_link"));
 
 	/* Existing, non-default. */
-	assert_bool (!is_default_action (actions, "image_viewer_open"));
+	assert_bool (!is_default_action (actions, "uri_link_save_link"));
 
 	/* Non-existing. */
 	assert_bool (!is_default_action (actions, "foo_open"));
 	
 	osso_uri_free_actions (actions);
+
+	/* Basic use of the new API to get actions by a URI */
+	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", OSSO_URI_ACTION_NORMAL, NULL);
+	assert_int (g_slist_length (actions), 1);
+	osso_uri_free_actions (actions);
+
+	/* Getting neutral actions which apply in all conditions where
+	 * there is a known mime type. There are 2 here because we
+	 * also have the older desktop file which defaults as a
+	 * neutral action type. 
+	 */
+	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", OSSO_URI_ACTION_NEUTRAL, NULL);
+	assert_int (g_slist_length (actions), 2);
+	osso_uri_free_actions (actions);
+
+	/* Fallbacks only get returned if the mime type is unknown, so
+	 * we test with something known first and then with something
+	 * unknown second. 
+	 */
+	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", OSSO_URI_ACTION_FALLBACK, NULL);
+	assert_int (g_slist_length (actions), 0);
+	osso_uri_free_actions (actions);
+
+	actions = osso_uri_get_actions_by_uri ("http://www.imendio.com/sliff.sloff", OSSO_URI_ACTION_FALLBACK, NULL);
+	assert_int (g_slist_length (actions), 1);
+	osso_uri_free_actions (actions);
+
+	/* FIXME: Finish this and test
+	 * osso_uri_get_default_action_by_uri() &
+	 * osso_uri_set_default_action_by_uri() 
+	 */
 }
 
 static void
@@ -204,12 +234,11 @@ test_local_default_actions (void)
 
 	/* The browser should be the default for http. */
 	g_print ("For http\n");
-
-	actions = osso_uri_get_actions ("http", NULL);
-	assert_int (g_slist_length (actions), 2);
+	actions = osso_uri_get_actions_by_uri ("http://www.imendio.com", -1, NULL);
+	assert_int (g_slist_length (actions), 3);
 
 	/* The default. */
-	assert_bool (is_default_action (actions, "browser_open"));
+	assert_bool (is_default_action (actions, "uri_link_open_link"));
 
 	/* Override the default. */
 	action = NULL;
@@ -241,7 +270,7 @@ test_local_default_actions (void)
 	}
 
 	/* We're back to the system default. */
-	assert_bool (is_default_action (actions, "browser_open"));
+	assert_bool (is_default_action (actions, "uri_link_open_link"));
 	
 	osso_uri_free_actions (actions);
 
@@ -256,39 +285,44 @@ main (int argc, char **argv)
 	GError   *error = NULL;
 	gboolean  ret;
 
+	if (!gnome_vfs_init()) {
+		g_error ("Could not initialise GnomeVFS");
+		return 1;
+	}
+
 	/* Use our custom data here. */
 	g_setenv ("XDG_DATA_DIRS", TEST_DATADIR, TRUE);
 	g_setenv ("XDG_DATA_HOME", TEST_DATADIR "-local", TRUE);
 
-	tmp = g_strdup_printf ("../libossomime/osso-update-category-database %s",
+	tmp = g_strdup_printf ("../libossomime/osso-update-category-database -v %s",
 			       TEST_DATADIR "/mime");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
 	if (!ret) {
-		g_print ("Couldn't launch ../libossomime/osso-update-category-database: %s\n",
-			 error->message);
+		g_printerr ("Couldn't launch ../libossomime/osso-update-category-database: %s\n",
+			    error->message);
 		g_clear_error (&error);
 		return 1;
 	}
 	
-	tmp = g_strdup_printf ("update-mime-database %s",
+	tmp = g_strdup_printf ("update-mime-database -v %s",
 			       TEST_DATADIR "/mime");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
 	if (!ret) {
-		g_print ("Couldn't launch update-mime-database: %s\n",
-			 error->message);
+		g_printerr ("Couldn't launch update-mime-database: %s\n",
+			    error->message);
 		g_clear_error (&error);
 		return 1;
 	}
 	
-	tmp = g_strdup_printf ("update-desktop-database %s",
+	tmp = g_strdup_printf ("update-desktop-database -v %s",
 			       TEST_DATADIR "/applications");
 	ret = g_spawn_command_line_sync (tmp, NULL, NULL, NULL, &error);
 	g_free (tmp);
 	if (!ret) {
-		g_print ("Couldn't launch update-desktop-database: %s\n",
-			 error->message);
+		g_printerr ("Couldn't launch update-desktop-database: %s\n",
+			    error->message);
 		g_clear_error (&error);
 		return 1;
 	}
@@ -298,7 +332,6 @@ main (int argc, char **argv)
 		test_get_actions ();
 	}
 
-	
 	test_system_default_actions ();
 	test_local_default_actions ();
 

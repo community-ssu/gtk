@@ -1,13 +1,37 @@
 [Desktop Entry]
 Encoding=UTF-8
-Version=1.0
+Version=0.1
 Type=Application
-Name=browser
-X-Osso-Service=browser
-MimeType=image/png;
-X-Osso-URI-Actions=http;
+Name=weba_ap_web_browser
+Comment=weba_ap_web_browser_thumb
+Exec=/usr/bin/browser
+Icon=qgn_list_browser
+X-Window-Icon=qgn_list_browser
+X-Window-Icon-Dimmed=qgn_list_browser
+X-Osso-Service=osso_browser
+X-HildonDesk-ShowInToolbar=true
+X-Osso-Type=application/x-executable
+MimeType=text/html;text/css;text/sgml;text/x-dtd;application/x-javascript;image/gif;image/jpeg;image/png;image/vnd.wap.wbmp;image/pjpeg;image/bmp;image/x-windows-bmp;image/x-ms-bmp;image/xbm;image/ico;image/x-ico;image/x-xbitmap;text/plain;application/x-shockwave-flash;
 
-[X-Osso-URI-Action Handler http]
-Method=browser_open
-Name=browser_open
-TranslationDomain=foo_bar_domain
+[X-Osso-URI-Actions]
+http=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+https=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+ftp=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+file=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+
+[X-Osso-URI-Action-Open]
+Method=load_url
+Name=uri_link_open_link
+TranslationDomain=osso-uri
+
+[X-Osso-URI-Action-Save]
+Type=Neutral
+Method=save_url
+Name=uri_link_save_link
+TranslationDomain=osso-uri
+
+[X-Osso-URI-Action-Fallback]
+Type=Fallback
+Method=load_url_fallback
+Name=uri_link_open_link_fallback
+TranslationDomain=osso-uri

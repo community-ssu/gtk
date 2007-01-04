@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
 
-#define DEBUG_MSG(x)  
-/*#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");*/
+#define DEBUG_MSG(x)
+/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n"); */
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -111,6 +111,7 @@ static gboolean          uri_get_desktop_file_is_old_ver       (const gchar     
 static GSList *          uri_get_desktop_file_actions          (const gchar       *desktop_file,
 								const gchar       *scheme);
 static GSList *          uri_get_desktop_file_actions_filtered (GSList            *actions,
+								OssoURIActionType  filter_action_type,
 								const gchar       *filter_mime_type);
 static GSList *          uri_get_desktop_file_info             (const gchar       *desktop_file,
 								const gchar       *scheme);
@@ -673,8 +674,9 @@ finish:
 }
 
 static GSList *
-uri_get_desktop_file_actions_filtered (GSList      *actions,
-				       const gchar *filter_mime_type)
+uri_get_desktop_file_actions_filtered (GSList            *actions,
+				       OssoURIActionType  filter_action_type,
+				       const gchar       *filter_mime_type)
 {
 	GSList *l;
 	GSList *actions_filtered = NULL;
@@ -685,18 +687,27 @@ uri_get_desktop_file_actions_filtered (GSList      *actions,
 	 * and free the old list.
 	 */
 
+	DEBUG_MSG (("URI: Filtering actions..."));
+
 	for (l = actions; l; l = l->next) {
 		OssoURIAction *action;
 		gboolean       add_to_list = FALSE;
 
 		action = l->data;
 	
+		if (filter_action_type != -1 && action->type != filter_action_type) {
+			DEBUG_MSG (("URI: \tIgnoring action:'%s', type:%d, "
+				    "because filter action type = %d", 
+				    action->name, action->type, filter_action_type));
+			continue;
+		}
+
 		if ((action->type == OSSO_URI_ACTION_FALLBACK && 
 		     filter_mime_type == NULL) ||
 		    (action->type == OSSO_URI_ACTION_NEUTRAL)) {
 			add_to_list = TRUE;
 
-			DEBUG_MSG (("Adding action:'%s' to list (neutral||fallback)", 
+			DEBUG_MSG (("URI: \tAdding action:'%s' to list (neutral||fallback)", 
 				    action->name));
 		} 
 		else if (action->type == OSSO_URI_ACTION_NORMAL && 
@@ -711,7 +722,7 @@ uri_get_desktop_file_actions_filtered (GSList      *actions,
 				if (g_ascii_strcasecmp (strv[i], filter_mime_type) == 0) {
 					add_to_list = TRUE;
 
-					DEBUG_MSG (("Adding action:'%s' to list (normal)", 
+					DEBUG_MSG (("URI: \tAdding action:'%s' to list (normal)", 
 						    action->name));
 
 					break;
@@ -721,15 +732,21 @@ uri_get_desktop_file_actions_filtered (GSList      *actions,
 			g_strfreev (strv);
 		}
 
-		if (add_to_list) {
-			actions_filtered = g_slist_append (actions_filtered, 
-							   osso_uri_action_ref (action));
+		if (!add_to_list) {
+			DEBUG_MSG (("URI: \tIgnoring action:'%s', type:%d", 
+				    action->name, action->type));
+			continue;
 		}
+
+		actions_filtered = g_slist_append (actions_filtered, 
+						   osso_uri_action_ref (action));
 	}
 
-	DEBUG_MSG (("Filtering %d actions by mime type:'%s', returning %d actions", 
+	DEBUG_MSG (("URI: Filtering %d actions by mime type:'%s' and "
+		    "action type:'%s', returning %d actions", 
 		    g_slist_length (actions), 
 		    filter_mime_type, 
+		    uri_action_type_to_string (filter_action_type),
 		    g_slist_length (actions_filtered)));
 
 	g_slist_foreach (actions, (GFunc) osso_uri_action_unref, NULL);
@@ -1266,7 +1283,7 @@ osso_uri_get_actions (const gchar  *scheme,
 
 GSList *  
 osso_uri_get_actions_by_uri (const gchar        *uri_str,
-			     OssoURIActionType   type,
+			     OssoURIActionType   action_type,
 			     GError            **error)
 {
 	GnomeVFSURI      *uri;
@@ -1321,12 +1338,46 @@ osso_uri_get_actions_by_uri (const gchar        *uri_str,
 		filename = l->data;
 
 		actions_found = uri_get_desktop_file_actions (filename, scheme);
-		actions_found = uri_get_desktop_file_actions_filtered (actions_found, 
-								       mime_type);
 		if (actions_found) {
 			actions = g_slist_concat (actions, actions_found);
 		}
 	}
+
+#ifdef EXTRA_DEBUGGING
+	{
+		gint count = 0;
+
+		DEBUG_MSG (("URI: Actions found:"));
+		
+		for (l = actions; l; l = l->next) {
+			OssoURIAction *action;
+			
+			action = l->data;
+			DEBUG_MSG (("URI: \tAction %2.2d:'%s', type:'%s'", 
+				    ++count, action->name, 
+				    uri_action_type_to_string (action->type)));
+		}
+	}
+#endif
+
+	actions = uri_get_desktop_file_actions_filtered (actions, 
+							 action_type, 
+							 mime_type);
+
+#ifdef EXTRA_DEBUGGING
+	{
+		gint count = 0;
+
+		DEBUG_MSG (("URI: Actions returned:"));
+		
+		for (l = actions; l; l = l->next) {
+			OssoURIAction *action;
+			
+			action = l->data;
+			DEBUG_MSG (("URI: \tAction %2.2d:'%s'", ++count, action->name));
+		}
+	}
+#endif
 
 	g_slist_foreach (desktop_files, (GFunc) g_free, NULL);
 	g_slist_free (desktop_files);
@@ -1340,8 +1391,10 @@ osso_uri_get_actions_by_uri (const gchar        *uri_str,
 void   
 osso_uri_free_actions (GSList *list)
 {
-	g_return_if_fail (list != NULL);
-	
+	if (list == NULL) {
+		return;
+	}
+
 	g_slist_foreach (list, (GFunc) osso_uri_action_unref, NULL);
 	g_slist_free (list);
 }
