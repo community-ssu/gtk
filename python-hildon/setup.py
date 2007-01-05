@@ -22,7 +22,7 @@ def get_hildon_version():
     return hildon_version
 hildon_version = get_hildon_version()
 
-def gen_hildon_types(filename, subproc_args):
+def gen_auto_file(filename, subproc_args):
     proc = subprocess.Popen(
         subproc_args,
         stdout=subprocess.PIPE,
@@ -30,7 +30,8 @@ def gen_hildon_types(filename, subproc_args):
     )
     cmdresult = proc.stdout
     error = proc.stderr
-    print >>sys.stderr, error.read()
+#   Print disabled to avoid problems with scratchbox
+#   print >>sys.sdterr, error.read()
     if cmdresult:
         new_file = open(filename, 'w')
         new_file.write(cmdresult.read())
@@ -58,31 +59,30 @@ class PyHildonBuild(build):
             includedir+'/glib-2.0/glib/gdate.h',
 	]
         
-	gen_hildon_types('hildon-types.h.in', ['/bin/sh', './gen-enum-h']+HILDON_TYPE_FILES)
-	gen_hildon_types('hildon-types.c.in', ['/bin/sh', './gen-enum-c']+HILDON_TYPE_FILES)
+	gen_auto_file('hildon-types.h.in', ['/bin/sh', './gen-enum-h']+HILDON_TYPE_FILES)
+	gen_auto_file('hildon-types.c.in', ['/bin/sh', './gen-enum-c']+HILDON_TYPE_FILES)
 
         # Creation of ".c" files, using pygtk-codegen-2.0
-        prefix = "hildon"
         override_filename = 'hildon.override'
         if hildon_version > (0, 14, 0):
             defs_filename = 'hildon-0.14.defs'
         else:
             defs_filename = 'hildon.defs'
-        cmdtoexec = 'pygtk-codegen-2.0 \
-            --register '+defsdir+'/gdk.defs \
-            --register '+defsdir+'/gtk-types.defs \
-            --register '+defsdir+'/gtk.defs \
-            --register '+defsdir+'/gtk-base.defs \
-            --register '+defsdir+'/pango-types.defs \
-            --register defs/missing-types.defs \
-            --register defs/hildon-grid-item.defs \
-            --override '+override_filename+' \
-            --prefix py'+prefix+' '+defs_filename+' > gen-'+prefix+'.c \
-        && cp gen-'+prefix+'.c '+prefix+'.c \
-        && rm -f gen-'+prefix+'.c'
-        
-        cmdinput, cmdresult, error = os.popen3(cmdtoexec)
-        print >>sys.stderr, error.read()
+
+        parameter = [
+            '--register', defsdir+'/gdk.defs',
+            '--register', defsdir+'/gtk-types.defs',
+            '--register', defsdir+'/gtk.defs',
+            '--register', defsdir+'/gtk-base.defs',
+            '--register', defsdir+'/pango-types.defs',
+            '--register', 'defs/missing-types.defs',
+            '--register', 'defs/hildon-grid-item.defs',
+            '--override', 'hildon.override',
+            '--prefix', 'pyhildon',
+	    defs_filename,
+	] 
+	gen_auto_file('hildon.c', ['/bin/sh', 'pygtk-codegen-2.0']+parameter)
+
         build.run(self)
         
 
