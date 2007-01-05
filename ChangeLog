@@ -1,3 +1,8 @@
+2006-01-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkimmodule.c (_gtk_im_module_get_default_context_id): Drop
+	'const' also in the .c file to avoid compile errors.
+
 2006-01-04  Michael Natterer  <mitch@imendio.com>
 
 	* gdk/gdkwindow.h: move GDK_WINDOW_TYPE_HINT_MESSAGE to the end of
