@@ -462,6 +462,11 @@ static void gtk_tree_view_tree_window_to_tree_coords (GtkTreeView *tree_view,
 static gint scroll_row_timeout                       (gpointer     data);
 static void remove_scroll_timeout                    (GtkTreeView *tree_view);
 
+/* MAEMO START */
+static gboolean gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
+						  GdkEvent  *event);
+/* MAEMO END */
+
 static guint tree_view_signals [LAST_SIGNAL] = { 0 };
 
 
@@ -525,6 +530,9 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
   widget_class->style_set = gtk_tree_view_style_set;
   widget_class->grab_notify = gtk_tree_view_grab_notify;
   widget_class->state_changed = gtk_tree_view_state_changed;
+  /* MAEMO START */
+  widget_class->tap_and_hold_query = gtk_tree_view_tap_and_hold_query;
+  /* MAEMO END */
 
   /* GtkContainer signals */
   container_class->remove = gtk_tree_view_remove;
@@ -14747,6 +14755,42 @@ gtk_tree_view_set_enable_tree_lines (GtkTreeView *tree_view,
       g_object_notify (G_OBJECT (tree_view), "enable-tree-lines");
     }
 }
+
+/* MAEMO START */
+static gboolean
+gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
+				  GdkEvent  *event)
+{
+  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+  GtkTreePath *path;
+  GtkRBTree *tree = NULL;
+  GtkRBNode *node = NULL;
+  gdouble x, y;
+  gint new_y;
+  gboolean sensitive;
+
+  if (!tree_view->priv->tree)
+    return FALSE;
+
+  if (!gdk_event_get_coords (event, &x, &y))
+    return FALSE;
+
+  new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, y);
+  if (new_y < 0)
+    new_y = 0;
+  _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+  if (node == NULL)
+    return TRUE;
+
+  path = _gtk_tree_view_find_path (tree_view, tree, node);
+  sensitive = _gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+                                                     node, path);
+  gtk_tree_path_free (path);
+
+  return !sensitive;
+}
+
+/* MAEMO END */
 
 #define __GTK_TREE_VIEW_C__
 #include "gtkaliasdef.c"

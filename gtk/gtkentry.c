@@ -5805,5 +5805,21 @@ gtk_entry_get_completion (GtkEntry *entry)
   return completion;
 }
 
+/* MAEMO START */
+
+void
+hildon_gtk_entry_set_input_mode (GtkEntry          *entry,
+                                 HildonGtkInputMode input_mode)
+{
+}
+
+HildonGtkInputMode
+hildon_gtk_entry_get_input_mode (GtkEntry          *entry)
+{
+  return 0;
+}
+
+/* MAEMO END */
+
 #define __GTK_ENTRY_C__
 #include "gtkaliasdef.c"

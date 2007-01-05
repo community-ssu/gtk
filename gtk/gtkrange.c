@@ -3070,5 +3070,29 @@ gtk_range_remove_update_timer (GtkRange *range)
     }
 }
 
+/* MAEMO START */
+
+void           osso_gtk_range_set_stream_indicator (GtkRange *range, 
+                                                    gboolean stream_indicator)
+{
+}
+
+gboolean       osso_gtk_range_get_stream_indicator (GtkRange *range)
+{
+  return FALSE;
+}
+
+void           osso_gtk_range_set_stream_position (GtkRange *range, 
+                                                   gdouble position)
+{
+}
+
+gdouble        osso_gtk_range_get_stream_position (GtkRange *range)
+{
+  return 0.0;
+}
+
+/* MAEMO END */
+
 #define __GTK_RANGE_C__
 #include "gtkaliasdef.c"

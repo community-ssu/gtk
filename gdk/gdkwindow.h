@@ -139,6 +139,9 @@ typedef enum
   GDK_WINDOW_TYPE_HINT_NOTIFICATION,
   GDK_WINDOW_TYPE_HINT_COMBO,
   GDK_WINDOW_TYPE_HINT_DND
+  /* MEAMO START */
+  , GDK_WINDOW_TYPE_HINT_MESSAGE = 1000
+  /* MAEMO END */
 } GdkWindowTypeHint;
 
 /* The next two enumeration values current match the

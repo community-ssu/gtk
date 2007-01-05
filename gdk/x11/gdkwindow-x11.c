@@ -1271,6 +1271,7 @@ set_initial_hints (GdkWindow *window)
   GdkToplevelX11 *toplevel;
   Atom atoms[9];
   gint i;
+  gint propmode;
 
   private = (GdkWindowObject*) window;
   toplevel = _gdk_x11_window_get_toplevel (window);
@@ -1279,6 +1280,14 @@ set_initial_hints (GdkWindow *window)
     return;
 
   update_wm_hints (window, TRUE);
+
+  /* MAEMO START */
+  /* If the window has _NET_WM_STATE key specified, use it as the property mode */
+  propmode = (gint)g_object_get_data (G_OBJECT (window), "_NET_WM_STATE");
+
+  if (!propmode)
+    propmode = PropModeReplace;
+  /* MAEMO END */
   
   /* We set the spec hints regardless of whether the spec is supported,
    * since it can't hurt and it's kind of expensive to check whether
@@ -1351,10 +1360,16 @@ set_initial_hints (GdkWindow *window)
       XChangeProperty (xdisplay,
                        xwindow,
 		       gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE"),
-                       XA_ATOM, 32, PropModeReplace,
+                       XA_ATOM, 32,
+		       /* MAEMO START */
+		       propmode,
+		       /* MAEMO END */
                        (guchar*) atoms, i);
     }
-  else 
+  /* MAEMO START */
+  /* Don't delete the property, unless we are replacing it */
+  else if (propmode == PropModeReplace)
+  /* MAEMO END */
     {
       XDeleteProperty (xdisplay,
                        xwindow,
@@ -2251,9 +2266,6 @@ gdk_window_set_type_hint (GdkWindow        *window,
     case GDK_WINDOW_TYPE_HINT_DESKTOP:
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DESKTOP");
       break;
-    case GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU:
-      atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU");
-      break;
     case GDK_WINDOW_TYPE_HINT_POPUP_MENU:
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_POPUP_MENU");
       break;
@@ -2270,6 +2282,22 @@ gdk_window_set_type_hint (GdkWindow        *window,
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DND");
       break;
     default:
+      /* MAEMO START */
+      /* The dropdown menu and message hints share the same integer at
+       * this moment.  Remove this once the ABI restore patch has been
+       * committed.
+       */
+      if (hint == GDK_WINDOW_TYPE_HINT_MESSAGE)
+        {
+          atom = gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_WINDOW_TYPE_MESSAGE");
+	  break;
+	}
+      else if (hint == GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU)
+        {
+	  atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU");
+	  break;
+	}
+      /* MAEMO END */
       g_warning ("Unknown hint %d passed to gdk_window_set_type_hint", hint);
       /* Fall thru */
     case GDK_WINDOW_TYPE_HINT_NORMAL:
@@ -2350,6 +2378,10 @@ gdk_window_get_type_hint (GdkWindow *window)
 	    type = GDK_WINDOW_TYPE_HINT_COMBO;
 	  else if (atom == gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DND"))
 	    type = GDK_WINDOW_TYPE_HINT_DND;
+	  /* MAEMO START */
+	  else if (atom == gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_WINDOW_TYPE_MESSAGE"))
+	    type = GDK_WINDOW_TYPE_HINT_MESSAGE;
+	  /* MAEMO END */
         }
 
       if (type_return != None && data != NULL)
@@ -2719,6 +2751,7 @@ gdk_window_get_geometry_hints (GdkWindow      *window,
   XFree (size_hints);
 }
 
+#ifdef ENABLE_ICCCM_LEGACY
 static gboolean
 utf8_is_latin1 (const gchar *str)
 {
@@ -2786,6 +2819,7 @@ set_text_property (GdkDisplay  *display,
 	g_free (prop_text);
     }
 }
+#endif
 
 /* Set WM_NAME and _NET_WM_NAME
  */
@@ -2799,9 +2833,11 @@ set_wm_name (GdkDisplay  *display,
 		   gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
 		   PropModeReplace, (guchar *)name, strlen (name));
   
+#ifdef ENABLE_ICCCM_LEGACY
   set_text_property (display, xwindow,
 		     gdk_x11_get_xatom_by_name_for_display (display, "WM_NAME"),
 		     name);
+#endif
 }
 
 /**
@@ -2842,9 +2878,11 @@ gdk_window_set_title (GdkWindow   *window,
 		       gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
 		       PropModeReplace, (guchar *)title, strlen (title));
       
+#ifdef ENABLE_ICCCM_LEGACY
       set_text_property (display, xwindow,
 			 gdk_x11_get_xatom_by_name_for_display (display, "WM_ICON_NAME"),
 			 title);
+#endif
     }
 }
 
@@ -4459,9 +4497,11 @@ gdk_window_set_icon_name (GdkWindow   *window,
 		   gdk_x11_get_xatom_by_name_for_display (display, "UTF8_STRING"), 8,
 		   PropModeReplace, (guchar *)name, strlen (name));
   
+#ifdef ENABLE_ICCCM_LEGACY
   set_text_property (display, GDK_WINDOW_XID (window),
 		     gdk_x11_get_xatom_by_name_for_display (display, "WM_ICON_NAME"),
 		     name);
+#endif
 }
 
 /**

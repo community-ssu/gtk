@@ -2126,7 +2126,8 @@ gtk_default_render_icon (GtkStyle            *style,
   /* If the size was wildcarded, and we're allowed to scale, then scale; otherwise,
    * leave it alone.
    */
-  if (size != (GtkIconSize)-1 && gtk_icon_source_get_size_wildcarded (source))
+  if (size != (GtkIconSize)-1 && gtk_icon_source_get_size_wildcarded (source)
+      /* MAEMO START */ && size < HILDON_ICON_SIZE_26 /* MAEMO END */)
     scaled = scale_or_ref (base_pixbuf, width, height);
   else
     scaled = g_object_ref (base_pixbuf);
@@ -6764,6 +6765,17 @@ gtk_draw_insertion_cursor (GtkWidget        *widget,
   if (area)
     gdk_gc_set_clip_rectangle (gc, NULL);
 }
+
+/* MAEMO START */
+
+gboolean  gtk_style_lookup_logical_color     (GtkStyle     *style,
+                                              const gchar  *color_name,
+                                              GdkColor     *color)
+{
+  return gtk_style_lookup_color (style, color_name, color);
+}
+
+/* MAEMO END */
 
 #define __GTK_STYLE_C__
 #include "gtkaliasdef.c"

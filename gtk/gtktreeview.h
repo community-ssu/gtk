@@ -108,7 +108,12 @@ struct _GtkTreeViewClass
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
   void (*_gtk_reserved3) (void);
-  void (*_gtk_reserved4) (void);
+
+  /* MAEMO START */
+  /* void (*_gtk_reserved4) (void); */
+  void     (* row_insensitive)            (GtkTreeView       *tree_view,
+                                           GtkTreePath       *path);
+  /* MAEMO END */
 };
 
 
