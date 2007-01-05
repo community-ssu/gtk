@@ -163,6 +163,15 @@ gdouble            gtk_range_get_value                     (GtkRange      *range
 gdouble	          _gtk_range_get_wheel_delta               (GtkRange      *range,
                                                             GdkScrollDirection direction);
 
+/* MAEMO START */
+void           osso_gtk_range_set_stream_indicator (GtkRange *range, 
+                                                    gboolean stream_indicator);
+gboolean       osso_gtk_range_get_stream_indicator (GtkRange *range);
+
+void           osso_gtk_range_set_stream_position (GtkRange *range, 
+                                                   gdouble position);
+gdouble        osso_gtk_range_get_stream_position (GtkRange *range);
+/* MAEMO END */
 
 G_END_DECLS
 

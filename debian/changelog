@@ -1,3 +1,41 @@
+gtk+2.0 (2:2.10.6-0osso1test1) unstable; urgency=low
+
+  * Restore API compatibility with maemo gtk+ 2.6
+
+  * Export symbols for implementing GtkFileChooser interface outside gtk:
+    - hildon_gtk_file_chooser_install_properties
+    - gtk/gtkfilesystemmodel.h, gtk/gtkfilechooserprivate.h,
+      gtk/gtkfilechooserutils.h
+  * Add stubs for removed / replaced API:
+    - gtk_widget_{get,set}_hildon_focus_handling
+    - osso_gtk_range_{get,set}_stream_indicator
+    - osso_gtk_range_{get,set}_stream_position
+    - gtk_style_lookup_logical_color
+    - gtk_text_buffer_{get,set}_can_paste_rich_text
+    - gtk_text_buffer_{get,set}_rich_text_format
+    - hildon_gtk_file_system_create
+    - gtk_file_system_render_icon
+    - hildon_gtk_button_set_depressed
+    - close signal (GtkMenuShell)
+  * Empty stubs:
+    - hildon_gtk_text_view_{get,set}_input_mode
+    - gtk_window_{get,set}_prev_focus_widget
+    - osso_gtk_button_set_detail_from_attach_flags
+    - osso_gtk_button_attach_details
+    - hildon_gtk_entry_{get,set}_input_mode
+    - invalid-input signal (GtkEntry)
+  * Restore the maemo API:
+    - tap'n'hold (GtkWidget, GtkContainer, GtkTreeView)
+    - insensitive-press signal (GtkWidget, GtkToolButton)
+    - row-insensitive signal (GtkTreeView)
+    - gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_has_selection
+    - hildon_gtk_im_context_{copy,cut,paste}
+    - HILDON_ICON_SIZE_{26,40,50,64}
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  5 Jan 2007 15:55:28 +0200
+
 gtk+2.0 (2:2.10.6-0osso1) unstable; urgency=low
 
   * Upgrade to 2.10.6 ** ALL MAEMO PATCHES DROPPED

@@ -7850,5 +7850,19 @@ gtk_window_set_default_icon_from_file (const gchar *filename,
 
 #endif
 
+/* MAEMO START */
+
+GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window )
+{
+  return NULL;
+
+}
+
+void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget )
+{
+}
+
+/* MAEMO END */
+
 #define __GTK_WINDOW_C__
 #include "gtkaliasdef.c"

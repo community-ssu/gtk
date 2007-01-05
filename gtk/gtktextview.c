@@ -8573,5 +8573,21 @@ gtk_text_view_move_visually (GtkTextView *text_view,
   return gtk_text_layout_move_iter_visually (text_view->layout, iter, count);
 }
 
+/* MAEMO_START */
+
+void
+hildon_gtk_text_view_set_input_mode (GtkTextView       *text_view,
+                                     HildonGtkInputMode mode)
+{
+}
+
+HildonGtkInputMode
+hildon_gtk_text_view_get_input_mode (GtkTextView       *text_view)
+{
+  return 0;
+}
+
+/* MAEMO END */
+
 #define __GTK_TEXT_VIEW_C__
 #include "gtkaliasdef.c"

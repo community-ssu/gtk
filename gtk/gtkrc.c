@@ -2205,6 +2205,12 @@ gtk_rc_parse_any (GtkRcContext *context,
 
   for (i = 0; i < G_N_ELEMENTS (symbols); i++)
     g_scanner_scope_add_symbol (scanner, 0, symbol_names + symbols[i].name_offset, GINT_TO_POINTER (symbols[i].token));
+
+  /* MAEMO START */
+  g_scanner_scope_add_symbol (scanner, 0, "logical_color",
+                              GINT_TO_POINTER (GTK_RC_TOKEN_COLOR));
+  /* MAEMO END */
+
   done = FALSE;
   while (!done)
     {
@@ -3856,9 +3862,16 @@ gtk_rc_parse_color_full (GScanner   *scanner,
     case G_TOKEN_STRING:
       if (!gdk_color_parse (scanner->value.v_string, color))
 	{
+          /* MAEMO START */
+          if (!(style && lookup_color (style, scanner->value.v_string, color)))
+            {
+          /* MAEMO END */
           g_scanner_warn (scanner, "Invalid color constant '%s'",
                           scanner->value.v_string);
           return G_TOKEN_STRING;
+          /* MAEMO START */
+            }
+          /* MAEMO_END */
 	}
       return G_TOKEN_NONE;
 
