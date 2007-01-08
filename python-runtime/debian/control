@@ -22,4 +22,5 @@ Package: python2.5-runtime
 Section: user/system-tools
 Architecture: all
 Depends: python2.5-bluez, python2.5-gtk2, python2.5-numeric, python2.5-dbus, python2.5-osso, python2.5-xml, python2.5-gstreamer, python2.5-pygame, python2.5, python2.5-runtime, python2.5-hildon
+Provides: python (= 2.5.0), python-runtime (= 2.5.0)
 Description: Python runtime environment.
