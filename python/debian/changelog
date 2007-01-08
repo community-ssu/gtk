@@ -1,3 +1,10 @@
+python2.5 (2.5.0-1osso7) unstable; urgency=low
+
+  * put the traceback module back to the runtime package. This module is
+    needed by webbrowser module.
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 5 Jan 2007 14:35:00 -0300
+
 python2.5 (2.5.0-1osso6) unstable; urgency=low
 
   * changed "all" to "any" in -dev package (readline.so and other binary

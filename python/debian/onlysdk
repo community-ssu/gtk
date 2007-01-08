@@ -37,7 +37,7 @@ telnetlib
 this
 timeit
 toaiff
-trace
+trace\.py
 tty
 user
 readline
