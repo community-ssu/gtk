@@ -1,0 +1,311 @@
+Index: src/update-desktop-database.c
+===================================================================
+--- src/update-desktop-database.c	(revision 13766)
++++ src/update-desktop-database.c	(working copy)
+@@ -37,16 +37,25 @@
+ #include "eggintl.h"
+ 
+ #define NAME "update-desktop-database"
+-#define CACHE_FILENAME "mimeinfo.cache"
+-#define TEMP_CACHE_FILENAME_PREFIX ".mimeinfo.cache.XXXXXX"
++
++#define MIME_CACHE_FILENAME "mimeinfo.cache"
++#define MIME_TEMP_CACHE_FILENAME_PREFIX ".mimeinfo.cache.XXXXXX"
++
++#define SCHEME_CACHE_FILENAME "schemeinfo.cache"
++#define SCHEME_TEMP_CACHE_FILENAME_PREFIX ".schemeinfo.cache.XXXXXX"
++
++#define SCHEME_GROUP_PREFIX "X-Osso-URI-Action Handler"
++
+ 
+ #define udd_print(...) if (!quiet) g_printerr (__VA_ARGS__)
+ #define udd_verbose_print(...) if (verbose) g_printerr (__VA_ARGS__)
+ 
+ static FILE *open_temp_cache_file (const char  *dir,
++				   const char  *name,
+ 				   char       **filename,
+ 				   GError     **error);
+ static void add_mime_type (const char *mime_type, GList *desktop_files, FILE *f);
++static void add_scheme_type (const char *scheme_type, GList *application_ids, FILE *f);
+ static void sync_database (const char *dir, GError **error);
+ static void cache_desktop_file (const char  *desktop_file, 
+                                 const char  *mime_type,
+@@ -56,6 +65,9 @@ static gboolean is_valid_mime_type (cons
+ static void process_desktop_file (const char  *desktop_file, 
+                                   const char  *name,
+                                   GError     **error);
++static void process_desktop_file_schemes (const char  *desktop_file, 
++					  const char  *name,
++					  GError     **error);
+ static void process_desktop_files (const char *desktop_dir,
+                                    const char *prefix,
+                                    GError **error);
+@@ -64,6 +76,8 @@ static const char ** get_default_search_
+ static void print_desktop_dirs (const char **dirs);
+ 
+ static GHashTable *mime_types_map = NULL;
++static GHashTable *scheme_types_map = NULL;
++
+ static gboolean verbose = FALSE, quiet = FALSE;
+ 
+ static void
+@@ -86,6 +100,18 @@ cache_desktop_file (const char  *desktop
+   g_hash_table_insert (mime_types_map, g_strdup (mime_type), desktop_files);
+ }
+ 
++static void
++cache_application_id (const char  *application_id,
++		      const char  *scheme_type,
++		      GError     **error)
++{
++  GList *application_ids;
++
++  application_ids = (GList *) g_hash_table_lookup (scheme_types_map, scheme_type);
++
++  application_ids = g_list_prepend (application_ids, g_strdup (application_id));
++  g_hash_table_insert (scheme_types_map, g_strdup (scheme_type), application_ids);
++}
+ 
+ static gboolean
+ is_valid_mime_type_char (const guchar c)
+@@ -226,6 +252,72 @@ process_desktop_file (const char  *deskt
+ }
+ 
+ static void
++process_desktop_file_schemes (const char  *desktop_file, 
++			      const char  *name,
++			      GError     **error)
++{
++  GError *load_error; 
++  EggDesktopEntries *entries;
++  char **groups; 
++  int i;
++  int prefix_len;
++
++  load_error = NULL;
++  entries = 
++    egg_desktop_entries_new_from_file (desktop_file, NULL,
++                                       EGG_DESKTOP_ENTRIES_DISCARD_COMMENTS |
++                                       EGG_DESKTOP_ENTRIES_DISCARD_TRANSLATIONS,
++                                       &load_error);
++
++  if (load_error != NULL) 
++    {
++      g_propagate_error (error, load_error);
++      egg_desktop_entries_free (entries);
++      return;
++    }
++
++  /* Handle schemes types second. */
++  udd_verbose_print ("Caching schemes for file:'%s'.\n", name);
++
++  groups = egg_desktop_entries_get_groups (entries, NULL);
++
++  prefix_len = strlen (SCHEME_GROUP_PREFIX);
++
++  for (i = 0; groups && groups[i] != NULL; i++)
++    {
++      char *scheme_type;
++      const char *scheme_type_stripped; 
++      int len;
++   
++      len = strlen (groups[i]);
++
++      if (! strstr (groups[i], SCHEME_GROUP_PREFIX) || 
++	  ! (len > prefix_len)) {
++        continue;  
++      }
++  
++      scheme_type = g_strdup (groups[i] + prefix_len);
++      scheme_type_stripped = g_strstrip (scheme_type);
++
++      udd_verbose_print ("Caching scheme:'%s' with desktop file:'%s'.\n",
++			 scheme_type_stripped, name);
++
++      cache_application_id (name, scheme_type_stripped, &load_error);
++      g_free (scheme_type);
++
++      /* Only set this error if a previous error has not been set */
++      if (load_error != NULL) 
++        {
++          g_propagate_error (error, load_error);
++          break;
++        }
++    }
++  g_strfreev (groups);
++
++  egg_desktop_entries_free (entries);
++}
++
++static void
+ process_desktop_files (const char  *desktop_dir,
+                        const char  *prefix,
+                        GError     **error)
+@@ -275,9 +367,8 @@ process_desktop_files (const char  *desk
+         }
+ 
+       name = g_strdup_printf ("%s%s", prefix, filename);
+-      process_desktop_file (full_path, name, &process_error);
+-      g_free (name);
+ 
++      process_desktop_file (full_path, name, &process_error);
+       if (process_error != NULL)
+         {
+           if (!g_error_matches (process_error, 
+@@ -292,10 +383,18 @@ process_desktop_files (const char  *desk
+               udd_verbose_print ("File '%s' lacks MimeType key\n", full_path);
+             }
+ 
+-          g_error_free (process_error);
+-          process_error = NULL;
++          g_clear_error (&process_error);
+         }
+ 
++      process_desktop_file_schemes (full_path, name, &process_error);
++      if (process_error != NULL)
++        {
++	  udd_verbose_print ("File '%s' lacks schemes\n", full_path);
++	  g_clear_error (&process_error);
++	}
++
++
++      g_free (name);
+       g_free (full_path);
+     }
+ 
+@@ -303,14 +402,17 @@ process_desktop_files (const char  *desk
+ }
+ 
+ static FILE *
+-open_temp_cache_file (const char *dir, char **filename, GError **error)
++open_temp_cache_file (const char   *dir, 
++		      const gchar  *name, 
++		      char        **filename, 
++		      GError      **error)
+ {
+   int fd;
+   char *file;
+   FILE *fp;
+   mode_t mask;
+ 
+-  file = g_build_filename (dir, TEMP_CACHE_FILENAME_PREFIX, NULL);
++  file = g_build_filename (dir, name, NULL);
+   fd = g_mkstemp (file);
+ 
+   if (fd < 0) 
+@@ -371,14 +473,42 @@ add_mime_type (const char *mime_type, GL
+ }
+ 
+ static void
++add_scheme_type (const char *scheme_type, GList *application_ids, FILE *f)
++{
++  GString *list;
++  GList *application_id;
++
++  list = g_string_new (scheme_type);
++  g_string_append_c (list, '=');
++  for (application_id = application_ids;
++       application_id != NULL; 
++       application_id = application_id->next)
++    {
++      g_string_append (list, (const char *) application_id->data);
++
++      if (application_id->next != NULL)
++        g_string_append_c (list, ';');
++    }
++  g_string_append_c (list, '\n');
++
++  fputs (list->str, f);
++
++  g_string_free (list, TRUE);
++}
++
++static void
+ sync_database (const char *dir, GError **error)
+ {
+   GError *sync_error;
+   char *temp_cache_file, *cache_file;
+   FILE *tmp_file;
+ 
++  /* Update: mimeinfo.cache */
+   sync_error = NULL;
+-  tmp_file = open_temp_cache_file (dir, &temp_cache_file, &sync_error);
++  tmp_file = open_temp_cache_file (dir, 
++				   MIME_TEMP_CACHE_FILENAME_PREFIX, 
++				   &temp_cache_file, 
++				   &sync_error);
+ 
+   if (sync_error != NULL)
+     {
+@@ -391,12 +521,46 @@ sync_database (const char *dir, GError *
+ 
+   fclose (tmp_file);
+ 
+-  cache_file = g_build_filename (dir, CACHE_FILENAME, NULL);
++  cache_file = g_build_filename (dir, MIME_CACHE_FILENAME, NULL);
+   if (rename (temp_cache_file, cache_file) < 0)
+     {
+       g_set_error (error, G_FILE_ERROR,
+                    g_file_error_from_errno (errno),
+-                   _("Cache file '%s' could not be written: %s"),
++                   _("MIME Cache file '%s' could not be written: %s"),
++                   cache_file, g_strerror (errno));
++
++      unlink (temp_cache_file);
++    }
++  g_free (temp_cache_file);
++  g_free (cache_file);
++
++  /* Update: uriinfo.cache */
++  sync_error = NULL;
++  tmp_file = open_temp_cache_file (dir, 
++				   SCHEME_TEMP_CACHE_FILENAME_PREFIX,
++				   &temp_cache_file, 
++				   &sync_error);
++
++  if (sync_error != NULL)
++    {
++      g_propagate_error (error, sync_error);
++      return;
++    }
++
++  fputs ("[", tmp_file);
++  fputs (SCHEME_GROUP_PREFIX, tmp_file);
++  fputs (" Cache]\n", tmp_file);
++
++  g_hash_table_foreach (scheme_types_map, (GHFunc) add_scheme_type, tmp_file);
++
++  fclose (tmp_file);
++
++  cache_file = g_build_filename (dir, SCHEME_CACHE_FILENAME, NULL);
++  if (rename (temp_cache_file, cache_file) < 0)
++    {
++      g_set_error (error, G_FILE_ERROR,
++                   g_file_error_from_errno (errno),
++                   _("URI Cache file '%s' could not be written: %s"),
+                    cache_file, g_strerror (errno));
+ 
+       unlink (temp_cache_file);
+@@ -414,6 +578,9 @@ update_database (const char  *desktop_di
+   mime_types_map = g_hash_table_new_full (g_str_hash, g_str_equal, 
+ 					  (GDestroyNotify)g_free,
+ 					  NULL);
++  scheme_types_map = g_hash_table_new_full (g_str_hash, g_str_equal, 
++					    (GDestroyNotify)g_free,
++					    NULL);
+ 
+   update_error = NULL;
+   process_desktop_files (desktop_dir, "", &update_error);
+@@ -426,8 +593,12 @@ update_database (const char  *desktop_di
+       if (update_error != NULL)
+         g_propagate_error (error, update_error);
+     }
++
+   g_hash_table_foreach (mime_types_map, (GHFunc) list_free_deep, NULL);
+   g_hash_table_destroy (mime_types_map);
++
++  g_hash_table_foreach (scheme_types_map, (GHFunc) list_free_deep, NULL);
++  g_hash_table_destroy (scheme_types_map);
+ }
+ 
+ static const char **

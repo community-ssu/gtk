@@ -1,0 +1,37 @@
+.TH DESKTOP-MENU-TOOL 1
+.SH NAME
+desktop-menu-tool \- do stuff with menu files
+.SH SYNOPSIS
+.B desktop-menu-tool
+.I "[options] file"
+.SH "DESCRIPTION"
+.B desktop-menu-tool
+does stuff to menu files. Possibly related to the GNOME1 .menu
+files. Not sure about this. :)
+.SH OPTIONS
+.TP
+\fB \-\-dir \fIpath\fP
+Specify the directory where the compat tree should be generated.
+.TP
+\fB \-\-print
+Print a human-readable representation of the menu to standard output.
+.TP
+\fB \-\-desktop \fIdesktop\fP
+Specify the current desktop, for the purposes of \fBOnlyShowIn\fP.
+.TP
+\fB \-\-print\-available
+Print the set of desktop files used for a given menu file.
+.TP
+.B \-h, \-\-help
+Show summary of options.
+.TP
+.B \-\-usage
+Display brief usage message.
+.TP
+.B \-v, \-\-version
+Show version of program.
+.SH "SEE ALSO"
+The Free Desktop .desktop file specification at www.freedesktop.org.
+.SH AUTHOR
+This manual page was written by Ross Burton <ross@debian.org>, for the
+Debian GNU/Linux system (but may be used by others).
