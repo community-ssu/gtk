@@ -140,9 +140,9 @@ class Bus(object):
     get_starter = staticmethod(get_starter)
 
 
-    def get_object(self, named_service, object_path):
+    def get_object(self, named_service, object_path, introspect=True):
         """Get a proxy object to call over the bus"""
-        return self.ProxyObjectClass(self, named_service, object_path)
+        return self.ProxyObjectClass(self, named_service, object_path, introspect=introspect)
 
     def _create_args_dict(self, keywords):
         args_dict = None 
