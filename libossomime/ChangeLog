@@ -1,3 +1,21 @@
+2007-01-09  Martyn Russell  <martyn@imendio.com>
+
+	* docs/mime-desktop-file-mapping.txt: Updated mistakes and
+	additions to libossomime I added today.
+
+	* libossomime/osso-uri.[ch]: Updated API to include
+	osso_uri_is_default_action_by_uri(). Also fixed
+	osso_uri_get_default_action_by_uri() so that it worked with
+	neutral or fallback actions by using the old defaults file group
+	(because mime type is immaterial in these cases) and add to it the
+	action id so we know WHICH action in a desktop file to use.
+	
+	* tests/datadir/applications/test/osso-addressbook.desktop:
+
+	* tests/datadir/applications/uri-action-defaults.list: 
+	* tests/test-all.c: Test getting and setting the default action
+	for special types of actions (like neutral and fallback actions). 
+
 2007-01-04  Martyn Russell  <martyn@imendio.com>
 
 	* libossomime/osso-uri.c: Don't error if NULL is given for

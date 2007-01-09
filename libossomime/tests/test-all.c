@@ -11,6 +11,72 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <osso-mime.h>
 
+#define assert_int(a, b) G_STMT_START {				        \
+	if (a != b) {						        \
+		g_log ("ASSERT INT",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: (%s), expected %d, got %d",	\
+		       __FILE__,					\
+		       __LINE__,					\
+		       #a,						\
+		       a,						\
+		       b);						\
+	}								\
+	} G_STMT_END			
+
+#define assert_bool(a) G_STMT_START {					\
+	if (!a) {   					                \
+		g_log ("ASSERT BOOL",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: (%s), expected to be TRUE",	\
+		       __FILE__,					\
+		       __LINE__,					\
+		       #a);						\
+	}						           	\
+	} G_STMT_END			
+
+#define assert_expr(a) G_STMT_START {					\
+	if (!(a)) {						        \
+		g_log ("ASSERT EXPR",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: (%s)",				\
+		       __FILE__,					\
+		       __LINE__,					\
+		       #a);						\
+	}								\
+	} G_STMT_END			
+
+#define assert_string(a, b) G_STMT_START {				\
+	if (!a && b) {						        \
+		g_log ("ASSERT SRTING",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: expected 'a' to be non-NULL",	\
+		       __FILE__,					\
+		       __LINE__);					\
+	} else if (a && !b) {						\
+		g_log ("ASSERT STRING",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: expected 'b' to be non-NULL",	\
+		       __FILE__,					\
+		       __LINE__);					\
+	} else if (!a && !b) {						\
+		g_log ("ASSERT STRING",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: 'a' & 'b' are NULL",		\
+		       __FILE__,					\
+		       __LINE__);					\
+	} else if (strcmp (a, b) != 0) {				\
+		g_log ("ASSERT STRING",					\
+		       G_LOG_LEVEL_ERROR,				\
+		       "%s:%d: failed: (%s), expected '%s', got '%s'",	\
+		       __FILE__,					\
+		       __LINE__,					\
+		       #a,						\
+		       a,						\
+		       b);						\
+	}								\
+	} G_STMT_END			
+
 static void
 print_header (const gchar *str)
 {
@@ -22,30 +88,6 @@ print_header (const gchar *str)
 	tmp = g_strnfill (strlen (str), '=');
 	g_print ("%s\n", tmp);
 	g_free (tmp);
-}
-
-static void
-assert_int (int a, int b)
-{
-	if (a != b) {
-		g_error ("Got %d, expected %d\n", a, b);
-	}
-}
-
-static void
-assert_bool (gboolean a)
-{
-	if (!a) {
-		g_error ("Got FALSE, expected TRUE\n");
-	}
-}
-
-static void
-assert_string (const gchar *a, const gchar *b)
-{
-	if (strcmp (a, b) != 0) {
-		g_error ("Got %s, expected %s\n", a, b);
-	}
 }
 
 static void
@@ -146,15 +188,32 @@ test_get_actions (void)
 }
 
 static gboolean
-is_default_action (GSList *actions, const gchar *action_name)
+is_default_action (GSList      *actions, 
+		   const gchar *action_name, 
+		   const gchar *uri)
 {
 	GSList        *l;
 	OssoURIAction *action;
 
-	for (l = actions; l; l = l->next) {
-		action = l->data;
-		if (strcmp (osso_uri_action_get_name (action), action_name) == 0) {
-			return osso_uri_is_default_action (action, NULL);
+	/* NOTE: uri is only used for the new API calls */
+
+	if (!action_name) {
+		return FALSE;
+	}
+
+	if (uri) {
+		for (l = actions; l; l = l->next) {
+			action = l->data;
+			if (strcmp (osso_uri_action_get_name (action), action_name) == 0) {
+				return osso_uri_is_default_action_by_uri (uri, action, NULL);
+			}
+		}
+	} else {
+		for (l = actions; l; l = l->next) {
+			action = l->data;
+			if (strcmp (osso_uri_action_get_name (action), action_name) == 0) {
+				return osso_uri_is_default_action (action, NULL);
+			}
 		}
 	}
 
@@ -164,7 +223,12 @@ is_default_action (GSList *actions, const gchar *action_name)
 static void
 test_system_default_actions (void)
 {
-	GSList *actions;
+	GSList        *actions;
+	GSList        *l;
+	OssoURIAction *default_action;
+	OssoURIAction *action = NULL;
+	const gchar   *uri_str;
+	gboolean       success;
 
 	print_header ("Testing default actions (system)");
 
@@ -173,23 +237,25 @@ test_system_default_actions (void)
 
 	/* The browser should be the default for http. */
 	g_print ("For http\n");
-	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", -1, NULL);
-	assert_int (g_slist_length (actions), 3);
+
+	uri_str = "http://www.nokia.com";
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_int (g_slist_length (actions), 4);
 
 	/* The default. */
-	assert_bool (is_default_action (actions, "uri_link_open_link"));
+	assert_bool (is_default_action (actions, "uri_link_open_link", uri_str));
 
 	/* Existing, non-default. */
-	assert_bool (!is_default_action (actions, "uri_link_save_link"));
+	assert_bool (!is_default_action (actions, "uri_link_save_link", uri_str));
 
 	/* Non-existing. */
-	assert_bool (!is_default_action (actions, "foo_open"));
+	assert_bool (!is_default_action (actions, "foo_open", uri_str));
 	
 	osso_uri_free_actions (actions);
 
 	/* Basic use of the new API to get actions by a URI */
 	actions = osso_uri_get_actions_by_uri ("http://www.nokia.com", OSSO_URI_ACTION_NORMAL, NULL);
-	assert_int (g_slist_length (actions), 1);
+	assert_int (g_slist_length (actions), 2);
 	osso_uri_free_actions (actions);
 
 	/* Getting neutral actions which apply in all conditions where
@@ -213,10 +279,67 @@ test_system_default_actions (void)
 	assert_int (g_slist_length (actions), 1);
 	osso_uri_free_actions (actions);
 
-	/* FIXME: Finish this and test
-	 * osso_uri_get_default_action_by_uri() &
-	 * osso_uri_set_default_action_by_uri() 
+	/*
+	 * Test getting and setting default actions 
 	 */
+
+	/* Set to nothing */
+	success = osso_uri_set_default_action_by_uri ("http://www.nokia.com", NULL, NULL);
+	assert_bool (success);
+
+	/* Test it is unset */
+	default_action = osso_uri_get_default_action_by_uri ("http://www.nokia.com", NULL);
+	assert_expr (default_action == NULL);
+
+	/* Test setting a NORMAL action */
+	uri_str = "http://www.google.co.uk/intl/en_uk/images/logo.gif";
+	l = actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+
+	for (l = actions; l; l = l->next) {
+		action = l->data;
+
+		if (strcmp (osso_uri_action_get_name (action), "addr_ap_address_book") == 0) {
+			break;
+		} 
+
+		action = NULL;
+	}
+
+	assert_expr (action != NULL);
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+
+	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	osso_uri_action_unref (action);
+
+	/* Test setting a NEUTRAL action */ 
+
+	/* Test setting a FALLBACK action */ 
+	uri_str = "http://www.imendio.com/sliff.sloff";
+	actions = osso_uri_get_actions_by_uri (uri_str, OSSO_URI_ACTION_FALLBACK, NULL);
+	assert_int (g_slist_length (actions), 1);
+
+	action = actions->data;
+	assert_string (osso_uri_action_get_name (action), "uri_link_open_link_fallback");
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+	
+	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	osso_uri_action_unref (action);
+
+	/* Test setting a new NORMAL action with the old API */ 
+	/* Test setting a new NEUTRAL action with the old API */ 
+	/* Test setting a new FALLBACK action with the old API */ 
 }
 
 static void
@@ -235,10 +358,10 @@ test_local_default_actions (void)
 	/* The browser should be the default for http. */
 	g_print ("For http\n");
 	actions = osso_uri_get_actions_by_uri ("http://www.imendio.com", -1, NULL);
-	assert_int (g_slist_length (actions), 3);
+	assert_int (g_slist_length (actions), 4);
 
 	/* The default. */
-	assert_bool (is_default_action (actions, "uri_link_open_link"));
+	assert_bool (is_default_action (actions, "uri_link_open_link", NULL));
 
 	/* Override the default. */
 	action = NULL;
@@ -261,8 +384,8 @@ test_local_default_actions (void)
 		g_error ("Couldn't set default...\n");
 	}
 
-	assert_bool (!is_default_action (actions, "http"));
-	assert_bool (is_default_action (actions, osso_uri_action_get_name (action)));
+	assert_bool (!is_default_action (actions, "http", NULL));
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), NULL));
 
 	/* Reset the default. */
 	if (!osso_uri_set_default_action ("http", NULL, NULL)) {
@@ -270,7 +393,7 @@ test_local_default_actions (void)
 	}
 
 	/* We're back to the system default. */
-	assert_bool (is_default_action (actions, "uri_link_open_link"));
+	assert_bool (is_default_action (actions, "uri_link_open_link", NULL));
 	
 	osso_uri_free_actions (actions);
 

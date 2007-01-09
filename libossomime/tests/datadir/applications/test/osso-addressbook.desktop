@@ -8,12 +8,13 @@ Exec=/usr/bin/osso-addressbook
 X-Osso-Service=osso_addressbook
 Icon=qgn_list_addressbook
 StartupWMClass=osso-addressbook
-MimeType=text/x-vcard
+MimeType=text/x-vcard;text/plain;text/html;image/gif;
 
 [X-Osso-URI-Actions]
 mailto=X-Osso-URI-Action-Add-Contact;
 xmpp=X-Osso-URI-Action-Add-Account;
 sipto=X-Osso-URI-Action-Add-Account;
+http=X-Osso-URI-Action-Add-Bookmark;
 
 [X-Osso-URI-Action-Add-Contact]
 Method=add_account
@@ -22,5 +23,10 @@ TranslationDomain=osso-addressbook
 
 [X-Osso-URI-Action-Add-Account]
 Method=add_account
+Name=addr_ap_address_book
+TranslationDomain=osso-addressbook
+
+[X-Osso-URI-Action-Add-Bookmark]
+Method=add_bookmark
 Name=addr_ap_address_book
 TranslationDomain=osso-addressbook

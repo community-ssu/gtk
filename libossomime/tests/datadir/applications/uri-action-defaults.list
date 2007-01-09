@@ -7,3 +7,7 @@ ftp=test-browser.desktop
 sipto=test-osso-addressbook.desktop
 mailto=test-email-engine.desktop
 chatto=test-chat-ui.desktop
+
+# For new actions
+[X-Osso-URI-Scheme http]
+text-html=test-browser.desktop:X-Osso-URI-Action-Open

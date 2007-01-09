@@ -35,6 +35,12 @@ G_BEGIN_DECLS
  *   - osso_uri_get_actions_by_uri()
  *   - osso_uri_get_default_action_by_uri()
  *   - osso_uri_set_default_action_by_uri()
+ *   - osso_uri_is_default_action_by_uri()
+ * 
+ * Considerations:
+ *   - Finding out if we have the default action by uri may be ok but
+ *     really we should do it by mime type and scheme, that makes more
+ *     sense to me.
  */
 
 #define OSSO_URI_ERROR osso_uri_error_quark()
@@ -250,6 +256,20 @@ gboolean           osso_uri_is_default_action             (OssoURIAction      *a
 
 
 /**
+ * osso_uri_action_is_default_action_by_uri:
+ * @uri: A %const @gchar pointer to a URI.
+ * @action: A @OssoURIAction pointer. 
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL. 
+ *
+ * Return: The %TRUE if it is the default action or %FALSE.
+ **/
+gboolean           osso_uri_is_default_action_by_uri      (const gchar        *uri,
+							   OssoURIAction      *action,
+							   GError            **error);
+
+
+/**
  * osso_uri_action_get_default_action:
  * @scheme: A string which represents a scheme. 
  * @error: The address of a pointer to a @GError structure. This is
@@ -351,9 +371,9 @@ gboolean           osso_uri_set_default_action            (const gchar        *s
  *
  * Return: %TRUE if it was successfully set or %FALSE.
  **/
-gboolean  osso_uri_set_default_action_by_uri (const gchar    *uri_str,
-					      OssoURIAction  *action,
-					      GError        **error);
+gboolean           osso_uri_set_default_action_by_uri     (const gchar    *uri_str,
+							   OssoURIAction  *action,
+							   GError        **error);
 
 /**
  * osso_uri_open:

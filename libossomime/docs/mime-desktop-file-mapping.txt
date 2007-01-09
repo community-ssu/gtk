@@ -77,19 +77,35 @@ The uri-default-action.list has updated but should still be compatible
 for older desktop file. It will look like this (showing old and new
 formats together): 
 
-	[X-Osso-URI-Scheme <mime type>]
-	<scheme>=<desktop file>:<action name>
+	[X-Osso-URI-Scheme <scheme>]
+	<mime type>=<desktop file>:<action name>
 
 An example of new and old formats together would look like:
 
 	# For supporting older actions
 	[Default Actions]
-	https=hildon-browser;
+	https=hildon-browser.desktop;
 
 	# For new actions
 	[X-Osso-URI-Scheme http]
-	image-png=hildon-browser:X-Osso-URI-Action-Open
-	image-jpeg=hildon-image-viewer:X-Osso-URI-Action-Open
+	image-png=hildon-browser.desktop:X-Osso-URI-Action-Open
+	image-jpeg=hildon-image-viewer.desktop:X-Osso-URI-Action-Open
+
+In addition to this any fallback actions will use the old [Default
+Actions] group because you only know the scheme in that case. To make
+sure that this doesn't break existing defaults files, the action name
+is added to the end of the desktop file, for example:
+ 
+	[Default Actions]
+	<scheme>=<desktop file>:<action name> 
+
+This means it would look like this:
+
+        [Default Actions]
+        http=test/browser.desktop:X-Osso-URI-Action-Fallback
+
+        [X-Osso-URI-Scheme http]
+        image-gif=test/osso-addressbook.desktop:X-Osso-URI-Action-Add-Bookmark
 
 Examples:
 =========

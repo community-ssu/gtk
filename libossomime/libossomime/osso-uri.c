@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
 
-#define DEBUG_MSG(x)
-/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n"); */
+/*  #define DEBUG_MSG(x)  */
+  #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");  
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -117,10 +117,13 @@ static GSList *          uri_get_desktop_file_info             (const gchar     
 								const gchar       *scheme);
 
 /* Defaults file */
-static gchar *           uri_get_desktop_file_by_filename      (const gchar       *filename,
-								const gchar       *scheme);
-
-static gchar *           uri_get_desktop_file_by_scheme        (const gchar       *scheme);
+static gboolean          uri_get_desktop_file_by_filename      (const gchar       *filename,
+								const gchar       *scheme,
+								gchar            **desktop_file,
+								gchar            **action_name);
+static gboolean          uri_get_desktop_file_by_scheme        (const gchar       *scheme,
+								gchar            **filename,
+								gchar            **action_name);
 static gboolean          uri_set_defaults_file                 (const gchar       *scheme,
 								const gchar       *mime_type,
 								const gchar       *desktop_file,
@@ -523,6 +526,8 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 					     G_KEY_FILE_KEEP_COMMENTS, 
 					     NULL);
 	if (!ok) {
+		DEBUG_MSG (("URI: Could not load filename:'%s' from data dirs",
+			    filename));
 		goto finish;
 	}
 
@@ -559,6 +564,8 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 						    scheme_lower,
 						    NULL);
 	} else {
+		DEBUG_MSG (("URI: Could not find scheme:'%s' in filename:'%s'",
+			    scheme_lower, filename));
 		goto finish;
 	}
 
@@ -598,6 +605,11 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 			/* Inherit from parent settings */
 			if (!mime_type) {
 				mime_type = g_strdup (parent_mime_type);
+			}
+
+			/* If still no mime type, we must be neutral */
+			if (!mime_type) {
+				type = OSSO_URI_ACTION_NEUTRAL;
 			}
 		}
 		
@@ -864,13 +876,20 @@ uri_get_desktop_file_info (const gchar *desktop_file,
  * Defaults file
  */
 
-static gchar *
-uri_get_desktop_file_by_filename (const gchar *filename, 
-				  const gchar *scheme)
+static gboolean
+uri_get_desktop_file_by_filename (const gchar  *filename, 
+				  const gchar  *scheme,
+				  gchar       **desktop_file,
+				  gchar       **action_id)
 {
 	GKeyFile *key_file;
-	gchar    *desktop_file = NULL;
 	gchar    *scheme_lower;
+
+	g_return_val_if_fail (desktop_file != NULL, FALSE);
+	g_return_val_if_fail (action_id != NULL, FALSE);
+	
+	*desktop_file = NULL;
+	*action_id = NULL;
 
 	scheme_lower = g_ascii_strdown (scheme, -1);
 
@@ -888,13 +907,21 @@ uri_get_desktop_file_by_filename (const gchar *filename,
 					     scheme_lower, 
 					     NULL);
 		if (str) {
+			gchar *p;
+
 			strv = g_strsplit (str, ";", -1);
 			if (strv) {
-				desktop_file = g_strdup (strv[0]);
+				*desktop_file = g_strdup (strv[0]);
 				g_strfreev (strv);
 				g_free (str);
 			} else {
-				desktop_file = str;
+				*desktop_file = str;
+			}
+
+			p = strchr (*desktop_file, ':');
+			if (p) {
+				*action_id = g_strdup (p + 1);
+				p[0] = '\0';
 			}
 		}
 	}
@@ -902,13 +929,14 @@ uri_get_desktop_file_by_filename (const gchar *filename,
 	g_key_file_free (key_file);
 	g_free (scheme_lower);
 
-	return desktop_file;
+	return *desktop_file != NULL;
 }
 
-static gchar *
-uri_get_desktop_file_by_scheme (const gchar *scheme)
+static gboolean
+uri_get_desktop_file_by_scheme (const gchar *scheme,
+				gchar      **desktop_file,
+				gchar      **action_id)
 {
-	gchar              *desktop_file = NULL;
 	gchar              *filename;
 	gchar              *full_filename;
 	const gchar        *user_data_dir;
@@ -916,6 +944,12 @@ uri_get_desktop_file_by_scheme (const gchar *scheme)
 	const gchar        *dir;
 	gchar              *scheme_lower;
 	gint                i = 0;
+
+	g_return_val_if_fail (desktop_file != NULL, FALSE);
+	g_return_val_if_fail (action_id != NULL, FALSE);
+
+	*desktop_file = NULL;
+	*action_id = NULL;
 
  	scheme_lower = g_ascii_strdown (scheme, -1);
 
@@ -933,17 +967,16 @@ uri_get_desktop_file_by_scheme (const gchar *scheme)
 	
 	/* Checking user dir ($home/.local/share/applications/...) first */
 	full_filename = g_build_filename (user_data_dir, filename, NULL);
-	desktop_file = uri_get_desktop_file_by_filename (full_filename, scheme_lower);
-
-	if (desktop_file) {
-		DEBUG_MSG (("URI: Found scheme:'%s' matches desktop file:'%s' in defaults file:'%s'",
-			    scheme_lower, desktop_file, full_filename));
+	if (uri_get_desktop_file_by_filename (full_filename, scheme_lower, desktop_file, action_id)) {
+		DEBUG_MSG (("URI: Found scheme:'%s' matches desktop file:'%s' with "
+			    "action:'%s' in defaults file:'%s'",
+			    scheme_lower, *desktop_file, *action_id, full_filename));
 		
 		g_free (full_filename);
 		g_free (filename);
 		g_free (scheme_lower);
 
-		return desktop_file;
+		return TRUE;
 	} 
 
 	g_free (full_filename);
@@ -951,17 +984,17 @@ uri_get_desktop_file_by_scheme (const gchar *scheme)
 	/* Checking system dirs ($prefix/share/applications/..., etc) second */
 	while ((dir = system_data_dirs[i++]) != NULL) {
 		full_filename = g_build_filename (dir, filename, NULL);
-		desktop_file = uri_get_desktop_file_by_filename (full_filename, scheme_lower);
-		
-		if (desktop_file) {
-			DEBUG_MSG (("URI: Found scheme:'%s' matches desktop file:'%s' in defaults file:'%s'",
-				    scheme_lower, desktop_file, full_filename));
+
+		if (uri_get_desktop_file_by_filename (full_filename, scheme_lower, desktop_file, action_id)) {
+			DEBUG_MSG (("URI: Found scheme:'%s' matches desktop file:'%s' "
+				    "with action:'%s' in defaults file:'%s'",
+				    scheme_lower, *desktop_file, *action_id, full_filename));
 		
 			g_free (full_filename);
 			g_free (filename);
 			g_free (scheme_lower);
 
-			return desktop_file;
+			return TRUE;
 		}
 
 		g_free (full_filename);
@@ -973,7 +1006,7 @@ uri_get_desktop_file_by_scheme (const gchar *scheme)
 	g_free (filename);
 	g_free (scheme_lower);
 
-	return NULL;
+	return FALSE;
 }
 
 static gboolean
@@ -1033,14 +1066,23 @@ uri_set_defaults_file (const gchar *scheme,
 			g_free (key);
 			g_free (group);
 		} else {
+			gchar *value;
+
 			/* Old scheme */
-			DEBUG_MSG (("URI: Added default desktop file:'%s' for "
-				    "scheme:'%s', (old method)",
-				    desktop_file, scheme_lower));
+			DEBUG_MSG (("URI: Added default desktop file:'%s' with "
+				    "action id:'%s' for scheme:'%s', (old method)",
+				    desktop_file, action_id, scheme_lower));
+
+			value = g_strdup_printf ("%s%s%s", 
+						 desktop_file, 
+						 action_id ? ":" : "",
+						 action_id ? action_id : "");
+
 			g_key_file_set_string (key_file, 
 					       OSSO_URI_DEFAULTS_GROUP,
 					       scheme_lower, 
-					       desktop_file);
+					       value);
+			g_free (value);
 		}
 	} else if (ok) {
 		DEBUG_MSG (("URI: Remove default for scheme:'%s'",
@@ -1443,7 +1485,85 @@ osso_uri_is_default_action (OssoURIAction  *action,
 	g_return_val_if_fail (action != NULL, FALSE);
 	g_return_val_if_fail (action->scheme != NULL, FALSE);
 
+	/* If new type of action we only need to make sure we have the
+	 * scheme to go on and we can then look for the default action
+	 * for that scheme in the old group ('Default Actions' in the
+	 * defaults file).
+	 */
+	if (action->id && !action->scheme) {
+		return FALSE;
+	}
+
 	default_action = osso_uri_get_default_action (action->scheme, error);
+
+	DEBUG_MSG (("URI: Checking desktop file is default for scheme:'%s':\n"
+		    "\tdefault_action:%p\n"
+		    "\tdefault_action->desktop_file:'%s'\n"
+		    "\taction->desktop_file:'%s'",
+		    action->scheme,
+		    default_action,
+		    default_action ? default_action->desktop_file : "",
+		    action->desktop_file))
+
+	if (default_action && 
+	    default_action->desktop_file && 
+	    action->desktop_file) {
+		gchar *desktop_file1;
+		gchar *desktop_file2;
+
+		/* Change all "/" to "-" since there may be some differences here */
+		desktop_file1 = g_strdup (default_action->desktop_file);
+		g_strdelimit (desktop_file1, G_DIR_SEPARATOR_S, '-');
+		desktop_file2 = g_strdup (action->desktop_file);
+		g_strdelimit (desktop_file2, G_DIR_SEPARATOR_S, '-');
+
+		/* Compare desktop files to know if this is the same
+		 * action as the default action.
+		 * 
+		 * We compare the desktop file and the method since
+		 * these two are what the dbus service will use to
+		 * identify what is done with the action. 
+		 */
+		if (default_action->name && action->name &&
+		    default_action->method && action->method &&
+		    strcmp (desktop_file1, desktop_file2) == 0 && 
+		    strcmp (default_action->name, action->name) == 0 && 
+		    strcmp (default_action->method, action->method) == 0) {
+			equal = TRUE;
+		}
+		
+		DEBUG_MSG (("URI: Checking desktop file is default:\n"
+			    "\tfile1:'%s'\n"
+			    "\tfile2:'%s'\n"
+			    "\tname1:'%s'\n"
+			    "\tname2:'%s'\n"
+			    "\tmethod1:'%s'\n"
+			    "\tmethod2:'%s'\n"
+			    "\tEQUAL = %s",
+			    desktop_file1, desktop_file2,
+			    default_action->name, action->name,
+			    default_action->method, action->method,
+			    equal ? "YES" : "NO"))
+
+		g_free (desktop_file1);
+		g_free (desktop_file2);
+	}
+
+	return equal;
+}
+
+gboolean
+osso_uri_is_default_action_by_uri (const gchar    *uri,
+				   OssoURIAction  *action,
+				   GError        **error)
+{
+	OssoURIAction *default_action;
+	gboolean       equal = FALSE;
+
+	g_return_val_if_fail (uri != NULL, FALSE);
+	g_return_val_if_fail (action != NULL, FALSE);
+
+	default_action = osso_uri_get_default_action_by_uri (uri, error);
 
 	DEBUG_MSG (("URI: Checking desktop file is default for scheme:'%s':\n"
 		    "\tdefault_action:%p\n"
@@ -1505,9 +1625,26 @@ OssoURIAction *
 osso_uri_get_default_action (const gchar  *scheme,
 			     GError      **error)
 {
-	GSList        *actions_found;
+	GSList        *actions;
+	GSList        *l;
 	OssoURIAction *action = NULL;
-	gchar         *filename;
+	gchar         *desktop_file;
+	gchar         *action_id;
+
+	/* We do some interesting stuff here. Before we had the new
+	 * type of desktop files for v1.0 we didn't have the action
+	 * name in the defaults file, but now we do so that we can use
+	 * the same group in the file as we did before but for neutral
+	 * and fallback actions because they have no need for checking
+	 * against mime type. The new format here is:
+	 *   
+	 *   [Default Actions]
+	 *   <scheme>=<desktop file>:<action name>
+	 * 
+	 * Previously the action name and the colon were not present
+	 * so this new method means that old defaults files should
+	 * still works.
+	 */
 
 	if (!scheme) {
 		g_set_error (error,
@@ -1517,16 +1654,40 @@ osso_uri_get_default_action (const gchar  *scheme,
 		return NULL;
 	}
 
-	filename = uri_get_desktop_file_by_scheme (scheme);
-	if (!filename) {
+	if (!uri_get_desktop_file_by_scheme (scheme, &desktop_file, &action_id)) {
+		DEBUG_MSG (("URI: No desktop file found for scheme:'%s'", scheme));
+		g_free (desktop_file);
+		g_free (action_id);
 		return NULL;
 	}
 
-	actions_found = uri_get_desktop_file_actions (filename, scheme);
-	action = osso_uri_action_ref (actions_found->data);
-	g_slist_foreach (actions_found, (GFunc) osso_uri_action_unref, NULL);
-	g_slist_free (actions_found);
-	g_free (filename);
+	actions = uri_get_desktop_file_actions (desktop_file, scheme);
+
+	for (l = actions; l && action_id; l = l->next) {
+		action = l->data;
+			
+		if (action->id && strcmp (action->id, action_id) == 0) {
+			break;
+		}
+		
+		action = NULL;
+	}
+		
+	/* If name not found, default to the first item */
+	if (!action) {
+		DEBUG_MSG (("URI: Using first action as default action"));
+		action = actions->data;
+	}
+	
+	if (action) {
+		osso_uri_action_ref (action);
+	}
+
+	g_slist_foreach (actions, (GFunc) osso_uri_action_unref, NULL);
+	g_slist_free (actions);
+
+	g_free (action_id);
+	g_free (desktop_file);
 
 	return action;
 }
@@ -1544,6 +1705,7 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 	gchar            *mime_type = NULL;
 	gchar            *desktop_file = NULL;
 	gchar            *filename;
+	gchar            *full_path = NULL;
 	gboolean          ok;
 
 	uri = gnome_vfs_uri_new (uri_str);
@@ -1563,7 +1725,6 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 			     OSSO_URI_ERROR,
 			     OSSO_URI_INVALID_URI,
 			     "The scheme could not be obtained from the uri.");
-
 		return NULL;
 	}
 
@@ -1576,15 +1737,21 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 	    info->mime_type != '\0') {
 		mime_type = g_strdup (info->mime_type);
 	} else {
+		/* We fallback to the old function here because it is
+		 * used for neutral and fallback actions.
+		 */
+
+		DEBUG_MSG (("URI: **** Getting default action by falling back to old "
+			    "function just using scheme:'%s'", 
+			    scheme));
+
 		gnome_vfs_file_info_unref (info);
 		gnome_vfs_uri_unref (uri);
+		
+		action = osso_uri_get_default_action (scheme, error);
 		g_free (scheme);
-		g_set_error (error,
-			     OSSO_URI_ERROR,
-			     OSSO_URI_INVALID_URI,
-			     "The mime type could not be obtained from the uri.");
 
-		return NULL;
+		return action;
 	}
 
 	DEBUG_MSG (("URI: Getting default action by uri:'%s', with scheme:'%s' and mime type'%s'", 
@@ -1602,9 +1769,11 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 
 	ok = g_key_file_load_from_data_dirs (key_file, 
 					     filename, 
-					     NULL, 
+					     &full_path, 
 					     G_KEY_FILE_KEEP_COMMENTS, 
 					     NULL);
+
+	DEBUG_MSG (("URI: Getting default actions from file:'%s'", full_path));
 
 	if (ok) {
 		gchar **strv;
@@ -1618,6 +1787,7 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 
 		group = g_strdup_printf (OSSO_URI_DEFAULTS_GROUP_FORMAT, scheme);
 		str = g_key_file_get_string (key_file, group, mime_type, NULL);
+		DEBUG_MSG (("URI: Found string:'%s' in group:'%s'", str, group));
 		g_free (group);
 
 		/* Should be in the format of '<desktop file>;<action name>' */
@@ -1662,6 +1832,7 @@ osso_uri_set_default_action (const gchar    *scheme,
 			     GError        **error)
 {
 	const gchar *desktop_file = NULL;
+	const gchar *action_id = NULL;
 	gchar       *scheme_lower;
 	gboolean     ok;
 
@@ -1681,7 +1852,11 @@ osso_uri_set_default_action (const gchar    *scheme,
 		desktop_file = action->desktop_file;
 	}
 
-	ok = uri_set_defaults_file (scheme_lower, NULL, desktop_file, NULL);
+	if (action && action->id && action->id[0] != '\0') {
+		action_id = action->id;
+	}
+
+	ok = uri_set_defaults_file (scheme_lower, NULL, desktop_file, action_id);
 	if (!ok) {
 		g_set_error (error,
 			     OSSO_URI_ERROR,
@@ -1707,6 +1882,15 @@ osso_uri_set_default_action_by_uri (const gchar    *uri_str,
 	const gchar      *desktop_file = NULL;
 	const gchar      *action_id = NULL;
 	gboolean          ok;
+
+	/* If we are a neutral or fallback action we just use the old
+	 * API because that only needs the scheme.
+	 */
+	if (action && 
+	    (action->type == OSSO_URI_ACTION_NEUTRAL || 
+	     action->type == OSSO_URI_ACTION_FALLBACK)) {
+		return osso_uri_set_default_action (action->scheme, action, error);
+	}
 
 	uri = gnome_vfs_uri_new (uri_str);
 	if (!uri) {
@@ -1813,7 +1997,12 @@ osso_uri_open (const gchar    *uri,
 			    "since no action was given.",
 			    uri));
 		
-		action = osso_uri_get_default_action (scheme, error);
+		if (action->id) {
+			action = osso_uri_get_default_action_by_uri (uri, error);
+		} else {
+			action = osso_uri_get_default_action (scheme, error);
+		}
+
 		cleanup_action = TRUE;
 		
 		if (!action) {
