@@ -1,3 +1,20 @@
+2007-01-10  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Use new libconic API to talk to the connectivity
+	facility. (N50190)
+	
+	* src/util.cc (connection_object): New.
+	(iap_callback): Adapted to be a handler for the "connection-event"
+	signal.
+	(ensure_network): Use ConICConnection object etc instead of
+	osso_iap_cb and osso_iap_connect.
+
+	* configure.ac (AI_DEPS_CFLAGS, AI_DEPS_LIBS): use conic package
+	instead of osso-ic.
+
+	* debian/control: Build-Depend on libconic0-dev instead of
+	osso-ic-dev.
+
 2006-12-15  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 4.45
