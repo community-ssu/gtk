@@ -1,5 +1,12 @@
 2007-01-10  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* src/menu.cc (noop_result): New.
+	(menu_close): Perform a APT_CMD_NOOP before exiting to ensure that
+	the apt-worker is idle. (N49759)
+
+	* src/apt-worker-client.h, src/apt-worker-client.cc
+	(apt_worker_noop): New.
+
 	Use new libconic API to talk to the connectivity
 	facility. (N50190)
 	
