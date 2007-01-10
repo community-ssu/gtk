@@ -2020,6 +2020,19 @@ gtk_combo_box_menu_popup (GtkComboBox *combo_box,
 		  button, activate_time);
 }
 
+/* Hildon: When the popup window gets fully obscured, pop it down to release
+ * grabs and allow keyboard lock to activate.
+ */
+static gboolean
+gtk_combo_box_popup_window_visibility_notify_event (GtkWidget          *popup_window,
+                                                    GdkEventVisibility *event,
+                                                    GtkComboBox        *combo_box)
+{
+  if (event->state == GDK_VISIBILITY_FULLY_OBSCURED)
+    gtk_combo_box_popdown (combo_box);
+  return FALSE;
+}
+
 /**
  * gtk_combo_box_popup:
  * @combo_box: a #GtkComboBox
@@ -2078,6 +2091,11 @@ gtk_combo_box_popup (GtkComboBox *combo_box)
   /* popup */
   gtk_widget_show (combo_box->priv->popup_window);
 
+  /* Hildon: when the popup window gets fully obscured, pop it down */
+  gtk_widget_add_events (combo_box->priv->popup_window, GDK_VISIBILITY_NOTIFY_MASK);
+  g_signal_connect (combo_box->priv->popup_window, "visibility-notify-event",
+		    G_CALLBACK (gtk_combo_box_popup_window_visibility_notify_event), combo_box);
+
   if (path)
     {
       gtk_tree_view_set_cursor (GTK_TREE_VIEW (combo_box->priv->tree_view),
@@ -2128,6 +2146,11 @@ gtk_combo_box_popdown (GtkComboBox *combo_box)
 
   if (!GTK_WIDGET_REALIZED (GTK_WIDGET (combo_box)))
     return;
+
+  /* Hildon: */
+  g_signal_handlers_disconnect_by_func (combo_box->priv->popup_window,
+                                        gtk_combo_box_popup_window_visibility_notify_event,
+                                        combo_box);
 
   gtk_combo_box_list_remove_grabs (combo_box);
 

@@ -1,3 +1,10 @@
+2007-01-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_popdown, gtk_combo_box_popup,
+	gtk_combo_box_popup_window_visibility_notify_event): When the popup
+	window gets fully obscured, pop down the window to release grabs and
+	allow keyboard lock to activate. NB#49859
+
 2006-11-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk/x11/gdkinput-x11.c (_gdk_input_common_other_event): Call
