@@ -467,6 +467,15 @@ apt_worker_set_status_callback (apt_worker_callback *callback, void *data)
 }
 
 void
+apt_worker_noop (apt_worker_callback *callback, void *data)
+{
+  request.reset ();
+  call_apt_worker (APTCMD_NOOP,
+		   request.get_buf (), request.get_len (),
+		   callback, data);
+}
+
+void
 apt_worker_get_package_list (bool only_user,
 			     bool only_installed,
 			     bool only_available,
