@@ -33,6 +33,7 @@
 #include "settings.h"
 #include "repo.h"
 #include "search.h"
+#include "apt-worker-client.h"
 
 #define _(x) gettext (x)
 
@@ -90,9 +91,24 @@ add_menu (GtkMenu *menu, const gchar *label)
 }
 
 static void
+noop_result (int cmd, apt_proto_decoder *dec, void *data)
+{
+  /* Even if we couldn't send the command, we just exit.  That way,
+     closing the application twice will reliably terminate it.
+   */
+  exit (0);
+}
+
+static void
 menu_close ()
 {
-  exit (0);
+  /* XXX - Wait for the apt-worker to be idle.  Otherwise the
+           Application Manager will not start when it is launched
+           again immediately.
+   */
+  show_updating ();
+  allow_updating ();
+  apt_worker_noop (noop_result, NULL);
 }
 
 static GtkWidget *details_menu_item = NULL;
