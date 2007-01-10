@@ -1,5 +1,10 @@
 2007-01-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* gtk/gtkmenu.c (gtk_menu_handle_scrolling): Always scroll fast.
+	NB#48386
+
+2007-01-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* gtk/gtkcombobox.c (gtk_combo_box_popdown, gtk_combo_box_popup,
 	gtk_combo_box_popup_window_visibility_notify_event): When the popup
 	window gets fully obscured, pop down the window to release grabs and
