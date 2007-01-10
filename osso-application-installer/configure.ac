@@ -1,6 +1,6 @@
 # configure.ac for osso-application-installer
 
-AC_INIT(osso-application-installer, 4.45)
+AC_INIT(osso-application-installer, 4.46)
 AC_CONFIG_SRCDIR([src/main.cc])
 AM_INIT_AUTOMAKE
 
@@ -17,7 +17,7 @@ if test x$ac_cv_header_apt_pkg_configuration_h != xyes; then
 fi
 
 PKG_CHECK_MODULES(AI_DEPS, glib-2.0 gtk+-2.0 hildon-libs hildon-fm libosso
-                           osso-ic gconf-2.0 gnome-vfs-2.0 libossohelp
+                           conic gconf-2.0 gnome-vfs-2.0 libossohelp
                            obex-vfs-utils)
 AC_SUBST(AI_DEPS_CFLAGS)
 AC_SUBST(AI_DEPS_LIBS)
