@@ -3187,7 +3187,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
   gint width, height;
   gint border;
   GdkRectangle rect;
-  gboolean scroll_fast = FALSE;
+  gboolean scroll_fast = TRUE; /* Hildon: always fast */
   guint vertical_padding;
   gint top_x, top_y;
   gint win_x, win_y;
