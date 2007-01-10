@@ -1,0 +1,7 @@
+usr/bin/*
+usr/sbin/*
+usr/share/defoma/scripts/*
+etc/defoma/config/*
+etc/pango/*
+var/lib/defoma/pango.d/*
+usr/share/man/man1/pango-querymodules.1

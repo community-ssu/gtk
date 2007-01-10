@@ -1,0 +1,4 @@
+build-tree/pango-@VERSION@/NEWS
+build-tree/pango-@VERSION@/README
+build-tree/pango-@VERSION@/TODO
+debian/README.Defoma

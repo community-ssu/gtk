@@ -1,0 +1,650 @@
+pango1.0 (1.14.7-1osso1) unstable; urgency=low
+
+  * version upgrade to 1.14.7 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 30 Oct 2006 10:09:16 +0200
+
+pango1.0 (1.8.1-1osso18) unstable; urgency=low
+
+  * take away self-dependency, don't build -udeb!
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 30 Nov 2006 13:57:49 +0200
+
+pango1.0 (1.8.1-1osso17) unstable; urgency=low
+
+  * fix to _really_ have debug symbols ...
+  * Fixes: NB#35625 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 17 Nov 2006 15:55:21 +0200
+
+pango1.0 (1.8.1-1osso16) unstable; urgency=low
+
+  * provide debug package containing only symbols (NOBITS)
+  * Fixes: NB#40542 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 21 Sep 2006 16:13:19 +0300
+
+pango1.0 (1.8.1-1osso15) unstable; urgency=low
+
+  * took away one useless patch to configure.ac 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 31 Aug 2006 10:31:18 +0300
+
+pango1.0 (1.8.1-1osso14) unstable; urgency=low
+
+  * disabled all other modules except basic, fixes NB#38278 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 24 Aug 2006 15:46:24 +0300
+
+pango1.0 (1.8.1-1osso13) unstable; urgency=low
+
+  * applied patch for line breaking, fixes NB#31607
+  * enabled 'g' in compilation to get .debug_frame, fixes #NB35625
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 26 Jul 2006 16:43:56 +0300
+
+pango1.0 (1.8.1-1osso12) unstable; urgency=low
+
+  * enable thumb code generation 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 24 May 2006 14:05:35 +0300
+
+pango1.0 (1.8.1-1osso11) unstable; urgency=low
+
+  * disabling thumb flag temporarily
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 24 May 2006 14:05:32 +0300
+
+pango1.0 (1.8.1-1osso10) unstable; urgency=low
+
+  * revert patch for line breaking code + dependency to glib 2.10  ...
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 11 May 2006 10:17:11 +0300
+
+pango1.0 (1.8.1-1osso9) unstable; urgency=low
+
+  * change to debian scripts, remove defoma dependency 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed,  3 May 2006 15:42:23 +0300
+
+pango1.0 (1.8.1-1osso8) unstable; urgency=low
+
+  * fixed glib dependency to 2.10 (because of definitions for unicode) 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed,  3 May 2006 10:45:28 +0300
+
+pango1.0 (1.8.1-1osso7) unstable; urgency=low
+
+  * Backporting line breaking code from new pango, fixes issue with
+    pango_layout_get_pixel_size call from FKB. Disabled defoma dependency.
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue,  2 May 2006 14:34:39 +0300
+
+pango1.0 (1.8.1-1osso6) unstable; urgency=low
+
+  * added thumb code generation flags 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 24 Apr 2006 13:53:29 +0300
+
+pango1.0 (1.8.1-1osso5) unstable; urgency=low
+
+  * upstream memory optimization patches (N#22863)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 23 Feb 2006 14:04:31 +0200
+
+pango1.0 (1.8.1-1osso4) unstable; urgency=low
+
+  * Bugfixes (N#20703)
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 15 Nov 2005 14:30:14 +0200
+
+pango1.0 (1.8.1-1osso3) unstable; urgency=low
+
+  * Made the fix for bug N#8986
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Tue, 10 May 2005 10:39:38 +0300
+
+pango1.0 (1.8.1-1osso2) unstable; urgency=low
+
+  * Fixed bug N#8986 (libexpat.so.1: cannot open shared
+    object file).
+  * debian/control: A missing build dependency for libexpat was added.
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Mon,  9 May 2005 14:17:48 +0300
+
+pango1.0 (1.8.1-1osso1) unstable; urgency=low
+
+  * Integrated glyphstring cache patch 
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Thu, 31 Mar 2005 23:56:23 +0300
+
+pango1.0 (1.8.1-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * [debian/scripts/vars, debian/sources] Updated for new upstream release.
+  * [debian/patches/absolute-attribute.diff] Removed; this is now handled
+    upstream in a different way.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sun,  6 Mar 2005 09:53:11 +0100
+
+pango1.0 (1.8.0-3) unstable; urgency=low
+
+  * Upload to unstable.
+  * debian/control.in:
+    - set myself as maintainer.
+
+ -- Sebastien Bacher <seb128@debian.org>  Mon, 31 Jan 2005 12:34:51 +0100
+
+pango1.0 (1.8.0-2) experimental; urgency=low
+
+  * debian/patches/absolute-attribute.diff:
+    - patch to fix absolute fonts (Closes: #289021).
+
+ -- Sebastien Bacher <seb128@debian.org>  Fri,  7 Jan 2005 11:27:16 +0100
+
+pango1.0 (1.8.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * debian/control.in:
+    - updated the Build-Depends.
+  * debian/po/cs.po:
+    - Czech translation from Miroslav Kure <kurem@upcase.inf.upol.cz> 
+      (Closes: #283224).
+  * debian/watch:
+    - updated.
+
+ -- Sebastien Bacher <seb128@debian.org>  Wed, 29 Dec 2004 17:45:00 +0100
+
+pango1.0 (1.6.0-3) unstable; urgency=low
+
+  * debian/rules:
+    - set modver to 1.4.0 (Closes: #281806).
+
+ -- Sebastien Bacher <seb128@debian.org>  Tue, 23 Nov 2004 18:35:04 +0100
+
+pango1.0 (1.6.0-2) unstable; urgency=low
+
+  * GNOME team upload.
+  * J.H.M. Dassen (Ray):
+    - [debian/rules] Changes from trunk:
+      + Derive "modver" value from "major" and "minor" rather than have it
+        hardwired.
+    - Fixed udeb name for the Hurd.
+  * Colin Watson <cjwatson@debian.org> (#274092):
+    - binary-arch depends on binary-arch-udeb.
+    - Strip udeb!
+  * Jordi Mallach:
+    - Upload to unstable.
+
+ -- Jordi Mallach <jordi@debian.org>  Wed, 17 Nov 2004 14:41:32 +0100
+
+pango1.0 (1.6.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * [debian/watch] Updated.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Tue, 14 Sep 2004 21:37:45 +0200
+
+pango1.0 (1.5.2-1) experimental; urgency=low
+
+  * New upstream development release.
+  * [debian/pango.defoma] Fixed logic.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sat,  7 Aug 2004 10:37:12 +0200
+
+pango1.0 (1.5.0-2) experimental; urgency=low
+
+  * debian/rules:
+    - modversion is still 1.4.0 since there is not compatibility breakage
+      for the moment.
+
+ -- Sebastien Bacher <seb128@debian.org>  Fri,  2 Jul 2004 11:49:31 +0200
+
+pango1.0 (1.5.0-1) experimental; urgency=low
+
+  * New development upstream release.
+  * debian/watch: Updated to the unstable branch.
+  * debian/pango.defoma: Use patch by Flavio Stanchina
+    <flavio.stanchina@tin.it> to fix perl warnings in the defoma
+    script. Thanks for the patch! (Closes: #256335)
+
+ -- Marc 'HE' Brockschmidt <he@debian.org>  Mon, 28 Jun 2004 13:17:02 +0200
+
+pango1.0 (1.4.0-4) unstable; urgency=high
+
+  * debian/rules:
+    + reverted previous change to fix the breakages on ia64 and alpha
+      (Closes: #252401).
+
+ -- Sebastien Bacher <seb128@debian.org>  Sat,  5 Jun 2004 15:39:56 +0200
+
+pango1.0 (1.4.0-3) unstable; urgency=low
+
+  * GNOME Team Upload.
+  * Upload to unstable (Closes: #238663).
+  * Akira TAGOH <tagoh@debian.org>
+  + backport from 1.2.5-4
+  + debian/pango.defoma:
+    - fixed to avoid the regex fails due to unquoted strings.
+  + po/tr.po:
+    - added Turkish translation.
+  * J.H.M. Dassen (Ray) <jdassen@debian.org>:
+  + debian/rules: Make the linker work a bit harder so dynamic loading can be
+    done faster; safety measure: ensure the build aborts when the library
+    still has references to undefined symbols. 
+
+ -- Sebastien Bacher <seb128@debian.org>  Sat, 22 May 2004 14:52:43 +0200
+
+pango1.0 (1.4.0-2) experimental; urgency=low
+
+  * Akira TAGOH <tagoh@debian.org>
+  + backport from 1.2.5-3
+    - po/nl.po: added Dutch translation.
+    - debian/control: fixed the dependencies for the separated xlibs-dev.
+    - debian/rules: don't specify the modules for --with-included-modules for
+      the static build. that bug was already gone.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 20 Apr 2004 00:23:25 +0900
+
+pango1.0 (1.4.0-1) experimental; urgency=low
+
+  * New upstream release (Closes: #238663).
+  * debian/pango-querymodules.1:
+    + removed since included in the new upstream release.
+  * debian/patches/000_pango1.0-1.2.5-fix-thai-sharper.patch:
+    + removed.
+  * debian/patches/001_new_freetype_build_system.patch:
+    + removed.
+  * debian/rules:     
+     - don't claim the newer shlibs.
+     - updated modules list.
+
+ -- Sebastien Bacher <seb128@debian.org>  Thu, 18 Mar 2004 21:07:49 +0100
+
+pango1.0 (1.2.5-5) unstable; urgency=low
+
+  * Akira TAGOH <tagoh@debian.org>
+  + debian/pango.defoma:
+    - fixed to avoid the regex fails due to unquoted strings.
+      Thanks to Flavio Stanchina <flavio.stanchina@tin.it>
+      (closes: Bug#247198)
+  + po/tr.po:
+    - added Turkish translation. (closes: Bug#246079)
+      Thanks to Gürkan Aslan <gurkan@iaslan.com>
+
+ -- Akira TAGOH <tagoh@debian.org>  Mon, 10 May 2004 02:34:54 +0900
+
+pango1.0 (1.2.5-3) unstable; urgency=low
+
+  * Ack to NMU (closes: Bug#221431, Bug#220988)
+  * po/nl.po: added Dutch translation.
+    thanks to Luk Claes <luk.claes@ugent.be> (closes: Bug#244321)
+  * debian/control: updated the dependencies for separated xlibs-dev.
+    thanks to Kevin B. McCarty <kmccarty@Princeton.EDU> (closes: Bug#241505)
+
+ -- Akira TAGOH <tagoh@debian.org>  Mon, 19 Apr 2004 23:28:36 +0900
+
+pango1.0 (1.2.5-2.1) unstable; urgency=high
+
+  * NMU
+  * [debian/patches/001_new_freetype_build_system.patch] New, needed to work
+    with freetype 2.1.7. (Closes: #220988)
+  * [debian/control.in, debian/control] Bumped the freetype build dependency.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Tue, 18 Nov 2003 10:17:51 +0100
+
+pango1.0 (1.2.5-2) unstable; urgency=low
+
+  * acknowledge to NMU. (closes: Bug#216003, Bug#216091)
+  * debian/control:
+    - added Uploaders to maintain as team.
+    - added gnome-pkg-tools to Build-Depends.
+  * debian/rules:
+    - modified to generate debian/control using gnome-pkg-tools.
+  * debian/patches/000_pango1.0-1.2.5-fix-thai-sharper.patch:
+    - applied a patch to fix displaying always hexadecimal glyphs when using
+      Thai sharper. (closes: Bug#210557)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 25 Oct 2003 04:16:52 +0900
+
+pango1.0 (1.2.5-1.1) unstable; urgency=medium
+
+  * NMU
+  * [debian/control.in] Follow the libxft2-dev -> libxft-dev renaming to
+    become installable again. (Closes: #216003)
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Thu, 16 Oct 2003 09:39:38 +0200
+
+pango1.0 (1.2.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/README.Debian:
+    - moved some notices from libpango1.0-common.templetes.
+      (closes: Bug#206266)
+  * debian/control:
+    - bumped Standards-Version to 3.6.1.0.
+  * debian/rules:
+    - removed dh_undocumented.
+  * debian/po/pt_BR.po:
+    - updated Brazilian Portuguese translation from Andre Luis Lopes.
+      (closes: Bug#208037)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun,  7 Sep 2003 19:21:40 +0900
+
+pango1.0 (1.2.3-1) unstable; urgency=low
+
+  * New upstream release. (closes: Bug#199965)
+  * debian/patches/:
+    - 000_pango-1.2.1-coverage-off-by-one.patch: removed.
+    - 000_pango1.0-1.2.1-dont_check_xft_if_without_x.patch: removed.
+  * debian/update-pangox-aliases:
+    - fix typo. (closes: Bug#199208)
+  * debian/pango.defoma:
+    - fix typo.
+  * debian/rules:
+    - don't claim the newer shlibs.
+    - don't statically link thai-ft2 module so that it's broken.
+  * debian/scripts/lib:
+    - redirect the echo back of cd command to /dev/null. (closes: Bug#199876)
+  * debian/pango-querymodules.1:
+    - added.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun,  6 Jul 2003 09:58:36 +0900
+
+pango1.0 (1.2.1-4) unstable; urgency=low
+
+  * debian/libpango1.0-common.templates:
+    - fix typo. Thanks to Philippe Batailler <philippe.batailler@free.fr>
+  * debian/po/fr.po:
+    - add French translation. Philippe Batailler. (closes: Bug#188886)
+  * debian/control:
+    - bumped Standards-Version to 3.5.10.0.
+    - changed the sections for libpango1.0-dev and libpango1.0-dbg to
+      libdevel.
+  * debian/compat:
+    - use it instead of DH_COMPAT.
+  * debian/patches/000_pango-1.2.1-coverage-off-by-one.patch:
+    - applied a backport patch to fix off-by-one error. Thanks Roger So for
+      this notification. (closes: Bug#194661)
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 27 May 2003 02:52:56 +0900
+
+pango1.0 (1.2.1-3) unstable; urgency=low
+
+  * build against the latest fontconfig. 2.1.90-1 was broken.
+    (closes: Bug#183389)
+  * debian/control:
+    - update Build-Depends.
+    - rename libpango1.0-0-udeb to libpango1.0-udeb.
+    - delete Depends: libpango1.0-common for libpango1.0-udeb.
+      (closes: Bug#183748)
+    - add Provides: libpango1.0-0 for libpango1.0-udeb.
+  * debian/rules:
+    - doh! fixed the symlinks on /usr/share/gtk-doc/html (closes: Bug#183503)
+    - bumped DH_COMPAT to 4.
+  * debian/libpango1.0-udeb.files:
+    - contain the files in libpango1.0-common package to libpango1.0-udeb.
+      (closes: Bug#183746)
+  * debian/po/pt_BR.po:
+    - add Brazilian Portuguese translation from Andre Luis Lopes
+      <andrelop@ig.com.br> (closes: Bug#183431)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat,  8 Mar 2003 16:53:44 +0900
+
+pango1.0 (1.2.1-2) unstable; urgency=low
+
+  * debian/control:
+    - drop ", for the debian-installer" from description of libpango1.0-0-udeb.
+      (closes: Bug#180155)
+    - add po-debconf to Build-Depends.
+    - update Build-Depends for debhelper.
+  * debian/rules:
+    - create the symlinks on /usr/share/gtk-doc
+  * support po-debconf.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue,  4 Mar 2003 02:34:08 +0900
+
+pango1.0 (1.2.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    - according to Michael Cardenas <mbc@debian.org>, create
+      libpango1.0-0-udeb.
+    - add autotools-dev to Build-Depends.
+  * debian/rules:
+    - modified to create udeb without X support.
+    - remove the old debug libraries on install process if exists.
+  * debian/patches/000_pango1.0-1.2.1-dont_check_xft_if_without_x.patch:
+    applied to fix the build-without-x stuff.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue,  4 Feb 2003 23:55:50 +0900
+
+pango1.0 (1.2.0-3) unstable; urgency=low
+
+  * debian/control:
+    updated Build-Depends to fix the dependency issue. (closes: Bug#176034)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 11 Jan 2003 03:51:51 +0900
+
+pango1.0 (1.2.0-2) unstable; urgency=low
+
+  * debian/control:
+    - added dependency of libpango1.0-common. (closes: Bug#175838)
+    - removed libpango-common package. it's no longer needed. I hope the loop
+      dependency will be disappeared.
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu,  9 Jan 2003 23:54:30 +0900
+
+pango1.0 (1.2.0-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/000_pango1.0-1.0.5-fixbuild-libtool.patch:
+    removed. it should be no longer needed.
+  * debian/libpango1.0-common.templates{,.ja}: updated.
+  * debian/libpango1.0-common.config: notice changed default renderer.
+  * debian/README.Debian: updated.
+  * debian/control: updated Build-Depends.
+  * debian/xftconfig.sample: removed.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun,  5 Jan 2003 23:13:46 +0900
+
+pango1.0 (1.0.5-4) unstable; urgency=low
+
+  * debian/patches/000_pango1.0-1.0.5-fixbuild-libtool.patch:
+    applied to fix the build issue on mips and mipsel. (closes: Bug#172416)
+  * debian/copyright:
+    fix copyright-lists-upstream-authors-with-dh_make-boilerplate issue.
+  * debian/control:
+    - bumped Standards-Version to 3.5.8.
+    - updated Build-Depends.
+  * debian/rules:
+    modified to build the static libraries. (closes: Bug#161937)
+  * debian/README.Debian:
+    updated the static-linked program issue.
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu, 12 Dec 2002 02:17:56 +0900
+
+pango1.0 (1.0.5-3) unstable; urgency=low
+
+  * debian/xftconfig.sample: add .xftconfig sample file.
+
+ -- Akira TAGOH <tagoh@debian.org>  Fri, 25 Oct 2002 02:40:54 +0900
+
+pango1.0 (1.0.5-2) unstable; urgency=low
+
+  * debian/pango.defoma: uses the wild cards instead of all iso8859-x entries.
+  * debian/README.Debian: update about static libraries issue.
+  * debian/control: add 'libpango1.0-common Recommends: x-ttcidfont-conf'. If
+    you decided defoma manages /etc/pango/pangox.aliases file, you need to
+    install x-ttcidfont-conf.
+
+ -- Akira TAGOH <tagoh@debian.org>  Fri, 25 Oct 2002 00:38:46 +0900
+
+pango1.0 (1.0.5-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/README.Defoma: improved the documentation. Thanks Jim W. Jaszewski.
+  * debian/control: bumped Standards-Version to 3.5.7.
+  * debian/rules: support noopt for DEB_BUILD_OPTIONS.
+
+ -- Akira TAGOH <tagoh@debian.org>  Wed, 16 Oct 2002 00:38:06 +0900
+
+pango1.0 (1.0.4-2) unstable; urgency=low
+
+  * debian/update-pango-modules.fr.1: added. Thanks Julien Louis.
+  * debian/update-pangox-aliases.fr.1: (closes: Bug#156989)
+  * debian/control:
+    - bumped Standards-Version and depends debhelper (>> 4).
+    - add libglib2.0-doc to Suggests for -doc.
+  * debian/rules:
+    - add symlink to fix the missing symlink for glib, gobject. (closes:
+      Bug#158721)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 31 Aug 2002 11:27:48 +0900
+
+pango1.0 (1.0.4-1) unstable; urgency=low
+
+  * New upstream release.
+    - needs to be re-ran xftcache and should be fixed by the upstream. see
+      http://bugzilla.gnome.org/show_bug.cgi?id=86911 for more details.
+      (closes: Bug#154985)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun,  4 Aug 2002 18:08:10 +0900
+
+pango1.0 (1.0.3-3) unstable; urgency=low
+
+  * debian/libpango1.0-doc.doc-base: add a new line before Format: (closes:
+    Bug#152928)
+  * debian/libpango1.0-common.postinst: fix the creating pangox.aliases issue.
+    (closes: Bug#152806)
+
+ -- Akira TAGOH <tagoh@debian.org>  Mon, 15 Jul 2002 00:11:29 +0900
+
+pango1.0 (1.0.3-2) unstable; urgency=low
+
+  * Build against the latest libfreetype6
+  * debian/control: changed a summary from 'Dummy' to 'Empty'.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 18 Jun 2002 02:04:37 +0900
+
+pango1.0 (1.0.3-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 16 Jun 2002 04:09:09 +0900
+
+pango1.0 (1.0.2-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Wed, 29 May 2002 01:48:35 +0900
+
+pango1.0 (1.0.1-4) unstable; urgency=low
+
+  * debian/pango.defoma:
+    - s/_/ / to fix wrong family name, and register to monospace when specify
+      'Fixed' to Width. (closes: Bug#144941)
+    - fix the missing XLFDs. Thanks, ha shao.
+    - split the cache for iso10646.
+    - get the fonts in priority order.
+  * debian/update-pango-modules: create /etc/pango directory for workaround,
+    if it's not found.
+  * debian/libpango1.0-common.templates: fix typo. (closes: Bug#145473)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 12 May 2002 05:26:25 +0900
+
+pango1.0 (1.0.1-3) unstable; urgency=medium
+
+  * debian/scripts/vars.build: fix bashism.
+  * debian/libpango1.0-common.{config,templates}:
+    fix my sucked english ;) (closes: Bug141108)
+  * debian/libpango1.0-common.postinst:
+    don't always call update-pangox-aliases.
+  * debian/README.Debian: add static link issue. libpango1.0-dev doesn't
+    provide some static libraries, but don't try to statically link this
+    library.
+  * debian/libpango1.0-common.templates-ja: add.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 14 Apr 2002 08:08:43 +0900
+
+pango1.0 (1.0.1-2) unstable; urgency=low
+
+  * debian/control:
+    - add versioned dependency for libfreetype6-dev (closes: Bug#140728)
+    - forgot to update versioned dependency for -dev.
+    - move all recommended font packages to Suggests for f**kin' latin1 ONLY
+      users, because our packaging mechanism looks like they have a right to
+      an opinion. I'm disappointed. (closes: Bug#140621)
+  * debian/README.Debian: describe about pangox.aliases.
+  * debian/libpango1.0-common.config,
+    debian/libpango1.0-common.templates:
+    add a note for suggested font packages.
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu,  4 Apr 2002 01:55:18 +0900
+
+pango1.0 (1.0.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/README.Debian: fix typo.
+  * debian/libpango1.0-common.config: fix bashism. (closes: Bug#140074,
+    Bug#140220)
+  * debian/control: changed from Suggests to Recommends. those fonts is
+    necessary to use Pango for debian.
+  * debian/libpango1.0-common.templates: add some templates.
+  * debian/libpango1.0-common.postinst: (closes: Bug#140088)
+    - save an old pangox.aliases file.
+    - make sure entrust a management to defoma.
+  * debian/update-pango-modules: check a modules directory.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 30 Mar 2002 17:33:42 +0900
+
+pango1.0 (1.0.0-7) unstable; urgency=low
+
+  * debian/rules: Oh.. don't clean up /var directories... (closes: Bug#139923)
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 26 Mar 2002 09:22:31 +0900
+
+pango1.0 (1.0.0-6) unstable; urgency=low
+
+  * debian/libpango1.0-common.templates: fix misspelling (closes: Bug#139831)
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 26 Mar 2002 00:29:48 +0900
+
+pango1.0 (1.0.0-5) unstable; urgency=low
+
+  * debian/update-pangox-aliases{,.1}: add.
+  * debian/libpango1.0-common.postinst: fix generating pangox.aliases even if
+    they have no defomized font packages. (closes: Bug#139695)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 24 Mar 2002 22:11:35 +0900
+
+pango1.0 (1.0.0-4) unstable; urgency=low
+
+  * debian/libpango1.0-common.postinst: fix bashism.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 17 Mar 2002 03:38:18 +0900
+
+pango1.0 (1.0.0-3) unstable; urgency=low
+
+  * debian/{rules,control}: add libpango-common as dummy package.
+    it will helps to upgrade -common package.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 16 Mar 2002 01:30:12 +0900
+
+pango1.0 (1.0.0-2) unstable; urgency=low
+
+  * debian/control: add defomized font packages to Suggests
+  * debian/libpango1.0-common.{config,postinst}:
+    moved removing old pangox.aliases to postinst.
+  * debian/update-pango-modules: fix file attribute for pangox.aliases...
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu, 14 Mar 2002 06:42:41 +0900
+
+pango1.0 (1.0.0-1) unstable; urgency=low
+
+  * Initial Release.
+  * Defomized for pangox.aliases.
+  * update-pango-modules: provides wrapper script for updating pango modules.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 12 Mar 2002 17:53:38 +0900
+

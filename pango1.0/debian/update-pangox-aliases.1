@@ -1,0 +1,30 @@
+.\"                                      Hey, EMACS: -*- nroff -*-
+.\" First parameter, NAME, should be all caps
+.\" Second parameter, SECTION, should be 1-8, maybe w/ subsection
+.\" other parameters are allowed: see man(7), man(1)
+.TH UPDATE\-PANGOX\-ALIASES 1 "24 March 2002"
+.\" Please adjust this date whenever revising the manpage.
+.\"
+.\" Some roff macros, for reference:
+.\" .nh        disable hyphenation
+.\" .hy        enable hyphenation
+.\" .ad l      left justify
+.\" .ad b      justify to both left and right margins
+.\" .nf        disable filling
+.\" .fi        enable filling
+.\" .br        insert line break
+.\" .sp <n>    insert n+1 empty lines
+.\" for manpage-specific macros, see man(7)
+.SH NAME
+update\-pangox\-aliases \- Update wrapper script for the Pango X aliases file.
+.SH SYNOPSIS
+.B update\-pangox\-aliases
+.SH DESCRIPTION
+\fIupdate\-pangox\-aliases\fP is a wrapper script for updating /var/lib/defoma/pango.d/pangox.aliases via \fIdefoma\fP.
+.br
+If you don't have any defomized font packages, it will generate that file using default XLFD which pango's defoma script has.
+.SH SEE ALSO
+.BR defoma (1)
+.SH AUTHOR
+This manual page was written by Akira TAGOH <tagoh@debian.org>,
+for the Debian GNU/Linux system.

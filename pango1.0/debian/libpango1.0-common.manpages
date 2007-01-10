@@ -1,0 +1,4 @@
+debian/update-pango-modules.1
+debian/update-pango-modules.fr.1
+debian/update-pangox-aliases.1
+debian/update-pangox-aliases.fr.1

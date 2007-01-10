@@ -1,0 +1,35 @@
+#! /bin/sh
+
+set -e
+
+TMPFILE=`mktemp /tmp/pango.XXXXXXXXXX`
+defaultver=1.4.0
+
+if [ "x$1" != "x" ]; then
+	VERSION=`echo $1 | sed -e 's/-[A-Za-z0-9\.]*$//' -e 's/+[A-Za-z0-9\.]*$//'`
+else
+	VERSION=$defaultver
+fi
+
+if ! test -d /usr/lib/pango/$VERSION/modules; then
+	echo "You don't have modules directory for version $VERSION."
+	echo "Use default version instead."
+	VERSION=$defaultver
+fi
+echo -n "Updating the modules list for Pango-$VERSION..."
+/usr/bin/pango-querymodules `find /usr/lib/pango/$VERSION/modules -name '*.so'` > $TMPFILE
+if [ "x`cat $TMPFILE | grep -v '^#'`" = "x" ]; then
+	echo "the Pango modules was not found."
+else
+	echo "done."
+fi
+if ! test -d /etc/pango; then
+	echo -n "Creating /etc/pango directory..."
+	mkdir /etc/pango
+	echo "done."
+fi
+cp $TMPFILE /etc/pango/pango.modules
+chmod 644 /etc/pango/pango.modules
+
+rm -f $TMPFILE
+

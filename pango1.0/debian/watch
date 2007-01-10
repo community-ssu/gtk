@@ -1,0 +1,4 @@
+version=2
+ftp://ftp.gnome.org/pub/GNOME/sources/pango/1.8/ \
+	pango-(.*)\.tar\.gz \
+	debian uupdate

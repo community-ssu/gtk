@@ -1,0 +1,355 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+
+include debian/scripts/vars
+BUILD_DIR=$(SOURCE_DIR)/$(TAR_DIR)
+BUILD_SHARED_DIR=$(SOURCE_DIR)/$(TAR_DIR)-shared
+BUILD_STATIC_DIR=$(SOURCE_DIR)/$(TAR_DIR)-static
+BUILD_UDEB_DIR=$(SOURCE_DIR)/$(TAR_DIR)-udeb
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# These are used for cross-compiling and for saving the configure script
+# from having to guess our platform (since we know it already)
+DEB_HOST_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE	?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+
+ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -O0 -g
+else
+	CFLAGS += -O2 -g
+endif
+
+# Use soft-float and thumb mode if it enabled. 
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+endif
+
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+export CFLAGS
+
+##
+debversion=$(shell dpkg-parsechangelog | grep '^Version: ' | sed -e 's/^Version: //')
+version=$(shell echo ${debversion} | sed -e 's/-[A-Za-z0-9\.]*$$//g' -e 's/+[A-Za-z0-9\.]*$$//g')
+major=$(shell echo ${version} | sed -e 's/\(^[0-9]*\)\.[0-9]*\.[0-9]*$$/\1/')
+minor=$(shell echo ${version} | sed -e 's/^[0-9]*\.\([0-9]*\)\.[0-9]*$$/\1/')
+rel=$(shell echo ${version} | sed -e 's/^[0-9]*\.[0-9]*\.\([0-9]*\)$$/\1/')
+shortver=$(major).$(minor)
+apiver=1.0
+soname=0
+glibver=2.0
+modver=1.4.0
+libpath=$(CURDIR)/$(BUILD_SHARED_DIR)/pango/.libs
+udeblibpath=$(CURDIR)/$(BUILD_UDEB_DIR)/pango/.libs
+udebname=libpango$(apiver)-udeb_$(debversion)_$(shell dpkg-architecture -qDEB_BUILD_ARCH).udeb
+
+
+debian/control:
+	dh_testdir
+
+	sed -e 's/@SONAME@/${soname}/g' -e 's/@VERSION@/${version}/g' $@.in > $@
+
+update-po: debian/po/templates.pot
+debian/po/templates.pot: debian/libpango1.0-common.templates
+	debconf2po-update
+
+extract: $(STAMP_DIR)/extract-stamp
+$(STAMP_DIR)/extract-stamp:
+	dh_testdir
+
+	$(MAKE) -f debian/sys-build.mk source.make
+
+	-test -r /usr/share/misc/config.sub && \
+	   cp -f /usr/share/misc/config.sub $(BUILD_DIR)/config.sub
+	-test -r /usr/share/misc/config.guess && \
+	   cp -f /usr/share/misc/config.guess $(BUILD_DIR)/config.guess
+
+	touch $@
+
+configure-shared: extract $(STAMP_DIR)/configure-shared-stamp
+$(STAMP_DIR)/configure-shared-stamp:
+	dh_testdir
+
+	cp -ar $(BUILD_DIR) $(BUILD_SHARED_DIR)
+
+	cd $(BUILD_SHARED_DIR) && \
+	./configure	--host=$(DEB_HOST_GNU_TYPE) \
+			--build=$(DEB_BUILD_GNU_TYPE) \
+			--prefix=/usr \
+			--mandir=\$${prefix}/share/man \
+			--infodir=\$${prefix}/share/info \
+			--with-html-dir=\$${prefix}/share/doc/libpango$(apiver)-doc \
+			--sysconfdir=/etc \
+			--enable-shared \
+			--disable-static \
+			--with-included-modules=basic-fc,basic-win32,basic-x
+
+	cd $(BUILD_SHARED_DIR) && \
+	sed < libtool > libtool-2 \
+	 -e 's/^hardcode_libdir_flag_spec.*$$/hardcode_libdir_flag_spec=" -D__LIBTOOL_IS_A_FOOL__ "/' \
+	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
+	mv libtool-2 libtool
+
+	touch $@
+
+configure-static: extract $(STAMP_DIR)/configure-static-stamp
+$(STAMP_DIR)/configure-static-stamp:
+	dh_testdir
+
+	cp -ar $(BUILD_DIR) $(BUILD_STATIC_DIR)
+
+	cd $(BUILD_STATIC_DIR) && \
+	./configure	--host=$(DEB_HOST_GNU_TYPE) \
+			--build=$(DEB_BUILD_GNU_TYPE) \
+			--prefix=/usr \
+			--mandir=\$${prefix}/share/man \
+			--infodir=\$${prefix}/share/info \
+			--sysconfdir=/etc \
+			--disable-shared \
+			--enable-static \
+			--with-included-modules=basic-fc,basic-win32,basic-x
+
+	cd $(BUILD_STATIC_DIR) && \
+	sed < libtool > libtool-2 \
+	 -e 's/^hardcode_libdir_flag_spec.*$$/hardcode_libdir_flag_spec=" -D__LIBTOOL_IS_A_FOOL__ "/' \
+	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
+	mv libtool-2 libtool
+
+	touch $@
+
+configure-udeb: extract $(STAMP_DIR)/configure-udeb-stamp
+$(STAMP_DIR)/configure-udeb-stamp:
+	dh_testdir
+
+	cp -ar $(BUILD_DIR) $(BUILD_UDEB_DIR)
+
+	cd $(BUILD_UDEB_DIR) && \
+	./configure	--host=$(DEB_HOST_GNU_TYPE) \
+			--build=$(DEB_BUILD_GNU_TYPE) \
+			--prefix=/usr \
+			--mandir=\$${prefix}/share/man \
+			--infodir=\$${prefix}/share/info \
+			--sysconfdir=/etc \
+			--without-x \
+			--enable-shared \
+			--disable-debug \
+			--with-included-modules=basic-fc,basic-win32,basic-x
+
+	cd $(BUILD_UDEB_DIR) && \
+	sed < libtool > libtool-2 \
+	 -e 's/^hardcode_libdir_flag_spec.*$$/hardcode_libdir_flag_spec=" -D__LIBTOOL_IS_A_FOOL__ "/' \
+	 -e '/^archive_cmds="/s/"$$/ \\$$deplibs"/' && \
+	mv libtool-2 libtool
+
+	touch $@
+
+configure: configure-static configure-shared configure-udeb
+
+build-shared: debian/control update-po configure-shared $(STAMP_DIR)/build-shared-stamp
+$(STAMP_DIR)/build-shared-stamp:
+	dh_testdir
+
+	-rm -f $(STAMP_DIR)/install-test-stamp
+	$(MAKE) -C $(BUILD_SHARED_DIR) \
+		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
+
+	touch $@
+
+build-static: debian/control update-po configure-static $(STAMP_DIR)/build-static-stamp
+$(STAMP_DIR)/build-static-stamp:
+	dh_testdir
+
+	-rm -f $(STAMP_DIR)/install-test-stamp
+	$(MAKE) -C $(BUILD_STATIC_DIR)
+
+	touch $@
+
+build-udeb: debian/control update-po configure-udeb $(STAMP_DIR)/build-udeb-stamp
+$(STAMP_DIR)/build-udeb-stamp:
+	dh_testdir
+
+	-rm -f $(STAMP_DIR)/install-test-stamp
+	$(MAKE) -C $(BUILD_UDEB_DIR) \
+		LD_LIBRARY_PATH=$(udeblibpath):$(LD_LIBRARY_PATH)
+
+	touch $@
+
+build: build-static build-shared
+
+clean:: debian/control update-po
+	dh_testdir
+	dh_testroot
+
+	# Add here commands to clean up after the build process.
+	$(MAKE) -f debian/sys-build.mk source.clean
+	-rm -rf $(BUILD_SHARED_DIR)
+	-rm -rf $(BUILD_STATIC_DIR)
+	-rm -rf $(BUILD_UDEB_DIR)
+	-rm -rf $(STAMP_DIR)
+
+	dh_clean
+
+install-test: $(STAMP_DIR)/install-test-stamp
+$(STAMP_DIR)/install-test-stamp:
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	# generating debian files from .in
+	for f in `find debian/ -name "[^c]*.in"`; do \
+		sed -e "s/@VERSION@/${version}/g" -e "s/@MODVER@/${modver}/g" $$f > `echo $$f | sed -e "s/\.in//"`; \
+	done
+
+	touch $@
+
+install-shared: build-shared install-test
+	$(MAKE) -C $(BUILD_SHARED_DIR) install \
+		DESTDIR=$(CURDIR)/debian/libpango$(apiver)-$(soname) \
+		LD_LIBRARY_PATH=$(libpath):$(LD_LIBRARY_PATH)
+
+install-static: build-static install-test
+	$(MAKE) -C $(BUILD_STATIC_DIR) install \
+		DESTDIR=$(CURDIR)/debian/libpango$(apiver)-$(soname)
+
+install-udeb: build-udeb install-test
+	$(MAKE) -C $(BUILD_UDEB_DIR) install \
+		DESTDIR=$(CURDIR)/debian/tmp \
+		LD_LIBRARY_PATH=$(udeblibpath):$(LD_LIBRARY_PATH)
+
+	# clean the unnecessary files up
+	rm -rf debian/tmp/usr/share/gtk-doc
+
+	dh_movefiles
+	-rm -rf $(CURDIR)/debian/libpango$(apiver)-udeb/usr/share/doc
+
+	# create pango.modules
+	mkdir -p $(CURDIR)/debian/libpango$(apiver)-udeb/etc/pango
+	LD_LIBRARY_PATH=$(udeblibpath):$(LD_LIBRARY_PATH)	\
+	$(BUILD_UDEB_DIR)/pango/pango-querymodules		\
+		$(CURDIR)/debian/libpango$(apiver)-udeb/usr/lib/pango/$(modver)/modules/*.so \
+		> $(CURDIR)/debian/libpango$(apiver)-udeb/etc/pango/pango.modules.tmp
+	sed -e 's,^${CURDIR}/debian/libpango${apiver}-udeb,,g' $(CURDIR)/debian/libpango$(apiver)-udeb/etc/pango/pango.modules.tmp > $(CURDIR)/debian/libpango$(apiver)-udeb/etc/pango/pango.modules
+	rm -f $(CURDIR)/debian/libpango$(apiver)-udeb/etc/pango/pango.modules.tmp
+
+	-find $(CURDIR)/debian/ -type d -empty ! -regex '.*/var.*' -prune | xargs rmdir -p 2>&1 > /dev/null
+
+	# don't ship pangox.aliases
+	rm -f debian/libpango$(apiver)-udeb/etc/pango/pangox.aliases
+
+install: install-static install-shared
+	# in debian/
+	install -m 755 $(CURDIR)/debian/update-pango-modules \
+		       $(CURDIR)/debian/libpango$(apiver)-common/usr/sbin/
+
+	# clean the unnecessary files up
+	rm -rf debian/libpango$(apiver)-$(soname)/usr/share/gtk-doc
+
+	dh_movefiles --sourcedir=debian/libpango$(apiver)-$(soname) -Nlibpango$(apiver)-udeb
+	-find $(CURDIR)/debian/ -type d -empty ! -regex '.*/var.*' -prune | xargs rmdir -p 2>&1 > /dev/null
+
+	# don't ship pango.modules and pangox.aliases
+	#rm -f debian/libpango$(apiver)-common/etc/pango/pango.modules
+	rm -f debian/libpango$(apiver)-common/etc/pango/pangox.aliases
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+
+	dh_installdocs -i
+
+	dh_link -plibpango$(apiver)-doc				\
+		usr/share/doc/libglib$(glibver)-doc/glib	\
+		usr/share/doc/libpango$(apiver)-doc/glib
+	dh_link -plibpango$(apiver)-doc				\
+		usr/share/doc/libglib$(glibver)-doc/gobject	\
+		usr/share/doc/libpango$(apiver)-doc/gobject
+
+	# create the symlinks to /usr/share/gtk-doc/html
+	for i in pango; do					\
+		dh_link -plibpango$(apiver)-doc			\
+			usr/share/doc/libpango$(apiver)-doc/$$i	\
+			usr/share/gtk-doc/html/$$i;		\
+	done
+
+	#dh_installexamples -i
+	#dh_installinfo -i
+	dh_installchangelogs -i $(BUILD_DIR)/ChangeLog
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir -a
+	dh_testroot -a
+
+	dh_installdebconf -a
+
+	rm -rf $(CURDIR)/debian/libpango$(apiver)-dbg/usr/share/doc/libpango$(apiver)-dbg
+	rm -rf $(CURDIR)/debian/libpango$(apiver)-dev/usr/share/doc/libpango$(apiver)-dev
+	rm -rf $(CURDIR)/debian/libpango$(apiver)-common/usr/share/doc/libpango$(apiver)-common
+	dh_link -plibpango$(apiver)-dbg \
+		usr/share/doc/libpango$(apiver)-$(soname) \
+		usr/share/doc/libpango$(apiver)-dbg
+	dh_link -plibpango$(apiver)-dev \
+		usr/share/doc/libpango$(apiver)-$(soname) \
+		usr/share/doc/libpango$(apiver)-dev
+	dh_link -plibpango$(apiver)-common \
+		usr/share/doc/libpango$(apiver)-$(soname) \
+		usr/share/doc/libpango$(apiver)-common
+
+	dh_installexamples -a
+	dh_installman -a
+	dh_installinfo -a
+	dh_installchangelogs $(BUILD_DIR)/ChangeLog
+
+	dh_strip -a --dbg-package=libpango$(apiver)-$(soname)
+
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -plibpango$(apiver)-$(soname) -X usr/lib/pango/$(modver)/modules -V "libpango${apiver}-${soname} (>= ${version})"
+	dh_makeshlibs -n -plibpango$(apiver)-common
+	dh_makeshlibs -plibpango$(apiver)-dev
+	dh_installdeb -a
+	dh_shlibdeps -l$(libpath) -a
+	sed -e 's/, libpango$(apiver)-$(soname) (>= [.0-9]*)//' $(CURDIR)/debian/libpango$(apiver)-$(soname).substvars > $(CURDIR)/debian/libpango$(apiver)-$(soname).substvars.new
+	mv $(CURDIR)/debian/libpango$(apiver)-$(soname).substvars.new \
+	   $(CURDIR)/debian/libpango$(apiver)-$(soname).substvars
+	cat debian/*/DEBIAN/shlibs > debian/shlibs.local
+	dh_gencontrol -a -Nlibpango$(apiver)-udeb
+	dh_md5sums -a -Nlibpango$(apiver)-udeb
+	dh_builddeb -a -Nlibpango$(apiver)-udeb
+
+binary-arch-udeb: build-udeb install-udeb
+	dh_testdir -a
+	dh_testroot -a
+
+	dh_installdebconf -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_installdeb -a
+	-rm -f $(CURDIR)/debian/shlibs.local
+	dh_shlibdeps -l$(udeblibpath) -plibpango$(apiver)-udeb
+	# hmm, I don't know but need to fix the self dependency.
+	sed -e 's/, libpango$(apiver)-$(soname) (>= [.0-9]*)//' $(CURDIR)/debian/libpango$(apiver)-udeb.substvars > $(CURDIR)/debian/libpango$(apiver)-udeb.substvars.new
+	mv $(CURDIR)/debian/libpango$(apiver)-udeb.substvars.new \
+	   $(CURDIR)/debian/libpango$(apiver)-udeb.substvars
+	dh_gencontrol -a -plibpango$(apiver)-udeb -- -fdebian/files~
+	dpkg-distaddfile $(udebname) debian-installer optional
+
+	dh_builddeb -plibpango$(apiver)-udeb --filename=$(udebname)
+
+binary: binary-indep binary-arch
+.PHONY: build build-shared build-static build-udeb clean binary-indep binary-arch binary-arch-udeb binary install install-shared install-static install-udeb configure configure-shared configure-static configure-udeb debian/control update-po debian/po/templates.pot
