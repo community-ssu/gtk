@@ -91,24 +91,25 @@ add_menu (GtkMenu *menu, const gchar *label)
 }
 
 static void
-noop_result (int cmd, apt_proto_decoder *dec, void *data)
-{
-  /* Even if we couldn't send the command, we just exit.  That way,
-     closing the application twice will reliably terminate it.
-   */
-  exit (0);
-}
-
-static void
 menu_close ()
 {
-  /* XXX - Wait for the apt-worker to be idle.  Otherwise the
-           Application Manager will not start when it is launched
-           again immediately.
+  /* XXX - Sometimes the apt-worker is still performing some
+           background processing at this time and it wont quit
+           immediately when we do.  The problem with this is that the
+           Application Manager will not launch again until the old
+           apt-worker process has finally exited.
+
+	   We could wait here until the apt-worker is idle (by issuing
+	   a NOOP command for example and waiting for the reply), but
+	   UI-wise it is better to just quit immediately and hope that
+	   the user doesn't restart the Application Manager
+	   immediately.
+
+	   The real fix would be to make the Application Manager
+	   robust against startup problems of the apt-worker.
    */
-  show_updating ();
-  allow_updating ();
-  apt_worker_noop (noop_result, NULL);
+
+  exit (0);
 }
 
 static GtkWidget *details_menu_item = NULL;
