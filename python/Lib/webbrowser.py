@@ -441,7 +441,7 @@ class Grail(BaseBrowser):
 # a console terminal or an X display to run.
 
 def register_X_browsers():
-    register("maemobrowser", MaemoBroser())
+    register("maemobrowser", MaemoBrowser())
 
     # The default Gnome browser
     if _iscommand("gconftool-2"):
