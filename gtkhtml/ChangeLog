@@ -1,5 +1,10 @@
 2006-12-05  Gabriel Schulhof <gabriel.schulho@nokia.com>
 
+	* htmlengine.c:insert_text: Improved space-eating algorithm
+	* Fixes: NB#32523
+
+2006-12-05  Gabriel Schulhof <gabriel.schulho@nokia.com>
+
 	* added gtkhtml_get_motion_hints.patch to properly get motion hints
 	* Fixes: NB#48890
 
