@@ -221,6 +221,89 @@ is_default_action (GSList      *actions,
 }
 
 static void
+test_failure_conditions (void)
+{
+	GSList        *actions;
+	OssoURIAction *action;
+	const gchar   *str;
+	gboolean       bool;
+
+	print_header ("Testing failure conditions");
+
+	/* Ref functions */
+	action = osso_uri_action_ref (NULL);
+	assert_expr (action == NULL);
+
+	/* Actions functions */
+	str = osso_uri_action_get_name (NULL);
+	assert_expr (str == NULL);
+
+	str = osso_uri_action_get_translation_domain (NULL);
+	assert_expr (str == NULL);
+
+	str = osso_uri_action_get_service (NULL);
+	assert_expr (str == NULL);
+
+	str = osso_uri_action_get_method (NULL);
+	assert_expr (str == NULL);
+
+	/* Get actions */
+	actions = osso_uri_get_actions (NULL, NULL);
+	assert_expr (actions == NULL);
+
+	actions = osso_uri_get_actions ("foo", NULL);
+	assert_expr (actions == NULL);
+	
+	actions = osso_uri_get_actions_by_uri (NULL, -1, NULL);
+	assert_expr (actions == NULL);
+
+	/* Misc functions */
+	str = osso_uri_get_scheme_from_uri (NULL, NULL);
+	assert_expr (str == NULL);
+
+	str = osso_uri_get_scheme_from_uri ("foo", NULL);
+	assert_expr (str == NULL);
+
+	/* Default actions */
+	bool = osso_uri_is_default_action (NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	bool = osso_uri_is_default_action_by_uri (NULL, NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	action = osso_uri_get_default_action (NULL, NULL);
+	assert_expr (action == NULL);
+
+	action = osso_uri_get_default_action ("", NULL);
+	assert_expr (action == NULL);
+
+	action = osso_uri_get_default_action_by_uri (NULL, NULL);
+	assert_expr (action == NULL);
+
+	action = osso_uri_get_default_action_by_uri ("foo", NULL);
+	assert_expr (action == NULL);
+
+	bool = osso_uri_set_default_action (NULL, NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	bool = osso_uri_set_default_action ("", NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	bool = osso_uri_set_default_action_by_uri (NULL, NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	bool = osso_uri_set_default_action_by_uri ("foo", NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	/* Open URI */
+	bool = osso_uri_open (NULL, NULL, NULL);
+	assert_bool (bool == FALSE);
+
+	bool = osso_uri_open ("foo", NULL, NULL);
+	assert_bool (bool == FALSE);
+}
+
+static void
 test_system_default_actions (void)
 {
 	GSList      *actions;
@@ -548,6 +631,7 @@ main (int argc, char **argv)
 		test_get_actions ();
 	}
 
+	test_failure_conditions ();
 	test_system_default_actions ();
 	test_local_default_actions ();
 

@@ -1,5 +1,13 @@
 2007-01-11  Martyn Russell  <martyn@imendio.com>
 
+	* tests/test-all.c: Added tests for failure conditions for all
+	functions.
+
+	* libossomime/osso-uri.c: Check for empty scheme strings and empty
+	uri strings. Removed some unnecessary debugging.
+
+2007-01-11  Martyn Russell  <martyn@imendio.com>
+
 	* tests/test-all.c: Finished the tests for setting a default
 	normal, neutral and fallback action and added 3 more tests for
 	setting the 3 types of new action but by the old API and checking

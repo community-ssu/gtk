@@ -1354,7 +1354,7 @@ osso_uri_get_actions (const gchar  *scheme,
 	GSList        *l;
 	gchar         *filename;
 
-	g_return_val_if_fail (scheme != NULL, NULL);
+	g_return_val_if_fail (scheme != NULL && scheme[0] != '\0', NULL);
 
 	desktop_files = uri_get_desktop_files (scheme);
 
@@ -1390,7 +1390,7 @@ osso_uri_get_actions_by_uri (const gchar        *uri_str,
 	gchar            *scheme = NULL;
 	gchar            *mime_type = NULL;
 
-	g_return_val_if_fail (uri_str != NULL, NULL);
+	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', NULL);
 
 	uri = gnome_vfs_uri_new (uri_str);
 	if (!uri) {
@@ -1403,6 +1403,13 @@ osso_uri_get_actions_by_uri (const gchar        *uri_str,
 
 	/* Get scheme */
 	scheme = g_strdup (gnome_vfs_uri_get_scheme (uri));
+	if (!scheme || scheme[0] == '\0') {
+		g_set_error (error,
+			     OSSO_URI_ERROR,
+			     OSSO_URI_INVALID_URI,
+			     "The scheme could not be obtained from the uri.");
+		return NULL;
+	}
 
 	/* Get mime type */
 	info = gnome_vfs_file_info_new ();
@@ -1437,41 +1444,9 @@ osso_uri_get_actions_by_uri (const gchar        *uri_str,
 		}
 	}
 
-#ifdef EXTRA_DEBUGGING
-	{
-		gint count = 0;
-
-		DEBUG_MSG (("URI: Actions found:"));
-		
-		for (l = actions; l; l = l->next) {
-			OssoURIAction *action;
-			
-			action = l->data;
-			DEBUG_MSG (("URI: \tAction %2.2d:'%s', type:'%s'", 
-				    ++count, action->name, 
-				    uri_action_type_to_string (action->type)));
-		}
-	}
-#endif
-
 	actions = uri_get_desktop_file_actions_filtered (actions, 
 							 action_type, 
 							 mime_type);
-
-#ifdef EXTRA_DEBUGGING
-	{
-		gint count = 0;
-
-		DEBUG_MSG (("URI: Actions returned:"));
-		
-		for (l = actions; l; l = l->next) {
-			OssoURIAction *action;
-			
-			action = l->data;
-			DEBUG_MSG (("URI: \tAction %2.2d:'%s'", ++count, action->name));
-		}
-	}
-#endif
 
 	g_slist_foreach (desktop_files, (GFunc) g_free, NULL);
 	g_slist_free (desktop_files);
@@ -1706,7 +1681,7 @@ osso_uri_get_default_action (const gchar  *scheme,
 	 * still works.
 	 */
 
-	if (!scheme) {
+	if (!scheme || scheme[0] == '\0') {
 		g_set_error (error,
 			     OSSO_URI_ERROR,
 			     OSSO_URI_INVALID_SCHEME,
@@ -1768,6 +1743,8 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 	gchar            *full_path = NULL;
 	gboolean          ok;
 
+	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', NULL);
+
 	uri = gnome_vfs_uri_new (uri_str);
 	if (!uri) {
 		g_set_error (error,
@@ -1779,7 +1756,7 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 
 	/* Get scheme */
 	scheme = g_strdup (gnome_vfs_uri_get_scheme (uri));
-	if (!scheme) {
+	if (!scheme || scheme[0] == '\0') {
 		gnome_vfs_uri_unref (uri);
 		g_set_error (error,
 			     OSSO_URI_ERROR,
@@ -1878,7 +1855,7 @@ osso_uri_set_default_action (const gchar    *scheme,
 	gchar       *scheme_lower;
 	gboolean     ok;
 
-	if (!scheme || strlen (scheme) < 1) {
+	if (!scheme || scheme[0] == '\0') {
 		g_set_error (error,
 			     OSSO_URI_ERROR,
 			     OSSO_URI_INVALID_SCHEME,
@@ -1925,6 +1902,8 @@ osso_uri_set_default_action_by_uri (const gchar    *uri_str,
 	const gchar      *action_id = NULL;
 	gboolean          ok;
 
+	g_return_val_if_fail (uri_str != NULL && uri_str[0] != '\0', FALSE);
+
 	/* If we are a neutral or fallback action we just use the old
 	 * API because that only needs the scheme.
 	 */
@@ -1945,7 +1924,7 @@ osso_uri_set_default_action_by_uri (const gchar    *uri_str,
 
 	/* Get scheme */
 	scheme = g_strdup (gnome_vfs_uri_get_scheme (uri));
-	if (!scheme) {
+	if (!scheme || scheme[0] == '\0') {
 		gnome_vfs_uri_unref (uri);
 		g_set_error (error,
 			     OSSO_URI_ERROR,
@@ -2028,7 +2007,7 @@ osso_uri_open (const gchar    *uri,
 	}
 
 	scheme = osso_uri_get_scheme_from_uri (uri, error);
-	if (!scheme) {
+	if (!scheme || scheme[0] == '\0') {
 		/* Error is filled in by _get_scheme_from_uri(). */
 		return FALSE;
 	}
