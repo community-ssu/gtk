@@ -4,7 +4,8 @@ import time
 
 c = osso.Context("test_server", "0.0.0", True)
 print "Sending test start..."
-c.rpc_run("com.nokia.test_client", "/com/nokia/python/test_client", "com.nokia.test_client", "start_test")
+rpc = osso.Rpc(c)
+rpc.rpc_run("com.nokia.test_client", "/com/nokia/python/test_client", "com.nokia.test_client", "start_test")
 #print "Waiting 10 seconds..."
 #time.sleep(10)
 #print "Sending test stop..."
