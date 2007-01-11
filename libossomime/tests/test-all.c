@@ -223,12 +223,8 @@ is_default_action (GSList      *actions,
 static void
 test_system_default_actions (void)
 {
-	GSList        *actions;
-	GSList        *l;
-	OssoURIAction *default_action;
-	OssoURIAction *action = NULL;
-	const gchar   *uri_str;
-	gboolean       success;
+	GSList      *actions;
+	const gchar *uri_str;
 
 	print_header ("Testing default actions (system)");
 
@@ -278,68 +274,6 @@ test_system_default_actions (void)
 	actions = osso_uri_get_actions_by_uri ("http://www.imendio.com/sliff.sloff", OSSO_URI_ACTION_FALLBACK, NULL);
 	assert_int (g_slist_length (actions), 1);
 	osso_uri_free_actions (actions);
-
-	/*
-	 * Test getting and setting default actions 
-	 */
-
-	/* Set to nothing */
-	success = osso_uri_set_default_action_by_uri ("http://www.nokia.com", NULL, NULL);
-	assert_bool (success);
-
-	/* Test it is unset */
-	default_action = osso_uri_get_default_action_by_uri ("http://www.nokia.com", NULL);
-	assert_expr (default_action == NULL);
-
-	/* Test setting a NORMAL action */
-	uri_str = "http://www.google.co.uk/intl/en_uk/images/logo.gif";
-	l = actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
-
-	for (l = actions; l; l = l->next) {
-		action = l->data;
-
-		if (strcmp (osso_uri_action_get_name (action), "addr_ap_address_book") == 0) {
-			break;
-		} 
-
-		action = NULL;
-	}
-
-	assert_expr (action != NULL);
-
-	osso_uri_action_ref (action);
-	osso_uri_free_actions (actions);
-
-	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
-	assert_bool (success);
-
-	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
-	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
-	osso_uri_action_unref (action);
-
-	/* Test setting a NEUTRAL action */ 
-
-	/* Test setting a FALLBACK action */ 
-	uri_str = "http://www.imendio.com/sliff.sloff";
-	actions = osso_uri_get_actions_by_uri (uri_str, OSSO_URI_ACTION_FALLBACK, NULL);
-	assert_int (g_slist_length (actions), 1);
-
-	action = actions->data;
-	assert_string (osso_uri_action_get_name (action), "uri_link_open_link_fallback");
-
-	osso_uri_action_ref (action);
-	osso_uri_free_actions (actions);
-	
-	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
-	assert_bool (success);
-
-	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
-	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
-	osso_uri_action_unref (action);
-
-	/* Test setting a new NORMAL action with the old API */ 
-	/* Test setting a new NEUTRAL action with the old API */ 
-	/* Test setting a new FALLBACK action with the old API */ 
 }
 
 static void
@@ -347,6 +281,9 @@ test_local_default_actions (void)
 {
 	GSList        *actions, *l;
 	OssoURIAction *action;
+	OssoURIAction *default_action;
+	const gchar   *uri_str;
+	gboolean       success;
 
 	/* FIXME: Implement. */
 	
@@ -397,6 +334,162 @@ test_local_default_actions (void)
 	
 	osso_uri_free_actions (actions);
 
+	/*
+	 * Test getting and setting default actions 
+	 */
+
+	/* Set to nothing */
+	success = osso_uri_set_default_action_by_uri ("http://www.nokia.com", NULL, NULL);
+	assert_bool (success);
+
+	/* Test it is unset */
+	default_action = osso_uri_get_default_action_by_uri ("http://www.nokia.com", NULL);
+	assert_expr (default_action == NULL);
+
+	/* Test setting a NORMAL action */
+	uri_str = "http://www.google.co.uk/intl/en_uk/images/logo.gif";
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+
+	for (l = actions; l; l = l->next) {
+		action = l->data;
+
+		if (strcmp (osso_uri_action_get_name (action), "addr_ap_address_book") == 0) {
+			break;
+		} 
+
+		action = NULL;
+	}
+
+	assert_expr (action != NULL);
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+
+	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	osso_uri_action_unref (action);
+
+	/* Test setting a NEUTRAL action */ 
+	actions = osso_uri_get_actions_by_uri (uri_str, OSSO_URI_ACTION_NEUTRAL, NULL);
+
+	for (l = actions; l; l = l->next) {
+		action = l->data;
+
+		if (strcmp (osso_uri_action_get_name (action), "uri_link_save_link") == 0) {
+			break;
+		} 
+
+		action = NULL;
+	}
+
+	assert_expr (action != NULL);
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+	
+	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	osso_uri_action_unref (action);
+
+	/* Test setting a FALLBACK action */ 
+	uri_str = "http://www.imendio.com/sliff.sloff";
+	actions = osso_uri_get_actions_by_uri (uri_str, OSSO_URI_ACTION_FALLBACK, NULL);
+	assert_int (g_slist_length (actions), 1);
+
+	action = actions->data;
+	assert_string (osso_uri_action_get_name (action), "uri_link_open_link_fallback");
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+	
+	success = osso_uri_set_default_action_by_uri (uri_str, action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	osso_uri_action_unref (action);
+
+	/* Clean up for new set of tests */
+	unlink (TEST_DATADIR "-local/applications/uri-action-defaults.list");
+
+	/* Test setting a new NORMAL action with the old API */ 
+	uri_str = "http://www.google.co.uk/intl/en_uk/images/logo.gif";
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+
+	for (l = actions; l; l = l->next) {
+		action = l->data;
+
+		if (strcmp (osso_uri_action_get_name (action), "addr_ap_address_book") == 0) {
+			break;
+		} 
+
+		action = NULL;
+	}
+
+	assert_expr (action != NULL);
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+
+	success = osso_uri_set_default_action ("http", action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), NULL));
+	osso_uri_action_unref (action);
+	
+	/* Test setting a new NEUTRAL action with the old API */ 
+	actions = osso_uri_get_actions_by_uri (uri_str, OSSO_URI_ACTION_NEUTRAL, NULL);
+
+	for (l = actions; l; l = l->next) {
+		action = l->data;
+
+		if (strcmp (osso_uri_action_get_name (action), "uri_link_save_link") == 0) {
+			break;
+		} 
+
+		action = NULL;
+	}
+
+	assert_expr (action != NULL);
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+	
+	success = osso_uri_set_default_action ("http", action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), NULL));
+	osso_uri_action_unref (action);
+
+	/* Test setting a new FALLBACK action with the old API */ 
+	uri_str = "http://www.imendio.com/sliff.sloff";
+	actions = osso_uri_get_actions_by_uri (uri_str, OSSO_URI_ACTION_FALLBACK, NULL);
+	assert_int (g_slist_length (actions), 1);
+
+	action = actions->data;
+	assert_string (osso_uri_action_get_name (action), "uri_link_open_link_fallback");
+
+	osso_uri_action_ref (action);
+	osso_uri_free_actions (actions);
+	
+	success = osso_uri_set_default_action ("http", action, NULL);
+	assert_bool (success);
+
+	actions = osso_uri_get_actions_by_uri (uri_str, -1, NULL);
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), uri_str));
+	assert_bool (is_default_action (actions, osso_uri_action_get_name (action), NULL));
+	osso_uri_action_unref (action);
+
 	/* Clean up. */
 	unlink (TEST_DATADIR "-local/applications/uri-action-defaults.list");
 }
@@ -407,11 +500,6 @@ main (int argc, char **argv)
 	gchar    *tmp;
 	GError   *error = NULL;
 	gboolean  ret;
-
-	if (!gnome_vfs_init()) {
-		g_error ("Could not initialise GnomeVFS");
-		return 1;
-	}
 
 	/* Use our custom data here. */
 	g_setenv ("XDG_DATA_DIRS", TEST_DATADIR, TRUE);
@@ -450,6 +538,11 @@ main (int argc, char **argv)
 		return 1;
 	}
 
+	if (!gnome_vfs_init()) {
+		g_error ("Could not initialise GnomeVFS");
+		return 1;
+	}
+
 	if (0) {	
 		test_get_mime_types ();
 		test_get_actions ();
@@ -457,6 +550,8 @@ main (int argc, char **argv)
 
 	test_system_default_actions ();
 	test_local_default_actions ();
+
+	gnome_vfs_shutdown ();
 
 	return 0;
 }

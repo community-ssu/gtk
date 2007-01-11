@@ -1,3 +1,15 @@
+2007-01-11  Martyn Russell  <martyn@imendio.com>
+
+	* tests/test-all.c: Finished the tests for setting a default
+	normal, neutral and fallback action and added 3 more tests for
+	setting the 3 types of new action but by the old API and checking
+	they are set with the new & old API.
+
+	* libossomime/osso-uri.c: Fixed 6 memory leaks with valgrind and
+	changed the way that we save the defaults file, now we remove any
+	instance of old the scheme in the NEW groups if saving a neutral
+	or fallback action.
+
 2007-01-09  Martyn Russell  <martyn@imendio.com>
 
 	* docs/mime-desktop-file-mapping.txt: Updated mistakes and

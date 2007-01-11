@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
 
-/*  #define DEBUG_MSG(x)  */
-  #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");  
+#define DEBUG_MSG(x)
+/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");   */
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -124,6 +124,8 @@ static gboolean          uri_get_desktop_file_by_filename      (const gchar     
 static gboolean          uri_get_desktop_file_by_scheme        (const gchar       *scheme,
 								gchar            **filename,
 								gchar            **action_name);
+static OssoURIAction *   uri_get_desktop_file_action           (const gchar       *scheme,
+								const gchar       *desktop_file_and_action);
 static gboolean          uri_set_defaults_file                 (const gchar       *scheme,
 								const gchar       *mime_type,
 								const gchar       *desktop_file,
@@ -1009,6 +1011,41 @@ uri_get_desktop_file_by_scheme (const gchar *scheme,
 	return FALSE;
 }
 
+static OssoURIAction *   
+uri_get_desktop_file_action (const gchar *scheme,
+			     const gchar *desktop_file_and_action)
+{
+	OssoURIAction  *action = NULL;
+	gchar         **strv;
+	
+	g_return_val_if_fail (scheme != NULL, NULL);
+	g_return_val_if_fail (desktop_file_and_action != NULL, NULL);
+	
+	/* Should be in the format of '<desktop file>;<action name>' */
+	strv = g_strsplit (desktop_file_and_action, ":", -1);
+	
+	if (g_strv_length (strv) == 2) {
+		GSList        *actions, *l;
+		OssoURIAction *this_action;
+		
+		actions = uri_get_desktop_file_actions (strv[0], scheme);
+		for (l = actions; l && !action; l = l->next) {
+			this_action = l->data;
+			
+			if (strcmp (this_action->id, strv[1]) == 0) {
+				action = osso_uri_action_ref (this_action);
+			}
+		}
+		
+		g_slist_foreach (actions, (GFunc) osso_uri_action_unref, NULL);
+		g_slist_free (actions);
+	}
+	
+	g_strfreev (strv);
+
+	return action;
+}
+
 static gboolean
 uri_set_defaults_file (const gchar *scheme,
 		       const gchar *mime_type,
@@ -1035,6 +1072,21 @@ uri_set_defaults_file (const gchar *scheme,
 					filename,
 					G_KEY_FILE_KEEP_COMMENTS, 
 					NULL);
+	if (ok && !mime_type) {
+		gchar *group;
+
+		/* First thing is first, we remove any exising NEW group with
+		 * same scheme, the reason for this is that if you have a
+		 * neutral action as the default it will always choose the
+		 * mime-type based action BEFORE the OLD group action.
+		 */
+		
+		group = g_strdup_printf (OSSO_URI_DEFAULTS_GROUP_FORMAT,
+					 scheme_lower);
+		g_key_file_remove_group (key_file, group, NULL);
+		
+		g_free (group);
+	}
 
 	if (desktop_file) {
 		if (mime_type && action_id) {
@@ -1549,6 +1601,10 @@ osso_uri_is_default_action (OssoURIAction  *action,
 		g_free (desktop_file2);
 	}
 
+	if (default_action) {
+		osso_uri_action_unref (default_action);
+	}
+
 	return equal;
 }
 
@@ -1616,6 +1672,10 @@ osso_uri_is_default_action_by_uri (const gchar    *uri,
 
 		g_free (desktop_file1);
 		g_free (desktop_file2);
+	}
+
+	if (default_action) {
+		osso_uri_action_unref (default_action);
 	}
 
 	return equal;
@@ -1736,22 +1796,6 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 	    info->mime_type && 
 	    info->mime_type != '\0') {
 		mime_type = g_strdup (info->mime_type);
-	} else {
-		/* We fallback to the old function here because it is
-		 * used for neutral and fallback actions.
-		 */
-
-		DEBUG_MSG (("URI: **** Getting default action by falling back to old "
-			    "function just using scheme:'%s'", 
-			    scheme));
-
-		gnome_vfs_file_info_unref (info);
-		gnome_vfs_uri_unref (uri);
-		
-		action = osso_uri_get_default_action (scheme, error);
-		g_free (scheme);
-
-		return action;
 	}
 
 	DEBUG_MSG (("URI: Getting default action by uri:'%s', with scheme:'%s' and mime type'%s'", 
@@ -1776,47 +1820,45 @@ osso_uri_get_default_action_by_uri (const gchar  *uri_str,
 	DEBUG_MSG (("URI: Getting default actions from file:'%s'", full_path));
 
 	if (ok) {
-		gchar **strv;
-		gchar  *str;
-		gchar  *group;
+		gchar *str;
 
-		str = strchr (mime_type, '/');
-		if (str) {
-			str[0] = '-';
-		}
+		if (mime_type) {
+			gchar *group;
 
-		group = g_strdup_printf (OSSO_URI_DEFAULTS_GROUP_FORMAT, scheme);
-		str = g_key_file_get_string (key_file, group, mime_type, NULL);
-		DEBUG_MSG (("URI: Found string:'%s' in group:'%s'", str, group));
-		g_free (group);
-
-		/* Should be in the format of '<desktop file>;<action name>' */
-		if (str) {
-			strv = g_strsplit (str, ":", 2);
-			g_free (str);
-
-			if (g_strv_length (strv) == 2) {
-				GSList        *actions, *l;
-				OssoURIAction *this_action;
-
-				actions = uri_get_desktop_file_actions (strv[0], scheme);
-				for (l = actions; l && !action; l = l->next) {
-					this_action = l->data;
-
-					if (strcmp (this_action->id, strv[1]) == 0) {
-						action = osso_uri_action_ref (this_action);
-					}
-				}
-
-				g_slist_foreach (actions, 
-						 (GFunc) osso_uri_action_unref, 
-						 NULL);
-				g_slist_free (actions);
+			str = strchr (mime_type, '/');
+			if (str) {
+				str[0] = '-';
 			}
 
-			g_strfreev (strv);
+			group = g_strdup_printf (OSSO_URI_DEFAULTS_GROUP_FORMAT, scheme);
+			str = g_key_file_get_string (key_file, group, mime_type, NULL);
+			DEBUG_MSG (("URI: Found string:'%s' in group:'%s'", str, group));
+			g_free (group);
+
+			if (str) {
+				action = uri_get_desktop_file_action (scheme, str);
+				g_free (str);
+			}
+		}
+
+		if (!action) {
+			/* We fallback to the old function here because it is
+			 * used for neutral and fallback actions.
+			 */
+			
+			DEBUG_MSG (("URI: Getting default action by falling back to old "
+				    "function just using scheme:'%s'", 
+				    scheme));
+
+			str = g_key_file_get_string (key_file, OSSO_URI_DEFAULTS_GROUP, scheme, NULL);
+			if (str) {
+				action = uri_get_desktop_file_action (scheme, str);
+				g_free (str);
+			}
 		}
 	}
+
+	g_key_file_free (key_file);
 
 	g_free (desktop_file);
 	g_free (filename);
