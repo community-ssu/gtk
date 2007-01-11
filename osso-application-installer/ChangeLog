@@ -1,5 +1,7 @@
 2007-01-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 4.46
+	
 	* src/menu.cc (noop_result, menu_close): Reverted change from
 	2007-01-10.  It is better to exit immediately and hope that the
 	user doesn't relaunch immediately.
