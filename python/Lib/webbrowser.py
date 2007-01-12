@@ -385,7 +385,9 @@ class MaemoBrowser(BaseBrowser):
             raise Error("Missing OSSO Context parameter. Please, read the\n"\
                         "Python for Maemo documentation for more "\
                         "information.")
-        context.rpc_run_with_defaults('osso_browser', 'open_new_window', (url,))
+        import osso.rpc
+        rpc_handler = osso.rpc.Rpc(context)
+        rpc_handler.rpc_run_with_defaults('osso_browser', 'open_new_window', (url,))
 
 class Grail(BaseBrowser):
     # There should be a way to maintain a connection to Grail, but the
@@ -441,7 +443,7 @@ class Grail(BaseBrowser):
 # a console terminal or an X display to run.
 
 def register_X_browsers():
-    register("maemobrowser", MaemoBrowser())
+    register("maemobrowser", MaemoBrowser, MaemoBrowser())
 
     # The default Gnome browser
     if _iscommand("gconftool-2"):
