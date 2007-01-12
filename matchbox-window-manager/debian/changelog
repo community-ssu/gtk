@@ -1,3 +1,10 @@
+matchbox-window-manager (2:1.1-osso14) unstable; urgency=low
+
+  * release button grab, additional focus movement restrictions/rules
+  * Fixes: NB#30183, NB#34446, NB#45473, NB#49379
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 15 Dec 2006 09:17:43 +0200
+
 matchbox-window-manager (2:1.1-osso13) unstable; urgency=low
 
   * added libgconf2-dev dependecy for gconf related aclocal macros
