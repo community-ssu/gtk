@@ -45,7 +45,8 @@ struct _GtkIMMulticontext
 
   GtkIMMulticontextPrivate *priv;
 
-  const gchar *context_id;
+  /* MAEMO CHANGE: dropped const */
+  gchar *context_id;
 };
 
 struct _GtkIMMulticontextClass

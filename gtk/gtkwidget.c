@@ -53,10 +53,24 @@
 #include "gtktooltips.h"
 #include "gtkinvisible.h"
 #include "gtkalias.h"
+/* MAEMO START */
+#include <x11/gdkx.h>
+#include <stdlib.h>
+#include "gtkmenu.h"
+#include "gtkmenuitem.h"
+#include "gtkicontheme.h"
+#include "gtkdnd.h"
+/* MAEMO END */
 
 #define WIDGET_CLASS(w)	 GTK_WIDGET_GET_CLASS (w)
 #define	INIT_PATH_SIZE	(512)
 
+/* MAEMO START */
+#define TAP_AND_HOLD_TIMER_COUNTER 11
+#define TAP_AND_HOLD_TIMER_INTERVAL 100
+
+#define TAP_AND_HOLD_ANIMATION 1
+/* MAEMO END */
 
 enum {
   SHOW,
@@ -122,6 +136,11 @@ enum {
   CAN_ACTIVATE_ACCEL,
   GRAB_BROKEN,
   COMPOSITED_CHANGED,
+  /* MAEMO START */
+  TAP_AND_HOLD,
+  TAP_AND_HOLD_SETUP,
+  TAP_AND_HOLD_QUERY,
+  /* MAEMO END */
   LAST_SIGNAL
 };
 
@@ -144,7 +163,10 @@ enum {
   PROP_STYLE,
   PROP_EVENTS,
   PROP_EXTENSION_EVENTS,
-  PROP_NO_SHOW_ALL
+  PROP_NO_SHOW_ALL,
+  /* MAEMO START */
+  PROP_TAP_AND_HOLD
+  /* MAEMO END */
 };
 
 typedef	struct	_GtkStateData	 GtkStateData;
@@ -156,6 +178,45 @@ struct _GtkStateData
   guint         parent_sensitive : 1;
   guint		use_forall : 1;
 };
+
+/* MAEMO START */
+typedef struct
+{
+  GtkWidget *menu;
+  guint timer_id;
+
+  GtkMenuPositionFunc func;
+  gint x, y;
+  gint timer_counter;
+  gint signals_connected : 1;
+  guint interval;
+  GdkWindow *tah_on_window;
+
+#ifdef TAP_AND_HOLD_ANIMATION
+  GdkPixbufAnimation *anim;
+  GdkPixbufAnimationIter *iter;
+#endif
+} TahData;
+
+
+/* --- Tap And Hold --- */
+static gboolean gtk_widget_tap_and_hold_timeout      (GtkWidget                *widget);
+static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget                *widget,
+						      GdkEvent                 *event,
+						      TahData                  *td);
+static gboolean gtk_widget_tap_and_hold_event_stop   (GtkWidget                *widget,
+						      gpointer                  unused,
+						      TahData                  *td);
+static void     gtk_widget_real_tap_and_hold_setup   (GtkWidget                *widget,
+						      GtkWidget                *menu,
+						      GtkCallback               func,
+						      GtkWidgetTapAndHoldFlags  flags );
+static void     gtk_widget_real_tap_and_hold         (GtkWidget                *widget);
+static gboolean gtk_widget_tap_and_hold_query        (GtkWidget                *widget,
+						      GdkEvent                 *event);
+static gboolean gtk_widget_real_tap_and_hold_query   (GtkWidget                *widget,
+						      GdkEvent                 *event);
+/* MAEMO END */
 
 
 /* --- prototypes --- */
@@ -404,6 +465,11 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   klass->screen_changed = NULL;
   klass->can_activate_accel = gtk_widget_real_can_activate_accel;
   klass->grab_broken_event = NULL;
+  /* MAEMO START */
+  klass->tap_and_hold_setup = gtk_widget_real_tap_and_hold_setup;
+  klass->tap_and_hold = gtk_widget_real_tap_and_hold;
+  klass->tap_and_hold_query = gtk_widget_real_tap_and_hold_query;
+  /* MAEMO END */
 
   klass->show_help = gtk_widget_real_show_help;
   
@@ -545,6 +611,31 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  							 P_("Whether gtk_widget_show_all() should not affect this widget"),
  							 FALSE,
  							 GTK_PARAM_READWRITE));
+
+  /* MAEMO START */
+  /**
+   * GtkWidget:tap-and-hold-state:
+   *
+   * Sets the state (#GtkStateType) to be used to the tap and hold
+   * functionality. The default is GTK_STATE_NORMAL.
+   *
+   * Warning: Functionality for setting and getting this propery is not
+   * implemented.
+   *
+   * Since: maemo 1.0
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_TAP_AND_HOLD,
+				   g_param_spec_int ("tap-and-hold-state",
+ 						     P_("Tap and hold State type"),
+ 						     P_("Sets the state to be used to the tap and hold functionality. The default is GTK_STATE_NORMAL"),
+ 						     0,
+ 						     4, /*4 == Last state in GTK+-2.0*/
+						     GTK_STATE_NORMAL,
+						     G_PARAM_READWRITE));
+
+  /* MAEMO END */
+
   widget_signals[SHOW] =
     g_signal_new (I_("show"),
 		  G_TYPE_FROM_CLASS (gobject_class),
@@ -1465,6 +1556,72 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_BOOLEAN__UINT,
                   G_TYPE_BOOLEAN, 1, G_TYPE_UINT);
 
+  /* MAEMO START */
+  /**
+   * GtkWidget::tap-and-hold:
+   * @widget: the object which received the signal
+   *
+   * The signal is emited when tap and hold activity occurs.
+   *
+   * Since: maemo 1.0
+   */
+  widget_signals[TAP_AND_HOLD] =
+    g_signal_new("tap_and_hold", G_TYPE_FROM_CLASS(gobject_class),
+                  G_SIGNAL_RUN_LAST,
+                  G_STRUCT_OFFSET(GtkWidgetClass, tap_and_hold),
+                  NULL, NULL,
+                  _gtk_marshal_VOID__VOID,
+                  G_TYPE_NONE, 0);
+  /**
+   * GtkWidget::tap-and-hold-setup:
+   * @widget: the object which received the signal
+   * @menu: the menu to be opened.
+   * @func: the menu position function
+   * @flags: debricated
+   *
+   * Enables the tap and hold functionality to the @widget.
+   * Usually a @menu is used at tap and hold signal,
+   * but this is optional.  Setup can be run and some other functionality
+   * may be connected to it as well.  Usually this signal is not used,
+   * instead the virtual function is over written.
+   *
+   * Signal is deprecated and should not be used.
+   *
+   * @Deprecated
+   *
+   * Since: maemo 1.0
+   */
+  widget_signals[TAP_AND_HOLD_SETUP] =
+    g_signal_new("tap_and_hold_setup", G_TYPE_FROM_CLASS(gobject_class),
+                  G_SIGNAL_RUN_LAST,
+                  G_STRUCT_OFFSET(GtkWidgetClass, tap_and_hold_setup),
+                  NULL, NULL, /*FIXME -- OBJECT_POINTER_FLAGS*/
+                  _gtk_marshal_VOID__OBJECT_UINT_FLAGS,
+		 G_TYPE_NONE, 3, G_TYPE_OBJECT, G_TYPE_POINTER, G_TYPE_UINT);
+
+  /**
+   * GtkWidget::tap-and-hold-query:
+   * @widget: the object which received the signal
+   * @returns: %FALSE if tap and hold is allowed to be started
+   *
+   * Signal is used in a situation where tap and hold is not allowed to be
+   * started in some mysterious reason.  A good mysterious reason could be,
+   * a widget which area is big and only part of it is allowed to start
+   * tap and hold.
+   *
+   * Since: maemo 1.0
+   */
+    widget_signals[TAP_AND_HOLD_QUERY] =
+    g_signal_new ("tap_and_hold_query",
+		  G_TYPE_FROM_CLASS (gobject_class),
+		  G_SIGNAL_RUN_LAST,
+		  G_STRUCT_OFFSET (GtkWidgetClass, tap_and_hold_query),
+		  _gtk_boolean_handled_accumulator, NULL,
+		  _gtk_marshal_BOOLEAN__BOXED,
+		  G_TYPE_BOOLEAN, 1, GDK_TYPE_EVENT);
+
+  /* MAEMO END */
+
   binding_set = gtk_binding_set_by_class (klass);
   gtk_binding_entry_add_signal (binding_set, GDK_F10, GDK_SHIFT_MASK,
                                 "popup_menu", 0);
@@ -1753,6 +1910,10 @@ gtk_widget_set_property (GObject         *object,
     case PROP_NO_SHOW_ALL:
       gtk_widget_set_no_show_all (widget, g_value_get_boolean (value));
       break;
+    /* MAEMO START */
+    case PROP_TAP_AND_HOLD:
+      break;
+    /* MAEMO END */
     default:
       break;
     }
@@ -1847,6 +2008,10 @@ gtk_widget_get_property (GObject         *object,
     case PROP_NO_SHOW_ALL:
       g_value_set_boolean (value, gtk_widget_get_no_show_all (widget));
       break;
+    /* MAEMO START */
+    case PROP_TAP_AND_HOLD:
+      break;
+    /* MAEMO END */
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -8056,6 +8221,475 @@ gtk_widget_set_no_show_all (GtkWidget *widget,
   
   g_object_notify (G_OBJECT (widget), "no-show-all");
 }
+
+/* MAEMO START */
+void gtk_widget_set_hildon_focus_handling( GtkWidget *widget, gboolean hildon_like )
+{
+}
+
+gboolean gtk_widget_get_hildon_focus_handling( GtkWidget *widget )
+{
+  return FALSE;
+}
+
+
+/* -- Tap and hold implementation -- */
+
+static TahData*
+gtk_widget_peek_tah_data (GtkWidget *widget)
+{
+  TahData *td = g_object_get_data (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold");
+  return td;
+}
+
+static void
+tap_and_hold_stop_animation (TahData *td)
+{
+#ifdef TAP_AND_HOLD_ANIMATION
+  if (td->tah_on_window)
+    gdk_window_set_cursor (td->tah_on_window, NULL);
+  td->tah_on_window = NULL;
+
+  if (td->anim)
+    g_object_unref (td->anim);
+  td->anim = NULL;
+
+  if (td->iter)
+    g_object_unref (td->iter);
+  td->iter = NULL;
+#endif
+}
+
+static void
+tap_and_hold_free_data (gpointer data)
+{
+  TahData *td = data;
+  if (td)
+    {
+      if (td->timer_id)
+	g_source_remove (td->timer_id);
+      td->timer_id = 0;
+
+      if (GTK_IS_MENU (td->menu))
+	g_object_unref (td->menu);
+      td->menu = NULL;
+
+      tap_and_hold_stop_animation (td);
+
+      g_free (td);
+    }
+}
+
+static void
+gtk_widget_set_tah_data (GtkWidget *widget, TahData *td)
+{
+  g_object_set_data_full (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold",
+			  td, tap_and_hold_free_data);
+}
+
+static TahData*
+gtk_widget_get_tah_data (GtkWidget *widget)
+{
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (!td)
+    {
+      td = g_new0 (TahData, 1);
+      td->interval = TAP_AND_HOLD_TIMER_INTERVAL;
+      gtk_widget_set_tah_data (widget, td);
+    }
+  return td;
+}
+
+static void
+tap_and_hold_remove_timer (GtkWidget *widget)
+{
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (td)
+    {
+      if (td->timer_id)
+	{
+	  g_source_remove (td->timer_id);
+	  td->timer_id = 0;
+	}
+
+      td->x = td->y = td->timer_counter = 0;
+      tap_and_hold_stop_animation (td);
+    }
+}
+
+#ifdef TAP_AND_HOLD_ANIMATION
+static GdkPixbufAnimation *
+tap_and_hold_load_animation_for_screen (GdkScreen *screen)
+{
+  GtkIconTheme *theme;
+  GtkIconInfo *info;
+  const char *filename = NULL;
+  GdkPixbufAnimation *anim = NULL;
+  GError *error = NULL;
+
+  theme = gtk_icon_theme_get_for_screen (screen);
+
+  info = gtk_icon_theme_lookup_icon (theme, "qgn_indi_tap_hold_a",
+				     GTK_ICON_SIZE_BUTTON,
+				     GTK_ICON_LOOKUP_NO_SVG);
+  if (info)
+    filename = gtk_icon_info_get_filename (info);
+  if (!info || !filename)
+    {
+      g_warning ("Unable to find tap and hold icon filename");
+      goto out;
+    }
+
+  anim = gdk_pixbuf_animation_new_from_file (filename, &error);
+  if (!anim)
+    {
+      g_warning ("Unable to load tap and hold animation: %s", error->message);
+      goto out;
+    }
+
+out:
+  if (info)
+    gtk_icon_info_free (info);
+  if (error)
+    g_error_free (error);
+
+  return anim;
+}
+#endif
+
+static void
+tap_and_hold_init_animation (TahData *td)
+{
+#ifdef TAP_AND_HOLD_ANIMATION
+  if (!td->anim)
+    td->anim = tap_and_hold_load_animation_for_screen (gdk_drawable_get_screen (td->tah_on_window));
+
+  if (td->anim)
+    {
+      if (td->iter)
+	g_object_unref (td->iter);
+      td->iter = gdk_pixbuf_animation_get_iter (td->anim, NULL);
+
+      td->interval = gdk_pixbuf_animation_iter_get_delay_time (td->iter);
+    }
+#endif
+}
+
+static gboolean
+tap_and_hold_animation_timeout (GtkWidget *widget)
+{
+#ifdef TAP_AND_HOLD_ANIMATION
+  TahData *td = gtk_widget_peek_tah_data (widget);
+
+  if (!td || !GDK_IS_WINDOW (td->tah_on_window))
+    {
+      tap_and_hold_remove_timer (widget);
+      return FALSE;
+    }
+
+  if (td->anim)
+    {
+      guint new_interval = 0;
+      GTimeVal time;
+      GdkScreen *screen;
+      GdkPixbuf *pic;
+      GdkCursor *cursor;
+      const gchar *x_hot, *y_hot;
+      gint x, y;
+
+      g_get_current_time (&time);
+      screen = gdk_screen_get_default ();
+      pic = gdk_pixbuf_animation_iter_get_pixbuf (td->iter);
+
+      pic = gdk_pixbuf_copy (pic);
+
+      if (!GDK_IS_PIXBUF (pic))
+        return TRUE;
+
+      x_hot = gdk_pixbuf_get_option (pic, "x_hot");
+      y_hot = gdk_pixbuf_get_option (pic, "y_hot");
+      x = (x_hot) ? atoi(x_hot) : gdk_pixbuf_get_width(pic) / 2;
+      y = (y_hot) ? atoi(y_hot) : gdk_pixbuf_get_height(pic) / 2;
+
+      cursor = gdk_cursor_new_from_pixbuf (gdk_display_get_default (), pic,
+                                           x, y);
+      g_object_unref (pic);
+
+      if (!cursor)
+        return TRUE;
+
+      gdk_window_set_cursor (td->tah_on_window, cursor);
+      gdk_cursor_unref (cursor);
+
+      gdk_pixbuf_animation_iter_advance (td->iter, &time);
+
+      new_interval = gdk_pixbuf_animation_iter_get_delay_time (td->iter);
+
+      if (new_interval != td->interval && td->timer_counter)
+	{
+	  td->interval = new_interval;
+	  td->timer_id = g_timeout_add (td->interval,
+					(GSourceFunc)gtk_widget_tap_and_hold_timeout, widget);
+	  return FALSE;
+	}
+    }
+#endif
+  return TRUE;
+}
+
+/**
+ * gtk_widget_tap_and_hold_menu_position_top:
+ * @menu: a #GtkMenu
+ * @x: x cordinate to be returned
+ * @y: y cordinate to be returned
+ * @push_in: If going off screen, push it pack on the screen
+ * @widget: a #GtkWidget
+ *
+ * Pre-made menu positioning function.
+ * It positiones the @menu over the @widget.
+ *
+ * Since: maemo 1.0
+ **/
+void
+gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
+					   gint      *x,
+					   gint      *y,
+					   gboolean  *push_in,
+					   GtkWidget *widget)
+{
+  /*
+   * This function positiones the menu above widgets.
+   * This is a modified version of the position function
+   * gtk_combo_box_position_over.
+   */
+  GtkWidget *topw;
+  GtkRequisition requisition;
+  gint screen_width = 0;
+  gint menu_xpos = 0;
+  gint menu_ypos = 0;
+  gint w_xpos = 0, w_ypos = 0;
+  gtk_widget_size_request (menu, &requisition);
+
+  topw = gtk_widget_get_toplevel (widget);
+  gdk_window_get_origin (topw->window, &w_xpos, &w_ypos);
+
+  menu_xpos += widget->allocation.x + w_xpos;
+  menu_ypos += widget->allocation.y + w_ypos - requisition.height;
+
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+    menu_xpos = menu_xpos + widget->allocation.width - requisition.width;
+
+  screen_width = gdk_screen_get_width (gtk_widget_get_screen (widget));
+
+  if (menu_xpos < w_xpos)
+    menu_xpos = w_xpos;
+  else if ((menu_xpos + requisition.width) > screen_width)
+    menu_xpos -= ((menu_xpos + requisition.width) - screen_width);
+  if (menu_ypos < w_ypos)
+    menu_ypos = w_ypos;
+
+  *x = menu_xpos;
+  *y = menu_ypos;
+  *push_in = TRUE;
+}
+
+/**
+ * gtk_widget_tap_and_hold_setup:
+ * @widget : a @GtkWidget
+ * @menu : a @GtkWidget
+ * @func : a @GtkCallback
+ * @flags : a @GtkWidgetTapAndHoldFlags
+ *
+ * Setups the tap and hold functionality to the @widget.
+ * The @menu is shown when the functionality is activated.
+ * If the @menu is wanted to be positioned in a different way than the
+ * gtk+ default, the menuposition @func can be passed as a third parameter.
+ * Fourth parameter, @flags is deprecated and has no effect.
+ *
+ * Since: maemo 1.0
+ */
+void
+gtk_widget_tap_and_hold_setup (GtkWidget                *widget,
+			       GtkWidget                *menu,
+			       GtkCallback               func,
+			       GtkWidgetTapAndHoldFlags  flags)
+{
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+
+  g_signal_emit (widget, widget_signals[TAP_AND_HOLD_SETUP], 0, menu, func,
+		 flags);
+}
+
+static void
+gtk_widget_real_tap_and_hold_setup (GtkWidget                *widget,
+				    GtkWidget                *menu,
+				    GtkCallback               func,
+				    GtkWidgetTapAndHoldFlags  flags)
+{
+  TahData *td;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+
+  td = gtk_widget_get_tah_data (widget);
+  if (td->signals_connected)
+    return;
+
+  if (menu != NULL)
+    {
+      g_object_ref (menu);
+      gtk_object_sink (GTK_OBJECT (menu));
+      _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
+
+      if (gtk_menu_get_attach_widget (GTK_MENU (menu)) == NULL)
+	gtk_menu_attach_to_widget (GTK_MENU (menu), widget, NULL);
+    }
+
+  td->menu = menu;
+  td->func = (GtkMenuPositionFunc)func;
+  td->signals_connected = TRUE;
+  td->timer_counter = 0;
+
+  g_signal_connect (widget, "button-press-event",
+		    G_CALLBACK (gtk_widget_tap_and_hold_button_press), td);
+  g_signal_connect (widget, "button-release-event",
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
+  g_signal_connect (widget, "leave-notify-event",
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
+  g_signal_connect (widget, "drag-begin",
+		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
+}
+
+static void
+gtk_widget_real_tap_and_hold (GtkWidget *widget)
+{
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (td && GTK_IS_MENU (td->menu))
+    gtk_menu_popup (GTK_MENU (td->menu), NULL, NULL,
+		    (GtkMenuPositionFunc)td->func,
+		    widget, 1, gdk_x11_get_server_time (widget->window));
+}
+
+static gboolean
+gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
+{
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  gboolean result;
+  gint x = 0, y = 0;
+
+  GDK_THREADS_ENTER ();
+
+  if (!td || !GDK_IS_WINDOW (td->tah_on_window))
+    {
+      tap_and_hold_remove_timer (widget);
+
+      GDK_THREADS_LEAVE ();
+      return FALSE;
+    }
+
+  /* A small timeout before starting the tap and hold */
+  if (td->timer_counter == TAP_AND_HOLD_TIMER_COUNTER)
+    {
+      td->timer_counter--;
+
+      GDK_THREADS_LEAVE ();
+      return TRUE;
+    }
+
+  result = tap_and_hold_animation_timeout (widget);
+
+  if (td->timer_counter)
+    td->timer_counter--;
+  else
+    td->timer_id = 0;
+
+  gdk_display_get_pointer (gdk_drawable_get_display (td->tah_on_window),
+			   NULL, &x, &y, NULL);
+
+  /* Did we dragged too far from the start point */
+  if (gtk_drag_check_threshold (widget, td->x, td->y, x, y))
+    {
+      tap_and_hold_remove_timer (widget);
+
+      GDK_THREADS_LEAVE ();
+      return FALSE;
+    }
+
+  /* Was that the last cycle -> tah starts */
+  if (!td->timer_id)
+    {
+      tap_and_hold_remove_timer (widget);
+      _gtk_widget_grab_notify (widget, FALSE);
+      g_signal_emit (widget, widget_signals[TAP_AND_HOLD], 0);
+
+      GDK_THREADS_LEAVE ();
+      return FALSE;
+    }
+
+  GDK_THREADS_LEAVE ();
+  return result;
+}
+
+static gboolean
+gtk_widget_real_tap_and_hold_query (GtkWidget *widget,
+				    GdkEvent  *event)
+{
+  return FALSE;
+}
+
+static gboolean
+gtk_widget_tap_and_hold_query (GtkWidget *widget,
+			       GdkEvent  *event)
+{
+  gboolean return_value = FALSE;
+
+  g_signal_emit (G_OBJECT (widget), widget_signals[TAP_AND_HOLD_QUERY],
+		 0, event, &return_value);
+
+  return return_value;
+}
+
+static gboolean
+gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
+				      GdkEvent  *event,
+				      TahData   *td)
+{
+  if (event->button.type == GDK_2BUTTON_PRESS)
+    return FALSE;
+
+  if (!gtk_widget_tap_and_hold_query (widget, event) && !td->timer_id)
+    {
+      gdk_display_get_pointer (gtk_widget_get_display (widget),
+			       NULL, &td->x, &td->y, NULL);
+
+      td->timer_counter = TAP_AND_HOLD_TIMER_COUNTER;
+      td->tah_on_window = widget->window;
+
+      tap_and_hold_init_animation (td);
+      td->timer_id = g_timeout_add (td->interval,
+				    (GSourceFunc)
+				    gtk_widget_tap_and_hold_timeout, widget);
+    }
+  return FALSE;
+}
+
+static gboolean
+gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
+				    gpointer   unused,
+				    TahData   *td)
+{
+  if (td->timer_id)
+    tap_and_hold_remove_timer (widget);
+
+  return FALSE;
+}
+
+
+void gtk_widget_insensitive_press ( GtkWidget *widget )
+{
+}
+/* MAEMO END */
 
 #define __GTK_WIDGET_C__
 #include "gtkaliasdef.c"

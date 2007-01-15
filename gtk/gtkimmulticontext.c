@@ -85,9 +85,93 @@ static gboolean gtk_im_multicontext_delete_surrounding_cb   (GtkIMContext      *
 							     gint               n_chars,
 							     GtkIMMulticontext *multicontext);
 
-static const gchar *global_context_id = NULL;
+/* MAEMO START */
+static gboolean hildon_gtk_im_multicontext_filter_event (GtkIMContext            *context,
+							 GdkEvent                *event);
+
+static void     gtk_im_multicontext_show                (GtkIMContext            *context);
+static void     gtk_im_multicontext_hide                (GtkIMContext            *context);
+
+static void     gtk_im_multicontext_notify              (GObject                 *object,
+                                                         GParamSpec              *pspec);
+
+static gboolean gtk_im_multicontext_has_selection_cb            (GtkIMContext                   *slave,
+								 GtkIMMulticontext              *multicontext);
+static void     gtk_im_multicontext_clipboard_operation_cb      (GtkIMContext                   *slave,
+								 GtkIMContextClipboardOperation  op,
+								 GtkIMMulticontext              *multicontext);
+static void     gtk_im_multicontext_slave_input_mode_changed_cb (GtkIMContext                   *slave,
+                                                                 GParamSpec                     *pspec,
+                                                                 GtkIMMulticontext              *multicontext);
+
+static GtkIMContext *gtk_im_multicontext_get_slave              (GtkIMMulticontext              *multicontext);
+
+
+static gchar *
+get_global_context_id (void)
+{
+  gint actual_format, actual_length;
+  guchar *context_id;
+  GdkAtom atom, type, actual_type;
+  gboolean succeeded;
+
+  atom = gdk_atom_intern ("gtk-global-immodule", FALSE);
+  type = gdk_atom_intern ("STRING", FALSE);
+
+  succeeded = gdk_property_get (gdk_screen_get_root_window (gdk_screen_get_default ()),
+			        atom,
+				type,
+				0,
+				G_MAXLONG,
+				FALSE,
+				&actual_type,
+				&actual_format,
+				&actual_length,
+				&context_id);
+
+  if (!succeeded)
+    {
+      /* Fall back to default locale */
+      gchar *locale = _gtk_get_lc_ctype ();
+      context_id = _gtk_im_module_get_default_context_id (locale);
+      g_free (locale);
+    }
+
+  return context_id;
+}
+/* MAEMO END */
+
 
 G_DEFINE_TYPE (GtkIMMulticontext, gtk_im_multicontext, GTK_TYPE_IM_CONTEXT)
+
+/* MAEMO START */
+static void
+gtk_im_multicontext_set_property (GObject      *object,
+				  guint         property_id,
+				  const GValue *value,
+				  GParamSpec   *pspec)
+{
+  GtkIMContext *slave = gtk_im_multicontext_get_slave (GTK_IM_MULTICONTEXT (object));
+  GParamSpec *param_spec;
+
+  param_spec = g_object_class_find_property (G_OBJECT_GET_CLASS (slave),
+                                             pspec->name);
+
+  if (param_spec != NULL)
+    g_object_set_property (G_OBJECT(slave), pspec->name, value);
+}
+
+static void
+gtk_im_multicontext_get_property (GObject    *object,
+				  guint       property_id,
+				  GValue     *value,
+				  GParamSpec *pspec)
+{
+  GtkIMContext *slave = gtk_im_multicontext_get_slave (GTK_IM_MULTICONTEXT(object));
+
+  g_object_get_property (G_OBJECT (slave), pspec->name, value);
+}
+/* MAEMO END */
 
 static void
 gtk_im_multicontext_class_init (GtkIMMulticontextClass *class)
@@ -107,6 +191,17 @@ gtk_im_multicontext_class_init (GtkIMMulticontextClass *class)
   im_context_class->get_surrounding = gtk_im_multicontext_get_surrounding;
 
   gobject_class->finalize = gtk_im_multicontext_finalize;
+
+  /* MAEMO START */
+  im_context_class->filter_event = hildon_gtk_im_multicontext_filter_event;
+  im_context_class->show = gtk_im_multicontext_show;
+  im_context_class->hide = gtk_im_multicontext_hide;
+
+  gobject_class->notify = gtk_im_multicontext_notify;
+
+  gobject_class->set_property = gtk_im_multicontext_set_property;
+  gobject_class->get_property = gtk_im_multicontext_get_property;
+  /* MAEMO END */
 
   g_type_class_add_private (gobject_class, sizeof (GtkIMMulticontextPrivate));   
 }
@@ -152,6 +247,9 @@ gtk_im_multicontext_set_slave (GtkIMMulticontext *multicontext,
 {
   GtkIMMulticontextPrivate *priv = multicontext->priv;
   gboolean need_preedit_changed = FALSE;
+  /* MAEMO START */
+  HildonGtkInputMode input_mode;
+  /* MAEMO END */
   
   if (multicontext->slave)
     {
@@ -171,8 +269,31 @@ gtk_im_multicontext_set_slave (GtkIMMulticontext *multicontext,
 					    gtk_im_multicontext_commit_cb,
 					    multicontext);
 
+      /* MAEMO START */
+      g_signal_handlers_disconnect_by_func (multicontext->slave,
+					    gtk_im_multicontext_retrieve_surrounding_cb,
+					    multicontext);
+      g_signal_handlers_disconnect_by_func (multicontext->slave,
+					    gtk_im_multicontext_delete_surrounding_cb,
+					    multicontext);
+      g_signal_handlers_disconnect_by_func (multicontext->slave,
+					    gtk_im_multicontext_has_selection_cb,
+					    multicontext);
+      g_signal_handlers_disconnect_by_func (multicontext->slave,
+					    gtk_im_multicontext_clipboard_operation_cb,
+					    multicontext);
+      g_signal_handlers_disconnect_by_func (multicontext->slave,
+					    gtk_im_multicontext_slave_input_mode_changed_cb,
+					    multicontext);
+      /* MAEMO END */
+
       g_object_unref (multicontext->slave);
       multicontext->slave = NULL;
+
+      /* MAEMO START */
+      g_free (multicontext->context_id);
+      multicontext->context_id = NULL;
+      /* MAEMO END */
 
       if (!finalizing)
 	need_preedit_changed = TRUE;
@@ -202,6 +323,21 @@ gtk_im_multicontext_set_slave (GtkIMMulticontext *multicontext,
       g_signal_connect (multicontext->slave, "delete_surrounding",
 			G_CALLBACK (gtk_im_multicontext_delete_surrounding_cb),
 			multicontext);
+
+      /* MAEMO START */
+      g_signal_connect (multicontext->slave, "has_selection",
+			G_CALLBACK (gtk_im_multicontext_has_selection_cb),
+			multicontext);
+      g_signal_connect (multicontext->slave, "clipboard_operation",
+			G_CALLBACK (gtk_im_multicontext_clipboard_operation_cb),
+			multicontext);
+      g_signal_connect (multicontext->slave, "notify::hildon-input-mode",
+                        G_CALLBACK (gtk_im_multicontext_slave_input_mode_changed_cb),
+                        multicontext);
+
+      g_object_get(multicontext, "hildon-input-mode", &input_mode, NULL);
+      g_object_set(multicontext->slave, "hildon-input-mode", input_mode, NULL);
+      /* MAEMO END */
       
       if (!priv->use_preedit)	/* Default is TRUE */
 	gtk_im_context_set_use_preedit (slave, FALSE);
@@ -224,17 +360,17 @@ gtk_im_multicontext_get_slave (GtkIMMulticontext *multicontext)
     {
       GtkIMContext *slave;
 
-      if (!global_context_id)
-	{
-	  gchar *locale = _gtk_get_lc_ctype ();
-	  global_context_id = _gtk_im_module_get_default_context_id (locale);
-	  g_free (locale);
-	}
+      /* MAEMO START */
+      gchar *global_context_id = get_global_context_id();
+      /* MAEMO END */
 	
       slave = _gtk_im_module_create (global_context_id);
       gtk_im_multicontext_set_slave (multicontext, slave, FALSE);
       g_object_unref (slave);
 
+      /* MAEMO START */
+      g_free (multicontext->context_id);
+      /* MAEMO END */
       multicontext->context_id = global_context_id;
     }
 
@@ -288,11 +424,29 @@ gtk_im_multicontext_filter_keypress (GtkIMContext *context,
     return FALSE;
 }
 
+/* MAEMO START */
+static gboolean
+hildon_gtk_im_multicontext_filter_event (GtkIMContext *context,
+					 GdkEvent *event)
+{
+  GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
+  GtkIMContext *slave = gtk_im_multicontext_get_slave (multicontext);
+
+  if (slave)
+    return hildon_gtk_im_context_filter_event (slave, event);
+  else
+    return FALSE;
+}
+/* MAEMO END */
+
 static void
 gtk_im_multicontext_focus_in (GtkIMContext   *context)
 {
   GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
   GtkIMContext *slave;
+  /* MAEMO START */
+  gchar *global_context_id = get_global_context_id ();
+  /* MAEMO END */
 
   /* If the global context type is different from the context we were
    * using before, get rid of the old slave and create a new one
@@ -308,6 +462,10 @@ gtk_im_multicontext_focus_in (GtkIMContext   *context)
   
   if (slave)
     gtk_im_context_focus_in (slave);
+
+  /* MAEMO START */
+  g_free (global_context_id);
+  /* MAEMO END */
 }
 
 static void
@@ -395,6 +553,33 @@ gtk_im_multicontext_set_surrounding (GtkIMContext *context,
     gtk_im_context_set_surrounding (slave, text, len, cursor_index);
 }
 
+/* MAEMO START */
+static void
+gtk_im_multicontext_notify (GObject      *object,
+                            GParamSpec   *pspec)
+{
+  GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (object);
+  HildonGtkInputMode input_mode_slave, input_mode_multi;
+
+  if (multicontext->slave != NULL &&
+      strcmp (pspec->name, "hildon-input-mode") == 0)
+    {
+      g_object_get (multicontext->slave,
+		    "hildon-input-mode", &input_mode_slave,
+		    NULL);
+      g_object_get (multicontext,
+		    "hildon-input-mode", &input_mode_multi,
+		    NULL);
+
+      /* don't change without comparing, or we'll get to infinite loop */
+      if (input_mode_slave != input_mode_multi)
+        g_object_set (multicontext->slave,
+		      "hildon-input-mode", input_mode_multi,
+		      NULL);
+    }
+}
+/* MAEMO END */
+
 static void
 gtk_im_multicontext_preedit_start_cb   (GtkIMContext      *slave,
 					GtkIMMulticontext *multicontext)
@@ -449,17 +634,52 @@ gtk_im_multicontext_delete_surrounding_cb (GtkIMContext      *slave,
   return result;
 }
 
+/* MAEMO START */
+static gboolean
+gtk_im_multicontext_has_selection_cb (GtkIMContext      *slave,
+                                      GtkIMMulticontext *multicontext)
+{
+  gboolean result;
+
+  g_signal_emit_by_name (multicontext, "has_selection",
+			 &result);
+
+  return result;
+}
+
+static void
+gtk_im_multicontext_clipboard_operation_cb (GtkIMContext                   *slave,
+                                            GtkIMContextClipboardOperation  op,
+                                            GtkIMMulticontext              *multicontext)
+{
+  g_signal_emit_by_name (multicontext, "clipboard_operation", op);
+}
+
+static void
+gtk_im_multicontext_slave_input_mode_changed_cb (GtkIMContext      *slave,
+                                                 GParamSpec        *pspec,
+                                                 GtkIMMulticontext *multicontext)
+{
+  HildonGtkInputMode input_mode_slave, input_mode_multi;
+
+  g_object_get (slave, "hildon-input-mode", &input_mode_slave, NULL);
+  g_object_get (multicontext, "hildon-input-mode", &input_mode_multi, NULL);
+
+  /* don't change without comparing, or we'll get to infinite loop */
+  if (input_mode_slave != input_mode_multi)
+    g_object_set (multicontext, "hildon-input-mode", input_mode_slave, NULL);
+}
+/* MAEMO END */
+
 static void
 activate_cb (GtkWidget         *menuitem,
 	     GtkIMMulticontext *context)
 {
   if (GTK_CHECK_MENU_ITEM (menuitem)->active)
     {
-      const gchar *id = g_object_get_data (G_OBJECT (menuitem), "gtk-context-id");
-
+      /* MAEMO CHANGE: code which overwrote global_context_id has been removed */
       gtk_im_context_reset (GTK_IM_CONTEXT (context));
       
-      global_context_id = id;
       gtk_im_multicontext_set_slave (context, NULL, FALSE);
     }
 }
@@ -480,6 +700,9 @@ gtk_im_multicontext_append_menuitems (GtkIMMulticontext *context,
   const GtkIMContextInfo **contexts;
   guint n_contexts, i;
   GSList *group = NULL;
+  /* MAEMO START */
+  gchar *global_context_id = get_global_context_id();
+  /* MAEMO END */
   
   _gtk_im_module_list (&contexts, &n_contexts);
 
@@ -534,8 +757,50 @@ gtk_im_multicontext_append_menuitems (GtkIMMulticontext *context,
       gtk_menu_shell_append (menushell, menuitem);
     }
 
+  /* MAEMO START */
+  g_free (global_context_id);
+  /* MAEMO END */
   g_free (contexts);
 }
+
+/* MAEMO START */
+static void
+gtk_im_multicontext_show (GtkIMContext *context)
+{
+  GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
+  GtkIMContext *slave;
+  gchar *global_context_id = get_global_context_id ();
+
+  /* If the global context type is different from the context we were
+   * using before, get rid of the old slave and create a new one
+   * for the new global context type.
+   */
+  if (!multicontext->context_id ||
+      strcmp (global_context_id, multicontext->context_id) != 0)
+    gtk_im_multicontext_set_slave (multicontext, NULL, FALSE);
+
+  slave = gtk_im_multicontext_get_slave (multicontext);
+
+  multicontext->priv->focus_in = TRUE;
+
+  if (slave)
+    gtk_im_context_show (slave);
+
+  g_free (global_context_id);
+}
+
+static void
+gtk_im_multicontext_hide (GtkIMContext *context)
+{
+  GtkIMMulticontext *multicontext = GTK_IM_MULTICONTEXT (context);
+  GtkIMContext *slave = gtk_im_multicontext_get_slave (multicontext);
+  
+  multicontext->priv->focus_in = FALSE;
+
+  if (slave)
+    gtk_im_context_hide (slave);
+}
+/* MAEMO END */
 
 #define __GTK_IM_MULTICONTEXT_C__
 #include "gtkaliasdef.c"

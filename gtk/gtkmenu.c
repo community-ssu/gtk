@@ -100,6 +100,13 @@ struct _GtkMenuPrivate
 
   gboolean ignore_button_release;
   gboolean initially_pushed_in;
+
+  /* MAEMO START */
+  /* For context menu behavior */
+  gboolean context_menu;
+  int popup_pointer_x;
+  int popup_pointer_y;
+  /* MAEMO END */
 };
 
 typedef struct
@@ -896,6 +903,12 @@ gtk_menu_init (GtkMenu *menu)
   priv->upper_arrow_state = GTK_STATE_NORMAL;
   priv->lower_arrow_state = GTK_STATE_NORMAL;
 
+  /* MAEMO START */
+  priv->context_menu = FALSE;
+  priv->popup_pointer_x = -1;
+  priv->popup_pointer_y = -1;
+  /* MAEMO END */
+
   priv->have_layout = FALSE;
 }
 
@@ -1428,6 +1441,15 @@ gtk_menu_popup (GtkMenu		    *menu,
   }
 
   gtk_menu_scroll_to (menu, menu->scroll_offset);
+
+  /* MAEMO START */
+  /* Hildon: save position of the pointer during popup. Not multihead safe. */
+  if (priv->context_menu)
+    gdk_display_get_pointer (gtk_widget_get_display (widget), NULL,
+                            &priv->popup_pointer_x,
+                            &priv->popup_pointer_y,
+                            NULL);
+  /* MAEMO END */
 
   /* Once everything is set up correctly, map the toplevel window on
      the screen.
@@ -4834,6 +4856,17 @@ gtk_menu_grab_notify (GtkWidget *widget,
         gtk_menu_shell_cancel (GTK_MENU_SHELL (widget));
     }
 }
+
+/* MAEMO START */
+/* Hildon function to make context menus behave according to spec */
+void
+_gtk_menu_enable_context_menu_behavior (GtkMenu *menu)
+{
+  GtkMenuPrivate *priv = gtk_menu_get_private (menu);
+
+  priv->context_menu = TRUE;
+}
+/* MAEMO END */
 
 #define __GTK_MENU_C__
 #include "gtkaliasdef.c"

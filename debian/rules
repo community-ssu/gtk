@@ -21,9 +21,14 @@ else
 	CFLAGS += -O2
 endif
 
-# Use soft-float and thumb mode if it enabled. 
+# Prefer hardware floating point if enabled
+ifneq (,$(findstring vfp,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mfpu=vfp -mfloat-abi=softfp
+else
+# Use soft-float and thumb mode if it enabled.
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -mthumb
+endif
 endif
 
 ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
@@ -166,10 +171,10 @@ install: install-shared
 
 	cp $(BUILD_SHARED_DIR)/docs/*.txt debian/libgtk$(apiver)-doc/usr/share/doc/libgtk$(apiver)-doc
 
-	# examples (without .svn)
+	# examples files (without Makefile.am, find-examples.sh and .cvsignore)
 	mkdir -p $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
 	find examples -name .svn -prune -o \
-		-not \( -type d -o -name .svn -o -name Makefile.am -o -name find-examples.sh \) -print | \
+		-not \( -type d -o -name Makefile.am -o -name find-examples.sh -o -name .cvsignore \) -print | \
 		tar cf - -T- | \
 		tar xf - -C $(CURDIR)/debian/gtk$(apiver)-examples/usr/share/doc/gtk$(apiver)-examples
 
