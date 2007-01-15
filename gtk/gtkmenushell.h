@@ -85,16 +85,13 @@ struct _GtkMenuShellClass
 			    gint          position);
   gint (*get_popup_delay)  (GtkMenuShell *menu_shell);
 
-  /* MAEMO START */
-  void (*close)            (GtkMenuShell *menu_shell);
-  /* MAEMO END */
-
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
 
   /* MAEMO START */
   /* void (*_gtk_reserved3) (void); */
+  void (*close)            (GtkMenuShell *menu_shell);
   /* MAEMO END */
 };
 

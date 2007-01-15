@@ -1,3 +1,20 @@
+gtk+2.0 (2:2.10.6-0osso2test1) unstable; urgency=low
+
+  * !!ABI BREAK!! Restore the ABI to be compatible with stock gtk+ 2.10
+
+  * Move added enums and vtable entries to the end (or beyond) to be safe
+    against upstream additions
+    - GtkTreeView::row-insensitive signal
+    - GtkToolButton::insensitive-press signal
+    - GtkIMContext signals
+    - GtkEntry::invalid-input signal
+    - GtkMenuShell::close signal
+    - GDK_WINDOW_TYPE_HINT_MESSAGE
+
+  * debian/rules: update shlibs to >= 2:2.10.6-0osso2test1
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 15 Jan 2007 18:36:07 +0200
+
 gtk+2.0 (2:2.10.6-0osso2) unstable; urgency=low
 
   * Restore API compatibility with maemo gtk+ 2.6

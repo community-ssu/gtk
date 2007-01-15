@@ -55,10 +55,6 @@ struct _GtkToolButtonClass
   /* signal */
   void       (* clicked)             (GtkToolButton    *tool_item);
 
-  /* MAEMO START */
-  void       (* insensitive_press)   (GtkToolButton    *tool_item);
-  /* MAEMO END */
-
   /* Padding for future expansion */
   void (* _gtk_reserved1) (void);
   void (* _gtk_reserved2) (void);
@@ -66,6 +62,7 @@ struct _GtkToolButtonClass
 
   /* MAEMO START */
   /* void (* _gtk_reserved4) (void); */
+  void       (* insensitive_press)   (GtkToolButton    *tool_item);
   /* MAEMO END */
 };
 

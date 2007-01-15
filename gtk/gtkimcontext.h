@@ -92,20 +92,6 @@ struct _GtkIMContextClass
 				   gchar         **text,
 				   gint           *cursor_index);
 
-  /* MAEMO START */
-  void     (*show)                (GtkIMContext   *context);
-  void     (*hide)                (GtkIMContext   *context);
-
-  /* Signals again: */
-  gboolean (*has_selection)       (GtkIMContext   *context);
-  void     (*clipboard_operation) (GtkIMContext   *context,
-                                   GtkIMContextClipboardOperation operation);
-
-  /* Virtual functions again: */
-  gboolean (*filter_event)        (GtkIMContext   *context,
-                                   GdkEvent       *event);
-  /* MAEMO END */
-
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
 
@@ -117,6 +103,17 @@ struct _GtkIMContextClass
   void (*_gtk_reserved5) (void);
   void (*_gtk_reserved6) (void);
 #endif
+  void     (*show)                (GtkIMContext   *context);
+  void     (*hide)                (GtkIMContext   *context);
+
+  /* Signals again: */
+  gboolean (*has_selection)       (GtkIMContext   *context);
+  void     (*clipboard_operation) (GtkIMContext   *context,
+                                   GtkIMContextClipboardOperation operation);
+
+  /* Virtual functions again: */
+  gboolean (*filter_event)        (GtkIMContext   *context,
+                                   GdkEvent       *event);
   /* MAEMO END */
 };
 

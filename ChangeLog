@@ -1,3 +1,16 @@
+2007-01-15  Michael Natterer  <mitch@imendio.com>
+
+	* gdk/gdkwindow.h: move GDK_WINDOW_TYPE_HINT_MESSAGE to the end of
+	the enum and changed its value to 1000 to be safe against upstream
+	value additions.
+
+	* gtk/gtktreeview.h
+	* gtk/gtktoolbutton.h
+	* gtk/gtkimcontext.h
+	* gtk/gtkentry.h
+	* gtk/gtkmenushell.h: move maemo vtable entries to the end of the
+	class structs to be safe against upstream vtable additions.
+
 2007-01-14  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeselection.c (tree_column_is_sensitive),

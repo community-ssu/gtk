@@ -133,15 +133,15 @@ typedef enum
   GDK_WINDOW_TYPE_HINT_UTILITY,
   GDK_WINDOW_TYPE_HINT_DOCK,
   GDK_WINDOW_TYPE_HINT_DESKTOP,
-  /* MEAMO START */
-  GDK_WINDOW_TYPE_HINT_MESSAGE,
-  /* MAEMO END */
-  GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU = GDK_WINDOW_TYPE_HINT_MESSAGE,	/* A drop down menu (from a menubar) */
+  GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU,	/* A drop down menu (from a menubar) */
   GDK_WINDOW_TYPE_HINT_POPUP_MENU,	/* A popup menu (from right-click) */
   GDK_WINDOW_TYPE_HINT_TOOLTIP,
   GDK_WINDOW_TYPE_HINT_NOTIFICATION,
   GDK_WINDOW_TYPE_HINT_COMBO,
   GDK_WINDOW_TYPE_HINT_DND
+  /* MAEMO START */
+  , GDK_WINDOW_TYPE_HINT_MESSAGE = 1000
+  /* MAEMO END */
 } GdkWindowTypeHint;
 
 /* The next two enumeration values current match the
