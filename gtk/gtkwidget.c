@@ -8107,8 +8107,8 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
       gtk_object_sink (GTK_OBJECT (menu));
       _gtk_menu_enable_context_menu_behavior (GTK_MENU (menu));
 
-      if (gtk_menu_get_attach_widget (menu) == NULL)
-	gtk_menu_attach_to_widget (menu, widget, NULL);
+      if (gtk_menu_get_attach_widget (GTK_MENU (menu) == NULL)
+	gtk_menu_attach_to_widget (GTK_MENU (menu), widget, NULL);
     }
 
   td->menu = menu;
