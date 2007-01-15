@@ -1,3 +1,10 @@
+gtk+2.0 (2:2.6.10-2.osso29) unstable; urgency=low
+
+  * debian/rules: Prefer HW floating points (via DEB_BUILD_OPTIONS=vfp)
+  * Fixes: NB#50601 Gtk not compiled with HW FPU support
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 15 Jan 2007 14:03:46 +0200
+
 gtk+2.0 (2:2.6.10-2.osso28) unstable; urgency=low
 
   * Fixes: NB#48386 The scrolling speed in GtkMenu should be faster
