@@ -865,6 +865,24 @@ gtk_entry_class_init (GtkEntryClass *class)
 						       TRUE,
 						       GTK_PARAM_READWRITE));
 
+   /* MAEMO START */
+   /**
+    * GtkEntry:icon-width:
+    *
+    * Size of the purpose icon.
+    *
+    * Since: maemo 1.0
+    */
+   gtk_widget_class_install_style_property (widget_class,
+                                            g_param_spec_int ("icon-width",
+                                                              P_("Icon Width"),
+                                                              P_("Size of the purpose icon."),
+                                                              0,
+                                                              G_MAXINT,
+                                                              0,
+                                                              GTK_PARAM_READWRITE));
+   /* MAEMO_END */
+
   /**
    * GtkSettings:gtk-entry-password-hint-timeout:
    *
@@ -1289,6 +1307,11 @@ gtk_entry_size_request (GtkWidget      *widget,
   gint xborder, yborder;
   GtkBorder inner_border;
   PangoContext *context;
+  /* MAEMO START */
+  gint icon_width;
+
+  gtk_widget_style_get (widget, "icon-width", &icon_width, NULL);
+  /* MAEMO_END */
   
   gtk_widget_ensure_style (widget);
   context = gtk_widget_get_pango_context (widget);
@@ -1313,6 +1336,9 @@ gtk_entry_size_request (GtkWidget      *widget,
       requisition->width = char_pixels * entry->width_chars + xborder * 2 + inner_border.left + inner_border.right;
     }
     
+  /* MAEMO START */
+  requisition->width += icon_width;
+  /* MAEMO_END */
   requisition->height = PANGO_PIXELS (entry->ascent + entry->descent) + yborder * 2 + inner_border.top + inner_border.bottom;
 
   pango_font_metrics_unref (metrics);
@@ -1328,19 +1354,24 @@ get_text_area_size (GtkEntry *entry,
   gint xborder, yborder;
   GtkRequisition requisition;
   GtkWidget *widget = GTK_WIDGET (entry);
+  /* MAEMO START */
+  gint icon_width;
+
+  gtk_widget_style_get (widget, "icon-width", &icon_width, NULL);
+  /* MAEMO END */
 
   gtk_widget_get_child_requisition (widget, &requisition);
 
   _gtk_entry_get_borders (entry, &xborder, &yborder);
 
   if (x)
-    *x = xborder;
+    *x = xborder /* MAEMO START */ + icon_width /* MAEMO END */;
 
   if (y)
     *y = yborder;
   
   if (width)
-    *width = GTK_WIDGET (entry)->allocation.width - xborder * 2;
+    *width = GTK_WIDGET (entry)->allocation.width - xborder * 2 /* MAEMO START */ - icon_width /* MAEMO END */;
 
   if (height)
     *height = requisition.height - yborder * 2;
@@ -1673,7 +1704,7 @@ gtk_entry_button_press (GtkWidget      *widget,
 	       */
 	      entry->in_drag = TRUE;
 	      entry->drag_start_x = event->x + entry->scroll_offset;
-	      entry->drag_start_y = event->y + entry->scroll_offset;
+	      entry->drag_start_y = event->y;
 	    }
 	  else
 	    gtk_editable_set_position (editable, tmp_pos);
@@ -5804,6 +5835,22 @@ gtk_entry_get_completion (GtkEntry *entry)
 
   return completion;
 }
+
+/* MAEMO START */
+
+void
+hildon_gtk_entry_set_input_mode (GtkEntry          *entry,
+                                 HildonGtkInputMode input_mode)
+{
+}
+
+HildonGtkInputMode
+hildon_gtk_entry_get_input_mode (GtkEntry          *entry)
+{
+  return 0;
+}
+
+/* MAEMO END */
 
 #define __GTK_ENTRY_C__
 #include "gtkaliasdef.c"

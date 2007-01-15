@@ -160,8 +160,10 @@ gtk_cell_renderer_text_init (GtkCellRendererText *celltext)
 
   GTK_CELL_RENDERER (celltext)->xalign = 0.0;
   GTK_CELL_RENDERER (celltext)->yalign = 0.5;
-  GTK_CELL_RENDERER (celltext)->xpad = 2;
-  GTK_CELL_RENDERER (celltext)->ypad = 2;
+  /* MAEMO START */
+  GTK_CELL_RENDERER (celltext)->xpad = 0;
+  GTK_CELL_RENDERER (celltext)->ypad = 0;
+  /* MAEMO END */
   celltext->fixed_height_rows = -1;
   celltext->font = pango_font_description_new ();
 
@@ -1617,7 +1619,9 @@ gtk_cell_renderer_text_render (GtkCellRenderer      *cell,
   else if ((flags & GTK_CELL_RENDERER_PRELIT) == GTK_CELL_RENDERER_PRELIT &&
 	   GTK_WIDGET_STATE (widget) == GTK_STATE_PRELIGHT)
     {
-      state = GTK_STATE_PRELIGHT;
+      /* MAEMO START */
+      state = GTK_STATE_NORMAL;
+      /* MAEMO END */
     }
   else
     {
