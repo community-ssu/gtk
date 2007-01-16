@@ -1,32 +1,32 @@
 INCLUDES = 				\
-	-I$(top_srcdir)/libossomime	\
+	-I$(top_srcdir)/libhildonmime	\
 	-DPREFIX=\"${prefix}\"		\
 	-DGLOBS_FILE_PATH=\"$(datadir)/mime/globs\"
 
 AM_CPPFLAGS = $(WARN_CFLAGS)
 
-lib_LTLIBRARIES = libossomime.la
+lib_LTLIBRARIES = libhildonmime.la
 
-libossomime_la_LDFLAGS = -version-info $(LIBOSSOMIME_VERSION_INFO)
-libossomime_la_CFLAGS = $(LIBOSSOMIME_CFLAGS)
-libossomime_la_LIBADD = $(LIBOSSOMIME_LIBS)
+libhildonmime_la_LDFLAGS = -version-info $(LIBHILDONMIME_VERSION_INFO)
+libhildonmime_la_CFLAGS = $(LIBHILDONMIME_CFLAGS)
+libhildonmime_la_LIBADD = $(LIBHILDONMIME_LIBS)
 
 ossomimeincludedir=$(includedir)
 ossomimeinclude_HEADERS = 	\
-	osso-mime.h		\
-	osso-uri.h		\
-	osso-mime-patterns.h
+	hildon-mime.h		\
+	hildon-uri.h		\
+	hildon-mime-patterns.h
 
-libossomime_la_SOURCES = 	\
-	osso-mime-categories.c	\
-	osso-mime-open.c	\
-	osso-mime-application.c	\
-	osso-mime-icon.c	\
-	osso-mime.h		\
-	osso-uri.c 		\
-	osso-mime-patterns.c
+libhildonmime_la_SOURCES = 	\
+	hildon-mime-categories.c	\
+	hildon-mime-open.c	\
+	hildon-mime-application.c	\
+	hildon-mime-icon.c	\
+	hildon-mime.h		\
+	hildon-uri.c 		\
+	hildon-mime-patterns.c
 
-bin_PROGRAMS = osso-update-category-database
-osso_update_category_database_SOURCES = update-category-database.c
-osso_update_category_database_CFLAGS = $(UPDATE_CATEGORY_CFLAGS)
-osso_update_category_database_LDADD = $(UPDATE_CATEGORY_LIBS)
+bin_PROGRAMS = hildon-update-category-database
+hildon_update_category_database_SOURCES = update-category-database.c
+hildon_update_category_database_CFLAGS = $(UPDATE_CATEGORY_CFLAGS)
+hildon_update_category_database_LDADD = $(UPDATE_CATEGORY_LIBS)

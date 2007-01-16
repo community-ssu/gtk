@@ -1,8 +1,8 @@
 SUBDIRS = debian		\
-	libossomime             \
+	libhildonmime             \
 	tests			\
 	data			\
 	docs
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = libossomime.pc
+pkgconfig_DATA = libhildonmime.pc

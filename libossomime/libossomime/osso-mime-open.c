@@ -1,10 +1,14 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2004 Nokia Corporation.
+ * This is file is part of libhildonmime
+ *
+ * Copyright (C) 2004-2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; version 2 of the
+ * published by the Free Software Foundation; version 2.1 of the
  * License.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,8 +22,6 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/* Contact: Andrey Kochanov <andrey.kochanov@nokia.com> */
-
 /* Note that for this to work, a properly setup desktop file must be installed
  * for the mime type of the files to open, i.e. in
  * $datadir/applications/[.../]app.desktop, with a field for the mimetypes and
@@ -28,8 +30,8 @@
 
 #include <config.h>
 #include <libgnomevfs/gnome-vfs-mime.h>
-#include "osso-mime.h"
 #include <string.h>
+#include "hildon-mime.h"
 
 #include <syslog.h>
 #define LOG_CLOSE() closelog()
@@ -193,7 +195,7 @@ get_service_name_for_path (const gchar *path)
 }			
 
 gint
-osso_mime_open_file (DBusConnection *con, const gchar *file)
+hildon_mime_open_file (DBusConnection *con, const gchar *file)
 {
 	AppEntry *entry;
 	gchar    *service_name;
@@ -232,7 +234,7 @@ osso_mime_open_file (DBusConnection *con, const gchar *file)
 }
 
 gint
-osso_mime_open_file_list (DBusConnection *con, GSList *files)
+hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 {
 	GHashTable *apps = NULL;
 	GSList     *l;
@@ -296,9 +298,9 @@ osso_mime_open_file_list (DBusConnection *con, GSList *files)
 }
 
 gint
-osso_mime_open_file_with_mime_type (DBusConnection *con,
-				    const gchar    *file,
-				    const gchar    *mime_type)
+hildon_mime_open_file_with_mime_type (DBusConnection *con,
+				      const gchar    *file,
+				      const gchar    *mime_type)
 {
        AppEntry *entry;
        gchar    *service_name;
@@ -414,7 +416,7 @@ static void mime_launch_add_arg (const gchar     *uri,
 				 DBusMessageIter *iter)
 {
 	if (!g_utf8_validate (uri, -1, NULL)) {
-		g_warning ("Invalid UTF-8 passed to osso_mime_open\n");
+		g_warning ("Invalid UTF-8 passed to hildon_mime_open\n");
 		return;
 	}
 

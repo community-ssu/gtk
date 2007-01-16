@@ -1,5 +1,26 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * Copyright (C) 2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation version 2.1 of the
+ * License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 #include <config.h>
-#include "osso-mime.h"
+#include "hildon-mime.h"
 #include <libgnomevfs/gnome-vfs-mime-info.h>
 #include <string.h>
 #include <stdlib.h>
@@ -9,44 +30,44 @@
 static GHashTable *category_hash;
 
 const gchar *
-osso_mime_get_category_name (OssoMimeCategory category)
+hildon_mime_get_category_name (HildonMimeCategory category)
 {
 	switch (category) {
-	case OSSO_MIME_CATEGORY_AUDIO:
+	case HILDON_MIME_CATEGORY_AUDIO:
 		return "audio";
-	case OSSO_MIME_CATEGORY_BOOKMARKS:
+	case HILDON_MIME_CATEGORY_BOOKMARKS:
 		return "bookmarks";
-	case OSSO_MIME_CATEGORY_CONTACTS:
+	case HILDON_MIME_CATEGORY_CONTACTS:
 		return "contacts";
-	case OSSO_MIME_CATEGORY_DOCUMENTS:
+	case HILDON_MIME_CATEGORY_DOCUMENTS:
 		return "documents";
-	case OSSO_MIME_CATEGORY_EMAILS:
+	case HILDON_MIME_CATEGORY_EMAILS:
 		return "emails";
-	case OSSO_MIME_CATEGORY_IMAGES:
+	case HILDON_MIME_CATEGORY_IMAGES:
 		return "images";
-	case OSSO_MIME_CATEGORY_VIDEO:
+	case HILDON_MIME_CATEGORY_VIDEO:
 		return "video"; 
 	default:
 		return NULL;
 	}
 }
 
-OssoMimeCategory
-osso_mime_get_category_from_name (const gchar *category)
+HildonMimeCategory
+hildon_mime_get_category_from_name (const gchar *category)
 {
 	int i;
 
 	struct {
 		const gchar *name;
-		OssoMimeCategory category;
+		HildonMimeCategory category;
 	} categories [] = {
-		{ "audio",     OSSO_MIME_CATEGORY_AUDIO },    
-		{ "bookmarks", OSSO_MIME_CATEGORY_BOOKMARKS },
-		{ "contacts",  OSSO_MIME_CATEGORY_CONTACTS },
-		{ "documents", OSSO_MIME_CATEGORY_DOCUMENTS },
-		{ "emails",    OSSO_MIME_CATEGORY_EMAILS },
-		{ "images",    OSSO_MIME_CATEGORY_IMAGES },
-		{ "video",     OSSO_MIME_CATEGORY_VIDEO },
+		{ "audio",     HILDON_MIME_CATEGORY_AUDIO },    
+		{ "bookmarks", HILDON_MIME_CATEGORY_BOOKMARKS },
+		{ "contacts",  HILDON_MIME_CATEGORY_CONTACTS },
+		{ "documents", HILDON_MIME_CATEGORY_DOCUMENTS },
+		{ "emails",    HILDON_MIME_CATEGORY_EMAILS },
+		{ "images",    HILDON_MIME_CATEGORY_IMAGES },
+		{ "video",     HILDON_MIME_CATEGORY_VIDEO },
 	};
 	
 	for (i = 0; i < G_N_ELEMENTS (categories); i++) {
@@ -55,21 +76,21 @@ osso_mime_get_category_from_name (const gchar *category)
 		}
 	}
 	
-	return OSSO_MIME_CATEGORY_OTHER;
+	return HILDON_MIME_CATEGORY_OTHER;
 }
 
-OssoMimeCategory
-osso_mime_get_category_for_mime_type (const gchar *mime_type)
+HildonMimeCategory
+hildon_mime_get_category_for_mime_type (const gchar *mime_type)
 {
 	const gchar *category;
 
 	category = gnome_vfs_mime_get_value (mime_type, "category");
 
 	if (!category) {
-		return OSSO_MIME_CATEGORY_OTHER;
+		return HILDON_MIME_CATEGORY_OTHER;
 	}
 
-	return osso_mime_get_category_from_name (category);
+	return hildon_mime_get_category_from_name (category);
 }
 
 typedef struct XdgDirTimeList XdgDirTimeList;
@@ -486,18 +507,18 @@ dup_string_list (GList *list)
 }
 
 GList *
-osso_mime_get_mime_types_for_category (OssoMimeCategory category)
+hildon_mime_get_mime_types_for_category (HildonMimeCategory category)
 {
 	const gchar *category_name;
 	GList       *list;
 
-	if (category == OSSO_MIME_CATEGORY_OTHER) {
+	if (category == HILDON_MIME_CATEGORY_OTHER) {
 		return NULL;
 	}
 
 	xdg_mime_init ();
 
-        category_name = osso_mime_get_category_name (category);
+        category_name = hildon_mime_get_category_name (category);
         
         if (category_name) {
                 list = g_hash_table_lookup (category_hash, category_name);
@@ -509,7 +530,7 @@ osso_mime_get_mime_types_for_category (OssoMimeCategory category)
 }
 
 void 
-osso_mime_types_list_free (GList *list)
+hildon_mime_types_list_free (GList *list)
 {
         g_list_foreach (list, (GFunc)g_free, NULL);
 	g_list_free (list);

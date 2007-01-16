@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <glib.h>
 
-#include "osso-mime-patterns.h"
+#include "hildon-mime-patterns.h"
 
 static gchar *
 mime_patterns_get_pattern_if_mimetype_matches (const gchar *mime_type,
@@ -60,8 +60,8 @@ mime_patterns_read (const gchar   *mime_type,
 	file = fopen (GLOBS_FILE_PATH, "r");
 	if (!file) {
 		g_set_error (error,
-			     OSSO_MIME_PATTERNS_ERROR,
-			     OSSO_MIME_PATTERNS_ERROR_INTERNAL,
+			     HILDON_MIME_PATTERNS_ERROR,
+			     HILDON_MIME_PATTERNS_ERROR_INTERNAL,
 			     "Failed to open glob file: %s", 
 			     GLOBS_FILE_PATH); 
 		return FALSE;
@@ -92,14 +92,14 @@ mime_patterns_free (GSList *list)
 }
 
 GQuark 
-osso_mime_patterns_error_quark (void)
+hildon_mime_patterns_error_quark (void)
 {
-	return g_quark_from_static_string ("Osso-Mime-Pattern");
+	return g_quark_from_static_string ("Hildon-Mime-Pattern");
 }
 
 GSList *
-osso_mime_patterns_get_for_mime_type (const gchar  *mime_type,
-				      GError      **error)
+hildon_mime_patterns_get_for_mime_type (const gchar  *mime_type,
+					GError      **error)
 {
 	GSList *patterns = NULL;
 

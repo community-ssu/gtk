@@ -1,10 +1,14 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2006 Nokia Corporation.
+ * This is file is part of libhildonmime
+ *
+ * Copyright (C) 2004-2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; version 2 of the
+ * published by the Free Software Foundation; version 2.1 of the
  * License.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,20 +21,17 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
-/* Contact: Andrey Kochanov <andrey.kochanov@nokia.com> */
-
-#ifndef OSSO_MIME_GLOBS_H_
-#define OSSO_MIME_GLOBS_H_
+#ifndef HILDON_MIME_GLOBS_H_
+#define HILDON_MIME_GLOBS_H_
 
 G_BEGIN_DECLS
 
-#define OSSO_MIME_PATTERNS_ERROR osso_mime_patterns_error_quark()
+#define HILDON_MIME_PATTERNS_ERROR hildon_mime_patterns_error_quark()
 
 typedef enum { 
-	OSSO_MIME_PATTERNS_ERROR_INTERNAL
+	HILDON_MIME_PATTERNS_ERROR_INTERNAL
 	/* Could add more errors in the future */
-} OssoMimePatternsError;
+} HildonMimePatternsError;
 
 /**
  * Returns a list of file "glob" patterns that are registered for certain mime
@@ -40,11 +41,10 @@ typedef enum {
  * @param mime_type mime type as a string. For example "image/gif"
  * @param error error to store possible error information 
  */
-GSList *osso_mime_patterns_get_for_mime_type (const gchar  *mime_type,
-					      GError      **error);
-GQuark  osso_mime_patterns_error_quark       (void);
-
+GSList *hildon_mime_patterns_get_for_mime_type (const gchar  *mime_type,
+						GError      **error);
+GQuark  hildon_mime_patterns_error_quark       (void);
 
 G_END_DECLS
 
-#endif /* OSSO_MIME_GLOBS_H_ */
+#endif /* HILDON_MIME_GLOBS_H_ */

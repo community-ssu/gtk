@@ -1,10 +1,12 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; version 2 of the
+ * published by the Free Software Foundation version 2.1 of the
  * License.
  *
  * This program is distributed in the hope that it will be useful,
@@ -18,12 +20,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-/*
- * @author Richard Hult <richard@imendio.com>
- */
-
 #include <config.h>
-#include "osso-mime.h"
+#include "hildon-mime.h"
 
 #define MIME_TYPES "MimeType"
 
@@ -61,7 +59,7 @@ desktop_file_get_mime_types (const char *id)
 }
 
 GList *
-osso_mime_application_get_mime_types (const gchar *application_id)
+hildon_mime_application_get_mime_types (const gchar *application_id)
 {
 	GList  *list;
 	gchar  *mime_types;
@@ -97,7 +95,7 @@ osso_mime_application_get_mime_types (const gchar *application_id)
 }
 
 void
-osso_mime_application_mime_types_list_free (GList *list)
+hildon_mime_application_mime_types_list_free (GList *list)
 {
 	g_list_foreach (list, (GFunc) g_free, NULL);
 	g_list_free (list);

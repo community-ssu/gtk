@@ -23,12 +23,12 @@
  * Copyright (C) 2002 Alexander Larsson <alexl@redhat.com>.
  * All rights reserved. License is LGPL.
  *
- * The changes include adding the function osso_mime_get_icon_names and 
+ * The changes include adding the function hildon_mime_get_icon_names and 
  * removing code that wasn't needed.
  */
 
 #include <config.h>
-#include "osso-mime.h"
+#include "hildon-mime.h"
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <string.h>
@@ -138,7 +138,7 @@ make_generic_mime_name (const char *mime_type)
 }
 
 gchar **
-osso_mime_get_icon_names (const gchar      *mime_type,
+hildon_mime_get_icon_names (const gchar      *mime_type,
 			  GnomeVFSFileInfo *file_info)
 {
 	gchar  *name;

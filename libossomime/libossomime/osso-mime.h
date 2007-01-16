@@ -1,10 +1,14 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
+ * This is file is part of libhildonmime
+ *
  * Copyright (C) 2004-2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; version 2 of the
+ * published by the Free Software Foundation; version 2.1 of the
  * License.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,11 +21,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
-/* Contact: Andrey Kochanov <andrey.kochanov@nokia.com> */
-
-#ifndef LIBMIMEOPEN_H_
-#define LIBMIMEOPEN_H_
+#ifndef HILDON_MIME_H_
+#define HILDON_MIME_H_
 
 #include <glib.h>
 #include <libgnomevfs/gnome-vfs.h>
@@ -31,8 +32,8 @@
 #endif
 #include <dbus/dbus.h>
 
-#include <osso-uri.h>
-#include <osso-mime-patterns.h>
+#include <hildon-uri.h>
+#include <hildon-mime-patterns.h>
 
 G_BEGIN_DECLS
 
@@ -46,7 +47,7 @@ G_BEGIN_DECLS
  * registered as the handler for the mime type of the file.
  * @param con The D-BUS connection that we want to use.
  * @param file A string representation of the GnomeVFS URI of the file to be
- * opened (UTF-8). See osso_mime_open for more details.
+ * opened (UTF-8). See hildonmime_open for more details.
  *
  * The mapping from mime type to D-BUS service is done by looking up the
  * application for the mime type and in the desktop file for that application
@@ -55,8 +56,8 @@ G_BEGIN_DECLS
  * @return 1 in case of success, < 1 if an error occurred or if some parameter
  * is invalid.
  */
-gint osso_mime_open_file                (DBusConnection *con,
-					 const gchar    *file);
+gint hildon_mime_open_file                  (DBusConnection *con,
+					     const gchar    *file);
 
 
 /**
@@ -64,7 +65,7 @@ gint osso_mime_open_file                (DBusConnection *con,
  * registered as the handler for the mime type of the file.
  * @param con The D-BUS connection that we want to use.
  * @param files A list of string representations of the GnomeVFS URI of the file
- * to be opened (UTF-8). See osso_mime_open for more details.
+ * to be opened (UTF-8). See hildonmime_open for more details.
  * 
  * These will be sent to the application that handles this MIME-type.
  * If more then one type of file is specified, many applications may be
@@ -77,8 +78,8 @@ gint osso_mime_open_file                (DBusConnection *con,
  * @return 1 in case of success, < 1 if an error occurred or if some parameter
  * is invalid.
  */
-gint osso_mime_open_file_list           (DBusConnection *con,
-					 GSList         *files);
+gint hildon_mime_open_file_list             (DBusConnection *con,
+					     GSList         *files);
 
 
 /**
@@ -87,21 +88,17 @@ gint osso_mime_open_file_list           (DBusConnection *con,
  * @param con The D-BUS connection that we want to use.
  * @param mime_type A string representation of the mime-type.
  *
- * This operates similarly to osso_mime_open_file() with the exception
+ * This operates similarly to hildonmime_open_file() with the exception
  * that a file does not need to be given, and the @mime_type supplied
  * is used without the need for checking the mime-type of the file itself. 
  *
  * @return 1 in case of success, < 1 if an error occurred or if some parameter
  * is invalid.
  */
-gint osso_mime_open_file_with_mime_type (DBusConnection *con,
-					 const gchar    *file,
-					 const gchar    *mime_type);
-
-
+gint hildon_mime_open_file_with_mime_type   (DBusConnection *con,
+					     const gchar    *file,
+					     const gchar    *mime_type);
 /*@}*/
-
-
 
 /**
  * \defgroup MIMECATEGORY MIME category
@@ -109,31 +106,30 @@ gint osso_mime_open_file_with_mime_type (DBusConnection *con,
 /*@{*/
 
 typedef enum {
-	OSSO_MIME_CATEGORY_BOOKMARKS = 1 << 0,
-	OSSO_MIME_CATEGORY_CONTACTS  = 1 << 1,
-	OSSO_MIME_CATEGORY_DOCUMENTS = 1 << 2,
-	OSSO_MIME_CATEGORY_EMAILS    = 1 << 3,
-	OSSO_MIME_CATEGORY_IMAGES    = 1 << 4,
-	OSSO_MIME_CATEGORY_AUDIO     = 1 << 5,
-	OSSO_MIME_CATEGORY_VIDEO     = 1 << 6,
-	OSSO_MIME_CATEGORY_OTHER     = 1 << 7,
-	OSSO_MIME_CATEGORY_ALL       = (1 << 8) - 1
-} OssoMimeCategory;
+	HILDON_MIME_CATEGORY_BOOKMARKS = 1 << 0,
+	HILDON_MIME_CATEGORY_CONTACTS  = 1 << 1,
+	HILDON_MIME_CATEGORY_DOCUMENTS = 1 << 2,
+	HILDON_MIME_CATEGORY_EMAILS    = 1 << 3,
+	HILDON_MIME_CATEGORY_IMAGES    = 1 << 4,
+	HILDON_MIME_CATEGORY_AUDIO     = 1 << 5,
+	HILDON_MIME_CATEGORY_VIDEO     = 1 << 6,
+	HILDON_MIME_CATEGORY_OTHER     = 1 << 7,
+	HILDON_MIME_CATEGORY_ALL       = (1 << 8) - 1
+} HildonMimeCategory;
 
 /**
  * Return the category the specified mime type is in. See
- * osso_mime_get_mime_types_for_category() for more information.
+ * hildon_mime_get_mime_types_for_category() for more information.
  *
  * @param mime_type The mime type.
  *
 * @return The category that the mime type is in.
 */
-OssoMimeCategory osso_mime_get_category_for_mime_type       (const gchar       *mime_type);
-
+HildonMimeCategory hildon_mime_get_category_for_mime_type     (const gchar       *mime_type);
 
 /**
  * Returns a list of mime types that are in the specified category. The returned
- * list should be freed by calling osso_mime_types_list_free().
+ * list should be freed by calling hildon_mime_types_list_free().
  *
  * The mapping between category and mime type is handled through the shared mime
  * info. Add the tag <osso:category name="name"/> to a mime type to specify that
@@ -152,17 +148,15 @@ OssoMimeCategory osso_mime_get_category_for_mime_type       (const gchar       *
  * @return A list of mime types, represented as strings, or NULL if none were
  * found or not valid category.
  */
-GList *          osso_mime_get_mime_types_for_category      (OssoMimeCategory   category);
-
+GList *          hildon_mime_get_mime_types_for_category      (HildonMimeCategory   category);
 
 /**
  * Frees the list of mime types as returned by
- * osso_mime_get_mime_types_for_category().
+ * hildon_mime_get_mime_types_for_category().
  * 
  * @param list A list of mime types.
  */
-void             osso_mime_types_list_free                  (GList             *list);
-
+void             hildon_mime_types_list_free                  (GList             *list);
 
 /**
  * Returns the name of the specified category.
@@ -171,8 +165,7 @@ void             osso_mime_types_list_free                  (GList             *
  *
  * @return The name of the category, should not be freed or modified.
  */
-const gchar *    osso_mime_get_category_name                (OssoMimeCategory   category);
-
+const gchar *    hildon_mime_get_category_name                (HildonMimeCategory   category);
 
 /**
  * Returns the category corresponding to the given name.
@@ -181,12 +174,9 @@ const gchar *    osso_mime_get_category_name                (OssoMimeCategory   
  *
  * @return The category.
  */
-OssoMimeCategory osso_mime_get_category_from_name           (const gchar       *category);
-
-
+HildonMimeCategory hildon_mime_get_category_from_name         (const gchar       *category);
 
 /*@}*/
-
 
 /**
  * \defgroup MIMEAPP MIME application
@@ -196,7 +186,7 @@ OssoMimeCategory osso_mime_get_category_from_name           (const gchar       *
 /**
  * Returns a list of mime types supported by the application corresponding to
  * the specified appliction id. The returned list should be freed by calling
- * osso_mime_application_mime_types_list_free().
+ * hildon_mime_application_mime_types_list_free().
  *
  * The list of mime types is specifed in the desktop file for the application
  * with the MimeType field.
@@ -206,19 +196,17 @@ OssoMimeCategory osso_mime_get_category_from_name           (const gchar       *
  * @return A list of mime types, represented as strings, or NULL if none were
  * found.
  */
-GList *          osso_mime_application_get_mime_types       (const gchar       *application_id);
+GList *          hildon_mime_application_get_mime_types       (const gchar       *application_id);
 
 /**
  * Frees the list of mime types as returned by
- * osso_mime_application_get_mime_types().
+ * hildon_mime_application_get_mime_types().
  * 
  * @param mime_types A list of mime types.
  */
-void             osso_mime_application_mime_types_list_free (GList             *mime_types);
-
+void             hildon_mime_application_mime_types_list_free (GList             *mime_types);
 
 /*@}*/
-
 
 /**
  * \defgroup MIMEICON MIME icon
@@ -245,11 +233,11 @@ void             osso_mime_application_mime_types_list_free (GList             *
  * @return A newly allocated array of icon name strings. Should be freed with
  * g_strfreev().
  */
-gchar **         osso_mime_get_icon_names                   (const gchar       *mime_type,
-							     GnomeVFSFileInfo  *file_info);
+gchar **         hildon_mime_get_icon_names                   (const gchar       *mime_type,
+							       GnomeVFSFileInfo  *file_info);
 
 /*@}*/
 
 G_END_DECLS
 
-#endif /* LIBMIMEOPEN_H_ */
+#endif /* HILDON_MIME_H_ */

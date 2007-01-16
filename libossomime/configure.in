@@ -1,26 +1,26 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.52)
  
-AC_INIT(libossomime, 1.9.0)
-AC_CONFIG_SRCDIR(libossomime/osso-uri.c)
+AC_INIT(libhildonmime, 1.9.0)
+AC_CONFIG_SRCDIR(libhildonmime/hildon-uri.c)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
-dnl Versioning for libossomime
+dnl Versioning for libhildonmime
 
 dnl Increase when changing the API (adding, removing, changing)
-LIBOSSOMIME_CURRENT=1
+LIBHILDONMIME_CURRENT=1
 
 dnl Increase when changing implementation of current API,
 dnl reset to 0 when changing CURRENT. This is the revision of current
 dnl API version.
-LIBOSSOMIME_REVISION=3
+LIBHILDONMIME_REVISION=3
 
 dnl Change this only if CURRENT has been changed. Increase if API
 dnl change is ABI compatible, otherwise reset to 0
-LIBOSSOMIME_AGE=1
+LIBHILDONMIME_AGE=1
 
-LIBOSSOMIME_VERSION_INFO="$LIBOSSOMIME_CURRENT:$LIBOSSOMIME_REVISION:$LIBOSSOMIME_AGE"
-AC_SUBST(LIBOSSOMIME_VERSION_INFO)
+LIBHILDONMIME_VERSION_INFO="$LIBHILDONMIME_CURRENT:$LIBHILDONMIME_REVISION:$LIBHILDONMIME_AGE"
+AC_SUBST(LIBHILDONMIME_VERSION_INFO)
 
 dnl Globally define_GNU_SOURCE and therefore enable the GNU extensions
 AC_DEFINE(_GNU_SOURCE, 1, [Enable GNU Extensions])
@@ -49,17 +49,17 @@ GTK_REQUIRED=2.6.0
 LIBXML_REQUIRED=2.4
 
 dnl =======================================
-dnl libossomime
+dnl libhildonmime
 dnl =======================================
-PKG_CHECK_MODULES(LIBOSSOMIME, [
+PKG_CHECK_MODULES(LIBHILDONMIME, [
         glib-2.0 >= $GLIB_REQUIRED
         gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
         gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
         dbus-glib-1 >= $DBUS_REQUIRED
 ])
 
-AC_SUBST(LIBOSSOMIME_CFLAGS)
-AC_SUBST(LIBOSSOMIME_LIBS)
+AC_SUBST(LIBHILDONMIME_CFLAGS)
+AC_SUBST(LIBHILDONMIME_LIBS)
 
 dnl =======================================
 dnl update-category-database 
@@ -85,9 +85,9 @@ AC_SUBST(ACLOCAL_AMFLAGS)
 
 AC_OUTPUT([
 	Makefile 
-	libossomime.pc
+	libhildonmime.pc
 	debian/Makefile
-        libossomime/Makefile
+        libhildonmime/Makefile
         tests/Makefile
         data/Makefile
 	docs/Makefile
