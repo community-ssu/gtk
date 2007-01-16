@@ -1,6 +1,5 @@
 osso-af-startup (1.34-1) unstable; urgency=low
 
-  * UNRELEASED
   * Startup greeting fix from Gabriel Schulhof.
   * Removed top-scripts/startup-greeting.sh.
 
