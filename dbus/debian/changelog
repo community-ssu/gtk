@@ -1,11 +1,10 @@
 dbus (1.0.2-0osso1) experimental; urgency=low
 
-  * UNRELEASED
   * Upgraded the upstream tarball to v1.0.2.
   * Fixed problem with installing the package in Sardine environment.
   * Removed 10-fix-match-rule-equal.patch because it's in the tarball.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 21 Dec 2006 15:43:33 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 16 Jan 2007 16:13:36 +0200
 
 dbus (1.0.0-osso3) experimental; urgency=low
 
