@@ -1,3 +1,15 @@
+osso-app-killer (1.15-1) unstable; urgency=low
+
+  * Not clearing VOIP accounts anymore in ROS. Fixes: NB#41676
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 28 Nov 2006 16:56:04 +0200
+
+osso-app-killer (1.14-1) unstable; urgency=low
+
+  * Fixed product name. Fixes: NB#47016
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 13 Nov 2006 12:47:27 +0200
+
 osso-app-killer (1.13-1) unstable; urgency=low
 
   * Fixed ROS and CUD to do nothing in case the flash is too full.

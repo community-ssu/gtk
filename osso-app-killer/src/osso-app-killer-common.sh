@@ -25,7 +25,7 @@ DIR=/etc/osso-af-init
 
 # reset the Bluetooth name
 dbus-send --system --dest=org.bluez /org/bluez/hci0 \
-  org.bluez.Adapter.SetName string:'Nokia 770'
+  org.bluez.Adapter.SetName string:'Nokia N800'
 
 if [ "x$CUD" != "x" ]; then
   # restore the original language

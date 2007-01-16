@@ -37,8 +37,8 @@ if [ $? = 0 ]; then
       # special handling for subdirectory 'apps'
       if [ "x$CUD" = "x" ]; then
         for f in `find apps -name *.xml`; do
-          # in RFS, paths having 'rtcom' are preserved
-          echo "$f" | grep -e 'rtcom' > /dev/null
+          # in RFS, paths having 'telepathy' are preserved
+          echo "$f" | grep -e 'telepathy' > /dev/null
           if [ $? = 0 ]; then
             continue
           fi
