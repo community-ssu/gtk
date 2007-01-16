@@ -47,6 +47,10 @@ start)
     /etc/osso-af-init/maemo-launcher start
   fi
 
+  if [ -x /etc/osso-af-init/startup-greeting.sh ]; then
+    source /etc/osso-af-init/startup-greeting.sh start
+  fi
+
   if [ -e $HOME/first-boot-flag ]; then
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
       source $AF_INIT_DIR/startup-wizard.sh start

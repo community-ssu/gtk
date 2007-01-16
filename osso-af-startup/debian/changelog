@@ -1,3 +1,10 @@
+osso-af-startup (1.34-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Startup greeting fix from Gabriel Schulhof.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 16 Jan 2007 16:38:33 +0200
+
 osso-af-startup (1.33-1) unstable; urgency=low
 
   * Fixed problem with /etc/sudoers when installing to Sardine.
