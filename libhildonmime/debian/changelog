@@ -1,6 +1,5 @@
 libhildonmime (1.9.0-1) unstable; urgency=low
 
-  * UNRELEASED
   * Start new development branch
 
- -- Richard Hult <richard@imendio.com>  Thu, 21 Dec 2006 09:49:20 +0100
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Wed, 17 Jan 2007 10:36:20 +0200
