@@ -1,8 +1,31 @@
+/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/*
+ * This is file is part of libhildonmime
+ *
+ * Copyright (C) 2004-2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License as
+ * published by the Free Software Foundation; version 2.1 of the
+ * License.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this program; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 #include <config.h>
 #include <stdlib.h>
 #include <string.h>
 #include <libgnomevfs/gnome-vfs.h>
-#include <osso-mime.h>
+#include <hildon-mime.h>
 
 static gboolean   use_default = FALSE;
 static gchar     *get_actions = NULL;
@@ -88,7 +111,7 @@ main (int argc, char **argv)
 	GOptionContext *context;
 	GError         *error = NULL;
 	
-	context = g_option_context_new ("- test the osso-uri API.");
+	context = g_option_context_new ("- test the hildon-uri API.");
 	g_option_context_add_main_entries (context, entries, NULL);
 	g_option_context_parse (context, &argc, &argv, NULL);
 	g_option_context_free (context);
@@ -106,7 +129,7 @@ main (int argc, char **argv)
 	gnome_vfs_init ();
 
 	if (set_default_to_nothing) {
-		osso_uri_set_default_action (set_default_to_nothing, NULL, &error);
+		hildon_uri_set_default_action (set_default_to_nothing, NULL, &error);
 		if (error != NULL) {
 			g_printerr ("Could not set default to nothing for scheme:'%s', error:%d->'%s'\n", 
 				    set_default_to_nothing, error->code, error->message);
@@ -118,9 +141,9 @@ main (int argc, char **argv)
 	}
 
 	if (get_default && set_default) {
-		OssoURIAction *default_action;
+		HildonURIAction *default_action;
 		
-		default_action = osso_uri_get_default_action (get_default, &error);
+		default_action = hildon_uri_get_default_action (get_default, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get default action for scheme:'%s', error:%d->'%s'\n", 
 				    get_default, error->code, error->message);
@@ -128,7 +151,7 @@ main (int argc, char **argv)
 			return EXIT_FAILURE;
 		} 
 
-		osso_uri_set_default_action (set_default, default_action, &error);
+		hildon_uri_set_default_action (set_default, default_action, &error);
 		if (error != NULL) {
 			g_printerr ("Could not set default action for scheme:'%s', error:%d->'%s'\n", 
 				    set_default, error->code, error->message);
@@ -137,7 +160,7 @@ main (int argc, char **argv)
 		}
 
 		if (default_action) {
-			osso_uri_action_unref (default_action);
+			hildon_uri_action_unref (default_action);
 		}
 
 		g_print ("Default for:'%s' set for '%s' too.\n", 
@@ -148,7 +171,7 @@ main (int argc, char **argv)
 		GSList *actions;
 		GSList *l;
 
-		actions = osso_uri_get_actions (get_actions, &error);
+		actions = hildon_uri_get_actions (get_actions, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get actions for scheme:'%s', error:%d->'%s'\n", 
 				    get_actions, error->code, error->message);
@@ -157,13 +180,13 @@ main (int argc, char **argv)
 		}
 
 		if (actions) {
-			OssoURIAction *action;
+			HildonURIAction *action;
 			const gchar   *name = NULL;
 			gboolean       found = FALSE;
 
 			for (l = actions; l && !found; l = l->next) {
 				action = l->data;
-				name = osso_uri_action_get_name (action);
+				name = hildon_uri_action_get_name (action);
 
 				if (name && strcmp (name, is_default) == 0) {
 					found = TRUE;
@@ -173,7 +196,7 @@ main (int argc, char **argv)
 			if (found) {
 				gboolean is_default_action;
 
-				is_default_action = osso_uri_is_default_action (action, NULL);
+				is_default_action = hildon_uri_is_default_action (action, NULL);
 
 				g_print ("Action:'%s' %s the default action\n", 
 					 is_default, is_default_action ? "is" : "is NOT");
@@ -181,16 +204,16 @@ main (int argc, char **argv)
 				g_print ("Action:'%s' was not found\n", is_default);
 			}
 			
-			osso_uri_free_actions (actions);
+			hildon_uri_free_actions (actions);
 		} else {
 			g_print ("No actions for scheme:'%s'\n", get_actions);
 		}
 	}
 
 	if (get_default_by_uri && set_default_by_uri) {
-		OssoURIAction *default_action;
+		HildonURIAction *default_action;
 		
-		default_action = osso_uri_get_default_action_by_uri (get_default_by_uri, &error);
+		default_action = hildon_uri_get_default_action_by_uri (get_default_by_uri, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get default action by uri:'%s', error:%d->'%s'\n", 
 				    get_default_by_uri, error->code, error->message);
@@ -198,7 +221,7 @@ main (int argc, char **argv)
 			return EXIT_FAILURE;
 		} 
 
-		osso_uri_set_default_action_by_uri (set_default_by_uri, default_action, &error);
+		hildon_uri_set_default_action_by_uri (set_default_by_uri, default_action, &error);
 		if (error != NULL) {
 			g_printerr ("Could not set default action by uri:'%s', error:%d->'%s'\n", 
 				    set_default_by_uri, error->code, error->message);
@@ -207,7 +230,7 @@ main (int argc, char **argv)
 		}
 
 		if (default_action) {
-			osso_uri_action_unref (default_action);
+			hildon_uri_action_unref (default_action);
 		}
 
 		g_print ("Default for:'%s' set for '%s' too.\n", 
@@ -218,7 +241,7 @@ main (int argc, char **argv)
 		GSList *actions;
 		GSList *l;
 
-		actions = osso_uri_get_actions_by_uri (get_actions_by_uri, -1, &error);
+		actions = hildon_uri_get_actions_by_uri (get_actions_by_uri, -1, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get actions by uri:'%s', error:%d->'%s'\n", 
 				    get_actions_by_uri, error->code, error->message);
@@ -227,13 +250,13 @@ main (int argc, char **argv)
 		}
 
 		if (actions) {
-			OssoURIAction *action;
+			HildonURIAction *action;
 			const gchar   *name = NULL;
 			gboolean       found = FALSE;
 
 			for (l = actions; l && !found; l = l->next) {
 				action = l->data;
-				name = osso_uri_action_get_name (action);
+				name = hildon_uri_action_get_name (action);
 
 				if (name && strcmp (name, is_default) == 0) {
 					found = TRUE;
@@ -243,7 +266,7 @@ main (int argc, char **argv)
 			if (found) {
 				gboolean is_default_action;
 
-				is_default_action = osso_uri_is_default_action (action, NULL);
+				is_default_action = hildon_uri_is_default_action (action, NULL);
 
 				g_print ("Action:'%s' %s the default action\n", 
 					 is_default, is_default_action ? "is" : "is NOT");
@@ -251,16 +274,16 @@ main (int argc, char **argv)
 				g_print ("Action:'%s' was not found\n", is_default);
 			}
 			
-			osso_uri_free_actions (actions);
+			hildon_uri_free_actions (actions);
 		} else {
 			g_print ("No actions for uri:'%s'\n", get_actions_by_uri);
 		}
 	}
 
 	if (get_default) {
-		OssoURIAction *default_action;
+		HildonURIAction *default_action;
 
-		default_action = osso_uri_get_default_action (get_default, &error);
+		default_action = hildon_uri_get_default_action (get_default, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get default action for scheme:'%s', error:%d->'%s'\n", 
 				    get_default, error->code, error->message);
@@ -270,8 +293,8 @@ main (int argc, char **argv)
 
 		if (default_action) {
 			g_print ("Default action for scheme:'%s' is '%s'\n", 
-				 get_default, osso_uri_action_get_name (default_action));
-			osso_uri_action_unref (default_action);
+				 get_default, hildon_uri_action_get_name (default_action));
+			hildon_uri_action_unref (default_action);
 		} else {
 			g_print ("No default action for scheme:'%s'\n", 
 				 get_default);
@@ -279,9 +302,9 @@ main (int argc, char **argv)
 	}
 
 	if (get_default_by_uri) {
-		OssoURIAction *default_action;
+		HildonURIAction *default_action;
 
-		default_action = osso_uri_get_default_action_by_uri (get_default_by_uri, &error);
+		default_action = hildon_uri_get_default_action_by_uri (get_default_by_uri, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get default action for uri:'%s', error:%d->'%s'\n", 
 				    get_default_by_uri, error->code, error->message);
@@ -291,8 +314,8 @@ main (int argc, char **argv)
 
 		if (default_action) {
 			g_print ("Default action for uri:'%s' is '%s'\n", 
-				 get_default_by_uri, osso_uri_action_get_name (default_action));
-			osso_uri_action_unref (default_action);
+				 get_default_by_uri, hildon_uri_action_get_name (default_action));
+			hildon_uri_action_unref (default_action);
 		} else {
 			g_print ("No default action for uri:'%s'\n", 
 				 get_default_by_uri);
@@ -303,7 +326,7 @@ main (int argc, char **argv)
 		GSList *actions = NULL;
 		GSList *l;
 
-		actions = osso_uri_get_actions (get_actions, &error);
+		actions = hildon_uri_get_actions (get_actions, &error);
 
 		if (error != NULL) {
 			g_printerr ("Could not get actions for scheme:'%s', error:%d->'%s'\n", 
@@ -316,14 +339,14 @@ main (int argc, char **argv)
 			g_print ("Actions for scheme:'%s' are:\n", get_actions);
 			
 			for (l = actions; l; l = l->next) {
-				OssoURIAction *action;
+				HildonURIAction *action;
 				
 				action = l->data;
 				
-				g_print ("\t%s\n", osso_uri_action_get_name (action));
+				g_print ("\t%s\n", hildon_uri_action_get_name (action));
 			}
 			
-			osso_uri_free_actions (actions);
+			hildon_uri_free_actions (actions);
 		} else {
 			g_print ("No actions for scheme:'%s'\n", get_actions);
 		}
@@ -334,21 +357,21 @@ main (int argc, char **argv)
 		GSList *l;
 
 		if (!action_type) {
-			actions = osso_uri_get_actions_by_uri (get_actions_by_uri, -1, &error);
+			actions = hildon_uri_get_actions_by_uri (get_actions_by_uri, -1, &error);
 		} else {
-			OssoURIActionType type;
+			HildonURIActionType type;
 			
-			type = OSSO_URI_ACTION_NORMAL;
+			type = HILDON_URI_ACTION_NORMAL;
 			
 			if (action_type) {
 				if (g_ascii_strcasecmp (action_type, "Neutral") == 0) {
-					type = OSSO_URI_ACTION_NEUTRAL;
+					type = HILDON_URI_ACTION_NEUTRAL;
 				} else if (g_ascii_strcasecmp (action_type, "Fallback") == 0) {
-					type = OSSO_URI_ACTION_FALLBACK;
+					type = HILDON_URI_ACTION_FALLBACK;
 				}
 			}
 
-			actions = osso_uri_get_actions_by_uri (get_actions_by_uri, type, &error);
+			actions = hildon_uri_get_actions_by_uri (get_actions_by_uri, type, &error);
 		}
 
 		if (error != NULL) {
@@ -362,14 +385,14 @@ main (int argc, char **argv)
 			g_print ("Actions for uri:'%s' are:\n", get_actions_by_uri);
 			
 			for (l = actions; l; l = l->next) {
-				OssoURIAction *action;
+				HildonURIAction *action;
 				
 				action = l->data;
 				
-				g_print ("\t%s\n", osso_uri_action_get_name (action));
+				g_print ("\t%s\n", hildon_uri_action_get_name (action));
 			}
 			
-			osso_uri_free_actions (actions);
+			hildon_uri_free_actions (actions);
 		} else {
 			g_print ("No actions for uri:'%s'\n", get_actions_by_uri);
 		}
@@ -378,7 +401,7 @@ main (int argc, char **argv)
 	if (get_scheme) {
 		gchar *scheme;
 
-		scheme = osso_uri_get_scheme_from_uri (get_scheme, &error);
+		scheme = hildon_uri_get_scheme_from_uri (get_scheme, &error);
 		if (error != NULL) {
 			g_printerr ("Could not get scheme from uri:'%s', error:%d->'%s'\n", 
 				    get_scheme, error->code, error->message);
@@ -406,18 +429,18 @@ main (int argc, char **argv)
 		}
 		
 		while ((uri = open_uris[i++]) != NULL) {
-		       OssoURIAction *default_action = NULL;
+		       HildonURIAction *default_action = NULL;
 		       gboolean       success;
 
 		       if (!use_default) {
 			       gchar *scheme;
 
-			       scheme = osso_uri_get_scheme_from_uri (uri, NULL);
-			       default_action = osso_uri_get_default_action (scheme, NULL);
+			       scheme = hildon_uri_get_scheme_from_uri (uri, NULL);
+			       default_action = hildon_uri_get_default_action (scheme, NULL);
 			       
 			       if (default_action) {
 				       g_print ("Using default action:'%s' to open URI:'%s'...\n", 
-						osso_uri_action_get_name (default_action), uri);
+						hildon_uri_action_get_name (default_action), uri);
 			       } else {
 				       g_print ("Using no action to open URI:'%s'...\n", 
 						uri);
@@ -426,10 +449,10 @@ main (int argc, char **argv)
 			       g_free (scheme);
 		       }
 
-		       success = osso_uri_open (uri, default_action, &error);
+		       success = hildon_uri_open (uri, default_action, &error);
 
 		       if (default_action) {
-			       osso_uri_action_unref (default_action);
+			       hildon_uri_action_unref (default_action);
 		       }
 		
 		       if (error != NULL) {

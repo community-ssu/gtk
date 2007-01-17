@@ -67,7 +67,7 @@ binary-arch: install
 	dh_installchangelogs 
 	dh_installdocs README docs/mime-category-mapping.txt docs/mime-dbus-mapping.txt
 	dh_link
-	dh_strip --dbg-package=libossomime0
+	dh_strip --dbg-package=libhildonmime0
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -V

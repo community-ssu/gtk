@@ -1,3 +1,9 @@
+2007-01-16  Erik Karlsson  <erik.b.karlsson@nokia.com>
+
+	* Changed the prefix from osso_ to hildon_
+	* Changed the name from libossomime to libhildonmime
+	* Modified the needed configuration and source files
+
 2007-01-11  Martyn Russell  <martyn@imendio.com>
 
 	* tests/test-all.c: Added tests for failure conditions for all

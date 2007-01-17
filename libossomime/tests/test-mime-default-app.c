@@ -1,10 +1,14 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2006 Nokia Corporation.
+ * This is file is part of libhildonmime
+ *
+ * Copyright (C) 2004-2006 Nokia Corporation.
+ *
+ * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License as
- * published by the Free Software Foundation; version 2 of the
+ * published by the Free Software Foundation; version 2.1 of the
  * License.
  *
  * This program is distributed in the hope that it will be useful,
@@ -17,7 +21,7 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-
+ 
 /* Test file to test the GnomeVFS default app. */
 
 #include <config.h>

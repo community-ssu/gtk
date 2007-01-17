@@ -1,34 +1,34 @@
-Source: libossomime
+Source: libhildonmime
 Section: libs
 Priority: optional
-Maintainer: Richard Hult <richard@imendio.com>
+Maintainer: Erik Karlsson <erik.b.karlsson@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev (>= 2.8), libosso-gnomevfs2-dev (>= 2.16.3), libdbus-glib-1-dev
 Standards-Version: 3.6.1.0
 
-Package: libossomime0
+Package: libhildonmime0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, osso-update-category-database (= ${Source-Version}), osso-uri-l10n-mr0 | osso-uri-l10n-mr
+Depends: ${shlibs:Depends}, hildon-update-category-database (= ${Source-Version}), osso-uri-l10n-mr0 | osso-uri-l10n-mr
 Description: Library for activating an application to handle a certain mime type
  This package contains a library for activating an application to handle
  a certain mime type.
 
-Package: libossomime-dev
+Package: libhildonmime-dev
 Section: devel
 Architecture: any
-Depends: libossomime0 (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libdbus-glib-1-dev
-Description: libossomime development files
- Development files for the libossomime package.
+Depends: libhildonmime0 (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libdbus-glib-1-dev
+Description: libhildonmime development files
+ Development files for the libhildonmime package.
 
-Package: libossomime0-dbg
+Package: libhildonmime0-dbg
 Section: devel
 Priority: extra
 Architecture: any
-Depends: libossomime0 (= ${Source-Version})
-Description: libossomime debugging symbols
- Development files for the libossomime package.
+Depends: libhildonmime0 (= ${Source-Version})
+Description: libhildonmime debugging symbols
+ Development files for the libhildonmime package.
 
-Package: osso-update-category-database
+Package: hildon-update-category-database
 Section: misc
 Architecture: any
 Depends: ${shlibs:Depends}

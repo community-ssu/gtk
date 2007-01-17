@@ -23,7 +23,7 @@
 #include <config.h>
 #include <string.h>
 #include <glib.h>
-#include <osso-mime.h>
+#include <hildon-mime.h>
 
 static gint
 test_no_mime_type (void)
@@ -34,7 +34,7 @@ test_no_mime_type (void)
 
 	mimetype = "doesntexistsmimetype/hgifff";
 
-	list = osso_mime_patterns_get_for_mime_type (mimetype, &error);
+	list = hildon_mime_patterns_get_for_mime_type (mimetype, &error);
 	if (!list) {
 		if (error != NULL) {
 			g_printerr ("[Error] %s\n", error->message);
@@ -62,7 +62,7 @@ test_html (void)
 	
 	mimetype = "text/html";
 	
-	list = osso_mime_patterns_get_for_mime_type (mimetype, &error);
+	list = hildon_mime_patterns_get_for_mime_type (mimetype, &error);
 	if (list) {
 		if ((strcmp ((gchar*) list->data, "*.html") != 0) &&
 		    (strcmp ((gchar*) list->data, "*.htm") != 0)) {
@@ -89,7 +89,7 @@ test_image_gif (void)
 
 	mimetype = "image/gif";
 
-	list = osso_mime_patterns_get_for_mime_type (mimetype, &error);
+	list = hildon_mime_patterns_get_for_mime_type (mimetype, &error);
 	if (!list) {
 		if (error != NULL) {
 			g_printerr ("[Error] %s\n", error->message);
