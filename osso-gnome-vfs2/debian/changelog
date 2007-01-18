@@ -1,11 +1,10 @@
 osso-gnome-vfs2 (2.16.3-1osso5) unstable; urgency=low
 
-  * FIXME: UNRELEASED
   * Update inotify headers from upstream GNOME CVS to get the right license
   * Update caseless-file-method from the normal file-method
   * Merge from stable, NB#43533, to work around broken http servers
 
- -- Richard Hult <richard@imendio.com>  Fri, 15 Dec 2006 09:46:01 +0100
+ -- Richard Hult <richard@imendio.com>  Thu, 18 Jan 2007 18:21:45 +0100
 
 osso-gnome-vfs2 (2.16.3-1osso4) unstable; urgency=low
 
