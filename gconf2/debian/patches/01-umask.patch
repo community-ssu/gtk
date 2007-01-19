@@ -1,0 +1,21 @@
+--- gconf/gconfd.c-unmod	2007-01-18 14:33:01.000000000 +0100
++++ gconf/gconfd.c	2007-01-19 13:18:51.000000000 +0100
+@@ -676,7 +676,7 @@ main(int argc, char** argv)
+       gconf_log_debug_messages = TRUE;
+     }
+   
+-  umask (022);
++  umask (0);
+ 
+ #ifndef DAEMON_DEBUG
+   gconf_set_daemon_mode(TRUE);
+--- gconf/gconftool.c-unmod	2007-01-18 14:33:01.000000000 +0100
++++ gconf/gconftool.c	2007-01-19 13:18:31.000000000 +0100
+@@ -544,6 +544,7 @@ main (int argc, char** argv)
+   bindtextdomain (GETTEXT_PACKAGE,GCONF_LOCALE_DIR);
+   textdomain (GETTEXT_PACKAGE);
+   _gconf_init_i18n ();
++  umask(0);
+   
+   context = g_option_context_new (_("- Tool to manipulate a GConf configuration"));
+ 

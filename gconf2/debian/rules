@@ -1,0 +1,59 @@
+#! /usr/bin/make -f
+
+export DH_VERBOSE=1
+DH_ALWAYS_EXCLUDE := .svn
+
+#include /usr/share/cdbs/1/rules/debhelper.mk
+#include /usr/share/cdbs/1/class/gnome.mk
+#include /usr/share/cdbs/1/rules/simple-patchsys.mk
+#include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/cdbs/1/class/gnome.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/rules/utils.mk
+
+# rh
+DEB_DH_STRIP_ARGS := --dbg-package=gconf2 --dbg-package=libgconf2-6
+
+DEB_INSTALL_DOCS_gconf2 := NEWS README
+
+DEB_CONFIGURE_EXTRA_FLAGS := \
+	--prefix=/usr 				\
+	--mandir=\$${prefix}/share/man 		\
+        --infodir=\$${prefix}/share/info 	\
+	--libexecdir=\$${prefix}/lib/gconf2 	\
+        --sysconfdir=/etc 			\
+	--disable-debug 			\
+	--disable-gtk	 			\
+	--disable-gtk-doc 			\
+	--with-ipc=dbus 			\
+	--enable-system-bus
+
+# rh DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,--as-needed"
+
+DEB_MAKE_INVOKE += pkglibdir=/usr/lib/libgconf2
+
+DEB_DH_MAKESHLIBS_ARGS_libgconf2-6 := -Xbackend -V"libgconf2-6 (>= 2.13.5)"
+# rh DEB_DH_SHLIBDEPS_ARGS := -Xgconf-sanity-check
+
+DEB_COMPRESS_EXCLUDE := usr/share/doc/gconf2/html
+
+CFLAGS ?= -O2 -g
+
+# Use soft-float and thumb mode if it is enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -mthumb
+endif
+
+post-patches:: debian/stamp-autothings-update
+debian/stamp-autothings-update:
+	NOCONFIGURE=1 ./autogen.sh
+	# Can add things here that need to be ran after autogen.sh
+	touch $@
+
+clean::
+	rm -f debian/stamp-autothings-update
+	rm -f debian/stamp-libtool-patch
+	-rm -rf doc/gconf/.libs

@@ -1,0 +1,20 @@
+--- gconf/gconftool.c-unmod	2007-01-19 13:45:37.000000000 +0100
++++ gconf/gconftool.c	2007-01-19 13:51:27.000000000 +0100
+@@ -963,6 +963,8 @@ main (int argc, char** argv)
+       
+       gconf_engine_unref (conf);
+ 
++      g_spawn_command_line_sync ("/usr/bin/killall -q -TERM " GCONFD, NULL, NULL, NULL, NULL);
++
+       return retval;
+     }
+ 
+@@ -975,6 +977,8 @@ main (int argc, char** argv)
+       
+       gconf_engine_unref (conf);
+ 
++      g_spawn_command_line_sync ("/usr/bin/killall -q -TERM " GCONFD, NULL, NULL, NULL, NULL);
++
+       return retval;
+     }
+ 

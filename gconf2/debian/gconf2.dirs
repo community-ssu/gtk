@@ -1,0 +1,4 @@
+/etc/gconf/2
+/etc/gconf/gconf.xml.mandatory
+/etc/gconf/gconf.xml.defaults
+/usr/share/gconf/defaults

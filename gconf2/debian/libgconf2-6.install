@@ -1,0 +1,3 @@
+debian/tmp/usr/lib/*.so.*
+debian/tmp/usr/lib/libgconf2/gconf*
+debian/tmp/usr/lib/libgconf2/2/*.so
