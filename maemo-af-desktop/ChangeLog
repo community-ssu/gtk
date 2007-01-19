@@ -1,3 +1,9 @@
+2007-01-19  Moises Martinez <moises.martinez@nokia.com>
+
+	* hildon-navigator/hildon-navigator-panel.c:
+	- Set default plugins if the .desktop file doesn't have 
+	  enough entries. Fixes: NB#50698.
+
 2007-01-19  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.99.17

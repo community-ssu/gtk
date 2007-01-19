@@ -197,6 +197,52 @@ hildon_navigator_panel_class_init (HildonNavigatorPanelClass *panel_class)
   panel_class->peek_plugins           = hn_panel_peek_plugins;
 }
 
+static void 
+hn_panel_send_recovery_plugin_message (void)
+{
+   DBusConnection *connection;
+   DBusMessage    *message;
+   DBusError       dbus_error;
+   gint pid,timeout,init;
+   gchar *strmsg = g_strdup (_("tncpa_ib_default_plugin_restored"));
+
+   pid     = getpid();
+   timeout = 3000;
+   init    = 0;
+
+   dbus_error_init (&dbus_error);
+   connection = dbus_bus_get( DBUS_BUS_SESSION, &dbus_error );
+
+   message = dbus_message_new_method_call
+	     ("com.nokia.statusbar",
+	      "/com/nokia/statusbar", 
+	      "com.nokia.statusbar", 
+	      "delayed_infobanner");
+
+   if (message)
+   {
+     dbus_message_append_args (message, 
+		      	       DBUS_TYPE_INT32, 
+			       &pid,
+			       DBUS_TYPE_INT32,
+			       &init,
+			       DBUS_TYPE_INT32, 
+			       &timeout,
+			       DBUS_TYPE_STRING, 
+			       &strmsg,
+			       DBUS_TYPE_INVALID);
+
+      dbus_connection_send (connection, message, NULL);
+
+      dbus_connection_flush (connection);
+
+  }
+
+  dbus_message_unref(message);
+
+  g_free (strmsg);
+}
+
 static GList * 
 hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 				gchar *filename, 
@@ -209,6 +255,8 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
   HildonNavigatorItem *plugin = NULL;
   HildonNavigatorPanelPrivate *priv;
   GError *error = NULL;
+  gint position;
+  gboolean mandatory;
 
   g_assert (panel);
 
@@ -250,8 +298,6 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
   while (groups[i] != NULL)
   {
     gchar *library = NULL;
-    gint position;
-    gboolean mandatory;
   
     library = g_key_file_get_string(keyfile, groups[i],
                                     PLUGIN_KEY_LIB, &error);
@@ -315,50 +361,11 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
 
 	  if (plugin)
 	  {
-            DBusConnection *connection;
-	    DBusMessage    *message;
-	    DBusError       dbus_error;
-	    gint pid,timeout,init;
-	    gchar *strmsg = g_strdup (_("tncpa_ib_default_plugin_restored"));
-
-	    pid     = getpid();
-	    timeout = 3000;
-	    init    = 0;
-
-	    dbus_error_init (&dbus_error);
-	    connection = dbus_bus_get( DBUS_BUS_SESSION, &dbus_error );
-
-	    message = dbus_message_new_method_call
-		      ("com.nokia.statusbar",
-		       "/com/nokia/statusbar", 
-		       "com.nokia.statusbar", 
-		       "delayed_infobanner");
-
-	    if (message)
-	    {
-	      dbus_message_append_args (message, 
-			      	        DBUS_TYPE_INT32, 
-					&pid,
-					DBUS_TYPE_INT32,
-					&init,
-					DBUS_TYPE_INT32, 
-					&timeout,
-					DBUS_TYPE_STRING, 
-					&strmsg,
-					DBUS_TYPE_INVALID);
-
-	      dbus_connection_send (connection, message, NULL);
-
-	      dbus_connection_flush (connection);
-	    }
-
-	    dbus_message_unref(message);
-		  
+	    hn_panel_send_recovery_plugin_message ();
+	  
 	    priv->default_items[j].used = TRUE;
 	    position  = i;
 	    mandatory = FALSE;
-	    
-	    g_free (strmsg);
 	  }
 	  break;
 	}
@@ -388,9 +395,35 @@ hn_panel_get_plugins_from_file (HildonNavigatorPanel *panel,
     if (allow_mandatory)
       g_object_set (G_OBJECT (plugin), "mandatory", mandatory,NULL);
 
-    list = g_list_append(list, plugin);
+    list = g_list_append (list, plugin);
 
     i++;
+  }
+
+  if (i<HN_MAX_DEFAULT)
+  {
+    for (j=0;j<HN_MAX_DEFAULT;j++)
+    {
+      if (priv->default_items[j].used == FALSE)
+      {
+        plugin = 
+	  hildon_navigator_item_new 
+	    (priv->default_items[j].name,priv->default_items[j].library);
+
+	if (plugin)
+	{
+	  hn_panel_send_recovery_plugin_message ();
+	  
+	  priv->default_items[j].used = TRUE;
+	  position  = i;
+	  mandatory = FALSE;
+
+	  g_object_set (G_OBJECT (plugin), "position", (guint)position,NULL);
+
+	  list = g_list_append (list,plugin);
+	}
+      }	      
+    }
   }
 
   g_strfreev(groups);
