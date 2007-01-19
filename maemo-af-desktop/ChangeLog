@@ -33,7 +33,7 @@
 
 	* configure.ac: 2.9.99.15
 
-2006-12-05  Moises Martinez <moises.martinzes@nokia.com>
+2006-12-05  Moises Martinez <moises.martinez@nokia.com>
 
 	* install_sbapplet.sh: If user config doesn't exist, set 
 	the right owner (not root). Fixes: NB#47811
@@ -55,7 +55,7 @@
 
 	* configure.ac: 2.9.99.13
 
-2006-11-30  Moises Martinez <moises.martinzes@nokia.com>
+2006-11-30  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-wm.c
 	* hildon-navigator/hn-app-button.c:
@@ -89,7 +89,7 @@
 	* hildon-home/background-manager.c: Check if the operation
 	was cancelled during loading and compositing. Fixes: NB#42484
 
-2006-11-28  Moises Martinez <moises.martinzes@nokia.com>
+2006-11-28  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-wm.c
 	* hildon-navigator/hildon-navigator-window.c: Set all the items in 
@@ -293,7 +293,7 @@
 	* hildon-home/hildon-home-applet.[ch]: Moved close button and
 	  resize handle Pixbuf to be class variables. Fixes: NB#45325
 
-2006-10-25  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-25  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: Changed again the extension
 	panel to DIALOG window and set transient for root window.
@@ -303,13 +303,13 @@
 	* hildon-navigator/hn-app-switcher.c: Also update the menu
 	  after a change in the stack
 
-2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-24  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	- When removing a plugin re-arrange the panel from previous 
 	plugin. Fixes: NB#43110
 
-2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-24  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-panel.c: Free the
 	gtk_container_get_children's list.
@@ -317,7 +317,7 @@
 	- Free the library & category if we can't allocate the plugin.
 	- (arrange_items) Code cleanup
 
-2006-10-24  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-24  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: Reverted
  	behavior on event DBus signal when destroying plugin itself.
@@ -345,7 +345,7 @@
 	* hildon-navigator/hn-app-menu-item.c: Make a copy of
 	  the pixbuf to avoid modifying the cached icon
 
-2006-12-23  Moises Martinez <moises.martinzes@nokia.com>
+2006-12-23  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-window.c:
 	* hildon-navigator/hildon-navigator-panel.[ch]:
@@ -379,7 +379,7 @@
 	* hildon-home/backgroun-manager.c: Use SIGKILL to kill the child,
 	to avoid interfering with our own signal handler.
 
-2006-10-19  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-19  Moises Martinez <moises.martinez@nokia.com>
 
 	* libhildonmenu/libhildonmenu.c: (read_menu_conf) Initialized two pointer to
 	null. They were crashing desktop on parsing others menu's bogus XML.
@@ -400,7 +400,7 @@
 	* libhildonmenu/libhildonmenu.c: Fixed accidental removal of
 	  a "fprintf"
 
-2006-10-17  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-17  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildons-status-bar/hildon-status-bar-main.c:
 	Return value when called event d-bus method. Fixes: NB#43303 
@@ -410,7 +410,7 @@
 	* hildon-home/hn-app-switcher.c: Only build the menu when it has
 	  changed. Fixes: NB#42748
 
-2006-10-17  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-17  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: Added asserts
 	for accesing the private members. Fixes: NB#43321
@@ -435,7 +435,7 @@
 	* hildon-status-bar/hildon-status-bar-main.c: Use an animation banner,
 	  not a progress banner. Fixes the fix to NB#42256
 
-2006-10-16  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-16  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-others-button.c: Copy the 
 	system wide config file if there is no user one. Fixes: NB#42202
@@ -447,7 +447,7 @@
 	  are always on top, as well as our event window
 	  Fixes: NB#42549
 
-2006-10-13  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-13  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-window.c: Added hardcoced gettext
 	  package for tn-cpa. Fixes: NB#37100
@@ -475,7 +475,7 @@
 	* hildon-home/background-manager.c: Do not hardcode hildon home window
 	  size. Fixes: NB#43264
 
-2006-10-13  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-13  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Removed g_debug
 	  leaking memory.
@@ -498,7 +498,7 @@
 	* hildon-navigator/hn-app-menu-item.[ch]: cache the close button
 	  pixbufs in class variables. Fixes: NB#43043
 
-2006-10-12  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-12  Moises Martinez <moises.martinez@nokia.com>
 
 	* install_sbapplet.sh: Improved script.
 
@@ -534,7 +534,7 @@
 	* hildon-navigator/hn-app-button.c: Removed a Critical warning
 	  Fixes: NB#39078
 
-2006-10-11  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-11  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	- Grab the pointer when extension panel is really mapped so
@@ -604,11 +604,11 @@
 	  - close button and resize handle and now drawn on their own
 	    shaped window. Fixes: NB#42549
 
-2006-10-09  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-09  Moises Martinez <moises.martinez@nokia.com>
 
 	* install_sbapplet.sh: Touch the configuration. Fixes: NB#39131
 
-2006-10-09  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-09  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: Fixed tipical
 	list's memory leak. Fixes: NB#42694
@@ -623,7 +623,7 @@
 	* hildon-home/background-manager.c: Center the picture to the home
 	  area when scaled. Fixes: NB#42493
 
-2006-10-06  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-06  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-main.[ch]: 
 	- Not needed long time ago.
@@ -672,7 +672,7 @@
 	  of an arrow for the arrow button
 	Fixes: NB#42430
 
-2006-10-05  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-05  Moises Martinez <moises.martinez@nokia.com>
 
 	* maemo-af-desktop-main.c: Cleanup.
 	* hildon-navigator/hildon-navigator-window.c: Moved most part
@@ -711,7 +711,7 @@
 
 	* configure.ac: 2.9.93
 
-2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-04  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-item-dummy.c: Show the child!!!
 	* hildon-navigator/hildon-navigator-item.c: Removed widget
@@ -733,7 +733,7 @@
 	  hildon-home-background-select-dialog.c}:
 	  Applied various fixes to cancellation problems
 
-2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-04  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-item-dummy.[ch]: New child class of
 	HildonNavigatorItem to have dummy buttons.
@@ -764,7 +764,7 @@
 	* hildon-home/background-manager.c: Stretch only on top of the
 	  home area (not under TN)
 
-2006-10-04  Moises Martinez <moises.martinzes@nokia.com>
+2006-10-04  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: 
 	- Dimm/Undimm the extension button and SB's plugins when appropiated.
@@ -825,7 +825,7 @@
 	  image on set-style if the title and sidebar images don't change.
 	  Fixes: NB#37723
 
-2006-09-28  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-28  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-panel.c:
 	- Load default plugins if there is bogus plugin. Fixes: NB#37100
@@ -872,7 +872,7 @@
 	* hildon-home/hildon-home-window.c: Connect the "directory-changed"
 	  with a re-sync of the plugin list. Fixes NB#37765
 
-2006-09-27  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-27  Moises Martinez <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-log.c: 
 	* hildon-status-bar/hildon-status-bar-main.c:
@@ -926,18 +926,18 @@
 	* hildon-home/background-manager.c: Fixed a few problems
 	  with the different modes
 
-2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-25  Moises Martinez <moises.martinez@nokia.com>
 
 	* libdesktop/hildon-log.c: Code cleanup.
 	* Makefile.am: added libdesktop.a
 	* hildon-navigator/Makefile.am: removed libdesktop.a
 
-2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-25  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-log.[ch]: Removed.
 	* Makefile.am: Added libdesktop/hildon-log.[ch]
 
-2006-09-25  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-25  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/regenerate_config.c: Improved
 
@@ -963,13 +963,13 @@
 	  - changed order of Tools submenu
 	  - set name layout mode menu to get proper positioning
 
-2006-09-22  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-22  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/regenerate_config.c:
   	- New helper program for postrm tn's plugin
           packages. Fixes: NB#36990
 
-2006-09-22  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-22  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-window.c:
         - Fixed initialization of hildon_dnotify_handler
@@ -991,7 +991,7 @@
 	  - do not return after first mask parsing failure
 	  - _new should return NULL, not FALSE
 
-2006-09-21  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-21  Moises Martinez <moises.martinez@nokia.com>
 
 	* install_sbapplet.sh: Added script to help sb's 
 	  plugins packages install its plugin.
@@ -1003,24 +1003,24 @@
 	* hildon-navigator/hn-wm.c: return DBUS_HANDLER_RESULT_HANDLED
 	  after handling the "this application died" message. Fixes NB#32556
 
-2006-09-21  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-21  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	- Forced to close statusbar's panel extension when 
 	  pressed full screen hardkey. Fixes: NB#40771
 
-2006-09-20  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-20  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	  - Set always sensitiveness of extension button. Fixes: NB#40831
 
-2006-09-20  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-20  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	- Implemented dbus method for communicating with
 	  cpa-navigatorapplet. Required by NB #31079.
 
-2006-09-19  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-19  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: 
 	* hildon-status-bar/hildon-status-bar-main.h:
@@ -1079,7 +1079,7 @@
 	* libhildonmenu/libhildonmenu.c: Fixed the leak of a GtkTreePath and
 	  2 strings. Fixes: NB#40645
 
-2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-15  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c:
 	* hildon-navigator/hildon-navigator-window.c:
@@ -1135,7 +1135,7 @@
 	  - fixed localization of %d items
 	  - fixed menu Y positioning
 
-2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-15  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-others-button.[ch]:
 	- New implementation of others menu. Fixes: NB#33935
@@ -1154,7 +1154,7 @@
 
 	* configure.ac: 2.9.26
 
-2006-09-15  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-15  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-keys.c: Changed HW fake Hardkey Menu from
 	F10 to F4. Fixes: #39988
@@ -1169,24 +1169,24 @@
 	  titles
 	* hildon-navigator/hn-entry-info.c: Fixed leak of the tooltip string
 
-2006-09-13  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-13  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c:
 	- No plugin is created if after sending "event" to
 	statusbar the plugin's not already loaded. Fixes: NB#39109
 
-2006-09-13  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-13  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-wm-watchable-app.c:
 	  - Improved fix for NB#35577. Split failing of 
 	  g_key_file_new from g_return_val_if_fail.
 
-2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-12  Moises Martinez <moises.martinez@nokia.com>
 
 	* libhildonmenu/hildon-thumb-menu-item.c:  Set each 
 	  label's ellipsize to PANGO_ELLIPSIZE_NONE. Fixes: NB#37617
 
-2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-12  Moises Martinez <moises.martinez@nokia.com>
 
 	* hn-app-switcher.[ch]:
 	* hn-wm.c:
@@ -1198,7 +1198,7 @@
 
 	* hildon-navigator/hn-app-switcher.c: Applied further fixes to NB#39667
 
-2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-12  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-statusbar/hildon-statusbar-main.c:
 	- Changed extension window from GTK_WINDOW_POPUP to
@@ -1209,13 +1209,13 @@
 	* hildon-navigator/hn-app-switcher.c: Fixed a buffer
 	  overflow (Closes NB#39667)
 
-2006-09-12  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-12  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.[ch]:
 	- Added HSB_PLUGIN_CONFIG_LIBRARY_VALUE for knowing
 	  we don't have to load an statusbar applet. 
 
-2006-09-11  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-11  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-app-menu-item.c:
 	* hildon-navigator/hn-app-button.c:
@@ -1231,7 +1231,7 @@
 	  libhildonmenu/libhildonmenu.c: Do not free const char *
 	  (Closes NB#39640)
 
-2006-09-08  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-08  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-panel.[ch]:
 	- Removing plugins from panel by removing from his
@@ -1240,7 +1240,7 @@
 	* hildon-navigator/hildon-navigator-item.c: Using
 	  parent gtk_widget_destroy implementation.
 
-2006-09-07  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-07  Moises Martinez <moises.martinez@nokia.com>
 
 	* others-menu.c: Applied fix to "Task Navigator requires
 	  full binary path in .desktop file Exec field" 
@@ -1253,11 +1253,11 @@
 	* All source files: Updated header texts
 	* configure.ac: 2.9.25
 
-2006-09-06  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-06  Moises Martinez <moises.martinez@nokia.com>
 
 	* configure.ac: 2.9.24
 
-2006-09-06  Moises Martinez <moises.martinzes@nokia.com>
+2006-09-06  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-home/layout-manager.c: 
 	* hildon-home/hildon-home-titlebar.[ch]:
@@ -1407,11 +1407,11 @@
 	    MCE handler
 	* configure.ac: 2.9.21.1
 
-2006-08-14  Moises Martinez <moises.martinzes@nokia.com>
+2006-08-14  Moises Martinez <moises.martinez@nokia.com>
 
 	* configure.ac: 2.9.21
 
-2006-08-14  Moises Martinez <moises.martinzes@nokia.com>
+2006-08-14  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator-window.[ch]:
 	* hn-wm.c:
@@ -1457,13 +1457,13 @@
 	* hildon-home/home-select-applet-dialog.c: Give the home main
 	  window as parent and let MB handle the positioning (Closes NB#37521)
 
-2006-08-11  Moises Martinez <moises.martinzes@nokia.com>
+2006-08-11  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator-panel.h:
 	  - added new method hn_panel_peek_plugins
 	  - fixed position of plugins
 
-2006-08-10  Moises Martinez <moises.martinzes@nokia.com>
+2006-08-10  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator-panel.h:
 	  - added new method: hn_panel_get_plugins
@@ -1529,7 +1529,7 @@
 	  - image_loader_callback(): Save the configuration here after succesfull
 	    load
 
-2006-08-09  Moises Martinez <moises.martinzes@nokia.com>
+2006-08-09  Moises Martinez <moises.martinez@nokia.com>
 
         The HildonNavigator has been rewritten in order
         to improve memory management, maintenance and
@@ -1698,7 +1698,7 @@
 	* hildon-navogator/hn-wm.c: Track changes in the keymap, and reload
 	  the key shortcuts when detected.
 
-2006-07-28  Moises Martinez <moises.martinzes@nokia.com>
+2006-07-28  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.h: Changed path for
 	  status bar HildonLog
@@ -1731,7 +1731,7 @@
 	  do not call it when events are being caught by the press_collapser
 	  (Closes NB#36129)
 
-2006-07-26  Moises Martinez <moises.martinzes@nokia.com>
+2006-07-26  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-log.[ch]: New files. GObject for
 	  logging and watching of plugins.
@@ -1790,7 +1790,7 @@
 	  XGrabKey, to avoid GTK from handling the shortcuts inside
 	  maemo-af-desktop
 
-2006-07-21  Moises Martinez <moises.martinzes@nokia.com>
+2006-07-21  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hn-app-switcher.c: Fixed memory leak 
 	  in loading of icon theme.
@@ -1845,7 +1845,7 @@
 	  - Use this field if present to translate the name of entries.
 	  - Properly translate the second line for folders
 
-2006-07-18  Moises Martinez <moises.martinzes@nokia.com>
+2006-07-18  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-home/screenshot.h: Removed unnecesary repeated code.
 
@@ -1884,7 +1884,7 @@
 	  - untoggle the button after a click and wait for changes in the window
 	    stack to avoid AS and window stack not being synchronized
 
-2006-07-14  Moises Martinez <moises.martinzes@nokia.com>
+2006-07-14  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-home/home-select-applets-dialog.c:
 	  - select_applets_selected(): fixed memory leak
@@ -1934,7 +1934,7 @@
 	* hildon-navigator/hn-keys.c: Fixed a typo in home_action (send
 	  F5 instead of F4) (Closes NB#33906)
 
-2006-07-11  Moises Martinez <moises.martinzes@nokia.com>
+2006-07-11  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.[ch]:
 	  - Added support for mandatory plugins
