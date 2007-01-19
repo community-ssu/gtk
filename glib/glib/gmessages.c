@@ -867,6 +867,18 @@ escape_string (GString *string)
 #define DEFAULT_DOMAIN	"default"
 #define DEFAULT_MESSAGE	"(NULL) message"
 
+static unsigned int G_LOG_OUTPUT_LEVEL;
+
+enum
+  {
+    G_LOG_OUTPUT_LEVEL_MIN = 0,
+    G_LOG_OUTPUT_LEVEL_CRITICAL,
+    G_LOG_OUTPUT_LEVEL_WARNING,
+    G_LOG_OUTPUT_LEVEL_MAX
+  };
+
+#define G_LOG_OUTPUT_LEVEL_DEF G_LOG_OUTPUT_LEVEL_MAX
+
 void g_log_default_handler (
 		const gchar*	log_domain,
 		GLogLevelFlags	log_level,
@@ -884,11 +896,28 @@ void g_log_default_handler (
 	const gchar* prefix;
 	int   priority;
 
+	gchar *output_level;
+	int level;
+	
 	/* Check first that logging facility is initialized */
 	if ( !initialized )
 	{
 		openlog(NULL, LOG_PERROR|LOG_PID, LOG_USER);
 		initialized = !initialized;
+
+		G_LOG_OUTPUT_LEVEL = G_LOG_OUTPUT_LEVEL_DEF;
+
+		output_level = getenv("G_LOG_OUTPUT_LEVEL");
+		if (output_level)
+		  {
+		    level = atoi(output_level);
+
+		    if (level >= G_LOG_OUTPUT_LEVEL_MIN &&
+			level <= G_LOG_OUTPUT_LEVEL_MAX)
+		      {
+			G_LOG_OUTPUT_LEVEL = level;
+		      }
+		  }
 	}
 
 	/* Validate log domain */
@@ -898,6 +927,31 @@ void g_log_default_handler (
 	/* Check log message for validity */
 	if ( IS_EMPTY_STRING(message) )
 		message = DEFAULT_MESSAGE;
+
+
+	/* no logging on minimal output level */
+	if (G_LOG_OUTPUT_LEVEL == G_LOG_OUTPUT_LEVEL_MIN)
+	  {
+	    return;
+	  }
+
+	/* if warning|message and level critical, return */
+	if ((log_level & G_LOG_LEVEL_MASK) >= G_LOG_LEVEL_WARNING)
+	  {
+	    if (G_LOG_OUTPUT_LEVEL == (G_LOG_OUTPUT_LEVEL_CRITICAL))
+	      {
+		return;
+	      }
+	  }
+
+	/* if message and level warning, return */
+	if ((log_level & G_LOG_LEVEL_MASK) >= G_LOG_LEVEL_MESSAGE)
+	  {
+	    if (G_LOG_OUTPUT_LEVEL <= (G_LOG_OUTPUT_LEVEL_WARNING))
+	      {
+		return;
+	      }
+	  }
 
 	/* Process the message prefix and priority */
 	switch (log_level & G_LOG_LEVEL_MASK)
