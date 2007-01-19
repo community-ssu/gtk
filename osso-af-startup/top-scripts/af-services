@@ -36,6 +36,10 @@ echo 256 > /proc/sys/kernel/threads-max
 echo 4096 > /proc/sys/fs/file-max
 echo 1 > /proc/sys/vm/swappiness
 
+# adjust flushing of memory card buffers
+echo 12 > /proc/sys/vm/dirty_ratio
+echo 6 > /proc/sys/vm/dirty_background_ratio
+
 SCRIPT=/etc/osso-af-init/real-af-services
 
 case "$1" in
