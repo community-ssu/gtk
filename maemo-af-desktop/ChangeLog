@@ -1,3 +1,8 @@
+2007-01-19  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/background-manager.c: Make sure previous child
+	worker are killed before spawning a new one. Fixes: NB#49487
+
 2006-12-15  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-wm-watched-window.c: Fixed a warning.

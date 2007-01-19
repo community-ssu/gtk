@@ -1408,6 +1408,7 @@ loading_image_banner_response (GtkDialog *dialog,
         {
           g_debug ("about to kill %i\n", manager->priv->child_pid);
           kill (manager->priv->child_pid, SIGKILL);
+          manager->priv->child_pid = 0;
 
         }
       g_object_set_data (G_OBJECT (dialog),
@@ -1672,6 +1673,13 @@ background_manager_create_background (BackgroundManager *manager,
 
   pipe (parent_exit_notify);
   pipe (pipe_from_child);
+
+  if (priv->child_pid)
+    {
+      g_debug ("Killing previous child worker: %i", priv->child_pid);
+      kill (priv->child_pid, SIGKILL);
+      priv->child_pid = 0;
+    }
 
   pid = fork ();
   if (pid == 0)
