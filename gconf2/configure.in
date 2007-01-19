@@ -224,7 +224,7 @@ AC_DEFINE(HAVE_LDAP,1,[Define if you have LDAP support])
 msg_ldap="yes"
 fi # Win32
 
-IT_PROG_INTLTOOL([0.34.1])
+IT_PROG_INTLTOOL([0.33])
 
 AM_GLIB_GNU_GETTEXT
 
