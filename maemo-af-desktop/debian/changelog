@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.17-1) unstable; urgency=low
+
+  * hildon-home/background-manager.c: Make sure previous child
+  worker are killed before spawning a new one. Fixes: NB#49487
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 19 Jan 2007 11:06:59 +0200
+
 maemo-af-desktop (2.9.99.16-1) unstable; urgency=low
 
   * maemo-af-desktop-main.c: Initialize dnotify stuff here

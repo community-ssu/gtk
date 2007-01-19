@@ -1,5 +1,9 @@
 2007-01-19  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.17
+
+2007-01-19  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c: Make sure previous child
 	worker are killed before spawning a new one. Fixes: NB#49487
 
