@@ -36,7 +36,7 @@ G_BEGIN_DECLS
 #include <config.h>
 #endif
 
-#define _(String) dgettext(PACKAGE, String)
+#define _(String) dgettext("hildon-fm", String)
 #define N_(String) String
 #define HCS(String) dgettext("hildon-common-strings", String)
 #define KE(String) dgettext("ke-recv", String)
