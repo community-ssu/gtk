@@ -1,6 +1,12 @@
+gconf2 (2.16.0-1osso2) unstable; urgency=low
+
+  * Remove python build dependency
+
+ -- Richard Hult <richard@imendio.com>  Mon, 22 Jan 2007 11:15:01 +0100
+
 gconf2 (2.16.0-1osso1) unstable; urgency=low
 
-  * First release of 2.16.x.
+  * First release of 2.16.x
 
  -- Richard Hult <richard@imendio.com>  Fri, 19 Jan 2007 12:10:37 +0100
 
