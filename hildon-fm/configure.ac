@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-fm, 2.1)
+AM_INIT_AUTOMAKE(libhildonfm, 2.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -30,7 +30,7 @@ CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror 
 PKG_CHECK_MODULES(OUTO, outo >= 0.1.1)
 AC_SUBST(OUTO_CFLAGS)
 
-GTK_VERSION=2.6.0
+GTK_VERSION=2.10.0
 
 PKG_CHECK_MODULES(GTK, hildon-libs >= 0.12.0)
 AC_SUBST(GTK_LIBS)
@@ -47,13 +47,9 @@ PKG_CHECK_MODULES(OSSO_THUMBNAIL, osso-thumbnail >= 0.0.4)
 AC_SUBST(OSSO_THUMBNAIL_CFLAGS)
 AC_SUBST(OSSO_THUMBNAIL_LIBS)
 
-PKG_CHECK_MODULES(GWCONNECT, gwconnect >= 0.58 osso-ic)
+PKG_CHECK_MODULES(GWCONNECT, gwconnect >= 0.58)
 AC_SUBST(GWCONNECT_CFLAGS)
 AC_SUBST(GWCONNECT_LIBS)
-
-PKG_CHECK_MODULES(OSSOIC, osso-ic)
-AC_SUBST(OSSOIC_CFLAGS)
-AC_SUBST(OSSOIC_LIBS)
 
 PKG_CHECK_MODULES(LIBOSSOMIME, libossomime >= 1.4)
 AC_SUBST(LIBOSSOMIME_CFLAGS)
@@ -68,21 +64,8 @@ AC_SUBST(DBUSGLIB_LIBS)
 PKG_CHECK_MODULES(LIBOSSO, libosso >= 0.8.8)
 AC_SUBST(LIBOSSO_CFLAGS)
 
-# Now also mce has a pkgconfig file.
 PKG_CHECK_MODULES(MCE, mce >= 0.8.5)
 AC_SUBST(MCE_CFLAGS)
-
-ALL_LINGUAS="en_GB"
-AC_SUBST(ALL_LINGUAS)
-AM_GLIB_GNU_GETTEXT
-
-# Temporary configure option for the Gtk+ migration
-
-AC_ARG_WITH(gtk-2-10, [  --with-gtk-2-10         compile for Gtk+ 2.10 instead of 2.6 ])
-
-if test "x$with_gtk_2_10" = "xyes" ; then
-  AC_DEFINE(WITH_GTK_2_10, 1, [Define when compiling for Gtk+ 2.10])
-fi
 
 ##################################################
 # Check for gtk-doc.
@@ -128,7 +111,6 @@ fi
 
 AM_CONDITIONAL(ENABLE_GTK_DOC, test x$enable_gtk_doc = xyes)
 
-localedir=${datadir}/locale
 outomoduledir=${libdir}/outo
 
 AC_ARG_ENABLE(doc-dir, [ --with-doc-dir=PATH path to installed docs ])
@@ -141,7 +123,6 @@ fi
 HTML_DIR=${docdir}/html
 
 AC_SUBST(docdir)
-AC_SUBST(localedir)
 AC_SUBST(outomoduledir)
 AC_SUBST(HTML_DIR)
 
@@ -169,7 +150,5 @@ AC_SUBST(REBUILD)
 AC_OUTPUT(Makefile \
         hildon-fm/Makefile \
 	ut/Makefile \
-	po/Makefile \
-	po/porules.mk \
 	doc/Makefile \
 	hildon-fm.pc)
