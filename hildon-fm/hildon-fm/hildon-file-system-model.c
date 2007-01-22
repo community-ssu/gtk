@@ -325,17 +325,13 @@ static void handle_load_error(GNode *node)
 
   /* We failed to connect to device before the call expired.
      We want disconnect the whole device in question, not 
-     just to kick of the individual node that caused problems */
+     just to kick of the individual node that caused problems 
+
+     XXX - Gtk+ 2.10 doesn't have ERROR_TIMEOUT anymore.  Is
+           ERROR_FAILED equivalent?
+  */
   if (g_error_matches (model_node->error, GTK_FILE_SYSTEM_ERROR,
-#if WITH_GTK_2_10
-		       /* XXX - Gtk+ 2.10 doesn't have ERROR_TIMEOUT.
-			        Is ERROR_FAILED quivalent?
-		       */
-		       GTK_FILE_SYSTEM_ERROR_FAILED
-#else		       
-		       GTK_FILE_SYSTEM_ERROR_TIMEOUT
-#endif
-		       ))
+		       GTK_FILE_SYSTEM_ERROR_FAILED))
   {
     GNode *device_node = get_device_for_node(node);
     if (device_node)
@@ -606,16 +602,27 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
 
       ULOG_INFO("Delayed add for path %s", (char *) model_node->path);
 
-      /* Unix backend sends finished loading even before returning children.
-         This causes our internal bookkeeping fail. */
-      g_signal_handlers_block_by_func(model_node->folder, 
-        hildon_file_system_model_folder_finished_loading, model);      
+      if (model_node->folder)
+	{
+	  /* Unix backend sends finished loading even before returning
+	     children.  This causes our internal bookkeeping fail. */
+	  g_signal_handlers_block_by_func
+	    (model_node->folder, 
+	     hildon_file_system_model_folder_finished_loading, model);
 
-      result = gtk_file_folder_list_children(model_node->folder, 
-                    &children, &model_node->error);
+	  result = gtk_file_folder_list_children
+	    (model_node->folder, &children, &(model_node->error));
 
-      g_signal_handlers_unblock_by_func(model_node->folder, 
-        hildon_file_system_model_folder_finished_loading, model);
+	  g_signal_handlers_unblock_by_func
+	    (model_node->folder, 
+	     hildon_file_system_model_folder_finished_loading, model);
+	}
+      else
+	{
+	  result = TRUE;
+	  children = NULL;
+	  model_node->error = NULL;
+	}
 
       /* Patched GnomeVFS now also reports errors. */
       if (result)
@@ -1566,39 +1573,42 @@ get_folder_callback (GtkFileSystemHandle *handle,
 
   model_node->get_folder_handle = NULL;
   model_node->folder = folder;
-  model_node->error = g_error_copy (error);
+  model_node->error = error? g_error_copy (error) : NULL;
 
-  if (folder)
+  if (folder == NULL)
     {
-      g_signal_connect_object
-	(model_node->folder, "deleted",
-	 G_CALLBACK(hildon_file_system_model_dir_removed),
-	 model, 0);
-      g_signal_connect_object
-	(model_node->folder, "files-added",
-	 G_CALLBACK(hildon_file_system_model_files_added),
-	 model, 0);
-      g_signal_connect_object
-	(model_node->folder, "files-removed",
-	 G_CALLBACK
-	 (hildon_file_system_model_files_removed), model, 0);
-      g_signal_connect_object
-	(model_node->folder, "files-changed",
-	 G_CALLBACK
-	 (hildon_file_system_model_files_changed), model, 0);
-      g_signal_connect_object
-	(model_node->folder, "finished-loading",
-	 G_CALLBACK (hildon_file_system_model_folder_finished_loading), model,
-	 0);
-
-      g_object_set_qdata (G_OBJECT(model_node->folder),
-			  hildon_file_system_model_quark, node);
-
-      if (error)
-	handle_load_error (node);
+      ULOG_ERR_F("Failed to create monitor for path %s",
+		 gtk_file_path_get_string (model_node->path));
+      return;
     }
-  else
-    ULOG_ERR_F("Failed to create monitor for path %s", (char *) path);
+
+  g_signal_connect_object
+    (model_node->folder, "deleted",
+     G_CALLBACK(hildon_file_system_model_dir_removed),
+     model, 0);
+
+  g_object_set_qdata (G_OBJECT(model_node->folder),
+		      hildon_file_system_model_quark, node);
+  
+  g_signal_connect_object
+    (model_node->folder, "files-added",
+     G_CALLBACK(hildon_file_system_model_files_added),
+     model, 0);
+  g_signal_connect_object
+    (model_node->folder, "files-removed",
+     G_CALLBACK
+     (hildon_file_system_model_files_removed), model, 0);
+  g_signal_connect_object
+    (model_node->folder, "files-changed",
+     G_CALLBACK
+     (hildon_file_system_model_files_changed), model, 0);
+  g_signal_connect_object
+    (model_node->folder, "finished-loading",
+     G_CALLBACK (hildon_file_system_model_folder_finished_loading), model,
+     0);
+  
+  if (error)
+    handle_load_error (node);
 }
 
 static gboolean
