@@ -1,0 +1,2 @@
+* Add into X11_LeaveFullscreen() option to NOT remap windowed window, in the
+ case of destroying the window.

@@ -1,10 +1,11 @@
-libsdl1.2 (1.2.8-16un) unstable; urgency=low
+libsdl1.2 (1.2.8-16) unstable; urgency=low
 
   * src/SDL_fatal.c: fatals will raise invoking signal after SDL_Quit().
     Fixes: NB#48789
-  * UNRELEASED
+  * src/video/x11/SDL_x11video.c: windowed window will be unmapped when
+    destroying the window from fullscreen.
 
- -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 18 Dec 2006 19:08:21 +0200
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Mon, 22 Jan 2007 14:05:18 +0200
 
 libsdl1.2 (1.2.8-15) unstable; urgency=low
 

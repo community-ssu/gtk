@@ -491,12 +491,13 @@ static void X11_DestroyWindow(_THIS, SDL_Surface *screen)
 
 	if ( ! SDL_windowid ) {
 		/* Hide the managed window */
-		if ( WMwindow ) {
+		if ( !( screen && (screen->flags & SDL_FULLSCREEN) ) && WMwindow ) {
 			XUnmapWindow(SDL_Display, WMwindow);
 		}
 		if ( screen && (screen->flags & SDL_FULLSCREEN) ) {
 			screen->flags &= ~SDL_FULLSCREEN;
 			X11_LeaveFullScreen(this);
+			XUnmapWindow(SDL_Display, WMwindow);
 		}
 
 		/* Destroy the output window */
