@@ -23,8 +23,8 @@
 /*
  * hildon-file-system-info.h
  *
- * New API for querying info about files.
-*/
+ * API for querying info about files.
+ */
 
 #include "hildon-file-system-info.h"
 #include "hildon-file-system-private.h"
@@ -223,10 +223,11 @@ hildon_file_system_info_async_new (const gchar *uri,
     }
   else
     {
-      result->get_info_handle = gtk_file_system_get_info (fs, path, 
-							  GTK_FILE_INFO_ALL,
-							  get_info_callback,
-							  result);
+      result->get_info_handle =
+	gtk_file_system_get_info (fs, path, 
+				  GTK_FILE_INFO_ALL,
+				  get_info_callback,
+				  result);
     }
 
   return (HildonFileSystemInfoHandle *) result;
