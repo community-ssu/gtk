@@ -56,6 +56,17 @@ gboolean _hildon_file_system_compare_ignore_last_separator(const char *a,
 {        
     gint len_a, len_b;
 
+    /* XXX - Canonicalize the "file://" prefix away since not all path
+             strings use it uniformly.  We should really be using the
+             GtkFileSystem path manipulation API religiously instead
+             of doing it ourself.
+    */
+
+    if (g_str_has_prefix (a, "file://"))
+      a += 7;
+    if (g_str_has_prefix (b, "file://"))
+      b += 7;
+
     len_a = strlen(a);
     len_b = strlen(b);
 
@@ -640,11 +651,7 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
         name = default_name;
     }
     if (name) {
-#if WITH_GTK_2_10
         result = gtk_file_system_create (name);
-#else
-        result = hildon_gtk_file_system_create (name);
-#endif
         if (!GTK_IS_FILE_SYSTEM(result))
             ULOG_WARN("Cannot create \"%s\" backend", name);
     }
