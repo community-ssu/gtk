@@ -519,8 +519,6 @@ muali_arg_t* _get_muali_args(DBusMessageIter *iter)
 
             int i;
             unsigned int u;
-            long l;
-            unsigned long ul;
             double d;
             char c, *s;
 
@@ -543,18 +541,6 @@ muali_arg_t* _get_muali_args(DBusMessageIter *iter)
                             arg_array[idx].value.u = u;
                             ++idx;
                             break;
-                    case DBUS_TYPE_INT64:
-                            arg_array[idx].type = MUALI_TYPE_LONG; 
-                            dbus_message_iter_get_basic(iter, &l);
-                            arg_array[idx].value.l = l;
-                            ++idx;
-                            break;
-                    case DBUS_TYPE_UINT64:
-                            arg_array[idx].type = MUALI_TYPE_ULONG; 
-                            dbus_message_iter_get_basic(iter, &ul);
-                            arg_array[idx].value.ul = ul;
-                            ++idx;
-                            break;
                     case DBUS_TYPE_DOUBLE:
                             arg_array[idx].type = MUALI_TYPE_DOUBLE; 
                             dbus_message_iter_get_basic(iter, &d);
@@ -562,9 +548,9 @@ muali_arg_t* _get_muali_args(DBusMessageIter *iter)
                             ++idx;
                             break;
                     case DBUS_TYPE_BYTE:
-                            arg_array[idx].type = MUALI_TYPE_CHAR; 
+                            arg_array[idx].type = MUALI_TYPE_BYTE; 
                             dbus_message_iter_get_basic(iter, &c);
-                            arg_array[idx].value.c = c;
+                            arg_array[idx].value.by = c;
                             ++idx;
                             break;
                     case DBUS_TYPE_STRING:

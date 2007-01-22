@@ -27,6 +27,7 @@
 #include "libosso.h"
 #include <assert.h>
 
+#if 0   /* Hildon API cleanup */
 static void _run_main_loop( void );
 
 
@@ -88,6 +89,7 @@ static gboolean _rpc_run_ret_cb(gpointer data)
     g_main_loop_quit( (GMainLoop *)data);
     return 0;
 }
+#endif
 
 const gchar * osso_application_name_get(osso_context_t *osso)
 {

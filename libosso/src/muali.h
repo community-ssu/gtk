@@ -61,12 +61,10 @@ typedef struct {
                            the length of the data */
   union {
     int b;              /* MUALI_TYPE_BOOL */
+    char by;            /* MUALI_TYPE_BYTE */
     int i;              /* MUALI_TYPE_INT */
     unsigned int u;     /* MUALI_TYPE_UINT */
-    long l;             /* MUALI_TYPE_LONG */
-    unsigned long ul;   /* MUALI_TYPE_ULONG */
     double d;           /* MUALI_TYPE_DOUBLE */
-    char c;             /* MUALI_TYPE_CHAR */
     char *s;            /* MUALI_TYPE_STRING */
     void *data;         /* MUALI_TYPE_DATA */
   } value;
@@ -76,14 +74,12 @@ typedef struct {
  * come later. */
 #define MUALI_TYPE_INVALID      0
 #define MUALI_TYPE_BOOL         1
-#define MUALI_TYPE_INT          2
-#define MUALI_TYPE_UINT         3
-#define MUALI_TYPE_LONG         4
-#define MUALI_TYPE_ULONG        5
-#define MUALI_TYPE_DOUBLE       6
-#define MUALI_TYPE_CHAR         7
-#define MUALI_TYPE_STRING       8
-#define MUALI_TYPE_DATA         9
+#define MUALI_TYPE_BYTE         2
+#define MUALI_TYPE_INT          3
+#define MUALI_TYPE_UINT         4
+#define MUALI_TYPE_DOUBLE       5
+#define MUALI_TYPE_STRING       6
+#define MUALI_TYPE_DATA         7
 
 typedef enum {
         MUALI_BUS_IRRELEVANT = 0,

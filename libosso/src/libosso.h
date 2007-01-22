@@ -1356,6 +1356,7 @@ int osso_state_open_read(osso_context_t *osso);
  */
 void osso_state_close(osso_context_t *osso, gint fd);
 
+#if 0  /* Hildon API cleanup */
 /** This function adds a mail to be displayed in the
  *      mail popup of the tasknavigator.
  *
@@ -1425,6 +1426,7 @@ osso_context_t * osso_application_initialize(const gchar *application,
 					     const gchar *version,
 					     osso_application_top_cb_f *cb,
 					     gpointer callback_data);
+#endif
 
 
 /*@}*/

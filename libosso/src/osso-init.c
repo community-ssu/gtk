@@ -171,6 +171,7 @@ muali_context_t *muali_init(const char *program_name,
         _deinit(osso);
         return NULL;
     }
+    osso->muali_filters_setup = TRUE;
     osso->cur_conn = NULL;
     return (muali_context_t*)osso;
 }
@@ -471,21 +472,6 @@ static DBusConnection * _dbus_connect_and_setup(osso_context_t *osso,
         ULOG_ERR_F("dbus_connection_add_filter failed");
 	goto dbus_conn_error4;
     }
-    /* FIXME: there are two filters because semantics in the new
-     * muali API are slightly different (stricter matching) */
-    if (bus_type == DBUS_BUS_SESSION) {
-        if (!dbus_connection_add_filter(conn, _muali_filter_session, osso,
-                                        NULL)) {
-            ULOG_ERR_F("dbus_connection_add_filter failed");
-	    goto dbus_conn_error4;
-        }
-    } else {
-        if (!dbus_connection_add_filter(conn, _muali_filter_system, osso,
-                                        NULL)) {
-            ULOG_ERR_F("dbus_connection_add_filter failed");
-	    goto dbus_conn_error4;
-        }
-    }
 
     dprint("My base service is '%s'", dbus_bus_get_unique_name(conn));
 
@@ -570,8 +556,10 @@ static void _dbus_disconnect(osso_context_t *osso, gboolean sys)
         osso->conn = NULL;
     }
     dbus_connection_remove_filter(conn, _msg_handler, osso);
-    dbus_connection_remove_filter(conn, _muali_filter_session, osso);
-    dbus_connection_remove_filter(conn, _muali_filter_system, osso);
+    if (osso->muali_filters_setup) {
+        dbus_connection_remove_filter(conn, _muali_filter_session, osso);
+        dbus_connection_remove_filter(conn, _muali_filter_system, osso);
+    }
 #ifdef LIBOSSO_DEBUG
     dbus_connection_remove_filter(conn, _debug_filter, NULL);
 #endif

@@ -1274,13 +1274,88 @@ muali_error_t muali_send_signal(muali_context_t *context,
         return MUALI_ERROR_SUCCESS;
 }
 
-muali_error_t muali_send_string(muali_context_t *context,
-                                muali_handler_t *reply_handler,
-                                const void *user_data,
-                                muali_bus_type bus_type,
-                                const char *destination,
-                                const char *message_name,
-                                const char *string_to_send)
+static muali_error_t _muali_append_args(DBusMessage *msg, int type,
+                                        va_list var_args)
+{
+        muali_error_t rc = MUALI_ERROR_SUCCESS;
+
+        while (type != MUALI_TYPE_INVALID && rc == MUALI_ERROR_SUCCESS) {
+                dbus_bool_t ret;
+                char *s;
+                const char *empty_str = "";
+                int i;
+                unsigned int u;
+                double d;
+
+                switch (type) {
+                case MUALI_TYPE_BOOL:
+                        i = va_arg(var_args, int);
+                        ret = dbus_message_append_args(msg, DBUS_TYPE_BOOLEAN,
+                                                 &i, DBUS_TYPE_INVALID);
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                case MUALI_TYPE_BYTE:
+                        i = va_arg(var_args, int);
+                        ret = dbus_message_append_args(msg, DBUS_TYPE_BYTE,
+                                                 &i, DBUS_TYPE_INVALID);
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                case MUALI_TYPE_INT:
+                        i = va_arg(var_args, int);
+                        ret = dbus_message_append_args(msg, DBUS_TYPE_INT32,
+                                                 &i, DBUS_TYPE_INVALID);
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                case MUALI_TYPE_UINT:
+                        u = va_arg(var_args, unsigned int);
+                        ret = dbus_message_append_args(msg, DBUS_TYPE_UINT32,
+                                                 &u, DBUS_TYPE_INVALID);
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                case MUALI_TYPE_DOUBLE:
+                        d = va_arg(var_args, double);
+                        ret = dbus_message_append_args(msg, DBUS_TYPE_DOUBLE,
+                                                 &d, DBUS_TYPE_INVALID);
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                case MUALI_TYPE_STRING:
+                        s = va_arg(var_args, char *);
+                        if (s == NULL) {
+                                ret = dbus_message_append_args(msg,
+                                    DBUS_TYPE_STRING, &empty_str,
+                                    DBUS_TYPE_INVALID);
+                        } else {
+                                ret = dbus_message_append_args(msg,
+                                    DBUS_TYPE_STRING, &s, DBUS_TYPE_INVALID);
+                        }
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                case MUALI_TYPE_DATA:
+                        i = va_arg(var_args, int); /* length of the data */
+                        s = va_arg(var_args, char *);
+        	        ret = dbus_message_append_args(msg,
+                                  DBUS_TYPE_ARRAY, DBUS_TYPE_BYTE,
+                                  &s, i, DBUS_TYPE_INVALID);
+                        if (!ret) rc = MUALI_ERROR;
+                        break;
+                default:
+                        ULOG_ERR_F("unknown type %d", type);
+                        rc = MUALI_ERROR_INVALID;
+                        break;	    
+                }
+                type = va_arg(var_args, int);
+        }
+        return rc;
+}
+
+static
+muali_error_t _muali_send_helper(muali_context_t *context,
+                                 muali_handler_t *reply_handler,
+                                 const void *user_data,
+                                 muali_bus_type bus_type,
+                                 const char *destination,
+                                 const char *message_name,
+                                 int arg_type, va_list va_args)
 {
         char service[MAX_SVC_LEN + 1], path[MAX_OP_LEN + 1],
              interface[MAX_IF_LEN + 1];
@@ -1288,7 +1363,6 @@ muali_error_t muali_send_string(muali_context_t *context,
         DBusMessage *msg;
         DBusConnection *conn;
         int msg_serial = 0, handler_id;
-        dbus_bool_t ret;
 
         if (context == NULL) {
                 return MUALI_ERROR_INVALID;
@@ -1334,14 +1408,12 @@ muali_error_t muali_send_string(muali_context_t *context,
 	        goto _muali_send_oom;
         }
 
-        if (string_to_send != NULL) {
-                ret = dbus_message_append_args(msg, DBUS_TYPE_STRING,
-                                               &string_to_send,
-                                               DBUS_TYPE_INVALID);
-                if (!ret) {
-                        ULOG_ERR_F("dbus_message_append_args failed");
+        if (arg_type != MUALI_TYPE_INVALID) {
+                muali_error_t rc;
+                rc = _muali_append_args(msg, arg_type, va_args);
+                if (rc != MUALI_ERROR_SUCCESS) {
                         dbus_message_unref(msg);
-	                goto _muali_send_oom;
+                        return rc;
                 }
         }
 
@@ -1409,8 +1481,31 @@ muali_error_t muali_send_varargs(muali_context_t *context,
                                  const char *message_name,
                                  int arg_type, ...)
 {
-        /* TODO */
-        return MUALI_ERROR_OOM;
+        va_list va_args;
+        muali_error_t rc;
+
+        va_start(va_args, arg_type);
+        rc = _muali_send_helper(context, reply_handler, user_data,
+                                bus_type, destination, message_name,
+                                arg_type, va_args);
+        va_end(va_args);
+        return rc;
+}
+
+muali_error_t muali_send_string(muali_context_t *context,
+                                muali_handler_t *reply_handler,
+                                const void *user_data,
+                                muali_bus_type bus_type,
+                                const char *destination,
+                                const char *message_name,
+                                const char *string_to_send)
+{
+        muali_error_t rc;
+        rc = muali_send_varargs(context, reply_handler, user_data,
+                                bus_type, destination, message_name,
+                                MUALI_TYPE_STRING, string_to_send,
+                                MUALI_TYPE_INVALID);
+        return rc;
 }
 
 muali_error_t muali_reply_string(muali_context_t *context,

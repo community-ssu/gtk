@@ -175,6 +175,7 @@ typedef struct osso_af_context_t {
     int next_handler_id;    /* next available handler id, unique in this
                                context */
     const DBusMessage *reply_dummy, *error_dummy;
+    gboolean muali_filters_setup;
 } _osso_af_context_t, _muali_context_t;
 
 typedef struct _muali_context_t {
@@ -204,6 +205,7 @@ typedef struct _muali_context_t {
     int next_handler_id;    /* next available handler id, unique in this
                                context */
     const DBusMessage *reply_dummy, *error_dummy;
+    gboolean muali_filters_setup;
 } _muali_this_type_is_not_used_t;
 
 # ifdef LIBOSSO_DEBUG

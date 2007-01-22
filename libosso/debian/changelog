@@ -1,5 +1,6 @@
-libosso (2.0-1unreleased1) unstable; urgency=low
+libosso (2.0-1) unstable; urgency=low
 
+  * UNRELEASED
   * Branched the code (1.x branch is the maintenance branch).
   * Compilation fixes for the case that LIBOSSO_DEBUG is defined.
   * Const keyword fixes from Murray Cumming <murrayc@murrayc.com>.
@@ -15,8 +16,12 @@ libosso (2.0-1unreleased1) unstable; urgency=low
   * Made lot of muali development, design fixes, and tested code.
   * Implemented muali_reply_string (not sure if *_string functions make
     sense...) and muali_reply_error.
+  * The old API does not use muali filter anymore.
+  * Removed unused API (as part of Hildon API cleanup): osso_tasknav_* and
+    osso_application_initialize.
+  * (Contains some untested muali code.)
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 03 Jan 2007 09:43:15 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 22 Jan 2007 18:00:35 +0200
 
 libosso (1.20-1) unstable; urgency=low
 
