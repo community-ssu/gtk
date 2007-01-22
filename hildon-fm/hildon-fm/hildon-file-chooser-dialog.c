@@ -32,12 +32,10 @@
 #define _GNU_SOURCE  /* To get the GNU version of basename. */
 #include <string.h>
 
-#if WITH_GTK_2_10
 #define GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
 #include <gtk/gtkfilechooserutils.h>
 #include <gtk/gtkfilesystem.h>
-#endif
 
 #include "hildon-file-selection.h"
 #include "hildon-file-chooser-dialog.h"
@@ -71,71 +69,6 @@
                                            mode */
 #define FILE_SELECTION_WIDTH_TOTAL 590  /* Width for full filetree (both
                                            content and navigation pane) */
-
-#if !WITH_GTK_2_10
-
-/* Copy paste from gtkfilechooserprivate.h to make implementation of
-   file chooser interface possible */
-typedef struct _GtkFileChooserIface GtkFileChooserIface;
-
-struct _GtkFileChooserIface {
-    GTypeInterface base_iface;
-
-    /* Methods */
-     gboolean(*set_current_folder) (GtkFileChooser * chooser,
-                                    const GtkFilePath * path,
-                                    GError ** error);
-    GtkFilePath *(*get_current_folder) (GtkFileChooser * chooser);
-    void (*set_current_name) (GtkFileChooser * chooser,
-                              const gchar * name);
-     gboolean(*select_path) (GtkFileChooser * chooser,
-                             const GtkFilePath * path, GError ** error);
-    void (*unselect_path) (GtkFileChooser * chooser,
-                           const GtkFilePath * path);
-    void (*select_all) (GtkFileChooser * chooser);
-    void (*unselect_all) (GtkFileChooser * chooser);
-    GSList *(*get_paths) (GtkFileChooser * chooser);
-    GtkFilePath *(*get_preview_path) (GtkFileChooser * chooser);
-    GtkFileSystem *(*get_file_system) (GtkFileChooser * chooser);
-    void (*add_filter) (GtkFileChooser * chooser, GtkFileFilter * filter);
-    void (*remove_filter) (GtkFileChooser * chooser,
-                           GtkFileFilter * filter);
-    GSList *(*list_filters) (GtkFileChooser * chooser);
-     gboolean(*add_shortcut_folder) (GtkFileChooser * chooser,
-                                     const GtkFilePath * path,
-                                     GError ** error);
-     gboolean(*remove_shortcut_folder) (GtkFileChooser * chooser,
-                                        const GtkFilePath * path,
-                                        GError ** error);
-    GSList *(*list_shortcut_folders) (GtkFileChooser * chooser);
-
-    /* Signals */
-    void (*current_folder_changed) (GtkFileChooser * chooser);
-    void (*selection_changed) (GtkFileChooser * chooser);
-    void (*update_preview) (GtkFileChooser * chooser);
-    void (*file_activated) (GtkFileChooser * chooser);
-};
-
-/* From gtkfilechooserutils.h */
-
-typedef enum {
-    GTK_FILE_CHOOSER_PROP_FIRST = 0x1000,
-    GTK_FILE_CHOOSER_PROP_ACTION = GTK_FILE_CHOOSER_PROP_FIRST,
-    GTK_FILE_CHOOSER_PROP_FILE_SYSTEM_BACKEND,
-    GTK_FILE_CHOOSER_PROP_FILTER,
-    GTK_FILE_CHOOSER_PROP_LOCAL_ONLY,
-    GTK_FILE_CHOOSER_PROP_PREVIEW_WIDGET,
-    GTK_FILE_CHOOSER_PROP_PREVIEW_WIDGET_ACTIVE,
-    GTK_FILE_CHOOSER_PROP_USE_PREVIEW_LABEL,
-    GTK_FILE_CHOOSER_PROP_EXTRA_WIDGET,
-    GTK_FILE_CHOOSER_PROP_SELECT_MULTIPLE,
-    GTK_FILE_CHOOSER_PROP_SHOW_HIDDEN,
-    GTK_FILE_CHOOSER_PROP_LAST = GTK_FILE_CHOOSER_PROP_SHOW_HIDDEN
-} GtkFileChooserProp;
-
-/* CopyPaste ends */
-
-#endif /* !WITH_GTK_2_10 */
 
 void hildon_gtk_file_chooser_install_properties(GObjectClass * klass);
 
@@ -226,9 +159,6 @@ unescape_character (const char *scanner)
   return (first_digit << 4) | second_digit;
 }
 
-#if !WITH_GTK_2_10
-/* XXX - Is the "invalid-input" signal supported in Gtk+ 2.10?
- */
 static void chooser_entry_invalid_input_cb (GtkEntry *entry,
                                             GtkInvalidInputType inv_type,
                                             gpointer user_data)
@@ -239,7 +169,6 @@ static void chooser_entry_invalid_input_cb (GtkEntry *entry,
 				    HCS("ckdg_ib_maximum_characters_reached"));
   }
 }
-#endif
 
 static gchar *
 g_unescape_uri_string (const char *escaped,
@@ -525,7 +454,7 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
 
 	  is_folder = FALSE;
 
-#if !WITH_GTK_2_10
+#if 0
 	  /* XXX - Do it asyncronously for Gtk+ 2.10.
 	   */
 
@@ -1859,12 +1788,9 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
           g_signal_connect( priv->entry_name, "changed",
 		          G_CALLBACK( hildon_file_chooser_entry_changed ),
 		          self );
-#if !WITH_GTK_2_10
-    /* XXX - Is the "invalid-input" signal supported in Gtk+ 2.10?
-     */
+
     g_signal_connect(priv->entry_name, "invalid-input",
 		     G_CALLBACK(chooser_entry_invalid_input_cb), self);
-#endif
 
     priv->hbox_location = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
     priv->hbox_items = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
