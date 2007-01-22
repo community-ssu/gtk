@@ -1,3 +1,8 @@
+2007-01-22  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Determine double-click distance tolerance via GtkSettings, not hardcoded value
+	* Fixes: NB#50744
+
 2006-12-05  Gabriel Schulhof <gabriel.schulho@nokia.com>
 
 	* htmlengine.c:insert_text: Improved space-eating algorithm
