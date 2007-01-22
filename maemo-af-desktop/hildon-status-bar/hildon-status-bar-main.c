@@ -75,7 +75,8 @@
 static gint _delayed_infobanner_add(gint32 pid, 
 		                    gint32 begin, 
 				    gint32 timeout, 
-				    const gchar *text);
+				    const gchar *text,
+                    gint32 parent_window_id);
 gboolean _delayed_infobanner_remove(gpointer data);
 gboolean _delayed_ib_show(gpointer data);
 void _remove_sb_d_ib_item (gpointer key, gpointer value, gpointer user_data);
@@ -1071,13 +1072,15 @@ gint rpc_cb( const gchar *interface,
     /* Check the method delayed infobanner */    
     else if( g_str_equal( "delayed_infobanner", method ) )
     {  
+        gint parent_window_id = 0;
+
         if( arguments->len < 4 ||
 	    arguments->len > 5 ||
             val[0]->type != DBUS_TYPE_INT32 ||
             val[1]->type != DBUS_TYPE_INT32 ||
             val[2]->type != DBUS_TYPE_INT32 ||
-            val[3]->type != DBUS_TYPE_STRING ) 
-            /* (arguments->len == 5 && val[5]->type != DBUS_TYPE_NIL) )*/
+            val[3]->type != DBUS_TYPE_STRING ||
+            (arguments->len == 5 && val[5]->type != DBUS_TYPE_INT32) )
 	  {
             if( arguments->len < 4 ) {
                 retval->value.s = "Not enough arguments.";
@@ -1094,11 +1097,16 @@ gint rpc_cb( const gchar *interface,
 	    
 	    return OSSO_ERROR;
 	  }
+
+      if (arguments->len == 5)
+        parent_window_id = val[4]->value.i;
+
 	
-	return _delayed_infobanner_add(val[0]->value.i,
+	  return _delayed_infobanner_add(val[0]->value.i,
 				       val[1]->value.i,
 				       val[2]->value.i,
-				       val[3]->value.s
+				       val[3]->value.s,
+                       parent_window_id
 				       );
     }
     /* Check the method cancel delayed infobanner */
@@ -1489,7 +1497,8 @@ static
 gint _delayed_infobanner_add(gint32 pid, 
 		             gint32 begin, 
 			     gint32 timeout, 
-			     const gchar *text)
+			     const gchar *text,
+                 gint32 parent_window_id)
 {
     SBDelayedInfobanner *data;
   
@@ -1508,6 +1517,7 @@ gint _delayed_infobanner_add(gint32 pid,
     data->timeout_to_show_id = g_timeout_add( (guint) begin,
                         _delayed_ib_show,
                         GINT_TO_POINTER(pid));
+    data->parent_window_id = parent_window_id;
     
     g_hash_table_insert(delayed_banners, GINT_TO_POINTER(pid), data);
     
@@ -1546,6 +1556,14 @@ _delayed_ib_show(gpointer data)
     info->timeout_to_show_id = 0;
      
     info->banner = hildon_banner_show_animation( NULL, NULL, info->text );
+    if (info->parent_window_id) {
+        GdkWindow *parent_window = gdk_window_foreign_new (info->parent_window_id);
+        if (parent_window) {
+            gdk_window_set_transient_for (info->banner->window, parent_window);
+            gdk_window_destroy (parent_window);
+        }
+    }
+
     info->timeout_onscreen_id = g_timeout_add(
                        (guint)info->displaytime,
                        _delayed_infobanner_remove,

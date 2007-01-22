@@ -1,3 +1,9 @@
+2007-01-22  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: Added
+	optional parent window id parameter to the show delayed
+	info banner RPC call
+
 2007-01-19  Moises Martinez <moises.martinez@nokia.com>
 
 	* hildon-navigator/hildon-navigator-panel.c:
