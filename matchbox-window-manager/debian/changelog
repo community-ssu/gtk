@@ -1,3 +1,10 @@
+matchbox-window-manager (2:1.1-osso15) unstable; urgency=low
+
+  * IM resize fix
+  * Fixes: NB#49087
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri, 19 Jan 2007 14:23:14 +0200
+
 matchbox-window-manager (2:1.1-osso14) unstable; urgency=low
 
   * release button grab, additional focus movement restrictions/rules
