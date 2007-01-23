@@ -354,7 +354,7 @@ class URLopener:
         """Default error handler: close the connection and raise IOError."""
         void = fp.read()
         fp.close()
-        raise IOError, ('http error', errcode, errmsg, headers)
+        raise IOError, ('http error', errcode, errmsg)
 
     if hasattr(socket, "ssl"):
         def open_https(self, url, data=None):

@@ -1,8 +1,9 @@
 python2.5 (2.5.0-1osso9) unstable; urgency=low
 
   * compiled with sqlite3 support
+  * closes #270
 
- -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 19 Jan 2007 13:41:00 -0300
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Fri, 23 Jan 2007 14:55:00 -0300
 
 python2.5 (2.5.0-1osso8) unstable; urgency=low
 
