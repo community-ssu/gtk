@@ -1,3 +1,9 @@
+pango1.0 (1.14.7-1osso2) unstable; urgency=low
+
+  * cleaning up debian/rules, build only shared library 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 23 Jan 2007 14:55:56 +0200
+
 pango1.0 (1.14.7-1osso1) unstable; urgency=low
 
   * version upgrade to 1.14.7 
