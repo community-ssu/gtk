@@ -53,7 +53,7 @@ udebname=libpango$(apiver)-udeb_$(debversion)_$(shell dpkg-architecture -qDEB_BU
 debian/control:
 	dh_testdir
 
-	sed -e 's/@SONAME@/${soname}/g' -e 's/@VERSION@/${version}/g' $@.in > $@
+	#sed -e 's/@SONAME@/${soname}/g' -e 's/@VERSION@/${version}/g' $@.in > $@
 
 update-po: debian/po/templates.pot
 debian/po/templates.pot: debian/libpango1.0-common.templates
@@ -149,7 +149,7 @@ $(STAMP_DIR)/configure-udeb-stamp:
 
 	touch $@
 
-configure: configure-static configure-shared configure-udeb
+configure: configure-shared
 
 build-shared: debian/control update-po configure-shared $(STAMP_DIR)/build-shared-stamp
 $(STAMP_DIR)/build-shared-stamp:
@@ -180,7 +180,7 @@ $(STAMP_DIR)/build-udeb-stamp:
 
 	touch $@
 
-build: build-static build-shared
+build: build-shared
 
 clean:: debian/control update-po
 	dh_testdir
@@ -243,7 +243,7 @@ install-udeb: build-udeb install-test
 	# don't ship pangox.aliases
 	rm -f debian/libpango$(apiver)-udeb/etc/pango/pangox.aliases
 
-install: install-static install-shared
+install: install-shared
 	# in debian/
 	install -m 755 $(CURDIR)/debian/update-pango-modules \
 		       $(CURDIR)/debian/libpango$(apiver)-common/usr/sbin/
