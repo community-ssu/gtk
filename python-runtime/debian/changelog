@@ -1,3 +1,10 @@
+python-runtime (0.4-4) unstable; urgency=low
+
+  * added sqlite3 support to Python
+  * added bindings for g_set/get_application_name() in pygtk
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 23 Jan 2007 10:45:00 -0300
+
 python-runtime (0.4-3) unstable; urgency=low
 
   * fix a problem with "Provides" item inside /debian/control file.
