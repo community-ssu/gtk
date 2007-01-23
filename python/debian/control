@@ -2,12 +2,12 @@ Source: python2.5
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: debhelper (>= 4.2), autoconf, zlib1g-dev, libssl-dev, libbz2-dev
+Build-Depends: debhelper (>= 4.2), autoconf, zlib1g-dev, libssl-dev, libbz2-dev, libsqlite3-dev (>= 3.3.5-0.2osso1)
 Standards-Version: 3.6.2
 
 Package: python2.5
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, libsqlite3-0 (>= 3.3.5-0.2osso1)
 Conflicts: python2.4
 Replaces: python2.4
 Provides: python-termios
