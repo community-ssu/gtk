@@ -5,7 +5,7 @@ Maintainer: Tapani Palli <tapani.palli@nokia.com>
 Build-Depends: debhelper (>= 4.1.16), libfreetype6-dev (>= 2.1.7), libx11-dev | xlibs-dev, libxrender-dev | xlibs-dev, libxt-dev | xlibs-dev, libglib2.0-dev (>= 2.10.0), pkg-config, libxft-dev, libfontconfig1-dev (>= 2.1.91), autotools-dev, po-debconf, gnome-pkg-tools, libcairo2-dev (>= 1.2.2)
 Standards-Version: 3.6.1
 
-Package: libpango1.0-@SONAME@
+Package: libpango1.0-0
 Section: libs
 Architecture: any
 Depends: libpango1.0-common (>= ${Source-Version}), ${shlibs:Depends}
@@ -73,7 +73,7 @@ Description: Development files for the Pango
  This package contains the header files and some files needed for development
  with Pango.
 
-Package: libpango1.0-@SONAME@-dbg
+Package: libpango1.0-0-dbg
 Section: libdevel
 Priority: extra
 Architecture: any
