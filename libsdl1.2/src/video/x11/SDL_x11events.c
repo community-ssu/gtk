@@ -489,7 +489,7 @@ void X11_PumpEvents(_THIS)
 				if ( go_fullscreen ) {
 					X11_EnterFullScreen(this);
 				} else {
-					X11_LeaveFullScreen(this);
+					X11_LeaveFullScreen(this, 0);
 				}
 			}
 			/* Handle focus in/out when grabbed */

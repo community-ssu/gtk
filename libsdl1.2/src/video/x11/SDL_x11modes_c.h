@@ -44,4 +44,4 @@ extern void X11_WaitMapped(_THIS, Window win);
 extern void X11_WaitUnmapped(_THIS, Window win);
 extern void X11_QueueEnterFullScreen(_THIS);
 extern int X11_EnterFullScreen(_THIS);
-extern int X11_LeaveFullScreen(_THIS);
+extern int X11_LeaveFullScreen(_THIS, int destroy);

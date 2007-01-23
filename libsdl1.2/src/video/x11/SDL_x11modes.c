@@ -749,7 +749,7 @@ int X11_EnterFullScreen(_THIS)
     /* Set the new resolution */
     okay = X11_ResizeFullScreen(this);
     if ( ! okay ) {
-        X11_LeaveFullScreen(this);
+        X11_LeaveFullScreen(this, 0);
     }
 
     XUnmapWindow(SDL_Display, WMwindow);
@@ -773,7 +773,7 @@ int X11_EnterFullScreen(_THIS)
     return(okay);
 }
 
-int X11_LeaveFullScreen(_THIS)
+int X11_LeaveFullScreen(_THIS, int destroy)
 {
     if ( currently_fullscreen ) {
         XReparentWindow(SDL_Display, SDL_Window, WMwindow, 0, 0);
@@ -815,8 +815,10 @@ int X11_LeaveFullScreen(_THIS)
      */
     X11_GrabInputNoLock(this, this->input_grab & ~SDL_GRAB_FULLSCREEN);
 
-    XMapWindow(SDL_Display, WMwindow);
-    X11_WaitMapped(this, WMwindow);
+    if ( !destroy ) {
+        XMapWindow(SDL_Display, WMwindow);
+        X11_WaitMapped(this, WMwindow);
+    }
 
     /* We may need to refresh the screen at this point (no backing store)
        We also don't get an event, which is why we explicitly refresh. */

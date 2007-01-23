@@ -1,3 +1,10 @@
+libsdl1.2 (1.2.8-17) unstable; urgency=low
+
+  * src/video/x11/: X11_LeaveFullScreen() won't remap the WM window when
+    destroying SDL window in fullscreen mode.
+
+ -- Kuisma Salonen <kuisma.salonen@nokia.com>  Tue, 23 Jan 2007 16:03:54 +0200
+
 libsdl1.2 (1.2.8-16) unstable; urgency=low
 
   * src/SDL_fatal.c: fatals will raise invoking signal after SDL_Quit().
