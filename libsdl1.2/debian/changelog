@@ -1,3 +1,9 @@
+libsdl1.2 (1.2.8-18) unstable; urgency=low
+
+  * remove from the source tree the svn-commit-file
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Wed, 24 Jan 2007 12:14:00 +0200
+
 libsdl1.2 (1.2.8-17) unstable; urgency=low
 
   * src/video/x11/: X11_LeaveFullScreen() won't remap the WM window when
