@@ -428,11 +428,11 @@ sapwood_pixmap_render (SapwoodPixmap *self,
 }
 
 void
-sapwood_pixmap_get_pixmap (SapwoodPixmap *self, gint i, gint j,
+sapwood_pixmap_get_pixmap (SapwoodPixmap *self, gint x, gint y,
 			   GdkPixmap **pixmap, GdkBitmap **pixmask)
 {
-  *pixmap  = self->pixmap[i][j];
-  *pixmask = self->pixmask[i][j];
+  *pixmap  = self->pixmap[y][x];
+  *pixmask = self->pixmask[y][x];
 }
 
 void

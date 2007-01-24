@@ -1,4 +1,9 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-pixmap.c (sapwood_pixmap_get_pixmap): Switch x/y indices
+	the right way around.
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* src/sapwood-rc-style.c (theme_symbols): Remove unused tokens
 	TOKEN_D_POLYGON, TOKEN_D_OVAL, TOKEN_D_STRING, TOKEN_D_CROSS,
