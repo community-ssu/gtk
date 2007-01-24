@@ -1,5 +1,9 @@
 2007-01-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.18
+
+2007-01-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/background-manager.c:
 	- removed unused pipe
 	- properly close the other pipe.

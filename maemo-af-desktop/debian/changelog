@@ -1,3 +1,24 @@
+maemo-af-desktop (2.9.99.18-1) unstable; urgency=low
+
+  * hildon-home/background-manager.c:
+  - removed unused pipe
+  - properly close the other pipe.
+  Fixes: NB#50838
+
+  * hildon-status-bar/hildon-status-bar-main.c: Fixed previous
+  changes
+  Fixes: NB#50246
+
+  * hildon-status-bar/hildon-status-bar-main.c: Added
+  optional parent window id parameter to the show delayed
+  info banner RPC call
+
+  * hildon-navigator/hildon-navigator-panel.c:
+  - Set default plugins if the .desktop file doesn't have 
+    enough entries. Fixes: NB#50698.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 24 Jan 2007 18:36:31 +0200
+
 maemo-af-desktop (2.9.99.17-1) unstable; urgency=low
 
   * hildon-home/background-manager.c: Make sure previous child
