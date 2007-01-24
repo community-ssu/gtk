@@ -1,5 +1,36 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Adjust the detail for buttons in button boxes depending on the button
+	position inside the button box for enhanced theming (special rounding
+	for outmost button edges.) For horizontal button box we use the
+	following details to work with existing themes:
+	- osso_button_nesw
+	- osso_button_nsw
+	- osso_button_nes
+	- osso_button_ns
+
+	vertical:
+	- osso_button_nesw
+	- osso_button_new
+	- osso_button_esw
+	- osso_button_ew
+
+	NOTE: this loses the ability to theme the 'default' response button
+	differently from the others. We could use 'osso_buttondefault_nesw' or
+	similar but that would then require duplicate theme declarations or
+	risk really bad looking theming when the 'default' style is used
+	without matching graphics. Some way to handle fallbacks
+	(buttondefault-shaped - button-shaped - buttondefault - button) could
+	be useful.
+
+	* src/sapwood-draw.c (maybe_set_dialog_button_details,
+	draw_simple_image): When painting GtkButtons check if it's contained
+	in a button box, and if so figure out the position
+	(solitary,left,right,middle - similarly for vertical) and replace the
+	detail with specific ones matching the position.
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-pixmap.c (sapwood_pixmap_get_pixmap): Switch x/y indices
 	the right way around.
 
