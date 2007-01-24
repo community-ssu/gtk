@@ -62,7 +62,7 @@ if [ $START = TRUE ]; then
 export MB_HUNG_APP_HANDLER='/usr/bin/hn-hung-app-handler'
 export MB_AGGRESSIVE_PING=1
 
-  $LAUNCHWRAPPER_NICE start "$SVC" $PROG \
+  $LAUNCHWRAPPER_NICE_TRYRESTART start "$SVC" $PROG \
       -theme $MBTHEME \
       -use_titlebar $TITLEBAR \
       -use_desktop_mode $DESKTOPMODE \
@@ -72,7 +72,7 @@ export MB_AGGRESSIVE_PING=1
       -use_super_modal $SUPERMODAL
 else
   # dsmetool wants identical arguments for stopping
-  $LAUNCHWRAPPER_NICE stop "$SVC" $PROG \
+  $LAUNCHWRAPPER_NICE_TRYRESTART stop "$SVC" $PROG \
       -theme $MBTHEME \
       -use_titlebar $TITLEBAR \
       -use_desktop_mode $DESKTOPMODE \

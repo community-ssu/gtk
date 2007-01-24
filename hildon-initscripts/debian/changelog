@@ -1,10 +1,11 @@
 hildon-initscripts (1.8-1) unstable; urgency=low
 
   * UNRELEASED
-  * Added workaround for Gtk theme files when the flash is too full
-    to create them in startup. Fixes: NB#43067
+  * Removed obsolete osso-connectivity-ui calls from af-sb-init.sh.
+  * Now calling lessertunjo0 startup script. Fixes: NB#48599
+  * Now trying to restart Matchbox if it dies (fix from maintenance branch).
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 13 Oct 2006 15:14:28 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 24 Jan 2007 17:31:07 +0200
 
 hildon-initscripts (1.7-1) unstable; urgency=low
 

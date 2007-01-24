@@ -141,14 +141,13 @@ if [ "$STOP" = "TRUE" ]; then
     fi
   done
 
-  # stop
-  if [ -r /usr/bin/osso-connectivity-ui.sh ]; then
-    source /usr/bin/osso-connectivity-ui.sh stop
-  fi
-
   # stop maemo-launcher
   if [ -x /etc/init.d/maemo-launcher ]; then
     /etc/init.d/maemo-launcher stop
+  fi
+  # just in case something goes to the script in the future
+  if [ -x /etc/init.d/lessertunjo0 ]; then
+    /etc/init.d/lessertunjo0 stop
   fi
   # remove dbus own dbus pid file
   rm -rf /var/run/dbus/pid
@@ -212,6 +211,11 @@ if [ "$START" = "TRUE" ]; then
   # resource AF_DEFS to read the address of the dbus session address
   source $AF_DEFS
 
+  # make some directories for games
+  if [ -x /etc/init.d/lessertunjo0 ]; then
+    /etc/init.d/lessertunjo0 start
+  fi
+
   # start maemo-launcher
   if [ -x /etc/init.d/maemo-launcher ]; then
     /etc/init.d/maemo-launcher start
@@ -233,7 +237,4 @@ if [ "$START" = "TRUE" ]; then
     fi
   done
 
-  if [ -e /usr/bin/osso-connectivity-ui.sh ]; then
-    source /usr/bin/osso-connectivity-ui.sh start
-  fi
 fi
