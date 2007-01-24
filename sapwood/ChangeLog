@@ -1,5 +1,13 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-draw.c (draw_simple_image,draw_gap_image): remove unused
+	allow_setbg parameter
+	(draw_shadow,draw_arrow,draw_arrow,draw_arrow,draw_diamond,draw_box,
+	draw_flat_box,draw_check,draw_option,draw_tab,draw_extension,draw_focus,
+	draw_slider,draw_handle): update callers
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (draw_simple_image, draw_gap_image): replace
 	deprecated gdk_window_get_size() call with gdk_drawable_get_size()
 
