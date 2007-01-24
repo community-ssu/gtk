@@ -1,5 +1,10 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-draw.c (draw_simple_image, draw_gap_image): replace
+	deprecated gdk_window_get_size() call with gdk_drawable_get_size()
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Export only symbols needed for the theme engine ABI
 
 	* src/sapwood-pixmap.h
