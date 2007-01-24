@@ -1,4 +1,11 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* src/sapwood-rc-style.c (theme_symbols): Remove unused tokens
+	TOKEN_D_POLYGON, TOKEN_D_OVAL, TOKEN_D_STRING, TOKEN_D_CROSS,
+	TOKEN_D_RAMP, TOKEN_D_ENTRY
+	* src/theme-pixbuf.h: rename unused tokens to TOKEN_UNUSED_*
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Pass pixmaps directly instead of reverse engineering them from
 	coordinates
