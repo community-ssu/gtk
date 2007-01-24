@@ -67,6 +67,7 @@ theme_symbols[] =
   { "overlay_stretch", 	TOKEN_OVERLAY_STRETCH },
   { "arrow_direction", 	TOKEN_ARROW_DIRECTION },
   { "orientation", 	TOKEN_ORIENTATION },
+  { "position", 	TOKEN_POSITION },
 
   { "HLINE", 		TOKEN_D_HLINE },
   { "VLINE",		TOKEN_D_VLINE },
@@ -337,6 +338,45 @@ theme_parse_detail(GScanner * scanner,
 }
 
 static guint
+theme_parse_position(GScanner * scanner,
+		     ThemeImage * data)
+{
+  guint token;
+
+  token = g_scanner_get_next_token(scanner);
+  if (token != TOKEN_POSITION)
+    return TOKEN_POSITION;
+
+  token = g_scanner_get_next_token(scanner);
+  if (token != G_TOKEN_EQUAL_SIGN)
+    return G_TOKEN_EQUAL_SIGN;
+
+  do
+    {
+      token = g_scanner_get_next_token(scanner);
+      if (token == TOKEN_LEFT)
+	data->match_data.position |= THEME_POS_LEFT;
+      else if (token == TOKEN_RIGHT)
+	data->match_data.position |= THEME_POS_RIGHT;
+      else if (token == TOKEN_TOP)
+	data->match_data.position |= THEME_POS_TOP;
+      else if (token == TOKEN_BOTTOM)
+	data->match_data.position |= THEME_POS_BOTTOM;
+      else
+	return TOKEN_LEFT;
+
+      data->match_data.flags |= THEME_MATCH_POSITION;
+
+      token = g_scanner_peek_next_token(scanner);
+      if (token == G_TOKEN_COMMA)
+	token = g_scanner_get_next_token(scanner);
+    }
+  while (token == G_TOKEN_COMMA);
+
+  return G_TOKEN_NONE;
+}
+
+static guint
 theme_parse_state(GScanner * scanner,
 		  ThemeImage * data)
 {
@@ -595,6 +635,9 @@ theme_parse_image(GtkSettings  *settings,
 	  break;
 	case TOKEN_ORIENTATION:
 	  token = theme_parse_orientation(scanner, data);
+	  break;
+	case TOKEN_POSITION:
+	  token = theme_parse_position(scanner, data);
 	  break;
 	case TOKEN_FILE:
 	  token = theme_parse_file(settings, scanner, &data->background);

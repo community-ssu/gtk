@@ -1,5 +1,28 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Implement dialog buttons using explicit "position" keyword. The
+	position is calculated only for buttons in button boxes for now.
+	Specific graphics can be applied with something like:
+	  position = LEFT,TOP,RIGHT,BOTTOM	(solitary)
+	  position = TOP,LEFT,BOTTOM		(leftmost)
+	  position = TOP,BOTTOM			(middle)
+	  position = TOP,RIGHT,BOTTOM		(rightmost)
+
+	* src/sapwood-draw.c (match_theme_image): check position flags
+	(maybe_set_dialog_button_details, draw_simple_image): rename
+	maybe_set_dialog_button_details to maybe_check_button_position
+	(maybe_check_button_position): don't check or modify the detail,
+	instead use the position match flags
+	* src/sapwood-rc-style.c (theme_symbols): add "position"
+	(theme_parse_position): parse "position = LEFT,RIGHT,TOP,BOTTOM"
+	(theme_parse_image): parse "position"
+	* src/theme-pixbuf.h: add TOKEN_POSITION and ThemePositionfFlags
+	(ThemeMatchFlags): add THEME_MATCH_POSITION
+	(ThemeMatchData): increase the flags size to hold
+	'THEME_MATCH_POSITION' and add ThemePositionfFlags
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	Adjust the detail for buttons in button boxes depending on the button
 	position inside the button box for enhanced theming (special rounding
 	for outmost button edges.) For horizontal button box we use the

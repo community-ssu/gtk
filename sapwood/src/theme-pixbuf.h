@@ -98,7 +98,8 @@ enum
   TOKEN_ETCHED_OUT,
   TOKEN_ORIENTATION,
   TOKEN_HORIZONTAL,
-  TOKEN_VERTICAL
+  TOKEN_VERTICAL,
+  TOKEN_POSITION
 };
 
 typedef enum
@@ -120,8 +121,16 @@ typedef enum {
   THEME_MATCH_ORIENTATION     = 1 << 1,
   THEME_MATCH_STATE           = 1 << 2,
   THEME_MATCH_SHADOW          = 1 << 3,
-  THEME_MATCH_ARROW_DIRECTION = 1 << 4
+  THEME_MATCH_ARROW_DIRECTION = 1 << 4,
+  THEME_MATCH_POSITION        = 1 << 5
 } ThemeMatchFlags;
+
+typedef enum {
+  THEME_POS_LEFT   = 1 << 0, /* GTK_POS_LEFT   */
+  THEME_POS_RIGHT  = 1 << 1, /* GTK_POS_RIGHT  */
+  THEME_POS_TOP    = 1 << 2, /* GTK_POS_TOP    */
+  THEME_POS_BOTTOM = 1 << 3  /* GTK_POS_BOTTOM */
+} ThemePositionFlags;
 
 struct _ThemePixbuf
 {
@@ -143,7 +152,8 @@ struct _ThemeMatchData
   gchar          *detail;
   guint16         function;	/* Mandatory */
 
-  ThemeMatchFlags flags           : 5;
+  ThemeMatchFlags flags           : 6;
+  ThemePositionFlags position     : 4;
   GtkStateType    state           : 3;
   GtkShadowType   shadow          : 3;
   GtkPositionType gap_side        : 2;

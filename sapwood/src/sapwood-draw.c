@@ -61,6 +61,10 @@ match_theme_image (GtkStyle       *style,
 	  match_data->state != image->match_data.state)
 	continue;
 
+      if ((flags & THEME_MATCH_POSITION) &&
+	  match_data->position != image->match_data.position)
+	continue;
+
       if ((flags & THEME_MATCH_SHADOW) &&
 	  match_data->shadow != image->match_data.shadow)
 	continue;
@@ -103,7 +107,7 @@ get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
 }
 
 static void
-maybe_set_dialog_button_details (GtkWidget *button, ThemeMatchData *match_data)
+maybe_check_button_position (GtkWidget *button, ThemeMatchData *match_data)
 {
   GtkWidget *bbox;
   gboolean secondary;
@@ -111,11 +115,6 @@ maybe_set_dialog_button_details (GtkWidget *button, ThemeMatchData *match_data)
   GtkWidget *first = NULL;
   GtkWidget *last = NULL;
   GList *list;
-
-  if (!match_data->detail ||
-      (strcmp (match_data->detail, "button") != 0 &&
-       strcmp (match_data->detail, "buttondefault") != 0))
-    return;
 
   bbox = gtk_widget_get_ancestor (button, GTK_TYPE_BUTTON_BOX);
   if (!bbox)
@@ -151,27 +150,22 @@ maybe_set_dialog_button_details (GtkWidget *button, ThemeMatchData *match_data)
 	}
     }
 
+  match_data->flags |= THEME_MATCH_POSITION;
   if (horizontal)
     {
-      if (first == button && button == last)		/* solitary */
-	match_data->detail = "osso_button_nesw";
-      else if (first == button)				/* left */
-	match_data->detail = "osso_button_nsw";
-      else if (last == button)				/* right */
-	match_data->detail = "osso_button_nes";
-      else						/* middle */
-	match_data->detail = "osso_button_ns";
+      match_data->position = THEME_POS_TOP | THEME_POS_BOTTOM;
+      if (first == button)
+	match_data->position |= THEME_POS_LEFT;
+      if (last == button)
+	match_data->position |= THEME_POS_RIGHT;
     }
   else
     {
-      if (first == button && button == last)		/* solitary */
-	match_data->detail = "osso_button_nesw";
-      else if (first == button)				/* top */
-	match_data->detail = "osso_button_new";
-      else if (last == button)				/* bottom */
-	match_data->detail = "osso_button_esw";
-      else						/* middle */
-	match_data->detail = "osso_button_ew";
+      match_data->position = THEME_POS_LEFT | THEME_POS_RIGHT;
+      if (first == button)
+	match_data->position |= THEME_POS_TOP;
+      if (last == button)
+	match_data->position |= THEME_POS_BOTTOM;
     }
 }
 
@@ -208,7 +202,7 @@ draw_simple_image(GtkStyle       *style,
 
   /* Special handling for buttons in dialogs */
   if (GTK_IS_BUTTON (widget))
-    maybe_set_dialog_button_details (widget, match_data);
+    maybe_check_button_position (widget, match_data);
     
   image = match_theme_image (style, match_data);
   if (image)
