@@ -1,3 +1,10 @@
+2007-01-24  Jose Dapena Paz  <jdapena@igalia.com>
+
+	* src/sapwood-server.c (extract_pixmap_single, main,
+	get_display_depth): use system default visual depth for all pixmaps.
+	This avoids crashing when running maemo desktop in a 24 bits color
+	depth X server (bug #856).
+
 2006-10-26  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* === Release 2.43 ===

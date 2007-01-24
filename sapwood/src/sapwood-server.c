@@ -49,6 +49,7 @@ static GMainLoop *main_loop;
 static GCache *pixmap_cache   = NULL;
 static int     pixmap_counter = 0;
 static int     pixbuf_counter = 0;
+static int     server_depth   = 0;
 
 static const char *sock_path;
 
@@ -85,7 +86,7 @@ extract_pixmap_single (GdkPixbuf  *pixbuf,
   static GdkGC *tmp_gc = NULL;
   gboolean      need_mask;
 
-  pixmap = gdk_pixmap_new (NULL, width, height, 16);
+  pixmap = gdk_pixmap_new (NULL, width, height, server_depth);
 
   if (!tmp_gc)
     tmp_gc = gdk_gc_new (pixmap);
@@ -512,6 +513,21 @@ main_sock_callback (GIOChannel   *channel,
   return TRUE;
 }
 
+static int
+get_display_depth (void)
+{
+  GdkScreen *screen;
+  GdkVisual *system_visual;
+
+  screen = gdk_screen_get_default ();
+  g_assert (screen != NULL);
+
+  system_visual = gdk_screen_get_system_visual (screen);
+
+  return system_visual->depth;
+}
+
+
 int
 main (int argc, char **argv)
 {
@@ -527,6 +543,8 @@ main (int argc, char **argv)
 #endif
 
   gdk_init (&argc, &argv);
+
+  server_depth = get_display_depth ();
 
   sock_path = sapwood_socket_path_get_default ();
 
