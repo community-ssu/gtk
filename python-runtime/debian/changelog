@@ -1,3 +1,15 @@
+python-runtime (0.4-6) unstable; urgency=low
+
+  * changed the package group
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 24 Jan 2007 10:28:00 -0300
+
+python-runtime (0.4-5) unstable; urgency=low
+
+  * update dependencies' versions
+
+ -- Osvaldo Santana Neto <osvaldo.santana@indt.org.br>  Tue, 24 Jan 2007 10:21:00 -0300
+
 python-runtime (0.4-4) unstable; urgency=low
 
   * added sqlite3 support to Python
