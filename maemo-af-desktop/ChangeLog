@@ -1,3 +1,8 @@
+2007-01-24  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: Fixed previous
+	changes
+
 2007-01-22  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-status-bar/hildon-status-bar-main.c: Added

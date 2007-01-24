@@ -887,7 +887,7 @@ gint rpc_cb( const gchar *interface,
              osso_rpc_t *retval )
 {
     StatusBar *panel;
-    osso_rpc_t *val[4];
+    osso_rpc_t *val[5];
     gint i;
     
     /* These must be specified */
@@ -1080,7 +1080,7 @@ gint rpc_cb( const gchar *interface,
             val[1]->type != DBUS_TYPE_INT32 ||
             val[2]->type != DBUS_TYPE_INT32 ||
             val[3]->type != DBUS_TYPE_STRING ||
-            (arguments->len == 5 && val[5]->type != DBUS_TYPE_INT32) )
+            (arguments->len == 5 && val[4]->type != DBUS_TYPE_INT32) )
 	  {
             if( arguments->len < 4 ) {
                 retval->value.s = "Not enough arguments.";
@@ -1560,7 +1560,7 @@ _delayed_ib_show(gpointer data)
         GdkWindow *parent_window = gdk_window_foreign_new (info->parent_window_id);
         if (parent_window) {
             gdk_window_set_transient_for (info->banner->window, parent_window);
-            gdk_window_destroy (parent_window);
+            g_object_unref (parent_window);
         }
     }
 
