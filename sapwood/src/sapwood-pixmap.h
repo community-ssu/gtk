@@ -36,7 +36,8 @@ enum {
 typedef struct _SapwoodPixmap SapwoodPixmap;
 
 typedef struct {
-    GdkRectangle src;
+    GdkPixmap *pixmap;
+    GdkPixmap *pixmask;
     GdkRectangle dest;
 } SapwoodRect;
 
@@ -52,6 +53,12 @@ void      sapwood_pixmap_free         (SapwoodPixmap *self) G_GNUC_INTERNAL;
 gboolean  sapwood_pixmap_get_geometry (SapwoodPixmap *self,
 				      gint         *width,
 				      gint         *height) G_GNUC_INTERNAL;
+
+void      sapwood_pixmap_get_pixmap   (SapwoodPixmap *self,
+				       gint           x,
+				       gint           y,
+				       GdkPixmap    **ret_pixmap,
+				       GdkBitmap    **ret_pixmask) G_GNUC_INTERNAL;
 
 void      sapwood_pixmap_render       (SapwoodPixmap *self,
 				      GdkWindow    *window,

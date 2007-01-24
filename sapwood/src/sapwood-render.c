@@ -264,6 +264,8 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 
   if (theme_pb->stretch)
     {
+      SapwoodPixmap *pixmap;
+
       src_x[0] = 0;
       src_x[1] = theme_pb->border_left;
       src_x[2] = pixbuf_width - theme_pb->border_right;
@@ -287,18 +289,18 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
       if (component_mask & COMPONENT_ALL)
 	component_mask = (COMPONENT_ALL - 1) & ~component_mask;
 
-#define RENDER_COMPONENT(X,Y) do {			\
-    rect[n_rect].src.x = src_x[X];			\
-    rect[n_rect].src.y = src_y[Y];			\
-    rect[n_rect].src.width = src_x[X+1] - src_x[X];	\
-    rect[n_rect].src.height = src_y[Y+1] - src_y[Y];	\
-							\
-    rect[n_rect].dest.x = dest_x[X];			\
-    rect[n_rect].dest.y = dest_y[Y];			\
-    rect[n_rect].dest.width = dest_x[X+1] - dest_x[X];	\
-    rect[n_rect].dest.height = dest_y[Y+1] - dest_y[Y];	\
-							\
-    n_rect++;						\
+      pixmap = theme_pixbuf_get_pixmap (theme_pb);
+
+#define RENDER_COMPONENT(X,Y) do {			           \
+    sapwood_pixmap_get_pixmap (pixmap, X, Y, &rect[n_rect].pixmap, \
+			       &rect[n_rect].pixmask);	           \
+							           \
+    rect[n_rect].dest.x = dest_x[X];			           \
+    rect[n_rect].dest.y = dest_y[Y];			           \
+    rect[n_rect].dest.width = dest_x[X+1] - dest_x[X];	           \
+    rect[n_rect].dest.height = dest_y[Y+1] - dest_y[Y];	           \
+							           \
+    n_rect++;						           \
 } while(0)
       
       n_rect = 0;

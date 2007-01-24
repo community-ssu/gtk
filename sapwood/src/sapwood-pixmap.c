@@ -427,31 +427,10 @@ sapwood_pixmap_render (SapwoodPixmap *self,
     g_object_unref (tmp_mask);
 }
 
-static void
-get_pixmaps (SapwoodPixmap *self, const GdkRectangle *area,
-	     GdkPixmap **pixmap, GdkBitmap **pixmask)
+void
+sapwood_pixmap_get_pixmap (SapwoodPixmap *self, gint i, gint j,
+			   GdkPixmap **pixmap, GdkBitmap **pixmask)
 {
-  gint i;
-  gint j;
-
-  if (area->y == 0 && area->height == self->height)
-    i = 1;
-  else if (area->y == self->border_top)
-    i = 1;
-  else if (area->y == 0)
-    i = 0;
-  else
-    i = 2;
-
-  if (area->x == 0 && area->width == self->width)
-    j = 1;
-  else if (area->x == self->border_left)
-    j = 1;
-  else if (area->x == 0)
-    j = 0;
-  else
-    j = 2;
-
   *pixmap  = self->pixmap[i][j];
   *pixmask = self->pixmask[i][j];
 }
@@ -472,8 +451,6 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
   static GdkGC *mask_gc = NULL;
   static GdkGC *draw_gc = NULL;
   GdkGCValues   values;
-  GdkPixmap    *pixmap;
-  GdkBitmap    *pixmask;
   gint          xofs;
   gint          yofs;
   gint          n;
@@ -490,7 +467,6 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
 
   for (n = 0; n < n_rect; n++)
     {
-      const GdkRectangle       *src  = &rect[n].src;
       /* const */ GdkRectangle *dest = &rect[n].dest;
       GdkRectangle              area;
 
@@ -502,10 +478,9 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
       else
 	area = *dest;
 
-      get_pixmaps (self, src, &pixmap, &pixmask);
-      if (pixmap && pixmask)
+      if (rect[n].pixmap && rect[n].pixmask)
 	{
-	  values.tile = pixmask;
+	  values.tile = rect[n].pixmask;
 	  values.ts_x_origin = dest->x - xofs;
 	  values.ts_y_origin = dest->y - yofs;
 	  gdk_gc_set_values (mask_gc, &values, GDK_GC_TILE|GDK_GC_TS_X_ORIGIN|GDK_GC_TS_Y_ORIGIN);
@@ -530,7 +505,6 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
 
   for (n = 0; n < n_rect; n++)
     {
-      const GdkRectangle       *src  = &rect[n].src;
       /* const */ GdkRectangle *dest = &rect[n].dest;
       GdkRectangle              area;
 
@@ -542,10 +516,9 @@ sapwood_pixmap_render_rects (SapwoodPixmap *self,
       else
 	area = *dest;
 
-      get_pixmaps (self, src, &pixmap, &pixmask);
-      if (pixmap)
+      if (rect[n].pixmap)
 	{
-	  values.tile = pixmap;
+	  values.tile = rect[n].pixmap;
 	  values.ts_x_origin = dest->x;
 	  values.ts_y_origin = dest->y;
 	  gdk_gc_set_values (draw_gc, &values, GDK_GC_TILE|GDK_GC_TS_X_ORIGIN|GDK_GC_TS_Y_ORIGIN);

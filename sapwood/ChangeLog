@@ -1,5 +1,18 @@
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	Pass pixmaps directly instead of reverse engineering them from
+	coordinates
+
+	* src/sapwood-pixmap.h (sapwood_pixmap_get_pixmap)
+	* src/sapwood-pixmap.c (get_pixmaps, sapwood_pixmap_get_pixmap):
+	Export a function for getting pixmap and mask for each square
+	* src/sapwood-pixmap.c (sapwood_pixmap_render_rects)
+	* src/sapwood-pixmap.h (SapwoodRect)
+	* src/sapwood-render.c (theme_pixbuf_render): replace source rectangle
+	with pixmap and mask pointers
+
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (draw_simple_image,draw_gap_image): remove unused
 	allow_setbg parameter
 	(draw_shadow,draw_arrow,draw_arrow,draw_arrow,draw_diamond,draw_box,
