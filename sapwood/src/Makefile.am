@@ -29,5 +29,8 @@ sapwood_server_LDADD = $(GDK_LIBS)
 sapwood_server_CFLAGS = $(AM_CFLAGS)	# created both with libtool and without
 
 MAINTAINERCLEANFILES = Makefile.in
+CLEANFILES = actual-abi actual-abi2 expected-abi expected-abi2 optional-abi
 
-EXTRA_DIST = README.pixbuf README.server
+EXTRA_DIST = README.pixbuf README.server abicheck.sh
+
+TESTS = abicheck.sh

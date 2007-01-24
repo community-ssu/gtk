@@ -1,3 +1,15 @@
+2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Export only symbols needed for the theme engine ABI
+
+	* src/sapwood-pixmap.h
+	* src/sapwood-proto.h
+	* src/sapwood-rc-style.h
+	* src/sapwood-style.h
+	* src/theme-pixbuf.h: Tag internal functions with G_GNUC_INTERNAL to
+	avoid symbol leakage.
+	* src/Makefile.am: Add check target to verify the ABI.
+
 2007-01-24  Jose Dapena Paz  <jdapena@igalia.com>
 
 	* src/sapwood-server.c (extract_pixmap_single, main,

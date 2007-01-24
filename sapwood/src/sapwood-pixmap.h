@@ -45,13 +45,13 @@ SapwoodPixmap *sapwood_pixmap_get_for_file (const char *filename,
 					  int border_right,
 					  int border_top,
 					  int border_bottom,
-					  GError **err);
+					  GError **err) G_GNUC_INTERNAL;
 
-void      sapwood_pixmap_free         (SapwoodPixmap *self);
+void      sapwood_pixmap_free         (SapwoodPixmap *self) G_GNUC_INTERNAL;
 
 gboolean  sapwood_pixmap_get_geometry (SapwoodPixmap *self,
 				      gint         *width,
-				      gint         *height);
+				      gint         *height) G_GNUC_INTERNAL;
 
 void      sapwood_pixmap_render       (SapwoodPixmap *self,
 				      GdkWindow    *window,
@@ -64,7 +64,7 @@ void      sapwood_pixmap_render       (SapwoodPixmap *self,
 				      gint          dest_x,
 				      gint          dest_y,
 				      gint          dest_width,
-				      gint          dest_height);
+				      gint          dest_height) G_GNUC_INTERNAL;
 
 void      sapwood_pixmap_render_rects (SapwoodPixmap *self,
 				      GdkDrawable  *draw,
@@ -76,7 +76,7 @@ void      sapwood_pixmap_render_rects (SapwoodPixmap *self,
 				      gboolean      mask_required,
 				      GdkRectangle *clip_rect,
 				      gint          n_rects,
-				      SapwoodRect   *rects);
+				      SapwoodRect   *rects) G_GNUC_INTERNAL;
 
 G_END_DECLS
 

@@ -27,7 +27,7 @@
 typedef struct _SapwoodRcStyle SapwoodRcStyle;
 typedef struct _SapwoodRcStyleClass SapwoodRcStyleClass;
 
-extern GType sapwood_type_rc_style;
+extern GType sapwood_type_rc_style G_GNUC_INTERNAL;
 
 #define SAPWOOD_TYPE_RC_STYLE              sapwood_type_rc_style
 #define SAPWOOD_RC_STYLE(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), SAPWOOD_TYPE_RC_STYLE, SapwoodRcStyle))
@@ -48,4 +48,4 @@ struct _SapwoodRcStyleClass
   GtkRcStyleClass parent_class;
 };
 
-void sapwood_rc_style_register_type (GTypeModule *module);
+void sapwood_rc_style_register_type (GTypeModule *module) G_GNUC_INTERNAL;

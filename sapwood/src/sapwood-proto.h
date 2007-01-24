@@ -61,8 +61,8 @@ typedef struct
   guint32 pixmask[3][3];        /* 0 if not applicable (full opacity)       */
 } PixbufOpenResponse;
 
-G_CONST_RETURN char *sapwood_socket_path_get_default (void);
-G_CONST_RETURN char *sapwood_socket_path_get_for_display (GdkDisplay *display);
+G_CONST_RETURN char *sapwood_socket_path_get_default (void) G_GNUC_INTERNAL;
+G_CONST_RETURN char *sapwood_socket_path_get_for_display (GdkDisplay *display) G_GNUC_INTERNAL;
 
 G_END_DECLS
 

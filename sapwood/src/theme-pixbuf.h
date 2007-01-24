@@ -166,20 +166,20 @@ struct _ThemeImage
 };
 
 
-ThemePixbuf *theme_pixbuf_new          (void);
-void         theme_pixbuf_unref        (ThemePixbuf  *theme_pb);
+ThemePixbuf *theme_pixbuf_new          (void) G_GNUC_INTERNAL;
+void         theme_pixbuf_unref        (ThemePixbuf  *theme_pb) G_GNUC_INTERNAL;
 void         theme_pixbuf_set_filename (ThemePixbuf  *theme_pb,
-					const char   *filename);
+					const char   *filename) G_GNUC_INTERNAL;
 gboolean     theme_pixbuf_get_geometry (ThemePixbuf  *theme_pb,
 					gint         *width,
-					gint         *height);
+					gint         *height) G_GNUC_INTERNAL;
 void         theme_pixbuf_set_border   (ThemePixbuf  *theme_pb,
 					gint          left,
 					gint          right,
 					gint          top,
-					gint          bottom);
+					gint          bottom) G_GNUC_INTERNAL;
 void         theme_pixbuf_set_stretch  (ThemePixbuf  *theme_pb,
-					gboolean      stretch);
+					gboolean      stretch) G_GNUC_INTERNAL;
 gboolean     theme_pixbuf_render       (ThemePixbuf  *theme_pb,
 					GdkWindow    *window,
 					GdkBitmap    *mask,
@@ -189,8 +189,8 @@ gboolean     theme_pixbuf_render       (ThemePixbuf  *theme_pb,
 					gint          dest_x,
 					gint          dest_y,
 					gint          dest_width,
-					gint          dest_height);
+					gint          dest_height) G_GNUC_INTERNAL;
 
 
 
-extern GtkStyleClass pixmap_default_class;
+extern GtkStyleClass pixmap_default_class G_GNUC_INTERNAL;
