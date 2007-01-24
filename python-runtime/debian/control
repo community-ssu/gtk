@@ -21,6 +21,6 @@ XB-Maemo-Icon-26:
 Package: python2.5-runtime
 Section: user/programming
 Architecture: all
-Depends: python2.5 (>= 2.5.0-1osso9), python2.5-bluez (>= 0.9.1-1osso2), python2.5-dbus (>= 0.71-1osso4), python2.5-gobject (>= 2.12.2-1osso2), python2.5-gstreamer (>= 0.10.5-0osso2), python2.5-gtk2 (>= 2.10.3-1osso4), python2.5-hildon (>= 0.8.7-1osso1), python2.5-numeric (>= 24.2-1osso4), python2.5-osso (>= 0.2-1osso1), python2.5-pygame (>= 1.7.1-1osso1), python2.5-runtime (>= 0.4-4), python2.5-xml (>= 0.8.4-1osso8),
+Depends: python2.5 (>= 2.5.0-1osso9), python2.5-bluez (>= 0.9.1-1osso2), python2.5-dbus (>= 0.71-1osso4), python2.5-gobject (>= 2.12.2-1osso2), python2.5-gstreamer (>= 0.10.5-0osso2), python2.5-gtk2 (>= 2.10.3-1osso4), python2.5-hildon (>= 0.8.7-1osso1), python2.5-numeric (>= 24.2-1osso4), python2.5-osso (>= 0.2-1osso1), python2.5-pygame (>= 1.7.1-1osso1), python2.5-xml (>= 0.8.4-1osso8),
 Provides: python-runtime
 Description: Python runtime environment.
