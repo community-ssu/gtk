@@ -1364,6 +1364,8 @@ read_pipe_from_child (GIOChannel   *source,
       gtk_widget_destroy (priv->loading_note);
       priv->loading_note = NULL;
     }
+
+  g_io_channel_shutdown (source, FALSE, NULL);
   
   return FALSE;
 }
@@ -1536,7 +1538,6 @@ background_manager_create_background (BackgroundManager *manager,
   BackgroundManagerPrivate *priv;
   BackgroundData *current;
   GPid pid;
-  int parent_exit_notify[2];
   int pipe_from_child[2];
   static gboolean first_run = TRUE;
   GdkPixbuf *image, *pixbuf;
@@ -1671,7 +1672,6 @@ background_manager_create_background (BackgroundManager *manager,
   if (image)
     g_object_unref (image);
 
-  pipe (parent_exit_notify);
   pipe (pipe_from_child);
 
   if (priv->child_pid)
@@ -1688,7 +1688,6 @@ background_manager_create_background (BackgroundManager *manager,
 
       g_debug ("Saving background (pid %d)...", getpid ());
 
-      close (parent_exit_notify[1]);
       close (pipe_from_child[0]);
 
       g_unlink (current->cache);
@@ -1721,7 +1720,6 @@ background_manager_create_background (BackgroundManager *manager,
       g_debug ("Child spawned (pid %d)...", pid);
       priv->child_pid = pid;
 
-      close (parent_exit_notify[0]);
       close (pipe_from_child[1]);
 
       channel = g_io_channel_unix_new (pipe_from_child[0]);

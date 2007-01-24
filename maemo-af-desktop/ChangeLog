@@ -1,7 +1,15 @@
 2007-01-24  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/background-manager.c:
+	- removed unused pipe
+	- properly close the other pipe.
+	Fixes: NB#50838
+
+2007-01-24  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.c: Fixed previous
 	changes
+	Fixes: NB#50246
 
 2007-01-22  Johan Bilien <johan.bilien@nokia.com>
 
