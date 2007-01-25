@@ -36,6 +36,11 @@
 #include <errno.h>
 #include <sys/resource.h>
 #include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
 
 /* GLib include */
 #include <glib.h>
@@ -362,6 +367,8 @@ hn_others_menu_activate_item (GtkMenuItem * item, HNOthersButton * button)
 	      {
                 int priority;
                 errno = 0;
+                gchar *oom_filename;
+                int fd;
 
                 /* If the child process inherited desktop's high priority,
                  * give child default priority */
@@ -371,6 +378,19 @@ hn_others_menu_activate_item (GtkMenuItem * item, HNOthersButton * button)
 		  {
                     setpriority(PRIO_PROCESS, child_pid, 0);
 		  }
+
+                /* Unprotect from OOM */
+                oom_filename = g_strdup_printf ("/proc/%i/oom_adj",
+                                                child_pid);
+                fd = open (oom_filename, O_WRONLY);
+                g_free (oom_filename);
+
+                if (fd >= 0)
+                {
+                    write (fd, "0", sizeof (char));
+                    close (fd);
+                }
+
 	      }
 
 	  }
