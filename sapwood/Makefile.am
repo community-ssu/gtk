@@ -1,4 +1,4 @@
-SUBDIRS = src
+SUBDIRS = src demos
 
 EXTRA_DIST = NEWS.pixbuf
 

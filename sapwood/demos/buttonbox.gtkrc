@@ -1,0 +1,46 @@
+# vim:set ft=gtkrc sw=2 sts=2 expandtab:
+pixmap_path "images"
+
+style "button" {
+  GtkButton::child-displacement-x = -2
+  GtkButton::child-displacement-y = 1
+
+  engine "sapwood" {
+    # solitary
+    image {
+      function = BOX
+      position = TOP, LEFT, BOTTOM, RIGHT
+      file = "hbbox-tlbr.png"
+      border = { 6, 6, 6, 6 }
+    }
+    # rightmost
+    image {
+      function = BOX
+      position = BOTTOM, RIGHT, TOP
+      file = "hbbox-brt.png"
+      border = { 3, 6, 6, 6 }
+    }
+    # middle
+    image {
+      function = BOX
+      position = TOP, BOTTOM
+      file = "hbbox-tb.png"
+      border = { 3, 3, 6, 6 }
+    }
+    # leftmost
+    image {
+      function = BOX
+      position = TOP, LEFT, BOTTOM
+      file = "hbbox-tlb.png"
+      border = { 6, 3, 6, 6 }
+    }
+    # default fallback (should be last)
+    image {
+      function = BOX
+      file = "hbbox.png"
+      border = { 6, 6, 6, 6 }
+    }
+  }
+}
+
+class "GtkButton" style "button"

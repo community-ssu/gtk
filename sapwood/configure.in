@@ -103,6 +103,7 @@ AC_SUBST(GDK_LIBS)
 AC_OUTPUT([
 Makefile
 src/Makefile
+demos/Makefile
 ])
 
 echo "

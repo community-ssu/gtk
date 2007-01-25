@@ -1,3 +1,14 @@
+2007-01-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* Makefile.am (SUBDIRS)
+	* configure.in (AC_OUTPUT): add demos directory
+
+	* demos/run-demo: add wrapper script for running demos without
+	installing libsapwood.so
+	* demos/buttonbox.c
+	* demos/buttonbox.gtkrc
+	* demos/images/hbbox*.png: Example for dialog button theming
+
 2007-01-24  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Implement dialog buttons using explicit "position" keyword. The
