@@ -1,3 +1,28 @@
+sapwood 2.91.0 - 2007-01-25
+===========================
+
+Bugs fixed
+----------
+MB#856 - Sapwood crashes with color depth != 16
+
+
+Changes
+-------
+Introduce new 'position' keyword for applying different graphics depending on
+widget position in the container. Currently it can be used only for buttons in
+buttonboxes. This allows theming buttons in dialogs nicely rounded (demo
+included.)
+
+Only symbols needed for the theme engine ABI is exported. (make check)
+
+Code cleanups (unused parameters, deprecated functions, ...)
+
+
+Contributors
+------------
+José Dapena Paz
+
+
 sapwood 2.43 - 2006-10-26
 =========================
 

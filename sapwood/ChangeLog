@@ -1,4 +1,8 @@
 2007-01-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* === Release 2.91.0 ===
+
+2007-01-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* Makefile.am (SUBDIRS)
 	* configure.in (AC_OUTPUT): add demos directory
