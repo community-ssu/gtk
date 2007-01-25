@@ -6,7 +6,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-SOURCE_DIR=./libmatchbox
+SOURCE_DIR=libmatchbox
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
