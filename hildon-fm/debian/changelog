@@ -1,3 +1,9 @@
+libhildonfm (2.2-1) unstable; urgency=low
+
+  * Renamed packages.  Support Gtk+ 2.10 only.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 11 Jan 2007 18:10:12 +0200
+
 hildon-fm (2.1-0unreleased1) unstable; urgency=low
 
   * Merged changes from 1.16-1 to 1.21-1.

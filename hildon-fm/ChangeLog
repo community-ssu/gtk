@@ -1,3 +1,7 @@
+2007-01-26  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.2 to experimental.
+
 2007-01-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-private.c

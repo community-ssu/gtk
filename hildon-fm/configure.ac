@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(libhildonfm, 2.1)
+AM_INIT_AUTOMAKE(libhildonfm, 2.2)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
