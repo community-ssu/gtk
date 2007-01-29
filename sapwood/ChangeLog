@@ -1,3 +1,9 @@
+2007-01-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c (get_window_for_shape): Consider setting the
+	window shape mask only when painting to widget->window, otherwise it
+	can cause an infinite expose loop.
+
 2007-01-25  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* === Release 2.91.0 ===

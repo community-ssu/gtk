@@ -95,7 +95,15 @@ match_theme_image (GtkStyle       *style,
 static GdkBitmap *
 get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
 {
-  if (image->background_shaped)
+  /* It's not a good idea to set a shape mask when painting on anything but
+   * widget->window, not only does the shape mask get wrongly offset but also
+   * causes re-exposing the widget, and we'll re-apply the shape mask, ad
+   * infinitum.
+   *
+   * Noticed when GtkMenu was changed to do two paints, the other one being on
+   * ->bin_window (http://bugzilla.gnome.org/show_bug.cgi?id=169532)
+   */
+  if (image->background_shaped && window == widget->window)
     {
       if (GTK_IS_MENU (widget))
 	return gtk_widget_get_parent_window (widget);
