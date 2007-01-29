@@ -742,6 +742,53 @@ draw_box (GtkStyle     *style,
 }
 
 static void
+maybe_check_cursor_position (GtkTreeView *treeview,
+                             gint x, gint y, gint width, gint height,
+                             ThemeMatchData *match_data)
+{
+  GtkTreePath *cursor_path;
+  GdkRectangle cursor_rect;
+  GdkRectangle paint_rect;
+
+  gtk_tree_view_get_cursor (treeview, &cursor_path, NULL);
+  if (!cursor_path)
+    return;
+
+  /* we only really care about the vertical position here */
+
+  gtk_tree_view_get_background_area (treeview, cursor_path, NULL, &cursor_rect);
+  gtk_tree_path_free (cursor_path);
+
+  paint_rect.y = y;
+  paint_rect.height = height;
+
+  paint_rect.x = cursor_rect.x = x;
+  paint_rect.width = cursor_rect.width = width;
+
+  if (!gdk_rectangle_intersect (&paint_rect, &cursor_rect, &paint_rect))
+    return;
+
+  /* We're painting the cursor row background, so distinguish between active
+   * and passive focus. Knowing that GTK_STATE_ACTIVE and GTK_SHADOW_NONE are
+   * never used in treeview, it should be (more or less) safe to (ab)use them
+   * for active/passive focus.
+   *
+   * Active focus:
+   *   function = FLAT_BOX
+   *   state    = ACTIVE
+   *   shadow   = NONE
+   *
+   * Passive focus:
+   *   function = FLAT_BOX
+   *   state    = ACTIVE
+   *   shadow   = OUT
+   */
+  match_data->state = GTK_STATE_ACTIVE;
+  if (!GTK_WIDGET_HAS_FOCUS (treeview))
+    match_data->shadow = GTK_SHADOW_OUT;
+}
+
+static void
 draw_flat_box (GtkStyle     *style,
 	       GdkWindow    *window,
 	       GtkStateType  state,
@@ -764,6 +811,10 @@ draw_flat_box (GtkStyle     *style,
   match_data.flags = THEME_MATCH_SHADOW | THEME_MATCH_STATE;
   match_data.shadow = shadow;
   match_data.state = state;
+
+  /* Special handling for treeview cursor row */
+  if (GTK_IS_TREE_VIEW (widget))
+    maybe_check_cursor_position (GTK_TREE_VIEW (widget), x, y, width, height, &match_data);
 
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE,
 			  x, y, width, height))

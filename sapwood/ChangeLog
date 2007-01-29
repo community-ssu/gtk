@@ -1,3 +1,14 @@
+2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c (maybe_check_cursor_position)
+	(draw_flat_box): When painting a treeview check if painting the cursor
+	row, and adjust matching rules accordingly for active/passive focus
+
+	Focus row background:
+	  function = FLAT_BOX
+	  state    = ACTIVE
+	  shadow   = NONE for active, OUT for passive focus
+
 2007-01-27  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/sapwood-draw.c (get_window_for_shape): Consider setting the
