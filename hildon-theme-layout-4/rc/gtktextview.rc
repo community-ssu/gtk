@@ -1,0 +1,44 @@
+####################################################  
+# GTK TEXTVIEW (Multiline editor)
+#
+# Copyright 2005 Nokia Oyj
+#
+# This file has the themeing of GtkTextView.
+#
+#################################################### 
+
+style "osso-textview"
+{
+  GtkWidget::focus_line_width = 3
+  
+  engine "sapwood"
+    {
+      image
+        {
+	  function = FOCUS
+	  state    = INSENSITIVE
+	  detail   = "textview"
+	  file     = "../images/qgn_plat_multi_line_input_disabled.png"
+	  border   = { 2, 2, 2, 2 }
+	  stretch  = TRUE
+	}
+      image
+        {
+	  function = FOCUS
+	  detail   = "textview"
+	  file     = "../images/qgn_plat_multi_line_input.png"
+	  border   = { 2, 2, 2, 2 }
+	  stretch  = TRUE
+	}
+      image
+        {
+	  function = FOCUS
+#	  detail   = "textview"
+	  file     = "../images/qgn_plat_multi_line_input.png"
+	  border   = { 2, 2, 2, 2 }
+	  stretch  = TRUE
+	}
+    }
+}
+
+class "GtkTextView" style "osso-textview"

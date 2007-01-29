@@ -1,0 +1,112 @@
+####################################################
+# OSSO CLOCK APPLET
+#
+# Copyright 2005 Nokia Oyj
+#
+#
+####################################################
+style "osso-clock"
+{
+  GtkFrame::hildonlike = 1
+  xthickness = 0
+  ythickness = 0
+
+  engine "sapwood"
+    {
+      image
+        {
+          function = BOX
+          file     = "../images/qgn_plat_gene_applet_bg.png"
+          border   = { 25, 25, 25, 25 }
+          stretch  = TRUE
+        }
+    }
+}
+widget "*.osso-clock" style "osso-clock"
+
+
+style "osso-clock-analog-am" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_analog_am.png"
+}
+widget "osso-clock-widget-clockbg-am" style "osso-clock-analog-am"
+
+style "osso-clock-analog-plain" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_analog_plain.png"
+}
+widget "osso-clock-widget-clockbg" style "osso-clock-analog-plain"
+
+style "osso-clock-analog-pm" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_analog_pm.png"
+}
+widget "osso-clock-widget-clockbg-pm" style "osso-clock-analog-pm"
+
+style "osso-clock-digital-display-number-0" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_0.png"
+}
+widget "osso-clock-widget-digit-0" style "osso-clock-digital-display-number-0"
+
+style "osso-clock-digital-display-number-1" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_1.png"
+}
+widget "osso-clock-widget-digit-1" style "osso-clock-digital-display-number-1"
+
+style "osso-clock-digital-display-number-2" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_2.png"
+}
+widget "osso-clock-widget-digit-2" style "osso-clock-digital-display-number-2"
+
+style "osso-clock-digital-display-number-3" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_3.png"
+}
+widget "osso-clock-widget-digit-3" style "osso-clock-digital-display-number-3"
+
+style "osso-clock-digital-display-number-4" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_4.png"
+}
+widget "osso-clock-widget-digit-4" style "osso-clock-digital-display-number-4"
+
+style "osso-clock-digital-display-number-5" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_5.png"
+}
+widget "osso-clock-widget-digit-5" style "osso-clock-digital-display-number-5"
+
+style "osso-clock-digital-display-number-6" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_6.png"
+}
+widget "osso-clock-widget-digit-6" style "osso-clock-digital-display-number-6"
+
+style "osso-clock-digital-display-number-7" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_7.png"
+}
+widget "osso-clock-widget-digit-7" style "osso-clock-digital-display-number-7"
+
+style "osso-clock-digital-display-number-8" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_8.png"
+}
+widget "osso-clock-widget-digit-8" style "osso-clock-digital-display-number-8"
+
+style "osso-clock-digital-display-number-9" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_number_9.png"
+}
+widget "osso-clock-widget-digit-9" style "osso-clock-digital-display-number-9"
+
+style "osso-clock-digital-background" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_background.png"
+}
+widget "osso-clock-widget-clockbg-digital" style "osso-clock-digital-background"
+
+style "osso-clock-digital-display-separator" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_display_separator.png"
+}
+widget "osso-clock-widget-digit-separator" style "osso-clock-digital-display-separator"
+
+style "osso-clock-digital-label-am" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_label_am.png"
+}
+widget "osso-clock-widget-digit-am" style "osso-clock-digital-label-am"
+
+style "osso-clock-digital-label-pm" {
+    bg_pixmap[NORMAL] = "../images/qgn_plat_clock_digital_label_pm.png"
+}
+widget "osso-clock-widget-digit-pm" style "osso-clock-digital-label-pm"
+

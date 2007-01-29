@@ -1,0 +1,1104 @@
+#################################################### 
+# GTK BUTTON
+#
+# Copyright 2004,2005 Nokia Oyj
+#
+# Both Dialog buttons and view buttons are themed
+# here.
+#
+# TODO :
+#   - pressed&active state needed for togglebuttons?
+#   - can focused_pressed & pressed states be combined?
+#   - Separate support for horizontal / vertical
+#     viewbutton images?
+# 
+# Buttons inside GtkHButton will 
+# automatically look like dialog buttons.
+#
+# Buttons inside a GtkTable will
+# automatically look like view buttons.
+#
+# There is also a button image used for a button
+# that is not inside either GtkHButtonBox or GtkTable.
+#
+# Buttons will have different graphics depending on
+# the position they are in relation to other buttons.
+# We are using button details for that.
+#
+# Button details are following:
+#
+# - osso_button
+# - osso_button_tl
+# - osso_button_tr
+# - osso_button_bl
+# - osso_button_br
+# - osso_button_tl_bl
+# - osso_button_tr_br
+# - osso_button_tl_tr
+# - osso_button_bl_br
+# - osso_button_tl_tr_bl_br
+#
+# Where tl, tr, bl and br indicate whether the that
+# button is connected to topleft, topright, bottomleft 
+# and bottomright corners of the container.
+#
+# Therefore osso_button_tl is the graphics used for
+# the top-left button in gtktable and osso_button_tl_tr
+# is used for rightmost dialogbutton. osso_button_tl_tr_bl_br
+# is used when button is alone.
+#
+# Only osso_button. osso_button_tl_bl, osso_button_tr_br and
+# osso_button_tl_tr_bl_br is used for dialog buttons.
+#
+# Buttons not inside either GtkHButtonBox or GtkTable use
+# following detail.
+#
+# - buttondefault
+#
+#################################################### 
+
+# Normal Button styles:
+style "osso-button" {
+
+  GtkWidget::focus-line-pattern = "\0\0\0\0\0\0\0\0"
+  GtkWidget::focus-width = 0
+  GtkButton::default_border = { 0, 0, 0, 0 }
+  GtkButton::child-displacement-x = -2
+  GtkButton::child-displacement-y = 2
+  GtkButton::interior_focus = 0
+  GtkButton::child_spacing = 1
+  xthickness = 7
+  ythickness = 0
+
+  engine "sapwood" {
+
+    # Default button
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "buttondefault"
+	file     = "../images/qgn_plat_view_button_nesw_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "buttondefault"
+	file     = "../images/qgn_plat_view_button_nesw_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+	shadow   = IN
+	detail   = "buttondefault"
+	file     = "../images/qgn_plat_view_button_nesw_pressed.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+	state    = SELECTED
+	detail   = "buttondefault"
+	file     = "../images/qgn_plat_view_button_nesw_pressed.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+	state    = INSENSITIVE
+	detail   = "buttondefault"
+	file     = "../images/qgn_plat_view_button_nesw_disabled.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail   = "buttondefault"
+	file     = "../images/qgn_plat_view_button_nesw.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button"
+	file     = "../images/qgn_plat_view_button_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button"
+	file     = "../images/qgn_plat_view_button_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button"
+	file     = "../images/qgn_plat_view_button_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button"
+	file     = "../images/qgn_plat_view_button_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button"
+	file     = "../images/qgn_plat_view_button_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button"
+	file     = "../images/qgn_plat_view_button.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+    # View buttons
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_n"
+	file     = "../images/qgn_plat_view_button_n_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_n"
+	file     = "../images/qgn_plat_view_button_n_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_n"
+	file     = "../images/qgn_plat_view_button_n_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_n"
+	file     = "../images/qgn_plat_view_button_n_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_n"
+	file     = "../images/qgn_plat_view_button_n_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_n"
+	file     = "../images/qgn_plat_view_button_n.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_e"
+	file     = "../images/qgn_plat_view_button_e_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_e"
+	file     = "../images/qgn_plat_view_button_e_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_e"
+	file     = "../images/qgn_plat_view_button_e_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_e"
+	file     = "../images/qgn_plat_view_button_e_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_e"
+	file     = "../images/qgn_plat_view_button_e_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_e"
+	file     = "../images/qgn_plat_view_button_e.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_s"
+	file     = "../images/qgn_plat_view_button_s_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_s"
+	file     = "../images/qgn_plat_view_button_s_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_s"
+	file     = "../images/qgn_plat_view_button_s_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_s"
+	file     = "../images/qgn_plat_view_button_s_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_s"
+	file     = "../images/qgn_plat_view_button_s_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_s"
+	file     = "../images/qgn_plat_view_button_s.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_w"
+	file     = "../images/qgn_plat_view_button_w_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_w"
+	file     = "../images/qgn_plat_view_button_w_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_w"
+	file     = "../images/qgn_plat_view_button_w_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_w"
+	file     = "../images/qgn_plat_view_button_w_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_w"
+	file     = "../images/qgn_plat_view_button_w_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_w"
+	file     = "../images/qgn_plat_view_button_w.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_ne"
+	file     = "../images/qgn_plat_view_button_ne_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_ne"
+	file     = "../images/qgn_plat_view_button_ne_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_ne"
+	file     = "../images/qgn_plat_view_button_ne_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_ne"
+	file     = "../images/qgn_plat_view_button_ne_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_ne"
+	file     = "../images/qgn_plat_view_button_ne_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_ne"
+	file     = "../images/qgn_plat_view_button_ne.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_es"
+	file     = "../images/qgn_plat_view_button_es_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_es"
+	file     = "../images/qgn_plat_view_button_es_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_es"
+	file     = "../images/qgn_plat_view_button_es_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_es"
+	file     = "../images/qgn_plat_view_button_es_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_es"
+	file     = "../images/qgn_plat_view_button_es_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_es"
+	file     = "../images/qgn_plat_view_button_es.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_sw"
+	file     = "../images/qgn_plat_view_button_sw_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_sw"
+	file     = "../images/qgn_plat_view_button_sw_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_sw"
+	file     = "../images/qgn_plat_view_button_sw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_sw"
+	file     = "../images/qgn_plat_view_button_sw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_sw"
+	file     = "../images/qgn_plat_view_button_sw_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_sw"
+	file     = "../images/qgn_plat_view_button_sw.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_nw"
+	file     = "../images/qgn_plat_view_button_nw_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_nw"
+	file     = "../images/qgn_plat_view_button_nw_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_nw"
+	file     = "../images/qgn_plat_view_button_nw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_nw"
+	file     = "../images/qgn_plat_view_button_nw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_nw"
+	file     = "../images/qgn_plat_view_button_nw_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_nw"
+	file     = "../images/qgn_plat_view_button_nw.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_ns"
+	file     = "../images/qgn_plat_view_button_ns_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_ns"
+	file     = "../images/qgn_plat_view_button_ns_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_view_button_ns_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_view_button_ns_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_view_button_ns_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_view_button_ns.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_ew"
+	file     = "../images/qgn_plat_view_button_ew_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_ew"
+	file     = "../images/qgn_plat_view_button_ew_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_ew"
+	file     = "../images/qgn_plat_view_button_ew_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_ew"
+	file     = "../images/qgn_plat_view_button_ew_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_ew"
+	file     = "../images/qgn_plat_view_button_ew_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_ew"
+	file     = "../images/qgn_plat_view_button_ew.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_nes"
+	file     = "../images/qgn_plat_view_button_nes_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_nes"
+	file     = "../images/qgn_plat_view_button_nes_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_view_button_nes_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_view_button_nes_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_view_button_nes_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_view_button_nes.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_esw"
+	file     = "../images/qgn_plat_view_button_esw_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_esw"
+	file     = "../images/qgn_plat_view_button_esw_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_esw"
+	file     = "../images/qgn_plat_view_button_esw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_esw"
+	file     = "../images/qgn_plat_view_button_esw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_esw"
+	file     = "../images/qgn_plat_view_button_esw_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_esw"
+	file     = "../images/qgn_plat_view_button_esw.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_nsw"
+	file     = "../images/qgn_plat_view_button_nsw_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_nsw"
+	file     = "../images/qgn_plat_view_button_nsw_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_view_button_nsw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_view_button_nsw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_view_button_nsw_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_view_button_nsw.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_new"
+	file     = "../images/qgn_plat_view_button_new_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_new"
+	file     = "../images/qgn_plat_view_button_new_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_new"
+	file     = "../images/qgn_plat_view_button_new_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_new"
+	file     = "../images/qgn_plat_view_button_new_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_new"
+	file     = "../images/qgn_plat_view_button_new_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_new"
+	file     = "../images/qgn_plat_view_button_new.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+
+
+    image {
+        function = FOCUS
+	state    = ACTIVE
+	detail   = "osso_button_nesw"
+	file     = "../images/qgn_plat_view_button_nesw_pressed_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+	detail   = "osso_button_nesw"
+	file     = "../images/qgn_plat_view_button_nesw_focused.png"
+	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	shadow   = IN
+	detail	 = "osso_button_nesw"
+	file     = "../images/qgn_plat_view_button_nesw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = SELECTED
+	detail	 = "osso_button_nesw"
+	file     = "../images/qgn_plat_view_button_nesw_pressed.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_nesw"
+	file     = "../images/qgn_plat_view_button_nesw_disabled.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_nesw"
+	file     = "../images/qgn_plat_view_button_nesw.png"
+  	border   = { 14, 14, 14, 14 }
+	stretch  = TRUE
+    }
+  }
+}
+class "GtkButton" style "osso-button"
+
+widget_class "*.GtkButton.GtkLabel" style "osso-ButtonFont"
+widget_class "*.GtkToggleButton.GtkLabel" style "osso-ButtonFont"
+
+#Style for Dialog buttons
+style "osso-dialogbutton" {
+
+  # The spec specifies the padding for the button and label. Button
+  # padding is specified in sapwoods. The following are for labels.
+  GtkButton::padding  = { 12, 12, 0, 0 }
+ 
+  # Minimum width of the label is 60 pixels, thus the miminum width of
+  # the button is 100 pixels. Use value 90 here since additional 10
+  # pixels is added automagically somewhere in code
+  GtkButton::minimum_width  = 90
+
+  engine "sapwood" {
+
+    #######################
+    # Dialog buttons
+    #######################
+
+    image {
+	function = BOX
+	state    = ACTIVE
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_dialog_button_middle_pressed.png"
+ 	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_dialog_button_middle_disabled.png"
+ 	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+        state    = SELECTED
+        detail   = "osso_button_ns"
+        file     = "../images/qgn_plat_dialog_button_middle_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_ns"
+	file     = "../images/qgn_plat_dialog_button_middle_normal.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        state    = ACTIVE
+        detail   = "osso_button_ns"
+        file     = "../images/qgn_plat_dialog_button_middle_focused_pressed.png"
+        border   = { 20, 20, 0, 0}
+        stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        detail   = "osso_button_ns"
+        file     = "../images/qgn_plat_dialog_button_middle_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+  
+    image {
+        function = BOX
+        state    = ACTIVE
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_dialog_button_left_pressed.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_dialog_button_left_disabled.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+        state    = SELECTED
+        detail   = "osso_button_nsw"
+        file     = "../images/qgn_plat_dialog_button_left_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_nsw"
+	file     = "../images/qgn_plat_dialog_button_left_normal.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        state    = ACTIVE
+        detail   = "osso_button_nsw"
+        file     = "../images/qgn_plat_dialog_button_left_focused_pressed.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        detail   = "osso_button_nsw"
+        file     = "../images/qgn_plat_dialog_button_left_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+
+
+    image {
+	function = BOX
+	state    = ACTIVE
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_dialog_button_right_pressed.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_dialog_button_right_disabled.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+        state    = SELECTED
+        detail   = "osso_button_nes"
+        file     = "../images/qgn_plat_dialog_button_right_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail	 = "osso_button_nes"
+	file     = "../images/qgn_plat_dialog_button_right_normal.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        state    = ACTIVE
+        detail   = "osso_button_nes"
+        file     = "../images/qgn_plat_dialog_button_right_focused_pressed.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        detail   = "osso_button_nes"
+        file     = "../images/qgn_plat_dialog_button_right_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    
+    image {
+	function = BOX
+	state    = ACTIVE
+	detail   = "osso_button_nesw"
+	file     = "../images/qgn_plat_dialog_button_alone_pressed.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+	function = BOX
+	state    = INSENSITIVE
+	detail   = "osso_button_nesw"
+	file     = "../images/qgn_plat_dialog_button_alone_disabled.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = BOX
+        state    = SELECTED
+        detail   = "osso_button_nesw"
+        file     = "../images/qgn_plat_dialog_button_alone_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+	function = BOX
+	detail   = "osso_button_nesw"
+	file     = "../images/qgn_plat_dialog_button_alone_normal.png"
+  	border   = { 20, 20, 0, 0 }
+	stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        state    = ACTIVE
+        detail   = "osso_button_nesw"
+        file     = "../images/qgn_plat_dialog_button_alone_focused_pressed.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+    image {
+        function = FOCUS
+        detail   = "osso_button_nesw"
+        file     = "../images/qgn_plat_dialog_button_alone_focused.png"
+        border   = { 20, 20, 0, 0 }
+        stretch  = TRUE
+    }
+  }
+}
+widget_class "*.GtkHButtonBox.GtkButton" style "osso-dialogbutton"

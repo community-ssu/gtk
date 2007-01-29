@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-Hildon-Metatheme
+Name=@THEME_NAME@
+Icon=@THEME_FULL_DIR@/images/qgn_plat_theme_thumbnail.png
+Encoding=UTF-8
+
+[X-Hildon-Metatheme]
+GtkTheme=@THEME_DIR@
+IconTheme=default
+X-MatchboxTheme=@THEME_DIR@
+X-AdditionalRCFiles=maemo_af_desktop
+X-OperaSkin=default.zip

@@ -1,0 +1,9 @@
+LayoutName=@PACKAGE@
+BundleType=Full
+
+LayoutFiles=layout.txt
+GtkRcFiles=gtkrc,gtkrc.maemo_af_desktop
+MatchboxFiles=theme.xml
+ThemeFiles=index.theme
+
+SubstFiles=gtkrc,gtkrc.maemo_af_desktop,index.theme,index.theme
