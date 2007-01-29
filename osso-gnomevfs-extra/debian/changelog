@@ -1,3 +1,10 @@
+osso-gnomevfs-extra (1.9.1-1) unstable; urgency=low
+
+  * Remove file-chooser backend, and clean up build
+  * Remove GTK+ dependency
+
+ -- Richard Hult <richard@imendio.com>  Thu, 21 Dec 2006 09:49:20 +0100
+
 osso-gnomevfs-extra (1.9.0-1) unstable; urgency=low
 
   * UNRELEASED

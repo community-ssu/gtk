@@ -1,5 +1,5 @@
 dnl Turn on the additional warnings last, so -Werror doesn't affect other tests.                                                                                
-AC_DEFUN([IMENDIO_COMPILE_WARNINGS],[
+AC_DEFUN([IDT_COMPILE_WARNINGS],[
    if test -f $srcdir/autogen.sh; then
         default_compile_warnings="error"
     else
@@ -61,7 +61,7 @@ AC_DEFUN([IMENDIO_COMPILE_WARNINGS],[
 dnl ***************
 dnl Timezone checks
 dnl ***************
-AC_DEFUN([IMENDIO_CHECK_TIMEZONE],[
+AC_DEFUN([IDT_CHECK_TIMEZONE],[
 AC_CACHE_CHECK(for tm_gmtoff in struct tm, ac_cv_struct_tm_gmtoff,
         AC_TRY_COMPILE([
                 #include <time.h>

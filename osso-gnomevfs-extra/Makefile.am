@@ -1,4 +1,4 @@
-SUBDIRS = debian		\
+SUBDIRS = 			\
+	debian			\
 	obex-utils		\
-	obex-module		\
-	file-chooser
+	obex-module

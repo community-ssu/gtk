@@ -33,7 +33,6 @@ configure-stamp:
 	./configure $(confflags) \
 		--prefix=/usr --sysconfdir=/etc \
 		--localstatedir=/var \
-		--disable-update-categorydb \
 		--with-doc-dir=$(CURDIR)/debian/tmp/usr/share/doc
 
 	touch configure-stamp

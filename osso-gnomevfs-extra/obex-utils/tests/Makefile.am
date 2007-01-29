@@ -14,14 +14,10 @@ LDADD =						\
 
 noinst_PROGRAMS =				\
 	test-cap-parser				\
-	test-cap-dbus				\
-	test-xfer	
+	test-cap-dbus
 
 test_cap_parser_SOURCES =			\
 	test-cap-parser.c
 
 test_cap_dbus_SOURCES =				\
 	test-cap-dbus.c
-
-test_xfer_SOURCES =				\
-	test-xfer.c
