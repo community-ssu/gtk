@@ -138,6 +138,55 @@ esd_play_file_with_pan( int esd, const char *name_prefix,
     return 1;
 }
 
+
+static void
+wait_for_esd_server_to_quiesce (int esd_fd)
+{
+    char *buf = NULL ;
+    esd_server_info_t *esd_server_info = NULL ;
+    int monitor_fd = -1, read_return = -1, available_bytes = 0, max_avail = 0;
+    int first_time = 1;
+
+    if (NULL != (esd_server_info = esd_get_server_info (esd_fd)))
+    {
+        if ((monitor_fd = esd_monitor_stream (esd_server_info->format, esd_server_info->rate, NULL, NULL)) > 0)
+        {
+            while (TRUE)
+            {
+                struct timeval tv;
+		
+                ioctl (monitor_fd, FIONREAD, &available_bytes) ;
+                if (available_bytes > max_avail)
+                {
+                    buf = realloc (buf, available_bytes) ;
+                    max_avail = available_bytes ;
+                }
+		
+                if (available_bytes)
+		{
+                    read_return = read(monitor_fd, buf, available_bytes);
+                    if (read_return < 0)
+                        break ;
+		}
+                else if ( !first_time )
+                {
+                    break ;
+                }
+
+                tv.tv_sec = 0;
+                tv.tv_usec = 200000;
+                select (0, NULL, NULL, NULL, &tv); /* avoid tight loop */
+                first_time = 0;
+            }
+
+            if (buf)
+                free (buf) ;
+            close (monitor_fd) ;
+        }
+        esd_free_server_info (esd_server_info) ;
+    }
+}
+
 static int 
 play_sound(gchar *sound_filename,
            gchar *data) 
@@ -172,6 +221,7 @@ play_sound(gchar *sound_filename,
     esd_play_file_with_pan(sock, data,
 		  sound_filename, pan, pan);
 
+    wait_for_esd_server_to_quiesce (sock) ;
     esd_close(sock);
 
     return 0;

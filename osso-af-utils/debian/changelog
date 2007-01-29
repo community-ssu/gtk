@@ -1,3 +1,10 @@
+osso-af-utils (1.14-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Added waiting back to play-sound. Fixes: NB#50967
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 29 Jan 2007 15:44:48 +0200
+
 osso-af-utils (1.13-2) unstable; urgency=low
 
   * Forgot this: Fixes: NB#50699
