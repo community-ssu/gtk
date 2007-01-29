@@ -1,3 +1,16 @@
+sapwood 2.91.1 - 2007-01-29
+===========================
+
+Changes
+-------
+Fix menu flickering with gtk+ 2.10.
+
+Implement special handling for active/passive focus in treeview.
+
+Add simple wildcard matching for the 'detail' parameter to simplify treeview
+row ending details theming.
+
+
 sapwood 2.91.0 - 2007-01-25
 ===========================
 
