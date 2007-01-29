@@ -68,28 +68,11 @@ style "treeview-with-row-endings" {
       shadow   = OUT
       file     = "treeview-passive.png"
     }
-    # active focus alone ##############################################
+    # active ##########################################################
     image {
       function = FLAT_BOX
       state    = ACTIVE
-      detail   = "cell_even"
-
-      file     = "treeview-active-alone.png"
-      border   = { 2, 2, 2, 2 }
-    }
-    image {
-      function = FLAT_BOX
-      state    = ACTIVE
-      detail   = "cell_odd"	# <-- the only difference to above
-
-      file     = "treeview-active-alone.png"
-      border   = { 2, 2, 2, 2 }
-    }
-    # active focus left ###############################################
-    image {
-      function = FLAT_BOX
-      state    = ACTIVE
-      detail   = "cell_odd_start"
+      detail   = "*_start"
 
       file     = "treeview-active-left.png"
       border   = { 2, 0, 2, 2 }
@@ -97,16 +80,7 @@ style "treeview-with-row-endings" {
     image {
       function = FLAT_BOX
       state    = ACTIVE
-      detail   = "cell_even_start"
-
-      file     = "treeview-active-left.png"
-      border   = { 2, 0, 2, 2 }
-    }
-    # active focus middle #############################################
-    image {
-      function = FLAT_BOX
-      state    = ACTIVE
-      detail   = "cell_even_middle"
+      detail   = "*_middle"
 
       file     = "treeview-active-middle.png"
       border   = { 0, 0, 1, 1 }
@@ -114,16 +88,7 @@ style "treeview-with-row-endings" {
     image {
       function = FLAT_BOX
       state    = ACTIVE
-      detail   = "cell_odd_middle"
-
-      file     = "treeview-active-middle.png"
-      border   = { 0, 0, 1, 1 }
-    }
-    # active focus right ##############################################
-    image {
-      function = FLAT_BOX
-      state    = ACTIVE
-      detail   = "cell_odd_end"
+      detail   = "*_end"
 
       file     = "treeview-active-right.png"
       border   = { 0, 2, 2, 2 }
@@ -131,10 +96,9 @@ style "treeview-with-row-endings" {
     image {
       function = FLAT_BOX
       state    = ACTIVE
-      detail   = "cell_even_end"
 
-      file     = "treeview-active-right.png"
-      border   = { 0, 2, 2, 2 }
+      file     = "treeview-active-alone.png"
+      border   = { 2, 2, 2, 2 }
     }
     # normal row background (fallback) ################################
     image {

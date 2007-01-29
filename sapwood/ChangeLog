@@ -1,5 +1,10 @@
 2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* demos/treeview.gtkrc: Simplify treeview theming example using
+	wildcards
+
+2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (match_theme_image): Add simple pattern matching
 	for the 'detail' to simplify treeview theming. Only leading wildcard
 	is supported. In gtkrc 'detail = "*_start"' will match all details
