@@ -1,0 +1,151 @@
+#vim: set sts=2 sw=2 ft=gtkrc expandtab:
+pixmap_path "images"
+style "treeview" {
+  engine "sapwood" {
+    image { # selection
+      function = FLAT_BOX
+      state    = SELECTED
+      file     = "treeview-selected.png"
+    }
+    image { # passive focus
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = OUT
+      file     = "treeview-passive.png"
+    }
+    image { # active focus
+      function = FLAT_BOX
+      state    = ACTIVE
+      file     = "treeview-active.png"
+    }
+    image { # normal row background (fallback)
+      function = FLAT_BOX
+      file     = "treeview-normal.png"
+    }
+
+    image { # disable the default focus rectangle
+      function = FOCUS
+    }
+  }
+}
+class "GtkTreeView" style "treeview"
+
+
+# More complicated example about row-ending-details
+# 
+# It's going to get *really* repetitive if you want to take advantage of the
+# possibilities. This is just the bare minimum to have only the active focus
+# look reasonable. 
+style "treeview-with-row-endings" {
+  GtkTreeView::row-ending-details = 1
+  engine "sapwood" {
+    #image {
+    #  function = FLAT_BOX
+    #  detail = %s / %s_start / %s_middle / %s_end
+    #  
+    #  (start, middle, end used only when row-ending-details = 1)
+    #
+    #  %s = "cell_odd_ruled_sorted"
+    #     | "cell_even_ruled_sorted"
+    #     | "cell_odd_ruled"
+    #     | "cell_even_ruled"
+    #     | "cell_odd_sorted"
+    #     | "cell_even_sorted"
+    #     | "cell_odd"
+    #     | "cell_even"
+    #}
+
+    # selection #######################################################
+    image {
+      function = FLAT_BOX
+      state    = SELECTED
+      file     = "treeview-selected.png"
+    }
+    # passive focus ###################################################
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = OUT
+      file     = "treeview-passive.png"
+    }
+    # active focus alone ##############################################
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_even"
+
+      file     = "treeview-active-alone.png"
+      border   = { 2, 2, 2, 2 }
+    }
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_odd"	# <-- the only difference to above
+
+      file     = "treeview-active-alone.png"
+      border   = { 2, 2, 2, 2 }
+    }
+    # active focus left ###############################################
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_odd_start"
+
+      file     = "treeview-active-left.png"
+      border   = { 2, 0, 2, 2 }
+    }
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_even_start"
+
+      file     = "treeview-active-left.png"
+      border   = { 2, 0, 2, 2 }
+    }
+    # active focus middle #############################################
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_even_middle"
+
+      file     = "treeview-active-middle.png"
+      border   = { 0, 0, 1, 1 }
+    }
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_odd_middle"
+
+      file     = "treeview-active-middle.png"
+      border   = { 0, 0, 1, 1 }
+    }
+    # active focus right ##############################################
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_odd_end"
+
+      file     = "treeview-active-right.png"
+      border   = { 0, 2, 2, 2 }
+    }
+    image {
+      function = FLAT_BOX
+      state    = ACTIVE
+      detail   = "cell_even_end"
+
+      file     = "treeview-active-right.png"
+      border   = { 0, 2, 2, 2 }
+    }
+    # normal row background (fallback) ################################
+    image {
+      function = FLAT_BOX
+      file     = "treeview-normal.png"
+    }
+
+    image { # disable the default focus rectangle
+      function = FOCUS
+    }
+  }
+}
+
+widget "*.treeview-with-row-endings" style "treeview-with-row-endings"

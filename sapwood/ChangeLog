@@ -1,5 +1,13 @@
 2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* demos/Makefile.am
+	* demos/treeview.c
+	* demos/treeview.gtkrc
+	* demos/images/treeview-*.png: Example for treeview active / passive
+	focus theming
+
+2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (maybe_check_cursor_position)
 	(draw_flat_box): When painting a treeview check if painting the cursor
 	row, and adjust matching rules accordingly for active/passive focus
