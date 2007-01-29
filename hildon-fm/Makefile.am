@@ -1,4 +1,4 @@
-SUBDIRS = hildon-fm ut doc
+SUBDIRS = hildon-fm doc
 EXTRA_DIST = \
 	debian/changelog \
 	debian/control \
