@@ -4,5 +4,5 @@ libdir=@libdir@
 pkgdatadir=@datadir@/@PACKAGE@/
 
 Name: @PACKAGE@
-Description: Hildon theme layout version 3
+Description: Hildon theme layout version 4
 Version: @VERSION@
