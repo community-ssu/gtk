@@ -1,5 +1,13 @@
 2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* src/sapwood-draw.c (match_theme_image): Add simple pattern matching
+	for the 'detail' to simplify treeview theming. Only leading wildcard
+	is supported. In gtkrc 'detail = "*_start"' will match all details
+	ending with "_start" such as "cell_even_start", "cell_odd_start",
+	"cell_even_ruled_start", etc.
+
+2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* demos/Makefile.am
 	* demos/treeview.c
 	* demos/treeview.gtkrc

@@ -81,10 +81,22 @@ match_theme_image (GtkStyle       *style,
 	  match_data->gap_side != image->match_data.gap_side)
 	continue;
 
-      if (image->match_data.detail &&
-	  (!match_data->detail ||
-	   strcmp (match_data->detail, image->match_data.detail) != 0))
-      continue;
+      /* simple pattern matching for (treeview) details
+       * in gtkrc 'detail = "*_start"' will match all calls with detail ending
+       * with '_start' such as 'cell_even_start', 'cell_odd_start', etc.
+       */
+      if (image->match_data.detail)
+        {
+          if (!match_data->detail)
+            continue;
+          else if (image->match_data.detail[0] == '*')
+            {
+              if (!g_str_has_suffix (match_data->detail, image->match_data.detail + 1))
+                continue;
+            }
+          else if (strcmp (match_data->detail, image->match_data.detail) != 0)
+            continue;
+        }
 
       return image;
     }
