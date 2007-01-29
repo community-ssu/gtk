@@ -59,6 +59,7 @@ $(SOURCE_DIR)/configure:
 	patch -p0 < upstream/patches/gtkhtml_get_motion_hints.diff
 	patch -p0 < upstream/patches/gtkhtml_better_spacing.diff
 	patch -p0 < upstream/patches/gtkhtml_text_selection_with_proper_doubleclick.diff
+	patch -p0 < upstream/patches/gtkhtml_dont_click_link_when_panning.diff
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 

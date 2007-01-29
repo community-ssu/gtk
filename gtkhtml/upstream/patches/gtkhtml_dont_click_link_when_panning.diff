@@ -1,0 +1,110 @@
+diff -ru gtkhtml-3.9.1/src/gtkhtml.c gtkhtml-3.9.1.mod/src/gtkhtml.c
+--- gtkhtml-3.9.1/src/gtkhtml.c	2007-01-24 17:13:28.000000000 +0200
++++ gtkhtml-3.9.1.mod/src/gtkhtml.c	2007-01-29 17:27:12.000000000 +0200
+@@ -1654,6 +1654,8 @@
+ 			value = adj->lower;
+ 		else if (value > (adj->upper - adj->page_size))
+ 			value = adj->upper - adj->page_size;
++    if (GTK_HTML (widget)->y_amount_panned < mouse_double_click_threshold)
++      GTK_HTML (widget)->y_amount_panned += (gint)(value - adj->value) ;
+ 		gtk_adjustment_set_value(adj, value);
+ 
+ 		/* Horizontal panning */
+@@ -1663,8 +1665,14 @@
+ 			value = adj->lower;
+ 		else if (value > (adj->upper - adj->page_size))
+ 			value = adj->upper - adj->page_size;
++    if (GTK_HTML (widget)->x_amount_panned < mouse_double_click_threshold)
++      GTK_HTML (widget)->x_amount_panned += (gint)(value - adj->value) ;
+ 		gtk_adjustment_set_value(adj, value);
+-	}
++
++    /* g_print ("GtkHTML::motion_notify_event: total pan so far: [%dx%d]\n", GTK_HTML (widget)->x_amount_panned, GTK_HTML (widget)->y_amount_panned) ; */
++	} /*else {
++    g_print ("GtkHTML::motion_notify_event: Not panning\n") ;
++  }*/
+ 
+ 	return TRUE;
+ }
+@@ -1783,6 +1791,8 @@
+ 			/* (TL 18-Nov-05) First click starts panning, not selection */
+ 			html->in_selection_drag = FALSE;
+ 			html->panning = TRUE;
++			html->x_amount_panned =
++			html->y_amount_panned = 0 ;
+ 			html->lastx = x;
+ 			html->lasty = y;
+ 
+@@ -1854,6 +1864,8 @@
+ 			/* (TL 18-Nov-05) Second click starts selection and stops panning */
+ 			html->in_selection_drag = TRUE;
+ 			html->panning = FALSE;
++      html->x_amount_panned =
++      html->y_amount_panned = 0 ;
+ 			html->in_selection = TRUE;
+ 			/* Check for simple double click, for selecting a word */
+ 			html->simple_dblclick = TRUE;
+@@ -1866,6 +1878,8 @@
+ 			/* (TL 18-Nov-05) Third click starts selection and stops panning */
+ 			html->in_selection_drag = TRUE;
+ 			html->panning = FALSE;
++      html->x_amount_panned =
++      html->y_amount_panned = 0 ;
+ 			html->in_selection = TRUE;
+ 		}
+ 	}
+@@ -1908,6 +1922,12 @@
+ 	}
+ 
+ 	if (event->button == 1) {
++	  guint mouse_double_click_threshold = MOUSE_DBLCLK_THRESHOLD ;
++	  GtkSettings *gtk_settings = gtk_widget_get_settings (widget) ;
++
++	  if (NULL != gtk_settings)
++		  g_object_get (G_OBJECT (gtk_settings), "gtk-double-click-distance", &mouse_double_click_threshold, NULL) ;
++
+ 
+ 		if (html->in_selection_drag && html_engine_get_editable (engine)) 
+ 			html_engine_jump_at (engine, x, y); 
+@@ -1917,6 +1937,8 @@
+ 		html->panning = FALSE;
+ 
+ 		if (!html->priv->dnd_in_progress
++		    && html->x_amount_panned < mouse_double_click_threshold
++		    && html->y_amount_panned < mouse_double_click_threshold
+ 		    && html->pointer_url != NULL && ! html->in_selection) {
+ 			g_signal_emit (widget,  signals[LINK_CLICKED], 0, html->pointer_url);
+ 			focus_object = html_engine_get_focus_object (html->engine, &focus_object_offset);
+@@ -1924,7 +1946,10 @@
+ 				html_text_set_link_visited (HTML_TEXT(focus_object), focus_object_offset, html->engine, TRUE);
+ 			}   
+ 		}
+-		
++
++		html->x_amount_panned =
++		html->y_amount_panned = 0 ;
++
+ 		/* If it was a simple doubleclick select a word */
+ 		if (html->simple_dblclick) {
+ 		    html->simple_dblclick = FALSE;
+@@ -3450,6 +3475,8 @@
+ 
+ 	/* (TL 18-Nov-05) For panning */
+ 	html->panning = FALSE;
++	html->x_amount_panned =
++	html->y_amount_panned = 0 ;
+ 	html->lastx = 0;
+ 	html->lasty = 0;
+ 
+diff -ru gtkhtml-3.9.1/src/gtkhtml.h gtkhtml-3.9.1.mod/src/gtkhtml.h
+--- gtkhtml-3.9.1/src/gtkhtml.h	2007-01-24 17:13:28.000000000 +0200
++++ gtkhtml-3.9.1.mod/src/gtkhtml.h	2007-01-29 17:52:28.000000000 +0200
+@@ -66,6 +66,8 @@
+ 	gboolean panning;
+ 	gint lastx;
+ 	gint lasty;
++	gint x_amount_panned ;
++	gint y_amount_panned ;
+ 
+ 	guint in_selection : 1;
+ 	guint in_selection_drag : 1;

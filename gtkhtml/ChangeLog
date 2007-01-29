@@ -1,3 +1,9 @@
+2007-01-29  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* When grabbing the page by a link for panning purposes, don't follow the link
+	  upon button release.
+	* Fixes: NB#50763
+
 2007-01-22  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Determine double-click distance tolerance via GtkSettings, not hardcoded value
