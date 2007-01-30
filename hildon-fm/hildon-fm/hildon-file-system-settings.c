@@ -42,11 +42,8 @@
 #include <libintl.h>
 #include <string.h>
 
-#define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus.h>
 #include <dbus/dbus-glib-lowlevel.h>
-
-#include <osso-ic-dbus.h>
 
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-settings.h"
@@ -80,6 +77,13 @@ enum {
 
 #define MCE_MATCH_RULE "type='signal',interface='" MCE_SIGNAL_IF \
                        "',member='" MCE_DEVICE_MODE_SIG "'"
+
+/* XXX - use libconic API to listen to the connectedness status
+         instead of talking to ICD directly.
+ */
+
+#define ICD_DBUS_INTERFACE          "com.nokia.icd"
+#define ICD_STATUS_CHANGED_SIG      "status_changed"
 
 #define ICD_MATCH_RULE "type='signal',interface='" ICD_DBUS_INTERFACE \
                        "',member='" ICD_STATUS_CHANGED_SIG "'"

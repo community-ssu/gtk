@@ -26,7 +26,6 @@
 #include <string.h>
 #include <memory.h>
 
-#define DBUS_API_SUBJECT_TO_CHANGE
 #include <dbus/dbus-glib-lowlevel.h>
 
 #include <gconf/gconf-client.h>
