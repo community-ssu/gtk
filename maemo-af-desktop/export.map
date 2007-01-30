@@ -1,0 +1,6 @@
+{
+   global:
+	main;
+	_*;
+   local: *;
+};	
