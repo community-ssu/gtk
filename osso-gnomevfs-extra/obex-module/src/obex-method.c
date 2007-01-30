@@ -24,6 +24,7 @@
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 #include <libgnomevfs/gnome-vfs-method.h>
 #include <libgnomevfs/gnome-vfs-module.h>
 #include <libgnomevfs/gnome-vfs-module-shared.h>
@@ -848,7 +849,7 @@ do_create (GnomeVFSMethod        *method,
 	
 	xfer = gw_obex_put_async (conn->obex, name, NULL, 
 				  GW_OBEX_UNKNOWN_LENGTH, /* Object size */
-				  -1, /* mtime */
+				  time (NULL), /* mtime */
 				  &error);
 
 	if (!xfer) {

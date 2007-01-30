@@ -1,3 +1,13 @@
+2007-01-30  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/obex-method.c: (do_create): Use the current
+	time, so we at least get a time set at all, port of fix for
+	stable, NB#50390.
+
+2007-01-29  Richard Hult  <richard@imendio.com>
+
+	* Release 1.9.1 (added marker after release).
+	
 2007-01-29  Richard Hult  <richard@imendio.com>
 
 	* configure.in: Bump version. Also remove lots of things that were
