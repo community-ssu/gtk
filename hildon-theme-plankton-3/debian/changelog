@@ -1,10 +1,17 @@
-hildon-theme-plankton-3 (0.3.0-2) unstable; urgency=low
+hildon-theme-plankton (3.0.0-1) unstable; urgency=low
+
+  * Changing the package name. 
+  * Changing the version scheme to better reflect the layout dependency.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 30 January 2007 11:00:00 +0300
+
+hildon-theme-plankton (0.3.0-2) unstable; urgency=low
 
   * Removing the ui-fonts and osso-icons dependencies for a little while.
 
  -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 12 December 2006 19:00:00 +0300
 
-hildon-theme-plankton-3 (0.3.0-1) unstable; urgency=low
+hildon-theme-plankton (0.3.0-1) unstable; urgency=low
 
   * Adding hardfixed dependency to layout.
   * Adjusting to new substing (@_@).
@@ -12,7 +19,7 @@ hildon-theme-plankton-3 (0.3.0-1) unstable; urgency=low
 
  -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 08 December 2006 14:00:00 +0300
 
-hildon-theme-plankton-3 (0.2.0-1) unstable; urgency=low
+hildon-theme-plankton (0.2.0-1) unstable; urgency=low
 
   * Second official release.
   * Lots of fixes. 
@@ -20,13 +27,13 @@ hildon-theme-plankton-3 (0.2.0-1) unstable; urgency=low
 
  -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Mon, 04 December 2006 14:00:00 +0300
 
-hildon-theme-plankton-3 (0.1.0-1) unstable; urgency=low
+hildon-theme-plankton (0.1.0-1) unstable; urgency=low
 
   * First official release.
 
  -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 20 October 2006 14:55:06 +0300
 
-hildon-theme-plankton-3 (0.0-unreleased1) unstable; urgency=low
+hildon-theme-plankton (0.0-unreleased1) unstable; urgency=low
 
   * Copied from osso-theme-demo-config 2.1.0-1 and modified a bit.
 

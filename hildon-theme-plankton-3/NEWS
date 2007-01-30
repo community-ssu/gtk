@@ -1,3 +1,7 @@
+[3.0.0-1 release]
+* Changing the package name (removing API version part)
+* Changing the versioning scheme to better reflect the layout dependency
+
 [0.3.0-2 release]
 * Removing the ui-fonts and osso-icons dependencies for the time being
 

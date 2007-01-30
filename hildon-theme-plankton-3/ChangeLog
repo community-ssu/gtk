@@ -1,3 +1,15 @@
+2007-01-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[3.0.0-1 release]
+
+	* NEWS: 
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* debian/copyright:
+	* debian/rules: Changing the package name to hildon-theme-plankton,
+	removing the API hardcoded number. It's not needed.
+
 2006-12-12  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.3.0-2 release]
