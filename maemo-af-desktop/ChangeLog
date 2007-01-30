@@ -1,5 +1,9 @@
 2007-01-30  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.19
+
+2007-01-30  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.c: add a weak
 	reference to the delayed banners' parent window so the
 	banner can be removed when the parent window is destroyed
