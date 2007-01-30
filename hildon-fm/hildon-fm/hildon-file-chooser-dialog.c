@@ -600,8 +600,8 @@ hildon_file_chooser_dialog_set_current_folder(GtkFileChooser * chooser,
     gboolean result;
 
     self = HILDON_FILE_CHOOSER_DIALOG(chooser);
-    result = hildon_file_selection_set_current_folder(
-        self->priv->filetree, path, error);
+    result = _hildon_file_selection_set_current_folder_path
+      (self->priv->filetree, path, error);
     hildon_file_chooser_dialog_set_limit(self);
 
     /* Now resplit the name into stub and ext parts since now the
@@ -625,7 +625,7 @@ static GtkFilePath
 {
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
-    return hildon_file_selection_get_current_folder(priv->filetree);
+    return _hildon_file_selection_get_current_folder_path (priv->filetree);
 }
 
 /* Sets current name as if entered by user */
@@ -658,7 +658,7 @@ static gboolean hildon_file_chooser_dialog_select_path(GtkFileChooser *
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
 
-    if (hildon_file_selection_select_path(priv->filetree, path, error))
+    if (_hildon_file_selection_select_path(priv->filetree, path, error))
       {
 	if (priv->action == GTK_FILE_CHOOSER_ACTION_SAVE
 	    || priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
@@ -677,7 +677,7 @@ static void hildon_file_chooser_dialog_unselect_path(GtkFileChooser *
 {
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
-    hildon_file_selection_unselect_path(priv->filetree, path);
+    _hildon_file_selection_unselect_path(priv->filetree, path);
 }
 
 static void hildon_file_chooser_dialog_select_all(GtkFileChooser * chooser)
@@ -710,7 +710,7 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
     if (priv->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER ||
         hildon_file_chooser_dialog_save_multiple_set(priv))
         return g_slist_append(NULL,
-                              hildon_file_selection_get_current_folder
+                              _hildon_file_selection_get_current_folder_path
                               (priv->filetree));
     
     if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN)
@@ -726,7 +726,7 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
 
     backend = _hildon_file_system_model_get_file_system(priv->model);
     base_path =
-            hildon_file_selection_get_current_folder(priv->filetree);
+            _hildon_file_selection_get_current_folder_path (priv->filetree);
     file_path =
             gtk_file_system_make_path(backend, base_path, 
             name_without_dot_prefix, NULL);

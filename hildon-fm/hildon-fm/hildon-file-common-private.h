@@ -36,6 +36,8 @@ G_BEGIN_DECLS
 #include <config.h>
 #endif
 
+#include "hildon-file-selection.h"
+
 #define _(String) dgettext("hildon-fm", String)
 #define N_(String) String
 #define HCS(String) dgettext("hildon-common-strings", String)
@@ -58,6 +60,26 @@ G_BEGIN_DECLS
 #else
 #define TRACE
 #endif
+
+/* In hildon-file-selection.c
+ */
+
+gboolean _hildon_file_selection_select_path (HildonFileSelection *self,
+					     const GtkFilePath *path,
+					     GError ** error);
+void _hildon_file_selection_unselect_path (HildonFileSelection *self,
+					   const GtkFilePath *path);
+
+gboolean
+_hildon_file_selection_set_current_folder_path (HildonFileSelection *self,
+						const GtkFilePath *folder,
+						GError ** error);
+GtkFilePath *
+_hildon_file_selection_get_current_folder_path (HildonFileSelection *self);
+
+GSList *_hildon_file_selection_get_selected_files (HildonFileSelection
+						   *self);
+void _hildon_file_selection_realize_help (HildonFileSelection *self);
 
 
 G_END_DECLS

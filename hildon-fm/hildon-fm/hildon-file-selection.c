@@ -103,6 +103,11 @@ hildon_file_selection_create_sort_model(HildonFileSelection *self,
 					GtkTreeIterCompareFunc sort_function,
                                         GtkTreeModel *parent_model);
 
+static gboolean
+hildon_file_selection_select_iter (HildonFileSelection *self,
+				   GtkTreeIter *iter,
+				   GError **error);
+
 #ifdef HILDON_FM_HPANED
 
 static void
@@ -121,7 +126,7 @@ static guint signal_folder_changed,
 static guint signal_navigation_pane_context_menu,
              signal_content_pane_context_menu;
 
-static guint signal_items_dropped, signal_location_insensitive;
+static guint signal_uris_dropped, signal_location_insensitive;
 
 /* Property id:s */
 enum {
@@ -1145,22 +1150,22 @@ static void hildon_file_selection_class_init(HildonFileSelectionClass *
                      NULL, gtk_marshal_VOID__VOID, G_TYPE_NONE, 0);
 
   /**
-   * HildonFileSelection::items-dropped:
+   * HildonFileSelection::uris-dropped:
    * @self: a #HildonFileSelection widget
-   * @destination: Destination path (this is quaranteed to be a directory).
-   * @sources: List of paths that should be transferred to destination.
+   * @destination: Destination URI (this is quaranteed to be a directory).
+   * @sources: List of URIs that should be transferred to destination.
    *
    * This signal is emitted when user drags one or more items to some
    * folder. This signal is emitted only if drag'n'drop is enabled
    * during widget creation.
    */
-    signal_items_dropped =
-        g_signal_new("items-dropped", HILDON_TYPE_FILE_SELECTION,
+    signal_uris_dropped =
+        g_signal_new("uris-dropped", HILDON_TYPE_FILE_SELECTION,
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(HildonFileSelectionClass,
-                                     items_dropped), NULL, NULL,
+                                     uris_dropped), NULL, NULL,
                      gtk_marshal_VOID__POINTER_POINTER, G_TYPE_NONE, 2,
-                     G_TYPE_POINTER, G_TYPE_POINTER);
+                     G_TYPE_STRING, G_TYPE_POINTER);
     /* Not portable to other languages */
 
   /**
@@ -2568,8 +2573,9 @@ static void on_drag_data_received(GtkWidget * widget,
     GtkTreePath *path;
     GtkWidget *nav_pane;
     GtkTreeIter dest_iter;
-    GtkFilePath *destination;
+    char *destination;
     gboolean success = FALSE;
+    HildonFileSelection *self;
     HildonFileSelectionPrivate *priv;
 
     g_assert(GTK_IS_TREE_VIEW(widget));
@@ -2579,7 +2585,8 @@ static void on_drag_data_received(GtkWidget * widget,
        need this */
     g_signal_stop_emission_by_name(widget, "drag-data-received");
     view = GTK_TREE_VIEW(widget);
-    priv = HILDON_FILE_SELECTION(userdata)->priv;
+    self = HILDON_FILE_SELECTION (userdata);
+    priv = self->priv;
     nav_pane = priv->dir_tree;
 
     /* Dragging from navigation pane to content pane do not work well,
@@ -2598,26 +2605,22 @@ static void on_drag_data_received(GtkWidget * widget,
           if (uris)
           {
             gint i;
-            GtkFileSystem *fs;
             GSList *sources = NULL;
 
-            fs = _hildon_file_system_model_get_file_system(
-                    HILDON_FILE_SYSTEM_MODEL(priv->main_model));
-            gtk_tree_model_get(gtk_tree_view_get_model(view), &dest_iter,
-              HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH, &destination, -1);
+            gtk_tree_model_get (gtk_tree_view_get_model(view), &dest_iter,
+				HILDON_FILE_SYSTEM_MODEL_COLUMN_URI,
+				&destination,
+				-1);
 
             for (i = 0; uris[i]; i++)
-            {
-              GtkFilePath *fpath = gtk_file_system_uri_to_path(fs, uris[i]);
-              if (fpath)
-                sources = g_slist_append(sources, fpath);
-            }
+	      sources = g_slist_append (sources, uris[i]);
   
-            g_signal_emit(userdata, signal_items_dropped, 0, destination, sources);
+            g_signal_emit (userdata, signal_uris_dropped,
+			   0, destination, sources);
             
-            gtk_file_paths_free(sources);
-            gtk_file_path_free(destination);
-            g_strfreev(uris);
+            g_slist_free (sources);
+            g_free (destination);
+            g_strfreev (uris);
 
             success = TRUE;
           }
@@ -3135,19 +3138,21 @@ static GObject *hildon_file_selection_constructor(GType type,
     return obj;
 }
 
-static void get_selected_paths_helper(GtkTreeModel * model,
-                                      GtkTreePath * path,
-                                      GtkTreeIter * iter, gpointer data)
+static void
+get_selected_uris_helper (GtkTreeModel *model,
+			  GtkTreePath *path,
+			  GtkTreeIter *iter,
+			  gpointer data)
 {
-    GtkFilePath *file_path;
-    GSList **list;
+  char *file_uri;
+  GSList **list;
 
-    list = data;
-    gtk_tree_model_get(model, iter,
-                       HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH,
-                       &file_path, -1);
-    *list = g_slist_append(*list, file_path);   /* file_path is already a
-                                                   copy */
+  list = data;
+  gtk_tree_model_get (model, iter,
+		      HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &file_uri,
+		      -1);
+  *list = g_slist_append (*list, file_uri);   /* file_uri is already a
+						 copy */
 }
 
 /*** Public API **********************************************************/
@@ -3292,7 +3297,7 @@ hildon_file_selection_set_current_folder_iter(HildonFileSelection * self,
 }
 
 /**
- * hildon_file_selection_set_current_folder:
+ * hildon_file_selection_set_current_folder_uri:
  * @self: a pointer to #HildonFileSelection
  * @folder: a new folder.
  * @error: a place to store possible error.
@@ -3302,10 +3307,10 @@ hildon_file_selection_set_current_folder_iter(HildonFileSelection * self,
  * Returns: %TRUE if directory change was succesful,
  *          %FALSE if error occurred.
  */
-gboolean hildon_file_selection_set_current_folder(HildonFileSelection *
-                                                  self,
-                                                  const GtkFilePath *
-                                                  folder, GError ** error)
+gboolean
+hildon_file_selection_set_current_folder_uri (HildonFileSelection *self,
+					      const char *folder,
+					      GError **error)
 {
     HildonFileSystemModel *file_system_model;
     GtkTreeIter main_iter;
@@ -3317,7 +3322,39 @@ gboolean hildon_file_selection_set_current_folder(HildonFileSelection *
 
     file_system_model = HILDON_FILE_SYSTEM_MODEL(self->priv->main_model);
 
-    if (hildon_file_system_model_load_path(file_system_model, folder, &main_iter))
+    if (hildon_file_system_model_load_uri (file_system_model,
+					   folder, &main_iter))
+    {
+        /* Save dialogs are currently smart enough to rerun autonaming
+           when folder is loaded. No need to block here until children
+           are loaded. */
+        hildon_file_selection_set_current_folder_iter(self, &main_iter);
+        activate_view(self->priv->dir_tree);
+        ULOG_INFO_F("Directory changed successfully");
+        return TRUE;
+    }
+
+    ULOG_INFO_F("Directory change failed");
+    return FALSE;
+}
+
+gboolean
+_hildon_file_selection_set_current_folder_path (HildonFileSelection *self,
+					       const GtkFilePath *folder,
+					       GError **error)
+{
+    HildonFileSystemModel *file_system_model;
+    GtkTreeIter main_iter;
+
+    g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), FALSE);
+    g_return_val_if_fail(folder != NULL, FALSE);
+
+    ULOG_INFO_F("Setting folder to %s", (const char *) folder);
+
+    file_system_model = HILDON_FILE_SYSTEM_MODEL(self->priv->main_model);
+
+    if (hildon_file_system_model_load_path (file_system_model,
+					    folder, &main_iter))
     {
         /* Save dialogs are currently smart enough to rerun autonaming
            when folder is loaded. No need to block here until children
@@ -3333,31 +3370,50 @@ gboolean hildon_file_selection_set_current_folder(HildonFileSelection *
 }
 
 /**
- * hildon_file_selection_get_current_folder:
+ * hildon_file_selection_get_current_folder_uri:
  * @self: a pointer to #HildonFileSelection
  *
- * Gets a path to the currently active folder (the folder which is
- * displayed in the content pane). You have to release the returned path
- * with #gtk_file_path_free.
+ * Gets the URI of the currently active folder (the folder which is
+ * displayed in the content pane). You have to release the returned string
+ * with #g_free.
  *
- * Returns: a #GtkFilePath. 
+ * Returns: a string.
  */
-GtkFilePath *hildon_file_selection_get_current_folder(HildonFileSelection *
-                                                      self)
+char *
+hildon_file_selection_get_current_folder_uri (HildonFileSelection *self)
 {
-    GtkTreeIter iter;
+  GtkTreeIter iter;
 
-    if (hildon_file_selection_get_current_folder_iter(self, &iter)) {
-        GtkFilePath *path;
+  if (hildon_file_selection_get_current_folder_iter(self, &iter)) {
+    char *uri;
+    
+    gtk_tree_model_get(self->priv->main_model, &iter,
+		       HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
+		       -1);
+    return uri;    /* This is already a copy */
+  } 
+  
+  g_assert_not_reached();
+  return NULL;
+}
 
-        gtk_tree_model_get(self->priv->main_model, &iter,
-                           HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH, &path,
-                           -1);
-        return path;    /* This is already a copy */
-    }
+GtkFilePath *
+_hildon_file_selection_get_current_folder_path (HildonFileSelection *self)
+{
+  GtkTreeIter iter;
 
-    g_assert_not_reached();
-    return NULL;
+  if (hildon_file_selection_get_current_folder_iter(self, &iter)) {
+    GtkFilePath *path;
+    
+    gtk_tree_model_get(self->priv->main_model, &iter,
+		       HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL,
+		       &path,
+		       -1);
+    return path;    /* This is already a copy */
+  } 
+  
+  g_assert_not_reached();
+  return NULL;
 }
 
 /**
@@ -3542,37 +3598,39 @@ void hildon_file_selection_clear_multi_selection(HildonFileSelection * self)
 }
 
 /**
- * hildon_file_selection_get_selected_paths:
+ * hildon_file_selection_get_selected_uris:
  * @self: a pointer to #HildonFileSelection
  *
- * Gets list of selected paths from content pane. You have to release
- * the returned list with #gtk_file_paths_free. If you are interested
- * in item that (probably) has active focus, you have to first get
- * the active pane and then call either #hildon_file_selection_get_selected_paths
- * or #hildon_file_selection_get_current_folder.
+ * Gets list of selected URIs from content pane. You have to release
+ * the returned list with #g_free for the individual URIs and
+ * g_slist_free for the list nodes.  If you are interested in item
+ * that (probably) has active focus, you have to first get the active
+ * pane and then call either #hildon_file_selection_get_selected_uris
+ * or #hildon_file_selection_get_current_folder_uri.
  *
- * Returns: a #GSList containing #GtkFilePath objects.
+ * Returns: a #GSList containing strings.
  */
-GSList *hildon_file_selection_get_selected_paths(HildonFileSelection *
-                                                 self)
+GSList *
+hildon_file_selection_get_selected_uris (HildonFileSelection *self)
 {
-    GtkWidget *view;
+  GtkWidget *view;
 
-    g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), NULL);
+  g_return_val_if_fail (HILDON_IS_FILE_SELECTION(self), NULL);
 
-    view = get_current_view(self->priv);
+  view = get_current_view (self->priv);
 
-    if (GTK_IS_TREE_VIEW(view)) {
-        GSList *paths = NULL;
+  if (GTK_IS_TREE_VIEW (view))
+    {
+      GSList *uris = NULL;
 
-        gtk_tree_selection_selected_foreach(gtk_tree_view_get_selection
-                                            (GTK_TREE_VIEW(view)),
-                                            get_selected_paths_helper,
-                                            &paths);
-        return paths;
+      gtk_tree_selection_selected_foreach (gtk_tree_view_get_selection
+					   (GTK_TREE_VIEW(view)),
+					   get_selected_uris_helper,
+					   &uris);
+      return uris;
     }
 
-    return NULL;
+  return NULL;
 }
 
 static void select_path_helper(gpointer path, gpointer selection)
@@ -3640,95 +3698,144 @@ hildon_file_selection_select_unselect_main_iter(HildonFileSelectionPrivate
 }
 
 /**
- * hildon_file_selection_select_path:
+ * hildon_file_selection_select_uri:
  * @self: a pointer to #HildonFileSelection
- * @path: a file to select.
+ * @uri: a file to select.
  * @error: a place to store possible error.
  *
- * Selects the given file. If the path doesn't point to current folder the
+ * Selects the given file. If the URI doesn't point to current folder the
  * folder is changed accordingly. If multiple selection is disabled then
  * the previous selection will dissappear.
  *
  * Returns: %TRUE if folder was succesfully selected,
  *          %FALSE if the path doesn't contain a valid folder.
  */
-gboolean hildon_file_selection_select_path(HildonFileSelection * self,
-                                           const GtkFilePath * path,
-                                           GError ** error)
+gboolean
+hildon_file_selection_select_uri (HildonFileSelection *self,
+				  const char *uri,
+				  GError **error)
 {
-    GtkTreeIter iter, nav_iter, old_iter;
-    gboolean found, dir_changed;
-    GtkWidget *view;
+  gboolean found;
+  GtkTreeIter iter;
 
-    g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), FALSE);
+  g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), FALSE);
 
-    found =
-        hildon_file_system_model_load_path(HILDON_FILE_SYSTEM_MODEL
-                                           (self->priv->main_model), path,
-                                           &iter);
+  found =
+    hildon_file_system_model_load_uri (HILDON_FILE_SYSTEM_MODEL
+				       (self->priv->main_model), uri,
+				       &iter);
 
-    /* We found the item */
-    if (found)
+  if (found)
+    return hildon_file_selection_select_iter (self, &iter, error);
+  
+  return FALSE;
+}
+
+gboolean
+_hildon_file_selection_select_path (HildonFileSelection *self,
+				    const GtkFilePath *path,
+				    GError **error)
+{
+  gboolean found;
+  GtkTreeIter iter;
+
+  g_return_val_if_fail(HILDON_IS_FILE_SELECTION(self), FALSE);
+
+  found =
+    hildon_file_system_model_load_path (HILDON_FILE_SYSTEM_MODEL
+				       (self->priv->main_model), path,
+				       &iter);
+
+  if (found)
+    return hildon_file_selection_select_iter (self, &iter, error);
+  
+  return FALSE;
+}
+
+gboolean
+hildon_file_selection_select_iter (HildonFileSelection *self,
+				   GtkTreeIter *iter,
+				   GError **error)
+{
+  GtkTreeIter nav_iter, old_iter;
+  gboolean dir_changed;
+  GtkWidget *view;
+
+  /* We set the nav. pane to contain parent of the item found */
+  if (gtk_tree_model_iter_parent(self->priv->main_model, &nav_iter, iter))
     {
-      /* We set the nav. pane to contain parent of the item found */
-      if (gtk_tree_model_iter_parent(self->priv->main_model, &nav_iter, &iter))
-      {
-        dir_changed = 
-            hildon_file_selection_get_current_folder_iter(self, &old_iter) &&
-            old_iter.user_data != nav_iter.user_data;
+      dir_changed = 
+	hildon_file_selection_get_current_folder_iter(self, &old_iter) &&
+	old_iter.user_data != nav_iter.user_data;
 
-        if (dir_changed)
-          hildon_file_selection_set_current_folder_iter(self, &nav_iter);
+      if (dir_changed)
+	hildon_file_selection_set_current_folder_iter(self, &nav_iter);
 
-        /* Had to move this after setting folder. Otherwise it'll be cleared... */
-        self->priv->user_touched = TRUE;
-        hildon_file_selection_select_unselect_main_iter
-                (self->priv, &iter, TRUE, !dir_changed);
+      /* Had to move this after setting folder. Otherwise it'll be
+	 cleared... */
+      self->priv->user_touched = TRUE;
+      hildon_file_selection_select_unselect_main_iter
+	(self->priv, iter, TRUE, !dir_changed);
 
-        view = get_current_view(self->priv);
-        if (GTK_IS_TREE_VIEW(view))
-          activate_view(view);
-        else
-          activate_view(self->priv->dir_tree);
-
-        return TRUE;
-      } 
+      view = get_current_view(self->priv);
+      if (GTK_IS_TREE_VIEW(view))
+	activate_view(view);
+      else
+	activate_view(self->priv->dir_tree);
       
-      /* If we do not get the parent then we fall through and the next
-          statement will just change the directory. */
-    }
+      return TRUE;
+    } 
+  
+  /* If we do not get the parent then we fall through and the next
+     statement will just change the directory. */
 
-    /* We didn't find the match, but we did find the parent */
-    if (iter.user_data != NULL)
+  /* We didn't find the match, but we did find the parent */
+  if (iter->user_data != NULL)
     {
-      hildon_file_selection_set_current_folder_iter(self, &iter);
+      hildon_file_selection_set_current_folder_iter (self, iter);
       return TRUE;
     }
-
-    return FALSE;
+  
+  return FALSE;
 }
 
 /**
- * hildon_file_selection_unselect_path:
+ * hildon_file_selection_unselect_uri:
  * @self: a pointer to #HildonFileSelection
- * @path: file to unselect
+ * @uri: file to unselect
  *
  * Unselects a currently selected filename. If the filename is not in
  * the current directory, does not exist, or is otherwise not currently
  * selected, does nothing.
  */
-void hildon_file_selection_unselect_path(HildonFileSelection * self,
-                                         const GtkFilePath * path)
+void
+hildon_file_selection_unselect_uri (HildonFileSelection *self,
+				     const char *uri)
 {
-    GtkTreeIter iter;
+  GtkTreeIter iter;
 
-    g_return_if_fail(HILDON_IS_FILE_SELECTION(self));
+  g_return_if_fail(HILDON_IS_FILE_SELECTION(self));
+  
+  if (hildon_file_system_model_search_uri
+      (HILDON_FILE_SYSTEM_MODEL(self->priv->main_model), uri, &iter,
+       NULL, TRUE))
+    hildon_file_selection_select_unselect_main_iter
+      (self->priv, &iter, FALSE, FALSE);
+}
 
-    if (hildon_file_system_model_search_path
-        (HILDON_FILE_SYSTEM_MODEL(self->priv->main_model), path, &iter,
-         NULL, TRUE))
-        hildon_file_selection_select_unselect_main_iter
-            (self->priv, &iter, FALSE, FALSE);
+void
+_hildon_file_selection_unselect_path (HildonFileSelection *self,
+				      const GtkFilePath *path)
+{
+  GtkTreeIter iter;
+
+  g_return_if_fail(HILDON_IS_FILE_SELECTION(self));
+  
+  if (hildon_file_system_model_search_path
+      (HILDON_FILE_SYSTEM_MODEL(self->priv->main_model), path, &iter,
+       NULL, TRUE))
+    hildon_file_selection_select_unselect_main_iter
+      (self->priv, &iter, FALSE, FALSE);
 }
 
 /**
@@ -4011,7 +4118,7 @@ static void get_selected_files_helper(GtkTreeModel * model,
     if (!folder)
     {
       gtk_tree_model_get(model, iter,
-                       HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH,
+                       HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL,
                        &file_path, -1);
       *list = g_slist_append(*list, file_path);
     }
@@ -4481,3 +4588,4 @@ hildon_file_selection_create_sort_model (HildonFileSelection *self,
 
   return ret;
 }
+

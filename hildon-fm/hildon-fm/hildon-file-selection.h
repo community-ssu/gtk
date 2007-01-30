@@ -129,8 +129,8 @@ struct _HildonFileSelectionClass {
     void (*selection_changed) (HildonFileSelection * self);
     void (*navigation_pane_context_menu) (HildonFileSelection * self);
     void (*content_pane_context_menu) (HildonFileSelection * self);
-    void (*items_dropped) (HildonFileSelection * self,
-                           GtkFilePath * destination, GSList * sources);
+    void (*uris_dropped) (HildonFileSelection * self,
+			  const char *destination, GSList * sources);
     void (*location_insensitive) (HildonFileSelection *self, GtkTreeIter *iter);
 };
 
@@ -150,13 +150,14 @@ void hildon_file_selection_get_sort_key(HildonFileSelection * self,
                                         HildonFileSelectionSortKey * key,
                                         GtkSortType * order);
 
-/* The following methods are needed by GtkFileChooserIface */
-gboolean hildon_file_selection_set_current_folder(HildonFileSelection *
-                                                  self,
-                                                  const GtkFilePath *
-                                                  folder, GError ** error);
-GtkFilePath *hildon_file_selection_get_current_folder(HildonFileSelection *
-                                                      self);
+gboolean hildon_file_selection_set_current_folder_uri (HildonFileSelection *
+						       self,
+						       const char *folder,
+						       GError ** error);
+char *hildon_file_selection_get_current_folder_uri (HildonFileSelection *
+						    self);
+
+
 #ifndef HILDON_DISABLE_DEPRECATED
 gboolean hildon_file_selection_get_current_content_iter(HildonFileSelection
                                                         * self,
@@ -173,16 +174,15 @@ gboolean hildon_file_selection_content_iter_is_selected(HildonFileSelection *sel
                                                        GtkTreeIter *iter);
 #endif
 
-gboolean hildon_file_selection_select_path(HildonFileSelection * self,
-                                           const GtkFilePath * path,
-                                           GError ** error);
-void hildon_file_selection_unselect_path(HildonFileSelection * self,
-                                         const GtkFilePath * path);
-void hildon_file_selection_select_all(HildonFileSelection * self);
-void hildon_file_selection_unselect_all(HildonFileSelection * self);
-void hildon_file_selection_clear_multi_selection(HildonFileSelection * self);
-GSList *hildon_file_selection_get_selected_paths(HildonFileSelection *
-                                                 self);
+gboolean hildon_file_selection_select_uri (HildonFileSelection *self,
+					   const char *uri,
+					   GError ** error);
+void hildon_file_selection_unselect_uri (HildonFileSelection *self,
+					 const char *uri);
+void hildon_file_selection_select_all(HildonFileSelection *self);
+void hildon_file_selection_unselect_all(HildonFileSelection *self);
+void hildon_file_selection_clear_multi_selection(HildonFileSelection *self);
+GSList *hildon_file_selection_get_selected_uris (HildonFileSelection *self);
 
 void hildon_file_selection_set_select_multiple(HildonFileSelection * self,
                                                gboolean select_multiple);
@@ -217,13 +217,8 @@ void hildon_file_selection_show_content_pane(HildonFileSelection * self);
    that a file with the new name will eventually appear and you want
    the cursor to be on it.
 */
-void hildon_file_selection_move_cursor_to_uri (HildonFileSelection * self,
+void hildon_file_selection_move_cursor_to_uri (HildonFileSelection *self,
 					       const gchar *uri);
-
-/* Not for public use */
-GSList *_hildon_file_selection_get_selected_files(HildonFileSelection
-                                                       * self);
-void _hildon_file_selection_realize_help(HildonFileSelection *self);
 
 G_END_DECLS
 #endif

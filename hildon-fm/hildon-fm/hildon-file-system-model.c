@@ -976,7 +976,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
     g_assert(path != NULL);
 
     switch (column) {
-    case HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH:
+    case HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL:
         g_value_set_boxed(value, path);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH:
@@ -2020,7 +2020,7 @@ static void hildon_file_system_model_init(HildonFileSystemModel * self)
                                     HildonFileSystemModelPrivate);
     self->priv = (gpointer) priv;
 
-    priv->column_types[HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH] =
+    priv->column_types[HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL] =
         GTK_TYPE_FILE_PATH;
     priv->column_types[HILDON_FILE_SYSTEM_MODEL_COLUMN_LOCAL_PATH] =
         G_TYPE_STRING;
