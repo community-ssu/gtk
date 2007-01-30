@@ -9,3 +9,5 @@ Package: hildon-theme-plankton
 Architecture: all
 Depends: gtk2-engines-sapwood, hildon-theme-cacher
 Description: A hildon theme. 
+Conflicts: hildon-theme-plankton-3, hildon-theme-plankton-2
+Replaces: hildon-theme-plankton-3, hildon-theme-plankton-2
