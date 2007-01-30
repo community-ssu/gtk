@@ -1,0 +1,3 @@
+debian/tmp/etc/gconf/schemas/system_smb.schemas
+debian/tmp/etc/gnome-vfs-2.0/modules/smb-module.conf
+debian/tmp/usr/lib/gnome-vfs-2.0/modules/libsmb.so

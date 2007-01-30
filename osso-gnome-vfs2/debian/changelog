@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso6) unstable; urgency=low
+
+  * Split out samba package into its own binary package
+
+ -- Richard Hult <richard@imendio.com>  Tue, 30 Jan 2007 10:14:36 +0100
+
 osso-gnome-vfs2 (2.16.3-1osso5) unstable; urgency=low
 
   * Update inotify headers from upstream GNOME CVS to get the right license

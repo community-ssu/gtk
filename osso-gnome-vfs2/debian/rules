@@ -11,7 +11,7 @@ include /usr/share/cdbs/1/rules/simple-patchsys.mk
 include /usr/share/cdbs/1/rules/utils.mk
 
 # debug lib
-DEB_DH_STRIP_ARGS := --dbg-package=libosso-gnomevfs2-0 --dbg-package=libosso-gnomevfs2-common
+DEB_DH_STRIP_ARGS := --dbg-package=libosso-gnomevfs2-0 --dbg-package=libosso-gnomevfs2-common --dbg-package=libosso-gnomevfs2-samba
 
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-samba --disable-gnutls --disable-openssl \
 	--disable-gtk-doc --libexecdir=/usr/libexec --enable-more-warnings=no

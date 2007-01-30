@@ -1,5 +1,8 @@
-debian/tmp/etc/gconf
-debian/tmp/etc/gnome-vfs-2.0/modules
+debian/tmp/etc/gconf/schemas/system_http_proxy.schemas
+debian/tmp/etc/gconf/schemas/system_dns_sd.schemas
+debian/tmp/etc/gconf/schemas/desktop_default_applications.schemas
+debian/tmp/etc/gconf/schemas/desktop_gnome_url_handlers.schemas
+debian/tmp/etc/gnome-vfs-2.0/modules/default-modules.conf
 debian/tmp/usr/lib/gnome-vfs-2.0/modules/libdns-sd.so
 debian/tmp/usr/lib/gnome-vfs-2.0/modules/libftp.so
 debian/tmp/usr/lib/gnome-vfs-2.0/modules/libgzip.so
@@ -8,7 +11,6 @@ debian/tmp/usr/lib/gnome-vfs-2.0/modules/libnetwork.so
 debian/tmp/usr/lib/gnome-vfs-2.0/modules/libtar.so
 debian/tmp/usr/lib/gnome-vfs-2.0/modules/libvfs-test.so
 debian/tmp/usr/lib/gnome-vfs-2.0/modules/libcaselessfile.so
-debian/tmp/usr/lib/gnome-vfs-2.0/modules/libsmb.so
 debian/tmp/usr/share/dbus-1/services
 debian/tmp/usr/bin
 debian/tmp/usr/libexec
