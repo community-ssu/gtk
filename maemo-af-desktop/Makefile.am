@@ -51,8 +51,12 @@ bin_SCRIPTS = install_sbapplet.sh
         
 maemo_af_desktop_SOURCES = maemo-af-desktop-main.c maemo-af-desktop-main.h
 
+# Flags to be removed from link
+LD_UNWANTED = -export-dynamic -Wl,--export-dynamic
+
 # libraries needed by task navigator, status bar and home to build them together
 maemo_af_desktop_LDADD = \
+	$(filter-out $(LD_UNWANTED), \
 	hildon-navigator/.libs/libhildonnavigator.a \
 	hildon-status-bar/.libs/libhildonstatusbarmain.a \
 	hildon-status-bar/libhildonstatusbar.la \
@@ -66,7 +70,9 @@ maemo_af_desktop_LDADD = \
 	$(XTEST_LIBS) \
 	$(ESD_LIBS) \
 	$(LAUNCHER_LDFLAGS) \
-	libdesktop/.libs/libdesktop.a
+	libdesktop/.libs/libdesktop.a) 
+	
+AM_LDFLAGS = -Wl,--version-script=export.map
 
 initexecdir=$(sysconfdir)/osso-af-init/init.d
 initexec_SCRIPTS = maemo-af-desktop-launch.sh

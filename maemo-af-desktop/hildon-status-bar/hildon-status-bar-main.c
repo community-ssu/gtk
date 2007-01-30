@@ -740,6 +740,8 @@ gboolean add_configured_plugins( StatusBar *panel )
         }
 
 	g_free (plugin_path);
+        while (gtk_events_pending ())
+          gtk_main_iteration ();
     }
 
     /* Cleanup */
@@ -1554,12 +1556,19 @@ _delayed_ib_show(gpointer data)
     g_source_remove(info->timeout_to_show_id);
  
     info->timeout_to_show_id = 0;
-     
+        
     info->banner = hildon_banner_show_animation( NULL, NULL, info->text );
     if (info->parent_window_id) {
         GdkWindow *parent_window = gdk_window_foreign_new (info->parent_window_id);
+            
         if (parent_window) {
             gdk_window_set_transient_for (info->banner->window, parent_window);
+
+            /* When the parent window is destroyed, remove this
+             * banner */
+            g_object_weak_ref (G_OBJECT (parent_window),
+                               (GWeakNotify)_delayed_infobanner_remove,
+                               data);
             g_object_unref (parent_window);
         }
     }

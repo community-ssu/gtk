@@ -198,6 +198,15 @@ home_deinitialize (gint id)
   osso_deinitialize (osso_home);
 }
 
+gboolean hildon_home_window_applets_init_wrapper (gpointer data);
+
+gboolean
+hildon_home_window_applets_init_wrapper (gpointer data)
+{
+  hildon_home_window_applets_init (HILDON_HOME_WINDOW (home_window));
+  return FALSE;
+}
+
 int
 hildon_home_main (void)
 {
@@ -243,8 +252,6 @@ hildon_home_main (void)
   hs.system_inactivity_ind = FALSE;
   hs.memory_low_ind = TRUE;
   osso_hw_set_event_cb (osso_home, &hs, hildon_home_osso_lowmem_cb, window);
-  
-  hildon_home_window_applets_init (HILDON_HOME_WINDOW (window));
   
   root_window = gdk_get_default_root_window ();
   gdk_window_set_events (root_window,

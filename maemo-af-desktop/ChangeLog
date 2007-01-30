@@ -1,3 +1,19 @@
+2007-01-30  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-status-bar/hildon-status-bar-main.c: add a weak
+	reference to the delayed banners' parent window so the
+	banner can be removed when the parent window is destroyed
+
+2007-01-30  Johan Bilien <johan.bilien@nokia.com>
+
+	* hildon-home/background-manager.c: Don't generate an alpha
+	bitmask
+	* hildon-home/hildon-home-area.c: Iterate the main loop between
+	the load of each applet
+	* hildon-home/hildon-home-main.c, maemo-af-desktop-main.c:
+	Move loading of home applets after the load of statusbar applets
+	Fixes: NB#43960
+
 2007-01-25  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-navigator/hn-others-button.c: unprotect spawned

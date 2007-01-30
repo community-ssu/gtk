@@ -191,10 +191,16 @@ deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
     return (TRUE);		/* keep the event source */
 }
 
+gboolean hildon_home_window_applets_init_wrapper (gpointer data);
+
 static gboolean
 start_status_bar (void)
 {
     status_bar_main(osso, &panel);
+
+    /* load home applets when status bar is done */
+    g_idle_add (&hildon_home_window_applets_init_wrapper, NULL);
+ 
     return FALSE;
 }
 

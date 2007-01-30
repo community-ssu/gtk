@@ -1757,7 +1757,6 @@ background_manager_changed (BackgroundManager *manager,
   BackgroundManagerPrivate *priv;
   GdkColormap *colormap;
   GdkPixmap *pixmap = NULL;
-  GdkBitmap *bitmask = NULL;
   
   if (G_UNLIKELY (!pixbuf))
     return;
@@ -1777,16 +1776,13 @@ background_manager_changed (BackgroundManager *manager,
 
   gdk_pixbuf_render_pixmap_and_mask_for_colormap (pixbuf, colormap,
                                                   &pixmap,
-                                                  &bitmask,
+                                                  NULL,
                                                   0);
   if (pixmap)
     {
       gdk_window_set_back_pixmap (priv->desktop, pixmap, FALSE);
       g_object_unref (pixmap);
     }
-
-  if (bitmask)
-    g_object_unref (bitmask);
 
   gdk_flush ();
 }

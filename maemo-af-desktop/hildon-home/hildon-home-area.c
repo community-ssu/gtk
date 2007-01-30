@@ -31,6 +31,8 @@
 #include <hildon-widgets/hildon-note.h>
 #include <string.h> /* strlen */
 
+#include <gtk/gtkmain.h>
+
 
 enum
 {
@@ -590,6 +592,10 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
           gtk_widget_set_size_request (applet, width, height);
         }
       n_groups --;
+
+      while (gtk_events_pending ())
+        gtk_main_iteration ();
+
     }
 
   /* Remove all the applets left in the list, they are no longer  */
