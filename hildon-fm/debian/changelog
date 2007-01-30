@@ -1,3 +1,9 @@
+libhildonfm (2.3-1) unstable; urgency=low
+
+  * Consolidated API according to plan.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 30 Jan 2007 11:25:45 +0200
+
 libhildonfm (2.2-2) unstable; urgency=low
 
   * Renamed control files in debian/ as well.

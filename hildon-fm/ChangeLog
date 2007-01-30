@@ -1,3 +1,52 @@
+2007-01-30  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.3
+	
+	* hildon-fm/hildon-file-system-settings.c,
+	hildon-fm/hildon-file-system-obex.c: Do not define
+	DBUS_API_SUBJECT_TO_CHANGE, we expect the real one now.
+
+	* hildon-fm/hildon-file-system-settings.c: Do not include
+	<osso-ic-dbus.h>, it is deprecated and no longer in our
+	Build-Deps.  Instead, hardcode the icd D-Bus names.
+
+2007-01-29  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Hildon Consolidation.  References to GtkFilePath in the public
+	HildonFileselection API are removed.
+	
+	* hildon-fm/hildon-file-selection.h,
+	hildon-fm/hildon-file-selection.c,
+	hildon-fm/hildon-file-common-private.h
+	(_HildonFileSelectionClass): Removed "items-dropped" signal, added
+	"uris-dropped" signal.
+	(hildon_file_selection_set_current_folder,
+	hildon_file_selection_get_current_folder): Removed.
+	(hildon_file_selection_set_current_folder_uri,
+	hildon_file_selection_get_current_folder_uri): Added as
+	replacement.
+	(hildon_file_selection_select_path,
+	hildon_file_selection_unselect_path,
+	hildon_file_selection_get_selected_paths): Removed.
+	(hildon_file_selection_select_uri,
+	hildon_file_selection_unselect_uri,
+	hildon_file_selection_get_selected_uris): Added as replacement.
+	(_hildon_file_selection_set_current_folder_path,
+	_hildon_file_selection_select_path,
+	_hildon_file_selection_unselect_path): Added as internal
+	replacement.  Changed all callers.
+	(_hildon_file_selection_get_selected_files,
+	_hildon_file_selection_realize_help): Moved prototypes to
+	"hildon-file-common-private.h".
+		
+	* hildon-fm/hildon-file-system-model.h
+	(HildonFileSystemModelColumns): Renamed
+	HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH column to
+	HILDON_FILE_SYSTEM_MODEL_COLUMN_GTK_PATH_INTERNAL.  Changed all
+	references.
+
+	* Makefile.am (SUBDIRS): Removed "ut".
+
 2007-01-26  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.2 to experimental.
