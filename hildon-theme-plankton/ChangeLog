@@ -1,3 +1,15 @@
+2007-01-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.png: the new shiny hopefully-it-works template!
+
+	* template/template.svg: Added. SVG template makes much more
+	sense.  Use latest Inkscape (www.inkscape.org) to edit,
+	Illustrator does not grok gradient strokes and the blur filter
+	used.
+
+	* template/template.xcf.gz: removed, bitmap template was not a
+	good idea.
+
 2007-01-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[3.0.0-1 release]
