@@ -1,5 +1,10 @@
 2007-01-31  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/gtkcheckbutton.rc: Removing the check focus that overdraws
+	everything.
+
+2007-01-31  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* configure.ac:
 	* debian/changelog: Changing version number and fixing the pkgconfig
 	file.

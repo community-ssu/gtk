@@ -139,13 +139,6 @@ style "osso-checkbutton"
       shadow          = ETCHED_IN
       state= ACTIVE
     }
-    image
-    {
-      function        = FOCUS
-      file    	       = "../images/qgn_plat_focus_active.png"
-      border  	       = { 2, 2, 2, 2 }
-      stretch 	       = TRUE
-    }
   }
 }
 class "GtkCheckButton" style "osso-checkbutton"
