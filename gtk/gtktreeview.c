@@ -413,7 +413,7 @@ static gboolean gtk_tree_view_search_scroll_event       (GtkWidget        *entry
 static gboolean gtk_tree_view_search_key_press_event    (GtkWidget        *entry,
 							 GdkEventKey      *event,
 							 GtkTreeView      *tree_view);
-static void     gtk_tree_view_search_move               (GtkWidget        *window,
+static gboolean gtk_tree_view_search_move               (GtkWidget        *window,
 							 GtkTreeView      *tree_view,
 							 gboolean          up);
 static gboolean gtk_tree_view_search_equal_func         (GtkTreeModel     *model,
@@ -459,8 +459,14 @@ static void gtk_tree_view_tree_window_to_tree_coords (GtkTreeView *tree_view,
 						      gint        *tx,
 						      gint        *ty);
 
-static gint scroll_row_timeout                       (gpointer     data);
-static void remove_scroll_timeout                    (GtkTreeView *tree_view);
+static gboolean scroll_row_timeout                   (gpointer     data);
+static void     add_scroll_timeout                   (GtkTreeView *tree_view);
+static void     remove_scroll_timeout                (GtkTreeView *tree_view);
+
+#ifdef MAEMO_CHANGES
+static gboolean gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
+						  GdkEvent  *event);
+#endif /* MAEMO_CHANGES */
 
 static guint tree_view_signals [LAST_SIGNAL] = { 0 };
 
@@ -525,6 +531,9 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
   widget_class->style_set = gtk_tree_view_style_set;
   widget_class->grab_notify = gtk_tree_view_grab_notify;
   widget_class->state_changed = gtk_tree_view_state_changed;
+#ifdef MAEMO_CHANGES
+  widget_class->tap_and_hold_query = gtk_tree_view_tap_and_hold_query;
+#endif /* MAEMO_CHANGES */
 
   /* GtkContainer signals */
   container_class->remove = gtk_tree_view_remove;
@@ -690,7 +699,11 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 				     g_param_spec_boolean ("show-expanders",
 							   P_("Show Expanders"),
 							   P_("View has expanders"),
+#ifndef MAEMO_CHANGES
 							   TRUE,
+#else /* MAEMO_CHANGES */
+							   FALSE,
+#endif /* MAEMO_CHANGES */
 							   GTK_PARAM_READWRITE));
 
     g_object_class_install_property (o_class,
@@ -700,7 +713,11 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 						       P_("Extra indentation for each level"),
 						       0,
 						       G_MAXINT,
+#ifndef MAEMO_CHANGES
 						       0,
+#else /* MAEMO_CHANGES */
+						       10,
+#endif /* MAEMO_CHANGES */
 						       GTK_PARAM_READWRITE));
 
     g_object_class_install_property (o_class,
@@ -732,6 +749,9 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 #define _TREE_VIEW_EXPANDER_SIZE 12
 #define _TREE_VIEW_VERTICAL_SEPARATOR 2
 #define _TREE_VIEW_HORIZONTAL_SEPARATOR 2
+#ifdef MAEMO_CHANGES
+#define _TREE_VIEW_SEPARATOR_HEIGHT 2
+#endif /* MAEMO_CHANGES */
     
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("expander-size",
@@ -822,6 +842,24 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 								P_("Dash pattern used to draw the tree view lines"),
 								"\1\1",
 								GTK_PARAM_READABLE));
+
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkTreeView::separator-height:
+   *
+   * Height in pixels of a separator.
+   *
+   * Since: maemo 3.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
+					   g_param_spec_int ("separator-height",
+							     P_("Separator height"),
+							     P_("Height of the separator"),
+							     0,
+							     G_MAXINT,
+							     _TREE_VIEW_SEPARATOR_HEIGHT,
+							     GTK_PARAM_READABLE));
+#endif /* MAEMO_CHANGES */
 
   /* Signals */
   widget_class->set_scroll_adjustments_signal =
@@ -1271,9 +1309,13 @@ gtk_tree_view_init (GtkTreeView *tree_view)
 
   gtk_widget_set_redraw_on_allocate (GTK_WIDGET (tree_view), FALSE);
 
-  tree_view->priv->flags =  GTK_TREE_VIEW_SHOW_EXPANDERS
-                            | GTK_TREE_VIEW_DRAW_KEYFOCUS
-                            | GTK_TREE_VIEW_HEADERS_VISIBLE;
+#ifdef MAEMO_CHANGES
+  tree_view->priv->flags = GTK_TREE_VIEW_DRAW_KEYFOCUS;
+#else /* !MAEMO_CHANGES */
+  tree_view->priv->flags = GTK_TREE_VIEW_SHOW_EXPANDERS
+			   | GTK_TREE_VIEW_DRAW_KEYFOCUS
+			   | GTK_TREE_VIEW_HEADERS_VISIBLE;
+#endif /* !MAEMO_CHANGES */
 
   /* We need some padding */
   tree_view->priv->dy = 0;
@@ -1305,7 +1347,9 @@ gtk_tree_view_init (GtkTreeView *tree_view)
   tree_view->priv->hover_selection = FALSE;
   tree_view->priv->hover_expand = FALSE;
 
-  tree_view->priv->level_indentation = 0;
+#ifdef MAEMO_CHANGES
+  tree_view->priv->level_indentation = 10;
+#endif /* MAEMO_CHANGES */
 
   tree_view->priv->rubber_banding_enable = FALSE;
 
@@ -3918,10 +3962,7 @@ gtk_tree_view_motion_bin_window (GtkWidget      *widget,
     {
       gtk_tree_view_update_rubber_band (tree_view);
 
-      if (tree_view->priv->scroll_timeout == 0)
-        {
-	  tree_view->priv->scroll_timeout = g_timeout_add (150, scroll_row_timeout, tree_view);
-	}
+      add_scroll_timeout (tree_view);
     }
 
   /* only check for an initiated drag when a button is pressed */
@@ -4629,7 +4670,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 		gtk_paint_focus (widget->style,
 			         tree_view->priv->bin_window,
 				 GTK_WIDGET_STATE (widget),
-				 NULL,
+				 &event->area,
 				 widget,
 				 (is_first
 				  ? (is_last ? "treeview-drop-indicator" : "treeview-drop-indicator-left" )
@@ -4642,7 +4683,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 		gtk_paint_focus (widget->style,
 			         tree_view->priv->bin_window,
 				 GTK_WIDGET_STATE (widget),
-				 NULL,
+				 &event->area,
 				 widget,
 				 "treeview-drop-indicator",
 				 0, BACKGROUND_FIRST_PIXEL (tree_view, tree, node)
@@ -4696,7 +4737,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	    gtk_paint_focus (widget->style,
 			     tree_view->priv->bin_window,
 			     focus_rect_state,
-			     NULL,
+			     &event->area,
 			     widget,
 			     (is_first
 			      ? (is_last ? "treeview" : "treeview-left" )
@@ -4707,7 +4748,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	    gtk_paint_focus (widget->style,
 			     tree_view->priv->bin_window,
 			     focus_rect_state,
-			     NULL,
+			     &event->area,
 			     widget,
 			     "treeview",
 			     0, tmp_y,
@@ -5102,10 +5143,15 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 	  if (GTK_WIDGET_HAS_FOCUS (column->button))
 	    {
 	      if (!column->resizable)
-		return TRUE;
+                {
+                  gtk_widget_error_bell (widget);
+                  return TRUE;
+                }
 
 	      if (event->keyval == GDK_Left || event->keyval == GDK_KP_Left)
 	        {
+                  gint old_width = column->resized_width;
+
 		  column->resized_width = MAX (column->resized_width,
 					       column->width);
 		  column->resized_width -= 2;
@@ -5121,12 +5167,19 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		    column->resized_width = MIN (column->resized_width, column->max_width);
 
 		  column->use_resized_width = TRUE;
-		  gtk_widget_queue_resize (widget);
+
+                  if (column->resized_width != old_width)
+                    gtk_widget_queue_resize (widget);
+                  else
+                    gtk_widget_error_bell (widget);
+
 		  return TRUE;
 		}
 	      else if (event->keyval == GDK_Right
                        || event->keyval == GDK_KP_Right)
 	        {
+                  gint old_width = column->resized_width;
+
 		  column->resized_width = MAX (column->resized_width,
 					       column->width);
 		  column->resized_width += 2;
@@ -5135,7 +5188,12 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		    column->resized_width = MIN (column->resized_width, column->max_width);
 
 		  column->use_resized_width = TRUE;
-		  gtk_widget_queue_resize (widget);
+
+                  if (column->resized_width != old_width)
+                    gtk_widget_queue_resize (widget);
+                  else
+                    gtk_widget_error_bell (widget);
+
 		  return TRUE;
 		}
 	    }
@@ -5171,6 +5229,8 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		  col = gtk_tree_view_get_drop_column (tree_view, column, DROP_RIGHT);
 		  if (col != (GtkTreeViewColumn *)0x1)
 		    gtk_tree_view_move_column_after (tree_view, column, col);
+                  else
+                    gtk_widget_error_bell (widget);
 		  return TRUE;
 		}
 	      else if (event->keyval == GDK_Home
@@ -5180,6 +5240,8 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		  col = gtk_tree_view_get_drop_column (tree_view, column, DROP_HOME);
 		  if (col != (GtkTreeViewColumn *)0x1)
 		    gtk_tree_view_move_column_after (tree_view, column, col);
+                  else
+                    gtk_widget_error_bell (widget);
 		  return TRUE;
 	        }
 	      else if (event->keyval == GDK_End || event->keyval == GDK_KP_End)
@@ -5188,6 +5250,8 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		  col = gtk_tree_view_get_drop_column (tree_view, column, DROP_END);
 		  if (col != (GtkTreeViewColumn *)0x1)
 		    gtk_tree_view_move_column_after (tree_view, column, col);
+                  else
+                    gtk_widget_error_bell (widget);
 		  return TRUE;
 		}
 	    }
@@ -5208,8 +5272,7 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 	  if (GTK_WIDGET_HAS_FOCUS (column->button))
 	    {
 	      if ((event->keyval == (rtl ? GDK_Right : GDK_Left)
-                   || event->keyval == (rtl ? GDK_KP_Right : GDK_KP_Left))
-                  && list->prev)
+                   || event->keyval == (rtl ? GDK_KP_Right : GDK_KP_Left)))
 	        {
 		  GList *tmp;
 
@@ -5218,7 +5281,10 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		      break;
 
 		  if (!tmp)
-		    return FALSE;
+                    {
+                      gtk_widget_error_bell (widget);
+                      return TRUE;
+                    }
 
 		  tree_view->priv->focus_column = GTK_TREE_VIEW_COLUMN (tmp->data);
 		  gtk_widget_grab_focus (tree_view->priv->focus_column->button);
@@ -5227,8 +5293,7 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		  return TRUE;
 		}
 	      else if ((event->keyval == (rtl ? GDK_Left : GDK_Right)
-                        || event->keyval == (rtl ? GDK_KP_Left : GDK_KP_Right))
-                       && list->next)
+                        || event->keyval == (rtl ? GDK_KP_Left : GDK_KP_Right)))
 	        {
 		  GList *tmp;
 
@@ -5237,7 +5302,10 @@ gtk_tree_view_key_press (GtkWidget   *widget,
 		      break;
 
 		  if (!tmp)
-		    return FALSE;
+                    {
+                      gtk_widget_error_bell (widget);
+                      return TRUE;
+                    }
 
 		  tree_view->priv->focus_column = GTK_TREE_VIEW_COLUMN (tmp->data);
 
@@ -5469,6 +5537,9 @@ validate_row (GtkTreeView *tree_view,
   gboolean draw_vgrid_lines, draw_hgrid_lines;
   gint focus_pad;
   gint grid_line_width;
+#ifdef MAEMO_CHANGES
+  gint separator_height;
+#endif /* MAEMO_CHANGES */
 
   /* double check the row needs validating */
   if (! GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_INVALID) &&
@@ -5488,6 +5559,9 @@ validate_row (GtkTreeView *tree_view,
 			"horizontal-separator", &horizontal_separator,
 			"vertical-separator", &vertical_separator,
 			"grid-line-width", &grid_line_width,
+#ifdef MAEMO_CHANGES
+			"separator-height", &separator_height,
+#endif /* MAEMO_CHANGES */
 			NULL);
   
   draw_vgrid_lines =
@@ -5534,7 +5608,11 @@ validate_row (GtkTreeView *tree_view,
 	  height = MAX (height, tree_view->priv->expander_size);
 	}
       else
+#ifdef MAEMO_CHANGES
+	height = separator_height + 2 * focus_pad;
+#else /* !MAEMO_CHANGES */
 	height = 2 + 2 * focus_pad;
+#endif /* !MAEMO_CHANGES */
 
       if (gtk_tree_view_is_expander_column (tree_view, column))
         {
@@ -6616,6 +6694,16 @@ drag_scan_timeout (gpointer data)
 #endif /* 0 */
 
 static void
+add_scroll_timeout (GtkTreeView *tree_view)
+{
+  if (tree_view->priv->scroll_timeout == 0)
+    {
+      tree_view->priv->scroll_timeout =
+	g_timeout_add (150, scroll_row_timeout, tree_view);
+    }
+}
+
+static void
 remove_scroll_timeout (GtkTreeView *tree_view)
 {
   if (tree_view->priv->scroll_timeout != 0)
@@ -7161,10 +7249,9 @@ gtk_tree_view_drag_motion (GtkWidget        *widget,
           tree_view->priv->open_dest_timeout =
             g_timeout_add (AUTO_EXPAND_TIMEOUT, open_row_timeout, tree_view);
         }
-      else if (tree_view->priv->scroll_timeout == 0)
+      else
         {
-	  tree_view->priv->scroll_timeout =
-	    g_timeout_add (150, scroll_row_timeout, tree_view);
+	  add_scroll_timeout (tree_view);
 	}
 
       if (target == gdk_atom_intern_static_string ("GTK_TREE_MODEL_ROW"))
@@ -8105,6 +8192,27 @@ gtk_tree_view_row_changed (GtkTreeModel *model,
 
   if (tree == NULL)
     goto done;
+
+#ifdef MAEMO_CHANGES
+  /* Unselect the row if it just became insensitive */
+  if (!_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+					      node, path)
+      && gtk_tree_row_reference_valid (tree_view->priv->cursor))
+    {
+      GtkTreePath *cursor_path;
+
+      cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
+      if (! gtk_tree_path_compare (path, cursor_path))
+        {
+	  gtk_tree_row_reference_free (tree_view->priv->cursor);
+	  tree_view->priv->cursor = NULL;
+	}
+
+      gtk_tree_selection_unselect_path (tree_view->priv->selection, path);
+
+      gtk_tree_path_free (cursor_path);
+    }
+#endif /* MAEMO_CHANGES */
 
   if (tree_view->priv->fixed_height_mode
       && tree_view->priv->fixed_height >= 0)
@@ -9456,7 +9564,37 @@ gtk_tree_view_focus_to_cursor (GtkTreeView *tree_view)
 	  g_list_free (selected_rows);
         }
       else
+#ifndef MAEMO_CHANGES
 	cursor_path = gtk_tree_path_new_first ();
+#else /* MAEMO_CHANGES */
+        {
+	  GtkRBTree *tree;
+	  GtkRBNode *node;
+
+	  /* Make sure the row we are about to place the cursor on
+	   * is sensitive.
+	   */
+	  cursor_path = gtk_tree_path_new_first ();
+	  _gtk_tree_view_find_node (tree_view, cursor_path, &tree, &node);
+
+	  while (node &&
+	         !_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+							 node, cursor_path))
+	    {
+	      _gtk_rbtree_next_full (tree, node, &tree, &node);
+
+	      if (node)
+	        {
+		  if (cursor_path)
+		    gtk_tree_path_free (cursor_path);
+
+		  cursor_path = _gtk_tree_view_find_path (tree_view, tree, node);
+		}
+	    }
+
+	  /* FIXME: this fails for views without sensitive items ... */
+	}
+#endif /* MAEMO_CHANGES */
 
       gtk_tree_row_reference_free (tree_view->priv->cursor);
       tree_view->priv->cursor = NULL;
@@ -9493,6 +9631,7 @@ gtk_tree_view_move_cursor_up_down (GtkTreeView *tree_view,
   GtkRBTree *new_cursor_tree = NULL;
   GtkRBNode *new_cursor_node = NULL;
   GtkTreePath *cursor_path = NULL;
+  gboolean grab_focus = TRUE;
 
   if (! GTK_WIDGET_HAS_FOCUS (tree_view))
     return;
@@ -9528,6 +9667,40 @@ gtk_tree_view_move_cursor_up_down (GtkTreeView *tree_view,
 			       &new_cursor_tree, &new_cursor_node);
     }
 
+#ifdef MAEMO_CHANGES
+  if (new_cursor_node)
+    cursor_path = _gtk_tree_view_find_path (tree_view,
+					    new_cursor_tree, new_cursor_node);
+  else
+    cursor_path = NULL;
+
+  while (new_cursor_node &&
+         !_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+						 new_cursor_node,
+						 cursor_path))
+    {
+      if (count == -1)
+	_gtk_rbtree_prev_full (new_cursor_tree, new_cursor_node,
+			       &new_cursor_tree, &new_cursor_node);
+      else
+	_gtk_rbtree_next_full (new_cursor_tree, new_cursor_node,
+			       &new_cursor_tree, &new_cursor_node);
+
+      if (new_cursor_node)
+        {
+	  if (cursor_path)
+	    gtk_tree_path_free (cursor_path);
+
+	  cursor_path = _gtk_tree_view_find_path (tree_view,
+				 		  new_cursor_tree,
+						  new_cursor_node);
+	}
+    }
+
+  if (cursor_path)
+    gtk_tree_path_free (cursor_path);
+#endif /* MAEMO_CHANGES */
+
   /*
    * If the list has only one item and multi-selection is set then select
    * the row.
@@ -9562,9 +9735,32 @@ gtk_tree_view_move_cursor_up_down (GtkTreeView *tree_view,
   else
     {
       gtk_tree_view_clamp_node_visible (tree_view, cursor_tree, cursor_node);
+
+      if (!tree_view->priv->shift_pressed)
+        {
+          if (! gtk_widget_keynav_failed (GTK_WIDGET (tree_view),
+                                          count < 0 ?
+                                          GTK_DIR_UP : GTK_DIR_DOWN))
+            {
+              GtkWidget *toplevel = gtk_widget_get_toplevel (GTK_WIDGET (tree_view));
+
+              if (toplevel)
+                gtk_widget_child_focus (toplevel,
+                                        count < 0 ?
+                                        GTK_DIR_TAB_BACKWARD :
+                                        GTK_DIR_TAB_FORWARD);
+
+              grab_focus = FALSE;
+            }
+        }
+      else
+        {
+          gtk_widget_error_bell (GTK_WIDGET (tree_view));
+        }
     }
 
-  gtk_widget_grab_focus (GTK_WIDGET (tree_view));
+  if (grab_focus)
+    gtk_widget_grab_focus (GTK_WIDGET (tree_view));
 }
 
 static void
@@ -9573,29 +9769,35 @@ gtk_tree_view_move_cursor_page_up_down (GtkTreeView *tree_view,
 {
   GtkRBTree *cursor_tree = NULL;
   GtkRBNode *cursor_node = NULL;
+  GtkTreePath *old_cursor_path = NULL;
   GtkTreePath *cursor_path = NULL;
   gint y;
   gint window_y;
   gint vertical_separator;
+#ifdef MAEMO_CHANGES
+  GtkRBTree *start_cursor_tree = NULL;
+  GtkRBNode *start_cursor_node = NULL;
+#endif /* MAEMO_CHANGES */
 
   if (! GTK_WIDGET_HAS_FOCUS (tree_view))
     return;
 
   if (gtk_tree_row_reference_valid (tree_view->priv->cursor))
-    cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
+    old_cursor_path = gtk_tree_row_reference_get_path (tree_view->priv->cursor);
   else
     /* This is sorta weird.  Focus in should give us a cursor */
     return;
 
   gtk_widget_style_get (GTK_WIDGET (tree_view), "vertical-separator", &vertical_separator, NULL);
-  _gtk_tree_view_find_node (tree_view, cursor_path,
+  _gtk_tree_view_find_node (tree_view, old_cursor_path,
 			    &cursor_tree, &cursor_node);
 
-  gtk_tree_path_free (cursor_path);
-
   if (cursor_tree == NULL)
-    /* FIXME: we lost the cursor.  Should we try to get one? */
-    return;
+    {
+      /* FIXME: we lost the cursor.  Should we try to get one? */
+      gtk_tree_path_free (old_cursor_path);
+      return;
+    }
   g_return_if_fail (cursor_node != NULL);
 
   y = _gtk_rbtree_node_find_offset (cursor_tree, cursor_node);
@@ -9608,8 +9810,80 @@ gtk_tree_view_move_cursor_page_up_down (GtkTreeView *tree_view,
 
   y -= _gtk_rbtree_find_offset (tree_view->priv->tree, y, &cursor_tree, &cursor_node);
   cursor_path = _gtk_tree_view_find_path (tree_view, cursor_tree, cursor_node);
+
+#ifndef MAEMO_CHANGES
   g_return_if_fail (cursor_path != NULL);
+#else /* MAEMO_CHANGES */
+  start_cursor_tree = cursor_tree;
+  start_cursor_node = cursor_node;
+
+  while (cursor_node &&
+         !_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+						 cursor_node,
+						 cursor_path))
+    {
+      if (count == -1)
+	_gtk_rbtree_prev_full (cursor_tree, cursor_node,
+			       &cursor_tree, &cursor_node);
+      else
+	_gtk_rbtree_next_full (cursor_tree, cursor_node,
+			       &cursor_tree, &cursor_node);
+
+      if (cursor_path)
+	gtk_tree_path_free (cursor_path);
+
+      if (cursor_node)
+	cursor_path = _gtk_tree_view_find_path (tree_view,
+						cursor_tree,
+						cursor_node);
+      else
+	cursor_path = NULL;
+    }
+
+  if (cursor_path == NULL)
+    {
+      /* It looks like we reached the end of the view without finding
+       * a sensitive row.  We will step backwards to find the last
+       * sensitive row.
+       */
+      cursor_tree = start_cursor_tree;
+      cursor_node = start_cursor_node;
+      cursor_path = _gtk_tree_view_find_path (tree_view, cursor_tree, cursor_node);
+
+      while (cursor_node &&
+	     !_gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+						     cursor_node,
+						     cursor_path))
+        {
+	  if (count == -1)
+	    _gtk_rbtree_next_full (cursor_tree, cursor_node,
+				   &cursor_tree, &cursor_node);
+	  else
+	    _gtk_rbtree_prev_full (cursor_tree, cursor_node,
+				   &cursor_tree, &cursor_node);
+
+	  if (cursor_path)
+	    gtk_tree_path_free (cursor_path);
+
+	  if (cursor_node)
+	    cursor_path = _gtk_tree_view_find_path (tree_view,
+						    cursor_tree,
+						    cursor_node);
+	  else
+	    cursor_path = NULL;
+	}
+    }
+
+  /* update y */
+  y = _gtk_rbtree_node_find_offset (cursor_tree, cursor_node);
+#endif /* MAEMO_CHANGES */
+
   gtk_tree_view_real_set_cursor (tree_view, cursor_path, TRUE, FALSE);
+
+  if (!gtk_tree_path_compare (old_cursor_path, cursor_path))
+    gtk_widget_error_bell (GTK_WIDGET (tree_view));
+
+  gtk_tree_path_free (old_cursor_path);
   gtk_tree_path_free (cursor_path);
 
   y -= window_y;
@@ -9706,6 +9980,11 @@ gtk_tree_view_move_cursor_left_right (GtkTreeView *tree_view,
 				        NULL);
       g_signal_emit (tree_view, tree_view_signals[CURSOR_CHANGED], 0);
     }
+  else
+    {
+      gtk_widget_error_bell (GTK_WIDGET (tree_view));
+    }
+
   gtk_tree_view_clamp_column_visible (tree_view, tree_view->priv->focus_column);
 }
 
@@ -9716,23 +9995,25 @@ gtk_tree_view_move_cursor_start_end (GtkTreeView *tree_view,
   GtkRBTree *cursor_tree;
   GtkRBNode *cursor_node;
   GtkTreePath *path;
+  GtkTreePath *old_path;
 
   if (! GTK_WIDGET_HAS_FOCUS (tree_view))
     return;
 
   g_return_if_fail (tree_view->priv->tree != NULL);
 
+  gtk_tree_view_get_cursor (tree_view, &old_path, NULL);
+
+  cursor_tree = tree_view->priv->tree;
+  cursor_node = cursor_tree->root;
+
   if (count == -1)
     {
-      cursor_tree = tree_view->priv->tree;
-      cursor_node = cursor_tree->root;
       while (cursor_node && cursor_node->left != cursor_tree->nil)
 	cursor_node = cursor_node->left;
     }
   else
     {
-      cursor_tree = tree_view->priv->tree;
-      cursor_node = cursor_tree->root;
       do
 	{
 	  while (cursor_node && cursor_node->right != cursor_tree->nil)
@@ -9747,7 +10028,17 @@ gtk_tree_view_move_cursor_start_end (GtkTreeView *tree_view,
     }
 
   path = _gtk_tree_view_find_path (tree_view, cursor_tree, cursor_node);
-  gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
+
+  if (gtk_tree_path_compare (old_path, path))
+    {
+      gtk_tree_view_real_set_cursor (tree_view, path, TRUE, TRUE);
+    }
+  else
+    {
+      gtk_widget_error_bell (GTK_WIDGET (tree_view));
+    }
+
+  gtk_tree_path_free (old_path);
   gtk_tree_path_free (path);
 }
 
@@ -13891,28 +14182,36 @@ gtk_tree_view_search_key_press_event (GtkWidget *widget,
   /* select previous matching iter */
   if (event->keyval == GDK_Up || event->keyval == GDK_KP_Up)
     {
-      gtk_tree_view_search_move (widget, tree_view, TRUE);
+      if (!gtk_tree_view_search_move (widget, tree_view, TRUE))
+        gtk_widget_error_bell (widget);
+
       retval = TRUE;
     }
 
   if (((event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == (GDK_CONTROL_MASK | GDK_SHIFT_MASK))
       && (event->keyval == GDK_g || event->keyval == GDK_G))
     {
-      gtk_tree_view_search_move (widget, tree_view, TRUE);
+      if (!gtk_tree_view_search_move (widget, tree_view, TRUE))
+        gtk_widget_error_bell (widget);
+
       retval = TRUE;
     }
 
   /* select next matching iter */
   if (event->keyval == GDK_Down || event->keyval == GDK_KP_Down)
     {
-      gtk_tree_view_search_move (widget, tree_view, FALSE);
+      if (!gtk_tree_view_search_move (widget, tree_view, FALSE))
+        gtk_widget_error_bell (widget);
+
       retval = TRUE;
     }
 
   if (((event->state & (GDK_CONTROL_MASK | GDK_SHIFT_MASK)) == GDK_CONTROL_MASK)
       && (event->keyval == GDK_g || event->keyval == GDK_G))
     {
-      gtk_tree_view_search_move (widget, tree_view, FALSE);
+      if (!gtk_tree_view_search_move (widget, tree_view, FALSE))
+        gtk_widget_error_bell (widget);
+
       retval = TRUE;
     }
 
@@ -13930,7 +14229,10 @@ gtk_tree_view_search_key_press_event (GtkWidget *widget,
   return retval;
 }
 
-static void
+/*  this function returns FALSE if there is a search string but
+ *  nothing was found, and TRUE otherwise.
+ */
+static gboolean
 gtk_tree_view_search_move (GtkWidget   *window,
 			   GtkTreeView *tree_view,
 			   gboolean     up)
@@ -13945,15 +14247,17 @@ gtk_tree_view_search_move (GtkWidget   *window,
 
   text = gtk_entry_get_text (GTK_ENTRY (tree_view->priv->search_entry));
 
-  g_return_if_fail (text != NULL);
+  g_return_val_if_fail (text != NULL, FALSE);
+
+  len = strlen (text);
 
   if (up && tree_view->priv->selected_iter == 1)
-    return;
+    return strlen (text) < 1;
 
   len = strlen (text);
 
   if (len < 1)
-    return;
+    return TRUE;
 
   model = gtk_tree_view_get_model (tree_view);
   selection = gtk_tree_view_get_selection (tree_view);
@@ -13961,7 +14265,7 @@ gtk_tree_view_search_move (GtkWidget   *window,
   /* search */
   gtk_tree_selection_unselect_all (selection);
   if (!gtk_tree_model_get_iter_first (model, &iter))
-    return;
+    return TRUE;
 
   ret = gtk_tree_view_search_iter (model, selection, &iter, text,
 				   &count, up?((tree_view->priv->selected_iter) - 1):((tree_view->priv->selected_iter + 1)));
@@ -13970,6 +14274,7 @@ gtk_tree_view_search_move (GtkWidget   *window,
     {
       /* found */
       tree_view->priv->selected_iter += up?(-1):(1);
+      return TRUE;
     }
   else
     {
@@ -13979,6 +14284,7 @@ gtk_tree_view_search_move (GtkWidget   *window,
       gtk_tree_view_search_iter (model, selection,
 				 &iter, text,
 				 &count, tree_view->priv->selected_iter);
+      return FALSE;
     }
 }
 
@@ -14747,6 +15053,41 @@ gtk_tree_view_set_enable_tree_lines (GtkTreeView *tree_view,
       g_object_notify (G_OBJECT (tree_view), "enable-tree-lines");
     }
 }
+
+#ifdef MAEMO_CHANGES
+static gboolean
+gtk_tree_view_tap_and_hold_query (GtkWidget *widget,
+				  GdkEvent  *event)
+{
+  GtkTreeView *tree_view = GTK_TREE_VIEW (widget);
+  GtkTreePath *path;
+  GtkRBTree *tree = NULL;
+  GtkRBNode *node = NULL;
+  gdouble x, y;
+  gint new_y;
+  gboolean sensitive;
+
+  if (!tree_view->priv->tree)
+    return FALSE;
+
+  if (!gdk_event_get_coords (event, &x, &y))
+    return FALSE;
+
+  new_y = TREE_WINDOW_Y_TO_RBTREE_Y (tree_view, y);
+  if (new_y < 0)
+    new_y = 0;
+  _gtk_rbtree_find_offset (tree_view->priv->tree, new_y, &tree, &node);
+  if (node == NULL)
+    return TRUE;
+
+  path = _gtk_tree_view_find_path (tree_view, tree, node);
+  sensitive = _gtk_tree_selection_row_is_selectable (tree_view->priv->selection,
+                                                     node, path);
+  gtk_tree_path_free (path);
+
+  return !sensitive;
+}
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_TREE_VIEW_C__
 #include "gtkaliasdef.c"

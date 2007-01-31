@@ -4720,7 +4720,7 @@ gtk_window_key_release_event (GtkWidget   *widget,
 
   /* Chain up, invokes binding set */
   if (!handled)
-    handled = GTK_WIDGET_CLASS (gtk_window_parent_class)->key_press_event (widget, event);
+    handled = GTK_WIDGET_CLASS (gtk_window_parent_class)->key_release_event (widget, event);
 
   return handled;
 }
@@ -7849,6 +7849,20 @@ gtk_window_set_default_icon_from_file (const gchar *filename,
 }
 
 #endif
+
+#ifdef MAEMO_CHANGES
+
+GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window )
+{
+  return NULL;
+
+}
+
+void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget )
+{
+}
+
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_WINDOW_C__
 #include "gtkaliasdef.c"

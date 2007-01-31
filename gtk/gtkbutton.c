@@ -515,6 +515,12 @@ gtk_button_init (GtkButton *button)
   priv->align_set = 0;
   priv->image_is_stock = TRUE;
   priv->image_position = GTK_POS_LEFT;
+
+#ifdef MAEMO_CHANGES
+  g_object_set (G_OBJECT (button),
+		"tap-and-hold-state", GTK_STATE_ACTIVE,
+		NULL);
+#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -2053,6 +2059,42 @@ gtk_button_get_image_position (GtkButton *button)
   
   return priv->image_position;
 }
+
+
+#ifdef MAEMO_CHANGES
+
+const gchar *osso_gtk_button_attach_details [OSSO_GTK_BUTTON_ATTACH_ENUM_END] =
+  { "osso_button",
+    "osso_button_n",
+    "osso_button_e",
+    "osso_button_ne",
+    "osso_button_s",
+    "osso_button_ns",
+    "osso_button_es",
+    "osso_button_nes",
+    "osso_button_w",
+    "osso_button_nw",
+    "osso_button_ew",
+    "osso_button_new",
+    "osso_button_sw",
+    "osso_button_nsw",
+    "osso_button_esw",
+    "osso_button_nesw",
+  };
+
+void
+hildon_gtk_button_set_depressed (GtkButton *button,
+                                 gboolean   depressed)
+{
+}
+
+void
+osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,
+                                              OssoGtkButtonAttachFlags flags)
+{
+}
+
+#endif /* MAEMO_CHANGES */
 
 
 #define __GTK_BUTTON_C__
