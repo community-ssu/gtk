@@ -1,0 +1,19 @@
+#######################################
+# GtkScrolledWindow
+#######################################
+
+style "osso-scrolledwindow"
+{
+
+  GtkScrolledWindow::scrollbar-spacing = 6
+
+}
+class "GtkScrolledWindow" style "osso-scrolledwindow"
+
+style "osso-special-scrolledwindow"
+{
+	GtkScrolledWindow::scrollbar-dislocation = 1
+}
+
+widget_class "*.GtkScrolledWindow" style "osso-special-scrolledwindow"
+widget_class "GtkDialog.GtkVBox.GtkScrolledWindow" style "osso-special-scrolledwindow"

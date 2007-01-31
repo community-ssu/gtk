@@ -1,0 +1,8 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+pkgdatadir=@datadir@/@PACKAGE@/
+
+Name: @PACKAGE@
+Description: Hildon theme layout version 4
+Version: @VERSION@

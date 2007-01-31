@@ -1,0 +1,65 @@
+####################################################
+# GTK MENU TOOL BUTTON
+#
+# Copyright 2006 Nokia Oyj
+#
+# This file has the themeing of toolbar's menu
+# button.
+#
+# The choicelist version of combobox which only
+# allows selection, not edition is named GtkComboBox
+# and is actually just one big GtkButton that has text
+# inside it. Therefore one image per state is enough
+# for it.
+#
+# The combobox version that allows editing of the text
+# is named GtkComboBoxEntry and consists of two parts:
+# A GtkButton and GtkEntry. These have to be themed
+# separately.
+#
+# Additionally, when a combobox is in a toolbar,
+# it will use different graphics that show the arrow
+# pointing upwards.
+#
+####################################################
+
+
+####################################################
+#
+# Style for the menutoolbuttonarrow
+#
+####################################################
+
+style "osso-menutoolbuttonarrow" {
+
+    engine "sapwood" {
+        image {
+            function = FOCUS
+            file = "../images/qgn_plat_toolbar_menu_button_pressed.png"
+            state = ACTIVE
+        }
+        image {
+            function = FOCUS
+            file = "../images/qgn_plat_toolbar_menu_button_normal.png"
+        }
+        image {
+            function = BOX
+            file = "../images/qgn_plat_toolbar_menu_button_disabled.png"
+            state = INSENSITIVE
+        }
+        image {
+            function = BOX
+            file = "../images/qgn_plat_toolbar_menu_button_pressed.png"
+            state = ACTIVE
+        }
+        image {
+            function = BOX
+            file = "../images/qgn_plat_toolbar_menu_button_normal.png"
+        }
+        image {
+            function = TAB
+        }
+    }
+}
+
+widget "*.GtkMenuToolButton.GtkHBox.GtkToggleButton.GtkArrow" style "osso-menutoolbuttonarrow"

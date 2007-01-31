@@ -1,0 +1,17 @@
+Source: hildon-theme-layout-4
+Section: x11
+Priority: optional
+Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, hildon-theme-tools (>= 0.2.0)
+Standards-Version: 3.6.0
+
+Package: hildon-theme-layout-4
+Architecture: all
+Depends: hildon-theme-tools (>= 0.2.0)
+Description: A layout file for making themes for the maemo 4 platform
+ This package contains tools that can help you create a theme for
+ the maemo platform version 4.
+ .
+ All you need to do is create a
+ big template image and these tools will create a theme package
+ from it.

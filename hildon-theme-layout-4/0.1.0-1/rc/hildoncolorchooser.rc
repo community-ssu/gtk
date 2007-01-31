@@ -1,0 +1,42 @@
+style "colorchoosar"
+{
+  HildonColorChooser::outer-border = { 3, 3, 3, 3 }
+
+  HildonColorChooserHSV::inner-size = { 202, 202, 26, 18 }
+  HildonColorChooserHSV::graphic-border = { 3, 3, 3, 3 }
+
+
+}
+class "HildonColorChooser" style "colorchoosar"
+
+
+style "chooserdialog"
+{
+  HildonColorChooserDialogHSV::radio-sizes = { 26, 26, 0, 3 }
+  HildonColorChooserDialogHSV::container-sizes = { 18, 12, 6, 0 }
+
+  HildonColorChooserDialogHSV::num-buttons = { 8, 2, 8, 4 }
+
+  HildonColorChooserDialogHSV::defined-color0  = "#000000"
+  HildonColorChooserDialogHSV::defined-color1  = "#660000"
+  HildonColorChooserDialogHSV::defined-color2  = "#0000FF"
+  HildonColorChooserDialogHSV::defined-color3  = "#FF00FF"
+  HildonColorChooserDialogHSV::defined-color4  = "#006600"
+  HildonColorChooserDialogHSV::defined-color5  = "#666600"
+  HildonColorChooserDialogHSV::defined-color6  = "#666666"
+  HildonColorChooserDialogHSV::defined-color7  = "#FF0000"
+  HildonColorChooserDialogHSV::defined-color8  = "#00FFFF"
+  HildonColorChooserDialogHSV::defined-color9  = "#FFFFFF"
+  HildonColorChooserDialogHSV::defined-color10 = "#00FF00"
+  HildonColorChooserDialogHSV::defined-color11 = "#FFFF00"
+
+  HildonColorChooserDialogHSV::defined-color12 = "#000066"
+  HildonColorChooserDialogHSV::defined-color13 = "#660066"
+  HildonColorChooserDialogHSV::defined-color14 = "#006666"
+  HildonColorChooserDialogHSV::defined-color15 = "#CCCCCC"
+
+  HildonColorChooserDialogHSV::default-color = "#ffffff"
+
+
+}
+class "HildonColorChooserDialog" style "chooserdialog"
