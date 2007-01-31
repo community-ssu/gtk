@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-layout-4, 4.0.0)
+AM_INIT_AUTOMAKE(hildon-theme-layout-4, 0.1.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
@@ -9,7 +9,7 @@ PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.2.0)
 
 AC_OUTPUT([Makefile                             \
 	   rc/Makefile                          \
-           pkgconfig/hildon-theme-layout-3.pc   \
+           pkgconfig/hildon-theme-layout-4.pc   \
            pkgconfig/Makefile                   \
            data/Makefile                        \
            data/bundle.ini])

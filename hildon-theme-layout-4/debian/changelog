@@ -1,7 +1,6 @@
-hildon-theme-layout-4 (4.0.0-1) unstable; urgency=low
+hildon-theme-layout-4 (0.1.0-1) unstable; urgency=low
 
-  * Unreleased.
   * Copied from hildon-theme-layout-3.
 
- -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 08 Dec 2006 15:00:00 +0300
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 31 Jan 2006 10:00:00 +0300
 
