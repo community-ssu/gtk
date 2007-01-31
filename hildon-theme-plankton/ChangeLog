@@ -1,5 +1,15 @@
 2007-01-31  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[4.0.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* template/Makefile.am: Branching out for 4.
+
+2007-01-31  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	[3.1.0-1 release]
 
 	* configure.ac:

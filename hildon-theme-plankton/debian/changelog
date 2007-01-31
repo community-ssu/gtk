@@ -1,3 +1,9 @@
+hildon-theme-plankton (4.0.0-1) unstable; urgency=low
+
+  * Branching our for 4'th release.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 30 January 2007 12:00:00 +0300
+
 hildon-theme-plankton (3.1.0-1) unstable; urgency=low
 
   * 'Final' art by tigert.
