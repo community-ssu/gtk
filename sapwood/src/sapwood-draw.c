@@ -991,6 +991,55 @@ draw_box_gap (GtkStyle       *style,
 }
 
 static void
+draw_expander (GtkStyle        *style,
+               GdkWindow       *window,
+               GtkStateType     state,
+               GdkRectangle    *area,
+               GtkWidget       *widget,
+               const gchar     *detail,
+               gint             center_x,
+               gint             center_y,
+               GtkExpanderStyle expander_style)
+{
+  ThemeMatchData match_data;
+  gint expander_size;
+
+  g_return_if_fail(style != NULL);
+  g_return_if_fail(window != NULL);
+
+  /* Reusing the arrow theming here as it's flexible enough (almost, we do lose
+   * the intermediate states.) It also allows us to use existing gtkrc.
+   * XXX Might want to introduce proper keywords for expanders some day.
+   */
+
+  gtk_widget_style_get (widget, "expander-size", &expander_size, NULL);
+
+  match_data.function = TOKEN_D_ARROW;
+  match_data.detail = (gchar *)detail;
+  match_data.flags = THEME_MATCH_STATE | THEME_MATCH_ARROW_DIRECTION;
+  match_data.state = state;
+
+  switch (expander_style)
+    {
+    case GTK_EXPANDER_COLLAPSED:
+    case GTK_EXPANDER_SEMI_COLLAPSED:
+      match_data.arrow_direction = GTK_ARROW_RIGHT;
+      break;
+    case GTK_EXPANDER_EXPANDED:
+    case GTK_EXPANDER_SEMI_EXPANDED:
+      match_data.arrow_direction = GTK_ARROW_DOWN;
+      break;
+    default:
+      g_return_if_reached ();
+    }
+
+  if (!draw_simple_image (style, window, area, widget, &match_data, TRUE,
+                          center_x - expander_size/2, center_y - expander_size/2, expander_size, expander_size))
+    parent_class->draw_expander (style, window, state, area, widget, detail,
+                                 center_x, center_y, expander_style);
+}
+
+static void
 draw_extension (GtkStyle       *style,
 		GdkWindow      *window,
 		GtkStateType    state,
@@ -1242,4 +1291,5 @@ sapwood_style_class_init (SapwoodStyleClass *klass)
   style_class->draw_slider = draw_slider;
   style_class->draw_handle = draw_handle;
   style_class->render_icon = render_icon;
+  style_class->draw_expander = draw_expander;
 }

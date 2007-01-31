@@ -1,3 +1,9 @@
+2007-01-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c (draw_expander): Added to handle painting
+	GtkExpander and treeview row expanders. Reuses arrow theming rules for
+	simplicity.
+
 2007-01-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* === Release 2.91.1 ===
