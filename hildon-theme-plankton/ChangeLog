@@ -1,3 +1,10 @@
+2007-01-31  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[3.1.0-1 release]
+
+	* configure.ac:
+	* debian/changelog: Updating.
+
 2007-01-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: the new shiny hopefully-it-works template!
