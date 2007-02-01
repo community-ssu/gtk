@@ -12,7 +12,7 @@ style "osso-listview" = "osso-logical-colors"
   GtkTreeView::expander-indent = 8
   GtkTreeView::horizontal-separator = 6
   GtkTreeView::vertical-separator = 2	  
-  GtkTreeView::hildonlike = 1
+  GtkTreeView::row-ending-details = 1
   GtkTreeView::passive_focus = 1
   GtkTreeView::separator-height = 15
 
@@ -163,11 +163,12 @@ style "osso-listview" = "osso-logical-colors"
         overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
+    # selection #######################################################
     image
     {
       function = FLAT_BOX
       state    = SELECTED
-      detail = "left"
+      detail   = "*_start"
       file = "../images/qgn_plat_focus_left_selection.png"
       border = { 2, 0, 2, 2 }
       stretch = TRUE
@@ -176,7 +177,7 @@ style "osso-listview" = "osso-logical-colors"
     {
       function = FLAT_BOX
       state    = SELECTED
-      detail = "middle"
+      detail   = "*_middle"
       file = "../images/qgn_plat_focus_middle_selection.png"
       border = { 0, 0, 2, 2 }
       stretch = TRUE
@@ -185,7 +186,7 @@ style "osso-listview" = "osso-logical-colors"
     {
       function = FLAT_BOX
       state    = SELECTED
-      detail = "right"
+      detail = "*_end"
       file = "../images/qgn_plat_focus_right_selection.png"
       border = { 0, 2, 2, 2 }
       stretch = TRUE
@@ -194,43 +195,91 @@ style "osso-listview" = "osso-logical-colors"
     {
       function = FLAT_BOX
       state    = SELECTED
-      detail = "full"
       file = "../images/qgn_plat_focus_selection.png"
       border = { 2, 2, 2, 2 }
       stretch = TRUE
     }
+    # active focus ####################################################
     image
     {
-      function = FOCUS
-      detail = "left"
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = NONE
+      detail   = "*_start"
       file = "../images/qgn_plat_focus_left_active.png"
       border = { 2, 0, 2, 2 }
       stretch = TRUE
     }
     image
     {
-      function = FOCUS
-      detail = "middle"
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = NONE
+      detail   = "*_middle"
       file = "../images/qgn_plat_focus_middle_active.png"
       border = { 0, 0, 2, 2 }
       stretch = TRUE
     }
     image
     {
-      function = FOCUS
-      detail = "right"
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = NONE
+      detail   = "*_end"
       file = "../images/qgn_plat_focus_right_active.png"
       border = { 0, 2, 2, 2 }
       stretch = TRUE
     }
     image
     {
-      function = FOCUS
-      detail = "full"
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = NONE
       file = "../images/qgn_plat_focus_active.png"
       border = { 2, 2, 2, 2 }
       stretch = TRUE
     }
+    # passive focus ###################################################
+    image
+    {
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = OUT
+      detail   = "*_start"
+      file = "../images/qgn_plat_focus_left_passive.png"
+      border = { 2, 0, 2, 2 }
+      stretch = TRUE
+    }		
+    image
+    {
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = OUT
+      detail   = "*_middle"
+      file = "../images/qgn_plat_focus_middle_passive.png"
+      border = { 0, 0, 2, 2 }
+      stretch = TRUE
+    }		
+    image
+    {
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = OUT
+      detail   = "*_end"
+      file = "../images/qgn_plat_focus_right_passive.png"
+      border = { 0, 2, 2, 2 }
+      stretch = TRUE
+    }		
+    image
+    {
+      function = FLAT_BOX
+      state    = ACTIVE
+      shadow   = OUT
+      file = "../images/qgn_plat_focus_passive.png"
+      border = { 2, 2, 2, 2 }
+      stretch = TRUE
+    }		
+    # drop indicator ##################################################
     image
     {
       function = FOCUS
@@ -309,48 +358,3 @@ style "osso-treeviewcolumn-sortarrow" {
 	}
 }
 widget_class "*.GtkTreeView.GtkButton.GtkHBox.GtkArrow" style "osso-treeviewcolumn-sortarrow"
-
-
-################################
-# Passive focus to GtkTreeView
-################################
-
-style "osso-focus"
-{
-	engine "sapwood"
-	{
-		image
-		{
-			function = FOCUS
-                        detail = "left"
-			file = "../images/qgn_plat_focus_left_passive.png"
-			border = { 2, 0, 2, 2 }
-			stretch = TRUE
-		}		
-		image
-		{
-			function = FOCUS
-                        detail = "middle"
-			file = "../images/qgn_plat_focus_middle_passive.png"
-			border = { 0, 0, 2, 2 }
-			stretch = TRUE
-		}		
-		image
-		{
-			function = FOCUS
-                        detail = "right"
-			file = "../images/qgn_plat_focus_right_passive.png"
-			border = { 0, 2, 2, 2 }
-			stretch = TRUE
-		}		
-		image
-		{
-			function = FOCUS
-                        detail = "full"
-			file = "../images/qgn_plat_focus_passive.png"
-			border = { 2, 2, 2, 2 }
-			stretch = TRUE
-		}		
-	}
-}
-widget "hildon-focus" style "osso-focus"

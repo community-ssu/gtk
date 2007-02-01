@@ -914,7 +914,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = ACTIVE
-	detail	 = "osso_button_ns"
+	position = TOP, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_middle_pressed.png"
  	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -922,7 +922,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = INSENSITIVE
-	detail	 = "osso_button_ns"
+	position = TOP, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_middle_disabled.png"
  	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -930,14 +930,14 @@ style "osso-dialogbutton" {
     image {
         function = BOX
         state    = SELECTED
-        detail   = "osso_button_ns"
+	position = TOP, BOTTOM
         file     = "../images/qgn_plat_dialog_button_middle_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
 	function = BOX
-	detail	 = "osso_button_ns"
+	position = TOP, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_middle_normal.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -945,14 +945,14 @@ style "osso-dialogbutton" {
     image {
         function = FOCUS
         state    = ACTIVE
-        detail   = "osso_button_ns"
+	position = TOP, BOTTOM
         file     = "../images/qgn_plat_dialog_button_middle_focused_pressed.png"
         border   = { 20, 20, 0, 0}
         stretch  = TRUE
     }
     image {
         function = FOCUS
-        detail   = "osso_button_ns"
+	position = TOP, BOTTOM
         file     = "../images/qgn_plat_dialog_button_middle_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
@@ -961,7 +961,7 @@ style "osso-dialogbutton" {
     image {
         function = BOX
         state    = ACTIVE
-	detail	 = "osso_button_nsw"
+	position = TOP, LEFT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_left_pressed.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -969,7 +969,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = INSENSITIVE
-	detail	 = "osso_button_nsw"
+	position = TOP, LEFT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_left_disabled.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -977,14 +977,14 @@ style "osso-dialogbutton" {
     image {
         function = BOX
         state    = SELECTED
-        detail   = "osso_button_nsw"
+	position = TOP, LEFT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_left_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
 	function = BOX
-	detail	 = "osso_button_nsw"
+	position = TOP, LEFT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_left_normal.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -992,14 +992,14 @@ style "osso-dialogbutton" {
     image {
         function = FOCUS
         state    = ACTIVE
-        detail   = "osso_button_nsw"
+	position = TOP, LEFT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_left_focused_pressed.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
         function = FOCUS
-        detail   = "osso_button_nsw"
+	position = TOP, LEFT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_left_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
@@ -1009,7 +1009,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = ACTIVE
-	detail	 = "osso_button_nes"
+	position = TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_right_pressed.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -1017,7 +1017,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = INSENSITIVE
-	detail	 = "osso_button_nes"
+	position = TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_right_disabled.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -1025,14 +1025,14 @@ style "osso-dialogbutton" {
     image {
         function = BOX
         state    = SELECTED
-        detail   = "osso_button_nes"
+	position = TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_right_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
 	function = BOX
-	detail	 = "osso_button_nes"
+	position = TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_right_normal.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -1040,14 +1040,14 @@ style "osso-dialogbutton" {
     image {
         function = FOCUS
         state    = ACTIVE
-        detail   = "osso_button_nes"
+	position = TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_right_focused_pressed.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
         function = FOCUS
-        detail   = "osso_button_nes"
+	position = TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_right_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
@@ -1056,7 +1056,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = ACTIVE
-	detail   = "osso_button_nesw"
+	position = LEFT, TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_alone_pressed.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -1064,7 +1064,7 @@ style "osso-dialogbutton" {
     image {
 	function = BOX
 	state    = INSENSITIVE
-	detail   = "osso_button_nesw"
+	position = LEFT, TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_alone_disabled.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -1072,14 +1072,14 @@ style "osso-dialogbutton" {
     image {
         function = BOX
         state    = SELECTED
-        detail   = "osso_button_nesw"
+	position = LEFT, TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_alone_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
 	function = BOX
-	detail   = "osso_button_nesw"
+	position = LEFT, TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_alone_normal.png"
   	border   = { 20, 20, 0, 0 }
 	stretch  = TRUE
@@ -1087,14 +1087,14 @@ style "osso-dialogbutton" {
     image {
         function = FOCUS
         state    = ACTIVE
-        detail   = "osso_button_nesw"
+	position = LEFT, TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_alone_focused_pressed.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
     }
     image {
         function = FOCUS
-        detail   = "osso_button_nesw"
+	position = LEFT, TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_alone_focused.png"
         border   = { 20, 20, 0, 0 }
         stretch  = TRUE
