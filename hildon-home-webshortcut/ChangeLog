@@ -1,5 +1,10 @@
 2007-02-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* plugin/hildon-home-webshortcut.c: Do not include
+	hildon-home-plugin.h which is gone
+
+2007-02-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* configure.ac: 3.0.1
 
 2007-02-01  Johan Bilien  <johan.bilien@nokia.com>

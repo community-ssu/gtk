@@ -53,7 +53,6 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <gconf/gconf-client.h>
 
-#include <hildon-home-plugin/hildon-home-plugin-interface.h>
 #include "hildon-widgets/hildon-file-chooser-dialog.h"
 #include <hildon-widgets/hildon-caption.h>
 #include <hildon-widgets/hildon-defines.h>
