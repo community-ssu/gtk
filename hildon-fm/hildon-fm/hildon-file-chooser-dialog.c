@@ -40,7 +40,6 @@
 #include "hildon-file-selection.h"
 #include "hildon-file-chooser-dialog.h"
 #include "hildon-file-system-private.h"
-#include <hildon-widgets/gtk-infoprint.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkbox.h>
 #include <gtk/gtkentry.h>
@@ -52,9 +51,9 @@
 #include <gtk/gtkimage.h>
 #include <gtk/gtklabel.h>
 #include <string.h>
-#include <hildon-widgets/hildon-caption.h>
-#include <hildon-widgets/hildon-defines.h>
-#include <hildon-widgets/hildon-banner.h>
+#include <hildon/hildon-caption.h>
+#include <hildon/hildon-defines.h>
+#include <hildon/hildon-banner.h>
 #include <libintl.h>
 #include <gdk/gdkx.h>
 #include <stdlib.h>
@@ -1100,7 +1099,7 @@ static void create_folder_callback(GtkFileSystemHandle *handle,
             message = _("sfil_ni_operation_failed");
 
         ULOG_ERR(error->message);
-        gtk_infoprint(GTK_WINDOW(self), message);
+        hildon_banner_show_information (GTK_WIDGET(self), NULL, message);
         hildon_file_chooser_dialog_select_text(self->priv);
         gtk_dialog_set_response_sensitive(dialog, GTK_RESPONSE_OK, TRUE);
     } else {
@@ -1220,11 +1219,9 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
 {
     HildonFileChooserDialog *self;
     HildonFileChooserDialogPrivate *priv;
-    GtkWindow *window;
 
     self = HILDON_FILE_CHOOSER_DIALOG(widget);
     priv = self->priv;
-    window = GTK_WINDOW(widget);
 
     switch (arg1) {
     case GTK_RESPONSE_OK:
@@ -1240,13 +1237,15 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                 priv->edited = FALSE;
                 hildon_file_chooser_dialog_do_autonaming(priv);
                 hildon_file_chooser_dialog_select_text(priv);
-                gtk_infoprint(window, HCS("ckdg_ib_enter_name"));
+                hildon_banner_show_information
+		  (widget, NULL, HCS("ckdg_ib_enter_name"));
             } else if (entry_text[0] == '.') {
 	        /* We don't allow files with a dot as the first character.
 		 */
                 hildon_file_chooser_dialog_select_text(priv);
 	        g_signal_stop_emission_by_name(widget, "response");
-		gtk_infoprint(window, _("sfil_ib_invalid_name_dot"));
+		hildon_banner_show_information
+		  (widget, NULL, _("sfil_ib_invalid_name_dot"));
 	    } else {
                 GString *illegals = check_illegal_characters(entry_text);
 
@@ -1259,7 +1258,7 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     msg = g_strdup_printf(
                               HCS("ckdg_ib_illegal_characters_entered"),
                               illegals->str);
-                    gtk_infoprint(window, msg);
+                    hildon_banner_show_information (widget, NULL, msg);
                     g_free(msg);
                     g_string_free(illegals, TRUE);
                 }
@@ -1276,8 +1275,8 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     {
                         g_signal_stop_emission_by_name(widget, "response");
                         hildon_file_chooser_dialog_select_text(priv);
-                        gtk_infoprintf(window, HCS("file_ib_name_too_long"), 
-                            path_length - self->priv->max_filename_length);
+                        hildon_banner_show_information
+			  (widget, NULL, HCS("file_ib_name_too_long"));
                     }
                     g_free(uri);
                 }
@@ -1888,7 +1887,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
                      priv);
     g_signal_connect(eventbox, "button-release-event",
                      G_CALLBACK(hildon_file_chooser_dialog_location_pressed), 
-                     self); 
+                     self);
     g_signal_connect(priv->action_button, "insensitive-press", 
                      G_CALLBACK(insensitive_button), self);
 

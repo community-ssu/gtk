@@ -46,9 +46,8 @@
 #include <libintl.h>
 
 #include "hildon-file-selection.h"
-#include <hildon-widgets/gtk-infoprint.h>
-#include <hildon-widgets/hildon-banner.h>
-#include <hildon-widgets/hildon-defines.h>
+#include <hildon/hildon-banner.h>
+#include <hildon/hildon-defines.h>
 
 #include "hildon-file-common-private.h"
 
@@ -1959,10 +1958,10 @@ static void thumbnail_data_func(GtkTreeViewColumn * tree_column,
      * So this is only for active cells */
     if (sensitive)  
     {
-      found1 = gtk_style_lookup_logical_color(GTK_WIDGET(data)->style, 
-                                              "DefaultTextColor", &color1);
-      found2 = gtk_style_lookup_logical_color(GTK_WIDGET(data)->style, 
-					      "SecondaryTextColor", &color2);
+      found1 = gtk_style_lookup_color(GTK_WIDGET(data)->style, 
+				      "DefaultTextColor", &color1);
+      found2 = gtk_style_lookup_color(GTK_WIDGET(data)->style, 
+				      "SecondaryTextColor", &color2);
 
       attrs = pango_attr_list_new();
       bytes1 = strlen(title);

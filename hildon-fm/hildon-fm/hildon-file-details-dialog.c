@@ -38,9 +38,10 @@
 #include <libintl.h>
 #include <libgnomevfs/gnome-vfs.h>
 
-#include <hildon-widgets/hildon-caption.h>
-#include <hildon-widgets/gtk-infoprint.h>
-#include <hildon-widgets/hildon-defines.h>
+#include <hildon/hildon-banner.h>
+#include <hildon/hildon-caption.h>
+#include <hildon/hildon-defines.h>
+
 #include "hildon-file-details-dialog.h"
 #include "hildon-file-system-model.h"
 
@@ -193,7 +194,8 @@ static void change_state(HildonFileDetailsDialog *self, gboolean readonly)
     }
 
     if (result != GNOME_VFS_OK)
-      gtk_infoprint(GTK_WINDOW(self), gnome_vfs_result_to_string(result));
+      hildon_banner_show_information (GTK_WIDGET (self), NULL,
+				      gnome_vfs_result_to_string (result));
     
     gnome_vfs_file_info_unref(info);
     g_free(uri);
