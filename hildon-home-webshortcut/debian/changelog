@@ -1,3 +1,11 @@
+hildon-home-webshortcut (3.0.1-1) unstable; urgency=low
+
+  * plugin/hhwsloader.c: Added hhws_register_type
+  * plugin/hildon-home-webshortcut.c: Add registration of the
+  hhwsloader type in the _load GTypeModule callback
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Feb 2007 17:49:10 +0200
+
 hildon-home-webshortcut (3.0.0-1) unstable; urgency=low
 
   * Released under the LGPL
