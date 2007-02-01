@@ -100,7 +100,7 @@ struct _HhwsPrivate {
   GConfClient      *gconf_client;
 };
 
-HD_DEFINE_PLUGIN (Hhws, hhws, HILDON_TYPE_HOME_APPLET)
+HD_DEFINE_PLUGIN_WITH_CODE (Hhws, hhws, HILDON_TYPE_HOME_APPLET, hhws_loader_register_type (module);)
 
 static void
 hhws_show_information_note (Hhws *hhws,

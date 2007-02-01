@@ -107,30 +107,35 @@ hhws_loader_error_quark (void)
   return g_quark_from_static_string ("hhws-loader-error-quark");
 }
 
+static GType loader_type = 0;
+
 GType hhws_loader_get_type(void)
 {
-  static GType loader_type = 0;
-
-  if (!loader_type) {
-    static const GTypeInfo loader_info = {
-      sizeof(HhwsLoaderClass),
-      NULL,       /* base_init */
-      NULL,       /* base_finalize */
-      (GClassInitFunc) hhws_loader_class_init,
-      NULL,       /* class_finalize */
-      NULL,       /* class_data */
-      sizeof(HhwsLoader),
-      0,  /* n_preallocs */
-      (GInstanceInitFunc) hhws_loader_init,
-    };
-
-    loader_type = g_type_register_static(G_TYPE_OBJECT,
-                                         "HhwsLoader",
-                                         &loader_info, 0);
-  }
   return loader_type;
 }
 
+void
+hhws_loader_register_type (GTypeModule *module)
+{
+  static const GTypeInfo loader_info = {
+    sizeof(HhwsLoaderClass),
+    NULL,       /* base_init */
+    NULL,       /* base_finalize */
+    (GClassInitFunc) hhws_loader_class_init,
+    NULL,       /* class_finalize */
+    NULL,       /* class_data */
+    sizeof (HhwsLoader),
+    0,  /* n_preallocs */
+    (GInstanceInitFunc) hhws_loader_init,
+    NULL
+  };
+
+  loader_type = g_type_module_register_type (module,
+                                             G_TYPE_OBJECT,
+                                             "HhwsLoader",
+                                             &loader_info,
+                                             0);
+}
 
 static void
 hhws_loader_class_init (HhwsLoaderClass *klass)

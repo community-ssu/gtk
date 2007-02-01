@@ -69,7 +69,8 @@ struct _HhwsLoaderClass {
 };
 
 
-GType hhws_loader_get_type (void);
+void            hhws_loader_register_type           (GTypeModule *module);
+GType           hhws_loader_get_type                (void);
 
 void            hhws_loader_set_uri                 (HhwsLoader *loader,
                                                      const gchar *uri);

@@ -1,3 +1,9 @@
+2007-02-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hhwsloader.c: Added hhws_register_type
+	* plugin/hildon-home-webshortcut.c: Add registration of the
+	hhwsloader type in the _load GTypeModule callback
+
 2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 3.0.0
