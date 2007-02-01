@@ -15,7 +15,7 @@
    sodipodi:version="0.32"
    inkscape:version="0.45+devel"
    version="1.0"
-   sodipodi:docbase="/sbhome/svn/hildon-theme-plankton/template"
+   sodipodi:docbase="/scratchbox/users/tigert/home/tigert/svn/hildon-theme-plankton/template"
    sodipodi:docname="template.svg"
    inkscape:export-filename="/sbhome/svn/hildon-theme-plankton/template/template.png"
    inkscape:export-xdpi="90"
@@ -5656,16 +5656,6 @@
        gradientTransform="translate(990,0)" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient19084"
-       id="linearGradient8213"
-       gradientUnits="userSpaceOnUse"
-       x1="3325"
-       y1="635"
-       x2="3325"
-       y2="620.99799"
-       gradientTransform="translate(990,0)" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient8080"
        id="linearGradient8215"
        gradientUnits="userSpaceOnUse"
@@ -7763,7 +7753,7 @@
        y1="68.84375"
        x2="5540.0957"
        y2="68.84375"
-       gradientTransform="translate(-1281,-13)" />
+       gradientTransform="translate(-1281,-12)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -7776,8 +7766,8 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="4696.5248"
-     inkscape:cy="703.59636"
+     inkscape:cx="5655.9118"
+     inkscape:cy="564.33814"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
      width="8000px"
@@ -7786,7 +7776,7 @@
      borderlayer="true"
      inkscape:showpageshadow="false"
      inkscape:window-width="1190"
-     inkscape:window-height="1090"
+     inkscape:window-height="1526"
      inkscape:window-x="0"
      inkscape:window-y="24"
      gridempspacing="5"
@@ -22137,7 +22127,7 @@
        sodipodi:type="star" />
     <path
        style="opacity:0.24867727;fill:none;fill-opacity:1;stroke:url(#linearGradient9128);stroke-width:1;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1"
-       d="M 5178.3125,84.5 C 5174.5125,84.5 5171.5,87.512428 5171.5,91.3125 L 5171.5,126.6875 C 5171.5,130.48756 5174.5125,133.5 5178.3125,133.5 C 5178.407,133.50153 5178.5012,133.51199 5178.5938,133.53125 L 5248.5625,147.1875 L 5248.5625,135.40625 C 5248.5231,135.27434 5248.5021,135.13764 5248.5,135 L 5248.5,96.3125 C 5248.5,90.90232 5252.9023,86.5 5258.3125,86.5 L 5564.8125,86.5 C 5570.5438,86.5 5574.4844,89.952841 5577.0312,94.625 C 5579.5781,99.29716 5581.0266,105.27648 5582.4688,111.15625 C 5583.9109,117.03602 5585.3545,122.82153 5587.5,126.96875 C 5589.6455,131.11597 5592.1798,133.5 5596.5,133.5 C 5689.6667,133.5 5874.5,133.5 5874.5,133.5 C 5879.1994,133.5 5882.2842,131.00855 5884.875,126.8125 C 5887.4658,122.61645 5889.3218,116.79184 5891.0312,110.90625 C 5892.7407,105.02066 5894.2771,99.07306 5896.5625,94.46875 C 5897.7052,92.16659 5899.0364,90.16521 5900.75,88.71875 C 5902.4636,87.27229 5904.6106,86.426646 5907.0312,86.5 C 5907.0314,86.5 6065.6921,86.500029 6068.5625,86.5 C 6068.5668,86.158702 6068.5891,85.843827 6068.5938,85.46875 C 6068.5998,84.984458 6068.5886,84.911597 6068.5938,84.5 L 5178.3125,84.5 z "
+       d="M 5178.3125,81.5 C 5174.5125,81.5 5171.5,87.512428 5171.5,91.3125 L 5171.5,126.6875 C 5171.5,130.48756 5174.5125,133.5 5178.3125,133.5 C 5178.407,133.50153 5178.5012,133.51199 5178.5938,133.53125 L 5248.5625,147.1875 L 5248.5625,135.40625 C 5248.5231,135.27434 5248.5021,135.13764 5248.5,135 L 5248.5,96.3125 C 5248.5,90.90232 5252.9023,86.5 5258.3125,86.5 L 5564.8125,86.5 C 5570.5438,86.5 5574.4844,89.952841 5577.0312,94.625 C 5579.5781,99.29716 5581.0266,105.27648 5582.4688,111.15625 C 5583.9109,117.03602 5585.3545,122.82153 5587.5,126.96875 C 5589.6455,131.11597 5592.1798,133.5 5596.5,133.5 C 5689.6667,133.5 5874.5,133.5 5874.5,133.5 C 5879.1994,133.5 5882.2842,131.00855 5884.875,126.8125 C 5887.4658,122.61645 5889.3218,116.79184 5891.0312,110.90625 C 5892.7407,105.02066 5894.2771,99.07306 5896.5625,94.46875 C 5897.7052,92.16659 5899.0364,90.16521 5900.75,88.71875 C 5902.4636,87.27229 5904.6106,86.426646 5907.0312,86.5 C 5907.0314,86.5 6065.6921,86.500029 6068.5625,86.5 C 6068.5668,86.158702 6068.5891,85.843827 6068.5938,85.46875 C 6068.5998,84.984458 6068.5886,81.911597 6068.5938,81.5 L 5178.3125,81.5 z "
        id="path9106"
        sodipodi:nodetypes="cccscccccccsssscssssscscc" />
     <rect
@@ -22332,26 +22322,6 @@
          id="path9324"
          sodipodi:nodetypes="cccc" />
     </g>
-    <path
-       sodipodi:nodetypes="ccscc"
-       id="path9383"
-       d="M 4283.8125,72.5 C 4283.8125,72.5 4282.5,133.5 4282.5,133.5 C 4282.5,133.5 4511.4645,140.49799 4593.5938,132.46875 C 4594.0733,132.42187 4596.0047,72.501207 4595.5938,72.5 L 4283.8125,72.5 z "
-       style="opacity:0.24867727;fill:none;fill-opacity:1;stroke:url(#linearGradient9385);stroke-width:1;stroke-miterlimit:4;stroke-dashoffset:0;stroke-opacity:1" />
-  </g>
-  <g
-     inkscape:groupmode="layer"
-     id="layer3"
-     inkscape:label="CutCoords"
-     style="opacity:0.50450451;display:none"
-     sodipodi:insensitive="true">
-    <image
-       y="0"
-       x="0"
-       id="image8339"
-       height="800"
-       width="8000"
-       sodipodi:absref="/sbhome/layout-gagarin.png"
-       xlink:href="/sbhome/layout-gagarin.png" />
   </g>
   <g
      inkscape:groupmode="layer"
