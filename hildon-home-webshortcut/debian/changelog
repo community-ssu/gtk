@@ -1,3 +1,9 @@
+hildon-home-webshortcut (3.0.1-2) unstable; urgency=low
+
+  * Added build-dep on libhildondesktop-dev 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Feb 2007 18:00:23 +0200
+
 hildon-home-webshortcut (3.0.1-1) unstable; urgency=low
 
   * plugin/hhwsloader.c: Added hhws_register_type
