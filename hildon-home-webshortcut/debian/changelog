@@ -1,0 +1,545 @@
+hildon-home-webshortcut (3.0.0-1) unstable; urgency=low
+
+  * Released under the LGPL
+
+  * Ported to hildon-desktop GTypeModule API
+  * Number of other cleanups
+
+  * plugin/hhws-l10n.h: Moved l10n to its own file
+
+  * Renamed to hildon-home-webshortcut
+
+  * data/*, plugin/*: re-organized sources
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 10 Jan 2007 18:50:01 +0200
+
+hildon-home-webshortcut (2.4.3-1) unstable; urgency=low
+
+  * hhivloader.c:
+    - _loader_load (): fixed an invalid free
+    - _loader_load_configuration (): set the uri after
+     loading the image name from gconf
+  * hildon-home-webshortcut.c: return the old
+    URI if the user didn't choose a new file
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 31 Oct 2006 15:33:38 +0200
+
+hildon-home-webshortcut (2.4.2-1) unstable; urgency=low
+
+  * hhivloader.c: Added a few sanity checks to avoid crashing
+    if the default from schemas could not be retrieved
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 30 Oct 2006 14:33:13 +0200
+
+hildon-home-webshortcut (2.4.1-1) unstable; urgency=low
+
+  * hildon-home-image-loader.c: set frame border to 0.
+  Fixes: NB#45077
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 26 Oct 2006 15:25:27 +0300
+
+hildon-home-webshortcut (2.4.0-1) unstable; urgency=low
+
+  * hhivloader.c:
+    - Use gconf to get the configuration
+    - Check also for internal mmc
+    - Save the image name (filename) because it will not
+      be preserved if the file is cached
+  * hildon-home-webshortcut.c: Big cleanup:
+    - Use Gconf to save/load configuration
+    - remove all global variables
+    - lots of coding style improvements
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 24 Oct 2006 19:45:02 +0300
+
+hildon-home-webshortcut (2.3.2-1) unstable; urgency=low
+
+  * hhivloader.c:
+    - fixed detection of local URIs:
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 19 Oct 2006 10:11:47 +0300
+
+hildon-home-webshortcut (2.3.1-1) unstable; urgency=low
+
+  * hhivloader.c:
+    - removed debug messages
+    - don't user gnome_vfs_is_local because it doesn't work. Fixes: NB#42999
+
+  * hildon-home-webshortcut.c: Fixed a Glib CRITICAL warning
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 11 Oct 2006 16:48:06 +0300
+
+hildon-home-webshortcut (2.3.0-1) unstable; urgency=low
+
+  * hhivloader.[ch]: Added external object to handle the loading and
+    cropping of pictures
+  * hildon-home-webshortcut.c: Use this new object (Fixes: NB#38811)
+
+  * hildon-home-webshortcut.c:
+    - Added note when the chosen file could not be opened (Fixes: NB#37550)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  2 Oct 2006 09:23:53 +0300
+
+hildon-home-webshortcut (2.2.5-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c:
+    - do not copy the picture if of the right size
+    - do not use BILINEAR interpolation (uses float)
+    - removed image_loaded variable, not really used
+    Fixes: NB#40712
+
+  * hildon-home-webshortcut.c:
+    - when picture is corrupted, close the pixbuf loader before destroying
+      it
+    - remove the memsaw handler. Fixes: NB#41003
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 25 Sep 2006 13:11:29 +0300
+
+hildon-home-webshortcut (2.2.4-2) unstable; urgency=low
+
+  * added hildon-home-webshortcut-dbg. Fixes: NB#40286 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 25 Sep 2006 12:41:37 +0300
+
+hildon-home-webshortcut (2.2.4-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c:
+    - fixed invalid free in deinitialize
+    - show the internal widgets in initialize
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 15 Sep 2006 15:07:57 +0300
+
+hildon-home-webshortcut (2.2.3-1) unstable; urgency=low
+
+  * Add separator to CSM (Closes NB#37549)
+  * Destroy the CSM with the rest of the applet
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 14 Aug 2006 13:38:56 +0300
+
+hildon-home-webshortcut (2.2.2-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Refresh the image after loading
+    (Closes NB#35616)
+
+  * hildon-home-webshortcut.c: Add sketch as an image MIME type
+    (Closes NB#33998)
+
+  * hildon-home-webshortcut.[ch]: Added "Settings..." menu entry
+    (Closes NB#34000)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  2 Aug 2006 14:24:19 +0300
+
+hildon-home-webshortcut (2.2.1-3) unstable; urgency=low
+
+  * Removed manual dependency on osso-ic-lib (Closes NB#34220) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 28 Jul 2006 10:39:17 +0300
+
+hildon-home-webshortcut (2.2.1-2) unstable; urgency=low
+
+  * Change dependency to correct localization package hildon-home-webshortcut-l10n-mr0 | hildon-home-webshortcut-l10n-mr  
+  * Fixes: NB#33752
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Thu, 29 Jun 2006 12:40:00 +0300
+
+hildon-home-webshortcut (2.2.1-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.[ch]:
+    - set correct default size
+    - use a themed frame
+
+  * hildon-home-webshortcut.c:
+    - If the URL does not contain ":", add http://
+    - Do not use AUTOCAPITALISATION on the URL entry
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 12 Jun 2006 16:57:17 +0300
+
+hildon-home-webshortcut (2.2.0-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Added GtkFrame around the image
+  * hildon-home-webshortcut.desktop: Declare as resizable
+    (Closes N#31135)
+
+  * hildon-home-webshortcut.c: Fix faulty "out-of-the-applet-release"
+    test (Closes N#30621)
+
+  * Display an error note when opening a corrupted image (Closes N#27011)
+  * Display an error note if the flash is full when saving the picture
+    (Closes N#29899)
+  * Check if the image file was opened correctly (Closes N#29909)
+
+  * hildon-home-webshortcut.c: Fixed the menu activation callback
+    signature
+
+  * hildon-home-webshortcut.[ch]: Implemented context-sensitive menu
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Jun 2006 19:20:04 +0300
+
+hildon-home-webshortcut (2.1.3-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Replaced old dbus-based launching of browser
+    with shiny osso_uri_open() (Closes N#27646)
+  * configure.ac, Makefile.am: Replaced dependency to browser-interface
+    with libossomime
+
+  * hildon-home-webshortcut.c:
+    - Made the response handler handle all the responses
+    - Stop the signal propagation when the URI was not filled, so the
+      dialog is not closed (Closes N#26406)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  9 May 2006 13:41:49 +0300
+
+hildon-home-webshortcut (2.1.2-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Fixed memory leak of a GtkSizeGroup
+  * hildon-home-webshortcut.c:
+    - Fixed memory leak of a string
+    - small cleanups
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 10 Apr 2006 13:51:55 +0300
+
+hildon-home-webshortcut (2.1.1-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.h: Fixed various L10n strings
+  * hildon-home-webshortcut.c: Use an infobanner instead of a note
+    dialog when no URL is specified (Closes N#24902)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  3 Apr 2006 15:10:59 +0300
+
+hildon-home-webshortcut (2.1.0-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Use a GtkImage instead of painting the
+    background of the event box (Closes N#24490)
+  * hildon-home-webshortcut.c: Made required changes to comply with
+    forgotten UI specifications (Replaced Image label with a combobox
+    that holds the original picture, in case the use would
+    ever like to restore it.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 27 Mar 2006 11:31:35 +0300
+
+hildon-home-webshortcut (2.0.4-1) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Don't reload the picture from the
+    file on each foreground() (Closes N#21213)
+  * hildon-home-webshortcut.c: Don't open the browser if the button is
+    released when the cursor has moved outside the applet (Closes N#20226)
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 20 Mar 2006 14:45:44 +0200
+
+hildon-home-webshortcut (2.0.3-1) unstable; urgency=low
+
+  * Added dependency to hildon-fm now required
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  9 Mar 2006 14:02:34 +0200
+
+hildon-home-webshortcut (2.0.2-1) unstable; urgency=low
+
+  * Fixed a crash when the default URL is used
+  * Changed display name in .desktop file
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 16 Feb 2006 17:30:53 +0200
+
+hildon-home-webshortcut (2.0.1-1) unstable; urgency=low
+
+  * Added .desktop file, required by the new home architecture
+  * Dependency on home-dev >= 2.4.5 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 15 Feb 2006 13:25:43 +0200
+
+hildon-home-webshortcut (2.0.0-1) unstable; urgency=low
+
+  * Fixed N#22140
+  * Updated version for IT-2006 branch
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  2 Feb 2006 17:46:00 +0200
+
+hildon-home-webshortcut (1.4.2-0) unstable; urgency=low
+
+  * Fixed N#21213 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 13 Jan 2006 11:06:43 +0200
+
+hildon-home-webshortcut (1.4.1-1) unstable; urgency=low
+
+  * Forgot to put dh_strip back
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  5 Jan 2006 15:31:11 +0200
+
+hildon-home-webshortcut (1.4.1-0) unstable; urgency=low
+
+  * Fixed #20226 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  5 Jan 2006 10:47:54 +0200
+
+hildon-home-webshortcut (1.4.0-0) unstable; urgency=low
+
+  * hildon-home-webshortcut.c: Fixed a number of small memory leaks.
+  * Closes #19570 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  9 Dec 2005 15:19:35 +0200
+
+hildon-home-webshortcut (1.3.0) unstable; urgency=low
+
+  * Patched bug N#19570 - Valgrind reported memory leaks in the home
+    image viewer plugin
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 18 Nov 2005 14:46:55 +0200
+
+hildon-home-webshortcut (1.2.0) unstable; urgency=low
+
+  * Raised version number and patched bug 19909
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue,  1 Nov 2005 11:09:11 +0200
+
+hildon-home-webshortcut (1.1.2-1) unstable; urgency=low
+
+  * added ChangeLog file to log software changes.
+  * debian/control: increased dependency on libosso-dev to 0.9.18
+  * previous change (N#20497) was not applied, applying.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 24 Oct 2005 11:41:44 +0300
+
+hildon-home-webshortcut (1.1.1) unstable; urgency=low
+
+  * Applied patch for N# 20497
+  * hildon-home-webshortcut.c:
+  - Laperie Andrei patch to add SAW (allocation watchdog facilities)
+  - osso-mem.h include added
+  - load_image_oom_cb(): out-of-memory callback added
+  - construct_webshortcut_image(): oom control added
+
+  * configure.ac
+  - changed libosso version requirement
+
+ -- Karoliina Salminen <karoliina.t.samlinen@nokia.com>  Fri, 14 Oct 2005 16:43:38 +0300
+
+hildon-home-webshortcut (1.1.0) unstable; urgency=low
+
+  * Raised version number to 1.1.0, preparing to next integration round
+  * Patched bug 19978
+
+ -- Karoliina Salminen <karoliina.t.samlinen@nokia.com>  Thu, 13 Oct 2005 17:44:18 +0300
+
+hildon-home-webshortcut (1.0.1) unstable; urgency=low
+
+  * Patched bug 19357 - Connection dialog failed to appear when tapped
+    on web shortcut
+
+  * hildon-home-webshortcut.c: get_iap_factory_setting():
+    - if readed IAP field is empty, free variable and return NULL
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 20 Sep 2005 15:01:09 +0300
+
+hildon-home-webshortcut (1.0.0) unstable; urgency=low
+
+  * Updated version to 1.0 main line. Complete for 770 first SW release.
+    Updated l10n package version dependencies.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Tue, 20 Sep 2005 11:44:26 +0300
+
+hildon-home-webshortcut (0.11.1) unstable; urgency=low
+
+  * Prepared the package ready for week 37 integration. Updated
+    changelog with more detailed description:
+  * hildon-home-webshortcut.h
+    - added 2 fields to be read from factory settings configure file
+  * hildon-home-webshortcut.c
+    - added 4 function declarations 
+  * hildon-home-webshortcut.c: (get_iap_factory_setting):
+    - added image and url reading and setting up files to correct funtionality
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 15 Sep 2005 17:08:49 +0300
+
+hildon-home-webshortcut (0.11.0) unstable; urgency=low
+
+  * Patched bug 17674. 
+  * Fixed factory settings problem which prevented
+    configuring factory image file for hildon-home-webshortcut (web
+    shortcut)
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu, 15 Sep 2005 16:39:31 +0300
+
+hildon-home-webshortcut (0.10.3) unstable; urgency=low
+
+  * Updated version again.
+
+ -- Karoliina Salminen <karoliina.t.samlinen@nokia.com>  Tue, 13 Sep 2005 14:17:02 +0300
+
+hildon-home-webshortcut (0.10.2) unstable; urgency=low
+
+  * Cleaned up the package a bit further
+
+ -- Karoliina Salminen <karoliina.t.samlinen@nokia.com>  Tue, 13 Sep 2005 14:14:25 +0300
+
+hildon-home-webshortcut (0.10.1) unstable; urgency=low
+
+  * Prepared package for week 37 integration round
+
+ -- Karoliina Salminen <karoliina.t.samlinen@nokia.com>  Tue, 13 Sep 2005 13:30:39 +0300
+
+hildon-home-webshortcut (0.10.0) unstable; urgency=low
+
+  * Updated debian/control point to version 3.1 of l10n files to correct
+    bug N#18129
+
+ -- Karoliina Salminen <karoliina.t.samlinen@nokia.com>  Tue, 13 Sep 2005 12:44:33 +0300
+
+hildon-home-webshortcut (0.9.10-1) unstable; urgency=low
+
+  * Recompiled with Scratchbox 0.9.8.2 for integration.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Fri, 19 Aug 2005 15:00:23 +0300
+
+hildon-home-webshortcut (0.9.10) unstable; urgency=low
+
+  * Ready for integration
+  * hildon-plugins/hildon-home-webshortcut/hildon-home-webshortcut.c:
+    (construct_webshortcut_image_pixbuf):
+    Added right alpha channel status for temporary pixbuf during
+    creation to avoid conflict during cropping.
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Thu,  18 Aug 2005 14:18:56 +0300
+
+hildon-home-webshortcut (0.9.9-1osso1) unstable; urgency=low
+
+  * Ready for integration
+
+ -- Karoliina Salminen <karoliina.t.salminen@nokia.com>  Wed,  17 Aug 2005 20:21:56 +0300
+
+hildon-home-webshortcut (0.9.9-1) unstable; urgency=low
+
+  * Use new l10n packages
+
+ -- Nokia <nokia>  Mon,  8 Aug 2005 14:35:56 +0300
+
+hildon-home-webshortcut (0.9.8-2) unstable; urgency=low
+
+  * Added dependency for libosso-dev version >= 0.9.10
+
+ -- Nokia <nokia>  Wed, 27 Jul 2005 18:10:29 +0300
+
+hildon-home-webshortcut (0.9.8-1) unstable; urgency=low
+
+  * Fixed #1660 (Remove logging functions)
+  * hildon-home-webshortcut.c: Included the log-functions.h
+
+ -- Nokia <nokia>  Thu, 21 Jul 2005 16:04:09 +0300
+
+hildon-home-webshortcut (0.9.7-1) unstable; urgency=low
+
+  * Fixed #14547: Home Application (maemo-af-desktop): Applet sizes
+    incorrect
+  * hildon-home-webshortcut.h:
+  * - Applet size changed
+
+ -- Nokia <nokia>  Fri, 17 Jun 2005 10:00:28 +0300
+
+hildon-home-webshortcut (0.9.6-1) unstable; urgency=low
+
+  * Cleaned up forbidded words
+
+ -- Nokia <nokia>  Thu, 16 Jun 2005 20:29:27 +0300
+
+hildon-home-webshortcut (0.9.5-1) unstable; urgency=low
+
+  * Updated applet sizes to match the new layout guide
+  * hildon-home-webshortcut.h:
+  * - updated apple area size
+
+ -- Nokia <nokia>  Fri,  3 Jun 2005 14:00:06 +0300
+
+hildon-home-webshortcut (0.9.4-1) unstable; urgency=low
+
+  * Fixed #7613 (Web Shortcut crashes Home when clicked)
+  * hildon-home-imageviewer.c: Corrected a callback definition to have
+    correct number of parameters, thus fixing pointer corruption
+
+ -- Nokia <nokia>  Wed, 11 May 2005 11:07:15 +0300
+
+hildon-home-webshortcut (0.9.3-1) unstable; urgency=low
+
+  * Fixed #9815 (caption in dialog, theme change behaviour)
+  * hildon-home-webshortcut.c: web_shortcut_dialog_handler() changed to
+    use caption
+  * Updated .po files to correspond with SDL release
+
+ -- Nokia <nokia>  Thu, 28 Apr 2005 17:23:55 +0300
+
+hildon-home-webshortcut (0.9.2-1) unstable; urgency=low
+
+  * Fixed #9434: browser is not invoked when Web shortcut applet is
+    invoked
+  * hildon-home-webshortcut.c:
+  * - launch_browser() changed osso_rpc_run to
+    osso_rpc_run_with_defaults with correct arguments
+
+ -- Nokia <nokia>  Tue, 26 Apr 2005 15:00:54 +0300
+
+hildon-home-webshortcut (0.9.1-1) unstable; urgency=low
+
+  * Fixed errors in l10n-src package
+
+ -- Nokia <nokia>  Thu,  7 Apr 2005 09:28:12 +0300
+
+hildon-home-webshortcut (0.8.10-1) unstable; urgency=low
+
+  * Added error case handling from specification ver 1.3 for Web
+    Shortcut icon loading
+  * Optimized Home Web Shortcut image operations.
+  * Some dependency updates
+  * Fixed some .po files
+
+ -- Nokia <nokia>  Thu, 17 Mar 2005 21:09:43 +0200
+
+hildon-home-webshortcut (0.8.9-1) unstable; urgency=low
+
+  * Added es_MX and fr_CA
+  * Renamed localization packages: fi -> fi_FI
+
+ -- Nokia <nokia>  Sun, 13 Mar 2005 13:48:19 +0200
+
+hildon-home-webshortcut (0.8.8-1) unstable; urgency=low
+
+  * Web shortcut launching url to browser. Connectivity and access point
+    functionality
+
+ -- Nokia <nokia>  Thu,  3 Feb 2005 19:14:56 +0200
+
+hildon-home-webshortcut (0.8.7-1) unstable; urgency=low
+
+  * Debianized locale-packages
+
+ -- Nokia <nokia>  Wed,  2 Feb 2005 14:56:09 +0200
+
+hildon-home-webshortcut (0.8.6-1) unstable; urgency=low
+
+  * Uri support for gateway device file loading. (bugzilla #4262) 
+
+ -- Nokia <nokia>  Wed,  5 Jan 2005 16:26:56 +0200
+
+hildon-home-webshortcut (0.8.5-2) unstable; urgency=low
+
+  * Release 0.8.5
+  * Added most of the functionality (Home spec 1.0)
+  * Separating plugin api from other code. bugzilla #4187
+  * HOME-LIBS and -CFLAG added
+
+ -- Nokia <nokia>  Thu, 30 Dec 2004 14:03:09 +0200
+
+hildon-home-webshortcut (0.8.5-1) unstable; urgency=low
+
+  * Release 0.8.5
+
+ -- Nokia <nokia>  Wed, 22 Dec 2004 16:51:37 +0200
+
+hildon-home-webshortcut (0.8.4-10) unstable; urgency=low
+
+  * Fixes
+
+ -- Nokia <nokia>  Mon, 20 Dec 2004 15:22:36 +0200
+
+hildon-home-webshortcut (0.8.0-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Nokia <nokia>  Wed, 17 Nov 2004 17:03:03 +0200

@@ -1,0 +1,5 @@
+[Desktop Entry]
+Name=ws_ap_web_shortcut
+Comment=hildon-home-webshortcut
+Type=default
+X-Path=libhildon-home-webshortcut.so

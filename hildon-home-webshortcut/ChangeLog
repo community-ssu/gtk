@@ -1,0 +1,332 @@
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 3.0.0
+
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* Released under the LGPL
+
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* Ported to hildon-desktop GTypeModule API
+	* Number of other cleanups
+
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hhws-l10n.h: Moved l10n to its own file
+
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* Renamed to hildon-home-webshortcut
+
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/*, plugin/*: re-organized sources
+
+2006-10-31  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hhivloader.c:
+	  - _loader_load (): fixed an invalid free
+	  - _loader_load_configuration (): set the uri after
+	   loading the image name from gconf
+	* hildon-home-image-viewer.c: return the old
+	  URI if the user didn't choose a new file
+	* configure.ac: 2.4.3
+
+2006-10-30  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hhivloader.c: Added a few sanity checks to avoid crashing
+	  if the default from schemas could not be retrieved
+	* configure.ac: 2.4.2
+
+2006-10-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.4.1
+
+2006-10-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-loader.c: set frame border to 0.
+	Fixes: NB#45077
+
+2006-10-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.4.0
+
+2006-10-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hhivloader.c:
+	  - Use gconf to get the configuration
+	  - Check also for internal mmc
+	  - Save the image name (filename) because it will not
+	    be preserved if the file is cached
+	* hildon-home-image-viewer.c: Big cleanup:
+	  - Use Gconf to save/load configuration
+	  - remove all global variables
+	  - lots of coding style improvements
+
+2006-10-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hhivloader.c:
+	  - fixed detection of local URIs:
+	* configure.ac: 2.3.2
+
+2006-10-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hhivloader.c:
+	  - removed debug messages
+	  - don't user gnome_vfs_is_local because it doesn't work. Fixes: NB#42999
+	* configure.ac: 2.3.1
+
+2006-10-03  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Fixed a Glib CRITICAL warning
+
+2006-10-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.3.0
+
+2006-09-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hhivloader.[ch]: Added external object to handle the loading and
+	  cropping of pictures
+	* hildon-home-image-viewer.c: Use this new object (Fixes: NB#38811)
+
+2006-09-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - Added note when the chosen file could not be opened (Fixes: NB#37550)
+
+2006-09-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.5
+
+2006-09-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - do not copy the picture if of the right size
+	  - do not use BILINEAR interpolation (uses float)
+	  - removed image_loaded variable, not really used
+	  Fixes: NB#40712
+
+2006-09-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - when picture is corrupted, close the pixbuf loader before destroying
+	    it
+	  - remove the memsaw handler. Fixes: NB#41003
+
+2006-09-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - fixed invalid free in deinitialize
+	  - show the internal widgets in initialize
+	* configure.ac: 2.2.4
+
+2006-08-14  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.3
+
+2006-08-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* Add separator to CSM (Closes NB#37549)
+	* Destroy the CSM with the rest of the applet
+
+2006-08-07  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.2
+
+2006-08-07  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Refresh the image after loading
+	  (Closes NB#35616)
+
+2006-08-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Add sketch as an image MIME type
+	  (Closes NB#33998)
+
+2006-07-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.[ch]: Added "Settings..." menu entry
+	  (Closes NB#34000)
+
+2006-06-12  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.[ch]:
+	  - set correct default size
+	  - use a themed frame
+	* configure.ac: 2.2.1
+
+2006-06-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - If the URL does not contain ":", add http://
+	  - Do not use AUTOCAPITALISATION on the URL entry
+
+2006-06-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.2.0
+
+2006-06-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Added GtkFrame around the image
+	* hildon-home-image-viewer.desktop: Declare as resizable
+	  (Closes N#31135)
+
+2006-05-31  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Fix faulty "out-of-the-applet-release"
+	  test (Closes N#30621)
+
+2006-05-17  Johan Bilien  <johan.bilien@nokia.com>
+
+	* Display an error note when opening a corrupted image (Closes N#27011)
+	* Display an error note if the flash is full when saving the picture
+	  (Closes N#29899)
+	* Check if the image file was opened correctly (Closes N#29909)
+
+2006-05-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Fixed the menu activation callback
+	  signature
+
+2006-05-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.[ch]: Implemented context-sensitive menu
+
+2006-05-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.1.3
+
+2006-05-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Replaced old dbus-based launching of browser
+	  with shiny osso_uri_open() (Closes N#27646)
+	* configure.ac, Makefile.am: Replaced dependency to browser-interface
+	  with libossomime
+
+2006-04-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - Made the response handler handle all the responses
+	  - Stop the signal propagation when the URI was not filled, so the
+	    dialog is not closed (Closes N#26406)
+
+2006-04-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 2.1.2
+
+2006-04-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Fixed memory leak of a GtkSizeGroup
+
+2006-04-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c:
+	  - Fixed memory leak of a string
+	  - small cleanups
+
+2006-04-03  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.h: Fixed various L10n strings
+	* configure.ac: 2.1.1
+
+2006-03-30  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Use an infobanner instead of a note
+	  dialog when no URL is specified (Closes N#24902)
+
+2006-03-27  Johan Bilien  <johan.bilien@nokia.com>
+	* configure.ac: 2.1.0
+
+2006-03-24  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.c: Use a GtkImage instead of painting the
+	  background of the event box (Closes N#24490)
+
+2006-03-22  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.c: Made required changes to comply with
+	  forgotten UI specifications (Replaced Image label with a combobox
+	  that holds the original picture, in case the use would
+	  ever like to restore it.
+
+2006-03-13  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.c: Don't reload the picture from the
+	  file on each foreground() (Closes N#21213)
+	* configure.ac: 2.0.4
+
+2006-03-13  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.c: Don't open the browser if the button is
+	  released when the cursor has moved outside the applet (Closes N#20226)
+
+2006-03-09  Johan Bilien  <johan.bilien@nokia.com>
+	* Makefile.am, configure.ac: Use hildon-fm, now required.
+	* configure.ac: 2.0.3
+
+2006-02-16  Johan Bilien  <johan.bilien@nokia.com>
+	* Fixed a crash when the default URL is used
+	* Changed display name in .desktop file
+	* configure.ac: 2.0.2
+
+2006-02-15  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.desktop: Added .desktop file, as required
+      by new home architecture
+	* configure.ac: 2.0.1
+
+2006-02-02  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.c: Fixed the leak when not freeing the
+	  return value of load_url_path().
+	* configure.ac: 2.0.0 (IT-2006)
+
+2006-01-13  Johan Bilien  <johan.bilien@nokia.com>
+	* hildon-home-image-viewer.c: Applied fix to N#21213: Web shortcut image 
+	is read twice on Desktop startup and each time user switches back to Home
+	  - lib include for stdio removed
+	  - get_webshortcut_image(): added image file existence check
+	  - refresh_webshortcut_image(): removed image file existence check
+	    with fopen which caused extra file opening. 
+	* configure.ac: 1.4.2
+
+2006-01-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Applied fix to N#20226: Just placing the
+	  styllus down on the webshortcut performs further actions.
+	  	- hildon_home_applet_lib_initialize(): changed signal to launch
+	      brower from press to release
+	* configure.ac: 1.4.1
+
+2005-12-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* hildon-home-image-viewer.c: Fixed a number of small memory leaks.
+	* Closes #19570
+	* configure.ac: 1.4.0
+
+2005-11-18  Johan Bilien  <johan.bilien@nokia.com>
+
+        * Patched bug N#19570
+        * hildon-home-image-viewer.c
+	- web_shortcut_select_file_dialog(): fixed memory leak
+        * configure.ac: 1.3.0
+
+
+2005-11-01  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+	
+	* Patched bug N#19909
+        * hildon-home-image-viewer.c
+        - web_shortcut_dialog_handler(): removed extra while loop which
+        blocked hw esc signal to dialog
+	* configure.ac: 1.2.0
+
+2005-10-24  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 1.1.2
+
+2005-10-24  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#20497,
+	Laperie Andrei patch to add SAW (allocation watchdog facilities).
+	
+	* hildon-home-image-viewer.c (load_image_oom_cb): New function. An
+	out-of-memory callback for load_image_from_uri
+	(construct_webshortcut_image): add oom control
+	
+	* configure.ac (PKG_CHECK_MODULES): depend on libosso >= 0.9.18
