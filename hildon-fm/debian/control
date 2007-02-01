@@ -2,13 +2,13 @@ Source: libhildonfm
 Section: x11
 Priority: optional
 Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libosso-dev (>= 0.9.1-1), libgtk2.0-dev (>= 2:2.10), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, osso-thumbnail-dev, osso-gwconnect-dev, mce-dev, libdbus-glib-1-dev (>= 0.50-1osso), hildon-libs-dev (>= 0.12.0), libossomime-dev
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libosso-dev (>= 0.9.1-1), libgtk2.0-dev (>= 2:2.10), outo, libxi-dev, libxt-dev, libpng12-dev, libgconf2-dev, osso-thumbnail-dev, osso-gwconnect-dev, mce-dev, libdbus-glib-1-dev (>= 0.50-1osso), libhildon1-dev, libossomime-dev
 Standards-Version: 3.6.0
 
 Package: libhildonfm-dev
 Section: devel
 Architecture: all
-Depends: libhildonfm2 (= ${Source-Version}), libgtk2.0-dev (>= 2:2.10), osso-thumbnail-dev, osso-gwconnect-dev, hildon-libs-dev (>= 0.12.0), libossomime-dev
+Depends: libhildonfm2 (= ${Source-Version}), libgtk2.0-dev (>= 2:2.10), osso-thumbnail-dev, osso-gwconnect-dev, libhildon1-dev, libossomime-dev
 Conflicts: hildon-fm-dev
 Replaces: hildon-fm-dev
 Description: Hildon-fm development files.
@@ -28,7 +28,7 @@ Package: libhildonfm2-dbg
 Section: libs
 Architecture: any
 Depends: libhildonfm2 (= ${Source-Version})
-Recommends: hildon-libs0-dbg
+Recommends: hildon-libs1-dbg
 Description: Debug symbols for libhildonfm2.
 
 Package: libhildonfm-test
