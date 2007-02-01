@@ -1,5 +1,19 @@
 2007-02-01  Marius Vollmer  <marius.vollmer@nokia.com>
 
+        Released 2.5
+	
+	Partly adapted to new Hildon API.
+	
+	* hildon-fm/hildon-file-chooser-dialog.c,
+	hildon-fm/hildon-file-details-dialog.c,
+	hildon-fm/hildon-file-selection.c: Include <hildon/foo.h> instead
+	of <hildon-widgets/foo.h>.  Use hildon_banner_show_information
+	instead of gtk_infoprint.  Use gtk_style_lookup_color instead of
+	gtk_style_lookup_logical_color.
+	* hildon-fm/hildon-file-chooser-dialog.c (response_handler): Don't
+	pass argument to file_ib_name_too_long string.  It doesn't have
+	formatting codes in it.
+	
 	Released 2.4
 	
 	* configure.ac: Check for hildon-1 instead of hildon-libs.

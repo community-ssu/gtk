@@ -1,7 +1,13 @@
+libhildonfm (2.5-1) unstable; urgency=low
+
+  * Don't have libhildonfm2 conflict/replace hildon-libs0 and hildon-lgpl0.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  1 Feb 2007 17:29:23 +0200
+
 libhildonfm (2.4-1) unstable; urgency=low
 
   * Build-depend on libhildon1-dev instead of hildon-libs-dev.
-
+  
  -- Marius Vollmer <marius.vollmer@nokia.com>  Thu,  1 Feb 2007 16:25:01 +0200
 
 libhildonfm (2.3-1) unstable; urgency=low
