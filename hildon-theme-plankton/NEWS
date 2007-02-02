@@ -1,3 +1,7 @@
+[4.1.1-1 release]
+* Bumping version for layout.
+* Version naming will now match layout version + 4.0.0. 
+
 [4.0.0-1 release]
 * Branched out for the four from three. 
 * No changes.
