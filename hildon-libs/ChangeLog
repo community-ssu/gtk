@@ -1,3 +1,11 @@
+2007-02-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.15.0-1 release]
+
+	* configure.ac:
+	* debian/changelog:
+	* hildon-libs.pc.in: Updating with the -DMAEMO_CHANGES.
+
 2006-11-23  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.14.10-1 release]

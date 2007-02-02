@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-libs, 0.14.10)
+AM_INIT_AUTOMAKE(hildon-libs, 0.15.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -16,7 +16,7 @@ AC_HEADER_STDC
 #PKG_CHECK_MODULES(OUTO, outo >= 0.1.1)
 #AC_SUBST(OUTO_CFLAGS)
 
-CFLAGS="$CFLAGS -std=c99 -Wall -pedantic -Wmissing-prototypes -Wmissing-declarations"
+CFLAGS="$CFLAGS -std=c99 -Wall -pedantic -Wmissing-prototypes -Wmissing-declarations -DMAEMO_CHANGES"
 # -Werror disabled due to the flaw in glib-2.0
 # See http://bugzilla.gnome.org/show_bug.cgi?id=310175 and
 # http://bugzilla.gnome.org/show_bug.cgi?id=310216
