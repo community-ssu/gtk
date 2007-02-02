@@ -1,3 +1,15 @@
+libhildonfm (2.7-1) unstable; urgency=low
+
+  * debian/rules: Removed unused version magic.  Dont attempt to copy
+    config.sub and config.guess from /usr/share/misc on clean.  Don't
+    cleanup outo bits, since outo is not used anymore.  Removed
+    --disable-gtk-doc from configure options.
+  * debian/control: Added gtk-doc-tools to Build-Depends and removed outo.
+    Include major version in -dev package.  Removed -test package.
+    Don't let the -dev package conflict with the old hildon-fm-dev.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  2 Feb 2007 13:30:26 +0200
+
 libhildonfm (2.6-1) unstable; urgency=low
 
   * Move header files to new <hildon/...> location.

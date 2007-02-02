@@ -1,5 +1,22 @@
 2007-02-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 2.7
+	
+	* Makefile.am (pkgconfig_DATA): Install hildon-fm-2.pc.
+	(EXTRA_DIST): Distribute the right files after the renaming.
+	(deb): Remove old sources before extracting new ones.
+	
+	* autogen.sh: Don't call configure.  Always use generic versions
+	of the tools instead of specific ones.
+
+	* configure.ac: Don't check for outo.  Use AC_CONFIG_FILES.
+
+	* hildon-fm/Makefile.am (hildonincludeinstdir): Install into
+	headers into $(includedir)/hildon-fm-2 so that their locations
+	contains the major version.
+
+	* hildon-fm.pc.in, hildon-fm-2.pc.in: Renamed former to latter.
+
 	Released 2.6
 	
 	* hildon-fm/Makefile.am (hildonincludeinstdir): Install headers
