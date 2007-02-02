@@ -483,16 +483,10 @@ dnl ******************************
 VFS_NEON_BUNDLED(imported/neon)
 
 AC_ARG_ENABLE(http-debug,
-[  --enable-http-debug  Enable HTTP method debugging],
-set_http_debug="$enableval",[
-if test -f $srcdir/CVSVERSION; then
-	set_http_debug=yes
-else
-	set_http_debug=no
-fi
-])
+	[AS_HELP_STRING([--enable-http-debug],[Enable HTTP method debugging])],
+	[],[enable_http_debug=no])
 
-if test x$set_http_debug = xyes; then
+if test "$enable_http_debug" = "yes"; then
  AC_DEFINE([DEBUG_HTTP_ENABLE], 1, [Indicates http debugging status])
  AC_MSG_NOTICE([HTTP module debugging ENABLED])
 fi

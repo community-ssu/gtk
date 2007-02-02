@@ -1,3 +1,7 @@
+2007-02-01  Richard Hult  <richard@imendio.com>
+
+	* configure.in: Merge patch from 2.17.x to disable HTTP debug output.
+
 2006-11-20  Alexander Larsson  <alexl@redhat.com>
 
 	* NEWS:
