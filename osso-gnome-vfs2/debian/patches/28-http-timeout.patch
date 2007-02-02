@@ -1,0 +1,14 @@
+Index: modules/http-neon-method.c
+===================================================================
+--- modules/http-neon-method.c	(revision 8989)
++++ modules/http-neon-method.c	(arbetskopia)
+@@ -1640,6 +1640,9 @@ http_acquire_connection (HttpContext *co
+ 		return GNOME_VFS_ERROR_INTERNAL;
+ 	}
+ 
++	/* Set the timeout, filed as upstream bug #402851, NB#50018. */
++	ne_set_read_timeout (session, 30);
++	
+ 	user_agent = getenv (CUSTOM_USER_AGENT_VARIABLE);
+ 	   
+ 	if (user_agent == NULL) {

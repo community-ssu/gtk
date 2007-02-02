@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso7) unstable; urgency=low
+
+  * Really apply the patch for NB#50018
+
+ -- Richard Hult <richard@imendio.com>  Fri,  2 Feb 2007 15:41:41 +0100
+
 osso-gnome-vfs2 (2.16.3-1osso6) unstable; urgency=low
 
   * Split out samba package into its own binary package
