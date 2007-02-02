@@ -1,25 +1,20 @@
 SUBDIRS = hildon-fm doc
-EXTRA_DIST = \
-	debian/changelog \
-	debian/control \
-	debian/copyright \
-	debian/hildon-fm-dev.install \
-	debian/hildon-fm1.install \
-	debian/hildon-fm1-dbg.install \
-	debian/hildon-fm-dev.docs \
-	debian/rules
+EXTRA_DIST =					\
+	debian/changelog			\
+	debian/control				\
+	debian/copyright			\
+	debian/rules				\
+	debian/libhildonfm2.install		\
+	debian/libhildonfm2-dbg.install		\
+	debian/libhildonfm2-dev.install		\
+	debian/libhildonfm2-dev.docs
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = hildon-fm.pc
-
-distclean-am: 
-	-rm -rf autom4te.cache 
-	-rm -f config.status config.cache config.log configure.lineno  
-#	-rm -f config.guess config.h.in config.sub configure depcomp
-#	-rm -f install-sh ltmain.sh missing mkinstalldirs Makefile.in aclocal.m4
+pkgconfig_DATA = hildon-fm-2.pc
 
 deb: dist
 	-mkdir debian-build
-	cd debian-build && \
-	tar zxvf ../$(PACKAGE)-$(VERSION).tar.gz && \
+	cd debian-build &&						\
+	rm -rf $(PACKAGE)-$(VERSION) &&					\
+	tar zxvf ../$(PACKAGE)-$(VERSION).tar.gz &&			\
 	cd $(PACKAGE)-$(VERSION) && dpkg-buildpackage -rfakeroot
