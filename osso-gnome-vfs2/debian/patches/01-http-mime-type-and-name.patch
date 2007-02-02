@@ -1,0 +1,85 @@
+--- modules/http-neon-method.c-unmod	2007-02-01 12:26:44.000000000 +0100
++++ modules/http-neon-method.c	2007-02-01 17:30:33.000000000 +0100
+@@ -1104,9 +1104,8 @@ std_headers_to_file_info (ne_request *re
+ 	
+ 	value  = ne_get_response_header (req, "Content-Type");
+ 
+-	if (value != NULL) {
+-		g_free (info->mime_type);
+-
++	if (value != NULL && info->mime_type == NULL) {
++		g_print ("get from server: %s\n", value);
+ 		info->mime_type = strip_semicolon (value);
+ 		info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
+ 	}
+@@ -1819,6 +1818,19 @@ http_follow_redirect (HttpContext *conte
+ /* ************************************************************************** */
+ /* Http operations */
+ 
++static char *
++strip_query (const char *path)
++{
++	const char *tmp;
++
++	tmp = strchr (path, '?');
++	if (tmp == NULL) {
++		return g_strdup (path);
++	}
++
++	return g_strndup (path, tmp - path);
++}
++
+ static GnomeVFSResult
+ http_get_file_info (HttpContext *context, GnomeVFSFileInfo *info)
+ {
+@@ -1827,9 +1839,21 @@ http_get_file_info (HttpContext *context
+ 	ne_propfind_handler *pfh;
+ 	ne_request *req;
+ 	int res;
++	char *stripped;
++	const char *mime_type;
+ 
+ 	DEBUG_HTTP_CONTEXT (context);
+ 	
++	/* First try getting the local mime type just from the filename. See
++	 * NB#10173.
++	 */
++	stripped = strip_query (context->path);
++	mime_type = gnome_vfs_mime_type_from_name_or_default (stripped, NULL);
++	g_free (stripped);
++	if (mime_type && strcmp (mime_type, "application/octet-stream") == 0) {
++		mime_type = NULL;
++	}
++
+ 	/* no dav server */
+ 	if (context->dav_mode == FALSE || context->dav_class == NO_DAV) 
+ 		goto head_start;
+@@ -1917,13 +1941,26 @@ http_get_file_info (HttpContext *context
+ 	result = resolve_result (res, req);	
+ 	
+ 	if (result == GNOME_VFS_OK) {
+-		const char *name;	
++		const char *name;
++		char *stripped;
+ 		
+ 		name = gnome_vfs_uri_get_path (context->uri);
+ 	
+ 		gnome_vfs_file_info_clear (info);
++
++		/* Keep any mime type we got from the filename above. */
++		if (mime_type) {
++			info->mime_type = g_strdup (mime_type);
++			info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_MIME_TYPE;
++		}
++
++		/* Remove any "?foobar", that shouldn't be part of the name. See
++		 * NB#19530.
++		 */
++		stripped = strip_query (name);
++		info->name  = g_path_get_basename (stripped);
++		g_free (stripped);
+ 		
+-		info->name  = g_path_get_basename (name);
+ 		info->type  = GNOME_VFS_FILE_TYPE_REGULAR;
+ 		info->flags = GNOME_VFS_FILE_FLAGS_NONE;
+ 		

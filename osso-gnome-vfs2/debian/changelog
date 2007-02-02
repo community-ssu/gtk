@@ -1,8 +1,11 @@
 osso-gnome-vfs2 (2.16.3-1osso6) unstable; urgency=low
 
   * Split out samba package into its own binary package
+  * Port NB#50018 from stable branch, jam when network goes down
+  * Fixes: NB#48919, Mime type of files with "#" in the name is not detected
+  * Fixes: NB#41904, File Manager; Non Translated; After renaming the MMC...
 
- -- Richard Hult <richard@imendio.com>  Tue, 30 Jan 2007 10:14:36 +0100
+-- Richard Hult <richard@imendio.com>  Fri,  2 Feb 2007 15:09:38 +0100
 
 osso-gnome-vfs2 (2.16.3-1osso5) unstable; urgency=low
 

@@ -1,11 +1,10 @@
---- libgnomevfs/gnome-vfs-mime.c-unmod	2006-10-18 12:34:42.000000000 +0200
-+++ libgnomevfs/gnome-vfs-mime.c	2006-10-18 12:46:05.000000000 +0200
-@@ -99,15 +99,31 @@ gnome_vfs_mime_type_from_name_or_default
+--- libgnomevfs/gnome-vfs-mime.c-unmod	2007-02-01 17:00:23.000000000 +0100
++++ libgnomevfs/gnome-vfs-mime.c	2007-02-01 17:38:39.000000000 +0100
+@@ -99,15 +99,21 @@ gnome_vfs_mime_type_from_name_or_default
  {
  	const char *mime_type;
  	const char *separator;
 +	char       *lower;
-+	char       *tail;
  
  	if (filename == NULL) {
  		return defaultv;
@@ -13,19 +12,10 @@
  
 -	separator = strrchr (filename, '/');
 +	/* Convert to lower case to implement a poor man's case insensitive mime
-+         * type lookup.
++         * type lookup. See NB#18581.
 +         */
 + 	lower = g_utf8_strdown (filename, -1);
 +
-+	/* Strip out any fragments or query strings. */
-+        tail = g_utf8_strchr (lower, -1, '?');
-+        if (!tail) {
-+                tail = g_utf8_strchr (lower, -1, '#');
-+        }
-+        if (tail) {
-+                *tail = '\0';
-+        }
-+	
 +	separator = strrchr (lower, '/');
  #ifdef G_OS_WIN32
  	{
@@ -34,7 +24,7 @@
  		if (separator == NULL ||
  		    (sep2 != NULL && sep2 > separator))
  			separator = sep2;
-@@ -115,16 +131,20 @@ gnome_vfs_mime_type_from_name_or_default
+@@ -115,16 +121,20 @@ gnome_vfs_mime_type_from_name_or_default
  #endif
  	if (separator != NULL) {
  		separator++;
@@ -57,24 +47,50 @@
  	if (mime_type)
  		return mime_type;
  	else
-@@ -212,17 +232,12 @@ gnome_vfs_get_mime_type_for_name_and_dat
+@@ -209,20 +219,37 @@ gnome_vfs_get_mime_type_for_name_and_dat
+ 	return mime_type;
+ }
+ 
++static char *
++strip_query (const char *path)
++{
++	const char *tmp;
++
++	tmp = strchr (path, '?');
++	if (tmp == NULL) {
++		return g_strdup (path);
++	}
++
++	return g_strndup (path, tmp - path);
++}
++
  static const char *
  gnome_vfs_get_mime_type_from_uri_internal (GnomeVFSURI *uri)
  {
 -	char *base_name;
 +	const char *path;
  	const char *mime_type;
++	char       *stripped;
  
 -	/* Return a mime type based on the file extension or NULL if no match. */
 -	base_name = gnome_vfs_uri_extract_short_path_name (uri);
 -	if (base_name == NULL) {
 -		return NULL;
 -	}
-+	path = gnome_vfs_uri_get_path (uri);
-+	mime_type = gnome_vfs_mime_type_from_name_or_default (path, NULL);
- 
+-
 -	mime_type = gnome_vfs_mime_type_from_name_or_default (base_name, NULL);
 -	g_free (base_name);
++	/* Strip off any query string, see NB#19530. The reason we get the path
++	 * instead of gnome_vfs_uri_extract_short_name is that the latter will
++	 * do the wrong thing for things like: http://foo.bar/file?abc=/dsa/gfd
++	 * (it will just take the last slash and return the part after it,
++	 * instead of "file".
++	 */
++	path = gnome_vfs_uri_get_path (uri);
++	stripped = strip_query (path);
++	mime_type = gnome_vfs_mime_type_from_name_or_default (stripped, NULL);
++	g_free (stripped);
++	
  	return mime_type;
  }
  
