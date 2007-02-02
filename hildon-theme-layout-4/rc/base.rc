@@ -157,7 +157,16 @@ class "GtkWidget" style "osso-default"
 
 #This has to be first because of font styles.
 
+# Some HIG-alike stuff
+gtk-button-images = FALSE
+gtk-entry-select-on-focus = FALSE
+gtk-menu-images = FALSE
+gtk-toolbar-style = GTK_TOOLBAR_ICONS
+hildon-keyboard-shortcuts = FALSE
 
+# Icon sizes
+gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
+gtk-icon-sizes = "gtk-menu=26,26:gtk-button=26,26:gtk-small-toolbar=26,26:gtk-large-toolbar=26,26:gtk-dnd=26,26:gtk-dialog=50,50:"
 
 # Maemo af desktop widgets included in gtkrc.maemo_af_desktop
 
