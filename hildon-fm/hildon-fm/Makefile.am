@@ -54,7 +54,7 @@ libhildonfm_la_SOURCES =			\
 	$(hildonfm_built_headers)		\
 	$(hildonfm_built_cfiles)
 
-hildonincludeinstdir=$(includedir)/hildon-fm/hildon
+hildonincludeinstdir=$(includedir)/hildon-fm-2/hildon
 hildonincludeinst_DATA = \
 	hildon-file-selection.h \
 	hildon-file-system-model.h \
