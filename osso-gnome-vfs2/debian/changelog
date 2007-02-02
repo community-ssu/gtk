@@ -5,7 +5,7 @@ osso-gnome-vfs2 (2.16.3-1osso6) unstable; urgency=low
   * Fixes: NB#48919, Mime type of files with "#" in the name is not detected
   * Fixes: NB#41904, File Manager; Non Translated; After renaming the MMC...
 
--- Richard Hult <richard@imendio.com>  Fri,  2 Feb 2007 15:09:38 +0100
+ -- Richard Hult <richard@imendio.com>  Fri,  2 Feb 2007 15:09:38 +0100
 
 osso-gnome-vfs2 (2.16.3-1osso5) unstable; urgency=low
 
