@@ -1,5 +1,11 @@
 2007-02-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[4.1.1-1bi release]
+
+	* debian/changelog: Updating.
+
+2007-02-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	[4.1.1-1 release]
 
 	* NEWS:
