@@ -71,4 +71,6 @@ add_sudoer 'user ALL = NOPASSWD: /etc/init.d/ke-recv start'
 add_sudoer 'user ALL = NOPASSWD: /etc/init.d/ke-recv stop'
 add_sudoer 'user ALL = NOPASSWD: /etc/init.d/alarmd start'
 add_sudoer 'user ALL = NOPASSWD: /etc/init.d/alarmd stop'
+add_sudoer 'user ALL = NOPASSWD: /etc/init.d/osso-hss start'
+add_sudoer 'user ALL = NOPASSWD: /etc/init.d/osso-hss stop'
 

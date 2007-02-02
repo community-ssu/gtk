@@ -28,6 +28,10 @@ fi
 if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh stop
 fi
+if [ -x /etc/init.d/osso-hss ]; then
+  sudo /etc/init.d/osso-hss stop
+fi
+
 # this is first boot, so VKB is running
 if [ -f $DIR/keyboard.defs ]; then
   source $DIR/keyboard.defs
@@ -63,6 +67,10 @@ fi
 if [ -x $DIR/osso-media-server.sh ]; then
   $DIR/osso-media-server.sh start &
 fi
+if [ -x /etc/init.d/osso-hss ]; then
+  sudo /etc/init.d/osso-hss start
+fi
+
 if [ -x $DIR/osso-connectivity-ui.sh ]; then
   source $DIR/osso-connectivity-ui.sh start
 fi
