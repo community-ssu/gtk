@@ -54,8 +54,8 @@ libhildonfm_la_SOURCES =			\
 	$(hildonfm_built_headers)		\
 	$(hildonfm_built_cfiles)
 
-hildonwidgetsincludeinstdir=$(includedir)/hildon-fm/hildon-widgets
-hildonwidgetsincludeinst_DATA = \
+hildonincludeinstdir=$(includedir)/hildon-fm/hildon
+hildonincludeinst_DATA = \
 	hildon-file-selection.h \
 	hildon-file-system-model.h \
 	hildon-file-chooser-dialog.h \
@@ -64,7 +64,7 @@ hildonwidgetsincludeinst_DATA = \
 	hildon-file-details-dialog.h
 
 
-headers_to_scan_for_enums = $(hildonwidgetsincludeinst_DATA)
+headers_to_scan_for_enums = $(hildonincludeinst_DATA)
  
 # Generate the enums source code, with glib-mkenums:
 # This is based on the same Makefile.am stuff in pango:

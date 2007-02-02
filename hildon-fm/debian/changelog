@@ -1,3 +1,9 @@
+libhildonfm (2.6-1) unstable; urgency=low
+
+  * Move header files to new <hildon/...> location.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  2 Feb 2007 11:33:49 +0200
+
 libhildonfm (2.5-1) unstable; urgency=low
 
   * Don't have libhildonfm2 conflict/replace hildon-libs0 and hildon-lgpl0.
