@@ -1,5 +1,5 @@
-AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(libhildonfm, 2.6)
+AC_INIT(hildon-fm/hildon-file-system-model.c)
+AM_INIT_AUTOMAKE(libhildonfm, 2.7)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -26,9 +26,6 @@ AC_ARG_ENABLE(logging,
   ])
 
 CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror -Wno-format-extra-args $LOGFLAGS"
-
-PKG_CHECK_MODULES(OUTO, outo >= 0.1.1)
-AC_SUBST(OUTO_CFLAGS)
 
 GTK_VERSION=2.10.0
 
@@ -146,9 +143,9 @@ if test "x$enable_rebuilds" = "xyes" && \
 fi
 AC_SUBST(REBUILD)
 
+AC_CONFIG_FILES([Makefile
+		 hildon-fm/Makefile
+ 	         doc/Makefile
+	         hildon-fm-2.pc])
 
-AC_OUTPUT(Makefile \
-        hildon-fm/Makefile \
-	ut/Makefile \
-	doc/Makefile \
-	hildon-fm.pc)
+AC_OUTPUT
