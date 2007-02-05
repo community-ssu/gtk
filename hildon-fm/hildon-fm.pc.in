@@ -1,0 +1,4 @@
+Name: hildon-fm
+Description: Hildon file management compatibility kluge
+Requires: hildon-fm-2
+Version: @VERSION@
