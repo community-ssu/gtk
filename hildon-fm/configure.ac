@@ -1,5 +1,5 @@
 AC_INIT(hildon-fm/hildon-file-system-model.c)
-AM_INIT_AUTOMAKE(libhildonfm, 2.8)
+AM_INIT_AUTOMAKE(libhildonfm, 2.9)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST
@@ -146,6 +146,7 @@ AC_SUBST(REBUILD)
 AC_CONFIG_FILES([Makefile
 		 hildon-fm/Makefile
  	         doc/Makefile
-	         hildon-fm-2.pc])
+	         hildon-fm-2.pc
+	         hildon-fm.pc])
 
 AC_OUTPUT

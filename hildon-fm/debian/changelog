@@ -1,3 +1,9 @@
+libhildonfm (2.9-1) unstable; urgency=low
+
+  * Added hildon-fm-dev as a build-time compatibility kluge as well.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Feb 2007 16:43:18 +0200
+
 libhildonfm (2.8-2) unstable; urgency=low
 
   * Put hildon-fm1.install and hildon-fm1.links into distribution so that

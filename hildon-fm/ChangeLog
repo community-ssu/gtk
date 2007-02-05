@@ -1,5 +1,12 @@
 2007-02-05  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 2.9
+	
+	* hildon-fm.pc.in: New.
+	* configure.ac: Create hildon-fm.pc from it.
+	* Makefile.am (pkgconfig_DATA): Added hildon-fm.pc.
+	(EXTRA_DIST): Added hildon-fm compatibility kluge files.
+	
 	Released 2.8
 	
 	* hildon-fm/Makefile.am (hildon-fm1-compat.c): New.
