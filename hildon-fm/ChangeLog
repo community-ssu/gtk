@@ -1,3 +1,10 @@
+2007-02-05  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.8
+	
+	* hildon-fm/Makefile.am (hildon-fm1-compat.c): New.
+	(libhildonfm_la_SOURCES): Added hildon-fm1-compat.c
+
 2007-02-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.7
@@ -58,7 +65,7 @@
 2007-01-29  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Hildon Consolidation.  References to GtkFilePath in the public
-	HildonFileselection API are removed.
+	HildonFileSelection API are removed.
 	
 	* hildon-fm/hildon-file-selection.h,
 	hildon-fm/hildon-file-selection.c,

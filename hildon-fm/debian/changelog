@@ -1,3 +1,10 @@
+libhildonfm (2.8-1) unstable; urgency=low
+
+  * Added hildon-fm1 compatibility kluge package.  Disabled gtk-doc again
+    since our version in the buildbot environment is too old. :(
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Feb 2007 10:35:22 +0200
+
 libhildonfm (2.7-1) unstable; urgency=low
 
   * debian/rules: Removed unused version magic.  Dont attempt to copy
