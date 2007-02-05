@@ -51,6 +51,7 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-system-upnp.c		\
 	hildon-file-system-obex.h		\
 	hildon-file-system-obex.c		\
+	hildon-fm1-compat.c			\
 	$(hildonfm_built_headers)		\
 	$(hildonfm_built_cfiles)
 
