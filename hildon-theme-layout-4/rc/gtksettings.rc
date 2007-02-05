@@ -18,3 +18,5 @@ gtk-menu-shell-timeout = -1
 # Drag and drop treshold
 gtk-dnd-drag-threshold = 30
 
+# Touchscreen mode (GtkMenu scrolling, prelighting)
+gtk-touchscreen-mode = 1

@@ -1,3 +1,11 @@
+2007-02-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* rc/base.rc: Change FALSE to 0 since gtk can't parse FALSE.
+	Comment 'gtk-menu-images = 0' as it has unintended effect on TN menus.
+
+	* rc/gtksettings.rc: Enable touchscreen mode (GtkMenu scrolling,
+	prelighting)
+	
 2007-02-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.1.1 release]

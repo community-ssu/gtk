@@ -158,11 +158,14 @@ class "GtkWidget" style "osso-default"
 #This has to be first because of font styles.
 
 # Some HIG-alike stuff
-gtk-button-images = FALSE
-gtk-entry-select-on-focus = FALSE
-gtk-menu-images = FALSE
+gtk-button-images = 0
+gtk-entry-select-on-focus = 0
 gtk-toolbar-style = GTK_TOOLBAR_ICONS
-hildon-keyboard-shortcuts = FALSE
+hildon-keyboard-shortcuts = 0
+
+## We don't want images on menus, but using this will remove icons also from
+## TN menus
+#gtk-menu-images = 0
 
 # Icon sizes
 gtk-toolbar-icon-size = GTK_ICON_SIZE_SMALL_TOOLBAR
