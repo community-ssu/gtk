@@ -1,0 +1,18 @@
+####################################################
+# Theming for GtkViewPort
+####################################################
+
+# Disable the shadow painting completely
+
+style "osso-viewport" {
+  xthickness = 0
+  ythickness = 0
+
+  engine "sapwood" {
+    image {
+      function = SHADOW
+    }
+  }
+}
+
+class "GtkViewPort" style "osso-viewport"

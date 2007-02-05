@@ -1,5 +1,11 @@
 2007-02-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* rc/Makefile.am:
+	* rc/gtkrc.rc:
+	* rc/gtkviewport.rc: Remove the shadow from GtkViewPort.
+
+2007-02-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* rc/gtkbutton.rc: Remove the 'osso_button' detail so that we get
 	decent fallback graphics for all buttons. Remove references to all
 	other view buttons as the matching rules no longer apply.

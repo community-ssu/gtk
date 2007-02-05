@@ -34,6 +34,7 @@ include "gtkfilechooserbutton.rc"
 include "gtkexpander.rc"
 include "gtkentrycompletion.rc"
 include "gtkcalendar.rc"
+include "gtkviewport.rc"
 
 include "hildonapp.rc"
 include "hildonbanners.rc"
