@@ -13,7 +13,6 @@ ORIGHOME=$HOME
 HOME=/home/user  ;# needed for some root processes
 
 export XDG_DATA_HOME=$PREFIX/share/mime
-export GTK_PATH=$PREFIX/lib/gtk-2.0/2.4.0
 
 DEFAULTMBTHEME=default
 DEFAULTGTKTHEME=default

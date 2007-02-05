@@ -1,3 +1,9 @@
+hildon-initscripts (1.9-1) unstable; urgency=low
+
+  * Removed definition of GTK_PATH from osso-gtk.defs. Fixes: MB#977
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 05 Feb 2007 14:50:18 +0200
+
 hildon-initscripts (1.8-1) unstable; urgency=low
 
   * Removed obsolete osso-connectivity-ui calls from af-sb-init.sh.
