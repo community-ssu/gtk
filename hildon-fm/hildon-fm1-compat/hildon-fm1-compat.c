@@ -31,6 +31,7 @@
    officially supported.
 */
 
+#include "hildon-file-selection.h"
 #include "hildon-file-common-private.h"
 
 gboolean
@@ -43,5 +44,5 @@ hildon_file_selection_set_current_folder (HildonFileSelection *self,
 					  const GtkFilePath *folder,
 					  GError **error)
 {
-  return _hildon_file_selection_set_current_folder (self, folder, error);
+  return _hildon_file_selection_set_current_folder_path (self, folder, error);
 }
