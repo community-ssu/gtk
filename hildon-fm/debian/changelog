@@ -1,3 +1,10 @@
+libhildonfm (2.8-2) unstable; urgency=low
+
+  * Put hildon-fm1.install and hildon-fm1.links into distribution so that
+    they take effect, stupid.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Feb 2007 13:07:52 +0200
+
 libhildonfm (2.8-1) unstable; urgency=low
 
   * Added hildon-fm1 compatibility kluge package.  Disabled gtk-doc again
