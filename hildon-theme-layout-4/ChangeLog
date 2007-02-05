@@ -1,5 +1,13 @@
 2007-02-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* rc/gtkbutton.rc: Remove the 'osso_button' detail so that we get
+	decent fallback graphics for all buttons. Remove references to all
+	other view buttons as the matching rules no longer apply.
+	NOTE: The unused buttons should be removed also from the coordinate
+	files and the templates.
+
+2007-02-05  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* rc/base.rc: Change FALSE to 0 since gtk can't parse FALSE.
 	Comment 'gtk-menu-images = 0' as it has unintended effect on TN menus.
 
