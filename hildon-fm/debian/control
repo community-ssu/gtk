@@ -24,3 +24,9 @@ Section: devel
 Architecture: all
 Depends: libhildonfm2 (= ${Source-Version}), libgtk2.0-dev (>= 2:2.10), osso-thumbnail-dev, osso-gwconnect-dev, libhildon1-dev, libossomime-dev
 Description: Development files for libhildonfm2.
+
+Package: hildon-fm1
+Section: libs
+Architecture: any
+Depends: libhildonfm2 (= ${Source-Version})
+Description: hildon-fm1 compatability kluge.
