@@ -21,7 +21,7 @@
  *
  */
 
-/* This is a thin compatability layer on top of libhildonfm.so.2 that
+/* This is a thin compatibility layer on top of libhildonfm.so.2 that
    gives you (more or less) the ABI of the old libhildonfm.so.1.  This
    works well enough since we only removed functions in
    libhildonfm.so.2 but didn't change existing functions in an
@@ -45,4 +45,71 @@ hildon_file_selection_set_current_folder (HildonFileSelection *self,
 					  GError **error)
 {
   return _hildon_file_selection_set_current_folder_path (self, folder, error);
+}
+
+GtkFilePath *
+hildon_file_selection_get_current_folder (HildonFileSelection *self);
+
+GtkFilePath *
+hildon_file_selection_get_current_folder (HildonFileSelection *self)
+{
+  return _hildon_file_selection_get_current_folder_path (self);
+}
+
+gboolean
+hildon_file_selection_select_path (HildonFileSelection *self,
+				   const GtkFilePath *path,
+				   GError **error);
+
+gboolean
+hildon_file_selection_select_path (HildonFileSelection *self,
+				   const GtkFilePath *path,
+				   GError **error)
+{
+  return _hildon_file_selection_select_path (self, path, error);
+}
+
+
+void
+hildon_file_selection_unselect_path (HildonFileSelection *self,
+				     const GtkFilePath *path);
+
+void
+hildon_file_selection_unselect_path (HildonFileSelection *self,
+				     const GtkFilePath *path)
+{
+  return _hildon_file_selection_unselect_path (self, path);
+}
+
+GSList *
+hildon_file_selection_get_selected_paths (HildonFileSelection *self);
+
+GSList *
+hildon_file_selection_get_selected_paths (HildonFileSelection *self)
+{
+  HildonFileSystemModel *model = NULL;
+  GtkFileSystem *fs = NULL;
+  GSList *uris = NULL, *elt;
+  GSList *paths = NULL;
+
+  g_object_get (self, "model", &model, NULL);
+  if (model == NULL)
+    return NULL;
+
+  fs = _hildon_file_system_model_get_file_system (model);
+  if (fs == NULL)
+    return NULL;
+
+  uris = hildon_file_selection_get_selected_uris (self);
+  
+  for (elt = uris; elt; elt = elt->next)
+    {
+      char *uri = (char *)elt->data;
+      paths = g_slist_prepend (paths,
+			       gtk_file_system_uri_to_path (fs, uri));
+      g_free (uri);
+    }
+  g_slist_free (uris);
+
+  return g_slist_reverse (paths);
 }
