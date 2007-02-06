@@ -1,9 +1,13 @@
 2007-02-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* === Release 2.91.2 ===
+
+2007-02-06  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (draw_simple_image, get_window_for_shape): Check
 	the paintable area size and apply the shape mask only when painting
 	the whole window to avoid another case of infinite expose loop.
-  
+
 2007-01-31  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/sapwood-draw.c (draw_expander): Added to handle painting
