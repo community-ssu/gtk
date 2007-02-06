@@ -1,4 +1,4 @@
-libpango-1.0 0 libpango1.0-0 (>= 1.14.7)
-libpangox-1.0 0 libpango1.0-0 (>= 1.14.7)
-libpangoft2-1.0 0 libpango1.0-0 (>= 1.14.7)
-libpangoxft-1.0 0 libpango1.0-0 (>= 1.14.7)
+libpango-1.0 0 libpango1.0-0 (>= 1.14.10)
+libpangox-1.0 0 libpango1.0-0 (>= 1.14.10)
+libpangoft2-1.0 0 libpango1.0-0 (>= 1.14.10)
+libpangoxft-1.0 0 libpango1.0-0 (>= 1.14.10)

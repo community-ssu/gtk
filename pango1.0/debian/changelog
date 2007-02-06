@@ -1,3 +1,10 @@
+pango1.0 (1.14.10-1osso4) unstable; urgency=low
+
+  * sync with upstream, pangocairo thread fixes, fix to ellipsize when width
+    or indentation is changed (gnome bugzilla 326099)
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue,  6 Feb 2007 13:06:09 +0200
+
 pango1.0 (1.14.7-1osso3) unstable; urgency=low
 
   * do not pack .la files to dev package 
