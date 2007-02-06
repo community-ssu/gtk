@@ -262,6 +262,15 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
   g_type_class_add_private (object_class, sizeof (GtkToolButtonPrivate));
 }
 
+#ifdef MAEMO_CHANGES
+static void
+maemo_insensitive_press (GtkWidget     *widget,
+                         GtkToolButton *button)
+{
+  gtk_widget_insensitive_press (GTK_WIDGET (button));
+}
+#endif /* MAEMO_CHANGES */
+
 static void
 gtk_tool_button_init (GtkToolButton      *button,
 		      GtkToolButtonClass *klass)
@@ -277,6 +286,12 @@ gtk_tool_button_init (GtkToolButton      *button,
   gtk_button_set_focus_on_click (GTK_BUTTON (button->priv->button), FALSE);
   g_signal_connect_object (button->priv->button, "clicked",
 			   G_CALLBACK (button_clicked), button, 0);
+
+#ifdef MAEMO_CHANGES
+  /* Hildon: connect "insensitive_press" signal for private button */
+  g_signal_connect_object (button->priv->button, "insensitive_press",
+                           G_CALLBACK (maemo_insensitive_press), button, 0);
+#endif /* MAEMO_CHANGES */
 
   gtk_container_add (GTK_CONTAINER (button), button->priv->button);
   gtk_widget_show (button->priv->button);

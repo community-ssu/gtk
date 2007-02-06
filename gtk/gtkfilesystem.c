@@ -1403,5 +1403,27 @@ gtk_file_system_create (const char *file_system_name)
   return fs;
 }
 
+#ifdef MAEMO_CHANGES
+
+GtkFileSystem *
+hildon_gtk_file_system_create(const char *file_system_name)
+{
+  return gtk_file_system_create (file_system_name);
+}
+
+GdkPixbuf *
+gtk_file_system_render_icon  (GtkFileSystem      *file_system,
+                              const GtkFilePath  *path,
+                              GtkWidget          *widget,
+                              gint                pixel_size,
+                              GError            **error)
+{
+  g_set_error (error, 0, 0, "EEK");
+
+  return NULL;
+}
+
+#endif /* MAEMO_CHANGES */
+
 #define __GTK_FILE_SYSTEM_C__
 #include "gtkaliasdef.c"

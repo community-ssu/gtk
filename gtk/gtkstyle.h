@@ -900,6 +900,12 @@ void   gtk_draw_insertion_cursor (GtkWidget        *widget,
 				  GtkTextDirection  direction,
 				  gboolean          draw_arrow);
 
+#ifdef MAEMO_CHANGES
+gboolean  gtk_style_lookup_logical_color     (GtkStyle     *style,
+                                              const gchar  *color_name,
+                                              GdkColor     *color);
+#endif /* MAEMO_CHANGES */
+
 G_END_DECLS
 
 #endif /* __GTK_STYLE_H__ */

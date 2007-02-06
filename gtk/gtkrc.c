@@ -319,7 +319,8 @@ static const gchar symbol_names[] =
   "im_module_file\0"
   "LTR\0"
   "RTL\0"
-  "color\0";
+  "color\0"
+  "unbind\0";
 
 static const struct
 {
@@ -361,7 +362,8 @@ static const struct
   { 245, GTK_RC_TOKEN_IM_MODULE_FILE },
   { 260, GTK_RC_TOKEN_LTR },
   { 264, GTK_RC_TOKEN_RTL },
-  { 268, GTK_RC_TOKEN_COLOR }
+  { 268, GTK_RC_TOKEN_COLOR },
+  { 274, GTK_RC_TOKEN_UNBIND }
 };
 
 static GHashTable *realized_style_ht = NULL;
@@ -1751,6 +1753,25 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
 
       gtk_rc_parse_default_files (context);
 
+#ifdef MAEMO_CHANGES
+      /* Swapped these sections of code, so the styles from the
+       * XSettings theme are available when parsing with
+       * gtk_rc_context_parse_string
+       */
+      g_free (context->theme_name);
+      g_free (context->key_theme_name);
+
+      g_object_get (context->settings,
+		    "gtk-theme-name", &context->theme_name,
+		    "gtk-key-theme-name", &context->key_theme_name,
+		    NULL);
+
+      if (context->theme_name && context->theme_name[0])
+	gtk_rc_parse_named (context, context->theme_name, NULL);
+      if (context->key_theme_name && context->key_theme_name[0])
+	gtk_rc_parse_named (context, context->key_theme_name, "key");
+#endif /* MAEMO_CHANGES */
+
       tmp_list = global_rc_files;
       while (tmp_list)
 	{
@@ -1764,6 +1785,7 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
 	  tmp_list = tmp_list->next;
 	}
 
+#ifndef MAEMO_CHANGES
       g_free (context->theme_name);
       g_free (context->key_theme_name);
 
@@ -1776,6 +1798,7 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
 	gtk_rc_parse_named (context, context->theme_name, NULL);
       if (context->key_theme_name && context->key_theme_name[0])
 	gtk_rc_parse_named (context, context->key_theme_name, "key");
+#endif /* !MAEMO_CHANGES */
 
       context->reloading = FALSE;
 
@@ -2205,6 +2228,12 @@ gtk_rc_parse_any (GtkRcContext *context,
 
   for (i = 0; i < G_N_ELEMENTS (symbols); i++)
     g_scanner_scope_add_symbol (scanner, 0, symbol_names + symbols[i].name_offset, GINT_TO_POINTER (symbols[i].token));
+
+#ifdef MAEMO_CHANGES
+  g_scanner_scope_add_symbol (scanner, 0, "logical_color",
+                              GINT_TO_POINTER (GTK_RC_TOKEN_COLOR));
+#endif /* MAEMO_CHANGES */
+
   done = FALSE;
   while (!done)
     {
@@ -2858,7 +2887,7 @@ gtk_rc_parse_statement (GtkRcContext *context,
       return gtk_rc_parse_style (context, scanner);
       
     case GTK_RC_TOKEN_BINDING:
-      return gtk_binding_parse_binding (scanner);
+      return _gtk_binding_parse_binding (scanner);
       
     case GTK_RC_TOKEN_PIXMAP_PATH:
       return gtk_rc_parse_pixmap_path (context, scanner);
@@ -3856,9 +3885,16 @@ gtk_rc_parse_color_full (GScanner   *scanner,
     case G_TOKEN_STRING:
       if (!gdk_color_parse (scanner->value.v_string, color))
 	{
+#ifdef MAEMO_CHANGES
+          if (!(style && lookup_color (style, scanner->value.v_string, color)))
+            {
+#endif /* MAEMO_CHANGES */
           g_scanner_warn (scanner, "Invalid color constant '%s'",
                           scanner->value.v_string);
           return G_TOKEN_STRING;
+#ifdef MAEMO_CHANGES
+            }
+#endif /* MAEMO_CHANGES */
 	}
       return G_TOKEN_NONE;
 

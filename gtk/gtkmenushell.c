@@ -203,6 +203,19 @@ static guint menu_shell_signals[LAST_SIGNAL] = { 0 };
 
 G_DEFINE_TYPE (GtkMenuShell, gtk_menu_shell, GTK_TYPE_CONTAINER)
 
+#ifdef MAEMO_CHANGES
+static void
+gtk_menu_shell_insensitive_press (GtkWidget *widget)
+{
+  GtkMenuShell *menu_shell;
+  GdkEvent *event;
+  g_return_if_fail (GTK_IS_MENU_SHELL (widget));
+  menu_shell = GTK_MENU_SHELL (widget);
+  event = gtk_get_current_event ();
+  gtk_widget_insensitive_press (gtk_get_event_widget (event));
+}
+#endif /* MAEMO_CHANGES */
+
 static void
 gtk_menu_shell_class_init (GtkMenuShellClass *klass)
 {
@@ -228,6 +241,9 @@ gtk_menu_shell_class_init (GtkMenuShellClass *klass)
   widget_class->enter_notify_event = gtk_menu_shell_enter_notify;
   widget_class->leave_notify_event = gtk_menu_shell_leave_notify;
   widget_class->screen_changed = gtk_menu_shell_screen_changed;
+#ifdef MAEMO_CHANGES
+  widget_class->insensitive_press = gtk_menu_shell_insensitive_press;
+#endif /* MAEMO_CHANGES */
 
   container_class->add = gtk_menu_shell_add;
   container_class->remove = gtk_menu_shell_remove;
@@ -685,6 +701,7 @@ gtk_menu_shell_key_press (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
   GtkMenuShell *menu_shell;
+  gboolean enable_mnemonics;
   
   g_return_val_if_fail (GTK_IS_MENU_SHELL (widget), FALSE);
   g_return_val_if_fail (event != NULL, FALSE);
@@ -697,7 +714,14 @@ gtk_menu_shell_key_press (GtkWidget   *widget,
   if (gtk_bindings_activate_event (GTK_OBJECT (widget), event))
     return TRUE;
 
-  return gtk_menu_shell_activate_mnemonic (menu_shell, event);
+  g_object_get (gtk_widget_get_settings (widget),
+		"gtk-enable-mnemonics", &enable_mnemonics,
+		NULL);
+
+  if (enable_mnemonics)
+    return gtk_menu_shell_activate_mnemonic (menu_shell, event);
+
+  return FALSE;
 }
 
 static gint
@@ -1044,17 +1068,27 @@ gtk_menu_shell_move_selected (GtkMenuShell  *menu_shell,
       GList *node = g_list_find (menu_shell->children,
 				 menu_shell->active_menu_item);
       GList *start_node = node;
-      
+      gboolean wrap_around;
+
+      g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu_shell)),
+                    "gtk-keynav-wrap-around", &wrap_around,
+                    NULL);
+
       if (distance > 0)
 	{
 	  node = node->next;
 	  while (node != start_node && 
 		 (!node || !_gtk_menu_item_is_selectable (node->data)))
 	    {
-	      if (!node)
-		node = menu_shell->children;
-	      else
+	      if (node)
 		node = node->next;
+              else if (wrap_around)
+		node = menu_shell->children;
+              else
+                {
+                  gtk_widget_error_bell (GTK_WIDGET (menu_shell));
+                  break;
+                }
 	    }
 	}
       else
@@ -1063,10 +1097,15 @@ gtk_menu_shell_move_selected (GtkMenuShell  *menu_shell,
 	  while (node != start_node &&
 		 (!node || !_gtk_menu_item_is_selectable (node->data)))
 	    {
-	      if (!node)
-		node = g_list_last (menu_shell->children);
-	      else
+	      if (node)
 		node = node->prev;
+              else if (wrap_around)
+		node = g_list_last (menu_shell->children);
+              else
+                {
+                  gtk_widget_error_bell (GTK_WIDGET (menu_shell));
+                  break;
+                }
 	    }
 	}
       

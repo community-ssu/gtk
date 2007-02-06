@@ -555,7 +555,11 @@ init_icon_sizes (void)
 {
   if (icon_sizes == NULL)
     {
+#ifdef MAEMO_CHANGES
+#define NUM_BUILTIN_SIZES 11
+#else  /* !MAEMO_CHANGES */
 #define NUM_BUILTIN_SIZES 7
+#endif /* !MAEMO_CHANGES */
       gint i;
 
       icon_aliases = g_hash_table_new (g_str_hash, g_str_equal);
@@ -605,7 +609,31 @@ init_icon_sizes (void)
       icon_sizes[GTK_ICON_SIZE_DIALOG].width = 48;
       icon_sizes[GTK_ICON_SIZE_DIALOG].height = 48;
 
+#ifdef MAEMO_CHANGES
+      icon_sizes[HILDON_ICON_SIZE_26].size = HILDON_ICON_SIZE_26;
+      icon_sizes[HILDON_ICON_SIZE_26].name = "hildon-26";
+      icon_sizes[HILDON_ICON_SIZE_26].width = 26;
+      icon_sizes[HILDON_ICON_SIZE_26].height = 26;
+
+      icon_sizes[HILDON_ICON_SIZE_40].size = HILDON_ICON_SIZE_40;
+      icon_sizes[HILDON_ICON_SIZE_40].name = "hildon-40";
+      icon_sizes[HILDON_ICON_SIZE_40].width = 40;
+      icon_sizes[HILDON_ICON_SIZE_40].height = 40;
+
+      icon_sizes[HILDON_ICON_SIZE_50].size = HILDON_ICON_SIZE_50;
+      icon_sizes[HILDON_ICON_SIZE_50].name = "hildon-50";
+      icon_sizes[HILDON_ICON_SIZE_50].width = 50;
+      icon_sizes[HILDON_ICON_SIZE_50].height = 50;
+
+      icon_sizes[HILDON_ICON_SIZE_64].size = HILDON_ICON_SIZE_64;
+      icon_sizes[HILDON_ICON_SIZE_64].name = "hildon-64";
+      icon_sizes[HILDON_ICON_SIZE_64].width = 54;
+      icon_sizes[HILDON_ICON_SIZE_64].height = 64;
+
+      g_assert ((HILDON_ICON_SIZE_64 + 1) == NUM_BUILTIN_SIZES);
+#else  /* !MAEMO_CHANGES */
       g_assert ((GTK_ICON_SIZE_DIALOG + 1) == NUM_BUILTIN_SIZES);
+#endif /* !MAEMO_CHANGES */
 
       /* Alias everything to itself. */
       i = 1; /* skip invalid size */
@@ -1477,7 +1505,12 @@ render_icon_name_pixbuf (GtkIconSource    *icon_source,
   tmp_source.source.pixbuf = tmp_pixbuf;
 
   pixbuf = gtk_style_render_icon (style, &tmp_source,
-				  direction, state, -1,
+#ifdef MAEMO_CHANGES
+				  direction, state,
+				  (size < HILDON_ICON_SIZE_26) ? -1 : size,
+#else   /* !MAEMO_CHANGES */
+                                  direction, state, -1,
+#endif /* !MAEMO_CHANGES */
 				  widget, detail);
 
   if (!pixbuf)
