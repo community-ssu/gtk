@@ -421,6 +421,11 @@ gboolean	_gtk_window_query_nonaccels	(GtkWindow	*window,
 						 guint		 accel_key,
 						 GdkModifierType accel_mods);
 
+#ifdef MAEMO_CHANGES
+GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window );
+void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget );
+#endif /* MAEMO_CHANGES */
+
 G_END_DECLS
 
 #endif /* __GTK_WINDOW_H__ */

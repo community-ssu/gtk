@@ -138,7 +138,10 @@ typedef enum
   GDK_WINDOW_TYPE_HINT_TOOLTIP,
   GDK_WINDOW_TYPE_HINT_NOTIFICATION,
   GDK_WINDOW_TYPE_HINT_COMBO,
-  GDK_WINDOW_TYPE_HINT_DND
+  GDK_WINDOW_TYPE_HINT_DND,
+#ifdef MAEMO_CHANGES
+  GDK_WINDOW_TYPE_HINT_MESSAGE = GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU,
+#endif /* MAEMO_CHANGES */
 } GdkWindowTypeHint;
 
 /* The next two enumeration values current match the
@@ -552,6 +555,7 @@ void	      gdk_window_set_functions	 (GdkWindow	  *window,
 GList *       gdk_window_get_toplevels   (void);
 #endif
 
+void          gdk_window_beep            (GdkWindow       *window);
 void          gdk_window_iconify         (GdkWindow       *window);
 void          gdk_window_deiconify       (GdkWindow       *window);
 void          gdk_window_stick           (GdkWindow       *window);

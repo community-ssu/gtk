@@ -39,7 +39,9 @@
 #include <gobject/gobjectnotifyqueue.c>
 #include <gobject/gvaluecollector.h>
 #include "gtkalias.h"
-
+#ifdef MAEMO_CHANGES
+#include "gtkmenu.h"
+#endif /* MAEMO_CHANGES */
 
 enum {
   ADD,
@@ -55,6 +57,16 @@ enum {
   PROP_RESIZE_MODE,
   PROP_CHILD
 };
+
+#ifdef MAEMO_CHANGES
+typedef struct
+{
+  GtkWidget *menu;
+  void *func;
+  GtkWidgetTapAndHoldFlags flags;
+} GtkContainerTAH;
+
+#endif /* MAEMO_CHANGES */
 
 #define PARAM_SPEC_PARAM_ID(pspec)              ((pspec)->param_id)
 #define PARAM_SPEC_SET_PARAM_ID(pspec, id)      ((pspec)->param_id = (id))
@@ -99,6 +111,14 @@ static void     gtk_container_unmap                (GtkWidget         *widget);
 static gchar* gtk_container_child_default_composite_name (GtkContainer *container,
 							  GtkWidget    *child);
 
+#ifdef MAEMO_CHANGES
+static void     gtk_container_tap_and_hold_setup   (GtkWidget                *widget,
+						    GtkWidget                *menu,
+						    GtkCallback               func,
+						    GtkWidgetTapAndHoldFlags  flags);
+static void     gtk_container_tap_and_hold_setup_forall (GtkWidget       *widget,
+							 GtkContainerTAH *tah);
+#endif /* MAEMO_CHANGES */
 
 /* --- variables --- */
 static const gchar           vadjustment_key[] = "gtk-vadjustment";
@@ -190,6 +210,9 @@ gtk_container_class_init (GtkContainerClass *class)
   widget_class->map = gtk_container_map;
   widget_class->unmap = gtk_container_unmap;
   widget_class->focus = gtk_container_focus;
+#ifdef MAEMO_CHANGES
+  widget_class->tap_and_hold_setup = gtk_container_tap_and_hold_setup;
+#endif /* MAEMO_CHANGES */
   
   class->add = gtk_container_add_unimplemented;
   class->remove = gtk_container_remove_unimplemented;
@@ -2463,6 +2486,41 @@ gtk_container_propagate_expose (GtkContainer   *container,
       gdk_event_free (child_event);
     }
 }
+
+#ifdef MAEMO_CHANGES
+static void
+gtk_container_tap_and_hold_setup_forall (GtkWidget       *widget,
+					 GtkContainerTAH *tah)
+{
+  gtk_widget_tap_and_hold_setup (widget, tah->menu, tah->func, tah->flags);
+}
+
+static void
+gtk_container_tap_and_hold_setup (GtkWidget                *widget,
+				  GtkWidget                *menu,
+				  GtkCallback               func,
+				  GtkWidgetTapAndHoldFlags  flags)
+{
+  GtkContainerTAH tah;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+
+  tah.menu = menu;
+  tah.func = func;
+  tah.flags = flags;
+
+  if (flags & GTK_TAP_AND_HOLD_NO_INTERNALS)
+    gtk_container_foreach (GTK_CONTAINER (widget),
+			   (GtkCallback)gtk_container_tap_and_hold_setup_forall, &tah);
+  else
+    gtk_container_forall (GTK_CONTAINER (widget),
+			  (GtkCallback)gtk_container_tap_and_hold_setup_forall,
+			  &tah);
+
+  parent_class->tap_and_hold_setup (widget, menu, func, flags);
+}
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_CONTAINER_C__
 #include "gtkaliasdef.c"

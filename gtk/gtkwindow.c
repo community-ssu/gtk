@@ -4720,7 +4720,7 @@ gtk_window_key_release_event (GtkWidget   *widget,
 
   /* Chain up, invokes binding set */
   if (!handled)
-    handled = GTK_WIDGET_CLASS (gtk_window_parent_class)->key_press_event (widget, event);
+    handled = GTK_WIDGET_CLASS (gtk_window_parent_class)->key_release_event (widget, event);
 
   return handled;
 }
@@ -7698,13 +7698,29 @@ gtk_window_activate_key (GtkWindow   *window,
 
   if (found_entry)
     {
+      gboolean enable_mnemonics;
+      gboolean enable_accels;
+
+      g_object_get (gtk_widget_get_settings (GTK_WIDGET (window)),
+                    "gtk-enable-mnemonics", &enable_mnemonics,
+                    "gtk-enable-accels", &enable_accels,
+                    NULL);
+
       if (found_entry->is_mnemonic)
-	return gtk_window_mnemonic_activate (window, found_entry->keyval, found_entry->modifiers);
+        {
+          if (enable_mnemonics)
+            return gtk_window_mnemonic_activate (window, found_entry->keyval,
+                                                 found_entry->modifiers);
+        }
       else
-	return gtk_accel_groups_activate (G_OBJECT (window), found_entry->keyval, found_entry->modifiers);
+        {
+          if (enable_accels)
+            return gtk_accel_groups_activate (G_OBJECT (window), found_entry->keyval,
+                                              found_entry->modifiers);
+        }
     }
-  else
-    return FALSE;
+
+  return FALSE;
 }
 
 static void
@@ -7849,6 +7865,20 @@ gtk_window_set_default_icon_from_file (const gchar *filename,
 }
 
 #endif
+
+#ifdef MAEMO_CHANGES
+
+GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window )
+{
+  return NULL;
+
+}
+
+void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget )
+{
+}
+
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_WINDOW_C__
 #include "gtkaliasdef.c"

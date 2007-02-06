@@ -104,7 +104,10 @@ struct _GtkTreeViewClass
   gboolean (* start_interactive_search)   (GtkTreeView       *tree_view);
 
   /* Padding for future expansion */
-  void (*_gtk_reserved0) (void);
+#ifdef MAEMO_CHANGES
+  void     (* row_insensitive)            (GtkTreeView       *tree_view,
+                                           GtkTreePath       *path);
+#endif /* MAEMO_CHANGES */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
   void (*_gtk_reserved3) (void);

@@ -1,3 +1,24 @@
+2007-01-19  Michael Natterer  <mitch@imendio.com>
+
+	Port over io-jpeg.c changed (also filed upstream):
+
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use spinguard
+	to avoid infinite looping also when num_left > 0.
+
+	(gdk_pixbuf__jpeg_image_stop_load): Make sure the return value
+	matches error status, to ensure the caller can handle 'error'
+	correctly.
+
+2007-01-17  Michael Natterer  <mitch@imendio.com>
+
+	Port over io-png.c changes (also merged back to upstream):
+
+	* io-png.c (png_text_to_pixbuf_option): don't call g_convert() on
+	ASCII strings.
+
+	(png_info_callback): set an error when the size_func would scale
+	the pixbuf away completely.
+
 2006-10-03  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.10.6 ===

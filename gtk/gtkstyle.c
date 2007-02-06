@@ -2126,7 +2126,11 @@ gtk_default_render_icon (GtkStyle            *style,
   /* If the size was wildcarded, and we're allowed to scale, then scale; otherwise,
    * leave it alone.
    */
-  if (size != (GtkIconSize)-1 && gtk_icon_source_get_size_wildcarded (source))
+  if (size != (GtkIconSize)-1 && gtk_icon_source_get_size_wildcarded (source)
+#ifdef MAEMO_CHANGES
+      && size < HILDON_ICON_SIZE_26
+#endif /* MAEMO_CHANGES */
+      )
     scaled = scale_or_ref (base_pixbuf, width, height);
   else
     scaled = g_object_ref (base_pixbuf);
@@ -6668,6 +6672,7 @@ draw_insertion_cursor (GtkWidget        *widget,
   gint i;
   gfloat cursor_aspect_ratio;
   gint offset;
+  gint window_width;
   
   /* When changing the shape or size of the cursor here,
    * propagate the changes to gtktextview.c:text_window_invalidate_cursors().
@@ -6684,6 +6689,13 @@ draw_insertion_cursor (GtkWidget        *widget,
   else
     offset = stem_width - stem_width / 2;
   
+  gdk_drawable_get_size (widget->window, &window_width, NULL);
+
+  if (location->x - offset < 0 && direction == GTK_TEXT_DIR_LTR)
+    location->x += ABS (location->x - offset);
+  else if (location->x + offset > window_width && direction == GTK_TEXT_DIR_RTL)
+    location->x -= location->x + offset - window_width;
+
   for (i = 0; i < stem_width; i++)
     gdk_draw_line (drawable, gc,
 		   location->x + i - offset, location->y,
@@ -6764,6 +6776,17 @@ gtk_draw_insertion_cursor (GtkWidget        *widget,
   if (area)
     gdk_gc_set_clip_rectangle (gc, NULL);
 }
+
+#ifdef MAEMO_CHANGES
+
+gboolean  gtk_style_lookup_logical_color     (GtkStyle     *style,
+                                              const gchar  *color_name,
+                                              GdkColor     *color)
+{
+  return gtk_style_lookup_color (style, color_name, color);
+}
+
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_STYLE_C__
 #include "gtkaliasdef.c"

@@ -105,6 +105,7 @@ struct _GtkTreeModelFilterPrivate
   gboolean modify_func_set;
 
   gboolean in_row_deleted;
+  gboolean virtual_root_deleted;
 
   /* signal ids */
   guint changed_id;
@@ -290,6 +291,7 @@ gtk_tree_model_filter_init (GtkTreeModelFilter *filter)
   filter->priv->visible_method_set = FALSE;
   filter->priv->modify_func_set = FALSE;
   filter->priv->in_row_deleted = FALSE;
+  filter->priv->virtual_root_deleted = FALSE;
 }
 
 static void
@@ -359,8 +361,11 @@ gtk_tree_model_filter_finalize (GObject *object)
 {
   GtkTreeModelFilter *filter = (GtkTreeModelFilter *) object;
 
-  if (filter->priv->virtual_root)
-    gtk_tree_model_filter_unref_path (filter, filter->priv->virtual_root);
+  if (filter->priv->virtual_root && !filter->priv->virtual_root_deleted)
+    {
+      gtk_tree_model_filter_unref_path (filter, filter->priv->virtual_root);
+      filter->priv->virtual_root_deleted = TRUE;
+    }
 
   gtk_tree_model_filter_set_model (filter, NULL);
 
@@ -1581,7 +1586,12 @@ gtk_tree_model_filter_row_has_child_toggled (GtkTreeModel *c_model,
   level = FILTER_LEVEL (iter.user_data);
   elt = FILTER_ELT (iter.user_data2);
 
+#ifdef MAEMO_CHANGES
+  /* FIXME: see NB#45767 */
+  g_return_if_fail (elt->visible);
+#else /* !MAEMO_CHANGES */
   g_assert (elt->visible);
+#endif /* !MAEMO_CHANGES */
 
   /* If this node is referenced and has children, build the level so we
    * can monitor it for changes.
@@ -1611,6 +1621,11 @@ gtk_tree_model_filter_row_deleted (GtkTreeModel *c_model,
 
   g_return_if_fail (c_path != NULL);
 
+#ifdef MAEMO_CHANGES
+  parent = NULL;
+  parent_level = NULL;
+#endif /* MAEMO_CHANGES */
+
   /* special case the deletion of an ancestor of the virtual root */
   if (filter->priv->virtual_root &&
       (gtk_tree_path_is_ancestor (c_path, filter->priv->virtual_root) ||
@@ -1619,6 +1634,9 @@ gtk_tree_model_filter_row_deleted (GtkTreeModel *c_model,
       gint i;
       GtkTreePath *path;
       FilterLevel *level = FILTER_LEVEL (filter->priv->root);
+
+      gtk_tree_model_filter_unref_path (filter, filter->priv->virtual_root);
+      filter->priv->virtual_root_deleted = TRUE;
 
       if (!level)
         return;
@@ -2835,7 +2853,10 @@ gtk_tree_model_filter_new (GtkTreeModel *child_model,
 
   filter = GTK_TREE_MODEL_FILTER (retval);
   if (filter->priv->virtual_root)
-    gtk_tree_model_filter_ref_path (filter, filter->priv->virtual_root);
+    {
+      gtk_tree_model_filter_ref_path (filter, filter->priv->virtual_root);
+      filter->priv->virtual_root_deleted = FALSE;
+    }
 
   return retval;
 }

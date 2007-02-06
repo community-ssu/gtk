@@ -1,3 +1,91 @@
+gtk+2.0 (2:2.10.6-0osso5) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * libgtk2.0-0.files: remove im-xim as unnecessary and in some cases harmful
+  * libgtk2.0-0.postinst: call hildon-theme-recache-all to regenerate theme
+    cache files (Fixes: MB#1024)
+  * Fixes: NB#38065 input method not return to VKB mode when connection is set
+    to offline mode and hw keyboard is actived
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  6 Feb 2007 18:46:19 +0200
+
+gtk+2.0 (2:2.10.6-0osso4) experimental; urgency=low
+
+  NOTE: Please remember you need to add "MAEMO_CHANGES" to your compilation
+  flags if you're using any of the Maemo GTK+ API.
+  See http://maemo.org/maemowiki/MaemoGtk210Overview for a review of the API.
+
+  * Pen dragging suport for GtkTreeView
+  * autodimmed property for GtkComboBox
+  * Fix scroll arrow backgrounds painting
+
+ -- Xan Lopez <xan@xan-laptop>  Tue,  6 Feb 2007 12:11:16 +0200
+
+gtk+2.0 (2:2.10.6-0osso3) experimental; urgency=low
+
+  * Backport from trunk:
+    - GtkComboBox keynav.
+    - Infrastructure and notification of failed navigation.
+    - GtkProgressBar style properties.
+    - GtkWidget::insensitive-press signal.
+    - gtkrc files parsing order.
+    - revert generic disabling of PRELIGHT state.
+    - Change GtkMenu window type, auto-select first item, various
+      drawing updates.
+  * Misc:
+    - Change MAEMO_CHANGES comments to #ifdef/#endif to allow conditionalized
+      inclusion of maemo-gtk changes during compilation.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 31 Jan 2007 15:12:14 +0200
+
+gtk+2.0 (2:2.10.6-0osso2) unstable; urgency=low
+
+  * Restore API compatibility with maemo gtk+ 2.6
+
+  * Add "fill-level" property to GtkRange
+
+  * Export symbols for implementing GtkFileChooser interface outside gtk:
+    - hildon_gtk_file_chooser_install_properties
+    - gtk/gtkfilesystemmodel.h, gtk/gtkfilechooserprivate.h,
+      gtk/gtkfilechooserutils.h
+  * Add stubs for removed / replaced API:
+    - gtk_widget_{get,set}_hildon_focus_handling
+    - osso_gtk_range_{get,set}_stream_indicator
+    - osso_gtk_range_{get,set}_stream_position
+    - gtk_style_lookup_logical_color
+    - gtk_text_buffer_{get,set}_can_paste_rich_text
+    - gtk_text_buffer_{get,set}_rich_text_format
+    - hildon_gtk_file_system_create
+    - gtk_file_system_render_icon
+    - hildon_gtk_button_set_depressed
+    - close signal (GtkMenuShell)
+    - "checkbox-mode" (GtkCellRendererToggle)
+  * Empty stubs:
+    - hildon_gtk_text_view_{get,set}_input_mode
+    - gtk_window_{get,set}_prev_focus_widget
+    - osso_gtk_button_set_detail_from_attach_flags
+    - osso_gtk_button_attach_details
+    - hildon_gtk_entry_{get,set}_input_mode
+    - invalid-input signal (GtkEntry)
+  * Restore the maemo API:
+    - tap'n'hold (GtkWidget, GtkContainer, GtkTreeView)
+    - insensitive-press signal (GtkWidget, GtkToolButton)
+    - row-insensitive signal (GtkTreeView)
+    - gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_has_selection
+    - hildon_gtk_im_context_{copy,cut,paste}
+    - HILDON_ICON_SIZE_{26,40,50,64}
+
+  * debian/rules:
+    - do not install .cvsignore files in gtk2.0-examples package
+    - Prefer HW floating points (via DEB_BUILD_OPTIONS=vfp)
+  * debian/control: Build-Depend on libtool >= 1.5.12 to handle four digits in
+    version
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 15 Jan 2007 18:27:03 +0200
+
 gtk+2.0 (2:2.10.6-0osso1) unstable; urgency=low
 
   * Upgrade to 2.10.6 ** ALL MAEMO PATCHES DROPPED

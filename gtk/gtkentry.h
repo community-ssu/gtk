@@ -135,10 +135,18 @@ struct _GtkEntryClass
   void (* paste_clipboard)    (GtkEntry       *entry);
   void (* toggle_overwrite)   (GtkEntry       *entry);
 
+#ifdef MAEMO_CHANGES
+  void (* invalid_input) (GtkEntry            *entry,
+                          GtkInvalidInputType  invalid_input_type);
+#endif /* MAEMO_CHANGES */
+
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
+
+#ifndef MAEMO_CHANGES
   void (*_gtk_reserved3) (void);
+#endif /* !MAEMO_CHANGES */
 };
 
 GType      gtk_entry_get_type       		(void) G_GNUC_CONST;
@@ -209,6 +217,12 @@ void       gtk_entry_select_region  		(GtkEntry      *entry,
 void       gtk_entry_set_editable   		(GtkEntry      *entry,
 						 gboolean       editable);
 #endif /* GTK_DISABLE_DEPRECATED */
+
+#ifdef MAEMO_CHANGES
+void               hildon_gtk_entry_set_input_mode (GtkEntry          *entry,
+                                                    HildonGtkInputMode input_mode);
+HildonGtkInputMode hildon_gtk_entry_get_input_mode (GtkEntry          *entry);
+#endif /* MAEMO_CHANGES */
 
 G_END_DECLS
 

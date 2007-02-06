@@ -68,10 +68,17 @@ enum {
   PROP_ACTIVE,
   PROP_RADIO,
   PROP_INCONSISTENT,
-  PROP_INDICATOR_SIZE
+  PROP_INDICATOR_SIZE,
+#ifdef MAEMO_CHANGES
+  PROP_CHECKBOX_MODE
+#endif /* MAEMO_CHANGES */
 };
 
+#ifndef MAEMO_CHANGES
 #define TOGGLE_WIDTH 12
+#else  /* MAEMO_CHANGES */
+#define TOGGLE_WIDTH 26
+#endif /* MAEMO_CHANGES */
 
 static guint toggle_cell_signals[LAST_SIGNAL] = { 0 };
 
@@ -83,6 +90,9 @@ struct _GtkCellRendererTogglePrivate
   gint indicator_size;
 
   guint inconsistent : 1;
+#ifdef MAEMO_CHANGES
+  guint checkbox_mode : 1;
+#endif /* MAEMO_CHANGES */
 };
 
 
@@ -100,10 +110,15 @@ gtk_cell_renderer_toggle_init (GtkCellRendererToggle *celltoggle)
   celltoggle->radio = FALSE;
 
   GTK_CELL_RENDERER (celltoggle)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+#ifdef MAEMO_CHANGES
   GTK_CELL_RENDERER (celltoggle)->xpad = 2;
   GTK_CELL_RENDERER (celltoggle)->ypad = 2;
+#endif /* MAEMO_CHANGES */
 
   priv->indicator_size = 12;
+#ifdef MAEMO_CHANGES
+  priv->indicator_size = TOGGLE_WIDTH;
+#endif /* MAEMO_CHANGES */
   priv->inconsistent = FALSE;
 }
 
@@ -151,6 +166,25 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Draw the toggle button as a radio button"),
 							 FALSE,
 							 GTK_PARAM_READWRITE));
+
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkCellRendererToggle:checkbox-mode:
+   *
+   * Activates the checkbox mode of drawing selection. Currently there are no 
+   * major differences in how the drawing is done.
+   * 
+   * Since: maemo 1.0
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_CHECKBOX_MODE,
+                                   g_param_spec_boolean ("checkbox-mode",
+                                                         P_("Checkbox Mode"),
+                                                         P_("Activates the checkbox mode of drawing selection"),
+                                                         FALSE,
+                                                         GTK_PARAM_READABLE |
+                                                         GTK_PARAM_WRITABLE));
+#endif /* MAEMO_CHANGES */
 
   g_object_class_install_property (object_class,
 				   PROP_INDICATOR_SIZE,
@@ -212,6 +246,11 @@ gtk_cell_renderer_toggle_get_property (GObject     *object,
     case PROP_INDICATOR_SIZE:
       g_value_set_int (value, priv->indicator_size);
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_CHECKBOX_MODE:
+      g_value_set_boolean (value, priv->checkbox_mode);
+      break;
+#endif /* MAEMO_CHANGES */
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -247,6 +286,11 @@ gtk_cell_renderer_toggle_set_property (GObject      *object,
     case PROP_INDICATOR_SIZE:
       priv->indicator_size = g_value_get_int (value);
       break;
+#ifdef MAEMO_CHANGES
+    case PROP_CHECKBOX_MODE:
+      priv->checkbox_mode = g_value_get_boolean (value);
+      break;
+#endif /* MAEMO_CHANGES */
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
       break;
@@ -339,6 +383,46 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
   if (width <= 0 || height <= 0)
     return;
 
+#ifdef MAEMO_CHANGES
+  if (priv->checkbox_mode)
+    {
+      /* Checkbox mode drawing */
+
+      state = GTK_STATE_NORMAL;
+
+      if (!cell->sensitive)
+        {
+          state = GTK_STATE_INSENSITIVE;
+        }
+#if 0
+      /* FIXME: Enable this after the activatable-issue is cleared up */
+      if (!celltoggle->activatable)
+        state = GTK_STATE_INSENSITIVE;
+#endif
+
+      if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
+        shadow = GTK_SHADOW_IN;
+      else
+        shadow = GTK_SHADOW_OUT;
+
+      if (priv->inconsistent)
+        shadow = GTK_SHADOW_ETCHED_IN;
+
+      if ((flags & GTK_CELL_RENDERER_FOCUSED) == GTK_CELL_RENDERER_FOCUSED)
+        {
+          /* Don't overlap with the focus border */
+          height -= 2;
+          if (GTK_WIDGET_HAS_FOCUS (widget))
+            state = GTK_STATE_ACTIVE;
+          else
+            state = GTK_STATE_PRELIGHT;
+        }
+    }
+  else
+    {
+      /* Normal operation */
+#endif /* MAEMO_CHANGES */
+
   if (priv->inconsistent)
     shadow = GTK_SHADOW_ETCHED_IN;
   else
@@ -362,6 +446,9 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
       else
         state = GTK_STATE_INSENSITIVE;
     }
+#ifdef MAEMO_CHANGES
+    }
+#endif /* MAEMO_CHANGES */
 
   if (celltoggle->radio)
     {

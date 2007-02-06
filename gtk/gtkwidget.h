@@ -37,6 +37,16 @@
 
 G_BEGIN_DECLS
 
+#ifdef MAEMO_CHANGES
+typedef enum
+{
+  GTK_TAP_AND_HOLD_NONE         = 0,
+  GTK_TAP_AND_HOLD_PASS_PRESS   = 1 << 0,
+  GTK_TAP_AND_HOLD_NO_SIGNALS   = 1 << 1,
+  GTK_TAP_AND_HOLD_NO_INTERNALS = 1 << 2
+} GtkWidgetTapAndHoldFlags;
+#endif /* MAEMO_CHANGES */
+
 /* The flags that are used by GtkWidget on top of the
  * flags field of GtkObject.
  */
@@ -408,12 +418,24 @@ struct _GtkWidgetClass
                                  GdkEventGrabBroken  *event);
 
   void         (* composited_changed) (GtkWidget *widget);
-	
+
+#ifdef MAEMO_CHANGES
+  void      (*tap_and_hold)       (GtkWidget                *widget);   /* Tap and hold action */
+  void      (*tap_and_hold_setup) (GtkWidget                *widget,
+				   GtkWidget                *menu,
+				   GtkCallback               func,
+				   GtkWidgetTapAndHoldFlags  flags);
+  gboolean  (*tap_and_hold_query) (GtkWidget                *widget,
+				   GdkEvent                 *event);
+
+  void (*insensitive_press) (GtkWidget *widget);
+#else /* !MAEMO_CHANGES */
   /* Padding for future expansion */
   void (*_gtk_reserved4) (void);
   void (*_gtk_reserved5) (void);
   void (*_gtk_reserved6) (void);
   void (*_gtk_reserved7) (void);
+#endif /* !MAEMO_CHANGES */
 };
 
 struct _GtkWidgetAuxInfo
@@ -563,6 +585,9 @@ GdkWindow *gtk_widget_get_parent_window	  (GtkWidget	       *widget);
 
 gboolean   gtk_widget_child_focus         (GtkWidget           *widget,
                                            GtkDirectionType     direction);
+gboolean   gtk_widget_keynav_failed       (GtkWidget           *widget,
+                                           GtkDirectionType     direction);
+void       gtk_widget_error_bell          (GtkWidget           *widget);
 
 void       gtk_widget_set_size_request    (GtkWidget           *widget,
                                            gint                 width,
@@ -795,6 +820,23 @@ void              _gtk_widget_propagate_screen_changed    (GtkWidget    *widget,
 void		  _gtk_widget_propagate_composited_changed (GtkWidget    *widget);
 
 GdkColormap* _gtk_widget_peek_colormap (void);
+
+#ifdef MAEMO_CHANGES
+void gtk_widget_set_hildon_focus_handling( GtkWidget *widget, gboolean hildon_like );
+gboolean gtk_widget_get_hildon_focus_handling( GtkWidget *widget );
+
+void gtk_widget_tap_and_hold_menu_position_top (GtkWidget                *menu,
+						gint                     *x,
+						gint                     *y,
+						gboolean                 *push_in,
+						GtkWidget                *widget);
+void gtk_widget_tap_and_hold_setup	       (GtkWidget                *widget,
+						GtkWidget                *menu,
+						GtkCallback               func,
+						GtkWidgetTapAndHoldFlags  flags);
+
+void gtk_widget_insensitive_press ( GtkWidget *widget );
+#endif /* MAEMO_CHANGES */
 
 G_END_DECLS
 

@@ -1,4 +1,3 @@
 usr/lib/*.so.*
 usr/lib/gtk-2.0/*/engines/*.so
-usr/lib/gtk-2.0/*/immodules/im-xim.so
 usr/lib/gtk-2.0/*/loaders/*.so

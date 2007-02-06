@@ -71,6 +71,9 @@ static void gtk_menu_item_parent_set     (GtkWidget        *widget,
 
 static void gtk_real_menu_item_select               (GtkItem     *item);
 static void gtk_real_menu_item_deselect             (GtkItem     *item);
+#ifdef MAEMO_CHANGES
+static void gtk_real_menu_item_activate             (GtkMenuItem *item);
+#endif /* MAEMO_CHANGES */
 static void gtk_real_menu_item_activate_item        (GtkMenuItem *item);
 static void gtk_real_menu_item_toggle_size_request  (GtkMenuItem *menu_item,
 						     gint        *requisition);
@@ -130,7 +133,11 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
   item_class->select = gtk_real_menu_item_select;
   item_class->deselect = gtk_real_menu_item_deselect;
 
+#ifdef MAEMO_CHANGES
+  klass->activate = gtk_real_menu_item_activate;
+#else
   klass->activate = NULL;
+#endif /* MAEMO_CHANGES */
   klass->activate_item = gtk_real_menu_item_activate_item;
   klass->toggle_size_request = gtk_real_menu_item_toggle_size_request;
   klass->toggle_size_allocate = gtk_real_menu_item_toggle_size_allocate;
@@ -385,16 +392,38 @@ void
 gtk_menu_item_select (GtkMenuItem *menu_item)
 {
   g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
-  
+
   gtk_item_select (GTK_ITEM (menu_item));
+
+  /* Enable themeing of the parent menu item depending on whether
+   * something is selected in its submenu
+   */
+  if (GTK_IS_MENU (GTK_WIDGET (menu_item)->parent))
+    {
+      GtkMenu *menu = GTK_MENU (GTK_WIDGET (menu_item)->parent);
+
+      if (menu->parent_menu_item)
+        gtk_widget_queue_draw (GTK_WIDGET (menu->parent_menu_item));
+    }
 }
 
 void
 gtk_menu_item_deselect (GtkMenuItem *menu_item)
 {
   g_return_if_fail (GTK_IS_MENU_ITEM (menu_item));
-  
+
   gtk_item_deselect (GTK_ITEM (menu_item));
+
+  /* Enable themeing of the parent menu item depending on whether
+   * something is selected in its submenu
+   */
+  if (GTK_IS_MENU (GTK_WIDGET (menu_item)->parent))
+    {
+      GtkMenu *menu = GTK_MENU (GTK_WIDGET (menu_item)->parent);
+
+      if (menu->parent_menu_item)
+        gtk_widget_queue_draw (GTK_WIDGET (menu->parent_menu_item));
+    }
 }
 
 void
@@ -901,10 +930,13 @@ gtk_real_menu_item_select (GtkItem *item)
       if (popup_delay > 0)
 	{
 	  GdkEvent *event = gtk_get_current_event ();
-	  
+
+#ifndef MAEMO_CHANGES
 	  menu_item->timer = g_timeout_add (popup_delay,
 					    gtk_menu_item_select_timeout,
 					    menu_item);
+#endif /* !MAEMO_CHANGES */
+
 	  if (event &&
 	      event->type != GDK_BUTTON_PRESS &&
 	      event->type != GDK_ENTER_NOTIFY)
@@ -965,6 +997,49 @@ gtk_menu_item_mnemonic_activate (GtkWidget *widget,
   return TRUE;
 }
 
+#ifdef MAEMO_CHANGES
+/* This function exists only for opening submenus on
+ * activation.
+ */
+static void
+gtk_real_menu_item_activate (GtkMenuItem *item)
+{
+  GdkEvent *event;
+  gint popup_delay;
+
+  g_return_if_fail (GTK_IS_MENU_ITEM (item));
+
+  if (!GTK_IS_MENU (item->submenu) ||
+      GTK_WIDGET_VISIBLE (item->submenu))
+    return;
+
+  event = gtk_get_current_event ();
+
+  /* Add a delay before opening a new menu */
+  if (item->timer)
+    {
+      g_source_remove (item->timer);
+      item->timer = 0;
+      popup_delay = 0;
+    }
+  else
+    popup_delay = get_popup_delay (item);
+
+  item->timer = g_timeout_add (popup_delay,
+                               gtk_menu_item_select_timeout,
+                               item);
+
+  /* We don't want to select first item if the submenu
+   * is opened with mouse release because the selection
+   * would move straigh back under the cursor.
+   */
+  if ((event == NULL) || (event->type != GDK_BUTTON_RELEASE))
+    gtk_menu_shell_select_first (GTK_MENU_SHELL (item->submenu), TRUE);
+
+  if (event)
+    gdk_event_free (event);
+}
+#endif /* MAEMO_CHANGES */
 
 static void
 gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
@@ -988,9 +1063,12 @@ gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
 	  _gtk_menu_shell_activate (menu_shell);
 
 	  gtk_menu_shell_select_item (GTK_MENU_SHELL (widget->parent), widget); 
+
+#ifndef MAEMO_CHANGES
 	  _gtk_menu_item_popup_submenu (widget); 
 
 	  gtk_menu_shell_select_first (GTK_MENU_SHELL (menu_item->submenu), TRUE);
+#endif /* !MAEMO_CHANGES */
 	}
     }
 }
