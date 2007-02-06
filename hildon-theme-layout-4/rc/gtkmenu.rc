@@ -43,6 +43,16 @@ style "osso-menu" {
 	 stretch = TRUE
      shaped = TRUE
       }
+    # Don't paint anything (extra) as the scroll arrow background
+    image
+      {
+	function = BOX
+	detail   = "menu_scroll_arrow_up"
+      }
+    image {
+	function = BOX
+	detail   = "menu_scroll_arrow_down"
+      }
     image
       {
         function        = ARROW
