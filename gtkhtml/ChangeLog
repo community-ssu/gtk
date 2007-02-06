@@ -1,3 +1,10 @@
+2007-02-06  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+	* During button_press_event, we must record the starting (x,y) of the pan using
+	  gdk_window_get_pointer + gtk_adjustment_get_value from the two adjustments
+	* We must compare the absolute value of the "total" pan, not the value itself
+	* gtk_html_private_calc_scrollbars allows page_size > upper - lower ... fixed
+	* Fixed NB#50763
+
 2007-01-29  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* When grabbing the page by a link for panning purposes, don't follow the link
