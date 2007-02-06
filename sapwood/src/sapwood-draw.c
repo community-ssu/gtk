@@ -105,7 +105,8 @@ match_theme_image (GtkStyle       *style,
 }
 
 static GdkBitmap *
-get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
+get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget,
+		      gint x, gint y, gint width, gint height)
 {
   /* It's not a good idea to set a shape mask when painting on anything but
    * widget->window, not only does the shape mask get wrongly offset but also
@@ -117,6 +118,22 @@ get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget)
    */
   if (image->background_shaped && window == widget->window)
     {
+      gint window_width;
+      gint window_height;
+      /* It also is not a good idea to apply shape mask when filling a window
+       * partially.
+       *
+       * For example GtkMenu paints/painted the arrow backgrounds with exactly
+       * the same parameters as full window background - except for the
+       * geometry. (http://bugzilla.gnome.org/show_bug.cgi?id=404571)
+       */
+      if (x != 0 || y != 0)
+        return NULL;
+
+      gdk_drawable_get_size (window, &window_width, &window_height);
+      if (width != window_width || height != window_height)
+        return NULL;
+
       if (GTK_IS_MENU (widget))
 	return gtk_widget_get_parent_window (widget);
       else if (GTK_IS_WINDOW (widget))
@@ -233,7 +250,7 @@ draw_simple_image(GtkStyle       *style,
 	  GdkBitmap *mask = NULL;
 	  gboolean valid;
 
-	  maskwin = get_window_for_shape (image, window, widget);
+	  maskwin = get_window_for_shape (image, window, widget, x, y, width, height);
 	  if (maskwin)
 	    mask = gdk_pixmap_new (maskwin, width, height, 1);
 
