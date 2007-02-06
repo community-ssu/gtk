@@ -108,7 +108,13 @@ struct _GtkTreeViewClass
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
   void (*_gtk_reserved3) (void);
+
+#ifdef MAEMO_CHANGES
+  void     (* row_insensitive)            (GtkTreeView       *tree_view,
+                                           GtkTreePath       *path);
+#else
   void (*_gtk_reserved4) (void);
+#endif /* MAEMO_CHANGES */
 };
 
 

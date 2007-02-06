@@ -372,11 +372,14 @@ gtk_aspect_frame_set
 
 #if IN_HEADER(__GTK_BINDINGS_H__)
 #if IN_FILE(__GTK_BINDINGS_C__)
-gtk_binding_entry_add_signal
-gtk_binding_entry_add_signall
+#ifndef GTK_DISABLE_DEPRECATED
 gtk_binding_entry_clear
-gtk_binding_entry_remove
+gtk_binding_entry_add_signall
 gtk_binding_parse_binding
+#endif
+gtk_binding_entry_skip
+gtk_binding_entry_add_signal
+gtk_binding_entry_remove
 gtk_bindings_activate
 gtk_bindings_activate_event
 gtk_binding_set_activate
@@ -2959,17 +2962,23 @@ gtk_radio_tool_button_set_group
 #if IN_HEADER(__GTK_RANGE_H__)
 #if IN_FILE(__GTK_RANGE_C__)
 gtk_range_get_adjustment
+gtk_range_get_fill_level
 gtk_range_get_inverted
 gtk_range_get_lower_stepper_sensitivity
+gtk_range_get_restrict_to_fill_level
+gtk_range_get_show_fill_level
 gtk_range_get_type G_GNUC_CONST
 gtk_range_get_update_policy
 gtk_range_get_upper_stepper_sensitivity
 gtk_range_get_value
 gtk_range_set_adjustment
+gtk_range_set_fill_level
 gtk_range_set_increments
 gtk_range_set_inverted
 gtk_range_set_lower_stepper_sensitivity
 gtk_range_set_range
+gtk_range_set_restrict_to_fill_level
+gtk_range_set_show_fill_level
 gtk_range_set_update_policy
 gtk_range_set_upper_stepper_sensitivity
 gtk_range_set_value
@@ -4464,6 +4473,7 @@ gtk_widget_create_pango_layout
 gtk_widget_destroy
 gtk_widget_destroyed
 gtk_widget_ensure_style
+gtk_widget_error_bell
 gtk_widget_event
 gtk_widget_freeze_child_notify
 gtk_widget_get_accessible
@@ -4505,6 +4515,7 @@ gtk_widget_hide_on_delete
 gtk_widget_intersect
 gtk_widget_is_ancestor
 gtk_widget_is_focus
+gtk_widget_keynav_failed
 gtk_widget_list_accel_closures
 gtk_widget_list_mnemonic_labels
 gtk_widget_map

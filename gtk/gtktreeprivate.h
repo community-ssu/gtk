@@ -263,6 +263,13 @@ struct _GtkTreeViewPrivate
 
   gboolean tree_lines_enabled;
   GdkGC *tree_line_gc;
+
+#ifdef MAEMO_CHANGES
+  /* Fields for Maemo specific functionality */
+  GtkTreeRowReference *queued_select_row;
+  GtkTreeRowReference *queued_expand_row;
+  GtkTreeRowReference *queued_activate_row;
+#endif /* MAEMO_CHANGES */
 };
 
 #ifdef __GNUC__

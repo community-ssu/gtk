@@ -62,7 +62,10 @@ typedef enum
   ICON_SUFFIX_XPM = 1 << 0,
   ICON_SUFFIX_SVG = 1 << 1,
   ICON_SUFFIX_PNG = 1 << 2,
-  HAS_ICON_FILE = 1 << 3
+  HAS_ICON_FILE = 1 << 3,
+#ifdef MAEMO_CHANGES
+  ICON_SUFFIX_ANI = 1 << 4
+#endif /* MAEMO_CHANGES */
 } IconSuffix;
 
 
@@ -1257,7 +1260,7 @@ gtk_icon_theme_lookup_icon (GtkIconTheme       *icon_theme,
   for (l = priv->themes; l; l = l->next)
     {
       IconTheme *theme = l->data;
-      
+   
       icon_info = theme_lookup_icon (theme, icon_name, size, allow_svg, use_builtin);
       if (icon_info)
 	goto out;
@@ -1795,6 +1798,10 @@ string_from_suffix (IconSuffix suffix)
       return ".svg";
     case ICON_SUFFIX_PNG:
       return ".png";
+#ifdef MAEMO_CHANGES
+    case ICON_SUFFIX_ANI:
+      return ".ani";
+#endif /* MAEMO_CHANGES */
     default:
       g_assert_not_reached();
     }
@@ -1812,6 +1819,10 @@ suffix_from_name (const char *name)
     retval = ICON_SUFFIX_SVG;
   else if (g_str_has_suffix (name, ".xpm"))
     retval = ICON_SUFFIX_XPM;
+#ifdef MAEMO_CHANGES
+  else if (g_str_has_prefix (name, ".ani"))
+    retval = ICON_SUFFIX_ANI;
+#endif /* MAEMO_CHANGES */
   else
     retval = ICON_SUFFIX_NONE;
 
@@ -1828,6 +1839,10 @@ best_suffix (IconSuffix suffix,
     return ICON_SUFFIX_SVG;
   else if ((suffix & ICON_SUFFIX_XPM) != 0)
     return ICON_SUFFIX_XPM;
+#ifdef MAEMO_CHANGES
+  else if ((suffix & ICON_SUFFIX_ANI) != 0)
+    return ICON_SUFFIX_ANI;
+#endif /* MAEMO_CHANGES */
   else
     return ICON_SUFFIX_NONE;
 }
@@ -1878,30 +1893,33 @@ theme_lookup_icon (IconTheme          *theme,
   min_difference = G_MAXINT;
   min_dir = NULL;
   has_larger = FALSE;
-
+  
+#ifdef MAEMO_CHANGES    /* do not prefer builtin icons */
+  dirs = theme->dirs;
+#else  /* !MAEMO_CHANGES */
   /* Builtin icons are logically part of the default theme and
    * are searched before other subdirectories of the default theme.
    */
   if (strcmp (theme->name, DEFAULT_THEME_NAME) == 0 && use_builtin)
     {
-      closest_builtin = find_builtin_icon (icon_name, 
-					   size,
-					   &min_difference,
-					   &has_larger);
-
+      closest_builtin = find_builtin_icon (icon_name,
+                                           size,
+                                           &min_difference,
+                                           &has_larger);
       if (min_difference == 0)
-	return icon_info_new_builtin (closest_builtin);
-
+        return icon_info_new_builtin (closest_builtin);
+      
       dirs = builtin_dirs;
     }
   else
     dirs = theme->dirs;
+#endif /* !MAEMO_CHANGES */
 
   l = dirs;
   while (l != NULL)
     {
       dir = l->data;
-
+      
       GTK_NOTE (ICONTHEME, 
 		g_print ("theme_lookup_icon dir %s\n", dir->dir));
       suffix = theme_dir_get_icon_suffix (dir, icon_name, NULL);
@@ -1946,8 +1964,10 @@ theme_lookup_icon (IconTheme          *theme,
 	}
     }
 
+#ifndef MAEMO_CHANGES    /* do not prefer builtin icons */
   if (closest_builtin)
     return icon_info_new_builtin (closest_builtin);
+#endif /* !MAEMO_CHANGES */
   
   if (min_dir)
     {
@@ -2014,6 +2034,21 @@ theme_lookup_icon (IconTheme          *theme,
       
       return icon_info;
     }
+
+#ifdef MAEMO_CHANGES
+  /* When an icon isn't found even in the default theme, try builtin stock
+   * icons as the last resort
+   */
+  if (strcmp (theme->name, DEFAULT_THEME_NAME) == 0 && use_builtin)
+    {
+      closest_builtin = find_builtin_icon (icon_name, size,
+					   &min_difference,
+					   &has_larger);
+
+      if (closest_builtin)
+	return icon_info_new_builtin (closest_builtin);
+    }
+#endif /* MAEMO_CHANGES */
  
   return NULL;
 }

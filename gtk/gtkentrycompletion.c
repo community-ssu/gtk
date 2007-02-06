@@ -455,6 +455,10 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   gtk_box_pack_start (GTK_BOX (priv->vbox), priv->scrolled_window,
                       TRUE, TRUE, 0);
 
+#ifdef MAEMO_CHANGES
+  gtk_widget_set_name (priv->popup_window, "hildon-completion-window"); 
+#endif /* MAEMO_CHANGES */
+
   /* we don't want to see the action treeview when no actions have
    * been inserted, so we pack the action treeview after the first
    * action has been added
@@ -1565,8 +1569,10 @@ gtk_entry_completion_insert_prefix (GtkEntryCompletion *completion)
   gboolean done;
   gchar *prefix;
 
-  g_signal_handler_block (completion->priv->entry,
-			  completion->priv->insert_text_id);
+  if (completion->priv->insert_text_id > 0)
+    g_signal_handler_block (completion->priv->entry,
+                            completion->priv->insert_text_id);
+
   prefix = gtk_entry_completion_compute_prefix (completion);
   if (prefix)
     {
@@ -1574,8 +1580,10 @@ gtk_entry_completion_insert_prefix (GtkEntryCompletion *completion)
 		     0, prefix, &done);
       g_free (prefix);
     }
-  g_signal_handler_unblock (completion->priv->entry,
-			    completion->priv->insert_text_id);
+
+  if (completion->priv->insert_text_id > 0)
+    g_signal_handler_unblock (completion->priv->entry,
+                              completion->priv->insert_text_id);
 }
 
 /**
