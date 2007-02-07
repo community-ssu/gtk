@@ -1,5 +1,7 @@
 2007-02-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 2.10
+	
 	* hildon-fm/hildon-file-system-model.c
 	(hildon_file_system_model_get_value): Consider nodes that have a
 	active get_folder_handle to be folders.
