@@ -1041,7 +1041,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                           info ? gtk_file_info_get_modification_time(info) : 0);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER:
-        g_value_set_boolean(value, model_node->folder || model_node->location || 
+        g_value_set_boolean(value, model_node->folder || model_node->location || model_node->get_folder_handle ||
             (info && gtk_file_info_get_is_folder(info)));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE:
