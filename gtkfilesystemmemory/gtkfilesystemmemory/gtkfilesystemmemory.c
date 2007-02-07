@@ -67,14 +67,14 @@ struct _GtkFileSystemMemoryClass
 };
 
 
-/*#define PRINT_FUNCTION_NAME 1*/
+#define PRINT_FUNCTION_NAME 1
 /* Set SOME_TESTING_STUFF is you want to use gtkfilechooserdialog.  */
 /*#define SOME_TESTING_STUFF 1 */
 
 #if PRINT_FUNCTION_NAME
-  #define DTEXT(str) fprintf( stderr, str )
+#define DTEXT(str) fprintf( stderr, "TRACE: %s\n", str )
 #else
-  #define DTEXT(str)
+#define DTEXT(str)
 #endif
 
 #define GTK_TYPE_FILE_FOLDER_MEMORY (gtk_file_folder_memory_get_type())
@@ -124,14 +124,17 @@ static GSList
 static GtkFileSystemVolume *
 gtk_file_system_memory_get_volume_for_path( GtkFileSystem *file_system,
 									                          const GtkFilePath *path );
-static GtkFileFolder *
-gtk_file_system_memory_get_folder( GtkFileSystem *file_system,
-							                     const GtkFilePath *path, GtkFileInfoType
-                                   types, GError **error );
-static gboolean
-gtk_file_system_memory_create_folder( GtkFileSystem *file_system,
-							                        const GtkFilePath *path,
-                                      GError **error );
+static GtkFileSystemHandle *
+gtk_file_system_memory_get_folder (GtkFileSystem *file_system,
+				   const GtkFilePath *path,
+				   GtkFileInfoType types,
+				   GtkFileSystemGetFolderCallback callback,
+				   gpointer data);
+static GtkFileSystemHandle *
+gtk_file_system_memory_create_folder (GtkFileSystem *file_system,
+				      const GtkFilePath *path,
+				      GtkFileSystemCreateFolderCallback callback,
+                                      gpointer data);
 static void
 gtk_file_system_memory_volume_free( GtkFileSystem  *file_system,
 						                        GtkFileSystemVolume *volume );
@@ -141,18 +144,22 @@ gtk_file_system_memory_volume_get_base_path( GtkFileSystem *file_system,
 static gboolean
 gtk_file_system_memory_volume_get_is_mounted( GtkFileSystem *file_system,
 								                              GtkFileSystemVolume *volume );
-static gboolean
-gtk_file_system_memory_volume_mount( GtkFileSystem *file_system,
-								                     GtkFileSystemVolume *volume,
-                                     GError **error );
+static GtkFileSystemHandle *
+gtk_file_system_memory_volume_mount (GtkFileSystem *file_system,
+				     GtkFileSystemVolume *volume,
+				     GtkFileSystemVolumeMountCallback callback,
+				     gpointer data);
 static gchar *
 gtk_file_system_memory_volume_get_display_name( GtkFileSystem *file_system,
 								                                GtkFileSystemVolume *volume );
+#if 0
 static GdkPixbuf *
 gtk_file_system_memory_volume_render_icon( GtkFileSystem *file_system,
 								                           GtkFileSystemVolume *volume,
                                            GtkWidget *widget, gint pixel_size, 
                                            GError **error );
+#endif
+
 static gboolean
 gtk_file_system_memory_get_parent( GtkFileSystem *file_system,
 							                     const GtkFilePath *path,
@@ -178,10 +185,12 @@ gtk_file_system_memory_uri_to_path( GtkFileSystem *file_system,
 static GtkFilePath *
 gtk_file_system_memory_filename_to_path( GtkFileSystem *file_system,
 								                         const gchar *filename );
+#if 0
 static GdkPixbuf *
 gtk_file_system_memory_render_icon( GtkFileSystem *file_system,
 							                      const GtkFilePath *path, GtkWidget *widget,
                                     gint pixel_size, GError **error );
+#endif
 static gboolean
 gtk_file_system_memory_insert_bookmark( GtkFileSystem *file_system,
 							                          const GtkFilePath *path, gint position,
@@ -208,7 +217,14 @@ static void
 gtk_file_folder_memory_finalize( GObject *object );
 
 
-
+#if 0
+static GtkFileSystemHandle *
+gtk_file_system_memory_get_info (GtkFileSystem                *file_system,
+				 const GtkFilePath            *path,
+				 GtkFileInfoType               types,
+				 GtkFileSystemGetInfoCallback  callback,
+				 gpointer                      data);
+#endif
 
 static GtkFileInfo *
 gtk_file_folder_memory_get_info( GtkFileFolder *folder, const GtkFilePath *path,
@@ -230,6 +246,197 @@ void signal_row_changed( GtkTreeModel *treemodel, GtkTreePath *path,
 
 void signal_row_deleted( GtkTreeModel *treemodel, GtkTreePath *path,
                          gpointer data);
+
+
+/* Maintaining callbacks.
+
+   All our operations are synchronous, but the clients of the
+   asynchronous GtkFileSystem API expect their callbacks to be invoked
+   from the main loop.  Thus, we queue them up for a idle handler.
+
+   We don't ever cancel a operation.
+
+   Because we don't cancel operations, we don't strictly need handles
+   except that clients might expect to get a unique handle for each
+   operation.  So we give them one.
+*/
+
+static void
+gtk_file_system_memory_cancel_operation (GtkFileSystemHandle *handle)
+{
+}
+
+enum callback_type {
+  CALLBACK_GET_FOLDER,
+  CALLBACK_CREATE_FOLDER,
+  CALLBACK_VOLUME_MOUNT
+};
+
+typedef struct {
+  GtkFileSystemHandle *handle;
+  GError *error;
+  gpointer callback_data;
+
+  enum callback_type type;
+  union {
+    struct {
+      GtkFileSystemGetFolderCallback callback;
+      GtkFileFolder *folder;
+    } get_folder;
+    struct {
+      GtkFileSystemCreateFolderCallback callback;
+      const GtkFilePath *path;
+    } create_folder;
+    struct {
+      GtkFileSystemVolumeMountCallback callback;
+      GtkFileSystemVolume *volume;
+    } volume_mount;
+  } info;
+} callback_info;
+
+static gint idle_handler_id = 0;
+static GSList *pending_callbacks = NULL;
+
+static gboolean
+execute_callbacks (gpointer unused)
+{
+  GSList *list, *l;
+
+  GDK_THREADS_ENTER ();
+
+  list = pending_callbacks;
+  pending_callbacks = NULL;
+  idle_handler_id = 0;
+
+  GDK_THREADS_LEAVE ();
+
+  for (l = list; l; l = l->next)
+    {
+      callback_info *info = (callback_info *)l->data;
+      GtkFileSystemHandle *handle = info->handle;
+      
+      switch (info->type)
+	{
+	case CALLBACK_GET_FOLDER:
+	  info->info.get_folder.callback (handle,
+					  info->info.get_folder.folder, 
+					  info->error,
+					  info->callback_data);
+	  break;
+	case CALLBACK_CREATE_FOLDER:
+	  info->info.create_folder.callback (handle,
+					     info->info.create_folder.path, 
+					     info->error,
+					     info->callback_data);
+	  break;
+	case CALLBACK_VOLUME_MOUNT:
+	  info->info.volume_mount.callback (handle,
+					    info->info.volume_mount.volume, 
+					    info->error,
+					    info->callback_data);
+	  break;
+	default:
+	  g_assert_not_reached ();
+	  break;
+	}
+
+      if (info->error)
+	g_error_free (info->error);
+
+      g_object_unref (handle->file_system);
+      handle->file_system = NULL;
+      g_object_unref (handle);
+
+      g_free (info);
+    }
+  
+  g_slist_free (list);
+
+  return FALSE;
+}
+
+static callback_info *
+queue_new_info (enum callback_type type,
+		GtkFileSystem *file_system,
+		GError *error,
+		gpointer callback_data)
+{
+  GtkFileSystemHandle *handle;
+  callback_info *info;
+
+  handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE, NULL);
+  handle->file_system = file_system;
+  g_object_ref (file_system);
+
+  info = g_new (callback_info, 1);
+  info->type = type;
+  info->handle = handle;
+  info->error = error;
+  info->callback_data = callback_data;
+  
+  g_object_ref (handle);
+
+  GDK_THREADS_ENTER ();
+
+  pending_callbacks = g_slist_prepend (pending_callbacks, info);
+  if (idle_handler_id == 0)
+    idle_handler_id = g_idle_add (execute_callbacks, NULL);
+
+  GDK_THREADS_LEAVE ();
+
+  return info;
+}
+
+static GtkFileSystemHandle *
+queue_get_folder_callback (GtkFileSystem *file_system,
+			   GtkFileSystemGetFolderCallback callback,
+			   GtkFileFolder *folder,
+			   GError *error,
+			   gpointer callback_data)
+{
+  callback_info *info = queue_new_info (CALLBACK_GET_FOLDER,
+					file_system,
+					error,
+					callback_data);
+
+  info->info.get_folder.callback = callback;
+  info->info.get_folder.folder = folder;
+  return info->handle;
+}
+
+static GtkFileSystemHandle *
+queue_create_folder_callback (GtkFileSystem *file_system,
+			      GtkFileSystemCreateFolderCallback callback,
+			      const GtkFilePath *path,
+			      GError *error,
+			      gpointer callback_data)
+{
+  callback_info *info = queue_new_info (CALLBACK_CREATE_FOLDER,
+					file_system,
+					error,
+					callback_data);
+
+  info->info.create_folder.callback = callback;
+  info->info.create_folder.path = path;
+  return info->handle;
+}
+
+static GtkFileSystemHandle *
+queue_volume_mount_callback (GtkFileSystem *file_system,
+			     GtkFileSystemVolumeMountCallback callback,
+			     GtkFileSystemVolume *volume,
+			     GError *error,
+			     gpointer callback_data)
+{
+  callback_info *info = queue_new_info (CALLBACK_VOLUME_MOUNT,
+					file_system,
+					error,
+					callback_data);
+
+  info->info.volume_mount.callback = callback;
+  info->info.volume_mount.volume = volume;
+  return info->handle;
+}
 
 
 void
@@ -325,7 +532,7 @@ unescape_character (const char *scanner)
   int first_digit;
   int second_digit;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   first_digit = g_ascii_xdigit_value (scanner[0]);
   if (first_digit < 0) 
@@ -346,7 +553,7 @@ g_unescape_uri_string (const char *escaped)
   gchar *out, *result;
   int c, len;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__  );
 
   if (escaped == NULL)
     return NULL;
@@ -425,7 +632,7 @@ gtk_file_system_memory_new( void )
 {
   GtkFileSystemMemory *mfs;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   mfs = g_object_new( GTK_TYPE_FILE_SYSTEM_MEMORY, NULL );
 
@@ -439,7 +646,7 @@ gtk_file_system_memory_class_init( GtkFileSystemMemoryClass *class )
   GObjectClass *gobject_class = G_OBJECT_CLASS( class );
   system_parent_class = g_type_class_peek_parent( class );
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   gobject_class->finalize = gtk_file_system_memory_finalize;
 }
@@ -451,14 +658,19 @@ gtk_file_system_memory_iface_init( GtkFileSystemIface *iface )
   iface->list_volumes = gtk_file_system_memory_list_volumes;
   iface->get_volume_for_path = gtk_file_system_memory_get_volume_for_path;
   iface->get_folder = gtk_file_system_memory_get_folder;
+#if 0
+  iface->get_info = gtk_file_system_memory_get_info;
+#endif
   iface->create_folder = gtk_file_system_memory_create_folder;
+  iface->cancel_operation = gtk_file_system_memory_cancel_operation;
   iface->volume_free = gtk_file_system_memory_volume_free;
   iface->volume_get_base_path = gtk_file_system_memory_volume_get_base_path;
   iface->volume_get_is_mounted = gtk_file_system_memory_volume_get_is_mounted;
   iface->volume_mount = gtk_file_system_memory_volume_mount;
-  iface->volume_get_display_name = 
-                        gtk_file_system_memory_volume_get_display_name;
-  iface->volume_render_icon = gtk_file_system_memory_volume_render_icon;
+  iface->volume_get_display_name = gtk_file_system_memory_volume_get_display_name;
+#if 0
+  iface->volume_get_icon_name = gtk_file_system_memory_volume_get_icon_name;
+#endif
   iface->get_parent = gtk_file_system_memory_get_parent;
   iface->make_path = gtk_file_system_memory_make_path;
   iface->parse = gtk_file_system_memory_parse;
@@ -466,10 +678,13 @@ gtk_file_system_memory_iface_init( GtkFileSystemIface *iface )
   iface->path_to_filename = gtk_file_system_memory_path_to_filename;
   iface->uri_to_path = gtk_file_system_memory_uri_to_path;
   iface->filename_to_path = gtk_file_system_memory_filename_to_path;
-  iface->render_icon = gtk_file_system_memory_render_icon;
   iface->insert_bookmark = gtk_file_system_memory_insert_bookmark;
   iface->remove_bookmark = gtk_file_system_memory_remove_bookmark;
   iface->list_bookmarks = gtk_file_system_memory_list_bookmarks;
+#if 0
+  iface->get_bookmark_label = gtk_file_system_memory_get_bookmark_label;
+  iface->set_bookmark_label = gtk_file_system_memory_set_bookmark_label;
+#endif
 }
 
 
@@ -609,7 +824,7 @@ gtk_file_system_memory_init(GtkFileSystemMemory *mfs)
 }
   #endif
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
 }
 
@@ -620,7 +835,7 @@ gtk_file_system_memory_finalize(GObject *object)
   GtkFileSystemMemory *mfs = GTK_FILE_SYSTEM_MEMORY( object );
   GObjectClass *object_class = G_OBJECT_CLASS(system_parent_class); 
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   g_slist_free(mfs->folders);
   g_slist_free(mfs->bookmarks);
@@ -684,7 +899,7 @@ void signal_row_inserted( GtkTreeModel *treemodel, GtkTreePath *path,
   GSList *paths = NULL;
   gchar *name;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( gtk_tree_path_get_depth( path ) == 1 )
   {
@@ -725,7 +940,7 @@ void signal_row_changed( GtkTreeModel *treemodel, GtkTreePath *path,
   GtkFilePath *file_path = NULL;
   GSList *paths = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( gtk_tree_path_get_depth( path ) == 1 )
   {
@@ -835,7 +1050,7 @@ gtk_file_folder_memory_finalize( GObject *object )
   GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(folder->model);
   GtkTreePath *path;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   /* If reference is invalid, it means we already removed it from folders tree
      in gtk_file_system_memory_remove() */
@@ -853,8 +1068,18 @@ gtk_file_folder_memory_finalize( GObject *object )
   gtk_tree_row_reference_free( folder->data );
 }
 
-
-
+#if 0
+static GtkFileSystemHandle *
+gtk_file_system_memory_get_info (GtkFileSystem                *file_system,
+				 const GtkFilePath            *path,
+				 GtkFileInfoType               types,
+				 GtkFileSystemGetInfoCallback  callback,
+				 gpointer                      data)
+{
+  DTEXT ( __FUNCTION__ );
+  return NULL;
+}
+#endif
 
 static GtkFileInfo *
 gtk_file_folder_memory_get_info( GtkFileFolder *folder, const GtkFilePath *path,
@@ -871,7 +1096,7 @@ gtk_file_folder_memory_get_info( GtkFileFolder *folder, const GtkFilePath *path,
   GtkFileInfo *info = NULL;
   GtkFileFolderMemory *ffm = GTK_FILE_FOLDER_MEMORY(folder);
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( path == NULL )
   {
@@ -934,7 +1159,7 @@ gtk_file_folder_memory_list_children( GtkFileFolder *folder, GSList **children,
   GtkFileFolderMemory *ffm = GTK_FILE_FOLDER_MEMORY(folder);
   GtkTreeRowReference *row = ffm->data;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   *children = NULL;
 
@@ -984,7 +1209,7 @@ gtk_file_folder_memory_list_children( GtkFileFolder *folder, GSList **children,
 static gboolean
 gtk_file_folder_memory_is_finished_loading( GtkFileFolder *folder )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   return TRUE;
 }
 
@@ -1000,7 +1225,7 @@ gtk_file_system_memory_list_volumes( GtkFileSystem *file_system )
   GtkTreeRowReference *row = NULL;
   GtkTreeModel *model = GTK_TREE_MODEL( file_system );
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( !gtk_tree_model_get_iter_first( model, &iter ) )
     return NULL;
@@ -1028,7 +1253,7 @@ gtk_file_system_memory_get_volume_for_path( GtkFileSystem *file_system,
   gchar **first = NULL;
   gchar *str = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   g_return_val_if_fail( path, NULL );
   
@@ -1065,26 +1290,31 @@ gtk_file_system_memory_get_volume_for_path( GtkFileSystem *file_system,
   return (GtkFileSystemVolume*)row;
 }
 
-static GtkFileFolder *
-gtk_file_system_memory_get_folder( GtkFileSystem *file_system,
-				                           const GtkFilePath *path,
-                                   GtkFileInfoType types, GError **error )
+static GtkFileSystemHandle *
+gtk_file_system_memory_get_folder (GtkFileSystem *file_system,
+				   const GtkFilePath *path,
+                                   GtkFileInfoType types,
+				   GtkFileSystemGetFolderCallback callback,
+				   gpointer data)
 {
   GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(file_system);
   GtkFileFolderMemory *ffm;
   GtkTreeModel *model;
   GtkTreePath *tree_path;
+  GError *error = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
-  if( !(tree_path = gtk_file_system_memory_file_path_to_tree_path( file_system,
-                                                                   path )) )
-  {
-    g_set_error( error, GTK_FILE_SYSTEM_ERROR, 
-                 GTK_FILE_SYSTEM_ERROR_NOT_FOLDER,
-                 "Path %s is not valid", (gchar*)path );
-    return NULL;
-  }
+  tree_path = gtk_file_system_memory_file_path_to_tree_path (file_system,
+							     path);
+  if(tree_path == NULL)
+    {
+      g_set_error (&error, GTK_FILE_SYSTEM_ERROR, 
+		   GTK_FILE_SYSTEM_ERROR_NOT_FOLDER,
+		   "Path %s is not valid", (gchar*)path );
+      return queue_get_folder_callback (file_system, callback,
+					NULL, error, data);
+    }
 
   model = GTK_TREE_MODEL(file_system);
 
@@ -1096,32 +1326,39 @@ gtk_file_system_memory_get_folder( GtkFileSystem *file_system,
   /* Pointer is removed from this list in folder finalize */
   fsm->folders = g_slist_prepend(fsm->folders, ffm);
 
-  gtk_tree_path_free( tree_path );
-  return GTK_FILE_FOLDER(ffm);
+  gtk_tree_path_free (tree_path);
+  
+  return queue_get_folder_callback (file_system, callback,
+				    GTK_FILE_FOLDER (ffm),
+				    NULL, data);
 }
 
 
-static gboolean
-gtk_file_system_memory_create_folder( GtkFileSystem *file_system,
-					                            const GtkFilePath *path, GError **error)
+static GtkFileSystemHandle *
+gtk_file_system_memory_create_folder (GtkFileSystem *file_system,
+				      const GtkFilePath *path,
+				      GtkFileSystemCreateFolderCallback callback,
+				      gpointer data)
 {
   gint path_len = 0, slash = 0, len = 0;
   gchar *str = NULL, *current = NULL, *to_path = NULL, *new_folder = NULL;
   GtkTreePath *tree_path = NULL;
   GtkTreeStore *store;
   GtkTreeIter iter, ipath;
+  GError *error = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   /* FIXME: This function is fuzzy, rework needed... */
 
   if( (tree_path = gtk_file_system_memory_file_path_to_tree_path( file_system, 
                                                                   path )) )
   {
-    g_set_error( error, GTK_FILE_SYSTEM_ERROR, 
+    g_set_error (&error, GTK_FILE_SYSTEM_ERROR, 
                  GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS,
-                 "Folder %s already exists", (gchar*)path );
-    return FALSE;
+                 "Folder %s already exists", (gchar*)path);
+    return queue_create_folder_callback (file_system, callback,
+					 path, error, data);
   }
   
   str = (gchar*)path;
@@ -1151,12 +1388,13 @@ gtk_file_system_memory_create_folder( GtkFileSystem *file_system,
   if( !(tree_path = gtk_file_system_memory_file_path_to_tree_path(file_system,
        (GtkFilePath*)to_path)) )
   {
-    g_set_error( error, GTK_FILE_SYSTEM_ERROR, 
+    g_set_error (&error, GTK_FILE_SYSTEM_ERROR, 
                  GTK_FILE_SYSTEM_ERROR_BAD_FILENAME,
                  "Path to %s is not valid", (gchar*)path );
     g_free( new_folder );
     g_free( to_path );             
-    return FALSE;
+    return queue_create_folder_callback (file_system, callback,
+					 path, error, data);
   }
 
   store = GTK_TREE_STORE( file_system );
@@ -1176,7 +1414,9 @@ gtk_file_system_memory_create_folder( GtkFileSystem *file_system,
   g_free( to_path );
   g_free( new_folder );
   gtk_tree_path_free( tree_path );
-  return TRUE;
+
+  return queue_create_folder_callback (file_system, callback,
+				       path, NULL, data);
 }
 
 
@@ -1184,7 +1424,7 @@ static void
 gtk_file_system_memory_volume_free( GtkFileSystem *file_system,
 				                            GtkFileSystemVolume *volume )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   gtk_tree_row_reference_free( (GtkTreeRowReference*)volume );
 }
 
@@ -1193,7 +1433,7 @@ static GtkFilePath *
 gtk_file_system_memory_volume_get_base_path( GtkFileSystem *file_system,
 						                                 GtkFileSystemVolume  *volume )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   return (GtkFilePath*)gtk_file_system_memory_volume_get_display_name(
                                                          file_system, volume );
 }
@@ -1203,20 +1443,22 @@ static gboolean
 gtk_file_system_memory_volume_get_is_mounted( GtkFileSystem  *file_system,
                                               GtkFileSystemVolume  *volume )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   return TRUE;
 }
 
 
-static gboolean
-gtk_file_system_memory_volume_mount( GtkFileSystem *file_system,
-					                           GtkFileSystemVolume *volume,
-                                     GError **error )
+static GtkFileSystemHandle *
+gtk_file_system_memory_volume_mount (GtkFileSystem *file_system,
+				     GtkFileSystemVolume *volume,
+				     GtkFileSystemVolumeMountCallback callback,
+				     gpointer data)
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   /* Volumes are always mounted in memory filesystem, so there's no need to
      do anything here. */
-  return TRUE;
+  return queue_volume_mount_callback (file_system, callback,
+				      volume, NULL, data);
 }
 
 
@@ -1230,7 +1472,7 @@ gtk_file_system_memory_volume_get_display_name( GtkFileSystem *file_system,
   GtkTreeModel *model;
   GtkTreeRowReference *row = (GtkTreeRowReference*)volume;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( !(path = gtk_tree_row_reference_get_path(row)) )
     return NULL;
@@ -1250,7 +1492,7 @@ gtk_file_system_memory_volume_get_display_name( GtkFileSystem *file_system,
   return str;
 }
 
-
+#if 0
 static GdkPixbuf *
 gtk_file_system_memory_volume_render_icon( GtkFileSystem *file_system,
 					                                 GtkFileSystemVolume *volume,
@@ -1262,7 +1504,7 @@ gtk_file_system_memory_volume_render_icon( GtkFileSystem *file_system,
   GtkTreePath *tree_path = gtk_tree_row_reference_get_path(
       					   (GtkTreeRowReference*)volume );
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( !tree_path )
   {
@@ -1281,7 +1523,7 @@ gtk_file_system_memory_volume_render_icon( GtkFileSystem *file_system,
   gtk_tree_path_free( tree_path );
   return pbuf;
 }
-
+#endif
 
 static gboolean
 gtk_file_system_memory_get_parent( GtkFileSystem *file_system,
@@ -1290,7 +1532,7 @@ gtk_file_system_memory_get_parent( GtkFileSystem *file_system,
 {
   GtkTreePath *tree_path = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( !(tree_path = gtk_file_system_memory_file_path_to_tree_path( file_system,
                                                                    path )) )
@@ -1328,7 +1570,7 @@ gtk_file_system_memory_make_path( GtkFileSystem *file_system,
   GtkFilePath *result = NULL;
   const gchar *path = gtk_file_path_get_string(base_path);
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   len = strlen(path)-1;
 
@@ -1353,7 +1595,7 @@ gtk_file_system_memory_parse( GtkFileSystem *file_system,
 {
   GtkTreePath *tree_path = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( !(tree_path = gtk_file_system_memory_file_path_to_tree_path( file_system,
                                                                    base_path)) )
@@ -1376,7 +1618,7 @@ static gchar *
 gtk_file_system_memory_path_to_uri( GtkFileSystem *file_system,
 				                            const GtkFilePath *path )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   return g_filename_to_uri( gtk_file_path_get_string(path), NULL, NULL );
 }
 
@@ -1385,7 +1627,7 @@ static gchar *
 gtk_file_system_memory_path_to_filename( GtkFileSystem *file_system,
 					                               const GtkFilePath *path )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   return g_strdup( gtk_file_path_get_string(path) );
 }
 
@@ -1397,7 +1639,7 @@ gtk_file_system_memory_uri_to_path( GtkFileSystem *file_system,
   GtkFilePath *path = NULL;
   gchar *filename = strchr( uri, ':' );
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if (filename)
     {
@@ -1416,11 +1658,11 @@ static GtkFilePath *
 gtk_file_system_memory_filename_to_path( GtkFileSystem *file_system,
 					                               const gchar *filename )
 {
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
   return gtk_file_path_new_dup(filename);
 }
 
-
+#if 0
 static GdkPixbuf *
 gtk_file_system_memory_render_icon( GtkFileSystem *file_system,
 				                            const GtkFilePath *path, GtkWidget *widget,
@@ -1431,7 +1673,7 @@ gtk_file_system_memory_render_icon( GtkFileSystem *file_system,
   GtkTreeModel *model;
   GtkTreePath *tree_path;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( !(tree_path = gtk_file_system_memory_file_path_to_tree_path(
        file_system, path )) )
@@ -1453,7 +1695,7 @@ gtk_file_system_memory_render_icon( GtkFileSystem *file_system,
   
   return pbuf;
 }
-
+#endif
 
 static gboolean
 gtk_file_system_memory_insert_bookmark( GtkFileSystem *file_system,
@@ -1463,7 +1705,7 @@ gtk_file_system_memory_insert_bookmark( GtkFileSystem *file_system,
   GtkTreePath *tree_path = NULL;
   GtkFileSystemMemory *fsm = GTK_FILE_SYSTEM_MEMORY(file_system);
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   tree_path = gtk_file_system_memory_file_path_to_tree_path( file_system, path );
   
@@ -1492,7 +1734,7 @@ gtk_file_system_memory_remove_bookmark( GtkFileSystem *file_system,
   GSList *current = NULL;
   start = current = GTK_FILE_SYSTEM_MEMORY(file_system)->bookmarks;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   while( current )
   {
@@ -1520,7 +1762,7 @@ gtk_file_system_memory_list_bookmarks( GtkFileSystem *file_system )
   GSList *current = GTK_FILE_SYSTEM_MEMORY(file_system)->bookmarks;
   GSList *new = NULL;
 
-  DTEXT( ":"__FUNCTION__"\n" );
+  DTEXT( __FUNCTION__ );
 
   if( current )
     do
