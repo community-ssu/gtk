@@ -1,8 +1,8 @@
 Source: gtkfilesystemmemory
 Section: x11
 Priority: optional
-Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libgtk2.0-dev (>= 2:2.6.10-1.osso6), libxi-dev, libxt-dev
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libgtk2.0-dev (>= 2:2.10)
 Standards-Version: 3.6.0
 
 Package: osso-memory-backend
