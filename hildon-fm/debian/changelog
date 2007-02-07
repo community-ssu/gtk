@@ -1,3 +1,9 @@
+libhildonfm (2.9-2unreleased) unstable; urgency=low
+
+  * Added Build dependency on libdbus-1-dev (>= 1.0).
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  7 Feb 2007 16:54:33 +0200
+
 libhildonfm (2.9-1) unstable; urgency=low
 
   * Added hildon-fm-dev as a build-time compatibility kluge as well.

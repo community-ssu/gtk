@@ -3,6 +3,14 @@
 	* hildon-fm/hildon-file-system-model.c
 	(hildon_file_system_model_get_value): Consider nodes that have a
 	active get_folder_handle to be folders.
+	(handle_possibly_finished_node): Only announce a row change when
+	the path is valid.  The path is invalid for the fake root.
+	(hildon_file_system_model_get_value): When calculating the weight,
+	don't look into info when it is NULL.
+	(get_folder_callback): When the folder is finished loading, list
+	and add its children immediately.  This is needed for the
+	filesystemmemory backend which doesn't emit any change
+	notification signals.
 
 	* hildon-fm/hildon-file-system-private.c
 	(_hildon_file_system_create_image): Don't call
