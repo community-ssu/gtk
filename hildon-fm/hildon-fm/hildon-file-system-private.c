@@ -440,7 +440,10 @@ _hildon_file_system_create_image (GtkFileSystem *fs,
         if (pixbuf) return pixbuf;
     }
 
-    return gtk_file_info_render_icon (info, ref_widget, size, NULL);
+    if (info)
+      return gtk_file_info_render_icon (info, ref_widget, size, NULL);
+    else
+      return NULL;
 }
 
 static const gchar *get_custom_root_name(const GtkFilePath *path)
