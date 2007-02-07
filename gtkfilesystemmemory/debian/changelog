@@ -1,3 +1,10 @@
+gtkfilesystemmemory (0.14-1) unstable; urgency=low
+
+  * Changed maintainer, pruned build depends, build depend on Gtk+ 2.10.
+  * Install module into /usr/lib/gtk-2.0/2.10.0/.
+
+ --
+
 gtkfilesystemmemory (0.13-1) unstable; urgency=low
 
   * Removed "or later" option from license statement.  Updated copyright

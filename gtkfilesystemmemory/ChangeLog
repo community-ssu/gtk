@@ -1,3 +1,15 @@
+2007-02-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 0.14.  
+
+	Ported to Gtk+ 2.10.
+	
+	* configure.ac: Removed "-ansi -pedantic" from CFLAGS.  Expect
+	Gtk+ 2.10.
+
+	* gtkfilesystemmemory/gtkfilesystemmemory.c: Ported to Gtk+ 2.10
+	GtkFileSystem API.  Icons don't work yet.
+
 2006-02-22  Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 
 	Added FIXMEs
