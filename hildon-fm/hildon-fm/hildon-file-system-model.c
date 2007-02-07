@@ -236,7 +236,8 @@ static void handle_possibly_finished_node(GNode *node)
       {
 	GtkTreePath *path =
 	  hildon_file_system_model_get_path (GTK_TREE_MODEL (model), &iter);
-	gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+	if (gtk_tree_path_get_depth (path) > 0)
+	  gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
 	gtk_tree_path_free (path);
       }
     }
@@ -1210,7 +1211,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         /* Temporary version of the weight calculation */
         g_value_set_int(value, model_node->location ? 
                 model_node->location->sort_weight : (
-            gtk_file_info_get_is_folder(info) ? 
+            (info && gtk_file_info_get_is_folder(info)) ? 
                 SORT_WEIGHT_FOLDER : SORT_WEIGHT_FILE));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO:
@@ -1590,6 +1591,25 @@ get_folder_callback (GtkFileSystemHandle *handle,
   g_object_set_qdata (G_OBJECT(model_node->folder),
 		      hildon_file_system_model_quark, node);
   
+  if (gtk_file_folder_is_finished_loading (model_node->folder))
+    {
+      GSList *children = NULL;
+      gboolean result;
+
+      result = gtk_file_folder_list_children
+	(model_node->folder, &children, &(model_node->error));
+      if (result)
+	{
+	  hildon_file_system_model_files_added (model_node->folder,
+						children,
+						model);
+	  hildon_file_system_model_folder_finished_loading
+	    (model_node->folder, model);
+	  gtk_file_paths_free (children);
+	}
+	  
+    }
+
   g_signal_connect_object
     (model_node->folder, "files-added",
      G_CALLBACK(hildon_file_system_model_files_added),
