@@ -1,3 +1,21 @@
+maemo-af-desktop (2.9.99.20-1) unstable; urgency=low
+
+  * hildon-home/home-applet-handler.[ch]:
+  - Add HildonLog class variable
+  - log each initialize and deinitialize callback call
+  - do not load an applet if it crashes on the last session
+  in one of these callbacks.
+  * hildon-home/hildon-home-window.c: Remove the log
+  file once Home has loaded all its applets properly.
+  Fixes: NB#51146
+
+  * hildon-home/hildon-home-area.c,
+  hildon-status-bar/hildon-status-bar-main.c:
+  - reverted iteration of the main loop between the load of
+  each applet
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  8 Feb 2007 10:49:19 +0200
+
 maemo-af-desktop (2.9.99.19-1) unstable; urgency=low
 
   * hildon-status-bar/hildon-status-bar-main.c: add a weak
