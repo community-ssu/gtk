@@ -220,7 +220,11 @@ gtk_dialog_init (GtkDialog *dialog)
   dialog->action_area = gtk_hbutton_box_new ();
 
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog->action_area),
+#ifdef MAEMO_CHANGES
+                             GTK_BUTTONBOX_CENTER);
+#else
                              GTK_BUTTONBOX_END);  
+#endif /* MAEMO_CHANGES */
 
   gtk_box_pack_end (GTK_BOX (dialog->vbox), dialog->action_area,
                     FALSE, TRUE, 0);
