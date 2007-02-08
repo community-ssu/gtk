@@ -155,8 +155,6 @@ static void home_applet_handler_class_init(HomeAppletHandlerClass * applet_class
         hildon_log_get_incomplete_groups (applet_class->log,
                                           "init_start",
                                           "init_end",
-                                          "deinit_start",
-                                          "deinit_end",
                                           NULL);
     
 }
@@ -578,18 +576,14 @@ GtkWidget *home_applet_handler_settings(HomeAppletHandler *handler,
 void home_applet_handler_deinitialize(HomeAppletHandler *handler)
 {
     HomeAppletHandlerPrivate *priv;
-    HildonLog *log;
 
     g_return_if_fail (handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
-    log = HOME_APPLET_HANDLER_GET_CLASS(handler)->log;
     
     if (priv->applet_data)
     {
-        hildon_log_add_message(log, "deinit_start", "1");
         priv->deinitialize(priv->applet_data);
-        hildon_log_add_message(log, "deinit_end", "1");
         /* The applet should have freed the data so we just clear the pointer */
         priv->applet_data = NULL;
     }
