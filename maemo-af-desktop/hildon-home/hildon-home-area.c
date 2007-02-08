@@ -593,9 +593,6 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
         }
       n_groups --;
 
-      while (gtk_events_pending ())
-        gtk_main_iteration ();
-
     }
 
   /* Remove all the applets left in the list, they are no longer  */

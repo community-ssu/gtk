@@ -740,8 +740,6 @@ gboolean add_configured_plugins( StatusBar *panel )
         }
 
 	g_free (plugin_path);
-        while (gtk_events_pending ())
-          gtk_main_iteration ();
     }
 
     /* Cleanup */
