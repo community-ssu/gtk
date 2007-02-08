@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.21-1) unstable; urgency=low
+
+  * hildon-home/home-applet-handler.c: Do not log the deinit
+  after all
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  8 Feb 2007 18:42:28 +0200
+
 maemo-af-desktop (2.9.99.20-1) unstable; urgency=low
 
   * hildon-home/home-applet-handler.[ch]:
