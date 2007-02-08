@@ -54,12 +54,13 @@ LTLIBRARIES = $(modules_LTLIBRARIES)
 am__DEPENDENCIES_1 =
 libfilesystemmemory_la_DEPENDENCIES = $(am__DEPENDENCIES_1) \
 	$(top_builddir)/gtkfilesystemmemorypublic/libgtkfilesystemmemorypublic.la
-am_libfilesystemmemory_la_OBJECTS = gtkfilesystemmemory.lo
+am_libfilesystemmemory_la_OBJECTS =  \
+	libfilesystemmemory_la-gtkfilesystemmemory.lo
 libfilesystemmemory_la_OBJECTS = $(am_libfilesystemmemory_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gtkfilesystemmemory.Plo
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Plo
 COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) \
 	$(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LTCOMPILE = $(LIBTOOL) --mode=compile $(CC) $(DEFS) \
@@ -198,6 +199,7 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = gtkfilesystemmemory.pc
 modules_LTLIBRARIES = libfilesystemmemory.la
 libfilesystemmemory_la_SOURCES = gtkfilesystemmemory.c gtkfilesystemmemoryprivate.h
+libfilesystemmemory_la_CFLAGS = -DMAEMO_CHANGES
 libfilesystemmemory_la_LDFLAGS = $(module_flags)
 libfilesystemmemory_la_LIBADD = $(GTK_LIBS) \
       $(top_builddir)/gtkfilesystemmemorypublic/libgtkfilesystemmemorypublic.la
@@ -273,7 +275,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gtkfilesystemmemory.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -298,6 +300,30 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/$*.Plo' tmpdepfile='$(DEPDIR)/$*.TPlo' @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
+
+libfilesystemmemory_la-gtkfilesystemmemory.o: gtkfilesystemmemory.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfilesystemmemory_la_CFLAGS) $(CFLAGS) -MT libfilesystemmemory_la-gtkfilesystemmemory.o -MD -MP -MF "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo" -c -o libfilesystemmemory_la-gtkfilesystemmemory.o `test -f 'gtkfilesystemmemory.c' || echo '$(srcdir)/'`gtkfilesystemmemory.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo" "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Po"; else rm -f "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkfilesystemmemory.c' object='libfilesystemmemory_la-gtkfilesystemmemory.o' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Po' tmpdepfile='$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfilesystemmemory_la_CFLAGS) $(CFLAGS) -c -o libfilesystemmemory_la-gtkfilesystemmemory.o `test -f 'gtkfilesystemmemory.c' || echo '$(srcdir)/'`gtkfilesystemmemory.c
+
+libfilesystemmemory_la-gtkfilesystemmemory.obj: gtkfilesystemmemory.c
+@am__fastdepCC_TRUE@	if $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfilesystemmemory_la_CFLAGS) $(CFLAGS) -MT libfilesystemmemory_la-gtkfilesystemmemory.obj -MD -MP -MF "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo" -c -o libfilesystemmemory_la-gtkfilesystemmemory.obj `if test -f 'gtkfilesystemmemory.c'; then $(CYGPATH_W) 'gtkfilesystemmemory.c'; else $(CYGPATH_W) '$(srcdir)/gtkfilesystemmemory.c'; fi`; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo" "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Po"; else rm -f "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkfilesystemmemory.c' object='libfilesystemmemory_la-gtkfilesystemmemory.obj' libtool=no @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Po' tmpdepfile='$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.TPo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfilesystemmemory_la_CFLAGS) $(CFLAGS) -c -o libfilesystemmemory_la-gtkfilesystemmemory.obj `if test -f 'gtkfilesystemmemory.c'; then $(CYGPATH_W) 'gtkfilesystemmemory.c'; else $(CYGPATH_W) '$(srcdir)/gtkfilesystemmemory.c'; fi`
+
+libfilesystemmemory_la-gtkfilesystemmemory.lo: gtkfilesystemmemory.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfilesystemmemory_la_CFLAGS) $(CFLAGS) -MT libfilesystemmemory_la-gtkfilesystemmemory.lo -MD -MP -MF "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo" -c -o libfilesystemmemory_la-gtkfilesystemmemory.lo `test -f 'gtkfilesystemmemory.c' || echo '$(srcdir)/'`gtkfilesystemmemory.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo" "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Plo"; else rm -f "$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='gtkfilesystemmemory.c' object='libfilesystemmemory_la-gtkfilesystemmemory.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	depfile='$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.Plo' tmpdepfile='$(DEPDIR)/libfilesystemmemory_la-gtkfilesystemmemory.TPlo' @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	$(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(libfilesystemmemory_la_CFLAGS) $(CFLAGS) -c -o libfilesystemmemory_la-gtkfilesystemmemory.lo `test -f 'gtkfilesystemmemory.c' || echo '$(srcdir)/'`gtkfilesystemmemory.c
 
 mostlyclean-libtool:
 	-rm -f *.lo
