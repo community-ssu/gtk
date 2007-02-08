@@ -1,3 +1,14 @@
+2007-02-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* gtkfilesystemmemory/Makefile.am (libfilesystemmemory_la_CFLAGS):
+	Define MAEMO_CHANGES to get gtk_file_info_set_icon_pixbuf.
+
+	* gtkfilesystemmemory/gtkfilesystemmemory.c: Don't undefine
+	__GNUC__.
+	(gtk_file_folder_memory_get_info): Use
+	gtk_file_info_set_icon_pixbuf to set the icon in the GtkFileInfo
+	structure.
+
 2007-02-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 0.14.  
