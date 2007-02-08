@@ -1,3 +1,10 @@
+dbus-glib (0.72-osso4) experimental; urgency=low
+
+  * Trying to fix compilation problem in Sardine.
+    (added build dependency to gtk-doc-tools.)
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 08 Feb 2007 11:55:51 +0200
+
 dbus-glib (0.72-osso3) experimental; urgency=low
 
   * Trying to fix compilation problem in Sardine.
