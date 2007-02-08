@@ -30,8 +30,6 @@
 #include <gtk/gtktreestore.h>
 
 #define GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
-#undef __GNUC__ /* This is needed because compile option -pedantic
-                   disables GNU extensions and code don't detect this */
 
 #include <gtk/gtkfilesystem.h>
 
@@ -67,7 +65,7 @@ struct _GtkFileSystemMemoryClass
 };
 
 
-#define PRINT_FUNCTION_NAME 1
+/*#define PRINT_FUNCTION_NAME 1*/
 /* Set SOME_TESTING_STUFF is you want to use gtkfilechooserdialog.  */
 /*#define SOME_TESTING_STUFF 1 */
 
@@ -1092,6 +1090,7 @@ gtk_file_folder_memory_get_info( GtkFileFolder *folder, const GtkFilePath *path,
   gint64 mod_time = 0;
   gint64 size = 0;
   gchar *mime = NULL;
+  GdkPixbuf *pbuf = NULL;
   GtkTreePath *tree_path = NULL;
   GtkFileInfo *info = NULL;
   GtkFileFolderMemory *ffm = GTK_FILE_FOLDER_MEMORY(folder);
@@ -1129,7 +1128,9 @@ gtk_file_folder_memory_get_info( GtkFileFolder *folder, const GtkFilePath *path,
                       GTK_FILE_SYSTEM_MEMORY_COLUMN_NAME, &name,
                       GTK_FILE_SYSTEM_MEMORY_COLUMN_MOD_TIME, &mod_time,
                       GTK_FILE_SYSTEM_MEMORY_COLUMN_MIME, &mime,
-                      GTK_FILE_SYSTEM_MEMORY_COLUMN_SIZE, &size, -1 );
+                      GTK_FILE_SYSTEM_MEMORY_COLUMN_SIZE, &size,
+		      GTK_FILE_SYSTEM_MEMORY_COLUMN_ICON, &pbuf,
+		      -1 );
 
   info = gtk_file_info_new();
   gtk_file_info_set_display_name( info, name );
@@ -1138,10 +1139,12 @@ gtk_file_folder_memory_get_info( GtkFileFolder *folder, const GtkFilePath *path,
   gtk_file_info_set_mime_type( info, "x-directory/normal" );
   gtk_file_info_set_modification_time( info, mod_time );
   gtk_file_info_set_size( info, size );
+  gtk_file_info_set_icon_pixbuf (info, pbuf);
   gtk_file_info_get_display_key( info );
   
   g_free( name );
   g_free( mime );
+  gdk_pixbuf_unref (pbuf);
   gtk_tree_path_free( tree_path );
 
   return info;
