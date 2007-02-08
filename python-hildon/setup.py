@@ -9,15 +9,15 @@ defsdir = datadir+'/pygtk/2.0/defs'
 includedir = '/usr/include'
 
 def get_hildon_version():
-    proc = subprocess.Popen(
-	["/usr/bin/pkg-config","--modversion","hildon-libs"],
-	stdout=subprocess.PIPE,
-	stderr=subprocess.PIPE
-    )
-    cmdresult = proc.stdout
-    error = proc.stderr
-    print >>sys.stderr, error.read()
-    raw_version = cmdresult.read().strip()
+    input = open('/usr/lib/pkgconfig/hildon-libs.pc','r')
+
+    for line in input:
+	result = line.split()
+        if result:
+	    if result[0] == 'Version:':
+                raw_version = result[-1]
+
+    input.close()
     hildon_version = tuple([ int(x) for x in raw_version.split('.') ])
     return hildon_version
 hildon_version = get_hildon_version()
