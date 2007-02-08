@@ -341,7 +341,13 @@ gtk_progress_bar_new (void)
 {
   GtkWidget *pbar;
 
+#ifdef MAEMO_CHANGES
+  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR,
+			 "text-xalign", 0.0,
+			 NULL);
+#else /* !MAEMO_CHANGES */
   pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR, NULL);
+#endif /* !MAEMO_CHANGES */
 
   return pbar;
 }

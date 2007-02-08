@@ -53,7 +53,9 @@ typedef enum {
 } GtkFileChooserProp;
 
 void _gtk_file_chooser_install_properties (GObjectClass *klass);
+#ifdef MAEMO_CHANGES
 void hildon_gtk_file_chooser_install_properties (GObjectClass *klass);
+#endif /* MAEMO_CHANGES */
 
 void _gtk_file_chooser_delegate_iface_init (GtkFileChooserIface *iface);
 void _gtk_file_chooser_set_delegate        (GtkFileChooser *receiver,

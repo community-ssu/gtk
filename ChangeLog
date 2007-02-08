@@ -1,3 +1,56 @@
+2007-02-08  Michael Natterer  <mitch@imendio.com>
+
+	Merge from upstream trunk:
+
+    Thu Feb  8 13:07:08 2007  Tim Janik  <timj@imendio.com>
+
+	* applied patch from Xan Lopez which adds GTK_BUTTONBOX_CENTER to
+	GtkButtonBox (bug #336159).
+
+	* gtk/gtkenums.h:
+	* gtk/gtkvbbox.c, gtk/gtkhbbox.c, gtk/gtkbbox.c:
+	support GTK_BUTTONBOX_CENTER.
+
+	* tests/testbbox.c: new button box test, which allows testing of 
+	the various button box properties.
+
+	* tests/testgtk.c: added GTK_BUTTONBOX_CENTER. to button box test.
+
+Tue Feb  6 15:53:59 2007  Tim Janik  <timj@imendio.com>
+ 
+	* gtk/gtktextview.c (gtk_text_view_motion_event):
+	* gtk/gtkspinbutton.c (gtk_spin_button_motion_notify):
+	* gtk/gtkaboutdialog.c (credits_motion_notify_event):
+	* gtk/gtkhruler.c (gtk_hruler_motion_notify):
+	* gtk/gtkvruler.c (gtk_vruler_motion_notify): 
+	* gtk/gtkentry.c (gtk_entry_motion_notify):
+	* gtk/gtktooltip.c (_gtk_tooltip_handle_event):
+	* gtk/gtkhsv.c (gtk_hsv_motion): call gdk_event_request_motions()
+	for new motion events after receiving motion hints.
+ 
+	* gdk/gdkevents.[hc]: added gdk_event_request_motions().
+ 
+2007-02-07  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkdialog.c: revert last change, since it will be replaced
+	by an upstream feature.
+
+2007-02-07  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkdialog.c (gtk_dialog_init): pack an alignment in the vbox,
+	and the action_area in the alignment to get the buttons centered.
+
+2007-02-07  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkprogressbar.c (gtk_progress_bar_new): pass text-xalign = 0.0
+	as construct-only property.
+
+2007-02-07  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkfilechooserutils.[ch]
+	(hildon_gtk_file_chooser_install_properties): conditionalize with
+	MAEMO_CHANGES, port over doc comment.
+
 2007-02-06  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_real_expand_row): Make sure the

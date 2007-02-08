@@ -34,6 +34,7 @@ noinst_PROGRAMS =			\
 	print-editor			\
 	testaccel			\
 	testassistant			\
+	testbbox			\
 	testcairo			\
 	testcalendar			\
 	testcombo			\
@@ -94,6 +95,7 @@ testicontheme_DEPENDENCIES = $(TEST_DEPS)
 testiconview_DEPENDENCIES = $(TEST_DEPS)
 testaccel_DEPENDENCIES = $(TEST_DEPS)
 testassistant_DEPENDENCIES = $(TEST_DEPS)
+testbbox_DEPENDENCIES = $(TEST_DEPS)
 testcairo_DEPENDENCIES = $(TEST_DEPS)
 testcalendar_DEPENDENCIES = $(TEST_DEPS)
 testcombo_DEPENDENCIES = $(TEST_DEPS)
@@ -144,6 +146,7 @@ floatingtest_LDADD = $(LDADDS)
 print_editor_LDADD = $(LDADDS)
 testaccel_LDADD = $(LDADDS)
 testassistant_LDADD = $(LDADDS)
+testbbox_LDADD = $(LDADDS)
 testcairo_LDADD = $(LDADDS)
 testcalendar_LDADD = $(LDADDS)
 testcombo_LDADD = $(LDADDS)
@@ -260,6 +263,9 @@ testmerge_SOURCES = 		\
 
 testactions_SOURCES = 		\
 	testactions.c
+
+testbbox_SOURCES = 		\
+	testbbox.c
 
 testiconview_SOURCES = 		\
 	testiconview.c		\

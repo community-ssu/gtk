@@ -119,11 +119,21 @@ _gtk_file_chooser_install_properties (GObjectClass *klass)
 				    "do-overwrite-confirmation");
 }
 
+#ifdef MAEMO_CHANGES
+/**
+ * hildon_gtk_file_chooser_install_properties:
+ *
+ * Exactly the same as the private _gtk_file_chooser_install_properties()
+ * but exported for hildon-fm.
+ *
+ * Since: maemo 2.0
+ */
 void
 hildon_gtk_file_chooser_install_properties (GObjectClass *klass)
 {
   _gtk_file_chooser_install_properties (klass);
 }
+#endif /* MAEMO_CHANGES */
 
 /**
  * _gtk_file_chooser_delegate_iface_init:
