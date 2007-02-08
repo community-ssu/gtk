@@ -55,9 +55,6 @@ start_it_up()
   start-stop-daemon --start --quiet --pidfile $PIDFILE \
     --user $DAEMONUSER --exec $DAEMON -- --system $PARAMS --fork
   echo "$NAME."
-#  if [ -d $EVENTDIR ]; then
-#      run-parts --arg=start $EVENTDIR
-#  fi
  else
   # start with dsmetool
   rm -f $PIDFILE
@@ -65,14 +62,17 @@ start_it_up()
   /usr/sbin/dsmetool -r "$DAEMON --system $PARAMS" -n -5
   echo "$NAME."
  fi
+ if [ -d $EVENTDIR ]; then
+     run-parts --arg=start $EVENTDIR
+ fi
 }
 
 shut_it_down()
 {
+ if [ -d $EVENTDIR ]; then
+     run-parts --reverse --arg=stop $EVENTDIR
+ fi
  if [ "x$USE_DT" = "x" ]; then
-#  if [ -d $EVENTDIR ]; then
-#      run-parts --reverse --arg=stop $EVENTDIR
-#  fi
   echo -n "Stopping $DESC: "
   start-stop-daemon --stop --retry 60 --quiet --oknodo --pidfile $PIDFILE \
     --user $DAEMONUSER
