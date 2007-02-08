@@ -25,6 +25,7 @@ pkgconfig_DATA = gtkfilesystemmemory.pc
 modules_LTLIBRARIES = libfilesystemmemory.la
 
 libfilesystemmemory_la_SOURCES = gtkfilesystemmemory.c gtkfilesystemmemoryprivate.h
+libfilesystemmemory_la_CFLAGS = -DMAEMO_CHANGES
 libfilesystemmemory_la_LDFLAGS = $(module_flags)
 libfilesystemmemory_la_LIBADD = $(GTK_LIBS) \
       $(top_builddir)/gtkfilesystemmemorypublic/libgtkfilesystemmemorypublic.la
