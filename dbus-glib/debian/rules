@@ -23,8 +23,8 @@ DEB_DH_MAKESHLIBS_ARGS_ALL := -V
 DEB_DH_STRIP_ARGS := --dbg-package=libdbus-glib-1-2
 
 # this is needed because we patch Makefile.ams in the tarball
-makebuilddir/libdbus-glib-1-doc::
-	cd $(DEB_BUILDDIR); autoreconf
+makebuilddir/libdbus-glib-1-2::
+	cd $(DEB_BUILDDIR); AUTOMAKE=automake-1.9 ACLOCAL=aclocal-1.9 autoreconf
 
 common-configure-impl::
 	cp $(CURDIR)/debian/dbus-bus-introspect.xml $(DEB_BUILDDIR)/tools/
