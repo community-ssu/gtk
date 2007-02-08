@@ -33,6 +33,7 @@
 #include "hildon-home-plugin-interface.h"
 #include "hildon-home-interface.h"
 #include "hildon-home-applet.h"
+#include "hildon-home-private.h"
 
 /* Systems includes */
 #include <string.h>  /* for strcmp */
@@ -134,6 +135,7 @@ static void home_applet_handler_class_init(HomeAppletHandlerClass * applet_class
 {
     /* Get convenience variables */
     GObjectClass *object_class = G_OBJECT_CLASS(applet_class);
+    gchar *log_path;
     
     /* Set the global parent_class here */
     parent_class = g_type_class_peek_parent(applet_class);
@@ -143,6 +145,19 @@ static void home_applet_handler_class_init(HomeAppletHandlerClass * applet_class
    
     g_type_class_add_private(applet_class,
                              sizeof(struct _HomeAppletHandlerPrivate));
+
+    log_path = g_strdup_printf ("%s%s",
+                                g_get_home_dir (),
+                                HH_LOG_PATH);
+    applet_class->log = hildon_log_new (log_path);
+    g_free (log_path);
+    applet_class->bad_plugins = 
+        hildon_log_get_incomplete_groups (applet_class->log,
+                                          "init_start",
+                                          "init_end",
+                                          "deinit_start",
+                                          "deinit_end",
+                                          NULL);
     
 }
 
@@ -263,6 +278,8 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     GtkWidget *applet;
     HomeAppletHandlerPrivate *priv;
     HomeAppletHandler *handler;
+    HildonLog *log;
+    GList     *bad_plugins;
     gint applet_x = APPLET_INVALID_COORDINATE;
     gint applet_y = APPLET_INVALID_COORDINATE;
     gint applet_minwidth = APPLET_NONCHANGABLE_DIMENSION;
@@ -276,6 +293,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     GError *error = NULL;
 
     g_return_val_if_fail (desktoppath, NULL);
+
 
     if (!htable)
       htable = g_hash_table_new (g_str_hash, g_str_equal);
@@ -409,13 +427,28 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
 
 
     g_key_file_free (kfile);
-        
-    librarypath =
-            g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
     
     handler = g_object_new (HOME_TYPE_APPLET_HANDLER, NULL);
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
+    log = HOME_APPLET_HANDLER_GET_CLASS(handler)->log;
+    bad_plugins = HOME_APPLET_HANDLER_GET_CLASS(handler)->bad_plugins;
 
+    if (g_list_find_custom (bad_plugins, desktoppath, (GCompareFunc)strcmp))
+    {
+        g_warning ("Not loading %s as it did not complete initialization on "
+                   "previous startup",
+                   desktoppath);
+
+        /* The plugin was found to crash during initialization last time */
+        g_object_unref (handler);
+        g_free (libraryfile);
+        return NULL;
+    }
+
+    hildon_log_add_group (log, desktoppath);
+        
+    librarypath =
+            g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
     priv->dlhandle = dlopen(librarypath, RTLD_NOW);
     g_free(librarypath);
     
@@ -443,7 +476,9 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
             return NULL;
         }
 
+        hildon_log_add_message (log, "init_start", "1");
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
+        hildon_log_add_message (log, "init_end", "1");
         priv->widget = applet;
 	
         handler->libraryfile = libraryfile;
@@ -543,14 +578,18 @@ GtkWidget *home_applet_handler_settings(HomeAppletHandler *handler,
 void home_applet_handler_deinitialize(HomeAppletHandler *handler)
 {
     HomeAppletHandlerPrivate *priv;
+    HildonLog *log;
 
     g_return_if_fail (handler);
 
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
+    log = HOME_APPLET_HANDLER_GET_CLASS(handler)->log;
     
     if (priv->applet_data)
     {
+        hildon_log_add_message(log, "deinit_start", "1");
         priv->deinitialize(priv->applet_data);
+        hildon_log_add_message(log, "deinit_end", "1");
         /* The applet should have freed the data so we just clear the pointer */
         priv->applet_data = NULL;
     }

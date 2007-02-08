@@ -249,6 +249,8 @@ G_BEGIN_DECLS
 #define LAYOUT_MODE_NOTIFICATION_MODE_CANCEL_NO    _("home_bd_cancel_layout_no")
 #define LAYOUT_MODE_NOTIFICATION_MODE_ACCEPT_TEXT  _("home_ni_overlapping_applets")
 
+#define HH_LOG_PATH                              "/.osso/home.log"
+
 
 #define TRANSIENCY_MAXITER 50
 										

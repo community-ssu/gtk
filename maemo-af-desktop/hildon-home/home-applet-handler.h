@@ -34,10 +34,12 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtkmenu.h>
-#include <gtk/gtktoolbar.h>
+#include <gtk/gtkeventbox.h>
+#include <gtk/gtkwindow.h>
 #include <gdk/gdkx.h> 
 #include <libosso.h>
-#include <gtk/gtk.h>
+
+#include "libdesktop/hildon-log.h"
 
 G_BEGIN_DECLS
 
@@ -55,6 +57,8 @@ G_BEGIN_DECLS
     HOME_TYPE_APPLET_HANDLER))
 #define IS_HOME_APPLET_HANDLER_CLASS(klass) \
     (GTK_CHECK_CLASS_TYPE ((klass), HOME_TYPE_APPLET_HANDLER))
+#define HOME_APPLET_HANDLER_GET_CLASS(applet) \
+    (G_TYPE_INSTANCE_GET_CLASS ((applet),  HOME_TYPE_APPLET_HANDLER, HomeAppletHandlerClass))
 
 /* Type definitions for the applet API */
 typedef void *(*AppletInitializeFn)(void *state_data, 
@@ -97,6 +101,9 @@ struct _HomeAppletHandler {
 
 struct _HomeAppletHandlerClass {
     GObjectClass parent_class;
+
+    HildonLog   *log;
+    GList       *bad_plugins;
 };
 
 

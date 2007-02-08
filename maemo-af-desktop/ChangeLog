@@ -1,5 +1,16 @@
 2007-02-08  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-home/home-applet-handler.[ch]:
+	- Add HildonLog class variable
+	- log each initialize and deinitialize callback call
+	- do not load an applet if it crashes on the last session
+	in one of these callbacks.
+	* hildon-home/hildon-home-window.c: Remove the log
+	file once Home has loaded all its applets properly.
+	Fixes: NB#51146
+
+2007-02-08  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-home/hildon-home-area.c,
 	hildon-status-bar/hildon-status-bar-main.c:
 	- reverted iteration of the main loop between the load of

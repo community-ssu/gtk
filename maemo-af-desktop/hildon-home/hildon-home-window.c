@@ -863,6 +863,11 @@ hildon_home_window_applets_init (HildonHomeWindow * window)
                                        filename);
 
   g_free (user_filename);
+
+  /* We survived, let's remove the log file */
+  user_filename = g_strdup_printf ("%s%s", g_get_home_dir (), HH_LOG_PATH);
+  unlink (user_filename);
+  g_free (user_filename);
 }
 
 static GObject *
