@@ -1,3 +1,9 @@
+2007-02-08  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* autogen.sh: Put back invocation of configure since that is
+	apparently expected to happen by some automated build systems.
+	Thanks to Richard Hult for pointing this out!
+
 2007-02-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 2.10
