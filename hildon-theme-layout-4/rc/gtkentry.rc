@@ -9,14 +9,13 @@
 
 style "osso-entry" {
 
-	GtkEntry::hildonlike = 1
 	GtkEntry::horizontal-border = 6
 	GtkEntry::vertical-border = 0
 	GtkEntry::show-last-char = 1
 	
 	engine "sapwood" {
 		image {
-			function = BOX
+			function = SHADOW
 			state = INSENSITIVE
 			file = "../images/qgn_plat_single_line_input_disabled.png"
 			border = { 2, 2, 2, 2 }
@@ -26,7 +25,7 @@ style "osso-entry" {
 
 	engine "sapwood" {
 		image {
-			function = BOX
+			function = SHADOW
 			file = "../images/qgn_plat_single_line_input.png"
 			border = { 2, 2, 2, 2 }
 			stretch = TRUE
