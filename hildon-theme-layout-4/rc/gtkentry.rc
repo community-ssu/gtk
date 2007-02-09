@@ -9,9 +9,7 @@
 
 style "osso-entry" {
 
-	GtkEntry::horizontal-border = 6
-	GtkEntry::vertical-border = 0
-	GtkEntry::show-last-char = 1
+        GtkEntry::inner-border = { 6, 6, 0, 0 }
 	
 	engine "sapwood" {
 		image {
