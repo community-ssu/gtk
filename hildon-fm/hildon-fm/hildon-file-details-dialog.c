@@ -353,7 +353,7 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     
     priv->tab_label = gtk_label_new(_("sfil_ti_notebook_file"));
     g_object_ref(priv->tab_label);
-    gtk_object_sink(GTK_OBJECT(priv->tab_label));
+    g_object_ref_sink (GTK_OBJECT(priv->tab_label));
     gtk_widget_show(priv->tab_label);
 
     priv->file_device = g_object_new(GTK_TYPE_LABEL, "xalign", 0.0f, NULL);

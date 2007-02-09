@@ -2264,11 +2264,7 @@ static void hildon_file_selection_create_thumbnail_view(HildonFileSelection
     self->priv->view[1] = gtk_tree_view_new();
     tree = GTK_TREE_VIEW(self->priv->view[1]);
 
-    /* Fixed height mode has some kind of problems when appending new content to
-        view. Seems that this is patch bug or Gtk 2.4 bug. Anyway, this works fine with
-        Gtk 2.6. Re-enabled this because we are now using 2.6 only. */
     gtk_tree_view_set_fixed_height_mode(tree, TRUE);
-    g_object_set(tree, "force_list_kludge", TRUE, NULL); 
 
     col = gtk_tree_view_column_new();
     renderer = gtk_cell_renderer_pixbuf_new();
@@ -2333,7 +2329,6 @@ static void hildon_file_selection_create_list_view(HildonFileSelection *
     self->priv->view[0] = gtk_tree_view_new();
     tree = GTK_TREE_VIEW(self->priv->view[0]);
     gtk_tree_view_set_headers_visible(tree, FALSE);
-    g_object_set(tree, "force_list_kludge", TRUE, NULL); 
     /* Fixed height seems to require setting fixed widths for every
        column. This is not a good thing in our case. We would _absolutely_
        need GTK_TREE_VIEW_COLUMN_GROW_ONLY to be supported as well in
@@ -3435,7 +3430,7 @@ void hildon_file_selection_set_filter(HildonFileSelection * self,
 
         if (filter) {
             g_object_ref(filter);
-            gtk_object_sink(GTK_OBJECT(filter));
+            g_object_ref_sink (GTK_OBJECT(filter));
         }
 
         self->priv->filter = filter;

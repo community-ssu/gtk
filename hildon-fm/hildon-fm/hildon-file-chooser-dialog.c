@@ -778,7 +778,7 @@ static void hildon_file_chooser_dialog_add_filter(GtkFileChooser * chooser,
     }
 
     g_object_ref(filter);
-    gtk_object_sink(GTK_OBJECT(filter));
+    g_object_ref_sink (GTK_OBJECT(filter));
     priv->filters = g_slist_append(priv->filters, filter);
     if (priv->filters_separator == NULL) {
       priv->filters_separator = gtk_separator_menu_item_new();
@@ -1821,7 +1821,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     priv->popup = gtk_menu_new();
     shell = GTK_MENU_SHELL(priv->popup);
     g_object_ref(priv->popup);
-    gtk_object_sink(GTK_OBJECT(priv->popup));
+    g_object_ref_sink (GTK_OBJECT(priv->popup));
 
     priv->sort_type =
         gtk_radio_menu_item_new_with_label(NULL, _("sfil_me_sort_type"));
