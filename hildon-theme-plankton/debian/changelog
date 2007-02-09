@@ -1,3 +1,15 @@
+hildon-theme-plankton (4.1.2-1) unstable; urgency=low
+
+  * Bumping version for layout.
+  * Enable touchscreen mode
+  * FALSE --> 0
+  * Removed osso_button detail 
+  * Removed shadow from GtkViewPort
+  * Removed scroll arrow background painting
+  * Changed GtkEntry drawing to SHADOW 
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 09 Feb 2007 17:00:00 +0300
+
 hildon-theme-plankton (4.1.1-1bi) unstable; urgency=low
 
   * Binary rebuild.

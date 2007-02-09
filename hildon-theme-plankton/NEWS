@@ -1,6 +1,19 @@
+[4.1.2-1 release]
+* Bumping version for layout
+* Enable touchscreen mode
+* FALSE --> 0
+* Removed osso_button detail 
+* Removed shadow from GtkViewPort
+* Removed scroll arrow background painting
+* Changed GtkEntry drawing to SHADOW 
+
 [4.1.1-1 release]
 * Bumping version for layout.
 * Version naming will now match layout version + 4.0.0. 
+* Adding the proper GtkSettings and some HIG definitions.
+* Fixing the CheckButton drawing.
+* Active/passive focus. 
+* Dialog button fixes.
 
 [4.0.0-1 release]
 * Branched out for the four from three. 
