@@ -1,3 +1,10 @@
+hildon-application-framework (0.3) unstable; urgency=low
+
+  * Changed hildon-theme-plankton-3 to hildon-theme-plankton.
+    Changed osso-application-manager to hildon-application-manager.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  9 Feb 2007 16:17:09 +0200
+
 hildon-application-framework (0.2) unstable; urgency=low
 
   * Added hildon-theme-plankton-3 as a dependency
