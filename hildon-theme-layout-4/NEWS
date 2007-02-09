@@ -1,3 +1,11 @@
+[0.1.2]
+* Enable touchscreen mode
+* FALSE --> 0
+* Removed osso_button detail 
+* Removed shadow from GtkViewPort
+* Removed scroll arrow background painting
+* Changed GtkEntry drawing to SHADOW 
+
 [0.1.1]
 * Adding the proper GtkSettings and some HIG definitions.
 * Fixing the CheckButton drawing.

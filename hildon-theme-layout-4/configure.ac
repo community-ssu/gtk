@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-layout-4, 0.1.1)
+AM_INIT_AUTOMAKE(hildon-theme-layout-4, 0.1.2)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
