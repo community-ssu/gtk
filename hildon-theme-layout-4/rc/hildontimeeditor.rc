@@ -51,9 +51,7 @@ style "osso-time-editor-ampm-button"
 style "osso-time-editor"
 {
    GtkFrame::hildonlike = 1
-   GtkEntry::hildonlike = 1
-   GtkEntry::horizontal-border = 2
-   GtkEntry::vertical-border = 0
+   GtkEntry::inner-border = { 2, 2, 0, 0 }
    xthickness = 0
    ythickness = 0
 }

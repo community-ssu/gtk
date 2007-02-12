@@ -116,10 +116,7 @@ widget_class "*.GtkComboBox.GtkFrame" style "osso-combobox-frame"
 
 style "osso-combobox-entry-base" {
 
-  GtkEntry::hildonlike = 1
-  GtkEntry::horizontal-border = 4
-  GtkEntry::vertical-border = 0
-  GtkEntry::show-last-char = 1
+  GtkEntry::inner-border = { 4, 4, 0, 0 }
 
   GtkEntry::icon_width = 0
 }
