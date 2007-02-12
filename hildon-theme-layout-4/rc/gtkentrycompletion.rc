@@ -9,8 +9,6 @@
 
 style "osso-completion-frame"
 {
-  GtkFrame::hildonlike = 1
-
   xthickness = 6
   ythickness = 6
 
@@ -19,7 +17,7 @@ style "osso-completion-frame"
       # Not quite sure if INSENSITIVE is and option for this widget
       image
         {
-	  function = BOX
+	  function = SHADOW
 	  state    = INSENSITIVE
 	  file     = "../images/qgn_plat_frame_disabled.png"
 	  border   = { 3, 3, 3, 3 }
@@ -27,7 +25,7 @@ style "osso-completion-frame"
 	}
       image
         {
-	  function = BOX
+	  function = SHADOW
 	  file     = "../images/qgn_plat_frame.png"
 	  border   = { 3, 3, 3, 3 }
 	  stretch  = TRUE

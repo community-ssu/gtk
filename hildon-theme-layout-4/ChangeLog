@@ -1,5 +1,11 @@
 2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtkentrycompletion.rc:
+	
+	Change function from BOX to SHADOW, drop hildon-like property.
+
+2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/gtkcombobox.rc:
 	
 	Change GtkComboBoxEntry from BOX to SHADOW.
