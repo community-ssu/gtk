@@ -20,3 +20,6 @@ gtk-dnd-drag-threshold = 30
 
 # Touchscreen mode (GtkMenu scrolling, prelighting)
 gtk-touchscreen-mode = 1
+
+# Show last char in hidden entries for 600 ms
+gtk-entry-last-char-timeout = 600

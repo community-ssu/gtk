@@ -1,5 +1,11 @@
 2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtksettings.rc:
+	
+	Enable gtk-entry-last-char-timeout with 600 (600 ms).
+
+2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/hildontimeeditor.rc: 
 	* rc/gtkcombobox.rc:
 
