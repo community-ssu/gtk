@@ -142,7 +142,7 @@ style "osso-combobox-entry-entry" {
     {
       image
         {
-	  function = BOX
+	  function = SHADOW
 	  state    = INSENSITIVE
   	  file = "../images/qgn_plat_listbox_border_with_icon_disabled.png"
 	  border   = { 2, 2, 0, 0 }
@@ -150,7 +150,7 @@ style "osso-combobox-entry-entry" {
 	}
       image
         {
-	  function = BOX
+	  function = SHADOW
   	  file = "../images/qgn_plat_listbox_border_with_icon_normal.png"
 	  border   = { 2, 2, 0, 0 }
 	  stretch  = TRUE

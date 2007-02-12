@@ -1,5 +1,11 @@
 2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtkcombobox.rc:
+	
+	Change GtkComboBoxEntry from BOX to SHADOW.
+
+2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/gtksettings.rc:
 	
 	Enable gtk-entry-last-char-timeout with 600 (600 ms).
