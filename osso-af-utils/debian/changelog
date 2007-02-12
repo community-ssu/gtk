@@ -1,3 +1,10 @@
+osso-af-utils (1.15-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Removed compiler warnings. Patch from Philippe De Swert.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 12 Feb 2007 12:31:56 +0200
+
 osso-af-utils (1.14-1) unstable; urgency=low
 
   * Added waiting back to play-sound. Fixes: NB#50967

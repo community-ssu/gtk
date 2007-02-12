@@ -14,7 +14,7 @@ DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
 
 
 CFLAGS = -DDEBUG -Wall -g \
-         -Wmissing-prototypes -Wunreachable-code -Wcast-align
+         -Wmissing-prototypes -Wcast-align
 # -pedantic-errors -std=c99
 
 CPPFLAGS = -DBONOBO_DISABLE_DEPRECATED \
