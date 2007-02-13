@@ -1,3 +1,8 @@
+2007-02-13  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkfilesystem.h (enum GtkFileSystemError): add
+	GTK_FILE_SYSTEM_ERROR_TIMEOUT.
+
 2007-02-08  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkdialog.c (gtk_dialog_init): use GTK_BUTTONBOX_CENTER for

@@ -72,6 +72,9 @@ typedef enum
   GTK_FILE_SYSTEM_ERROR_BAD_FILENAME,
   GTK_FILE_SYSTEM_ERROR_FAILED,
   GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS
+#ifdef MAEMO_CHANGES
+  , GTK_FILE_SYSTEM_ERROR_TIMEOUT
+#endif /* MAEMO_CHANGES */
 } GtkFileSystemError;
 
 GQuark     gtk_file_system_error_quark      (void);
