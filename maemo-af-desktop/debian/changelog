@@ -1,3 +1,10 @@
+maemo-af-desktop (2.9.99.23-1) unstable; urgency=low
+
+  * maemo-af-desktop.sh: Changed watchdog policy to restart.
+  Fixes: NB#50401
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 13 Feb 2007 14:19:40 +0200
+
 maemo-af-desktop (2.9.99.22-1) unstable; urgency=low
 
   * hildon-navigator/hn-others-button.c:
