@@ -1,4 +1,9 @@
 2007-02-13  Johan Bilien <johan.bilien@nokia.com>
+
+	* maemo-af-desktop.sh: Changed watchdog policy to restart.
+	Fixes: NB#50401
+
+2007-02-13  Johan Bilien <johan.bilien@nokia.com>
 	
 	* configure.ac: 2.9.99.21
 
