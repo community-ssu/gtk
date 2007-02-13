@@ -126,6 +126,8 @@ static gboolean
 hn_others_button_button_release(HNOthersButton *button, GdkEventButton *event,
 				gpointer d);
 
+static gboolean
+hn_others_button_menu_changed (HNOthersButton * button);
      
 /* HNOthersButton implementation */
 struct _HNOthersButtonPrivate
@@ -134,6 +136,7 @@ struct _HNOthersButtonPrivate
   guint       collapse_id;
   gboolean    thumb_pressed;
   guint       dnotify_update_timeout;
+  guint       generate_menu_source;
 };
 
 
@@ -203,6 +206,8 @@ hn_others_button_init (HNOthersButton *button)
   priv->collapse_id            = 0;
   priv->thumb_pressed          = FALSE;
   priv->dnotify_update_timeout = 0;
+  priv->generate_menu_source =
+      g_timeout_add (8000, (GSourceFunc)hn_others_button_menu_changed, button);
   
 }
 
@@ -686,6 +691,14 @@ hn_others_button_create_menu (HNOthersButton * button)
     
   g_return_if_fail (button);
 
+  g_debug ("Creating menu");
+
+  if (button->priv->generate_menu_source)
+    {
+      g_source_remove (button->priv->generate_menu_source);
+      button->priv->generate_menu_source = 0;
+    }
+
   /* create the menu shell, and connect callbacks */
   menu = gtk_menu_new();
     
@@ -945,6 +958,7 @@ hn_others_button_menu_changed (HNOthersButton * button)
   HN_DBG ("Creating menu");
   
   button->priv->dnotify_update_timeout = 0;
+  button->priv->generate_menu_source = 0;
 
   hn_others_button_create_menu (button);
   return FALSE;
@@ -958,9 +972,9 @@ hn_others_button_dnotify_handler ( char *path, gpointer data )
   if( !button->priv->dnotify_update_timeout )
     {
       button->priv->dnotify_update_timeout =
-	g_timeout_add(1000,
-		      (GSourceFunc)hn_others_button_menu_changed,
-		      button);
+          g_timeout_add(1000,
+                        (GSourceFunc)hn_others_button_menu_changed,
+                        button);
     }
 }
 
