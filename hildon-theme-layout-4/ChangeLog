@@ -1,3 +1,10 @@
+2007-02-13  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* NEWS:
+	* data/layout.txt: qgn_plat_combobox_frame_normal.png extraction
+	changed.qgn_plat_combobox_frame_pressed.png added. Those fixes are
+	needed for the ComboBox.
+
 2007-02-12  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtkentrycompletion.rc:
