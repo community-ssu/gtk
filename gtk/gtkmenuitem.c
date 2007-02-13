@@ -958,6 +958,18 @@ gtk_real_menu_item_select (GtkItem *item)
 static void
 gtk_real_menu_item_deselect (GtkItem *item)
 {
+#ifdef MAEMO_CHANGES
+  GtkWidget *menu_item;
+
+  g_return_if_fail (GTK_IS_MENU_ITEM (item));
+
+  menu_item = GTK_WIDGET (item);
+
+  _gtk_menu_item_popdown_submenu (menu_item);
+
+  gtk_widget_set_state (menu_item, GTK_STATE_NORMAL);
+  gtk_widget_queue_draw (menu_item);
+#else
   GtkMenuItem *menu_item;
 
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
@@ -977,6 +989,7 @@ gtk_real_menu_item_deselect (GtkItem *item)
 
   gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_NORMAL);
   gtk_widget_queue_draw (GTK_WIDGET (menu_item));
+#endif /* MAEMO_CHANGES */
 }
 
 static gboolean
@@ -1142,6 +1155,27 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget)
                       GTK_MENU_SHELL (widget->parent)->button,
                       0);
     }
+}
+
+void
+_gtk_menu_item_popdown_submenu (GtkWidget *widget)
+{
+  GtkMenuItem *menu_item;
+
+  menu_item = GTK_MENU_ITEM (widget);
+
+  if (menu_item->submenu)
+    {
+      if (menu_item->timer)
+        {
+          g_source_remove (menu_item->timer);
+          menu_item->timer = 0;
+        }
+      else
+        gtk_menu_popdown (GTK_MENU (menu_item->submenu));
+    }
+
+  gtk_widget_queue_draw (widget);
 }
 
 static void
