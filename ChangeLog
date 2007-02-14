@@ -1,3 +1,9 @@
+2007-02-14  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenu.c (gtk_menu_motion_notify): don't forget to set the
+	state of the synthesized GDK_ENTER_NOTIFY event. Fix also merged
+	to upstream trunk.
+
 2007-02-14  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeviewcolumn.c (gtk_tree_view_column_create_button),
