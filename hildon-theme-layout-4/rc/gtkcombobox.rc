@@ -156,6 +156,9 @@ style "osso-combobox-entry-button-down" {
 
 	engine "sapwood" {
 		image {
+			function = FOCUS
+		}
+		image {
 			function = BOX
 			file = "../images/qgn_plat_listbox_arrow_down_disabled.png"
 			state = INSENSITIVE
@@ -187,6 +190,9 @@ widget_class "*.GtkComboBoxEntry.GtkToggleButton" style "osso-combobox-entry-but
 style "osso-combobox-entry-button-up" {
 
 	engine "sapwood" {
+		image {
+			function = FOCUS
+		}
 		image {
 			function = BOX
 			file = "../images/qgn_plat_listbox_arrow_up_disabled.png"
