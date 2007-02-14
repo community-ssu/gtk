@@ -1,0 +1,26 @@
+diff -pur trunk/bus/session.conf.in trunk.new/bus/session.conf.in
+--- trunk/bus/session.conf.in	2006-11-16 11:30:14.000000000 +0200
++++ trunk.new/bus/session.conf.in	2007-02-13 15:45:21.390464344 +0200
+@@ -12,6 +12,9 @@
+ 
+   <servicedir>@EXPANDED_DATADIR@/dbus-1/services</servicedir>
+ 
++  <limit name="max_completed_connections">10000</limit>
++  <limit name="max_connections_per_user">10000</limit>
++
+   <policy context="default">
+     <!-- Allow everything to be sent -->
+     <allow send_destination="*"/>
+diff -pur trunk/bus/system.conf.in trunk.new/bus/system.conf.in
+--- trunk/bus/system.conf.in	2006-11-16 11:30:14.000000000 +0200
++++ trunk.new/bus/system.conf.in	2007-02-13 15:45:07.078640072 +0200
+@@ -32,6 +32,9 @@
+        systems.) -->
+   <listen>@DBUS_SYSTEM_BUS_DEFAULT_ADDRESS@</listen>
+ 
++  <limit name="max_completed_connections">10000</limit>
++  <limit name="max_connections_per_user">10000</limit>
++
+   <policy context="default">
+     <!-- Deny everything then punch holes -->
+     <deny send_interface="*"/>
