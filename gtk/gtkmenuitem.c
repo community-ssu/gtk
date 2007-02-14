@@ -1346,8 +1346,13 @@ gtk_menu_item_position_menu (GtkMenu  *menu,
 
   if (!GTK_WIDGET_VISIBLE (menu->toplevel))
     {
+#ifdef MAEMO_CHANGES
+      gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel),
+				GDK_WINDOW_TYPE_HINT_MENU);
+#else
       gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel), menu_item->from_menubar?
 				GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU : GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+#endif /* MAEMO_CHANGES */
     }
 }
 
