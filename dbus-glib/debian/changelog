@@ -1,3 +1,10 @@
+dbus-glib (0.73-0osso1) experimental; urgency=low
+
+  * UNRELEASED
+  * Upgraded the upstream tarball to v0.73.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 14 Feb 2007 08:45:45 +0200
+
 dbus-glib (0.72-osso4) experimental; urgency=low
 
   * Trying to fix compilation problem in Sardine.
