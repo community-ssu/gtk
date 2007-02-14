@@ -35,8 +35,7 @@ PKG_CHECK_MODULES( DEPS,
     libxml-2.0 >= 2.6.7
     gtk+-2.0 >= 2.6
     glib-2.0 >= 2.6
-    hildon-libs >= 0.9.4
-    hildon-lgpl >= 0.9.4
+    hildon-1 >= 1.0.0
     libosso >= 1.0.0
     libpng
     libgtkhtml-3.8

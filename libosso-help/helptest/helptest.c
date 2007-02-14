@@ -37,8 +37,8 @@
 #include <gtk/gtk.h>
 #include <libosso.h>
 
-#include <hildon-widgets/hildon-app.h>
-#include <hildon-widgets/hildon-appview.h>
+#include <hildon/hildon.h>
+#include <hildon/hildon.h>
 
 #include <locale.h>
 #include <libintl.h>
@@ -162,23 +162,23 @@ void create_ui( osso_context_t *osso, gboolean style )
     g_assert( osso );
 
     if (!style) {   /* Button UI */
-        HildonApp *app;
-        HildonAppView *appview;
+        HildonProgram *hildon_program ;
+        HildonWindow *hildon_window ;
         GtkWidget *main_vbox;
         GtkWidget *button;
 
-        app= HILDON_APP (hildon_app_new());
-        g_assert(app);
+        hildon_program = hildon_program_get_instance () ;
+        g_assert (hildon_program) ;
 
-        hildon_app_set_title( app, "Help Dialog Test" );
+        hildon_window = HILDON_WINDOW (hildon_window_new ()) ;
+        g_assert (hildon_window) ;
 
-        appview= HILDON_APPVIEW (hildon_appview_new(""));
-        g_assert(appview);
+        hildon_program_add_window (hildon_program, hildon_window) ;
 
-        hildon_app_set_appview( HILDON_APP (app), appview );
+        g_set_application_name ( "Help Dialog Test" );
 
         main_vbox= gtk_vbox_new( FALSE, 0 );
-        gtk_container_add( GTK_CONTAINER (appview), GTK_WIDGET (main_vbox) );
+        gtk_container_add( GTK_CONTAINER (hildon_window), GTK_WIDGET (main_vbox) );
     
         button= gtk_button_new_with_label( "Help!" );
         gtk_box_pack_start( GTK_BOX (main_vbox), 
@@ -189,7 +189,7 @@ void create_ui( osso_context_t *osso, gboolean style )
     
         gtk_widget_show_all( GTK_WIDGET (main_vbox) );
 
-        gtk_widget_show( GTK_WIDGET (app) );
+        gtk_widget_show( GTK_WIDGET (hildon_window) );
     } else {
         GtkWidget *dialog;
         GtkWidget *vbox;
