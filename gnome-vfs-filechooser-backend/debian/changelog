@@ -1,0 +1,5 @@
+gnome-vfs-filechooser-backend (1.9.1-1) unstable; urgency=low
+
+  * Initial release.
+
+ -- Richard Hult <richard@imendio.com>  Wed, 14 Feb 2007 08:48:15 +0100

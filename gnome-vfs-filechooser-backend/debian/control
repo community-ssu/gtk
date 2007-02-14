@@ -1,0 +1,14 @@
+Source: gnome-vfs-filechooser-backend
+Section: libs
+Priority: optional
+Maintainer: Richard Hult <richard@imendio.com>
+Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev (>= 2.8), libosso-gnomevfs2-dev (>= 2.16.3), libgtk2.0-dev (>= 2.10.0)
+Standards-Version: 3.6.1.0
+
+Package: gnome-vfs-filechooser-backend
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: GnomeVFS filechooser backend for GTK+
+ This package contains the GnomeVFS filechooser backend for use in the
+ filechooser in GTK+.
