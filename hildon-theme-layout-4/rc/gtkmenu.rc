@@ -29,8 +29,8 @@ style "osso-menu" {
 
    GtkMenu::horizontal_padding = 18
    GtkMenu::vertical_padding = 18
+   GtkMenu::horizontal_offset = -18
 
-   GtkMenu::hildonlike = 1
    GtkMenu::double_arrows = 1
    
    engine "sapwood" {
@@ -104,9 +104,6 @@ style "osso-menu" {
 
 style "osso-menu-with-corners" {
 
-   GtkMenu::horizontal_padding = 18
-   GtkMenu::vertical_padding = 18
-
    engine "sapwood" {
       image {
 	  function = BOX
@@ -122,9 +119,6 @@ style "osso-menu-with-corners" {
 
 style "osso-menu-without-corners" {
 
-   GtkMenu::horizontal_padding = 18
-   GtkMenu::vertical_padding = 18
-
    engine "sapwood" {
       image {
 	 function = BOX
@@ -139,9 +133,6 @@ style "osso-menu-without-corners" {
 }
 
 style "osso-menu-from-navigator" {
-
-   GtkMenu::horizontal_padding = 18
-   GtkMenu::vertical_padding = 18
 
    engine "sapwood" {
       image {
@@ -159,9 +150,6 @@ style "osso-menu-from-navigator" {
 
 
 style "osso-menu-from-navigator-thumb" {
-
-   GtkMenu::horizontal_padding = 18
-   GtkMenu::vertical_padding = 18
 
    GtkWidget::scroll-arrow-vlength = 58
 
