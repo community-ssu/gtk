@@ -1,0 +1,87 @@
+.\"     Title: apt\-sortpkgs
+.\"    Author: Jason Gunthorpe
+.\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
+.\"      Date: 29 February 2004
+.\"    Manual: 
+.\"    Source: Linux
+.\"
+.TH "APT\-SORTPKGS" "1" "29 February 2004" "Linux" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+apt\-sortpkgs \- Utility to sort package index files
+.SH "SYNOPSIS"
+.HP 13
+\fBapt\-sortpkgs\fR [\fB\-hvs\fR] [\fB\-o=\fR\fB\fIconfig\ string\fR\fR] [\fB\-c=\fR\fB\fIfile\fR\fR] \fIfile\fR...
+.SH "DESCRIPTION"
+.PP
+\fBapt\-sortpkgs\fR
+will take an index file (Source index or Package index) and sort the records so that they are ordered by the package name. It will also sort the internal fields of each record according to the internal sorting rules.
+.PP
+All output is sent to stdout, the input must be a seekable file.
+.SH "OPTIONS"
+.PP
+All command line options may be set using the configuration file, the descriptions indicate the configuration option to set. For boolean options you can override the config file by using something like
+\fB\-f\-\fR,\fB\-\-no\-f\fR,
+\fB\-f=no\fR
+or several other variations.
+.PP
+\fB\-s\fR, \fB\-\-source\fR
+.RS 3n
+Use Source index field ordering. Configuration Item:
+APT::SortPkgs::Source.
+.RE
+.PP
+\fB\-h\fR, \fB\-\-help\fR
+.RS 3n
+Show a short usage summary.
+.RE
+.PP
+\fB\-v\fR, \fB\-\-version\fR
+.RS 3n
+Show the program version.
+.RE
+.PP
+\fB\-c\fR, \fB\-\-config\-file\fR
+.RS 3n
+Configuration File; Specify a configuration file to use. The program will read the default configuration file and then this configuration file. See
+\fBapt.conf\fR(5)
+for syntax information.
+.RE
+.PP
+\fB\-o\fR, \fB\-\-option\fR
+.RS 3n
+Set a Configuration Option; This will set an arbitary configuration option. The syntax is
+\fB\-o Foo::Bar=bar\fR.
+.RE
+.SH "SEE ALSO"
+.PP
+\fBapt.conf\fR(5)
+.SH "DIAGNOSTICS"
+.PP
+\fBapt\-sortpkgs\fR
+returns zero on normal operation, decimal 100 on error.
+.SH "BUGS"
+.PP
+[1]\&\fIAPT bug page\fR. If you wish to report a bug in APT, please see
+\fI/usr/share/doc/debian/bug\-reporting.txt\fR
+or the
+\fBreportbug\fR(1)
+command.
+.SH "AUTHORS"
+.PP
+\fBJason Gunthorpe\fR
+.sp -1n
+.IP "" 3n
+Author.
+.PP
+\fBAPT team\fR
+.sp -1n
+.IP "" 3n
+Author.
+.SH "REFERENCES"
+.TP 3
+1.\ APT bug page
+\%http://bugs.debian.org/src:apt

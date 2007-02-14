@@ -1,0 +1,108 @@
+.\"     Title: apt\-config
+.\"    Author: Jason Gunthorpe
+.\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
+.\"      Date: 29 February 2004
+.\"    Manual: 
+.\"    Source: Linux
+.\"
+.TH "APT\-CONFIG" "8" "29 February 2004" "Linux" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+apt\-config \- APT Configuration Query program
+.SH "SYNOPSIS"
+.HP 11
+\fBapt\-config\fR [\fB\-hv\fR] [\fB\-o=\fR\fB\fIconfig\ string\fR\fR] [\fB\-c=\fR\fB\fIfile\fR\fR] {[shell] | [dump]}
+.SH "DESCRIPTION"
+.PP
+\fBapt\-config\fR
+is an internal program used by various portions of the APT suite to provide consistent configurability. It accesses the main configuration file
+\fI/etc/apt/apt.conf\fR
+in a manner that is easy to use by scripted applications.
+.PP
+Unless the
+\fB\-h\fR, or
+\fB\-\-help\fR
+option is given one of the commands below must be present.
+.PP
+shell
+.RS 3n
+shell is used to access the configuration information from a shell script. It is given pairs of arguments, the first being a shell variable and the second the configuration value to query. As output it lists a series of shell assignments commands for each present value. In a shell script it should be used like:
+.sp
+.RS 3n
+.nf
+OPTS="\-f"
+RES=`apt\-config shell OPTS MyApp::options`
+eval $RES
+.fi
+.RE
+This will set the shell environment variable $OPTS to the value of MyApp::options with a default of
+\fB\-f\fR.
+.sp
+The configuration item may be postfixed with a /[fdbi]. f returns file names, d returns directories, b returns true or false and i returns an integer. Each of the returns is normalized and verified internally.
+.RE
+.PP
+dump
+.RS 3n
+Just show the contents of the configuration space.
+.RE
+.SH "OPTIONS"
+.PP
+All command line options may be set using the configuration file, the descriptions indicate the configuration option to set. For boolean options you can override the config file by using something like
+\fB\-f\-\fR,\fB\-\-no\-f\fR,
+\fB\-f=no\fR
+or several other variations.
+.PP
+\fB\-h\fR, \fB\-\-help\fR
+.RS 3n
+Show a short usage summary.
+.RE
+.PP
+\fB\-v\fR, \fB\-\-version\fR
+.RS 3n
+Show the program version.
+.RE
+.PP
+\fB\-c\fR, \fB\-\-config\-file\fR
+.RS 3n
+Configuration File; Specify a configuration file to use. The program will read the default configuration file and then this configuration file. See
+\fBapt.conf\fR(5)
+for syntax information.
+.RE
+.PP
+\fB\-o\fR, \fB\-\-option\fR
+.RS 3n
+Set a Configuration Option; This will set an arbitary configuration option. The syntax is
+\fB\-o Foo::Bar=bar\fR.
+.RE
+.SH "SEE ALSO"
+.PP
+\fBapt.conf\fR(5)
+.SH "DIAGNOSTICS"
+.PP
+\fBapt\-config\fR
+returns zero on normal operation, decimal 100 on error.
+.SH "BUGS"
+.PP
+[1]\&\fIAPT bug page\fR. If you wish to report a bug in APT, please see
+\fI/usr/share/doc/debian/bug\-reporting.txt\fR
+or the
+\fBreportbug\fR(1)
+command.
+.SH "AUTHORS"
+.PP
+\fBJason Gunthorpe\fR
+.sp -1n
+.IP "" 3n
+Author.
+.PP
+\fBAPT team\fR
+.sp -1n
+.IP "" 3n
+Author.
+.SH "REFERENCES"
+.TP 3
+1.\ APT bug page
+\%http://bugs.debian.org/src:apt

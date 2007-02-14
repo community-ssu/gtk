@@ -1,0 +1,92 @@
+.\"     Title: apt\-extracttemplates
+.\"    Author: Jason Gunthorpe
+.\" Generator: DocBook XSL Stylesheets v1.71.0 <http://docbook.sf.net/>
+.\"      Date: 29 February 2004
+.\"    Manual: 
+.\"    Source: Linux
+.\"
+.TH "APT\-EXTRACTTEMPLATES" "1" "29 February 2004" "Linux" ""
+.\" disable hyphenation
+.nh
+.\" disable justification (adjust text to left margin only)
+.ad l
+.SH "NAME"
+apt\-extracttemplates \- Utility to extract DebConf config and templates from Debian packages
+.SH "SYNOPSIS"
+.HP 21
+\fBapt\-extracttemplates\fR [\fB\-hv\fR] [\fB\-t=\fR\fB\fItemporary\ directory\fR\fR] \fIfile\fR...
+.SH "DESCRIPTION"
+.PP
+\fBapt\-extracttemplates\fR
+will take one or more Debian package files as input and write out (to a temporary directory) all associated config scripts and template files. For each passed in package that contains config scripts and templates, one line of output will be generated in the format:
+.PP
+package version template\-file config\-script
+.PP
+template\-file and config\-script are written to the temporary directory specified by the \-t or \-\-tempdir (APT::ExtractTemplates::TempDir) directory, with filenames of the form
+\fIpackage.template.XXXX\fR
+and
+\fIpackage.config.XXXX\fR
+.SH "OPTIONS"
+.PP
+All command line options may be set using the configuration file, the descriptions indicate the configuration option to set. For boolean options you can override the config file by using something like
+\fB\-f\-\fR,\fB\-\-no\-f\fR,
+\fB\-f=no\fR
+or several other variations.
+.PP
+\fB\-t\fR, \fB\-\-tempdir\fR
+.RS 3n
+Temporary directory in which to write extracted debconf template files and config scripts Configuration Item:
+APT::ExtractTemplates::TempDir
+.RE
+.PP
+\fB\-h\fR, \fB\-\-help\fR
+.RS 3n
+Show a short usage summary.
+.RE
+.PP
+\fB\-v\fR, \fB\-\-version\fR
+.RS 3n
+Show the program version.
+.RE
+.PP
+\fB\-c\fR, \fB\-\-config\-file\fR
+.RS 3n
+Configuration File; Specify a configuration file to use. The program will read the default configuration file and then this configuration file. See
+\fBapt.conf\fR(5)
+for syntax information.
+.RE
+.PP
+\fB\-o\fR, \fB\-\-option\fR
+.RS 3n
+Set a Configuration Option; This will set an arbitary configuration option. The syntax is
+\fB\-o Foo::Bar=bar\fR.
+.RE
+.SH "SEE ALSO"
+.PP
+\fBapt.conf\fR(5)
+.SH "DIAGNOSTICS"
+.PP
+\fBapt\-extracttemplates\fR
+returns zero on normal operation, decimal 100 on error.
+.SH "BUGS"
+.PP
+[1]\&\fIAPT bug page\fR. If you wish to report a bug in APT, please see
+\fI/usr/share/doc/debian/bug\-reporting.txt\fR
+or the
+\fBreportbug\fR(1)
+command.
+.SH "AUTHORS"
+.PP
+\fBJason Gunthorpe\fR
+.sp -1n
+.IP "" 3n
+Author.
+.PP
+\fBAPT team\fR
+.sp -1n
+.IP "" 3n
+Author.
+.SH "REFERENCES"
+.TP 3
+1.\ APT bug page
+\%http://bugs.debian.org/src:apt
