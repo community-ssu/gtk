@@ -4780,6 +4780,76 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 				  background_area.height);
 	    }
 
+#ifdef MAEMO_CHANGES
+      if (node == drag_highlight)
+        {
+          /* Draw indicator for the drop
+           */
+          gint highlight_y = -1;
+	  GtkRBTree *tree = NULL;
+	  GtkRBNode *node = NULL;
+	  gint width;
+
+          switch (tree_view->priv->drag_dest_pos)
+            {
+            case GTK_TREE_VIEW_DROP_BEFORE:
+              highlight_y = background_area.y - 1;
+	      if (highlight_y < 0)
+		      highlight_y = 0;
+              break;
+
+            case GTK_TREE_VIEW_DROP_AFTER:
+              highlight_y = background_area.y + background_area.height - 1;
+              break;
+
+            case GTK_TREE_VIEW_DROP_INTO_OR_BEFORE:
+            case GTK_TREE_VIEW_DROP_INTO_OR_AFTER:
+	      _gtk_tree_view_find_node (tree_view, drag_dest_path, &tree, &node);
+
+	      if (tree == NULL)
+		break;
+	      gdk_drawable_get_size (tree_view->priv->bin_window,
+				     &width, NULL);
+
+	      if (row_ending_details)
+		gtk_paint_focus (widget->style,
+			         tree_view->priv->bin_window,
+				 GTK_WIDGET_STATE (widget),
+				 &event->area,
+				 widget,
+				 (is_first
+				  ? (is_last ? "treeview-drop-indicator" : "treeview-drop-indicator-left" )
+				  : (is_last ? "treeview-drop-indicator-right" : "tree-view-drop-indicator-middle" )),
+				 0, BACKGROUND_FIRST_PIXEL (tree_view, tree, node)
+				 - focus_line_width / 2,
+				 width, ROW_HEIGHT (tree_view, BACKGROUND_HEIGHT (node))
+			       - focus_line_width + 1);
+	      else
+		gtk_paint_focus (widget->style,
+			         tree_view->priv->bin_window,
+				 GTK_WIDGET_STATE (widget),
+				 &event->area,
+				 widget,
+				 "treeview-drop-indicator",
+				 0, BACKGROUND_FIRST_PIXEL (tree_view, tree, node)
+				 - focus_line_width / 2,
+				 width, ROW_HEIGHT (tree_view, BACKGROUND_HEIGHT (node))
+				 - focus_line_width + 1);
+              break;
+            }
+
+          if (highlight_y >= 0)
+            {
+              gdk_draw_line (event->window,
+                             widget->style->fg_gc[GTK_WIDGET_STATE (widget)],
+                             rtl ? highlight_x + expander_cell_width : highlight_x,
+                             highlight_y,
+                             rtl ? 0 : bin_window_width,
+                             highlight_y);
+            }
+        }
+#endif /* MAEMO_CHANGES */
+
 	  if (draw_hgrid_lines)
 	    {
 	      if (background_area.y > 0)
@@ -4949,6 +5019,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
 	  cell_offset += column->width;
 	}
 
+#ifndef MAEMO_CHANGES
       if (node == drag_highlight)
         {
           /* Draw indicator for the drop
@@ -5016,6 +5087,7 @@ gtk_tree_view_bin_expose (GtkWidget      *widget,
                              highlight_y);
             }
         }
+#endif /* !MAEMO_CHANGES */
 
       /* draw the big row-spanning focus rectangle, if needed */
       if (!has_special_cell && node == cursor &&

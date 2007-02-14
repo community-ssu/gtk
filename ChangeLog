@@ -1,3 +1,9 @@
+2007-02-14  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_bin_expose): move around
+	some code so the drag drop position indicators are drawn
+	before the cell contents.
+
 2007-02-14  Michael Natterer  <mitch@imendio.com>
 
 	Fix automatic popdown of obscured menus:
