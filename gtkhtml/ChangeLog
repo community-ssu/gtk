@@ -1,3 +1,6 @@
+2007-02-14  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+	* Moved trunk to sardine-experimental. New patch properly frees Pango structures
+
 2007-02-06  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 	* During button_press_event, we must record the starting (x,y) of the pan using
 	  gdk_window_get_pointer + gtk_adjustment_get_value from the two adjustments
