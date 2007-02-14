@@ -33,41 +33,35 @@ style "osso-navigator-button-one"
 			function = BOX
 			state = NORMAL
 			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
 			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
 			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_button_01_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = SELECTED
 			file = "../images/qgn_plat_task_navigation_button_01_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 		        function = FOCUS
         		file = "../images/qgn_plat_task_navigation_button_01_focused.png"
-        		border = { 0, 0, 0, 0 }
         		stretch = TRUE
                 }
 	}
@@ -84,41 +78,35 @@ style "osso-navigator-button-two"
 			function = BOX
 			state = NORMAL
 			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
 			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
 			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_button_02_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = SELECTED
 			file = "../images/qgn_plat_task_navigation_button_02_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 		        function = FOCUS
         		file = "../images/qgn_plat_task_navigation_button_02_focused.png"
-        		border = { 0, 0, 0, 0 }
         		stretch = TRUE
                 }	
 	}
@@ -135,41 +123,35 @@ style "osso-navigator-button-three"
 			function = BOX
 			state = NORMAL
 			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
 			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
 			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_button_03_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = SELECTED
 			file = "../images/qgn_plat_task_navigation_button_03_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 		        function = FOCUS
         		file = "../images/qgn_plat_task_navigation_button_03_focused.png"
-        		border = { 0, 0, 0, 0 }
         		stretch = TRUE
                 }
 	}
@@ -185,13 +167,11 @@ style "osso-navigator-small-button1"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_01_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
 			file = "../images/qgn_plat_task_navigation_application_switcher_01_focused.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -208,13 +188,11 @@ style "osso-navigator-small-button2"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_02_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
 			file = "../images/qgn_plat_task_navigation_application_switcher_02_focused.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -231,13 +209,11 @@ style "osso-navigator-small-button3"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_03_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
 			file = "../images/qgn_plat_task_navigation_application_switcher_03_focused.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -254,13 +230,11 @@ style "osso-navigator-small-button4"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_04_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
 			file = "../images/qgn_plat_task_navigation_application_switcher_04_focused.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -278,41 +252,35 @@ style "osso-navigator-small-button5"
 			function = BOX
 			state = NORMAL
 			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
 			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_application_switcher_05_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = SELECTED
 			file = "../images/qgn_plat_task_navigation_application_switcher_05_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
 			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
 			file = "../images/qgn_plat_task_navigation_application_switcher_05_focused.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -332,14 +300,12 @@ style "osso-navigator-small-button1-pressed"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
             state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -356,14 +322,12 @@ style "osso-navigator-small-button2-pressed"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
             state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -380,14 +344,12 @@ style "osso-navigator-small-button3-pressed"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
             state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}
@@ -404,14 +366,12 @@ style "osso-navigator-small-button4-pressed"
 		image {
 			function = BOX
 			file = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}
 		image {
 			function = FOCUS
             state = ACTIVE
 			file = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
-			border = { 0, 0, 0, 0 }
 			stretch = TRUE
 		}	
 	}

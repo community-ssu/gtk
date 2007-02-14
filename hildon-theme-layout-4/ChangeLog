@@ -1,3 +1,10 @@
+2007-02-14  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/hildonnavigator.rc:
+
+	The default for border is { 0, 0, 0, 0}, no need to plague the rc
+	file with it.
+
 2007-02-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* rc/gtkmenu.rc: Remove unused hildonlike, and redundant
