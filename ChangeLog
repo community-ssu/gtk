@@ -1,5 +1,12 @@
 2007-02-14  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtktreeviewcolumn.c (gtk_tree_view_column_create_button),
+	(gtk_tree_view_column_update_button): make the alignment expand
+	the child so ellipsizing labels in column headers work
+	correctly.
+
+2007-02-14  Kristian Rietveld  <kris@imendio.com>
+
 	* gtk/gtkbutton.c (gtk_button_class_init),
 	(gtk_button_size_request), (gtk_button_size_allocate),
 	(_gtk_button_paint): add tree-view-separator-area style
