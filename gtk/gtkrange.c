@@ -507,6 +507,21 @@ gtk_range_class_init (GtkRangeClass *class)
                                                                  GTK_PARAM_READABLE));
 
   g_type_class_add_private (class, sizeof (GtkRangeLayout));
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkRange:arrow-paint-box-layout:
+   *
+   * Allows to use images instead of normal arrows.
+   *
+   * Since: maemo 1.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_boolean ("arrow-paint-box-layout",
+                                                                 P_("Arrow paint box layout"),
+                                                                 P_("Allocate range arrows with the maximum available space."),
+                                                                 FALSE,
+                                                                 GTK_PARAM_READABLE));
+#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -1358,6 +1373,18 @@ draw_stepper (GtkRange     *range,
   arrow_height = rect->height / 2;
   arrow_x = widget->allocation.x + rect->x + (rect->width - arrow_width) / 2;
   arrow_y = widget->allocation.y + rect->y + (rect->height - arrow_height) / 2;
+
+#ifdef MAEMO_CHANGES
+  gboolean arrow_paint_box_layout = FALSE;
+  gtk_widget_style_get (widget, "arrow-paint-box-layout", &arrow_paint_box_layout, NULL);
+  if (arrow_paint_box_layout)
+    {
+      arrow_width = rect->width;
+      arrow_height = rect->height;
+      arrow_x = widget->allocation.x + rect->x;
+      arrow_y = widget->allocation.y + rect->y;
+    }
+#endif /* MAEMO_CHANGES */
   
   if (clicked && arrow_sensitive)
     {
