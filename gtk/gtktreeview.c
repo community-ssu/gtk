@@ -15357,7 +15357,25 @@ gtk_tree_view_grab_notify (GtkWidget *widget,
   tree_view->priv->in_grab = !was_grabbed;
 
   if (!was_grabbed)
+#ifndef MAEMO_CHANGES
     tree_view->priv->pressed_button = -1;
+#else /* MAEMO_CHANGES */
+    {
+      tree_view->priv->pressed_button = -1;
+
+      if (tree_view->priv->queued_expand_row)
+        {
+	  gtk_tree_row_reference_free (tree_view->priv->queued_expand_row);
+	  tree_view->priv->queued_expand_row = NULL;
+	}
+
+      if (tree_view->priv->queued_activate_row)
+        {
+	  gtk_tree_row_reference_free (tree_view->priv->queued_activate_row);
+	  tree_view->priv->queued_activate_row = NULL;
+	}
+    }
+#endif /* MAEMO_CHANGES */
 }
 
 static void
