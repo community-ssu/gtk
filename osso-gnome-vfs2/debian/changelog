@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso9) unstable; urgency=low
+
+  * UNRELEASED! (1osso8 is only a tag)
+
+ -- Richard Hult <richard@imendio.com>  Fri, 14 Feb 2007 21:44:37 +0100
+
 osso-gnome-vfs2 (2.16.3-1osso7) unstable; urgency=low
 
   * Really apply the patch for NB#50018
