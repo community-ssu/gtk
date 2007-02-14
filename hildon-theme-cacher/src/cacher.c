@@ -87,6 +87,7 @@ int                             main (int argc, char **argv)
         }
 
         g_unsetenv ("DISPLAY");
+        g_unsetenv ("GTK2_RC_FILES");
 
         gtk_init_check (&argc, &argv);
 
