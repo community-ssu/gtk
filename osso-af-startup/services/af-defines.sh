@@ -115,7 +115,7 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
 
   source_if_is osso-gtk.defs
   source_if_is matchbox.defs
-  source_if_is maemo-af-desktop.defs
+  source_if_is hildon-desktop.defs
   source_if_is keyboard.defs
 
   export AF_DEFINES_SOURCED=1

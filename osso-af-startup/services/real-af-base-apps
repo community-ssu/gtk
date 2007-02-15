@@ -23,7 +23,7 @@ case "$1" in
 start)
 
   source $SESSION_BUS_ADDRESS_FILE
-  source $AF_INIT_DIR/maemo-af-desktop.sh start
+  source $AF_INIT_DIR/hildon-desktop.sh start
 
   # boost desktop startup
   sleep 9
@@ -54,7 +54,7 @@ stop)
     source $CONNECTIVITY_UI_SCRIPT stop
   fi
 
-  source $AF_INIT_DIR/maemo-af-desktop.sh stop
+  source $AF_INIT_DIR/hildon-desktop.sh stop
 
   ;;
 restart)
