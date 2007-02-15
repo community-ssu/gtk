@@ -1,5 +1,11 @@
 2007-02-15  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtkdialog.rc
+
+	extended_{left,right}_border have gone the way of the Dodo too.
+
+2007-02-15  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/gtkdialog.rc:
 
 	Drop inner-left-border, inner-right-border and use xthickness instead.

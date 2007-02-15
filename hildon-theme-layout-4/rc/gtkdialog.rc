@@ -20,8 +20,6 @@ style "osso-multipage-dialog" {
   GtkDialog::content_area_border = 6
   GtkDialog::content_area_spacing = 18
   GtkDialog::action_area_border = 0
-  GtkDialog::extended_left_border = 0
-  GtkDialog::extended_right_border = 0
 }
 
 widget_class "GtkDialog.GtkVBox.GtkNotebook" style "osso-multipage-dialog"
@@ -31,8 +29,6 @@ style "osso-dialog" {
 #  GtkDialog::content_area_border = 10
   GtkDialog::content_area_border = 0
   GtkDialog::action_area_border = 10
-  GtkDialog::extended_left_border = 0
-  GtkDialog::extended_right_border = 0
 }
 
 class "GtkDialog" style "osso-dialog"
