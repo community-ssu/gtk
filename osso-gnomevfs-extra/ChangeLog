@@ -1,3 +1,14 @@
+2007-02-15  Richard Hult  <richard@imendio.com>
+
+	* obex-module/src/om-dbus.c (connection_free): Close the private
+	connection instead of disconnecting, fixes build with newer D-Bus.
+
+	* obex-utils/obex-vfs-utils/ovu-xfer.c (ovu_async_xfer): Remove
+	the obsolete code here and only leave the thin deprecated wrapper
+	function.
+
+	* file-chooser/: Remove.
+
 2007-01-30  Richard Hult  <richard@imendio.com>
 
 	* obex-module/src/obex-method.c: (do_create): Use the current

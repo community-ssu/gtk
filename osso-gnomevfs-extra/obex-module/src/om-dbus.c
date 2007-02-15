@@ -90,7 +90,7 @@ get_gwcond_connection (void)
 static void
 connection_free (Connection *conn)
 {
-	dbus_connection_disconnect (conn->dbus_conn);
+	dbus_connection_close (conn->dbus_conn);
 	dbus_connection_unref (conn->dbus_conn);
 	
 	g_main_loop_unref (conn->loop);
