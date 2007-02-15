@@ -1,3 +1,9 @@
+apt-https (2.5.1) unstable; urgency=low
+
+  * Released 2.5 to recompile against new apt.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 15 Feb 2007 21:11:53 +0200
+
 apt-https (2.5) unstable; urgency=low
 
   * Improved debian/copyright.
