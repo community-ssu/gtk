@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-08-18 15:45+0100\n"
 "Last-Translator: Daniel Nylander <po@danielnylander.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
@@ -148,8 +148,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s för %s %s kompilerad den %s %s\n"
@@ -309,342 +309,6 @@ msgstr "Kunde inte skriva till %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Kan inte ta reda på debconfs version. Är debconf installerat?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Listan över filtillägg för Packages är för lång"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Fel vid behandling av katalogen %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Listan över filtillägg för Sources är för lång"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Fel vid skrivning av huvud till innehållsfil"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Fel vid behaldning av innehållet %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Användning: apt-ftparchive [flaggor] kommando\n"
-"Kommandon: packages binärsökväg [åsidosättningsfil [sökvägsprefix]]\n"
-"           sources källsökväg [åsidosättningsfil [sökvägsprefix]]\n"
-"           contents sökväg\n"
-"           release sökväg\n"
-"           generate konfiguration [grupper]\n"
-"           clean konfiguration\n"
-"\n"
-"apt-ftparchive genererar indexfiler för Debianarkiv. Det stöder många\n"
-"former av generering, allt från helautomatiserat till funktionella\n"
-"ersättningar till dpkg-scanpackages och dpkg-scansources\n"
-"\n"
-"apt-ftparchive skapar Package-filer från ett träd med .deb-filer.\n"
-"Packagefilen innehåller alla styrfälten från paketen samt MD5-hashvärdet\n"
-"och filstorlek. En overrride-fil stöds för att tvinga värden på Priority\n"
-"och Section.\n"
-"\n"
-"På samma sätt skapar apt-ftparchive Sources-filer från ett träd med\n"
-".dsc-filer. Flaggan --source-override kan användas för att ange en\n"
-"override-fil för källkoden.\n"
-"\n"
-"Kommandona \"packages\" och \"sources\" bör köras från rotet på trädet.\n"
-"Binärsökvägen bör peka på basen på den rekursiva sökningen och\n"
-"override-filen bör innehålla override-flaggorna de framtvingade flaggorna.\n"
-"Sökvägsprefixet läggs till i filnamnsfälten om det anges. Ett exempel på\n"
-"hur programmet kan användas från Debianarkivet:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Flaggor:\n"
-"  -h    Denna hjälptext\n"
-"  --md5 Kontrollera generering av MD5\n"
-"  -s=?  Källkods-override-fil\n"
-"  -q    Tyst\n"
-"  -d=?  Väljer den valfria cachedatabasen\n"
-"  --no-delink Aktivera \"delinkning\"-felspårningsläget\n"
-"  --contents  Styr skapande av contents-fil\n"
-"  -c=?  Läs denna konfigurationsfil\n"
-"  -o=?  Ange valfri inställningsflagga"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Inga val träffades"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Några filer saknas i paketfilsgruppen \"%s\""
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "DB var skadad, filen omdöpt till %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "DB är för gammal, försöker uppgradera %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"DB-formatet är ogiltigt. Ta bort och återskapa databasen om du uppgraderar "
-"från en äldre version av apt."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Kunde inte öppna DB-filen %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Misslyckades med att ta status på %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Arkivet har ingen styrpost"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Kunde inte få tag i någon markör"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "V: Kunde inte läsa katalogen %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "V: Kunde inte ta status på %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "F: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "V: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "F: Felen gäller filen "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Misslyckades med att slå upp %s"
-
-# ???
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Trädvandring misslyckades"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Misslyckades med att öppna %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " Avlänka %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Misslyckades med att läsa länk %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Misslyckades med att länka ut %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Misslyckades med att länka %s till %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " Avlänkningsgräns på %sB nådd.\n"
-
-# Fält vid namn "Package"
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Arkivet har inget package-fält"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  %s har ingen post i override-filen\n"
-
-# parametrar: paket, ny, gammal
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  ansvarig för %s är %s ej %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  %s har ingen källåsidosättningspost\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  %s har heller ingen binär åsidosättningspost\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Internt fel, kunde inta hitta delen %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Misslyckades med att allokera minne"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Kunde inte öppna %s"
-
-# parametrar: filnamn, radnummer
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Felaktig override %s rad %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Felaktig override %s rad %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Felaktig override %s rad %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Misslyckades med att läsa åsidosättningsfilen %s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Okänd komprimeringsalgoritm \"%s\""
-
-# ???
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Komprimerad utdata %s behöver en komprimeringsuppsättning"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Misslyckades med att skapa IPC-rör till underprocess"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Misslyckades med att skapa FILE*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Misslyckades med att grena process"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Barnprocess för komprimering"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Internt fel, misslyckades med att skapa %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Misslyckades med att skapa underprocess-IPC"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Misslyckades med att starta packare "
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "uppackare"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "Barnprocessen misslyckades"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Misslyckades med att läsa vid beräkning av MD5"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Problem med att länka ut %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Misslyckades med att byta namn på %s till %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1499,6 +1163,17 @@ msgstr "Paketet försöker skriva till omdirigeringsmålet %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Omdirigeringssökvägen är för lång"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Misslyckades med att ta status på %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Misslyckades med att byta namn på %s till %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2781,9 +2456,254 @@ msgstr "Tog bort hela %s"
 msgid "Could not patch file"
 msgstr "Kunde inte lägga på programfix på filen"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Misslyckades med att skapa IPC-rör till underprocess"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Förbindelsen stängdes i förtid"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Listan över filtillägg för Packages är för lång"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Fel vid behandling av katalogen %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Listan över filtillägg för Sources är för lång"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Fel vid skrivning av huvud till innehållsfil"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Fel vid behaldning av innehållet %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Användning: apt-ftparchive [flaggor] kommando\n"
+#~ "Kommandon: packages binärsökväg [åsidosättningsfil [sökvägsprefix]]\n"
+#~ "           sources källsökväg [åsidosättningsfil [sökvägsprefix]]\n"
+#~ "           contents sökväg\n"
+#~ "           release sökväg\n"
+#~ "           generate konfiguration [grupper]\n"
+#~ "           clean konfiguration\n"
+#~ "\n"
+#~ "apt-ftparchive genererar indexfiler för Debianarkiv. Det stöder många\n"
+#~ "former av generering, allt från helautomatiserat till funktionella\n"
+#~ "ersättningar till dpkg-scanpackages och dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive skapar Package-filer från ett träd med .deb-filer.\n"
+#~ "Packagefilen innehåller alla styrfälten från paketen samt MD5-hashvärdet\n"
+#~ "och filstorlek. En overrride-fil stöds för att tvinga värden på Priority\n"
+#~ "och Section.\n"
+#~ "\n"
+#~ "På samma sätt skapar apt-ftparchive Sources-filer från ett träd med\n"
+#~ ".dsc-filer. Flaggan --source-override kan användas för att ange en\n"
+#~ "override-fil för källkoden.\n"
+#~ "\n"
+#~ "Kommandona \"packages\" och \"sources\" bör köras från rotet på trädet.\n"
+#~ "Binärsökvägen bör peka på basen på den rekursiva sökningen och\n"
+#~ "override-filen bör innehålla override-flaggorna de framtvingade "
+#~ "flaggorna.\n"
+#~ "Sökvägsprefixet läggs till i filnamnsfälten om det anges. Ett exempel på\n"
+#~ "hur programmet kan användas från Debianarkivet:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Flaggor:\n"
+#~ "  -h    Denna hjälptext\n"
+#~ "  --md5 Kontrollera generering av MD5\n"
+#~ "  -s=?  Källkods-override-fil\n"
+#~ "  -q    Tyst\n"
+#~ "  -d=?  Väljer den valfria cachedatabasen\n"
+#~ "  --no-delink Aktivera \"delinkning\"-felspårningsläget\n"
+#~ "  --contents  Styr skapande av contents-fil\n"
+#~ "  -c=?  Läs denna konfigurationsfil\n"
+#~ "  -o=?  Ange valfri inställningsflagga"
+
+#~ msgid "No selections matched"
+#~ msgstr "Inga val träffades"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Några filer saknas i paketfilsgruppen \"%s\""
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "DB var skadad, filen omdöpt till %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "DB är för gammal, försöker uppgradera %s"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "DB-formatet är ogiltigt. Ta bort och återskapa databasen om du "
+#~ "uppgraderar från en äldre version av apt."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Kunde inte öppna DB-filen %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Arkivet har ingen styrpost"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Kunde inte få tag i någon markör"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "V: Kunde inte läsa katalogen %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "V: Kunde inte ta status på %s\n"
+
+#~ msgid "E: "
+#~ msgstr "F: "
+
+#~ msgid "W: "
+#~ msgstr "V: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "F: Felen gäller filen "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Misslyckades med att slå upp %s"
+
+# ???
+#~ msgid "Tree walking failed"
+#~ msgstr "Trädvandring misslyckades"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Misslyckades med att öppna %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " Avlänka %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Misslyckades med att läsa länk %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Misslyckades med att länka ut %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Misslyckades med att länka %s till %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " Avlänkningsgräns på %sB nådd.\n"
+
+# Fält vid namn "Package"
+#~ msgid "Archive had no package field"
+#~ msgstr "Arkivet har inget package-fält"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  %s har ingen post i override-filen\n"
+
+# parametrar: paket, ny, gammal
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  ansvarig för %s är %s ej %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  %s har ingen källåsidosättningspost\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  %s har heller ingen binär åsidosättningspost\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Internt fel, kunde inta hitta delen %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Misslyckades med att allokera minne"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Kunde inte öppna %s"
+
+# parametrar: filnamn, radnummer
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Felaktig override %s rad %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Felaktig override %s rad %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Felaktig override %s rad %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Misslyckades med att läsa åsidosättningsfilen %s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Okänd komprimeringsalgoritm \"%s\""
+
+# ???
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Komprimerad utdata %s behöver en komprimeringsuppsättning"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Misslyckades med att skapa FILE*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Misslyckades med att grena process"
+
+#~ msgid "Compress child"
+#~ msgstr "Barnprocess för komprimering"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Internt fel, misslyckades med att skapa %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Misslyckades med att skapa underprocess-IPC"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Misslyckades med att starta packare "
+
+#~ msgid "decompressor"
+#~ msgstr "uppackare"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "Barnprocessen misslyckades"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Misslyckades med att läsa vid beräkning av MD5"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Problem med att länka ut %s"
 
 # Felmeddelande för misslyckad chdir
 #~ msgid "File date has changed %s"

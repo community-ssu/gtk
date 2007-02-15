@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-10-04 18:53+0200\n"
 "Last-Translator: Miroslav Kure <kurem@debian.cz>\n"
 "Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
@@ -147,8 +147,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s pro %s %s zkompilován na %s %s\n"
@@ -307,336 +307,6 @@ msgstr "Nemohu zapsat do %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Nemohu určit verzi programu debconf. Je debconf nainstalován?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Seznam rozšíření balíku je příliš dlouhý"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Chyba zpracování adresáře %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Seznam zdrojových rozšíření je příliš dlouhý"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Chyba při zapisování hlavičky do souboru"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Chyba při zpracovávání obsahu %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Použití: apt-ftparchive [volby] příkaz\n"
-"Příkazy: packages binárnícesta [souboroverride [prefixcesty]]\n"
-"         sources zdrojovácesta [souboroverride [prefixcesty]]\n"
-"         contents cesta\n"
-"         release cesta\n"
-"         generate konfiguračnísoubor [skupiny]\n"
-"         clean konfiguračnísoubor\n"
-"\n"
-"apt-ftparchive generuje indexové soubory debianích archivů. Podporuje\n"
-"několik režimů vytváření - od plně automatického až po funkční ekvivalent\n"
-"příkazů dpkg-scanpackages a dpkg-scansources.\n"
-"\n"
-"apt-ftparchive vytvoří ze stromu .deb souborů soubory Packages. Soubor\n"
-"Packages obsahuje kromě všech kontrolních polí každého balíku také jeho\n"
-"velikost a MD5 součet. Podporován je také soubor override, kterým můžete \n"
-"vynutit hodnoty polí Priority a Section.\n"
-"\n"
-"Podobně umí apt-ftparchive vygenerovat ze stromu souborů .dsc soubory\n"
-"Sources. Volbou --source-override můžete zadat zdrojový soubor override.\n"
-"\n"
-"Příkazy 'packages' a 'sources' by se měly spouštět z kořene stromu.\n"
-"BinárníCesta by měla ukazovat na začátek rekurzivního hledání a soubor \n"
-"override by měl obsahovat příznaky pro přepis. PrefixCesty, pokud je\n"
-"přítomen, je přidán do polí Filename.\n"
-"Reálný příklad na archivu Debianu:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Volby:\n"
-"  -h          Tato nápověda\n"
-"  --md5       Vygeneruje kontrolní MD5\n"
-"  -s=?        Zdrojový soubor override\n"
-"  -q          Tichý režim\n"
-"  -d=?        Vybere volitelnou databázi pro vyrovnávací paměť\n"
-"  --no-delink Povolí ladicí režim\n"
-"  --contents  Vygeneruje soubor Contents\n"
-"  -c=?        Načte tento konfigurační soubor\n"
-"  -o=?        Nastaví libovolnou volbu"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Žádný výběr nevyhověl"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Některé soubory chybí v balíkovém souboru skupiny %s"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "DB je porušená, soubor přejmenován na %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "DB je stará, zkouším aktualizovat %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"Formát databáze je neplatný. Pokud jste přešli ze starší verze apt, databázi "
-"prosím odstraňte a poté ji znovu vytvořte."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Nemohu otevřít DB soubor %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Nemohu vyhodnotit %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Archiv nemá kontrolní záznam"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Nemohu získat kurzor"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "W: Nemohu číst adresář %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "W: Nemohu vyhodnotit %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "E: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "W: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "E: Chyby se týkají souboru "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Chyba při zjišťování %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Průchod stromem selhal"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Nelze otevřít %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr "Odlinkování %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Nemohu přečíst link %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Nemohu odlinkovat %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Nezdařilo se slinkovat %s s %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " Odlinkovací limit %sB dosažen.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Archiv nemá pole Package"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr " %s nemá žádnou položku pro override\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  správce %s je %s, ne %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr " %s nemá žádnou zdrojovou položku pro override\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr " %s nemá ani žádnou binární položku pro override\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Vnitřní chyba, nemohu najít část %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Selhal pokus o přidělení paměti"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Nemohu otevřít %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Zkomolený soubor %s, řádek %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Zkomolený soubor %s, řádek %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Zkomolený soubor %s, řádek %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Nezdařilo se přečíst override soubor %s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Neznámý kompresní algoritmus '%s'"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Komprimovaný výstup %s potřebuje kompresní sadu"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Selhalo vytvoření meziprocesové roury k podprocesu"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Selhalo vytvoření FILE*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Volání fork() se nezdařilo"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Komprimovat potomka"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Interní chyba, nezdařilo se vytvořit %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Nemohu vytvořit podproces IPC"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Nezdařilo se spustit kompresor "
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "dekompresor"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "V/V operace s podprocesem/souborem selhala"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Chyba čtení při výpočtu MD5"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Problém s odlinkováním %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Selhalo přejmenování %s na %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1476,6 +1146,17 @@ msgstr "Balík se pokouší zapisovat do diverzního cíle %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Diverzní cesta je příliš dlouhá"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Nemohu vyhodnotit %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Selhalo přejmenování %s na %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2747,9 +2428,249 @@ msgstr "Kompletně odstraněn %s"
 msgid "Could not patch file"
 msgstr "Nemohu otevřít soubor %s"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Selhalo vytvoření meziprocesové roury k podprocesu"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Spojení bylo předčasně ukončeno"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Seznam rozšíření balíku je příliš dlouhý"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Chyba zpracování adresáře %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Seznam zdrojových rozšíření je příliš dlouhý"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Chyba při zapisování hlavičky do souboru"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Chyba při zpracovávání obsahu %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Použití: apt-ftparchive [volby] příkaz\n"
+#~ "Příkazy: packages binárnícesta [souboroverride [prefixcesty]]\n"
+#~ "         sources zdrojovácesta [souboroverride [prefixcesty]]\n"
+#~ "         contents cesta\n"
+#~ "         release cesta\n"
+#~ "         generate konfiguračnísoubor [skupiny]\n"
+#~ "         clean konfiguračnísoubor\n"
+#~ "\n"
+#~ "apt-ftparchive generuje indexové soubory debianích archivů. Podporuje\n"
+#~ "několik režimů vytváření - od plně automatického až po funkční "
+#~ "ekvivalent\n"
+#~ "příkazů dpkg-scanpackages a dpkg-scansources.\n"
+#~ "\n"
+#~ "apt-ftparchive vytvoří ze stromu .deb souborů soubory Packages. Soubor\n"
+#~ "Packages obsahuje kromě všech kontrolních polí každého balíku také jeho\n"
+#~ "velikost a MD5 součet. Podporován je také soubor override, kterým "
+#~ "můžete \n"
+#~ "vynutit hodnoty polí Priority a Section.\n"
+#~ "\n"
+#~ "Podobně umí apt-ftparchive vygenerovat ze stromu souborů .dsc soubory\n"
+#~ "Sources. Volbou --source-override můžete zadat zdrojový soubor override.\n"
+#~ "\n"
+#~ "Příkazy 'packages' a 'sources' by se měly spouštět z kořene stromu.\n"
+#~ "BinárníCesta by měla ukazovat na začátek rekurzivního hledání a soubor \n"
+#~ "override by měl obsahovat příznaky pro přepis. PrefixCesty, pokud je\n"
+#~ "přítomen, je přidán do polí Filename.\n"
+#~ "Reálný příklad na archivu Debianu:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Volby:\n"
+#~ "  -h          Tato nápověda\n"
+#~ "  --md5       Vygeneruje kontrolní MD5\n"
+#~ "  -s=?        Zdrojový soubor override\n"
+#~ "  -q          Tichý režim\n"
+#~ "  -d=?        Vybere volitelnou databázi pro vyrovnávací paměť\n"
+#~ "  --no-delink Povolí ladicí režim\n"
+#~ "  --contents  Vygeneruje soubor Contents\n"
+#~ "  -c=?        Načte tento konfigurační soubor\n"
+#~ "  -o=?        Nastaví libovolnou volbu"
+
+#~ msgid "No selections matched"
+#~ msgstr "Žádný výběr nevyhověl"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Některé soubory chybí v balíkovém souboru skupiny %s"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "DB je porušená, soubor přejmenován na %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "DB je stará, zkouším aktualizovat %s"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "Formát databáze je neplatný. Pokud jste přešli ze starší verze apt, "
+#~ "databázi prosím odstraňte a poté ji znovu vytvořte."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Nemohu otevřít DB soubor %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Archiv nemá kontrolní záznam"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Nemohu získat kurzor"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "W: Nemohu číst adresář %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "W: Nemohu vyhodnotit %s\n"
+
+#~ msgid "E: "
+#~ msgstr "E: "
+
+#~ msgid "W: "
+#~ msgstr "W: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "E: Chyby se týkají souboru "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Chyba při zjišťování %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Průchod stromem selhal"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Nelze otevřít %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr "Odlinkování %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Nemohu přečíst link %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Nemohu odlinkovat %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Nezdařilo se slinkovat %s s %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " Odlinkovací limit %sB dosažen.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Archiv nemá pole Package"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr " %s nemá žádnou položku pro override\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  správce %s je %s, ne %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr " %s nemá žádnou zdrojovou položku pro override\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr " %s nemá ani žádnou binární položku pro override\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Vnitřní chyba, nemohu najít část %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Selhal pokus o přidělení paměti"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Nemohu otevřít %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Zkomolený soubor %s, řádek %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Zkomolený soubor %s, řádek %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Zkomolený soubor %s, řádek %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Nezdařilo se přečíst override soubor %s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Neznámý kompresní algoritmus '%s'"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Komprimovaný výstup %s potřebuje kompresní sadu"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Selhalo vytvoření FILE*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Volání fork() se nezdařilo"
+
+#~ msgid "Compress child"
+#~ msgstr "Komprimovat potomka"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Interní chyba, nezdařilo se vytvořit %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Nemohu vytvořit podproces IPC"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Nezdařilo se spustit kompresor "
+
+#~ msgid "decompressor"
+#~ msgstr "dekompresor"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "V/V operace s podprocesem/souborem selhala"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Chyba čtení při výpočtu MD5"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Problém s odlinkováním %s"
 
 #~ msgid "File date has changed %s"
 #~ msgstr "Datum souboru se změnil %s"

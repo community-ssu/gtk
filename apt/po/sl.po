@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt 0.5.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2005-02-16 22:18+0100\n"
 "Last-Translator: Jure Cuhalev <gandalf@owca.info>\n"
 "Language-Team: Slovenian <sl@li.org>\n"
@@ -144,8 +144,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s za %s %s preveden na %s %s\n"
@@ -309,335 +309,6 @@ msgstr "Ni mogoèe pisati na %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Ni mogoèe ugotoviti razlièice debconfa. Je sploh name¹èen?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Seznam raz¹iritev paketov je predolg"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Napaka pri obdelavi imenika %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Seznam raz¹iritev virov je predolg"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Napaka pri pisanju glave v vsebinsko datoteko"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Napaka pri obdelavi vsebine %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-#, fuzzy
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Uporaba: apt-ftparchive [mo¾nosti] ukaz\n"
-"Ukazi: packages binarypath [overridefile [pathprefix]]\n"
-"       sources srcpath [overridefile [pathprefix]]\n"
-"       contents path\n"
-"       release path\n"
-"       generate config [groups]\n"
-"       clean config\n"
-"\n"
-"apt-ftparchive ustvari kazalo Debianovih arhivov. Podpira ¹tevilne\n"
-"sloge ustvarjanja, od popolnoma samodejnih do enakovrednih zamenjav\n"
-"za dpkg-scanpackages in dpkg-scansources\n"
-"\n"
-"apt-ftparchive ustvari paketne datoteke z drevesa .deb-ov. Paketna\n"
-"datoteka hrani vsebino vseh nadzornih polj vsakega paketa in tudi\n"
-"razpr¹eno kodo MD5 ter velikost datoteke. Prekrivna datoteka\n"
-"lahko vsili vrednost Prioriteta in Odsek.\n"
-"\n"
-"Podobno apt-ftparchive ustvari tudi izvorne datoteke iz .dsc-jev.\n"
-"Mo¾nost --source-override lahko nastavi prekrivno datoteko.\n"
-"\n"
-"Ukaz 'paketi' in 'izvorne datoteke' se uporablja v korenu drevesa.\n"
-"BinarnaPot mora kazati na osnovo rekurzivnega iskanja, prekrivna\n"
-"datoteka pa naj vsebuje prekrivne zastavice. Predponapoti se\n"
-"doda poljem z imeni datotek, èe je podana. Primer uporabe iz\n"
-"Debianovega arhiva:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Mo¾nosti:\n"
-"  -h    To besedilo\n"
-"  --md5 Nadzoruje ustvarjanje MD5\n"
-"  -s=?  Prekrivna datoteka izvorne datoteke\n"
-"  -q    Tiho\n"
-"  -d=?  Izbere poljubno pomnilni¹ko zbirko\n"
-"  --no-delink Omogoèi razhro¹èevalni naèin z razvezovanjem\n"
-"  --contents  Nadzoruje ustvarjanje vsebinskih datotek\n"
-"  -c=?  Prebere podano datoteko z nastavitvami\n"
-"  -o=?  Nastavi poljubno nastavitveno mo¾nost"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Nobena izbira se ne ujema"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Nekatere datoteke manjkajo v skupini paketnih datotek '%s'"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "ZP je pokvarjena, datoteka je preimenovana v %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "ZP je stara, posku¹am nadgraditi %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Ni mogoèe odprti datoteke ZP %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Napaka pri postavitvi %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Arhiv nima nadzornega zapisa"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Ni mogoèe najti kazalca"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "O: ni mogoèe brati imenika %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "O: Ni mogoèe nastaviti %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "E: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "O: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "N: Napake se sklicujejo na datoteko"
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Ni mogoèe razre¹iti %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Hoja drevesa ni uspela"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Ni mogoèe odprti %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " RazVe¾i %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Napaka pri branju povezave %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Napaka pri odvezovanju %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Napaka pri povezovanju %s z %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " Dose¾ena meja RazVezovanja %sB.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Arhiv ni imel polja s paketom"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr " %s nima prekrivnega vnosa\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr " Vzdr¾evalec %s je %s in ne %s\n"
-
-#: ftparchive/writer.cc:623
-#, fuzzy, c-format
-msgid "  %s has no source override entry\n"
-msgstr " %s nima prekrivnega vnosa\n"
-
-#: ftparchive/writer.cc:627
-#, fuzzy, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr " %s nima prekrivnega vnosa\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Notranja napaka. Ni mogoèe najti èlana %s."
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Napaka pri dodeljevanju prostora"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Ne morem odpreti %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Napaèno prekrivanje %s vrstica %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Napaèno prekrivanje %s vrstica %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Napaèno prekrivanje %s vrstica %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Napaka pri branju prekrite datoteke %s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Neznan algoritem stiskanja '%s'"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Stisnjen izhod %s potrebuje niz stiskanja"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Ustvarjanje pipe IPC podprocesa ni uspelo"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Ustvarjanje DATOTEKE* ni uspelo"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Vejitev ni uspela"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Otrok stiskanja"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Notranja napaka. Ni mogoèe ustvariti %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Ni mogoèe ustvariti podprocesa IPD"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Ni mogoèe izvesti stiskanja"
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "program za dekompresijo"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "IO podprocesa/datoteke je spodletel"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Med raèunanjem MD5 ni mogoèe brati"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Napaka pri odvezovanju %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Ni mogoèe preimenovati %s v %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1484,6 +1155,17 @@ msgstr "Paket posku¹a pisati v tarèo odklona %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Pot odklona je predloga"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Napaka pri postavitvi %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Ni mogoèe preimenovati %s v %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2755,9 +2437,243 @@ msgstr "Odstranitev %s ni uspela"
 msgid "Could not patch file"
 msgstr "Ne morem odpreti datoteke %s"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Ustvarjanje pipe IPC podprocesa ni uspelo"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Povezava se je prezgodaj zaprla"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Seznam raz¹iritev paketov je predolg"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Napaka pri obdelavi imenika %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Seznam raz¹iritev virov je predolg"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Napaka pri pisanju glave v vsebinsko datoteko"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Napaka pri obdelavi vsebine %s"
+
+#, fuzzy
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Uporaba: apt-ftparchive [mo¾nosti] ukaz\n"
+#~ "Ukazi: packages binarypath [overridefile [pathprefix]]\n"
+#~ "       sources srcpath [overridefile [pathprefix]]\n"
+#~ "       contents path\n"
+#~ "       release path\n"
+#~ "       generate config [groups]\n"
+#~ "       clean config\n"
+#~ "\n"
+#~ "apt-ftparchive ustvari kazalo Debianovih arhivov. Podpira ¹tevilne\n"
+#~ "sloge ustvarjanja, od popolnoma samodejnih do enakovrednih zamenjav\n"
+#~ "za dpkg-scanpackages in dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive ustvari paketne datoteke z drevesa .deb-ov. Paketna\n"
+#~ "datoteka hrani vsebino vseh nadzornih polj vsakega paketa in tudi\n"
+#~ "razpr¹eno kodo MD5 ter velikost datoteke. Prekrivna datoteka\n"
+#~ "lahko vsili vrednost Prioriteta in Odsek.\n"
+#~ "\n"
+#~ "Podobno apt-ftparchive ustvari tudi izvorne datoteke iz .dsc-jev.\n"
+#~ "Mo¾nost --source-override lahko nastavi prekrivno datoteko.\n"
+#~ "\n"
+#~ "Ukaz 'paketi' in 'izvorne datoteke' se uporablja v korenu drevesa.\n"
+#~ "BinarnaPot mora kazati na osnovo rekurzivnega iskanja, prekrivna\n"
+#~ "datoteka pa naj vsebuje prekrivne zastavice. Predponapoti se\n"
+#~ "doda poljem z imeni datotek, èe je podana. Primer uporabe iz\n"
+#~ "Debianovega arhiva:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Mo¾nosti:\n"
+#~ "  -h    To besedilo\n"
+#~ "  --md5 Nadzoruje ustvarjanje MD5\n"
+#~ "  -s=?  Prekrivna datoteka izvorne datoteke\n"
+#~ "  -q    Tiho\n"
+#~ "  -d=?  Izbere poljubno pomnilni¹ko zbirko\n"
+#~ "  --no-delink Omogoèi razhro¹èevalni naèin z razvezovanjem\n"
+#~ "  --contents  Nadzoruje ustvarjanje vsebinskih datotek\n"
+#~ "  -c=?  Prebere podano datoteko z nastavitvami\n"
+#~ "  -o=?  Nastavi poljubno nastavitveno mo¾nost"
+
+#~ msgid "No selections matched"
+#~ msgstr "Nobena izbira se ne ujema"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Nekatere datoteke manjkajo v skupini paketnih datotek '%s'"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "ZP je pokvarjena, datoteka je preimenovana v %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "ZP je stara, posku¹am nadgraditi %s"
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Ni mogoèe odprti datoteke ZP %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Arhiv nima nadzornega zapisa"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Ni mogoèe najti kazalca"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "O: ni mogoèe brati imenika %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "O: Ni mogoèe nastaviti %s\n"
+
+#~ msgid "E: "
+#~ msgstr "E: "
+
+#~ msgid "W: "
+#~ msgstr "O: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "N: Napake se sklicujejo na datoteko"
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Ni mogoèe razre¹iti %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Hoja drevesa ni uspela"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Ni mogoèe odprti %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " RazVe¾i %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Napaka pri branju povezave %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Napaka pri odvezovanju %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Napaka pri povezovanju %s z %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " Dose¾ena meja RazVezovanja %sB.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Arhiv ni imel polja s paketom"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr " %s nima prekrivnega vnosa\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr " Vzdr¾evalec %s je %s in ne %s\n"
+
+#, fuzzy
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr " %s nima prekrivnega vnosa\n"
+
+#, fuzzy
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr " %s nima prekrivnega vnosa\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Notranja napaka. Ni mogoèe najti èlana %s."
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Napaka pri dodeljevanju prostora"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Ne morem odpreti %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Napaèno prekrivanje %s vrstica %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Napaèno prekrivanje %s vrstica %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Napaèno prekrivanje %s vrstica %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Napaka pri branju prekrite datoteke %s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Neznan algoritem stiskanja '%s'"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Stisnjen izhod %s potrebuje niz stiskanja"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Ustvarjanje DATOTEKE* ni uspelo"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Vejitev ni uspela"
+
+#~ msgid "Compress child"
+#~ msgstr "Otrok stiskanja"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Notranja napaka. Ni mogoèe ustvariti %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Ni mogoèe ustvariti podprocesa IPD"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Ni mogoèe izvesti stiskanja"
+
+#~ msgid "decompressor"
+#~ msgstr "program za dekompresijo"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "IO podprocesa/datoteke je spodletel"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Med raèunanjem MD5 ni mogoèe brati"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Napaka pri odvezovanju %s"
 
 #~ msgid "File date has changed %s"
 #~ msgstr "Datum datoteke se je spremenil %s"

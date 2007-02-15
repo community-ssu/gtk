@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt-da\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-10-06 15:57+0200\n"
 "Last-Translator: Claus Hindsgaul <claus.hindsgaul@gmail.com>\n"
 "Language-Team: Danish\n"
@@ -153,8 +153,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s for %s %s oversat på %s %s\n"
@@ -314,337 +314,6 @@ msgstr "Kunne ikke skrive til %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Kan ikke finde debconfs version. Er debconf installeret?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Pakkeudvidelseslisten er for lang"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Fejl under behandling af mappen %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Kildeudvidelseslisten er for lang"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Fejl under skrivning af hovedet til indholdsfil"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Fejl under behandling af indhold %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Brug: apt-ftparchive [tilvalg] kommando\n"
-"Kommandoer: packges binærsti [tvangsfil [sti]]\n"
-"            sources kildesti [tvangsfil [sti]]\n"
-"            contents sti\n"
-"            release sti\n"
-"            generate config [grupper]\n"
-"            clean config\n"
-"\n"
-"apt-ftparchive laver indeksfiler til Debianarkiver. Det understøtter \n"
-"mange former for generering, lige fra fuldautomatiske til funktionelle\n"
-"erstatninger for dpkg-scanpackages og dpkg-scansources\n"
-"\n"
-"apt-ftparchive genererer Package-filer ud fra træer af .deb'er.\n"
-"Package-filen indeholder alle styrefelterne fra hver pakke såvel\n"
-"som MD5-mønstre og filstørrelser. En tvangsfil understøttes til at\n"
-"gennemtvinge indholdet af Priority og Section.\n"
-"\n"
-"På samme måde genererer apt-ftparchive Sources-filer ud fra træer\n"
-"med .dsc'er. Tvangstilvalget --source-override kan bruges til at\n"
-"angive en src-tvangsfil.\n"
-"\n"
-"Kommandoerne 'packages' og 'sources' skal køres i roden af træet.\n"
-"binærsti skal pege på basen af rekursive søgninger og tvangsfilen\n"
-"skal indeholde tvangsflagene. Sti foranstilles eventuelle\n"
-"filnavnfelter. Et eksempel på brug fra Debianarkivet:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Tilvalg:\n"
-"  -h    Denne hjælpetekst\n"
-"  --md5 Styr generering af MD5\n"
-"  -s=?  Kilde-tvangsfil\n"
-"  -q    Stille\n"
-"  -d=?  Vælg den valgfrie mellemlager-database\n"
-"  --no-delink Aktivér \"delinking\"-fejlsporingstilstand\n"
-"  --contents  Bestem generering af indholdsfil\n"
-"  -c=?  Læs denne opsætningsfil\n"
-"  -o=?  Sæt en opsætnings-indstilling"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Ingen valg passede"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Visse filer mangler i pakkefilgruppen '%s'"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "DB var ødelagt, filen omdøbt til %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "DB er gammel, forsøger at opgradere %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"Databaseformatet er ugyldigt. Hvis du har opgraderet fra en tidligere "
-"version af apt, så fjern og genskab databasen."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Kunne ikke åbne DB-filen %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Kunne ikke finde %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Arkivet har ingen kontrolindgang"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Kunne skaffe en markør"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "A: Kunne ikke læse mappen %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "W: Kunne ikke finde finde %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "F: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "A: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "F: Fejlene vedrører filen "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Kunne ikke omsætte navnet %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Trævandring mislykkedes"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Kunne ikke åbne %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " DeLink %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Kunne ikke 'readlink' %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Kunne ikke frigøre %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Kunne ikke lænke %s til %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " Nåede DeLink-begrænsningen på %sB.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Arkivet havde intet package-felt"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  %s har ingen tvangs-post\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  pakkeansvarlig for %s er %s, ikke %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  %s har ingen linje med tilsidesættelse af standard for kildefiler\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr ""
-"  %s har ingen linje med tilsidesættelse af standard for binøre filer\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Intern fejl, kunne ikke finde elementet %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Kunne ikke allokere hukommelse"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Kunne ikke åbne %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Ugyldig gennemtvangs %s-linje %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Ugyldig gennemtvangs %s-linje %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Ugyldig gennemtvangs %s-linje %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Kunne ikke læse gennemtvangsfilen %s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Ukendt komprimeringsalgoritme '%s'"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Komprimerede uddata %s kræver et komprimeringssæt"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Kunne ikke oprette IPC-videreførsel til underproces"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Kunne ikke oprette FILE*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Kunne ikke spalte"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Komprimer barn"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Intern fejl. Kunne ikke oprette %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Kunne ikke oprette underproces IPC"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Kunne ikke udføre komprimeringsprogram"
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "dekomprimerings-program"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "IO til underproces/fil mislykkedes"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Kunne ikke læse under beregning af MD5"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Problem under aflænkning af %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Kunne ikke omdøbe %s til %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1490,6 +1159,17 @@ msgstr "Pakken forsøger at skrive til omrokeret mål %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Omrokeringsstien er for lang"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Kunne ikke finde %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Kunne ikke omdøbe %s til %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2763,9 +2443,249 @@ msgstr "Fjernede %s helt"
 msgid "Could not patch file"
 msgstr "Kunne ikke påføre filen %s en lap"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Kunne ikke oprette IPC-videreførsel til underproces"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Forbindelsen lukkedes for hurtigt"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Pakkeudvidelseslisten er for lang"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Fejl under behandling af mappen %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Kildeudvidelseslisten er for lang"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Fejl under skrivning af hovedet til indholdsfil"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Fejl under behandling af indhold %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Brug: apt-ftparchive [tilvalg] kommando\n"
+#~ "Kommandoer: packges binærsti [tvangsfil [sti]]\n"
+#~ "            sources kildesti [tvangsfil [sti]]\n"
+#~ "            contents sti\n"
+#~ "            release sti\n"
+#~ "            generate config [grupper]\n"
+#~ "            clean config\n"
+#~ "\n"
+#~ "apt-ftparchive laver indeksfiler til Debianarkiver. Det understøtter \n"
+#~ "mange former for generering, lige fra fuldautomatiske til funktionelle\n"
+#~ "erstatninger for dpkg-scanpackages og dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive genererer Package-filer ud fra træer af .deb'er.\n"
+#~ "Package-filen indeholder alle styrefelterne fra hver pakke såvel\n"
+#~ "som MD5-mønstre og filstørrelser. En tvangsfil understøttes til at\n"
+#~ "gennemtvinge indholdet af Priority og Section.\n"
+#~ "\n"
+#~ "På samme måde genererer apt-ftparchive Sources-filer ud fra træer\n"
+#~ "med .dsc'er. Tvangstilvalget --source-override kan bruges til at\n"
+#~ "angive en src-tvangsfil.\n"
+#~ "\n"
+#~ "Kommandoerne 'packages' og 'sources' skal køres i roden af træet.\n"
+#~ "binærsti skal pege på basen af rekursive søgninger og tvangsfilen\n"
+#~ "skal indeholde tvangsflagene. Sti foranstilles eventuelle\n"
+#~ "filnavnfelter. Et eksempel på brug fra Debianarkivet:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Tilvalg:\n"
+#~ "  -h    Denne hjælpetekst\n"
+#~ "  --md5 Styr generering af MD5\n"
+#~ "  -s=?  Kilde-tvangsfil\n"
+#~ "  -q    Stille\n"
+#~ "  -d=?  Vælg den valgfrie mellemlager-database\n"
+#~ "  --no-delink Aktivér \"delinking\"-fejlsporingstilstand\n"
+#~ "  --contents  Bestem generering af indholdsfil\n"
+#~ "  -c=?  Læs denne opsætningsfil\n"
+#~ "  -o=?  Sæt en opsætnings-indstilling"
+
+#~ msgid "No selections matched"
+#~ msgstr "Ingen valg passede"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Visse filer mangler i pakkefilgruppen '%s'"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "DB var ødelagt, filen omdøbt til %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "DB er gammel, forsøger at opgradere %s"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "Databaseformatet er ugyldigt. Hvis du har opgraderet fra en tidligere "
+#~ "version af apt, så fjern og genskab databasen."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Kunne ikke åbne DB-filen %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Arkivet har ingen kontrolindgang"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Kunne skaffe en markør"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "A: Kunne ikke læse mappen %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "W: Kunne ikke finde finde %s\n"
+
+#~ msgid "E: "
+#~ msgstr "F: "
+
+#~ msgid "W: "
+#~ msgstr "A: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "F: Fejlene vedrører filen "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Kunne ikke omsætte navnet %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Trævandring mislykkedes"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Kunne ikke åbne %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " DeLink %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Kunne ikke 'readlink' %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Kunne ikke frigøre %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Kunne ikke lænke %s til %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " Nåede DeLink-begrænsningen på %sB.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Arkivet havde intet package-felt"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  %s har ingen tvangs-post\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  pakkeansvarlig for %s er %s, ikke %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr ""
+#~ "  %s har ingen linje med tilsidesættelse af standard for kildefiler\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr ""
+#~ "  %s har ingen linje med tilsidesættelse af standard for binøre filer\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Intern fejl, kunne ikke finde elementet %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Kunne ikke allokere hukommelse"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Kunne ikke åbne %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Ugyldig gennemtvangs %s-linje %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Ugyldig gennemtvangs %s-linje %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Ugyldig gennemtvangs %s-linje %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Kunne ikke læse gennemtvangsfilen %s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Ukendt komprimeringsalgoritme '%s'"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Komprimerede uddata %s kræver et komprimeringssæt"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Kunne ikke oprette FILE*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Kunne ikke spalte"
+
+#~ msgid "Compress child"
+#~ msgstr "Komprimer barn"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Intern fejl. Kunne ikke oprette %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Kunne ikke oprette underproces IPC"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Kunne ikke udføre komprimeringsprogram"
+
+#~ msgid "decompressor"
+#~ msgstr "dekomprimerings-program"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "IO til underproces/fil mislykkedes"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Kunne ikke læse under beregning af MD5"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Problem under aflænkning af %s"
 
 #~ msgid "File date has changed %s"
 #~ msgstr "Filens dato er ændret %s"

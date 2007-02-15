@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt 0.5.26\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-09-29 16:06+0300\n"
 "Last-Translator: Tapio Lehtonen <tale@debian.org>\n"
 "Language-Team: Finnish <debian-l10n-finnish@lists.debian.org>\n"
@@ -149,8 +149,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s laitealustalle %s %s käännöksen päiväys %s %s\n"
@@ -309,339 +309,6 @@ msgstr "Tiedostoon %s kirjoittaminen ei onnistu"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Ohjelman debconf versiota ei saa selvitettyä. Onko debconf asennettu?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Paketin laajennuslista on liian pitkä"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Tapahtui virhe käsiteltäessa kansiota %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Lähteiden laajennuslista on liian pitkä"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr ""
-"Tapahtui virhe kirjoitettaessa otsikkotietoa sisällysluettelotiedostoon"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Tapahtui virhe käsiteltäessä sisällysluetteloa %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Käyttö: apt-ftparchive [valitsimet] komento\n"
-"Komennot: packages binääripolku [poikkeustdsto [polun alku]]\n"
-"          sources lähdepolku [poikkeustdsto [polun alku]]\n"
-"          contents polku\n"
-"          release polku\n"
-"          generate asetukset [ryhmät]\n"
-"          clean asetukset\n"
-"\n"
-"apt-ftparchive tuottaa hakemistoja Debianin arkistoista. Monta "
-"tuottamistapaa\n"
-"on tuettu alkaen täysin automaattisista toiminnallisesti samoihin kuin\n"
-"dpkg-scanpackages ja dpkg-scansources.\n"
-"\n"
-"apt-ftparchive tuottaa pakettitiedostoja .deb-tiedostojen puusta.\n"
-"Pakettitiedostossa on kunkin paketin kaikkien ohjauskenttien\n"
-"sisältö sekä MD5 tiiviste ja tiedoston koko. Poikkeus-\n"
-"tiedostolla voidaan arvot Priority ja Section pakottaa halutuiksi.\n"
-"\n"
-"Samaan tapaan apt-ftparchive tuottaa lähdetiedostoja\n"
-".dscs-tiedostojen puusta. Valitsimella --source-overrride voidaan\n"
-"määrittää lähteiden poikkeustiedosto.\n"
-"\n"
-"Komennot \"packages\" ja \"sources\" olisi suoritettava puun juuressa.\n"
-"Binääripolun olisi osoitettava rekursiivisen haun alkukohtaan ja\n"
-"poikkeustiedostossa olisi oltava poikkeusilmaisimet. Polun alku\n"
-"yhdistetään tiedoston nimeen jos se on annettu. Esimerkki\n"
-"käytöstä Debianin arkiston kanssa:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Valitsimet:\n"
-"  -h    Tämä ohje\n"
-"  --md5 MD5 luonti\n"
-"  -s=?  Lähteiden poikkeustdosto\n"
-"  -q    Ei tulostusta\n"
-"  -d=?  Valinnainen välimuistitietokanta\n"
-"  --no-delink delinking-virheenjäljitys päälle\n"
-"  --contents  Sisällysluettelotiedoston luonti\n"
-"  -c=?  Lue tämä asetustiedosto\n"
-"  -o=?  Aseta mikä asetusvalitsin tahansa"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Mitkään valinnat eivät täsmänneet"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Pakettitiedostojen ryhmästä \"%s\" puuttuu joitain tiedostoja"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "Tietokanta on turmeltunut, tiedosto nimetty %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "Tietokanta on vanha, yritetään päivittää %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"Tietokannan muoto ei kelpaa. Jos tehtiin päivitys vanhasta apt:n versiosta, "
-"on tietokanta poistettava ja luotava uudelleen."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Tietokantatiedostoa %s ei saatu avattua: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Tiedostolle %s ei toimi stat"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Arkistolla ei ole ohjaustietuetta"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Kohdistinta ei saada"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "W: Kansiota %s ei voi lukea\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "W: Tdstolle %s ei toimi stat\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "E: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "W: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "E: Tiedostossa virheitä "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Osoitteen %s selvitys ei onnistunut"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Puun läpikäynti ei onnistunut"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Tiedoston %s avaaminen ei onnistunut"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " DeLink %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "readlink %s ei onnistunut"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "unlink %s ei onnistunut"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Linkin %s -> %s luonti ei onnistunut"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " DeLinkin yläraja %st saavutettu.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Arkistossa ei ollut pakettikenttää"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  %s:llä ei ole poikkeustietuetta\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  %s ylläpitäjä on %s eikä %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  %s:llä ei ole poikkeustietuetta\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  %s:llä ei  ole binääristäkään poikkeustietuetta\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Tapahtui sisäinen virhe, tiedostoa %s ei löydy"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Muistin varaaminen ei onnistunut"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Tiedoston %s avaaminen ei onnistunut"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Väärän muotoinen poikkeus %s rivi %lu n:ro 1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Väärän muotoinen poikkeus %s rivi %lu n:ro 2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Väärän muotoinen poikkeus %s rivi %lu n:ro 3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Poikkeustiedoston %s lukeminen ei onnistunut"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Tuntematon pakkausalgoritmi \"%s\""
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Pakattu tulostus %s tarvitsee pakkausjoukon"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "IPC-putken luominen aliprosessiin ei onnistunut"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "FILE* luominen ei onnistunut"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "fork ei onnistunut"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Compress-lapsiprosessi"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Sisäinen virhe, prosessin %s luominen ei onnistunut"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Prosessien välistä kommunikaatiota aliprosessiin ei saatu luotua"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Pakkaajan käynnistäminen ei onnistunut"
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "purkaja"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "Syöttö/tulostus aliprosessiin/tiedostoon ei onnistunut"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Lukeminen ei onnistunut laskettaessa MD5:ttä"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Ilmeni pulmia poistettaessa tiedosto %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Nimen muuttaminen %s -> %s ei onnistunut"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1486,6 +1153,17 @@ msgstr "Paketti yrittää kirjoittaa korvautuksen kohteeseen %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Korvautuspolku on liian pitkä"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Tiedostolle %s ei toimi stat"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Nimen muuttaminen %s -> %s ei onnistunut"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2761,9 +2439,250 @@ msgstr "%s poistettiin kokonaan"
 msgid "Could not patch file"
 msgstr "Tiedostoa %s ei voitu avata"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "IPC-putken luominen aliprosessiin ei onnistunut"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Yhteys katkesi ennenaikaisesti"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Paketin laajennuslista on liian pitkä"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Tapahtui virhe käsiteltäessa kansiota %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Lähteiden laajennuslista on liian pitkä"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr ""
+#~ "Tapahtui virhe kirjoitettaessa otsikkotietoa sisällysluettelotiedostoon"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Tapahtui virhe käsiteltäessä sisällysluetteloa %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Käyttö: apt-ftparchive [valitsimet] komento\n"
+#~ "Komennot: packages binääripolku [poikkeustdsto [polun alku]]\n"
+#~ "          sources lähdepolku [poikkeustdsto [polun alku]]\n"
+#~ "          contents polku\n"
+#~ "          release polku\n"
+#~ "          generate asetukset [ryhmät]\n"
+#~ "          clean asetukset\n"
+#~ "\n"
+#~ "apt-ftparchive tuottaa hakemistoja Debianin arkistoista. Monta "
+#~ "tuottamistapaa\n"
+#~ "on tuettu alkaen täysin automaattisista toiminnallisesti samoihin kuin\n"
+#~ "dpkg-scanpackages ja dpkg-scansources.\n"
+#~ "\n"
+#~ "apt-ftparchive tuottaa pakettitiedostoja .deb-tiedostojen puusta.\n"
+#~ "Pakettitiedostossa on kunkin paketin kaikkien ohjauskenttien\n"
+#~ "sisältö sekä MD5 tiiviste ja tiedoston koko. Poikkeus-\n"
+#~ "tiedostolla voidaan arvot Priority ja Section pakottaa halutuiksi.\n"
+#~ "\n"
+#~ "Samaan tapaan apt-ftparchive tuottaa lähdetiedostoja\n"
+#~ ".dscs-tiedostojen puusta. Valitsimella --source-overrride voidaan\n"
+#~ "määrittää lähteiden poikkeustiedosto.\n"
+#~ "\n"
+#~ "Komennot \"packages\" ja \"sources\" olisi suoritettava puun juuressa.\n"
+#~ "Binääripolun olisi osoitettava rekursiivisen haun alkukohtaan ja\n"
+#~ "poikkeustiedostossa olisi oltava poikkeusilmaisimet. Polun alku\n"
+#~ "yhdistetään tiedoston nimeen jos se on annettu. Esimerkki\n"
+#~ "käytöstä Debianin arkiston kanssa:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Valitsimet:\n"
+#~ "  -h    Tämä ohje\n"
+#~ "  --md5 MD5 luonti\n"
+#~ "  -s=?  Lähteiden poikkeustdosto\n"
+#~ "  -q    Ei tulostusta\n"
+#~ "  -d=?  Valinnainen välimuistitietokanta\n"
+#~ "  --no-delink delinking-virheenjäljitys päälle\n"
+#~ "  --contents  Sisällysluettelotiedoston luonti\n"
+#~ "  -c=?  Lue tämä asetustiedosto\n"
+#~ "  -o=?  Aseta mikä asetusvalitsin tahansa"
+
+#~ msgid "No selections matched"
+#~ msgstr "Mitkään valinnat eivät täsmänneet"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Pakettitiedostojen ryhmästä \"%s\" puuttuu joitain tiedostoja"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "Tietokanta on turmeltunut, tiedosto nimetty %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "Tietokanta on vanha, yritetään päivittää %s"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "Tietokannan muoto ei kelpaa. Jos tehtiin päivitys vanhasta apt:n "
+#~ "versiosta, on tietokanta poistettava ja luotava uudelleen."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Tietokantatiedostoa %s ei saatu avattua: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Arkistolla ei ole ohjaustietuetta"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Kohdistinta ei saada"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "W: Kansiota %s ei voi lukea\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "W: Tdstolle %s ei toimi stat\n"
+
+#~ msgid "E: "
+#~ msgstr "E: "
+
+#~ msgid "W: "
+#~ msgstr "W: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "E: Tiedostossa virheitä "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Osoitteen %s selvitys ei onnistunut"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Puun läpikäynti ei onnistunut"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Tiedoston %s avaaminen ei onnistunut"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " DeLink %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "readlink %s ei onnistunut"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "unlink %s ei onnistunut"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Linkin %s -> %s luonti ei onnistunut"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " DeLinkin yläraja %st saavutettu.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Arkistossa ei ollut pakettikenttää"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  %s:llä ei ole poikkeustietuetta\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  %s ylläpitäjä on %s eikä %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  %s:llä ei ole poikkeustietuetta\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  %s:llä ei  ole binääristäkään poikkeustietuetta\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Tapahtui sisäinen virhe, tiedostoa %s ei löydy"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Muistin varaaminen ei onnistunut"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Tiedoston %s avaaminen ei onnistunut"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Väärän muotoinen poikkeus %s rivi %lu n:ro 1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Väärän muotoinen poikkeus %s rivi %lu n:ro 2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Väärän muotoinen poikkeus %s rivi %lu n:ro 3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Poikkeustiedoston %s lukeminen ei onnistunut"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Tuntematon pakkausalgoritmi \"%s\""
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Pakattu tulostus %s tarvitsee pakkausjoukon"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "FILE* luominen ei onnistunut"
+
+#~ msgid "Failed to fork"
+#~ msgstr "fork ei onnistunut"
+
+#~ msgid "Compress child"
+#~ msgstr "Compress-lapsiprosessi"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Sisäinen virhe, prosessin %s luominen ei onnistunut"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Prosessien välistä kommunikaatiota aliprosessiin ei saatu luotua"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Pakkaajan käynnistäminen ei onnistunut"
+
+#~ msgid "decompressor"
+#~ msgstr "purkaja"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "Syöttö/tulostus aliprosessiin/tiedostoon ei onnistunut"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Lukeminen ei onnistunut laskettaessa MD5:ttä"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Ilmeni pulmia poistettaessa tiedosto %s"
 
 #~ msgid "File date has changed %s"
 #~ msgstr "Tiedoston uusi päiväys %s"

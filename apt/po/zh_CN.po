@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt 0.5.23\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-02-22 14:20+1300\n"
 "Last-Translator: Carlos Z.F. Liu <carlosliu@users.sourceforge.net>\n"
 "Language-Team: Debian Chinese [GB] <debian-chinese-gb@lists.debian.org>\n"
@@ -147,8 +147,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s for %s %s ，编译于 %s %s\n"
@@ -308,334 +308,6 @@ msgstr "无法写入 %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "无法获得 debconf 的版本。您安装了 debconf 吗?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "软件包的扩展列表超长"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "处理目录 %s 时出错"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "源扩展列表超长"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "将 header 写到 contents 文件时出错"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "处理 Contents %s 时出错"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"用法： apt-ftparchive [选项] 命令\n"
-"命令： packages 二进制软件包搜索路径 [overridefile [路径前缀]]\n"
-"       sources 源代码包搜索路径 [overridefile [路径前缀]]\n"
-"       contents 搜索路径\n"
-"       release 搜索路径\n"
-"       generate 配置文件 [groups]\n"
-"       clean 配置文件\n"
-"\n"
-"apt-ftparchive 被用来为 Debian 软件包生成索引文件。它能支持\n"
-"多种生成索引的方式，从全自动的索引生成到在功能上取代 dpkg-scanpackages \n"
-"和 dpkg-scansources，都能游刃有余\n"
-"\n"
-"apt-ftparchive 能依据一个由 .deb 文件构成的文件树生成 Package 文件。\n"
-"Package 文件里不仅注有每个软件包的 MD5 校验码和文件大小，\n"
-"还有软件包的所有控制字段的内容。该软件同时支持 override 文件，\n"
-"通过它可以强制指定软件包的优先级及其所属的软件类别。\n"
-"\n"
-"与上面类似，apt-ftparchive 也能由 .dsc 的文件树生成 Source 文件。\n"
-"可以通过使用 --source-override 选项来指定一个 override 文件\n"
-"\n"
-"使用“packages”和“source”命令时，必须在文件树的根部执行本程序。\n"
-"二进制包的搜索路径一定要是递归搜索的底层，而且 override 文件里\n"
-"应该注明 override 的标志。若指定了路径前缀，那么它会被加到文件名前面。\n"
-"下面有个来自 Debian 文档的例子：\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386 > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"选项:\n"
-"  -h    本帮助文档\n"
-"  --md5 使之生成 MD5 校验和\n"
-"  -s=?  源代码包 override 文件\n"
-"  -q    输出精简信息\n"
-"  -d=?  指定可选的缓存数据库\n"
-"  -d=?  使用另一个可选的缓存数据库\n"
-"  --no-delink 开启delink的调试模式\n"
-"  --contents  使之生成控制内容文件\n"
-"  -c=?  读取指定配置文件\n"
-"  -o=?  设置任意指定的配置选项"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "没有任何选定项是匹配的"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "软件包文件组“%s”中缺少一些文件"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "缓存数据库被损坏了，该数据库文件的文件名已改成 %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "DB 已过时，现试图进行升级 %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "无法打开 DB 文件 %s：%s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "无法读取 %s 的状态"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "存档没有包含控制字段"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "无法获得游标(cursor)"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "警告：无法读取目录 %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "警告：无法对 %s 进行统计\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "错误："
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "警告："
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "错误：处理文件时出错 "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "无法解析路径 %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "无法遍历目录树"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "无法打开 %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " DeLink %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "无法读取符号链接 %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "无法 unlink %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** 无法将 %s 链接到 %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " 达到了 DeLink 的上限 %sB。\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "存档没有包含软件包(package)字段"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  %s 中没有 override 项\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  %s 的维护者 %s 并非 %s\n"
-
-#: ftparchive/writer.cc:623
-#, fuzzy, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  %s 中没有 override 项\n"
-
-#: ftparchive/writer.cc:627
-#, fuzzy, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  %s 中没有 override 项\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "内部错误，无法定位包内文件 %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - 无法再分配内存"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "无法打开 %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "override 文件 %s 第 %lu 行的格式有误 #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "override 文件 %s 第 %lu 行的格式有误 #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "override 文件 %s 第 %lu 行的格式有误 #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "无法读取 override 文件 %s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "未知的压缩算法“%s”"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "压缩后的输出文件 %s 要求有一个压缩文件集合"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "无法为子进程创建 IPC 管道"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "无法创建 FILE*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "无法 fork"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "压缩子进程"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "内部错误，无法建立 %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "无法建立子进程的 IPC 管道"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "无法执行压缩程序"
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "解压程序"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "无法对子进程或文件进行读写"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "在计算 MD5 校验和时，无法读取数据"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "在 unlink %s 时出错"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "无法将 %s 重命名为 %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1468,6 +1140,17 @@ msgstr "该软件包正尝试写入转移对象(diversion target) %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "该转移路径(diversion path)过长"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "无法读取 %s 的状态"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "无法将 %s 重命名为 %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2729,9 +2412,242 @@ msgstr "无法删除 %s"
 msgid "Could not patch file"
 msgstr "无法打开文件 %s"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "无法为子进程创建 IPC 管道"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "连接被永久关闭"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "软件包的扩展列表超长"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "处理目录 %s 时出错"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "源扩展列表超长"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "将 header 写到 contents 文件时出错"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "处理 Contents %s 时出错"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "用法： apt-ftparchive [选项] 命令\n"
+#~ "命令： packages 二进制软件包搜索路径 [overridefile [路径前缀]]\n"
+#~ "       sources 源代码包搜索路径 [overridefile [路径前缀]]\n"
+#~ "       contents 搜索路径\n"
+#~ "       release 搜索路径\n"
+#~ "       generate 配置文件 [groups]\n"
+#~ "       clean 配置文件\n"
+#~ "\n"
+#~ "apt-ftparchive 被用来为 Debian 软件包生成索引文件。它能支持\n"
+#~ "多种生成索引的方式，从全自动的索引生成到在功能上取代 dpkg-scanpackages \n"
+#~ "和 dpkg-scansources，都能游刃有余\n"
+#~ "\n"
+#~ "apt-ftparchive 能依据一个由 .deb 文件构成的文件树生成 Package 文件。\n"
+#~ "Package 文件里不仅注有每个软件包的 MD5 校验码和文件大小，\n"
+#~ "还有软件包的所有控制字段的内容。该软件同时支持 override 文件，\n"
+#~ "通过它可以强制指定软件包的优先级及其所属的软件类别。\n"
+#~ "\n"
+#~ "与上面类似，apt-ftparchive 也能由 .dsc 的文件树生成 Source 文件。\n"
+#~ "可以通过使用 --source-override 选项来指定一个 override 文件\n"
+#~ "\n"
+#~ "使用“packages”和“source”命令时，必须在文件树的根部执行本程序。\n"
+#~ "二进制包的搜索路径一定要是递归搜索的底层，而且 override 文件里\n"
+#~ "应该注明 override 的标志。若指定了路径前缀，那么它会被加到文件名前面。\n"
+#~ "下面有个来自 Debian 文档的例子：\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386 > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "选项:\n"
+#~ "  -h    本帮助文档\n"
+#~ "  --md5 使之生成 MD5 校验和\n"
+#~ "  -s=?  源代码包 override 文件\n"
+#~ "  -q    输出精简信息\n"
+#~ "  -d=?  指定可选的缓存数据库\n"
+#~ "  -d=?  使用另一个可选的缓存数据库\n"
+#~ "  --no-delink 开启delink的调试模式\n"
+#~ "  --contents  使之生成控制内容文件\n"
+#~ "  -c=?  读取指定配置文件\n"
+#~ "  -o=?  设置任意指定的配置选项"
+
+#~ msgid "No selections matched"
+#~ msgstr "没有任何选定项是匹配的"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "软件包文件组“%s”中缺少一些文件"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "缓存数据库被损坏了，该数据库文件的文件名已改成 %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "DB 已过时，现试图进行升级 %s"
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "无法打开 DB 文件 %s：%s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "存档没有包含控制字段"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "无法获得游标(cursor)"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "警告：无法读取目录 %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "警告：无法对 %s 进行统计\n"
+
+#~ msgid "E: "
+#~ msgstr "错误："
+
+#~ msgid "W: "
+#~ msgstr "警告："
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "错误：处理文件时出错 "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "无法解析路径 %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "无法遍历目录树"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "无法打开 %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " DeLink %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "无法读取符号链接 %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "无法 unlink %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** 无法将 %s 链接到 %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " 达到了 DeLink 的上限 %sB。\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "存档没有包含软件包(package)字段"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  %s 中没有 override 项\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  %s 的维护者 %s 并非 %s\n"
+
+#, fuzzy
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  %s 中没有 override 项\n"
+
+#, fuzzy
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  %s 中没有 override 项\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "内部错误，无法定位包内文件 %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - 无法再分配内存"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "无法打开 %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "override 文件 %s 第 %lu 行的格式有误 #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "override 文件 %s 第 %lu 行的格式有误 #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "override 文件 %s 第 %lu 行的格式有误 #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "无法读取 override 文件 %s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "未知的压缩算法“%s”"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "压缩后的输出文件 %s 要求有一个压缩文件集合"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "无法创建 FILE*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "无法 fork"
+
+#~ msgid "Compress child"
+#~ msgstr "压缩子进程"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "内部错误，无法建立 %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "无法建立子进程的 IPC 管道"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "无法执行压缩程序"
+
+#~ msgid "decompressor"
+#~ msgstr "解压程序"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "无法对子进程或文件进行读写"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "在计算 MD5 校验和时，无法读取数据"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "在 unlink %s 时出错"
 
 #~ msgid "File date has changed %s"
 #~ msgstr "文件 %s 的时间已被改动"

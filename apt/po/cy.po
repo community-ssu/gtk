@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: APT\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2005-06-06 13:46+0100\n"
 "Last-Translator: Dafydd Harries <daf@muse.19inch.net>\n"
 "Language-Team: Welsh <cy@pengwyn.linux.org.uk>\n"
@@ -163,8 +163,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s ar gyfer %s %s wedi ei grynhow ar %s %s\n"
@@ -332,339 +332,6 @@ msgstr "Ni ellir ysgrifennu i %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Ni ellir cael fersiwn debconf. Ydi debconf wedi ei sefydlu?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Mae'r rhestr estyniad pecyn yn rhy hir."
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, fuzzy, c-format
-msgid "Error processing directory %s"
-msgstr "Gwall wrth brosesu'r cyfeiriadur %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Mae'r rhestr estyniad ffynhonell yn rhy hir"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Gwall wrth ysgrifennu pennawd i'r ffeil cynnwys"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, fuzzy, c-format
-msgid "Error processing contents %s"
-msgstr "Gwall wrth Brosesu Cynnwys %s"
-
-# FIXME: full stops
-#: ftparchive/apt-ftparchive.cc:556
-#, fuzzy
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Defnydd: apt-ftparchive [opsiynnau] gorchymyn\n"
-"Gorchmynion: packages llwybrdeuol [ffeilgwrthwneud [cynddodiadllwybr]]\n"
-"             sources llwybrffynhonell [ffeilgwrthwneud [cynddodiadllwybr]]\n"
-"             contents llwybr\n"
-"             release llwybr\n"
-"             generate cyfluniad [grŵpiau]\n"
-"             clean cyfluniad\n"
-"\n"
-"Mae apt-ftparchive yn cynhyrchu ffeiliau mynegai ar gyfer archifau Debian.\n"
-"Mae'n cynnal nifer o arddulliau o gynhyrchiad, yn cynnwys modd wedi\n"
-"awtomeiddio'n llwyr a modd yn debyg i dpkg-scanpackages a dpkg-scansources.\n"
-"\n"
-"Gall apt-ftparchive gynhyrchu ffeil Package o goeden o ffeiliau .deb.\n"
-"Mae'r ffeil Package yn cynnwys yr holl feysydd rheoli o bob pecyn yn\n"
-"ogystal a'r stwnsh MD5 a maint y ffeil. Cynhelir ffeil gwrthwneud er mwyn\n"
-"gorfodi'r gwerthoedd Priority a Section.\n"
-"\n"
-"Yn debyg, gall apt-ftparchive gynhyrchu ffeil Sources o goeden o ffeiliau\n"
-".dsc. Gellir defnyddio'r opsiwn --source-override er mwyn penodi ffeil\n"
-"gwrthwneud ffynhonell.\n"
-"\n"
-"Dylid rhedeg y gorchmynion 'packages' a 'sources' yng ngwraidd y goeden.\n"
-"Fe ddylai llwybrdeuol bwyntio at sail y chwilio ailadroddus a fe ddylai\n"
-"ffeilgwrthwneud gynnwys y gosodiadau gwrthwneud. Ychwanegir\n"
-"cynddodiadllwybr i'r meysydd enw ffeil os ydynt yn bresennol. Esiampl\n"
-"defnydd o'r archif Debian:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Opsiynnau:\n"
-"  -h          Y testun cymorth hwn\n"
-"  --md5       Rheoli cynhyrchiad stwnch MD5\n"
-"  -s=?        Ffeil gwrthwneud ffynhonell\n"
-"  -q          Tawel\n"
-"  -d=?        Dewis cronda data storfa opsiynnol\n"
-"  --no-delink Galluogi'r modd datgysylltu datnamu\n"
-"  --contents  Rheoli cynhyrchiad ffeil cynnwys\n"
-"  -c=?        Darllen y ffeil cyfluniad hwn\n"
-"  -o=?        Gosod opsiwn cyfluniad mympwyol"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Dim dewisiadau'n cyfateb"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Mae rhai ffeiliau ar goll yn y grŵp ffeiliau pecyn  `%s'"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "Llygrwyd y cronfa data, ailenwyd y ffeil i %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "Hen gronfa data, yn ceisio uwchraddio %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Ni ellir agor y ffeil DB2 %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Methodd stat() o %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Does dim cofnod rheoli gan yr archif"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Ni ellir cael cyrchydd"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "Rh: Ni ellir darllen y cyfeiriadur %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "Rh: Ni ellir gwneud stat() o %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "G: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "Rh: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "G: Mae gwallau yn cymhwyso i'r ffeil "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Methwyd datrys %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Methwyd cerdded y goeden"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Methwyd agor %s"
-
-# FIXME
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " DatGysylltu %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Methwyd darllen y cyswllt %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Methwyd datgysylltu %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Methwyd cysylltu %s at %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr "  Tarwyd y terfyn cyswllt %sB.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Doedd dim maes pecyn gan yr archif"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  Does dim cofnod gwrthwneud gan %s\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  Cynaliwr %s yw %s nid %s\n"
-
-#: ftparchive/writer.cc:623
-#, fuzzy, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  Does dim cofnod gwrthwneud gan %s\n"
-
-#: ftparchive/writer.cc:627
-#, fuzzy, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  Does dim cofnod gwrthwneud gan %s\n"
-
-#: ftparchive/contents.cc:317
-#, fuzzy, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Gwall Mewnol, methwyd lleoli aelod %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Methwyd neilltuo cof"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Ni ellir agor %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Gwrthwneud camffurfiol %s llinell %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Gwrthwneud camffurfiol %s llinell %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Gwrthwneud camffurfiol %s llinell %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Methwydd darllen y ffeil dargyfeirio %s"
-
-#: ftparchive/multicompress.cc:75
-#, fuzzy, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Dull Cywasgu Anhysbys '%s'"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Mae'r allbwn cywasgiedig %s angen cywasgiad wedi ei osod"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Methwyd creu pibell cyfathrebu at isbroses"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Methwyd creu FILE*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Methodd fork()"
-
-#: ftparchive/multicompress.cc:215
-#, fuzzy
-msgid "Compress child"
-msgstr "Plentyn Cywasgu"
-
-#: ftparchive/multicompress.cc:238
-#, fuzzy, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Gwall Mewnol, Methwyd creu %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Methwyd creu isbroses IPC"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Methwyd gweithredu cywasgydd "
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "datgywasgydd"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "Methodd MA i isbroses/ffeil"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Methwyd darllen wrth gyfrifo MD5"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Gwall wrth datgysylltu %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Methwyd ailenwi %s at %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1537,6 +1204,17 @@ msgstr "Mae'r pecyn yn ceisio ysgrifennu i'r targed dargyfeiriad %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Mae llwybr y dargyfeiriad yn rhy hir"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Methodd stat() o %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Methwyd ailenwi %s at %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2851,9 +2529,257 @@ msgstr "Methwyd dileu %s"
 msgid "Could not patch file"
 msgstr "Methwyd agor ffeil %s"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Methwyd creu pibell cyfathrebu at isbroses"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Caewyd y cysylltiad yn gynnar"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Mae'r rhestr estyniad pecyn yn rhy hir."
+
+#, fuzzy
+#~ msgid "Error processing directory %s"
+#~ msgstr "Gwall wrth brosesu'r cyfeiriadur %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Mae'r rhestr estyniad ffynhonell yn rhy hir"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Gwall wrth ysgrifennu pennawd i'r ffeil cynnwys"
+
+#, fuzzy
+#~ msgid "Error processing contents %s"
+#~ msgstr "Gwall wrth Brosesu Cynnwys %s"
+
+# FIXME: full stops
+#, fuzzy
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Defnydd: apt-ftparchive [opsiynnau] gorchymyn\n"
+#~ "Gorchmynion: packages llwybrdeuol [ffeilgwrthwneud [cynddodiadllwybr]]\n"
+#~ "             sources llwybrffynhonell [ffeilgwrthwneud "
+#~ "[cynddodiadllwybr]]\n"
+#~ "             contents llwybr\n"
+#~ "             release llwybr\n"
+#~ "             generate cyfluniad [grŵpiau]\n"
+#~ "             clean cyfluniad\n"
+#~ "\n"
+#~ "Mae apt-ftparchive yn cynhyrchu ffeiliau mynegai ar gyfer archifau "
+#~ "Debian.\n"
+#~ "Mae'n cynnal nifer o arddulliau o gynhyrchiad, yn cynnwys modd wedi\n"
+#~ "awtomeiddio'n llwyr a modd yn debyg i dpkg-scanpackages a dpkg-"
+#~ "scansources.\n"
+#~ "\n"
+#~ "Gall apt-ftparchive gynhyrchu ffeil Package o goeden o ffeiliau .deb.\n"
+#~ "Mae'r ffeil Package yn cynnwys yr holl feysydd rheoli o bob pecyn yn\n"
+#~ "ogystal a'r stwnsh MD5 a maint y ffeil. Cynhelir ffeil gwrthwneud er "
+#~ "mwyn\n"
+#~ "gorfodi'r gwerthoedd Priority a Section.\n"
+#~ "\n"
+#~ "Yn debyg, gall apt-ftparchive gynhyrchu ffeil Sources o goeden o "
+#~ "ffeiliau\n"
+#~ ".dsc. Gellir defnyddio'r opsiwn --source-override er mwyn penodi ffeil\n"
+#~ "gwrthwneud ffynhonell.\n"
+#~ "\n"
+#~ "Dylid rhedeg y gorchmynion 'packages' a 'sources' yng ngwraidd y goeden.\n"
+#~ "Fe ddylai llwybrdeuol bwyntio at sail y chwilio ailadroddus a fe ddylai\n"
+#~ "ffeilgwrthwneud gynnwys y gosodiadau gwrthwneud. Ychwanegir\n"
+#~ "cynddodiadllwybr i'r meysydd enw ffeil os ydynt yn bresennol. Esiampl\n"
+#~ "defnydd o'r archif Debian:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Opsiynnau:\n"
+#~ "  -h          Y testun cymorth hwn\n"
+#~ "  --md5       Rheoli cynhyrchiad stwnch MD5\n"
+#~ "  -s=?        Ffeil gwrthwneud ffynhonell\n"
+#~ "  -q          Tawel\n"
+#~ "  -d=?        Dewis cronda data storfa opsiynnol\n"
+#~ "  --no-delink Galluogi'r modd datgysylltu datnamu\n"
+#~ "  --contents  Rheoli cynhyrchiad ffeil cynnwys\n"
+#~ "  -c=?        Darllen y ffeil cyfluniad hwn\n"
+#~ "  -o=?        Gosod opsiwn cyfluniad mympwyol"
+
+#~ msgid "No selections matched"
+#~ msgstr "Dim dewisiadau'n cyfateb"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Mae rhai ffeiliau ar goll yn y grŵp ffeiliau pecyn  `%s'"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "Llygrwyd y cronfa data, ailenwyd y ffeil i %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "Hen gronfa data, yn ceisio uwchraddio %s"
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Ni ellir agor y ffeil DB2 %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Does dim cofnod rheoli gan yr archif"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Ni ellir cael cyrchydd"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "Rh: Ni ellir darllen y cyfeiriadur %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "Rh: Ni ellir gwneud stat() o %s\n"
+
+#~ msgid "E: "
+#~ msgstr "G: "
+
+#~ msgid "W: "
+#~ msgstr "Rh: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "G: Mae gwallau yn cymhwyso i'r ffeil "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Methwyd datrys %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Methwyd cerdded y goeden"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Methwyd agor %s"
+
+# FIXME
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " DatGysylltu %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Methwyd darllen y cyswllt %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Methwyd datgysylltu %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Methwyd cysylltu %s at %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr "  Tarwyd y terfyn cyswllt %sB.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Doedd dim maes pecyn gan yr archif"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  Does dim cofnod gwrthwneud gan %s\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  Cynaliwr %s yw %s nid %s\n"
+
+#, fuzzy
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  Does dim cofnod gwrthwneud gan %s\n"
+
+#, fuzzy
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  Does dim cofnod gwrthwneud gan %s\n"
+
+#, fuzzy
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Gwall Mewnol, methwyd lleoli aelod %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Methwyd neilltuo cof"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Ni ellir agor %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Gwrthwneud camffurfiol %s llinell %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Gwrthwneud camffurfiol %s llinell %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Gwrthwneud camffurfiol %s llinell %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Methwydd darllen y ffeil dargyfeirio %s"
+
+#, fuzzy
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Dull Cywasgu Anhysbys '%s'"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Mae'r allbwn cywasgiedig %s angen cywasgiad wedi ei osod"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Methwyd creu FILE*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Methodd fork()"
+
+#, fuzzy
+#~ msgid "Compress child"
+#~ msgstr "Plentyn Cywasgu"
+
+#, fuzzy
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Gwall Mewnol, Methwyd creu %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Methwyd creu isbroses IPC"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Methwyd gweithredu cywasgydd "
+
+#~ msgid "decompressor"
+#~ msgstr "datgywasgydd"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "Methodd MA i isbroses/ffeil"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Methwyd darllen wrth gyfrifo MD5"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Gwall wrth datgysylltu %s"
 
 #~ msgid "File date has changed %s"
 #~ msgstr "Dyddiad ffeil wedi newid %s"

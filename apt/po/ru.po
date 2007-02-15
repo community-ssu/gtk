@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 0.6.46.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-10-16 21:53+0400\n"
 "Last-Translator: Yuri Kozlov <kozlov.y@gmail.com>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
@@ -156,8 +156,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s для %s %s скомпилирован %s %s\n"
@@ -316,347 +316,6 @@ msgstr "Невозможно записать в %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Невозможно определить версию debconf. Он установлен?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Список расширений, допустимых для пакетов, слишком длинен"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Ошибка обработки каталога %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr ""
-"Список расширений, допустимых для пакетов с исходными текстами, слишком "
-"длинен"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr ""
-"Ошибка записи заголовка в полный перечень содержимого пакетов (Contents)"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "ошибка обработки полного перечня содержимого пакетов (Contents) %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Использование: apt-ftparchive [параметры] команда\n"
-"Команды:  packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive генерирует индексные файлы архивов Debian. Он поддерживает\n"
-"множество стилей генерации: от полностью автоматического до функциональной "
-"замены\n"
-"программ dpkg-scanpackages и dpkg-scansources\n"
-"\n"
-"apt-ftparchive генерирует файлы Package (списки пакетов) для дерева\n"
-"каталогов, содержащих файлы .deb. Файл Package включает в себя управляющие\n"
-"поля каждого пакета, а также хеш MD5 и размер файла. Значения управляющих\n"
-"полей \"приоритет\" (Priority) и \"секция\" (Section) могут быть изменены с\n"
-"помощью файла override.\n"
-"\n"
-"Кроме того, apt-ftparchive может генерировать файлы Sources из дерева\n"
-"каталогов, содержащих файлы .dsc. Для указания файла override в этом \n"
-"режиме можно использовать параметр --source-override.\n"
-"\n"
-"Команды 'packages' и 'sources' надо выполнять, находясь в корневом каталоге\n"
-"дерева, которое вы хотите обработать. BinaryPath должен указывать на место,\n"
-"с которого начинается рекурсивный обход, а файл переназначений (override)\n"
-"должен содержать записи о переназначениях управляющих полей. Если был "
-"указан\n"
-"Pathprefix, то его значение добавляется к управляющим полям, содержащим\n"
-"имена файлов. Пример использования для архива Debian:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Параметры:\n"
-"  -h    Этот текст\n"
-"  --md5 Управление генерацией MD5-хешей\n"
-"  -s=?  Указать файл переназначений (override) для пакетов с исходными "
-"текстами\n"
-"  -q    Не выводить сообщения в процессе работы\n"
-"  -d=?  Указать кэширующую базу данных (не обязательно)\n"
-"  --no-delink Включить режим отладки процесса удаления файлов\n"
-"  --contents  Управление генерацией полного перечня содержимого пакетов\n"
-"              (файла Contents)\n"
-"  -c=?  Использовать указанный конфигурационный файл\n"
-"  -o=?  Указать произвольный параметр конфигурации"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Совпадений не обнаружено"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "В группе пакетов `%s' отсутствуют некоторые файлы"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "БД была повреждена, файл переименован в %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "DB устарела, попытка обновить %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"Неправильный формат базы данных (DB). Если вы производили обновление apt, "
-"удалите и пересоздайте базу данных."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Не удалось открыть DB файл %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Не удалось получить атрибуты %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "В архиве нет поля control"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Невозможно получить курсор"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "W: Не удалось прочитать каталог %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "W: Не удалось прочитать атрибуты %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "E: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "W: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "E: Ошибки относятся к файлу '"
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Не удалось проследовать по ссылке %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Не удалось совершить обход дерева"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Не удалось открыть %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr "DeLink %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Не удалось прочесть ссылку %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Не удалось удалить %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Не удалось создать ссылку %s на %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " Превышен лимит в %sB в DeLink.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "В архиве нет поля package"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  Нет записи о переназначении (override) для %s\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  пакет %s сопровождает %s, а не %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  Нет записи source override для %s\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  Нет записи binary override для %s\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Внутренняя ошибка, не удалось найти составную часть %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - не удалось выделить память"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Не удалось открыть %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Неправильная запись о переназначении (override) %s на строке %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Неправильная запись о переназначении (override) %s на строке %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Неправильная запись о переназначении (override) %s на строке %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Не удалось прочесть файл переназначений (override)%s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Неизвестный алгоритм сжатия '%s'"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr ""
-"Для получения сжатого вывода %s необходимо включить использования сжатия"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Не удалось создать IPC-канал для порождённого процесса"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Не удалось создать FILE*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Не удалось запустить порождённый процесс"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Процесс-потомок, производящий сжатие"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Внутренняя ошибка, не удалось создать %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Не удалось создать IPC с порождённым процессом"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Не удалось выполнить компрессор "
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "декомпрессор"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "Ошибка ввода/вывода в подпроцесс/файл"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Ошибка чтения во время вычисления MD5"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Не удалось удалить %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Не удалось переименовать %s в %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1519,6 +1178,17 @@ msgstr "Пакет пытается писать в diversion %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Путь diversion слишком длинен"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Не удалось получить атрибуты %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Не удалось переименовать %s в %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2804,6 +2474,262 @@ msgstr "%s полностью удалён"
 msgid "Could not patch file"
 msgstr "Не могу открыть файл %s"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Не удалось создать IPC-канал для порождённого процесса"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Соединение закрыто преждевременно"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Список расширений, допустимых для пакетов, слишком длинен"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Ошибка обработки каталога %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr ""
+#~ "Список расширений, допустимых для пакетов с исходными текстами, слишком "
+#~ "длинен"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr ""
+#~ "Ошибка записи заголовка в полный перечень содержимого пакетов (Contents)"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "ошибка обработки полного перечня содержимого пакетов (Contents) %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Использование: apt-ftparchive [параметры] команда\n"
+#~ "Команды:  packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive генерирует индексные файлы архивов Debian. Он "
+#~ "поддерживает\n"
+#~ "множество стилей генерации: от полностью автоматического до "
+#~ "функциональной замены\n"
+#~ "программ dpkg-scanpackages и dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive генерирует файлы Package (списки пакетов) для дерева\n"
+#~ "каталогов, содержащих файлы .deb. Файл Package включает в себя "
+#~ "управляющие\n"
+#~ "поля каждого пакета, а также хеш MD5 и размер файла. Значения "
+#~ "управляющих\n"
+#~ "полей \"приоритет\" (Priority) и \"секция\" (Section) могут быть изменены "
+#~ "с\n"
+#~ "помощью файла override.\n"
+#~ "\n"
+#~ "Кроме того, apt-ftparchive может генерировать файлы Sources из дерева\n"
+#~ "каталогов, содержащих файлы .dsc. Для указания файла override в этом \n"
+#~ "режиме можно использовать параметр --source-override.\n"
+#~ "\n"
+#~ "Команды 'packages' и 'sources' надо выполнять, находясь в корневом "
+#~ "каталоге\n"
+#~ "дерева, которое вы хотите обработать. BinaryPath должен указывать на "
+#~ "место,\n"
+#~ "с которого начинается рекурсивный обход, а файл переназначений "
+#~ "(override)\n"
+#~ "должен содержать записи о переназначениях управляющих полей. Если был "
+#~ "указан\n"
+#~ "Pathprefix, то его значение добавляется к управляющим полям, содержащим\n"
+#~ "имена файлов. Пример использования для архива Debian:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Параметры:\n"
+#~ "  -h    Этот текст\n"
+#~ "  --md5 Управление генерацией MD5-хешей\n"
+#~ "  -s=?  Указать файл переназначений (override) для пакетов с исходными "
+#~ "текстами\n"
+#~ "  -q    Не выводить сообщения в процессе работы\n"
+#~ "  -d=?  Указать кэширующую базу данных (не обязательно)\n"
+#~ "  --no-delink Включить режим отладки процесса удаления файлов\n"
+#~ "  --contents  Управление генерацией полного перечня содержимого пакетов\n"
+#~ "              (файла Contents)\n"
+#~ "  -c=?  Использовать указанный конфигурационный файл\n"
+#~ "  -o=?  Указать произвольный параметр конфигурации"
+
+#~ msgid "No selections matched"
+#~ msgstr "Совпадений не обнаружено"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "В группе пакетов `%s' отсутствуют некоторые файлы"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "БД была повреждена, файл переименован в %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "DB устарела, попытка обновить %s"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "Неправильный формат базы данных (DB). Если вы производили обновление apt, "
+#~ "удалите и пересоздайте базу данных."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Не удалось открыть DB файл %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "В архиве нет поля control"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Невозможно получить курсор"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "W: Не удалось прочитать каталог %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "W: Не удалось прочитать атрибуты %s\n"
+
+#~ msgid "E: "
+#~ msgstr "E: "
+
+#~ msgid "W: "
+#~ msgstr "W: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "E: Ошибки относятся к файлу '"
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Не удалось проследовать по ссылке %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Не удалось совершить обход дерева"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Не удалось открыть %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr "DeLink %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Не удалось прочесть ссылку %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Не удалось удалить %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Не удалось создать ссылку %s на %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " Превышен лимит в %sB в DeLink.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "В архиве нет поля package"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  Нет записи о переназначении (override) для %s\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  пакет %s сопровождает %s, а не %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  Нет записи source override для %s\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  Нет записи binary override для %s\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Внутренняя ошибка, не удалось найти составную часть %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - не удалось выделить память"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Не удалось открыть %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Неправильная запись о переназначении (override) %s на строке %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Неправильная запись о переназначении (override) %s на строке %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Неправильная запись о переназначении (override) %s на строке %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Не удалось прочесть файл переназначений (override)%s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Неизвестный алгоритм сжатия '%s'"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr ""
+#~ "Для получения сжатого вывода %s необходимо включить использования сжатия"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Не удалось создать FILE*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Не удалось запустить порождённый процесс"
+
+#~ msgid "Compress child"
+#~ msgstr "Процесс-потомок, производящий сжатие"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Внутренняя ошибка, не удалось создать %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Не удалось создать IPC с порождённым процессом"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Не удалось выполнить компрессор "
+
+#~ msgid "decompressor"
+#~ msgstr "декомпрессор"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "Ошибка ввода/вывода в подпроцесс/файл"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Ошибка чтения во время вычисления MD5"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Не удалось удалить %s"

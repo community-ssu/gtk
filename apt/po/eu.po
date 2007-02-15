@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt_po_eu\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-09-27 13:59+0200\n"
 "Last-Translator: Piarres Beobide <pi@beobide.net>\n"
 "Language-Team: librezale <librezale@librezale.org>\n"
@@ -152,8 +152,8 @@ msgid "       %4i %s\n"
 msgstr "       %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s (%s %s) konpilatua: %s %s\n"
@@ -313,335 +313,6 @@ msgstr "%s : ezin da idatzi"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Ezin da debconf bertsioa eskuratu. Debconf instalatuta dago?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Pakete-luzapenen zerrenda luzeegia da"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Errorea direktorioa prozesatzean %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Iturburu-luzapenen zerrenda luzeegia da"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Errorea eduki-fitxategiaren goiburua idaztean"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Errorea edukiak prozesatzean %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Erabilera: apt-ftparchive [aukerak] komandoa\n"
-"Komandoak: packages binarypath [overridefile [pathprefix]]\n"
-"           sources srcpath [overridefile [pathprefix]]\n"
-"           contents path\n"
-"           release path\n"
-"           generate config [groups]\n"
-"           clean config\n"
-"\n"
-"apt-ftparchive Debian artxiboen indizeak sortzeko erabiltzen da. Sortzeko \n"
-"estilo asko onartzen ditu, erabat automatizatuak nahiz ordezte funtzionalak\n"
-"'dpkg-scanpackages' eta 'dpkg-scansources'erako\n"
-"Package izeneko fitxategiak sortzen ditu .deb fitxategien zuhaitz batetik.\n"
-"Package fitxategiak pakete bakoitzaren kontrol-eremu guztiak izaten ditu,\n"
-"MD5 hash balioa eta fitxategi-tamaina barne. Override fitxategia erabiltzen\n"
-"da lehentasunearen eta sekzioaren balioak behartzeko.\n"
-"\n"
-"Era berean, iturburu-fitxategiak ere sortzen ditu .dsc fitxategien\n"
-"zuhaitzetik. --source-override aukera erabil daiteke src override \n"
-"fitxategi bat zehazteko.\n"
-"'packages' eta 'sources' komandoa zuhaitzaren erroan exekutatu behar dira.\n"
-"BinaryPath-ek bilaketa errekurtsiboaren oinarria seinalatu behar du, eta\n"
-"override fitxategiak override banderak izan behar ditu. Pathprefix \n"
-"fitxategi-izenen eremuei eransten zaie (halakorik badago). Hona hemen\n"
-"Debian artxiboko erabilera-adibide bat:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Aukerak:\n"
-"  -h    Laguntza-testu hau\n"
-"  --md5 Kontrolatu MD5 sortzea\n"
-"  -s=?  Iturburuaren override fitxategia\n"
-"  -q    Isilik\n"
-"  -d=?  Hautatu aukerako cachearen datu-basea\n"
-"  --no-delink Gaitu delink arazketa-modua\n"
-"  --contents  Kontrolatu eduki-fitxategia sortzea\n"
-"  -c=?  Irakurri konfigurazio-fitxategi hau\n"
-"  -o=?  Ezarri konfigurazio-aukera arbitrario bat"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Ez dago bat datorren hautapenik"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Fitxategi batzuk falta dira `%s' pakete-fitxategien taldean"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "Datu-basea hondatuta dago; fitxategiari %s.old izena jarri zaio"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "Datu-basea zaharra da; %s bertsio-berritzen saiatzen ari da"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"DB formatu baliogabe da. Apt bertsio zaharrago batetik eguneratu baduzu, "
-"mesedez datubasea ezabatu eta birsortu."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Ezin da ireki %s datu-base fitxategia: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Huts egin du %s(e)tik datuak lortzean"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Artxiboak ez du kontrol-erregistrorik"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Ezin da kurtsorerik eskuratu"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "A: Ezin da %s direktorioa irakurri\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "A: Ezin da %s atzitu\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "E: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "A: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "E: Erroreak fitxategiari dagozkio "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Huts egin du %s ebaztean"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Huts egin dute zuhaitz-urratsek"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Huts egin du %s irekitzean"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " DeLink %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Huts egin du %s esteka irakurtzean"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Huts egin du %s desestekatzean"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Ezin izan da %s %s(r)ekin estekatu"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " DeLink-en mugara (%sB) heldu da.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Artxiboak ez du pakete-eremurik"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  %s: ez du override sarrerarik\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  %s mantentzailea %s da, eta ez %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  %s: ez du jatorri gainidazketa sarrerarik\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  %s: ez du bitar gainidazketa sarrerarik\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Barne Errorea, ezin da %s atala kokatu"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Huts egin du memoria esleitzean"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Ezin da %s ireki"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Gaizki osatutako override %s, lerroa: %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Gaizki osatutako override %s, lerroa: %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Gaizki osatutako override %s, lerroa: %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Huts egin du %s override fitxategia irakurtzean"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "'%s' Kompresio Algoritmo Ezezaguna"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "%s irteera konprimituak konpresio-tresna bat behar du"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Huts egin du azpiprozesuarentzako IPC kanalizazio bat sortzean"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Huts egin du FILE* sortzean"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Huts egin du sardetzean"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Konprimatu Umeak"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Barne Errorea, Huts %s sortzerakoan"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Huts egin du IPC azpiprozesua sortzean"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Huts egin du konpresorea exekutatzean "
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "deskonpresorea"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "Huts egin du azpiprozesu/fitxategiko S/Iak"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Huts egin du MD5 konputatzean"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Arazoa %s desestekatzean"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Huts egin du %s izenaren ordez %s ipintzean"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1487,6 +1158,17 @@ msgstr "Paketea desbideratze-helburuan %s/%s idazten saiatzen ari da"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Desbideratzearen bide-izena luzeegia da"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Huts egin du %s(e)tik datuak lortzean"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Huts egin du %s izenaren ordez %s ipintzean"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2767,6 +2449,249 @@ msgstr "%s guztiz ezabatu da"
 msgid "Could not patch file"
 msgstr "%s fitxategia ezin izan da ireki"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Huts egin du azpiprozesuarentzako IPC kanalizazio bat sortzean"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Konexioa behar baino lehenago itxi da"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Pakete-luzapenen zerrenda luzeegia da"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Errorea direktorioa prozesatzean %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Iturburu-luzapenen zerrenda luzeegia da"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Errorea eduki-fitxategiaren goiburua idaztean"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Errorea edukiak prozesatzean %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Erabilera: apt-ftparchive [aukerak] komandoa\n"
+#~ "Komandoak: packages binarypath [overridefile [pathprefix]]\n"
+#~ "           sources srcpath [overridefile [pathprefix]]\n"
+#~ "           contents path\n"
+#~ "           release path\n"
+#~ "           generate config [groups]\n"
+#~ "           clean config\n"
+#~ "\n"
+#~ "apt-ftparchive Debian artxiboen indizeak sortzeko erabiltzen da. "
+#~ "Sortzeko \n"
+#~ "estilo asko onartzen ditu, erabat automatizatuak nahiz ordezte "
+#~ "funtzionalak\n"
+#~ "'dpkg-scanpackages' eta 'dpkg-scansources'erako\n"
+#~ "Package izeneko fitxategiak sortzen ditu .deb fitxategien zuhaitz "
+#~ "batetik.\n"
+#~ "Package fitxategiak pakete bakoitzaren kontrol-eremu guztiak izaten "
+#~ "ditu,\n"
+#~ "MD5 hash balioa eta fitxategi-tamaina barne. Override fitxategia "
+#~ "erabiltzen\n"
+#~ "da lehentasunearen eta sekzioaren balioak behartzeko.\n"
+#~ "\n"
+#~ "Era berean, iturburu-fitxategiak ere sortzen ditu .dsc fitxategien\n"
+#~ "zuhaitzetik. --source-override aukera erabil daiteke src override \n"
+#~ "fitxategi bat zehazteko.\n"
+#~ "'packages' eta 'sources' komandoa zuhaitzaren erroan exekutatu behar "
+#~ "dira.\n"
+#~ "BinaryPath-ek bilaketa errekurtsiboaren oinarria seinalatu behar du, eta\n"
+#~ "override fitxategiak override banderak izan behar ditu. Pathprefix \n"
+#~ "fitxategi-izenen eremuei eransten zaie (halakorik badago). Hona hemen\n"
+#~ "Debian artxiboko erabilera-adibide bat:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Aukerak:\n"
+#~ "  -h    Laguntza-testu hau\n"
+#~ "  --md5 Kontrolatu MD5 sortzea\n"
+#~ "  -s=?  Iturburuaren override fitxategia\n"
+#~ "  -q    Isilik\n"
+#~ "  -d=?  Hautatu aukerako cachearen datu-basea\n"
+#~ "  --no-delink Gaitu delink arazketa-modua\n"
+#~ "  --contents  Kontrolatu eduki-fitxategia sortzea\n"
+#~ "  -c=?  Irakurri konfigurazio-fitxategi hau\n"
+#~ "  -o=?  Ezarri konfigurazio-aukera arbitrario bat"
+
+#~ msgid "No selections matched"
+#~ msgstr "Ez dago bat datorren hautapenik"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Fitxategi batzuk falta dira `%s' pakete-fitxategien taldean"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "Datu-basea hondatuta dago; fitxategiari %s.old izena jarri zaio"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "Datu-basea zaharra da; %s bertsio-berritzen saiatzen ari da"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "DB formatu baliogabe da. Apt bertsio zaharrago batetik eguneratu baduzu, "
+#~ "mesedez datubasea ezabatu eta birsortu."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Ezin da ireki %s datu-base fitxategia: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Artxiboak ez du kontrol-erregistrorik"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Ezin da kurtsorerik eskuratu"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "A: Ezin da %s direktorioa irakurri\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "A: Ezin da %s atzitu\n"
+
+#~ msgid "E: "
+#~ msgstr "E: "
+
+#~ msgid "W: "
+#~ msgstr "A: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "E: Erroreak fitxategiari dagozkio "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Huts egin du %s ebaztean"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Huts egin dute zuhaitz-urratsek"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Huts egin du %s irekitzean"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " DeLink %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Huts egin du %s esteka irakurtzean"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Huts egin du %s desestekatzean"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Ezin izan da %s %s(r)ekin estekatu"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " DeLink-en mugara (%sB) heldu da.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Artxiboak ez du pakete-eremurik"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  %s: ez du override sarrerarik\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  %s mantentzailea %s da, eta ez %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  %s: ez du jatorri gainidazketa sarrerarik\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  %s: ez du bitar gainidazketa sarrerarik\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Barne Errorea, ezin da %s atala kokatu"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Huts egin du memoria esleitzean"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Ezin da %s ireki"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Gaizki osatutako override %s, lerroa: %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Gaizki osatutako override %s, lerroa: %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Gaizki osatutako override %s, lerroa: %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Huts egin du %s override fitxategia irakurtzean"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "'%s' Kompresio Algoritmo Ezezaguna"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "%s irteera konprimituak konpresio-tresna bat behar du"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Huts egin du FILE* sortzean"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Huts egin du sardetzean"
+
+#~ msgid "Compress child"
+#~ msgstr "Konprimatu Umeak"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Barne Errorea, Huts %s sortzerakoan"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Huts egin du IPC azpiprozesua sortzean"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Huts egin du konpresorea exekutatzean "
+
+#~ msgid "decompressor"
+#~ msgstr "deskonpresorea"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "Huts egin du azpiprozesu/fitxategiko S/Iak"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Huts egin du MD5 konputatzean"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Arazoa %s desestekatzean"

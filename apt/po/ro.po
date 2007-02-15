@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: apt_po_ro\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-12-04 17:45+0000\n"
+"POT-Creation-Date: 2007-02-14 18:55+0200\n"
 "PO-Revision-Date: 2006-09-19 01:35+0300\n"
 "Last-Translator: Sorin Batariuc <sorin@bonbon.net>\n"
 "Language-Team: Romanian <debian-l10n-romanian@lists.debian.org>\n"
@@ -148,8 +148,8 @@ msgid "       %4i %s\n"
 msgstr "        %4i %s\n"
 
 #: cmdline/apt-cache.cc:1652 cmdline/apt-cdrom.cc:138 cmdline/apt-config.cc:70
-#: cmdline/apt-extracttemplates.cc:225 ftparchive/apt-ftparchive.cc:550
-#: cmdline/apt-get.cc:2387 cmdline/apt-sortpkgs.cc:144
+#: cmdline/apt-extracttemplates.cc:225 cmdline/apt-get.cc:2387
+#: cmdline/apt-sortpkgs.cc:144
 #, c-format
 msgid "%s %s for %s %s compiled on %s %s\n"
 msgstr "%s %s pentru %s %s compilat pe %s %s\n"
@@ -311,344 +311,6 @@ msgstr "Nu pot scrie în %s"
 #: cmdline/apt-extracttemplates.cc:310
 msgid "Cannot get debconf version. Is debconf installed?"
 msgstr "Nu pot citi versiunea debconf. Este instalat debconf?"
-
-#: ftparchive/apt-ftparchive.cc:167 ftparchive/apt-ftparchive.cc:341
-msgid "Package extension list is too long"
-msgstr "Lista de extensii pentru pachet este prea lungă"
-
-#: ftparchive/apt-ftparchive.cc:169 ftparchive/apt-ftparchive.cc:183
-#: ftparchive/apt-ftparchive.cc:206 ftparchive/apt-ftparchive.cc:256
-#: ftparchive/apt-ftparchive.cc:270 ftparchive/apt-ftparchive.cc:292
-#, c-format
-msgid "Error processing directory %s"
-msgstr "Eroare la prelucrarea directorului %s"
-
-#: ftparchive/apt-ftparchive.cc:254
-msgid "Source extension list is too long"
-msgstr "Lista de extensii pentru sursă este prea lungă"
-
-#: ftparchive/apt-ftparchive.cc:371
-msgid "Error writing header to contents file"
-msgstr "Eroare la scrierea antetului în fişierul index"
-
-#: ftparchive/apt-ftparchive.cc:401
-#, c-format
-msgid "Error processing contents %s"
-msgstr "Eroare la prelucrarea conţinutului %s"
-
-#: ftparchive/apt-ftparchive.cc:556
-msgid ""
-"Usage: apt-ftparchive [options] command\n"
-"Commands: packages binarypath [overridefile [pathprefix]]\n"
-"          sources srcpath [overridefile [pathprefix]]\n"
-"          contents path\n"
-"          release path\n"
-"          generate config [groups]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generates index files for Debian archives. It supports\n"
-"many styles of generation from fully automated to functional replacements\n"
-"for dpkg-scanpackages and dpkg-scansources\n"
-"\n"
-"apt-ftparchive generates Package files from a tree of .debs. The\n"
-"Package file contains the contents of all the control fields from\n"
-"each package as well as the MD5 hash and filesize. An override file\n"
-"is supported to force the value of Priority and Section.\n"
-"\n"
-"Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
-"The --source-override option can be used to specify a src override file\n"
-"\n"
-"The 'packages' and 'sources' command should be run in the root of the\n"
-"tree. BinaryPath should point to the base of the recursive search and \n"
-"override file should contain the override flags. Pathprefix is\n"
-"appended to the filename fields if present. Example usage from the \n"
-"Debian archive:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Options:\n"
-"  -h    This help text\n"
-"  --md5 Control MD5 generation\n"
-"  -s=?  Source override file\n"
-"  -q    Quiet\n"
-"  -d=?  Select the optional caching database\n"
-"  --no-delink Enable delinking debug mode\n"
-"  --contents  Control contents file generation\n"
-"  -c=?  Read this configuration file\n"
-"  -o=?  Set an arbitrary configuration option"
-msgstr ""
-"Utilizare: apt-ftparchive [opţiuni] comanda\n"
-"Comenzi: packages cale_binare [fişier_înlocuire [prefix_cale]]\n"
-"          sources cale_src [fişier_înlocuire [prefix_cale]]\n"
-"          contents cale\n"
-"          release cale\n"
-"          generate config [grupuri]\n"
-"          clean config\n"
-"\n"
-"apt-ftparchive generează fişiere de indexare pentru arhivele Debian. "
-"Suportă\n"
-"multe stiluri de generare de la complet automat la înlocuiri funcţionale\n"
-"pentru dpkg-scanpackage şi dpkg-scansources\n"
-"\n"
-"apt-ftparchive generează fişierele Package dintr-un arbore de .deb-uri.\n"
-"Fişierul Pachet înglobează conţinutul tuturor câmpurilor de control din "
-"fiecare\n"
-"pachet cât şi MD5 hash şi dimensiunea fişierului. Un fişier de înlocuire "
-"este\n"
-"furnizat pentru a forţa valoarea Priorităţii şi Secţiunii.\n"
-"\n"
-"În mod asemănator apt-ftparchive generează fişierele Sources dintr-un arbore "
-"de .dsc-uri.\n"
-"Opţiunea --source-override poate fi folosită pentru a specifica fişierul de "
-"înlocuire\n"
-"\n"
-"Comenzile 'packages' şi 'sources' ar trebui executate în rădăcina "
-"arborelui.\n"
-"Cale_binare ar trebui să indice baza căutării recursive şi fişierul de "
-"înlocuire ar\n"
-"trebui să conţină semnalizatorul de înlocuire. Prefix_cale este adăugat "
-"câmpului\n"
-"de nume fişier dacă acesta este prezent. Exemplu de utilizare din arhiva\n"
-"Debian:\n"
-"   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
-"               dists/potato/main/binary-i386/Packages\n"
-"\n"
-"Opţiuni:\n"
-"  -h   Acest text de ajutor.\n"
-"  --md5 Generarea controlului MD5\n"
-"  -s=?  Fişierul de înlocuire pentru surse\n"
-"  -q    În linişte\n"
-"  -d=?  Selectează baza de date de cache opţională\n"
-"  --no-delink Activează modul de depanare dezlegare\n"
-"  --contents  Generarea fişierului cu sumarul de control\n"
-"  -c=? Citeşte acest fişier de configurare\n"
-"  -o=? Ajustează o opţiune de configurare arbitrară"
-
-#: ftparchive/apt-ftparchive.cc:762
-msgid "No selections matched"
-msgstr "Nu s-a potrivit nici o selecţie"
-
-#: ftparchive/apt-ftparchive.cc:835
-#, c-format
-msgid "Some files are missing in the package file group `%s'"
-msgstr "Unele fişiere lipsesc din grupul fişierului pachet '%s'"
-
-#: ftparchive/cachedb.cc:47
-#, c-format
-msgid "DB was corrupted, file renamed to %s.old"
-msgstr "DB a fost corupt, fişierul a fost redenumit %s.old"
-
-#: ftparchive/cachedb.cc:65
-#, c-format
-msgid "DB is old, attempting to upgrade %s"
-msgstr "DB este vechi, se încearcă înnoirea %s"
-
-#: ftparchive/cachedb.cc:76
-msgid ""
-"DB format is invalid. If you upgraded from a older version of apt, please "
-"remove and re-create the database."
-msgstr ""
-"Formatul DB este nevalid. Dacă l-aţi înnoit pe apt de la o versiune mai "
-"veche, ştergeţi şi recreaţi baza de date."
-
-#: ftparchive/cachedb.cc:81
-#, c-format
-msgid "Unable to open DB file %s: %s"
-msgstr "Nu pot deschide fişierul DB %s: %s"
-
-#: ftparchive/cachedb.cc:127 apt-inst/extract.cc:181 apt-inst/extract.cc:193
-#: apt-inst/extract.cc:210 apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
-#, c-format
-msgid "Failed to stat %s"
-msgstr "Eşuare în determinarea stării %s"
-
-#: ftparchive/cachedb.cc:242
-msgid "Archive has no control record"
-msgstr "Arhiva nu are înregistrare de control"
-
-#: ftparchive/cachedb.cc:448
-msgid "Unable to get a cursor"
-msgstr "Nu pot obţine un cursor"
-
-#: ftparchive/writer.cc:79
-#, c-format
-msgid "W: Unable to read directory %s\n"
-msgstr "A: Nu pot citi directorul %s\n"
-
-#: ftparchive/writer.cc:84
-#, c-format
-msgid "W: Unable to stat %s\n"
-msgstr "A: Nu pot determina starea %s\n"
-
-#: ftparchive/writer.cc:135
-msgid "E: "
-msgstr "E: "
-
-#: ftparchive/writer.cc:137
-msgid "W: "
-msgstr "A: "
-
-#: ftparchive/writer.cc:144
-msgid "E: Errors apply to file "
-msgstr "E: Erori la fişierul "
-
-#: ftparchive/writer.cc:161 ftparchive/writer.cc:191
-#, c-format
-msgid "Failed to resolve %s"
-msgstr "Eşuare în a rezolva %s"
-
-#: ftparchive/writer.cc:173
-msgid "Tree walking failed"
-msgstr "Eşuare în parcurgerea arborelui"
-
-#: ftparchive/writer.cc:198
-#, c-format
-msgid "Failed to open %s"
-msgstr "Eşuare la deschiderea %s"
-
-#: ftparchive/writer.cc:257
-#, c-format
-msgid " DeLink %s [%s]\n"
-msgstr " Dezlegare %s [%s]\n"
-
-#: ftparchive/writer.cc:265
-#, c-format
-msgid "Failed to readlink %s"
-msgstr "Eşuare la citirea legăturii %s"
-
-#: ftparchive/writer.cc:269
-#, c-format
-msgid "Failed to unlink %s"
-msgstr "Eşuare în desfacerea legăturii %s"
-
-#: ftparchive/writer.cc:276
-#, c-format
-msgid "*** Failed to link %s to %s"
-msgstr "*** Eşuare în legarea %s de %s"
-
-#: ftparchive/writer.cc:286
-#, c-format
-msgid " DeLink limit of %sB hit.\n"
-msgstr " Limita de %sB a dezlegării a fost atinsă.\n"
-
-#: ftparchive/writer.cc:390
-msgid "Archive had no package field"
-msgstr "Arhiva nu are câmp de pachet"
-
-#: ftparchive/writer.cc:398 ftparchive/writer.cc:613
-#, c-format
-msgid "  %s has no override entry\n"
-msgstr "  %s nu are intrare de înlocuire\n"
-
-#: ftparchive/writer.cc:443 ftparchive/writer.cc:701
-#, c-format
-msgid "  %s maintainer is %s not %s\n"
-msgstr "  %s responsabil este %s nu %s\n"
-
-#: ftparchive/writer.cc:623
-#, c-format
-msgid "  %s has no source override entry\n"
-msgstr "  %s nu are nici o intrare sursă de înlocuire\n"
-
-#: ftparchive/writer.cc:627
-#, c-format
-msgid "  %s has no binary override entry either\n"
-msgstr "  %s nu are nici intrare binară de înlocuire\n"
-
-#: ftparchive/contents.cc:317
-#, c-format
-msgid "Internal error, could not locate member %s"
-msgstr "Eroare internă, nu pot localiza membrul %s"
-
-#: ftparchive/contents.cc:353 ftparchive/contents.cc:384
-msgid "realloc - Failed to allocate memory"
-msgstr "realloc - Eşuare în alocarea memoriei"
-
-#: ftparchive/override.cc:38 ftparchive/override.cc:146
-#, c-format
-msgid "Unable to open %s"
-msgstr "Nu pot deschide %s"
-
-#: ftparchive/override.cc:64 ftparchive/override.cc:170
-#, c-format
-msgid "Malformed override %s line %lu #1"
-msgstr "Înlocuire greşită %s linia %lu #1"
-
-#: ftparchive/override.cc:78 ftparchive/override.cc:182
-#, c-format
-msgid "Malformed override %s line %lu #2"
-msgstr "Înlocuire greşită %s linia %lu #2"
-
-#: ftparchive/override.cc:92 ftparchive/override.cc:195
-#, c-format
-msgid "Malformed override %s line %lu #3"
-msgstr "Înlocuire greşită %s linia %lu #3"
-
-#: ftparchive/override.cc:131 ftparchive/override.cc:205
-#, c-format
-msgid "Failed to read the override file %s"
-msgstr "Eşuare la citirea fişierului de înlocuire %s"
-
-#: ftparchive/multicompress.cc:75
-#, c-format
-msgid "Unknown compression algorithm '%s'"
-msgstr "Algoritm de compresie necunoscut '%s'"
-
-#: ftparchive/multicompress.cc:105
-#, c-format
-msgid "Compressed output %s needs a compression set"
-msgstr "Rezultatul comprimat %s are nevoie de o ajustare a compresiei"
-
-#: ftparchive/multicompress.cc:172 methods/rsh.cc:91
-msgid "Failed to create IPC pipe to subprocess"
-msgstr "Eşuare în crearea conexiunii IPC către subproces"
-
-#: ftparchive/multicompress.cc:198
-msgid "Failed to create FILE*"
-msgstr "Eşuare în crearea FIŞIERULUI*"
-
-#: ftparchive/multicompress.cc:201
-msgid "Failed to fork"
-msgstr "Eşuare în bifurcare"
-
-#: ftparchive/multicompress.cc:215
-msgid "Compress child"
-msgstr "Comprimare copil"
-
-#: ftparchive/multicompress.cc:238
-#, c-format
-msgid "Internal error, failed to create %s"
-msgstr "Eroare internă, eşuare în a crea %s"
-
-#: ftparchive/multicompress.cc:289
-msgid "Failed to create subprocess IPC"
-msgstr "Eşuare în a crea subprocesul IPC"
-
-#: ftparchive/multicompress.cc:324
-msgid "Failed to exec compressor "
-msgstr "Eşuare în executarea compresorului"
-
-#: ftparchive/multicompress.cc:363
-msgid "decompressor"
-msgstr "decompresor"
-
-#: ftparchive/multicompress.cc:406
-msgid "IO to subprocess/file failed"
-msgstr "IE către subproces/fişier eşuat"
-
-#: ftparchive/multicompress.cc:458
-msgid "Failed to read while computing MD5"
-msgstr "Eşuare la citire în timpul calculării MD5"
-
-#: ftparchive/multicompress.cc:475
-#, c-format
-msgid "Problem unlinking %s"
-msgstr "Problemă la desfacerea %s"
-
-#: ftparchive/multicompress.cc:490 apt-inst/extract.cc:188
-#, c-format
-msgid "Failed to rename %s to %s"
-msgstr "Eşuare în a redenumi %s în %s"
 
 #: cmdline/apt-get.cc:120
 msgid "Y"
@@ -1503,6 +1165,17 @@ msgstr "Pachetul încearcă să scrie în ţinta de diversiune %s/%s"
 #: apt-inst/extract.cc:157 apt-inst/extract.cc:300
 msgid "The diversion path is too long"
 msgstr "Calea de diversiune este prea lungă"
+
+#: apt-inst/extract.cc:181 apt-inst/extract.cc:193 apt-inst/extract.cc:210
+#: apt-inst/deb/dpkgdb.cc:121 methods/gpgv.cc:272
+#, c-format
+msgid "Failed to stat %s"
+msgstr "Eşuare în determinarea stării %s"
+
+#: apt-inst/extract.cc:188
+#, c-format
+msgid "Failed to rename %s to %s"
+msgstr "Eşuare în a redenumi %s în %s"
 
 #: apt-inst/extract.cc:243
 #, c-format
@@ -2791,6 +2464,252 @@ msgstr "Şters complet %s"
 msgid "Could not patch file"
 msgstr "Nu pot deschide fişierul %s"
 
+#: methods/rsh.cc:91
+msgid "Failed to create IPC pipe to subprocess"
+msgstr "Eşuare în crearea conexiunii IPC către subproces"
+
 #: methods/rsh.cc:330
 msgid "Connection closed prematurely"
 msgstr "Conexiune închisă prematur"
+
+#~ msgid "Package extension list is too long"
+#~ msgstr "Lista de extensii pentru pachet este prea lungă"
+
+#~ msgid "Error processing directory %s"
+#~ msgstr "Eroare la prelucrarea directorului %s"
+
+#~ msgid "Source extension list is too long"
+#~ msgstr "Lista de extensii pentru sursă este prea lungă"
+
+#~ msgid "Error writing header to contents file"
+#~ msgstr "Eroare la scrierea antetului în fişierul index"
+
+#~ msgid "Error processing contents %s"
+#~ msgstr "Eroare la prelucrarea conţinutului %s"
+
+#~ msgid ""
+#~ "Usage: apt-ftparchive [options] command\n"
+#~ "Commands: packages binarypath [overridefile [pathprefix]]\n"
+#~ "          sources srcpath [overridefile [pathprefix]]\n"
+#~ "          contents path\n"
+#~ "          release path\n"
+#~ "          generate config [groups]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generates index files for Debian archives. It supports\n"
+#~ "many styles of generation from fully automated to functional "
+#~ "replacements\n"
+#~ "for dpkg-scanpackages and dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generates Package files from a tree of .debs. The\n"
+#~ "Package file contains the contents of all the control fields from\n"
+#~ "each package as well as the MD5 hash and filesize. An override file\n"
+#~ "is supported to force the value of Priority and Section.\n"
+#~ "\n"
+#~ "Similarly apt-ftparchive generates Sources files from a tree of .dscs.\n"
+#~ "The --source-override option can be used to specify a src override file\n"
+#~ "\n"
+#~ "The 'packages' and 'sources' command should be run in the root of the\n"
+#~ "tree. BinaryPath should point to the base of the recursive search and \n"
+#~ "override file should contain the override flags. Pathprefix is\n"
+#~ "appended to the filename fields if present. Example usage from the \n"
+#~ "Debian archive:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Options:\n"
+#~ "  -h    This help text\n"
+#~ "  --md5 Control MD5 generation\n"
+#~ "  -s=?  Source override file\n"
+#~ "  -q    Quiet\n"
+#~ "  -d=?  Select the optional caching database\n"
+#~ "  --no-delink Enable delinking debug mode\n"
+#~ "  --contents  Control contents file generation\n"
+#~ "  -c=?  Read this configuration file\n"
+#~ "  -o=?  Set an arbitrary configuration option"
+#~ msgstr ""
+#~ "Utilizare: apt-ftparchive [opţiuni] comanda\n"
+#~ "Comenzi: packages cale_binare [fişier_înlocuire [prefix_cale]]\n"
+#~ "          sources cale_src [fişier_înlocuire [prefix_cale]]\n"
+#~ "          contents cale\n"
+#~ "          release cale\n"
+#~ "          generate config [grupuri]\n"
+#~ "          clean config\n"
+#~ "\n"
+#~ "apt-ftparchive generează fişiere de indexare pentru arhivele Debian. "
+#~ "Suportă\n"
+#~ "multe stiluri de generare de la complet automat la înlocuiri funcţionale\n"
+#~ "pentru dpkg-scanpackage şi dpkg-scansources\n"
+#~ "\n"
+#~ "apt-ftparchive generează fişierele Package dintr-un arbore de .deb-uri.\n"
+#~ "Fişierul Pachet înglobează conţinutul tuturor câmpurilor de control din "
+#~ "fiecare\n"
+#~ "pachet cât şi MD5 hash şi dimensiunea fişierului. Un fişier de înlocuire "
+#~ "este\n"
+#~ "furnizat pentru a forţa valoarea Priorităţii şi Secţiunii.\n"
+#~ "\n"
+#~ "În mod asemănator apt-ftparchive generează fişierele Sources dintr-un "
+#~ "arbore de .dsc-uri.\n"
+#~ "Opţiunea --source-override poate fi folosită pentru a specifica fişierul "
+#~ "de înlocuire\n"
+#~ "\n"
+#~ "Comenzile 'packages' şi 'sources' ar trebui executate în rădăcina "
+#~ "arborelui.\n"
+#~ "Cale_binare ar trebui să indice baza căutării recursive şi fişierul de "
+#~ "înlocuire ar\n"
+#~ "trebui să conţină semnalizatorul de înlocuire. Prefix_cale este adăugat "
+#~ "câmpului\n"
+#~ "de nume fişier dacă acesta este prezent. Exemplu de utilizare din arhiva\n"
+#~ "Debian:\n"
+#~ "   apt-ftparchive packages dists/potato/main/binary-i386/ > \\\n"
+#~ "               dists/potato/main/binary-i386/Packages\n"
+#~ "\n"
+#~ "Opţiuni:\n"
+#~ "  -h   Acest text de ajutor.\n"
+#~ "  --md5 Generarea controlului MD5\n"
+#~ "  -s=?  Fişierul de înlocuire pentru surse\n"
+#~ "  -q    În linişte\n"
+#~ "  -d=?  Selectează baza de date de cache opţională\n"
+#~ "  --no-delink Activează modul de depanare dezlegare\n"
+#~ "  --contents  Generarea fişierului cu sumarul de control\n"
+#~ "  -c=? Citeşte acest fişier de configurare\n"
+#~ "  -o=? Ajustează o opţiune de configurare arbitrară"
+
+#~ msgid "No selections matched"
+#~ msgstr "Nu s-a potrivit nici o selecţie"
+
+#~ msgid "Some files are missing in the package file group `%s'"
+#~ msgstr "Unele fişiere lipsesc din grupul fişierului pachet '%s'"
+
+#~ msgid "DB was corrupted, file renamed to %s.old"
+#~ msgstr "DB a fost corupt, fişierul a fost redenumit %s.old"
+
+#~ msgid "DB is old, attempting to upgrade %s"
+#~ msgstr "DB este vechi, se încearcă înnoirea %s"
+
+#~ msgid ""
+#~ "DB format is invalid. If you upgraded from a older version of apt, please "
+#~ "remove and re-create the database."
+#~ msgstr ""
+#~ "Formatul DB este nevalid. Dacă l-aţi înnoit pe apt de la o versiune mai "
+#~ "veche, ştergeţi şi recreaţi baza de date."
+
+#~ msgid "Unable to open DB file %s: %s"
+#~ msgstr "Nu pot deschide fişierul DB %s: %s"
+
+#~ msgid "Archive has no control record"
+#~ msgstr "Arhiva nu are înregistrare de control"
+
+#~ msgid "Unable to get a cursor"
+#~ msgstr "Nu pot obţine un cursor"
+
+#~ msgid "W: Unable to read directory %s\n"
+#~ msgstr "A: Nu pot citi directorul %s\n"
+
+#~ msgid "W: Unable to stat %s\n"
+#~ msgstr "A: Nu pot determina starea %s\n"
+
+#~ msgid "E: "
+#~ msgstr "E: "
+
+#~ msgid "W: "
+#~ msgstr "A: "
+
+#~ msgid "E: Errors apply to file "
+#~ msgstr "E: Erori la fişierul "
+
+#~ msgid "Failed to resolve %s"
+#~ msgstr "Eşuare în a rezolva %s"
+
+#~ msgid "Tree walking failed"
+#~ msgstr "Eşuare în parcurgerea arborelui"
+
+#~ msgid "Failed to open %s"
+#~ msgstr "Eşuare la deschiderea %s"
+
+#~ msgid " DeLink %s [%s]\n"
+#~ msgstr " Dezlegare %s [%s]\n"
+
+#~ msgid "Failed to readlink %s"
+#~ msgstr "Eşuare la citirea legăturii %s"
+
+#~ msgid "Failed to unlink %s"
+#~ msgstr "Eşuare în desfacerea legăturii %s"
+
+#~ msgid "*** Failed to link %s to %s"
+#~ msgstr "*** Eşuare în legarea %s de %s"
+
+#~ msgid " DeLink limit of %sB hit.\n"
+#~ msgstr " Limita de %sB a dezlegării a fost atinsă.\n"
+
+#~ msgid "Archive had no package field"
+#~ msgstr "Arhiva nu are câmp de pachet"
+
+#~ msgid "  %s has no override entry\n"
+#~ msgstr "  %s nu are intrare de înlocuire\n"
+
+#~ msgid "  %s maintainer is %s not %s\n"
+#~ msgstr "  %s responsabil este %s nu %s\n"
+
+#~ msgid "  %s has no source override entry\n"
+#~ msgstr "  %s nu are nici o intrare sursă de înlocuire\n"
+
+#~ msgid "  %s has no binary override entry either\n"
+#~ msgstr "  %s nu are nici intrare binară de înlocuire\n"
+
+#~ msgid "Internal error, could not locate member %s"
+#~ msgstr "Eroare internă, nu pot localiza membrul %s"
+
+#~ msgid "realloc - Failed to allocate memory"
+#~ msgstr "realloc - Eşuare în alocarea memoriei"
+
+#~ msgid "Unable to open %s"
+#~ msgstr "Nu pot deschide %s"
+
+#~ msgid "Malformed override %s line %lu #1"
+#~ msgstr "Înlocuire greşită %s linia %lu #1"
+
+#~ msgid "Malformed override %s line %lu #2"
+#~ msgstr "Înlocuire greşită %s linia %lu #2"
+
+#~ msgid "Malformed override %s line %lu #3"
+#~ msgstr "Înlocuire greşită %s linia %lu #3"
+
+#~ msgid "Failed to read the override file %s"
+#~ msgstr "Eşuare la citirea fişierului de înlocuire %s"
+
+#~ msgid "Unknown compression algorithm '%s'"
+#~ msgstr "Algoritm de compresie necunoscut '%s'"
+
+#~ msgid "Compressed output %s needs a compression set"
+#~ msgstr "Rezultatul comprimat %s are nevoie de o ajustare a compresiei"
+
+#~ msgid "Failed to create FILE*"
+#~ msgstr "Eşuare în crearea FIŞIERULUI*"
+
+#~ msgid "Failed to fork"
+#~ msgstr "Eşuare în bifurcare"
+
+#~ msgid "Compress child"
+#~ msgstr "Comprimare copil"
+
+#~ msgid "Internal error, failed to create %s"
+#~ msgstr "Eroare internă, eşuare în a crea %s"
+
+#~ msgid "Failed to create subprocess IPC"
+#~ msgstr "Eşuare în a crea subprocesul IPC"
+
+#~ msgid "Failed to exec compressor "
+#~ msgstr "Eşuare în executarea compresorului"
+
+#~ msgid "decompressor"
+#~ msgstr "decompresor"
+
+#~ msgid "IO to subprocess/file failed"
+#~ msgstr "IE către subproces/fişier eşuat"
+
+#~ msgid "Failed to read while computing MD5"
+#~ msgstr "Eşuare la citire în timpul calculării MD5"
+
+#~ msgid "Problem unlinking %s"
+#~ msgstr "Problemă la desfacerea %s"
