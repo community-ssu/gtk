@@ -33,6 +33,11 @@ else
   export CXXFLAGS = -O2 -g -Wall
 endif
 
+# Pass on thumb mode when enabled
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+	CXXFLAGS += -mthumb
+endif
+
 # Default rule
 build:
 
@@ -109,7 +114,7 @@ build/configure-stamp: configure
 	dh_testdir
 	-mkdir build
 	cp COPYING debian/copyright
-	cd build && CXXFLAGS="$(confcxxflags)" ../configure $(confflags)
+	cd build && CXXFLAGS="$(CXXFLAGS)" ../configure $(confflags)
 	touch $@
 
 build/build-stamp: build/configure-stamp
@@ -206,18 +211,18 @@ apt: build debian/shlibs.local
 	cp $(BLD)/bin/methods/* debian/$@/usr/lib/apt/methods/
 
 	cp $(BLD)/scripts/dselect/* debian/$@/usr/lib/dpkg/methods/apt/
-	cp -r $(BLD)/locale debian/$@/usr/share/
+	#cp -r $(BLD)/locale debian/$@/usr/share/
 
 	cp debian/bugscript debian/$@/usr/share/bug/apt/script
 
-	cp share/debian-archive.gpg debian/$@/usr/share/$@
+#	cp share/debian-archive.gpg debian/$@/usr/share/$@
 
 #	head -n 500 ChangeLog > debian/ChangeLog
 
 	dh_installexamples -p$@ $(BLD)/docs/examples/*
-	dh_installman -p$@ 
-	dh_installcron -p$@
-	dh_installdocs -p$@
+#	dh_installman -p$@ 
+#	dh_installcron -p$@
+#	dh_installdocs -p$@
 	dh_installchangelogs -p$@
 	dh_strip -p$@
 	dh_compress -p$@
