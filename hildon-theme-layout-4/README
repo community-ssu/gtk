@@ -1,2 +1,46 @@
-This is the theme support package for maemo/hildon 4
-----------------------------------------------------
+This is the theme support package for maemo
+-------------------------------------------
+
+It's representing the layout for the post-bora times.
+
+Versioning (x.y.z)
+------------------
+
+The relation between the themes and layouts is a static one, not dynamic (think:
+statically linked libraries). Therefore it's important to stick to a package
+versioning system so that the layout version can be discovered from the theme
+version itself. 
+
+The following basic rules apply to this layout package:
+
+1) y is increased each time the layout itself (cutting information) is changed.
+2) z is increased each time the rc data was modified
+
+Generally the themes have (should have) a dependency bound to the 'y' version of the 
+package. So, for example, a theme might depend on a layout > 1.4.x but < 1.5.x. So,
+increasing the y version of the layout WILL BREAK ALL THEMES BASED ON THIS
+LAYOUT (till they're fixed and the dependency is readjusted again). 
+
+This is intentional. It's meant to prevent the rebuild of the broken theme. y is
+shoulbe be changed each time the changes in the layout will render the children
+themes broken -- ie. changing the cutting information will render the themes
+broken as they have no proper graphics in the proper places. 
+
+Additionally, the platform version (or -- the major API version) is embedded in
+the name of the layout package. For example:
+
+        hildon-theme-layout-2 for mistral
+        hildon-theme-layout-3 for bora
+        ...
+
+It's handled in such a way since the user might want to have severall layouts
+(layout versions) installed at the same time. 
+
+The themes take this major API number as they major version number. For example:
+
+        hildon-theme-plankton 4.x.y is a theme based on hildon-theme-layout-4
+        hildon-theme-plankton 3.x.y is a theme based on hildon-theme-layout-3
+        ...
+
+(tbc)
+
