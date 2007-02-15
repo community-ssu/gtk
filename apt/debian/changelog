@@ -1,3 +1,10 @@
+apt (0.6.46.4.osso1) unstable; urgency=low
+
+  * Removed most docs since the Sardine build infrastructure can't build
+    them.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 15 Feb 2007 20:40:18 +0200
+
 apt (0.6.46.4.osso0) unstable; urgency=low
 
   Make it work for maemo.
