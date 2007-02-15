@@ -2,7 +2,7 @@ Thu Feb 15 15:18:37 2007  Tim Janik  <timj@gtk.org>
 
 	* gtk/gtkdialog.c: added style property ::content-area-spacing, to
 	allow configurable area spacing similar to the style properties 
-	::button-spacing and ::content-area-border.
+	::button-spacing and ::content-area-border, upstream #408244.
 
 Thu Feb 15 13:17:52 2007  Tim Janik  <timj@gtk.org>
 
