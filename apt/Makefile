@@ -17,8 +17,14 @@ all headers library clean veryclean binary program doc dirs:
 	$(MAKE) -C cmdline $@
 	$(MAKE) -C ftparchive $@
 	$(MAKE) -C dselect $@
-	$(MAKE) -C doc $@
-	$(MAKE) -C po $@
+
+#       Don't build docs for now.  If you reenable this, remember to
+#       add the following build dependencies and to reenable to actions in
+#       debian/rules.
+#       Build-Depends-Indep: debiandoc-sgml, docbook-utils (>= 0.6.12-1)
+#	$(MAKE) -C doc $@
+
+#	$(MAKE) -C po $@
 
 # Some very common aliases
 .PHONY: maintainer-clean dist-clean distclean pristine sanity 

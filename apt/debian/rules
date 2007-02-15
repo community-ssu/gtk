@@ -148,9 +148,9 @@ libapt-pkg-doc: build-doc debian/shlibs.local
 #
 # libapt-pkg-doc install
 #	
-	dh_installdocs -p$@ $(BLD)/docs/cache* $(BLD)/docs/design* $(BLD)/docs/dpkg-tech* \
-                            $(BLD)/docs/files* $(BLD)/docs/method* \
-			    doc/libapt-pkg2_to_3.txt doc/style.txt
+#	dh_installdocs -p$@ $(BLD)/docs/cache* $(BLD)/docs/design* $(BLD)/docs/dpkg-tech* \
+#                            $(BLD)/docs/files* $(BLD)/docs/method* \
+#			    doc/libapt-pkg2_to_3.txt doc/style.txt
 	dh_installexamples -p$@
 #	dh_installmenu -p$@
 #	dh_installinit -p$@
@@ -176,8 +176,8 @@ apt-doc: build-doc
 # apt-doc install
 #
 	# Copy the guides
-	dh_installdocs -p$@ $(BLD)/docs/guide*.text $(BLD)/docs/guide*.html \
-	               $(BLD)/docs/offline*.text $(BLD)/docs/offline*.html
+#	dh_installdocs -p$@ $(BLD)/docs/guide*.text $(BLD)/docs/guide*.html \
+#	               $(BLD)/docs/offline*.text $(BLD)/docs/offline*.html
 	dh_installchangelogs -p$@
 	dh_compress -p$@
 	dh_fixperms -p$@
@@ -219,7 +219,7 @@ apt: build debian/shlibs.local
 
 #	head -n 500 ChangeLog > debian/ChangeLog
 
-	dh_installexamples -p$@ $(BLD)/docs/examples/*
+#	dh_installexamples -p$@ $(BLD)/docs/examples/*
 #	dh_installman -p$@ 
 #	dh_installcron -p$@
 #	dh_installdocs -p$@
