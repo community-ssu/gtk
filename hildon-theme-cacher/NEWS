@@ -1,5 +1,9 @@
-[0.2.0]
+[0.3.0 release]
+* Fixing the theme trap (unable to change theme after installing new one)
+* Skip junk files during generation
+
+[0.2.0 release]
 * Working.
 
-[0.1.0]
+[0.1.0 release]
 * First release.

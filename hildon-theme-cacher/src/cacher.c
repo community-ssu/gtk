@@ -49,7 +49,9 @@ GSList*                         parse_dir (const gchar *dir_name, GSList *list, 
 
                 if (g_file_test (path, G_FILE_TEST_IS_REGULAR) &&
                     g_strrstr (file_name, "gtkrc") != NULL     &&
-                    g_strrstr (file_name, "cache") == NULL)
+                    g_strrstr (file_name, "cache") == NULL     &&
+                    file_name [0] != '.'                       &&
+                    g_strrstr (file_name, "~") == NULL)
                         list = g_slist_append (list, path);
                 else if (g_file_test (path, G_FILE_TEST_IS_DIR)) 
                         list = parse_dir (path, list, level + 1);
