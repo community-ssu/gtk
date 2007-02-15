@@ -79,7 +79,7 @@ AC_SUBST(BDBLIB)
 dnl Converts the ARCH to be something singular for this general CPU family
 dnl This is often the dpkg architecture string.
 AC_MSG_CHECKING(system architecture)
-archset="`awk \" ! /^#|^\\\$/ { if(match(\\\"$target_cpu\\\",\\\"^\\\"\\\$1\\\"\\\$\\\")) {print \\\$2; exit}}\" $srcdir/buildlib/archtable`"
+archset="`dpkg-architecture -qDEB_HOST_ARCH`"
 if test "x$archset" = "x"; then
   AC_MSG_ERROR(failed: use --host= or check buildlib/archtable)
 fi

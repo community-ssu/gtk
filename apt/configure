@@ -3953,7 +3953,7 @@ LIBS="$saveLIBS"
 
 echo "$as_me:$LINENO: checking system architecture" >&5
 echo $ECHO_N "checking system architecture... $ECHO_C" >&6
-archset="`awk \" ! /^#|^\\\$/ { if(match(\\\"$target_cpu\\\",\\\"^\\\"\\\$1\\\"\\\$\\\")) {print \\\$2; exit}}\" $srcdir/buildlib/archtable`"
+archset="`dpkg-architecture -qDEB_HOST_ARCH`"
 if test "x$archset" = "x"; then
   { { echo "$as_me:$LINENO: error: failed: use --host= or check buildlib/archtable" >&5
 echo "$as_me: error: failed: use --host= or check buildlib/archtable" >&2;}
