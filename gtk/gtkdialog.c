@@ -147,6 +147,21 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                              G_MAXINT,
                                                              2,
                                                              GTK_PARAM_READABLE));
+  /**
+   * GtkDialog:content-area-spacing:
+   *
+   * Spacing between elements of the main dialog area.
+   *
+   * Since: maemo 1.0
+   */
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_int ("content-area-spacing",
+                                                             P_("Content area spacing"),
+                                                             P_("Spacing between elements of the main dialog area"),
+                                                             0,
+                                                             G_MAXINT,
+                                                             0,
+                                                             GTK_PARAM_READABLE));
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("button-spacing",
                                                              P_("Button spacing"),
@@ -178,17 +193,20 @@ update_spacings (GtkDialog *dialog)
   gint content_area_border;
   gint button_spacing;
   gint action_area_border;
+  gint content_area_spacing;
   
   widget = GTK_WIDGET (dialog);
 
   gtk_widget_style_get (widget,
                         "content-area-border", &content_area_border,
+                        "content-area-spacing", &content_area_spacing,
                         "button-spacing", &button_spacing,
                         "action-area-border", &action_area_border,
                         NULL);
 
   gtk_container_set_border_width (GTK_CONTAINER (dialog->vbox),
                                   content_area_border);
+  gtk_box_set_spacing (GTK_BOX (dialog->vbox), content_area_spacing);
   gtk_box_set_spacing (GTK_BOX (dialog->action_area),
                        button_spacing);
   gtk_container_set_border_width (GTK_CONTAINER (dialog->action_area),
