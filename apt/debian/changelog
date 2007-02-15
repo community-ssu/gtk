@@ -1,3 +1,26 @@
+apt (0.6.46.4.osso0) unstable; urgency=low
+
+  Make it work for maemo.
+
+  * Do not expect the debian-archive-keyring package to be present.  Don't
+    run apt-key update in apt.postinst.
+  * Reduced debhelper compat version to 4, fingers crossed.
+  * Do not Build-Depend on libdb4.4-dev, don't expect apt-ftparchive to be
+    build.
+  * buildlib/environment.mak.in: Also build shared libraries on gnueabi
+    platforms such as the armel architecture.
+  * Get the host architecture name from dpkg-architecture instead of
+    guessing via the archtable.
+  * Applied mmap.patch that allows us to work on file systems that don't
+    support read-write mmaps such as JFFS2.
+  * Use CXXFLAGS instead of confcxxflags to control compiler options from
+    debian/rules.
+  * Pass -mthumb to compiler when requested by DEB_BUILD_OPTIONS.
+  * Removed locale, cron, debian-archive keyring, man pages and other docs
+    from apt package.
+  
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Thu, 15 Feb 2007 14:18:47 +0200
+
 apt (0.6.46.4) unstable; urgency=high
 
   * ack NMU (closes: #401017)
