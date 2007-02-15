@@ -35,13 +35,15 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <errno.h>
+
    									/*}}}*/
 
 // MMap::MMap - Constructor						/*{{{*/
 // ---------------------------------------------------------------------
 /* */
 MMap::MMap(FileFd &F,unsigned long Flags) : Flags(Flags), iSize(0),
-                     Base(0)
+					    Base(0), fd(0)
 {
    if ((Flags & NoImmMap) != NoImmMap)
       Map(F);
@@ -51,7 +53,7 @@ MMap::MMap(FileFd &F,unsigned long Flags) : Flags(Flags), iSize(0),
 // ---------------------------------------------------------------------
 /* */
 MMap::MMap(unsigned long Flags) : Flags(Flags), iSize(0),
-                     Base(0)
+                     Base(0), fd(0)
 {
 }
 									/*}}}*/
@@ -84,7 +86,26 @@ bool MMap::Map(FileFd &Fd)
    // Map it.
    Base = mmap(0,iSize,Prot,Map,Fd.Fd(),0);
    if (Base == (void *)-1)
-      return _error->Errno("mmap",_("Couldn't make mmap of %lu bytes"),iSize);
+     {
+       if (errno == ENODEV || errno == EINVAL)
+        {
+          // The filesystem doesn't support this particular kind of
+          // mmap.  So we allocate a buffer and read the whole file
+          // into it.
+          //
+	  int dupped_fd = dup (Fd.Fd());
+	  if (dupped_fd == -1)
+	    return _error->Errno("mmap",_("Couldn't dup filedescriptor"));
+	    
+	  Base = new unsigned char[iSize];
+          fd = new FileFd (dupped_fd);
+          if (!fd->Seek(0L) || !fd->Read(Base, iSize))
+	    return false;
+        }
+       else
+        return _error->Errno("mmap",_("Couldn't make mmap of %lu bytes"),
+                             iSize);
+     }
 
    return true;
 }
@@ -99,9 +120,18 @@ bool MMap::Close(bool DoSync)
    
    if (DoSync == true)
       Sync();
-   
-   if (munmap((char *)Base,iSize) != 0)
-      _error->Warning("Unable to munmap");
+
+   if (fd)
+     {
+       delete[] (char *)Base;
+       delete fd;
+       fd = NULL;
+     }
+   else
+     {
+       if (munmap((char *)Base,iSize) != 0)
+	 _error->Warning("Unable to munmap");
+     }
    
    iSize = 0;
    Base = 0;
@@ -113,14 +143,24 @@ bool MMap::Close(bool DoSync)
 /* This is done in syncronous mode - the docs indicate that this will 
    not return till all IO is complete */
 bool MMap::Sync()
-{   
+{
    if ((Flags & UnMapped) == UnMapped)
       return true;
    
 #ifdef _POSIX_SYNCHRONIZED_IO   
    if ((Flags & ReadOnly) != ReadOnly)
-      if (msync((char *)Base,iSize,MS_SYNC) != 0)
-	 return _error->Errno("msync","Unable to write mmap");
+     {
+       if (fd)
+	 {
+	   if (!fd->Seek (0) || !fd->Write (Base, iSize))
+	     return false;
+	 }
+       else
+	 {
+	   if (msync((char *)Base,iSize,MS_SYNC) != 0)
+	     return _error->Errno("msync","Unable to write mmap");
+	 }
+     }
 #endif   
    return true;
 }
@@ -136,8 +176,20 @@ bool MMap::Sync(unsigned long Start,unsigned long Stop)
 #ifdef _POSIX_SYNCHRONIZED_IO
    unsigned long PSize = sysconf(_SC_PAGESIZE);
    if ((Flags & ReadOnly) != ReadOnly)
-      if (msync((char *)Base+(int)(Start/PSize)*PSize,Stop - Start,MS_SYNC) != 0)
-	 return _error->Errno("msync","Unable to write mmap");
+     {
+       if (fd)
+	 {
+	   if (!fd->Seek (Start)
+	       || !fd->Write (((char *)Base)+Start, Stop-Start))
+	     return false;
+	 }
+       else
+	 {
+	   if (msync((char *)Base+(int)(Start/PSize)*PSize,Stop - Start,
+		     MS_SYNC) != 0)
+	     return _error->Errno("msync","Unable to write mmap");
+	 }
+     }
 #endif   
    return true;
 }
