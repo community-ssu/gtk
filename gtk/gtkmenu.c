@@ -1540,9 +1540,9 @@ gtk_menu_popup (GtkMenu		    *menu,
                              &priv->popup_pointer_x,
                              &priv->popup_pointer_y,
                              NULL);
-#endif /* MAEMO_CHANGES */
 
-#ifdef MAEMO_CHANGES
+  _gtk_menu_shell_set_first_click (menu_shell);
+
   /* if no item is selected, select the first one */
   if (!menu_shell->active_menu_item)
     gtk_menu_shell_select_first (menu_shell, TRUE);

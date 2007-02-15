@@ -1,3 +1,35 @@
+2007-02-15  Michael Natterer  <mitch@imendio.com>
+
+	Port over the remaining logic changes from maemo-gtk-2-6. The
+	menus should behave as specified now.
+
+	* gtk/gtkmenushell.c: add private memmbers "activated_submenu" and
+	"first_click".
+
+	(gtk_menu_shell_button_press)
+	(gtk_menu_shell_button_release)
+	(gtk_menu_shell_button_enter_notify)
+	(gtk_menu_shell_button_leave_notify): activate submenus on button
+	events.
+
+	(gtk_menu_shell_real_select_item): don't activate submenus on item
+	selection.
+
+	(gtk_menu_shell_activate_item)
+	(gtk_menu_shell_select_submenu_first)
+	(gtk_menu_shell_activate_current): changed submenu activation
+	and deactivation behavior.
+
+	(gtk_real_menu_shell_move_current): deactivate submenu when
+	keyboard-navigating to parent.
+
+	(_gtk_menu_shell_set_first_click): new private api.
+
+	* gtk/gtkmenushell.h: add _gtk_menu_shell_set_first_click().
+
+	* gtk/gtkmenu.c (gtk_menu_popup): call
+	_gtk_menu_shell_set_first_click().
+
 2007-02-14  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): stop possibly
