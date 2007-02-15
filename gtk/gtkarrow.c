@@ -221,6 +221,9 @@ gtk_arrow_expose (GtkWidget      *widget,
       width = widget->allocation.width - misc->xpad * 2;
       height = widget->allocation.height - misc->ypad * 2;
       extent = MIN (width, height) * 0.7;
+#ifdef MAEMO_CHANGES
+      extent = MIN (width, height);
+#endif /* MAEMO_CHANGES */
       effective_arrow_type = arrow->arrow_type;
 
       if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
