@@ -1,5 +1,12 @@
 2007-02-15  Michael Natterer  <mitch@imendio.com>
 
+	Merged from upstream trunk:
+
+	* gtk/gtkmenushell.c: remove two antique function typedefs that
+	are probably obsolete for ages.
+
+2007-02-15  Michael Natterer  <mitch@imendio.com>
+
 	Port over the remaining logic changes from maemo-gtk-2-6. The
 	menus should behave as specified now.
 
