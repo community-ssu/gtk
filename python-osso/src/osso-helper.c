@@ -168,7 +168,7 @@ _rpc_args_c_to_py(GArray *args)
 	}
 
 	for (i = 0; i < size; i++) {
-		arg = g_array_index(args, osso_rpc_t *, i);
+		arg = &g_array_index(args, osso_rpc_t, i);
 		py_arg = _rpc_t_to_python(arg);
 		PyTuple_SetItem(ret, i, py_arg);
 	}

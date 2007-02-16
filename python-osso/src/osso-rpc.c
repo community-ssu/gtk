@@ -348,12 +348,12 @@ _wrap_rpc_async_handler(const char *interface, const char *method, osso_rpc_t *r
 	if (rpc_async_callback == NULL) {
 		return;
 	}
-	
-	py_args = Py_BuildValue("(ssO)", interface, method, data);
+
+	py_args = Py_BuildValue("(ssOO)", interface, method, _rpc_t_to_python(retval), data);
 	py_ret = PyEval_CallObject(rpc_async_callback, py_args);
 	
-	_python_to_rpc_t(py_ret, retval);
-
+	Py_DECREF(py_args);
+	Py_DECREF(py_ret);
 	PyGILState_Release(state);
 	return;
 }
@@ -366,8 +366,8 @@ Context_rpc_async_run(Context *self, PyObject *args, PyObject *kwds)
 	char *object_path;
 	char *interface;
 	char *method;
-	PyObject *py_func;
-	PyObject *py_data;
+	PyObject *py_func = NULL;
+	PyObject *py_data = NULL;
 	PyObject *py_rpc_args = NULL;
 	osso_return_t ret;
 
@@ -382,7 +382,8 @@ Context_rpc_async_run(Context *self, PyObject *args, PyObject *kwds)
 				&py_rpc_args)) {
 		return NULL;
 	}
-
+	if (py_data == NULL)
+		py_data = Py_None;
 	/* py_rpc_args */
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
@@ -451,6 +452,8 @@ Context_rpc_async_run_with_defaults(Context *self, PyObject *args, PyObject *kwd
 		return NULL;
 	}
 
+	if (py_data == NULL)
+		py_data = Py_None;
 	if (py_rpc_args != NULL) {
 		if (!PyTuple_Check(py_rpc_args)) {
 			PyErr_SetString(PyExc_TypeError,
@@ -506,7 +509,7 @@ _wrap_rpc_callback_handler(const char *interface, const char *method, GArray *ar
 	if (set_rpc_callback == NULL) {
 		return OSSO_ERROR;
 	}
-	
+
 	py_args = Py_BuildValue("(ssOO)", interface, method, _rpc_args_c_to_py(arguments), data);
 	py_ret = PyEval_CallObject(set_rpc_callback, py_args);
 
@@ -546,19 +549,8 @@ Context_set_rpc_callback(Context *self, PyObject *args, PyObject *kwds)
 		return NULL;
 	}
 
-	if (py_func != Py_None) {
-		if (!PyCallable_Check(py_func)) {
-			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
-			return NULL;
-		}
-		Py_XINCREF(py_func);
-		Py_XDECREF(set_rpc_callback);
-		set_rpc_callback = py_func;
-	} else {
-		Py_XDECREF(set_rpc_callback);
-		set_rpc_callback = NULL;
-	}
-
+	if (py_data == NULL)
+		py_data = Py_None;
 	if (py_func != Py_None) {
 		if (!PyCallable_Check(py_func)) {
 			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");
@@ -602,6 +594,8 @@ Context_set_rpc_default_callback(Context *self, PyObject *args, PyObject *kwds)
 		return NULL;
 	}
 
+	if (py_data == NULL)
+		py_data = Py_None;
 	if (py_func != Py_None) {
 		if (!PyCallable_Check(py_func)) {
 			PyErr_SetString(PyExc_TypeError, "callback parameter must be callable");

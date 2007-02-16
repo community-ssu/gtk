@@ -1,3 +1,12 @@
+python-osso (0.3-1osso1) unstable; urgency=low
+
+  * Osso rpc functions revised:
+    - rpc_run and rpc_async_run now can send correctly rpc arguments
+    - callback function of rpc_async_run now has an extra param: retval
+      eg: def callbackfunc (interface, method, retval, userdata):
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Fri, 16 Jan 2007 14:50:00 -0300
+
 python-osso (0.2-1osso1) unstable; urgency=low
 
   * Osso split in small modules
