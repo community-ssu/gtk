@@ -2722,6 +2722,7 @@ gtk_widget_set_extension_events_internal (GtkWidget        *widget,
 void
 gtk_widget_realize (GtkWidget *widget)
 {
+  GdkExtensionMode mode;
   GtkWidgetShapeInfo *shape_info;
   
   g_return_if_fail (GTK_IS_WIDGET (widget));
@@ -2764,15 +2765,9 @@ gtk_widget_realize (GtkWidget *widget)
 					     shape_info->offset_x,
 					     shape_info->offset_y);
 
-      if (!GTK_WIDGET_NO_WINDOW (widget))
-        {
-          GdkExtensionMode mode;
-
-          mode = gtk_widget_get_extension_events (widget);
-
-          if (mode != GDK_EXTENSION_EVENTS_NONE)
-            gtk_widget_set_extension_events_internal (widget, mode, NULL);
-        }
+      mode = gtk_widget_get_extension_events (widget);
+      if (mode != GDK_EXTENSION_EVENTS_NONE)
+	gtk_widget_set_extension_events_internal (widget, mode, NULL);
     }
 }
 
