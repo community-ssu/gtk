@@ -755,17 +755,6 @@ pkgAcqMetaSig::pkgAcqMetaSig(pkgAcquire *Owner,
    Desc.ShortDesc = ShortDesc;
    Desc.URI = URI;
    
-      
-   string Final = _config->FindDir("Dir::State::lists");
-   Final += URItoFileName(RealURI);
-   struct stat Buf;
-   if (stat(Final.c_str(),&Buf) == 0)
-   {
-      // File was already in place.  It needs to be re-verified
-      // because Release might have changed, so Move it into partial
-      Rename(Final,DestFile);
-   }
-
    QueueURI(Desc);
 }
 									/*}}}*/
@@ -774,8 +763,10 @@ pkgAcqMetaSig::pkgAcqMetaSig(pkgAcquire *Owner,
 /* The only header we use is the last-modified header. */
 string pkgAcqMetaSig::Custom600Headers()
 {
+   string Final = _config->FindDir("Dir::State::lists");
+   Final += URItoFileName(RealURI);
    struct stat Buf;
-   if (stat(DestFile.c_str(),&Buf) != 0)
+   if (stat(Final.c_str(),&Buf) != 0)
       return "\nIndex-File: true";
 
    return "\nIndex-File: true\nLast-Modified: " + TimeRFC1123(Buf.st_mtime);
@@ -805,6 +796,21 @@ void pkgAcqMetaSig::Done(string Message,unsigned long Size,string MD5,
 
    Complete = true;
 
+   string Final = _config->FindDir("Dir::State::lists");
+   Final += URItoFileName(RealURI);
+   if (StringToBool(LookupTag(Message,"IMS-Hit"),false))
+     {
+       // Move it into position
+       Rename (Final, DestFile);
+     }
+   else
+     {
+       // Delete the old version in lists/.  The new version will be moved
+       // there from partial/ when the signature verification succeeds
+       //
+       unlink (Final.c_str ());
+     }
+
    // queue a pkgAcqMetaIndex to be verified against the sig we just retrieved
    new pkgAcqMetaIndex(Owner, MetaIndexURI, MetaIndexURIDesc, MetaIndexShortDesc,
 		       DestFile, IndexTargets, MetaIndexParser);
@@ -813,22 +819,49 @@ void pkgAcqMetaSig::Done(string Message,unsigned long Size,string MD5,
 									/*}}}*/
 void pkgAcqMetaSig::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
 {
+   string Final =
+     _config->FindDir("Dir::State::lists") + URItoFileName(RealURI);
 
-   // if we get a network error we fail gracefully
-   if(LookupTag(Message,"FailReason") == "Timeout" || 
-      LookupTag(Message,"FailReason") == "TmpResolveFailure" ||
-      LookupTag(Message,"FailReason") == "ConnectionRefused") {
-      Item::Failed(Message,Cnf);
-      return;
-   }
+   // If this is a transient failure, we use the old version, if we
+   // have one.  "Using it" means moving it into the partial/
+   // directory for further consumption by gpgv.
+   //
+   if (StringToBool(LookupTag(Message,"Transient-Failure"),false))
+     {
+       struct stat Buf;
+       if (stat(Final.c_str(),&Buf) == 0)
+	 {
+	   Rename (Final, DestFile); 
+	   new pkgAcqMetaIndex(Owner, MetaIndexURI, MetaIndexURIDesc,
+			       MetaIndexShortDesc,
+			       DestFile, IndexTargets, MetaIndexParser);
+	 }
+       else
+	 {
+	   // queue a pkgAcqMetaIndex with no sigfile
+	   new pkgAcqMetaIndex(Owner, MetaIndexURI, MetaIndexURIDesc,
+			       MetaIndexShortDesc,
+			       "", IndexTargets, MetaIndexParser);
+	 }
+     }
+   else
+     {
+       // Delete any existing sigfile, so that this source isn't
+       // mistakenly trusted
+       unlink(Final.c_str());
 
-   // Delete any existing sigfile when the acquire failed
-   string Final = _config->FindDir("Dir::State::lists") + URItoFileName(RealURI);
-   unlink(Final.c_str());
+       // if we get a network error we fail gracefully
+       if(LookupTag(Message,"FailReason") == "Timeout" || 
+	  LookupTag(Message,"FailReason") == "TmpResolveFailure" ||
+	  LookupTag(Message,"FailReason") == "ConnectionRefused") {
+	 Item::Failed(Message,Cnf);
+	 return;
+       }
 
-   // queue a pkgAcqMetaIndex with no sigfile
-   new pkgAcqMetaIndex(Owner, MetaIndexURI, MetaIndexURIDesc, MetaIndexShortDesc,
-		       "", IndexTargets, MetaIndexParser);
+       // queue a pkgAcqMetaIndex with no sigfile
+       new pkgAcqMetaIndex(Owner, MetaIndexURI, MetaIndexURIDesc, MetaIndexShortDesc,
+			   "", IndexTargets, MetaIndexParser);
+     }
 
    if (Cnf->LocalOnly == true || 
        StringToBool(LookupTag(Message,"Transient-Failure"),false) == false)
@@ -1157,7 +1190,38 @@ void pkgAcqMetaIndex::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
                       LookupTag(Message,"Message").c_str());
 
    }
+   else
+     {
+       // If this is a transient failure, we use the old version, if we
+       // have one.
+       //
+       if (StringToBool(LookupTag(Message,"Transient-Failure"),false))
+	 {
+	   string Final = _config->FindDir("Dir::State::lists");
+	   Final += URItoFileName(RealURI);
+	   struct stat Buf;
+	   if (stat(Final.c_str(),&Buf) == 0)
+	     {
+	       DestFile = Final;
 
+	       if (SigFile != "")
+		 {
+		   // There was a signature file, so pass it to gpgv
+		   // for verification
+
+		   if (_config->FindB("Debug::pkgAcquire::Auth", false))
+		     std::cerr << "Metaindex acquired, queueing gpg verification ("
+			       << SigFile << "," << DestFile << ")\n";
+		   AuthPass = true;
+		   Desc.URI = "gpgv:" + SigFile;
+		   QueueURI(Desc);
+		   Mode = "gpgv";
+		   return;
+		 }
+	     }
+	 }
+     }
+       
    // No Release file was present, or verification failed, so fall
    // back to queueing Packages files without verification
    QueueIndexes(false);
