@@ -26,7 +26,6 @@ style "osso-combobox-base" {
   GtkWidget::focus-line-width = 0
   GtkWidget::focus-padding = 0
   GtkWidget::focus-line-pattern = "\0\0\0\0\0\0\0\0"
-  GtkComboBox::minimum-width = 150
   GtkComboBox::autodimmed_button = 1
   GtkComboBox::appears-as-list = 1
   GtkComboBox::arrow-size = 30
