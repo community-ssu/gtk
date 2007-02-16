@@ -1600,9 +1600,9 @@ gtk_entry_draw_frame (GtkWidget    *widget,
       width += 2 * focus_width;
       height += 2 * focus_width;
       
-      gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget), 
+      /*      gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget), 
 		       area, widget, "entry",
-		       0, 0, width, height);
+                       0, 0, width, height);*/
     }
 }
 
@@ -1620,10 +1620,10 @@ gtk_entry_expose (GtkWidget      *widget,
 
       get_text_area_size (entry, NULL, NULL, &area_width, &area_height);
 
-      gtk_paint_flat_box (widget->style, entry->text_area, 
+      gtk_paint_flat_box (widget->style, entry->text_area,
 			  GTK_WIDGET_STATE(widget), GTK_SHADOW_NONE,
 			  &event->area, widget, "entry_bg",
-			  0, 0, area_width, area_height);
+                          0, 0, area_width, area_height);
       
       if ((entry->visible || entry->invisible_char != 0) &&
 	  GTK_WIDGET_HAS_FOCUS (widget) &&
