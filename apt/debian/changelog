@@ -1,3 +1,13 @@
+apt (0.6.46.4.osso2) unstable; urgency=low
+
+  * Applied gcc3-bug.patch which a long time ago did help against a
+    segfault that was ultimately blamed on a bug in GCC 3.  It can't hurt,
+    so let's have it.
+  * Applied transientsigs.patch that allows us to survive transient
+    network failures without throwing away good signatures.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 16 Feb 2007 15:41:26 +0200
+
 apt (0.6.46.4.osso1) unstable; urgency=low
 
   * Removed most docs since the Sardine build infrastructure can't build
