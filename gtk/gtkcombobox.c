@@ -2664,6 +2664,11 @@ gtk_combo_box_menu_setup (GtkComboBox *combo_box,
       gtk_button_set_focus_on_click (GTK_BUTTON (combo_box->priv->button),
 				     combo_box->priv->focus_on_click);
 
+#ifdef MAEMO_CHANGES
+      if (GTK_IS_ENTRY (GTK_BIN (combo_box)->child))
+        GTK_WIDGET_UNSET_FLAGS (combo_box->priv->button, GTK_CAN_FOCUS);
+#endif /* MAEMO_CHANGES */
+
       g_signal_connect (combo_box->priv->button, "toggled",
                         G_CALLBACK (gtk_combo_box_button_toggled), combo_box);
       gtk_widget_set_parent (combo_box->priv->button,
@@ -3444,6 +3449,12 @@ gtk_combo_box_list_setup (GtkComboBox *combo_box)
   combo_box->priv->button = gtk_toggle_button_new ();
   gtk_widget_set_parent (combo_box->priv->button,
                          GTK_BIN (combo_box)->child->parent);
+
+#ifdef MAEMO_CHANGES
+      if (GTK_IS_ENTRY (GTK_BIN (combo_box)->child))
+        GTK_WIDGET_UNSET_FLAGS (combo_box->priv->button, GTK_CAN_FOCUS);
+#endif /* MAEMO_CHANGES */
+
   g_signal_connect (combo_box->priv->button, "button_press_event",
                     G_CALLBACK (gtk_combo_box_list_button_pressed), combo_box);
   g_signal_connect (combo_box->priv->button, "toggled",
@@ -3665,9 +3676,13 @@ gtk_combo_box_list_button_pressed (GtkWidget      *widget,
       gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (combo_box->priv->button)))
     return FALSE;
 
+#ifdef MAEMO_CHANGES
+  gtk_widget_grab_focus (GTK_WIDGET (combo_box));
+#else
   if (combo_box->priv->focus_on_click && 
       !GTK_WIDGET_HAS_FOCUS (combo_box->priv->button))
     gtk_widget_grab_focus (combo_box->priv->button);
+#endif /* MAEMO_CHANGES */
 
   gtk_combo_box_popup (combo_box);
 

@@ -1,3 +1,13 @@
+2007-02-16  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_menu_setup)
+	(gtk_combo_box_list_setup): if the child widget is a GtkEntry,
+	unset CAN_FOCUS on the toggle button.
+
+	(gtk_combo_box_list_button_pressed): grab the focus on the combo
+	box, which implicitly grabs the right widget due to grab_focus()
+	virtualization.
+
 2007-02-16  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkwidget.c (gtk_widget_realize): Call
