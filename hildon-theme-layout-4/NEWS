@@ -1,3 +1,9 @@
+[0.2.0-1 release]
+* GtkEntry style fixes
+* Horizontal offset for Menu
+* GtkComboBox fixes 
+* GtkDialog thickness fixes
+
 [0.1.2-1 release]
 * Enable touchscreen mode
 * FALSE --> 0
