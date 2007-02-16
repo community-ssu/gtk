@@ -1,3 +1,10 @@
+[4.2.0-1 release]
+* Updating the graphics
+* GtkEntry style fixes
+* Horizontal offset for Menu
+* GtkComboBox fixes 
+* GtkDialog thickness fixes
+
 [4.1.2-1 release]
 * Bumping version for layout
 * Enable touchscreen mode
