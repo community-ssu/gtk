@@ -1,3 +1,20 @@
+2007-02-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.13.25.osso0.
+
+	Removed dependency of dpkg package on Perl.
+
+	* scripts/install-info.pl, scripts/cleanup-info.pl,
+	scripts/dpkg-divert.pl, scripts/update-alternatives.pl: Renamed
+	to have a ".pl-disabled" suffix.
+	* scripts/install-info.sh, scripts/cleanup-info.sh,
+        scripts/dpkg-divert.sh, scripts/update-alternatives.sh: New, to
+	replace disabled Perl scripts.
+	* scripts/Makefile.am (EXTRA_DIST): Updated to reflect changes
+	above.
+	(install-info-stamp): Depend on install-info.sh instead of
+	install-info.pl
+
 2007-01-02  Guillem Jover  <guillem@debian.org>
 
 	* configure.ac: Release 1.13.25.

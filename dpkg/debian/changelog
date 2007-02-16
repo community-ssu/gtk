@@ -1,3 +1,15 @@
+dpkg (1.13.25.osso0) unstable; urgency=low
+
+  [ Marius Vollmer, for maemo ]
+  
+  * Replaced some Perl script with shell version and moved other scripts
+    to dpkg-dev to make the dpkg package independent from Perl.
+  * Removed Build-Dependency on libselinux1-dev, configure without it.
+  * Made dpkg-dev architecture any since it now contains dpkg-split.
+  * Moved dpkg l10n and man files to dpkg-dev package.
+  
+ --
+
 dpkg (1.13.25) unstable; urgency=low
 
   [ Guillem Jover ]

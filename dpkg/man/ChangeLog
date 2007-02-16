@@ -1,3 +1,7 @@
+2007-02-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* Makefile.am (SUBDIRS): Removed po4a subdirectory for now.
+
 2006-11-24  Tomas Pospisek  <tpo_deb@sourcepole.ch>
 
 	* C/update-alternatives.8: Document that it requires cooperation from
