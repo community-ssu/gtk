@@ -42,11 +42,15 @@ EXTRA_DIST = \
 	dpkg-scansources.pl \
 	dpkg-shlibdeps.pl \
 	dpkg-source.pl \
-	cleanup-info.pl \
-	dpkg-divert.pl \
+	cleanup-info.pl-disabled \
+	cleanup-info.sh \
+	dpkg-divert.pl-disabled \
+	dpkg-divert.sh \
 	dpkg-statoverride.pl \
-	install-info.pl \
-	update-alternatives.pl \
+	install-info.pl-disabled \
+	install-info.sh \
+	update-alternatives.pl-disabled \
+	update-alternatives.sh \
 	changelog/debian.pl
 
 CLEANFILES = \
@@ -81,7 +85,7 @@ do_shell_subst = sed -e "s:version=\"[^\"]*\":version=\"$(PACKAGE_VERSION)\":"
 
 # Automake has its own install-info rule, gah
 all-local: install-info-stamp
-install-info-stamp: $(srcdir)/install-info.pl
+install-info-stamp: $(srcdir)/install-info.sh
 	$(do_perl_subst) <$< >install-info
 	chmod +x install-info
 	touch $@
