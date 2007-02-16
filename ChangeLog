@@ -536,7 +536,7 @@ Wed Jan 24 13:37:41 2007  Tim Janik  <timj@imendio.com>
 
 	* gtk/gtkwidget.c: port over set_extension_events_internal() which
 	allows setting extension events on already realized widgets (applied
-	updated and cleaned up patch from upstream bug #79550).
+	updated and cleaned up patch from upstream bug #379550).
 
 2007-01-24  Michael Natterer  <mitch@imendio.com>
 
