@@ -1,3 +1,12 @@
+dpkg (1.13.25.osso2) unstable; urgency=low
+
+  [ Marius Vollmer, for maemo ]
+
+  * Removed version in Pre-Dependency on coreutils so that busybox can
+    satisfy it.
+
+ -- Marius Vollmer <mvo@zagadka.de>  Sun, 18 Feb 2007 14:36:15 +0200
+
 dpkg (1.13.25.osso1) unstable; urgency=low
 
   [ Marius Vollmer, for maemo ]
@@ -10,7 +19,7 @@ dpkg (1.13.25.osso0) unstable; urgency=low
 
   [ Marius Vollmer, for maemo ]
   
-  * Replaced some Perl script with shell version and moved other scripts
+  * Replaced some Perl scripts with shell versions and moved other scripts
     to dpkg-dev to make the dpkg package independent from Perl.
   * Removed Build-Dependency on libselinux1-dev, configure without it.
   * Made dpkg-dev architecture any since it now contains dpkg-split.
