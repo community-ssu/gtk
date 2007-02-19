@@ -5,8 +5,8 @@ style "osso-color-themeing" = "osso-logical-colors" {
   fg[NORMAL] = "DefaultTextColor"
   bg[NORMAL] = "DefaultBackgrdColor"
 
-  fg[PRELIGHT] = "PaintedDefaultTextColor"
-  bg[PRELIGHT] = "PaintedBackgrdColor"
+  fg[PRELIGHT] = "DefaultTextColor"
+  bg[PRELIGHT] = "DefaultBackgrdColor"
 
   fg[ACTIVE] = "DefaultTextColor"
   bg[ACTIVE] = "PaintedBackgrdColor"
