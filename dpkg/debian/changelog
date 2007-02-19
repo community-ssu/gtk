@@ -1,3 +1,14 @@
+dpkg (1.13.25.osso3) unstable; urgency=low
+
+  [ Marius Vollmer, for maemo ]
+
+  * Moved dpkg-split from dpkg-dev back to dpkg since dpkg calls it during
+    normal operation.  (mksplit script is left in dpkg-dev since it is
+    only used when splitting.)
+  * Changed architecture of dpkg-dev back to "all".
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 19 Feb 2007 17:58:53 +0200
+
 dpkg (1.13.25.osso2) unstable; urgency=low
 
   [ Marius Vollmer, for maemo ]
