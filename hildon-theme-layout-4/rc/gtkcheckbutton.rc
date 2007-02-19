@@ -139,6 +139,10 @@ style "osso-checkbutton"
       shadow          = ETCHED_IN
       state= ACTIVE
     }
+    image
+    {
+      function        = FOCUS
+    }
   }
 }
 class "GtkCheckButton" style "osso-checkbutton"

@@ -84,6 +84,10 @@ style "osso-radiobutton"
 	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
+    image
+      {
+        function        = FOCUS
+      }
   }
 }
 class "GtkRadioButton" style "osso-radiobutton"
