@@ -1,31 +1,40 @@
-Current Issues:
-===============
-- No neutral actions.
-- No actions for unknown mime types.
-- No way to use actions on a per mime type basis.
-
-Current Approach:
+MIME/URI handling
 =================
-For the moment we have:
+
+Background
+==========
+
+The previous framework only had a way to handle URIs based on the scheme,
+not MIME type. One application would handle callto:// URIs, one http://, 
+etc.
+
+Libhildonmime now has been extended to add support for mapping the
+scheme+MIME type pair to an action. Each application can implement one or
+more actions.
+
+
+Desktop file format
+===================
+
+First an example of the "old" desktop file format, that was used to handle
+scheme-only actions:
 
 	[Desktop Entry]
-	X-Osso-URI-Actions=<method1>;<method2>;...
+	<regular keys and values here...>
+	X-Osso-URI-Actions=<method1>;<method2>;...;
 
 	[X-Osso-URI-Action-Handler <method>]
-	Name=<nice name>
+	Name=<logical string>
 	Method=<dbus method>
 	TranslationDomain=<translation domain>
 	X-Osso-Service=<dbus service>
 
-Detailed Proposal:
-==================
-We would leave the original group name of "[X-Osso-URI-Action-Handler
-<method>]" in so that older applications can still work with the newer
-specification. 
+This format is still supported, so that old applications don't have to
+change.
 
-Instead now, we will use a new group name of "[X-Osso-URI-Actions]"
-which will be used to list all actions corresponding to schemes, for
-example: 
+For applications that want to support the new API, there is a new format.
+A new group, X-Osso-URI-Actions, is used to list all the available actions,
+and their corresponding schemes:
 
 	[X-Osso-URI-Actions]
 	http=X-Osso-URI-Action-Add-Bookmark;
@@ -33,19 +42,11 @@ example:
 	X-Osso-URI-Action-Add-To-Media-Library; 
 	ftp=X-Osso-URI-Action-Open-Browser;
 
-You can also make all actions available for all schemes where the
-"All" scheme would be uniquely available for ALL schemes: 
-
-	[X-Osso-URI-Actions]
-	http=X-Osso-URI-Action-Add-Bookmark; X-Osso-URI-Action-Open-Browser;
-	https=X-Osso-URI-Action-Add-Bookmark; X-Osso-URI-Action-Open-Browser;
-	ftp=X-Osso-URI-Action-Add-Bookmark; X-Osso-URI-Action-Open-Browser;
-
-The actions would all be a group in themselves:
+Each action is then listed as a separate group with the details, e.g.:
 
 	[X-Osso-URI-Action-Add-Bookmark]
 	Type=Neutral
-	MimeType=text/html;...
+	MimeType=text/html;...;
 	Name=Add Bookmark
 	X-Osso-Service=com.nokia.browser
 	Method=add_bookmark
@@ -56,7 +57,7 @@ Where Type, Service, MimeType, and TranslationDomain are completely optional.
 The X-Osso-Service and MimeType both inherit from the [Desktop Entry]
 and are overwritten if specified. 
 
-Type can be one of three values.
+Type can be one of three values:
 
 	Normal (default if the Type is not specified).
 	Neutral (applies to ALL mime types).
@@ -64,19 +65,24 @@ Type can be one of three values.
 
 For the moment the distinction between the old and the new .desktop
 files is made by the existence of the X-Osso-URI-Actions key in the
-[Desktop Entry] group. 
+[Desktop Entry] group. If the key is missing, the file is interpreted
+using the old format, otherwise using the new format.
 
-The schemeinfo.cache file which has a scheme (like http, https, ftp,
-etc) to desktop file conversion will remain unchanged. 
+[Implementation detail: The schemeinfo.cache file that is a cache for
+faster lookups, remains unchanged. It is used to make scheme->desktop file
+lookups.]
 
-The uri-default-action.list has updated but should still be compatible
-for older desktop file. It will look like this (showing old and new
-formats together): 
+
+Default actions
+===============
+
+The uri-default-action.list format has been extended as well, but also
+remains compatible so older files will still work. It now looks like this:
 
 	[X-Osso-URI-Scheme <scheme>]
 	<mime type>=<desktop file>:<action name>
-
-An example of new and old formats together would look like:
+	
+An example of the new and old formats together would look like:
 
 	# For supporting older actions
 	[Default Actions]
@@ -87,10 +93,10 @@ An example of new and old formats together would look like:
 	image-png=hildon-browser.desktop:X-Osso-URI-Action-Open
 	image-jpeg=hildon-image-viewer.desktop:X-Osso-URI-Action-Open
 
-In addition to this any fallback actions will use the old [Default
+In addition to this, any fallback actions will use the old [Default
 Actions] group because you only know the scheme in that case. To make
 sure that this doesn't break existing defaults files, the action name
-is added to the end of the desktop file, for example:
+can be added to the end of the desktop file, for example:
  
 	[Default Actions]
 	<scheme>=<desktop file>:<action name> 
@@ -103,8 +109,12 @@ This means it would look like this:
         [X-Osso-URI-Scheme http]
         image-gif=test/osso-addressbook.desktop:X-Osso-URI-Action-Add-Bookmark
 
-Examples:
-=========
+The added action name can be left out, when referring to old format desktop
+files, of course.
+
+
+Examples
+========
 
 Current VOIP desktop file:
 
@@ -163,6 +173,7 @@ New VOIP desktop file:
 	Name=tana_fi_new_call
 	TranslationDomain=osso-contact-plugin
 
+
 Current address book desktop file:
 
 	[Desktop Entry]
@@ -193,6 +204,7 @@ Current address book desktop file:
 	Name=addr_ap_address_book
 	TranslationDomain=osso-addressbook
 
+
 New address book desktop file:
 
 	[Desktop Entry]
@@ -221,6 +233,7 @@ New address book desktop file:
 	Method=add_account
 	Name=addr_ap_address_book
 	TranslationDomain=osso-addressbook
+
 
 Current browser desktop file:
 
@@ -261,6 +274,7 @@ Current browser desktop file:
 	Name=uri_link_open_link
 	TranslationDomain=osso-uri
 	
+
 New browser desktop file (with new "neutral" and "fallback" features):
 
 	[Desktop Entry]
@@ -282,7 +296,7 @@ New browser desktop file (with new "neutral" and "fallback" features):
 	http=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
 	https=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
 	ftp=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
-	file=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback
+	file=X-Osso-URI-Action-Open;X-Osso-URI-Action-Save;X-Osso-URI-Action-Fallback;
 
 	[X-Osso-URI-Action-Open]
 	Method=load_url
@@ -301,6 +315,7 @@ New browser desktop file (with new "neutral" and "fallback" features):
 	Name=uri_link_open_link_fallback
 	TranslationDomain=osso-uri
 
+
 Current media player desktop file:
 
 	[Desktop Entry]
@@ -317,13 +332,14 @@ Current media player desktop file:
 	X-Osso-Service=mediaplayer
 	X-Osso-Type=application/x-executable
 	X-Osso-URI-Actions=rtsp
-	MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
+	MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg;
 	Comment=medi_ap_mediaplayer_name_thumb
 
 	[X-Osso-URI-Action Handler rtsp]
 	Method=mime_open
 	Name=medi_ap_mediaplayer_name
 	TranslationDomain=mediaplayer
+
 
 New media player desktop file:
 
@@ -340,7 +356,7 @@ New media player desktop file:
 	X-HildonDesk-ShowInToolbar=true
 	X-Osso-Service=mediaplayer
 	X-Osso-Type=application/x-executable
-	MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg
+	MimeType=video/x-msvideo;audio/x-mp3;video/mpeg;audio/x-wav;audio/x-real;video/x-real;audio/x-m4a;audio/x-amr;video/x-mp4;video/3gpp;audio/x-mp2;audio/x-ms-wma;audio/x-mpegurl;audio/x-scpls;audio/x-pn-realaudio;audio/x-pn-realaudio-plugin;video/x-ms-asf;audio/x-ms-wax;video/x-ms-wvx;application/vnd.ms-wpl;audio/mp3;video/avi;audio/wav;audio/mpeg;
 	Comment=medi_ap_mediaplayer_name_thumb
 
 	[X-Osso-URI-Actions]
