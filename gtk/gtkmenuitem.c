@@ -1221,6 +1221,13 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget)
                       GTK_MENU_SHELL (widget->parent)->button,
                       0);
     }
+
+#ifdef MAEMO_CHANGES
+  /* This is required as changed submenu arrow isn't drawn automatically
+   * and drawing it must be requested.
+   */
+  gtk_widget_queue_draw (widget);
+#endif /* MAEMO_CHANGES */
 }
 
 void
