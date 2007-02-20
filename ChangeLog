@@ -1,5 +1,9 @@
 2007-02-20  Kristian Rietveld  <kris@imendio.com>
 
+	* gtk/gtkcellrenderertoggle.c: back out checkbox-mode.
+
+2007-02-20  Kristian Rietveld  <kris@imendio.com>
+
 	* gdk/gdkwindow.h: modify GdkWindowTypeHint so that we don't end
 	the enumerator list with a comma.  (MB#1087).
 
