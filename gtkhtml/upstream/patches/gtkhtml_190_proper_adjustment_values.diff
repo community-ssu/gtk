@@ -1,0 +1,24 @@
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.9.1.mod/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-06 17:08:09.000000000 +0200
++++ gtkhtml-3.13.91.mod/src/gtkhtml.c	2007-02-06 18:31:54.000000000 +0200
+@@ -3941,8 +3941,11 @@
+ 
+ 	/* printf ("calc scrollbars\n"); */
+ 
+-	height = html_engine_get_doc_height (html->engine);
+ 	width = html_engine_get_doc_width (html->engine);
++	height = html_engine_get_doc_height (html->engine);
++
++	width = MAX (width, html->engine->width) ;
++	height = MAX (height, html->engine->height) ;
+ 
+ 	layout = GTK_LAYOUT (html);
+ 	hadj = layout->hadjustment;
+@@ -3972,7 +3975,6 @@
+ 		if (changed_x)
+ 			*changed_x = TRUE;
+ 	}
+-
+ }
+ 
+ 

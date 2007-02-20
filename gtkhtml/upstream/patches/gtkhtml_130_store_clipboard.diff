@@ -1,0 +1,11 @@
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod12/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-16 15:56:22.000000000 +0200
++++ gtkhtml-3.13.91.mod12/src/gtkhtml.c	2007-02-16 16:29:01.000000000 +0200
+@@ -4446,6 +4446,7 @@
+ 
+ 	html_engine_copy (html->engine);
+ 	gtk_selection_owner_set (GTK_WIDGET (html), gdk_atom_intern ("CLIPBOARD", FALSE), gtk_get_current_event_time ());
++	gtk_clipboard_set_can_store (gtk_widget_get_clipboard (GTK_WIDGET (html), GDK_SELECTION_CLIPBOARD ), NULL, 0);
+ }
+ 
+ void

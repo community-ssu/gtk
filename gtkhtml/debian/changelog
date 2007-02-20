@@ -1,3 +1,12 @@
+gtkhtml (3.9.1-3osso1) unstable; urgency=low
+
+  * Major changes: Moved to gtkhtml-3.13.91
+  * Fixed: Stale htmlengine->focus_object pointer being carried over across
+    gtk_html_load_empty
+  * Reorganized patch application system to use numbered patches
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Tue, 20 Feb 2007 18:58:33 +0200
+
 gtkhtml (3.9.1-3osso0) unstable; urgency=low
 
   * Moved trunk to sardine-experimental. New patch properly frees Pango structures

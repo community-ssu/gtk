@@ -1,0 +1,15 @@
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod4/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-15 15:58:27.000000000 +0200
++++ gtkhtml-3.13.91.mod4/src/gtkhtml.c	2007-02-15 16:09:48.000000000 +0200
+@@ -1010,9 +1010,9 @@
+ 				url = html_object_get_complete_url (focus_object, focus_object_offset);
+ 				if (url) {
+ 					/* printf ("link clicked: %s\n", url); */
+-					g_signal_emit (html, signals [LINK_CLICKED], 0, url);
+                                         if (HTML_IS_TEXT(focus_object)) {
+ 						html_text_set_link_visited (HTML_TEXT (focus_object), focus_object_offset, html->engine, TRUE);
++					g_signal_emit (html, signals [LINK_CLICKED], 0, url);
+ 					}   
+ 					g_free (url);
+ 				}
+Only in gtkhtml-3.13.91.mod4/src: gtkhtml.c.orig

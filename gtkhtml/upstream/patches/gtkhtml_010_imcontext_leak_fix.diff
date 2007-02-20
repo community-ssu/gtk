@@ -1,0 +1,15 @@
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod5/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-15 12:59:30.000000000 +0200
++++ gtkhtml-3.13.91.mod5/src/gtkhtml.c	2007-02-15 14:40:31.000000000 +0200
+@@ -754,6 +754,11 @@
+ 			html->priv->resize_cursor = NULL;
+ 		}
+ 
++		if (html->priv->im_context) {
++			g_object_unref (html->priv->im_context);
++			html->priv->im_context = NULL;
++		}
++
+ 		g_free (html->priv->content_type);
+ 		g_free (html->priv->base_url);
+ 		g_free (html->priv);

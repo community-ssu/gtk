@@ -1,0 +1,14 @@
+# During unrealize, we must feed NULL to gtk_im_context_set_client_window so as to
+# dissociate it from a GdkWindow which is about to be destroyed anyway
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod6/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-15 14:40:31.000000000 +0200
++++ gtkhtml-3.13.91.mod6/src/gtkhtml.c	2007-02-15 15:12:46.000000000 +0200
+@@ -1119,7 +1119,7 @@
+ 
+ 	html_engine_unrealize (html->engine);
+ 
+-	gtk_im_context_set_client_window (html->priv->im_context, widget->window);
++	gtk_im_context_set_client_window (html->priv->im_context, NULL);
+ 
+ 	html_image_factory_stop_animations (html->engine->image_factory);
+ 

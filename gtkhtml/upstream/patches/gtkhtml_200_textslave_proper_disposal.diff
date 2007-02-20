@@ -1,0 +1,15 @@
+diff -ru gtkhtml-3.13.91/src/htmltextslave.c gtkhtml-3.13.91.mod/src/htmltextslave.c
+--- gtkhtml-3.13.91/src/htmltextslave.c	2007-02-16 17:48:00.000000000 +0200
++++ gtkhtml-3.13.91.mod/src/htmltextslave.c	2007-02-16 17:58:09.000000000 +0200
+@@ -623,9 +623,8 @@
+ 					- (slave->owner->text + tmp_gi1.item->offset);
+ 				tmp_gi2 = pango_glyph_item_split (&tmp_gi1, slave->owner->text, split_index);
+ 
+-				glyph_item->glyph_item = *tmp_gi2;
+-				tmp_gi2->item = NULL;
+-				tmp_gi2->glyphs = NULL;
++				glyph_item->glyph_item.item = pango_item_copy (tmp_gi2->item) ;
++				glyph_item->glyph_item.glyphs = pango_glyph_string_copy (tmp_gi2->glyphs) ;
+ 
+ 				/* free the tmp1 content and tmp2 container, but not the content */
+ 				pango_item_free (tmp_gi1.item);

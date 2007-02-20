@@ -1,0 +1,11 @@
+diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91.mod0/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-02-20 18:20:56.000000000 +0200
++++ gtkhtml-3.13.91.mod0/src/htmlengine.c	2007-02-20 18:22:08.000000000 +0200
+@@ -5002,6 +5002,7 @@
+ 
+ 	g_list_free (e->formList);
+ 
++	e->focus_object = NULL;
+ 	e->map = NULL;
+ 	e->formList = NULL;
+ 	e->form = NULL;

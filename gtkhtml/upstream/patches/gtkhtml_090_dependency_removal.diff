@@ -1,0 +1,655 @@
+diff -ru gtkhtml-3.13.91/config.h.in gtkhtml-3.13.91.mod7/config.h.in
+--- gtkhtml-3.13.91/config.h.in	2007-02-12 14:01:17.000000000 +0200
++++ gtkhtml-3.13.91.mod7/config.h.in	2007-02-15 16:34:40.000000000 +0200
+@@ -25,6 +25,8 @@
+ #undef GTKHTML_RELEASE_STRING
+ #undef HAVE_OLD_SOUP
+ 
++#undef DISABLE_PRINTING
++#undef DISABLE_GNOME
+ 
+ /* Editor API Version */
+ #undef EDITOR_API_VERSION
+diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91.mod7/configure.in
+--- gtkhtml-3.13.91/configure.in	2007-02-12 13:55:17.000000000 +0200
++++ gtkhtml-3.13.91.mod7/configure.in	2007-02-15 16:42:51.000000000 +0200
+@@ -5,6 +5,8 @@
+ 
+ PACKAGE=gtkhtml
+ 
++AC_PROG_MAKE_SET
++
+ GTKHTML_API_VERSION=3.8
+ AC_DEFINE_UNQUOTED(GTKHTML_API_VERSION, "${GTKHTML_API_VERSION}", [GtkHTML API Version])
+ AC_SUBST(GTKHTML_API_VERSION)
+@@ -56,8 +58,8 @@
+ AM_CONDITIONAL(OS_WIN32, [test $os_win32 = yes])
+ AC_SUBST(SOEXT)
+ 
+-GNOME_COMPILE_WARNINGS(yes)
+-CFLAGS="$CFLAGS $warning_flags"
++dnl GNOME_COMPILE_WARNINGS(yes)
++dnl CFLAGS="$CFLAGS $warning_flags"
+ 
+ AC_SUBST(CFLAGS)
+ AC_SUBST(CPPFLAGS)
+@@ -65,13 +67,81 @@
+ 
+ AM_GLIB_GNU_GETTEXT
+ 
+-GAIL_MODULES="gail >= 1.1.0"
+-PKG_CHECK_MODULES(GAIL, $GAIL_MODULES)
+-AC_SUBST(GAIL_CFLAGS)
+-AC_SUBST(GAIL_LIBS)
+-AC_SUBST(GAIL_MODULES)
++dnl
++dnl do we want a11y support?
++dnl
++GAIL_MODULES=""
++AC_ARG_ENABLE(a11y,
++             [ --enable-a11y   Enable Accessibility (requires gail) [default=yes]],
++             [ac_cv_enable_a11y=$enableval],[ac_cv_enable_a11y=yes])
++AC_MSG_CHECKING([whether to enable a11y])
++if test "$ac_cv_enable_a11y" = yes; then
++       AC_MSG_RESULT(yes)
++       GAIL_MODULES="gail >= 1.1.0"
++       PKG_CHECK_MODULES(GAIL, $GAIL_MODULES)
++       AC_SUBST(GAIL_CFLAGS)
++       AC_SUBST(GAIL_LIBS)
++       AC_SUBST(GAIL_MODULES)
++       A11Y_DIR="a11y"
++       AC_SUBST(A11Y_DIR)
++       A11Y_LA="../a11y/libgtkhtml-a11y.la"
++       AC_SUBST(A11Y_LA)
++else
++       AC_MSG_RESULT(no)
++       AC_DEFINE(DISABLE_A11Y)
++       CFLAGS="-DDISABLE_A11Y $CFLAGS"
++       PC_CFLAGS="-DDISABLE_A11Y $PC_CFLAGS"
++fi
++
++
++dnl
++dnl do we want printing support?
++dnl
++GNOMEPRINT_MODULES=""
++AC_ARG_ENABLE(printing,
++             [ --enable-printing Enable Printing (requires gnome-print) [default=yes]],
++             [ac_cv_enable_printing=$enableval],[ac_cv_enable_printing=yes])
++AC_MSG_CHECKING([whether to enable printing])
++if test "$ac_cv_enable_printing" = yes; then
++       AC_MSG_RESULT(yes)
++       GNOMEPRINT_MODULES="libgnomeprintui-2.2 >= 2.2.1"
++       GNOME_TEST_PROGRAMS="gtest test-suite test-stress"
++else
++       AC_MSG_RESULT(no)
++       AC_DEFINE(DISABLE_PRINTING)
++       CFLAGS="-DDISABLE_PRINTING $CFLAGS"
++       PC_CFLAGS="-DDISABLE_PRINTING $PC_CFLAGS"
++fi
++AM_CONDITIONAL(HAVE_PRINTING, test x$ac_cv_enable_printing != xno)
+ 
+-GTKHTML_MODULES="libgnomeui-2.0 >= 2.0.0 gtk+-unix-print-2.0 >= 2.10.0 libglade-2.0 >= 2.0.0"
++
++dnl
++dnl do we want gnome support?
++dnl
++GNOME_MODULES=""
++AC_ARG_ENABLE(gnome,
++             [ --enable-gnome Enable Gnome  (requires many things) [default=yes]],
++             [ac_cv_enable_gnome=$enableval],[ac_cv_enable_gnome=yes])
++AC_MSG_CHECKING([whether to enable gnome])
++if test "$ac_cv_enable_gnome" = yes; then
++       AC_MSG_RESULT(yes)
++       GNOME_MODULES="libgnomeui-2.0 >= 2.0.0"
++
++       dnl **************************************************
++       dnl * Gnome Icon Theme
++       dnl **************************************************
++       PKG_CHECK_MODULES(GIT, gnome-icon-theme >= 1.2.0)
++else
++       GNOME_MODULES=""
++       AC_MSG_RESULT(no)
++       AC_DEFINE(DISABLE_GNOME)
++       CFLAGS="-DDISABLE_GNOME $CFLAGS"
++       PC_CFLAGS="-DDISABLE_GNOME $PC_CFLAGS"
++fi
++
++dnl libglade only needed on windows?
++dnl GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES libglade-2.0 >= 2.0.0"
++GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES gtk+-2.0 >= 2.6.0 gconf-2.0 libart-2.0 >= 2.3.0"
+ PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
+ AC_SUBST(GTKHTML_CFLAGS)
+ AC_SUBST(GTKHTML_LIBS)
+@@ -82,16 +152,33 @@
+ 	AC_DEFINE([PANGO_1_5_OR_HIGHER], [], [Means that Pango 1.5 or higher is available])
+ fi
+ 
+-EDITOR_MODULES="${GTKHTML_MODULES} libbonoboui-2.0 >= 2.2.4"
+-PKG_CHECK_MODULES(EDITOR, $EDITOR_MODULES)
+-AC_SUBST(EDITOR_CFLAGS)
+-AC_SUBST(EDITOR_LIBS)
++dnl
++dnl do we want the editor module?
++dnl
++EDITOR_MODULES=""
++AC_ARG_ENABLE(editor,
++             [ --enable-editor Enable Editor  (requires many things) [default=yes]],
++             [ac_cv_enable_editor=$enableval],[ac_cv_enable_editor=yes])
++AC_MSG_CHECKING([whether to enable editor])
++if test "$ac_cv_enable_editor" = yes; then
++       AC_MSG_RESULT(yes)
++       EDITOR_MODULES="${GTKHTML_MODULES} libgnomeui-2.0 >= 2.0.0 libbonoboui-2.0 >= 2.2.4"
++       PKG_CHECK_MODULES(EDITOR, $EDITOR_MODULES)
++       AC_SUBST(EDITOR_CFLAGS)
++       AC_SUBST(EDITOR_LIBS)
+ 
+-ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
+-AC_SUBST(ORBIT_IDL)
++       ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
++       AC_SUBST(ORBIT_IDL)
+ 
+-BONOBO_IDL_INCLUDES="-I`$PKG_CONFIG --variable=idldir libbonobo-2.0` -I`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
+-AC_SUBST(BONOBO_IDL_INCLUDES)
++       BONOBO_IDL_INCLUDES="-I`$PKG_CONFIG --variable=idldir libbonobo-2.0` -I`$PKG_CONFIG --variable=idldir bonobo-activation-2.0`"
++       AC_SUBST(BONOBO_IDL_INCLUDES)
++
++       EDITOR_DIR="components"
++       AC_SUBST(EDITOR_DIR)
++else
++       AC_MSG_RESULT(no)
++       AC_DEFINE(DISABLE_EDITOR)
++fi
+ 
+ dnl **********************************
+ dnl soup for testgtkhtml
+@@ -118,11 +205,6 @@
+ fi
+ 
+ dnl **************************************************
+-dnl * Gnome Icon Theme
+-dnl **************************************************
+-PKG_CHECK_MODULES(GIT, gnome-icon-theme >= 1.2.0)
+-
+-dnl **************************************************
+ dnl * regex library
+ dnl **************************************************
+ AC_CHECK_FUNCS(regexec,,[AC_CHECK_LIB(regex,regexec,[REGEX_LIBS=-lregex],[AC_MSG_ERROR([No regex library found])])])
+@@ -166,6 +248,8 @@
+ AC_SUBST(GTKHTML_REVISION)
+ AC_SUBST(GTKHTML_AGE)
+ 
++AC_SUBST(PC_CFLAGS)
++
+ dnl **************
+ dnl Done.
+ dnl **************
+@@ -187,5 +271,10 @@
+ 
+ Configuration:
+ 
++       accessibility support:          $ac_cv_enable_a11y
++       gnome-print support:            $ac_cv_enable_printing
++       gnome support:                  $ac_cv_enable_gnome
++       editor component:               $ac_cv_enable_editor
++
+ 	Editor component type:		${GNOME_GTKHTML_EDITOR_TYPE}
+ "
+diff -ru gtkhtml-3.13.91/Makefile.am gtkhtml-3.13.91.mod7/Makefile.am
+--- gtkhtml-3.13.91/Makefile.am	2007-01-03 17:20:03.000000000 +0200
++++ gtkhtml-3.13.91.mod7/Makefile.am	2007-02-16 14:10:52.000000000 +0200
+@@ -1,9 +1,8 @@
+-SUBDIRS =					\
+-	a11y					\
+-	src					\
+-	components				\
+-	art					\
+-	po
++SUBDIRS =                                 \
++	$(A11Y_DIR)                             \
++	src                                     \
++	$(EDITOR_DIR)                           \
++	art
+ 
+ CLEANFILES =					\
+ 	po/.intltool-merge-cache
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91.mod7/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-02-15 16:09:48.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/gtkhtml.c	2007-02-15 17:27:50.000000000 +0200
+@@ -30,9 +30,14 @@
+ #include <glib/gi18n-lib.h>
+ #include <string.h>
+ 
++#ifndef DISABLE_GNOME
+ #include <gnome.h>
++#include <libgnome/gnome-util.h>
++#endif /* ndef DISABLE_GNOME */
+ 
++#ifndef DISABLE_A11Y
+ #include "../a11y/factory.h"
++#endif /* ndef DISABLE_A11Y */
+ 
+ #include "htmlcolorset.h"
+ #include "htmlcluev.h"
+@@ -73,7 +78,6 @@
+ #include "gtkhtml-private.h"
+ #include "gtkhtml-properties.h"
+ #include "math.h"
+-#include <libgnome/gnome-util.h>
+ 
+ enum DndTargetType {
+ 	DND_TARGET_TYPE_MESSAGE_RFC822,
+@@ -3167,7 +3171,10 @@
+ 	html_class->command           = command;
+ 
+ 	add_bindings (klass);
++
++#ifndef DISABLE_A11Y
+ 	gtk_html_accessibility_init ();
++#endif /* ndef DISABLE_A11Y */
+ 
+ 	filename = g_build_filename (PREFIX, "share", GTKHTML_RELEASE_STRING, "keybindingsrc.emacs", NULL);
+ 	gtk_rc_parse (filename);
+@@ -4164,7 +4171,7 @@
+ 	return html->priv->base_url;
+ }
+ 
+-
++#ifndef DISABLE_PRINTING
+ /* Printing.  */
+ void
+ gtk_html_print_page (GtkHTML *html,
+@@ -4175,7 +4182,7 @@
+ 
+ 	html_engine_print (html->engine, print_context);
+ }
+-	
++
+ void
+ gtk_html_print_page_with_header_footer (GtkHTML *html, GtkPrintContext *print_context,
+ 					gdouble header_height, gdouble footer_height,
+@@ -4188,7 +4195,7 @@
+ 					      header_height, footer_height, header_print, footer_print, user_data);
+ }
+ 
+-
++#endif /* ndef DISABLE_PRINTING */
+ /* Editing.  */
+ 
+ void
+@@ -5870,13 +5877,13 @@
+ {
+ 	html->engine->block_images = block;
+ }
+-
++#ifndef DISABLE_PRINTING
+ gint
+ gtk_html_print_page_get_pages_num (GtkHTML *html, GtkPrintContext *print_context, gdouble header_height, gdouble footer_height)
+ {
+ 	return html_engine_print_get_pages_num (html->engine, print_context, header_height, footer_height);
+ }
+-
++#endif /* ndef DISABLE_PRINTING */
+ gboolean
+ gtk_html_has_undo (GtkHTML *html)
+ {
+diff -ru gtkhtml-3.13.91/src/gtkhtml-embedded.c gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.c
+--- gtkhtml-3.13.91/src/gtkhtml-embedded.c	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.c	2007-02-15 17:37:10.000000000 +0200
+@@ -22,7 +22,9 @@
+  */
+ 
+ #include <config.h>
++#ifndef DISABLE_GNOME
+ #include <gnome.h>
++#endif /* ndef DISABLE_GNOME */
+ 
+ #include "gtkhtml-embedded.h"
+ #include "htmlengine.h"
+@@ -120,7 +122,9 @@
+ 	gtk_html_embedded_changed(GTK_HTML_EMBEDDED(container));
+ }
+ 
++#ifndef DISABLE_PRINTING
+ typedef void (*draw_print_signal)(GtkObject *, gpointer, gpointer);
++#endif /* ndef DISABLE_PRINTING */
+ typedef void (*draw_gdk_signal)(GtkObject *, gpointer, gpointer, gint, gint, gpointer);
+ 
+ static void 
+@@ -189,7 +193,7 @@
+ 			      draw_gdk_signal_marshaller, G_TYPE_NONE, 4,
+ 			      G_TYPE_POINTER, G_TYPE_POINTER,
+ 			      G_TYPE_INT, G_TYPE_INT);
+-	
++#ifndef DISABLE_PRINTING
+ 	signals [DRAW_PRINT] = 
+ 		g_signal_new ("draw_print",
+ 			      G_TYPE_FROM_CLASS (object_class),
+@@ -199,7 +203,7 @@
+ 			      g_cclosure_marshal_VOID__POINTER,
+ 			      G_TYPE_NONE, 1,
+ 			      G_TYPE_POINTER);
+-	
++#endif /* ndef DISABLE_PRINTING */
+ 	gobject_class->finalize = gtk_html_embedded_finalize;
+ 
+ 	widget_class->size_request = gtk_html_embedded_size_request;
+diff -ru gtkhtml-3.13.91/src/gtkhtml-embedded.h gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.h
+--- gtkhtml-3.13.91/src/gtkhtml-embedded.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/gtkhtml-embedded.h	2007-02-15 17:39:15.000000000 +0200
+@@ -56,7 +56,9 @@
+         void (*changed)(GtkHTMLEmbedded *);
+         void (*draw_gdk)(GtkHTMLEmbedded *, GdkPixmap *, GdkGC *,
+                          gint, gint);
++#ifndef DISABLE_PRINTING
+         void (*draw_print)(GtkHTMLEmbedded *, GtkPrintContext *);
++#endif /* ndef DISABLE_PRINTING */
+ };
+ 
+ /* FIXME: There needs to be a way for embedded objects in forms to encode
+diff -ru gtkhtml-3.13.91/src/gtkhtml.h gtkhtml-3.13.91.mod7/src/gtkhtml.h
+--- gtkhtml-3.13.91/src/gtkhtml.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/gtkhtml.h	2007-02-15 17:42:33.000000000 +0200
+@@ -212,7 +212,7 @@
+ void                       gtk_html_set_animate                   (GtkHTML                   *html,
+ 								   gboolean                   animate);
+ gboolean                   gtk_html_get_animate                   (const GtkHTML             *html);
+-
++#ifndef DISABLE_PRINTING
+ /* Printing support.  */
+ void 			   gtk_html_print_page_with_header_footer  (GtkHTML		     *html,
+ 								   GtkPrintContext 	     *print_context,
+@@ -227,7 +227,7 @@
+ 								   GtkPrintContext            *print_context,
+ 					 			   gdouble		       header_height,
+ 								   gdouble                     footer_height);
+-
++#endif /* ndef DISABLE_PRINTING */
+ /* Title.  */
+ const gchar               *gtk_html_get_title                     (GtkHTML                   *html);
+ void                       gtk_html_set_title                     (GtkHTML                   *html, const char *title);
+diff -ru gtkhtml-3.13.91/src/gtkhtml-types.h gtkhtml-3.13.91.mod7/src/gtkhtml-types.h
+--- gtkhtml-3.13.91/src/gtkhtml-types.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/gtkhtml-types.h	2007-02-15 17:46:37.000000000 +0200
+@@ -51,8 +51,8 @@
+ 					      const gchar *data,
+ 					      size_t       len,
+ 					      gpointer     user_data);
+-
++#ifndef DISABLE_PRINTING
+ typedef void (*GtkHTMLPrintCallback) (GtkHTML *html, GtkPrintContext *print_context,
+ 				      gdouble x, gdouble y, gdouble width, gdouble height, gpointer user_data);
+-
++#endif /* ndef DISABLE_PRINTING */
+ #endif
+diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91.mod7/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-02-15 16:18:27.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlengine.c	2007-02-15 17:52:01.000000000 +0200
+@@ -56,7 +56,9 @@
+ #include "htmlengine-edit-movement.h"
+ #include "htmlengine-edit-cut-and-paste.h"
+ #include "htmlengine-edit-selection-updater.h"
++#ifndef DISABLE_PRINTING
+ #include "htmlengine-print.h"
++#endif /* ndef DISABLE_PRINTING */
+ #include "htmlcolor.h"
+ #include "htmlinterval.h"
+ #include "htmlobject.h"
+@@ -4195,9 +4197,9 @@
+ 
+ 	engine->search_info = NULL;
+ 	engine->need_spell_check = FALSE;
+-
++#ifndef DISABLE_PRINTING
+ 	html_engine_print_set_min_split_index (engine, .75);
+-
++#endif /* ndef DISABLE_PRINTING */
+ 	engine->block = FALSE;
+ 	engine->block_images = FALSE;
+ 	engine->save_data = FALSE;
+diff -ru gtkhtml-3.13.91/src/htmlengine-print.c gtkhtml-3.13.91.mod7/src/htmlengine-print.c
+--- gtkhtml-3.13.91/src/htmlengine-print.c	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlengine-print.c	2007-02-15 17:55:49.000000000 +0200
+@@ -20,6 +20,9 @@
+ */
+ 
+ #include <config.h>
++
++#ifndef DISABLE_PRINTING
++
+ #include <gtk/gtk.h>
+ #include <glib/gi18n-lib.h>
+ #include <libgnomeui/gnome-dialog-util.h>
+@@ -234,3 +237,5 @@
+ {
+ 	e->min_split_index = idx;
+ }
++
++#endif /* ndef DISABLE_PRINTING */
+diff -ru gtkhtml-3.13.91/src/htmlengine-print.h gtkhtml-3.13.91.mod7/src/htmlengine-print.h
+--- gtkhtml-3.13.91/src/htmlengine-print.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlengine-print.h	2007-02-15 18:02:44.000000000 +0200
+@@ -22,6 +22,8 @@
+ #ifndef _HTMLENGINE_PRINT_H
+ #define _HTMLENGINE_PRINT_H
+ 
++#ifndef DISABLE_PRINTING
++
+ #include <gtk/gtk.h>
+ #include "htmlengine.h"
+ 
+@@ -40,4 +42,5 @@
+ 					     gdouble               footer_height);
+ void  html_engine_print_set_min_split_index (HTMLEngine           *e,
+ 					     gdouble               idx);
++#endif /* ndef DISABLE_PRINTING */
+ #endif
+diff -ru gtkhtml-3.13.91/src/htmlframe.c gtkhtml-3.13.91.mod7/src/htmlframe.c
+--- gtkhtml-3.13.91/src/htmlframe.c	2007-01-03 17:19:57.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlframe.c	2007-02-15 18:13:35.000000000 +0200
+@@ -167,7 +167,7 @@
+ 	HTMLFrame   *frame  = HTML_FRAME (o);
+ 	HTMLEngine   *e       = GTK_HTML (frame->html)->engine;
+ 	GdkRectangle paint;
+-
++#ifndef DISABLE_PRINTING
+ 	if (GTK_OBJECT_TYPE (e->painter) == HTML_TYPE_PRINTER) {
+ 		gint pixel_size = html_painter_get_pixel_size (e->painter);
+ 
+@@ -180,6 +180,7 @@
+ 				  height - pixel_size * (html_engine_get_top_border (e) + html_engine_get_bottom_border (e)),
+ 				  tx + pixel_size * html_engine_get_left_border (e), ty + pixel_size * html_engine_get_top_border (e));
+ 	} else
++#endif /* ndef DISABLE_PRINTING */
+ 		(*HTML_OBJECT_CLASS (parent_class)->draw) (o, p, x, y, width, height, tx, ty);
+ }
+ 
+@@ -189,12 +190,16 @@
+ 	HTMLFrame *frame;
+ 
+ 	frame = HTML_FRAME (o);
++#ifndef DISABLE_PRINTING
+ 	if (G_OBJECT_TYPE (GTK_HTML (frame->html)->engine->painter) != HTML_TYPE_PRINTER) {
++#endif /* ndef DISABLE_PRINTING */
+ 		frame_set_gdk_painter (frame, GTK_HTML (frame->html)->engine->painter);
+-	}
+-	
++#ifdef DISABLE_PRINTING
++		html_engine_set_painter (GTK_HTML (frame->html)->engine, frame->gdk_painter);
++#else /* ndef DISABLE_PRINTING */
+ 	html_engine_set_painter (GTK_HTML (frame->html)->engine,
+ 				 GTK_OBJECT_TYPE (painter) != HTML_TYPE_PRINTER ? frame->gdk_painter : painter);
++#endif /* def DISABLE_PRINTING */
+ }
+ 
+ static void
+diff -ru gtkhtml-3.13.91/src/htmliframe.c gtkhtml-3.13.91.mod7/src/htmliframe.c
+--- gtkhtml-3.13.91/src/htmliframe.c	2007-02-09 21:54:58.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmliframe.c	2007-02-15 18:21:32.000000000 +0200
+@@ -166,6 +166,7 @@
+       gint width, gint height,
+       gint tx, gint ty)
+ {
++#ifndef DISABLE_PRINTING
+ 	HTMLIFrame   *iframe  = HTML_IFRAME (o);
+ 	HTMLEngine   *e       = GTK_HTML (iframe->html)->engine;
+ 	GdkRectangle paint;
+@@ -182,6 +183,7 @@
+ 				  height - pixel_size * (html_engine_get_top_border (e) + html_engine_get_bottom_border (e)),
+ 				  tx + pixel_size * html_engine_get_left_border (e), ty + pixel_size * html_engine_get_top_border (e));
+ 	} else
++#endif /* ndef DISABLE_PRINTING */
+ 		(*HTML_OBJECT_CLASS (parent_class)->draw) (o, p, x, y, width, height, tx, ty);
+ }
+ 
+@@ -191,12 +193,16 @@
+ 	HTMLIFrame *iframe;
+ 
+ 	iframe = HTML_IFRAME (o);
+-	if (G_OBJECT_TYPE (GTK_HTML (iframe->html)->engine->painter) != HTML_TYPE_PRINTER) {
++#ifndef DISABLE_PRINTING
++	if (G_OBJECT_TYPE (GTK_HTML (iframe->html)->engine->painter) != HTML_TYPE_PRINTER)
++#endif /* ndef DISABLE_PRINTING */
+ 		iframe_set_gdk_painter (iframe, GTK_HTML (iframe->html)->engine->painter);
+-	}
+-	
++#ifdef DISABLE_PRINTING
++	html_engine_set_painter (GTK_HTML (iframe->html)->engine, iframe->gdk_painter);
++#else /* def DISABLE_PRINTING */
+ 	html_engine_set_painter (GTK_HTML (iframe->html)->engine,
+ 				 G_OBJECT_TYPE (painter) != HTML_TYPE_PRINTER ? iframe->gdk_painter : painter);
++#endif /* ndef DISABLE_PRINTING */
+ }
+ 
+ static void
+diff -ru gtkhtml-3.13.91/src/htmlimage.c gtkhtml-3.13.91.mod7/src/htmlimage.c
+--- gtkhtml-3.13.91/src/htmlimage.c	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlimage.c	2007-02-15 18:26:30.000000000 +0200
+@@ -391,10 +391,10 @@
+ 		e = html_object_engine (HTML_OBJECT (image), GTK_HTML (painter->widget)->engine);
+ 	else
+ 		return;
+-
++#ifndef DISABLE_PRINTING
+ 	if (HTML_IS_PRINTER (painter))
+ 		return;
+-	
++#endif /* ndef DISABLE_PRINTING */
+ 	p = HTML_GDK_PAINTER (painter);
+ 	/* printf ("draw_image_focus\n"); */
+ 
+diff -ru gtkhtml-3.13.91/src/htmlprinter.c gtkhtml-3.13.91.mod7/src/htmlprinter.c
+--- gtkhtml-3.13.91/src/htmlprinter.c	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlprinter.c	2007-02-15 18:31:57.000000000 +0200
+@@ -20,6 +20,9 @@
+ */
+ 
+ #include <config.h>
++
++#ifndef DISABLE_PRINTING
++
+ #include "gtkhtml-compat.h"
+ 
+ #include <string.h>
+@@ -796,3 +799,5 @@
+ 	printer->scale = scale;
+ 	painter->engine_to_pango = scale * PANGO_SCALE / 1024.;
+ }
++
++#endif /* ndef DISABLE_PRINTING */
+diff -ru gtkhtml-3.13.91/src/htmlprinter.h gtkhtml-3.13.91.mod7/src/htmlprinter.h
+--- gtkhtml-3.13.91/src/htmlprinter.h	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmlprinter.h	2007-02-15 18:33:15.000000000 +0200
+@@ -25,6 +25,8 @@
+ #include <gtk/gtk.h>
+ #include "htmlpainter.h"
+ 
++#ifndef DISABLE_PRINTING
++
+ #define HTML_TYPE_PRINTER                 (html_printer_get_type ())
+ #define HTML_PRINTER(obj)                 (G_TYPE_CHECK_INSTANCE_CAST((obj), HTML_TYPE_PRINTER, HTMLPrinter))
+ #define HTML_PRINTER_CLASS(klass)         (G_TYPE_CHECK_CLASS_CAST ((klass), HTML_TYPE_PRINTER, HTMLPrinterClass))
+@@ -64,4 +66,5 @@
+ void         html_printer_set_scale                   (HTMLPrinter       *printer,
+ 						       gdouble            scale);
+ 
++#endif /* ndef DISABLE_PRINTING */
+ #endif /* _HTMLPRINTER_H */
+diff -ru gtkhtml-3.13.91/src/htmltextslave.c gtkhtml-3.13.91.mod7/src/htmltextslave.c
+--- gtkhtml-3.13.91/src/htmltextslave.c	2007-02-09 21:54:58.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmltextslave.c	2007-02-15 18:41:39.000000000 +0200
+@@ -862,10 +862,10 @@
+ 		e = html_object_engine (HTML_OBJECT (slave->owner), GTK_HTML (painter->widget)->engine);
+ 	else
+ 		return;
+-
++#ifndef DISABLE_PRINTING
+ 	if (HTML_IS_PRINTER (painter))
+ 		return;
+-	
++#endif /* ndef DISABLE_PRINTING */
+ 	p = HTML_GDK_PAINTER (painter);
+ 	/* printf ("draw_text_focus\n"); */
+ 
+diff -ru gtkhtml-3.13.91/src/htmltokenizer.c gtkhtml-3.13.91.mod7/src/htmltokenizer.c
+--- gtkhtml-3.13.91/src/htmltokenizer.c	2007-01-03 17:19:57.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/htmltokenizer.c	2007-02-15 18:44:33.000000000 +0200
+@@ -26,7 +26,9 @@
+ #include <config.h>
+ #include <ctype.h>
+ #include <string.h>
++#ifndef DISABLE_GNOME
+ #include <gnome.h>
++#endif /* ndef DISABLE_GNOME */
+ #include "htmltokenizer.h"
+ #include "htmlentity.h"
+ 
+@@ -263,10 +265,10 @@
+         G_OBJECT_CLASS (parent_class)->finalize (obj);
+ }
+ 
+-GtkType
++GType
+ html_tokenizer_get_type (void)
+ {
+-	static GtkType html_tokenizer_type = 0;
++	static GType html_tokenizer_type = 0;
+ 
+ 	if (!html_tokenizer_type) {
+ 		static const GTypeInfo html_tokenizer_info = {
+diff -ru gtkhtml-3.13.91/src/libgtkhtml.pc.in gtkhtml-3.13.91.mod7/src/libgtkhtml.pc.in
+--- gtkhtml-3.13.91/src/libgtkhtml.pc.in	2007-01-03 17:19:57.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/libgtkhtml.pc.in	2007-02-15 18:48:22.000000000 +0200
+@@ -10,4 +10,4 @@
+ Requires: @GTKHTML_MODULES@
+ Version: @VERSION@
+ Libs: -L${libdir} -lgtkhtml-@GTKHTML_API_VERSION@
+-Cflags: -I${includedir}/libgtkhtml-@GTKHTML_API_VERSION@
++Cflags: -I${includedir}/libgtkhtml-@GTKHTML_API_VERSION@ @PC_CFLAGS@
+diff -ru gtkhtml-3.13.91/src/Makefile.am gtkhtml-3.13.91.mod7/src/Makefile.am
+--- gtkhtml-3.13.91/src/Makefile.am	2007-02-12 08:57:38.000000000 +0200
++++ gtkhtml-3.13.91.mod7/src/Makefile.am	2007-02-15 18:52:33.000000000 +0200
+@@ -207,7 +207,7 @@
+ 	$(NULL)
+ 
+ libgtkhtml_3_8_la_LDFLAGS = -version-info $(GTKHTML_CURRENT):$(GTKHTML_REVISION):$(GTKHTML_AGE) -no-undefined
+-libgtkhtml_3_8_la_LIBADD = $(GTKHTML_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
++libgtkhtml_3_8_la_LIBADD = $(GTKHTML_LIBS) $(A11Y_LA) $(GAIL_LIBS) $(REGEX_LIBS)
+ 
+ dist-hook:
+ 	mkdir $(distdir)/tests
+@@ -217,8 +217,12 @@
+ if HAVE_SOUP
+ test_programs = testgtkhtml
+ endif
+-#noinst_PROGRAMS = $(test_programs) gtest test-suite test-stress
+-noinst_PROGRAMS = gtest test-suite test-stress
++
++if HAVE_PRINTING
++gnome_test_programs = gtest test-suite test-stress
++endif
++
++noinst_PROGRAMS = $(test_programs) $(gnome_test_programs)
+ 
+ 
+ testgtkhtml_SOURCES = 		\

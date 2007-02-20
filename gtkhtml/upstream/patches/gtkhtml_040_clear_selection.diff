@@ -1,0 +1,13 @@
+diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91.mod11/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-02-15 17:52:01.000000000 +0200
++++ gtkhtml-3.13.91.mod11/src/htmlengine.c	2007-02-16 16:09:21.000000000 +0200
+@@ -5000,6 +5000,8 @@
+ 	if (e->clue != NULL)
+ 		html_object_destroy (e->clue);
+ 
++	clear_selection (e);
++
+ 	g_list_foreach (e->formList, destroy_form, NULL);
+ 
+ 	g_list_free (e->formList);
+Only in gtkhtml-3.13.91.mod11/src: htmlengine.c.orig

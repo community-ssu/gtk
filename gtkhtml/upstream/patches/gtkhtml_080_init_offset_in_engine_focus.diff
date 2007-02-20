@@ -1,0 +1,40 @@
+diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91.mod6/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-02-15 15:54:05.000000000 +0200
++++ gtkhtml-3.13.91.mod6/src/htmlengine.c	2007-02-15 16:18:27.000000000 +0200
+@@ -6216,9 +6216,9 @@
+ html_engine_focus (HTMLEngine *e, GtkDirectionType dir)
+ {
+ 	if (e->clue && (dir == GTK_DIR_TAB_FORWARD || dir == GTK_DIR_TAB_BACKWARD)) {
+-		HTMLObject *cur;
+-		HTMLObject *focus_object;
+-		gint offset;
++		HTMLObject *cur = NULL;
++		HTMLObject *focus_object = NULL;
++		gint offset = 0;
+ 
+ 		focus_object = html_engine_get_focus_object (e, &offset);
+ 		if (focus_object && html_object_is_embedded (focus_object)
+@@ -6229,9 +6229,22 @@
+ 		if (focus_object)
+ 			cur = move_focus_object (focus_object, &offset, e, dir);
+ 		else
++		{
+ 			cur = dir == GTK_DIR_TAB_FORWARD
+ 				? html_object_get_head_leaf (e->clue)
+ 				: html_object_get_tail_leaf (e->clue);
++			if (HTML_IS_TEXT (cur))
++			{
++				if (dir == GTK_DIR_TAB_FORWARD)
++					html_text_first_link_offset (HTML_TEXT (cur), &offset);
++				else
++					html_text_last_link_offset (HTML_TEXT (cur), &offset);
++			}
++			else
++				offset = (dir == GTK_DIR_TAB_FORWARD)
++					? 0
++					: html_object_get_length (cur);
++		}
+ 
+ 		while (cur) {
+ 			/* printf ("try child %p\n", cur); */
+Only in gtkhtml-3.13.91.mod6/src: htmlengine.c.orig

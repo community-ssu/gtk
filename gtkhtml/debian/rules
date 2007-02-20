@@ -6,7 +6,7 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-SOURCE_DIR=./gtkhtml-3.9.1
+SOURCE_DIR=./gtkhtml-3.13.91
 
 # These are used for cross-compiling and for saving the configure script
 # from having to guess our platform (since we know it already)
@@ -31,7 +31,7 @@ ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
 	INSTALL_PROGRAM += -s
 endif
 
-config.status: $(SOURCE_DIR)/configure
+$(SOURCE_DIR)/config.status: $(SOURCE_DIR)/configure
 	dh_testdir
 
 	# Add here commands to configure the package.
@@ -39,36 +39,21 @@ config.status: $(SOURCE_DIR)/configure
 
 $(SOURCE_DIR)/configure:
 	#inflate upstream and prepare
-	tar -jxf upstream/tarballs/gtkhtml-3.9.1osso.tar.bz2
-	patch -p0 < upstream/patches/gtkhtml_dependency_removal.diff
-	patch -p0 < upstream/patches/gtkhtml_dependency_removal_cleaning.diff
-	patch -p0 < upstream/patches/gtkhtml_panning.diff
-	patch -p0 < upstream/patches/gtkhtml_text_selection.diff
-	patch -p0 < upstream/patches/gtkhtml_memleak_fix.diff
-	patch -p0 < upstream/patches/gtkhtml_clear_selection.diff
-	patch -p0 < upstream/patches/gtkhtml_store_clipboard.diff
-	patch -p0 < upstream/patches/gtkhtml_check_string.diff
-	patch -p0 < upstream/patches/gtkhtml_return_press_crash_fix.diff
-	patch -p0 < upstream/patches/gtkhtml_init_offset_in_engine_focus.diff
-	patch -p0 < upstream/patches/gtkhtml_engine_clear_focus.diff
-	patch -p0 < upstream/patches/gtkhtml_empty_content_search_crash.diff
-	patch -p0 < upstream/patches/gtkhtml_imcontext_leak.diff
-	patch -p0 < upstream/patches/gtkhtml_const_patch.diff
-	patch -p0 < upstream/patches/gtkhtml_unrealize_fix.diff
-	patch -p0 < upstream/patches/gtkhtml_image_magnification.diff
-	patch -p0 < upstream/patches/gtkhtml_get_motion_hints.diff
-	patch -p0 < upstream/patches/gtkhtml_better_spacing.diff
-	patch -p0 < upstream/patches/gtkhtml_text_selection_with_proper_doubleclick.diff
-	patch -p0 < upstream/patches/gtkhtml_dont_click_link_when_panning.diff
-	patch -p0 < upstream/patches/gtkhtml_proper_adjustment_values.diff
-	patch -p0 < upstream/patches/gtkhtml_textslave_proper_disposal.diff
+	tar -jxf upstream/tarballs/gtkhtml-3.13.91.tar.bz2
+	#patches must be properly numbered for this to work
+	#i.e., gtkhtml_[0-9][0-9][0-9]_<description>.diff
+	for patch in upstream/patches/gtkhtml_[0-9][0-9][0-9]_*.diff; do \
+		echo -e '\033[7m'Applying $$patch ...'\033[0m'; \
+		patch -p0 < $$patch || exit 1; \
+	done
 	cd $(SOURCE_DIR) && ./autogen.sh
 
 
 build: build-stamp
-build-stamp:  config.status
+build-stamp:  $(SOURCE_DIR)/config.status
 	dh_testdir
 
+	echo -e '\033[7mMaking build-stamp\033[0m'
 	# Add here commands to compile the package.
 	cd $(SOURCE_DIR) && $(MAKE)
 
@@ -82,14 +67,6 @@ clean:
 
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-
-
 	dh_clean 
 
 install: build
@@ -98,6 +75,7 @@ install: build
 	dh_clean -k 
 	dh_installdirs
 
+	echo -e '\033[7mMaking install\033[0m'
 	# Add here commands to install the package into debian/tmp
 	cd $(SOURCE_DIR) && $(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 

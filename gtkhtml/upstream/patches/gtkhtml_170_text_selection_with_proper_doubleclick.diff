@@ -1,0 +1,26 @@
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.9.1.new/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-01-22 10:35:40.000000000 +0200
++++ gtkhtml-3.13.91.new/src/gtkhtml.c	2007-01-22 10:52:26.000000000 +0200
+@@ -1598,6 +1598,11 @@
+ 	GdkWindow *window = widget->window;
+ 	HTMLEngine *engine;
+ 	gint x, y;
++	guint mouse_double_click_threshold = MOUSE_DBLCLK_THRESHOLD ;
++	GtkSettings *gtk_settings = gtk_widget_get_settings (widget) ;
++
++	if (NULL != gtk_settings)
++		g_object_get (G_OBJECT (gtk_settings), "gtk-double-click-distance", &mouse_double_click_threshold, NULL) ;
+ 
+ 	g_return_val_if_fail (widget != NULL, 0);
+ 	g_return_val_if_fail (GTK_IS_HTML (widget), 0);
+@@ -1619,8 +1624,8 @@
+ 	if (GTK_HTML (widget)->simple_dblclick) {
+ 	    GtkHTML *html = GTK_HTML (widget);
+ 	    
+-	    if (abs(x - html->selection_x1) <= MOUSE_DBLCLK_THRESHOLD && 
+-		abs(y - html->selection_y1) <= MOUSE_DBLCLK_THRESHOLD)
++	    if (abs(x - html->selection_x1) <= mouse_double_click_threshold && 
++		abs(y - html->selection_y1) <= mouse_double_click_threshold)
+ 		return TRUE;
+ 		
+ 	    html->simple_dblclick = FALSE;
