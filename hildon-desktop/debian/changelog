@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-16) unstable; urgency=low
+
+  * New experimental snapshot 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Feb 2007 16:33:18 +0200
+
 hildon-desktop (0.0.0-15) unstable; urgency=low
 
   * New experimental snapshot 
