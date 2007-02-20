@@ -3,7 +3,7 @@
 #
 # This file is part of osso-af-sb-startup
 #
-# Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+# Copyright (C) 2004-2007 Nokia Corporation. All rights reserved.
 #
 # Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 #
@@ -125,7 +125,7 @@ TMPSTOP=$STOP
 if [ "$STOP" = "TRUE" ]; then
 
   for svc in \
-      maemo-af-desktop \
+      hildon-desktop \
       keyboard \
       clipboard \
       matchbox \
@@ -227,7 +227,7 @@ if [ "$START" = "TRUE" ]; then
       matchbox \
       clipboard \
       keyboard \
-      maemo-af-desktop;
+      hildon-desktop;
   do
     if [ -e $DIR/$svc.defs ]; then
       source $DIR/$svc.defs
