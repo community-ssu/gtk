@@ -1,5 +1,9 @@
 2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/Makefile.am: Added LAUNCHER_LDFLAGS to the link
+
+2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hildon-desktop.pc.in,
 	  libhildondesktop/libhildondesktop.pc.in,
 	  libhildonwm/libhildonwm.pc.in: require libhildon-1 rather

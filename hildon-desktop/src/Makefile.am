@@ -28,6 +28,7 @@ hildon_desktop_CPPFLAGS = \
 
 hildon_desktop_LDFLAGS  = \
 	-rdynamic         \
+	$(LAUNCHER_LDFLAGS) \
 	$(HILDON_LIBS)	  \
 	$(HILDON_FM_LIBS) \
 	$(OSSO_LIBS)	  \
