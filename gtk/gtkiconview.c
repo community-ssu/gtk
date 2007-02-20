@@ -1894,7 +1894,7 @@ gtk_icon_view_button_press (GtkWidget      *widget,
   GtkIconViewCellInfo *info = NULL;
   gboolean dirty = FALSE;
   GtkCellRendererMode mode;
-  gint cursor_cell;
+  gint cursor_cell = -1;
 
   icon_view = GTK_ICON_VIEW (widget);
 
@@ -1908,20 +1908,21 @@ gtk_icon_view_button_press (GtkWidget      *widget,
     {
       item = gtk_icon_view_get_item_at_coords (icon_view, 
 					       event->x, event->y,
-					       TRUE,
-					       &info);      
+					       FALSE,
+					       &info); 
       if (item != NULL)
 	{
-	  g_object_get (info->cell, "mode", &mode, NULL);
-	  
-	  if (mode == GTK_CELL_RENDERER_MODE_ACTIVATABLE ||
-	      mode == GTK_CELL_RENDERER_MODE_EDITABLE)
-	    cursor_cell = g_list_index (icon_view->priv->cell_list, info);
-	  else
-	    cursor_cell = -1;
-	  
+          if (info != NULL)
+            {
+	      g_object_get (info->cell, "mode", &mode, NULL);
+ 
+	      if (mode == GTK_CELL_RENDERER_MODE_ACTIVATABLE ||
+	          mode == GTK_CELL_RENDERER_MODE_EDITABLE)
+	        cursor_cell = g_list_index (icon_view->priv->cell_list, info);
+	    }
+
 	  gtk_icon_view_scroll_to_item (icon_view, item);
-	  
+ 
 	  if (icon_view->priv->selection_mode == GTK_SELECTION_NONE)
 	    {
 	      gtk_icon_view_set_cursor_item (icon_view, item, cursor_cell);
@@ -1978,13 +1979,16 @@ gtk_icon_view_button_press (GtkWidget      *widget,
 
 	  /* cancel the current editing, if it exists */
 	  gtk_icon_view_stop_editing (icon_view, TRUE);
-	  
-	  if (mode == GTK_CELL_RENDERER_MODE_ACTIVATABLE)
-	    gtk_icon_view_item_activate_cell (icon_view, item, info, 
-					      (GdkEvent *)event);
-	  else if (mode == GTK_CELL_RENDERER_MODE_EDITABLE)
-	    gtk_icon_view_start_editing (icon_view, item, info, 
-					 (GdkEvent *)event);	  
+
+          if (info != NULL)
+            {
+	      if (mode == GTK_CELL_RENDERER_MODE_ACTIVATABLE)
+	        gtk_icon_view_item_activate_cell (icon_view, item, info, 
+	          			          (GdkEvent *)event);
+	      else if (mode == GTK_CELL_RENDERER_MODE_EDITABLE)
+	        gtk_icon_view_start_editing (icon_view, item, info, 
+	      				     (GdkEvent *)event);	  
+            }
 	}
       else
 	{
@@ -2875,28 +2879,16 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 #endif
 
   if (item->selected)
-    for (l = icon_view->priv->cell_list; l; l = l->next)
-      {
-	GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
-	
-	if (!info->cell->visible)
-	  continue;
-	
-	gtk_icon_view_get_cell_box (icon_view, item, info, &box);
+    {
+      gdk_cairo_set_source_color (cr, &GTK_WIDGET (icon_view)->style->base[state]);
 
-	/* FIXME we hardwire background drawing behind text
-	 * cell renderers here 
-	 */
-	if (GTK_IS_CELL_RENDERER_TEXT (info->cell))
-	  {
-	    gdk_cairo_set_source_color (cr, &GTK_WIDGET (icon_view)->style->base[state]);
-	    cairo_rectangle (cr,
-			     x - item->x + box.x, 
-			     y - item->y + box.y,
-			     box.width, box.height);
-	    cairo_fill (cr);
-	  }
-      }
+      cairo_rectangle (cr,
+          	       x, 
+          	       y,
+          	       item->width, item->height);
+
+      cairo_fill (cr);
+    }
   
   for (l = icon_view->priv->cell_list; l; l = l->next)
     {
@@ -2916,7 +2908,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 			  cell_area.width, cell_area.height);
 
       gtk_icon_view_get_cell_box (icon_view, item, info, &box);
-	  
+ 
       gdk_draw_rectangle (drawable,
 			  GTK_WIDGET (icon_view)->style->black_gc,
 			  FALSE,
@@ -2935,39 +2927,54 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
       
     }
 
-  /* FIXME where to draw the focus with generic cell renderers ? */
   if (draw_focus && 
       GTK_WIDGET_HAS_FOCUS (icon_view) &&
       item == icon_view->priv->cursor_item)
-    for (l = icon_view->priv->cell_list, i = 0; l; l = l->next, i++)
-      {
-	GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
-	
-	if (!info->cell->visible)
-	  continue;
-	
-	if (icon_view->priv->cursor_cell < 0 &&
-	    (info->cell->mode != GTK_CELL_RENDERER_MODE_INERT ||
-	     GTK_IS_CELL_RENDERER_TEXT (info->cell)))
-	  icon_view->priv->cursor_cell = i;
-	
-	if (i == icon_view->priv->cursor_cell)
-	  {
-	    gtk_icon_view_get_cell_box (icon_view, item, info, &box);
+    {
+      for (l = icon_view->priv->cell_list, i = 0; l; l = l->next, i++)
+        {
+          GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
+          
+          if (!info->cell->visible)
+            continue;
 
-	    gtk_paint_focus (GTK_WIDGET (icon_view)->style,
-			     drawable,
-			     GTK_STATE_NORMAL,
-			     area,
-			     GTK_WIDGET (icon_view),
-			     "icon_view",
-			     x - item->x + box.x - padding,
-			     y - item->y + box.y - padding,
-			     box.width + 2 * padding,
-			     box.height + 2 * padding);
-	    break;
-	  }
-      }
+          /* If found a editable/activatable cell, draw focus on it. */          
+          if (icon_view->priv->cursor_cell < 0 &&
+              info->cell->mode != GTK_CELL_RENDERER_MODE_INERT)
+            icon_view->priv->cursor_cell = i;
+
+          gtk_icon_view_get_cell_box (icon_view, item, info, &box);
+          
+          if (i == icon_view->priv->cursor_cell)
+            {
+              gtk_paint_focus (GTK_WIDGET (icon_view)->style,
+          		     drawable,
+          		     GTK_STATE_NORMAL,
+          		     area,
+          		     GTK_WIDGET (icon_view),
+          		     "icon_view",
+                             x - item->x + box.x - padding,
+                             y - item->y + box.y - padding,
+                             box.width + 2 * padding,
+                             box.height + 2 * padding);
+              break;
+            }
+        }
+
+      /* If there are no editable/activatable cells, draw focus 
+       * around the whole item. */          
+      if (icon_view->priv->cursor_cell < 0)
+        gtk_paint_focus (GTK_WIDGET (icon_view)->style,
+            	   drawable,
+            	   GTK_STATE_NORMAL,
+            	   area,
+            	   GTK_WIDGET (icon_view),
+            	   "icon_view",
+                   x - padding,
+                   y - padding,
+                   item->width + 2 * padding,
+                   item->height + 2 * padding);
+    }
 }
 
 static void
@@ -4441,7 +4448,7 @@ gtk_icon_view_get_path_at_pos (GtkIconView *icon_view,
   
   g_return_val_if_fail (GTK_IS_ICON_VIEW (icon_view), NULL);
 
-  item = gtk_icon_view_get_item_at_coords (icon_view, x, y, TRUE, NULL);
+  item = gtk_icon_view_get_item_at_coords (icon_view, x, y, FALSE, NULL);
 
   if (!item)
     return NULL;
