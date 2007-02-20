@@ -874,7 +874,15 @@ draw_check (GtkStyle     *style,
   match_data.flags = THEME_MATCH_SHADOW | THEME_MATCH_STATE;
   match_data.shadow = shadow;
   match_data.state = state;
-  
+
+  /* Special casing for GtkCheckButton: We want to set the widget state to
+   * ACTIVE to get the correct graphics used in the RC files. Ideally we'd
+   * use the FOCUS rules, but this is not possible due to technical limitations
+   * in how focus is drawn in sapwood */
+  if (GTK_IS_CHECK_BUTTON (widget) &&
+      GTK_WIDGET_HAS_FOCUS (widget))
+    match_data.state = GTK_STATE_ACTIVE;
+
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE,
 			  x, y, width, height))
     parent_class->draw_check (style, window, state, shadow, area, widget, detail,
@@ -905,6 +913,14 @@ draw_option (GtkStyle      *style,
   match_data.shadow = shadow;
   match_data.state = state;
   
+  /* Special casing for GtkRadioButton: We want to set the widget state to
+   * ACTIVE to get the correct graphics used in the RC files. Ideally we'd
+   * use the FOCUS rules, but this is not possible due to technical limitations
+   * in how focus is drawn in sapwood */
+  if (GTK_IS_RADIO_BUTTON (widget) &&
+      GTK_WIDGET_HAS_FOCUS (widget))
+    match_data.state = GTK_STATE_ACTIVE;
+
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE,
 			  x, y, width, height))
     parent_class->draw_option (style, window, state, shadow, area, widget, detail,
@@ -934,7 +950,7 @@ draw_tab (GtkStyle     *style,
   match_data.flags = THEME_MATCH_SHADOW | THEME_MATCH_STATE;
   match_data.shadow = shadow;
   match_data.state = state;
-  
+
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE,
 			  x, y, width, height))
     parent_class->draw_tab (style, window, state, shadow, area, widget, detail,
