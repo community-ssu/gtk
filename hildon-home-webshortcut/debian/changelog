@@ -1,3 +1,13 @@
+hildon-home-webshortcut (3.0.2-1) unstable; urgency=low
+
+  * changed build-dep to libhildon1-dev and libhildonfm2-dev
+
+  Ported to libhildon-1 and hildon-fm-2
+  * plugin/hildon-home-webshortcut.c: changed includes
+  * configure.ac: Check for libhildon-1 and hildon-fm-2
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Feb 2007 16:01:51 +0200
+
 hildon-home-webshortcut (3.0.1-2) unstable; urgency=low
 
   * Added build-dep on libhildondesktop-dev 

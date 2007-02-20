@@ -1,4 +1,8 @@
-2007-02-01  Johan Bilien  <johan.bilien@nokia.com>
+2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 3.0.2
+
+2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	Ported to libhildon-1 and hildon-fm-2
 	* plugin/hildon-home-webshortcut.c: changed includes
