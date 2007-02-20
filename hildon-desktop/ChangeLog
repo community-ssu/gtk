@@ -1,0 +1,1487 @@
+2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hildon-desktop.pc.in,
+	  libhildondesktop/libhildondesktop.pc.in,
+	  libhildonwm/libhildonwm.pc.in: require libhildon-1 rather
+	  than hildon-libs
+	* configure.ac, src/hd-home-background-dialog.c: Include
+	  hildon/ instead of hildon-widgets/ when compiled
+	  against libhildonfm-2
+
+2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: Added check for libhildonfm2
+
+2007-02-19  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Remove from panel the StatusbarItemSocket when plug-removed.
+
+2007-02-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.c:
+	- added "layout-mode-sucks" property (default to FALSE)
+	- if TRUE, add a dragging handle and always show the resize handle.
+	always react on button press for these handle, and don't react
+	to _set_layout_mode. Layout mode dies
+	- if FALSE, business as usual
+
+2007-02-15  Moises Martinez  <moises.martinez@nokia.com>
+
+	* lbihildondesktop/hildon-desktop-panel-expandable.c:
+	- Only if created systray stuff, remove them when finalizing.
+	* libhildondesktop/hildon-desktop-panel.h:
+	- Added missing _GET_CLASS macro
+
+2007-02-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/background-manager.c: Disable OOM watchdog
+	if libosso is not present
+	* src/hn-app-switcher.c, src/hn-app-tooltip.c, src/hn-app-menu-item.c
+	src/hn-app-button.c, libhildondesktop/libhildonmenu.c:
+	- Don't use deprecated log-functions.h, use glib logging
+	* src/hd-home-window.c: use hildon_helper_set_insensitive_message
+	when available (Patch by Xan Lopez).
+	* libhildonwm/osso-manager.[ch], libhildonwm/hd-wm.[ch]:
+	- replaced osso_manager_launch with hd_wm_activate_service
+	which doesn't use libosso
+	- removed unused osso_manager_infoprint
+	* libhildonwm/hd-keys.c: Disable using the power button if
+	libosso is not here
+
+2007-02-14  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	- Using union for storing value returned from XGetWindowProperty.
+	Patch from Santtu Lakkala.
+	* libhildondesktop/hildon-desktop-panel-window.c:
+	- Taking into account "move" property when moving/resizing
+	- Changed forced moving resizing when mapping widget
+
+2007-02-14  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/hildon-desktop.sh: Added startup script
+
+2007-02-13  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hd-wm.c: fixed a compilation warning
+
+2007-02-13  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-notification-manager.c: Fix the build against libhildon1
+
+2007-02-13  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	- Check status of fullscreen whenever you get active/last_active
+	window.
+	- trap X errors when getting _NET_WM_STATE property
+
+2007-02-13  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-panel-window-dialog.c:
+	- Connected to fullscreen libhildonwm's signal
+	* libhildonwm/hd-wm.c:
+	- Added fullscreen signal.
+	- Added checking of fullscreen for specific watched window.
+	
+2007-02-13  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/statusbar-item-socket.c:
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Use gdk_window_set_back_pixmap for getting the proper background.
+	- Code cleanup.
+
+2007-02-13  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c, src/hd-notification-manager.[ch],
+	src/notification-manager.xml, src/Makefile.am: add Desktop
+	Notification compliant notification service to HDDesktop.
+
+2007-02-12  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel.c: Refactored to use
+	GtkHBoxClass and GtkVBoxClass instead.
+
+2007-02-09  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Fixed potential crashing when adding ICCCM systray icons
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Changed number of items
+
+2007-02-09  Moises Martinez  <moises.martinez@nokia.com>
+
+	* test/test8.c: ICCCM systray example applet.
+
+2007-02-09  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.[ch]:
+	- Added public method for accesing extension widget.
+	- Put systray icons always at the beginning.
+	- Emit signal when arrow is added.
+	
+2007-02-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/statusbar-item-socket.[ch]:
+	- Removed proxy of "plug-removed" signal.
+	- Added GdkNativeWindow wid property
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Added early support for ICCCM systray spec
+
+2007-02-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]:
+	- created application-starting signal to which the launch-bannering
+	should be connected
+	- do not launch the banner from the window manager code
+
+2007-02-06  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-panel-window-dialog.c:
+	- Listening to new signal "queued-button" instead GtkContainer's "add"
+	* libhildondesktop/hildon-desktop-panel.c:
+	- Fixed "add-button" signal.
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Emit new signal "queued-button" whenever a button is queued to be in
+	the statusbar panel
+	* data/statusbar.conf: add presence plugin
+
+2007-02-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	Ported from hildon-libs to libhildon-1 and GTK+ 2.10
+	* src/hd-home-background.c: set the colormap of the window
+	to the pixmap before applying as background
+	* src/hd-home-window.[ch], libhildondesktop/hildon-home-window.[ch]:
+	- moved key_press_event, _show_information_banner and
+	_show_information_note from the lib to the app
+	* src/hn-others-button.c:
+	- moved hildon_finger to hildon_helper
+	* libhildondesktop/hildon-home-titlebar.c:
+	- movded hildon_gtk_widget_set to hildon_helper
+	* configure.ac:
+	- test for libhildon first, then fallback to hildon-libs
+	* ALL: changed includes from hildon-widgets/* to hildon/*
+
+2007-02-06  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c: 
+	- Implemented position for statusbar
+	* libhildondesktop/hildon-desktop-window-dialog.c:
+	- Set the number of items to 7 for expandable panel.
+
+2007-02-06  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c, libhildondesktop/hildon-desktop-window.[ch]: move
+	all plugin_dir and config_file handling to HDDesktop to make
+	HildonDesktopWindow free from desktop specific code.
+
+2007-02-06  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: define padding for HDPanelDialog.
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c,
+	libhildondesktop/hildon-desktop-panel-window.c: use
+	HildonDesktopWindow padding properties to define the panel padding.
+	* libhildondesktop/hildon-desktop-window.c: add
+	padding-(left|right|top|bottom) properties. 
+
+2007-02-05  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.c, src/hd-plugin-loader-default.c:
+	small code improvements on internal registries.
+
+2007-02-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c:
+	- Connect to change of "condition" property instead of 
+	old signal.
+	* libhildondesktop/statusbar-item.c:
+	- g_object_notify "condition" property changes
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Changed list of items by a hash table
+
+2007-02-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-item.c: Fixed
+	hildon_desktop_find_by_id to properly return != 0 if found
+
+2007-02-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.c:
+	- do not unref the widget's window in unrealize, because
+	this is done by the parent class
+
+2007-02-02  Moises Martinez  <moises.martinez@nokia.com>
+	
+	* libhildondesktop/hildon-desktop-panel.[ch]:
+	- Added property for type of packing.
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Using packing end.
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Set modal as false.
+
+2007-02-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-panel-window-dialog.[ch]: HildonDesktopPanelWindowDialog
+	desktop specific implementation with theming.
+	* src/hd-desktop.c: make desktop use HDPanelWindowDialog.
+	* src/Makefile.am: added src/hd-panel-window-dialog.[ch] to the build.
+	* data/desktop.conf: changed the layout to make it work with current
+	themes.
+
+2007-02-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-panel-window.c: added theme code for panel itself in addition
+	the plugin's.
+	* libhildondesktop/hildon-desktop-panel-window.[ch]: added
+	"orientation-changed" signal.
+
+2007-02-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c: Fixed a double free of
+	a GList
+
+2007-02-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-select-plugins-dialog.c: Fixed the leak of a GDir
+
+2007-02-01  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/libhildondesktop.h: add HD_PLUGIN_DEFINE_WITH_CODE
+	macro facility.
+
+2007-02-01  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window.c:
+	- Force moving & resizing at start-up.
+
+2007-02-01  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c:
+	- Listen to "hildon-status-bar-update-conditional"
+	* libhildondesktop/hildon-status-bar-item.[ch]:
+	- Added wrapper for backward compatibility
+	* libhildondesktop/statusbar-item.c:
+	- Rename signal to "hildon-status-bar-update-conditional"
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Fixed the whole loading behavior
+	* libhildondesktop/Makefile.am:
+	- Added libhildondesktop/hildon-status-bar-item.[ch]
+
+2007-01-31  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.[ch]:
+	- added hildon_home_area_set_batch_add, which allows to add
+	applets in a bunch (for placement)
+	- added hildon_home_area_place which places the applets according
+	to a simple algorithm
+	* libhildondesktop/hildon-home-window.c: Set batch_add mode
+	on the are before opening the "select applets" dialog, and
+	unset it when done
+	* src/hd-plugin-loader-legacy.c: pass NULL as state_data in
+	the home applets initialization callback
+
+2007-01-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c: Initialize the symbols structure
+	to 0
+
+2007-01-29  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c: Before setting the conditional 
+	callback set it to NULL.
+
+2007-01-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c: If set_conditional callback,
+	set default value for the condition to FALSE
+
+2007-01-29  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/statusbar-item.c:
+	- Condition set to TRUE by default
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Use of statusbar's condition property
+
+2007-01-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c: Connect changes in the condition
+	property to the set_conditional callback
+
+2007-01-29  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/statusbar-item.[ch]:
+	- Use of the condition property
+
+2007-01-26  Moises Martinez  <moises.martinez@nokia.com>
+
+	* data/statusbar.conf: configuration file for statusbar
+	* data/desktop.conf: added statusbar layout
+	* data/Makefile.am: updated.
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Set the size to widgets.
+	* src/hd-desktop.c: check new type of panel (expandable)
+	* src/hd-config.h: Added new key for expandable panel
+
+2007-01-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hn-others-button.c: Fixed bottom orientation
+
+2007-01-26  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hn-others-button.c: Forgot a break statement
+
+2007-01-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/statusbar-item.c: Made non-abstract
+	* src/hd-plugin-loader-legacy.c: Added support for
+	legacy statusbar plugins (not tested nor fully functional).
+
+2007-01-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Fixed orientation of panel container.
+
+2007-01-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window-dialog.[ch]:
+	- Added new panel window with dialog hint
+
+2007-01-25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Fixed positioning in extended panel (GtkTable).
+	- Fixed positioning in extended window.
+	- Added scalability on-the-fly.
+
+2007-01-24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c: 
+	- Fixed few wrong behaviors
+
+2007-01-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/others-button.c: Position menu according to panel orientation
+
+2007-01-24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel.[ch]:
+	- add_button method turned into virtual method
+	* libhildondesktop/hildon-desktop-panel-expandable.[ch]:
+	- New panel for expandable panels as old statusbar panel for example.
+	* libhildondesktop/Makefile.am:
+	- Added hildon-desktop-panel-expandable.*
+
+2007-01-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-window.c: added saving of the home
+	container which had disappeared.
+
+2007-01-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/background-manager.{c,h,xml.in}:
+	- take 4 more parameters specifying the offsets due to dock windows.
+	- removed all hard-coded dimensions in favour of these parameters.
+	* src/hd-home-background.{c,h}:
+	- apply_background[async] takes an additional GdkRectangle
+	representing the workarea.
+	- added _notify handler to set refresh the background when the
+	workarea changes
+	- fetch the workarea and give it to _apply_background calls
+
+2007-01-23  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac, src/hd-home-background-dialog.c: make hildon-fm an
+	optional dependency. If it's not present, use standard
+	GtkFileChooserDialog instead.
+
+2007-01-22  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-background.c:
+	- copy the color when setting the property.
+	- be sure not to send NULL strings to DBus.
+	* src/hd-home-window.c:
+	- added background_apply_and_save_callback callback for background
+	setting, which saves the background after it's set.
+	- added response to the background dialog. Ok and Preview implemented.
+	* src/hd-home-background-dialog.c:
+	- set the combobox to the correct item when applying existing
+	background settings.
+	- connect file-chooser dialog.
+	- reflect changes to the combobox to the current background.
+	- added _get_background method
+
+2007-01-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-home-background-dialog.c: make osso-help related code chunks
+	optional based on the presence (or not) of libosso-help.
+
+2007-01-19  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-background-dialog.c:
+	- added osso-context property, use it for help topics.
+	- added background property.
+	- setup the background dialog according to loaded background,
+	and track changes to the widgets.
+	* src/hd-home-background.[ch]: Added _copy method.
+
+2007-01-18  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/*:
+	- Add optional argument to set_background which returns
+	the pixmap ID instead of setting the background
+	- Remove as many dependency on gdk as possible
+	* src/hd-home-background.c:
+	- Query for the pixmap id and set it as background in the
+	callback
+	- Free the pixmap when gdk finalizes it
+
+2007-01-17  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c, src/hn-app-switcher.c, src/hn-app-menu-item.c,
+	src/hd-home-window.c, src/hd-select-plugins-dialog.[ch],
+	src/hn-others-button.c, src/hd-home-background-dialog.c,
+	libhildondesktop/libhildonmenu.c, libhildonwm/hd-wm-watched-window.c,
+	bhildonwm/hd-wm.c, libhildonwm/hd-wm-memory.c,
+	libhildonwm/hd-wm-watchable-app.c, libhildonwm/osso-manager.c: initial
+	work on making the dependency on libosso and libosso-help 
+	optional (replace all osso_log calls with GLib equivalents, make code
+	chunks related to libosso and libosso-help optional, remove all
+	uneeded header includes, make libosso and libosso-help dependency
+	checks not drop an error, etc.). 
+	Files src/hd-home-background-dialog.c, libhildonwm/hd-wm.c and 
+	libhildonwm/osso-manager.[ch] are still pending. 
+
+2007-01-17  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c: Fixed showing arrows of main menu when no 
+	applications.
+	* src/hn-others-button.c: Fixed keyboard navigation.
+
+2007-01-17  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-config.h, src/hd-desktop.c: use simpler TOP, BOTTOM, LEFT and RIGHT for
+	container orientation instead of NORTH, SOUTH, WEST and EAST.
+
+2007-01-17  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c: Reverted disabling double-buffering of the
+	window as it breaks the painting
+
+2007-01-17  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: use HDPanelWindow instead of
+	HildonDesktopPanelWindow.
+	* src/hn-app-switcher.c: explicitly set the size request depending on its
+	orientation.
+	* src/hn-others-button.c: don't set size request to use the panel's
+	default one.
+	* src/main.c: add GTK theming code. 
+	* src/Makefile.am, src/hd-panel-window.[ch]: especialized panel window
+	with theming support.
+	* libhildondesktop/hildon-desktop-panel.c: changed items sizing
+	policy. If the panel item haven't set its size request, the panel used
+	it's default values.
+	* libhildondesktop/hildon-desktop-panel-window.c: set HANDLE_SIZE to
+	0.
+	* data/tasknavigator.conf: add others menu button to default layout.
+
+2007-01-16  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/home-background.conf: Removed side and top bar, retrieve
+	them from the theme always
+	* libhildondesktop/hildon-home-window.c:
+	- Removed old references to style and background-manager
+	- various cleanups
+	* src/hd-home-window.c:
+	- implemented style_set
+	- set the background if the titlebar or leftbar have changed
+	* src/hd-home-background.c:
+	- fixed order of the arguments in the DBus call
+	* test/test6.c: 
+	- allow to set the background to other windows
+	- allow to switch between 2 backgrounds
+
+2007-01-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac, src/Makefile.am, src/hn-others-button.[ch]: others menu 
+	button ported to hildon-desktop.
+	* src/hd-plugin-loader-builtin.c: added others menu support.
+	* data/others-button.desktop.in: others menu button plugin desktop
+	file.
+
+2007-01-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-background.[ch]:
+	- added
+	- object to load, save and apply background data
+	* src/hd-home-window.c:
+	- added background property
+	- apply on map_event
+	* data/home-background.conf: Added temporary default background
+
+2007-01-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- Fixed position of main menu.
+	* src/hn-app-button.c:
+	- Fixed focusing on buttons.
+	* src/hd-plugin-loader-builtin.c:
+	- Fixed not initializing GError to NULL.
+	* libhildonwm/hd-wm.[ch]:
+	- Changed usage of hd_wm_activate_window from GtkWindow to 
+	  GdkWindow
+
+2007-01-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]:
+	- (hd_wm_update_client_list): New method for updating the client list.
+	- (hd_wm_close_application): Close the children views as well.
+	* test/test7.c: Test updated.
+
+2007-01-11  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.[ch]: rename
+	HILDON_HOME_APPLET_RESIZE_TYPE_TYPE to
+	HILDON_TYPE_HOME_APPLET_RESIZE_TYPE for consistency.
+	* libhildondesktop/hildon-desktop-panel.[ch]: rename
+	hildon_desktop_panel_flip_panel to hildon_desktop_panel_flip for
+	consistency.
+	* libhildondesktop/hildon-desktop-panel-window.[ch]: add GType definition
+	for HildonDesktopPanelWindowOrientation. 
+	* libhildondesktop/Makefile.am: add hildon-home-titlebar.h to
+	instalation.
+
+2007-01-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c: Set applet to layout mode
+	when adding, if the area is in layout mode
+	
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.h: Fixed prototype of the
+	settings callback
+
+2007-01-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: update because of changes in libhildondesktop.
+	* libhildondesktop/desktop-panel.[ch],
+	libhildondesktop/desktop-panel-window.[ch],
+	libhildondesktop/desktop-multiscreen.[ch]: add hildon prefix to
+	desktop-* files in libhildondesktop for consistency.
+	* libhildondesktop/libhildondesktop.h: update with new filenames.
+	* libhildondesktop/tasknavigator-item-wrapper.[ch],
+	statusbar-item-wrapper.[ch]: removed.
+
+2007-01-10  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c: Reffing and unreffing usage of HDWM.
+
+2007-01-10  Moises Martinez  <moises.martinez@nokia.com>
+
+	* test/test7.c:
+	- Added test for closing applications nicely.
+	* libhildonwm/hd-wm-watched-window.h:
+	* libhildonwm/hd-wm-watched-window-view.h:
+	* libhildonwm/hd-entry-info.h :
+	- Fixed headers
+	* libhildonwm/hd-wm.[ch]:
+	- Added method for closing nicely applications.
+
+2007-01-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.c: Fixed allocation in layout
+	and normal mode
+
+2007-01-09  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm-watched-window.c:
+	- Adding the application when is a watched window.
+	* libhildonwm/hd-wm.[ch]:
+	- (hd_wm_add_applications) made public.
+	* src/hn-app-switcher.c: Decreased refreshing time.
+
+2007-01-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/home-applet-handler.[ch]: Removed (replaced
+	by the legacy plugin loader)
+	* libhildondesktop/hildon-home-applet.c:
+	- removed reference to applet handler
+	- use the signal instead for callbacks
+
+2007-01-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-l10n.h, src/hd-home-l10n.h: Moved
+	home translations to hildon-desktop
+	* libhildondesktop/hildon-home-titlebar.[ch]:
+	- move menus and menu titles to properties
+	- added setters for the latters
+	- removed menus and titles initializations
+	* libhildondesktop/hildon-home-area.[ch]:
+	- _{load,save}_configuration now takes a GError
+	* libhildondesktop/hildon-home-window.[ch]:
+	- added _get_area
+	- added public layout_mode_{accept,cancel}
+	- added signals and default handler layout-mode-{accept,cancel}
+	- check GError when loading/saving area's layout and propagate
+	- removed displaying of notes and banners
+	* src/hd-plugin-loader-legacy.c: Added parsing of the
+	resizability from the .desktop file
+	* src/hd-home-window.c:
+	- added creation of both titlebar menus and titles
+	- added layout banners and notes
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-builtin.[ch], src/Makefile.am: new builtin
+	plugin loader.
+	* src/hd-plugin-loader-factory.c: added builtin loader.
+	* data/Makefile.am, data/app-switcher.desktop.in: desktop file for application switcher
+	plugin.
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-home-window.c, data/Makefile.am: renamed
+	hildon-home-layout.conf to home-layout.conf.
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hn-app-*, src/hn-app-pixbuf-anim-blinker.[ch]: rename
+	src/hildon-pixbuf-anim-blinker.[ch] to
+	src/hn-app-pixbuf-anim-blinker.[ch] for consistency.
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hn-app-*,
+	libhildondesktop/hildon-pixbuf-anim-blinker.[ch]: move application
+	switcher to hildon-desktop directory.
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: change g_module_open flag to avoid
+	undefined symbols problems.
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: changed default loaders dir to
+	/usr/lib/hildon-desktop/loaders. Tiny CS fixes. Removed uneeded python
+	checks.
+	* configure.ac, src/Makefile.am: renamed some dirs for consistency.
+	* src/hildon-desktop.pc.in: added hildondesktoplibdir.
+
+2007-01-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: Added support for
+	loading plugin loaders as modules.
+	* src/hildon-desktop.pc.in: Package for plugin loaders modules
+	* src/Makefile.am: Removed support of python. Now it's splitted
+	* configure.ac: Removed python support.
+
+2007-01-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn-app-switcher.c:
+	* libhildonwm/hd-wm-watched-window.c:
+	* libhildonwm/hd-wm-watched-window-view.c:
+	* libhildonwm/hd-wm.[ch]:
+	- Moved control of applications opened from appswitcher to
+	  hdwm.
+	* libhildonwm/Makefile.am:
+	* libhildonwm/hd-wm-marshalers.list:
+	- Added marshalers for hdwm.
+
+2007-01-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* updated headers in libhildondesktop
+
+2007-01-05  Karoliina Salminen  <karoliina.t.salminen@nokia.com>
+
+	* updated some comments
+	* added some missing license related files 
+
+2007-01-03  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* data/desktop.conf: change default width to 480 for task navigator.
+	* Makefile.am, data/Makefile.am, src/Makefile.am: added *~ to
+	CLEANFILES.
+
+2007-01-03  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/*.[ch]: several coding style and GObject standards fixes.
+	config.h included in all files for consistency.
+
+2007-01-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-python.c: improve memory management by
+	decreasing reference count of the python object and module related to
+	the plugin. Also, python garbage collection is used now.
+
+2007-01-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-python.c: fix crash when loading and then
+	unloading a python plugin.
+
+2007-01-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: fix package name for l10n reasons.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.h: removed unused symbols.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: make python support optional. To enable it, add
+	--enable-python to configure script.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	Support for python plugins.
+
+	* src/hd-plugin-loader-python.[ch]: plugin loader for python plugins.
+	* src/hd-plugin-loader-factory.[ch]: added python plugin loader.
+	* src/Makefile.am: update to get new files into the build process.
+	* configure.ac: complete reorganization and python checks added. 
+
+2006-12-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-background-dialog.[ch]: added
+	- import and large rewrite from maemo-af-desktop
+	* background-manager/Makefile.am: Add object remote
+	object definition to the exported header
+
+2006-12-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/main.c: Added gnome-vfs initialization
+	* background-manager/background-manager.c: various fixes
+	* background-manager/*.in: Added configure-based definition
+	of service, interface and object path
+	* tests/test6.c: Added test using the background manager dbus service
+
+2006-12-19  Johan Bilien  <johan.bilien@nokia.com>
+
+	* background-manager/*:
+	- added
+	- simple and dummy DBus service to composite and set the background
+
+2006-12-19  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-select-plugins-dialog.c: only consider .desktop files when
+	getting the list of available plugins for a container.
+
+2006-12-19  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn-app-switcher.c:
+	* libhildondesktop/hn-app-button.[ch]:
+	* libhildonwm/hd-keys.[ch]:
+	- Fixes backported from old code: NB#42971,NB#43855,NB#38950,NB#47370.
+
+2006-12-19  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: fix internal registry to really
+	re-use  plugin loader instances.
+	* src/hd-plugin-loader-default.[ch]: add internal registry to store
+	and re-use instances of HildonDesktopPlugin.
+	* src/hd-plugin-loader-legacy.c: use g_path_is_absolute instead of
+	string checking.
+	* libhildondesktop/hildon-desktop-plugin.c: clean GType list when
+	unloading the module.
+
+2006-12-19  Moises Martinez  <moises.martinez@nokia.com>
+
+	* test/test5.c: test added
+	* test/test4.c: test updated.
+	* libhildondesktop/desktop-panel.c:
+	- Added orientation change notification
+	* libhildondesktop/hn-app-switcher.[ch]:
+	- Implemented change of orientation
+	* libhildondesktop/hildon-desktop-panel-item.[ch]:
+	- Added orientation property.
+	* libhildondesktop/hn-app-button.c: Fixed blinking by
+	adding a app_switcher reference to every button.
+
+2006-12-18  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.h,
+	libhildondesktop/libhildondesktop.h: fixes on macros for plugin type
+	definitions.
+
+2006-12-18  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-window.c:
+	- set the applet area as the legitimate child
+	- fixed allocation of the applet area
+
+2006-12-15  Moises Martinez <moises.martinez@nokia.com>
+
+	* test/test4.c: test updated with refactored appswitcher.
+	* libhildondesktop/hn-app-switcher.[ch]:
+	- Refactored appswitcher to allow different sizes.
+	* libhildondesktop/hn-app-button.c: Commented out code not implemented
+	yet.
+
+2006-12-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.[ch]: new macro which correctly
+	registers the GType from the GTypeModule. This way, when the type is
+	not used anymore the module is unloaded.
+
+2006-12-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c: use item_find_by_id instead
+	of home_applet_find_by_name
+
+2006-12-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-item.[ch]: added _find_by_id
+	* libhildondesktop/hildon-home-applet.[ch]: Removed
+	desktop_file property (replaced by desktop item id)
+
+2006-12-15  Moises Martinez <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn-app-switcher.c:
+	* libhildonwm/hd-wm.c:
+	- Moved bgkill and lowmem handlers from appswitcher to HDWM.
+
+2006-12-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/desktop-panel-window.c: Fixed a warning
+	* libhildondesktop/hildon-home-window.c:
+	- Removed main_area and hbox in the layout
+	- implemeted _expose, _map, _forall, size_allocate
+	- track the _NET_WORKAREA and resize accordingly
+	* libhildondesktop/hildon-home-titlebar.c: Removed hard-coded
+	width
+	* libhildonwm/hd-wm.[ch]: Added _get_workarea method
+
+2006-12-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.[ch]: small fixes on GObject
+	stuff and symbol export MACRO.
+	* libhildondesktop/Makefile.am: install hildon-desktop-plugin headers.
+
+2006-12-14  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.h: Removed silly declaration
+	in macros.
+
+2006-12-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	*  src/hd-plugin-loader-factory.c: add support for new API plugin 
+	loader.
+	* src/hd-plugin-manager.[ch], src/hd-plugin-loader.[ch]: conform to
+	new Plugin Loader API. 
+	* src/hd-plugin-loader-legacy.[ch]: make HDPluginLoaderLegacy work
+	with HDPluginLoader API. Use constants from hd-config.h.Some GObject 
+	tiny cleanups.
+	* src/hd-config.h: add legacy plugin desktop file key entries.
+	* src/Makefile.am: add new files to the game.
+	* libhildondesktop/hildon-desktop-plugin.[ch]: complete implementation of
+	GTypeModule to create the new API loader (aka HDPluginLoaderDefault).
+	* configure.ac: general cleanups to improve readability.
+	* src/hd-plugin-loader-default.[ch]: plugin loader for new API
+	plugins.
+
+2006-12-14  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn-app-switcher.c:
+	- Removed MCE handler.
+	* libhildonwm/hd-wm.c:
+	- Moved MCE handler to window management code.
+
+2006-12-13  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn-app-switcher.c: Using the hd_keys_'s API
+	for sending fake keys.
+
+2006-12-12  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.[ch]:
+	- Removed query symbl for plugins. Added macro for 
+	creating easily symbols for 3rd party plugin developers.
+
+2006-12-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-keys.[ch]: Refactoring to GObject.
+	* libhildonwm/hd-wm.[ch]: Using a public a hd-keys config handler.
+	* libhildonwm/hd-entry-info.[ch]: Code cleanup 
+
+2006-12-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]:
+	  - added work-area-changed property to keep track of the
+	    _NET_WORKAREA root window property
+	* libhildondesktop/desktop-panel-window.c:
+	  - add missing  _new implementation
+	* libhildondesktop/hildon-home-window.c:
+	  - use the new WM property to track thw work area changes
+
+2006-12-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/desktop-panel.c:
+	  - Set a default size for widgets.
+	* libhildondesktop/desktop-panel-window.c:
+	  - Show the container!!!!
+
+2006-12-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/desktop-panel-window.[ch]: Fixed partially dragging
+	of window.
+
+2006-12-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel.h,
+	libhildondesktop/desktop-multiscreen.h: code cleanups.
+	* libhildondesktop/desktop-panel-window.c: code cleanups and
+	refactoring. Implementation of panel window positioting on bottom and
+	right. Always use DesktopMultiscreen when required.
+
+2006-12-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-window.c: when an applet is added,
+	only save after layout mode ends.
+
+2006-12-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* debian/libhildonwm*.install:
+	- added
+
+2006-12-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn_app_switcher.c: Added support for opening the
+	menu from hd-wm.
+	* libhildonwm/hd-wm.c: Code cleanup
+	* test/test4.c: updated.
+
+2006-12-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* debian/:
+	- added
+	- first version of the Debian packaging
+
+2006-12-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hn_app_switcher.c: Added support for opening the
+	menu from hd-wm.
+	* libhildonwm/hd-wm.c: Code cleanup
+	* test/test4.c: updated.
+
+2006-12-05  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]: Added a signal for requesting appswitchers
+	open their menu.
+
+2006-12-04  Moises Martinez  <moises.martinez@nokia.com>
+
+	* test/test4.c:
+	- Updated test. 4 application switcher working at the same time.
+	* libhildonwm/hd-entry-info.c:
+	- Check if we have that entry for an specific application.
+	* libhildondesktop/hn-app-switcher.c:
+	- Code cleanup.
+
+2006-12-04  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-keys.c: Fixed shortcuts to active tn/ap buttons.
+	* libhildonwm/hd-wm.[ch]: 
+	- Added method to have a reference of others menu.
+	- Now hd-wm is able to focus any gtkwindow (and subclasses).
+
+2006-12-01  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* hd-desktop.c: keep track of container plugin directory changes and
+	unload plugins and save new configuration if needed. Fix some memory
+	leaks.
+
+2006-11-30  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-select-plugins-dialog.[ch], src/hd-desktop.c: don't clear
+	container configuration file if canceling on plugin selection dialog.
+
+2006-11-30  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonhome/hildon-home-area.c: fixes to correctly save
+	the layout.
+	* libhildonhome/hildon-home-window.c: go to layout mode when
+	an applet is added
+
+2006-11-30  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-manager.c: do not gtk_widget_show_all plugins.
+	* libhildondesktop/hildon-desktop-window.[ch]: new signals to
+	request the desktop save and load container configuration.
+	* src/hd-desktop.c: listen to "save" and "load" container signals to
+	decide when to save and load container configuration.
+	* libhildondesktop/desktop-panel-window.c: small code cleanups.
+	* libhildondesktop/hildon-home-window.c: emit load signal when
+	canceling layout mode and save signal when confirming layout.
+
+2006-11-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c: do not unref GModule
+
+2006-11-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: container configuration saving support after
+	plugins selection.
+
+2006-11-28  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-window.c: Removed references to
+	osso_context_t
+
+2006-11-28  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/Makefile.am, libhildondesktop/Makefile.am: cleanup and small
+	fixes.
+	* libhildondesktop/hildon-home-window.[ch],
+	libhildondesktop/hildon-home-area.c,
+	libhildondesktop/hildon-plugin-list.[ch],
+	libhildondesktop/hildon-home-select-applets-dialog.[ch]: remove
+	HildonPluginList and applets selection dialog as they are not needed
+	anymore. 
+
+2006-11-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-manager.[ch]: now Plugin Manager just loads/syncs from a
+	plugin desktop file list. Desktop is reponsible for loading/saving
+	containers conf files.
+	* src/hd-desktop.c, src/hd-select-plugins-dialog.[ch], src/Makefile.am: 
+	implement plugin selection dialog base on a select-plugins signal emited 
+	from Hildon Desktop Window.
+	* libhildondesktop/hildon-desktop-window.[ch]: added plugin-dir and
+	config-file properties (with their respective accessor methods) and 
+	the select-plugins signal. 
+
+2006-11-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop: Added old app switcher with new interface.
+
+2006-11-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/*: Updated libhildonwm.
+
+2006-11-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/libhildonmenu.c: Fixed a potential crash when
+	no Type = is provided.
+
+2006-11-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/libhildondesktop.h: Added macros for GTypeModule 
+	declarations
+
+2006-11-24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	* libhildonwm/hd-wm-watched-window.c:
+	- Added more emission of signals for appswitchers
+
+2006-11-24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]: Moved to a more consistent GObject behavior.
+
+2006-11-23  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]: Moved the hd-wm to a new API based on 
+	GObject that allows having more than one app switcher.
+	* test/test4.c: Modified test for libhildonwm
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: use the legacy loader for
+	 Type = HildonHomeApplet
+	* src/hd-desktop.c: read layout configuration after creating
+	window
+	* data/hildon-home-layout.conf: added
+	* libhildondesktop/hildon-home-area.c: Implement _add, keep track
+	of the layout configuration and place applets accordingly
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader.c:
+	(hd_plugin_loader_load()) use _GET_CLASS instead of _CLASS
+
+2006-11-23  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.c, src/hd-plugin-loader.[ch], 
+	src/hd-plugin-loader-legacy.[ch]: make HDPluginLoader an abstract class 
+	and moved keyfile property to it.
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/home.conf: Added
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: if no Type= assume old API
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.[ch]:
+	- added
+	- inherit from HildonHomeWindow and implement everything related
+	to libosso there. To come, move everything localized and background
+	manager related there.
+	* src/hildon-home-window.[ch], src/hildon-home-titlebar.[ch]:
+	- removed everything libosso related
+
+2006-11-23  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-window.c,
+	libhildondesktop/desktop-panel-window.c: GObject Love (chain
+	finalize to parent, memory leaks).
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-window.[ch]: Inherit from
+	HildonDesktopWindow
+
+2006-11-23  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.[ch]: made _set_key_type public
+
+2006-11-22  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/*: Added libhildonwm to building system. Now it builds
+	but lacks of application switcher support (needs refactoring API for
+	that)
+	* test/test4.c: Created test-program for testing libhildonwm.
+
+2006-11-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac, Makefile.am, data/desktop.conf, data/tasknavigator.conf,
+	data/Makefile.am: new data directory with default configuration files
+	that are installed on hildon-desktop global conf dir.
+
+2006-11-22  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-*.[ch]: First import of window managemente code.
+	- At this point the window management code is broken and there is no
+	way of building yet. Many dependencies (AppSwitcher mostly) must be
+	resolved. Basically, this new approach should support more than 1
+	AppSwitcher.
+	* libhildondesktop/desktop-panel-window.c: Redraw and resize only when
+	necessary (rotated).
+	* window_management_dependencies updated. (Refers to old code)
+
+2006-11-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: desktop conf file and container conf file
+	handling. For both: look for user conf file, if not found, fall to
+	global configuration at sysconfdir (i.e /etc/hildon-desktop). 
+	Change orientation to "north", "south", "west" and "east" instead of
+	"vertical" and	"horizontal".
+	* src/hd-plugin-manager.c: checks if the plugin conf file exists. If
+	not, ignore the plugin.
+	* configure.ac, src/Makefile.am: define hildon-desktop global conf dir
+	as ${sysconfdir}/hildon-desktop.
+
+2006-11-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c:
+	- cleanup, factorize as much code as possible among the 3 types
+	of legacy plugins
+	- use GModule and open the plugin from the loader instead of using
+	the tasknavigator-item-wrapper
+	* libhildondesktop/tasknavigator-item.c: Made non-abstract
+
+2006-11-21  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/main.c: added locale.h header
+	* libhildondesktop/desktop-panel-window.c: Deleted debug messages.
+
+2006-11-21  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: use configuration file settings to define Desktop
+	Panel Window position and size.
+
+2006-11-21  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/desktop-multiscreen.[ch],
+	libhildondesktop/desktop-panel.[ch],
+	libhildondesktop/desktop-panel-window.[ch],
+	libhildondesktop/hildon-desktop-item.[ch]: GObject Love (chain
+	finalize to parent, use of macros, memory leaks, coding style, other
+	minor things).
+
+2006-11-20  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: use new HildonDesktopWindow to add plugins
+	to the correct container. Read orientation from desktop configuration
+	file.
+	* src/hd-plugin-loader-factory.c: don't free GKeyFile because
+	the plugin loader will hold a reference to it.
+
+2006-11-20  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-window.[ch]:
+	- New class for abstracting a window with a container.
+	* libhildondesktop/desktop-panel-window.[ch]:
+	- Make DesktopPanelWindow inherits from HildonDesktopWindow
+
+2006-11-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.c: g_build_path takes a NULL terminated
+	strinf
+
+2006-11-20  Johan Bilien  <johan.bilien@nokia.com>
+	
+	* src/hd-plugin-loader-legacy.h: Fixed inclusion of parent in
+	class and instance structure 
+
+2006-11-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader-legacy.[ch]:
+	- added
+	- implemented ugly loader for legacy home applets and navigator item
+	* src/hd-plugin-loader-factory.c: added support for legacy plugins
+	* libhildondesktop/hildon-home-applet.[ch]: Added signals
+	matching plugin callbacks.
+	* libhildondesktop/hildon-desktop-marshalers.list:
+	- added
+	- added pointer: pointer marshaler
+
+2006-11-20  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/desktop-panel-window.[ch]: Added magic 
+	properties as movement and static size to desktop-panel-window.
+	* libhildondesktop/hildon-desktop-item-plug.[ch]:
+	* libhildondesktop/statusbar-item-binding.[ch]:
+	- Implemented interface and class for abstracting GtkPlugs.
+
+2006-11-20  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader.[ch]: add method to API.
+	* src/hd-plugin-manager.[ch], src/hd-plugin-loader-factory.[ch]:
+	initial implementation of plugin loading.
+	* src/main.c: add i18n handling code.
+
+2006-11-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader.[ch]: small change in API
+
+2006-11-17  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c, src/main.c: initial real implementation of 
+	HDDesktop. Still with (container instances) gaps to be filled.
+
+2006-11-17  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-item.[ch]: added "id" property
+	to HildonDesktopItem.
+
+2006-11-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.[ch]: Hildon Desktop inicial implementation skel.
+	* src/Makefile.am: add hd-desktop.[ch] to build.
+
+2006-11-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.[ch]: Plugin Loader Factory inicial
+	implementation skel.
+	* src/Makefile.am: add hd-plugin-loader-factory.[ch] to build.
+
+2006-11-16  Moises Martinez  <moises.martinez@nokia.com>
+
+	* AUTHORS: Added Lucas Rocha as an author.
+
+2006-11-16  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm: This lib will be responsible for all the window 
+	management needed for hildon-desktop.
+	* window_management_dependencies: dependencies of old window 
+	management code
+
+2006-11-16  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/tasknavigator-item-socket.[ch]: Added 
+	implementation of desktop-item-socket for tasknavigator items.
+	* libhildondesktop/libhildondesktop.h: Removed headers that the user
+	does not need at all.
+
+2006-11-16  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-manager.[ch]: Plugin Manager inicial implementation 
+	skeletton.
+	* src/Makefile.am: add hd-plugin-manager to build.
+
+2006-11-15  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-plugin-loader.[ch]:
+	  - added
+	  - Plugin Loader interface skeletton
+	* src/Makefile.am, src/main.c, configure.ac: Added hildon-desktop
+	app to the build
+
+2006-11-15  Moises Martinez <moises.martinez@nokia.com>
+
+	* plugin_manager readme file added
+
+2006-11-14  Johan Bilien  <johan.bilien@nokia.com>
+
+	* test/minihome/minihome.c: Parse the MAD GTKRC
+
+2006-11-14  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.c: Fixed realize and size_allocate
+
+2006-11-14  Moises Martinez <moises.martinez@nokia.com>
+
+	* Now libhildondesktop builds ok
+
+2006-11-14  Moises Martinez <moises.martinez@nokia.com>
+
+	* Renamed libdesktop to libhildondesktop
+
+2006-11-14  Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/libdesktop.h: new global header file.
+
+2006-11-13  Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/hildon-desktop-plugin.[ch]: GTypeModule child class
+	for plugins.
+
+2006-11-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libdesktop/hildon-home-applet.[ch]:
+	- inherit from DesktopItem
+	- added realize/map with visible window and event window when in
+	layout mode.
+
+2006-11-09  Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/desktop-panel.[ch]: Added optional fixed sizes 
+	for added panel's button.
+
+2006-11-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libdesktop/home-applet-handler.[ch]: temporary reimported (to be
+	replaced with plugin manager)
+	* test/minihome:
+	- added
+	- provides basic home functionality
+
+2006-11-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libdesktop/hildon-plugin-list.[ch]: Imported
+	* libdesktop/Makefile.am: Do not compile _home_window and
+	_home_titlebar which are likely to go on the application side
+
+2006-11-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libdesktop/hildon-home-*.[ch]:
+	- first import of Hildon Home widgets
+	- removed home-applet-handler, to be replaced with the plugin manager
+	* libdesktop/hildon-home-l10n.h:
+	- added
+	- centralized all Hildon Home l10n strings
+
+2006-11-08 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/desktop-panel-window.[ch]:
+	- Fixed dragging. 
+	- Moved the panel to a property.
+	* libdesktop/statusbar-item.c:
+	* libdesktop/hildon-desktop-panel-item.c:
+	- Minor fixes
+
+2006-11-07 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/statusbar-item.c:
+	- library is construct only property.
+	* libdesktop/tasknavigator-item.[ch]:
+	- New subclass of HildonDesktopPanelItem for tasknavigator
+	plugins.
+	* libdesktop/tasknavigator-item-wrapper.[ch]:
+ 	- Subclass of TaskNavigatorItem that adds support for old API.
+
+2006-11-06 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/hildon-desktop-panel-item.[ch]:
+	* libdesktop/statusbar-item.[ch]:
+	- StatusbarItem is a Panel Item.
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/statusbar-item-socket.c: Removing proxy 
+        of GtkSocket's plug_removed signal
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/statusbar-item-socket.[ch]:
+	- Fixed building problems.
+	* libdesktop/hildon-desktop-item-socket.[ch]:
+	- Fixed proxy calling to GtkSocket methods plug_added 
+	and plug_removed
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/hildon-desktop-item.[ch]:
+	* libdesktop/statusbar-item-wrapper.[ch]:
+	* libdesktop/statusbar-item.c:
+	- Fixed building problems.
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/statusbar-item-wrapper.[ch]: 
+	- Fixed building problems.
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/hildon-desktop-item-socket.c:
+	- Changed _gtk_boolean_handled_accumulator to 
+	  g_signal_accumulator_true_handled.
+	* test/test1.c: Added test 
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/desktop-multiscreen.[ch]:
+	* libdesktop/desktop-panel-window.h:
+	- Fixed more building problems
+
+2006-10-31 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/desktop-panel-window.c: Fixed building problem
+	
+2006-10-30 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/desktop-multiscreen.[ch]:
+	* libdesktop/statusbar-item.[ch]:
+	* libdesktop/desktop-panel.c:
+	* libdesktop/hildon-desktop-item-socket.[ch]:
+	* libdesktop/desktop-panel-window.[ch]:
+	* libdesktop/hildon-desktop-item.[ch]:
+	* libdesktop/statusbar-item-socket.[ch]:
+	- Fixed a lot of build problems
+
+2006-10-30 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/desktop-panel-window.c: Added positioning and resizing
+	code.
+
+2006-10-30 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/statusbar-item-socket.[ch]: Implementation of
+	a hildon-desktop-item-socket for statusbar items.
+
+2006-10-20 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/statusbar-item-wrapper.[ch]: Added wrapper
+	for supporting statusbar's APIs.
+
+2006-10-20 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/libhildonmenu.[ch];
+	* libdesktop/hildon-thumb-menu-item.[ch]:
+	- Imported libhildonmenu from maemo-af-desktop.
+
+2006-10-19 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/hildon-desktop-item-socket.[ch]: Added GInterface 
+	for GtkSocket decoration in DesktopItems
+
+2006-10-19 Moises Martinez <moises.martinez@nokia.com>
+
+	* libdesktop/*.[ch]:Inital Import

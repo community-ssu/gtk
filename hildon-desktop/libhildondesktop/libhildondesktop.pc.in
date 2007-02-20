@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@/libhildondesktop
+localedir=@localedir@
+
+Name: libhildondesktop
+Description: Hildon Lib Desktop
+Requires: hildon-1 libxml-2.0
+Version: @VERSION@
+Libs: -L${libdir} -lhildondesktop
+Cflags: -I${includedir}

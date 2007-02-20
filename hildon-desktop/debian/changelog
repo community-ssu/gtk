@@ -1,0 +1,110 @@
+hildon-desktop (0.0.0-15) unstable; urgency=low
+
+  * New experimental snapshot 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Feb 2007 16:10:51 +0200
+
+hildon-desktop (0.0.0-14) unstable; urgency=low
+
+  * src/hildon-desktop.pc.in,
+    libhildondesktop/libhildondesktop.pc.in,
+    libhildonwm/libhildonwm.pc.in: require libhildon-1 rather
+    than hildon-libs
+  * configure.ac, src/hd-home-background-dialog.c: Include
+    hildon/ instead of hildon-widgets/ when compiled
+    against libhildonfm-2
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Feb 2007 15:44:08 +0200
+
+hildon-desktop (0.0.0-13) unstable; urgency=low
+
+  * Replaced build-dep on hildon-fm-dev with build-dep on
+    libhildonfm2-dev 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Feb 2007 14:55:05 +0200
+
+hildon-desktop (0.0.0-12) unstable; urgency=low
+
+  * Added startup script to the package
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 16 Feb 2007 14:05:19 +0200
+
+hildon-desktop (0.0.0-11) unstable; urgency=low
+
+  * New experimental snapshot
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 15 Feb 2007 15:08:07 +0200
+
+hildon-desktop (0.0.0-10) unstable; urgency=low
+
+  * libhildonwm/hd-wm.[ch]
+  - created application-starting signal to which the launch-bannering
+  should be connected
+  - do not launch the banner from the window manager code
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Feb 2007 18:55:52 +0200
+
+hildon-desktop (0.0.0-9) unstable; urgency=low
+
+  * src/hd-panel-window-dialog.c:
+  - Listening to new signal "queued-button" instead GtkContainer's "add"
+  * libhildondesktop/hildon-desktop-panel.c:
+  - Fixed "add-button" signal.
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Emit new signal "queued-button" whenever a button is queued to be in
+  the statusbar panel
+  * data/statusbar.conf: add presence plugin
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Feb 2007 17:03:46 +0200
+
+hildon-desktop (0.0.0-8) unstable; urgency=low
+
+  * Moved build-dep from hildon-libs-dev to libhildon1-dev 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Feb 2007 15:06:58 +0200
+
+hildon-desktop (0.0.0-7) unstable; urgency=low
+
+  * Added hildon-desktop-dev for the plugin loader writers 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 18 Jan 2007 18:00:46 +0200
+
+hildon-desktop (0.0.0-6) unstable; urgency=low
+
+  * Added .desktop files for built-in plugins
+  * Added .pc file 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 18 Jan 2007 17:34:52 +0200
+
+hildon-desktop (0.0.0-5) unstable; urgency=low
+
+  * Fixed conffiles 
+  * Added background manager to the package
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 17 Jan 2007 12:19:28 +0200
+
+hildon-desktop (0.0.0-4) unstable; urgency=low
+
+  * Include headers in -dev packages 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 17 Jan 2007 11:33:44 +0200
+
+hildon-desktop (0.0.0-3) unstable; urgency=low
+
+  * Do not replace maemo-af-desktop until it's usable 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 17 Jan 2007 09:57:39 +0200
+
+hildon-desktop (0.0.0-2) unstable; urgency=low
+
+  * Temporary add hildon-base-lib-dev as build-dep 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  5 Dec 2006 16:19:57 +0200
+
+hildon-desktop (0.0.0-1) unstable; urgency=low
+
+  * First version of the packaging
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  5 Dec 2006 14:25:43 +0200
+
+

@@ -1,0 +1,120 @@
+Notes
+------
+
+We have at the moment plugins that we cannot unload (SB:presence,connection) and
+plugins in tasknavigator that the user is not meant to unload them (TN:appswitcher,others menu)
+
+Because of performance reasons we should have built-in plugins in libhildondesktop (appswitcher,others menu)
+and we should find a way for the user not being able to remove them.
+
+We need a mandatory key for every plugin that is not meant to be unloaded and a new type of plugin: builtin
+
+
+Desktop Configuration (A)
+---------------------
+
+- Layout for panels and home.
+- For each panel, the configuration file.
+- The global configuration file should be located at 
+  ${sysconfdir}/hildon-desktop/desktop.conf
+- First, hildon-desktop tries to find container conf files at
+  ${HOME}/.osso/hildon-desktop/container.conf. If it doesn't exist
+  look for them in global conf dir ${sysconfdir}/hildon-desktop
+
+[Statusbar]
+X-Type=panel_fixed
+X-Position-x=100
+X-Position-y=0
+X-Orientation=
+X-Size-Width=100
+X-Size-Height=50
+X-Config-file=statusbar.conf
+[Tasknavigator]
+X-Type=panel_box
+X-Position-x=100
+X-Position-y=0
+X-Size-Width=100
+X-Size-Height=50
+X-Config-file=tasknavigator.conf
+[Home]
+X-Type=home
+X-Config-file=home.conf
+
+Tasknavigator.conf (user configuration)
+------------------
+[/usr/share/apps/tasknavigator/bookmarks.desktop]
+[/usr/share/apps/tasknavigator/contacts.desktop]
+[/usr/share/apps/tasknavigator/appswitcher.desktop]
+
+generic.desktop
+-----------------
+[Desktop Entry]
+Name=generic_eng_oko
+Icon=tn_icon_eng
+Comment=comment_eng
+Type=old_api (by default if not provided)      | New set of keys
+X-Path=/usr/lib/tasknavigator/libbookmarks.so  |
+
+X-home-applet-resizable=X
+X-home-applet-minwidth=270
+X-home-applet-minheight=45
+
+Mandatory=true/false
+Category=whatever
+
+HildonDesktop Object
+--------------------
+
+- Get list of available plugins for each container.
+  
+  - One directory for each type of item's desktop file.
+
+Plugin Manager
+--------------
+
+- It uses plugin loaders
+
+- Public methods
+
+  - GList *plugin_manager_load (gchar *user_configuration, GtkContainer *container);
+ 
+    - (*) We parse the GKeyFile for (2)
+    
+  - void  plugin_manager_unload (void)
+
+  - void plugin_manager_sync (gchar *user_configuration, GtkContainer *container)
+
+Plugin Loader Factory
+---------------------
+
+- PluginLoader *create (PluginLoaderType type);
+
+
+Plugin Loader (This interface will be implemented according to PluginLoaderType)
+-------------
+
+- HildonDesktopItem *plugin_loader_load (GKeyFile *file); (2)
+
+------
+
+Use cases:
+
+- Start-up
+
+  - There is a HildonDesktop instance
+
+    - read the Desktop Configuration (A)
+
+    - create the containers according to (A)
+
+    - for each container, asks plugin manager to load plugins
+
+    - We will have the list of plugins to add to the respective containers.
+
+
+- Load or unload one(or more) specific plugins) / We change the configuration of a specific container
+
+  - HildonDesktop keeps track of changes of configuration.
+
+  - Plugin Manager syncs the configuration for that container.
+

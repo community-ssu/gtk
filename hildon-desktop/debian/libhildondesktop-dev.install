@@ -1,0 +1,4 @@
+usr/lib/libhildondesktop.so
+usr/lib/libhildondesktop.a
+usr/lib/pkgconfig/libhildondesktop.pc
+usr/include/libhildondesktop

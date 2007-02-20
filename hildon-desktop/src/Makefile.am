@@ -1,0 +1,108 @@
+pkgconfigdir = $(libdir)/pkgconfig
+pkgincludedir = $(includedir)/hildon-desktop/hildon-desktop
+pkgconfig_DATA = hildon-desktop.pc
+pkginclude_HEADERS = hd-plugin-loader.h \
+		     hd-config.h
+
+bin_PROGRAMS = hildon-desktop
+
+hildon_desktop_CPPFLAGS = \
+	$(HILDON_CFLAGS)             					   \
+	$(HILDON_FM_CFLAGS)             				   \
+	$(OSSO_CFLAGS)               					   \
+	$(OSSO_HELP_CFLAGS)          					   \
+	$(GCONF_CFLAGS)                                                    \
+	$(LIBXML_CFLAGS)                                                   \
+	$(DBUS_GLIB_CFLAGS)                                                \
+	-I$(top_srcdir) 						   \
+	-DLOCALEDIR=\"$(localedir)\" 					   \
+	-DDATADIR=\"$(datadir)\"                                           \
+	-DHD_DESKTOP_ENTRY_PATH=\"$(hildondesktopentrydir)\" 		   \
+	-DHD_DESKTOP_CONFIG_PATH=\"$(hildondesktopconfdir)\" 		   \
+	-DHD_DESKTOP_MODULE_PATH=\"$(hildondesktoplibdir)\"                \
+	-DHD_DESKTOP_BACKGROUNDS_PATH=\"$(hildondesktopbackgroundsdir)\"   \
+	-DHD_PLUGIN_LOADER_MODULES_PATH=\"$(hildonpluginloaderlibdir)\"    \
+	-DHD_PLUGIN_LOADER_LEGACY_HOME_MODULE_PATH=\"$(hildonhomelibdir)\" \
+	-DHD_PLUGIN_LOADER_LEGACY_STATUSBAR_MODULE_PATH=\"$(hildonstatusbarlibdir)\" \
+	-DHD_PLUGIN_LOADER_LEGACY_NAVIGATOR_MODULE_PATH=\"$(hildonnavigatorlibdir)\"
+
+hildon_desktop_LDFLAGS  = \
+	-rdynamic         \
+	$(HILDON_LIBS)	  \
+	$(HILDON_FM_LIBS) \
+	$(OSSO_LIBS)	  \
+	$(GCONF_LIBS)     \
+	$(OSSO_HELP_LIBS) \
+	$(DBUS_GLIB_LIBS)
+
+hildon_desktop_LDADD = \
+	$(top_srcdir)/libhildondesktop/libhildondesktop.la \
+	$(top_srcdir)/libhildonwm/libhildonwm.la
+
+PLUGIN_MANAGER_SOURCES  = \
+	hd-plugin-manager.c         \
+	hd-plugin-manager.h         \
+	hd-plugin-loader-factory.c  \
+	hd-plugin-loader-factory.h  \
+	hd-plugin-loader.c          \
+	hd-plugin-loader.h          \
+	hd-plugin-loader-default.c  \
+	hd-plugin-loader-default.h  \
+	hd-plugin-loader-builtin.c  \
+	hd-plugin-loader-builtin.h  \
+	hd-plugin-loader-legacy.c   \
+	hd-plugin-loader-legacy.h 
+
+HOME_SOURCES = \
+	hd-home-window.c            \
+	hd-home-window.h            \
+	hd-home-background-dialog.c \
+	hd-home-background-dialog.h \
+	hd-home-background.c        \
+	hd-home-background.h
+
+APP_SWITCHER_SOURCES  = \
+	hn-app-pixbuf-anim-blinker.c  \
+	hn-app-pixbuf-anim-blinker.h  \
+	hn-app-button.c               \
+	hn-app-button.h               \
+	hn-app-menu-item.c            \
+	hn-app-menu-item.h            \
+	hn-app-sound.c                \
+	hn-app-sound.h                \
+	hn-app-switcher.c             \
+	hn-app-switcher.h             \
+	hn-app-tooltip.c              \
+	hn-app-tooltip.h 
+
+OTHERS_BUTTON_SOURCES  = \
+	hn-others-button.c \
+	hn-others-button.h
+
+#BUILT_SOURCES = hd-notification-service.h 
+
+#hd-notification-service.h: notification-manager.xml
+#	dbus-binding-tool --prefix=hd_notification_service --mode=glib-server --output=hd-notification-service.h $<
+
+hildon_desktop_SOURCES = \
+	$(BUILT_SOURCES)            \
+	$(PLUGIN_MANAGER_SOURCES)   \
+	$(HOME_SOURCES)             \
+	$(APP_SWITCHER_SOURCES)     \
+	$(OTHERS_BUTTON_SOURCES)    \
+	hd-desktop.c                \
+	hd-desktop.h                \
+	hd-select-plugins-dialog.c  \
+	hd-select-plugins-dialog.h  \
+	hd-panel-window.c           \
+	hd-panel-window.h           \
+	hd-panel-window-dialog.c    \
+	hd-panel-window-dialog.h    \
+	hd-notification-manager.c   \
+	hd-notification-manager.h   \
+	hd-config.h                 \
+	main.c
+
+EXTRA_DIST = notification-manager.xml
+
+CLEANFILES = *~ $(BUILT_SOURCES)

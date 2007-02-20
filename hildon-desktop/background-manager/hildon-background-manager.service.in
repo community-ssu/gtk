@@ -1,0 +1,3 @@
+[D-BUS Service]
+Name=@HILDON_BACKGROUND_MANAGER_SERVICE@
+Exec=@prefix@/bin/hildon-background-manager

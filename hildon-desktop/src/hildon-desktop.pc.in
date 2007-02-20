@@ -1,0 +1,12 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=@includedir@/hildon-desktop
+localedir=@localedir@
+hildonpluginloaderlibdir=@hildonpluginloaderlibdir@
+hildondesktoplibdir=@hildondesktoplibdir@
+
+Name: hildon-desktop
+Description: Hildon Desktop Headers
+Requires: libhildonwm libhildondesktop
+Version: @VERSION@
+Cflags: -I${includedir}
