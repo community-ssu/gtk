@@ -1,5 +1,10 @@
 2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildonwm/hd_entry_info.[ch]:
+	- added _get_x_window () method
+
+2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/Makefile.am: Added LAUNCHER_LDFLAGS to the link
 
 2007-02-20  Johan Bilien  <johan.bilien@nokia.com>

@@ -27,6 +27,8 @@
 #include <glib-object.h>
 #include <gdk/gdkpixbuf.h>
 
+#include <X11/Xlib.h>
+
 #include <libhildonwm/hd-wm-types.h>
 
 G_BEGIN_DECLS
@@ -110,6 +112,7 @@ gboolean     hd_entry_info_is_hibernating    (HDEntryInfo *info);
 
 gboolean     hd_entry_info_has_extra_icon    (HDEntryInfo *info);
 const gchar *hd_entry_info_get_extra_icon    (HDEntryInfo *info);
+Window       hd_entry_info_get_x_window      (HDEntryInfo *info);
 
 G_END_DECLS
 

@@ -760,6 +760,23 @@ hd_entry_info_get_extra_icon (HDEntryInfo *info)
   return NULL;
 }
 
+Window
+hd_entry_info_get_x_window (HDEntryInfo *info)
+{
+  HDWMWatchedWindow *win;
+  g_return_val_if_fail (info, None);
+
+  if (info->type == HD_ENTRY_DESKTOP)
+    return None;
+  
+  win = hd_entry_info_get_window (info);
+
+  if (win)
+    return hd_wm_watched_window_get_x_win (win);
+
+  return None;
+}
+
 gboolean
 hd_entry_info_has_extra_icon (HDEntryInfo *info)
 {
