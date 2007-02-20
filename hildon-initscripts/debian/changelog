@@ -1,6 +1,5 @@
 hildon-initscripts (1.10-1) unstable; urgency=low
 
-  * UNRELEASED
   * maemo-af-desktop -> hildon-desktop
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 20 Feb 2007 16:41:17 +0200
