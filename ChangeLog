@@ -1,3 +1,8 @@
+2007-02-20  Kristian Rietveld  <kris@imendio.com>
+
+	* gdk/gdkwindow.h: modify GdkWindowTypeHint so that we don't end
+	the enumerator list with a comma.  (MB#1087).
+
 2007-02-20  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenuitem.c (_gtk_menu_item_popup_submenu): queue a draw
