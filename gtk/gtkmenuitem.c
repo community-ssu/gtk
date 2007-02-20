@@ -770,27 +770,32 @@ gtk_menu_item_paint (GtkWidget    *widget,
 				NULL);
 
 #ifdef MAEMO_CHANGES
+          /* Don't draw the selection prelight around the arrow */
           if (menu_item->submenu)
             {
               GtkMenuItem *msi;
               gint focus_x = x;
               gint focus_width = width;
+              GtkStateType selected_state;
 
               if (menu_item->show_submenu_indicator)
                 {
                   GtkRequisition child_requisition;
                   gint arrow_size;
 
-#define HILDON_ARROW_SPACE 6
+                  /* Add 4 additional pixels of padding on both sides
+                   * of the arrow
+                   */
+#define ARROW_PADDING 4
 
                   gtk_widget_get_child_requisition (GTK_BIN (menu_item)->child,
                                                     &child_requisition);
 
                   arrow_size = child_requisition.height - 2 * widget->style->ythickness;
                   if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
-                    focus_width = x + width - arrow_size - 2 - HILDON_ARROW_SPACE;
+                    focus_width = x + width - arrow_size - 2 * ARROW_PADDING;
                   else
-                    focus_x = x + arrow_size + 2 + HILDON_ARROW_SPACE;
+                    focus_x = x + arrow_size + 2 * ARROW_PADDING;
                 }
 
               /* This draws different focus depending on if it's the
@@ -801,20 +806,17 @@ gtk_menu_item_paint (GtkWidget    *widget,
                */
               msi = GTK_MENU_ITEM (GTK_MENU_SHELL (menu_item->submenu)->active_menu_item);
 
-              if ((msi == NULL) || (GTK_WIDGET (msi)->state == 0))
-                gtk_paint_box (widget->style,
-                               widget->window,
-                               GTK_STATE_PRELIGHT,
-                               selected_shadow_type,
-                               area, widget, "menuitem",
-                               focus_x, y, focus_width, height);
+              if ((msi == NULL) || (GTK_WIDGET_STATE (msi) == GTK_STATE_NORMAL))
+                selected_state = GTK_STATE_PRELIGHT;
               else
-                gtk_paint_box (widget->style,
-                               widget->window,
-                               GTK_STATE_SELECTED,
-                               selected_shadow_type,
-                               area, widget, "menuitem",
-                               focus_x, y, focus_width, height);
+                selected_state = GTK_STATE_SELECTED;
+
+              gtk_paint_box (widget->style,
+                             widget->window,
+                             selected_state,
+                             selected_shadow_type,
+                             area, widget, "menuitem",
+                             focus_x, y, focus_width, height);
             }
           else
 #endif /* MAEMO_CHANGES */
@@ -861,27 +863,32 @@ gtk_menu_item_paint (GtkWidget    *widget,
 #ifdef MAEMO_CHANGES
 	  if (state_type == GTK_STATE_PRELIGHT &&
               GTK_WIDGET_VISIBLE (menu_item->submenu))
+	    shadow_type = GTK_SHADOW_IN;
 #else
 	  if (state_type == GTK_STATE_PRELIGHT)
-#endif /* MAEMO_CHANGES */
 	    shadow_type = GTK_SHADOW_IN;
+#endif /* MAEMO_CHANGES */
 
 	  if (direction == GTK_TEXT_DIR_LTR)
 	    {
 	      arrow_x = x + width - horizontal_padding - arrow_extent;
 	      arrow_type = GTK_ARROW_RIGHT;
+
+#ifdef MAEMO_CHANGES
+              arrow_x -= ARROW_PADDING;
+#endif /* MAEMO_CHANGES */
 	    }
 	  else
 	    {
 	      arrow_x = x + horizontal_padding;
 	      arrow_type = GTK_ARROW_LEFT;
+
+#ifdef MAEMO_CHANGES
+              arrow_x += ARROW_PADDING;
+#endif /* MAEMO_CHANGES */
 	    }
 
 	  arrow_y = y + (height - arrow_extent) / 2;
-
-#ifdef MAEMO_CHANGES
-          arrow_x = arrow_x - 4;
-#endif /* MAEMO_CHANGES */
 
 	  gtk_paint_arrow (widget->style, widget->window,
 			   state_type, shadow_type, 

@@ -1,3 +1,10 @@
+2007-02-20  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenuitem.c (gtk_menu_item_paint): clean up yesterday's
+	commit: change HILDON_ARROW_SPACE of 6 pixels to ARROW_PADDING of
+	4 pixels because that's how it's used. Use GTK_STATE_NORMAL
+	instead of 0. Cleaned up a bit and added comments.
+
 2007-02-19  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenuitem.c (gtk_menu_item_paint): port over changes to
