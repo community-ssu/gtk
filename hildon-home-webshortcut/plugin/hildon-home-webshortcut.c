@@ -37,14 +37,10 @@
 #include <gtk/gtklabel.h>
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkmenuitem.h>
-#include <hildon-widgets/hildon-banner.h>
-#include <hildon-widgets/hildon-note.h>
-
 
 #include <osso-ic.h>
 #include <libosso.h>
 #include <osso-uri.h>
-
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -53,9 +49,11 @@
 #include <libgnomevfs/gnome-vfs.h>
 #include <gconf/gconf-client.h>
 
-#include "hildon-widgets/hildon-file-chooser-dialog.h"
-#include <hildon-widgets/hildon-caption.h>
-#include <hildon-widgets/hildon-defines.h>
+#include <hildon/hildon-file-chooser-dialog.h>
+#include <hildon/hildon-caption.h>
+#include <hildon/hildon-defines.h>
+#include <hildon/hildon-banner.h>
+#include <hildon/hildon-note.h>
 
 #define HHWS_GCONF_IAP          "/apps/osso/apps/hhws/iap"
 #define HHWS_GCONF_URI          "/apps/osso/apps/hhws/uri"
