@@ -1,6 +1,6 @@
 bin_PROGRAMS = hildon-background-manager
 
-#BUILT_SOURCES = background-manager-glue.h hildon-background-manager.h
+BUILT_SOURCES = background-manager-glue.h hildon-background-manager.h
 CLEANFILES = $(BUILT_SOURCES) \
 			 background-manager-glue-tmp.h \
 			 hildon-background-manager-tmp.h
