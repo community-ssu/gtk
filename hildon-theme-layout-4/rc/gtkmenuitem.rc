@@ -38,7 +38,6 @@ style "osso-menuitem"
         arrow_direction = RIGHT
         state           = INSENSITIVE
         overlay_file    = "../images/qgn_plat_menu_next_level_arrow_disabled.png"
-        overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
     image
@@ -47,7 +46,6 @@ style "osso-menuitem"
 	arrow_direction = RIGHT
 	shadow          = OUT
 	overlay_file    = "../images/qgn_plat_menu_next_level_arrow_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -56,7 +54,6 @@ style "osso-menuitem"
         arrow_direction = RIGHT
         shadow          = IN
         overlay_file    = "../images/qgn_plat_menu_next_level_arrow_pressed.png"
-        overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
      image

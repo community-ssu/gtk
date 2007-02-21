@@ -43,7 +43,6 @@ style "osso-controlbar"
 			arrow_direction = LEFT
 			state = NORMAL
 			overlay_file = "../images/qgn_plat_control_bar_less_normal.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		image {
@@ -51,7 +50,6 @@ style "osso-controlbar"
 			arrow_direction = LEFT
 			state = PRELIGHT
 			overlay_file = "../images/qgn_plat_control_bar_less_normal.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		image {
@@ -59,7 +57,6 @@ style "osso-controlbar"
 			arrow_direction = LEFT
 			state = ACTIVE
 			overlay_file = "../images/qgn_plat_control_bar_less_pressed.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		image {
@@ -67,7 +64,6 @@ style "osso-controlbar"
 			arrow_direction = LEFT
 			state = INSENSITIVE
 			overlay_file = "../images/qgn_plat_control_bar_less_disabled.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		
@@ -77,7 +73,6 @@ style "osso-controlbar"
 			arrow_direction = RIGHT
 			state = NORMAL
 			overlay_file = "../images/qgn_plat_control_bar_more_normal.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		image {
@@ -85,7 +80,6 @@ style "osso-controlbar"
 			arrow_direction = RIGHT
 			state = PRELIGHT
 			overlay_file = "../images/qgn_plat_control_bar_more_normal.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		image {
@@ -93,7 +87,6 @@ style "osso-controlbar"
 			arrow_direction = RIGHT
 			state = ACTIVE
 			overlay_file = "../images/qgn_plat_control_bar_more_pressed.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		image {
@@ -101,7 +94,6 @@ style "osso-controlbar"
 			arrow_direction = RIGHT
 			state = INSENSITIVE
 			overlay_file = "../images/qgn_plat_control_bar_more_disabled.png"
-			overlay_border = { 0, 0, 0, 0 }
 			overlay_stretch = FALSE
       		}
 		

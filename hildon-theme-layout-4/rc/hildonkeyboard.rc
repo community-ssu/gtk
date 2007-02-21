@@ -325,7 +325,6 @@ style "osso-input-special-character-view-tabs"
         state           = INSENSITIVE
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -334,7 +333,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = IN
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -343,7 +341,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = OUT
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     
@@ -354,7 +351,6 @@ style "osso-input-special-character-view-tabs"
         state           = INSENSITIVE
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -363,7 +359,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = IN
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -372,7 +367,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = OUT
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
   }

@@ -18,7 +18,6 @@ style "osso-radiobutton"
 	shadow          = OUT
 	state           = NORMAL
 	overlay_file    = "../images/qgn_plat_button_radio_empty_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -27,7 +26,6 @@ style "osso-radiobutton"
 	shadow          = IN
 	state           = NORMAL
 	overlay_file    = "../images/qgn_plat_button_radio_selected_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -36,7 +34,6 @@ style "osso-radiobutton"
 	shadow          = OUT
 	state           = PRELIGHT
 	overlay_file    = "../images/qgn_plat_button_radio_empty_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -45,7 +42,6 @@ style "osso-radiobutton"
 	shadow          = IN
 	state           = PRELIGHT
 	overlay_file    = "../images/qgn_plat_button_radio_selected_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -54,7 +50,6 @@ style "osso-radiobutton"
 	shadow          = OUT
 	state           = ACTIVE
 	overlay_file    = "../images/qgn_plat_button_radio_empty_focused.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -63,7 +58,6 @@ style "osso-radiobutton"
 	shadow          = IN
 	state           = ACTIVE
 	overlay_file    = "../images/qgn_plat_button_radio_selected_focused.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
@@ -72,7 +66,6 @@ style "osso-radiobutton"
 	shadow          = OUT
 	state           = INSENSITIVE
 	overlay_file    = "../images/qgn_plat_button_radio_empty_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image 
@@ -81,13 +74,16 @@ style "osso-radiobutton"
 	shadow          = IN
 	state           = INSENSITIVE
 	overlay_file    = "../images/qgn_plat_button_radio_selected_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = TRUE
       }
     image
       {
-        function        = FOCUS
+        function = FOCUS
+        file = "../images/qgn_plat_focus_active.png"
+        border = { 2, 2, 2, 2 }
+        stretch = TRUE
       }
+
   }
 }
 class "GtkRadioButton" style "osso-radiobutton"

@@ -27,7 +27,6 @@ style "osso-scrollbar"
 	state           = ACTIVE
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_left_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -36,7 +35,6 @@ style "osso-scrollbar"
 	state           = SELECTED
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_left_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -45,7 +43,6 @@ style "osso-scrollbar"
 	state           = INSENSITIVE
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_left_arrow_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image    
@@ -53,7 +50,6 @@ style "osso-scrollbar"
         function        = STEPPER
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_left_arrow_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     
@@ -64,7 +60,6 @@ style "osso-scrollbar"
 	state           = ACTIVE
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_right_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -73,7 +68,6 @@ style "osso-scrollbar"
 	state           = SELECTED
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_right_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -82,7 +76,6 @@ style "osso-scrollbar"
 	state           = INSENSITIVE
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_right_arrow_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -90,7 +83,6 @@ style "osso-scrollbar"
         function        = STEPPER
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_scroll_horizontal_right_arrow_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
 
@@ -101,7 +93,6 @@ style "osso-scrollbar"
 	state           = ACTIVE
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_scroll_vertical_up_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -110,7 +101,6 @@ style "osso-scrollbar"
 	state           = SELECTED
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_scroll_vertical_up_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -119,7 +109,6 @@ style "osso-scrollbar"
 	state           = INSENSITIVE
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_scroll_vertical_up_arrow_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -127,7 +116,6 @@ style "osso-scrollbar"
         function        = STEPPER
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_scroll_vertical_up_arrow_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     
@@ -138,7 +126,6 @@ style "osso-scrollbar"
 	state           = ACTIVE
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_scroll_vertical_down_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -147,7 +134,6 @@ style "osso-scrollbar"
 	state           = SELECTED
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_scroll_vertical_down_arrow_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -156,7 +142,6 @@ style "osso-scrollbar"
 	state           = INSENSITIVE
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_scroll_vertical_down_arrow_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -164,7 +149,6 @@ style "osso-scrollbar"
         function        = STEPPER
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_scroll_vertical_down_arrow_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
   }

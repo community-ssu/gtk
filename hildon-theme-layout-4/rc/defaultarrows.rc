@@ -11,7 +11,6 @@ style "hildon-default-arrows"
 	state           = ACTIVE
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_arrow_left_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -20,7 +19,6 @@ style "hildon-default-arrows"
 	state           = SELECTED
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_arrow_left_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -29,7 +27,6 @@ style "hildon-default-arrows"
 	state           = INSENSITIVE
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_arrow_left_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -37,7 +34,6 @@ style "hildon-default-arrows"
         function        = ARROW
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_arrow_left_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     
@@ -48,7 +44,6 @@ style "hildon-default-arrows"
 	state           = ACTIVE
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_right_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -57,7 +52,6 @@ style "hildon-default-arrows"
 	state           = SELECTED
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_right_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -66,7 +60,6 @@ style "hildon-default-arrows"
 	state           = INSENSITIVE
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_right_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -74,7 +67,6 @@ style "hildon-default-arrows"
         function        = ARROW
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_right_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
 
@@ -85,7 +77,6 @@ style "hildon-default-arrows"
 	state           = ACTIVE
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_arrow_up_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -94,7 +85,6 @@ style "hildon-default-arrows"
 	state           = SELECTED
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_arrow_up_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       } 
     image
@@ -103,7 +93,6 @@ style "hildon-default-arrows"
 	state           = INSENSITIVE
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_arrow_up_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -111,7 +100,6 @@ style "hildon-default-arrows"
         function        = ARROW
 	arrow_direction = UP
 	overlay_file    = "../images/qgn_plat_arrow_up_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     
@@ -122,7 +110,6 @@ style "hildon-default-arrows"
 	state           = ACTIVE
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_down_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image    
@@ -131,7 +118,6 @@ style "hildon-default-arrows"
 	state           = SELECTED
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_down_pressed.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -140,7 +126,6 @@ style "hildon-default-arrows"
 	state           = INSENSITIVE
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_down_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
     image
@@ -148,7 +133,6 @@ style "hildon-default-arrows"
         function        = ARROW
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_down_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
       }
   }

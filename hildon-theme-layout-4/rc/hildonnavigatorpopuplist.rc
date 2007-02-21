@@ -23,7 +23,6 @@ style "osso-popuplist" = "osso-logical-colors"
         state           = NORMAL
         detail          = "cellcheck"
         overlay_file    = "../images/qgn_plat_check_box_empty_normal.png"
-        overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
     image
@@ -33,7 +32,6 @@ style "osso-popuplist" = "osso-logical-colors"
         state           = ACTIVE
         detail          = "cellcheck"
         overlay_file    = "../images/qgn_plat_check_box_selected_normal.png"
-        overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
     image
@@ -43,7 +41,6 @@ style "osso-popuplist" = "osso-logical-colors"
         state           = SELECTED
         detail          = "cellcheck"
         overlay_file    = "../images/qgn_plat_check_box_selected_normal.png"
-        overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
     image
@@ -53,7 +50,6 @@ style "osso-popuplist" = "osso-logical-colors"
         state           = INSENSITIVE
         detail          = "cellcheck"
         overlay_file    = "../images/qgn_plat_check_box_empty_normal.png"
-        overlay_border  = { 0, 0, 0, 0 }
         overlay_stretch = FALSE
       }
   }

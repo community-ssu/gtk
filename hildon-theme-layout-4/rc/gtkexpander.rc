@@ -22,7 +22,6 @@ style "osso-expander" {
         detail = "expander"
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_expander_focused.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
     }
     image {
@@ -31,7 +30,6 @@ style "osso-expander" {
         detail = "expander"
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_expander_down_focused.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
     }
     image {
@@ -40,7 +38,6 @@ style "osso-expander" {
         detail = "expander"
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_expander_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
     }
     image {
@@ -49,7 +46,6 @@ style "osso-expander" {
         detail = "expander"
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_expander_down_normal.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
     }
     image {
@@ -58,7 +54,6 @@ style "osso-expander" {
         detail = "expander"
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_arrow_expander_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
     }
     image {
@@ -67,7 +62,6 @@ style "osso-expander" {
         detail = "expander"
 	arrow_direction = DOWN
 	overlay_file    = "../images/qgn_plat_arrow_expander_down_disabled.png"
-	overlay_border  = { 0, 0, 0, 0 }
 	overlay_stretch = FALSE
     }
   }
