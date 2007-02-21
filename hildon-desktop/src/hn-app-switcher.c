@@ -157,41 +157,6 @@ static void
 hn_app_switcher_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec);
 
 static void
-hn_app_image_animation (GtkWidget *icon,
-		       gboolean   is_on)
-{
-  GdkPixbuf *pixbuf;
-  GdkPixbufAnimation *pixbuf_anim;
-
-  g_return_if_fail (GTK_IS_IMAGE (icon));
-
-  if (is_on)
-  {
-    pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (icon));
-    pixbuf_anim = 
-      hn_app_pixbuf_anim_blinker_new (pixbuf, 1000 / ANIM_FPS, -1, 10);
-     
-    gtk_image_set_from_animation (GTK_IMAGE(icon), pixbuf_anim);
-    g_object_unref (pixbuf_anim);
-  }
-  else
-  {
-    pixbuf_anim = gtk_image_get_animation (GTK_IMAGE (icon));
-
-    /* grab static image from menu item and reset */
-    pixbuf = gdk_pixbuf_animation_get_static_image (pixbuf_anim);
-
-    gtk_image_set_from_pixbuf (GTK_IMAGE (icon), pixbuf);
-
-    /*
-     * unrefing the pixbuf here causes SIGSEGV
-     */
-      
-    /*g_object_unref (pixbuf);*/
-  }
-}
-
-static void
 refresh_app_button (HNAppSwitcher *app_switcher, HDEntryInfo *entry, gint pos);
 
 static void
@@ -265,6 +230,97 @@ struct _HNAppSwitcherPrivate
 };
 
 G_DEFINE_TYPE (HNAppSwitcher, hn_app_switcher, TASKNAVIGATOR_TYPE_ITEM);
+
+static void
+hn_app_switcher_get_workarea (GtkAllocation *allocation)
+{
+  unsigned long n;
+  unsigned long extra;
+  int format;
+  int status;
+  Atom property = XInternAtom (GDK_DISPLAY (), WORKAREA_ATOM, FALSE);
+  Atom realType;
+  
+  /* This is needed to get rid of the punned type-pointer 
+     breaks strict aliasing warning*/
+  union
+  {
+    unsigned char *char_value;
+    int *int_value;
+  } value;
+    
+  status = XGetWindowProperty (GDK_DISPLAY (), 
+			       GDK_ROOT_WINDOW (), 
+			       property, 
+			       0L, 
+			       4L,
+			       0, 
+			       XA_CARDINAL, 
+			       &realType, 
+			       &format,
+			       &n, 
+			       &extra, 
+			       (unsigned char **) &value.char_value);
+    
+  if (status == Success &&
+      realType == XA_CARDINAL &&
+      format == 32 && 
+      n == 4  &&
+      value.char_value != NULL)
+  {
+    allocation->x = value.int_value[0];
+    allocation->y = value.int_value[1];
+    allocation->width = value.int_value[2];
+    allocation->height = value.int_value[3];
+  }
+  else
+  {
+    allocation->x = 0;
+    allocation->y = 0;
+    allocation->width = 0;
+    allocation->height = 0;
+  }
+    
+  if (value.char_value) 
+  {
+    XFree(value.char_value);  
+  }
+}
+
+static void
+hn_app_image_animation (GtkWidget *icon,
+		       gboolean   is_on)
+{
+  GdkPixbuf *pixbuf;
+  GdkPixbufAnimation *pixbuf_anim;
+
+  g_return_if_fail (GTK_IS_IMAGE (icon));
+
+  if (is_on)
+  {
+    pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (icon));
+    pixbuf_anim = 
+      hn_app_pixbuf_anim_blinker_new (pixbuf, 1000 / ANIM_FPS, -1, 10);
+     
+    gtk_image_set_from_animation (GTK_IMAGE(icon), pixbuf_anim);
+    g_object_unref (pixbuf_anim);
+  }
+  else
+  {
+    pixbuf_anim = gtk_image_get_animation (GTK_IMAGE (icon));
+
+    /* grab static image from menu item and reset */
+    pixbuf = gdk_pixbuf_animation_get_static_image (pixbuf_anim);
+
+    gtk_image_set_from_pixbuf (GTK_IMAGE (icon), pixbuf);
+
+    /*
+     * unrefing the pixbuf here causes SIGSEGV
+     */
+      
+    /*g_object_unref (pixbuf);*/
+  }
+}
 
 static gint
 get_app_button_pos (GtkWidget *button)
@@ -602,22 +658,77 @@ main_menu_position_func (GtkMenu  *menu,
 			 gboolean *push_in,
 			 gpointer  data)
 {
-  GtkWidget *widget = GTK_WIDGET (data);
   GtkRequisition req;
-
-  if (!GTK_WIDGET_REALIZED (widget))
+  GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (menu));
+  gint menu_height = 0;
+  gint main_height = 0;
+  GtkAllocation workarea = { 0, 0, 0, 0 };
+  GtkWidget *top_level;
+  HildonDesktopPanelWindowOrientation orientation = 
+      HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT;
+  GtkWidget *button = HN_APP_SWITCHER (data)->priv->main_button;
+  
+  if (!GTK_WIDGET_REALIZED (GTK_WIDGET (data)))
     return;
 
-  if (hd_wm_fullscreen_mode())
-    *x = 0;
-  else
-    gdk_window_get_origin (widget->window, x, y);
-    *x += widget->allocation.width;
-
-  gtk_widget_size_request ((HN_APP_SWITCHER (widget)->priv->main_menu), &req);
-  *y = (*y + widget->allocation.y);/*FIXME: + req.height;*/
+  hn_app_switcher_get_workarea (&workarea);
 
   *push_in = FALSE;
+
+  top_level = gtk_widget_get_toplevel (button);
+
+  if (HILDON_DESKTOP_IS_PANEL_WINDOW (top_level))
+  {
+    g_object_get (top_level, "orientation", &orientation, NULL);
+  }
+ 
+  gtk_widget_size_request (GTK_WIDGET (menu), &req);
+
+  menu_height = req.height;
+  main_height = gdk_screen_get_height (screen);
+
+  if (hd_wm_fullscreen_mode ())
+  {
+    *x = 0;
+    *y = MAX (0, (main_height - menu_height));
+  }
+  else
+  {
+    switch (orientation)
+    {
+      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT:
+        *x = workarea.x;
+
+        if (main_height - button->allocation.y < menu_height)
+          *y = MAX (0, (main_height - menu_height));
+        else
+          *y = button->allocation.y;
+        break;
+
+      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_RIGHT:
+        *x = workarea.x + workarea.width - req.width;
+
+        if (main_height - button->allocation.y < menu_height)
+          *y = MAX (0, (main_height - menu_height));
+        else
+          *y = button->allocation.y;
+        break;
+          
+      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_TOP:
+        *x = button->allocation.x;
+        *y = workarea.y;
+        break;
+          
+      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_BOTTOM:
+        *x = button->allocation.x;
+        *y = workarea.y + workarea.height - req.height;
+        break;
+
+      default:
+        g_assert_not_reached ();
+    }
+  }
+  g_debug ("####################################################################################### %d %d", *x, *y);
 }
 
 

@@ -777,34 +777,37 @@ hn_others_button_get_menu_position (GtkMenu *menu,
   switch (orientation)
   {
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT:
-        *x =  workarea.x;
+      *x =  workarea.x;
 
-        if (main_height - button->allocation.y < menu_height)
-          *y = MAX(0, ((main_height - menu_height) / 2));
-        else
-          *y = button->allocation.y;
-        
-        break;
+      if (main_height - button->allocation.y < menu_height)
+        *y = MAX(0, ((main_height - menu_height) / 2));
+      else
+        *y = button->allocation.y;
+      
+      break;
 
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_RIGHT:
-        *x =  workarea.x + workarea.width - req.width;
+      *x =  workarea.x + workarea.width - req.width;
 
-        if (main_height - button->allocation.y < menu_height)
-          *y = MAX(0, ((main_height - menu_height) / 2));
-        else
-          *y = button->allocation.y;
+      if (main_height - button->allocation.y < menu_height)
+        *y = MAX(0, ((main_height - menu_height) / 2));
+      else
+        *y = button->allocation.y;
+      
+      break;
         
-        break;
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_TOP:
-        *x = button->allocation.x;
-        *y = workarea.y;
-        break;
+      *x = button->allocation.x;
+      *y = workarea.y;
+      break;
+        
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_BOTTOM:
-        *x = button->allocation.x;
-        *y = workarea.y + workarea.height - req.height;
-        break;
+      *x = button->allocation.x;
+      *y = workarea.y + workarea.height - req.height;
+      break;
+
     default:
-        g_assert_not_reached ();
+      g_assert_not_reached ();
   }
 
 }
