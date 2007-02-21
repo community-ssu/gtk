@@ -178,24 +178,6 @@ titlebar_menu_deactivate_cb (GtkWidget *widget,
 }
 
 static void
-titlebar_normal_menu_detach (GtkWidget *widget,
-                             GtkMenu   *menu)
-{
-  HildonHomeTitlebar *titlebar = HILDON_HOME_TITLEBAR (widget);
-
-  titlebar->priv->menu = NULL;
-}
-
-static void
-titlebar_layout_menu_detach (GtkWidget *widget,
-                             GtkMenu   *menu)
-{
-  HildonHomeTitlebar *titlebar = HILDON_HOME_TITLEBAR (widget);
-
-  titlebar->priv->menu = NULL;
-}
-
-static void
 titlebar_menu_position_func (GtkMenu  *menu,
                              gint     *x,
                              gint     *y,
@@ -647,9 +629,6 @@ hildon_home_titlebar_set_menu (HildonHomeTitlebar *titlebar,
   if (priv->menu)
     gtk_menu_detach (GTK_MENU (priv->menu));
 
-  gtk_menu_attach_to_widget (GTK_MENU (menu), 
-                             GTK_WIDGET (titlebar),
-                             titlebar_normal_menu_detach);
   priv->menu = menu;
 
   gtk_widget_set_name (menu, HH_TITLEBAR_MENU_WIDGET_NAME);
@@ -676,9 +655,6 @@ hildon_home_titlebar_set_layout_menu (HildonHomeTitlebar *titlebar,
   if (priv->layout_menu)
     gtk_menu_detach (GTK_MENU (priv->layout_menu));
 
-  gtk_menu_attach_to_widget (GTK_MENU (menu), 
-                             GTK_WIDGET (titlebar),
-                             titlebar_layout_menu_detach);
   priv->layout_menu = menu;
 
   gtk_widget_set_name (menu, HH_TITLEBAR_MENU_WIDGET_NAME);

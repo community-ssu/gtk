@@ -1,3 +1,8 @@
+2007-02-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-titlebar.c: Work around a bug
+	in GTK+/matchbox by not attaching the menu to the titlebar
+
 2007-02-21  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/main.c: user GETTEXT_PACKAGE to setup the l10n environment.

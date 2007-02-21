@@ -507,7 +507,7 @@ hn_others_menu_get_items (GtkMenu *menu,
         menu_item = hildon_thumb_menu_item_new_with_labels (
       	        (item_text_domain && *item_text_domain)?
       	        dgettext(item_text_domain, item_name):
-      	        _(item_name),
+      	        dgettext("maemo-af-desktop", item_name),
       	        NULL,
       	        child_string);
 
@@ -554,7 +554,7 @@ hn_others_menu_get_items (GtkMenu *menu,
       menu_item = hildon_thumb_menu_item_new_with_labels (
       		(item_text_domain && *item_text_domain)?
       		dgettext(item_text_domain, item_name):
-      		_(item_name),
+      		dgettext("maemo-af-desktop", item_name),
       		NULL,
       		/* work around strange behaviour of gettext for
       		 * empty  strings
