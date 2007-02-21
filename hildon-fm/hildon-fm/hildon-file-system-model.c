@@ -1111,7 +1111,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             /* the following if clause handles the hourglass icon */
             if (path && info && !model_node->thumbnail_cache)
             {
-              OssoMimeCategory cat;
+              HildonMimeCategory cat;
               const gchar *mime_type;
               gchar *uri = gtk_file_system_path_to_uri(priv->filesystem,
                                                        path);
@@ -1124,7 +1124,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                   (uri && !g_str_has_prefix(uri, "obex://")))
               {
                 cat = hildon_mime_get_category_for_mime_type(mime_type);
-                if (cat == OSSO_MIME_CATEGORY_IMAGES)
+                if (cat == HILDON_MIME_CATEGORY_IMAGES)
                   model_node->thumbnail_cache =
                     _hildon_file_system_load_icon_cached(
                         gtk_icon_theme_get_default(),
