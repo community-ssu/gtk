@@ -111,14 +111,6 @@ void add_method_cb(osso_manager_t *manager,
                             gpointer data);
 
 
-/** Method to set the x window to be used by the osso manager */
-void osso_manager_set_window(osso_manager_t *man,Window win);
-
-
-
-/** Check if a service given is connected to D-BUS*/
-int is_service_running(const char *service);
-
 /** Getter for the osso context */
 
 G_END_DECLS

@@ -404,9 +404,9 @@ hd_wm_dbus_method_call_handler (DBusConnection *connection,
     if (dbus_error_is_set (&error))
     {
       g_warning ("Error getting message args: %s\n", error.message);
+      dbus_error_free (&error);
       return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
-
 
     g_return_val_if_fail (service_name, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
 
@@ -473,6 +473,7 @@ hd_wm_dbus_signal_handler (DBusConnection *conn, DBusMessage *msg, void *data)
     {
 	g_warning ("Error getting message args: %s\n",
 		 err.message);
+        dbus_error_free (&err);
 	return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
     }
 
