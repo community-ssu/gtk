@@ -7,11 +7,6 @@ style "osso-progressbar" = "osso-logical-colors"
 {
   xthickness = 2
   ythickness = 3
-  GtkProgressBar::width-increment = 0
-  GtkProgressBar::height-increment = 0
-  GtkProgressBar::text-spacing = -2
-  GtkProgressBar::text-xnudge = 0
-  GtkProgressBar::text-ynudge = 0
   
   fg[NORMAL] = "ProgressTextColor1"
   fg[PRELIGHT] = "ProgressTextColor2"
