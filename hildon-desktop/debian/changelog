@@ -1,3 +1,13 @@
+hildon-desktop (0.0.0-20) unstable; urgency=low
+
+  * src/hn-app-switcher.c: fix app switcher menu positioning taking the
+  panel orientation into account. 
+
+  * libhildondesktop/hildon-home-titlebar.c: Work around a bug
+  in GTK+/matchbox by not attaching the menu to the titlebar
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Feb 2007 14:23:25 +0200
+
 hildon-desktop (0.0.0-19) unstable; urgency=low
 
   * Added dependency on l10n 
