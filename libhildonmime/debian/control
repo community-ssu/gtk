@@ -6,6 +6,7 @@ Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev (>= 2.8), libosso-gnomevfs2-
 Standards-Version: 3.6.1.0
 
 Package: libhildonmime0
+Conflicts: libossomime0 (<< 1.8.5) 
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, hildon-update-category-database (= ${Source-Version}), osso-uri-l10n-mr0 | osso-uri-l10n-mr

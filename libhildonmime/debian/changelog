@@ -1,3 +1,9 @@
+libhildonmime (1.9.1) unstable; urgency=low
+
+  * Added conflict package 
+
+ -- Erik Karlsson <erik.b.karlsson@nokia.com>  Wed, 21 Feb 2007 16:36:12 +0200
+
 libhildonmime (1.9.0-1) unstable; urgency=low
 
   * Start new development branch
