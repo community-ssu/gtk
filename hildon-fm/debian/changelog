@@ -1,3 +1,9 @@
+libhildonfm (2.11-2) unstable; urgency=low
+
+  * Fat fingered a "i" into debhelper Build-Dependency...
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Feb 2007 14:48:16 +0200
+
 libhildonfm (2.11-1) unstable; urgency=low
 
   * Consolidated away use of osso-mime, in favor of hildon-mime.
