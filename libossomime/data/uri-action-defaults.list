@@ -1,0 +1,9 @@
+[Default Actions]
+jabberto=hildon-osso-addressbook.desktop
+voipto=hildon-browser.desktop
+http=hildon-browser.desktop
+https=hildon-browser.desktop
+ftp=hildon-browser.desktop
+sipto=hildon-osso-addressbook.desktop
+mailto=hildon-email-engine.desktop
+chatto=hildon-chat-ui.desktop

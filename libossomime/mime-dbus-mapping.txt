@@ -1,0 +1,63 @@
+MIME/DBus Service Mapping
+=========================
+
+Note: This document assumes familiarity with adding MIME types to the
+system, using the shared-mime-info specification. The specification
+can be found at:
+
+  http://standards.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-0.13.html 
+
+There are 2 different utilities used when it comes to the MIME
+database/desktop files:
+
+  * update-desktop-database:
+  * update-mime-datebase:
+
+
+Desktop files
+-------------
+
+These are found in $prefix/share/applications. Each application has a
+desktop file, that specifies how it is started, what name it has,
+etc. It also specifies which MIME types the application can handle, if
+any.
+
+The desktop file standard can be found here:
+
+  http://www.freedesktop.org/wiki/Standards_2fdesktop_2dentry_2dspec 
+
+In Maemo, the ONLY addition to the standard for .desktop files is the
+'X-Osso-Service' key. This identifies the DBus service to to talk to
+when trying to open a URI.
+
+When the osso_mime_open_*() API is called with a URI, GnomeVFS is used
+to get the default MIME type if there is one, and otherwise the first
+from the list of possible ones for the specified MIME type is used.
+
+Then a DBus message is sent to activate the service specified by the
+'X-Osso-Service' value, and the URI is passed to it for opening.
+
+The 'MimeType' key which is part of the standard is used by GnomeVFS
+to find out which desktop file it should return for us to look up the
+'X-Osso-Service' key in.  Note, the 'MimeType' value is a semi-colon
+separated list of types, for example 'image/png;image/jpeg;'. Note the
+trailing semi-colon.
+
+
+Updating the Desktop Database
+-----------------------------
+
+The 'update-desktop-database' command looks at *.desktop file anywhere below:
+
+  $prefix/share/applications/
+
+and from those files generates cache files, which are used when
+looking up which application to open a certain MIME type with, in
+order to not having to go through all the desktop files when doing
+that.
+
+Like update-mime-database, this is usually done in the post-inst phase
+in a Debian package, in addition to "make install" in the makefile
+target:
+
+  update-desktop-database $prefix/share/applications
