@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-19) unstable; urgency=low
+
+  * Added dependency on l10n 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Feb 2007 11:35:32 +0200
+
 hildon-desktop (0.0.0-18) unstable; urgency=low
 
   * New experimental snapshot 

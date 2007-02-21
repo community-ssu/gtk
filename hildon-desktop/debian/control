@@ -8,7 +8,7 @@ Standards-Version: 3.6.0
 Package: hildon-desktop
 Section: x11
 Architecture: any
-Depends:  ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}
+Depends:  ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, maemo-af-desktop-l10n-mr | maemo-af-desktop-l10n-mr0
 Conflicts: maemo-af-desktop
 Replaces: maemo-af-desktop
 Description: Desktop environment for embedded devices
