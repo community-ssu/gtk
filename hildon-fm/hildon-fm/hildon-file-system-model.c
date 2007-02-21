@@ -45,7 +45,7 @@
 #include <sys/vfs.h>
 #include <unistd.h>
 #include <errno.h>
-#include <osso-mime.h>
+#include <hildon-mime.h>
 
 #include "hildon-file-common-private.h"
 #include "hildon-file-system-special-location.h"
@@ -1123,7 +1123,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               if (strcmp(mime_type, "sketch/png") != 0 &&
                   (uri && !g_str_has_prefix(uri, "obex://")))
               {
-                cat = osso_mime_get_category_for_mime_type(mime_type);
+                cat = hildon_mime_get_category_for_mime_type(mime_type);
                 if (cat == OSSO_MIME_CATEGORY_IMAGES)
                   model_node->thumbnail_cache =
                     _hildon_file_system_load_icon_cached(

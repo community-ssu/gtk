@@ -1,3 +1,9 @@
+2007-02-21  Erik Karlsson  <erik.b.karlsson@nokia.com>
+
+        * hildon-fm/hildon-file-system-model.c: Changed from osso-mime.h to
+	hildon-mime.h. Changed osso_mime_* functions to hildon_mime_*
+	functions.
+
 2007-02-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-chooser-dialog.c,
