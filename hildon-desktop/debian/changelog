@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-21) unstable; urgency=low
+
+  * libhildonwm/hd-wm.c: Initialize DBus error
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Feb 2007 14:51:26 +0200
+
 hildon-desktop (0.0.0-20) unstable; urgency=low
 
   * src/hn-app-switcher.c: fix app switcher menu positioning taking the
