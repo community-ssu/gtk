@@ -2,6 +2,22 @@
 
 	* rc/gtkprogressbar.rc:
 
+	Shrink {x,y}spacing by 2 pixels.
+
+2007-02-21  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkcheckbutton.rc:
+	* rc/gtkradiobutton.rc:
+
+	Add new FOCUS rules to match code changes in sapwood. Makes the focus
+	on standalone {check,radio}buttons have some vague resemblace to the
+	spec, but this needs more work (and very possibly theme graphics
+	changes).
+
+2007-02-21  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkprogressbar.rc:
+
 	Remove old style properties.
 
 2007-02-20  Xan Lopez  <xan.lopez@nokia.com>
