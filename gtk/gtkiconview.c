@@ -1894,7 +1894,11 @@ gtk_icon_view_button_press (GtkWidget      *widget,
   GtkIconViewCellInfo *info = NULL;
   gboolean dirty = FALSE;
   GtkCellRendererMode mode;
+#ifdef MAEMO_CHANGES
   gint cursor_cell = -1;
+#else
+  gint cursor_cell;
+#endif /* MAEMO_CHANGES */
 
   icon_view = GTK_ICON_VIEW (widget);
 
@@ -1908,10 +1912,16 @@ gtk_icon_view_button_press (GtkWidget      *widget,
     {
       item = gtk_icon_view_get_item_at_coords (icon_view, 
 					       event->x, event->y,
+#ifdef MAEMO_CHANGES
 					       FALSE,
+#else
+					       TRUE,
+#endif /* MAEMO_CHANGES */
 					       &info); 
+
       if (item != NULL)
 	{
+#ifdef MAEMO_CHANGES
           if (info != NULL)
             {
 	      g_object_get (info->cell, "mode", &mode, NULL);
@@ -1920,6 +1930,15 @@ gtk_icon_view_button_press (GtkWidget      *widget,
 	          mode == GTK_CELL_RENDERER_MODE_EDITABLE)
 	        cursor_cell = g_list_index (icon_view->priv->cell_list, info);
 	    }
+#else
+	  g_object_get (info->cell, "mode", &mode, NULL);
+	  
+	  if (mode == GTK_CELL_RENDERER_MODE_ACTIVATABLE ||
+	      mode == GTK_CELL_RENDERER_MODE_EDITABLE)
+	    cursor_cell = g_list_index (icon_view->priv->cell_list, info);
+	  else
+	    cursor_cell = -1;
+#endif /* MAEMO_CHANGES */	  
 
 	  gtk_icon_view_scroll_to_item (icon_view, item);
  
@@ -1980,15 +1999,19 @@ gtk_icon_view_button_press (GtkWidget      *widget,
 	  /* cancel the current editing, if it exists */
 	  gtk_icon_view_stop_editing (icon_view, TRUE);
 
+#ifdef MAEMO_CHANGES
           if (info != NULL)
             {
+#endif /* MAEMO_CHANGES */
 	      if (mode == GTK_CELL_RENDERER_MODE_ACTIVATABLE)
 	        gtk_icon_view_item_activate_cell (icon_view, item, info, 
 	          			          (GdkEvent *)event);
 	      else if (mode == GTK_CELL_RENDERER_MODE_EDITABLE)
 	        gtk_icon_view_start_editing (icon_view, item, info, 
 	      				     (GdkEvent *)event);	  
+#ifdef MAEMO_CHANGES
             }
+#endif /* MAEMO_CHANGES */
 	}
       else
 	{
@@ -2879,6 +2902,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 #endif
 
   if (item->selected)
+#ifdef MAEMO_CHANGES
     {
       gdk_cairo_set_source_color (cr, &GTK_WIDGET (icon_view)->style->base[state]);
 
@@ -2889,7 +2913,31 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
 
       cairo_fill (cr);
     }
-  
+#else
+    for (l = icon_view->priv->cell_list; l; l = l->next)
+      {
+	GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
+	
+	if (!info->cell->visible)
+	  continue;
+	
+	gtk_icon_view_get_cell_box (icon_view, item, info, &box);
+
+	/* FIXME we hardwire background drawing behind text
+	 * cell renderers here 
+	 */
+	if (GTK_IS_CELL_RENDERER_TEXT (info->cell))
+	  {
+	    gdk_cairo_set_source_color (cr, &GTK_WIDGET (icon_view)->style->base[state]);
+	    cairo_rectangle (cr,
+			     x - item->x + box.x, 
+			     y - item->y + box.y,
+			     box.width, box.height);
+	    cairo_fill (cr);
+	  }
+      }
+#endif /* MAEMO_CHANGES */
+
   for (l = icon_view->priv->cell_list; l; l = l->next)
     {
       GtkIconViewCellInfo *info = (GtkIconViewCellInfo *)l->data;
@@ -2938,9 +2986,15 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
           if (!info->cell->visible)
             continue;
 
-          /* If found a editable/activatable cell, draw focus on it. */          
+#ifdef MAEMO_CHANGES
+          /* If found a editable/activatable cell, draw focus on it. */
           if (icon_view->priv->cursor_cell < 0 &&
               info->cell->mode != GTK_CELL_RENDERER_MODE_INERT)
+#else
+	  if (icon_view->priv->cursor_cell < 0 &&
+	      (info->cell->mode != GTK_CELL_RENDERER_MODE_INERT ||
+	       GTK_IS_CELL_RENDERER_TEXT (info->cell)))
+#endif /* MAEMO_CHANGES */
             icon_view->priv->cursor_cell = i;
 
           gtk_icon_view_get_cell_box (icon_view, item, info, &box);
@@ -2961,6 +3015,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
             }
         }
 
+#ifdef MAEMO_CHANGES
       /* If there are no editable/activatable cells, draw focus 
        * around the whole item. */          
       if (icon_view->priv->cursor_cell < 0)
@@ -2974,6 +3029,7 @@ gtk_icon_view_paint_item (GtkIconView     *icon_view,
                    y - padding,
                    item->width + 2 * padding,
                    item->height + 2 * padding);
+#endif /* MAEMO_CHANGES */
     }
 }
 
@@ -4448,8 +4504,12 @@ gtk_icon_view_get_path_at_pos (GtkIconView *icon_view,
   
   g_return_val_if_fail (GTK_IS_ICON_VIEW (icon_view), NULL);
 
+#ifdef MAEMO_CHANGES
   item = gtk_icon_view_get_item_at_coords (icon_view, x, y, FALSE, NULL);
-
+#else
+  item = gtk_icon_view_get_item_at_coords (icon_view, x, y, TRUE, NULL);
+#endif /* MAEMO_CHANGES */
+  
   if (!item)
     return NULL;
 

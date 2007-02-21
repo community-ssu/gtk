@@ -1,3 +1,8 @@
+2007-02-21  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* gtk/gtkiconview.c: surround all changes made on selection behavior
+	with MAEMO_CHANGES ifdefs.
+
 Wed Feb 21 13:43:33 2007  Tim Janik  <timj@gtk.org>
 
 	* gtkprogressbar.c: adapt minimum progressbar height (used for progress
