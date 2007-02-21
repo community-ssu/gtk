@@ -81,6 +81,8 @@ int                             main (int argc, char **argv)
         GtkSettings *settings;
         GSList *rc_list = NULL;
         GSList *iterator = NULL;
+        
+        g_set_prgname (g_basename (argv [0]));
 
         if (argc < 2) {
                 show_banner ();
