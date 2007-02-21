@@ -1,8 +1,6 @@
 categoriesdir = $(datadir)/mime/packages
 categories_DATA = categories.xml
 
-defaultsdir = $(datadir)/applications
-defaults_DATA = uri-action-defaults.list
 
 install-data-hook: 
 if ENABLE_UPDATE_CATEGORYDB
