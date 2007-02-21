@@ -1013,6 +1013,7 @@ hd_wm_activate_service (const gchar *app, const gchar *parameters)
         g_snprintf(interface,INTERFACE_NAME_LEN,"%s",service);
     }
 
+    dbus_error_init (&error);
     conn = dbus_bus_get (DBUS_BUS_SESSION, &error);
 
     if (dbus_error_is_set (&error))
