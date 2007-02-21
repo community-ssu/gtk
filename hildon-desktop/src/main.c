@@ -43,11 +43,11 @@ int main (int argc, char **argv)
 
   setlocale (LC_ALL, "");
 
-  bindtextdomain (PACKAGE, LOCALEDIR);
+  bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
 
-  bind_textdomain_codeset (PACKAGE, "UTF-8");
+  bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
-  textdomain (PACKAGE);
+  textdomain (GETTEXT_PACKAGE);
 
   /* Read the maemo-af-desktop gtkrc file */
   gtkrc = g_build_filename (g_get_home_dir (), 

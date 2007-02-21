@@ -66,6 +66,7 @@ AC_SUBST(CFLAGS)
 ALL_LINGUAS="en_GB"
 AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
+AC_DEFINE(GETTEXT_PACKAGE, ["maemo-af-desktop"], [Package name for gettext])
 
 PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
 localedir=`pkg-config osso-af-settings --variable=localedir`

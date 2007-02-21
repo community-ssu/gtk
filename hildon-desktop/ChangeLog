@@ -1,3 +1,9 @@
+2007-02-21  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/main.c: user GETTEXT_PACKAGE to setup the l10n environment.
+	* configure.ac: define a GETTEXT_PACKAGE to bring flexibility on
+	defining i18n/l10n settings.
+
 2007-02-21  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildonwm/libhildonwm.pc.in: Fixed dependency on hildon-1
