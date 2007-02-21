@@ -1,4 +1,4 @@
-usr/lib/libhildonmime.so
-usr/lib/libhildonmime.la
-usr/lib/pkgconfig/libhildonmime.pc
+usr/lib/libossomime.so
+usr/lib/libossomime.la
+usr/lib/pkgconfig/libossomime.pc
 usr/include/*.h

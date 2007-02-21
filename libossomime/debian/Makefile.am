@@ -5,6 +5,6 @@ EXTRA_DIST =                       	\
 	copyright		   	\
 	hildon-update-category-database.install \
 	hildon-update-category-database.postinst \
-	libhildonmime0.install		\
-	libhildonmime-dev.install		\
+	libossomime0.install		\
+	libossomime-dev.install		\
 	rules

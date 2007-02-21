@@ -65,7 +65,6 @@ binary-arch: install
 	dh_testroot
 	dh_install --sourcedir=debian/tmp
 	dh_installchangelogs 
-	dh_installdocs README docs/mime-category-mapping.txt docs/mime-dbus-mapping.txt
 	dh_link
 	dh_strip --dbg-package=libossomime0
 	dh_compress
