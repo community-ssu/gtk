@@ -1,3 +1,8 @@
+Wed Feb 21 13:43:33 2007  Tim Janik  <timj@gtk.org>
+
+	* gtkprogressbar.c: adapt minimum progressbar height (used for progress
+	bars without text) to maemo theme image height.
+
 2007-02-20  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* gtk/gtkiconview.c: selection painted around the item, not just the

@@ -41,7 +41,15 @@
 
 
 #define MIN_HORIZONTAL_BAR_WIDTH   150
+#ifdef MAEMO_CHANGES
+/* maemo themes use 30pixel heigh progressbar images; so this setting is
+ * adjusted for progressbars to have the correct height, even when no text
+ * is being displayed.
+ */
+#define MIN_HORIZONTAL_BAR_HEIGHT  30
+#else /* !MAEMO_CHANGES */
 #define MIN_HORIZONTAL_BAR_HEIGHT  20
+#endif /* !MAEMO_CHANGES */
 #define MIN_VERTICAL_BAR_WIDTH     22
 #define MIN_VERTICAL_BAR_HEIGHT    80
 #define MAX_TEXT_LENGTH            80
