@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-18) unstable; urgency=low
+
+  * New experimental snapshot 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 21 Feb 2007 10:42:25 +0200
+
 hildon-desktop (0.0.0-17) unstable; urgency=low
 
   * src/Makefile.am: Added LAUNCHER_LDFLAGS to the link

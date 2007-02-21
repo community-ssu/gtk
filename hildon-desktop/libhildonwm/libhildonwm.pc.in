@@ -6,7 +6,7 @@ localedir=@localedir@
 
 Name: libhildonwm
 Description: Hildon WM Lib 
-Requires: libhildon-1 libxml-2.0 x11 xtst libosso
+Requires: hildon-1 libxml-2.0 x11 xtst libosso
 Version: @VERSION@
 Libs: -L${libdir} -lhildonwm -lX11 -lXtst -losso
 Cflags: -I${includedir}

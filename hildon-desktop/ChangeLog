@@ -1,3 +1,7 @@
+2007-02-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonwm/libhildonwm.pc.in: Fixed dependency on hildon-1
+
 2007-02-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildonwm/hd_entry_info.[ch]:
