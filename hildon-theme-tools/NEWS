@@ -1,5 +1,6 @@
-[UNRELEASED]
+[0.3.0 release]
 * Fixing a tiny dep problem in debian package
+* New tool: hildon-theme-bootstrap
 
 [0.2.1 release]
 * Outliner tool now outlines colors as well. 

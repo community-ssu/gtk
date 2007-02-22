@@ -3,7 +3,26 @@ These are the hildon theme tools
 
 These tools allow you to create themes for the maemo platform.  They
 are intended to support the various theme layout packages (such as
-hildon-theme-layout-2 for mistral or hildon-theme-layout-3 for sardine).
+hildon-theme-layout-2 for mistral or hildon-theme-layout-3 for bora, etc.).
 
-See these layout packages for more information on how to create a
-actual theme package.
+Tools lists
+-----------
+
+ * hildon-theme-bootstrap
+ * hildon-theme-mk-bundle 
+ * hildon-theme-rc-parser 
+ * hildon-theme-subst
+ * hildon-theme-slicer
+ * hildon-theme-colourizer
+ * hildon-theme-regenerator
+ * hildon-theme-outliner
+
+Creating themes
+---------------
+
+Check the documentation on our wiki pages for howtos and instructions about
+creating themes. For a start you might want to try out hildon-theme-bootstrap
+which is a quick tool for bootstrapping a new theme. This tool will create a
+complete theme package directory that can be built directly using the debian
+tools.
+

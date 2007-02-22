@@ -1,3 +1,10 @@
+hildon-theme-tools (0.3.0-1) unstable; urgency=low
+
+  * Fixing a tiny dep problem in debian package
+  * New tool: hildon-theme-bootstrap
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 22 Feb 2007 10:50:59 +0200
+
 hildon-theme-tools (0.2.1-1) unstable; urgency=low
 
   * Outliner tool now outlines colors as well. 

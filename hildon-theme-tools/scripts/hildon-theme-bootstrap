@@ -1,0 +1,250 @@
+#! /usr/bin/env bash
+
+# GPL license, Copyright (c) 2007 by Nokia Corporation                       
+#                                                                            
+# Authors:                                                                   
+#      Michael Dominic K. <michael.kostrzewa@nokia.com>
+#                                                                            
+# This program is free software; you can redistribute it and/or modify it    
+# under the terms of the GNU General Public License as published by the      
+# Free Software Foundation, version 2.                                                                   
+#                                                                            
+# This program is distributed in the hope that it will be useful, but        
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY 
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License   
+# for more details.                                                          
+#                                                                            
+# You should have received a copy of the GNU General Public License along    
+# with this program; if not, write to the Free Software Foundation, Inc., 59 
+# Temple Place - Suite 330, Boston, MA 02111-1307, USA.                      
+
+# Vars
+LAYOUTS="hildon-theme-layout-3 hildon-theme-layout-4"
+LAYOUT=
+THEME_NAME=
+THEME_DIR=
+AUTHOR_NAME=
+AUTHOR_EMAIL=
+PACKAGE_NAME=
+SVN_ADDRESS=
+
+function show_banner 
+{
+        echo "Theme bootstrap tool by Michael Dominic K.";
+        echo "Copyright 2007 by Nokia Corporation.";
+        echo
+        echo "This tool will bootstrap a new theme directory structure.";
+        echo 
+}
+
+function show_layout_options
+{
+        echo "Which layout do you want to use?"
+        select opt in $LAYOUTS; do
+                if [ "$opt" == "hildon-theme-layout-3" ]; then 
+                        LAYOUT="hildon-theme-layout-3"
+                        SVN_ADDRESS="https://stage.maemo.org/svn/maemo/projects/haf/tags/hildon-theme-plankton/3.1.1-1/"
+                        return
+                elif [ "$opt" == "hildon-theme-layout-4" ]; then
+                        LAYOUT="hildon-theme-layout-4"
+                        SVN_ADDRESS="https://stage.maemo.org/svn/maemo/projects/haf/tags/hildon-theme-plankton/4.2.0-1/"
+                        return
+                else
+                        echo "Bad selection!"
+                fi
+        done
+}
+
+function ask_for_theme_name 
+{
+        echo "What's the theme name? [ie. My Theme]"
+
+        while [ "$THEME_NAME" = "" ]; do
+                echo -n "#? "
+                read THEME_NAME
+        done
+}
+
+function ask_for_theme_dir
+{
+        echo "What's the theme directory? [ie. mytheme]"
+
+        while [ "$THEME_DIR" = "" ]; do
+                echo -n "#? "
+                read THEME_DIR
+        done
+        PACKAGE_NAME="hildon-theme-$THEME_DIR"
+}
+
+function ask_for_author_name
+{
+        echo "What's the author name? [ie. John Doe]"
+
+        while [ "$AUTHOR_NAME" = "" ]; do
+                echo -n "#? "
+                read AUTHOR_NAME
+        done
+}
+
+function ask_for_author_dir
+{
+        echo "What's the author's e-mail? [ie. john_doe@gmail.com]"
+
+        while [ "$AUTHOR_EMAIL" = "" ]; do
+                echo -n "#? "
+                read AUTHOR_EMAIL
+        done
+}
+
+function show_summary
+{
+        echo "Summary:"
+        echo
+        echo "Theme name      : $THEME_NAME"
+        echo "Layout          : $LAYOUT"
+        echo "Package name    : $PACKAGE_NAME"
+        echo "Theme directory : $THEME_DIR [/usr/share/themes/$THEME_DIR]"
+        echo "Author          : $AUTHOR_NAME <$AUTHOR_EMAIL>"
+        echo
+
+        echo "Is this correct? [y/n]"
+        OPTION=
+        while [[ "$OPTION" != "y" && "$OPTION" != "n" ]]; do
+                echo -n "#? "
+                read OPTION
+        done
+
+        if [ "$OPTION" = "n" ]; then
+                exit
+        fi
+
+}
+
+function fetch
+{
+        echo "Fetching source from subversion repository..."
+        svn co $SVN_ADDRESS $PACKAGE_NAME 
+
+        if [ "$?" -ne "0" ]; then
+                echo "Failed to fetch source!"
+                exit 128
+        fi
+}
+
+function parse_configure
+{
+        echo "Tweaking configure.ac"
+        
+        sed -i -e "s:plankton:$THEME_DIR:" configure.ac
+        sed -i -e "s:Plankton:$THEME_NAME:" configure.ac
+}
+
+function remove_and_touch
+{
+        echo "Replacing basic files..."
+        rm -f README
+        rm -f AUTHORS
+        rm -f ChangeLog
+        rm -f NEWS
+        touch README
+        touch AUTHORS
+        touch NEWS
+        touch ChangeLog
+}
+
+function fix_control_file
+{
+        echo "Fixing the debian control file..."
+        sed -i -e "s:plankton:$THEME_DIR:" control
+        sed -i -e "s:Michael Dominic Kostrzewa:$AUTHOR_NAME:" control
+        sed -i -e "s:michael.kostrzewa@nokia.com:$AUTHOR_EMAIL:" control
+        sed -i -e '/^Conflicts:.*/d' control
+        sed -i -e '/^Replaces:.*/d' control
+}
+
+function fix_postinst
+{
+        echo "Fixing the postinst script..."
+        sed -i -e "s:plankton:$THEME_DIR:" postinst
+}
+
+function fix_rules
+{
+        echo "Fixing the debian rules..."
+        sed -i -e "s:plankton:$THEME_DIR:" rules
+}
+
+function fix_copyright 
+{
+        echo "Fixing copyright headers..."
+        sed -i -e '/Nokia/d' copyright
+}
+
+function fix_changelog
+{
+        # We want to maintain the version number here
+        echo "Fixing the debian changelog..."
+        LINE=`grep "unstable" -m 1 changelog`
+        DATE=`date -R`
+        echo "$LINE"                                    >  changelog
+        echo                                            >> changelog
+        echo "  * New theme"                            >> changelog
+        echo                                            >> changelog
+        echo " -- $AUTHOR_NAME <$AUTHOR_EMAIL>  $DATE"  >> changelog
+        echo                                            >> changelog
+
+        sed -i -e "s:plankton:$THEME_DIR:" changelog
+}
+
+# First show the banner
+show_banner
+
+# Show the layout options
+show_layout_options
+echo
+
+# Ask for theme name
+ask_for_theme_name
+echo
+
+# Ask for theme directory
+ask_for_theme_dir
+echo
+
+# Ask for theme name
+ask_for_author_name
+echo
+
+# Ask for theme name
+ask_for_author_dir
+echo
+
+# Show summary
+show_summary
+
+# Fetch if from svn
+fetch
+
+# Change in to the proper directory
+cd $PACKAGE_NAME
+
+# Parse configure.ac, replace basic files
+parse_configure
+remove_and_touch
+
+# Do the right thing in the debian directory
+cd debian
+fix_control_file
+fix_postinst
+fix_rules
+fix_copyright
+fix_changelog
+
+echo
+echo "The the layout was created in $PACKAGE_NAME - go ahead"
+echo "and modify the graphics to your liking."
+echo 
+echo "Please note that the theme package has all the licensing data"
+echo "set to GPL. If you'd like to license your theme under different terms"
+echo "make sure to change the copyright information manually."
+echo
