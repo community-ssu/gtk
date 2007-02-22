@@ -8,7 +8,7 @@ Standards-Version: 3.7.2
 Package: libdbus-glib-1-dev
 Section: libdevel
 Architecture: any
-Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (>= 0.91), libglib2.0-dev, ${shlibs:Depends}
+Depends: libdbus-glib-1-2 (= ${Source-Version}), libdbus-1-dev (>= 0.91), libglib2.0-dev
 Conflicts: libdbus-glib-dev, dbus-glib-1-dev, dbus-1-utils (<< 0.50-2)
 Replaces: libdbus-glib0-dev, dbus-glib-1-dev, libdbus-1-dev (<< 0.90)
 Description: simple interprocess messaging system (GLib interface)
