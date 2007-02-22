@@ -2,7 +2,7 @@ Source: python2.5
 Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
-Build-Depends: debhelper (>= 4.2), autoconf, zlib1g-dev, libssl-dev, libbz2-dev, libsqlite3-dev (>= 3.3.5-0.2osso1)
+Build-Depends: debhelper (>= 4.2), autoconf, zlib1g-dev, libssl-dev, libbz2-dev, libsqlite3-dev (>= 3.3.5-0.2osso1), dpatch
 Standards-Version: 3.6.2
 
 Package: python2.5

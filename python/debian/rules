@@ -79,11 +79,12 @@ stamp-install: stamp-build
 	    $(d_dev)/$(scriptdir)/lib-dynload/audioop.so \
 	    $(d_dev)/$(scriptdir)/lib-dynload/_ctypes_test.so \
 	    $(d_dev)/$(scriptdir)/lib-dynload/_testcapi.so \
-	    $(d_dev)/$(scriptdir)/lib-dynload/pyexpat.so \
 	    $(d_dev)/$(scriptdir)/idlelib \
 	    $(d_dev)/$(scriptdir)/lib-tk \
 	    $(d_dev)/$(scriptdir)/bsddb \
 	    $(d_dev)/$(scriptdir)/xml/{dom,parsers,sax}
+
+#	$(d_dev)/$(scriptdir)/lib-dynload/pyexpat.so \
 
 	# base
 	# ====

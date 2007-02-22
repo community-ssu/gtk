@@ -1,3 +1,10 @@
+python2.5 (2.5.0-1osso10) unstable; urgency=low
+
+  * leaves pyexpat module inside python package 
+  * bugfix on race condition with signals
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Thu, 22 Feb 2007 09:15:00 -0300
+
 python2.5 (2.5.0-1osso9) unstable; urgency=low
 
   * compiled with sqlite3 support
