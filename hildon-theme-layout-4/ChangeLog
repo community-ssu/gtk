@@ -1,3 +1,9 @@
+2007-02-22  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkcombobox.rc:
+
+	Update the border values to match the graphics.
+
 2007-02-22  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.2.1-1 release]

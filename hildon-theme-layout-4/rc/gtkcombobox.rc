@@ -131,13 +131,13 @@ style "osso-combobox-entry-entry" {
 	  function = SHADOW
 	  state    = INSENSITIVE
   	  file = "../images/qgn_plat_listbox_border_with_icon_disabled.png"
-	  border   = { 2, 2, 0, 0 }
+	  border   = { 1, 0, 1, 2 }
 	}
       image
         {
 	  function = SHADOW
   	  file = "../images/qgn_plat_listbox_border_with_icon_normal.png"
-	  border   = { 2, 2, 0, 0 }
+	  border   = { 1, 0, 1, 2 }
 	}
     }
 }
