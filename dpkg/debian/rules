@@ -44,7 +44,7 @@ build-tree/config.status: configure
 	dh_testdir
 
 	install -d build-tree
-	cd build-tree && ../configure $(confflags) \
+	cd build-tree && PERL=/usr/bin/perl ../configure $(confflags) \
 		CFLAGS="$(CFLAGS)" CXXFLAGS="$(CXXFLAGS)" \
 		--prefix=/usr \
 		--mandir=\$${datadir}/man \
