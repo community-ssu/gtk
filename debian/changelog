@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.10.6-0osso6test1) experimental; urgency=low
+
+  *** NOTE: THIS VERSION OF GTK+ IS ABI INCOMPATIBLE WITH MAEMO GTK+ 2.6 ***
+
+  * Menu changes to menu item drawing when there's a submenu
+  * Use full widget width for popup in combombox when using list-mode 
+  * Back out checkboxmode from cellrenderertoggle
+  * Pop down combobox with F4 and F5
+  * GtkIconView selection drawing fixes
+  * Adapt progressbar minimum height to maemo specs
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Feb 2007 12:39:00 +0200
+
 gtk+2.0 (2:2.10.6-0osso5) experimental; urgency=low
 
   * libgtk2.0-0.files: remove im-xim as unnecessary and in some cases harmful
