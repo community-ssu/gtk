@@ -104,14 +104,14 @@ static struct PyMethodDef Rpc_methods[] = {
 		"c.rpc.rpc_async_run(service, object_path, interface, method, callback[, user_data[, rpc_args]])\n\n"
 		"Run a RPC method and call 'callback' after finished.\n\n"
 		"Usage example:\n\n"
-		"\tdef my_func(interface, method, user_data=None):\n"
+		"\tdef my_func(interface, method, retval, user_data=None):\n"
 		"\t\tpass\n\n"
 		"\tc.rpc_async_run('com.nokia.backup', '/com/nokia/backup', 'com.nokia.backup', 'backup_finish', my_func, 'hello!', (True,))\n"},
 	{"rpc_async_run_with_defaults", (PyCFunction)Context_rpc_async_run_with_defaults, METH_VARARGS | METH_KEYWORDS,
 		"c.rpc.rpc_async_run_with_defaults(application, method, callback[, user_data[, rpc_args]])\n\n"
 		"Run a RPC method using default parameters and call 'callback' after finished.\n\n"
 		"Usage example:\n\n"
-		"\tdef my_func(interface, method, user_data=None):\n"
+		"\tdef my_func(interface, method, retval, user_data=None):\n"
 		"\t\tpass\n\n"
 		"\tc.rpc_async_run_with_defaults('tn_mail', 'send_recv_button_focus', my_func, 'hello!', (True,))\n"},
 	{"set_rpc_callback", (PyCFunction)Context_set_rpc_callback, METH_VARARGS | METH_KEYWORDS,
