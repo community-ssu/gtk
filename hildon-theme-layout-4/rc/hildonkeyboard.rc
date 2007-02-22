@@ -12,7 +12,6 @@ style "osso-input-method-frame"
 	state = NORMAL
 	detail = "osso-im-frame-top"
 	file = "../images/qgn_plat_inputmet_buffer_zone_top.png"
-	stretch = TRUE
     }
     image {
       function = BOX
@@ -20,7 +19,6 @@ style "osso-input-method-frame"
 	detail = "osso-im-frame-left"
 	file = "../images/qgn_plat_inputmet_buffer_zone_left.png"
 	border = {0, 0, 25, 0}
-	stretch = TRUE
     }
   }
 }
@@ -37,7 +35,6 @@ style "osso-input-method-side-close-button"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_button_side_close_normal.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
 	image
         {
@@ -45,7 +42,6 @@ style "osso-input-method-side-close-button"
 	    state = PRELIGHT
             file = "../images/qgn_plat_inputmet_button_side_close_normal.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
 
 	image
@@ -54,7 +50,6 @@ style "osso-input-method-side-close-button"
 	    state = ACTIVE 
             file = "../images/qgn_plat_inputmet_button_side_close_pressed.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -77,7 +72,6 @@ style "osso-input-method-side-button" = "osso-logical-colors"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_button_side_normal.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
 	image
         {
@@ -86,7 +80,6 @@ style "osso-input-method-side-button" = "osso-logical-colors"
 	    shadow = IN
             file = "../images/qgn_plat_inputmet_button_side_pressed.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
 	image
         {
@@ -95,7 +88,6 @@ style "osso-input-method-side-button" = "osso-logical-colors"
 	    shadow = OUT
             file = "../images/qgn_plat_inputmet_button_side_normal.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -103,7 +95,6 @@ style "osso-input-method-side-button" = "osso-logical-colors"
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_button_side_pressed.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -111,7 +102,6 @@ style "osso-input-method-side-button" = "osso-logical-colors"
             state = SELECTED
             file = "../images/qgn_plat_inputmet_button_side_pressed.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -119,7 +109,6 @@ style "osso-input-method-side-button" = "osso-logical-colors"
 	    state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_button_side_disabled.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -141,7 +130,6 @@ style "osso-input-method-side-toggle-button" = "osso-logical-colors"
 	    shadow = IN
             file = "../images/qgn_plat_inputmet_button_side_latched.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -149,7 +137,6 @@ style "osso-input-method-side-toggle-button" = "osso-logical-colors"
             state = SELECTED
             file = "../images/qgn_plat_inputmet_button_side_latched.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
 	}
         image
         {
@@ -157,14 +144,12 @@ style "osso-input-method-side-toggle-button" = "osso-logical-colors"
 	    state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_button_side_disabled.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
         image
         {
             function = BOX
             file = "../images/qgn_plat_inputmet_button_side_normal.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -185,7 +170,6 @@ style "osso-input-method-vkb-key" = "osso-logical-colors"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_button_key_normal.png"
             border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
         image
         {
@@ -193,7 +177,6 @@ style "osso-input-method-vkb-key" = "osso-logical-colors"
             state = PRELIGHT
             file = "../images/qgn_plat_inputmet_button_key_normal.png"
             border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
         image
         {
@@ -201,7 +184,6 @@ style "osso-input-method-vkb-key" = "osso-logical-colors"
             state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_button_key_disabled.png"
             border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
         image
         {
@@ -209,7 +191,6 @@ style "osso-input-method-vkb-key" = "osso-logical-colors"
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_button_key_pressed.png"
             border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
     }
 }
@@ -234,7 +215,6 @@ style "osso-input-method-accent-key" = "osso-logical-colors"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_button_key_accent_normal.png"
             border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
         image
         {
@@ -242,7 +222,6 @@ style "osso-input-method-accent-key" = "osso-logical-colors"
             state = PRELIGHT
             file = "../images/qgn_plat_inputmet_button_key_accent_normal.png"
 	    border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
         image
         {
@@ -250,7 +229,6 @@ style "osso-input-method-accent-key" = "osso-logical-colors"
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_button_key_pressed.png"
 	    border = { 5, 5, 5, 5 }
-            stretch = TRUE
         }
         image
         {
@@ -258,7 +236,6 @@ style "osso-input-method-accent-key" = "osso-logical-colors"
             state = SELECTED
             file = "../images/qgn_plat_inputmet_button_key_pressed.png"
             border = { 5, 5, 5, 5 }
-            stretch = TRUE
 	}
         image
         {
@@ -266,7 +243,6 @@ style "osso-input-method-accent-key" = "osso-logical-colors"
 	    state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_button_side_disabled.png"
             border = { 4, 4, 0, 0 }
-            stretch = TRUE
         }
 
     }
@@ -294,7 +270,6 @@ style "osso-input-special-character-view-tabs"
 	state    = ACTIVE
 	file     = "../images/qgn_plat_inputmet_tab_special_character_normal.png"
 	border   = { 5, 5, 0, 0 }
-	stretch  = TRUE
 	gap_side = BOTTOM
       }
     image
@@ -302,7 +277,6 @@ style "osso-input-special-character-view-tabs"
         function = EXTENSION
 	file     = "../images/qgn_plat_inputmet_tab_special_character_selected.png"
 	border   = { 5, 5, 0, 0 }
-	stretch  = TRUE
 	gap_side = BOTTOM
       }
     # Content area theming when arrows are not present.
@@ -325,7 +299,6 @@ style "osso-input-special-character-view-tabs"
         state           = INSENSITIVE
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous_disabled.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -333,7 +306,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = IN
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous_pressed.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -341,7 +313,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = OUT
 	arrow_direction = LEFT
 	overlay_file    = "../images/qgn_plat_notebook_button_previous.png"
-	overlay_stretch = TRUE
       }
     
     # Arrows right
@@ -351,7 +322,6 @@ style "osso-input-special-character-view-tabs"
         state           = INSENSITIVE
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next_disabled.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -359,7 +329,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = IN
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next_pressed.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -367,7 +336,6 @@ style "osso-input-special-character-view-tabs"
         shadow          = OUT
 	arrow_direction = RIGHT
 	overlay_file    = "../images/qgn_plat_notebook_button_next.png"
-	overlay_stretch = TRUE
       }
   }
 }
@@ -399,7 +367,6 @@ style "osso-input-method-hwr-frame"
             function = BOX
             file = "../images/qgn_plat_inputmet_pane_border.png"
             border = { 2, 2, 2, 2 }
-            stretch = TRUE
         }
     }
 }
@@ -425,7 +392,6 @@ style "osso-input-method-word-completion-prefix-button"
 	    state = NORMAL
 	    file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_prefix_normal.png"
 	    border = { 5, 5, 0, 0 }
-	  stretch = TRUE
 	}
       image
 	{
@@ -433,7 +399,6 @@ style "osso-input-method-word-completion-prefix-button"
 	    state = PRELIGHT
 	    file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_prefix_normal.png"
 	    border = { 5, 5, 0, 0 }
-	  stretch = TRUE
 	}
       image
 	{
@@ -441,7 +406,6 @@ style "osso-input-method-word-completion-prefix-button"
 	    state = ACTIVE
 	    file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_pressed.png"
 	    border = { 5, 5, 0, 0 }
-	  stretch = TRUE
 	}
     }
 }
@@ -458,7 +422,6 @@ style "osso-input-method-word-completion-candidates"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_normal.png"
             border = { 5, 5, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -466,7 +429,6 @@ style "osso-input-method-word-completion-candidates"
 	    state = PRELIGHT
             file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_normal.png"
             border = { 5, 5, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -474,7 +436,6 @@ style "osso-input-method-word-completion-candidates"
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_pressed.png"
             border = { 5, 5, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -491,14 +452,12 @@ style "osso-input-method-fkb-backspace" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_inputmet_thumb_button_backspace_pressed.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
 	function = BOX
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_inputmet_thumb_button_backspace_normal.png"
 	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
   }
 }
@@ -513,14 +472,12 @@ style "osso-input-method-fkb-tab" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_inputmet_thumb_tab_selected.png"
 	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_inputmet_thumb_tab_normal.png"
 	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
   }
 }
@@ -535,14 +492,12 @@ style "osso-input-method-fkb-common-button" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_inputmet_thumb_button_common_pressed.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
 	function = BOX
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_inputmet_thumb_button_commom_normal.png"
 	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
   }
 }
@@ -562,7 +517,6 @@ style "osso-input-method-fkb-key" = "osso-logical-colors"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_thumb_button_key_normal.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -570,7 +524,6 @@ style "osso-input-method-fkb-key" = "osso-logical-colors"
             state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_thumb_button_key_disabled.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -578,7 +531,6 @@ style "osso-input-method-fkb-key" = "osso-logical-colors"
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_thumb_button_key_pressed.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -595,7 +547,6 @@ style "osso-input-method-fkb-slide-key" {
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_thumb_button_extra_normal.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -603,7 +554,6 @@ style "osso-input-method-fkb-slide-key" {
 	    state = ACTIVE
             file = "../images/qgn_plat_inputmet_thumb_button_extra_pressed.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -611,7 +561,6 @@ style "osso-input-method-fkb-slide-key" {
             state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_thumb_button_extra_disabled.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -628,7 +577,6 @@ style "osso-input-method-fkb-whitespace-key" {
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_thumb_button_key_space_normal.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -636,7 +584,6 @@ style "osso-input-method-fkb-whitespace-key" {
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_thumb_button_key_space_pressed.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -644,7 +591,6 @@ style "osso-input-method-fkb-whitespace-key" {
             state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_thumb_button_key_space_disabled.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -663,7 +609,6 @@ style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
 	    state = NORMAL
             file = "../images/qgn_plat_inputmet_thumb_button_key_accent_normal.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -671,7 +616,6 @@ style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
             state = ACTIVE
             file = "../images/qgn_plat_inputmet_thumb_button_key_latched.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
         image
         {
@@ -679,7 +623,6 @@ style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
             state = SELECTED
             file = "../images/qgn_plat_inputmet_thumb_button_key_latched.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
 	}
         image
         {
@@ -687,7 +630,6 @@ style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
             state = INSENSITIVE
             file = "../images/qgn_plat_inputmet_thumb_button_key_disabled.png"
             border = { 20, 20, 0, 0 }
-            stretch = TRUE
         }
     }
 }

@@ -25,7 +25,6 @@ style "osso-calendar" = "osso-logical-colors"
       state = NORMAL
       detail = "current-day"
       file = "../images/qgn_plat_calendar_current_day_indicator.png"
-      stretch = TRUE
       border = {4,4,4,4}
     }
     
@@ -35,7 +34,6 @@ style "osso-calendar" = "osso-logical-colors"
       state = NORMAL
       detail = "active-day"
       file = "../images/qgn_plat_calendar_active_day_indicator.png"
-      stretch = TRUE
       border = {1,1,1,1}
     }
     
@@ -46,7 +44,6 @@ style "osso-calendar" = "osso-logical-colors"
       state = NORMAL
       detail = "passive-focus"
       file = "../images/qgn_plat_calendar_week_day_indicator.png"
-      stretch = TRUE
       border = {2,2,2,2}
     }
   }

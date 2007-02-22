@@ -26,14 +26,12 @@ style "osso-filechooserbutton-button" {
     	  detail   = "buttondefault"
   	  file = "../images/qgn_plat_single_line_input.png"
   	  border   = { 2, 2, 2, 2 }
-  	  stretch  = TRUE
       }
       image {
           function = FOCUS
 	  detail   = "buttondefault"
   	  file = "../images/qgn_plat_single_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
       }
       image {
           function = BOX
@@ -41,7 +39,6 @@ style "osso-filechooserbutton-button" {
 	  detail   = "buttondefault"
 	  file = "../images/qgn_plat_single_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
       }
       image {
           function = BOX
@@ -49,7 +46,6 @@ style "osso-filechooserbutton-button" {
 	  detail   = "buttondefault"
 	  file = "../images/qgn_plat_single_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
       }
       image {
           function = BOX
@@ -57,14 +53,12 @@ style "osso-filechooserbutton-button" {
 	  detail   = "buttondefault"
 	  file = "../images/qgn_plat_single_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
       }
       image {
 	  function = BOX
 	  detail   = "buttondefault"
 	  file = "../images/qgn_plat_single_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
       }
     }
 }

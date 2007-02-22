@@ -157,7 +157,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_start"
       file = "../images/qgn_plat_focus_left_selection.png"
       border = { 2, 0, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -166,7 +165,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_middle"
       file = "../images/qgn_plat_focus_middle_selection.png"
       border = { 0, 0, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -175,7 +173,6 @@ style "osso-listview" = "osso-logical-colors"
       detail = "*_end"
       file = "../images/qgn_plat_focus_right_selection.png"
       border = { 0, 2, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -183,7 +180,6 @@ style "osso-listview" = "osso-logical-colors"
       state    = SELECTED
       file = "../images/qgn_plat_focus_selection.png"
       border = { 2, 2, 2, 2 }
-      stretch = TRUE
     }
     # active focus ####################################################
     image
@@ -194,7 +190,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_start"
       file = "../images/qgn_plat_focus_left_active.png"
       border = { 2, 0, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -204,7 +199,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_middle"
       file = "../images/qgn_plat_focus_middle_active.png"
       border = { 0, 0, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -214,7 +208,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_end"
       file = "../images/qgn_plat_focus_right_active.png"
       border = { 0, 2, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -223,7 +216,6 @@ style "osso-listview" = "osso-logical-colors"
       shadow   = NONE
       file = "../images/qgn_plat_focus_active.png"
       border = { 2, 2, 2, 2 }
-      stretch = TRUE
     }
     # passive focus ###################################################
     image
@@ -234,7 +226,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_start"
       file = "../images/qgn_plat_focus_left_passive.png"
       border = { 2, 0, 2, 2 }
-      stretch = TRUE
     }		
     image
     {
@@ -244,7 +235,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_middle"
       file = "../images/qgn_plat_focus_middle_passive.png"
       border = { 0, 0, 2, 2 }
-      stretch = TRUE
     }		
     image
     {
@@ -254,7 +244,6 @@ style "osso-listview" = "osso-logical-colors"
       detail   = "*_end"
       file = "../images/qgn_plat_focus_right_passive.png"
       border = { 0, 2, 2, 2 }
-      stretch = TRUE
     }		
     image
     {
@@ -263,7 +252,6 @@ style "osso-listview" = "osso-logical-colors"
       shadow   = OUT
       file = "../images/qgn_plat_focus_passive.png"
       border = { 2, 2, 2, 2 }
-      stretch = TRUE
     }		
     # drop indicator ##################################################
     image
@@ -272,7 +260,6 @@ style "osso-listview" = "osso-logical-colors"
       detail = "treeview-drop-indicator-left"
       file = "../images/qgn_plat_focus_left_active.png"
       border = { 2, 0, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -280,7 +267,6 @@ style "osso-listview" = "osso-logical-colors"
       detail = "treeview-drop-indicator-middle"
       file = "../images/qgn_plat_focus_middle_active.png"
       border = { 0, 0, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -288,7 +274,6 @@ style "osso-listview" = "osso-logical-colors"
       detail = "treeview-drop-indicator-right"
       file = "../images/qgn_plat_focus_right_active.png"
       border = { 0, 2, 2, 2 }
-      stretch = TRUE
     }
     image
     {
@@ -296,7 +281,6 @@ style "osso-listview" = "osso-logical-colors"
       detail = "treeview-drop-indicator"
       file = "../images/qgn_plat_focus_active.png"
       border = { 2, 2, 2, 2 }
-      stretch = TRUE
     }
   }
 }

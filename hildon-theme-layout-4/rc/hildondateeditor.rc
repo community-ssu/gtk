@@ -48,7 +48,6 @@ style "osso-date-editor-frame"
           state = INSENSITIVE
           file = "../images/qgn_plat_single_line_input_disabled.png"
           border = { 2, 2, 2, 2 }
-          stretch = TRUE
         }
     }
 
@@ -59,7 +58,6 @@ style "osso-date-editor-frame"
           function = BOX
           file = "../images/qgn_plat_single_line_input.png"
           border = { 2, 2, 2, 2 }
-          stretch = TRUE
         }
     }
 }

@@ -18,7 +18,6 @@ style "osso-hitentry" = "osso-logical-colors"
       detail = "eventbox" 
       file = "../images/qgn_plat_focus_selection.png" 
       border = { 2, 2, 2, 2 } 
-      stretch = TRUE 
     } 
 
     image
@@ -27,7 +26,6 @@ style "osso-hitentry" = "osso-logical-colors"
       detail = "eventbox"
       file = "../images/qgn_plat_focus_active.png"
       border = { 2, 2, 2, 2 }
-      stretch = TRUE
     }
   } 
 } 

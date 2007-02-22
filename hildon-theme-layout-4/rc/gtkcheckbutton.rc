@@ -29,7 +29,6 @@ style "osso-checkbutton"
       shadow          = OUT
       state           = NORMAL
       overlay_file    = "../images/qgn_plat_check_box_empty_normal.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -37,7 +36,6 @@ style "osso-checkbutton"
       shadow          = IN
       state           = NORMAL
       overlay_file    = "../images/qgn_plat_check_box_selected_normal.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -45,7 +43,6 @@ style "osso-checkbutton"
       shadow          = OUT
       state           = PRELIGHT
       overlay_file    = "../images/qgn_plat_check_box_empty_normal.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -53,7 +50,6 @@ style "osso-checkbutton"
       shadow          = IN
       state           = PRELIGHT
       overlay_file    = "../images/qgn_plat_check_box_selected_normal.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -61,7 +57,6 @@ style "osso-checkbutton"
       shadow          = OUT
       state           = ACTIVE
       overlay_file    = "../images/qgn_plat_check_box_empty_focused.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -69,7 +64,6 @@ style "osso-checkbutton"
       shadow          = IN
       state           = ACTIVE
       overlay_file    = "../images/qgn_plat_check_box_selected_focused.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -77,7 +71,6 @@ style "osso-checkbutton"
       shadow          = OUT
       state           = SELECTED
       overlay_file    = "../images/qgn_plat_check_box_empty_focused.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -85,7 +78,6 @@ style "osso-checkbutton"
       shadow          = IN
       state           = SELECTED
       overlay_file    = "../images/qgn_plat_check_box_selected_focused.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -93,7 +85,6 @@ style "osso-checkbutton"
       shadow          = OUT
       state           = INSENSITIVE
       overlay_file    = "../images/qgn_plat_check_box_empty_disabled.png"
-      overlay_stretch = TRUE
     }
     image
     {
@@ -101,13 +92,11 @@ style "osso-checkbutton"
       shadow          = IN
       state           = INSENSITIVE
       overlay_file    = "../images/qgn_plat_check_box_selected_disabled.png"
-      overlay_stretch = TRUE
     }
     image
     {
       function        = CHECK
       overlay_file    = "../images/qgn_plat_check_box_indeterminate_disabled.png"
-      overlay_stretch = TRUE
       shadow          = ETCHED_IN
       state           = INSENSITIVE
     }
@@ -115,14 +104,12 @@ style "osso-checkbutton"
     {
       function        = CHECK
       overlay_file    = "../images/qgn_plat_check_box_indeterminate_normal.png"
-      overlay_stretch = TRUE
       shadow          = ETCHED_IN
     }
     image
     {
       function        = CHECK
       overlay_file    = "../images/qgn_plat_check_box_indeterminate_focused.png"
-      overlay_stretch = TRUE
       shadow          = ETCHED_IN
       state= ACTIVE
     }
@@ -131,7 +118,6 @@ style "osso-checkbutton"
         function = FOCUS
         file = "../images/qgn_plat_focus_active.png"
         border = { 2, 2, 2, 2 }
-        stretch = TRUE
       }
   }
 }

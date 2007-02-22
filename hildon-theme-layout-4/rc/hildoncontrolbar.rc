@@ -104,14 +104,12 @@ style "osso-controlbar"
 			state = INSENSITIVE
 	 		file = "../images/qgn_plat_control_bar_border_disabled.png"
 	 		border = { 2, 2, 0, 0 }
-	 		stretch = TRUE
       		}
       		image {
 	 		function = BOX
 			detail = "trough"
 	 		file = "../images/qgn_plat_control_bar_border.png"
 	 		border = { 2, 2, 0, 0 }
-	 		stretch = TRUE
       		}
 		
 		# Controlbar blocks
@@ -121,7 +119,6 @@ style "osso-controlbar"
  			detail = "hildon_block"
  	 		file = "../images/qgn_plat_control_bar_block_active.png"
  	 		border = { 2, 2, 0, 0 }
- 	 		stretch = TRUE
        		}
        		image {
  	 		function = BOX
@@ -130,7 +127,6 @@ style "osso-controlbar"
  			state = INSENSITIVE
  	 		file = "../images/qgn_plat_control_bar_block_active_disabled.png"
  	 		border = { 2, 2, 0, 0 }
- 	 		stretch = TRUE
       		}
       		image {
 	 		function = BOX
@@ -138,7 +134,6 @@ style "osso-controlbar"
 			detail = "hildon_block"
 	 		file = "../images/qgn_plat_control_bar_block_passive.png"
 	 		border = { 2, 2, 0, 0 }
-	 		stretch = TRUE
       		}
       		image {
 	 		function = BOX
@@ -147,7 +142,6 @@ style "osso-controlbar"
 			state = INSENSITIVE
 	 		file = "../images/qgn_plat_control_bar_block_passive_disabled.png"
 	 		border = { 2, 2, 0, 0 }
-	 		stretch = TRUE
       		}
 	}
 }

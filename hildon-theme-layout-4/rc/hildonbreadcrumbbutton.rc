@@ -52,27 +52,23 @@ style "osso-breadcrumb-button" = "osso-logical-colors" {
             state    = ACTIVE
             file     = "../images/qgn_plat_button_breadcrumb_pressed.png"
             border   = { 14, 14, 14, 14 }
-            stretch  = TRUE
         }
         image {
             function = FOCUS
             file     = "../images/qgn_plat_button_breadcrumb_focused.png"
             border   = { 14, 14, 14, 14 }
-            stretch  = TRUE
         }
         image {
             function = BOX
             shadow   = IN
             file     = "../images/qgn_plat_button_breadcrumb_pressed.png"
             border   = { 14, 14, 14, 14 }
-            stretch  = TRUE
         }
         image {
             function = BOX
             state    = SELECTED
             file     = "../images/qgn_plat_button_breadcrumb_pressed.png"
             border   = { 14, 14, 14, 14 }
-            stretch  = TRUE
         }
         image {
             function = BOX
@@ -83,7 +79,6 @@ style "osso-breadcrumb-button" = "osso-logical-colors" {
             function = BOX
             file     = "../images/qgn_plat_button_breadcrumb_normal.png"
             border   = { 14, 14, 14, 14 }
-            stretch  = TRUE
         }
 
     }

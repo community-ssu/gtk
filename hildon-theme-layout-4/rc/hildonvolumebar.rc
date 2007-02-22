@@ -38,7 +38,6 @@ style "osso-volumebar-horizontal"
       state = NORMAL
       file = "../images/qgn_plat_volume_bar_horizontal_regular_background_normal.png"
       border = {20, 20, 28, 28}
-      stretch = TRUE
     }
     image
     {
@@ -47,7 +46,6 @@ style "osso-volumebar-horizontal"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_horizontal_regular_background_disabled.png"
       border = {20, 20, 28, 28}
-      stretch = TRUE
     }
     image
     {
@@ -61,7 +59,6 @@ style "osso-volumebar-horizontal"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_horizontal_regular_shaft_left_disabled.png"
       border = {4, 0, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -69,7 +66,6 @@ style "osso-volumebar-horizontal"
       detail = "trough_northwest"
       file = "../images/qgn_plat_volume_bar_horizontal_regular_shaft_left_normal.png"
       border = {4, 0, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -78,7 +74,6 @@ style "osso-volumebar-horizontal"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_horizontal_regular_shaft_right_disabled.png"
       border = {0, 4, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -86,7 +81,6 @@ style "osso-volumebar-horizontal"
       detail = "trough_southeast"
       file = "../images/qgn_plat_volume_bar_horizontal_regular_shaft_right_normal.png"
       border = {0, 4, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -167,14 +161,12 @@ style "osso-volumebar-horizontal-mutebutton"
       shadow = OUT
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_disabled.png"
-      stretch = TRUE
     }
     image
     {
       function = BOX
       shadow = OUT
       file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_normal.png"
-      stretch = TRUE
     }
     image
     {
@@ -182,27 +174,23 @@ style "osso-volumebar-horizontal-mutebutton"
       shadow = IN
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_disabled_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = BOX
       shadow = IN
       file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = FOCUS
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_disabled_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = FOCUS
       file = "../images/qgn_plat_volume_bar_horizontal_regular_mute_button_pressed.png"
-      stretch = TRUE
     }
   }
 }
@@ -234,7 +222,6 @@ style "osso-volumebar-vertical"
       state = NORMAL
       file = "../images/qgn_plat_volume_bar_vertical_regular_background_normal.png"
       border = {28, 28, 20, 20}
-      stretch = TRUE
     }
     image
     {
@@ -243,7 +230,6 @@ style "osso-volumebar-vertical"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_background_disabled.png"
       border = {28, 28, 20, 20}
-      stretch = TRUE
     }
     image
     {
@@ -257,7 +243,6 @@ style "osso-volumebar-vertical"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_top_disabled.png"
       border = {0, 0, 4, 0}
-      stretch = TRUE
     }
     image
     {
@@ -265,7 +250,6 @@ style "osso-volumebar-vertical"
       detail = "trough_northwest"
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_top_normal.png"
       border = {0, 0, 4, 0}
-      stretch = TRUE
     }
     image
     {
@@ -274,14 +258,13 @@ style "osso-volumebar-vertical"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_bottom_disabled.png"
       border = {0, 0, 0, 4}
-      stretch = TRUE}
+    }
     image
     {
       function = BOX
       detail = "trough_southeast"
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_bottom_normal.png"
       border = {0, 0, 0, 4}
-      stretch = TRUE
     }
     image
     {
@@ -362,14 +345,12 @@ style "osso-volumebar-vertical-mutebutton"
       shadow = OUT
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_disabled.png"
-      stretch = TRUE
     }
     image
     {
       function = BOX
       shadow = OUT
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_normal.png"
-      stretch = TRUE
     }
     image
     {
@@ -377,27 +358,23 @@ style "osso-volumebar-vertical-mutebutton"
       shadow = IN
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_disabled_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = BOX
       shadow = IN
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = FOCUS
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_disabled_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = FOCUS
       file = "../images/qgn_plat_volume_bar_vertical_regular_mute_button_pressed.png"
-      stretch = TRUE
     }
   }
 }
@@ -429,7 +406,6 @@ style "osso-volumebar-toolbar"
       state = NORMAL
       file = "../images/qgn_plat_volume_bar_toolbar_background_normal.png"
       border = {20, 20, 18, 18}
-      stretch = TRUE
     }
     image
     {
@@ -438,7 +414,6 @@ style "osso-volumebar-toolbar"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_toolbar_background_disabled.png"
       border = {20, 20, 18, 18}
-      stretch = TRUE
     }
     image
     {
@@ -452,7 +427,6 @@ style "osso-volumebar-toolbar"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_toolbar_shaft_left_disabled.png"
       border = {4, 0, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -460,7 +434,6 @@ style "osso-volumebar-toolbar"
       detail = "trough_northwest"
       file = "../images/qgn_plat_volume_bar_toolbar_shaft_left_normal.png"
       border = {4, 0, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -469,7 +442,6 @@ style "osso-volumebar-toolbar"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_toolbar_shaft_right_disabled.png"
       border = {0, 4, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -477,7 +449,6 @@ style "osso-volumebar-toolbar"
       detail = "trough_southeast"
       file = "../images/qgn_plat_volume_bar_toolbar_shaft_right_normal.png"
       border = {0, 4, 0, 0}
-      stretch = TRUE
     }
     image
     {
@@ -558,14 +529,12 @@ style "osso-volumebar-toolbar-mutebutton"
       shadow = OUT
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_toolbar_mute_button_disabled.png"
-      stretch = TRUE
     }
     image
     {
       function = BOX
       shadow = OUT
       file = "../images/qgn_plat_volume_bar_toolbar_mute_button_normal.png"
-      stretch = TRUE
     }
     image
     {
@@ -573,27 +542,23 @@ style "osso-volumebar-toolbar-mutebutton"
       shadow = IN
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_toolbar_mute_button_disabled_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = BOX
       shadow = IN
       file = "../images/qgn_plat_volume_bar_toolbar_mute_button_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = FOCUS
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_toolbar_mute_button_disabled_pressed.png"
-      stretch = TRUE
     }
     image
     {
       function = FOCUS
       file = "../images/qgn_plat_volume_bar_toolbar_mute_button_pressed.png"
-      stretch = TRUE
     }
   }
 }

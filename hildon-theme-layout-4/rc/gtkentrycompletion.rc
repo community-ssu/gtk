@@ -21,14 +21,12 @@ style "osso-completion-frame"
 	  state    = INSENSITIVE
 	  file     = "../images/qgn_plat_frame_disabled.png"
 	  border   = { 3, 3, 3, 3 }
-	  stretch  = TRUE
 	}
       image
         {
 	  function = SHADOW
 	  file     = "../images/qgn_plat_frame.png"
 	  border   = { 3, 3, 3, 3 }
-	  stretch  = TRUE
 	}
     }
 }

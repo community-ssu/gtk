@@ -24,7 +24,6 @@ style "osso-range"
 	state		= INSENSITIVE
 	file            = "../images/qgn_plat_scroll_vertical_shaft_disabled.png"
 	border          = { 0, 0, 0, 0 }
-	stretch         = TRUE
       }
     image
       {
@@ -33,7 +32,6 @@ style "osso-range"
 	state		= INSENSITIVE
 	file            = "../images/qgn_plat_scroll_vertical_thumb_disabled.png"
 	border		= { 0, 0, 10, 10 }
-	stretch         = TRUE
       }
     image
       {
@@ -41,7 +39,6 @@ style "osso-range"
 	orientation     = VERTICAL
 	file            = "../images/qgn_plat_scroll_vertical_shaft_normal.png"
 	border          = { 0, 0, 0, 0 }
-	stretch         = TRUE
       }
     image
       {
@@ -49,7 +46,6 @@ style "osso-range"
 	orientation     = VERTICAL
 	file            = "../images/qgn_plat_scroll_vertical_thumb_normal.png"
 	border		= { 0, 0, 10, 10 }
-	stretch         = TRUE
       }
     
     # Horizontal
@@ -60,7 +56,6 @@ style "osso-range"
 	state		= INSENSITIVE
 	file            = "../images/qgn_plat_scroll_horizontal_shaft_disabled.png"
 	border          = { 0, 0, 0, 0 }
-	stretch         = TRUE
       }
     image 
       {
@@ -69,7 +64,6 @@ style "osso-range"
 	state		= INSENSITIVE
 	file            = "../images/qgn_plat_scroll_horizontal_thumb_disabled.png"
 	border		= { 10, 10, 0, 0 }
-	stretch         = TRUE
       }
     image
       {
@@ -77,7 +71,6 @@ style "osso-range"
 	orientation     = HORIZONTAL
 	file            = "../images/qgn_plat_scroll_horizontal_shaft_normal.png"
 	border          = { 0, 0, 0, 0 }
-	stretch         = TRUE
       }
     image 
       {
@@ -85,7 +78,6 @@ style "osso-range"
 	orientation     = HORIZONTAL
 	file            = "../images/qgn_plat_scroll_horizontal_thumb_normal.png"
 	border		= { 10, 10, 0, 0 }
-	stretch         = TRUE
       }
   }
 }

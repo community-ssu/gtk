@@ -90,14 +90,12 @@ style "osso-default"
 #        function        = HLINE
 #        file            = "../hline.png"
 #        border          = { 2, 2, 0, 0 }
-#        stretch         = TRUE
 #      }
 #    image
 #      {
 #        function        = VLINE
 #        file            = "../black.png"
 #        border          = { 0, 0, 0, 0 }
-#        stretch         = TRUE
 #      }
 #
 #    # do not draw widget focus at all. 
@@ -106,7 +104,6 @@ style "osso-default"
 #        function        = FOCUS
 #        overlay_file    = "../transparent.png"
 #        overlay_border  = { 4, 4, 4, 4 }
-#        overlay_stretch = TRUE
 #      }
     image
       {

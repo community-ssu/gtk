@@ -24,7 +24,6 @@ style "osso-menucheck"
 	shadow          = IN
 	state           = INSENSITIVE
 	overlay_file    = "../images/qgn_plat_menu_check_mark_disabled.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -32,7 +31,6 @@ style "osso-menucheck"
 	shadow          = IN
 	state           = ACTIVE
 	overlay_file    = "../images/qgn_plat_menu_check_mark_focus.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -40,7 +38,6 @@ style "osso-menucheck"
 	shadow          = IN
 	state           = PRELIGHT
 	overlay_file    = "../images/qgn_plat_menu_check_mark_focus.png"
-	overlay_stretch = TRUE
       }
     image
       {
@@ -48,14 +45,12 @@ style "osso-menucheck"
 	shadow          = IN
 	state           = SELECTED
 	overlay_file    = "../images/qgn_plat_menu_check_mark_focus.png"
-	overlay_stretch = TRUE
       }
     image
       {
         function        = CHECK
 	shadow          = IN
 	overlay_file    = "../images/qgn_plat_menu_check_mark_normal.png"
-	overlay_stretch = TRUE
       }
     image
       {

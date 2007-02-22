@@ -16,7 +16,6 @@ style "osso-status-bar-extension-background" {
             state = NORMAL
             file = "../images/qgn_plat_status_bar_second_level_background.png"
 	        border = { 0, 0, 39, 9 }
-            stretch = TRUE
         }
     }
 }
@@ -59,7 +58,6 @@ style "osso-status-bar-popup"
             state = NORMAL
             file = "../images/qgn_plat_application_menu_lower_level_frame.png"
 	        border = { 20, 20, 20, 20 }
-            stretch = TRUE
             shaped = TRUE
         }
     }
@@ -81,7 +79,6 @@ style "osso-frame-statusbar" {
          state = NORMAL
 	     file = "../images/qgn_plat_status_bar_background.png"	
 	     border = { 0,0,0,0 }	
-	     stretch = TRUE
       }
    }
 }

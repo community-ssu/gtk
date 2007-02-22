@@ -26,7 +26,6 @@ style "osso-number-editor-plus"
   	  function = BOX
           state = NORMAL
   	  file = "../images/qgn_plat_number_editor_more_normal.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
     image
@@ -34,7 +33,6 @@ style "osso-number-editor-plus"
   	  function = BOX
           state = SELECTED
   	  file = "../images/qgn_plat_number_editor_more_normal.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
     image
@@ -42,7 +40,6 @@ style "osso-number-editor-plus"
   	  function = BOX
           state = PRELIGHT
   	  file = "../images/qgn_plat_number_editor_more_normal.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
   	image
@@ -50,7 +47,6 @@ style "osso-number-editor-plus"
   	  function = BOX
           state = INSENSITIVE
   	  file = "../images/qgn_plat_number_editor_more_disabled.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
   	image
@@ -58,7 +54,6 @@ style "osso-number-editor-plus"
   	  function = BOX
           state = ACTIVE
   	  file = "../images/qgn_plat_number_editor_more_pressed.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
   }
@@ -81,7 +76,6 @@ style "osso-number-editor-minus"
   	  function = BOX
           state = NORMAL
   	  file = "../images/qgn_plat_number_editor_less_normal.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
     image
@@ -89,7 +83,6 @@ style "osso-number-editor-minus"
   	  function = BOX
           state = SELECTED
   	  file = "../images/qgn_plat_number_editor_less_normal.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
     image
@@ -97,7 +90,6 @@ style "osso-number-editor-minus"
   	  function = BOX
           state = PRELIGHT
   	  file = "../images/qgn_plat_number_editor_less_normal.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
   	image
@@ -105,7 +97,6 @@ style "osso-number-editor-minus"
   	  function = BOX
           state = INSENSITIVE
   	  file = "../images/qgn_plat_number_editor_less_disabled.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
   	image
@@ -113,7 +104,6 @@ style "osso-number-editor-minus"
   	  function = BOX
           state = ACTIVE
   	  file = "../images/qgn_plat_number_editor_less_pressed.png"
-  	  stretch = TRUE
 	  border = {0,0,0,0}
   	}
   }

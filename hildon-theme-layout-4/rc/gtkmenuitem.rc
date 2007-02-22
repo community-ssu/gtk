@@ -19,7 +19,6 @@ style "osso-menuitem"
 	state = SELECTED
 	file = "../images/qgn_plat_focus_passive.png"
 	border = { 2, 2, 2, 2 }
-	stretch = TRUE
       }
     
     # Image for active focus.
@@ -29,7 +28,6 @@ style "osso-menuitem"
 	state = PRELIGHT
         file = "../images/qgn_plat_focus_active.png"
         border = { 2, 2, 2, 2 }
-	stretch = TRUE
       }
     
     image
@@ -62,7 +60,6 @@ style "osso-menuitem"
 	detail          = "separator"
         file            = "../images/qgn_plat_separator_horizontal.png"
         border          = { 12, 12, 0, 0 }
-        stretch         = TRUE
       }
   }		  
 }

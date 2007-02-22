@@ -12,14 +12,12 @@ style "osso-window-background" {
 		state = NORMAL
 		detail = "left-border"
 		file = "../images/qgn_plat_application_frame_left.png"
-		stretch = TRUE
 	}
 	image {
 		function = BOX
 		state = NORMAL
 		detail = "right-border"
 		file = "../images/qgn_plat_application_frame_right.png"
-		stretch = TRUE
 	}
 	image {
 	 	function = BOX
@@ -27,7 +25,6 @@ style "osso-window-background" {
 		detail = "bottom-border"
 		file = "../images/qgn_plat_application_frame_bottom.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
         }
 	image {
 		function = BOX
@@ -35,7 +32,6 @@ style "osso-window-background" {
 		detail = "toolbar-frame-top"
 		file = "../images/qgn_plat_toolbar_frame_top.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -43,7 +39,6 @@ style "osso-window-background" {
 		detail = "toolbar-frame-middle"
 		file = "../images/qgn_plat_toolbar_frame_middle.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -51,7 +46,6 @@ style "osso-window-background" {
 		detail = "toolbar-frame-bottom"
 		file = "../images/qgn_plat_toolbar_frame_bottom.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -59,7 +53,6 @@ style "osso-window-background" {
 		detail = "findtoolbar"
 		file = "../images/qgn_plat_toolbar_find.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -67,7 +60,6 @@ style "osso-window-background" {
 		detail = "toolbar"
 		file = "../images/qgn_plat_toolbar.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 
 	image {
@@ -76,7 +68,6 @@ style "osso-window-background" {
 		detail = "toolbar-fullscreen-frame-top"
 		file = "../images/qgn_plat_toolbar_fullscreen_frame_top.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -84,7 +75,6 @@ style "osso-window-background" {
 		detail = "toolbar-fullscreen-frame-middle"
 		file = "../images/qgn_plat_toolbar_fullscreen_frame_middle.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -92,7 +82,6 @@ style "osso-window-background" {
 		detail = "toolbar-fullscreen-frame-bottom"
 		file = "../images/qgn_plat_toolbar_fullscreen_frame_bottom.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -100,7 +89,6 @@ style "osso-window-background" {
 		detail = "findtoolbar-fullscreen"
 		file = "../images/qgn_plat_toolbar_fullscreen_find.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
 	image {
 		function = BOX
@@ -108,7 +96,6 @@ style "osso-window-background" {
 		detail = "toolbar-fullscreen"
 		file = "../images/qgn_plat_toolbar_fullscreen.png"
 		border = { 24, 24, 0, 0 }
-		stretch = TRUE
 	}
    }
 }

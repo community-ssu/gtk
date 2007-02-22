@@ -17,7 +17,6 @@ style "osso-toggletoolbutton" {
               state             = ACTIVE
           file              = "../images/qgn_plat_toolbar_button_selected.png"
           border            = { 23, 23, 0, 0 }	
-          stretch           = TRUE
       }
       image
       {
@@ -26,7 +25,6 @@ style "osso-toggletoolbutton" {
           shadow            = IN
           file              = "../images/qgn_plat_toolbar_button_selected.png"
           border            = { 23, 23, 0, 0 }	
-          stretch           = TRUE
       }
    }
 }

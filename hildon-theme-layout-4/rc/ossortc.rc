@@ -14,7 +14,6 @@ style "osso-rtc-window"
         image {
             function = FLAT_BOX
                 file     = "../images/qgn_plat_application_chat_background.jpg"
-                stretch  = TRUE
         }
     }
 }
@@ -30,33 +29,28 @@ style "osso-rtc-button"
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_voip_pressed.png"
                 border   = { 38, 38, 0, 0 }
-                stretch  = TRUE
         }
         image {
             function = FOCUS
                 file     = "../images/qgn_plat_button_voip_focused.png"
                 border   = { 38, 38, 0, 0 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_voip_pressed.png"
                 border   = { 38, 38, 0, 0 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = INSENSITIVE
                 file     = "../images/qgn_plat_button_voip_disabled.png"
                 border   = { 38, 38, 0, 0 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 file     = "../images/qgn_plat_button_voip_normal.png"
                 border   = { 38, 38, 0, 0 }
-                stretch  = TRUE
         }
     }
 }
@@ -73,7 +67,6 @@ style "osso-rtc-frame"
             function = BOX
                 file     = "../images/qgn_plat_application_call_handling_frame_block.png"
                 border   = { 12, 12, 12, 12 }
-                stretch  = TRUE
         }
     }
 }

@@ -40,7 +40,6 @@ style "osso-menu" {
 	 detail = "menu"
 	 file = "../images/qgn_plat_application_menu_lower_level_frame.png"
 	 border = { 20, 20, 20, 20 }
-	 stretch = TRUE
      shaped = TRUE
       }
     # Don't paint anything (extra) as the scroll arrow background
@@ -111,7 +110,6 @@ style "osso-menu-with-corners" {
 	  detail = "menu"
 	  file = "../images/qgn_plat_application_menu_1st_level_frame.png"
 	  border = { 20, 20, 20, 20 }
-	  stretch = TRUE
       shaped = TRUE
       }
    }
@@ -126,7 +124,6 @@ style "osso-menu-without-corners" {
 	 detail = "menu"
 	 file = "../images/qgn_plat_application_menu_lower_level_frame.png"
 	 border = { 20, 20, 20, 20 }
-	 stretch = TRUE
      shaped = TRUE
       }
    }
@@ -141,7 +138,6 @@ style "osso-menu-from-navigator" {
 	 detail = "menu"
 	 file = "../images/qgn_plat_task_navigation_menu_frame.png"
 	 border = { 20, 20, 20, 20 }
-	 stretch = TRUE
      shaped = TRUE
       }
   }
@@ -160,7 +156,6 @@ style "osso-menu-from-navigator-thumb" {
 	    detail = "menu"
 	    file = "../images/qgn_plat_task_navigation_menu_frame.png"
 	    border = { 20, 20, 20, 20 }
-	    stretch = TRUE
         shaped = TRUE
       }
 

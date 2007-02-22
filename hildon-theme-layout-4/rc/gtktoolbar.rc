@@ -31,7 +31,6 @@ style "osso-toolbar-separator"
 			state = NORMAL
 			detail = "vertical"
 			file = "../images/qgn_plat_toolbar_separator.png"
-			stretch = TRUE
 			border = {0,0,0,0}
 		}
 		image{
@@ -40,7 +39,6 @@ style "osso-toolbar-separator"
 			state = NORMAL
 			detail = "horizontal"
 			file = "../images/qgn_plat_toolbar_separator.png"
-			stretch = TRUE
 			border = {0,0,0,0}
 		}
 	}

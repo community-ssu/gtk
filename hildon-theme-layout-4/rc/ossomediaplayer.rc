@@ -15,33 +15,28 @@ style "osso-mplayer1-button"
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer1_pressed_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = FOCUS
                 file     = "../images/qgn_plat_button_mplayer1_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer1_pressed.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = INSENSITIVE
                 file     = "../images/qgn_plat_button_mplayer1_disabled.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 file     = "../images/qgn_plat_button_mplayer1_normal.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
     }
 }
@@ -57,33 +52,28 @@ style "osso-mplayer2-button"
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer2_pressed_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = FOCUS
                 file     = "../images/qgn_plat_button_mplayer2_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer2_pressed.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = INSENSITIVE
                 file     = "../images/qgn_plat_button_mplayer2_disabled.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 file     = "../images/qgn_plat_button_mplayer2_normal.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
     }
 }
@@ -99,33 +89,28 @@ style "osso-mplayer3-button"
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer3_pressed_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = FOCUS
                 file     = "../images/qgn_plat_button_mplayer3_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer3_pressed.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = INSENSITIVE
                 file     = "../images/qgn_plat_button_mplayer3_disabled.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 file     = "../images/qgn_plat_button_mplayer3_normal.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
     }
 }
@@ -141,33 +126,28 @@ style "osso-mplayer4-button"
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer4_pressed_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = FOCUS
                 file     = "../images/qgn_plat_button_mplayer4_focused.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = ACTIVE
                 file     = "../images/qgn_plat_button_mplayer4_pressed.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 state    = INSENSITIVE
                 file     = "../images/qgn_plat_button_mplayer4_disabled.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
         image {
             function = BOX
                 file     = "../images/qgn_plat_button_mplayer4_normal.png"
                 border   = { 35, 35, 35, 35 }
-                stretch  = TRUE
         }
     }
 }
@@ -183,7 +163,6 @@ style "osso-mp-button-frame"
             function = BOX
                 file     = "../images/qgn_plat_mediaplayer_buttons_bg.png"
                 border   = { 0, 0, 112, 112 }
-                stretch  = TRUE
         }
     }
 }

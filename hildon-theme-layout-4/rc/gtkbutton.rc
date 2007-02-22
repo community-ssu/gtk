@@ -79,14 +79,12 @@ style "osso-button" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_view_button_nesw_pressed_focused.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
         function = FOCUS
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_view_button_nesw_focused.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -94,7 +92,6 @@ style "osso-button" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_view_button_nesw_pressed.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -102,7 +99,6 @@ style "osso-button" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_view_button_nesw_pressed.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -110,14 +106,12 @@ style "osso-button" {
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_view_button_nesw_disabled.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
 	detail   = "buttondefault"
 	file     = "../images/qgn_plat_view_button_nesw.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
 
     image {
@@ -125,40 +119,34 @@ style "osso-button" {
 	state    = ACTIVE
 	file     = "../images/qgn_plat_view_button_pressed_focused.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
         function = FOCUS
 	file     = "../images/qgn_plat_view_button_focused.png"
 	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
 	shadow   = IN
 	file     = "../images/qgn_plat_view_button_pressed.png"
   	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
 	state    = SELECTED
 	file     = "../images/qgn_plat_view_button_pressed.png"
   	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
 	state    = INSENSITIVE
 	file     = "../images/qgn_plat_view_button_disabled.png"
   	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
 	file     = "../images/qgn_plat_view_button.png"
   	border   = { 14, 14, 14, 14 }
-	stretch  = TRUE
     }
   }
 }
@@ -191,7 +179,6 @@ style "osso-dialogbutton" {
 	position = TOP, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_middle_pressed.png"
  	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
@@ -199,7 +186,6 @@ style "osso-dialogbutton" {
 	position = TOP, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_middle_disabled.png"
  	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -207,14 +193,12 @@ style "osso-dialogbutton" {
 	position = TOP, BOTTOM
         file     = "../images/qgn_plat_dialog_button_middle_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
 	function = BOX
 	position = TOP, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_middle_normal.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = FOCUS
@@ -222,14 +206,12 @@ style "osso-dialogbutton" {
 	position = TOP, BOTTOM
         file     = "../images/qgn_plat_dialog_button_middle_focused_pressed.png"
         border   = { 20, 20, 0, 0}
-        stretch  = TRUE
     }
     image {
         function = FOCUS
 	position = TOP, BOTTOM
         file     = "../images/qgn_plat_dialog_button_middle_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
   
     image {
@@ -238,7 +220,6 @@ style "osso-dialogbutton" {
 	position = TOP, LEFT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_left_pressed.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
@@ -246,7 +227,6 @@ style "osso-dialogbutton" {
 	position = TOP, LEFT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_left_disabled.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -254,14 +234,12 @@ style "osso-dialogbutton" {
 	position = TOP, LEFT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_left_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
 	function = BOX
 	position = TOP, LEFT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_left_normal.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = FOCUS
@@ -269,14 +247,12 @@ style "osso-dialogbutton" {
 	position = TOP, LEFT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_left_focused_pressed.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
         function = FOCUS
 	position = TOP, LEFT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_left_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
 
 
@@ -286,7 +262,6 @@ style "osso-dialogbutton" {
 	position = TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_right_pressed.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
@@ -294,7 +269,6 @@ style "osso-dialogbutton" {
 	position = TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_right_disabled.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -302,14 +276,12 @@ style "osso-dialogbutton" {
 	position = TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_right_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
 	function = BOX
 	position = TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_right_normal.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = FOCUS
@@ -317,14 +289,12 @@ style "osso-dialogbutton" {
 	position = TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_right_focused_pressed.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
         function = FOCUS
 	position = TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_right_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     
     image {
@@ -333,7 +303,6 @@ style "osso-dialogbutton" {
 	position = LEFT, TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_alone_pressed.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
 	function = BOX
@@ -341,7 +310,6 @@ style "osso-dialogbutton" {
 	position = LEFT, TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_alone_disabled.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = BOX
@@ -349,14 +317,12 @@ style "osso-dialogbutton" {
 	position = LEFT, TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_alone_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
 	function = BOX
 	position = LEFT, TOP, RIGHT, BOTTOM
 	file     = "../images/qgn_plat_dialog_button_alone_normal.png"
   	border   = { 20, 20, 0, 0 }
-	stretch  = TRUE
     }
     image {
         function = FOCUS
@@ -364,14 +330,12 @@ style "osso-dialogbutton" {
 	position = LEFT, TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_alone_focused_pressed.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
     image {
         function = FOCUS
 	position = LEFT, TOP, RIGHT, BOTTOM
         file     = "../images/qgn_plat_dialog_button_alone_focused.png"
         border   = { 20, 20, 0, 0 }
-        stretch  = TRUE
     }
   }
 }

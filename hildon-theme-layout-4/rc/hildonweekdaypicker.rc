@@ -13,14 +13,12 @@ style "osso-weekday" {
              state = NORMAL
              file = "../images/qgn_plat_weekday_picker_normal.png"
              border = { 2, 2, 0, 0 }
-             stretch = TRUE
        }
        image {
             function = BOX
             state = ACTIVE
             file = "../images/qgn_plat_weekday_picker_pressed.png"
             border = { 2, 2, 0, 0}
-            stretch = TRUE
        }
     }
 }

@@ -17,7 +17,6 @@ style "osso-rss-feed-reader"
           function = BOX
           file     = "../images/qgn_plat_news_applet_bg.png"
           border   = { 55, 55, 55, 15 }
-          stretch  = TRUE
           shaped = TRUE
         }
     }

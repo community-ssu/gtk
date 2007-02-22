@@ -49,18 +49,15 @@ style "osso-combobox-button" {
             function = BOX
             file = "../images/qgn_plat_combobox_button_disabled.png"
             state = INSENSITIVE
-            stretch = TRUE
         }
         image {
             function = BOX
             file = "../images/qgn_plat_combobox_button_pressed.png"
             state = ACTIVE
-            stretch = TRUE
         }
         image {
             function = BOX
             file = "../images/qgn_plat_combobox_button_normal.png"
-            stretch = TRUE
         }
         image {
             function = TAB
@@ -83,13 +80,11 @@ style "osso-combobox-frame" {
             file = "../images/qgn_plat_combobox_frame_disabled.png"
             state = INSENSITIVE
             border = { 2, 2, 0, 0 }
-            stretch = TRUE
         }
         image {
             function = BOX
             file = "../images/qgn_plat_combobox_frame_normal.png"
             border = { 2, 2, 0, 0 }
-            stretch = TRUE
         }
     }
 }
@@ -137,14 +132,12 @@ style "osso-combobox-entry-entry" {
 	  state    = INSENSITIVE
   	  file = "../images/qgn_plat_listbox_border_with_icon_disabled.png"
 	  border   = { 2, 2, 0, 0 }
-	  stretch  = TRUE
 	}
       image
         {
 	  function = SHADOW
   	  file = "../images/qgn_plat_listbox_border_with_icon_normal.png"
 	  border   = { 2, 2, 0, 0 }
-	  stretch  = TRUE
 	}
     }
 }
@@ -162,20 +155,17 @@ style "osso-combobox-entry-button-down" {
 			file = "../images/qgn_plat_listbox_arrow_down_disabled.png"
 			state = INSENSITIVE
 			border = { 0, 1, 1, 2 }
-			stretch = TRUE
 		}
 		image {
 			function = BOX
 			file = "../images/qgn_plat_listbox_arrow_down_pressed.png"
 			state = ACTIVE
 			border = { 0, 1, 1, 2 }
-			stretch = TRUE
 		}
 		image {
 			function = BOX
 			file = "../images/qgn_plat_listbox_arrow_down_normal.png"
 			border = { 0, 1, 1, 2 }
-			stretch = TRUE
 		}
 		image {
 			function = TAB
@@ -197,20 +187,17 @@ style "osso-combobox-entry-button-up" {
 			file = "../images/qgn_plat_listbox_arrow_up_disabled.png"
 			state = INSENSITIVE
 			border = { 0, 1, 1, 2 }
-			stretch = TRUE
 		}
 		image {
 			function = BOX
 			file = "../images/qgn_plat_listbox_arrow_up_pressed.png"
 			state = ACTIVE
 			border = { 0, 1, 1, 2 }
-			stretch = TRUE
 		}
 		image {
 			function = BOX
 			file = "../images/qgn_plat_listbox_arrow_up_normal.png"
 			border = { 0, 1, 1, 2 }
-			stretch = TRUE
 		}
 		image {
 			function = TAB

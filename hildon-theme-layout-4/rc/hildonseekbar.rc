@@ -40,7 +40,6 @@ style "osso-seekbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_background_disabled.png"
                         border = { 20, 20, 18, 20 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -48,7 +47,6 @@ style "osso-seekbar"
                         state = NORMAL
                         file = "../images/qgn_plat_seek_bar_regular_background_normal.png"
                         border = { 20, 20, 18, 20 }
-                        stretch = TRUE
                 }
 		
                 image {
@@ -57,7 +55,6 @@ style "osso-seekbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_left_disabled.png"
                         border = { 4, 0, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -65,7 +62,6 @@ style "osso-seekbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_disabled.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -73,7 +69,6 @@ style "osso-seekbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_finished_disabled.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -81,35 +76,30 @@ style "osso-seekbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_regular_shaft_right_disabled.png"
                         border = { 0, 4, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_northwest"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_left_normal.png"
                         border = { 4, 0, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_stream"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_normal.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_stream_complete"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_stream_finished_normal.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_southeast"
                         file = "../images/qgn_plat_seek_bar_regular_shaft_right_normal.png"
                         border = { 0, 4, 0, 0 }
-                        stretch = TRUE
                 }
 
                 image {
@@ -217,7 +207,6 @@ style "osso-seekbar-toolbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_background_disabled.png"
                         border = { 20, 20, 19, 19 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -225,7 +214,6 @@ style "osso-seekbar-toolbar"
                         state = NORMAL
                         file = "../images/qgn_plat_seek_bar_toolbar_background_normal.png"
                         border = { 20, 20, 19, 19 }
-                        stretch = TRUE
                 }
 
                 image {
@@ -234,7 +222,6 @@ style "osso-seekbar-toolbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_left_disabled.png"
                         border = { 4, 0, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -242,7 +229,6 @@ style "osso-seekbar-toolbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_disabled.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -250,7 +236,6 @@ style "osso-seekbar-toolbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_finished_disabled.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
@@ -258,35 +243,30 @@ style "osso-seekbar-toolbar"
                         state = INSENSITIVE
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_right_disabled.png"
                         border = { 0, 4, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_northwest"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_left_normal.png"
                         border = { 4, 0, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_stream"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_normal.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_stream_complete"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_stream_finished_normal.png"
                         border = { 0, 2, 0, 0 }
-                        stretch = TRUE
                 }
                 image {
                         function = BOX
                         detail = "trough_southeast"
                         file = "../images/qgn_plat_seek_bar_toolbar_shaft_right_normal.png"
                         border = { 0, 4, 0, 0 }
-                        stretch = TRUE
                 }
 
                 image {

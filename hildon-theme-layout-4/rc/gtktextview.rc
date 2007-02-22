@@ -20,7 +20,6 @@ style "osso-textview"
 	  detail   = "textview"
 	  file     = "../images/qgn_plat_multi_line_input_disabled.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
 	}
       image
         {
@@ -28,7 +27,6 @@ style "osso-textview"
 	  detail   = "textview"
 	  file     = "../images/qgn_plat_multi_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
 	}
       image
         {
@@ -36,7 +34,6 @@ style "osso-textview"
 #	  detail   = "textview"
 	  file     = "../images/qgn_plat_multi_line_input.png"
 	  border   = { 2, 2, 2, 2 }
-	  stretch  = TRUE
 	}
     }
 }

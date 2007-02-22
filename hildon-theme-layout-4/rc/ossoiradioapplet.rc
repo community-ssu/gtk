@@ -17,7 +17,6 @@ style "osso-iradio-applet"
           function = BOX
           file     = "../images/qgn_plat_radio_applet_bg.png"
           border   = { 30, 140, 0, 0 }
-          stretch  = TRUE
           shaped = TRUE
         }
     }
@@ -37,7 +36,6 @@ style "osso-iradio-applet-volumebar"
           function = BOX
           file     = "../images/qgn_plat_radio_applet_volume_bg.png"
           border   = { 10, 10, 10, 10 }
-          stretch  = TRUE
           shaped = TRUE
         }
     }
@@ -59,7 +57,6 @@ style "osso-iradio-volumebar"
           function = FLAT_BOX
           file     = "../images/qgn_plat_radio_applet_volume_bg.png"
           border   = { 10, 10, 10, 10 }
-          stretch  = TRUE
           shaped = TRUE
         }
     }
