@@ -1,3 +1,9 @@
+hildon-theme-plankton (4.2.1-1) unstable; urgency=low
+
+  * Bumping version for layout.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 22 Feb 2007 11:39:29 +0200
+
 hildon-theme-plankton (4.2.0-1) unstable; urgency=low
 
   * Updating the graphics
