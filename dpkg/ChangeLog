@@ -1,3 +1,11 @@
+2007-02-22  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.13.25.osso4.
+
+	* ostable, scripts/controllib.pl, scripts/dpkg-architecture.pl:
+	applied triplet.patch that adds ABI information to the output of
+	dpkg-architecture and makes it work for gnueabi and armel systems.
+
 2007-02-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.13.25.osso0.
