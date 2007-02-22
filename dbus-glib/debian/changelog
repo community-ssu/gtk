@@ -1,13 +1,12 @@
 dbus-glib (0.73-0osso1) experimental; urgency=low
 
-  * UNRELEASED
   * Upgraded the upstream tarball to v0.73.
   * Removed 04-dbus-gproxy-crash-and-leak-fix.patch because it's included
     in the tarball.
   * Removed ${shlibs:depends} from libdbus-glib-1-dev and added libexpat1
-    dependency manually to it because of lintian warning.
+    dependency manually to it because of a lintian warning.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 14 Feb 2007 08:45:45 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 22 Feb 2007 15:57:13 +0200
 
 dbus-glib (0.72-osso4) experimental; urgency=low
 
