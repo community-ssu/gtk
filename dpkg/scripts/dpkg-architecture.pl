@@ -95,19 +95,23 @@ sub read_ostable {
 sub split_debian {
     local ($_) = @_;
     
-    if (/^([^-]*)-(.*)/) {
-	return ($1, $2);
+    if (/^([^-]*)-([^-]*)-(.*)/) {
+	return ($1, $2, $3);
+    } elsif (/^([^-]*)-(.*)/) {
+	return ("gnu", $1, $2);
+    } elsif (/^armel/) {
+	return ("gnueabi", "linux", "arm");
     } else {
-	return ("linux", $_);
+	return ("gnu", "linux", $_);
     }
 }
 
 sub debian_to_gnu {
     local ($arch) = @_;
-    local ($os, $cpu) = &split_debian($arch);
+    local ($abi, $os, $cpu) = &split_debian($arch);
 
-    return undef unless exists($cputable{$cpu}) && exists($ostable{$os});
-    return join("-", $cputable{$cpu}, $ostable{$os});
+    return undef unless exists($cputable{$cpu}) && exists($ostable{"$abi-$os"});
+    return join("-", $cputable{$cpu}, $ostable{"$abi-$os"});
 }
 
 sub split_gnu {
@@ -252,20 +256,22 @@ $deb_host_gnu_type = $req_host_gnu_type if $req_host_gnu_type ne '';
 &warn(sprintf(_g("Specified GNU system type %s does not match gcc system type %s."), $deb_host_gnu_type, $gcc)) if !($req_is_arch or $req_eq_arch) && ($gcc ne '') && ($gcc ne $deb_host_gnu_type);
 
 # Split the Debian and GNU names
-($deb_host_arch_os, $deb_host_arch_cpu) = &split_debian($deb_host_arch);
-($deb_build_arch_os, $deb_build_arch_cpu) = &split_debian($deb_build_arch);
+($deb_host_arch_abi, $deb_host_arch_os, $deb_host_arch_cpu) = &split_debian($deb_host_arch);
+($deb_build_arch_abi, $deb_build_arch_os, $deb_build_arch_cpu) = &split_debian($deb_build_arch);
 ($deb_host_gnu_cpu, $deb_host_gnu_system) = &split_gnu($deb_host_gnu_type);
 ($deb_build_gnu_cpu, $deb_build_gnu_system) = &split_gnu($deb_build_gnu_type);
 
 %env = ();
 if (!$force) {
     $deb_build_arch = $ENV{DEB_BUILD_ARCH} if (exists $ENV{DEB_BUILD_ARCH});
+    $deb_build_arch_abi = $ENV{DEB_BUILD_ARCH_ABI} if (exists $ENV{DEB_BUILD_ARCH_ABI});
     $deb_build_arch_os = $ENV{DEB_BUILD_ARCH_OS} if (exists $ENV{DEB_BUILD_ARCH_OS});
     $deb_build_arch_cpu = $ENV{DEB_BUILD_ARCH_CPU} if (exists $ENV{DEB_BUILD_ARCH_CPU});
     $deb_build_gnu_cpu = $ENV{DEB_BUILD_GNU_CPU} if (exists $ENV{DEB_BUILD_GNU_CPU});
     $deb_build_gnu_system = $ENV{DEB_BUILD_GNU_SYSTEM} if (exists $ENV{DEB_BUILD_GNU_SYSTEM});
     $deb_build_gnu_type = $ENV{DEB_BUILD_GNU_TYPE} if (exists $ENV{DEB_BUILD_GNU_TYPE});
     $deb_host_arch = $ENV{DEB_HOST_ARCH} if (exists $ENV{DEB_HOST_ARCH});
+    $deb_host_arch_abi = $ENV{DEB_HOST_ARCH_ABI} if (exists $ENV{DEB_HOST_ARCH_ABI});
     $deb_host_arch_os = $ENV{DEB_HOST_ARCH_OS} if (exists $ENV{DEB_HOST_ARCH_OS});
     $deb_host_arch_cpu = $ENV{DEB_HOST_ARCH_CPU} if (exists $ENV{DEB_HOST_ARCH_CPU});
     $deb_host_gnu_cpu = $ENV{DEB_HOST_GNU_CPU} if (exists $ENV{DEB_HOST_GNU_CPU});
@@ -273,18 +279,20 @@ if (!$force) {
     $deb_host_gnu_type = $ENV{DEB_HOST_GNU_TYPE} if (exists $ENV{DEB_HOST_GNU_TYPE});
 }
 
-@ordered = qw(DEB_BUILD_ARCH DEB_BUILD_ARCH_OS DEB_BUILD_ARCH_CPU
+@ordered = qw(DEB_BUILD_ARCH DEB_BUILD_ARCH_ABI DEB_BUILD_ARCH_OS DEB_BUILD_ARCH_CPU
 	      DEB_BUILD_GNU_CPU DEB_BUILD_GNU_SYSTEM DEB_BUILD_GNU_TYPE
-	      DEB_HOST_ARCH DEB_HOST_ARCH_OS DEB_HOST_ARCH_CPU
+	      DEB_HOST_ARCH DEB_HOST_ARCH_ABI DEB_HOST_ARCH_OS DEB_HOST_ARCH_CPU
 	      DEB_HOST_GNU_CPU DEB_HOST_GNU_SYSTEM DEB_HOST_GNU_TYPE);
 
 $env{'DEB_BUILD_ARCH'}=$deb_build_arch;
+$env{'DEB_BUILD_ARCH_ABI'}=$deb_build_arch_abi;
 $env{'DEB_BUILD_ARCH_OS'}=$deb_build_arch_os;
 $env{'DEB_BUILD_ARCH_CPU'}=$deb_build_arch_cpu;
 $env{'DEB_BUILD_GNU_CPU'}=$deb_build_gnu_cpu;
 $env{'DEB_BUILD_GNU_SYSTEM'}=$deb_build_gnu_system;
 $env{'DEB_BUILD_GNU_TYPE'}=$deb_build_gnu_type;
 $env{'DEB_HOST_ARCH'}=$deb_host_arch;
+$env{'DEB_HOST_ARCH_ABI'}=$deb_host_arch_abi;
 $env{'DEB_HOST_ARCH_OS'}=$deb_host_arch_os;
 $env{'DEB_HOST_ARCH_CPU'}=$deb_host_arch_cpu;
 $env{'DEB_HOST_GNU_CPU'}=$deb_host_gnu_cpu;

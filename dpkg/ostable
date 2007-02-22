@@ -13,11 +13,12 @@
 # system part of the output of the GNU config.guess script.
 #
 # <Debian name>	<GNU name>	<config.guess regex>
-linux		linux-gnu	linux[^-]*(-gnu.*)?
-darwin		darwin		darwin[^-]*
-freebsd		freebsd		freebsd[^-]*
-kfreebsd	kfreebsd-gnu	kfreebsd[^-]*(-gnu.*)?
-knetbsd		knetbsd-gnu	knetbsd[^-]*(-gnu.*)?
-netbsd		netbsd		netbsd[^-]*
-openbsd		openbsd		openbsd[^-]*
-hurd		gnu		gnu[^-]*
+gnueabi-linux	linux-gnueabi	linux[^-]*-gnueabi
+gnu-linux	linux-gnu	linux[^-]*(-gnu)?
+none-darwin	darwin		darwin[^-]*
+none-freebsd	freebsd		freebsd[^-]*
+gnu-kfreebsd	kfreebsd-gnu	kfreebsd[^-]*(-gnu.*)?
+gnu-knetbsd	knetbsd-gnu	knetbsd[^-]*(-gnu.*)?
+none-netbsd	netbsd		netbsd[^-]*
+none-openbsd	openbsd		openbsd[^-]*
+gnu-hurd	gnu		gnu[^-]*

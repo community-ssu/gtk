@@ -88,8 +88,12 @@ sub debian_arch_fix
 {
     local ($os, $cpu) = @_;
 
-    if ($os eq "linux") {
+    if ($os eq "gnu-linux") {
 	return $cpu;
+    } elsif ($os =~ /^(none|gnu)-(.*)/) {
+	return "$2-$cpu";
+    } elsif ("$os-$cpu" eq "gnueabi-linux-arm") {
+	return "armel";
     } else {
 	return "$os-$cpu";
     }
@@ -102,8 +106,10 @@ sub debian_arch_split {
 	return ($1, $2);
     } elsif (/any/ || /all/) {
 	return ($_, $_);
+    } elsif (/^armel$/) {
+	return ("gnueabi-linux", "arm");
     } else {
-	return ("linux", $_);
+	return ("gnu-linux", $_);
     }
 }
 
