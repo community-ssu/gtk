@@ -1,3 +1,13 @@
+[0.2.1-1 release]
+* Update GtkFrame painting rules for gtk+ 2.10
+* Remove non-existent "GtkFrame::hildonlike" property
+* use function=SHADOW instead of BOX
+* Removed the setters for default values
+* Shrink progressbar spacing by 2 pixels
+* Fixing the menu prelight and other prelights
+* Enable widget navigation with cursor only.
+* Add new FOCUS rules to match code changes in sapwood
+
 [0.2.0-1 release]
 * GtkEntry style fixes
 * Horizontal offset for Menu

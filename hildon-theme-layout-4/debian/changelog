@@ -1,3 +1,16 @@
+hildon-theme-layout-4 (0.2.1-1) unstable; urgency=low
+
+  * Update GtkFrame painting rules for gtk+ 2.10
+  * Remove non-existent "GtkFrame::hildonlike" property
+  * use function=SHADOW instead of BOX
+  * Removed the setters for default values
+  * Shrink progressbar spacing by 2 pixels
+  * Fixing the menu prelight and other prelights
+  * Enable widget navigation with cursor only.
+  * Add new FOCUS rules to match code changes in sapwood
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 22 Feb 2007 11:33:06 +0200
+
 hildon-theme-layout-4 (0.2.0-1) unstable; urgency=low
 
   * GtkEntry style fixes

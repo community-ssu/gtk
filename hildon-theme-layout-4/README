@@ -21,7 +21,7 @@ package. So, for example, a theme might depend on a layout > 1.4.x but < 1.5.x. 
 increasing the y version of the layout WILL BREAK ALL THEMES BASED ON THIS
 LAYOUT (till they're fixed and the dependency is readjusted again). 
 
-This is intentional. It's meant to prevent the rebuild of the broken theme. y is
+This is intentional. It's meant to prevent the rebuild of the broken theme. y
 shoulbe be changed each time the changes in the layout will render the children
 themes broken -- ie. changing the cutting information will render the themes
 broken as they have no proper graphics in the proper places. 
