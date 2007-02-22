@@ -1707,13 +1707,16 @@ hildon_uri_get_default_action (const gchar  *scheme,
 		
 		action = NULL;
 	}
-		
+
 	/* If name not found, default to the first item */
 	if (!action) {
 		DEBUG_MSG (("URI: Using first action as default action"));
-		action = actions->data;
+
+		if (actions) {
+			action = actions->data;
+		} 
 	}
-	
+
 	if (action) {
 		hildon_uri_action_ref (action);
 	}
@@ -2018,14 +2021,18 @@ hildon_uri_open (const gchar    *uri,
 			    "since no action was given.",
 			    uri));
 		
+		/* TODO: Fix this, what was the idea here */
+/*
 		if (action->id) {
 			action = hildon_uri_get_default_action_by_uri (uri, error);
 		} else {
-			action = hildon_uri_get_default_action (scheme, error);
-		}
+*/
+		action = hildon_uri_get_default_action (scheme, error);
 
+/*		}
+ */
 		cleanup_action = TRUE;
-		
+
 		if (!action) {
 			GSList *actions;
 

@@ -1,3 +1,9 @@
+2007-02-22  Erik Karlsson  <erik.b.karlsson@nokia.com>
+
+	* libhildonmime/hildon-uri.c: (hildon_uri_open)
+	(hildon_uri_get_default_action) Fixed some points
+	where NULL pointer was used.	
+	
 2007-01-16  Erik Karlsson  <erik.b.karlsson@nokia.com>
 
 	* Changed the prefix from osso_ to hildon_
