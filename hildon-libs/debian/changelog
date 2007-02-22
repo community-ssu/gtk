@@ -1,3 +1,9 @@
+hildon-libs (0.15.0-1bi) unstable; urgency=low
+
+  * Forcing binary rebuild.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 22 Feb 2007 13:14:51 +0200
+
 hildon-libs (0.15.0-1) unstable; urgency=low
 
   * Adding -DMAEMO_CHANGES define so that it can be compiled with new gtk. 
