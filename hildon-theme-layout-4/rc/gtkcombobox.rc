@@ -76,13 +76,13 @@ style "osso-combobox-frame" {
             function = FOCUS
         }
         image {
-            function = BOX
+            function = SHADOW
             file = "../images/qgn_plat_combobox_frame_disabled.png"
             state = INSENSITIVE
             border = { 2, 2, 0, 0 }
         }
         image {
-            function = BOX
+            function = SHADOW
             file = "../images/qgn_plat_combobox_frame_normal.png"
             border = { 2, 2, 0, 0 }
         }

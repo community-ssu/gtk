@@ -6,7 +6,6 @@
 ####################################################
 style "osso-iradio-applet"
 {
-  GtkFrame::hildonlike = 1
   xthickness = 0
   ythickness = 0
 
@@ -14,7 +13,7 @@ style "osso-iradio-applet"
     {
       image
         {
-          function = BOX
+          function = SHADOW
           file     = "../images/qgn_plat_radio_applet_bg.png"
           border   = { 30, 140, 0, 0 }
           shaped = TRUE

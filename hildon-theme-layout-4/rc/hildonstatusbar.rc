@@ -71,11 +71,9 @@ widget "hildon-status-bar-popup" style "osso-status-bar-popup"
 
 style "osso-frame-statusbar" {
 
-   GtkFrame::hildonlike = 1
-
    engine "sapwood" {
       image {
-    	 function = BOX
+    	 function = SHADOW
          state = NORMAL
 	     file = "../images/qgn_plat_status_bar_background.png"	
 	     border = { 0,0,0,0 }	

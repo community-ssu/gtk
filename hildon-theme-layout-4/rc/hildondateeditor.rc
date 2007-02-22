@@ -35,8 +35,6 @@ widget_class "*.HildonDateEditor.GtkButton" style "osso-date-editor-button"
 
 style "osso-date-editor-frame"
 {
-  GtkFrame::hildonlike = 1
-
   ythickness = 1
   xthickness = 1
 
@@ -44,7 +42,7 @@ style "osso-date-editor-frame"
     {
       image
         {
-          function = BOX
+          function = SHADOW
           state = INSENSITIVE
           file = "../images/qgn_plat_single_line_input_disabled.png"
           border = { 2, 2, 2, 2 }
@@ -55,7 +53,7 @@ style "osso-date-editor-frame"
     {
       image
         {
-          function = BOX
+          function = SHADOW
           file = "../images/qgn_plat_single_line_input.png"
           border = { 2, 2, 2, 2 }
         }

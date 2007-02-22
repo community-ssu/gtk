@@ -6,7 +6,6 @@
 ####################################################
 style "osso-rss-feed-reader"
 {
-  GtkFrame::hildonlike = 1
   xthickness = 0
   ythickness = 0
 
@@ -14,7 +13,7 @@ style "osso-rss-feed-reader"
     {
       image
         {
-          function = BOX
+          function = SHADOW
           file     = "../images/qgn_plat_news_applet_bg.png"
           border   = { 55, 55, 55, 15 }
           shaped = TRUE

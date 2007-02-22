@@ -7,7 +7,6 @@
 ####################################################
 style "osso-clock"
 {
-  GtkFrame::hildonlike = 1
   xthickness = 0
   ythickness = 0
 
@@ -15,7 +14,7 @@ style "osso-clock"
     {
       image
         {
-          function = BOX
+          function = SHADOW
           file     = "../images/qgn_plat_gene_applet_bg.png"
           border   = { 25, 25, 25, 25 }
         }

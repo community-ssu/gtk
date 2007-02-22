@@ -1,3 +1,22 @@
+2007-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* rc/hildondateeditor.rc
+	* rc/ossorssfeedreader.rc
+	* rc/gtkframe.rc
+	* rc/gtkcombobox.rc
+	* rc/ossospeeddial.rc
+	* rc/hildontimeeditor.rc
+	* rc/hildonstatusbar.rc
+	* rc/ossoiradioapplet.rc
+	* rc/ossortc.rc
+	* rc/ossoclock.rc
+	* rc/ossomediaplayer.rc: Update GtkFrame painting rules for gtk+ 2.10
+	  - remove non-existent "GtkFrame::hildonlike" property
+	  - use function=SHADOW instead of BOX
+
+	* rc/gtkentrycompletion.rc: Removed redundant references to files,
+	they're already inherited from GtkFrame
+
 2007-02-22  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/base.rc

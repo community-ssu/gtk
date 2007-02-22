@@ -60,11 +60,10 @@ widget "*.ChavoButton" style "osso-rtc-button"
 
 style "osso-rtc-frame"
 {
-  GtkFrame::hildonlike = 1
   engine "sapwood"
     {
         image {
-            function = BOX
+            function = SHADOW
                 file     = "../images/qgn_plat_application_call_handling_frame_block.png"
                 border   = { 12, 12, 12, 12 }
         }

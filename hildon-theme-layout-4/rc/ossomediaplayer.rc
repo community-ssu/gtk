@@ -156,11 +156,10 @@ widget "*.Mplayer4Button" style "osso-mplayer4-button"
 
 style "osso-mp-button-frame"
 {
-  GtkFrame::hildonlike = 1
   engine "sapwood"
     {
         image {
-            function = BOX
+            function = SHADOW
                 file     = "../images/qgn_plat_mediaplayer_buttons_bg.png"
                 border   = { 0, 0, 112, 112 }
         }

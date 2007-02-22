@@ -11,8 +11,6 @@
 
 style "osso-frame"
 {
-  GtkFrame::hildonlike = 1
-  
   xthickness = 3
   ythickness = 3
   
@@ -20,14 +18,14 @@ style "osso-frame"
     {
       image
         {
-	  function = BOX
+	  function = SHADOW
 	  state    = INSENSITIVE
 	  file     = "../images/qgn_plat_frame_disabled.png"
 	  border   = { 3, 3, 3, 3 }
 	}
       image
         {
-	  function = BOX
+	  function = SHADOW
 	  file     = "../images/qgn_plat_frame.png"
 	  border   = { 3, 3, 3, 3 }
 	}

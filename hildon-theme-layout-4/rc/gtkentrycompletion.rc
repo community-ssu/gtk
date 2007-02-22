@@ -11,24 +11,6 @@ style "osso-completion-frame"
 {
   xthickness = 6
   ythickness = 6
-
-  engine "sapwood"
-    {
-      # Not quite sure if INSENSITIVE is and option for this widget
-      image
-        {
-	  function = SHADOW
-	  state    = INSENSITIVE
-	  file     = "../images/qgn_plat_frame_disabled.png"
-	  border   = { 3, 3, 3, 3 }
-	}
-      image
-        {
-	  function = SHADOW
-	  file     = "../images/qgn_plat_frame.png"
-	  border   = { 3, 3, 3, 3 }
-	}
-    }
 }
 
 widget "hildon-completion-window.GtkFrame" style "osso-completion-frame"
