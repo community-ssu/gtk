@@ -1,3 +1,11 @@
+python-runtime (0.4-7) unstable; urgency=low
+
+  * python package now contains pyexpat module
+  * fixed race condition with signals inside python
+  * python-osso fixes #388, #389
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Thu, 22 Feb 2007 09:35:00 -0300
+
 python-runtime (0.4-6) unstable; urgency=low
 
   * changed the package group
