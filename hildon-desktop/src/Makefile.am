@@ -80,10 +80,6 @@ OTHERS_BUTTON_SOURCES  = \
 	hn-others-button.c \
 	hn-others-button.h
 
-BUILT_SOURCES = hd-notification-service.h 
-
-hd-notification-service.h: notification-manager.xml
-	dbus-binding-tool --prefix=hd_notification_service --mode=glib-server --output=hd-notification-service.h $<
 
 hildon_desktop_SOURCES = \
 	$(BUILT_SOURCES)            \
@@ -99,8 +95,6 @@ hildon_desktop_SOURCES = \
 	hd-panel-window.h           \
 	hd-panel-window-dialog.c    \
 	hd-panel-window-dialog.h    \
-	hd-notification-manager.c   \
-	hd-notification-manager.h   \
 	hd-config.h                 \
 	main.c
 

@@ -4,6 +4,7 @@
  * Copyright (C) 2006 Nokia Corporation.
  *
  * Author:  Lucas Rocha <lucas.rocha@nokia.com>
+ *          Moises Martinez <moises.martinez@nokia.com>
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
@@ -22,44 +23,45 @@
  *
  */
 
-#ifndef __HD_NOTIFICATION_MANAGER_H__
-#define __HD_NOTIFICATION_MANAGER_H__
+#ifndef __HILDON_DESKTOP_NOTIFICATION_MANAGER_H__
+#define __HILDON_DESKTOP_NOTIFICATION_MANAGER_H__
 
 #include <gtk/gtk.h>
+#include <gtk/gtkliststore.h>
 #include <glib.h>
 #include <glib-object.h>
 #include <dbus/dbus-glib-bindings.h>
 
 G_BEGIN_DECLS
 
-typedef struct _HDNotificationManager HDNotificationManager;
-typedef struct _HDNotificationManagerClass HDNotificationManagerClass;
-typedef struct _HDNotificationManagerPrivate HDNotificationManagerPrivate;
+typedef struct _HildonDesktopNotificationManager HildonDesktopNotificationManager;
+typedef struct _HildonDesktopNotificationManagerClass HildonDesktopNotificationManagerClass;
+typedef struct _HildonDesktopNotificationManagerPrivate HildonDesktopNotificationManagerPrivate;
 
-#define HD_TYPE_NOTIFICATION_MANAGER            (hd_notification_manager_get_type ())
-#define HD_NOTIFICATION_MANAGER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), HD_TYPE_NOTIFICATION_MANAGER, HDNotificationManager))
-#define HD_NOTIFICATION_MANAGER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  HD_TYPE_NOTIFICATION_MANAGER, HDNotificationManagerClass))
-#define HD_IS_NOTIFICATION_MANAGER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HD_TYPE_NOTIFICATION_MANAGER))
-#define HD_IS_NOTIFICATION_MANAGER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  HD_TYPE_NOTIFICATION_MANAGER))
-#define HD_NOTIFICATION_MANAGER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  HD_TYPE_NOTIFICATION_MANAGER, HDNotificationManagerClass))
+#define HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER            (hildon_desktop_notification_manager_get_type ())
+#define HILDON_DESKTOP_NOTIFICATION_MANAGER(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, HildonDesktopNotificationManager))
+#define HILDON_DESKTOP_NOTIFICATION_MANAGER_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, HildonDesktopNotificationManagerClass))
+#define HILDON_DESKTOP_IS_NOTIFICATION_MANAGER(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER))
+#define HILDON_DESKTOP_IS_NOTIFICATION_MANAGER_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER))
+#define HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, HildonDesktopNotificationManagerClass))
 
-struct _HDNotificationManager 
+struct _HildonDesktopNotificationManager 
 {
-  GObject gobject;
+  GtkListStore liststore;
 
-  HDNotificationManagerPrivate *priv;
+  HildonDesktopNotificationManagerPrivate *priv;
 };
 
-struct _HDNotificationManagerClass 
+struct _HildonDesktopNotificationManagerClass 
 {
-  GObjectClass parent_class;
+  GtkListStore parent_class;
 };
 
-GType      hd_notification_manager_get_type          (void);
+GType      hildon_desktop_notification_manager_get_type          (void);
 
-GObject   *hd_notification_manager_new               (void);
+GtkWidget *hildon_desktop_notification_manager_get_singleton     (void);
 
-gboolean   hd_notification_manager_notify_handler    (HDNotificationManager *nm,
+gboolean   hildon_desktop_notification_manager_notify_handler    (HildonDesktopNotificationManager *nm,
                                                       const gchar           *app_name,
                                                       guint                  id,
                                                       const gchar           *icon,
@@ -70,18 +72,18 @@ gboolean   hd_notification_manager_notify_handler    (HDNotificationManager *nm,
                                                       gint                   timeout, 
                                                       DBusGMethodInvocation *context);
 
-gboolean   hd_notification_manager_get_capabilities  (HDNotificationManager *nm, 
+gboolean   hildon_desktop_notification_manager_get_capabilities  (HildonDesktopNotificationManager *nm, 
                                                       gchar               ***caps);
 
-gboolean   hd_notification_manager_get_server_info   (HDNotificationManager *nm,
+gboolean   hildon_desktop_notification_manager_get_server_info   (HildonDesktopNotificationManager *nm,
                                                       gchar                **out_name,
                                                       gchar                **out_vendor,
                                                       gchar                **out_version,
                                                       gchar                **out_spec_ver);
 
-gboolean   hd_notification_manager_close_notification_handler (HDNotificationManager *nm,
+gboolean   hildon_desktop_notification_manager_close_notification_handler (HildonDesktopNotificationManager *nm,
                                                                guint id, GError **error);
 
 G_END_DECLS
 
-#endif /* __HD_NOTIFICATION_MANAGER_H__ */
+#endif /* __HILDON_DESKTOP_NOTIFICATION_MANAGER_H__ */

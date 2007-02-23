@@ -1,3 +1,11 @@
+2007-02-23  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/notification-manager.xml:
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]:
+	* libhildondesktop/Makefile.am:
+	- Moved from src to libhildondesktop
+	- Now inherits from GtkListStore.
+
 2007-02-23  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/libhildondesktop.pc.in: remove dependency on

@@ -7,7 +7,7 @@
     <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="HDNotificationManager"/>
 
     <method name="Notify">
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hd_notification_manager_notify_handler"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_notify_handler"/>
 
       <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
  
@@ -23,20 +23,20 @@
     </method>
 
     <method name="CloseNotification">
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hd_notification_manager_close_notification_handler"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_close_notification_handler"/>
 
       <arg type="u" name="id" direction="in" />
     </method>
 
     <method name="GetCapabilities">
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hd_notification_manager_get_capabilities"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_get_capabilities"/>
 
       <arg type="as" name="return_caps" direction="out"/>
     </method>
 
     <method name="GetServerInformation">
       
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hd_notification_manager_get_server_info"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_get_server_info"/>
 
       <arg type="s" name="return_name" direction="out"/>
       <arg type="s" name="return_vendor" direction="out"/>

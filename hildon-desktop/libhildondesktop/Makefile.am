@@ -16,6 +16,7 @@ pkginclude_HEADERS = \
 	hildon-desktop-panel.h        \
 	hildon-desktop-multiscreen.h  \
 	hildon-desktop-panel-expandable.h \
+	hildon-desktop-notification-manager.h \
 	statusbar-item.h              \
 	statusbar-item-socket.h       \
 	tasknavigator-item.h          \
@@ -60,7 +61,11 @@ HILDON_HOME_SOURCES = \
 
 BUILT_SOURCES = \
 	hildon-desktop-marshalers.c \
-	hildon-desktop-marshalers.h
+	hildon-desktop-marshalers.h \
+	hildon-desktop-notification-service.h 
+
+hildon-desktop-notification-service.h: notification-manager.xml
+	dbus-binding-tool --prefix=hildon_desktop_notification_service --mode=glib-server --output=hildon-desktop-notification-service.h $<
 
 libhildondesktop_la_SOURCES = \
 	$(HILDON_HOME_SOURCES)               \
@@ -87,6 +92,8 @@ libhildondesktop_la_SOURCES = \
 	hildon-desktop-panel-expandable.c    \
 	hildon-desktop-multiscreen.h         \
 	hildon-desktop-multiscreen.c         \
+	hildon-desktop-notification-manager.h \
+	hildon-desktop-notification-manager.c \
 	statusbar-item.h                     \
 	statusbar-item.c                     \
 	statusbar-item-socket.h              \
