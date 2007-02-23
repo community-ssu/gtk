@@ -38,12 +38,12 @@
 
 #include <hildon-base-lib/hildon-base-dnotify.h>
 #include <libhildondesktop/hildon-desktop-window.h>
+#include <libhildondesktop/hildon-desktop-notification-manager.h>
 
 #include "hd-desktop.h"
 #include "hd-select-plugins-dialog.h"
 #include "hd-config.h"
 #include "hd-plugin-manager.h"
-#include "hd-notification-manager.h"
 #include "hd-home-window.h"
 #include "hd-panel-window.h"
 #include "hd-panel-window-dialog.h"
@@ -70,7 +70,7 @@ struct _HDDesktopPrivate
   gchar           *config_file;
   GHashTable      *containers;
   GObject         *pm;
-  GObject         *nm;
+  GtkWidget       *nm;
 #ifdef HAVE_LIBOSSO
   osso_context_t  *osso_context;
 #endif
@@ -862,7 +862,7 @@ hd_desktop_init (HDDesktop *desktop)
 
   desktop->priv->pm = hd_plugin_manager_new (); 
 
-  desktop->priv->nm = hd_notification_manager_new (); 
+  desktop->priv->nm = hildon_desktop_notification_manager_get_singleton (); 
 }
 
 static void
