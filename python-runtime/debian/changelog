@@ -1,3 +1,9 @@
+python-runtime (0.4-8) unstable; urgency=low
+
+  * bump release version 
+
+ -- Luciano Miguel Wolf <luciano.wolf@indt.org.br>  Fri, 23 Feb 2007 10:13:00 -0300
+
 python-runtime (0.4-7) unstable; urgency=low
 
   * python package now contains pyexpat module
