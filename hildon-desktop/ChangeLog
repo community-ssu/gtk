@@ -1,3 +1,8 @@
+2007-02-26  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hn-app-button.c: return TRUE on button press handler to fix
+	miss-behavior when clicking on app button.
+
 2007-02-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c: Added new notification manager.

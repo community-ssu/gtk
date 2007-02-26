@@ -866,7 +866,7 @@ hn_app_button_press_event (GtkWidget      *widget,
                                 NULL,
                                 NULL);
   
-  return FALSE;
+  return TRUE;
 }
 
 static void
