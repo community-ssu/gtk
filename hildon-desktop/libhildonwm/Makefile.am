@@ -11,8 +11,7 @@ pkginclude_HEADERS = hd-entry-info.h \
 		     hd-wm-watchable-app.h \
 		     hd-wm-watched-window-view.h \
 		     hd-wm-watched-window.h \
-		     hd-wm.h \
-		     osso-manager.h
+		     hd-wm.h
 		     
 
 EXTRA_DIST = .empty
@@ -21,10 +20,10 @@ INCLUDES = \
 	$(HILDON_CFLAGS) \
    	$(GCONF_CFLAGS) \
 	$(GNOME_VFS_CFLAGS) \
-	$(OSSO_CFLAGS) \
 	$(LIBXML_CFLAGS) \
 	$(XLIBS_CFLAGS) \
 	$(XTEST_CFLAGS) \
+	$(DBUS_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\"
 
@@ -49,16 +48,15 @@ libhildonwm_la_SOURCES = \
 	hd-wm-watched-window.c \
 	hd-wm-watched-window-view.c \
 	hd-wm-watchable-app.c \
-	hd-entry-info.c \
-	osso-manager.c 
+	hd-entry-info.c
 
 libhildonwm_la_LIBADD = \
-	$(OSSO_LIBS) \
 	$(HILDON_LIBS) \
 	$(HILDONBASELIB_LIBS) \
 	$(GCONF_LIBS) \
 	$(GNOME_VFS_LIBS) \
 	$(XLIBS_LIBS) \
-	$(XTEST_LIBS)
+	$(XTEST_LIBS) \
+	$(DBUS_LIBS)
 
 CLEANFILES = *~

@@ -25,12 +25,14 @@
 #include "hd-keys.h"
 #include "hd-wm.h"
 #include "hd-wm-watched-window.h"
-#include "osso-manager.h"
 
 #include <X11/keysymdef.h>
 #include <X11/keysym.h>
 #include <X11/extensions/XTest.h>
 #include <glib.h>
+
+#define DBUS_API_SUBJECT_TO_CHANGE
+#include <dbus/dbus.h>
 
 /** The MCE DBus service */
 #define MCE_SERVICE         "com.nokia.mce"
@@ -158,29 +160,34 @@ static void
 hd_keys_action_power (HDKeysConfig *keys,
                       gpointer     *user_data)
 {
-#ifdef HAVE_LIBOSSO
-  osso_rpc_t       retval;
+  DBusConnection       *connection;
+  DBusError             error;
+  DBusMessage          *msg = NULL;
+  gboolean              long_press = GPOINTER_TO_INT(user_data);
   
-  osso_context_t * osso_context =
-    get_context(osso_manager_singleton_get_instance());
-  
-  gboolean long_press = GPOINTER_TO_INT(user_data);
-  
-  if (!osso_context ||
-    OSSO_OK != osso_rpc_run_system (osso_context,
-                                    MCE_SERVICE,
-                                    MCE_REQUEST_PATH,
-                                    MCE_REQUEST_IF,
-                                    MCE_TRIGGER_POWERKEY_EVENT_REQ,
-                                    &retval,
-                                    DBUS_TYPE_BOOLEAN, long_press,
-                                    DBUS_TYPE_INVALID))
-  {
-    g_warning ("Unable to toggle Power menu");
-  }
-#else
-  g_warning ("Power key shortcut presses");
-#endif
+  dbus_error_init (&error);
+  connection = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
+
+  if (dbus_error_is_set (&error))
+    {
+      g_warning ("Could not acquire the DBus system bus: %s", error.message);
+      dbus_error_free (&error);
+      return;
+    }
+
+  g_return_if_fail (connection);
+
+  msg = dbus_message_new_method_call (MCE_SERVICE,
+                                      MCE_REQUEST_PATH,
+                                      MCE_REQUEST_IF,
+                                      MCE_TRIGGER_POWERKEY_EVENT_REQ);
+
+  dbus_message_append_args (msg,
+                            DBUS_TYPE_BOOLEAN,
+                            long_press,
+                            DBUS_TYPE_INVALID);
+
+  dbus_connection_send (connection, msg, NULL);
 }
 
 struct 

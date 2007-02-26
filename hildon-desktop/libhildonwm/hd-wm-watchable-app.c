@@ -47,7 +47,8 @@
 #include "hd-wm-watchable-app.h"
 #include "hd-wm-watched-window.h"
 #include "hd-entry-info.h"
-#include "osso-manager.h"
+
+#define SERVICE_PREFIX          "com.nokia."
 
 typedef char HDWMWatchableAppFlags;
 

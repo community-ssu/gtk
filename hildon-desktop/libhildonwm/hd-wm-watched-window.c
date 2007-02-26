@@ -48,7 +48,6 @@
 #include "hd-wm-watched-window-view.h"
 #include "hd-wm-watchable-app.h"
 #include "hd-entry-info.h"
-#include "osso-manager.h"
 
 #define _(o) o
 

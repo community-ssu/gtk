@@ -64,7 +64,6 @@
 #include "hd-wm-watched-window-view.h"
 #include "hd-wm-memory.h"
 #include "hd-entry-info.h"
-#include "osso-manager.h"
 
 #include "hd-wm-marshalers.h"
 
@@ -101,6 +100,17 @@
 /* hardware signals */
 #define HOME_LONG_PRESS "sig_home_key_pressed_long_ind"
 #define HOME_PRESS      "sig_home_key_pressed_ind"
+
+/* DBus identifier lengths */
+#define SERVICE_NAME_LEN        255
+#define PATH_NAME_LEN           255
+#define INTERFACE_NAME_LEN      255
+#define TMP_NAME_LEN            255
+
+/* DBus OSSO default path */
+#define OSSO_BUS_ROOT          "com.nokia"
+#define OSSO_BUS_ROOT_PATH     "/com/nokia"
+#define OSSO_BUS_TOP           "top_application"
 
 #define LAUNCH_SUCCESS_TIMEOUT 20
 
