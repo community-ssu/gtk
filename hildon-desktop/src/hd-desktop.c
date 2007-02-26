@@ -70,7 +70,7 @@ struct _HDDesktopPrivate
   gchar           *config_file;
   GHashTable      *containers;
   GObject         *pm;
-  GtkWidget       *nm;
+  GtkListStore    *nm;
 #ifdef HAVE_LIBOSSO
   osso_context_t  *osso_context;
 #endif

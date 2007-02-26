@@ -54,12 +54,12 @@ struct _HildonDesktopNotificationManager
 
 struct _HildonDesktopNotificationManagerClass 
 {
-  GtkListStore parent_class;
+  GtkListStoreClass parent_class;
 };
 
 GType      hildon_desktop_notification_manager_get_type          (void);
 
-GtkWidget *hildon_desktop_notification_manager_get_singleton     (void);
+GtkListStore *hildon_desktop_notification_manager_get_singleton     (void);
 
 gboolean   hildon_desktop_notification_manager_notify_handler    (HildonDesktopNotificationManager *nm,
                                                       const gchar           *app_name,

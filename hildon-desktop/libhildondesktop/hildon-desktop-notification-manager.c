@@ -128,7 +128,20 @@ hildon_desktop_notification_manager_class_init (HildonDesktopNotificationManager
 {
 }
 
-GtkWidget *
+static gboolean 
+hildon_desktop_notification_manager_timeout (GtkTreeIter *iter)
+{
+ GtkListStore *nm = 
+   hildon_desktop_notification_manager_get_singleton ();	
+
+  gtk_list_store_remove (nm, iter);
+
+  g_free (iter);
+
+  return FALSE;
+}
+
+GtkListStore *
 hildon_desktop_notification_manager_get_singleton (void)
 {
   static GObject *nm = NULL;
@@ -136,7 +149,7 @@ hildon_desktop_notification_manager_get_singleton (void)
   if (nm == NULL)
     nm = g_object_new (HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, NULL);
 
-  return GTK_WIDGET (nm);
+  return GTK_LIST_STORE (nm);
 }
 
 gboolean
@@ -151,7 +164,7 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
                                         	    gint                   timeout, 
                                         	    DBusGMethodInvocation *context)
 {
-  GtkTreeIter iter;
+  GtkTreeIter iter,*iter_timeout;
 
 
   gtk_list_store_append (GTK_LIST_STORE (nm),
@@ -169,6 +182,19 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
 		      COL_HINTS, hints,
 		      COL_TIMEOUT, timeout,
 		      -1);
+
+   
+
+  if (timeout > 0)
+  {
+    iter_timeout = g_new0 (GtkTreeIter, 1);
+
+    *iter_timeout = iter;  
+    
+    g_timeout_add (timeout,
+		   (GSourceFunc)hildon_desktop_notification_manager_timeout,
+		   iter_timeout);
+  }
 		      
   dbus_g_method_return (context, id);
 
