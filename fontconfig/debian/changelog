@@ -2,7 +2,7 @@ fontconfig (2.4.1-1osso2.1) unstable; urgency=low
 
   * Increasing the version, recompilation is needed to link with libdbus-1-3
 
- -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Fri, 23 Feb 2006 14:41:00 +0200
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Fri, 23 Feb 2007 14:41:00 +0200
 
 fontconfig (2.4.1-1osso2) unstable; urgency=low
 
