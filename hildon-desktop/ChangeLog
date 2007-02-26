@@ -1,10 +1,15 @@
 2007-02-26  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildondesktop/libhildondesktop.h: Added missing headers.
+	* libhildondesktop/libhildondesktop.pc.in: Requires dbus-glib-1
+
+2007-02-26  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hd-desktop.c:
-        - Fixed usage of notification manager.
-        * libhildondesktop/hildon-desktop-notification-manager.[ch]:
+	- Fixed usage of notification manager.
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]:
 	- Fixed silly castings on notification manager.
-        - Added support for timeout.
+	- Added support for timeout.
 
 2007-02-26  Johan Bilien  <johan.bilien@nokia.com>
 
@@ -16,8 +21,8 @@
 
 2007-02-26  Lucas Rocha  <lucas.rocha@nokia.com>
 
-        * src/hn-app-button.c: return TRUE on button press handler to fix
-        miss-behavior when clicking on app button.
+	* src/hn-app-button.c: return TRUE on button press handler to fix 
+	miss-behavior when clicking on app button.
 
 2007-02-23  Moises Martinez  <moises.martinez@nokia.com>
 

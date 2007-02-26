@@ -26,8 +26,10 @@
 #define __LIBDESKTOP_H__
 
 #include <libhildondesktop/hildon-desktop-panel-window.h>
+#include <libhildondesktop/hildon-desktop-panel-window-dialog.h>
 #include <libhildondesktop/hildon-desktop-multiscreen.h>
 #include <libhildondesktop/hildon-desktop-panel.h>
+#include <libhildondesktop/hildon-desktop-panel-expandable.h>
 
 #include <libhildondesktop/hildon-desktop-item.h>
 #include <libhildondesktop/hildon-desktop-panel-item.h>
@@ -42,6 +44,8 @@
 
 #include <libhildondesktop/hildon-home-area.h>
 #include <libhildondesktop/hildon-home-applet.h>
+
+#include <libhildondesktop/hildon-desktop-notification-manager.h>
 
 #include <libhildondesktop/libhildonmenu.h>
 #include <libhildondesktop/hildon-thumb-menu-item.h>

@@ -6,7 +6,7 @@ localedir=@localedir@
 
 Name: libhildondesktop
 Description: Hildon Lib Desktop
-Requires: libxml-2.0
+Requires: libxml-2.0 dbus-glib-1
 Version: @VERSION@
 Libs: -L${libdir} -lhildondesktop
 Cflags: -I${includedir}
