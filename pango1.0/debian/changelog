@@ -1,3 +1,9 @@
+pango1.0 (1.14.10-1osso4.1) unstable; urgency=low
+
+  * Increasing the version, the rebuilding is needed with libdbus-1-3
+
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon,  26 Feb 2007 14:25:00 +0200
+
 pango1.0 (1.14.10-1osso4) unstable; urgency=low
 
   * sync with upstream, pangocairo thread fixes, fix to ellipsize when width
