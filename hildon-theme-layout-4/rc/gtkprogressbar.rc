@@ -21,14 +21,14 @@ style "osso-progressbar" = "osso-logical-colors"
 	function = BOX
 	detail = "bar"
 	file = "../images/qgn_plat_progress_bar_gradient.png"
-	border = { 0, 0, 0, 0 }
+	border = { 0, 0, 11, 12 }
       }
     image 
       {	
 	function = BOX
 	detail = "trough"
 	file = "../images/qgn_plat_progress_bar_border.png"
-	border = { 4, 4, 0, 0 }
+	border = { 4, 4, 12, 15 }
 
 	# If orientation is set to HORIZONTAL, then the box will not be
 	# drawn if HEIGHT > WIDTH
