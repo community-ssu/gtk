@@ -34,6 +34,19 @@
 
 G_BEGIN_DECLS
 
+enum 
+{
+  HD_NM_COL_APPNAME,
+  HD_NM_COL_ID,
+  HD_NM_COL_ICON_NAME,
+  HD_NM_COL_ICON,
+  HD_NM_COL_SUMMARY,
+  HD_NM_COL_BODY,
+  HD_NM_COL_ACTIONS,
+  HD_NM_COL_HINTS,
+  HD_NM_COL_TIMEOUT
+};
+
 typedef struct _HildonDesktopNotificationManager HildonDesktopNotificationManager;
 typedef struct _HildonDesktopNotificationManagerClass HildonDesktopNotificationManagerClass;
 typedef struct _HildonDesktopNotificationManagerPrivate HildonDesktopNotificationManagerPrivate;

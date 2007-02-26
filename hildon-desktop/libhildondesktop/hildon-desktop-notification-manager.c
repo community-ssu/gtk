@@ -42,20 +42,6 @@ G_DEFINE_TYPE (HildonDesktopNotificationManager, hildon_desktop_notification_man
 
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_ICON_SIZE  48
 
-enum 
-{
-  COL_APPNAME,
-  COL_ID,
-  COL_ICON_NAME,
-  COL_ICON,
-  COL_SUMMARY,
-  COL_BODY,
-  COL_ACTIONS,
-  COL_HINTS,
-  COL_TIMEOUT
-};
-
-
 static void
 hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
 {
@@ -165,25 +151,54 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
                                         	    DBusGMethodInvocation *context)
 {
   GtkTreeIter iter,*iter_timeout;
+  GError *error = NULL;
+  GdkPixbuf *pixbuf = NULL;
+  GtkIconTheme *icon_theme;
 
+  if (!g_str_equal (icon, ""))
+  {
+    if (g_file_test (icon, G_FILE_TEST_EXISTS))
+    {
+      pixbuf = gdk_pixbuf_new_from_file (icon, &error);
 
-  gtk_list_store_append (GTK_LIST_STORE (nm),
-		  	 &iter);
+      if (error)
+      {
+        pixbuf = NULL; /* Tt'd be already NULL */
+	g_warning ("Notification Manager %s:",error->message);
+        g_error_free (error);
+      }
+    }
+    else
+    {	    
+      icon_theme = gtk_icon_theme_get_default ();
+      pixbuf = gtk_icon_theme_load_icon (icon_theme,
+                                         icon,
+                                         32,
+                                         GTK_ICON_LOOKUP_NO_SVG,
+	                                 &error);
 
+      if (error)
+      {
+	pixbuf = NULL; /* Tt'd be already NULL */
+	g_warning ("Notification Manager %s:",error->message);
+        g_error_free (error);
+      }
+    }
+  }
+
+  gtk_list_store_append (GTK_LIST_STORE (nm), &iter);
   gtk_list_store_set (GTK_LIST_STORE (nm),
 		      &iter,
-		      COL_APPNAME, app_name,
-		      COL_ID, id,
-		      COL_ICON_NAME, icon,
-		      COL_ICON, NULL,
-		      COL_SUMMARY, summary,
-		      COL_BODY, body,
-		      COL_ACTIONS, actions,
-		      COL_HINTS, hints,
-		      COL_TIMEOUT, timeout,
+		      HD_NM_COL_APPNAME, app_name,
+		      HD_NM_COL_ID, id,
+		      HD_NM_COL_ICON_NAME, icon,
+		      HD_NM_COL_ICON, pixbuf,
+		      HD_NM_COL_SUMMARY, summary,
+		      HD_NM_COL_BODY, body,
+		      HD_NM_COL_ACTIONS, actions,
+		      HD_NM_COL_HINTS, hints,
+		      HD_NM_COL_TIMEOUT, timeout,
 		      -1);
-
-   
 
   if (timeout > 0)
   {
