@@ -1,6 +1,12 @@
+gtkhtml (3.9.1-3osso3) unstable; urgency=low
+
+  * Removed dependency on libxml-parser-perl
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Mon, 26 Feb 2007 18:06:24 +0200
+
 gtkhtml (3.9.1-3osso2) unstable; urgency=low
 
-  * Added dependency to libxml-parser-perl
+  * Added dependency on libxml-parser-perl
 
  -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Mon, 26 Feb 2007 17:59:33 +0200
 

@@ -1,5 +1,9 @@
 2007-02-20  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
+	* Removed dependency on libxml-parser-perl
+
+2007-02-20  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
 	* Added dependency on libxml-parser-perl
 
 2007-02-20  Gabriel Schulhof <gabriel.schulhof@nokia.com>
