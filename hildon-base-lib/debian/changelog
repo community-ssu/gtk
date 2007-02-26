@@ -2,7 +2,7 @@ hildon-base-lib (0.11.1-2) unstable; urgency=low
 
   * Increasing the version, the rebuilding is needed to link with libdbus-1-3
 
- -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon, 26 Feb 2006 13:19:00 +0300
+ -- Natalia Dobrovolskaya <natalia.dobrovolskaya@nokia.com>  Mon, 26 Feb 2007 13:19:00 +0300
 
 hildon-base-lib (0.11.1-1) unstable; urgency=low
 
