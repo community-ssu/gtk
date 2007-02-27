@@ -31,12 +31,12 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #ifdef HAVE_LIBOSSO
 #include <libosso.h>
 #endif
 
-#include <hildon-base-lib/hildon-base-dnotify.h>
 #include <libhildondesktop/hildon-desktop-window.h>
 #include <libhildondesktop/hildon-desktop-notification-manager.h>
 
@@ -58,10 +58,11 @@ G_DEFINE_TYPE (HDDesktop, hd_desktop, G_TYPE_OBJECT);
 
 typedef struct
 {
-  gchar      *config_file;
-  gchar      *plugin_dir;
-  GtkWidget  *container;
-  HDDesktop  *desktop;
+  gchar                  *config_file;
+  gchar                  *plugin_dir;
+  GtkWidget              *container;
+  HDDesktop              *desktop;
+  GnomeVFSMonitorHandle  *monitor;
 } HDDesktopContainerInfo;
 
 struct _HDDesktopPrivate 
@@ -312,6 +313,9 @@ hd_desktop_free_container_info (HDDesktopContainerInfo *info)
   if (info->container)
     gtk_widget_destroy (info->container);
 
+  if (info->monitor)
+    gnome_vfs_monitor_cancel (info->monitor);
+  
   g_free (info);
 }
 
@@ -353,17 +357,21 @@ hd_desktop_container_config_changed (gchar *config_file, HDDesktop *desktop)
 }
 
 static void
-hd_desktop_plugin_dir_changed (gchar *plugin_dir, HDDesktopContainerInfo *info)
+hd_desktop_plugin_dir_changed (GnomeVFSMonitorHandle *handle,
+                               const gchar *monitor_uri,
+                               const gchar *info_uri,
+                               GnomeVFSMonitorEventType event_type,
+                               HDDesktopContainerInfo *info)
 {
   GDir *dir;
   GError *error = NULL;
   GList *plugin_list = NULL, *remove_list, *iter;
   const gchar *filename;
-
+  
   remove_list = gtk_container_get_children (
                   HILDON_DESKTOP_WINDOW (info->container)->container);
 
-  dir = g_dir_open (plugin_dir, 0, &error);
+  dir = g_dir_open (info->plugin_dir, 0, &error);
 
   if (!dir)
   {
@@ -380,7 +388,7 @@ hd_desktop_plugin_dir_changed (gchar *plugin_dir, HDDesktopContainerInfo *info)
     GList *found = NULL;
     gchar *desktop_path = NULL;
     
-    desktop_path = g_build_filename (plugin_dir, filename, NULL);
+    desktop_path = g_build_filename (info->plugin_dir, filename, NULL);
 
     found = g_list_find_custom (remove_list, 
                                 desktop_path,
@@ -424,31 +432,20 @@ hd_desktop_watch_dir (gchar    *plugin_dir,
                       gpointer  callback, 
                       gpointer  user_data)
 {
-  hildon_return_t ret;
+  HDDesktopContainerInfo *info = (HDDesktopContainerInfo *) user_data;
 
   g_return_if_fail (plugin_dir);
 
-  ret = hildon_dnotify_set_cb ((hildon_dnotify_cb_f *) hd_desktop_plugin_dir_changed,
-                               (gchar *) plugin_dir,
-                               user_data);
-
-  if (ret != HILDON_OK)
-  {
-    g_warning ("Error trying to watch plugin directory: %s", plugin_dir);
-  }
+  gnome_vfs_monitor_add  (&info->monitor, 
+                          plugin_dir,
+                          GNOME_VFS_MONITOR_DIRECTORY,
+                          (GnomeVFSMonitorCallback) callback,
+                          user_data);
 }
 
 static void 
 hd_desktop_dnotify_init () 
 {
-  hildon_return_t ret;
-
-  ret = hildon_dnotify_handler_init ();
-
-  if (ret != HILDON_OK)
-  {
-    g_warning ("Error on dnotify init");
-  }
 }
 
 static void 

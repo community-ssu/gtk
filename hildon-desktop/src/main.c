@@ -30,6 +30,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "hd-desktop.h"
 
@@ -73,6 +74,8 @@ int main (int argc, char **argv)
 
   gtk_init (&argc, &argv);
 
+  gnome_vfs_init ();
+  
   desktop = hd_desktop_new ();
 
   hd_desktop_run (HD_DESKTOP (desktop));

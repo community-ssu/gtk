@@ -220,7 +220,7 @@ hd_wm_compute_watched_window_hibernation_key (Window xwin,
 					      HDWMWatchableApp *app);
 
 void
-hd_wm_dnotify_register (void);
+hd_wm_monitor_register (void);
 
 /* keyboard handling functions */
 

@@ -24,6 +24,7 @@ INCLUDES = \
 	$(XLIBS_CFLAGS) \
 	$(XTEST_CFLAGS) \
 	$(DBUS_CFLAGS) \
+	$(GNOME_VFS_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\"
 
@@ -50,13 +51,13 @@ libhildonwm_la_SOURCES = \
 	hd-wm-watchable-app.c \
 	hd-entry-info.c
 
-libhildonwm_la_LIBADD = \
-	$(HILDON_LIBS) \
-	$(HILDONBASELIB_LIBS) \
-	$(GCONF_LIBS) \
-	$(GNOME_VFS_LIBS) \
-	$(XLIBS_LIBS) \
-	$(XTEST_LIBS) \
+libhildonwm_la_LIBADD =     \
+	$(HILDON_LIBS)      \
+	$(GCONF_LIBS)       \
+	$(GNOME_VFS_LIBS)   \
+	$(XLIBS_LIBS)       \
+	$(XTEST_LIBS)       \
+	$(GNOME_VFS_LIBS)   \
 	$(DBUS_LIBS)
 
 CLEANFILES = *~

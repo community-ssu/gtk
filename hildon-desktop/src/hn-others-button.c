@@ -37,13 +37,12 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
 #include <gdk/gdkx.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include <X11/X.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
-
-#include <hildon-base-lib/hildon-base-dnotify.h>
 
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-helper.h>
@@ -91,12 +90,16 @@ G_DEFINE_TYPE (HNOthersButton, hn_others_button, TASKNAVIGATOR_TYPE_ITEM);
 
 struct _HNOthersButtonPrivate
 {
-  GtkWidget  *button;
-  guint       collapse_id;
-  gboolean    thumb_pressed;
-  guint       dnotify_update_timeout;
+  GtkWidget              *button;
+  guint                   collapse_id;
+  gboolean                thumb_pressed;
+  GnomeVFSMonitorHandle  *system_dir_monitor;
+  GnomeVFSMonitorHandle  *home_dir_monitor;
+  GnomeVFSMonitorHandle  *desktop_dir_monitor;
+  guint                   monitor_update_timeout;
 };
 
+static void hn_others_button_register_monitors (HNOthersButton *button);
 static void hn_others_button_create_menu (HNOthersButton *button);
 static void hn_others_button_button_toggled (GtkWidget *widget, HNOthersButton *button);
 static gboolean hn_others_button_key_press (GtkWidget* widget, GdkEventKey *event, HNOthersButton *button);
@@ -111,8 +114,17 @@ hn_others_button_finalize (GObject *gobject)
   if (button->priv->collapse_id)
     g_source_remove (button->priv->collapse_id);
 
-  if (button->priv->dnotify_update_timeout)
-    g_source_remove (button->priv->dnotify_update_timeout);
+  if (button->priv->monitor_update_timeout)
+    g_source_remove (button->priv->monitor_update_timeout);
+  
+  if (button->priv->system_dir_monitor)
+    gnome_vfs_monitor_cancel (button->priv->system_dir_monitor);
+  
+  if (button->priv->home_dir_monitor)
+    gnome_vfs_monitor_cancel (button->priv->home_dir_monitor);
+  
+  if (button->priv->desktop_dir_monitor)
+    gnome_vfs_monitor_cancel (button->priv->desktop_dir_monitor);
   
   if (TASKNAVIGATOR_ITEM (button)->menu)
     gtk_widget_destroy (GTK_WIDGET (TASKNAVIGATOR_ITEM (button)->menu));
@@ -140,6 +152,10 @@ hn_others_button_init (HNOthersButton *button)
 
   button->priv = priv;
 
+  button->priv->system_dir_monitor = NULL;
+  button->priv->home_dir_monitor = NULL;
+  button->priv->desktop_dir_monitor = NULL;
+  
   gtk_widget_set_name (GTK_WIDGET(button), NAVIGATOR_BUTTON_THREE);
 
   gtk_widget_set_extension_events (GTK_WIDGET (button),
@@ -182,11 +198,13 @@ hn_others_button_init (HNOthersButton *button)
 
   priv->collapse_id = 0;
   priv->thumb_pressed = FALSE;
-  priv->dnotify_update_timeout = 0;
+  priv->monitor_update_timeout = 0;
 
   TASKNAVIGATOR_ITEM (button)->menu = NULL;
 
   gtk_container_add (GTK_CONTAINER (button), priv->button);
+
+  hn_others_button_register_monitors (button);
 }
 
 GtkWidget *
@@ -961,7 +979,7 @@ hn_others_button_menu_changed (HNOthersButton *button)
 
   g_debug ("Creating menu");
   
-  button->priv->dnotify_update_timeout = 0;
+  button->priv->monitor_update_timeout = 0;
 
   hn_others_button_create_menu (button);
   
@@ -969,21 +987,23 @@ hn_others_button_menu_changed (HNOthersButton *button)
 }
 
 static void
-hn_others_button_dnotify_handler (char *path, gpointer data)
+hn_others_button_dir_changed (GnomeVFSMonitorHandle *handle,
+                              const gchar *monitor_uri,
+                              const gchar *info_uri,
+                              GnomeVFSMonitorEventType event_type,
+                              HNOthersButton *button)
 {
-  HNOthersButton * button = HN_OTHERS_BUTTON (data);
-  
-  if (!button->priv->dnotify_update_timeout)
+  if (!button->priv->monitor_update_timeout)
   {
-    button->priv->dnotify_update_timeout =
+    button->priv->monitor_update_timeout =
             g_timeout_add (1000,
-            	           (GSourceFunc)hn_others_button_menu_changed,
+            	           (GSourceFunc) hn_others_button_menu_changed,
             	           button);
   }
 }
 
 void
-hn_others_button_dnotify_register (HNOthersButton * button)
+hn_others_button_register_monitors (HNOthersButton * button)
 {
   const gchar *home_dir;
   gchar *dir;
@@ -1006,13 +1026,15 @@ hn_others_button_dnotify_register (HNOthersButton * button)
   
   /* Watch systemwide menu conf */
   dir = g_path_get_dirname (SYSTEMWIDE_MENU_FILE);
-  
-  if (hildon_dnotify_set_cb (
-		(hildon_dnotify_cb_f *) hn_others_button_dnotify_handler,
-		dir, button) != HILDON_OK)
+ 
+  if (gnome_vfs_monitor_add (&button->priv->system_dir_monitor, 
+                             dir,
+                             GNOME_VFS_MONITOR_DIRECTORY,
+                             (GnomeVFSMonitorCallback) hn_others_button_dir_changed,
+                             button) != GNOME_VFS_OK)
   {
     g_error ("Others_menu_initialize_menu: "
-      	     "failed setting dnotify callback "
+      	     "failed setting monitor callback "
       	     "for systemwide menu conf." );
   }
 
@@ -1029,13 +1051,15 @@ hn_others_button_dnotify_register (HNOthersButton * button)
 
     if (dir && *dir)
     {
-      if (hildon_dnotify_set_cb (
-    	  (hildon_dnotify_cb_f *) hn_others_button_dnotify_handler,
-    	  dir, button) != HILDON_OK)
+      if (gnome_vfs_monitor_add (&button->priv->home_dir_monitor, 
+                                 dir,
+                                 GNOME_VFS_MONITOR_DIRECTORY,
+                                 (GnomeVFSMonitorCallback) hn_others_button_dir_changed,
+                                 button) != GNOME_VFS_OK)
       {
         g_error ("Others_menu_initialize_menu: "
-      	         "failed setting dnotify callback "
-      	         "for user spesific menu conf." );
+      	         "failed setting monitor callback "
+      	         "for user specific menu conf." );
       }
     }
     else
@@ -1051,12 +1075,14 @@ hn_others_button_dnotify_register (HNOthersButton * button)
   
   /* Monitor the .desktop directories, so we can regenerate the menu
    * when a new application is installed */
-  if (hildon_dnotify_set_cb (
-      (hildon_dnotify_cb_f *) hn_others_button_dnotify_handler,
-      HD_DESKTOP_ENTRY_PATH, button) != HILDON_OK)
+  if (gnome_vfs_monitor_add (&button->priv->desktop_dir_monitor, 
+                             HD_DESKTOP_ENTRY_PATH,
+                             GNOME_VFS_MONITOR_DIRECTORY,
+                             (GnomeVFSMonitorCallback) hn_others_button_dir_changed,
+                             button) != GNOME_VFS_OK)
   {
     g_error ("Others_menu_initialize_menu: "
-      	     "failed setting dnotify callback "
+      	     "failed setting monitor callback "
       	     "for .desktop directory." );
   }
 }

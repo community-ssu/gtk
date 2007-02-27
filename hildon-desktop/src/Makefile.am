@@ -13,6 +13,7 @@ hildon_desktop_CPPFLAGS = \
 	$(OSSO_HELP_CFLAGS)          					   \
 	$(GCONF_CFLAGS)                                                    \
 	$(LIBXML_CFLAGS)                                                   \
+	$(GNOME_VFS_CFLAGS)                                                \
 	$(DBUS_GLIB_CFLAGS)                                                \
 	-I$(top_srcdir) 						   \
 	-DLOCALEDIR=\"$(localedir)\" 					   \
@@ -26,14 +27,15 @@ hildon_desktop_CPPFLAGS = \
 	-DHD_PLUGIN_LOADER_LEGACY_STATUSBAR_MODULE_PATH=\"$(hildonstatusbarlibdir)\" \
 	-DHD_PLUGIN_LOADER_LEGACY_NAVIGATOR_MODULE_PATH=\"$(hildonnavigatorlibdir)\"
 
-hildon_desktop_LDFLAGS  = \
-	-rdynamic         \
+hildon_desktop_LDFLAGS  =   \
+	-rdynamic           \
 	$(LAUNCHER_LDFLAGS) \
-	$(HILDON_LIBS)	  \
-	$(HILDON_FM_LIBS) \
-	$(OSSO_LIBS)	  \
-	$(GCONF_LIBS)     \
-	$(OSSO_HELP_LIBS) \
+	$(HILDON_LIBS)	    \
+	$(HILDON_FM_LIBS)   \
+	$(OSSO_LIBS)	    \
+	$(GCONF_LIBS)       \
+	$(OSSO_HELP_LIBS)   \
+	$(GNOME_VFS_LIBS)   \
 	$(DBUS_GLIB_LIBS)
 
 hildon_desktop_LDADD = \

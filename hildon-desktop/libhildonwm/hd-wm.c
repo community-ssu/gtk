@@ -35,7 +35,7 @@
 #include <gdk/gdk.h>
 #include <gdk/gdkx.h>
 #include <gdk/gdkevents.h>
-
+#include <libgnomevfs/gnome-vfs.h>
 
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-defines.h>
@@ -48,8 +48,6 @@
 #include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-window.h>
 #endif
-
-#include <hildon-base-lib/hildon-base-dnotify.h>
 
 #ifdef HAVE_LIBOSSO
 #include <libosso.h>
@@ -172,60 +170,61 @@ struct xwinv
 struct _HDWMPrivate   /* Our main struct */
 {
  
-  Atom          atoms[HD_ATOM_COUNT];
+  Atom                    atoms[HD_ATOM_COUNT];
  
   /* WatchedWindows is a hash of watched windows hashed via in X window ID.
    * As most lookups happen via window ID's makes sense to hash on this,
    */
-  GHashTable   *watched_windows;
+  GHashTable             *watched_windows;
 
   /* watched windows that are 'hibernating' - i.e there actually not
    * running any more but still appear in HN as if they are ( for memory ).
    * Split into seperate hash for efficiency reasons.
    */
-  GHashTable   *watched_windows_hibernating;
+  GHashTable             *watched_windows_hibernating;
 
   /* curretnly active app window */
-  HDWMWatchedWindow *active_window;
+  HDWMWatchedWindow      *active_window;
 
   /* used to toggle between home and application */
-  HDWMWatchedWindow *last_active_window;
+  HDWMWatchedWindow      *last_active_window;
   
   /* A hash of valid watchable apps ( hashed on class name ). This is built
    * on startup by slurping in /usr/share/applications/hildon .desktop's
    * NOTE: previous code used service/exec/class to refer to class name so
    *       quite confusing.
    */
-  GHashTable   *watched_apps;
+  GHashTable             *watched_apps;
 
 
-  GtkWidget    *others_menu;
+  GtkWidget              *others_menu;
 
   /* stack for the launch banner messages. 
    * Needed to work round gtk(hindon)_infoprint issues.
    */
-  GList        *banner_stack;
+  GList                  *banner_stack;
 
   /* Key bindings and shortcuts */
-  HDKeysConfig  *keys;
-  HDKeyShortcut *shortcut;
-  gulong         power_key_timeout;
+  HDKeysConfig           *keys;
+  HDKeyShortcut          *shortcut;
+  gulong                  power_key_timeout;
 
   /* FIXME: Below memory management related not 100% sure what they do */
 
-  gulong        lowmem_banner_timeout;
-  gulong        lowmem_min_distance;
-  gulong        lowmem_timeout_multiplier;
-  gboolean      lowmem_situation;
+  gulong                 lowmem_banner_timeout;
+  gulong                 lowmem_min_distance;
+  gulong                 lowmem_timeout_multiplier;
+  gboolean               lowmem_situation;
 
-  gboolean      bg_kill_situation;
-  gint          timer_id;
-  gboolean      about_to_shutdown;
-  gboolean      has_focus;
-  guint         dnotify_timeout_id;
-  gboolean      modal_windows;
+  gboolean               bg_kill_situation;
+  gint                   timer_id;
+  gboolean               about_to_shutdown;
+  gboolean               has_focus;
+  GnomeVFSMonitorHandle *monitor;
+  guint                  monitor_timeout_id;
+  gboolean               modal_windows;
 
-  GList		*applications;
+  GList		        *applications;
 };
 
 static HDWMPrivate *hdwmpriv = NULL; 			/* Singleton instance */
@@ -695,7 +694,6 @@ hd_wm_class_init (HDWMClass *hdwm_class)
 		     G_TYPE_NONE,
 		     1,
 		     G_TYPE_BOOLEAN);
-
 }
 
 static void hd_wm_register_object_path (HDWM *hdwm,
@@ -2473,7 +2471,7 @@ struct _cb_steal_data
 
 /* iterates over the new hash and carries out updates on the old hash */
 static gboolean
-dnotify_hash_table_foreach_steal_func (gpointer key,
+monitor_hash_table_foreach_steal_func (gpointer key,
                                        gpointer value,
                                        gpointer user_data)
 {
@@ -2511,7 +2509,7 @@ dnotify_hash_table_foreach_steal_func (gpointer key,
 
 /* iterates over the old app hash and removes any apps that disappeared */
 static gboolean
-dnotify_hash_table_foreach_remove_func (gpointer key,
+monitor_hash_table_foreach_remove_func (gpointer key,
                                         gpointer value,
                                         gpointer user_data)
 {
@@ -2538,12 +2536,12 @@ dnotify_hash_table_foreach_remove_func (gpointer key,
 }
 
 static gboolean 
-hd_wm_dnotify_process (HDWM *hdwm)
+hd_wm_monitor_process (HDWM *hdwm)
 {
   GHashTable * new_apps;
   struct _cb_steal_data std;
 
-  hdwm->priv->dnotify_timeout_id = 0;
+  hdwm->priv->monitor_timeout_id = 0;
 
   /* reread all .desktop files and compare each agains existing apps; add any
    * new ones, updated existing ones
@@ -2573,7 +2571,7 @@ hd_wm_dnotify_process (HDWM *hdwm)
    * exist in the new one
    */
   g_hash_table_foreach_remove (hdwm->priv->watched_apps,
-                               dnotify_hash_table_foreach_remove_func,
+                               monitor_hash_table_foreach_remove_func,
                                new_apps);
   /*
    * then we do updates on what is left in the old hash
@@ -2582,7 +2580,7 @@ hd_wm_dnotify_process (HDWM *hdwm)
   std.update = FALSE;
   
   g_hash_table_foreach_steal (new_apps,
-                              dnotify_hash_table_foreach_steal_func,
+                              monitor_hash_table_foreach_steal_func,
                               &std);
 
   if (std.update)
@@ -2887,30 +2885,40 @@ hd_wm_fullscreen_mode ()
   return FALSE;
 }
 
-/* Dnotify callback function -- we filter dnotify calls through a timout, see
- * comments on hd_wm_dnotify_process ()
+/* Dnotify callback function -- we filter monitor calls through a timout, see
+ * comments on hd_wm_monitor_process ()
  */
 static void
-hd_wm_dnotify_cb (char *path, void * data)
+hd_wm_monitor_cb (GnomeVFSMonitorHandle *handle,
+                  const gchar *monitor_uri,
+                  const gchar *info_uri,
+                  GnomeVFSMonitorEventType event_type,
+                  gpointer user_data)
 {
-  HDWM *hdwm = HD_WM (data);
+  HDWM *hdwm = hd_wm_get_singleton ();
 	
-  if (!hdwm->priv->dnotify_timeout_id)
+  if (!hdwm->priv->monitor_timeout_id)
     {
-      hdwm->priv->dnotify_timeout_id =
+      hdwm->priv->monitor_timeout_id =
       g_timeout_add(1000,
-                    (GSourceFunc)hd_wm_dnotify_process,
+                    (GSourceFunc)hd_wm_monitor_process,
                     NULL);
     }
 }
 
-/* Public function to register our dnotify callback (called from
+/* Public function to register our monitor callback (called from
  * hildon-navigator-main.c)
  */
 void
-hd_wm_dnotify_register ()
+hd_wm_monitor_register ()
 {
-  if (hildon_dnotify_set_cb ((hildon_dnotify_cb_f *)hd_wm_dnotify_cb,DESKTOPENTRYDIR,NULL) != HILDON_OK)
+  HDWM *hdwm = hd_wm_get_singleton ();
+
+  if (gnome_vfs_monitor_add (&hdwm->priv->monitor, 
+                             DESKTOPENTRYDIR,
+                             GNOME_VFS_MONITOR_DIRECTORY,
+                             (GnomeVFSMonitorCallback) hd_wm_monitor_cb,
+                             NULL) != GNOME_VFS_OK)
   {
     g_warning("unable to register TN callback for %s", DESKTOPENTRYDIR);
   }

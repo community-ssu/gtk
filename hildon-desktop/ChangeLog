@@ -1,3 +1,12 @@
+2007-02-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c, src/hn-others-button.c, libhildonwm/hd-wm.[ch],
+	src/Makefile.am, libhildonwm/Makefile.am: get rid of hildon-base-lib 
+	by using gnome-vfs file monitoring instead of dnotify.
+	* src/main.c: initialize gnome-vfs.
+	* debian/control: remove hildon-base-libs-dev build dependency.
+	* configure.ac: remove hildon-base-lib dependency check.
+
 2007-02-27  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-notification-manager.c:
