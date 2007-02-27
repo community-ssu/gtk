@@ -470,7 +470,7 @@ menu_unmap_cb (GtkWidget   *widget,
     {
       HN_DBG ("Retoggling previously toggled button");
 	 
-      gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);
+      /*gtk_toggle_button_set_active (app_button->priv->prev_button, TRUE);*/
       gtk_toggle_button_toggled (app_button->priv->prev_button);
     }
   
@@ -715,7 +715,6 @@ hn_app_button_release_event (GtkWidget      *widget,
   HNAppButton *app_button = HN_APP_BUTTON (widget);
   HNAppButtonPrivate *priv = app_button->priv;
   gint x,y;
-  gboolean force_untoggle = FALSE;
   gboolean untoggle = FALSE;
   
   HN_DBG("Button released ...");
@@ -748,30 +747,19 @@ hn_app_button_release_event (GtkWidget      *widget,
     {
       untoggle = TRUE;
     }
-  else if (priv->info && hd_entry_info_get_n_children (priv->info) == 1)
-    {
-      /* single window application, i.e., no submenu -- have to untogle
-       * the button and wait for MB notification of change in stacking order
-       * to make the toggle permanent
-       */
-      force_untoggle = TRUE;
-    }
     
-  if(untoggle || force_untoggle)
+  if(untoggle)
     {
       if (priv->prev_button)
         {
           HN_DBG ("Retoggling previously toggled button");
-	 
-	  gtk_toggle_button_set_active (priv->prev_button, TRUE);
-	  gtk_toggle_button_toggled (priv->prev_button);
-	}
-
-      if (untoggle)
-        {
-          /* click canceled -- we are done */
-          goto out;
+     
+          gtk_toggle_button_set_active (priv->prev_button, TRUE);
+          gtk_toggle_button_toggled (priv->prev_button);
         }
+  
+      /* click canceled -- we are done */
+      goto out;
     }
   
   hn_app_button_pop_menu (app_button);

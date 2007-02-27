@@ -728,7 +728,6 @@ main_menu_position_func (GtkMenu  *menu,
         g_assert_not_reached ();
     }
   }
-  g_debug ("####################################################################################### %d %d", *x, *y);
 }
 
 
@@ -941,7 +940,6 @@ menu_button_pressed_cb (GtkWidget      *widget,
                                                  menu_button_pressed_timeout,
                                                app_switcher);
                                                
-  
   return TRUE;
 }
 
@@ -1528,7 +1526,7 @@ refresh_buttons (gpointer user_data)
     gtk_widget_set_sensitive (priv->main_button, TRUE);
     gtk_widget_show (app_image);
   }
-
+  
   return FALSE;
 }
 
@@ -1831,12 +1829,12 @@ static void
 hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
 {
   HNAppSwitcher	       * app_switcher = HN_APP_SWITCHER (data);
+  HNAppSwitcherPrivate * priv = app_switcher->priv;
   gint                   pos, active_pos;
   GList                * l;
-  HNAppSwitcherPrivate * priv = app_switcher->priv;
   HDEntryInfo          * parent;
   gboolean               active_found = FALSE;
-  
+
   g_debug ("In hn_app_switcher_real_changed_stack");
 
   if (priv->main_menu)
@@ -1867,7 +1865,7 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
   if (entry_info->type != HD_ENTRY_DESKTOP)  
   {
      parent = hd_entry_info_get_parent (entry_info);
-     
+
      if (!parent)
      {
        g_warning ("Orphan entry info");
@@ -1909,7 +1907,7 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
       gtk_toggle_button_toggled (app_button);
     }
   }  
-  
+
   /* we do not worry about the urgency hint here, as we will receive a
    * notification when it is cleared from the WM
    */

@@ -1,3 +1,8 @@
+2007-02-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hn-app-button.c: fix weird behavior when switching
+	windows with app switcher buttons.
+
 2007-02-26  Moises Martinez  <moises.martinez@nokia.com>
 	
 	* libhildondesktop/hildon-desktop-notification-manager.h:
