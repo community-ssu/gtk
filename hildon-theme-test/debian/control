@@ -1,0 +1,11 @@
+Source: hildon-theme-test
+Section: user/themes
+Priority: optional
+Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-4 (>= 0.2.0) (< 0.3.0), hildon-theme-tools
+Standards-Version: 3.6.0
+
+Package: hildon-theme-test
+Architecture: all
+Depends: gtk2-engines-sapwood, hildon-theme-cacher
+Description: A hildon test theme. 

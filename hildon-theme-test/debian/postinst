@@ -1,0 +1,8 @@
+#! /bin/sh
+
+hildon-theme-cacher /usr/share/themes/test
+
+#DEBHELPER#
+
+exit 0
+
