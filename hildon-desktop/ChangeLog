@@ -1,3 +1,9 @@
+2007-02-27  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-notification-manager.c:
+	- Added support for assigning id and self-replacing of notifications.
+	- Implemented close_notification_handler
+
 2007-02-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hn-app-button.c: translate the app name to show it in the app

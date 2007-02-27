@@ -42,6 +42,11 @@ G_DEFINE_TYPE (HildonDesktopNotificationManager, hildon_desktop_notification_man
 
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_ICON_SIZE  48
 
+struct _HildonDesktopNotificationManagerPrivate
+{
+  guint current_id;
+};
+
 static void
 hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
 {
@@ -52,7 +57,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
   GType _types[9] = 
   { 
     G_TYPE_STRING,
-    G_TYPE_INT,
+    G_TYPE_UINT,
     G_TYPE_STRING,
     GDK_TYPE_PIXBUF,
     G_TYPE_STRING,
@@ -61,6 +66,10 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
     G_TYPE_POINTER,
     G_TYPE_INT 
   };
+
+  nm->priv = HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_PRIVATE (nm);
+
+  nm->priv->current_id = 0;
 
   gtk_list_store_set_column_types (GTK_LIST_STORE (nm),
 		  		   9,
@@ -112,6 +121,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
 static void
 hildon_desktop_notification_manager_class_init (HildonDesktopNotificationManagerClass *class)
 {
+  g_type_class_add_private (class, sizeof (HildonDesktopNotificationManagerPrivate));
 }
 
 static gboolean 
@@ -124,6 +134,35 @@ hildon_desktop_notification_manager_timeout (GtkTreeIter *iter)
 
   g_free (iter);
 
+  return FALSE;
+}
+
+static gboolean 
+hildon_desktop_notification_manager_find_by_id (HildonDesktopNotificationManager *nm,
+						guint id, 
+					        GtkTreeIter *return_iter)
+{
+  GtkTreeIter iter;
+  guint iter_id = 0;
+	
+  if (!gtk_tree_model_get_iter_first (GTK_TREE_MODEL (nm), &iter))
+    return FALSE;
+  
+  do
+  {
+    gtk_tree_model_get (GTK_TREE_MODEL (nm),
+	  		&iter,
+			HD_NM_COL_ID,
+			&iter_id,
+			-1);
+    if (iter_id == id)
+    {	    
+      *return_iter = iter;
+      return TRUE;
+    }
+  }
+  while (gtk_tree_model_iter_next (GTK_TREE_MODEL (nm), &iter));
+	
   return FALSE;
 }
 
@@ -154,6 +193,14 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
   GError *error = NULL;
   GdkPixbuf *pixbuf = NULL;
   GtkIconTheme *icon_theme;
+
+  if (id == 0)
+  {
+    id = ++nm->priv->current_id;	  
+    
+    if (nm->priv->current_id == G_MAXUINT)
+      nm->priv->current_id = 0;
+  }
 
   if (!g_str_equal (icon, ""))
   {
@@ -186,7 +233,9 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
     }
   }
 
-  gtk_list_store_append (GTK_LIST_STORE (nm), &iter);
+  if (!hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
+    gtk_list_store_append (GTK_LIST_STORE (nm), &iter);
+    
   gtk_list_store_set (GTK_LIST_STORE (nm),
 		      &iter,
 		      HD_NM_COL_APPNAME, app_name,
@@ -249,7 +298,13 @@ hildon_desktop_notification_manager_close_notification_handler (HildonDesktopNot
                                                     	        guint                  id, 
                                                     	        GError               **error)
 {
-  g_debug ("CALLING CLOSE NOTIFICATION");
+  GtkTreeIter iter;
 
-  return TRUE;
+  if (hildon_desktop_notification_manager_find_by_id (nm,id,&iter))
+  {
+    gtk_list_store_remove (GTK_LIST_STORE (nm), &iter);
+    return TRUE;    
+  }
+  else
+    return FALSE;
 }
