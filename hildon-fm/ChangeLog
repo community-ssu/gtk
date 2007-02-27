@@ -1,4 +1,22 @@
+2007-02-27  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 2.13
+	
+	Use hildon_helper_set_insensitive_message instead of the
+	"insensitive-press" signal.
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(_HildonFileChooserDialogPrivate): Removed infobanner_message
+	field.
+	(insensitive_button): Removed.
+	(build_ui): Use hildon_helper_set_insensitive_message instead of
+	setting infobanner_message.
+	(hildon_file_chooser_dialog_init): Don't connect to
+	"insensitive-press" signal.
+
 2007-02-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-
 
 	Released 2.12
 	
@@ -384,7 +402,7 @@
 	sort model, not from filter model since the view shows the sort
 	model.
 
-        From José Dapena Paz <jdapena@igalia.com>.  Thanks! (M842)
+        From José Dapena Paz <jdapena@i\galia.com>.  Thanks! (M842)
 	
  	* hildon-fm/hildon-file-chooser.c: Add available filters to pane
 	context menu. The filters are added with method add_filter (and

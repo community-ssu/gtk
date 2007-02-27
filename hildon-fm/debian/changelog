@@ -1,3 +1,9 @@
+libhildonfm (2.13-1) unstable; urgency=low
+
+  * More consolidation.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Feb 2007 18:32:51 +0200
+
 libhildonfm (2.12-1) unstable; urgency=low
 
   * Fat fingered a "i" into debhelper Build-Dependency... and completed
