@@ -25,14 +25,15 @@ Depends: bluez-utils,
  osso-update-category-database,
  posix-locales,
  telepathy-feed
-Conflicts: libxtrans-dev
 Description: Hildon Application Framework metapackage.
- This package depends on packages forming the Hildon Application Framework. 
+ Installing this package gives you the complete
+ Hildon Application Framework. 
 
-#Section: base
-#Package: hildon-application-framework-dev
-#Depends: hildon-application-framework (= ${Source-Version}),
-# libglade2-0, libglade2-dev, 
-#Architecture: all
-#Description: Hildon Application Framework development metapackage.
-# This package depends on development packages of the HAF.
+Package: hildon-application-framework-dev
+Architecture: all
+Conflicts: libxtrans-dev
+Description: Hildon Application Framework development metapackage.
+ Installing this package makes sure you have the correct environment
+ for development for the Hildon Application Framework.  You should not
+ use this package in Build-Dependencies, but installing it will make
+ sure that you have no deprecated packages.

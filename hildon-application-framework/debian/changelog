@@ -1,3 +1,12 @@
+hildon-application-framework (0.4) unstable; urgency=low
+
+  * Enabled hildon-application-framework-dev package.  Moved conflict on
+    libxtrans-dev to hildon-application-framework-dev package.  Existing
+    docs will be updated to tell people to install the -dev package as
+    well in Scratchbox.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 27 Feb 2007 15:45:19 +0200
+
 hildon-application-framework (0.3) unstable; urgency=low
 
   * Changed hildon-theme-plankton-3 to hildon-theme-plankton.
