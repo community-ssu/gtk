@@ -1,0 +1,50 @@
+#!/usr/bin/make -f
+
+export DH_COMPAT=3
+
+SHELL = /bin/bash
+
+CFLAGS = -g
+
+configure: configure-stamp
+configure-stamp:
+	dh_testdir
+	touch configure-stamp
+
+
+build: configure-stamp build-stamp
+build-stamp:
+	dh_testdir
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp configure-stamp
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+	
+	# Symlink
+	install -d $(CURDIR)/debian/meta-product-sardine/usr/share/themes/plankton
+	ln -s plankton $(CURDIR)/debian/meta-product-sardine/usr/share/themes/default
+
+binary-indep: build install
+
+binary-arch: build install
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs
+	dh_install --sourcedir=debian/meta-product-sardine -v
+	dh_installdeb
+	dh_shlibdeps
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install configure
