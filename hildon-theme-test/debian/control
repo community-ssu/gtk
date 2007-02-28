@@ -7,5 +7,5 @@ Standards-Version: 3.6.0
 
 Package: hildon-theme-test
 Architecture: all
-Depends: gtk2-engines-sapwood, hildon-theme-cacher
+Depends: gtk2-engines-sapwood (>= 2.91.2), hildon-theme-cacher (>= 0.3.0)
 Description: A hildon test theme. 
