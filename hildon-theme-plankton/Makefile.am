@@ -1,4 +1,4 @@
-SUBDIRS 		= template data
+SUBDIRS 		= template data wallpaper
 
 MAINTAINERCLEANFILES	= Makefile.in aclocal.m4 configure 	\
 			  config.h.in compile 			\
