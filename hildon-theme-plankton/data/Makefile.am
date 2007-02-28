@@ -13,9 +13,13 @@ theme_DATA 				= index.theme
 
 gtkrc: 
 	hildon-theme-subst $(LAYOUT_DIR)/layout.txt $(srcdir)/../template/template.png $(LAYOUT_DIR)/gtkrc gtkrc
+	echo "" >> gtkrc
+	echo "# Generated from hildon-theme-layout-4 version `pkg-config --modversion hildon-theme-layout-4`" >> gtkrc
 
 gtkrc.maemo_af_desktop: 
 	hildon-theme-subst $(LAYOUT_DIR)/layout.txt $(srcdir)/../template/template.png $(LAYOUT_DIR)/gtkrc.maemo_af_desktop gtkrc.maemo_af_desktop
+	echo "" >> gtkrc.maemo_af_desktop
+	echo "# Generated from hildon-theme-layout-4 version `pkg-config --modversion hildon-theme-layout-4`" >> gtkrc.maemo_af_desktop
 
 theme.xml: 
 	hildon-theme-subst $(LAYOUT_DIR)/layout.txt $(srcdir)/../template/template.png $(LAYOUT_DIR)/theme.xml theme.xml
