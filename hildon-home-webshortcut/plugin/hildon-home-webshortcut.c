@@ -40,7 +40,7 @@
 
 #include <osso-ic.h>
 #include <libosso.h>
-#include <osso-uri.h>
+#include <hildon-uri.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -490,7 +490,7 @@ hhws_launch_uri (Hhws *hhws)
   if (!priv->uri)
     return;
 
-  if (!osso_uri_open (priv->uri, NULL /* default action */, &error ))
+  if (!hildon_uri_open (priv->uri, NULL /* default action */, &error ))
     {
       g_warning ("Could not launch URI %s: %s", priv->uri, error->message);
       g_error_free (error);

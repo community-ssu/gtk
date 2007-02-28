@@ -1,3 +1,11 @@
+hildon-home-webshortcut (3.0.3-1) unstable; urgency=low
+
+  * moved build-dep from libossomime-dev to libhildonmime-dev
+
+  * ported from libossomime to libhildonmime
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 28 Feb 2007 17:44:34 +0200
+
 hildon-home-webshortcut (3.0.2-1) unstable; urgency=low
 
   * changed build-dep to libhildon1-dev and libhildonfm2-dev

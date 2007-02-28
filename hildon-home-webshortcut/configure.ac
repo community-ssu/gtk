@@ -1,6 +1,6 @@
 AC_INIT(Makefile.am)
 
-AM_INIT_AUTOMAKE(hildon-home-webshortcut, 3.0.2)
+AM_INIT_AUTOMAKE(hildon-home-webshortcut, 3.0.3)
 AM_CONFIG_HEADER(config.h)
 
 AC_ARG_ENABLE(debug, [AC_HELP_STRING([--enable-debug],[Debug (default=no)])],
@@ -29,7 +29,7 @@ CFLAGS="$CFLAGS -Wall -ansi -pedantic -Wmissing-prototypes -Wmissing-declaration
 
 AC_SUBST(CFLAGS)
 
-PKG_CHECK_MODULES(OSSOMIME,libossomime)
+PKG_CHECK_MODULES(OSSOMIME,libhildonmime)
 AC_SUBST(OSSOMIME_LIBS)
 AC_SUBST(OSSOMIME_CFLAGS)
 
