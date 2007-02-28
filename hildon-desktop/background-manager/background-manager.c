@@ -78,50 +78,6 @@ background_mode_get_type (void)
   return etype;
 }
 
-#define BACKGROUND_MANAGER_GET_PRIVATE(obj) \
-(G_TYPE_INSTANCE_GET_PRIVATE ((obj), TYPE_BACKGROUND_MANAGER, BackgroundManagerPrivate))
-
-typedef struct _BackgroundData
-{
-  gchar        *image_uri;
-  gchar        *left_bar;
-  gchar        *top_bar;
-  GdkColor     *color;
-  GdkWindow    *window;
-} BackgroundData;
-
-struct _BackgroundManagerPrivate
-{
-  BackgroundData *current;
-  
-  guint is_screen_singleton : 1;
-  GdkScreen *screen;
-  
-  guint bg_timeout;
-  guint loading_note_update_timeout;
-  GtkWidget *loading_note;
-};
-
-static BackgroundData *
-background_data_new ()
-{
-  BackgroundData *data;
-
-  data = g_new0 (BackgroundData, 1);
-  data->color = g_new0 (GdkColor, 1);
-  return data;
-}
-
-static void
-background_data_free (BackgroundData *data)
-{
-  if (data)
-    {
-      g_free (data->color);
-      g_free (data);
-    }
-}
-
 G_DEFINE_TYPE (BackgroundManager, background_manager, G_TYPE_OBJECT);
 
 static void
@@ -150,18 +106,6 @@ background_manager_get_property (GObject    *object,
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
-}
-
-static void
-background_manager_finalize (GObject *object)
-{
-  BackgroundManager *manager = BACKGROUND_MANAGER (object);
-  BackgroundManagerPrivate *priv = manager->priv;
-
-  background_data_free (priv->current);
-  priv->current = NULL;
-
-  G_OBJECT_CLASS (background_manager_parent_class)->finalize (object);
 }
 
 #ifdef HAVE_LIBOSSO
@@ -672,6 +616,7 @@ composite_background (const GdkPixbuf  *bg_image,
       return NULL;
     }
 
+#if 0
   if (titlebar_path && *titlebar_path)
     {
       compose = load_image_from_file (titlebar_path, cancellable, &bg_error);
@@ -716,6 +661,7 @@ composite_background (const GdkPixbuf  *bg_image,
           compose = NULL;
         }
     }
+#endif
 
   if (sidebar_path && *sidebar_path)
     {
@@ -794,8 +740,6 @@ background_manager_class_init (BackgroundManagerClass *klass)
 
   gobject_class->set_property = background_manager_set_property;
   gobject_class->get_property = background_manager_get_property;
-  gobject_class->finalize = background_manager_finalize;
-  g_type_class_add_private (gobject_class, sizeof (BackgroundManagerPrivate));
 
   klass->connection = dbus_g_bus_get (DBUS_BUS_SESSION, &error);
 
@@ -814,10 +758,7 @@ background_manager_class_init (BackgroundManagerClass *klass)
 static void
 background_manager_init (BackgroundManager *manager)
 {
-  BackgroundManagerPrivate     *priv;
   BackgroundManagerClass       *klass;
-
-  manager->priv = priv = BACKGROUND_MANAGER_GET_PRIVATE (manager);
 
   klass = BACKGROUND_MANAGER_GET_CLASS (manager);
   if (klass->connection)
@@ -845,9 +786,8 @@ background_manager_set_background (BackgroundManager   *manager,
                                    gint                *pixmap_xid,
                                    GError             **error)
 {
-  BackgroundManagerPrivate *priv;
-  BackgroundData           *data;
   GdkDisplay               *display;
+  GdkColor                  color;
   GdkWindow                *window;
   GdkPixbuf                *image = NULL;
   GdkPixbuf                *background = NULL;
@@ -895,44 +835,39 @@ background_manager_set_background (BackgroundManager   *manager,
       return FALSE;
     }
   
-  priv = BACKGROUND_MANAGER_GET_PRIVATE (manager);
+  color.red   = red;
+  color.blue  = blue;
+  color.green = green;
 
-  background_data_free (priv->current);
-  
-  priv->current = data = background_data_new ();
-
-  data->color->red   = red;
-  data->color->blue  = blue;
-  data->color->green = green;
-
-  data->window = window;
-
-  data->image_uri = g_strdup (filename);
-  if (top_bar)
-    data->top_bar   = g_strdup (top_bar);
-  if (left_bar)
-    data->left_bar  = g_strdup (left_bar);
-
-  if (data->image_uri && data->image_uri[0])
+  if (filename && filename[0])
     {
-      image = load_image_from_uri (data->image_uri,
+      image = load_image_from_uri (filename,
                                    TRUE, 
                                    TRUE,
                                    &local_error);
       if (local_error)
         {
+          /* We will try to recover by using a plain color */
+          g_warning ("Error when loading uri %s: %s",
+                     filename,
+                     local_error->message);
+
+          g_clear_error (&local_error);
+          image = NULL;
+          /*
           g_propagate_error (error, local_error);
           return FALSE;
+          */
         }
     }
 
   gdk_drawable_get_size (GDK_DRAWABLE (window), &width, &height);
 
   background = composite_background (image,
-                                     data->color,
+                                     &color,
                                      mode,
-                                     data->top_bar,
-                                     data->left_bar,
+                                     top_bar,
+                                     left_bar,
                                      width,
                                      height,
                                      TRUE,
@@ -1029,11 +964,6 @@ background_manager_set_background (BackgroundManager   *manager,
     }
 
   gdk_display_close (display);
-
-#if 0
-  if (bitmask)
-    g_object_unref (bitmask);
-#endif
 
   if (background)
     g_object_unref (background);
