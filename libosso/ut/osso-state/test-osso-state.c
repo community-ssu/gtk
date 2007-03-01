@@ -44,6 +44,7 @@ struct my_state{
 
 char *outo_name = "osso statefile opening/closing";
 
+#if 0
 int open_statefile_with_null_context_w(void);
 int open_statefile_with_null_context_r(void);
 int open_statefile_without_appdata_w(void);
@@ -61,6 +62,7 @@ int multiple_statefiles_concurrently_r(void);
 int open_statefile_no_permissions_w(void);
 int open_statefile_no_permissions_r(void);
 int open_statefile_truncation_ww(void);
+#endif
 int write_state_invalid_osso(void);
 int write_state_invalid_state(void);
 int write_state(void);
@@ -78,6 +80,7 @@ testcase *get_tests(void);
 #define APP_ILLEGALVER "/0.0.01"
 #define NO_PERMS "/tmp/nopermissions"
 
+#if 0
 int open_statefile_with_null_context_w(void)
 {
     gint fd = -1;
@@ -419,6 +422,7 @@ int open_statefile_truncation_ww(void)
     osso_deinitialize(osso);
     return 1;
 }
+#endif
 
 int write_state_invalid_osso(void)
 {
@@ -624,6 +628,7 @@ int read_state(void)
 }
 
 testcase cases[] = {
+#if 0
     {*open_statefile_with_null_context_w,
      "osso_state_open wr, context=NULL",
      EXPECT_OK}
@@ -692,6 +697,7 @@ testcase cases[] = {
      "open_statefile truncation",
      EXPECT_OK}
     ,
+#endif
     {*write_state_invalid_osso,
      "write state, invalid osso",
      EXPECT_OK}
