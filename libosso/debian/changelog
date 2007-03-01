@@ -1,11 +1,10 @@
 libosso (2.1-1) unstable; urgency=low
 
-  * UNRELEASED
   * Removed deprecated API: osso_application_exit_cb type,
     osso_application_set_exit_cb(), osso_state_open_write(),
     osso_state_open_read(), osso_state_close().
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 01 Mar 2007 13:07:43 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 01 Mar 2007 14:55:01 +0200
 
 libosso (2.0-1) unstable; urgency=low
 
