@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-24) unstable; urgency=low
+
+  * conffiles should have absolute path
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Mar 2007 10:30:39 +0200
+
 hildon-desktop (0.0.0-23) unstable; urgency=low
 
   * New experimental snaptshot
