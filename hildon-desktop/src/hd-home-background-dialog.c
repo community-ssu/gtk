@@ -685,6 +685,18 @@ hd_home_background_dialog_background_dir_changed
                                GTK_TREE_MODEL (priv->combobox_contents));
     }
 
+  /* No background file option */
+  gtk_list_store_append (priv->combobox_contents, &iterator);
+  gtk_list_store_set (priv->combobox_contents,
+                      &iterator,
+                      BG_IMAGE_NAME, HH_SET_BG_IMAGE_NONE,
+                      BG_IMAGE_FILENAME, NULL,
+                      BG_IMAGE_PRIORITY, 0, -1);
+
+  /* It's the default */
+  gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->img_combo),
+                                 &iterator);
+
   if (!priv->background_dir)
     return;
 
@@ -700,19 +712,6 @@ hd_home_background_dialog_background_dir_changed
     g_error_free (error);
     return;
   }
-
-
-  /* No background file option */
-  gtk_list_store_append (priv->combobox_contents, &iterator);
-  gtk_list_store_set (priv->combobox_contents,
-                      &iterator,
-                      BG_IMAGE_NAME, HH_SET_BG_IMAGE_NONE,
-                      BG_IMAGE_FILENAME, NULL,
-                      BG_IMAGE_PRIORITY, 0, -1);
-
-  /* It's the default */
-  gtk_combo_box_set_active_iter (GTK_COMBO_BOX (priv->img_combo),
-                                 &iterator);
 
   kfile = g_key_file_new ();
 

@@ -1,5 +1,10 @@
 2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-background-dialog.c: Add the default "None" background
+	before checking for background directory
+
+2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c: osso_cp_plugin_path takes relative path
 	* background-manager/background-manager.c: Uncommented setting
 	the title bar
