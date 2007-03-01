@@ -1,5 +1,11 @@
 2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-applet.c:
+	- added hildon_home_snap_to_grid
+	- call the latter when releasing the drag
+
+2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background-dialog.c: Add the default "None" background
 	before checking for background directory
 

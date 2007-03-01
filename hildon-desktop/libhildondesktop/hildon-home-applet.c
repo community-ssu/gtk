@@ -46,6 +46,8 @@
 #define APPLET_CLOSE_BUTTON_WIDTH   26
 #define APPLET_CLOSE_BUTTON_HEIGHT  26
 
+#define GRID_SIZE                       10
+
 
 #define DRAG_UPDATE_TIMEOUT 50
 #define LAYOUT_MODE_HIGHLIGHT_WIDTH 4
@@ -76,6 +78,8 @@ typedef struct HildonHomeAppletPriv_
   gboolean      layout_mode;
   HildonHomeAppletResizeType resize_type;
 
+  gboolean      snap_to_grid;
+
   GdkPixbuf    *close_button;
   GdkWindow    *close_button_window;
   GdkPixbuf    *resize_handle;
@@ -91,6 +95,8 @@ typedef struct HildonHomeAppletPriv_
   HildonHomeAppletState state;
   guint         x_offset;
   guint         y_offset;
+  gint          delta_x;
+  gint          delta_y;
   guint         timeout;
   gboolean      overlaps;
   GtkAllocation old_allocation;
@@ -428,6 +434,7 @@ hildon_home_applet_init (HildonHomeApplet * self)
   priv = HILDON_HOME_APPLET_GET_PRIVATE (self);
 
   priv->layout_mode = FALSE;
+  priv->snap_to_grid = TRUE;
   
   if (klass->close_button)
     {
@@ -1135,6 +1142,12 @@ hildon_home_applet_drag_update (HildonHomeApplet *applet)
         y_applet =  fixed->allocation.height -
             widget->allocation.height - LAYOUT_AREA_BOTTOM_BORDER_PADDING;
 
+      if (x_applet != widget->allocation.x - fixed->allocation.x)
+        priv->delta_x = x_applet - widget->allocation.x + fixed->allocation.x;
+
+      if (y_applet != widget->allocation.y - fixed->allocation.y)
+        priv->delta_y = y_applet - widget->allocation.y + fixed->allocation.y;
+
       gtk_fixed_move (GTK_FIXED (fixed), widget, x_applet, y_applet);
     }
   else /* Resizing */
@@ -1171,6 +1184,12 @@ hildon_home_applet_drag_update (HildonHomeApplet *applet)
         height = fixed->allocation.y + fixed->allocation.height
           - LAYOUT_AREA_BOTTOM_BORDER_PADDING - widget->allocation.y;
 
+      if (width != widget->allocation.width)
+        priv->delta_x = width  - widget->allocation.width;
+
+      if (height != widget->allocation.height)
+        priv->delta_y = height - widget->allocation.height;
+      
       gtk_widget_set_size_request (widget, width, height);
     }
   
@@ -1206,6 +1225,78 @@ hildon_home_applet_check_overlap (HildonHomeApplet *applet1,
     }
 
 
+}
+
+static void
+hildon_home_applet_snap_to_grid (HildonHomeApplet *applet)
+{
+  HildonHomeAppletPriv      *priv;
+  gint x_grid = 0, y_grid = 0;
+  gint x, y;
+  GtkWidget     *parent, *widget;
+
+  priv = HILDON_HOME_APPLET_GET_PRIVATE (applet);
+
+  widget = GTK_WIDGET (applet);
+  parent = widget->parent;
+
+  if (!GTK_IS_FIXED (parent))
+    return;
+
+  x = widget->allocation.x - parent->allocation.x;
+  y = widget->allocation.y - parent->allocation.y;
+  
+  switch (priv->state)
+    {
+      case HILDON_HOME_APPLET_STATE_MOVING:
+
+          if (priv->delta_x || priv->delta_y)
+            {
+              x_grid = x - (x % GRID_SIZE);
+              if (priv->delta_x > 0)
+                x_grid += GRID_SIZE;
+              
+              y_grid = y - (y % GRID_SIZE);
+              if (priv->delta_y > 0)
+                y_grid += GRID_SIZE;
+
+              gtk_fixed_move (GTK_FIXED (parent), widget, x_grid, y_grid);
+            }
+
+          break;
+      case HILDON_HOME_APPLET_STATE_RESIZING:
+
+          if (priv->delta_x || priv->delta_y)
+            {
+              x_grid = x + widget->allocation.width;
+              
+              if (priv->resize_type == HILDON_HOME_APPLET_RESIZE_HORIZONTAL ||
+                  priv->resize_type == HILDON_HOME_APPLET_RESIZE_BOTH)
+                {
+                  x_grid -= x_grid % GRID_SIZE;
+
+                  if (priv->delta_x > 0)
+                    x_grid += GRID_SIZE;
+                }
+              
+              y_grid = y + widget->allocation.height;
+              
+              if (priv->resize_type == HILDON_HOME_APPLET_RESIZE_VERTICAL ||
+                  priv->resize_type == HILDON_HOME_APPLET_RESIZE_BOTH)
+                {
+                  y_grid -= y_grid % GRID_SIZE;
+
+                  if (priv->delta_y > 0)
+                    y_grid += GRID_SIZE;
+                }
+
+              gtk_widget_set_size_request (widget, x_grid - x, y_grid - y); 
+            }
+
+          break;
+      default:
+          break;
+    }
 }
 
 static gboolean
@@ -1311,6 +1402,10 @@ hildon_home_applet_button_release_event (GtkWidget *applet,
 
   if (priv->timeout)
     {
+
+      if (priv->snap_to_grid)
+        hildon_home_applet_snap_to_grid (HILDON_HOME_APPLET (applet));
+
       g_source_remove (priv->timeout);
       priv->timeout = 0;
       priv->state = HILDON_HOME_APPLET_STATE_NORMAL;
