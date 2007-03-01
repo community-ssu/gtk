@@ -680,6 +680,8 @@ hd_home_background_apply_async_dbus_callback (DBusGProxy       *proxy,
     data->callback (data->background, pixmap_xid, error, data->user_data);
 
 cleanup:
+  if (G_IS_OBJECT (data->background))
+      g_object_unref (data->background);
   g_free (data);
 }
 
@@ -718,7 +720,7 @@ hd_home_background_apply_async (HDHomeBackground               *background,
   data = g_new (struct cb_data, 1);
 
   data->callback = cb;
-  data->background = background;
+  data->background = g_object_ref (background);
   data->user_data = user_data;
   data->window = window;
 
@@ -781,3 +783,30 @@ hd_home_background_copy (const HDHomeBackground *src)
   return dest;
 
 }
+
+gboolean
+hd_home_background_equal (const HDHomeBackground *background1,
+                          const HDHomeBackground *background2)
+{
+  HDHomeBackgroundPrivate      *priv1;
+  HDHomeBackgroundPrivate      *priv2;
+
+  g_return_val_if_fail (HD_IS_HOME_BACKGROUND (background1) &&
+                        HD_IS_HOME_BACKGROUND (background2),
+                        FALSE);
+
+  priv1 = background1->priv;
+  priv2 = background2->priv;
+
+#define equal_or_null(s, t) ((!s && !t) || ((s && t) && g_str_equal (s,t)))
+  return (equal_or_null (priv1->filename,         priv2->filename)        &&
+          equal_or_null (priv1->west_border,      priv2->west_border)     &&
+          equal_or_null (priv1->east_border,      priv2->east_border)     &&
+          equal_or_null (priv1->north_border,     priv2->north_border)    &&
+          equal_or_null (priv1->south_border,     priv2->south_border)    &&
+          gdk_color_equal (priv1->color,          priv2->color)           &&
+          priv1->mode == priv2->mode);
+#undef equal_or_null
+
+}
+

@@ -922,5 +922,5 @@ hd_home_background_dialog_get_background (HDHomeBackgroundDialog *dialog)
   g_return_val_if_fail (HD_IS_HOME_BACKGROUND_DIALOG (dialog), NULL);
   priv = HD_HOME_BACKGROUND_DIALOG_GET_PRIVATE (dialog);
 
-  return priv->background;
+  return g_object_ref (priv->background);
 }

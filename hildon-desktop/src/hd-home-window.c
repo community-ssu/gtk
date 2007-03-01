@@ -91,6 +91,7 @@ struct _HDHomeWindowPrivate
   gchar            *west_border;
 
   HDHomeBackground *background;
+  HDHomeBackground *previous_background;
 };
 
 /* Properties */
@@ -1131,8 +1132,9 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
                                        gint response,
                                        GtkDialog *dialog)
 {
-  HDHomeBackground *background;
-  GdkRectangle *workarea;
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  HDHomeBackground     *background;
+  GdkRectangle         *workarea;
 
   g_object_get (window, "work-area", &workarea, NULL);
 
@@ -1143,12 +1145,15 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
     {
       case GTK_RESPONSE_OK:
           gtk_widget_hide (GTK_WIDGET(dialog));
-          hd_home_background_apply_async 
-              (background,
-               GTK_WIDGET (window)->window,
-               workarea,
-               (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
+          if (!hd_home_background_equal (priv->background,
+                                         background))
+            hd_home_background_apply_async 
+                (background,
+                 GTK_WIDGET (window)->window,
+                 workarea,
+                 (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
                window);
+          g_object_unref (priv->previous_background);
           break;
       case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
           hd_home_background_apply_async 
@@ -1161,7 +1166,17 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
           break;
       case GTK_RESPONSE_CANCEL:
       case GTK_RESPONSE_DELETE_EVENT:
+          if (!hd_home_background_equal (priv->background,
+                                         priv->previous_background))
+            hd_home_background_apply_async 
+                (priv->previous_background,
+                 GTK_WIDGET (window)->window,
+                 workarea,
+                 (HDHomeBackgroundApplyCallback)background_apply_callback,
+                 window);
+
           gtk_widget_hide (GTK_WIDGET (dialog));
+          g_object_unref (priv->previous_background);
           break;
       default:
           break;
@@ -1173,6 +1188,8 @@ hd_home_window_set_background_activate (HDHomeWindow *window)
 {
   HDHomeWindowPrivate      *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
   GtkWidget                *dialog;
+
+  priv->previous_background = hd_home_background_copy (priv->background);
 
   dialog = g_object_new (HD_TYPE_HOME_BACKGROUND_DIALOG,
 #ifdef HAVE_LIBOSSO

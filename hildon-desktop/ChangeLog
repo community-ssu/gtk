@@ -1,3 +1,11 @@
+2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-background.[ch]:
+	- added _equal() method
+	* hd_home_window.c:
+	- added previous_background private pointer
+	- revert to previous background when dialog is cancelled
+
 2007-02-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* background-manager/background-manager.c:
