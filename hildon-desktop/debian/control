@@ -63,7 +63,7 @@ Description: libhildonwm shared library
 Package: libhildonwm-dev
 Section: devel
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libhildondesktop0 (=${Source-Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildondesktop0 (=${Source-Version}), libxtst-dev, libx11-dev
 Description: libhildonwm development files
   Development headers and static libraries for the libhildonwm
 
