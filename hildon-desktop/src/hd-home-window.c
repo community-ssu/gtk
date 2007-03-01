@@ -52,10 +52,8 @@
 #include "hd-home-background.h"
 #include "hd-home-background-dialog.h"
 
-/* FIXME */
-#define HCP_LIBRARY_PATH                "/usr/lib/hildon-control-panel"
-#define HCP_PLUGIN_PATH_PERSONALISATION HCP_LIBRARY_PATH"/libpersonalisation.so"
-#define HCP_PLUGIN_PATH_CALIBRATION     HCP_LIBRARY_PATH"/tscalib.so"
+#define HCP_PLUGIN_PATH_PERSONALISATION "libpersonalisation.so"
+#define HCP_PLUGIN_PATH_CALIBRATION     "tscalib.so"
 
 #define HD_HOME_BACKGROUND_CONF_FILE        "home-background.conf"
 #define HD_DESKTOP_USER_PATH                ".osso/hildon-desktop/"
@@ -789,6 +787,7 @@ hd_home_window_applet_activate (HDHomeWindow *window,
   if (!priv->osso_context)
     return;
 
+  g_debug ("Launching controlpanel applet %s", applet_path);
   res = osso_cp_plugin_execute (priv->osso_context,
                                 applet_path,
                                 NULL,

@@ -616,7 +616,6 @@ composite_background (const GdkPixbuf  *bg_image,
       return NULL;
     }
 
-#if 0
   if (titlebar_path && *titlebar_path)
     {
       compose = load_image_from_file (titlebar_path, cancellable, &bg_error);
@@ -661,7 +660,6 @@ composite_background (const GdkPixbuf  *bg_image,
           compose = NULL;
         }
     }
-#endif
 
   if (sidebar_path && *sidebar_path)
     {

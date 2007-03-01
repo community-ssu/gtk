@@ -1,5 +1,11 @@
 2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-home-window.c: osso_cp_plugin_path takes relative path
+	* background-manager/background-manager.c: Uncommented setting
+	the title bar
+
+2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background.[ch]:
 	- added _equal() method
 	* hd_home_window.c:
