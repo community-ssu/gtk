@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Background Image
+Name=@THEME_NAME@
+File=/usr/share/backgrounds/@THEME_DIR@.png
+X-Order=01
