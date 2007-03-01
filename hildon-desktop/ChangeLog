@@ -1,5 +1,14 @@
 2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-area.c:
+	- added snap-to-grid boolean property
+	* libhildondesktop/hildon-home-applet.c:
+	- check the parent property to know whether to snap to grid
+	* src/hd-home-window.c:
+	- Added check menu item connected to this property
+	
+2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-applet.c:
 	- added hildon_home_snap_to_grid
 	- call the latter when releasing the drag

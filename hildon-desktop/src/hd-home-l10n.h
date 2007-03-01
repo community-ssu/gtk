@@ -54,6 +54,7 @@ G_BEGIN_DECLS
 #define HH_MENU_LAYOUT_SELECT       _MAD("home_me_layout_select_applets")
 #define HH_MENU_LAYOUT_ACCEPT       _MAD("home_me_layout_accept_layout")
 #define HH_MENU_LAYOUT_CANCEL       _MAD("home_me_layout_cancel")
+#define HH_MENU_LAYOUT_SNAP_TO_GRID "Snap to grid"
 #define HH_MENU_LAYOUT_HELP         _MAD("home_me_layout_help")
 
 /* applet settings unavailable banner */

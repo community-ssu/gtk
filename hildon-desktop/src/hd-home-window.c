@@ -37,6 +37,8 @@
 #include <libhildondesktop/hildon-home-area.h>
 #include <libhildondesktop/hildon-home-titlebar.h>
 
+#include <gtk/gtkcheckmenuitem.h>
+
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-banner.h>
 #include <hildon/hildon-note.h>
@@ -163,6 +165,9 @@ hd_home_window_layout_mode_accept (HildonHomeWindow *window);
 
 static void
 hd_home_window_layout_mode_cancel (HildonHomeWindow *window);
+
+static void
+hd_home_window_snap_toggled (HDHomeWindow *window, GtkCheckMenuItem *item);
 
 static void
 hd_home_window_show_layout_mode_banner (HDHomeWindow *window);
@@ -736,8 +741,9 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
 static GtkWidget *
 hd_home_window_build_layout_menu (HDHomeWindow *window)
 {
-  GtkWidget *menu;
-  GtkWidget *mi;
+  GtkWidget    *menu;
+  GtkWidget    *mi;
+  GtkWidget    *area;
 
   menu = gtk_menu_new ();
 
@@ -760,6 +766,20 @@ hd_home_window_build_layout_menu (HDHomeWindow *window)
   g_signal_connect_swapped (mi, "activate",
                             G_CALLBACK (hildon_home_window_cancel_layout),
                             window);
+  gtk_widget_show (mi);
+
+  mi = gtk_check_menu_item_new_with_label (HH_MENU_LAYOUT_SNAP_TO_GRID);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
+  g_signal_connect_swapped (mi, "toggled",
+                            G_CALLBACK (hd_home_window_snap_toggled),
+                            window);
+  area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
+  if (area)
+    {
+      gboolean snap_to_grid;
+      g_object_get (G_OBJECT (area), "snap-to-grid", &snap_to_grid, NULL);
+      gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (mi), snap_to_grid);
+    }
   gtk_widget_show (mi);
 
 #ifdef HAVE_LIBOSSOHELP
@@ -902,6 +922,20 @@ hd_home_window_layout_insensitive_press_cb (HDHomeWindow *window)
 
 }
 #endif
+
+static void
+hd_home_window_snap_toggled (HDHomeWindow *window, GtkCheckMenuItem *item)
+{
+  GtkWidget *area;
+
+  area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
+
+  if (area)
+    g_object_set (area,
+                  "snap-to-grid", gtk_check_menu_item_get_active (item),
+                  NULL);
+
+}
 
 static void
 hd_home_window_ensure_menu_status (HDHomeWindow *window)

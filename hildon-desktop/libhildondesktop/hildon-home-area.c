@@ -35,13 +35,16 @@
 
 enum
 {
-  HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE = 1
+  HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE = 1,
+  HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID
 };
 
 typedef struct HildonHomeAreaPriv_
 {
   gboolean      layout_mode;
   gboolean      layout_changed;
+
+  gboolean      snap_to_grid;
 
   GHashTable   *layout;
 
@@ -250,10 +253,20 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                                  "Whether the home area is in layout "
                                  "mode",
                                  FALSE,
-                                 G_PARAM_READABLE | G_PARAM_WRITABLE);
+                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
                                    HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE,
+                                   pspec);
+  
+  pspec =  g_param_spec_boolean ("snap-to-grid",
+                                 "Snap to grid",
+                                 "Whether applets should snap to grid",
+                                 TRUE,
+                                 G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+  g_object_class_install_property (object_class,
+                                   HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID,
                                    pspec);
                 
 }
@@ -286,11 +299,18 @@ hildon_home_area_set_property (GObject      *object,
                                const GValue *value,
                                GParamSpec   *pspec)
 {
+  HildonHomeAreaPriv      *priv;
+  priv = HILDON_HOME_AREA_GET_PRIVATE (HILDON_HOME_AREA (object));
+
   switch (property_id)
     {
       case HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE:
           hildon_home_area_set_layout_mode (HILDON_HOME_AREA (object),
                                             g_value_get_boolean (value));
+           break;
+
+      case HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID:
+           priv->snap_to_grid = g_value_get_boolean (value);
            break;
 
       default:
@@ -313,6 +333,10 @@ hildon_home_area_get_property (GObject      *object,
       case HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE:
           g_value_set_boolean (value, priv->layout_mode);
           break;
+      
+      case HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID:
+           g_value_set_boolean (value, priv->snap_to_grid);
+           break;
 
       default:
           G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);

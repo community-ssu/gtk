@@ -78,8 +78,6 @@ typedef struct HildonHomeAppletPriv_
   gboolean      layout_mode;
   HildonHomeAppletResizeType resize_type;
 
-  gboolean      snap_to_grid;
-
   GdkPixbuf    *close_button;
   GdkWindow    *close_button_window;
   GdkPixbuf    *resize_handle;
@@ -434,7 +432,6 @@ hildon_home_applet_init (HildonHomeApplet * self)
   priv = HILDON_HOME_APPLET_GET_PRIVATE (self);
 
   priv->layout_mode = FALSE;
-  priv->snap_to_grid = TRUE;
   
   if (klass->close_button)
     {
@@ -1402,8 +1399,14 @@ hildon_home_applet_button_release_event (GtkWidget *applet,
 
   if (priv->timeout)
     {
+      gboolean snap_to_grid = FALSE;
 
-      if (priv->snap_to_grid)
+      if (applet->parent)
+        g_object_get (G_OBJECT (applet->parent),
+                      "snap-to-grid", &snap_to_grid,
+                      NULL);
+
+      if (snap_to_grid)
         hildon_home_applet_snap_to_grid (HILDON_HOME_APPLET (applet));
 
       g_source_remove (priv->timeout);
