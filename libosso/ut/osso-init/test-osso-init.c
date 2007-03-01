@@ -48,7 +48,9 @@ int multiple_init_deinit_calls( void );
 int concurrent_init_deinit_calls( void );
 
 int init_without_activation( void );
+/*
 int statefile_cleanup( void );
+*/
 
 testcase* get_tests(void);
 
@@ -229,6 +231,7 @@ int init_without_activation( void )
     return 1;
 }
 
+#if 0
 int statefile_cleanup( void )
 {
     osso_context_t *osso = NULL, *osso2 = NULL;
@@ -286,6 +289,7 @@ int statefile_cleanup( void )
     return 0;
     
 }
+#endif
 
 
 testcase cases[] = {
@@ -316,9 +320,11 @@ testcase cases[] = {
     {*init_without_activation,
 	    "Initialize with activation=TRUE",
             EXPECT_OK},
+#if 0
     {*statefile_cleanup,
             "Clean up older versions",
             EXPECT_OK},
+#endif
     {*system_bus_init,
             "System bus",
             EXPECT_OK},
