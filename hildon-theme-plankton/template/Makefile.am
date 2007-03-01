@@ -2,8 +2,8 @@ MAINTAINERCLEANFILES 		= Makefile.in
 
 CLEANFILES			= slice.stamp
 
-EXTRA_DIST 			= template.png 		\
-				  slice.stamp
+EXTRA_DIST 			= template.png \
+				  template.svg
 
 all: slice.stamp
 

@@ -33,7 +33,8 @@ PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.2.0)
 AC_OUTPUT([Makefile             \
            template/Makefile    \
            data/Makefile        \
-           wallpaper/Makefile])
+           wallpaper/Makefile   \
+           wallpaper/theme_bg.desktop])
 
 dnl some nicey output
 AC_MSG_RESULT([

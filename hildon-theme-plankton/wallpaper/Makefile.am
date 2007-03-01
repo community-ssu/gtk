@@ -1,8 +1,9 @@
 MAINTAINERCLEANFILES 		= Makefile.in
 
-EXTRA_DIST 			= wallpaper.png
+EXTRA_DIST 			= wallpaper.png theme_bg.desktop
 
 install: 
-	$(mkinstalldirs) $(DESTDIR)/$(IMAGES_FULL_DIR)
-	install -c -m 644 wallpaper.png $(DESTDIR)/$(IMAGES_FULL_DIR)/qgn_plat_home_background.png
+	$(mkinstalldirs) $(DESTDIR)/usr/share/backgrounds
+	install -c -m 644 wallpaper.png $(DESTDIR)/usr/share/backgrounds/$(THEME_DIR).png
+	install -c -m 644 theme_bg.desktop $(DESTDIR)/usr/share/backgrounds/$(THEME_DIR)_bg.desktop
 
