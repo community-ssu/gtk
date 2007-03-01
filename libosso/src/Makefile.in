@@ -58,13 +58,12 @@ am_libosso_la_OBJECTS = osso-state.lo osso-init.lo \
 	osso-application-top.lo osso-application-autosave.lo \
 	osso-hw.lo osso-mime.lo osso-system-note.lo osso-rpc.lo \
 	osso-statusbar.lo osso-cp-plugin.lo osso-log.lo osso-time.lo \
-	osso-application-init.lo osso-application-exit.lo osso-mem.lo
+	osso-application-init.lo osso-mem.lo
 libosso_la_OBJECTS = $(am_libosso_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
 @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/osso-application-autosave.Plo \
-@AMDEP_TRUE@	./$(DEPDIR)/osso-application-exit.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-init.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-top.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-cp-plugin.Plo \
@@ -243,7 +242,6 @@ libosso_la_SOURCES = \
 	osso-time.c \
 	osso-time.h \
 	osso-application-init.c \
-	osso-application-exit.c \
 	osso-mem.h \
 	osso-mem.c \
 	muali.h
@@ -318,7 +316,6 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-autosave.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-exit.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-top.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-cp-plugin.Plo@am__quote@

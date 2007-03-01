@@ -136,122 +136,6 @@ osso_return_t osso_state_read(osso_context_t *osso, osso_state_t *state)
     return ret;
 }
 
-/************************************************************************/
-int osso_state_open_write(osso_context_t *osso)
-{
-    gint fd = -1;
-    gchar *tmpdir_path  = NULL;
-    gchar *path = NULL, *app_path = NULL;
-    struct stat statbuf;
-
-    if (!validate_osso_context(osso)) {
-      ULOG_ERR_F("appname/version invalid or osso context NULL");
-      return -1;
-    }
-    
-    tmpdir_path = getenv(LOCATION_VAR);
-    
-    if (tmpdir_path != NULL)
-      {
-	path = g_strconcat(tmpdir_path, "/",
-			   osso->application, "/",
-			   osso->version, NULL);
-      }
-    else
-      {
-	path = g_strconcat(FALLBACK_PREFIX "/",
-			   osso->application, "/",
-			   osso->version, NULL);
-      }
-
-    if (path == NULL) {
-      ULOG_ERR_F("Allocation of application/version string failed");
-      return -1;
-    }
-    
-    /* Check for the existence of application directory. */
-
-    if (tmpdir_path == NULL)
-      {
-	app_path = g_strconcat(FALLBACK_PREFIX "/",
-			       osso->application,
-			       NULL);
-      }
-    else {
-      app_path = g_strconcat(tmpdir_path, "/", osso->application, NULL);
-      
-    }
-    if (app_path == NULL) {
-      ULOG_ERR_F("Allocation of application string failed");
-      g_free(path);
-      return -1;
-    }
-    if (stat(app_path, &statbuf) != -1) {
-      if (!S_ISDIR(statbuf.st_mode)) {
-	ULOG_ERR_F("Other type of file instead of app directory");
-	g_free(app_path);
-	g_free(path);
-	return -1;
-      }
-    } else {
-
-      /* It's the responsibility of the startup scripts to create
-	 the directory path contained in the STATESAVEDIR env var */
-
-      if (mkdir(app_path, S_IRUSR | S_IWUSR | S_IXUSR) != 0) {
-	ULOG_ERR_F("Could not create application state directory");
-	g_free(app_path);
-	g_free(path);
-	return -1;
-      }
-    }
-    
-    g_free(app_path);
-    if ((fd = open(path, O_WRONLY | O_CREAT | O_TRUNC,
-		   S_IRUSR | S_IWUSR)) == -1) {
-      ULOG_ERR_F("Opening of state file failed");
-    }
-    g_free(path);
-    return fd;
-}
-
-
-/************************************************************************/
-int osso_state_open_read(osso_context_t *osso)
-{
-    gint fd = -1;
-    gchar *tmpdir_path  = NULL;
-    gchar *path = NULL;
-
-    if (!validate_osso_context(osso)) {
-      ULOG_ERR_F("appname/version invalid or osso context NULL");
-      return -1;
-    }
-
-    /* Create the filename path from application name and version. */
-    tmpdir_path = getenv(LOCATION_VAR);
-    if (tmpdir_path == NULL)
-      {
-	path = g_strconcat(FALLBACK_PREFIX "/",
-			   osso->application, "/",
-			   osso->version, NULL);
-      }
-    else {
-      path = g_strconcat(tmpdir_path, "/",
-			 osso->application, "/",
-			 osso->version, NULL);
-      }
-    if (path == NULL) {
-      ULOG_ERR_F("Allocation of application/version string failed");
-      return -1;
-    }
-    if ((fd = open(path, O_RDONLY)) == -1) {
-      ULOG_ERR_F("Opening of state file failed");
-    }
-    g_free(path);
-    return fd;
-}
-
 static gboolean reliable_close(int fd)
 {
     do {
@@ -262,12 +146,6 @@ static gboolean reliable_close(int fd)
             return FALSE;
         }
     } while (1);
-}
-
-/************************************************************************/
-void osso_state_close(osso_context_t * osso, gint fd)
-{
-    reliable_close(fd);
 }
 
 /************************************************************************/

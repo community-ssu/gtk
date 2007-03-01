@@ -1296,66 +1296,6 @@ gpointer osso_get_dbus_connection(osso_context_t *osso);
  */
 gpointer osso_get_sys_dbus_connection(osso_context_t *osso);
 
-
-
-/************************************************************************/
-/************************************************************************/
-/*******         OBSOLETE API BELOW -- DO NOT USE                     ***/
-/************************************************************************/
-/************************************************************************/
-
-/**
- * \defgroup outside Not included
- *
- * @note
- * This API is obsolete and should not be used by new code.
- *
- */
-/* @{*/
-
-/**
- * @deprecated Obsolete type -- do not use.
- */
-typedef void (osso_application_exit_cb)(gboolean die_now, gpointer data);
-
-/**
- * @deprecated This function is obsolete and does nothing. Do not use it.
- */
-osso_return_t osso_application_set_exit_cb(osso_context_t *osso,
-					   osso_application_exit_cb *cb,
-					   gpointer data);
-
-/**
- * This function opens a state file for writing. If the state file already
- * exists, it will be silently truncated.
- * @deprecated Use the more robust osso_state_write() function instead.
- * No new code should use this function.
- * @param osso The library context as returned by #osso_initialize.
- * @return the file descriptor of the opened file. On an error -1 is
- * returned.
- */
-int osso_state_open_write(osso_context_t *osso);
-
-/**
- * This function opens a state file for reading.
- * @deprecated Use the more robust osso_state_read() function instead.
- * No new code should use this function.
- * @param osso The library context as returned by #osso_initialize.
- * @return The file descriptor of the opened file. On an error -1 is
- * returned.
- */
-int osso_state_open_read(osso_context_t *osso);
-
-/**
- * This function closes the state file.
- * @deprecated Use the more robust osso_state_read() and 
- * osso_state_write() functions instead. No new code should use this
- * function.
- * @param osso The library context as returned by #osso_initialize.
- * @param fd The file descriptor to close.
- */
-void osso_state_close(osso_context_t *osso, gint fd);
-
 /*@}*/
 G_END_DECLS
 
