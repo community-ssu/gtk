@@ -1,3 +1,9 @@
+hildon-home-webshortcut (3.0.3-2) unstable; urgency=low
+
+  * Added build-dep on hildon-desktop-dev 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  1 Mar 2007 10:50:52 +0200
+
 hildon-home-webshortcut (3.0.3-1) unstable; urgency=low
 
   * moved build-dep from libossomime-dev to libhildonmime-dev
