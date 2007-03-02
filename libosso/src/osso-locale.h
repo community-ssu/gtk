@@ -26,7 +26,7 @@
 #ifndef OSSO_LOCALE_H
 #define OSSO_LOCALE_H
 
-#include <libosso.h>
+#include "libosso.h"
 #include "osso-internal.h"
 #include "osso-log.h"
 
