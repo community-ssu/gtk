@@ -875,7 +875,7 @@ static void locale_changed_cb (char *new_locale, gpointer user_data)
 }
  * @endcode
  */
-typedef void(osso_locale_change_cb_f)(const gchar *new_locale, gpointer data);
+typedef void(osso_locale_change_cb_f)(const char *new_locale, gpointer data);
 
 /**
  * This function registers a callback that is called whenever the locale is
