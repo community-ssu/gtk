@@ -1,5 +1,12 @@
+gnome-vfs-filechooser-backend (1.9.1-2) unstable; urgency=low
+
+  * UNRELEASED
+  * Add cdbs build dependency
+
+ -- Richard Hult <richard@imendio.com>  Fri,  2 Mar 2007 08:48:15 +0100
+
 gnome-vfs-filechooser-backend (1.9.1-1) unstable; urgency=low
 
-  * Initial release.
+  * Initial release
 
  -- Richard Hult <richard@imendio.com>  Wed, 14 Feb 2007 08:48:15 +0100
