@@ -864,9 +864,7 @@ static void locale_changed_cb (char *new_locale, gpointer user_data)
   GtkWidget *my_label = GTK_WIDGET (user_data);
 
   g_setenv ("LANG", new_locale, TRUE);
-  setlocale (LC_ALL, "");
   setlocale (LC_MESSAGES, new_locale);
-  setlocale (LC_TIME, new_locale);
 
   // Here you re-set the text labels for all your widgets. In this example
   // only one widget is passed into the callback via user_data.
