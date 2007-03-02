@@ -841,7 +841,7 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time);
 
 /* @}*/
 /**
- * \defgroup Locale Locale
+ * \defgroup Locale Sending/receiving locale change notifications
  */
 /* @{*/
 
