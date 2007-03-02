@@ -1,3 +1,10 @@
+gconf2 (2.16.0-1osso3) unstable; urgency=low
+
+  * UNRELEASED
+  * Install the gconf path file
+
+ -- Richard Hult <richard@imendio.com>  Fri,  2 Mar 2007 11:15:01 +0100
+
 gconf2 (2.16.0-1osso2) unstable; urgency=low
 
   * Remove python build dependency
