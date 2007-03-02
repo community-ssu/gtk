@@ -43,7 +43,7 @@ main (int argc, char **argv)
   DBusGConnection      *connection;
   DBusGProxy           *driver_proxy;
   GError               *error = NULL;
-  gint                  request_ret;
+  guint                  request_ret;
   
   g_type_init ();
   gnome_vfs_init ();

@@ -1,5 +1,14 @@
 2007-03-02  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* background-manager/fix build warning.
+	* configure.ac: expand nested variables to be used in
+	desktop/container configuration files.
+	* data/desktop.conf.in, data/tasknavigator.conf.in,
+	data/statusbar.conf.in, data/home.conf.in: get paths from the
+	configuration and don't hardcode them.
+
+2007-03-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c: fix build warning.
 	* libhildondesktop/Makefile.am, libhildonwm/Makefile.am: added
 	dbus-glib cflags and libs to the build.

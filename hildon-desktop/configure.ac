@@ -160,16 +160,25 @@ AC_SUBST(hildondesktoplibdir)
 AC_SUBST(hildondesktopconfdir)
 
 hildonnavigatordesktopentrydir=${datadir}/applications/hildon-navigator
+# Expand nested variables
+eval "hildonnavigatordesktopentrydir=$hildonnavigatordesktopentrydir"
+eval "hildonnavigatordesktopentrydir=$hildonnavigatordesktopentrydir"
 hildonnavigatorlibdir=${libdir}/hildon-navigator
 AC_SUBST(hildonnavigatordesktopentrydir)
 AC_SUBST(hildonnavigatorlibdir)
 
 hildonhomedesktopentrydir=${datadir}/applications/hildon-home
+# Expand nested variables
+eval "hildonhomedesktopentrydir=$hildonhomedesktopentrydir"
+eval "hildonhomedesktopentrydir=$hildonhomedesktopentrydir"
 hildonhomelibdir=${libdir}/hildon-home
 AC_SUBST(hildonhomedesktopentrydir)
 AC_SUBST(hildonhomelibdir)
 
 hildonstatusbardesktopentrydir=${datadir}/applications/hildon-status-bar
+# Expand nested variables
+eval "hildonstatusbardesktopentrydir=$hildonstatusbardesktopentrydir"
+eval "hildonstatusbardesktopentrydir=$hildonstatusbardesktopentrydir"
 hildonstatusbarlibdir=${libdir}/hildon-status-bar
 AC_SUBST(hildonstatusbardesktopentrydir)
 AC_SUBST(hildonstatusbarlibdir)
@@ -209,7 +218,11 @@ background-manager/Makefile
 background-manager/hildon-background-manager.service 
 background-manager/background-manager.xml 
 background-manager/background-manager-dbus.h 
-data/Makefile 
+data/Makefile
+data/desktop.conf
+data/tasknavigator.conf
+data/statusbar.conf
+data/home.conf
 data/app-switcher.desktop 
 data/others-button.desktop 
 ])
