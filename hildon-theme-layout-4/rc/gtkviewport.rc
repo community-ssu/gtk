@@ -15,4 +15,4 @@ style "osso-viewport" {
   }
 }
 
-class "GtkViewPort" style "osso-viewport"
+class "GtkViewport" style "osso-viewport"

@@ -1,3 +1,12 @@
+2007-03-02  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkviewport.rc:
+
+	The class name of GtkViewport has a typo and the rules have never
+	been used. This fixes among other things the Control Panel ugliness.
+	We never noticed before because the shadow type was hardcoded to NONE
+	in maemo gtk 2.6. Way to go :)
+
 2007-02-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* data/layout.txt: Adding the bradcrumb, thumbsize scroolbar and
