@@ -12,6 +12,7 @@ include /usr/share/cdbs/1/rules/utils.mk
 DEB_TAR_SRCDIR := dbus-1.0.2
 include /usr/share/cdbs/1/rules/tarball.mk
 
+CFLAGS=-Wall -fPIC -O2
 # Use soft-float and thumb mode if it is enabled.
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -mthumb
