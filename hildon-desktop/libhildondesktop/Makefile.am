@@ -37,6 +37,7 @@ INCLUDES = \
 	$(GNOME_VFS_CFLAGS)          \
 	$(OSSO_CFLAGS)               \
 	$(LIBXML_CFLAGS)             \
+	$(DBUS_GLIB_CFLAGS)          \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DHILDON_HOME_DESKTOP_ENTRY_DIR=\"$(hildonhomedesktopentrydir)\" \
 	-I$(top_srcdir)/libhildonwm
@@ -115,6 +116,7 @@ libhildondesktop_la_LIBADD =                      \
 	$(HILDON_LIBS)                            \
 	$(HILDONBASELIB_LIBS)                     \
 	$(GNOME_VFS_LIBS)                         \
+	$(DBUS_GLIB_LIBS)                         \
 	$(top_srcdir)/libhildonwm/libhildonwm.la
 
 CLEANFILES = *~

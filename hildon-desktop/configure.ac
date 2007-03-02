@@ -68,8 +68,10 @@ AC_SUBST(ALL_LINGUAS)
 AM_GLIB_GNU_GETTEXT
 AC_DEFINE(GETTEXT_PACKAGE, ["maemo-af-desktop"], [Package name for gettext])
 
-PKG_CHECK_MODULES(OSSOSETTINGS, osso-af-settings >= 0.8.1)
-localedir=`pkg-config osso-af-settings --variable=localedir`
+PKG_CHECK_MODULES(OSSOSETTINGS, 
+		  [osso-af-settings >= 0.8.1],
+                  localedir=`pkg-config osso-af-settings --variable=localedir`, 
+		  localedir="${datadir}/locale")
 AC_SUBST(localedir)
 
 #+++++++++++++++++++++
@@ -80,7 +82,6 @@ AC_SUBST(localedir)
 PKG_CHECK_MODULES(HILDON_FM,
                   [hildon-fm-2],
                   [AC_DEFINE(HAVE_HILDON_FM2, [], [Whether hildon-fm is present on the system])],
-                  
                   [PKG_CHECK_MODULES(HILDON_FM,
 		                    [hildon-fm >= 0.15],
                                     [AC_DEFINE(HAVE_HILDON_FM, [], [Whether hildon-fm is present on the system])], 

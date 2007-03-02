@@ -23,7 +23,7 @@ INCLUDES = \
 	$(LIBXML_CFLAGS) \
 	$(XLIBS_CFLAGS) \
 	$(XTEST_CFLAGS) \
-	$(DBUS_CFLAGS) \
+	$(DBUS_GLIB_CFLAGS) \
 	$(GNOME_VFS_CFLAGS) \
 	-DLOCALEDIR=\"$(localedir)\" \
 	-DDESKTOPENTRYDIR=\"$(hildondesktopentrydir)\"
@@ -58,6 +58,6 @@ libhildonwm_la_LIBADD =     \
 	$(XLIBS_LIBS)       \
 	$(XTEST_LIBS)       \
 	$(GNOME_VFS_LIBS)   \
-	$(DBUS_LIBS)
+	$(DBUS_GLIB_LIBS)
 
 CLEANFILES = *~

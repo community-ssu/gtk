@@ -741,7 +741,7 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
   GKeyFile *keyfile;
   GError *local_error = NULL;
   gchar **groups = NULL;
-  gint n_groups;
+  guint n_groups;
   GList *applets = NULL;
 
   g_return_if_fail (area);
