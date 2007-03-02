@@ -79,7 +79,7 @@ osso_return_t osso_locale_change_set_notification_cb(osso_context_t *osso,
 }
 
 /************************************************************************/
-osso_return_t osso_locale_set(osso_context_t *osso, const char *new_locale)
+osso_return_t osso_locale_set(osso_context_t *osso, char *new_locale)
 {
   DBusMessage* m = NULL;
   dbus_bool_t ret = FALSE;
