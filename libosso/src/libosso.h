@@ -901,7 +901,7 @@ osso_return_t osso_locale_change_set_notification_cb(osso_context_t *osso,
  * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occurred, or
  * #OSSO_INVALID if new_locale is NULL or the osso context is invalid.
  */
-osso_return_t osso_locale_set(osso_context_t *osso, const gchar *new_locale);
+osso_return_t osso_locale_set(osso_context_t *osso, char *new_locale);
 
 /* @}*/
 /**
