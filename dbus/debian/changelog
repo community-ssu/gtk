@@ -1,10 +1,9 @@
 dbus (1.0.2-0osso3) experimental; urgency=low
 
-  * UNRELEASED
   * Increased per-user connection limit.
   * Added -fPIC compilation option. Fixes: NB#52390
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 02 Mar 2007 13:00:39 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 02 Mar 2007 13:10:49 +0200
 
 dbus (1.0.2-0osso2) experimental; urgency=low
 
