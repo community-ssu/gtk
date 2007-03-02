@@ -841,6 +841,68 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time);
 
 /* @}*/
 /**
+ * \defgroup Locale Locale
+ */
+/* @{*/
+
+/**
+ * This is the type for the locale change notification callback function.
+ * @param new_locale The new locale (e.g. "en_GB")
+ * @param data An application specific data pointer.
+ *
+ * <h2>Example</h2>
+ * This is an example implementation of the locale change callback
+ * function. It correctly passes the received locale value to gettext
+ * and updates the labels for all the text widgets in the application.
+ * @code
+static void locale_changed_cb (char *new_locale, gpointer user_data)
+{
+  GtkWidget *my_label = GTK_WIDGET (user_data);
+
+  g_setenv ("LANG", new_locale, TRUE);
+  setlocale (LC_ALL, "");
+  setlocale (LC_MESSAGES, new_locale);
+  setlocale (LC_TIME, new_locale);
+
+  // Here you re-set the text labels for all your widgets. In this example
+  // only one widget is passed into the callback via user_data.
+
+  gtk_label_set_text (GTK_LABEL (my_label), _("Label Text"));
+
+  // The label's text will now be rendered in the new language
+}
+ * @endcode
+ */
+typedef void(osso_locale_change_cb_f)(char *new_locale, gpointer data);
+
+/**
+ * This function registers a callback that is called whenever the locale is
+ * changed.
+ * @param osso The library context as returned by #osso_initialize.
+ * @param cb Function that is called when the system locale is changed.
+ * @param data Arbitrary application-specific pointer that will be passed
+ * to the callback and ignored by Libosso.
+ * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occurred, or
+ * #OSSO_INVALID if some parameter is invalid.
+ */
+osso_return_t osso_locale_change_set_notification_cb(osso_context_t *osso,
+					    osso_locale_change_cb_f *cb,
+					    gpointer data);
+
+/**
+ * This function issues a notification over the D-Bus system bus indicating
+ * a change of locale. To receive such a notification, install a callback
+ * function with #osso_locale_change_set_notification_cb. 
+ *
+ * @param osso The library context as returned by #osso_initialize.
+ * @param new_locale The new locale (e.g. "en_GB"). Must not be NULL.
+ * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occurred, or
+ * #OSSO_INVALID if new_locale is NULL or the osso context is invalid.
+ */
+osso_return_t osso_locale_set(osso_context_t *osso, char *new_locale);
+
+/* @}*/
+/**
  * \defgroup Sysnotes System notification
  */
 /* @{*/
