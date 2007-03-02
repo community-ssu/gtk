@@ -47,18 +47,30 @@ start)
     /etc/osso-af-init/maemo-launcher start
   fi
 
-  if [ -x /etc/osso-af-init/startup-greeting.sh ]; then
-    source /etc/osso-af-init/startup-greeting.sh start
+  if [ -x $AF_INIT_DIR/startup-greeting.sh ]; then
+    source $AF_INIT_DIR/startup-greeting.sh start
   fi
 
   if [ -e $HOME/first-boot-flag ]; then
+
+    if [ -x $AF_INIT_DIR/wizard-background.sh ]; then
+      source $AF_INIT_DIR/wizard-background.sh start
+    fi
+
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
       source $AF_INIT_DIR/startup-wizard.sh start
       source $AF_INIT_DIR/af-defines.sh ;# re-read locale variables
       # show progress animation
-      /usr/sbin/anim-shower 17000 &
+      if [ ! -x /usr/bin/wizback ]; then
+        /usr/sbin/anim-shower 17000 &
+      fi
       # restart processes because the locale might have changed
       source $AF_INIT_DIR/after-suw-process-restart.sh
+    fi
+
+    if [ -x /usr/bin/wizback ]; then
+      echo "wizback: Advancing"
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance
     fi
 
     # Give Backup a chance to restore settings automatically
@@ -70,6 +82,12 @@ start)
          -a ! -f /tmp/suw-user-cancelled.tmp ]; then
       $AF_INIT_DIR/osso-connectivity-ui-gwwizard-startup.sh start
     fi
+
+    if [ -x /usr/bin/wizback ]; then
+      echo "wizback: Advancing"
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance
+    fi
+
     if [ -f $TMPDIR/launch-operator-wizard.tmp \
          -a ! -f /tmp/suw-user-cancelled.tmp ]; then
       if [ -x $AF_INIT_DIR/operator-wizard.sh ]; then
@@ -77,6 +95,15 @@ start)
       fi
       rm -f $TMPDIR/launch-operator-wizard.tmp
     fi
+
+    if [ -x /usr/bin/wizback ]; then
+      echo "wizback: Advancing"
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance
+      sleep 1
+      echo "wizback: Quitting"
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.quit
+    fi
+
     rm -f $HOME/first-boot-flag
     rm -f /tmp/suw-user-cancelled.tmp
   else
