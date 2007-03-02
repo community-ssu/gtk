@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-28) unstable; urgency=low
+
+  * hildon-desktop-dev should not depend on maemo-launcher
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  2 Mar 2007 12:36:37 +0200
+
 hildon-desktop (0.0.0-27) unstable; urgency=low
 
   * libhildonwm-dev depends on libx11-dev and libxtst-dev

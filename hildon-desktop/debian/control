@@ -18,7 +18,7 @@ Description: Desktop environment for embedded devices
 Package: hildon-desktop-dev
 Section: x11
 Architecture: all
-Depends:  ${shlibs:Depends}, ${misc:Depends}, ${launcher:Depends}, libhildondesktop-dev, libhildonwm-dev
+Depends:  ${shlibs:Depends}, ${misc:Depends}, libhildondesktop-dev, libhildonwm-dev
 Description: Development files for the Hildon Desktop
   Hildon Desktop is a desktop environment for embedded devices. It
   is based on the GNOME platform. This package contains the
