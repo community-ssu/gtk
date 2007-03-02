@@ -54,7 +54,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
   DBusGProxy *bus_proxy;
   GError *error = NULL;
   guint request_name_result;
-  GType _types[9] = 
+  GType _types[] = 
   { 
     G_TYPE_STRING,
     G_TYPE_UINT,
@@ -64,7 +64,8 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
     G_TYPE_STRING,
     G_TYPE_POINTER,
     G_TYPE_POINTER,
-    G_TYPE_INT 
+    G_TYPE_INT,
+    G_TYPE_BOOLEAN
   };
 
   nm->priv = HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_PRIVATE (nm);
@@ -72,7 +73,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
   nm->priv->current_id = 0;
 
   gtk_list_store_set_column_types (GTK_LIST_STORE (nm),
-		  		   9,
+		  		   HD_NM_N_COLS,
 		  		   _types);
 		  		   
 
@@ -194,14 +195,6 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
   GdkPixbuf *pixbuf = NULL;
   GtkIconTheme *icon_theme;
 
-  if (id == 0)
-  {
-    id = ++nm->priv->current_id;	  
-    
-    if (nm->priv->current_id == G_MAXUINT)
-      nm->priv->current_id = 0;
-  }
-
   if (!g_str_equal (icon, ""))
   {
     if (g_file_test (icon, G_FILE_TEST_EXISTS))
@@ -234,21 +227,43 @@ hildon_desktop_notification_manager_notify_handler (HildonDesktopNotificationMan
   }
 
   if (!hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
+  {
     gtk_list_store_append (GTK_LIST_STORE (nm), &iter);
+  
+    if (id == 0)
+    { 
+      id = ++nm->priv->current_id;	  
     
-  gtk_list_store_set (GTK_LIST_STORE (nm),
-		      &iter,
-		      HD_NM_COL_APPNAME, app_name,
-		      HD_NM_COL_ID, id,
-		      HD_NM_COL_ICON_NAME, icon,
-		      HD_NM_COL_ICON, pixbuf,
-		      HD_NM_COL_SUMMARY, summary,
-		      HD_NM_COL_BODY, body,
-		      HD_NM_COL_ACTIONS, actions,
-		      HD_NM_COL_HINTS, hints,
-		      HD_NM_COL_TIMEOUT, timeout,
-		      -1);
+      if (nm->priv->current_id == G_MAXUINT)
+        nm->priv->current_id = 0;
+    }
 
+    gtk_list_store_set (GTK_LIST_STORE (nm),
+		        &iter,
+		        HD_NM_COL_APPNAME, app_name,
+		        HD_NM_COL_ID, id,
+		        HD_NM_COL_ICON_NAME, icon,
+		        HD_NM_COL_ICON, pixbuf,
+		        HD_NM_COL_SUMMARY, summary,
+		        HD_NM_COL_BODY, body,
+		        HD_NM_COL_ACTIONS, actions,
+		        HD_NM_COL_HINTS, hints,
+		        HD_NM_COL_TIMEOUT, timeout,
+			HD_NM_COL_REMOVABLE, TRUE,
+		        -1);
+  }
+  else 
+  {
+    gtk_list_store_set (GTK_LIST_STORE (nm),
+		        &iter,
+			HD_NM_COL_ICON_NAME, icon,
+			HD_NM_COL_ICON, pixbuf,
+			HD_NM_COL_SUMMARY, summary,
+			HD_NM_COL_BODY, body,
+			HD_NM_COL_REMOVABLE, FALSE,
+			-1);
+  }
+    
   if (timeout > 0)
   {
     iter_timeout = g_new0 (GtkTreeIter, 1);
@@ -298,13 +313,30 @@ hildon_desktop_notification_manager_close_notification_handler (HildonDesktopNot
                                                     	        guint                  id, 
                                                     	        GError               **error)
 {
+
   GtkTreeIter iter;
+  gboolean removable = TRUE;
 
   if (hildon_desktop_notification_manager_find_by_id (nm,id,&iter))
   {
-    gtk_list_store_remove (GTK_LIST_STORE (nm), &iter);
+    gtk_tree_model_get (GTK_TREE_MODEL (nm),
+		        &iter,
+			HD_NM_COL_REMOVABLE, &removable,
+			-1);
+	  
+    if (!removable)  /*libnotify call close_notification_handler when updating a row 
+		       that we happend to not want removed
+		      */
+      gtk_list_store_set (GTK_LIST_STORE (nm),
+		          &iter,
+			  HD_NM_COL_REMOVABLE, TRUE,
+			  -1);
+    else
+      gtk_list_store_remove (GTK_LIST_STORE (nm), &iter);
+    
     return TRUE;    
   }
   else
     return FALSE;
+
 }

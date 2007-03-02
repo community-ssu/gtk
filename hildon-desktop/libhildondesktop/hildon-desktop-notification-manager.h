@@ -44,7 +44,9 @@ enum
   HD_NM_COL_BODY,
   HD_NM_COL_ACTIONS,
   HD_NM_COL_HINTS,
-  HD_NM_COL_TIMEOUT
+  HD_NM_COL_TIMEOUT,
+  HD_NM_COL_REMOVABLE,
+  HD_NM_N_COLS
 };
 
 typedef struct _HildonDesktopNotificationManager HildonDesktopNotificationManager;
