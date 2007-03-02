@@ -1033,9 +1033,9 @@ hn_others_button_register_monitors (HNOthersButton * button)
                              (GnomeVFSMonitorCallback) hn_others_button_dir_changed,
                              button) != GNOME_VFS_OK)
   {
-    g_error ("Others_menu_initialize_menu: "
-      	     "failed setting monitor callback "
-      	     "for systemwide menu conf." );
+    g_warning ("Others_menu_initialize_menu: "
+      	       "failed setting monitor callback "
+      	       "for systemwide menu conf." );
   }
 
   g_free (dir);
@@ -1057,9 +1057,9 @@ hn_others_button_register_monitors (HNOthersButton * button)
                                  (GnomeVFSMonitorCallback) hn_others_button_dir_changed,
                                  button) != GNOME_VFS_OK)
       {
-        g_error ("Others_menu_initialize_menu: "
-      	         "failed setting monitor callback "
-      	         "for user specific menu conf." );
+        g_warning ("Others_menu_initialize_menu: "
+      	           "failed setting monitor callback "
+      	           "for user specific menu conf." );
       }
     }
     else
@@ -1081,9 +1081,9 @@ hn_others_button_register_monitors (HNOthersButton * button)
                              (GnomeVFSMonitorCallback) hn_others_button_dir_changed,
                              button) != GNOME_VFS_OK)
   {
-    g_error ("Others_menu_initialize_menu: "
-      	     "failed setting monitor callback "
-      	     "for .desktop directory." );
+    g_warning ("Others_menu_initialize_menu: "
+      	       "failed setting monitor callback "
+      	       "for .desktop directory." );
   }
 }
 
