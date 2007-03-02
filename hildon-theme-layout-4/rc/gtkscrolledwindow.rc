@@ -4,15 +4,47 @@
 
 style "osso-scrolledwindow"
 {
-
   GtkScrolledWindow::scrollbar-spacing = 6
 
+  engine "sapwood"
+    {
+      image
+        {
+	  function = SHADOW
+	  state    = INSENSITIVE
+	  file     = "../images/qgn_plat_frame_disabled.png"
+	  border   = { 3, 3, 3, 3 }
+	}
+      image
+        {
+	  function = SHADOW
+	  file     = "../images/qgn_plat_frame.png"
+	  border   = { 3, 3, 3, 3 }
+	}
+    }
 }
 class "GtkScrolledWindow" style "osso-scrolledwindow"
 
 style "osso-special-scrolledwindow"
 {
-	GtkScrolledWindow::scrollbar-dislocation = 1
+  GtkScrolledWindow::scrollbar-dislocation = 1
+
+  engine "sapwood"
+    {
+      image
+        {
+	  function = SHADOW
+	  state    = INSENSITIVE
+	  file     = "../images/qgn_plat_frame_disabled.png"
+	  border   = { 3, 3, 3, 3 }
+	}
+      image
+        {
+	  function = SHADOW
+	  file     = "../images/qgn_plat_frame.png"
+	  border   = { 3, 3, 3, 3 }
+	}
+    }
 }
 
 widget_class "*.GtkScrolledWindow" style "osso-special-scrolledwindow"

@@ -1,3 +1,8 @@
+2007-03-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/gtkscrolledwindow.rc: Fixing the scrolled window shadow. Not used
+	by anything at the moment AFAIK but it won't hurt for future.
+
 2007-03-02  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtkviewport.rc:
