@@ -855,6 +855,10 @@ osso_return_t osso_time_set(osso_context_t *osso, time_t new_time);
  * function. It correctly passes the received locale value to gettext
  * and updates the labels for all the text widgets in the application.
  * @code
+#include <libintl.h>
+#include <locale.h>
+#include <glib.h>
+
 static void locale_changed_cb (char *new_locale, gpointer user_data)
 {
   GtkWidget *my_label = GTK_WIDGET (user_data);
