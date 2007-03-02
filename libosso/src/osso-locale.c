@@ -79,7 +79,7 @@ osso_return_t osso_locale_change_set_notification_cb(osso_context_t *osso,
 }
 
 /************************************************************************/
-osso_return_t osso_locale_set(osso_context_t *osso, char *new_locale)
+osso_return_t osso_locale_set(osso_context_t *osso, const char *new_locale)
 {
   DBusMessage* m = NULL;
   dbus_bool_t ret = FALSE;
@@ -91,7 +91,8 @@ osso_return_t osso_locale_set(osso_context_t *osso, char *new_locale)
   }
 
   /* send a signal about the locale change */
-  m = dbus_message_new_signal(LOCALE_CHANGED_PATH, LOCALE_CHANGED_INTERFACE, LOCALE_CHANGED_SIG_NAME);
+  m = dbus_message_new_signal(LOCALE_CHANGED_PATH, LOCALE_CHANGED_INTERFACE,
+                              LOCALE_CHANGED_SIG_NAME);
   if (m == NULL) {
       ULOG_ERR_F("dbus_message_new_signal failed");
       return OSSO_ERROR;
@@ -122,20 +123,22 @@ static void _locale_change_handler(osso_context_t *osso,
                                     _osso_callback_data_t *ot,
                                     muali_bus_type dbus_type)
 {
-    if (dbus_message_is_signal(msg, LOCALE_CHANGED_INTERFACE, (char*)ot->data)) {
+    if (dbus_message_is_signal(msg, LOCALE_CHANGED_INTERFACE,
+                               (char*)ot->data)) {
         osso_locale_change_cb_f *handler = ot->user_cb;
-        char *new_locale = NULL ;
-        DBusMessageIter iter ;
+        char *new_locale = NULL;
+        DBusMessageIter iter;
 
-        if(!dbus_message_iter_init(msg, &iter)) {
+        if (!dbus_message_iter_init(msg, &iter)) {
             ULOG_ERR_F("Message has no arguments");
             return;
         }
-        if(dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
+        if (dbus_message_iter_get_arg_type(&iter) == DBUS_TYPE_STRING) {
             dbus_message_iter_get_basic(&iter, &new_locale);
         }
 
-        ULOG_DEBUG_F("arguments = '%s'", NULL == new_locale ? "<NULL>" : new_locale);
+        ULOG_DEBUG_F("arguments = '%s'", NULL == new_locale ? "<NULL>"
+                     : new_locale);
 
         (*handler)(new_locale, ot->user_data);
     }
