@@ -476,11 +476,10 @@ hildon_home_titlebar_init (HildonHomeTitlebar *titlebar)
   gtk_container_add (GTK_CONTAINER (align), hbox);
   gtk_widget_show (hbox);
 
-  priv->layout_accept = gtk_button_new_with_label ("");
-  g_object_set (priv->layout_accept,
-                "image", gtk_image_new_from_icon_name (LAYOUT_MODE_ACCEPT_BUTTON,
-                                                       GTK_ICON_SIZE_BUTTON),
-                NULL);
+  priv->layout_accept = gtk_button_new ();
+  gtk_container_add (GTK_CONTAINER (priv->layout_accept),
+                     gtk_image_new_from_icon_name (LAYOUT_MODE_ACCEPT_BUTTON,
+                                                   GTK_ICON_SIZE_BUTTON));
   gtk_widget_set_size_request (priv->layout_accept,
                                LAYOUT_MODE_BUTTON_SIZE,
                                LAYOUT_MODE_BUTTON_SIZE);
@@ -490,11 +489,10 @@ hildon_home_titlebar_init (HildonHomeTitlebar *titlebar)
   gtk_box_pack_start (GTK_BOX (hbox), priv->layout_accept, FALSE, FALSE, 0);
 
 
-  priv->layout_cancel = gtk_button_new_with_label ("");
-  g_object_set (priv->layout_cancel,
-                "image", gtk_image_new_from_icon_name (LAYOUT_MODE_CANCEL_BUTTON,
-                                                       GTK_ICON_SIZE_BUTTON),
-                NULL);
+  priv->layout_cancel = gtk_button_new ();
+  gtk_container_add (GTK_CONTAINER (priv->layout_cancel),
+                     gtk_image_new_from_icon_name (LAYOUT_MODE_CANCEL_BUTTON,
+                                                   GTK_ICON_SIZE_BUTTON));
   gtk_widget_set_size_request (priv->layout_cancel,
                                LAYOUT_MODE_BUTTON_SIZE,
                                LAYOUT_MODE_BUTTON_SIZE);
