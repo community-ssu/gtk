@@ -3,5 +3,6 @@ usr/bin/hn-hung-app-handler*
 usr/bin/hildon-background-manager*
 etc/hildon-desktop
 etc/osso-af-init
+etc/xdg
 usr/share/dbus-1
 usr/share/applications
