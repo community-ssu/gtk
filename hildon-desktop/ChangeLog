@@ -1,4 +1,14 @@
-2007-03-01  Johan Bilien  <johan.bilien@nokia.com>
+2007-03-05  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-applet.c:
+	- Made the drag handle have its own icon
+	* libhildondesktop/hildon-home-window.c:
+	- Do not go to layout mode if it sucks
+	* src/hd-home-window.c:
+	- Added "layout-mode-sucks" property
+	- adapt menus to this property
+
+2007-03-05  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-titlebar.c:
 	- add image as child rather than button icon for the accept and

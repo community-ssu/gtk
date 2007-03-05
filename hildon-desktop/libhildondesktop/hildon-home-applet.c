@@ -45,6 +45,9 @@
 #define APPLET_CLOSE_BUTTON_ICON    "qgn_home_layoutmode_close"
 #define APPLET_CLOSE_BUTTON_WIDTH   26
 #define APPLET_CLOSE_BUTTON_HEIGHT  26
+#define APPLET_DRAG_HANDLE_ICON     "qgn_list_presence_invisible"
+#define APPLET_DRAG_HANDLE_WIDTH    26
+#define APPLET_DRAG_HANDLE_HEIGHT   26
 
 #define GRID_SIZE                       10
 
@@ -82,6 +85,7 @@ typedef struct HildonHomeAppletPriv_
   GdkWindow    *close_button_window;
   GdkPixbuf    *resize_handle;
   GdkWindow    *resize_handle_window;
+  GdkPixbuf    *drag_handle;
   GdkWindow    *drag_handle_window;
 
   GdkWindow    *event_window;
@@ -359,7 +363,7 @@ hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
                                  "Layout mode sucks",
                                  "Whether or not the layout mode "
                                  "is considered to suck",
-                                 /*TRUE well really it should*/ FALSE,
+                                 TRUE,
                                  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
@@ -417,6 +421,20 @@ hildon_home_applet_class_init (HildonHomeAppletClass * applet_class)
       g_error_free (error);
       error = NULL;
     }
+  
+  applet_class->drag_handle =
+      gtk_icon_theme_load_icon (icon_theme,
+                                APPLET_DRAG_HANDLE_ICON,
+                                APPLET_DRAG_HANDLE_WIDTH,
+                                GTK_ICON_LOOKUP_NO_SVG,
+                                &error);
+  if (error)
+    {
+      g_warning ("Could not load drag handle icon: %s", error->message);
+      applet_class->drag_handle = NULL;
+      g_error_free (error);
+      error = NULL;
+    }
 }
 
 static void
@@ -445,13 +463,16 @@ hildon_home_applet_init (HildonHomeApplet * self)
       priv->resize_handle = klass->resize_handle;
     }
   
+  if (klass->drag_handle)
+    {
+      g_object_ref (klass->drag_handle);
+      priv->drag_handle = klass->drag_handle;
+    }
+  
   gtk_widget_add_events (GTK_WIDGET (self), GDK_VISIBILITY_NOTIFY_MASK);
 
   /* FIXME remove this from the theme */
   gtk_widget_set_name (GTK_WIDGET (self), "osso-home-layoutmode-applet");
-
-  fprintf (stderr, "Layout mode sucks: %i\n", priv->layout_mode_sucks);
-
 
 }
 
@@ -632,7 +653,7 @@ hildon_home_applet_realize (GtkWidget *widget)
         {
           priv->drag_handle_window =
               hildon_home_applet_create_icon_window (HILDON_HOME_APPLET (widget),
-                                                     priv->resize_handle,
+                                                     priv->drag_handle,
                                                      0,
                                                      0);
           

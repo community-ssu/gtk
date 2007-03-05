@@ -80,6 +80,8 @@ struct _HDHomeWindowPrivate
   osso_context_t   *osso_context;
 #endif
 
+  gboolean          layout_mode_sucks;
+
   GtkWidget        *settings_item;
   GtkWidget        *settings_menu;
   GtkWidget        *layout_mode_item;
@@ -99,6 +101,7 @@ enum
 {
   PROP_0,
   PROP_OSSO_CONTEXT,
+  PROP_LAYOUT_MODE_SUCKS,
   PROP_BACKGROUND
 };
 
@@ -241,6 +244,15 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   g_object_class_install_property (object_class,
                                    PROP_BACKGROUND,
                                    pspec);
+  
+  pspec = g_param_spec_boolean ("layout-mode-sucks",
+                                "Layout mode sucks",
+                                "Whether or not the layout mode sucks",
+                                TRUE,
+                               (G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+  g_object_class_install_property (object_class,
+                                   PROP_LAYOUT_MODE_SUCKS,
+                                   pspec);
 
   g_type_class_add_private (window_class, sizeof (HDHomeWindowPrivate));
 
@@ -357,6 +369,7 @@ hd_home_window_set_property (GObject      *gobject,
                              GParamSpec   *pspec)
 {
   HDHomeWindow *window = HD_HOME_WINDOW (gobject);
+  HDHomeWindowPrivate *priv = HD_HOME_WINDOW_GET_PRIVATE (gobject);
 
   switch (prop_id)
   {
@@ -372,6 +385,10 @@ hd_home_window_set_property (GObject      *gobject,
     case PROP_BACKGROUND:
       hd_home_window_set_background (window,
                                      g_value_get_object (value));
+      break;
+
+    case PROP_LAYOUT_MODE_SUCKS:
+      priv->layout_mode_sucks = g_value_get_boolean (value);
       break;
 
     default:
@@ -395,6 +412,10 @@ hd_home_window_get_property (GObject    *gobject,
       g_value_set_pointer (value, priv->osso_context);
       break;
 #endif
+    
+    case PROP_LAYOUT_MODE_SUCKS:
+      g_value_set_boolean (value, priv->layout_mode_sucks);
+      break;
       
     case PROP_BACKGROUND:
       g_value_set_object (value, priv->background);
@@ -674,22 +695,45 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
   priv->settings_item = menu_item;
   priv->settings_menu = settings_menu;
 
-  /* layout mode */
-  menu_item = gtk_menu_item_new_with_label (HH_MENU_EDIT_LAYOUT);
-  g_signal_connect_swapped (menu_item, "activate",
-                            G_CALLBACK (hildon_home_window_layout_mode_activate),
-                            window);
+  if (!priv->layout_mode_sucks)
+    {
+      /* layout mode */
+      menu_item = gtk_menu_item_new_with_label (HH_MENU_EDIT_LAYOUT);
+      g_signal_connect_swapped (menu_item, "activate",
+                                G_CALLBACK (hildon_home_window_layout_mode_activate),
+                                window);
 #ifdef HAVE_LIBHILDON
-  hildon_helper_set_insensitive_message (menu_item, HH_LAYOUT_UNAVAIL_BANNER);
+      hildon_helper_set_insensitive_message (menu_item, HH_LAYOUT_UNAVAIL_BANNER);
 #else
-  g_signal_connect_swapped (menu_item, "insensitive-press",
-                            G_CALLBACK (hd_home_window_layout_insensitive_press_cb),
-                            window);
+      g_signal_connect_swapped (menu_item, "insensitive-press",
+                                G_CALLBACK (hd_home_window_layout_insensitive_press_cb),
+                                window);
 #endif
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-  gtk_widget_set_sensitive (menu_item, FALSE);
-  gtk_widget_show (menu_item);
-  priv->layout_mode_item = menu_item;
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+      gtk_widget_set_sensitive (menu_item, FALSE);
+      gtk_widget_show (menu_item);
+      priv->layout_mode_item = menu_item;
+    }
+
+  else
+    {
+      GtkWidget *area;
+
+      menu_item = gtk_check_menu_item_new_with_label (HH_MENU_LAYOUT_SNAP_TO_GRID);
+      gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+      g_signal_connect_swapped (menu_item, "toggled",
+                                G_CALLBACK (hd_home_window_snap_toggled),
+                                window);
+      area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
+      if (area)
+        {
+          gboolean snap_to_grid;
+          g_object_get (G_OBJECT (area), "snap-to-grid", &snap_to_grid, NULL);
+          gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM (menu_item),
+                                          snap_to_grid);
+        }
+      gtk_widget_show (menu_item);
+    }
   
   /* tools sub-menu */
   tools_menu = gtk_menu_new ();

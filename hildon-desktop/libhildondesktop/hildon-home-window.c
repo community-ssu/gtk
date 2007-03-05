@@ -122,8 +122,13 @@ area_add (HildonHomeArea   *area,
           HildonHomeWindow *window)
 {
   HildonHomeWindowPrivate *priv = window->priv;
+  gboolean layout_mode_sucks;
 
-  if (HILDON_IS_HOME_AREA (priv->applet_area))
+  g_object_get (applet,
+                "layout-mode-sucks", &layout_mode_sucks,
+                NULL);
+
+  if (HILDON_IS_HOME_AREA (priv->applet_area) && !layout_mode_sucks)
     {
       HildonHomeArea *area =  HILDON_HOME_AREA (priv->applet_area);
 
