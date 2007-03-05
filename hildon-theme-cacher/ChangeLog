@@ -1,3 +1,14 @@
+2007-03-05  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.4.0 release]
+
+	* scripts/hildon-theme-recache-all.in: Changing the location of the
+	interpreter from /usr/bin/sh to /bin/sh. 
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog: Updating.
+
 2007-02-21  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* src/cacher.c: Use proper prg name.

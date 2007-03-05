@@ -1,4 +1,4 @@
-#! /usr/bin/sh
+#! /usr/sh
 
 hildon-theme-cacher @prefix@/share/themes
 

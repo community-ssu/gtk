@@ -1,3 +1,9 @@
+hildon-theme-cacher (0.4.0-1) unstable; urgency=low
+
+  * Fixing the broken interpreter location
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Mon, 05 Mar 2007 10:13:11 +0200
+
 hildon-theme-cacher (0.3.0-1) unstable; urgency=low
 
   * Unset the GTK2_RC_FILES to avoid the 'theme trap'

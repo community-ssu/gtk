@@ -1,3 +1,6 @@
+[0.4.0 release]
+* Fixing the broken interpreter location
+
 [0.3.0 release]
 * Fixing the theme trap (unable to change theme after installing new one)
 * Skip junk files during generation
