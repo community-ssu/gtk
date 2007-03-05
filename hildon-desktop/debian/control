@@ -42,7 +42,7 @@ Description: libhildondesktop shared library
 Package: libhildondesktop-dev
 Section: devel
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libhildondesktop0 (=${Source-Version})
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildondesktop0 (=${Source-Version}), libhildon1-dev, libxml2-dev
 Description: libhildondesktop development files
   Development headers and static libraries for the libhildondesktop
 
@@ -63,7 +63,7 @@ Description: libhildonwm shared library
 Package: libhildonwm-dev
 Section: devel
 Architecture: all
-Depends: ${shlibs:Depends}, ${misc:Depends}, libhildondesktop0 (=${Source-Version}), libxtst-dev, libx11-dev
+Depends: ${shlibs:Depends}, ${misc:Depends}, libhildondesktop0 (=${Source-Version}), libxtst-dev, libx11-dev, libhildon1-dev
 Description: libhildonwm development files
   Development headers and static libraries for the libhildonwm
 
