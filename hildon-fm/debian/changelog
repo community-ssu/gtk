@@ -1,3 +1,11 @@
+libhildonfm (2.13-2) unstable; urgency=low
+
+  * Make libhildonfm2-dev conflict with hildon-fm-dev (<= 2.10).
+    Conflicting with (<< 2) wasn't enough since there is a 2.0 version out
+    there that does conflict.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  5 Mar 2007 15:44:24 +0200
+
 libhildonfm (2.13-1) unstable; urgency=low
 
   * More consolidation.
