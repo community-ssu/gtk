@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.10.6-0osso7test1) experimental; urgency=low
+
+*** NOTE: This version is ABI incompatible with maemo gtk+ 2.6 ***
+
+  * Back out maemo icon theme load order patch.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  5 Mar 2007 17:31:20 +0200
+
 gtk+2.0 (2:2.10.6-0osso6) experimental; urgency=low
 
   * Menu changes to menu item drawing when there's a submenu
