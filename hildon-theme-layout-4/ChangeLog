@@ -1,3 +1,13 @@
+2007-03-05  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtktreeview.rc:
+
+	Remove {odd,even}-row-color properties, they are not used by the theme
+	engine.
+	Remove passive-focus property, it's gone from GTK+.
+	Remove expander-indent, it's now an ordinary property inside GTK+ with
+	the correct default value if MAEMO_CHANGES is enabled.
+
 2007-03-02  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkscrolledwindow.rc: Fixing the scrolled window shadow. Not used

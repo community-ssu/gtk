@@ -6,15 +6,11 @@ style "osso-listview" = "osso-logical-colors"
   text[ACTIVE] = "DefaultTextColor"
   text[SELECTED] = "DefaultTextColor"
 
-  GtkTreeView::odd_row_color = "DefaultBackgrdColor"
-  GtkTreeView::even_row_color = "DefaultBackgrdColor"
   GtkTreeView::expander-size = 0
-  GtkTreeView::expander-indent = 8
+  GtkTreeView::vertical-separator = 2
   GtkTreeView::horizontal-separator = 6
-  GtkTreeView::vertical-separator = 2	  
-  GtkTreeView::row-ending-details = 1
-  GtkTreeView::passive_focus = 1
   GtkTreeView::separator-height = 15
+  GtkTreeView::row-ending-details = 1
 
   engine "sapwood"
   {
