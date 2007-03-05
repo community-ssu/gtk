@@ -1,3 +1,9 @@
+hildon-theme-cacher (0.4.1-1) unstable; urgency=low
+
+  * Fixing the broken interpreter location again. :)
+
+ -- Marius Vollmer <mvo@zagadka.de>  Mon,  5 Mar 2007 22:07:48 +0200
+
 hildon-theme-cacher (0.4.0-1) unstable; urgency=low
 
   * Fixing the broken interpreter location
