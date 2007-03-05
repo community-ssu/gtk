@@ -1,3 +1,9 @@
+2007-03-05  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkicontheme.c: Back out our changes to the icon loading order.
+	This should fix stock icons being broken and has no noticeable performance
+	differences in out tests.
+
 2007-02-21  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* gtk/gtkiconview.c: surround all changes made on selection behavior

@@ -39,7 +39,7 @@ gtk+2.0 (2:2.10.6-0osso4) experimental; urgency=low
   * autodimmed property for GtkComboBox
   * Fix scroll arrow backgrounds painting
 
- -- Xan Lopez <xan@xan-laptop>  Tue,  6 Feb 2007 12:11:16 +0200
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  6 Feb 2007 12:11:16 +0200
 
 gtk+2.0 (2:2.10.6-0osso3) experimental; urgency=low
 

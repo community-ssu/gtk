@@ -1894,9 +1894,6 @@ theme_lookup_icon (IconTheme          *theme,
   min_dir = NULL;
   has_larger = FALSE;
   
-#ifdef MAEMO_CHANGES    /* do not prefer builtin icons */
-  dirs = theme->dirs;
-#else  /* !MAEMO_CHANGES */
   /* Builtin icons are logically part of the default theme and
    * are searched before other subdirectories of the default theme.
    */
@@ -1913,7 +1910,6 @@ theme_lookup_icon (IconTheme          *theme,
     }
   else
     dirs = theme->dirs;
-#endif /* !MAEMO_CHANGES */
 
   l = dirs;
   while (l != NULL)
@@ -1964,10 +1960,8 @@ theme_lookup_icon (IconTheme          *theme,
 	}
     }
 
-#ifndef MAEMO_CHANGES    /* do not prefer builtin icons */
   if (closest_builtin)
     return icon_info_new_builtin (closest_builtin);
-#endif /* !MAEMO_CHANGES */
   
   if (min_dir)
     {
@@ -2034,21 +2028,6 @@ theme_lookup_icon (IconTheme          *theme,
       
       return icon_info;
     }
-
-#ifdef MAEMO_CHANGES
-  /* When an icon isn't found even in the default theme, try builtin stock
-   * icons as the last resort
-   */
-  if (strcmp (theme->name, DEFAULT_THEME_NAME) == 0 && use_builtin)
-    {
-      closest_builtin = find_builtin_icon (icon_name, size,
-					   &min_difference,
-					   &has_larger);
-
-      if (closest_builtin)
-	return icon_info_new_builtin (closest_builtin);
-    }
-#endif /* MAEMO_CHANGES */
  
   return NULL;
 }
