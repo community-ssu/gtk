@@ -1,5 +1,11 @@
 2007-03-05  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/themespecificgtk.rc:
+
+	Remove hildonlike property from GtkEntry.
+	
+2007-03-05  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/themespecificgtk.rc: 
 	
 	s/logical_color/color/
