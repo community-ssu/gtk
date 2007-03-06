@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-30) unstable; urgency=low
+
+  * New experimental snapshot 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Mar 2007 13:58:15 +0200
+
 hildon-desktop (0.0.0-29) unstable; urgency=low
 
   * libhildonwm-dev depends on libhildon1-dev
