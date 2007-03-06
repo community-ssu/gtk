@@ -1,3 +1,9 @@
+2007-03-06  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-plugin-loader-factory.c: monitor plugin loader directory to
+	dynamicaly load new ones without needing to restart the desktop.
+	* src/hd-desktop.c: small code cleanup.
+
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-applet.[ch]:
@@ -6,7 +12,7 @@
 	- renamed class from HildonHomeApplet to HildonDesktopHomeItem
 	* ALL: Made necessary adjustments
 
-2007-03-05  Lucas Rocha  <lucas.rocha@nokia.com>
+2007-03-06  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/libhildondesktop.pc.in: added gtk+ and glib
 	dependency info.

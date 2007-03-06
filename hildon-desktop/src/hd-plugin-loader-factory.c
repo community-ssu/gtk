@@ -27,6 +27,7 @@
 #endif
 
 #include <glib-object.h>
+#include <libgnomevfs/gnome-vfs.h>
 
 #include "hd-plugin-loader-factory.h"
 #include "hd-plugin-loader.h"
@@ -49,13 +50,45 @@ G_DEFINE_TYPE (HDPluginLoaderFactory, hd_plugin_loader_factory, G_TYPE_OBJECT);
 
 struct _HDPluginLoaderFactoryPrivate 
 {
-  GHashTable *registry;
-  GHashTable *modules;
-
-  gchar 	 *(*load_module)   (void);
-  HDPluginLoader *(*get_instance)    (void);
+  GHashTable            *registry;
+  GHashTable            *modules;
+  GnomeVFSMonitorHandle *monitor;
+  
+  gchar 	  *(*load_module)   (void);
+  HDPluginLoader  *(*get_instance)  (void);
 };
 
+static int callback_pending = 0;
+
+static void hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory);
+
+static void
+hd_plugin_loader_factory_dir_changed (GnomeVFSMonitorHandle *handle,
+                                      const gchar *monitor_uri,
+                                      const gchar *info_uri,
+                                      GnomeVFSMonitorEventType event_type,
+                                      HDPluginLoaderFactory *factory)
+{
+  if (!callback_pending) 
+  {
+    callback_pending = 1;
+
+    g_debug ("REFRESHING... %s", monitor_uri);
+    
+    g_timeout_add (500,
+                  (GSourceFunc) hd_plugin_loader_factory_load_modules, 
+                  factory);
+  }
+}
+
+static gboolean
+hd_plugin_loader_factory_remove_module (gpointer key, 
+                                        gpointer value, 
+                                        gpointer data)
+{
+  return TRUE;
+}
+        
 static void 
 hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
 {
@@ -63,14 +96,29 @@ hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
   GDir *path_modules;
   const gchar *name;
 
+  /* FIXME: this is done because g_hash_table_remove_all is not 
+     available in glib <= 2.12 */
+  g_hash_table_foreach_remove (factory->priv->modules, 
+                               hd_plugin_loader_factory_remove_module,
+                               NULL);
+
   path_modules = g_dir_open (HD_PLUGIN_LOADER_MODULES_PATH, 0, &error);
 
+  if (factory->priv->monitor)
+    gnome_vfs_monitor_cancel (factory->priv->monitor);
+  
   if (error != NULL)
   { 
-    g_warning ("I couldn't open %s path for plugin loaders",
-		HD_PLUGIN_LOADER_MODULES_PATH);
-   
     g_error_free (error);
+
+    gnome_vfs_monitor_add (&factory->priv->monitor, 
+                           HD_DESKTOP_MODULE_PATH,
+                           GNOME_VFS_MONITOR_DIRECTORY,
+                           (GnomeVFSMonitorCallback) hd_plugin_loader_factory_dir_changed,
+                           factory);
+
+   callback_pending = 0;
+    
     return;
   }
 
@@ -89,6 +137,8 @@ hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
 			     MODULE_LOAD_SYMBOL,
 			     (gpointer *) &factory->priv->load_module))
 	{
+          g_debug (factory->priv->load_module ());
+                
 	  g_hash_table_insert (factory->priv->modules,
 			       factory->priv->load_module (),
 			       module);
@@ -106,7 +156,15 @@ hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
     } 
   }
    
-  g_dir_close (path_modules); 
+  g_dir_close (path_modules);
+
+  gnome_vfs_monitor_add (&factory->priv->monitor, 
+                         HD_PLUGIN_LOADER_MODULES_PATH,
+                         GNOME_VFS_MONITOR_DIRECTORY,
+                         (GnomeVFSMonitorCallback) hd_plugin_loader_factory_dir_changed,
+                         factory);
+  
+  callback_pending = 0;
 }
 
 static void
@@ -127,6 +185,7 @@ hd_plugin_loader_factory_init (HDPluginLoaderFactory *factory)
 			   (GDestroyNotify) g_module_close);
 
   hd_plugin_loader_factory_load_modules (factory);
+
 }
 
 static void

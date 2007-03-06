@@ -444,11 +444,6 @@ hd_desktop_watch_dir (gchar    *plugin_dir,
 }
 
 static void 
-hd_desktop_dnotify_init () 
-{
-}
-
-static void 
 hd_desktop_load_containers (HDDesktop *desktop)
 {
   HDDesktopPrivate *priv;
@@ -795,13 +790,11 @@ hd_desktop_load_containers (HDDesktop *desktop)
 static void
 hd_desktop_init (HDDesktop *desktop)
 {
-  const gchar *home, *env_config_file;
+  const gchar *env_config_file;
 
   desktop->priv = HD_DESKTOP_GET_PRIVATE (desktop);
 
-  home = getenv ("HOME");
-
-  desktop->priv->config_path = g_build_filename (home, 
+  desktop->priv->config_path = g_build_filename (g_get_home_dir (), 
                                                  HD_DESKTOP_CONFIG_USER_PATH, 
                                                  NULL);
 
@@ -845,8 +838,6 @@ hd_desktop_init (HDDesktop *desktop)
   desktop->priv->osso_context = osso_initialize (PACKAGE, VERSION, TRUE, NULL);
 #endif
   
-  hd_desktop_dnotify_init ();
-
   hd_desktop_watch_file (desktop->priv->config_file, 
                          hd_desktop_config_changed, 
                          desktop);
