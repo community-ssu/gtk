@@ -26,7 +26,7 @@
 #define __HILDON_HOME_WEBSHORTCUT_H__
 
 #include "hhwsloader.h"
-#include <libhildondesktop/hildon-home-applet.h>
+#include <libhildondesktop/hildon-desktop-home-item.h>
 
 G_BEGIN_DECLS
 
@@ -41,15 +41,15 @@ G_BEGIN_DECLS
 typedef struct _HhwsPrivate HhwsPrivate;
 typedef struct
 {
-  HildonHomeApplet          parent;
+  HildonDesktopHomeItem         parent;
 
-  HhwsPrivate              *priv;
+  HhwsPrivate                  *priv;
 
 } Hhws;
 
 typedef struct
 {
-  HildonHomeAppletClass     parent_class;
+  HildonDesktopHomeItem         parent_class;
 
 } HhwsClass;
 

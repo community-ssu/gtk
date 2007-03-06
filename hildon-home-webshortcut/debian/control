@@ -2,7 +2,7 @@ Source: hildon-home-webshortcut
 Section: x11
 Priority: optional
 Maintainer: Johan Bilien <johan.bilien@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), pkg-config, libhildon1-dev, libosso-dev (>= 0.9.18), osso-af-settings, osso-ic-dev, libhildonfm2-dev, libhildonmime-dev, libhildondesktop-dev, hildon-desktop-dev
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libhildon1-dev, libosso-dev (>= 0.9.18), osso-af-settings, osso-ic-dev, libhildonfm2-dev, libhildonmime-dev, libhildondesktop-dev (>= 0.0.0-30), hildon-desktop-dev
 Standards-Version: 3.6.0
 
 Package: hildon-home-webshortcut

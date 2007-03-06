@@ -1,3 +1,8 @@
+2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.[ch]:
+	- HildonHomeApplet is now HildonDesktopHomeItem
+
 2007-02-28  Johan Bilien  <johan.bilien@nokia.com>
 
 	* ported from libossomime to libhildonmime

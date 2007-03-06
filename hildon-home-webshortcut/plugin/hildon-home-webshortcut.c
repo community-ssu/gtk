@@ -97,7 +97,7 @@ struct _HhwsPrivate {
   GConfClient      *gconf_client;
 };
 
-HD_DEFINE_PLUGIN_WITH_CODE (Hhws, hhws, HILDON_TYPE_HOME_APPLET, hhws_loader_register_type (module);)
+HD_DEFINE_PLUGIN_WITH_CODE (Hhws, hhws, HILDON_DESKTOP_TYPE_HOME_ITEM, hhws_loader_register_type (module);)
 
 static void
 hhws_show_information_note (Hhws *hhws,
@@ -650,8 +650,8 @@ hhws_destroy (GtkObject *object)
 }
 
 static GtkWidget *
-hhws_settings (HildonHomeApplet    *applet,
-               GtkWidget           *parent)
+hhws_settings (HildonDesktopHomeItem   *applet,
+               GtkWidget               *parent)
 {
   Hhws         *hhws = HHWS (applet);
   HhwsPrivate  *priv = hhws->priv; 
@@ -747,12 +747,12 @@ hhws_init (Hhws *hhws)
 static void
 hhws_class_init (HhwsClass *klass)
 {
-  GtkWidgetClass           *widget_class;
-  GtkObjectClass           *object_class;
-  HildonHomeAppletClass    *applet_class;
+  GtkWidgetClass                       *widget_class;
+  GtkObjectClass                       *object_class;
+  HildonDesktopHomeItemClass           *applet_class;
 
   widget_class = GTK_WIDGET_CLASS (klass);
-  applet_class = HILDON_HOME_APPLET_CLASS (klass);
+  applet_class = HILDON_DESKTOP_HOME_ITEM_CLASS (klass);
   object_class = GTK_OBJECT_CLASS (klass);
 
   applet_class->settings = hhws_settings;
