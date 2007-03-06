@@ -1,5 +1,9 @@
 2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
+	* Update the version in configure.ac
+
+2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
 	* Version 2.1.1
 	* Don't realize the dialog in order to add the help hint. Instead, add a handler
 	  for the "realize" signal and enable/disable the hint during the signal handler
