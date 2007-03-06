@@ -376,6 +376,7 @@ hhws_loader_is_mmc_open (HhwsLoader *l)
 static void
 hhws_loader_oom_cb (size_t current_sz, size_t max_sz,void *context)
 {
+  g_warning ("OSSO memory watchdog triggered");
   *(gboolean *)context = TRUE;
 }
 
@@ -567,6 +568,8 @@ hhws_loader_load (HhwsLoader *l)
 
   if (pixbuf)
     {
+      g_debug ("pixbuf loaded");
+
       if (priv->pixbuf)
         gdk_pixbuf_unref (priv->pixbuf);
 
@@ -670,6 +673,7 @@ hhws_loader_uri_changed (HhwsLoader *l)
         gdk_pixbuf_unref (old_pixbuf);
 
       hhws_loader_save_configuration (l);
+      g_debug ("emitting pixbuf-changed");
       g_signal_emit_by_name (l, "pixbuf-changed");
     }
 }
@@ -737,6 +741,8 @@ hhws_loader_load_configuration (HhwsLoader *loader)
       g_signal_emit_by_name (loader, "loading-failed", error);
       goto cleanup;
     }
+
+  g_debug ("Read URI %s", uri);
 
   /* We retrieve the image name before setting the URI, or
    * the image name gets overwritten */

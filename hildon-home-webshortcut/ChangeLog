@@ -1,6 +1,11 @@
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* plugin/hildon-home-webshortcut.c:
+	- show the alignment so the image get shown too
+
+2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.c:
 	- added resize type and minimum size
 
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>

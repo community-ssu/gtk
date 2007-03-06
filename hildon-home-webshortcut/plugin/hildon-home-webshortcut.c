@@ -352,7 +352,6 @@ hhws_settings_dialog_response (GtkWidget *dialog,
                     new_image_path = hhws_loader_get_uri (priv->loader);
                 }
 
-              g_debug ("User selected: %s", new_image_path);
               error_handler = g_signal_connect (priv->loader,
                                                 "loading-failed",
                                                 G_CALLBACK (hhws_loader_error_cb),
@@ -736,6 +735,7 @@ hhws_init (Hhws *hhws)
   gtk_container_add (GTK_CONTAINER (hhws), frame);
 
   gtk_widget_show (priv->image);
+  gtk_widget_show (alignment);
   gtk_widget_show (frame);
 
   priv->csm = hhws_create_csm (hhws);
@@ -747,8 +747,8 @@ hhws_init (Hhws *hhws)
 
   g_object_set (hhws,
                 "resize-type",          HILDON_DESKTOP_HOME_ITEM_RESIZE_BOTH,
-                "minimum-width",        HILDON_HOME_WS_WIDTH,
-                "minimum-height",       HILDON_HOME_WS_HEIGHT,
+                "minimum-width",        HILDON_HOME_WS_MINIMUM_WIDTH,
+                "minimum-height",       HILDON_HOME_WS_MINIMUM_HEIGHT,
                 NULL);
 }
 
