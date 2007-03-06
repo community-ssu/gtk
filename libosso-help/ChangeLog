@@ -1,5 +1,9 @@
 2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
+	* Added -fPIC -DPIC to CFLAGS
+
+2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
 	* Update the version in configure.ac
 
 2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
