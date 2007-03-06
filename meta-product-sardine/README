@@ -1,0 +1,9 @@
+meta-desktop-sardine
+--------------------
+
+This is just an 'empty' meta package that contains the sardine desktop
+configuration. It has the proper dependencies and switches to plankton as the
+'default' theme during installaion. It ensures the right icons/themes are
+being pulled.
+
+Similiar packages should be created for other desktop product configurations.

@@ -1,8 +1,13 @@
+meta-desktop-sardine (1.0.1-1) unstable; urgency=low
+
+  * Added proper icons dependancy (old naming for now)
+  * Moved all the theme directory logic to postinst script
+  
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 06 Mar 2007 11:32:39 +0200
+
 meta-product-sardine (1.0.0-1) unstable; urgency=low
 
   * New
   
  -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 28 Feb 2007 11:33:27 +0200
-
-
 

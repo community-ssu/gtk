@@ -1,4 +1,14 @@
 2007-03-06  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[1.0.1-1 release]
+
+	* AUTHORS:
+	* README: Adding basic information about the package.
+
+	* debian/changelog:
+	* debian/control: Changing name to meta-desktop-sardine.
+
+2007-03-06  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 	
 	* debian/postinst: Adding a postinst script that creates the symlinks
 	and all the stuff.
