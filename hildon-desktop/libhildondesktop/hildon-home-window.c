@@ -159,7 +159,7 @@ area_remove (HildonHomeArea   *area,
   if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (priv->applet_area)))
     {
       GError *error = NULL;
-      gchar *filename = g_build_filename (g_getenv ("HOME"),
+      gchar *filename = g_build_filename (g_get_home_dir (),
                                           HH_AREA_CONFIGURATION_FILE,
                                           NULL);
 
@@ -212,7 +212,7 @@ hildon_home_window_background (HildonHomeWindow   *window,
           hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
                                             FALSE);
 
-          user_filename = g_build_filename (g_getenv ("HOME"),
+          user_filename = g_build_filename (g_get_home_dir (),
                                             HH_AREA_CONFIGURATION_FILE,
                                             NULL);
 
@@ -268,7 +268,7 @@ hildon_home_window_layout_mode_accept (HildonHomeWindow *window)
   hildon_home_area_set_layout_mode (HILDON_HOME_AREA (priv->applet_area),
                                     FALSE);
   
-  filename = g_build_filename (g_getenv ("HOME"),
+  filename = g_build_filename (g_get_home_dir (),
                                HH_AREA_CONFIGURATION_FILE,
                                NULL);
   
@@ -297,7 +297,7 @@ hildon_home_window_layout_mode_cancel (HildonHomeWindow *window)
   gchar *filename = NULL;
   GError *error = NULL;
 
-  user_filename = g_build_filename (g_getenv ("HOME"),
+  user_filename = g_build_filename (g_get_home_dir (),
                                     HH_AREA_CONFIGURATION_FILE,
                                     NULL);
 
@@ -391,7 +391,7 @@ hildon_home_window_applets_init (HildonHomeWindow * window)
   gchar *filename = NULL;
   GError *error = NULL;
 
-  user_filename = g_build_filename (g_getenv ("HOME"),
+  user_filename = g_build_filename (g_get_home_dir (),
                                     HH_AREA_CONFIGURATION_FILE,
                                     NULL);
 

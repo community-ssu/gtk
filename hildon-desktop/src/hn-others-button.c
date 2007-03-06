@@ -1005,14 +1005,11 @@ hn_others_button_dir_changed (GnomeVFSMonitorHandle *handle,
 void
 hn_others_button_register_monitors (HNOthersButton * button)
 {
-  const gchar *home_dir;
   gchar *dir;
   gchar	*file = NULL;
   gchar *conf_file;
 
-  home_dir = getenv ("HOME");
-  
-  conf_file = g_build_filename (home_dir, USER_MENU_FILE, NULL);
+  conf_file = g_build_filename (g_get_home_dir (), USER_MENU_FILE, NULL);
  
   /* We copy SYSTEMWIDE_MENU_FILE to always track the changes */
   if (!g_file_test (conf_file, G_FILE_TEST_EXISTS))
@@ -1041,7 +1038,7 @@ hn_others_button_register_monitors (HNOthersButton * button)
   g_free (dir);
   
   /* Watch user specific menu conf */
-  if (home_dir && *home_dir)
+  if (g_get_home_dir ())
   {    
     /* Have to get the directory from the path because the USER_MENU_FILE
        define might contain directory (it does, in fact). */
