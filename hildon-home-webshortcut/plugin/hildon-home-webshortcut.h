@@ -49,7 +49,7 @@ typedef struct
 
 typedef struct
 {
-  HildonDesktopHomeItem         parent_class;
+  HildonDesktopHomeItemClass    parent_class;
 
 } HhwsClass;
 
