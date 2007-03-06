@@ -45,6 +45,8 @@
 
 static guint help_signal = 0 ;
 
+static void dialog_on_realize (GtkDialog *dialog, void *user_data) ;
+
 static GdkFilterReturn
 handle_xevent(GdkXEvent * xevent, GdkEvent * event, gpointer dialog)
 {
@@ -73,19 +75,7 @@ handle_xevent(GdkXEvent * xevent, GdkEvent * event, gpointer dialog)
     return GDK_FILTER_CONTINUE; /* Event not handled */
 }
 
-/**
- * gtk_dialog_help_enable:
- * @dialog: The dialog for which help is to be enabled.
- *
- * Enables context help button for a given dialog. The signal "help" can be
- * connected to handler by normal GTK methods. Note that this function
- * has to be called before the dialog is shown.
- *
- * The "help" signal itself has no other parameters than the dialog where
- * it is connected to, ie.:
- * void user_function(GtkDialog *dialog, gpointer user_data);
- */
-static void gtk_dialog_help_enable(GtkDialog * dialog)
+static void dialog_on_realize (GtkDialog *dialog, void *user_data)
 {
     GdkWindow *window;
     GdkDisplay *display;
@@ -96,7 +86,79 @@ static void gtk_dialog_help_enable(GtkDialog * dialog)
     int n = 0;
     int i = 0;
     int help_enabled = 0;
+    gboolean do_enable_help = (gboolean)user_data ;
+
+    window = GTK_WIDGET(dialog)->window;
+    display = gdk_drawable_get_display (window);
+
+    /* Create a list of atoms stored in GdkWindow */
+    XGetWMProtocols(GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
+                    &list, &amount);
    
+    if (do_enable_help)
+      {
+      protocols = (Atom *) malloc ((amount+1) * sizeof (Atom));
+      helpatom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_CONTEXT_HELP");
+      }
+    else
+      {
+      helpatom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_CONTEXT_HELP");
+      protocols = (Atom *) malloc (amount * sizeof (Atom));
+      }
+
+    /* Enable the dialoghelp if help_atom is in the atoms' list */
+    for (i=0; i<amount; i++)
+    {
+        if (do_enable_help)
+        {
+            protocols[n++] = list[i];
+            if (list[i] == helpatom)
+                help_enabled = 1;
+        }
+        else
+        {
+            if (list[i] != helpatom)
+                protocols[n++] = list[i];
+        }
+    }
+    XFree (list);
+
+    /* Add the help_atom to the atoms' list if it was not in it */
+    if (!help_enabled && do_enable_help)
+    {
+            protocols[n++] = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_CONTEXT_HELP");
+    }
+   
+    /* Replace the protocol property of the GdkWindow with the new atoms' list */
+    XSetWMProtocols (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window), protocols, n);
+    free (protocols);
+   
+    if (do_enable_help)
+      /* Add a callback function as event filter */
+      gdk_window_add_filter(window, handle_xevent, dialog);
+    else
+      /* Remove the event filter */
+      gdk_window_remove_filter(window, handle_xevent, dialog);
+}
+
+
+/**
+ * gtk_dialog_set_has_help:
+ * @dialog: The dialog for which help is to be enabled/disabled.
+ * @has_help: Whether the dialog is to have a "Help" button
+ *
+ * Enables/disables the "Help" button to be shown on a dialog's title bar.
+ * This function only affects dialogs which are not yet realized, because
+ * it performs its actions during a function attached to the dialog's
+ * "realize" event. When help is enabled, the dialog will emit the "help"
+ * signal whenever the user clicks on the the "Help" title bar button.
+ *
+ * The "help" signal itself has no other parameters than the dialog it is
+ * connected to, ie.:
+ * void user_function(GtkDialog *dialog, gpointer user_data);
+ */
+static void gtk_dialog_set_has_help(GtkDialog * dialog, gboolean has_help)
+{
     /* Create help signal if it didn't exist */  
     if (help_signal == 0) {
         help_signal = g_signal_new("help", GTK_TYPE_DIALOG,
@@ -107,89 +169,9 @@ static void gtk_dialog_help_enable(GtkDialog * dialog)
 
     g_return_if_fail(GTK_IS_DIALOG(dialog));
 
-    gtk_widget_realize(GTK_WIDGET(dialog));
-    window = GTK_WIDGET(dialog)->window;
-    display = gdk_drawable_get_display (window);
+    g_signal_handlers_disconnect_matched (dialog, G_SIGNAL_MATCH_FUNC, 0, 0, NULL, dialog_on_realize, NULL) ;
 
-    /* Create a list of atoms stored in GdkWindow */
-    XGetWMProtocols(GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
-                    &list, &amount);
-   
-    protocols = (Atom *) malloc ((amount+1) * sizeof (Atom));
-    helpatom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_CONTEXT_HELP");
-
-    /* Enable the dialoghelp if help_atom is in the atoms' list */
-    for (i=0; i<amount; i++)
-    {
-            protocols[n++] = list[i];
-            if (list[i] == helpatom)
-            {
-                    help_enabled = 1;
-            }
-    }
-    XFree (list);
-
-    /* Add the help_atom to the atoms' list if it was not in it */
-    if (!help_enabled)
-    {
-            protocols[n++] = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_CONTEXT_HELP");
-    }
-   
-    /* Replace the protocol property of the GdkWindow with the new atoms' list */
-    XSetWMProtocols (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window), protocols, n);
-    free (protocols);
-   
-    /* Add a callback function as event filter */
-    gdk_window_add_filter(window, handle_xevent, dialog);
-}
-
-
-/**
- * gtk_dialog_help_disable:
- * @dialog: The dialog for which help is to be disabled.
- *
- * Disables context help button for the given dialog.
- **/
-static void gtk_dialog_help_disable(GtkDialog * dialog)
-{
-    GdkWindow *window=NULL;
-    GdkDisplay *display;
-    Atom *protocols;
-    Atom *list;
-    Atom helpatom;
-    int amount = 0;
-    int n = 0;
-    int i = 0;
-   
-    g_return_if_fail(GTK_IS_DIALOG(dialog));
-
-    gtk_widget_realize(GTK_WIDGET(dialog));
-    window = GTK_WIDGET(dialog)->window;
-    display = gdk_drawable_get_display (window);
-
-    /* Create a list of atoms stored in GdkWindow */
-    XGetWMProtocols(GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window),
-                    &list, &amount);
-   
-    helpatom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_CONTEXT_HELP");
-    protocols = (Atom *) malloc (amount * sizeof (Atom));
-
-    /* Remove the help_atom if it is in the atoms' list */
-    for (i=0; i<amount; i++)
-    {
-            if (list[i] != helpatom)
-            {
-                    protocols[n++] = list[i];
-            }
-    }
-    XFree (list);
-   
-    /* Replace the protocol property of the GdkWindow with the new atoms' list */
-    XSetWMProtocols (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XID (window), protocols, n);
-    free (protocols);
-
-    /* Remove the event filter */
-    gdk_window_remove_filter(window, handle_xevent, dialog);
+    g_signal_connect (G_OBJECT (dialog), "realize", (GCallback)dialog_on_realize, (gpointer)has_help) ;
 }
 
 static gboolean ossohelp_file2_private( const char *basename, int basename_len,
@@ -783,8 +765,6 @@ gboolean ossohelp_title( const char *key, char *buf, size_t bufsize )
  *       be moved to the HildonDialogHelp codebase (that's where
  *       it belongs, so applications don't need to duplicate this)
  *
- *       Current (w19) 'gtk_dialog_help_enable()' is too low-level.
- *
  *       If there's a way to pass the 'osso' pointer without giving
  *       it as a parameter, that would be fine.
  */
@@ -849,7 +829,7 @@ gboolean ossohelp_dialog_help_enable( GtkDialog *dialog,
 
     /* If topic == NULL, disable the ? icon */
     if (!topic){
-	gtk_dialog_help_disable(GTK_DIALOG(dialog));
+	gtk_dialog_set_has_help(GTK_DIALOG(dialog), FALSE);
         return FALSE;
     }
 
@@ -857,14 +837,14 @@ gboolean ossohelp_dialog_help_enable( GtkDialog *dialog,
         ossohelp_show( NULL, topic, OSSO_HELP_SHOW_JUSTASK );
 
     if (rc != OSSO_OK){  /* incorrect topic, we will disable the ? icon then! */
-	gtk_dialog_help_disable(GTK_DIALOG(dialog));
+	gtk_dialog_set_has_help(GTK_DIALOG(dialog), FALSE);
         return FALSE;
     }
 
     g_object_set_data_full(G_OBJECT(dialog), "help-topic", g_strdup(topic),
 		           g_free);
 
-    gtk_dialog_help_enable( dialog );   /* enables '?' icon */
+    gtk_dialog_set_has_help( dialog, TRUE );   /* enables '?' icon */
 
     if ((sigid != -1) && g_signal_handler_is_connected(G_OBJECT(dialog), sigid))
         g_signal_handler_disconnect (GTK_OBJECT (dialog), sigid );
