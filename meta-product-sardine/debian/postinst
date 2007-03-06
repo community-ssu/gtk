@@ -1,0 +1,21 @@
+#!/bin/sh -e
+
+# We try to support upgrade path from older dists
+# First check if there is an existing old-default directory 
+# and try moving it around a bit
+if [[ -d '/usr/share/themes/default' && ! -h '/usr/share/themes/default' ]]; then
+  echo "Moving 'default' theme to 'theme0'..."
+  mv "/usr/share/themes/default" "/usr/share/themes/theme0"
+fi
+
+# Remove the existing symlink if it exists
+if [ -h '/usr/share/themes/default' ]; then
+  echo "Removing existing 'default' symlink"
+  rm -f '/usr/share/themes/default'
+fi
+
+# Create a symlink to default theme
+echo "Creating a sumlink 'default' => 'plankton' in /usr/share/themes"
+ln -s '/usr/share/themes/plankton' '/usr/share/themes/default'
+
+exit 0

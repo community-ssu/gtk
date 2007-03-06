@@ -1,0 +1,9 @@
+2007-03-06  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+	
+	* debian/postinst: Adding a postinst script that creates the symlinks
+	and all the stuff.
+	
+	* debian/files: Removing.
+
+	* debian/rules: Moving all the logic to the postinst script.
+

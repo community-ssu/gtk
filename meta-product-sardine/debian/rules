@@ -28,10 +28,6 @@ install: build
 	dh_testroot
 	dh_clean -k
 	dh_installdirs
-	
-	# Symlink
-	install -d $(CURDIR)/debian/meta-product-sardine/usr/share/themes/plankton
-	ln -s plankton $(CURDIR)/debian/meta-product-sardine/usr/share/themes/default
 
 binary-indep: build install
 
