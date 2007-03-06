@@ -58,8 +58,10 @@
 #define HHWS_GCONF_IAP          "/apps/osso/apps/hhws/iap"
 #define HHWS_GCONF_URI          "/apps/osso/apps/hhws/uri"
 
-#define HILDON_HOME_WS_WIDTH 290
-#define HILDON_HOME_WS_HEIGHT 134
+#define HILDON_HOME_WS_WIDTH            290
+#define HILDON_HOME_WS_HEIGHT           134
+#define HILDON_HOME_WS_MINIMUM_WIDTH    120
+#define HILDON_HOME_WS_MINIMUM_HEIGHT   60
 #define HILDON_HOME_WS_ENV_HOME "HOME"
 #define HILDON_HOME_WS_SYSTEM_DIR ".osso/hildon-home"
 #define HILDON_HOME_WS_USER_FILE "hildon_home_wshortcut.png"
@@ -742,6 +744,12 @@ hhws_init (Hhws *hhws)
                                  priv->csm,
                                  NULL /* position function */,
                                  0 /* flags, deprecated */);
+
+  g_object_set (hhws,
+                "resize-type",          HILDON_DESKTOP_HOME_ITEM_RESIZE_BOTH,
+                "minimum-width",        HILDON_HOME_WS_WIDTH,
+                "minimum-height",       HILDON_HOME_WS_HEIGHT,
+                NULL);
 }
 
 static void

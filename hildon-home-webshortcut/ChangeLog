@@ -1,6 +1,11 @@
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
 
-	* plugin/hildon-home-webshort.h: Fixed typo
+	* plugin/hildon-home-webshortcut.c:
+	- added resize type and minimum size
+
+2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.h: Fixed typo
 	* configure.ac: 3.0.5
 
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
