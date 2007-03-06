@@ -1,3 +1,13 @@
+hildon-home-webshortcut (3.0.6-1) unstable; urgency=low
+
+  * plugin/hildon-home-webshortcut.c:
+  - show the alignment so the image get shown too
+
+  * plugin/hildon-home-webshortcut.c:
+  - added resize type and minimum size
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Mar 2007 17:29:08 +0200
+
 hildon-home-webshortcut (3.0.5-1) unstable; urgency=low
 
   * plugin/hildon-home-webshort.h: Fixed typo
