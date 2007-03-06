@@ -628,8 +628,6 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
                                        &attributes,
                                        attributes_mask);
       
-      widget->style = gtk_style_attach (widget->style, widget->window);
-      
       gdk_window_set_user_data (widget->window, widget);
   
 #if 0
@@ -682,6 +680,8 @@ hildon_desktop_home_item_realize (GtkWidget *widget)
       widget->window = gtk_widget_get_parent_window (widget);
       g_object_ref (widget->window);
     }
+      
+  widget->style = gtk_style_attach (widget->style, widget->window);
 
 }
 
