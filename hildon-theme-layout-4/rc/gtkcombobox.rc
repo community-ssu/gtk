@@ -49,15 +49,18 @@ style "osso-combobox-button" {
             function = BOX
             file = "../images/qgn_plat_combobox_button_disabled.png"
             state = INSENSITIVE
+	    border = { 0, 2, 2, 2 }
         }
         image {
             function = BOX
             file = "../images/qgn_plat_combobox_button_pressed.png"
             state = ACTIVE
+	    border = { 0, 2, 2, 2 }
         }
         image {
             function = BOX
             file = "../images/qgn_plat_combobox_button_normal.png"
+	    border = { 0, 2, 2, 2 }
         }
         image {
             function = TAB
@@ -79,12 +82,12 @@ style "osso-combobox-frame" {
             function = SHADOW
             file = "../images/qgn_plat_combobox_frame_disabled.png"
             state = INSENSITIVE
-            border = { 2, 2, 0, 0 }
+            border = { 2, 0, 2, 2 }
         }
         image {
             function = SHADOW
             file = "../images/qgn_plat_combobox_frame_normal.png"
-            border = { 2, 2, 0, 0 }
+            border = { 2, 0, 2, 2 }
         }
     }
 }

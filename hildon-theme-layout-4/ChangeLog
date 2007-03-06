@@ -1,3 +1,9 @@
+2007-03-06  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkcombobox.rc:
+
+	Fix border values for graphics. Will the brokeness ever end?
+
 2007-03-05  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/themespecificgtk.rc:
