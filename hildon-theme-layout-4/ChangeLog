@@ -1,5 +1,26 @@
 2007-03-06  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/base.rc
+	* rc/gtkbuttonbox.rc
+	* rc/gtkcalendar.rc
+	* rc/gtkfilechooserbutton.rc
+	* rc/gtkseparator.rc
+	* rc/hildoncandidatebox.rc
+	* rc/hildoncontrolbar.rc
+	* rc/hildonnavigatorpopuplist.rc
+	* rc/hildonseekbar.rc
+	* rc/hildontimeeditor.rc
+	* rc/hildonvolumebar.rc
+	* rc/ossoiradioapplet.rc
+
+	Kill all hildonlike properties.
+
+	* rc/gtkmenuitem.rc:
+
+	Kill hildonlike property and arrow_in_focus.
+	
+2007-03-06  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/gtkcombobox.rc:
 
 	Fix border values for graphics. Will the brokeness ever end?

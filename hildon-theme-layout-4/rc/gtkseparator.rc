@@ -9,7 +9,6 @@
 
 style "osso-separator"
 {
-  GtkSeparator::hildonlike-drawing = 1
   ythickness = 3
   xthickness = 3
   

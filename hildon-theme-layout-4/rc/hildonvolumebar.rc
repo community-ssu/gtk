@@ -23,7 +23,6 @@ style "osso-volumebar-horizontal"
   HildonVolumebarRange::arrow_displacement_x = 0
   HildonVolumebarRange::arrow_displacement_y = 0
   HildonVolumebarRange::trough_border = 0
-  HildonVolumebarRange::hildonlike = 1
   HildonVolumebarRange::value_spacing = 0
   HildonVolumebarRange::autodimmed_steppers = 1
   HildonVolumebarRange::two_part_trough = 1
@@ -207,7 +206,6 @@ style "osso-volumebar-vertical"
   HildonVolumebarRange::arrow_displacement_x = 0
   HildonVolumebarRange::arrow_displacement_y = 0
   HildonVolumebarRange::trough_border = 0
-  HildonVolumebarRange::hildonlike = 1
   HildonVolumebarRange::value_spacing = 0
   HildonVolumebarRange::autodimmed_steppers = 1
   HildonVolumebarRange::two_part_trough = 1 
@@ -391,7 +389,6 @@ style "osso-volumebar-toolbar"
   HildonVolumebarRange::arrow_displacement_x = 0
   HildonVolumebarRange::arrow_displacement_y = 0
   HildonVolumebarRange::trough_border = 0
-  HildonVolumebarRange::hildonlike = 1
   HildonVolumebarRange::value_spacing = 0
   HildonVolumebarRange::autodimmed_steppers = 1
   HildonVolumebarRange::two_part_trough = 1 

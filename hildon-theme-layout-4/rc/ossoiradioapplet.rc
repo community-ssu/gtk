@@ -24,7 +24,6 @@ widget "*.osso-iradio-applet" style "osso-iradio-applet"
 
 style "osso-iradio-applet-volumebar"
 {
-  GtkFrame::hildonlike = 1
   xthickness = 0
   ythickness = 0
 
@@ -45,7 +44,6 @@ widget "*.osso-iradio-applet.*HildonVolumebar" style "osso-iradio-applet-volumeb
 
 style "osso-iradio-volumebar"
 {
-  GtkWindow::hildonlike = 1
   xthickness = 0
   ythickness = 0
 
@@ -65,7 +63,6 @@ widget "osso-iradio-volumebar-window" style "osso-iradio-volumebar"
 
 style "osso-iradio-button"
 {
-  GtkButton::hildonlike = 1
   GtkButton::default_border = { 0, 0, 0, 0 }
   GtkButton::default_outside_border = { 0, 0, 0, 0 }
   GtkButton::child_spacing = 0

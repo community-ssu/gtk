@@ -9,14 +9,12 @@
 
 style "osso-filechooserbutton" {
 
-    GtkFileChooserButton::hildonlike = 1
 }
 
 class "GtkFileChooserButton" style "osso-filechooserbutton"
 
 style "osso-filechooserbutton-button" {
 
-    GtkFileChooserButton::hildonlike = 1
 
     # file chooser button
     engine "sapwood" {

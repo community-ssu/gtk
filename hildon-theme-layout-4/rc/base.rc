@@ -51,7 +51,6 @@ style "osso-default"
   #   INSENSITIVE: disabled widget
 
 # global picture theming.
-#  GtkWidget::hildonlike = 1
   GtkWidget::hildon-focus-handling = 1
   GtkWidget::focus-line-width = 0
   GtkWidget::focus-padding = 0
@@ -59,13 +58,10 @@ style "osso-default"
 
 # Removed because this changes wrapping and results in incorrect wrapping
 # (and truncating) in dialogs.
-#  GtkLabel::hildonlike = 1
 
   GtkWidget::scroll-arrow-hlength = 20
   GtkWidget::scroll-arrow-vlength = 20
 
-  GtkToggleButton::hildonlike = 1
-  GtkCalendar::hildonlike = 1
 
   engine "sapwood"
   {

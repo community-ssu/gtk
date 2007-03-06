@@ -18,7 +18,6 @@ style "osso-seekbar"
 	HildonSeekbar::slider_length = 23
         HildonSeekbar::focus-line-width = 0
         HildonSeekbar::focus-padding = 0
-	HildonSeekbar::hildonlike = 1
         HildonSeekbar::autodimmed_steppers = 1
 	HildonSeekbar::draw_trough_under_steppers = 0
         HildonSeekbar::two_part_trough = 1
@@ -186,7 +185,6 @@ style "osso-seekbar-toolbar"
 	HildonSeekbar::slider_length = 23
         HildonSeekbar::focus-line-width = 0
         HildonSeekbar::focus-padding = 0
-	HildonSeekbar::hildonlike = 1
         HildonSeekbar::autodimmed_steppers = 1
 	HildonSeekbar::draw_trough_under_steppers = 0
         HildonSeekbar::two_part_trough = 1

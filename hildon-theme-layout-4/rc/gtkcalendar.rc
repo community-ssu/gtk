@@ -10,7 +10,6 @@
 
 style "osso-calendar" = "osso-logical-colors"
 {
-  GtkCalendar::hildonlike = 1
   GtkWidget::scroll-arrow-vlength = 26
   GtkWidget::scroll-arrow-hlength = 26
   xthickness = 0

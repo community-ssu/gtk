@@ -8,7 +8,6 @@
 
 style "osso-hbuttonbox" {
 
-  GtkHButtonBox::hildonlike = 1
   GtkHButtonBox::child_min_height = 47
   GtkHButtonBox::child_min_width = 105
 }

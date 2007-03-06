@@ -5,9 +5,6 @@
 
 style "osso-menuitem"
 {
-
-  GtkMenuItem::include_arrow_in_focus = 0
-  GtkMenuItem::hildonlike = 1
   GtkMenuItem::separator_height = 3
 
   engine "sapwood"
