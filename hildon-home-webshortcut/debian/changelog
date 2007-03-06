@@ -1,3 +1,12 @@
+hildon-home-webshortcut (3.0.4-1) unstable; urgency=low
+
+  * build-dep adjusted to libhildondesktop-dev >= 0.0.0-30
+
+  * plugin/hildon-home-webshortcut.[ch]:
+  - HildonHomeApplet is now HildonDesktopHomeItem
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue,  6 Mar 2007 14:03:28 +0200
+
 hildon-home-webshortcut (3.0.3-2) unstable; urgency=low
 
   * Added build-dep on hildon-desktop-dev 

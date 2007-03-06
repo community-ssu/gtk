@@ -1,5 +1,9 @@
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 3.0.4
+
+2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
+
 	* plugin/hildon-home-webshortcut.[ch]:
 	- HildonHomeApplet is now HildonDesktopHomeItem
 
