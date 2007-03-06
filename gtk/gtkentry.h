@@ -135,18 +135,16 @@ struct _GtkEntryClass
   void (* paste_clipboard)    (GtkEntry       *entry);
   void (* toggle_overwrite)   (GtkEntry       *entry);
 
-#ifdef MAEMO_CHANGES
-  void (* invalid_input) (GtkEntry            *entry,
-                          GtkInvalidInputType  invalid_input_type);
-#endif /* MAEMO_CHANGES */
-
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
 
-#ifndef MAEMO_CHANGES
+#ifdef MAEMO_CHANGES
+  void (* invalid_input) (GtkEntry            *entry,
+                          GtkInvalidInputType  invalid_input_type);
+#else
   void (*_gtk_reserved3) (void);
-#endif /* !MAEMO_CHANGES */
+#endif /* MAEMO_CHANGES */
 };
 
 GType      gtk_entry_get_type       		(void) G_GNUC_CONST;

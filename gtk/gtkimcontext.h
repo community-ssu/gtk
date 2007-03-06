@@ -92,6 +92,9 @@ struct _GtkIMContextClass
 				   gchar         **text,
 				   gint           *cursor_index);
 
+  /* Padding for future expansion */
+  void (*_gtk_reserved1) (void);
+
 #ifdef MAEMO_CHANGES
   void     (*show)                (GtkIMContext   *context);
   void     (*hide)                (GtkIMContext   *context);
@@ -105,14 +108,12 @@ struct _GtkIMContextClass
   gboolean (*filter_event)        (GtkIMContext   *context,
                                    GdkEvent       *event);
 #else   /* MAEMO_CHANGES */
-  /* Padding for future expansion */
-  void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
   void (*_gtk_reserved3) (void);
   void (*_gtk_reserved4) (void);
   void (*_gtk_reserved5) (void);
-#endif /* MAEMO_CHANGES */
   void (*_gtk_reserved6) (void);
+#endif /* MAEMO_CHANGES */
 };
 
 GType    gtk_im_context_get_type            (void) G_GNUC_CONST;

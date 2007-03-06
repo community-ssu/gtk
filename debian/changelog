@@ -1,4 +1,6 @@
-gtk+2.0 (2:2.10.6-0osso7) experimental; urgency=low
+gtk+2.0 (2:2.10.6-0osso7test1b) experimental; urgency=low
+
+  *** NOTE: THIS VERSION IS ABI INCOMPATIBLE WITH MAEMO GTK+ 2.6 ***
 
   * Back out maemo icon theme load order patch.
 
