@@ -22,7 +22,7 @@ pkginclude_HEADERS = \
 	tasknavigator-item.h          \
 	tasknavigator-item-socket.h   \
 	hildon-thumb-menu-item.h      \
-	hildon-home-applet.h          \
+	hildon-desktop-home-item.h    \
 	hildon-home-area.h            \
 	hildon-home-titlebar.h        \
 	hildon-home-window.h          \
@@ -51,13 +51,13 @@ hildon-desktop-marshalers.h:
 lib_LTLIBRARIES = libhildondesktop.la
 
 HILDON_HOME_SOURCES = \
-	hildon-home-area.c     \
-	hildon-home-area.h     \
-	hildon-home-applet.c   \
-	hildon-home-applet.h   \
-	hildon-home-window.c   \
-	hildon-home-window.h   \
-	hildon-home-titlebar.c \
+	hildon-home-area.c           \
+	hildon-home-area.h           \
+	hildon-desktop-home-item.c   \
+	hildon-desktop-home.item.h   \
+	hildon-home-window.c         \
+	hildon-home-window.h         \
+	hildon-home-titlebar.c       \
 	hildon-home-titlebar.h
 
 BUILT_SOURCES = \

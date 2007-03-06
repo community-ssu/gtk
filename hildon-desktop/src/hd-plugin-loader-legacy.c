@@ -30,7 +30,7 @@
 
 #include <glib/gkeyfile.h>
 
-#include <libhildondesktop/hildon-home-applet.h>
+#include <libhildondesktop/hildon-desktop-home-item.h>
 #include <libhildondesktop/tasknavigator-item.h>
 #include <libhildondesktop/statusbar-item.h>
 
@@ -408,7 +408,7 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
   gint                          state_data_length = 0;
   SymbolMapping                *s;
   gpointer                      symbol;
-  HildonHomeAppletResizeType    resize_type = HILDON_HOME_APPLET_RESIZE_NONE;
+  HildonDesktopHomeItemResizeType resize_type = HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE;
   gint                          min_width = -1, min_height = -1;
   GKeyFile                     *keyfile;
 
@@ -456,11 +456,11 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
       if (!kferror)
         {
           if (g_str_equal (resizable, "XY"))
-            resize_type = HILDON_HOME_APPLET_RESIZE_BOTH;
+            resize_type = HILDON_DESKTOP_HOME_ITEM_RESIZE_BOTH;
           else if (g_str_equal (resizable, "X"))
-            resize_type = HILDON_HOME_APPLET_RESIZE_HORIZONTAL;
+            resize_type = HILDON_DESKTOP_HOME_ITEM_RESIZE_HORIZONTAL;
           else if (g_str_equal (resizable, "Y"))
-            resize_type = HILDON_HOME_APPLET_RESIZE_VERTICAL;
+            resize_type = HILDON_DESKTOP_HOME_ITEM_RESIZE_VERTICAL;
 
           g_free (resizable);
         }
@@ -490,7 +490,7 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
 
   g_debug ("Creating applet with resize-type: %i, minim-width: %i, minimum-height: %i", resize_type, min_width, min_height);
   
-  applet = GTK_WIDGET (g_object_new (HILDON_TYPE_HOME_APPLET,
+  applet = GTK_WIDGET (g_object_new (HILDON_DESKTOP_TYPE_HOME_ITEM,
                                      "resize-type", resize_type,
                                      "minimum-width", min_width,
                                      "minimum-height", min_height,

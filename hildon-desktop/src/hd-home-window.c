@@ -36,6 +36,7 @@
 
 #include <libhildondesktop/hildon-home-area.h>
 #include <libhildondesktop/hildon-home-titlebar.h>
+#include <libhildondesktop/hildon-desktop-home-item.h>
 
 #include <gtk/gtkcheckmenuitem.h>
 
@@ -1018,14 +1019,14 @@ hd_home_window_ensure_menu_status (HDHomeWindow *window)
 
   for (l = items; l != NULL; l = l->next)
     {
-      HildonHomeApplet *applet;
-      GtkWidget *item;
+      HildonDesktopHomeItem    *applet;
+      GtkWidget                *item;
   
-      if (!HILDON_IS_HOME_APPLET (l->data))
+      if (!HILDON_DESKTOP_IS_HOME_ITEM (l->data))
         continue;
-      applet = HILDON_HOME_APPLET (l->data);
+      applet = HILDON_DESKTOP_HOME_ITEM (l->data);
 
-      item = hildon_home_applet_get_settings_menu_item (applet);
+      item = hildon_desktop_home_item_get_settings_menu_item (applet);
       if (item && GTK_IS_MENU_ITEM (item))
         {
           gtk_menu_append (GTK_MENU (priv->settings_menu), item);

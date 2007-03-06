@@ -1,7 +1,7 @@
 /*
- * This file is part of maemo-af-desktop
+ * This file is part of hildon-desktop
  *
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  * Author: Johan Bilien <johan.bilien@nokia.com>
@@ -24,7 +24,8 @@
 
 
 #include "hildon-home-area.h"
-#include "hildon-home-applet.h"
+
+#include <libhildondesktop/hildon-desktop-home-item.h>
 
 #include <string.h> /* strlen */
 #include <errno.h>
@@ -353,7 +354,7 @@ hildon_home_area_layout_mode_start (HildonHomeArea *area)
   priv->layout_changed = FALSE;
 
   gtk_container_foreach (GTK_CONTAINER (area),
-                         (GtkCallback)hildon_home_applet_set_layout_mode,
+                         (GtkCallback)hildon_desktop_home_item_set_layout_mode,
                          (gpointer)TRUE);
 
   g_signal_emit_by_name (area, "layout-mode-started");
@@ -363,7 +364,7 @@ static void
 hildon_home_area_layout_mode_end (HildonHomeArea *area)
 {
   gtk_container_foreach (GTK_CONTAINER (area),
-                        (GtkCallback)hildon_home_applet_set_layout_mode,
+                        (GtkCallback)hildon_desktop_home_item_set_layout_mode,
                          (gpointer)FALSE);
   g_signal_emit_by_name (area, "layout-mode-ended");
 }
@@ -387,8 +388,9 @@ hildon_home_area_applet_added (HildonHomeArea *area, GtkWidget *applet)
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
   if (priv->layout_mode)
     {
-      if (HILDON_IS_HOME_APPLET (applet))
-        hildon_home_applet_set_layout_mode (HILDON_HOME_APPLET (applet), TRUE);
+      if (HILDON_DESKTOP_IS_HOME_ITEM (applet))
+        hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
+                                                  TRUE);
       g_signal_emit_by_name (area, "layout-changed");
     }
 }
@@ -411,7 +413,7 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
       return;
     }
 
-  if (priv->layout && HILDON_IS_HOME_APPLET (applet))
+  if (priv->layout && HILDON_DESKTOP_IS_HOME_ITEM (applet))
     {
       g_debug ("Adding Hildon Home applet");
       GdkRectangle *rect;
@@ -437,7 +439,7 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
         }
 
       if (priv->layout_mode)
-        hildon_home_applet_set_layout_mode (HILDON_HOME_APPLET (applet),
+        hildon_desktop_home_item_set_layout_mode (HILDON_DESKTOP_HOME_ITEM (applet),
                                             TRUE);
     }
 
@@ -679,7 +681,7 @@ hildon_home_area_save_configuration (HildonHomeArea *area,
   keyfile = g_key_file_new ();
 
   gtk_container_foreach (GTK_CONTAINER (area),
-                         (GtkCallback)hildon_home_applet_save_position,
+                         (GtkCallback)hildon_desktop_home_item_save_position,
                          keyfile);
 
   file = fopen (path, "w");
@@ -828,7 +830,7 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
 #if 0
       else
         {
-          applet = hildon_home_applet_new_with_plugin (groups[n_groups-1]);
+          applet = hildon_desktop_home_item_new_with_plugin (groups[n_groups-1]);
           if (applet)
             {
               gtk_fixed_put (GTK_FIXED (area),
@@ -842,8 +844,8 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
               if (priv->layout_mode)
                 {
                   g_signal_emit_by_name (G_OBJECT (area), "layout-changed");
-                  hildon_home_applet_set_layout_mode
-                      (HILDON_HOME_APPLET (applet),
+                  hildon_desktop_home_item_set_layout_mode
+                      (HILDON_DESKTOP_HOME_ITEM (applet),
                        TRUE);
                 }
 
@@ -902,11 +904,11 @@ hildon_home_area_get_overlaps (HildonHomeArea *area)
 
   for (l = applets; l && !overlap; l = g_list_next (l))
     {
-      if (!HILDON_IS_HOME_APPLET (l->data))
+      if (!HILDON_DESKTOP_IS_HOME_ITEM (l->data))
         continue;
 
-      overlap = hildon_home_applet_get_overlaps 
-          (HILDON_HOME_APPLET (l->data));
+      overlap = hildon_desktop_home_item_get_overlaps 
+          (HILDON_DESKTOP_HOME_ITEM (l->data));
     }
 
   g_list_free (applets);

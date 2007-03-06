@@ -36,10 +36,10 @@
 
 #include <libhildonwm/hd-wm.h>
 
-#include "hildon-home-area.h"
-#include "hildon-home-applet.h"
-#include "hildon-home-titlebar.h"
-#include "hildon-home-window.h"
+#include <libhildondesktop/hildon-home-area.h>
+#include <libhildondesktop/hildon-desktop-home-item.h>
+#include <libhildondesktop/hildon-home-titlebar.h>
+#include <libhildondesktop/hildon-home-window.h>
 
 
 #define HH_AREA_CONFIGURATION_FILE        ".osso/hildon-desktop/home-layout.conf"
@@ -235,7 +235,7 @@ hildon_home_window_background (HildonHomeWindow   *window,
         }
 
       gtk_container_foreach (GTK_CONTAINER (priv->applet_area),
-                             (GtkCallback)hildon_home_applet_set_is_background,
+                             (GtkCallback)hildon_desktop_home_item_set_is_background,
                              (gpointer)is_background);
     }
 }
@@ -251,7 +251,7 @@ hildon_home_window_system_inactivity (HildonHomeWindow   *window,
   priv->is_inactive = is_inactive;
 
   gtk_container_foreach (GTK_CONTAINER (priv->applet_area),
-                         (GtkCallback)hildon_home_applet_set_is_background,
+                         (GtkCallback)hildon_desktop_home_item_set_is_background,
                          (gpointer)is_inactive);
 }
 

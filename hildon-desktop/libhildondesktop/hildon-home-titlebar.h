@@ -26,8 +26,7 @@
 #define __HILDON_HOME_TITLEBAR_H__
 
 #include <gtk/gtkeventbox.h>
-#include "hildon-home-applet.h"
-#include "hildon-home-area.h"
+#include <libhildondesktop/hildon-home-area.h>
 
 #define HILDON_TYPE_HOME_TITLEBAR		(hildon_home_titlebar_get_type ())
 #define HILDON_HOME_TITLEBAR(obj)		(G_TYPE_CHECK_INSTANCE_CAST ((obj), HILDON_TYPE_HOME_TITLEBAR, HildonHomeTitlebar))

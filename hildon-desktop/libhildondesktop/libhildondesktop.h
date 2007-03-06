@@ -33,6 +33,7 @@
 
 #include <libhildondesktop/hildon-desktop-item.h>
 #include <libhildondesktop/hildon-desktop-panel-item.h>
+#include <libhildondesktop/hildon-desktop-home-item.h>
 
 #include <libhildondesktop/hildon-desktop-plugin.h>
 
@@ -43,7 +44,6 @@
 #include <libhildondesktop/tasknavigator-item-socket.h>
 
 #include <libhildondesktop/hildon-home-area.h>
-#include <libhildondesktop/hildon-home-applet.h>
 
 #include <libhildondesktop/hildon-desktop-notification-manager.h>
 
