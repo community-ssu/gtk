@@ -1,5 +1,13 @@
 2007-03-06  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtkmenuitem.rc:
+
+	Update the detail in the separator rule and add
+	GtkMenuItem::wide-separators so the BOX function and
+	separator-height properties are used in the code.
+
+2007-03-06  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/base.rc
 	* rc/gtkbuttonbox.rc
 	* rc/gtkcalendar.rc
