@@ -1,3 +1,9 @@
+gtkhtml (3.9.1-3osso5) unstable; urgency=low
+
+  * Fixes: NB#52411
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Tue,  6 Mar 2007 19:42:39 +0200
+
 gtkhtml (3.9.1-3osso4) unstable; urgency=low
 
   * Added -fPIC -DPIC to the CFLAGS

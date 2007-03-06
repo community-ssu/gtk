@@ -1,5 +1,9 @@
 2007-03-06  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
+	* Fixes: NB#52411
+
+2007-03-06  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
 	* Added -fPIC -DPIC to the CFLAGS
 
 2007-02-20  Gabriel Schulhof <gabriel.schulhof@nokia.com>
