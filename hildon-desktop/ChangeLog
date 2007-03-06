@@ -1,3 +1,8 @@
+2007-03-05  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/libhildondesktop.pc.in: added gtk+ and glib
+	dependency info.
+
 2007-03-05  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-applet.c:
