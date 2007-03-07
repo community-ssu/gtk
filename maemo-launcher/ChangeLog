@@ -1,3 +1,11 @@
+2007-03-08  Johannes Schmid <johannes.schmid@openismus.com>,
+	    Guillem Jover  <guillem.jover@nokia.com>
+
+	* configure.ac (AC_CONFIG_FILES): Generate maemo-launcher-booster.pc.
+	* launcher/Makefile.am (pkgconfigdir): New variable.
+	(dist_pkgconfig_DATA): Likewise.
+	* launcher/booster.pc.in: New file.
+
 2007-03-07  Johannes Schmid <johannes.schmid@openismus.com>,
 	    Guillem Jover  <guillem.jover@nokia.com>
 
