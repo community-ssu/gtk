@@ -1,7 +1,7 @@
 /*
  * $Id$
  *
- * Copyright (C) 2006 Nokia Corporation
+ * Copyright (C) 2006, 2007 Nokia Corporation
  *
  * Author: Guillem Jover <guillem.jover@nokia.com>
  *
@@ -24,12 +24,28 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <dlfcn.h>
 
 #include "booster.h"
 #include "report.h"
 
-void
+static booster_t *
+booster_new(const char *name)
+{
+  booster_t *booster;
+
+  booster = malloc(sizeof(*booster));
+  if (!booster)
+    die(50, "allocating booster\n");
+
+  booster->next = NULL;
+  booster->name = name;
+
+  return booster;
+}
+
+static void
 booster_module_load(booster_t *booster)
 {
   char *booster_path;
@@ -61,5 +77,62 @@ booster_module_load(booster_t *booster)
   if (booster->api->booster_version != BOOSTER_API_VERSION)
     die(43, "cannot handle booster module version %d.\n",
         booster->api->booster_version);
+}
+
+void
+boosters_alloc(booster_t **booster, const char *arg)
+{
+  char *name, *name_p;
+
+  /* Optimization: allocate once and share among all boosters, in case we want
+   * to free the boosters we'll have free only 'name' from the first entry. */
+  name = name_p = strdup(arg);
+  if (!name_p)
+    die(60, "allocating booster names\n");
+
+  for (name = name_p; *name_p; name_p++)
+  {
+    if (name == name_p)
+    {
+      *booster = booster_new(name);
+      booster = &((*booster)->next);
+    }
+    else if (*name_p == ',')
+    {
+      *name_p = '\0';
+      name = name_p + 1;
+    }
+  }
+}
+
+void
+boosters_load(booster_t *booster, int *argc, char **argv[])
+{
+  while (booster)
+  {
+    booster_module_load(booster);
+    booster->state = booster->api->booster_preinit(argc, argv);
+    booster = booster->next;
+  }
+}
+
+void
+boosters_init(booster_t *booster, char *argv0)
+{
+  while (booster)
+  {
+    booster->api->booster_init(argv0, booster->state);
+    booster = booster->next;
+  }
+}
+
+void
+boosters_reload(booster_t *booster)
+{
+  while (booster)
+  {
+    booster->api->booster_reload(booster->state);
+    booster = booster->next;
+  }
 }
 

@@ -1,3 +1,30 @@
+2007-03-07  Johannes Schmid <johannes.schmid@openismus.com>,
+	    Guillem Jover  <guillem.jover@nokia.com>
+
+	* launcher/booster.h (LAUNCHER_BOOSTER_H): Renamed to ...
+	(BOOSTER_H): ... this.
+	(booster_module_load): Remove declaration.
+	(boosters_alloc): New function declaration.
+	(boosters_load): Likewise.
+	(boosters_init): Likewise.
+	(boosters_reload): Likewise.
+	(booster_api_t, booster_state_t, BOOSTER_API_VERSION): Move ...
+	* launcher/booster_api.h: ... here. New file.
+	* launcher/booster.c (booster_new): New function.
+	(boosters_alloc): Likewise.
+	(boosters_load): Likewise.
+	(boosters_init): Likewise.
+	(boosters_reload): Likewise.
+	* launcher/Makefile.am (maemo_launcherdir): New variable.
+	(maemo_launcher_HEADERS): Likewise.
+	* launcher/launcher.c (usage): Document new support for multiple
+	boosters.
+	(main): Rename variable 'booster' to 'boosters'. Use boosters_alloc
+	when parsing the arguments and afterwards if 'boosters' is empty.
+	Use boosters_load instead of booster_module_load and booster_preinit.
+	Use boosters_reload instead of booster_reload. Use boosters_init
+	instead of booster_init.
+
 2007-03-01  Guillem Jover  <guillem.jover@nokia.com>
 
 	* configure.ac: Bump version to 0.22~.

@@ -664,7 +664,9 @@ usage(int status)
 	 "Options:\n"
 	 "  --daemon            Fork and go into the background.\n"
 	 "  --pidfile FILE      Specify a different pid file (default %s).\n"
-	 "  --booster MODULE    Specify a booster module to use (default '%s').\n"
+	 "  --booster MODULE,...\n"
+	 "                      Specify a comma-separated list of boosters to use"
+	 "                      (default '%s').\n"
 	 "  --send-app-died     Send application died signal.\n"
 	 "  --quiet             Do not print anything.\n"
 	 "  --version           Print program version.\n"
@@ -681,7 +683,7 @@ usage(int status)
 int
 main(int argc, char *argv[])
 {
-  booster_t booster = { .name = BOOSTER_DEFAULT };
+  booster_t *boosters = NULL;
   kindergarten_t *childs;
   const int initial_child_slots = 64;
   int i;
@@ -706,7 +708,7 @@ main(int argc, char *argv[])
     else if (strcmp(argv[i], "--booster") == 0)
     {
       if (argv[++i])
-	booster.name = argv[i];
+	boosters_alloc(&boosters, argv[i]);
     }
     else if (strcmp(argv[i], "--send-app-died") == 0)
       send_app_died = true;
@@ -718,12 +720,13 @@ main(int argc, char *argv[])
       usage(-1);
   }
 
+  if (!boosters)
+    boosters_alloc(&boosters, BOOSTER_DEFAULT);
+
   /*
    * Daemon initialization.
    */
-  booster_module_load(&booster);
-
-  booster.state = booster.api->booster_preinit(&argc, &argv);
+  boosters_load(boosters, &argc, &argv);
 
   sigs_init();
   env_init();
@@ -766,7 +769,7 @@ main(int argc, char *argv[])
 
     if (sighup_catched)
     {
-      booster.api->booster_reload(booster.state);
+      boosters_reload(boosters);
       sighup_catched = false;
     }
 
@@ -819,7 +822,7 @@ main(int argc, char *argv[])
         info("invoking '%s'\n", prog.filename);
         set_progname(prog.argv[0], argc, argv);
 
-	booster.api->booster_init(prog.argv[0], booster.state);
+	boosters_init(boosters, prog.argv[0]);
 
 	launch_process(&prog);
       }

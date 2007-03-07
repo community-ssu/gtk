@@ -20,23 +20,19 @@
  *
  */
 
-#ifndef BOOSTER_H
-#define BOOSTER_H
+#ifndef BOOSTER_API_H
+#define BOOSTER_API_H
 
-#include "booster_api.h"
+typedef void *booster_state_t;
 
-typedef struct booster {
-  booster_state_t	state;
-  booster_api_t		*api;
-  void			*so;
-  const char		*name;
-  struct booster	*next;
-} booster_t;
+typedef struct {
+  int booster_version;
+  booster_state_t (*booster_preinit)(int *argc, char **argv[]);
+  void (*booster_init)(const char *progfilename, const booster_state_t state);
+  void (*booster_reload)(booster_state_t state);
+} booster_api_t;
 
-void boosters_alloc(booster_t **booster, const char *arg);
-void boosters_load(booster_t *booster, int *argc, char **argv[]);
-void boosters_init(booster_t *booster, char *argv0);
-void boosters_reload(booster_t *booster);
+#define BOOSTER_API_VERSION 0
 
 #endif
 
