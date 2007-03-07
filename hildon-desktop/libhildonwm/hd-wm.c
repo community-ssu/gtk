@@ -128,6 +128,12 @@ enum
   HDWM_SIGNALS
 };
 
+enum
+{
+  PROP_0,
+  PROP_INIT_DBUS
+};
+
 static gint hdwm_signals[HDWM_SIGNALS];
 
 G_DEFINE_TYPE (HDWM, hd_wm, G_TYPE_OBJECT);
@@ -158,8 +164,18 @@ hd_wm_process_x_client_list (HDWM *hdwm);
 static gboolean
 hd_wm_relaunch_timeout (gpointer data);
 
-	static void 
+static void 
 hd_wm_check_net_state (HDWM *hdwm, HDWMWatchedWindow *win);
+
+static void hd_wm_get_property (GObject *object,
+		                guint prop_id,
+		                GValue *value,
+		                GParamSpec *pspec);
+
+static void hd_wm_set_property (GObject *object,
+		                guint prop_id,
+		                const GValue *value,
+		                GParamSpec *pspec);
 
 struct xwinv
 {
@@ -225,6 +241,8 @@ struct _HDWMPrivate   /* Our main struct */
   gboolean               modal_windows;
 
   GList		        *applications;
+
+  gboolean 		 init_dbus;
 };
 
 static HDWMPrivate *hdwmpriv = NULL; 			/* Singleton instance */
@@ -615,6 +633,9 @@ hd_wm_class_init (HDWMClass *hdwm_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (hdwm_class);
 
+  object_class->get_property = hd_wm_get_property;
+  object_class->set_property = hd_wm_set_property;
+
   g_type_class_add_private (hdwm_class, sizeof (HDWMPrivate));
 	
   hdwm_signals[HDWM_ENTRY_INFO_CHANGE_SIGNAL] = 
@@ -694,6 +715,49 @@ hd_wm_class_init (HDWMClass *hdwm_class)
 		     G_TYPE_NONE,
 		     1,
 		     G_TYPE_BOOLEAN);
+
+  g_object_class_install_property (object_class,
+                                   PROP_INIT_DBUS,
+                                   g_param_spec_boolean("init-dbus",
+                                                        "initdbus",
+                                                        "Max width when horizontal",
+	                                                TRUE,
+							G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+}
+
+static void 
+hd_wm_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+  HDWM *hdwm = HD_WM (object);	
+	
+  switch (prop_id)
+  {
+    case PROP_INIT_DBUS:
+      g_value_set_boolean (value, hdwm->priv->init_dbus);
+      break;
+      
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+  }  
+}
+
+static void 
+hd_wm_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+  HDWM *hdwm = HD_WM (object);
+	
+  switch (prop_id)
+  {
+    case PROP_INIT_DBUS:
+      hdwm->priv->init_dbus = g_value_get_boolean (value);
+      break;      
+	  
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+  }  
+
 }
 
 static void hd_wm_register_object_path (HDWM *hdwm,
@@ -811,6 +875,10 @@ hd_wm_init (HDWM *hdwm)
 		    "keys-changed",
 		    G_CALLBACK (hd_keys_reload),
 		    hdwm->keys);
+
+
+  if (!hdwm->priv->init_dbus)
+    return;  
 
   /* Get on the DBus */
 
@@ -2721,6 +2789,16 @@ hd_wm_get_singleton (void)
   return hdwm;
 }
 
+HDWM *
+hd_wm_get_singleton_without_dbus (void)
+{
+  static HDWM *hdwm = NULL;
+
+  if (!hdwm)
+    hdwm = g_object_new (HD_TYPE_WM, "init-dbus", FALSE, NULL);
+
+  return hdwm;
+}
 
 Atom
 hd_wm_get_atom(gint indx)

@@ -1,3 +1,8 @@
+2007-03-07  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]: Added hd_wm_get_singleton_without_dbus for
+	lib users who don't want to initialize DBus stuff.
+
 2007-03-06  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hn-others-button.c, libhildondesktop/hildon-home-window.c: use

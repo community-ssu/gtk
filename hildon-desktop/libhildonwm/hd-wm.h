@@ -174,6 +174,9 @@ hd_wm_get_type (void);
 HDWM *
 hd_wm_get_singleton (void);
 
+HDWM *
+hd_wm_get_singleton_without_dbus (void);
+
 /**  Send 'top' request for a certain existing window/view
  *
  * @param info the window/view to be topped
