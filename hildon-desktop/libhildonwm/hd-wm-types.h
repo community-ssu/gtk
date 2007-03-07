@@ -106,8 +106,6 @@ typedef struct HDWMCallbacks         HDWMCallbacks;
 /* Used to pass data to launch banner timeout callback */
 typedef struct HDWMLaunchBannerInfo  HDWMLaunchBannerInfo;
 
-typedef struct _HDAppSwitcher HDAppSwitcher;
-
 typedef struct _HDEntryInfo HDEntryInfo;
 
 #endif/*__HD_WM_TYPES_H__*/
