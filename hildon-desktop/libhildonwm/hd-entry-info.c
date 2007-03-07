@@ -30,8 +30,6 @@
 
 #include "hd-wm-watchable-app.h"
 #include "hd-wm-watched-window.h"
-#include "hd-wm-watched-window-view.h"
-
 #include "hd-wm-util.h"
 
 typedef struct
@@ -45,7 +43,6 @@ typedef struct
   union {
     HDWMWatchableApp *app;
     HDWMWatchedWindow *window;
-    HDWMWatchedWindowView *view;
   } d;
 
   GHashTable *icon_cache;
@@ -101,18 +98,6 @@ hd_entry_info_new_from_window (HDWMWatchedWindow *window)
   return retval;
 }
 
-HDEntryInfo *
-hd_entry_info_new_from_view (HDWMWatchedWindowView *view)
-{
-  HDEntryInfo *retval;
-  
-  g_return_val_if_fail (view != NULL, NULL);
-  
-  retval = hd_entry_info_new (HD_ENTRY_WATCHED_VIEW);
-  hd_entry_info_set_view (retval, view);
-  
-  return retval;
-}
 
 void
 hd_entry_info_free (HDEntryInfo *entry_info)
@@ -128,8 +113,6 @@ hd_entry_info_free (HDEntryInfo *entry_info)
     case HD_ENTRY_WATCHED_APP:
       break;
     case HD_ENTRY_WATCHED_WINDOW:
-      break;
-    case HD_ENTRY_WATCHED_VIEW:
       break;
     case HD_ENTRY_INVALID:
     default:
@@ -159,7 +142,6 @@ hd_entry_info_get_app (HDEntryInfo *entry_info)
 {
   RealEntryInfo         *real = NULL;
   HDWMWatchedWindow     *win = NULL;
-  HDWMWatchedWindowView *view = NULL;
   
   g_return_val_if_fail (entry_info != NULL, 0);
   real = REAL_ENTRY_INFO (entry_info);
@@ -171,10 +153,6 @@ hd_entry_info_get_app (HDEntryInfo *entry_info)
       break;
     case HD_ENTRY_WATCHED_WINDOW:
       win = hd_entry_info_get_window(entry_info);
-      break;
-    case HD_ENTRY_WATCHED_VIEW:
-      view = hd_entry_info_get_view(entry_info);
-      win = hd_wm_watched_window_view_get_parent(view);
       break;
     case HD_ENTRY_INVALID:
     default:
@@ -198,38 +176,15 @@ hd_entry_info_set_window (HDEntryInfo       *entry_info,
 HDWMWatchedWindow *
 hd_entry_info_get_window (HDEntryInfo *entry_info)
 {
-  HDWMWatchedWindowView *view;
   g_return_val_if_fail (entry_info != NULL, NULL);
 
   switch (entry_info->type)
   {
     case HD_ENTRY_WATCHED_WINDOW:
       return REAL_ENTRY_INFO (entry_info)->d.window;
-    case HD_ENTRY_WATCHED_VIEW:
-      view = hd_entry_info_get_view (entry_info);
-      return hd_wm_watched_window_view_get_parent (view);
     default:
       return hd_wm_watchable_app_get_active_window (hd_entry_info_get_app (entry_info));
     }
-}
-
-void
-hd_entry_info_set_view (HDEntryInfo           *entry_info,
-			HDWMWatchedWindowView *view)
-{
-  g_return_if_fail (entry_info != NULL);
-  g_return_if_fail (entry_info->type == HD_ENTRY_WATCHED_VIEW);
-  
-  REAL_ENTRY_INFO (entry_info)->d.view = view;
-}
-
-HDWMWatchedWindowView *
-hd_entry_info_get_view (HDEntryInfo *entry_info)
-{
-  g_return_val_if_fail (entry_info != NULL, NULL);
-  g_return_val_if_fail (entry_info->type == HD_ENTRY_WATCHED_VIEW, NULL);
-
-  return REAL_ENTRY_INFO (entry_info)->d.view;
 }
 
 HDEntryInfo *
@@ -274,9 +229,6 @@ hd_entry_info_peek_app_name (HDEntryInfo *entry_info)
     case HD_ENTRY_WATCHED_WINDOW:
       retval = hd_wm_watched_window_get_name (real->d.window);
       break;
-    case HD_ENTRY_WATCHED_VIEW:
-      retval = hd_wm_watched_window_view_get_name (real->d.view);
-      break;
     case HD_ENTRY_DESKTOP:
       retval = _("tana_fi_home");
       break;
@@ -315,10 +267,6 @@ hd_entry_info_peek_title (HDEntryInfo *entry_info)
     
     case HD_ENTRY_WATCHED_WINDOW:
       retval = hd_wm_watched_window_get_name (real->d.window);
-      break;
-      
-    case HD_ENTRY_WATCHED_VIEW:
-      retval = hd_wm_watched_window_view_get_name (real->d.view);
       break;
       
     case HD_ENTRY_DESKTOP:
@@ -421,10 +369,6 @@ hd_entry_info_set_title (HDEntryInfo *entry_info,
       hd_wm_watched_window_set_name (real->d.window, title);
       break;
       
-    case HD_ENTRY_WATCHED_VIEW:
-      hd_wm_watched_window_view_set_name (real->d.view, title);
-      break;
-      
     case HD_ENTRY_INVALID:
     default:
       g_assert_not_reached ();
@@ -449,9 +393,6 @@ hd_entry_info_get_icon (HDEntryInfo *entry_info)
       break;
     case HD_ENTRY_WATCHED_WINDOW:
       retval = hd_wm_watched_window_get_custom_icon (real->d.window);
-      break;
-    case HD_ENTRY_WATCHED_VIEW:
-      retval = hd_entry_info_get_icon (hd_entry_info_get_parent (entry_info));
       break;
     case HD_ENTRY_DESKTOP:
       retval = NULL;
@@ -482,8 +423,6 @@ hd_entry_info_set_icon (HDEntryInfo *entry_info,
       break;
     case HD_ENTRY_WATCHED_WINDOW:
       break;
-    case HD_ENTRY_WATCHED_VIEW:
-      break;
     case HD_ENTRY_INVALID:
     default:
       g_assert_not_reached ();
@@ -507,10 +446,6 @@ hd_entry_info_close (HDEntryInfo *info)
       
     case HD_ENTRY_WATCHED_WINDOW:
       hd_wm_watched_window_close (real->d.window);
-      break;
-      
-    case HD_ENTRY_WATCHED_VIEW:
-      hd_wm_watched_window_view_close_window (real->d.view);
       break;
       
     case HD_ENTRY_INVALID:
@@ -537,9 +472,6 @@ hd_entry_info_get_app_icon_name (HDEntryInfo *info)
       break;
     case HD_ENTRY_WATCHED_WINDOW:
       win = real->d.window;
-      break;
-    case HD_ENTRY_WATCHED_VIEW:
-      win = hd_wm_watched_window_view_get_parent (real->d.view);
       break;
     case HD_ENTRY_DESKTOP:
       return "qgn_list_home";
@@ -715,9 +647,6 @@ hd_entry_info_is_active (HDEntryInfo *info)
     case HD_ENTRY_WATCHED_WINDOW:
       return hd_wm_watched_window_is_active(real->d.window);
       
-    case HD_ENTRY_WATCHED_VIEW:
-      return hd_wm_watched_window_view_is_active(real->d.view);
-	
     case HD_ENTRY_DESKTOP:
       return TRUE;
      
@@ -751,7 +680,6 @@ hd_entry_info_get_extra_icon (HDEntryInfo *info)
       return hd_wm_watchable_app_get_extra_icon(hd_entry_info_get_app(info));
         
     case HD_ENTRY_WATCHED_WINDOW:
-    case HD_ENTRY_WATCHED_VIEW:
     case HD_ENTRY_INVALID:
     default:
       g_critical("Invalid Entry type");

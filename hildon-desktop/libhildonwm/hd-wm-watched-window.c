@@ -45,7 +45,6 @@
 #endif
 
 #include "hd-wm-watched-window.h"
-#include "hd-wm-watched-window-view.h"
 #include "hd-wm-watchable-app.h"
 #include "hd-entry-info.h"
 
@@ -96,8 +95,6 @@ struct HDWMWatchedWindow
   gchar                  *subname;
   GtkWidget              *menu_widget;   /* Active if no views */
   HDWMWatchableApp       *app_parent;
-  GList                  *views;
-  HDWMWatchedWindowView  *view_active;
   GdkPixbuf              *pixb_icon;
   Window                  xwin_group;
   gchar                  *hibernation_key;
@@ -115,9 +112,6 @@ struct xwinv
 /* NOTE: for below caller traps x errors */
 static void
 hd_wm_watched_window_process_wm_state (HDWMWatchedWindow *win);
-
-static void
-hd_wm_watched_window_process_hildon_view_list (HDWMWatchedWindow *win);
 
 static void
 hd_wm_watched_window_process_wm_name (HDWMWatchedWindow *win);
@@ -238,79 +232,9 @@ out:
     XFree(data);
 }
 
-static void
-hd_wm_watched_window_process_hildon_view_active (HDWMWatchedWindow *win)
-{
-  Window                *new_active_view_id;
-  HDWMWatchedWindowView *current_active_view;
-  GList                 *iter = NULL;
-  HDWMWatchableApp      *app = NULL;
-  HDWM 			*hdwm = hd_wm_get_singleton ();
-
-  if (hd_wm_watched_window_get_views (win) == NULL)
-    return;
-
-  app = hd_wm_watched_window_get_app (win);
-  
-  if (!app)
-    return;
-  
-  new_active_view_id = hd_wm_util_get_win_prop_data_and_validate 
-                             (hd_wm_watched_window_get_x_win (win),
-                              hd_wm_get_atom(HD_ATOM_HILDON_VIEW_ACTIVE),
-                              XA_WINDOW,
-                              32,
-                              0,
-                              NULL);
-
-  if (!new_active_view_id)
-    return;
-
-  current_active_view = hd_wm_watched_window_get_active_view (win);
-
-  /* Check the prop value is valid and not alreday active */
-
-  if (current_active_view
-      && hd_wm_watched_window_view_get_id (current_active_view) 
-            == *new_active_view_id)
-    goto out;
-
-  iter = hd_wm_watched_window_get_views (win);
-  
-  /* Find what the view id matches for this window's views and
-   * update.
-   */
-  while (iter != NULL)
-    {
-      HDWMWatchedWindowView *view;
-
-      view = (HDWMWatchedWindowView *)iter->data;
-
-      if (hd_wm_watched_window_view_get_id (view) == *new_active_view_id)
-	{
-          HDEntryInfo *info;
-
-	  info = hd_wm_watched_window_view_get_info (view);
-	  hd_wm_watched_window_set_active_view (win, view);
-	  g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
-
-	  goto out;
-	}
-      iter  = g_list_next(iter);
-    }
-
- out:
-
-  if (new_active_view_id)
-    XFree(new_active_view_id);
-
-  return;
-}
-
-static void
+	static void
 hd_wm_watched_window_process_wm_name (HDWMWatchedWindow *win)
 {
-  HDWMWatchedWindowView *view;
   int                    n_items = 0;
   HDWM			*hdwm = hd_wm_get_singleton ();
 
@@ -351,15 +275,9 @@ hd_wm_watched_window_process_wm_name (HDWMWatchedWindow *win)
                        0,
                        NULL);
   
-  view = hd_wm_watched_window_get_active_view(win);
-  
-  /* Duplicate to topped view also */
-  if (view)
-    hd_wm_watched_window_view_set_name (view, win->name);
-  
   if (win->info)
     g_signal_emit_by_name (hdwm,"entry_info_changed",win->info);
-}
+}  
 
 static void
 hd_wm_watched_window_process_wm_window_role (HDWMWatchedWindow *win)
@@ -379,7 +297,6 @@ hd_wm_watched_window_process_wm_window_role (HDWMWatchedWindow *win)
       win->hibernation_key = new_key;
     }
 }
-
 
 static void
 hd_wm_watched_window_process_hibernation_prop (HDWMWatchedWindow *win)
@@ -520,128 +437,6 @@ hd_wm_watched_window_process_net_wm_user_time (HDWMWatchedWindow *win)
     XFree(data);
 }
 
-static void
-hd_wm_watched_window_process_hildon_view_list (HDWMWatchedWindow *win)
-{
-  struct xwinv xwins;
-  int          i;
-  GList       *iter = NULL, *next_iter;
-  HDEntryInfo *info;
-  HDWM 	      *hdwm = hd_wm_get_singleton ();
-  
-  if (hd_wm_watched_window_is_hibernating(win))
-    return;
-
-  xwins.wins = hd_wm_util_get_win_prop_data_and_validate 
-                    (win->xwin,
-                     hd_wm_get_atom(HD_ATOM_HILDON_VIEW_LIST),
-                     XA_WINDOW,
-                     32,
-                     0,
-                     &xwins.n_wins);
-
-  if (G_UNLIKELY(xwins.wins == NULL))
-    return;
-
-  HN_DBG("_HILDON_VIEW_LIST change with %i wins", xwins.n_wins);
-
-  iter = hd_wm_watched_window_get_views (win);
-
-  /* Delete an views we have listed, but are not listed in prop */
-
-  while (iter != NULL)
-    {
-      HDWMWatchedWindowView *view;
-      gboolean               view_found;
-      
-      view       = (HDWMWatchedWindowView *)iter->data;
-      view_found = FALSE;
-      
-      next_iter  = g_list_next(iter);
-      
-      for (i=0; i < xwins.n_wins; i++)
-	if (xwins.wins[i] == hd_wm_watched_window_view_get_id (view))
-	  {
-	    view_found = TRUE;
-	    break;
-	  }
-      
-      if (!view_found)
-	{
-	  /* view is not listed on client - delete the list entry */
-	  hd_wm_watched_window_remove_view  (win, view);
-	  hd_wm_watched_window_view_destroy (view);
-	}
-      
-      iter = next_iter;
-    }
-  
-  /* Now add any new views in prop that we dont have listed */
-
-  for (i=0; i < xwins.n_wins; i++)
-    {
-      gboolean view_found;
-
-      iter       = hd_wm_watched_window_get_views (win);
-      view_found = FALSE;
-
-      while (iter != NULL)
-	{
-	  HDWMWatchedWindowView *view;
-		  
-	  view = (HDWMWatchedWindowView *)iter->data;
-		  
-	  if (hd_wm_watched_window_view_get_id (view) == xwins.wins[i])
-	    {
-	      view_found = TRUE;
-	      break;
-	    }
-	  iter = g_list_next(iter);
-	}
-
-      if (!view_found)
-        {
-          HDWMWatchedWindowView *new_view;
-
-          /* Not in internal list so its new, add it */
-          new_view = hd_wm_watched_window_view_new (win, xwins.wins[i]);
-          
-          if (new_view)
-            hd_wm_watched_window_add_view (win, new_view);
-
-          HN_DBG("adding view info to AS");
-          info = hd_wm_watched_window_view_get_info (new_view);
-
-	  hd_wm_add_applications (hdwm,info);
-
-	  g_signal_emit_by_name (hdwm,"entry_info_added",info);
-  
-          /* The window may have been 'viewless' before this 
-           * view was created to we need to remove the widget 
-           * ref for a viewless window  
-           */
-          if (hd_wm_watched_window_peek_info (win))
-            {
-	      gboolean removed_app;
-              HN_DBG("adding first view; removing window info from AS");
-           
-	      removed_app = hd_wm_remove_applications (hdwm, hd_wm_watched_window_peek_info (win));
- 
-	      g_signal_emit_by_name (hdwm,"entry_info_removed",removed_app,hd_wm_watched_window_peek_info (win)); 
-
-              /*
-               * since the window of multiviewed app does not figure in the AS,
-               * tell it to get rid of the info
-               */
-              hd_wm_watched_window_destroy_info (win);
-            }
-        }
-    }
-
-  if (xwins.wins)
-    XFree(xwins.wins);
-}
-
 HDWMWatchedWindow*
 hd_wm_watched_window_new (Window            xid,
 			  HDWMWatchableApp *app)
@@ -710,10 +505,7 @@ hd_wm_watched_window_new (Window            xid,
        * not set for single-view apps, and does not have to be valid for
        * multi-view apps that just woken up.
        */
-      if (win->views)
-        info = hd_wm_watched_window_view_get_info (win->views->data);
-      else
-        info = hd_wm_watched_window_peek_info (win);
+      info = hd_wm_watched_window_peek_info (win);
 
       if (info)
         g_signal_emit_by_name (hdwm,"entry_info_stack_changed", info);
@@ -830,66 +622,6 @@ hd_wm_watched_window_set_menu (HDWMWatchedWindow *win,
 			       GtkWidget         *menu)
 {
   win->menu_widget = menu;
-}
-
-GList*
-hd_wm_watched_window_get_views (HDWMWatchedWindow *win)
-{
-  g_return_val_if_fail (win != NULL, NULL);
-  
-  return win->views;
-}
-
-gint
-hd_wm_watched_window_get_n_views (HDWMWatchedWindow *win)
-{
-  g_return_val_if_fail (win != NULL, 0);
-  
-  return g_list_length (win->views);
-}
-
-void
-hd_wm_watched_window_add_view (HDWMWatchedWindow     *win,
-			       HDWMWatchedWindowView *view)
-{
-  win->views = g_list_append(win->views, view);
-}
-
-void
-hd_wm_watched_window_remove_view (HDWMWatchedWindow     *win,
-				  HDWMWatchedWindowView *view)
-{
-  GList *view_link;
-
-  view_link = g_list_find (win->views, view);
-
-  if (view_link)
-    win->views = g_list_delete_link(win->views, view_link);
-}
-
-void
-hd_wm_watched_window_set_active_view (HDWMWatchedWindow     *win,
-				      HDWMWatchedWindowView *view)
-{
-  win->view_active = view;
-}
-
-HDWMWatchedWindowView*
-hd_wm_watched_window_get_active_view (HDWMWatchedWindow     *win)
-{
-  g_return_val_if_fail (win, NULL);
-
-  if (win->view_active)
-  return win->view_active;
-
-  /* We have no active view set atm so just return the first one. 
-   * Works around some issues with hildon_app_new_with_view() not 
-   * dispatching VIEW_ACTIVE 
-  */
-  if (win->views)
-    return g_list_first(win->views)->data;
-
-  return NULL;
 }
 
 static gboolean
@@ -1011,7 +743,6 @@ hd_wm_watched_window_awake (HDWMWatchedWindow *win)
 void
 hd_wm_watched_window_destroy (HDWMWatchedWindow *win)
 {
-  HDWMWatchedWindowView *view;
   GtkWidget             *note;
   HDWM			*hdwm = hd_wm_get_singleton ();
   
@@ -1057,16 +788,6 @@ hd_wm_watched_window_destroy (HDWMWatchedWindow *win)
       win->info = NULL;
     }
   
-  /* Destroy the views too */
-  while (win->views)
-    {
-      view = (HDWMWatchedWindowView *)win->views->data;
-
-      hd_wm_watched_window_view_destroy (view);
-
-      win->views = g_list_delete_link(win->views, win->views);
-    }
-
   if (win->name)
     XFree(win->name);
 
@@ -1115,16 +836,6 @@ hd_wm_watched_window_props_sync (HDWMWatchedWindow *win, gulong props)
   if (props & HD_WM_SYNC_WM_STATE)
     {
       hd_wm_watched_window_process_wm_state (win);
-    }
-
-  if (props & HD_WM_SYNC_HILDON_VIEW_LIST)
-    {
-      hd_wm_watched_window_process_hildon_view_list (win);
-    }
-
-  if (props & HD_WM_SYNC_HILDON_VIEW_ACTIVE)
-    {
-      hd_wm_watched_window_process_hildon_view_active (win);
     }
 
   if (props & HD_WM_SYNC_WMHINTS)

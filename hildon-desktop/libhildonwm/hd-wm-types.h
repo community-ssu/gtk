@@ -59,8 +59,6 @@ enum
   
   HD_ATOM_HILDON_APP_KILLABLE,
   HD_ATOM_HILDON_ABLE_TO_HIBERNATE,
-  HD_ATOM_HILDON_VIEW_LIST,
-  HD_ATOM_HILDON_VIEW_ACTIVE,
   HD_ATOM_HILDON_FROZEN_WINDOW,
   HD_ATOM_HILDON_TN_ACTIVATE,
 
@@ -101,13 +99,6 @@ typedef struct HDWMWatchableApp      HDWMWatchableApp;
  * a list of views ( see below ). 
  */
 typedef struct HDWMWatchedWindow     HDWMWatchedWindow;
-
-/* A HDWMWatchedWindowView is a window in a window of a watched window,
- * but to WM it appears as a *single* window, yet to HN as multiples via
- * having a _NET_CLIENT_LIST and _NET_ACTIVE_ID set on *it* rather than 
- * the usual root window.
- */
-typedef struct HDWMWatchedWindowView HDWMWatchedWindowView;
 
 /* callbacks for external application switch code - actual menu updates */
 typedef struct HDWMCallbacks         HDWMCallbacks;

@@ -47,11 +47,10 @@ typedef enum {
   HD_ENTRY_DESKTOP,
   
   HD_ENTRY_WATCHED_APP,
-  HD_ENTRY_WATCHED_WINDOW,
-  HD_ENTRY_WATCHED_VIEW
+  HD_ENTRY_WATCHED_WINDOW
 } HDEntryInfoType;
 
-#define HD_ENTRY_INFO_IS_VALID_TYPE(x) (((x) > HD_ENTRY_INVALID) && ((x) <= HD_ENTRY_WATCHED_VIEW))
+#define HD_ENTRY_INFO_IS_VALID_TYPE(x) (((x) > HD_ENTRY_INVALID) && ((x) <= HD_ENTRY_WATCHED_WINDOW))
 
 struct _HDEntryInfo
 {
@@ -61,7 +60,6 @@ struct _HDEntryInfo
 HDEntryInfo *hd_entry_info_new             (HDEntryInfoType        type);
 HDEntryInfo *hd_entry_info_new_from_app    (HDWMWatchableApp      *app);
 HDEntryInfo *hd_entry_info_new_from_window (HDWMWatchedWindow     *window);
-HDEntryInfo *hd_entry_info_new_from_view   (HDWMWatchedWindowView *view);
 void         hd_entry_info_free            (HDEntryInfo           *info);
 
 void                   hd_entry_info_set_app    (HDEntryInfo           *info,
@@ -70,9 +68,6 @@ HDWMWatchableApp *     hd_entry_info_get_app    (HDEntryInfo           *info);
 void                   hd_entry_info_set_window (HDEntryInfo           *info,
 						 HDWMWatchedWindow     *window);
 HDWMWatchedWindow *    hd_entry_info_get_window (HDEntryInfo           *info);
-void                   hd_entry_info_set_view   (HDEntryInfo           *info,
-						 HDWMWatchedWindowView *view);
-HDWMWatchedWindowView *hd_entry_info_get_view   (HDEntryInfo           *info);
 
 HDEntryInfo *hd_entry_info_get_parent      (HDEntryInfo *info);
 

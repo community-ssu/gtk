@@ -59,7 +59,6 @@
 #include "hd-wm.h"
 #include "hd-wm-watched-window.h"
 #include "hd-wm-watchable-app.h"
-#include "hd-wm-watched-window-view.h"
 #include "hd-wm-memory.h"
 #include "hd-entry-info.h"
 
@@ -288,11 +287,6 @@ hd_wm_atoms_init (HDWM *hdwm)
     
     "_HILDON_APP_KILLABLE",	/* Hildon only props */
     "_HILDON_ABLE_TO_HIBERNATE",/* alias for the above */
-    "_NET_CLIENT_LIST",         /* NOTE: Hildon uses these values on app wins*/
-    "_NET_ACTIVE_WINDOW",       /* for views, thus index is named different  */
-                                /* to improve code readablity.               */
-                                /* Ultimatly the props should be renamed with*/
-                                /* a _HILDON prefix  */
     "_HILDON_FROZEN_WINDOW",
     "_HILDON_TN_ACTIVATE",
 
@@ -982,37 +976,6 @@ hd_wm_top_item (HDEntryInfo *info)
     return;
   }
   
-  if (info->type == HD_ENTRY_WATCHED_VIEW)
-  {
-    HDWMWatchedWindowView *view = hd_entry_info_get_view (info);
-    win = hd_wm_watched_window_view_get_parent (view);
-    app = hd_wm_watched_window_get_app (win);
-    single_view = (hd_wm_watched_window_get_n_views(win) == 1);
-        
-    if (app && hd_wm_watchable_app_is_hibernating(app))
-    {
-      g_debug  ("Window hibernating, calling hd_wm_top_service\n");
-      hd_wm_watched_window_set_active_view(win, view);
-      hd_wm_top_service (hd_wm_watchable_app_get_service (app));
-      return;
-    }
-
-    g_debug  ("Sending hildon activate message\n");
-
-    hd_wm_util_send_x_message (hd_wm_watched_window_view_get_id (view),
-			       hd_wm_watched_window_get_x_win (win),
-			       hdwm->priv->atoms[HD_ATOM_HILDON_VIEW_ACTIVE],
-			       SubstructureRedirectMask | SubstructureNotifyMask,
-			       0,
-			       0,
-			       0,
-			       0,
-			       0);
-
-    if (!single_view)
-      return;
-  }
-
   if (info->type == HD_ENTRY_WATCHED_WINDOW || single_view)
   {
     XEvent ev;
@@ -1191,95 +1154,65 @@ hd_wm_top_service (const gchar *service_name)
   else
   {
     HDWMWatchableApp      *app;
-    HDWMWatchedWindowView *view = NULL;
 
     app = hd_wm_watched_window_get_app (win);
 
     /* set active view before we attempt to waken up hibernating app */
-    if (hd_wm_watched_window_get_views (win))
+    if (hd_wm_watched_window_is_hibernating(win))
     {
-      view = hd_wm_watched_window_get_active_view(win);
-          
-      if (!view) /* There is no active so just grab the first one */
-      {
-        view = (HDWMWatchedWindowView *)((hd_wm_watched_window_get_views (win))->data);
-        g_debug  ("Window does not have active view !!!");
-        hd_wm_watched_window_set_active_view(win, view);
-      }
-      else
-        g_debug  ("Active view [%s]", hd_wm_watched_window_view_get_name(view));
-
-      if (hd_wm_watched_window_is_hibernating(win))
-      {
-	guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
-	HDWMWatchedWindow * active_win = hd_wm_watchable_app_get_active_window(app);
+       guint interval = LAUNCH_SUCCESS_TIMEOUT * 1000;
+       HDWMWatchedWindow *h_active_win = hd_wm_watchable_app_get_active_window(app);
       
-        g_debug ("app is hibernating, attempting to reawaken"
+       g_debug ("app is hibernating, attempting to reawaken"
 		 "via osso_manager_launch()");
 
-        if (active_win)
-          hd_wm_watched_window_awake (active_win);
-        else
-        {
-          /* we do not know which was the active window, so just launch it */
-          hd_wm_watchable_app_set_launching (app, TRUE);
-          hd_wm_activate_service(service_name, RESTORED);
-        }
+       if (h_active_win)
+         hd_wm_watched_window_awake (h_active_win);
+       else
+       {
+         /* we do not know which was the active window, so just launch it */
+         hd_wm_watchable_app_set_launching (app, TRUE);
+         hd_wm_activate_service(service_name, RESTORED);
+       }
 
       /*
         we add a timeout allowing us to check the application started,
         since we need to display a banner if it did not
       */
-        g_debug ("adding launch_timeout() callback");
-        g_timeout_add( interval, hd_wm_relaunch_timeout,(gpointer) g_strdup(service_name));
-        return TRUE;
-      }
+       g_debug ("adding launch_timeout() callback");
+       g_timeout_add( interval, hd_wm_relaunch_timeout,(gpointer) g_strdup(service_name));
+       return TRUE;
+    }
       
     g_debug ("sending x message to activate app");
       
-      if (view)
-      {
-        hd_wm_util_send_x_message (hd_wm_watched_window_view_get_id (view),
-				   hd_wm_watched_window_get_x_win (win),
-				   hdwm->priv->atoms[HD_ATOM_HILDON_VIEW_ACTIVE],
-				   SubstructureRedirectMask | SubstructureNotifyMask,
-				   0,
-				   0,
-				   0,
-				   0,
-				   0);
-      }
-      else
-      {
-        /* Regular or grouped win, get MB to top */
-        XEvent ev;
-        HDWMWatchedWindow *active_win = hd_wm_watchable_app_get_active_window(app);
+    /* Regular or grouped win, get MB to top */
+    XEvent ev;
+    HDWMWatchedWindow *active_win = hd_wm_watchable_app_get_active_window(app);
 
-        memset(&ev, 0, sizeof(ev));
+    memset(&ev, 0, sizeof(ev));
       
-        g_debug ("@@@@ Last active window %s\n",
-                 active_win ? hd_wm_watched_window_get_hibernation_key(active_win) : "none");
+    g_debug ("@@@@ Last active window %s\n",
+             active_win ? hd_wm_watched_window_get_hibernation_key(active_win) : "none");
       
-        ev.xclient.type         = ClientMessage;
-        ev.xclient.window       = hd_wm_watched_window_get_x_win (active_win ? active_win : win);
-        ev.xclient.message_type = hdwm->priv->atoms[HD_ATOM_NET_ACTIVE_WINDOW];
-        ev.xclient.format       = 32;
+    ev.xclient.type         = ClientMessage;
+    ev.xclient.window       = hd_wm_watched_window_get_x_win (active_win ? active_win : win);
+    ev.xclient.message_type = hdwm->priv->atoms[HD_ATOM_NET_ACTIVE_WINDOW];
+    ev.xclient.format       = 32;
 
-        gdk_error_trap_push();
+    gdk_error_trap_push();
 
-        XSendEvent (GDK_DISPLAY (), GDK_ROOT_WINDOW(), False, SubstructureRedirectMask, &ev);
+    XSendEvent (GDK_DISPLAY (), GDK_ROOT_WINDOW(), False, SubstructureRedirectMask, &ev);
      
-        XSync (GDK_DISPLAY (),FALSE);
+    XSync (GDK_DISPLAY (),FALSE);
    
-        gdk_error_trap_pop();
+    gdk_error_trap_pop();
 
-     /*
-      * do not call hd_wm_watchable_app_set_active_window() from here -- this
-      * is only a request; we set the window only when it becomes active in
-      * hd_wm_process_mb_current_app_window()
-      */
-      }
-    }
+   /*
+    * do not call hd_wm_watchable_app_set_active_window() from here -- this
+    * is only a request; we set the window only when it becomes active in
+    * hd_wm_process_mb_current_app_window()
+    */
   }
 
   return TRUE;
@@ -1519,56 +1452,6 @@ hd_wm_lookup_watchable_app_via_menu (GtkWidget *menu)
 }
 #endif
 
-static gboolean
-hd_wm_lookup_watched_window_view_find_func (gpointer key,
-					    gpointer value,
-					    gpointer user_data)
-{
-  HDWMWatchedWindow *win;
-  GList             *iter;
-
-  win = (HDWMWatchedWindow*)value;
-
-  iter = hd_wm_watched_window_get_views (win);
-  
-  while (iter != NULL)
-  {
-    HDWMWatchedWindowView *view;
-
-    view = (HDWMWatchedWindowView *)iter->data;
-
-    if (hd_wm_watched_window_view_get_menu (view) == (GtkWidget*)user_data)
-      return TRUE;
-
-    iter  = g_list_next (iter);
-  }
-
-  return FALSE;
-}
-
-HDWMWatchedWindow*
-hd_wm_lookup_watched_window_view (GtkWidget *menu_widget)
-{
-  HDWMWatchedWindow *win;
-  HDWM *hdwm = hd_wm_get_singleton ();
-
-  win = g_hash_table_find ( hdwm->priv->watched_windows,
-			    hd_wm_lookup_watched_window_view_find_func,
-			    (gpointer)menu_widget);
-  
-  if (!win)
-  {
-    g_debug ("checking WatchedWindowsHibernating hash, has %i items",
-	     g_hash_table_size (hdwm->priv->watched_windows_hibernating));
-
-    win = g_hash_table_find (hdwm->priv->watched_windows_hibernating,
-			     hd_wm_lookup_watched_window_view_find_func,
-			     (gpointer)menu_widget);
-  }
-  
-  return win;
-}
-
 /* Root win property changes */
 
 static void
@@ -1578,7 +1461,6 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
 
   HDWMWatchedWindow *win;
   Window            *app_xwin;
-  GList             *views;
 
   g_debug  ("called");
   
@@ -1602,58 +1484,41 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
   win = g_hash_table_lookup(hdwm->priv->watched_windows, (gconstpointer)app_xwin);
   
   if (win)
-    {
-      HDWMWatchableApp *app;
+  {
+    HDWMWatchableApp *app;
 
-      app = hd_wm_watched_window_get_app (win);
+    app = hd_wm_watched_window_get_app (win);
       
-      if (!app)
-        goto out;
+    if (!app)
+      goto out;
 
-      hd_wm_watchable_app_set_active_window(app, win);
+    hd_wm_watchable_app_set_active_window(app, win);
       
-      hd_wm_watchable_app_set_active_window(app, win);
-      hdwm->priv->active_window = hdwm->priv->last_active_window = win;
+    hd_wm_watchable_app_set_active_window(app, win);
+    hdwm->priv->active_window = hdwm->priv->last_active_window = win;
       
-      /* Note: this is whats grouping all views togeather */
-      views = hd_wm_watched_window_get_views (win);
-      if (views)
-        {
-          GList *l;
-          
-          for (l = views; l != NULL; l = l->next)
-            {
-              HDWMWatchedWindowView *view = l->data;
-              HDEntryInfo *info = hd_wm_watched_window_view_get_info (view);
-
-	      g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
-	    }
-        }
-      else
-        {
-          /* Window with no views */
-          g_debug ("Window 0x%x just became active", (int)win);
+    /* Window with no views */
+    g_debug ("Window 0x%x just became active", (int)win);
 	  
-	  HDEntryInfo *info = hd_wm_watched_window_peek_info (win);
+    HDEntryInfo *info = hd_wm_watched_window_peek_info (win);
 
-     	  g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
-        }
-    }
+    g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
+  }
   else
-    {
-      /* this happens when, for example, when Home is topped, or an application
-       * gets minimised and the desktop is showing. We need to notify the AS to
-       * deactivate any active buttons.
-       */
+  {
+    /* this happens when, for example, when Home is topped, or an application
+     * gets minimised and the desktop is showing. We need to notify the AS to
+     * deactivate any active buttons.
+     */
       
-      HDEntryInfo * info = NULL;
+    HDEntryInfo * info = NULL;
       /*  = hn_app_switcher_get_home_entry_info (hdwm->priv->app_switcher);*/
       
-      if (info)
-	g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
-      else
-        g_debug  ("***************** No Home info yet");
-    }
+    if (info)
+      g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
+    else
+      g_debug  ("***************** No Home info yet");
+  }
   
 out:
   XFree(app_xwin);
@@ -1793,7 +1658,6 @@ hd_wm_add_applications (HDWM *hdwm, HDEntryInfo *entry_info)
   switch(entry_info->type)
   {
     case HD_ENTRY_WATCHED_WINDOW:
-    case HD_ENTRY_WATCHED_VIEW:
       /*
        * because initial windows get created before we have a chance to add
        * the application item, we have to store orphan windows in temporary
@@ -1842,7 +1706,6 @@ hd_wm_remove_applications (HDWM *hdwm, HDEntryInfo *entry_info)
   switch (entry_info->type)
   {
     case HD_ENTRY_WATCHED_WINDOW:
-    case HD_ENTRY_WATCHED_VIEW:
       g_debug ("removing child from AS ...");
       info_parent = hd_entry_info_get_parent(entry_info);
 
@@ -1991,25 +1854,22 @@ hd_wm_process_x_client_list (HDWM *hdwm)
             g_warning("Application %s did not provide valid .desktop file",
                       hd_wm_watched_window_get_name(win));
 
-	  if (hd_wm_watched_window_get_n_views (win) == 0)
-	    {
-	      HDEntryInfo *info;
+	  HDEntryInfo *info;
 
-	      HN_MARK();
+	  HN_MARK();
 	      
-              /* if the window does not have attached info yet, then it is new
-	       * and needs to be added to AS; if it has one, then it is coming
-	       * out of hibernation, in which case it must not be added
-	       */
-	      info = hd_wm_watched_window_peek_info (win);
-	      if (!info)
-                {
-		  info  = hd_wm_watched_window_create_new_info (win);
-		  g_debug ("Adding AS entry for view-less window\n");
-		  hd_wm_add_applications (hdwm,info);
-		  g_signal_emit_by_name (hdwm,"entry_info_added",info);		
-	        }
-	    }
+          /* if the window does not have attached info yet, then it is new
+	   * and needs to be added to AS; if it has one, then it is coming
+	   * out of hibernation, in which case it must not be added
+	   */
+	   info = hd_wm_watched_window_peek_info (win);
+	   if (!info)
+           {
+	     info  = hd_wm_watched_window_create_new_info (win);
+	     g_debug ("Adding AS entry for view-less window\n");
+	     hd_wm_add_applications (hdwm,info);
+	     g_signal_emit_by_name (hdwm,"entry_info_added",info);		
+	   }
 	}
     }
 
@@ -2412,8 +2272,6 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
 
     if (prop->atom == hdwm->priv->atoms[HD_ATOM_WM_NAME]
 	|| prop->atom == hdwm->priv->atoms[HD_ATOM_WM_STATE]
-	|| prop->atom == hdwm->priv->atoms[HD_ATOM_HILDON_VIEW_LIST]
-	|| prop->atom == hdwm->priv->atoms[HD_ATOM_HILDON_VIEW_ACTIVE]
 	|| prop->atom == hdwm->priv->atoms[HD_ATOM_HILDON_APP_KILLABLE]
 	|| prop->atom == hdwm->priv->atoms[HD_ATOM_HILDON_ABLE_TO_HIBERNATE]
 	|| prop->atom == hdwm->priv->atoms[HD_ATOM_NET_WM_STATE]
@@ -2446,14 +2304,8 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
     if (prop->atom == hdwm->priv->atoms[HD_ATOM_NET_WM_ICON])
       hd_wm_watched_window_props_sync (win, HD_WM_SYNC_ICON);
     else 
-    if (prop->atom == hdwm->priv->atoms[HD_ATOM_HILDON_VIEW_ACTIVE])
-      hd_wm_watched_window_props_sync (win, HD_WM_SYNC_HILDON_VIEW_ACTIVE);
-    else 
     if (prop->atom == hdwm->priv->atoms[HD_ATOM_WM_HINTS])
       hd_wm_watched_window_props_sync (win, HD_WM_SYNC_WMHINTS);
-    else 
-    if (prop->atom == hdwm->priv->atoms[HD_ATOM_HILDON_VIEW_LIST])
-      hd_wm_watched_window_props_sync (win, HD_WM_SYNC_HILDON_VIEW_LIST);
     else 
     if (prop->atom == hdwm->priv->atoms[HD_ATOM_WM_WINDOW_ROLE])
      /* Windows realy shouldn't do this... */

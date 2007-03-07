@@ -215,9 +215,6 @@ hd_wm_lookup_watchable_app_via_exec (const gchar *exec_name);
 HDWMWatchableApp*
 hd_wm_lookup_watchable_app_via_menu (GtkWidget *menu);
 
-HDWMWatchedWindow*
-hd_wm_lookup_watched_window_view (GtkWidget *menu_widget);
-
 gchar *
 hd_wm_compute_watched_window_hibernation_key (Window xwin,
 					      HDWMWatchableApp *app);

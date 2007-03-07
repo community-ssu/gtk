@@ -9,7 +9,6 @@ pkginclude_HEADERS = hd-entry-info.h \
 		     hd-wm-types.h \
 		     hd-wm-util.h \
 		     hd-wm-watchable-app.h \
-		     hd-wm-watched-window-view.h \
 		     hd-wm-watched-window.h \
 		     hd-wm.h
 		     
@@ -47,7 +46,6 @@ libhildonwm_la_SOURCES = \
 	hd-wm-memory.c \
 	hd-keys.c \
 	hd-wm-watched-window.c \
-	hd-wm-watched-window-view.c \
 	hd-wm-watchable-app.c \
 	hd-entry-info.c
 

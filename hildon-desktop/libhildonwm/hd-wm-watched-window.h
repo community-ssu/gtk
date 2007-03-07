@@ -111,20 +111,6 @@ hd_wm_watched_window_get_views (HDWMWatchedWindow *win);
 gint
 hd_wm_watched_window_get_n_views (HDWMWatchedWindow *win);
 
-void
-hd_wm_watched_window_add_view (HDWMWatchedWindow     *win,
-			       HDWMWatchedWindowView *view);
-
-void
-hd_wm_watched_window_remove_view (HDWMWatchedWindow     *win,
-				  HDWMWatchedWindowView *view);
-void
-hd_wm_watched_window_set_active_view (HDWMWatchedWindow     *win,
-				      HDWMWatchedWindowView *view);
-
-HDWMWatchedWindowView*
-hd_wm_watched_window_get_active_view (HDWMWatchedWindow     *win);
-
 gboolean
 hd_wm_watched_window_attempt_signal_kill (HDWMWatchedWindow *win,
                                           int sig,

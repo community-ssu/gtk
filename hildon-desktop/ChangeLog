@@ -1,5 +1,15 @@
 2007-03-07  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildonwm/hd-wm.[ch]:
+	* libhildonwm/hd-wm-types-h:
+	* libhildonwm/hd-wm-watched-window.[ch]:
+	* libhildonwm/hd-entry-info.[ch]:
+	* libhildonwm/hd-wm-watched-window-view.[ch]: (Removed)
+	- Removed support for Window Views
+	* libhildonwm/Makefile.am: updated.
+
+2007-03-07  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildonwm/hd-wm.[ch]: Added hd_wm_get_singleton_without_dbus for
 	lib users who don't want to initialize DBus stuff.
 
