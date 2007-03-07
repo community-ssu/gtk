@@ -242,6 +242,8 @@ struct _HDWMPrivate   /* Our main struct */
   GList		        *applications;
 
   gboolean 		 init_dbus;
+
+  HDEntryInfo		*home_info;
 };
 
 static HDWMPrivate *hdwmpriv = NULL; 			/* Singleton instance */
@@ -623,12 +625,33 @@ mce_handler (DBusConnection *conn,
 }
 
 static void 
+hd_wm_finalize (GObject *object)
+{
+  HDWM *hdwm = HD_WM (object);
+
+  hd_entry_info_free (hdwm->priv->home_info);
+
+  g_hash_table_destroy (hdwm->priv->watched_windows);
+  g_hash_table_destroy (hdwm->priv->watched_windows_hibernating);
+
+  gdk_window_remove_filter (gdk_get_default_root_window(),
+                            hd_wm_x_event_filter,
+                            hdwm);
+
+  g_object_unref (G_OBJECT (hdwm->keys));
+
+  G_OBJECT_CLASS (hd_wm_parent_class)->finalize (object);
+}
+
+static void 
 hd_wm_class_init (HDWMClass *hdwm_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (hdwm_class);
 
   object_class->get_property = hd_wm_get_property;
   object_class->set_property = hd_wm_set_property;
+
+  object_class->finalize = hd_wm_finalize;
 
   g_type_class_add_private (hdwm_class, sizeof (HDWMPrivate));
 	
@@ -848,19 +871,15 @@ hd_wm_init (HDWM *hdwm)
 
   /* select X events */
 
-  gdk_window_set_events(gdk_get_default_root_window (),
-			gdk_window_get_events(gdk_get_default_root_window())
-			| GDK_PROPERTY_CHANGE_MASK );
+  gdk_window_set_events (gdk_get_default_root_window (),
+			 gdk_window_get_events(gdk_get_default_root_window())
+			 | GDK_PROPERTY_CHANGE_MASK );
 
-  gdk_window_add_filter(gdk_get_default_root_window(),
-			hd_wm_x_event_filter,
-			hdwm);
+  gdk_window_add_filter (gdk_get_default_root_window(),
+			 hd_wm_x_event_filter,
+			 hdwm);
 
   gdk_error_trap_pop();
-
-  /* Setup shortcuts */
-
-  hdwm->keys = hd_keys_config_get_singleton ();
 
   /* Track changes in the keymap */
 
@@ -870,9 +889,15 @@ hd_wm_init (HDWM *hdwm)
 		    G_CALLBACK (hd_keys_reload),
 		    hdwm->keys);
 
+  hdwm->priv->home_info = hd_entry_info_new (HD_ENTRY_DESKTOP);
+
 
   if (!hdwm->priv->init_dbus)
     return;  
+
+  /* Setup shortcuts */
+
+  hdwm->keys = hd_keys_config_get_singleton ();
 
   /* Get on the DBus */
 
@@ -1025,6 +1050,12 @@ hd_wm_top_item (HDEntryInfo *info)
   }
   else
     g_debug  ("### Invalid window type ###\n");
+}
+
+HDEntryInfo *
+hd_wm_get_home_info (HDWM *hdwm)
+{
+  return hdwm->priv->home_info;
 }
 
 void

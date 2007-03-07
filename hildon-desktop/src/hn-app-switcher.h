@@ -79,19 +79,11 @@ GType      hn_app_switcher_get_type      (void) G_GNUC_CONST;
 
 GtkWidget *hn_app_switcher_new           (gint nitems);
 
-GList *    hn_app_switcher_get_entries   (HNAppSwitcher            *app_switcher);
-void       hn_app_switcher_foreach_entry (HNAppSwitcher            *app_switcher,
-					  HNAppSwitcherForeachFunc  func,
-					  gpointer                  data);
-
-void       hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher);
-
 gboolean   hn_app_switcher_get_system_inactivity (HNAppSwitcher *app_switcher);
 
 gboolean   hn_app_switcher_menu_button_release_cb (GtkWidget      *widget,
                                                  GdkEventButton *event);
 
-HDEntryInfo * hn_app_switcher_get_home_entry_info (HNAppSwitcher *as);
 
 G_END_DECLS
 

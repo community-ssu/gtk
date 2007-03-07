@@ -1,5 +1,15 @@
 2007-03-07  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hn-app-switcher.[ch]:
+	- Fixed home entry info issue.
+	- Massive code cleanup.
+	* libhildonwm/hd-wm.[ch]:
+	- Moved home entry info to hd_wm.
+	- Added _finalize override.
+	- Code cleanup.
+
+2007-03-07  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildonwm/hd-wm.[ch]:
 	* libhildonwm/hd-wm-types-h:
 	* libhildonwm/hd-wm-watched-window.[ch]:

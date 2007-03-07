@@ -288,6 +288,21 @@ hn_app_switcher_get_workarea (GtkAllocation *allocation)
 }
 
 static void
+hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
+{
+ 
+ g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
+			
+ if (!hd_wm_get_applications (app_switcher->hdwm))
+   return;
+
+ gtk_toggle_button_set_active 
+   (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), TRUE);
+ 
+ g_signal_emit_by_name (app_switcher->priv->main_button, "toggled");
+}
+
+static void
 hn_app_image_animation (GtkWidget *icon,
 		       gboolean   is_on)
 {
@@ -807,8 +822,9 @@ main_menu_button_keypress_cb (GtkWidget     *toggle,
       event->keyval == GDK_KP_Right ||
       event->keyval == GDK_KP_Enter)
   {
+
     hn_app_switcher_toggle_menu_button (app_switcher);
-      
+	  
     return TRUE;
   }
   else
@@ -1117,8 +1133,7 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
 
   g_object_ref (app_switcher->hdwm);
 
-  if (!app_switcher->priv->home_info)
-    app_switcher->priv->home_info = hd_entry_info_new (HD_ENTRY_DESKTOP);
+  app_switcher->priv->home_info = hd_wm_get_home_info (app_switcher->hdwm);
 
   gtk_widget_push_composite_child ();
 
@@ -1923,9 +1938,6 @@ hn_app_switcher_finalize (GObject *gobject)
   osso_deinitialize (priv->osso);
 #endif
 
-  if (priv->home_info)
-    hd_entry_info_free (priv->home_info);
-
   g_object_unref (app_switch->hdwm);
 
   g_debug ("Destroying HNAppSwitcher");
@@ -2043,68 +2055,10 @@ hn_app_switcher_init (HNAppSwitcher *app_switcher)
   hn_app_switcher_init_sound_samples (app_switcher);
 }
 
-
-/* Public API */
-
 GtkWidget *
 hn_app_switcher_new (gint nitems)
 {
   return g_object_new (HN_TYPE_APP_SWITCHER,"n_items",nitems,NULL);
-}
-
-GList *
-hn_app_switcher_get_entries (HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv;
-  GList *retlist, *l;
-
-  g_return_val_if_fail (HN_IS_APP_SWITCHER (app_switcher), NULL);
-  priv = app_switcher->priv;
-
-  retlist = NULL;
-  for (l = priv->applications; l != NULL; l = l->next)
-    retlist = g_list_prepend (retlist, l->data);
-
-  return g_list_reverse (retlist);
-}
-
-void
-hn_app_switcher_foreach_entry (HNAppSwitcher            *app_switcher,
-			       HNAppSwitcherForeachFunc  func,
-			       gpointer                  data)
-{
-  HNAppSwitcherPrivate *priv;
-  GList *entries, *l;
-
-  g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
-  g_return_if_fail (func != NULL);
-
-  priv = app_switcher->priv;
-  entries = hd_wm_get_applications (app_switcher->hdwm);
-
-  for (l = entries; l != NULL; l = l->next)
-  {
-    HDEntryInfo *info = l->data;
-
-    if (!(* func) (info, data))
-      break;
-  }
-}
-
-
-void
-hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv;
-  
-  g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
-  priv = app_switcher->priv;
-
-  if (!hd_wm_get_applications (app_switcher->hdwm))
-    return;
-  
-  gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->main_button), TRUE);
-  g_signal_emit_by_name (priv->main_button, "toggled");
 }
 
 gboolean
@@ -2116,13 +2070,5 @@ hn_app_switcher_get_system_inactivity (HNAppSwitcher *app_switcher)
   priv = app_switcher->priv;
 
   return priv->system_inactivity;
-}
-
-HDEntryInfo *
-hn_app_switcher_get_home_entry_info (HNAppSwitcher *app_switcher)
-{
-  g_return_val_if_fail (app_switcher, NULL);
-
-  return app_switcher->priv->home_info;
 }
 

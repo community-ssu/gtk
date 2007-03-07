@@ -177,28 +177,35 @@ hd_wm_get_singleton (void);
 HDWM *
 hd_wm_get_singleton_without_dbus (void);
 
+HDEntryInfo *
+hd_wm_get_home_info (HDWM *hdwm);
+
 /**  Send 'top' request for a certain existing window/view
  *
  * @param info the window/view to be topped
  *
  */
-void hd_wm_top_item (HDEntryInfo *info);
+void 
+hd_wm_top_item (HDEntryInfo *info);
 
 
 /**  Send 'top' request for a certain service
  *   @param service_name The name of the service that is to be topped
  */
-gboolean hd_wm_top_service(const gchar *service_name);
+gboolean 
+hd_wm_top_service(const gchar *service_name);
 
 /**
  * Requests the real window manager to top the desktop
  */
-void hd_wm_top_desktop(void);
+void 
+hd_wm_top_desktop(void);
 
 /**
  * Toggle between desktop and the last active application
  */
-void hd_wm_toggle_desktop (void);
+void 
+hd_wm_toggle_desktop (void);
 
 HDWMWatchedWindow*
 hd_wm_lookup_watched_window_via_service (const gchar *service_name);
