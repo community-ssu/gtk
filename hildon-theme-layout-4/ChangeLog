@@ -1,3 +1,7 @@
+2007-03-07  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildontimepicker.rc: Fixing the missing HildonTimePicker arrows.
+
 2007-03-06  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtkmenuitem.rc:

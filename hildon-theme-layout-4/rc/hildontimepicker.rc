@@ -4,34 +4,37 @@
 #
 #################################################### 
 
-style "osso-time-picker-arrows" {
+style "osso-time-picker-up" {
 
   engine "sapwood" {
     image {
       function = BOX
-      detail = "osso_button_n"
       state = ACTIVE
       file = "../images/qgn_plat_arrow_up_pressed.png"
     }
     image {
       function = BOX
-      detail = "osso_button_n"
       file = "../images/qgn_plat_arrow_up_normal.png"
     }
+  }
+}
+widget "*.hildon-time-picker-up" style "osso-time-picker-up"
+
+style "osso-time-picker-down" {
+
+  engine "sapwood" {
     image {
       function = BOX
-      detail = "osso_button_s"
       state = ACTIVE
       file = "../images/qgn_plat_arrow_down_pressed.png"
     }
     image {
       function = BOX
-      detail = "osso_button_s"
       file = "../images/qgn_plat_arrow_down_normal.png"
     }
   }
 }
-widget_class "HildonTimePicker.GtkVBox.GtkAlignment.GtkTable.GtkButton" style "osso-time-picker-arrows"
+widget "*.hildon-time-picker-down" style "osso-time-picker-down"
 
 style "osso-time-picker-ebox" {
       xthickness = 0
