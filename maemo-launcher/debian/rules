@@ -54,10 +54,21 @@ install: build
 	dh_clean -k
 	dh_installdirs -a
 	
-	$(MAKE) install DESTDIR=$(CURDIR)/debian/maemo-launcher
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
 
 binary-indep: build install
-	# Nothing to do.
+	dh_testdir
+	dh_testroot
+	dh_installchangelogs -i ChangeLog
+	dh_installdocs -i
+	dh_install -i --sourcedir=$(CURDIR)/debian/tmp
+	dh_link -i
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
 
 binary-arch: build install
 	dh_testdir
@@ -65,9 +76,8 @@ binary-arch: build install
 	dh_installchangelogs -a ChangeLog
 	dh_installdocs -a
 	dh_installexamples -a
-#	dh_install
+	dh_install -a --sourcedir=$(CURDIR)/debian/tmp
 #	dh_installlogrotate
-#	dh_installpam
 	dh_installinit -a -- start 45 2 3 4 . stop 45 0 1 5 6 .
 	dh_installman -a
 	dh_link -a

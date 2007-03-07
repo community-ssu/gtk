@@ -29,3 +29,13 @@ Description: Maemo Launcher for GTK applications - debugging symbols
  .
  This package provides the debugging symbols for maemo-launcher.
 
+Package: maemo-launcher-dev
+Architecture: all
+Description: Maemo Launcher for GTK applications - development files
+ Maemo Launcher for any gtk+ application. Tries to reduce startup time by
+ pre-initializing the state of some libraries and then dynamically loading
+ the applications.
+ .
+ This package provides the development files needed to build boosters
+ and applications using the maemo-launcher.
+
