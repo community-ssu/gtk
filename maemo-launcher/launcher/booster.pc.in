@@ -1,0 +1,12 @@
+#
+# $Id$
+#
+
+prefix=@prefix@
+pkgincludedir=@includedir@/@PACKAGE@
+
+Name: maemo-launcher-booster
+Description: maemo-launcher booster module
+Version: @VERSION@
+Cflags: -I${pkgincludedir}
+

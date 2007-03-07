@@ -143,6 +143,7 @@ fi
 AC_CONFIG_FILES([
 	Makefile
 	launcher/Makefile
+	launcher/maemo-launcher-booster.pc:launcher/booster.pc.in
 	launcher/maemo-invoker.1:launcher/invoker.1.in
 	launcher/maemo-summoner.1:launcher/summoner.1.in
 	launcher/maemo-launcher.1:launcher/launcher.1.in
