@@ -919,24 +919,6 @@ gtk_entry_class_init (GtkEntryClass *class)
 						       TRUE,
 						       GTK_PARAM_READWRITE));
 
-#ifdef MAEMO_CHANGES
-   /**
-    * GtkEntry:icon-width:
-    *
-    * Size of the purpose icon.
-    *
-    * Since: maemo 1.0
-    */
-   gtk_widget_class_install_style_property (widget_class,
-                                            g_param_spec_int ("icon-width",
-                                                              P_("Icon Width"),
-                                                              P_("Size of the purpose icon."),
-                                                              0,
-                                                              G_MAXINT,
-                                                              0,
-                                                              GTK_PARAM_READWRITE));
-#endif /* MAEMO_CHANGES */
-
   /**
    * GtkSettings:gtk-entry-password-hint-timeout:
    *
@@ -1395,11 +1377,6 @@ gtk_entry_size_request (GtkWidget      *widget,
   gint xborder, yborder;
   GtkBorder inner_border;
   PangoContext *context;
-#ifdef MAEMO_CHANGES
-  gint icon_width;
-
-  gtk_widget_style_get (widget, "icon-width", &icon_width, NULL);
-#endif /* MAEMO_CHANGES */
   
   gtk_widget_ensure_style (widget);
   context = gtk_widget_get_pango_context (widget);
@@ -1424,9 +1401,6 @@ gtk_entry_size_request (GtkWidget      *widget,
       requisition->width = char_pixels * entry->width_chars + xborder * 2 + inner_border.left + inner_border.right;
     }
     
-#ifdef MAEMO_CHANGES
-  requisition->width += icon_width;
-#endif /* MAEMO_CHANGES */
   requisition->height = PANGO_PIXELS (entry->ascent + entry->descent) + yborder * 2 + inner_border.top + inner_border.bottom;
 
   pango_font_metrics_unref (metrics);
@@ -1442,32 +1416,19 @@ get_text_area_size (GtkEntry *entry,
   gint xborder, yborder;
   GtkRequisition requisition;
   GtkWidget *widget = GTK_WIDGET (entry);
-#ifdef MAEMO_CHANGES
-  gint icon_width;
-
-  gtk_widget_style_get (widget, "icon-width", &icon_width, NULL);
-#endif /* MAEMO_CHANGES */
 
   gtk_widget_get_child_requisition (widget, &requisition);
 
   _gtk_entry_get_borders (entry, &xborder, &yborder);
 
   if (x)
-#ifdef MAEMO_CHANGES
-    *x = xborder + icon_width;
-#else
     *x = xborder;
-#endif /* MAEMO_CHANGES */
 
   if (y)
     *y = yborder;
   
   if (width)
-#ifdef MAEMO_CHANGES
-    *width = GTK_WIDGET (entry)->allocation.width - xborder * 2 - icon_width;
-else
     *width = GTK_WIDGET (entry)->allocation.width - xborder * 2;
-#endif /* MAEMO_CHANGES */
 
   if (height)
     *height = requisition.height - yborder * 2;

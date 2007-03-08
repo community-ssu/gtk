@@ -1,3 +1,7 @@
+2007-03-08  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkentry.c: Remove the icon-width property, it's unused.
+
 2007-03-05  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkicontheme.c: Back out our changes to the icon loading order.
