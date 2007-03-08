@@ -34,6 +34,7 @@ G_BEGIN_DECLS
 #define DESKTOP_ENTRY_TYPE_FIELD        "Type"
 #define DESKTOP_ENTRY_ICON_FIELD        "Icon"
 #define DESKTOP_ENTRY_NAME_FIELD        "Name"
+#define DESKTOP_ENTRY_CATEGORIES_FIELD  "Categories"
 #define DESKTOP_ENTRY_COMMENT_FIELD     "Comment"
 #define DESKTOP_ENTRY_EXEC_FIELD        "Exec"
 #define DESKTOP_ENTRY_SERVICE_FIELD     "X-Osso-Service"

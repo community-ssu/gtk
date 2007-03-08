@@ -1,3 +1,10 @@
+2007-03-08  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/libhildonmenu.[ch]:
+	- factorized addition of menu item in a routing
+	- added parsing of Categories node in the XML file
+	and .desktop file so we have basic support for GNOME menus
+
 2007-03-08  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-desktop.c: added configuration monitoring code. Always use

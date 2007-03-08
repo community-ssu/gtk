@@ -58,6 +58,7 @@ typedef struct {
 	gchar *exec;
 	gchar *service;
 	gchar *desktop_id;
+        gchar **categories;
 	gchar *text_domain;
 	gboolean allocated;
 } desktop_entry_t;
@@ -97,6 +98,8 @@ static void destroy_desktop_item(gpointer data, gpointer null)
     g_free(de->service);
     g_free(de->text_domain);
     g_free(de->desktop_id);
+    if ( de->categories )
+        g_strfreev(de->categories);
 
     g_free(de);
 }
@@ -350,6 +353,14 @@ GList *get_desktop_files(gchar *directory, GList *desktop_files)
 					DESKTOP_ENTRY_SERVICE_FIELD,
 					NULL);
 
+                        item->categories = g_key_file_get_string_list(
+					key_file,
+					DESKTOP_ENTRY_GROUP,
+					DESKTOP_ENTRY_CATEGORIES_FIELD,
+                                        NULL,
+					NULL);
+
+
             if (item->service && !strchr(item->service, '.')) {
                 /* Unqualified domain, add the default com.nokia. */
                 gchar * s = g_strconcat (SERVICE_PREFIX, item->service, NULL);
@@ -416,6 +427,114 @@ desktop_entry_t *get_desktop_item( GList *desktop_files,
 	return item;
 } /* GtkTreeIter *get_desktop_item() */
 
+static gint find_by_category(desktop_entry_t *a, const gchar *category)
+{
+    gint i = 0;
+
+    if ( !a->categories || !category ) return 1;
+
+    if ( a->allocated ) return 1;
+
+    while ( a->categories[i] )
+    {
+        if ( strcmp (category, a->categories[i]) == 0 )
+            return 0;
+
+        i++;
+    }
+
+    return 1;
+}
+
+static GSList *get_desktop_entries_from_category(GList *desktop_files,
+                                          const gchar *category)
+{
+    GSList *result = NULL;
+    GList *l = NULL;
+
+    while ( (  l = g_list_find_custom(desktop_files,
+                                      category,
+                                      (GCompareFunc)find_by_category) ) ) {
+      result = g_slist_append(result, l->data);
+
+      ((desktop_entry_t *)(l->data))->allocated = TRUE;
+    }
+
+    return result;
+}
+
+static void add_desktop_entry(desktop_entry_t * item,
+                              GtkTreeStore *menu_tree,
+                              GtkTreeIter *iterator)
+{
+    GdkPixbuf *app_icon = NULL;
+    GdkPixbuf *thumb_icon = NULL;
+    GtkTreeIter child_iter;
+
+    gtk_tree_store_append(menu_tree,
+                          &child_iter, iterator);
+
+    /* Check that we have the app icon.. */
+    app_icon = get_icon( item->icon, ICON_SIZE );
+
+    if ( !app_icon ) {
+      /* .. or use the default */
+      app_icon = get_icon( ICON_DEFAULT_APP,
+                           ICON_SIZE );
+    }
+
+    /* Check if we have an thumb sized icon.. */
+    thumb_icon = get_icon_with_fallback( item->icon,
+                                         ICON_THUMB_SIZE,
+                                         app_icon );
+
+    if ( !thumb_icon )
+      {
+        /* .. or use the default */
+        thumb_icon = get_icon( ICON_DEFAULT_APP,
+                               ICON_THUMB_SIZE );
+      }
+
+    gtk_tree_store_set(menu_tree,
+                       &child_iter,
+                       TREE_MODEL_NAME,
+                       item->name,
+                       TREE_MODEL_ICON,
+                       app_icon,
+                       TREE_MODEL_THUMB_ICON,
+                       thumb_icon,
+                       TREE_MODEL_EMBLEM_EXPANDER_OPEN,
+                       NULL,
+                       TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
+                       NULL,
+                       TREE_MODEL_EXEC,
+                       item->exec,
+                       TREE_MODEL_SERVICE,
+                       item->service,
+                       TREE_MODEL_DESKTOP_ID,
+                       item->desktop_id,
+                       TREE_MODEL_TEXT_DOMAIN,
+                       item->text_domain,
+                       TREE_MODEL_COMMENT,
+                       item->comment,
+                       -1);
+
+    if ( app_icon ){
+      g_object_unref( G_OBJECT( app_icon ) );
+      app_icon = NULL;
+    }
+
+    if ( thumb_icon ){
+      g_object_unref( G_OBJECT( thumb_icon ) );
+      thumb_icon = NULL;
+    }
+
+    /* Mark the item allocated */
+    item->allocated = TRUE;
+
+}
+
+
 
 static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		xmlDocPtr doc, xmlNodePtr root_element, GtkTreeIter *iterator,
@@ -423,9 +542,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 {
 	gint level = 0;
 	gboolean doc_created = FALSE;
-
-	GdkPixbuf *app_icon                      = NULL;
-	GdkPixbuf *thumb_icon                    = NULL;
 
 	GdkPixbuf *favourite_icon                = NULL;
 	GdkPixbuf *favourite_open_icon           = NULL;
@@ -632,7 +748,6 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 		} else if (strcmp(current_element->name, "Include") == 0) {
 
 			xmlNodePtr child_element = NULL;
-			GtkTreeIter child_iter;
 
 			for (child_element = current_element->xmlChildrenNode;
 					child_element != NULL;
@@ -660,71 +775,48 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 					g_debug( "read_menu_conf: level %i: "
 							"appending .desktop", level );
+                                        add_desktop_entry(item, menu_tree, iterator);
+                                        xmlFree(key);
+                                }
+                                else if (strcmp((char *)child_element->name, "And") == 0) {
+                                  xmlNodePtr cat_element = NULL;
+                                  GSList *items, *i;
+                                  for (cat_element = child_element->xmlChildrenNode;
+                                       cat_element != NULL;
+                                       cat_element = cat_element->next) {
 
-					gtk_tree_store_append(menu_tree,
-							&child_iter, iterator);
+                                    if (strcmp((char *)cat_element->name, "Category") != 0)
+                                      continue;
 
-					/* Check that we have the app icon.. */
-					app_icon = get_icon( item->icon, ICON_SIZE );
-					
-					if ( !app_icon ) {
-						/* .. or use the default */
-						app_icon = get_icon( ICON_DEFAULT_APP,
-								ICON_SIZE );
-					}
+                                    if (!cat_element->xmlChildrenNode)
+                                      continue;
 
-					/* Check if we have an thumb sized icon.. */
-					thumb_icon = get_icon_with_fallback( item->icon,
-					                                     ICON_THUMB_SIZE,
-					                                     app_icon );
+                                    key = xmlNodeListGetString(doc,
+                                                               cat_element->xmlChildrenNode,
+                                                               1);
 
-                    if ( !thumb_icon )
-                    {
-						/* .. or use the default */
-						thumb_icon = get_icon( ICON_DEFAULT_APP,
-								ICON_THUMB_SIZE );
-					}
-					
-					gtk_tree_store_set(menu_tree,
-							&child_iter,
-							TREE_MODEL_NAME,
-							item->name,
-							TREE_MODEL_ICON,
-							app_icon,
-							TREE_MODEL_THUMB_ICON,
-							thumb_icon,
-							TREE_MODEL_EMBLEM_EXPANDER_OPEN,
-							NULL,
-							TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
-							NULL,
-							TREE_MODEL_EXEC,
-							item->exec,
-							TREE_MODEL_SERVICE,
-							item->service,
-							TREE_MODEL_DESKTOP_ID,
-							item->desktop_id,
-                            TREE_MODEL_TEXT_DOMAIN,
-                            item->text_domain,
-							TREE_MODEL_COMMENT,
-							item->comment,
-							-1);
+                                    items = get_desktop_entries_from_category (desktop_files,
+                                                                               (gchar*)key);
 
-					if ( app_icon ){
-						g_object_unref( G_OBJECT( app_icon ) );
-						app_icon = NULL;
-					}
-					
-                    if ( thumb_icon ){
-						g_object_unref( G_OBJECT( thumb_icon ) );
-						thumb_icon = NULL;
-					}
+                                    for (i = items ; i ; i = g_slist_next(i))
+                                      {
+                                        add_desktop_entry((desktop_entry_t *)i->data,
+                                                          menu_tree,
+                                                          iterator);
+                                      }
 
-					/* Mark the item allocated */
-					item->allocated = TRUE;
-					
-					xmlFree(key);
-				}
-			}
+                                    xmlFree(key);
+                                  }
+                                }
+                        }
+
+ 
+
+
+
+
+
+
 
 		} else if (strcmp(current_element->name, "Separator") == 0) {
 			g_debug( "read_menu_conf: level %i: "
@@ -802,7 +894,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						GTK_TREE_MODEL( menu_tree ),
 						&sibling, last_folder );
 
-                gtk_tree_path_free( last_folder );
+                                gtk_tree_path_free( last_folder );
 				gtk_tree_store_insert_after(
 						menu_tree, extras_iter,
 						NULL, &sibling );
@@ -812,7 +904,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						GTK_TREE_MODEL( menu_tree ),
 						&sibling, first_folder );
 
-                gtk_tree_path_free( first_folder );
+                                gtk_tree_path_free( first_folder );
 				gtk_tree_store_insert_after(
 						menu_tree, extras_iter,
 						NULL, &sibling );
@@ -868,63 +960,8 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 						"unallocated item: '%s'",
 						item->desktop_id );
 
-				GtkTreeIter item_iter;
+                                add_desktop_entry( item, menu_tree, extras_iter );
 
-				gtk_tree_store_append( menu_tree,
-						&item_iter, extras_iter );
-
-				app_icon = get_icon( item->icon, ICON_SIZE );
-                if ( !app_icon ) {
-                  /* .. or use the default */
-                  app_icon = get_icon( ICON_DEFAULT_APP,
-                                       ICON_SIZE );
-                }
-
-                /* Check if we have an thumb sized icon.. */
-                thumb_icon = get_icon_with_fallback( item->icon,
-                                                     ICON_THUMB_SIZE,
-                                                     app_icon );
-
-                if ( !thumb_icon )
-                  {
-                    /* .. or use the default */
-                    thumb_icon = get_icon( ICON_DEFAULT_APP,
-                                           ICON_THUMB_SIZE );
-                  }
-
-				gtk_tree_store_set(menu_tree,
-						&item_iter,
-						TREE_MODEL_NAME,
-						item->name,
-						TREE_MODEL_ICON,
-						app_icon,
-						TREE_MODEL_THUMB_ICON,
-						thumb_icon,
-						TREE_MODEL_EMBLEM_EXPANDER_OPEN,
-						NULL,
-						TREE_MODEL_EMBLEM_EXPANDER_CLOSED,
-						NULL,
-						TREE_MODEL_EXEC,
-						item->exec,
-						TREE_MODEL_SERVICE,
-						item->service,
-                        TREE_MODEL_TEXT_DOMAIN,
-                        item->text_domain,
-						TREE_MODEL_DESKTOP_ID,
-						item->desktop_id,
-						-1 );
-
-				if ( app_icon ) {
-					g_object_unref( G_OBJECT ( app_icon ) );
-					app_icon = NULL;
-				}
-				
-                if ( thumb_icon ) {
-					g_object_unref( G_OBJECT ( thumb_icon ) );
-					thumb_icon = NULL;
-				}
-
-				item->allocated = TRUE;
 			}
 
 			loop = loop->next;
