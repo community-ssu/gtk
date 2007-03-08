@@ -1,3 +1,9 @@
+osso-gnomevfs-extra (1.9.3-1) unstable; urgency=low
+
+  * Remove old module conf file when installing
+
+ -- Richard Hult <richard@imendio.com>  Thu,  8 Mar 2007 12:39:17 +0100
+
 osso-gnomevfs-extra (1.9.2-1) unstable; urgency=low
 
   * Port NB#50390 from stable, always set current time on created files
