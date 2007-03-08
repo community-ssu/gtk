@@ -389,11 +389,9 @@ hd_desktop_system_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
   if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
   {
-    /*
     g_free (priv->config_file);
     priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
     hd_desktop_load_containers (desktop);
-    */
   } else {
     HDDesktopContainerInfo *info;
     GList *plugin_list = NULL;
@@ -441,11 +439,9 @@ hd_desktop_user_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
   if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
   {
-    /*
     g_free (priv->config_file);
     priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
     hd_desktop_load_containers (desktop);
-    */
   } else {
     HDDesktopContainerInfo *info;
     GList *plugin_list = NULL;
@@ -581,8 +577,8 @@ hd_desktop_load_containers (HDDesktop *desktop)
 
   if (error)
   {
-    g_error ("Error loading desktop configuration file: %s", 
-              error->message);
+    g_warning ("Error loading desktop configuration file: %s", 
+               error->message);
 
     g_error_free (error);
 
