@@ -73,8 +73,6 @@ hd_plugin_loader_factory_dir_changed (GnomeVFSMonitorHandle *handle,
   {
     callback_pending = 1;
 
-    g_debug ("REFRESHING... %s", monitor_uri);
-    
     g_timeout_add (500,
                   (GSourceFunc) hd_plugin_loader_factory_load_modules, 
                   factory);
@@ -137,8 +135,6 @@ hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
 			     MODULE_LOAD_SYMBOL,
 			     (gpointer *) &factory->priv->load_module))
 	{
-          g_debug (factory->priv->load_module ());
-                
 	  g_hash_table_insert (factory->priv->modules,
 			       factory->priv->load_module (),
 			       module);
@@ -184,8 +180,9 @@ hd_plugin_loader_factory_init (HDPluginLoaderFactory *factory)
 			   (GDestroyNotify) g_free,
 			   (GDestroyNotify) g_module_close);
 
+  factory->priv->monitor = NULL;
+  
   hd_plugin_loader_factory_load_modules (factory);
-
 }
 
 static void
@@ -206,6 +203,12 @@ hd_plugin_loader_factory_finalize (GObject *object)
   if (priv->modules != NULL) 
   {
     g_hash_table_destroy (priv->modules);
+  }
+
+  if (priv->monitor != NULL) 
+  {
+    gnome_vfs_monitor_cancel (priv->monitor);
+    priv->monitor = NULL;
   }
 
   G_OBJECT_CLASS (hd_plugin_loader_factory_parent_class)->finalize (object);
@@ -317,7 +320,7 @@ hd_plugin_loader_factory_create (HDPluginLoaderFactory *factory,
 	}
 	else
 	{
-	  g_debug ("%s: module invalid, discarding it for future use",__FILE__);
+	  g_warning ("%s: module invalid, discarding it for future use", __FILE__);
 	  g_hash_table_remove (priv->modules, type);
 	}
       }

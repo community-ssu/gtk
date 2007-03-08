@@ -1,3 +1,10 @@
+2007-03-08  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: added configuration monitoring code. Always use
+	user configuration directory files when present. Fallback to
+	system-wide configuration when no user configuration is present.
+	* src/hd-plugin-loader-factory.c: removed useless debug messages.
+
 2007-03-07  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.[ch]:

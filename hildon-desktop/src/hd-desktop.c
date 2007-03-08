@@ -62,16 +62,17 @@ typedef struct
   gchar                  *plugin_dir;
   GtkWidget              *container;
   HDDesktop              *desktop;
-  GnomeVFSMonitorHandle  *monitor;
+  GnomeVFSMonitorHandle  *plugin_dir_monitor;
 } HDDesktopContainerInfo;
 
 struct _HDDesktopPrivate 
 {
-  gchar           *config_path;
-  gchar           *config_file;
-  GHashTable      *containers;
-  GObject         *pm;
-  GtkListStore    *nm;
+  gchar                 *config_file;
+  GnomeVFSMonitorHandle *system_conf_monitor;
+  GnomeVFSMonitorHandle *user_conf_monitor;
+  GHashTable            *containers;
+  GObject               *pm;
+  GtkListStore          *nm;
 #ifdef HAVE_LIBOSSO
   osso_context_t  *osso_context;
 #endif
@@ -95,6 +96,36 @@ hd_desktop_find_by_id (gconstpointer a, gconstpointer b)
   g_free (id);
 
   return result;
+}
+
+static gchar *
+hd_desktop_get_conf_file_path (const gchar *config_file)
+{
+  gchar *config_file_path;
+        
+  config_file_path = g_build_filename (g_get_home_dir (),
+                                       HD_DESKTOP_CONFIG_USER_PATH, 
+                                       config_file,
+                                       NULL);
+
+  /* If there's no user configuration file, fall to global
+     configuration file at sysconfdir. */
+  if (!g_file_test (config_file_path, G_FILE_TEST_EXISTS))
+  {
+    g_free (config_file_path);
+
+    config_file_path = g_build_filename (HD_DESKTOP_CONFIG_PATH, 
+                                         config_file,
+                                         NULL);
+
+    if (!g_file_test (config_file_path, G_FILE_TEST_EXISTS))
+    {
+      g_free (config_file_path);
+      config_file_path = NULL;
+    }
+  }
+
+  return config_file_path; 
 }
 
 static GList *
@@ -125,9 +156,15 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
   GList *iter;
   GError *error = NULL;
   gchar *buffer;
+  gchar *config_file_path;
   gint buffer_size;
 
   g_return_if_fail (config_file != NULL);
+
+  config_file_path = g_build_filename (g_get_home_dir (),
+                                       HD_DESKTOP_CONFIG_USER_PATH, 
+                                       HD_DESKTOP_CONFIG_FILE,
+                                       NULL);
 
   keyfile = g_key_file_new ();
 
@@ -164,7 +201,7 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
     return;
   }
 
-  g_file_set_contents (config_file, buffer, buffer_size, &error);
+  g_file_set_contents (config_file_path, buffer, buffer_size, &error);
 
   if (error)
   {
@@ -174,6 +211,7 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
     return;
   }
 
+  g_free (config_file_path);
   g_key_file_free (keyfile);
 }
 
@@ -313,8 +351,8 @@ hd_desktop_free_container_info (HDDesktopContainerInfo *info)
   if (info->container)
     gtk_widget_destroy (info->container);
 
-  if (info->monitor)
-    gnome_vfs_monitor_cancel (info->monitor);
+  if (info->plugin_dir_monitor)
+    gnome_vfs_monitor_cancel (info->plugin_dir_monitor);
   
   g_free (info);
 }
@@ -324,36 +362,115 @@ hd_desktop_remove_container_info (gpointer key, gpointer value, gpointer data)
 {
   return TRUE;
 }
-        
-static void
-hd_desktop_config_changed (gchar *config_file, HDDesktop *desktop)
-{
-  /* FIXME: this is done because g_hash_table_remove_all is not 
-     available in glib <= 2.12 */
-  g_hash_table_foreach_remove (desktop->priv->containers, 
-                               hd_desktop_remove_container_info,
-                               NULL);
 
-  hd_desktop_load_containers (desktop);
+static void
+hd_desktop_system_conf_dir_changed (GnomeVFSMonitorHandle *handle,
+                                    const gchar *monitor_uri,
+                                    const gchar *info_uri,
+                                    GnomeVFSMonitorEventType event_type,
+                                    HDDesktop *desktop)
+{
+  HDDesktopPrivate *priv;
+  gchar *filename, *user_conf;
+
+  g_return_if_fail (HD_IS_DESKTOP (desktop));
+  
+  priv = desktop->priv;
+  
+  filename = g_path_get_basename (info_uri);
+
+  user_conf = g_build_filename (g_get_home_dir (),
+                                HD_DESKTOP_CONFIG_USER_PATH,
+                                filename,
+                                NULL);
+  
+  if (g_file_test (user_conf, G_FILE_TEST_EXISTS))
+    goto out;
+
+  if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
+  {
+    /*
+    g_free (priv->config_file);
+    priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
+    hd_desktop_load_containers (desktop);
+    */
+  } else {
+    HDDesktopContainerInfo *info;
+    GList *plugin_list = NULL;
+    
+    info = g_hash_table_lookup (priv->containers, filename);
+
+    if (info != NULL)
+    {
+      gchar *config_file;
+      
+      config_file = hd_desktop_get_conf_file_path (info->config_file);
+      
+      plugin_list = hd_desktop_plugin_list_from_conf (config_file);
+
+      hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
+                              plugin_list, 
+                              HILDON_DESKTOP_WINDOW (info->container)->container);
+
+      g_free (config_file);
+      g_list_foreach (plugin_list, (GFunc) g_free , NULL);
+      g_list_free (plugin_list);
+    }
+  }
+
+out:
+  g_free (user_conf);
+  g_free (filename);
 }
 
 static void
-hd_desktop_container_config_changed (gchar *config_file, HDDesktop *desktop)
+hd_desktop_user_conf_dir_changed (GnomeVFSMonitorHandle *handle,
+                                  const gchar *monitor_uri,
+                                  const gchar *info_uri,
+                                  GnomeVFSMonitorEventType event_type,
+                                  HDDesktop *desktop)
 {
-  HDDesktopContainerInfo *info;
-  GList *plugin_list = NULL;
+  HDDesktopPrivate *priv;
+  gchar *filename;
+
+  g_return_if_fail (HD_IS_DESKTOP (desktop));
   
-  info = g_hash_table_lookup (desktop->priv->containers,
-                              config_file);
+  priv = desktop->priv;
+  
+  filename = g_path_get_basename (info_uri);
 
-  plugin_list = hd_desktop_plugin_list_from_conf (config_file);
+  if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
+  {
+    /*
+    g_free (priv->config_file);
+    priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
+    hd_desktop_load_containers (desktop);
+    */
+  } else {
+    HDDesktopContainerInfo *info;
+    GList *plugin_list = NULL;
+    
+    info = g_hash_table_lookup (priv->containers, filename);
 
-  hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
-                          plugin_list, 
-                          HILDON_DESKTOP_WINDOW (info->container)->container);
+    if (info != NULL)
+    {
+      gchar *config_file;
+      
+      config_file = hd_desktop_get_conf_file_path (info->config_file);
+      
+      plugin_list = hd_desktop_plugin_list_from_conf (config_file);
 
-  g_list_foreach (plugin_list, (GFunc) g_free , NULL);
-  g_list_free (plugin_list);
+      hd_plugin_manager_sync (HD_PLUGIN_MANAGER (desktop->priv->pm), 
+                              plugin_list, 
+                              HILDON_DESKTOP_WINDOW (info->container)->container);
+
+      g_free (config_file);
+      g_list_foreach (plugin_list, (GFunc) g_free , NULL);
+      g_list_free (plugin_list);
+    }
+  }
+
+  g_free (filename);
 }
 
 static void
@@ -419,24 +536,14 @@ hd_desktop_plugin_dir_changed (GnomeVFSMonitorHandle *handle,
 }
 
 static void 
-hd_desktop_watch_file (gchar    *config_file, 
-                       gpointer  callback, 
-                       gpointer  user_data)
+hd_desktop_watch_dir (gchar                 *plugin_dir, 
+                      gpointer               callback,
+                      GnomeVFSMonitorHandle *monitor, 
+                      gpointer               user_data)
 {
-  /* Add file alteration watcher code here to make it keep
-     track of config_file alterations */
-}
-
-static void 
-hd_desktop_watch_dir (gchar    *plugin_dir, 
-                      gpointer  callback, 
-                      gpointer  user_data)
-{
-  HDDesktopContainerInfo *info = (HDDesktopContainerInfo *) user_data;
-
   g_return_if_fail (plugin_dir);
 
-  gnome_vfs_monitor_add  (&info->monitor, 
+  gnome_vfs_monitor_add  (&monitor, 
                           plugin_dir,
                           GNOME_VFS_MONITOR_DIRECTORY,
                           (GnomeVFSMonitorCallback) callback,
@@ -457,6 +564,12 @@ hd_desktop_load_containers (HDDesktop *desktop)
 
   priv = desktop->priv;
 
+  /* FIXME: this is done because g_hash_table_remove_all is not 
+     available in glib <= 2.12 */
+  g_hash_table_foreach_remove (desktop->priv->containers, 
+                               hd_desktop_remove_container_info,
+                               NULL);
+
   g_return_if_fail (priv->config_file != NULL);
 
   keyfile = g_key_file_new ();
@@ -468,8 +581,8 @@ hd_desktop_load_containers (HDDesktop *desktop)
 
   if (error)
   {
-    g_warning ("Error loading desktop configuration file: %s", 
-               error->message);
+    g_error ("Error loading desktop configuration file: %s", 
+              error->message);
 
     g_error_free (error);
 
@@ -505,30 +618,16 @@ hd_desktop_load_containers (HDDesktop *desktop)
       continue;
     }
 
-    container_config = g_build_filename (desktop->priv->config_path, 
-                                         container_config_file,
-                                         NULL);
+    container_config = hd_desktop_get_conf_file_path (container_config_file); 
 
-    /* If use container configuration file is not on user dir, 
-       try to find it on hildon-desktop global configuration dir.
-       If it's not found there, ignore the container. */
-    if (!g_file_test (container_config, G_FILE_TEST_EXISTS))
+    if (container_config == NULL)
     {
+      g_warning ("Container configuration file doesn't exist, ignoring container");
+
       g_free (container_config);
+      g_free (container_config_file);
 
-      container_config = g_build_filename (HD_DESKTOP_CONFIG_PATH, 
-                                           container_config_file,
-                                           NULL);
-
-      if (!g_file_test (container_config, G_FILE_TEST_EXISTS))
-      {
-        g_warning ("Container configuration file doesn't exist, ignoring container");
-
-        g_free (container_config);
-        g_free (container_config_file);
-
-        continue;
-      }
+      continue;
     }
 
     plugin_dir = g_key_file_get_string (keyfile, 
@@ -739,7 +838,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
       continue;
     }
 
-    info->config_file = g_strdup (container_config);
+    info->config_file = g_strdup (container_config_file);
     info->plugin_dir = g_strdup (plugin_dir);
     info->desktop = desktop;
     
@@ -758,15 +857,12 @@ hd_desktop_load_containers (HDDesktop *desktop)
                       G_CALLBACK (hd_desktop_container_load),
                       info);
 
-    hd_desktop_watch_file (container_config, 
-                           hd_desktop_container_config_changed, 
-                           info->container);
-
     hd_desktop_watch_dir (plugin_dir, 
-                          hd_desktop_plugin_dir_changed, 
+                          hd_desktop_plugin_dir_changed,
+                          info->plugin_dir_monitor, 
                           info);
 
-    g_hash_table_insert (priv->containers, container_config, info);
+    g_hash_table_insert (priv->containers, container_config_file, info);
 
     plugin_list = hd_desktop_plugin_list_from_conf (container_config);
 
@@ -777,7 +873,6 @@ hd_desktop_load_containers (HDDesktop *desktop)
     gtk_widget_show (info->container);
 
     g_free (type);
-    g_free (container_config_file);
     g_free (plugin_dir);
     g_list_foreach (plugin_list, (GFunc) g_free , NULL);
     g_list_free (plugin_list);
@@ -790,58 +885,46 @@ hd_desktop_load_containers (HDDesktop *desktop)
 static void
 hd_desktop_init (HDDesktop *desktop)
 {
+  HDDesktopPrivate *priv;
+  gchar *user_conf_dir;
   const gchar *env_config_file;
 
   desktop->priv = HD_DESKTOP_GET_PRIVATE (desktop);
 
-  desktop->priv->config_path = g_build_filename (g_get_home_dir (), 
-                                                 HD_DESKTOP_CONFIG_USER_PATH, 
-                                                 NULL);
+  priv = desktop->priv;
+  
+  user_conf_dir = g_build_filename (g_get_home_dir (), 
+                                    HD_DESKTOP_CONFIG_USER_PATH, 
+                                    NULL);
 
-  if (g_mkdir_with_parents (desktop->priv->config_path, 0755) < 0)
+  if (g_mkdir_with_parents (user_conf_dir, 0755) < 0)
   {
     g_error ("Error on creating desktop user configuration directory");
   }
 
   env_config_file = getenv ("HILDON_DESKTOP_CONFIG_FILE");
 
-  /* Environment variable overrides default config file  */
+  /* Environment variable overrides default config file */
   if (env_config_file == NULL)
   {
-    desktop->priv->config_file = g_build_filename (desktop->priv->config_path, 
-                                                   HD_DESKTOP_CONFIG_FILE,
-                                                   NULL);
+    priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE); 
 
-    /* If there's no user desktop configuration file, fall to global
-       configuration file at sysconfdir. If still not found a fatal error
-       occurs. */
-    if (!g_file_test (desktop->priv->config_file, G_FILE_TEST_EXISTS))
+    if (priv->config_file == NULL)
     {
-      g_free (desktop->priv->config_file);
-
-      desktop->priv->config_file = g_build_filename (HD_DESKTOP_CONFIG_PATH, 
-                                                     HD_DESKTOP_CONFIG_FILE,
-                                                     NULL);
-
-      if (!g_file_test (desktop->priv->config_file, G_FILE_TEST_EXISTS))
-      {
-        g_error ("No desktop configuration file found, exiting...");
-      }
+      g_error ("No desktop configuration file found, exiting...");
     }
   }
   else
   {
-    desktop->priv->config_file = g_strdup (env_config_file);
+    priv->config_file = g_strdup (env_config_file);
   }
 
+  g_free (user_conf_dir);
+  
 #ifdef HAVE_LIBOSSO
   desktop->priv->osso_context = osso_initialize (PACKAGE, VERSION, TRUE, NULL);
 #endif
   
-  hd_desktop_watch_file (desktop->priv->config_file, 
-                         hd_desktop_config_changed, 
-                         desktop);
-
   desktop->priv->containers = 
           g_hash_table_new_full (g_str_hash, 
 	  		         g_str_equal,
@@ -851,6 +934,9 @@ hd_desktop_init (HDDesktop *desktop)
   desktop->priv->pm = hd_plugin_manager_new (); 
 
   desktop->priv->nm = hildon_desktop_notification_manager_get_singleton (); 
+
+  desktop->priv->system_conf_monitor = NULL;
+  desktop->priv->user_conf_monitor = NULL;
 }
 
 static void
@@ -863,28 +949,40 @@ hd_desktop_finalize (GObject *object)
 
   priv = HD_DESKTOP (object)->priv;
 
-  if (priv->config_file)
+  if (priv->config_file != NULL)
   {
     g_free (priv->config_file);
     priv->config_file = NULL;
   }
 
-  if (priv->containers)
+  if (priv->containers != NULL)
   {
     g_hash_table_destroy (priv->containers);
     priv->containers = NULL;
   }
 
-  if (priv->pm)
+  if (priv->pm != NULL)
   {
     g_object_unref (priv->pm);
     priv->pm = NULL;
   }
 
-  if (priv->nm)
+  if (priv->nm != NULL)
   {
     g_object_unref (priv->nm);
     priv->nm = NULL;
+  }
+
+  if (priv->system_conf_monitor != NULL)
+  {
+    gnome_vfs_monitor_cancel (priv->system_conf_monitor);
+    priv->system_conf_monitor = NULL;
+  }
+
+  if (priv->user_conf_monitor != NULL)
+  {
+    gnome_vfs_monitor_cancel (priv->user_conf_monitor);
+    priv->user_conf_monitor = NULL;
   }
 
   G_OBJECT_CLASS (hd_desktop_parent_class)->finalize (object);
@@ -911,5 +1009,23 @@ hd_desktop_new ()
 void
 hd_desktop_run (HDDesktop *desktop)
 {
+  gchar *user_conf_dir;
+        
   hd_desktop_load_containers (desktop);
+
+  user_conf_dir = g_build_filename (g_get_home_dir (), 
+                                    HD_DESKTOP_CONFIG_USER_PATH, 
+                                    NULL);
+
+  hd_desktop_watch_dir (HD_DESKTOP_CONFIG_PATH, 
+                        hd_desktop_system_conf_dir_changed,
+                        desktop->priv->system_conf_monitor, 
+                        desktop);
+
+  hd_desktop_watch_dir (user_conf_dir, 
+                        hd_desktop_user_conf_dir_changed,
+                        desktop->priv->user_conf_monitor, 
+                        desktop);
+
+  g_free (user_conf_dir);
 }
