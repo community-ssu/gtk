@@ -1,75 +1,454 @@
-gtk-engines
-===========
+sapwood
+=======
 
-This package provides three sample theme engines for GTK+:
+Derived from the pixbuf engine in gtk-engines 2.2.0
 
- Pixmap: A generic engine that renders using pixmaps.
-   One theme using this theme engine is included.
+Uses X pixmaps (pixbuf engine uses pixbufs)
+Not supported:
+ * scaling of images
+ * 8bit alpha
+ * gradients
+ * recoloring
 
- Metal: A fairly complete theme engine that looks like the
-   Java-Metal look of Swing.
+Instead
+ * uses a separate daemon process
+ * images are tiled (see 'Images and borders' below)
+ * 1bit alpha
+ * shaped windows (see 'shaped' below)
+ * leading wildcard in detail handling
+ * special cases for some widgets (see 'Special cases')
 
- Redmond95: A simple theme engine that looks a bit like 
-   Microsoft Windows 95.
 
-Requirements
-============
+Note that 1bit alpha still allows you to do things like drop shadows in some
+cases. You just need to be careful about the background and fake the effect
+with opaque bitmaps.
 
-To compile this package, you must have:
-
- GTK+, version 1.3.12 or better
-
-   http://www.gtk.org/
-   ftp://ftp.gtk.org/pub/gtk/
 
 Installation
 ============
 
- ./configure 
+ ./configure
  make
  [ become root ]
  make install
 
 
-If you configured GTK+ in a non-default prefix, you should
-configure this package the same way. For instance:
+Running
+=======
 
- ./configure --prefix=/opt/gtk+
+In order to run applications using the sapwood theme engine, the
+sapwood-server needs to be started beforehand. You can do this by running the
+following command:
 
-If you need to install this package in a different prefix
-from GTK+, then you'll have to set your GTK_PATH environment
-variable to point to the installed prefix. For instance,
-if this package was configured with:
+ /usr/lib/sapwood/sapwood-server &
 
- ./configure --prefix=/home/john.doe/gtk-engines/
+It is important to use the same TMPDIR and DISPLAY environment variables for
+both the sapwood-server as well as the applications so that the theme engine
+knows how to connect to the server. If the theme engine fails to connect to
+the server for any reason you should see an error message similar to following
+in the console:
 
-Then you'd set:
+ `/usr/lib/sapwood/sapwood-server' MUST be started before applications
 
- GTK_PATH=/home/john.doe/gtk-engines/lib/gtk-2.0/
- export GTK_PATH
-
-This will allow GTK+ to find the newly installed theme
-engines. To use the sample themes (installed into 
-$prefix/share/themes), you'll need to copy copy or link them 
-into your  ~/.theme directory.
-
-Further Information
-===================
-
-Questions about this package should be directed to the
-GTK+ mailing lists. See:
-
-  http://www.gtk.org/mailinglists.html
+When that happens, check the TMPDIR and DISPLAY environment variables and
+check the sapwood-server process is running.
 
 
+Bugs
 ====
-Owen Taylor <otaylor@redhat.com>
-The Rasterman <raster@redhat.com>
-18 Jan 1999
 
-Owen Taylor <otaylor@redhat.com>
-23 Jan 2002
+Please report bugs to maemo.org bugzilla:
+https://maemo.org/bugzilla/enter_bug.cgi?product=haf&component=sapwood
 
-All software in this package is Copyright (C) 1999-2002 Red Hat Software and
-Randy Gordon and is distributed under the LGPL License (same as gtk+)
 
+gtkrc
+=====
+
+Mostly compatible with the pixbuf engine
+ * engine "sapwood" instead of "pixmap"
+ * 'recolorable' declaration is not supported
+
+This document covers only the theme engine specific details. For more generic
+overview see the following links:
+ * http://developer.gnome.org/doc/API/2.0/gtk/gtk-Resource-Files.html
+ * http://live.gnome.org/GnomeArt/Tutorials/GtkThemes
+
+
+Overview
+--------
+engine "sapwood" {
+  image { ... }
+  image { ... }
+  image { ... }
+  ...
+}
+
+image {
+  [match options]
+
+  [image data]
+}
+
+'image data' is optional. You can disable painting by omitting all file
+references. This can be useful for FOCUS rules in case you want to use the
+background images to indicate the focus and not paint the focus indicator
+separately on top.
+
+Example:
+
+image {
+  function = FOCUS
+}
+
+
+Precedence
+----------
+The order of image blocks matters. The first image to satisfy the match options
+is used. Put the specific rules first and generic rules last, like this:
+
+engine "sapwood" {
+  image {
+    function = BOX
+    state    = INSENSITIVE
+    [specific image]
+  }
+  image {
+    function = BOX
+    [generic image]
+  }
+}
+
+If the two image blocks are reordered, the 'generic image' is always used,
+even for INSENSITIVE widgets.
+
+
+match options
+-------------
+The widget, widget_class and class declarations supported by gtk+ let you to
+attach style declarations to widgets. The image declarations let you attach
+images to the painting commands used by the widgets.
+
+Match options are used to select the right image 
+
+The values map directly to the functions and parameters used by the
+implementation. 
+
+http://live.gnome.org/GnomeArt/Tutorials/GtkThemes describes how some widgets
+are drawn, but in most cases you need to read the code to find the details.
+
+
+C                                   gtkrc
+--------------------------------------------------------------------
+                                    style "button" {
+                                      engine "sapwood" {
+                                        image {
+gtk_paint_box(                                  function = BOX
+  state  = GTK_STATE_NORMAL                  state = NORMAL
+  shadow = GTK_SHADOW_IN                  shadow = IN
+  widget = <GtkButton>
+  detail = "buttondefault"                  detail = "buttondefault"
+)
+                                          [image data]
+                                        }
+                                      }
+                                    }
+                                    class "GtkButton" style "button"
+--------------------------------------------------------------------
+
+The following options are always available. 'function' is mandatory and
+determines what other options are available.
+  function = (mandatory, see the table below for recognized values)
+
+You can add specifity to the rule with the following options, regardless of
+function: 
+  detail = (string, such as "buttondefault")
+  state  = NORMAL | ACTIVE | PRELIGHT | SELECTED | INSENSITIVE
+
+You can add further specifity to the rules with the following options,
+depending on function (see the table below for which options are valid for each
+function)
+  arrow_direction = UP | DOWN | LEFT | RIGHT
+  gap_side        = TOP | BOTTOM | LEFT | RIGHT
+  orientation     = HORIZONTAL | VERTICAL
+  position        = (comma separated list of) UP | DOWN | LEFT | RIGHT
+  shadow          = NONE | IN | OUT | ETCHED_IN | ETCHED_OUT
+
+
+function     options                                       gtk function call
+----------------------------------------------------------------------------------------------
+ARROW      | arrow_direction                      shadow | gtk_paint_arrow, gtk_paint_expander
+BOX_GAP    |                 gap_side orientation shadow | gtk_paint_box_gap
+BOX        |                                      shadow | gtk_paint_box
+CHECK      |                                      shadow | gtk_paint_check
+DIAMOND    |                                      shadow | gtk_paint_diamond
+EXTENSION  |                 gap_side             shadow | gtk_paint_extension
+FLAT_BOX   |                                      shadow | gtk_paint_flat_box
+FOCUS      |                                             | gtk_paint_focus
+HANDLE     |                          orientation shadow | gtk_paint_handle
+HLINE      |                          orientation        | gtk_paint_hline
+OPTION     |                                      shadow | gtk_paint_option
+SHADOW_GAP |                 gap_side orientation shadow | gtk_paint_shadow_gap
+SHADOW     |                                      shadow | gtk_paint_shadow
+SLIDER     |                          orientation shadow | gtk_paint_slider
+STEPPER    | arrow_direction                      shadow | 
+TAB        |                                      shadow | gtk_paint_tab
+VLINE      |                          orientation        | gtk_paint_vline
+----------------------------------------------------------------------------------------------
+
+
+function = ARROW
+~~~~~~~~~~~~~~~~
+gtk_paint_expander uses arrows.
+
+
+function = FOCUS
+~~~~~~~~~~~~~~~~
+Focus indicator is always painted on top of all other graphics and the widget
+content. It should be a (hollow) rectangle with transparency. Otherwise it will
+hide the content.
+
+
+function = STEPPER
+~~~~~~~~~~~~~~~~~~
+Used for scrollbar arrows.
+
+
+position
+~~~~~~~~
+You can select different graphics based on the position of the widget inside
+the container. The value for position is a combination of LEFT, RIGHT, TOP, and
+BOTTOM when the widget is leftmost, rightmost, topmost, or bottommost
+respectively.
+
+Used only for buttons in button boxes.
+
+See demos/buttonbox.gtkrc
+
+
+image data
+----------
+
+file    = (filename, see the example below)
+border  = { left, right, top, bottom }	    (default: { 0, 0, 0, 0 })
+stretch = TRUE | FALSE			    (default: TRUE)
+shaped  = TRUE | FALSE			    (default: FALSE)
+
+Note the defaults.
+
+image {
+  function = BOX
+
+  file    = "image.png"
+  border  = { 0, 0, 0, 0 }
+  stretch = TRUE
+}
+
+The above can be written shorter as:
+
+image {
+  function = BOX
+
+  file = "image.png"
+}
+
+
+file
+~~~~
+Path to an image file whose format is supported by GdkPixbuf. The path should
+be relative (relative to the directory where the gtkrc file is located, or
+relative to the paths set with 'pixmap_path') 
+
+Note that 'pixmap_path' declaration can save you some typing with the
+filenames. Assuming the following directory structure:
+
+/usr/share/themes/mytheme/gtk-2.0/gtkrc
+                         /images/button.png
+
+The following gtkrc snippets are equivalent.
+
+----
+style "button" {
+  engine "sapwood" {
+    image {
+      function = BOX
+
+      file = "../images/button.png"
+    }
+  }
+}
+----
+pixmap_path "../images"
+
+style "button" {
+  engine "sapwood" {
+    image {
+      function = BOX
+
+      file = "button.png"
+    }
+  }
+}
+----
+
+
+border
+~~~~~~
+Used together with 'stretch = TRUE' See 'Images and borders' below for more
+details.
+
+NOTE: the same file (including overlays and gaps) can not be referenced
+multiple times with different border values. This is a limitation in the
+implementation. It is unlikely to cause any significant problems as the same
+image is rarely meant to be tiled in different ways. It is more commonly an
+indication of a typo in the gtkrc file.
+
+
+shaped
+~~~~~~
+When set to TRUE the transparent pixels (more than 50% transparency) in the
+bitmap are applied to the underlying window. This allows menus, for example,
+to have rounded corners.
+
+NOTE: If the bitmap does not have an alpha channel, shaped must NOT be set or
+strange drawing artefacts will appear.
+
+Used only for GtkWindow and GtkMenu widgets (and derivatives)
+
+
+stretch
+~~~~~~~
+When set to TRUE the image is stretched to fill the whole area that is
+requested. See 'Images and borders' below for how the stretching is done.
+
+When set to FALSE the image is centered instead.
+
+Note: stretch = FALSE and border != 0 makes no sense
+
+
+overlay
+~~~~~~~
+overlay_file, overlay_border, overlay_stretch
+
+Overlay image is painted after the background image (as referenced by 'file')
+This allows you to add small details to parts of the widgets, such as the
+scrollbar slider or the GtkPaned drag handle.
+
+NOTE: 'overlay_stretch = TRUE' rarely makes sense as it'll paint over the area
+already covered by the background image. 
+
+Not used if function is BOX_GAP, FOCUS, HLINE, SHADOW, SHADOW_GAP, or VLINE.
+
+
+gap_start, gap, gap_end
+~~~~~~~~~~~~~~~~~~~~~~~
+When function is BOX_GAP or SHADOW_GAP more images are needed to paint the gap
+differently from its surroundings. Use the following declarations:
+ * gap_start_file, gap_start_border, gap_start_stretch
+ * gap_file, gap_border, gap_stretch
+ * gap_end_file, gap_end_border, gap_end_stretch
+
+They're similar to file, border and stretch.
+
+
+Images and borders
+==================
+
+border = { left, right, top, bottom }
+the number of pixels from left, right, top and bottom edge respectively
+
+This chapter tries to explain how the image stretching is done. The border
+values define how the original image is to be stretched to fill up larger
+areas. They are used to divide the image into a 3x3 grid of smaller images.
+These smaller images are tiled, or not depending on their position in the
+grid, while painting.
+
+Take a 5x5 pixels image for example, with borders of 2px on each side. The
+grid will look something like below. The corner pieces (1,3,7,9) are 2x2
+pixels, the center (5) is 1x1 pixels and the horizontal (4,6) and vertical
+(2,8) slices are 2x1 and 1x2 pixels respectively.
+
++--+-+--+
+|11|2|33| top
+|11|2|33|
++--+-+--+
+|44|5|66|
++--+-+--+
+|77|8|99| bottom
+|77|8|99|
++--+-+--+
+ ^    right
+ left
+
+
+When the image is stretched to fill up say a 11x8 pixels area the stretched
+image will look something like below. The corner pieces (1,3,7,9) are still
+2x2 pixels, the horizontal slices (4,6) are tiled only vertically, the
+vertical slices (2,8) are tiled only horizontally, and the center (5) is tiled
+both horizontally and vertically.
+
++--+-------+--+
+|11|2222222|33| top
+|11|2222222|33|
++--+-------+--+
+|44|5555555|66|
+|44|5555555|66|
+|44|5555555|66|
+|44|5555555|66|
++--+-------+--+
+|77|8888888|99| bottom
+|77|8888888|99|
++--+-------+--+
+ ^          right
+ left
+
+1,3,7,9 are fixed
+    2,8 are tiled horizontally
+    4,6 are tiled vertically
+      5 is tiled both horizontally and vertically
+
+
+
+Special cases
+=============
+
+The theme engine includes special cases for some widgets which are needed to
+get the Maemo look and feel. They should not interfere when not used.
+
+
+GtkButton
+---------
+You can use the button position in the button box (solitary, leftmost, middle,
+rightmost) to select different bitmaps for buttons in button boxes. This allows
+painting dialog buttons nicely rounded.
+
+See 'position' above and demos/buttonbox.gtkrc
+
+
+GtkCheckButton and GtkRadioButton
+---------------------------------
+You can use artificial ACTIVE state to select different bitmaps for check and
+radio button indicators when the widget is focused. This allows painting focus
+indicator style different from the standard dashed rectangle.
+
+GtkCheckButton:
+  function = CHECK
+  state    = ACTIVE
+
+GtkRadioButton:
+  function = OPTION
+  state    = ACTIVE
+
+
+GtkTreeView
+-----------
+Focus row background:
+  function = FLAT_BOX
+  state    = ACTIVE
+  shadow   = NONE for active, OUT for passive focus
+
+See demos/treeview.gtkrc
+
+
+Random details
+==============
+Changing an image file might require switching themes.
