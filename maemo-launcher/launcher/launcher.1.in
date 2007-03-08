@@ -25,7 +25,7 @@ Fork and go to background.
 .B \-\-pidfile \fIPIDFILE\fP
 Specify a different filename for the pid file.
 .TP
-.B \-\-booster \fIMODULE\fP
+.BR \-\-booster " \fIMODULE\fP,\fI...\fP"
 Specify a booster module to use, to preinitialize some state.
 .TP
 .B \-\-quiet

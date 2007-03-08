@@ -1,5 +1,10 @@
 2007-03-08  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/launcher.1.in: Update the '--booster' option to mention
+	that it supports multiple boosters now.
+
+2007-03-08  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/booster_api.h: When included from C++ declare as extern C.
 
 2007-03-08  Johannes Schmid <johannes.schmid@openismus.com>,
