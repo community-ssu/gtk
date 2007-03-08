@@ -23,6 +23,10 @@
 #ifndef BOOSTER_API_H
 #define BOOSTER_API_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef void *booster_state_t;
 
 typedef struct {
@@ -33,6 +37,10 @@ typedef struct {
 } booster_api_t;
 
 #define BOOSTER_API_VERSION 0
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
