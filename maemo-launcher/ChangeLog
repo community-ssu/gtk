@@ -1,5 +1,12 @@
 2007-03-08  Guillem Jover  <guillem.jover@nokia.com>
 
+	* launcher/booster.pc.in (exec_prefix): New variable.
+	(pkglibdir): New variable.
+	(pkgincludedir): Renamed to ...
+	(includedir): ... this. Fix all users.
+
+2007-03-08  Guillem Jover  <guillem.jover@nokia.com>
+
 	* launcher/launcher.1.in: Update the '--booster' option to mention
 	that it supports multiple boosters now.
 

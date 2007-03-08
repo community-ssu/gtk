@@ -3,10 +3,12 @@
 #
 
 prefix=@prefix@
-pkgincludedir=@includedir@/@PACKAGE@
+exec_prefix=@exec_prefix@
+includedir=@includedir@
+pkglibdir=@libdir@/@PACKAGE@
 
 Name: maemo-launcher-booster
 Description: maemo-launcher booster module
 Version: @VERSION@
-Cflags: -I${pkgincludedir}
+Cflags: -I${includedir}
 
