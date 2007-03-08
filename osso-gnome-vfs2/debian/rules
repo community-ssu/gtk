@@ -2,21 +2,25 @@
 
 #export DH_VERBOSE=1
 
-DH_ALWAYS_EXCLUDE := .svn
-
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/cdbs/1/class/autotools.mk
 include /usr/share/cdbs/1/class/gnome.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 include /usr/share/cdbs/1/rules/utils.mk
 
-# debug lib
+DEB_DH_ALWAYS_EXCLUDE := .svn
+
+# Debug symbol packages
 DEB_DH_STRIP_ARGS := --dbg-package=libosso-gnomevfs2-0 --dbg-package=libosso-gnomevfs2-common --dbg-package=libosso-gnomevfs2-samba
 
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-samba --disable-gnutls --disable-openssl \
+	--disable-avahi --disable-hal --disable-fam --disable-howl \
 	--disable-gtk-doc --libexecdir=/usr/libexec --enable-more-warnings=no
 
-DEB_DH_INSTALL_ARGS := -Xlibextfs -Xlibnntp -Xlibvfs-pipe -Xlibcomputer -Xlibfile -Xlibvfolder-desktop
+# For the ssh support so it doesn't pick up /scratchbox/tools/bin/ssh
+DEB_CONFIGURE_SCRIPT_ENV += SSH_PROGRAM=/usr/bin/ssh
+
+DEB_DH_INSTALL_ARGS := -Xlibnntp -Xlibcomputer -Xlibfile
 
 DEB_DH_MAKESHLIBS_ARGS_libosso-gnomevfs2-common := --no-act
 
@@ -27,16 +31,10 @@ endif
 
 post-patches:: debian/stamp-autothings-update
 debian/stamp-autothings-update:
-	NOCONFIGURE=1 ./autogen.sh
+	# Set ACLOCAL_FLAGS so that libtool.m4 is picked up in scratchbox 1.0.x + sardine
+	NOCONFIGURE=1 ACLOCAL_FLAGS="-I /targets/links/arch_tools/share/aclocal" ./autogen.sh
 	# Can add things here that need to be ran after autogen.sh
 	touch $@
 
 clean::
 	rm -f debian/stamp-autothings-update
-	rm -f debian/stamp-libtool-patch
-
-common-configure-arch:: debian/stamp-libtool-patch
-debian/stamp-libtool-patch:
-	if [ `./libtool --version | head -1 |cut -d' ' -f4` = '1.5.6' ]; then \
-	    patch -p0 < debian/libtool-long-versions.patch; fi
-	touch $@

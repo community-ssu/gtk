@@ -1,3 +1,14 @@
+osso-gnome-vfs2 (2.16.3-1osso10) unstable; urgency=low
+
+  * Don't try to use the ssh binary installed as scratchbox tool
+  * Set ACLOCAL_FLAGS to find the broken libtool in sb 1.0 + sardine
+  * Remove the no longer needed libtool patch for high version numbers
+  * Explicitly disable avahi, fam and howl so it's more clear what is done
+  * Explicitly disable hal until we are supposed to enable it
+  * Remove options for modules that have been removed
+
+ -- Richard Hult <richard@imendio.com>  Thu,  8 Mar 2007 12:41:37 +0100
+
 osso-gnome-vfs2 (2.16.3-1osso9) unstable; urgency=low
 
   * Make a release with samba enabled
