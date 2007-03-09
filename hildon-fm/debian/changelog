@@ -1,3 +1,10 @@
+libhildonfm (1:1.9.13) unstable; urgency=low
+
+  * Conform to unified Hildon versioning scheme (but keep old versions for
+    the transitional packages).
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri,  9 Mar 2007 15:07:52 +0200
+
 libhildonfm (2.13-2) unstable; urgency=low
 
   * Make libhildonfm2-dev conflict with hildon-fm-dev (<= 2.10).
