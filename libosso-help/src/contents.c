@@ -416,7 +416,7 @@ const gchar *contents( struct s_OssoHelpWalker *s,
         GError* gerr= NULL;
         const gchar* fn;
         const gchar* path= ossohelp_getpath(NULL);
-        
+
         if (!s->gdir) {     /* first call, no dir iterator */
             s->gdir= g_dir_open( path, 
                                  0, /*flags ("must be set to 0") */
@@ -485,7 +485,7 @@ const gchar *contents( struct s_OssoHelpWalker *s,
             
             return s->key;  /* we're done! (this time) */
         }
-            
+
         g_dir_close(s->gdir);
         s->gdir= NULL;
         return NULL;    /* no more */
