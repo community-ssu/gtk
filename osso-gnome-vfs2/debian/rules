@@ -8,6 +8,7 @@ include /usr/share/cdbs/1/class/gnome.mk
 include /usr/share/cdbs/1/rules/simple-patchsys.mk
 include /usr/share/cdbs/1/rules/utils.mk
 
+# Skip .svn dirs if any in the build directories
 DEB_DH_ALWAYS_EXCLUDE := .svn
 
 # Debug symbol packages
