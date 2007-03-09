@@ -1,3 +1,8 @@
+2007-03-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* Reverted version to 1.9.0 for coherence with the rest
+	of Hildon
+
 2007-03-06  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 3.0.6

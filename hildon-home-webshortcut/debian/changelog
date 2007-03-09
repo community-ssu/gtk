@@ -1,3 +1,10 @@
+hildon-home-webshortcut (1:1.9.0-1) unstable; urgency=low
+
+  * Reverted version to 1.9.0 for coherence with the rest
+  of Hildon
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  9 Mar 2007 17:51:30 +0200
+
 hildon-home-webshortcut (3.0.6-1) unstable; urgency=low
 
   * plugin/hildon-home-webshortcut.c:
