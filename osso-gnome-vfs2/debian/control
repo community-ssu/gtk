@@ -2,7 +2,7 @@ Source: osso-gnome-vfs2
 Section: libs
 Priority: optional
 Maintainer: Richard Hult <richard@imendio.com>
-Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev, cdbs, libgconf2-dev (>= 2.6.4), libxml2-dev, gettext, debhelper (>> 4.1.0), zlib1g-dev, intltool, gnome-common, gnome-pkg-tools, libdbus-glib-1-dev (>= 0.60), gtk-doc-tools, libsmbclient-dev, libtool
+Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev, cdbs, libgconf2-dev (>= 2.6.4), libxml2-dev, gettext, debhelper (>> 4.1.0), zlib1g-dev, intltool, gnome-common, gnome-pkg-tools, libdbus-glib-1-dev (>= 0.60), gtk-doc-tools, libsmbclient-dev
 Standards-Version: 3.6.1.0
 
 Package: libosso-gnomevfs2-common
