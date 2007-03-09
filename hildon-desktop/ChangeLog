@@ -1,3 +1,8 @@
+2007-03-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: fix small bug when saving the container configuration 
+	file.
+
 2007-03-08  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/libhildonmenu.[ch]:

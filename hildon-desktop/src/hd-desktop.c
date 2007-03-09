@@ -163,7 +163,7 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
 
   config_file_path = g_build_filename (g_get_home_dir (),
                                        HD_DESKTOP_CONFIG_USER_PATH, 
-                                       HD_DESKTOP_CONFIG_FILE,
+                                       config_file,
                                        NULL);
 
   keyfile = g_key_file_new ();
