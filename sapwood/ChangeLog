@@ -1,3 +1,12 @@
+2007-03-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* AUTHORS
+	* NEWS.pixbuf
+	* src/ChangeLog
+	* src/README.pixbuf
+	* src/README.server: clean up and remove obsolete documentation
+	* HACKING: add documentation about the internals
+
 2007-03-08  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* README: replace with more detailed and relevant information

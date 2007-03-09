@@ -1,0 +1,347 @@
+Subversion
+==========
+ svn co https://stage.maemo.org/svn/maemo/projects/haf/trunk/sapwood
+ cd sapwood
+ ./autogen.sh
+ make
+ [ become root ]
+ make install
+
+
+Bugs
+====
+Please report bugs to maemo.org bugzilla:
+https://maemo.org/bugzilla/enter_bug.cgi?product=haf&component=sapwood
+
+
+Patches
+=======
+Please send patches to maemo.org bugzilla:
+https://maemo.org/bugzilla/enter_bug.cgi?product=haf&component=sapwood
+
+To make patch review process as smooth as possible, please follow the
+following guidelines. It'll help avoid unnecessary roundtrips.
+
+* Follow the existing (GNU) coding style.
+* Prepare patches with equivalent of 'diff -up' preferrably against the
+  latest trunk, for example:
+
+   svn diff -x -up
+
+  http://www.xenomai.org/index.php/Teaching_-p_to_svn_diff
+
+* Prepare a ChangeLog entry for every change. Include all modified files,
+  functions, variables, structs, etc. in the ChangeLog entry.
+* Attach the patch in bugzilla and include the ChangeLog entry as attachment
+  comment.
+
+
+Files
+=====
+
+sapwood-main.c
+--------------
+theme engine module entry points
+
+sapwood-rc-style.h
+sapwood-rc-style.c
+------------------
+GtkRcStyle method implementations, gtkrc parser
+
+sapwood-style.h
+sapwood-draw.c
+--------------
+GtkStyle declarations and method implementations
+
+theme-pixbuf.h
+--------------
+structs and enumerations, ThemePixbuf declarations
+
+sapwood-render.c
+----------------
+ThemePixbuf implementation
+
+sapwood-pixmap.h
+sapwood-pixmap.c
+----------------
+client side protocol implementation and pixmap handling
+
+sapwood-proto.h
+sapwood-proto.c
+---------------
+socket path
+
+sapwood-server.c
+----------------
+pixmap server implementation
+
+
+Basic flow
+==========
+Below is a typical control flow for the theme engine calls displayed as a sort
+of stack trace. [Square brackets] indicate a jump to different library or
+source file, indentation indicates the stack depth, the symbols are function
+names.
+
+
+libsapwood.so                                                   sapwood-server
+-----------------------------------------------------------------------------------------------------
+[gtk]              gtk_paint_box
+[sapwood-draw.c]     draw_box
+                       draw_simple_image
+                         match_theme_image
+[sapwood-render.c]       theme_pixbuf_render
+                           theme_pixbuf_get_geometry
+                           | theme_pixbuf_get_pixmap
+                           |   pixmap_cache_value_new (GCache)
+[sapwood-pixmap.c]         |     sapwood_pixmap_get_for_file
+                           |       pixbuf_proto_request ------> client_sock_callback
+                           |                                      process_buffer
+                           |                                        pixbuf_open_response_new (GCache)
+                           |                                          gdk_pixbuf_new_from_file
+                           |                                          extract_pixmaps
+                           |                                            extract_pixmap_single
+                           |                                              gdk_pixmap_new
+                           |                            <------     write
+                           | sapwood_pixmap_get_geometry
+                           sapwood_pixmap_render_rects
+[gdk]                        gdk_draw_rectangle
+
+
+
+Data structures
+===============
+Below is a rough mapping between gtkrc declarations and theme engine data
+structures. See theme-pixbuf.h for details.
+
+gtkrc                              data structures
+--------------------------------------------------------------------------------
+engine "sapwood" {                 SapwoodRcStyle {
+  image { ... }                      img_list : GList* /* list of ThemeImages */
+
+  image {                            ThemeImage {
+                                       match_data : ThemeMatchData {
+    function = BOX                       function : guint16 /* mandatory */
+    state = NORMAL                       state : GtkStateType
+    detail = "buttondefault"             detail : char*
+    shadow = NONE                        shadow : GtkShadowType
+    gap_side = TOP                       gap_side : GtkPositionType
+    arrow_direction = UP                 arrow_direction : GtkArrowType
+    orientation VERTICAL                 orientation : GtkOrientation
+    position = UP, LEFT, DOWN            position : ThemePositionFlags
+
+                                         /* bitmask, which of the above are set */
+                                         flags : ThemeMatchFlags
+                                       }
+
+    shaped = FALSE                     background_shaped : boolean
+    
+                                       background : ThemePixbuf {
+    file = "image.png"                   dirname, basename : char*
+    border = { 2, 2, 0, 0 }              border_{left,right,top,bottom} : guint8
+    stretch = TRUE                       stretch : boolean
+
+                                         /* pointer to 3x3 image grid */
+                                         pixmap : SapwoodPixmap*
+
+                                         /* reference count */
+                                         refcnt : guint
+                                       }
+                                       overlay : ThemePixbuf {
+    overlay_file
+    overlay_border                       [as above]
+    overlay_stretch
+                                       }
+                                       gap_start : ThemePixbuf {
+    gap_start_file
+    gap_start_border                     [as above]
+    gap_start_stretch
+                                       }
+                                       gap : ThemePixbuf {
+    gap_file
+    gap_border                           [as above]
+    gap_stretch
+                                       }
+                                       gap_end : ThemePixbuf {
+    gap_end_file
+    gap_end_border                       [as above]
+    gap_end_stretch
+                                       }
+
+                                       /* reference count */
+                                       refcount : guint
+  }                                  }
+}                                  }
+--------------------------------------------------------------------------------
+
+
+TOKEN_*
+-------
+Parser tokens. Be mindful of changing the values of the tokens as changes will
+invalidate existing 'gtkrc.cache' files causing strange effects.
+
+
+ThemePixbuf		( gtkrc: file = "..." border = { ... } stretch = ... )
+-----------
+Reference counted reference to a single image file. There are around 500
+images used in maemo themes, quarks and bitfields are used to reduce memory
+consumption.  Always holds the image filenames, the images themselves are
+loaded on demand.
+
+
+ThemeMatchData		( gtkrc: function = ... state = ... )
+--------------
+Set of rules used for finding the right image to match the painting commands.  
+
+
+ThemeImage		( gtkrc: image { ... } )
+----------
+Reference counted, holds references to background, overlay and gap images.
+
+
+SapwoodPixmap
+-------------
+Struct holding the pixmap information from the server, including the 3x3 grid
+of images (see README) and their corresponding bitmasks. The structs are
+cached with GCache so each client gets only single reference from the server.
+
+
+Rationales
+==========
+The goals for sapwood is to support bitmap based theming with acceptable
+performance and memory consumption. The pixbuf engine sapwood is based on
+supports bitmap based theming as well, but has performance problems and
+is wasting memory.
+
+
+Performance
+-----------
+To improve performance all images are converted to display format (565 RGB)
+once and X core commands are used when painting. The assumption is that X
+server is suitable optimized for these operations. Use of pixmaps loses the
+ability to do gradients or 8bit alpha, but improves performance. (Using X
+Render extension with 24/32 bit RGB(A) images should be straightforward and
+enable 8bit alpha, scaling, and possibly gradients, with some loss of
+performance.)
+
+
+Memory
+------
+To reduce memory consumption all images are loaded in memory only once and
+reference counted between clients. A central server process (sapwood-server)
+is owning the pixmaps and is responsible for handling the reference counting.
+
+Client/server
+~~~~~~~~~~~~~
+A separate server process was chosen for simplicity. While it adds one more
+process, it is conceptually much more simple than any distributed reference
+counting mechanism.
+
+For simplicity reasons also, the server is not automatically started (similar
+to GConf daemon) as it would introduce new error conditions and complicate
+startup sequence with possible race conditions.
+
+The communication between client and server is (abstract) UNIX sockets, for
+simplicity and reliability. D-Bus would be overkill, X client messages,
+property changes, and selection owners are limited and/or complicated to use
+properly. X based mechanisms and POSIX message queues do not appear to have
+'client disconnected' notification which is important for releasing the
+references when the client exits, possibly uncleanly. Abstract UNIX sockets
+do not need to be manually removed from the file system.
+
+The server listens to UNIX socket in "$TMPDIR/sapwood-$DISPLAY"
+(g_get_tmp_dir() and gdk_display_get_name()) The protocol between client and
+server is as follows, see sapwood-proto.h
+
+PixbufOpenRequest:
+  C -> S:
+    guint8  op;                   /* == PIXBUF_OP_OPEN (1) */
+    guint8  _pad1;
+    guint16 length;               /* == sizeof(PixbufOpenRequest) + strlen(filename) + 1 */
+  
+    guint8  border_left;          /* border values from gtkrc */
+    guint8  border_right;
+    guint8  border_top;
+    guint8  border_bottom;
+    guchar  filename[0];          /* null terminated, absolute filename */
+  
+  S -> C:
+    guint32 id;                   /* id for closing the pixbuf */
+    guint16 width;                /* image dimensions */
+    guint16 height;
+    guint32 pixmap[3][3];         /* XIDs for pixmaps and masks for each part */
+    guint32 pixmask[3][3];        /* 0 if not applicable (full opacity)       */
+  
+    on error:
+     char dummy;                  /* == '-' */
+
+PixbufCloseRequest:
+  C -> S:
+    guint8  op;                   /* == PIXBUF_OP_CLOSE (2) */
+    guint8  _pad1;
+    guint16 length;               /* == sizeof(PixbufCloseRequest) */
+  
+    guint32 id;                   /* the id as returned for PixbufOpenRequest */
+
+  No reply.
+
+
+Caching
+~~~~~~~
+For reference counting some caching mechanism is neeed, and GCache seemed to
+fit the bill and save the trouble of doing it manually. In hindsight GCache
+has slightly strange semantics and may be obscuring the implementation
+somewhat.
+
+GDK + XSHM
+~~~~~~~~~~
+sapwood-server (when started with the maemo specific startup script) disables
+XSHM use in gdk, which saves around 100kB RAM. As the pixmap data is
+transferred only once from the sapwood-server to the X server, this has little
+impact on performance.
+
+This is dependent on a minor modification to gdk:
+
+diff --git a/gdk/x11/gdkdisplay-x11.c b/gdk/x11/gdkdisplay-x11.c
+index fd48807..3f56025 100644
+--- a/gdk/x11/gdkdisplay-x11.c
++++ b/gdk/x11/gdkdisplay-x11.c
+@@ -149,7 +149,7 @@ gdk_display_open (const gchar *display_name)
+   display = g_object_new (GDK_TYPE_DISPLAY_X11, NULL);
+   display_x11 = GDK_DISPLAY_X11 (display);
+ 
+-  display_x11->use_xshm = TRUE;
++  display_x11->use_xshm = g_getenv ("GDK_DISABLE_XSHM") == NULL;
+   display_x11->xdisplay = xdisplay;
+ 
+ #ifdef HAVE_X11R6  
+
+
+background_shaped
+-----------------
+When we know the theme does not use shaped bitmaps for menus or windows, we
+can avoid preparing and setting the window shape mask completely. This is a
+minor improvement at the expense of bad painting artefacts when the images do
+not have alpha channel but gtkrc has shaped=TRUE. The need for explicit flag
+could be removed by checking whether the SapwoodPixmap has masks.
+
+
+Limitations
+===========
+* No support for multiple displays. Currently the assumption of single display is
+  spread in many places on the client side. In order to support multiple
+  displays GdkDisplay needs to passed around the caching scheme all the way to
+  the UNIX socket path handling.
+* Widgets using different visual/colormaps will receive BadMatch when painted.
+  Due to the way X works and the pixmaps are handled, fixing this does not
+  seem wortwhile.
+  https://maemo.org/bugzilla/show_bug.cgi?id=179
+* Caching is based on absolute filenames. If a file is updated on disk it is
+  not reloaded until after all references to it (in sapwood-server) are
+  removed.
+
+
+Future work
+===========
+* Support 8bit alpha. Should be straightforward to implement, though means
+  touching virtually all pixmap handling parts.
