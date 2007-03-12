@@ -1,5 +1,11 @@
 2007-03-12  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtktreeview.r:
+
+	Use the new tree-view-separator-area property.
+
+2007-03-12  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/gtkcheckbutton.rc:
 	* rc/gtkradiobutton.rc:
 

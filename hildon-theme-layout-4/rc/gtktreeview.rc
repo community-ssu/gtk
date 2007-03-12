@@ -9,7 +9,7 @@ style "osso-listview" = "osso-logical-colors"
   GtkTreeView::expander-size = 0
   GtkTreeView::vertical-separator = 2
   GtkTreeView::horizontal-separator = 6
-  GtkTreeView::separator-height = 15
+  GtkTreeView::tree-view-separator-area = 15
   GtkTreeView::row-ending-details = 1
 
   engine "sapwood"
