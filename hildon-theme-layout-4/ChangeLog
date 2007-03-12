@@ -1,3 +1,10 @@
+2007-03-12  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkcheckbutton.rc:
+	* rc/gtkradiobutton.rc:
+
+	Add interior-focus = 1, we need it to draw focus only over the child.
+
 2007-03-07  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonvolumebar.rc: Fixing the broken volumebar ranges.

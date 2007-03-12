@@ -18,6 +18,7 @@ style "osso-checkbutton"
 {
   GtkCheckButton::indicator-size = 26
   GtkCheckButton::indicator-spacing = 2
+  GtkButton::interior-focus = 1
   
   ythickness = 0
 
