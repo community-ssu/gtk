@@ -8,15 +8,15 @@ The previous framework only had a way to handle URIs based on the scheme,
 not MIME type. One application would handle callto:// URIs, one http://, 
 etc.
 
-Libhildonmime now has been extended to add support for mapping the
-scheme+MIME type pair to an action. Each application can implement one or
+The libhildonmime code has been extended to add support for mapping the
+scheme & MIME type pair to an action. Each application can implement one or
 more actions.
 
 
 Desktop file format
 ===================
 
-First an example of the "old" desktop file format, that was used to handle
+First an example of the "old" desktop file format that was used to handle
 scheme-only actions:
 
 	[Desktop Entry]
@@ -60,7 +60,7 @@ and are overwritten if specified.
 Type can be one of three values:
 
 	Normal (default if the Type is not specified).
-	Neutral (applies to ALL mime types).
+	Neutral (applies to ALL mime types, even if none are given).
 	Fallback (applies exclusively when the mime type is unknown).
 
 For the moment the distinction between the old and the new .desktop

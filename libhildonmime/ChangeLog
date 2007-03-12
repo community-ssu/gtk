@@ -1,3 +1,8 @@
+2007-03-12  Martyn Russell  <martyn@imendio.com>
+
+	* docs/hildon-uri-open.txt: Clarify a few issues in the
+	documentation.
+
 2007-02-22  Erik Karlsson  <erik.b.karlsson@nokia.com>
 
 	* libhildonmime/hildon-uri.c: (hildon_uri_open)
