@@ -91,15 +91,18 @@ The key 'Type' can be one of three values:
   Fallback (the action applies only when the MIME type is unknown)
 
 A Normal action is the default, and means that the action is mapped to
-a pair of scheme and MIME type, for example "http" and
+a pair of scheme and MIME type, for example "http" AND
 "image/png". This type of action will be listed when you ask for
-actions for a URI that matches the pair.
+actions for a URI that matches the exact pair.
 
-A Neutral action means that the action applies for any MIME types,
-that is, only the URI scheme is used for the matching.
+A Neutral action means that it is MIME type neutral, and the action
+applies to any URI that has the right scheme. Note: this corresponds
+to the "URI actions" from the older revision of this system, since
+only the scheme is used to get the actions.
 
-A Fallback action means that the action applies only when there IS a
-MIME type, but it is unknown.
+A Fallback action means that the action applies only when no other
+action could be found. Currently there is only one intended usecase
+for this, the "Save Target As..." kind of action in a browser.
 
 
 Default actions
