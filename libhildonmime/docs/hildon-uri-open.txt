@@ -1,16 +1,34 @@
 MIME/URI handling
 =================
 
+Preamble
+========
+
+Before reading this, you should make sure you are full aqainted with
+the desktop entry standard which libhildonmime builds on top of. This
+can be found here:
+
+  http://standards.freedesktop.org/desktop-entry-spec/latest/
+
+
 Background
 ==========
+
+This version of the framework has changed largely in API and the way
+that the desktop files are designed. There is an example of the old
+desktop file format (which is still supported) below but to understand
+it completely, you would be advised to read the original specification
+found here: 
+
+      libhildonmime/docs/osso-uri-open.txt
 
 The previous framework only had a way to handle URIs based on the scheme,
 not MIME type. One application would handle callto:// URIs, one http://, 
 etc.
 
-The libhildonmime code has been extended to add support for mapping the
-scheme & MIME type pair to an action. Each application can implement one or
-more actions.
+Now, libhildonmime has been extended to add support for mapping the
+scheme & MIME type pair to an action. Each application can implement
+one or more actions.
 
 
 Desktop file format

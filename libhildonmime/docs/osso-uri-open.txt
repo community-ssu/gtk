@@ -1,0 +1,37 @@
+Desktop files in libossomime
+============================
+
+Preamble
+========
+
+Before reading this, you should make sure you are full aqainted with
+the desktop entry standard which libhildonmime builds on top of. This
+can be found here:
+
+  http://standards.freedesktop.org/desktop-entry-spec/latest/
+
+
+Desktop file format
+===================
+
+These are found in $prefix/share/applications. Each application has a
+desktop file, that specifies how it is started, what name it has,
+etc. It also specifies which MIME types the application can handle, if
+any.
+
+In Maemo, the ONLY addition to the standard for .desktop files is the
+'X-Osso-Service' key. This identifies the DBus service to to talk to
+when trying to open a URI.
+
+When the osso_mime_open_*() API is called with a URI, GnomeVFS is used
+to get the default MIME type if there is one, and otherwise the first
+from the list of possible ones for the specified MIME type is used.
+
+Then a DBus message is sent to activate the service specified by the
+'X-Osso-Service' value, and the URI is passed to it for opening.
+
+The 'MimeType' key which is part of the standard is used by GnomeVFS
+to find out which desktop file it should return for us to look up the
+'X-Osso-Service' key in.  Note, the 'MimeType' value is a semi-colon
+separated list of types, for example 'image/png;image/jpeg;'. Note the
+trailing semi-colon.

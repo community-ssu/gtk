@@ -1,3 +1,16 @@
+2007-03-13  Martyn Russell  <martyn@imendio.com>
+
+	* docs/osso-uri-open.txt: Separated the desktop file changes out
+	from the mime-dbus-mapping.txt file so we have a file to link to
+	in the hildon-uri-open.txt documentation.
+	
+	* docs/hildon-uri-open.txt: Mention that the desktop entry
+	specification and the old API we used in osso-uri-open.txt.
+	
+	* docs/mime-category-mapping.txt: 
+	* docs/mime-dbus-mapping.txt: Clean up, and give better URIs to
+	the freedesktop specifications.
+
 2007-03-12  Martyn Russell  <martyn@imendio.com>
 
 	* docs/hildon-uri-open.txt: Clarify a few issues in the

@@ -1,12 +1,18 @@
 MIME/Category Mapping
 =====================
 
-Note: This document assumes familiarity with adding MIME types to the
-system, using the shared-mime-info specification. The specification can
-be found at:
+Preamble
+========
 
-  http://standards.freedesktop.org/shared-mime-info-spec/shared-mime-info-spec-0.13.html
+This document assumes familiarity with adding MIME types to the
+system, using the shared-mime-info specification. This specification
+can be found at:
 
+  http://standards.freedesktop.org/shared-mime-info-spec/latest/
+
+
+Categories
+==========
 
 The platform has a notion of file categories for the user's data
 files. The available categories are:
@@ -33,7 +39,7 @@ See the API documentation for libossomime for more details on this.
 
 
 Adding mappings
----------------
+===============
 
 Adding a mapping between a category and a number of MIME types is done
 much like adding or editing the supported MIME types in the system.
