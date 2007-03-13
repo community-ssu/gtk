@@ -1,5 +1,11 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkbutton.c:
+
+	We really need the type to compile, genius.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkrange.h:
 
 	Remove osso_gtk_range_* API from the header file.

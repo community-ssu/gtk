@@ -2122,7 +2122,15 @@ gtk_button_get_image_position (GtkButton *button)
 
 #ifdef MAEMO_CHANGES
 
-const gchar *osso_gtk_button_attach_details [1 << 4] =
+typedef enum {
+  OSSO_GTK_BUTTON_ATTACH_NORTH =    1 << 0,
+  OSSO_GTK_BUTTON_ATTACH_EAST =     1 << 1,
+  OSSO_GTK_BUTTON_ATTACH_SOUTH =    1 << 2,
+  OSSO_GTK_BUTTON_ATTACH_WEST =     1 << 3,
+  OSSO_GTK_BUTTON_ATTACH_ENUM_END = 1 << 4
+} OssoGtkButtonAttachFlags;
+
+const gchar *osso_gtk_button_attach_details [OSSO_GTK_BUTTON_ATTACH_ENUM_END] =
   { "osso_button",
     "osso_button_n",
     "osso_button_e",
