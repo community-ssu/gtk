@@ -822,9 +822,6 @@ void		  _gtk_widget_propagate_composited_changed (GtkWidget    *widget);
 GdkColormap* _gtk_widget_peek_colormap (void);
 
 #ifdef MAEMO_CHANGES
-void gtk_widget_set_hildon_focus_handling( GtkWidget *widget, gboolean hildon_like );
-gboolean gtk_widget_get_hildon_focus_handling( GtkWidget *widget );
-
 void gtk_widget_tap_and_hold_menu_position_top (GtkWidget                *menu,
 						gint                     *x,
 						gint                     *y,

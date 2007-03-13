@@ -1,5 +1,11 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkwidget.h:
+
+	Remove the prev_focus API from the header file.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtktextbuffer.h:
 
 	Remove the old rich text copy&paste API from the header.
