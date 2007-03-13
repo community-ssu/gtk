@@ -446,15 +446,6 @@ void    gtk_file_paths_free (GSList *paths);
 
 GtkFileSystem  *gtk_file_system_create (const char *file_system_name);
 
-#ifdef MAEMO_CHANGES
-GtkFileSystem *hildon_gtk_file_system_create(const char *file_system_name);
-GdkPixbuf     *gtk_file_system_render_icon  (GtkFileSystem      *file_system,
-                                             const GtkFilePath  *path,
-                                             GtkWidget          *widget,
-                                             gint                pixel_size,
-                                             GError            **error);
-#endif /* MAEMO_CHANGES */
-
 G_END_DECLS
 
 #endif /* __GTK_FILE_SYSTEM_H__ */

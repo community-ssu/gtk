@@ -1,5 +1,12 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkfilesystem.h:
+
+	Remove hildon_gtk_file_system_create and
+	gtk_file_system_render_icon from the header file.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkbutton.[ch]:
 
 	Remove hildon_gtk_button_set_depressed,
