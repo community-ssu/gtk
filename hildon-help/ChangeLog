@@ -1,0 +1,186 @@
+2007-03-13 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Renamed package to libhildonhelp0-1.9.9-0
+
+2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Added -fPIC -DPIC to CFLAGS
+
+2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Update the version in configure.ac
+
+2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Version 2.1.1
+	* Don't realize the dialog in order to add the help hint. Instead, add a handler
+	  for the "realize" signal and enable/disable the hint during the signal handler
+	* Fixes NB#49086
+
+2007-02-14  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Version 2.1.0
+	* Migrated to libhildon-1
+
+2007-01-04  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+	
+	* Version 2.0.9
+	* libosso-help.c: When translation unavailable, fall back to en_GB
+	* Fixes: NB#50011
+
+2006-11-29  Jakub Pavelek <jakub.pavelek@nokia.com>
+	
+	* Version 2.0.8
+	* src/graphics.c: changed the scaling of images in contents
+
+2006-10-25 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* configure.ac: Generate also doc/Doxyfile
+	* src/osso-helplib.h: Added file tag so that doxygen documentation
+               will be generated for the file
+	* doc/Doxyfile.in: Configuration for doxygen
+	* doc/README: Short readme for document generation
+
+
+2006-10-25 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/osso-helplib.c: Removed linefeed characters from source file.
+	        Call osso_rpc_free_val for retval
+	Fixes NB#42988
+
+2006-08-31 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* version 2.0.6
+	* src/dialog.c, src/filter.c: Changed to show hyperlinks in help
+	  dialogs
+	* src/osso-helplib.c, src/osso-helplib-private.h: Added two logical
+	  id:s which are used from the help domain
+	Fixes NB#38141
+
+2006-08-28 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.5
+	* src/browser.c, src/osso-helplib-private.h: Added functions
+		browser_focus_forward_backward and browser_has_focus
+		which are used for rocker key interaction
+
+2006-08-23 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: url_requested(): freeing the allocated buffer
+	Fixes NB#38458
+
+2006-08-23 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: browser_show(): fixed file descriptor leak
+	Fixes NB#38456
+
+2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.3
+	* src/filter.c: removed extra checks for change_history and change (not present in help contents anymore)
+
+2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/Makefile.am: added -D_POSIX_SOURCE to libossohelp_la_CFLAGS
+
+2006-08-04 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: Do not interperet find on page searches as regexp
+	Fixes NB#33749
+
+2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/graphic.c: Removed referneces to picture popup code because
+		that has been removed from UI Specs
+
+2006-08-03 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: In browser_has_selection() check that selection is also active
+	Fixes NB#32554
+
+2006-07-28 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* configure.ac, debian/control: Removed dependency to non used library hildon-base-lib
+	Fixes N#33294
+
+2006-07-18 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.2
+	* src/osso-helplib.c:ossohelp_dialog_help_enable(): storing and checking the help signal for a dialog.
+	Fixes NB#33600
+
+2006-06-05 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.1
+	* Merged from IT-2006: 
+		src/browser.c: Previous fix for N#27708 caused crashing. Moved
+		grabbing of focus to later point in code. This hopefully
+		fixes the crashing.
+	Fixes N#31679 N#27708
+
+2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 2.0.0
+	* debian/libosso-help-dev.install: removed installing of la files
+	* debian/control: Removed dependency for gtkhtml-dev in libosso-help-dev
+	Fixes N#31127
+
+
+2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.10
+	* debian/control: Added libxml2-dev to dependency of libosso-help-dev
+		as required by integration
+	* debian/control: Added libxml2-dev to build dependency of source
+		package
+
+2006-05-30 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* debian/control: Adding dependency for libpng12-dev, libjpeg62-dev
+	* configure.ac, src/Makefile.am: Added checking for jpeg library
+	* src/filter.c, src/graphic.c, src/osso-helplib-private.h:
+		Added support for jpeg images in help
+	Fixes N#30890 N#30895
+
+2006-05-24 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.9
+	* src/*.{c,h}: added license notice to all source and headers
+	* COPYING: added the text of GNU LGPL v 2.1
+	* debian/control: removed extra dependencies
+
+2006-05-23 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.8
+	* src/osso-helplib.c: Fixed ossohelp_getpath() when called with
+		non NULL parameter.
+	Fixes N#30388
+
+2006-05-11 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.7
+	* src/browser.c: Applied patch for hardkey interaction in help topic
+		view. Now you can scroll with the hardkeys.
+	Fixes N#27708
+
+2006-05-09 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/browser.c: browser_zoom() Fixed zoom levels so that arbitary zoom
+		levels works.
+
+2006-05-08 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.6
+	* src/contents.c: fixing the size of buffer to prevent truncation
+	Fixes N#27078, N#26822, N#26825, N#27072, N#27349, N#27468
+
+2006-04-05 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* Version 1.5.5
+	* src/osso-helplib.c: 4KB per application would be saved if help library would allocate the help path dynamically inosso-helplib.c::ossohelp_getpath()
+	Fixes N#22968
+
+2006-04-05 Jakub Pavelek <jakub.pavelek@nokia.com>
+
+	* src/osso-helplib.c: bring window to front
+	Fixes N#22841

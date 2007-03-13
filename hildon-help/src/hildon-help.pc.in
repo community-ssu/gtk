@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: libhildonhelp
+Description: Hildon Help Library
+Version: @VERSION@
+Libs: -L${libdir} -lhildonhelp -lglib-2.0 -losso
+Cflags: -I${includedir}/hildon-help
