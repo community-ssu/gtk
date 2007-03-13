@@ -4,7 +4,7 @@
 # This code is included in the HelpLib source package, but
 # not built into any binary packages (.deb's).
 #
-# Contact:   Jakub Pavelek <jakub.pavelek@nokia.com>
+# Contact:   Gabriel Schulhof <gabriel.schulhof@nokia.com>
 #
 
 INCLUDES=@DEPS_CFLAGS@
