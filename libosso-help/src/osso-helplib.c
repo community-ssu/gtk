@@ -23,7 +23,7 @@
 
 #include <libosso.h>
 #include <hildon/hildon-help.h>
-
+#include "osso-helplib.h"
 
 /*---=== Public API ===---*/
 
