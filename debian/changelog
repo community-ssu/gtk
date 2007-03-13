@@ -1,3 +1,15 @@
+gtk+2.0 (2:2.10.6-0osso8) unstable; urgency=low
+
+  *** NOTE: starting with this version we are ABI incompatible with maemo gtk+
+   2.6 ***
+
+  * Remove all the stubs from the header files.
+  * Add MAEMO_CHANGES protection to the DISABLE_XSHM feature.
+  * Stop supporting TYPE_HINT_MESSAGE. TYPE_HINT_NOTIFICATION is the new
+    black.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 13 Mar 2007 16:51:16 +0200
+
 gtk+2.0 (2:2.10.6-0osso7) experimental; urgency=low
 
   * Back out maemo icon theme load order patch.
