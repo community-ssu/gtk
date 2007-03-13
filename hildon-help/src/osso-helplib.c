@@ -22,7 +22,7 @@
  */
 
 #include "internal.h"
-#include "osso-helplib-private.h"
+#include "hildon-help-private.h"
 
 #include <libosso.h>
 #include <osso-log.h>

@@ -29,7 +29,7 @@
 
 #include <libxml/parser.h>  /* xmlChar */
 
-#include "osso-helplib-private.h"   /* HELP_KEY_MAXLEN */
+#include "hildon-help-private.h"   /* HELP_KEY_MAXLEN */
 
 #define fexists(fn)  g_file_test( fn, G_FILE_TEST_EXISTS )
 
