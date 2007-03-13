@@ -1,3 +1,10 @@
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkrc.c:
+	* gtk/gtkstyle.h:
+
+	Remove support for logical colors with the maemo gtk+ 2.6 format.
+
 2007-03-08  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentry.c: Remove the icon-width property, it's unused.
