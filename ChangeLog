@@ -1,5 +1,16 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkbutton.[ch]:
+
+	Remove hildon_gtk_button_set_depressed,
+	osso_gtk_button_set_detail_from_attach_flags and the
+	OssoGtkButtonAttachFlags type from the header
+	files.
+	Hardcode the number of items of the enum in the
+	C file so we don't depend on its definition. Yay hacks.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkrc.c:
 	* gtk/gtkstyle.h:
 
