@@ -1,8 +1,14 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkwindow.h:
+
+	Remove the focus_prev API from the header file.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkwidget.h:
 
-	Remove the prev_focus API from the header file.
+	Remove the focus handling API from the header file.
 	
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
