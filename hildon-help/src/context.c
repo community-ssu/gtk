@@ -21,7 +21,7 @@
  *
  */
 
-#include "osso-helplib-private.h"
+#include "hildon-help-private.h"
 #include "internal.h"
 
 #include <libxml/parser.h>     /* libXML */

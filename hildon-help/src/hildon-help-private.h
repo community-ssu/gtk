@@ -21,9 +21,9 @@
  *
  */
 /**
-  @file osso-helplib-private.h
+  @file hildon-help-private.h
   
-  More services than 'osso-helplib.h' offers.  Also these are
+  More services than 'hildon-help.h' offers.  Also these are
   exported but intended to be used by members of the Help clan
   (HelpUI, HelpTest, HelpGS) only. Therefore, incompatible 
   changes will be mercilessly implemented, if necessary.
@@ -33,8 +33,8 @@
         the old version still resides in the /usr/include
         (or, you could just remove the /usr/include thing)
 */
-#ifndef OSSO_HELPLIB_PRIVATE_H
-#define OSSO_HELPLIB_PRIVATE_H
+#ifndef _HILDON_HELP_PRIVATE_H_
+#define _HILDON_HELP_PRIVATE_H_
 
 #include "hildon-help.h"
 
@@ -237,5 +237,5 @@ gboolean browser_focus_forward_backward( GtkWidget *browser,
 gboolean browser_has_focus( GtkWidget *browser );
 
 
-#endif  /* OSSO_HELPLIB_PRIVATE_H */
+#endif  /* _HILDON_HELP_PRIVATE_H_ */
 

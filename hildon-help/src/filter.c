@@ -34,7 +34,7 @@
 #include <libintl.h>    /* gettext() */
 #define _(str) gettext(str)
 
-#include "osso-helplib-private.h"
+#include "hildon-help-private.h"
 #include "internal.h"
 
 /* Runtime tag configuration: */
