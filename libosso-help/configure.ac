@@ -1,5 +1,5 @@
 #
-# configure.ac for OSSO HelpLib (& HelpTest)
+# configure.ac for OSSO HelpLib
 #
 # Copyright (c) 2004,2006 Nokia.
 # Contact:  Jakub Pavelek <jakub.pavelek@nokia.com>
@@ -74,8 +74,6 @@ AC_CONFIG_FILES([
   Makefile
   src/Makefile
   src/libossohelp.pc
-  helptest/Makefile
-  doc/Doxyfile
 ])
 
 # Mandatory, produce output
