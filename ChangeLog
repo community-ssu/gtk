@@ -1,5 +1,11 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkrange.h:
+
+	Remove osso_gtk_range_* API from the header file.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkfilesystem.h:
 
 	Remove hildon_gtk_file_system_create and
