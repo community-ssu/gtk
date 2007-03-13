@@ -1,5 +1,11 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtktextbuffer.h:
+
+	Remove the old rich text copy&paste API from the header.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkbutton.c:
 
 	We really need the type to compile, genius.
