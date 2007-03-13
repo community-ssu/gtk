@@ -139,10 +139,6 @@ typedef enum
   GDK_WINDOW_TYPE_HINT_NOTIFICATION,
   GDK_WINDOW_TYPE_HINT_COMBO,
   GDK_WINDOW_TYPE_HINT_DND
-#ifdef MAEMO_CHANGES
-  ,
-  GDK_WINDOW_TYPE_HINT_MESSAGE = GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU
-#endif /* MAEMO_CHANGES */
 } GdkWindowTypeHint;
 
 /* The next two enumeration values current match the

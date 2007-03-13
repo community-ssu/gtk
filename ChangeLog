@@ -1,3 +1,15 @@
+2007-03-13  Michael Natterer  <mitch@imendio.com>
+
+	* gdk/gdkwindow.h (enum GdkWindowTypeHint): remove
+	GDK_WINDOW_TYPE_HINT_MESSAGE.
+
+	* gdk/x11/gdkwindow-x11.c (gdk_window_set_type_hint)
+	(gdk_window_get_type_hint): remove compat support for
+	TYPE_HINT_MESSAGE.
+
+	* gtk/gtkmenu.c (gtk_menu_window_visibility_notify_event): use
+	TYPE_HINT_NOTIFICATION instead of TYPE_HINT_MESSAGE.
+
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkwindow.h:

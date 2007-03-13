@@ -2277,11 +2277,9 @@ gdk_window_set_type_hint (GdkWindow        *window,
     case GDK_WINDOW_TYPE_HINT_DESKTOP:
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DESKTOP");
       break;
-#ifndef MAEMO_CHANGES
     case GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU:
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU");
       break;
-#endif /* !MAEMO_CHANGES */
     case GDK_WINDOW_TYPE_HINT_POPUP_MENU:
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_POPUP_MENU");
       break;
@@ -2298,22 +2296,6 @@ gdk_window_set_type_hint (GdkWindow        *window,
       atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DND");
       break;
     default:
-#ifdef MAEMO_CHANGES
-      /* The dropdown menu and message hints share the same integer at
-       * this moment.  Remove this once the ABI restore patch has been
-       * committed.
-       */
-      if (hint == GDK_WINDOW_TYPE_HINT_MESSAGE)
-        {
-          atom = gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_WINDOW_TYPE_MESSAGE");
-	  break;
-	}
-      else if (hint == GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU)
-        {
-	  atom = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DROPDOWN_MENU");
-	  break;
-	}
-#endif /* MAEMO_CHANGES */
       g_warning ("Unknown hint %d passed to gdk_window_set_type_hint", hint);
       /* Fall thru */
     case GDK_WINDOW_TYPE_HINT_NORMAL:
@@ -2394,10 +2376,6 @@ gdk_window_get_type_hint (GdkWindow *window)
 	    type = GDK_WINDOW_TYPE_HINT_COMBO;
 	  else if (atom == gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_WINDOW_TYPE_DND"))
 	    type = GDK_WINDOW_TYPE_HINT_DND;
-#ifdef MAEMO_CHANGES
-	  else if (atom == gdk_x11_get_xatom_by_name_for_display (display, "_MB_WM_WINDOW_TYPE_MESSAGE"))
-	    type = GDK_WINDOW_TYPE_HINT_MESSAGE;
-#endif /* MAEMO_CHANGES */
         }
 
       if (type_return != None && data != NULL)
