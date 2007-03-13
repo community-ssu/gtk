@@ -31,8 +31,7 @@ libhildonhelp_la_LDFLAGS=@DEPS_LIBS@ @JPEG_LIBS@
 libhildonhelp_la_includedir = $(includedir)/hildon-help/hildon
 libhildonhelp_la_include_HEADERS = \
 	hildon-help.h \
-	hildon-help-private.h \
-	$(NULL)
+	hildon-help-private.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-help.pc
