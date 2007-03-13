@@ -1,3 +1,7 @@
+2007-03-13  Richard Hult  <richard@imendio.com>
+
+	* docs/mime-category-mapping.txt: Reflect the osso->hildon rename.
+
 2007-03-13  Martyn Russell  <martyn@imendio.com>
 
 	* docs/osso-uri-open.txt: Separated the desktop file changes out

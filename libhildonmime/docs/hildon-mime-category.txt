@@ -1,14 +1,18 @@
-MIME/Category Mapping
-=====================
+The hildon_mime_category_* API
+==============================
 
-Preamble
-========
+This document describes how the hildon_mime_category_* API works in
+the system.
 
-This document assumes familiarity with adding MIME types to the
-system, using the shared-mime-info specification. This specification
+Note: This document assumes familiarity with adding MIME types to the
+system, using the shared-mime-info specification. The specification
 can be found at:
 
   http://standards.freedesktop.org/shared-mime-info-spec/latest/
+
+The utility that is used when working with MIME categories is:
+
+  * hildon-update-mime-database
 
 
 Categories
@@ -31,11 +35,11 @@ type of a file decides which category it is in. The MIME type setup is
 handled by the shared-mime-info infrastructure, and the category
 information is added to that same framework.
 
-There is also a category API in libossomime that is used to get the
+There is also a category API in libhildonmime that is used to get the
 category of a certain MIME type and a list of MIME types in a certain
 category.
 
-See the API documentation for libossomime for more details on this.
+See the API documentation for libhildonmime for more details on this.
 
 
 Adding mappings
@@ -47,7 +51,7 @@ much like adding or editing the supported MIME types in the system.
 Each application or library that adds a category mapping should add a
 file in:
 
-  /usr/share/mime/packages/
+  $(prefix)/share/mime/packages/
 
 The file format is the same XML format used for MIME types, with an
 added tag "<osso:category>". An example follows:
@@ -96,9 +100,9 @@ information and category information can be put in the same file:
 
 
 As when adding MIME types, a special program needs to be run to update
-the MIME information:
+the MIME information, for example:
 
-  osso-update-category-database /usr/share/mime
+  hildon-update-category-database /usr/share/mime
 
 Like update-mime-database, this is usually done in the post-inst phase
 in a Debian package, in addition to "make install" in the makefile

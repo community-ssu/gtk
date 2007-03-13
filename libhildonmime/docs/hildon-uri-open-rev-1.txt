@@ -1,0 +1,108 @@
+The hildon_uri_* API, pre-OSSO 1.1
+==================================
+
+This document describes the first revision of the hildon_uri_* API
+that was added in IT-2007. It has been revised and expanded in OSSO
+1.1, see hildon-uri-open-rev-2.txt for information about that.
+
+The API brings functionality for actions to be performed basen on the
+scheme in the URI, such as "http" or "callto". There can be one or
+more actions for a scheme, and a default action for each scheme.
+
+This setup closely follows the hildon_mime_* API setup, and the
+Freedesktop standard for desktop files is reused here as well.
+ 
+This is be done by adding custom sections to the desktop files,
+listing the URI actions for the application. This has the advantage
+that applications already have the build and Debian packaging
+mechanisms in place.
+
+Make sure to read the desktop entry specification:
+
+  http://standards.freedesktop.org/desktop-entry-spec/latest/
+
+The utility update-desktop-database from desktop-file-utils is used to
+handle the new fields that have been added.
+
+
+Desktop file format
+===================
+
+An example:
+
+[Desktop Entry]
+Version=1.0
+Type=Application
+Encoding=UTF-8
+Name=Instant messenger
+Comment=Talk to your friends
+Icon=im.png
+X-Osso-Service=com.nokia.im
+X-Osso-URI-Actions=callto;jabber;msn;
+
+[X-Osso-URI-Action Handler callto]
+Method=call_to
+Name=call_this_contact
+TranslationDomain=some_app
+
+[X-Osso-URI-Action Handler jabber]
+Method=jabber_chat
+Name=send_message
+TranslationDomain=some_app
+
+[X-Osso-URI-Action Handler msn]
+Method=msn_chat
+Name=send_message
+TranslationDomain=some_app
+
+The X-Osso-URI-Actions key in the [Desktop Entry] specifies the
+available actions that the application provides. Then for each action
+there is a corresponding groups, that specifies the properties of that
+action.
+
+The keys are:
+
+Method: the D-Bus method to call on the service
+Name: the name of the action
+TranslationDomain: the translation domain to use when translating the name
+
+
+Default action
+==============
+
+Just like for the MIME open functionality in upstream GNOME and in
+Maemo, there is a way to specify which application is the default if
+there are many that support the same URI scheme. The defaults file is
+located in $(prefix)/share/applications/uri-action-defaults.list.
+
+
+Updating the desktop database
+=============================
+
+The 'update-desktop-database' command parses all the *.desktop files
+pointed to and generates a cache for them to speed up the
+lookup. This generation is usually done in the post-inst phase in a
+Debian package, in addition to "make install" in the makefile target:
+
+  update-desktop-database $prefix/share/applications
+
+Note that the update-desktop-database tool in Maemo has been patched
+to generate the cache for the added data. An example of a cache file,
+that resides in $(prefix)/share/applications:
+
+  [X-Osso-URI-Action Cache]
+  callto=im.desktop;gossip.desktop;gaim.desktop;
+  http=browser.desktop
+  https=browser.desktop
+
+
+Implementation details
+======================
+
+When activating an action, the corresponding desktop file is used to
+lookup the D-Bus message and service name. The message is sent to the
+service. The arguments to the message consist of a an array of
+strings, which are the URIs passed. Note that the current
+implementation only sends one URI in the array, since the API only
+allows for one.
+

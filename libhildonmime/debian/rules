@@ -65,7 +65,7 @@ binary-arch: install
 	dh_testroot
 	dh_install --sourcedir=debian/tmp
 	dh_installchangelogs 
-	dh_installdocs README docs/mime-category-mapping.txt docs/mime-dbus-mapping.txt
+	dh_installdocs README docs/hildon-mime-category.txt docs/hildon-mime-open.txt docs/hildon-uri-open-rev-1.txt docs/hildon-uri-open-rev-2.txt
 	dh_link
 	dh_strip --dbg-package=libhildonmime0
 	dh_compress
