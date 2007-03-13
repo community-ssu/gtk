@@ -1,3 +1,9 @@
+hildon-theme-plankton (4.2.2-2) unstable; urgency=low
+
+  * removed extra line in debian/copyright (copy/paste?)
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 13 Mar 2007 15:20:09 +0200
+
 hildon-theme-plankton (4.2.2-1) unstable; urgency=low
 
   * Adding wallpaper.
