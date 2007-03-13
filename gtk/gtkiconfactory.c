@@ -550,6 +550,17 @@ static IconSize *icon_sizes = NULL;
 static gint      icon_sizes_allocated = 0;
 static gint      icon_sizes_used = 0;
 
+#ifdef MAEMO_CHANGES
+
+enum {
+  HILDON_ICON_SIZE_26 = GTK_ICON_SIZE_DIALOG + 1,
+  HILDON_ICON_SIZE_40,
+  HILDON_ICON_SIZE_50,
+  HILDON_ICON_SIZE_64
+};
+
+#endif /* MAEMO_CHANGES */
+
 static void
 init_icon_sizes (void)
 {
@@ -1505,12 +1516,7 @@ render_icon_name_pixbuf (GtkIconSource    *icon_source,
   tmp_source.source.pixbuf = tmp_pixbuf;
 
   pixbuf = gtk_style_render_icon (style, &tmp_source,
-#ifdef MAEMO_CHANGES
-				  direction, state,
-				  (size < HILDON_ICON_SIZE_26) ? -1 : size,
-#else   /* !MAEMO_CHANGES */
                                   direction, state, -1,
-#endif /* !MAEMO_CHANGES */
 				  widget, detail);
 
   if (!pixbuf)

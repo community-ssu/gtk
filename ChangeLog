@@ -1,3 +1,11 @@
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkenums.h:
+	* gtk/gtkiconfactory.c:
+	* gtk/gtkstyle.c:
+
+	Remove the HILDON_ICON_SIZE_* stuff from the stock enums.
+
 2007-03-13  Michael Natterer  <mitch@imendio.com>
 
 	* gdk/x11/gdkdisplay-x11.c (gdk_display_open): added missing

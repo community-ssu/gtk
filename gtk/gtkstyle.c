@@ -2126,11 +2126,7 @@ gtk_default_render_icon (GtkStyle            *style,
   /* If the size was wildcarded, and we're allowed to scale, then scale; otherwise,
    * leave it alone.
    */
-  if (size != (GtkIconSize)-1 && gtk_icon_source_get_size_wildcarded (source)
-#ifdef MAEMO_CHANGES
-      && size < HILDON_ICON_SIZE_26
-#endif /* MAEMO_CHANGES */
-      )
+  if (size != (GtkIconSize)-1 && gtk_icon_source_get_size_wildcarded (source))
     scaled = scale_or_ref (base_pixbuf, width, height);
   else
     scaled = g_object_ref (base_pixbuf);
