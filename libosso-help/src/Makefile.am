@@ -29,14 +29,10 @@ libossohelp_la_LDFLAGS=@DEPS_LIBS@ @JPEG_LIBS@
 #libossohelp_la_LIBADD=$(DEPS_LIBS)
 
 libossohelp_la_includedir = $(includedir)
-libossohelp_la_include_HEADERS = osso-helplib.h \
-				osso-helplib-private.h
+libossohelp_la_include_HEADERS = osso-helplib.h
 
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = libossohelp.pc
 
 libossohelp_la_SOURCES = \
-			osso-helplib.c osso-helplib.h \
-			osso-helplib-private.h \
-			browser.c contents.c context.c filter.c dialog.c graphic.c \
-			internal.h htmltags.cfg
+			osso-helplib.c osso-helplib.h

@@ -1,3 +1,7 @@
+2007-03-13 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Gutted. Contents moved to hildon-help (libhildonhelp0)
+
 2007-03-06 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Added -fPIC -DPIC to CFLAGS

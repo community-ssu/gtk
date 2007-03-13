@@ -15,7 +15,7 @@ EXTRA_DIST = \
 	     debian/libosso-help0.links \
 	     debian/rules
 
-SUBDIRS = src helptest
+SUBDIRS = src
 
 INCLUDES = $(DEPS_CFLAGS)
 
