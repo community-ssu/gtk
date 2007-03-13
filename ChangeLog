@@ -1,5 +1,13 @@
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* gtk/gtkentry.h:
+	* gtk/gtkimcontext.h:
+	* gtk/gtktreeview.h:
+
+	Restore the upstream ABI compatibility.
+	
+2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* gtk/gtkenums.h:
 	* gtk/gtkiconfactory.c:
 	* gtk/gtkstyle.c:
