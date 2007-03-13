@@ -1,5 +1,10 @@
 2007-03-13  Michael Natterer  <mitch@imendio.com>
 
+	* gdk/x11/gdkdisplay-x11.c (gdk_display_open): added missing
+	#ifdef MAEMO_CHANGES.
+
+2007-03-13  Michael Natterer  <mitch@imendio.com>
+
 	* gdk/gdkwindow.h (enum GdkWindowTypeHint): remove
 	GDK_WINDOW_TYPE_HINT_MESSAGE.
 
