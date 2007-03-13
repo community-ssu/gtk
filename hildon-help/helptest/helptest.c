@@ -32,7 +32,7 @@
 
 */
 
-#include "osso-helplib-private.h"
+#include "hildon-help-private.h"
 
 #include <gtk/gtk.h>
 #include <libosso.h>
