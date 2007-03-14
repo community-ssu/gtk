@@ -302,7 +302,7 @@ hn_others_menu_activate_item (GtkMenuItem *item, HNOthersButton *button)
     }
     
     exec_field = g_object_get_data (G_OBJECT (item),
-    			              DESKTOP_ENTRY_EXEC_FIELD);
+    			            DESKTOP_ENTRY_EXEC_FIELD);
 
     if(exec_field)
     {
@@ -359,9 +359,8 @@ hn_others_menu_activate_item (GtkMenuItem *item, HNOthersButton *button)
       
       if (error)
       {
-        g_error ("Others_menu_activate_item: failed to execute %s: %s.",
-                  exec_field, 
-      	    error->message);
+        g_warning ("Others_menu_activate_item: failed to execute %s: %s.",
+                   exec_field, error->message);
     
         g_clear_error (&error);
       }
@@ -386,9 +385,9 @@ hn_others_menu_activate_item (GtkMenuItem *item, HNOthersButton *button)
        * have a path to the executable so it would be
        * quite difficult to launch the app.
        */
-      g_error ("hn_others_menu_activate_item: "
-               "both service name and binary path missing. "
-               "Unable to launch.");
+      g_warning ("hn_others_menu_activate_item: "
+                 "both service name and binary path missing. "
+                 "Unable to launch.");
     }
   }
   
@@ -1061,8 +1060,8 @@ hn_others_button_register_monitors (HNOthersButton * button)
     }
     else
     {
-      g_error ("Others_menu_initialize_menu: "
-    	       "failed to create directory '%s'", dir);
+      g_warning ("Others_menu_initialize_menu: "
+    	         "failed to create directory '%s'", dir);
     }
 
     g_free (dir);

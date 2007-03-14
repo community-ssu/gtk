@@ -1,3 +1,10 @@
+2007-03-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: activate the "stretch" property for panel
+	containers.
+	* src/hn-others-button.c: replace some error with warnings as they are
+	not critical errors.
+
 2007-03-09  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-desktop.c: fix small bug when saving the container configuration 

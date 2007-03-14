@@ -806,6 +806,7 @@ hd_desktop_load_containers (HDDesktop *desktop)
                                         "width", width,
                                         "height", height,
                                         "orientation", orientation,
+                                        "stretch", TRUE,
                                          NULL);
       }
       else if (!g_ascii_strcasecmp (type, HD_CONTAINER_TYPE_PANEL_EXPANDABLE))
