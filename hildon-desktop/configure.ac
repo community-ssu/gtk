@@ -98,12 +98,12 @@ PKG_CHECK_MODULES(OSSO,
 AC_SUBST(OSSO_LIBS)
 AC_SUBST(OSSO_CFLAGS)
 
-PKG_CHECK_MODULES(OSSO_HELP, 
-		  [libossohelp],
-                  AC_DEFINE(HAVE_LIBOSSOHELP, [], [Whether libossohelp is present on the system]), 
-		  [AC_MSG_NOTICE([libossohelp not present.])])
-AC_SUBST(OSSO_HELP_CFLAGS)
-AC_SUBST(OSSO_HELP_LIBS)
+PKG_CHECK_MODULES(HILDON_HELP, 
+		  [hildon-help],
+                  AC_DEFINE(HAVE_LIBHILDONHELP, [], [Whether hildon-help is present on the system]), 
+		  [AC_MSG_NOTICE([hildon-help not present.])])
+AC_SUBST(HILDON_HELP_CFLAGS)
+AC_SUBST(HILDON_HELP_LIBS)
 
 PKG_CHECK_MODULES(HILDON,
                   [hildon-1], 

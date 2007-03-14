@@ -1,5 +1,13 @@
 2007-03-14  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* debian/control, debian/changelog, src/hd-desktop.c,
+	src/hd-select-plugins-dialog.c, src/hd-home-window.c,
+	src/hd-select-plugins-dialog.h, src/Makefile.am,
+	src/hd-home-background-dialog.c, configure.ac: Moved from libosso-help 
+	to hildon-help. Patch from Gabriel Schulhof <gabriel.schulhof@nokia.com>.
+
+2007-03-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-desktop.c: activate the "stretch" property for panel
 	containers.
 	* src/hn-others-button.c: replace some error with warnings as they are

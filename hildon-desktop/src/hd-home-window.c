@@ -26,8 +26,8 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBOSSOHELP
-#include <osso-helplib.h>
+#ifdef HAVE_LIBHILDONHELP
+#include <hildon/hildon-help.h>
 #endif
 
 #ifdef HAVE_LIBOSSO
@@ -138,7 +138,7 @@ hd_home_window_personalisation_activate (HDHomeWindow *window);
 static void
 hd_home_window_calibration_activate (HDHomeWindow *window);
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
 static void
 hd_home_window_help_activate (HDHomeWindow *window);
 #endif
@@ -768,7 +768,7 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
   gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
   gtk_widget_show (menu_item);
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
   /* help */
   menu_item = gtk_menu_item_new_with_label (HH_MENU_HELP);
   gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
@@ -827,7 +827,7 @@ hd_home_window_build_layout_menu (HDHomeWindow *window)
     }
   gtk_widget_show (mi);
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
   mi = gtk_menu_item_new_with_label (HH_MENU_LAYOUT_HELP);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
   g_signal_connect_swapped (mi, "activate",
@@ -881,7 +881,7 @@ hd_home_window_applet_activate (HDHomeWindow *window,
 }
 #endif
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
 static void
 hd_home_window_help_activate (HDHomeWindow *window)
 {
@@ -899,13 +899,13 @@ hd_home_window_help_activate (HDHomeWindow *window)
     return;
 
   if (hildon_home_area_get_layout_mode (area))
-    res = ossohelp_show (priv->osso_context,
-                         HH_HELP_LAYOUT_MODE,
-                         OSSO_HELP_SHOW_DIALOG);
+    res = hildon_help_show (priv->osso_context,
+                            HH_HELP_LAYOUT_MODE,
+                            HILDON_HELP_SHOW_DIALOG);
   else
-    res = ossohelp_show (priv->osso_context,
-                         HH_HELP,
-                         0);
+    res = hildon_help_show (priv->osso_context,
+                            HH_HELP,
+                            0);
 
   switch (res)
   {
@@ -1063,7 +1063,7 @@ hd_home_window_set_osso_context (HDHomeWindow *window,
 
     if (HILDON_IS_HOME_TITLEBAR (titlebar))
     {
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
       g_signal_connect_swapped (titlebar, "help-activate",
                                 G_CALLBACK (hd_home_window_help_activate),
                                 window);

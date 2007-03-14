@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-33) unstable; urgency=low
+
+  * Move from libosso-help to hildon-help
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 14 Mar 2007 12:45:22 +0200
+
 hildon-desktop (0.0.0-32) unstable; urgency=low
 
   * New experimental snapshot 

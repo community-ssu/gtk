@@ -32,9 +32,9 @@
 #include <glib/gi18n.h>
 #include <gdk/gdkkeysyms.h>
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
 #include <libosso.h>
-#include <osso-helplib.h>
+#include <hildon/hildon-help.h>
 #endif
 
 #include "hd-select-plugins-dialog.h"
@@ -227,7 +227,7 @@ hd_select_plugins_dialog_get_store (GList *loaded_plugins,
 
 gint
 hd_select_plugins_dialog_run (GList           *loaded_plugins,
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
                               osso_context_t  *osso_context,
 #endif
                               const gchar     *plugin_dir,
@@ -261,11 +261,11 @@ hd_select_plugins_dialog_run (GList           *loaded_plugins,
 
   gtk_widget_set_size_request (dialog, HD_SELECT_PLUGINS_DIALOG_WIDTH, -1);
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
   /* Add help button to the dialog */
-  ossohelp_dialog_help_enable (GTK_DIALOG (dialog),
-                               HD_SELECT_PLUGINS_HELP_TOPIC,
-                               osso_context);
+  hildon_help_dialog_help_enable (GTK_DIALOG (dialog),
+                                  HD_SELECT_PLUGINS_HELP_TOPIC,
+                                  osso_context);
 #endif
 
   scrollwindow = gtk_scrolled_window_new (NULL, NULL);

@@ -26,8 +26,8 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBOSSOHELP
-#include <osso-helplib.h>
+#ifdef HAVE_LIBHILDONHELP
+#include <hildon/hildon-help.h>
 #endif
 
 #ifdef HAVE_LIBOSSO
@@ -379,12 +379,12 @@ hd_home_background_dialog_set_property (GObject      *gobject,
     case PROP_OSSO_CONTEXT:
         priv->osso_context = g_value_get_pointer (value);
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
         /* Add help button */
         if (priv->osso_context)
-          ossohelp_dialog_help_enable (GTK_DIALOG (gobject),
-                                       HH_HELP_SET_BACKGROUND,
-                                       priv->osso_context);
+          hildon_help_dialog_help_enable (GTK_DIALOG (gobject),
+                                          HH_HELP_SET_BACKGROUND,
+                                          priv->osso_context);
 #endif
         break;
         
@@ -415,7 +415,7 @@ hd_home_background_dialog_get_property (GObject      *gobject,
         g_value_set_string (value, priv->background_dir);
         break;
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
     case PROP_OSSO_CONTEXT:
         g_value_set_pointer (value, priv->osso_context);
         break;
@@ -486,11 +486,11 @@ hd_home_background_dialog_file_select (HDHomeBackgroundDialog *dialog)
 					 NULL);
 #endif
   
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
   if (priv->osso_context)
-    ossohelp_dialog_help_enable (GTK_DIALOG(fdialog), 
-                                 HH_HELP_SELECT_IMAGE,
-                                 priv->osso_context);
+    hildon_help_dialog_help_enable (GTK_DIALOG(fdialog), 
+                                    HH_HELP_SELECT_IMAGE,
+                                    priv->osso_context);
 #endif
         
   mime_type_filter = gtk_file_filter_new();

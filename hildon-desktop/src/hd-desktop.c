@@ -321,7 +321,7 @@ hd_desktop_select_plugins (HildonDesktopWindow *window, gpointer user_data)
   loaded_plugins = gtk_container_get_children (window->container);
 
   response = hd_select_plugins_dialog_run (loaded_plugins,
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
                                            priv->osso_context,
 #endif 
                                            info->plugin_dir,

@@ -10,7 +10,7 @@ hildon_desktop_CPPFLAGS = \
 	$(HILDON_CFLAGS)             					   \
 	$(HILDON_FM_CFLAGS)             				   \
 	$(OSSO_CFLAGS)               					   \
-	$(OSSO_HELP_CFLAGS)          					   \
+	$(HILDON_HELP_CFLAGS)          					   \
 	$(GCONF_CFLAGS)                                                    \
 	$(LIBXML_CFLAGS)                                                   \
 	$(GNOME_VFS_CFLAGS)                                                \
@@ -34,7 +34,7 @@ hildon_desktop_LDFLAGS  =   \
 	$(HILDON_FM_LIBS)   \
 	$(OSSO_LIBS)	    \
 	$(GCONF_LIBS)       \
-	$(OSSO_HELP_LIBS)   \
+	$(HILDON_HELP_LIBS) \
 	$(GNOME_VFS_LIBS)   \
 	$(DBUS_GLIB_LIBS)
 

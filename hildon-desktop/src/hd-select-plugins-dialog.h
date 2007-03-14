@@ -30,14 +30,14 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
 #include <libosso.h>
 #endif
 
 #include <gtk/gtk.h>
 
 gint   hd_select_plugins_dialog_run  (GList           *loaded_plugins,
-#ifdef HAVE_LIBOSSOHELP
+#ifdef HAVE_LIBHILDONHELP
                                       osso_context_t  *osso_context,
 #endif
                                       const gchar     *plugin_dir,
