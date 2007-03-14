@@ -25,6 +25,11 @@
 #include <hildon/hildon-help.h>
 #include "osso-helplib.h"
 
+#define link_warning(symbol, msg) \
+  static const char __evoke_link_warning_##symbol[]     \
+    __attribute__ ((unused, section (".gnu.warning." #symbol ))) \
+    = msg;
+
 /*---=== Public API ===---*/
 
 /*---( doc in header )---*/
@@ -35,6 +40,7 @@ osso_return_t ossohelp_show( osso_context_t* osso,
 {
   return hildon_help_show (osso, help_id, flags) ;
 }
+link_warning(ossohelp_show, "warning: ossohelp_show has been deprecated in favour of hildon_help_show from pkg-config: hildon-help and Debian libhildonhelp0.");
 
 
 /*---=== Dialog help enabling ===---*/
@@ -72,3 +78,4 @@ gboolean ossohelp_dialog_help_enable( GtkDialog *dialog,
 {
   return hildon_help_dialog_help_enable (dialog, topic, osso) ;
 }
+link_warning(ossohelp_dialog_help_enable, "warning: ossohelp_dialog_help_enable has been deprecated in favour of hildon_help_dialog_help_enable from pkg-config: hildon-help and Debian libhildonhelp0.");
