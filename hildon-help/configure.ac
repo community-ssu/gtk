@@ -1,13 +1,13 @@
 #
-# configure.ac for OSSO HelpLib (& HelpTest)
+# configure.ac for Hildon HelpLib (& HelpTest)
 #
-# Copyright (c) 2004,2006 Nokia.
-# Contact:  Jakub Pavelek <jakub.pavelek@nokia.com>
+# Copyright (c) 2004,2006,2007 Nokia.
+# Contact:  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 #
 
 # Mandatory, initializes autoconf.
 #
-AC_INIT(libhildonhelp, 1.9.9)
+AC_INIT(libhildonhelp, 1.9.0)
 
 # Tests that source dir exists
 AC_CONFIG_SRCDIR( [src/osso-helplib.c] )
