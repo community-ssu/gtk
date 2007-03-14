@@ -1,3 +1,8 @@
+2007-03-14  Michael Natterer  <mitch@imendio.com>
+
+	* gtk+-2.0.pc (Cflags): add -DMAEMO_CHANGES so library users see
+	the changes.
+
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkentry.h:
