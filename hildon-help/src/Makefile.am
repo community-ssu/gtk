@@ -38,6 +38,6 @@ pkgconfig_DATA = hildon-help.pc
 
 libhildonhelp_la_SOURCES = \
 			   osso-helplib.c hildon-help.h \
-			   osso-helplib-private.h \
+			   hildon-help-private.h \
 			   browser.c contents.c context.c filter.c dialog.c graphic.c \
 			   internal.h htmltags.cfg
