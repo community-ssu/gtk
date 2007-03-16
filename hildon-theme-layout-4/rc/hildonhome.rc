@@ -24,11 +24,11 @@ style "osso-home-layoutmode-applet" = "osso-logical-colors"
   GtkWidget::focus-line-width = 4
 
 # Normal state border
-  fg[NORMAL]   = "HomeFrameNormal"
+  fg[NORMAL]   = @HomeFrameNormal
 # Conflicting state border
-  fg[PRELIGHT] = "HomeFrameReject"
+  fg[PRELIGHT] = @HomeFrameReject
 # Resize border
-  fg[ACTIVE]   = "HomeFrameResize"
+  fg[ACTIVE]   = @HomeFrameResize
 
 }
 

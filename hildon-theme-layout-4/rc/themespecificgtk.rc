@@ -7,68 +7,68 @@
 ##############################
 
 style "osso-logical-colors" {
-	color["DefaultTextColor"]        = "@DefaultTextColor@"
-	color["EmpTextColor"]            = "@EmpTextColor@"
-	color["PaintedDefaultTextColor"] = "@PaintedDefaultTextColor@"
-	color["DisabledTextColor"]       = "@DisabledTextColor@"
-	color["ProgressTextColor1"]      = "@ProgressTextColor1@"
-	color["ProgressTextColor2"]      = "@ProgressTextColor2@"
-	color["SecondaryTextColor"]      = "@SecondaryTextColor@"
-	color["TitleTextColor"]          = "@TitleTextColor@"
-	color["DialogTitleTextColor"]    = "@DialogTitleTextColor@"
+	color["DefaultTextColor"]        = @@DefaultTextColor@
+	color["EmpTextColor"]            = @@EmpTextColor@
+	color["PaintedDefaultTextColor"] = @@PaintedDefaultTextColor@
+	color["DisabledTextColor"]       = @@DisabledTextColor@
+	color["ProgressTextColor1"]      = @@ProgressTextColor1@
+	color["ProgressTextColor2"]      = @@ProgressTextColor2@
+	color["SecondaryTextColor"]      = @@SecondaryTextColor@
+	color["TitleTextColor"]          = @@TitleTextColor@
+	color["DialogTitleTextColor"]    = @@DialogTitleTextColor@
 	
-	color["ClearButtonTextColor"]    = "@ClearButtonTextColor@"
-	color["MemButtonTextColor"]      = "@MemButtonTextColor@"
+	color["ClearButtonTextColor"]    = @@ClearButtonTextColor@
+	color["MemButtonTextColor"]      = @@MemButtonTextColor@
 	
-	color["HWRAlphaTextColor"]       = "@HWRAlphaTextColor@"
-	color["HWRNumberTextColor"]      = "@HWRNumberTextColor@"
-	color["HWRDimmedTextColor"]      = "@HWRDimmedTextColor@"
-	color["HWRIllegalTextColor"]     = "@HWRIllegalTextColor@"
+	color["HWRAlphaTextColor"]       = @@HWRAlphaTextColor@
+	color["HWRNumberTextColor"]      = @@HWRNumberTextColor@
+	color["HWRDimmedTextColor"]      = @@HWRDimmedTextColor@
+	color["HWRIllegalTextColor"]     = @@HWRIllegalTextColor@
 	
-	color["WebTextColor"]            = "@WebTextColor@"
-	color["DimWebTextColor"]         = "@DimWebTextColor@"
-	color["LinkTextColor"]           = "@LinkTextColor@"
-	color["VisitedLinkTextColor"]    = "@VisitedLinkTextColor@"
+	color["WebTextColor"]            = @@WebTextColor@
+	color["DimWebTextColor"]         = @@DimWebTextColor@
+	color["LinkTextColor"]           = @@LinkTextColor@
+	color["VisitedLinkTextColor"]    = @@VisitedLinkTextColor@
 	
-	color["DefaultBackgrdColor"]     = "@DefaultBackgrdColor@"
-	color["PaintedBackgrdColor"]     = "@PaintedBackgrdColor@"
-	color["ImageBackgrdColor"]       = "@ImageBackgrdColor@"
+	color["DefaultBackgrdColor"]     = @@DefaultBackgrdColor@
+	color["PaintedBackgrdColor"]     = @@PaintedBackgrdColor@
+	color["ImageBackgrdColor"]       = @@ImageBackgrdColor@
 	
-	color["InputBackgrdColor"]       = "@InputBackgrdColor@"
-	color["HWRAlphaBackgrdColor"]    = "@HWRAlphaBackgrdColor@"
-	color["HWRPunctBackgrdColor"]    = "@HWRPunctBackgrdColor@"
-	color["HWRContBackgrdColor"]     = "@HWRContBackgrdColor@"
-	color["HWRHyphBackgrdColor"]     = "@HWRHyphBackgrdColor@"
+	color["InputBackgrdColor"]       = @@InputBackgrdColor@
+	color["HWRAlphaBackgrdColor"]    = @@HWRAlphaBackgrdColor@
+	color["HWRPunctBackgrdColor"]    = @@HWRPunctBackgrdColor@
+	color["HWRContBackgrdColor"]     = @@HWRContBackgrdColor@
+	color["HWRHyphBackgrdColor"]     = @@HWRHyphBackgrdColor@
 	
-	color["WebBackgrdColor"]         = "@WebBackgrdColor@"
+	color["WebBackgrdColor"]         = @@WebBackgrdColor@
 	
-	color["ImageBorderColor"]        = "@ImageBorderColor@"
-	color["FocusColor"]              = "@FocusColor@"
-	color["SelectionColor"]          = "@SelectionColor@"
+	color["ImageBorderColor"]        = @@ImageBorderColor@
+	color["FocusColor"]              = @@FocusColor@
+	color["SelectionColor"]          = @@SelectionColor@
 	
-	color["MapTopLeftColor"]         = "@MapTopLeftColor@"
-	color["MapBottomRightColor"]     = "@MapBottomRightColor@"
-	color["ClockHandColor"]          = "@ClockHandColor@"
+	color["MapTopLeftColor"]         = @@MapTopLeftColor@
+	color["MapBottomRightColor"]     = @@MapBottomRightColor@
+	color["ClockHandColor"]          = @@ClockHandColor@
 	
-	color["HWRBaselineColor"]        = "@HWRBaselineColor@"
-	color["HWRRecogColor"]           = "@HWRRecogColor@"
-	color["HWRUserColor"]            = "@HWRUserColor@"
-	color["HWRUserBackgrdColor"]     = "@HWRUserBackgrdColor@"
-	color["HWRHintColor"]            = "@HWRHintColor@"
+	color["HWRBaselineColor"]        = @@HWRBaselineColor@
+	color["HWRRecogColor"]           = @@HWRRecogColor@
+	color["HWRUserColor"]            = @@HWRUserColor@
+	color["HWRUserBackgrdColor"]     = @@HWRUserBackgrdColor@
+	color["HWRHintColor"]            = @@HWRHintColor@
 
-	color["ChatUserNameColor"]       = "@ChatUserNameColor@"
-	color["ChatParticipantNameColor"]= "@ChatParticipantNameColor@"
-	color["ChatEventColor"]          = "@ChatEventColor@"
+	color["ChatUserNameColor"]       = @@ChatUserNameColor@
+	color["ChatParticipantNameColor"]= @@ChatParticipantNameColor@
+	color["ChatEventColor"]          = @@ChatEventColor@
 	
-	color["CallHeaderBlockBgColor"]  = "@CallHeaderBlockBgColor@"
-	color["CallHeaderOnHoldBlockBgColor"] = "@CallHeaderOnHoldBlockBgColor@"
+	color["CallHeaderBlockBgColor"]  = @@CallHeaderBlockBgColor@
+	color["CallHeaderOnHoldBlockBgColor"] = @@CallHeaderOnHoldBlockBgColor@
 	
-	color["HomeFrameNormal"]         = "@HomeFrameNormal@"
-	color["HomeFrameResize"]         = "@HomeFrameResize@"
-	color["HomeFrameReject"]         = "@HomeFrameReject@"
+	color["HomeFrameNormal"]         = @@HomeFrameNormal@
+	color["HomeFrameResize"]         = @@HomeFrameResize@
+	color["HomeFrameReject"]         = @@HomeFrameReject@
 	
-	color["MenuInfoTextColor"]       = "@MenuInfoTextColor@"
-        color["VKBButtonTextColor"]      = "@VKBButtonTextColor@"
+	color["MenuInfoTextColor"]       = @@MenuInfoTextColor@
+        color["VKBButtonTextColor"]      = @@VKBButtonTextColor@
 }
 
 ##############################

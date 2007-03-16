@@ -3,8 +3,8 @@
 style "osso-listview" = "osso-logical-colors"
 {
 
-  text[ACTIVE] = "DefaultTextColor"
-  text[SELECTED] = "DefaultTextColor"
+  text[ACTIVE] = @DefaultTextColor
+  text[SELECTED] = @DefaultTextColor
 
   GtkTreeView::expander-size = 0
   GtkTreeView::vertical-separator = 2

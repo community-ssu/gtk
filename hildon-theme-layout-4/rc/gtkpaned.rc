@@ -9,8 +9,8 @@
 
 style "osso-paned"  = "osso-logical-colors" {
 
-    bg[NORMAL] = "PaintedBackgrdColor"  
-    bg[PRELIGHT] = "PaintedBackgrdColor"  
+    bg[NORMAL] = @PaintedBackgrdColor  
+    bg[PRELIGHT] = @PaintedBackgrdColor 
     GtkPaned::handle_size = 10
 
     engine "sapwood"

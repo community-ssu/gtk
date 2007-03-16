@@ -43,7 +43,7 @@ style "osso-breadcrumb-button" = "osso-logical-colors" {
     xthickness = 0
     ythickness = 0
 
-    fg[INSENSITIVE] = "DefaultTextColor"
+    fg[INSENSITIVE] = @DefaultTextColor
 
     engine "sapwood" {
 

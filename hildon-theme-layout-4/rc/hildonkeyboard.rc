@@ -60,9 +60,9 @@ widget "*.OssoIMSideCloseButton" style "osso-input-method-side-close-button"
 #common control buttons
 style "osso-input-method-side-button" = "osso-logical-colors"
 {
-    fg[NORMAL] = "VKBButtonTextColor"
-    fg[ACTIVE] = "VKBButtonTextColor"
-    fg[PRELIGHT] = "VKBButtonTextColor"
+    fg[NORMAL] = @VKBButtonTextColor
+    fg[ACTIVE] = @VKBButtonTextColor
+    fg[PRELIGHT] = @VKBButtonTextColor
 
     engine "sapwood"
     {
@@ -118,9 +118,9 @@ widget "*.OssoIMSideButton.GtkLabel" style "osso-input-method-side-button"
 #common control toggle buttons
 style "osso-input-method-side-toggle-button" = "osso-logical-colors"
 {
-    fg[NORMAL] = "VKBButtonTextColor"
-    fg[ACTIVE] = "VKBButtonTextColor"
-    fg[PRELIGHT] = "VKBButtonTextColor"
+    fg[NORMAL] = @VKBButtonTextColor
+    fg[ACTIVE] = @VKBButtonTextColor
+    fg[PRELIGHT] = @VKBButtonTextColor
 
     engine "sapwood"
     {
@@ -159,7 +159,7 @@ widget "*.OssoIMSideToggleButton.GtkLabel" style "osso-input-method-side-toggle-
 #ordinary keys in vkb and special character view
 style "osso-input-method-vkb-key" = "osso-logical-colors"
 {
-    fg[NORMAL] = "VKBButtonTextColor"
+    fg[NORMAL] = @VKBButtonTextColor
 
     GtkButton::child_spacing = 0
     engine "sapwood"
@@ -205,7 +205,7 @@ widget "*.osso-im-dim" style "osso-input-method-vkb-key"
 #accent dead keys in vkb
 style "osso-input-method-accent-key" = "osso-logical-colors"
 {
-    fg[NORMAL] = "VKBButtonTextColor"
+    fg[NORMAL] = @VKBButtonTextColor
 
     engine "sapwood"
     {
@@ -346,14 +346,14 @@ widget "*.osso-im-scv-tab" style "osso-input-special-character-view-tabs"
 #hwr area mixmode background color
 style "osso-input-method-hwr-area-mixmode-background" = "osso-logical-colors"
 {
-  bg[NORMAL] = "HWRAlphaBackgrdColor"
+  bg[NORMAL] = @HWRAlphaBackgrdColor
 }
 widget "*.hildonhwrarea_mix" style "osso-input-method-hwr-area-mixmode-background"
 
 #hwr area punctuationmode background color
 style "osso-input-method-hwr-area-puncmode-background" = "osso-logical-colors"
 {
-  bg[NORMAL] = "HWRPunctBackgrdColor" 
+  bg[NORMAL] = @HWRPunctBackgrdColor 
 }
 widget "*.hildonhwrarea_pun" style "osso-input-method-hwr-area-puncmode-background"
 
@@ -506,7 +506,7 @@ widget "*.osso-im-fkb-common-button" style "osso-input-method-fkb-common-button"
 #finger keyboard input keys
 style "osso-input-method-fkb-key" = "osso-logical-colors"
 {
-    fg[NORMAL] = "VKBButtonTextColor"
+    fg[NORMAL] = @VKBButtonTextColor
 
     GtkButton::child_spacing = 0
     engine "sapwood"
@@ -599,7 +599,7 @@ widget "*osso-im-fkb-whitespace-key" style "osso-input-method-fkb-whitespace-key
 #accent dead keys in fkb
 style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
 {
-    fg[NORMAL] = "VKBButtonTextColor"
+    fg[NORMAL] = @VKBButtonTextColor
 
     engine "sapwood"
     {

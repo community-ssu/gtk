@@ -6,7 +6,7 @@
 # Theming instructions for GtkDialog -widget
 #
 # The outer border/frame graphics are themed in matchbox
-# theme files located in ../matchbox/*
+# theme files located in ../matchbox/
 #
 # Only change is setting the button spacing to 5
 # pixels.

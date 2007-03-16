@@ -1,6 +1,12 @@
+2007-03-16  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/*.rc:
+
+	Use the @ format for logical color references.
+
 2007-03-12  Xan Lopez  <xan.lopez@nokia.com>
 
-	* rc/gtktreeview.r:
+	* rc/gtktreeview.rc:
 
 	Use the new tree-view-separator-area property.
 
