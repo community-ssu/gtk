@@ -67,7 +67,7 @@
   <Menu>
     <Name>tana_fi_tools</Name>
     <Include>
-      <Filename>osso-application-installer.desktop</Filename>
+      <Filename>hildon-application-manager.desktop</Filename>
       <Filename>osso-backup.desktop</Filename>
       <Filename>hildon-control-panel.desktop</Filename>
       <Filename>osso-connectivity-ui-connmgr.desktop</Filename>
