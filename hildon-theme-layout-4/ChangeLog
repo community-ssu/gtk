@@ -1,3 +1,12 @@
+2007-03-16  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Moved the minimize/close button images and
+	statusbar background 90 pixels to the left so it alings better
+	in the template. Affected images are: 
+	  - qgn_plat_status_bar_background.png
+	  - qgn_plat_button_minimize_pressed.png
+	  - qgn_plat_button_close_pressed.png
+	
 2007-03-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.3.0-1 release]
