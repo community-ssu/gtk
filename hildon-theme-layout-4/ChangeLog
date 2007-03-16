@@ -1,3 +1,8 @@
+2007-03-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* data/layout.txt: Fixing a coordinate of the _frame_right thing.
+	Moving one pixel right.
+
 2007-03-16  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/*.rc:
