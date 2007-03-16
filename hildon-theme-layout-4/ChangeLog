@@ -1,5 +1,13 @@
 2007-03-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[0.3.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog: Updating.
+
+2007-03-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* data/layout.txt: Fixing a coordinate of the _frame_right thing.
 	Moving one pixel right.
 

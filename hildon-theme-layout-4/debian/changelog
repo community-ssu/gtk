@@ -1,3 +1,14 @@
+hildon-theme-layout-4 (0.3.0-1) unstable; urgency=low
+
+  * Adding the bradcrumb, thumbsize scroolbar and customized toolbar for mediaplayer to layout
+  * Fixing the scrolled window shadow
+  * Remove {odd,even}-row-color properties, they are not used by the theme engine
+  * Fixing the volumebar ranges and time picker arrows
+  * Use the @ format for logical color references
+  * Fixing a coordinate of the _frame_right thing. moving one pixel right
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 16 Mar 2007 16:52:28 +0200
+
 hildon-theme-layout-4 (0.2.1-1) unstable; urgency=low
 
   * Update GtkFrame painting rules for gtk+ 2.10
