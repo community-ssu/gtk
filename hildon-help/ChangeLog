@@ -1,3 +1,7 @@
+2007-03-15 Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Re-implemented help dialog
+
 2007-03-14 Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Updated version in configure.ac to 1.9.0 (not 1.9.9)

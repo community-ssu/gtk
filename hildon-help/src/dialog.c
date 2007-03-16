@@ -26,68 +26,19 @@
 
 #include <gtk/gtk.h>
 #include <gdk/gdkkeysyms.h>
+#include <hildon/hildon.h>
 
 #define HELP_URL_PREFIX "help://"
 #define HELP_URL_PREFIX_LENGTH (strlen(HELP_URL_PREFIX))
 
-/*
-    This variable is set to:
-       TRUE: If there's one instance of help dialog running already
-       FALSE: If there's no instance of help dialog running
+typedef struct
+  {
+  GtkWidget *dialog ;
+  GtkWidget *browser ;
+  GtkWidget *close_button ;
+  } HELP_DIALOG ;
 
-    Without this extra variable, when clicking the (?) icon fast enough twice,
-    before the first dialog has been completed, which means the application 
-    modal help dialog hasn't been able to 'capture' all the GTK events, the
-    (?) icon can be clicked twice. This results in 2 instances of help dialog
-    being created.
-*/
-static gboolean dialog_running = FALSE;
-
-static GtkWidget *browser;
-
-
-/*--== Browser handling ==--*/
-
-/*  update_html now renamed to libosso_update_html in browser.c
- *  because of update_html defined in help-ui/ui/content_view.c
- */
-/*--== GTK+ dialog ==--*/
-
-static GtkWidget *dialog;
-GtkWidget *btn_close;
-gboolean closed= FALSE;
-
-static
-gboolean on_close( GtkWidget *btn, gpointer data )
-{
-    gboolean *closed_ref= (gboolean*)data;
-    g_assert(data);
-    (void)btn;
-
-    dialog_running = FALSE;
-
-    gtk_widget_destroy( GTK_WIDGET (dialog) );
-    *closed_ref= TRUE;
-    
-    return TRUE;    /* yes, we handled it */
-}
-
-static
-gboolean on_key_release( GtkWidget *widget, GdkEventKey *event, gpointer data ) {
-    g_assert(widget);
-    g_assert(event);
-
-    switch (event->keyval) {
-        /* Closing dialog on ESC release */
-        case GDK_Escape:
-            on_close(btn_close, &closed);
-            return TRUE;
-        default:
-            break;
-    }
-
-    return FALSE;
-}
+static HELP_DIALOG help_dialog = {NULL} ;
 
 static
 gchar* get_dialog_title(const gchar *topic_key)
@@ -104,7 +55,7 @@ gchar* get_dialog_title(const gchar *topic_key)
 }
 
 static
-gboolean open_help_url(const gchar *url,  osso_context_t *osso)
+gboolean open_help_url(HELP_DIALOG *help_dialog, const gchar *url,  osso_context_t *osso)
 {
   const gchar *file_url= "file://" HELP_HTML_TMPFILE;
   char key[HELP_KEY_MAXLEN];
@@ -135,13 +86,13 @@ gboolean open_help_url(const gchar *url,  osso_context_t *osso)
       return FALSE;
   }
 
-  if (!browser_show( browser, file_url, TRUE ))
+  if (!browser_show( help_dialog->browser, file_url, TRUE ))
   {
       g_free(dialog_title); dialog_title = NULL;
       return FALSE;
   }
 
-  gtk_window_set_title(GTK_WINDOW(dialog), dialog_title);
+  gtk_window_set_title (GTK_WINDOW (help_dialog->dialog), dialog_title);
   g_free(dialog_title); dialog_title = NULL;
   return TRUE;
 }
@@ -153,12 +104,50 @@ void dialog_link_clicked (GtkHTML *html, const gchar *url, gpointer data)
   osso_context_t *osso = (osso_context_t*) data;
 
 
-  if (!open_help_url(url, osso))
-  {
-      osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST),
-                                  NULL /*retval*/ );
-  }
+  if (!open_help_url(&help_dialog, url, osso))
+      /*osso_system_note_infoprint (osso, helplib_ui_str(HELP_UI_NOT_EXIST), NULL *//*retval*//*);*/
+    hildon_banner_show_information (NULL, NULL, helplib_ui_str(HELP_UI_NOT_EXIST)) ;
 }
+
+static osso_return_t create_help_dialog (HELP_DIALOG *help_dialog, osso_context_t *osso)
+  {
+  GtkWindowGroup *grp = NULL ;
+  GtkBox *dialog_vbox = NULL ;
+  GtkWidget *hsep = NULL ;
+
+  if (NULL == (help_dialog->dialog = g_object_new (GTK_TYPE_DIALOG, "modal", TRUE, "has-separator", FALSE, NULL)))
+    return OSSO_ERROR ;
+
+  help_dialog->close_button = gtk_dialog_add_button (GTK_DIALOG (help_dialog->dialog), helplib_str_close(), GTK_RESPONSE_CLOSE) ;
+/*gtk_dialog_set_default_response (GTK_DIALOG (help_dialog->dialog), GTK_RESPONSE_CLOSE) ; */
+
+  if (NULL == (help_dialog->browser = browser_new (osso)))
+    {
+    g_object_unref (help_dialog->dialog) ;
+    help_dialog->dialog = NULL ;
+    return OSSO_RPC_ERROR ;
+    }
+  gtk_widget_show_all (help_dialog->browser) ;
+
+  dialog_vbox = GTK_BOX (GTK_DIALOG (help_dialog->dialog)->vbox) ;
+
+  gtk_box_pack_start (dialog_vbox, help_dialog->browser, TRUE, TRUE, 0) ;
+
+  if (NULL != (hsep = g_object_new (GTK_TYPE_HSEPARATOR, "visible", TRUE, NULL)))
+    gtk_box_pack_start (dialog_vbox, hsep, FALSE, FALSE, 0) ;
+
+  if (NULL != (grp = gtk_window_group_new ()))
+    {
+    gtk_window_group_add_window (grp, GTK_WINDOW (help_dialog->dialog)) ;
+    g_object_unref (grp) ;
+    }
+
+  g_signal_connect (G_OBJECT (gtk_bin_get_child (GTK_BIN (help_dialog->browser))), "link_clicked", (GCallback)dialog_link_clicked, osso);
+
+  gtk_widget_set_size_request (help_dialog->dialog, HELP_DIALOG_WIDTH, HELP_DIALOG_HEIGHT);
+
+  return OSSO_OK ;
+  }
 
 /**
   Show help in a system modal dialog
@@ -178,124 +167,60 @@ void dialog_link_clicked (GtkHTML *html, const gchar *url, gpointer data)
 osso_return_t system_dialog( osso_context_t *osso,
                              const char *topic_key )
 {
-    GtkWindowGroup *group;
-    GtkWidget *vbox;
-    GtkWidget *hsep;
+    osso_return_t ret = OSSO_OK ;
     gchar *dialog_title = NULL;
 
+    g_print ("system_dialog: Entering\n") ;
+
     const gchar *file_url= "file://" HELP_HTML_TMPFILE;
-    
-    if (dialog_running)  /*There shouldn't be more than one dialog*/
-        return OSSO_OK;
 
     if (!osso || !topic_key) return OSSO_ERROR;
 
-    /* Catch the title before opening dialog; if there is
-       no such key, this is the last chance to know.. */
-    dialog_title = get_dialog_title(topic_key);
-    if (!dialog_title)
+    if (NULL == (dialog_title = get_dialog_title(topic_key)))
     {
-        osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST),
-                                    NULL /*retval*/ );
+        /*osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST), NULL *//*retval*//* );*/
+        hildon_banner_show_information (NULL, NULL, helplib_ui_str(HELP_UI_NOT_EXIST)) ;
         return OSSO_ERROR;
     }
-
-    dialog_running = TRUE;
-
     /* Create dialog and set its attributes */
-    dialog= gtk_dialog_new_with_buttons(
-        dialog_title,
-        NULL,    /* no parent: system modal */
-        GTK_DIALOG_DESTROY_WITH_PARENT | 
-            GTK_DIALOG_NO_SEPARATOR |
-            GTK_DIALOG_MODAL,
-        NULL );
+    if (NULL == help_dialog.dialog)
+      if (OSSO_OK != (ret = create_help_dialog (&help_dialog, osso)))
+        {
+        g_free (dialog_title) ;
+        return ret ;
+        }
 
-    g_free(dialog_title); dialog_title = NULL;
-
-    g_assert(dialog);
-
-    group = gtk_window_group_new ();
-    gtk_window_group_add_window (group, GTK_WINDOW (dialog));
-    g_object_unref (group);
-
-    /* This could be fancy but we don't have the HildonApp handle.
-     *
-     * gtk_window_set_transient_for( GTK_WINDOW (dialog), GTK_WINDOW (hildonapp) );
-     */
-
-    /*---*/
-    vbox= GTK_DIALOG(dialog) ->vbox;
-
-    /* Browser component */
-    browser= browser_new( osso );
-
-    if (!browser) {
-        dialog_running = FALSE;
-        return OSSO_RPC_ERROR;    /* Browser service not found */
-    }
-
-    /* Need to 'anchor' the socket before using it! */
-    gtk_box_pack_start( GTK_BOX (vbox), GTK_WIDGET (browser),
-                                        TRUE,   /* expand */
-                                        TRUE,   /* fill */
-                                        0 );    /* padding */
-    hsep= gtk_hseparator_new();
+    gtk_window_set_title (GTK_WINDOW (help_dialog.dialog), dialog_title) ;
+    g_free (dialog_title) ;
     
-    gtk_box_pack_start( GTK_BOX (vbox), GTK_WIDGET (hsep),
-                                        FALSE, FALSE, 0 );
-
-    btn_close= gtk_dialog_add_button( GTK_DIALOG (dialog),
-                                      helplib_str_close(),
-                                      GTK_RESPONSE_OK );
-
-    /* signal handlers */
-    g_signal_connect( GTK_OBJECT (btn_close), "clicked",
-                      G_CALLBACK (on_close), &closed );
-
-    g_signal_connect( G_OBJECT (dialog), "key-release-event",
-                      G_CALLBACK (on_key_release), NULL );
-    gtk_widget_add_events(GTK_WIDGET(dialog), GDK_KEY_RELEASE_MASK);
-
-    GtkWidget *browser_html = gtk_bin_get_child(GTK_BIN(browser));
-    g_signal_connect(G_OBJECT (browser_html), "link_clicked",
-             G_CALLBACK(dialog_link_clicked), osso);
-
-    gtk_widget_set_size_request( dialog, HELP_DIALOG_WIDTH, HELP_DIALOG_HEIGHT );
- 
-    /* Display dialog */
-    gtk_widget_show_all( dialog );
-
-    /* Add the default focus to the Close button */
-    gtk_widget_grab_default(btn_close);
+    gtk_widget_grab_default (help_dialog.close_button);
 
     /* Now, we can fill in with data */
     /*
      * We need this libosso_update_html because we need to update the
      * /tmp/osso-help.htm file with topic_key
      */
-    osso_return_t rc= libosso_update_html( osso, 0, topic_key );
+    osso_return_t rc= libosso_update_html (osso, 0, topic_key);
 
-    if (rc!=OSSO_OK) {
-        gtk_widget_destroy( GTK_WIDGET (dialog) );
-        osso_system_note_infoprint( osso, helplib_ui_str(HELP_UI_NOT_EXIST),
-                                    NULL /*retval*/ );
-        return rc;  /* failed! */
-    }
+    if (rc != OSSO_OK)
+      {
+      /*osso_system_note_infoprint (osso, helplib_ui_str(HELP_UI_NOT_EXIST), NULL *//*retval*//*);*/
+      hildon_banner_show_information (NULL, NULL, helplib_ui_str(HELP_UI_NOT_EXIST)) ;
+      return rc;  /* failed! */
+      }
 
     /*use file_url, not topic_key as the file url.*/
-    if (!browser_show( browser, file_url, TRUE )) {
-        browser_close( &browser );
-        gtk_widget_destroy( GTK_WIDGET (dialog) );
-        dialog_running = FALSE;
+    if (!browser_show (help_dialog.browser, file_url, TRUE))
+      return OSSO_ERROR;
 
-        return OSSO_ERROR;
-    }
+    g_print ("system_dialog: Calling gtk_dialog_run\n") ;
 
     /* Stay here until 'close' is pressed (easiest for the application) */
-    while( !closed ) {
-        gtk_main_iteration();
-    }
+    gtk_dialog_run (GTK_DIALOG (help_dialog.dialog)) ;
+
+    gtk_widget_hide (help_dialog.dialog) ;
+
+    g_print ("system_dialog: Dialog is now hidden\n") ;
 
     return OSSO_OK;
 }

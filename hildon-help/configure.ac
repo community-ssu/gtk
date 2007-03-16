@@ -7,10 +7,10 @@
 
 # Mandatory, initializes autoconf.
 #
-AC_INIT(libhildonhelp, 1.9.0)
+AC_INIT(libhildonhelp, 1.9.1)
 
 # Tests that source dir exists
-AC_CONFIG_SRCDIR(src/osso-helplib.c)
+AC_CONFIG_SRCDIR(src/hildon-help.h)
 
 # For automake: generate rules to reproduce config.h, if needed
 AM_CONFIG_HEADER(config.h)

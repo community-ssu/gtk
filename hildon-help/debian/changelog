@@ -1,3 +1,9 @@
+libhildonhelp (1.9.1-1) unstable; urgency=low
+
+  * Re-implemented help dialog
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Thu, 15 Mar 2007 14:42:52 +0200
+
 libhildonhelp (1.9.0-2) unstable; urgency=low
 
   * Updated version in configure.ac
