@@ -1,8 +1,9 @@
-hildon-theme-plankton (4.2.2-2) unstable; urgency=low
+hildon-theme-plankton (4.3.0-1) unstable; urgency=low
 
-  * removed extra line in debian/copyright (copy/paste?)
+  * Removed extra line in debian/copyright (copy/paste?)
+  * Updating to new layout
 
- -- Luc Pionchon <luc.pionchon@nokia.com>  Tue, 13 Mar 2007 15:20:09 +0200
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Fri, 16 Mar 2007 17:00:07 +0200
 
 hildon-theme-plankton (4.2.2-1) unstable; urgency=low
 
