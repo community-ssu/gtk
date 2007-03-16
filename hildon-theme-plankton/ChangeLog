@@ -1,3 +1,10 @@
+2007-03-16  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg,png: moved the close / minimize buttons
+	around in the template. Removed the unused area from the right
+	side of task navigator menu hilight state. Made right and left
+	side margins 12 pixels on application area (yay! :)
+
 2007-03-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* template/Makefile.am: Remove stamp from distfiles.
