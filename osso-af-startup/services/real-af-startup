@@ -69,8 +69,7 @@ start)
     fi
 
     if [ -x /usr/bin/wizback ]; then
-      echo "wizback: Advancing"
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance uint32:1
     fi
 
     # Give Backup a chance to restore settings automatically
@@ -83,24 +82,21 @@ start)
       $AF_INIT_DIR/osso-connectivity-ui-gwwizard-startup.sh start
     fi
 
-    if [ -x /usr/bin/wizback ]; then
-      echo "wizback: Advancing"
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance
-    fi
-
     if [ -f $TMPDIR/launch-operator-wizard.tmp \
          -a ! -f /tmp/suw-user-cancelled.tmp ]; then
       if [ -x $AF_INIT_DIR/operator-wizard.sh ]; then
+        if [ -x /usr/bin/wizback ]; then
+          dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance uint32:1
+        fi
         $AF_INIT_DIR/operator-wizard.sh start
       fi
       rm -f $TMPDIR/launch-operator-wizard.tmp
     fi
 
     if [ -x /usr/bin/wizback ]; then
-      echo "wizback: Advancing"
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance
+      # Can advance 2 positions here, since any position past the end has no effect
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance uint32:2
       sleep 1
-      echo "wizback: Quitting"
       dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.quit
     fi
 
