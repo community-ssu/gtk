@@ -3,7 +3,7 @@ Section: python
 Priority: optional
 Maintainer: Osvaldo Santana Neto <osvaldo.santana@indt.org.br>
 Standards-Version: 3.6.1
-Build-Depends: python2.5-dev, debhelper (>= 4.1.67), g77-3.4
+Build-Depends: python2.5-dev, debhelper (>= 4.1.67)
 
 Package: python2.5-numeric
 Architecture: any
