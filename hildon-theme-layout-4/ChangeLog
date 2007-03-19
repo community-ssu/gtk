@@ -1,3 +1,9 @@
+2007-03-19  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: oops, forgot to fix the coordinates of two
+	additional images that got moved around in the template as
+	well. Duh.. (The normal states for minimize + close buttons).
+
 2007-03-16  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Moved the minimize/close button images and
