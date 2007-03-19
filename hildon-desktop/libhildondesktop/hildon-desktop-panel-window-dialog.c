@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 #include <gdk/gdk.h>
 #include <libhildonwm/hd-wm.h>
+#include <X11/Xatom.h>
+#include <gdk/gdkx.h>
 
 #include "hildon-desktop-panel-window-dialog.h"
 #include "hildon-desktop-panel-expandable.h"
@@ -93,6 +95,53 @@ hildon_desktop_panel_window_dialog_init (HildonDesktopPanelWindowDialog *window)
   /* FIXME: what do we do with focus??? */
 }
 
+static gchar *
+hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
+{
+  Atom           atom_utf8_string, atom_wm_name, atom_check, type;
+  int            result, format;
+  gchar          *val, *retval;
+  unsigned long  nitems, bytes_after;
+  Window        *support_xwin = NULL;
+  Display	*dpy;
+
+  dpy = GDK_DISPLAY ();
+
+  atom_check = XInternAtom (dpy, "_NET_SUPPORTING_WM_CHECK", False);
+
+  XGetWindowProperty (dpy, 
+		      GDK_WINDOW_XID (gdk_get_default_root_window ()),
+		      atom_check,
+		      0, 16L, False, XA_WINDOW, &type, &format,
+		      &nitems, &bytes_after, (unsigned char **)&support_xwin);
+
+  if (support_xwin == NULL)
+      return NULL;
+
+  atom_utf8_string = XInternAtom (dpy, "UTF8_STRING", False);
+  atom_wm_name     = XInternAtom (dpy, "_NET_WM_NAME", False);
+
+  result = XGetWindowProperty (dpy, *support_xwin, atom_wm_name,
+			       0, 1000L,False, atom_utf8_string,
+			       &type, &format, &nitems,
+			       &bytes_after, (unsigned char **)&val);
+  if (result != Success)
+    return NULL;
+
+  if (type != atom_utf8_string || format !=8 || nitems == 0)
+  {
+    if (val) 
+      XFree (val);
+    return NULL;
+  }
+
+  retval = g_strdup (val);
+
+  XFree (val);
+
+  return retval;
+}
+
 static GObject *  
 hildon_desktop_panel_window_dialog_constructor (GType gtype,
 			                 guint n_params,
@@ -103,18 +152,15 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
   GtkWidget *widget;
   GtkContainer *parent = NULL;
   gint orientation;
+  gchar *wm_name;
   
   object = G_OBJECT_CLASS (hildon_desktop_panel_window_dialog_parent_class)->constructor (gtype,
 		  				                                   	  n_params,
 						                                   	  params);
-
   widget = GTK_WIDGET (object);
   window = HILDON_DESKTOP_PANEL_WINDOW_DIALOG (object);
 
   GTK_WINDOW (window)->type = GTK_WINDOW_TOPLEVEL;
-
-  gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DIALOG);
-  gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
 
   if (HILDON_DESKTOP_WINDOW (window)->container != NULL) 
   {
@@ -148,11 +194,27 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
   
   gtk_widget_show (GTK_WIDGET (HILDON_DESKTOP_WINDOW (window)->container));
 
-  gtk_widget_realize (GTK_WIDGET (window));
-  
-  gdk_window_set_transient_for (GTK_WIDGET (window)->window, gdk_get_default_root_window ());
-  gtk_window_set_accept_focus (GTK_WINDOW (window), FALSE);
+  wm_name = hildon_desktop_get_current_wm_name (window);
 
+  if (g_str_equal (wm_name, "matchbox"))
+  {
+    gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DIALOG);
+    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+
+    gtk_widget_realize (GTK_WIDGET (window));
+
+    gdk_window_set_transient_for (GTK_WIDGET (window)->window, gdk_get_default_root_window ());
+    gtk_window_set_accept_focus (GTK_WINDOW (window), FALSE);
+  }
+  else
+  {
+    gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DOCK);
+
+    gtk_widget_realize (GTK_WIDGET (window));
+  }
+
+  g_free (wm_name);
+ 
   gtk_widget_pop_composite_child ();
 
   g_signal_connect (window->priv->hdwm,

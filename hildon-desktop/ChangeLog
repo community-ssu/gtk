@@ -1,3 +1,9 @@
+2007-03-19  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Check the WM we are running: if not matchbox set the window dialog
+	as a dock window.
+
 2007-03-14  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* debian/control, debian/changelog, src/hd-desktop.c,
