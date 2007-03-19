@@ -1,3 +1,11 @@
+matchbox-window-manager (2:1.1-osso18) unstable; urgency=low
+
+  * support for more specific menu hints DROPDOWN and POPUP (used by gtk)
+  * sync with upstream changes
+  * fixes maemo.org bugzilla bug #1141 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Mon, 19 Mar 2007 15:28:13 +0200
+
 matchbox-window-manager (2:1.1-osso17) unstable; urgency=low
 
   * configure.ac : check for xfixes 4.0 
