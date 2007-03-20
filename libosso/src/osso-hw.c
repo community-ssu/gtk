@@ -262,7 +262,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 
     if (install_mce_handler) {
         _msg_handler_set_cb_f(osso,
-                              MCE_SIGNAL_SVC,
+                              MCE_SERVICE,
                               MCE_SIGNAL_PATH,
                               MCE_SIGNAL_IF,
                               signal_handler,
@@ -326,7 +326,7 @@ osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
     _unset_state_cb(sig_device_mode_ind);
 
     if (_state_is_unset()) {
-	_msg_handler_rm_cb_f(osso, MCE_SIGNAL_SVC,
+	_msg_handler_rm_cb_f(osso, MCE_SERVICE,
                              MCE_SIGNAL_PATH, MCE_SIGNAL_IF,
                              (const _osso_handler_f*)signal_handler,
                              NULL, FALSE);
@@ -711,7 +711,7 @@ static void signal_handler(osso_context_t *osso,
         } else if (strncmp(s, MCE_OFFLINE_MODE,
                            strlen(MCE_OFFLINE_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
-            write_device_state_to_file(OFFLINE_MODE);
+            write_device_state_to_file(MCE_OFFLINE_MODE);
         } else if (strncmp(s, MCE_INVALID_MODE,
                            strlen(MCE_INVALID_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
@@ -780,7 +780,7 @@ static void inactivity_signal_handler(osso_context_t *osso,
         assert(msg != NULL);
         assert(data != NULL);
 
-        if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, INACTIVITY_SIG)) {
+        if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, MCE_INACTIVITY_SIG)) {
                 DBusMessageIter iter;
                 dbus_bool_t value;
 
@@ -875,7 +875,7 @@ static void display_signal_handler(osso_context_t *osso,
         assert(data != NULL);
 
         if (dbus_message_is_signal(msg, MCE_SIGNAL_IF,
-                                   DISPLAY_STATUS_SIG)) {
+                                   MCE_DISPLAY_SIG)) {
                 DBusMessageIter iter;
                 char *value;
 
@@ -1274,7 +1274,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         object_path = MCE_SIGNAL_PATH;
                         interface = MCE_SIGNAL_IF;
                         match = "type='signal',interface='" MCE_SIGNAL_IF
-                                "',member='" INACTIVITY_SIG "'";
+                                "',member='" MCE_INACTIVITY_SIG "'";
                         error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_SYSTEM);
                         break;
                 case MUALI_EVENT_DISPLAY_ON:
@@ -1286,7 +1286,7 @@ muali_error_t muali_set_event_handler(muali_context_t *context,
                         object_path = MCE_SIGNAL_PATH;
                         interface = MCE_SIGNAL_IF;
                         match = "type='signal',interface='" MCE_SIGNAL_IF
-                                "',member='" DISPLAY_STATUS_SIG "'";
+                                "',member='" MCE_DISPLAY_SIG "'";
                         error = _SET_HANDLER_CALL(FALSE, MUALI_BUS_SYSTEM);
                         break;
                 default:
