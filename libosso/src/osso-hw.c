@@ -27,27 +27,9 @@
 #include "osso-hw.h"
 #include "osso-mem.h"
 #include "muali.h"
+#include <mce/dbus-names.h>
+#include <mce/mode-names.h>
 #include <assert.h>
-
-#define MCE_SERVICE			"com.nokia.mce"
-#define MCE_REQUEST_PATH		"/com/nokia/mce/request"
-#define MCE_REQUEST_IF			"com.nokia.mce.request"
-#define MCE_SIGNAL_PATH			"/com/nokia/mce/signal"
-#define MCE_SIGNAL_IF			"com.nokia.mce.signal"
-#define MCE_SIGNAL_SVC		        MCE_SERVICE	
-#define MCE_DISPLAY_ON_REQ		"req_display_state_on"
-#define MCE_PREVENT_BLANK_REQ		"req_display_blanking_pause"
-
-#define DEVICE_MODE_SIG	                "sig_device_mode_ind"
-#define INACTIVITY_SIG                  "system_inactivity_ind"
-#define SHUTDOWN_SIG                    "shutdown_ind"
-#define SAVE_UNSAVED_SIG                "save_unsaved_data_ind"
-#define DISPLAY_STATUS_SIG              "display_status_ind"
-
-#define NORMAL_MODE                     "normal"
-#define FLIGHT_MODE                     "flight"
-#define OFFLINE_MODE                    "offline"
-#define INVALID_MODE                    "invalid"
 
 /* user lowmem signal */
 #define USER_LOWMEM_OFF_SIGNAL_SVC "com.nokia.ke_recv"

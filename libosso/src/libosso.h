@@ -1297,6 +1297,31 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
 osso_return_t osso_hw_unset_event_cb(osso_context_t *osso,
 				     osso_hw_state_t *state);
 
+
+typedef enum {
+  OSSO_DISPLAY_ON,
+  OSSO_DISPLAY_OFF,
+  OSSO_DISPLAY_DIMMED
+} osso_display_state_t;
+
+typedef void(osso_display_event_cb_f)(osso_display_state_t state,
+                                      gpointer data);
+
+/**
+ * This function registers a callback that is called whenever the display
+ * state is changed. It is also called once directly after registering it,
+ * to tell about the current state.
+ * @param osso The library context as returned by #osso_initialize.
+ * @param cb Function that is called when the display state is changed.
+ * @param data Arbitrary application-specific pointer that will be passed
+ * to the callback and ignored by Libosso.
+ * @return #OSSO_OK if all goes well, #OSSO_ERROR if an error occurred, or
+ * #OSSO_INVALID if some parameter is invalid.
+ */
+osso_return_t osso_hw_set_display_event_cb(osso_context_t *osso,
+					   osso_display_event_cb_f *cb,
+					   gpointer data);
+
 /*@}*/
 /**********************************************************************/
 /**
