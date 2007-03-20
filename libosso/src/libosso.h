@@ -4,7 +4,7 @@
  *
  * This file is part of libosso
  *
- * Copyright (C) 2005-2006 Nokia Corporation. All rights reserved.
+ * Copyright (C) 2005-2007 Nokia Corporation. All rights reserved.
  *
  * Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
  *
