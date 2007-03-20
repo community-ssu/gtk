@@ -211,7 +211,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.save_unsaved_data_ind.data = data;
         if (!osso->hw_cbs.save_unsaved_data_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='" MCE_SAVE_UNSAVED_SIG "'", &error);
+                MCE_SIGNAL_IF "',member='" MCE_DATA_SAVE_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
@@ -381,13 +381,16 @@ static void read_device_state_from_file(osso_context_t *osso)
     ret = readlink(cache_file_name, s, STORED_LEN - 1);
     if (ret >= 0) {
         s[ret] = '\0';
-        if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
+        if (strncmp(s, MCE_NORMAL_MODE, strlen(MCE_NORMAL_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-        } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
+        } else if (strncmp(s, MCE_FLIGHT_MODE,
+                           strlen(MCE_FLIGHT_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
-        } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
+        } else if (strncmp(s, MCE_OFFLINE_MODE,
+                           strlen(MCE_OFFLINE_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
-        } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
+        } else if (strncmp(s, MCE_INVALID_MODE,
+                           strlen(MCE_INVALID_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
         } else {
             ULOG_WARN_F("invalid device mode '%s'", s);
@@ -397,7 +400,7 @@ static void read_device_state_from_file(osso_context_t *osso)
             "assuming OSSO_DEVMODE_NORMAL", cache_file_name,
             strerror(errno));
         osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-        ret = symlink(NORMAL_MODE, cache_file_name);
+        ret = symlink(MCE_NORMAL_MODE, cache_file_name);
         if (ret == -1) {
             ULOG_ERR_F("failed to create symlink '%s': %s",
                        cache_file_name, strerror(errno));
@@ -645,13 +648,13 @@ static void signal_handler(osso_context_t *osso,
     ULOG_DEBUG_F("entered");
     assert(osso != NULL);
 
-    if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SHUTDOWN_SIG)) {
+    if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, MCE_SHUTDOWN_SIG)) {
         osso->hw_state.shutdown_ind = TRUE;
         if (osso->hw_cbs.shutdown_ind.set) {
             (osso->hw_cbs.shutdown_ind.cb)(&osso->hw_state,
                 osso->hw_cbs.shutdown_ind.data);
         } 
-    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, SAVE_UNSAVED_SIG)) {
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, MCE_DATA_SAVE_SIG)) {
         if (osso->hw_cbs.save_unsaved_data_ind.set) {
             /* stateless signal, the value only tells the signal came */
             osso->hw_state.save_unsaved_data_ind = TRUE;
@@ -663,7 +666,8 @@ static void signal_handler(osso_context_t *osso,
 	        osso_application_autosave_force(osso);
             }
         }
-    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, INACTIVITY_SIG)) {
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF,
+                                      MCE_INACTIVITY_SIG)) {
         int type;
         DBusMessageIter i;
         gboolean new_state;
@@ -671,7 +675,7 @@ static void signal_handler(osso_context_t *osso,
         dbus_message_iter_init(msg, &i);
         type = dbus_message_iter_get_arg_type(&i);
         if (type != DBUS_TYPE_BOOLEAN) {
-            ULOG_ERR_F("invalid argument in '" INACTIVITY_SIG "' signal");
+            ULOG_ERR_F("invalid argument in '" MCE_INACTIVITY_SIG "' signal");
             return;
         }
 
@@ -683,7 +687,8 @@ static void signal_handler(osso_context_t *osso,
                     osso->hw_cbs.system_inactivity_ind.data);
             }
         }
-    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF, DEVICE_MODE_SIG)) {
+    } else if (dbus_message_is_signal(msg, MCE_SIGNAL_IF,
+                                      MCE_DEVICE_MODE_SIG)) {
         int type;
         DBusMessageIter i;
 	char* s = NULL;
@@ -691,23 +696,26 @@ static void signal_handler(osso_context_t *osso,
         dbus_message_iter_init(msg, &i);
         type = dbus_message_iter_get_arg_type(&i);
         if (type != DBUS_TYPE_STRING) {
-            ULOG_ERR_F("invalid argument in '" DEVICE_MODE_SIG "' signal");
+            ULOG_ERR_F("invalid argument in '" MCE_DEVICE_MODE_SIG "' signal");
             return;
         }
 
         dbus_message_iter_get_basic (&i, &s);
-        if (strncmp(s, NORMAL_MODE, strlen(NORMAL_MODE)) == 0) {
+        if (strncmp(s, MCE_NORMAL_MODE, strlen(MCE_NORMAL_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_NORMAL;
-            write_device_state_to_file(NORMAL_MODE);
-        } else if (strncmp(s, FLIGHT_MODE, strlen(FLIGHT_MODE)) == 0) {
+            write_device_state_to_file(MCE_NORMAL_MODE);
+        } else if (strncmp(s, MCE_FLIGHT_MODE,
+                           strlen(MCE_FLIGHT_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_FLIGHT;
-            write_device_state_to_file(FLIGHT_MODE);
-        } else if (strncmp(s, OFFLINE_MODE, strlen(OFFLINE_MODE)) == 0) {
+            write_device_state_to_file(MCE_FLIGHT_MODE);
+        } else if (strncmp(s, MCE_OFFLINE_MODE,
+                           strlen(MCE_OFFLINE_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_OFFLINE;
             write_device_state_to_file(OFFLINE_MODE);
-        } else if (strncmp(s, INVALID_MODE, strlen(INVALID_MODE)) == 0) {
+        } else if (strncmp(s, MCE_INVALID_MODE,
+                           strlen(MCE_INVALID_MODE)) == 0) {
             osso->hw_state.sig_device_mode_ind = OSSO_DEVMODE_INVALID;
-            write_device_state_to_file(INVALID_MODE);
+            write_device_state_to_file(MCE_INVALID_MODE);
         } else {
             ULOG_WARN_F("invalid device mode '%s'", s);
             return;
