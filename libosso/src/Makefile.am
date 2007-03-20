@@ -38,6 +38,8 @@ libosso_la_SOURCES = \
 	osso-time.h \
 	osso-locale.c \
 	osso-locale.h \
+	osso-display.c \
+	osso-display.h \
 	osso-application-init.c \
 	osso-mem.h \
 	osso-mem.c \

@@ -58,7 +58,8 @@ am_libosso_la_OBJECTS = osso-state.lo osso-init.lo \
 	osso-application-top.lo osso-application-autosave.lo \
 	osso-hw.lo osso-mime.lo osso-system-note.lo osso-rpc.lo \
 	osso-statusbar.lo osso-cp-plugin.lo osso-log.lo osso-time.lo \
-	osso-locale.lo osso-application-init.lo osso-mem.lo
+	osso-locale.lo osso-display.lo osso-application-init.lo \
+	osso-mem.lo
 libosso_la_OBJECTS = $(am_libosso_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -67,6 +68,7 @@ am__depfiles_maybe = depfiles
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-init.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-top.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-cp-plugin.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/osso-display.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-hw.Plo ./$(DEPDIR)/osso-init.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-locale.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-log.Plo ./$(DEPDIR)/osso-mem.Plo \
@@ -244,6 +246,8 @@ libosso_la_SOURCES = \
 	osso-time.h \
 	osso-locale.c \
 	osso-locale.h \
+	osso-display.c \
+	osso-display.h \
 	osso-application-init.c \
 	osso-mem.h \
 	osso-mem.c \
@@ -322,6 +326,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-top.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-cp-plugin.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-display.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-hw.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-locale.Plo@am__quote@
