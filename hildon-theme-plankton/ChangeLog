@@ -1,5 +1,10 @@
 2007-03-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* wallpaper/Makefile.am: Do not use hardcoded /usr/share paths. Use
+	the datadir instead.
+
+2007-03-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	[4.3.1-1 release]
 
 	* NEWS:
