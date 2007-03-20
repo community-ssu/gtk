@@ -1230,6 +1230,7 @@ _gtk_menu_item_popup_submenu (GtkWidget *widget)
 #endif /* MAEMO_CHANGES */
 }
 
+#ifdef MAEMO_CHANGES
 void
 _gtk_menu_item_popdown_submenu (GtkWidget *widget)
 {
@@ -1250,6 +1251,7 @@ _gtk_menu_item_popdown_submenu (GtkWidget *widget)
 
   gtk_widget_queue_draw (widget);
 }
+#endif /* MAEMO_CHANGES */
 
 static void
 get_offsets (GtkMenu *menu,
@@ -1419,13 +1421,8 @@ gtk_menu_item_position_menu (GtkMenu  *menu,
 
   if (!GTK_WIDGET_VISIBLE (menu->toplevel))
     {
-#ifdef MAEMO_CHANGES
-      gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel),
-				GDK_WINDOW_TYPE_HINT_MENU);
-#else
       gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel), menu_item->from_menubar?
 				GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU : GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-#endif /* MAEMO_CHANGES */
     }
 }
 

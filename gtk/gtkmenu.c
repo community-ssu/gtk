@@ -891,15 +891,11 @@ gtk_menu_init (GtkMenu *menu)
                                      "signal::visibility_notify_event", gtk_menu_window_visibility_notify_event, menu,
 #endif /* MAEMO_CHANGES */
 				     NULL);
-#ifdef MAEMO_CHANGES
-  gtk_window_set_decorated (GTK_WINDOW (menu->toplevel), FALSE);
-  gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel),
-                            GDK_WINDOW_TYPE_HINT_MENU);
-#endif /* MAEMO_CHANGES */
   gtk_window_set_resizable (GTK_WINDOW (menu->toplevel), FALSE);
   gtk_window_set_mnemonic_modifier (GTK_WINDOW (menu->toplevel), 0);
 
 #ifdef MAEMO_CHANGES
+  gtk_window_set_decorated (GTK_WINDOW (menu->toplevel), FALSE);
   gtk_widget_add_events (menu->toplevel, GDK_VISIBILITY_NOTIFY_MASK);
 #endif /* MAEMO_CHANGES */
 
@@ -4001,11 +3997,7 @@ gtk_menu_position (GtkMenu *menu)
 
   /* Set the type hint here to allow custom position functions to set a different hint */
   if (!GTK_WIDGET_VISIBLE (menu->toplevel))
-#ifdef MAEMO_CHANGES
-    gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel), GDK_WINDOW_TYPE_HINT_MENU);
-#else
     gtk_window_set_type_hint (GTK_WINDOW (menu->toplevel), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
-#endif /* MAEMO_CHANGES */
 
   if (menu->position_func)
     {
@@ -5140,7 +5132,9 @@ gtk_menu_window_visibility_notify_event (GtkWidget          *widget,
           type = gdk_window_get_type_hint (win);
           if (!gdk_error_trap_pop () &&
               (type != GDK_WINDOW_TYPE_HINT_NOTIFICATION) &&
-              (type != GDK_WINDOW_TYPE_HINT_MENU))
+              (type != GDK_WINDOW_TYPE_HINT_MENU)         &&
+              (type != GDK_WINDOW_TYPE_HINT_POPUP_MENU)   &&
+              (type != GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU))
             {
               /* A non-message and non-menu window above us; close. */
               deactivate = TRUE;

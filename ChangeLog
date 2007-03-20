@@ -1,3 +1,14 @@
+2007-03-20  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkmenuitem.c (gtk_menu_item_position_menu)
+	* gtk/gtkmenu.c (gtk_menu_init)
+	(gtk_menu_position): remove patch that used to set all menu window
+	type hints to GTK_WINDOW_TYPE_HINT_MENU.
+
+	(gtk_menu_window_visibility_notify_event): don't pop down the menu
+	if obscured by windows of TYPE_HINT_POPUP_MENU or
+	TYPE_HINT_DROPDOWN_MENU.
+
 2007-03-15  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk+-2.0.pc.in (Cflags): remove -DMAEMO_CHANGES, it's intentionally
