@@ -100,10 +100,15 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
 {
   Atom           atom_utf8_string, atom_wm_name, atom_check, type;
   int            result, format;
-  gchar          *val, *retval;
+  gchar          *retval;
+  unsigned char *val;
   unsigned long  nitems, bytes_after;
-  Window        *support_xwin = NULL;
   Display	*dpy;
+  union
+  {
+    unsigned char      *s;
+    Window             *w;
+  } support_xwin;
 
   dpy = GDK_DISPLAY ();
 
@@ -113,18 +118,18 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
 		      GDK_WINDOW_XID (gdk_get_default_root_window ()),
 		      atom_check,
 		      0, 16L, False, XA_WINDOW, &type, &format,
-		      &nitems, &bytes_after, (unsigned char **)&support_xwin);
+		      &nitems, &bytes_after, &support_xwin.s);
 
-  if (support_xwin == NULL)
+  if (support_xwin.s == NULL)
       return NULL;
 
   atom_utf8_string = XInternAtom (dpy, "UTF8_STRING", False);
   atom_wm_name     = XInternAtom (dpy, "_NET_WM_NAME", False);
 
-  result = XGetWindowProperty (dpy, *support_xwin, atom_wm_name,
+  result = XGetWindowProperty (dpy, *(support_xwin.w), atom_wm_name,
 			       0, 1000L,False, atom_utf8_string,
 			       &type, &format, &nitems,
-			       &bytes_after, (unsigned char **)&val);
+			       &bytes_after, &val);
   if (result != Success)
     return NULL;
 
@@ -138,6 +143,7 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
   retval = g_strdup (val);
 
   XFree (val);
+  XFree (support_xwin.s);
 
   return retval;
 }
