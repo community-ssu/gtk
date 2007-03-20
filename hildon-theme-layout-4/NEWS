@@ -1,3 +1,7 @@
+[0.3.1-1 release]
+* Fixing the coords for minimize and close buttons (normal state)
+* Fixing the logical colors definitions
+
 [0.3.0-1 release]
 * Adding the bradcrumb, thumbsize scroolbar and customized toolbar for mediaplayer to layout
 * Fixing the scrolled window shadow

@@ -1,3 +1,11 @@
+2007-03-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[0.3.1-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+
 2007-03-20  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/themespecificgtk.rc: the @ format wasn't supposed to be used here.

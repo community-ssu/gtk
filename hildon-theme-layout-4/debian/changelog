@@ -1,3 +1,10 @@
+hildon-theme-layout-4 (0.3.1-1) unstable; urgency=low
+
+  * Fixing the coords for minimize and close buttons (normal state)
+  * Fixing the logical colors definitions
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 20 Mar 2007 09:52:13 +0200
+
 hildon-theme-layout-4 (0.3.0-1) unstable; urgency=low
 
   * Adding the bradcrumb, thumbsize scroolbar and customized toolbar for mediaplayer to layout
