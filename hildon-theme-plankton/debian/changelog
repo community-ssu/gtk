@@ -1,3 +1,9 @@
+hildon-theme-plankton (4.3.1-1) unstable; urgency=low
+
+  * Bumping version for layout
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 20 Mar 2007 09:57:34 +0200
+
 hildon-theme-plankton (4.3.0-1) unstable; urgency=low
 
   * Removed extra line in debian/copyright (copy/paste?)
