@@ -1,3 +1,9 @@
+hildon-desktop (0.0.0-34) unstable; urgency=low
+
+  * Conflict with maemo-af-desktop < 3.0.0 (transition package) 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 20 Mar 2007 15:57:25 +0200
+
 hildon-desktop (0.0.0-33) unstable; urgency=low
 
   * Move from libosso-help to hildon-help
