@@ -26,6 +26,7 @@
 #include <osso-display.h>
 #include <mce/dbus-names.h>
 #include <mce/mode-names.h>
+#include <assert.h>
 
 #define MATCH_RULE \
   "type='signal',interface='" MCE_SIGNAL_IF "',"\
@@ -38,9 +39,10 @@ static osso_display_state_t get_display_state(osso_context_t *osso)
         DBusError err;
         dbus_bool_t ret = FALSE;
         char *s = NULL;
+        osso_display_state_t new_state;
+
         assert(osso->sys_conn != NULL);
         dbus_error_init(&err);
-        osso_display_state_t new_state;
 
         ret = dbus_bus_name_has_owner(osso->sys_conn, MCE_SERVICE, &err);
         if (!ret) {
@@ -53,7 +55,7 @@ static osso_display_state_t get_display_state(osso_context_t *osso)
                 }
                 return OSSO_DISPLAY_ON; /* wild guess */
         }
-        m = dbus_message_new_method_call(MCE_SERVICE, MCE_REQUEST_OP,
+        m = dbus_message_new_method_call(MCE_SERVICE, MCE_REQUEST_PATH,
                 MCE_REQUEST_IF, MCE_DISPLAY_STATUS_GET);
         if (m == NULL) {
                 ULOG_ERR_F("couldn't create message");
