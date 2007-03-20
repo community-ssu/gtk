@@ -161,7 +161,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         if (!osso->hw_cbs.shutdown_ind.set) {
             /* if callback was not previously registered, add match */
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='" SHUTDOWN_SIG "'", &error);
+                MCE_SIGNAL_IF "',member='" MCE_SHUTDOWN_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
@@ -211,7 +211,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.save_unsaved_data_ind.data = data;
         if (!osso->hw_cbs.save_unsaved_data_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='" SAVE_UNSAVED_SIG "'", &error);
+                MCE_SIGNAL_IF "',member='" MCE_SAVE_UNSAVED_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
@@ -228,7 +228,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.system_inactivity_ind.data = data;
         if (!osso->hw_cbs.system_inactivity_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='" INACTIVITY_SIG "'", &error);
+                MCE_SIGNAL_IF "',member='" MCE_INACTIVITY_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
@@ -246,7 +246,7 @@ osso_return_t osso_hw_set_event_cb(osso_context_t *osso,
         osso->hw_cbs.sig_device_mode_ind.data = data;
         if (!osso->hw_cbs.sig_device_mode_ind.set) {
             dbus_bus_add_match(osso->sys_conn, "type='signal',interface='"
-                MCE_SIGNAL_IF "',member='" DEVICE_MODE_SIG "'", &error);
+                MCE_SIGNAL_IF "',member='" MCE_DEVICE_MODE_SIG "'", &error);
             if (dbus_error_is_set(&error)) {
                 ULOG_ERR_F("dbus_bus_add_match failed: %s", error.message);
                 dbus_error_free(&error);
