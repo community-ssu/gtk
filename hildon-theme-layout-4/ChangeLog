@@ -1,3 +1,7 @@
+2007-03-20  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/themespecificgtk.rc: the @ format wasn't supposed to be used here.
+
 2007-03-19  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: oops, forgot to fix the coordinates of two
