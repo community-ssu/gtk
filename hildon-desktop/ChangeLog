@@ -1,3 +1,8 @@
+2007-03-20  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- Support for changing number of items on the fly. Cleanup.
+
 2007-03-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-window-dialog.c:

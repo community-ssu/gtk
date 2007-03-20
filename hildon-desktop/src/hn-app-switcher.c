@@ -148,7 +148,7 @@ static void
 hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data);
 
 static void 
-hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher, GParamSpec *pspec);
+hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher);
 
 static void 
 hn_app_switcher_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec);
@@ -1044,8 +1044,7 @@ hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data)
 }
 
 static void 
-hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher, 
-					GParamSpec *pspec)
+hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher) 
 {
   GList *children,*iter;
   
@@ -1984,6 +1983,7 @@ hn_app_switcher_set_property (GObject *object,
   {
     case AS_PROP_NITEMS:	   
       app_switcher->priv->nitems = g_value_get_int (value);
+      hn_app_switcher_orientation_changed_cb (app_switcher);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
