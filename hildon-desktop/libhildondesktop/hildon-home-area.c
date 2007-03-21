@@ -445,6 +445,7 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
 
 }
 
+#ifdef SIMPLE_PLACEMENT
 static gint
 sort_by_area (GtkWidget *a, GtkWidget *b)
 {
@@ -585,13 +586,33 @@ hildon_home_area_place (HildonHomeArea *area, GList *applets)
 #undef PADDING
 
 }
+#endif
 
+static void
+remove_rectangle (GtkWidget *widget, GdkRegion *region)
+{
+  GdkRegion    *to_remove;
+  GdkRectangle  rectangle = (GdkRectangle)widget->allocation;
+  gint          x, y;
 
+  gtk_container_child_get (GTK_CONTAINER (widget->parent), widget,
+                           "x", &x,
+                           "y", &y,
+                           NULL);
+
+  rectangle.x = x;
+  rectangle.y = y;
+
+  to_remove = gdk_region_rectangle (&rectangle);
+  gdk_region_subtract (region, to_remove);
+  gdk_region_destroy (to_remove);
+}
 
 static void
 hildon_home_area_batch_add (HildonHomeArea *area)
 {
   HildonHomeAreaPriv      *priv;
+#ifdef SIMPLE_PLACEMENT
   GList                   *children, *to_place;
   g_return_if_fail (area);
 
@@ -605,6 +626,97 @@ hildon_home_area_batch_add (HildonHomeArea *area)
 
   g_list_free (children);
 /*  g_list_free (priv->to_add);*/
+
+#else
+  GList                *i;
+  GList                *children;
+  GdkRegion            *region, *clean_region;
+  GdkRectangle          area_rectangle = {0};
+
+  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
+
+  area_rectangle.width  = GTK_WIDGET (area)->allocation.width;
+  area_rectangle.height = GTK_WIDGET (area)->allocation.height;
+
+  clean_region = gdk_region_rectangle (&area_rectangle);
+  region = gdk_region_copy (clean_region);
+
+  children = gtk_container_get_children (GTK_CONTAINER (area));
+  g_list_foreach (children, (GFunc)remove_rectangle, region);
+
+  i = priv->to_add;
+
+  while (i)
+    {
+      GtkRequisition    req = {0};
+      GdkRectangle     *rectangles;
+      gint              n_rect, i_rect;
+      GtkWidget        *w;
+      const gchar      *name;
+
+      w = GTK_WIDGET (i->data);
+      name = hildon_desktop_item_get_id (HILDON_DESKTOP_ITEM (w));
+
+      g_debug ("Placing %s", name);
+              
+      gtk_widget_size_request (w, &req);
+      gdk_region_get_rectangles (region, &rectangles, &n_rect);
+
+      g_debug ("Got %i rectangles", n_rect);
+
+      for (i_rect = 0; i_rect < n_rect; i_rect++)
+        {
+          g_debug ("Rectangle %i: (%i,%i) %ix%i",
+                   i_rect,
+                   rectangles[i_rect].x,
+                   rectangles[i_rect].y,
+                   rectangles[i_rect].width,
+                   rectangles[i_rect].height);
+          if (rectangles[i_rect].width  >= req.width &&
+              rectangles[i_rect].height >= req.height)
+            {
+              GdkRectangle     *layout = g_new (GdkRectangle, 1);
+              GdkRegion        *layout_region;
+
+              layout->x = rectangles[i_rect].x;
+              layout->y = rectangles[i_rect].y;
+              layout->width = -1;
+              layout->height = -1;
+
+              g_hash_table_insert (priv->layout, g_strdup (name), layout);
+              gtk_container_add (GTK_CONTAINER (area), w);
+
+              layout->width  = req.width;
+              layout->height = req.height;
+
+              layout_region = gdk_region_rectangle (layout);
+              gdk_region_subtract (region, layout_region);
+              gdk_region_destroy (layout_region);
+
+              break;
+            }
+
+        }
+
+      if (i_rect == n_rect)
+        {
+          g_debug ("Adding layer");
+          /* Not enough place in this layer, we need to add one */
+          gdk_region_destroy (region);
+          region = gdk_region_copy (clean_region);
+        }
+      else
+        i = g_list_next (i);
+
+      g_free (rectangles);
+    }
+
+  gdk_region_destroy (clean_region);
+  gdk_region_destroy (region);
+
+  g_list_free (children);
+
+#endif
   priv->to_add = NULL;
 
 }
