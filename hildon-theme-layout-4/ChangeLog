@@ -1,3 +1,13 @@
+2007-03-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Removed unused viewbutton images so they dont get
+	created anymore (left plain and "nesw" -variant) - still need to move
+	them next to the dialog buttons.
+
+	I also moved dialog button coordinates (the whole group together)
+	30 pixels down and 160 pixels right to use the space better for
+	other things in the future.
+
 2007-03-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.3.1-1 release]
