@@ -1,3 +1,10 @@
+hildon-application-framework (0.6.1) unstable; urgency=low
+
+  * Corrected type in control file: hildon-init-scripts ->
+    hildon-initscripts.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Mar 2007 13:58:53 +0200
+
 hildon-application-framework (0.6) unstable; urgency=low
 
   * Added osso-af-startup and hildon-initscripts with the

@@ -26,7 +26,7 @@ Depends: bluez-utils,
  posix-locales,
  telepathy-feed,
  osso-af-startup (>= 1.35-1),
- hildon-init-scripts (>= 1.10-1)
+ hildon-initscripts (>= 1.10-1)
 Description: Hildon Application Framework metapackage.
  Installing this package gives you the complete
  Hildon Application Framework. 
