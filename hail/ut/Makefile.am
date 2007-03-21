@@ -4,8 +4,6 @@ INCLUDES = @DEP_CFLAGS@ -I$(top_srcdir)/hail $(OUTO_CFLAGS) -I./
 AM_LDFLAGS = -module -avoid-version $(top_builddir)/hail/.libs/libhail.so
 
 libhail_unittests_la_SOURCES =  hailcaption_tests.c \
-				hailappview_tests.c \
-				hailapp_tests.c \
 				hailbanner_tests.c \
 				hailfindtoolbar_tests.c \
 				hailvolumebar_tests.c \
