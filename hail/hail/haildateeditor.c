@@ -36,7 +36,7 @@
 #include <string.h>
 #include <langinfo.h>
 #include <gdk/gdkkeysyms.h>
-#include <hildon-widgets/hildon-date-editor.h>
+#include <hildon/hildon-date-editor.h>
 #include <libgail-util/gailtextutil.h>
 #include "haildateeditor.h"
 

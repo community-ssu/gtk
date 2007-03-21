@@ -30,7 +30,7 @@
  */
 
 #include <gtk/gtktogglebutton.h>
-#include <hildon-widgets/hildon-weekday-picker.h>
+#include <hildon/hildon-weekday-picker.h>
 #include "hailweekdaypicker.h"
 
 

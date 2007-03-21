@@ -30,7 +30,7 @@
 
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkentry.h>
-#include <hildon-widgets/hildon-number-editor.h>
+#include <hildon/hildon-number-editor.h>
 #include "hailnumbereditor.h"
 
 #define HAIL_NUMBER_EDITOR_DEFAULT_NAME "Number editor"

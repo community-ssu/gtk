@@ -29,7 +29,7 @@
 
 #include <gtk/gtkentry.h>
 #include <gtk/gtklabel.h>
-#include <hildon-widgets/hildon-range-editor.h>
+#include <hildon/hildon-range-editor.h>
 #include "hailrangeeditor.h"
 
 #define HAIL_RANGE_EDITOR_DEFAULT_NAME "Edit range"

@@ -27,7 +27,7 @@
  * It reports the children from their position through #AtkComponent.
  */
 
-#include <hildon-widgets/hildon-grid.h>
+#include <hildon/hildon-grid.h>
 #include "hailgrid.h"
 
 #define HAIL_GRID_DEFAULT_NAME "Grid"

@@ -38,8 +38,8 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <gtk/gtkbox.h>
-#include <hildon-widgets/hildon-window.h>
-#include <hildon-widgets/hildon-program.h>
+#include <hildon/hildon-window.h>
+#include <hildon/hildon-program.h>
 #include "hailwindow.h"
 
 typedef struct _HailWindowPrivate HailWindowPrivate;

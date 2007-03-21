@@ -29,7 +29,7 @@
  */
 
 #include <gtk/gtkdrawingarea.h>
-#include <hildon-widgets/hildon-color-button.h>
+#include <hildon/hildon-color-button.h>
 #include "hailcolorbutton.h"
 
 
@@ -225,18 +225,18 @@ hail_color_button_update_text (HailColorButton * selector)
 {
   HailColorButtonPrivate * priv = NULL;
   GtkWidget * widget = NULL;
-  GdkColor * color = NULL;
+  GdkColor color;
 
   g_return_if_fail (HAIL_COLOR_BUTTON(selector));
   widget = GTK_ACCESSIBLE(selector)->widget;
   g_return_if_fail (HILDON_COLOR_BUTTON(widget));
 
   priv = HAIL_COLOR_BUTTON_GET_PRIVATE(selector);
-  color = (GdkColor *) hildon_color_button_get_color(HILDON_COLOR_BUTTON(widget));
+  hildon_color_button_get_color(HILDON_COLOR_BUTTON(widget), &color);
   if (priv->exposed_text != NULL)
     g_free(priv->exposed_text);
   /* html format of color*/
-  priv->exposed_text = g_strdup_printf("Color #%02x%02x%02x", (color->red)&0xff, (color->green)&0xff, (color->blue)&0xff);
+  priv->exposed_text = g_strdup_printf("Color #%02x%02x%02x", (color.red)&0xff, (color.green)&0xff, (color.blue)&0xff);
 }
 
 /* Implementation of AtkObject method get_name() */
@@ -290,20 +290,20 @@ hail_color_button_get_current_value (AtkValue		*obj,
 				       GValue		*value)
 {
   HailColorButtonPrivate * priv = NULL;
-  GdkColor * color = NULL;
+  GdkColor color;
   GtkWidget * widget = NULL;
 
   g_return_if_fail (HAIL_IS_COLOR_BUTTON (obj));
   priv = HAIL_COLOR_BUTTON_GET_PRIVATE(obj);
   widget = GTK_ACCESSIBLE(obj)->widget;
 
-  color = (GdkColor *) hildon_color_button_get_color(HILDON_COLOR_BUTTON(widget));
+  hildon_color_button_get_color(HILDON_COLOR_BUTTON(widget), &color);
 
   g_value_init(value, G_TYPE_DOUBLE);
   /* compose the color as a 24 bits number */
-  g_value_set_double(value, (gdouble) (((color->red)/256)*65536) +
-		     (((color->green)/256)*256) +
-		     (((color->blue)/256)));
+  g_value_set_double(value, (gdouble) (((color.red)/256)*65536) +
+		     (((color.green)/256)*256) +
+		     (((color.blue)/256)));
 }
 
 /* Implementation of AtkValue method get_maximum_value() */

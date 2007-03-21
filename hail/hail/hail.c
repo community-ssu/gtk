@@ -18,29 +18,25 @@
  */
 
 
-#include <hildon-widgets/hildon-app.h>
-#include <hildon-widgets/hildon-caption.h>
-#include <hildon-widgets/hildon-code-dialog.h>
-#include <hildon-widgets/hildon-color-button.h>
-#include <hildon-widgets/hildon-color-selector.h>
-#include <hildon-widgets/hildon-date-editor.h>
-#include <hildon-widgets/hildon-file-selection.h>
-#include <hildon-widgets/hildon-find-toolbar.h>
-#include <hildon-widgets/hildon-grid.h>
-#include <hildon-widgets/hildon-grid-item.h>
-#include <hildon-widgets/hildon-number-editor.h>
-#include <hildon-widgets/hildon-range-editor.h>
-#include <hildon-widgets/hildon-time-editor.h>
-#include <hildon-widgets/hildon-time-picker.h>
-#include <hildon-widgets/hildon-volumebar.h>
-#include <hildon-widgets/hildon-weekday-picker.h>
-#include <hildon-widgets/hildon-window.h>
+#include <hildon/hildon-caption.h>
+#include <hildon/hildon-code-dialog.h>
+#include <hildon/hildon-color-button.h>
+#include <hildon/hildon-color-chooser.h>
+#include <hildon/hildon-date-editor.h>
+#include <hildon/hildon-file-selection.h>
+#include <hildon/hildon-find-toolbar.h>
+#include <hildon/hildon-number-editor.h>
+#include <hildon/hildon-range-editor.h>
+#include <hildon/hildon-time-editor.h>
+#include <hildon/hildon-time-picker.h>
+#include <hildon/hildon-volumebar.h>
+#include <hildon/hildon-weekday-picker.h>
+#include <hildon/hildon-window.h>
 #include "hailfactory.h"
 #include "hail.h"
 
 /* Hail factories class definition */
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_CAPTION, hail_caption, hail_caption_new)
-HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_APP_VIEW, hail_app_view, hail_app_view_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_FIND_TOOLBAR, hail_find_toolbar, hail_find_toolbar_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_VOLUME_BAR, hail_volume_bar, hail_volume_bar_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_FILE_SELECTION, hail_file_selection, hail_file_selection_new)
@@ -48,8 +44,6 @@ HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_WEEKDAY_PICKER, hail_weekday_picker, hail_wee
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_DIALOG, hail_dialog, hail_dialog_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_TIME_PICKER, hail_time_picker, hail_time_picker_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_COLOR_SELECTOR, hail_color_selector, hail_color_selector_new)
-HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_GRID_ITEM, hail_grid_item, hail_grid_item_new)
-HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_GRID, hail_grid, hail_grid_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_DATE_EDITOR, hail_date_editor, hail_date_editor_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_NUMBER_EDITOR, hail_number_editor, hail_number_editor_new)
 HAIL_ACCESSIBLE_FACTORY (HAIL_TYPE_TIME_EDITOR, hail_time_editor, hail_time_editor_new)
@@ -82,23 +76,19 @@ hail_accessibility_module_init (void)
 
   HAIL_WIDGET_SET_FACTORY (GTK_TYPE_DIALOG, hail_dialog);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_CAPTION, hail_caption);
-  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_APPVIEW, hail_app_view);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_FIND_TOOLBAR, hail_find_toolbar);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_VOLUMEBAR, hail_volume_bar);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_FILE_SELECTION, hail_file_selection);
-  HAIL_WIDGET_SET_FACTORY (HILDON_WEEKDAY_PICKER_TYPE, hail_weekday_picker);
+  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_WEEKDAY_PICKER, hail_weekday_picker);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_TIME_PICKER, hail_time_picker);
-  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_COLOR_SELECTOR, hail_color_selector);
-  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_GRID_ITEM, hail_grid_item);
-  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_GRID, hail_grid);
-  HAIL_WIDGET_SET_FACTORY (HILDON_DATE_EDITOR_TYPE, hail_date_editor);
+  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_COLOR_CHOOSER, hail_color_chooser);
+  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_DATE_EDITOR, hail_date_editor);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_NUMBER_EDITOR, hail_number_editor);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_TIME_EDITOR, hail_time_editor);
-  HAIL_WIDGET_SET_FACTORY (HILDON_RANGE_EDITOR_TYPE, hail_range_editor);
+  HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_RANGE_EDITOR, hail_range_editor);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_COLOR_BUTTON, hail_color_button);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_WINDOW, hail_window);
   HAIL_WIDGET_SET_FACTORY (HILDON_TYPE_CODE_DIALOG, hail_code_dialog);
-  HAIL_WIDGET_SET_EXTERNAL_FACTORY (HILDON_TYPE_APP, "GailWindowFactory");
 
 }
 

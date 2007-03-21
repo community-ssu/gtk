@@ -35,7 +35,7 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkframe.h>
 #include <gtk/gtktable.h>
-#include <hildon-widgets/hildon-time-picker.h>
+#include <hildon/hildon-time-picker.h>
 #include "hailtimepicker.h"
 
 /* list of widgets holded inside the time picker */

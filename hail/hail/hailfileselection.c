@@ -39,7 +39,7 @@
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtktreeview.h>
 #include <gtk/gtkhpaned.h>
-#include <hildon-widgets/hildon-file-selection.h>
+#include <hildon/hildon-file-selection.h>
 #include "hailfileselection.h"
 
 #define HAIL_FILE_SELECTION_DEFAULT_NAME "File selection"

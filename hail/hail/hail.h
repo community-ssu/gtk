@@ -30,7 +30,7 @@
 #include "hailcaption.h"
 #include "hailcodedialog.h"
 #include "hailcolorbutton.h"
-#include "hailcolorselector.h"
+#include "hailcolorchooser.h"
 #include "haildateeditor.h"
 #include "haildialog.h"
 #include "hailfileselection.h"

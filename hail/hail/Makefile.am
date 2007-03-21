@@ -7,15 +7,11 @@ module_LTLIBRARIES = libhail.la
 hail_c_sources =			\
 	hail.c \
 	hailcaption.c \
-	hailappview.c \
 	hailvolumebar.c \
 	hailweekdaypicker.c \
 	hailtimepicker.c \
 	hailfileselection.c \
 	hailfindtoolbar.c \
-	hailcolorselector.c \
-	hailgriditem.c \
-	hailgrid.c \
 	haildialog.c \
 	hailnumbereditor.c \
 	hailtimeeditor.c \
@@ -24,22 +20,21 @@ hail_c_sources =			\
 	hailcolorbutton.c \
 	hailwindow.c \
 	hailcodedialog.c
+	
+#TODO
+#	hailcolorchooser.c
 
 #libhailincludedir=$(includedir)/hail-1.0/hail
 
 hail_private_h_sources =		\
 	hail.h \
 	hailcaption.h \
-	hailappview.h \
 	hailfindtoolbar.h \
 	hailvolumebar.h \
 	hailweekdaypicker.h \
 	hailtimepicker.h \
 	hailfileselection.h \
 	haildialog.h \
-	hailcolorselector.h \
-	hailgriditem.h \
-	hailgrid.h \
 	haildateeditor.h \
 	hailnumbereditor.h \
 	hailtimeeditor.h \
@@ -48,6 +43,9 @@ hail_private_h_sources =		\
 	hailwindow.h \
 	hailcodedialog.h \
 	hailfactory.h
+
+
+#	hailcolorchooser.h 
 
 hail_public_h_sources =
 

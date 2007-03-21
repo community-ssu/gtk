@@ -34,7 +34,7 @@
  */
 
 #include <gtk/gtkimage.h>
-#include <hildon-widgets/hildon-caption.h>
+#include <hildon/hildon-caption.h>
 #include "hailcaption.h"
 
 static void                  hail_caption_class_init       (HailCaptionClass *klass);

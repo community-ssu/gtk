@@ -33,7 +33,7 @@
 #include <string.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtktoolbutton.h>
-#include <hildon-widgets/hildon-find-toolbar.h>
+#include <hildon/hildon-find-toolbar.h>
 #include "hailfindtoolbar.h"
 
 static void                  hail_find_toolbar_class_init       (HailFindToolbarClass *klass);

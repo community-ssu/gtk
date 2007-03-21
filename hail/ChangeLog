@@ -1,3 +1,26 @@
+2007-03-21  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* configure.in:
+	* hail/Makefile.am:
+	* hail/hail.c: (hail_accessibility_module_init):
+	* hail/hail.h:
+	* hail/hailcaption.c:
+	* hail/hailcodedialog.c:
+	* hail/hailcolorbutton.c: (hail_color_button_update_text),
+	(hail_color_button_get_current_value):
+	* hail/haildateeditor.c:
+	* hail/hailfileselection.c:
+	* hail/hailfindtoolbar.c:
+	* hail/hailgrid.c:
+	* hail/hailnumbereditor.c:
+	* hail/hailrangeeditor.c:
+	* hail/hailtimeeditor.c:
+	* hail/hailtimepicker.c:
+	* hail/hailvolumebar.c:
+	* hail/hailweekdaypicker.c:
+	* hail/hailwindow.c: First bunch of changes to port to new hildon-libs
+	and hildon-fm. 
+
 2007-03-21 15:45  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* ut/hailapp*

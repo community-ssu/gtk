@@ -36,8 +36,8 @@
 
 #include <gtk/gtkrange.h>
 #include <gtk/gtktogglebutton.h>
-#include <hildon-widgets/hildon-hvolumebar.h>
-#include <hildon-widgets/hildon-vvolumebar.h>
+#include <hildon/hildon-hvolumebar.h>
+#include <hildon/hildon-vvolumebar.h>
 #include "hailvolumebar.h"
 
 #define HAIL_VOLUME_BAR_DEFAULT_NAME "Volume bar"

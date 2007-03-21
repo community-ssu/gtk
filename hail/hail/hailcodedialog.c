@@ -26,7 +26,7 @@
  * children (the buttons inside the widget). 
  */
 
-#include <hildon-widgets/hildon-code-dialog.h>
+#include <hildon/hildon-code-dialog.h>
 #include "hailcodedialog.h"
 
 

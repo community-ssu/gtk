@@ -35,7 +35,7 @@
 #include <gdk/gdkkeysyms.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkentry.h>
-#include <hildon-widgets/hildon-time-editor.h>
+#include <hildon/hildon-time-editor.h>
 #include <libgail-util/gailtextutil.h>
 #include "hailtimeeditor.h"
 
