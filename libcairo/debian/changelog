@@ -1,3 +1,9 @@
+libcairo (1.2.4-4osso4) unstable; urgency=low
+
+  * debian/rules: Add missing dh_install -i to package the documentation
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 21 Mar 2007 13:58:21 +0200
+
 libcairo (1.2.4-4osso3) unstable; urgency=low
 
   * debian/libcairo2-dev.install: remove the .la files
