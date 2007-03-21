@@ -79,13 +79,13 @@ static osso_display_state_t get_display_state(osso_context_t *osso)
         }
 
         if (strncmp(s, MCE_DISPLAY_ON_STRING,
-                    strlen(MCE_DISPLAY_ON_STRING)) == 0) {
+                    strlen(MCE_DISPLAY_ON_STRING) + 1) == 0) {
                 new_state = OSSO_DISPLAY_ON;
         } else if (strncmp(s, MCE_DISPLAY_DIM_STRING,
-                           strlen(MCE_DISPLAY_DIM_STRING)) == 0) {
+                           strlen(MCE_DISPLAY_DIM_STRING) + 1) == 0) {
                 new_state = OSSO_DISPLAY_DIMMED;
         } else if (strncmp(s, MCE_DISPLAY_OFF_STRING,
-                           strlen(MCE_DISPLAY_OFF_STRING)) == 0) {
+                           strlen(MCE_DISPLAY_OFF_STRING) + 1) == 0) {
                 new_state = OSSO_DISPLAY_OFF;
         } else {
                 ULOG_ERR_F("Unknown argument: %s", s);
@@ -176,13 +176,13 @@ static void _display_state_handler(osso_context_t *osso,
         }
 
         if (strncmp(tmp, MCE_DISPLAY_ON_STRING,
-                    strlen(MCE_DISPLAY_ON_STRING)) == 0) {
+                    strlen(MCE_DISPLAY_ON_STRING) + 1) == 0) {
             new_state = OSSO_DISPLAY_ON;
         } else if (strncmp(tmp, MCE_DISPLAY_DIM_STRING,
-                           strlen(MCE_DISPLAY_DIM_STRING)) == 0) {
+                           strlen(MCE_DISPLAY_DIM_STRING) + 1) == 0) {
             new_state = OSSO_DISPLAY_DIMMED;
         } else if (strncmp(tmp, MCE_DISPLAY_OFF_STRING,
-                           strlen(MCE_DISPLAY_OFF_STRING)) == 0) {
+                           strlen(MCE_DISPLAY_OFF_STRING) + 1) == 0) {
             new_state = OSSO_DISPLAY_OFF;
         } else {
             ULOG_ERR_F("Unknown argument: %s", tmp);
