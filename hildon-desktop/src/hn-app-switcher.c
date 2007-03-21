@@ -296,6 +296,14 @@ hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
  if (!hd_wm_get_applications (app_switcher->hdwm))
    return;
 
+ if (gtk_toggle_button_get_active 
+      (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
+ {
+   gtk_toggle_button_set_active
+     (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), FALSE);
+   return;
+ }
+
  gtk_toggle_button_set_active 
    (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), TRUE);
  
@@ -1931,9 +1939,9 @@ static void
 hn_app_switcher_finalize (GObject *gobject)
 {
   HNAppSwitcher *app_switch = HN_APP_SWITCHER (gobject);
+#ifdef HAVE_LIBOSSO  
   HNAppSwitcherPrivate *priv = app_switch->priv;
 
-#ifdef HAVE_LIBOSSO  
   osso_deinitialize (priv->osso);
 #endif
 

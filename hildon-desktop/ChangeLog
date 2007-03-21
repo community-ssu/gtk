@@ -1,3 +1,9 @@
+2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- Fixed opening of main menu.
+	- Fixed little problem if building without libosso.
+
 2007-03-21  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c, libhildondesktop/hildon-desktop-home-item.c:
@@ -6,10 +12,11 @@
 	- new implementation of the applet placement, based
 	on GdkRegion
 
-2007-03-20  Moises Martinez  <moises.martinez@nokia.com>
+2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
 
 	* data/Makefile.am: remove statusbar.conf while statusbar window
 	is not fixed.
+	* data/desktop.conf: commented out the statusbar section.
 
 2007-03-20  Moises Martinez  <moises.martinez@nokia.com>
 
