@@ -32,7 +32,7 @@
 #include <gtk/gtkwidget.h>
 #include <atk/atktext.h>
 #include <atk/atkvalue.h>
-#include <hildon-widgets/hildon-seekbar.h>
+#include <hildon/hildon-seekbar.h>
 
 #include <assert.h>
 #include <string.h>

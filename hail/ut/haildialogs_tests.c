@@ -31,13 +31,13 @@
 
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkprogressbar.h>
-#include <hildon-widgets/hildon-get-password-dialog.h>
-#include <hildon-widgets/hildon-set-password-dialog.h>
-#include <hildon-widgets/hildon-name-password-dialog.h>
-#include <hildon-widgets/hildon-font-selection-dialog.h>
-#include <hildon-widgets/hildon-note.h>
-#include <hildon-widgets/hildon-sort-dialog.h>
-#include <hildon-widgets/hildon-file-chooser-dialog.h>
+#include <hildon/hildon-get-password-dialog.h>
+#include <hildon/hildon-set-password-dialog.h>
+#include <hildon/hildon-login-dialog.h>
+#include <hildon/hildon-font-selection-dialog.h>
+#include <hildon/hildon-note.h>
+#include <hildon/hildon-sort-dialog.h>
+#include <hildon/hildon-file-chooser-dialog.h>
 #include <hail/hailcaption.h>
 #include <hail/hailfileselection.h>
 
@@ -653,7 +653,7 @@ test_sort_dialog_get_accessibles (void)
 /**
  * test_name_and_password_dialog_get_accessibles:
  *
- * get the expected accessibles from #HildonNamePassordDialog. It
+ * get the expected accessibles from #HildonLoginPassordDialog. It
  * also sets the values of the fields through atk and check the
  * dialog is updated
  * 
@@ -670,8 +670,8 @@ test_name_and_password_dialog_get_accessibles (void)
   AtkObject * password_a = NULL;
   AtkObject * editable_a = NULL;
 
-  dialog = hildon_name_password_dialog_new (NULL);
-  assert (HILDON_IS_NAME_PASSWORD_DIALOG(dialog));
+  dialog = hildon_login_dialog_new (NULL);
+  assert (HILDON_IS_LOGIN_DIALOG(dialog));
 
   /* get the main accessible */
   dialog_a = gtk_widget_get_accessible (dialog);
@@ -692,7 +692,7 @@ test_name_and_password_dialog_get_accessibles (void)
   assert (atk_object_get_role(domain_a) == ATK_ROLE_LABEL);
   assert (ATK_IS_TEXT(domain_a));
   assert (atk_text_get_character_count(ATK_TEXT(domain_a)) == 0);
-  hildon_name_password_dialog_set_domain(HILDON_NAME_PASSWORD_DIALOG(dialog), "test_domain");
+  hildon_login_dialog_set_domain(HILDON_LOGIN_DIALOG(dialog), "test_domain");
   assert (atk_text_get_character_count(ATK_TEXT(domain_a)) == strlen("test_domain"));
   g_object_unref(domain_a);
 
@@ -703,7 +703,7 @@ test_name_and_password_dialog_get_accessibles (void)
   editable_a = atk_object_ref_accessible_child(username_a, 0);
   assert (ATK_IS_EDITABLE_TEXT(editable_a));
   atk_editable_text_set_text_contents(ATK_EDITABLE_TEXT(editable_a), "Test user");
-  assert (strcmp(hildon_name_password_dialog_get_name(HILDON_NAME_PASSWORD_DIALOG(dialog)), "Test user")==0);
+  assert (strcmp(hildon_login_dialog_get_name(HILDON_LOGIN_DIALOG(dialog)), "Test user")==0);
   g_object_unref(editable_a);
   g_object_unref(username_a);
 
@@ -714,7 +714,7 @@ test_name_and_password_dialog_get_accessibles (void)
   editable_a = atk_object_ref_accessible_child(password_a, 0);
   assert (ATK_IS_EDITABLE_TEXT(editable_a));
   atk_editable_text_set_text_contents(ATK_EDITABLE_TEXT(editable_a), "Test password");
-  assert (strcmp(hildon_name_password_dialog_get_password(HILDON_NAME_PASSWORD_DIALOG(dialog)), "Test password")==0);
+  assert (strcmp(hildon_login_dialog_get_password(HILDON_LOGIN_DIALOG(dialog)), "Test password")==0);
   g_object_unref(editable_a);
   g_object_unref(password_a);
 

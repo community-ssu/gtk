@@ -30,7 +30,7 @@
  */
 
 #include <gtk/gtkwidget.h>
-#include <hildon-widgets/hildon-controlbar.h>
+#include <hildon/hildon-controlbar.h>
 #include <atk/atkvalue.h>
 #include <atk/atktext.h>
 

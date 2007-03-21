@@ -31,7 +31,7 @@
 #include <gtk/gtkwidget.h>
 #include <atk/atkvalue.h>
 #include <atk/atkimage.h>
-#include <hildon-widgets/hildon-color-selector.h>
+#include <hildon/hildon-color-selector.h>
 #include <hail/hailcolorselector.h>
 
 #include <assert.h>

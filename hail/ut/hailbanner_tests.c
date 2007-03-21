@@ -31,7 +31,7 @@
 #include <atk/atktext.h>
 #include <atk/atkvalue.h>
 #include <gtk/gtklabel.h>
-#include <hildon-widgets/hildon-banner.h>
+#include <hildon/hildon-banner.h>
 #include <hail_tests_utils.h>
 
 #include <assert.h>

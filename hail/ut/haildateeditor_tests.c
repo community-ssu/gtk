@@ -33,7 +33,7 @@
 #include <gtk/gtkwindow.h>
 #include <atk/atkaction.h>
 #include <atk/atktext.h>
-#include <hildon-widgets/hildon-date-editor.h>
+#include <hildon/hildon-date-editor.h>
 #include <hail/haildateeditor.h>
 #include <hail_tests_utils.h>
 

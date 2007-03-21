@@ -31,7 +31,7 @@
 
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
-#include <hildon-widgets/hildon-number-editor.h>
+#include <hildon/hildon-number-editor.h>
 #include <hail/hailnumbereditor.h>
 
 #include <stdlib.h>

@@ -35,8 +35,8 @@
 #include <atk/atkobject.h>
 #include <atk/atkaction.h>
 #include <atk/atkselection.h>
-#include <hildon-widgets/hildon-file-system-model.h>
-#include <hildon-widgets/hildon-file-selection.h>
+#include <hildon/hildon-file-system-model.h>
+#include <hildon/hildon-file-selection.h>
 #include <hail/hailfileselection.h>
 #include <hail_tests_utils.h>
 

@@ -1,5 +1,33 @@
 2007-03-21  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
+	* ut/Makefile.am:
+	* ut/hail_tests.c:
+	* ut/hail_tests.h:
+	* ut/hailbanner_tests.c:
+	* ut/hailcaption_tests.c:
+	* ut/hailcodedialog_tests.c:
+	* ut/hailcolorbutton_tests.c: (test_color_button_change_colors):
+	* ut/hailcolorselector_tests.c:
+	* ut/hailcontrolbar_tests.c:
+	* ut/haildateeditor_tests.c:
+	* ut/haildialog_tests.c:
+	* ut/haildialogs_tests.c:
+	(test_name_and_password_dialog_get_accessibles):
+	* ut/hailfileselection_tests.c:
+	* ut/hailfindtoolbar_tests.c:
+	* ut/hailgrid_tests.c:
+	* ut/hailnumbereditor_tests.c:
+	* ut/hailrangeeditor_tests.c:
+	* ut/hailseekbar_tests.c:
+	* ut/hailtimeeditor_tests.c:
+	* ut/hailtimepicker_tests.c:
+	* ut/hailvolumebar_tests.c:
+	* ut/hailweekdaypicker_tests.c:
+	* ut/hailwindow_tests.c:
+	* ut/hailwizarddialog_tests.c: Migrated tests
+
+2007-03-21  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
 	* configure.in:
 	* hail/Makefile.am:
 	* hail/hail.c: (hail_accessibility_module_init):

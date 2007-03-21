@@ -20,8 +20,6 @@
  *
  */
 
-#include <hailappview_tests.h>
-#include <hailapp_tests.h>
 #include <hailbanner_tests.h>
 #include <hailcaption_tests.h>
 #include <hailcodedialog_tests.h>
@@ -33,7 +31,6 @@
 #include <haildialogs_tests.h>
 #include <hailfileselection_tests.h>
 #include <hailfindtoolbar_tests.h>
-#include <hailgrid_tests.h>
 #include <hailnumbereditor_tests.h>
 #include <hailrangeeditor_tests.h>
 #include <hailseekbar_tests.h>

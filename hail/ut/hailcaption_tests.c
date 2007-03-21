@@ -30,7 +30,7 @@
  */
 
 #include <gtk/gtkentry.h>
-#include <hildon-widgets/hildon-caption.h>
+#include <hildon/hildon-caption.h>
 #include <hail/hailcaption.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>

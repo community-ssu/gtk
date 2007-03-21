@@ -32,7 +32,7 @@
 #include <gtk/gtkvbox.h>
 #include <gtk/gtklabel.h>
 #include <atk/atkstateset.h>
-#include <hildon-widgets/hildon-wizard-dialog.h>
+#include <hildon/hildon-wizard-dialog.h>
 
 #include <assert.h>
 #include <string.h>

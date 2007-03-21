@@ -35,8 +35,8 @@
 #include <gtk/gtkstock.h>
 #include <gtk/gtklabel.h>
 #include <gtk/gtktoolbutton.h>
-#include <hildon-widgets/hildon-window.h>
-#include <hildon-widgets/hildon-program.h>
+#include <hildon/hildon-window.h>
+#include <hildon/hildon-program.h>
 #include <hail/hailwindow.h>
 
 #include <string.h>

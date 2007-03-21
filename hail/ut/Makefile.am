@@ -11,12 +11,9 @@ libhail_unittests_la_SOURCES =  hailcaption_tests.c \
 				hailcontrolbar_tests.c \
 				hailweekdaypicker_tests.c \
 				hailfileselection_tests.c \
-				haildialog_tests.c \
 				hailtimepicker_tests.c \
 				hailcolorbutton_tests.c \
-				hailcolorselector_tests.c \
 				haildialogs_tests.c \
-				hailgrid_tests.c \
 				haildateeditor_tests.c \
 				hailnumbereditor_tests.c \
 				hailtimeeditor_tests.c \
@@ -26,4 +23,8 @@ libhail_unittests_la_SOURCES =  hailcaption_tests.c \
 				hailcodedialog_tests.c \
 				hail_tests_utils.c \
 				hail_tests.c
+
+#TODO
+#hailcolorselector_tests.c
+
 libhail_unittests_la_LIBADD = @DEP_LIBS@ $(top_builddir)/hail/libhail.la

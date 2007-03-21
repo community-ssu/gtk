@@ -30,7 +30,7 @@
  */
 
 #include <gtk/gtkwidget.h>
-#include <hildon-widgets/hildon-code-dialog.h>
+#include <hildon/hildon-code-dialog.h>
 #include <hail/hailcodedialog.h>
 #include <hail_tests_utils.h>
 

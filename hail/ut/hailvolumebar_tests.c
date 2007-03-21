@@ -30,8 +30,8 @@
  */
 
 #include <gtk/gtkwindow.h>
-#include <hildon-widgets/hildon-hvolumebar.h>
-#include <hildon-widgets/hildon-vvolumebar.h>
+#include <hildon/hildon-hvolumebar.h>
+#include <hildon/hildon-vvolumebar.h>
 #include <hail/hailvolumebar.h>
 
 #include <hail_tests_utils.h>

@@ -34,7 +34,7 @@
 #include <atk/atkobject.h>
 #include <atk/atkvalue.h>
 #include <atk/atkimage.h>
-#include <hildon-widgets/hildon-color-button.h>
+#include <hildon/hildon-color-button.h>
 #include <hail/hailcolorbutton.h>
 
 #include <string.h>
@@ -78,7 +78,7 @@ test_color_button_change_colors (void)
   AtkObject * button_a = NULL;
   GtkWidget * window = NULL;
   GValue *value;
-  GdkColor * color = NULL;
+  GdkColor color;
 
   window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
   button = hildon_color_button_new();
@@ -92,11 +92,11 @@ test_color_button_change_colors (void)
   assert(ATK_IS_VALUE(button_a));
   assert(ATK_IS_IMAGE(button_a));
 
-  color = gdk_color_copy(hildon_color_button_get_color(HILDON_COLOR_BUTTON(button)));
-  color->blue=0xcccc;
-  color->red = 0xffff;
-  color->green = 0x0000;
-  hildon_color_button_set_color(HILDON_COLOR_BUTTON(button), color);
+  hildon_color_button_get_color(HILDON_COLOR_BUTTON(button), &color);
+  color.blue=0xcccc;
+  color.red = 0xffff;
+  color.green = 0x0000;
+  hildon_color_button_set_color(HILDON_COLOR_BUTTON(button), &color);
 
   value = g_new0(GValue, 1);
   g_value_init(value, G_TYPE_DOUBLE);

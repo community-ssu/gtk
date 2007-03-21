@@ -31,7 +31,7 @@
 
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
-#include <hildon-widgets/hildon-time-editor.h>
+#include <hildon/hildon-time-editor.h>
 #include <hail/hailtimeeditor.h>
 
 #include <assert.h>

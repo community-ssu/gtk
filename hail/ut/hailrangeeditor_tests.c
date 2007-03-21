@@ -31,7 +31,7 @@
 
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
-#include <hildon-widgets/hildon-range-editor.h>
+#include <hildon/hildon-range-editor.h>
 #include <hail/hailrangeeditor.h>
 
 #include <assert.h>

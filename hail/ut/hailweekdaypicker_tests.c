@@ -32,7 +32,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <atk/atkobject.h>
-#include <hildon-widgets/hildon-weekday-picker.h>
+#include <hildon/hildon-weekday-picker.h>
 #include <hail/hailweekdaypicker.h>
 #include <hail_tests_utils.h>
 

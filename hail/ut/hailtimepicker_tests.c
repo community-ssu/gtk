@@ -31,7 +31,7 @@
 
 #include <gtk/gtkwidget.h>
 #include <atk/atkobject.h>
-#include <hildon-widgets/hildon-time-picker.h>
+#include <hildon/hildon-time-picker.h>
 #include <hail/hailtimepicker.h>
 
 #include <assert.h>
