@@ -13,13 +13,13 @@ X-Type=home
 X-Config-File=home.conf
 X-Plugin-Dir=@hildonhomedesktopentrydir@
 
-[Statusbar]
-X-Type=panel_expandable
-X-Position-X=423
-X-Position-Y=0
-X-Size-Width=270
-X-Size-Height=50
-X-Orientation=top
-X-Config-File=statusbar.conf
-X-Plugin-Dir=@hildonstatusbardesktopentrydir@
+#[Statusbar]
+#X-Type=panel_expandable
+#X-Position-X=423
+#X-Position-Y=0
+#X-Size-Width=270
+#X-Size-Height=50
+#X-Orientation=top
+#X-Config-File=statusbar.conf
+#X-Plugin-Dir=@hildonstatusbardesktopentrydir@
 
