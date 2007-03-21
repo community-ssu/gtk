@@ -468,8 +468,7 @@ hildon_home_area_place (HildonHomeArea *area, GList *applets)
   HildonHomeAreaPriv      *priv;
 
   guint columns_last_width[2] = {0, 0};
-  guint columns_last_y[2] = {LAYOUT_AREA_TOP_BORDER_PADDING,
-                             LAYOUT_AREA_TOP_BORDER_PADDING};
+  guint columns_last_y[2] = {0, 0};
   GList *i_applet, *to_place;
   gint i_column = 0;
   gint width = GTK_WIDGET (area)->allocation.width;
@@ -514,19 +513,17 @@ hildon_home_area_place (HildonHomeArea *area, GList *applets)
 #endif
 
       if (columns_last_y[i_column] + req.height + PADDING < height
-          && req.width + columns_last_width[(1+i_column)%2] + LAYOUT_AREA_LEFT_BORDER_PADDING + LAYOUT_AREA_RIGHT_BORDER_PADDING < width)
+          && req.width + columns_last_width[(1+i_column)%2] < width)
         {
-          x = i_column? (width - req.width - LAYOUT_AREA_RIGHT_BORDER_PADDING):
-              LAYOUT_AREA_LEFT_BORDER_PADDING;
+          x = i_column? (width - req.width): 0;
           y = columns_last_y[i_column] + PADDING;
 
           selected_column = i_column;
         }
       else if (columns_last_y[other_c] + req.height + PADDING < height
-                              && req.width + columns_last_width[i_column] + LAYOUT_AREA_LEFT_BORDER_PADDING + LAYOUT_AREA_RIGHT_BORDER_PADDING < width)
+           && req.width + columns_last_width[i_column] < width)
         {
-          x = other_c? (width - req.width - LAYOUT_AREA_RIGHT_BORDER_PADDING):
-              LAYOUT_AREA_LEFT_BORDER_PADDING;
+          x = other_c? (width - req.width): 0;
           y = columns_last_y[other_c] + PADDING;
 
           selected_column = other_c;
@@ -538,13 +535,11 @@ hildon_home_area_place (HildonHomeArea *area, GList *applets)
           x = last_stacked_x;
           y = last_stacked_y;
 
-          if (x + req.width > width - LAYOUT_AREA_LEFT_BORDER_PADDING
-                                    - LAYOUT_AREA_RIGHT_BORDER_PADDING)
-            x = LAYOUT_AREA_LEFT_BORDER_PADDING;
+          if (x + req.width > width)
+            x = 0;
           
-          if (y + req.height > height - LAYOUT_AREA_TOP_BORDER_PADDING
-                                      - LAYOUT_AREA_BOTTOM_BORDER_PADDING)
-            y = LAYOUT_AREA_TOP_BORDER_PADDING;
+          if (y + req.height > height)
+            y = 0;
 
           last_stacked_x = x + APPLET_ADD_X_STEP;
           last_stacked_y = y + APPLET_ADD_Y_STEP;

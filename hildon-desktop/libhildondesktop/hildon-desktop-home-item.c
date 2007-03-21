@@ -1147,22 +1147,18 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
       x_applet -= priv->x_offset;
       y_applet -= priv->y_offset;
 
-      if (x_applet < LAYOUT_AREA_LEFT_BORDER_PADDING)
-        x_applet = LAYOUT_AREA_LEFT_BORDER_PADDING;
+      if (x_applet < 0)
+        x_applet = 0;
 
-      if (y_applet < LAYOUT_AREA_TOP_BORDER_PADDING)
-        y_applet = LAYOUT_AREA_TOP_BORDER_PADDING;
+      if (y_applet < 0)
+        y_applet = 0;
 
-      if (x_applet + widget->allocation.width > fixed->allocation.width
-          - LAYOUT_AREA_RIGHT_BORDER_PADDING)
+      if (x_applet + widget->allocation.width > fixed->allocation.width)
         x_applet =  fixed->allocation.width -
-            widget->allocation.width - LAYOUT_AREA_RIGHT_BORDER_PADDING;
+            widget->allocation.width;
 
-
-      if (y_applet + widget->allocation.height > fixed->allocation.height
-          - LAYOUT_AREA_BOTTOM_BORDER_PADDING)
-        y_applet =  fixed->allocation.height -
-            widget->allocation.height - LAYOUT_AREA_BOTTOM_BORDER_PADDING;
+      if (y_applet + widget->allocation.height > fixed->allocation.height)
+        y_applet =  fixed->allocation.height - widget->allocation.height;
 
       if (x_applet != widget->allocation.x - fixed->allocation.x)
         priv->delta_x = x_applet - widget->allocation.x + fixed->allocation.x;
@@ -1195,16 +1191,14 @@ hildon_desktop_home_item_drag_update (HildonDesktopHomeItem *applet)
         height = priv->minimum_height;
 
       if (widget->allocation.x + width > 
-          fixed->allocation.x + fixed->allocation.width
-          - LAYOUT_AREA_RIGHT_BORDER_PADDING)
+          fixed->allocation.x + fixed->allocation.width)
         width = fixed->allocation.x + fixed->allocation.width
-          - LAYOUT_AREA_RIGHT_BORDER_PADDING - widget->allocation.x;
+                - widget->allocation.x;
       
       if (widget->allocation.y + height > 
-          fixed->allocation.y + fixed->allocation.height
-          - LAYOUT_AREA_RIGHT_BORDER_PADDING)
+          fixed->allocation.y + fixed->allocation.height)
         height = fixed->allocation.y + fixed->allocation.height
-          - LAYOUT_AREA_BOTTOM_BORDER_PADDING - widget->allocation.y;
+                 - widget->allocation.y;
 
       if (width != widget->allocation.width)
         priv->delta_x = width  - widget->allocation.width;

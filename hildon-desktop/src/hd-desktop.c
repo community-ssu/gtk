@@ -667,12 +667,58 @@ hd_desktop_load_containers (HDDesktop *desktop)
 
     if (!g_ascii_strcasecmp (type, HD_CONTAINER_TYPE_HOME))
     {
+      gint padding_left, padding_right, padding_bottom, padding_top;
+
+      padding_left = g_key_file_get_integer (keyfile,
+                                             groups[i],
+                                             HD_DESKTOP_CONFIG_KEY_PADDING_LEFT,
+                                             &error);
+      if (error)
+      {
+        g_clear_error (&error);
+        padding_left = 0;
+      }
+      
+      padding_right = g_key_file_get_integer (keyfile,
+                                              groups[i],
+                                              HD_DESKTOP_CONFIG_KEY_PADDING_RIGHT,
+                                              &error);
+      if (error)
+      {
+        g_clear_error (&error);
+        padding_right = 0;
+      }
+      
+      padding_bottom = g_key_file_get_integer (keyfile,
+                                               groups[i],
+                                               HD_DESKTOP_CONFIG_KEY_PADDING_BOTTOM,
+                                               &error);
+      if (error)
+      {
+        g_clear_error (&error);
+        padding_bottom = 0;
+      }
+      
+      padding_top = g_key_file_get_integer (keyfile,
+                                            groups[i],
+                                            HD_DESKTOP_CONFIG_KEY_PADDING_TOP,
+                                            &error);
+      if (error)
+      {
+        g_clear_error (&error);
+        padding_top = 0;
+      }
+
       info = g_new0 (HDDesktopContainerInfo, 1);
  
       info->container = g_object_new (HD_TYPE_HOME_WINDOW,
 #ifdef HAVE_LIBOSSO
                                       "osso-context", priv->osso_context,
 #endif
+                                      "padding-left",   padding_left,
+                                      "padding-right",  padding_right,
+                                      "padding-top",    padding_top,
+                                      "padding-bottom", padding_bottom,
                                       NULL);
 
       hildon_home_window_applets_init (HILDON_HOME_WINDOW (info->container));

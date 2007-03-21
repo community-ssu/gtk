@@ -1,3 +1,14 @@
+2007-03-21  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-config.h:
+	- added PADDING keys
+	* src/hd-desktop.c:
+	- Parse PADDING keys for the HomeWindow, give them as properties
+	* libhildondesktop/hildon-home-window.c:
+	- Use the padding property in child allocation
+	* libhildondesktop/hildon-desktop-home-item.c, hildon-home-area.c:
+	- Removed hard-coded padding
+	
 2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c:

@@ -34,6 +34,11 @@
 #define HD_DESKTOP_CONFIG_KEY_CONFIG_FILE   "X-Config-File"
 #define HD_DESKTOP_CONFIG_KEY_PLUGIN_DIR    "X-Plugin-Dir"
 
+#define HD_DESKTOP_CONFIG_KEY_PADDING_TOP       "X-Padding-Top"
+#define HD_DESKTOP_CONFIG_KEY_PADDING_BOTTOM    "X-Padding-Bottom"
+#define HD_DESKTOP_CONFIG_KEY_PADDING_LEFT      "X-Padding-Left"
+#define HD_DESKTOP_CONFIG_KEY_PADDING_RIGHT     "X-Padding-Right"
+
 #define HD_CONTAINER_TYPE_HOME              "home"
 #define HD_CONTAINER_TYPE_PANEL_FIXED       "panel_fixed"
 #define HD_CONTAINER_TYPE_PANEL_BOX         "panel_box"
