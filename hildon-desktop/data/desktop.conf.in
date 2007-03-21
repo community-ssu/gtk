@@ -12,6 +12,10 @@ X-Plugin-Dir=@hildonnavigatordesktopentrydir@
 X-Type=home
 X-Config-File=home.conf
 X-Plugin-Dir=@hildonhomedesktopentrydir@
+X-Padding-Left=10
+X-Padding-Right=10
+X-Padding-Top=12
+X-Padding-Bottom=10
 
 #[Statusbar]
 #X-Type=panel_expandable
