@@ -1,3 +1,12 @@
+glib2.0 (2.12.4-1osso2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+ 
+  * Ensure added symbols appear in API docs
+  * debian/rules: do not compress index.sgml for gtkdoc-fixxref benefit
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 21 Mar 2007 13:32:55 +0200
+
 glib2.0 (2.12.4-1osso1) unstable; urgency=low
 
   * upgrade to version 2.12.4 
