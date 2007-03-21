@@ -1,10 +1,10 @@
 libosso (2.3-1) unstable; urgency=low
 
-  * UNRELEASED
   * New API (osso_hw_set_display_event_cb) for catching the MCE display
     signal.
+  * Now using and depending on mce-dev.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 20 Mar 2007 14:00:09 +0200
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 21 Mar 2007 14:05:10 +0200
 
 libosso (2.2-1) unstable; urgency=low
 
