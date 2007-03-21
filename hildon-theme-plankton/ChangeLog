@@ -1,7 +1,8 @@
 2007-03-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.[svg,png]: moved dialog buttons around 30px
-	down, 160px right to make space for other things to come.
+	down, 160px right to make space for other things to come. Also moved
+	the tooltip and stuff to reflect the layout changes.
 
 2007-03-20  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
