@@ -3,8 +3,7 @@ hildondesktopconf_DATA = \
 	tasknavigator.conf  \
 	home.conf           \
 	home-layout.conf    \
-	home-background.conf \
-	statusbar.conf
+	home-background.conf
 
 hildonnavigatordesktopentry_DATA = \
 	app-switcher.desktop       \
