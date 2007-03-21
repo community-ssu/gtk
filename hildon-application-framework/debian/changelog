@@ -1,3 +1,11 @@
+hildon-application-framework (0.5) unstable; urgency=low
+
+  * Added gnome-vfs-filechooser-backend to hildon-application-framework
+    dependencies.
+  * Replaced maemo-af-desktop with hildon-desktop
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Mar 2007 12:42:21 +0200
+
 hildon-application-framework (0.4) unstable; urgency=low
 
   * Enabled hildon-application-framework-dev package.  Moved conflict on
