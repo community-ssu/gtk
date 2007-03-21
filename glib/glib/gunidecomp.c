@@ -261,6 +261,8 @@ g_unicode_canonical_decomposition (gunichar ch,
  * again with a buffer of size @result_len.
  * 
  * Return value: TRUE if @out was large enough
+ *
+ * Since: maemo
  **/
 gboolean
 g_unicode_canonical_decomposition_to_buffer (gunichar  ch,

@@ -1446,6 +1446,9 @@ G_CSET_LATINS
 g_scanner_add_symbol
 g_scanner_remove_symbol
 g_scanner_foreach_symbol
+
+<SUBSECTION>
+osso_g_scanner_cache_open
 </SECTION>
 
 <SECTION>
@@ -2272,6 +2275,7 @@ GUnicodeBreakType
 g_unichar_break_type
 g_unicode_canonical_ordering
 g_unicode_canonical_decomposition
+g_unicode_canonical_decomposition_to_buffer
 g_unichar_get_mirror_char
 
 <SUBSECTION>

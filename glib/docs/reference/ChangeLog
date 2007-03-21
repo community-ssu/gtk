@@ -1,3 +1,10 @@
+2007-03-21  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* glib/glib-sections.txt: Add osso_g_scanner_cache_open and
+	g_unicode_canonical_decomposition_to_buffer
+	* glib/glib-docs.sgml: Add index for 'Since: maemo' symbols
+	* glib/tmpl/scanner.sgml: Add osso_g_scanner_cache_open
+
 2006-10-01  Matthias Clasen  <mclasen@redhat.com>
 	
 	* === Released 2.12.4 ===
