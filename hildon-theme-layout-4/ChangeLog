@@ -3,6 +3,9 @@
 	* data/layout.txt: Moved the (view)buttons next to dialog buttons in
 	the template.
 
+	Moved listbox icons a bit (are these used at all?) and tooltip graphic
+	into a bit more sensible place.
+
 2007-03-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Removed unused viewbutton images so they dont get
