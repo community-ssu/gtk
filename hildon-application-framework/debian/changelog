@@ -1,3 +1,10 @@
+hildon-application-framework (0.6) unstable; urgency=low
+
+  * Added osso-af-startup and hildon-initscripts with the
+    versions that are needed for hildon-desktop.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 21 Mar 2007 13:49:30 +0200
+
 hildon-application-framework (0.5) unstable; urgency=low
 
   * Added gnome-vfs-filechooser-backend to hildon-application-framework
