@@ -55,7 +55,7 @@ Description: libhildondesktop debug symbols
 Package: libhildonwm0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, libgconf2-dev
 Description: libhildonwm shared library
   Set of tools for window managing from desktop environments
 

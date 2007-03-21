@@ -1,6 +1,5 @@
 /etc/hildon-desktop/desktop.conf
 /etc/hildon-desktop/tasknavigator.conf
-/etc/hildon-desktop/statusbar.conf
 /etc/hildon-desktop/home.conf
 /etc/hildon-desktop/home-layout.conf
 /etc/hildon-desktop/home-background.conf

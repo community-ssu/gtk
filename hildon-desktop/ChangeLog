@@ -1,3 +1,9 @@
+2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/libhildonwm.pc.in:
+	* debian/control: Added libgonf2-dev dependency to libhildonwm
+	* debian/conffiles: removed statusbar.conf
+
 2007-03-21  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-config.h:
