@@ -1,3 +1,10 @@
+2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-wm.c:
+	* libhildonwm/hd-wm-memory.[ch]:
+	- Get environment vars for lowmem situations.
+	- Code cleanup.
+
 2007-03-21  Johan Bilien  <johan.bilien@nokia.com>
 
 	* data/desktop.conf.in:

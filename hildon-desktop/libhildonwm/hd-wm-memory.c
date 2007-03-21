@@ -45,6 +45,27 @@
 #include "hd-wm-watched-window.h"
 #include "hd-wm-watchable-app.h"
 
+gboolean config_do_bgkill;
+gboolean config_lowmem_dim;
+
+static gboolean
+hd_wm_memory_get_env_is_set (const gchar *env, gboolean valbydefault)
+{
+  const gchar *val = g_getenv (env);
+
+  if (val)
+    return (g_str_equal (val, "yes"));
+  else
+    return valbydefault;
+}
+
+void 
+hd_wm_memory_get_env_vars (void)
+{
+  config_do_bgkill  = hd_wm_memory_get_env_is_set ("NAVIGATOR_DO_BGKILL", TRUE);
+  config_lowmem_dim = hd_wm_memory_get_env_is_set ("NAVIGATOR_LOWMEM_DIM", FALSE);
+}
+
 gboolean 
 hd_wm_memory_get_limits (guint *pages_used,
 			 guint *pages_available)
@@ -209,10 +230,9 @@ hd_wm_memory_kill_all_watched (gboolean only_kill_able_to_hibernate)
 void                     /* NOTE: callback from app switcher */
 hd_wm_memory_bgkill_func(gboolean is_on) 
 {
-#if 0
- if (!config_do_bgkill) /* NOTE: var extern in hildon-navigator-main.h  */
+  if (!config_do_bgkill) /* NOTE: var extern in hildon-navigator-main.h  */
     return;
-#endif
+
   hd_wm_set_bg_kill_situation(is_on);
       
   if (is_on == TRUE)
@@ -222,32 +242,23 @@ hd_wm_memory_bgkill_func(gboolean is_on)
 }
 
  void                     /* NOTE: callback from app switcher */
-hd_wm_memory_lowmem_func(gboolean is_on)
+hd_wm_memory_lowmem_func (gboolean is_on)
 {
   if (hd_wm_is_lowmem_situation() != is_on)
-    {
-      hd_wm_set_lowmem_situation(is_on);
+  {
+    hd_wm_set_lowmem_situation (is_on);
 
-      /* The 'lowmem' situation always includes the 'bgkill' situation,
-	 but the 'bgkill' signal is not generated in all configurations.
-	 So we just call the bgkill_handler here. */
-      hd_wm_memory_bgkill_func(is_on);
-
-      hd_wm_memory_update_lowmem_ui(is_on);
+    /* The 'lowmem' situation always includes the 'bgkill' situation,
+       but the 'bgkill' signal is not generated in all configurations.
+       So we just call the bgkill_handler here. */
+    hd_wm_memory_bgkill_func (is_on);
+    hd_wm_memory_update_lowmem_ui (is_on);
       
-      /* NOTE: config_lowmem_notify_enter extern in hildon-navigator-main.h */
-#if 0
-      if (is_on && config_lowmem_notify_enter)
-	{
-	  /* NOTE: again in hildon-navigator-main.h 
-	  if (config_lowmem_pavlov_dialog)
-	    {
-	      tm_wm_memory_show_pavlov_dialog();
-	    }
-	  */
-	}
-#endif
+    if (is_on)
+    {
+      g_debug ("We enter in lowmem situation");
     }
+  }
 }
 
 /* FIXME: This is defined in maemo-af-desktop-main.c and we shouldn't
@@ -259,10 +270,9 @@ hd_wm_memory_update_lowmem_ui (gboolean lowmem)
 {
   /* If dimming is disabled, we don't do anything here. Also see
      APPLICATION_SWITCHER_UPDATE_LOWMEM_SITUATION. */
-#if 0
   if (!config_lowmem_dim)
     return;
-#endif 
+  
   g_debug ("We have to set sensitiveness of others menu here!");
 /*
   gtk_widget_set_sensitive(hn_window_get_others_menu(tasknav),!lowmem);

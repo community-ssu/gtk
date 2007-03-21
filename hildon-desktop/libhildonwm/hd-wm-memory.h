@@ -30,6 +30,9 @@
 
 #include "hd-wm.h"
 
+void 
+hd_wm_memory_get_env_vars (void);
+
 gboolean 
 hd_wm_memory_get_limits (guint *pages_used,
 			 guint *pages_available);

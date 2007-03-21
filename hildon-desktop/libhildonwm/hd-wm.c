@@ -835,11 +835,8 @@ hd_wm_init (HDWM *hdwm)
     = hd_wm_util_getenv_long (LOWMEM_TIMEOUT_MULTIPLIER_ENV,
 			      LOWMEM_TIMEOUT_MULTIPLIER);
 
-  /* Various app switcher callbacks */
-#if 0
-  application_switcher_set_dnotify_handler (as, &hd_wm_dnotify_func);
-  application_switcher_set_shutdown_handler (as, &hd_wm_shutdown_func);
-#endif
+  hd_wm_memory_get_env_vars ();
+  
   /* build our hash of watchable apps via .desktop key/values */
 
   hdwm->priv->applications = NULL;
