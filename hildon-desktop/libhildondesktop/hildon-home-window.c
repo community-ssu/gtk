@@ -99,7 +99,7 @@ area_layout_mode_started (HildonHomeArea *area,
   HildonHomeWindowPrivate *priv = window->priv;
 
   hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
-                                 HILDON_HOME_TITLEBAR_LAYOUT);
+                                 HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT);
 
 }
 
@@ -110,7 +110,7 @@ area_layout_mode_ended (HildonHomeArea *area,
   HildonHomeWindowPrivate *priv = window->priv;
 
   hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (priv->titlebar),
-                                 HILDON_HOME_TITLEBAR_NORMAL);
+                                 HILDON_DESKTOP_HOME_TITLEBAR_NORMAL);
 
   hildon_home_window_set_desktop_dimmed (window, FALSE);
 

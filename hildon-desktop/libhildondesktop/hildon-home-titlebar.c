@@ -77,8 +77,8 @@ hildon_home_titlebar_mode_get_type (void)
     {
       static const GEnumValue values[] =
       {
-        { HILDON_HOME_TITLEBAR_NORMAL, "HILDON_HOME_TITLEBAR_NORMAL", "normal" },
-	{ HILDON_HOME_TITLEBAR_LAYOUT, "HILDON_HOME_TITLEBAR_LAYOUT", "layout" },
+        { HILDON_DESKTOP_HOME_TITLEBAR_NORMAL, "HILDON_DESKTOP_HOME_TITLEBAR_NORMAL", "normal" },
+	{ HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT, "HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT", "layout" },
 	{ 0, NULL, NULL }
       };
 
@@ -339,7 +339,7 @@ hildon_home_titlebar_class_init (HildonHomeTitlebarClass *klass)
                              "Mode",
                              "Titlebar mode",
                              HILDON_TYPE_HOME_TITLEBAR_MODE,
-                             HILDON_HOME_TITLEBAR_NORMAL,
+                             HILDON_DESKTOP_HOME_TITLEBAR_NORMAL,
                              G_PARAM_READWRITE);
 
   g_object_class_install_property (gobject_class,
@@ -415,7 +415,7 @@ hildon_home_titlebar_init (HildonHomeTitlebar *titlebar)
 
   titlebar->priv = priv = HILDON_HOME_TITLEBAR_GET_PRIVATE (titlebar);
 
-  priv->mode = HILDON_HOME_TITLEBAR_NORMAL;
+  priv->mode = HILDON_DESKTOP_HOME_TITLEBAR_NORMAL;
   priv->menu_key_pressed = FALSE;
   priv->menu_popup_status = FALSE;
 
@@ -508,7 +508,7 @@ GtkWidget *
 hildon_home_titlebar_new ()
 {
   return g_object_new (HILDON_TYPE_HOME_TITLEBAR,
-                       "mode", HILDON_HOME_TITLEBAR_NORMAL,
+                       "mode", HILDON_DESKTOP_HOME_TITLEBAR_NORMAL,
                        NULL);
 }
 
@@ -531,14 +531,14 @@ hildon_home_titlebar_set_mode (HildonHomeTitlebar     *titlebar,
 
       switch (mode)
         {
-          case HILDON_HOME_TITLEBAR_NORMAL:
+	  case HILDON_DESKTOP_HOME_TITLEBAR_NORMAL:
               gtk_label_set_text (GTK_LABEL (priv->label),
                                   priv->normal_text);
 
               gtk_widget_hide (priv->layout_accept);
               gtk_widget_hide (priv->layout_cancel);
               break;
-          case HILDON_HOME_TITLEBAR_LAYOUT:
+          case HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT:
               gtk_label_set_text (GTK_LABEL (priv->label),
                                   priv->layout_text);
 
@@ -564,10 +564,10 @@ hildon_home_titlebar_toggle_menu (HildonHomeTitlebar *titlebar)
 
   switch (priv->mode)
     {
-      case HILDON_HOME_TITLEBAR_NORMAL:
+      case HILDON_DESKTOP_HOME_TITLEBAR_NORMAL:
           menu = GTK_MENU (priv->menu);
           break;
-      case HILDON_HOME_TITLEBAR_LAYOUT:
+      case HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT:
           menu = GTK_MENU (priv->layout_menu);
           break;
       default:
@@ -578,7 +578,7 @@ hildon_home_titlebar_toggle_menu (HildonHomeTitlebar *titlebar)
   if (!menu)
     {
       g_warning ("Titlebar mode `%s', but no menu defined",
-                 priv->mode == HILDON_HOME_TITLEBAR_NORMAL ? "normal"
+                 priv->mode == HILDON_DESKTOP_HOME_TITLEBAR_NORMAL ? "normal"
                  : "layout");
 
       return;
@@ -682,7 +682,7 @@ hildon_home_titlebar_set_menu_title (HildonHomeTitlebar *titlebar,
 
       priv->normal_text = g_strdup (label);
       
-      if (priv->mode == HILDON_HOME_TITLEBAR_NORMAL)
+      if (priv->mode == HILDON_DESKTOP_HOME_TITLEBAR_NORMAL)
         gtk_label_set_text (GTK_LABEL (priv->label), priv->normal_text);
       
       g_object_notify (G_OBJECT (titlebar), "menu-title");
@@ -709,7 +709,7 @@ hildon_home_titlebar_set_layout_menu_title (HildonHomeTitlebar *titlebar,
 
       priv->layout_text = g_strdup (label);
 
-      if (priv->mode == HILDON_HOME_TITLEBAR_LAYOUT)
+      if (priv->mode == HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT)
         gtk_label_set_text (GTK_LABEL (priv->label), priv->layout_text);
       
       g_object_notify (G_OBJECT (titlebar), "layout-menu-title");

@@ -1,3 +1,9 @@
+2007-03-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-home-titlebar.[ch],
+	libhildondesktop/hildon-home-window.c: renamed HILDON_HOME_TITLEBAR_* to
+	HILDON_DESKTOP_HOME_TITLEBAR_* for consistency.
+
 2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-wm.c:
