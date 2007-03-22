@@ -69,9 +69,36 @@ AM_GLIB_GNU_GETTEXT
 AC_DEFINE(GETTEXT_PACKAGE, ["maemo-af-desktop"], [Package name for gettext])
 
 PKG_CHECK_MODULES(OSSOSETTINGS, 
-		  [osso-af-settings >= 0.8.1],
-                  localedir=`pkg-config osso-af-settings --variable=localedir`, 
-		  localedir="${datadir}/locale")
+		  [osso-af-settings >= 0.9.0],
+                  [
+                  localedir=`pkg-config osso-af-settings --variable=localedir` 
+                  hildondesktopentrydir=`pkg-config osso-af-settings --variable=desktopentrydir`
+                  hildondesktoplibdir=`pkg-config osso-af-settings --variable=hildondesktoplibdir`
+
+
+                  hildonnavigatordesktopentrydir=`pkg-config osso-af-settings --variable=tasknavigatordesktopentrydir`
+                  hildonhomedesktopentrydir=`pkg-config osso-af-settings --variable=homedesktopentrydir`
+                  hildonstatusbardesktopentrydir=`pkg-config osso-af-settings --variable=statusbardesktopentrydir`,
+                  
+                  hildonnavigatorlibdir=`pkg-config osso-af-settings --variable=legacynavigatorlibdir`
+                  hildonhomelibdir=`pkg-config osso-af-settings --variable=legacyhomelibdir`
+                  hildonstatusbarlibdir=`pkg-config osso-af-settings --variable=legacystatusbarlibdir`
+
+                  ],[
+
+		  localedir="${datadir}/locale"
+                  hildondesktopentrydir="${datadir}/applications"
+                  hildondesktoplibdir="${libdir}/hildon-desktop"
+                  
+                  hildonnavigatordesktopentrydir="${datadir}/applications/hildon-navigator"
+                  hildonhomedesktopentrydir="${datadir}/applications/hildon-home"
+                  hildonstatusbardesktopentrydir="${datadir}/applications/hildon-status-bar"
+
+                  hildonnavigatorlibdir="${libdir}/hildon-navigator"
+                  hildonhomelibdir="${libdir}/hildon-home"
+                  hildonstatusbarlibdir="${libdir}/hildon-status-bar"
+                  ])
+
 AC_SUBST(localedir)
 
 #+++++++++++++++++++++
@@ -152,34 +179,26 @@ AC_SUBST(XTEST_CFLAGS)
 # Directories setup
 #+++++++++++++++++++
 
-hildondesktopentrydir=`pkg-config osso-af-settings --variable=desktopentrydir`
-hildondesktoplibdir=${libdir}/hildon-desktop
 hildondesktopconfdir=${sysconfdir}/hildon-desktop
 AC_SUBST(hildondesktopentrydir)
 AC_SUBST(hildondesktoplibdir)
 AC_SUBST(hildondesktopconfdir)
 
-hildonnavigatordesktopentrydir=${datadir}/applications/hildon-navigator
 # Expand nested variables
 eval "hildonnavigatordesktopentrydir=$hildonnavigatordesktopentrydir"
 eval "hildonnavigatordesktopentrydir=$hildonnavigatordesktopentrydir"
-hildonnavigatorlibdir=${libdir}/hildon-navigator
 AC_SUBST(hildonnavigatordesktopentrydir)
 AC_SUBST(hildonnavigatorlibdir)
 
-hildonhomedesktopentrydir=${datadir}/applications/hildon-home
 # Expand nested variables
 eval "hildonhomedesktopentrydir=$hildonhomedesktopentrydir"
 eval "hildonhomedesktopentrydir=$hildonhomedesktopentrydir"
-hildonhomelibdir=${libdir}/hildon-home
 AC_SUBST(hildonhomedesktopentrydir)
 AC_SUBST(hildonhomelibdir)
 
-hildonstatusbardesktopentrydir=${datadir}/applications/hildon-status-bar
 # Expand nested variables
 eval "hildonstatusbardesktopentrydir=$hildonstatusbardesktopentrydir"
 eval "hildonstatusbardesktopentrydir=$hildonstatusbardesktopentrydir"
-hildonstatusbarlibdir=${libdir}/hildon-status-bar
 AC_SUBST(hildonstatusbardesktopentrydir)
 AC_SUBST(hildonstatusbarlibdir)
 

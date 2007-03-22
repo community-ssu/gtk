@@ -1,4 +1,9 @@
-2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
+2007-03-22  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: retrieve home, statusbar and home directories
+	from osso-af-settings
+
+2007-03-22  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c: 
 	- Set default no of items to 3.
