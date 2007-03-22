@@ -1,5 +1,12 @@
 prefix=@prefix@
 desktopentrydir=@datadir@/applications/hildon
+tasknavigatordesktopentrydir=@datadir@/applications/hildon-navigator
+statusbardesktopentrydir=@datadir@/applications/hildon-status-bar
+homedesktopentrydir=@datadir@/applications/hildon-home
+hildondesktoplibdir=@libdir@/hildon-desktop
+legacyhomelibdir=@libdir@/hildon-home
+legacystatusbarlibdir=@libdir@/hildon-status-bar
+legacynavigatorlibdir=@libdir@/hildon-navigator
 localedir=@localedir@
 hildonpixmapdir=@hildonpixmapdir@
 dbusservicedir=/usr/share/dbus-1/services
