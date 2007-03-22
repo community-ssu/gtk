@@ -1,0 +1,12 @@
+diff -pur dosfstools-2.11/Makefile dosfstools-2.11.new/Makefile
+--- dosfstools-2.11/Makefile	2005-03-12 16:07:01.000000000 +0200
++++ dosfstools-2.11.new/Makefile	2006-11-20 17:00:05.259942384 +0200
+@@ -10,7 +10,7 @@ DEBUGFLAGS = 
+ CFLAGS = $(OPTFLAGS) $(WARNFLAGS) $(DEBUGFLAGS)
+ LDFLAGS =
+ 
+-PREFIX = 
++PREFIX = REPLACE_WITH_PREFIX
+ SBINDIR = $(PREFIX)/sbin
+ MANDIR = $(PREFIX)/usr/man/man8
+ 

@@ -1,0 +1,46 @@
+diff -pur dosfstools-2.11/mkdosfs/mkdosfs.c dosfstools-2.11.new/mkdosfs/mkdosfs.c
+--- dosfstools-2.11/mkdosfs/mkdosfs.c	2005-03-12 18:12:16.000000000 +0200
++++ dosfstools-2.11.new/mkdosfs/mkdosfs.c	2006-11-20 17:52:19.995390160 +0200
+@@ -1336,12 +1336,22 @@ write_tables (void)
+ 	       CF_LE_L(bs.fat32.fat32_length) : CF_LE_W(bs.fat_length);
+ 
+   seekto( 0, "start of device" );
++  {
++    /* tell the number of printed hash marks */
++    char buf[20];
++    snprintf(buf, 19, "%d\n", reserved_sectors + nr_fats + 3); 
++    buf[19] = '\0';
++    write(STDERR_FILENO, buf, strlen(buf));
++  }
+   /* clear all reserved sectors */
+-  for( x = 0; x < reserved_sectors; ++x )
++  for( x = 0; x < reserved_sectors; ++x ) {
+     writebuf( blank_sector, sector_size, "reserved sector" );
++    write(STDERR_FILENO, "#", 1);
++  }
+   /* seek back to sector 0 and write the boot sector */
+   seekto( 0, "boot sector" );
+   writebuf( (char *) &bs, sizeof (struct msdos_boot_sector), "boot sector" );
++  write(STDERR_FILENO, "#", 1);
+   /* on FAT32, write the info sector and backup boot sector */
+   if (size_fat == 32)
+     {
+@@ -1354,13 +1364,17 @@ write_tables (void)
+ 		    "backup boot sector" );
+ 	}
+     }
++  write(STDERR_FILENO, "#", 1);
+   /* seek to start of FATS and write them all */
+   seekto( reserved_sectors*sector_size, "first FAT" );
+-  for (x = 1; x <= nr_fats; x++)
++  for (x = 1; x <= nr_fats; x++) {
+     writebuf( fat, fat_length * sector_size, "FAT" );
++    write(STDERR_FILENO, "#", 1);
++  }
+   /* Write the root directory directly after the last FAT. This is the root
+    * dir area on FAT12/16, and the first cluster on FAT32. */
+   writebuf( (char *) root_dir, size_root_dir, "root directory" );
++  write(STDERR_FILENO, "#", 1);
+ 
+   if (blank_sector) free( blank_sector );
+   if (info_sector) free( info_sector );

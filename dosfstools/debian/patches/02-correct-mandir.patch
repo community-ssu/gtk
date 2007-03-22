@@ -1,0 +1,12 @@
+diff -pur dosfstools-2.11/Makefile dosfstools-2.11.new/Makefile
+--- dosfstools-2.11/Makefile	2005-03-12 16:07:01.000000000 +0200
++++ dosfstools-2.11.new/Makefile	2006-11-20 17:43:39.644495520 +0200
+@@ -12,7 +12,7 @@ LDFLAGS =
+ 
+ PREFIX = 
+ SBINDIR = $(PREFIX)/sbin
+-MANDIR = $(PREFIX)/usr/man/man8
++MANDIR = $(PREFIX)/usr/share/man/man8
+ 
+ .PHONY: clean distclean install depend
+ .EXPORT_ALL_VARIABLES:

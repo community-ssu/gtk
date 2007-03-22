@@ -1,0 +1,23 @@
+#!/usr/bin/make -f
+# Copyright © 2006 Nokia Corporation. All rights reserved.
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/rules/utils.mk
+
+DEB_TAR_SRCDIR := dosfstools-2.11
+include /usr/share/cdbs/1/rules/tarball.mk
+
+# Use soft-float and thumb mode if it is enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -mthumb
+endif
+
+configure/dosfstools::
+	cd $(DEB_BUILDDIR); sed -ri "s#REPLACE_WITH_PREFIX#$(DEB_DESTDIR)#" Makefile
+
+build/dosfstools::
+	cd $(DEB_BUILDDIR); $(MAKE) install
+
+clean::
+	rm -f *.cdbs-config_list

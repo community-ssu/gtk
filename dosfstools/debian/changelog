@@ -1,0 +1,6 @@
+dosfstools (2.11-0osso1) unstable; urgency=low
+
+  * OSSO-packaged dosfstools (used debian scripts from 2.11-2 for guidance).
+  * Added patch to mkdosfs to print hash marks for progress indication.
+  
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 20 Nov 2006 18:07:30 +0200
