@@ -1,3 +1,8 @@
+2007-03-22  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.[svg,png]: Added graphics for the breadcrumb path
+	widget styling.
+
 2007-03-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.[svg,png]: moved dialog buttons around 30px
