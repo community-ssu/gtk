@@ -153,6 +153,7 @@ gtk_dialog_class_init (GtkDialogClass *class)
    * Spacing between elements of the main dialog area.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("content-area-spacing",

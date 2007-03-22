@@ -613,6 +613,7 @@ gtk_entry_class_init (GtkEntryClass *class)
    * Allowed characters and input mode for the entry. See #HildonGtkInputMode.
    *
    * Since: maemo 2.0
+   * Stability: Unstable
    **/
   g_object_class_install_property (gobject_class,
                                    PROP_HILDON_INPUT_MODE,
@@ -734,6 +735,7 @@ gtk_entry_class_init (GtkEntryClass *class)
    * has been reached.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   signals[INVALID_INPUT] =
     g_signal_new ("invalid_input",

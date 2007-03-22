@@ -514,6 +514,7 @@ gtk_range_class_init (GtkRangeClass *class)
    * Allows to use images instead of normal arrows.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("arrow-paint-box-layout",

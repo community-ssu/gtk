@@ -177,6 +177,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
    * any text selected in the widget. Return TRUE if there is.
    *
    * Since: maemo 2.0
+   * Stability: Unstable
    **/
   im_context_signals[HAS_SELECTION] =
     g_signal_new ("has_selection",
@@ -195,6 +196,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
    * text. The widget needs to implement these operations.
    *
    * Since: maemo 2.0
+   * Stability: Unstable
    **/
   im_context_signals[CLIPBOARD_OPERATION] =
     g_signal_new ("clipboard_operation",
@@ -212,6 +214,7 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
    * See #HildonGtkInputMode.
    *
    * Since: maemo 2.0
+   * Stability: Unstable
    **/
   g_object_class_install_property (gobject_class,
 				   PROP_HILDON_INPUT_MODE,
@@ -711,11 +714,11 @@ gtk_im_context_delete_surrounding (GtkIMContext *context,
  * or gtk_im_context_filter_keypress() for focus and keypress events
  * where applicable.
  * </para></note>
- * </para></note>
  *
  * Return value: %TRUE if the input method handled the event.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  */
 gboolean hildon_gtk_im_context_filter_event (GtkIMContext   *context,
                                              GdkEvent        *event)
@@ -737,6 +740,7 @@ gboolean hildon_gtk_im_context_filter_event (GtkIMContext   *context,
  * input method show be opened.
  *
  * Since: maemo 1.0
+ * Stability: Unstable
  *
  * Deprecated: Use hildon_gtk_im_context_show() instead.
  **/
@@ -754,6 +758,7 @@ gtk_im_context_show (GtkIMContext *context)
  * input method show be closed.
  *
  * Since: maemo 1.0
+ * Stability: Unstable
  *
  * Deprecated: Use hildon_gtk_im_context_hide() instead.
  **/
@@ -771,6 +776,7 @@ gtk_im_context_hide (GtkIMContext *context)
  * input method show be opened.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  **/
 void
 hildon_gtk_im_context_show (GtkIMContext *context)
@@ -792,6 +798,7 @@ hildon_gtk_im_context_show (GtkIMContext *context)
  * input method show be closed.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  **/
 void
 hildon_gtk_im_context_hide (GtkIMContext *context)
@@ -813,6 +820,7 @@ hildon_gtk_im_context_hide (GtkIMContext *context)
  * text selected in it.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  **/
 gboolean
 hildon_gtk_im_context_has_selection (GtkIMContext *context)
@@ -836,6 +844,7 @@ hildon_gtk_im_context_has_selection (GtkIMContext *context)
  * selected text in it is copied to clipboard.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  **/
 void
 hildon_gtk_im_context_copy (GtkIMContext *context)
@@ -854,6 +863,7 @@ hildon_gtk_im_context_copy (GtkIMContext *context)
  * selected text is cut and copied to clipboard.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  **/
 void
 hildon_gtk_im_context_cut (GtkIMContext *context)
@@ -872,6 +882,7 @@ hildon_gtk_im_context_cut (GtkIMContext *context)
  * text in clipboard is pasted to it.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  **/
 void
 hildon_gtk_im_context_paste (GtkIMContext *context)

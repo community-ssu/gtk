@@ -1,3 +1,28 @@
+2007-03-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	API documentation updates.
+
+	* gtk/gtkbutton.c (:image, :image-spacing, :tree-view-separator-area):
+	* gtk/gtktreeview.c (:separator-height):
+	Use single colon in the API doclet. Double colon is for signals and
+	gets gtk-doc confused leaving the documentation out of the generated
+	API docs.
+
+	* gtk/gtkbutton.c
+	* gtk/gtkcombobox.c
+	* gtk/gtkdialog.c
+	* gtk/gtkentry.c
+	* gtk/gtkfilechooserutils.c
+	* gtk/gtkimcontext.c
+	* gtk/gtkrange.c
+	* gtk/gtktextview.c
+	* gtk/gtktreeview.c
+	* gtk/gtkwidget.c: Tag all maemo additions (not backports) as
+	'Stability: Unstable'
+
+	* gtk/gtkwidget.c (::insensitive-press, :tap-and-hold,
+	gtk_widget_insensitive_press): Tag as deprecated.
+
 2007-03-20  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenuitem.c (gtk_menu_item_position_menu)

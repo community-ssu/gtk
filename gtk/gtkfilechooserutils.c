@@ -127,6 +127,7 @@ _gtk_file_chooser_install_properties (GObjectClass *klass)
  * but exported for hildon-fm.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  */
 void
 hildon_gtk_file_chooser_install_properties (GObjectClass *klass)

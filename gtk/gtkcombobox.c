@@ -782,6 +782,7 @@ gtk_combo_box_class_init (GtkComboBoxClass *klass)
    * When TRUE, automatically dims the button if the list is empty.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_boolean ("autodimmed-button",

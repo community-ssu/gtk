@@ -852,11 +852,12 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
 
 #ifdef MAEMO_CHANGES
   /**
-   * GtkTreeView::separator-height:
+   * GtkTreeView:separator-height:
    *
    * Height in pixels of a separator.
    *
    * Since: maemo 3.0
+   * Stability: Unstable
    */
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("separator-height",
@@ -1105,6 +1106,7 @@ gtk_tree_view_class_init (GtkTreeViewClass *class)
    * Emitted when the user tries to move cursor to an insesitive row.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   tree_view_signals[ROW_INSENSITIVE] =
      g_signal_new ("row_insensitive",

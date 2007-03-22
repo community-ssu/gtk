@@ -623,10 +623,11 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * Sets the state (#GtkStateType) to be used to the tap and hold
    * functionality. The default is GTK_STATE_NORMAL.
    *
-   * Warning: Functionality for setting and getting this propery is not
+   * Deprecated: Functionality for setting and getting this propery is not
    * implemented.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   g_object_class_install_property (gobject_class,
 				   PROP_TAP_AND_HOLD,
@@ -1590,9 +1591,12 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    *
    * If a widget is insensitive and it receives click event,
    * the signal is emited.  Signal is made to clarify situations where
-   * a widget is not easily noticable as an insenitive widget.
+   * a widget is not easily noticable as an insensitive widget.
+   *
+   * Deprecated: Use hildon_helper_set_insensitive_message() instead.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   widget_signals[INSENSITIVE_PRESS] =
     g_signal_new ("insensitive_press",
@@ -1609,6 +1613,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * The signal is emited when tap and hold activity occurs.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   widget_signals[TAP_AND_HOLD] =
     g_signal_new("tap_and_hold", G_TYPE_FROM_CLASS(gobject_class),
@@ -1622,7 +1627,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * @widget: the object which received the signal
    * @menu: the menu to be opened.
    * @func: the menu position function
-   * @flags: debricated
+   * @flags: deprecated
    *
    * Enables the tap and hold functionality to the @widget.
    * Usually a @menu is used at tap and hold signal,
@@ -1630,11 +1635,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * may be connected to it as well.  Usually this signal is not used,
    * instead the virtual function is over written.
    *
-   * Signal is deprecated and should not be used.
-   *
-   * @Deprecated
-   *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   widget_signals[TAP_AND_HOLD_SETUP] =
     g_signal_new("tap_and_hold_setup", G_TYPE_FROM_CLASS(gobject_class),
@@ -1655,6 +1657,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * tap and hold.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
     widget_signals[TAP_AND_HOLD_QUERY] =
     g_signal_new ("tap_and_hold_query",
@@ -8639,6 +8642,7 @@ tap_and_hold_animation_timeout (GtkWidget *widget)
  * It positiones the @menu over the @widget.
  *
  * Since: maemo 1.0
+ * Stability: Unstable
  **/
 void
 gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
@@ -8685,10 +8689,10 @@ gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
 
 /**
  * gtk_widget_tap_and_hold_setup:
- * @widget : a @GtkWidget
- * @menu : a @GtkWidget
- * @func : a @GtkCallback
- * @flags : a @GtkWidgetTapAndHoldFlags
+ * @widget : a #GtkWidget
+ * @menu : a #GtkMenu or %NULL
+ * @func : a #GtkMenuPositionFunc or %NULL
+ * @flags : a #GtkWidgetTapAndHoldFlags
  *
  * Setups the tap and hold functionality to the @widget.
  * The @menu is shown when the functionality is activated.
@@ -8697,6 +8701,7 @@ gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
  * Fourth parameter, @flags is deprecated and has no effect.
  *
  * Since: maemo 1.0
+ * Stability: Unstable
  */
 void
 gtk_widget_tap_and_hold_setup (GtkWidget                *widget,
@@ -8882,7 +8887,10 @@ gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
  *
  * Emits the "insensitive-press" signal.
  *
+ * Deprecated: Use hildon_helper_set_insensitive_message() instead.
+ *
  * Since: maemo 1.0
+ * Stability: Unstable
  */
 void
 gtk_widget_insensitive_press ( GtkWidget *widget )

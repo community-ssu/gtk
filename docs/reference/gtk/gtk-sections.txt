@@ -1138,6 +1138,9 @@ gtk_entry_get_max_length
 gtk_entry_get_visibility
 gtk_entry_set_completion
 gtk_entry_get_completion
+<SUBSECTION Hildon>
+hildon_gtk_entry_get_input_mode
+hildon_gtk_entry_set_input_mode
 <SUBSECTION Standard>
 GTK_ENTRY
 GTK_IS_ENTRY
@@ -1846,6 +1849,18 @@ gtk_im_context_set_use_preedit
 gtk_im_context_set_surrounding
 gtk_im_context_get_surrounding
 gtk_im_context_delete_surrounding
+<SUBSECTION Hildon>
+GtkIMContextClipboardOperation
+HildonGtkInputMode
+gtk_im_context_hide
+gtk_im_context_show
+hildon_gtk_im_context_copy
+hildon_gtk_im_context_cut
+hildon_gtk_im_context_filter_event
+hildon_gtk_im_context_has_selection
+hildon_gtk_im_context_hide
+hildon_gtk_im_context_paste
+hildon_gtk_im_context_show
 <SUBSECTION Standard>
 GTK_IM_CONTEXT
 GTK_IS_IM_CONTEXT
@@ -2746,6 +2761,12 @@ gtk_range_set_lower_stepper_sensitivity
 gtk_range_get_lower_stepper_sensitivity
 gtk_range_set_upper_stepper_sensitivity
 gtk_range_get_upper_stepper_sensitivity
+gtk_range_get_fill_level
+gtk_range_set_fill_level
+gtk_range_get_restrict_to_fill_level
+gtk_range_set_restrict_to_fill_level
+gtk_range_get_show_fill_level
+gtk_range_set_show_fill_level
 <SUBSECTION Standard>
 GTK_RANGE
 GTK_IS_RANGE
@@ -3695,6 +3716,9 @@ gtk_text_view_set_accepts_tab
 gtk_text_view_get_accepts_tab
 gtk_text_view_get_default_attributes
 GTK_TEXT_VIEW_PRIORITY_VALIDATE
+<SUBSECTION Hildon>
+hildon_gtk_text_view_get_input_mode
+hildon_gtk_text_view_set_input_mode
 <SUBSECTION Standard>
 GTK_TEXT_VIEW
 GTK_IS_TEXT_VIEW
@@ -5092,6 +5116,13 @@ gtk_widget_add_mnemonic_label
 gtk_widget_remove_mnemonic_label
 gtk_widget_get_action
 gtk_widget_is_composited
+gtk_widget_error_bell
+gtk_widget_keynav_failed
+<SUBSECTION Hildon>
+gtk_widget_tap_and_hold_flags_get_type
+gtk_widget_tap_and_hold_menu_position_top
+gtk_widget_tap_and_hold_setup
+gtk_widget_insensitive_press
 <SUBSECTION>
 gtk_requisition_copy
 gtk_requisition_free
@@ -5844,7 +5875,8 @@ GtkVisibility
 GtkWindowPosition
 GtkWindowType
 GtkSortType
-
+<SUBSECTION Hildon>
+GtkInvalidInputType
 <SUBSECTION Private>
 GtkMenuCallback
 GtkMenuEntry

@@ -273,7 +273,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       GTK_PARAM_READWRITE));
 
   /**
-   * GtkButton::image:
+   * GtkButton:image:
    * 
    * The child widget to appear next to the button text.
    * 
@@ -465,7 +465,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                                GTK_PARAM_READABLE));
 
   /**
-   * GtkButton::image-spacing:
+   * GtkButton:image-spacing:
    * 
    * Spacing in pixels between the image and label.
    * 
@@ -482,14 +482,15 @@ gtk_button_class_init (GtkButtonClass *klass)
 
 #ifdef MAEMO_CHANGES
   /**
-   * GtkButton::tree-view-separator-area:
+   * GtkButton:tree-view-separator-area:
    *
    * Specifies the amount of pixels to reserve for drawing a separator
    * below the button.  This is used to visually separate column headers
    * from the tree view.  The separator which will be drawn is exactly
    * 1px thick.  When 0, no separator will be drawn.
    *
-   * Since: maemo 1.0
+   * Since: maemo 4.0
+   * Stability: Unstable
    */
   gtk_widget_class_install_style_property (widget_class,
                                            g_param_spec_int ("tree-view-separator-area",

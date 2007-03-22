@@ -1,3 +1,12 @@
+2007-03-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtk-docs.sgml: Add 2.12 and maemo addition indices.
+	* gtk/gtk-sections.txt: Add new symbols so that they get documented.
+	* gtk/tmpl/gtkenums.sgml: Document GTK_BUTTONBOX_CENTER and
+	GtkInvalidInputType
+	* gtk/tmpl/gtkimcontext.sgml: Document GtkIMContextClipboardOperation
+	and HildonGtkInputMode
+
 2007-01-19  Michael Natterer  <mitch@gimp.org>
 
 	Backport unbinding of keybindings:

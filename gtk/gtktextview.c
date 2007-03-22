@@ -656,6 +656,7 @@ gtk_text_view_class_init (GtkTextViewClass *klass)
    * See #HildonGtkInputMode.
    *
    * Since: maemo 2.0
+   * Stability: Unstable
    **/
   g_object_class_install_property (gobject_class,
                                    PROP_HILDON_INPUT_MODE,
@@ -8785,6 +8786,7 @@ gtk_text_view_move_visually (GtkTextView *text_view,
  * Sets input mode of the widget.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  */
 void
 hildon_gtk_text_view_set_input_mode (GtkTextView       *text_view,
@@ -8809,6 +8811,7 @@ hildon_gtk_text_view_set_input_mode (GtkTextView       *text_view,
  * Return value: the input mode of the widget.
  *
  * Since: maemo 2.0
+ * Stability: Unstable
  */
 HildonGtkInputMode
 hildon_gtk_text_view_get_input_mode (GtkTextView *text_view)
