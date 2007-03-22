@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.10.6-0osso9) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * API documentation updates.
+  * debian/rules: Do not compress index.sgml files so that gtkdoc-fixxref can
+    access those and generate better cross reference when building hildon API
+    docs.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 22 Mar 2007 18:44:47 +0200
+
 gtk+2.0 (2:2.10.6-0osso8) unstable; urgency=low
 
   *** NOTE: starting with this version we are ABI incompatible with maemo gtk+

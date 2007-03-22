@@ -232,7 +232,7 @@ binary-indep: build install
 
 	dh_installinfo -i
 	dh_installchangelogs -i $(SOURCE_DIR)/ChangeLog
-	dh_compress -i
+	dh_compress -i -Xindex.sgml
 	dh_fixperms -i
 	dh_installdeb -i
 	dh_gencontrol -i
@@ -265,7 +265,7 @@ binary-arch: build install
 	dh_installinfo -a
 	dh_installchangelogs -a $(SOURCE_DIR)/ChangeLog
 	dh_strip -a --dbg-package=libgtk2.0-$(soname)
-	dh_compress -a
+	dh_compress -a -Xindex.sgml
 	dh_fixperms -a
 	dh_makeshlibs -a -Nlibgtk$(apiver)-$(soname)-dbg
 	dh_makeshlibs -n -X usr/lib/gtk-$(apiver) -plibgtk$(apiver)-$(soname)$(suffix) -V "libgtk${apiver}-${soname}${suffix} (>= 2:2.10.6)"
