@@ -568,6 +568,7 @@ qgn_plat_toolbar_fullscreen_frame_top_right_tab.png=3895,732,224,9
 qgn_plat_toolbar_fullscreen_right_tab.png=3895,741,224,40
 qgn_plat_toolbar_fullscreen_frame_bottom_right_tab.png=3895,781,224,9
 
+# these are still bogus.. will fix. /tig
 qgn_plat_scroll_thumbsize_vertical_up_arrow_normal.png=1717,508,64,52
 qgn_plat_scroll_thumbsize_vertical_up_arrow_disabled.png=1791,446,64,52
 qgn_plat_scroll_thumbsize_vertical_up_arrow_pressed.png=1717,446,64,52
@@ -582,18 +583,23 @@ qgn_plat_scroll_thumbsize_vertical_down_arrow_normal.png=1717,655,64,52
 qgn_plat_scroll_thumbsize_vertical_down_arrow_disabled.png=1791,717,64,52
 qgn_plat_scroll_thumbsize_vertical_down_arrow_pressed.png=1717,717,64,52
 
-qgn_plat_breadcrumb_home_normal.png=295,430,26,36
-qgn_plat_breadcrumb_level_normal.png=331,430,26,36
-qgn_plat_breadcrumb_level_previous_current.png=367,430,26,36
-qgn_plat_breadcrumb_level_current_normal.png=403,430,26,36
+# breadcrumb images
+qgn_plat_breadcrumb_backbutton_normal.png=1760,359,16,58
+qgn_plat_breadcrumb_middle_normal.png=1776,359,10,58
+qgn_plat_breadcrumb_end_normal.png=1786,359,11,58
 
-qgn_plat_breadcrumb_home_pressed.png=295,338,26,36
-qgn_plat_breadcrumb_level_1_pressed.png=331,338,26,36
-qgn_plat_breadcrumb_level_previous_pressed.png=367,338,26,36
-qgn_plat_breadcrumb_level_last_pressed.png=403,338,26,36
+qgn_plat_breadcrumb_backbutton_pressed.png=1810,359,16,58
+qgn_plat_breadcrumb_middle_pressed.png=1826,359,10,58
+qgn_plat_breadcrumb_end_pressed.png=1836,359,11,58
 
-qgn_plat_breadcrumb_home_focused.png=295,384,26,36
-qgn_plat_breadcrumb_level_1_focused.png=331,384,26,36
-qgn_plat_breadcrumb_level_previous_focused.png=367,384,26,36
-qgn_plat_breadcrumb_level_focused.png=403,384,26,36
-qgn_plat_breadcrumb_level_last_focused.png=439,384,26,36
+qgn_plat_breadcrumb_backbutton_focused.png=1760,429,16,58
+qgn_plat_breadcrumb_middle_focused.png=1776,429,10,58
+qgn_plat_breadcrumb_end_focused.png=1786,429,11,58
+
+qgn_plat_breadcrumb_backbutton_disabled.png=1810,429,16,58
+qgn_plat_breadcrumb_middle_disabled.png=1826,429,10,58
+qgn_plat_breadcrumb_end_disabled.png=1836,429,11,58
+
+qgn_plat_breadcrumb_arrow_normal.png=1912,363,34,34
+qgn_plat_breadcrumb_arrow_disabled.png=1912,403,34,34
+qgn_plat_breadcrumb_separator.png=1962,363,16,34

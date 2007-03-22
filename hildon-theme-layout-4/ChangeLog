@@ -1,3 +1,7 @@
+2007-03-22  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: added breadcrumb images for Xan.
+
 2007-03-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Moved the (view)buttons next to dialog buttons in
