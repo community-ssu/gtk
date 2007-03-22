@@ -112,7 +112,7 @@
 #define AS_MENU_BORDER_WIDTH    20
 #define AS_TIP_BORDER_WIDTH 	20
 #define AS_BUTTON_HEIGHT        38
-#define AS_MENU_BUTTON_HEIGHT   58
+#define AS_MENU_BUTTON_HEIGHT  116
 #define AS_ROW_HEIGHT 		    30
 #define AS_ICON_SIZE            26
 #define AS_TOOLTIP_WIDTH        360
@@ -161,6 +161,9 @@ refresh_app_button (HNAppSwitcher *app_switcher, HDEntryInfo *entry, gint pos);
 
 static void
 queue_refresh_buttons (HNAppSwitcher *app_switcher);
+
+	static gboolean 
+hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GList *items);
 
 /*
  * HNAppSwitcher
@@ -947,6 +950,8 @@ menu_button_pressed_cb (GtkWidget      *widget,
   /* remember which button was used to press this button */
   g_debug("Main menu button pressed using button %d", event->button);
 
+
+  /*FIXME: We will have to rewrite this */
 /*  hd_wm_activate (HN_TN_DEACTIVATE_KEY_FOCUS);*/
 #ifndef HILDON_LIBS
   if (event->button == APP_BUTTON_THUMBABLE || event->button == 2)
@@ -957,6 +962,7 @@ menu_button_pressed_cb (GtkWidget      *widget,
   else 
   if (!priv->menu_button_timeout)
     priv->is_thumbable = FALSE;
+
 
   if (!priv->menu_button_timeout)
     priv->menu_button_timeout = g_timeout_add (100,
@@ -1198,6 +1204,11 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
 		    "show_menu",
 		    G_CALLBACK (hn_app_switcher_show_menu_cb),
 		    (gpointer)app_switcher);
+
+  g_signal_connect (app_switcher->hdwm,
+		    "close-app",
+		    G_CALLBACK (hn_app_switcher_close_application_dialog),
+		    NULL);
 
   g_signal_connect (app_switcher,
 		    "notify::orientation",
@@ -2043,7 +2054,7 @@ hn_app_switcher_class_init (HNAppSwitcherClass *klass)
                                                     "Number of items",
                                                     1,
 						    20,
-						    4,
+						    3,
                                                     G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE));
 }
 
@@ -2061,6 +2072,234 @@ hn_app_switcher_init (HNAppSwitcher *app_switcher)
   gtk_container_set_border_width (GTK_CONTAINER (app_switcher), 0);
 
   hn_app_switcher_init_sound_samples (app_switcher);
+}
+
+static void 
+hn_app_switcher_cad_item_toggled (GtkToggleButton *button, gpointer user_data)
+{
+  gboolean selected;
+  GList *l;
+  GList *items;
+  GtkDialog *dialog;
+  HDWMCADItem *item;
+  
+  item = NULL;
+  selected = FALSE;
+
+  items = (GList*) user_data;
+
+  for (l = items; l; l = l->next)
+  {
+    item = (HDWMCADItem *) l->data;
+    if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (item->button)))
+      selected = TRUE;
+  }
+
+  dialog = GTK_DIALOG(gtk_widget_get_toplevel(GTK_WIDGET(item->button)));
+
+  gtk_dialog_set_response_sensitive (dialog,
+                                     GTK_RESPONSE_ACCEPT,
+                                     selected);  
+}
+
+static void 
+hn_app_switcher_cad_kill_selected_items (GList *items)
+{
+  GList *l;
+  
+  for (l = items; l; l = l->next)
+    {
+      HDWMCADItem *item = (HDWMCADItem *) l->data;
+      if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (item->button))
+          && item->win != NULL)
+        {
+          hd_wm_watched_window_attempt_signal_kill (item->win, SIGTERM, TRUE);
+        }
+    }
+}
+
+static gboolean 
+hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GList *items)
+{
+  gint response;
+  gint i;
+  gboolean retval;
+  GList *l;
+  GtkWidget *dialog;
+  GtkWidget *hbox;
+  GtkWidget *vbox;
+  GtkWidget *box;
+  GtkWidget *label;
+  GtkWidget *swin;
+  GtkWidget *check;
+  GtkRequisition req;
+  
+  items = NULL;
+  check = NULL;
+  req.height = 0;
+
+  /* Creating the UI */
+  dialog = gtk_dialog_new_with_buttons ("Title"/*FIXME: HN_CAD_TITLE*/,
+                                        NULL,
+                                        GTK_DIALOG_MODAL
+                                        | GTK_DIALOG_DESTROY_WITH_PARENT,
+                                        "Ok"/*FIXME: HN_CAD_OK*/,
+                                        GTK_RESPONSE_ACCEPT,
+                                        "Cancel"/*FIXME: HN_CAD_CANCEL*/,
+                                        GTK_RESPONSE_CANCEL,
+                                        NULL);                                        
+
+  gtk_dialog_set_has_separator(GTK_DIALOG(dialog), FALSE);
+  /* Ok is dimmed when there is nothing selected */
+  gtk_dialog_set_response_sensitive(GTK_DIALOG(dialog),
+                                    GTK_RESPONSE_ACCEPT,
+                                    FALSE);
+
+  swin = GTK_WIDGET (g_object_new(GTK_TYPE_SCROLLED_WINDOW,
+                                  "vscrollbar-policy", GTK_POLICY_AUTOMATIC,
+                                  "hscrollbar-policy", GTK_POLICY_NEVER,
+                                  NULL));
+
+  hbox = GTK_WIDGET (g_object_new(GTK_TYPE_HBOX,
+                                  "spacing", 12,
+                                  NULL));
+
+  vbox = GTK_WIDGET(g_object_new(GTK_TYPE_VBOX, NULL));
+
+  label = gtk_label_new ("label_app_list"/*FIXME: HN_CAD_LABEL_APP_LIST*/);
+
+  /* Align to top-right */
+  gtk_misc_set_alignment (GTK_MISC(label), 1, 0);
+
+  gtk_container_add (GTK_CONTAINER(hbox), label);
+  gtk_container_add (GTK_CONTAINER(hbox), vbox);
+
+  /* Collect open applications */
+  for (l = items; l; l = l->next)
+  {
+    const gchar *icon_name;
+    GtkWidget *image;
+    GtkWidget *label;
+    GdkPixbuf *icon = NULL;
+    GtkIconTheme *icon_theme;
+    HDWMWatchableApp *app;
+    HDWMCADItem *item = (HDWMCADItem *) l->data;
+
+    if (item->win == NULL)
+      continue;
+
+    app = hd_wm_watched_window_get_app (item->win);
+      
+    if (app == NULL)
+      continue;
+      
+    label = gtk_label_new (_(hd_wm_watchable_app_get_name (app)));
+    icon_name = hd_wm_watchable_app_get_icon_name(app);
+    icon_theme = gtk_icon_theme_get_default ();
+    
+    if (icon_name)
+      icon = gtk_icon_theme_load_icon (icon_theme,
+                                       icon_name,
+                                       ICON_SIZE,
+                                       GTK_ICON_LOOKUP_NO_SVG,
+                                       NULL);
+
+    if (!icon)
+      icon = gtk_icon_theme_load_icon (icon_theme,
+                                       AS_MENU_DEFAULT_APP_ICON,
+                                       ICON_SIZE,
+                                       GTK_ICON_LOOKUP_NO_SVG,
+                                       NULL);
+      
+
+    image = gtk_image_new_from_pixbuf (icon);
+    if (icon)
+      gdk_pixbuf_unref (icon);
+    
+    check = gtk_check_button_new();
+    item->button = G_OBJECT (check);
+
+    box = GTK_WIDGET (g_object_new (GTK_TYPE_HBOX,
+                                    "spacing", 12,
+                                    NULL));
+
+    gtk_container_add (GTK_CONTAINER (box),   image);
+    gtk_container_add (GTK_CONTAINER (box),   label);
+    gtk_container_add (GTK_CONTAINER (check), box);
+      
+    gtk_box_pack_start(GTK_BOX(vbox), check, FALSE, TRUE, 0);
+      
+    g_signal_connect (item->button,
+		      "toggled",
+		      G_CALLBACK(hn_app_switcher_cad_item_toggled),
+		      items);
+  }
+
+  switch (action)
+  {
+    case CAD_ACTION_OPENING:
+      label = gtk_label_new ("opening");
+      break;
+    case CAD_ACTION_SWITCHING:
+      label = gtk_label_new ("switching");
+      break;
+    default:
+      label = gtk_label_new("Unlikely internal error happened, but feel free "
+                            "to close applications anyway");
+      break;
+  }
+
+  gtk_label_set_line_wrap (GTK_LABEL(label), TRUE);
+
+  box = GTK_WIDGET(g_object_new(GTK_TYPE_VBOX,
+                                "spacing", 12,
+                                NULL));
+
+  gtk_box_pack_start (GTK_BOX(box), label, FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX(box), gtk_hseparator_new (), FALSE, TRUE, 0);
+  gtk_box_pack_start (GTK_BOX(box), hbox, TRUE, TRUE, 0);
+
+  gtk_scrolled_window_add_with_viewport (GTK_SCROLLED_WINDOW(swin), box);
+  gtk_container_add (GTK_CONTAINER(GTK_DIALOG(dialog)->vbox), swin);
+
+  gtk_widget_show_all(GTK_DIALOG(dialog)->vbox);
+
+  /* ScrolledWindow won't request visibly pleasing amounts of space so we need
+   * to do it for it. We ensure that there's vertical space for the whole
+   * content or at least for 5 items (plus one for padding) at a time. We trust
+   * the dialog to not allocate so much space that it would go offscreen.
+   */
+  gtk_widget_size_request (box, &req);
+  i = req.height;
+  gtk_widget_size_request(check, &req);
+  gtk_widget_set_size_request(swin, -1, MIN(i, req.height*6));
+
+  response = gtk_dialog_run (GTK_DIALOG(dialog));
+  
+  gtk_widget_hide(dialog);
+  
+  switch (response)
+  {
+    case GTK_RESPONSE_ACCEPT:
+      hn_app_switcher_cad_kill_selected_items (items);
+      retval = TRUE;
+
+      break;
+    default:
+      retval = FALSE;
+      break;  
+  }
+
+  gtk_widget_destroy (dialog);
+
+  /* Cleanup */
+  for (l = items; l; l = l->next)
+  {
+    if (l->data != NULL)
+      g_free (l->data);
+  }
+
+  return retval;
 }
 
 GtkWidget *

@@ -38,6 +38,7 @@
 #include <libhildonwm/hd-wm-types.h>
 #include <libhildonwm/hd-entry-info.h>
 #include <libhildonwm/hd-wm-watchable-app.h>
+#include <libhildonwm/hd-wm-watched-window.h>
 #include <libhildonwm/hd-keys.h>
 
 #define HN_WANT_DEBUG 0 /* Set to 1 for more verbose hn */
@@ -157,7 +158,25 @@ typedef struct
   gchar *service;
   gchar *wm_class;
   gulong window_id;
-} menuitem_comp_t;
+} 
+menuitem_comp_t;
+
+typedef struct 
+{
+  HDWMWatchedWindow* win;
+  GObject *button;
+  gint vmdata;
+  guint pid;
+}
+HDWMCADItem;
+
+typedef enum 
+{
+  CAD_ACTION_OPENING=0,
+  CAD_ACTION_SWITCHING,
+  CAD_ACTION_OTHER
+}
+HDWMCADAction;
 
 struct HDWMLaunchBannerInfo
 {

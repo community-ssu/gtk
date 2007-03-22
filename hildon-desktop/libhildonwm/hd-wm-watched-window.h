@@ -33,6 +33,8 @@
 #include <libhildonwm/hd-wm.h>
 #include <libhildonwm/hd-wm-util.h>
 #include <libhildonwm/hd-wm-types.h>
+#include <sys/types.h>
+#include <signal.h>
 
 /* For watched_window_sync(), should go in enum */
 

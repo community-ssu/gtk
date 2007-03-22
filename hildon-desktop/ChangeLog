@@ -1,3 +1,14 @@
+2007-03-21  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c: 
+	- Set default no of items to 3.
+	- Bigger main menu button.
+	- Added close_application_dialog dialog
+	* libhildonwm/hd-wm.[ch]:
+	- Added close_application_dialog support.
+	* libhildonwm/hd-wm-marshalers.list: new marshaler.
+	* libhildonwm/hd-wm-watched-window.h: Added missing headers.
+
 2007-03-22  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-home-titlebar.[ch],

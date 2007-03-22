@@ -124,6 +124,7 @@ enum
   HDWM_SHOW_A_MENU_SIGNAL,
   HDWM_APPLICATION_STARTING_SIGNAL,
   HDWM_FULLSCREEN,
+  HDWM_CLOSE_APP,
   HDWM_SIGNALS
 };
 
@@ -308,7 +309,157 @@ hd_wm_atoms_init (HDWM *hdwm)
 		hdwm->priv->atoms);
 }
 
-static HDWMWatchableApp*
+static gint 
+hd_wm_cad_compare_items (gconstpointer a, gconstpointer b)
+{
+  HDWMCADItem *ia;
+  HDWMCADItem *ib;
+  
+  ia = (HDWMCADItem *)a;
+  ib = (HDWMCADItem *)b;
+  
+  return (ib->vmdata - ia->vmdata);
+}
+
+static gboolean
+hd_wm_prepare_close_application_dialog (HDWM *hdwm, HDWMCADAction action, gboolean *retval)
+{
+  GList *l,*items = NULL;
+  gint i;
+
+  for (l = hdwm->priv->applications; l; l = l->next)
+  {
+    guint32 *pid_result = NULL;
+    pid_t pid;
+    GList *p;
+    gboolean pid_exists;
+    HDWMWatchableApp *app;
+    HDWMWatchedWindow* win;
+    GdkAtom a;
+    HDEntryInfo *info;
+    HDWMCADItem *item;
+
+    info = (HDEntryInfo*)l->data;
+    win = hd_entry_info_get_window (info);
+
+    if (win == NULL)
+    {
+      gchar *title = hd_entry_info_get_title (info);
+      g_warning ("No win found for item %s",title);
+      g_free (title);
+      continue;
+    }
+
+    app = hd_wm_watched_window_get_app(win);
+      
+    if (app == NULL)
+    {
+      gchar *title = hd_entry_info_get_title (info);
+      g_warning ("No app found for item %s",title);
+      g_free (title);
+      continue;
+    }
+
+    /* Skip hibernating apps */
+    if (hd_wm_watchable_app_is_hibernating (app))
+      continue;
+ 
+
+      /* FIXME: This is interned here since we don't want to rely on extern
+       * global structures (which are slated for removal anyway).
+       */
+    a = gdk_atom_intern ("_NET_WM_PID", FALSE);
+
+    pid_result = hd_wm_util_get_win_prop_data_and_validate (hd_wm_watched_window_get_x_win(win),
+							    gdk_x11_atom_to_xatom (a),
+							    XA_CARDINAL,
+							    32,
+							    0,
+							    NULL);
+    if (pid_result == NULL)
+    {
+      gchar * title = hd_entry_info_get_title(info);
+      g_warning ("No pid found for item %s",title);
+      g_free (title);
+      continue;
+    }
+
+    /*
+    sanity check -- pid_t can be less than 32 bits, and has to allow
+    for a sign
+     */
+  
+    if (sizeof(pid_t) <= sizeof(guint32) &&
+        pid_result[0] > (1 << (sizeof(pid_t)*8 - 1)))
+    {
+      /*
+       something is very wrong; the PID we were given does not fit into pid_t
+          */
+       g_warning ("PID (%d) out of bounds", pid_result[0]);
+       XFree (pid_result);
+       continue;
+    }
+
+      
+    pid = pid_result[0];
+
+    /* If we already have the pid, skip item creation */
+    pid_exists = FALSE;
+   
+    for (p = items; p != NULL; p = p->next)
+    {
+      HDWMCADItem *item = (HDWMCADItem *) p->data;
+          
+      if (item->pid == pid)
+      {
+        pid_exists = TRUE;
+        break;
+      }
+    }
+
+    if (pid_exists)
+      continue;
+   
+    g_debug ("%s(): %s is %s, Pid:%i, VmData: %ikB\n", __FUNCTION__, hd_wm_watchable_app_get_name(app),
+           hd_wm_watchable_app_is_hibernating(app) ? "hibernating" : "awake",
+           pid,
+           hd_wm_get_vmdata_for_pid (pid));
+
+    item = g_new0 (HDWMCADItem, 1);
+      
+    item->win = win;
+    item->vmdata = hd_wm_get_vmdata_for_pid(pid);
+    item->pid = pid;
+      
+    items = g_list_append(items, item);
+  }
+
+  if (g_list_length (items) == 0)
+  /* If there wasn't any items we could kill, return TRUE to try the
+   * action anyway without showing the dialog.
+   */
+    return TRUE;
+
+  /* Sort */
+  items = g_list_sort (items, hd_wm_cad_compare_items);
+
+  i = 0;
+  l = g_list_last(items);
+
+  /* Truncate to 10 items */
+  while (g_list_length (items) > 10)
+  {
+     g_free (l->data);
+     items = g_list_delete_link (items, l);
+     l = g_list_last (items);
+  }
+
+  g_signal_emit_by_name (hdwm, "close-app", action, items, retval);
+
+  return TRUE;
+}
+
+static HDWMWatchableApp *
 hd_wm_x_window_is_watchable (HDWM *hdwm, Window xid)
 {
   HDWMWatchableApp *app;
@@ -733,6 +884,16 @@ hd_wm_class_init (HDWMClass *hdwm_class)
 		     1,
 		     G_TYPE_BOOLEAN);
 
+  hdwm_signals[HDWM_CLOSE_APP] = 
+	g_signal_new("close-app",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_LAST,0,
+		     NULL, NULL,
+		     g_cclosure_user_marshal_BOOLEAN__UINT_POINTER,
+		     G_TYPE_BOOLEAN,
+		     2,
+		     G_TYPE_UINT, G_TYPE_POINTER);
+
   g_object_class_install_property (object_class,
                                    PROP_INIT_DBUS,
                                    g_param_spec_boolean("init-dbus",
@@ -1114,6 +1275,11 @@ hd_wm_top_service (const gchar *service_name)
   HDWM *hdwm = hd_wm_get_singleton ();
   HDWMWatchedWindow *win;
   guint              pages_used = 0, pages_available = 0;
+  gboolean *killed_by_dialog; 
+  
+  killed_by_dialog = g_new0 (gboolean,1);
+
+  *killed_by_dialog = TRUE;
 
   g_debug (" Called with '%s'", service_name);
 
@@ -1131,16 +1297,21 @@ hd_wm_top_service (const gchar *service_name)
       (pages_available > 0 && pages_available < hdwm->priv->lowmem_min_distance))
   {
     gboolean killed = TRUE;
-    
+
     if (win == NULL)
-      g_debug ("%s: %d, killed = tn_close_application_dialog(CAD_ACTION_OPENING);",__FILE__,__LINE__);
+      killed = hd_wm_prepare_close_application_dialog (hdwm,CAD_ACTION_OPENING,killed_by_dialog);
     else 
-    if (hd_wm_watched_window_is_hibernating(win))
-      g_debug ("%s: %d, killed = tn_close_application_dialog(CAD_ACTION_SWITCHING);",__FILE__,__LINE__); 
-      
-    if (!killed)
-      return FALSE;    
+    if (hd_wm_watched_window_is_hibernating (win))
+      killed = hd_wm_prepare_close_application_dialog (hdwm,CAD_ACTION_SWITCHING,killed_by_dialog);
+
+    if (!killed || !killed_by_dialog)
+    {
+      g_free (killed_by_dialog);
+      return FALSE;
+    }
   }
+
+  *killed_by_dialog = TRUE;
 
   /* Check how much memory we do have until the lowmem threshold */
 
@@ -1156,18 +1327,22 @@ hd_wm_top_service (const gchar *service_name)
    */
   if (pages_available > 0 && pages_available < hdwm->priv->lowmem_min_distance)
   {
-      
     gboolean killed = TRUE;
 
     if (win == NULL)
-      g_debug ("%s: %d, killed = tn_close_application_dialog(CAD_ACTION_OPENING);",__FILE__,__LINE__);
+      killed = hd_wm_prepare_close_application_dialog (hdwm,CAD_ACTION_OPENING,killed_by_dialog);
     else 
     if (hd_wm_watched_window_is_hibernating (win))
-      g_debug ("%s: %d, killed = tn_close_application_dialog(CAD_ACTION_SWITCHING);",__FILE__,__LINE__);
+      killed = hd_wm_prepare_close_application_dialog (hdwm,CAD_ACTION_SWITCHING,killed_by_dialog);
 
-    if (!killed)
+    if (!killed || !killed_by_dialog)
+    {
+      g_free (killed_by_dialog);
       return FALSE;
+    }
   }
+
+  g_free (killed_by_dialog);
 
   if (win == NULL)
   {
