@@ -1,4 +1,5 @@
 prefix=@prefix@
+exec_prefix=@exec_prefix@
 desktopentrydir=@datadir@/applications/hildon
 tasknavigatordesktopentrydir=@datadir@/applications/hildon-navigator
 statusbardesktopentrydir=@datadir@/applications/hildon-status-bar
