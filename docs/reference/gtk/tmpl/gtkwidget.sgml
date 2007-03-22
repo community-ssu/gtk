@@ -323,6 +323,13 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @widget2: 
 
+<!-- ##### SIGNAL GtkWidget::insensitive-press ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+
 <!-- ##### SIGNAL GtkWidget::key-press-event ##### -->
 <para>
 
@@ -340,6 +347,15 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @event: 
 @Returns: %TRUE to stop other handlers from being invoked for the event. %FALSE to propagate the event further.
+
+<!-- ##### SIGNAL GtkWidget::keynav-failed ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@arg1: 
+@Returns: 
 
 <!-- ##### SIGNAL GtkWidget::leave-notify-event ##### -->
 <para>
@@ -554,6 +570,32 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @previous_style: 
 
+<!-- ##### SIGNAL GtkWidget::tap-and-hold ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+
+<!-- ##### SIGNAL GtkWidget::tap-and-hold-query ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@event: 
+@Returns: 
+
+<!-- ##### SIGNAL GtkWidget::tap-and-hold-setup ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@arg1: 
+@arg2: 
+@arg3: 
+
 <!-- ##### SIGNAL GtkWidget::unmap ##### -->
 <para>
 
@@ -671,6 +713,11 @@ a widget changes from un-anchored to anchored or vice-versa.
 </para>
 
 <!-- ##### ARG GtkWidget:style ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:tap-and-hold-state ##### -->
 <para>
 
 </para>
@@ -2409,6 +2456,55 @@ This function is deprecated; it does nothing.
 
 @widget: 
 @Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_error_bell ##### -->
+<para>
+
+</para>
+
+@widget: 
+
+
+<!-- ##### FUNCTION gtk_widget_keynav_failed ##### -->
+<para>
+
+</para>
+
+@widget: 
+@direction: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_tap_and_hold_menu_position_top ##### -->
+<para>
+
+</para>
+
+@menu: 
+@x: 
+@y: 
+@push_in: 
+@widget: 
+
+
+<!-- ##### FUNCTION gtk_widget_tap_and_hold_setup ##### -->
+<para>
+
+</para>
+
+@widget: 
+@menu: 
+@func: 
+@flags: 
+
+
+<!-- ##### FUNCTION gtk_widget_insensitive_press ##### -->
+<para>
+
+</para>
+
+@widget: 
 
 
 <!-- ##### FUNCTION gtk_requisition_copy ##### -->

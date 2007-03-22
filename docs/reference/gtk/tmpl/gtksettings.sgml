@@ -88,7 +88,17 @@ Sharing settings between applications
 
 </para>
 
+<!-- ##### ARG GtkSettings:gtk-enable-accels ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-enable-animations ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-enable-mnemonics ##### -->
 <para>
 
 </para>
@@ -99,6 +109,11 @@ Sharing settings between applications
 </para>
 
 <!-- ##### ARG GtkSettings:gtk-entry-select-on-focus ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-error-bell ##### -->
 <para>
 
 </para>
@@ -124,6 +139,16 @@ Sharing settings between applications
 </para>
 
 <!-- ##### ARG GtkSettings:gtk-key-theme-name ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-keynav-cursor-only ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-keynav-wrap-around ##### -->
 <para>
 
 </para>
