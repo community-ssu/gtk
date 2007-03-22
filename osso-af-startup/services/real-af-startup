@@ -69,7 +69,8 @@ start)
     fi
 
     if [ -x /usr/bin/wizback ]; then
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance uint32:1
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground \
+                / org.maemo.WizardBackground.advance uint32:1
     fi
 
     # Give Backup a chance to restore settings automatically
@@ -86,7 +87,8 @@ start)
          -a ! -f /tmp/suw-user-cancelled.tmp ]; then
       if [ -x $AF_INIT_DIR/operator-wizard.sh ]; then
         if [ -x /usr/bin/wizback ]; then
-          dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance uint32:1
+          dbus-send --print-reply --system --dest=org.maemo.WizardBackground \
+                    / org.maemo.WizardBackground.advance uint32:1
         fi
         $AF_INIT_DIR/operator-wizard.sh start
       fi
@@ -94,10 +96,13 @@ start)
     fi
 
     if [ -x /usr/bin/wizback ]; then
-      # Can advance 2 positions here, since any position past the end has no effect
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.advance uint32:2
+      # Can advance 2 positions here, since any position past the
+      # end has no effect
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / \
+                org.maemo.WizardBackground.advance uint32:2
       sleep 1
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / org.maemo.WizardBackground.quit
+      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / \
+                org.maemo.WizardBackground.quit
     fi
 
     rm -f $HOME/first-boot-flag
