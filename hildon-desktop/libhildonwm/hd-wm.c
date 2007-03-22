@@ -122,6 +122,7 @@ enum
   HDWM_ENTRY_INFO_STACK_CHANGED_SIGNAL,
   HDWM_WORK_AREA_CHANGED_SIGNAL,
   HDWM_SHOW_A_MENU_SIGNAL,
+  HDWM_LONG_PRESS_KEY,
   HDWM_APPLICATION_STARTING_SIGNAL,
   HDWM_FULLSCREEN,
   HDWM_CLOSE_APP,
@@ -749,6 +750,8 @@ mce_handler (DBusConnection *conn,
 {
   const gchar *member;
 
+  HDWM *hdwm = HD_WM (data);
+
   g_debug ("processing MCE");
   
   if (dbus_message_get_type (msg) != DBUS_MESSAGE_TYPE_SIGNAL)
@@ -760,7 +763,7 @@ mce_handler (DBusConnection *conn,
 
   if (strcmp (HOME_LONG_PRESS, member) == 0 && !hd_wm_modal_windows_present())
   {
-    hd_wm_toggle_desktop ();
+    g_signal_emit_by_name (hdwm, "long-key-press");
       
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
@@ -858,6 +861,15 @@ hd_wm_class_init (HDWMClass *hdwm_class)
 		     G_OBJECT_CLASS_TYPE(object_class),
 		     G_SIGNAL_RUN_LAST,
 		     G_STRUCT_OFFSET (HDWMClass,show_menu),
+		     NULL, NULL,
+		     g_cclosure_marshal_VOID__VOID,
+		     G_TYPE_NONE, 0);
+
+  hdwm_signals[HDWM_LONG_PRESS_KEY] = 
+	g_signal_new("long-key-press",
+		     G_OBJECT_CLASS_TYPE(object_class),
+		     G_SIGNAL_RUN_LAST,
+		     0,
 		     NULL, NULL,
 		     g_cclosure_marshal_VOID__VOID,
 		     G_TYPE_NONE, 0);

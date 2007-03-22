@@ -162,7 +162,7 @@ refresh_app_button (HNAppSwitcher *app_switcher, HDEntryInfo *entry, gint pos);
 static void
 queue_refresh_buttons (HNAppSwitcher *app_switcher);
 
-	static gboolean 
+static gboolean 
 hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GList *items);
 
 /*
@@ -302,11 +302,33 @@ hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
  if (gtk_toggle_button_get_active 
       (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
  {
-   gtk_toggle_button_set_active
-     (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), FALSE);
+   GList *l,*children = gtk_container_get_children (GTK_CONTAINER (app_switcher->priv->main_menu));
+   
+   for (l = children; l; l = g_list_next (l))
+   {
+      if (l->data == app_switcher->priv->active_menu_item &&
+	  l->data != app_switcher->priv->main_home_item)
+      {
+        GtkWidget *item;
+	      
+        if ((l->next)->data)
+          item = GTK_WIDGET ((l->next)->data);        		
+	else
+	  item = app_switcher->priv->main_home_item;
+
+	app_switcher->priv->active_menu_item = item;
+	
+        gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), item);	      
+      }
+      else 
+      if (l->data == app_switcher->priv->main_home_item)
+	gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), 
+			            GTK_WIDGET (children->data));
+   }	
+	 
    return;
  }
-
+ 
  gtk_toggle_button_set_active 
    (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), TRUE);
  
@@ -1096,6 +1118,19 @@ hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher)
   g_list_free (children);
 }
 
+static void 
+hn_app_switcher_long_press_cb (HDWM *hdwm, HNAppSwitcher *app_switcher)
+{
+  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
+  {
+    gtk_menu_shell_activate_item (GTK_MENU_SHELL (app_switcher->priv->main_menu),
+		  		  app_switcher->priv->active_menu_item,
+				  TRUE);  
+  }
+  else
+    hd_wm_top_desktop ();  
+}
+
 static GtkWidget *
 create_app_button (HNAppSwitcher *app_switcher,
 	           gint           pos)
@@ -1203,6 +1238,11 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
   g_signal_connect (app_switcher->hdwm,
 		    "show_menu",
 		    G_CALLBACK (hn_app_switcher_show_menu_cb),
+		    (gpointer)app_switcher);
+
+  g_signal_connect (app_switcher->hdwm,
+		    "long-press-key",
+		    G_CALLBACK (hn_app_switcher_long_press_cb),
 		    (gpointer)app_switcher);
 
   g_signal_connect (app_switcher->hdwm,
