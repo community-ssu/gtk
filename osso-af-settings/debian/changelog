@@ -1,6 +1,5 @@
 osso-af-settings (0.9.0-1) unstable; urgency=low
 
-  [UNRELEASED]
   * Added hildon-desktop library and .desktop directories, as
     used on OSSO devices. 
 
