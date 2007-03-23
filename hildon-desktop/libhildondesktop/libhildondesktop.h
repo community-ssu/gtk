@@ -50,6 +50,10 @@
 #include <libhildondesktop/libhildonmenu.h>
 #include <libhildondesktop/hildon-thumb-menu-item.h>
 
+#define HD_DEFINE_PLUGIN_EXTENDED(TN, t_n, T_P, CODE_LOAD, CODE_UNLOAD)      \
+HD_DEFINE_TYPE_MODULE_EXTENDED (TN, t_n, T_P, 0, {})       		     \
+HILDON_DESKTOP_PLUGIN_SYMBOLS_CODE (TN, t_n, T_P, 0, CODE_LOAD, CODE_UNLOAD)
+
 #define HD_DEFINE_PLUGIN(TN, t_n, T_P)			\
 HD_DEFINE_TYPE_MODULE_EXTENDED (TN, t_n, T_P, 0, {})	\
 HILDON_DESKTOP_PLUGIN_SYMBOLS (t_n)

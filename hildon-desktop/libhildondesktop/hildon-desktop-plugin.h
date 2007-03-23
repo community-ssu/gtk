@@ -75,6 +75,19 @@ void hildon_desktop_plugin_unload (HildonDesktopPlugin *plugin)			 	\
 {										 	\
 }
 
+#define HILDON_DESKTOP_PLUGIN_SYMBOLS_CODE(t_n, CODE_LOAD, CODE_UNLOAD)					 	\
+G_MODULE_EXPORT void hildon_desktop_plugin_load (HildonDesktopPlugin *plugin);	 	\
+void hildon_desktop_plugin_load (HildonDesktopPlugin *plugin)			 	\
+{											\
+  hildon_desktop_plugin_add_type (plugin, t_n##_register_type(G_TYPE_MODULE (plugin)));	\
+  { CODE_LOAD }										\
+}										 	\
+G_MODULE_EXPORT void hildon_desktop_plugin_unload (HildonDesktopPlugin *plugin); 	\
+void hildon_desktop_plugin_unload (HildonDesktopPlugin *plugin)			 	\
+{										 	\
+  { CODE_UNLOAD }									\
+}
+
 G_END_DECLS
 
 #endif /*__HILDON_DESKTOP_PLUGIN_H__*/

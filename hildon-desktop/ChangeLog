@@ -1,3 +1,12 @@
+2007-03-23  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-plugin.h:
+	- new macro HILDON_DESKTOP_PLUGIN_SYMBOLS_CODE to add code in load
+	and unload symbols.
+	* libhildondesktop/libhildondesktop.h
+	- new macro HD_DEFINE_PLUGIN_EXTENDED to register the plugin and 
+	add code in load and unload exported symbols.
+
 2007-03-22  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c: Implemented navigation throw swap-key.
