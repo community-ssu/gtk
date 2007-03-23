@@ -88,7 +88,7 @@ binary-arch: build install
 	dh_installman
 	dh_link
 	dh_strip --dbg-package="libhildonfm2"
-	dh_compress
+	dh_compress -Xindex.sgml
 	dh_fixperms
 #	dh_perl
 #	dh_python
