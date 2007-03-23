@@ -1,3 +1,4 @@
 usr/include
 usr/lib/*.so
 usr/lib/pkgconfig/hildon-fm-2.pc
+usr/share/gtk-doc/html/hildon-fm/* usr/share/doc/libhildonfm2-dev/html/

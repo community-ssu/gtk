@@ -1,3 +1,16 @@
+libhildonfm (1:1.9.14) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * Improve gtk-doc packaging:
+    * debian/rules: remove misleading --with-doc-dir
+    * debian/libhildonfm2-dev.docs: removed
+    * debian/libhildonfm2-dev.install: install the docs here
+    * debian/libhildonfm2-dev.links: add symbolic link to gtk-doc dir, it
+      makes crossreferences to hildon-fm relative, which is a good thing.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Mar 2007 13:42:10 +0200
+
 libhildonfm (1:1.9.13) unstable; urgency=low
 
   * Conform to unified Hildon versioning scheme (but keep old versions for
