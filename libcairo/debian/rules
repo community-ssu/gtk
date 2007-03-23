@@ -124,6 +124,11 @@ binary-indep: build install
 	dh_testroot -i
 	dh_install -i
 	dh_installdocs -i -A TODO README NEWS AUTHORS
+
+	dh_link -plibcairo2-doc				\
+		usr/share/doc/libcairo2-doc/html	\
+		usr/share/gtk-doc/html/cairo
+
 	dh_installchangelogs -i ChangeLog
 	dh_compress -i
 	dh_fixperms -i

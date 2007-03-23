@@ -1,3 +1,12 @@
+libcairo (1.2.4-4osso5) unstable; urgency=low
+
+  * Swap gtk-doc location and the symlink around so that gtkdoc-fixxref makes
+    relative links
+    - debian/libcairo2-doc.install: move gtk-doc files under doc
+    - debian/rules: make gtk-doc a symlink to the doc dir
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Mar 2007 16:07:53 +0200
+
 libcairo (1.2.4-4osso4) unstable; urgency=low
 
   * debian/rules: Add missing dh_install -i to package the documentation
