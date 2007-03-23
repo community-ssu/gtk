@@ -1,3 +1,12 @@
+atk1.0 (1.12.3-1osso2) unstable; urgency=low
+
+  * Swap gtk-doc location and the symlink around so that gtkdoc-fixxref makes
+    relative links
+    - debian/libatk1.0-doc.install: move gtk-doc files under doc
+    - debian/libatk1.0-doc.links: make gtk-doc a symlink to the doc dir
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Mar 2007 16:03:16 +0200
+
 atk1.0 (1.12.3-1osso1) unstable; urgency=low
 
   * Set myself as maintainer,
