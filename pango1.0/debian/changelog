@@ -1,3 +1,13 @@
+pango1.0 (1.14.10-1osso4.2) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * debian/rules: Do not compress index.sgml files so that gtkdoc-fixxref can
+    access those and generate better cross reference when building gtk+ API
+    docs.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Mar 2007 08:50:02 +0200
+
 pango1.0 (1.14.10-1osso4.1) unstable; urgency=low
 
   * Increasing the version, the rebuilding is needed with libdbus-1-3
