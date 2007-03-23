@@ -1,3 +1,10 @@
+hildon-desktop (0.0.0-35) feisty; urgency=low
+
+  * New experimental snapshot
+  * Updated build-dep on osso-af-settings to 0.0.0-35 
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 23 Mar 2007 13:36:55 +0200
+
 hildon-desktop (0.0.0-34) unstable; urgency=low
 
   * Conflict with maemo-af-desktop < 3.0.0 (transition package) 
