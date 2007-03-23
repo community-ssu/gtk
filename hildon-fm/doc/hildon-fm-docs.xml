@@ -7,9 +7,23 @@
   </bookinfo>
 
   <chapter>
-	  <title>Hildon FM</title>
-    <xi:include href="xml/hildon-file-chooser-dialog.xml"/>
+    <title>Object Hierarchy</title>
+    <xi:include href="xml/tree_index.sgml"/>
+  </chapter>
+
+  <chapter>
+    <title>Hildon FM</title>
     <xi:include href="xml/hildon-file-selection.xml"/>
     <xi:include href="xml/hildon-file-system-model.xml"/>
+    <xi:include href="xml/hildon-file-chooser-dialog.xml"/>
+    <xi:include href="xml/hildon-file-details-dialog.xml"/>
+    <xi:include href="xml/hildon-file-system-info.xml"/>
   </chapter>
+
+  <index>
+    <title>Index</title>
+  </index>
+  <index role="deprecated">
+    <title>Index of deprecated symbols</title>
+  </index>
 </book>

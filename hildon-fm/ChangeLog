@@ -1,5 +1,18 @@
 2007-03-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* configure.ac: Remove the manual check for gtk-doc and use
+	GTK_DOC_CHECK instead
+	* doc/hildon-fm.types: Add hildon_file_details_dialog_get_type
+	* doc/hildon-fm-docs.xml: Add 'Object Hierarchy', indices and missing
+	public API docs for file details dialog and file system info. The rest
+	of xml files are for private APIs.
+	* doc/gtk-doc.make: Copy from gtk-doc 1.7 and fix '*.sgml'
+	prerequisite with $(wildcard) to work in absence of any files. 
+	* doc/Makefile.am: Remove inlined gtk-doc.make bits and update to
+	gtk-doc 1.7. Define deprecation guards. Update MAINTAINERCLEANFILES.
+
+2007-03-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* Makefile.am (MAINTAINERCLEANFILES): Added to clean up cruft
 	
 2007-03-09  Marius Vollmer  <marius.vollmer@nokia.com>
