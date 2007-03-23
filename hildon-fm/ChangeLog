@@ -1,3 +1,7 @@
+2007-03-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* Makefile.am (MAINTAINERCLEANFILES): Added to clean up cruft
+	
 2007-03-09  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.13, to conform with the unified Hildon verisioning

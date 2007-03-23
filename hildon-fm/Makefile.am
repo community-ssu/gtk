@@ -18,6 +18,10 @@ EXTRA_DIST =					\
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = hildon-fm-2.pc hildon-fm.pc
 
+MAINTAINERCLEANFILES = Makefile.in aclocal.m4 configure config.h.in compile \
+		       ltmain.sh depcomp missing install-sh config.sub \
+		       config.guess
+
 deb: dist
 	-mkdir debian-build
 	cd debian-build &&						\
