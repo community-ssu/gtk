@@ -66,6 +66,7 @@
 #endif
 
 #ifdef HAVE_LIBHILDON
+#include <hildon/hildon-helper.h>
 #else
 #include <hildon-widgets/hildon-finger.h>
 #endif 
@@ -975,10 +976,10 @@ menu_button_pressed_cb (GtkWidget      *widget,
 
   /*FIXME: We will have to rewrite this */
 /*  hd_wm_activate (HN_TN_DEACTIVATE_KEY_FOCUS);*/
-#ifndef HILDON_LIBS
+#ifndef HAVE_LIBHILDON
   if (event->button == APP_BUTTON_THUMBABLE || event->button == 2)
 #else
-  if (hildon_button_event_is_finger (event))
+  if (hildon_helper_event_button_is_finger (event))
 #endif
     priv->is_thumbable = TRUE;
   else 

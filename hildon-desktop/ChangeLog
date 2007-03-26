@@ -1,3 +1,8 @@
+2007-03-26  Moises Martinez  <moises.martinez@nokia.com>
+
+	* Src/hn-app-switcher.c: Use hildon_helper_event_button_is_finger 
+	if hildon-1 is present.
+
 2007-03-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-plugin.h:
