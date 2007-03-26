@@ -1,5 +1,12 @@
 2007-03-26  Moises Martinez  <moises.martinez@nokia.com>
 
+	* doxyconf: Removed
+	* configure.ac: Look for gdx-x11
+	* libhildonwm/hd-wm.c: fixed some headers
+	* libhildonwm/Makefile.am: Links against gdk not hildon
+
+2007-03-26  Moises Martinez  <moises.martinez@nokia.com>
+
 	* Src/hn-app-switcher.c: Use hildon_helper_event_button_is_finger 
 	if hildon-1 is present.
 

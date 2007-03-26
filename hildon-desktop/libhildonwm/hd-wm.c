@@ -39,13 +39,9 @@
 
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-defines.h>
-#include <hildon/hildon-banner.h>
-#include <hildon/hildon-note.h>
 #include <hildon/hildon-window.h>
 #else
 #include <hildon-widgets/hildon-defines.h>
-#include <hildon-widgets/hildon-banner.h>
-#include <hildon-widgets/hildon-note.h>
 #include <hildon-widgets/hildon-window.h>
 #endif
 
