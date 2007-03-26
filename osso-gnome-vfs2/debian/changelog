@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso11) unstable; urgency=low
+
+  * Don't package .la files
+
+ -- Richard Hult <richard@imendio.com>  Mon, 26 Mar 2007 16:22:49 +0200
+
 osso-gnome-vfs2 (2.16.3-1osso10) unstable; urgency=low
 
   * Don't try to use the ssh binary installed as scratchbox tool
