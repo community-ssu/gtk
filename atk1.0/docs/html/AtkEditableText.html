@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkEditableText</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkDocument.html" title="AtkDocument">
@@ -28,20 +28,20 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkGObjectAccessible.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2535974" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2558599" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2536313" class="shortcut">Description</a>
+                  <a href="#id2558938" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2536266" class="shortcut">Object Hierarchy</a>
+                  <a href="#id2558891" class="shortcut">Object Hierarchy</a>
                   &#160;|&#160;
-                  <a href="#id2536290" class="shortcut">Known Implementations</a></nobr></td></tr>
+                  <a href="#id2558916" class="shortcut">Known Implementations</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkEditableText"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2535974"></a><span class="refentrytitle">AtkEditableText</span>
+<a name="id2558599"></a><span class="refentrytitle">AtkEditableText</span>
 </h2>
 <p>AtkEditableText &#8212; The ATK interface implemented by components containing user-editable text content.</p>
 </td>
@@ -54,62 +54,34 @@
 
 
             <a href="AtkEditableText.html#AtkEditableText-struct">AtkEditableText</a>;
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkEditableText.html#atk-editable-text-set-run-attributes">atk_editable_text_set_run_attributes</a>
+gboolean    <a href="AtkEditableText.html#atk-editable-text-set-run-attributes">atk_editable_text_set_run_attributes</a>
                                             (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
                                              <a href="AtkText.html#AtkAttributeSet">AtkAttributeSet</a> *attrib_set,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_offset,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_offset);
+                                             gint start_offset,
+                                             gint end_offset);
 void        <a href="AtkEditableText.html#atk-editable-text-set-text-contents">atk_editable_text_set_text_contents</a>
                                             (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *string);
+                                             const gchar *string);
 void        <a href="AtkEditableText.html#atk-editable-text-insert-text">atk_editable_text_insert_text</a>   (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *string,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> length,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *position);
+                                             const gchar *string,
+                                             gint length,
+                                             gint *position);
 void        <a href="AtkEditableText.html#atk-editable-text-copy-text">atk_editable_text_copy_text</a>     (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_pos,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_pos);
+                                             gint start_pos,
+                                             gint end_pos);
 void        <a href="AtkEditableText.html#atk-editable-text-cut-text">atk_editable_text_cut_text</a>      (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_pos,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_pos);
+                                             gint start_pos,
+                                             gint end_pos);
 void        <a href="AtkEditableText.html#atk-editable-text-delete-text">atk_editable_text_delete_text</a>   (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_pos,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_pos);
+                                             gint start_pos,
+                                             gint end_pos);
 void        <a href="AtkEditableText.html#atk-editable-text-paste-text">atk_editable_text_paste_text</a>    (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> position);
+                                             gint position);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2536266"></a><h2>Object Hierarchy</h2>
+<a name="id2558891"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
   GInterface
@@ -117,13 +89,13 @@ href="../glib/glib-Basic-Types.html#gint"
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2536290"></a><h2>Known Implementations</h2>
+<a name="id2558916"></a><h2>Known Implementations</h2>
 <p>
 AtkEditableText is implemented by
  <a href="AtkNoOpObject.html" title="AtkNoOpObject">AtkNoOpObject</a>.</p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2536313"></a><h2>Description</h2>
+<a name="id2558938"></a><h2>Description</h2>
 <p>
 <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a> should be implemented by UI components which contain
 text which the user can edit, via the <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> corresponding to that
@@ -135,11 +107,11 @@ implements <a href="AtkEditableText.html" title="AtkEditableText"><span class="t
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2536391"></a><h2>Details</h2>
+<a name="id2559016"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2536401"></a><h3>
+<a name="id2559026"></a><h3>
 <a name="AtkEditableText-struct"></a>AtkEditableText</h3>
-<a class="indexterm" name="id2536415"></a><pre class="programlisting">typedef struct _AtkEditableText AtkEditableText;</pre>
+<a class="indexterm" name="id2559040"></a><pre class="programlisting">typedef struct _AtkEditableText AtkEditableText;</pre>
 <p>
 The AtkEditableText structure does not contain any fields.
 
@@ -147,19 +119,13 @@ The AtkEditableText structure does not contain any fields.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2536432"></a><h3>
+<a name="id2559057"></a><h3>
 <a name="atk-editable-text-set-run-attributes"></a>atk_editable_text_set_run_attributes ()</h3>
-<a class="indexterm" name="id2536445"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_editable_text_set_run_attributes
+<a class="indexterm" name="id2559070"></a><pre class="programlisting">gboolean    atk_editable_text_set_run_attributes
                                             (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
                                              <a href="AtkText.html#AtkAttributeSet">AtkAttributeSet</a> *attrib_set,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_offset,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_offset);</pre>
+                                             gint start_offset,
+                                             gint end_offset);</pre>
 <p>
 Sets the attributes for a specified range. See the ATK_ATTRIBUTE
 macros (such as <span class="type">ATK_ATTRIBUTE_LEFT_MARGIN</span>) for examples of attributes 
@@ -172,38 +138,29 @@ ATK_ATTRIBUTE macros may also be set for certain text widgets.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>attrib_set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>attrib_set</code></em>&#160;:</span></td>
 <td> an <a href="AtkText.html#AtkAttributeSet"><span class="type">AtkAttributeSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>start_offset</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>start_offset</code></em>&#160;:</span></td>
 <td> start of range in which to set attributes
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>end_offset</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>end_offset</code></em>&#160;:</span></td>
 <td> end of range in which to set attributes
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td> <a
-href="../glib/glib-Standard-Macros.html#TRUE:CAPS"
-><code class="literal">TRUE</code></a> if attributes successfully set for the specified
-range, otherwise <a
-href="../glib/glib-Standard-Macros.html#FALSE:CAPS"
-><code class="literal">FALSE</code></a>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">TRUE</code> if attributes successfully set for the specified
+range, otherwise <code class="literal">FALSE</code>
 </td>
 </tr>
 </tbody>
@@ -211,13 +168,11 @@ href="../glib/glib-Standard-Macros.html#FALSE:CAPS"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2536624"></a><h3>
+<a name="id2559249"></a><h3>
 <a name="atk-editable-text-set-text-contents"></a>atk_editable_text_set_text_contents ()</h3>
-<a class="indexterm" name="id2536637"></a><pre class="programlisting">void        atk_editable_text_set_text_contents
+<a class="indexterm" name="id2559263"></a><pre class="programlisting">void        atk_editable_text_set_text_contents
                                             (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *string);</pre>
+                                             const gchar *string);</pre>
 <p>
 Set text contents of <em class="parameter"><code>text</code></em>.</p>
 <p>
@@ -227,14 +182,12 @@ Set text contents of <em class="parameter"><code>text</code></em>.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>string</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>string</code></em>&#160;:</span></td>
 <td> string to set for text contents of <em class="parameter"><code>text</code></em>
 </td>
 </tr>
@@ -243,18 +196,12 @@ Set text contents of <em class="parameter"><code>text</code></em>.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2536730"></a><h3>
+<a name="id2559355"></a><h3>
 <a name="atk-editable-text-insert-text"></a>atk_editable_text_insert_text ()</h3>
-<a class="indexterm" name="id2536743"></a><pre class="programlisting">void        atk_editable_text_insert_text   (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *string,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> length,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *position);</pre>
+<a class="indexterm" name="id2559368"></a><pre class="programlisting">void        atk_editable_text_insert_text   (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
+                                             const gchar *string,
+                                             gint length,
+                                             gint *position);</pre>
 <p>
 Insert text at a given position.</p>
 <p>
@@ -264,26 +211,22 @@ Insert text at a given position.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>string</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>string</code></em>&#160;:</span></td>
 <td> the text to insert
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>length</code></em>&#160;:</span></td>
 <td> the length of text to insert, in bytes
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>position</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>position</code></em>&#160;:</span></td>
 <td> The caller initializes this to 
 the position at which to insert the text. After the call it
 points at the position after the newly inserted text.
@@ -294,15 +237,11 @@ points at the position after the newly inserted text.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2536869"></a><h3>
+<a name="id2559494"></a><h3>
 <a name="atk-editable-text-copy-text"></a>atk_editable_text_copy_text ()</h3>
-<a class="indexterm" name="id2536883"></a><pre class="programlisting">void        atk_editable_text_copy_text     (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_pos,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_pos);</pre>
+<a class="indexterm" name="id2559508"></a><pre class="programlisting">void        atk_editable_text_copy_text     (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
+                                             gint start_pos,
+                                             gint end_pos);</pre>
 <p>
 Copy text from <em class="parameter"><code>start_pos</code></em> up to, but not including <em class="parameter"><code>end_pos</code></em> 
 to the clipboard.</p>
@@ -313,20 +252,17 @@ to the clipboard.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>start_pos</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>start_pos</code></em>&#160;:</span></td>
 <td> start position
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>end_pos</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>end_pos</code></em>&#160;:</span></td>
 <td> end position
 </td>
 </tr>
@@ -335,15 +271,11 @@ to the clipboard.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2536996"></a><h3>
+<a name="id2559621"></a><h3>
 <a name="atk-editable-text-cut-text"></a>atk_editable_text_cut_text ()</h3>
-<a class="indexterm" name="id2537010"></a><pre class="programlisting">void        atk_editable_text_cut_text      (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_pos,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_pos);</pre>
+<a class="indexterm" name="id2559635"></a><pre class="programlisting">void        atk_editable_text_cut_text      (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
+                                             gint start_pos,
+                                             gint end_pos);</pre>
 <p>
 Copy text from <em class="parameter"><code>start_pos</code></em> up to, but not including <em class="parameter"><code>end_pos</code></em>
 to the clipboard and then delete from the widget.</p>
@@ -354,20 +286,17 @@ to the clipboard and then delete from the widget.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>start_pos</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>start_pos</code></em>&#160;:</span></td>
 <td> start position
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>end_pos</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>end_pos</code></em>&#160;:</span></td>
 <td> end position
 </td>
 </tr>
@@ -376,15 +305,11 @@ to the clipboard and then delete from the widget.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2537124"></a><h3>
+<a name="id2559749"></a><h3>
 <a name="atk-editable-text-delete-text"></a>atk_editable_text_delete_text ()</h3>
-<a class="indexterm" name="id2537137"></a><pre class="programlisting">void        atk_editable_text_delete_text   (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> start_pos,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> end_pos);</pre>
+<a class="indexterm" name="id2559762"></a><pre class="programlisting">void        atk_editable_text_delete_text   (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
+                                             gint start_pos,
+                                             gint end_pos);</pre>
 <p>
 Delete text <em class="parameter"><code>start_pos</code></em> up to, but not including <em class="parameter"><code>end_pos</code></em>.</p>
 <p>
@@ -394,20 +319,17 @@ Delete text <em class="parameter"><code>start_pos</code></em> up to, but not inc
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>start_pos</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>start_pos</code></em>&#160;:</span></td>
 <td> start position
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>end_pos</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>end_pos</code></em>&#160;:</span></td>
 <td> end position
 </td>
 </tr>
@@ -416,12 +338,10 @@ Delete text <em class="parameter"><code>start_pos</code></em> up to, but not inc
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2537250"></a><h3>
+<a name="id2559876"></a><h3>
 <a name="atk-editable-text-paste-text"></a>atk_editable_text_paste_text ()</h3>
-<a class="indexterm" name="id2537264"></a><pre class="programlisting">void        atk_editable_text_paste_text    (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> position);</pre>
+<a class="indexterm" name="id2559889"></a><pre class="programlisting">void        atk_editable_text_paste_text    (<a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a> *text,
+                                             gint position);</pre>
 <p>
 Paste text from clipboard to specified <em class="parameter"><code>position</code></em>.</p>
 <p>
@@ -431,14 +351,12 @@ Paste text from clipboard to specified <em class="parameter"><code>position</cod
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>text</code></em>&#160;:</span></td>
 <td> an <a href="AtkEditableText.html" title="AtkEditableText"><span class="type">AtkEditableText</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>position</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>position</code></em>&#160;:</span></td>
 <td> position to paste
 </td>
 </tr>
@@ -447,7 +365,7 @@ Paste text from clipboard to specified <em class="parameter"><code>position</cod
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2537351"></a><h2>See Also</h2>
+<a name="id2559976"></a><h2>See Also</h2>
 <p>
 <a href="AtkText.html" title="AtkText"><span class="type">AtkText</span></a>
 </p>

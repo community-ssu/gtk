@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkUtil</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkText.html" title="AtkText">
@@ -28,18 +28,18 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkValue.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2609154" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2632238" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2609556" class="shortcut">Description</a>
+                  <a href="#id2632641" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2609531" class="shortcut">Object Hierarchy</a></nobr></td></tr>
+                  <a href="#id2632617" class="shortcut">Object Hierarchy</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkUtil"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2609154"></a><span class="refentrytitle">AtkUtil</span>
+<a name="id2632238"></a><span class="refentrytitle">AtkUtil</span>
 </h2>
 <p>AtkUtil &#8212; A set of ATK utility functions for event and toolkit support.</p>
 </td>
@@ -53,68 +53,40 @@
 
             <a href="AtkUtil.html#AtkUtil-struct">AtkUtil</a>;
 enum        <a href="AtkUtil.html#AtkCoordType">AtkCoordType</a>;
-<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>       <a href="AtkUtil.html#atk-add-focus-tracker">atk_add_focus_tracker</a>           (<a href="AtkUtil.html#AtkEventListener">AtkEventListener</a> focus_tracker);
-void        <a href="AtkUtil.html#atk-remove-focus-tracker">atk_remove_focus_tracker</a>        (<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a> tracker_id);
+guint       <a href="AtkUtil.html#atk-add-focus-tracker">atk_add_focus_tracker</a>           (<a href="AtkUtil.html#AtkEventListener">AtkEventListener</a> focus_tracker);
+void        <a href="AtkUtil.html#atk-remove-focus-tracker">atk_remove_focus_tracker</a>        (guint tracker_id);
 void        <a href="AtkUtil.html#atk-focus-tracker-init">atk_focus_tracker_init</a>          (<a href="AtkUtil.html#AtkEventListenerInit">AtkEventListenerInit</a> init);
 void        <a href="AtkUtil.html#atk-focus-tracker-notify">atk_focus_tracker_notify</a>        (<a href="AtkObject.html" title="AtkObject">AtkObject</a> *object);
 void        (<a href="AtkUtil.html#AtkEventListener">*AtkEventListener</a>)             (<a href="AtkObject.html" title="AtkObject">AtkObject</a> *obj);
 void        (<a href="AtkUtil.html#AtkEventListenerInit">*AtkEventListenerInit</a>)         (void);
-<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>       <a href="AtkUtil.html#atk-add-global-event-listener">atk_add_global_event_listener</a>   (<a
-href="../gobject/gobject-Signals.html#GSignalEmissionHook"
->GSignalEmissionHook</a> listener,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *event_type);
+guint       <a href="AtkUtil.html#atk-add-global-event-listener">atk_add_global_event_listener</a>   (GSignalEmissionHook listener,
+                                             const gchar *event_type);
 void        <a href="AtkUtil.html#atk-remove-global-event-listener">atk_remove_global_event_listener</a>
-                                            (<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a> listener_id);
+                                            (guint listener_id);
             <a href="AtkUtil.html#AtkKeyEventStruct">AtkKeyEventStruct</a>;
 enum        <a href="AtkUtil.html#AtkKeyEventType">AtkKeyEventType</a>;
-<a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        (<a href="AtkUtil.html#AtkKeySnoopFunc">*AtkKeySnoopFunc</a>)              (<a href="AtkUtil.html#AtkKeyEventStruct">AtkKeyEventStruct</a> *event,
-                                             <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a> func_data);
-<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>       <a href="AtkUtil.html#atk-add-key-event-listener">atk_add_key_event_listener</a>      (<a href="AtkUtil.html#AtkKeySnoopFunc">AtkKeySnoopFunc</a> listener,
-                                             <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a> data);
-void        <a href="AtkUtil.html#atk-remove-key-event-listener">atk_remove_key_event_listener</a>   (<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a> listener_id);
+gint        (<a href="AtkUtil.html#AtkKeySnoopFunc">*AtkKeySnoopFunc</a>)              (<a href="AtkUtil.html#AtkKeyEventStruct">AtkKeyEventStruct</a> *event,
+                                             gpointer func_data);
+guint       <a href="AtkUtil.html#atk-add-key-event-listener">atk_add_key_event_listener</a>      (<a href="AtkUtil.html#AtkKeySnoopFunc">AtkKeySnoopFunc</a> listener,
+                                             gpointer data);
+void        <a href="AtkUtil.html#atk-remove-key-event-listener">atk_remove_key_event_listener</a>   (guint listener_id);
 <a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkUtil.html#atk-get-root">atk_get_root</a>                    (void);
 <a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkUtil.html#atk-get-focus-object">atk_get_focus_object</a>            (void);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkUtil.html#atk-get-toolkit-name">atk_get_toolkit_name</a>           (void);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkUtil.html#atk-get-toolkit-version">atk_get_toolkit_version</a>        (void);
+const gchar* <a href="AtkUtil.html#atk-get-toolkit-name">atk_get_toolkit_name</a>           (void);
+const gchar* <a href="AtkUtil.html#atk-get-toolkit-version">atk_get_toolkit_version</a>        (void);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2609531"></a><h2>Object Hierarchy</h2>
+<a name="id2632617"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----AtkUtil
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2609556"></a><h2>Description</h2>
+<a name="id2632641"></a><h2>Description</h2>
 <p>
 A set of ATK utility functions which are used to support event registration of
 various types, and obtaining the 'root' accessible of a process and
@@ -122,20 +94,20 @@ information about the current ATK implementation and toolkit version.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2609574"></a><h2>Details</h2>
+<a name="id2632659"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2609584"></a><h3>
+<a name="id2632670"></a><h3>
 <a name="AtkUtil-struct"></a>AtkUtil</h3>
-<a class="indexterm" name="id2609597"></a><pre class="programlisting">typedef struct _AtkUtil AtkUtil;</pre>
+<a class="indexterm" name="id2632683"></a><pre class="programlisting">typedef struct _AtkUtil AtkUtil;</pre>
 <p>
 The AtkUtil struct does not contain any fields.
 </p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2609613"></a><h3>
+<a name="id2632698"></a><h3>
 <a name="AtkCoordType"></a>enum AtkCoordType</h3>
-<a class="indexterm" name="id2609626"></a><pre class="programlisting">typedef enum {
+<a class="indexterm" name="id2632711"></a><pre class="programlisting">typedef enum {
   ATK_XY_SCREEN,
   ATK_XY_WINDOW
 }AtkCoordType;
@@ -150,14 +122,12 @@ as <a href="AtkComponent.html#atk-component-get-position"><code class="function"
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><a name="ATK-XY-SCREEN:CAPS"></a><code class="literal">ATK_XY_SCREEN</code></span></td>
+<td><span class="term"><a name="ATK-XY-SCREEN:CAPS"></a><code class="literal">ATK_XY_SCREEN</code></span></td>
 <td> specifies xy coordinates relative to the screen
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a name="ATK-XY-WINDOW:CAPS"></a><code class="literal">ATK_XY_WINDOW</code></span></td>
+<td><span class="term"><a name="ATK-XY-WINDOW:CAPS"></a><code class="literal">ATK_XY_WINDOW</code></span></td>
 <td> specifies xy coordinates relative to the widget's 
 top-level window
 </td>
@@ -167,11 +137,9 @@ top-level window
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2609718"></a><h3>
+<a name="id2632803"></a><h3>
 <a name="atk-add-focus-tracker"></a>atk_add_focus_tracker ()</h3>
-<a class="indexterm" name="id2609731"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>       atk_add_focus_tracker           (<a href="AtkUtil.html#AtkEventListener">AtkEventListener</a> focus_tracker);</pre>
+<a class="indexterm" name="id2632817"></a><pre class="programlisting">guint       atk_add_focus_tracker           (<a href="AtkUtil.html#AtkEventListener">AtkEventListener</a> focus_tracker);</pre>
 <p>
 Adds the specified function to the list of functions to be called
 when an object receives focus.</p>
@@ -182,15 +150,13 @@ when an object receives focus.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>focus_tracker</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>focus_tracker</code></em>&#160;:</span></td>
 <td> Function to be added to the list of functions to be called
 when an object receives focus.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> added focus tracker id, or 0 on failure.
 </td>
 </tr>
@@ -199,11 +165,9 @@ when an object receives focus.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2609796"></a><h3>
+<a name="id2632881"></a><h3>
 <a name="atk-remove-focus-tracker"></a>atk_remove_focus_tracker ()</h3>
-<a class="indexterm" name="id2609809"></a><pre class="programlisting">void        atk_remove_focus_tracker        (<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a> tracker_id);</pre>
+<a class="indexterm" name="id2632894"></a><pre class="programlisting">void        atk_remove_focus_tracker        (guint tracker_id);</pre>
 <p>
 Removes the specified focus tracker from the list of functions
 to be called when any object receives focus.</p>
@@ -213,8 +177,7 @@ to be called when any object receives focus.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>tracker_id</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>tracker_id</code></em>&#160;:</span></td>
 <td> the id of the focus tracker to remove
 </td>
 </tr></tbody>
@@ -222,9 +185,9 @@ to be called when any object receives focus.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2609861"></a><h3>
+<a name="id2632946"></a><h3>
 <a name="atk-focus-tracker-init"></a>atk_focus_tracker_init ()</h3>
-<a class="indexterm" name="id2609874"></a><pre class="programlisting">void        atk_focus_tracker_init          (<a href="AtkUtil.html#AtkEventListenerInit">AtkEventListenerInit</a> init);</pre>
+<a class="indexterm" name="id2632960"></a><pre class="programlisting">void        atk_focus_tracker_init          (<a href="AtkUtil.html#AtkEventListenerInit">AtkEventListenerInit</a> init);</pre>
 <p>
 Specifies the function to be called for focus tracker initialization.
 This function should be called by an implementation of the
@@ -236,8 +199,7 @@ focus tracking.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>init</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>init</code></em>&#160;:</span></td>
 <td> Function to be called for focus tracker initialization
 </td>
 </tr></tbody>
@@ -245,9 +207,9 @@ focus tracking.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2609929"></a><h3>
+<a name="id2633014"></a><h3>
 <a name="atk-focus-tracker-notify"></a>atk_focus_tracker_notify ()</h3>
-<a class="indexterm" name="id2609942"></a><pre class="programlisting">void        atk_focus_tracker_notify        (<a href="AtkObject.html" title="AtkObject">AtkObject</a> *object);</pre>
+<a class="indexterm" name="id2633028"></a><pre class="programlisting">void        atk_focus_tracker_notify        (<a href="AtkObject.html" title="AtkObject">AtkObject</a> *object);</pre>
 <p>
 Cause the focus tracker functions which have been specified to be
 executed for the object.</p>
@@ -257,8 +219,7 @@ executed for the object.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>object</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>object</code></em>&#160;:</span></td>
 <td> an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a>
 </td>
 </tr></tbody>
@@ -266,9 +227,9 @@ executed for the object.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610001"></a><h3>
+<a name="id2633086"></a><h3>
 <a name="AtkEventListener"></a>AtkEventListener ()</h3>
-<a class="indexterm" name="id2610014"></a><pre class="programlisting">void        (*AtkEventListener)             (<a href="AtkObject.html" title="AtkObject">AtkObject</a> *obj);</pre>
+<a class="indexterm" name="id2633099"></a><pre class="programlisting">void        (*AtkEventListener)             (<a href="AtkObject.html" title="AtkObject">AtkObject</a> *obj);</pre>
 <p>
 A function which is called when an object emits a matching event,
 as used in <a href="AtkUtil.html#atk-add-focus-tracker"><span class="type">atk_add_focus_tracker</span></a>.
@@ -284,8 +245,7 @@ attach signal handlers for the various ATK signals instead.
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
 <td> An <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> instance for whom the callback will be called when
 the specified event (e.g. 'focus:') takes place.
 </td>
@@ -294,9 +254,9 @@ the specified event (e.g. 'focus:') takes place.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610095"></a><h3>
+<a name="id2633181"></a><h3>
 <a name="AtkEventListenerInit"></a>AtkEventListenerInit ()</h3>
-<a class="indexterm" name="id2610109"></a><pre class="programlisting">void        (*AtkEventListenerInit)         (void);</pre>
+<a class="indexterm" name="id2633194"></a><pre class="programlisting">void        (*AtkEventListenerInit)         (void);</pre>
 <p>
 An <a href="AtkUtil.html#AtkEventListenerInit"><span class="type">AtkEventListenerInit</span></a> function is a special function that is
 called in order to initialize the per-object event registration system
@@ -310,16 +270,10 @@ used by <a href="AtkUtil.html#AtkEventListener"><span class="type">AtkEventListe
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610162"></a><h3>
+<a name="id2633248"></a><h3>
 <a name="atk-add-global-event-listener"></a>atk_add_global_event_listener ()</h3>
-<a class="indexterm" name="id2610176"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>       atk_add_global_event_listener   (<a
-href="../gobject/gobject-Signals.html#GSignalEmissionHook"
->GSignalEmissionHook</a> listener,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *event_type);</pre>
+<a class="indexterm" name="id2633261"></a><pre class="programlisting">guint       atk_add_global_event_listener   (GSignalEmissionHook listener,
+                                             const gchar *event_type);</pre>
 <p>
 Adds the specified function to the list of functions to be called
 when an event of type event_type occurs.</p>
@@ -330,20 +284,17 @@ when an event of type event_type occurs.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>listener</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>listener</code></em>&#160;:</span></td>
 <td> the listener to notify
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>event_type</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>event_type</code></em>&#160;:</span></td>
 <td> the type of event for which notification is requested
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> added event listener id, or 0 on failure.
 </td>
 </tr>
@@ -352,12 +303,10 @@ when an event of type event_type occurs.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610262"></a><h3>
+<a name="id2633347"></a><h3>
 <a name="atk-remove-global-event-listener"></a>atk_remove_global_event_listener ()</h3>
-<a class="indexterm" name="id2610275"></a><pre class="programlisting">void        atk_remove_global_event_listener
-                                            (<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a> listener_id);</pre>
+<a class="indexterm" name="id2633360"></a><pre class="programlisting">void        atk_remove_global_event_listener
+                                            (guint listener_id);</pre>
 <p>
 Removes the specified event listener</p>
 <p>
@@ -366,8 +315,7 @@ Removes the specified event listener</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>listener_id</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>listener_id</code></em>&#160;:</span></td>
 <td> the id of the event listener to remove
 </td>
 </tr></tbody>
@@ -375,9 +323,9 @@ Removes the specified event listener</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610327"></a><h3>
+<a name="id2633412"></a><h3>
 <a name="AtkKeyEventStruct"></a>AtkKeyEventStruct</h3>
-<a class="indexterm" name="id2610340"></a><pre class="programlisting">typedef struct {
+<a class="indexterm" name="id2633425"></a><pre class="programlisting">typedef struct {
   gint type;
   guint state;
   guint keyval;
@@ -396,48 +344,31 @@ Encapsulates information about a key event.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>&#160;<em class="structfield"><code>type</code></em>;</span></td>
+<td><span class="term">gint&#160;<em class="structfield"><code>type</code></em>;</span></td>
 <td> An AtkKeyEventType, generally one of ATK_KEY_EVENT_PRESS or ATK_KEY_EVENT_RELEASE
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>&#160;<em class="structfield"><code>state</code></em>;</span></td>
+<td><span class="term">guint&#160;<em class="structfield"><code>state</code></em>;</span></td>
 <td> A bitmask representing the state of the modifier keys immediately after the event takes place.   
 The meaning of the bits is currently defined to match the bitmask used by GDK in
 GdkEventType.state, see 
-http://developer.gnome.org/doc/API/2.0/gdk/gdk-Event-Structures.html<a
-href="../gdk/gdk-Event-Structures.html#GdkEventKey"
-><span class="type">GdkEventKey</span></a>
+http://developer.gnome.org/doc/API/2.0/gdk/gdk-Event-Structures.html<span class="type">GdkEventKey</span>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>&#160;<em class="structfield"><code>keyval</code></em>;</span></td>
+<td><span class="term">guint&#160;<em class="structfield"><code>keyval</code></em>;</span></td>
 <td> A guint representing a keysym value corresponding to those used by GDK and X11: see
 /usr/X11/include/keysymdef.h.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>&#160;<em class="structfield"><code>length</code></em>;</span></td>
+<td><span class="term">gint&#160;<em class="structfield"><code>length</code></em>;</span></td>
 <td> The length of member <span class="type">string</span>.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>&#160;*<em class="structfield"><code>string</code></em>;</span></td>
+<td><span class="term">gchar&#160;*<em class="structfield"><code>string</code></em>;</span></td>
 <td> A string containing one of the following: either a string approximating the text that would 
 result from this keypress, if the key is a control or graphic character, or a symbolic name for this keypress.
 Alphanumeric and printable keys will have the symbolic key name in this string member, for instance "A". "0", 
@@ -445,18 +376,12 @@ Alphanumeric and printable keys will have the symbolic key name in this string m
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#guint16"
->guint16</a>&#160;<em class="structfield"><code>keycode</code></em>;</span></td>
+<td><span class="term">guint16&#160;<em class="structfield"><code>keycode</code></em>;</span></td>
 <td> The raw hardware code that generated the key event.  This field is raraly useful.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a
-href="../glib/glib-Basic-Types.html#guint32"
->guint32</a>&#160;<em class="structfield"><code>timestamp</code></em>;</span></td>
+<td><span class="term">guint32&#160;<em class="structfield"><code>timestamp</code></em>;</span></td>
 <td> A timestamp in milliseconds indicating when the event occurred.  
 These timestamps are relative to a starting point which should be considered arbitrary, 
 and only used to compare the dispatch times of events to one another.
@@ -467,9 +392,9 @@ and only used to compare the dispatch times of events to one another.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610546"></a><h3>
+<a name="id2633632"></a><h3>
 <a name="AtkKeyEventType"></a>enum AtkKeyEventType</h3>
-<a class="indexterm" name="id2610560"></a><pre class="programlisting">typedef enum
+<a class="indexterm" name="id2633645"></a><pre class="programlisting">typedef enum
 {
   ATK_KEY_EVENT_PRESS,
   ATK_KEY_EVENT_RELEASE,
@@ -485,20 +410,17 @@ Specifies the type of a keyboard evemt.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><a name="ATK-KEY-EVENT-PRESS:CAPS"></a><code class="literal">ATK_KEY_EVENT_PRESS</code></span></td>
+<td><span class="term"><a name="ATK-KEY-EVENT-PRESS:CAPS"></a><code class="literal">ATK_KEY_EVENT_PRESS</code></span></td>
 <td> specifies a key press event
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a name="ATK-KEY-EVENT-RELEASE:CAPS"></a><code class="literal">ATK_KEY_EVENT_RELEASE</code></span></td>
+<td><span class="term"><a name="ATK-KEY-EVENT-RELEASE:CAPS"></a><code class="literal">ATK_KEY_EVENT_RELEASE</code></span></td>
 <td> specifies a key release event
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><a name="ATK-KEY-EVENT-LAST-DEFINED:CAPS"></a><code class="literal">ATK_KEY_EVENT_LAST_DEFINED</code></span></td>
+<td><span class="term"><a name="ATK-KEY-EVENT-LAST-DEFINED:CAPS"></a><code class="literal">ATK_KEY_EVENT_LAST_DEFINED</code></span></td>
 <td> Not a valid value; specifies end of enumeration
 </td>
 </tr>
@@ -507,14 +429,10 @@ Specifies the type of a keyboard evemt.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610654"></a><h3>
+<a name="id2633740"></a><h3>
 <a name="AtkKeySnoopFunc"></a>AtkKeySnoopFunc ()</h3>
-<a class="indexterm" name="id2610667"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        (*AtkKeySnoopFunc)              (<a href="AtkUtil.html#AtkKeyEventStruct">AtkKeyEventStruct</a> *event,
-                                             <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a> func_data);</pre>
+<a class="indexterm" name="id2633752"></a><pre class="programlisting">gint        (*AtkKeySnoopFunc)              (<a href="AtkUtil.html#AtkKeyEventStruct">AtkKeyEventStruct</a> *event,
+                                             gpointer func_data);</pre>
 <p>
 An <a href="AtkUtil.html#AtkKeySnoopFunc"><span class="type">AtkKeySnoopFunc</span></a> is a type of callback which is called whenever a key event occurs, 
 if registered via atk_add_key_event_listener.  It allows for pre-emptive 
@@ -526,21 +444,18 @@ interception of key events via the return code as described below.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>event</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>event</code></em>&#160;:</span></td>
 <td> an AtkKeyEventStruct containing information about the key event for which
 notification is being given.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>func_data</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>func_data</code></em>&#160;:</span></td>
 <td> a block of data which will be passed to the event listener, on notification.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> TRUE (nonzero) if the event emission should be stopped and the event 
 discarded without being passed to the normal GUI recipient; FALSE (zero) if the 
 event dispatch to the client application should proceed as normal.
@@ -553,14 +468,10 @@ event dispatch to the client application should proceed as normal.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610773"></a><h3>
+<a name="id2633858"></a><h3>
 <a name="atk-add-key-event-listener"></a>atk_add_key_event_listener ()</h3>
-<a class="indexterm" name="id2610787"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a>       atk_add_key_event_listener      (<a href="AtkUtil.html#AtkKeySnoopFunc">AtkKeySnoopFunc</a> listener,
-                                             <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a> data);</pre>
+<a class="indexterm" name="id2633872"></a><pre class="programlisting">guint       atk_add_key_event_listener      (<a href="AtkUtil.html#AtkKeySnoopFunc">AtkKeySnoopFunc</a> listener,
+                                             gpointer data);</pre>
 <p>
 Adds the specified function to the list of functions to be called
        when a key event occurs.  The <em class="parameter"><code>data</code></em> element will be passed to the
@@ -572,23 +483,18 @@ Adds the specified function to the list of functions to be called
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>listener</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>listener</code></em>&#160;:</span></td>
 <td> the listener to notify
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
-<td> a <a
-href="../glib/glib-Basic-Types.html#gpointer"
-><span class="type">gpointer</span></a> that points to a block of data that should be sent to the registered listeners,
+<td><span class="term"><em class="parameter"><code>data</code></em>&#160;:</span></td>
+<td> a <span class="type">gpointer</span> that points to a block of data that should be sent to the registered listeners,
        along with the event notification, when it occurs.  
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> added event listener id, or 0 on failure.
 </td>
 </tr>
@@ -597,11 +503,9 @@ href="../glib/glib-Basic-Types.html#gpointer"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610908"></a><h3>
+<a name="id2633993"></a><h3>
 <a name="atk-remove-key-event-listener"></a>atk_remove_key_event_listener ()</h3>
-<a class="indexterm" name="id2610921"></a><pre class="programlisting">void        atk_remove_key_event_listener   (<a
-href="../glib/glib-Basic-Types.html#guint"
->guint</a> listener_id);</pre>
+<a class="indexterm" name="id2634007"></a><pre class="programlisting">void        atk_remove_key_event_listener   (guint listener_id);</pre>
 <p>
 Removes the specified event listener</p>
 <p>
@@ -610,8 +514,7 @@ Removes the specified event listener</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>listener_id</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>listener_id</code></em>&#160;:</span></td>
 <td> the id of the event listener to remove
 </td>
 </tr></tbody>
@@ -619,9 +522,9 @@ Removes the specified event listener</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2610972"></a><h3>
+<a name="id2634058"></a><h3>
 <a name="atk-get-root"></a>atk_get_root ()</h3>
-<a class="indexterm" name="id2610985"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_get_root                    (void);</pre>
+<a class="indexterm" name="id2634071"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_get_root                    (void);</pre>
 <p>
 Gets the root accessible container for the current application.</p>
 <p>
@@ -630,8 +533,7 @@ Gets the root accessible container for the current application.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> the root accessible container for the current application
 </td>
 </tr></tbody>
@@ -639,9 +541,9 @@ Gets the root accessible container for the current application.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2611026"></a><h3>
+<a name="id2634112"></a><h3>
 <a name="atk-get-focus-object"></a>atk_get_focus_object ()</h3>
-<a class="indexterm" name="id2611042"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_get_focus_object            (void);</pre>
+<a class="indexterm" name="id2634128"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_get_focus_object            (void);</pre>
 <p>
 Gets the currently focused object.
 </p>
@@ -653,8 +555,7 @@ Returns:</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> the currently focused object for the current application
 </td>
 </tr></tbody>
@@ -665,11 +566,9 @@ Returns:</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2611091"></a><h3>
+<a name="id2634177"></a><h3>
 <a name="atk-get-toolkit-name"></a>atk_get_toolkit_name ()</h3>
-<a class="indexterm" name="id2611104"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_get_toolkit_name           (void);</pre>
+<a class="indexterm" name="id2634190"></a><pre class="programlisting">const gchar* atk_get_toolkit_name           (void);</pre>
 <p>
 Gets name string for the GUI toolkit implementing ATK for this application.</p>
 <p>
@@ -678,8 +577,7 @@ Gets name string for the GUI toolkit implementing ATK for this application.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> name string for the GUI toolkit implementing ATK for this application
 </td>
 </tr></tbody>
@@ -687,11 +585,9 @@ Gets name string for the GUI toolkit implementing ATK for this application.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2611148"></a><h3>
+<a name="id2634233"></a><h3>
 <a name="atk-get-toolkit-version"></a>atk_get_toolkit_version ()</h3>
-<a class="indexterm" name="id2611161"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_get_toolkit_version        (void);</pre>
+<a class="indexterm" name="id2634246"></a><pre class="programlisting">const gchar* atk_get_toolkit_version        (void);</pre>
 <p>
 Gets version string for the GUI toolkit implementing ATK for this application.</p>
 <p>
@@ -700,8 +596,7 @@ Gets version string for the GUI toolkit implementing ATK for this application.</
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> version string for the GUI toolkit implementing ATK for this application
 </td>
 </tr></tbody>

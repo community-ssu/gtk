@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkGObjectAccessible</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkEditableText.html" title="AtkEditableText">
@@ -28,18 +28,18 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkHyperlink.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2538789" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2561413" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2538888" class="shortcut">Description</a>
+                  <a href="#id2561513" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2538856" class="shortcut">Object Hierarchy</a></nobr></td></tr>
+                  <a href="#id2561481" class="shortcut">Object Hierarchy</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkGObjectAccessible"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2538789"></a><span class="refentrytitle">AtkGObjectAccessible</span>
+<a name="id2561413"></a><span class="refentrytitle">AtkGObjectAccessible</span>
 </h2>
 <p>AtkGObjectAccessible &#8212; This object class is derived from AtkObject and can be used as a basis 
 implementing accessible objects.</p>
@@ -54,29 +54,23 @@ implementing accessible objects.</p>
 
             <a href="AtkGObjectAccessible.html#AtkGObjectAccessible-struct">AtkGObjectAccessible</a>;
 <a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkGObjectAccessible.html#atk-gobject-accessible-for-object">atk_gobject_accessible_for_object</a>
-                                            (<a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a> *obj);
-<a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>*    <a href="AtkGObjectAccessible.html#atk-gobject-accessible-get-object">atk_gobject_accessible_get_object</a>
+                                            (GObject *obj);
+GObject*    <a href="AtkGObjectAccessible.html#atk-gobject-accessible-get-object">atk_gobject_accessible_get_object</a>
                                             (<a href="AtkGObjectAccessible.html" title="AtkGObjectAccessible">AtkGObjectAccessible</a> *obj);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2538856"></a><h2>Object Hierarchy</h2>
+<a name="id2561481"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----<a href="AtkObject.html" title="AtkObject">AtkObject</a>
          +----AtkGObjectAccessible
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2538888"></a><h2>Description</h2>
+<a name="id2561513"></a><h2>Description</h2>
 <p>
 This object class is derived from AtkObject. It can be used as a basis for
 implementing accessible objects for GObjects which are not derived from
@@ -86,23 +80,21 @@ for GnomeCanvasItem in the GAIL library.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2538907"></a><h2>Details</h2>
+<a name="id2561532"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2538917"></a><h3>
+<a name="id2561542"></a><h3>
 <a name="AtkGObjectAccessible-struct"></a>AtkGObjectAccessible</h3>
-<a class="indexterm" name="id2538930"></a><pre class="programlisting">typedef struct _AtkGObjectAccessible AtkGObjectAccessible;</pre>
+<a class="indexterm" name="id2561555"></a><pre class="programlisting">typedef struct _AtkGObjectAccessible AtkGObjectAccessible;</pre>
 <p>
 The AtkGObjectAccessible structure should not be accessed directly.
 </p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2538947"></a><h3>
+<a name="id2561572"></a><h3>
 <a name="atk-gobject-accessible-for-object"></a>atk_gobject_accessible_for_object ()</h3>
-<a class="indexterm" name="id2538961"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_gobject_accessible_for_object
-                                            (<a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a> *obj);</pre>
+<a class="indexterm" name="id2561586"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_gobject_accessible_for_object
+                                            (GObject *obj);</pre>
 <p>
 Gets the accessible object for the specified <em class="parameter"><code>obj</code></em>.</p>
 <p>
@@ -112,16 +104,12 @@ Gets the accessible object for the specified <em class="parameter"><code>obj</co
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a>
+<td><span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> which is the accessible object for the <em class="parameter"><code>obj</code></em>
 </td>
 </tr>
@@ -130,11 +118,9 @@ href="../gobject/gobject-The-Base-Object-Type.html#GObject"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2539048"></a><h3>
+<a name="id2561674"></a><h3>
 <a name="atk-gobject-accessible-get-object"></a>atk_gobject_accessible_get_object ()</h3>
-<a class="indexterm" name="id2539062"></a><pre class="programlisting"><a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>*    atk_gobject_accessible_get_object
+<a class="indexterm" name="id2561688"></a><pre class="programlisting">GObject*    atk_gobject_accessible_get_object
                                             (<a href="AtkGObjectAccessible.html" title="AtkGObjectAccessible">AtkGObjectAccessible</a> *obj);</pre>
 <p>
 Gets the GObject for which <em class="parameter"><code>obj</code></em> is the accessible object.</p>
@@ -145,17 +131,13 @@ Gets the GObject for which <em class="parameter"><code>obj</code></em> is the ac
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
 <td> a <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> which is the object for which <em class="parameter"><code>obj</code></em> is the accessible objedct
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a <span class="type">GObject</span> which is the object for which <em class="parameter"><code>obj</code></em> is the accessible objedct
 </td>
 </tr>
 </tbody>

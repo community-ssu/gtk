@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkHypertext</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="atk-AtkHyperlinkImpl.html" title="AtkHyperlinkImpl">
@@ -28,22 +28,22 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkImage.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2542882" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2565380" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2543606" class="shortcut">Description</a>
+                  <a href="#id2566241" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2543501" class="shortcut">Object Hierarchy</a>
+                  <a href="#id2566136" class="shortcut">Object Hierarchy</a>
                   &#160;|&#160;
-                  <a href="#id2543525" class="shortcut">Known Implementations</a>
+                  <a href="#id2566160" class="shortcut">Known Implementations</a>
                   &#160;|&#160;
-                  <a href="#id2543548" class="shortcut">Signals</a></nobr></td></tr>
+                  <a href="#id2566183" class="shortcut">Signals</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkHypertext"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2542882"></a><span class="refentrytitle">AtkHypertext</span>
+<a name="id2565380"></a><span class="refentrytitle">AtkHypertext</span>
 </h2>
 <p>AtkHypertext &#8212; The ATK interface which provides standard mechanism for manipulating hyperlinks.</p>
 </td>
@@ -57,23 +57,15 @@
 
             <a href="AtkHypertext.html#AtkHypertext-struct">AtkHypertext</a>;
 <a href="AtkHyperlink.html" title="AtkHyperlink">AtkHyperlink</a>* <a href="AtkHypertext.html#atk-hypertext-get-link">atk_hypertext_get_link</a>        (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> link_index);
-<a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        <a href="AtkHypertext.html#atk-hypertext-get-n-links">atk_hypertext_get_n_links</a>       (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext);
-<a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        <a href="AtkHypertext.html#atk-hypertext-get-link-index">atk_hypertext_get_link_index</a>    (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> char_index);
+                                             gint link_index);
+gint        <a href="AtkHypertext.html#atk-hypertext-get-n-links">atk_hypertext_get_n_links</a>       (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext);
+gint        <a href="AtkHypertext.html#atk-hypertext-get-link-index">atk_hypertext_get_link_index</a>    (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
+                                             gint char_index);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2543501"></a><h2>Object Hierarchy</h2>
+<a name="id2566136"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
   GInterface
@@ -81,27 +73,23 @@ href="../glib/glib-Basic-Types.html#gint"
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2543525"></a><h2>Known Implementations</h2>
+<a name="id2566160"></a><h2>Known Implementations</h2>
 <p>
 AtkHypertext is implemented by
  <a href="AtkNoOpObject.html" title="AtkNoOpObject">AtkNoOpObject</a>.</p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2543548"></a><h2>Signals</h2>
+<a name="id2566183"></a><h2>Signals</h2>
 <pre class="synopsis">
 
 "<a href="AtkHypertext.html#AtkHypertext-link-selected">link-selected</a>"
             void        user_function      (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *atkhypertext,
-                                            <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>          arg1,
-                                            <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a>      user_data)         : Run last
+                                            gint          arg1,
+                                            gpointer      user_data)         : Run last
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2543606"></a><h2>Description</h2>
+<a name="id2566241"></a><h2>Description</h2>
 <p>
 An interface used for objects which implement linking between multiple
 resource or content locations, or multiple 'markers' within a single
@@ -111,23 +99,21 @@ content.  While this interface is derived from Text, there is no requirement tha
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2543629"></a><h2>Details</h2>
+<a name="id2566264"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2543638"></a><h3>
+<a name="id2566274"></a><h3>
 <a name="AtkHypertext-struct"></a>AtkHypertext</h3>
-<a class="indexterm" name="id2543651"></a><pre class="programlisting">typedef struct _AtkHypertext AtkHypertext;</pre>
+<a class="indexterm" name="id2566286"></a><pre class="programlisting">typedef struct _AtkHypertext AtkHypertext;</pre>
 <p>
 The AtkHypertext structure does not contain any fields.
 </p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2543667"></a><h3>
+<a name="id2566303"></a><h3>
 <a name="atk-hypertext-get-link"></a>atk_hypertext_get_link ()</h3>
-<a class="indexterm" name="id2543680"></a><pre class="programlisting"><a href="AtkHyperlink.html" title="AtkHyperlink">AtkHyperlink</a>* atk_hypertext_get_link        (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> link_index);</pre>
+<a class="indexterm" name="id2566315"></a><pre class="programlisting"><a href="AtkHyperlink.html" title="AtkHyperlink">AtkHyperlink</a>* atk_hypertext_get_link        (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
+                                             gint link_index);</pre>
 <p>
 Gets the link in this hypertext document at index 
 <em class="parameter"><code>link_index</code></em></p>
@@ -138,20 +124,17 @@ Gets the link in this hypertext document at index
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>hypertext</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>hypertext</code></em>&#160;:</span></td>
 <td> an <a href="AtkHypertext.html" title="AtkHypertext"><span class="type">AtkHypertext</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>link_index</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>link_index</code></em>&#160;:</span></td>
 <td> an integer specifying the desired link
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> the link in this hypertext document at
 index <em class="parameter"><code>link_index</code></em>
 </td>
@@ -161,11 +144,9 @@ index <em class="parameter"><code>link_index</code></em>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2543783"></a><h3>
+<a name="id2566418"></a><h3>
 <a name="atk-hypertext-get-n-links"></a>atk_hypertext_get_n_links ()</h3>
-<a class="indexterm" name="id2543797"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        atk_hypertext_get_n_links       (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext);</pre>
+<a class="indexterm" name="id2566432"></a><pre class="programlisting">gint        atk_hypertext_get_n_links       (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext);</pre>
 <p>
 Gets the number of links within this hypertext document.</p>
 <p>
@@ -175,14 +156,12 @@ Gets the number of links within this hypertext document.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>hypertext</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>hypertext</code></em>&#160;:</span></td>
 <td> an <a href="AtkHypertext.html" title="AtkHypertext"><span class="type">AtkHypertext</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> the number of links within this hypertext document
 </td>
 </tr>
@@ -191,14 +170,10 @@ Gets the number of links within this hypertext document.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2543867"></a><h3>
+<a name="id2566502"></a><h3>
 <a name="atk-hypertext-get-link-index"></a>atk_hypertext_get_link_index ()</h3>
-<a class="indexterm" name="id2543880"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        atk_hypertext_get_link_index    (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> char_index);</pre>
+<a class="indexterm" name="id2566515"></a><pre class="programlisting">gint        atk_hypertext_get_link_index    (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *hypertext,
+                                             gint char_index);</pre>
 <p>
 Gets the index into the array of hyperlinks that is associated with
 the character specified by <em class="parameter"><code>char_index</code></em>.</p>
@@ -209,20 +184,17 @@ the character specified by <em class="parameter"><code>char_index</code></em>.</
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>hypertext</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>hypertext</code></em>&#160;:</span></td>
 <td> an <a href="AtkHypertext.html" title="AtkHypertext"><span class="type">AtkHypertext</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>char_index</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>char_index</code></em>&#160;:</span></td>
 <td> a character index
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> an index into the array of hyperlinks in <em class="parameter"><code>hypertext</code></em>,
 or -1 if there is no hyperlink associated with this character.
 </td>
@@ -232,17 +204,13 @@ or -1 if there is no hyperlink associated with this character.
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2543986"></a><h2>Signal Details</h2>
+<a name="id2566622"></a><h2>Signal Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2543997"></a><h3>
+<a name="id2566632"></a><h3>
 <a name="AtkHypertext-link-selected"></a>The "link-selected" signal</h3>
-<a class="indexterm" name="id2544007"></a><pre class="programlisting">void        user_function                  (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *atkhypertext,
-                                            <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>          arg1,
-                                            <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a>      user_data)         : Run last</pre>
+<a class="indexterm" name="id2566642"></a><pre class="programlisting">void        user_function                  (<a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a> *atkhypertext,
+                                            gint          arg1,
+                                            gpointer      user_data)         : Run last</pre>
 <p>
 The "link-selected" signal is emitted by an AtkHyperText object when one of
 the hyperlinks associated with the object is selected.
@@ -251,21 +219,18 @@ the hyperlinks associated with the object is selected.
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>atkhypertext</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>atkhypertext</code></em>&#160;:</span></td>
 <td>the object which received the signal.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>arg1</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>arg1</code></em>&#160;:</span></td>
 <td>the index of the hyperlink which is selected
 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
 <td>user data set when the signal handler was connected.</td>
 </tr>
 </tbody>
@@ -273,7 +238,7 @@ the hyperlinks associated with the object is selected.
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2544102"></a><h2>See Also</h2>
+<a name="id2566738"></a><h2>See Also</h2>
 <p>
 AtkHyperlink
 </p>

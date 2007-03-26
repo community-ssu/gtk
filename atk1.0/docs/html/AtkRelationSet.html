@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkRelationSet</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkRelation.html" title="AtkRelation">
@@ -28,18 +28,18 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkSelection.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2570872" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2593794" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2571153" class="shortcut">Description</a>
+                  <a href="#id2594076" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2571129" class="shortcut">Object Hierarchy</a></nobr></td></tr>
+                  <a href="#id2594052" class="shortcut">Object Hierarchy</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkRelationSet"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2570872"></a><span class="refentrytitle">AtkRelationSet</span>
+<a name="id2593794"></a><span class="refentrytitle">AtkRelationSet</span>
 </h2>
 <p>AtkRelationSet &#8212; A set of AtkRelations, normally the set of AtkRelations which an AtkObject has.</p>
 </td>
@@ -53,22 +53,16 @@
 
             <a href="AtkRelationSet.html#AtkRelationSet-struct">AtkRelationSet</a>;
 <a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a>* <a href="AtkRelationSet.html#atk-relation-set-new">atk_relation_set_new</a>        (void);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkRelationSet.html#atk-relation-set-contains">atk_relation_set_contains</a>       (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
+gboolean    <a href="AtkRelationSet.html#atk-relation-set-contains">atk_relation_set_contains</a>       (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html#AtkRelationType">AtkRelationType</a> relationship);
 void        <a href="AtkRelationSet.html#atk-relation-set-remove">atk_relation_set_remove</a>         (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html" title="AtkRelation">AtkRelation</a> *relation);
 void        <a href="AtkRelationSet.html#atk-relation-set-add">atk_relation_set_add</a>            (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html" title="AtkRelation">AtkRelation</a> *relation);
-<a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        <a href="AtkRelationSet.html#atk-relation-set-get-n-relations">atk_relation_set_get_n_relations</a>
+gint        <a href="AtkRelationSet.html#atk-relation-set-get-n-relations">atk_relation_set_get_n_relations</a>
                                             (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set);
 <a href="AtkRelation.html" title="AtkRelation">AtkRelation</a>* <a href="AtkRelationSet.html#atk-relation-set-get-relation">atk_relation_set_get_relation</a>  (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
+                                             gint i);
 <a href="AtkRelation.html" title="AtkRelation">AtkRelation</a>* <a href="AtkRelationSet.html#atk-relation-set-get-relation-by-type">atk_relation_set_get_relation_by_type</a>
                                             (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html#AtkRelationType">AtkRelationType</a> relationship);
@@ -80,17 +74,15 @@ void        <a href="AtkRelationSet.html#atk-relation-set-add-relation-by-type">
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2571129"></a><h2>Object Hierarchy</h2>
+<a name="id2594052"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----AtkRelationSet
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2571153"></a><h2>Description</h2>
+<a name="id2594076"></a><h2>Description</h2>
 <p>
 The AtkRelationSet held by an object establishes its relationships with
 objects beyond the normal "parent/child" hierarchical relationships that all
@@ -101,11 +93,11 @@ components (for instance within a radio-button group), or share content which
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2571175"></a><h2>Details</h2>
+<a name="id2594098"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2571186"></a><h3>
+<a name="id2594109"></a><h3>
 <a name="AtkRelationSet-struct"></a>AtkRelationSet</h3>
-<a class="indexterm" name="id2571199"></a><pre class="programlisting">typedef struct _AtkRelationSet AtkRelationSet;</pre>
+<a class="indexterm" name="id2594122"></a><pre class="programlisting">typedef struct _AtkRelationSet AtkRelationSet;</pre>
 <p>
 The AtkRelationSet structure should not be accessed directly.
 
@@ -113,9 +105,9 @@ The AtkRelationSet structure should not be accessed directly.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571216"></a><h3>
+<a name="id2594139"></a><h3>
 <a name="atk-relation-set-new"></a>atk_relation_set_new ()</h3>
-<a class="indexterm" name="id2571229"></a><pre class="programlisting"><a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a>* atk_relation_set_new        (void);</pre>
+<a class="indexterm" name="id2594152"></a><pre class="programlisting"><a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a>* atk_relation_set_new        (void);</pre>
 <p>
 Creates a new empty relation set.</p>
 <p>
@@ -124,8 +116,7 @@ Creates a new empty relation set.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a new <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a> 
 </td>
 </tr></tbody>
@@ -133,11 +124,9 @@ Creates a new empty relation set.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571277"></a><h3>
+<a name="id2594200"></a><h3>
 <a name="atk-relation-set-contains"></a>atk_relation_set_contains ()</h3>
-<a class="indexterm" name="id2571291"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_relation_set_contains       (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
+<a class="indexterm" name="id2594214"></a><pre class="programlisting">gboolean    atk_relation_set_contains       (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html#AtkRelationType">AtkRelationType</a> relationship);</pre>
 <p>
 Determines whether the relation set contains a relation that matches the
@@ -149,26 +138,19 @@ specified type.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>relationship</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>relationship</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelation.html#AtkRelationType"><span class="type">AtkRelationType</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td> <a
-href="../glib/glib-Standard-Macros.html#TRUE:CAPS"
-><code class="literal">TRUE</code></a> if <em class="parameter"><code>relationship</code></em> is the relationship type of a relation
-in <em class="parameter"><code>set</code></em>, <a
-href="../glib/glib-Standard-Macros.html#FALSE:CAPS"
-><code class="literal">FALSE</code></a> otherwise
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">TRUE</code> if <em class="parameter"><code>relationship</code></em> is the relationship type of a relation
+in <em class="parameter"><code>set</code></em>, <code class="literal">FALSE</code> otherwise
 </td>
 </tr>
 </tbody>
@@ -176,9 +158,9 @@ href="../glib/glib-Standard-Macros.html#FALSE:CAPS"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571423"></a><h3>
+<a name="id2594346"></a><h3>
 <a name="atk-relation-set-remove"></a>atk_relation_set_remove ()</h3>
-<a class="indexterm" name="id2571436"></a><pre class="programlisting">void        atk_relation_set_remove         (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
+<a class="indexterm" name="id2594360"></a><pre class="programlisting">void        atk_relation_set_remove         (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html" title="AtkRelation">AtkRelation</a> *relation);</pre>
 <p>
 Removes a relation from the relation set.
@@ -191,14 +173,12 @@ is another reference to it.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>relation</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>relation</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelation.html" title="AtkRelation"><span class="type">AtkRelation</span></a>
 </td>
 </tr>
@@ -207,9 +187,9 @@ is another reference to it.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571534"></a><h3>
+<a name="id2594457"></a><h3>
 <a name="atk-relation-set-add"></a>atk_relation_set_add ()</h3>
-<a class="indexterm" name="id2571547"></a><pre class="programlisting">void        atk_relation_set_add            (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
+<a class="indexterm" name="id2594470"></a><pre class="programlisting">void        atk_relation_set_add            (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html" title="AtkRelation">AtkRelation</a> *relation);</pre>
 <p>
 Add a new relation to the current relation set if it is not already
@@ -224,14 +204,12 @@ is destroyed.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>relation</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>relation</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelation.html" title="AtkRelation"><span class="type">AtkRelation</span></a>
 </td>
 </tr>
@@ -240,11 +218,9 @@ is destroyed.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571638"></a><h3>
+<a name="id2594561"></a><h3>
 <a name="atk-relation-set-get-n-relations"></a>atk_relation_set_get_n_relations ()</h3>
-<a class="indexterm" name="id2571651"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        atk_relation_set_get_n_relations
+<a class="indexterm" name="id2594574"></a><pre class="programlisting">gint        atk_relation_set_get_n_relations
                                             (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set);</pre>
 <p>
 Determines the number of relations in a relation set.</p>
@@ -255,14 +231,12 @@ Determines the number of relations in a relation set.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> an integer representing the number of relations in the set.
 </td>
 </tr>
@@ -271,12 +245,10 @@ Determines the number of relations in a relation set.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571722"></a><h3>
+<a name="id2594646"></a><h3>
 <a name="atk-relation-set-get-relation"></a>atk_relation_set_get_relation ()</h3>
-<a class="indexterm" name="id2571736"></a><pre class="programlisting"><a href="AtkRelation.html" title="AtkRelation">AtkRelation</a>* atk_relation_set_get_relation  (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2594659"></a><pre class="programlisting"><a href="AtkRelation.html" title="AtkRelation">AtkRelation</a>* atk_relation_set_get_relation  (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
+                                             gint i);</pre>
 <p>
 Determines the relation at the specified position in the relation set.</p>
 <p>
@@ -286,20 +258,17 @@ Determines the relation at the specified position in the relation set.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> a gint representing a position in the set, starting from 0.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a <a href="AtkRelation.html" title="AtkRelation"><span class="type">AtkRelation</span></a>, which is the relation at position i in the set.
 </td>
 </tr>
@@ -308,9 +277,9 @@ Determines the relation at the specified position in the relation set.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571836"></a><h3>
+<a name="id2594759"></a><h3>
 <a name="atk-relation-set-get-relation-by-type"></a>atk_relation_set_get_relation_by_type ()</h3>
-<a class="indexterm" name="id2571849"></a><pre class="programlisting"><a href="AtkRelation.html" title="AtkRelation">AtkRelation</a>* atk_relation_set_get_relation_by_type
+<a class="indexterm" name="id2594772"></a><pre class="programlisting"><a href="AtkRelation.html" title="AtkRelation">AtkRelation</a>* atk_relation_set_get_relation_by_type
                                             (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html#AtkRelationType">AtkRelationType</a> relationship);</pre>
 <p>
@@ -322,20 +291,17 @@ Finds a relation that matches the specified type.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>relationship</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>relationship</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelation.html#AtkRelationType"><span class="type">AtkRelationType</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> an <a href="AtkRelation.html" title="AtkRelation"><span class="type">AtkRelation</span></a>, which is a relation matching the specified type.
 </td>
 </tr>
@@ -344,9 +310,9 @@ Finds a relation that matches the specified type.</p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2571958"></a><h3>
+<a name="id2594881"></a><h3>
 <a name="atk-relation-set-add-relation-by-type"></a>atk_relation_set_add_relation_by_type ()</h3>
-<a class="indexterm" name="id2571975"></a><pre class="programlisting">void        atk_relation_set_add_relation_by_type
+<a class="indexterm" name="id2594898"></a><pre class="programlisting">void        atk_relation_set_add_relation_by_type
                                             (<a href="AtkRelationSet.html" title="AtkRelationSet">AtkRelationSet</a> *set,
                                              <a href="AtkRelation.html#AtkRelationType">AtkRelationType</a> relationship,
                                              <a href="AtkObject.html" title="AtkObject">AtkObject</a> *target);</pre>
@@ -362,20 +328,17 @@ is added to the relation.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>set</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelationSet.html" title="AtkRelationSet"><span class="type">AtkRelationSet</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>relationship</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>relationship</code></em>&#160;:</span></td>
 <td> an <a href="AtkRelation.html#AtkRelationType"><span class="type">AtkRelationType</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>target</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>target</code></em>&#160;:</span></td>
 <td> an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a>
 </td>
 </tr>

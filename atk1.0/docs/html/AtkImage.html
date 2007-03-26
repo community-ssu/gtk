@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkImage</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkHypertext.html" title="AtkHypertext">
@@ -28,20 +28,20 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkNoOpObject.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2544896" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2567530" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2545123" class="shortcut">Description</a>
+                  <a href="#id2567758" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2545075" class="shortcut">Object Hierarchy</a>
+                  <a href="#id2567711" class="shortcut">Object Hierarchy</a>
                   &#160;|&#160;
-                  <a href="#id2545100" class="shortcut">Known Implementations</a></nobr></td></tr>
+                  <a href="#id2567735" class="shortcut">Known Implementations</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkImage"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2544896"></a><span class="refentrytitle">AtkImage</span>
+<a name="id2567530"></a><span class="refentrytitle">AtkImage</span>
 </h2>
 <p>AtkImage &#8212; The ATK Interface implemented by components which expose image or pixmap
 content on-screen.</p>
@@ -56,38 +56,22 @@ content on-screen.</p>
 
             <a href="AtkImage.html#AtkImage-struct">AtkImage</a>;
 void        <a href="AtkImage.html#atk-image-get-image-position">atk_image_get_image_position</a>    (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *x,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *y,
+                                             gint *x,
+                                             gint *y,
                                              <a href="AtkUtil.html#AtkCoordType">AtkCoordType</a> coord_type);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkImage.html#atk-image-get-image-description">atk_image_get_image_description</a>
+const gchar* <a href="AtkImage.html#atk-image-get-image-description">atk_image_get_image_description</a>
                                             (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkImage.html#atk-image-set-image-description">atk_image_set_image_description</a> (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *description);
+gboolean    <a href="AtkImage.html#atk-image-set-image-description">atk_image_set_image_description</a> (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
+                                             const gchar *description);
 void        <a href="AtkImage.html#atk-image-get-image-size">atk_image_get_image_size</a>        (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *width,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *height);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkImage.html#atk-image-get-image-locale">atk_image_get_image_locale</a>     (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image);
+                                             gint *width,
+                                             gint *height);
+const gchar* <a href="AtkImage.html#atk-image-get-image-locale">atk_image_get_image_locale</a>     (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2545075"></a><h2>Object Hierarchy</h2>
+<a name="id2567711"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
   GInterface
@@ -95,13 +79,13 @@ href="../glib/glib-Basic-Types.html#gchar"
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2545100"></a><h2>Known Implementations</h2>
+<a name="id2567735"></a><h2>Known Implementations</h2>
 <p>
 AtkImage is implemented by
  <a href="AtkNoOpObject.html" title="AtkNoOpObject">AtkNoOpObject</a>.</p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2545123"></a><h2>Description</h2>
+<a name="id2567758"></a><h2>Description</h2>
 <p>
 <a href="AtkImage.html" title="AtkImage"><span class="type">AtkImage</span></a> should be implemented by <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> subtypes on behalf of
 components which display image/pixmap information onscreen, and which
@@ -118,11 +102,11 @@ most significant information present in the image.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2545182"></a><h2>Details</h2>
+<a name="id2567817"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2545192"></a><h3>
+<a name="id2567828"></a><h3>
 <a name="AtkImage-struct"></a>AtkImage</h3>
-<a class="indexterm" name="id2545205"></a><pre class="programlisting">typedef struct _AtkImage AtkImage;</pre>
+<a class="indexterm" name="id2567840"></a><pre class="programlisting">typedef struct _AtkImage AtkImage;</pre>
 <p>
 The AtkImage structure does not contain any fields.
 
@@ -130,15 +114,11 @@ The AtkImage structure does not contain any fields.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2545221"></a><h3>
+<a name="id2567856"></a><h3>
 <a name="atk-image-get-image-position"></a>atk_image_get_image_position ()</h3>
-<a class="indexterm" name="id2545234"></a><pre class="programlisting">void        atk_image_get_image_position    (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *x,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *y,
+<a class="indexterm" name="id2567869"></a><pre class="programlisting">void        atk_image_get_image_position    (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
+                                             gint *x,
+                                             gint *y,
                                              <a href="AtkUtil.html#AtkCoordType">AtkCoordType</a> coord_type);</pre>
 <p>
 Gets the position of the image in the form of a point specifying the
@@ -150,32 +130,22 @@ images top-left corner.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkImageIface
+<td><span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkImageIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>x</code></em>&#160;:</span></td>
-<td> address of <a
-href="../glib/glib-Basic-Types.html#gint"
-><span class="type">gint</span></a> to put x coordinate position; otherwise, -1 if value cannot be obtained.
+<td><span class="term"><em class="parameter"><code>x</code></em>&#160;:</span></td>
+<td> address of <span class="type">gint</span> to put x coordinate position; otherwise, -1 if value cannot be obtained.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>y</code></em>&#160;:</span></td>
-<td> address of <a
-href="../glib/glib-Basic-Types.html#gint"
-><span class="type">gint</span></a> to put y coordinate position; otherwise, -1 if value cannot be obtained.
+<td><span class="term"><em class="parameter"><code>y</code></em>&#160;:</span></td>
+<td> address of <span class="type">gint</span> to put y coordinate position; otherwise, -1 if value cannot be obtained.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>coord_type</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>coord_type</code></em>&#160;:</span></td>
 <td> specifies whether the coordinates are relative to the screen
 or to the components top level window
 </td>
@@ -185,11 +155,9 @@ or to the components top level window
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2545378"></a><h3>
+<a name="id2568013"></a><h3>
 <a name="atk-image-get-image-description"></a>atk_image_get_image_description ()</h3>
-<a class="indexterm" name="id2545391"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_image_get_image_description
+<a class="indexterm" name="id2568026"></a><pre class="programlisting">const gchar* atk_image_get_image_description
                                             (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image);</pre>
 <p>
 Get a textual description of this image.</p>
@@ -200,16 +168,12 @@ Get a textual description of this image.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkImageIface
+<td><span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkImageIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a string representing the image description
 </td>
 </tr>
@@ -218,14 +182,10 @@ href="../gobject/gobject-The-Base-Object-Type.html#GObject"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2545463"></a><h3>
+<a name="id2568098"></a><h3>
 <a name="atk-image-set-image-description"></a>atk_image_set_image_description ()</h3>
-<a class="indexterm" name="id2545476"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_image_set_image_description (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *description);</pre>
+<a class="indexterm" name="id2568112"></a><pre class="programlisting">gboolean    atk_image_set_image_description (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
+                                             const gchar *description);</pre>
 <p>
 Sets the textual description for this image.</p>
 <p>
@@ -235,22 +195,17 @@ Sets the textual description for this image.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkImageIface
+<td><span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkImageIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>description</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>description</code></em>&#160;:</span></td>
 <td> a string description to set for <em class="parameter"><code>image</code></em>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> boolean TRUE, or FALSE if operation could
 not be completed.
 </td>
@@ -260,15 +215,11 @@ not be completed.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2545574"></a><h3>
+<a name="id2568210"></a><h3>
 <a name="atk-image-get-image-size"></a>atk_image_get_image_size ()</h3>
-<a class="indexterm" name="id2545587"></a><pre class="programlisting">void        atk_image_get_image_size        (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *width,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> *height);</pre>
+<a class="indexterm" name="id2568223"></a><pre class="programlisting">void        atk_image_get_image_size        (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image,
+                                             gint *width,
+                                             gint *height);</pre>
 <p>
 Get the width and height in pixels for the specified image.
 The values of <em class="parameter"><code>width</code></em> and <em class="parameter"><code>height</code></em> are returned as -1 if the
@@ -280,22 +231,17 @@ values cannot be obtained (for instance, if the object is not onscreen).</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkImageIface
+<td><span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkImageIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>width</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>width</code></em>&#160;:</span></td>
 <td> filled with the image width, or -1 if the value cannot be obtained.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>height</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>height</code></em>&#160;:</span></td>
 <td> filled with the image height, or -1 if the value cannot be obtained.
 </td>
 </tr>
@@ -304,11 +250,9 @@ href="../gobject/gobject-The-Base-Object-Type.html#GObject"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2545705"></a><h3>
+<a name="id2568340"></a><h3>
 <a name="atk-image-get-image-locale"></a>atk_image_get_image_locale ()</h3>
-<a class="indexterm" name="id2545718"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_image_get_image_locale     (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image);</pre>
+<a class="indexterm" name="id2568354"></a><pre class="programlisting">const gchar* atk_image_get_image_locale     (<a href="AtkImage.html" title="AtkImage">AtkImage</a> *image);</pre>
 <p>
 Since ATK 1.12</p>
 <p>
@@ -318,14 +262,12 @@ Since ATK 1.12</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>image</code></em>&#160;:</span></td>
 <td> An <a href="AtkImage.html" title="AtkImage"><span class="type">AtkImage</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td>a string corresponding to the POSIX LC_MESSAGES locale used by the image description, or NULL if the image does not specify a locale. 
 
 </td>

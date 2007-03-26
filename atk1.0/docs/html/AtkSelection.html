@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkSelection</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkRelationSet.html" title="AtkRelationSet">
@@ -28,22 +28,22 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="atk-AtkState.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2573362" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2596284" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2573681" class="shortcut">Description</a>
+                  <a href="#id2596604" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2573583" class="shortcut">Object Hierarchy</a>
+                  <a href="#id2596506" class="shortcut">Object Hierarchy</a>
                   &#160;|&#160;
-                  <a href="#id2573608" class="shortcut">Known Implementations</a>
+                  <a href="#id2596531" class="shortcut">Known Implementations</a>
                   &#160;|&#160;
-                  <a href="#id2573631" class="shortcut">Signals</a></nobr></td></tr>
+                  <a href="#id2596554" class="shortcut">Signals</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkSelection"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2573362"></a><span class="refentrytitle">AtkSelection</span>
+<a name="id2596284"></a><span class="refentrytitle">AtkSelection</span>
 </h2>
 <p>AtkSelection &#8212; 
 The ATK interface implemented by container objects whose <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> children
@@ -58,44 +58,24 @@ can be selected.</p>
 
 
             <a href="AtkSelection.html#AtkSelection-struct">AtkSelection</a>;
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkSelection.html#atk-selection-add-selection">atk_selection_add_selection</a>     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkSelection.html#atk-selection-clear-selection">atk_selection_clear_selection</a>   (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);
+gboolean    <a href="AtkSelection.html#atk-selection-add-selection">atk_selection_add_selection</a>     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);
+gboolean    <a href="AtkSelection.html#atk-selection-clear-selection">atk_selection_clear_selection</a>   (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);
 <a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkSelection.html#atk-selection-ref-selection">atk_selection_ref_selection</a>     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-<a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        <a href="AtkSelection.html#atk-selection-get-selection-count">atk_selection_get_selection_count</a>
+                                             gint i);
+gint        <a href="AtkSelection.html#atk-selection-get-selection-count">atk_selection_get_selection_count</a>
                                             (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkSelection.html#atk-selection-is-child-selected">atk_selection_is_child_selected</a> (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkSelection.html#atk-selection-remove-selection">atk_selection_remove_selection</a>  (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkSelection.html#atk-selection-select-all-selection">atk_selection_select_all_selection</a>
+gboolean    <a href="AtkSelection.html#atk-selection-is-child-selected">atk_selection_is_child_selected</a> (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);
+gboolean    <a href="AtkSelection.html#atk-selection-remove-selection">atk_selection_remove_selection</a>  (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);
+gboolean    <a href="AtkSelection.html#atk-selection-select-all-selection">atk_selection_select_all_selection</a>
                                             (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2573583"></a><h2>Object Hierarchy</h2>
+<a name="id2596506"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
   GInterface
@@ -103,24 +83,22 @@ href="../glib/glib-Basic-Types.html#gboolean"
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2573608"></a><h2>Known Implementations</h2>
+<a name="id2596531"></a><h2>Known Implementations</h2>
 <p>
 AtkSelection is implemented by
  <a href="AtkNoOpObject.html" title="AtkNoOpObject">AtkNoOpObject</a>.</p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2573631"></a><h2>Signals</h2>
+<a name="id2596554"></a><h2>Signals</h2>
 <pre class="synopsis">
 
 "<a href="AtkSelection.html#AtkSelection-selection-changed">selection-changed</a>"
             void        user_function      (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *atkselection,
-                                            <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a>      user_data)         : Run last
+                                            gpointer      user_data)         : Run last
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2573681"></a><h2>Description</h2>
+<a name="id2596604"></a><h2>Description</h2>
 <p>
 <a href="AtkSelection.html" title="AtkSelection"><span class="type">AtkSelection</span></a> should be implemented by UI components with children which
 are exposed by <span class="type">atk_object_ref_child</span> and <span class="type">atk_object_get_n_children</span>, if
@@ -135,11 +113,11 @@ selection/deselection of children.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2573749"></a><h2>Details</h2>
+<a name="id2596672"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2573760"></a><h3>
+<a name="id2596683"></a><h3>
 <a name="AtkSelection-struct"></a>AtkSelection</h3>
-<a class="indexterm" name="id2573773"></a><pre class="programlisting">typedef struct _AtkSelection AtkSelection;</pre>
+<a class="indexterm" name="id2596696"></a><pre class="programlisting">typedef struct _AtkSelection AtkSelection;</pre>
 <p>
 The AtkAction structure does not contain any fields.
 
@@ -147,14 +125,10 @@ The AtkAction structure does not contain any fields.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2573789"></a><h3>
+<a name="id2596712"></a><h3>
 <a name="atk-selection-add-selection"></a>atk_selection_add_selection ()</h3>
-<a class="indexterm" name="id2573803"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_selection_add_selection     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2596726"></a><pre class="programlisting">gboolean    atk_selection_add_selection     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);</pre>
 <p>
 Adds the specified accessible child of the object to the
 object's selection.</p>
@@ -165,24 +139,17 @@ object's selection.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
-<td> a <a
-href="../glib/glib-Basic-Types.html#gint"
-><span class="type">gint</span></a> specifying the child index.
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td> a <span class="type">gint</span> specifying the child index.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> TRUE if success, FALSE otherwise.
 </td>
 </tr>
@@ -191,11 +158,9 @@ href="../glib/glib-Basic-Types.html#gint"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2573902"></a><h3>
+<a name="id2596826"></a><h3>
 <a name="atk-selection-clear-selection"></a>atk_selection_clear_selection ()</h3>
-<a class="indexterm" name="id2573916"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_selection_clear_selection   (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);</pre>
+<a class="indexterm" name="id2596839"></a><pre class="programlisting">gboolean    atk_selection_clear_selection   (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);</pre>
 <p>
 Clears the selection in the object so that no children in the object
 are selected.</p>
@@ -206,16 +171,12 @@ are selected.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> TRUE if success, FALSE otherwise.
 </td>
 </tr>
@@ -224,18 +185,14 @@ href="../gobject/gobject-The-Base-Object-Type.html#GObject"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2573987"></a><h3>
+<a name="id2596910"></a><h3>
 <a name="atk-selection-ref-selection"></a>atk_selection_ref_selection ()</h3>
-<a class="indexterm" name="id2574001"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_selection_ref_selection     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2596924"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_selection_ref_selection     (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);</pre>
 <p>
 Gets a reference to the accessible object representing the specified 
 selected child of the object.
-Note: callers should not rely on <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a> or on a zero value for
+Note: callers should not rely on <code class="literal">NULL</code> or on a zero value for
 indication of whether AtkSelectionIface is implemented, they should
 use type checking/interface checking macros or the
 <code class="function">atk_get_accessible_value()</code> convenience method.</p>
@@ -246,28 +203,19 @@ use type checking/interface checking macros or the
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
-<td> a <a
-href="../glib/glib-Basic-Types.html#gint"
-><span class="type">gint</span></a> specifying the index in the selection set.  (e.g. the
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td> a <span class="type">gint</span> specifying the index in the selection set.  (e.g. the
 ith selection as opposed to the ith child).
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td> an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> representing the selected accessible , or <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> representing the selected accessible , or <code class="literal">NULL</code>
 if <em class="parameter"><code>selection</code></em> does not implement this interface.
 </td>
 </tr>
@@ -276,17 +224,13 @@ if <em class="parameter"><code>selection</code></em> does not implement this int
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2574152"></a><h3>
+<a name="id2597075"></a><h3>
 <a name="atk-selection-get-selection-count"></a>atk_selection_get_selection_count ()</h3>
-<a class="indexterm" name="id2574166"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        atk_selection_get_selection_count
+<a class="indexterm" name="id2597089"></a><pre class="programlisting">gint        atk_selection_get_selection_count
                                             (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);</pre>
 <p>
 Gets the number of accessible children currently selected.
-Note: callers should not rely on <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a> or on a zero value for
+Note: callers should not rely on <code class="literal">NULL</code> or on a zero value for
 indication of whether AtkSelectionIface is implemented, they should
 use type checking/interface checking macros or the
 <code class="function">atk_get_accessible_value()</code> convenience method.</p>
@@ -297,16 +241,12 @@ use type checking/interface checking macros or the
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a gint representing the number of items selected, or 0
 if <em class="parameter"><code>selection</code></em> does not implement this interface.
 </td>
@@ -316,19 +256,13 @@ if <em class="parameter"><code>selection</code></em> does not implement this int
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2574268"></a><h3>
+<a name="id2597191"></a><h3>
 <a name="atk-selection-is-child-selected"></a>atk_selection_is_child_selected ()</h3>
-<a class="indexterm" name="id2574281"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_selection_is_child_selected (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2597204"></a><pre class="programlisting">gboolean    atk_selection_is_child_selected (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);</pre>
 <p>
 Determines if the current child of this object is selected
-Note: callers should not rely on <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a> or on a zero value for
+Note: callers should not rely on <code class="literal">NULL</code> or on a zero value for
 indication of whether AtkSelectionIface is implemented, they should
 use type checking/interface checking macros or the
 <code class="function">atk_get_accessible_value()</code> convenience method.</p>
@@ -339,24 +273,17 @@ use type checking/interface checking macros or the
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
-<td> a <a
-href="../glib/glib-Basic-Types.html#gint"
-><span class="type">gint</span></a> specifying the child index.
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td> a <span class="type">gint</span> specifying the child index.
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a gboolean representing the specified child is selected, or 0
 if <em class="parameter"><code>selection</code></em> does not implement this interface.
 </td>
@@ -366,14 +293,10 @@ if <em class="parameter"><code>selection</code></em> does not implement this int
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2574413"></a><h3>
+<a name="id2597336"></a><h3>
 <a name="atk-selection-remove-selection"></a>atk_selection_remove_selection ()</h3>
-<a class="indexterm" name="id2574426"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_selection_remove_selection  (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2597349"></a><pre class="programlisting">gboolean    atk_selection_remove_selection  (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection,
+                                             gint i);</pre>
 <p>
 Removes the specified child of the object from the object's selection.</p>
 <p>
@@ -383,25 +306,18 @@ Removes the specified child of the object from the object's selection.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
-<td> a <a
-href="../glib/glib-Basic-Types.html#gint"
-><span class="type">gint</span></a> specifying the index in the selection set.  (e.g. the
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td> a <span class="type">gint</span> specifying the index in the selection set.  (e.g. the
 ith selection as opposed to the ith child).
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> TRUE if success, FALSE otherwise.
 </td>
 </tr>
@@ -410,11 +326,9 @@ ith selection as opposed to the ith child).
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2574527"></a><h3>
+<a name="id2597450"></a><h3>
 <a name="atk-selection-select-all-selection"></a>atk_selection_select_all_selection ()</h3>
-<a class="indexterm" name="id2574542"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_selection_select_all_selection
+<a class="indexterm" name="id2597465"></a><pre class="programlisting">gboolean    atk_selection_select_all_selection
                                             (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *selection);</pre>
 <p>
 Causes every child of the object to be selected if the object
@@ -426,16 +340,12 @@ supports multiple selections.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkSelectionIface
+<td><span class="term"><em class="parameter"><code>selection</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkSelectionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> TRUE if success, FALSE otherwise.
 </td>
 </tr>
@@ -444,14 +354,12 @@ href="../gobject/gobject-The-Base-Object-Type.html#GObject"
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2574614"></a><h2>Signal Details</h2>
+<a name="id2597537"></a><h2>Signal Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2574624"></a><h3>
+<a name="id2597548"></a><h3>
 <a name="AtkSelection-selection-changed"></a>The "selection-changed" signal</h3>
-<a class="indexterm" name="id2574636"></a><pre class="programlisting">void        user_function                  (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *atkselection,
-                                            <a
-href="../glib/glib-Basic-Types.html#gpointer"
->gpointer</a>      user_data)         : Run last</pre>
+<a class="indexterm" name="id2597559"></a><pre class="programlisting">void        user_function                  (<a href="AtkSelection.html" title="AtkSelection">AtkSelection</a> *atkselection,
+                                            gpointer      user_data)         : Run last</pre>
 <p>
 The "selection-changed" signal is emitted by an object which implements 
 AtkSelection interface when the selection changes.
@@ -460,15 +368,13 @@ AtkSelection interface when the selection changes.
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>atkselection</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>atkselection</code></em>&#160;:</span></td>
 <td>the object which received the signal.
 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>user_data</code></em>&#160;:</span></td>
 <td>user data set when the signal handler was connected.</td>
 </tr>
 </tbody>
@@ -476,7 +382,7 @@ AtkSelection interface when the selection changes.
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2574709"></a><h2>See Also</h2>
+<a name="id2597632"></a><h2>See Also</h2>
 <p>
 <a href="AtkText.html" title="AtkText"><span class="type">AtkText</span></a>
 </p>

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkHyperlinkImpl</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkHyperlink.html" title="AtkHyperlink">
@@ -28,16 +28,16 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkHypertext.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2542922" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2565546" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2542965" class="shortcut">Description</a></nobr></td></tr>
+                  <a href="#id2565590" class="shortcut">Description</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="atk-AtkHyperlinkImpl"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2542922"></a><span class="refentrytitle">AtkHyperlinkImpl</span>
+<a name="id2565546"></a><span class="refentrytitle">AtkHyperlinkImpl</span>
 </h2>
 <p>AtkHyperlinkImpl &#8212; An interface from which the AtkHyperlink associated with an
 AtkObject may be obtained.</p>
@@ -57,7 +57,7 @@ AtkObject may be obtained.</p>
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2542965"></a><h2>Description</h2>
+<a name="id2565590"></a><h2>Description</h2>
 <p>
 AtkHyperlinkImpl allows AtkObjects to
 refer to their associated AtkHyperlink instance, if one
@@ -76,20 +76,24 @@ followed by AtkHyperlink:getObject.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2542992"></a><h2>Details</h2>
+<a name="id2565617"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2543002"></a><h3>
+<a name="id2565627"></a><h3>
 <a name="AtkHyperlinkImpl"></a>AtkHyperlinkImpl</h3>
-<a class="indexterm" name="id2543014"></a><pre class="programlisting">typedef struct _AtkHyperlinkImpl AtkHyperlinkImpl;</pre>
+<a class="indexterm" name="id2565640"></a><pre class="programlisting">typedef struct _AtkHyperlinkImpl AtkHyperlinkImpl;</pre>
 <p>
-
+A queryable interface which allows AtkHyperlink instances associated with an 
+AtkObject to be obtained.  AtkHyperlinkImpl corresponds to AT-SPI's 
+Hyperlink interface, and differs from AtkHyperlink in that AtkHyperlink 
+is an object type, rather than an interface, and thus cannot be directly 
+queried.
 </p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2543030"></a><h3>
+<a name="id2565660"></a><h3>
 <a name="atk-hyperlink-impl-get-hyperlink"></a>atk_hyperlink_impl_get_hyperlink ()</h3>
-<a class="indexterm" name="id2543045"></a><pre class="programlisting"><a href="AtkHyperlink.html" title="AtkHyperlink">AtkHyperlink</a>* atk_hyperlink_impl_get_hyperlink
+<a class="indexterm" name="id2565676"></a><pre class="programlisting"><a href="AtkHyperlink.html" title="AtkHyperlink">AtkHyperlink</a>* atk_hyperlink_impl_get_hyperlink
                                             (<a href="atk-AtkHyperlinkImpl.html#AtkHyperlinkImpl">AtkHyperlinkImpl</a> *obj);</pre>
 <p>
 Gets the hyperlink associated with this object.</p>
@@ -100,14 +104,12 @@ Gets the hyperlink associated with this object.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
 <td> a GObject instance that implements AtkHyperlinkImplIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td>an AtkHyperlink object which points to this implementing AtkObject.
 
 </td>

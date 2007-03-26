@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkNoOpObjectFactory</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkNoOpObject.html" title="AtkNoOpObject">
@@ -28,18 +28,18 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkObject.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2546693" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2568778" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2547515" class="shortcut">Description</a>
+                  <a href="#id2570150" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2547483" class="shortcut">Object Hierarchy</a></nobr></td></tr>
+                  <a href="#id2570118" class="shortcut">Object Hierarchy</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkNoOpObjectFactory"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2546693"></a><span class="refentrytitle">AtkNoOpObjectFactory</span>
+<a name="id2568778"></a><span class="refentrytitle">AtkNoOpObjectFactory</span>
 </h2>
 <p>AtkNoOpObjectFactory &#8212; The AtkObjectFactory which creates an AtkNoOpObject.</p>
 </td>
@@ -58,18 +58,16 @@
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2547483"></a><h2>Object Hierarchy</h2>
+<a name="id2570118"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a>
          +----AtkNoOpObjectFactory
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2547515"></a><h2>Description</h2>
+<a name="id2570150"></a><h2>Description</h2>
 <p>
 The AtkObjectFactory which creates an AtkNoOpObject. An instance of this is
 created by an AtkRegistry if no factory type has not been specified to
@@ -77,11 +75,11 @@ create an accessible object of a particular type.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2547533"></a><h2>Details</h2>
+<a name="id2570168"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2547543"></a><h3>
+<a name="id2570178"></a><h3>
 <a name="AtkNoOpObjectFactory-struct"></a>AtkNoOpObjectFactory</h3>
-<a class="indexterm" name="id2547556"></a><pre class="programlisting">typedef struct _AtkNoOpObjectFactory AtkNoOpObjectFactory;</pre>
+<a class="indexterm" name="id2570191"></a><pre class="programlisting">typedef struct _AtkNoOpObjectFactory AtkNoOpObjectFactory;</pre>
 <p>
 The AtkNoOpObjectFactory structure should not be accessed directly.
 
@@ -89,9 +87,9 @@ The AtkNoOpObjectFactory structure should not be accessed directly.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2547573"></a><h3>
+<a name="id2570208"></a><h3>
 <a name="atk-no-op-object-factory-new"></a>atk_no_op_object_factory_new ()</h3>
-<a class="indexterm" name="id2547586"></a><pre class="programlisting"><a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a>* atk_no_op_object_factory_new
+<a class="indexterm" name="id2570221"></a><pre class="programlisting"><a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a>* atk_no_op_object_factory_new
                                             (void);</pre>
 <p>
 Creates an instance of an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> which generates primitive
@@ -102,8 +100,7 @@ Creates an instance of an <a href="AtkObjectFactory.html" title="AtkObjectFactor
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> an instance of an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>
 </td>
 </tr></tbody>

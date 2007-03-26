@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkNoOpObject</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkImage.html" title="AtkImage">
@@ -28,20 +28,20 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkNoOpObjectFactory.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2546739" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2569373" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2546897" class="shortcut">Description</a>
+                  <a href="#id2569532" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2546780" class="shortcut">Object Hierarchy</a>
+                  <a href="#id2569415" class="shortcut">Object Hierarchy</a>
                   &#160;|&#160;
-                  <a href="#id2546811" class="shortcut">Implemented Interfaces</a></nobr></td></tr>
+                  <a href="#id2569446" class="shortcut">Implemented Interfaces</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkNoOpObject"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2546739"></a><span class="refentrytitle">AtkNoOpObject</span>
+<a name="id2569373"></a><span class="refentrytitle">AtkNoOpObject</span>
 </h2>
 <p>AtkNoOpObject &#8212; An AtkObject which purports to implement all ATK interfaces.</p>
 </td>
@@ -54,31 +54,27 @@
 
 
             <a href="AtkNoOpObject.html#AtkNoOpObject-struct">AtkNoOpObject</a>;
-<a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkNoOpObject.html#atk-no-op-object-new">atk_no_op_object_new</a>            (<a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a> *obj);
+<a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkNoOpObject.html#atk-no-op-object-new">atk_no_op_object_new</a>            (GObject *obj);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2546780"></a><h2>Object Hierarchy</h2>
+<a name="id2569415"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----<a href="AtkObject.html" title="AtkObject">AtkObject</a>
          +----AtkNoOpObject
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2546811"></a><h2>Implemented Interfaces</h2>
+<a name="id2569446"></a><h2>Implemented Interfaces</h2>
 <p>
 AtkNoOpObject implements
  <a href="AtkAction.html" title="AtkAction">AtkAction</a>,  <a href="AtkComponent.html" title="AtkComponent">AtkComponent</a>,  <a href="AtkDocument.html" title="AtkDocument">AtkDocument</a>,  <a href="AtkEditableText.html" title="AtkEditableText">AtkEditableText</a>,  <a href="AtkHypertext.html" title="AtkHypertext">AtkHypertext</a>,  <a href="AtkImage.html" title="AtkImage">AtkImage</a>,  <a href="AtkSelection.html" title="AtkSelection">AtkSelection</a>,  <a href="AtkTable.html" title="AtkTable">AtkTable</a>,  <a href="AtkText.html" title="AtkText">AtkText</a> and  <a href="AtkValue.html" title="AtkValue">AtkValue</a>.</p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2546897"></a><h2>Description</h2>
+<a name="id2569532"></a><h2>Description</h2>
 <p>
 An AtkNoOpObject is an AtkObject which purports to implement all ATK 
 interfaces. It is the type of AtkObject which is created if an accessible
@@ -86,22 +82,20 @@ object is requested for an object type for which no factory type is specified.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2546915"></a><h2>Details</h2>
+<a name="id2569550"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2546925"></a><h3>
+<a name="id2569560"></a><h3>
 <a name="AtkNoOpObject-struct"></a>AtkNoOpObject</h3>
-<a class="indexterm" name="id2546938"></a><pre class="programlisting">typedef struct _AtkNoOpObject AtkNoOpObject;</pre>
+<a class="indexterm" name="id2569574"></a><pre class="programlisting">typedef struct _AtkNoOpObject AtkNoOpObject;</pre>
 <p>
 The AtkNoOpObject structure should not be accessed directly.
 </p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2546955"></a><h3>
+<a name="id2569590"></a><h3>
 <a name="atk-no-op-object-new"></a>atk_no_op_object_new ()</h3>
-<a class="indexterm" name="id2546968"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_no_op_object_new            (<a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a> *obj);</pre>
+<a class="indexterm" name="id2569603"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_no_op_object_new            (GObject *obj);</pre>
 <p>
 Provides a default (non-functioning stub) <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a>.
 Application maintainers should not use this method.</p>
@@ -112,16 +106,12 @@ Application maintainers should not use this method.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a>
+<td><span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a default (non-functioning stub) <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a>
 </td>
 </tr>

@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkAction</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="atk.html" title="ATK Library">
@@ -28,20 +28,20 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkComponent.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2516169" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2538705" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2525131" class="shortcut">Description</a>
+                  <a href="#id2547665" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2478936" class="shortcut">Object Hierarchy</a>
+                  <a href="#id2503668" class="shortcut">Object Hierarchy</a>
                   &#160;|&#160;
-                  <a href="#id2525100" class="shortcut">Known Implementations</a></nobr></td></tr>
+                  <a href="#id2547634" class="shortcut">Known Implementations</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkAction"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2516169"></a><span class="refentrytitle">AtkAction</span>
+<a name="id2538705"></a><span class="refentrytitle">AtkAction</span>
 </h2>
 <p>AtkAction &#8212; The ATK interface provided by UI components which the user can
 activate/interact with,</p>
@@ -55,53 +55,25 @@ activate/interact with,</p>
 
 
             <a href="AtkAction.html#AtkAction-struct">AtkAction</a>;
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkAction.html#atk-action-do-action">atk_action_do_action</a>            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-<a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        <a href="AtkAction.html#atk-action-get-n-actions">atk_action_get_n_actions</a>        (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkAction.html#atk-action-get-description">atk_action_get_description</a>     (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkAction.html#atk-action-get-name">atk_action_get_name</a>            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkAction.html#atk-action-get-localized-name">atk_action_get_localized_name</a>  (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* <a href="AtkAction.html#atk-action-get-keybinding">atk_action_get_keybinding</a>      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);
-<a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    <a href="AtkAction.html#atk-action-set-description">atk_action_set_description</a>      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *desc);
+gboolean    <a href="AtkAction.html#atk-action-do-action">atk_action_do_action</a>            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);
+gint        <a href="AtkAction.html#atk-action-get-n-actions">atk_action_get_n_actions</a>        (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action);
+const gchar* <a href="AtkAction.html#atk-action-get-description">atk_action_get_description</a>     (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);
+const gchar* <a href="AtkAction.html#atk-action-get-name">atk_action_get_name</a>            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);
+const gchar* <a href="AtkAction.html#atk-action-get-localized-name">atk_action_get_localized_name</a>  (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);
+const gchar* <a href="AtkAction.html#atk-action-get-keybinding">atk_action_get_keybinding</a>      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);
+gboolean    <a href="AtkAction.html#atk-action-set-description">atk_action_set_description</a>      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i,
+                                             const gchar *desc);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2478936"></a><h2>Object Hierarchy</h2>
+<a name="id2503668"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
   GInterface
@@ -109,13 +81,13 @@ href="../glib/glib-Basic-Types.html#gchar"
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2525100"></a><h2>Known Implementations</h2>
+<a name="id2547634"></a><h2>Known Implementations</h2>
 <p>
 AtkAction is implemented by
  <a href="AtkHyperlink.html" title="AtkHyperlink">AtkHyperlink</a> and  <a href="AtkNoOpObject.html" title="AtkNoOpObject">AtkNoOpObject</a>.</p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2525131"></a><h2>Description</h2>
+<a name="id2547665"></a><h2>Description</h2>
 <p>
 <a href="AtkAction.html" title="AtkAction"><span class="type">AtkAction</span></a> should be implemented by instances of <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> classes with
 which the user can interact directly, i.e. buttons, checkboxes,
@@ -147,25 +119,21 @@ terminology for <a href="AtkAction.html" title="AtkAction"><span class="type">At
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2525245"></a><h2>Details</h2>
+<a name="id2547780"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2525256"></a><h3>
+<a name="id2547790"></a><h3>
 <a name="AtkAction-struct"></a>AtkAction</h3>
-<a class="indexterm" name="id2525268"></a><pre class="programlisting">typedef struct _AtkAction AtkAction;</pre>
+<a class="indexterm" name="id2547802"></a><pre class="programlisting">typedef struct _AtkAction AtkAction;</pre>
 <p>
 The AtkAction structure does not contain any fields.
 </p>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525284"></a><h3>
+<a name="id2547818"></a><h3>
 <a name="atk-action-do-action"></a>atk_action_do_action ()</h3>
-<a class="indexterm" name="id2525297"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_action_do_action            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2547831"></a><pre class="programlisting">gboolean    atk_action_do_action            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);</pre>
 <p>
 Perform the specified action on the object.</p>
 <p>
@@ -175,27 +143,18 @@ Perform the specified action on the object.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> the action index corresponding to the action to be performed 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td> <a
-href="../glib/glib-Standard-Macros.html#TRUE:CAPS"
-><code class="literal">TRUE</code></a> if success, <a
-href="../glib/glib-Standard-Macros.html#FALSE:CAPS"
-><code class="literal">FALSE</code></a> otherwise
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> <code class="literal">TRUE</code> if success, <code class="literal">FALSE</code> otherwise
 
 </td>
 </tr>
@@ -204,11 +163,9 @@ href="../glib/glib-Standard-Macros.html#FALSE:CAPS"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525414"></a><h3>
+<a name="id2547948"></a><h3>
 <a name="atk-action-get-n-actions"></a>atk_action_get_n_actions ()</h3>
-<a class="indexterm" name="id2525426"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a>        atk_action_get_n_actions        (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action);</pre>
+<a class="indexterm" name="id2547960"></a><pre class="programlisting">gint        atk_action_get_n_actions        (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action);</pre>
 <p>
 Gets the number of accessible actions available on the object.
 If there are more than one, the first one is considered the
@@ -220,16 +177,12 @@ If there are more than one, the first one is considered the
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a the number of actions, or 0 if <em class="parameter"><code>action</code></em> does not
 implement this interface.
 </td>
@@ -239,14 +192,10 @@ implement this interface.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525502"></a><h3>
+<a name="id2548036"></a><h3>
 <a name="atk-action-get-description"></a>atk_action_get_description ()</h3>
-<a class="indexterm" name="id2525515"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_action_get_description     (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2548049"></a><pre class="programlisting">const gchar* atk_action_get_description     (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);</pre>
 <p>
 Returns a description of the specified action of the object.</p>
 <p>
@@ -256,25 +205,18 @@ Returns a description of the specified action of the object.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> the action index corresponding to the action to be performed 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td>a description string, or <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>a description string, or <code class="literal">NULL</code>
 if <em class="parameter"><code>action</code></em> does not implement this interface.
 </td>
 </tr>
@@ -283,16 +225,26 @@ if <em class="parameter"><code>action</code></em> does not implement this interf
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525626"></a><h3>
+<a name="id2548160"></a><h3>
 <a name="atk-action-get-name"></a>atk_action_get_name ()</h3>
-<a class="indexterm" name="id2525639"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_action_get_name            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2548173"></a><pre class="programlisting">const gchar* atk_action_get_name            (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);</pre>
 <p>
-Returns the name of the specified action of the object.</p>
+Returns a non-localized string naming the specified action of the 
+object. This name is generally not descriptive of the end result 
+of the action, but instead names the 'interaction type' which the 
+object supports. By convention, the above strings should be used to 
+represent the actions which correspond to the common point-and-click 
+interaction techniques of the same name: i.e. 
+"click", "press", "release", "drag", "drop", "popup", etc.
+The "popup" action should be used to pop up a context menu for the 
+object, if one exists.
+</p>
+<p>
+For technical reasons, some toolkits cannot guarantee that the 
+reported action is actually 'bound' to a nontrivial user event;
+i.e. the result of some actions via <a href="AtkAction.html#atk-action-do-action"><code class="function">atk_action_do_action()</code></a> may be
+NIL.</p>
 <p>
 
 </p>
@@ -300,25 +252,18 @@ Returns the name of the specified action of the object.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> the action index corresponding to the action to be performed 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td>a name string, or <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>a name string, or <code class="literal">NULL</code>
 if <em class="parameter"><code>action</code></em> does not implement this interface.
 </td>
 </tr>
@@ -327,14 +272,10 @@ if <em class="parameter"><code>action</code></em> does not implement this interf
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525748"></a><h3>
+<a name="id2548307"></a><h3>
 <a name="atk-action-get-localized-name"></a>atk_action_get_localized_name ()</h3>
-<a class="indexterm" name="id2525761"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_action_get_localized_name  (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2548321"></a><pre class="programlisting">const gchar* atk_action_get_localized_name  (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);</pre>
 <p>
 Returns the localized name of the specified action of the object.</p>
 <p>
@@ -344,25 +285,18 @@ Returns the localized name of the specified action of the object.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> the action index corresponding to the action to be performed 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td>a name string, or <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>a name string, or <code class="literal">NULL</code>
 if <em class="parameter"><code>action</code></em> does not implement this interface.
 </td>
 </tr>
@@ -371,16 +305,22 @@ if <em class="parameter"><code>action</code></em> does not implement this interf
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525871"></a><h3>
+<a name="id2548430"></a><h3>
 <a name="atk-action-get-keybinding"></a>atk_action_get_keybinding ()</h3>
-<a class="indexterm" name="id2525884"></a><pre class="programlisting">const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a>* atk_action_get_keybinding      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i);</pre>
+<a class="indexterm" name="id2548444"></a><pre class="programlisting">const gchar* atk_action_get_keybinding      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i);</pre>
 <p>
-Returns a keybinding associated with this action, if one exists.</p>
+Returns a keybinding associated with this action, if one exists.
+The returned string is in the format "&lt;a&gt;;&lt;b&gt;;&lt;c&gt;"
+(i.e. semicolon-delimited), where &lt;a&gt; is the keybinding which
+activates the object if it is presently enabled onscreen, 
+&lt;b&gt; corresponds to the keybinding or sequence of keys
+which invokes the action even if the relevant element is not
+currently posted on screen (for instance, for a menu item it
+posts the parent menus before invoking).  The last token in the
+above string, if non-empty, represents a keyboard shortcut which
+invokes the same action without posting the component or its
+enclosing menus or dialogs.</p>
 <p>
 
 </p>
@@ -388,25 +328,18 @@ Returns a keybinding associated with this action, if one exists.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> the action index corresponding to the action to be performed 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td>a string representing the keybinding, or <a
-href="../liboil/liboil-liboiljunk.html#NULL:CAPS"
-><code class="literal">NULL</code></a>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td>a string representing the available keybindings, or <code class="literal">NULL</code>
 if there is no keybinding for this action.
 
 </td>
@@ -416,17 +349,11 @@ if there is no keybinding for this action.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2525988"></a><h3>
+<a name="id2548579"></a><h3>
 <a name="atk-action-set-description"></a>atk_action_set_description ()</h3>
-<a class="indexterm" name="id2526001"></a><pre class="programlisting"><a
-href="../glib/glib-Basic-Types.html#gboolean"
->gboolean</a>    atk_action_set_description      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
-                                             <a
-href="../glib/glib-Basic-Types.html#gint"
->gint</a> i,
-                                             const <a
-href="../glib/glib-Basic-Types.html#gchar"
->gchar</a> *desc);</pre>
+<a class="indexterm" name="id2548593"></a><pre class="programlisting">gboolean    atk_action_set_description      (<a href="AtkAction.html" title="AtkAction">AtkAction</a> *action,
+                                             gint i,
+                                             const gchar *desc);</pre>
 <p>
 Sets a description of the specified action of the object.</p>
 <p>
@@ -436,28 +363,22 @@ Sets a description of the specified action of the object.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> instance that implements AtkActionIface
+<td><span class="term"><em class="parameter"><code>action</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> instance that implements AtkActionIface
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>i</code></em>&#160;:</span></td>
 <td> the action index corresponding to the action to be performed 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>desc</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>desc</code></em>&#160;:</span></td>
 <td> the description to be assigned to this action
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a gboolean representing if the description was successfully set;
 </td>
 </tr>

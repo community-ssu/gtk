@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkRegistry</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkObjectFactory.html" title="AtkObjectFactory">
@@ -28,18 +28,18 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkRelation.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2565833" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2588712" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2565992" class="shortcut">Description</a>
+                  <a href="#id2588872" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2565967" class="shortcut">Object Hierarchy</a></nobr></td></tr>
+                  <a href="#id2588848" class="shortcut">Object Hierarchy</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkRegistry"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2565833"></a><span class="refentrytitle">AtkRegistry</span>
+<a name="id2588712"></a><span class="refentrytitle">AtkRegistry</span>
 </h2>
 <p>AtkRegistry &#8212; An object used to store the GType of the factories used to create an accessible
 object for an object of a particular GType.</p>
@@ -54,38 +54,26 @@ object for an object of a particular GType.</p>
 
             <a href="AtkRegistry.html#AtkRegistry-struct">AtkRegistry</a>;
 void        <a href="AtkRegistry.html#atk-registry-set-factory-type">atk_registry_set_factory_type</a>   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> type,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> factory_type);
-<a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a>       <a href="AtkRegistry.html#atk-registry-get-factory-type">atk_registry_get_factory_type</a>   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> type);
+                                             GType type,
+                                             GType factory_type);
+GType       <a href="AtkRegistry.html#atk-registry-get-factory-type">atk_registry_get_factory_type</a>   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
+                                             GType type);
 <a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a>* <a href="AtkRegistry.html#atk-registry-get-factory">atk_registry_get_factory</a>  (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> type);
+                                             GType type);
 <a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a>* <a href="AtkRegistry.html#atk-get-default-registry">atk_get_default_registry</a>       (void);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2565967"></a><h2>Object Hierarchy</h2>
+<a name="id2588848"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----AtkRegistry
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2565992"></a><h2>Description</h2>
+<a name="id2588872"></a><h2>Description</h2>
 <p>
 The AtkRegistry is normally used to create appropriate ATK "peers" for user
 interface components.  Application developers usually need only interact with
@@ -95,11 +83,11 @@ appropriate GType for application custom widget classes.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2566012"></a><h2>Details</h2>
+<a name="id2588893"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2566022"></a><h3>
+<a name="id2588903"></a><h3>
 <a name="AtkRegistry-struct"></a>AtkRegistry</h3>
-<a class="indexterm" name="id2566036"></a><pre class="programlisting">typedef struct _AtkRegistry AtkRegistry;</pre>
+<a class="indexterm" name="id2588916"></a><pre class="programlisting">typedef struct _AtkRegistry AtkRegistry;</pre>
 <p>
 The AtkRegistry structure should not be accessed directly.
 
@@ -107,19 +95,13 @@ The AtkRegistry structure should not be accessed directly.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2566052"></a><h3>
+<a name="id2588932"></a><h3>
 <a name="atk-registry-set-factory-type"></a>atk_registry_set_factory_type ()</h3>
-<a class="indexterm" name="id2566066"></a><pre class="programlisting">void        atk_registry_set_factory_type   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> type,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> factory_type);</pre>
+<a class="indexterm" name="id2588946"></a><pre class="programlisting">void        atk_registry_set_factory_type   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
+                                             GType type,
+                                             GType factory_type);</pre>
 <p>
-Associate an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> subclass with a <a
-href="../gobject/gobject-Type-Information.html#GType"
-><span class="type">GType</span></a>. Note:
+Associate an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> subclass with a <span class="type">GType</span>. Note:
 The associated <em class="parameter"><code>factory_type</code></em> will thereafter be responsible for
 the creation of new <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> implementations for instances
 appropriate for <em class="parameter"><code>type</code></em>.</p>
@@ -130,20 +112,17 @@ appropriate for <em class="parameter"><code>type</code></em>.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>registry</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>registry</code></em>&#160;:</span></td>
 <td> the <a href="AtkRegistry.html" title="AtkRegistry"><span class="type">AtkRegistry</span></a> in which to register the type association
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
 <td> an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> type 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>factory_type</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>factory_type</code></em>&#160;:</span></td>
 <td> an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> type to associate with <em class="parameter"><code>type</code></em>.  Must
 implement AtkObject appropriate for <em class="parameter"><code>type</code></em>.
 </td>
@@ -153,18 +132,12 @@ implement AtkObject appropriate for <em class="parameter"><code>type</code></em>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2566234"></a><h3>
+<a name="id2589115"></a><h3>
 <a name="atk-registry-get-factory-type"></a>atk_registry_get_factory_type ()</h3>
-<a class="indexterm" name="id2566248"></a><pre class="programlisting"><a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a>       atk_registry_get_factory_type   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> type);</pre>
+<a class="indexterm" name="id2589129"></a><pre class="programlisting">GType       atk_registry_get_factory_type   (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
+                                             GType type);</pre>
 <p>
-Provides a <a
-href="../gobject/gobject-Type-Information.html#GType"
-><span class="type">GType</span></a> indicating the <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> subclass
+Provides a <span class="type">GType</span> indicating the <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> subclass
 associated with <em class="parameter"><code>type</code></em>.</p>
 <p>
 
@@ -173,26 +146,19 @@ associated with <em class="parameter"><code>type</code></em>.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>registry</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>registry</code></em>&#160;:</span></td>
 <td> an <a href="AtkRegistry.html" title="AtkRegistry"><span class="type">AtkRegistry</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-Type-Information.html#GType"
-><span class="type">GType</span></a> with which to look up the associated <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>
+<td><span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
+<td> a <span class="type">GType</span> with which to look up the associated <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>
 subclass
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-Type-Information.html#GType"
-><span class="type">GType</span></a> associated with type <em class="parameter"><code>type</code></em>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td> a <span class="type">GType</span> associated with type <em class="parameter"><code>type</code></em>
 </td>
 </tr>
 </tbody>
@@ -200,12 +166,10 @@ href="../gobject/gobject-Type-Information.html#GType"
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2566391"></a><h3>
+<a name="id2589271"></a><h3>
 <a name="atk-registry-get-factory"></a>atk_registry_get_factory ()</h3>
-<a class="indexterm" name="id2566404"></a><pre class="programlisting"><a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a>* atk_registry_get_factory  (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
-                                             <a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a> type);</pre>
+<a class="indexterm" name="id2589285"></a><pre class="programlisting"><a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a>* atk_registry_get_factory  (<a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a> *registry,
+                                             GType type);</pre>
 <p>
 Gets an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> appropriate for creating <span class="type">AtkObjects</span>
 appropriate for <em class="parameter"><code>type</code></em>.</p>
@@ -216,22 +180,17 @@ appropriate for <em class="parameter"><code>type</code></em>.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>registry</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>registry</code></em>&#160;:</span></td>
 <td> an <a href="AtkRegistry.html" title="AtkRegistry"><span class="type">AtkRegistry</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-Type-Information.html#GType"
-><span class="type">GType</span></a> with which to look up the associated <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>
+<td><span class="term"><em class="parameter"><code>type</code></em>&#160;:</span></td>
+<td> a <span class="type">GType</span> with which to look up the associated <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> appropriate for creating <span class="type">AtkObjects</span>
 appropriate for <em class="parameter"><code>type</code></em>.
 </td>
@@ -241,9 +200,9 @@ appropriate for <em class="parameter"><code>type</code></em>.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2566555"></a><h3>
+<a name="id2589436"></a><h3>
 <a name="atk-get-default-registry"></a>atk_get_default_registry ()</h3>
-<a class="indexterm" name="id2566568"></a><pre class="programlisting"><a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a>* atk_get_default_registry       (void);</pre>
+<a class="indexterm" name="id2589449"></a><pre class="programlisting"><a href="AtkRegistry.html" title="AtkRegistry">AtkRegistry</a>* atk_get_default_registry       (void);</pre>
 <p>
 Gets a default implementation of the <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>/type
 registry.
@@ -258,8 +217,7 @@ for whom accessibility information will be provided.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> a default implementation of the <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a>/type
 registry
 </td>

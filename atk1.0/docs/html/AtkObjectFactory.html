@@ -3,7 +3,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=US-ASCII">
 <title>AtkObjectFactory</title>
-<meta name="generator" content="DocBook XSL Stylesheets V1.68.1">
+<meta name="generator" content="DocBook XSL Stylesheets V1.71.0">
 <link rel="start" href="index.html" title="ATK - Accessibility Toolkit">
 <link rel="up" href="atk.html" title="ATK Library">
 <link rel="prev" href="AtkObject.html" title="AtkObject">
@@ -28,18 +28,18 @@
 <th width="100%" align="center">ATK - Accessibility Toolkit</th>
 <td><a accesskey="n" href="AtkRegistry.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
-<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2564651" class="shortcut">Top</a>
+<tr><td colspan="5" class="shortcuts"><nobr><a href="#id2587531" class="shortcut">Top</a>
                   &#160;|&#160;
-                  <a href="#id2564784" class="shortcut">Description</a>
+                  <a href="#id2587665" class="shortcut">Description</a>
                   &#160;|&#160;
-                  <a href="#id2564751" class="shortcut">Object Hierarchy</a></nobr></td></tr>
+                  <a href="#id2587632" class="shortcut">Object Hierarchy</a></nobr></td></tr>
 </table>
 <div class="refentry" lang="en">
 <a name="AtkObjectFactory"></a><div class="titlepage"></div>
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2>
-<a name="id2564651"></a><span class="refentrytitle">AtkObjectFactory</span>
+<a name="id2587531"></a><span class="refentrytitle">AtkObjectFactory</span>
 </h2>
 <p>AtkObjectFactory &#8212; The base object class for a factory used to create accessible objects for 
 objects of a specific GType.</p>
@@ -55,30 +55,24 @@ objects of a specific GType.</p>
             <a href="AtkObjectFactory.html#AtkObjectFactory-struct">AtkObjectFactory</a>;
 <a href="AtkObject.html" title="AtkObject">AtkObject</a>*  <a href="AtkObjectFactory.html#atk-object-factory-create-accessible">atk_object_factory_create_accessible</a>
                                             (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory,
-                                             <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a> *obj);
-<a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a>       <a href="AtkObjectFactory.html#atk-object-factory-get-accessible-type">atk_object_factory_get_accessible_type</a>
+                                             GObject *obj);
+GType       <a href="AtkObjectFactory.html#atk-object-factory-get-accessible-type">atk_object_factory_get_accessible_type</a>
                                             (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory);
 void        <a href="AtkObjectFactory.html#atk-object-factory-invalidate">atk_object_factory_invalidate</a>   (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory);
 
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2564751"></a><h2>Object Hierarchy</h2>
+<a name="id2587632"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
 
-  <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a>
+  GObject
    +----AtkObjectFactory
          +----<a href="AtkNoOpObjectFactory.html" title="AtkNoOpObjectFactory">AtkNoOpObjectFactory</a>
 </pre>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2564784"></a><h2>Description</h2>
+<a name="id2587665"></a><h2>Description</h2>
 <p>
 This class is the base object class for a factory used to create an 
 accessible object for a specific GType. The function 
@@ -88,11 +82,11 @@ particular GType.
 </p>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2564816"></a><h2>Details</h2>
+<a name="id2587696"></a><h2>Details</h2>
 <div class="refsect2" lang="en">
-<a name="id2564826"></a><h3>
+<a name="id2587707"></a><h3>
 <a name="AtkObjectFactory-struct"></a>AtkObjectFactory</h3>
-<a class="indexterm" name="id2564839"></a><pre class="programlisting">typedef struct _AtkObjectFactory AtkObjectFactory;</pre>
+<a class="indexterm" name="id2587720"></a><pre class="programlisting">typedef struct _AtkObjectFactory AtkObjectFactory;</pre>
 <p>
 The AtkObjectFactory structure should not be accessed directly.
 
@@ -100,13 +94,11 @@ The AtkObjectFactory structure should not be accessed directly.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2564856"></a><h3>
+<a name="id2587737"></a><h3>
 <a name="atk-object-factory-create-accessible"></a>atk_object_factory_create_accessible ()</h3>
-<a class="indexterm" name="id2564869"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_object_factory_create_accessible
+<a class="indexterm" name="id2587750"></a><pre class="programlisting"><a href="AtkObject.html" title="AtkObject">AtkObject</a>*  atk_object_factory_create_accessible
                                             (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory,
-                                             <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
->GObject</a> *obj);</pre>
+                                             GObject *obj);</pre>
 <p>
 Provides an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> that implements an accessibility interface 
 on behalf of <em class="parameter"><code>obj</code></em></p>
@@ -117,23 +109,18 @@ on behalf of <em class="parameter"><code>obj</code></em></p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>factory</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>factory</code></em>&#160;:</span></td>
 <td> The <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> associated with <em class="parameter"><code>obj</code></em>'s
 object type
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
-<td> a <a
-href="../gobject/gobject-The-Base-Object-Type.html#GObject"
-><span class="type">GObject</span></a> 
+<td><span class="term"><em class="parameter"><code>obj</code></em>&#160;:</span></td>
+<td> a <span class="type">GObject</span> 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> an <a href="AtkObject.html" title="AtkObject"><span class="type">AtkObject</span></a> that implements an accessibility interface
 on behalf of <em class="parameter"><code>obj</code></em>
 </td>
@@ -143,11 +130,9 @@ on behalf of <em class="parameter"><code>obj</code></em>
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2565001"></a><h3>
+<a name="id2587882"></a><h3>
 <a name="atk-object-factory-get-accessible-type"></a>atk_object_factory_get_accessible_type ()</h3>
-<a class="indexterm" name="id2565015"></a><pre class="programlisting"><a
-href="../gobject/gobject-Type-Information.html#GType"
->GType</a>       atk_object_factory_get_accessible_type
+<a class="indexterm" name="id2587896"></a><pre class="programlisting">GType       atk_object_factory_get_accessible_type
                                             (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory);</pre>
 <p>
 Gets the GType of the accessible which is created by the factory.</p>
@@ -158,14 +143,12 @@ Gets the GType of the accessible which is created by the factory.</p>
 <col align="left" valign="top">
 <tbody>
 <tr>
-<td>
-<span class="term"><em class="parameter"><code>factory</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>factory</code></em>&#160;:</span></td>
 <td> an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> 
 </td>
 </tr>
 <tr>
-<td>
-<span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
+<td><span class="term"><span class="emphasis"><em>Returns</em></span>&#160;:</span></td>
 <td> the type of the accessible which is created by the <em class="parameter"><code>factory</code></em>.
 The value G_TYPE_INVALID is returned if no type if found.
 </td>
@@ -175,9 +158,9 @@ The value G_TYPE_INVALID is returned if no type if found.
 </div>
 <hr>
 <div class="refsect2" lang="en">
-<a name="id2565093"></a><h3>
+<a name="id2587974"></a><h3>
 <a name="atk-object-factory-invalidate"></a>atk_object_factory_invalidate ()</h3>
-<a class="indexterm" name="id2565107"></a><pre class="programlisting">void        atk_object_factory_invalidate   (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory);</pre>
+<a class="indexterm" name="id2587988"></a><pre class="programlisting">void        atk_object_factory_invalidate   (<a href="AtkObjectFactory.html" title="AtkObjectFactory">AtkObjectFactory</a> *factory);</pre>
 <p>
 Inform <em class="parameter"><code>factory</code></em> that it is no longer being used to create
 accessibles. When called, <em class="parameter"><code>factory</code></em> may need to inform
@@ -190,8 +173,7 @@ in object registries.</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
-<td>
-<span class="term"><em class="parameter"><code>factory</code></em>&#160;:</span></td>
+<td><span class="term"><em class="parameter"><code>factory</code></em>&#160;:</span></td>
 <td> an <a href="AtkObjectFactory.html" title="AtkObjectFactory"><span class="type">AtkObjectFactory</span></a> to invalidate
 </td>
 </tr></tbody>
@@ -199,7 +181,7 @@ in object registries.</p>
 </div>
 </div>
 <div class="refsect1" lang="en">
-<a name="id2565200"></a><h2>See Also</h2>
+<a name="id2588081"></a><h2>See Also</h2>
 <p>
 AtkRegistry
 
