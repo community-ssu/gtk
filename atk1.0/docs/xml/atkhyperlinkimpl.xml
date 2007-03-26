@@ -1,19 +1,16 @@
 <refentry id="atk-AtkHyperlinkImpl">
 <refmeta>
-<refentrytitle role="top_of_page">AtkHyperlinkImpl</refentrytitle>
+<refentrytitle>AtkHyperlinkImpl</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkHyperlinkImpl</refname>
-<refpurpose>An interface from which the AtkHyperlink associated with an
+<refname>AtkHyperlinkImpl</refname><refpurpose>An interface from which the AtkHyperlink associated with an
 AtkObject may be obtained.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -34,8 +31,8 @@ AtkObject may be obtained.</refpurpose>
 
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 AtkHyperlinkImpl allows AtkObjects to
 refer to their associated AtkHyperlink instance, if one
@@ -54,16 +51,20 @@ followed by AtkHyperlink:getObject.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkHyperlinkImpl" role="struct"/>AtkHyperlinkImpl</title>
+<title><anchor id="AtkHyperlinkImpl"/>AtkHyperlinkImpl</title>
 <indexterm><primary>AtkHyperlinkImpl</primary></indexterm><programlisting>typedef struct _AtkHyperlinkImpl AtkHyperlinkImpl;</programlisting>
 <para>
-
+A queryable interface which allows AtkHyperlink instances associated with an 
+AtkObject to be obtained.  AtkHyperlinkImpl corresponds to AT-SPI's 
+Hyperlink interface, and differs from AtkHyperlink in that AtkHyperlink 
+is an object type, rather than an interface, and thus cannot be directly 
+queried.
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-impl-get-hyperlink" role="function" condition="since:ATK 1.12"/>atk_hyperlink_impl_get_hyperlink ()</title>
+<title><anchor id="atk-hyperlink-impl-get-hyperlink"/>atk_hyperlink_impl_get_hyperlink ()</title>
 <indexterm role="ATK 1.12"><primary>atk_hyperlink_impl_get_hyperlink</primary></indexterm><programlisting><link linkend="AtkHyperlink">AtkHyperlink</link>* atk_hyperlink_impl_get_hyperlink
                                             (<link linkend="AtkHyperlinkImpl">AtkHyperlinkImpl</link> *obj);</programlisting>
 <para>

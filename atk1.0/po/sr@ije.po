@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: atk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
 "PO-Revision-Date: 2004-08-06 19:34+0200\n"
 "Last-Translator: Bojan Suzic <bojans@teol.net>\n"
 "Language-Team: Serbian (sr) <gnom@prevod.org>\n"
@@ -381,7 +381,7 @@ msgstr "заглавље"
 #: atk/atkobject.c:164
 #, fuzzy
 msgid "page"
-msgstr "панел"
+msgstr "слика"
 
 #: atk/atkobject.c:165
 msgid "section"

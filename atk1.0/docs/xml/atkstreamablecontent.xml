@@ -1,18 +1,15 @@
 <refentry id="AtkStreamableContent">
 <refmeta>
-<refentrytitle role="top_of_page">AtkStreamableContent</refentrytitle>
+<refentrytitle>AtkStreamableContent</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkStreamableContent</refname>
-<refpurpose>The ATK interface which provides access to streamable content.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+<refname>AtkStreamableContent</refname><refpurpose>The ATK interface which provides access to streamable content.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -33,8 +30,8 @@ const <link linkend="gchar">gchar</link>* <link linkend="atk-streamable-content-
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GInterface">GInterface</link>
@@ -50,8 +47,8 @@ const <link linkend="gchar">gchar</link>* <link linkend="atk-streamable-content-
 
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 An interface whereby an object allows its backing content to be streamed to
 clients.  Typical implementors would be images or icons, HTML content, or
@@ -72,17 +69,17 @@ a particular document, but may in some cases give access to the underlying model
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkStreamableContent-struct" role="struct"/>AtkStreamableContent</title>
+<title><anchor id="AtkStreamableContent-struct"/>AtkStreamableContent</title>
 <indexterm><primary>AtkStreamableContent</primary></indexterm><programlisting>typedef struct _AtkStreamableContent AtkStreamableContent;</programlisting>
 <para>
 The AtkStreamableContent structure does not contain any fields.
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-streamable-content-get-n-mime-types" role="function"/>atk_streamable_content_get_n_mime_types ()</title>
+<title><anchor id="atk-streamable-content-get-n-mime-types"/>atk_streamable_content_get_n_mime_types ()</title>
 <indexterm><primary>atk_streamable_content_get_n_mime_types</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_streamable_content_get_n_mime_types
                                             (<link linkend="AtkStreamableContent">AtkStreamableContent</link> *streamable);</programlisting>
 <para>
@@ -97,7 +94,7 @@ Gets the number of mime types supported by this object.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-streamable-content-get-mime-type" role="function"/>atk_streamable_content_get_mime_type ()</title>
+<title><anchor id="atk-streamable-content-get-mime-type"/>atk_streamable_content_get_mime_type ()</title>
 <indexterm><primary>atk_streamable_content_get_mime_type</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_streamable_content_get_mime_type
                                             (<link linkend="AtkStreamableContent">AtkStreamableContent</link> *streamable,
                                              <link linkend="gint">gint</link> i);</programlisting>
@@ -118,7 +115,7 @@ should not free the character string.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-streamable-content-get-stream" role="function"/>atk_streamable_content_get_stream ()</title>
+<title><anchor id="atk-streamable-content-get-stream"/>atk_streamable_content_get_stream ()</title>
 <indexterm><primary>atk_streamable_content_get_stream</primary></indexterm><programlisting><link linkend="GIOChannel">GIOChannel</link>* atk_streamable_content_get_stream
                                             (<link linkend="AtkStreamableContent">AtkStreamableContent</link> *streamable,
                                              const <link linkend="gchar">gchar</link> *mime_type);</programlisting>
@@ -138,7 +135,7 @@ type.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-streamable-content-get-uri" role="function" condition="since:ATK 1.12"/>atk_streamable_content_get_uri ()</title>
+<title><anchor id="atk-streamable-content-get-uri"/>atk_streamable_content_get_uri ()</title>
 <indexterm role="ATK 1.12"><primary>atk_streamable_content_get_uri</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*      atk_streamable_content_get_uri  (<link linkend="AtkStreamableContent">AtkStreamableContent</link> *streamable,
                                              const <link linkend="gchar">gchar</link> *mime_type);</programlisting>
 <para>

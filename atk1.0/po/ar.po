@@ -1,32 +1,36 @@
-# translation of atk.HEAD.ar.po to 
+# translation of atk.HEAD.ar.po to Arabic
 # translation of atk.HEAD.ar.po to
-# translation of atk.po to Arabic
-# translation of atk.gnome-2-2.po to Arabic
+# translation of atk.HEAD.ar.po to
 # This file is distributed under the same license as the atk.HEAD.ar package.
 # Copyright (C) 2003 THE atk.HEAD.ar'S COPYRIGHT HOLDER
+#
 # Arafat Medini <lumina@silverpen.de>, 2003.
 # Arafat Medini <kinryu@silverpen.de>, 2004.
-# 
-# 
+# Djihed Afifi <djihed@gmail.com>, 2006.
+# Khaled Hosny <khaledhosny@eglug.org>, 2007.
 msgid ""
 msgstr ""
 "Project-Id-Version: atk.HEAD.ar\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
-"PO-Revision-Date: 2005-02-24 20:12+0100\n"
-"Last-Translator:  <kinryu@silverpen.de>\n"
-"Language-Team:  <en@li.org>\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
+"PO-Revision-Date: 2007-01-19 18:52+0200\n"
+"Last-Translator: Khaled Hosny <khaledhosny@eglug.org>\n"
+"Language-Team: Arabic <doc@arabeyes.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Arabic\n"
+"X-Generator: KBabel 1.11.4\n"
+"Plural-Forms: Plural-Forms: nplurals=4; plural=n==1 ? 0 : n==2 ? 1 : n>=3 && "
+"n<=10 ? 2 : 3\n"
 
 #: atk/atkhyperlink.c:103
 msgid "Selected Link"
-msgstr "الوصلة المنتقات"
+msgstr "الوصلة المنتقاة"
 
 #: atk/atkhyperlink.c:104
 msgid "Specifies whether the AtkHyperlink object is selected"
-msgstr "يحدد فيما اذا وجب انتقاء جسم AtkHyperlink"
+msgstr "يحدد فيما اذا انتُقِيَ كائِن AtkHyperlink"
 
 #: atk/atkhyperlink.c:110
 msgid "Number of Anchors"
@@ -34,7 +38,7 @@ msgstr "عدد المثبتات"
 
 #: atk/atkhyperlink.c:111
 msgid "The number of anchors associated with the AtkHyperlink object"
-msgstr "عدد المثبتات المربوطة بجسم AtkHyperlink"
+msgstr "عدد المثبتات المرتبطة بكائن AtkHyperlink"
 
 #: atk/atkhyperlink.c:119
 msgid "End index"
@@ -42,15 +46,15 @@ msgstr "الفهرس النهائي"
 
 #: atk/atkhyperlink.c:120
 msgid "The end index of the AtkHyperlink object"
-msgstr "مؤشر النهاية لجسم AtkHyperlink"
+msgstr "الفهرس النهائي لكائن AtkHyperlink"
 
 #: atk/atkhyperlink.c:128
 msgid "Start index"
-msgstr "الفهرس البدائي"
+msgstr "فهرس البداية"
 
 #: atk/atkhyperlink.c:129
 msgid "The start index of the AtkHyperlink object"
-msgstr "مؤشر البداية لجسم AtkHyperlink"
+msgstr "فهرس البداية لكائن AtkHyperlink"
 
 #: atk/atkobject.c:82
 msgid "invalid"
@@ -74,11 +78,11 @@ msgstr "سهم"
 
 #: atk/atkobject.c:87
 msgid "calendar"
-msgstr "رزنامة"
+msgstr "تقويم"
 
 #: atk/atkobject.c:88
 msgid "canvas"
-msgstr "مساحة رسم"
+msgstr "لوح رسم"
 
 #: atk/atkobject.c:89
 msgid "check box"
@@ -86,7 +90,7 @@ msgstr "صندوق ضبط"
 
 #: atk/atkobject.c:90
 msgid "check menu item"
-msgstr "ضبط عنصر القائمة"
+msgstr "عنصر قائمة ضبط"
 
 #: atk/atkobject.c:91
 msgid "color chooser"
@@ -94,11 +98,11 @@ msgstr "مختار الألوان"
 
 #: atk/atkobject.c:92
 msgid "column header"
-msgstr "ترويسة العمود"
+msgstr "رأس العمود"
 
 #: atk/atkobject.c:93
 msgid "combo box"
-msgstr "صندوق مجموعة"
+msgstr "صندوق مركب"
 
 #: atk/atkobject.c:94
 msgid "dateeditor"
@@ -122,7 +126,7 @@ msgstr "حوار"
 
 #: atk/atkobject.c:99
 msgid "directory pane"
-msgstr "شباك الدلائل"
+msgstr "لوح الدلائل"
 
 #: atk/atkobject.c:100
 msgid "drawing area"
@@ -147,7 +151,7 @@ msgstr "إطار"
 
 #: atk/atkobject.c:106
 msgid "glass pane"
-msgstr "شباك بلوري"
+msgstr "لوح بلوري"
 
 #: atk/atkobject.c:107
 msgid "html container"
@@ -171,7 +175,7 @@ msgstr "شارة"
 
 #: atk/atkobject.c:112
 msgid "layered pane"
-msgstr "شباك ذي مستويات"
+msgstr "لوح ذي مستويات"
 
 #: atk/atkobject.c:113
 msgid "list"
@@ -187,7 +191,7 @@ msgstr "قائمة"
 
 #: atk/atkobject.c:116
 msgid "menu bar"
-msgstr "عمود قائمة"
+msgstr "شريط قوائم"
 
 #: atk/atkobject.c:117
 msgid "menu item"
@@ -195,7 +199,7 @@ msgstr "عنصر قائمة"
 
 #: atk/atkobject.c:118
 msgid "option pane"
-msgstr "شباك الخيارات"
+msgstr "لوح خيارات"
 
 #: atk/atkobject.c:119
 msgid "page tab"
@@ -215,39 +219,39 @@ msgstr "نص كلمة السر"
 
 #: atk/atkobject.c:123
 msgid "popup menu"
-msgstr "قائمة بارزة"
+msgstr "قائمة منبثقة"
 
 #: atk/atkobject.c:124
 msgid "progress bar"
-msgstr "عمود التقدم"
+msgstr "شريط التقدم"
 
 #: atk/atkobject.c:125
 msgid "push button"
-msgstr "زر الضغط"
+msgstr "زر ضغط"
 
 #: atk/atkobject.c:126
 msgid "radio button"
-msgstr "زر مشع"
+msgstr "زر مذياع"
 
 #: atk/atkobject.c:127
 msgid "radio menu item"
-msgstr "عنصر قائمة مشع"
+msgstr "عنصر قائمة مذياعي"
 
 #: atk/atkobject.c:128
 msgid "root pane"
-msgstr "شباك الجذر"
+msgstr "اللوح الجذر"
 
 #: atk/atkobject.c:129
 msgid "row header"
-msgstr "ترويسة السطر"
+msgstr "رأس الصف"
 
 #: atk/atkobject.c:130
 msgid "scroll bar"
-msgstr "عمود اللف"
+msgstr "شريط اللف"
 
 #: atk/atkobject.c:131
 msgid "scroll pane"
-msgstr "شباك اللف"
+msgstr "لوح اللف"
 
 #: atk/atkobject.c:132
 msgid "separator"
@@ -259,7 +263,7 @@ msgstr "مزلق"
 
 #: atk/atkobject.c:134
 msgid "split pane"
-msgstr "شباك الإنقسام"
+msgstr "لوح الإنقسام"
 
 #: atk/atkobject.c:135
 msgid "spin button"
@@ -267,7 +271,7 @@ msgstr "زر تدوير"
 
 #: atk/atkobject.c:136
 msgid "statusbar"
-msgstr "عمود الحالة"
+msgstr "شريط الحالة"
 
 #: atk/atkobject.c:137
 msgid "table"
@@ -279,19 +283,19 @@ msgstr "خلية الجدول"
 
 #: atk/atkobject.c:139
 msgid "table column header"
-msgstr "ترويسة عمود الجدول"
+msgstr "رأس عمود الجدول"
 
 #: atk/atkobject.c:140
 msgid "table row header"
-msgstr "ترويسة سطر الجدول"
+msgstr "رأس صف الجدول"
 
 #: atk/atkobject.c:141
 msgid "tear off menu item"
-msgstr "قلع عنصر القائمة"
+msgstr "افصِل عنصر القائمة"
 
 #: atk/atkobject.c:142
 msgid "terminal"
-msgstr "شاشة طرفية"
+msgstr "طرفية"
 
 #: atk/atkobject.c:143
 msgid "text"
@@ -299,15 +303,15 @@ msgstr "نص"
 
 #: atk/atkobject.c:144
 msgid "toggle button"
-msgstr "زر التحول"
+msgstr "زر تبديل"
 
 #: atk/atkobject.c:145
 msgid "tool bar"
-msgstr "عمود الأدوات"
+msgstr "شريط الأدوات"
 
 #: atk/atkobject.c:146
 msgid "tool tip"
-msgstr "تلميحة عن اﻷدوات"
+msgstr "تلميحة أداه"
 
 #: atk/atkobject.c:147
 msgid "tree"
@@ -347,11 +351,11 @@ msgstr "تطبيق"
 
 #: atk/atkobject.c:156
 msgid "autocomplete"
-msgstr "إنهاء آلي"
+msgstr "أكمل آليا"
 
 #: atk/atkobject.c:157
 msgid "edit bar"
-msgstr "تحرير العمود"
+msgstr "حرّر الشريط"
 
 #: atk/atkobject.c:158
 msgid "embedded component"
@@ -359,45 +363,39 @@ msgstr "مكوّن مضمّن"
 
 #: atk/atkobject.c:159
 msgid "entry"
-msgstr ""
+msgstr "خانة"
 
 #: atk/atkobject.c:160
-#, fuzzy
 msgid "chart"
-msgstr "تنبيه"
+msgstr "شكل"
 
 #: atk/atkobject.c:161
-#, fuzzy
 msgid "caption"
-msgstr "تطبيق"
+msgstr "عنوان"
 
 #: atk/atkobject.c:162
-#, fuzzy
 msgid "document frame"
-msgstr "إطار المكتب"
+msgstr "إطار المستند"
 
 #: atk/atkobject.c:163
-#, fuzzy
 msgid "heading"
-msgstr "ترويسة"
+msgstr "ترويس"
 
 #: atk/atkobject.c:164
-#, fuzzy
 msgid "page"
-msgstr "شريط"
+msgstr "صفحة"
 
 #: atk/atkobject.c:165
 msgid "section"
-msgstr ""
+msgstr "فصل"
 
 #: atk/atkobject.c:166
 msgid "redundant object"
-msgstr ""
+msgstr "كائن فائض"
 
 #: atk/atkobject.c:167
-#, fuzzy
 msgid "form"
-msgstr "إطار"
+msgstr "نموذج"
 
 #: atk/atkobject.c:356
 msgid "Accessible Name"
@@ -405,7 +403,7 @@ msgstr "اسم ممكن النفاذ إليه"
 
 #: atk/atkobject.c:357
 msgid "Object instance's name formatted for assistive technology access"
-msgstr "اسم نموذج الجسم المهيئ للاستخدام من قبل التكنولوجيا المعينة"
+msgstr "اسم نموذج الكائن المهيئ للاستخدام من قبل التقنية المعينة"
 
 #: atk/atkobject.c:363
 msgid "Accessible Description"
@@ -413,7 +411,7 @@ msgstr "وصف ممكن النفاذ إليه"
 
 #: atk/atkobject.c:364
 msgid "Description of an object, formatted for assistive technology access"
-msgstr "وصف جسم، مهيئ للنفاذ عبره إلى تكنولوجيا مساعدة المعوقين"
+msgstr "وصف جسم، مهيئ للنفاذ عبره إلى تقنية مساعدة المعوقين"
 
 #: atk/atkobject.c:370
 msgid "Accessible Parent"
@@ -421,7 +419,7 @@ msgstr "أب يمكن النفاذ إليه"
 
 #: atk/atkobject.c:371
 msgid "Is used to notify that the parent has changed"
-msgstr "مستخدم للتبليغ عن تغير الأب"
+msgstr "يستخدم للتبليغ عن تغير الأب"
 
 #: atk/atkobject.c:377
 msgid "Accessible Value"
@@ -429,7 +427,7 @@ msgstr "قيمة يمكن النفاذ إليها"
 
 #: atk/atkobject.c:378
 msgid "Is used to notify that the value has changed"
-msgstr "مستخدم للتبليغ عن تغير القيمة"
+msgstr "يستخدم للتبليغ عن تغير القيمة"
 
 #: atk/atkobject.c:386
 msgid "Accessible Role"
@@ -437,7 +435,7 @@ msgstr "دور ميسر"
 
 #: atk/atkobject.c:387
 msgid "The accessible role of this object"
-msgstr "الدور الميسر لهذا الجسم"
+msgstr "الدور الميسر لهذا الكائن"
 
 #: atk/atkobject.c:395
 msgid "Accessible Layer"
@@ -445,7 +443,7 @@ msgstr "طبقة ميسرة"
 
 #: atk/atkobject.c:396
 msgid "The accessible layer of this object"
-msgstr "الطبقة الميسرة لهذا الجسم"
+msgstr "الطبقة الميسرة لهذا الكائن"
 
 #: atk/atkobject.c:404
 msgid "Accessible MDI Value"
@@ -464,16 +462,16 @@ msgid ""
 "Is used to notify that the table caption has changed; this property should "
 "not be used. accessible-table-caption-object should be used instead"
 msgstr ""
-"مستخدم للتبليغ عن تغيير العنوان الفرعي للجدول،من المفروض عدم استخدامهذه "
+"يستخدم للتبليغ عن تغيير العنوان الفرعي للجدول،من المفروض عدم استخدامهذه "
 "الخاصية. من المفروض استخدام accessible-table-caption-object عوضا عنها."
 
 #: atk/atkobject.c:420
 msgid "Accessible Table Column Header"
-msgstr "ترويسة عمود الجدول الميسرة"
+msgstr "رأس عمود الجدول الميسر"
 
 #: atk/atkobject.c:421
 msgid "Is used to notify that the table column header has changed"
-msgstr "مستخدم للتبليغ عن تغير ترويسة عمود الجدول"
+msgstr "يستخدم للتبليغ عن تغير رأس عمود الجدول"
 
 #: atk/atkobject.c:427
 msgid "Accessible Table Column Description"
@@ -481,7 +479,7 @@ msgstr "الوصف الميسر لعمود الجدول"
 
 #: atk/atkobject.c:428
 msgid "Is used to notify that the table column description has changed"
-msgstr "مستخدم للتبليغ عن تغير وصف عمود الجدول"
+msgstr "يستخدم للتبليغ عن تغير وصف عمود الجدول"
 
 #: atk/atkobject.c:434
 msgid "Accessible Table Row Header"
@@ -489,7 +487,7 @@ msgstr "ترويسة صف الجدول الميسرة"
 
 #: atk/atkobject.c:435
 msgid "Is used to notify that the table row header has changed"
-msgstr "مستخدم للتبليغ عن تغير ترويسة صف الجدول"
+msgstr "يستخدم للتبليغ عن تغير ترويسة صف الجدول"
 
 #: atk/atkobject.c:441
 msgid "Accessible Table Row Description"
@@ -497,7 +495,7 @@ msgstr "الوصف الميسر لصف الجدول"
 
 #: atk/atkobject.c:442
 msgid "Is used to notify that the table row description has changed"
-msgstr "مستخدم للتبليغ عن تغير وصف صف الجدول"
+msgstr "يستخدم للتبليغ عن تغير وصف صف الجدول"
 
 #: atk/atkobject.c:448
 msgid "Accessible Table Summary"
@@ -505,7 +503,7 @@ msgstr "خلاصة الجدول الميسرة"
 
 #: atk/atkobject.c:449
 msgid "Is used to notify that the table summary has changed"
-msgstr "مستخدم للتبليغ عن تغير خلاصة الجدول"
+msgstr "يستخدم للتبليغ عن تغير خلاصة الجدول"
 
 #: atk/atkobject.c:455
 msgid "Accessible Table Caption Object"
@@ -513,11 +511,11 @@ msgstr "جسم العنوان الفرعي للجدول الداعم للإعا�
 
 #: atk/atkobject.c:456
 msgid "Is used to notify that the table caption has changed"
-msgstr "مستخدم للتبليغ عن تغيير العنوان الفرعي للجدول"
+msgstr "يستخدم للتبليغ عن تغيير العنوان الفرعي للجدول"
 
 #: atk/atkobject.c:462
 msgid "Number of Accessible Hypertext Links"
-msgstr "عدد الوصلات النّصّيّة الدّاعمة للإعانة"
+msgstr "عدد وصلات النّصّ الفائق الدّاعمة للإعانة"
 
 #: atk/atkobject.c:463
 msgid "The number of links which the current AtkHypertext has"

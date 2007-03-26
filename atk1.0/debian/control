@@ -1,7 +1,7 @@
 Source: atk1.0
 Section: libs
 Priority: optional
-Maintainer: Tommi Komulainen <tommi.komulainen@nokia.com>
+Maintainer: Xan Lopez <xan.lopez@nokia.com>
 Build-Depends: debhelper (>= 4.0.0), pkg-config, libglib2.0-dev (>= 2.5.7), cdbs, gtk-doc-tools, docbook-xml
 Standards-Version: 3.7.2
 

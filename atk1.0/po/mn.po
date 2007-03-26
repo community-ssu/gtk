@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mn\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
 "PO-Revision-Date: 2004-08-06 08:38+0200\n"
 "Last-Translator: Sanlig Badral <badral@users.sourceforge.net>\n"
 "Language-Team: Mongolian <openmn-translation@lists.sourceforge.net>\n"
@@ -383,7 +383,7 @@ msgstr "толгой"
 #: atk/atkobject.c:164
 #, fuzzy
 msgid "page"
-msgstr "Удирдах самбар"
+msgstr "Зураг"
 
 #: atk/atkobject.c:165
 msgid "section"

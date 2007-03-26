@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: atk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
-"PO-Revision-Date: 2006-07-23 16:46+0200\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
+"PO-Revision-Date: 2007-01-18 16:46+0200\n"
 "Last-Translator: Maxim Dziumanenko <dziumanenko@gmail.com>\n"
 "Language-Team: Ukrainian <uk@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,7 +18,7 @@ msgstr ""
 
 #: atk/atkhyperlink.c:103
 msgid "Selected Link"
-msgstr "Виділене посилання"
+msgstr "Посилання виділене"
 
 #: atk/atkhyperlink.c:104
 msgid "Specifies whether the AtkHyperlink object is selected"
@@ -26,11 +26,11 @@ msgstr "Вказує, чи виділений об'єкт AtkHyperlink"
 
 #: atk/atkhyperlink.c:110
 msgid "Number of Anchors"
-msgstr "Кількість прив'язок"
+msgstr "Кількість якорів"
 
 #: atk/atkhyperlink.c:111
 msgid "The number of anchors associated with the AtkHyperlink object"
-msgstr "Кількість прив'язок, пов'язаних з AtkHyperlink об'єктом"
+msgstr "Кількість якорів, пов'язаних з об'єктом AtkHyperlink"
 
 #: atk/atkhyperlink.c:119
 msgid "End index"
@@ -50,11 +50,11 @@ msgstr "Початковий індекс об'єкту AtkHyperlink"
 
 #: atk/atkobject.c:82
 msgid "invalid"
-msgstr "недопустимий"
+msgstr "неприпустимий"
 
 #: atk/atkobject.c:83
 msgid "accelerator label"
-msgstr "позначка прискорювача"
+msgstr "позначка комбінації клавіш"
 
 #: atk/atkobject.c:84
 msgid "alert"
@@ -90,7 +90,7 @@ msgstr "вибір кольору"
 
 #: atk/atkobject.c:92
 msgid "column header"
-msgstr "заголовок стовпця"
+msgstr "заголовок стовпчика"
 
 #: atk/atkobject.c:93
 msgid "combo box"
@@ -102,11 +102,11 @@ msgstr "редактор дати"
 
 #: atk/atkobject.c:95
 msgid "desktop icon"
-msgstr "значок стільниці"
+msgstr "значок робочого столу"
 
 #: atk/atkobject.c:96
 msgid "desktop frame"
-msgstr "рамка стільниці"
+msgstr "рамка робочого столу"
 
 #: atk/atkobject.c:97
 msgid "dial"
@@ -215,7 +215,7 @@ msgstr "контекстне меню"
 
 #: atk/atkobject.c:124
 msgid "progress bar"
-msgstr "індикатор перебігу"
+msgstr "індикатор поступу"
 
 #: atk/atkobject.c:125
 msgid "push button"
@@ -223,7 +223,7 @@ msgstr "звичайна кнопка"
 
 #: atk/atkobject.c:126
 msgid "radio button"
-msgstr "кнопка перемикач"
+msgstr "кнопка-перемикач"
 
 #: atk/atkobject.c:127
 msgid "radio menu item"
@@ -255,7 +255,7 @@ msgstr "повзунок"
 
 #: atk/atkobject.c:134
 msgid "split pane"
-msgstr "подвійна панель"
+msgstr "розділена панель"
 
 #: atk/atkobject.c:135
 msgid "spin button"
@@ -271,11 +271,11 @@ msgstr "таблиця"
 
 #: atk/atkobject.c:138
 msgid "table cell"
-msgstr "клітинка-таблиці"
+msgstr "клітинка таблиці"
 
 #: atk/atkobject.c:139
 msgid "table column header"
-msgstr "заголовок стовпця таблиці"
+msgstr "заголовок стовпчика таблиці"
 
 #: atk/atkobject.c:140
 msgid "table row header"
@@ -295,7 +295,7 @@ msgstr "текст"
 
 #: atk/atkobject.c:144
 msgid "toggle button"
-msgstr "кнопка-вимикач"
+msgstr "кнопка-перемикач"
 
 #: atk/atkobject.c:145
 msgid "tool bar"
@@ -339,7 +339,7 @@ msgstr "абзац"
 
 #: atk/atkobject.c:155
 msgid "application"
-msgstr "додаток"
+msgstr "програма"
 
 #: atk/atkobject.c:156
 msgid "autocomplete"
@@ -391,16 +391,16 @@ msgstr "форма"
 
 #: atk/atkobject.c:356
 msgid "Accessible Name"
-msgstr "Допоміжна назва"
+msgstr "Назва об'єкту"
 
 #: atk/atkobject.c:357
 msgid "Object instance's name formatted for assistive technology access"
 msgstr ""
-"Ім'я екземпляру об'єкта для доступу з використанням допоміжних технологій"
+"Назва екземпляру об'єкту для доступу з використанням допоміжних технологій"
 
 #: atk/atkobject.c:363
 msgid "Accessible Description"
-msgstr "Допоміжний опис"
+msgstr "Опис об'єкту"
 
 #: atk/atkobject.c:364
 msgid "Description of an object, formatted for assistive technology access"
@@ -408,7 +408,7 @@ msgstr "Опис об'єкта для доступу з використання
 
 #: atk/atkobject.c:370
 msgid "Accessible Parent"
-msgstr "Допоміжний предок"
+msgstr "Батьківський об'єкт"
 
 #: atk/atkobject.c:371
 msgid "Is used to notify that the parent has changed"
@@ -416,7 +416,7 @@ msgstr "Використовується для сповіщення про зм
 
 #: atk/atkobject.c:377
 msgid "Accessible Value"
-msgstr "Допоміжне значення"
+msgstr "Значення об'єкту"
 
 #: atk/atkobject.c:378
 msgid "Is used to notify that the value has changed"
@@ -424,15 +424,15 @@ msgstr "Використовується для сповіщення, що зн�
 
 #: atk/atkobject.c:386
 msgid "Accessible Role"
-msgstr "Допоміжна роль"
+msgstr "Роль об'єкту"
 
 #: atk/atkobject.c:387
 msgid "The accessible role of this object"
-msgstr "роль цього об'єкту у допоміжних технологіях"
+msgstr "Роль цього об'єкту у допоміжних технологіях"
 
 #: atk/atkobject.c:395
 msgid "Accessible Layer"
-msgstr "Допоміжний рівень"
+msgstr "Рівень об'єкту"
 
 #: atk/atkobject.c:396
 msgid "The accessible layer of this object"
@@ -461,7 +461,7 @@ msgstr ""
 
 #: atk/atkobject.c:420
 msgid "Accessible Table Column Header"
-msgstr "Допоміжний заголовок стовпця таблиці"
+msgstr "Допоміжний заголовок стовпчика таблиці"
 
 #: atk/atkobject.c:421
 msgid "Is used to notify that the table column header has changed"

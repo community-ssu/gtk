@@ -3,14 +3,14 @@
 # This file is distributed under the same license as the atk package.
 # Alexandre Folle de Menezes <afmenez@terra.com.br>, 2003.
 # Claudio André <claudio.andre@correios.net.br>, 2006.
-# Leonardo Ferreira Fontenelle <leo.fontenelle@gmail.com>, 2006.
+# Leonardo Ferreira Fontenelle <leo.fontenelle@gmail.com>, 2006-2007.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: atk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
-"PO-Revision-Date: 2006-08-08 23:20-0300\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
+"PO-Revision-Date: 2007-03-06 01:12-0300\n"
 "Last-Translator: Leonardo Ferreira Fontenelle <leo.fontenelle@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-l10n-br@listas.cipsga.org.br>\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 
 #: atk/atkhyperlink.c:103
 msgid "Selected Link"
-msgstr "Vínculo Selecionado"
+msgstr "Link Selecionado"
 
 #: atk/atkhyperlink.c:104
 msgid "Specifies whether the AtkHyperlink object is selected"
@@ -509,11 +509,11 @@ msgstr "É usado para notificar que a legenda da tabela mudou"
 
 #: atk/atkobject.c:462
 msgid "Number of Accessible Hypertext Links"
-msgstr "Número de Vínculos de Hipertexto Acessíveis"
+msgstr "Número de Links de Hipertexto Acessíveis"
 
 #: atk/atkobject.c:463
 msgid "The number of links which the current AtkHypertext has"
-msgstr "O número de vínculos com o AtkHypertext atual"
+msgstr "O número de links com o AtkHypertext atual"
 
 #~ msgid "ruler"
 #~ msgstr "régua"

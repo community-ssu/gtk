@@ -10,7 +10,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: atk\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
 "PO-Revision-Date: 2004-05-25 17:47+0330\n"
 "Last-Translator: Mühemmet Amut <m_amout@yahoo.com>\n"
 "Language-Team: Turkmen <kakilikgroup@yahoo.com>\n"
@@ -383,7 +383,7 @@ msgstr "heder"
 #: atk/atkobject.c:164
 #, fuzzy
 msgid "page"
-msgstr "panel"
+msgstr "surat"
 
 #: atk/atkobject.c:165
 msgid "section"

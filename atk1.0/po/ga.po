@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: atk HEAD\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
 "PO-Revision-Date: 2003-06-05 19:30+0100\n"
 "Last-Translator: Paul Duffy <dubhthach@frink.nuigalway.ie>\n"
 "Language-Team: Irish\n"
@@ -387,7 +387,7 @@ msgstr ""
 #: atk/atkobject.c:164
 #, fuzzy
 msgid "page"
-msgstr "painéal"
+msgstr "íomha"
 
 #: atk/atkobject.c:165
 msgid "section"

@@ -1,0 +1,25 @@
+<screen>
+    <link linkend="GObject">GObject</link>
+        <link linkend="AtkObject">AtkObject</link>
+            <link linkend="AtkGObjectAccessible">AtkGObjectAccessible</link>
+            <link linkend="AtkNoOpObject">AtkNoOpObject</link>
+        <link linkend="AtkHyperlink">AtkHyperlink</link>
+        <link linkend="AtkObjectFactory">AtkObjectFactory</link>
+            <link linkend="AtkNoOpObjectFactory">AtkNoOpObjectFactory</link>
+        <link linkend="AtkRegistry">AtkRegistry</link>
+        <link linkend="AtkRelation">AtkRelation</link>
+        <link linkend="AtkRelationSet">AtkRelationSet</link>
+        <link linkend="AtkUtil">AtkUtil</link>
+    <link linkend="GInterface">GInterface</link>
+        <link linkend="AtkAction">AtkAction</link>
+        <link linkend="AtkComponent">AtkComponent</link>
+        <link linkend="AtkDocument">AtkDocument</link>
+        <link linkend="AtkEditableText">AtkEditableText</link>
+        <link linkend="AtkHypertext">AtkHypertext</link>
+        <link linkend="AtkImage">AtkImage</link>
+        <link linkend="AtkSelection">AtkSelection</link>
+        <link linkend="AtkTable">AtkTable</link>
+        <link linkend="AtkText">AtkText</link>
+        <link linkend="AtkValue">AtkValue</link>
+        <link linkend="AtkStreamableContent">AtkStreamableContent</link>
+</screen>

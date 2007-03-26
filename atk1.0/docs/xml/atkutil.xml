@@ -1,18 +1,15 @@
 <refentry id="AtkUtil">
 <refmeta>
-<refentrytitle role="top_of_page">AtkUtil</refentrytitle>
+<refentrytitle>AtkUtil</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkUtil</refname>
-<refpurpose>A set of ATK utility functions for event and toolkit support.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+<refname>AtkUtil</refname><refpurpose>A set of ATK utility functions for event and toolkit support.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -45,8 +42,8 @@ const <link linkend="gchar">gchar</link>* <link linkend="atk-get-toolkit-version
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GObject">GObject</link>
@@ -62,8 +59,8 @@ const <link linkend="gchar">gchar</link>* <link linkend="atk-get-toolkit-version
 
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 A set of ATK utility functions which are used to support event registration of
 various types, and obtaining the 'root' accessible of a process and
@@ -71,16 +68,16 @@ information about the current ATK implementation and toolkit version.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkUtil-struct" role="struct"/>AtkUtil</title>
+<title><anchor id="AtkUtil-struct"/>AtkUtil</title>
 <indexterm><primary>AtkUtil</primary></indexterm><programlisting>typedef struct _AtkUtil AtkUtil;</programlisting>
 <para>
 The AtkUtil struct does not contain any fields.
 </para></refsect2>
 <refsect2>
-<title><anchor id="AtkCoordType" role="enum"/>enum AtkCoordType</title>
+<title><anchor id="AtkCoordType"/>enum AtkCoordType</title>
 <indexterm><primary>AtkCoordType</primary></indexterm><programlisting>typedef enum {
   ATK_XY_SCREEN,
   ATK_XY_WINDOW
@@ -93,19 +90,19 @@ as <link linkend="atk-component-get-position"><function>atk_component_get_positi
 
 </para><variablelist role="enum">
 <varlistentry>
-<term><anchor id="ATK-XY-SCREEN:CAPS" role="constant"/><literal>ATK_XY_SCREEN</literal></term>
+<term><literal>ATK_XY_SCREEN</literal></term>
 <listitem><simpara> specifies xy coordinates relative to the screen
 </simpara></listitem>
 </varlistentry>
 <varlistentry>
-<term><anchor id="ATK-XY-WINDOW:CAPS" role="constant"/><literal>ATK_XY_WINDOW</literal></term>
+<term><literal>ATK_XY_WINDOW</literal></term>
 <listitem><simpara> specifies xy coordinates relative to the widget's 
 top-level window
 </simpara></listitem>
 </varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-add-focus-tracker" role="function"/>atk_add_focus_tracker ()</title>
+<title><anchor id="atk-add-focus-tracker"/>atk_add_focus_tracker ()</title>
 <indexterm><primary>atk_add_focus_tracker</primary></indexterm><programlisting><link linkend="guint">guint</link>       atk_add_focus_tracker           (<link linkend="AtkEventListener">AtkEventListener</link> focus_tracker);</programlisting>
 <para>
 Adds the specified function to the list of functions to be called
@@ -121,7 +118,7 @@ when an object receives focus.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-remove-focus-tracker" role="function"/>atk_remove_focus_tracker ()</title>
+<title><anchor id="atk-remove-focus-tracker"/>atk_remove_focus_tracker ()</title>
 <indexterm><primary>atk_remove_focus_tracker</primary></indexterm><programlisting><link linkend="void">void</link>        atk_remove_focus_tracker        (<link linkend="guint">guint</link> tracker_id);</programlisting>
 <para>
 Removes the specified focus tracker from the list of functions
@@ -134,7 +131,7 @@ to be called when any object receives focus.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-focus-tracker-init" role="function"/>atk_focus_tracker_init ()</title>
+<title><anchor id="atk-focus-tracker-init"/>atk_focus_tracker_init ()</title>
 <indexterm><primary>atk_focus_tracker_init</primary></indexterm><programlisting><link linkend="void">void</link>        atk_focus_tracker_init          (<link linkend="AtkEventListenerInit">AtkEventListenerInit</link> init);</programlisting>
 <para>
 Specifies the function to be called for focus tracker initialization.
@@ -149,7 +146,7 @@ focus tracking.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-focus-tracker-notify" role="function"/>atk_focus_tracker_notify ()</title>
+<title><anchor id="atk-focus-tracker-notify"/>atk_focus_tracker_notify ()</title>
 <indexterm><primary>atk_focus_tracker_notify</primary></indexterm><programlisting><link linkend="void">void</link>        atk_focus_tracker_notify        (<link linkend="AtkObject">AtkObject</link> *object);</programlisting>
 <para>
 Cause the focus tracker functions which have been specified to be
@@ -162,7 +159,7 @@ executed for the object.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="AtkEventListener" role="function"/>AtkEventListener ()</title>
+<title><anchor id="AtkEventListener"/>AtkEventListener ()</title>
 <indexterm><primary>AtkEventListener</primary></indexterm><programlisting><link linkend="void">void</link>        (*AtkEventListener)             (<link linkend="AtkObject">AtkObject</link> *obj);</programlisting>
 <para>
 A function which is called when an object emits a matching event,
@@ -182,7 +179,7 @@ the specified event (e.g. 'focus:') takes place.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="AtkEventListenerInit" role="function"/>AtkEventListenerInit ()</title>
+<title><anchor id="AtkEventListenerInit"/>AtkEventListenerInit ()</title>
 <indexterm><primary>AtkEventListenerInit</primary></indexterm><programlisting><link linkend="void">void</link>        (*AtkEventListenerInit)         (void);</programlisting>
 <para>
 An <link linkend="AtkEventListenerInit"><type>AtkEventListenerInit</type></link> function is a special function that is
@@ -195,7 +192,7 @@ used by <link linkend="AtkEventListener"><type>AtkEventListener</type></link>, i
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-add-global-event-listener" role="function"/>atk_add_global_event_listener ()</title>
+<title><anchor id="atk-add-global-event-listener"/>atk_add_global_event_listener ()</title>
 <indexterm><primary>atk_add_global_event_listener</primary></indexterm><programlisting><link linkend="guint">guint</link>       atk_add_global_event_listener   (<link linkend="GSignalEmissionHook">GSignalEmissionHook</link> listener,
                                              const <link linkend="gchar">gchar</link> *event_type);</programlisting>
 <para>
@@ -214,7 +211,7 @@ when an event of type event_type occurs.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-remove-global-event-listener" role="function"/>atk_remove_global_event_listener ()</title>
+<title><anchor id="atk-remove-global-event-listener"/>atk_remove_global_event_listener ()</title>
 <indexterm><primary>atk_remove_global_event_listener</primary></indexterm><programlisting><link linkend="void">void</link>        atk_remove_global_event_listener
                                             (<link linkend="guint">guint</link> listener_id);</programlisting>
 <para>
@@ -227,7 +224,7 @@ Removes the specified event listener</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="AtkKeyEventStruct" role="struct"/>AtkKeyEventStruct</title>
+<title><anchor id="AtkKeyEventStruct"/>AtkKeyEventStruct</title>
 <indexterm><primary>AtkKeyEventStruct</primary></indexterm><programlisting>typedef struct {
   gint type;
   guint state;
@@ -289,7 +286,7 @@ and only used to compare the dispatch times of events to one another.
 </varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="AtkKeyEventType" role="enum"/>enum AtkKeyEventType</title>
+<title><anchor id="AtkKeyEventType"/>enum AtkKeyEventType</title>
 <indexterm><primary>AtkKeyEventType</primary></indexterm><programlisting>typedef enum
 {
   ATK_KEY_EVENT_PRESS,
@@ -303,23 +300,23 @@ Specifies the type of a keyboard evemt.</para>
 
 </para><variablelist role="enum">
 <varlistentry>
-<term><anchor id="ATK-KEY-EVENT-PRESS:CAPS" role="constant"/><literal>ATK_KEY_EVENT_PRESS</literal></term>
+<term><literal>ATK_KEY_EVENT_PRESS</literal></term>
 <listitem><simpara> specifies a key press event
 </simpara></listitem>
 </varlistentry>
 <varlistentry>
-<term><anchor id="ATK-KEY-EVENT-RELEASE:CAPS" role="constant"/><literal>ATK_KEY_EVENT_RELEASE</literal></term>
+<term><literal>ATK_KEY_EVENT_RELEASE</literal></term>
 <listitem><simpara> specifies a key release event
 </simpara></listitem>
 </varlistentry>
 <varlistentry>
-<term><anchor id="ATK-KEY-EVENT-LAST-DEFINED:CAPS" role="constant"/><literal>ATK_KEY_EVENT_LAST_DEFINED</literal></term>
+<term><literal>ATK_KEY_EVENT_LAST_DEFINED</literal></term>
 <listitem><simpara> Not a valid value; specifies end of enumeration
 </simpara></listitem>
 </varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="AtkKeySnoopFunc" role="function"/>AtkKeySnoopFunc ()</title>
+<title><anchor id="AtkKeySnoopFunc"/>AtkKeySnoopFunc ()</title>
 <indexterm><primary>AtkKeySnoopFunc</primary></indexterm><programlisting><link linkend="gint">gint</link>        (*AtkKeySnoopFunc)              (<link linkend="AtkKeyEventStruct">AtkKeyEventStruct</link> *event,
                                              <link linkend="gpointer">gpointer</link> func_data);</programlisting>
 <para>
@@ -344,7 +341,7 @@ event dispatch to the client application should proceed as normal.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-add-key-event-listener" role="function"/>atk_add_key_event_listener ()</title>
+<title><anchor id="atk-add-key-event-listener"/>atk_add_key_event_listener ()</title>
 <indexterm><primary>atk_add_key_event_listener</primary></indexterm><programlisting><link linkend="guint">guint</link>       atk_add_key_event_listener      (<link linkend="AtkKeySnoopFunc">AtkKeySnoopFunc</link> listener,
                                              <link linkend="gpointer">gpointer</link> data);</programlisting>
 <para>
@@ -365,7 +362,7 @@ Adds the specified function to the list of functions to be called
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-remove-key-event-listener" role="function"/>atk_remove_key_event_listener ()</title>
+<title><anchor id="atk-remove-key-event-listener"/>atk_remove_key_event_listener ()</title>
 <indexterm><primary>atk_remove_key_event_listener</primary></indexterm><programlisting><link linkend="void">void</link>        atk_remove_key_event_listener   (<link linkend="guint">guint</link> listener_id);</programlisting>
 <para>
 Removes the specified event listener</para>
@@ -377,7 +374,7 @@ Removes the specified event listener</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-get-root" role="function"/>atk_get_root ()</title>
+<title><anchor id="atk-get-root"/>atk_get_root ()</title>
 <indexterm><primary>atk_get_root</primary></indexterm><programlisting><link linkend="AtkObject">AtkObject</link>*  atk_get_root                    (void);</programlisting>
 <para>
 Gets the root accessible container for the current application.</para>
@@ -388,7 +385,7 @@ Gets the root accessible container for the current application.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-get-focus-object" role="function" condition="since:ATK 1.6"/>atk_get_focus_object ()</title>
+<title><anchor id="atk-get-focus-object"/>atk_get_focus_object ()</title>
 <indexterm role="ATK 1.6"><primary>atk_get_focus_object</primary></indexterm><programlisting><link linkend="AtkObject">AtkObject</link>*  atk_get_focus_object            (void);</programlisting>
 <para>
 Gets the currently focused object.
@@ -404,7 +401,7 @@ Returns:</para>
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-get-toolkit-name" role="function"/>atk_get_toolkit_name ()</title>
+<title><anchor id="atk-get-toolkit-name"/>atk_get_toolkit_name ()</title>
 <indexterm><primary>atk_get_toolkit_name</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_get_toolkit_name           (void);</programlisting>
 <para>
 Gets name string for the GUI toolkit implementing ATK for this application.</para>
@@ -415,7 +412,7 @@ Gets name string for the GUI toolkit implementing ATK for this application.</par
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-get-toolkit-version" role="function"/>atk_get_toolkit_version ()</title>
+<title><anchor id="atk-get-toolkit-version"/>atk_get_toolkit_version ()</title>
 <indexterm><primary>atk_get_toolkit_version</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_get_toolkit_version        (void);</programlisting>
 <para>
 Gets version string for the GUI toolkit implementing ATK for this application.</para>

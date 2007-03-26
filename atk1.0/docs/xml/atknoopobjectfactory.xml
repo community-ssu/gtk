@@ -1,18 +1,15 @@
 <refentry id="AtkNoOpObjectFactory">
 <refmeta>
-<refentrytitle role="top_of_page">AtkNoOpObjectFactory</refentrytitle>
+<refentrytitle>AtkNoOpObjectFactory</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkNoOpObjectFactory</refname>
-<refpurpose>The AtkObjectFactory which creates an AtkNoOpObject.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+<refname>AtkNoOpObjectFactory</refname><refpurpose>The AtkObjectFactory which creates an AtkNoOpObject.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -25,8 +22,8 @@
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GObject">GObject</link>
@@ -43,8 +40,8 @@
 
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 The AtkObjectFactory which creates an AtkNoOpObject. An instance of this is
 created by an AtkRegistry if no factory type has not been specified to
@@ -52,17 +49,17 @@ create an accessible object of a particular type.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkNoOpObjectFactory-struct" role="struct"/>AtkNoOpObjectFactory</title>
+<title><anchor id="AtkNoOpObjectFactory-struct"/>AtkNoOpObjectFactory</title>
 <indexterm><primary>AtkNoOpObjectFactory</primary></indexterm><programlisting>typedef struct _AtkNoOpObjectFactory AtkNoOpObjectFactory;</programlisting>
 <para>
 The AtkNoOpObjectFactory structure should not be accessed directly.
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-no-op-object-factory-new" role="function"/>atk_no_op_object_factory_new ()</title>
+<title><anchor id="atk-no-op-object-factory-new"/>atk_no_op_object_factory_new ()</title>
 <indexterm><primary>atk_no_op_object_factory_new</primary></indexterm><programlisting><link linkend="AtkObjectFactory">AtkObjectFactory</link>* atk_no_op_object_factory_new
                                             (void);</programlisting>
 <para>

@@ -1,19 +1,16 @@
 <refentry id="AtkComponent">
 <refmeta>
-<refentrytitle role="top_of_page">AtkComponent</refentrytitle>
+<refentrytitle>AtkComponent</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkComponent</refname>
-<refpurpose>The ATK interface provided by UI components which occupy a physical area on
+<refname>AtkComponent</refname><refpurpose>The ATK interface provided by UI components which occupy a physical area on
 the screen.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -68,8 +65,8 @@ the screen.</refpurpose>
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GInterface">GInterface</link>
@@ -81,8 +78,8 @@ the screen.</refpurpose>
 
 
 
-<refsect1 role="implementations">
-<title role="implementations.title">Known Implementations</title>
+<refsect1>
+<title>Known Implementations</title>
 <para>
 AtkComponent is implemented by
  <link linkend="AtkNoOpObject">AtkNoOpObject</link>.</para>
@@ -90,20 +87,20 @@ AtkComponent is implemented by
 </refsect1>
 
 
-<refsect1 role="signal_proto">
-<title role="signal_proto.title">Signals</title>
+<refsect1>
+<title>Signal Prototypes</title>
 <synopsis>
 
 &quot;<link linkend="AtkComponent-bounds-changed">bounds-changed</link>&quot;
             <link linkend="void">void</link>        user_function      (<link linkend="AtkComponent">AtkComponent</link> *atkcomponent,
                                             <link linkend="AtkRectangle">AtkRectangle</link> *arg1,
-                                            <link linkend="gpointer">gpointer</link>      user_data)         : Run last
+                                            <link linkend="gpointer">gpointer</link> user_data);
 </synopsis>
 </refsect1>
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 <link linkend="AtkComponent"><type>AtkComponent</type></link> should be implemented by most if not all UI elements with
 an actual on-screen presence, i.e. components which can be said to have
@@ -119,17 +116,17 @@ provided by <link linkend="AtkText"><type>AtkText</type></link>.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkComponent-struct" role="struct"/>AtkComponent</title>
+<title><anchor id="AtkComponent-struct"/>AtkComponent</title>
 <indexterm><primary>AtkComponent</primary></indexterm><programlisting>typedef struct _AtkComponent AtkComponent;</programlisting>
 <para>
 The AtkComponent structure does not contain any fields.
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-component-add-focus-handler" role="function"/>atk_component_add_focus_handler ()</title>
+<title><anchor id="atk-component-add-focus-handler"/>atk_component_add_focus_handler ()</title>
 <indexterm><primary>atk_component_add_focus_handler</primary></indexterm><programlisting><link linkend="guint">guint</link>       atk_component_add_focus_handler (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="AtkFocusHandler">AtkFocusHandler</link> handler);</programlisting>
 <para>
@@ -150,7 +147,7 @@ or zero if the handler was already added.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-contains" role="function"/>atk_component_contains ()</title>
+<title><anchor id="atk-component-contains"/>atk_component_contains ()</title>
 <indexterm><primary>atk_component_contains</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_component_contains          (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> x,
                                              <link linkend="gint">gint</link> y,
@@ -173,12 +170,12 @@ Checks whether the specified point is within the extent of the <parameter>compon
 <listitem><simpara> specifies whether the coordinates are relative to the screen
 or to the components top level window
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> or <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> indicating whether the specified point is within
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> or <literal>FALSE</literal> indicating whether the specified point is within
 the extent of the <parameter>component</parameter> or not
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-get-extents" role="function"/>atk_component_get_extents ()</title>
+<title><anchor id="atk-component-get-extents"/>atk_component_get_extents ()</title>
 <indexterm><primary>atk_component_get_extents</primary></indexterm><programlisting><link linkend="void">void</link>        atk_component_get_extents       (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> *x,
                                              <link linkend="gint">gint</link> *y,
@@ -211,7 +208,7 @@ or to the components top level window
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-get-layer" role="function"/>atk_component_get_layer ()</title>
+<title><anchor id="atk-component-get-layer"/>atk_component_get_layer ()</title>
 <indexterm><primary>atk_component_get_layer</primary></indexterm><programlisting><link linkend="AtkLayer">AtkLayer</link>    atk_component_get_layer         (<link linkend="AtkComponent">AtkComponent</link> *component);</programlisting>
 <para>
 Gets the layer of the component.</para>
@@ -225,7 +222,7 @@ Gets the layer of the component.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-get-mdi-zorder" role="function"/>atk_component_get_mdi_zorder ()</title>
+<title><anchor id="atk-component-get-mdi-zorder"/>atk_component_get_mdi_zorder ()</title>
 <indexterm><primary>atk_component_get_mdi_zorder</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_component_get_mdi_zorder    (<link linkend="AtkComponent">AtkComponent</link> *component);</programlisting>
 <para>
 Gets the zorder of the component. The value G_MININT will be returned 
@@ -242,7 +239,7 @@ container.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-get-position" role="function"/>atk_component_get_position ()</title>
+<title><anchor id="atk-component-get-position"/>atk_component_get_position ()</title>
 <indexterm><primary>atk_component_get_position</primary></indexterm><programlisting><link linkend="void">void</link>        atk_component_get_position      (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> *x,
                                              <link linkend="gint">gint</link> *y,
@@ -268,7 +265,7 @@ or to the components top level window
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-get-size" role="function"/>atk_component_get_size ()</title>
+<title><anchor id="atk-component-get-size"/>atk_component_get_size ()</title>
 <indexterm><primary>atk_component_get_size</primary></indexterm><programlisting><link linkend="void">void</link>        atk_component_get_size          (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> *width,
                                              <link linkend="gint">gint</link> *height);</programlisting>
@@ -288,7 +285,7 @@ Gets the size of the <parameter>component</parameter> in terms of width and heig
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-grab-focus" role="function"/>atk_component_grab_focus ()</title>
+<title><anchor id="atk-component-grab-focus"/>atk_component_grab_focus ()</title>
 <indexterm><primary>atk_component_grab_focus</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_component_grab_focus        (<link linkend="AtkComponent">AtkComponent</link> *component);</programlisting>
 <para>
 Grabs focus for this <parameter>component</parameter>.</para>
@@ -298,11 +295,11 @@ Grabs focus for this <parameter>component</parameter>.</para>
 <varlistentry><term><parameter>component</parameter>&nbsp;:</term>
 <listitem><simpara> an <link linkend="AtkComponent"><type>AtkComponent</type></link>
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if successful, <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> otherwise.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> if successful, <literal>FALSE</literal> otherwise.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-ref-accessible-at-point" role="function"/>atk_component_ref_accessible_at_point ()</title>
+<title><anchor id="atk-component-ref-accessible-at-point"/>atk_component_ref_accessible_at_point ()</title>
 <indexterm><primary>atk_component_ref_accessible_at_point</primary></indexterm><programlisting><link linkend="AtkObject">AtkObject</link>*  atk_component_ref_accessible_at_point
                                             (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> x,
@@ -331,7 +328,7 @@ or to the components top level window
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-remove-focus-handler" role="function"/>atk_component_remove_focus_handler ()</title>
+<title><anchor id="atk-component-remove-focus-handler"/>atk_component_remove_focus_handler ()</title>
 <indexterm><primary>atk_component_remove_focus_handler</primary></indexterm><programlisting><link linkend="void">void</link>        atk_component_remove_focus_handler
                                             (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="guint">guint</link> handler_id);</programlisting>
@@ -351,7 +348,7 @@ from <parameter>component</parameter>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-set-extents" role="function"/>atk_component_set_extents ()</title>
+<title><anchor id="atk-component-set-extents"/>atk_component_set_extents ()</title>
 <indexterm><primary>atk_component_set_extents</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_component_set_extents       (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> x,
                                              <link linkend="gint">gint</link> y,
@@ -382,11 +379,11 @@ Sets the extents of <parameter>component</parameter>.</para>
 <listitem><simpara> specifies whether the coordinates are relative to the screen
 or to the components top level window
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> or <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> whether the extents were set or not
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> or <literal>FALSE</literal> whether the extents were set or not
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-set-position" role="function"/>atk_component_set_position ()</title>
+<title><anchor id="atk-component-set-position"/>atk_component_set_position ()</title>
 <indexterm><primary>atk_component_set_position</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_component_set_position      (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> x,
                                              <link linkend="gint">gint</link> y,
@@ -409,11 +406,11 @@ Sets the postition of <parameter>component</parameter>.</para>
 <listitem><simpara> specifies whether the coordinates are relative to the screen
 or to the components top level window
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> or <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> whether or not the position was set or not
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> or <literal>FALSE</literal> whether or not the position was set or not
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-set-size" role="function"/>atk_component_set_size ()</title>
+<title><anchor id="atk-component-set-size"/>atk_component_set_size ()</title>
 <indexterm><primary>atk_component_set_size</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_component_set_size          (<link linkend="AtkComponent">AtkComponent</link> *component,
                                              <link linkend="gint">gint</link> width,
                                              <link linkend="gint">gint</link> height);</programlisting>
@@ -431,11 +428,11 @@ Set the size of the <parameter>component</parameter> in terms of width and heigh
 <varlistentry><term><parameter>height</parameter>&nbsp;:</term>
 <listitem><simpara> height to set for <parameter>component</parameter>
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> or <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> whether the size was set or not
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> or <literal>FALSE</literal> whether the size was set or not
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-component-get-alpha" role="function" condition="since:ATK 1.12"/>atk_component_get_alpha ()</title>
+<title><anchor id="atk-component-get-alpha"/>atk_component_get_alpha ()</title>
 <indexterm role="ATK 1.12"><primary>atk_component_get_alpha</primary></indexterm><programlisting><link linkend="gdouble">gdouble</link>     atk_component_get_alpha         (<link linkend="AtkComponent">AtkComponent</link> *component);</programlisting>
 <para>
 Returns the alpha value (i.e. the opacity) for this
@@ -454,12 +451,12 @@ Returns the alpha value (i.e. the opacity) for this
 
 </refsect1>
 
-<refsect1 role="signals">
-<title role="signals.title">Signal Details</title>
+<refsect1>
+<title>Signals</title>
 <refsect2><title><anchor id="AtkComponent-bounds-changed"/>The &quot;bounds-changed&quot; signal</title>
-<indexterm><primary>AtkComponent::bounds-changed</primary></indexterm><programlisting><link linkend="void">void</link>        user_function                  (<link linkend="AtkComponent">AtkComponent</link> *atkcomponent,
+<programlisting><link linkend="void">void</link>        user_function                  (<link linkend="AtkComponent">AtkComponent</link> *atkcomponent,
                                             <link linkend="AtkRectangle">AtkRectangle</link> *arg1,
-                                            <link linkend="gpointer">gpointer</link>      user_data)         : Run last</programlisting>
+                                            <link linkend="gpointer">gpointer</link> user_data);</programlisting>
 <para>
 The 'bounds-changed" signal is emitted when the bposition or size of the 
 a component changes.

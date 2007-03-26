@@ -15,7 +15,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: atk 2.12\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:47+0100\n"
+"POT-Creation-Date: 2007-03-12 19:56+0800\n"
 "PO-Revision-Date: 2005-03-28 19:34-0700\n"
 "Last-Translator: Steve Murphy <murf@e-tools.com>\n"
 "Language-Team: Kinyarwanda <translation-team-rw@lists.sourceforge.net>\n"
@@ -552,10 +552,14 @@ msgstr "Ibiro Ikadiri"
 msgid "heading"
 msgstr "Umutwempangano"
 
+# #-#-#-#-#  officecfg.pot (Gnome 2.12)  #-#-#-#-#
+# officecfg/registry\schema\org\openoffice\Office\Common.xcs:....Image.text
+# #-#-#-#-#  officecfg.pot (Gnome 2.12)  #-#-#-#-#
+# officecfg/registry\schema\org\openoffice\Office\Writer.xcs:....Insert.Caption.OfficeObject.Image.Enable.text
 #: atk/atkobject.c:164
 #, fuzzy
 msgid "page"
-msgstr "Ipaji Isunika"
+msgstr "Ishusho"
 
 #: atk/atkobject.c:165
 msgid "section"

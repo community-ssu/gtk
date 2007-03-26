@@ -1,0 +1,11 @@
+99% symbol docs coverage.
+341 symbols documented.
+0 symbols incomplete.
+3 not documented.
+
+
+AtkMisc
+
+
+atkmisc:Long_Description
+atkmisc:Short_Description

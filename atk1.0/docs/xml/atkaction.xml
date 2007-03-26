@@ -1,19 +1,16 @@
 <refentry id="AtkAction">
 <refmeta>
-<refentrytitle role="top_of_page">AtkAction</refentrytitle>
+<refentrytitle>AtkAction</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkAction</refname>
-<refpurpose>The ATK interface provided by UI components which the user can
+<refname>AtkAction</refname><refpurpose>The ATK interface provided by UI components which the user can
 activate/interact with,</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -38,8 +35,8 @@ const <link linkend="gchar">gchar</link>* <link linkend="atk-action-get-keybindi
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GInterface">GInterface</link>
@@ -51,8 +48,8 @@ const <link linkend="gchar">gchar</link>* <link linkend="atk-action-get-keybindi
 
 
 
-<refsect1 role="implementations">
-<title role="implementations.title">Known Implementations</title>
+<refsect1>
+<title>Known Implementations</title>
 <para>
 AtkAction is implemented by
  <link linkend="AtkHyperlink">AtkHyperlink</link> and  <link linkend="AtkNoOpObject">AtkNoOpObject</link>.</para>
@@ -62,8 +59,8 @@ AtkAction is implemented by
 
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 <link linkend="AtkAction"><type>AtkAction</type></link> should be implemented by instances of <link linkend="AtkObject"><type>AtkObject</type></link> classes with
 which the user can interact directly, i.e. buttons, checkboxes,
@@ -95,16 +92,16 @@ terminology for <link linkend="AtkAction"><type>AtkAction</type></link> names.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkAction-struct" role="struct"/>AtkAction</title>
+<title><anchor id="AtkAction-struct"/>AtkAction</title>
 <indexterm><primary>AtkAction</primary></indexterm><programlisting>typedef struct _AtkAction AtkAction;</programlisting>
 <para>
 The AtkAction structure does not contain any fields.
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-action-do-action" role="function"/>atk_action_do_action ()</title>
+<title><anchor id="atk-action-do-action"/>atk_action_do_action ()</title>
 <indexterm><primary>atk_action_do_action</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_action_do_action            (<link linkend="AtkAction">AtkAction</link> *action,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -118,12 +115,12 @@ Perform the specified action on the object.</para>
 <varlistentry><term><parameter>i</parameter>&nbsp;:</term>
 <listitem><simpara> the action index corresponding to the action to be performed 
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if success, <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> otherwise
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> if success, <literal>FALSE</literal> otherwise
 
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-action-get-n-actions" role="function"/>atk_action_get_n_actions ()</title>
+<title><anchor id="atk-action-get-n-actions"/>atk_action_get_n_actions ()</title>
 <indexterm><primary>atk_action_get_n_actions</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_action_get_n_actions        (<link linkend="AtkAction">AtkAction</link> *action);</programlisting>
 <para>
 Gets the number of accessible actions available on the object.
@@ -140,7 +137,7 @@ implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-action-get-description" role="function"/>atk_action_get_description ()</title>
+<title><anchor id="atk-action-get-description"/>atk_action_get_description ()</title>
 <indexterm><primary>atk_action_get_description</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_action_get_description     (<link linkend="AtkAction">AtkAction</link> *action,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -154,16 +151,30 @@ Returns a description of the specified action of the object.</para>
 <varlistentry><term><parameter>i</parameter>&nbsp;:</term>
 <listitem><simpara> the action index corresponding to the action to be performed 
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a description string, or <link linkend="NULL:CAPS"><literal>NULL</literal></link>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a description string, or <literal>NULL</literal>
 if <parameter>action</parameter> does not implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-action-get-name" role="function"/>atk_action_get_name ()</title>
+<title><anchor id="atk-action-get-name"/>atk_action_get_name ()</title>
 <indexterm><primary>atk_action_get_name</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_action_get_name            (<link linkend="AtkAction">AtkAction</link> *action,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
-Returns the name of the specified action of the object.</para>
+Returns a non-localized string naming the specified action of the 
+object. This name is generally not descriptive of the end result 
+of the action, but instead names the 'interaction type' which the 
+object supports. By convention, the above strings should be used to 
+represent the actions which correspond to the common point-and-click 
+interaction techniques of the same name: i.e. 
+"click", "press", "release", "drag", "drop", "popup", etc.
+The "popup" action should be used to pop up a context menu for the 
+object, if one exists.
+</para>
+<para>
+For technical reasons, some toolkits cannot guarantee that the 
+reported action is actually 'bound' to a nontrivial user event;
+i.e. the result of some actions via <link linkend="atk-action-do-action"><function>atk_action_do_action()</function></link> may be
+NIL.</para>
 <para>
 
 </para><variablelist role="params">
@@ -173,12 +184,12 @@ Returns the name of the specified action of the object.</para>
 <varlistentry><term><parameter>i</parameter>&nbsp;:</term>
 <listitem><simpara> the action index corresponding to the action to be performed 
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a name string, or <link linkend="NULL:CAPS"><literal>NULL</literal></link>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a name string, or <literal>NULL</literal>
 if <parameter>action</parameter> does not implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-action-get-localized-name" role="function"/>atk_action_get_localized_name ()</title>
+<title><anchor id="atk-action-get-localized-name"/>atk_action_get_localized_name ()</title>
 <indexterm><primary>atk_action_get_localized_name</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_action_get_localized_name  (<link linkend="AtkAction">AtkAction</link> *action,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -192,16 +203,26 @@ Returns the localized name of the specified action of the object.</para>
 <varlistentry><term><parameter>i</parameter>&nbsp;:</term>
 <listitem><simpara> the action index corresponding to the action to be performed 
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a name string, or <link linkend="NULL:CAPS"><literal>NULL</literal></link>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a name string, or <literal>NULL</literal>
 if <parameter>action</parameter> does not implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-action-get-keybinding" role="function"/>atk_action_get_keybinding ()</title>
+<title><anchor id="atk-action-get-keybinding"/>atk_action_get_keybinding ()</title>
 <indexterm><primary>atk_action_get_keybinding</primary></indexterm><programlisting>const <link linkend="gchar">gchar</link>* atk_action_get_keybinding      (<link linkend="AtkAction">AtkAction</link> *action,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
-Returns a keybinding associated with this action, if one exists.</para>
+Returns a keybinding associated with this action, if one exists.
+The returned string is in the format "&lt;a&gt;;&lt;b&gt;;&lt;c&gt;"
+(i.e. semicolon-delimited), where &lt;a&gt; is the keybinding which
+activates the object if it is presently enabled onscreen, 
+&lt;b&gt; corresponds to the keybinding or sequence of keys
+which invokes the action even if the relevant element is not
+currently posted on screen (for instance, for a menu item it
+posts the parent menus before invoking).  The last token in the
+above string, if non-empty, represents a keyboard shortcut which
+invokes the same action without posting the component or its
+enclosing menus or dialogs.</para>
 <para>
 
 </para><variablelist role="params">
@@ -211,13 +232,13 @@ Returns a keybinding associated with this action, if one exists.</para>
 <varlistentry><term><parameter>i</parameter>&nbsp;:</term>
 <listitem><simpara> the action index corresponding to the action to be performed 
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a string representing the keybinding, or <link linkend="NULL:CAPS"><literal>NULL</literal></link>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara>a string representing the available keybindings, or <literal>NULL</literal>
 if there is no keybinding for this action.
 
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-action-set-description" role="function"/>atk_action_set_description ()</title>
+<title><anchor id="atk-action-set-description"/>atk_action_set_description ()</title>
 <indexterm><primary>atk_action_set_description</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_action_set_description      (<link linkend="AtkAction">AtkAction</link> *action,
                                              <link linkend="gint">gint</link> i,
                                              const <link linkend="gchar">gchar</link> *desc);</programlisting>

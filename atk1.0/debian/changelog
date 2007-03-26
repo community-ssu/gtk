@@ -1,3 +1,12 @@
+atk1.0 (1.18.0-1osso1) UNRELEASED; urgency=low
+
+  * New upstream release.
+  * Set myself as maintainer.
+  * The doc fails to build with xsltproc 1.1.12, waiting for an upgrade
+    to release... (1.1.17 works).
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 26 Mar 2007 14:39:52 +0300
+
 atk1.0 (1.12.3-1osso2) unstable; urgency=low
 
   * Swap gtk-doc location and the symlink around so that gtkdoc-fixxref makes

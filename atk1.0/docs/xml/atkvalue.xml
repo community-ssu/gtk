@@ -1,19 +1,16 @@
 <refentry id="AtkValue">
 <refmeta>
-<refentrytitle role="top_of_page">AtkValue</refentrytitle>
+<refentrytitle>AtkValue</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkValue</refname>
-<refpurpose>The ATK interface implemented by valuators and components which display or
+<refname>AtkValue</refname><refpurpose>The ATK interface implemented by valuators and components which display or
 select a value from a bounded range of values.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -34,8 +31,8 @@ select a value from a bounded range of values.</refpurpose>
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GInterface">GInterface</link>
@@ -47,8 +44,8 @@ select a value from a bounded range of values.</refpurpose>
 
 
 
-<refsect1 role="implementations">
-<title role="implementations.title">Known Implementations</title>
+<refsect1>
+<title>Known Implementations</title>
 <para>
 AtkValue is implemented by
  <link linkend="AtkNoOpObject">AtkNoOpObject</link>.</para>
@@ -58,8 +55,8 @@ AtkValue is implemented by
 
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 <link linkend="AtkValue"><type>AtkValue</type></link> should be implemented for components which either display a
 value from a bounded range, or which allow the user to specify a value
@@ -71,17 +68,17 @@ indicate failure.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkValue-struct" role="struct"/>AtkValue</title>
+<title><anchor id="AtkValue-struct"/>AtkValue</title>
 <indexterm><primary>AtkValue</primary></indexterm><programlisting>typedef struct _AtkValue AtkValue;</programlisting>
 <para>
 The AtkValue structure does not contain any fields.
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-value-get-current-value" role="function"/>atk_value_get_current_value ()</title>
+<title><anchor id="atk-value-get-current-value"/>atk_value_get_current_value ()</title>
 <indexterm><primary>atk_value_get_current_value</primary></indexterm><programlisting><link linkend="void">void</link>        atk_value_get_current_value     (<link linkend="AtkValue">AtkValue</link> *obj,
                                              <link linkend="GValue">GValue</link> *value);</programlisting>
 <para>
@@ -97,7 +94,7 @@ Gets the value of this object.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-value-get-maximum-value" role="function"/>atk_value_get_maximum_value ()</title>
+<title><anchor id="atk-value-get-maximum-value"/>atk_value_get_maximum_value ()</title>
 <indexterm><primary>atk_value_get_maximum_value</primary></indexterm><programlisting><link linkend="void">void</link>        atk_value_get_maximum_value     (<link linkend="AtkValue">AtkValue</link> *obj,
                                              <link linkend="GValue">GValue</link> *value);</programlisting>
 <para>
@@ -113,7 +110,7 @@ Gets the maximum value of this object.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-value-get-minimum-value" role="function"/>atk_value_get_minimum_value ()</title>
+<title><anchor id="atk-value-get-minimum-value"/>atk_value_get_minimum_value ()</title>
 <indexterm><primary>atk_value_get_minimum_value</primary></indexterm><programlisting><link linkend="void">void</link>        atk_value_get_minimum_value     (<link linkend="AtkValue">AtkValue</link> *obj,
                                              <link linkend="GValue">GValue</link> *value);</programlisting>
 <para>
@@ -129,7 +126,7 @@ Gets the minimum value of this object.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-value-set-current-value" role="function"/>atk_value_set_current_value ()</title>
+<title><anchor id="atk-value-set-current-value"/>atk_value_set_current_value ()</title>
 <indexterm><primary>atk_value_set_current_value</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_value_set_current_value     (<link linkend="AtkValue">AtkValue</link> *obj,
                                              const <link linkend="GValue">GValue</link> *value);</programlisting>
 <para>
@@ -143,11 +140,11 @@ Sets the value of this object.</para>
 <varlistentry><term><parameter>value</parameter>&nbsp;:</term>
 <listitem><simpara> a <link linkend="GValue"><type>GValue</type></link> which is the desired new accessible value.
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if new value is successfully set, <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> otherwise.
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> <literal>TRUE</literal> if new value is successfully set, <literal>FALSE</literal> otherwise.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-value-get-minimum-increment" role="function" condition="since:ATK 1.12"/>atk_value_get_minimum_increment ()</title>
+<title><anchor id="atk-value-get-minimum-increment"/>atk_value_get_minimum_increment ()</title>
 <indexterm role="ATK 1.12"><primary>atk_value_get_minimum_increment</primary></indexterm><programlisting><link linkend="void">void</link>        atk_value_get_minimum_increment (<link linkend="AtkValue">AtkValue</link> *obj,
                                              <link linkend="GValue">GValue</link> *value);</programlisting>
 <para>

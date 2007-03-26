@@ -1,18 +1,15 @@
 <refentry id="AtkHyperlink">
 <refmeta>
-<refentrytitle role="top_of_page">AtkHyperlink</refentrytitle>
+<refentrytitle>AtkHyperlink</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkHyperlink</refname>
-<refpurpose>An ATK object which encapsulates a link or set of links in a hypertext document.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
+<refname>AtkHyperlink</refname><refpurpose>An ATK object which encapsulates a link or set of links in a hypertext document.</refpurpose>
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -34,8 +31,8 @@ enum        <link linkend="AtkHyperlinkStateFlags">AtkHyperlinkStateFlags</link>
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GObject">GObject</link>
@@ -46,8 +43,8 @@ enum        <link linkend="AtkHyperlinkStateFlags">AtkHyperlinkStateFlags</link>
 
 
 
-<refsect1 role="impl_interfaces">
-<title role="impl_interfaces.title">Implemented Interfaces</title>
+<refsect1>
+<title>Implemented Interfaces</title>
 <para>
 AtkHyperlink implements
  <link linkend="AtkAction">AtkAction</link>.</para>
@@ -55,8 +52,8 @@ AtkHyperlink implements
 </refsect1>
 
 
-<refsect1 role="properties">
-<title role="properties.title">Properties</title>
+<refsect1>
+<title>Properties</title>
 <synopsis>
 
   &quot;<link linkend="AtkHyperlink--end-index">end-index</link>&quot;            <link linkend="gint">gint</link>                  : Read
@@ -66,19 +63,19 @@ AtkHyperlink implements
 </synopsis>
 </refsect1>
 
-<refsect1 role="signal_proto">
-<title role="signal_proto.title">Signals</title>
+<refsect1>
+<title>Signal Prototypes</title>
 <synopsis>
 
 &quot;<link linkend="AtkHyperlink-link-activated">link-activated</link>&quot;
             <link linkend="void">void</link>        user_function      (<link linkend="AtkHyperlink">AtkHyperlink</link> *atkhyperlink,
-                                            <link linkend="gpointer">gpointer</link>      user_data)         : Run last
+                                            <link linkend="gpointer">gpointer</link> user_data);
 </synopsis>
 </refsect1>
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 An ATK object which encapsulates a link or set of links 
 (for instance in the case of client-side image maps) in a hypertext document.
@@ -88,17 +85,17 @@ and end offset within the host AtkHypertext object.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkHyperlink-struct" role="struct"/>AtkHyperlink</title>
+<title><anchor id="AtkHyperlink-struct"/>AtkHyperlink</title>
 <indexterm><primary>AtkHyperlink</primary></indexterm><programlisting>typedef struct _AtkHyperlink AtkHyperlink;</programlisting>
 <para>
 The AtkHyperlink structure should not be accessed directly.
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="AtkHyperlinkStateFlags" role="enum"/>enum AtkHyperlinkStateFlags</title>
+<title><anchor id="AtkHyperlinkStateFlags"/>enum AtkHyperlinkStateFlags</title>
 <indexterm><primary>AtkHyperlinkStateFlags</primary></indexterm><programlisting>typedef enum 
 {
   ATK_HYPERLINK_IS_INLINE = 1 &lt;&lt; 0
@@ -110,13 +107,13 @@ Describes the type of link</para>
 
 </para><variablelist role="enum">
 <varlistentry>
-<term><anchor id="ATK-HYPERLINK-IS-INLINE:CAPS" role="constant"/><literal>ATK_HYPERLINK_IS_INLINE</literal></term>
+<term><literal>ATK_HYPERLINK_IS_INLINE</literal></term>
 <listitem><simpara> Link is inline
 </simpara></listitem>
 </varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-get-uri" role="function"/>atk_hyperlink_get_uri ()</title>
+<title><anchor id="atk-hyperlink-get-uri"/>atk_hyperlink_get_uri ()</title>
 <indexterm><primary>atk_hyperlink_get_uri</primary></indexterm><programlisting><link linkend="gchar">gchar</link>*      atk_hyperlink_get_uri           (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -138,7 +135,7 @@ Multiple anchors are primarily used by client-side image maps.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-get-object" role="function"/>atk_hyperlink_get_object ()</title>
+<title><anchor id="atk-hyperlink-get-object"/>atk_hyperlink_get_object ()</title>
 <indexterm><primary>atk_hyperlink_get_object</primary></indexterm><programlisting><link linkend="AtkObject">AtkObject</link>*  atk_hyperlink_get_object        (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -162,7 +159,7 @@ Multiple anchors are primarily used by client-side image maps.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-get-end-index" role="function"/>atk_hyperlink_get_end_index ()</title>
+<title><anchor id="atk-hyperlink-get-end-index"/>atk_hyperlink_get_end_index ()</title>
 <indexterm><primary>atk_hyperlink_get_end_index</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_hyperlink_get_end_index     (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_);</programlisting>
 <para>
 Gets the index with the hypertext document at which this link ends.</para>
@@ -176,7 +173,7 @@ Gets the index with the hypertext document at which this link ends.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-get-start-index" role="function"/>atk_hyperlink_get_start_index ()</title>
+<title><anchor id="atk-hyperlink-get-start-index"/>atk_hyperlink_get_start_index ()</title>
 <indexterm><primary>atk_hyperlink_get_start_index</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_hyperlink_get_start_index   (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_);</programlisting>
 <para>
 Gets the index with the hypertext document at which this link begins.</para>
@@ -190,12 +187,12 @@ Gets the index with the hypertext document at which this link begins.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-is-valid" role="function"/>atk_hyperlink_is_valid ()</title>
+<title><anchor id="atk-hyperlink-is-valid"/>atk_hyperlink_is_valid ()</title>
 <indexterm><primary>atk_hyperlink_is_valid</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_hyperlink_is_valid          (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_);</programlisting>
 <para>
 Since the document that a link is associated with may have changed
-this method returns <link linkend="TRUE:CAPS"><literal>TRUE</literal></link> if the link is still valid (with
-respect to the document it references) and <link linkend="FALSE:CAPS"><literal>FALSE</literal></link> otherwise.</para>
+this method returns <literal>TRUE</literal> if the link is still valid (with
+respect to the document it references) and <literal>FALSE</literal> otherwise.</para>
 <para>
 
 </para><variablelist role="params">
@@ -206,13 +203,13 @@ respect to the document it references) and <link linkend="FALSE:CAPS"><literal>F
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-is-inline" role="function"/>atk_hyperlink_is_inline ()</title>
+<title><anchor id="atk-hyperlink-is-inline"/>atk_hyperlink_is_inline ()</title>
 <indexterm><primary>atk_hyperlink_is_inline</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_hyperlink_is_inline         (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_);</programlisting>
 <para>
 Indicates whether the link currently displays some or all of its
           content inline.  Ordinary HTML links will usually return
-          <link linkend="FALSE:CAPS"><literal>FALSE</literal></link>, but an inline &amp;lt;src&amp;gt; HTML element will return
-          <link linkend="TRUE:CAPS"><literal>TRUE</literal></link>.
+          <literal>FALSE</literal>, but an inline &amp;lt;src&amp;gt; HTML element will return
+          <literal>TRUE</literal>.
 a *</para>
 <para>
 
@@ -225,7 +222,7 @@ a *</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-get-n-anchors" role="function"/>atk_hyperlink_get_n_anchors ()</title>
+<title><anchor id="atk-hyperlink-get-n-anchors"/>atk_hyperlink_get_n_anchors ()</title>
 <indexterm><primary>atk_hyperlink_get_n_anchors</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_hyperlink_get_n_anchors     (<link linkend="AtkHyperlink">AtkHyperlink</link> *link_);</programlisting>
 <para>
 Gets the number of anchors associated with this hyperlink.</para>
@@ -239,7 +236,7 @@ Gets the number of anchors associated with this hyperlink.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-hyperlink-is-selected-link" role="function" condition="since"/>atk_hyperlink_is_selected_link ()</title>
+<title><anchor id="atk-hyperlink-is-selected-link"/>atk_hyperlink_is_selected_link ()</title>
 <indexterm role="ATK 1.4
 
 @Deprecated: This method is deprecated since ATK version 1.8.
@@ -267,35 +264,35 @@ Hypertext container is selected.
 </para></refsect2>
 
 </refsect1>
-<refsect1 role="property_details">
-<title role="property_details.title">Property Details</title>
+<refsect1>
+<title>Properties</title>
 <refsect2><title><anchor id="AtkHyperlink--end-index"/>The &quot;<literal>end-index</literal>&quot; property</title>
-<indexterm><primary>AtkHyperlink:end-index</primary></indexterm><programlisting>  &quot;end-index&quot;            <link linkend="gint">gint</link>                  : Read</programlisting>
+<programlisting>  &quot;end-index&quot;            <link linkend="gint">gint</link>                  : Read</programlisting>
 <para>The end index of the AtkHyperlink object.</para><para>Allowed values: &gt;= 0</para>
 <para>Default value: 0</para>
 </refsect2>
 <refsect2><title><anchor id="AtkHyperlink--number-of-anchors"/>The &quot;<literal>number-of-anchors</literal>&quot; property</title>
-<indexterm><primary>AtkHyperlink:number-of-anchors</primary></indexterm><programlisting>  &quot;number-of-anchors&quot;    <link linkend="gint">gint</link>                  : Read</programlisting>
+<programlisting>  &quot;number-of-anchors&quot;    <link linkend="gint">gint</link>                  : Read</programlisting>
 <para>The number of anchors associated with the AtkHyperlink object.</para><para>Allowed values: &gt;= 0</para>
 <para>Default value: 0</para>
 </refsect2>
 <refsect2><title><anchor id="AtkHyperlink--selected-link"/>The &quot;<literal>selected-link</literal>&quot; property</title>
-<indexterm><primary>AtkHyperlink:selected-link</primary></indexterm><programlisting>  &quot;selected-link&quot;        <link linkend="gboolean">gboolean</link>              : Read</programlisting>
+<programlisting>  &quot;selected-link&quot;        <link linkend="gboolean">gboolean</link>              : Read</programlisting>
 <para>Specifies whether the AtkHyperlink object is selected.</para><para>Default value: FALSE</para>
 </refsect2>
 <refsect2><title><anchor id="AtkHyperlink--start-index"/>The &quot;<literal>start-index</literal>&quot; property</title>
-<indexterm><primary>AtkHyperlink:start-index</primary></indexterm><programlisting>  &quot;start-index&quot;          <link linkend="gint">gint</link>                  : Read</programlisting>
+<programlisting>  &quot;start-index&quot;          <link linkend="gint">gint</link>                  : Read</programlisting>
 <para>The start index of the AtkHyperlink object.</para><para>Allowed values: &gt;= 0</para>
 <para>Default value: 0</para>
 </refsect2>
 
 </refsect1>
 
-<refsect1 role="signals">
-<title role="signals.title">Signal Details</title>
+<refsect1>
+<title>Signals</title>
 <refsect2><title><anchor id="AtkHyperlink-link-activated"/>The &quot;link-activated&quot; signal</title>
-<indexterm><primary>AtkHyperlink::link-activated</primary></indexterm><programlisting><link linkend="void">void</link>        user_function                  (<link linkend="AtkHyperlink">AtkHyperlink</link> *atkhyperlink,
-                                            <link linkend="gpointer">gpointer</link>      user_data)         : Run last</programlisting>
+<programlisting><link linkend="void">void</link>        user_function                  (<link linkend="AtkHyperlink">AtkHyperlink</link> *atkhyperlink,
+                                            <link linkend="gpointer">gpointer</link> user_data);</programlisting>
 <para>
 The signal link-activated is emitted when a link is activated.
 </para><variablelist role="params">

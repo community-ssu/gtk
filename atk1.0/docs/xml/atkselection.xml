@@ -1,20 +1,17 @@
 <refentry id="AtkSelection">
 <refmeta>
-<refentrytitle role="top_of_page">AtkSelection</refentrytitle>
+<refentrytitle>AtkSelection</refentrytitle>
 <manvolnum>3</manvolnum>
 <refmiscinfo>ATK Library</refmiscinfo>
 </refmeta>
 
 <refnamediv>
-<refname>AtkSelection</refname>
-<refpurpose>
+<refname>AtkSelection</refname><refpurpose>
 The ATK interface implemented by container objects whose <link linkend="AtkObject"><type>AtkObject</type></link> children
 can be selected.</refpurpose>
-<!--[<xref linkend="desc" endterm="desc.title"/>]-->
 </refnamediv>
 
-<refsynopsisdiv role="synopsis">
-<title role="synopsis.title">Synopsis</title>
+<refsynopsisdiv><title>Synopsis</title>
 
 <synopsis>
 
@@ -38,8 +35,8 @@ can be selected.</refpurpose>
 </synopsis>
 </refsynopsisdiv>
 
-<refsect1 role="object_hierarchy">
-<title role="object_hierarchy.title">Object Hierarchy</title>
+<refsect1>
+<title>Object Hierarchy</title>
 <synopsis>
 
   <link linkend="GInterface">GInterface</link>
@@ -51,8 +48,8 @@ can be selected.</refpurpose>
 
 
 
-<refsect1 role="implementations">
-<title role="implementations.title">Known Implementations</title>
+<refsect1>
+<title>Known Implementations</title>
 <para>
 AtkSelection is implemented by
  <link linkend="AtkNoOpObject">AtkNoOpObject</link>.</para>
@@ -60,19 +57,19 @@ AtkSelection is implemented by
 </refsect1>
 
 
-<refsect1 role="signal_proto">
-<title role="signal_proto.title">Signals</title>
+<refsect1>
+<title>Signal Prototypes</title>
 <synopsis>
 
 &quot;<link linkend="AtkSelection-selection-changed">selection-changed</link>&quot;
             <link linkend="void">void</link>        user_function      (<link linkend="AtkSelection">AtkSelection</link> *atkselection,
-                                            <link linkend="gpointer">gpointer</link>      user_data)         : Run last
+                                            <link linkend="gpointer">gpointer</link> user_data);
 </synopsis>
 </refsect1>
 
 
-<refsect1 role="desc">
-<title role="desc.title">Description</title>
+<refsect1>
+<title>Description</title>
 <para>
 <link linkend="AtkSelection"><type>AtkSelection</type></link> should be implemented by UI components with children which
 are exposed by <link linkend="atk-object-ref-child"><type>atk_object_ref_child</type></link> and <link linkend="atk-object-get-n-children"><type>atk_object_get_n_children</type></link>, if
@@ -87,17 +84,17 @@ selection/deselection of children.
 </para>
 </refsect1>
 
-<refsect1 role="details">
-<title role="details.title">Details</title>
+<refsect1>
+<title>Details</title>
 <refsect2>
-<title><anchor id="AtkSelection-struct" role="struct"/>AtkSelection</title>
+<title><anchor id="AtkSelection-struct"/>AtkSelection</title>
 <indexterm><primary>AtkSelection</primary></indexterm><programlisting>typedef struct _AtkSelection AtkSelection;</programlisting>
 <para>
 The AtkAction structure does not contain any fields.
 
 </para></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-add-selection" role="function"/>atk_selection_add_selection ()</title>
+<title><anchor id="atk-selection-add-selection"/>atk_selection_add_selection ()</title>
 <indexterm><primary>atk_selection_add_selection</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_selection_add_selection     (<link linkend="AtkSelection">AtkSelection</link> *selection,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -116,7 +113,7 @@ object's selection.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-clear-selection" role="function"/>atk_selection_clear_selection ()</title>
+<title><anchor id="atk-selection-clear-selection"/>atk_selection_clear_selection ()</title>
 <indexterm><primary>atk_selection_clear_selection</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_selection_clear_selection   (<link linkend="AtkSelection">AtkSelection</link> *selection);</programlisting>
 <para>
 Clears the selection in the object so that no children in the object
@@ -131,13 +128,13 @@ are selected.</para>
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-ref-selection" role="function"/>atk_selection_ref_selection ()</title>
+<title><anchor id="atk-selection-ref-selection"/>atk_selection_ref_selection ()</title>
 <indexterm><primary>atk_selection_ref_selection</primary></indexterm><programlisting><link linkend="AtkObject">AtkObject</link>*  atk_selection_ref_selection     (<link linkend="AtkSelection">AtkSelection</link> *selection,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
 Gets a reference to the accessible object representing the specified 
 selected child of the object.
-Note: callers should not rely on <link linkend="NULL:CAPS"><literal>NULL</literal></link> or on a zero value for
+Note: callers should not rely on <literal>NULL</literal> or on a zero value for
 indication of whether AtkSelectionIface is implemented, they should
 use type checking/interface checking macros or the
 <link linkend="atk-get-accessible-value"><function>atk_get_accessible_value()</function></link> convenience method.</para>
@@ -151,17 +148,17 @@ use type checking/interface checking macros or the
 <listitem><simpara> a <link linkend="gint"><type>gint</type></link> specifying the index in the selection set.  (e.g. the
 ith selection as opposed to the ith child).
 </simpara></listitem></varlistentry>
-<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> an <link linkend="AtkObject"><type>AtkObject</type></link> representing the selected accessible , or <link linkend="NULL:CAPS"><literal>NULL</literal></link>
+<varlistentry><term><emphasis>Returns</emphasis>&nbsp;:</term><listitem><simpara> an <link linkend="AtkObject"><type>AtkObject</type></link> representing the selected accessible , or <literal>NULL</literal>
 if <parameter>selection</parameter> does not implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-get-selection-count" role="function"/>atk_selection_get_selection_count ()</title>
+<title><anchor id="atk-selection-get-selection-count"/>atk_selection_get_selection_count ()</title>
 <indexterm><primary>atk_selection_get_selection_count</primary></indexterm><programlisting><link linkend="gint">gint</link>        atk_selection_get_selection_count
                                             (<link linkend="AtkSelection">AtkSelection</link> *selection);</programlisting>
 <para>
 Gets the number of accessible children currently selected.
-Note: callers should not rely on <link linkend="NULL:CAPS"><literal>NULL</literal></link> or on a zero value for
+Note: callers should not rely on <literal>NULL</literal> or on a zero value for
 indication of whether AtkSelectionIface is implemented, they should
 use type checking/interface checking macros or the
 <link linkend="atk-get-accessible-value"><function>atk_get_accessible_value()</function></link> convenience method.</para>
@@ -176,12 +173,12 @@ if <parameter>selection</parameter> does not implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-is-child-selected" role="function"/>atk_selection_is_child_selected ()</title>
+<title><anchor id="atk-selection-is-child-selected"/>atk_selection_is_child_selected ()</title>
 <indexterm><primary>atk_selection_is_child_selected</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_selection_is_child_selected (<link linkend="AtkSelection">AtkSelection</link> *selection,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
 Determines if the current child of this object is selected
-Note: callers should not rely on <link linkend="NULL:CAPS"><literal>NULL</literal></link> or on a zero value for
+Note: callers should not rely on <literal>NULL</literal> or on a zero value for
 indication of whether AtkSelectionIface is implemented, they should
 use type checking/interface checking macros or the
 <link linkend="atk-get-accessible-value"><function>atk_get_accessible_value()</function></link> convenience method.</para>
@@ -199,7 +196,7 @@ if <parameter>selection</parameter> does not implement this interface.
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-remove-selection" role="function"/>atk_selection_remove_selection ()</title>
+<title><anchor id="atk-selection-remove-selection"/>atk_selection_remove_selection ()</title>
 <indexterm><primary>atk_selection_remove_selection</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_selection_remove_selection  (<link linkend="AtkSelection">AtkSelection</link> *selection,
                                              <link linkend="gint">gint</link> i);</programlisting>
 <para>
@@ -218,7 +215,7 @@ ith selection as opposed to the ith child).
 </simpara></listitem></varlistentry>
 </variablelist></refsect2>
 <refsect2>
-<title><anchor id="atk-selection-select-all-selection" role="function"/>atk_selection_select_all_selection ()</title>
+<title><anchor id="atk-selection-select-all-selection"/>atk_selection_select_all_selection ()</title>
 <indexterm><primary>atk_selection_select_all_selection</primary></indexterm><programlisting><link linkend="gboolean">gboolean</link>    atk_selection_select_all_selection
                                             (<link linkend="AtkSelection">AtkSelection</link> *selection);</programlisting>
 <para>
@@ -236,11 +233,11 @@ supports multiple selections.</para>
 
 </refsect1>
 
-<refsect1 role="signals">
-<title role="signals.title">Signal Details</title>
+<refsect1>
+<title>Signals</title>
 <refsect2><title><anchor id="AtkSelection-selection-changed"/>The &quot;selection-changed&quot; signal</title>
-<indexterm><primary>AtkSelection::selection-changed</primary></indexterm><programlisting><link linkend="void">void</link>        user_function                  (<link linkend="AtkSelection">AtkSelection</link> *atkselection,
-                                            <link linkend="gpointer">gpointer</link>      user_data)         : Run last</programlisting>
+<programlisting><link linkend="void">void</link>        user_function                  (<link linkend="AtkSelection">AtkSelection</link> *atkselection,
+                                            <link linkend="gpointer">gpointer</link> user_data);</programlisting>
 <para>
 The "selection-changed" signal is emitted by an object which implements 
 AtkSelection interface when the selection changes.
