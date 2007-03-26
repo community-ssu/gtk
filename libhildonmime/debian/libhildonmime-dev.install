@@ -1,4 +1,3 @@
 usr/lib/libhildonmime.so
-usr/lib/libhildonmime.la
 usr/lib/pkgconfig/libhildonmime.pc
 usr/include/*.h

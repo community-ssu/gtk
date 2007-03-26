@@ -1,3 +1,12 @@
+2007-03-26  Richard Hult  <richard@imendio.com>
+
+	* Release 1.9.3.
+
+	* configure.in: Bump version to 1.9.3 to reflect what's in the
+	debian package version.
+
+	* autogen.sh: Change name to libhildonmime.
+
 2007-03-13  Richard Hult  <richard@imendio.com>
 
 	* docs/mime-category-mapping.txt: Reflect the osso->hildon rename.

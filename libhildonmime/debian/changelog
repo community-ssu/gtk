@@ -1,3 +1,9 @@
+libhildonmime (1.9.3-1) unstable; urgency=low
+
+  * Remove .la files from install
+
+ -- Richard Hult <richard@imendio.com>  Mon, 26 Mar 2007 16:10:01 +0200
+
 libhildonmime (1.9.2) unstable; urgency=low
 
   * Removed a glitch inside the uri handling code. 

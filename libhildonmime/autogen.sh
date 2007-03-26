@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PACKAGE="libossomime"
+PACKAGE="libhildonmime"
 
 have_libtool=false
 have_autoconf=false
