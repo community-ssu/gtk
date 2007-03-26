@@ -1,4 +1,10 @@
-hildon-desktop (0.0.0-35) feisty; urgency=low
+hildon-desktop (0.0.0-36) unstable; urgency=low
+
+  * libhildonwm-dev should depend on libgonf2-dev, not libhildonwm0
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 26 Mar 2007 14:22:41 +0300
+
+hildon-desktop (0.0.0-35) unstable; urgency=low
 
   * New experimental snapshot
   * Updated build-dep on osso-af-settings to 0.0.0-35 
