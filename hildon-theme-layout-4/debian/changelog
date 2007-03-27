@@ -1,3 +1,14 @@
+hildon-theme-layout-4 (0.4.0-1) unstable; urgency=low
+
+  * Removed unused viewbutton images
+  * Moved listbox icons a bit and and tooltip graphic
+  * Added breadcrumb images
+  * Added thumb-sized scrollbar images
+  * RC style for the thumb-sized 'fingerable' scrollbar
+  * Adding the DejaVu Sans Condensed as the second font option
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 27 Mar 2007 12:56:48 +0300
+
 hildon-theme-layout-4 (0.3.1-1) unstable; urgency=low
 
   * Fixing the coords for minimize and close buttons (normal state)
