@@ -1,3 +1,14 @@
+2007-03-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/coordinates.png: Added the coordinates file for
+	convenience.  ** THIS WILL NOT BE GUARANTEED TO BE UP TO DATE **
+
+	To get the latest one yourself, you can use hildon-theme-outliner
+	to generate it. However, I try to remember to commit this every
+	time there are layout changes. This file can be useful when placed
+	over the template in a new layer on a graphics program, so you can
+	see where the theme tool is going to cut the bitmaps.
+	
 2007-03-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[4.4.0-1 release]
