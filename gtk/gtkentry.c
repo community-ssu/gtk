@@ -622,7 +622,8 @@ gtk_entry_class_init (GtkEntryClass *class)
                                                        P_("Define widget's input mode"),
                                                        GTK_TYPE_GTK_INPUT_MODE,
                                                        HILDON_GTK_INPUT_MODE_FULL |
-                                                       HILDON_GTK_INPUT_MODE_AUTOCAP,
+                                                       HILDON_GTK_INPUT_MODE_AUTOCAP |
+                                                       HILDON_GTK_INPUT_MODE_DICTIONARY,
                                                        GTK_PARAM_READWRITE));
 #endif /* MAEMO_CHANGES */
  

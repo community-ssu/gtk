@@ -222,7 +222,9 @@ gtk_im_context_class_init (GtkIMContextClass *klass)
 						       "Hildon input mode",
 						       "Allowed characters and input mode",
 						       GTK_TYPE_GTK_INPUT_MODE,
-						       HILDON_GTK_INPUT_MODE_FULL | HILDON_GTK_INPUT_MODE_AUTOCAP,
+						       HILDON_GTK_INPUT_MODE_FULL |
+						       HILDON_GTK_INPUT_MODE_AUTOCAP |
+						       HILDON_GTK_INPUT_MODE_DICTIONARY,
 						       G_PARAM_READWRITE));
 #endif /* MAEMO_CHANGES */
 }
@@ -233,7 +235,9 @@ gtk_im_context_init (GtkIMContext *im_context)
 #ifdef MAEMO_CHANGES
   GtkIMContextPrivate *priv = GTK_IM_CONTEXT_GET_PRIVATE (im_context);
 
-  priv->mode = HILDON_GTK_INPUT_MODE_FULL | HILDON_GTK_INPUT_MODE_AUTOCAP;
+  priv->mode = HILDON_GTK_INPUT_MODE_FULL |
+               HILDON_GTK_INPUT_MODE_AUTOCAP |
+               HILDON_GTK_INPUT_MODE_DICTIONARY;
 #endif /* MAEMO_CHANGES */
 }
 
