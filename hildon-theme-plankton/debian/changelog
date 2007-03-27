@@ -1,3 +1,11 @@
+hildon-theme-plankton (4.4.0-1) unstable; urgency=low
+
+  * Added graphics for the breadcrumb path widget styling
+  * Do not use hardcoded /usr/share paths 
+  * Changes to match the layout
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 27 Mar 2007 13:11:55 +0300
+
 hildon-theme-plankton (4.3.1-1) unstable; urgency=low
 
   * Bumping version for layout
