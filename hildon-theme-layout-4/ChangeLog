@@ -1,3 +1,9 @@
+2007-03-27  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: added 
+	qgn_plat_menu_next_level_arrow_focused.png=2464,128,20,30
+	(parent menu's arrow when submenu has focus)
+
 2007-03-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.4.0-1 release]
@@ -15,6 +21,7 @@
 	* rc/themespecificgtk.rc: Adding the DejaVu Sans Condensed as the
 	second font option.
 
+>>>>>>> .r10779
 2007-03-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: added thumb-sized scrollbar images, hopefully

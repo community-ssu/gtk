@@ -162,6 +162,7 @@ qgn_plat_button_close_normal.png=3951,83,40,50
 qgn_plat_view_button_focused.png=2146,378,30,30
 qgn_plat_view_button_nesw_focused.png=2146,418,30,30
 qgn_plat_menu_next_level_arrow_pressed.png=2364,168,20,30
+qgn_plat_menu_next_level_arrow_focused.png=2464,128,20,30
 qgn_plat_menu_scroll_down_arrow_pressed.png=2162,170,26,26
 qgn_plat_menu_scroll_up_arrow_pressed.png=2262,170,26,26
 qgn_plat_arrow_left_pressed.png=2630,170,26,26
