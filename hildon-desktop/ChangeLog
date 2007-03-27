@@ -1,3 +1,7 @@
+2007-03-27  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* autogen.sh: run configure script to be jhbuild friendly.
+
 2007-03-26  Moises Martinez  <moises.martinez@nokia.com>
 
 	* doxyconf: Removed
