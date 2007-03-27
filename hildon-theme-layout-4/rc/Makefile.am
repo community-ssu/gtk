@@ -67,7 +67,8 @@ RC_FILES				= afterincludes.rc 		\
 					  ossorssfeedreader.rc 		\
 					  ossortc.rc 			\
 					  ossospeeddial.rc 		\
-					  themespecificgtk.rc
+					  themespecificgtk.rc		\
+					  hildonthumbscrollbar.rc
 
 gtkrc: $(RC_FILES)
 	hildon-theme-rc-parser gtkrc.rc gtkrc

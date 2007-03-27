@@ -52,6 +52,7 @@ include "hildonvolumebar.rc"
 include "hildonweekdaypicker.rc"
 include "hildonbreadcrumbbutton.rc"
 include "hildondateeditor.rc"
+include "hildonthumbscrollbar.rc"
 
 include "ossoclock.rc"
 include "ossortc.rc"

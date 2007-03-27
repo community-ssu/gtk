@@ -78,37 +78,37 @@ style "osso-logical-colors" {
 ##############################
 
 style "osso-SystemFont" {
-	font_name = "Nokia Sans 16.75"
+	font_name = "Nokia Sans 16.75, DejaVu Sans Condensed 16.75, Sans 16.75"
 }
 
 style "osso-EmpSystemFont" {
-	font_name = "Nokia Sans Bold 16.75"
+	font_name = "Nokia Sans Bold 16.75, DejaVu Sans Condensed 16.75, Sans 16.75"
 }
 
 style "osso-TitleFont" {
-	font_name = "Nokia Sans 16.75"
+	font_name = "Nokia Sans 16.75, DejaVu Sans Condensed 16.75, Sans 16.75"
 }
 
 style "osso-ButtonFont" {
-	font_name = "Nokia Sans 16.75"
+	font_name = "Nokia Sans 16.75, DejaVu Sans Condensed 16.75, Sans 16.75"
 }
 
 style "osso-SmallFont" {
-	font_name = "Nokia Sans 11.625"
+	font_name = "Nokia Sans 11.625, DejaVu Sans Condensed 11.625, Sans 11.625"
 }
 
 style "osso-LargeFont" {
-	font_name = "Nokia Sans 29.5"
+	font_name = "Nokia Sans 29.5, DejaVu Sans Condensed 29.5, Sans 29.5"
 }
 
 style "osso-HWRFont1"
 {
-  font_name = "Nokia Sans 52"
+  font_name = "Nokia Sans 52, DejaVu Sans Condensed 52, Sans 52"
 }
 
 style "osso-HWRFont2"
 {
-  font_name = "Nokia Sans 38"
+  font_name = "Nokia Sans 38, DejaVu Sans Condensed 38, Sans 38"
 }
 
 ######################################

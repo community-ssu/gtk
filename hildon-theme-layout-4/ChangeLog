@@ -1,3 +1,12 @@
+2007-03-27  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/Makefile.am:
+	* rc/gtkrc.rc:
+	* rc/hildonthumbscrollbar.rc: Style for the thumb-sized 'fingerable' scrollbar.
+
+	* rc/themespecificgtk.rc: Adding the DejaVu Sans Condensed as the
+	second font option.
+
 2007-03-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: added thumb-sized scrollbar images, hopefully
