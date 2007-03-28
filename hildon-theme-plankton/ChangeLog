@@ -1,3 +1,11 @@
+2007-03-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.*: added a new icon for bcrumb separator
+	clicked state and made them use no alpha, also changed the
+	gradients so that the theme can be stretched without it looking
+	bad. The gradient is now 15 pixels from top and bottom, the center
+	is flat colour as far as I know.
+
 2007-03-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/coordinates.png: Added the coordinates file for
