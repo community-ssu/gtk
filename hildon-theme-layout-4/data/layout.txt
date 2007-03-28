@@ -605,4 +605,5 @@ qgn_plat_breadcrumb_end_disabled.png=1836,429,11,58
 
 qgn_plat_breadcrumb_arrow_normal.png=1912,363,34,34
 qgn_plat_breadcrumb_arrow_disabled.png=1912,403,34,34
-qgn_plat_breadcrumb_separator.png=1962,363,16,34
+qgn_plat_breadcrumb_separator_normal.png=1962,363,16,34
+qgn_plat_breadcrumb_separator_pressed.png=1962,403,16,34

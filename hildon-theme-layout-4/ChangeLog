@@ -1,3 +1,7 @@
+2007-03-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: pressed variant of the path separator chevron 
+
 2007-03-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* rc/gtkmenuitem.rc: add qgn_plat_menu_next_level_arrow_focused
