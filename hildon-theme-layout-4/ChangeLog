@@ -25,7 +25,6 @@
 	* rc/themespecificgtk.rc: Adding the DejaVu Sans Condensed as the
 	second font option.
 
->>>>>>> .r10779
 2007-03-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: added thumb-sized scrollbar images, hopefully
