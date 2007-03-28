@@ -1,3 +1,39 @@
+hildon-desktop (0.0.1-1) unstable; urgency=low
+
+  * src/hn-app-switcher:
+  - Fixed navigation through swap key when is highest element.
+
+  * src/hn-app-switcher.c: 
+  - Handling of swap key fixed.
+  - Open thumb menu when swap key pressed.
+  * libhildonwm/hd-wm.c (working copy):
+  - Created constructor and moved DBus initialization to constructor.
+
+  * src/hd-home-background.c, src/hd-desktop.c,
+  src/hd-plugin-loader-factory.c, libhildondesktop/libhildonmenu.c,
+  libhildondesktop/hildon-desktop-plugin.c,
+  libhildondesktop/hildon-desktop-panel-window-dialog.c: fixed a bunch
+  of build warnings.      
+
+  * autogen.sh: run configure script to be jhbuild friendly.
+
+  * doxyconf: Removed
+  * configure.ac: Look for gdx-x11
+  * libhildonwm/hd-wm.c: fixed some headers
+  * libhildonwm/Makefile.am: Links against gdk not hildon
+
+  * Src/hn-app-switcher.c: Use hildon_helper_event_button_is_finger 
+  if hildon-1 is present.
+
+  * libhildondesktop/hildon-desktop-plugin.h:
+  - new macro HILDON_DESKTOP_PLUGIN_SYMBOLS_CODE to add code in load
+  and unload symbols.
+  * libhildondesktop/libhildondesktop.h
+  - new macro HD_DEFINE_PLUGIN_EXTENDED to register the plugin and 
+  add code in load and unload exported symbols.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed, 28 Mar 2007 17:09:15 +0300
+
 hildon-desktop (0.0.0-36) unstable; urgency=low
 
   * libhildonwm-dev should depend on libgonf2-dev, not libhildonwm0
