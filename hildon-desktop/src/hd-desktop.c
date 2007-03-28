@@ -191,7 +191,7 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
     }
   }
 
-  buffer = g_key_file_to_data (keyfile, &buffer_size, &error);
+  buffer = g_key_file_to_data (keyfile, (gsize *) &buffer_size, &error);
 
   if (error)
   {

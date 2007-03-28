@@ -133,7 +133,7 @@ hd_plugin_loader_factory_load_modules (HDPluginLoaderFactory *factory)
       {
         if (g_module_symbol (module,
 			     MODULE_LOAD_SYMBOL,
-			     (gpointer *) &factory->priv->load_module))
+			     (void *) &factory->priv->load_module))
 	{
 	  g_hash_table_insert (factory->priv->modules,
 			       factory->priv->load_module (),
@@ -312,7 +312,7 @@ hd_plugin_loader_factory_create (HDPluginLoaderFactory *factory,
       {
         if (g_module_symbol (module,
 			     MODULE_GET_INSTANCE_SYMBOL,
-			     (gpointer *) &factory->priv->get_instance))
+			     (void *) &factory->priv->get_instance))
         {
 	  loader = priv->get_instance ();
 	  

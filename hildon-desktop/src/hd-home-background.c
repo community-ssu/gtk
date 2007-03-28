@@ -397,7 +397,7 @@ hd_home_background_save (HDHomeBackground *background,
     }
 
   buffer = g_key_file_to_data (keyfile,
-                               &buffer_length,
+                               (gsize *) &buffer_length,
                                &local_error);
   if (local_error) goto cleanup;
 

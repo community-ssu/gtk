@@ -179,10 +179,10 @@ hildon_desktop_plugin_load (GTypeModule *gmodule)
 
   if (!g_module_symbol (plugin->priv->library,
 			"hildon_desktop_plugin_load",
-			(gpointer *) &plugin->priv->load)  ||
+			(void *) &plugin->priv->load)  ||
       !g_module_symbol (plugin->priv->library,
 	      		"hildon_desktop_plugin_unload",
-			(gpointer *) &plugin->priv->unload)) 
+			(void *) &plugin->priv->unload)) 
   {
     g_warning (g_module_error ());
 

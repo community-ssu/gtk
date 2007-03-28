@@ -675,7 +675,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 			current_element != NULL;
 			current_element = current_element->next) {
 
-		if (strcmp(current_element->name, "Menu") == 0) {
+		if (strcmp((const char *) current_element->name, "Menu") == 0) {
 			
 			/* Submenu */
 			g_debug( "read_menu_conf: "
@@ -685,7 +685,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 			read_menu_conf(filename, menu_tree,
 					doc, current_element, &child_iterator, desktop_files);
-		} else if (strcmp(current_element->name, "Name") == 0) {
+		} else if (strcmp((const char *) current_element->name, "Name") == 0) {
 
 			if (level == 0) {
 				/* H4rd c0d3d for top level */
@@ -720,13 +720,13 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					"",
 					-1);
 
-			if ( strcmp( key, EXTRAS_MENU_STRING ) == 0 ) {
+			if ( strcmp((const char *) key, EXTRAS_MENU_STRING ) == 0 ) {
 				extras_iter = gtk_tree_iter_copy( iterator );
 			}
 
 			xmlFree(key);
 
-		} else if (strcmp(current_element->name, "MergeFile") == 0) {
+		} else if (strcmp((const char *) current_element->name, "MergeFile") == 0) {
 
 			/* FIXME: skip this for now */
 			continue;
@@ -735,17 +735,17 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					current_element->xmlChildrenNode, 1);
 
 			/* Relative path. prepend current dir */
-			if (g_str_has_prefix(key, "/") == FALSE) {
-				key = g_build_path(G_DIR_SEPARATOR_S,
+			if (g_str_has_prefix((const char *) key, "/") == FALSE) {
+				key = (xmlChar *) g_build_path(G_DIR_SEPARATOR_S,
 						g_path_get_dirname(filename), key, NULL);
 			}
 
 			/* Recursion */
-			read_menu_conf(key, menu_tree, NULL, NULL, iterator, desktop_files);
+			read_menu_conf((const char *) key, menu_tree, NULL, NULL, iterator, desktop_files);
 
 			xmlFree(key);
 
-		} else if (strcmp(current_element->name, "Include") == 0) {
+		} else if (strcmp((const char *) current_element->name, "Include") == 0) {
 
 			xmlNodePtr child_element = NULL;
 
@@ -753,20 +753,20 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 					child_element != NULL;
 					child_element = child_element->next) {
 
-				if (strcmp(child_element->name, "Filename") == 0) {
+				if (strcmp((const char *) child_element->name, "Filename") == 0) {
 
 					/* Get the children */
 					key = xmlNodeListGetString(doc,
 							child_element->xmlChildrenNode,
 							1);
 
-					if ( !key || strlen( key ) == 0) {
+					if ( !key || strlen((const char *) key) == 0) {
 						xmlFree( key );
 						continue;
 					}
 
 					/* Get the contents */
-					item = get_desktop_item(desktop_files, key);
+					item = get_desktop_item(desktop_files, (const char *) key);
 
 					if ( !item ) {
 						xmlFree( key );
@@ -818,7 +818,7 @@ static void read_menu_conf(const char *filename, GtkTreeStore *menu_tree,
 
 
 
-		} else if (strcmp(current_element->name, "Separator") == 0) {
+		} else if (strcmp((const char *) current_element->name, "Separator") == 0) {
 			g_debug( "read_menu_conf: level %i: "
 					"appending separator.", level );
 
@@ -1100,7 +1100,7 @@ gboolean write_menu_conf( xmlTextWriterPtr writer,
 			}
 
 			/* <Name> ... </Name> */
-			if ( xmlTextWriterWriteElement( writer, "Name", name ) < 0 ) {
+			if ( xmlTextWriterWriteElement( writer, (const xmlChar *) "Name", (const xmlChar *) name ) < 0 ) {
 				g_warning( "write_menu_conf: "
 				          "failed to write Name element." );
 				goto cleanup_and_exit;
@@ -1149,7 +1149,7 @@ gboolean write_menu_conf( xmlTextWriterPtr writer,
 
 			/* This returns -1 for some reason. But this seems to work 
 			 * and without this it doesn't work. Oh well.. */
-			xmlTextWriterWriteElement( writer, "Separator", NULL );
+			xmlTextWriterWriteElement( writer, (const xmlChar *) "Separator", NULL );
 			xmlTextWriterEndElement( writer );
 
 			g_debug( "write_menu_conf: <Separator/>" );
@@ -1171,7 +1171,7 @@ gboolean write_menu_conf( xmlTextWriterPtr writer,
 
 			/* <Filename> ... </Filename> */
 			if ( xmlTextWriterWriteElement( writer,
-					"Filename", desktop_id ) < 0 ) {
+					(const xmlChar *) "Filename", (const xmlChar *) desktop_id ) < 0 ) {
 				g_warning( "write_menu_conf: "
 				          "failed to write Filename element." );
 				goto cleanup_and_exit;

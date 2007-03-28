@@ -1,3 +1,11 @@
+2007-03-28  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-home-background.c, src/hd-desktop.c,
+	src/hd-plugin-loader-factory.c, libhildondesktop/libhildonmenu.c,
+	libhildondesktop/hildon-desktop-plugin.c,
+	libhildondesktop/hildon-desktop-panel-window-dialog.c: fixed a bunch
+	of build warnings.      
+
 2007-03-27  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* autogen.sh: run configure script to be jhbuild friendly.

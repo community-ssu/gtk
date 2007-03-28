@@ -101,7 +101,7 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
   Atom           atom_utf8_string, atom_wm_name, atom_check, type;
   int            result, format;
   gchar          *retval;
-  unsigned char *val;
+  unsigned char  *val;
   unsigned long  nitems, bytes_after;
   Display	*dpy;
   union
@@ -140,7 +140,7 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
     return NULL;
   }
 
-  retval = g_strdup (val);
+  retval = g_strdup ((char *) val);
 
   XFree (val);
   XFree (support_xwin.s);
