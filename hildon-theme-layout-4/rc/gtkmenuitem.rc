@@ -41,6 +41,15 @@ style "osso-menuitem"
         function        = ARROW
 	arrow_direction = RIGHT
 	shadow          = OUT
+	state           = PRELIGHT
+	overlay_file    = "../images/qgn_plat_menu_next_level_arrow_focused.png"
+	overlay_stretch = FALSE
+      }
+    image
+      {
+        function        = ARROW
+	arrow_direction = RIGHT
+	shadow          = OUT
 	overlay_file    = "../images/qgn_plat_menu_next_level_arrow_normal.png"
 	overlay_stretch = FALSE
       }
