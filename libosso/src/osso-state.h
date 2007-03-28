@@ -42,6 +42,4 @@
 #define LOCATION_VAR "STATESAVEDIR"
 #define FALLBACK_PREFIX "/tmp/state"
 
-static gboolean _validate_state(osso_state_t *state);
-
 #endif /* OSSO_STATE_H */

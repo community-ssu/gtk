@@ -59,12 +59,13 @@ am_libosso_la_OBJECTS = osso-state.lo osso-init.lo \
 	osso-hw.lo osso-mime.lo osso-system-note.lo osso-rpc.lo \
 	osso-statusbar.lo osso-cp-plugin.lo osso-log.lo osso-time.lo \
 	osso-locale.lo osso-display.lo osso-application-init.lo \
-	osso-mem.lo
+	osso-mem.lo deprecated.lo
 libosso_la_OBJECTS = $(am_libosso_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
-@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/osso-application-autosave.Plo \
+@AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/deprecated.Plo \
+@AMDEP_TRUE@	./$(DEPDIR)/osso-application-autosave.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-init.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-application-top.Plo \
 @AMDEP_TRUE@	./$(DEPDIR)/osso-cp-plugin.Plo \
@@ -214,7 +215,7 @@ AM_CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) \
 
 AM_CPPFLAGS = \
 	-DPREFIX=\"${prefix}\" \
-       	-DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
+	-DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
 
 lib_LTLIBRARIES = libosso.la
 libosso_la_LIBADD = -ldl -lc $(GTHREAD_LIBS) $(GLIB_LIBS) $(DBUS_LIBS)
@@ -251,7 +252,8 @@ libosso_la_SOURCES = \
 	osso-application-init.c \
 	osso-mem.h \
 	osso-mem.c \
-	muali.h
+	muali.h \
+        deprecated.c
 
 all: all-am
 
@@ -322,6 +324,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/deprecated.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-autosave.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-init.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/osso-application-top.Plo@am__quote@

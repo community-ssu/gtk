@@ -3,7 +3,7 @@ AM_CFLAGS = $(OSSO_CFLAGS) $(GLIB_CFLAGS) $(DBUS_CFLAGS) \
 
 AM_CPPFLAGS = \
 	-DPREFIX=\"${prefix}\" \
-       	-DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
+	-DOSSO_CTRLPANELPLUGINDIR=\"${prefix}/lib/hildon-control-panel\"
 
 lib_LTLIBRARIES = libosso.la
 
@@ -43,4 +43,5 @@ libosso_la_SOURCES = \
 	osso-application-init.c \
 	osso-mem.h \
 	osso-mem.c \
-	muali.h
+	muali.h \
+        deprecated.c
