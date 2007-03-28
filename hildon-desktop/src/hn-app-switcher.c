@@ -311,15 +311,23 @@ hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
 	  l->data != app_switcher->priv->main_home_item)
       {
         GtkWidget *item;
-	      
-        if ((l->next)->data)
+	
+        if (l->next && (l->next)->data)
           item = GTK_WIDGET ((l->next)->data);        		
 	else
 	  item = app_switcher->priv->main_home_item;
 
+	if (GTK_IS_SEPARATOR_MENU_ITEM (item))
+        {		
+	  app_switcher->priv->active_menu_item = item;
+          continue;
+	}
+
 	app_switcher->priv->active_menu_item = item;
 	
         gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), item);	      
+	g_debug ("home %p item %p",app_switcher->priv->main_home_item,item);
+	break;
       }
       else 
       if (l->data == app_switcher->priv->main_home_item &&
@@ -329,6 +337,7 @@ hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
 			            GTK_WIDGET (children->data));
 
 	app_switcher->priv->active_menu_item = GTK_WIDGET (children->data);
+	break;
       }
    }	
 	 

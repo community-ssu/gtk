@@ -1,5 +1,10 @@
 2007-03-28  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hn-app-switcher:
+	- Fixed navigation through swap key when is highest element.
+
+2007-03-28  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hn-app-switcher.c: 
 	- Handling of swap key fixed.
 	- Open thumb menu when swap key pressed.
