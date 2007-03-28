@@ -1,5 +1,10 @@
 2007-03-28  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildonwm/hd-wm.c:
+	- Fixed crash when entering lowmem situation and bgkilling.
+
+2007-03-28  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hn-app-switcher:
 	- Fixed navigation through swap key when is highest element.
 

@@ -43,9 +43,7 @@ G_BEGIN_DECLS
 
 typedef enum {
   HD_ENTRY_INVALID,        /* only used for debugging */
-
   HD_ENTRY_DESKTOP,
-  
   HD_ENTRY_WATCHED_APP,
   HD_ENTRY_WATCHED_WINDOW
 } HDEntryInfoType;

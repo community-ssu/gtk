@@ -696,7 +696,7 @@ lowmem_handler (DBusConnection *conn,
   if (strcmp (LOWMEM_ON_SIGNAL_NAME, member) == 0)
   {
     hd_wm_memory_lowmem_func (TRUE);
-    g_signal_emit_by_name (hdwm,"entry_info_changed");
+    g_signal_emit_by_name (hdwm,"entry_info_changed",NULL);
     
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
@@ -704,7 +704,7 @@ lowmem_handler (DBusConnection *conn,
   if (strcmp (LOWMEM_OFF_SIGNAL_NAME, member) == 0)
   {
     hd_wm_memory_lowmem_func (FALSE);
-    g_signal_emit_by_name (hdwm,"entry_info_changed");
+    g_signal_emit_by_name (hdwm,"entry_info_changed",NULL);
 	  
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
@@ -730,7 +730,7 @@ bgkill_handler (DBusConnection *conn,
   if (strcmp (BGKILL_ON_SIGNAL_NAME, member) == 0)
   {
     hd_wm_memory_bgkill_func (TRUE);
-    g_signal_emit_by_name (hdwm,"entry_info_changed");
+    g_signal_emit_by_name (hdwm,"entry_info_changed",NULL);
       
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
@@ -738,7 +738,7 @@ bgkill_handler (DBusConnection *conn,
   if (strcmp (BGKILL_OFF_SIGNAL_NAME, member) == 0)
   {
     hd_wm_memory_bgkill_func (FALSE);
-    g_signal_emit_by_name (hdwm,"entry_info_changed");
+    g_signal_emit_by_name (hdwm,"entry_info_changed",NULL);
       
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
@@ -755,8 +755,6 @@ mce_handler (DBusConnection *conn,
 
   HDWM *hdwm = HD_WM (data);
 
-  g_debug ("processing MCE");
-  
   if (dbus_message_get_type (msg) != DBUS_MESSAGE_TYPE_SIGNAL)
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   
@@ -768,8 +766,6 @@ mce_handler (DBusConnection *conn,
   {
     g_signal_emit_by_name (hdwm, "long-key-press");
 
-    g_debug ("long key press!!!!");
-      
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
   
