@@ -1,10 +1,10 @@
 libosso (2.4-1) unstable; urgency=low
 
-  * UNRELEASED
   * Bring back osso_application_set_exit_cb(), osso_state_open_write(),
     osso_state_open_read(), osso_state_close() to stay binary compatible.
+  * Added check for mce-dev to configure.ac.
 
- -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 27 Mar 2007 20:10:19 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 28 Mar 2007 10:56:11 +0300
 
 libosso (2.3-1) unstable; urgency=low
 
