@@ -138,23 +138,24 @@ AC_SUBST(DBUS_CONF_DIR)
 
 
 # Checks for libraries.
-PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.4.0)
+PKG_CHECK_MODULES([GLIB], [glib-2.0 >= 2.4.0])
 AC_SUBST(GLIB_LIBS)
 AC_SUBST(GLIB_CFLAGS)
 
-PKG_CHECK_MODULES(GTHREAD, gthread-2.0 >= 2.4.0)
+PKG_CHECK_MODULES([GTHREAD], [gthread-2.0 >= 2.4.0])
 AC_SUBST(GTHREAD_LIBS)
 AC_SUBST(GTHREAD_CFLAGS)
 
-PKG_CHECK_MODULES(DBUS, dbus-glib-1 >= 0.61)
+PKG_CHECK_MODULES([DBUS], [dbus-glib-1 >= 0.61])
 AC_SUBST(DBUS_LIBS)
 AC_SUBST(DBUS_CFLAGS)
 
-PKG_CHECK_MODULES(OUTO, outo >= 0.1.1, [build_unit_tests="yes"],
+PKG_CHECK_MODULES([OUTO], [outo >= 0.1.1], [build_unit_tests="yes"],
                   [build_unit_tests="no"])
 AC_SUBST([OUTO_CFLAGS])
 AM_CONDITIONAL([BUILD_UNIT_TESTS], [test "x${build_unit_tests}" = "xyes"])
 
+PKG_CHECK_MODULES([MCE], [mce >= 1.5])
 
 # Checks for header files.
 AC_HEADER_STDC
