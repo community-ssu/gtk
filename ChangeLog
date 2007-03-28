@@ -1,3 +1,9 @@
+2007-03-28  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenuitem.c (gtk_menu_item_paint): Remove the patch that
+	excludes the submenu arrow from selection prelight. Remove
+	ARROW_PADDING and use style->xthickness instead.
+
 2007-03-27  Tomas Junnonen  <tomas.junnonen@nokia.com>
 	
 	* gtk/gtkenums.h: Add HILDON_GTK_INPUT_MODE_DICTIONARY for enabling

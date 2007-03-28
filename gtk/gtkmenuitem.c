@@ -770,33 +770,10 @@ gtk_menu_item_paint (GtkWidget    *widget,
 				NULL);
 
 #ifdef MAEMO_CHANGES
-          /* Don't draw the selection prelight around the arrow */
           if (menu_item->submenu)
             {
               GtkMenuItem *msi;
-              gint focus_x = x;
-              gint focus_width = width;
               GtkStateType selected_state;
-
-              if (menu_item->show_submenu_indicator)
-                {
-                  GtkRequisition child_requisition;
-                  gint arrow_size;
-
-                  /* Add 4 additional pixels of padding on both sides
-                   * of the arrow
-                   */
-#define ARROW_PADDING 4
-
-                  gtk_widget_get_child_requisition (GTK_BIN (menu_item)->child,
-                                                    &child_requisition);
-
-                  arrow_size = child_requisition.height - 2 * widget->style->ythickness;
-                  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
-                    focus_width = x + width - arrow_size - 2 * ARROW_PADDING;
-                  else
-                    focus_x = x + arrow_size + 2 * ARROW_PADDING;
-                }
 
               /* This draws different focus depending on if it's the
                * toplevel focused menu item. All items that have
@@ -816,7 +793,7 @@ gtk_menu_item_paint (GtkWidget    *widget,
                              selected_state,
                              selected_shadow_type,
                              area, widget, "menuitem",
-                             focus_x, y, focus_width, height);
+                             x, y, width, height);
             }
           else
 #endif /* MAEMO_CHANGES */
@@ -875,7 +852,7 @@ gtk_menu_item_paint (GtkWidget    *widget,
 	      arrow_type = GTK_ARROW_RIGHT;
 
 #ifdef MAEMO_CHANGES
-              arrow_x -= ARROW_PADDING;
+              arrow_x -= widget->style->xthickness;
 #endif /* MAEMO_CHANGES */
 	    }
 	  else
@@ -884,7 +861,7 @@ gtk_menu_item_paint (GtkWidget    *widget,
 	      arrow_type = GTK_ARROW_LEFT;
 
 #ifdef MAEMO_CHANGES
-              arrow_x += ARROW_PADDING;
+              arrow_x += widget->style->xthickness;
 #endif /* MAEMO_CHANGES */
 	    }
 
