@@ -322,9 +322,14 @@ hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
         gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), item);	      
       }
       else 
-      if (l->data == app_switcher->priv->main_home_item)
+      if (l->data == app_switcher->priv->main_home_item &&
+	  children->next)
+      {	      
 	gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), 
 			            GTK_WIDGET (children->data));
+
+	app_switcher->priv->active_menu_item = GTK_WIDGET (children->data);
+      }
    }	
 	 
    return;
@@ -1077,6 +1082,8 @@ hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data)
 {
   HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);
 
+  app_switcher->priv->is_thumbable = TRUE;
+
   hn_app_switcher_toggle_menu_button (app_switcher);
 }
 
@@ -1242,7 +1249,7 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
 		    (gpointer)app_switcher);
 
   g_signal_connect (app_switcher->hdwm,
-		    "long-press-key",
+		    "long-key-press",
 		    G_CALLBACK (hn_app_switcher_long_press_cb),
 		    (gpointer)app_switcher);
 

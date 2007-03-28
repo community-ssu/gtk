@@ -1,3 +1,11 @@
+2007-03-28  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c: 
+	- Handling of swap key fixed.
+	- Open thumb menu when swap key pressed.
+	* libhildonwm/hd-wm.c (working copy):
+	- Created constructor and moved DBus initialization to constructor.
+
 2007-03-28  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-home-background.c, src/hd-desktop.c,

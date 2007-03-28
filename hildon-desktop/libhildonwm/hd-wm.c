@@ -162,6 +162,13 @@ static gboolean
 hd_wm_relaunch_timeout (gpointer data);
 
 static void 
+hd_wm_register_object_path (HDWM *hdwm,
+ 			    DBusConnection *conn,
+			    DBusObjectPathMessageFunction func,
+			    gchar *interface,
+			    gchar *path);
+
+static void 
 hd_wm_check_net_state (HDWM *hdwm, HDWMWatchedWindow *win);
 
 static void hd_wm_get_property (GObject *object,
@@ -760,6 +767,8 @@ mce_handler (DBusConnection *conn,
   if (strcmp (HOME_LONG_PRESS, member) == 0 && !hd_wm_modal_windows_present())
   {
     g_signal_emit_by_name (hdwm, "long-key-press");
+
+    g_debug ("long key press!!!!");
       
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
@@ -793,11 +802,117 @@ hd_wm_finalize (GObject *object)
   G_OBJECT_CLASS (hd_wm_parent_class)->finalize (object);
 }
 
+static GObject *
+hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
+{
+  GObject *object;
+  HDWM *hdwm;
+  DBusConnection *connection,*sys_connection;
+  DBusError       error,sys_error;
+  gchar          *match_rule = NULL;
+
+  object = G_OBJECT_CLASS (hd_wm_parent_class)->constructor (gtype, n_params, params);
+
+  hdwm = HD_WM (object);
+
+  if (!hdwm->priv->init_dbus)
+    return object;  
+  
+  /* Setup shortcuts */
+
+  hdwm->keys = hd_keys_config_get_singleton ();
+
+  /* Get on the DBus */
+
+  dbus_error_init (&error);
+  dbus_error_init (&sys_error);
+
+  connection     = dbus_bus_get (DBUS_BUS_SESSION, &error);
+  sys_connection = dbus_bus_get (DBUS_BUS_SYSTEM, &sys_error);
+  
+  if (!connection)
+  {
+      g_debug ("Failed to connect to DBUS: %s!\n", error.message );
+      dbus_error_free( &error );
+  }
+  else
+  {
+    match_rule = g_strdup_printf("interface='%s'", APP_LAUNCH_BANNER_METHOD_INTERFACE );
+
+    dbus_bus_add_match( connection, match_rule, NULL );
+    g_free (match_rule);
+
+    match_rule = g_strdup_printf("type='signal', interface='%s'",APPKILLER_SIGNAL_INTERFACE);
+      
+    dbus_bus_add_match( connection, match_rule, NULL );
+    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
+    g_free(match_rule);
+
+    match_rule = g_strdup_printf("interface='%s'", TASKNAV_INSENSITIVE_INTERFACE );
+
+    dbus_bus_add_match (connection, match_rule, NULL );
+
+    dbus_connection_add_filter (connection, hd_wm_dbus_method_call_handler, hdwm, NULL );
+    g_free(match_rule);
+
+    match_rule = g_strdup_printf("type='signal', interface='%s'", MAEMO_LAUNCHER_SIGNAL_IFACE);
+
+    dbus_bus_add_match (connection, match_rule, NULL);
+    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
+    g_free(match_rule);
+
+    dbus_connection_flush(connection);
+
+  }
+
+  if (!sys_connection)
+  {
+      g_debug ("Failed to connect to DBUS: %s!\n", sys_error.message );
+      dbus_error_free( &sys_error );
+  }
+  else
+  {
+    hd_wm_register_object_path (hdwm, 
+		    		sys_connection,
+				mce_handler,
+				MCE_SIGNAL_INTERFACE,
+				MCE_SIGNAL_PATH); 
+    
+    hd_wm_register_object_path (hdwm,
+		    		sys_connection,
+				bgkill_handler,
+				BGKILL_ON_SIGNAL_INTERFACE,
+				BGKILL_ON_SIGNAL_PATH);
+
+    hd_wm_register_object_path (hdwm,
+		    		sys_connection,
+				bgkill_handler,
+				BGKILL_OFF_SIGNAL_INTERFACE,
+				BGKILL_OFF_SIGNAL_PATH);
+    
+    hd_wm_register_object_path (hdwm,
+		    		sys_connection,
+				lowmem_handler,
+				LOWMEM_ON_SIGNAL_INTERFACE,
+				LOWMEM_ON_SIGNAL_PATH);
+
+    hd_wm_register_object_path (hdwm,
+		    		sys_connection,
+				lowmem_handler,
+				LOWMEM_OFF_SIGNAL_INTERFACE,
+				LOWMEM_OFF_SIGNAL_PATH);
+  }
+
+  return object;
+}
+
 static void 
 hd_wm_class_init (HDWMClass *hdwm_class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (hdwm_class);
 
+
+  object_class->constructor  = hd_wm_constructor;
   object_class->get_property = hd_wm_get_property;
   object_class->set_property = hd_wm_set_property;
 
@@ -908,7 +1023,7 @@ hd_wm_class_init (HDWMClass *hdwm_class)
                                                         "initdbus",
                                                         "Max width when horizontal",
 	                                                TRUE,
-							G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 }
 
 static void 
@@ -978,9 +1093,6 @@ static void hd_wm_register_object_path (HDWM *hdwm,
 static void 
 hd_wm_init (HDWM *hdwm)
 {
-  DBusConnection *connection,*sys_connection;
-  DBusError       error,sys_error;
-  gchar          *match_rule = NULL;
   GdkKeymap      *keymap;
   
   hdwm->priv = hdwmpriv = HD_WM_GET_PRIVATE (hdwm);
@@ -1057,94 +1169,7 @@ hd_wm_init (HDWM *hdwm)
 
   hdwm->priv->home_info = hd_entry_info_new (HD_ENTRY_DESKTOP);
 
-
-  if (!hdwm->priv->init_dbus)
-    return;  
-
-  /* Setup shortcuts */
-
-  hdwm->keys = hd_keys_config_get_singleton ();
-
-  /* Get on the DBus */
-
-  dbus_error_init (&error);
-  dbus_error_init (&sys_error);
-
-  connection     = dbus_bus_get (DBUS_BUS_SESSION, &error);
-  sys_connection = dbus_bus_get (DBUS_BUS_SYSTEM, &sys_error);
-  
-  if (!connection)
-  {
-      g_debug ("Failed to connect to DBUS: %s!\n", error.message );
-      dbus_error_free( &error );
-  }
-  else
-  {
-    match_rule = g_strdup_printf("interface='%s'", APP_LAUNCH_BANNER_METHOD_INTERFACE );
-
-    dbus_bus_add_match( connection, match_rule, NULL );
-    g_free (match_rule);
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'",APPKILLER_SIGNAL_INTERFACE);
-      
-    dbus_bus_add_match( connection, match_rule, NULL );
-    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
-    g_free(match_rule);
-
-    match_rule = g_strdup_printf("interface='%s'", TASKNAV_INSENSITIVE_INTERFACE );
-
-    dbus_bus_add_match (connection, match_rule, NULL );
-
-    dbus_connection_add_filter (connection, hd_wm_dbus_method_call_handler, hdwm, NULL );
-    g_free(match_rule);
-
-    match_rule = g_strdup_printf("type='signal', interface='%s'", MAEMO_LAUNCHER_SIGNAL_IFACE);
-
-    dbus_bus_add_match (connection, match_rule, NULL);
-    dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
-    g_free(match_rule);
-
-    dbus_connection_flush(connection);
-
-  }
-
-  if (!sys_connection)
-  {
-      g_debug ("Failed to connect to DBUS: %s!\n", sys_error.message );
-      dbus_error_free( &sys_error );
-  }
-  else
-  {
-    hd_wm_register_object_path (hdwm, 
-		    		sys_connection,
-				mce_handler,
-				MCE_SIGNAL_INTERFACE,
-				MCE_SIGNAL_PATH); 
-    
-    hd_wm_register_object_path (hdwm,
-		    		sys_connection,
-				bgkill_handler,
-				BGKILL_ON_SIGNAL_INTERFACE,
-				BGKILL_ON_SIGNAL_PATH);
-
-    hd_wm_register_object_path (hdwm,
-		    		sys_connection,
-				bgkill_handler,
-				BGKILL_OFF_SIGNAL_INTERFACE,
-				BGKILL_OFF_SIGNAL_PATH);
-    
-    hd_wm_register_object_path (hdwm,
-		    		sys_connection,
-				lowmem_handler,
-				LOWMEM_ON_SIGNAL_INTERFACE,
-				LOWMEM_ON_SIGNAL_PATH);
-
-    hd_wm_register_object_path (hdwm,
-		    		sys_connection,
-				lowmem_handler,
-				LOWMEM_OFF_SIGNAL_INTERFACE,
-				LOWMEM_OFF_SIGNAL_PATH);
-  }
+  hdwm->keys = NULL;
 }
 
 void
