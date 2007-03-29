@@ -2735,10 +2735,9 @@ gtk_menu_button_scroll (GtkMenu        *menu,
 {
   if (menu->upper_arrow_prelight || menu->lower_arrow_prelight)
     {
-      GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (menu));
-      gboolean     touchscreen_mode;
+      gboolean touchscreen_mode;
 
-      g_object_get (G_OBJECT (settings),
+      g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
                     "gtk-touchscreen-mode", &touchscreen_mode,
                     NULL);
 
@@ -3254,18 +3253,16 @@ gtk_menu_do_timeout_scroll (GtkMenu  *menu,
 }
 
 static gboolean
-gtk_menu_scroll_timeout (gpointer  data)
+gtk_menu_scroll_timeout (gpointer data)
 {
-  GtkMenu     *menu;
-  GtkSettings *settings;
-  gboolean     touchscreen_mode;
+  GtkMenu  *menu;
+  gboolean  touchscreen_mode;
 
   GDK_THREADS_ENTER ();
 
   menu = GTK_MENU (data);
 
-  settings = gtk_widget_get_settings (GTK_WIDGET (menu));
-  g_object_get (settings,
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
 
@@ -3279,17 +3276,15 @@ gtk_menu_scroll_timeout (gpointer  data)
 static gboolean
 gtk_menu_scroll_timeout_initial (gpointer data)
 {
-  GtkMenu     *menu;
-  GtkSettings *settings;
-  guint        timeout;
-  gboolean     touchscreen_mode;
+  GtkMenu  *menu;
+  guint     timeout;
+  gboolean  touchscreen_mode;
 
   GDK_THREADS_ENTER ();
 
   menu = GTK_MENU (data);
 
-  settings = gtk_widget_get_settings (GTK_WIDGET (menu));
-  g_object_get (settings,
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
                 "gtk-timeout-repeat", &timeout,
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
@@ -3308,12 +3303,10 @@ gtk_menu_scroll_timeout_initial (gpointer data)
 static void
 gtk_menu_start_scrolling (GtkMenu *menu)
 {
-  GtkSettings *settings;
-  guint        timeout;
-  gboolean     touchscreen_mode;
+  guint    timeout;
+  gboolean touchscreen_mode;
 
-  settings = gtk_widget_get_settings (GTK_WIDGET (menu));
-  g_object_get (settings,
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
                 "gtk-timeout-repeat", &timeout,
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
@@ -3362,17 +3355,16 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
   guint vertical_padding;
   gint top_x, top_y;
   gint win_x, win_y;
-  GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (menu));
   gboolean touchscreen_mode;
   gint scroll_arrow_height;
-  
+
   priv = gtk_menu_get_private (menu);
 
   menu_shell = GTK_MENU_SHELL (menu);
 
   gdk_drawable_get_size (GTK_WIDGET (menu)->window, &width, &height);
 
-  g_object_get (G_OBJECT (settings),
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
 
@@ -3583,11 +3575,10 @@ static gboolean
 gtk_menu_enter_notify (GtkWidget        *widget,
 		       GdkEventCrossing *event)
 {
-  GtkSettings *settings = gtk_widget_get_settings (widget);
   GtkWidget *menu_item;
-  gboolean touchscreen_mode;
+  gboolean   touchscreen_mode;
 
-  g_object_get (G_OBJECT (settings),
+  g_object_get (gtk_widget_get_settings (widget),
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
 
@@ -4193,15 +4184,14 @@ gtk_menu_remove_scroll_timeout (GtkMenu *menu)
 static void
 gtk_menu_stop_scrolling (GtkMenu *menu)
 {
-  GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (menu));
   gboolean touchscreen_mode;
 
   gtk_menu_remove_scroll_timeout (menu);
-  
-  g_object_get (G_OBJECT (settings),
+
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
 		"gtk-touchscreen-mode", &touchscreen_mode,
 		NULL);
-  
+
   if (!touchscreen_mode)
     {
       menu->upper_arrow_prelight = FALSE;
