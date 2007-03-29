@@ -189,6 +189,7 @@ hildon_desktop_panel_expandable_init (HildonDesktopPanelExpandable *panel)
 					      (GDestroyNotify) g_free,
 					      (GDestroyNotify) gtk_widget_destroy);
 
+
   panel->priv->queued_items = NULL;
   panel->priv->extension_opened = FALSE;
   panel->priv->extension_table = NULL;
@@ -221,6 +222,12 @@ hildon_desktop_panel_expandable_constructor (GType gtype,
   gtk_window_set_decorated (panel->priv->extension_window, FALSE);
 
   panel->priv->extension_table = GTK_TABLE (gtk_table_new (1,panel->priv->items_p_row,TRUE));
+
+  g_object_set (panel->priv->extension_table,
+		"homogeneous", TRUE,
+	        "row-spacing", 0,
+		"column-spacing", 0,
+		NULL);	
 
   gtk_container_add (GTK_CONTAINER (panel->priv->extension_window),
 		     GTK_WIDGET (panel->priv->extension_table));
@@ -349,15 +356,17 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
 
   g_debug ("Adding button in expandable %d %d",ex_panel->priv->items_p_row,ex_panel->priv->n_items+1);
 
-  gtk_widget_size_request (button, &req);
+  req.width  = button->requisition.width;
+  req.height = button->requisition.height;
   
   g_object_get (G_OBJECT (panel), "item_width", &item_width, "item_height", &item_height, NULL);
-
+  
   if (req.width > item_width)
     item_width = req.width;
-	  
+  
   gtk_widget_set_size_request (button, item_width, item_height);
-
+  gtk_widget_set_size_request (GTK_BIN (button)->child, item_width, item_height);
+  
   g_signal_connect (button,
 		    "destroy",
 		    G_CALLBACK (hildon_desktop_panel_expandable_button_destroyed),
@@ -383,7 +392,6 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
   }
   else
   {
-   
     if (STATUSBAR_IS_ITEM (button) && !STATUSBAR_ITEM (button)->condition)
       g_debug ("Statusbar: Item not visible %s",HILDON_DESKTOP_ITEM (button)->id);
     else
@@ -430,7 +438,7 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
 	
   g_object_get (panel->priv->extension_table, "n-rows", &table_rows, NULL);
 
-  if (n_rows > table_rows)
+  if (n_rows+1 > table_rows)
   {
     if (HILDON_DESKTOP_PANEL (panel)->orient == GTK_ORIENTATION_HORIZONTAL)
       gtk_table_resize (panel->priv->extension_table,
@@ -450,21 +458,22 @@ hildon_desktop_panel_expandable_add_in_extension (HildonDesktopPanelExpandable *
     if ((panel->priv->n_items % panel->priv->items_p_row) == 0)
       left_attach = 0;
     else 
-      left_attach = (((panel->priv->n_items+1) % panel->priv->items_p_row)+1);
+      left_attach = (((panel->priv->n_items+1) % panel->priv->items_p_row)) - 1;
 
     right_attach = left_attach + 1;
+
+    g_debug ("left attach %d right attach %d top attach %d b attach %d",
+	     left_attach,right_attach,top_attach,bottom_attach);
   }
   else
   {
     /*TODO:  g_debug ("l: %d, r: %d, t:%d, b: %d",left_attach,right_attach,top_attach,bottom_attach);*/
   }
 
-  gtk_table_attach (panel->priv->extension_table,
-		    GTK_WIDGET (item),
-		    left_attach, right_attach,
-		    top_attach, bottom_attach,
-		    GTK_SHRINK, GTK_SHRINK,
-		    0,0);
+  gtk_table_attach_defaults (panel->priv->extension_table,
+		    	     GTK_WIDGET (item),
+		             left_attach, right_attach,
+		             top_attach, bottom_attach);
 
   panel->priv->n_items++;
 }
