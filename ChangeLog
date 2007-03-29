@@ -1,3 +1,8 @@
+2007-03-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenuitem.c (gtk_menu_item_paint): Remove the patch that
+	handles active/passive focus and do it in sapwood instead.
+
 2007-03-29  Michael Natterer  <mitch@imendio.com>
 
 	Merge small menu cleanup from upstream trunk:

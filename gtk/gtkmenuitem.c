@@ -768,35 +768,6 @@ gtk_menu_item_paint (GtkWidget    *widget,
 	  gtk_widget_style_get (widget,
 				"selected-shadow-type", &selected_shadow_type,
 				NULL);
-
-#ifdef MAEMO_CHANGES
-          if (menu_item->submenu)
-            {
-              GtkMenuItem *msi;
-              GtkStateType selected_state;
-
-              /* This draws different focus depending on if it's the
-               * toplevel focused menu item. All items that have
-               * submenus that in turn have an item selected will be
-               * drawn with SELECTED-state focus. If this isn't the
-               * case, PRELIGHT-state focus is used.
-               */
-              msi = GTK_MENU_ITEM (GTK_MENU_SHELL (menu_item->submenu)->active_menu_item);
-
-              if ((msi == NULL) || (GTK_WIDGET_STATE (msi) == GTK_STATE_NORMAL))
-                selected_state = GTK_STATE_PRELIGHT;
-              else
-                selected_state = GTK_STATE_SELECTED;
-
-              gtk_paint_box (widget->style,
-                             widget->window,
-                             selected_state,
-                             selected_shadow_type,
-                             area, widget, "menuitem",
-                             x, y, width, height);
-            }
-          else
-#endif /* MAEMO_CHANGES */
 	  gtk_paint_box (widget->style,
 			 widget->window,
 			 GTK_STATE_PRELIGHT,
