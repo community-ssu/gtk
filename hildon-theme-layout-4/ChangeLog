@@ -1,3 +1,8 @@
+2007-03-29  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/ossointernetsearchapplet.rc: adapt to the applet's new
+	widget layout
+
 2007-03-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: pressed variant of the path separator chevron 

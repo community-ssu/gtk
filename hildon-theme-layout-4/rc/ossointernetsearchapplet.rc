@@ -1,7 +1,7 @@
 ####################################################  
-# OSSO RSS FEED READER
+# OSSO INTERNET SEARCH APPLET
 #
-# Copyright 2005 Nokia Oyj
+# Copyright 2005, 2006, 2007 Nokia Oyj
 #
 ####################################################
 style "osso-internetsearch-applet"
@@ -16,7 +16,7 @@ style "osso-internetsearch-applet"
         }
     }
 }
-class "MisWidget" style "osso-internetsearch-applet"
+class "IsPlugin" style "osso-internetsearch-applet"
 
 style "osso-internetsearch-applet-button"
 {
@@ -33,4 +33,4 @@ style "osso-internetsearch-applet-button"
     }
 }
 
-widget_class "*.MisWidget.GtkButton" style "osso-internetsearch-applet-button"
+widget_class "*.IsPlugin.GtkHBox.GtkButton" style "osso-internetsearch-applet-button"
