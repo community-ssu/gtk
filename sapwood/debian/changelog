@@ -1,3 +1,12 @@
+sapwood (2.91.3-1) unstable; urgency=low
+
+  * Documentation for theme maintainers.
+  * Implement GtkMenuItem active/passive focus.
+  * Special case GtkCheckButton and GtkRadioButton background drawing when
+    focused.
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 29 Mar 2007 15:33:49 +0300
+
 sapwood (2.91.2-1) experimental; urgency=low
 
   * Fix menu flickering when the scroll arrows were shown
