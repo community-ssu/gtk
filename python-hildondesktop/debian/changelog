@@ -1,8 +1,15 @@
+python-hildondesktop (0.0.0-7) unstable; urgency=low
+
+  * Removed save_position method from HomeItem.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Thu, 29 Mar 2007 12:36:30 +0300
+
 python-hildondesktop (0.0.0-6) unstable; urgency=low
 
   * Several updates to match API changes.
+  * 0.0.0-7
 
- -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 14 Mar 2007 10:07:04 +0200
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Thu, 29 Mar 2007 12:36:12 +0300
 
 python-hildondesktop (0.0.0-5) unstable; urgency=low
 
