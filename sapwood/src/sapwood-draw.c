@@ -733,6 +733,30 @@ draw_string (GtkStyle * style,
 }
 
 static void
+maybe_check_submenu_state (GtkMenuItem *menu_item, ThemeMatchData *match_data)
+{
+  /* Distinguish between active and passive focus, depending on whether the
+   * focus is in submenu.
+   *
+   * Active focus:
+   *   function = BOX
+   *   state    = PRELIGHT
+   *
+   * Passive focus:
+   *   function = BOX
+   *   state    = SELECTED
+   */
+  if (menu_item->submenu)
+    {
+      GtkWidget *sub_item;
+
+      sub_item = GTK_MENU_SHELL (menu_item->submenu)->active_menu_item;
+      if (sub_item && GTK_WIDGET_STATE (sub_item) != GTK_STATE_NORMAL)
+	match_data->state = GTK_STATE_SELECTED;
+    }
+}
+
+static void
 draw_box (GtkStyle     *style,
 	  GdkWindow    *window,
  	  GtkStateType  state,
@@ -762,6 +786,9 @@ draw_box (GtkStyle     *style,
   match_data.flags = THEME_MATCH_SHADOW | THEME_MATCH_STATE;
   match_data.shadow = shadow;
   match_data.state = state;
+
+  if (GTK_IS_MENU_ITEM (widget))
+    maybe_check_submenu_state (GTK_MENU_ITEM (widget), &match_data);
 
   if (!draw_simple_image (style, window, area, widget, &match_data, TRUE,
 			  x, y, width, height)) {

@@ -439,6 +439,13 @@ GtkRadioButton:
   state    = ACTIVE
 
 
+GtkMenuItem
+-----------
+Selected item background:
+  function = BOX
+  state    = PRELIGHT for active, SELECTED for passive focus
+
+
 GtkTreeView
 -----------
 Focus row background:

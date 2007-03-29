@@ -1,3 +1,10 @@
+2007-03-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c (maybe_check_submenu_state, draw_box):
+	Support active/passive focus on GtkMenuItems, use passive focus when
+	the focus is in an item in a submenu.
+	* README: add GtkMenuItem notes
+	
 2007-03-09  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* AUTHORS
