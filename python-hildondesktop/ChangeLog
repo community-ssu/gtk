@@ -1,3 +1,8 @@
+2007-03-28  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs: removed save_position from
+	HomeItem.
+
 2007-03-22  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildondesktop.defs,

@@ -598,15 +598,6 @@
   (return-type "GtkWidget*")
 )
 
-(define-method save_position
-  (of-object "HildonHomeApplet")
-  (c-name "hildon_desktop_home_item_save_position")
-  (return-type "none")
-  (parameters
-    '("GKeyFile*" "keyfile")
-  )
-)
-
 (define-method get_overlaps
   (of-object "HildonHomeApplet")
   (c-name "hildon_desktop_home_item_get_overlaps")
