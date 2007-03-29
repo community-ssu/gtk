@@ -454,10 +454,12 @@ hildon_home_window_size_allocate (GtkWidget *widget,
 
       child_allocation.y += child_allocation.height + padding_top;
       child_allocation.height = priv->work_area->height -
-                                child_allocation.height - padding_bottom;
+                                child_allocation.height - padding_bottom
+                                - padding_top;
 
       child_allocation.x = priv->work_area->x + padding_left;
-      child_allocation.width = priv->work_area->width - padding_right;
+      child_allocation.width = priv->work_area->width - padding_right
+                               - padding_left;
       
       gtk_widget_size_allocate (priv->applet_area, &child_allocation);
     }

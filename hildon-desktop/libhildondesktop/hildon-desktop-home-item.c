@@ -1269,11 +1269,15 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
           if (priv->delta_x || priv->delta_y)
             {
               x_grid = x - (x % GRID_SIZE);
-              if (priv->delta_x > 0)
+              if (priv->delta_x > 0
+                  && !(x_grid + GRID_SIZE + widget->allocation.width >
+                       parent->allocation.width))
                 x_grid += GRID_SIZE;
               
               y_grid = y - (y % GRID_SIZE);
-              if (priv->delta_y > 0)
+              if (priv->delta_y > 0
+                  && !(y_grid + GRID_SIZE + widget->allocation.height >
+                       parent->allocation.height))
                 y_grid += GRID_SIZE;
 
               gtk_fixed_move (GTK_FIXED (parent), widget, x_grid, y_grid);
@@ -1291,7 +1295,8 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
                 {
                   x_grid -= x_grid % GRID_SIZE;
 
-                  if (priv->delta_x > 0)
+                  if (priv->delta_x > 0 
+                      && !(x_grid + GRID_SIZE > parent->allocation.width))
                     x_grid += GRID_SIZE;
                 }
               
@@ -1302,7 +1307,8 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
                 {
                   y_grid -= y_grid % GRID_SIZE;
 
-                  if (priv->delta_y > 0)
+                  if (priv->delta_y > 0
+                      && !(y_grid + GRID_SIZE > parent->allocation.height))
                     y_grid += GRID_SIZE;
                 }
 
