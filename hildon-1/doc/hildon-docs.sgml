@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" 
+               "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+<!ENTITY version SYSTEM "version.xml">
+]>
+
+<book id="index" xmlns:xi="http://www.w3.org/2003/XInclude">
+  <bookinfo>
+    <title>hildon &version; Reference Manual</title>
+  </bookinfo>
+
+  <chapter>
+    <title>Object Hierarchy</title>
+    <xi:include href="xml/tree_index.sgml"/>
+  </chapter>
+
+  <chapter>
+    <title>Widgets gallery</title>
+    <xi:include href="visual_index.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Toplevel Widgets</title>
+    <xi:include href="xml/hildon-window.xml"/>
+    <xi:include href="xml/hildon-program.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Selectors</title>
+    <xi:include href="xml/hildon-color-button.xml"/>
+    <xi:include href="xml/hildon-color-chooser-dialog.xml"/>
+    <xi:include href="xml/hildon-color-chooser.xml"/>
+    <xi:include href="xml/hildon-controlbar.xml"/>
+    <xi:include href="xml/hildon-volumebar.xml"/>
+    <xi:include href="xml/hildon-vvolumebar.xml"/>
+    <xi:include href="xml/hildon-hvolumebar.xml"/>
+    <xi:include href="xml/hildon-seekbar.xml"/>
+    <xi:include href="xml/hildon-calendar-popup.xml"/>
+    <xi:include href="xml/hildon-calendar.xml"/>
+    <xi:include href="xml/hildon-weekday-picker.xml"/>
+    <xi:include href="xml/hildon-time-picker.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Editors</title>
+    <xi:include href="xml/hildon-number-editor.xml"/>
+    <xi:include href="xml/hildon-range-editor.xml"/>
+    <xi:include href="xml/hildon-time-editor.xml"/>
+    <xi:include href="xml/hildon-date-editor.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Miscellaneous controls</title>
+    <xi:include href="xml/hildon-find-toolbar.xml"/>
+    <xi:include href="xml/hildon-caption.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Notifications</title>
+    <xi:include href="xml/hildon-banner.xml"/>
+    <xi:include href="xml/hildon-note.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Dialogs</title>
+    <xi:include href="xml/hildon-set-password-dialog.xml"/>
+    <xi:include href="xml/hildon-get-password-dialog.xml"/>
+    <xi:include href="xml/hildon-login-dialog.xml"/>
+    <xi:include href="xml/hildon-sort-dialog.xml"/>
+    <xi:include href="xml/hildon-font-selection-dialog.xml"/>
+    <xi:include href="xml/hildon-code-dialog.xml"/>
+    <xi:include href="xml/hildon-wizard-dialog.xml"/>
+  </chapter>
+
+  <chapter>
+    <title>Other</title>
+    <xi:include href="xml/hildon-sound.xml"/>
+    <xi:include href="xml/hildon-helper.xml"/>
+    <xi:include href="xml/hildon-defines.xml"/>
+  </chapter>
+
+  <index>
+    <title>Index</title>
+  </index>
+
+  <!-- New symbols index -->
+
+</book>
