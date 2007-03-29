@@ -31,6 +31,6 @@ sapwood_server_CFLAGS = $(AM_CFLAGS)	# created both with libtool and without
 MAINTAINERCLEANFILES = Makefile.in
 CLEANFILES = actual-abi actual-abi2 expected-abi expected-abi2 optional-abi
 
-EXTRA_DIST = README.pixbuf README.server abicheck.sh
+EXTRA_DIST = abicheck.sh
 
 TESTS = abicheck.sh
