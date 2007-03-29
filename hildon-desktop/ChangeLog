@@ -1,5 +1,12 @@
 2007-03-29  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-home-item.[ch]:
+	- removed hildon_desktop_home_item_save_position ()
+	* libhildondesktop/hildon-home-area.c:
+	- added private hildon_home_area_child_save_position ()
+
+2007-03-29  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-home-item.c:
 	- never snap to outside the area
 	* libhildondesktop/hildon-home-window.c:

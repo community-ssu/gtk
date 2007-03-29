@@ -966,11 +966,10 @@ window_event_filter (GdkXEvent *xevent,
       if (priv->drag_handle_window)
         gdk_window_raise (priv->drag_handle_window);
 
-      if (!priv->layout_mode_sucks && GTK_IS_BIN (applet) &&
-                                      GTK_BIN (applet)->child)
+      if (!priv->layout_mode_sucks && GTK_IS_WIDGET (GTK_BIN (applet)->child))
         {
-        gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
-        gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
+          gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
+          gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
         }
     }
 
@@ -1028,7 +1027,7 @@ hildon_desktop_home_item_layout_mode_start (HildonDesktopHomeItem *applet)
            widget->allocation.height - APPLET_RESIZE_HANDLE_HEIGHT);
     }
 
-  if (GTK_BIN (applet) && GTK_BIN (applet)->child)
+  if (GTK_IS_WIDGET (GTK_BIN (applet)->child))
     gtk_widget_set_sensitive (GTK_BIN (applet)->child, FALSE);
 
   gdk_window_set_events (widget->window,
@@ -1067,7 +1066,7 @@ hildon_desktop_home_item_layout_mode_end (HildonDesktopHomeItem *applet)
       priv->resize_handle_window = NULL;
     }
 
-  if (GTK_BIN (applet) && GTK_BIN (applet)->child)
+  if (GTK_IS_WIDGET (GTK_BIN (applet)->child))
     gtk_widget_set_sensitive (GTK_BIN (applet)->child, TRUE);
 
   gdk_window_remove_filter (GTK_WIDGET (applet)->window,
@@ -1583,43 +1582,6 @@ hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet)
   g_signal_emit_by_name (applet, "settings", window, &item);
 
   return item;
-}
-
-void
-hildon_desktop_home_item_save_position (HildonDesktopHomeItem *applet,
-                                        GKeyFile *keyfile)
-{
-  HildonDesktopHomeItemPriv      *priv;
-  const gchar               *id;
-  g_return_if_fail (applet && keyfile);
-  
-  priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-
-  id = hildon_desktop_item_get_id (HILDON_DESKTOP_ITEM (applet));
-  g_return_if_fail (id);
-
-  g_key_file_set_integer (keyfile,
-                          id,
-                          HH_APPLET_KEY_X,
-                          GTK_WIDGET (applet)->allocation.x - 
-                          GTK_WIDGET (applet)->parent->allocation.x);
-
-  g_key_file_set_integer (keyfile,
-                          id,
-                          HH_APPLET_KEY_Y,
-                          GTK_WIDGET (applet)->allocation.y -
-                          GTK_WIDGET (applet)->parent->allocation.y);
-
-  g_key_file_set_integer (keyfile,
-                          id,
-                          HH_APPLET_KEY_WIDTH,
-                          GTK_WIDGET (applet)->allocation.width);
-
-  g_key_file_set_integer (keyfile,
-                          id,
-                          HH_APPLET_KEY_HEIGHT,
-                          GTK_WIDGET (applet)->allocation.height);
-
 }
 
 gboolean

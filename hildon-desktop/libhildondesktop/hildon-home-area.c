@@ -773,6 +773,45 @@ hildon_home_area_get_layout_mode (HildonHomeArea *area)
   return priv->layout_mode;
 }
 
+static void
+hildon_home_area_child_save_position (GtkWidget *widget, GKeyFile *keyfile)
+{
+  const gchar  *id;
+  gint          x, y;
+
+  if (!HILDON_DESKTOP_IS_HOME_ITEM (widget))
+    return;
+
+  id = hildon_desktop_item_get_id (HILDON_DESKTOP_ITEM (widget));
+  g_return_if_fail (id);
+
+  gtk_container_child_get (GTK_CONTAINER (widget->parent), widget,
+                           "x", &x,
+                           "y", &y,
+                           NULL);
+
+  g_key_file_set_integer (keyfile,
+                          id,
+                          HH_APPLET_KEY_X,
+                          x);
+
+  g_key_file_set_integer (keyfile,
+                          id,
+                          HH_APPLET_KEY_Y,
+                          y);
+
+  g_key_file_set_integer (keyfile,
+                          id,
+                          HH_APPLET_KEY_WIDTH,
+                          widget->allocation.width);
+
+  g_key_file_set_integer (keyfile,
+                          id,
+                          HH_APPLET_KEY_HEIGHT,
+                          widget->allocation.height);
+
+}
+
 gint
 hildon_home_area_save_configuration (HildonHomeArea *area,
                                      const gchar *path,
@@ -788,7 +827,7 @@ hildon_home_area_save_configuration (HildonHomeArea *area,
   keyfile = g_key_file_new ();
 
   gtk_container_foreach (GTK_CONTAINER (area),
-                         (GtkCallback)hildon_desktop_home_item_save_position,
+                         (GtkCallback)hildon_home_area_child_save_position,
                          keyfile);
 
   file = fopen (path, "w");
@@ -934,32 +973,6 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
           applets = g_list_remove (applets, applet);
         }
 
-#if 0
-      else
-        {
-          applet = hildon_desktop_home_item_new_with_plugin (groups[n_groups-1]);
-          if (applet)
-            {
-              gtk_fixed_put (GTK_FIXED (area),
-                             applet,
-                             x, 
-                             y);
-
-              gtk_widget_show (applet);
-              
-              g_signal_emit_by_name (G_OBJECT (area), "applet-added", applet);
-              if (priv->layout_mode)
-                {
-                  g_signal_emit_by_name (G_OBJECT (area), "layout-changed");
-                  hildon_desktop_home_item_set_layout_mode
-                      (HILDON_DESKTOP_HOME_ITEM (applet),
-                       TRUE);
-                }
-
-            }
-        }
-#endif
-      
 
       if (applet)
         {

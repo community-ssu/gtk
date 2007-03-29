@@ -126,10 +126,6 @@ hildon_desktop_home_item_get_resize_type        (HildonDesktopHomeItem *applet);
 GtkWidget *
 hildon_desktop_home_item_get_settings_menu_item (HildonDesktopHomeItem *applet);
 
-void        hildon_desktop_home_item_save_position
-                                                (HildonDesktopHomeItem *applet,
-                                                 GKeyFile         *keyfile);
-
 gboolean    hildon_desktop_home_item_get_overlaps
                                                 (HildonDesktopHomeItem *applet);
 
