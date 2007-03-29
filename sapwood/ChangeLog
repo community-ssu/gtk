@@ -1,5 +1,9 @@
 2007-03-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* === Release 2.91.3 ===
+
+2007-03-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* Makefile.am (EXTRA_DIST): Remove forgotten NEWS.pixbuf
 	* src/Makefile.am (EXTRA_DIST): Remove forgotten README.pixbuf and
 	README.server
