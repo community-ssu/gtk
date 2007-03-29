@@ -1,0 +1,679 @@
+;; -*- scheme -*-
+; object definitions ...
+(define-object Item
+  (in-module "HildonDesktop")
+  (parent "GtkBin")
+  (c-name "HildonDesktopItem")
+  (gtype-id "HILDON_DESKTOP_TYPE_ITEM")
+)
+
+(define-object Multiscreen
+  (in-module "HildonDesktop")
+  (parent "GObject")
+  (c-name "HildonDesktopMultiscreen")
+  (gtype-id "HILDON_DESKTOP_TYPE_MULTISCREEN")
+)
+
+(define-object Panel
+  (in-module "HildonDesktop")
+  (parent "GtkBox")
+  (c-name "HildonDesktopPanel")
+  (gtype-id "HILDON_DESKTOP_TYPE_PANEL")
+)
+
+(define-object PanelExpandable
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopPanel")
+  (c-name "HildonDesktopPanelExpandable")
+  (gtype-id "HILDON_DESKTOP_TYPE_PANEL_EXPANDABLE")
+)
+
+(define-object PanelItem
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopItem")
+  (c-name "HildonDesktopPanelItem")
+  (gtype-id "HILDON_DESKTOP_TYPE_PANEL_ITEM")
+)
+
+(define-object Window
+  (in-module "HildonDesktop")
+  (parent "GtkWindow")
+  (c-name "HildonDesktopWindow")
+  (gtype-id "HILDON_DESKTOP_TYPE_WINDOW")
+)
+
+(define-object PanelWindow
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopWindow")
+  (c-name "HildonDesktopPanelWindow")
+  (gtype-id "HILDON_DESKTOP_TYPE_PANEL_WINDOW")
+)
+
+(define-object PanelWindowDialog
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopPanelWindow")
+  (c-name "HildonDesktopPanelWindowDialog")
+  (gtype-id "HILDON_DESKTOP_TYPE_PANEL_WINDOW_DIALOG")
+)
+
+(define-object HomeItem
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopItem")
+  (c-name "HildonDesktopHomeItem")
+  (gtype-id "HILDON_DESKTOP_TYPE_HOME_ITEM")
+)
+
+(define-object HomeArea
+  (in-module "HildonDesktop")
+  (parent "GtkFixed")
+  (c-name "HildonHomeArea")
+  (gtype-id "HILDON_TYPE_HOME_AREA")
+)
+
+(define-object HomeTitlebar
+  (in-module "HildonDesktop")
+  (parent "GtkEventBox")
+  (c-name "HildonHomeTitlebar")
+  (gtype-id "HILDON_TYPE_HOME_TITLEBAR")
+)
+
+(define-object HomeWindow
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopWindow")
+  (c-name "HildonHomeWindow")
+  (gtype-id "HILDON_TYPE_HOME_WINDOW")
+)
+
+(define-object StatusbarItem
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopPanelItem")
+  (c-name "StatusbarItem")
+  (gtype-id "STATUSBAR_TYPE_ITEM")
+)
+
+(define-object TaskNavigatorItem
+  (in-module "HildonDesktop")
+  (parent "HildonDesktopPanelItem")
+  (c-name "TaskNavigatorItem")
+  (gtype-id "TASKNAVIGATOR_TYPE_ITEM")
+)
+
+;; Enumerations and flags ...
+
+(define-flags DesktopPanelWindowOrientationType
+  (in-module "HildonDesktop")
+  (c-name "HildonDesktopPanelWindowOrientation")
+  (gtype-id "HILDON_DESKTOP_TYPE_PANEL_WINDOW_ORIENTATION")
+)
+
+(define-enum HomeTitlebarMode
+  (in-module "HildonDesktop")
+  (c-name "HildonHomeTitlebarMode")
+  (gtype-id "HILDON_TYPE_HOME_TITLEBAR_MODE")
+  (values
+    '("normal" "HILDON_DESKTOP_HOME_TITLEBAR_NORMAL")
+    '("layout" "HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT")
+  )
+)
+
+(define-enum HomeItemResizeType
+  (in-module "HildonDesktop")
+  (c-name "HildonDesktopHomeItemResizeType")
+  (gtype-id "HILDON_DESKTOP_TYPE_HOME_ITEM_RESIZE_TYPE")
+  (values
+    '("none" "HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE")
+    '("vertical" "HILDON_DESKTOP_HOME_ITEM_RESIZE_VERTICAL")
+    '("horizontal" "HILDON_DESKTOP_HOME_ITEM_RESIZE_HORIZONTAL")
+    '("both" "HILDON_DESKTOP_HOME_ITEM_RESIZE_BOTH")
+  )
+)
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-window.h
+
+(define-function hildon_desktop_window_get_type
+  (c-name "hildon_desktop_window_get_type")
+  (return-type "GType")
+)
+
+(define-method set_sensitive
+  (of-object "HildonDesktopWindow")
+  (c-name "hildon_desktop_window_set_sensitive")
+  (return-type "none")
+  (parameters
+    '("gboolean" "sensitive")
+  )
+)
+
+(define-method set_focus
+  (of-object "HildonDesktopWindow")
+  (c-name "hildon_desktop_window_set_focus")
+  (return-type "none")
+  (parameters
+    '("gboolean" "focus")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-panel.h
+
+(define-function hildon_desktop_panel_get_type
+  (c-name "hildon_desktop_panel_get_type")
+  (return-type "GType")
+)
+
+(define-method add_button
+  (of-object "HildonDesktopPanel")
+  (c-name "hildon_desktop_panel_add_button")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "widget")
+  )
+)
+
+(define-method set_orientation
+  (of-object "HildonDesktopPanel")
+  (c-name "hildon_desktop_panel_set_orientation")
+  (return-type "none")
+  (parameters
+    '("GtkOrientation" "orientation")
+  )
+)
+
+(define-method get_orientation
+  (of-object "HildonDesktopPanel")
+  (c-name "hildon_desktop_panel_get_orientation")
+  (return-type "GtkOrientation")
+)
+
+(define-method flip
+  (of-object "HildonDesktopPanel")
+  (c-name "hildon_desktop_panel_flip")
+  (return-type "none")
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-panel-window.h
+
+(define-function hildon_desktop_panel_window_get_type
+  (c-name "hildon_desktop_panel_window_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_desktop_panel_window_new
+  (c-name "hildon_desktop_panel_window_new")
+  (is-constructor-of "HildonDesktopPanelWindow")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_multiscreen_handler
+  (of-object "HildonDesktopPanelWindow")
+  (c-name "hildon_desktop_panel_window_set_multiscreen_handler")
+  (return-type "none")
+  (parameters
+    '("HildonDesktopMultiscreen*" "ms")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-panel-item.h
+
+(define-function hildon_desktop_panel_item_get_type
+  (c-name "hildon_desktop_panel_item_get_type")
+  (return-type "GType")
+)
+
+(define-method get_position
+  (of-object "HildonDesktopPanelItem")
+  (c-name "hildon_desktop_panel_item_get_position")
+  (return-type "gint")
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-multiscreen.h
+
+(define-function hildon_desktop_ms_get_type
+  (c-name "hildon_desktop_ms_get_type")
+  (return-type "GType")
+)
+
+(define-method reinit
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_reinit")
+  (return-type "none")
+)
+
+(define-method get_screens
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_get_screens")
+  (return-type "gint")
+)
+
+(define-method get_monitors
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_get_monitors")
+  (return-type "gint")
+  (parameters
+    '("GdkScreen*" "screen")
+  )
+)
+
+(define-method get_x
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_get_x")
+  (return-type "gint")
+  (parameters
+    '("GdkScreen*" "screen")
+    '("gint" "monitor")
+  )
+)
+
+(define-method get_y
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_get_y")
+  (return-type "gint")
+  (parameters
+    '("GdkScreen*" "screen")
+    '("gint" "monitor")
+  )
+)
+
+(define-method get_width
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_get_width")
+  (return-type "gint")
+  (parameters
+    '("GdkScreen*" "screen")
+    '("gint" "monitor")
+  )
+)
+
+(define-method get_height
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_get_height")
+  (return-type "gint")
+  (parameters
+    '("GdkScreen*" "screen")
+    '("gint" "monitor")
+  )
+)
+
+(define-method locate_widget_monitor
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_locate_widget_monitor")
+  (return-type "gint")
+  (parameters
+    '("GtkWidget*" "widget")
+  )
+)
+
+(define-method is_at_visible_extreme
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_is_at_visible_extreme")
+  (return-type "none")
+  (parameters
+    '("GdkScreen*" "screen")
+    '("gint" "monitor")
+    '("gboolean*" "leftmost")
+    '("gboolean*" "rightmost")
+    '("gboolean*" "topmost")
+    '("gboolean*" "bottommost")
+  )
+)
+
+(define-method make_environment_for_screen
+  (of-object "HildonDesktopMultiscreen")
+  (c-name "hildon_desktop_ms_make_environment_for_screen")
+  (return-type "gchar**")
+  (parameters
+    '("GdkScreen*" "screen")
+    '("gchar**" "envp")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-home-window.h
+
+(define-function hildon_home_window_get_type
+  (c-name "hildon_home_window_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_home_window_new
+  (c-name "hildon_home_window_new")
+  (is-constructor-of "HildonHomeWindow")
+  (return-type "GtkWidget*")
+)
+
+(define-method get_titlebar
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_get_titlebar")
+  (return-type "GtkWidget*")
+)
+
+(define-method applets_init
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_applets_init")
+  (return-type "none")
+)
+
+(define-method select_applets
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_select_applets")
+  (return-type "none")
+)
+
+(define-method layout_mode_activate
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_layout_mode_activate")
+  (return-type "none")
+)
+
+(define-method set_desktop_dimmed
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_set_desktop_dimmed")
+  (return-type "none")
+  (parameters
+    '("gboolean" "dimmed")
+  )
+)
+
+(define-method accept_layout
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_accept_layout")
+  (return-type "none")
+)
+
+(define-method cancel_layout
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_cancel_layout")
+  (return-type "none")
+)
+
+(define-method get_area
+  (of-object "HildonHomeWindow")
+  (c-name "hildon_home_window_get_area")
+  (return-type "GtkWidget*")
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-home-area.h
+
+(define-function hildon_home_area_get_type
+  (c-name "hildon_home_area_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_home_area_new
+  (c-name "hildon_home_area_new")
+  (is-constructor-of "HildonHomeArea")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_layout_mode
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_set_layout_mode")
+  (return-type "none")
+  (parameters
+    '("gboolean" "layout_mode")
+  )
+)
+
+(define-method get_layout_mode
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_get_layout_mode")
+  (return-type "gboolean")
+)
+
+(define-method save_configuration
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_save_configuration")
+  (return-type "gint")
+  (parameters
+    '("const-gchar*" "filename")
+    '("GError**" "error")
+  )
+)
+
+(define-method load_configuration
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_load_configuration")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "filename")
+    '("GError**" "error")
+  )
+)
+
+(define-method get_layout_changed
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_get_layout_changed")
+  (return-type "gboolean")
+)
+
+(define-method get_overlaps
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_get_overlaps")
+  (return-type "gboolean")
+)
+
+(define-method set_batch_add
+  (of-object "HildonHomeArea")
+  (c-name "hildon_home_area_set_batch_add")
+  (return-type "none")
+  (parameters
+    '("gboolean" "batch_add")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-home-titlebar.h
+
+(define-function hildon_home_titlebar_mode_get_type
+  (c-name "hildon_home_titlebar_mode_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_home_titlebar_get_type
+  (c-name "hildon_home_titlebar_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_home_titlebar_new
+  (c-name "hildon_home_titlebar_new")
+  (is-constructor-of "HildonHomeTitlebar")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_mode
+  (of-object "HildonHomeTitlebar")
+  (c-name "hildon_home_titlebar_set_mode")
+  (return-type "none")
+  (parameters
+    '("HildonHomeTitlebarMode" "mode")
+  )
+)
+
+(define-method toggle_menu
+  (of-object "HildonHomeTitlebar")
+  (c-name "hildon_home_titlebar_toggle_menu")
+  (return-type "none")
+)
+
+(define-method set_menu
+  (of-object "HildonHomeTitlebar")
+  (c-name "hildon_home_titlebar_set_menu")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "menu")
+  )
+)
+
+(define-method set_layout_menu
+  (of-object "HildonHomeTitlebar")
+  (c-name "hildon_home_titlebar_set_layout_menu")
+  (return-type "none")
+  (parameters
+    '("GtkWidget*" "menu")
+  )
+)
+
+(define-method set_menu_title
+  (of-object "HildonHomeTitlebar")
+  (c-name "hildon_home_titlebar_set_menu_title")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "title")
+  )
+)
+
+(define-method set_layout_menu_title
+  (of-object "HildonHomeTitlebar")
+  (c-name "hildon_home_titlebar_set_layout_menu_title")
+  (return-type "none")
+  (parameters
+    '("const-gchar*" "title")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-home-item.h
+
+(define-function hildon_desktop_home_item_resize_type_get_type
+  (c-name "hildon_desktop_home_item_resize_type_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_desktop_home_item_get_type
+  (c-name "hildon_desktop_home_item_get_type")
+  (return-type "GType")
+)
+
+(define-function hildon_desktop_home_item_new
+  (c-name "hildon_desktop_home_item_new")
+  (is-constructor-of "HildonHomeApplet")
+  (return-type "GtkWidget*")
+)
+
+(define-method set_layout_mode
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_set_layout_mode")
+  (return-type "none")
+  (parameters
+    '("gboolean" "layout_mode")
+  )
+)
+
+(define-method get_layout_mode
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_get_layout_mode")
+  (return-type "gboolean")
+)
+
+(define-method set_resize_type
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_set_resize_type")
+  (return-type "none")
+  (parameters
+    '("HildonHomeAppletResizeType" "rt")
+  )
+)
+
+(define-method get_resize_type
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_get_resize_type")
+  (return-type "HildonHomeAppletResizeType")
+)
+
+(define-method get_settings_menu_item
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_get_settings_menu_item")
+  (return-type "GtkWidget*")
+)
+
+(define-method save_position
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_save_position")
+  (return-type "none")
+  (parameters
+    '("GKeyFile*" "keyfile")
+  )
+)
+
+(define-method get_overlaps
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_get_overlaps")
+  (return-type "gboolean")
+)
+
+(define-method set_is_background
+  (of-object "HildonHomeApplet")
+  (c-name "hildon_desktop_home_item_set_is_background")
+  (return-type "none")
+  (parameters
+    '("gboolean" "is_background")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/hildon-desktop-item.h
+
+(define-function hildon_desktop_item_get_type
+  (c-name "hildon_desktop_item_get_type")
+  (return-type "GType")
+)
+
+(define-method get_widget
+  (of-object "HildonDesktopItem")
+  (c-name "hildon_desktop_item_get_widget")
+  (return-type "GtkWidget*")
+)
+
+(define-method get_id
+  (of-object "HildonDesktopItem")
+  (c-name "hildon_desktop_item_get_id")
+  (return-type "const-gchar*")
+)
+
+(define-method get_name
+  (of-object "HildonDesktopItem")
+  (c-name "hildon_desktop_item_get_name")
+  (return-type "const-gchar*")
+)
+
+(define-method find_by_id
+  (of-object "HildonDesktopItem")
+  (c-name "hildon_desktop_item_find_by_id")
+  (return-type "gint")
+  (parameters
+    '("const-gchar*" "id")
+  )
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/statusbar-item.h
+
+(define-function statusbar_item_get_type
+  (c-name "statusbar_item_get_type")
+  (return-type "GType")
+)
+
+
+
+;; From /usr/include/libhildondesktop/libhildondesktop/tasknavigator-item.h
+
+(define-function tasknavigator_item_get_type
+  (c-name "tasknavigator_item_get_type")
+  (return-type "GType")
+)
+
+

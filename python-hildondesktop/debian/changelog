@@ -1,0 +1,36 @@
+python-hildondesktop (0.0.0-6) unstable; urgency=low
+
+  * Several updates to match API changes.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 14 Mar 2007 10:07:04 +0200
+
+python-hildondesktop (0.0.0-5) unstable; urgency=low
+
+  * More build dependency fixes.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Tue, 06 Mar 2007 10:28:12 +0200
+
+python-hildondesktop (0.0.0-4) unstable; urgency=low
+
+  * More build dependency fixes.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Tue, 06 Mar 2007 09:55:12 +0200
+
+python-hildondesktop (0.0.0-3) unstable; urgency=low
+
+  * Build dependency fixes.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Fri, 02 Mar 2007 14:18:12 +0200
+
+python-hildondesktop (0.0.0-2) unstable; urgency=low
+
+  * Several updates to match API changes.
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 22 Feb 2007 17:10:12 +0200
+
+python-hildondesktop (0.0.0-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Moises Martinez <moises.martinez@nokia.com>  Tue, 16 Jan 2007 16:40:12 +0200
+

@@ -1,0 +1,20 @@
+Source: python-hildondesktop
+Section: libs
+Priority: optional
+Maintainer: Moises Martinez <moises.martinez@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, hildon-desktop-dev, python2.4, python2.4-dev, python2.4-gtk2-dev, libhildondesktop-dev
+Standards-Version: 3.6.1
+
+Package: python-hildondesktop
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Python bindings for libhildondesktop
+ Python binding for set of widgets provided by libhildondesktop
+
+Package: hildon-desktop-python-loader
+Section: libs
+Architecture: any
+Depends: hildon-desktop, python2.4, ${misc:Depends}
+Description: Hildon Desktop Python Plugin Loader
+ Plugin Loader for Hildon Desktop for loading python plugins

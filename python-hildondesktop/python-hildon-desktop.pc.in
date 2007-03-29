@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+includedir=${prefix}/include
+libdir=@libdir@
+
+Name: python-hildon-desktop
+Description: Hildon Lib Desktop Python Bindings
+Requires: libhildondesktop
+Version: @VERSION@
+Cflags: -I${includedir}

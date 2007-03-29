@@ -1,0 +1,95 @@
+2007-03-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs,
+	libhildondesktop/hildondesktopmodule.c: update to match API changes.
+
+2007-03-14  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/Makefile.am, libhildondesktop/hildondesktop.defs,
+	libhildondesktop/hildondesktop.override: update to match API changes.
+
+2007-03-05  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: remove unused libhildonwm dependency.
+
+2007-03-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: build dependency fixes.
+
+2007-02-15  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs: update to match API changes.
+
+2007-02-06  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/Makefile.am, libhildondesktop/hildondesktop.defs,
+	libhildondesktop/hildondesktop.override: update to match API changes.
+
+2007-01-19  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* pythonloader/*, loader/*: rename directory for simplicity.
+
+2007-01-19  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* debian/control: fix some package dependencies.
+	* libhildondesktop/Makefile.am: revert python-hildondesktop to
+	hildondesktop.
+
+2007-01-17  Moises Martinez  <moises.martinez@nokia.com>
+
+	* debian/*: Debian packaging.
+	* configure.ac: name changed to python-hildondesktop
+	* libhildondesktop/Makefile.am: changed to python-hildondesktop
+
+2007-01-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs, libhildondesktop/Makefile.am,
+	libhildondesktop/hildondesktop.override: fix flags binding for
+	HildonDesktopWindow. Add HildonHomeTitlebar to the game.
+
+2007-01-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs,
+	libhildondesktop/hildondesktop.override, libhildondesktop/Makefile.am:
+	python bindings cover all applicable objects from libhildondesktop.
+
+2007-01-09  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: rename some vars for consistency.
+	* Makefile.am: add pythonloader to SUBDIRS.
+	* pythonloader/Makefile.am: install plugin loader in
+	${prefix}/lib/hildon-desktop/loaders.
+
+2007-01-08  Moises Martinez <moises.martinez@nokia.com>
+
+	* configure.ac: Added pythonloader
+	* pythonloader/hd-plugin-loader-python.[ch]:
+	- python loader module for python
+	* pythonloader/Makefile.am: to build pythonloader
+
+2007-01-08  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktopmodule.c: export enums and constants
+	to bindings also.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs, libhildondesktop/Makefile.am,
+	libhildondesktop/hildondesktop.override: added home applets to the binding.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* Makefile.am, configure.ac, python-hildon-desktop.pc.in: install pc file for
+	dependency checks from other modules.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs: update class names to make them
+	valid in the python module.
+
+	* libhildondesktop/hildondesktop.defs: update class names to make them
+	valid in the python module.
+
+2006-12-29  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* Initial import.
