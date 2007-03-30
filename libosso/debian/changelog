@@ -1,6 +1,5 @@
 libosso (2.5-1) unstable; urgency=low
 
-  * UNRELEASED
   * Resident Plugin I patch from Johan Bilien (MB#1184).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 30 Mar 2007 16:57:34 +0300
