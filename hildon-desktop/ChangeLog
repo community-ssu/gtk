@@ -1,4 +1,4 @@
-2007-03-29  Moises Martinez  <moises.martinez@nokia.com>
+2007-03-30  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c:
 	- Use old DOCK_TITLEBAR on hildon-desktop-window-dialog child class

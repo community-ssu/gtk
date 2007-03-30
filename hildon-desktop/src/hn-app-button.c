@@ -870,6 +870,7 @@ hn_app_button_set_property (GObject      *gobject,
     case BUTTON_PROP_ENTRY_INFO:
       hn_app_button_set_entry_info (app_button,
 		                    g_value_get_pointer (value));
+      g_object_notify (G_OBJECT (app_button), "entry-info");
       break;
     case BUTTON_PROP_IS_BLINKING:
       hn_app_button_set_is_blinking (app_button,
