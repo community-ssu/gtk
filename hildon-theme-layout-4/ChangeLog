@@ -1,6 +1,8 @@
 2007-03-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: 
+	Sorted the graphics alphabetically (duh, should have done this
+	ages ago :)) - and added disabled breadcrumb arrow image.
 
 	Removed disabled button images from breadcrumb, those are not
 	really needed.
