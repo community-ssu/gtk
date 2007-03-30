@@ -8,7 +8,6 @@ RC_FILES				= afterincludes.rc 		\
 					  defaultarrows.rc 		\
 					  gtkbutton.rc 			\
 					  gtkbuttonbox.rc 		\
-					  gtkcalendar.rc 		\
 					  gtkcheckbutton.rc 		\
 					  gtkcheckmenuitem.rc 		\
 					  gtkcombobox.rc 		\
@@ -68,7 +67,8 @@ RC_FILES				= afterincludes.rc 		\
 					  ossortc.rc 			\
 					  ossospeeddial.rc 		\
 					  themespecificgtk.rc		\
-					  hildonthumbscrollbar.rc
+					  hildonthumbscrollbar.rc	\
+					  hildoncalendar.rc
 
 gtkrc: $(RC_FILES)
 	hildon-theme-rc-parser gtkrc.rc gtkrc

@@ -1,17 +1,14 @@
 ####################################################
-# CALENDAR POPOUP (GTKCALENDAR)
 #
-# Copyright 2004,2005 Nokia Oyj
+# HILDON CALENDAR
 #
-# Following style is for switching on osso theming
-# for GtkCalendar.
-# Assign this style to all GtkCalendars
 ####################################################
 
-style "osso-calendar" = "osso-logical-colors"
+style "hildon-calendar" = "osso-logical-colors"
 {
   GtkWidget::scroll-arrow-vlength = 26
   GtkWidget::scroll-arrow-hlength = 26
+
   xthickness = 0
   ythickness = 0
   text[SELECTED] = @DefaultTextColor
@@ -48,4 +45,4 @@ style "osso-calendar" = "osso-logical-colors"
   }
 }
 
-class "GtkCalendar" style "osso-calendar"
+class "HildonCalendar" style "hildon-calendar"
