@@ -1,3 +1,8 @@
+2007-03-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* wallpaper/Makefile.am: Fixing the wallpaper installation prefixes.
+	For good now.
+
 2007-03-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.*: added a new icon for bcrumb separator
