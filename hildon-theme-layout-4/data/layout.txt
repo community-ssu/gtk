@@ -601,9 +601,10 @@ qgn_plat_breadcrumb_backbutton_focused.png=1760,429,16,58
 qgn_plat_breadcrumb_middle_focused.png=1776,429,10,58
 qgn_plat_breadcrumb_end_focused.png=1786,429,11,58
 
-qgn_plat_breadcrumb_backbutton_disabled.png=1810,429,16,58
-qgn_plat_breadcrumb_middle_disabled.png=1826,429,10,58
-qgn_plat_breadcrumb_end_disabled.png=1836,429,11,58
+#removed for now, I think these are not needed.
+#qgn_plat_breadcrumb_backbutton_disabled.png=1810,429,16,58
+#qgn_plat_breadcrumb_middle_disabled.png=1826,429,10,58
+#qgn_plat_breadcrumb_end_disabled.png=1836,429,11,58
 
 qgn_plat_breadcrumb_arrow_normal.png=1912,363,34,34
 qgn_plat_breadcrumb_arrow_disabled.png=1912,403,34,34

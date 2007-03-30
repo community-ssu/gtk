@@ -1,8 +1,13 @@
 2007-03-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
-	* data/layout.txt: added pressed states for scrollbar thumbs for
-	  better visibility and to be consistent with thumb scrollbar.
+	* data/layout.txt: 
 
+	Removed disabled button images from breadcrumb, those are not
+	really needed.
+
+	Added pressed states for scrollbar thumbs for better visibility
+	and to be consistent with thumb scrollbar.
+	 
 	Images: qgn_plat_scroll_horizontal_thumb_pressed.png
 	        qgn_plat_scroll_vertical_thumb_pressed.png,
 
