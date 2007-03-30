@@ -1,3 +1,24 @@
+2007-03-30  Michael Natterer  <mitch@imendio.com>
+
+	Replace some MAEMO_CHANGES code with the version merged to
+	upstream trunk:
+
+	Don't close menus on clicks on their border area (bug #423761).
+	(modified patch from maemo-gtk).
+
+	* gtk/gtkmenu.c (gtk_menu_button_press)
+	(gtk_menu_button_release): bail out early if the click was on the
+	menu's border (not on any item and not outside the window).
+
+	(pointer_in_menu_window): new utility function which checks if
+	passed root coords are inside the menu_shell or one of its
+	parent shells.
+
+	Maemo-only:
+
+	(gtk_menu_motion_notify): use pointer_in_menu_window() instead
+	of the old pointer_in_menu_tree() which didn't take root coords.
+
 2007-03-29  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenuitem.c (gtk_menu_item_paint): Remove the patch that

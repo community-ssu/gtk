@@ -2674,39 +2674,6 @@ gtk_menu_show (GtkWidget *widget)
 }
 
 #ifdef MAEMO_CHANGES
-static GtkWidget *
-find_active_menu_item (GdkEventButton *event)
-{
-  GtkWidget *menu_item;
-
-  menu_item = gtk_get_event_widget ((GdkEvent*) event);
-  while (menu_item && !GTK_IS_MENU_ITEM (menu_item))
-    menu_item = menu_item->parent;
-
-  return menu_item;
-}
-
-static gboolean
-pointer_in_menu_tree (GtkWidget *widget)
-{
-  GtkMenuShell *mshell;
-  gint width, height, x, y;
-
-  mshell = GTK_MENU_SHELL (widget);
-
-  gdk_window_get_pointer (widget->window, &x, &y, NULL);
-  gdk_drawable_get_size (widget->window, &width, &height);
-
-  if ((x <= width) && (x >= 0) && (y <= height) && (y >= 0))
-    return TRUE;
-
-  if ((mshell->parent_menu_shell != NULL) &&
-      GTK_IS_MENU (mshell->parent_menu_shell))
-    return pointer_in_menu_tree (mshell->parent_menu_shell);
-
-  return FALSE;
-}
-
 static gint
 distance_traveled (GtkWidget *widget)
 {
@@ -2754,27 +2721,55 @@ gtk_menu_button_scroll (GtkMenu        *menu,
 }
 
 static gboolean
+pointer_in_menu_window (GtkWidget *widget,
+                        gdouble    x_root,
+                        gdouble    y_root)
+{
+  GtkMenu *menu = GTK_MENU (widget);
+
+  if (GTK_WIDGET_MAPPED (menu->toplevel))
+    {
+      GtkMenuShell *menu_shell;
+      gint          window_x, window_y;
+
+      gdk_window_get_position (menu->toplevel->window, &window_x, &window_y);
+
+      if (x_root >= window_x && x_root < window_x + widget->allocation.width &&
+          y_root >= window_y && y_root < window_y + widget->allocation.height)
+        return TRUE;
+
+      menu_shell = GTK_MENU_SHELL (widget);
+
+      if (GTK_IS_MENU (menu_shell->parent_menu_shell))
+        return pointer_in_menu_window (menu_shell->parent_menu_shell,
+                                       x_root, y_root);
+    }
+
+  return FALSE;
+}
+
+static gboolean
 gtk_menu_button_press (GtkWidget      *widget,
                        GdkEventButton *event)
 {
   if (event->type != GDK_BUTTON_PRESS)
     return FALSE;
 
-  /* Don't pop down the menu for presses over scroll arrows
+  /* Don't pass down to menu shell for presses over scroll arrows
    */
   if (gtk_menu_button_scroll (GTK_MENU (widget), event))
     return TRUE;
 
-#ifdef MAEMO_CHANGES
-  if (!find_active_menu_item (event))
-    {
-      /*  Don't pass down to menu shell if a non-menuitem part of the menu
-       *  was clicked.
-       */
-      if (pointer_in_menu_tree (widget))
-        return TRUE;
-    }
-#endif /* MAEMO_CHANGES */
+  /*  Don't pass down to menu shell if a non-menuitem part of the menu
+   *  was clicked. The check for the event_widget being a GtkMenuShell
+   *  works because we have the pointer grabbed on menu_shell->window
+   *  with owner_events=TRUE, so all events that are either outside
+   *  the menu or on its border are delivered relative to
+   *  menu_shell->window.
+   */
+  if (GTK_IS_MENU_SHELL (gtk_get_event_widget ((GdkEvent *) event)) &&
+      pointer_in_menu_window (widget, event->x_root, event->y_root))
+    return TRUE;
 
   return GTK_WIDGET_CLASS (gtk_menu_parent_class)->button_press_event (widget, event);
 }
@@ -2794,13 +2789,20 @@ gtk_menu_button_release (GtkWidget      *widget,
   if (event->type != GDK_BUTTON_RELEASE)
     return FALSE;
 
-  /* Don't pop down the menu for releases over scroll arrows
+  /* Don't pass down to menu shell for releases over scroll arrows
    */
   if (gtk_menu_button_scroll (GTK_MENU (widget), event))
     return TRUE;
 
-#ifdef MAEMO_CHANGES
-  if (!find_active_menu_item (event))
+  /*  Don't pass down to menu shell if a non-menuitem part of the menu
+   *  was clicked (see comment in button_press()).
+   */
+#ifndef MAEMO_CHANGES
+  if (GTK_IS_MENU_SHELL (gtk_get_event_widget ((GdkEvent *) event)) &&
+      pointer_in_menu_window (widget, event->x_root, event->y_root))
+    return TRUE;
+#else
+  if (GTK_IS_MENU_SHELL (gtk_get_event_widget ((GdkEvent *) event)))
     {
       if (priv->context_menu &&
           (priv->popup_pointer_x >= 0) &&
@@ -2820,10 +2822,7 @@ gtk_menu_button_release (GtkWidget      *widget,
             return TRUE;
         }
 
-      /*  Don't pass down to menu shell if a non-menuitem part of the menu
-       *  was clicked.
-       */
-      if (pointer_in_menu_tree (widget))
+      if (pointer_in_menu_window (widget, event->x_root, event->y_root))
         return TRUE;
     }
 #endif /* MAEMO_CHANGES */
@@ -3076,7 +3075,7 @@ gtk_menu_motion_notify  (GtkWidget	   *widget,
           /* Context menu mode. If we dragged out of the menu, close
            * the menu, as by the specs.
            */
-          if (!pointer_in_menu_tree (widget) &&
+          if (!pointer_in_menu_window (widget, event->x_root, event->y_root) &&
               (distance_traveled (widget) >= 20) &&
               (event->state & GDK_BUTTON1_MASK))
             {
