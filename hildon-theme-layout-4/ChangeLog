@@ -1,6 +1,23 @@
 2007-03-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: 
+
+	More fixes: 
+
+	- some rather huge voip and contacts graphics to come
+	(argh, must split out of here!)
+
+	- task navigator full height background: 
+	  qgn_plat_task_navigation_background.png
+
+	- search popup toolbar graphic
+	  qgn_plat_live_search_frame.png
+
+	- task nav / switcher button changes, and other things I forget now.
+
+2007-03-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: 
 	Sorted the graphics alphabetically (duh, should have done this
 	ages ago :)) - and added disabled breadcrumb arrow image.
 
