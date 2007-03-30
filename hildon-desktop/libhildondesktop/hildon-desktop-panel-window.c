@@ -388,7 +388,10 @@ hildon_desktop_panel_window_init (HildonDesktopPanelWindow *window)
 static void 
 hildon_desktop_panel_window_force_move (GtkWidget *widget, GdkEventExpose *event, gpointer data)
 { 
-  hildon_desktop_panel_win_move_resize (HILDON_DESKTOP_PANEL_WINDOW (widget),TRUE,TRUE);
+  HildonDesktopPanelWindow *window = HILDON_DESKTOP_PANEL_WINDOW (widget);
+
+  if (window->priv->move)
+    hildon_desktop_panel_win_move_resize (window,TRUE,TRUE);
 }
 
 static GObject *  

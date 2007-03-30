@@ -40,12 +40,14 @@ G_DEFINE_TYPE (HildonDesktopPanelWindowDialog, hildon_desktop_panel_window_dialo
 enum
 {
   PROP_0,
-  PROP_FULLSCREEN
+  PROP_FULLSCREEN,
+  PROP_TITLEBAR
 };
 
 struct _HildonDesktopPanelWindowDialogPrivate
 {
   gboolean show_in_fullscreen;
+  gboolean old_titlebar;
 
   HDWM 	   *hdwm;
 };
@@ -80,6 +82,15 @@ hildon_desktop_panel_window_dialog_class_init (HildonDesktopPanelWindowDialogCla
 					   "dock panel",
 					    FALSE,
 					    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+  g_object_class_install_property (object_class,
+ 				   PROP_TITLEBAR,
+				   g_param_spec_boolean(
+					   "use-old-titlebar",
+					   "use-old-titlebar",
+					   "Uses old matchbox DOCK_TITLEBAR",
+					    FALSE,
+					    G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 												
 }
 
@@ -91,6 +102,8 @@ hildon_desktop_panel_window_dialog_init (HildonDesktopPanelWindowDialog *window)
   window->priv = HILDON_DESKTOP_PANEL_WINDOW_DIALOG_GET_PRIVATE (window);
 
   window->priv->hdwm = hd_wm_get_singleton ();
+
+  window->priv->old_titlebar = FALSE;
 
   /* FIXME: what do we do with focus??? */
 }
@@ -204,13 +217,61 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
 
   if (g_str_equal (wm_name, "matchbox"))
   {
-    gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DIALOG);
-    gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+    if (window->priv->old_titlebar)
+    {
+       Atom atoms[3];
+       Display *dpy;
+       Window  win;
+       gint width, height;
 
-    gtk_widget_realize (GTK_WIDGET (window));
+       g_debug ("Using DOCK_TITLEBAR SHOW_ON_DESKTOP");
 
-    gdk_window_set_transient_for (GTK_WIDGET (window)->window, gdk_get_default_root_window ());
-    gtk_window_set_accept_focus (GTK_WINDOW (window), FALSE);
+       gtk_window_set_accept_focus (GTK_WINDOW (window), FALSE);
+       gtk_container_set_border_width (GTK_CONTAINER (window), 0);
+
+       gtk_window_set_type_hint( GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DOCK);
+
+       gtk_widget_realize (GTK_WIDGET (window));
+
+       g_object_set_data (G_OBJECT (GTK_WIDGET (window)->window),
+                          "_NET_WM_STATE", (gpointer)PropModeAppend);
+       
+       dpy = GDK_DISPLAY();
+       win = GDK_WINDOW_XID (GTK_WIDGET (window)->window);
+
+       atoms[0] = XInternAtom(dpy, "_NET_WM_STATE", False);
+       atoms[1] = XInternAtom(dpy, "_MB_WM_STATE_DOCK_TITLEBAR", False);
+       atoms[2] = XInternAtom(dpy, "_MB_DOCK_TITLEBAR_SHOW_ON_DESKTOP", False);
+
+       XChangeProperty (dpy, win, 
+		        atoms[0], XA_ATOM, 
+			32, PropModeReplace,
+			(unsigned char *) &atoms[1], 2);
+
+       gdk_window_get_geometry (GTK_WIDGET (window)->window,
+		       		NULL,NULL,&width, &height, NULL);
+
+       g_object_set (G_OBJECT (window),
+		     "width", width, 
+		     "height", height,
+		     NULL);
+
+       g_debug ("WINDOW SIZE DOCK %d %d", width, height);
+       gtk_widget_set_size_request (GTK_BIN (window)->child, width, height);
+
+       g_debug ("heeeeeeey %d %d", GTK_WIDGET (window)->requisition.width,
+		       		   GTK_WIDGET (window)->requisition.height);
+    }
+    else
+    {    
+      gtk_window_set_type_hint (GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DIALOG);
+      gtk_window_set_decorated (GTK_WINDOW (window), FALSE);
+
+      gtk_widget_realize (GTK_WIDGET (window));
+
+      gdk_window_set_transient_for (GTK_WIDGET (window)->window, gdk_get_default_root_window ());
+      gtk_window_set_accept_focus (GTK_WINDOW (window), FALSE);
+   }
   }
   else
   {
@@ -261,6 +322,9 @@ hildon_desktop_panel_window_dialog_get_property (GObject *object,
    case PROP_FULLSCREEN:
       g_value_set_boolean (value, window->priv->show_in_fullscreen);
       break;			
+   case PROP_TITLEBAR:
+      g_value_set_boolean (value, window->priv->old_titlebar);
+      break;			
    default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -280,7 +344,10 @@ hildon_desktop_panel_window_dialog_set_property (GObject *object,
     case PROP_FULLSCREEN:
       window->priv->show_in_fullscreen = g_value_get_boolean (value);
       break;			
-   default:
+    case PROP_TITLEBAR:
+      window->priv->old_titlebar = g_value_get_boolean (value);
+      break;			  
+    default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
   }

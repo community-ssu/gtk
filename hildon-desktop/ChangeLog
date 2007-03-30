@@ -1,5 +1,17 @@
 2007-03-29  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hd-desktop.c:
+	- Use old DOCK_TITLEBAR on hildon-desktop-window-dialog child class
+	- Deleted padding
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Fixed number of items per row in extension panel.
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Implemented old DOCK_TITLEBAR as optional.
+	* libhildondesktop/hildon-desktop-panel-window.c:
+	- Never resize/move window if move is FALSE.
+
+2007-03-29  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
 	- Fixed size of items in extension table.
 

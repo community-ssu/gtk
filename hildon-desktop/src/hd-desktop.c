@@ -863,10 +863,12 @@ hd_desktop_load_containers (HDDesktop *desktop)
                                         "width", width,
                                         "height", height,
                                         "orientation", orientation,
-                                        "padding-left", 10,
-                                        "padding-right", 10,
+                                        "padding-left", 0,
+                                        "padding-right", 0,
                                         "padding-top", 0,
                                         "padding-bottom", 0,
+					"use-old-titlebar", TRUE, 
+					"move", FALSE, 
                                          NULL);
       }
 
