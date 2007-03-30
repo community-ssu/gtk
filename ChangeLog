@@ -1,5 +1,11 @@
 2007-03-30  Michael Natterer  <mitch@imendio.com>
 
+	* gtk/gtkmenuitem.c (gtk_real_menu_item_activate_item): revert to
+	upstream (don't #ifdef out submenu opening) because this function
+	is called on mnemonic activation, which should open submenus.
+
+2007-03-30  Michael Natterer  <mitch@imendio.com>
+
 	Replace some MAEMO_CHANGES code with the version merged to
 	upstream trunk:
 

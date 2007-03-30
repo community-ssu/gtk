@@ -1091,11 +1091,9 @@ gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
 
 	  gtk_menu_shell_select_item (GTK_MENU_SHELL (widget->parent), widget); 
 
-#ifndef MAEMO_CHANGES
 	  _gtk_menu_item_popup_submenu (widget); 
 
 	  gtk_menu_shell_select_first (GTK_MENU_SHELL (menu_item->submenu), TRUE);
-#endif /* !MAEMO_CHANGES */
 	}
     }
 }
