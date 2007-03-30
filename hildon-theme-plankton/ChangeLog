@@ -1,3 +1,8 @@
+2007-03-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.[svg,png], template/coordinates.txt: Updated
+	to layout, many small changes, see layout changelog.
+
 2007-03-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* wallpaper/Makefile.am: Fixing the wallpaper installation prefixes.
