@@ -4,6 +4,8 @@
 	Sorted the graphics alphabetically (duh, should have done this
 	ages ago :)) - and added disabled breadcrumb arrow image.
 
+	Made submenu arrows graphics 26x26 pixels size.
+
 	Removed disabled button images from breadcrumb, those are not
 	really needed.
 
