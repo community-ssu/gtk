@@ -1,3 +1,13 @@
+2007-03-30  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: added pressed states for scrollbar thumbs for
+	  better visibility and to be consistent with thumb scrollbar.
+
+	Images: qgn_plat_scroll_horizontal_thumb_pressed.png
+	        qgn_plat_scroll_vertical_thumb_pressed.png,
+
+	..these are the same size & border values as regular thumb graphics.
+
 2007-03-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkrc.rc: Fixing the base.rc.
