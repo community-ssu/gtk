@@ -1,5 +1,9 @@
 2007-03-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/gtkrc.rc: Fixing the base.rc.
+
+2007-03-30  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/Makefile.am:
 	* rc/hildoncalendar.rc: Moving the gtkcalendar styles hildoncalendar.
 
