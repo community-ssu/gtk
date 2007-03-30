@@ -1,3 +1,10 @@
+libosso (2.5-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Resident Plugin I patch from Johan Bilien (MB#1184).
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 30 Mar 2007 16:57:34 +0300
+
 libosso (2.4-1) unstable; urgency=low
 
   * Bring back osso_application_set_exit_cb(), osso_state_open_write(),

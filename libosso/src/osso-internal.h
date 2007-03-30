@@ -139,12 +139,6 @@ typedef struct {
     GSList *handlers;
 } _osso_hash_value_t;
 
-typedef struct {
-    void *lib;
-    gchar *name;
-    gchar *svcname;
-} _osso_cp_plugin_t;
-
 /**
  * This structure is used to store library specific stuff
  */
@@ -171,7 +165,7 @@ typedef struct osso_af_context_t {
     _osso_hw_cb_t hw_cbs;
     osso_hw_state_t hw_state;
     guint rpc_timeout;
-    GArray *cp_plugins;
+    GHashTable *cp_plugins;
     int next_handler_id;    /* next available handler id, unique in this
                                context */
     const DBusMessage *reply_dummy, *error_dummy;
@@ -201,7 +195,7 @@ typedef struct _muali_context_t {
     _osso_hw_cb_t hw_cbs;
     osso_hw_state_t hw_state;
     guint rpc_timeout;
-    GArray *cp_plugins;
+    GHashTable *cp_plugins;
     int next_handler_id;    /* next available handler id, unique in this
                                context */
     const DBusMessage *reply_dummy, *error_dummy;

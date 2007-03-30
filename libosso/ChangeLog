@@ -1,3 +1,13 @@
+2007-03-28  Johan Bilien <johan.bilien@nokia.com>
+
+	* src/osso-internal.h: replaced GArray *cp_plugins with
+	a GHashTable
+	* src/osso-cp-plugin.c:
+	(try_plugin): use this hash table to store
+	the dlopen handle, and reuse the handle if the same plugin
+	is run again (making it resident).
+	(close_lib): removed since unused
+
 2007-03-27  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* src/osso-state.h (validate_state): Removed static prototype,

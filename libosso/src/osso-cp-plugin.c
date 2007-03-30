@@ -84,10 +84,10 @@ is_applet_running_in_cp (osso_context_t *osso,
 
 
 static void *
-try_plugin (const char *dir, const char *file)
+try_plugin (osso_context_t *osso, const char *dir, const char *file)
 {
   char libname[PATH_MAX];
-  void *handle;
+  void *handle = NULL;
 
   if (snprintf (libname, PATH_MAX, "%s/%s", dir, file) >= PATH_MAX)
     {
@@ -95,11 +95,19 @@ try_plugin (const char *dir, const char *file)
       return NULL;
     }
 
+  if (osso->cp_plugins)
+    handle = g_hash_table_lookup (osso->cp_plugins, libname);
+
+  if (handle)
+    return handle;
+
   handle = dlopen (libname, RTLD_LAZY | RTLD_GLOBAL);
   if (handle == NULL)
     {
       ULOG_ERR_F("Unable to load library '%s': %s", libname, dlerror());
     }
+
+  g_hash_table_insert (osso->cp_plugins, g_strdup (libname), handle);
   return handle;
 }
 
@@ -107,10 +115,9 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 				     const gchar *filename,
 				     gpointer data, gboolean user_activated)
 {
-    gint r;
+    void *handle = NULL;
     osso_return_t ret;
     osso_cp_plugin_exec_f *exec = NULL;
-    _osso_cp_plugin_t p;
    
     if (osso == NULL || filename == NULL) {
 	ULOG_ERR_F("invalid arguments");
@@ -134,8 +141,9 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
         
 
     /* First try builtin path */
-    p.lib = try_plugin (OSSO_CTRLPANELPLUGINDIR, filename);
-    if (p.lib == NULL)
+    handle = try_plugin (osso, OSSO_CTRLPANELPLUGINDIR, filename);
+
+    if (handle == NULL)
       {
 	/* Then try the directories in LIBOSSO_CP_PLUGIN_DIRS
 	 */
@@ -145,8 +153,8 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 	    char *dirs_copy = strdup (dirs), *ptr = dirs_copy, *tok;
 	    while ((tok = strsep (&ptr, ":")))
 	      {
-		p.lib = try_plugin (tok, filename);
-		if (p.lib)
+		handle = try_plugin (osso, tok, filename);
+		if (handle)
 		  break;
 	      }
 	    if (dirs_copy)
@@ -156,18 +164,15 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
 	  }
       }
 
-    if (p.lib == NULL) {
+    if (handle == NULL) {
         ULOG_ERR_F("library '%s' could not be opened", filename);
         return OSSO_ERROR;
     }
 
-    p.name = g_path_get_basename(filename);
-
     dprint("..");
     fflush(stderr);
-    g_array_append_val(osso->cp_plugins, p);
     
-    exec = dlsym(p.lib, "execute");
+    exec = dlsym(handle, "execute");
     dprint("..");
     /* function wasn't found or it was NULL */
     if (exec == NULL) {
@@ -181,11 +186,6 @@ osso_return_t osso_cp_plugin_execute(osso_context_t *osso,
     ret = exec(osso, data, user_activated);  
     _exec_err1:
 
-    r = _close_lib(osso->cp_plugins, p.name); /* p.name is freed here */
-    if (r != 0) {
-	ULOG_ERR_F("Error closing library");
-	ret = OSSO_ERROR;
-    }
     return ret;
 }
 
@@ -193,16 +193,12 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
 					const gchar *filename,
 					gpointer data)
 {
-    gchar *pluginname;
-    _osso_cp_plugin_t *p = NULL;
-    GArray *a;
-    gint i;
+    void *handle = NULL;
     
     if (osso == NULL || filename == NULL) {
 	ULOG_ERR_F("invalid arguments");
 	return OSSO_INVALID;
     }
-    a = osso->cp_plugins;
 
     if (is_applet_running_in_cp (osso, filename))
     {
@@ -210,20 +206,15 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
          * by controlpanel, which will take care of saving its state */
         return OSSO_OK;
     }
-    
-    pluginname = g_path_get_basename(filename);
-    for (i = 0; i < a->len; i++) {
-	p = &g_array_index(a, _osso_cp_plugin_t, i);
-	if (strcmp(p->name, pluginname) == 0)
-	    break;
-    }
-    g_free(pluginname); pluginname = NULL;
 
-    if (i < a->len) {
+    if (osso->cp_plugins)
+      handle = g_hash_table_lookup(osso->cp_plugins, filename);
+
+    if (handle) {
 	osso_return_t ret;
 	osso_cp_plugin_save_state_f *ss = NULL;
 
- 	ss = dlsym(p->lib, "save_state"); 
+ 	ss = dlsym(handle, "save_state"); 
 	
 	/* function wasn't found or it was NULL */
 	if (ss == NULL) {
@@ -243,27 +234,3 @@ osso_return_t osso_cp_plugin_save_state(osso_context_t *osso,
 	return OSSO_ERROR;
     }
 }
-
-
-static int _close_lib(GArray *a, const gchar *n)
-{
-    gint i=0, r=0;
-    _osso_cp_plugin_t *p = NULL;
-
-    while (i < a->len) {
-        p = &g_array_index(a, _osso_cp_plugin_t, i);
-        if (strcmp(p->name, n) == 0)
-            break;
-        else
-            i++;
-    }
-
-    if (i < a->len) {
-        r = dlclose(p->lib);
-        g_free(p->name);
-        g_array_remove_index_fast(a, i);
-    }
-
-    return r;
-}
-                        

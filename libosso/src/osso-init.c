@@ -349,7 +349,7 @@ static osso_context_t *_init(const gchar *application, const gchar *version)
         free(osso);
         return NULL;
     }
-    osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
+    osso->cp_plugins = g_hash_table_new(g_str_hash, g_str_equal);
     osso->rpc_timeout = -1;
     osso->next_handler_id = 1;
     return osso;
@@ -386,7 +386,7 @@ static osso_context_t *_muali_init(const char *application,
         free(osso);
         return NULL;
     }
-    osso->cp_plugins = g_array_new(FALSE, FALSE, sizeof(_osso_cp_plugin_t));
+    osso->cp_plugins = g_hash_table_new(g_str_hash, g_str_equal);
     osso->rpc_timeout = -1;
     osso->next_handler_id = 1;
     return osso;
@@ -412,7 +412,7 @@ static void _deinit(osso_context_t *osso)
         g_hash_table_destroy(osso->id_hash);
     }
     if (osso->cp_plugins != NULL) {
-        g_array_free(osso->cp_plugins, TRUE);
+        g_hash_table_destroy(osso->cp_plugins);
     }
     
 #ifdef LIBOSSO_DEBUG

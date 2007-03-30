@@ -65,12 +65,4 @@ typedef osso_return_t (osso_cp_plugin_save_state_f)(osso_context_t *osso,
 						    gpointer data);
 
 
-
-static int _close_lib(GArray *a, const gchar *n);
-
-struct _osso_cp {
-    gchar *name;
-    gpointer data;
-};
-
 #endif
