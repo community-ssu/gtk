@@ -1,3 +1,10 @@
+hildon-application-framework (0.7) unstable; urgency=low
+
+  * Added libgtk2.0-dev (<< 2:2.10) to -dev conflicts, since we don't want
+    that old version anymore.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  2 Apr 2007 16:44:30 +0300
+
 hildon-application-framework (0.6.1) unstable; urgency=low
 
   * Corrected type in control file: hildon-init-scripts ->
