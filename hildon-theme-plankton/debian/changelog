@@ -1,8 +1,8 @@
-hildon-theme-plankton (4.4.0-1.1) unstable; urgency=low
+hildon-theme-plankton (4.4.0-1.3) unstable; urgency=low
 
   * debian/control: Fix Build-Depends syntax
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  2 Apr 2007 18:28:10 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon,  2 Apr 2007 18:58:10 +0300
 
 hildon-theme-plankton (4.4.0-1) unstable; urgency=low
 
