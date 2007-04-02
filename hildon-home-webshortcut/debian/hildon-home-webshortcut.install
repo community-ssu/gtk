@@ -1,2 +1,2 @@
-usr/lib/hildon-home/*.so
+usr/lib/hildon-desktop/*.so
 usr/share/applications/hildon-home/*.desktop
