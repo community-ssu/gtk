@@ -23,6 +23,7 @@
 
 #include <config.h>
 #include <string.h>
+#include <gtk/gtk.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkimagemenuitem.h>
 #include <gtk/gtkaccellabel.h>
@@ -737,10 +738,17 @@ hildon_thumb_menu_item_set_thumb_label (HildonThumbMenuItem *thumb_menu_item,
     gtk_widget_ensure_style (GTK_WIDGET (thumb_menu_item));
 
     /* Fetch the colours to be used */
+#if GTK_CHECK_VERSION(2, 10, 0)
+    color1_found = gtk_style_lookup_color(GTK_WIDGET(
+                thumb_menu_item)->style, "DefaultTextColor", &color1);
+    color2_found = gtk_style_lookup_color(GTK_WIDGET(
+                thumb_menu_item)->style, "SecondaryTextColor", &color2);
+#else
     color1_found = gtk_style_lookup_logical_color(GTK_WIDGET(
                 thumb_menu_item)->style, "DefaultTextColor", &color1);
     color2_found = gtk_style_lookup_logical_color(GTK_WIDGET(
                 thumb_menu_item)->style, "SecondaryTextColor", &color2);
+#endif
 
     attrs = pango_attr_list_new();
 

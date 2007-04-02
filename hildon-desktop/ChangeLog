@@ -1,3 +1,8 @@
+2007-04-02  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-thumb-menu-item.c: make the needed checks to
+	avoid hard dependency on Maemo GTK+.
+
 2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.3
