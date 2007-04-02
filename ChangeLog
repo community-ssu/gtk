@@ -1,3 +1,17 @@
+2007-04-02  Michael Natterer  <mitch@imendio.com>
+
+	Merge from upstream trunk:
+
+	* gtk/gtkmenushell.c (gtk_real_menu_shell_move_current): remove
+	artifact from the time when type checking casts warned on NULL,
+	some whitespace cleanup.
+
+	Maemo-only:
+
+	(gtk_real_menu_shell_move_current): remove #ifndef MAEMO_CHANGES
+	from some code that has no effect on maemo anyway because there
+	are no menubars.
+
 2007-03-30  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkmenuitem.c (gtk_real_menu_item_activate_item): revert to
@@ -105,7 +119,7 @@
 	* gtk/gtktreeview.h:
 
 	Restore the upstream ABI compatibility.
-	
+
 2007-03-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkenums.h:

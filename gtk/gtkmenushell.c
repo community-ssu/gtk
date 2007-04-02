@@ -1415,16 +1415,16 @@ gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 
       if (parent_menu_shell)
 	{
-	  if (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement == 
-		       GTK_MENU_SHELL_GET_CLASS (menu_shell)->submenu_placement)
+	  if (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
+              GTK_MENU_SHELL_GET_CLASS (menu_shell)->submenu_placement)
 	    gtk_menu_shell_deselect (menu_shell);
-	  else 
+	  else
 	    {
 	      if (PACK_DIRECTION (parent_menu_shell) == GTK_PACK_DIRECTION_LTR)
 		gtk_menu_shell_move_selected (parent_menu_shell, -1);
 	      else
 		gtk_menu_shell_move_selected (parent_menu_shell, 1);
-	      gtk_menu_shell_select_submenu_first (parent_menu_shell); 
+	      gtk_menu_shell_select_submenu_first (parent_menu_shell);
 	    }
 	}
       /* If there is no parent and the submenu is in the opposite direction
@@ -1442,7 +1442,7 @@ gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 	    _gtk_menu_shell_select_last (submenu, TRUE);
 	}
       break;
-      
+
     case GTK_MENU_DIR_CHILD:
       if (menu_shell->active_menu_item &&
 	  _gtk_menu_item_is_selectable (menu_shell->active_menu_item) &&
@@ -1452,20 +1452,14 @@ gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 	    break;
 	}
 
-#ifndef MAEMO_CHANGES
       /* Try to find a menu running the opposite direction */
-      while (parent_menu_shell && 
+      while (parent_menu_shell &&
 	     (GTK_MENU_SHELL_GET_CLASS (parent_menu_shell)->submenu_placement ==
 	      GTK_MENU_SHELL_GET_CLASS (menu_shell)->submenu_placement))
 	{
-	  GtkWidget *tmp_widget = parent_menu_shell->parent_menu_shell;
-	  
-	  if (tmp_widget)
-	    parent_menu_shell = GTK_MENU_SHELL (tmp_widget);
-	  else
-	    parent_menu_shell = NULL;
+	  parent_menu_shell = GTK_MENU_SHELL (parent_menu_shell->parent_menu_shell);
 	}
-      
+
       if (parent_menu_shell)
 	{
 	  if (PACK_DIRECTION (parent_menu_shell) == GTK_PACK_DIRECTION_LTR)
@@ -1475,9 +1469,8 @@ gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 
 	  gtk_menu_shell_select_submenu_first (parent_menu_shell);
 	}
-#endif /* !MAEMO_CHANGES */
       break;
-      
+
     case GTK_MENU_DIR_PREV:
       gtk_menu_shell_move_selected (menu_shell, -1);
       if (!had_selection &&
@@ -1485,6 +1478,7 @@ gtk_real_menu_shell_move_current (GtkMenuShell      *menu_shell,
 	  menu_shell->children)
 	_gtk_menu_shell_select_last (menu_shell, TRUE);
       break;
+
     case GTK_MENU_DIR_NEXT:
       gtk_menu_shell_move_selected (menu_shell, 1);
       if (!had_selection &&
