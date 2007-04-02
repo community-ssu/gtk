@@ -1,3 +1,14 @@
+hildon-desktop (0.0.3-1) feisty; urgency=low
+
+  * data/Makefile.am:
+  * data/desktop.conf.in:
+  - Reverted statusbar panel
+
+  * libhildondesktop/hildon-status-bar-item.h:
+  - Fixed GET_TYPE macro
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  2 Apr 2007 16:32:47 +0300
+
 hildon-desktop (0.0.2-2) feisty; urgency=low
 
   * Forgot the magic:
