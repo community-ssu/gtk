@@ -1,3 +1,9 @@
+2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- moved creation of the internal VBox from the constructor
+	to the _orientation_changed. Fixes a warning
+
 2007-04-02  Moises Martinez  <moises.martinez@nokia.com>
 
 	* configure.ac: Fixed typo in statusbardesktopentrydir

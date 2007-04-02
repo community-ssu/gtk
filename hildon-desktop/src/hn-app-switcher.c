@@ -1099,13 +1099,13 @@ hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data)
 static void 
 hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher) 
 {
-  GList *children,*iter;
-  
-  children = 
-    gtk_container_get_children (GTK_CONTAINER (app_switcher->box));
+  GList *children = NULL, *iter;
 
-  if (children == NULL) return;
-  else g_debug ("Changing orientation app_switcher");
+  g_debug ("orientation_changed");
+  
+  if (GTK_IS_CONTAINER (app_switcher->box))
+    children = 
+        gtk_container_get_children (GTK_CONTAINER (app_switcher->box));
   
   for (iter = children; iter; iter = g_list_next (iter))
   {	  
@@ -1113,14 +1113,21 @@ hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher)
     gtk_container_remove (GTK_CONTAINER (app_switcher->box),GTK_WIDGET (iter->data));
   }
 
-  gtk_container_remove (GTK_CONTAINER (app_switcher),GTK_WIDGET (app_switcher->box)); 
+  if (GTK_IS_WIDGET (app_switcher->box))
+      gtk_container_remove (GTK_CONTAINER (app_switcher),GTK_WIDGET (app_switcher->box)); 
 
+  gtk_widget_push_composite_child ();
   if (HILDON_DESKTOP_PANEL_ITEM (app_switcher)->orientation == GTK_ORIENTATION_HORIZONTAL) 
     app_switcher->box = GTK_BOX (gtk_hbox_new (FALSE, 0));
   else
     app_switcher->box = GTK_BOX (gtk_vbox_new (FALSE, 0));
 
   gtk_container_add (GTK_CONTAINER (app_switcher),GTK_WIDGET (app_switcher->box));
+  gtk_widget_set_composite_name (GTK_WIDGET (app_switcher->box), "application-switcher-button-box");
+  
+  gtk_widget_show (GTK_WIDGET (app_switcher->box));
+
+  gtk_widget_pop_composite_child ();
 
   for (iter = children; iter; iter = g_list_next (iter))
   {
@@ -1132,7 +1139,8 @@ hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher)
 
   queue_refresh_buttons (app_switcher);
 
-  g_list_free (children);
+  if (children)
+    g_list_free (children);
 }
 
 static void 
@@ -1201,20 +1209,6 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
   app_switcher->priv->home_info = hd_wm_get_home_info (app_switcher->hdwm);
 
   gtk_widget_push_composite_child ();
-
-  /* inner box, used for padding */
-  g_debug ("Adding inner VBox");
-
-  if (HILDON_DESKTOP_PANEL_ITEM (app_switcher)->orientation == GTK_ORIENTATION_HORIZONTAL) 
-    app_switcher->box = GTK_BOX (gtk_hbox_new (FALSE, 0));
-  else
-    app_switcher->box = GTK_BOX (gtk_vbox_new (FALSE, 0));
-
-  gtk_widget_set_composite_name (GTK_WIDGET (app_switcher->box), "application-switcher-button-box");
-  
-  gtk_container_add (GTK_CONTAINER (app_switcher),GTK_WIDGET (app_switcher->box));
- 
-  gtk_widget_show (GTK_WIDGET (app_switcher->box));
 
   /* most recent applications buttons */
   g_debug ("Adding buttons");
