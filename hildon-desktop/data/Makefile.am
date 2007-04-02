@@ -3,6 +3,7 @@ hildondesktopconf_DATA = \
 	tasknavigator.conf  \
 	home.conf           \
 	home-layout.conf    \
+	statusbar.conf	    \
 	home-background.conf
 
 hildonnavigatordesktopentry_DATA = \
