@@ -1,5 +1,9 @@
 2007-04-02  Moises Martinez  <moises.martinez@nokia.com>
 
+	* configure.ac: Fixed typo in statusbardesktopentrydir
+
+2007-04-02  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildonwm/hd-wm.c:
 	- Moved key's signal connection to constructor. Fixes: NB53697
 

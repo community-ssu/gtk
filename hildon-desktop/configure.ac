@@ -78,7 +78,7 @@ PKG_CHECK_MODULES(OSSOSETTINGS,
 
                   hildonnavigatordesktopentrydir=`pkg-config osso-af-settings --variable=tasknavigatordesktopentrydir`
                   hildonhomedesktopentrydir=`pkg-config osso-af-settings --variable=homedesktopentrydir`
-                  hildonstatusbardesktopentrydir=`pkg-config osso-af-settings --variable=statusbardesktopentrydir`,
+                  hildonstatusbardesktopentrydir=`pkg-config osso-af-settings --variable=statusbardesktopentrydir`
                   
                   hildonnavigatorlibdir=`pkg-config osso-af-settings --variable=legacynavigatorlibdir`
                   hildonhomelibdir=`pkg-config osso-af-settings --variable=legacyhomelibdir`
