@@ -36,8 +36,10 @@
 
 enum
 {
-  HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE = 1,
-  HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID
+  PROP_LAYOUT_MODE = 1,
+  PROP_SNAP_TO_GRID,
+  PROP_APPLET_PADDING
+
 };
 
 typedef struct HildonHomeAreaPriv_
@@ -46,6 +48,8 @@ typedef struct HildonHomeAreaPriv_
   gboolean      layout_changed;
 
   gboolean      snap_to_grid;
+
+  gint          applet_padding;
 
   GHashTable   *layout;
 
@@ -257,7 +261,7 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                                  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
-                                   HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE,
+                                   PROP_LAYOUT_MODE,
                                    pspec);
   
   pspec =  g_param_spec_boolean ("snap-to-grid",
@@ -267,7 +271,19 @@ hildon_home_area_class_init (HildonHomeAreaClass *klass)
                                  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (object_class,
-                                   HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID,
+                                   PROP_SNAP_TO_GRID,
+                                   pspec);
+  
+  pspec =  g_param_spec_int ("applet-padding",
+                             "Applet padding",
+                             "Padding between newly added applets",
+                             0,
+                             G_MAXINT,
+                             10,
+                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+
+  g_object_class_install_property (object_class,
+                                   PROP_APPLET_PADDING,
                                    pspec);
                 
 }
@@ -305,13 +321,17 @@ hildon_home_area_set_property (GObject      *object,
 
   switch (property_id)
     {
-      case HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE:
+      case PROP_LAYOUT_MODE:
           hildon_home_area_set_layout_mode (HILDON_HOME_AREA (object),
                                             g_value_get_boolean (value));
            break;
 
-      case HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID:
+      case PROP_SNAP_TO_GRID:
            priv->snap_to_grid = g_value_get_boolean (value);
+           break;
+      
+      case PROP_APPLET_PADDING:
+           priv->applet_padding = g_value_get_int (value);
            break;
 
       default:
@@ -331,12 +351,16 @@ hildon_home_area_get_property (GObject      *object,
 
   switch (property_id)
     {
-      case HILDON_HOME_AREA_PROPERTY_LAYOUT_MODE:
+      case PROP_LAYOUT_MODE:
           g_value_set_boolean (value, priv->layout_mode);
           break;
       
-      case HILDON_HOME_AREA_PROPERTY_SNAP_TO_GRID:
+      case PROP_SNAP_TO_GRID:
            g_value_set_boolean (value, priv->snap_to_grid);
+           break;
+
+      case PROP_APPLET_PADDING:
+           g_value_set_int (value, priv->applet_padding);
            break;
 
       default:
@@ -583,24 +607,171 @@ hildon_home_area_place (HildonHomeArea *area, GList *applets)
 }
 #endif
 
-static void
-remove_rectangle (GtkWidget *widget, GdkRegion *region)
+static GdkRectangle *
+create_rectangle (gint x, gint y, gint w, gint h)
 {
-  GdkRegion    *to_remove;
-  GdkRectangle  rectangle = (GdkRectangle)widget->allocation;
-  gint          x, y;
+  GdkRectangle *r;
+
+  r = g_new (GdkRectangle, 1);
+  r->x = x;
+  r->y = y;
+  r->width = w;
+  r->height = h;
+
+  return r;
+}
+
+#if 0
+static void
+print_rectangle (GdkRectangle *rect)
+{
+  g_print ("(%i,%i)\t %ix%i\n", rect->x, rect->y, rect->width, rect->height);
+}
+#endif
+
+static void
+substract_rectangle (GdkRectangle     *original,
+                     GdkRectangle     *rectangle,
+                     GList           **result)
+{
+  *result = NULL;
+  
+  /* top */
+  if (rectangle->y > original->y)
+    *result = g_list_append (*result,
+                             create_rectangle (original->x,
+                                               original->y,
+                                               original->width,
+                                               rectangle->y - original->y));
+
+  /* left */
+  if (rectangle->x > original->x)
+    *result = g_list_append (*result,
+                             create_rectangle (original->x,
+                                               original->y,
+                                               rectangle->x - original->x,
+                                               original->height));
+  
+  /* right */
+  if (rectangle->x + rectangle->width < original->x + original->width)
+    *result = g_list_append (*result,
+                             create_rectangle (rectangle->x + rectangle->width,
+                                               original->y,
+                                               original->x + original->width -
+                                               rectangle->x - rectangle->width,
+                                               original->height));
+
+  /* bottom */
+  if (rectangle->y + rectangle->height < original->y + original->height)
+    *result = g_list_append (*result,
+                             create_rectangle (original->x,
+                                               rectangle->y + rectangle->height,
+                                               original->width,
+                                               original->y + original->height -
+                                               rectangle->y - rectangle->height));
+
+}
+
+static void
+substract_rectangle_from_region (GList        *region,
+                                 GdkRectangle  *rectangle)
+{
+  GList *i = region;
+
+  while (i)
+    {
+      GdkRectangle     *r = (GdkRectangle *)i->data;
+      GdkRectangle      tmp;
+      
+      if (gdk_rectangle_intersect (r, rectangle, &tmp))
+        {
+          GList *pieces = NULL;
+
+          substract_rectangle (r, rectangle, &pieces);
+
+          if (pieces)
+            {
+              GList *last_piece = g_list_last (pieces);
+
+              /* Insert the new list of rectangles as a replacement of the
+               * original */
+
+              last_piece->next = i->next;
+              (pieces)->prev = i->prev;
+
+              if (i->prev)
+                {
+                  i->prev->next = pieces;
+                  if (i->next)
+                    i->next->prev = last_piece;
+                  
+                  g_free (i->data);
+                  g_list_free_1 (i);
+                  i = last_piece->next;
+
+                }
+              else
+                {
+                  /* In this case, we keep the first element of region
+                   * and get rid of the first element of pieces */
+
+                  if (i->next)
+                    {
+                      i->next->prev = (pieces->next)?last_piece:region;
+                    }
+
+                  region->data = pieces->data;
+                  if (pieces->next)
+                    {
+                      region->next = pieces->next;
+                      pieces->next->prev = region;
+                    }
+
+                  i = last_piece->next;
+
+                  g_list_free_1 (pieces);
+                  
+                }
+
+            }
+        }
+      else
+        i = i->next;
+    }
+}
+
+static void
+remove_widget (GtkWidget *widget, GList *region)
+{
+  GdkRectangle r = {0};
+  gint x, y;
+  gint padding;
 
   gtk_container_child_get (GTK_CONTAINER (widget->parent), widget,
                            "x", &x,
                            "y", &y,
                            NULL);
 
-  rectangle.x = x;
-  rectangle.y = y;
+  g_object_get (widget->parent,
+                "applet-padding", &padding,
+                NULL);
 
-  to_remove = gdk_region_rectangle (&rectangle);
-  gdk_region_subtract (region, to_remove);
-  gdk_region_destroy (to_remove);
+  r.x = x?x-padding:0;
+  r.y = y?y-padding:0;
+
+  r.width = widget->allocation.width;
+  if (x + widget->allocation.width != widget->parent->allocation.width)
+    r.width += padding;
+  if (x)
+    r.width += padding;
+
+  r.height = widget->allocation.height;
+  if (y + widget->allocation.height != widget->parent->allocation.height)
+    r.height += padding;
+  if (y)
+    r.height += padding;
+  
+  substract_rectangle_from_region (region, &r);
 }
 
 static void
@@ -623,29 +794,26 @@ hildon_home_area_batch_add (HildonHomeArea *area)
 /*  g_list_free (priv->to_add);*/
 
 #else
-  GList                *i;
-  GList                *children;
-  GdkRegion            *region, *clean_region;
   GdkRectangle          area_rectangle = {0};
+  GList                *region = NULL, *i;
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
 
   area_rectangle.width  = GTK_WIDGET (area)->allocation.width;
   area_rectangle.height = GTK_WIDGET (area)->allocation.height;
 
-  clean_region = gdk_region_rectangle (&area_rectangle);
-  region = gdk_region_copy (clean_region);
+  region = g_list_append (region, &area_rectangle);
 
-  children = gtk_container_get_children (GTK_CONTAINER (area));
-  g_list_foreach (children, (GFunc)remove_rectangle, region);
+  gtk_container_foreach (GTK_CONTAINER (area),
+                         (GtkCallback)remove_widget,
+                         region);
 
   i = priv->to_add;
 
   while (i)
     {
       GtkRequisition    req = {0};
-      GdkRectangle     *rectangles;
-      gint              n_rect, i_rect;
+      GList            *i_rect;
       GtkWidget        *w;
       const gchar      *name;
 
@@ -655,61 +823,74 @@ hildon_home_area_batch_add (HildonHomeArea *area)
       g_debug ("Placing %s", name);
               
       gtk_widget_size_request (w, &req);
-      gdk_region_get_rectangles (region, &rectangles, &n_rect);
 
-      g_debug ("Got %i rectangles", n_rect);
+      i_rect = region;
 
-      for (i_rect = 0; i_rect < n_rect; i_rect++)
+      while (i_rect)
         {
-          g_debug ("Rectangle %i: (%i,%i) %ix%i",
-                   i_rect,
-                   rectangles[i_rect].x,
-                   rectangles[i_rect].y,
-                   rectangles[i_rect].width,
-                   rectangles[i_rect].height);
-          if (rectangles[i_rect].width  >= req.width &&
-              rectangles[i_rect].height >= req.height)
-            {
-              GdkRectangle     *layout = g_new (GdkRectangle, 1);
-              GdkRegion        *layout_region;
+          GdkRectangle *r = (GdkRectangle *)i_rect->data;
+          g_debug ("Rectangle: (%i,%i) %ix%i",
+                   r->x,
+                   r->y,
+                   r->width,
+                   r->height);
 
-              layout->x = rectangles[i_rect].x;
-              layout->y = rectangles[i_rect].y;
-              layout->width = -1;
-              layout->height = -1;
+          if (r->width  >= req.width &&
+              r->height >= req.height)
+            {
+              GdkRectangle     *layout = create_rectangle (r->x,
+                                                           r->y,
+                                                           -1,
+                                                           -1);
 
               g_hash_table_insert (priv->layout, g_strdup (name), layout);
               gtk_container_add (GTK_CONTAINER (area), w);
-
+              
               layout->width  = req.width;
-              layout->height = req.height;
+              if (layout->x + layout->width < area_rectangle.width)
+                layout->width += priv->applet_padding;
 
-              layout_region = gdk_region_rectangle (layout);
-              gdk_region_subtract (region, layout_region);
-              gdk_region_destroy (layout_region);
+              layout->height = req.height;
+              if (layout->y + layout->height < area_rectangle.height)
+                layout->height += priv->applet_padding;
+
+              if (layout->x)
+                {
+                  layout->x -= priv->applet_padding;
+                  layout->width += priv->applet_padding;
+                }
+
+              if (layout->y)
+                {
+                  layout->y-= priv->applet_padding;
+                  layout->height += priv->applet_padding;
+                }
+
+              substract_rectangle_from_region (region, layout);
 
               break;
             }
 
+          i_rect = g_list_next (i_rect);
+
         }
 
-      if (i_rect == n_rect)
+      if (!i_rect)
         {
           g_debug ("Adding layer");
           /* Not enough place in this layer, we need to add one */
-          gdk_region_destroy (region);
-          region = gdk_region_copy (clean_region);
+          g_list_foreach (region, (GFunc)g_free, NULL);
+          g_list_free (region);
+          region = NULL;
+          region = g_list_append (region, &area_rectangle);
         }
       else
         i = g_list_next (i);
 
-      g_free (rectangles);
     }
 
-  gdk_region_destroy (clean_region);
-  gdk_region_destroy (region);
-
-  g_list_free (children);
+  g_list_foreach (region, (GFunc)g_free, NULL);
+  g_list_free (region);
 
 #endif
   priv->to_add = NULL;

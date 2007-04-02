@@ -1,3 +1,11 @@
+2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- added applet-padding property which specifies the padding
+	between newly added applets
+	- re-implemented auto-arrange without using GdkRegion, whose
+	rectangle decomposition was not the one specified.
+
 2007-03-30  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-desktop.c:
