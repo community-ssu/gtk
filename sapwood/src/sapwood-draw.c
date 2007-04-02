@@ -144,66 +144,73 @@ get_window_for_shape (ThemeImage *image, GdkWindow *window, GtkWidget *widget,
 }
 
 static void
-maybe_check_button_position (GtkWidget *button, ThemeMatchData *match_data)
+check_child_position (GtkWidget      *child,
+		      GList          *children,
+		      ThemeMatchData *match_data)
 {
-  GtkWidget *bbox;
-  gboolean secondary;
-  gboolean horizontal;
-  GtkWidget *first = NULL;
-  GtkWidget *last = NULL;
-  GList *list;
+  GtkWidget *left;
+  GtkWidget *right;
+  GtkWidget *top;
+  GtkWidget *bottom;
+  GList *l;
 
-  bbox = gtk_widget_get_ancestor (button, GTK_TYPE_BUTTON_BOX);
-  if (!bbox)
-    return;
+  left = right = top = bottom = child;
 
-  horizontal = GTK_IS_HBUTTON_BOX (bbox);
-
-  secondary = gtk_button_box_get_child_secondary (GTK_BUTTON_BOX (bbox),
-						  button);
-
-  for (list = GTK_BOX (bbox)->children; list != NULL; list = list->next)
+  for (l = children; l != NULL; l = l->next)
     {
-      GtkBoxChild *child_info = list->data;
-      GtkWidget   *widget = child_info->widget;
+      GtkWidget *widget = l->data;
 
-      if (child_info->is_secondary != secondary ||
-	  !GTK_WIDGET_VISIBLE (widget))
+      if (!GTK_WIDGET_VISIBLE (widget))
 	continue;
+      
+      /* XXX Should we consider the lower right corner instead, for
+       * right/bottom? */
 
-      if (horizontal)
-	{
-	  if (first == NULL || first->allocation.x > widget->allocation.x)
-	    first = widget;
-	  if (last == NULL || last->allocation.x < widget->allocation.x)
-	    last = widget;
-	}
-      else
-	{
-	  if (first == NULL || first->allocation.y > widget->allocation.y)
-	    first = widget;
-	  if (last == NULL || last->allocation.y < widget->allocation.y)
-	    last = widget;
-	}
+      if (left->allocation.x > widget->allocation.x)
+	left = widget;
+      if (right->allocation.x < widget->allocation.x)
+	right = widget;
+      if (top->allocation.y > widget->allocation.y)
+	top = widget;
+      if (bottom->allocation.y < widget->allocation.y)
+	bottom = widget;
     }
 
   match_data->flags |= THEME_MATCH_POSITION;
-  if (horizontal)
+  if (left == child)
+    match_data->position |= THEME_POS_LEFT;
+  if (right == child)
+    match_data->position |= THEME_POS_RIGHT;
+  if (top == child)
+    match_data->position |= THEME_POS_TOP;
+  if (bottom == child)
+    match_data->position |= THEME_POS_BOTTOM;
+}
+
+static void
+check_buttonbox_child_position (GtkWidget *child, ThemeMatchData *match_data)
+{
+  GList *children = NULL;
+  GList *l;
+  GtkWidget *bbox;
+  gboolean secondary;
+
+  g_assert (GTK_IS_BUTTON_BOX (child->parent));
+  bbox = child->parent;
+
+  secondary = gtk_button_box_get_child_secondary (GTK_BUTTON_BOX (bbox), child);
+
+  for (l = GTK_BOX (bbox)->children; l != NULL; l = l->next)
     {
-      match_data->position = THEME_POS_TOP | THEME_POS_BOTTOM;
-      if (first == button)
-	match_data->position |= THEME_POS_LEFT;
-      if (last == button)
-	match_data->position |= THEME_POS_RIGHT;
+      GtkBoxChild *child_info = l->data;
+      GtkWidget *widget = child_info->widget;
+
+      if (child_info->is_secondary == secondary && GTK_WIDGET_VISIBLE (widget))
+	children = g_list_prepend (children, widget);
     }
-  else
-    {
-      match_data->position = THEME_POS_LEFT | THEME_POS_RIGHT;
-      if (first == button)
-	match_data->position |= THEME_POS_TOP;
-      if (last == button)
-	match_data->position |= THEME_POS_BOTTOM;
-    }
+
+  check_child_position (child, children, match_data);
+  g_list_free (children);
 }
 
 static gboolean
@@ -239,7 +246,10 @@ draw_simple_image(GtkStyle       *style,
 
   /* Special handling for buttons in dialogs */
   if (GTK_IS_BUTTON (widget))
-    maybe_check_button_position (widget, match_data);
+    {
+      if (GTK_IS_BUTTON_BOX (widget->parent))
+	check_buttonbox_child_position (widget, match_data);
+    }
     
   image = match_theme_image (style, match_data);
   if (image)
