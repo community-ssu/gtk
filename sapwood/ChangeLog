@@ -1,5 +1,10 @@
 2007-04-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
+	* demos/treeview.c (create_treeview): Enable rubberbanding only with
+	gtk >= 2.10.0
+
+2007-04-02  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
 	* src/sapwood-draw.c (maybe_check_button_position): rename to
 	check_child_position and generalize to handle a list of widgets.
 	(check_buttonbox_child_position): new function to get the list of

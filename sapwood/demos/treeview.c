@@ -49,7 +49,9 @@ create_treeview (int n_columns)
 						 "text", 0,
 						 NULL);
 
+#if GTK_CHECK_VERSION(2,10,0)
   gtk_tree_view_set_rubber_banding (GTK_TREE_VIEW (treeview), TRUE);
+#endif
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (treeview));
   gtk_tree_selection_set_mode (selection, GTK_SELECTION_MULTIPLE);
 
