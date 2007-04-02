@@ -1,5 +1,9 @@
 2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.2
+
+2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c:
 	- Sort the region before using for placement
 	* src/hd-desktop.c:

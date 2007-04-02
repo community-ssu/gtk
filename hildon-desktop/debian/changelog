@@ -1,3 +1,41 @@
+hildon-desktop (0.0.2-1) unstable; urgency=low
+
+  * libhildondesktop/hildon-home-area.c:
+  - Sort the region before using for placement
+  * src/hd-desktop.c:
+  - Fixed the path used to load the containers
+
+  * libhildondesktop/hildon-home-area.c:
+  - added applet-padding property which specifies the padding
+  between newly added applets
+  - re-implemented auto-arrange without using GdkRegion, whose
+  rectangle decomposition was not the one specified.
+
+  * src/hd-desktop.c:
+  - Use old DOCK_TITLEBAR on hildon-desktop-window-dialog child class
+  - Deleted padding
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Fixed number of items per row in extension panel.
+  * libhildondesktop/hildon-desktop-panel-window-dialog.c:
+  - Implemented old DOCK_TITLEBAR as optional.
+  * libhildondesktop/hildon-desktop-panel-window.c:
+  - Never resize/move window if move is FALSE.
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Fixed size of items in extension table.
+
+  * libhildondesktop/hildon-desktop-home-item.[ch]:
+  - removed hildon_desktop_home_item_save_position ()
+  * libhildondesktop/hildon-home-area.c:
+  - added private hildon_home_area_child_save_position ()
+
+  * libhildondesktop/hildon-desktop-home-item.c:
+  - never snap to outside the area
+  * libhildondesktop/hildon-home-window.c:
+  - fixed wrong allocation
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  2 Apr 2007 12:21:10 +0300
+
 hildon-desktop (0.0.1-1) unstable; urgency=low
 
   * src/hn-app-switcher:
