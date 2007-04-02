@@ -1,6 +1,13 @@
 2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
+	- Sort the region before using for placement
+	* src/hd-desktop.c:
+	- Fixed the path used to load the containers
+
+2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
 	- added applet-padding property which specifies the padding
 	between newly added applets
 	- re-implemented auto-arrange without using GdkRegion, whose

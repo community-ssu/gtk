@@ -621,14 +621,6 @@ create_rectangle (gint x, gint y, gint w, gint h)
   return r;
 }
 
-#if 0
-static void
-print_rectangle (GdkRectangle *rect)
-{
-  g_print ("(%i,%i)\t %ix%i\n", rect->x, rect->y, rect->width, rect->height);
-}
-#endif
-
 static void
 substract_rectangle (GdkRectangle     *original,
                      GdkRectangle     *rectangle,
@@ -746,11 +738,14 @@ remove_widget (GtkWidget *widget, GList *region)
   GdkRectangle r = {0};
   gint x, y;
   gint padding;
+  const gchar *name;
 
   gtk_container_child_get (GTK_CONTAINER (widget->parent), widget,
                            "x", &x,
                            "y", &y,
                            NULL);
+  g_object_get (widget, "id", &name, NULL);
+  g_debug ("Removing %s", name);
 
   g_object_get (widget->parent,
                 "applet-padding", &padding,
@@ -772,6 +767,16 @@ remove_widget (GtkWidget *widget, GList *region)
     r.height += padding;
   
   substract_rectangle_from_region (region, &r);
+}
+
+/* Sorts top - left first */
+static gint
+sort_rectangles (GdkRectangle *r1, GdkRectangle *r2)
+{
+  return (r1->y - r2->y)?
+      r1->y - r2->y:
+      r1->x - r2->x;
+
 }
 
 static void
@@ -808,6 +813,7 @@ hildon_home_area_batch_add (HildonHomeArea *area)
                          (GtkCallback)remove_widget,
                          region);
 
+  region = g_list_sort (region, (GCompareFunc)sort_rectangles);
   i = priv->to_add;
 
   while (i)
@@ -867,6 +873,7 @@ hildon_home_area_batch_add (HildonHomeArea *area)
                 }
 
               substract_rectangle_from_region (region, layout);
+              region = g_list_sort (region, (GCompareFunc)sort_rectangles);
 
               break;
             }

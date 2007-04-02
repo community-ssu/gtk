@@ -235,7 +235,7 @@ hd_desktop_plugin_list_from_conf (const gchar *config_file)
 
   if (error)
   {
-    g_warning ("Error loading container configuration file: %s", error->message);
+    g_warning ("Error loading container configuration file %s: %s", config_file, error->message);
     g_error_free (error);
 
     return NULL;
@@ -259,6 +259,7 @@ hd_desktop_container_load (HildonDesktopWindow *window, gpointer user_data)
   HDDesktopPrivate *priv;
   HDDesktopContainerInfo *info;
   GList *plugin_list;
+  gchar *config_file_path;
 
   g_return_if_fail (user_data != NULL);
 
@@ -268,7 +269,9 @@ hd_desktop_container_load (HildonDesktopWindow *window, gpointer user_data)
 
   priv = info->desktop->priv;
 
-  plugin_list = hd_desktop_plugin_list_from_conf (info->config_file);
+  config_file_path = hd_desktop_get_conf_file_path (info->config_file);
+  plugin_list = hd_desktop_plugin_list_from_conf (config_file_path);
+  g_free (config_file_path);
 
   hd_plugin_manager_sync (HD_PLUGIN_MANAGER (priv->pm), 
                           plugin_list, 
