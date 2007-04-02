@@ -806,6 +806,7 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
   DBusConnection *connection,*sys_connection;
   DBusError       error,sys_error;
   gchar          *match_rule = NULL;
+  GdkKeymap      *keymap;
 
   object = G_OBJECT_CLASS (hd_wm_parent_class)->constructor (gtype, n_params, params);
 
@@ -815,8 +816,15 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
     return object;  
   
   /* Setup shortcuts */
+  /* Track changes in the keymap */
 
   hdwm->keys = hd_keys_config_get_singleton ();
+
+  keymap = gdk_keymap_get_default ();
+  g_signal_connect (G_OBJECT (keymap), 
+		    "keys-changed",
+		    G_CALLBACK (hd_keys_reload),
+		    hdwm->keys);
 
   /* Get on the DBus */
 
@@ -1089,7 +1097,6 @@ static void hd_wm_register_object_path (HDWM *hdwm,
 static void 
 hd_wm_init (HDWM *hdwm)
 {
-  GdkKeymap      *keymap;
   
   hdwm->priv = hdwmpriv = HD_WM_GET_PRIVATE (hdwm);
 	
@@ -1155,14 +1162,7 @@ hd_wm_init (HDWM *hdwm)
 
   gdk_error_trap_pop();
 
-  /* Track changes in the keymap */
-
-  keymap = gdk_keymap_get_default ();
-  g_signal_connect (G_OBJECT (keymap), 
-		    "keys-changed",
-		    G_CALLBACK (hd_keys_reload),
-		    hdwm->keys);
-
+  
   hdwm->priv->home_info = hd_entry_info_new (HD_ENTRY_DESKTOP);
 
   hdwm->keys = NULL;
@@ -2273,6 +2273,12 @@ static gboolean
 hdwm_power_key_timeout (gpointer data)
 {
   HDWM *hdwm = HD_WM (data);
+
+  if (!hdwm->keys)
+  {	  
+    g_debug ("No key handling initialized");
+    return FALSE;
+  }
 	
   if (hdwm->priv->shortcut != NULL &&
       hdwm->priv->shortcut->action == HD_KEY_ACTION_POWER)
