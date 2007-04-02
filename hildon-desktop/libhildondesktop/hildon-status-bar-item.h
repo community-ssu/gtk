@@ -28,7 +28,7 @@
 
 G_BEGIN_DECLS
 
-#define HILDON_STATUS_BAR_ITEM_TYPE ( status_bar_item_get_type() )
+#define HILDON_STATUS_BAR_ITEM_TYPE ( statusbar_item_get_type() )
 #define HILDON_STATUS_BAR_ITEM(obj) (GTK_CHECK_CAST (obj, HILDON_STATUS_BAR_ITEM_TYPE,  HildonStatusBarItem))
 #define HILDON_STATUS_BAR_ITEM_CLASS(klass) (GTK_CHECK_CLASS_CAST ((klass), HILDON_STATUS_BAR_ITEM_TYPE, HildonStatusBarItemClass))
 #define HILDON_IS_STATUS_BAR_ITEM(obj) (GTK_CHECK_TYPE (obj, HILDON_STATUS_BAR_ITEM_TYPE))
