@@ -1,4 +1,4 @@
 #!/bin/sh
 
 rm -rf \
-        gtkhtml* *stamp
+        gtkhtml* *stamp debian/{files,gtkhtml{0{,-dbg},-dev},tmp}

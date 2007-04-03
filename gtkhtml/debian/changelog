@@ -1,3 +1,9 @@
+gtkhtml (3.9.1-3osso7) unstable; urgency=low
+
+  * Forgot to add soft-a11y-check patch
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Tue,  3 Apr 2007 15:32:47 +0300
+
 gtkhtml (3.9.1-3osso6) unstable; urgency=low
 
   * Added patch comments

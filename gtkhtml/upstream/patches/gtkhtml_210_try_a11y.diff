@@ -1,0 +1,33 @@
+diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91-a11y/configure.in
+--- gtkhtml-3.13.91/configure.in	2007-04-03 13:43:10.000000000 +0300
++++ gtkhtml-3.13.91-a11y/configure.in	2007-04-03 15:20:59.000000000 +0300
+@@ -75,6 +75,29 @@
+              [ --enable-a11y   Enable Accessibility (requires gail) [default=no]],
+              [ac_cv_enable_a11y=$enableval],[ac_cv_enable_a11y=no])
+ AC_MSG_CHECKING([whether to enable a11y])
++echo '**********************************'
++if test -z "$PKG_CONFIG"; then
++       echo "Going to check for pkg-config ..."
++       AC_PATH_PROG(PKG_CONFIG, pkg-config, no)
++       echo "Checked for pkg-config: $PKG_CONFIG"
++fi
++if test "$ac_cv_enable_a11y" = yes; then
++       echo "ac_cv_enable_a11y: Forced off."
++       ac_cv_enable_a11y=no
++       if test "x$PKG_CONFIG" != "xno"; then
++         echo "ac_cv_enable_a11y: Have pkg-config: $PKG_CONFIG"
++         if $PKG_CONFIG --exists gail; then
++           echo "ac_cv_enable_a11y: pkg-config says gail exists"
++           ac_cv_enable_a11y=yes ;
++           echo "ac_cv_enable_a11y: Turned on."
++         else
++           echo "ac_cv_enable_a11y: $PKG_CONFIG --exists gail failed"
++         fi
++       else
++         echo "ac_cv_enable_a11y: Do not have pkg-config: $PKG_CONFIG"
++       fi
++fi
++echo '**********************************'
+ if test "$ac_cv_enable_a11y" = yes; then
+        AC_MSG_RESULT(yes)
+        GAIL_MODULES="gail >= 1.1.0"
