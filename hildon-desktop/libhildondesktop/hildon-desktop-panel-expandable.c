@@ -217,7 +217,7 @@ hildon_desktop_panel_expandable_extension_winevent (GtkWidget *widget,
 				                    HildonDesktopPanelExpandable *panel)
 {
    gboolean in_panel_area = FALSE,
-   	    in_button_area;
+   	    in_button_area = FALSE;
    gint x,y,w,h;
    
     if (!event) 

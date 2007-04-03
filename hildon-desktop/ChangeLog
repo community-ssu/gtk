@@ -1,4 +1,9 @@
-2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
+2007-04-03  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- fixed a compilation warning
+
+2007-04-03  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-plugin-loader-legacy.c:
 	- call show_all on the home widgets as it was done in
