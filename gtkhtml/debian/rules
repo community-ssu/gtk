@@ -35,7 +35,7 @@ $(SOURCE_DIR)/config.status: $(SOURCE_DIR)/configure
 	dh_testdir
 
 	# Add here commands to configure the package.
-	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
+	cd $(SOURCE_DIR) && CFLAGS="$(CFLAGS)" ./configure --enable-a11y --host=$(DEB_HOST_GNU_TYPE) --build=$(DEB_BUILD_GNU_TYPE) --prefix=/usr --mandir=\$${prefix}/share/man --infodir=\$${prefix}/share/info
 
 $(SOURCE_DIR)/configure:
 	#inflate upstream and prepare

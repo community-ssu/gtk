@@ -1,3 +1,10 @@
+2007-04-03  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Added patch comments
+	* Removed empty debian/patches
+	* Added --enable-a11y, but with forgiving gail check
+	* Increased GTK+ dependency to 2.10.0
+
 2007-03-06  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Fixes: NB#52411

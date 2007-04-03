@@ -1,3 +1,9 @@
+# Remove GNOME dependencies
+#
+# Copyright (C) 2006 - 2007 Nokia Corporation.
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
+#
 diff -ru gtkhtml-3.13.91/config.h.in gtkhtml-3.13.91.mod7/config.h.in
 --- gtkhtml-3.13.91/config.h.in	2007-02-12 14:01:17.000000000 +0200
 +++ gtkhtml-3.13.91.mod7/config.h.in	2007-02-15 16:34:40.000000000 +0200
@@ -117,7 +123,7 @@ diff -ru gtkhtml-3.13.91/configure.in gtkhtml-3.13.91.mod7/configure.in
 +
 +dnl libglade only needed on windows?
 +dnl GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES libglade-2.0 >= 2.0.0"
-+GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES gtk+-2.0 >= 2.6.0 gconf-2.0 libart-2.0 >= 2.3.0"
++GTKHTML_MODULES="$GNOME_MODULES $GNOMEPRINT_MODULES $GAIL_MODULES gtk+-2.0 >= 2.10.0 gconf-2.0 libart-2.0 >= 2.3.0"
  PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
  AC_SUBST(GTKHTML_CFLAGS)
  AC_SUBST(GTKHTML_LIBS)

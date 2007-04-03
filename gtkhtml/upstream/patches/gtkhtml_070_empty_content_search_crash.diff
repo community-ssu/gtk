@@ -1,3 +1,10 @@
+# Be a little more paranoid about dereferencing pointers, because they may be NULL in the
+# case of an empty document
+#
+# Copyright (C) 2006 - 2007 Nokia Corporation.
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
+#
 diff -ru gtkhtml-3.13.91/src/htmlengine-search.c gtkhtml-3.13.91.mod4/src/htmlengine-search.c
 --- gtkhtml-3.13.91/src/htmlengine-search.c	2007-01-03 17:19:57.000000000 +0200
 +++ gtkhtml-3.13.91.mod4/src/htmlengine-search.c	2007-02-15 14:14:16.000000000 +0200

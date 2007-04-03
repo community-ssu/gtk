@@ -1,3 +1,12 @@
+gtkhtml (3.9.1-3osso6) unstable; urgency=low
+
+  * Added patch comments
+  * Removed empty debian/patches
+  * Added --enable-a11y, but with forgiving gail check
+  * Increased GTK+ dependency to 2.10.0
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Tue,  3 Apr 2007 12:08:10 +0300
+
 gtkhtml (3.9.1-3osso5) unstable; urgency=low
 
   * Fixes: NB#52411

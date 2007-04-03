@@ -1,3 +1,9 @@
+# Properly initialize the variable named "offset"
+#
+# Copyright (C) 2006 - 2007 Nokia Corporation.
+# This file is distributed under the terms of GNU LGPL license, either version 2
+# of the License, or (at your option) any later version.
+#
 diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91.mod6/src/htmlengine.c
 --- gtkhtml-3.13.91/src/htmlengine.c	2007-02-15 15:54:05.000000000 +0200
 +++ gtkhtml-3.13.91.mod6/src/htmlengine.c	2007-02-15 16:18:27.000000000 +0200
