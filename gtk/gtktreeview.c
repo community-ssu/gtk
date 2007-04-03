@@ -2929,13 +2929,11 @@ gtk_tree_view_button_press (GtkWidget      *widget,
 
       gtk_tree_path_free (path);
 
-#ifndef MAEMO_CHANGES
       /* If we activated the row through a double click we don't want to grab
        * focus back, as moving focus to another widget is pretty common.
        */
       if (!row_double_click)
 	grab_focus_and_unset_draw_keyfocus (tree_view);
-#endif /* !MAEMO_CHANGES */
 
       return TRUE;
     }
