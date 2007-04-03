@@ -10,7 +10,7 @@ ThemeThumbnail=qgn_plat_theme_thumbnail.png
 
 # Text
 DefaultTextColor=7960,24,30,10
-EmpTextColor=7960,754,36,10
+EmpTextColor=7960,36,30,10
 PaintedDefaultTextColor=7960,48,30,10
 DisabledTextColor=7960,60,30,10
 ProgressTextColor1=7960,72,30,10
