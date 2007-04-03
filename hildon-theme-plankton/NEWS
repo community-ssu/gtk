@@ -1,3 +1,10 @@
+[4.5.0-1 release]
+* Fixing the wallpaper installation prefixes for good now
+* Added a new icon for bcrumb separator clicked state and made them use no alpha
+* Changed the gradients so that the theme can be stretched without it looking bad
+* Added the coordinates file for convenience
+* Fixed Build-Depends syntax
+
 [4.4.0-1 release]
 * Added graphics for the breadcrumb path widget styling
 * Do not use hardcoded /usr/share paths 
