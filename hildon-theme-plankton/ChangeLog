@@ -1,8 +1,10 @@
 2007-04-03  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
-	* template/template.svg: Added combobox artwork, removed old cruft.
-	Some cleanups too.
+	* template/template.*: 
 
+	Added combobox artwork, removed old cruft. Some cleanups too.
+	Added some new logical colours.
+	
 2007-04-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[4.5.0-1 release]

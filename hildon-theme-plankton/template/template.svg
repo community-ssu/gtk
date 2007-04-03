@@ -2811,16 +2811,6 @@
        gradientUnits="userSpaceOnUse" />
     <linearGradient
        inkscape:collect="always"
-       xlink:href="#linearGradient5376"
-       id="linearGradient8211"
-       gradientUnits="userSpaceOnUse"
-       x1="3216"
-       y1="163"
-       x2="3353"
-       y2="512"
-       gradientTransform="translate(990,0)" />
-    <linearGradient
-       inkscape:collect="always"
        xlink:href="#linearGradient8159"
        id="linearGradient8221"
        gradientUnits="userSpaceOnUse"
@@ -8671,10 +8661,10 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="4258.4081"
-     inkscape:cy="393.8115"
+     inkscape:cx="7586.6147"
+     inkscape:cy="383.23286"
      inkscape:document-units="px"
-     inkscape:current-layer="layer4"
+     inkscape:current-layer="layer5"
      width="8000px"
      height="800px"
      showgrid="true"
@@ -10523,7 +10513,8 @@
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="Design"
-     style="opacity:1;display:inline">
+     style="opacity:1;display:inline"
+     sodipodi:insensitive="true">
     <rect
        ry="0"
        rx="0"
@@ -22093,8 +22084,7 @@
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="colors"
-     style="opacity:1;display:inline"
-     sodipodi:insensitive="true">
+     style="opacity:1;display:inline">
     <rect
        style="opacity:1;fill:#303030;fill-opacity:1;stroke:none;stroke-width:2.00000048;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1"
        id="rect9488"
@@ -22560,7 +22550,7 @@
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9372">DialogTitleTextColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
-         id="flowPara9374" /><flowPara
+         id="flowPara9374">MediaPlayerToolbarFontColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9376"># Calculator</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
@@ -22600,7 +22590,7 @@
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9416">HWRHintColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
-         id="flowPara9494" /><flowPara
+         id="flowPara9494">HWRWhiteTextColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9418"># Web browser</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
@@ -22624,9 +22614,9 @@
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9438">ImageBackgrdColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
-         id="flowPara9440" /><flowPara
-         style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
-         id="flowPara9442"># Gtk?</flowPara><flowPara
+         id="flowPara9440">TreeViewOddRowColor</flowPara><flowPara
+         style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
+         id="flowPara9442">TreeViewEvenRowColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9444">ImageBorderColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
@@ -22660,7 +22650,7 @@
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9474">CallHeaderOnHoldBlockBgColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
-         id="flowPara9476" /><flowPara
+         id="flowPara9476">CropFrameColor</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
          id="flowPara9478"># Home applet layout mode</flowPara><flowPara
          style="font-size:5.39578438px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:150%;writing-mode:lr-tb;text-anchor:start;font-family:Bitstream Vera Sans"
@@ -22705,6 +22695,51 @@
          id="tspan7939"
          x="7477.25"
          y="22">VKBButtonTextColor</tspan></text>
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#d3d7cf;stroke-width:2.00000048;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9477"
+       width="30"
+       height="10"
+       x="7960"
+       y="132.25"
+       rx="2.9999976"
+       ry="2.9999976" />
+    <rect
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#d3d7cf;stroke-width:2.00000048;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9479"
+       width="30"
+       height="10"
+       x="7960"
+       y="372.85727"
+       rx="2.9999976"
+       ry="2.9999976" />
+    <rect
+       style="opacity:1;fill:#eeeeec;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9481"
+       width="30"
+       height="10"
+       x="7960"
+       y="516.94873"
+       rx="2.9999976"
+       ry="2.9999976" />
+    <rect
+       ry="2.9999976"
+       rx="2.9999976"
+       y="528.94873"
+       x="7960"
+       height="10"
+       width="30"
+       id="rect9483"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       style="opacity:1;fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:square;stroke-miterlimit:3.4000001;stroke-dasharray:none;stroke-opacity:1"
+       id="rect9485"
+       width="30"
+       height="10"
+       x="7960"
+       y="731.87866"
+       rx="2.9999976"
+       ry="2.9999976" />
   </g>
   <g
      inkscape:groupmode="layer"
