@@ -1,3 +1,14 @@
+[0.5.0-1 release]
+* Added qgn_plat_menu_next_level_arrow_focused.png
+* Moving the gtkcalendar styles to hildoncalendar
+* Sorted the graphics alphabetically
+* Made submenu arrows graphics
+* Added pressed states for scrollbar thumbs for better visibility and to be consistent with thumb scrollbar
+* Task navigator full height background
+* Search popup toolbar graphic
+* Task nav / switcher button changes
+* New combobox artwork
+
 [0.4.0-1 release]
 * Removed unused viewbutton images
 * Moved listbox icons a bit and and tooltip graphic

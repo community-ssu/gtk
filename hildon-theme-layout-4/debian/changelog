@@ -1,3 +1,17 @@
+hildon-theme-layout-4 (0.5.0-1) unstable; urgency=low
+
+  * Added qgn_plat_menu_next_level_arrow_focused.png
+  * Moving the gtkcalendar styles to hildoncalendar
+  * Sorted the graphics alphabetically
+  * Made submenu arrows graphics
+  * Added pressed states for scrollbar thumbs for better visibility and to be consistent with thumb scrollbar
+  * Task navigator full height background
+  * Search popup toolbar graphic
+  * Task nav / switcher button changes
+  * New combobox artwork
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 03 Apr 2007 11:27:20 +0300
+
 hildon-theme-layout-4 (0.4.0-1) unstable; urgency=low
 
   * Removed unused viewbutton images
