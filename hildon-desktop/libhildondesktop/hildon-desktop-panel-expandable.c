@@ -105,7 +105,7 @@ static void hildon_desktop_panel_expandable_cadd (GtkContainer *container, GtkWi
 
 static void hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget *widget);
 
-GObject *hildon_desktop_panel_expandable_constructor (GType gtype,guint n_params,GObjectConstructParam *params);
+static GObject *hildon_desktop_panel_expandable_constructor (GType gtype,guint n_params,GObjectConstructParam *params);
 
 static void hildon_desktop_panel_expandable_finalize (GObject *object);
 
@@ -198,7 +198,84 @@ hildon_desktop_panel_expandable_init (HildonDesktopPanelExpandable *panel)
 #endif
 }
 
-GObject *
+static void 
+hildon_desktop_panel_expandable_hide_extension (HildonDesktopPanelExpandable *panel)
+{
+  gdk_pointer_ungrab (GDK_CURRENT_TIME);
+  gdk_keyboard_ungrab (GDK_CURRENT_TIME);
+
+  g_object_set (panel->priv->arrow, "active", FALSE, NULL);
+
+  gtk_grab_remove (GTK_WIDGET (panel->priv->extension_window));
+
+  gtk_widget_hide (GTK_WIDGET (panel->priv->extension_window));
+}
+
+static gboolean 
+hildon_desktop_panel_expandable_extension_winevent (GtkWidget *widget, 
+				                    GdkEvent *event, 
+				                    HildonDesktopPanelExpandable *panel)
+{
+   gboolean in_panel_area = FALSE,
+   	    in_button_area;
+   gint x,y,w,h;
+   
+    if (!event) 
+      return FALSE;
+    
+    gtk_widget_get_pointer (widget, &x, &y);
+    
+    w = widget->allocation.width;
+    h = widget->allocation.height;
+    	 
+    /* Pointer on window popup area */
+    if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+        in_panel_area = TRUE;
+    else 
+    if (panel->priv->extension_opened)
+    {		    
+        w = panel->priv->arrow->allocation.width;
+	h = panel->priv->arrow->allocation.height;
+	
+	gtk_widget_get_pointer (panel->priv->arrow, &x, &y);
+	
+	/* Pointer on button area  */
+	if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+          in_button_area = TRUE;
+    } 
+    
+    /* Event outside of popup or in button area, close in clean way */    
+    if (!in_panel_area || in_button_area)
+      hildon_desktop_panel_expandable_hide_extension (panel);
+   
+    return TRUE;
+}
+
+static gboolean 
+hildon_desktop_panel_expandable_grab_table_focus (GtkWidget *table_window,
+						  GdkEventExpose *event,
+						  HildonDesktopPanelExpandable *panel)
+{
+  (void)event;
+
+  if ((gdk_pointer_grab (table_window->window, TRUE,
+                         GDK_BUTTON_PRESS_MASK |
+                         GDK_BUTTON_RELEASE_MASK |
+                         GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK |
+                         GDK_POINTER_MOTION_MASK,
+                         NULL, NULL,
+                         GDK_CURRENT_TIME) == GDK_GRAB_SUCCESS ))
+  {
+    gtk_grab_add (table_window);
+    return TRUE;
+  }
+
+  hildon_desktop_panel_expandable_hide_extension (panel);
+
+  return FALSE;  
+}
+
+static GObject *
 hildon_desktop_panel_expandable_constructor (GType gtype,
 			                     guint n_params, 
 					     GObjectConstructParam *params)
@@ -238,6 +315,16 @@ hildon_desktop_panel_expandable_constructor (GType gtype,
 		    "notify::items_row",
 		    G_CALLBACK (hildon_desktop_panel_expandable_resize_notify),
 		    NULL);
+
+  g_signal_connect_after (panel->priv->extension_window,
+		  	  "map-event",
+			  G_CALLBACK (hildon_desktop_panel_expandable_grab_table_focus),
+			  (gpointer)panel);
+
+  g_signal_connect (panel->priv->extension_window,
+		    "button-release-event",
+		    G_CALLBACK (hildon_desktop_panel_expandable_extension_winevent),
+		    (gpointer)panel);
 
   g_object_get (object, "item_width", &item_width, "item_height", &item_height, NULL);
 
@@ -665,7 +752,7 @@ hildon_desktop_panel_expandable_arrow_toggled (GtkToggleButton *button, gpointer
   }
   else
   {
-    gtk_widget_hide (GTK_WIDGET (panel->priv->extension_window));
+    hildon_desktop_panel_expandable_hide_extension (panel);
   } 
 }
 
