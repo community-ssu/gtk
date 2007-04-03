@@ -1,5 +1,10 @@
 2007-04-03  Johan Bilien  <johan.bilien@nokia.com>
 
+	* * src/hd-plugin-loader-legacy.c:
+	- also show_all legacy statusbar widgets
+
+2007-04-03  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-background-dialog.c:
 	- copy the background instead of reffing it.
 

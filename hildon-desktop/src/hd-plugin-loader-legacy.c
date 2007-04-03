@@ -692,8 +692,8 @@ hd_plugin_loader_legacy_status_bar_init (HDPluginLoaderLegacy *loader,
 
   if (module_widget)
     {
+      gtk_widget_show_all (module_widget);
       gtk_container_add (GTK_CONTAINER (item), module_widget);
-      gtk_widget_show (module_widget);
     }
 
   g_signal_connect_swapped (item, "destroy",
