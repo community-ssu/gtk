@@ -906,7 +906,7 @@ hd_home_background_dialog_set_background (HDHomeBackgroundDialog *dialog,
   if (priv->background)
     g_object_unref (priv->background);
 
-  priv->background = g_object_ref (background);
+  priv->background = hd_home_background_copy (background);
 
   g_object_notify (G_OBJECT (dialog), "background");
   hd_home_background_dialog_sync_from_background (dialog);
