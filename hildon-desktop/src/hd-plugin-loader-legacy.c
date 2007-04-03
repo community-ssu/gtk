@@ -439,6 +439,9 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
                  "Hildon Home Home Applet did not return a widget");
     return NULL;
   }
+
+  /* Legacy plugins were not expected to show all their internal widgets */
+  gtk_widget_show_all (module_widget);
   
   keyfile = hd_plugin_loader_get_key_file (HD_PLUGIN_LOADER (loader));
 
@@ -494,9 +497,8 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
                                      "resize-type", resize_type,
                                      "minimum-width", min_width,
                                      "minimum-height", min_height,
+                                     "child", module_widget,
                                      NULL));
-
-  gtk_container_add (GTK_CONTAINER (applet), module_widget);
 
   return applet;
 }

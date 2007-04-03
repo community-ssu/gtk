@@ -1,5 +1,11 @@
 2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
 
+	* src/hd-plugin-loader-legacy.c:
+	- call show_all on the home widgets as it was done in
+	maemo-af-desktop
+
+2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hn-app-switcher.c:
 	- moved creation of the internal VBox from the constructor
 	to the _orientation_changed. Fixes a warning
