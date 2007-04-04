@@ -22,40 +22,30 @@
 
 start_input()
 {
-  ENABLE_FLAG=0
-  AF_INIT=/etc/osso-af-init
+  # we need to start VKB for the wizard...
+  if [ -f $AF_INIT_DIR/keyboard.defs ]; then
+    source $AF_INIT_DIR/keyboard.defs
+  fi
 
-	# we need to start VKB for the wizard...
-	if [ -f $AF_INIT/keyboard.defs ]; then
-		source $AF_INIT/keyboard.defs
- 	fi
+  source $AF_INIT_DIR/keyboard.sh start
+  # give VKB some time to start
+  sleep 5
 
-	source $AF_INIT/keyboard.sh start
-	# give VKB some time to start
-	sleep 5
-
-	# start clipboard daemon for the wizard
-	if [ -f $AF_INIT/clipboard.sh ]; then
-		source $AF_INIT/clipboard.sh start
-	fi
+  # start clipboard daemon for the wizard
+  if [ -f $AF_INIT_DIR/clipboard.sh ]; then
+    source $AF_INIT_DIR/clipboard.sh start
+  fi
 }
-
-if [ "$ENABLE_FLAG" = "0" ]; then
-	if [ "x$DISPLAY" = "x" ]; then
-			echo "$0: Error, DISPLAY is not defined!"
-			exit 2
-	fi
-fi
 
 if [ -f /etc/osso-af-init/wizard-background-defs.sh ]; then
   source /etc/osso-af-init/wizard-background-defs.sh
 fi
 
 if ! type wizback_method 2> /dev/null; then
-wizback_method() # args ignored
-{
-  return 0
-}
+  wizback_method() # args ignored
+  {
+    return 0
+  }
 fi
 
 case "$1" in
