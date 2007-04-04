@@ -2402,6 +2402,10 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
   if (((XEvent*)xevent)->type == KeyPress)
   {
     XKeyEvent *kev = (XKeyEvent *)xevent;
+
+    if (!hdwm->keys)
+      return GDK_FILTER_CONTINUE;
+    
     hdwm->priv->shortcut = hd_keys_handle_keypress (hdwm->keys, kev->keycode, kev->state); 
 
     if (hdwm->priv->shortcut != NULL &&
@@ -2423,7 +2427,7 @@ hd_wm_x_event_filter (GdkXEvent *xevent,
       hdwm->priv->power_key_timeout = 0;
     }
 
-    if (hdwm->priv->shortcut != NULL)
+    if (hdwm->keys != NULL && hdwm->priv->shortcut != NULL)
     {
       if (!hd_wm_modal_windows_present())
         hdwm->priv->shortcut->action_func (hdwm->keys, hdwm->priv->shortcut->action_func_data);

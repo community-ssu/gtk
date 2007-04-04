@@ -213,6 +213,7 @@ struct _HNAppSwitcherPrivate
   /* pointer location */
   guint pointer_on_button : 1;
   guint is_thumbable : 1;
+  gboolean force_thumb : 1;
   guint was_thumbable : 1;
 
   guint menu_button_timeout;
@@ -532,7 +533,13 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
   HNAppSwitcherPrivate *priv = app_switcher->priv;
   GList *menu_children, *l;
   GtkWidget *separator;
-  
+
+  if (priv->force_thumb)
+  {	  
+    priv->is_thumbable = TRUE;
+    priv->force_thumb = FALSE;
+  }
+
   /* we must dispose the old contents of the menu first */
   menu_children = gtk_container_get_children (GTK_CONTAINER (priv->main_menu));
   for (l = menu_children; l != NULL; l = l->next)
@@ -587,7 +594,7 @@ main_menu_ensure_state (HNAppSwitcher *app_switcher)
     gtk_widget_destroy (priv->main_home_item);
     priv->main_home_item = NULL;
   }
-  
+ 
   g_assert (priv->home_info); 
   priv->main_home_item = hn_app_menu_item_new (priv->home_info,
 		                               FALSE,
@@ -841,7 +848,7 @@ main_menu_pop (HNAppSwitcher *app_switcher,
 
   gtk_widget_realize (priv->main_menu);
 
-  if (priv->is_thumbable)
+  if (priv->is_thumbable || priv->force_thumb)
     gtk_widget_set_name (gtk_widget_get_toplevel (priv->main_menu),
                          "hildon-menu-window-thumb");
   else
@@ -1091,7 +1098,14 @@ hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data)
 {
   HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);
 
-  app_switcher->priv->is_thumbable = TRUE;
+  if (app_switcher->priv->main_menu && 
+      !gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
+  {
+    gtk_widget_destroy (app_switcher->priv->main_menu);
+    app_switcher->priv->main_menu = NULL;
+  }
+
+  app_switcher->priv->force_thumb = TRUE;
 
   hn_app_switcher_toggle_menu_button (app_switcher);
 }
@@ -1473,6 +1487,16 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   gtk_widget_set_sensitive (priv->buttons[pos], TRUE);
 }
 
+static void 
+hn_app_switcher_destroy_main_menu (HNAppSwitcher *app_switcher)
+{
+  if (app_switcher->priv->main_menu)
+  {
+    gtk_widget_destroy (app_switcher->priv->main_menu);
+    app_switcher->priv->main_menu = NULL;
+  }
+}
+
 static gboolean
 refresh_buttons (gpointer user_data)
 {
@@ -1665,11 +1689,8 @@ hn_app_switcher_add_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
    * now that the application list is tainted by a new entry;
    * destroying the menu widget will call the detach function
    */
-  if (priv->main_menu)
-  {
-    gtk_widget_destroy (priv->main_menu);
-    priv->main_menu = NULL;
-  }
+
+  hn_app_switcher_destroy_main_menu (app_switcher);
 }
 
 /* Class closure for the "remove" signal; this is called each time
@@ -1703,12 +1724,8 @@ hn_app_switcher_remove_info_cb (HDWM *hdwm,
    * now that the application list is tainted by delete entry;
    * destroying the menu widget will call the detach function
    */
-  if (priv->main_menu)
-  {
-      gtk_widget_destroy (priv->main_menu);
-      priv->main_menu = NULL;
-    }
 
+  hn_app_switcher_destroy_main_menu (app_switcher);
 }
 
 
@@ -1728,11 +1745,8 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
   /* all changes have potential impact on the the main menu; app menus are
    * created on the fly, so we do not have to worry about menu changes there
    */
-  if (priv->main_menu)
-  {
-    gtk_widget_destroy (priv->main_menu);
-    priv->main_menu = NULL;
-  }
+
+  /* hn_app_switcher_destroy_main_menu (app_switcher);*/
 
   /*
    * If we are given an entry info and it of the app type, we just need to
@@ -1921,11 +1935,7 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
 
   g_debug ("In hn_app_switcher_real_changed_stack");
 
-  if (priv->main_menu)
-  {
-    gtk_widget_destroy (priv->main_menu);
-    priv->main_menu = NULL;
-  }
+  hn_app_switcher_destroy_main_menu (app_switcher);
   
   if (!entry_info || !hd_entry_info_is_active (entry_info))
   {
@@ -2115,6 +2125,8 @@ hn_app_switcher_init (HNAppSwitcher *app_switcher)
   app_switcher->priv = HN_APP_SWITCHER_GET_PRIVATE (app_switcher);
   
   app_switcher->priv->buttons_group = NULL;
+
+  app_switcher->priv->force_thumb = FALSE;
 
   gtk_widget_set_name (GTK_WIDGET (app_switcher), AS_BOX_NAME);
   
