@@ -1,3 +1,8 @@
+2007-04-04  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkcombobox.rc: Update to use new graphics. Still missing the
+	arrows pointing up.
+
 2007-04-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.5.0-1 release]

@@ -28,7 +28,7 @@ style "osso-combobox-base" {
   GtkWidget::focus-line-pattern = "\0\0\0\0\0\0\0\0"
   GtkComboBox::autodimmed_button = 1
   GtkComboBox::appears-as-list = 1
-  GtkComboBox::arrow-size = 30
+  GtkComboBox::arrow-size = 26
 
 }
 class "GtkComboBox" style "osso-combobox-base"
@@ -47,20 +47,14 @@ style "osso-combobox-button" {
         }
         image {
             function = BOX
-            file = "../images/qgn_plat_combobox_button_disabled.png"
+            file = "../images/qgn_plat_combobox_frame_right_disabled.png"
             state = INSENSITIVE
-	    border = { 0, 2, 2, 2 }
+	    border = { 0, 4, 4, 4 }
         }
         image {
             function = BOX
-            file = "../images/qgn_plat_combobox_button_pressed.png"
-            state = ACTIVE
-	    border = { 0, 2, 2, 2 }
-        }
-        image {
-            function = BOX
-            file = "../images/qgn_plat_combobox_button_normal.png"
-	    border = { 0, 2, 2, 2 }
+            file = "../images/qgn_plat_combobox_frame_right_normal.png"
+	    border = { 0, 4, 4, 4 }
         }
         image {
             function = TAB
@@ -80,14 +74,14 @@ style "osso-combobox-frame" {
         }
         image {
             function = SHADOW
-            file = "../images/qgn_plat_combobox_frame_disabled.png"
+            file = "../images/qgn_plat_combobox_frame_left_disabled.png"
             state = INSENSITIVE
-            border = { 2, 0, 2, 2 }
+            border = { 4, 0, 4, 4 }
         }
         image {
             function = SHADOW
-            file = "../images/qgn_plat_combobox_frame_normal.png"
-            border = { 2, 0, 2, 2 }
+            file = "../images/qgn_plat_combobox_frame_left_normal.png"
+            border = { 4, 0, 4, 4 }
         }
     }
 }
@@ -106,21 +100,30 @@ widget_class "*.GtkComboBox.GtkFrame" style "osso-combobox-frame"
 style "osso-combobox-entry-base" {
 
   GtkEntry::inner-border = { 4, 4, 0, 0 }
-
-  GtkEntry::icon_width = 0
 }
-widget_class "*.GtkComboBoxEntry.GtkEntry" style "osso-combobox-entry-base"
 
-# We don't need gtk+ to draw it's arrow. The button drawing is enough for us.
+widget_class "*.GtkComboBoxEntry.GtkEntry" style "osso-combobox-entry-base"
 
 style "osso-combobox-entry-arrow"
 {
-	engine "sapwood" {
-		image {
-			function = ARROW
-		}
-	}
+  engine "sapwood"
+    {
+      image 
+        {
+          function = ARROW
+          state = ACTIVE
+          file = "../images/qgn_plat_combobox_button_pressed.png"
+          stretch = FALSE
+        }
+      image
+        {
+          function = ARROW
+          file = "../images/qgn_plat_combobox_button_normal.png"
+          stretch = FALSE
+        }
+    }
 }
+
 widget_class "*.GtkComboBox.GtkToggleButton.GtkArrow" style "osso-combobox-entry-arrow"
 widget_class "*.GtkComboBoxEntry.GtkToggleButton.GtkArrow" style "osso-combobox-entry-arrow"
 
@@ -133,14 +136,14 @@ style "osso-combobox-entry-entry" {
         {
 	  function = SHADOW
 	  state    = INSENSITIVE
-  	  file = "../images/qgn_plat_listbox_border_with_icon_disabled.png"
-	  border   = { 1, 0, 1, 2 }
+  	  file = "../images/qgn_plat_combobox_entry_frame_left_disabled.png"
+	  border   = { 4, 0, 4, 4 }
 	}
       image
         {
 	  function = SHADOW
-  	  file = "../images/qgn_plat_listbox_border_with_icon_normal.png"
-	  border   = { 1, 0, 1, 2 }
+  	  file = "../images/qgn_plat_combobox_entry_frame_left_normal.png"
+	  border   = { 4, 0, 4, 4 }
 	}
     }
 }
@@ -155,20 +158,14 @@ style "osso-combobox-entry-button-down" {
 		}
 		image {
 			function = BOX
-			file = "../images/qgn_plat_listbox_arrow_down_disabled.png"
+			file = "../images/qgn_plat_combobox_entry_frame_right_disabled.png"
 			state = INSENSITIVE
-			border = { 0, 1, 1, 2 }
+			border = { 0, 4, 4, 4 }
 		}
 		image {
 			function = BOX
-			file = "../images/qgn_plat_listbox_arrow_down_pressed.png"
-			state = ACTIVE
-			border = { 0, 1, 1, 2 }
-		}
-		image {
-			function = BOX
-			file = "../images/qgn_plat_listbox_arrow_down_normal.png"
-			border = { 0, 1, 1, 2 }
+			file = "../images/qgn_plat_combobox_entry_frame_right_normal.png"
+			border = { 0, 4, 4, 4 }
 		}
 		image {
 			function = TAB
@@ -176,36 +173,3 @@ style "osso-combobox-entry-button-down" {
 	}
 }
 widget_class "*.GtkComboBoxEntry.GtkToggleButton" style "osso-combobox-entry-button-down"
-
-# Different themeing to combobox when it's in a toolbar. In this case the
-# arrow points upwards.
-style "osso-combobox-entry-button-up" {
-
-	engine "sapwood" {
-		image {
-			function = FOCUS
-		}
-		image {
-			function = BOX
-			file = "../images/qgn_plat_listbox_arrow_up_disabled.png"
-			state = INSENSITIVE
-			border = { 0, 1, 1, 2 }
-		}
-		image {
-			function = BOX
-			file = "../images/qgn_plat_listbox_arrow_up_pressed.png"
-			state = ACTIVE
-			border = { 0, 1, 1, 2 }
-		}
-		image {
-			function = BOX
-			file = "../images/qgn_plat_listbox_arrow_up_normal.png"
-			border = { 0, 1, 1, 2 }
-		}
-		image {
-			function = TAB
-		}
-	}
-
-}
-widget_class "*.GtkToolbar.GtkComboBoxEntry.GtkToggleButton" style "osso-combobox-entry-button-up"
