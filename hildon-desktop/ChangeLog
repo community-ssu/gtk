@@ -1,5 +1,9 @@
 2007-04-04  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.4
+
+2007-04-04  Johan Bilien  <johan.bilien@nokia.com>
+
 	* data/statusbar.conf: Added all the plugins from IT-2007
 
 2007-04-03  Johan Bilien  <johan.bilien@nokia.com>

@@ -1,4 +1,35 @@
-hildon-desktop (0.0.3-1) feisty; urgency=low
+hildon-desktop (0.0.4-1) sardine; urgency=low
+
+  * data/statusbar.conf: Added all the plugins from IT-2007
+
+  * src/hd-plugin-loader-legacy.c:
+  - also show_all legacy statusbar widgets
+
+  * src/hd-home-background-dialog.c:
+  - copy the background instead of reffing it.
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - fixed a compilation warning
+
+  * src/hd-plugin-loader-legacy.c:
+  - call show_all on the home widgets as it was done in
+  maemo-af-desktop
+
+  * src/hn-app-switcher.c:
+  - moved creation of the internal VBox from the constructor
+  to the _orientation_changed. Fixes a warning
+
+  * configure.ac: Fixed typo in statusbardesktopentrydir
+
+  * libhildonwm/hd-wm.c:
+  - Moved key's signal connection to constructor. Fixes: NB#53697
+
+  * libhildondesktop/hildon-thumb-menu-item.c: make the needed checks to
+  avoid hard dependency on Maemo GTK+.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  4 Apr 2007 09:11:13 +0300
+
+hildon-desktop (0.0.3-1) sardine; urgency=low
 
   * data/Makefile.am:
   * data/desktop.conf.in:
@@ -9,7 +40,7 @@ hildon-desktop (0.0.3-1) feisty; urgency=low
 
  -- Johan Bilien <johan.bilien@nokia.com>  Mon,  2 Apr 2007 16:32:47 +0300
 
-hildon-desktop (0.0.2-2) feisty; urgency=low
+hildon-desktop (0.0.2-2) sardine; urgency=low
 
   * Forgot the magic:
     + Implemented: NR#167413, NR#167412 NR#167224, NR#167638, NR#167206
