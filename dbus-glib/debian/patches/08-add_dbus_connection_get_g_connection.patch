@@ -1,0 +1,94 @@
+--- a/dbus/dbus-glib-lowlevel.h
++++ b/dbus/dbus-glib-lowlevel.h
+@@ -49,6 +49,7 @@ void dbus_g_proxy_send (DBusGProxy    *p
+                         dbus_uint32_t *client_serial);
+ 
+ DBusConnection*  dbus_g_connection_get_connection (DBusGConnection *gconnection);
++DBusGConnection* dbus_connection_get_g_connection (DBusConnection  *connection);
+ DBusMessage*     dbus_g_message_get_message       (DBusGMessage    *gmessage);
+ 
+ /* dbus_g_pending_call_get_pending_call() deliberately skipped for now;
+--- a/dbus/dbus-glib.c
++++ b/dbus/dbus-glib.c
+@@ -305,9 +305,33 @@ dbus_g_message_get_g_type (void)
+ DBusConnection*
+ dbus_g_connection_get_connection (DBusGConnection *gconnection)
+ {
++  g_return_val_if_fail (gconnection, NULL);
+   return DBUS_CONNECTION_FROM_G_CONNECTION (gconnection);
+ }
+ 
++extern dbus_int32_t _dbus_gmain_connection_slot;
++
++/**
++ * dbus_connection_get_g_connection:
++ * @connection:  a #DBusConnection
++ *
++ * Get the #DBusGConnection corresponding to this #DBusConnection.  This only
++ * makes sense if the #DBusConnection was originally a #DBusGConnection that was
++ * registered with the GLib main loop.  The return value does not have its
++ * refcount incremented.
++ *
++ * Returns: #DBusGConnection 
++ */
++DBusGConnection*
++dbus_connection_get_g_connection (DBusConnection *connection)
++{
++  g_return_val_if_fail (connection, NULL);
++  g_return_val_if_fail (dbus_connection_get_data (connection, _dbus_gmain_connection_slot), NULL);
++  
++  return DBUS_G_CONNECTION_FROM_CONNECTION (connection);
++}
++
++
+ /**
+  * dbus_g_message_get_message:
+  * @gmessage: a #DBusGMessage
+--- a/dbus/dbus-gmain.c
++++ b/dbus/dbus-gmain.c
+@@ -129,7 +129,7 @@ typedef struct
+   DBusTimeout *timeout;
+ } TimeoutHandler;
+ 
+-static dbus_int32_t connection_slot = -1;
++dbus_int32_t _dbus_gmain_connection_slot = -1;
+ static dbus_int32_t server_slot = -1;
+ 
+ static ConnectionSetup*
+@@ -560,8 +560,8 @@ dbus_connection_setup_with_g_main (DBusC
+   /* FIXME we never free the slot, so its refcount just keeps growing,
+    * which is kind of broken.
+    */
+-  dbus_connection_allocate_data_slot (&connection_slot);
+-  if (connection_slot < 0)
++  dbus_connection_allocate_data_slot (&_dbus_gmain_connection_slot);
++  if (_dbus_gmain_connection_slot < 0)
+     goto nomem;
+ 
+   if (context == NULL)
+@@ -569,7 +569,7 @@ dbus_connection_setup_with_g_main (DBusC
+ 
+   cs = NULL;
+   
+-  old_setup = dbus_connection_get_data (connection, connection_slot);
++  old_setup = dbus_connection_get_data (connection, _dbus_gmain_connection_slot);
+   if (old_setup != NULL)
+     {
+       if (old_setup->context == context)
+@@ -578,14 +578,14 @@ dbus_connection_setup_with_g_main (DBusC
+       cs = connection_setup_new_from_old (context, old_setup);
+       
+       /* Nuke the old setup */
+-      dbus_connection_set_data (connection, connection_slot, NULL, NULL);
++      dbus_connection_set_data (connection, _dbus_gmain_connection_slot, NULL, NULL);
+       old_setup = NULL;
+     }
+ 
+   if (cs == NULL)
+     cs = connection_setup_new (context, connection);
+ 
+-  if (!dbus_connection_set_data (connection, connection_slot, cs,
++  if (!dbus_connection_set_data (connection, _dbus_gmain_connection_slot, cs,
+                                  (DBusFreeFunction)connection_setup_free))
+     goto nomem;
+   
