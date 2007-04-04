@@ -29,8 +29,9 @@
 int
 main (int argc, char **argv)
 {
-	gchar            *name;
+	gchar              *name;
 	HildonMimeCategory  category;
+	const gchar        *str;
 
 	gnome_vfs_init ();
 
@@ -42,8 +43,12 @@ main (int argc, char **argv)
 	name = argv[1];
 	category = hildon_mime_get_category_for_mime_type (name);
 
-	g_print ("category is: %s (%d)\n",
-		 hildon_mime_get_category_name (category), category);
+	str = hildon_mime_get_category_name (category);
+	if (!str) {
+		g_print ("No category found\n");
+	} else {
+		g_print ("The category is '%s' (%d)\n", str, category);
+	}
 
 	return 0;
 }

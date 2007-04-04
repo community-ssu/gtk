@@ -133,5 +133,7 @@ main (int argc, char** argv)
 		return 1;
 	}
 
+	g_print ("All tests passed\n");
+	
 	return 0;
 }

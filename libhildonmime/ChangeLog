@@ -1,3 +1,12 @@
+2007-04-04  Richard Hult  <richard@imendio.com>
+
+	* tests/test-mime-category.c: Improve output.
+
+	* Remove libhildonmime/test-mime-default-app.c, it was moved to
+	tests/.
+
+	* tests/test-mime-patterns.c: Say if/when the tests passed.
+
 2007-03-26  Richard Hult  <richard@imendio.com>
 
 	* Release 1.9.3.

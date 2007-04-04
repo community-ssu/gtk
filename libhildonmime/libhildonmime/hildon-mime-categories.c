@@ -453,6 +453,8 @@ xdg_check_time_and_dirs (void)
 static void
 xdg_mime_shutdown (void)
 {
+	g_print ("*** shutdown\n");
+	
 	/* FIXME: Need to make this (and the whole library) thread safe */
 	if (dir_time_list) {
 		xdg_dir_time_list_free (dir_time_list);
