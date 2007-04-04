@@ -27,6 +27,11 @@
 	- call show_all on the home widgets as it was done in
 	maemo-af-desktop
 
+2007-04-03  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Implemented grab/ungrab the focus and close for extension panel window.
+
 2007-04-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hn-app-switcher.c:
