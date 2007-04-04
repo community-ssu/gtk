@@ -20,6 +20,44 @@
 # Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
 # 02110-1301 USA
 
+start_input()
+{
+  ENABLE_FLAG=0
+  AF_INIT=/etc/osso-af-init
+
+	# we need to start VKB for the wizard...
+	if [ -f $AF_INIT/keyboard.defs ]; then
+		source $AF_INIT/keyboard.defs
+ 	fi
+
+	source $AF_INIT/keyboard.sh start
+	# give VKB some time to start
+	sleep 5
+
+	# start clipboard daemon for the wizard
+	if [ -f $AF_INIT/clipboard.sh ]; then
+		source $AF_INIT/clipboard.sh start
+	fi
+}
+
+if [ "$ENABLE_FLAG" = "0" ]; then
+	if [ "x$DISPLAY" = "x" ]; then
+			echo "$0: Error, DISPLAY is not defined!"
+			exit 2
+	fi
+fi
+
+if [ -f /etc/osso-af-init/wizard-background-defs.sh ]; then
+  source /etc/osso-af-init/wizard-background-defs.sh
+fi
+
+if ! type wizback_method 2> /dev/null; then
+wizback_method() # args ignored
+{
+  return 0
+}
+fi
+
 case "$1" in
 start)
 
@@ -52,63 +90,86 @@ start)
   fi
 
   if [ -e $HOME/first-boot-flag ]; then
+    ADVANCE_STEPS=1
 
     if [ -x $AF_INIT_DIR/wizard-background.sh ]; then
       source $AF_INIT_DIR/wizard-background.sh start
     fi
 
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
+      start_input
+      wizback_method advance 1
+      wizback_method set_progress_visible false
       source $AF_INIT_DIR/startup-wizard.sh start
-      source $AF_INIT_DIR/af-defines.sh ;# re-read locale variables
-      # show progress animation
-      if [ ! -x /usr/bin/wizback ]; then
-        /usr/sbin/anim-shower 17000 &
-      fi
-      # restart processes because the locale might have changed
-      source $AF_INIT_DIR/after-suw-process-restart.sh
-    fi
+      wizback_method set_progress_visible true
 
-    if [ -x /usr/bin/wizback ]; then
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground \
-                / org.maemo.WizardBackground.advance uint32:1
+      if [ "x$AFTER_SUW_RESTART_NEEDED" != "x0" ]; then
+      	source $AF_INIT_DIR/af-defines.sh ;# re-read locale variables
+      	# show progress animation
+      	if ! [ -f /etc/osso-af-init/wizard-background-defs.sh ]; then
+        	/usr/sbin/anim-shower 17000 &
+      	fi
+      	# restart processes because the locale might have changed
+      	source $AF_INIT_DIR/after-suw-process-restart.sh
+      fi
+    else
+      ADVANCE_STEPS=`expr $ADVANCE_STEPS + 1`
     fi
 
     # Give Backup a chance to restore settings automatically
     if [ -x $AF_INIT_DIR/osso-backup-startup.sh ]; then
-      $AF_INIT_DIR/osso-backup-startup.sh
+      $AF_INIT_DIR/osso-backup-startup.sh check
+      if [ "x$?" = "x2" ]; then
+        wizback_method set_progress_visible false
+        wizback_method set_descriptions_visible false
+
+        $AF_INIT_DIR/osso-backup-startup.sh
+
+        wizback_method set_progress_visible true
+        wizback_method set_descriptions_visible true
+      fi
     fi
 
     if [ -x $AF_INIT_DIR/osso-connectivity-ui-gwwizard-startup.sh \
          -a ! -f /tmp/suw-user-cancelled.tmp ]; then
+
+      wizback_method advance 1
+
+      wizback_method set_progress_visible false
+
       $AF_INIT_DIR/osso-connectivity-ui-gwwizard-startup.sh start
+
+      wizback_method set_progress_visible true
+    else
+      ADVANCE_STEPS=`expr $ADVANCE_STEPS + 1`
     fi
 
     if [ -f $TMPDIR/launch-operator-wizard.tmp \
          -a ! -f /tmp/suw-user-cancelled.tmp ]; then
       if [ -x $AF_INIT_DIR/operator-wizard.sh ]; then
-        if [ -x /usr/bin/wizback ]; then
-          dbus-send --print-reply --system --dest=org.maemo.WizardBackground \
-                    / org.maemo.WizardBackground.advance uint32:1
-        fi
+
+        wizback_method advance 1
+
+        wizback_method set_progress_visible false
+
         $AF_INIT_DIR/operator-wizard.sh start
+
+        wizback_method set_progress_visible true
       fi
       rm -f $TMPDIR/launch-operator-wizard.tmp
+    else
+      ADVANCE_STEPS=`expr $ADVANCE_STEPS + 1`
     fi
 
-    if [ -x /usr/bin/wizback ]; then
-      # Can advance 2 positions here, since any position past the
-      # end has no effect
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / \
-                org.maemo.WizardBackground.advance uint32:2
-      sleep 1
-      dbus-send --print-reply --system --dest=org.maemo.WizardBackground / \
-                org.maemo.WizardBackground.quit
-    fi
+    wizback_method advance $ADVANCE_STEPS
+    sleep 1
+    wizback_method quit
 
     rm -f $HOME/first-boot-flag
     rm -f /tmp/suw-user-cancelled.tmp
   else
     if [ -x $AF_INIT_DIR/startup-wizard.sh ]; then
+      start_input
       source $AF_INIT_DIR/startup-wizard.sh start
     fi
   fi
