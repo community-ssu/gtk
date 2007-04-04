@@ -38,7 +38,8 @@ enum
 {
   PROP_LAYOUT_MODE = 1,
   PROP_SNAP_TO_GRID,
-  PROP_APPLET_PADDING
+  PROP_APPLET_PADDING,
+  PROP_DEFAULT_ALPHA
 
 };
 
@@ -799,15 +800,17 @@ hildon_home_area_batch_add (HildonHomeArea *area)
 /*  g_list_free (priv->to_add);*/
 
 #else
-  GdkRectangle          area_rectangle = {0};
+  GdkRectangle         *area_rectangle;
   GList                *region = NULL, *i;
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
 
-  area_rectangle.width  = GTK_WIDGET (area)->allocation.width;
-  area_rectangle.height = GTK_WIDGET (area)->allocation.height;
+  area_rectangle = create_rectangle (0,
+                                     0,
+                                     GTK_WIDGET (area)->allocation.width,
+                                      GTK_WIDGET (area)->allocation.height);
 
-  region = g_list_append (region, &area_rectangle);
+  region = g_list_append (region, area_rectangle);
 
   gtk_container_foreach (GTK_CONTAINER (area),
                          (GtkCallback)remove_widget,
@@ -853,11 +856,11 @@ hildon_home_area_batch_add (HildonHomeArea *area)
               gtk_container_add (GTK_CONTAINER (area), w);
               
               layout->width  = req.width;
-              if (layout->x + layout->width < area_rectangle.width)
+              if (layout->x + layout->width < area_rectangle->width)
                 layout->width += priv->applet_padding;
 
               layout->height = req.height;
-              if (layout->y + layout->height < area_rectangle.height)
+              if (layout->y + layout->height < area_rectangle->height)
                 layout->height += priv->applet_padding;
 
               if (layout->x)
@@ -889,7 +892,7 @@ hildon_home_area_batch_add (HildonHomeArea *area)
           g_list_foreach (region, (GFunc)g_free, NULL);
           g_list_free (region);
           region = NULL;
-          region = g_list_append (region, &area_rectangle);
+          region = g_list_append (region, area_rectangle);
         }
       else
         i = g_list_next (i);
