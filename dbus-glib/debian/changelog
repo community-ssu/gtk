@@ -1,6 +1,5 @@
 dbus-glib (0.73-0osso2) experimental; urgency=low
 
-  * UNRELEASED
   * Added two patches from Ross Burton: one to add
     dbus_connection_get_g_connection and another to fix a bug in peer-to-peer
     proxy support. Fixes: NB#53688
