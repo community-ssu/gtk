@@ -1,0 +1,21 @@
+diff -pur dbus-1.0.2/dbus/dbus-sysdeps-util-unix.c dbus-1.0.2.new/dbus/dbus-sysdeps-util-unix.c
+--- dbus-1.0.2/dbus/dbus-sysdeps-util-unix.c	2006-12-11 21:21:10.000000000 +0200
++++ dbus-1.0.2.new/dbus/dbus-sysdeps-util-unix.c	2007-04-05 13:19:26.315752664 +0300
+@@ -506,7 +506,8 @@ _dbus_directory_open (const DBusString *
+ static dbus_bool_t
+ dirent_buf_size(DIR * dirp, size_t *size)
+ {
+- long name_max;
++ long name_max = NAME_MAX;
++#if 0
+ #   if defined(HAVE_FPATHCONF) && defined(_PC_NAME_MAX)
+ #      if defined(HAVE_DIRFD)
+           name_max = fpathconf(dirfd(dirp), _PC_NAME_MAX);
+@@ -530,6 +531,7 @@ dirent_buf_size(DIR * dirp, size_t *size
+ #           error "buffer size for readdir_r cannot be determined"
+ #       endif
+ #   endif
++#endif
+   if (size)
+     *size = (size_t)offsetof(struct dirent, d_name) + name_max + 1;
+   else
