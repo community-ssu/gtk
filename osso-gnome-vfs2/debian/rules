@@ -15,10 +15,11 @@ DEB_DH_ALWAYS_EXCLUDE := .svn
 DEB_DH_STRIP_ARGS := --dbg-package=libosso-gnomevfs2-0 --dbg-package=libosso-gnomevfs2-common --dbg-package=libosso-gnomevfs2-samba
 
 DEB_CONFIGURE_EXTRA_FLAGS := --enable-samba --disable-gnutls --disable-openssl \
-	--disable-avahi --disable-hal --disable-fam --disable-howl \
+	--disable-avahi --enable-hal --disable-fam --disable-howl \
 	--disable-gtk-doc --libexecdir=/usr/libexec --enable-more-warnings=no
 
 # For the ssh support so it doesn't pick up /scratchbox/tools/bin/ssh
+# when building with ssh support
 DEB_CONFIGURE_SCRIPT_ENV += SSH_PROGRAM=/usr/bin/ssh
 
 DEB_DH_INSTALL_ARGS := -Xlibnntp -Xlibcomputer -Xlibfile
