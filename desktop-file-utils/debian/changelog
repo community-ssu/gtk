@@ -1,7 +1,10 @@
 desktop-file-utils (0.12-1osso1) unstable; urgency=low
 
-  * Merged changes in from 0.12.
-  * Refactored and reworked our uri-open patch.
+  * Fix mem leaks and double frees
+  * Validate desktop file categories
+  * Use GKeyFile instead of the old egg code in update-desktop-database     
+  * Use GOption instead of popt
+  * Remove all old obsolete "menus" code
 
  -- Martyn Russell <martyn@imendio.com>  Thu, 05 Apr 2007 12:07:28 +0000
 
