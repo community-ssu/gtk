@@ -1,9 +1,8 @@
 dbus (1.0.2-0osso4) experimental; urgency=low
 
-  * UNRELEASED
-  * Added workaround for an issue in dbus-sysdeps-util-unix.c.
+  * Added workaround for an issue in dbus-sysdeps-util-unix.c. Fixes: MB#883
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 05 Apr 2007 13:25:08 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 05 Apr 2007 13:57:48 +0300
 
 dbus (1.0.2-0osso3) experimental; urgency=low
 
