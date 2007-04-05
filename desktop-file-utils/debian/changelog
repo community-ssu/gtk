@@ -1,7 +1,7 @@
 desktop-file-utils (0.12-1osso1) unstable; urgency=low
 
-  * Refactored and reworked our uri-open patch.
   * Merged changes in from 0.12.
+  * Refactored and reworked our uri-open patch.
 
  -- Martyn Russell <martyn@imendio.com>  Thu, 05 Apr 2007 12:07:28 +0000
 

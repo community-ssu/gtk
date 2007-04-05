@@ -1,11 +1,3 @@
-2007-04-04  Martyn Russell  <martyn@imendio.com>
-
-	* debian/changelog: Updated to include details about merge from
-	upstream 0.12 and change the release name.
-
-	* debian/patches/01-uri-open.patch: Updated to remove full paths so
-	the patch applies properly.
-	
 2006-11-08  Ray Strode  <rstrode@redhat.com>
 
 	* NEWS: update news file
