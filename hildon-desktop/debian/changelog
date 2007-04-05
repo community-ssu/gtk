@@ -1,3 +1,12 @@
+hildon-desktop (0.0.5-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-home-area.c: Fixed an illegal free
+
+  * libhildonwm/hd-wm.c: Fixed some hdwm->keys cases left.
+  * src/hn-app-switcher.c: Menu thumb fixed when no entries are added.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu,  5 Apr 2007 09:35:11 +0300
+
 hildon-desktop (0.0.4-1) sardine; urgency=low
 
   * data/statusbar.conf: Added all the plugins from IT-2007
