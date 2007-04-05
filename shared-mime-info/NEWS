@@ -1,3 +1,90 @@
+shared-mime-info 0.19 (2006-08-25)
+* Mime-type Changes:
+- Add application/powerpoint and application/mspowerpoint as aliases for
+  Powerpoint
+- Add VHDL mime-type
+- Add application/mbox for the MBOX mailboxes
+- Add text/x-txt2tags
+- Remove *.dat as a glob for MPEG videos
+- Add Monkey's Audio, AC3, and Musepack mime-types
+- Fix matching Type1 fonts
+- Remove useless application/octet-stream mime-type
+- Add *.mo to application/x-gettext-translation
+- Add loads of tracker audio files, console ROMs, raw images mime-types
+- Fix QuickTime Media Links mime-types and detection
+- Add audio/AMR and audio/AMR-WB mime-types and detection
+- Add better TeX magic, and more globs
+- Add better magic for patch files
+- Fix .jar files' mime-types, and add better magic
+- Fix magic for MPEG4 audio files
+- Add an alias for .deb packages
+- Add application/sieve mime-type
+- Fix application/javascript's mime-type
+- Fix text/csv's mime-type
+
+* Other:
+- Add paths to the .pc file
+
+shared-mime-info 0.18 (2006-07-03)
+
+* Mime-type Changes:
+- Add *.qtl to video/quicktime
+- Add *.wax to audio/x-ms-asx
+- Add *.mpga to audio/mpeg
+- Add audio/x-ms-wma (Windows Media Audio)
+- Add application/xspf+xml (XSPF playlist)
+- Add a lot of subclassing information
+- Fix the RSS mime-types
+- Fix *.asx files' mime-type
+- Avoid audio/x-ms-asx files being detected as HTML
+- Avoid application/pdf files being detected as Matlab documents
+- Clarify C, C++, C# and ObjC mime-types
+
+* New translations:
+- Danish
+
+shared-mime-info 0.17 (2006-03-14)
+
+* Mime-types Changes:
+- Added application/x-cue (CD image cuesheet)
+- Added application/vnd.ms-access (Access database)
+- Added application/x-7z-compressed (7-zip archive)
+- Added application/mathematica (Mathematica)
+- Added application/x-gedcom (GEDCOM genealogy)
+- Added application/x-shorten (Shorten audio)
+- Added video/3gpp (3GPP video)
+- Added application/docbook+xml (Docbook)
+- Added application/x-sqlite (SQLite database)
+- Added application/x-go-sgf (Go saved games)
+- Added application/x-m4 (M4 scripts)
+- Added a few Ogg related mime-types
+- Added application/x-cbr and application/x-cbz (Comic books archives)
+- Added flv-application/octet-stream (Flash video)
+- Added application/x-gnuplot (Gnuplot)
+- Added application/x-srt (Text subtitle files)
+
+* New translations:
+- zh_TW
+
+* Spec changes:
+- Make the mime cache contain an mmappable binary format
+- Add acronym and expanded-acronym
+- Add recommendations for duplicate globs handling
+
+shared-mime-info 0.16  (2004-03-22)
+
+* Mime Types Changes:
+- Added application/mathematica
+- Added application/stuffit
+- Fixed application/vnd.lotus-1-2-3 and other office types
+- Added application/vnd.oasis.opendocument
+- Even more types now inherit from text/plain
+- Added text/x-gettext-translation
+- Fixed up text/x-python
+
+* Lots of new translations:
+   - bg eo es eu it ja ms nb pl pt pt_BR ru sq uk zh_CN
+
 shared-mime-info 0.15  (2004-08-30)
 
 * Mime Types Changes:
@@ -9,7 +96,7 @@ shared-mime-info 0.15  (2004-08-30)
 * Translations:
 - new translations: Danish (Ole Laursen), Greek (Nikos Charonitakis), 
   Korean (Cha Young-Ho)
-- updated translations: Finnish  (Ville Skytt‰), German (Christian Neumair)
+- updated translations: Finnish  (Ville Skytt√§), German (Christian Neumair)
 
 			Version 0.14 (21-Mar-2004)
 

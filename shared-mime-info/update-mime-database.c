@@ -1,28 +1,3 @@
-/* update-mime-database.c 
- *
- * Copyright 2004, 2005  
- * Jonathan Blandford  <jrb@redhat.com>,
- * Matthias Clasen <mclasen@redhat.com>, 
- * Christian Neumair  <chris@gnome-de.org>
- * Christophe Fergeau  <teuf@gnome.org>
- * 
- * update-mime-database is free software; you can redistribute it
- * and/or modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation; either version 2 of the
- * License, or (at your option) any later version.
- *
- * update-desktop-database is distributed in the hope that it will be
- * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with update-desktop-database; see the file COPYING.  If not,
- * write to the Free Software Foundation, Inc., 59 Temple Place - Suite
- * 330, Boston, MA 02111-1307, USA.
- */
-
-
 #include <config.h>
 
 #define N_(x) x
@@ -43,7 +18,7 @@
 
 #define XML_NS XML_XML_NAMESPACE
 #define XMLNS_NS "http://www.w3.org/2000/xmlns/"
-#define FREE_NS "http://www.freedesktop.org/standards/shared-mime-info"
+#define FREE_NS (xmlChar *)"http://www.freedesktop.org/standards/shared-mime-info"
 
 #define COPYING								\
 	     N_("Copyright (C) 2003 Thomas Leonard.\n"			\
@@ -119,6 +94,12 @@ static GHashTable *globs_hash = NULL;
 /* 'magic' nodes */
 static GPtrArray *magic_array = NULL;
 
+/* Maps MIME type names to superclass names */
+static GHashTable *subclass_hash = NULL;
+
+/* Maps aliases to Types */
+static GHashTable *alias_hash = NULL;
+
 /* Static prototypes */
 static Magic *magic_new(xmlNode *node, Type *type, GError **error);
 
@@ -138,6 +119,16 @@ static void free_type(gpointer data)
 	xmlFreeDoc(type->output);
 
 	g_free(type);
+}
+
+/* Ugly workaround to shut up gcc4 warnings about signedness issues
+ * (xmlChar is typedef'ed to unsigned char)
+ */
+static char *my_xmlGetNsProp (xmlNodePtr node, 
+			      const char *name,
+			      const xmlChar *namespace)
+{
+	return (char *)xmlGetNsProp (node, (xmlChar *)name, namespace);
 }
 
 /* If we've seen this type before, return the existing object.
@@ -170,14 +161,14 @@ static Type *get_type(const char *name, GError **error)
 	type->subtype = g_strdup(slash + 1);
 	g_hash_table_insert(types, g_strdup(name), type);
 
-	type->output = xmlNewDoc("1.0");
-	root = xmlNewDocNode(type->output, NULL, "mime-type", NULL);
+	type->output = xmlNewDoc((xmlChar *)"1.0");
+	root = xmlNewDocNode(type->output, NULL, (xmlChar *)"mime-type", NULL);
 	ns = xmlNewNs(root, FREE_NS, NULL);
 	xmlSetNs(root, ns);
 	xmlDocSetRootElement(type->output, root);
-	xmlSetNsProp(root, NULL, "type", name);
+	xmlSetNsProp(root, NULL, (xmlChar *)"type", (xmlChar *)name);
 	xmlAddChild(root, xmlNewDocComment(type->output,
-		"Created automatically by update-mime-database. DO NOT EDIT!"));
+		(xmlChar *)"Created automatically by update-mime-database. DO NOT EDIT!"));
 
 	for (i = 0; i < G_N_ELEMENTS(media_types); i++)
 	{
@@ -197,10 +188,10 @@ static gboolean match_node(xmlNode *node,
 {
 	if (namespaceURI)
 		return node->ns &&
-			strcmp(node->ns->href, namespaceURI) == 0 &&
-			strcmp(node->name, localName) == 0;
+			strcmp((char *)node->ns->href, namespaceURI) == 0 &&
+  		        strcmp((char *)node->name, localName) == 0;
 	else
-		return strcmp(node->name, localName) == 0 && !node->ns;
+		return strcmp((char *)node->name, localName) == 0 && !node->ns;
 }
 
 /* Return the priority of a <magic> node.
@@ -212,7 +203,7 @@ static int get_priority(xmlNode *node)
 	char *prio_string;
 	int p;
 
-	prio_string = xmlGetNsProp(node, "priority", NULL);
+	prio_string = my_xmlGetNsProp(node, "priority", NULL);
 	if (prio_string)
 	{
 		char *end;
@@ -230,8 +221,8 @@ static int get_priority(xmlNode *node)
 }
 
 /* Process a <root-XML> element by adding a rule to namespace_hash */
-static void add_namespace(Type *type, const guchar *namespaceURI,
-			  const guchar *localName, GError **error)
+static void add_namespace(Type *type, const char *namespaceURI,
+			  const char *localName, GError **error)
 {
 	g_return_if_fail(type != NULL);
 
@@ -278,16 +269,18 @@ static void add_namespace(Type *type, const guchar *namespaceURI,
 static gboolean process_freedesktop_node(Type *type, xmlNode *field,
 					 GError **error)
 {
-	if (strcmp(field->name, "glob") == 0)
+	if (strcmp((char *)field->name, "glob") == 0)
 	{
 		gchar *pattern;
 		
-		pattern = xmlGetNsProp(field, "pattern", NULL);
+		pattern = my_xmlGetNsProp(field, "pattern", NULL);
 
 		if (pattern && *pattern)
 		{
-			g_hash_table_insert(globs_hash,
-					    g_strdup(pattern), type);
+			GList *list = g_hash_table_lookup (globs_hash, pattern);
+			
+			list = g_list_append (list, type);
+			g_hash_table_insert(globs_hash, g_strdup(pattern), list);
 			xmlFree(pattern);
 		}
 		else
@@ -299,7 +292,7 @@ static gboolean process_freedesktop_node(Type *type, xmlNode *field,
 				  "element"));
 		}
 	}
-	else if (strcmp(field->name, "magic") == 0)
+	else if (strcmp((char *)field->name, "magic") == 0)
 	{
 		Magic *magic;
 
@@ -313,29 +306,56 @@ static gboolean process_freedesktop_node(Type *type, xmlNode *field,
 		else
 			g_return_val_if_fail(magic == NULL, FALSE);
 	}
-	else if (strcmp(field->name, "comment") == 0)
+	else if (strcmp((char *)field->name, "comment") == 0 ||
+		 strcmp((char *)field->name, "acronym") == 0 ||
+		 strcmp((char *)field->name, "expanded-acronym") == 0)
 		return FALSE;
-	else if (strcmp(field->name, "alias") == 0 ||
-		 strcmp(field->name, "sub-class-of") == 0)
+	else if (strcmp((char *)field->name, "alias") == 0 ||
+		 strcmp((char *)field->name, "sub-class-of") == 0)
 	{
 		char *other_type;
 		gboolean valid;
-		other_type = xmlGetNsProp(field, "type", NULL);
-		valid = other_type && strchr(other_type, '/');
-		xmlFree(other_type);
-		if (valid)
-			return FALSE;	/* Copy through */
+		GSList *list, *nlist;
 
+		other_type = my_xmlGetNsProp(field, "type", NULL);
+		valid = other_type && strchr(other_type, '/');
+		if (valid)
+		{
+			char *typename;
+
+			typename = g_strdup_printf("%s/%s", 
+						   type->media,
+						   type->subtype);
+			
+			if (strcmp((char *)field->name, "alias") == 0)
+				g_hash_table_insert(alias_hash,
+						    g_strdup(other_type), type);
+				
+			else
+			{
+				list = g_hash_table_lookup(subclass_hash, typename);
+				nlist = g_slist_append (list, g_strdup(other_type));
+				if (list == NULL)
+					g_hash_table_insert(subclass_hash, 
+							    g_strdup(typename), nlist);    
+			}
+			g_free(typename);
+			xmlFree(other_type);
+			
+			return FALSE;	/* Copy through */
+		}
+		
+		xmlFree(other_type);
 		g_set_error(error, MIME_ERROR, 0,
 			_("Incorrect or missing 'type' attribute "
 			  "in <%s>"), field->name);
 	}
-	else if (strcmp(field->name, "root-XML") == 0)
+	else if (strcmp((char *)field->name, "root-XML") == 0)
 	{
 		char *namespaceURI, *localName;
 
-		namespaceURI = xmlGetNsProp(field, "namespaceURI", NULL);
-		localName = xmlGetNsProp(field, "localName", NULL);
+		namespaceURI = my_xmlGetNsProp(field, "namespaceURI", NULL);
+		localName = my_xmlGetNsProp(field, "localName", NULL);
 
 		add_namespace(type, namespaceURI, localName, error);
 
@@ -361,7 +381,7 @@ static gboolean has_lang(xmlNode *node, const char *lang)
 {
 	char *lang2;
 
-	lang2 = xmlGetNsProp(node, "lang", XML_NS);
+	lang2 = my_xmlGetNsProp(node, "lang", XML_NS);
 	if (!lang2)
 		return !lang;
 
@@ -380,20 +400,20 @@ static gboolean has_lang(xmlNode *node, const char *lang)
 static void remove_old(Type *type, xmlNode *new)
 {
 	xmlNode *field, *fields;
-	gchar *lang;
+	char *lang;
 
-	if (new->ns == NULL || strcmp(new->ns->href, FREE_NS) != 0)
+	if (new->ns == NULL || xmlStrcmp(new->ns->href, FREE_NS) != 0)
 		return;	/* No idea what we're doing -- leave it in! */
 
-	if (strcmp(new->name, "comment") != 0)
+	if (strcmp((char *)new->name, "comment") != 0)
 		return;
 
-	lang = xmlGetNsProp(new, "lang", XML_NS);
+	lang = my_xmlGetNsProp(new, "lang", XML_NS);
 
 	fields = xmlDocGetRootElement(type->output);
 	for (field = fields->xmlChildrenNode; field; field = field->next)
 	{
-		if (match_node(field, FREE_NS, "comment") &&
+		if (match_node(field, (char *)FREE_NS, "comment") &&
 		    has_lang(field, lang))
 		{
 			xmlUnlinkNode(field);
@@ -423,7 +443,7 @@ static void load_type(Type *type, xmlNode *node, GError **error)
 		if (field->type != XML_ELEMENT_NODE)
 			continue;
 
-		if (field->ns && strcmp(field->ns->href, FREE_NS) == 0)
+		if (field->ns && xmlStrcmp(field->ns->href, FREE_NS) == 0)
 		{
 			if (process_freedesktop_node(type, field, error))
 			{
@@ -441,7 +461,7 @@ static void load_type(Type *type, xmlNode *node, GError **error)
 		 * every node...
 		 */
 		if (copy->ns && copy->ns->prefix == NULL &&
-			strcmp(copy->ns->href, FREE_NS) == 0)
+			xmlStrcmp(copy->ns->href, FREE_NS) == 0)
 		{
 			if (copy->nsDef)
 			{
@@ -476,7 +496,7 @@ static void load_source_file(const char *filename)
 
 	root = xmlDocGetRootElement(doc);
 
-	if (root->ns == NULL || strcmp(root->ns->href, FREE_NS) != 0)
+	if (root->ns == NULL || xmlStrcmp(root->ns->href, FREE_NS) != 0)
 	{
 		g_print("* Wrong namespace on document element\n"
 			"*   in '%s'\n"
@@ -484,7 +504,7 @@ static void load_source_file(const char *filename)
 		goto out;
 	}
 	
-	if (strcmp(root->name, "mime-info") != 0)
+	if (strcmp((char *)root->name, "mime-info") != 0)
 	{
 		g_print("* Root element <%s> is not <mime-info>\n"
 			"*   (in '%s')\n", root->name, filename);
@@ -494,20 +514,20 @@ static void load_source_file(const char *filename)
 	for (node = root->xmlChildrenNode; node; node = node->next)
 	{
 		Type *type = NULL;
-		guchar *type_name = NULL;
+		char *type_name = NULL;
 		GError *error = NULL;
 
 		if (node->type != XML_ELEMENT_NODE)
 			continue;
 
-		if (!match_node(node, FREE_NS, "mime-type"))
+		if (!match_node(node, (char *)FREE_NS, "mime-type"))
 			g_set_error(&error, MIME_ERROR, 0,
 				_("Excepted <mime-type>, but got wrong name "
 				  "or namespace"));
 
 		if (!error)
 		{
-			type_name = xmlGetNsProp(node, "type", NULL);
+			type_name = my_xmlGetNsProp(node, "type", NULL);
 
 			if (!type_name)
 				g_set_error(&error, MIME_ERROR, 0,
@@ -629,26 +649,30 @@ static int save_xml_file(xmlDocPtr doc, const gchar *filename)
 	return 0;
 }
 
-/* Write out one line of the 'globs' file */
+/* Write out globs for one pattern to the 'globs' file */
 static void write_out_glob(gpointer key, gpointer value, gpointer data)
 {
 	const gchar *pattern = (gchar *) key;
-	Type *type = (Type *) value;
+	GList *list = (GList *) value;
 	FILE *stream = (FILE *) data;
+	Type *type;
 
-	if (strchr(pattern, '\n'))
-		g_print("* Glob patterns can't contain literal newlines "
-			"(%s in type %s/%s)\n", pattern,
-			type->media, type->subtype);
-	else
-		fprintf(stream, "%s/%s:%s\n",
+	for ( ; list; list = list->next) {
+		type = (Type *)list->data;
+		if (strchr(pattern, '\n'))
+			g_print("* Glob patterns can't contain literal newlines "
+				"(%s in type %s/%s)\n", pattern,
+				type->media, type->subtype);
+		else
+			fprintf(stream, "%s/%s:%s\n",
 				type->media, type->subtype, pattern);
+	}
 }
 
 /* Renames pathname by removing the .new extension */
-static void atomic_update(const guchar *pathname)
+static void atomic_update(const gchar *pathname)
 {
-	guchar *new_name;
+	gchar *new_name;
 	int len;
 
 	len = strlen(pathname);
@@ -834,7 +858,14 @@ static void parse_int_value(int bytes, const char *in, const char *in_mask,
 	unsigned long value;
 	int b;
 
-	value = strtol(in, &end, 0);
+	value = strtoul(in, &end, 0);
+	if (errno == ERANGE) {
+		g_set_error(error, MIME_ERROR, 0,
+			    "Number out-of-range (%s should fit in %d bytes)",
+			    in, bytes);
+		return;
+	}
+
 	if (*end != '\0')
 	{
 		g_set_error(error, MIME_ERROR, 0, "Value is not a number");
@@ -859,9 +890,17 @@ static void parse_int_value(int bytes, const char *in, const char *in_mask,
 	if (in_mask)
 	{
 		int b;
-		long mask;
+		unsigned long mask;
 		
-		mask = strtol(in_mask, &end, 0);
+		mask = strtoul(in_mask, &end, 0);
+		if (errno == ERANGE) {
+			g_set_error(error, MIME_ERROR, 0,
+				    "Mask out-of-range (%s should fit in %d bytes)",
+				    in_mask, bytes);
+			return;
+		}
+
+
 		if (*end != '\0')
 		{
 			g_set_error(error, MIME_ERROR, 0,
@@ -872,7 +911,7 @@ static void parse_int_value(int bytes, const char *in, const char *in_mask,
 		out_mask = g_new(char, bytes);
 		for (b = 0; b < bytes; b++)
 		{
-			int shift = (bytes - b - 1) * 8;
+			int shift = (big_endian ? (bytes - b - 1) : b) * 8;
 			out_mask[b] = (mask >> shift) & 0xff;
 		}
 	}
@@ -1008,7 +1047,7 @@ static void match_offset(Match *match, xmlNode *node, GError **error)
 	char *offset = NULL;
 	char *end;
 
-	offset = xmlGetNsProp(node, "offset", NULL);
+	offset = my_xmlGetNsProp(node, "offset", NULL);
 	if (offset == NULL || !*offset)
 	{
 		g_set_error(error, MIME_ERROR, 0, "Missing 'offset' attribute");
@@ -1016,11 +1055,33 @@ static void match_offset(Match *match, xmlNode *node, GError **error)
 	}
 
 	match->range_start = strtol(offset, &end, 10);
+	if (errno == ERANGE) {
+		char *number;
+		number = g_strndup(offset, end-offset);
+		g_set_error(error, MIME_ERROR, 0,
+			    "Number out-of-range (%s should fit in 4 bytes)",
+			    number);
+		g_free(number);
+		return;
+	}
+
 	if (*end == ':' && end[1] && match->range_start >= 0)
 	{
 		int last;
+		char *begin;
 
-		last = strtol(end + 1, &end, 10);
+		begin = end + 1;
+		last = strtol(begin, &end, 10);
+		if (errno == ERANGE) {
+			char *number;
+			number = g_strndup(begin, end-begin);
+			g_set_error(error, MIME_ERROR, 0,
+				    "Number out-of-range (%s should fit in 8 bytes)",
+				    number);
+			g_free(number);
+			return;
+		}
+
 		if (*end == '\0' && last >= match->range_start)
 			match->range_length = last - match->range_start + 1;
 		else
@@ -1041,11 +1102,11 @@ static void match_value_and_mask(Match *match, xmlNode *node, GError **error)
 	char *parsed_mask = NULL;
 	GString *parsed_value;
 
-	type = xmlGetNsProp(node, "type", NULL);
+	type = my_xmlGetNsProp(node, "type", NULL);
 	g_return_if_fail(type != NULL);
 
-	mask = xmlGetNsProp(node, "mask", NULL);
-	value = xmlGetNsProp(node, "value", NULL);
+	mask = my_xmlGetNsProp(node, "mask", NULL);
+	value = my_xmlGetNsProp(node, "value", NULL);
 
 	parsed_value = g_string_new(NULL);
 
@@ -1078,7 +1139,7 @@ static void match_word_size(Match *match, xmlNode *node, GError **error)
 {
 	char *type;
 
-	type = xmlGetNsProp(node, "type", NULL);
+	type = my_xmlGetNsProp(node, "type", NULL);
 
 	if (!type)
 	{
@@ -1118,7 +1179,7 @@ static GList *build_matches(xmlNode *parent, GError **error)
 		if (node->type != XML_ELEMENT_NODE)
 			continue;
 
-		if (node->ns == NULL || strcmp(node->ns->href, FREE_NS) != 0)
+		if (node->ns == NULL || xmlStrcmp(node->ns->href, FREE_NS) != 0)
 		{
 			g_set_error(error, MIME_ERROR, 0,
 				_("Element found with non-freedesktop.org "
@@ -1126,7 +1187,7 @@ static GList *build_matches(xmlNode *parent, GError **error)
 			break;
 		}
 
-		if (strcmp(node->name, "match") != 0)
+		if (strcmp((char *)node->name, "match") != 0)
 		{
 			g_set_error(error, MIME_ERROR, 0,
 				_("Expected <match> element, but found "
@@ -1304,7 +1365,7 @@ static void delete_old_types(const gchar *mime_dir)
 static void add_ns(gpointer key, gpointer value, gpointer data)
 {
 	GPtrArray *lines = (GPtrArray *) data;
-	const guchar *ns = (guchar *) key;
+	const gchar *ns = (gchar *) key;
 	Type *type = (Type *) value;
 
 	g_ptr_array_add(lines, g_strconcat(ns, " ", type->media,
@@ -1334,6 +1395,66 @@ static void write_namespaces(FILE *stream)
 
 	g_ptr_array_free(lines, TRUE);
 }
+
+static void write_subclass(gpointer key, gpointer value, gpointer data)
+{
+	GSList *list = value;
+	FILE *stream = data;
+	GSList *l;
+	char *line;
+
+	for (l = list; l; l = l->next)
+	{
+		line = g_strconcat (key, " ", l->data, "\n", NULL);
+		fwrite(line, 1, strlen(line), stream);
+		g_free (line);
+	}
+}
+
+/* Write all the collected subclass information to 'subclasses' */
+static void write_subclasses(FILE *stream)
+{
+	g_hash_table_foreach(subclass_hash, write_subclass, stream);
+}
+
+/* Extract one entry from alias_hash and put it in the GPtrArray so
+ * we can sort it.
+ */
+static void add_alias(gpointer key, gpointer value, gpointer data)
+{
+	GPtrArray *lines = (GPtrArray *) data;
+	const gchar *alias = (gchar *) key;
+	Type *type = (Type *) value;
+	
+	g_ptr_array_add(lines, g_strconcat(alias, " ", type->media,
+					   "/", type->subtype, "\n", 
+					   NULL));
+}
+
+/* Write all the collected aliases */
+static void write_aliases(FILE *stream)
+{
+	GPtrArray *lines;
+	int i;
+	
+	lines = g_ptr_array_new();
+
+	g_hash_table_foreach(alias_hash, add_alias, lines);
+
+	g_ptr_array_sort(lines, strcmp2);
+
+	for (i = 0; i < lines->len; i++)
+	{
+		char *line = (char *) lines->pdata[i];
+
+		fwrite(line, 1, strlen(line), stream);
+
+		g_free(line);
+	}
+
+	g_ptr_array_free(lines, TRUE);
+}
+
 
 /* Issue a warning if 'path' won't be found by applications */
 static void check_in_path_xdg_data(const char *mime_path)
@@ -1395,6 +1516,1135 @@ static void check_in_path_xdg_data(const char *mime_path)
 out:
 	g_free(path);
 }
+
+static void free_string_list(gpointer data)
+{
+  GSList *list = data;
+
+  g_slist_foreach(list, (GFunc)g_free, NULL);
+  g_slist_free(list);
+}
+
+#define ALIGN_VALUE(this, boundary) \
+  (( ((unsigned long)(this)) + (((unsigned long)(boundary)) -1)) & (~(((unsigned long)(boundary))-1)))
+
+
+static gint
+write_data (FILE *cache, const gchar *n, gint len)
+{
+  gchar *s;
+  int i, l;
+  
+  l = ALIGN_VALUE (len, 4);
+  
+  s = g_malloc0 (l);
+  memcpy (s, n, len);
+
+  i = fwrite (s, l, 1, cache);
+
+  return i == 1;
+  
+}
+
+static gint
+write_string (FILE *cache, const gchar *n)
+{
+  return write_data (cache, n, strlen (n) + 1);
+}
+
+static gboolean
+write_card16 (FILE *cache, guint16 n)
+{
+  int i;
+
+  n = GUINT16_TO_BE (n);
+  
+  i = fwrite ((char *)&n, 2, 1, cache);
+
+  return i == 1;
+}
+
+static gboolean
+write_card32 (FILE *cache, guint32 n)
+{
+  int i;
+
+  n = GUINT32_TO_BE (n);
+  
+  i = fwrite ((char *)&n, 4, 1, cache);
+
+  return i == 1;
+}
+
+#define MAJOR_VERSION 1
+#define MINOR_VERSION 0
+
+static gboolean
+write_header (FILE *cache,   
+	      gint  alias_offset,
+	      gint  parent_offset,
+	      gint  literal_offset,
+	      gint  suffix_offset,
+	      gint  glob_offset,
+	      gint  magic_offset,
+	      gint  namespace_offset,
+	      guint *offset)
+{
+  *offset = 32;
+
+  return (write_card16 (cache, MAJOR_VERSION) &&
+	  write_card16 (cache, MINOR_VERSION) &&
+	  write_card32 (cache, alias_offset) &&
+	  write_card32 (cache, parent_offset) &&
+	  write_card32 (cache, literal_offset) &&
+	  write_card32 (cache, suffix_offset) &&
+	  write_card32 (cache, glob_offset) &&
+	  write_card32 (cache, magic_offset) &&
+	  write_card32 (cache, namespace_offset));
+}
+
+
+typedef gboolean (FilterFunc) (gpointer key);
+typedef gchar ** (GetValueFunc) (gpointer data, gchar *key);
+
+typedef struct
+{
+  FILE         *cache;
+  GHashTable   *pool;
+  guint         offset;
+  GetValueFunc *get_value;
+  gpointer      data;
+  gboolean      error;
+} MapData;
+
+static void
+write_map_entry (gpointer key,
+		 gpointer data)
+{
+  MapData *map_data = (MapData *)data;
+  gchar **values;
+  guint offset, i;
+
+
+  values = (* map_data->get_value) (map_data->data, key);
+  for (i = 0; values[i]; i++)
+    {
+      offset = GPOINTER_TO_UINT (g_hash_table_lookup (map_data->pool, values[i]));
+      if (offset == 0)
+	{
+	  g_printerr ("Missing string: '%s'\n", values[i]);
+	  map_data->error = TRUE;  
+	}
+      
+      if (!write_card32 (map_data->cache, offset))
+	map_data->error = TRUE;
+
+      map_data->offset += 4;
+    }
+
+  g_strfreev (values);
+}
+
+typedef struct 
+{
+  FilterFunc *filter;
+  GPtrArray  *keys;
+} FilterData;
+
+static void 
+add_key (gpointer key, 
+	 gpointer value, 
+	 gpointer data)
+{
+  FilterData *filter_data = (FilterData *)data;
+
+  if (!filter_data->filter || (* filter_data->filter) (key))
+    g_ptr_array_add (filter_data->keys, key);
+}
+
+static gboolean
+write_map (FILE         *cache,
+	   GHashTable   *strings,
+	   GHashTable   *map,
+	   FilterFunc   *filter,
+           GetValueFunc *get_value,
+	   guint        *offset)
+{
+  GPtrArray *keys;
+  MapData map_data;
+  FilterData filter_data;
+
+  keys = g_ptr_array_new ();
+  
+  filter_data.keys = keys;
+  filter_data.filter = filter;
+  g_hash_table_foreach (map, add_key, &filter_data);
+
+  g_ptr_array_sort (keys, strcmp2);
+
+  if (!write_card32 (cache, keys->len))
+    return FALSE;
+
+  map_data.cache = cache;
+  map_data.pool = strings;
+  map_data.get_value = get_value;
+  map_data.data = map;
+  map_data.offset = *offset + 4;
+  map_data.error = FALSE;
+
+  g_ptr_array_foreach (keys, write_map_entry, &map_data);
+
+  *offset = map_data.offset;
+
+  return !map_data.error;
+}
+
+static gchar **
+get_type_value (gpointer  data, 
+		gchar    *key)
+{
+  Type *type;
+  gchar **result;
+
+  type = (Type *)g_hash_table_lookup ((GHashTable *)data, key);
+  
+  result = g_new0 (gchar *, 3);
+  result[0] = g_strdup (key);
+  result[1] = g_strdup_printf ("%s/%s", type->media, type->subtype);
+
+  return result;
+}
+
+static gchar **
+get_type_list_value (gpointer  data, 
+		     gchar    *key)
+{
+  GList *list;
+  Type *type;
+  gchar **result;
+  gint i;
+
+  list = (GList *)g_hash_table_lookup ((GHashTable *)data, key);
+  
+  result = g_new0 (gchar *, 1 + 2 * g_list_length (list));
+  
+  i = 0;
+  for (; list; list = list->next)
+    {
+      type = (Type *)list->data;
+
+      result[i++] = g_strdup (key);
+      result[i++] = g_strdup_printf ("%s/%s", type->media, type->subtype);
+    }
+  return result;
+}
+
+static gboolean
+write_alias_cache (FILE       *cache, 
+		   GHashTable *strings,
+		   guint      *offset)
+{
+  return write_map (cache, strings, alias_hash, NULL, get_type_value, offset);
+}
+		   
+static void
+write_parent_entry (gpointer key,
+		    gpointer data)
+{
+  gchar *mimetype = (gchar *)key;
+  MapData *map_data = (MapData *)data;
+  guint parents_offset, offset;
+  GList *parents;
+
+  parents = (GList *)g_hash_table_lookup (subclass_hash, mimetype);
+  offset = GPOINTER_TO_UINT (g_hash_table_lookup (map_data->pool, mimetype));
+  if (offset == 0)
+    {
+      g_printerr ("Missing string: '%s'\n", (gchar *)key);
+      map_data->error = TRUE;  
+    }
+
+  parents_offset = map_data->offset;
+  map_data->offset += 4 + 4 * g_list_length (parents);
+
+  if (!write_card32 (map_data->cache, offset) ||
+      !write_card32 (map_data->cache, parents_offset))
+    map_data->error = TRUE;
+}
+
+static void
+write_parent_list (gpointer key,
+		   gpointer data)
+{
+  gchar *mimetype = (gchar *)key;
+  MapData *map_data = (MapData *)data;
+  guint offset;
+  GList *parents, *p;
+
+  parents = (GList *)g_hash_table_lookup (subclass_hash, mimetype);
+
+  if (!write_card32 (map_data->cache, g_list_length (parents)))
+    map_data->error = TRUE;
+
+  for (p = parents; p; p = p->next)
+    {
+      gchar *parent = (gchar *)p->data;
+      
+      offset = GPOINTER_TO_UINT (g_hash_table_lookup (map_data->pool, parent));
+      if (offset == 0)
+	{
+	  g_printerr ("Missing string: '%s'\n", parent);
+	  map_data->error = TRUE;  
+	}
+      
+      if (!write_card32 (map_data->cache, offset))
+	map_data->error = TRUE;
+    }
+
+  map_data->offset += 4 + 4 * g_list_length (parents);
+}
+
+static gboolean
+write_parent_cache (FILE       *cache,
+		    GHashTable *strings,
+		    guint      *offset)
+{
+  GPtrArray *keys;
+  MapData map_data;
+  FilterData filter_data;
+
+  keys = g_ptr_array_new ();
+
+  filter_data.keys = keys;
+  filter_data.filter = NULL;
+  g_hash_table_foreach (subclass_hash, add_key, &filter_data);
+
+  g_ptr_array_sort (keys, strcmp2);
+
+  if (!write_card32 (cache, keys->len))
+    return FALSE;
+
+  map_data.cache = cache;
+  map_data.pool = strings;
+  map_data.offset = *offset + 4 + keys->len * 8;
+  map_data.error = FALSE;
+
+  g_ptr_array_foreach (keys, write_parent_entry, &map_data);
+
+  map_data.offset = *offset + 4 + keys->len * 8;
+  g_ptr_array_foreach (keys, write_parent_list, &map_data);
+
+  *offset = map_data.offset;
+
+  return !map_data.error;
+}
+
+typedef enum 
+{
+  GLOB_LITERAL,
+  GLOB_SIMPLE,
+  GLOB_FULL
+} GlobType;
+
+static GlobType
+glob_type (gchar *glob)
+{
+  gchar *ptr;
+  gboolean maybe_in_simple_glob = FALSE;
+  gboolean first_char = TRUE;
+
+  ptr = glob;
+
+  while (*ptr != '\0')
+    {
+      if (*ptr == '*' && first_char)
+	maybe_in_simple_glob = TRUE;
+      else if (*ptr == '\\' || *ptr == '[' || *ptr == '?' || *ptr == '*')
+	return GLOB_FULL;
+      
+      first_char = FALSE;
+      ptr = g_utf8_next_char (ptr);
+    }
+
+  if (maybe_in_simple_glob)
+    return GLOB_SIMPLE;
+
+  return GLOB_LITERAL;
+}
+
+static gboolean
+is_literal_glob (gpointer key)
+{
+  return glob_type ((gchar *)key) == GLOB_LITERAL;
+}
+
+static gboolean
+is_simple_glob (gpointer key)
+{
+  return glob_type ((gchar *)key) == GLOB_SIMPLE;
+}
+
+static gboolean
+is_full_glob (gpointer key)
+{
+  return glob_type ((gchar *)key) == GLOB_FULL;
+}
+
+static gboolean
+write_literal_cache (FILE       *cache,
+		     GHashTable *strings,
+		     guint      *offset)
+{
+  return write_map (cache, strings, globs_hash, is_literal_glob, 
+		    get_type_list_value, offset); 
+}
+
+static gboolean
+write_glob_cache (FILE       *cache,
+		  GHashTable *strings,
+		  guint      *offset)
+{
+  return write_map (cache, strings, globs_hash, is_full_glob, 
+		    get_type_list_value, offset); 
+}
+
+typedef struct _SuffixEntry SuffixEntry;
+
+struct _SuffixEntry
+{
+  gunichar character;
+  gchar *mimetype;
+  GList *children;
+  guint size;
+  guint depth;
+};
+
+static GList *
+insert_suffix (gunichar *suffix, 
+	       gchar    *mimetype,
+	       GList    *suffixes)
+{
+  GList *l;
+  SuffixEntry *s = NULL;
+
+  for (l = suffixes; l; l = l->next)
+    {
+      s = (SuffixEntry *)l->data;
+
+      if (s->character > suffix[0])
+	{
+	  s = g_new0 (SuffixEntry, 1);
+	  s->character = suffix[0];
+	  s->mimetype = NULL;
+	  s->children = NULL;
+
+	  suffixes = g_list_insert_before (suffixes, l, s);
+	}
+
+      if (s->character == suffix[0])
+	break;
+    }
+
+  if (!s || s->character != suffix[0])
+    {
+      s = g_new0 (SuffixEntry, 1);
+      s->character = suffix[0];
+      s->mimetype = NULL;
+      s->children = NULL;
+
+      suffixes = g_list_append (suffixes, s);
+    }
+
+  if (suffix[1] == 0)
+    {
+      if (s->mimetype != NULL)
+	{
+	  if (strcmp (s->mimetype, mimetype) != 0)
+	    {
+	      GList *l2;
+	      SuffixEntry *s2;
+	      gboolean found = FALSE;
+
+	      for (l2 = s->children; l2; l2 = l2->next)
+		{
+		  s2 = (SuffixEntry *)l2->data;
+		  if (s2->character != '\0')
+		    break;
+		  if (strcmp (s2->mimetype, mimetype) == 0)
+		    {
+		      found = TRUE;
+		      break;
+		    }
+		}
+	      if (!found)
+		{
+		  s2 = g_new0 (SuffixEntry, 1);
+		  s2->character = '\0';
+		  s2->mimetype = mimetype;
+		  s2->children = NULL;
+		  
+		  s->children = g_list_prepend (s->children, s2);
+		}
+	    }
+	}
+      else
+	s->mimetype = mimetype;
+    }
+  else
+    s->children = insert_suffix (suffix + 1, mimetype, s->children);
+
+  return suffixes;
+}
+
+static void
+build_suffixes (gpointer key,
+		gpointer value,
+		gpointer data)
+{
+  gchar *glob = (gchar *)key;
+  GList *list = (GList *)value;
+  GList **suffixes = (GList **)data;
+  gunichar *suffix;
+  gchar *mimetype;
+  Type *type;
+  
+  if (is_simple_glob (glob))
+    {
+      suffix = g_utf8_to_ucs4 (glob + 1, -1, NULL, NULL, NULL);
+      
+      if (suffix == NULL)
+	{
+	  g_printerr ("Glob '%s' is not valid UTF-8\n", glob);
+	  return;
+	}
+
+      for ( ; list; list = list->next)
+        {
+          type = (Type *)list->data;
+          mimetype = g_strdup_printf ("%s/%s", type->media, type->subtype);
+
+          *suffixes = insert_suffix (suffix, mimetype, *suffixes);
+        }
+
+      g_free (suffix);
+    }
+}
+
+static void
+calculate_size (SuffixEntry *entry)
+{
+  GList *s;
+
+  entry->size = 0;
+  entry->depth = 0;
+  for (s = entry->children; s; s= s->next)
+    {
+      SuffixEntry *child = (SuffixEntry *)s->data;
+
+      calculate_size (child);
+      entry->size += 1 + child->size;
+      entry->depth = MAX (entry->depth, child->depth + 1);
+    }
+}
+
+static gboolean 
+write_suffix_entries (FILE        *cache, 
+		      guint        depth,
+		      SuffixEntry *entry,
+		      GHashTable *strings, 
+		      guint      *child_offset)
+{
+  GList *c;
+  guint offset;
+
+  if (depth > 0)
+    {
+      gboolean error = FALSE;
+
+      for (c = entry->children; c; c = c->next)
+	{
+	  SuffixEntry *child = (SuffixEntry *)c->data;
+	  if (!write_suffix_entries (cache, depth - 1, child, strings, child_offset))
+	    error = TRUE;
+	}
+
+      return !error;
+    }
+    
+  write_card32 (cache, entry->character);
+
+  if (entry->mimetype)
+    {
+      offset = GPOINTER_TO_UINT(g_hash_table_lookup (strings, entry->mimetype));
+      if (offset == 0)
+	{
+	  g_printerr ("Missing string: '%s'\n", entry->mimetype);
+	  return FALSE;
+	}
+    }
+  else
+    offset = 0;
+
+  if (!write_card32 (cache, offset))
+    return FALSE;
+  
+  if (!write_card32 (cache, g_list_length (entry->children)))
+    return FALSE;
+  
+  if (!write_card32 (cache, *child_offset))
+    return FALSE;
+
+  *child_offset += 16 * g_list_length (entry->children);
+
+  return TRUE;
+}
+
+static gboolean
+write_suffix_cache (FILE        *cache, 
+		    GHashTable *strings, 
+		    guint      *offset)
+{
+  GList *suffixes, *s;
+  guint n_entries;
+  guint child_offset;
+  guint depth, d;
+
+  suffixes = NULL;
+
+  g_hash_table_foreach (globs_hash, build_suffixes, &suffixes);
+
+  n_entries = g_list_length (suffixes);
+
+  *offset += 8;
+  child_offset = *offset + 16 * n_entries;
+  depth = 0;
+  for (s = suffixes; s; s= s->next)
+    {
+      SuffixEntry *entry = (SuffixEntry *)s->data;
+      calculate_size (entry);
+      depth = MAX (depth, entry->depth + 1);
+    }
+
+  if (!write_card32 (cache, n_entries) || !write_card32 (cache, *offset))
+    return FALSE;
+
+  for (d = 0; d < depth; d++)
+    {
+      for (s = suffixes; s; s = s->next)
+	{
+	  SuffixEntry *entry = (SuffixEntry *)s->data;
+	  
+	  if (!write_suffix_entries (cache,  d, entry, strings, &child_offset))
+	    return FALSE;
+	}
+    }
+
+  *offset = child_offset;
+
+  return TRUE;
+}
+
+typedef struct {
+  FILE       *cache;
+  GHashTable *strings;
+  GList      *matches;
+  guint       offset;
+  gboolean    error;
+} WriteMatchData;
+
+
+static void
+write_match (gpointer key,
+	     gpointer data)
+{
+  Magic *magic = (Magic *)key;
+  WriteMatchData *mdata = (WriteMatchData *)data;
+  gchar *mimetype;
+  guint offset;
+
+  if (!write_card32 (mdata->cache, magic->priority))
+    {
+      mdata->error = TRUE;
+      return;
+    }
+
+  mimetype = g_strdup_printf ("%s/%s", magic->type->media, magic->type->subtype);
+  offset = GPOINTER_TO_UINT (g_hash_table_lookup (mdata->strings, mimetype));
+  if (offset == 0)
+    {
+      g_printerr ("Missing string: '%s'\n", mimetype);
+      g_free (mimetype);
+      mdata->error = TRUE;
+      return;
+    }
+  g_free (mimetype);
+  
+  if (!write_card32 (mdata->cache, offset))
+    {
+      mdata->error = TRUE;
+      return;
+    }
+
+  if (!write_card32 (mdata->cache, g_list_length (magic->matches)))
+    {
+      mdata->error = TRUE;
+      return;
+    }
+
+    offset = mdata->offset + 32 * g_list_index (mdata->matches, magic->matches->data);
+
+  if (!write_card32 (mdata->cache, offset))
+    {
+      mdata->error = TRUE;
+      return;
+    }
+}
+
+static gboolean
+write_matchlet (FILE           *cache,
+		Match          *match,
+		GList          *matches,
+		gint            offset,
+		gint           *offset2)
+{
+  if (!write_card32 (cache, match->range_start) ||
+      !write_card32 (cache, match->range_length) ||
+      !write_card32 (cache, match->word_size) ||
+      !write_card32 (cache, match->data_length) ||
+      !write_card32 (cache, *offset2))
+    return FALSE;
+  
+  *offset2 = ALIGN_VALUE (*offset2 + match->data_length, 4);
+      
+  if (match->mask)
+    {
+      if (!write_card32 (cache, *offset2))
+	return FALSE;
+      
+      *offset2 = ALIGN_VALUE (*offset2 + match->data_length, 4);
+    }
+  else
+    {
+      if (!write_card32 (cache, 0))
+	return FALSE;
+    }
+
+  if (match->matches)
+    {
+      if (!write_card32 (cache, g_list_length (match->matches)) ||
+	  !write_card32 (cache, offset + 32 * g_list_index (matches, match->matches->data)))
+	return FALSE;
+    }
+  else
+    {
+      if (!write_card32 (cache, 0) ||
+	  !write_card32 (cache, 0))
+	return FALSE;
+    }
+
+  return TRUE;
+}  
+
+static gboolean
+write_matchlet_data (FILE           *cache,
+		     Match          *match,
+		     gint           *offset2)
+{
+  if (!write_data (cache, match->data, match->data_length))
+    return FALSE;
+  
+  *offset2 = ALIGN_VALUE (*offset2 + match->data_length, 4);
+
+  if (match->mask)
+    {
+      if (!write_data (cache, match->mask, match->data_length))
+	return FALSE;
+
+      *offset2 = ALIGN_VALUE (*offset2 + match->data_length, 4);
+    }
+
+  return TRUE;
+}
+
+static void
+collect_matches_list (GList *list, GList **matches)
+{
+  GList *l;
+
+  for (l = list; l; l = l->next)
+    *matches = g_list_prepend (*matches, l->data);
+
+  for (l = list; l; l = l->next)
+    {  
+      Match *match = (Match *)l->data;
+      collect_matches_list (match->matches, matches);
+    }
+}
+
+static void
+collect_matches (gpointer key, gpointer data)
+{
+  Magic *magic = (Magic *)key;
+  GList **matches = (GList **)data;
+
+  collect_matches_list (magic->matches, matches);
+}
+
+static gboolean
+write_magic_cache (FILE        *cache, 
+		   GHashTable *strings, 
+		   guint      *offset)
+{
+  guint n_entries, max_extent;
+  gint offset2;
+  GList *m;
+  WriteMatchData data;
+  
+  data.matches = NULL;
+  g_ptr_array_foreach (magic_array, collect_matches, &data.matches);
+  data.matches = g_list_reverse (data.matches);
+
+  max_extent = 0;
+  for (m = data.matches; m; m = m->next)
+    {
+      Match *match = (Match *)m->data;
+      max_extent = MAX (max_extent, match->data_length + match->range_start + match->range_length);
+    }
+
+  n_entries = magic_array->len;
+
+  *offset += 12;
+  
+  if (!write_card32 (cache, n_entries) ||
+      !write_card32 (cache, max_extent) ||
+      !write_card32 (cache, *offset))
+    return FALSE;
+
+  *offset += 16 * n_entries;
+
+  data.cache = cache;
+  data.strings = strings;
+  data.offset = *offset;
+  data.error = FALSE;
+
+  offset2 = *offset + 32 * g_list_length (data.matches);
+
+  g_ptr_array_foreach (magic_array, write_match, &data);
+  for (m = data.matches; m; m = m->next)
+    {
+      Match *match = (Match *)m->data;
+      write_matchlet (cache, match, data.matches, *offset, &offset2);
+    }
+
+  offset2 = *offset + 32 * g_list_length (data.matches);
+
+  for (m = data.matches; m; m = m->next)
+    {
+      Match *match = (Match *)m->data;
+      write_matchlet_data (cache, match, &offset2);
+    }
+
+  *offset = offset2;
+
+  g_list_free (data.matches);
+
+  return !data.error;
+}
+
+static gchar **
+get_namespace_value (gpointer  data, 
+		     gchar    *key)
+{
+  Type *type;
+  gchar **result;
+  gchar *space;
+
+  type = (Type *)g_hash_table_lookup ((GHashTable *)data, key);
+  
+  result = g_new0 (gchar *, 4);
+  space = strchr (key, ' ');
+  if (*space)
+    {
+      *space = '\0';
+      result[0] = g_strdup (key);
+      result[1] = g_strdup (space + 1);
+      *space = ' ';
+    }
+  else 
+    result[0] = g_strdup (key);
+
+  result[2] = g_strdup_printf ("%s/%s", type->media, type->subtype);
+
+  return result;
+}
+
+static gboolean
+write_namespace_cache (FILE       *cache,
+		       GHashTable *strings,
+		       guint      *offset)
+{
+  return write_map (cache, strings, namespace_hash, NULL, 
+		    get_namespace_value, offset); 
+}
+
+static void
+collect_alias (gpointer key,
+	       gpointer value,
+	       gpointer data)
+{
+  GHashTable *strings = (GHashTable *)data;
+  Type *type = (Type *)value;
+  gchar *mimetype;
+  
+  mimetype = g_strdup_printf ("%s/%s", type->media, type->subtype);
+  g_hash_table_insert (strings, key, NULL);
+  g_hash_table_insert (strings, mimetype, NULL);
+}
+
+
+static void
+collect_parents (gpointer key,
+		 gpointer value,
+		 gpointer data)
+{
+  GList *parents = (GList *)value;
+  GHashTable *strings = (GHashTable *)data;
+  GList *p;
+  
+  g_hash_table_insert (strings, key, NULL);
+  for (p = parents; p; p = p->next)
+    g_hash_table_insert (strings, p->data, NULL);
+}
+
+static void
+collect_glob (gpointer key,
+	      gpointer value,
+	      gpointer data)
+{
+  gchar *glob = (gchar *)key;
+  GList *list = (GList *)value;
+  GHashTable *strings = (GHashTable *)data;
+  gchar *mimetype;
+  Type *type;
+
+  switch (glob_type (glob))
+    {
+      case GLOB_LITERAL:
+      case GLOB_FULL:
+        g_hash_table_insert (strings, glob, NULL);
+        break;
+     default:
+        break;
+   }
+
+  for (; list; list = list->next) 
+    {	  
+      type = (Type *)list->data;
+      mimetype = g_strdup_printf ("%s/%s", type->media, type->subtype);
+
+     g_hash_table_insert (strings, mimetype, NULL);
+    }
+}
+
+static void
+collect_magic (gpointer key,
+	       gpointer data)
+{
+  Magic *magic = (Magic *)key;
+  GHashTable *strings = (GHashTable *)data;
+  gchar *mimetype;
+  
+  mimetype = g_strdup_printf ("%s/%s", magic->type->media, magic->type->subtype);
+  g_hash_table_insert (strings, mimetype, NULL);
+}
+
+static void
+collect_namespace (gpointer key,
+		   gpointer value,
+		   gpointer data)
+{
+  gchar *ns = (gchar *)key;
+  Type *type = (Type *)value;
+  GHashTable *strings = (GHashTable *)data;
+  gchar *mimetype;
+  gchar *space;
+
+  mimetype = g_strdup_printf ("%s/%s", type->media, type->subtype);
+  g_hash_table_insert (strings, mimetype, NULL);
+  
+  space = strchr (ns, ' ');
+
+  if (space)
+    {
+      *space = '\0';
+      g_hash_table_insert (strings, g_strdup (ns), NULL);
+      g_hash_table_insert (strings, space + 1, NULL);
+      *space = ' ';
+    }
+  else     
+    g_hash_table_insert (strings, ns, NULL);
+}
+
+
+static void
+collect_strings (GHashTable *strings)
+{
+  g_hash_table_foreach (alias_hash, collect_alias, strings); 
+  g_hash_table_foreach (subclass_hash, collect_parents, strings); 
+  g_hash_table_foreach (globs_hash, collect_glob, strings); 
+  g_ptr_array_foreach (magic_array, collect_magic, strings); 
+  g_hash_table_foreach (namespace_hash, collect_namespace, strings); 
+}
+
+typedef struct 
+{
+  FILE       *cache;
+  GHashTable *strings;
+  guint       offset;
+  gboolean    error;
+} StringData;
+
+static void
+write_one_string (gpointer key,
+		  gpointer value,
+		  gpointer data)
+{
+  gchar *str = (gchar *)key;
+  StringData *sdata = (StringData *)data;
+
+  if (!write_string (sdata->cache, str))
+    sdata->error = TRUE;
+
+  g_hash_table_insert (sdata->strings, str, GUINT_TO_POINTER (sdata->offset));
+  
+  sdata->offset = ALIGN_VALUE (sdata->offset + strlen (str) + 1, 4);
+}
+
+static gboolean
+write_strings (FILE       *cache, 
+	       GHashTable *strings,       
+	       guint      *offset)
+{
+  StringData data;
+
+  data.cache = cache;
+  data.strings = strings;
+  data.offset = *offset;
+  data.error = FALSE;
+
+  g_hash_table_foreach (strings, write_one_string, &data);
+
+  *offset = data.offset;
+
+  return !data.error;
+}
+
+static gboolean 
+write_cache (FILE *cache)
+{
+  guint strings_offset;
+  guint alias_offset;
+  guint parent_offset;
+  guint literal_offset;
+  guint suffix_offset;
+  guint glob_offset;
+  guint magic_offset;
+  guint namespace_offset;
+  guint offset;
+  GHashTable *strings;
+
+  offset = 0;
+  if (!write_header (cache, 0, 0, 0, 0, 0, 0, 0, &offset))
+    {
+      g_printerr ("Failed to write header\n");
+      return FALSE;
+    }
+
+  strings = g_hash_table_new (g_str_hash, g_str_equal);
+  collect_strings (strings);
+  strings_offset = offset;
+
+  if (!write_strings (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write strings\n");
+      return FALSE;
+    }
+  g_print ("Wrote %d strings at %x - %x\n", 
+	   g_hash_table_size (strings), strings_offset, offset);
+
+  alias_offset = offset;
+  if (!write_alias_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write alias list\n");
+      return FALSE;
+    }
+  g_print ("Wrote aliases at %x - %x\n", alias_offset, offset);
+
+  parent_offset = offset;
+  if (!write_parent_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write parent list\n");
+      return FALSE;
+    }
+  g_print ("Wrote parents at %x - %x\n", parent_offset, offset);
+
+  literal_offset = offset;
+  if (!write_literal_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write literal list\n");
+      return FALSE;
+    }
+  g_print ("Wrote literal globs at %x - %x\n", literal_offset, offset);
+
+  suffix_offset = offset;
+  if (!write_suffix_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write suffix list\n");
+      return FALSE;
+    }
+  g_print ("Wrote suffix globs at %x - %x\n", suffix_offset, offset);
+
+  glob_offset = offset;
+  if (!write_glob_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write glob list\n");
+      return FALSE;
+    }
+  g_print ("Wrote full globs at %x - %x\n", glob_offset, offset);
+
+  magic_offset = offset;
+  if (!write_magic_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write magic list\n");
+      return FALSE;
+    }
+  g_print ("Wrote magic at %x - %x\n", magic_offset, offset);
+
+  namespace_offset = offset;
+  if (!write_namespace_cache (cache, strings, &offset))
+    {
+      g_printerr ("Failed to write namespace list\n");
+      return FALSE;
+    }
+  g_print ("Wrote namespace list at %x - %x\n", namespace_offset, offset);
+
+  rewind (cache);
+  offset = 0; 
+
+  if (!write_header (cache, 
+		     alias_offset, parent_offset, literal_offset,
+		     suffix_offset, glob_offset, magic_offset, 
+		     namespace_offset, &offset))
+    {
+      g_printerr ("Failed to rewrite header\n");
+      return FALSE;
+    }
+
+  g_hash_table_destroy (strings);
+
+  return TRUE;
+}
+
 
 int main(int argc, char **argv)
 {
@@ -1467,7 +2717,11 @@ int main(int argc, char **argv)
 	namespace_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
 					g_free, NULL);
 	magic_array = g_ptr_array_new();
-
+	subclass_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+					      g_free, free_string_list);
+	alias_hash = g_hash_table_new_full(g_str_hash, g_str_equal,
+					   g_free, NULL);
+	
 	scan_source_dir(package_dir);
 	g_free(package_dir);
 
@@ -1511,15 +2765,13 @@ int main(int argc, char **argv)
 			Magic *magic = (Magic *) magic_array->pdata[i];
 
 			write_magic(stream, magic);
-
-			magic_free(magic);
 		}
 		fclose(stream);
 
 		atomic_update(magic_path);
 		g_free(magic_path);
 	}
-	
+
 	{
 		FILE *stream;
 		char *ns_path;
@@ -1535,12 +2787,63 @@ int main(int argc, char **argv)
 		atomic_update(ns_path);
 		g_free(ns_path);
 	}
+	
+	{
+		FILE *stream;
+		char *path;
+		
+		path = g_strconcat(mime_dir, "/subclasses.new", NULL);
+		stream = fopen(path, "wb");
+		if (!stream)
+			g_error("Failed to open '%s' for writing\n",
+				path);
+		
+		write_subclasses(stream);
 
+		atomic_update(path);
+		g_free(path);
+	}
+
+	{
+		FILE *stream;
+		char *path;
+		
+		path = g_strconcat(mime_dir, "/aliases.new", NULL);
+		stream = fopen(path, "wb");
+		if (!stream)
+			g_error("Failed to open '%s' for writing\n",
+				path);
+		
+		write_aliases(stream);
+
+		atomic_update(path);
+		g_free(path);
+	}
+
+	{
+		FILE *stream;
+		char *path;
+		
+		path = g_strconcat(mime_dir, "/mime.cache.new", NULL);
+		stream = fopen(path, "wb");
+		if (!stream)
+			g_error("Failed to open '%s' for writing\n",
+				path);
+		
+		write_cache(stream);
+
+		atomic_update(path);
+		g_free(path);
+	}
+
+	g_ptr_array_foreach(magic_array, (GFunc)magic_free, NULL);
 	g_ptr_array_free(magic_array, TRUE);
 
 	g_hash_table_destroy(types);
 	g_hash_table_destroy(globs_hash);
 	g_hash_table_destroy(namespace_hash);
+	g_hash_table_destroy(subclass_hash);
+	g_hash_table_destroy(alias_hash);
 
 	g_print("***\n");
 

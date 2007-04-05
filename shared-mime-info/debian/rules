@@ -1,16 +1,19 @@
 #!/usr/bin/make -f
 # -*- mode: makefile; coding: utf-8 -*-
 
-include /usr/share/cdbs/1/class/gnome.mk
+#export DH_VERBOSE=1
+export DH_COMPAT=4
+
 include /usr/share/cdbs/1/rules/debhelper.mk
-include /usr/share/cdbs/1/rules/simple-patchsys.mk
-include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
+include /usr/share/cdbs/1/class/gnome.mk
 
 DEB_CONFIGURE_EXTRA_FLAGS := --disable-update-mimedb
 
-build/shared-mime-info::
-#	docbook2pdf shared-mime-info-spec.xml && \
-#	docbook2html -o shared-mime-info-spec.html shared-mime-info-spec.xml
+post-patches:: debian/stamp-autothings-update
+debian/stamp-autothings-update:
+	NOCONFIGURE=1 ./autogen.sh
+	# Can add things here that need to be ran after autogen.sh
+	touch $@
 
 clean::
-	-rm -rf shared-mime-info-spec.html shared-mime-info-spec.pdf
+	rm -f debian/stamp-autothings-update

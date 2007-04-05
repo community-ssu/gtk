@@ -1,8 +1,7 @@
 prefix=@prefix@
-exec_prefix=${prefix}
-libdir=${exec_prefix}/lib
-includedir=${prefix}/include
-
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
 
 Name: shared-mime-info
 Description: Freedesktop common MIME database

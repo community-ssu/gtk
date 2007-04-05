@@ -26,21 +26,14 @@ if test -z "$ACLOCAL_FLAGS"; then
     fi
 fi
 
-if test -z "$*"; then
-    echo "$ARGV0:Note: \`./configure' will be run with no arguments."
-	echo "If you wish to pass any to it, please specify them on the"
-	echo "\`$0' command line."
-  echo
-fi
-
 do_cmd() {
     echo "$ARGV0: running \`$@'"
     $@
 }
 
-do_cmd libtoolize --force --copy
+#do_cmd libtoolize --force --copy
 
-do_cmd intltoolize --force
+#do_cmd intltoolize --force
 
 do_cmd aclocal ${ACLOCAL_FLAGS}
 
@@ -52,4 +45,6 @@ do_cmd autoconf
 
 cd $ORIGDIR || exit $?
 
-do_cmd $srcdir/configure --enable-maintainer-mode ${1+"$@"} && echo "Now type \`make' to compile" || exit 1
+if test x$NOCONFIGURE = x; then
+    do_cmd $srcdir/configure --enable-maintainer-mode ${1+"$@"} && echo "Now type \`make' to compile" || exit 1
+fi

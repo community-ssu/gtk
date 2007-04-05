@@ -1,8 +1,8 @@
 <?xml version="1.0" standalone="no"?>
 <!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
 "/usr/share/sgml/docbook/dtd/xml/4.1.2/docbookx.dtd" [
-  <!ENTITY updated "15 Oct 2003">
-  <!ENTITY version "0.13">
+  <!ENTITY updated "1 December 2005">
+  <!ENTITY version "0.15">
 ]>
 <article id="index">
 
@@ -165,12 +165,23 @@ The files created by <command>update-mime-database</command> are:
 <filename>&lt;MIME&gt;/magic</filename> (contains a mapping from file contents to MIME types)
 				</para></listitem>
 				<listitem><para>
+<filename>&lt;MIME&gt;/subclasses</filename> (contains a mapping from MIME types to types they inherit from)
+				</para></listitem>
+				<listitem><para>
+<filename>&lt;MIME&gt;/aliases</filename> (contains a mapping from aliases to MIME types)
+				</para></listitem>
+				<listitem><para>
 <filename>&lt;MIME&gt;/XMLnamespaces</filename> (contains a mapping from XML
 (namespaceURI, localName) pairs to MIME types)
 				</para></listitem>
-				<listitem><para>
+ 				<listitem><para>
 <filename>&lt;MIME&gt;/MEDIA/SUBTYPE.xml</filename> (one file for each MIME
 type, giving details about the type)
+				</para></listitem>
+				<listitem><para>
+<filename>&lt;MIME&gt;/mime.cache</filename> (contains the same information as the <filename>globs</filename>,
+<filename>magic</filename>, <filename>subclasses</filename>, <filename>aliases</filename> and 
+<filename>XMLnamespaces</filename> files, in a binary, mmappable format)
 				</para></listitem>
 			</itemizedlist>
 The format of these generated files and the source files in <filename>packages</filename>
@@ -274,8 +285,24 @@ attribute. See <xref linkend="subclassing"/>.
 				</para></listitem>
 				<listitem><para>
 <userinput>comment</userinput> elements give a human-readable textual description of the MIME
-type. There may be many of these elements with different <userinput>xml:lang</userinput> attributes
+type, usually composed of an acronym of the file name extension and a short description, like
+"ODS spreadsheet".
+There may be many of these elements with different <userinput>xml:lang</userinput> attributes
 to provide the text in multiple languages.
+				</para></listitem>
+				<listitem><para>
+<userinput>acronym</userinput> elements give experienced users a terse idea of the document contents.
+for example "ODS", "GEDCOM", "JPEG" and "XML".
+There may be many of these elements with different <userinput>xml:lang</userinput> attributes
+to provide the text in multiple languages, although these should only be used if absolutely neccessary.
+				</para></listitem>
+				<listitem><para>
+<userinput>expanded-acronym</userinput> elements are the expanded versions of the acronym elements,
+for example "OpenDocument Spreadsheet", "GEnealogical Data COMmunication", and "eXtensible Markup Language".
+The purpose of these elements is to provide users a way to look up information on various MIME types or
+file formats in third-party resources.
+There may be many of these elements with different <userinput>xml:lang</userinput> attributes
+to provide the text in multiple languages, although these should only be used if absolutely neccessary.
 				</para></listitem>
 				<listitem><para>
 <userinput>root-XML</userinput> elements have <userinput>namespaceURI</userinput> 
@@ -373,6 +400,13 @@ be matched before all others. It is suggested that patterns beginning with `*.'
 and containing no other special characters (`*?[') should be placed in a hash
 table for efficient lookup, since this covers the majority of the patterns. Thus,
 patterns of this form should be matched before other wildcarded patterns.
+		</para>
+		<para>
+If a matching pattern is provided by two or more MIME types, applications
+SHOULD not rely on one of them. They are instead supposed to use magic data
+(see below) to detect the actual MIME type. This is for instance required to
+deal with container formats like Ogg or AVI, that map various video and/or
+audio-encoded data to one extension.
 		</para>
 		<para>
 There may be several rules mapping to the same type. They should all be merged.
@@ -482,6 +516,127 @@ The lines are sorted (using strcmp) and there are no lines with the same namespa
 localName in one file. If the localName was empty then there will be two spaces following
 the namespaceURI.
 		</para>
+	</sect2>
+	<sect2>
+		<title>The mime.cache files</title>
+		<para>
+The <filename>mime.cache</filename> files contain the same information as the 
+<filename>globs</filename>, <filename>magic</filename>, <filename>subclasses</filename>, 
+<filename>aliases</filename> and <filename>XMLnamespaces</filename> files, in a binary, 
+mmappable format:
+</para>
+<programlisting>
+Header:
+2			CARD16		MAJOR_VERSION	1	
+2			CARD16		MINOR_VERSION	0	
+4			CARD32		ALIAS_LIST_OFFSET
+4			CARD32		PARENT_LIST_OFFSET
+4			CARD32		LITERAL_LIST_OFFSET
+4			CARD32		SUFFIX_LIST_OFFSET
+4			CARD32		GLOB_LIST_OFFSET
+4			CARD32		MAGIC_LIST_OFFSET
+4			CARD32		NAMESPACE_LIST_OFFSET
+
+AliasList:
+4			CARD32		N_ALIASES
+8*N_ALIASES		AliasListEntry
+
+AliasListEntry:
+4			CARD32		ALIAS_OFFSET
+4			CARD32		MIME_TYPE_OFFSET
+
+ParentList:
+4			CARD32		N_ENTRIES 
+8*N_ENTRIES		ParentListEntry
+
+ParentListEntry:
+4			CARD32		MIME_TYPE_OFFSET
+4			CARD32		PARENTS_OFFSET
+
+Parents:
+4			CARD32		N_PARENTS
+4*N_PARENTS		CARD32		MIME_TYPE_OFFSET
+
+LiteralList:
+4			CARD32		N_LITERALS
+8*N_LITERALS		LiteralEntry	
+
+LiteralEntry:
+4			CARD32		LITERAL_OFFSET
+4			CARD32		MIME_TYPE_OFFSET
+
+GlobList:
+4			CARD32		N_GLOBS
+8*N_GLOBS		GlobEntry	
+
+GlobEntry:
+4			CARD32		GLOB_OFFSET
+4			CARD32		MIME_TYPE_OFFSET
+
+SuffixTree:
+4			CARD32		N_ROOTS
+4	 		CARD32		FIRST_ROOT_OFFSET
+
+SuffixTreeNode:
+4			CARD32		CHARACTER
+4			CARD32		MIME_TYPE_OFFSET
+4			CARD32		N_CHILDREN			
+4			CARD32		FIRST_CHILD_OFFSET
+
+MagicList:
+4			CARD32		N_MATCHES
+4			CARD32		MAX_EXTENT
+4			CARD32		FIRST_MATCH_OFFSET
+
+Match:
+4			CARD32		PRIORITY
+4			CARD32		MIME_TYPE_OFFSET
+4			CARD32		N_MATCHLETS
+4			CARD32		FIRST_MATCHLET_OFFSET
+
+Matchlet:
+4			CARD32		RANGE_START
+4			CARD32		RANGE_LENGTH
+4			CARD32		WORD_SIZE
+4			CARD32		VALUE_LENGTH
+4			CARD32		VALUE
+4			CARD32		MASK
+4			CARD32		N_CHILDREN
+4			CARD32		FIRST_CHILD_OFFSET
+
+NamespaceList:
+4			CARD32		N_NAMESPACES
+12*N_NAMESPACES		NamespaceEntry	
+
+NamespaceEntry:
+4			CARD32		NAMESPACE_URI_OFFSET
+4			CARD32		LOCAL_NAME_OFFSET
+4			CARD32		MIME_TYPE_OFFSET
+</programlisting>
+<para>
+Lists in the file are sorted, to enable binary searching. The list of 
+aliases is sorted by alias, the list of literal globs is sorted by the 
+literal. The SuffixTreeNode siblings are sorted by character. 
+The list of namespaces is sorted by namespace uri.
+</para>
+<para>
+Identical globs are stored in the suffix tree by appending suffix
+tree nodes with '\0' as character.
+</para>
+<para>
+All offsets are in bytes from the beginning of the file.
+</para>
+<para>
+Strings are zero-terminated.
+</para>
+<para>
+All numbers are in network (big-endian) order. This is necessary because the data will be stored in 
+arch-independent directories like <filename>/usr/share/mime</filename> or even in user's home directories.
+</para>
+<para>
+Cache files have to be written atomically - write to a temporary name, then move over the old file - so 
+that clients that have the old cache file open and mmap'ed won't get corrupt data.
+</para>
 	</sect2>
 	<sect2>
 		<title>Storing the MIME type using Extended Attributes</title>
@@ -651,6 +806,9 @@ Override.xml mentioned in <xref linkend="s2_layout"/>. Information such as
 		</member>
 		<member>
 			Christos Zoulas <email>christos at zoulas.com</email>
+		</member>
+		<member>
+			Matthias Clasen <email>mclasen at redhat.com</email>
 		</member>
 	</simplelist>
 </sect1>

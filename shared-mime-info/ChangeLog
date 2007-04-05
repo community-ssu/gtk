@@ -1,3 +1,1041 @@
+=== shared-mime-info 0.19 ===
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* NEWS: upd
+	* configure.in: 0.19
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: patch from Stephane Chauveau
+	<spam70@chauveau-central.net> and Eugenia Loli-Queru
+	<eloli@hotmail.com> to add many raw image types from digital cameras
+	(Closes: #4117)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add a mime-type for musepack, patch from
+	Pino Toscano <toscano.pino@tiscali.it> (Closes: #6408)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add ECMAScript mime-type
+	(application/ecmascript), patch by Ville Skyttä
+	<ville.skytta@iki.fi> (Closes: #6616)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Use text/csv rather than
+	text/x-comma-separated-values, patch by Ville Skyttä
+	<ville.skytta@iki.fi> (Closes: #6616)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Use application/javascript rather than
+	application/x-javascript, patch by Ville Skyttä <ville.skytta@iki.fi>
+	(Closes: #6616)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* README: Add some reference links
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Patch from Pino Toscano
+	<toscano.pino@tiscali.it> to add the application/sieve mime-type
+	for Sieve scripts (Closes: #6572)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add text/x-ocaml as a mime-type for OCaml
+	files (Closes: #7836)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add application/x-debian-package as an alias
+	for application/x-deb, as used by Apache, spotted by Gustavo
+	J. A. M. Carneiro <gjc@inescporto.pt> (Closes: #6303)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add *.dtx and *.ins as possible patterns
+	for TeX files, spotted by Thomas Braun <braun@physik.fu-berlin.de>
+	(Re: #6235)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Fix the magic offset for M4A files, spotted
+	by thrope <freedesktop@robince.ftml.net> (Closes: #7718)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: add "check" to the default target when compiling from
+	CVS
+	* freedesktop.org.xml.in: Change application/x-jar to the SUN-
+	recommended application/x-java-archive, add an alias for the former,
+	Add better conditional magic to tell zip files and .jars apart,
+	Thanks to Joseph Kowalski <jek3@eng.sun.com> for his detailed report
+	(Closes: #7852)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Patch from Wouter Bolsterlee
+	<uws+freedesktop@xs4all.nl> with better magic for BZR generated
+	patch files, and those starting with "---" (Closes: #7890)
+
+2006-08-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Patch from Wouter Bolsterlee
+	<uws+freedesktop@xs4all.nl> to add better magic for TeX files
+	(Closes: #7891)
+
+2006-08-24  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add audio/AMR and audio/AMR-WB as per
+	RFC 3267, using the magic in section 8.1
+
+2006-08-12  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: *.qtl files are
+	QuickTime Media Links as per
+	http://developer.apple.com/documentation/QuickTime/QT6WhatsNew/Chap1/chapter_1_section_53.html
+
+2006-08-07  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Move the Quicktime metalink magic
+	to its own mime-type: application/x-quicktime-media-link
+
+2006-07-14  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add application/x-snes-rom and
+	application/x-gba-rom types for SNES and GBA Roms (Closes: #7511)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* shared-mime-info.pc.in: patch from foser@gentoo.org to use
+	the paths specified at build-time in the pkgconfig file
+	(Closes: #6437)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add description and acronym to the
+	GDBM mime-type (Closes: #6353)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add *.mo as a glob for
+	application/x-gettext-translation (Closes: #6351)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: patch from Arthur Taylor <art@ified.ca> to
+	add magic to most tracker files, and remove a duplicate *.xm glob
+	(Closes: #6372)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: remove the magic for
+	application/octet-stream, it's silly (Closes: #4843)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: patch from Matthias Clasen
+	<mclasen@redhat.com> to match Type1 fonts higher than Postscript files
+	(Closes: #4675)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add magic for audio/ac3 (Closes: #6509)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add audio/x-ape mime-type for
+	Monkey's audio (Closes: #6747)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: remove po/stamp-it on "make clean" (Closes: #6485)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: remove the wide *.dat glob from matching
+	MPEG videos (Closes: #2788)
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add text/x-txt2tags to the mime-type
+	so that we can whitelist it (not a Postscript!) (Closes: #2001),
+	lower the priority of the application/mbox magic to avoid false
+	positives
+
+2006-07-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add application/mbox for the MBOX mailboxes
+	(Closes: #2052)
+
+2006-07-03  Christian Neumair  <chris@gnome-de.org>
+
+	* po/Makefile.in.in: Remove from CVS. Fixes #7255.
+	Thanks to Christian Persch <chpe@gnome.org>.
+
+2006-07-03  Christian Neumair  <chris@gnome-de.org>
+
+	* fredesktop.org.xml.in: Add VHDL MIME type. Fixes #7329.
+	Thanks to George Jenkins <gvj11@student.canterbury.ac.nz>.
+
+2006-07-03  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add application/powerpoint and
+	application/mspowerpoint as PPT alias. Fixes #7407.
+	Thanks to Frederic Crozat <fcrozat@mandriva.com>.
+
+=== shared-mime-info 0.18 ===
+
+2006-07-03  Bastien Nocera  <hadess@hadess.net>
+
+	* NEWS: upd
+	* configure.in: 0.18
+
+2006-06-19  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: *.mpga is also a pattern for MP3
+	(Closes GNOME #345306)
+
+2006-05-14  Bastien Nocera  <hadess@hadess.net>
+
+	* .cvsignore: upd
+
+2006-05-14  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add support for XSPF version 1 playlists
+	(see http://www.xspf.org/specs/)
+
+2006-05-14  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: patch from Stanislav Brabec <sbrabec@suse.cz>
+	to clarify C, C++, C# and ObjC headers and sources (Closes: #6743)
+
+2006-05-09  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: lower priority of "%" magic patterns to 10.
+
+2006-04-19  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: .wax is a suffix for ASX playlists as well
+
+2006-04-18  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.in: Remove "no" from ALL_LINGUAS
+
+2006-04-16  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Make audio/x-ms-asx's magic higher priority
+	than HTML to avoid matching HTML on "<TITLE" present in an ASX file
+	(Closes GNOME #338328 and #338515)
+
+2006-04-14  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: .asx files are of audio/x-ms-asx, not ASF
+	files
+
+2006-04-05  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Remove "application/pdf" subclassing
+	information. Thanks to Sebastien Bacher and Bastien Nocera.
+
+2006-04-05  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Rename "text/rss" to
+	"application/rss+xml", make "text/rss" an alias, make it a subclass of
+	"application/xml".  Thanks to Sebastien Bacher.
+
+2006-04-05  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Make "application/postscript",
+	a subclass of "text/plain". Thanks to Sebastian Heutling,
+	Tristan Wibberley and Sebastien Bacher.
+
+	Add missing sub-classing information to a few dozen other
+	MIME types, including "application/rtf", "application/pdf",
+	ODF and OOo MIME types.
+
+	* Makefile.am:
+	* test-subclassing.c:
+	Add simple XML parser that checks for presence of "sub-class-of"
+	nodes in freedesktop.org.xml and outputs MIME types that don't
+	provide the flag.
+
+2006-03-18  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Add "lt" (Lithuanian) to ALL_LINGUAS.
+
+2006-03-15  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add a mime-type for WMA (Closes: #2178),
+	and make it and WMV sub-classes of ASF (Closes: #2051), patches from
+	Stanislav Brabec <sbrabec@suse.cz>
+
+2006-03-15  Bastien Nocera  <hadess@hadess.net>
+
+	* configure.in: also install the Danish translation, patch from 
+	Stanislav Brabec <sbrabec@suse.cz> (Closes: #2051)
+
+2006-03-15  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add *.qtl glob for Quicktime Links files
+	(from http://developer.apple.com/documentation/QuickTime/QT6WhatsNew/Chap1/chapter_1_section_53.html)
+
+=== shared-mime-info 0.17 ===
+2006-03-14  Bastien Nocera  <hadess@hadess.net>
+
+	* .cvsignore: upd
+	* configure.in: 0.17
+	* NEWS: upd
+
+2006-03-13  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add Quicktime Media Link magic to
+	video/quicktime
+
+2006-03-13  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add "application/x-srt" for .srt subtitle
+	files, and make them a subclass of text/plain
+
+2006-03-09  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "x-directory/normal" an alias for
+	"inode/directory".
+
+2006-03-09  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "application/x-cue" a subclass of
+	"text/plain". Fixes GNOME #334008. Thanks to Stefan Jol.
+
+2006-03-02  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "text/rdf" a subclass of
+	"application/xml" instead of "text/plain". Fixes GNOME #331468.
+	Thanks to Luca Ferretti.
+
+2006-03-02  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "application/x-abiword" a subclass of
+	"application/xml". Fixes GNOME #333158/Launchpad #33301.
+	Thanks to Lionel Dricot and Sebastien Bacher.
+
+2006-03-02  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: also add the .divx suffix to AVI
+
+2006-03-02  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add video/vnd.divx as an alias for AVI files
+	(as used on the divx.com website)
+
+2006-02-21  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "application/x-gnuplot". Fixes #5455.
+	Thanks to Triastan Miller.
+
+2006-02-21  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: fix "application/x-tex-gf" and
+	"application/x-tex-pk" globs. Fixes #5373. Thanks to Jens Herden.
+
+2006-02-21  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: remove "makefile*" glob from
+	"text/x-makefile". Fixes #3256. Thanks to Björn Lindqvist.
+
+2006-02-21  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: merge ICB and TGA into TGA MIME type, add
+	some more extensions. Fixes #1276. Thanks to Filip Van Raemdonck.
+
+2006-02-21  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "application/x-planperfect" MIME type.
+	Fixes #3148.
+
+2006-02-20  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Add "vi" (Vietnamese) to LINGUAS.
+
+2006-02-19  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: also add "%" glob pattern to "text/x-tex".
+	Still requires xdgmime fixes to not conflict with matlab:
+	http://bugzilla.gnome.org/show_bug.cgi?id=331719
+
+2006-02-07  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: fixed the typo that made it uninstallable
+
+2006-02-04  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Remove "sub-class" association with
+	text/plain for mime-types that it doesn't make sense to open in a
+	text editor, see for details:
+	http://lists.freedesktop.org/archives/xdg/2005-June/007032.html
+
+2006-02-04  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add *.nfo as a pattern for README files
+
+2006-02-01  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add image/pjpeg as an alias for image/jpeg
+
+2006-01-26  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: don't expect a trailing space when looking
+	for the SMIL magic (GNOME bug #328720)
+
+2006-01-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add Flash Video support, with the
+	Macromedia recommended mime-type (flv-application/octet-stream)
+	being an alias
+
+2006-01-04  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add video/dv detection
+
+2005-01-03  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add Objective-C, C and C header magic
+	patterns, add matlab MIME type and magic patterns. Fixes #3971.
+
+2005-12-31  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add XML-style comment magic pattern to XML
+	MIME type.
+
+2005-12-25  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Make "audio/3gpp" an alias for "video/3gpp".
+	Fixes #5419. Thanks to Thiago Macieira and GML.
+
+2005-12-19  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add CBR/CBZ MIME types "application/x-cbr"
+	and "application/x-cbz". Fixes #3122. Thanks to Paul Coates, Nickolay
+	V. Shmyrev and Olivier Le Thanh Duong.
+
+2005-12-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* update-mime-database.c (write_magic_cache): Reset the match data
+	offset when starting to write out match datas, pointed out by
+	Alex Larsson.
+
+2005-12-17  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: search a bit further in ASF playlists
+	(GNOME bug #323683)
+
+2005-12-16  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add ChangeLog MIME type "text/x-changelog".
+	Fixes #5355. Thanks to Björn Lindqvist and Paolo Borelli.
+
+2005-12-02  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Modify Ogg-related MIME types to match the
+	XML naming pattern. Thanks to Peter Bowen.
+
+2005-12-01  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add Ogg-related MIME types:
+	"audio/x-vorbis", "audio/x-oggflac", "audio/x-speex", "video/x-theora"
+	and "video/x-ogm". Make them subtypes of "application/ogg".
+	Fixes #1002.
+
+2005-12-01  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Make "application/x-mozilla-bookmarks"
+	subtype of "text/html". Fixes #3169. Thanks to Reinout van Schouwen.
+
+2005-12-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* shared-mime-info-spec.xml: Add acronym and expanded-acronym
+	elements, add recommendations for handling duplicate globs.
+	Specify how duplicate globs are stored in mime.cache.
+
+	* update-mime-database.c (process_freedesktop_node): Allow 
+	identical globs.
+	(insert_suffix): Store duplicate globs in the suffix tree
+	by using '\0' as a key.
+
+2005-12-01  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Rename "text/xml" to "application/xml", make
+	the former an alias. Improve SVG, TIFF and JNG comments.
+	Thanks to Eric van der Vlist.
+
+2005-11-16  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Rename "application/x-troff" to
+	"text/troff", make the latter an alias, also add "text/x-troff" alias.
+	Fixes #5072. Thanks to Tristan Miller.
+
+2005-11-14  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: Add Mup MIME type ("text/x-mup"). Fixes
+	#2531. Thanks to Abel Cheung.
+
+2005-11-01  Bastien Nocera  <hadess@hadess.net>
+
+	* README: Fix the URLs to point to the right specs, pointed out
+	by Tommi Vainikainen <thv@iki.fi> (Closes: #4041)
+
+2005-11-01  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Add *.svgz as a glob for SVG files, from
+	Luca Ferretti <elle.uca@libero.it> (Closes: #4836)
+	* config.h.in: removed, it is a generated file
+
+2005-10-30  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: split SQLite MIME type into two. Thanks to
+	Jarosław Staniek. Fixes #3178.
+
+2005-10-30  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "application/x-lyx" subclass of
+	"text/plain" and add "text/x-lyx" as alias. Thanks to Filip Van
+	Raemdonck and Abel Cheung. Fixes #1269.
+
+2005-10-30  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "application/x-font-type1" subclass of
+	"application/postscript". Thanks to Stephane Loeuillet. Fixes #1161.
+
+2005-10-30  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: change dBASE comment, add aliases.
+	Thanks to J.H.M Dassen. Fixes #3147.
+
+2005-10-30  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add Lotus 1-2-3 aliases. Thanks to J.H.M
+	Dassen. Fixes #3144.
+
+2005-10-30  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add dia magic pattern. Thanks to J.H.M
+	Dassen. Fixes #3142.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add a bunch of Real formats, remove real
+	audio glob since it breaks metafiles. Thanks to Ryan Gammon. Fixes
+	#2342.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "*.kino" glob pattern, and magic
+	patterns to "application/smil". Thanks to J.H.M Dassen. Fixes #3141.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* .cvsignore: add freedesktop.org.xml.
+	* freedesktop.org.xml: remove from CVS, since it is auto-generated on
+	make dist.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "application/x-m4" MIME type. Thanks to
+	Macro Pesenti Gritti. Fixes #2049.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add a bunch of aliases for
+	"application/vnd.ms-access", change its description. Thanks to
+	Jarosław Staniek. Fixes #3179.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "application/x-go-sgf" MIME type. Thanks
+	to Peter Lundqvist. Fixes #592.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "application/x-sqlite" MIME type. Thanks
+	to Jarosław Staniek. Fixes #3178.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: improve docbook, JNLP and GEDCOM description.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: don't mark <acronym/> and
+	<expanded-acronym/> for translation.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: make "application/mathematica" subclass of
+	"text/plain". Thanks to Shaun McCance. Fixes #4345.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: fix corel draw magic string, add aliases.
+	Thanks to Stewart Jeacocke. Fixes #3136.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* update-mime-database.c: (process_freedesktop_node):
+	process <acronym/> and <expanded-acronym/>.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add "GNUmakefile" pattern to
+	"text/x-makefile". Fixes #4334.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add comment to "application/x-sc", by J.H.M.
+	Dassen. Fixes #3146.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: register "application/x-mathematica" as
+	alias for "application/mathematica". Fixes #4403.
+
+2005-10-29  Christian Neumair  <chris@gnome-de.org>
+
+	* freedesktop.org.xml.in: add <acronym/> and <expanded-acronym/> tags.
+	Use shorter text for many <comment/> tags.
+
+2005-10-22  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add m4v as a possible extension for video
+	MPEG4, and add video/x-m4v as an alias for video/mp4
+
+2005-10-22  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add text/gedcom as an alias for
+	application/x-gedcom
+
+2005-05-31  Antonio Xu <antonio.xu@sun.com>
+
+	Reviewed by: Bastien Nocera <hadess@hadess.net>
+ 
+	* freedesktop.org.xml.in: add one more pattern "Return-path" for
+	message/rfc822
+
+2005-09-11  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml: add audio/mpegurl as an alias to
+	audio/x-mpegurl
+
+2005-08-26  Christopher Aillon  <caillon@redhat.com>
+
+	* freedesktop.org.xml.in: text/css subclasses text/plain
+
+2005-08-10  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: increase priority of the docbook magic
+	for it to take precedence over suffixes
+
+2005-08-09  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: Make the application/mathematica comment
+	translatable, patch from Christopher James Lahey <clahey@novell.com>
+	and Luis Villa <luis.villa@gmail.com> for docbook support
+
+2005-07-25  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml: add video/3gpp with associated magic
+	(from: http://www.faqs.org/rfcs/rfc3839.html)
+
+2005-07-24  Thomas Leonard  <tal@ecs.soton.ac.uk>
+
+	* freedesktop.org.xml: sync
+	* freedesktop.org.xml.in: made application/x-awk and x-shellscript
+	both subclass application/x-executable
+
+2005-07-13  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml: sync
+	* freedesktop.org.xml.in: add magic data to recognise asf reference
+	files (with the same mime-type as asf video files, go MS)
+
+2005-05-30  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add the "application/x-shorten" mime-type
+	to represent Shorten lossless audio files
+
+2005-04-17  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: change audio/x-m4a mime-type to audio/mp4,
+	add audio/x-m4a as an alias, add video/mp4 detection
+	(from: http://www.ietf.org/internet-drafts/draft-lim-mpeg4-mime-03.txt)
+
+2005-04-16  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add application/x-gedcom as a mime-type
+	for GEDCOM family history files
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: improved mathematica magic, fixes #2660
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added magic for mathematica notebooks
+	* freedesktop.org.xml:
+	* po/Makefile.in.in: updated autogenerated files
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* .cvsignore:
+	* freedesktop.org.xml.in: use application/xslt+xml for xslt
+	stylesheets, maybe it will need to be changed to text/xml or
+	application/xml, I'm unsure about what's best, this is bug #2928
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* .cvsignore: minor update, fixes #2091, patch by Loic Minier
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added magic pattern and glob pattern for
+	ruby files, patch by Ilmari Heikkinen, fixes #2154
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added mime type for 7-zip
+
+2005-04-16  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml: sync with freedesktop.org.xml.in content
+	* freedesktop.org.xml.in: add ".RMF" as a  magic for RealMedia
+	files, also add the rmvb suffix for "Real Media Variable Bitrate" files
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added application/vnd.ms-access, patch from
+	Ed Catmur, fixes bug #2619
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added more extensions for fortran programs,
+	patch by John Spray, fixes #2623
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: marked image/x-eps as a subclass of 
+	  PostScript files, fix part of bug #2686
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added *.hpp glob to C++ headers, fixes #2923
+
+2005-04-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* update-mime-database.c: (my_xmlGetNsProp), (get_type),
+	(match_node), (get_priority), (add_namespace),
+	(process_freedesktop_node), (has_lang), (remove_old), (load_type),
+	(load_source_file), (atomic_update), (match_offset),
+	(match_value_and_mask), (match_word_size), (build_matches),
+	(add_ns), (add_alias), (write_header), (write_magic_cache):
+	fix signedness warnings in gcc, maybe it would be better to just
+	disable that warning
+
+2005-04-15  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "zh_TW" (traditional Chinese) to ALL_LINGUAS.
+
+2005-04-14  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml: sync with freedesktop.org.xml.in content
+	* freedesktop.org.xml.in: added application/x-cue as the CD image
+	cuesheet mime-type
+
+2005-04-14  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "rw" (Kinyarwanda) to ALL_LINGUAS.
+
+Fri Apr  8 23:34:27 2005  Jonathan Blandford  <jrb@redhat.com>
+
+	* update-mime-database.c: Patch from Matthias Clasen
+	<mclasen@redhat.com> to adjust one offset after adding the
+	namespace table.  Produced cache now works.
+
+2005-04-07  Bastien Nocera  <hadess@hadess.net>
+
+	* Makefile.am: work-around for old versions of automake
+
+Fri Apr  1 14:33:54 2005  Jonathan Blandford  <jrb@redhat.com>
+
+	* shared-mime-info-spec.xml:
+	* update-mime-database.c: Patch from Matthias Clasen
+	<mclasen@redhat.com> to make the MIME Cache contain an mmappable
+	binary format.
+
+=== shared-mime-info 0.16 ===
+Tue Mar 22 14:33:31 2005  Jonathan Blandford  <jrb@redhat.com>
+
+	* NEWS:
+	* freedesktop.org.xml:
+	* configure.in: Release 0.16
+	
+2005-03-20  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "ru" (Russian) to ALL_LINGUAS.
+
+2005-03-19  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml: sync with freedesktop.org.xml.in content
+	* freedesktop.org.xml.in: added StuffIt archives
+
+Thu Mar 10 11:55:21 2005  Jonathan Blandford  <jrb@redhat.com>
+
+	* freedesktop.org.xml: sync with freedesktop.org.xml.in content
+	* freedesktop.org.xml.in: Add OpenDocumentText formats.
+
+2005-01-21  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "nb" (Norwegian (bokmål)) to ALL_LINGUAS.
+
+2005-01-16  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.in: added it to ALL_LINGUAS
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added many sub-class-of definitions, patch
+	by David Faure <faure@kde.org>, fixes #619.
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml: sync with freedesktop.org.xml.in content
+	* freedesktop.org.xml.in: fixed malformed XML doc
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: Cleanup for "text executable" types
+	(shellscripts and other scripts). Patch from David Faure
+	(faure@kde.org), fixes #618.
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: fix vCard and vCalendar mime types and glob
+	patterns
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added mime entry for D source files, fixes
+	#676
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added audio/wav and audio/vnd.wave aliases
+	for wav files, fixes #1885
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: text/xml+html is a subclass of text/xml, not
+	text/plain
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: use application/msword as the main type
+	for MS/Word files
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: fix entry about DICOM, fixes bug #1310,
+	patch from Artur Frysiak <wiget@pld-linux.org>
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added audio/x-m4a, fixes #584
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: move a few definitions to get an
+	alphabetically ordered file.
+
+2004-12-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: change application/x-python to
+	text/x-python, fixes #208, please complain if you think this is wrong.
+
+2004-12-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* po/Makefile.in.in: sync with upstream changes
+
+2004-12-09  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: back out DTD change which wasn't expected in
+	the first place.
+
+2004-12-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: added application/x-zip-compressed as an 
+	alias to application/zip.
+
+2004-12-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* Makefile.am: don't override CFLAGS, fixes #2033
+
+2004-12-08  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: change main mp3 mime type to audio/mpeg,
+	add audio/x-mp3 as an alias for this mime type.
+
+2004-12-02  Dan Winship  <danw@novell.com>
+
+	* Makefile.am (CLEANFILES, DISTCLEANFILES): Fix. intltool stuff
+	shouldn't be in CLEANFILES, or "make clean; make" will fail
+	(#1845)
+
+2004-12-02  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: mark glade files as inheriting from 
+	text/xml, not text/plain
+
+2004-11-28  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml: sync'ed file with freedesktop.org.xml.in
+	* freedesktop.org.xml.in: fixed entry for jnlp files
+
+2004-11-26  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: added application/x-java-jnlp-file, fixes 
+	#1118
+
+2004-11-26  Christophe Fergeau  <teuf@gnome.org>
+
+	* update-mime-database.c: (parse_int_value), (match_offset): use 
+	strtoul when reading an unsigned long, not strtol, fixes #1506
+
+2004-11-26  Christophe Fergeau  <teuf@gnome.org>
+
+	* update-mime-database.c: (parse_int_value): take value endianness
+	into account when reading the "mask" tag, fixes #1507.
+
+Tue Nov  9 01:52:52 2004  Jonathan Blandford  <jrb@redhat.com>
+
+	* update-mime-database.c: Patch from Matthias Clasen to generate
+	subclass and alias files.
+
+	* shared-mime-info-spec.xml.in: update the spec to mention the
+	subclasses and aliases files.
+
+2004-11-04  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: add magic for the audio/x-mpegurl mime-type
+
+2004-11-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml:
+	* freedesktop.org.xml.in: sync freedesktop.org.xml with
+	freedesktop.org.xml.in, fix freedesktop.org.xml.in to make it valid
+	XML
+
+2004-11-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: Added application/mathematica, patch by Chris
+	Maes <i-chris@wolfram.com>, fixes #870
+
+2004-11-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: Added application/x-chm, patch by Loic
+	Minier <lool+freedesktop@dooz.org>, fixes #794 
+
+2004-11-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: Added application/x-pdf alias, fixes #560
+
+2004-11-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: Added application/x-par2, patch by dob 
+	<abusenospam@free.fr>, fixes #750
+
+2004-11-01  Christophe Fergeau  <teuf@gnome.org>
+
+	* freedesktop.org.xml.in: Improve lotus 123 files magic pattern. Patch
+	by Filip Van Raemdonck <mechanix@debian.org>, fix #1276.
+
+Mon Nov  1 14:49:57 2004  Jonathan Blandford  <jrb@redhat.com>
+
+	* MAINTAINERS: New file to highlight that I'm no longer the
+	maintainer.
+
+Mon Nov  1 14:47:02 2004  Jonathan Blandford  <jrb@redhat.com>
+
+	* autogen.sh: Patch from Thomas Fitzsimmons <fitzsim@redhat.com>
+	to add support for building modules in separate build directories
+
+2004-10-20  Bastien Nocera  <hadess@hadess.net>
+
+	* freedesktop.org.xml.in: add magic for audio/x-scpls
+
+2004-10-07  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "eo" (Esperanto) to ALL_LINGUAS.
+
+2004-09-29  Christopher Aillon  <caillon@redhat.com>
+
+       * freedesktop.org.xml.in: Add application/vnd.mozilla.xul+xml and
+       make MathML inherit from XML.
+
+2004-09-13  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.in: Added "ms" (Malay) to ALL_LINGUAS
+
+2004-09-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.in: Added "ja" (Japanese) to ALL_LINGUAS
+
+2004-09-10  Christophe Fergeau  <teuf@gnome.org>
+
+	* configure.in: Added "pl" (Polish) to ALL_LINGUAS.
+
+2004-09-10  Nico R. <n-roeser@gmx.net>
+
+	* configure.in: fix substitution of ALL_CFLAGS and ALL_LIBS
+
+2004-09-08  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "es" (Spanish) to ALL_LINGUAS.
+
+2004-09-06  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "pt" (Portuguese) to ALL_LINGUAS.
+
+	* configure.in: Added "uk" (Ukrainian) to ALL_LINGUAS.
+
+2004-09-04  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "pt_BR" (Brazilian Portuguese) to ALL_LINGUAS.
+
+	* configure.in: Added "eu" (Basque) to ALL_LINGUAS.
+
+2004-09-03  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "bg" (Bulgarian) to ALL_LINGUAS.
+
+2004-09-01  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Added "sq" (Albanian) to ALL_LINGUAS.
+
+2004-08-31  Miloslav Trmac  <mitr@volny.cz>
+
+	* configure.in: Add "zh_CN" (simplified Chinese) to ALL_LINGUAS.
+
+=== shared-mime-info 0.15 ===
+
 2004-08-30  Christophe Fergeau  <teuf@gnome.org>
 
 	* Makefile.am:

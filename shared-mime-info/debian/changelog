@@ -1,3 +1,13 @@
+shared-mime-info (0.19-1) unstable; urgency=medium
+
+  * Rebase against new upstream version 0.19, changes:
+    - Also urge XMLnamespaces, subclasses, aliases, and mime.cache
+    - Make the mime cache contain an mmappable binary format
+    - Add acronym and expanded-acronym
+    - Add recommendations for duplicate globs handling
+
+ -- Richard Hult <richard@imendio.com>  Tue,  4 Apr 2007 09:16:33 +0200
+
 shared-mime-info (0.15-5) unstable; urgency=medium
 
   * Fixes NB#: 34440, shared-mime-info: out-dated Makefile.in
