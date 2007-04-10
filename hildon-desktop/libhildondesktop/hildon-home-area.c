@@ -376,8 +376,6 @@ hildon_home_area_layout_mode_start (HildonHomeArea *area)
   HildonHomeAreaPriv      *priv;
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
 
-  priv->layout_changed = FALSE;
-
   gtk_container_foreach (GTK_CONTAINER (area),
                          (GtkCallback)hildon_desktop_home_item_set_layout_mode,
                          (gpointer)TRUE);
@@ -388,10 +386,16 @@ hildon_home_area_layout_mode_start (HildonHomeArea *area)
 static void
 hildon_home_area_layout_mode_end (HildonHomeArea *area)
 {
+  HildonHomeAreaPriv      *priv;
+  priv = HILDON_HOME_AREA_GET_PRIVATE (area);
+  
   gtk_container_foreach (GTK_CONTAINER (area),
                         (GtkCallback)hildon_desktop_home_item_set_layout_mode,
                          (gpointer)FALSE);
   g_signal_emit_by_name (area, "layout-mode-ended");
+
+  priv->layout_changed = FALSE;
+
 }
 
 static void
@@ -435,6 +439,7 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
     {
       g_debug ("Batch adding it");
       priv->to_add = g_list_append (priv->to_add, applet);
+      g_signal_emit_by_name (area, "layout-changed");
       return;
     }
 

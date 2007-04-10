@@ -1,4 +1,9 @@
-2007-04-05  Johan Bilien  <johan.bilien@nokia.com>
+2007-04-10  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- mark the layout as changed when adding an applet. Fixes: NB#53972
+
+2007-04-10  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-background-dialog.c:
 	- make the dialog modal. Fixes: NB#53971
