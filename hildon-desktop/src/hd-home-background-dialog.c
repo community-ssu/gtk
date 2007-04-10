@@ -356,6 +356,8 @@ hd_home_background_dialog_init (HDHomeBackgroundDialog *dialog)
   
   /* Let the WM take care of the positioning */
   gtk_window_set_position (GTK_WINDOW (dialog), GTK_WIN_POS_NONE);
+
+  gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 }
 
 static void
