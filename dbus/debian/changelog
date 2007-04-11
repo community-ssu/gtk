@@ -1,3 +1,9 @@
+dbus (1.0.2-0osso5) experimental; urgency=low
+
+  * Fixed upgrading problem caused by dephelper additions to postinst.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 11 Apr 2007 14:55:53 +0300
+
 dbus (1.0.2-0osso4) experimental; urgency=low
 
   * Added workaround for an issue in dbus-sysdeps-util-unix.c. Fixes: MB#883

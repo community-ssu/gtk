@@ -5,7 +5,7 @@
 # Copyright © 2006 Sjoerd Simons <sjoerd@debian.org>
 # Copyright (C) 2006 Nokia Corporation. All rights reserved.
 
-set -e
+#set -e
 
 MESSAGEUSER=messagebus
 MESSAGEHOME=/var/run/dbus
@@ -19,14 +19,13 @@ if [ ! -d /scratchbox ]; then
 fi
 
 # Do not restart dbus on upgrades, only on fresh installations
-if [ "$1" = "configure" ]; then
-    if [ -e /var/run/dbus/pid ] && 
-      ps --no-heading -p $(cat /var/run/dbus/pid) > /dev/null; then
-        # trigger an update notification which recommends to reboot
-        [ -x /usr/share/update-notifier/notify-reboot-required ] && \
-            /usr/share/update-notifier/notify-reboot-required || true
-        exit 0
-    fi
-fi
+#if [ "$1" = "configure" ]; then
+#    if [ -e /var/run/dbus/pid ] && 
+#      ps --no-heading -p $(cat /var/run/dbus/pid) > /dev/null; then
+#        # trigger an update notification which recommends to reboot
+#        [ -x /usr/share/update-notifier/notify-reboot-required ] && \
+#            /usr/share/update-notifier/notify-reboot-required || true
+#        exit 0
+#    fi
+#fi
 
-#DEBHELPER#
