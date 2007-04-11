@@ -877,12 +877,20 @@ hn_others_button_key_press (GtkWidget *widget,
       event->keyval == GDK_KP_Enter)
   {
     hn_others_button_menu_show (button);
+ 
+    gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (button->priv->button), TRUE); 
+
     return TRUE;
   }
   else if (event->keyval == GDK_Left || 
            event->keyval == GDK_KP_Left)
   {
-    hd_wm_activate (HD_TN_ACTIVATE_LAST_APP_WINDOW);
+    gtk_widget_grab_focus (widget);
+	  
+    GdkWindow *w = 
+      gtk_widget_get_parent_window (GTK_WIDGET (button));
+	  
+    hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS, w);
   }
 	
   return FALSE;
@@ -935,7 +943,7 @@ hn_others_button_press_collapser (HNOthersButton *button)
   
   button->priv->collapse_id = 0;
   button->priv->thumb_pressed = FALSE;
-  
+
   return FALSE;
 }
 

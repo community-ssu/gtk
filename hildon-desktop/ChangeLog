@@ -1,3 +1,8 @@
+2007-04-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-others-button.c: Set active others menu's toggle button when
+	opened by using right key. Fixes: NB#54020.
+
 2007-04-10  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
