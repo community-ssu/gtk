@@ -3,6 +3,11 @@
 	* data/layout.txt: moved voip buttons more tightly together and 
 	evened their spacing for easier editing.
 
+	Moved thumb scrollbars a bit, and added very small scroll
+	indicators as food for thought, could be used for stylus panned
+	content to save space..? Not in layout yet though - will need to
+	discuss this with mdk first.
+	
 2007-04-04  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtkcombobox.rc: Update to use new graphics. Still missing the
