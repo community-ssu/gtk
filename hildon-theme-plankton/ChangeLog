@@ -1,7 +1,12 @@
+2007-04-11  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.*: moved voip buttons closer together.
+
 2007-04-10  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
-	* template/template.*: Added some alpha to applet backgrounds.. 
-	we really need to split these out of the toolkit widget theme.. :)	
+	* template/template.*: Added some alpha to applet backgrounds..
+	we really need to split these out of the toolkit widget theme.. :)
+
 2007-04-03  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.*: 
