@@ -1,3 +1,8 @@
+2007-04-11  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.png: moved stuff around a bit according to
+	layout changes. New version too.
+
 2007-03-01  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* debian/files: Removing. Accidentaly added.
