@@ -167,10 +167,12 @@ qgn_plat_button_radio_empty_normal.png=155,294,26,26
 qgn_plat_button_radio_selected_disabled.png=47,414,26,26
 qgn_plat_button_radio_selected_focused.png=47,354,26,26
 qgn_plat_button_radio_selected_normal.png=47,294,26,26
-qgn_plat_button_voip_disabled.png=3563,663,72,72
-qgn_plat_button_voip_focused.png=3462,663,72,72
-qgn_plat_button_voip_normal.png=3260,663,72,72
-qgn_plat_button_voip_pressed.png=3361,663,72,72
+
+qgn_plat_button_voip_normal.png=3191,663,72,72
+qgn_plat_button_voip_pressed.png=3271,663,72,72
+qgn_plat_button_voip_focused.png=3351,663,72,72
+qgn_plat_button_voip_disabled.png=3431,663,72,72
+
 qgn_plat_calendar_active_day_indicator.png=6762,640,4,4
 qgn_plat_calendar_current_day_indicator.png=6761,610,10,10
 qgn_plat_calendar_week_day_indicator.png=6762,671,6,6
