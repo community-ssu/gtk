@@ -560,7 +560,6 @@ hd_wm_dbus_method_call_handler (DBusConnection *connection,
 				void           *data)
 {
   const gchar *path;
-  HDWM  *hdwm = HD_WM (data);
 
   path = dbus_message_get_path(message);
   if (path != NULL && g_str_equal(path, TASKNAV_GENERAL_PATH))
