@@ -929,6 +929,12 @@ hildon_desktop_panel_window_check_resize (GtkContainer *container)
   GtkRequisition  requisition;
   GtkWidget      *widget;
 
+  if (!HILDON_DESKTOP_PANEL_WINDOW (container)->priv->move)
+  {
+    GTK_CONTAINER_CLASS (hildon_desktop_panel_window_parent_class)->check_resize (container);
+    return;
+  }
+
   widget = GTK_WIDGET (container);
 
   if (!GTK_WIDGET_VISIBLE (widget))
@@ -958,6 +964,12 @@ hildon_desktop_panel_size_request (GtkWidget *widget,
   gboolean position_changed = FALSE;
   gboolean size_changed     = FALSE;
 
+  if (!HILDON_DESKTOP_PANEL_WINDOW (widget)->priv->move)
+  {
+    GTK_WIDGET_CLASS (hildon_desktop_panel_window_parent_class)->size_request (widget,requisition);
+    return;
+  }
+
   window = HILDON_DESKTOP_PANEL_WINDOW (widget);
   bin	 = GTK_BIN (widget);
 
@@ -983,8 +995,7 @@ hildon_desktop_panel_size_request (GtkWidget *widget,
     position_changed = TRUE;	
   }
 
-  if (window->priv->move)
-    hildon_desktop_panel_win_move_resize (window,position_changed,size_changed);
+  hildon_desktop_panel_win_move_resize (window,position_changed,size_changed);
 }
 
 static void 
@@ -994,6 +1005,12 @@ hildon_desktop_panel_size_allocate (GtkWidget *widget,
   HildonDesktopPanelWindow *window = HILDON_DESKTOP_PANEL_WINDOW (widget);
   GtkBin *bin = GTK_BIN (widget);
   GtkAllocation challoc;
+
+  if (!window->priv->move)
+  {
+    GTK_WIDGET_CLASS (hildon_desktop_panel_window_parent_class)->size_allocate (widget,allocation);
+    return;
+  }
 
   widget->allocation = *allocation;
 

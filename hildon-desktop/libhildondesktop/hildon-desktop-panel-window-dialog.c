@@ -197,6 +197,8 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
   if (parent != NULL)
     gtk_container_add (parent,
   		       GTK_WIDGET (HILDON_DESKTOP_WINDOW (window)->container));
+  
+  gtk_widget_pop_composite_child ();
 
   g_object_get (object,"orientation", &orientation, NULL);
 
@@ -228,7 +230,7 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
 
        gtk_window_set_accept_focus (GTK_WINDOW (window), FALSE);
        gtk_container_set_border_width (GTK_CONTAINER (window), 0);
-
+       
        gtk_window_set_type_hint( GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_DOCK);
 
        gtk_widget_realize (GTK_WIDGET (window));
@@ -282,8 +284,6 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
 
   g_free (wm_name);
  
-  gtk_widget_pop_composite_child ();
-
   g_signal_connect (window->priv->hdwm,
 		    "fullscreen",
 		    G_CALLBACK (hildon_desktop_window_dialog_fullscreen_cb),

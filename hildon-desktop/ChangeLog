@@ -1,5 +1,15 @@
 2007-04-12  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Code cleanup 
+	* libhildondesktop/hildon-desktop-panel-window.c:
+	- If the window is not to be moved, it uses parent implementations for
+	check_resize, size_request and size_allocation.
+	* data/desktop.conf.in:
+	- Changed size of statusbar panel.
+
+2007-04-12  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hd-desktop.c:
 	- Implemented banner when launching applications. Fixes: NB#53974
 	* libhildonwm/hd-wm.c:
