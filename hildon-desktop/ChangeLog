@@ -1,3 +1,7 @@
+2007-04-12  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.6
+
 2007-04-12  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
@@ -7,6 +11,7 @@
 	check_resize, size_request and size_allocation.
 	* data/desktop.conf.in:
 	- Changed size of statusbar panel.
+	Fixes: NB#53998
 
 2007-04-12  Moises Martinez  <moises.martinez@nokia.com>
 
