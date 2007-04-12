@@ -189,15 +189,12 @@ typedef void (osso_rpc_async_f)(const gchar *interface,
  * are:
  *  - DBUS_TYPE_BOOLEAN
  *    - The value is a gboolean.
- *  - DBUS_TYPE_INT, DBUS_TYPE_UINT
+ *  - DBUS_TYPE_INT32, DBUS_TYPE_UINT32
  *    - The value is an int or an unsigned int.
  *  - DBUS_TYPE_DOUBLE
  *    - The value is a float.
  *  - DBUS_TYPE_STRING
  *    - The value is a pointer to a string.
- *    - If the pointer is NULL it is translated to a DBUS_TYPE_NIL.
- *  - DBUS_TYPE_NIL
- *    - No value, this represents a NULL type.
  * @param osso The library context as returned by #osso_initialize.
  * @param service The service name of the remote service,
  * e.g. com.nokia.application.
