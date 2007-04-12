@@ -557,52 +557,10 @@ out:
 static DBusHandlerResult
 hd_wm_dbus_method_call_handler (DBusConnection *connection,
 				DBusMessage    *message,
-				void           *data )
+				void           *data)
 {
   const gchar *path;
   HDWM  *hdwm = HD_WM (data);
-
-  /* Catch APP_LAUNCH_BANNER_METHOD */
-  if (dbus_message_is_method_call (message,
-				   APP_LAUNCH_BANNER_METHOD_INTERFACE,
-				   APP_LAUNCH_BANNER_METHOD ) )
-  {
-    DBusError         error;
-    gchar            *service_name = NULL;
-    HDWMWatchableApp *app;
-      
-    dbus_error_init (&error);
-      
-    dbus_message_get_args (message,
- 		     	   &error,
-			   DBUS_TYPE_STRING,
-			   &service_name,
-			   DBUS_TYPE_INVALID );
-
-    if (dbus_error_is_set (&error))
-    {
-      g_warning ("Error getting message args: %s\n", error.message);
-      dbus_error_free (&error);
-      return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
-    }
-
-    g_return_val_if_fail (service_name, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
-
-    g_debug ("Checking if service: '%s' is watchable", service_name);
-
-    /* Is this 'service' watchable ? */
-    if ((app = hd_wm_lookup_watchable_app_via_service (service_name)) != NULL)
-    {
-      if (hd_wm_watchable_app_has_startup_notify (app) && 
-	  hdwm->priv->lowmem_banner_timeout > 0 &&
-	  !hd_wm_watchable_app_has_windows (app))
-      {
-        g_signal_emit_by_name (hdwm,
-                               "application-starting",
-                               hd_wm_watchable_app_get_localized_name (app));
-      }
-    }
-  }
 
   path = dbus_message_get_path(message);
   if (path != NULL && g_str_equal(path, TASKNAV_GENERAL_PATH))
@@ -841,7 +799,7 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
   }
   else
   {
-    match_rule = g_strdup_printf("interface='%s'", APP_LAUNCH_BANNER_METHOD_INTERFACE );
+    match_rule = g_strdup_printf("interface='%s'", TASKNAV_INSENSITIVE_INTERFACE);
 
     dbus_bus_add_match( connection, match_rule, NULL );
     g_free (match_rule);
@@ -852,7 +810,7 @@ hd_wm_constructor (GType gtype, guint n_params, GObjectConstructParam *params)
     dbus_connection_add_filter (connection, hd_wm_dbus_signal_handler, hdwm, NULL);
     g_free(match_rule);
 
-    match_rule = g_strdup_printf("interface='%s'", TASKNAV_INSENSITIVE_INTERFACE );
+    match_rule = g_strdup_printf("interface='%s'", APP_LAUNCH_BANNER_METHOD_INTERFACE );
 
     dbus_bus_add_match (connection, match_rule, NULL );
 
@@ -990,15 +948,15 @@ hd_wm_class_init (HDWMClass *hdwm_class)
 		     G_TYPE_NONE, 0);
   
   hdwm_signals[HDWM_APPLICATION_STARTING_SIGNAL] = 
-	g_signal_new("application_starting",
+	g_signal_new("application-starting",
 		     G_OBJECT_CLASS_TYPE(object_class),
 		     G_SIGNAL_RUN_LAST,
 		     G_STRUCT_OFFSET (HDWMClass,application_starting),
 		     NULL, NULL,
-		     g_cclosure_marshal_VOID__STRING,
+		     g_cclosure_marshal_VOID__POINTER,
 		     G_TYPE_NONE,
                      1,
-                     G_TYPE_STRING);
+                     G_TYPE_POINTER);
 
   hdwm_signals[HDWM_FULLSCREEN] = 
 	g_signal_new("fullscreen",
@@ -1248,53 +1206,71 @@ hd_wm_get_home_info (HDWM *hdwm)
 void
 hd_wm_activate_service (const gchar *app, const gchar *parameters)
 {
-  char service[SERVICE_NAME_LEN],
-       path[PATH_NAME_LEN],
-       interface[INTERFACE_NAME_LEN],
-       tmp[TMP_NAME_LEN];
-    DBusMessage *msg = NULL;
-    DBusError error;
-    DBusConnection *conn;
+  gchar service[SERVICE_NAME_LEN],
+        path[PATH_NAME_LEN],
+        interface[INTERFACE_NAME_LEN],
+        tmp[TMP_NAME_LEN];
+  DBusMessage *msg = NULL;
+  DBusError error;
+  DBusConnection *conn;
+  gboolean sent;
+  HDWM *hdwm = hd_wm_get_singleton ();
+  HDWMWatchableApp *wapp;
 
-    /* If we have full service name we will use it*/
-    if (g_strrstr(app,"."))
+  /* If we have full service name we will use it*/
+  if (g_strrstr(app,"."))
+  {
+    g_snprintf(service,SERVICE_NAME_LEN,"%s",app);
+    g_snprintf(interface,INTERFACE_NAME_LEN,"%s",service);
+    g_snprintf(tmp,TMP_NAME_LEN,"%s",app);
+    g_snprintf(path,PATH_NAME_LEN,"/%s",g_strdelimit(tmp,".",'/'));
+  }
+  else /* we will use com.nokia prefix*/
+  {
+    g_snprintf(service,SERVICE_NAME_LEN,"%s.%s",OSSO_BUS_ROOT,app);
+    g_snprintf(path,PATH_NAME_LEN,"%s/%s",OSSO_BUS_ROOT_PATH,app);
+    g_snprintf(interface,INTERFACE_NAME_LEN,"%s",service);
+  }
+
+  dbus_error_init (&error);
+  conn = dbus_bus_get (DBUS_BUS_SESSION, &error);
+
+  if (dbus_error_is_set (&error))
+  {
+    g_warning ("could not start: %s: %s",
+               service,
+               error.message);
+    dbus_error_free (&error);
+    return;
+  }
+
+  msg = dbus_message_new_method_call (service,
+                                      path,
+                                      interface,
+                                      OSSO_BUS_TOP);
+  if (parameters)
+    dbus_message_append_args (msg,
+                              DBUS_TYPE_STRING,
+                              parameters,
+                              DBUS_TYPE_INVALID);
+
+  dbus_message_set_auto_start (msg, TRUE);
+  sent = dbus_connection_send (conn, msg, NULL);
+
+  if (sent)
+  {
+    if ((wapp = hd_wm_lookup_watchable_app_via_service (service)) != NULL)
     {
-        g_snprintf(service,SERVICE_NAME_LEN,"%s",app);
-        g_snprintf(interface,INTERFACE_NAME_LEN,"%s",service);
-        g_snprintf(tmp,TMP_NAME_LEN,"%s",app);
-        g_snprintf(path,PATH_NAME_LEN,"/%s",g_strdelimit(tmp,".",'/'));
-    }
-    else /* we will use com.nokia prefix*/
-    {
-        g_snprintf(service,SERVICE_NAME_LEN,"%s.%s",OSSO_BUS_ROOT,app);
-        g_snprintf(path,PATH_NAME_LEN,"%s/%s",OSSO_BUS_ROOT_PATH,app);
-        g_snprintf(interface,INTERFACE_NAME_LEN,"%s",service);
-    }
-
-    dbus_error_init (&error);
-    conn = dbus_bus_get (DBUS_BUS_SESSION, &error);
-
-    if (dbus_error_is_set (&error))
-      {
-        g_warning ("could not start: %s: %s",
-                   service,
-                   error.message);
-        dbus_error_free (&error);
-        return;
+      if (hd_wm_watchable_app_has_startup_notify (wapp) && 
+	  hdwm->priv->lowmem_banner_timeout >= 0 &&
+	  !hd_wm_watchable_app_has_windows (wapp))
+      { 
+        g_signal_emit_by_name (hdwm,
+                               "application-starting",
+                               wapp);
       }
-
-    msg = dbus_message_new_method_call (service,
-                                        path,
-                                        interface,
-                                        OSSO_BUS_TOP);
-    if (parameters)
-      dbus_message_append_args (msg,
-                                DBUS_TYPE_STRING,
-                                parameters,
-                                DBUS_TYPE_INVALID);
-
-    dbus_message_set_auto_start (msg, TRUE);
-    dbus_connection_send (conn, msg, NULL);
+    }
+  }
 }
 
 

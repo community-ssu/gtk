@@ -1,3 +1,14 @@
+2007-04-12  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-desktop.c:
+	- Implemented banner when launching applications. Fixes: NB#53974
+	* libhildonwm/hd-wm.c:
+	- Removed all dbus method for launching banners.
+	- Send application starting signal when launched by DBus.
+	* libhildonwm/hd-wm-watchable-app.c:
+	- Never return maemo-af-desktop when trying to get localized name of
+	watchable application.
+
 2007-04-11  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-others-button.c: Set active others menu's toggle button when

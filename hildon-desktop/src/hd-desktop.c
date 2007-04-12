@@ -32,13 +32,17 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 #include <libgnomevfs/gnome-vfs.h>
+#include <glib/gi18n.h>
 
 #ifdef HAVE_LIBOSSO
 #include <libosso.h>
 #endif
 
+#include <libhildonwm/hd-wm.h>
 #include <libhildondesktop/hildon-desktop-window.h>
 #include <libhildondesktop/hildon-desktop-notification-manager.h>
+
+#include <hildon/hildon-banner.h>
 
 #include "hd-desktop.h"
 #include "hd-select-plugins-dialog.h"
@@ -55,6 +59,16 @@ G_DEFINE_TYPE (HDDesktop, hd_desktop, G_TYPE_OBJECT);
 
 #define HD_DESKTOP_CONFIG_FILE         "desktop.conf"
 #define HD_DESKTOP_CONFIG_USER_PATH    ".osso/hildon-desktop/"
+
+typedef struct 
+{
+  GtkWidget         *parent;
+  GtkWidget         *banner;
+  struct timeval     launch_time;
+  gchar             *msg;
+  HDWMWatchableApp  *app;
+  HDWM 		    *hdwm;
+} HDDesktopBannerInfo;
 
 typedef struct
 {
@@ -79,6 +93,89 @@ struct _HDDesktopPrivate
 };
 
 static void hd_desktop_load_containers (HDDesktop *desktop);
+
+static gboolean
+hd_desktop_launch_banner_timeout (gpointer data);
+
+void 
+hd_desktop_launch_banner_close (GtkWidget *parent, HDDesktopBannerInfo *info);
+
+static void 
+hd_desktop_launch_banner_show (HDWM *hdwm, HDWMWatchableApp *app, gpointer data)
+{
+  HDDesktopBannerInfo *info;
+  guint                interval;
+  const gchar         *lapp_name;
+
+  g_return_if_fail (app);
+
+  interval = APP_LAUNCH_BANNER_CHECK_INTERVAL * 1000;
+
+  info = g_new0 (HDDesktopBannerInfo, 1);
+
+  info->hdwm = hdwm;
+  info->app  = app;
+
+  gettimeofday (&info->launch_time, NULL );
+
+  lapp_name = hd_wm_watchable_app_get_localized_name (app);
+
+  info->msg = 
+    g_strdup_printf (_(hd_wm_watchable_app_is_hibernating(app) ?
+                     APP_LAUNCH_BANNER_MSG_RESUMING :
+                     APP_LAUNCH_BANNER_MSG_LOADING),
+                     lapp_name ? _(lapp_name) : "" );
+
+  g_debug ("Launching banner %s...",info->msg);
+
+  info->banner = GTK_WIDGET (hildon_banner_show_animation (NULL, NULL, info->msg));
+
+  g_timeout_add (interval, hd_desktop_launch_banner_timeout, info);
+}
+
+static gboolean
+hd_desktop_launch_banner_timeout (gpointer data)
+{
+  HDDesktopBannerInfo  *info = data;
+  struct timeval        current_time;
+  long unsigned int     t1, t2;
+  guint                 time_left;
+  gulong                current_banner_timeout = 0;
+
+  if (hd_wm_is_lowmem_situation())
+    current_banner_timeout = 
+      hd_wm_get_lowmem_banner_timeout() * hd_wm_get_lowmem_timeout_multiplier();
+
+  gettimeofday (&current_time, NULL);
+
+  t1 = (long unsigned int) info->launch_time.tv_sec;
+  t2 = (long unsigned int) current_time.tv_sec;
+  time_left = (guint) (t2 - t1);
+
+  if (time_left >= current_banner_timeout ||
+      hd_wm_watchable_app_has_windows (info->app))
+  {
+    hd_desktop_launch_banner_close (NULL, info);
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
+void
+hd_desktop_launch_banner_close (GtkWidget *parent,
+                                HDDesktopBannerInfo *info)
+{
+  if (!(info && info->msg))
+    return;
+
+  if (info->banner)
+    gtk_widget_destroy (info->banner);
+
+  g_free (info->msg);
+  g_free (info);
+}
+
 
 static gint
 hd_desktop_find_by_id (gconstpointer a, gconstpointer b)
@@ -936,6 +1033,7 @@ hd_desktop_init (HDDesktop *desktop)
   HDDesktopPrivate *priv;
   gchar *user_conf_dir;
   const gchar *env_config_file;
+  HDWM *hdwm;
 
   desktop->priv = HD_DESKTOP_GET_PRIVATE (desktop);
 
@@ -983,6 +1081,13 @@ hd_desktop_init (HDDesktop *desktop)
 
   desktop->priv->nm = hildon_desktop_notification_manager_get_singleton (); 
 
+  hdwm = hd_wm_get_singleton ();
+
+  g_signal_connect (hdwm,
+		    "application-starting",
+		    G_CALLBACK (hd_desktop_launch_banner_show),
+		    NULL);
+		    
   desktop->priv->system_conf_monitor = NULL;
   desktop->priv->user_conf_monitor = NULL;
 }

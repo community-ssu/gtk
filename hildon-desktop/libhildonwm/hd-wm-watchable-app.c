@@ -452,8 +452,8 @@ hd_wm_watchable_app_get_name (HDWMWatchableApp *app)
 const gchar*
 hd_wm_watchable_app_get_localized_name (HDWMWatchableApp *app)
 {
-  return (app->text_domain?dgettext(app->text_domain,app->app_name):
-                           dgettext("maemo-af-desktop", app->app_name));
+  return (app->text_domain ? dgettext(app->text_domain,app->app_name):
+                             app->app_name);
 }
 
 const gchar*
