@@ -1,5 +1,10 @@
 2007-04-13  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
+	- Set no of items for container to 7. Fixes: NB#54193
+
+2007-04-13  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hn-app-switcher.c:
 	- Place main menu according to fullscreen mode. Fixes: NB#53969
 	* src/hn-app-button.c:

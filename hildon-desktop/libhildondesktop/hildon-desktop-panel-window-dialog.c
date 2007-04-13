@@ -192,7 +192,7 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
   gtk_widget_push_composite_child ();
 
   HILDON_DESKTOP_WINDOW (window)->container = 
-    g_object_new (HILDON_DESKTOP_TYPE_PANEL_EXPANDABLE, "items_row", 6,NULL);
+    g_object_new (HILDON_DESKTOP_TYPE_PANEL_EXPANDABLE, "items_row", 7,NULL);
 
   if (parent != NULL)
     gtk_container_add (parent,
