@@ -7342,7 +7342,7 @@
        xlink:href="#linearGradient8987"
        id="linearGradient9526"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.9487666,0,0,2.1454545,2000.5947,1509.0637)"
+       gradientTransform="matrix(0.9487666,0,0,2.1454545,3222.4752,1271.4758)"
        x1="-889"
        y1="-79.999992"
        x2="-889"
@@ -8846,9 +8846,9 @@
      objecttolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1"
-     inkscape:cx="3939.6242"
-     inkscape:cy="37.174066"
+     inkscape:zoom="0.1767767"
+     inkscape:cx="4231.7077"
+     inkscape:cy="-1131.81"
      inkscape:document-units="px"
      inkscape:current-layer="layer4"
      width="8000px"
@@ -10759,15 +10759,6 @@
        y="400.5"
        rx="3.498872"
        ry="3.4988742" />
-    <rect
-       ry="2.6238742"
-       rx="2.6238742"
-       y="818.5"
-       x="72.5"
-       height="55.000004"
-       width="217"
-       id="rect9313"
-       style="opacity:0.8;fill:none;fill-opacity:1;stroke:url(#linearGradient9315);stroke-width:0.99999976;stroke-opacity:1;display:inline" />
     <g
        id="g6861"
        transform="translate(-49.00038,74.49998)"
@@ -16066,13 +16057,6 @@
        id="rect8894"
        sodipodi:nodetypes="ccccccc" />
     <rect
-       style="fill:none;stroke:none"
-       width="64"
-       height="64"
-       x="3052"
-       y="-139"
-       id="rect12738" />
-    <rect
        ry="3.5304115"
        rx="3.5304112"
        y="650.5"
@@ -20988,15 +20972,6 @@
        y="378.5"
        rx="3.4973938"
        ry="3.4973938" />
-    <rect
-       style="opacity:0.8;fill:none;fill-opacity:1;stroke:url(#linearGradient9526);stroke-width:0.99999976;stroke-opacity:1;display:inline"
-       id="rect9513"
-       width="500"
-       height="118.00001"
-       x="900.5"
-       y="1338.5"
-       rx="2.6238742"
-       ry="2.6238744" />
     <g
        style="opacity:0.49462364;fill:url(#linearGradient9780);fill-opacity:1;stroke:url(#linearGradient9782);stroke-width:1.64343214;display:inline"
        id="g9776"
