@@ -17,6 +17,6 @@ style "osso-vbuttonbox" {
 
   GtkVButtonBox::child_min_height = 47
   GtkVButtonBox::child_min_width = 105
-
+  GtkWidget::maemo-position-theming = 1
 }
 class "GtkVButtonBox" style "osso-vbuttonbox"

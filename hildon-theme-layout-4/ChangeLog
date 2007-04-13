@@ -1,5 +1,9 @@
 2007-04-13  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtkbuttonbox.rc: Set maemo-position-theming style property.
+
+2007-04-13  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/hildonbreadcrumbtrail.rc:
 	* rc/Makefile.rc:
 
