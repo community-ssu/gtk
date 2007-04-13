@@ -1,3 +1,10 @@
+2007-04-13  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- Place main menu according to fullscreen mode. Fixes: NB#53969
+	* src/hn-app-button.c:
+	- Implemented proper left/right rocker behavior.
+
 2007-04-12  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.6

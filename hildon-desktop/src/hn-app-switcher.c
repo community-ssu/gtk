@@ -215,6 +215,7 @@ struct _HNAppSwitcherPrivate
   guint is_thumbable : 1;
   gboolean force_thumb : 1;
   guint was_thumbable : 1;
+  gboolean is_fullscreen;
 
   guint menu_button_timeout;
 
@@ -728,6 +729,7 @@ main_menu_position_func (GtkMenu  *menu,
 			 gboolean *push_in,
 			 gpointer  data)
 {
+  HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);	
   GtkRequisition req;
   GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (menu));
   gint menu_height = 0;
@@ -757,7 +759,7 @@ main_menu_position_func (GtkMenu  *menu,
   menu_height = req.height;
   main_height = gdk_screen_get_height (screen);
 
-  if (hd_wm_fullscreen_mode ())
+  if (app_switcher->priv->is_fullscreen)
   {
     *x = 0;
     *y = MAX (0, (main_height - menu_height));
@@ -1205,6 +1207,12 @@ create_app_button (HNAppSwitcher *app_switcher,
   return priv->buttons[pos];
 }
 
+static void 
+hn_app_switcher_track_fullscreen_cb (HDWM *hdwm, gboolean fullscreen, HNAppSwitcher *app_switcher)
+{
+  app_switcher->priv->is_fullscreen = fullscreen;
+}	
+
 static void
 hn_app_switcher_build (HNAppSwitcher *app_switcher)
 {
@@ -1274,6 +1282,11 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
 		    "close-app",
 		    G_CALLBACK (hn_app_switcher_close_application_dialog),
 		    NULL);
+
+  g_signal_connect (app_switcher->hdwm,
+		    "fullscreen",
+		    G_CALLBACK (hn_app_switcher_track_fullscreen_cb),
+		    (gpointer)app_switcher);
 
   g_signal_connect (app_switcher,
 		    "notify::orientation",
@@ -2126,6 +2139,7 @@ hn_app_switcher_init (HNAppSwitcher *app_switcher)
   
   app_switcher->priv->buttons_group = NULL;
 
+  app_switcher->priv->is_fullscreen = 
   app_switcher->priv->force_thumb = FALSE;
 
   gtk_widget_set_name (GTK_WIDGET (app_switcher), AS_BOX_NAME);

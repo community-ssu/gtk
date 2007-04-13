@@ -576,9 +576,9 @@ hn_app_button_pop_menu (HNAppButton *app_button)
   g_return_val_if_fail(info, FALSE);
   
   n_children = hd_entry_info_get_n_children (info);
-  if (n_children == 1)
-    {
-      /* pointer released in the app button, top our app */
+  if (n_children == 1) /*FIXME: to be deleted */
+  {
+    /* pointer released in the app button, top our app */
       const GList *child;
       gboolean was_blinking;
 
@@ -595,9 +595,9 @@ hn_app_button_pop_menu (HNAppButton *app_button)
 	}
       
       hd_wm_top_item (child->data);
-    }
+  }
   else
-    {
+  {
       GtkWidget *menu;
       gboolean   was_blinking;
 
@@ -676,35 +676,41 @@ hn_app_button_key_press_event (GtkWidget * widget,
       event->keyval == GDK_KP_Enter ||
       event->keyval == GDK_ISO_Enter||
       event->keyval == GDK_Return)
-    {
-      /* search for the toggled button, so that we can re-toggle
-       * it in case the user didn't top the window/application
-       */
+  {
+    gint n_children;
+    
+    /* search for the toggled button, so that we can re-toggle
+     * it in case the user didn't top the window/application
+     */
       
-      app_button->priv->prev_button = NULL;
-      for (l = app_button->group; l != NULL; l = l->next)
-        {
-          tmp_button = l->data;
+    app_button->priv->prev_button = NULL;
+    for (l = app_button->group; l != NULL; l = l->next)
+    {
+      tmp_button = l->data;
 
-          if (tmp_button->active && (tmp_button != toggle_button))
-            {
-              app_button->priv->prev_button = tmp_button;
-              break;
-            }
-        }
-  
+      if (tmp_button->active && (tmp_button != toggle_button))
+      {
+         app_button->priv->prev_button = tmp_button;
+         break;
+      }
+    }
+    
+    n_children = hd_entry_info_get_n_children (app_button->priv->info);
+
+    if (n_children > 1 || 
+	event->keyval == GDK_KP_Enter || 
+	event->keyval == GDK_ISO_Enter || 
+	event->keyval == GDK_Return)
+    {
       gtk_toggle_button_set_active (toggle_button, TRUE);
       gtk_toggle_button_toggled (toggle_button);
-  
+    	    
       hn_app_button_pop_menu (app_button);
-      return TRUE;
     }
-  else if(event->keyval == GDK_Left || event->keyval == GDK_KP_Left)
-	{
-      HN_DBG("left keypress -- passing focus to last active app");
-      g_debug ("%s: %d, hd_wm_activate(HN_TN_ACTIVATE_LAST_APP_WINDOW);",__FILE__,__LINE__);
-	}
-
+      
+    return TRUE;
+  }
+  
   return FALSE;
 }
 
