@@ -1,3 +1,9 @@
+osso-gnome-vfs2 (2.16.3-1osso14) unstable; urgency=low
+
+  * Add missing #DEBHELPER# marker in libosso-gnomevfs2-common.postinst
+
+ -- Richard Hult <richard@imendio.com>  Fri, 13 Apr 2007 09:42:07 +0200
+
 osso-gnome-vfs2 (2.16.3-1osso13) unstable; urgency=low
 
   * Enable hal build option
