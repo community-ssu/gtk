@@ -213,6 +213,28 @@ check_buttonbox_child_position (GtkWidget *child, ThemeMatchData *match_data)
   g_list_free (children);
 }
 
+static void
+gtk_container_children_callback (GtkWidget *widget,
+				 gpointer   client_data)
+{
+  GList **children;
+
+  children = (GList**) client_data;
+  *children = g_list_prepend (*children, widget);
+}
+
+static GList *
+gtk_container_get_all_children (GtkContainer *container)
+{
+  GList *children = NULL;
+
+  gtk_container_forall (container,
+			gtk_container_children_callback,
+			&children);
+
+  return children;
+}
+
 static gboolean
 draw_simple_image(GtkStyle       *style,
 		  GdkWindow      *window,
@@ -225,6 +247,7 @@ draw_simple_image(GtkStyle       *style,
 		  gint            width,
 		  gint            height)
 {
+  gboolean maemo_position_theming;
   ThemeImage *image;
   
   if ((width == -1) && (height == -1))
@@ -244,11 +267,25 @@ draw_simple_image(GtkStyle       *style,
 	match_data->orientation = GTK_ORIENTATION_HORIZONTAL;
     }
 
-  /* Special handling for buttons in dialogs */
-  if (GTK_IS_BUTTON (widget))
+  /* Check for maemo-position-theming to update the position data */
+  if (widget->parent)
     {
-      if (GTK_IS_BUTTON_BOX (widget->parent))
-	check_buttonbox_child_position (widget, match_data);
+      gtk_widget_style_get (widget->parent,
+			    "maemo-position-theming", &maemo_position_theming,
+			    NULL);
+      if (maemo_position_theming)
+	{
+	  if (GTK_IS_BUTTON_BOX (widget->parent))
+	    check_buttonbox_child_position (widget, match_data);
+	  else
+	    {
+	      GList *children;
+
+	      children = gtk_container_get_all_children (widget->parent);
+	      check_child_position (widget, children, match_data);
+	      g_list_free (children);
+	    }
+	}
     }
     
   image = match_theme_image (style, match_data);
