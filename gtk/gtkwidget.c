@@ -1700,6 +1700,16 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 								 TRUE,
 								 GTK_PARAM_READABLE));
 
+#ifdef MAEMO_CHANGES
+  gtk_widget_class_install_style_property (klass,
+					   g_param_spec_boolean ("maemo-position-theming",
+								 P_("Maemo position theming"),
+								 P_("Theming hint to allow rounded corner effects on border children"),
+								 FALSE,
+								 GTK_PARAM_READABLE));
+#endif
+
+
   gtk_widget_class_install_style_property (klass,
 					   g_param_spec_int ("focus-line-width",
 							     P_("Focus linewidth"),
