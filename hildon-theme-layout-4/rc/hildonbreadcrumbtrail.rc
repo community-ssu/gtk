@@ -1,0 +1,130 @@
+#########################
+# HildonBreadCrumbTrail #
+#########################
+
+style "osso-bread-crumb"
+{
+  GtkWidget::maemo-position-theming = 1
+}
+
+widget "*.HildonBreadCrumbTrail" style "osso-bread-crumb"
+
+style "osso-breadcrumb-backbutton-arrow"
+{
+  engine "sapwood" {
+
+    image {
+      function = ARROW
+	state = INSENSITIVE
+	overlay_file = "../images/qgn_plat_breadcrumb_arrow_disabled.png"
+	overlay_stretch = FALSE
+	}
+    image {
+      function = ARROW
+	state = ACTIVE
+	overlay_file = "../images/qgn_plat_breadcrumb_arrow_pressed.png"
+	overlay_stretch = FALSE
+	}
+    image {
+      function = ARROW
+	overlay_file = "../images/qgn_plat_breadcrumb_arrow_normal.png"
+	overlay_stretch = FALSE
+	}
+  }
+}
+
+widget "*.hildon-bread-crumb-back-button.GtkArrow" style "osso-breadcrumb-backbutton-arrow"
+
+style "osso-bread-crumb-back-button" {
+  GtkButton::inner-border = { 0, 0, 9, 9 }
+
+  engine "sapwood" {
+    image {
+      function = FOCUS
+	state = ACTIVE
+	file = "../images/qgn_plat_breadcrumb_backbutton_pressed.png"
+	border = { 6, 6, 27, 28 }
+    }
+
+    image {
+      function = FOCUS
+	file = "../images/qgn_plat_breadcrumb_backbutton_focused.png"
+	border = { 5, 5, 27, 28 }
+    }
+
+    image {
+      function = BOX
+	file = "../images/qgn_plat_breadcrumb_backbutton_normal.png"
+	border = { 4, 4, 27, 28 }
+    }
+  }
+}
+
+widget "*.hildon-bread-crumb-back-button" style "osso-bread-crumb-back-button"
+
+style "osso-bread-crumb-button-arrow"
+{
+  engine "sapwood" {
+    image {
+      function = ARROW
+	state = ACTIVE
+	overlay_file = "../images/qgn_plat_breadcrumb_separator_pressed.png"
+	overlay_stretch = FALSE
+	}
+    image {
+      function = ARROW
+	overlay_file = "../images/qgn_plat_breadcrumb_separator_normal.png"
+	overlay_stretch = FALSE
+	}
+
+  }
+}
+
+widget "*.hildon-bread-crumb-separator-arrow" style "osso-bread-crumb-button-arrow"
+
+style "osso-bread-crumb-button" {
+  engine "sapwood" {
+    image {
+      function = BOX
+	position = RIGHT, TOP, BOTTOM
+	file = "../images/qgn_plat_breadcrumb_end_normal.png"
+	border = { 0, 2, 28, 29 }
+    }
+    image {
+      function = FOCUS
+	state = ACTIVE
+	position = RIGHT, TOP, BOTTOM
+	file = "../images/qgn_plat_breadcrumb_end_pressed.png"
+	border = { 4, 4, 28, 29 }
+    }
+
+    image {
+      function = FOCUS
+	position = RIGHT, TOP, BOTTOM
+	file = "../images/qgn_plat_breadcrumb_end_focused.png"
+	border = { 4, 4, 28, 29 }
+    }
+
+    image {
+      function = FOCUS
+	state = ACTIVE
+	file = "../images/qgn_plat_breadcrumb_middle_pressed.png"
+	border = { 4, 4, 28, 29 }
+    }
+
+    image {
+      function = BOX
+	file ="../images/qgn_plat_breadcrumb_middle_normal.png"
+	border = { 1, 0, 28, 29 }
+    }
+
+    image {
+      function = FOCUS
+	file = "../images/qgn_plat_breadcrumb_middle_focused.png"
+	border = { 4, 4, 28, 29 }
+    }
+
+  }
+}
+
+widget "*.HildonBreadCrumbTrail.HildonBreadCrumb" style "osso-bread-crumb-button"

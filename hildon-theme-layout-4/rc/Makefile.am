@@ -68,7 +68,8 @@ RC_FILES				= afterincludes.rc 		\
 					  ossospeeddial.rc 		\
 					  themespecificgtk.rc		\
 					  hildonthumbscrollbar.rc	\
-					  hildoncalendar.rc
+					  hildoncalendar.rc		\
+					  hildonbreadcrumbtrail.rc
 
 gtkrc: $(RC_FILES)
 	hildon-theme-rc-parser gtkrc.rc gtkrc

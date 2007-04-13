@@ -1,3 +1,10 @@
+2007-04-13  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/hildonbreadcrumbtrail.rc:
+	* rc/Makefile.rc:
+
+	Add HildonBreadCrumbTrail rc file.
+
 2007-04-11  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: moved voip buttons more tightly together and 
