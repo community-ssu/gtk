@@ -1,3 +1,9 @@
+2007-04-13  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.*: added custom tabs for mediaplayer.. must
+	split these things away from the template at some point, they dont
+	really belong in the toolkit itself..
+
 2007-04-11  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.*: moved voip buttons closer together.
