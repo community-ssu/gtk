@@ -1,5 +1,12 @@
 2007-04-13  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildonwm/hd-wm-c:
+	- Added dbus method previously removed.
+	* src/hd-desktop.c:
+	- Only check timeout value.
+
+2007-04-13  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
 	- Set no of items for container to 7. Fixes: NB#54193
 

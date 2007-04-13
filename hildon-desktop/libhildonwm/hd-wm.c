@@ -560,6 +560,50 @@ hd_wm_dbus_method_call_handler (DBusConnection *connection,
 				void           *data)
 {
   const gchar *path;
+  HDWM  *hdwm = HD_WM (data);
+
+  /* Catch APP_LAUNCH_BANNER_METHOD */
+  if (dbus_message_is_method_call (message,
+                                  APP_LAUNCH_BANNER_METHOD_INTERFACE,
+                                  APP_LAUNCH_BANNER_METHOD ) )
+  {
+    DBusError         error;
+    gchar            *service_name = NULL;
+    HDWMWatchableApp *app;
+
+    dbus_error_init (&error);
+
+    dbus_message_get_args (message,
+                          &error,
+                          DBUS_TYPE_STRING,
+                          &service_name,
+                          DBUS_TYPE_INVALID );
+
+    if (dbus_error_is_set (&error))
+    {
+      g_warning ("Error getting message args: %s\n", error.message);
+      dbus_error_free (&error);
+      return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    }
+
+    g_return_val_if_fail (service_name, DBUS_HANDLER_RESULT_NOT_YET_HANDLED);
+
+    g_debug ("Checking if service: '%s' is watchable", service_name);
+
+    /* Is this 'service' watchable ? */
+    if ((app = hd_wm_lookup_watchable_app_via_service (service_name)) != NULL)
+    {
+      if (hd_wm_watchable_app_has_startup_notify (app) &&
+         hdwm->priv->lowmem_banner_timeout >= 0 &&
+         !hd_wm_watchable_app_has_windows (app))
+      {
+        g_signal_emit_by_name (hdwm,
+                               "application-starting",
+                               app);
+      }
+    }
+  }
+
 
   path = dbus_message_get_path(message);
   if (path != NULL && g_str_equal(path, TASKNAV_GENERAL_PATH))

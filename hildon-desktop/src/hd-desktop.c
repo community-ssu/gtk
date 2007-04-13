@@ -152,8 +152,8 @@ hd_desktop_launch_banner_timeout (gpointer data)
   t2 = (long unsigned int) current_time.tv_sec;
   time_left = (guint) (t2 - t1);
 
-  if (time_left >= current_banner_timeout ||
-      hd_wm_watchable_app_has_windows (info->app))
+  if (time_left >= current_banner_timeout+4)/* ||
+      hd_wm_watchable_app_has_windows (info->app))*/
   {
     hd_desktop_launch_banner_close (NULL, info);
     return FALSE;
