@@ -129,6 +129,7 @@ static void _mime_handler(osso_context_t *osso,
         gchar *arg = NULL;
 	DBusMessageIter iter;
         osso_mime_cb_f *handler;
+        DBusMessage *reply = NULL;
 
         argc = get_message_arg_count(msg);
         if (argc == 0) {
@@ -158,6 +159,13 @@ static void _mime_handler(osso_context_t *osso,
         handler = mime->user_cb;
 	(*handler)(mime->user_data, argc, argv);
         free(argv);
+
+        /* send an empty reply message */
+        reply = dbus_message_new_method_return(msg);
+        if (reply != NULL) {
+            dbus_connection_send(osso->cur_conn, reply, NULL);
+            dbus_message_unref(reply);
+        }
     }
 }
 

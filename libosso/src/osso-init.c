@@ -577,6 +577,7 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     _osso_hash_value_t *elem;
     gboolean is_method;
     const char *interface;
+    DBusHandlerResult ret = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 #ifdef OSSOLOG_COMPILE
     gboolean found = FALSE;
 #endif
@@ -624,6 +625,7 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 #ifdef OSSOLOG_COMPILE
                 found = TRUE;
 #endif
+                ret = DBUS_HANDLER_RESULT_HANDLED;
             }
 
             list = g_slist_next(list);
@@ -653,7 +655,7 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     }	
 #endif
 
-    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
+    return ret;
 }
 
 inline int __attribute__ ((visibility("hidden")))
@@ -1057,11 +1059,6 @@ static int set_handler_helper(osso_context_t *osso,
         ULOG_WARN_F(" service: %s", service);
         ULOG_WARN_F(" obj. path: %s", object_path);
         ULOG_WARN_F(" interface: %s", interface);
-        fprintf(stderr, "\nLibosso WARNING: yet another "
-                        "handler registered for:\n");
-        fprintf(stderr, " service: %s\n", service);
-        fprintf(stderr, " obj. path: %s\n", object_path);
-        fprintf(stderr, " interface: %s\n", interface);
 
         /* add it to the list of handlers */
         old->handlers = g_slist_append(old->handlers, handler);
