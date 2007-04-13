@@ -1,6 +1,5 @@
 libosso (2.6-1) unstable; urgency=low
 
-  * UNRELEASED
   * Fixed typos and referring to DBUS_TYPE_NIL in libosso.h documentation.
   * Now sending an empty reply message after a MIME handler was called.
   * Now returning DBUS_HANDLER_RESULT_HANDLED for handled method calls,
