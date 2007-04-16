@@ -95,11 +95,7 @@ binary-arch: build install
 	dh_makeshlibs -V
 	dh_installdeb
 	dh_shlibdeps
-	dh_gencontrol -p libhildonfm2
-	dh_gencontrol -p libhildonfm2-dev
-	dh_gencontrol -p libhildonfm2-dbg
-	dh_gencontrol -p hildon-fm1 -u "-v2.14"
-	dh_gencontrol -p hildon-fm-dev -u "-v2.14"
+	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
 
