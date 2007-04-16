@@ -1,11 +1,17 @@
 2007-04-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	* hildon-fm/hildon-file-system-info.c
+	(hildon_file_system_info_async_new): Use g_slice_new0 and
+	g_slice_free after all.  The slice allocator is the recommended
+	general purpose allocator now.  Thanks to Martyn again for
+	explaining this!
+
 	Released 1.9.14.
 	
 	* hildon-fm/hildon-file-system-info.c
 	(hildon_file_system_info_free): Use g_free instead of g_slice_free
 	to free the HildonFileSystemInfo structure since we have allocated
-	it with g_new0 (N54107).  Thanks to Russel Martyn!
+	it with g_new0 (N54107).  Thanks to Martyn Russell!
 
 2007-03-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
