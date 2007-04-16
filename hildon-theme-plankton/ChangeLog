@@ -1,3 +1,13 @@
+2007-04-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[4.6.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+	* template/Makefile.am: Updating.
+
 2007-04-13  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.*: added custom buttons for voip app.

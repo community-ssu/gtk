@@ -1,3 +1,14 @@
+hildon-theme-plankton (4.6.0-1) unstable; urgency=low
+
+  * Added combobox artwork, removed old cruft. Some cleanups too.
+  * Added some new logical colours.
+  * Added some alpha to applet backgrounds.
+  * Moved voip buttons closer together.
+  * Added custom tabs for mediaplayer. 
+  * Added custom buttons for voip app.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Mon, 16 Apr 2007 11:44:09 +0300
+
 hildon-theme-plankton (4.5.0-1) unstable; urgency=low
 
   * debian/control: Fix Build-Depends syntax
