@@ -1,3 +1,6 @@
+[0.6.1-1 release]
+* Add special case for position theming when there's only one breadcrumb.
+
 [0.6.0-1 release]
 * Removing the alternative font defs for the time being
 * Set maemo-position-theming style property
