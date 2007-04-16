@@ -1,3 +1,12 @@
+gtk+2.0 (2:2.10.6-0osso10) unstable; urgency=low
+
+  * Don't close menus on clicks on their border area.
+  * Fix treeview focusing with button press.
+  * Add "maemo-position-theming" style property, used in sapwood to add
+    positioning data to the matching rules.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 16 Apr 2007 11:07:02 +0300
+
 gtk+2.0 (2:2.10.6-0osso9) unstable; urgency=low
 
   * HILDON_GTK_INPUT_MODE_DICTIONARY added
