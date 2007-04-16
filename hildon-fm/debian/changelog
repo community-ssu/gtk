@@ -1,3 +1,11 @@
+libhildonfm (1:1.9.15) unstable; urgency=low
+
+  * Improve fix for NB#54107.
+  * Do not use special versions for hildon-fm1 and hildon-fm-dev, there is
+    no point and it's a pain to maintain.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 16 Apr 2007 16:33:54 +0300
+
 libhildonfm (1:1.9.14) unstable; urgency=low
 
   * Fixes: NB#54107.
