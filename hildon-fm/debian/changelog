@@ -1,7 +1,10 @@
-libhildonfm (1:1.9.14) UNRELEASED; urgency=low
+libhildonfm (1:1.9.14) unstable; urgency=low
 
-  * NOT RELEASED YET
+  * Fixes: NB#54107.
+    HildonFileSystemInfo uses g_new0() with g_slice_free() causing crashes
 
+  From Tommi Komulainen <tommi.komulainen@nokia.com>:
+  
   * Improve gtk-doc packaging:
     * debian/rules:
       - remove misleading --with-doc-dir
@@ -12,7 +15,7 @@ libhildonfm (1:1.9.14) UNRELEASED; urgency=low
     * debian/libhildonfm2-dev.links: add symbolic link to gtk-doc dir, it
       makes crossreferences to hildon-fm relative, which is a good thing.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 23 Mar 2007 14:04:11 +0200
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 16 Apr 2007 14:52:00 +0300
 
 libhildonfm (1:1.9.13) unstable; urgency=low
 
