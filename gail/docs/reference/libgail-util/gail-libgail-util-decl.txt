@@ -1,0 +1,125 @@
+<FUNCTION>
+<NAME>gail_misc_add_attribute</NAME>
+<RETURNS>AtkAttributeSet*</RETURNS>
+AtkAttributeSet   *attrib_set,AtkTextAttribute   attr,gchar             *value
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_layout_get_run_attributes</NAME>
+<RETURNS>AtkAttributeSet *</RETURNS>
+AtkAttributeSet   *attrib_set,PangoLayout       *layout,gchar             *text,gint              offset,gint              *start_offset,gint              *end_offset
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_get_default_attributes</NAME>
+<RETURNS>AtkAttributeSet*</RETURNS>
+AtkAttributeSet   *attrib_set,PangoLayout       *layout,GtkWidget         *widget
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_get_extents_from_pango_rectangle</NAME>
+<RETURNS>void  </RETURNS>
+GtkWidget         *widget,PangoRectangle    *char_rect,gint              x_layout,gint              y_layout,gint              *x,gint              *y,gint              *width,gint              *height,AtkCoordType      coords
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_get_index_at_point_in_layout</NAME>
+<RETURNS>gint  </RETURNS>
+GtkWidget         *widget,PangoLayout       *layout,gint              x_layout,gint              y_layout,gint              x,gint              y,AtkCoordType      coords
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_get_origins</NAME>
+<RETURNS>void		 </RETURNS>
+GtkWidget         *widget,gint              *x_window,gint              *y_window,gint              *x_toplevel,gint              *y_toplevel
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_add_to_attr_set</NAME>
+<RETURNS>AtkAttributeSet*</RETURNS>
+AtkAttributeSet   *attrib_set,GtkTextAttributes *attrs,AtkTextAttribute  attr
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_misc_buffer_get_run_attributes</NAME>
+<RETURNS>AtkAttributeSet *</RETURNS>
+GtkTextBuffer     *buffer,gint              offset,gint              *start_offset,gint              *end_offset
+</FUNCTION>
+<MACRO>
+<NAME>GAIL_TYPE_TEXT_UTIL</NAME>
+#define GAIL_TYPE_TEXT_UTIL                  (gail_text_util_get_type ())
+</MACRO>
+<MACRO>
+<NAME>GAIL_TEXT_UTIL</NAME>
+#define GAIL_TEXT_UTIL(obj)                  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GAIL_TYPE_TEXT_UTIL, GailTextUtil))
+</MACRO>
+<MACRO>
+<NAME>GAIL_TEXT_UTIL_CLASS</NAME>
+#define GAIL_TEXT_UTIL_CLASS(klass)          (G_TYPE_CHECK_CLASS_CAST ((klass), GAIL_TYPE_TEXT_UTIL, GailTextUtilClass))
+</MACRO>
+<MACRO>
+<NAME>GAIL_IS_TEXT_UTIL</NAME>
+#define GAIL_IS_TEXT_UTIL(obj)               (G_TYPE_CHECK_INSTANCE_TYPE ((obj), GAIL_TYPE_TEXT_UTIL))
+</MACRO>
+<MACRO>
+<NAME>GAIL_IS_TEXT_UTIL_CLASS</NAME>
+#define GAIL_IS_TEXT_UTIL_CLASS(klass)       (G_TYPE_CHECK_CLASS_TYPE ((klass), GAIL_TYPE_TEXT_UTIL))
+</MACRO>
+<MACRO>
+<NAME>GAIL_TEXT_UTIL_GET_CLASS</NAME>
+#define GAIL_TEXT_UTIL_GET_CLASS(obj)        (G_TYPE_INSTANCE_GET_CLASS ((obj), GAIL_TYPE_TEXT_UTIL, GailTextUtilClass))
+</MACRO>
+<ENUM>
+<NAME>GailOffsetType</NAME>
+typedef enum
+{
+  GAIL_BEFORE_OFFSET,
+  GAIL_AT_OFFSET,
+  GAIL_AFTER_OFFSET
+}GailOffsetType;
+</ENUM>
+<STRUCT>
+<NAME>GailTextUtil</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GailTextUtilClass</NAME>
+</STRUCT>
+<STRUCT>
+<NAME>GailTextUtil</NAME>
+struct _GailTextUtil
+{
+  GObject parent;
+
+  GtkTextBuffer *buffer;
+};
+</STRUCT>
+<STRUCT>
+<NAME>GailTextUtilClass</NAME>
+struct _GailTextUtilClass
+{
+  GObjectClass parent_class;
+};
+</STRUCT>
+<FUNCTION>
+<NAME>gail_text_util_get_type</NAME>
+<RETURNS>GType         </RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_text_util_new</NAME>
+<RETURNS>GailTextUtil*</RETURNS>
+void
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_text_util_text_setup</NAME>
+<RETURNS>void          </RETURNS>
+GailTextUtil    *textutil,const gchar     *text
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_text_util_buffer_setup</NAME>
+<RETURNS>void          </RETURNS>
+GailTextUtil    *textutil,GtkTextBuffer   *buffer
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_text_util_get_text</NAME>
+<RETURNS>gchar*</RETURNS>
+GailTextUtil    *textutil,gpointer        layout,GailOffsetType  function,AtkTextBoundary boundary_type,gint            offset,gint            *start_offset,gint            *end_offset
+</FUNCTION>
+<FUNCTION>
+<NAME>gail_text_util_get_substring</NAME>
+<RETURNS>gchar*</RETURNS>
+GailTextUtil    *textutil,gint            start_pos,gint            end_pos
+</FUNCTION>

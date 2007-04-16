@@ -1,0 +1,477 @@
+gail (1.18.0-osso1)  UNRELEASED; urgency=low
+
+  * New package based on ubuntu one.
+  * Added a patch to remove gnome-canvas dependency
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Mon, 16 Apr 2007 15:12:31 +0100
+
+gail (1.18.0-0ubuntu1) feisty; urgency=low
+
+  * New upstream release:
+    - the GNOME 2.18.0 version of gail.
+    - Translation updates.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon, 12 Mar 2007 15:12:31 +0100
+
+gail (1.17.0-0ubuntu1) feisty; urgency=low
+
+  * New upstream release.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon, 12 Feb 2007 15:41:58 +0100
+
+gail (1.10.1-0ubuntu1) feisty; urgency=low
+
+  * New upstream release.
+  * debian/libgail18.shlibs:
+    - bumped shlibs.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon, 22 Jan 2007 17:06:32 +0100
+
+gail (1.10.0-0ubuntu1) feisty; urgency=low
+
+  * New upstream release.
+  * debian/control.in:
+    - bumped atk requirement.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon,  8 Jan 2007 18:56:10 +0100
+
+gail (1.9.4-0ubuntu1) feisty; urgency=low
+
+  * New upstream release:
+    - lots of bugfixes.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Tue, 19 Dec 2006 13:40:34 +0100
+
+gail (1.9.3-0ubuntu1) edgy; urgency=low
+
+  * New upstream release:
+    - Lots of Bugfixes.
+  * debian/libgail18.shlibs:
+    - bumped, new interfaces.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon,  2 Oct 2006 11:18:39 +0200
+
+gail (1.9.2-0ubuntu1) edgy; urgency=low
+
+  * New upstream release. 
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Tue, 22 Aug 2006 09:27:25 +0200
+
+gail (1.9.1-0ubuntu1) edgy; urgency=low
+
+  * New upstream release.
+  * debian/patches/000_relibtoolise.patch:
+    - dropped, does not apply, unnecessary.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Fri, 28 Jul 2006 11:36:48 +0200
+
+gail (1.9.0-0ubuntu1) edgy; urgency=low
+
+  * New upstream release.
+  * debian/control.in:
+    - bumped GTK {Build-,}Depends.
+  * debian/*:
+    - changes for soname change. 
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Fri, 21 Jul 2006 16:38:58 +0200
+
+gail (1.8.11-2ubuntu1) edgy; urgency=low
+
+  * Resynchronized with Debian, only Ubuntu changes are:
+    - debian/control.in: don't require exact Debian revisions of gnomecanvas
+      and orbit as we haven't merged them yet - we should be able to sync the
+      next Debian version again.
+
+ -- Daniel Holbach <daniel.holbach@ubuntu.com>  Mon,  3 Jul 2006 12:16:30 +0200
+
+gail (1.8.11-2) unstable; urgency=low
+
+  * Bump build-deps to libgtk2.0-dev >= 2.8.17-1, liborbit2-dev >= 1:2.14.0-1,
+    libgnomecanvas2-dev >= 2.14.0-2 to build without any reference to Xcursor
+    or Xrender.la.
+    [debian/control, debian/control.in]
+  * Bump deps of libgail-dev to libgtk2.0-dev >= 2.8.17-1, libgnomecanvas2-dev
+    >= 2.14.0-2 to pull packages without any reference to Xcursor.la or
+    Xrender.la.
+    [debian/control, debian/control.in]
+  * Add ${misc:Depends}.
+    [debian/control, debian/control.in]
+
+ -- Loic Minier <lool@dooz.org>  Sun, 23 Apr 2006 18:42:30 +0200
+
+gail (1.8.11-1) unstable; urgency=low
+
+  * New upstream release: the GNOME 2.14.0 version of gail.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Thu, 16 Mar 2006 08:18:46 +0100
+
+gail (1.8.10-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Tue, 21 Feb 2006 19:17:48 +0100
+
+gail (1.8.9-1) unstable; urgency=low
+
+  * New upstream bugfix release.
+  * [debian/patches/000_relibtoolise.patch] Updated.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Tue, 14 Feb 2006 20:34:10 +0100
+
+gail (1.8.8-1) unstable; urgency=medium
+
+  * New upstream bugfix release. Verified that no update of the relibtoolizing
+    patch is needed.
+
+  Loic Minier <lool@dooz.org>:
+  * Cut "shared libraries" by a couple of chars to fit in width.
+    [debian/control, debian/control.in]
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sat,  3 Dec 2005 12:11:50 +0100
+
+gail (1.8.7-1) unstable; urgency=medium
+
+  * New upstream release, fixing a regression in 1.8.6.
+    - Update relibtoolizing patch.
+      [debian/patches/000_relibtoolise.patch]
+
+ -- Loic Minier <lool@dooz.org>  Thu, 24 Nov 2005 13:54:02 +0100
+
+gail (1.8.6-1) unstable; urgency=low
+
+  * New upstream release.
+  * Don't overwrite CFLAGS, DEB_CONFIGURE_EXTRA_FLAGS, and
+    DEB_CONFIGURE_EXTRA_FLAGS.
+    [debian/rules]
+  * Add CDBS' utils.
+    [debian/rules]
+  * Update upstream URL and watch file.
+    [debian/copyright, debian/watch]
+  * Clarify copyright versus license and actually include license.
+    [debian/copyright]
+  * Drop obsolete Replaces/Conflicts.
+    [debian/control, debian/control.in]
+  * Add missing libatk1.0-dev dep on libgail-dev (referenced in gail.pc).
+    [debian/control, debian/control.in]
+  * Add missing deps on libgail-dev (referenced in *.la): libart-2.0-dev,
+    libglib2.0-dev, libpango1.0-dev.
+    [debian/control, debian/control.in]
+  * Update relibtoolizing patch.
+    [debian/patches/000_relibtoolise.patch]
+
+ -- Loic Minier <lool@dooz.org>  Mon, 14 Nov 2005 17:56:20 +0100
+
+gail (1.8.5-1) unstable; urgency=medium
+
+  * New (for Debian) upstream bugfix and translations update release.
+  * [debian/control.in] Bumped Standards-Version.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sun, 18 Sep 2005 13:57:40 +0200
+
+gail (1.8.5-0ubuntu2) breezy; urgency=low
+
+  * Add B-D gtk-doc-tools to fix FTBFS when building arch all pkgs.
+  (Closes: #14598)
+
+ -- Fabio M. Di Nitto <fabbione@ubuntu.com>  Fri, 09 Sep 2005 11:37:22 +0200
+
+gail (1.8.5-0ubuntu1) breezy; urgency=low
+
+  * New upstream version.
+  * debian/patches/000_relibtoolise.patch:
+    - updated.
+
+ -- Sebastien Bacher <seb128@canonical.com>  Wed, 31 Aug 2005 18:35:24 +0200
+
+gail (1.8.4-1) unstable; urgency=medium
+
+  * New upstream bugfix and translations update release.
+  * [debian/patches/000_relibtoolise.patch] Updated.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Fri, 29 Apr 2005 06:51:39 +0200
+
+gail (1.8.3-1) unstable; urgency=medium
+
+  * New upstream bugfix and translations update release.
+  * [debian/patches/000_relibtoolise.patch] Updated.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sat, 23 Apr 2005 18:27:26 +0200
+
+gail (1.8.2-1) unstable; urgency=medium
+
+  * New upstream bugfix release.
+  * [debian/control.in] Reworked the descriptions a bit.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Tue,  4 Jan 2005 21:42:58 +0100
+
+gail (1.8.1-1) unstable; urgency=low
+
+  * GNOME team upload.
+  * New upstream release.
+
+ -- Jordi Mallach <jordi@debian.org>  Thu, 30 Dec 2004 03:57:02 +0100
+
+gail (1.8.0-2) unstable; urgency=low
+
+  * Upload to unstable.
+
+ -- Sebastien Bacher <seb128@debian.org>  Fri, 19 Nov 2004 19:58:21 +0100
+
+gail (1.8.0-1) experimental; urgency=low
+
+  * New upstream release.
+  * [debian/control.in] Dropped gtk-doc-tools build dependency; the upstream
+    tarball now includes HTML files we can use.
+  * [debian/watch] Updated.
+  * [debian/patches/000_relibtoolise.patch] Updated.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Tue, 14 Sep 2004 20:54:06 +0200
+
+gail (1.7.1-2) experimental; urgency=low
+
+  * [debian/*] Added files that were accidentally missing in the subversion
+    repository; this makes the packages usable. (Closes: #271197)
+  * [debian/rules] Generate the documentation as the HTML rendering isn't
+    included in the tarball.
+  * [debian/control.in] Added build dependency on gtk-doc-tools.
+  * [debian/patches/000_relibtoolise.patch] Updated; added AM_MAINTAINER_MODE.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sun, 12 Sep 2004 11:25:40 +0200
+
+gail (1.7.1-1) experimental; urgency=low
+
+  * New upstream development release.
+  * [debian/control.in] Updated build dependencies (following configure.in).
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sat, 11 Sep 2004 13:37:13 +0200
+
+gail (1.6.6b-1) unstable; urgency=low
+
+  * GNOME Team Upload.
+  * Switched to CDBS.
+  * debian/control.in:
+    - updated the Build-Depends.
+  * debian/*.files:
+    - changes for *.install files.
+  * debian/libgail-doc.doc-base.gail-reference:
+    - updated.
+  * debian/rules:
+    - switched to CDBS.
+
+ -- Sebastien Bacher <seb128@debian.org>  Mon,  6 Sep 2004 22:56:13 +0200
+
+gail (1.6.6-2) unstable; urgency=medium
+
+  * [debian/rules] Don't update config.{guess,sub}; that's done by the
+    relibtoolise patch.
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sun,  5 Sep 2004 14:57:33 +0200
+
+gail (1.6.6-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #267699)
+  * Gnumeric crashes when accessibility is enabled have been fixed upstream
+    (http://bugzilla.gnome.org/show_bug.cgi?id=151070).
+  * [debian/patches/000_relibtoolise.patch] New.
+  * [debian/fixed-ltmain.sh] Dropped.
+  * [docs/reference/libgail-util/gail-libgail-util-docs.sgml] The FPI was
+    corrected upstream. (Closes: #219767)
+
+ -- J.H.M. Dassen (Ray) <jdassen@debian.org>  Sat,  4 Sep 2004 16:08:40 +0200
+
+gail (1.4.1-2) unstable; urgency=low
+
+  * Akira TAGOH <tagoh@debian.org>
+  - debian/control:
+    - added gnome-pkg-tools to Build-Depends.
+  - debian/rules:
+    - modified to generate debian/control from gnome-pkg-tools.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 28 Oct 2003 20:14:29 +0900
+
+gail (1.4.1-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    - updated Build-Depends.
+    - bumped Standards-Version to 3.6.1.0  .
+  * debian/rules:
+    - comment fixed-ltmain.sh copy.
+  * Gnome Team Upload
+
+ -- Sebastien Bacher <seb128@debian.org>  Sun, 19 Oct 2003 13:03:21 +0200
+
+gail (1.2.2-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/cntrol:
+    - bumped Standards-Version to 3.5.10.0.
+  * debian/patches/000_gail-debian-libtool.patch:
+    - removed.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 18 May 2003 02:26:04 +0900
+
+gail (1.2.1-1) unstable; urgency=low
+
+  * New upsream release.
+  * debian/control:
+    - bumped Standards-Version to 3.5.9.
+    - changed the section for libgail-dbg and libgail-dev to libdevel.
+  * debian/compat:
+    - use it instead of DH_COMPAT.
+  * debian/patches/000_gail-debian-libtool.patch:
+    - updated.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sun, 20 Apr 2003 01:42:29 +0900
+
+gail (1.2.0-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 21 Jan 2003 03:56:36 +0900
+
+gail (1.1.7-2) unstable; urgency=low
+
+  * debian/patches/000_gail-1.1.7-libtool.patch:
+    applied to fix the build issue for mipsel. (closes: Bug#177113)
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 18 Jan 2003 05:03:25 +0900
+
+gail (1.1.7-1) unstable; urgency=low
+
+  * New upstream release.
+  * Build against the latest GTK+ libraries. (closes: Bug#176088)
+  * debian/control:
+    - updated Build-Depends.
+    - bumped Standards-Version to 3.5.8.
+    - fix description-synopsis-might-not-be-phrased-properly stuff.
+  * debian/rules:
+    - support noopt option for DEB_BUILD_OPTIONS.
+  * debian/copyright:
+    fix copyright-lists-upstream-authors-with-dh_make-boilerplate stuff.
+
+ -- Akira TAGOH <tagoh@debian.org>  Fri, 17 Jan 2003 13:22:14 +0900
+
+gail (0.17-2) unstable; urgency=low
+
+  * debian/control: removed libc6-dev from Build-Depends.
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu, 22 Aug 2002 01:48:10 +0900
+
+gail (0.17-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/control:
+    - updates Build-Depends and Depends for libgtk2.0-dev.
+    - add libgail-doc package.
+
+ -- Akira TAGOH <tagoh@debian.org>  Fri,  9 Aug 2002 03:24:23 +0900
+
+gail (0.16-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Wed, 12 Jun 2002 20:07:16 +0900
+
+gail (0.15-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu,  6 Jun 2002 02:48:10 +0900
+
+gail (0.13-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/scripts/vars.build: fix bashism.
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu, 18 Apr 2002 02:33:55 +0900
+
+gail (0.11-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/000_gail-0.9-fixconfigure.patch:
+    removed. it's no longer needed for build.
+
+ -- Akira TAGOH <tagoh@debian.org>  Sat, 30 Mar 2002 04:53:54 +0900
+
+gail (0.9-2) unstable; urgency=low
+
+  * Build against the latest libraries.
+  * debian/rules: copying the latest config.sub and config.guess.
+  * debian/control: next release will be changed directories location. so I
+    changed packaging
+    - renamed from libgail0 to libgail-common
+    - renamed from libgailutil9 to libgail9
+
+ -- Akira TAGOH <tagoh@debian.org>  Mon, 25 Mar 2002 14:36:10 +0900
+
+gail (0.9-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/patches/000_gail-0.9-fixconfigure.patch:
+    add sh path for the configure script fix patch.
+  * debian/rules: remove the libraries on test directory.
+
+ -- Akira TAGOH <tagoh@debian.org>  Wed,  6 Mar 2002 02:52:29 +0900
+
+gail (0.8-3) unstable; urgency=low
+
+  * Build against the latest libraries again.
+  * debian/rules: changed as the following
+    - support DEB_HOST_GNU_TYPE and DEB_BUILD_GNU_TYPE.
+    - support debug and nostrip for DEB_BUILD_OPTIONS.
+
+ -- Akira TAGOH <tagoh@debian.org>  Wed, 27 Feb 2002 02:14:09 +0900
+
+gail (0.8-2) unstable; urgency=low
+
+  * Build against GTK+ 1.3.14 families.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 19 Feb 2002 03:17:55 +0900
+
+gail (0.8-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Fri, 15 Feb 2002 02:02:45 +0900
+
+gail (0.7-1) unstable; urgency=low
+
+  * New upstream release.
+  * Add versioned liblinc-dev and liborbit2-dev to Build-Depends
+
+ -- Akira TAGOH <tagoh@debian.org>  Thu, 14 Feb 2002 01:16:44 +0900
+
+gail (0.6-2) unstable; urgency=low
+
+  * Build against libglib1.3-13.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue,  5 Feb 2002 01:49:24 +0900
+
+gail (0.6-1) unstable; urgency=low
+
+  * New upstream release.
+
+ -- Akira TAGOH <tagoh@debian.org>  Tue, 29 Jan 2002 23:02:00 +0900
+
+gail (0.5-3) unstable; urgency=low
+
+  * added libgnomecanvas2-dev to build-depends.
+
+ -- Akira TAGOH <tagoh@debian.org>  Fri, 25 Jan 2002 01:55:00 +0900
+
+gail (0.5-2) unstable; urgency=low
+
+  * added libart-2.0-dev to build-depends. (closes: Bug#130180)
+
+ -- Akira TAGOH <tagoh@debian.org>  Mon, 21 Jan 2002 21:24:04 +0900
+
+gail (0.5-1) unstable; urgency=low
+
+  * Initial Release. (closes: Bug#121109)
+
+ -- Akira TAGOH <tagoh@debian.org>  Mon, 14 Jan 2002 01:24:47 +0900
+
+Local variables:
+mode: debian-changelog
+End:

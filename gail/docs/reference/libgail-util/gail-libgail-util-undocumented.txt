@@ -1,0 +1,9 @@
+100% symbol docs coverage.
+19 symbols documented.
+1 symbols incomplete.
+0 not documented.
+
+
+GailTextUtil (parent, buffer)
+
+
