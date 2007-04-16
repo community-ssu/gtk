@@ -53,6 +53,7 @@ include "hildonbreadcrumbbutton.rc"
 include "hildondateeditor.rc"
 include "hildonthumbscrollbar.rc"
 include "hildoncalendar.rc"
+include "hildonbreadcrumbtrail.rc"
 
 include "ossoclock.rc"
 include "ossortc.rc"

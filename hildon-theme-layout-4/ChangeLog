@@ -1,5 +1,14 @@
 2007-04-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[0.6.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* rc/gtkrc.rc: Updating.
+
+2007-04-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/themespecificgtk.rc: Removing the alternative font defs for the
 	time being. Seems to break some things. Need to investiagate.
 

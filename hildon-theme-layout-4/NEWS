@@ -1,3 +1,11 @@
+[0.6.0-1 release]
+* Removing the alternative font defs for the time being
+* Set maemo-position-theming style property
+* HildonBreadCrumbTrail rc file
+* Moved voip buttons more tightly together and evened their spacing for easier editing
+* Moved thumb scrollbars a bit
+* Combobox updates
+
 [0.5.0-1 release]
 * Added qgn_plat_menu_next_level_arrow_focused.png
 * Moving the gtkcalendar styles to hildoncalendar
