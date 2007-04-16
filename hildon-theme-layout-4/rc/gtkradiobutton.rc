@@ -7,7 +7,6 @@ style "osso-radiobutton"
 {
   GtkCheckButton::indicator-size = 26
   GtkCheckButton::indicator-spacing = 2
-  GtkButton::interior-focus = 1
   
   ythickness = 0
 
@@ -72,8 +71,6 @@ style "osso-radiobutton"
     image
       {
         function = FOCUS
-        file = "../images/qgn_plat_focus_active.png"
-        border = { 2, 2, 2, 2 }
       }
 
   }
