@@ -21,6 +21,10 @@
 #ifndef __GTK_FILE_SYSTEM_MODEL_H__
 #define __GTK_FILE_SYSTEM_MODEL_H__
 
+#ifndef GTK_FILE_SYSTEM_ENABLE_UNSUPPORTED
+#error "GtkFileSystemModel is not supported API for general use"
+#endif
+
 #include <glib-object.h>
 #include "gtkfilesystem.h"
 #include <gtk/gtktreemodel.h>
@@ -71,7 +75,7 @@ typedef void (*GtkFileSystemModelPathFunc) (GtkFileSystemModel *model,
 					    GtkTreeIter        *iter,
 					    gpointer            user_data);
 
-gboolean _gtk_file_system_model_path_do (GtkFileSystemModel        *model,
+void     _gtk_file_system_model_path_do (GtkFileSystemModel        *model,
 					 const GtkFilePath         *path,
 					 GtkFileSystemModelPathFunc func,
 					 gpointer                   user_data);

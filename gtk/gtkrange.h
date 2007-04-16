@@ -24,10 +24,6 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-/* Modified by Nokia Corporation - 2005
- * 
- */
-
 #ifndef __GTK_RANGE_H__
 #define __GTK_RANGE_H__
 
@@ -37,9 +33,7 @@
 #include <gtk/gtkwidget.h>
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 
 #define GTK_TYPE_RANGE            (gtk_range_get_type ())
@@ -135,42 +129,51 @@ struct _GtkRangeClass
 };
 
 
-GType          gtk_range_get_type               (void) G_GNUC_CONST;
+GType              gtk_range_get_type                      (void) G_GNUC_CONST;
 
-void           gtk_range_set_update_policy (GtkRange      *range,
-                                            GtkUpdateType  policy);
-GtkUpdateType  gtk_range_get_update_policy (GtkRange      *range);
-void           gtk_range_set_adjustment    (GtkRange      *range,
-                                            GtkAdjustment *adjustment);
-GtkAdjustment* gtk_range_get_adjustment    (GtkRange      *range);
-void           gtk_range_set_inverted      (GtkRange      *range,
-                                            gboolean       setting);
-gboolean       gtk_range_get_inverted      (GtkRange      *range);
-void           gtk_range_set_increments    (GtkRange      *range,
-                                            gdouble        step,
-                                            gdouble        page);
-void           gtk_range_set_range         (GtkRange      *range,
-                                            gdouble        min,
-                                            gdouble        max);
-void           gtk_range_set_value         (GtkRange      *range,
-                                            gdouble        value);
-gdouble        gtk_range_get_value         (GtkRange      *range);
+void               gtk_range_set_update_policy             (GtkRange      *range,
+                                                            GtkUpdateType  policy);
+GtkUpdateType      gtk_range_get_update_policy             (GtkRange      *range);
 
-gdouble	      _gtk_range_get_wheel_delta   (GtkRange           *range,
-					    GdkScrollDirection  direction);
+void               gtk_range_set_adjustment                (GtkRange      *range,
+                                                            GtkAdjustment *adjustment);
+GtkAdjustment*     gtk_range_get_adjustment                (GtkRange      *range);
 
-/* OSSO additions for streaming indicator support. */
-void           osso_gtk_range_set_stream_indicator (GtkRange *range, 
-						    gboolean stream_indicator);
-gboolean       osso_gtk_range_get_stream_indicator (GtkRange *range);
+void               gtk_range_set_inverted                  (GtkRange      *range,
+                                                            gboolean       setting);
+gboolean           gtk_range_get_inverted                  (GtkRange      *range);
 
-void           osso_gtk_range_set_stream_position (GtkRange *range, 
-						   gdouble position);
-gdouble        osso_gtk_range_get_stream_position (GtkRange *range);
+void               gtk_range_set_lower_stepper_sensitivity (GtkRange      *range,
+                                                            GtkSensitivityType sensitivity);
+GtkSensitivityType gtk_range_get_lower_stepper_sensitivity (GtkRange      *range);
+void               gtk_range_set_upper_stepper_sensitivity (GtkRange      *range,
+                                                            GtkSensitivityType sensitivity);
+GtkSensitivityType gtk_range_get_upper_stepper_sensitivity (GtkRange      *range);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+void               gtk_range_set_increments                (GtkRange      *range,
+                                                            gdouble        step,
+                                                            gdouble        page);
+void               gtk_range_set_range                     (GtkRange      *range,
+                                                            gdouble        min,
+                                                            gdouble        max);
+void               gtk_range_set_value                     (GtkRange      *range,
+                                                            gdouble        value);
+gdouble            gtk_range_get_value                     (GtkRange      *range);
+
+void               gtk_range_set_show_fill_level           (GtkRange      *range,
+                                                            gboolean       show_fill_level);
+gboolean           gtk_range_get_show_fill_level           (GtkRange      *range);
+void               gtk_range_set_restrict_to_fill_level    (GtkRange      *range,
+                                                            gboolean       restrict_to_fill_level);
+gboolean           gtk_range_get_restrict_to_fill_level    (GtkRange      *range);
+void               gtk_range_set_fill_level                (GtkRange      *range,
+                                                            gdouble        fill_level);
+gdouble            gtk_range_get_fill_level                (GtkRange      *range);
+
+gdouble            _gtk_range_get_wheel_delta              (GtkRange      *range,
+                                                            GdkScrollDirection direction);
+
+G_END_DECLS
 
 
 #endif /* __GTK_RANGE_H__ */

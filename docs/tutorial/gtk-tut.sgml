@@ -64,33 +64,9 @@ GNU Network Object Model Environment (GNOME) project. GTK is built on
 top of GDK (GIMP Drawing Kit) which is basically a wrapper around the
 low-level functions for accessing the underlying windowing functions
 (Xlib in the case of the X windows system), and gdk-pixbuf, a library for
-client-side image manipulation.
+client-side image manipulation.</para>
+
 </para>
-<para>The primary authors of GTK are:</para>
-
-<itemizedlist>
-<listitem><simpara> Peter Mattis <ulink url="mailto:petm@xcf.berkeley.edu">
-petm@xcf.berkeley.edu</ulink></simpara>
-</listitem>
-<listitem><simpara> Spencer Kimball <ulink url="mailto:spencer@xcf.berkeley.edu">
-spencer@xcf.berkeley.edu</ulink></simpara>
-</listitem>
-<listitem><simpara> Josh MacDonald <ulink url="mailto:jmacd@xcf.berkeley.edu">
-jmacd@xcf.berkeley.edu</ulink></simpara>
-</listitem>
-</itemizedlist>
-
-<para>GTK is currently maintained by:</para>
-
-<itemizedlist>
-<listitem><simpara> Owen Taylor <ulink url="mailto:otaylor@redhat.com">
-otaylor@redhat.com</ulink></simpara>
-</listitem>
-<listitem><simpara> Tim Janik <ulink url="mailto:timj@gtk.org">
-timj@gtk.org</ulink></simpara>
-</listitem>
-</itemizedlist>
-
 <para>GTK is essentially an object oriented application programmers
 interface (API). Although written completely in C, it is implemented
 using the idea of classes and callback functions (pointers to
@@ -4892,7 +4868,7 @@ Adjustments range.</para>
 by the specified amount.</para>
 
 <para>We move away from functions for setting and retreving the range attributes
-of the Spin Button now, and move onto functions that effect the
+of the Spin Button now, and move onto functions that affect the
 appearance and behaviour of the Spin Button widget itself.</para>
 
 <para>The first of these functions is used to constrain the text box of the
@@ -6025,7 +6001,7 @@ void gtk_color_selection_set_current_alpha( GtkColorSelection *colorsel,
 gtk_color_selection_set_current_color() with a pointer to a GdkColor. 
 Setting the opacity (alpha channel) is done with 
 gtk_color_selection_set_current_alpha(). The alpha value should be between
-0 (fully transparent) and 65636 (fully opaque).
+0 (fully transparent) and 65535 (fully opaque).
 </para>
 
 <programlisting role="C">
@@ -6450,7 +6426,7 @@ exisiting Alignment widget to be altered.</para>
 <para>All four alignment parameters are floating point numbers which can
 range from 0.0 to 1.0. The <literal>xalign</literal> and <literal>yalign</literal> arguments
 affect the position of the widget placed within the Alignment
-widget. The <literal>xscale</literal> and <literal>yscale</literal> arguments effect the amount of
+widget. The <literal>xscale</literal> and <literal>yscale</literal> arguments affect the amount of
 space allocated to the widget.</para>
 
 <para>A child widget can be added to this Alignment widget using:</para>

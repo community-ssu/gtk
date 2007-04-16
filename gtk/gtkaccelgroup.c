@@ -39,58 +39,28 @@
 
 
 /* --- prototypes --- */
-static void gtk_accel_group_class_init	(GtkAccelGroupClass	*class);
-static void gtk_accel_group_init	(GtkAccelGroup		*accel_group);
 static void gtk_accel_group_finalize	(GObject		*object);
 
 
 /* --- variables --- */
-static GObjectClass     *parent_class = NULL;
 static guint		 signal_accel_activate = 0;
 static guint		 signal_accel_changed = 0;
 static guint		 quark_acceleratable_groups = 0;
 static guint		 default_accel_mod_mask = (GDK_SHIFT_MASK |
 						   GDK_CONTROL_MASK |
-						   GDK_MOD1_MASK);
+						   GDK_MOD1_MASK |
+						   GDK_SUPER_MASK |
+						   GDK_HYPER_MASK |
+						   GDK_META_MASK);
 
+
+G_DEFINE_TYPE (GtkAccelGroup, gtk_accel_group, G_TYPE_OBJECT)
 
 /* --- functions --- */
-/**
- * gtk_accel_group_get_type:
- * @returns: the type ID for accelerator groups.
- */
-GType
-gtk_accel_group_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info = {
-	sizeof (GtkAccelGroupClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-	(GClassInitFunc) gtk_accel_group_class_init,
-	NULL,   /* class_finalize */
-	NULL,   /* class_data */
-	sizeof (GtkAccelGroup),
-	0,      /* n_preallocs */
-	(GInstanceInitFunc) gtk_accel_group_init,
-      };
-
-      object_type = g_type_register_static (G_TYPE_OBJECT, "GtkAccelGroup",
-					    &object_info, 0);
-    }
-
-  return object_type;
-}
-
 static void
 gtk_accel_group_class_init (GtkAccelGroupClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   quark_acceleratable_groups = g_quark_from_static_string ("gtk-acceleratable-accel-groups");
 
@@ -111,7 +81,7 @@ gtk_accel_group_class_init (GtkAccelGroupClass *class)
    * Returns: %TRUE if the accelerator was activated
    */
   signal_accel_activate =
-    g_signal_new ("accel_activate",
+    g_signal_new (I_("accel_activate"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_DETAILED,
 		  0,
@@ -136,7 +106,7 @@ gtk_accel_group_class_init (GtkAccelGroupClass *class)
    * their visual representation if the @accel_closure is theirs.
    */
   signal_accel_changed =
-    g_signal_new ("accel_changed",
+    g_signal_new (I_("accel_changed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_DETAILED,
 		  G_STRUCT_OFFSET (GtkAccelGroupClass, accel_changed),
@@ -168,7 +138,7 @@ gtk_accel_group_finalize (GObject *object)
 
   g_free (accel_group->priv_accels);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_accel_group_parent_class)->finalize (object);
 }
 
 static void
@@ -963,6 +933,41 @@ is_release (const gchar *string)
 	  (string[8] == '>'));
 }
 
+static inline gboolean
+is_meta (const gchar *string)
+{
+  return ((string[0] == '<') &&
+	  (string[1] == 'm' || string[1] == 'M') &&
+	  (string[2] == 'e' || string[2] == 'E') &&
+	  (string[3] == 't' || string[3] == 'T') &&
+	  (string[4] == 'a' || string[4] == 'A') &&
+	  (string[5] == '>'));
+}
+
+static inline gboolean
+is_super (const gchar *string)
+{
+  return ((string[0] == '<') &&
+	  (string[1] == 's' || string[1] == 'S') &&
+	  (string[2] == 'u' || string[2] == 'U') &&
+	  (string[3] == 'p' || string[3] == 'P') &&
+	  (string[4] == 'e' || string[4] == 'E') &&
+	  (string[5] == 'r' || string[5] == 'R') &&
+	  (string[6] == '>'));
+}
+
+static inline gboolean
+is_hyper (const gchar *string)
+{
+  return ((string[0] == '<') &&
+	  (string[1] == 'h' || string[1] == 'H') &&
+	  (string[2] == 'y' || string[2] == 'Y') &&
+	  (string[3] == 'p' || string[3] == 'P') &&
+	  (string[4] == 'e' || string[4] == 'E') &&
+	  (string[5] == 'r' || string[5] == 'R') &&
+	  (string[6] == '>'));
+}
+
 /**
  * gtk_accelerator_parse:
  * @accelerator:      string representing an accelerator
@@ -1054,6 +1059,24 @@ gtk_accelerator_parse (const gchar     *accelerator,
 	      len -= 5;
 	      mods |= GDK_MOD1_MASK;
 	    }
+          else if (len >= 6 && is_meta (accelerator))
+	    {
+	      accelerator += 6;
+	      len -= 6;
+	      mods |= GDK_META_MASK;
+	    }
+          else if (len >= 7 && is_hyper (accelerator))
+	    {
+	      accelerator += 7;
+	      len -= 7;
+	      mods |= GDK_HYPER_MASK;
+	    }
+          else if (len >= 7 && is_super (accelerator))
+	    {
+	      accelerator += 7;
+	      len -= 7;
+	      mods |= GDK_SUPER_MASK;
+	    }
 	  else
 	    {
 	      gchar last_ch;
@@ -1108,6 +1131,9 @@ gtk_accelerator_name (guint           accelerator_key,
   static const gchar text_mod3[] = "<Mod3>";
   static const gchar text_mod4[] = "<Mod4>";
   static const gchar text_mod5[] = "<Mod5>";
+  static const gchar text_meta[] = "<Meta>";
+  static const gchar text_super[] = "<Super>";
+  static const gchar text_hyper[] = "<Hyper>";
   guint l;
   gchar *keyval_name;
   gchar *accelerator;
@@ -1136,6 +1162,12 @@ gtk_accelerator_name (guint           accelerator_key,
   if (accelerator_mods & GDK_MOD5_MASK)
     l += sizeof (text_mod5) - 1;
   l += strlen (keyval_name);
+  if (accelerator_mods & GDK_META_MASK)
+    l += sizeof (text_meta) - 1;
+  if (accelerator_mods & GDK_HYPER_MASK)
+    l += sizeof (text_hyper) - 1;
+  if (accelerator_mods & GDK_SUPER_MASK)
+    l += sizeof (text_super) - 1;
 
   accelerator = g_new (gchar, l + 1);
 
@@ -1181,6 +1213,21 @@ gtk_accelerator_name (guint           accelerator_key,
       strcpy (accelerator + l, text_mod5);
       l += sizeof (text_mod5) - 1;
     }
+  if (accelerator_mods & GDK_META_MASK)
+    {
+      strcpy (accelerator + l, text_meta);
+      l += sizeof (text_meta) - 1;
+    }
+  if (accelerator_mods & GDK_HYPER_MASK)
+    {
+      strcpy (accelerator + l, text_hyper);
+      l += sizeof (text_hyper) - 1;
+    }
+  if (accelerator_mods & GDK_SUPER_MASK)
+    {
+      strcpy (accelerator + l, text_super);
+      l += sizeof (text_super) - 1;
+    }
   strcpy (accelerator + l, keyval_name);
 
   return accelerator;
@@ -1220,10 +1267,12 @@ gtk_accelerator_get_label (guint           accelerator_key,
  *
  * Sets the modifiers that will be considered significant for keyboard
  * accelerators. The default mod mask is #GDK_CONTROL_MASK |
- * #GDK_SHIFT_MASK | #GDK_MOD1_MASK, that is, Control, Shift, and Alt.
- * Other modifiers will by default be ignored by #GtkAccelGroup.
- * You must include at least the three default modifiers in any
- * value you pass to this function.
+ * #GDK_SHIFT_MASK | #GDK_MOD1_MASK | #GDK_SUPER_MASK | 
+ * #GDK_HYPER_MASK | #GDK_META_MASK, that is, Control, Shift, Alt, 
+ * Super, Hyper and Meta. Other modifiers will by default be ignored 
+ * by #GtkAccelGroup.
+ * You must include at least the three modifiers Control, Shift
+ * and Alt in any value you pass to this function.
  *
  * The default mod mask should be changed on application startup,
  * before using any accelerator groups.

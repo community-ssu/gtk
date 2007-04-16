@@ -61,6 +61,7 @@ struct _GtkMenuItem
   guint submenu_direction : 1;
   guint right_justify: 1;
   guint timer_from_keypress : 1;
+  guint from_menubar : 1;
   guint timer;
 };
 
@@ -119,7 +120,9 @@ void	  _gtk_menu_item_refresh_accel_path   (GtkMenuItem	   *menu_item,
 					       gboolean		    group_changed);
 gboolean  _gtk_menu_item_is_selectable        (GtkWidget           *menu_item);
 void      _gtk_menu_item_popup_submenu        (GtkWidget           *menu_item);
+#ifdef MAEMO_CHANGES
 void      _gtk_menu_item_popdown_submenu      (GtkWidget           *menu_item);
+#endif /* MAEMO_CHANGES */
 
 #ifndef GTK_DISABLE_DEPRECATED
 #define gtk_menu_item_right_justify(menu_item) gtk_menu_item_set_right_justified ((menu_item), TRUE)

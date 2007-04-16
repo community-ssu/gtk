@@ -25,12 +25,12 @@
  */
 
 #include <config.h>
-#include <glib/gprintf.h>
 #include <math.h>
 #include <string.h>
+#undef GTK_DISABLE_DEPRECATED
 #include "gtkprogress.h" 
+#include "gtkprivate.h" 
 #include "gtkintl.h"
-#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define EPSILON  1e-5
@@ -45,8 +45,6 @@ enum {
 };
 
 
-static void gtk_progress_class_init      (GtkProgressClass *klass);
-static void gtk_progress_init            (GtkProgress      *progress);
 static void gtk_progress_set_property    (GObject          *object,
 					  guint             prop_id,
 					  const GValue     *value,
@@ -58,7 +56,7 @@ static void gtk_progress_get_property    (GObject          *object,
 static void gtk_progress_destroy         (GtkObject        *object);
 static void gtk_progress_finalize        (GObject          *object);
 static void gtk_progress_realize         (GtkWidget        *widget);
-static gint gtk_progress_expose          (GtkWidget        *widget,
+static gboolean gtk_progress_expose      (GtkWidget        *widget,
 				 	  GdkEventExpose   *event);
 static void gtk_progress_size_allocate   (GtkWidget        *widget,
 				 	  GtkAllocation    *allocation);
@@ -68,36 +66,7 @@ static void gtk_progress_value_changed   (GtkAdjustment    *adjustment,
 static void gtk_progress_changed         (GtkAdjustment    *adjustment,
 					  GtkProgress      *progress);
 
-
-static GtkWidgetClass *parent_class = NULL;
-
-
-GType
-gtk_progress_get_type (void)
-{
-  static GType progress_type = 0;
-
-  if (!progress_type)
-    {
-      static const GTypeInfo progress_info =
-      {
-	sizeof (GtkProgressClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_progress_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkProgress),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_progress_init,
-      };
-
-      progress_type = g_type_register_static (GTK_TYPE_WIDGET, "GtkProgress",
-					      &progress_info, 0);
-    }
-
-  return progress_type;
-}
+G_DEFINE_TYPE (GtkProgress, gtk_progress, GTK_TYPE_WIDGET)
 
 static void
 gtk_progress_class_init (GtkProgressClass *class)
@@ -108,8 +77,6 @@ gtk_progress_class_init (GtkProgressClass *class)
 
   object_class = (GtkObjectClass *) class;
   widget_class = (GtkWidgetClass *) class;
-
-  parent_class = gtk_type_class (GTK_TYPE_WIDGET);
 
   gobject_class->finalize = gtk_progress_finalize;
 
@@ -125,40 +92,36 @@ gtk_progress_class_init (GtkProgressClass *class)
   class->paint = NULL;
   class->update = NULL;
   class->act_mode_enter = NULL;
-
+  
   g_object_class_install_property (gobject_class,
                                    PROP_ACTIVITY_MODE,
                                    g_param_spec_boolean ("activity-mode",
 							 P_("Activity mode"),
-							 P_("If TRUE the GtkProgress is in activity mode, meaning that it signals something is happening, but not how much of the activity is finished. This is used when you're doing something that you don't know how long it will take"),
+							 P_("If TRUE, the GtkProgress is in activity mode, meaning that it signals "
+                                                            "something is happening, but not how much of the activity is finished. "
+                                                            "This is used when you're doing something but don't know how long it will take."),
 							 FALSE,
 							 GTK_PARAM_READWRITE));
-
   g_object_class_install_property (gobject_class,
                                    PROP_SHOW_TEXT,
                                    g_param_spec_boolean ("show-text",
 							 P_("Show text"),
-							 P_("Whether the progress is shown as text"),
+							 P_("Whether the progress is shown as text."),
 							 FALSE,
 							 GTK_PARAM_READWRITE));
-
   g_object_class_install_property (gobject_class,
 				   PROP_TEXT_XALIGN,
 				   g_param_spec_float ("text-xalign",
 						       P_("Text x alignment"),
-						       P_("A number between 0.0 and 1.0 specifying the horizontal alignment of the text in the progress widget"),
-						       0.0,
-						       1.0,
-						       0.5,
+                                                       P_("The horizontal text alignment, from 0 (left) to 1 (right). Reversed for RTL layouts."),
+						       0.0, 1.0, 0.5,
 						       GTK_PARAM_READWRITE));  
-    g_object_class_install_property (gobject_class,
+  g_object_class_install_property (gobject_class,
 				   PROP_TEXT_YALIGN,
 				   g_param_spec_float ("text-yalign",
 						       P_("Text y alignment"),
-						       P_("A number between 0.0 and 1.0 specifying the vertical alignment of the text in the progress widget"),
-						       0.0,
-						       1.0,
-						       0.5,
+                                                       P_("The vertical text alignment, from 0 (top) to 1 (bottom)."),
+						       0.0, 1.0, 0.5,
 						       GTK_PARAM_READWRITE));
 }
 
@@ -295,7 +258,7 @@ gtk_progress_destroy (GtkObject *object)
       progress->adjustment = NULL;
     }
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_progress_parent_class)->destroy (object);
 }
 
 static void
@@ -313,10 +276,10 @@ gtk_progress_finalize (GObject *object)
   if (progress->format)
     g_free (progress->format);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_progress_parent_class)->finalize (object);
 }
 
-static gint
+static gboolean
 gtk_progress_expose (GtkWidget      *widget,
 		     GdkEventExpose *event)
 {
@@ -372,16 +335,12 @@ gtk_progress_create_pixmap (GtkProgress *progress)
 						   widget->allocation.width,
 						   widget->allocation.height,
 						   -1);
-       
-      /* OSSO addition : clear the pixmap first or transparent images
-       * painted on top of it may look stupid when it's blended against
-       * random memory.*/
+
+      /* clear the pixmap for transparent themes */
       gtk_paint_flat_box (widget->style,
-			  progress->offscreen_pixmap,
-			  GTK_STATE_NORMAL,
-			  GTK_SHADOW_NONE,
-			  NULL, widget, NULL,
-			  0, 0, widget->allocation.width, widget->allocation.height);
+                          progress->offscreen_pixmap,
+                          GTK_STATE_NORMAL, GTK_SHADOW_NONE,
+                          NULL, widget, "trough", 0, 0, -1, -1);
       
       GTK_PROGRESS_GET_CLASS (progress)->paint (progress);
     }
@@ -546,8 +505,7 @@ gtk_progress_set_adjustment (GtkProgress   *progress,
       progress->adjustment = adjustment;
       if (adjustment)
         {
-          g_object_ref (adjustment);
-	  gtk_object_sink (GTK_OBJECT (adjustment));
+          g_object_ref_sink (adjustment);
           g_signal_connect (adjustment, "changed",
 			    G_CALLBACK (gtk_progress_changed),
 			    progress);

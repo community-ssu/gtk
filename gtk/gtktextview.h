@@ -357,12 +357,14 @@ void             gtk_text_view_set_tabs               (GtkTextView      *text_vi
                                                        PangoTabArray    *tabs);
 PangoTabArray*   gtk_text_view_get_tabs               (GtkTextView      *text_view);
 
+/* note that the return value of this changes with the theme */
+GtkTextAttributes* gtk_text_view_get_default_attributes (GtkTextView    *text_view);
+
+#ifdef MAEMO_CHANGES
 void               hildon_gtk_text_view_set_input_mode (GtkTextView       *text_view,
                                                         HildonGtkInputMode mode);
 HildonGtkInputMode hildon_gtk_text_view_get_input_mode (GtkTextView       *text_view);
-
-/* note that the return value of this changes with the theme */
-GtkTextAttributes* gtk_text_view_get_default_attributes (GtkTextView    *text_view);
+#endif /* MAEMO_CHANGES */
 
 G_END_DECLS
 

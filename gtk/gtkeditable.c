@@ -29,10 +29,11 @@
 
 #include "gtkeditable.h"
 #include "gtkmarshalers.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
-static void   gtk_editable_base_init             (gpointer g_class);
+static void gtk_editable_base_init (gpointer g_class);
 
 
 GType
@@ -42,14 +43,14 @@ gtk_editable_get_type (void)
 
   if (!editable_type)
     {
-      static const GTypeInfo editable_info =
+      const GTypeInfo editable_info =
       {
 	sizeof (GtkEditableClass),  /* class_size */
 	gtk_editable_base_init,	    /* base_init */
 	NULL,			    /* base_finalize */
       };
 
-      editable_type = g_type_register_static (G_TYPE_INTERFACE, "GtkEditable",
+      editable_type = g_type_register_static (G_TYPE_INTERFACE, I_("GtkEditable"),
 					      &editable_info, 0);
     }
 
@@ -63,7 +64,7 @@ gtk_editable_base_init (gpointer g_class)
 
   if (! initialized)
     {
-      g_signal_new ("insert_text",
+      g_signal_new (I_("insert_text"),
 		    GTK_TYPE_EDITABLE,
 		    G_SIGNAL_RUN_LAST,
 		    G_STRUCT_OFFSET (GtkEditableClass, insert_text),
@@ -73,7 +74,7 @@ gtk_editable_base_init (gpointer g_class)
 		    G_TYPE_STRING,
 		    G_TYPE_INT,
 		    G_TYPE_POINTER);
-      g_signal_new ("delete_text",
+      g_signal_new (I_("delete_text"),
 		    GTK_TYPE_EDITABLE,
 		    G_SIGNAL_RUN_LAST,
 		    G_STRUCT_OFFSET (GtkEditableClass, delete_text),
@@ -82,7 +83,7 @@ gtk_editable_base_init (gpointer g_class)
 		    G_TYPE_NONE, 2,
 		    G_TYPE_INT,
 		    G_TYPE_INT);
-      g_signal_new ("changed",
+      g_signal_new (I_("changed"),
 		    GTK_TYPE_EDITABLE,
 		    G_SIGNAL_RUN_LAST,
 		    G_STRUCT_OFFSET (GtkEditableClass, changed),

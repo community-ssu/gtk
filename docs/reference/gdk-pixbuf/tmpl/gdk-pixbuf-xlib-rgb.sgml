@@ -65,6 +65,15 @@ displays.
 @prefDepth: 
 
 
+<!-- ##### FUNCTION xlib_rgb_xpixel_from_rgb ##### -->
+<para>
+
+</para>
+
+@rgb: 
+@Returns: 
+
+
 <!-- ##### FUNCTION xlib_rgb_gc_set_foreground ##### -->
 <para>
 

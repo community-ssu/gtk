@@ -29,6 +29,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "gtkobject.h"
+#include "gtkintl.h"
 #include "gtkmarshalers.h"
 #include "gtksignal.h"
 #include "gtkprivate.h"
@@ -81,7 +82,7 @@ gtk_object_get_type (void)
 
   if (!object_type)
     {
-      static const GTypeInfo object_info =
+      const GTypeInfo object_info =
       {
 	sizeof (GtkObjectClass),
 	(GBaseInitFunc) gtk_object_base_class_init,
@@ -95,7 +96,7 @@ gtk_object_get_type (void)
 	NULL,		/* value_table */
       };
       
-      object_type = g_type_register_static (G_TYPE_OBJECT, "GtkObject", 
+      object_type = g_type_register_static (G_TYPE_INITIALLY_UNOWNED, I_("GtkObject"), 
 					    &object_info, G_TYPE_FLAG_ABSTRACT);
     }
 
@@ -313,12 +314,45 @@ gtk_object_add_arg_type (const gchar *arg_name,
   g_object_class_install_property (oclass, arg_id, pspec);
 }
 
+static guint (*gobject_floating_flag_handler) (GtkObject*,gint) = NULL;
+
+static guint
+gtk_object_floating_flag_handler (GtkObject *object,
+                                  gint       job)
+{
+  /* FIXME: remove this whole thing once GTK+ breaks ABI */
+  if (!GTK_IS_OBJECT (object))
+    return gobject_floating_flag_handler (object, job);
+  switch (job)
+    {
+      guint32 oldvalue;
+    case +1:    /* force floating if possible */
+      do
+        oldvalue = g_atomic_int_get (&object->flags);
+      while (!g_atomic_int_compare_and_exchange (&object->flags, oldvalue, oldvalue | GTK_FLOATING));
+      return oldvalue & GTK_FLOATING;
+    case -1:    /* sink if possible */
+      do
+        oldvalue = g_atomic_int_get (&object->flags);
+      while (!g_atomic_int_compare_and_exchange (&object->flags, oldvalue, oldvalue & ~(guint32) GTK_FLOATING));
+      return oldvalue & GTK_FLOATING;
+    default:    /* check floating */
+      return 0 != (g_atomic_int_get (&object->flags) & GTK_FLOATING);
+    }
+}
+
 static void
 gtk_object_class_init (GtkObjectClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
+  gboolean is_glib_2_10_1;
 
   parent_class = g_type_class_ref (G_TYPE_OBJECT);
+
+  is_glib_2_10_1 = g_object_compat_control (3, &gobject_floating_flag_handler);
+  if (!is_glib_2_10_1)
+    g_error ("this version of Gtk+ requires GLib-2.10.1");
+  g_object_compat_control (2, gtk_object_floating_flag_handler);
 
   gobject_class->set_property = gtk_object_set_property;
   gobject_class->get_property = gtk_object_get_property;
@@ -329,11 +363,12 @@ gtk_object_class_init (GtkObjectClass *class)
 
   g_object_class_install_property (gobject_class,
 				   PROP_USER_DATA,
-				   g_param_spec_pointer ("user-data", "User Data",
-							 "Anonymous User Data Pointer",
-							 GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+				   g_param_spec_pointer ("user-data", 
+							 P_("User Data"),
+							 P_("Anonymous User Data Pointer"),
+							 GTK_PARAM_READWRITE));
   object_signals[DESTROY] =
-    g_signal_new ("destroy",
+    g_signal_new (I_("destroy"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_CLEANUP | G_SIGNAL_NO_RECURSE | G_SIGNAL_NO_HOOKS,
 		  G_STRUCT_OFFSET (GtkObjectClass, destroy),
@@ -346,7 +381,12 @@ static void
 gtk_object_init (GtkObject      *object,
 		 GtkObjectClass *klass)
 {
-  GTK_OBJECT_FLAGS (object) = GTK_FLOATING;
+  gboolean was_floating;
+  /* sink the GInitiallyUnowned floating flag */
+  was_floating = gobject_floating_flag_handler (object, -1);
+  /* set GTK_FLOATING via gtk_object_floating_flag_handler */
+  if (was_floating)
+    g_object_force_floating (G_OBJECT (object));
 }
 
 /********************************************
@@ -394,13 +434,12 @@ gtk_object_finalize (GObject *gobject)
 {
   GtkObject *object = GTK_OBJECT (gobject);
 
-  if (GTK_OBJECT_FLOATING (object))
+  if (g_object_is_floating (object))
     {
       g_warning ("A floating object was finalized. This means that someone\n"
 		 "called g_object_unref() on an object that had only a floating\n"
 		 "reference; the initial floating reference is not owned by anyone\n"
-		 "and must be removed with gtk_object_sink() after a normal\n"
-		 "reference is obtained with g_object_ref().");
+		 "and must be removed with g_object_ref_sink().");
     }
   
   gtk_object_notify_weaks (object);
@@ -422,7 +461,7 @@ gtk_object_set_property (GObject      *object,
   switch (property_id)
     {
     case PROP_USER_DATA:
-      g_object_set_data (G_OBJECT (object), "user_data", g_value_get_pointer (value));
+      g_object_set_data (G_OBJECT (object), I_("user_data"), g_value_get_pointer (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -447,24 +486,12 @@ gtk_object_get_property (GObject     *object,
     }
 }
 
-/*****************************************
- * gtk_object_sink:
- *
- *   arguments:
- *
- *   results:
- *****************************************/
-
 void
 gtk_object_sink (GtkObject *object)
 {
   g_return_if_fail (GTK_IS_OBJECT (object));
-
-  if (GTK_OBJECT_FLOATING (object))
-    {
-      GTK_OBJECT_UNSET_FLAGS (object, GTK_FLOATING);
-      g_object_unref (object);
-    }
+  g_object_ref_sink (object);
+  g_object_unref (object);
 }
 
 /*****************************************

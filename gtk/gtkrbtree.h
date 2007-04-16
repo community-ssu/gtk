@@ -22,11 +22,12 @@
 #ifndef __GTK_RBTREE_H__
 #define __GTK_RBTREE_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
-
 #include <glib.h>
+
+
+G_BEGIN_DECLS
+
+
 typedef enum
 {
   GTK_RBNODE_BLACK = 1 << 0,
@@ -110,8 +111,6 @@ struct _GtkRBNode
 #define GTK_RBNODE_FLAG_SET(node, flag) 	(node?(((node->flags&flag)==flag)?TRUE:FALSE):FALSE)
 
 
-void       _gtk_rbtree_push_allocator   (GAllocator             *allocator);
-void       _gtk_rbtree_pop_allocator    (void);
 GtkRBTree *_gtk_rbtree_new              (void);
 void       _gtk_rbtree_free             (GtkRBTree              *tree);
 void       _gtk_rbtree_remove           (GtkRBTree              *tree);
@@ -141,7 +140,8 @@ void       _gtk_rbtree_node_mark_valid  (GtkRBTree              *tree,
 void       _gtk_rbtree_column_invalid   (GtkRBTree              *tree);
 void       _gtk_rbtree_mark_invalid     (GtkRBTree              *tree);
 void       _gtk_rbtree_set_fixed_height (GtkRBTree              *tree,
-					 gint                    height);
+					 gint                    height,
+					 gboolean                mark_valid);
 gint       _gtk_rbtree_node_find_offset (GtkRBTree              *tree,
 					 GtkRBNode              *node);
 gint       _gtk_rbtree_node_find_parity (GtkRBTree              *tree,
@@ -177,8 +177,8 @@ void       _gtk_rbtree_test             (const gchar            *where,
 void       _gtk_rbtree_debug_spew       (GtkRBTree              *tree);
 #endif
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
+G_END_DECLS
+
 
 #endif /* __GTK_RBTREE_H__ */

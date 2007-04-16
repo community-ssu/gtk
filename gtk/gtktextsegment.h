@@ -1,3 +1,29 @@
+/* GTK - The GIMP Toolkit
+ * gtktextsegment.h Copyright (C) 2000 Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+/*
+ * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
+ * file for a list of people on the GTK+ Team.  See the ChangeLog
+ * files for a list of changes.  These files are distributed with
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
+ */
+
 #ifndef __GTK_TEXT_SEGMENT_H__
 #define __GTK_TEXT_SEGMENT_H__
 
@@ -105,10 +131,10 @@ struct _GtkTextLineSegmentClass {
  */
 
 struct _GtkTextLineSegment {
-  GtkTextLineSegmentClass *type;                /* Pointer to record describing
-                                                 * segment's type. */
-  GtkTextLineSegment *next;                /* Next in list of segments for this
-                                            * line, or NULL for end of list. */
+  const GtkTextLineSegmentClass *type;  /* Pointer to record describing
+                                         * segment's type. */
+  GtkTextLineSegment *next;             /* Next in list of segments for this
+                                         * line, or NULL for end of list. */
 
   int char_count;                       /* # of chars of index space occupied */
 
@@ -132,8 +158,10 @@ GtkTextLineSegment *_gtk_char_segment_new                  (const gchar    *text
                                                             guint           len);
 GtkTextLineSegment *_gtk_char_segment_new_from_two_strings (const gchar    *text1,
                                                             guint           len1,
+							    guint           chars1,
                                                             const gchar    *text2,
-                                                            guint           len2);
+                                                            guint           len2,
+							    guint           chars2);
 GtkTextLineSegment *_gtk_toggle_segment_new                (GtkTextTagInfo *info,
                                                             gboolean        on);
 

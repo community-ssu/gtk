@@ -19,33 +19,20 @@
  */
 
 #include <config.h>
+#include "gtkfilechooserprivate.h"
 #include "gtkfilechooserdialog.h"
 #include "gtkfilechooserwidget.h"
 #include "gtkfilechooserutils.h"
 #include "gtkfilechooserembed.h"
 #include "gtkfilesystem.h"
 #include "gtktypebuiltins.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #include <stdarg.h>
 
-struct _GtkFileChooserDialogPrivate
-{
-  GtkWidget *widget;
-  
-  char *file_system;
-
-  /* for use with GtkFileChooserEmbed */
-  gint default_width;
-  gint default_height;
-  gboolean resize_horizontally;
-  gboolean resize_vertically;
-};
-
 #define GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE(o)  (GTK_FILE_CHOOSER_DIALOG (o)->priv)
 
-static void gtk_file_chooser_dialog_class_init (GtkFileChooserDialogClass *class);
-static void gtk_file_chooser_dialog_init       (GtkFileChooserDialog      *dialog);
 static void gtk_file_chooser_dialog_finalize   (GObject                   *object);
 
 static GObject* gtk_file_chooser_dialog_constructor  (GType                  type,
@@ -68,52 +55,15 @@ static void     gtk_file_chooser_dialog_style_set    (GtkWidget             *wid
 static void response_cb (GtkDialog *dialog,
 			 gint       response_id);
 
-static GObjectClass *parent_class;
-
-GType
-gtk_file_chooser_dialog_get_type (void)
-{
-  static GType file_chooser_dialog_type = 0;
-
-  if (!file_chooser_dialog_type)
-    {
-      static const GTypeInfo file_chooser_dialog_info =
-      {
-	sizeof (GtkFileChooserDialogClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_file_chooser_dialog_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkFileChooserDialog),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_file_chooser_dialog_init,
-      };
-
-      static const GInterfaceInfo file_chooser_info =
-      {
-	(GInterfaceInitFunc) _gtk_file_chooser_delegate_iface_init, /* interface_init */
-	NULL,			                                    /* interface_finalize */
-	NULL			                                    /* interface_data */
-      };
-
-      file_chooser_dialog_type = g_type_register_static (GTK_TYPE_DIALOG, "GtkFileChooserDialog",
-							 &file_chooser_dialog_info, 0);
-      g_type_add_interface_static (file_chooser_dialog_type,
-				   GTK_TYPE_FILE_CHOOSER,
-				   &file_chooser_info);
-    }
-
-  return file_chooser_dialog_type;
-}
+G_DEFINE_TYPE_WITH_CODE (GtkFileChooserDialog, gtk_file_chooser_dialog, GTK_TYPE_DIALOG,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_FILE_CHOOSER,
+						_gtk_file_chooser_delegate_iface_init))
 
 static void
 gtk_file_chooser_dialog_class_init (GtkFileChooserDialogClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->constructor = gtk_file_chooser_dialog_constructor;
   gobject_class->set_property = gtk_file_chooser_dialog_set_property;
@@ -140,6 +90,7 @@ gtk_file_chooser_dialog_init (GtkFileChooserDialog *dialog)
   dialog->priv->default_height = -1;
   dialog->priv->resize_horizontally = TRUE;
   dialog->priv->resize_vertically = TRUE;
+  dialog->priv->response_requested = FALSE;
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
@@ -159,7 +110,7 @@ gtk_file_chooser_dialog_finalize (GObject *object)
 
   g_free (dialog->priv->file_system);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);  
+  G_OBJECT_CLASS (gtk_file_chooser_dialog_parent_class)->finalize (object);  
 }
 
 /* Callback used when the user activates a file in the file chooser widget */
@@ -366,6 +317,39 @@ file_chooser_widget_default_size_changed (GtkWidget            *widget,
   else
     file_chooser_widget_default_unrealized_size_changed (widget, dialog);
 }
+
+static void
+file_chooser_widget_response_requested (GtkWidget            *widget,
+					GtkFileChooserDialog *dialog)
+{
+  GList *children, *l;
+
+  /* There probably isn't a default widget, so make things easier for the
+   * programmer by looking for a reasonable button on our own.
+   */
+
+  children = gtk_container_get_children (GTK_CONTAINER (GTK_DIALOG (dialog)->action_area));
+
+  for (l = children; l; l = l->next)
+    {
+      GtkWidget *widget;
+      int response_id;
+
+      widget = GTK_WIDGET (l->data);
+      response_id = gtk_dialog_get_response_for_widget (GTK_DIALOG (dialog), widget);
+      if (response_id == GTK_RESPONSE_ACCEPT
+	  || response_id == GTK_RESPONSE_OK
+	  || response_id == GTK_RESPONSE_YES
+	  || response_id == GTK_RESPONSE_APPLY)
+	{
+	  dialog->priv->response_requested = TRUE;
+	  gtk_widget_activate (widget); /* Should we gtk_dialog_response (dialog, response_id) instead? */
+	  break;
+	}
+    }
+
+  g_list_free (children);
+}
   
 static GObject*
 gtk_file_chooser_dialog_constructor (GType                  type,
@@ -375,9 +359,9 @@ gtk_file_chooser_dialog_constructor (GType                  type,
   GtkFileChooserDialogPrivate *priv;
   GObject *object;
 
-  object = parent_class->constructor (type,
-				      n_construct_properties,
-				      construct_params);
+  object = G_OBJECT_CLASS (gtk_file_chooser_dialog_parent_class)->constructor (type,
+									       n_construct_properties,
+									       construct_params);
   priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (object);
 
   gtk_widget_push_composite_child ();
@@ -393,6 +377,8 @@ gtk_file_chooser_dialog_constructor (GType                  type,
 		    G_CALLBACK (file_chooser_widget_file_activated), object);
   g_signal_connect (priv->widget, "default-size-changed",
 		    G_CALLBACK (file_chooser_widget_default_size_changed), object);
+  g_signal_connect (priv->widget, "response-requested",
+		    G_CALLBACK (file_chooser_widget_response_requested), object);
 
   gtk_box_pack_start (GTK_BOX (GTK_DIALOG (object)->vbox), priv->widget, TRUE, TRUE, 0);
 
@@ -499,9 +485,9 @@ gtk_file_chooser_dialog_map (GtkWidget *widget)
   if (!GTK_WIDGET_MAPPED (priv->widget))
     gtk_widget_map (priv->widget);
 
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
-
   _gtk_file_chooser_embed_initial_focus (GTK_FILE_CHOOSER_EMBED (priv->widget));
+
+  GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->map (widget);
 }
 
 /* GtkWidget::unmap handler */
@@ -511,7 +497,7 @@ gtk_file_chooser_dialog_unmap (GtkWidget *widget)
   GtkFileChooserDialog *dialog = GTK_FILE_CHOOSER_DIALOG (widget);
   GtkFileChooserDialogPrivate *priv = GTK_FILE_CHOOSER_DIALOG_GET_PRIVATE (dialog);
 
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->unmap (widget);
 
   /* See bug #145470.  We unmap the GtkFileChooserWidget so that if the dialog
    * is remapped, the widget will be remapped as well.  Implementations should
@@ -528,8 +514,8 @@ gtk_file_chooser_dialog_style_set (GtkWidget *widget,
 {
   GtkDialog *dialog;
 
-  if (GTK_WIDGET_CLASS (parent_class)->style_set)
-    GTK_WIDGET_CLASS (parent_class)->style_set (widget, previous_style);
+  if (GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->style_set)
+    GTK_WIDGET_CLASS (gtk_file_chooser_dialog_parent_class)->style_set (widget, previous_style);
 
   dialog = GTK_DIALOG (widget);
 
@@ -561,8 +547,11 @@ response_cb (GtkDialog *dialog,
 	|| response_id == GTK_RESPONSE_APPLY))
     return;
 
-  if (!_gtk_file_chooser_embed_should_respond (GTK_FILE_CHOOSER_EMBED (priv->widget)))
-    g_signal_stop_emission_by_name (dialog, "response");
+  if (!priv->response_requested && !_gtk_file_chooser_embed_should_respond (GTK_FILE_CHOOSER_EMBED (priv->widget)))
+    {
+      g_signal_stop_emission_by_name (dialog, "response");
+      priv->response_requested = FALSE;
+    }
 }
 
 static GtkWidget *

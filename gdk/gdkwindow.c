@@ -44,6 +44,7 @@ struct _GdkWindowPaint
   GdkPixmap *pixmap;
   gint x_offset;
   gint y_offset;
+  cairo_surface_t *surface;
 };
 
 static GdkGC *gdk_window_create_gc      (GdkDrawable     *drawable,
@@ -157,6 +158,8 @@ static GdkImage* gdk_window_copy_to_image (GdkDrawable *drawable,
 					   gint         width,
 					   gint         height);
 
+static cairo_surface_t *gdk_window_ref_cairo_surface (GdkDrawable *drawable);
+
 static void   gdk_window_real_get_size  (GdkDrawable     *drawable,
                                          gint            *width,
                                          gint            *height);
@@ -197,26 +200,39 @@ gdk_window_object_get_type (void)
   static GType object_type = 0;
 
   if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (GdkWindowObjectClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gdk_window_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GdkWindowObject),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gdk_window_init,
-      };
-      
-      object_type = g_type_register_static (GDK_TYPE_DRAWABLE,
-                                            "GdkWindow",
-                                            &object_info, 0);
-    }
+    object_type = g_type_register_static_simple (GDK_TYPE_DRAWABLE,
+						 "GdkWindow",
+						 sizeof (GdkWindowObjectClass),
+						 (GClassInitFunc) gdk_window_class_init,
+						 sizeof (GdkWindowObject),
+						 (GInstanceInitFunc) gdk_window_init,
+						 0);
   
   return object_type;
+}
+
+GType
+_gdk_paintable_get_type (void)
+{
+  static GType paintable_type = 0;
+
+  if (!paintable_type)
+    {
+      const GTypeInfo paintable_info =
+      {
+	sizeof (GdkPaintableIface),  /* class_size */
+	NULL,                        /* base_init */
+	NULL,                        /* base_finalize */
+      };
+
+      paintable_type = g_type_register_static (G_TYPE_INTERFACE,
+					       g_intern_static_string ("GdkPaintable"),
+					       &paintable_info, 0);
+
+      g_type_interface_add_prerequisite (paintable_type, G_TYPE_OBJECT);
+    }
+
+  return paintable_type;
 }
 
 static void
@@ -263,6 +279,7 @@ gdk_window_class_init (GdkWindowObjectClass *klass)
   drawable_class->get_colormap = gdk_window_real_get_colormap;
   drawable_class->get_visual = gdk_window_real_get_visual;
   drawable_class->_copy_to_image = gdk_window_copy_to_image;
+  drawable_class->ref_cairo_surface = gdk_window_ref_cairo_surface;
   drawable_class->get_clip_region = gdk_window_get_clip_region;
   drawable_class->get_visible_region = gdk_window_get_visible_region;
   drawable_class->get_composite_drawable = gdk_window_get_composite_drawable;
@@ -787,7 +804,7 @@ gdk_screen_get_toplevel_windows (GdkScreen *screen)
  * gdk_window_get_toplevels:
  * 
  * Obtains a list of all toplevel windows known to GDK on the default
- * screen (see gdk_window_get_toplevels_for_screen()).
+ * screen (see gdk_screen_get_toplevel_windows()).
  * A toplevel window is a child of the root window (see
  * gdk_get_default_root_window()).
  *
@@ -964,6 +981,13 @@ gdk_window_begin_paint_region (GdkWindow *window,
   if (GDK_WINDOW_DESTROYED (window))
     return;
 
+  if (GDK_IS_PAINTABLE (private->impl) &&
+      GDK_PAINTABLE_GET_IFACE (private->impl)->begin_paint_region) 
+    {
+      GDK_PAINTABLE_GET_IFACE (private->impl)->begin_paint_region (GDK_PAINTABLE (private->impl), region);
+      return;
+    }
+
   gdk_region_get_clipbox (region, &clip_box);
 
   paint = g_new (GdkWindowPaint, 1);
@@ -974,6 +998,10 @@ gdk_window_begin_paint_region (GdkWindow *window,
     gdk_pixmap_new (window,
 		    MAX (clip_box.width, 1), MAX (clip_box.height, 1), -1);
 
+  paint->surface = _gdk_drawable_ref_cairo_surface (paint->pixmap);
+  cairo_surface_set_device_offset (paint->surface,
+				   - paint->x_offset, - paint->y_offset);
+  
   for (list = private->paint_stack; list != NULL; list = list->next)
     {
       GdkWindowPaint *tmp_paint = list->data;
@@ -1021,6 +1049,13 @@ gdk_window_end_paint (GdkWindow *window)
   if (GDK_WINDOW_DESTROYED (window))
     return;
 
+  if (GDK_IS_PAINTABLE (private->impl) &&
+      GDK_PAINTABLE_GET_IFACE (private->impl)->end_paint) 
+    {
+      GDK_PAINTABLE_GET_IFACE (private->impl)->end_paint (GDK_PAINTABLE (private->impl));
+      return;
+    }
+
   if (private->paint_stack == NULL)
     {
       g_warning (G_STRLOC": no preceding call to gdk_window_begin_paint_region(), see documentation");
@@ -1048,7 +1083,8 @@ gdk_window_end_paint (GdkWindow *window)
 
   /* Reset clip region of the cached GdkGC */
   gdk_gc_set_clip_region (tmp_gc, NULL);
-  
+
+  cairo_surface_destroy (paint->surface);
   g_object_unref (paint->pixmap);
   gdk_region_destroy (paint->region);
   g_free (paint);
@@ -1721,41 +1757,86 @@ gdk_window_draw_glyphs_transformed (GdkDrawable      *drawable,
   RESTORE_GC (gc);
 }
 
-static GdkGC *
-gdk_window_get_bg_gc (GdkWindow      *window,
-		      GdkWindowPaint *paint)
+typedef struct {
+  cairo_t *cr; /* if non-null, it means use this cairo context */
+  GdkGC *gc;   /* if non-null, it means use this GC instead */
+} BackingRectMethod;
+
+static void
+setup_backing_rect_method (BackingRectMethod *method, GdkWindow *window, GdkWindowPaint *paint, int x_offset_cairo, int y_offset_cairo)
 {
   GdkWindowObject *private = (GdkWindowObject *)window;
 
-  guint gc_mask = 0;
-  GdkGCValues gc_values;
-
   if (private->bg_pixmap == GDK_PARENT_RELATIVE_BG && private->parent)
     {
-      GdkWindowPaint tmp_paint = *paint;
+      GdkWindowPaint tmp_paint;
+
+      tmp_paint = *paint;
       tmp_paint.x_offset += private->x;
       tmp_paint.y_offset += private->y;
-      
-      return gdk_window_get_bg_gc (GDK_WINDOW (private->parent), &tmp_paint);
+
+      x_offset_cairo += private->x;
+      y_offset_cairo += private->y;
+
+      setup_backing_rect_method (method, GDK_WINDOW (private->parent), &tmp_paint, x_offset_cairo, y_offset_cairo);
     }
-  else if (private->bg_pixmap && 
-           private->bg_pixmap != GDK_PARENT_RELATIVE_BG && 
-           private->bg_pixmap != GDK_NO_BG)
+  else if (private->bg_pixmap &&
+	   private->bg_pixmap != GDK_PARENT_RELATIVE_BG &&
+	   private->bg_pixmap != GDK_NO_BG)
     {
+/* This is a workaround for https://bugs.freedesktop.org/show_bug.cgi?id=4320.
+ * In it, using a pixmap as a repeating pattern in Cairo, and painting it to a
+ * pixmap destination surface, can be very slow (on the order of seconds for a
+ * whole-screen copy).  The workaround is to use pretty much the same code that
+ * we used in GTK+ 2.6 (pre-Cairo), which clears the double-buffer pixmap with
+ * a tiled GC XFillRectangle().
+ */
+
+/* Actually computing this flag is left as an exercise for the reader */
+#if defined (G_OS_UNIX)
+#  define GDK_CAIRO_REPEAT_IS_FAST 0
+#else
+#  define GDK_CAIRO_REPEAT_IS_FAST 1
+#endif
+
+#if GDK_CAIRO_REPEAT_IS_FAST
+      cairo_surface_t *surface = _gdk_drawable_ref_cairo_surface (private->bg_pixmap);
+      cairo_pattern_t *pattern = cairo_pattern_create_for_surface (surface);
+      cairo_surface_destroy (surface);
+
+      if (x_offset_cairo != 0 || y_offset_cairo != 0)
+	{
+	  cairo_matrix_t matrix;
+	  cairo_matrix_init_translate (&matrix, x_offset_cairo, y_offset_cairo);
+	  cairo_pattern_set_matrix (pattern, &matrix);
+	}
+
+      cairo_pattern_set_extend (pattern, CAIRO_EXTEND_REPEAT);
+
+      method->cr = cairo_create (paint->surface);
+      method->gc = NULL;
+
+      cairo_set_source (method->cr, pattern);
+      cairo_pattern_destroy (pattern);
+#else
+      guint gc_mask;
+      GdkGCValues gc_values;
+
       gc_values.fill = GDK_TILED;
       gc_values.tile = private->bg_pixmap;
-      
-      gc_mask = GDK_GC_FILL | GDK_GC_TILE;
+      gc_values.ts_x_origin = -x_offset_cairo;
+      gc_values.ts_y_origin = -y_offset_cairo;
 
-      return gdk_gc_new_with_values (paint->pixmap, &gc_values, gc_mask);
+      gc_mask = GDK_GC_FILL | GDK_GC_TILE | GDK_GC_TS_X_ORIGIN | GDK_GC_TS_Y_ORIGIN;
+
+      method->gc = gdk_gc_new_with_values (paint->pixmap, &gc_values, gc_mask);
+#endif
     }
   else
     {
-      GdkGC *gc = _gdk_drawable_get_scratch_gc (paint->pixmap, FALSE);
+      method->cr = cairo_create (paint->surface);
 
-      gdk_gc_set_foreground (gc, &(private->bg_color));
-
-      return g_object_ref (gc);
+      gdk_cairo_set_source_color (method->cr, &private->bg_color);
     }
 }
 
@@ -1768,20 +1849,56 @@ gdk_window_clear_backing_rect (GdkWindow *window,
 {
   GdkWindowObject *private = (GdkWindowObject *)window;
   GdkWindowPaint *paint = private->paint_stack->data;
-  GdkGC *tmp_gc;
+  BackingRectMethod method;
+#if 0
+  GTimer *timer;
+  double elapsed;
+#endif
 
   if (GDK_WINDOW_DESTROYED (window))
     return;
 
-  tmp_gc = gdk_window_get_bg_gc (window, paint);
-  gdk_gc_set_clip_region (tmp_gc, paint->region);
-  
-  gdk_draw_rectangle (window, tmp_gc, TRUE,
-		      x, y, width, height);
+#if 0
+  timer = g_timer_new ();
+#endif
 
-  gdk_gc_set_clip_region (tmp_gc, NULL);
-  
-  g_object_unref (tmp_gc);
+  method.cr = NULL;
+  method.gc = NULL;
+  setup_backing_rect_method (&method, window, paint, 0, 0);
+
+  if (method.cr)
+    {
+      g_assert (method.gc == NULL);
+
+      cairo_rectangle (method.cr, x, y, width, height);
+      cairo_clip (method.cr);
+
+      gdk_cairo_region (method.cr, paint->region);
+      cairo_fill (method.cr);
+
+      cairo_destroy (method.cr);
+#if 0
+      elapsed = g_timer_elapsed (timer, NULL);
+      g_print ("Draw the background with Cairo: %fs\n", elapsed);
+#endif
+    }
+  else
+    {
+      g_assert (method.gc != NULL);
+
+      gdk_gc_set_clip_region (method.gc, paint->region);
+      gdk_draw_rectangle (window, method.gc, TRUE, x, y, width, height);
+      g_object_unref (method.gc);
+
+#if 0
+      elapsed = g_timer_elapsed (timer, NULL);
+      g_print ("Draw the background with GDK: %fs\n", elapsed);
+#endif
+    }
+
+#if 0
+  g_timer_destroy (timer);
+#endif
 }
 
 /**
@@ -2096,6 +2213,25 @@ gdk_window_copy_to_image (GdkDrawable     *drawable,
 				     width, height);
 }
 
+static cairo_surface_t *
+gdk_window_ref_cairo_surface (GdkDrawable *drawable)
+{
+  GdkWindowObject *private = (GdkWindowObject*) drawable;
+  cairo_surface_t *surface;
+
+  if (private->paint_stack)
+    {
+      GdkWindowPaint *paint = private->paint_stack->data;
+
+      surface = paint->surface;
+      cairo_surface_reference (surface);
+    }
+  else
+    surface = _gdk_drawable_ref_cairo_surface (private->impl);
+
+  return surface;
+}
+
 /* Code for dirty-region queueing
  */
 static GSList *update_windows = NULL;
@@ -2180,6 +2316,7 @@ gdk_window_process_updates_internal (GdkWindow *window)
 	      
 	      event.expose.type = GDK_EXPOSE;
 	      event.expose.window = g_object_ref (window);
+	      event.expose.send_event = FALSE;
 	      event.expose.count = 0;
 	      event.expose.region = expose_region;
 	      gdk_region_get_clipbox (expose_region, &event.expose.area);
@@ -2208,6 +2345,16 @@ flush_all_displays (void)
 
   g_slist_free (displays);
 }
+
+/* Currently it is not possible to override
+ * gdk_window_process_all_updates in the same manner as
+ * gdk_window_process_updates and gdk_window_invalidate_maybe_recurse
+ * by implementing the GdkPaintable interface.  If in the future a
+ * backend would need this, the right solution would be to add a
+ * method to GdkDisplay that can be optionally
+ * NULL. gdk_window_process_all_updates can then walk the list of open
+ * displays and call the mehod.
+ */
 
 /**
  * gdk_window_process_all_updates:
@@ -2271,6 +2418,13 @@ gdk_window_process_updates (GdkWindow *window,
 
   g_return_if_fail (window != NULL);
   g_return_if_fail (GDK_IS_WINDOW (window));
+  
+  if (GDK_IS_PAINTABLE (private->impl) &&
+      GDK_PAINTABLE_GET_IFACE (private->impl)->process_updates)
+    {
+      GDK_PAINTABLE_GET_IFACE (private->impl)->process_updates (GDK_PAINTABLE (private->impl), update_children);
+      return;
+    }
   
   if (private->update_area && !private->update_freeze_count)
     {      
@@ -2390,6 +2544,7 @@ gdk_window_invalidate_maybe_recurse (GdkWindow *window,
 {
   GdkWindowObject *private = (GdkWindowObject *)window;
   GdkRegion *visible_region;
+  GList *tmp_list;
 
   g_return_if_fail (window != NULL);
   g_return_if_fail (GDK_IS_WINDOW (window));
@@ -2400,9 +2555,56 @@ gdk_window_invalidate_maybe_recurse (GdkWindow *window,
   if (private->input_only || !GDK_WINDOW_IS_MAPPED (window))
     return;
 
+  if (GDK_IS_PAINTABLE (private->impl) &&
+      GDK_PAINTABLE_GET_IFACE (private->impl)->invalidate_maybe_recurse)
+    {
+      GDK_PAINTABLE_GET_IFACE (private->impl)->invalidate_maybe_recurse (GDK_PAINTABLE (private->impl), region,
+									 child_func, user_data);
+      return;
+    }
+
   visible_region = gdk_drawable_get_visible_region (window);
   gdk_region_intersect (visible_region, region);
 
+  tmp_list = private->children;
+  while (tmp_list)
+    {
+      GdkWindowObject *child = tmp_list->data;
+      
+      if (!child->input_only)
+	{
+	  GdkRegion *child_region;
+	  GdkRectangle child_rect;
+	  
+	  gdk_window_get_position ((GdkWindow *)child,
+				   &child_rect.x, &child_rect.y);
+	  gdk_drawable_get_size ((GdkDrawable *)child,
+				 &child_rect.width, &child_rect.height);
+
+	  child_region = gdk_region_rectangle (&child_rect);
+	  
+	  /* remove child area from the invalid area of the parent */
+	  if (GDK_WINDOW_IS_MAPPED (child) && !child->shaped)
+	    gdk_region_subtract (visible_region, child_region);
+	  
+	  if (child_func && (*child_func) ((GdkWindow *)child, user_data))
+	    {
+	      gdk_region_offset (region, - child_rect.x, - child_rect.y);
+	      gdk_region_offset (child_region, - child_rect.x, - child_rect.y);
+	      gdk_region_intersect (child_region, region);
+	      
+	      gdk_window_invalidate_maybe_recurse ((GdkWindow *)child,
+						   child_region, child_func, user_data);
+	      
+	      gdk_region_offset (region, child_rect.x, child_rect.y);
+	    }
+
+	  gdk_region_destroy (child_region);
+	}
+
+      tmp_list = tmp_list->next;
+    }
+  
   if (!gdk_region_empty (visible_region))
     {
       if (debug_updates)
@@ -2418,34 +2620,6 @@ gdk_window_invalidate_maybe_recurse (GdkWindow *window,
 	  private->update_area = gdk_region_copy (visible_region);
 	  
 	  gdk_window_schedule_update (window);
-	}
-      
-      if (child_func)
-	{
-	  GList *tmp_list;
-	  
-	  tmp_list = private->children;
-	  while (tmp_list)
-	    {
-	      GdkWindowObject *child = tmp_list->data;
-	      tmp_list = tmp_list->next;
-
-	      if (!child->input_only && (*child_func) ((GdkWindow *)child, user_data))
-		{
-		  GdkRegion *child_region;
-		  gint x, y;
-
-		  gdk_window_get_position ((GdkWindow *)child, &x, &y);
-
-		  /* This copy could be saved with a little more complexity */
-		  child_region = gdk_region_copy (visible_region);
-		  gdk_region_offset (child_region, - x, - y);
-		  
-		  gdk_window_invalidate_maybe_recurse ((GdkWindow *)child, child_region, child_func, user_data);
-		  
-		  gdk_region_destroy (child_region);
-		}
-	    }
 	}
     }
   
@@ -2761,7 +2935,8 @@ gdk_window_constrain_size (GdkGeometry *geometry,
  * @mask: return location for modifier mask
  *
  * Obtains the current pointer position and modifier state.
- * The position is given in coordinates relative to @window.
+ * The position is given in coordinates relative to the upper left 
+ * corner of @window.
  * 
  * Return value: the window containing the pointer (as with
  * gdk_window_at_pointer()), or %NULL if the window containing the

@@ -28,10 +28,13 @@ IGNORE_HFILES=			\
 	gdkprivate.h		\
 	gdkpoly-generic.h	\
 	gdkregion-generic.h	\
+	keyname-table.h		\
 	linux-fb 		\
 	nanox 			\
 	win32 			\
-	x11
+	directfb		\
+	x11			\
+	quartz
 
 # Extra files to add when scanning (relative to $srcdir)
 EXTRA_HFILES=			\

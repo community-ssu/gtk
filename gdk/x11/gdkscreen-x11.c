@@ -47,7 +47,10 @@
 #include <X11/extensions/Xrandr.h>
 #endif
 
-static void         gdk_screen_x11_class_init  (GdkScreenX11Class *klass);
+#ifdef HAVE_XFIXES
+#include <X11/extensions/Xfixes.h>
+#endif
+
 static void         gdk_screen_x11_dispose     (GObject		  *object);
 static void         gdk_screen_x11_finalize    (GObject		  *object);
 static void	    init_xinerama_support      (GdkScreen	  *screen);
@@ -59,47 +62,20 @@ enum
   LAST_SIGNAL
 };
 
-static gpointer parent_class = NULL;
 static guint signals[LAST_SIGNAL] = { 0 };
 
-GType
-_gdk_screen_x11_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-	{
-	  sizeof (GdkScreenX11Class),
-	  (GBaseInitFunc) NULL,
-	  (GBaseFinalizeFunc) NULL,
-	  (GClassInitFunc) gdk_screen_x11_class_init,
-	  NULL,			/* class_finalize */
-	  NULL,			/* class_data */
-	  sizeof (GdkScreenX11),
-	  0,			/* n_preallocs */
-	  (GInstanceInitFunc) NULL,
-	};
-      object_type = g_type_register_static (GDK_TYPE_SCREEN,
-					    "GdkScreenX11",
-					    &object_info, 0);
-    }
-  return object_type;
-}
+G_DEFINE_TYPE (GdkScreenX11, _gdk_screen_x11, GDK_TYPE_SCREEN)
 
 static void
-gdk_screen_x11_class_init (GdkScreenX11Class *klass)
+_gdk_screen_x11_class_init (GdkScreenX11Class *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
   object_class->dispose = gdk_screen_x11_dispose;
   object_class->finalize = gdk_screen_x11_finalize;
 
-  parent_class = g_type_class_peek_parent (klass);
-
   signals[WINDOW_MANAGER_CHANGED] =
-    g_signal_new ("window_manager_changed",
+    g_signal_new (g_intern_static_string ("window_manager_changed"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GdkScreenX11Class, window_manager_changed),
@@ -107,6 +83,11 @@ gdk_screen_x11_class_init (GdkScreenX11Class *klass)
                   g_cclosure_marshal_VOID__VOID,
                   G_TYPE_NONE,
                   0);
+}
+
+static void
+_gdk_screen_x11_init (GdkScreenX11 *screen)
+{
 }
 
 /**
@@ -300,17 +281,22 @@ gdk_screen_x11_dispose (GObject *object)
       screen_x11->system_colormap = NULL;
     }
 
+  if (screen_x11->rgba_colormap)
+    {
+      g_object_unref (screen_x11->rgba_colormap);
+      screen_x11->rgba_colormap = NULL;
+    }
+
   if (screen_x11->root_window)
     _gdk_window_destroy (screen_x11->root_window, TRUE);
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (_gdk_screen_x11_parent_class)->dispose (object);
 
   screen_x11->xdisplay = NULL;
   screen_x11->xscreen = NULL;
   screen_x11->screen_num = -1;
   screen_x11->xroot_window = None;
   screen_x11->wmspec_check_window = None;
-
 }
 
 static void
@@ -326,18 +312,18 @@ gdk_screen_x11_finalize (GObject *object)
     g_object_unref (screen_x11->renderer);
 
   /* Visual Part */
-  for (i = 0;i < screen_x11->nvisuals; i++)
+  for (i = 0; i < screen_x11->nvisuals; i++)
     g_object_unref (screen_x11->visuals[i]);
   g_free (screen_x11->visuals);
   g_hash_table_destroy (screen_x11->visual_hash);
 
-  g_free (screen_x11->window_manager_name);  
+  g_free (screen_x11->window_manager_name);
 
   g_hash_table_destroy (screen_x11->colormap_hash);
 
   g_free (screen_x11->monitors);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (_gdk_screen_x11_parent_class)->finalize (object);
 }
 
 /**
@@ -385,6 +371,68 @@ gdk_screen_get_monitor_geometry (GdkScreen    *screen,
 }
 
 /**
+ * gdk_screen_get_rgba_colormap:
+ * @screen: a #GdkScreen.
+ * 
+ * Gets a colormap to use for creating windows or pixmaps with an
+ * alpha channel. The windowing system on which GTK+ is running
+ * may not support this capability, in which case %NULL will
+ * be returned. Even if a non-%NULL value is returned, its
+ * possible that the window's alpha channel won't be honored
+ * when displaying the window on the screen: in particular, for
+ * X an appropriate windowing manager and compositing manager
+ * must be running to provide appropriate display.
+ * 
+ * Return value: a colormap to use for windows with an alpha channel
+ *   or %NULL if the capability is not available.
+ *
+ * Since: 2.8
+ **/
+GdkColormap *
+gdk_screen_get_rgba_colormap (GdkScreen *screen)
+{
+  GdkScreenX11 *screen_x11;
+
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
+
+  screen_x11 = GDK_SCREEN_X11 (screen);
+
+  if (!screen_x11->rgba_visual)
+    return NULL;
+
+  if (!screen_x11->rgba_colormap)
+    screen_x11->rgba_colormap = gdk_colormap_new (screen_x11->rgba_visual,
+						  FALSE);
+  
+  return screen_x11->rgba_colormap;
+}
+
+/**
+ * gdk_screen_get_rgba_visual:
+ * @screen: a #GdkScreen
+ * 
+ * Gets a visual to use for creating windows or pixmaps with an
+ * alpha channel. See the docs for gdk_screen_get_rgba_colormap()
+ * for caveats.
+ * 
+ * Return value: a visual to use for windows with an alpha channel
+ *   or %NULL if the capability is not available.
+ *
+ * Since: 2.8
+ **/
+GdkVisual *
+gdk_screen_get_rgba_visual (GdkScreen *screen)
+{
+  GdkScreenX11 *screen_x11;
+
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
+
+  screen_x11 = GDK_SCREEN_X11 (screen);
+
+  return screen_x11->rgba_visual;
+}
+
+/**
  * gdk_x11_screen_get_xscreen:
  * @screen: a #GdkScreen.
  * @returns: an Xlib <type>Screen*</type>
@@ -416,6 +464,27 @@ gdk_x11_screen_get_screen_number (GdkScreen *screen)
   return GDK_SCREEN_X11 (screen)->screen_num;
 }
 
+static gboolean
+check_is_composited (GdkDisplay *display,
+		     GdkScreenX11 *screen_x11)
+{
+  Atom xselection = gdk_x11_atom_to_xatom_for_display (display, screen_x11->cm_selection_atom);
+  Window xwindow;
+  
+  xwindow = XGetSelectionOwner (GDK_DISPLAY_XDISPLAY (display), xselection);
+
+  return xwindow != None;
+}
+
+static GdkAtom
+make_cm_atom (int screen_number)
+{
+  gchar *name = g_strdup_printf ("_NET_WM_CM_S%d", screen_number);
+  GdkAtom atom = gdk_atom_intern (name, FALSE);
+  g_free (name);
+  return atom;
+}
+
 GdkScreen *
 _gdk_x11_screen_new (GdkDisplay *display,
 		     gint	 screen_number) 
@@ -435,14 +504,44 @@ _gdk_x11_screen_new (GdkDisplay *display,
   screen_x11->wmspec_check_window = None;
   /* we want this to be always non-null */
   screen_x11->window_manager_name = g_strdup ("unknown");
+  screen_x11->cm_selection_atom = make_cm_atom (screen_number);
+  screen_x11->is_composited = check_is_composited (display, screen_x11);
   
   init_xinerama_support (screen);
   init_randr_support (screen);
   
   _gdk_visual_init (screen);
   _gdk_windowing_window_init (screen);
-
+  
   return screen;
+}
+
+/**
+ * gdk_screen_is_composited:
+ * @screen: a #GdkScreen
+ * 
+ * Returns whether windows with an RGBA visual can reasonably
+ * be expected to have their alpha channel drawn correctly on
+ * the screen.
+ *
+ * On X11 this function returns whether a compositing manager is
+ * compositing @screen.
+ * 
+ * Return value: Whether windows with RGBA visuals can reasonably be
+ * expected to have their alpha channels drawn correctly on the screen.
+ * 
+ * Since: 2.10
+ **/
+gboolean
+gdk_screen_is_composited (GdkScreen *screen)
+{
+  GdkScreenX11 *screen_x11;
+
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), FALSE);
+
+  screen_x11 = GDK_SCREEN_X11 (screen);
+
+  return screen_x11->is_composited;
 }
 
 #ifdef HAVE_XINERAMA
@@ -661,6 +760,30 @@ _gdk_x11_screen_window_manager_changed (GdkScreen *screen)
   g_signal_emit (screen, signals[WINDOW_MANAGER_CHANGED], 0);
 }
 
+void
+_gdk_x11_screen_process_owner_change (GdkScreen *screen,
+				      XEvent *event)
+{
+#ifdef HAVE_XFIXES
+  XFixesSelectionNotifyEvent *selection_event = (XFixesSelectionNotifyEvent *)event;
+  GdkScreenX11 *screen_x11 = GDK_SCREEN_X11 (screen);
+  Atom xcm_selection_atom = gdk_x11_atom_to_xatom_for_display (screen_x11->display,
+							       screen_x11->cm_selection_atom);
+
+  if (selection_event->selection == xcm_selection_atom)
+    {
+      gboolean composited = selection_event->owner != None;
+
+      if (composited != screen_x11->is_composited)
+	{
+	  screen_x11->is_composited = composited;
+
+	  g_signal_emit_by_name (screen, "composited_changed");
+	}
+    }
+#endif
+}
+
 /**
  * _gdk_windowing_substitute_screen_number:
  * @display_name : The name of a display, in the form used by 
@@ -728,17 +851,25 @@ gdk_screen_make_display_name (GdkScreen *screen)
  * gdk_screen_get_active_window
  * @screen: a #GdkScreen
  *
- * Returns a pointer to the screen's currently active window. On X11,
- * this is done by inspecting the _NET_ACTIVE_WINDOW property on the root
- * window. If there is no currently currently active window, or the window
- * manager does not support the _NET_ACTIVE_WINDOW hint, this function
- * returns NULL.
+ * Returns the screen's currently active window.
  *
- * Return value: a #GdkWindow wrapper for the currently active window,
- * or %NULL.
+ * On X11, this is done by inspecting the _NET_ACTIVE_WINDOW property
+ * on the root window, as described in the <ulink
+ * url="http://www.freedesktop.org/Standards/wm-spec">Extended Window
+ * Manager Hints</ulink>. If there is no currently currently active
+ * window, or the window manager does not support the
+ * _NET_ACTIVE_WINDOW hint, this function returns %NULL.
  *
- * Since: maemo 1.0
- */
+ * On other platforms, this function may return %NULL, depending on whether
+ * it is implementable on that platform.
+ *
+ * The returned window should be unrefed using g_object_unref() when
+ * no longer needed.
+ *
+ * Return value: the currently active window, or %NULL.
+ *
+ * Since: 2.10
+ **/
 GdkWindow *
 gdk_screen_get_active_window (GdkScreen *screen)
 {
@@ -748,10 +879,12 @@ gdk_screen_get_active_window (GdkScreen *screen)
   gint format_return;
   gulong nitems_return;
   gulong bytes_after_return;
-  guchar *data;
+  guchar *data = NULL;
+
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
 
   if (!gdk_x11_screen_supports_net_wm_hint (screen,
-                                            gdk_atom_intern ("_NET_ACTIVE_WINDOW", FALSE)))
+                                            gdk_atom_intern_static_string ("_NET_ACTIVE_WINDOW")))
     return NULL;
 
   screen_x11 = GDK_SCREEN_X11 (screen);
@@ -776,7 +909,7 @@ gdk_screen_get_active_window (GdkScreen *screen)
         }
     }
 
-  if (type_return != None)
+  if (data)
     XFree (data);
 
   return ret;
@@ -786,16 +919,27 @@ gdk_screen_get_active_window (GdkScreen *screen)
  * gdk_screen_get_window_stack
  * @screen: a #GdkScreen
  *
- * Returns a list of #GdkWindow wrappers representing the current window stack.
- * On X11, this is done by inspecting the _NET_CLIENT_LIST_STACKING property on
- * the root window. If the window manager does not support the
- * _NET_CLIENT_LIST_STACKING hint, this function returns NULL.
+ * Returns a #GList of #GdkWindow<!-- -->s representing the current
+ * window stack.
  *
- * Return value: a list of #GdkWindow wrappers for the current window stack,
- * or %NULL.
+ * On X11, this is done by inspecting the _NET_CLIENT_LIST_STACKING
+ * property on the root window, as described in the <ulink
+ * url="http://www.freedesktop.org/Standards/wm-spec">Extended Window
+ * Manager Hints</ulink>. If the window manager does not support the
+ * _NET_CLIENT_LIST_STACKING hint, this function returns %NULL.
  *
- * Since: maemo 1.0
- */
+ * On other platforms, this function may return %NULL, depending on whether
+ * it is implementable on that platform.
+ *
+ * The returned list is newly allocated and owns references to the
+ * windows it contains, so it should be freed using g_list_free() and
+ * its windows unrefed using g_object_unref() when no longer needed.
+ *
+ * Return value: a list of #GdkWindow<!-- -->s for the current window stack,
+ *               or %NULL.
+ *
+ * Since: 2.10
+ **/
 GList *
 gdk_screen_get_window_stack (GdkScreen *screen)
 {
@@ -805,10 +949,12 @@ gdk_screen_get_window_stack (GdkScreen *screen)
   gint format_return;
   gulong nitems_return;
   gulong bytes_after_return;
-  guchar *data;
+  guchar *data = NULL;
+
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
 
   if (!gdk_x11_screen_supports_net_wm_hint (screen,
-                                            gdk_atom_intern ("_NET_CLIENT_LIST_STACKING", FALSE)))
+                                            gdk_atom_intern_static_string ("_NET_CLIENT_LIST_STACKING")))
     return NULL;
 
   screen_x11 = GDK_SCREEN_X11 (screen);
@@ -824,24 +970,22 @@ gdk_screen_get_window_stack (GdkScreen *screen)
       if ((type_return == XA_WINDOW) && (format_return == 32) &&
           (data) && (nitems_return > 0))
         {
-          GdkNativeWindow *stack;
+          GdkNativeWindow *stack = (GdkNativeWindow *) data;
           GdkWindow *win;
           int i;
 
-          stack = (GdkNativeWindow *) data;
-
           for (i = 0; i < nitems_return; i++)
             {
-              win = gdk_window_foreign_new_for_display (screen_x11->display, stack[i]);
+              win = gdk_window_foreign_new_for_display (screen_x11->display,
+                                                        stack[i]);
 
               if (win != NULL)
                 ret = g_list_append (ret, win);
             }
-
         }
     }
 
-  if (type_return != None)
+  if (data)
     XFree (data);
 
   return ret;

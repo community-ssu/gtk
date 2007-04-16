@@ -24,15 +24,15 @@ Animated images.
 
 
 <!-- ##### STRUCT GdkPixbufAnimation ##### -->
-  <para>
-    This object describes an animation.
-  </para>
+<para>
+And opaque struct representing an animation.
+</para>
 
 
 <!-- ##### STRUCT GdkPixbufAnimationIter ##### -->
 <para>
-A #GdkPixbufAnimationIter provides the necessary functionality to
-display an animation. See gdk_pixbuf_animation_get_iter().
+And opaque struct representing an iterator which points to a
+certain position in an animation.
 </para>
 
 
@@ -144,5 +144,31 @@ display an animation. See gdk_pixbuf_animation_get_iter().
 
 @iter: 
 @Returns: 
+
+
+<!-- ##### STRUCT GdkPixbufSimpleAnim ##### -->
+<para>
+An
+</para>
+
+
+<!-- ##### FUNCTION gdk_pixbuf_simple_anim_new ##### -->
+<para>
+
+</para>
+
+@width: 
+@height: 
+@rate: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gdk_pixbuf_simple_anim_add_frame ##### -->
+<para>
+
+</para>
+
+@animation: 
+@pixbuf: 
 
 

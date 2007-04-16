@@ -51,9 +51,6 @@
 #include <windows.h>
 #undef STRICT
 #endif /* G_PLATFORM_WIN32 */
-#ifdef G_OS_WIN32
-#include <winsock.h>		/* For gethostname */
-#endif
 
 #include "gdk/gdkkeysyms.h"
 #include "gtkbutton.h"
@@ -81,7 +78,6 @@
 
 #undef GTK_DISABLE_DEPRECATED
 #include "gtkoptionmenu.h"
-#define GTK_DISABLE_DEPRECATED
 
 #define WANT_HPANED 1
 #include "gtkhpaned.h"
@@ -375,7 +371,6 @@ static gint compare_cmpl_dir(const void* a, const void* b);
 static void update_cmpl(PossibleCompletion* poss,
 			CompletionState* cmpl_state);
 
-static void gtk_file_selection_class_init    (GtkFileSelectionClass *klass);
 static void gtk_file_selection_set_property  (GObject         *object,
 					      guint            prop_id,
 					      const GValue    *value,
@@ -384,7 +379,6 @@ static void gtk_file_selection_get_property  (GObject         *object,
 					      guint            prop_id,
 					      GValue          *value,
 					      GParamSpec      *pspec);
-static void gtk_file_selection_init          (GtkFileSelection      *filesel);
 static void gtk_file_selection_finalize      (GObject               *object);
 static void gtk_file_selection_destroy       (GtkObject             *object);
 static void gtk_file_selection_map           (GtkWidget             *widget);
@@ -469,8 +463,6 @@ compare_sys_filenames (const gchar *a,
 
 #endif
 
-static GtkWindowClass *parent_class = NULL;
-
 /* Saves errno when something cmpl does fails. */
 static gint cmpl_errno;
 
@@ -510,33 +502,7 @@ translate_win32_path (GtkFileSelection *filesel)
 }
 #endif
 
-GType
-gtk_file_selection_get_type (void)
-{
-  static GType file_selection_type = 0;
-
-  if (!file_selection_type)
-    {
-      static const GTypeInfo filesel_info =
-      {
-	sizeof (GtkFileSelectionClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_file_selection_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkFileSelection),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_file_selection_init,
-      };
-
-      file_selection_type =
-	g_type_register_static (GTK_TYPE_DIALOG, "GtkFileSelection",
-				&filesel_info, 0);
-    }
-
-  return file_selection_type;
-}
+G_DEFINE_TYPE (GtkFileSelection, gtk_file_selection, GTK_TYPE_DIALOG)
 
 static void
 gtk_file_selection_class_init (GtkFileSelectionClass *class)
@@ -549,8 +515,6 @@ gtk_file_selection_class_init (GtkFileSelectionClass *class)
   object_class = (GtkObjectClass*) class;
   widget_class = (GtkWidgetClass*) class;
 
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->finalize = gtk_file_selection_finalize;
   gobject_class->set_property = gtk_file_selection_set_property;
   gobject_class->get_property = gtk_file_selection_get_property;
@@ -561,23 +525,21 @@ gtk_file_selection_class_init (GtkFileSelectionClass *class)
                                                         P_("Filename"),
                                                         P_("The currently selected filename"),
                                                         NULL,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SHOW_FILEOPS,
 				   g_param_spec_boolean ("show-fileops",
 							 P_("Show file operations"),
 							 P_("Whether buttons for creating/manipulating files should be displayed"),
 							 FALSE,
-							 GTK_PARAM_READABLE |
-							 GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_SELECT_MULTIPLE,
 				   g_param_spec_boolean ("select-multiple",
-							 P_("Select multiple"),
+							 P_("Select Multiple"),
 							 P_("Whether to allow multiple files to be selected"),
 							 FALSE,
-							 GTK_PARAM_READABLE |
-							 GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
   object_class->destroy = gtk_file_selection_destroy;
   widget_class->map = gtk_file_selection_map;
 }
@@ -658,7 +620,6 @@ gtk_file_selection_init (GtkFileSelection *filesel)
   GtkWidget *entry_vbox;
   GtkWidget *label;
   GtkWidget *list_hbox, *list_container;
-  GtkWidget *confirm_area;
   GtkWidget *pulldown_hbox;
   GtkWidget *scrolled_win;
   GtkWidget *eventbox;
@@ -802,7 +763,6 @@ gtk_file_selection_init (GtkFileSelection *filesel)
   gtk_widget_show (filesel->action_area);
   
   /*  The OK/Cancel button area */
-  confirm_area = dialog->action_area;
 
   /*  The Cancel button  */
   filesel->cancel_button = gtk_dialog_add_button (dialog,
@@ -942,8 +902,7 @@ filenames_dropped (GtkWidget        *widget,
   char *uri = NULL;
   char *filename = NULL;
   char *hostname;
-  char this_hostname[257];
-  int res;
+  const char *this_hostname;
   GError *error = NULL;
 	
   if (!selection_data->data)
@@ -965,11 +924,10 @@ filenames_dropped (GtkWidget        *widget,
       return;
     }
 
-  res = gethostname (this_hostname, 256);
-  this_hostname[256] = 0;
+  this_hostname = g_get_host_name ();
   
   if ((hostname == NULL) ||
-      (res == 0 && strcmp (hostname, this_hostname) == 0) ||
+      (strcmp (hostname, this_hostname) == 0) ||
       (strcmp (hostname, "localhost") == 0))
     gtk_file_selection_set_filename (GTK_FILE_SELECTION (widget),
 				     filename);
@@ -992,7 +950,7 @@ filenames_dropped (GtkWidget        *widget,
 					 "Are you sure that you want to select it?"), filename_utf8, hostname);
       g_free (filename_utf8);
 
-      g_object_set_data_full (G_OBJECT (dialog), "gtk-fs-dnd-filename", g_strdup (filename), g_free);
+      g_object_set_data_full (G_OBJECT (dialog), I_("gtk-fs-dnd-filename"), g_strdup (filename), g_free);
       
       g_signal_connect_data (dialog, "response",
 			     (GCallback) dnd_really_drop, 
@@ -1025,8 +983,7 @@ filenames_drag_get (GtkWidget        *widget,
 {
   const gchar *file;
   gchar *uri_list;
-  char hostname[256];
-  int res;
+  const char *hostname;
   GError *error;
 
   file = gtk_file_selection_get_filename (filesel);
@@ -1035,10 +992,10 @@ filenames_drag_get (GtkWidget        *widget,
     {
       if (info == TARGET_URILIST)
 	{
-	  res = gethostname (hostname, 256);
+	  hostname = g_get_host_name ();
 	  
 	  error = NULL;
-	  uri_list = g_filename_to_uri (file, (!res)?hostname:NULL, &error);
+	  uri_list = g_filename_to_uri (file, hostname, &error);
 	  if (!uri_list)
 	    {
 	      g_warning ("Error getting filename: %s\n",
@@ -1253,7 +1210,7 @@ G_CONST_RETURN gchar*
 gtk_file_selection_get_filename (GtkFileSelection *filesel)
 {
   static const gchar nothing[2] = "";
-  static gchar something[MAXPATHLEN*2+1];
+  static GString *something;
   char *sys_filename;
   const char *text;
 
@@ -1270,10 +1227,13 @@ gtk_file_selection_get_filename (GtkFileSelection *filesel)
       g_free (fullname);
       if (!sys_filename)
 	return nothing;
-      strncpy (something, sys_filename, sizeof (something) - 1);
-      something[sizeof (something) - 1] = '\0';
+      if (!something)
+        something = g_string_new (sys_filename);
+      else
+        g_string_assign (something, sys_filename);
       g_free (sys_filename);
-      return something;
+
+      return something->str;
     }
 
   return nothing;
@@ -1340,7 +1300,7 @@ gtk_file_selection_destroy (GtkObject *object)
       filesel->last_selected = NULL;
     }
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_file_selection_parent_class)->destroy (object);
 }
 
 static void
@@ -1351,7 +1311,7 @@ gtk_file_selection_map (GtkWidget *widget)
   /* Refresh the contents */
   gtk_file_selection_populate (filesel, "", FALSE, FALSE);
   
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (gtk_file_selection_parent_class)->map (widget);
 }
 
 static void
@@ -1361,7 +1321,7 @@ gtk_file_selection_finalize (GObject *object)
 
   g_free (filesel->fileop_file);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_file_selection_parent_class)->finalize (object);
 }
 
 /* Begin file operations callbacks */
@@ -1445,8 +1405,8 @@ gtk_file_selection_create_dir_confirmed (GtkWidget *widget,
       if (g_error_matches (error, G_CONVERT_ERROR, G_CONVERT_ERROR_ILLEGAL_SEQUENCE))
 	buf = g_strdup_printf (_("The folder name \"%s\" contains symbols that are not allowed in filenames"), dirname);
       else
-	buf = g_strdup_printf (_("Error creating folder \"%s\": %s\n%s"), dirname, error->message,
-			       _("You probably used symbols not allowed in filenames."));
+	buf = g_strdup_printf (_("Error creating directory '%s': %s"), 
+			       dirname, error->message);
       gtk_file_selection_fileop_error (fs, buf);
       g_error_free (error);
       goto out;
@@ -1454,8 +1414,8 @@ gtk_file_selection_create_dir_confirmed (GtkWidget *widget,
 
   if (g_mkdir (sys_full_path, 0777) < 0)
     {
-      buf = g_strdup_printf (_("Error creating folder \"%s\": %s\n"), dirname,
-			     g_strerror (errno));
+      buf = g_strdup_printf (_("Error creating directory '%s': %s"), 
+			     dirname, g_strerror (errno));
       gtk_file_selection_fileop_error (fs, buf);
     }
 
@@ -1573,9 +1533,8 @@ gtk_file_selection_delete_file_response (GtkDialog *dialog,
 	buf = g_strdup_printf (_("The filename \"%s\" contains symbols that are not allowed in filenames"),
 			       fs->fileop_file);
       else
-	buf = g_strdup_printf (_("Error deleting file \"%s\": %s\n%s"),
-			       fs->fileop_file, error->message,
-			       _("It probably contains symbols not allowed in filenames."));
+	buf = g_strdup_printf (_("Error deleting file '%s': %s"),
+			       fs->fileop_file, error->message);
       
       gtk_file_selection_fileop_error (fs, buf);
       g_error_free (error);
@@ -1584,7 +1543,7 @@ gtk_file_selection_delete_file_response (GtkDialog *dialog,
 
   if (g_unlink (sys_full_path) < 0) 
     {
-      buf = g_strdup_printf (_("Error deleting file \"%s\": %s"),
+      buf = g_strdup_printf (_("Error deleting file '%s': %s"),
 			     fs->fileop_file, g_strerror (errno));
       gtk_file_selection_fileop_error (fs, buf);
     }
@@ -1678,11 +1637,10 @@ gtk_file_selection_rename_file_confirmed (GtkWidget *widget,
   if (error)
     {
       if (g_error_matches (error, G_CONVERT_ERROR, G_CONVERT_ERROR_ILLEGAL_SEQUENCE))
-	buf = g_strdup_printf (_("The file name \"%s\" contains symbols that are not allowed in filenames"), new_filename);
+	buf = g_strdup_printf (_("The filename \"%s\" contains symbols that are not allowed in filenames"), new_filename);
       else
-	buf = g_strdup_printf (_("Error renaming file to \"%s\": %s\n%s"),
-			       new_filename, error->message,
-			       _("You probably used symbols not allowed in filenames."));
+	buf = g_strdup_printf (_("Error renaming file to \"%s\": %s"),
+			       new_filename, error->message);
       gtk_file_selection_fileop_error (fs, buf);
       g_error_free (error);
       goto out1;
@@ -1692,11 +1650,10 @@ gtk_file_selection_rename_file_confirmed (GtkWidget *widget,
   if (error)
     {
       if (g_error_matches (error, G_CONVERT_ERROR, G_CONVERT_ERROR_ILLEGAL_SEQUENCE))
-	buf = g_strdup_printf (_("The file name \"%s\" contains symbols that are not allowed in filenames"), old_filename);
+	buf = g_strdup_printf (_("The filename \"%s\" contains symbols that are not allowed in filenames"), old_filename);
       else
-	buf = g_strdup_printf (_("Error renaming file \"%s\": %s\n%s"),
-			       old_filename, error->message,
-			       _("It probably contains symbols not allowed in filenames."));
+	buf = g_strdup_printf (_("Error renaming file \"%s\": %s"),
+			       old_filename, error->message);
       gtk_file_selection_fileop_error (fs, buf);
       g_error_free (error);
       goto out2;
@@ -3210,7 +3167,7 @@ check_dir (gchar       *dir_name,
    */
 
   static struct {
-    const gchar *name;
+    const gchar name[5];
     gboolean present;
     struct stat statbuf;
   } no_stat_dirs[] = {
@@ -3565,12 +3522,11 @@ static PossibleCompletion*
 attempt_homedir_completion (gchar           *text_to_complete,
 			    CompletionState *cmpl_state)
 {
-  gint index, length;
+  gint index;
 
   if (!cmpl_state->user_dir_name_buffer &&
       !get_pwdb (cmpl_state))
     return NULL;
-  length = strlen (text_to_complete) - 1;
 
   cmpl_state->user_completion_index += 1;
 

@@ -29,8 +29,8 @@
 #include <stdlib.h>
 
 #include "gtkcellrendererprogress.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define GTK_CELL_RENDERER_PROGRESS_GET_PRIVATE(object) (G_TYPE_INSTANCE_GET_PRIVATE ((object),                        \
@@ -87,7 +87,7 @@ static void gtk_cell_renderer_progress_render       (GtkCellRenderer         *ce
 						     guint                    flags);
 
      
-G_DEFINE_TYPE (GtkCellRendererProgress, gtk_cell_renderer_progress, GTK_TYPE_CELL_RENDERER);
+G_DEFINE_TYPE (GtkCellRendererProgress, gtk_cell_renderer_progress, GTK_TYPE_CELL_RENDERER)
 
 static void
 gtk_cell_renderer_progress_class_init (GtkCellRendererProgressClass *klass)
@@ -233,7 +233,7 @@ gtk_cell_renderer_progress_set_value (GtkCellRendererProgress *cellprogress,
   if (cellprogress->priv->text)
     text = g_strdup (cellprogress->priv->text);
   else
-    /* translators, strip the prefix up to and including the first | */
+    /* do not translate the part before the | */
     text = g_strdup_printf (Q_("progress bar label|%d %%"), 
 			    cellprogress->priv->value);
   
@@ -302,10 +302,23 @@ gtk_cell_renderer_progress_get_size (GtkCellRenderer *cell,
   compute_dimensions (cell, widget, cellprogress->priv->label, &w, &h);
   
   if (width)
-      *width = MAX (cellprogress->priv->min_w, w);
+    *width = MAX (cellprogress->priv->min_w, w);
   
   if (height)
     *height = MIN (cellprogress->priv->min_h, h);
+
+  /* FIXME: at the moment cell_area is only set when we are requesting
+   * the size for drawing the focus rectangle. We now just return
+   * the last size we used for drawing the progress bar, which will
+   * work for now. Not a really nice solution though.
+   */
+  if (cell_area)
+    {
+      if (width)
+        *width = cell_area->width;
+      if (height)
+        *height = cell_area->height;
+    }
 }
 
 static void
@@ -318,36 +331,41 @@ gtk_cell_renderer_progress_render (GtkCellRenderer *cell,
 				   guint            flags)
 {
   GtkCellRendererProgress *cellprogress = GTK_CELL_RENDERER_PROGRESS (cell);
-  GdkGC *gc;
   PangoLayout *layout;
   PangoRectangle logical_rect;
   gint x, y, w, h, perc_w, pos;
   GdkRectangle clip;
   gboolean is_rtl;
+  cairo_t *cr;
 
   is_rtl = gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL;
   
-  gc = gdk_gc_new (window);
+  cr = gdk_cairo_create (window);
   
   x = cell_area->x + cell->xpad;
   y = cell_area->y + cell->ypad;
   
   w = cell_area->width - cell->xpad * 2;
   h = cell_area->height - cell->ypad * 2;
-  
-  gdk_gc_set_rgb_fg_color (gc, &widget->style->fg[GTK_STATE_NORMAL]);
-  gdk_draw_rectangle (window, gc, TRUE, x, y, w, h);
+
+  cairo_rectangle (cr, x, y, w, h);
+  gdk_cairo_set_source_color (cr, &widget->style->fg[GTK_STATE_NORMAL]);
+  cairo_fill (cr);
   
   x += widget->style->xthickness;
   y += widget->style->ythickness;
   w -= widget->style->xthickness * 2;
   h -= widget->style->ythickness * 2;
-  gdk_gc_set_rgb_fg_color (gc, &widget->style->bg[GTK_STATE_NORMAL]);
-  gdk_draw_rectangle (window, gc, TRUE, x, y, w, h);
   
-  gdk_gc_set_rgb_fg_color (gc, &widget->style->bg[GTK_STATE_SELECTED]);
+  cairo_rectangle (cr, x, y, w, h);
+  gdk_cairo_set_source_color (cr, &widget->style->bg[GTK_STATE_NORMAL]);
+  cairo_fill (cr);
+  
   perc_w = w * MAX (0, cellprogress->priv->value) / 100;
-  gdk_draw_rectangle (window, gc, TRUE, is_rtl ? (x + w - perc_w) : x, y, perc_w, h);
+  
+  cairo_rectangle (cr, is_rtl ? (x + w - perc_w) : x, y, perc_w, h);
+  gdk_cairo_set_source_color (cr, &widget->style->bg[GTK_STATE_SELECTED]);
+  cairo_fill (cr);
   
   layout = gtk_widget_create_pango_layout (widget, cellprogress->priv->label);
   pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
@@ -375,7 +393,7 @@ gtk_cell_renderer_progress_render (GtkCellRenderer *cell,
 		    layout);
   
   g_object_unref (layout);
-  g_object_unref (gc);
+  cairo_destroy (cr);
 }
 
 #define __GTK_CELL_RENDERER_PROGRESS_C__

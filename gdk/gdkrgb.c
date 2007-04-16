@@ -54,16 +54,6 @@ typedef void (*GdkRgbConvFunc) (GdkRgbInfo *image_info, GdkImage *image,
 				gint x_align, gint y_align,
 				GdkRgbCmap *cmap);
 
-static const gchar *const visual_names[] =
-{
-  "static gray",
-  "grayscale",
-  "static color",
-  "pseudo color",
-  "true color",
-  "direct color",
-};
-
 #define STAGE_ROWSTRIDE (GDK_SCRATCH_IMAGE_WIDTH * 3)
 
 /* Some of these fields should go, as they're not being used at all. (?)
@@ -445,8 +435,8 @@ gdk_rgb_score_visual (GdkVisual *visual)
   pseudo = (visual->type == GDK_VISUAL_PSEUDO_COLOR || visual->type == GDK_VISUAL_TRUE_COLOR);
 
   if (gdk_rgb_verbose)
-    g_print ("Visual type = %s, depth = %d, %x:%x:%x%s; score=%x\n",
-	     visual_names[visual->type],
+    g_print ("Visual type = %d, depth = %d, %x:%x:%x%s; score=%x\n",
+	     visual->type,
 	     visual->depth,
 	     visual->red_mask,
 	     visual->green_mask,
@@ -719,6 +709,23 @@ gdk_rgb_get_info_from_colormap (GdkColormap *cmap)
   return image_info;
 }
 
+static guint32
+gdk_rgb_alpha_mask (GdkRgbInfo *image_info)
+{
+  guint padding;
+  
+  /* Shifting by >= width-of-type isn't defined in C */
+  if (image_info->visual->depth >= 32)
+    padding = 0;
+  else
+    padding = ((~(guint32)0)) << image_info->visual->depth;
+	  
+  return ~(image_info->visual->red_mask |
+	   image_info->visual->green_mask |
+	   image_info->visual->blue_mask |
+	   padding);
+}
+
 static gulong
 gdk_rgb_xpixel_from_rgb_internal (GdkColormap *colormap,
 				  guint16 r, guint16 g, guint16 b)
@@ -767,6 +774,7 @@ gdk_rgb_xpixel_from_rgb_internal (GdkColormap *colormap,
       pixel = (unused + ((r >> (16 - image_info->visual->red_prec)) << image_info->visual->red_shift) +
 	       ((g >> (16 - image_info->visual->green_prec)) << image_info->visual->green_shift) +
 	       ((b >> (16 - image_info->visual->blue_prec)) << image_info->visual->blue_shift));
+      pixel |= gdk_rgb_alpha_mask (image_info);
     }
   else if (image_info->visual->type == GDK_VISUAL_STATIC_GRAY ||
 	   image_info->visual->type == GDK_VISUAL_GRAYSCALE)
@@ -2126,11 +2134,10 @@ gdk_rgb_convert_0888 (GdkRgbInfo *image_info, GdkImage *image,
 		      guchar *buf, int rowstride,
 		      gint x_align, gint y_align, GdkRgbCmap *cmap)
 {
-  int x, y;
-  guchar *obuf;
+  int y, w;
+  guchar *obuf, *p;
   gint bpl;
   guchar *bptr, *bp2;
-  int r, g, b;
 
   bptr = buf;
   bpl = image->bpl;
@@ -2138,13 +2145,16 @@ gdk_rgb_convert_0888 (GdkRgbInfo *image_info, GdkImage *image,
   for (y = 0; y < height; y++)
     {
       bp2 = bptr;
-      for (x = 0; x < width; x++)
+      p = obuf;
+      w = width;
+      while (w--)
 	{
-	  r = bp2[0];
-	  g = bp2[1];
-	  b = bp2[2];
-	  ((guint32 *)obuf)[x] = (r << 16) | (g << 8) | b;
+	  p[0] = bp2[2];
+	  p[1] = bp2[1];
+	  p[2] = bp2[0];
+	  p[3] = 0xff;
 	  bp2 += 3;
+	  p += 4;
 	}
       bptr += rowstride;
       obuf += bpl;
@@ -2157,11 +2167,10 @@ gdk_rgb_convert_0888_br (GdkRgbInfo *image_info, GdkImage *image,
 			 guchar *buf, int rowstride,
 			 gint x_align, gint y_align, GdkRgbCmap *cmap)
 {
-  int x, y;
-  guchar *obuf;
+  int y, w;
+  guchar *obuf, *p;
   gint bpl;
   guchar *bptr, *bp2;
-  int r, g, b;
 
   bptr = buf;
   bpl = image->bpl;
@@ -2169,13 +2178,16 @@ gdk_rgb_convert_0888_br (GdkRgbInfo *image_info, GdkImage *image,
   for (y = 0; y < height; y++)
     {
       bp2 = bptr;
-      for (x = 0; x < width; x++)
+      p = obuf;
+      w = width;
+      while (w--)
 	{
-	  r = bp2[0];
-	  g = bp2[1];
-	  b = bp2[2];
-	  ((guint32 *)obuf)[x] = (b << 24) | (g << 16) | (r << 8);
+	  p[0] = 0xff;
+	  p[1] = bp2[0];
+	  p[2] = bp2[1];
+	  p[3] = bp2[2];
 	  bp2 += 3;
+	  p += 4;
 	}
       bptr += rowstride;
       obuf += bpl;
@@ -2232,6 +2244,7 @@ gdk_rgb_convert_truecolor_lsb (GdkRgbInfo *image_info, GdkImage *image,
   gint b_right, b_left;
   gint bpp;
   guint32 pixel;
+  guint32 alpha_mask = gdk_rgb_alpha_mask (image_info);
   gint i;
 
   r_right = 8 - image_info->visual->red_prec;
@@ -2255,7 +2268,7 @@ gdk_rgb_convert_truecolor_lsb (GdkRgbInfo *image_info, GdkImage *image,
 	  b = bp2[2];
 	  pixel = ((r >> r_right) << r_left) |
 	    ((g >> g_right) << g_left) |
-	    ((b >> b_right) << b_left);
+	    ((b >> b_right) << b_left) | alpha_mask;
 	  for (i = 0; i < bpp; i++)
 	    {
 	      *obptr++ = pixel & 0xff;
@@ -2285,6 +2298,7 @@ gdk_rgb_convert_truecolor_lsb_d (GdkRgbInfo *image_info, GdkImage *image,
   gint b_right, b_left, b_prec;
   gint bpp;
   guint32 pixel;
+  guint32 alpha_mask = gdk_rgb_alpha_mask (image_info);
   gint i;
   gint dith;
   gint r1, g1, b1;
@@ -2319,7 +2333,7 @@ gdk_rgb_convert_truecolor_lsb_d (GdkRgbInfo *image_info, GdkImage *image,
 	  b1 = b + (dith >> b_prec);
 	  pixel = (((r1 - (r1 >> r_prec)) >> r_right) << r_left) |
 	    (((g1 - (g1 >> g_prec)) >> g_right) << g_left) |
-	    (((b1 - (b1 >> b_prec)) >> b_right) << b_left);
+	    (((b1 - (b1 >> b_prec)) >> b_right) << b_left) | alpha_mask;
 	  for (i = 0; i < bpp; i++)
 	    {
 	      *obptr++ = pixel & 0xff;
@@ -2349,6 +2363,7 @@ gdk_rgb_convert_truecolor_msb (GdkRgbInfo *image_info, GdkImage *image,
   gint b_right, b_left;
   gint bpp;
   guint32 pixel;
+  guint32 alpha_mask = gdk_rgb_alpha_mask (image_info);
   gint shift, shift_init;
 
   r_right = 8 - image_info->visual->red_prec;
@@ -2373,7 +2388,7 @@ gdk_rgb_convert_truecolor_msb (GdkRgbInfo *image_info, GdkImage *image,
 	  b = bp2[2];
 	  pixel = ((r >> r_right) << r_left) |
 	    ((g >> g_right) << g_left) |
-	    ((b >> b_right) << b_left);
+	    ((b >> b_right) << b_left) | alpha_mask;
 	  for (shift = shift_init; shift >= 0; shift -= 8)
 	    {
 	      *obptr++ = (pixel >> shift) & 0xff;
@@ -2402,6 +2417,7 @@ gdk_rgb_convert_truecolor_msb_d (GdkRgbInfo *image_info, GdkImage *image,
   gint b_right, b_left, b_prec;
   gint bpp;
   guint32 pixel;
+  guint32 alpha_mask = gdk_rgb_alpha_mask (image_info);
   gint shift, shift_init;
   gint dith;
   gint r1, g1, b1;
@@ -2437,7 +2453,7 @@ gdk_rgb_convert_truecolor_msb_d (GdkRgbInfo *image_info, GdkImage *image,
 	  b1 = b + (dith >> b_prec);
 	  pixel = (((r1 - (r1 >> r_prec)) >> r_right) << r_left) |
 	    (((g1 - (g1 >> g_prec)) >> g_right) << g_left) |
-	    (((b1 - (b1 >> b_prec)) >> b_right) << b_left);
+	    (((b1 - (b1 >> b_prec)) >> b_right) << b_left) | alpha_mask;
 	  for (shift = shift_init; shift >= 0; shift -= 8)
 	    {
 	      *obptr++ = (pixel >> shift) & 0xff;
@@ -3040,8 +3056,8 @@ gdk_rgb_select_conv (GdkRgbInfo *image_info)
 
   byte_order = image_info->visual->byte_order;
   if (gdk_rgb_verbose)
-    g_print ("Chose visual type=%s depth=%d, image bpp=%d, %s first\n",
-	     visual_names[image_info->visual->type], image_info->visual->depth,
+    g_print ("Chose visual type=%d depth=%d, image bpp=%d, %s first\n",
+	     image_info->visual->type, image_info->visual->depth,
 	     bpp, byte_order == GDK_LSB_FIRST ? "lsb" : "msb");
 
 #if G_BYTE_ORDER == G_BIG_ENDIAN
@@ -3109,28 +3125,34 @@ gdk_rgb_select_conv (GdkRgbInfo *image_info)
 	   ((mask_rgb && byte_order == GDK_MSB_FIRST) ||
 	    (mask_bgr && byte_order == GDK_LSB_FIRST)))
     conv = gdk_rgb_convert_888_msb;
-#if G_BYTE_ORDER == G_BIG_ENDIAN
-  else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
-	   (mask_rgb && byte_order == GDK_LSB_FIRST))
-    conv = gdk_rgb_convert_0888_br;
-  else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
+  else if (bpp == 32 &&
+	   (depth == 24 || depth == 32) &&
+	   vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_rgb && byte_order == GDK_MSB_FIRST))
+    conv = gdk_rgb_convert_0888_br;
+  else if (bpp == 32 &&
+	   (depth == 24 || depth == 32) &&
+	   vtype == GDK_VISUAL_TRUE_COLOR &&
+	   (mask_rgb && byte_order == GDK_LSB_FIRST))
     conv = gdk_rgb_convert_0888;
+#if G_BYTE_ORDER == G_BIG_ENDIAN
   else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_bgr && byte_order == GDK_MSB_FIRST))
     conv = gdk_rgb_convert_8880_br;
-#else
-  else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
-	   (mask_rgb && byte_order == GDK_MSB_FIRST))
-    conv = gdk_rgb_convert_0888_br;
-  else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
+  else if (bpp == 32 && depth == 32 && vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_rgb && byte_order == GDK_LSB_FIRST))
-    conv = gdk_rgb_convert_0888;
+    conv = gdk_rgb_convert_8880_br;
+  else if (bpp == 32 && depth == 32 && vtype == GDK_VISUAL_TRUE_COLOR &&
+	   (mask_rgb && byte_order == GDK_MSB_FIRST))
+    conv = gdk_rgb_convert_8880_br;
+#else
   else if (bpp == 32 && depth == 24 && vtype == GDK_VISUAL_TRUE_COLOR &&
 	   (mask_bgr && byte_order == GDK_LSB_FIRST))
     conv = gdk_rgb_convert_8880_br;
+  else if (bpp == 32 && depth == 32 && vtype == GDK_VISUAL_TRUE_COLOR &&
+	   (mask_rgb && byte_order == GDK_LSB_FIRST))
+    conv = gdk_rgb_convert_0888;
 #endif
-
   else if (vtype == GDK_VISUAL_TRUE_COLOR && byte_order == GDK_LSB_FIRST)
     {
       conv = gdk_rgb_convert_truecolor_lsb;
@@ -3203,10 +3225,10 @@ gdk_rgb_select_conv (GdkRgbInfo *image_info)
 
   if (!conv)
     {
-      g_warning ("Visual type=%s depth=%d, image bpp=%d, %s first\n"
+      g_warning ("Visual type=%d depth=%d, image bpp=%d, %s first\n"
 		 "is not supported by GdkRGB. Please submit a bug report\n"
 		 "with the above values to bugzilla.gnome.org",
-		 visual_names[vtype], depth, bpp,
+		 vtype, depth, bpp,
 		 byte_order == GDK_LSB_FIRST ? "lsb" : "msb");
       exit (1);
     }

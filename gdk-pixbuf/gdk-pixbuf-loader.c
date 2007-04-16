@@ -43,16 +43,13 @@ enum {
 };
 
 
-static void gdk_pixbuf_loader_class_init    (GdkPixbufLoaderClass   *klass);
-static void gdk_pixbuf_loader_init          (GdkPixbufLoader        *loader);
-static void gdk_pixbuf_loader_finalize      (GObject                *loader);
+static void gdk_pixbuf_loader_finalize (GObject *loader);
 
-static gpointer parent_class = NULL;
 static guint    pixbuf_loader_signals[LAST_SIGNAL] = { 0 };
 
 /* Internal data */
 
-#define LOADER_HEADER_SIZE 128
+#define LOADER_HEADER_SIZE 1024
 
 typedef struct
 {
@@ -69,42 +66,7 @@ typedef struct
         gboolean needs_scale;
 } GdkPixbufLoaderPrivate;
 
-
-/**
- * gdk_pixbuf_loader_get_type:
- *
- * Registers the #GdkPixbufLoader class if necessary, and returns the type ID
- * associated to it.
- *
- * Return value: The type ID of the #GdkPixbufLoader class.
- **/
-GType
-gdk_pixbuf_loader_get_type (void)
-{
-        static GType loader_type = 0;
-  
-        if (!loader_type)
-                {
-                        static const GTypeInfo loader_info = {
-                                sizeof (GdkPixbufLoaderClass),
-                                (GBaseInitFunc) NULL,
-                                (GBaseFinalizeFunc) NULL,
-                                (GClassInitFunc) gdk_pixbuf_loader_class_init,
-                                NULL,           /* class_finalize */
-                                NULL,           /* class_data */
-                                sizeof (GdkPixbufLoader),
-                                0,              /* n_preallocs */
-                                (GInstanceInitFunc) gdk_pixbuf_loader_init
-                        };
-      
-                        loader_type = g_type_register_static (G_TYPE_OBJECT,
-                                                              "GdkPixbufLoader",
-                                                              &loader_info,
-                                                              0);
-                }
-  
-        return loader_type;
-}
+G_DEFINE_TYPE (GdkPixbufLoader, gdk_pixbuf_loader, G_TYPE_OBJECT)
 
 static void
 gdk_pixbuf_loader_class_init (GdkPixbufLoaderClass *class)
@@ -112,8 +74,6 @@ gdk_pixbuf_loader_class_init (GdkPixbufLoaderClass *class)
         GObjectClass *object_class;
   
         object_class = (GObjectClass *) class;
-  
-        parent_class = g_type_class_peek_parent (class);
   
         object_class->finalize = gdk_pixbuf_loader_finalize;
 
@@ -236,7 +196,7 @@ gdk_pixbuf_loader_finalize (GObject *object)
   
         g_free (priv);
   
-        G_OBJECT_CLASS (parent_class)->finalize (object);
+        G_OBJECT_CLASS (gdk_pixbuf_loader_parent_class)->finalize (object);
 }
 
 /**
@@ -343,6 +303,27 @@ gdk_pixbuf_loader_update (GdkPixbuf *pixbuf,
                                MIN (height, gdk_pixbuf_animation_get_height (priv->animation)));
 }
 
+/* Defense against broken loaders; DO NOT take this as a GError example! */
+static void
+gdk_pixbuf_loader_ensure_error (GdkPixbufLoader *loader,
+                                GError         **error)
+{ 
+        GdkPixbufLoaderPrivate *priv = loader->priv;
+
+        if (error == NULL || *error != NULL)
+                return;
+
+        g_warning ("Bug! loader '%s' didn't set an error on failure",
+                   priv->image_module->module_name);
+        g_set_error (error,
+                     GDK_PIXBUF_ERROR,
+                     GDK_PIXBUF_ERROR_FAILED,
+                     _("Internal error: Image loader module '%s' failed to"
+                       " complete an operation, but didn't give a reason for"
+                       " the failure"),
+                     priv->image_module->module_name);
+}
+
 static gint
 gdk_pixbuf_loader_load_module (GdkPixbufLoader *loader,
                                const char      *image_type,
@@ -398,23 +379,7 @@ gdk_pixbuf_loader_load_module (GdkPixbufLoader *loader,
   
         if (priv->context == NULL)
                 {
-                        /* Defense against broken loaders; DO NOT take this as a GError
-                         * example
-                         */
-                        if (error && *error == NULL)
-                                {
-                                        g_warning ("Bug! loader '%s' didn't set an error on failure",
-                                                   priv->image_module->module_name);
-                                        g_set_error (error,
-                                                     GDK_PIXBUF_ERROR,
-                                                     GDK_PIXBUF_ERROR_FAILED,
-                                                     _("Internal error: Image loader module '%s'"
-                                                       " failed to begin loading an image, but didn't"
-                                                       " give a reason for the failure"),
-                                                     priv->image_module->module_name);
-
-                                }
-      
+                        gdk_pixbuf_loader_ensure_error (loader, error);
                         return 0;
                 }
   
@@ -477,7 +442,6 @@ gdk_pixbuf_loader_write (GdkPixbufLoader *loader,
         g_return_val_if_fail (GDK_IS_PIXBUF_LOADER (loader), FALSE);
   
         g_return_val_if_fail (buf != NULL, FALSE);
-        g_return_val_if_fail (count >= 0, FALSE);
         g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
   
         priv = loader->priv;
@@ -485,13 +449,16 @@ gdk_pixbuf_loader_write (GdkPixbufLoader *loader,
         /* we expect it's not to be closed */
         g_return_val_if_fail (priv->closed == FALSE, FALSE);
   
-        if (priv->image_module == NULL)
+        if (count > 0 && priv->image_module == NULL)
                 {
                         gint eaten;
       
                         eaten = gdk_pixbuf_loader_eat_header_write (loader, buf, count, error);
                         if (eaten <= 0)
-                                return FALSE;
+                                {
+                                        gdk_pixbuf_loader_ensure_error (loader, error);
+                                        return FALSE;
+                                }
       
                         count -= eaten;
                         buf += eaten;
@@ -502,19 +469,8 @@ gdk_pixbuf_loader_write (GdkPixbufLoader *loader,
                         gboolean retval;
                         retval = priv->image_module->load_increment (priv->context, buf, count,
                                                                      error);
-                        if (!retval && error && *error == NULL)
-                                {
-                                        /* Fix up busted image loader */
-                                        g_warning ("Bug! loader '%s' didn't set an error on failure",
-                                                   priv->image_module->module_name);
-                                        g_set_error (error,
-                                                     GDK_PIXBUF_ERROR,
-                                                     GDK_PIXBUF_ERROR_FAILED,
-                                                     _("Internal error: Image loader module '%s'"
-                                                       " failed to begin loading an image, but didn't"
-                                                       " give a reason for the failure"),
-                                                     priv->image_module->module_name);
-                                }
+                        if (!retval)
+                                gdk_pixbuf_loader_ensure_error (loader, error);
 
                         return retval;
                 }
@@ -546,6 +502,12 @@ gdk_pixbuf_loader_new (void)
  * the image isn't the expected type, for loading image formats
  * that can't be reliably identified by looking at the data, or if
  * the user manually forces a specific type.
+ *
+ * The list of supported image formats depends on what image loaders
+ * are installed, but typically "png", "jpeg", "gif", "tiff" and 
+ * "xpm" are among the supported formats. To obtain the full list of
+ * supported image formats, call gdk_pixbuf_format_get_name() on each 
+ * of the #GdkPixbufFormat structs returned by gdk_pixbuf_get_formats().
  *
  * Return value: A newly-created pixbuf loader.
  **/
@@ -583,6 +545,13 @@ gdk_pixbuf_loader_new_with_type (const char *image_type,
  * the image isn't the expected mime type, for loading image formats
  * that can't be reliably identified by looking at the data, or if
  * the user manually forces a specific mime type.
+ *
+ * The list of supported mime types depends on what image loaders
+ * are installed, but typically "image/png", "image/jpeg", "image/gif", 
+ * "image/tiff" and "image/x-xpixmap" are among the supported mime types. 
+ * To obtain the full list of supported mime types, call 
+ * gdk_pixbuf_format_get_mime_types() on each of the #GdkPixbufFormat 
+ * structs returned by gdk_pixbuf_get_formats().
  *
  * Return value: A newly-created pixbuf loader.
  * Since: 2.4
@@ -727,7 +696,9 @@ gdk_pixbuf_loader_close (GdkPixbufLoader *loader,
         /* we expect it's not closed */
         g_return_val_if_fail (priv->closed == FALSE, TRUE);
   
-        /* We have less the 128 bytes in the image.  Flush it, and keep going. */
+        /* We have less the LOADER_HEADER_SIZE bytes in the image.  
+         * Flush it, and keep going. 
+         */
         if (priv->image_module == NULL)
                 {
                         GError *tmp = NULL;
@@ -742,7 +713,10 @@ gdk_pixbuf_loader_close (GdkPixbufLoader *loader,
         if (priv->image_module && priv->image_module->stop_load && priv->context) 
                 {
                         if (!priv->image_module->stop_load (priv->context, error))
-                                retval = FALSE;
+                                {
+                                        gdk_pixbuf_loader_ensure_error (loader, error);
+                                        retval = FALSE;
+                                }
                 }
   
         priv->closed = TRUE;

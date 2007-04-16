@@ -35,8 +35,6 @@ enum {
   LAST_SIGNAL
 };
 
-static void gdk_display_class_init (GdkDisplayClass *class);
-static void gdk_display_init       (GdkDisplay      *display);
 static void gdk_display_dispose    (GObject         *object);
 static void gdk_display_finalize   (GObject         *object);
 
@@ -65,7 +63,6 @@ static GdkWindow* singlehead_default_window_at_pointer  (GdkScreen       *screen
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
-static GObjectClass *parent_class;
 static char *gdk_sm_client_id;
 
 static const GdkDisplayPointerHooks default_pointer_hooks = {
@@ -87,39 +84,13 @@ static const GdkPointerHooks singlehead_default_pointer_hooks = {
 
 static const GdkPointerHooks *singlehead_current_pointer_hooks = &singlehead_default_pointer_hooks;
 
-GType
-gdk_display_get_type (void)
-{
-
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info = {
-	sizeof (GdkDisplayClass),
-	(GBaseInitFunc) NULL,
-	(GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gdk_display_class_init,
-	NULL,			/* class_finalize */
-	NULL,			/* class_data */
-	sizeof (GdkDisplay),
-	0,			/* n_preallocs */
-	(GInstanceInitFunc) gdk_display_init
-      };
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-					    "GdkDisplay", &object_info, 0);
-    }
-
-  return object_type;
-}
+G_DEFINE_TYPE (GdkDisplay, gdk_display, G_TYPE_OBJECT)
 
 static void
 gdk_display_class_init (GdkDisplayClass *class)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (class);
   
-  parent_class = g_type_class_peek_parent (class);
-
   object_class->finalize = gdk_display_finalize;
   object_class->dispose = gdk_display_dispose;
 
@@ -134,7 +105,7 @@ gdk_display_class_init (GdkDisplayClass *class)
    * Since: 2.2
    */   
   signals[CLOSED] =
-    g_signal_new ("closed",
+    g_signal_new (g_intern_static_string ("closed"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GdkDisplayClass, closed),
@@ -175,15 +146,22 @@ gdk_display_dispose (GObject *object)
   _gdk_displays = g_slist_remove (_gdk_displays, object);
 
   if (gdk_display_get_default() == display)
-    gdk_display_manager_set_default_display (gdk_display_manager_get(), NULL);
+    {
+      if (_gdk_displays)
+        gdk_display_manager_set_default_display (gdk_display_manager_get(),
+                                                 _gdk_displays->data);
+      else
+        gdk_display_manager_set_default_display (gdk_display_manager_get(),
+                                                 NULL);
+    }
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (gdk_display_parent_class)->dispose (object);
 }
 
 static void
 gdk_display_finalize (GObject *object)
 {
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gdk_display_parent_class)->finalize (object);
 }
 
 /**

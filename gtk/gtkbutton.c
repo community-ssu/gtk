@@ -24,10 +24,6 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-/* Modified by Nokia Corporation - 2005.
- * 
- */
-
 #include <config.h>
 #include <string.h>
 #include "gtkalignment.h"
@@ -37,41 +33,16 @@
 #include "gtkmarshalers.h"
 #include "gtkimage.h"
 #include "gtkhbox.h"
+#include "gtkvbox.h"
 #include "gtkstock.h"
 #include "gtkiconfactory.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
-
-/* Osso addition:
- * Here are the details for each attach 
- * bitmask combination. */
-const gchar *osso_gtk_button_attach_details [OSSO_GTK_BUTTON_ATTACH_ENUM_END] =
-  { "osso_button",
-    "osso_button_n",
-    "osso_button_e",
-    "osso_button_ne",
-    "osso_button_s",
-    "osso_button_ns",
-    "osso_button_es",
-    "osso_button_nes",
-    "osso_button_w",
-    "osso_button_nw",
-    "osso_button_ew",
-    "osso_button_new",
-    "osso_button_sw",
-    "osso_button_nsw",
-    "osso_button_esw",
-    "osso_button_nesw",
-  };
-
-#define CHILD_SPACING     1
-
-/* Take this away after font drawing is fixed */
-#define OSSO_FONT_HACK TRUE
 
 static const GtkBorder default_default_border = { 1, 1, 1, 1 };
 static const GtkBorder default_default_outside_border = { 0, 0, 0, 0 };
+static const GtkBorder default_inner_border = { 1, 1, 1, 1 };
 
 /* Time out before giving up on getting a key release when animating
  * the close button.
@@ -98,8 +69,7 @@ enum {
   PROP_FOCUS_ON_CLICK,
   PROP_XALIGN,
   PROP_YALIGN,
-  PROP_DETAIL,
-  PROP_AUTOMATIC_DETAIL
+  PROP_IMAGE_POSITION
 };
 
 #define GTK_BUTTON_GET_PRIVATE(o)       (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_BUTTON, GtkButtonPrivate))
@@ -107,57 +77,60 @@ typedef struct _GtkButtonPrivate GtkButtonPrivate;
 
 struct _GtkButtonPrivate
 {
-  gfloat       xalign;
-  gfloat       yalign;
-  GtkWidget   *image;
-  guint        align_set : 1;
-  guint        image_is_stock : 1;
-  gchar       *detail;
-  gboolean     automatic_detail;
+  gfloat          xalign;
+  gfloat          yalign;
+  GtkWidget      *image;
+  guint           align_set      : 1;
+  guint           image_is_stock : 1;
+  guint           has_grab       : 1;
+  guint32         grab_time;
+  GtkPositionType image_position;
 };
 
-static void gtk_button_class_init     (GtkButtonClass   *klass);
-static void gtk_button_init           (GtkButton        *button);
-static void gtk_button_destroy        (GtkObject        *object);
-static void gtk_button_set_property   (GObject         *object,
-                                       guint            prop_id,
-                                       const GValue    *value,
-                                       GParamSpec      *pspec);
-static void gtk_button_get_property   (GObject         *object,
-                                       guint            prop_id,
-                                       GValue          *value,
-                                       GParamSpec      *pspec);
-static void gtk_button_screen_changed (GtkWidget        *widget,
-				       GdkScreen        *previous_screen);
-static void gtk_button_realize        (GtkWidget        *widget);
-static void gtk_button_unrealize      (GtkWidget        *widget);
-static void gtk_button_map            (GtkWidget        *widget);
-static void gtk_button_unmap          (GtkWidget        *widget);
-static void gtk_button_size_request   (GtkWidget        *widget,
-				       GtkRequisition   *requisition);
-static void gtk_button_size_allocate  (GtkWidget        *widget,
-				       GtkAllocation    *allocation);
-static gint gtk_button_expose         (GtkWidget        *widget,
-				       GdkEventExpose   *event);
-static gint gtk_button_button_press   (GtkWidget        *widget,
-				       GdkEventButton   *event);
-static gint gtk_button_button_release (GtkWidget        *widget,
-				       GdkEventButton   *event);
-static gint gtk_button_key_release    (GtkWidget        *widget,
-				       GdkEventKey      *event);
-static gint gtk_button_enter_notify   (GtkWidget        *widget,
-				       GdkEventCrossing *event);
-static gint gtk_button_leave_notify   (GtkWidget        *widget,
-				       GdkEventCrossing *event);
-static void gtk_real_button_pressed   (GtkButton        *button);
-static void gtk_real_button_released  (GtkButton        *button);
-static void gtk_real_button_activate  (GtkButton         *button);
-static void gtk_button_update_state   (GtkButton        *button);
-static void gtk_button_add            (GtkContainer   *container,
-			               GtkWidget      *widget);
-static GType gtk_button_child_type    (GtkContainer     *container);
-static void gtk_button_finish_activate (GtkButton *button,
-					gboolean   do_it);
+static void gtk_button_destroy        (GtkObject          *object);
+static void gtk_button_set_property   (GObject            *object,
+                                       guint               prop_id,
+                                       const GValue       *value,
+                                       GParamSpec         *pspec);
+static void gtk_button_get_property   (GObject            *object,
+                                       guint               prop_id,
+                                       GValue             *value,
+                                       GParamSpec         *pspec);
+static void gtk_button_screen_changed (GtkWidget          *widget,
+				       GdkScreen          *previous_screen);
+static void gtk_button_realize        (GtkWidget          *widget);
+static void gtk_button_unrealize      (GtkWidget          *widget);
+static void gtk_button_map            (GtkWidget          *widget);
+static void gtk_button_unmap          (GtkWidget          *widget);
+static void gtk_button_style_set      (GtkWidget          *widget,
+				       GtkStyle           *prev_style);
+static void gtk_button_size_request   (GtkWidget          *widget,
+				       GtkRequisition     *requisition);
+static void gtk_button_size_allocate  (GtkWidget          *widget,
+				       GtkAllocation      *allocation);
+static gint gtk_button_expose         (GtkWidget          *widget,
+				       GdkEventExpose     *event);
+static gint gtk_button_button_press   (GtkWidget          *widget,
+				       GdkEventButton     *event);
+static gint gtk_button_button_release (GtkWidget          *widget,
+				       GdkEventButton     *event);
+static gint gtk_button_grab_broken    (GtkWidget          *widget,
+				       GdkEventGrabBroken *event);
+static gint gtk_button_key_release    (GtkWidget          *widget,
+				       GdkEventKey        *event);
+static gint gtk_button_enter_notify   (GtkWidget          *widget,
+				       GdkEventCrossing   *event);
+static gint gtk_button_leave_notify   (GtkWidget          *widget,
+				       GdkEventCrossing   *event);
+static void gtk_real_button_pressed   (GtkButton          *button);
+static void gtk_real_button_released  (GtkButton          *button);
+static void gtk_real_button_activate  (GtkButton          *button);
+static void gtk_button_update_state   (GtkButton          *button);
+static void gtk_button_add            (GtkContainer       *container,
+			               GtkWidget          *widget);
+static GType gtk_button_child_type    (GtkContainer       *container);
+static void gtk_button_finish_activate (GtkButton         *button,
+					gboolean           do_it);
 
 static GObject*	gtk_button_constructor (GType                  type,
 					guint                  n_construct_properties,
@@ -169,37 +142,9 @@ static void gtk_button_grab_notify     (GtkWidget             *widget,
 					gboolean               was_grabbed);
 
 
-
-static GtkBinClass *parent_class = NULL;
 static guint button_signals[LAST_SIGNAL] = { 0 };
 
-
-GType
-gtk_button_get_type (void)
-{
-  static GType button_type = 0;
-
-  if (!button_type)
-    {
-      static const GTypeInfo button_info =
-      {
-	sizeof (GtkButtonClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_button_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkButton),
-	16,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_button_init,
-      };
-
-      button_type = g_type_register_static (GTK_TYPE_BIN, "GtkButton",
-					    &button_info, 0);
-    }
-
-  return button_type;
-}
+G_DEFINE_TYPE (GtkButton, gtk_button, GTK_TYPE_BIN)
 
 static void
 gtk_button_class_init (GtkButtonClass *klass)
@@ -214,8 +159,6 @@ gtk_button_class_init (GtkButtonClass *klass)
   widget_class = (GtkWidgetClass*) klass;
   container_class = (GtkContainerClass*) klass;
   
-  parent_class = g_type_class_peek_parent (klass);
-
   gobject_class->constructor = gtk_button_constructor;
   gobject_class->set_property = gtk_button_set_property;
   gobject_class->get_property = gtk_button_get_property;
@@ -227,11 +170,13 @@ gtk_button_class_init (GtkButtonClass *klass)
   widget_class->unrealize = gtk_button_unrealize;
   widget_class->map = gtk_button_map;
   widget_class->unmap = gtk_button_unmap;
+  widget_class->style_set = gtk_button_style_set;
   widget_class->size_request = gtk_button_size_request;
   widget_class->size_allocate = gtk_button_size_allocate;
   widget_class->expose_event = gtk_button_expose;
   widget_class->button_press_event = gtk_button_button_press;
   widget_class->button_release_event = gtk_button_button_release;
+  widget_class->grab_broken_event = gtk_button_grab_broken;
   widget_class->key_release_event = gtk_button_key_release;
   widget_class->enter_notify_event = gtk_button_enter_notify;
   widget_class->leave_notify_event = gtk_button_leave_notify;
@@ -287,7 +232,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       P_("The border relief style"),
                                                       GTK_TYPE_RELIEF_STYLE,
                                                       GTK_RELIEF_NORMAL,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   /**
    * GtkButton:xalign:
@@ -306,7 +251,7 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       0.0,
                                                       1.0,
                                                       0.5,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
   /**
    * GtkButton:yalign:
@@ -325,10 +270,10 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                       0.0,
                                                       1.0,
                                                       0.5,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
   /**
-   * GtkButton::image:
+   * GtkButton:image:
    * 
    * The child widget to appear next to the button text.
    * 
@@ -340,42 +285,100 @@ gtk_button_class_init (GtkButtonClass *klass)
                                                         P_("Image widget"),
                                                         P_("Child widget to appear next to the button text"),
                                                         GTK_TYPE_WIDGET,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
 
+  /**
+   * GtkButton:image-position:
+   *
+   * The position of the image relative to the text inside the button.
+   * 
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_IMAGE_POSITION,
+                                   g_param_spec_enum ("image-position",
+                                            P_("Image position"),
+                                                      P_("The position of the image relative to the text"),
+                                                      GTK_TYPE_POSITION_TYPE,
+                                                      GTK_POS_LEFT,
+                                                      GTK_PARAM_READWRITE));
+
+  /**
+   * GtkButton::pressed:
+   * @button: the object that received the signal
+   *
+   * Emitted when the button is pressed.
+   * 
+   * @Deprecated: Use the GtkWidget::button-press-event signal.
+   */ 
   button_signals[PRESSED] =
-    g_signal_new ("pressed",
+    g_signal_new (I_("pressed"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkButtonClass, pressed),
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
+  /**
+   * GtkButton::released:
+   * @button: the object that received the signal
+   *
+   * Emitted when the button is released.
+   * 
+   * @Deprecated: Use the GtkWidget::button-release-event signal.
+   */ 
   button_signals[RELEASED] =
-    g_signal_new ("released",
+    g_signal_new (I_("released"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkButtonClass, released),
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
+  /**
+   * GtkButton::clicked:
+   * @button: the object that received the signal
+   *
+   * Emitted when the button has been activated (pressed and released).
+   */ 
   button_signals[CLICKED] =
-    g_signal_new ("clicked",
+    g_signal_new (I_("clicked"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkButtonClass, clicked),
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
+  /**
+   * GtkButton::enter:
+   * @button: the object that received the signal
+   *
+   * Emitted when the pointer enters the button.
+   * 
+   * @Deprecated: Use the GtkWidget::enter-notify-event signal.
+   */ 
   button_signals[ENTER] =
-    g_signal_new ("enter",
+    g_signal_new (I_("enter"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkButtonClass, enter),
 		  NULL, NULL,
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
+
+  /**
+   * GtkButton::leave:
+   * @button: the object that received the signal
+   *
+   * Emitted when the pointer leaves the button.
+   * 
+   * @Deprecated: Use the GtkWidget::leave-notify-event signal.
+   */ 
   button_signals[LEAVE] =
-    g_signal_new ("leave",
+    g_signal_new (I_("leave"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkButtonClass, leave),
@@ -393,7 +396,7 @@ gtk_button_class_init (GtkButtonClass *klass)
    * "clicked" signal.
    */
   button_signals[ACTIVATE] =
-    g_signal_new ("activate",
+    g_signal_new (I_("activate"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkButtonClass, activate),
@@ -447,138 +450,66 @@ gtk_button_class_init (GtkButtonClass *klass)
 						       FALSE,
 						       GTK_PARAM_READABLE));
 
+  /**
+   * GtkButton:inner-border:
+   *
+   * Sets the border between the button edges and child.
+   *
+   * Since: 2.10
+   */
+  gtk_widget_class_install_style_property (widget_class,
+					   g_param_spec_boxed ("inner-border",
+                                                               P_("Inner Border"),
+                                                               P_("Border between button edges and child."),
+                                                               GTK_TYPE_BORDER,
+                                                               GTK_PARAM_READABLE));
+
+  /**
+   * GtkButton:image-spacing:
+   * 
+   * Spacing in pixels between the image and label.
+   * 
+   * Since: 2.10
+   */
+  gtk_widget_class_install_style_property (widget_class,
+					   g_param_spec_int ("image-spacing",
+							     P_("Image spacing"),
+							     P_("Spacing in pixels between the image and label"),
+							     0,
+							     G_MAXINT,
+							     2,
+							     GTK_PARAM_READABLE));
+
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkButton:tree-view-separator-area:
+   *
+   * Specifies the amount of pixels to reserve for drawing a separator
+   * below the button.  This is used to visually separate column headers
+   * from the tree view.  The separator which will be drawn is exactly
+   * 1px thick.  When 0, no separator will be drawn.
+   *
+   * Since: maemo 4.0
+   * Stability: Unstable
+   */
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_int ("tree-view-separator-area",
+                                                             P_("Tree View Separator Area"),
+                                                             P_("Amount of pixels to reserve for a separator"),
+							     0,
+							     G_MAXINT,
+							     0,
+							     GTK_PARAM_READABLE));
+#endif /* MAEMO_CHANGES */
+  
+
   gtk_settings_install_property (g_param_spec_boolean ("gtk-button-images",
 						       P_("Show button images"),
 						       P_("Whether stock icons should be shown in buttons"),
 						       TRUE,
 						       GTK_PARAM_READWRITE));
 
-  /**
-   * GtkButton:child-spacing:
-   *
-   * Spacing between the button edges and its child.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("child-spacing",
-							     P_("Child spacing"),
-							     P_("Spacing between button edges and child."),
-							     0,
-							     G_MAXINT,
-							     CHILD_SPACING,
-							     GTK_PARAM_READABLE));
-  /**
-   * GtkButton:detail:
-   *
-   * The detail the button is drawn with.
-   *
-   * Since: maemo 1.0
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_DETAIL,
-				   g_param_spec_string ("detail",
-							P_("Detail"),
-							P_("The detail the button is drawn with."),
-							"buttondefault",
-							GTK_PARAM_READWRITE));
-
-  /**
-   * GtkButton:automatic-detail:
-   *
-   * Whether setting the drawing detail is automatic, based on 
-   * GtkTable/GtkHButtonBox.
-   * 
-   * Since: maemo 1.0
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_AUTOMATIC_DETAIL,
-				   g_param_spec_boolean ("automatic-detail",
-							 P_("Automatic Detail"),
-							 P_("Whether setting detail is automatic based on GtkTable/GtkHButtonBox."),
-							 TRUE,
-							 GTK_PARAM_READWRITE));
-
-
-  /**
-   * GtkButton:child-offset-y:
-   *
-   * How many pixels to add/take away from GtkButton's child size allocation.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("child-offset-y",
-							     P_("Child Y Offset"),
-							     P_("How many pixels to add/take away from GtkButton's child size allocation."),
-							     G_MININT,
-							     G_MAXINT,
-							     0,
-							     GTK_PARAM_READABLE));
-
-  /**
-   * GtkButton:listboxheader:
-   *
-   * Whether the button is a GtkTreeView column Listbox header. If TRUE, the 
-   * button will be drawn differently.
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boolean ("listboxheader",
-								 P_( "Listbox header" ),
-								 P_( "Listbox header ( FALSE / TRUE )" ),
-								 FALSE,
-								 GTK_PARAM_READABLE));
-
-  /**
-   * GtkButton::separator-height:
-   *
-   * Column Listbox header separator height
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("separator-height",
-							     P_( "Separator height" ),
-							     P_( "Listbox header separator height ( FALSE / TRUE )" ),
-							     0,
-							     G_MAXINT,
-							     0,
-							     GTK_PARAM_READABLE));
-
-  /**
-   * GtkButton:padding:
-   *
-   * Paddings around the child of the button. gtkrc usage: GtkButton::padding  
-   * = { left, right, top, bottom }
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_boxed ("padding",
-							       P_("Padding"),
-							       P_("Paddings around the button child"),
-							       GTK_TYPE_BORDER,
-							       GTK_PARAM_READABLE));
-
-  /**
-   * GtkButton:minimum-width:
-   *
-   * The minimum width that the button will request.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("minimum-width",
-							     P_("Minimum Width"),
-							     P_("Minimum width of the button"),
-							     0,
-							     G_MAXINT,
-							     0,
-							     GTK_PARAM_READABLE));
-  
-  g_type_class_add_private (gobject_class, sizeof (GtkButtonPrivate));  
+  g_type_class_add_private (gobject_class, sizeof (GtkButtonPrivate));
 }
 
 static void
@@ -604,33 +535,28 @@ gtk_button_init (GtkButton *button)
   priv->xalign = 0.5;
   priv->yalign = 0.5;
   priv->align_set = 0;
-  priv->detail = g_strdup ("buttondefault");
-  priv->automatic_detail = TRUE;
   priv->image_is_stock = TRUE;
+  priv->image_position = GTK_POS_LEFT;
 
-  g_object_set (G_OBJECT (button), "tap_and_hold_state",
-                GTK_STATE_ACTIVE, NULL);
+#ifdef MAEMO_CHANGES
+  g_object_set (G_OBJECT (button),
+		"tap-and-hold-state", GTK_STATE_ACTIVE,
+		NULL);
+#endif /* MAEMO_CHANGES */
 }
 
 static void
 gtk_button_destroy (GtkObject *object)
 {
   GtkButton *button = GTK_BUTTON (object);
-  GtkButtonPrivate *priv = GTK_BUTTON_GET_PRIVATE (button);
   
   if (button->label_text)
     {
       g_free (button->label_text);
       button->label_text = NULL;
     }
-
-  if (priv->detail)
-    {
-      g_free (priv->detail);
-      priv->detail = NULL;
-    }
   
-  (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+  (* GTK_OBJECT_CLASS (gtk_button_parent_class)->destroy) (object);
 }
 
 static GObject*
@@ -641,9 +567,9 @@ gtk_button_constructor (GType                  type,
   GObject *object;
   GtkButton *button;
 
-  object = (* G_OBJECT_CLASS (parent_class)->constructor) (type,
-							   n_construct_properties,
-							   construct_params);
+  object = (* G_OBJECT_CLASS (gtk_button_parent_class)->constructor) (type,
+								      n_construct_properties,
+								      construct_params);
 
   button = GTK_BUTTON (object);
   button->constructed = TRUE;
@@ -693,7 +619,7 @@ gtk_button_add (GtkContainer *container,
 {
   maybe_set_alignment (GTK_BUTTON (container), widget);
 
-  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
+  GTK_CONTAINER_CLASS (gtk_button_parent_class)->add (container, widget);
 }
 
 static void
@@ -731,14 +657,8 @@ gtk_button_set_property (GObject         *object,
     case PROP_YALIGN:
       gtk_button_set_alignment (button, priv->xalign, g_value_get_float (value));
       break;
-    case PROP_DETAIL:
-      if (priv->detail)
-        g_free (priv->detail);
-      priv->detail = g_strdup (g_value_get_string (value));
-      gtk_widget_queue_draw (GTK_WIDGET (button));
-      break;
-    case PROP_AUTOMATIC_DETAIL:
-      priv->automatic_detail = g_value_get_boolean (value);
+    case PROP_IMAGE_POSITION:
+      gtk_button_set_image_position (button, g_value_get_enum (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -781,11 +701,8 @@ gtk_button_get_property (GObject         *object,
     case PROP_YALIGN:
       g_value_set_float (value, priv->yalign);
       break;
-    case PROP_DETAIL:
-      g_value_set_string (value, priv->detail);
-      break;
-    case PROP_AUTOMATIC_DETAIL:
-      g_value_set_boolean (value, priv->automatic_detail);
+    case PROP_IMAGE_POSITION:
+      g_value_set_enum (value, priv->image_position);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -823,10 +740,11 @@ gtk_button_construct_child (GtkButton *button)
   GtkButtonPrivate *priv = GTK_BUTTON_GET_PRIVATE (button);
   GtkStockItem item;
   GtkWidget *label;
-  GtkWidget *hbox;
+  GtkWidget *box;
   GtkWidget *align;
   GtkWidget *image = NULL;
   gchar *label_text = NULL;
+  gint image_spacing;
   
   if (!button->constructed)
     return;
@@ -834,6 +752,10 @@ gtk_button_construct_child (GtkButton *button)
   if (!button->label_text && !priv->image)
     return;
   
+  gtk_widget_style_get (GTK_WIDGET (button), 
+			"image-spacing", &image_spacing, 
+			NULL);
+
   if (priv->image && !priv->image_is_stock)
     {
       image = g_object_ref (priv->image);
@@ -862,19 +784,27 @@ gtk_button_construct_child (GtkButton *button)
   if (image)
     {
       priv->image = image;
-
       g_object_set (priv->image, 
 		    "visible", show_image (button),
-		    "no_show_all", TRUE,
+		    "no-show-all", TRUE,
 		    NULL);
-      hbox = gtk_hbox_new (FALSE, 2);
+
+      if (priv->image_position == GTK_POS_LEFT ||
+	  priv->image_position == GTK_POS_RIGHT)
+	box = gtk_hbox_new (FALSE, image_spacing);
+      else
+	box = gtk_vbox_new (FALSE, image_spacing);
 
       if (priv->align_set)
 	align = gtk_alignment_new (priv->xalign, priv->yalign, 0.0, 0.0);
       else
 	align = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
-	
-      gtk_box_pack_start (GTK_BOX (hbox), priv->image, FALSE, FALSE, 0);
+
+      if (priv->image_position == GTK_POS_LEFT ||
+	  priv->image_position == GTK_POS_TOP)
+	gtk_box_pack_start (GTK_BOX (box), priv->image, FALSE, FALSE, 0);
+      else
+	gtk_box_pack_end (GTK_BOX (box), priv->image, FALSE, FALSE, 0);
 
       if (label_text)
 	{
@@ -882,11 +812,15 @@ gtk_button_construct_child (GtkButton *button)
 	  gtk_label_set_mnemonic_widget (GTK_LABEL (label), 
 					 GTK_WIDGET (button));
 
-	  gtk_box_pack_end (GTK_BOX (hbox), label, FALSE, FALSE, 0);
+	  if (priv->image_position == GTK_POS_RIGHT ||
+	      priv->image_position == GTK_POS_BOTTOM)
+	    gtk_box_pack_start (GTK_BOX (box), label, FALSE, FALSE, 0);
+	  else
+	    gtk_box_pack_end (GTK_BOX (box), label, FALSE, FALSE, 0);
 	}
       
       gtk_container_add (GTK_CONTAINER (button), align);
-      gtk_container_add (GTK_CONTAINER (align), hbox);
+      gtk_container_add (GTK_CONTAINER (align), box);
       gtk_widget_show_all (align);
 
       g_object_unref (image);
@@ -934,8 +868,8 @@ gtk_button_new_from_stock (const gchar *stock_id)
 {
   return g_object_new (GTK_TYPE_BUTTON,
                        "label", stock_id,
-                       "use_stock", TRUE,
-                       "use_underline", TRUE,
+                       "use-stock", TRUE,
+                       "use-underline", TRUE,
                        NULL);
 }
 
@@ -955,7 +889,7 @@ gtk_button_new_from_stock (const gchar *stock_id)
 GtkWidget*
 gtk_button_new_with_mnemonic (const gchar *label)
 {
-  return g_object_new (GTK_TYPE_BUTTON, "label", label, "use_underline", TRUE,  NULL);
+  return g_object_new (GTK_TYPE_BUTTON, "label", label, "use-underline", TRUE,  NULL);
 }
 
 void
@@ -1073,7 +1007,7 @@ gtk_button_unrealize (GtkWidget *widget)
       button->event_window = NULL;
     }
   
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  GTK_WIDGET_CLASS (gtk_button_parent_class)->unrealize (widget);
 }
 
 static void
@@ -1081,7 +1015,7 @@ gtk_button_map (GtkWidget *widget)
 {
   GtkButton *button = GTK_BUTTON (widget);
   
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (gtk_button_parent_class)->map (widget);
 
   if (button->event_window)
     gdk_window_show (button->event_window);
@@ -1095,13 +1029,50 @@ gtk_button_unmap (GtkWidget *widget)
   if (button->event_window)
     gdk_window_hide (button->event_window);
 
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (gtk_button_parent_class)->unmap (widget);
+}
+
+static void
+gtk_button_update_image_spacing (GtkButton *button)
+{
+  GtkButtonPrivate *priv = GTK_BUTTON_GET_PRIVATE (button);
+  GtkWidget *child; 
+  gint spacing;
+
+  /* Keep in sync with gtk_button_construct_child,
+   * we only want to update the spacing if the box 
+   * was constructed there.
+   */
+  if (!button->constructed || !priv->image)
+    return;
+
+  child = GTK_BIN (button)->child;
+  if (GTK_IS_ALIGNMENT (child))
+    {
+      child = GTK_BIN (child)->child;
+      if (GTK_IS_BOX (child))
+        {
+          gtk_widget_style_get (GTK_WIDGET (button),
+                                "image-spacing", &spacing,
+                                NULL);
+
+          gtk_box_set_spacing (GTK_BOX (child), spacing);
+        }
+    }   
+}
+
+static void
+gtk_button_style_set (GtkWidget *widget,
+		      GtkStyle  *prev_style)
+{
+  gtk_button_update_image_spacing (GTK_BUTTON (widget));
 }
 
 static void
 gtk_button_get_props (GtkButton *button,
 		      GtkBorder *default_border,
 		      GtkBorder *default_outside_border,
+                      GtkBorder *inner_border,
 		      gboolean  *interior_focus)
 {
   GtkWidget *widget =  GTK_WIDGET (button);
@@ -1109,7 +1080,7 @@ gtk_button_get_props (GtkButton *button,
 
   if (default_border)
     {
-      gtk_widget_style_get (widget, "default_border", &tmp_border, NULL);
+      gtk_widget_style_get (widget, "default-border", &tmp_border, NULL);
 
       if (tmp_border)
 	{
@@ -1122,7 +1093,7 @@ gtk_button_get_props (GtkButton *button,
 
   if (default_outside_border)
     {
-      gtk_widget_style_get (widget, "default_outside_border", &tmp_border, NULL);
+      gtk_widget_style_get (widget, "default-outside-border", &tmp_border, NULL);
 
       if (tmp_border)
 	{
@@ -1133,8 +1104,21 @@ gtk_button_get_props (GtkButton *button,
 	*default_outside_border = default_default_outside_border;
     }
 
+  if (inner_border)
+    {
+      gtk_widget_style_get (widget, "inner-border", &tmp_border, NULL);
+
+      if (tmp_border)
+	{
+	  *inner_border = *tmp_border;
+	  g_free (tmp_border);
+	}
+      else
+	*inner_border = default_inner_border;
+    }
+
   if (interior_focus)
-    gtk_widget_style_get (widget, "interior_focus", interior_focus, NULL);
+    gtk_widget_style_get (widget, "interior-focus", interior_focus, NULL);
 }
 	
 static void
@@ -1143,23 +1127,28 @@ gtk_button_size_request (GtkWidget      *widget,
 {
   GtkButton *button = GTK_BUTTON (widget);
   GtkBorder default_border;
+  GtkBorder inner_border;
   gint focus_width;
   gint focus_pad;
-  gint child_spacing;
-  gint separator_height;
+#ifdef MAEMO_CHANGES
+  gint tree_view_separator_area;
+#endif /* MAEMO_CHANGES */
 
-  gtk_button_get_props (button, &default_border, NULL, NULL);
+  gtk_button_get_props (button, &default_border, NULL, &inner_border, NULL);
   gtk_widget_style_get (GTK_WIDGET (widget),
 			"focus-line-width", &focus_width,
 			"focus-padding", &focus_pad,
-			"child-spacing", &child_spacing,
-			"separator-height", &separator_height,
+#ifdef MAEMO_CHANGES
+			"tree-view-separator-area", &tree_view_separator_area,
+#endif /* MAEMO_CHANGES */
 			NULL);
  
-  requisition->width = (GTK_CONTAINER (widget)->border_width + child_spacing +
-			GTK_WIDGET (widget)->style->xthickness) * 2;
-  requisition->height = (GTK_CONTAINER (widget)->border_width + child_spacing +
-			 GTK_WIDGET (widget)->style->ythickness) * 2;
+  requisition->width = ((GTK_CONTAINER (widget)->border_width +
+                         GTK_WIDGET (widget)->style->xthickness) * 2 +
+                        inner_border.left + inner_border.right);
+  requisition->height = ((GTK_CONTAINER (widget)->border_width +
+                          GTK_WIDGET (widget)->style->ythickness) * 2 +
+                         inner_border.top + inner_border.bottom);
 
   if (GTK_WIDGET_CAN_DEFAULT (widget))
     {
@@ -1170,37 +1159,19 @@ gtk_button_size_request (GtkWidget      *widget,
   if (GTK_BIN (button)->child && GTK_WIDGET_VISIBLE (GTK_BIN (button)->child))
     {
       GtkRequisition child_requisition;
-      GtkBorder *padding;
-      gint minimum_width;
 
       gtk_widget_size_request (GTK_BIN (button)->child, &child_requisition);
 
-      gtk_widget_style_get (widget,
-			    "padding",
-			    &padding,
-			    "minimum_width",
-			    &minimum_width,
-			    NULL);
-		
-      if ( padding )
-	{
-	  requisition->width += padding->left + padding->right;
-	  requisition->height += padding->top + padding->bottom;
-
-          g_free (padding);
-	}
-
       requisition->width += child_requisition.width;
       requisition->height += child_requisition.height;
-
-      if (requisition->width < minimum_width)
-        requisition->width = minimum_width;
     }
   
   requisition->width += 2 * (focus_width + focus_pad);
   requisition->height += 2 * (focus_width + focus_pad);
 
-  requisition->height += separator_height;
+#ifdef MAEMO_CHANGES
+  requisition->height += tree_view_separator_area;
+#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -1214,19 +1185,23 @@ gtk_button_size_allocate (GtkWidget     *widget,
   gint xthickness = GTK_WIDGET (widget)->style->xthickness;
   gint ythickness = GTK_WIDGET (widget)->style->ythickness;
   GtkBorder default_border;
+  GtkBorder inner_border;
   gint focus_width;
   gint focus_pad;
-  gint child_spacing;
-  gint separator_height;
+#ifdef MAEMO_CHANGES
+  gint tree_view_separator_area;
+#endif /* MAEMO_CHANGES */
 
-  gtk_button_get_props (button, &default_border, NULL, NULL);
+  gtk_button_get_props (button, &default_border, NULL, &inner_border, NULL);
   gtk_widget_style_get (GTK_WIDGET (widget),
 			"focus-line-width", &focus_width,
 			"focus-padding", &focus_pad,
-			"child-spacing", &child_spacing,
-			"separator-height", &separator_height,
+#ifdef MAEMO_CHANGES
+			"tree-view-separator-area", &tree_view_separator_area,
+#endif /* MAEMO_CHANGES */
 			NULL);
-
+ 
+			    
   widget->allocation = *allocation;
 
   if (GTK_WIDGET_REALIZED (widget))
@@ -1238,27 +1213,23 @@ gtk_button_size_allocate (GtkWidget     *widget,
 
   if (GTK_BIN (button)->child && GTK_WIDGET_VISIBLE (GTK_BIN (button)->child))
     {
-      child_allocation.x = widget->allocation.x + border_width + child_spacing + xthickness;
-      child_allocation.y = widget->allocation.y + border_width + child_spacing + ythickness;
+      child_allocation.x = widget->allocation.x + border_width + inner_border.left + xthickness;
+      child_allocation.y = widget->allocation.y + border_width + inner_border.top + ythickness;
       
-      child_allocation.width = MAX (1, widget->allocation.width - (child_spacing + xthickness) * 2 -
+      child_allocation.width = MAX (1, widget->allocation.width -
+                                    xthickness * 2 -
+                                    inner_border.left -
+                                    inner_border.right -
 				    border_width * 2);
-      child_allocation.height = MAX (1, widget->allocation.height - separator_height - (child_spacing + ythickness) * 2 -
+      child_allocation.height = MAX (1, widget->allocation.height -
+#ifdef MAEMO_CHANGES
+				     tree_view_separator_area -
+#endif /* MAEMO_CHANGES */
+                                     ythickness * 2 -
+                                     inner_border.top -
+                                     inner_border.bottom -
 				     border_width * 2);
 
-#ifdef OSSO_FONT_HACK
-      {
-	gint child_offset_y;
-	
-	gtk_widget_style_get (widget, "child_offset_y", &child_offset_y, NULL);
-	
-	if( GTK_IS_LABEL(GTK_BIN (button)->child) )
-	  {
-	    child_allocation.y += child_offset_y;
-	  }
-      }
-#endif
-      
       if (GTK_WIDGET_CAN_DEFAULT (button))
 	{
 	  child_allocation.x += default_border.left;
@@ -1281,8 +1252,8 @@ gtk_button_size_allocate (GtkWidget     *widget,
 	  gint child_displacement_y;
 	  
 	  gtk_widget_style_get (widget,
-				"child_displacement_x", &child_displacement_x, 
-				"child_displacement_y", &child_displacement_y,
+				"child-displacement-x", &child_displacement_x, 
+				"child-displacement-y", &child_displacement_y,
 				NULL);
 	  child_allocation.x += child_displacement_x;
 	  child_allocation.y += child_displacement_y;
@@ -1309,25 +1280,22 @@ _gtk_button_paint (GtkButton    *button,
   gboolean interior_focus;
   gint focus_width;
   gint focus_pad;
-  gint separator_height;
-  gboolean listboxheader;
-  GtkButtonPrivate *priv;
-
-  g_return_if_fail (GTK_IS_BUTTON (button));
-  
-  priv = GTK_BUTTON_GET_PRIVATE (button);
-  
+#ifdef MAEMO_CHANGES
+  gint tree_view_separator_area;
+#endif /* MAEMO_CHANGES */
+   
   if (GTK_WIDGET_DRAWABLE (button))
     {
       widget = GTK_WIDGET (button);
       border_width = GTK_CONTAINER (widget)->border_width;
 
-      gtk_button_get_props (button, &default_border, &default_outside_border, &interior_focus);
+      gtk_button_get_props (button, &default_border, &default_outside_border, NULL, &interior_focus);
       gtk_widget_style_get (GTK_WIDGET (widget),
 			    "focus-line-width", &focus_width,
 			    "focus-padding", &focus_pad,
-                            "listboxheader", &listboxheader,
-                            "separator-height", &separator_height,
+#ifdef MAEMO_CHANGES
+			    "tree-view-separator-area", &tree_view_separator_area,
+#endif /* MAEMO_CHANGES */
 			    NULL); 
 	
       x = widget->allocation.x + border_width;
@@ -1335,55 +1303,26 @@ _gtk_button_paint (GtkButton    *button,
       width = widget->allocation.width - border_width * 2;
       height = widget->allocation.height - border_width * 2;
 
-      if (listboxheader)
-        {
-          /* this changes everything! */
-          PangoLayout *layout;
-          int layout_height;
-
-          /* construct layout - see get_layout in gtkcellrenderertext.c */
-          layout = gtk_widget_create_pango_layout (widget, /* use parent treeview instead? */
-                                                   button->label_text);
-          pango_layout_set_width (layout, -1);
-          pango_layout_get_pixel_size (layout, NULL, &layout_height);
-
-          /* render text */
-          gtk_paint_layout (widget->style,
-                            widget->window,
-                            GTK_STATE_NORMAL,
-                            TRUE,
-                            area,
-                            widget,
-                            "listboxheader",
-                            x,
-                            y,
-                            layout);
-
-          g_object_unref (layout);
-
-          /* draw separator */
-          gtk_paint_hline (widget->style,
-                           widget->window,
-                           GTK_STATE_NORMAL,
-                           area,
-                           widget,
-                           "listboxseparator",
-                           area->x - focus_width - focus_pad,
-                           area->x + area->width + focus_width + focus_pad,
-                           layout_height + separator_height * 2);
-          return;
-        }
+#ifdef MAEMO_CHANGES
+      if (tree_view_separator_area != 0)
+	gtk_paint_hline (widget->style,
+			 widget->window,
+			 GTK_STATE_NORMAL,
+			 area,
+			 widget,
+			 "listboxseparator",
+			 area->x - focus_width - focus_pad,
+			 area->x + area->width + focus_width + focus_pad,
+			 height + 2 * tree_view_separator_area);
+#endif /* MAEMO_CHANGES */
 
       if (GTK_WIDGET_HAS_DEFAULT (widget) &&
 	  GTK_BUTTON (widget)->relief == GTK_RELIEF_NORMAL)
 	{
-          /* This comment is here because it's part of the
-           * normal GtkButton
-           */
-	  /*  gtk_paint_box (widget->style, widget->window,
+	  gtk_paint_box (widget->style, widget->window,
 			 GTK_STATE_NORMAL, GTK_SHADOW_IN,
 			 area, widget, "buttondefault",
-			 x, y, width, height); */
+			 x, y, width, height);
 
 	  x += default_border.left;
 	  y += default_border.top;
@@ -1410,7 +1349,7 @@ _gtk_button_paint (GtkButton    *button,
 	  GTK_WIDGET_STATE(widget) == GTK_STATE_PRELIGHT)
 	gtk_paint_box (widget->style, widget->window,
 		       state_type,
-		       shadow_type, area, widget, priv->detail,
+		       shadow_type, area, widget, "button",
 		       x, y, width, height);
        
       if (GTK_WIDGET_HAS_FOCUS (widget))
@@ -1420,9 +1359,9 @@ _gtk_button_paint (GtkButton    *button,
 	  gboolean displace_focus;
 	  
 	  gtk_widget_style_get (GTK_WIDGET (widget),
-				"child_displacement_y", &child_displacement_y,
-				"child_displacement_x", &child_displacement_x,
-				"displace_focus", &displace_focus,
+				"child-displacement-y", &child_displacement_y,
+				"child-displacement-x", &child_displacement_x,
+				"displace-focus", &displace_focus,
 				NULL);
 
 	  if (interior_focus)
@@ -1445,13 +1384,9 @@ _gtk_button_paint (GtkButton    *button,
 	      x += child_displacement_x;
 	      y += child_displacement_y;
 	    }
-          /* Comment exists, because it is part of normal GtkButton
+
 	  gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
 			   area, widget, "button",
-			   x, y, width, height);
-          */
-	  gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
-			   area, widget, priv->detail,
 			   x, y, width, height);
 	}
     }
@@ -1470,7 +1405,7 @@ gtk_button_expose (GtkWidget      *widget,
 			 button->depressed ? GTK_SHADOW_IN : GTK_SHADOW_OUT,
 			 "button", "buttondefault");
       
-      (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
+      (* GTK_WIDGET_CLASS (gtk_button_parent_class)->expose_event) (widget, event);
     }
   
   return FALSE;
@@ -1512,6 +1447,29 @@ gtk_button_button_release (GtkWidget      *widget,
 }
 
 static gboolean
+gtk_button_grab_broken (GtkWidget          *widget,
+			GdkEventGrabBroken *event)
+{
+  GtkButton *button = GTK_BUTTON (widget);
+  gboolean save_in;
+  
+  /* Simulate a button release without the pointer in the button */
+  if (button->button_down)
+    {
+      save_in = button->in_button;
+      button->in_button = FALSE;
+      gtk_button_released (button);
+      if (save_in != button->in_button)
+	{
+	  button->in_button = save_in;
+	  gtk_button_update_state (button);
+	}
+    }
+
+  return TRUE;
+}
+
+static gboolean
 gtk_button_key_release (GtkWidget   *widget,
 			GdkEventKey *event)
 {
@@ -1522,8 +1480,8 @@ gtk_button_key_release (GtkWidget   *widget,
       gtk_button_finish_activate (button, TRUE);
       return TRUE;
     }
-  else if (GTK_WIDGET_CLASS (parent_class)->key_release_event)
-    return GTK_WIDGET_CLASS (parent_class)->key_release_event (widget, event);
+  else if (GTK_WIDGET_CLASS (gtk_button_parent_class)->key_release_event)
+    return GTK_WIDGET_CLASS (gtk_button_parent_class)->key_release_event (widget, event);
   else
     return FALSE;
 }
@@ -1611,21 +1569,29 @@ static void
 gtk_real_button_activate (GtkButton *button)
 {
   GtkWidget *widget = GTK_WIDGET (button);
-  
+  GtkButtonPrivate *priv;
+  guint32 time;
+
+  priv = GTK_BUTTON_GET_PRIVATE (button);
+
   if (GTK_WIDGET_REALIZED (button) && !button->activate_timeout)
     {
-      if (gdk_keyboard_grab (button->event_window, TRUE,
-			     gtk_get_current_event_time ()) == 0)
+      time = gtk_get_current_event_time ();
+      if (gdk_keyboard_grab (button->event_window, TRUE, time) == 
+	  GDK_GRAB_SUCCESS)
 	{
-	  gtk_grab_add (widget);
-	  
-	  button->activate_timeout = g_timeout_add (ACTIVATE_TIMEOUT,
-						    button_activate_timeout,
-						    button);
-	  button->button_down = TRUE;
-	  gtk_button_update_state (button);
-	  gtk_widget_queue_draw (GTK_WIDGET (button));
+	  priv->has_grab = TRUE;
+	  priv->grab_time = time;
 	}
+
+      gtk_grab_add (widget);
+      
+      button->activate_timeout = g_timeout_add (ACTIVATE_TIMEOUT,
+						button_activate_timeout,
+						button);
+      button->button_down = TRUE;
+      gtk_button_update_state (button);
+      gtk_widget_queue_draw (GTK_WIDGET (button));
     }
 }
 
@@ -1634,12 +1600,18 @@ gtk_button_finish_activate (GtkButton *button,
 			    gboolean   do_it)
 {
   GtkWidget *widget = GTK_WIDGET (button);
+  GtkButtonPrivate *priv;
   
+  priv = GTK_BUTTON_GET_PRIVATE (button);
+
   g_source_remove (button->activate_timeout);
   button->activate_timeout = 0;
 
-  gdk_display_keyboard_ungrab (gtk_widget_get_display (widget),
-			       gtk_get_current_event_time ());
+  if (priv->has_grab)
+    {
+      gdk_display_keyboard_ungrab (gtk_widget_get_display (widget),
+				   priv->grab_time);
+    }
   gtk_grab_remove (widget);
 
   button->button_down = FALSE;
@@ -1924,27 +1896,6 @@ _gtk_button_set_depressed (GtkButton *button,
     }
 }
 
-/**
- * hildon_gtk_button_set_depressed:
- * @button: a #GtkButton
- * @depressed: whether the button is depressed
- *
- * Exactly the same as private _gtk_button_set_depressed() but exported for
- * hildon. Basically a Hildon wrapper for _gtk_button_set_depressed.
- *
- * Sets whether the button is currently drawn as down or not. This is
- * purely a visual setting, and is meant only for use by derived widgets
- * such as #GtkToggleButton.
- *
- * Since: maemo 2.0
- */
-void
-hildon_gtk_button_set_depressed (GtkButton *button,
-				 gboolean   depressed)
-{
-  _gtk_button_set_depressed (button, depressed);
-}
-
 static void
 gtk_button_update_state (GtkButton *button)
 {
@@ -2027,7 +1978,7 @@ gtk_button_screen_changed (GtkWidget *widget,
     g_signal_connect (settings, "notify::gtk-button-images",
 		      G_CALLBACK (gtk_button_setting_changed), 0);
   g_object_set_data (G_OBJECT (settings), 
-		     "gtk-button-connection",
+		     I_("gtk-button-connection"),
 		     GUINT_TO_POINTER (show_image_connection));
 
   show_image_change_notify (GTK_BUTTON (widget));
@@ -2066,7 +2017,8 @@ gtk_button_grab_notify (GtkWidget *widget,
  *
  * Set the image of @button to the given widget. Note that
  * it depends on the gtk-button-images setting whether the
- * image will be displayed or not.
+ * image will be displayed or not, you don't have to call
+ * gtk_widget_show() on @image yourself.
  *
  * Since: 2.6
  */ 
@@ -2074,7 +2026,12 @@ void
 gtk_button_set_image (GtkButton *button,
 		      GtkWidget *image)
 {
-  GtkButtonPrivate *priv = GTK_BUTTON_GET_PRIVATE (button);
+  GtkButtonPrivate *priv;
+
+  g_return_if_fail (GTK_IS_BUTTON (button));
+  g_return_if_fail (image == NULL || GTK_IS_WIDGET (image));
+
+  priv = GTK_BUTTON_GET_PRIVATE (button);
 
   priv->image = image;
   priv->image_is_stock = (image == NULL);
@@ -2109,25 +2066,104 @@ gtk_button_get_image (GtkButton *button)
 }
 
 /**
- * osso_gtk_button_set_detail_from_attach_flags:
+ * gtk_button_set_image_position:
  * @button: a #GtkButton
- * @flags: #OssoGtkButtonAttachFlags
+ * @position: the position
  *
- * This function sets "automatic-detail" to %FALSE and uses the %flags to set 
- * the detail.
+ * Sets the position of the image relative to the text 
+ * inside the button.
  *
- * Since: maemo 1.0
- */
-void osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,OssoGtkButtonAttachFlags flags)
+ * Since: 2.10
+ */ 
+void
+gtk_button_set_image_position (GtkButton       *button,
+			       GtkPositionType  position)
 {
+
+  GtkButtonPrivate *priv;
+
   g_return_if_fail (GTK_IS_BUTTON (button));
-  g_object_set (G_OBJECT (button),
-                "automatic_detail",
-		FALSE,
-		"detail",
-		osso_gtk_button_attach_details[flags],
-		NULL);
-} 
+  g_return_if_fail (position >= GTK_POS_LEFT && position <= GTK_POS_BOTTOM);
+  
+  priv = GTK_BUTTON_GET_PRIVATE (button);
+
+  if (priv->image_position != position)
+    {
+      priv->image_position = position;
+
+      gtk_button_construct_child (button);
+
+      g_object_notify (G_OBJECT (button), "image-position");
+    }
+}
+
+/**
+ * gtk_button_get_image_position:
+ * @button: a #GtkButton
+ *
+ * Gets the position of the image relative to the text 
+ * inside the button.
+ *
+ * Return value: the position
+ *
+ * Since: 2.10
+ */
+GtkPositionType
+gtk_button_get_image_position (GtkButton *button)
+{
+  GtkButtonPrivate *priv;
+
+  g_return_val_if_fail (GTK_IS_BUTTON (button), GTK_POS_LEFT);
+
+  priv = GTK_BUTTON_GET_PRIVATE (button);
+  
+  return priv->image_position;
+}
+
+
+#ifdef MAEMO_CHANGES
+
+typedef enum {
+  OSSO_GTK_BUTTON_ATTACH_NORTH =    1 << 0,
+  OSSO_GTK_BUTTON_ATTACH_EAST =     1 << 1,
+  OSSO_GTK_BUTTON_ATTACH_SOUTH =    1 << 2,
+  OSSO_GTK_BUTTON_ATTACH_WEST =     1 << 3,
+  OSSO_GTK_BUTTON_ATTACH_ENUM_END = 1 << 4
+} OssoGtkButtonAttachFlags;
+
+const gchar *osso_gtk_button_attach_details [OSSO_GTK_BUTTON_ATTACH_ENUM_END] =
+  { "osso_button",
+    "osso_button_n",
+    "osso_button_e",
+    "osso_button_ne",
+    "osso_button_s",
+    "osso_button_ns",
+    "osso_button_es",
+    "osso_button_nes",
+    "osso_button_w",
+    "osso_button_nw",
+    "osso_button_ew",
+    "osso_button_new",
+    "osso_button_sw",
+    "osso_button_nsw",
+    "osso_button_esw",
+    "osso_button_nesw",
+  };
+
+void
+hildon_gtk_button_set_depressed (GtkButton *button,
+                                 gboolean   depressed)
+{
+}
+
+void
+osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,
+                                              OssoGtkButtonAttachFlags flags)
+{
+}
+
+#endif /* MAEMO_CHANGES */
+
 
 #define __GTK_BUTTON_C__
-#include "gtkaliasdef.c"
+#include "gtkaliasdef.c"  

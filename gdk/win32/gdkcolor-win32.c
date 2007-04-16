@@ -107,8 +107,7 @@ gdk_colormap_finalize (GObject *object)
   GdkColormap *colormap = GDK_COLORMAP (object);
   GdkColormapPrivateWin32 *private = GDK_WIN32_COLORMAP_DATA (colormap);
 
-  if (!DeleteObject (private->hpal))
-    WIN32_GDI_FAILED ("DeleteObject");
+  GDI_CALL (DeleteObject, (private->hpal));
 
   if (private->hash)
     g_hash_table_destroy (private->hash);
@@ -156,11 +155,12 @@ alloc_color_cells (GdkColormap    *cmap,
 
       if (npixels > nfree)
 	{
-	  GDK_NOTE (COLORMAP, g_print ("...nope (%d > %d)\n", npixels, nfree));
+	  GDK_NOTE (COLORMAP, g_print ("... nope (%d > %d)\n",
+				       npixels, nfree));
 	  return FALSE;
 	}
       else
-	GDK_NOTE (COLORMAP, g_print ("...ok\n"));
+	GDK_NOTE (COLORMAP, g_print ("... ok\n"));
 
       iret = 0;
       for (i = start; i < cmap->size && iret < npixels; i++)
@@ -266,9 +266,8 @@ alloc_color (GdkColormap  *cmap,
 	      /* It was a nonused entry anyway, so we can use it, and
 	       * set it to the correct color.
 	       */
-	      GDK_NOTE (COLORMAP, g_print ("...was free\n"));
-	      if (!SetPaletteEntries (cmapp->hpal, index, 1, &entry))
-		WIN32_GDI_FAILED ("SetPaletteEntries");
+	      GDK_NOTE (COLORMAP, g_print ("... was free\n"));
+	      GDI_CALL (SetPaletteEntries, (cmapp->hpal, index, 1, &entry));
 	    }
 	  else
 	    {
@@ -281,7 +280,7 @@ alloc_color (GdkColormap  *cmap,
 		  {
 		    /* An available slot, use it. */
 		    GDK_NOTE (COLORMAP,
-			      g_print ("...use free slot %d%s\n",
+			      g_print ("... use free slot %d%s\n",
 				       i, (i >= cmapp->current_size) ?
 				       ", will resize palette" : ""));
 		    if (i >= cmapp->current_size)
@@ -354,7 +353,6 @@ alloc_color (GdkColormap  *cmap,
       return TRUE;
 
     default:
-      g_error ("cmap->visual->type=%d", cmap->visual->type);
       g_assert_not_reached ();
       return FALSE;
     }
@@ -413,8 +411,7 @@ free_colors (GdkColormap *cmap,
 	{
 	  if (cleared_entries[i])
 	    {
-	      if (!SetPaletteEntries (cmapp->hpal, i, 1, &pe))
-		WIN32_GDI_FAILED ("SetPaletteEntries");
+	      GDI_CALL (SetPaletteEntries, (cmapp->hpal, i, 1, &pe));
 	      GDK_NOTE (COLORMAP, set_black_count++);
 	    }
 	}
@@ -602,6 +599,8 @@ gdk_screen_get_system_colormap (GdkScreen *screen)
   static GdkColormap *colormap = NULL;
   GdkColormapPrivateWin32 *private;
 
+  g_return_val_if_fail (screen == _gdk_screen, NULL);
+
   if (!colormap)
     {
       colormap = g_object_new (gdk_colormap_get_type (), NULL);
@@ -655,7 +654,7 @@ gdk_colormap_change (GdkColormap *colormap,
   PALETTEENTRY *pe;
   int i;
 
-  g_return_if_fail (colormap != NULL);
+  g_return_if_fail (GDK_IS_COLORMAP (colormap));
 
   cmapp = GDK_WIN32_COLORMAP_DATA (colormap);
 
@@ -676,8 +675,7 @@ gdk_colormap_change (GdkColormap *colormap,
 	  pe[i].peFlags = 0;
 	}
 
-      if (!SetPaletteEntries (cmapp->hpal, 0, ncolors, pe))
-	WIN32_GDI_FAILED ("SetPaletteEntries");
+      GDI_CALL (SetPaletteEntries, (cmapp->hpal, 0, ncolors, pe));
       g_free (pe);
       break;
 
@@ -698,7 +696,7 @@ gdk_colors_alloc (GdkColormap   *colormap,
   gint return_val;
   gint i;
 
-  g_return_val_if_fail (GDK_IS_COLORMAP (colormap), 0);
+  g_return_val_if_fail (GDK_IS_COLORMAP (colormap), FALSE);
 
   private = GDK_WIN32_COLORMAP_DATA (colormap);
 
@@ -1147,6 +1145,7 @@ gdk_colormap_alloc_colors (GdkColormap *colormap,
 
   g_return_val_if_fail (GDK_IS_COLORMAP (colormap), FALSE);
   g_return_val_if_fail (colors != NULL, FALSE);
+  g_return_val_if_fail (success != NULL, ncolors);
 
   private = GDK_WIN32_COLORMAP_DATA (colormap);
 
@@ -1259,8 +1258,7 @@ gdk_color_change (GdkColormap *colormap,
   pe.peGreen = color->green >> 8;
   pe.peBlue = color->blue >> 8;
 
-  if (SetPaletteEntries (private->hpal, color->pixel, 1, &pe) == 0)
-    WIN32_GDI_FAILED ("SetPaletteEntries");
+  GDI_CALL (SetPaletteEntries, (private->hpal, color->pixel, 1, &pe));
 
   return TRUE;
 }
@@ -1306,8 +1304,8 @@ gdk_colormap_match_color (GdkColormap *cmap,
 GdkScreen*
 gdk_colormap_get_screen (GdkColormap *cmap)
 {
-  g_return_val_if_fail (cmap != NULL, NULL);
+  g_return_val_if_fail (GDK_IS_COLORMAP (cmap), NULL);
 
-  return gdk_screen_get_default ();
+  return _gdk_screen;
 }
 

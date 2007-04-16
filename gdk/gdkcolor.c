@@ -103,8 +103,6 @@ gdk_colors_store (GdkColormap   *colormap,
   gdk_colormap_change (colormap, ncolors);
 }
 
-static GMemChunk *color_chunk;
-
 /**
  * gdk_color_copy:
  * @color: a #GdkColor.
@@ -121,13 +119,7 @@ gdk_color_copy (const GdkColor *color)
   
   g_return_val_if_fail (color != NULL, NULL);
 
-  if (color_chunk == NULL)
-    color_chunk = g_mem_chunk_new ("colors",
-				   sizeof (GdkColor),
-				   4096,
-				   G_ALLOC_AND_FREE);
-
-  new_color = g_chunk_new (GdkColor, color_chunk);
+  new_color = g_slice_new (GdkColor);
   *new_color = *color;
   return new_color;
 }
@@ -142,10 +134,9 @@ gdk_color_copy (const GdkColor *color)
 void
 gdk_color_free (GdkColor *color)
 {
-  g_assert (color_chunk != NULL);
   g_return_if_fail (color != NULL);
 
-  g_mem_chunk_free (color_chunk, color);
+  g_slice_free (GdkColor, color);
 }
 
 /**
@@ -314,7 +305,7 @@ gdk_color_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GdkColor",
+    our_type = g_boxed_type_register_static (g_intern_static_string ("GdkColor"),
 					     (GBoxedCopyFunc)gdk_color_copy,
 					     (GBoxedFreeFunc)gdk_color_free);
   return our_type;
@@ -335,7 +326,7 @@ gdk_color_get_type (void)
  * by <function>XParseColor</function>; these include
  * name for a color from <filename>rgb.txt</filename>, such as
  * <literal>DarkSlateGray</literal>, or a hex specification
- * such as <literal>305050</literal>.
+ * such as <literal>&num;3050b2</literal> or <literal>&num;35b</literal>.
  * 
  * Return value: %TRUE if the parsing succeeded.
  **/

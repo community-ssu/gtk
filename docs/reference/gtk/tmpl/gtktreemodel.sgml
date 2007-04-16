@@ -121,11 +121,11 @@ the second is much more common, as you often get paths from callbacks.
 
 
   /* walk the tree to find the iterator */
-  gtk_tree_model_get_nth_child (model, &amp;iter, NULL, 3);
+  gtk_tree_model_iter_nth_child (model, &amp;iter, NULL, 3);
   parent_iter = iter;
-  gtk_tree_model_get_nth_child (model, &amp;iter, &amp;parent_iter, 2);
+  gtk_tree_model_iter_nth_child (model, &amp;iter, &amp;parent_iter, 2);
   parent_iter = iter;
-  gtk_tree_model_get_nth_child (model, &amp;iter, &amp;parent_iter, 5);
+  gtk_tree_model_iter_nth_child (model, &amp;iter, &amp;parent_iter, 5);
 }
 </programlisting>
 </example>
@@ -514,6 +514,15 @@ compatibility reasons.
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_tree_row_reference_get_model ##### -->
+<para>
+
+</para>
+
+@reference: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_tree_row_reference_get_path ##### -->
 <para>
 
@@ -818,9 +827,6 @@ versions of GTK+.
 @tree_model: 
 @path: 
 @iter: 
-<!-- # Unused Parameters # -->
-@start_path: 
-@start_iter: 
 
 
 <!-- ##### FUNCTION gtk_tree_model_row_inserted ##### -->

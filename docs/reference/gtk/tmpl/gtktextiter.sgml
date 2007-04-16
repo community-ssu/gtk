@@ -666,6 +666,44 @@ types related to the text widget and how they work together.
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_text_iter_forward_visible_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_text_iter_backward_visible_line ##### -->
+<para>
+
+</para>
+
+@iter: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_text_iter_forward_visible_lines ##### -->
+<para>
+
+</para>
+
+@iter: 
+@count: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_text_iter_backward_visible_lines ##### -->
+<para>
+
+</para>
+
+@iter: 
+@count: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_text_iter_set_offset ##### -->
 <para>
 
@@ -811,9 +849,6 @@ types related to the text widget and how they work together.
 @match_end: 
 @limit: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@visible_only: 
-@slice: 
 
 
 <!-- ##### FUNCTION gtk_text_iter_backward_search ##### -->
@@ -828,9 +863,6 @@ types related to the text widget and how they work together.
 @match_end: 
 @limit: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@visible_only: 
-@slice: 
 
 
 <!-- ##### FUNCTION gtk_text_iter_equal ##### -->

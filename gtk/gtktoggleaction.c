@@ -47,39 +47,11 @@ enum
 
 enum {
   PROP_0,
-  PROP_DRAW_AS_RADIO
+  PROP_DRAW_AS_RADIO,
+  PROP_ACTIVE
 };
 
-static void gtk_toggle_action_init       (GtkToggleAction *action);
-static void gtk_toggle_action_class_init (GtkToggleActionClass *class);
-
-GType
-gtk_toggle_action_get_type (void)
-{
-  static GtkType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info =
-      {
-        sizeof (GtkToggleActionClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gtk_toggle_action_class_init,
-        (GClassFinalizeFunc) NULL,
-        NULL,
-        
-        sizeof (GtkToggleAction),
-        0, /* n_preallocs */
-        (GInstanceInitFunc) gtk_toggle_action_init,
-      };
-
-      type = g_type_register_static (GTK_TYPE_ACTION,
-                                     "GtkToggleAction",
-                                     &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (GtkToggleAction, gtk_toggle_action, GTK_TYPE_ACTION)
 
 static void gtk_toggle_action_activate     (GtkAction       *action);
 static void gtk_toggle_action_real_toggled (GtkToggleAction *action);
@@ -133,8 +105,23 @@ gtk_toggle_action_class_init (GtkToggleActionClass *klass)
                                                          FALSE,
                                                          GTK_PARAM_READWRITE));
 
+  /**
+   * GtkToggleAction:active:
+   *
+   * If the toggle action should be active in or not.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_ACTIVE,
+                                   g_param_spec_boolean ("active",
+                                                         P_("Active"),
+                                                         P_("If the toggle action should be active in or not"),
+                                                         FALSE,
+                                                         GTK_PARAM_READWRITE));
+
   action_signals[TOGGLED] =
-    g_signal_new ("toggled",
+    g_signal_new (I_("toggled"),
                   G_OBJECT_CLASS_TYPE (klass),
                   G_SIGNAL_RUN_FIRST,
                   G_STRUCT_OFFSET (GtkToggleActionClass, toggled),
@@ -180,7 +167,7 @@ gtk_toggle_action_new (const gchar *name,
 			 "name", name,
 			 "label", label,
 			 "tooltip", tooltip,
-			 "stock_id", stock_id,
+			 "stock-id", stock_id,
 			 NULL);
 
   return action;
@@ -198,6 +185,9 @@ get_property (GObject     *object,
     {
     case PROP_DRAW_AS_RADIO:
       g_value_set_boolean (value, gtk_toggle_action_get_draw_as_radio (action));
+      break;
+    case PROP_ACTIVE:
+      g_value_set_boolean (value, gtk_toggle_action_get_active (action));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -218,6 +208,9 @@ set_property (GObject      *object,
     case PROP_DRAW_AS_RADIO:
       gtk_toggle_action_set_draw_as_radio (action, g_value_get_boolean (value));
       break;
+    case PROP_ACTIVE:
+      gtk_toggle_action_set_active (action, g_value_get_boolean (value));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -234,6 +227,8 @@ gtk_toggle_action_activate (GtkAction *action)
   toggle_action = GTK_TOGGLE_ACTION (action);
 
   toggle_action->private_data->active = !toggle_action->private_data->active;
+
+  g_object_notify (action, "active");
 
   gtk_toggle_action_toggled (toggle_action);
 }
@@ -293,10 +288,6 @@ static void
 disconnect_proxy (GtkAction *action, 
 		  GtkWidget *proxy)
 {
-  GtkToggleAction *toggle_action;
-
-  toggle_action = GTK_TOGGLE_ACTION (action);
-
   (* GTK_ACTION_CLASS (parent_class)->disconnect_proxy) (action, proxy);
 }
 
@@ -408,7 +399,7 @@ create_menu_item (GtkAction *action)
   GtkToggleAction *toggle_action = GTK_TOGGLE_ACTION (action);
 
   return g_object_new (GTK_TYPE_CHECK_MENU_ITEM, 
-		       "draw_as_radio", toggle_action->private_data->draw_as_radio,
+		       "draw-as-radio", toggle_action->private_data->draw_as_radio,
 		       NULL);
 }
 

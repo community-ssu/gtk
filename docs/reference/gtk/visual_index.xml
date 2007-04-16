@@ -38,6 +38,9 @@
   <link linkend="GtkLabel">
     <inlinegraphic fileref="label.png" format="PNG"></inlinegraphic>
   </link>
+  <link linkend="GtkLinkButton">
+    <inlinegraphic fileref="link-button.png" format="PNG"></inlinegraphic>
+  </link>
   <link linkend="GtkMenuBar">
     <inlinegraphic fileref="menubar.png" format="PNG"></inlinegraphic>
   </link>
@@ -47,11 +50,20 @@
   <link linkend="GtkPaned">
     <inlinegraphic fileref="panes.png" format="PNG"></inlinegraphic>
   </link> 
+  <link linkend="GtkPageSetupUnixDialog">
+    <inlinegraphic fileref="pagesetupdialog.png" format="PNG"></inlinegraphic>
+  </link> 
+  <link linkend="GtkPrintUnixDialog">
+    <inlinegraphic fileref="printdialog.png" format="PNG"></inlinegraphic>
+  </link> 
   <link linkend="GtkProgressBar">
     <inlinegraphic fileref="progressbar.png" format="PNG"></inlinegraphic>
   </link>
   <link linkend="GtkRadioButton">
     <inlinegraphic fileref="radio-group.png" format="PNG"></inlinegraphic>
+  </link>
+  <link linkend="GtkRecentChooserDialog">
+    <inlinegraphic fileref="recentchooserdialog.png" format="PNG"></inlinegraphic>
   </link>
   <link linkend="GtkScale">
     <inlinegraphic fileref="scales.png" format="PNG"></inlinegraphic>
@@ -85,6 +97,9 @@
   </link>
   <link linkend="GtkMessageDialog">
     <inlinegraphic fileref="messagedialog.png" format="PNG"></inlinegraphic>
+  </link>
+  <link linkend="GtkAssistant">
+    <inlinegraphic fileref="assistant.png" format="PNG"></inlinegraphic>
   </link>
   <link linkend="GtkFontSelectionDialog">
     <inlinegraphic fileref="fontsel.png" format="PNG"></inlinegraphic>

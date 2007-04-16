@@ -19,7 +19,7 @@ enum {
   TITLE_COLUMN,
   FILENAME_COLUMN,
   FUNC_COLUMN,
-  ITALIC_COLUMN,
+  STYLE_COLUMN,
   NUM_COLUMNS
 };
 
@@ -94,15 +94,15 @@ window_closed_cb (GtkWidget *window, gpointer data)
 {
   CallbackData *cbdata = data;
   GtkTreeIter iter;
-  gboolean italic;
+  PangoStyle style;
 
   gtk_tree_model_get_iter (cbdata->model, &iter, cbdata->path);
   gtk_tree_model_get (GTK_TREE_MODEL (cbdata->model), &iter,
-		      ITALIC_COLUMN, &italic,
+		      STYLE_COLUMN, &style,
 		      -1);
-  if (italic)
+  if (style == PANGO_STYLE_ITALIC)
     gtk_tree_store_set (GTK_TREE_STORE (cbdata->model), &iter,
-			ITALIC_COLUMN, !italic,
+			STYLE_COLUMN, PANGO_STYLE_NORMAL,
 			-1);
 
   gtk_tree_path_free (cbdata->path);
@@ -586,7 +586,7 @@ row_activated_cb (GtkTreeView       *tree_view,
 		  GtkTreeViewColumn *column)
 {
   GtkTreeIter iter;
-  gboolean italic;
+  PangoStyle style;
   GDoDemoFunc func;
   GtkWidget *window;
   GtkTreeModel *model;
@@ -597,14 +597,14 @@ row_activated_cb (GtkTreeView       *tree_view,
   gtk_tree_model_get (GTK_TREE_MODEL (model),
 		      &iter,
 		      FUNC_COLUMN, &func,
-		      ITALIC_COLUMN, &italic,
+		      STYLE_COLUMN, &style,
 		      -1);
 
   if (func)
     {
       gtk_tree_store_set (GTK_TREE_STORE (model),
 			  &iter,
-			  ITALIC_COLUMN, !italic,
+			  STYLE_COLUMN, (style == PANGO_STYLE_ITALIC ? PANGO_STYLE_NORMAL : PANGO_STYLE_ITALIC),
 			  -1);
       window = (func) (gtk_widget_get_toplevel (GTK_WIDGET (tree_view)));
       
@@ -666,7 +666,7 @@ create_text (GtkTextBuffer **buffer,
   
   if (is_source)
     {
-      font_desc = pango_font_description_from_string ("Courier 12");
+      font_desc = pango_font_description_from_string ("monospace");
       gtk_widget_modify_font (text_view, font_desc);
       pango_font_description_free (font_desc);
 
@@ -696,10 +696,11 @@ create_tree (void)
   GtkTreeViewColumn *column;
   GtkTreeStore *model;
   GtkTreeIter iter;
+  GtkWidget *box, *label, *scrolled_window;
 
   Demo *d = testgtk_demos;
 
-  model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_BOOLEAN);
+  model = gtk_tree_store_new (NUM_COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_POINTER, G_TYPE_INT);
   tree_view = gtk_tree_view_new ();
   gtk_tree_view_set_model (GTK_TREE_VIEW (tree_view), GTK_TREE_MODEL (model));
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tree_view));
@@ -722,7 +723,7 @@ create_tree (void)
 			  TITLE_COLUMN, d->title,
 			  FILENAME_COLUMN, d->filename,
 			  FUNC_COLUMN, d->func,
-			  ITALIC_COLUMN, FALSE,
+			  STYLE_COLUMN, PANGO_STYLE_NORMAL,
 			  -1);
 
       d++;
@@ -741,7 +742,7 @@ create_tree (void)
 			      TITLE_COLUMN, children->title,
 			      FILENAME_COLUMN, children->filename,
 			      FUNC_COLUMN, children->func,
-			      ITALIC_COLUMN, FALSE,
+			      STYLE_COLUMN, PANGO_STYLE_NORMAL,
 			      -1);
 	  
 	  children++;
@@ -750,24 +751,38 @@ create_tree (void)
 
   cell = gtk_cell_renderer_text_new ();
 
-  g_object_set (cell,
-                "style", PANGO_STYLE_ITALIC,
-                NULL);
-  
   column = gtk_tree_view_column_new_with_attributes ("Widget (double click for demo)",
 						     cell,
 						     "text", TITLE_COLUMN,
-						     "style_set", ITALIC_COLUMN,
+						     "style", STYLE_COLUMN,
 						     NULL);
   
   gtk_tree_view_append_column (GTK_TREE_VIEW (tree_view),
 			       GTK_TREE_VIEW_COLUMN (column));
 
+  gtk_tree_model_get_iter_first (GTK_TREE_MODEL (model), &iter);
+  gtk_tree_selection_select_iter (GTK_TREE_SELECTION (selection), &iter);
+
   g_signal_connect (selection, "changed", G_CALLBACK (selection_cb), model);
   g_signal_connect (tree_view, "row_activated", G_CALLBACK (row_activated_cb), model);
 
-  gtk_tree_view_expand_all (GTK_TREE_VIEW (tree_view));
-  return tree_view;
+  gtk_tree_view_collapse_all (GTK_TREE_VIEW (tree_view));
+  gtk_tree_view_set_headers_visible (GTK_TREE_VIEW (tree_view), FALSE);
+  				    
+  scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+				  GTK_POLICY_NEVER,
+				  GTK_POLICY_AUTOMATIC);
+  gtk_container_add (GTK_CONTAINER (scrolled_window), tree_view);
+
+  label = gtk_label_new ("Widget (double click for demo)");
+
+  box = gtk_notebook_new ();
+  gtk_notebook_append_page (GTK_NOTEBOOK (box), scrolled_window, label);
+
+  gtk_widget_grab_focus (tree_view);
+
+  return box;
 }
 
 static void
@@ -875,7 +890,7 @@ main (int argc, char **argv)
                                     NULL);
 
   tag = gtk_text_buffer_create_tag (source_buffer, "comment",
-				    "foreground", "red",
+				    "foreground", "DodgerBlue",
                                     NULL);
   tag = gtk_text_buffer_create_tag (source_buffer, "type",
 				    "foreground", "ForestGreen",

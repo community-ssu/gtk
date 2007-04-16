@@ -185,16 +185,6 @@ was clicked.
 
 </para>
 
-<!-- ##### ARG GtkDialog:extended-left-border ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkDialog:extended-right-border ##### -->
-<para>
-
-</para>
-
 <!-- ##### ENUM GtkDialogFlags ##### -->
 <para>
 Flags used to influence dialog construction.
@@ -296,8 +286,6 @@ directly, but into the @vbox and @action_area, as described above.
 @dialog: 
 @child: 
 @response_id: 
-<!-- # Unused Parameters # -->
-@widget: 
 
 
 <!-- ##### FUNCTION gtk_dialog_get_has_separator ##### -->
@@ -335,6 +323,16 @@ directly, but into the @vbox and @action_area, as described above.
 @dialog: 
 @response_id: 
 @setting: 
+
+
+<!-- ##### FUNCTION gtk_dialog_get_response_for_widget ##### -->
+<para>
+
+</para>
+
+@dialog: 
+@widget: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gtk_alternative_dialog_button_order ##### -->

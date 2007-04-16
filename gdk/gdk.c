@@ -69,7 +69,8 @@ static const GDebugKey gdk_debug_keys[] = {
   {"input",	    GDK_DEBUG_INPUT},
   {"cursor",	    GDK_DEBUG_CURSOR},
   {"multihead",	    GDK_DEBUG_MULTIHEAD},
-  {"xinerama",	    GDK_DEBUG_XINERAMA}
+  {"xinerama",	    GDK_DEBUG_XINERAMA},
+  {"draw",	    GDK_DEBUG_DRAW}
 };
 
 static const int gdk_ndebug_keys = G_N_ELEMENTS (gdk_debug_keys);
@@ -110,7 +111,7 @@ gdk_arg_name_cb (const char *key, const char *value, gpointer user_data, GError 
   return TRUE;
 }
 
-static GOptionEntry gdk_args[] = {
+static const GOptionEntry gdk_args[] = {
   { "class",        0, 0,                     G_OPTION_ARG_CALLBACK, gdk_arg_class_cb,
     /* Description of --class=CLASS in --help output */        N_("Program class as used by the window manager"),
     /* Placeholder in --class=CLASS in --help output */        N_("CLASS") },
@@ -200,6 +201,7 @@ gdk_parse_args (int    *argc,
 {
   GOptionContext *option_context;
   GOptionGroup *option_group;
+  GError *error = NULL;
 
   if (gdk_initialized)
     return;
@@ -215,7 +217,11 @@ gdk_parse_args (int    *argc,
   g_option_group_add_entries (option_group, gdk_args);
   g_option_group_add_entries (option_group, _gdk_windowing_args);
 
-  g_option_context_parse (option_context, argc, argv, NULL);
+  if (!g_option_context_parse (option_context, argc, argv, &error))
+    {
+      g_warning ("%s", error->message);
+      g_error_free (error);
+    }
   g_option_context_free (option_context);
   
   GDK_NOTE (MISC, g_message ("progname: \"%s\"", g_get_prgname ()));
@@ -322,7 +328,8 @@ gdk_init (int *argc, char ***argv)
 {
   if (!gdk_init_check (argc, argv))
     {
-      g_warning ("cannot open display: %s", gdk_get_display_arg_name ());
+      const char *display_name = gdk_get_display_arg_name ();
+      g_warning ("cannot open display: %s", display_name ? display_name : "");
       exit(1);
     }
 }

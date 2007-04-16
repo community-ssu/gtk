@@ -27,8 +27,8 @@
 #include <config.h>
 #include <gdk/gdk.h>
 #include "gtkinvisible.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum {
@@ -37,8 +37,6 @@ enum {
   LAST_ARG
 };
 
-static void gtk_invisible_class_init    (GtkInvisibleClass *klass);
-static void gtk_invisible_init          (GtkInvisible      *invisible);
 static void gtk_invisible_destroy       (GtkObject         *object);
 static void gtk_invisible_realize       (GtkWidget         *widget);
 static void gtk_invisible_style_set     (GtkWidget         *widget,
@@ -59,34 +57,7 @@ static GObject *gtk_invisible_constructor (GType                  type,
 					   guint                  n_construct_properties,
 					   GObjectConstructParam *construct_params);
 
-static GObjectClass *parent_class;
-
-GType
-gtk_invisible_get_type (void)
-{
-  static GType invisible_type = 0;
-
-  if (!invisible_type)
-    {
-      static const GTypeInfo invisible_info =
-      {
-	sizeof (GtkInvisibleClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_invisible_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkInvisible),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_invisible_init,
-      };
-
-      invisible_type = g_type_register_static (GTK_TYPE_WIDGET, "GtkInvisible",
-					       &invisible_info, 0);
-    }
-
-  return invisible_type;
-}
+G_DEFINE_TYPE (GtkInvisible, gtk_invisible, GTK_TYPE_WIDGET)
 
 static void
 gtk_invisible_class_init (GtkInvisibleClass *class)
@@ -98,8 +69,6 @@ gtk_invisible_class_init (GtkInvisibleClass *class)
   widget_class = (GtkWidgetClass*) class;
   object_class = (GtkObjectClass*) class;
   gobject_class = (GObjectClass*) class;
-
-  parent_class = g_type_class_peek_parent (class);
 
   widget_class->realize = gtk_invisible_realize;
   widget_class->style_set = gtk_invisible_style_set;
@@ -128,8 +97,7 @@ gtk_invisible_init (GtkInvisible *invisible)
   GTK_WIDGET_UNSET_FLAGS (invisible, GTK_NO_WINDOW);
   GTK_WIDGET_SET_FLAGS (invisible, GTK_TOPLEVEL);
 
-  g_object_ref (invisible);
-  gtk_object_sink (GTK_OBJECT (invisible));
+  g_object_ref_sink (invisible);
 
   invisible->has_user_ref_count = TRUE;
   invisible->screen = gdk_screen_get_default ();
@@ -150,7 +118,7 @@ gtk_invisible_destroy (GtkObject *object)
       g_object_unref (invisible);
     }
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);  
+  GTK_OBJECT_CLASS (gtk_invisible_parent_class)->destroy (object);  
 }
 
 /**
@@ -246,10 +214,15 @@ gtk_invisible_get_screen (GtkInvisible *invisible)
 static void
 gtk_invisible_realize (GtkWidget *widget)
 {
+  GdkWindow *parent;
   GdkWindowAttr attributes;
   gint attributes_mask;
 
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
+
+  parent = gtk_widget_get_parent_window (widget);
+  if (parent == NULL)
+    parent = gtk_widget_get_root_window (widget);
 
   attributes.x = -100;
   attributes.y = -100;
@@ -262,8 +235,7 @@ gtk_invisible_realize (GtkWidget *widget)
 
   attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_NOREDIR;
 
-  widget->window = gdk_window_new (gtk_widget_get_root_window (widget),
-				   &attributes, attributes_mask);
+  widget->window = gdk_window_new (parent, &attributes, attributes_mask);
 					      
   gdk_window_set_user_data (widget->window, widget);
   
@@ -340,9 +312,9 @@ gtk_invisible_constructor (GType                  type,
 {
   GObject *object;
 
-  object = (* G_OBJECT_CLASS (parent_class)->constructor) (type,
-							   n_construct_properties,
-							   construct_params);
+  object = (* G_OBJECT_CLASS (gtk_invisible_parent_class)->constructor) (type,
+									 n_construct_properties,
+									 construct_params);
 
   gtk_widget_realize (GTK_WIDGET (object));
 

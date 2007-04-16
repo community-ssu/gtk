@@ -57,7 +57,7 @@
 
 typedef struct _ToolbarContent ToolbarContent;
 
-#define DEFAULT_IPADDING 0
+#define DEFAULT_IPADDING    0
 
 #define DEFAULT_SPACE_SIZE  12
 #define DEFAULT_SPACE_STYLE GTK_TOOLBAR_SPACE_LINE
@@ -67,9 +67,8 @@ typedef struct _ToolbarContent ToolbarContent;
 
 #define DEFAULT_ICON_SIZE GTK_ICON_SIZE_LARGE_TOOLBAR
 #define DEFAULT_TOOLBAR_STYLE GTK_TOOLBAR_BOTH
-#define DEFAULT_ANIMATION_STATE FALSE
+#define DEFAULT_ANIMATION_STATE TRUE
 
-#define DEFAULT_MAX_CHILD_SPACING   G_MAXINT
 #define MAX_HOMOGENEOUS_N_CHARS 13 /* Items that are wider than this do not participate
 				    * in the homogeneous game. In units of
 				    * pango_font_get_estimated_char_width().
@@ -86,7 +85,10 @@ enum {
   PROP_0,
   PROP_ORIENTATION,
   PROP_TOOLBAR_STYLE,
-  PROP_SHOW_ARROW
+  PROP_SHOW_ARROW,
+  PROP_TOOLTIPS,
+  PROP_ICON_SIZE,
+  PROP_ICON_SIZE_SET
 };
 
 /* Child properties */
@@ -141,19 +143,16 @@ struct _GtkToolbarPrivate
   gint		max_homogeneous_pixels;
   
   GTimer *	timer;
-  
-  guint   animation_connection;
 
-  guint		show_arrow : 1;
-  guint		need_sync : 1;
-  guint		is_sliding : 1;
-  guint		need_rebuild : 1;	/* whether the overflow menu should be regenerated */
-  guint   animation_set : 1;
-  guint   animation : 1;
+  gulong        settings_connection;
+
+  guint         show_arrow : 1;
+  guint         need_sync : 1;
+  guint         is_sliding : 1;
+  guint         need_rebuild : 1;  /* whether the overflow menu should be regenerated */
+  guint         animation : 1;
 };
 
-static void       gtk_toolbar_init                 (GtkToolbar          *toolbar);
-static void       gtk_toolbar_class_init           (GtkToolbarClass     *klass);
 static void       gtk_toolbar_set_property         (GObject             *object,
 						    guint                prop_id,
 						    const GValue        *value,
@@ -231,7 +230,6 @@ static GtkWidget *internal_insert_element          (GtkToolbar          *toolbar
 static void       gtk_toolbar_reconfigured         (GtkToolbar          *toolbar);
 static gboolean   gtk_toolbar_check_new_api        (GtkToolbar          *toolbar);
 static gboolean   gtk_toolbar_check_old_api        (GtkToolbar          *toolbar);
-static void       gtk_toolbar_update_animation_state (GtkToolbar         *toolbar);
 
 static GtkReliefStyle       get_button_relief    (GtkToolbar *toolbar);
 static gint                 get_internal_padding (GtkToolbar *toolbar);
@@ -305,36 +303,9 @@ static void	       toolbar_content_set_expand	    (ToolbarContent      *content,
 #define GTK_TOOLBAR_GET_PRIVATE(o)  \
   (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_TOOLBAR, GtkToolbarPrivate))
 
-static GtkContainerClass *	parent_class = NULL;
 static guint			toolbar_signals [LAST_SIGNAL] = { 0 };
 
-GType
-gtk_toolbar_get_type (void)
-{
-  static GtkType type = 0;
-  
-  if (!type)
-    {
-      static const GTypeInfo type_info =
-	{
-	  sizeof (GtkToolbarClass),
-	  (GBaseInitFunc) NULL,
-	  (GBaseFinalizeFunc) NULL,
-	  (GClassInitFunc) gtk_toolbar_class_init,
-	  (GClassFinalizeFunc) NULL,
-	  NULL,
-	  sizeof (GtkToolbar),
-	  0, /* n_preallocs */
-	  (GInstanceInitFunc) gtk_toolbar_init,
-	};
-      
-      type = g_type_register_static (GTK_TYPE_CONTAINER,
-				     "GtkToolbar",
-				     &type_info, 0);
-    }
-  
-  return type;
-}
+G_DEFINE_TYPE (GtkToolbar, gtk_toolbar, GTK_TYPE_CONTAINER)
 
 static void
 add_arrow_bindings (GtkBindingSet   *binding_set,
@@ -373,8 +344,6 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
   GtkWidgetClass *widget_class;
   GtkContainerClass *container_class;
   GtkBindingSet *binding_set;
-  
-  parent_class = g_type_class_peek_parent (klass);
   
   gobject_class = (GObjectClass *)klass;
   widget_class = (GtkWidgetClass *)klass;
@@ -417,7 +386,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Emitted when the orientation of the toolbar changes.
    */
   toolbar_signals[ORIENTATION_CHANGED] =
-    g_signal_new ("orientation-changed",
+    g_signal_new (I_("orientation-changed"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkToolbarClass, orientation_changed),
@@ -433,7 +402,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Emitted when the style of the toolbar changes. 
    */
   toolbar_signals[STYLE_CHANGED] =
-    g_signal_new ("style-changed",
+    g_signal_new (I_("style-changed"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkToolbarClass, style_changed),
@@ -460,7 +429,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Return value: return %TRUE if the signal was handled, %FALSE if not
    */
   toolbar_signals[POPUP_CONTEXT_MENU] =
-    g_signal_new ("popup_context_menu",
+    g_signal_new (I_("popup_context_menu"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolbarClass, popup_context_menu),
@@ -480,7 +449,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Return value: %TRUE if the signal was handled, %FALSE if not
    */
   toolbar_signals[MOVE_FOCUS] =
-    _gtk_binding_signal_new ("move_focus",
+    _gtk_binding_signal_new (I_("move_focus"),
 			     G_TYPE_FROM_CLASS (klass),
 			     G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 			     G_CALLBACK (gtk_toolbar_move_focus),
@@ -499,7 +468,7 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
    * Return value: %TRUE if the signal was handled, %FALSE if not
    */
   toolbar_signals[FOCUS_HOME_OR_END] =
-    _gtk_binding_signal_new ("focus_home_or_end",
+    _gtk_binding_signal_new (I_("focus_home_or_end"),
 			     G_OBJECT_CLASS_TYPE (klass),
 			     G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 			     G_CALLBACK (gtk_toolbar_focus_home_or_end),
@@ -534,6 +503,60 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
 							 TRUE,
 							 GTK_PARAM_READWRITE));
   
+
+  /**
+   * GtkToolbar:tooltips:
+   * 
+   * If the tooltips of the toolbar should be active or not.
+   * 
+   * Since: 2.8
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_TOOLTIPS,
+				   g_param_spec_boolean ("tooltips",
+							 P_("Tooltips"),
+							 P_("If the tooltips of the toolbar should be active or not"),
+							 TRUE,
+							 GTK_PARAM_READWRITE));
+  
+
+  /**
+   * GtkToolbar:icon-size:
+   *
+   * The size of the icons in a toolbar is normally determined by
+   * the toolbar-icon-size setting. When this property is set, it 
+   * overrides the setting. 
+   * 
+   * This should only be used for special-purpose toolbars, normal
+   * application toolbars should respect the user preferences for the
+   * size of icons.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_ICON_SIZE,
+				   g_param_spec_enum ("icon-size",
+						      P_("Icon size"),
+						      P_("Size of icons in this toolbar"),
+						      GTK_TYPE_ICON_SIZE,
+						      DEFAULT_ICON_SIZE,
+						      GTK_PARAM_READWRITE));  
+
+  /**
+   * GtkToolbar:icon-size-set:
+   *
+   * Is %TRUE if the icon-size property has been set.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_ICON_SIZE_SET,
+				   g_param_spec_boolean ("icon-size-set",
+							 P_("Icon size set"),
+							 P_("Whether the icon-size property has been set"),
+							 FALSE,
+							 GTK_PARAM_READWRITE));  
+
   /* child properties */
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_EXPAND,
@@ -569,23 +592,16 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
 							     G_MAXINT,
                                                              DEFAULT_IPADDING,
                                                              GTK_PARAM_READABLE));
-  
-  /**
-   * GtkToolbar:max-child-expand:
-   *
-   * Maximum space between the toolbar items.
-   * 
-   * Since: maemo 1.0
-   */
+
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("max-child-expand",
-							     P_("Maximum toolbar item spacing"),
-							     P_("Maximum space between the toolbar items."),
-							     0,
-							     G_MAXINT,
-                                                             DEFAULT_MAX_CHILD_SPACING,
+                                           g_param_spec_int ("max-child-expand",
+                                                             P_("Maximum child expand"),
+                                                             P_("Maximum amount of space an expandable item will be given"),
+                                                             0,
+                                                             G_MAXINT,
+                                                             G_MAXINT,
                                                              GTK_PARAM_READABLE));
-  
+
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_enum ("space-style",
 							      P_("Space style"),
@@ -623,19 +639,6 @@ gtk_toolbar_class_init (GtkToolbarClass *klass)
                                                     DEFAULT_ICON_SIZE,
                                                     GTK_PARAM_READWRITE));  
 
-  /**
-   * GtkSettings:gtk-toolbar-animation:
-   *
-   * Enable toolbar animation.
-   *
-   * Since: maemo 1.0
-   */
-  gtk_settings_install_property (g_param_spec_boolean ("gtk-toolbar-animation",
-                                                    P_("Toolbar animation"),
-                                                    P_("Are we using toolbar animation"),
-                                                    DEFAULT_ANIMATION_STATE,
-                                                    GTK_PARAM_READWRITE));  
-  
   binding_set = gtk_binding_set_by_class (klass);
   
   add_arrow_bindings (binding_set, GDK_Left, GTK_DIR_LEFT);
@@ -677,8 +680,7 @@ gtk_toolbar_init (GtkToolbar *toolbar)
   toolbar->icon_size = DEFAULT_ICON_SIZE;
   priv->animation = DEFAULT_ANIMATION_STATE;
   toolbar->tooltips = gtk_tooltips_new ();
-  g_object_ref (toolbar->tooltips);
-  gtk_object_sink (GTK_OBJECT (toolbar->tooltips));
+  g_object_ref_sink (toolbar->tooltips);
   
   priv->arrow_button = gtk_toggle_button_new ();
   g_signal_connect (priv->arrow_button, "button_press_event",
@@ -728,6 +730,18 @@ gtk_toolbar_set_property (GObject      *object,
     case PROP_SHOW_ARROW:
       gtk_toolbar_set_show_arrow (toolbar, g_value_get_boolean (value));
       break;
+    case PROP_TOOLTIPS:
+      gtk_toolbar_set_tooltips (toolbar, g_value_get_boolean (value));
+      break;
+    case PROP_ICON_SIZE:
+      gtk_toolbar_set_icon_size (toolbar, g_value_get_enum (value));
+      break;
+    case PROP_ICON_SIZE_SET:
+      if (g_value_get_boolean (value))
+	toolbar->icon_size_set = TRUE;
+      else
+	gtk_toolbar_unset_icon_size (toolbar);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -754,6 +768,15 @@ gtk_toolbar_get_property (GObject    *object,
     case PROP_SHOW_ARROW:
       g_value_set_boolean (value, priv->show_arrow);
       break;
+    case PROP_TOOLTIPS:
+      g_value_set_boolean (value, gtk_toolbar_get_tooltips (toolbar));
+      break;
+    case PROP_ICON_SIZE:
+      g_value_set_enum (value, gtk_toolbar_get_icon_size (toolbar));
+      break;
+    case PROP_ICON_SIZE_SET:
+      g_value_set_boolean (value, toolbar->icon_size_set);
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -765,7 +788,7 @@ gtk_toolbar_map (GtkWidget *widget)
 {
   GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (widget);
   
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->map (widget);
   
   if (priv->event_window)
     gdk_window_show_unraised (priv->event_window);
@@ -779,7 +802,7 @@ gtk_toolbar_unmap (GtkWidget *widget)
   if (priv->event_window)
     gdk_window_hide (priv->event_window);
   
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->unmap (widget);
 }
 
 static void
@@ -831,8 +854,8 @@ gtk_toolbar_unrealize (GtkWidget *widget)
       priv->event_window = NULL;
     }
   
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  if (GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->unrealize)
+    (* GTK_WIDGET_CLASS (gtk_toolbar_parent_class)->unrealize) (widget);
 }
 
 static gint
@@ -998,9 +1021,15 @@ gtk_toolbar_size_request (GtkWidget      *widget,
 }
 
 static gint
-position (GtkToolbar *toolbar, gint from, gint to, gdouble elapsed)
+position (GtkToolbar *toolbar,
+          gint        from,
+          gint        to,
+          gdouble     elapsed)
 {
   gint n_pixels;
+
+  if (! GTK_TOOLBAR_GET_PRIVATE (toolbar)->animation)
+    return to;
 
   if (elapsed <= ACCEL_THRESHOLD)
     {
@@ -1016,20 +1045,11 @@ position (GtkToolbar *toolbar, gint from, gint to, gdouble elapsed)
       n_pixels = (SLIDE_SPEED / ACCEL_THRESHOLD) * elapsed * elapsed -
 	SLIDE_SPEED * elapsed + SLIDE_SPEED * ACCEL_THRESHOLD;
     }
-  if (GTK_TOOLBAR_GET_PRIVATE (toolbar)->animation) {
-    if (to > from)
-      return MIN (from + n_pixels, to);
-    else
-      return MAX (from - n_pixels, to);
-  }
-  return to;
-}
 
-static GtkSettings *
-toolbar_get_settings (GtkToolbar *toolbar)
-{
-   GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
-   return priv->settings;
+  if (to > from)
+    return MIN (from + n_pixels, to);
+  else
+    return MAX (from - n_pixels, to);
 }
 
 static void
@@ -1040,13 +1060,15 @@ compute_intermediate_allocation (GtkToolbar          *toolbar,
 {
   GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
   gdouble elapsed = g_timer_elapsed (priv->timer, NULL);
-  
-  intermediate->x = position (toolbar, start->x, goal->x, elapsed);
-  intermediate->y = position (toolbar, start->y, goal->y, elapsed);
-  intermediate->width =
-    position (toolbar, start->x + start->width, goal->x + goal->width, elapsed) - intermediate->x;
-  intermediate->height =
-    position (toolbar, start->y + start->height, goal->y + goal->height, elapsed) - intermediate->y;
+
+  intermediate->x      = position (toolbar, start->x, goal->x, elapsed);
+  intermediate->y      = position (toolbar, start->y, goal->y, elapsed);
+  intermediate->width  = position (toolbar, start->x + start->width,
+                                   goal->x + goal->width,
+                                   elapsed) - intermediate->x;
+  intermediate->height = position (toolbar, start->y + start->height,
+                                   goal->y + goal->height,
+                                   elapsed) - intermediate->y;
 }
 
 static void
@@ -1091,32 +1113,6 @@ get_item_size (GtkToolbar     *toolbar,
 	return toolbar->button_maxh;
       else
 	return requisition.height;
-    }
-}
-
-static void
-gtk_toolbar_update_animation_state (GtkToolbar *toolbar)
-{
-  gboolean animation_state;
-  GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
-  
-  g_return_if_fail (GTK_IS_TOOLBAR (toolbar));
-  
-  if (priv->animation_set)
-    {
-      GtkSettings *settings = toolbar_get_settings (toolbar);
-      
-      if (settings)
-      	{
-      	  g_object_get (settings,
-      			"gtk-toolbar-animation", &animation_state,
-      			NULL);
-        }
-      else
-      	animation_state = DEFAULT_ANIMATION_STATE;
-
-      priv->animation = animation_state;
-      priv->animation_set = FALSE;
     }
 }
 
@@ -1595,7 +1591,9 @@ gtk_toolbar_size_allocate (GtkWidget     *widget,
    */
   if (!overflowing)
     {
+      gint max_child_expand;
       n_expand_items = 0;
+      
       for (i = 0, list = priv->content; list != NULL; list = list->next, ++i)
 	{
 	  ToolbarContent *content = list->data;
@@ -1604,19 +1602,19 @@ gtk_toolbar_size_allocate (GtkWidget     *widget,
 	    n_expand_items++;
 	}
       
+      max_child_expand = get_max_child_expand (toolbar);
       for (list = priv->content, i = 0; list != NULL; list = list->next, ++i)
 	{
 	  ToolbarContent *content = list->data;
 	  
 	  if (toolbar_content_get_expand (content) && new_states[i] == NORMAL)
 	    {
-	      gint mexpand = get_max_child_expand(toolbar);
 	      gint extra = size / n_expand_items;
 	      if (size % n_expand_items != 0)
 		extra++;
-	      if (extra > mexpand) {
-		extra = mexpand;
-	      }
+
+              if (extra > max_child_expand)
+                extra = max_child_expand;
 
 	      allocations[i].width += extra;
 	      size -= extra;
@@ -1746,7 +1744,7 @@ gtk_toolbar_size_allocate (GtkWidget     *widget,
 	  new_states[i] == NORMAL)
 	{
 	  GtkAllocation alloc;
-	  GtkAllocation start_allocation;
+	  GtkAllocation start_allocation = { 0, };
 	  GtkAllocation goal_allocation;
 
 	  if (priv->is_sliding)
@@ -1987,24 +1985,31 @@ gtk_toolbar_focus (GtkWidget        *widget,
   return result;
 }
 
+static GtkSettings *
+toolbar_get_settings (GtkToolbar *toolbar)
+{
+  GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
+  return priv->settings;
+}
+
 static void
 style_change_notify (GtkToolbar *toolbar)
 {
   if (!toolbar->style_set)
     {
       /* pretend it was set, then unset, thus reverting to new default */
-      toolbar->style_set = TRUE; 
+      toolbar->style_set = TRUE;
       gtk_toolbar_unset_style (toolbar);
     }
 }
 
 static void
 icon_size_change_notify (GtkToolbar *toolbar)
-{ 
+{
   if (!toolbar->icon_size_set)
     {
       /* pretend it was set, then unset, thus reverting to new default */
-      toolbar->icon_size_set = TRUE; 
+      toolbar->icon_size_set = TRUE;
       gtk_toolbar_unset_icon_size (toolbar);
     }
 }
@@ -2013,12 +2018,30 @@ static void
 animation_change_notify (GtkToolbar *toolbar)
 {
   GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
-  if (!priv->animation_set)
-    {
-      /* pretend it was set, then unset, thus reverting to new default */
-      priv->animation_set = TRUE; 
-      gtk_toolbar_update_animation_state (toolbar);
-    }
+  GtkSettings *settings = toolbar_get_settings (toolbar);
+  gboolean animation;
+
+  if (settings)
+    g_object_get (settings,
+                  "gtk-enable-animations", &animation,
+                  NULL);
+  else
+    animation = DEFAULT_ANIMATION_STATE;
+
+  priv->animation = animation;
+}
+
+static void
+settings_change_notify (GtkSettings      *settings,
+                        const GParamSpec *pspec,
+                        GtkToolbar       *toolbar)
+{
+  if (! strcmp (pspec->name, "gtk-toolbar-style"))
+    style_change_notify (toolbar);
+  else if (! strcmp (pspec->name, "gtk-toolbar-icon-size"))
+    icon_size_change_notify (toolbar);
+  else if (! strcmp (pspec->name, "gtk-enable-animations"))
+    animation_change_notify (toolbar);
 }
 
 static void
@@ -2040,37 +2063,23 @@ gtk_toolbar_screen_changed (GtkWidget *widget,
   
   if (old_settings)
     {
-      g_signal_handler_disconnect (old_settings, toolbar->style_set_connection);
-      g_signal_handler_disconnect (old_settings, toolbar->icon_size_connection);
-      g_signal_handler_disconnect (old_settings, priv->animation_connection);
-      
+      g_signal_handler_disconnect (old_settings, priv->settings_connection);
+
       g_object_unref (old_settings);
     }
-  
+
   if (settings)
     {
-      toolbar->style_set_connection =
-	g_signal_connect_swapped (settings,
-				  "notify::gtk-toolbar-style",
-				  G_CALLBACK (style_change_notify),
-				  toolbar);
-      toolbar->icon_size_connection =
-	g_signal_connect_swapped (settings,
-				  "notify::gtk-toolbar-icon-size",
-				  G_CALLBACK (icon_size_change_notify),
-				  toolbar);
-      priv->animation_connection =
-	g_signal_connect_swapped (settings,
-				  "notify::gtk-toolbar-animation",
-				  G_CALLBACK (animation_change_notify),
-				  toolbar);
-      
-      g_object_ref (settings);
-      priv->settings = settings;
+      priv->settings_connection =
+	g_signal_connect (settings, "notify",
+                          G_CALLBACK (settings_change_notify),
+                          toolbar);
+
+      priv->settings = g_object_ref (settings);
     }
   else
     priv->settings = NULL;
-  
+
   style_change_notify (toolbar);
   icon_size_change_notify (toolbar);
   animation_change_notify (toolbar);
@@ -2297,8 +2306,7 @@ gtk_toolbar_set_drop_highlight_item (GtkToolbar  *toolbar,
       if (priv->highlight_tool_item)
 	g_object_unref (priv->highlight_tool_item);
       
-      g_object_ref (tool_item);
-      gtk_object_sink (GTK_OBJECT (tool_item));
+      g_object_ref_sink (tool_item);
       
       priv->highlight_tool_item = tool_item;
       
@@ -2604,18 +2612,35 @@ menu_position_func (GtkMenu  *menu,
   GtkToolbarPrivate *priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
   GtkRequisition req;
   GtkRequisition menu_req;
+  GdkRectangle monitor;
+  gint monitor_num;
+  GdkScreen *screen;
   
-  gdk_window_get_origin (GTK_BUTTON (priv->arrow_button)->event_window, x, y);
   gtk_widget_size_request (priv->arrow_button, &req);
   gtk_widget_size_request (GTK_WIDGET (menu), &menu_req);
   
+  screen = gtk_widget_get_screen (GTK_WIDGET (menu));
+  monitor_num = gdk_screen_get_monitor_at_window (screen, priv->arrow_button->window);
+  if (monitor_num < 0)
+    monitor_num = 0;
+  gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
+
+  gdk_window_get_origin (GTK_BUTTON (priv->arrow_button)->event_window, x, y);
   if (toolbar->orientation == GTK_ORIENTATION_HORIZONTAL)
     {
-      *y += priv->arrow_button->allocation.height;
       if (gtk_widget_get_direction (GTK_WIDGET (toolbar)) == GTK_TEXT_DIR_LTR) 
 	*x += priv->arrow_button->allocation.width - req.width;
       else 
 	*x += req.width - menu_req.width;
+
+      if ((*y + priv->arrow_button->allocation.height + menu_req.height) <= monitor.y + monitor.height)
+	*y += priv->arrow_button->allocation.height;
+      else if ((*y - menu_req.height) >= monitor.y)
+	*y -= menu_req.height;
+      else if (monitor.y + monitor.height - (*y + priv->arrow_button->allocation.height) > *y)
+	*y += priv->arrow_button->allocation.height;
+      else
+	*y -= menu_req.height;
     }
   else 
     {
@@ -2623,10 +2648,13 @@ menu_position_func (GtkMenu  *menu,
 	*x += priv->arrow_button->allocation.width;
       else 
 	*x -= menu_req.width;
-      *y += priv->arrow_button->allocation.height - req.height;      
+
+      if (*y + menu_req.height > monitor.y + monitor.height &&
+	  *y + priv->arrow_button->allocation.height - monitor.y > monitor.y + monitor.height - *y)
+	*y += priv->arrow_button->allocation.height - menu_req.height;
     }
-  
-  *push_in = TRUE;
+
+  *push_in = FALSE;
 }
 
 static void
@@ -2913,6 +2941,8 @@ gtk_toolbar_set_tooltips (GtkToolbar *toolbar,
     gtk_tooltips_enable (toolbar->tooltips);
   else
     gtk_tooltips_disable (toolbar->tooltips);
+
+  g_object_notify (G_OBJECT (toolbar), "tooltips");
 }
 
 /**
@@ -2962,11 +2992,11 @@ gtk_toolbar_get_n_items (GtkToolbar *toolbar)
  * @toolbar: a #GtkToolbar
  * @n: A position on the toolbar
  *
- * Returns the @n<!-- -->'s item on @toolbar, or %NULL if the
+ * Returns the @n<!-- -->'th item on @toolbar, or %NULL if the
  * toolbar does not contain an @n<!-- -->'th item.
  * 
  * Return value: The @n<!-- -->'th #GtkToolItem on @toolbar, or %NULL if there
- * isn't an @n<!-- -->th item.
+ * isn't an @n<!-- -->'th item.
  * 
  * Since: 2.4
  **/
@@ -3073,9 +3103,9 @@ gtk_toolbar_set_show_arrow (GtkToolbar *toolbar,
  * @toolbar: a #GtkToolbar
  * 
  * Returns whether the toolbar has an overflow menu.
- * See gtk_toolbar_set_show_arrow()
+ * See gtk_toolbar_set_show_arrow().
  * 
- * Return value: 
+ * Return value: %TRUE if the toolbar has an overflow menu.
  * 
  * Since: 2.4
  **/
@@ -3155,12 +3185,8 @@ gtk_toolbar_finalize (GObject *object)
   if (priv->idle_id)
     g_source_remove (priv->idle_id);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_toolbar_parent_class)->finalize (object);
 }
-
-/*
- * Deprecated API
- */
 
 /**
  * gtk_toolbar_set_icon_size:
@@ -3172,21 +3198,28 @@ gtk_toolbar_finalize (GObject *object)
  * added. The size you set will override user preferences for the default
  * icon size.
  * 
- * Deprecated: Applications should respect the user preferences for
- *   the size of icons in toolbars.
+ * This should only be used for special-purpose toolbars, normal
+ * application toolbars should respect the user preferences for the
+ * size of icons.
  **/
 void
 gtk_toolbar_set_icon_size (GtkToolbar  *toolbar,
 			   GtkIconSize  icon_size)
 {
   g_return_if_fail (GTK_IS_TOOLBAR (toolbar));
+  g_return_if_fail (icon_size != GTK_ICON_SIZE_INVALID);
   
-  toolbar->icon_size_set = TRUE;
-  
+  if (!toolbar->icon_size_set)
+    {
+      toolbar->icon_size_set = TRUE;  
+      g_object_notify (G_OBJECT (toolbar), "icon-size-set");
+    }
+
   if (toolbar->icon_size == icon_size)
     return;
   
   toolbar->icon_size = icon_size;
+  g_object_notify (G_OBJECT (toolbar), "icon-size");
   
   gtk_toolbar_reconfigured (toolbar);
   
@@ -3221,11 +3254,19 @@ gtk_toolbar_unset_icon_size (GtkToolbar *toolbar)
 	size = DEFAULT_ICON_SIZE;
       
       if (size != toolbar->icon_size)
-	gtk_toolbar_set_icon_size (toolbar, size);
+	{
+	  gtk_toolbar_set_icon_size (toolbar, size);
+	  g_object_notify (G_OBJECT (toolbar), "icon-size");	  
+	}
       
       toolbar->icon_size_set = FALSE;
+      g_object_notify (G_OBJECT (toolbar), "icon-size-set");      
     }
 }
+
+/*
+ * Deprecated API
+ */
 
 /**
  * gtk_toolbar_append_item:
@@ -3700,9 +3741,7 @@ internal_insert_element (GtkToolbar          *toolbar,
 {
   GtkWidget *box;
   ToolbarContent *content;
-  GtkToolbarPrivate *priv;
   char *free_me = NULL;
-  gboolean is_button = FALSE;
 
   GtkWidget *child_widget;
   GtkWidget *child_label;
@@ -3718,8 +3757,6 @@ internal_insert_element (GtkToolbar          *toolbar,
   
   if (!gtk_toolbar_check_old_api (toolbar))
     return NULL;
-  
-  priv = GTK_TOOLBAR_GET_PRIVATE (toolbar);
   
   child_widget = NULL;
   child_label = NULL;
@@ -3737,7 +3774,6 @@ internal_insert_element (GtkToolbar          *toolbar,
     case GTK_TOOLBAR_CHILD_BUTTON:
     case GTK_TOOLBAR_CHILD_TOGGLEBUTTON:
     case GTK_TOOLBAR_CHILD_RADIOBUTTON:
-      is_button = TRUE;
       if (type == GTK_TOOLBAR_CHILD_BUTTON)
 	{
 	  child_widget = gtk_button_new ();
@@ -4683,7 +4719,7 @@ get_space_size (GtkToolbar *toolbar)
   if (toolbar)
     {
       gtk_widget_style_get (GTK_WIDGET (toolbar),
-			    "space_size", &space_size,
+			    "space-size", &space_size,
 			    NULL);
     }
   
@@ -4698,7 +4734,7 @@ get_space_style (GtkToolbar *toolbar)
   if (toolbar)
     {
       gtk_widget_style_get (GTK_WIDGET (toolbar),
-			    "space_style", &space_style,
+			    "space-style", &space_style,
 			    NULL);
     }
   
@@ -4713,7 +4749,7 @@ get_button_relief (GtkToolbar *toolbar)
   gtk_widget_ensure_style (GTK_WIDGET (toolbar));
   
   gtk_widget_style_get (GTK_WIDGET (toolbar),
-                        "button_relief", &button_relief,
+                        "button-relief", &button_relief,
                         NULL);
   
   return button_relief;
@@ -4725,7 +4761,7 @@ get_internal_padding (GtkToolbar *toolbar)
   gint ipadding = 0;
   
   gtk_widget_style_get (GTK_WIDGET (toolbar),
-			"internal_padding", &ipadding,
+			"internal-padding", &ipadding,
 			NULL);
   
   return ipadding;
@@ -4734,11 +4770,11 @@ get_internal_padding (GtkToolbar *toolbar)
 static gint
 get_max_child_expand (GtkToolbar *toolbar)
 {
-  gint mexpand = DEFAULT_MAX_CHILD_SPACING;
-  
+  gint mexpand = G_MAXINT;
+
   gtk_widget_style_get (GTK_WIDGET (toolbar),
-		  	"max_child_expand", &mexpand,
-			NULL);
+                        "max-child-expand", &mexpand,
+                        NULL);
   return mexpand;
 }
 
@@ -4748,7 +4784,7 @@ get_shadow_type (GtkToolbar *toolbar)
   GtkShadowType shadow_type;
   
   gtk_widget_style_get (GTK_WIDGET (toolbar),
-			"shadow_type", &shadow_type,
+			"shadow-type", &shadow_type,
 			NULL);
   
   return shadow_type;
@@ -4804,31 +4840,63 @@ _gtk_toolbar_paint_space_line (GtkWidget       *widget,
   const double start_fraction = (SPACE_LINE_START / SPACE_LINE_DIVISION);
   const double end_fraction = (SPACE_LINE_END / SPACE_LINE_DIVISION);
   
-  GtkToolbarSpaceStyle space_style;
   GtkOrientation orientation;
 
   g_return_if_fail (GTK_IS_WIDGET (widget));
   
-  space_style = toolbar? get_space_style (toolbar) : DEFAULT_SPACE_STYLE;
   orientation = toolbar? toolbar->orientation : GTK_ORIENTATION_HORIZONTAL;
 
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     {
-      gtk_paint_vline (widget->style, widget->window,
-		       GTK_WIDGET_STATE (widget), area, widget,
-		       "toolbar",
-		       allocation->y + allocation->height * start_fraction,
-		       allocation->y + allocation->height * end_fraction,
-		       allocation->x + (allocation->width - widget->style->xthickness) / 2);
+      gboolean wide_separators;
+      gint     separator_width;
+
+      gtk_widget_style_get (widget,
+                            "wide-separators", &wide_separators,
+                            "separator-width", &separator_width,
+                            NULL);
+
+      if (wide_separators)
+        gtk_paint_box (widget->style, widget->window,
+                       GTK_WIDGET_STATE (widget), GTK_SHADOW_ETCHED_OUT,
+                       area, widget, "vseparator",
+                       allocation->x + (allocation->width - separator_width) / 2,
+                       allocation->y + allocation->height * start_fraction,
+                       separator_width,
+                       allocation->height * (end_fraction - start_fraction));
+      else
+        gtk_paint_vline (widget->style, widget->window,
+                         GTK_WIDGET_STATE (widget), area, widget,
+                         "toolbar",
+                         allocation->y + allocation->height * start_fraction,
+                         allocation->y + allocation->height * end_fraction,
+                         allocation->x + (allocation->width - widget->style->xthickness) / 2);
     }
   else
     {
-      gtk_paint_hline (widget->style, widget->window,
-		       GTK_WIDGET_STATE (widget), area, widget,
-		       "toolbar",
-		       allocation->x + allocation->width * start_fraction,
-		       allocation->x + allocation->width * end_fraction,
-		       allocation->y + (allocation->height - widget->style->ythickness) / 2);
+      gboolean wide_separators;
+      gint     separator_height;
+
+      gtk_widget_style_get (widget,
+                            "wide-separators",  &wide_separators,
+                            "separator-height", &separator_height,
+                            NULL);
+
+      if (wide_separators)
+        gtk_paint_box (widget->style, widget->window,
+                       GTK_WIDGET_STATE (widget), GTK_SHADOW_ETCHED_OUT,
+                       area, widget, "hseparator",
+                       allocation->x + allocation->width * start_fraction,
+                       allocation->y + (allocation->height - separator_height) / 2,
+                       allocation->width * (end_fraction - start_fraction),
+                       separator_height);
+      else
+        gtk_paint_hline (widget->style, widget->window,
+                         GTK_WIDGET_STATE (widget), area, widget,
+                         "toolbar",
+                         allocation->x + allocation->width * start_fraction,
+                         allocation->x + allocation->width * end_fraction,
+                         allocation->y + (allocation->height - widget->style->ythickness) / 2);
     }
 }
 
@@ -4836,22 +4904,38 @@ gchar *
 _gtk_toolbar_elide_underscores (const gchar *original)
 {
   gchar *q, *result;
-  const gchar *p;
+  const gchar *p, *end;
+  gsize len;
   gboolean last_underscore;
   
-  q = result = g_malloc (strlen (original) + 1);
+  if (!original)
+    return NULL;
+
+  len = strlen (original);
+  q = result = g_malloc (len + 1);
   last_underscore = FALSE;
   
-  for (p = original; *p; p++)
+  end = original + len;
+  for (p = original; p < end; p++)
     {
       if (!last_underscore && *p == '_')
 	last_underscore = TRUE;
       else
 	{
 	  last_underscore = FALSE;
-	  *q++ = *p;
+	  if (*p != '_' && original + 2 <= p && p + 1 <= end && p[-2] == '(' && p[1] == ')')
+	    {
+	      q--;
+	      *q = '\0';
+	      p++;
+	    }
+	  else
+	    *q++ = *p;
 	}
     }
+
+  if (last_underscore)
+    *q++ = '_';
   
   *q = '\0';
   

@@ -23,6 +23,7 @@
 
 #include "gtkfilefilter.h"
 #include "gtkobject.h"
+#include "gtkintl.h"
 #include "gtkprivate.h"
 
 #include "gtkalias.h"
@@ -78,44 +79,20 @@ struct _FilterRule
   } u;
 };
 
-static void gtk_file_filter_class_init (GtkFileFilterClass *class);
 static void gtk_file_filter_finalize   (GObject            *object);
 
-static GObjectClass *parent_class;
 
-GType
-gtk_file_filter_get_type (void)
+G_DEFINE_TYPE (GtkFileFilter, gtk_file_filter, GTK_TYPE_OBJECT)
+
+static void
+gtk_file_filter_init (GtkFileFilter *object)
 {
-  static GType file_filter_type = 0;
-
-  if (!file_filter_type)
-    {
-      static const GTypeInfo file_filter_info =
-      {
-	sizeof (GtkFileFilterClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_file_filter_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkFileFilter),
-	0,		/* n_preallocs */
-	NULL            /* init */
-      };
-      
-      file_filter_type = g_type_register_static (GTK_TYPE_OBJECT, "GtkFileFilter",
-						 &file_filter_info, 0);
-    }
-
-  return file_filter_type;
 }
 
 static void
 gtk_file_filter_class_init (GtkFileFilterClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->finalize = gtk_file_filter_finalize;
 }
@@ -156,7 +133,7 @@ gtk_file_filter_finalize (GObject  *object)
   if (filter->name)
     g_free (filter->name);
 
-  parent_class->finalize (object);
+  G_OBJECT_CLASS (gtk_file_filter_parent_class)->finalize (object);
 }
 
 /**
@@ -424,6 +401,9 @@ gtk_file_filter_filter (GtkFileFilter           *filter,
 	case FILTER_RULE_PIXBUF_FORMATS:
 	  {
 	    GSList *list;
+
+	    if (!filter_info->mime_type)
+	      break;
 
 	    for (list = rule->u.pixbuf_formats; list; list = list->next)
 	      {

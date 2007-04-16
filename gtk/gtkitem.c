@@ -27,6 +27,7 @@
 #include <config.h>
 #include "gtkitem.h"
 #include "gtkmarshalers.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
@@ -38,8 +39,6 @@ enum {
 };
 
 
-static void gtk_item_class_init (GtkItemClass     *klass);
-static void gtk_item_init       (GtkItem          *item);
 static void gtk_item_realize    (GtkWidget        *widget);
 static gint gtk_item_enter      (GtkWidget        *widget,
 				 GdkEventCrossing *event);
@@ -49,34 +48,7 @@ static gint gtk_item_leave      (GtkWidget        *widget,
 
 static guint item_signals[LAST_SIGNAL] = { 0 };
 
-
-GType
-gtk_item_get_type (void)
-{
-  static GType item_type = 0;
-
-  if (!item_type)
-    {
-      static const GTypeInfo item_info =
-      {
-	sizeof (GtkItemClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_item_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkItem),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_item_init,
-	NULL,		/* value_table */
-      };
-
-      item_type = g_type_register_static (GTK_TYPE_BIN, "GtkItem",
-					  &item_info, G_TYPE_FLAG_ABSTRACT);
-    }
-
-  return item_type;
-}
+G_DEFINE_ABSTRACT_TYPE (GtkItem, gtk_item, GTK_TYPE_BIN)
 
 static void
 gtk_item_class_init (GtkItemClass *class)
@@ -96,7 +68,7 @@ gtk_item_class_init (GtkItemClass *class)
   class->toggle = NULL;
 
   item_signals[SELECT] =
-    g_signal_new ("select",
+    g_signal_new (I_("select"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkItemClass, select),
@@ -104,7 +76,7 @@ gtk_item_class_init (GtkItemClass *class)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   item_signals[DESELECT] =
-    g_signal_new ("deselect",
+    g_signal_new (I_("deselect"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkItemClass, deselect),
@@ -112,7 +84,7 @@ gtk_item_class_init (GtkItemClass *class)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   item_signals[TOGGLE] =
-    g_signal_new ("toggle",
+    g_signal_new (I_("toggle"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkItemClass, toggle),

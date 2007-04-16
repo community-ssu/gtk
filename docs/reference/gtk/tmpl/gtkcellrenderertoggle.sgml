@@ -44,12 +44,12 @@ property. When activated, it emits the toggled signal.
 
 </para>
 
-<!-- ##### ARG GtkCellRendererToggle:checkbox-mode ##### -->
+<!-- ##### ARG GtkCellRendererToggle:inconsistent ##### -->
 <para>
 
 </para>
 
-<!-- ##### ARG GtkCellRendererToggle:inconsistent ##### -->
+<!-- ##### ARG GtkCellRendererToggle:indicator-size ##### -->
 <para>
 
 </para>

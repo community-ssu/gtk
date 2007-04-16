@@ -22,6 +22,14 @@
 #ifndef __GTK_FILE_CHOOSER_UTILS_H__
 #define __GTK_FILE_CHOOSER_UTILS_H__
 
+/* This is a "semi-private" header; it is meant only for
+ * alternate GtkFileChooser implementations; no stability guarantees 
+ * are made at this point
+ */
+#ifndef GTK_FILE_CHOOSER_ENABLE_UNSUPPORTED
+#error "gtkfilechooserutils.h is not supported API for general use"
+#endif
+
 #include "gtkfilechooserprivate.h"
 
 G_BEGIN_DECLS
@@ -40,13 +48,14 @@ typedef enum {
   GTK_FILE_CHOOSER_PROP_EXTRA_WIDGET,
   GTK_FILE_CHOOSER_PROP_SELECT_MULTIPLE,
   GTK_FILE_CHOOSER_PROP_SHOW_HIDDEN,
-  GTK_FILE_CHOOSER_PROP_LAST                   = GTK_FILE_CHOOSER_PROP_SHOW_HIDDEN
+  GTK_FILE_CHOOSER_PROP_DO_OVERWRITE_CONFIRMATION,
+  GTK_FILE_CHOOSER_PROP_LAST                   = GTK_FILE_CHOOSER_PROP_DO_OVERWRITE_CONFIRMATION
 } GtkFileChooserProp;
 
 void _gtk_file_chooser_install_properties (GObjectClass *klass);
-
-/* _gtk_file_chooser_install_properties exported for hildon-fm */
+#ifdef MAEMO_CHANGES
 void hildon_gtk_file_chooser_install_properties (GObjectClass *klass);
+#endif /* MAEMO_CHANGES */
 
 void _gtk_file_chooser_delegate_iface_init (GtkFileChooserIface *iface);
 void _gtk_file_chooser_set_delegate        (GtkFileChooser *receiver,

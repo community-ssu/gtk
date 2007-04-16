@@ -41,14 +41,15 @@ PERL = perl
 !ENDIF
 
 CFLAGS = -FImsvc_recommended_pragmas.h -I . -I .. \
-		$(GLIB_CFLAGS) $(PANGO_CFLAGS) -I ../gdk-pixbuf \
+	$(GLIB_CFLAGS) $(PANGO_CFLAGS) $(CAIRO_CFLAGS) -I ../gdk-pixbuf \
 	$(G_DEBUGGING) -DHAVE_CONFIG_H -DGDK_ENABLE_BROKEN \
 	-DGDK_VERSION=\"$(GTK_VER)\" \
 	-DG_LOG_DOMAIN=\"Gdk\"
 
 EXTRALIBS = $(WTKIT)\lib\i386\wntab32x.lib $(GLIB_LIBS) \
 		..\gdk-pixbuf\gdk_pixbuf-$(GDK_PIXBUF_VER).lib \
-		$(PANGOWIN32_LIBS) $(INTL_LIBS)
+		$(PANGOWIN32_LIBS) $(INTL_LIBS) $(CAIRO_LIBS) \
+		$(PANGOCAIRO_LIBS)
 
 gdk-win32-backend :
 	cd win32
@@ -72,6 +73,7 @@ all: \
 
 gdk_OBJECTS = \
 	gdk.obj \
+	gdkcairo.obj \
 	gdkcolor.obj \
 	gdkcursor.obj \
 	gdkdisplay.obj \
@@ -152,7 +154,9 @@ gdkaliasdef.c: gdk.symbols
 
 gdk.def: gdk.symbols
 	echo EXPORTS > gdk.def
-	cl /EP -DINCLUDE_VARIABLES -DG_OS_WIN32 -DGDK_WINDOWING_WIN32 -DALL_FILES gdk.symbols >> gdk.def
+	cl /EP -DINCLUDE_VARIABLES -DG_OS_WIN32 -DGDK_WINDOWING_WIN32 -DALL_FILES \
+		-DG_GNUC_CONST= \
+		gdk.symbols >> gdk.def
 
 libgdk-win32-$(GTK_VER)-0.dll : $(gdk_OBJECTS) gdk.def win32\gdk-win32.lib
 	$(CC) $(CFLAGS) -LD -Fe$@ $(gdk_OBJECTS) win32\gdk-win32.lib $(EXTRALIBS) \
@@ -174,6 +178,9 @@ testgdk.exe : libgdk-win32-$(GTK_VER)-0.dll testgdk.obj
 	$(CC) $(CFLAGS) -GD -c -DGDK_COMPILATION -DG_LOG_DOMAIN=\"Gdk\" $<
 
 clean::
+	cd win32
+	nmake -f makefile.msc clean
+	cd ..
 	del gdkmarshalers.c
 	del gdkmarshalers.h
 	del *.dll

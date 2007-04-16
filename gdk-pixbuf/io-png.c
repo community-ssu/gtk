@@ -204,22 +204,23 @@ png_text_to_pixbuf_option (png_text   text_ptr,
                            gchar    **key,
                            gchar    **value)
 {
-	gboolean is_ascii = TRUE;
-	int i;
+        gboolean is_ascii = TRUE;
+        int i;
 
-	/* Avoid loading iconv if the text is plain ASCII */
-	for (i = 0; i < text_ptr.text_length; i++)
-		if (text_ptr.text[i] & 0x80) {
-			is_ascii = FALSE;
-			break;
-		}
+        /* Avoid loading iconv if the text is plain ASCII */
+        for (i = 0; i < text_ptr.text_length; i++)
+                if (text_ptr.text[i] & 0x80) {
+                        is_ascii = FALSE;
+                        break;
+                }
 
-	if (is_ascii)
-		*value = g_strdup (text_ptr.text);
-	else
-		*value = g_convert (text_ptr.text, -1, 
-				    "UTF-8", "ISO-8859-1", 
-				    NULL, NULL, NULL);
+        if (is_ascii) {
+                *value = g_strdup (text_ptr.text);
+        } else {
+                *value = g_convert (text_ptr.text, -1,
+                                     "UTF-8", "ISO-8859-1",
+                                     NULL, NULL, NULL);
+        }
 
         if (*value) {
                 *key = g_strconcat ("tEXt::", text_ptr.key, NULL);
@@ -526,7 +527,7 @@ gdk_pixbuf__png_image_load_increment(gpointer context,
                 lc->error = NULL;
                 return FALSE;
         } else {
-                if (lc->first_row_seen_in_chunk >= 0) {
+                if (lc->first_row_seen_in_chunk >= 0 && lc->update_func) {
                         /* We saw at least one row */
                         gint pass_diff = lc->last_pass_seen_in_chunk - lc->first_pass_seen_in_chunk;
                         
@@ -611,12 +612,12 @@ png_info_callback   (png_structp png_read_ptr,
                 
                 if (w == 0 || h == 0) {
                         lc->fatal_error_occurred = TRUE;
-			if (lc->error && *lc->error == NULL) {
-				g_set_error (lc->error,
-					     GDK_PIXBUF_ERROR,
-					     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-					     _("Transformed PNG has zero width or height."));
-			}
+                        if (lc->error && *lc->error == NULL) {
+                                g_set_error (lc->error,
+                                             GDK_PIXBUF_ERROR,
+                                             GDK_PIXBUF_ERROR_FAILED,
+                                             _("Transformed PNG has zero width or height."));
+                        }
                         return;
                 }
         }
@@ -769,7 +770,7 @@ png_save_to_callback_write_func (png_structp png_ptr,
 {
         SaveToFunctionIoPtr *ioptr = png_get_io_ptr (png_ptr);
 
-        if (!ioptr->save_func (data, length, ioptr->error, ioptr->user_data)) {
+        if (!ioptr->save_func ((gchar *)data, length, ioptr->error, ioptr->user_data)) {
                 /* If save_func has already set an error, which it
                    should have done, this won't overwrite it. */
                 png_error (png_ptr, "write function failed");

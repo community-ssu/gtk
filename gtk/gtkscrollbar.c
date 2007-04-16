@@ -31,41 +31,10 @@
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
-static void gtk_scrollbar_class_init (GtkScrollbarClass *klass);
-static void gtk_scrollbar_init       (GtkScrollbar      *scrollbar);
 static void gtk_scrollbar_style_set  (GtkWidget         *widget,
                                       GtkStyle          *previous);
 
-static gpointer parent_class;
-
-GType
-gtk_scrollbar_get_type (void)
-{
-  static GType scrollbar_type = 0;
-
-  if (!scrollbar_type)
-    {
-      static const GTypeInfo scrollbar_info =
-      {
-	sizeof (GtkScrollbarClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_scrollbar_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkScrollbar),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_scrollbar_init,
-	NULL,		/* value_table */
-      };
-
-      scrollbar_type =
-	g_type_register_static (GTK_TYPE_RANGE, "GtkScrollbar",
-			        &scrollbar_info, G_TYPE_FLAG_ABSTRACT);
-    }
-
-  return scrollbar_type;
-}
+G_DEFINE_ABSTRACT_TYPE (GtkScrollbar, gtk_scrollbar, GTK_TYPE_RANGE)
 
 static void
 gtk_scrollbar_class_init (GtkScrollbarClass *class)
@@ -74,8 +43,6 @@ gtk_scrollbar_class_init (GtkScrollbarClass *class)
 
   widget_class = GTK_WIDGET_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-  
   widget_class->style_set = gtk_scrollbar_style_set;
   
   gtk_widget_class_install_style_property (widget_class,
@@ -122,7 +89,7 @@ gtk_scrollbar_class_init (GtkScrollbarClass *class)
     gtk_widget_class_install_style_property (widget_class,
                                              g_param_spec_boolean ("has-secondary-forward-stepper",
                                                                    P_("Secondary forward stepper"),
-                                                                   P_("Display a secondary forward arrow button on the opposite end of the scrollbar"),
+                                                                   P_("Display a second forward arrow button on the opposite end of the scrollbar"),
                                                                    FALSE,
                                                                    
                                                                    GTK_PARAM_READABLE));
@@ -131,9 +98,6 @@ gtk_scrollbar_class_init (GtkScrollbarClass *class)
 static void
 gtk_scrollbar_init (GtkScrollbar *scrollbar)
 {
-  GtkRange *range;
-
-  range = GTK_RANGE (scrollbar);
 }
 
 static void
@@ -148,12 +112,12 @@ gtk_scrollbar_style_set  (GtkWidget *widget,
   range = GTK_RANGE (widget);
   
   gtk_widget_style_get (widget,
-                        "min_slider_length", &slider_length,
-                        "fixed_slider_length", &fixed_size,
-                        "has_backward_stepper", &has_a,
-                        "has_secondary_forward_stepper", &has_b,
-                        "has_secondary_backward_stepper", &has_c,
-                        "has_forward_stepper", &has_d,
+                        "min-slider-length", &slider_length,
+                        "fixed-slider-length", &fixed_size,
+                        "has-backward-stepper", &has_a,
+                        "has-secondary-forward-stepper", &has_b,
+                        "has-secondary-backward-stepper", &has_c,
+                        "has-forward-stepper", &has_d,
                         NULL);
   
   range->min_slider_size = slider_length;
@@ -164,7 +128,7 @@ gtk_scrollbar_style_set  (GtkWidget *widget,
   range->has_stepper_c = has_c;
   range->has_stepper_d = has_d;
   
-  (* GTK_WIDGET_CLASS (parent_class)->style_set) (widget, previous);
+  (* GTK_WIDGET_CLASS (gtk_scrollbar_parent_class)->style_set) (widget, previous);
 }
 
 #define __GTK_SCROLLBAR_C__

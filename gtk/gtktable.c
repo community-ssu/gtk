@@ -26,9 +26,8 @@
 
 #include <config.h>
 #include "gtktable.h"
-#include "gtkbutton.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum
@@ -55,8 +54,6 @@ enum
 };
   
 
-static void gtk_table_class_init    (GtkTableClass  *klass);
-static void gtk_table_init	    (GtkTable	    *table);
 static void gtk_table_finalize	    (GObject	    *object);
 static void gtk_table_size_request  (GtkWidget	    *widget,
 				     GtkRequisition *requisition);
@@ -101,35 +98,7 @@ static void gtk_table_size_allocate_pass1 (GtkTable *table);
 static void gtk_table_size_allocate_pass2 (GtkTable *table);
 
 
-static GtkContainerClass *parent_class = NULL;
-
-
-GType
-gtk_table_get_type (void)
-{
-  static GType table_type = 0;
-  
-  if (!table_type)
-    {
-      static const GTypeInfo table_info =
-      {
-	sizeof (GtkTableClass),
-	NULL,
-	NULL,
-	(GClassInitFunc) gtk_table_class_init,
-	NULL,
-	NULL,
-	sizeof (GtkTable),
-	0,
-	(GInstanceInitFunc) gtk_table_init,
-      };
-      
-      table_type = g_type_register_static (GTK_TYPE_CONTAINER, "GtkTable",
-					   &table_info, 0);
-    }
-  
-  return table_type;
-}
+G_DEFINE_TYPE (GtkTable, gtk_table, GTK_TYPE_CONTAINER)
 
 static void
 gtk_table_class_init (GtkTableClass *class)
@@ -138,8 +107,6 @@ gtk_table_class_init (GtkTableClass *class)
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
   
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->finalize = gtk_table_finalize;
 
   gobject_class->get_property = gtk_table_get_property;
@@ -195,8 +162,8 @@ gtk_table_class_init (GtkTableClass *class)
   g_object_class_install_property (gobject_class,
                                    PROP_HOMOGENEOUS,
                                    g_param_spec_boolean ("homogeneous",
-							 P_("Homogenous"),
-							 P_("If TRUE this means the table cells are all the same width/height"),
+							 P_("Homogeneous"),
+							 P_("If TRUE, the table cells are all the same width/height"),
 							 FALSE,
 							 GTK_PARAM_READWRITE));
 
@@ -509,41 +476,6 @@ gtk_table_new (guint	rows,
   return GTK_WIDGET (table);
 }
 
-/**
- * osso_gtk_table_find_button_detail:
- * @table: a #GtkTable
- * @table_child:
- *
- * Since: maemo 1.0
- */
-void 
-osso_gtk_table_find_button_detail (GtkTable *table,
-				   GtkTableChild *table_child)
-{
-  OssoGtkButtonAttachFlags attachflags = 0;
-  gboolean automatic_detail;
-
-  g_return_if_fail (GTK_IS_TABLE (table));
-  g_return_if_fail (table_child != NULL);
-  g_return_if_fail (GTK_IS_BUTTON (table_child->widget));
-
-  if (table_child->top_attach == 0)
-    attachflags |= OSSO_GTK_BUTTON_ATTACH_NORTH;
-
-  if (table_child->bottom_attach == table->nrows)
-    attachflags |= OSSO_GTK_BUTTON_ATTACH_SOUTH;
-
-  if (table_child->left_attach == 0)
-    attachflags |= OSSO_GTK_BUTTON_ATTACH_WEST;
-
-  if (table_child->right_attach == table->ncols)
-    attachflags |= OSSO_GTK_BUTTON_ATTACH_EAST;
-
-  g_object_get (G_OBJECT (table_child->widget), "automatic-detail", &automatic_detail, NULL);
-  if (automatic_detail == TRUE)
-    g_object_set (G_OBJECT (table_child->widget), "detail", osso_gtk_button_attach_details[attachflags], NULL);
-}
-
 void
 gtk_table_resize (GtkTable *table,
 		  guint     n_rows,
@@ -560,18 +492,6 @@ gtk_table_resize (GtkTable *table,
       n_cols != table->ncols)
     {
       GList *list;
-      guint recalc_column = -1;
-      guint recalc_row = -1;
-
-      if (n_rows > table->nrows)
-        recalc_row = table->nrows;
-      else
-        recalc_row = n_rows;
-
-      if (n_cols > table->ncols)
-        recalc_column = table->ncols;
-      else
-        recalc_column = n_cols;
       
       for (list = table->children; list; list = list->next)
 	{
@@ -626,20 +546,6 @@ gtk_table_resize (GtkTable *table,
 
 	  g_object_notify (G_OBJECT (table), "n-columns");
 	}
-
-      if ((recalc_column != -1) || (recalc_row != -1))
-	for (list = table->children; list; list = list->next)
-          {
-            GtkTableChild *child;
-	  
-            child = list->data;
-
-            if (GTK_IS_BUTTON (child->widget) &&
-                ((child->bottom_attach == recalc_row) ||
-                 (child->right_attach == recalc_column)))
-
-              osso_gtk_table_find_button_detail (table, child);
-          }
     }
 }
 
@@ -686,9 +592,6 @@ gtk_table_attach (GtkTable	  *table,
   table_child->yshrink = (yoptions & GTK_SHRINK) != 0;
   table_child->yfill = (yoptions & GTK_FILL) != 0;
   table_child->ypadding = ypadding;
-
-  if (GTK_IS_BUTTON (table_child->widget))
-    osso_gtk_table_find_button_detail (table, table_child);
   
   table->children = g_list_prepend (table->children, table_child);
   
@@ -904,7 +807,7 @@ gtk_table_finalize (GObject *object)
   g_free (table->rows);
   g_free (table->cols);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_table_parent_class)->finalize (object);
 }
 
 static void

@@ -154,6 +154,8 @@ gtk_im_module_finalize (GObject *object)
   parent_class->finalize (object);
 }
 
+G_DEFINE_TYPE (GtkIMModule, gtk_im_module, G_TYPE_TYPE_MODULE)
+
 static void
 gtk_im_module_class_init (GtkIMModuleClass *class)
 {
@@ -168,31 +170,9 @@ gtk_im_module_class_init (GtkIMModuleClass *class)
   gobject_class->finalize = gtk_im_module_finalize;
 }
 
-static GType
-gtk_im_module_get_type (void)
+static void 
+gtk_im_module_init (GtkIMModule* object)
 {
-  static GType im_module_type = 0;
-
-  if (!im_module_type)
-    {
-      static const GTypeInfo im_module_info = {
-        sizeof (GtkIMModuleClass),
-        NULL,           /* base_init */
-        NULL,           /* base_finalize */
-        (GClassInitFunc) gtk_im_module_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GtkIMModule),
-        0,              /* n_preallocs */
-        NULL,           /* instance_init */
-      };
-
-      im_module_type =
-	g_type_register_static (G_TYPE_TYPE_MODULE, "GtkIMModule",
-				&im_module_info, 0);
-    }
-  
-  return im_module_type;
 }
 
 static void
@@ -271,7 +251,7 @@ correct_libdir_prefix (gchar **path)
 
 
 static void
-gtk_im_module_init (void)
+gtk_im_module_initialize (void)
 {
   GString *line_buf = g_string_new (NULL);
   GString *tmp_buf = g_string_new (NULL);
@@ -435,7 +415,7 @@ _gtk_im_module_list (const GtkIMContextInfo ***contexts,
   };
 
   if (!contexts_hash)
-    gtk_im_module_init ();
+    gtk_im_module_initialize ();
 
   if (n_contexts)
     *n_contexts = (n_loaded_contexts + 1);
@@ -482,7 +462,7 @@ _gtk_im_module_create (const gchar *context_id)
   GtkIMContext *context = NULL;
   
   if (!contexts_hash)
-    gtk_im_module_init ();
+    gtk_im_module_initialize ();
 
   if (strcmp (context_id, SIMPLE_ID) != 0)
     {
@@ -545,6 +525,9 @@ match_locale (const gchar *locale,
  *    the value is newly allocated and must be freed
  *    with g_free().
  **/
+#ifndef MAEMO_CHANGES
+const
+#endif /* MAEMO_CHANGES */
 gchar *
 _gtk_im_module_get_default_context_id (const gchar *locale)
 {
@@ -556,7 +539,7 @@ _gtk_im_module_get_default_context_id (const gchar *locale)
   const gchar *envvar;
       
   if (!contexts_hash)
-    gtk_im_module_init ();
+    gtk_im_module_initialize ();
 
   envvar = g_getenv ("GTK_IM_MODULE");
   if (envvar &&

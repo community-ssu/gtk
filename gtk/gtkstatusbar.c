@@ -31,8 +31,8 @@
 #include "gtkmarshalers.h"
 #include "gtkstatusbar.h"
 #include "gtkwindow.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 typedef struct _GtkStatusbarMsg GtkStatusbarMsg;
@@ -57,8 +57,6 @@ enum
   PROP_HAS_RESIZE_GRIP
 };
 
-static void     gtk_statusbar_class_init        (GtkStatusbarClass *class);
-static void     gtk_statusbar_init              (GtkStatusbar      *statusbar);
 static void     gtk_statusbar_destroy           (GtkObject         *object);
 static void     gtk_statusbar_update            (GtkStatusbar      *statusbar,
 						 guint              context_id,
@@ -94,35 +92,9 @@ static void     label_selectable_changed        (GtkWidget         *label,
 						 gpointer           data);
 
 
-static GtkContainerClass *parent_class;
 static guint              statusbar_signals[SIGNAL_LAST] = { 0 };
 
-GType      
-gtk_statusbar_get_type (void)
-{
-  static GType statusbar_type = 0;
-
-  if (!statusbar_type)
-    {
-      static const GTypeInfo statusbar_info =
-      {
-        sizeof (GtkStatusbarClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-        (GClassInitFunc) gtk_statusbar_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-        sizeof (GtkStatusbar),
-	0,		/* n_preallocs */
-        (GInstanceInitFunc) gtk_statusbar_init,
-      };
-
-      statusbar_type = g_type_register_static (GTK_TYPE_HBOX, "GtkStatusbar",
-					       &statusbar_info, 0);
-    }
-
-  return statusbar_type;
-}
+G_DEFINE_TYPE (GtkStatusbar, gtk_statusbar, GTK_TYPE_HBOX)
 
 static void
 gtk_statusbar_class_init (GtkStatusbarClass *class)
@@ -130,15 +102,11 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
   GObjectClass *gobject_class;
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
-  GtkContainerClass *container_class;
 
   gobject_class = (GObjectClass *) class;
   object_class = (GtkObjectClass *) class;
   widget_class = (GtkWidgetClass *) class;
-  container_class = (GtkContainerClass *) class;
 
-  parent_class = g_type_class_peek_parent (class);
-  
   gobject_class->set_property = gtk_statusbar_set_property;
   gobject_class->get_property = gtk_statusbar_get_property;
 
@@ -157,11 +125,6 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
 
   widget_class->direction_changed = gtk_statusbar_direction_changed;
   
-  class->messages_mem_chunk = g_mem_chunk_new ("GtkStatusbar messages mem chunk",
-					       sizeof (GtkStatusbarMsg),
-					       sizeof (GtkStatusbarMsg) * 64,
-					       G_ALLOC_AND_FREE);
-
   class->text_pushed = gtk_statusbar_update;
   class->text_popped = gtk_statusbar_update;
   
@@ -180,7 +143,7 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
  							 TRUE,
  							 GTK_PARAM_READWRITE));
   statusbar_signals[SIGNAL_TEXT_PUSHED] =
-    g_signal_new ("text_pushed",
+    g_signal_new (I_("text_pushed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkStatusbarClass, text_pushed),
@@ -190,7 +153,7 @@ gtk_statusbar_class_init (GtkStatusbarClass *class)
 		  G_TYPE_UINT,
 		  G_TYPE_STRING);
   statusbar_signals[SIGNAL_TEXT_POPPED] =
-    g_signal_new ("text_popped",
+    g_signal_new (I_("text_popped"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkStatusbarClass, text_popped),
@@ -222,7 +185,7 @@ gtk_statusbar_init (GtkStatusbar *statusbar)
 
   statusbar->has_resize_grip = TRUE;
 
-  gtk_widget_style_get (GTK_WIDGET (statusbar), "shadow_type", &shadow_type, NULL);
+  gtk_widget_style_get (GTK_WIDGET (statusbar), "shadow-type", &shadow_type, NULL);
   
   statusbar->frame = gtk_frame_new (NULL);
   gtk_frame_set_shadow_type (GTK_FRAME (statusbar->frame), shadow_type);
@@ -302,7 +265,7 @@ gtk_statusbar_push (GtkStatusbar *statusbar,
   g_return_val_if_fail (text != NULL, 0);
 
   class = GTK_STATUSBAR_GET_CLASS (statusbar);
-  msg = g_chunk_new (GtkStatusbarMsg, class->messages_mem_chunk);
+  msg = g_slice_new (GtkStatusbarMsg);
   msg->text = g_strdup (text);
   msg->context_id = context_id;
   msg->message_id = statusbar->seq_message_id++;
@@ -343,7 +306,7 @@ gtk_statusbar_pop (GtkStatusbar *statusbar,
 	      statusbar->messages = g_slist_remove_link (statusbar->messages,
 							 list);
 	      g_free (msg->text);
-	      g_mem_chunk_free (class->messages_mem_chunk, msg);
+              g_slice_free (GtkStatusbarMsg, msg);
 	      g_slist_free_1 (list);
 	      break;
 	    }
@@ -394,7 +357,7 @@ gtk_statusbar_remove (GtkStatusbar *statusbar,
 	      class = GTK_STATUSBAR_GET_CLASS (statusbar);
 	      statusbar->messages = g_slist_remove_link (statusbar->messages, list);
 	      g_free (msg->text);
-	      g_mem_chunk_free (class->messages_mem_chunk, msg);
+              g_slice_free (GtkStatusbarMsg, msg);
 	      g_slist_free_1 (list);
 	      
 	      break;
@@ -459,7 +422,7 @@ gtk_statusbar_destroy (GtkObject *object)
 
       msg = list->data;
       g_free (msg->text);
-      g_mem_chunk_free (class->messages_mem_chunk, msg);
+      g_slice_free (GtkStatusbarMsg, msg);
     }
   g_slist_free (statusbar->messages);
   statusbar->messages = NULL;
@@ -469,7 +432,7 @@ gtk_statusbar_destroy (GtkObject *object)
   g_slist_free (statusbar->keys);
   statusbar->keys = NULL;
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_statusbar_parent_class)->destroy (object);
 }
 
 static void
@@ -629,7 +592,7 @@ gtk_statusbar_realize (GtkWidget *widget)
 
   statusbar = GTK_STATUSBAR (widget);
   
-  (* GTK_WIDGET_CLASS (parent_class)->realize) (widget);
+  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->realize) (widget);
 
   if (statusbar->has_resize_grip)
     gtk_statusbar_create_window (statusbar);
@@ -645,7 +608,7 @@ gtk_statusbar_unrealize (GtkWidget *widget)
   if (statusbar->grip_window)
     gtk_statusbar_destroy_window (statusbar);
   
-  (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->unrealize) (widget);
 }
 
 static void
@@ -655,7 +618,7 @@ gtk_statusbar_map (GtkWidget *widget)
 
   statusbar = GTK_STATUSBAR (widget);
   
-  (* GTK_WIDGET_CLASS (parent_class)->map) (widget);
+  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->map) (widget);
   
   if (statusbar->grip_window)
     gdk_window_show (statusbar->grip_window);
@@ -671,7 +634,7 @@ gtk_statusbar_unmap (GtkWidget *widget)
   if (statusbar->grip_window)
     gdk_window_hide (statusbar->grip_window);
   
-  (* GTK_WIDGET_CLASS (parent_class)->unmap) (widget);
+  (* GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->unmap) (widget);
 }
 
 static gboolean
@@ -722,7 +685,7 @@ gtk_statusbar_expose_event (GtkWidget      *widget,
   
   statusbar = GTK_STATUSBAR (widget);
 
-  GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->expose_event (widget, event);
 
   if (statusbar->has_resize_grip)
     {
@@ -751,18 +714,18 @@ gtk_statusbar_expose_event (GtkWidget      *widget,
 }
 
 static void
-gtk_statusbar_size_request   (GtkWidget      *widget,
-                              GtkRequisition *requisition)
+gtk_statusbar_size_request (GtkWidget      *widget,
+			    GtkRequisition *requisition)
 {
   GtkStatusbar *statusbar;
   GtkShadowType shadow_type;
   
   statusbar = GTK_STATUSBAR (widget);
 
-  gtk_widget_style_get (GTK_WIDGET (statusbar), "shadow_type", &shadow_type, NULL);  
+  gtk_widget_style_get (GTK_WIDGET (statusbar), "shadow-type", &shadow_type, NULL);  
   gtk_frame_set_shadow_type (GTK_FRAME (statusbar->frame), shadow_type);
   
-  GTK_WIDGET_CLASS (parent_class)->size_request (widget, requisition);
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->size_request (widget, requisition);
 }
 
 /* look for extra children between the frame containing
@@ -826,9 +789,9 @@ gtk_statusbar_size_allocate  (GtkWidget     *widget,
 	    allocation->x += rect.width;
 	}
     }
-      
+
   /* chain up normally */
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  GTK_WIDGET_CLASS (gtk_statusbar_parent_class)->size_allocate (widget, allocation);
 
   if (statusbar->has_resize_grip)
     {
@@ -854,10 +817,10 @@ gtk_statusbar_size_allocate  (GtkWidget     *widget,
 	    {
 	      /* shrink the label to make room for the grip */
 	      *allocation = statusbar->label->allocation;
-	      allocation->width -= rect.width;
+	      allocation->width = MAX (1, allocation->width - rect.width);
 	      if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL) 
-		allocation->x += rect.width;
-	      
+		allocation->x += statusbar->label->allocation.width - allocation->width;
+
 	      gtk_widget_size_allocate (statusbar->label, allocation);
 	    }
 	}

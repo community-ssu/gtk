@@ -141,8 +141,7 @@ ratio.
 </para>
 
 @min_width: minimum width of window (or -1 to use requisition, with #GtkWindow only)
-@min_height minimum height of window (or -1 to use requisition, with #GtkWindow only)
-@min_height: 
+@min_height: minimum height of window (or -1 to use requisition, with #GtkWindow only)
 @max_width: maximum width of window (or -1 to use requisition, with #GtkWindow only)
 @max_height: maximum height of window (or -1 to use requisition, with #GtkWindow only)
 @base_width: allowed window widths are @base_width + @width_inc * N where N is any integer (-1 allowed with #GtkWindow)
@@ -158,8 +157,8 @@ ratio.
 Defines the reference point of a window and the meaning of coordinates
 passed to gtk_window_move(). See gtk_window_move() and the "implementation 
 notes" section of the 
-<ulink url="http://www.freedesktop.org/standards/wm-spec">extended 
-window manager hints</ulink> specification for more details.
+<ulink url="http://www.freedesktop.org/Standards/wm-spec">Extended 
+Window Manager Hints</ulink> specification for more details.
 </para>
 
 @GDK_GRAVITY_NORTH_WEST: the reference point is at the top left corner.
@@ -196,8 +195,8 @@ and behaviour of the window. The hint must be set before mapping the window.
 </para>
 <para>
 See the
-<ulink url="http://www.freedesktop.org/standards/wm-spec">extended 
-window manager hints</ulink> specification for more details about 
+<ulink url="http://www.freedesktop.org/Standards/wm-spec">Extended 
+Window Manager Hints</ulink> specification for more details about 
 window types.
 </para>
 
@@ -212,7 +211,12 @@ window types.
 @GDK_WINDOW_TYPE_HINT_DOCK: Used for creating dock or panel windows.
 @GDK_WINDOW_TYPE_HINT_DESKTOP: Used for creating the desktop background 
 window.
-@GDK_WINDOW_TYPE_HINT_MESSAGE: 
+@GDK_WINDOW_TYPE_HINT_DROPDOWN_MENU: 
+@GDK_WINDOW_TYPE_HINT_POPUP_MENU: 
+@GDK_WINDOW_TYPE_HINT_TOOLTIP: 
+@GDK_WINDOW_TYPE_HINT_NOTIFICATION: 
+@GDK_WINDOW_TYPE_HINT_COMBO: 
+@GDK_WINDOW_TYPE_HINT_DND: 
 
 <!-- ##### STRUCT GdkWindowAttr ##### -->
 <para>
@@ -277,7 +281,7 @@ corresponding flag in #GdkWindowAttributesType.
 Deprecated equivalent of g_object_ref()
 </para>
 
-@Returns: 
+@Returns: the window
 
 
 <!-- ##### MACRO gdk_window_unref ##### -->
@@ -489,6 +493,17 @@ Deprecated equivalent of g_object_unref()
 @dy: 
 
 
+<!-- ##### FUNCTION gdk_window_move_region ##### -->
+<para>
+
+</para>
+
+@window: 
+@region: 
+@dx: 
+@dy: 
+
+
 <!-- ##### FUNCTION gdk_window_reparent ##### -->
 <para>
 
@@ -537,15 +552,19 @@ Deprecated equivalent of g_object_unref()
 Deprecated equivalent to gdk_draw_drawable(), see that function for docs
 </para>
 
-@drawable: 
-@gc: 
-@x: 
-@y: 
-@source_drawable: 
-@source_x: 
-@source_y: 
-@width: 
-@height: 
+@drawable: a #GdkDrawable
+@gc: a #GdkGC sharing the drawable's visual and colormap
+@x: X position in @drawable where the rectangle should be drawn
+@y: Y position in @drawable where the rectangle should be drawn
+@source_drawable: the source #GdkDrawable, which may be the same as @drawable
+@source_x: X position in @src of rectangle to draw
+@source_y: Y position in @src of rectangle to draw
+@width: width of rectangle to draw, or -1 for entire @src width
+@height: height of rectangle to draw, or -1 for entire @src height
+<!-- # Unused Parameters # -->
+@drawable: a #GdkDrawable
+@xdest: X position in @drawable where the rectangle should be drawn
+@ydest: Y position in @drawable where the rectangle should be drawn
 
 
 <!-- ##### FUNCTION gdk_window_raise ##### -->
@@ -617,6 +636,14 @@ Registers a window as a potential drop destination.
 @height: 
 @new_width: 
 @new_height: 
+
+
+<!-- ##### FUNCTION gdk_window_beep ##### -->
+<para>
+
+</para>
+
+@window: 
 
 
 <!-- ##### FUNCTION gdk_window_begin_paint_rect ##### -->
@@ -883,6 +910,44 @@ backend, <type>MSG</type>s for Win32).
 @window: 
 
 
+<!-- ##### FUNCTION gdk_window_input_shape_combine_mask ##### -->
+<para>
+
+</para>
+
+@window: 
+@mask: 
+@x: 
+@y: 
+
+
+<!-- ##### FUNCTION gdk_window_input_shape_combine_region ##### -->
+<para>
+
+</para>
+
+@window: 
+@shape_region: 
+@offset_x: 
+@offset_y: 
+
+
+<!-- ##### FUNCTION gdk_window_set_child_input_shapes ##### -->
+<para>
+
+</para>
+
+@window: 
+
+
+<!-- ##### FUNCTION gdk_window_merge_child_input_shapes ##### -->
+<para>
+
+</para>
+
+@window: 
+
+
 <!-- ##### FUNCTION gdk_window_set_static_gravities ##### -->
 <para>
 
@@ -1020,6 +1085,15 @@ Deprecated equivalent to gdk_drawable_set_colormap()
 @hint: 
 
 
+<!-- ##### FUNCTION gdk_window_get_type_hint ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gdk_window_set_skip_taskbar_hint ##### -->
 <para>
 
@@ -1036,6 +1110,15 @@ Deprecated equivalent to gdk_drawable_set_colormap()
 
 @window: 
 @skips_pager: 
+
+
+<!-- ##### FUNCTION gdk_window_set_urgency_hint ##### -->
+<para>
+
+</para>
+
+@window: 
+@urgent: 
 
 
 <!-- ##### FUNCTION gdk_window_get_position ##### -->
@@ -1079,7 +1162,7 @@ Deprecated equivalent of gdk_drawable_get_size().
 Deprecated equivalent of gdk_drawable_get_visual().
 </para>
 
-@Returns: 
+@Returns: the #GdkVisual of the window
 
 
 <!-- ##### MACRO gdk_window_get_colormap ##### -->
@@ -1141,6 +1224,11 @@ Hyper, Alt, Compose, Apple, CapsLock or ShiftLock.
 <para>
 Like the X Window System, GDK supports 8 modifier keys and 5 mouse buttons.
 </para>
+<para>
+Since 2.10, GDK recognizes which of the Meta, Super or Hyper keys are mapped 
+to Mod2 - Mod5, and indicates this by setting %GDK_SUPER_MASK, %GDK_HYPER_MASK
+or %GDK_META_MASK in the state field of key events.
+</para>
 
 @GDK_SHIFT_MASK: the Shift key.
 @GDK_LOCK_MASK: a Lock key (depending on the modifier mapping of the 
@@ -1162,9 +1250,12 @@ Like the X Window System, GDK supports 8 modifier keys and 5 mouse buttons.
 @GDK_BUTTON3_MASK: the third mouse button.
 @GDK_BUTTON4_MASK: the fourth mouse button.
 @GDK_BUTTON5_MASK: the fifth mouse button.
+@GDK_SUPER_MASK: the Super modifier. Since 2.10
+@GDK_HYPER_MASK: the Hyper modifier. Since 2.10
+@GDK_META_MASK: the Meta modifier. Since 2.10
 @GDK_RELEASE_MASK: not used in GDK itself. GTK+ uses it to differentiate 
   between (keyval, modifiers) pairs from key press and release events.
-@GDK_MODIFIER_MASK: 
+@GDK_MODIFIER_MASK: a mask covering all modifier types.
 
 <!-- ##### FUNCTION gdk_window_get_parent ##### -->
 <para>

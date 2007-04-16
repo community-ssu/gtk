@@ -25,23 +25,23 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
-
 #include <config.h>
 #include <string.h>
 #include <stdarg.h>
 
-
 #define GTK_TEXT_USE_INTERNAL_UNSUPPORTED_API
 #include "gtkclipboard.h"
+#include "gtkdnd.h"
 #include "gtkinvisible.h"
 #include "gtkmarshalers.h"
 #include "gtktextbuffer.h"
+#include "gtktextbufferrichtext.h"
 #include "gtktextbtree.h"
 #include "gtktextiterprivate.h"
-#include "gtktextbufferserialize.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
+
 
 #define GTK_TEXT_BUFFER_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_TEXT_BUFFER, GtkTextBufferPrivate))
 
@@ -49,9 +49,15 @@ typedef struct _GtkTextBufferPrivate GtkTextBufferPrivate;
 
 struct _GtkTextBufferPrivate
 {
-  gboolean can_paste_rich_text;
-  gchar   *rich_text_format;
+  GtkTargetList  *copy_target_list;
+  GtkTargetEntry *copy_target_entries;
+  gint            n_copy_target_entries;
+
+  GtkTargetList  *paste_target_list;
+  GtkTargetEntry *paste_target_entries;
+  gint            n_paste_target_entries;
 };
+
 
 typedef struct _ClipboardRequest ClipboardRequest;
 
@@ -86,24 +92,15 @@ enum {
   /* Construct */
   PROP_TAG_TABLE,
 
-  PROP_CAN_PASTE_RICH_TEXT,
-  PROP_RICH_TEXT_FORMAT  
+  /* Normal */
+  PROP_TEXT,
+  PROP_HAS_SELECTION,
+  PROP_CURSOR_POSITION,
+  PROP_COPY_TARGET_LIST,
+  PROP_PASTE_TARGET_LIST
 };
 
-enum {
-  TARGET_STRING,
-  TARGET_TEXT,
-  TARGET_COMPOUND_TEXT,
-  TARGET_UTF8_STRING,
-  TARGET_TEXT_VIEW_MARKUP,
-  TARGET_TEXT_VIEW_RICH_TEXT_FORMAT,
-  TARGET_TEXT_BUFFER_CONTENTS
-};
-
-static void gtk_text_buffer_init       (GtkTextBuffer      *tkxt_buffer);
-static void gtk_text_buffer_class_init (GtkTextBufferClass *klass);
 static void gtk_text_buffer_finalize   (GObject            *object);
-
 
 static void gtk_text_buffer_real_insert_text           (GtkTextBuffer     *buffer,
                                                         GtkTextIter       *iter,
@@ -127,6 +124,9 @@ static void gtk_text_buffer_real_remove_tag            (GtkTextBuffer     *buffe
                                                         const GtkTextIter *start_char,
                                                         const GtkTextIter *end_char);
 static void gtk_text_buffer_real_changed               (GtkTextBuffer     *buffer);
+static void gtk_text_buffer_real_mark_set              (GtkTextBuffer     *buffer,
+                                                        const GtkTextIter *iter,
+                                                        GtkTextMark       *mark);
 
 static GtkTextBTree* get_btree (GtkTextBuffer *buffer);
 static void          free_log_attr_cache (GtkTextLogAttrCache *cache);
@@ -136,7 +136,8 @@ static void update_selection_clipboards           (GtkTextBuffer *buffer);
 
 static GtkTextBuffer *create_clipboard_contents_buffer (GtkTextBuffer *buffer);
 
-static GObjectClass *parent_class = NULL;
+static void gtk_text_buffer_free_target_lists     (GtkTextBuffer *buffer);
+
 static guint signals[LAST_SIGNAL] = { 0 };
 
 static void gtk_text_buffer_set_property (GObject         *object,
@@ -147,45 +148,20 @@ static void gtk_text_buffer_get_property (GObject         *object,
 				          guint            prop_id,
 				          GValue          *value,
 				          GParamSpec      *pspec);
+static void gtk_text_buffer_notify       (GObject         *object,
+                                          GParamSpec      *pspec);
 
-
-GType
-gtk_text_buffer_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (our_type == 0)
-    {
-      static const GTypeInfo our_info =
-      {
-        sizeof (GtkTextBufferClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gtk_text_buffer_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GtkTextBuffer),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gtk_text_buffer_init
-      };
-
-      our_type = g_type_register_static (G_TYPE_OBJECT, "GtkTextBuffer",
-                                         &our_info, 0);
-    }
-
-  return our_type;
-}
+G_DEFINE_TYPE (GtkTextBuffer, gtk_text_buffer, G_TYPE_OBJECT)
 
 static void
 gtk_text_buffer_class_init (GtkTextBufferClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (klass);
-
   object_class->finalize = gtk_text_buffer_finalize;
   object_class->set_property = gtk_text_buffer_set_property;
   object_class->get_property = gtk_text_buffer_get_property;
+  object_class->notify       = gtk_text_buffer_notify;
  
   klass->insert_text = gtk_text_buffer_real_insert_text;
   klass->insert_pixbuf = gtk_text_buffer_real_insert_pixbuf;
@@ -194,6 +170,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
   klass->apply_tag = gtk_text_buffer_real_apply_tag;
   klass->remove_tag = gtk_text_buffer_real_remove_tag;
   klass->changed = gtk_text_buffer_real_changed;
+  klass->mark_set = gtk_text_buffer_real_mark_set;
 
   /* Construct */
   g_object_class_install_property (object_class,
@@ -203,36 +180,90 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                                                         P_("Text Tag Table"),
                                                         GTK_TYPE_TEXT_TAG_TABLE,
                                                         GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-  /**
-   * GtkTextBuffer:can-paste-rich-text:
-   *
-   * Whether it should be possible to paste rich text to the buffer.
-   * 
-   * Since: maemo 1.0
-   */
-  g_object_class_install_property (object_class,
-                                  PROP_CAN_PASTE_RICH_TEXT,
-                                  g_param_spec_boolean ("can-paste-rich-text",
-                                                        P_("Can paste rich text"),
-                                                        P_("Whether it should be possible to paste rich text to the buffer"),
-                                                        FALSE, GTK_PARAM_READWRITE));
-  /**
-   * GtkTextBuffer:rich-text-format:
-   *
-   * Name of a collection of tags that the text view supports
-   * 
-   * Since: maemo 1.0
-   */
-  g_object_class_install_property (object_class,
-                                  PROP_RICH_TEXT_FORMAT,
-                                  g_param_spec_string ("rich-text-format",
-                                                       P_("Rich Text Format"),
-                                                       P_("Name of a collection of tags that the text view supports"),
-                                                       NULL, GTK_PARAM_READWRITE));
 
+  /* Normal properties*/
   
+  /**
+   * GtkTextBuffer:text:
+   *
+   * The text content of the buffer. Without child widgets and images,
+   * see gtk_text_buffer_get_text () for more information.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_TEXT,
+                                   g_param_spec_string ("text",
+                                                        P_("Text"),
+                                                        P_("Current text of the buffer"),
+							"",
+                                                        GTK_PARAM_READWRITE));
+
+  /**
+   * GtkTextBuffer:has-selection:
+   *
+   * Whether the buffer has some text currently selected.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_HAS_SELECTION,
+                                   g_param_spec_boolean ("has-selection",
+                                                         P_("Has selection"),
+                                                         P_("Whether the buffer has some text currently selected"),
+                                                         FALSE,
+                                                         GTK_PARAM_READABLE));
+
+  /**
+   * GtkTextBuffer:cursor-position:
+   *
+   * The position of the insert mark (as offset from the beginning of the buffer). 
+   * It is useful for getting notified when the cursor moves.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_CURSOR_POSITION,
+                                   g_param_spec_int ("cursor-position",
+                                                     P_("Cursor position"),
+                                                     P_("The position of the insert mark (as offset from the beginning of the buffer)"),
+						     0, G_MAXINT, 0,
+                                                     GTK_PARAM_READABLE));
+
+  /**
+   * GtkTextBuffer:copy-target-list:
+   *
+   * The list of targets this buffer supports for clipboard copying
+   * and as DND source.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_COPY_TARGET_LIST,
+                                   g_param_spec_boxed ("copy-target-list",
+                                                       P_("Copy target list"),
+                                                       P_("The list of targets this buffer supports for clipboard copying and DND source"),
+                                                       GTK_TYPE_TARGET_LIST,
+                                                       GTK_PARAM_READABLE));
+
+  /**
+   * GtkTextBuffer:paste-target-list:
+   *
+   * The list of targets this buffer supports for clipboard pasting
+   * and as DND destination.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_PASTE_TARGET_LIST,
+                                   g_param_spec_boxed ("paste-target-list",
+                                                       P_("Paste target list"),
+                                                       P_("The list of targets this buffer supports for clipboard pasting and DND destination"),
+                                                       GTK_TYPE_TARGET_LIST,
+                                                       GTK_PARAM_READABLE));
+
   signals[INSERT_TEXT] =
-    g_signal_new ("insert_text",
+    g_signal_new (I_("insert_text"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, insert_text),
@@ -245,7 +276,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   G_TYPE_INT);
 
   signals[INSERT_PIXBUF] =
-    g_signal_new ("insert_pixbuf",
+    g_signal_new (I_("insert_pixbuf"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, insert_pixbuf),
@@ -257,7 +288,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   GDK_TYPE_PIXBUF);
 
   signals[INSERT_CHILD_ANCHOR] =
-    g_signal_new ("insert_child_anchor",
+    g_signal_new (I_("insert_child_anchor"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, insert_child_anchor),
@@ -282,7 +313,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
    * those don't have access to the deleted text.
    */
   signals[DELETE_RANGE] =
-    g_signal_new ("delete_range",
+    g_signal_new (I_("delete_range"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, delete_range),
@@ -294,7 +325,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   GTK_TYPE_TEXT_ITER | G_SIGNAL_TYPE_STATIC_SCOPE);
 
   signals[CHANGED] =
-    g_signal_new ("changed",
+    g_signal_new (I_("changed"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,                   
                   G_STRUCT_OFFSET (GtkTextBufferClass, changed),
@@ -304,7 +335,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   0);
 
   signals[MODIFIED_CHANGED] =
-    g_signal_new ("modified_changed",
+    g_signal_new (I_("modified_changed"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, modified_changed),
@@ -314,7 +345,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   0);
 
   signals[MARK_SET] =
-    g_signal_new ("mark_set",
+    g_signal_new (I_("mark_set"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,                   
                   G_STRUCT_OFFSET (GtkTextBufferClass, mark_set),
@@ -326,7 +357,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   GTK_TYPE_TEXT_MARK);
 
   signals[MARK_DELETED] =
-    g_signal_new ("mark_deleted",
+    g_signal_new (I_("mark_deleted"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,                   
                   G_STRUCT_OFFSET (GtkTextBufferClass, mark_deleted),
@@ -337,7 +368,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   GTK_TYPE_TEXT_MARK);
   
   signals[APPLY_TAG] =
-    g_signal_new ("apply_tag",
+    g_signal_new (I_("apply_tag"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, apply_tag),
@@ -350,7 +381,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   GTK_TYPE_TEXT_ITER);
 
   signals[REMOVE_TAG] =
-    g_signal_new ("remove_tag",
+    g_signal_new (I_("remove_tag"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextBufferClass, remove_tag),
@@ -363,7 +394,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   GTK_TYPE_TEXT_ITER);
 
   signals[BEGIN_USER_ACTION] =
-    g_signal_new ("begin_user_action",
+    g_signal_new (I_("begin_user_action"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,                   
                   G_STRUCT_OFFSET (GtkTextBufferClass, begin_user_action),
@@ -373,7 +404,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   0);
 
   signals[END_USER_ACTION] =
-    g_signal_new ("end_user_action",
+    g_signal_new (I_("end_user_action"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,                   
                   G_STRUCT_OFFSET (GtkTextBufferClass, end_user_action),
@@ -381,7 +412,7 @@ gtk_text_buffer_class_init (GtkTextBufferClass *klass)
                   _gtk_marshal_VOID__VOID,
                   G_TYPE_NONE,
                   0);
-  
+
   g_type_class_add_private (object_class, sizeof (GtkTextBufferPrivate));
 }
 
@@ -390,6 +421,9 @@ gtk_text_buffer_init (GtkTextBuffer *buffer)
 {
   buffer->clipboard_contents_buffers = NULL;
   buffer->tag_table = NULL;
+
+  /* allow copying of arbiatray stuff in the internal rich text format */
+  gtk_text_buffer_register_serialize_tagset (buffer, NULL);
 }
 
 static void
@@ -432,12 +466,12 @@ gtk_text_buffer_set_property (GObject         *object,
     case PROP_TAG_TABLE:
       set_table (text_buffer, g_value_get_object (value));
       break;
-    case PROP_CAN_PASTE_RICH_TEXT:
-      gtk_text_buffer_set_can_paste_rich_text (text_buffer, g_value_get_boolean (value));
+
+    case PROP_TEXT:
+      gtk_text_buffer_set_text (text_buffer,
+				g_value_get_string (value), -1);
       break;
-    case PROP_RICH_TEXT_FORMAT:
-      gtk_text_buffer_set_rich_text_format (text_buffer, g_value_get_string (value));
-      break;
+
     default:
       break;
     }
@@ -450,6 +484,7 @@ gtk_text_buffer_get_property (GObject         *object,
                               GParamSpec      *pspec)
 {
   GtkTextBuffer *text_buffer;
+  GtkTextIter iter;
 
   text_buffer = GTK_TEXT_BUFFER (object);
 
@@ -458,16 +493,51 @@ gtk_text_buffer_get_property (GObject         *object,
     case PROP_TAG_TABLE:
       g_value_set_object (value, get_table (text_buffer));
       break;
-    case PROP_CAN_PASTE_RICH_TEXT:
-      g_value_set_boolean (value,
-                          gtk_text_buffer_get_can_paste_rich_text (text_buffer));
+
+    case PROP_TEXT:
+      {
+        GtkTextIter start, end;
+
+        gtk_text_buffer_get_start_iter (text_buffer, &start);
+        gtk_text_buffer_get_end_iter (text_buffer, &end);
+
+        g_value_take_string (value,
+                            gtk_text_buffer_get_text (text_buffer,
+                                                      &start, &end, FALSE));
+        break;
+      }
+
+    case PROP_HAS_SELECTION:
+      g_value_set_boolean (value, text_buffer->has_selection);
       break;
-    case PROP_RICH_TEXT_FORMAT:
-      g_value_set_string (value,
-                         gtk_text_buffer_get_rich_text_format (text_buffer));
+
+    case PROP_CURSOR_POSITION:
+      gtk_text_buffer_get_iter_at_mark (text_buffer, &iter, 
+    				        gtk_text_buffer_get_insert (text_buffer));
+      g_value_set_int (value, gtk_text_iter_get_offset (&iter));
       break;
+
+    case PROP_COPY_TARGET_LIST:
+      g_value_set_boxed (value, gtk_text_buffer_get_copy_target_list (text_buffer));
+      break;
+
+    case PROP_PASTE_TARGET_LIST:
+      g_value_set_boxed (value, gtk_text_buffer_get_paste_target_list (text_buffer));
+      break;
+
     default:
       break;
+    }
+}
+
+static void
+gtk_text_buffer_notify (GObject    *object,
+                        GParamSpec *pspec)
+{
+  if (!strcmp (pspec->name, "copy-target-list") ||
+      !strcmp (pspec->name, "paste-target-list"))
+    {
+      gtk_text_buffer_free_target_lists (GTK_TEXT_BUFFER (object));
     }
 }
 
@@ -484,7 +554,7 @@ gtk_text_buffer_new (GtkTextTagTable *table)
 {
   GtkTextBuffer *text_buffer;
 
-  text_buffer = g_object_new (GTK_TYPE_TEXT_BUFFER, "tag_table", table, NULL);
+  text_buffer = g_object_new (GTK_TYPE_TEXT_BUFFER, "tag-table", table, NULL);
 
   return text_buffer;
 }
@@ -497,9 +567,9 @@ gtk_text_buffer_finalize (GObject *object)
 
   buffer = GTK_TEXT_BUFFER (object);
 
-  remove_all_selection_clipboards (buffer);
-
   priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
+
+  remove_all_selection_clipboards (buffer);
 
   if (buffer->tag_table)
     {
@@ -519,9 +589,9 @@ gtk_text_buffer_finalize (GObject *object)
 
   buffer->log_attr_cache = NULL;
 
-  g_free (priv->rich_text_format);
+  gtk_text_buffer_free_target_lists (buffer);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_text_buffer_parent_class)->finalize (object);
 }
 
 static GtkTextBTree*
@@ -587,7 +657,11 @@ gtk_text_buffer_set_text (GtkTextBuffer *buffer,
       gtk_text_buffer_get_iter_at_offset (buffer, &start, 0);
       gtk_text_buffer_insert (buffer, &start, text, len);
     }
+  
+  g_object_notify (G_OBJECT (buffer), "text");
 }
+
+ 
 
 /*
  * Insertion
@@ -605,6 +679,7 @@ gtk_text_buffer_real_insert_text (GtkTextBuffer *buffer,
   _gtk_text_btree_insert (iter, text, len);
 
   g_signal_emit (buffer, signals[CHANGED], 0);
+  g_object_notify (G_OBJECT (buffer), "cursor-position");
 }
 
 static void
@@ -876,7 +951,6 @@ insert_range_untagged (GtkTextBuffer     *buffer,
   GtkTextIter range_start;
   GtkTextIter range_end;
   GtkTextIter start, end;
-  GtkTextBuffer *src_buffer;
   Range *r;
   
   if (gtk_text_iter_equal (orig_start, orig_end))
@@ -884,8 +958,6 @@ insert_range_untagged (GtkTextBuffer     *buffer,
 
   start = *orig_start;
   end = *orig_end;
-  
-  src_buffer = gtk_text_iter_get_buffer (&start);
   
   range_start = start;
   range_end = start;
@@ -992,12 +1064,9 @@ insert_range_not_inside_self (GtkTextBuffer     *buffer,
   GtkTextIter end = *orig_end;
   GtkTextIter range_start;
   GtkTextIter range_end;
-  GtkTextBuffer *src_buffer;
   
   if (gtk_text_iter_equal (orig_start, orig_end))
     return;
-  
-  src_buffer = gtk_text_iter_get_buffer (orig_start);
   
   gtk_text_iter_order (&start, &end);
 
@@ -1319,6 +1388,8 @@ gtk_text_buffer_real_delete_range (GtkTextBuffer *buffer,
                                    GtkTextIter   *start,
                                    GtkTextIter   *end)
 {
+  gboolean has_selection;
+
   g_return_if_fail (GTK_IS_TEXT_BUFFER (buffer));
   g_return_if_fail (start != NULL);
   g_return_if_fail (end != NULL);
@@ -1328,7 +1399,15 @@ gtk_text_buffer_real_delete_range (GtkTextBuffer *buffer,
   /* may have deleted the selection... */
   update_selection_clipboards (buffer);
 
+  has_selection = gtk_text_buffer_get_selection_bounds (buffer, NULL, NULL);
+  if (has_selection != buffer->has_selection)
+    {
+      buffer->has_selection = has_selection;
+      g_object_notify (G_OBJECT (buffer), "has-selection");
+    }
+
   g_signal_emit (buffer, signals[CHANGED], 0);
+  g_object_notify (G_OBJECT (buffer), "cursor-position");
 }
 
 static void
@@ -1530,7 +1609,7 @@ gtk_text_buffer_delete_interactive (GtkTextBuffer *buffer,
  *
  * Returns the text in the range [@start,@end). Excludes undisplayed
  * text (text marked with tags that set the invisibility attribute) if
- * @include_hidden_chars is FALSE. Does not include characters
+ * @include_hidden_chars is %FALSE. Does not include characters
  * representing embedded images, so byte and character indexes into
  * the returned string do <emphasis>not</emphasis> correspond to byte
  * and character indexes into the buffer. Contrast with
@@ -1565,7 +1644,7 @@ gtk_text_buffer_get_text (GtkTextBuffer      *buffer,
  *
  * Returns the text in the range [@start,@end). Excludes undisplayed
  * text (text marked with tags that set the invisibility attribute) if
- * @include_hidden_chars is FALSE. The returned string includes a
+ * @include_hidden_chars is %FALSE. The returned string includes a
  * 0xFFFC character whenever the buffer contains
  * embedded images, so byte and character indexes into
  * the returned string <emphasis>do</emphasis> correspond to byte
@@ -1784,12 +1863,6 @@ gtk_text_buffer_set_mark (GtkTextBuffer *buffer,
                                    iter,
                                    should_exist);
   
-  if (_gtk_text_btree_mark_is_insert (get_btree (buffer), mark) ||
-      _gtk_text_btree_mark_is_selection_bound (get_btree (buffer), mark))
-    {
-      update_selection_clipboards (buffer);
-    }
-
   _gtk_text_btree_get_iter_at_mark (get_btree (buffer),
                                    &location,
                                    mark);
@@ -2130,7 +2203,6 @@ gtk_text_buffer_select_range (GtkTextBuffer     *buffer,
   gtk_text_buffer_mark_set (buffer, &real_bound,
                             gtk_text_buffer_get_mark (buffer,
                                                       "selection_bound"));
-  update_selection_clipboards (buffer);
 }
 
 /*
@@ -2221,6 +2293,36 @@ static void
 gtk_text_buffer_real_changed (GtkTextBuffer *buffer)
 {
   gtk_text_buffer_set_modified (buffer, TRUE);
+}
+
+static void
+gtk_text_buffer_real_mark_set (GtkTextBuffer *buffer,
+                               const GtkTextIter *iter,
+                               GtkTextMark *mark)
+{
+  GtkTextMark *insert;
+  
+  insert = gtk_text_buffer_get_insert (buffer);
+
+  if (mark == insert || mark == gtk_text_buffer_get_selection_bound (buffer))
+    {
+      gboolean has_selection;
+
+      update_selection_clipboards (buffer);
+    
+      has_selection = gtk_text_buffer_get_selection_bounds (buffer,
+                                                            NULL,
+                                                            NULL);
+
+      if (has_selection != buffer->has_selection)
+        {
+          buffer->has_selection = has_selection;
+          g_object_notify (G_OBJECT (buffer), "has-selection");
+        }
+    }
+    
+    if (mark == insert)
+      g_object_notify (G_OBJECT (buffer), "cursor-position");
 }
 
 static void
@@ -2417,7 +2519,7 @@ gtk_text_buffer_remove_all_tags (GtkTextBuffer     *buffer,
   GtkTextIter first, second, tmp;
   GSList *tags;
   GSList *tmp_list;
-  GSList *prev;
+  GSList *prev, *next;
   GtkTextTag *tag;
   
   g_return_if_fail (GTK_IS_TEXT_BUFFER (buffer));
@@ -2472,14 +2574,15 @@ gtk_text_buffer_remove_all_tags (GtkTextBuffer     *buffer,
       if (tag == tmp_list->data)
         {
           /* duplicate */
+          next = tmp_list->next;
           if (prev)
-            prev->next = tmp_list->next;
+            prev->next = next;
 
           tmp_list->next = NULL;
 
           g_slist_free (tmp_list);
 
-          tmp_list = prev->next;
+          tmp_list = next;
           /* prev is unchanged */
         }
       else
@@ -2725,6 +2828,24 @@ gtk_text_buffer_set_modified (GtkTextBuffer      *buffer,
     }
 }
 
+/**
+ * gtk_text_buffer_get_has_selection:
+ * @buffer: a #GtkTextBuffer 
+ * 
+ * Indicates whether the buffer has some text currently selected.
+ * 
+ * Return value: %TRUE if the there is text selected
+ *
+ * Since: 2.10
+ **/
+gboolean
+gtk_text_buffer_get_has_selection (GtkTextBuffer *buffer)
+{
+  g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), FALSE);
+
+  return buffer->has_selection;
+}
+
 
 /*
  * Assorted other stuff
@@ -2802,47 +2923,36 @@ clipboard_get_selection_cb (GtkClipboard     *clipboard,
 
   if (gtk_text_buffer_get_selection_bounds (buffer, &start, &end))
     {
-      if (info == TARGET_TEXT_BUFFER_CONTENTS)
+      if (info == GTK_TEXT_BUFFER_TARGET_INFO_BUFFER_CONTENTS)
         {
           /* Provide the address of the buffer; this will only be
            * used within-process
            */
           gtk_selection_data_set (selection_data,
-                                  gdk_atom_intern ("GTK_TEXT_BUFFER_CONTENTS", FALSE),
+                                  selection_data->target,
                                   8, /* bytes */
                                   (void*)&buffer,
                                   sizeof (buffer));
         }
-      else if (info == TARGET_TEXT_VIEW_MARKUP)
-       {
-         gchar *str;
-         gint len;
+      else if (info == GTK_TEXT_BUFFER_TARGET_INFO_RICH_TEXT)
+        {
+          guint8 *str;
+          gsize   len;
 
-         str = gtk_text_buffer_serialize_rich_text (buffer, &start, &end, &len);
+          str = gtk_text_buffer_serialize (buffer, buffer,
+                                           selection_data->target,
+                                           &start, &end, &len);
 
-         gtk_selection_data_set (selection_data,
-                                 gdk_atom_intern ("application/x-gtk-text-view-markup", FALSE),
-                                 8, /* bytes */
-                                 str, len);
-         g_free (str);
-       }
-      else if (info == TARGET_TEXT_VIEW_RICH_TEXT_FORMAT)
-	{
-	  gint len;
-	  gchar *format;
-	  
-	  format = g_object_get_data (G_OBJECT (buffer), "gtk-text-buffer-clipboard-format");
-	  len = format ? strlen (format) : -1;
-	  
-	  gtk_selection_data_set (selection_data,
-				  gdk_atom_intern ("application/x-gtk-text-view-rich-text-format", FALSE),
-				  8, /* bytes */
-				  format, len);
-	}
+          gtk_selection_data_set (selection_data,
+                                  selection_data->target,
+                                  8, /* bytes */
+                                  str, len);
+          g_free (str);
+        }
       else
         {
           gchar *str;
-          
+
           str = gtk_text_iter_get_visible_text (&start, &end);
           gtk_selection_data_set_text (selection_data, str, -1);
           g_free (str);
@@ -2854,17 +2964,21 @@ static GtkTextBuffer *
 create_clipboard_contents_buffer (GtkTextBuffer *buffer)
 {
   GtkTextBuffer *contents;
-  gchar *format;
 
   contents = gtk_text_buffer_new (gtk_text_buffer_get_tag_table (buffer));
 
-  format = GTK_TEXT_BUFFER_GET_PRIVATE (buffer)->rich_text_format;
+  g_object_set_data (G_OBJECT (contents), I_("gtk-text-buffer-clipboard-source"),
+                     buffer);
+  g_object_set_data (G_OBJECT (contents), I_("gtk-text-buffer-clipboard"),
+                     GINT_TO_POINTER (1));
 
-  g_object_set_data (G_OBJECT (contents), "gtk-text-buffer-clipboard", GINT_TO_POINTER (1));
+  /*  Ref the source buffer as long as the clipboard contents buffer
+   *  exists, because it's needed for serializing the contents buffer.
+   *  See http://bugzilla.gnome.org/show_bug.cgi?id=339195
+   */
+  g_object_ref (buffer);
+  g_object_weak_ref (G_OBJECT (contents), (GWeakNotify) g_object_unref, buffer);
 
-  g_object_set_data_full (G_OBJECT (contents), "gtk-text-buffer-clipboard-format",
- 			  format ? g_strdup (format) : NULL, g_free);
-  
   return contents;
 }
 
@@ -2875,59 +2989,50 @@ clipboard_get_contents_cb (GtkClipboard     *clipboard,
                            guint             info,
                            gpointer          data)
 {
-  GtkTextBuffer *contents;
+  GtkTextBuffer *contents = GTK_TEXT_BUFFER (data);
 
-  contents = GTK_TEXT_BUFFER (data);
-  
   g_assert (contents); /* This should never be called unless we own the clipboard */
 
-  if (info == TARGET_TEXT_BUFFER_CONTENTS)
+  if (info == GTK_TEXT_BUFFER_TARGET_INFO_BUFFER_CONTENTS)
     {
       /* Provide the address of the clipboard buffer; this will only
        * be used within-process. OK to supply a NULL value for contents.
        */
       gtk_selection_data_set (selection_data,
-                              gdk_atom_intern ("GTK_TEXT_BUFFER_CONTENTS", FALSE),
+                              selection_data->target,
                               8, /* bytes */
                               (void*)&contents,
                               sizeof (contents));
     }
-  else if (info == TARGET_TEXT_VIEW_MARKUP)
+  else if (info == GTK_TEXT_BUFFER_TARGET_INFO_RICH_TEXT)
     {
-      gchar *str;
-      gint len;
+      GtkTextBuffer *clipboard_source_buffer;
       GtkTextIter start, end;
-      
+      guint8 *str;
+      gsize   len;
+
+      clipboard_source_buffer = g_object_get_data (G_OBJECT (contents),
+                                                   "gtk-text-buffer-clipboard-source");
+
       gtk_text_buffer_get_bounds (contents, &start, &end);
-      
-      str = gtk_text_buffer_serialize_rich_text (contents, &start, &end, &len);
-      
+
+      str = gtk_text_buffer_serialize (clipboard_source_buffer, contents,
+                                       selection_data->target,
+                                       &start, &end, &len);
+
       gtk_selection_data_set (selection_data,
-			      gdk_atom_intern ("application/x-gtk-text-view-markup", FALSE),
+			      selection_data->target,
 			      8, /* bytes */
 			      str, len);
       g_free (str);
-    }
-  else if (info == TARGET_TEXT_VIEW_RICH_TEXT_FORMAT)
-    {
-      gint len;
-      gchar *format;
-
-      format = g_object_get_data (G_OBJECT (contents), "gtk-text-buffer-clipboard-format");
-      len = format ? strlen (format) : -1;
-
-      gtk_selection_data_set (selection_data,
-                             gdk_atom_intern ("application/x-gtk-text-view-rich-text-format", FALSE),
-                             8, /* bytes */
-                             format, len);
     }
   else
     {
       gchar *str;
       GtkTextIter start, end;
-      
+
       gtk_text_buffer_get_bounds (contents, &start, &end);
-      
+
       str = gtk_text_iter_get_visible_text (&start, &end);
       gtk_selection_data_set_text (selection_data, str, -1);
       g_free (str);
@@ -3014,6 +3119,13 @@ post_paste_cleanup (ClipboardRequest *request_data)
     }
 }
 
+static void
+free_clipboard_request (ClipboardRequest *request_data)
+{
+  g_object_unref (request_data->buffer);
+  g_free (request_data);
+}
+
 /* Called when we request a paste and receive the text data
  */
 static void
@@ -3046,8 +3158,7 @@ clipboard_text_received (GtkClipboard *clipboard,
 	gtk_text_buffer_end_user_action (buffer);
     }
 
-  g_object_unref (buffer);
-  g_free (request_data);
+  free_clipboard_request (request_data);
 }
 
 static GtkTextBuffer*
@@ -3067,7 +3178,8 @@ selection_data_get_buffer (GtkSelectionData *selection_data,
   if (gdk_window_get_window_type (owner) == GDK_WINDOW_FOREIGN)
     return NULL;
  
-  if (selection_data->type != gdk_atom_intern ("GTK_TEXT_BUFFER_CONTENTS", FALSE))
+  if (selection_data->type !=
+      gdk_atom_intern_static_string ("GTK_TEXT_BUFFER_CONTENTS"))
     return NULL;
 
   if (selection_data->length != sizeof (src_buffer))
@@ -3115,9 +3227,11 @@ restore_iter (const GtkTextIter *iter,
 #endif
 
 static void
-clipboard_text_view_markup_received (GtkClipboard     *clipboard,
-                                    GtkSelectionData *selection_data,
-                                    gpointer          data)
+clipboard_rich_text_received (GtkClipboard *clipboard,
+                              GdkAtom       format,
+                              const guint8 *text,
+                              gsize         length,
+                              gpointer      data)
 {
   ClipboardRequest *request_data = data;
   GtkTextIter insert_point;
@@ -3127,41 +3241,45 @@ clipboard_text_view_markup_received (GtkClipboard     *clipboard,
 
   priv = GTK_TEXT_BUFFER_GET_PRIVATE (request_data->buffer);
 
-  /* The length is negative if the request failed. */
-  if (selection_data->length > 0 && selection_data->target ==
-      gdk_atom_intern ("application/x-gtk-text-view-markup", FALSE))
+  if (text != NULL && length > 0)
     {
       pre_paste_prep (request_data, &insert_point);
 
       if (request_data->interactive)
-       gtk_text_buffer_begin_user_action (request_data->buffer);
+        gtk_text_buffer_begin_user_action (request_data->buffer);
 
       if (!request_data->interactive ||
-         gtk_text_iter_can_insert (&insert_point, request_data->default_editable))
-       retval = gtk_text_buffer_deserialize_rich_text (request_data->buffer,
-                                                       &insert_point,
-                                                       selection_data->data, selection_data->length,
-                                                       priv->rich_text_format == NULL, &error);
+          gtk_text_iter_can_insert (&insert_point,
+                                    request_data->default_editable))
+        {
+          retval = gtk_text_buffer_deserialize (request_data->buffer,
+                                                request_data->buffer,
+                                                format,
+                                                &insert_point,
+                                                text, length,
+                                                &error);
+        }
 
       if (!retval)
-       {
-         g_warning ("error pasting: %s\n", error->message);
-	 g_clear_error (&error);
-       }
+        {
+          g_warning ("error pasting: %s\n", error->message);
+          g_clear_error (&error);
+        }
 
       if (request_data->interactive)
-       gtk_text_buffer_end_user_action (request_data->buffer);
+        gtk_text_buffer_end_user_action (request_data->buffer);
 
-      if (retval) {
-       post_paste_cleanup (request_data);
-       return;
-      }
+      if (retval)
+        {
+          post_paste_cleanup (request_data);
+          return;
+        }
     }
 
   /* Request the text selection instead */
   gtk_clipboard_request_text (clipboard,
-                             clipboard_text_received,
-                             data);
+                              clipboard_text_received,
+                              data);
 }
 
 static void
@@ -3199,41 +3317,10 @@ paste_from_buffer (ClipboardRequest    *request_data,
     gtk_text_buffer_end_user_action (buffer);
 
   g_object_unref (src_buffer);
-  g_free (request_data);
+
+  free_clipboard_request (request_data);
 }
 
-static gboolean
-formats_match (GtkClipboard *clipboard, const gchar *format)
-{
-  GtkSelectionData *data;
-  gchar *tmp;
-  gboolean retval;
-
-  if (!format)
-    return TRUE;
-
-  data = gtk_clipboard_wait_for_contents (clipboard,
-					  gdk_atom_intern ("application/x-gtk-text-view-rich-text-format", FALSE));
-
-  if (!data)
-    return FALSE;
-
-  if (data->length <= 0)
-    retval = FALSE;
-  else
-    {
-      tmp = g_strndup (data->data, data->length);
-
-      retval = (strcmp (tmp, format) == 0);
-
-      g_free (tmp);
-    }
-
-  gtk_selection_data_free (data);
-
-  return retval;
-}
-      
 static void
 clipboard_clipboard_buffer_received (GtkClipboard     *clipboard,
                                      GtkSelectionData *selection_data,
@@ -3242,7 +3329,7 @@ clipboard_clipboard_buffer_received (GtkClipboard     *clipboard,
   ClipboardRequest *request_data = data;
   GtkTextBuffer *src_buffer;
   GtkTextBufferPrivate *priv;
-  
+
   src_buffer = selection_data_get_buffer (selection_data, request_data); 
 
   if (src_buffer)
@@ -3252,7 +3339,7 @@ clipboard_clipboard_buffer_received (GtkClipboard     *clipboard,
       if (g_object_get_data (G_OBJECT (src_buffer), "gtk-text-buffer-clipboard"))
 	{
 	  gtk_text_buffer_get_bounds (src_buffer, &start, &end);
-      
+
 	  paste_from_buffer (request_data, src_buffer,
 			     &start, &end);
 	}
@@ -3267,29 +3354,24 @@ clipboard_clipboard_buffer_received (GtkClipboard     *clipboard,
     {
       priv = GTK_TEXT_BUFFER_GET_PRIVATE (request_data->buffer);
 
-      if (priv->can_paste_rich_text &&
-         formats_match (clipboard, priv->rich_text_format))
-       /* Request markup */
-       gtk_clipboard_request_contents (clipboard,
-                                       gdk_atom_intern ("application/x-gtk-text-view-markup", FALSE),
-                                       clipboard_text_view_markup_received, data);
+      if (gtk_clipboard_wait_is_rich_text_available (clipboard,
+                                                     request_data->buffer))
+        {
+          /* Request rich text */
+          gtk_clipboard_request_rich_text (clipboard,
+                                           request_data->buffer,
+                                           clipboard_rich_text_received,
+                                           data);
+        }
       else
-       /* Request the text selection instead */
-       gtk_clipboard_request_text (clipboard,
-                                   clipboard_text_received,
-                                   data);
+        {
+          /* Request the text selection instead */
+          gtk_clipboard_request_text (clipboard,
+                                      clipboard_text_received,
+                                      data);
+        }
     }
 }
-
-static const GtkTargetEntry targets[] = {
-  { "STRING", 0, TARGET_STRING },
-  { "TEXT",   0, TARGET_TEXT },
-  { "COMPOUND_TEXT", 0, TARGET_COMPOUND_TEXT },
-  { "UTF8_STRING", 0, TARGET_UTF8_STRING },
-  { "application/x-gtk-text-view-markup", 0, TARGET_TEXT_VIEW_MARKUP },
-  { "application/x-gtk-text-view-rich-text-format", 0, TARGET_TEXT_VIEW_RICH_TEXT_FORMAT },
-  { "GTK_TEXT_BUFFER_CONTENTS", 0, TARGET_TEXT_BUFFER_CONTENTS }
-};
 
 typedef struct
 {
@@ -3300,7 +3382,13 @@ typedef struct
 static void
 update_selection_clipboards (GtkTextBuffer *buffer)
 {
-  GSList *tmp_list = buffer->selection_clipboards;
+  GtkTextBufferPrivate *priv;
+  GSList               *tmp_list = buffer->selection_clipboards;
+
+  priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
+
+  gtk_text_buffer_get_copy_target_list (buffer);
+
   while (tmp_list)
     {
       GtkTextIter start;
@@ -3322,7 +3410,9 @@ update_selection_clipboards (GtkTextBuffer *buffer)
 	  /* Even if we already have the selection, we need to update our
 	   * timestamp.
 	   */
-	  if (!gtk_clipboard_set_with_owner (clipboard, targets, G_N_ELEMENTS (targets),
+	  if (!gtk_clipboard_set_with_owner (clipboard,
+                                             priv->copy_target_entries,
+                                             priv->n_copy_target_entries,
 					     clipboard_get_selection_cb,
 					     clipboard_clear_selection_cb,
 					     G_OBJECT (buffer)))
@@ -3419,19 +3509,7 @@ gtk_text_buffer_remove_selection_clipboard (GtkTextBuffer *buffer,
 static void
 remove_all_selection_clipboards (GtkTextBuffer *buffer)
 {
-  GSList *tmp_list = buffer->selection_clipboards;
-  while (tmp_list)
-    {
-      SelectionClipboard *selection_clipboard = tmp_list->data;
-      
-      if (gtk_clipboard_get_owner (selection_clipboard->clipboard) == G_OBJECT (buffer))
-	gtk_clipboard_clear (selection_clipboard->clipboard);
-      
-      g_free (selection_clipboard);
-
-      tmp_list = tmp_list->next;
-    }
-
+  g_slist_foreach (buffer->selection_clipboards, (GFunc)g_free, NULL);
   g_slist_free (buffer->selection_clipboards);
   buffer->selection_clipboards = NULL;
 }
@@ -3464,8 +3542,7 @@ gtk_text_buffer_paste_clipboard (GtkTextBuffer *buffer,
                                  "gtk_paste_point_override",
                                  override_location, FALSE);
 
-  data->buffer = buffer;
-  g_object_ref (buffer);
+  data->buffer = g_object_ref (buffer);
   data->interactive = TRUE;
   data->default_editable = default_editable;
 
@@ -3484,7 +3561,7 @@ gtk_text_buffer_paste_clipboard (GtkTextBuffer *buffer,
     data->replace_selection = TRUE;
 
   gtk_clipboard_request_contents (clipboard,
-				  gdk_atom_intern ("GTK_TEXT_BUFFER_CONTENTS", FALSE),
+				  gdk_atom_intern_static_string ("GTK_TEXT_BUFFER_CONTENTS"),
 				  clipboard_clipboard_buffer_received, data);
 }
 
@@ -3634,6 +3711,8 @@ cut_or_copy (GtkTextBuffer *buffer,
              gboolean       interactive,
              gboolean       default_editable)
 {
+  GtkTextBufferPrivate *priv;
+
   /* We prefer to cut the selected region between selection_bound and
    * insertion point. If that region is empty, then we cut the region
    * between the "anchor" and the insertion point (this is for
@@ -3643,7 +3722,11 @@ cut_or_copy (GtkTextBuffer *buffer,
    */
   GtkTextIter start;
   GtkTextIter end;
-  
+
+  priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
+
+  gtk_text_buffer_get_copy_target_list (buffer);
+
   if (!gtk_text_buffer_get_selection_bounds (buffer, &start, &end))
     {
       /* Let's try the anchor thing */
@@ -3669,14 +3752,18 @@ cut_or_copy (GtkTextBuffer *buffer,
       
       gtk_text_buffer_insert_range (contents, &ins, &start, &end);
                                     
-      if (!gtk_clipboard_set_with_data (clipboard, targets, G_N_ELEMENTS (targets),
+      if (!gtk_clipboard_set_with_data (clipboard,
+                                        priv->copy_target_entries,
+                                        priv->n_copy_target_entries,
 					clipboard_get_contents_cb,
 					clipboard_clear_contents_cb,
 					contents))
 	g_object_unref (contents);
       else
-	gtk_clipboard_set_can_store (clipboard, (GtkTargetEntry *)targets, G_N_ELEMENTS (targets) -1);
-				     
+	gtk_clipboard_set_can_store (clipboard,
+                                     priv->copy_target_entries + 1,
+                                     priv->n_copy_target_entries - 1);
+
       if (delete_region_after)
         {
           if (interactive)
@@ -3808,92 +3895,78 @@ gtk_text_buffer_end_user_action (GtkTextBuffer *buffer)
     }
 }
 
-/**
- * gtk_text_buffer_set_can_paste_rich_text:
- * @buffer: a #GtkTextBuffer
- * @can_paste_rich_text: whether rich text pasting and dropping is enabled
- *
- * Sets whether rich text can be pasted and dropped to the text buffer.
- *
- * Since: maemo 1.0
- */
-void
-gtk_text_buffer_set_can_paste_rich_text (GtkTextBuffer *buffer,
-                                        gboolean       can_paste_rich_text)
+static void
+gtk_text_buffer_free_target_lists (GtkTextBuffer *buffer)
 {
-  GtkTextBufferPrivate *priv;
+  GtkTextBufferPrivate *priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
 
-  g_return_if_fail (GTK_IS_TEXT_BUFFER (buffer));
-
-  priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
-
-  can_paste_rich_text = (can_paste_rich_text != FALSE);
-
-  if (priv->can_paste_rich_text != can_paste_rich_text)
+  if (priv->copy_target_list)
     {
-      priv->can_paste_rich_text = can_paste_rich_text;
+      gtk_target_list_unref (priv->copy_target_list);
+      priv->copy_target_list = NULL;
 
-      g_object_notify (G_OBJECT (buffer), "can_paste_rich_text");
+      gtk_target_table_free (priv->copy_target_entries,
+                             priv->n_copy_target_entries);
+      priv->copy_target_entries = NULL;
+      priv->n_copy_target_entries = 0;
+    }
+
+  if (priv->paste_target_list)
+    {
+      gtk_target_list_unref (priv->paste_target_list);
+      priv->paste_target_list = NULL;
+
+      gtk_target_table_free (priv->paste_target_entries,
+                             priv->n_paste_target_entries);
+      priv->paste_target_entries = NULL;
+      priv->n_paste_target_entries = 0;
     }
 }
 
-/**
- * gtk_text_buffer_get_can_paste_rich_text:
- * @buffer: a #GtkTextBuffer
- *
- * Return value: whether rich text pasting and dropping is enabled
- *
- * Since: maemo 1.0
- */
-gboolean
-gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer)
+static GtkTargetList *
+gtk_text_buffer_get_target_list (GtkTextBuffer   *buffer,
+                                 gboolean         deserializable,
+                                 GtkTargetEntry **entries,
+                                 gint            *n_entries)
 {
-  GtkTextBufferPrivate *priv;
+  GtkTargetList *target_list;
 
-  g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), FALSE);
+  target_list = gtk_target_list_new (NULL, 0);
 
-  priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
+  gtk_target_list_add (target_list,
+                       gdk_atom_intern_static_string ("GTK_TEXT_BUFFER_CONTENTS"),
+                       GTK_TARGET_SAME_APP,
+                       GTK_TEXT_BUFFER_TARGET_INFO_BUFFER_CONTENTS);
 
-  return priv->can_paste_rich_text;
+  gtk_target_list_add_rich_text_targets (target_list,
+                                         GTK_TEXT_BUFFER_TARGET_INFO_RICH_TEXT,
+                                         deserializable,
+                                         buffer);
+
+  gtk_target_list_add_text_targets (target_list,
+                                    GTK_TEXT_BUFFER_TARGET_INFO_TEXT);
+
+  *entries = gtk_target_table_new_from_list (target_list, n_entries);
+
+  return target_list;
 }
 
 /**
- * gtk_text_buffer_set_rich_text_format:
- * @buffer: a #GtkTextBuffer
- * @format: name of a collection of tags that the text view supports
- *
- * Sets a new rich text format for the widget.
- * 
- * Since: maemo 1.0
- */
-void
-gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
-                                     const gchar   *format)
-{
-  gchar *new_format;
-  GtkTextBufferPrivate *priv;
-
-  g_return_if_fail (GTK_IS_TEXT_BUFFER (buffer));
-
-  priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
-
-  new_format = g_strdup (format);
-  g_free (priv->rich_text_format);
-
-  priv->rich_text_format = new_format;
-  g_object_notify (G_OBJECT (buffer), "rich_text_format");
-}
-
-/**
- * gtk_text_buffer_get_rich_text_format:
+ * gtk_text_buffer_get_copy_target_list:
  * @buffer: a #GtkTextBuffer
  *
- * Return value: the widget's current rich text format.
+ * This function returns the list of targets this text buffer can
+ * provide for copying and as DND source. The targets in the list are
+ * added with %info values from the #GtkTextBufferTargetInfo enum,
+ * using gtk_target_list_add_rich_text_targets() and
+ * gtk_target_list_add_text_targets()
  *
- * Since: maemo 1.0
- */
-G_CONST_RETURN gchar *
-gtk_text_buffer_get_rich_text_format (GtkTextBuffer *buffer)
+ * Return value: the #GtkTargetList
+ *
+ * Since: 2.10
+ **/
+GtkTargetList *
+gtk_text_buffer_get_copy_target_list (GtkTextBuffer *buffer)
 {
   GtkTextBufferPrivate *priv;
 
@@ -3901,7 +3974,45 @@ gtk_text_buffer_get_rich_text_format (GtkTextBuffer *buffer)
 
   priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
 
-  return priv->rich_text_format;
+  if (! priv->copy_target_list)
+    priv->copy_target_list =
+      gtk_text_buffer_get_target_list (buffer, FALSE,
+                                       &priv->copy_target_entries,
+                                       &priv->n_copy_target_entries);
+
+  return priv->copy_target_list;
+}
+
+/**
+ * gtk_text_buffer_get_paste_target_list:
+ * @buffer: a #GtkTextBuffer
+ *
+ * This function returns the list of targets this text buffer supports
+ * for pasting and as DND destination. The targets in the list are
+ * added with %info values from the #GtkTextBufferTargetInfo enum,
+ * using gtk_target_list_add_rich_text_targets() and
+ * gtk_target_list_add_text_targets()
+ *
+ * Return value: the #GtkTargetList
+ *
+ * Since: 2.10
+ **/
+GtkTargetList *
+gtk_text_buffer_get_paste_target_list (GtkTextBuffer *buffer)
+{
+  GtkTextBufferPrivate *priv;
+
+  g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), NULL);
+
+  priv = GTK_TEXT_BUFFER_GET_PRIVATE (buffer);
+
+  if (! priv->paste_target_list)
+    priv->paste_target_list =
+      gtk_text_buffer_get_target_list (buffer, TRUE,
+                                       &priv->paste_target_entries,
+                                       &priv->n_paste_target_entries);
+
+  return priv->paste_target_list;
 }
 
 /*
@@ -4083,6 +4194,32 @@ _gtk_text_buffer_spew (GtkTextBuffer *buffer)
 {
   _gtk_text_btree_spew (get_btree (buffer));
 }
+
+#ifdef MAEMO_CHANGES
+void
+gtk_text_buffer_set_can_paste_rich_text (GtkTextBuffer *buffer,
+                                         gboolean       can_paste_rich_text)
+{
+}
+
+gboolean
+gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer)
+{
+  return FALSE;
+}
+
+void
+gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
+                                      const gchar   *format)
+{
+}
+
+G_CONST_RETURN gchar *
+gtk_text_buffer_get_rich_text_format (GtkTextBuffer *buffer)
+{
+  return NULL;
+}
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_TEXT_BUFFER_C__
 #include "gtkaliasdef.c"

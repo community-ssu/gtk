@@ -26,6 +26,8 @@
  */
 
 #include <config.h>
+#include <string.h>
+
 #include "gtkmessagedialog.h"
 #include "gtklabel.h"
 #include "gtkhbox.h"
@@ -34,7 +36,6 @@
 #include "gtkstock.h"
 #include "gtkiconfactory.h"
 #include "gtkintl.h"
-#include <string.h>
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -45,12 +46,11 @@ typedef struct _GtkMessageDialogPrivate GtkMessageDialogPrivate;
 struct _GtkMessageDialogPrivate
 {
   GtkWidget *secondary_label;
-  gboolean   has_primary_markup;
-  gboolean   has_secondary_text;
+  guint message_type : 3;
+  guint has_primary_markup : 1;
+  guint has_secondary_text : 1;
 };
 
-static void gtk_message_dialog_class_init (GtkMessageDialogClass *klass);
-static void gtk_message_dialog_init       (GtkMessageDialog      *dialog);
 static void gtk_message_dialog_style_set  (GtkWidget             *widget,
                                            GtkStyle              *prev_style);
 
@@ -65,44 +65,18 @@ static void gtk_message_dialog_get_property (GObject          *object,
 static void gtk_message_dialog_add_buttons  (GtkMessageDialog *message_dialog,
 					     GtkButtonsType    buttons);
 
-static void gtk_message_dialog_font_size_change (GtkWidget *widget,
-						 GtkStyle  *prev_style,
-						 gpointer   data);
-
 enum {
   PROP_0,
   PROP_MESSAGE_TYPE,
-  PROP_BUTTONS
+  PROP_BUTTONS,
+  PROP_TEXT,
+  PROP_USE_MARKUP,
+  PROP_SECONDARY_TEXT,
+  PROP_SECONDARY_USE_MARKUP,
+  PROP_IMAGE
 };
 
-static gpointer parent_class;
-
-GType
-gtk_message_dialog_get_type (void)
-{
-  static GType dialog_type = 0;
-
-  if (!dialog_type)
-    {
-      static const GTypeInfo dialog_info =
-      {
-	sizeof (GtkMessageDialogClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_message_dialog_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkMessageDialog),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_message_dialog_init,
-      };
-
-      dialog_type = g_type_register_static (GTK_TYPE_DIALOG, "GtkMessageDialog",
-					    &dialog_info, 0);
-    }
-
-  return dialog_type;
-}
+G_DEFINE_TYPE (GtkMessageDialog, gtk_message_dialog, GTK_TYPE_DIALOG)
 
 static void
 gtk_message_dialog_class_init (GtkMessageDialogClass *class)
@@ -112,8 +86,6 @@ gtk_message_dialog_class_init (GtkMessageDialogClass *class)
 
   widget_class = GTK_WIDGET_CLASS (class);
   gobject_class = G_OBJECT_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
   
   widget_class->style_set = gtk_message_dialog_style_set;
 
@@ -129,7 +101,7 @@ gtk_message_dialog_class_init (GtkMessageDialogClass *class)
                                                              12,
                                                              GTK_PARAM_READABLE));
   /**
-   * GtkMessageDialog::use_separator
+   * GtkMessageDialog:use-separator:
    *
    * Whether to draw a separator line between the message label and the buttons
    * in the dialog.
@@ -142,6 +114,13 @@ gtk_message_dialog_class_init (GtkMessageDialogClass *class)
 								 P_("Whether to put a separator between the message dialog's text and the buttons"),
 								 FALSE,
 								 GTK_PARAM_READABLE));
+  /**
+   * GtkMessageDialog:message-type:
+   *
+   * The type of the message. The type is used to determine
+   * the image that is shown in the dialog, unless the image is 
+   * explicitly set by the ::image property.
+   */
   g_object_class_install_property (gobject_class,
                                    PROP_MESSAGE_TYPE,
                                    g_param_spec_enum ("message-type",
@@ -149,7 +128,7 @@ gtk_message_dialog_class_init (GtkMessageDialogClass *class)
 						      P_("The type of message"),
 						      GTK_TYPE_MESSAGE_TYPE,
                                                       GTK_MESSAGE_INFO,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE | G_PARAM_CONSTRUCT));
+                                                      GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   g_object_class_install_property (gobject_class,
                                    PROP_BUTTONS,
                                    g_param_spec_enum ("buttons",
@@ -158,6 +137,85 @@ gtk_message_dialog_class_init (GtkMessageDialogClass *class)
 						      GTK_TYPE_BUTTONS_TYPE,
                                                       GTK_BUTTONS_NONE,
                                                       GTK_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+
+  /**
+   * GtkMessageDialog:text:
+   * 
+   * The primary text of the message dialog. If the dialog has 
+   * a secondary text, this will appear as the title.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_TEXT,
+                                   g_param_spec_string ("text",
+                                                        P_("Text"),
+                                                        P_("The primary text of the message dialog"),
+                                                        NULL,
+                                                        GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMessageDialog:use-markup:
+   * 
+   * %TRUE if the primary text of the dialog includes Pango markup. 
+   * See pango_parse_markup(). 
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_USE_MARKUP,
+				   g_param_spec_boolean ("use-markup",
+							 P_("Use Markup"),
+							 P_("The primary text of the title includes Pango markup."),
+							 FALSE,
+							 GTK_PARAM_READWRITE));
+  
+  /**
+   * GtkMessageDialog:secondary-text:
+   * 
+   * The secondary text of the message dialog. 
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_SECONDARY_TEXT,
+                                   g_param_spec_string ("secondary-text",
+                                                        P_("Secondary Text"),
+                                                        P_("The secondary text of the message dialog"),
+                                                        NULL,
+                                                        GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMessageDialog:secondary-use-markup:
+   * 
+   * %TRUE if the secondary text of the dialog includes Pango markup. 
+   * See pango_parse_markup(). 
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_SECONDARY_USE_MARKUP,
+				   g_param_spec_boolean ("secondary-use-markup",
+							 P_("Use Markup in secondary"),
+							 P_("The secondary text includes Pango markup."),
+							 FALSE,
+							 GTK_PARAM_READWRITE));
+
+  /**
+   * GtkMessageDialog:image:
+   * 
+   * The image for this dialog.
+   *
+   * Since: 2.10
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_IMAGE,
+                                   g_param_spec_object ("image",
+                                                        P_("Image"),
+                                                        P_("The image"),
+                                                        GTK_TYPE_WIDGET,
+                                                        GTK_PARAM_READWRITE));
+
   g_type_class_add_private (gobject_class,
 			    sizeof (GtkMessageDialogPrivate));
 }
@@ -171,6 +229,8 @@ gtk_message_dialog_init (GtkMessageDialog *dialog)
   priv = GTK_MESSAGE_DIALOG_GET_PRIVATE (dialog);
 
   gtk_window_set_resizable (GTK_WINDOW (dialog), FALSE);
+  gtk_window_set_title (GTK_WINDOW (dialog), "");
+  gtk_window_set_skip_taskbar_hint (GTK_WINDOW (dialog), TRUE);
 
   priv->has_primary_markup = FALSE;
   priv->has_secondary_text = FALSE;
@@ -208,41 +268,15 @@ gtk_message_dialog_init (GtkMessageDialog *dialog)
                       hbox,
                       FALSE, FALSE, 0);
 
+  gtk_container_set_border_width (GTK_CONTAINER (dialog), 5);
+  gtk_container_set_border_width (GTK_CONTAINER (hbox), 5);
+  gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->vbox), 14); /* 14 + 2 * 5 = 24 */
+  gtk_container_set_border_width (GTK_CONTAINER (GTK_DIALOG (dialog)->action_area), 5);
+  gtk_box_set_spacing (GTK_BOX (GTK_DIALOG (dialog)->action_area), 6);
+
   gtk_widget_show_all (hbox);
 
   _gtk_dialog_set_ignore_separator (GTK_DIALOG (dialog), TRUE);
-
-  g_signal_connect (G_OBJECT (dialog), "style-set",
-		    G_CALLBACK (gtk_message_dialog_font_size_change), NULL);
-}
-
-static GtkMessageType
-gtk_message_dialog_get_message_type (GtkMessageDialog *dialog)
-{
-  const gchar* stock_id = NULL;
-
-  g_return_val_if_fail (GTK_IS_MESSAGE_DIALOG (dialog), GTK_MESSAGE_INFO);
-  g_return_val_if_fail (GTK_IS_IMAGE(dialog->image), GTK_MESSAGE_INFO);
-
-  stock_id = GTK_IMAGE(dialog->image)->data.stock.stock_id;
-
-  /* Look at the stock id of the image to guess the
-   * GtkMessageType value that was used to choose it
-   * in setup_type()
-   */
-  if (strcmp (stock_id, GTK_STOCK_DIALOG_INFO) == 0)
-    return GTK_MESSAGE_INFO;
-  else if (strcmp (stock_id, GTK_STOCK_DIALOG_QUESTION) == 0)
-    return GTK_MESSAGE_QUESTION;
-  else if (strcmp (stock_id, GTK_STOCK_DIALOG_WARNING) == 0)
-    return GTK_MESSAGE_WARNING;
-  else if (strcmp (stock_id, GTK_STOCK_DIALOG_ERROR) == 0)
-    return GTK_MESSAGE_ERROR;
-  else
-    {
-      g_assert_not_reached (); 
-      return GTK_MESSAGE_INFO;
-    }
 }
 
 static void
@@ -254,13 +288,10 @@ setup_primary_label_font (GtkMessageDialog *dialog)
 
   priv = GTK_MESSAGE_DIALOG_GET_PRIVATE (dialog);
 
-  if (priv->has_primary_markup)
-    return;
-
   /* unset the font settings */
   gtk_widget_modify_font (dialog->label, NULL);
 
-  if (priv->has_secondary_text)
+  if (priv->has_secondary_text && !priv->has_primary_markup)
     {
       size = pango_font_description_get_size (dialog->label->style->font_desc);
       font_desc = pango_font_description_new ();
@@ -275,9 +306,11 @@ static void
 setup_type (GtkMessageDialog *dialog,
 	    GtkMessageType    type)
 {
+  GtkMessageDialogPrivate *priv = GTK_MESSAGE_DIALOG_GET_PRIVATE (dialog);
   const gchar *stock_id = NULL;
-  GtkStockItem item;
-  
+ 
+  priv->message_type = type;
+
   switch (type)
     {
     case GTK_MESSAGE_INFO:
@@ -296,23 +329,17 @@ setup_type (GtkMessageDialog *dialog,
       stock_id = GTK_STOCK_DIALOG_ERROR;
       break;
 
+    case GTK_MESSAGE_OTHER:
+      break;
+
     default:
       g_warning ("Unknown GtkMessageType %d", type);
       break;
     }
 
-  if (stock_id == NULL)
-    stock_id = GTK_STOCK_DIALOG_INFO;
-
-  if (gtk_stock_lookup (stock_id, &item))
-    {
-      gtk_image_set_from_stock (GTK_IMAGE (dialog->image), stock_id,
-                                GTK_ICON_SIZE_DIALOG);
-      
-      gtk_window_set_title (GTK_WINDOW (dialog), item.label);
-    }
-  else
-    g_warning ("Stock dialog ID doesn't exist?");  
+  if (stock_id)
+    gtk_image_set_from_stock (GTK_IMAGE (dialog->image), stock_id,
+                              GTK_ICON_SIZE_DIALOG);
 }
 
 static void 
@@ -322,8 +349,10 @@ gtk_message_dialog_set_property (GObject      *object,
 				 GParamSpec   *pspec)
 {
   GtkMessageDialog *dialog;
-  
+  GtkMessageDialogPrivate *priv;
+
   dialog = GTK_MESSAGE_DIALOG (object);
+  priv = GTK_MESSAGE_DIALOG_GET_PRIVATE (dialog);
   
   switch (prop_id)
     {
@@ -333,6 +362,50 @@ gtk_message_dialog_set_property (GObject      *object,
     case PROP_BUTTONS:
       gtk_message_dialog_add_buttons (dialog, g_value_get_enum (value));
       break;
+    case PROP_TEXT:
+      if (priv->has_primary_markup)
+	gtk_label_set_markup (GTK_LABEL (dialog->label), 
+			      g_value_get_string (value));
+      else
+	gtk_label_set_text (GTK_LABEL (dialog->label), 
+			    g_value_get_string (value));
+      break;
+    case PROP_USE_MARKUP:
+      priv->has_primary_markup = g_value_get_boolean (value) != FALSE;
+      gtk_label_set_use_markup (GTK_LABEL (dialog->label), 
+				priv->has_primary_markup);
+      setup_primary_label_font (dialog);
+      break;
+    case PROP_SECONDARY_TEXT:
+      {
+	const gchar *txt = g_value_get_string (value);
+	
+	if (gtk_label_get_use_markup (GTK_LABEL (priv->secondary_label)))
+	  gtk_label_set_markup (GTK_LABEL (priv->secondary_label), txt);
+	else
+	  gtk_label_set_text (GTK_LABEL (priv->secondary_label), txt);
+
+	if (txt)
+	  {
+	    priv->has_secondary_text = TRUE;
+	    gtk_widget_show (priv->secondary_label);
+	  }
+	else
+	  {
+	    priv->has_secondary_text = FALSE;
+	    gtk_widget_hide (priv->secondary_label);
+	  }
+	setup_primary_label_font (dialog);
+      }
+      break;
+    case PROP_SECONDARY_USE_MARKUP:
+      gtk_label_set_use_markup (GTK_LABEL (priv->secondary_label), 
+				g_value_get_boolean (value));
+      break;
+    case PROP_IMAGE:
+      gtk_message_dialog_set_image (dialog, (GtkWidget *)g_value_get_object (value));
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -346,13 +419,38 @@ gtk_message_dialog_get_property (GObject     *object,
 				 GParamSpec  *pspec)
 {
   GtkMessageDialog *dialog;
-  
+  GtkMessageDialogPrivate *priv;
+
   dialog = GTK_MESSAGE_DIALOG (object);
-  
+  priv = GTK_MESSAGE_DIALOG_GET_PRIVATE (dialog);
+    
   switch (prop_id)
     {
     case PROP_MESSAGE_TYPE:
-      g_value_set_enum (value, gtk_message_dialog_get_message_type (dialog));
+      g_value_set_enum (value, (GtkMessageType) priv->message_type);
+      break;
+    case PROP_TEXT:
+      g_value_set_string (value, gtk_label_get_label (GTK_LABEL (dialog->label)));
+      break;
+    case PROP_USE_MARKUP:
+      g_value_set_boolean (value, priv->has_primary_markup);
+      break;
+    case PROP_SECONDARY_TEXT:
+      if (priv->has_secondary_text)
+      g_value_set_string (value, 
+			  gtk_label_get_label (GTK_LABEL (priv->secondary_label)));
+      else
+	g_value_set_string (value, NULL);
+      break;
+    case PROP_SECONDARY_USE_MARKUP:
+      if (priv->has_secondary_text)
+	g_value_set_boolean (value, 
+			     gtk_label_get_use_markup (GTK_LABEL (priv->secondary_label)));
+      else
+	g_value_set_boolean (value, FALSE);
+      break;
+    case PROP_IMAGE:
+      g_value_set_object (value, dialog->image);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -360,22 +458,13 @@ gtk_message_dialog_get_property (GObject     *object,
     }
 }
 
-static void
-gtk_message_dialog_font_size_change (GtkWidget *widget,
-				     GtkStyle  *prev_style,
-				     gpointer   data)
-{
-  setup_primary_label_font (GTK_MESSAGE_DIALOG (widget));
-}
-
-
 /**
  * gtk_message_dialog_new:
- * @parent: transient parent, or NULL for none 
+ * @parent: transient parent, or %NULL for none 
  * @flags: flags
  * @type: type of message
  * @buttons: set of buttons to use
- * @message_format: printf()-style format string, or NULL
+ * @message_format: printf()-style format string, or %NULL
  * @Varargs: arguments for @message_format
  * 
  * Creates a new message dialog, which is a simple dialog with an icon
@@ -402,7 +491,7 @@ gtk_message_dialog_new (GtkWindow     *parent,
   g_return_val_if_fail (parent == NULL || GTK_IS_WINDOW (parent), NULL);
 
   widget = g_object_new (GTK_TYPE_MESSAGE_DIALOG,
-			 "message_type", type,
+			 "message-type", type,
 			 "buttons", buttons,
 			 NULL);
   dialog = GTK_DIALOG (widget);
@@ -434,9 +523,6 @@ gtk_message_dialog_new (GtkWindow     *parent,
 
   if (flags & GTK_DIALOG_DESTROY_WITH_PARENT)
     gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
-
-  if (flags & GTK_DIALOG_NO_SEPARATOR)
-    gtk_dialog_set_has_separator (dialog, FALSE);
 
   return widget;
 }
@@ -471,7 +557,7 @@ gtk_message_dialog_new (GtkWindow     *parent,
  *  dialog = gtk_message_dialog_new (main_application_window,
  *                                   GTK_DIALOG_DESTROY_WITH_PARENT,
  *                                   GTK_MESSAGE_ERROR,
- *                                   GTK_BUTTON_CLOSE,
+ *                                   GTK_BUTTONS_CLOSE,
  *                                   NULL);
  *  gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog),
  *                                 markup);
@@ -509,6 +595,38 @@ gtk_message_dialog_new_with_markup (GtkWindow     *parent,
     }
 
   return widget;
+}
+
+/**
+ * gtk_message_dialog_set_image:
+ * @dialog: a #GtkMessageDialog
+ * @image: the image
+ * 
+ * Sets the dialog's image to @image.
+ *
+ * Since: 2.10
+ **/
+void
+gtk_message_dialog_set_image (GtkMessageDialog *dialog,
+			      GtkWidget        *image)
+{
+  GtkMessageDialogPrivate *priv;
+  GtkWidget *parent;
+
+  g_return_if_fail (GTK_IS_MESSAGE_DIALOG (dialog));
+
+  priv = GTK_MESSAGE_DIALOG_GET_PRIVATE (dialog);
+
+  priv->message_type = GTK_MESSAGE_OTHER;
+  
+  parent = dialog->image->parent;
+  gtk_container_add (GTK_CONTAINER (parent), image);
+  gtk_container_remove (GTK_CONTAINER (parent), dialog->image);
+  gtk_box_reorder_child (GTK_BOX (parent), image, 0);
+
+  dialog->image = image;
+
+  g_object_notify (G_OBJECT (dialog), "image");
 }
 
 /**
@@ -597,6 +715,19 @@ gtk_message_dialog_format_secondary_text (GtkMessageDialog *message_dialog,
  *
  * Note that setting a secondary text makes the primary text become
  * bold, unless you have provided explicit markup.
+ *
+ * Due to an oversight, this function does not escape special XML characters
+ * like gtk_message_dialog_new_with_markup() does. Thus, if the arguments 
+ * may contain special XML characters, you should use g_markup_printf_escaped()
+ * to escape it.
+
+ * <informalexample><programlisting>
+ * gchar *msg;
+ *  
+ * msg = g_markup_printf_escaped (message_format, ...);
+ * gtk_message_dialog_format_secondary_markup (message_dialog, "&percnt;s", msg);
+ * g_free (msg);
+ * </programlisting></informalexample>
  *
  * Since: 2.6
  **/
@@ -703,30 +834,34 @@ static void
 gtk_message_dialog_style_set (GtkWidget *widget,
                               GtkStyle  *prev_style)
 {
-  GtkWidget *parent;
-  gint border_width = 0;
+  GtkMessageDialog *dialog = GTK_MESSAGE_DIALOG (widget);
   gboolean use_separator;
+  GtkWidget *parent;
+  gint border_width;
 
   parent = GTK_WIDGET (GTK_MESSAGE_DIALOG (widget)->image->parent);
 
   if (parent)
     {
-      gtk_widget_style_get (widget, "message_border",
+      gtk_widget_style_get (widget, "message-border",
                             &border_width, NULL);
       
       gtk_container_set_border_width (GTK_CONTAINER (parent),
-                                      border_width);
+                                      MAX (0, border_width - 7));
     }
 
   gtk_widget_style_get (widget,
-			"use_separator", &use_separator,
+			"use-separator", &use_separator,
 			NULL);
+
   _gtk_dialog_set_ignore_separator (GTK_DIALOG (widget), FALSE);
   gtk_dialog_set_has_separator (GTK_DIALOG (widget), use_separator);
   _gtk_dialog_set_ignore_separator (GTK_DIALOG (widget), TRUE);
 
-  if (GTK_WIDGET_CLASS (parent_class)->style_set)
-    (GTK_WIDGET_CLASS (parent_class)->style_set) (widget, prev_style);
+  setup_primary_label_font (dialog);
+
+  if (GTK_WIDGET_CLASS (gtk_message_dialog_parent_class)->style_set)
+    (GTK_WIDGET_CLASS (gtk_message_dialog_parent_class)->style_set) (widget, prev_style);
 }
 
 #define __GTK_MESSAGE_DIALOG_C__

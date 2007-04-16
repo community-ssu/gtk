@@ -19,6 +19,7 @@
 
 #include <config.h>
 #include "gtkcelllayout.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 GType
@@ -28,7 +29,7 @@ gtk_cell_layout_get_type (void)
 
   if (! cell_layout_type)
     {
-      static const GTypeInfo cell_layout_info =
+      const GTypeInfo cell_layout_info =
       {
         sizeof (GtkCellLayoutIface),
         NULL,
@@ -42,7 +43,7 @@ gtk_cell_layout_get_type (void)
       };
 
       cell_layout_type =
-        g_type_register_static (G_TYPE_INTERFACE, "GtkCellLayout",
+        g_type_register_static (G_TYPE_INTERFACE, I_("GtkCellLayout"),
                                 &cell_layout_info, 0);
 
       g_type_interface_add_prerequisite (cell_layout_type, G_TYPE_OBJECT);
@@ -60,6 +61,8 @@ gtk_cell_layout_get_type (void)
  * Packs the @cell into the beginning of @cell_layout. If @expand is %FALSE,
  * then the @cell is allocated no more space than it needs. Any unused space
  * is divided evenly between cells for which @expand is %TRUE.
+ *
+ * Note that reusing the same cell renderer is not supported. 
  *
  * Since: 2.4
  */
@@ -85,6 +88,8 @@ gtk_cell_layout_pack_start (GtkCellLayout   *cell_layout,
  * Adds the @cell to the end of @cell_layout. If @expand is %FALSE, then the
  * @cell is allocated no more space than it needs. Any unused space is
  * divided evenly between cells for which @expand is %TRUE.
+ *
+ * Note that reusing the same cell renderer is not supported. 
  *
  * Since: 2.4
  */

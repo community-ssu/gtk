@@ -127,6 +127,11 @@ gdk_pixbuf_animation_iter_get_delay_time
 gdk_pixbuf_animation_iter_on_currently_loading_frame
 gdk_pixbuf_animation_iter_get_pixbuf
 
+<SUBSECTION>
+GdkPixbufSimpleAnim
+gdk_pixbuf_simple_anim_new
+gdk_pixbuf_simple_anim_add_frame
+
 <SUBSECTION Standard>
 GDK_PIXBUF_ANIMATION
 GDK_TYPE_PIXBUF_ANIMATION
@@ -135,11 +140,22 @@ GDK_IS_PIXBUF_ANIMATION_ITER
 GDK_PIXBUF_ANIMATION_ITER
 GDK_TYPE_PIXBUF_ANIMATION_ITER
 
+GDK_PIXBUF_SIMPLE_ANIM_GET_CLASS
+GDK_IS_PIXBUF_SIMPLE_ANIM
+GDK_PIXBUF_SIMPLE_ANIM_CLASS
+GDK_IS_PIXBUF_SIMPLE_ANIM_CLASS
+GDK_TYPE_PIXBUF_SIMPLE_ANIM
+GDK_PIXBUF_SIMPLE_ANIM
+
 <SUBSECTION Private>
 gdk_pixbuf_non_anim_new
 
 gdk_pixbuf_animation_get_type
 gdk_pixbuf_animation_iter_get_type
+
+gdk_pixbuf_simple_anim_get_type
+gdk_pixbuf_simple_anim_iter_get_type
+GdkPixbufSimpleAnimClass
 </SECTION>
 
 <SECTION>
@@ -250,6 +266,7 @@ XlibRgbCmap
 XlibRgbDither
 xlib_rgb_init
 xlib_rgb_init_with_depth
+xlib_rgb_xpixel_from_rgb
 xlib_rgb_gc_set_foreground
 xlib_rgb_gc_set_background
 xlib_draw_rgb_image

@@ -30,16 +30,12 @@
 #include "gtkalias.h"
 
 #define MENU_ID "gtk-separator-tool-item-menu-id"
-#define HILDON_SEPARATOR_HEIGHT 40
 
 enum {
   PROP_0,
   PROP_DRAW
 };
 
-static void     gtk_separator_tool_item_class_init        (GtkSeparatorToolItemClass *class);
-static void	gtk_separator_tool_item_init		  (GtkSeparatorToolItem      *separator_item,
-							   GtkSeparatorToolItemClass *class);
 static gboolean gtk_separator_tool_item_create_menu_proxy (GtkToolItem               *item);
 static void     gtk_separator_tool_item_set_property      (GObject                   *object,
 							   guint                      prop_id,
@@ -59,8 +55,6 @@ static gint     get_space_size                            (GtkToolItem          
 
 
 
-static GObjectClass *parent_class = NULL;
-
 #define GTK_SEPARATOR_TOOL_ITEM_GET_PRIVATE(obj)(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_SEPARATOR_TOOL_ITEM, GtkSeparatorToolItemPrivate))
 
 struct _GtkSeparatorToolItemPrivate
@@ -68,31 +62,7 @@ struct _GtkSeparatorToolItemPrivate
   guint draw : 1;
 };
 
-GType
-gtk_separator_tool_item_get_type (void)
-{
-  static GType type = 0;
-  
-  if (!type)
-    {
-      static const GTypeInfo type_info =
-	{
-	  sizeof (GtkSeparatorToolItemClass),
-	  (GBaseInitFunc) 0,
-	  (GBaseFinalizeFunc) 0,
-	  (GClassInitFunc) gtk_separator_tool_item_class_init,
-	  (GClassFinalizeFunc) 0,
-	  NULL,
-	  sizeof (GtkSeparatorToolItem),
-	  0, /* n_preallocs */
-	  (GInstanceInitFunc) gtk_separator_tool_item_init,
-	};
-      
-      type = g_type_register_static (GTK_TYPE_TOOL_ITEM,
-				     "GtkSeparatorToolItem", &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (GtkSeparatorToolItem, gtk_separator_tool_item, GTK_TYPE_TOOL_ITEM)
 
 static gint
 get_space_size (GtkToolItem *tool_item)
@@ -103,7 +73,7 @@ get_space_size (GtkToolItem *tool_item)
   if (GTK_IS_TOOLBAR (parent))
     {
       gtk_widget_style_get (parent,
-			    "space_size", &space_size,
+			    "space-size", &space_size,
 			    NULL);
     }
   
@@ -118,7 +88,6 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
   GtkToolItemClass *toolitem_class;
   GtkWidgetClass *widget_class;
   
-  parent_class = g_type_class_peek_parent (class);
   object_class = (GObjectClass *)class;
   container_class = (GtkContainerClass *)class;
   toolitem_class = (GtkToolItemClass *)class;
@@ -139,38 +108,12 @@ gtk_separator_tool_item_class_init (GtkSeparatorToolItemClass *class)
 							 P_("Whether the separator is drawn, or just blank"),
 							 TRUE,
 							 GTK_PARAM_READWRITE));
-  /**
-   * GtkSeparatorToolItem:separator-size:
-   *
-   * The thickness of the separator. -1 for default behaviour.
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property(widget_class,
-					   g_param_spec_int ("separator-size",
-							      P_("Separator size"), P_("The thickness of the separator. -1 for default behaviour."),
-							     -1, G_MAXINT, -1, GTK_PARAM_READWRITE));
-
-  /**
-   * GtkSeparatorToolItem:is-image:
-   *
-   * Whether the separator is drawn as an image, or just as a line.
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-				   g_param_spec_boolean ("is-image",
-							 P_("Is separator an image or a line"),
-							 P_("Whether the separator is drawn as an image, or just as a line"),
-							 FALSE,
-							 GTK_PARAM_READWRITE));
   
   g_type_class_add_private (object_class, sizeof (GtkSeparatorToolItemPrivate));
 }
 
 static void
-gtk_separator_tool_item_init (GtkSeparatorToolItem      *separator_item,
-			      GtkSeparatorToolItemClass *class)
+gtk_separator_tool_item_init (GtkSeparatorToolItem      *separator_item)
 {
   separator_item->priv = GTK_SEPARATOR_TOOL_ITEM_GET_PRIVATE (separator_item);
   separator_item->priv->draw = TRUE;
@@ -240,26 +183,14 @@ gtk_separator_tool_item_size_request (GtkWidget      *widget,
   GtkToolItem *item = GTK_TOOL_ITEM (widget);
   GtkOrientation orientation = gtk_tool_item_get_orientation (item);
   
-  /* Hildon modifications from here on:
-   * if the "separator_size" style property
-   * is the default value (it has not been set
-   * in resource files), use default gtk+ behaviour.
-   */
-  gint separator_size = -1;
-  
-  gtk_widget_style_get( widget, "separator_size", &separator_size, NULL );
-  
-  if (separator_size == -1)
-    separator_size = get_space_size (item);
-
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     {
-      requisition->width = separator_size;
+      requisition->width = get_space_size (item);
       requisition->height = 1;
     }
   else
     {
-      requisition->height = separator_size;
+      requisition->height = get_space_size (item);
       requisition->width = 1;
     }
 }
@@ -274,30 +205,10 @@ gtk_separator_tool_item_expose (GtkWidget      *widget,
 
   if (priv->draw)
     {
-      gboolean is_image = FALSE;
       if (widget->parent && GTK_IS_TOOLBAR (widget->parent))
 	toolbar = GTK_TOOLBAR (widget->parent);
 
-      gtk_widget_style_get( widget, "is_image", &is_image, NULL );
-      if (is_image)
-      {
-        gint separator_size = -1;
-        GtkOrientation orientation = gtk_tool_item_get_orientation (GTK_TOOL_ITEM (widget));
-        
-        gtk_widget_style_get( widget, "separator_size", &separator_size, NULL );
-        
-        /* if style property not set, use gtk+
-         * default behaviour. */
-        if (separator_size == -1)
-          separator_size = get_space_size (GTK_TOOL_ITEM (widget));
-        	
-        gtk_paint_box( widget->style, widget->window, GTK_WIDGET_STATE(widget),
-          GTK_SHADOW_NONE, &event->area, widget,
-          orientation == GTK_ORIENTATION_HORIZONTAL ? "vertical" : "horizontal",
-          widget->allocation.x, widget->allocation.y + (widget->allocation.height - HILDON_SEPARATOR_HEIGHT) / 2,
-          separator_size, HILDON_SEPARATOR_HEIGHT );
-      } else
-        _gtk_toolbar_paint_space_line (widget, toolbar,
+      _gtk_toolbar_paint_space_line (widget, toolbar,
 				     &(event->area), &widget->allocation);
     }
   
@@ -346,7 +257,7 @@ gtk_separator_tool_item_get_draw (GtkSeparatorToolItem *item)
 /**
  * gtk_separator_tool_item_set_draw:
  * @item: a #GtkSeparatorToolItem
- * @draw: whether @separator_tool_item is drawn as a vertical iln
+ * @draw: whether @separator_tool_item is drawn as a vertical line
  * 
  * When @separator_tool_items is drawn as a vertical line, or just blank.
  * Setting this #FALSE along with gtk_tool_item_set_expand() is useful

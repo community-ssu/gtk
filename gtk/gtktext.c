@@ -42,8 +42,8 @@
 #include "gtktext.h"
 #include "line-wrap.xbm"
 #include "line-arrow.xbm"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
@@ -442,73 +442,7 @@ static void gtk_text_show_props (GtkText* test,
 #define TEXT_SHOW_ADJ(text,adj,msg)
 #endif
 
-/* Memory Management. */
-static GMemChunk  *params_mem_chunk    = NULL;
-static GMemChunk  *text_property_chunk = NULL;
-
 static GtkWidgetClass *parent_class = NULL;
-
-
-static const GtkTextFunction control_keys[26] =
-{
-  (GtkTextFunction)gtk_text_move_beginning_of_line,    /* a */
-  (GtkTextFunction)gtk_text_move_backward_character,   /* b */
-  (GtkTextFunction)gtk_editable_copy_clipboard,        /* c */
-  (GtkTextFunction)gtk_text_delete_forward_character,  /* d */
-  (GtkTextFunction)gtk_text_move_end_of_line,          /* e */
-  (GtkTextFunction)gtk_text_move_forward_character,    /* f */
-  NULL,                                                /* g */
-  (GtkTextFunction)gtk_text_delete_backward_character, /* h */
-  NULL,                                                /* i */
-  NULL,                                                /* j */
-  (GtkTextFunction)gtk_text_delete_to_line_end,        /* k */
-  NULL,                                                /* l */
-  NULL,                                                /* m */
-  (GtkTextFunction)gtk_text_move_next_line,            /* n */
-  NULL,                                                /* o */
-  (GtkTextFunction)gtk_text_move_previous_line,        /* p */
-  NULL,                                                /* q */
-  NULL,                                                /* r */
-  NULL,                                                /* s */
-  NULL,                                                /* t */
-  (GtkTextFunction)gtk_text_delete_line,               /* u */
-  (GtkTextFunction)gtk_editable_paste_clipboard,       /* v */
-  (GtkTextFunction)gtk_text_delete_backward_word,      /* w */
-  (GtkTextFunction)gtk_editable_cut_clipboard,         /* x */
-  NULL,                                                /* y */
-  NULL,                                                /* z */
-};
-
-static const GtkTextFunction alt_keys[26] =
-{
-  NULL,                                                /* a */
-  (GtkTextFunction)gtk_text_move_backward_word,        /* b */
-  NULL,                                                /* c */
-  (GtkTextFunction)gtk_text_delete_forward_word,       /* d */
-  NULL,                                           /* e */
-  (GtkTextFunction)gtk_text_move_forward_word,         /* f */
-  NULL,                                           /* g */
-  NULL,                                           /* h */
-  NULL,                                           /* i */
-  NULL,                                           /* j */
-  NULL,                                           /* k */
-  NULL,                                           /* l */
-  NULL,                                           /* m */
-  NULL,                                           /* n */
-  NULL,                                           /* o */
-  NULL,                                           /* p */
-  NULL,                                           /* q */
-  NULL,                                           /* r */
-  NULL,                                           /* s */
-  NULL,                                           /* t */
-  NULL,                                           /* u */
-  NULL,                                           /* v */
-  NULL,                                           /* w */
-  NULL,                                           /* x */
-  NULL,                                           /* y */
-  NULL,                                           /* z */
-};
-
 
 /**********************************************************************/
 /*			        Widget Crap                           */
@@ -540,6 +474,7 @@ gtk_text_get_type (void)
 	NULL  /* interface_data */
       };
       
+      I_("GtkText");
       text_type = gtk_type_unique (GTK_TYPE_OLD_EDITABLE, &text_info);
       g_type_add_interface_static (text_type,
 				   GTK_TYPE_EDITABLE,
@@ -633,7 +568,7 @@ gtk_text_class_init (GtkTextClass *class)
 							 GTK_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
-    gtk_signal_new ("set_scroll_adjustments",
+    gtk_signal_new (I_("set_scroll_adjustments"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTextClass, set_scroll_adjustments),
@@ -733,12 +668,6 @@ gtk_text_init (GtkText *text)
   text->scratch_buffer_len = 0;
  
   text->freeze_count = 0;
-  
-  if (!params_mem_chunk)
-    params_mem_chunk = g_mem_chunk_new ("LineParams",
-					sizeof (LineParams),
-					256 * sizeof (LineParams),
-					G_ALLOC_AND_FREE);
   
   text->default_tab_width = 4;
   text->tab_stops = NULL;
@@ -876,8 +805,7 @@ gtk_text_set_adjustments (GtkText       *text,
   if (text->hadj != hadj)
     {
       text->hadj = hadj;
-      gtk_object_ref (GTK_OBJECT (text->hadj));
-      gtk_object_sink (GTK_OBJECT (text->hadj));
+      g_object_ref_sink (text->hadj);
       
       gtk_signal_connect (GTK_OBJECT (text->hadj), "changed",
 			  (GtkSignalFunc) gtk_text_adjustment,
@@ -896,8 +824,7 @@ gtk_text_set_adjustments (GtkText       *text,
   if (text->vadj != vadj)
     {
       text->vadj = vadj;
-      gtk_object_ref (GTK_OBJECT (text->vadj));
-      gtk_object_sink (GTK_OBJECT (text->vadj));
+      g_object_ref_sink (text->vadj);
       
       gtk_signal_connect (GTK_OBJECT (text->vadj), "changed",
 			  (GtkSignalFunc) gtk_text_adjustment,
@@ -1106,7 +1033,7 @@ gboolean
 gtk_text_forward_delete (GtkText *text,
 			 guint    nchars)
 {
-  guint old_lines, old_height;
+  guint old_lines = 0, old_height = 0;
   GtkOldEditable *old_editable = GTK_OLD_EDITABLE (text);
   gboolean frozen = FALSE;
   
@@ -1600,13 +1527,11 @@ gtk_text_size_allocate (GtkWidget     *widget,
 			GtkAllocation *allocation)
 {
   GtkText *text;
-  GtkOldEditable *old_editable;
   
   g_return_if_fail (GTK_IS_TEXT (widget));
   g_return_if_fail (allocation != NULL);
   
   text = GTK_TEXT (widget);
-  old_editable = GTK_OLD_EDITABLE (widget);
   
   widget->allocation = *allocation;
   if (GTK_WIDGET_REALIZED (widget))
@@ -1748,7 +1673,7 @@ gtk_text_button_press (GtkWidget      *widget,
 	    }
 	  
 	  gtk_selection_convert (widget, GDK_SELECTION_PRIMARY,
-				 gdk_atom_intern ("UTF8_STRING", FALSE),
+				 gdk_atom_intern_static_string ("UTF8_STRING"),
 				 event->time);
 	}
       else
@@ -2129,26 +2054,79 @@ gtk_text_key_press (GtkWidget   *widget,
 	  
 	  if (event->state & GDK_CONTROL_MASK)
 	    {
+	      return_val = TRUE;
 	      if ((key >= 'A') && (key <= 'Z'))
 		key -= 'A' - 'a';
-	      
-	      if ((key >= 'a') && (key <= 'z') && control_keys[(int) (key - 'a')])
+
+	      switch (key)
 		{
-		  (* control_keys[(int) (key - 'a')]) (old_editable, event->time);
-		  return_val = TRUE;
+		case 'a':
+		  gtk_text_move_beginning_of_line (text);
+		  break;
+		case 'b':
+		  gtk_text_move_backward_character (text);
+		  break;
+		case 'c':
+		  gtk_editable_copy_clipboard (text);
+		  break;
+		case 'd':
+		  gtk_text_delete_forward_character (text);
+		  break;
+		case 'e':
+		  gtk_text_move_end_of_line (text);
+		  break;
+		case 'f':
+		  gtk_text_move_forward_character (text);
+		  break;
+		case 'h':
+		  gtk_text_delete_backward_character (text);
+		  break;
+		case 'k':
+		  gtk_text_delete_to_line_end (text);
+		  break;
+		case 'n':
+		  gtk_text_move_next_line (text);
+		  break;
+		case 'p':
+		  gtk_text_move_previous_line (text);
+		  break;
+		case 'u':
+		  gtk_text_delete_line (text);
+		  break;
+		case 'v':
+		  gtk_editable_paste_clipboard (text);
+		  break;
+		case 'w':
+		  gtk_text_delete_backward_word (text);
+		  break;
+		case 'x':
+		  gtk_editable_cut_clipboard (text);
+		  break;
+		default:
+		  return_val = FALSE;
 		}
-	      
+
 	      break;
 	    }
 	  else if (event->state & GDK_MOD1_MASK)
 	    {
+	      return_val = TRUE;
 	      if ((key >= 'A') && (key <= 'Z'))
 		key -= 'A' - 'a';
 	      
-	      if ((key >= 'a') && (key <= 'z') && alt_keys[(int) (key - 'a')])
+	      switch (key)
 		{
-		  (* alt_keys[(int) (key - 'a')]) (old_editable, event->time);
-		  return_val = TRUE;
+		case 'b':
+		  gtk_text_move_backward_word (text);
+		  break;
+		case 'd':
+		  gtk_text_delete_forward_word (text);
+		  break;
+		case 'f':
+		  gtk_text_move_forward_word (text);
+		  break;
+		default:
+		  return_val = FALSE;
 		}
 	      
 	      break;
@@ -2296,7 +2274,7 @@ line_params_iterate (GtkText* text,
   for (;;)
     {
       if (alloc)
-	lp = g_chunk_new (LineParams, params_mem_chunk);
+	lp = g_slice_new (LineParams);
       else
 	lp = &lpbuf;
       
@@ -2367,7 +2345,7 @@ fetch_lines (GtkText* text,
 static void
 fetch_lines_backward (GtkText* text)
 {
-  GList* new_lines = NULL, *new_line_start;
+  GList *new_line_start;
   GtkPropertyMark mark;
   
   if (CACHE_DATA(text->line_start_cache).start.index == 0)
@@ -2377,7 +2355,7 @@ fetch_lines_backward (GtkText* text)
 				    CACHE_DATA(text->line_start_cache).start.index - 1,
 				    &CACHE_DATA(text->line_start_cache).start);
   
-  new_line_start = new_lines = fetch_lines (text, &mark, NULL, FetchLinesCount, 1);
+  new_line_start = fetch_lines (text, &mark, NULL, FetchLinesCount, 1);
   
   while (new_line_start->next)
     new_line_start = new_line_start->next;
@@ -2980,15 +2958,7 @@ new_text_property (GtkText *text, GdkFont *font, const GdkColor* fore,
 {
   TextProperty *prop;
   
-  if (text_property_chunk == NULL)
-    {
-      text_property_chunk = g_mem_chunk_new ("text property mem chunk",
-					     sizeof(TextProperty),
-					     1024*sizeof(TextProperty),
-					     G_ALLOC_AND_FREE);
-    }
-  
-  prop = g_chunk_new(TextProperty, text_property_chunk);
+  prop = g_slice_new (TextProperty);
 
   prop->flags = 0;
   if (font)
@@ -3025,7 +2995,7 @@ destroy_text_property (TextProperty *prop)
   if (prop->font)
     text_font_unref (prop->font);
   
-  g_mem_chunk_free (text_property_chunk, prop);
+  g_slice_free (TextProperty, prop);
 }
 
 /* Flop the memory between the point and the gap around like a
@@ -3781,7 +3751,7 @@ free_cache (GtkText* text)
     }
   
   for (; cache; cache = cache->next)
-    g_mem_chunk_free (params_mem_chunk, cache->data);
+    g_slice_free (LineParams, cache->data);
   
   g_list_free (text->line_start_cache);
   
@@ -3807,7 +3777,7 @@ remove_cache_line (GtkText* text, GList* member)
   
   list = member->next;
   
-  g_mem_chunk_free (params_mem_chunk, member->data);
+  g_slice_free (LineParams, member->data);
   g_list_free_1 (member);
   
   return list;
@@ -5105,11 +5075,7 @@ drawn_cursor_min (GtkText* text)
 static gint
 drawn_cursor_max (GtkText* text)
 {
-  GdkFont* font;
-  
   g_assert(text->cursor_mark.property);
-  
-  font = MARK_CURRENT_FONT(text, &text->cursor_mark);
   
   return text->cursor_pos_y - text->cursor_char_offset;
 }

@@ -142,6 +142,7 @@ gdk_display_get_pointer
 gdk_display_get_window_at_pointer
 GdkDisplayPointerHooks
 gdk_display_set_pointer_hooks
+gdk_display_warp_pointer
 gdk_display_supports_cursor_color
 gdk_display_supports_cursor_alpha
 gdk_display_get_default_cursor_size
@@ -151,6 +152,8 @@ gdk_display_supports_selection_notification
 gdk_display_request_selection_notification
 gdk_display_supports_clipboard_persistence
 gdk_display_store_clipboard
+gdk_display_supports_shapes
+gdk_display_supports_input_shapes
 <SUBSECTION Standard>
 GDK_DISPLAY_OBJECT
 GDK_IS_DISPLAY
@@ -196,6 +199,9 @@ gdk_screen_get_system_colormap
 gdk_screen_get_system_visual
 gdk_screen_get_rgb_colormap
 gdk_screen_get_rgb_visual
+gdk_screen_get_rgba_colormap
+gdk_screen_get_rgba_visual
+gdk_screen_is_composited
 gdk_screen_get_root_window
 gdk_screen_get_display
 gdk_screen_get_number
@@ -212,6 +218,12 @@ gdk_screen_get_monitor_at_point
 gdk_screen_get_monitor_at_window
 gdk_screen_broadcast_client_message
 gdk_screen_get_setting
+gdk_screen_get_font_options
+gdk_screen_set_font_options
+gdk_screen_get_resolution
+gdk_screen_set_resolution
+gdk_screen_get_active_window
+gdk_screen_get_window_stack
 <SUBSECTION Spawning>
 gdk_spawn_on_screen
 gdk_spawn_on_screen_with_pipes
@@ -495,7 +507,6 @@ GDK_IS_DRAWABLE_CLASS
 <SUBSECTION Private>
 GdkDrawableClass
 gdk_draw_bitmap
-gdk_draw_rectangle_alpha_libgtk_only
 </SECTION>
 
 <SECTION>
@@ -641,6 +652,7 @@ gdk_window_move
 gdk_window_resize
 gdk_window_move_resize
 gdk_window_scroll
+gdk_window_move_region
 gdk_window_reparent
 gdk_window_clear
 gdk_window_clear_area
@@ -653,6 +665,7 @@ gdk_window_register_dnd
 gdk_window_begin_resize_drag
 gdk_window_begin_move_drag
 gdk_window_constrain_size
+gdk_window_beep
 
 <SUBSECTION>
 gdk_window_begin_paint_rect
@@ -687,6 +700,10 @@ gdk_window_shape_combine_mask
 gdk_window_shape_combine_region
 gdk_window_set_child_shapes
 gdk_window_merge_child_shapes
+gdk_window_input_shape_combine_mask
+gdk_window_input_shape_combine_region
+gdk_window_set_child_input_shapes
+gdk_window_merge_child_input_shapes
 gdk_window_set_static_gravities
 gdk_window_set_hints
 gdk_window_set_title
@@ -701,8 +718,10 @@ gdk_window_set_geometry_hints
 gdk_window_set_icon_list
 gdk_window_set_modal_hint
 gdk_window_set_type_hint
+gdk_window_get_type_hint
 gdk_window_set_skip_taskbar_hint
 gdk_window_set_skip_pager_hint
+gdk_window_set_urgency_hint
 gdk_window_get_position
 gdk_window_get_root_origin
 gdk_window_get_frame_extents
@@ -817,6 +836,7 @@ gdk_utf8_to_string_target
 gdk_utf8_to_compound_text
 gdk_utf8_to_compound_text_for_display
 gdk_atom_intern
+gdk_atom_intern_static_string
 gdk_atom_name
 gdk_property_get
 gdk_property_change
@@ -858,6 +878,17 @@ GDK_PANGO_RENDERER_GET_CLASS
 <SUBSECTION Private>
 gdk_pango_renderer_get_type
 GdkPangoRendererPrivate
+</SECTION>
+
+<SECTION>
+<TITLE>Cairo Interaction</TITLE>
+<FILE>cairo_interaction</FILE>
+gdk_cairo_create
+gdk_cairo_set_source_color
+gdk_cairo_set_source_pixbuf
+gdk_cairo_set_source_pixmap
+gdk_cairo_rectangle
+gdk_cairo_region
 </SECTION>
 
 <SECTION>
@@ -1087,6 +1118,7 @@ GdkEventNoExpose
 GdkEventWindowState
 GdkEventSetting
 GdkEventOwnerChange
+GdkEventGrabBroken
 
 <SUBSECTION>
 GdkScrollDirection
@@ -1122,8 +1154,10 @@ GdkCursorType
 gdk_cursor_new
 gdk_cursor_new_from_pixmap
 gdk_cursor_new_from_pixbuf
+gdk_cursor_new_from_name
 gdk_cursor_new_for_display
 gdk_cursor_get_display
+gdk_cursor_get_image
 gdk_cursor_ref
 gdk_cursor_unref
 gdk_cursor_destroy
@@ -1222,6 +1256,7 @@ gdkx_visual_get
 gdkx_colormap_get
 gdk_pixmap_foreign_new
 gdk_pixmap_foreign_new_for_display
+gdk_pixmap_foreign_new_for_screen
 gdk_window_foreign_new
 gdk_window_foreign_new_for_display
 gdk_xid_table_lookup
@@ -1239,6 +1274,8 @@ gdk_x11_screen_supports_net_wm_hint
 gdk_x11_screen_get_window_manager_name
 gdk_x11_screen_lookup_visual
 gdk_x11_window_set_user_time
+gdk_x11_window_move_to_current_desktop
+gdk_x11_display_get_user_time
 gdk_x11_colormap_foreign_new
 gdk_x11_colormap_get_xcolormap
 gdk_x11_colormap_get_xdisplay
@@ -1247,6 +1284,7 @@ gdk_x11_cursor_get_xdisplay
 gdk_x11_display_get_xdisplay
 gdk_x11_display_grab
 gdk_x11_display_ungrab
+gdk_x11_display_set_cursor_theme
 gdk_x11_register_standard_event_type
 gdk_x11_drawable_get_xdisplay
 gdk_x11_drawable_get_xid

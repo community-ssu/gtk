@@ -26,8 +26,8 @@
 
 #include <config.h>
 #include "gtkruler.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum {
@@ -35,11 +35,10 @@ enum {
   PROP_LOWER,
   PROP_UPPER,
   PROP_POSITION,
-  PROP_MAX_SIZE
+  PROP_MAX_SIZE,
+  PROP_METRIC
 };
 
-static void gtk_ruler_class_init    (GtkRulerClass  *klass);
-static void gtk_ruler_init          (GtkRuler       *ruler);
 static void gtk_ruler_realize       (GtkWidget      *widget);
 static void gtk_ruler_unrealize     (GtkWidget      *widget);
 static void gtk_ruler_size_allocate (GtkWidget      *widget,
@@ -56,42 +55,14 @@ static void gtk_ruler_get_property  (GObject        *object,
 				     GValue         *value,
 				     GParamSpec     *pspec);
 
-static GtkWidgetClass *parent_class;
-
 static const GtkRulerMetric ruler_metrics[] =
 {
-  {"Pixels", "Pi", 1.0, { 1, 2, 5, 10, 25, 50, 100, 250, 500, 1000 }, { 1, 5, 10, 50, 100 }},
-  {"Inches", "In", 72.0, { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 }, { 1, 2, 4, 8, 16 }},
-  {"Centimeters", "Cn", 28.35, { 1, 2, 5, 10, 25, 50, 100, 250, 500, 1000 }, { 1, 5, 10, 50, 100 }},
+  { "Pixel", "Pi", 1.0, { 1, 2, 5, 10, 25, 50, 100, 250, 500, 1000 }, { 1, 5, 10, 50, 100 }},
+  { "Inches", "In", 72.0, { 1, 2, 4, 8, 16, 32, 64, 128, 256, 512 }, { 1, 2, 4, 8, 16 }},
+  { "Centimeters", "Cn", 28.35, { 1, 2, 5, 10, 25, 50, 100, 250, 500, 1000 }, { 1, 5, 10, 50, 100 }},
 };
 
-
-GType
-gtk_ruler_get_type (void)
-{
-  static GType ruler_type = 0;
-
-  if (!ruler_type)
-    {
-      static const GTypeInfo ruler_info =
-      {
-	sizeof (GtkRulerClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_ruler_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkRuler),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_ruler_init,
-      };
-
-      ruler_type = g_type_register_static (GTK_TYPE_WIDGET, "GtkRuler",
-					   &ruler_info, 0);
-    }
-
-  return ruler_type;
-}
+G_DEFINE_TYPE (GtkRuler, gtk_ruler, GTK_TYPE_WIDGET)
 
 static void
 gtk_ruler_class_init (GtkRulerClass *class)
@@ -102,8 +73,6 @@ gtk_ruler_class_init (GtkRulerClass *class)
   gobject_class = G_OBJECT_CLASS (class);
   widget_class = (GtkWidgetClass*) class;
 
-  parent_class = g_type_class_peek_parent (class);
-  
   gobject_class->set_property = gtk_ruler_set_property;
   gobject_class->get_property = gtk_ruler_get_property;
 
@@ -154,13 +123,27 @@ gtk_ruler_class_init (GtkRulerClass *class)
 							G_MAXDOUBLE,
 							0.0,
 							GTK_PARAM_READWRITE));  
+  /**
+   * GtkRuler:metric:
+   *
+   * The metric used for the ruler.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (gobject_class,
+                                   PROP_METRIC,
+                                   g_param_spec_enum ("metric",
+						      P_("Metric"),
+						      P_("The metric used for the ruler"),
+						      GTK_TYPE_METRIC_TYPE, 
+						      GTK_PIXELS,
+						      GTK_PARAM_READWRITE));  
 }
 
 static void
 gtk_ruler_init (GtkRuler *ruler)
 {
   ruler->backing_store = NULL;
-  ruler->non_gr_exp_gc = NULL;
   ruler->xsrc = 0;
   ruler->ysrc = 0;
   ruler->slider_size = 0;
@@ -198,6 +181,12 @@ gtk_ruler_set_property (GObject      *object,
       gtk_ruler_set_range (ruler, ruler->lower, ruler->upper,
 			   ruler->position,  g_value_get_double (value));
       break;
+    case PROP_METRIC:
+      gtk_ruler_set_metric (ruler, g_value_get_enum (value));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
     }
 }
 
@@ -223,6 +212,9 @@ gtk_ruler_get_property (GObject      *object,
     case PROP_MAX_SIZE:
       g_value_set_double (value, ruler->max_size);
       break;
+    case PROP_METRIC:
+      g_value_set_enum (value, gtk_ruler_get_metric (ruler));
+      break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -239,6 +231,8 @@ gtk_ruler_set_metric (GtkRuler      *ruler,
 
   if (GTK_WIDGET_DRAWABLE (ruler))
     gtk_widget_queue_draw (GTK_WIDGET (ruler));
+
+  g_object_notify (G_OBJECT (ruler), "metric");
 }
 
 /**
@@ -391,15 +385,19 @@ gtk_ruler_unrealize (GtkWidget *widget)
   GtkRuler *ruler = GTK_RULER (widget);
 
   if (ruler->backing_store)
-    g_object_unref (ruler->backing_store);
+    {
+      g_object_unref (ruler->backing_store);
+      ruler->backing_store = NULL;
+    }
+
   if (ruler->non_gr_exp_gc)
-    g_object_unref (ruler->non_gr_exp_gc);
+    {
+      g_object_unref (ruler->non_gr_exp_gc);
+      ruler->non_gr_exp_gc = NULL;
+    }
 
-  ruler->backing_store = NULL;
-  ruler->non_gr_exp_gc = NULL;
-
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  if (GTK_WIDGET_CLASS (gtk_ruler_parent_class)->unrealize)
+    (* GTK_WIDGET_CLASS (gtk_ruler_parent_class)->unrealize) (widget);
 }
 
 static void

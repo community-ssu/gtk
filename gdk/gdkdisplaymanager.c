@@ -67,33 +67,7 @@ static guint signals[LAST_SIGNAL] = { 0 };
 
 static GdkDisplay *default_display = NULL;
 
-GType
-gdk_display_manager_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (GdkDisplayManagerClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gdk_display_manager_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GdkDisplayManager),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) NULL,
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "GdkDisplayManager",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (GdkDisplayManager, gdk_display_manager, G_TYPE_OBJECT)
 
 static void
 gdk_display_manager_class_init (GdkDisplayManagerClass *klass)
@@ -113,7 +87,7 @@ gdk_display_manager_class_init (GdkDisplayManagerClass *klass)
    * Since: 2.2
    */
   signals[DISPLAY_OPENED] =
-    g_signal_new ("display_opened",
+    g_signal_new (g_intern_static_string ("display_opened"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GdkDisplayManagerClass, display_opened),
@@ -134,6 +108,11 @@ gdk_display_manager_class_init (GdkDisplayManagerClass *klass)
 }
 
 static void
+gdk_display_manager_init (GdkDisplayManager *manager)
+{
+}
+
+static void
 gdk_display_manager_set_property (GObject      *object,
 				  guint         prop_id,
 				  const GValue *value,
@@ -142,7 +121,8 @@ gdk_display_manager_set_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_DEFAULT_DISPLAY:
-      default_display = g_value_get_object (value);
+      gdk_display_manager_set_default_display (GDK_DISPLAY_MANAGER (object),
+					       g_value_get_object (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);

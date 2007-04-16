@@ -174,12 +174,12 @@ char_segment_self_check (GtkTextLineSegment *seg)
 
   if (seg->byte_count <= 0)
     {
-      g_error ("char_segment_check_func: segment has size <= 0");
+      g_error ("segment has size <= 0");
     }
 
   if (strlen (seg->body.chars) != seg->byte_count)
     {
-      g_error ("char_segment_check_func: segment has wrong size");
+      g_error ("segment has wrong size");
     }
 
   if (g_utf8_strlen (seg->body.chars, seg->byte_count) != seg->char_count)
@@ -196,7 +196,7 @@ _gtk_char_segment_new (const gchar *text, guint len)
   g_assert (gtk_text_byte_begins_utf8_char (text));
 
   seg = g_malloc (CSEG_SIZE (len));
-  seg->type = &gtk_text_char_type;
+  seg->type = (GtkTextLineSegmentClass *)&gtk_text_char_type;
   seg->next = NULL;
   seg->byte_count = len;
   memcpy (seg->body.chars, text, len);
@@ -211,8 +211,12 @@ _gtk_char_segment_new (const gchar *text, guint len)
 }
 
 GtkTextLineSegment*
-_gtk_char_segment_new_from_two_strings (const gchar *text1, guint len1,
-                                        const gchar *text2, guint len2)
+_gtk_char_segment_new_from_two_strings (const gchar *text1, 
+					guint        len1, 
+					guint        chars1,
+                                        const gchar *text2, 
+					guint        len2, 
+					guint        chars2)
 {
   GtkTextLineSegment *seg;
 
@@ -227,9 +231,7 @@ _gtk_char_segment_new_from_two_strings (const gchar *text1, guint len1,
   memcpy (seg->body.chars + len1, text2, len2);
   seg->body.chars[len1+len2] = '\0';
 
-  /* In principle this function could probably take chars1 and chars2
-     as args, since it's typically used to merge two char segments */
-  seg->char_count = g_utf8_strlen (seg->body.chars, seg->byte_count);
+  seg->char_count = chars1 + chars2;
 
   if (gtk_debug_flags & GTK_DEBUG_TEXT)
     char_segment_self_check (seg);
@@ -326,8 +328,12 @@ char_segment_cleanup_func (segPtr, line)
     }
 
   newPtr =
-    _gtk_char_segment_new_from_two_strings (segPtr->body.chars, segPtr->byte_count,
-                                            segPtr2->body.chars, segPtr2->byte_count);
+    _gtk_char_segment_new_from_two_strings (segPtr->body.chars, 
+					    segPtr->byte_count,
+					    segPtr->char_count,
+                                            segPtr2->body.chars, 
+					    segPtr2->byte_count,
+					    segPtr2->char_count);
 
   newPtr->next = segPtr2->next;
 
@@ -398,7 +404,7 @@ char_segment_check_func (segPtr, line)
     {
       if (segPtr->next->type == &gtk_text_char_type)
         {
-          g_error ("char_segment_check_func: adjacent character segments weren't merged");
+          g_error ("adjacent character segments weren't merged");
         }
     }
 }
@@ -584,7 +590,7 @@ toggle_segment_line_change_func (segPtr, line)
  */
 
 
-GtkTextLineSegmentClass gtk_text_char_type = {
+const GtkTextLineSegmentClass gtk_text_char_type = {
   "character",                          /* name */
   0,                                            /* leftGravity */
   char_segment_split_func,                              /* splitFunc */
@@ -599,7 +605,7 @@ GtkTextLineSegmentClass gtk_text_char_type = {
  * range:
  */
 
-GtkTextLineSegmentClass gtk_text_toggle_on_type = {
+const GtkTextLineSegmentClass gtk_text_toggle_on_type = {
   "toggleOn",                                   /* name */
   0,                                            /* leftGravity */
   NULL,                 /* splitFunc */
@@ -614,7 +620,7 @@ GtkTextLineSegmentClass gtk_text_toggle_on_type = {
  * range:
  */
 
-GtkTextLineSegmentClass gtk_text_toggle_off_type = {
+const GtkTextLineSegmentClass gtk_text_toggle_off_type = {
   "toggleOff",                          /* name */
   1,                                            /* leftGravity */
   NULL,                 /* splitFunc */

@@ -1,8 +1,8 @@
-/* Icon View
+/* Icon View/Icon View Basics
  *
- * The GtkIconView widget is used to display and manipulate icons.  It
- * uses a GtkTreeModel for data storage, so the list store example
- * might be helpful.
+ * The GtkIconView widget is used to display and manipulate icons.  
+ * It uses a GtkTreeModel for data storage, so the list store 
+ * example might be helpful.
  */
 
 #include <gtk/gtk.h>
@@ -147,7 +147,7 @@ sort_func (GtkTreeModel *model,
   return ret;
 }
 
-GtkListStore *
+static GtkListStore *
 create_store (void)
 {
   GtkListStore *store;
@@ -331,7 +331,7 @@ do_iconview (GtkWidget *do_widget)
 	  g_signal_connect (home_button, "clicked",
 			    G_CALLBACK (home_clicked), store);
 	  
-	  /* We now set which model columns that correspont to the text
+	  /* We now set which model columns that correspond to the text
 	   * and pixbuf of each item
 	   */
 	  gtk_icon_view_set_text_column (GTK_ICON_VIEW (icon_view), COL_DISPLAY_NAME);

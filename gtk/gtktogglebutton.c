@@ -29,8 +29,8 @@
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtktogglebutton.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define DEFAULT_LEFT_POS  4
@@ -50,8 +50,6 @@ enum {
 };
 
 
-static void gtk_toggle_button_class_init    (GtkToggleButtonClass *klass);
-static void gtk_toggle_button_init          (GtkToggleButton      *toggle_button);
 static gint gtk_toggle_button_expose        (GtkWidget            *widget,
 					     GdkEventExpose       *event);
 static gboolean gtk_toggle_button_mnemonic_activate  (GtkWidget            *widget,
@@ -70,35 +68,8 @@ static void gtk_toggle_button_get_property  (GObject              *object,
 static void gtk_toggle_button_update_state  (GtkButton            *button);
 
 static guint toggle_button_signals[LAST_SIGNAL] = { 0 };
-static GtkContainerClass *parent_class = NULL;
 
-GType
-gtk_toggle_button_get_type (void)
-{
-  static GType toggle_button_type = 0;
-
-  if (!toggle_button_type)
-    {
-      static const GTypeInfo toggle_button_info =
-      {
-	sizeof (GtkToggleButtonClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_toggle_button_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkToggleButton),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_toggle_button_init,
-      };
-
-      toggle_button_type =
-	g_type_register_static (GTK_TYPE_BUTTON, "GtkToggleButton",
-				&toggle_button_info, 0);
-    }
-
-  return toggle_button_type;
-}
+G_DEFINE_TYPE (GtkToggleButton, gtk_toggle_button, GTK_TYPE_BUTTON)
 
 static void
 gtk_toggle_button_class_init (GtkToggleButtonClass *class)
@@ -112,8 +83,6 @@ gtk_toggle_button_class_init (GtkToggleButtonClass *class)
   widget_class = (GtkWidgetClass*) class;
   container_class = (GtkContainerClass*) class;
   button_class = (GtkButtonClass*) class;
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->set_property = gtk_toggle_button_set_property;
   gobject_class->get_property = gtk_toggle_button_get_property;
@@ -154,7 +123,7 @@ gtk_toggle_button_class_init (GtkToggleButtonClass *class)
 							 GTK_PARAM_READWRITE));
 
   toggle_button_signals[TOGGLED] =
-    g_signal_new ("toggled",
+    g_signal_new (I_("toggled"),
 		  G_OBJECT_CLASS_TYPE (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkToggleButtonClass, toggled),
@@ -197,7 +166,10 @@ gtk_toggle_button_new_with_label (const gchar *label)
 GtkWidget*
 gtk_toggle_button_new_with_mnemonic (const gchar *label)
 {
-  return g_object_new (GTK_TYPE_TOGGLE_BUTTON, "label", label, "use_underline", TRUE, NULL);
+  return g_object_new (GTK_TYPE_TOGGLE_BUTTON, 
+		       "label", label, 
+		       "use-underline", TRUE, 
+		       NULL);
 }
 
 static void
@@ -263,7 +235,7 @@ gtk_toggle_button_get_property (GObject      *object,
  * You can call this function on a checkbutton or a radiobutton with
  * @draw_indicator = %FALSE to make the button look like a normal button
  *
- * This function only effects instances of classes like #GtkCheckButton
+ * This function only affects instances of classes like #GtkCheckButton
  * and #GtkRadioButton that derive from #GtkToggleButton,
  * not instances of #GtkToggleButton itself.
  */
@@ -480,8 +452,12 @@ static void
 gtk_toggle_button_update_state (GtkButton *button)
 {
   GtkToggleButton *toggle_button = GTK_TOGGLE_BUTTON (button);
-  gboolean depressed;
+  gboolean depressed, touchscreen;
   GtkStateType new_state;
+
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (button)),
+                "gtk-touchscreen-mode", &touchscreen,
+                NULL);
 
   if (toggle_button->inconsistent)
     depressed = FALSE;
@@ -490,7 +466,7 @@ gtk_toggle_button_update_state (GtkButton *button)
   else
     depressed = toggle_button->active;
       
-  if (button->in_button && (!button->button_down || toggle_button->draw_indicator))
+  if (!touchscreen && button->in_button && (!button->button_down || toggle_button->draw_indicator))
     new_state = GTK_STATE_PRELIGHT;
   else
     new_state = depressed ? GTK_STATE_ACTIVE : GTK_STATE_NORMAL;

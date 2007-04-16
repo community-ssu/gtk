@@ -75,6 +75,11 @@ and should not be accessed directly.
 
 </para>
 
+<!-- ##### ARG GtkAction:icon-name ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkAction:is-important ##### -->
 <para>
 
@@ -318,6 +323,15 @@ and should not be accessed directly.
 
 @action: 
 @accel_path: 
+
+
+<!-- ##### FUNCTION gtk_action_get_accel_closure ##### -->
+<para>
+
+</para>
+
+@action: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gtk_action_set_accel_group ##### -->

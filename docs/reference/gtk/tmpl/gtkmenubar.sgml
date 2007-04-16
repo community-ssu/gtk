@@ -23,6 +23,16 @@ The #GtkMenuBar struct contains the following fields. (These fields should be co
 </para>
 
 
+<!-- ##### ARG GtkMenuBar:child-pack-direction ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkMenuBar:pack-direction ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkMenuBar:internal-padding ##### -->
 <para>
 
@@ -46,10 +56,9 @@ Creates the new #GtkMenuBar
 Adds a new #GtkMenuItem to the end of the GtkMenuBar
 </para>
 
-@menu: 
+@menu: a #GtkMenuBar
 @child: the #GtkMenuItem to add
-<!-- # Unused Parameters # -->
-@menu_bar: a #GtkMenuBar
+@Deprecated: Use gtk_menu_shell_append() instead.
 
 
 <!-- ##### MACRO gtk_menu_bar_prepend ##### -->
@@ -57,11 +66,9 @@ Adds a new #GtkMenuItem to the end of the GtkMenuBar
 Adds a new #GtkMenuItem to the beginning of the GtkMenuBar
 </para>
 
-@menu: 
+@menu: a #GtkMenuBar
 @child: the #GtkMenuItem to add
-<!-- # Unused Parameters # -->
-@menu_child: 
-@menu_bar: a #GtkMenuBar
+@Deprecated: Use gtk_menu_shell_prepend() instead.
 
 
 <!-- ##### MACRO gtk_menu_bar_insert ##### -->
@@ -69,11 +76,55 @@ Adds a new #GtkMenuItem to the beginning of the GtkMenuBar
 Adds a new #GtkMenuItem to the GtkMenuBar at the position defined by @position
 </para>
 
-@menu: 
+@menu: a #GtkMenuBar
 @child: the #GtkMenuItem to add
-@pos: 
-<!-- # Unused Parameters # -->
-@menu_bar: a #GtkMenuBar
-@position: the position in the item list where the @child is added.
+@pos: the position in the item list where the @child is added.
+@Deprecated: Use gtk_menu_shell_insert() instead.
+
+
+<!-- ##### ENUM GtkPackDirection ##### -->
+<para>
+
+</para>
+
+@GTK_PACK_DIRECTION_LTR: 
+@GTK_PACK_DIRECTION_RTL: 
+@GTK_PACK_DIRECTION_TTB: 
+@GTK_PACK_DIRECTION_BTT: 
+
+<!-- ##### FUNCTION gtk_menu_bar_set_pack_direction ##### -->
+<para>
+
+</para>
+
+@menubar: 
+@pack_dir: 
+
+
+<!-- ##### FUNCTION gtk_menu_bar_get_pack_direction ##### -->
+<para>
+
+</para>
+
+@menubar: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_menu_bar_set_child_pack_direction ##### -->
+<para>
+
+</para>
+
+@menubar: 
+@child_pack_dir: 
+
+
+<!-- ##### FUNCTION gtk_menu_bar_get_child_pack_direction ##### -->
+<para>
+
+</para>
+
+@menubar: 
+@Returns: 
 
 

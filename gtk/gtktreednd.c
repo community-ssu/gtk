@@ -20,6 +20,7 @@
 #include <config.h>
 #include <string.h>
 #include "gtktreednd.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 GType
@@ -29,7 +30,7 @@ gtk_tree_drag_source_get_type (void)
 
   if (!our_type)
     {
-      static const GTypeInfo our_info =
+      const GTypeInfo our_info =
       {
         sizeof (GtkTreeDragSourceIface), /* class_size */
 	NULL,		/* base_init */
@@ -42,7 +43,8 @@ gtk_tree_drag_source_get_type (void)
 	NULL
       };
 
-      our_type = g_type_register_static (G_TYPE_INTERFACE, "GtkTreeDragSource",
+      our_type = g_type_register_static (G_TYPE_INTERFACE, 
+					 I_("GtkTreeDragSource"),
 					 &our_info, 0);
     }
   
@@ -57,7 +59,7 @@ gtk_tree_drag_dest_get_type (void)
 
   if (!our_type)
     {
-      static const GTypeInfo our_info =
+      const GTypeInfo our_info =
       {
         sizeof (GtkTreeDragDestIface), /* class_size */
 	NULL,		/* base_init */
@@ -70,7 +72,7 @@ gtk_tree_drag_dest_get_type (void)
 	NULL
       };
 
-      our_type = g_type_register_static (G_TYPE_INTERFACE, "GtkTreeDragDest", &our_info, 0);
+      our_type = g_type_register_static (G_TYPE_INTERFACE, I_("GtkTreeDragDest"), &our_info, 0);
     }
   
   return our_type;
@@ -248,7 +250,7 @@ gtk_tree_set_row_drag_data (GtkSelectionData *selection_data,
   g_return_val_if_fail (GTK_IS_TREE_MODEL (tree_model), FALSE);
   g_return_val_if_fail (path != NULL, FALSE);
 
-  if (selection_data->target != gdk_atom_intern ("GTK_TREE_MODEL_ROW", FALSE))
+  if (selection_data->target != gdk_atom_intern_static_string ("GTK_TREE_MODEL_ROW"))
     return FALSE;
   
   path_str = gtk_tree_path_to_string (path);
@@ -268,7 +270,7 @@ gtk_tree_set_row_drag_data (GtkSelectionData *selection_data,
   trd->model = tree_model;
   
   gtk_selection_data_set (selection_data,
-                          gdk_atom_intern ("GTK_TREE_MODEL_ROW", FALSE),
+                          gdk_atom_intern_static_string ("GTK_TREE_MODEL_ROW"),
                           8, /* bytes */
                           (void*)trd,
                           struct_size);
@@ -312,7 +314,7 @@ gtk_tree_get_row_drag_data (GtkSelectionData  *selection_data,
   if (path)
     *path = NULL;
   
-  if (selection_data->target != gdk_atom_intern ("GTK_TREE_MODEL_ROW", FALSE))
+  if (selection_data->target != gdk_atom_intern_static_string ("GTK_TREE_MODEL_ROW"))
     return FALSE;
 
   if (selection_data->length < 0)

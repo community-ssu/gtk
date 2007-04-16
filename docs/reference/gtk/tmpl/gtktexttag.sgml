@@ -202,6 +202,21 @@ planned to be implemented in future releases.
 
 </para>
 
+<!-- ##### ARG GtkTextTag:paragraph-background ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTextTag:paragraph-background-gdk ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkTextTag:paragraph-background-set ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkTextTag:pixels-above-lines ##### -->
 <para>
 
@@ -468,8 +483,6 @@ modified directly.
 
 @src: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@dest: 
 
 
 <!-- ##### FUNCTION gtk_text_attributes_copy_values ##### -->
@@ -495,5 +508,6 @@ modified directly.
 </para>
 
 @values: 
+@Returns: 
 
 

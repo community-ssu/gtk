@@ -65,6 +65,11 @@ the interface functions.
 
 @radiomenuitem: the object which received the signal.
 
+<!-- ##### ARG GtkRadioMenuItem:group ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_radio_menu_item_new ##### -->
 <para>
 Creates a new #GtkRadioMenuItem.

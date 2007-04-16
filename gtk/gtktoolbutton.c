@@ -42,7 +42,6 @@
 
 enum {
   CLICKED,
-  INSENSITIVE_PRESS,
   LAST_SIGNAL
 };
 
@@ -52,6 +51,7 @@ enum {
   PROP_USE_UNDERLINE,
   PROP_LABEL_WIDGET,
   PROP_STOCK_ID,
+  PROP_ICON_NAME,
   PROP_ICON_WIDGET
 };
 
@@ -74,12 +74,11 @@ static void gtk_tool_button_toolbar_reconfigured (GtkToolItem *tool_item);
 static gboolean   gtk_tool_button_create_menu_proxy (GtkToolItem     *item);
 static void       button_clicked                    (GtkWidget       *widget,
 						     GtkToolButton   *button);
+static void gtk_tool_button_style_set      (GtkWidget          *widget,
+					    GtkStyle           *prev_style);
 
 static void gtk_tool_button_construct_contents (GtkToolItem *tool_item);
-
-static void insensitive_press (GtkWidget       *widget,
-                               GtkToolButton   *button);
-
+      
 static GObjectClass *parent_class = NULL;
 static guint         toolbutton_signals[LAST_SIGNAL] = { 0 };
 
@@ -90,6 +89,7 @@ struct _GtkToolButtonPrivate
   GtkWidget *button;
 
   gchar *stock_id;
+  gchar *icon_name;
   gchar *label_text;
   GtkWidget *label_widget;
   GtkWidget *icon_widget;
@@ -103,24 +103,13 @@ gtk_tool_button_get_type (void)
   static GtkType type = 0;
 
   if (!type)
-    {
-      static const GTypeInfo type_info =
-	{
-	  sizeof (GtkToolButtonClass),
-	  (GBaseInitFunc) NULL,
-	  (GBaseFinalizeFunc) NULL,
-	  (GClassInitFunc) gtk_tool_button_class_init,
-	  (GClassFinalizeFunc) NULL,
-	  NULL,
-	  sizeof (GtkToolButton),
-	  0, /* n_preallocs */
-	  (GInstanceInitFunc) gtk_tool_button_init,
-	};
-
-      type = g_type_register_static (GTK_TYPE_TOOL_ITEM,
-				     "GtkToolButton",
-				     &type_info, 0);
-    }
+    type = g_type_register_static_simple (GTK_TYPE_TOOL_ITEM,
+					  I_("GtkToolButton"),
+					  sizeof (GtkToolButtonClass),
+					  (GClassInitFunc) gtk_tool_button_class_init,
+					  sizeof (GtkToolButton),
+					  (GInstanceInitFunc) gtk_tool_button_init,
+					  0);
   return type;
 }
 
@@ -142,6 +131,8 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
   object_class->notify = gtk_tool_button_property_notify;
   object_class->finalize = gtk_tool_button_finalize;
 
+  widget_class->style_set = gtk_tool_button_style_set;
+
   tool_item_class->create_menu_proxy = gtk_tool_button_create_menu_proxy;
   tool_item_class->toolbar_reconfigured = gtk_tool_button_toolbar_reconfigured;
   
@@ -152,14 +143,17 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
    *          - if the tool button has an icon_widget, then that widget
    *            will be used as the icon. Otherwise, if the tool button
    *            has a stock id, the corresponding stock icon will be
-   *            used. Otherwise, the tool button will not have an icon.
+   *            used. Otherwise, if the tool button has an icon name,
+   *            the corresponding icon from the theme will be used.
+   *            Otherwise, the tool button will not have an icon.
    *
    *          - if the tool button has a label_widget then that widget
    *            will be used as the label. Otherwise, if the tool button
    *            has a label text, that text will be used as label. Otherwise,
    *            if the toolbutton has a stock id, the corresponding text
-   *            will be used as label. Otherwise, the toolbutton will
-   *            have an empty label.
+   *            will be used as label. Otherwise, if the tool button has
+   *            an icon name, the corresponding icon name from the theme will
+   *            be used. Otherwise, the toolbutton will have an empty label.
    *
    *	      - The use_underline property only has an effect when the label
    *            on the toolbutton comes from the label property (ie. not from
@@ -208,6 +202,23 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
 							P_("The stock icon displayed on the item"),
 							NULL,
 							GTK_PARAM_READWRITE));
+
+  /**
+   * GtkToolButton:icon-name:
+   * 
+   * The name of the themed icon displayed on the item.
+   * This property only has an effect if not overridden by "label", 
+   * "icon_widget" or "stock_id" properties.
+   *
+   * Since: 2.8 
+   */
+  g_object_class_install_property (object_class,
+				   PROP_ICON_NAME,
+				   g_param_spec_string ("icon-name",
+							P_("Icon name"),
+							P_("The name of the themed icon displayed on the item"),
+							NULL,
+							GTK_PARAM_READWRITE));
   g_object_class_install_property (object_class,
 				   PROP_ICON_WIDGET,
 				   g_param_spec_object ("icon-widget",
@@ -215,6 +226,22 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
 							P_("Icon widget to display in the item"),
 							GTK_TYPE_WIDGET,
 							GTK_PARAM_READWRITE));
+
+  /**
+   * GtkButton:icon-spacing:
+   * 
+   * Spacing in pixels between the icon and label.
+   * 
+   * Since: 2.10
+   */
+  gtk_widget_class_install_style_property (widget_class,
+					   g_param_spec_int ("icon-spacing",
+							     P_("Icon spacing"),
+							     P_("Spacing in pixels between the icon and label"),
+							     0,
+							     G_MAXINT,
+							     0,
+							     GTK_PARAM_READWRITE));
 
 /**
  * GtkToolButton::clicked:
@@ -224,16 +251,25 @@ gtk_tool_button_class_init (GtkToolButtonClass *klass)
  * or activated with the keyboard.
  **/
   toolbutton_signals[CLICKED] =
-    g_signal_new ("clicked",
+    g_signal_new (I_("clicked"),
 		  G_OBJECT_CLASS_TYPE (klass),
-		  G_SIGNAL_RUN_FIRST,
+		  G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkToolButtonClass, clicked),
 		  NULL, NULL,
 		  g_cclosure_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
-
+  
   g_type_class_add_private (object_class, sizeof (GtkToolButtonPrivate));
 }
+
+#ifdef MAEMO_CHANGES
+static void
+maemo_insensitive_press (GtkWidget     *widget,
+                         GtkToolButton *button)
+{
+  gtk_widget_insensitive_press (GTK_WIDGET (button));
+}
+#endif /* MAEMO_CHANGES */
 
 static void
 gtk_tool_button_init (GtkToolButton      *button,
@@ -251,9 +287,11 @@ gtk_tool_button_init (GtkToolButton      *button,
   g_signal_connect_object (button->priv->button, "clicked",
 			   G_CALLBACK (button_clicked), button, 0);
 
+#ifdef MAEMO_CHANGES
   /* Hildon: connect "insensitive_press" signal for private button */
   g_signal_connect_object (button->priv->button, "insensitive_press",
-			   G_CALLBACK (insensitive_press), button, 0);
+                           G_CALLBACK (maemo_insensitive_press), button, 0);
+#endif /* MAEMO_CHANGES */
 
   gtk_container_add (GTK_CONTAINER (button), button->priv->button);
   gtk_widget_show (button->priv->button);
@@ -270,6 +308,11 @@ gtk_tool_button_construct_contents (GtkToolItem *tool_item)
   gboolean need_icon = FALSE;
   GtkIconSize icon_size;
   GtkWidget *box = NULL;
+  guint icon_spacing;
+
+  gtk_widget_style_get (GTK_WIDGET (tool_item), 
+			"icon-spacing", &icon_spacing,
+			NULL);
 
   if (button->priv->icon_widget && button->priv->icon_widget->parent)
     {
@@ -307,7 +350,7 @@ gtk_tool_button_construct_contents (GtkToolItem *tool_item)
     }
   
   if (style == GTK_TOOLBAR_ICONS && button->priv->icon_widget == NULL &&
-      button->priv->stock_id == NULL /* && button->priv->icon_name == NULL */)
+      button->priv->stock_id == NULL && button->priv->icon_name == NULL)
     {
       need_label = TRUE;
       need_icon = FALSE;
@@ -377,9 +420,15 @@ gtk_tool_button_construct_contents (GtkToolItem *tool_item)
 			    NULL);
 	    }
 	}
-      else if (button->priv->stock_id)
+      else if (button->priv->stock_id && 
+	       gtk_icon_factory_lookup_default (button->priv->stock_id))
 	{
 	  icon = gtk_image_new_from_stock (button->priv->stock_id, icon_size);
+	  gtk_widget_show (icon);
+	}
+      else if (button->priv->icon_name)
+	{
+	  icon = gtk_image_new_from_icon_name (button->priv->icon_name, icon_size);
 	  gtk_widget_show (icon);
 	}
     }
@@ -392,7 +441,7 @@ gtk_tool_button_construct_contents (GtkToolItem *tool_item)
       break;
 
     case GTK_TOOLBAR_BOTH:
-      box = gtk_vbox_new (FALSE, 0);
+      box = gtk_vbox_new (FALSE, icon_spacing);
       if (icon)
 	gtk_box_pack_start (GTK_BOX (box), icon, TRUE, TRUE, 0);
       gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
@@ -400,7 +449,7 @@ gtk_tool_button_construct_contents (GtkToolItem *tool_item)
       break;
 
     case GTK_TOOLBAR_BOTH_HORIZ:
-      box = gtk_hbox_new (FALSE, 0);
+      box = gtk_hbox_new (FALSE, icon_spacing);
       if (icon)
 	gtk_box_pack_start (GTK_BOX (box), icon, label? FALSE : TRUE, TRUE, 0);
       if (label)
@@ -446,6 +495,9 @@ gtk_tool_button_set_property (GObject         *object,
     case PROP_STOCK_ID:
       gtk_tool_button_set_stock_id (button, g_value_get_string (value));
       break;
+    case PROP_ICON_NAME:
+      gtk_tool_button_set_icon_name (button, g_value_get_string (value));
+      break;
     case PROP_ICON_WIDGET:
       gtk_tool_button_set_icon_widget (button, g_value_get_object (value));
       break;
@@ -487,6 +539,9 @@ gtk_tool_button_get_property (GObject         *object,
     case PROP_STOCK_ID:
       g_value_set_string (value, button->priv->stock_id);
       break;
+    case PROP_ICON_NAME:
+      g_value_set_string (value, button->priv->icon_name);
+      break;
     case PROP_ICON_WIDGET:
       g_value_set_object (value, button->priv->icon_widget);
       break;
@@ -500,11 +555,9 @@ gtk_tool_button_finalize (GObject *object)
 {
   GtkToolButton *button = GTK_TOOL_BUTTON (object);
 
-  if (button->priv->stock_id)
-    g_free (button->priv->stock_id);
-
-  if (button->priv->label_text)
-    g_free (button->priv->label_text);
+  g_free (button->priv->stock_id);
+  g_free (button->priv->icon_name);
+  g_free (button->priv->label_text);
 
   if (button->priv->label_widget)
     g_object_unref (button->priv->label_widget);
@@ -541,12 +594,16 @@ clone_image_menu_size (GtkImage *image, GtkSettings *settings)
 					     &width, &height))
 	{
 	  GdkPixbuf *src_pixbuf, *dest_pixbuf;
+	  GtkWidget *cloned_image;
 
 	  src_pixbuf = gtk_image_get_pixbuf (image);
 	  dest_pixbuf = gdk_pixbuf_scale_simple (src_pixbuf, width, height,
-						 GDK_INTERP_NEAREST);
+						 GDK_INTERP_BILINEAR);
 
-	  return gtk_image_new_from_pixbuf (dest_pixbuf);
+	  cloned_image = gtk_image_new_from_pixbuf (dest_pixbuf);
+	  g_object_unref (dest_pixbuf);
+
+	  return cloned_image;
 	}
     }
 
@@ -619,16 +676,32 @@ button_clicked (GtkWidget     *widget,
 }
 
 static void
-insensitive_press (GtkWidget     *widget,
-                   GtkToolButton *button)
-{
-  g_signal_emit_by_name (button, "insensitive_press");
-}
-
-static void
 gtk_tool_button_toolbar_reconfigured (GtkToolItem *tool_item)
 {
   gtk_tool_button_construct_contents (tool_item);
+}
+
+static void 
+gtk_tool_button_update_icon_spacing (GtkToolButton *button)
+{
+  GtkWidget *box;
+  guint spacing;
+
+  box = GTK_BIN (button->priv->button)->child;
+  if (GTK_IS_BOX (box))
+    {
+      gtk_widget_style_get (GTK_WIDGET (button), 
+			    "icon-spacing", &spacing,
+			    NULL);
+      gtk_box_set_spacing (GTK_BOX (box), spacing);      
+    }
+}
+
+static void
+gtk_tool_button_style_set (GtkWidget *widget,
+			   GtkStyle  *prev_style)
+{
+  gtk_tool_button_update_icon_spacing (GTK_TOOL_BUTTON (widget));
 }
 
 /**
@@ -653,7 +726,7 @@ gtk_tool_button_new_from_stock (const gchar *stock_id)
   g_return_val_if_fail (stock_id != NULL, NULL);
     
   button = g_object_new (GTK_TYPE_TOOL_BUTTON,
-			 "stock_id", stock_id,
+			 "stock-id", stock_id,
 			 NULL);
 
   return GTK_TOOL_ITEM (button);
@@ -844,6 +917,57 @@ gtk_tool_button_get_stock_id (GtkToolButton *button)
 }
 
 /**
+ * gtk_tool_button_set_icon_name
+ * @button: a #GtkToolButton
+ * @icon_name: the name of the themed icon
+ * 
+ * Sets the icon for the tool button from a named themed icon.
+ * See the docs for #GtkIconTheme for more details.
+ * The "icon_name" property only has an effect if not
+ * overridden by non-%NULL "label", "icon_widget" and "stock_id"
+ * properties.
+ * 
+ * Since: 2.8
+ **/
+void
+gtk_tool_button_set_icon_name (GtkToolButton *button,
+			       const gchar   *icon_name)
+{
+  gchar *old_icon_name;
+
+  g_return_if_fail (GTK_IS_TOOL_BUTTON (button));
+
+  old_icon_name = button->priv->icon_name;
+
+  button->priv->icon_name = g_strdup (icon_name);
+  gtk_tool_button_construct_contents (GTK_TOOL_ITEM (button));
+
+  g_object_notify (G_OBJECT (button), "icon-name");
+
+  g_free (old_icon_name);
+}
+
+/**
+ * gtk_tool_button_get_icon_name
+ * @button: a #GtkToolButton
+ * 
+ * Returns the name of the themed icon for the tool button,
+ * see gtk_tool_button_set_icon_name().
+ *
+ * Returns: the icon name or %NULL if the tool button has
+ * no themed icon
+ * 
+ * Since: 2.8
+ **/
+G_CONST_RETURN gchar*
+gtk_tool_button_get_icon_name (GtkToolButton *button)
+{
+  g_return_val_if_fail (GTK_IS_TOOL_BUTTON (button), NULL);
+
+  return button->priv->icon_name;
+}
+
+/**
  * gtk_tool_button_set_icon_widget:
  * @button: a #GtkToolButton
  * @icon_widget: the widget used as icon, or %NULL
@@ -876,8 +1000,7 @@ gtk_tool_button_set_icon_widget (GtkToolButton *button,
       
       if (icon_widget)
 	{
-	  g_object_ref (icon_widget);
-	  gtk_object_sink (GTK_OBJECT (icon_widget));
+	  g_object_ref_sink (icon_widget);
 	}
 
       button->priv->icon_widget = icon_widget;
@@ -923,8 +1046,7 @@ gtk_tool_button_set_label_widget (GtkToolButton *button,
       
       if (label_widget)
 	{
-	  g_object_ref (label_widget);
-	  gtk_object_sink (GTK_OBJECT (label_widget));
+	  g_object_ref_sink (label_widget);
 	}
 
       button->priv->label_widget = label_widget;
@@ -980,6 +1102,7 @@ _gtk_tool_button_get_button (GtkToolButton *button)
 
   return button->priv->button;
 }
+
 
 #define __GTK_TOOL_BUTTON_C__
 #include "gtkaliasdef.c"

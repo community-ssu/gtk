@@ -971,7 +971,7 @@ gdk_dropfiles_filter (GdkXEvent *xev,
       private = GDK_DRAG_CONTEXT_PRIVATE_DATA (context);
       context->protocol = GDK_DRAG_PROTO_WIN32_DROPFILES;
       context->is_source = FALSE;
-      context->source_window = _gdk_parent_root;
+      context->source_window = _gdk_root;
       g_object_ref (context->source_window);
       context->dest_window = event->any.window;
       g_object_ref (context->dest_window);
@@ -1023,7 +1023,7 @@ gdk_dropfiles_filter (GdkXEvent *xev,
 	      if (uri != NULL)
 		{
 		  g_string_append (result, uri);
-		  GDK_NOTE (DND, g_print ("...%s link to %s: %s\n",
+		  GDK_NOTE (DND, g_print ("... %s link to %s: %s\n",
 					  fileName, linkedFile, uri));
 		  g_free (uri);
 		}
@@ -1034,7 +1034,7 @@ gdk_dropfiles_filter (GdkXEvent *xev,
 	      if (uri != NULL)
 		{
 		  g_string_append (result, uri);
-		  GDK_NOTE (DND, g_print ("...%s: %s\n", fileName, uri));
+		  GDK_NOTE (DND, g_print ("... %s: %s\n", fileName, uri));
 		  g_free (uri);
 		}
 	    }
@@ -1421,7 +1421,7 @@ gdk_drag_find_window_for_screen (GdkDragContext  *context,
     }
 
   GDK_NOTE (DND,
-	    g_print ("gdk_drag_find_window: %p +%d+%d: %p: %p %d\n",
+	    g_print ("gdk_drag_find_window: %p %+d%+d: %p: %p %d\n",
 		     (drag_window ? GDK_WINDOW_HWND (drag_window) : NULL),
 		     x_root, y_root,
 		     a.result,

@@ -66,8 +66,6 @@ struct _GtkToolItemPrivate
   GtkWidget *menu_item;
 };
   
-static void gtk_tool_item_init       (GtkToolItem *toolitem);
-static void gtk_tool_item_class_init (GtkToolItemClass *class);
 static void gtk_tool_item_finalize    (GObject *object);
 static void gtk_tool_item_parent_set   (GtkWidget   *toolitem,
 				        GtkWidget   *parent);
@@ -97,36 +95,9 @@ static gboolean gtk_tool_item_real_set_tooltip (GtkToolItem *tool_item,
 static gboolean gtk_tool_item_create_menu_proxy (GtkToolItem *item);
 
 
-static GObjectClass *parent_class = NULL;
-static guint         toolitem_signals[LAST_SIGNAL] = { 0 };
+static guint toolitem_signals[LAST_SIGNAL] = { 0 };
 
-GType
-gtk_tool_item_get_type (void)
-{
-  static GtkType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info =
-	{
-	  sizeof (GtkToolItemClass),
-	  (GBaseInitFunc) NULL,
-	  (GBaseFinalizeFunc) NULL,
-	  (GClassInitFunc) gtk_tool_item_class_init,
-	  (GClassFinalizeFunc) NULL,
-	  NULL,
-        
-	  sizeof (GtkToolItem),
-	  0, /* n_preallocs */
-	  (GInstanceInitFunc) gtk_tool_item_init,
-	};
-
-      type = g_type_register_static (GTK_TYPE_BIN,
-				     "GtkToolItem",
-				     &type_info, 0);
-    }
-  return type;
-}
+G_DEFINE_TYPE (GtkToolItem, gtk_tool_item, GTK_TYPE_BIN)
 
 static void
 gtk_tool_item_class_init (GtkToolItemClass *klass)
@@ -134,7 +105,6 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
   GObjectClass *object_class;
   GtkWidgetClass *widget_class;
   
-  parent_class = g_type_class_peek_parent (klass);
   object_class = (GObjectClass *)klass;
   widget_class = (GtkWidgetClass *)klass;
   
@@ -206,7 +176,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  * Return value: %TRUE if the signal was handled, %FALSE if not
  **/
   toolitem_signals[CREATE_MENU_PROXY] =
-    g_signal_new ("create_menu_proxy",
+    g_signal_new (I_("create_menu_proxy"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolItemClass, create_menu_proxy),
@@ -231,7 +201,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  * themselves accordingly.
  **/
   toolitem_signals[TOOLBAR_RECONFIGURED] =
-    g_signal_new ("toolbar_reconfigured",
+    g_signal_new (I_("toolbar_reconfigured"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolItemClass, toolbar_reconfigured),
@@ -252,7 +222,7 @@ gtk_tool_item_class_init (GtkToolItemClass *klass)
  * Return value: %TRUE if the signal was handled, %FALSE if not
  **/
   toolitem_signals[SET_TOOLTIP] =
-    g_signal_new ("set_tooltip",
+    g_signal_new (I_("set_tooltip"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkToolItemClass, set_tooltip),
@@ -290,8 +260,8 @@ gtk_tool_item_finalize (GObject *object)
   if (item->priv->menu_item)
     g_object_unref (item->priv->menu_item);
   
-  if (G_OBJECT_CLASS (parent_class)->finalize)
-    G_OBJECT_CLASS (parent_class)->finalize (object);
+  if (G_OBJECT_CLASS (gtk_tool_item_parent_class)->finalize)
+    G_OBJECT_CLASS (gtk_tool_item_parent_class)->finalize (object);
 }
 
 static void
@@ -425,7 +395,7 @@ gtk_tool_item_unrealize (GtkWidget *widget)
 
   destroy_drag_window (toolitem);
   
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  GTK_WIDGET_CLASS (gtk_tool_item_parent_class)->unrealize (widget);
 }
 
 static void
@@ -434,7 +404,7 @@ gtk_tool_item_map (GtkWidget *widget)
   GtkToolItem *toolitem;
 
   toolitem = GTK_TOOL_ITEM (widget);
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (gtk_tool_item_parent_class)->map (widget);
   if (toolitem->priv->drag_window)
     gdk_window_show (toolitem->priv->drag_window);
 }
@@ -447,7 +417,7 @@ gtk_tool_item_unmap (GtkWidget *widget)
   toolitem = GTK_TOOL_ITEM (widget);
   if (toolitem->priv->drag_window)
     gdk_window_hide (toolitem->priv->drag_window);
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (gtk_tool_item_parent_class)->unmap (widget);
 }
 
 static void
@@ -1109,8 +1079,7 @@ gtk_tool_item_set_proxy_menu_item (GtkToolItem *tool_item,
       
       if (menu_item)
 	{
-	  g_object_ref (menu_item);
-	  gtk_object_sink (GTK_OBJECT (menu_item));
+	  g_object_ref_sink (menu_item);
 
 	  gtk_widget_set_sensitive (menu_item,
 				    GTK_WIDGET_SENSITIVE (tool_item));
@@ -1137,6 +1106,9 @@ _gtk_tool_item_toolbar_reconfigured (GtkToolItem *tool_item)
 
   g_signal_emit (tool_item, toolitem_signals[TOOLBAR_RECONFIGURED], 0);
   
+  if (tool_item->priv->drag_window)
+    gdk_window_raise (tool_item->priv->drag_window);
+
   gtk_widget_queue_resize (GTK_WIDGET (tool_item));
 }
 

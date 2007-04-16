@@ -26,8 +26,8 @@
 
 #include <config.h>
 #include "gtkalignment.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum {
@@ -56,8 +56,6 @@ struct _GtkAlignmentPrivate
   guint padding_right;
 };
 
-static void gtk_alignment_class_init    (GtkAlignmentClass *klass);
-static void gtk_alignment_init          (GtkAlignment      *alignment);
 static void gtk_alignment_size_request  (GtkWidget         *widget,
 					 GtkRequisition    *requisition);
 static void gtk_alignment_size_allocate (GtkWidget         *widget,
@@ -71,32 +69,7 @@ static void gtk_alignment_get_property (GObject         *object,
                                         GValue          *value,
                                         GParamSpec      *pspec);
 
-GType
-gtk_alignment_get_type (void)
-{
-  static GType alignment_type = 0;
-
-  if (!alignment_type)
-    {
-      static const GTypeInfo alignment_info =
-      {
-	sizeof (GtkAlignmentClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_alignment_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkAlignment),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_alignment_init,
-      };
-
-      alignment_type = g_type_register_static (GTK_TYPE_BIN, "GtkAlignment",
-					       &alignment_info, 0);
-    }
-
-  return alignment_type;
-}
+G_DEFINE_TYPE (GtkAlignment, gtk_alignment, GTK_TYPE_BIN)
 
 static void
 gtk_alignment_class_init (GtkAlignmentClass *class)
@@ -121,7 +94,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
                                                       0.5,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
    
   g_object_class_install_property (gobject_class,
                                    PROP_YALIGN,
@@ -131,7 +104,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
 						      0.5,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_XSCALE,
                                    g_param_spec_float("xscale",
@@ -140,7 +113,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
                                                       1.0,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_YSCALE,
                                    g_param_spec_float("yscale",
@@ -149,7 +122,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0.0,
                                                       1.0,
                                                       1.0,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
 
 /**
@@ -167,10 +140,10 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
 /**
- * GtkAlignment:top-padding:
+ * GtkAlignment:bottom-padding:
  *
  * The padding to insert at the bottom of the widget.
  *
@@ -184,10 +157,10 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
 /**
- * GtkAlignment:top-padding:
+ * GtkAlignment:left-padding:
  *
  * The padding to insert at the left of the widget.
  *
@@ -201,10 +174,10 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
 /**
- * GtkAlignment:top-padding:
+ * GtkAlignment:right-padding:
  *
  * The padding to insert at the right of the widget.
  *
@@ -218,7 +191,7 @@ gtk_alignment_class_init (GtkAlignmentClass *class)
                                                       0,
                                                       G_MAXINT,
                                                       0,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
   g_type_class_add_private (gobject_class, sizeof (GtkAlignmentPrivate));  
 }
@@ -441,11 +414,9 @@ static void
 gtk_alignment_size_request (GtkWidget      *widget,
 			    GtkRequisition *requisition)
 {
-  GtkAlignment *alignment;
   GtkBin *bin;
   GtkAlignmentPrivate *priv;
 
-  alignment = GTK_ALIGNMENT (widget);
   bin = GTK_BIN (widget);
   priv = GTK_ALIGNMENT_GET_PRIVATE (widget);
 

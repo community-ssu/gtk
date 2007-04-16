@@ -138,7 +138,7 @@ GtkWidget* gtk_dialog_add_button        (GtkDialog   *dialog,
                                          gint         response_id);
 void       gtk_dialog_add_buttons       (GtkDialog   *dialog,
                                          const gchar *first_button_text,
-                                         ...);
+                                         ...) G_GNUC_NULL_TERMINATED;
 
 void gtk_dialog_set_response_sensitive (GtkDialog *dialog,
                                         gint       response_id,

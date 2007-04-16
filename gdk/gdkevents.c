@@ -255,7 +255,6 @@ gdk_event_put (GdkEvent *event)
   gdk_display_put_event (display, event);
 }
 
-static GMemChunk *event_chunk = NULL;
 static GHashTable *event_hash = NULL;
 
 /**
@@ -275,17 +274,10 @@ gdk_event_new (GdkEventType type)
   GdkEventPrivate *new_private;
   GdkEvent *new_event;
   
-  if (event_chunk == NULL)
-    {
-      event_chunk = g_mem_chunk_new ("events",
-				     sizeof (GdkEventPrivate),
-				     4096,
-				     G_ALLOC_AND_FREE);
-      event_hash = g_hash_table_new (g_direct_hash, NULL);
-    }
-  
-  new_private = g_chunk_new (GdkEventPrivate, event_chunk);
-  memset (new_private, 0, sizeof (GdkEventPrivate));
+  if (!event_hash)
+    event_hash = g_hash_table_new (g_direct_hash, NULL);
+
+  new_private = g_slice_new0 (GdkEventPrivate);
   
   new_private->flags = 0;
   new_private->screen = NULL;
@@ -446,8 +438,6 @@ gdk_event_free (GdkEvent *event)
 {
   g_return_if_fail (event != NULL);
 
-  g_assert (event_chunk != NULL); /* paranoid */
-  
   if (event->any.window)
     g_object_unref (event->any.window);
   
@@ -498,7 +488,7 @@ gdk_event_free (GdkEvent *event)
     }
 
   g_hash_table_remove (event_hash, event);
-  g_mem_chunk_free (event_chunk, event);
+  g_slice_free (GdkEventPrivate, (GdkEventPrivate*) event);
 }
 
 /**
@@ -561,6 +551,7 @@ gdk_event_get_time (GdkEvent *event)
       case GDK_WINDOW_STATE:
       case GDK_SETTING:
       case GDK_OWNER_CHANGE:
+      case GDK_GRAB_BROKEN:
         /* return current time */
         break;
       }
@@ -637,6 +628,7 @@ gdk_event_get_state (GdkEvent        *event,
       case GDK_WINDOW_STATE:
       case GDK_SETTING:
       case GDK_OWNER_CHANGE:
+      case GDK_GRAB_BROKEN:
         /* no state field */
         break;
       }
@@ -840,6 +832,26 @@ gdk_event_get_axis (GdkEvent   *event,
     return FALSE;
 
   return gdk_device_get_axis (device, axes, axis_use, value);
+}
+
+/**
+ * gdk_event_request_motions:
+ * @event: a valid #GdkEvent
+ *
+ * Request more motion notifies if #event is a motion notify hint event.
+ * This function should be used instead of gdk_window_get_pointer() to
+ * request further motion notifies, because it also works for extension
+ * events where motion notifies are provided for devices other than the
+ * core pointer.
+ *
+ * Since: 2.12
+ **/
+void
+gdk_event_request_motions (GdkEventMotion *event)
+{
+  g_return_if_fail (event != NULL);
+  if (event->type == GDK_MOTION_NOTIFY && event->is_hint)
+    gdk_device_get_state (event->device, event->window, NULL, NULL);
 }
 
 /**
@@ -1198,7 +1210,7 @@ gdk_event_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GdkEvent",
+    our_type = g_boxed_type_register_static (g_intern_static_string ("GdkEvent"),
 					     (GBoxedCopyFunc)gdk_event_copy,
 					     (GBoxedFreeFunc)gdk_event_free);
   return our_type;

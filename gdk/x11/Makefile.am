@@ -8,9 +8,7 @@ INCLUDES = 				\
 	-I$(top_srcdir)			\
 	-I$(top_srcdir)/gdk		\
 	-I$(top_builddir)/gdk		\
-	-DG_DISABLE_DEPRECATED		\
 	-DGDK_PIXBUF_DISABLE_DEPRECATED	\
-	-DGDK_DISABLE_DEPRECATED	\
 	$(GTK_DEBUG_FLAGS) 		\
 	$(GDK_DEP_CFLAGS)
 
@@ -39,7 +37,6 @@ libgdk_x11_la_SOURCES =    	\
 	gdkinput.c	   	\
 	gdkkeys-x11.c		\
 	gdkmain-x11.c	   	\
-	gdkpango-x11.c		\
 	gdkpixmap-x11.c	   	\
 	gdkpixmap-x11.h		\
 	gdkproperty-x11.c  	\
@@ -50,6 +47,7 @@ libgdk_x11_la_SOURCES =    	\
 	gdkvisual-x11.c	   	\
 	gdkwindow-x11.c    	\
 	gdkwindow-x11.h		\
+	gdkxftdefaults.c	\
 	gdkxid.c	   	\
 	gdkx.h		   	\
 	gdkprivate-x11.h   	\
@@ -69,9 +67,16 @@ endif
 libgdkinclude_HEADERS = 	\
 	gdkx.h
 
+
+noinst_PROGRAMS = checksettings
+checksettings_LDADD = libgdk-x11.la $(GLIB_LIBS) $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la 
+
+TESTS = checksettings
+
 # We need to include all these C files here since the conditionals
 # don't seem to be correctly expanded for the dist files.
 EXTRA_DIST = 			\
 	gdkinput-x11.c		\
 	gdkinput-xfree.c	\
-	gdkinput-none.c
+	gdkinput-none.c		\
+	gdksettings.c

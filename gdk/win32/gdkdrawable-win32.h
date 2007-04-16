@@ -30,9 +30,7 @@
 #include <gdk/gdkdrawable.h>
 #include <gdk/win32/gdkwin32.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 /* Drawable implementation for Win32
  */
@@ -53,6 +51,11 @@ struct _GdkDrawableImplWin32
   GdkDrawable *wrapper;
   GdkColormap *colormap;
   HANDLE handle;
+
+  guint hdc_count;
+  HDC hdc;
+  HBITMAP saved_dc_bitmap;	/* Original bitmap for dc */
+  cairo_surface_t *cairo_surface;
 };
  
 struct _GdkDrawableImplWin32Class 
@@ -63,8 +66,10 @@ struct _GdkDrawableImplWin32Class
 
 GType gdk_drawable_impl_win32_get_type (void);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+HDC  _gdk_win32_drawable_acquire_dc (GdkDrawable *drawable);
+void _gdk_win32_drawable_release_dc (GdkDrawable *drawable);
+void _gdk_win32_drawable_finish     (GdkDrawable *drawable);
+
+G_END_DECLS
 
 #endif /* __GDK_DRAWABLE_WIN32_H__ */

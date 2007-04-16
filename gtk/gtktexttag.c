@@ -105,6 +105,8 @@ enum {
   PROP_LANGUAGE,
   PROP_TABS,
   PROP_INVISIBLE,
+  PROP_PARAGRAPH_BACKGROUND,
+  PROP_PARAGRAPH_BACKGROUND_GDK,
   
   /* Whether-a-style-arg-is-set args */
   PROP_BACKGROUND_SET,
@@ -134,11 +136,10 @@ enum {
   PROP_LANGUAGE_SET,
   PROP_TABS_SET,
   PROP_INVISIBLE_SET,
+  PROP_PARAGRAPH_BACKGROUND_SET,
 
   LAST_ARG
 };
-static void gtk_text_tag_init         (GtkTextTag      *text_tag);
-static void gtk_text_tag_class_init   (GtkTextTagClass *klass);
 static void gtk_text_tag_finalize     (GObject         *object);
 static void gtk_text_tag_set_property (GObject         *object,
                                        guint            prop_id,
@@ -149,42 +150,14 @@ static void gtk_text_tag_get_property (GObject         *object,
                                        GValue          *value,
                                        GParamSpec      *pspec);
 
-static GObjectClass *parent_class = NULL;
 static guint signals[LAST_SIGNAL] = { 0 };
 
-GType
-gtk_text_tag_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (our_type == 0)
-    {
-      static const GTypeInfo our_info =
-      {
-        sizeof (GtkTextTagClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gtk_text_tag_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GtkTextTag),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gtk_text_tag_init
-      };
-
-      our_type = g_type_register_static (G_TYPE_OBJECT, "GtkTextTag",
-                                         &our_info, 0);
-    }
-
-  return our_type;
-}
+G_DEFINE_TYPE (GtkTextTag, gtk_text_tag, G_TYPE_OBJECT)
 
 static void
 gtk_text_tag_class_init (GtkTextTagClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-  parent_class = g_type_class_peek_parent (klass);
 
   object_class->set_property = gtk_text_tag_set_property;
   object_class->get_property = gtk_text_tag_get_property;
@@ -198,7 +171,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                         P_("Tag name"),
                                                         P_("Name used to refer to the text tag. NULL for anonymous tags"),
                                                         NULL,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY));
+                                                        GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
 
   /* Style args */
 
@@ -216,7 +189,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                        P_("Background color"),
                                                        P_("Background color as a (possibly unallocated) GdkColor"),
                                                        GDK_TYPE_COLOR,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                       GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_BACKGROUND_FULL_HEIGHT,
@@ -224,7 +197,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                          P_("Background full height"),
                                                          P_("Whether the background color fills the entire line height or only the height of the tagged characters"),
                                                          FALSE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
 
   
   g_object_class_install_property (object_class,
@@ -233,7 +206,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                         P_("Background stipple mask"),
                                                         P_("Bitmap to use as a mask when drawing the text background"),
                                                         GDK_TYPE_PIXMAP,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));  
+                                                        GTK_PARAM_READWRITE));  
 
 
   g_object_class_install_property (object_class,
@@ -250,7 +223,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                        P_("Foreground color"),
                                                        P_("Foreground color as a (possibly unallocated) GdkColor"),
                                                        GDK_TYPE_COLOR,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                       GTK_PARAM_READWRITE));
 
   
   g_object_class_install_property (object_class,
@@ -259,7 +232,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                         P_("Foreground stipple mask"),
                                                         P_("Bitmap to use as a mask when drawing the text foreground"),
                                                         GDK_TYPE_PIXMAP,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));  
+                                                        GTK_PARAM_READWRITE));  
   
   g_object_class_install_property (object_class,
                                    PROP_DIRECTION,
@@ -267,8 +240,8 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                       P_("Text direction"),
                                                       P_("Text direction, e.g. right-to-left or left-to-right"),
                                                       GTK_TYPE_TEXT_DIRECTION,
-                                                      GTK_TEXT_DIR_LTR,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_TEXT_DIR_NONE,
+                                                      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_EDITABLE,
@@ -276,15 +249,23 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                          P_("Editable"),
                                                          P_("Whether the text can be modified by the user"),
                                                          TRUE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
 
+  /**
+   * GtkTextTag:font:
+   *
+   * Font description as string, e.g. \"Sans Italic 12\". 
+   *
+   * Note that the initial value of this property depends on
+   * the internals of #PangoFontDescription.
+   */
   g_object_class_install_property (object_class,
                                    PROP_FONT,
                                    g_param_spec_string ("font",
                                                         P_("Font"),
                                                         P_("Font description as a string, e.g. \"Sans Italic 12\""),
                                                         NULL,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_FONT_DESC,
@@ -292,8 +273,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                        P_("Font"),
                                                        P_("Font description as a PangoFontDescription struct"),
                                                        PANGO_TYPE_FONT_DESCRIPTION,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
-
+                                                       GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_FAMILY,
@@ -301,7 +281,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                         P_("Font family"),
                                                         P_("Name of the font family, e.g. Sans, Helvetica, Times, Monospace"),
                                                         NULL,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_STYLE,
@@ -310,7 +290,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                       P_("Font style as a PangoStyle, e.g. PANGO_STYLE_ITALIC"),
                                                       PANGO_TYPE_STYLE,
                                                       PANGO_STYLE_NORMAL,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_VARIANT,
@@ -319,7 +299,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      P_("Font variant as a PangoVariant, e.g. PANGO_VARIANT_SMALL_CAPS"),
                                                       PANGO_TYPE_VARIANT,
                                                       PANGO_VARIANT_NORMAL,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_WEIGHT,
@@ -329,7 +309,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      PANGO_WEIGHT_NORMAL,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
   
 
   g_object_class_install_property (object_class,
@@ -339,7 +319,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                       P_("Font stretch as a PangoStretch, e.g. PANGO_STRETCH_CONDENSED"),
                                                       PANGO_TYPE_STRETCH,
                                                       PANGO_STRETCH_NORMAL,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_SIZE,
@@ -349,7 +329,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_SCALE,
@@ -359,7 +339,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                         0.0,
                                                         G_MAXDOUBLE,
                                                         1.0,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_SIZE_POINTS,
@@ -369,7 +349,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                         0.0,
                                                         G_MAXDOUBLE,
                                                         0.0,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));  
+                                                        GTK_PARAM_READWRITE));  
 
   g_object_class_install_property (object_class,
                                    PROP_JUSTIFICATION,
@@ -378,15 +358,25 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                       P_("Left, right, or center justification"),
                                                       GTK_TYPE_JUSTIFICATION,
                                                       GTK_JUSTIFY_LEFT,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
-  
+                                                      GTK_PARAM_READWRITE));
+
+  /**
+   * GtkTextTag:language:
+   *
+   * The language this text is in, as an ISO code. Pango can use this as a 
+   * hint when rendering the text. If not set, an appropriate default will be 
+   * used.
+   *
+   * Note that the initial value of this property depends on the current
+   * locale, see also gtk_get_default_language().
+   */
   g_object_class_install_property (object_class,
                                    PROP_LANGUAGE,
                                    g_param_spec_string ("language",
                                                         P_("Language"),
                                                         P_("The language this text is in, as an ISO code. Pango can use this as a hint when rendering the text. If not set, an appropriate default will be used."),
                                                         NULL,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));  
+                                                        GTK_PARAM_READWRITE));  
 
   g_object_class_install_property (object_class,
                                    PROP_LEFT_MARGIN,
@@ -396,7 +386,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_RIGHT_MARGIN,
@@ -406,7 +396,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   
   g_object_class_install_property (object_class,
@@ -417,7 +407,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      G_MININT,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   
   g_object_class_install_property (object_class,
@@ -428,7 +418,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
 						     G_MININT,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_PIXELS_ABOVE_LINES,
@@ -438,7 +428,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_PIXELS_BELOW_LINES,
@@ -448,7 +438,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_PIXELS_INSIDE_WRAP,
@@ -458,7 +448,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
                                    PROP_STRIKETHROUGH,
@@ -466,7 +456,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                          P_("Strikethrough"),
                                                          P_("Whether to strike through the text"),
                                                          FALSE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_UNDERLINE,
@@ -475,7 +465,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                       P_("Style of underline for this text"),
                                                       PANGO_TYPE_UNDERLINE,
                                                       PANGO_UNDERLINE_NONE,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
                                    PROP_WRAP_MODE,
@@ -484,7 +474,7 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                      P_("Whether to wrap lines never, at word boundaries, or at character boundaries"),
                                                       GTK_TYPE_WRAP_MODE,
                                                       GTK_WRAP_NONE,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
 
   g_object_class_install_property (object_class,
@@ -493,19 +483,61 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                                                        P_("Tabs"),
                                                        P_("Custom tabs for this text"),
                                                        PANGO_TYPE_TAB_ARRAY,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                       GTK_PARAM_READWRITE));
   
+  /**
+   * GtkTextTag:invisible:
+   *
+   * Whether this text is hidden.
+   *
+   * Note that there may still be problems with the support for invisible 
+   * text, in particular when navigating programmatically inside a buffer
+   * containing invisible segments. 
+   *
+   * Since: 2.8
+   */
   g_object_class_install_property (object_class,
                                    PROP_INVISIBLE,
                                    g_param_spec_boolean ("invisible",
                                                          P_("Invisible"),
-                                                         P_("Whether this text is hidden. Not implemented in GTK 2.0"),
+                                                         P_("Whether this text is hidden."),
                                                          FALSE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
+
+  /**
+   * GtkTextTag:paragraph-background:
+   *
+   * The paragraph background color as a string.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_PARAGRAPH_BACKGROUND,
+                                   g_param_spec_string ("paragraph-background",
+                                                        P_("Paragraph background color name"),
+                                                        P_("Paragraph background color as a string"),
+                                                        NULL,
+                                                        GTK_PARAM_WRITABLE));
+
+  /**
+   * GtkTextTag:paragraph-background-gdk:
+   *
+   * The paragraph background color as a as a (possibly unallocated) 
+   * #GdkColor.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_PARAGRAPH_BACKGROUND_GDK,
+                                   g_param_spec_boxed ("paragraph-background-gdk",
+                                                       P_("Paragraph background color"),
+                                                       P_("Paragraph background color as a (possibly unallocated) GdkColor"),
+                                                       GDK_TYPE_COLOR,
+                                                       GTK_PARAM_READWRITE));
 
   /* Style props are set or not */
 
-#define ADD_SET_PROP(propname, propval, nick, blurb) g_object_class_install_property (object_class, propval, g_param_spec_boolean (propname, nick, blurb, FALSE, GTK_PARAM_READABLE | GTK_PARAM_WRITABLE))
+#define ADD_SET_PROP(propname, propval, nick, blurb) g_object_class_install_property (object_class, propval, g_param_spec_boolean (propname, nick, blurb, FALSE, GTK_PARAM_READWRITE))
 
   ADD_SET_PROP ("background-set", PROP_BACKGROUND_SET,
                 P_("Background set"),
@@ -615,8 +647,12 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
                 P_("Invisible set"),
                 P_("Whether this tag affects text visibility"));
 
+  ADD_SET_PROP ("paragraph-background-set", PROP_PARAGRAPH_BACKGROUND_SET,
+                P_("Paragraph background set"),
+                P_("Whether this tag affects the paragraph background color"));
+  
   signals[EVENT] =
-    g_signal_new ("event",
+    g_signal_new (I_("event"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagClass, event),
@@ -632,9 +668,6 @@ gtk_text_tag_class_init (GtkTextTagClass *klass)
 static void
 gtk_text_tag_init (GtkTextTag *text_tag)
 {
-  /* 0 is basically a fine way to initialize everything in the
-     entire struct */
-  
   text_tag->values = gtk_text_attributes_new ();
 }
 
@@ -677,7 +710,7 @@ gtk_text_tag_finalize (GObject *object)
   g_free (text_tag->name);
   text_tag->name = NULL;
 
-  (* G_OBJECT_CLASS (parent_class)->finalize) (object);
+  (* G_OBJECT_CLASS (gtk_text_tag_parent_class)->finalize) (object);
 }
 
 static void
@@ -722,6 +755,34 @@ set_fg_color (GtkTextTag *tag, GdkColor *color)
           tag->fg_color_set = FALSE;
           g_object_notify (G_OBJECT (tag), "foreground-set");
         }
+    }
+}
+
+static void
+set_pg_bg_color (GtkTextTag *tag, GdkColor *color)
+{
+  if (color)
+    {
+      if (!tag->pg_bg_color_set)
+        {
+          tag->pg_bg_color_set = TRUE;
+          g_object_notify (G_OBJECT (tag), "paragraph-background-set");
+        }
+      else
+	gdk_color_free (tag->values->pg_bg_color);
+
+      tag->values->pg_bg_color = gdk_color_copy (color);
+    }
+  else
+    {
+      if (tag->pg_bg_color_set)
+        {
+          tag->pg_bg_color_set = FALSE;
+          g_object_notify (G_OBJECT (tag), "paragraph-background-set");
+	  gdk_color_free (tag->values->pg_bg_color);
+        }
+
+      tag->values->pg_bg_color = NULL;
     }
 }
 
@@ -1190,13 +1251,33 @@ gtk_text_tag_set_property (GObject      *object,
       break;
 
     case PROP_INVISIBLE:
-      g_warning ("The \"invisible\" property on GtkTextTag is not supported for GTK 2.0, it will be added in a future release. see http://bugzilla.gnome.org bug #66194 for status.");
       text_tag->invisible_set = TRUE;
       text_tag->values->invisible = g_value_get_boolean (value);
       g_object_notify (object, "invisible-set");
       size_changed = TRUE;
       break;
       
+    case PROP_PARAGRAPH_BACKGROUND:
+      {
+        GdkColor color;
+
+        if (gdk_color_parse (g_value_get_string (value), &color))
+          set_pg_bg_color (text_tag, &color);
+        else
+          g_warning ("Don't know color `%s'", g_value_get_string (value));
+
+        g_object_notify (object, "paragraph-background-gdk");
+      }
+      break;
+
+    case PROP_PARAGRAPH_BACKGROUND_GDK:
+      {
+        GdkColor *color = g_value_get_boxed (value);
+
+        set_pg_bg_color (text_tag, color);
+      }
+      break;
+
       /* Whether the value should be used... */
 
     case PROP_BACKGROUND_SET:
@@ -1331,6 +1412,10 @@ gtk_text_tag_set_property (GObject      *object,
       size_changed = TRUE;
       break;
       
+    case PROP_PARAGRAPH_BACKGROUND_SET:
+      text_tag->pg_bg_color_set = g_value_get_boolean (value);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -1388,16 +1473,12 @@ gtk_text_tag_get_property (GObject      *object,
 
     case PROP_FONT:
         {
-          /* FIXME GValue imposes a totally gratuitous string copy
-           * here, we could just hand off string ownership
-           */
           gchar *str;
 
 	  gtk_text_tag_ensure_font (tag);
 	  
 	  str = pango_font_description_to_string (tag->values->font);
-          g_value_set_string (value, str);
-          g_free (str);
+          g_value_take_string (value, str);
         }
       break;
 
@@ -1519,6 +1600,10 @@ gtk_text_tag_get_property (GObject      *object,
       g_value_set_boolean (value, tag->values->invisible);
       break;
       
+    case PROP_PARAGRAPH_BACKGROUND_GDK:
+      g_value_set_boxed (value, tag->values->pg_bg_color);
+      break;
+
     case PROP_BACKGROUND_SET:
       g_value_set_boolean (value, tag->bg_color_set);
       break;
@@ -1617,9 +1702,14 @@ gtk_text_tag_get_property (GObject      *object,
       g_value_set_boolean (value, tag->invisible_set);
       break;
       
+    case PROP_PARAGRAPH_BACKGROUND_SET:
+      g_value_set_boolean (value, tag->pg_bg_color_set);
+      break;
+
     case PROP_BACKGROUND:
     case PROP_FOREGROUND:
-      g_warning ("'foreground' and 'background' properties are not readable, use 'foreground_gdk' and 'background_gdk'");
+    case PROP_PARAGRAPH_BACKGROUND:
+      g_warning ("'foreground', 'background' and 'paragraph_background' properties are not readable, use 'foreground_gdk', 'background_gdk' and 'paragraph_background_gdk'");
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -1832,7 +1922,9 @@ gtk_text_attributes_new (void)
   values->language = gtk_get_default_language ();
 
   values->font_scale = 1.0;
-  
+
+  values->editable = TRUE;
+      
   return values;
 }
 
@@ -1861,7 +1953,7 @@ gtk_text_attributes_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GtkTextAttributes",
+    our_type = g_boxed_type_register_static (I_("GtkTextAttributes"),
 					     (GBoxedCopyFunc) gtk_text_attributes_ref,
 					     (GBoxedFreeFunc) gtk_text_attributes_unref);
 
@@ -1919,6 +2011,9 @@ gtk_text_attributes_copy_values (GtkTextAttributes *src,
   if (dest->font)
     dest->font = pango_font_description_copy (src->font);
   
+  if (src->pg_bg_color)
+    dest->pg_bg_color = gdk_color_copy (src->pg_bg_color);
+
   dest->refcount = orig_refcount;
   dest->realized = FALSE;
 }
@@ -1928,13 +2023,17 @@ gtk_text_attributes_copy_values (GtkTextAttributes *src,
  * @values: a #GtkTextAttributes
  * 
  * Increments the reference count on @values.
+ *
+ * Returns: the #GtkTextAttributes that were passed in
  **/
-void
+GtkTextAttributes *
 gtk_text_attributes_ref (GtkTextAttributes *values)
 {
-  g_return_if_fail (values != NULL);
+  g_return_val_if_fail (values != NULL, NULL);
 
   values->refcount += 1;
+
+  return values;
 }
 
 /**
@@ -1967,7 +2066,10 @@ gtk_text_attributes_unref (GtkTextAttributes *values)
 
       if (values->font)
 	pango_font_description_free (values->font);
-      
+
+      if (values->pg_bg_color)
+	gdk_color_free (values->pg_bg_color);
+
       g_free (values);
     }
 }
@@ -1990,6 +2092,11 @@ _gtk_text_attributes_realize (GtkTextAttributes *values,
                             &values->appearance.bg_color,
                             FALSE, TRUE);
 
+  if (values->pg_bg_color)
+    gdk_colormap_alloc_color (cmap,
+			      values->pg_bg_color,
+			      FALSE, TRUE);
+
   values->realized = TRUE;
 }
 
@@ -2011,6 +2118,13 @@ _gtk_text_attributes_unrealize (GtkTextAttributes *values,
 
   values->appearance.fg_color.pixel = 0;
   values->appearance.bg_color.pixel = 0;
+
+  if (values->pg_bg_color)
+    {
+      gdk_colormap_free_colors (cmap, values->pg_bg_color, 1);
+      
+      values->pg_bg_color->pixel = 0;
+    }
 
   values->realized = FALSE;
 }
@@ -2042,6 +2156,11 @@ _gtk_text_attributes_fill_from_tags (GtkTextAttributes *dest,
       if (tag->fg_color_set)
         dest->appearance.fg_color = vals->appearance.fg_color;
       
+      if (tag->pg_bg_color_set)
+        {
+          dest->pg_bg_color = gdk_color_copy (vals->pg_bg_color);
+        }
+
       if (tag->bg_stipple_set)
         {
           g_object_ref (vals->appearance.bg_stipple);
@@ -2164,7 +2283,8 @@ _gtk_text_tag_affects_nonsize_appearance (GtkTextTag *tag)
     tag->fg_color_set ||
     tag->fg_stipple_set ||
     tag->strikethrough_set ||
-    tag->bg_full_height_set;
+    tag->bg_full_height_set ||
+    tag->pg_bg_color_set;
 }
 
 #define __GTK_TEXT_TAG_C__

@@ -33,7 +33,6 @@
 
 #undef GTK_DISABLE_DEPRECATED
 #include "gtkoptionmenu.h"
-#define GTK_DISABLE_DEPRECATED
 
 #include "gtkprivate.h"
 #include "gtkalias.h"
@@ -62,8 +61,6 @@ static const GtkOptionMenuProps default_props = {
   0
 };
 
-static void gtk_option_menu_class_init      (GtkOptionMenuClass *klass);
-static void gtk_option_menu_init            (GtkOptionMenu      *option_menu);
 static void gtk_option_menu_destroy         (GtkObject          *object);
 static void gtk_option_menu_set_property    (GObject            *object,
 					     guint               prop_id,
@@ -116,37 +113,9 @@ enum
   LAST_PROP
 };
 
-static GtkButtonClass *parent_class = NULL;
-static guint           signals[LAST_SIGNAL] = { 0 };
+static guint signals[LAST_SIGNAL] = { 0 };
 
-
-GType
-gtk_option_menu_get_type (void)
-{
-  static GType option_menu_type = 0;
-
-  if (!option_menu_type)
-    {
-      static const GTypeInfo option_menu_info =
-      {
-	sizeof (GtkOptionMenuClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_option_menu_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkOptionMenu),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_option_menu_init,
-      };
-
-      option_menu_type =
-	g_type_register_static (GTK_TYPE_BUTTON, "GtkOptionMenu",
-				&option_menu_info, 0);
-    }
-
-  return option_menu_type;
-}
+G_DEFINE_TYPE (GtkOptionMenu, gtk_option_menu, GTK_TYPE_BUTTON)
 
 static void
 gtk_option_menu_class_init (GtkOptionMenuClass *class)
@@ -154,19 +123,15 @@ gtk_option_menu_class_init (GtkOptionMenuClass *class)
   GObjectClass *gobject_class;
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
-  GtkButtonClass *button_class;
   GtkContainerClass *container_class;
 
   gobject_class = (GObjectClass*) class;
   object_class = (GtkObjectClass*) class;
   widget_class = (GtkWidgetClass*) class;
-  button_class = (GtkButtonClass*) class;
   container_class = (GtkContainerClass*) class;
 
-  parent_class = g_type_class_peek_parent (class);
-
   signals[CHANGED] =
-    g_signal_new ("changed",
+    g_signal_new (I_("changed"),
                   G_OBJECT_CLASS_TYPE (class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkOptionMenuClass, changed),
@@ -196,7 +161,7 @@ gtk_option_menu_class_init (GtkOptionMenuClass *class)
                                                         P_("Menu"),
                                                         P_("The menu of options"),
                                                         GTK_TYPE_MENU,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
   
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_boxed ("indicator-size",
@@ -285,7 +250,7 @@ gtk_option_menu_set_menu (GtkOptionMenu *option_menu,
 
       gtk_option_menu_calc_size (option_menu);
 
-      g_signal_connect_after (option_menu->menu, "selection_done",
+      g_signal_connect_after (option_menu->menu, "selection-done",
 			      G_CALLBACK (gtk_option_menu_selection_done),
 			      option_menu);
       g_signal_connect_swapped (option_menu->menu, "size_request",
@@ -341,7 +306,7 @@ gtk_option_menu_set_history (GtkOptionMenu *option_menu,
  * items are numbered from top to bottom, starting with 0. 
  * 
  * Return value: index of the selected menu item, or -1 if there are no menu items
- * Deprecated: Use #GtkComboBox instead.
+ * Deprecated: 2.4: Use #GtkComboBox instead.
  **/
 gint
 gtk_option_menu_get_history (GtkOptionMenu *option_menu)
@@ -416,8 +381,8 @@ gtk_option_menu_destroy (GtkObject *object)
   if (option_menu->menu)
     gtk_widget_destroy (option_menu->menu);
 
-  if (GTK_OBJECT_CLASS (parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+  if (GTK_OBJECT_CLASS (gtk_option_menu_parent_class)->destroy)
+    (* GTK_OBJECT_CLASS (gtk_option_menu_parent_class)->destroy) (object);
 }
 
 static void
@@ -428,11 +393,11 @@ gtk_option_menu_get_props (GtkOptionMenu       *option_menu,
   GtkBorder *indicator_spacing;
   
   gtk_widget_style_get (GTK_WIDGET (option_menu),
-			"indicator_size", &indicator_size,
-			"indicator_spacing", &indicator_spacing,
-			"interior_focus", &props->interior_focus,
-			"focus_line_width", &props->focus_width,
-			"focus_padding", &props->focus_pad,
+			"indicator-size", &indicator_size,
+			"indicator-spacing", &indicator_spacing,
+			"interior-focus", &props->interior_focus,
+			"focus-line-width", &props->focus_width,
+			"focus-padding", &props->focus_pad,
 			NULL);
 
   if (indicator_size)

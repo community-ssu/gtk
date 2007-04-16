@@ -1,8 +1,34 @@
+/* GTK - The GIMP Toolkit
+ * Copyright (C) 1995-1997 Peter Mattis, Spencer Kimball and Josh MacDonald
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
+/*
+ * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
+ * file for a list of people on the GTK+ Team.  See the ChangeLog
+ * files for a list of changes.  These files are distributed with
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ */
 
 #include <config.h>
 #include "gtktexttagtable.h"
 #include "gtkmarshalers.h"
 #include "gtktextbuffer.h" /* just for the lame notify_will_remove_tag hack */
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #include <stdlib.h>
@@ -18,8 +44,6 @@ enum {
   LAST_ARG
 };
 
-static void gtk_text_tag_table_init         (GtkTextTagTable      *table);
-static void gtk_text_tag_table_class_init   (GtkTextTagTableClass *klass);
 static void gtk_text_tag_table_finalize     (GObject              *object);
 static void gtk_text_tag_table_set_property (GObject              *object,
                                              guint                 prop_id,
@@ -30,42 +54,14 @@ static void gtk_text_tag_table_get_property (GObject              *object,
                                              GValue               *value,
                                              GParamSpec           *pspec);
 
-static GObjectClass *parent_class = NULL;
 static guint signals[LAST_SIGNAL] = { 0 };
 
-GType
-gtk_text_tag_table_get_type (void)
-{
-  static GType our_type = 0;
-
-  if (our_type == 0)
-    {
-      static const GTypeInfo our_info =
-      {
-        sizeof (GtkTextTagTableClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gtk_text_tag_table_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GtkTextTagTable),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gtk_text_tag_table_init
-      };
-
-      our_type = g_type_register_static (G_TYPE_OBJECT, "GtkTextTagTable",
-                                         &our_info, 0);
-    }
-
-  return our_type;
-}
+G_DEFINE_TYPE (GtkTextTagTable, gtk_text_tag_table, G_TYPE_OBJECT)
 
 static void
 gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-  parent_class = g_type_class_peek_parent (klass);
 
   object_class->set_property = gtk_text_tag_table_set_property;
   object_class->get_property = gtk_text_tag_table_get_property;
@@ -73,7 +69,7 @@ gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
   object_class->finalize = gtk_text_tag_table_finalize;
   
   signals[TAG_CHANGED] =
-    g_signal_new ("tag_changed",
+    g_signal_new (I_("tag_changed"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagTableClass, tag_changed),
@@ -85,7 +81,7 @@ gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
                   G_TYPE_BOOLEAN);  
 
   signals[TAG_ADDED] =
-    g_signal_new ("tag_added",
+    g_signal_new (I_("tag_added"),
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagTableClass, tag_added),
@@ -96,7 +92,7 @@ gtk_text_tag_table_class_init (GtkTextTagTableClass *klass)
                   GTK_TYPE_TEXT_TAG);
 
   signals[TAG_REMOVED] =
-    g_signal_new ("tag_removed",                   
+    g_signal_new (I_("tag_removed"),  
                   G_OBJECT_CLASS_TYPE (object_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkTextTagTableClass, tag_removed),
@@ -167,7 +163,7 @@ gtk_text_tag_table_finalize (GObject *object)
 
   g_slist_free (table->buffers);
   
-  (* G_OBJECT_CLASS (parent_class)->finalize) (object);
+  (* G_OBJECT_CLASS (gtk_text_tag_table_parent_class)->finalize) (object);
 }
 static void
 gtk_text_tag_table_set_property (GObject      *object,
@@ -175,10 +171,6 @@ gtk_text_tag_table_set_property (GObject      *object,
                                  const GValue *value,
                                  GParamSpec   *pspec)
 {
-  GtkTextTagTable *table;
-
-  table = GTK_TEXT_TAG_TABLE (object);
-
   switch (prop_id)
     {
 
@@ -195,10 +187,6 @@ gtk_text_tag_table_get_property (GObject      *object,
                                  GValue       *value,
                                  GParamSpec   *pspec)
 {
-  GtkTextTagTable *table;
-
-  table = GTK_TEXT_TAG_TABLE (object);
-
   switch (prop_id)
     {
 
@@ -361,7 +349,8 @@ list_foreach (gpointer data, gpointer user_data)
  * @data: user data
  *
  * Calls @func on each tag in @table, with user data @data.
- * 
+ * Note that the table may not be modified while iterating 
+ * over it (you can't add/remove tags).
  **/
 void
 gtk_text_tag_table_foreach (GtkTextTagTable       *table,

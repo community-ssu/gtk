@@ -1,3 +1,23 @@
+/* testtreefocus.c
+ * Copyright (C) 2001 Red Hat, Inc
+ * Author: Jonathan Blandford
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 #include <config.h>
 #include <gtk/gtk.h>
 
@@ -299,6 +319,23 @@ dave_toggled (GtkCellRendererToggle *cell,
   gtk_tree_path_free (path);
 }
 
+static void
+set_indicator_size (GtkTreeViewColumn *column,
+		    GtkCellRenderer *cell,
+		    GtkTreeModel *model,
+		    GtkTreeIter *iter,
+		    gpointer data)
+{
+  gint size;
+  GtkTreePath *path;
+
+  path = gtk_tree_model_get_path (model, iter);
+  size = gtk_tree_path_get_indices (path)[0]  * 2 + 10;
+  gtk_tree_path_free (path);
+
+  g_object_set (cell, "indicator_size", size, NULL);
+}
+
 int
 main (int argc, char *argv[])
 {
@@ -415,6 +452,7 @@ main (int argc, char *argv[])
 					       "visible", VISIBLE_COLUMN,
 					       NULL);
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (tree_view), col_offset - 1);
+  gtk_tree_view_column_set_cell_data_func (column, renderer, set_indicator_size, NULL, NULL);
   gtk_tree_view_column_set_sizing (GTK_TREE_VIEW_COLUMN (column), GTK_TREE_VIEW_COLUMN_FIXED);
   gtk_tree_view_column_set_fixed_width (GTK_TREE_VIEW_COLUMN (column), 50);
   gtk_tree_view_column_set_clickable (GTK_TREE_VIEW_COLUMN (column), TRUE);

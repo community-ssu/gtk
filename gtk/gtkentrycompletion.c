@@ -40,6 +40,7 @@
 
 #include <string.h>
 
+
 /* signals */
 enum
 {
@@ -57,23 +58,14 @@ enum
   PROP_MINIMUM_KEY_LENGTH,
   PROP_TEXT_COLUMN,
   PROP_INLINE_COMPLETION,
-  PROP_POPUP_COMPLETION
+  PROP_POPUP_COMPLETION,
+  PROP_POPUP_SET_WIDTH,
+  PROP_POPUP_SINGLE_MATCH
 };
-
-/* Hildon: identify the window of the completion */
-#define HILDON_ENTRY_COMPLETION_POPUP "hildon-completion-window"
-
-/* Hildon: constraints to fit popups nicely on screen
- * See also gtkcombobox.c
- */
-#define HILDON_MAX_ITEMS 8
-#define HILDON_MAX_HEIGHT 305
 
 #define GTK_ENTRY_COMPLETION_GET_PRIVATE(obj)(G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ENTRY_COMPLETION, GtkEntryCompletionPrivate))
 
-static void     gtk_entry_completion_class_init          (GtkEntryCompletionClass *klass);
 static void     gtk_entry_completion_cell_layout_init    (GtkCellLayoutIface      *iface);
-static void     gtk_entry_completion_init                (GtkEntryCompletion      *completion);
 static void     gtk_entry_completion_set_property        (GObject                 *object,
                                                           guint                    prop_id,
                                                           const GValue            *value,
@@ -145,55 +137,17 @@ static gboolean gtk_entry_completion_match_selected      (GtkEntryCompletion *co
 static gboolean gtk_entry_completion_real_insert_prefix  (GtkEntryCompletion *completion,
 							  const gchar        *prefix);
 
-static GObjectClass *parent_class = NULL;
 static guint entry_completion_signals[LAST_SIGNAL] = { 0 };
 
-
-GType
-gtk_entry_completion_get_type (void)
-{
-  static GType entry_completion_type = 0;
-
-  if (!entry_completion_type)
-    {
-      static const GTypeInfo entry_completion_info =
-      {
-        sizeof (GtkEntryCompletionClass),
-        NULL,
-        NULL,
-        (GClassInitFunc) gtk_entry_completion_class_init,
-        NULL,
-        NULL,
-        sizeof (GtkEntryCompletion),
-        0,
-        (GInstanceInitFunc) gtk_entry_completion_init
-      };
-
-      static const GInterfaceInfo cell_layout_info =
-      {
-        (GInterfaceInitFunc) gtk_entry_completion_cell_layout_init,
-        NULL,
-        NULL
-      };
-
-      entry_completion_type =
-        g_type_register_static (G_TYPE_OBJECT, "GtkEntryCompletion",
-                                &entry_completion_info, 0);
-
-      g_type_add_interface_static (entry_completion_type,
-                                   GTK_TYPE_CELL_LAYOUT,
-                                   &cell_layout_info);
-    }
-
-  return entry_completion_type;
-}
+G_DEFINE_TYPE_WITH_CODE (GtkEntryCompletion, gtk_entry_completion, G_TYPE_OBJECT,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_CELL_LAYOUT,
+						gtk_entry_completion_cell_layout_init))
 
 static void
 gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
 {
   GObjectClass *object_class;
 
-  parent_class = g_type_class_peek_parent (klass);
   object_class = (GObjectClass *)klass;
 
   object_class->set_property = gtk_entry_completion_set_property;
@@ -222,7 +176,7 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * Since: 2.6
    */ 
   entry_completion_signals[INSERT_PREFIX] =
-    g_signal_new ("insert_prefix",
+    g_signal_new (I_("insert_prefix"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkEntryCompletionClass, insert_prefix),
@@ -247,7 +201,7 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * Since: 2.4
    */ 
   entry_completion_signals[MATCH_SELECTED] =
-    g_signal_new ("match_selected",
+    g_signal_new (I_("match_selected"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkEntryCompletionClass, match_selected),
@@ -267,7 +221,7 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
    * Since: 2.4
    */
   entry_completion_signals[ACTION_ACTIVATED] =
-    g_signal_new ("action_activated",
+    g_signal_new (I_("action_activated"),
                   G_TYPE_FROM_CLASS (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkEntryCompletionClass, action_activated),
@@ -342,6 +296,41 @@ gtk_entry_completion_class_init (GtkEntryCompletionClass *klass)
  							 TRUE,
  							 GTK_PARAM_READWRITE));
 
+  /**
+   * GtkEntryCompletion:popup-set-width:
+   * 
+   * Determines whether the completions popup window will be
+   * resized to the width of the entry.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (object_class,
+				   PROP_POPUP_SET_WIDTH,
+				   g_param_spec_boolean ("popup-set-width",
+ 							 P_("Popup set width"),
+ 							 P_("If TRUE, the popup window will have the same size as the entry"),
+ 							 TRUE,
+ 							 GTK_PARAM_READWRITE));
+
+  /**
+   * GtkEntryCompletion:popup-single-match:
+   * 
+   * Determines whether the completions popup window will shown
+   * for a single possible completion. You probably want to set
+   * this to %FALSE if you are using 
+   * <link linkend="GtkEntryCompletion--inline-completion">inline 
+   * completion</link>.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (object_class,
+				   PROP_POPUP_SINGLE_MATCH,
+				   g_param_spec_boolean ("popup-single-match",
+ 							 P_("Popup single match"),
+ 							 P_("If TRUE, the popup window will appear for a single match."),
+ 							 TRUE,
+ 							 GTK_PARAM_READWRITE));
+
   g_type_class_add_private (object_class, sizeof (GtkEntryCompletionPrivate));
 }
 
@@ -373,6 +362,8 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   priv->has_completion = FALSE;
   priv->inline_completion = FALSE;
   priv->popup_completion = TRUE;
+  priv->popup_set_width = TRUE;
+  priv->popup_single_match = TRUE;
 
   /* completions */
   priv->filter_model = NULL;
@@ -416,6 +407,7 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
 
   priv->action_view =
     gtk_tree_view_new_with_model (GTK_TREE_MODEL (priv->actions));
+  g_object_ref_sink (priv->action_view);
   g_signal_connect (priv->action_view, "button_press_event",
                     G_CALLBACK (gtk_entry_completion_action_button_press),
                     completion);
@@ -463,7 +455,9 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   gtk_box_pack_start (GTK_BOX (priv->vbox), priv->scrolled_window,
                       TRUE, TRUE, 0);
 
-  gtk_widget_set_name (priv->popup_window, HILDON_ENTRY_COMPLETION_POPUP); 
+#ifdef MAEMO_CHANGES
+  gtk_widget_set_name (priv->popup_window, "hildon-completion-window"); 
+#endif /* MAEMO_CHANGES */
 
   /* we don't want to see the action treeview when no actions have
    * been inserted, so we pack the action treeview after the first
@@ -478,7 +472,7 @@ gtk_entry_completion_set_property (GObject      *object,
                                    GParamSpec   *pspec)
 {
   GtkEntryCompletion *completion = GTK_ENTRY_COMPLETION (object);
-  GtkEntryCompletionPrivate *priv = GTK_ENTRY_COMPLETION_GET_PRIVATE (completion);
+  GtkEntryCompletionPrivate *priv = completion->priv;
 
   switch (prop_id)
     {
@@ -502,6 +496,14 @@ gtk_entry_completion_set_property (GObject      *object,
 
       case PROP_POPUP_COMPLETION:
 	priv->popup_completion = g_value_get_boolean (value);
+        break;
+
+      case PROP_POPUP_SET_WIDTH:
+	priv->popup_set_width = g_value_get_boolean (value);
+        break;
+
+      case PROP_POPUP_SINGLE_MATCH:
+	priv->popup_single_match = g_value_get_boolean (value);
         break;
 
       default:
@@ -541,6 +543,14 @@ gtk_entry_completion_get_property (GObject    *object,
         g_value_set_boolean (value, gtk_entry_completion_get_popup_completion (completion));
         break;
 
+      case PROP_POPUP_SET_WIDTH:
+        g_value_set_boolean (value, gtk_entry_completion_get_popup_set_width (completion));
+        break;
+
+      case PROP_POPUP_SINGLE_MATCH:
+        g_value_set_boolean (value, gtk_entry_completion_get_popup_single_match (completion));
+        break;
+
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
         break;
@@ -551,23 +561,29 @@ static void
 gtk_entry_completion_finalize (GObject *object)
 {
   GtkEntryCompletion *completion = GTK_ENTRY_COMPLETION (object);
+  GtkEntryCompletionPrivate *priv = completion->priv;
 
-  if (completion->priv->tree_view)
-    gtk_widget_destroy (completion->priv->tree_view);
+  if (priv->tree_view)
+    gtk_widget_destroy (priv->tree_view);
 
-  if (completion->priv->entry)
-    gtk_entry_set_completion (GTK_ENTRY (completion->priv->entry), NULL);
+  if (priv->entry)
+    gtk_entry_set_completion (GTK_ENTRY (priv->entry), NULL);
 
-  if (completion->priv->actions)
-    g_object_unref (completion->priv->actions);
+  if (priv->actions)
+    g_object_unref (priv->actions);
+  if (priv->action_view)
+    g_object_unref (priv->action_view);
 
-  if (completion->priv->case_normalized_key)
-    g_free (completion->priv->case_normalized_key);
+  if (priv->case_normalized_key)
+    g_free (priv->case_normalized_key);
 
-  if (completion->priv->popup_window)
-    gtk_widget_destroy (completion->priv->popup_window);
+  if (priv->popup_window)
+    gtk_widget_destroy (priv->popup_window);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  if (priv->match_notify)
+    (* priv->match_notify) (priv->match_data);
+
+  G_OBJECT_CLASS (gtk_entry_completion_parent_class)->finalize (object);
 }
 
 /* implement cell layout interface */
@@ -816,6 +832,8 @@ gtk_entry_completion_action_button_press (GtkWidget      *widget,
 
   if (!GTK_WIDGET_MAPPED (completion->priv->popup_window))
     return FALSE;
+
+  _gtk_entry_reset_im_context (completion->priv->entry);
 
   if (gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
                                      event->x, event->y,
@@ -1273,7 +1291,7 @@ gboolean
 _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 {
   gint x, y;
-  gint matches, items, item_height, height, x_border, y_border;
+  gint matches, items, height, x_border, y_border;
   GdkScreen *screen;
   gint monitor_num;
   gint vertical_separator;
@@ -1292,16 +1310,18 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 
   matches = gtk_tree_model_iter_n_children (GTK_TREE_MODEL (completion->priv->filter_model), NULL);
 
-  items = MIN (matches, HILDON_MAX_ITEMS);
+  items = MIN (matches, 15);
 
   gtk_tree_view_column_cell_get_size (completion->priv->column, NULL,
-                                      NULL, NULL, NULL, &item_height);
+                                      NULL, NULL, NULL, &height);
 
   gtk_widget_style_get (GTK_WIDGET (completion->priv->tree_view),
-			"vertical-separator", &vertical_separator,
-			NULL);
+                        "vertical-separator", &vertical_separator,
+                        NULL);
 
-  item_height += vertical_separator;
+  height += vertical_separator;
+  
+  gtk_widget_realize (completion->priv->tree_view);
 
   if (items <= 0)
     gtk_widget_hide (completion->priv->scrolled_window);
@@ -1313,9 +1333,13 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
 						  GTK_WIDGET (completion->priv->entry)->window);
   gdk_screen_get_monitor_geometry (screen, monitor_num, &monitor);
 
-  width = MIN (completion->priv->entry->allocation.width, monitor.width) - 2 * x_border;
-  height = MIN (items * item_height, HILDON_MAX_HEIGHT);
-  gtk_widget_set_size_request (completion->priv->tree_view, width, height);
+  if (completion->priv->popup_set_width)
+    width = MIN (completion->priv->entry->allocation.width, monitor.width) - 2 * x_border;
+  else
+    width = -1;
+
+  gtk_tree_view_columns_autosize (GTK_TREE_VIEW (completion->priv->tree_view));
+  gtk_widget_set_size_request (completion->priv->tree_view, width, items * height);
 
   /* default on no match */
   completion->priv->current_selected = -1;
@@ -1338,17 +1362,8 @@ _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion)
   else if (x + popup_req.width > monitor.x + monitor.width)
     x = monitor.x + monitor.width - popup_req.width;
   
-  /* Pop-up direction priorities:
-   * 1. above, if it fits on screen (hildon preference)
-   * 2. below, if it fits on screen (gtk+, doesn't take hildon IM into account)
-   * 3. above, otherwise (gtk+)
-   */
-  if (monitor.y + popup_req.height < y)
-    {
-      y -= popup_req.height;
-      above = TRUE;
-    }
-  else if (y + entry_req.height + popup_req.height <= monitor.y + monitor.height)
+  if (y + entry_req.height + popup_req.height <= monitor.y + monitor.height ||
+      y - monitor.y < (monitor.y + monitor.height) - (y + entry_req.height))
     {
       y += entry_req.height;
       above = FALSE;
@@ -1377,6 +1392,7 @@ _gtk_entry_completion_popup (GtkEntryCompletion *completion)
 {
   GtkTreeViewColumn *column;
   GList *renderers;
+  GtkWidget *toplevel;
 
   if (GTK_WIDGET_MAPPED (completion->priv->popup_window))
     return;
@@ -1384,12 +1400,15 @@ _gtk_entry_completion_popup (GtkEntryCompletion *completion)
   if (!GTK_WIDGET_MAPPED (completion->priv->entry))
     return;
 
+  if (!GTK_WIDGET_HAS_FOCUS (completion->priv->entry))
+    return;
+
   completion->priv->ignore_enter = TRUE;
     
   column = gtk_tree_view_get_column (GTK_TREE_VIEW (completion->priv->action_view), 0);
   renderers = gtk_tree_view_column_get_cell_renderers (column);
   gtk_widget_ensure_style (completion->priv->tree_view);
-  g_object_set (GTK_CELL_RENDERER (renderers->data), "cell_background_gdk",
+  g_object_set (GTK_CELL_RENDERER (renderers->data), "cell-background-gdk",
                 &completion->priv->tree_view->style->bg[GTK_STATE_NORMAL],
                 NULL);
   g_list_free (renderers);
@@ -1398,21 +1417,26 @@ _gtk_entry_completion_popup (GtkEntryCompletion *completion)
 
   _gtk_entry_completion_resize_popup (completion);
 
+  toplevel = gtk_widget_get_toplevel (completion->priv->entry);
+  if (GTK_IS_WINDOW (toplevel))
+    gtk_window_group_add_window (gtk_window_get_group (GTK_WINDOW (toplevel)), 
+				 GTK_WINDOW (completion->priv->popup_window));
+
+  /* prevent the first row being focused */
+  gtk_widget_grab_focus (completion->priv->tree_view);
+
+  gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (GTK_TREE_VIEW (completion->priv->tree_view)));
+  gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (GTK_TREE_VIEW (completion->priv->action_view)));
+  
+
   gtk_widget_show (completion->priv->popup_window);
-
-  if (! /* FIXME: Hildon grab free style */ 1)
-    {
-      gtk_grab_add (completion->priv->popup_window);
-      gdk_pointer_grab (completion->priv->popup_window->window, TRUE,
-			GDK_BUTTON_PRESS_MASK |
-			GDK_BUTTON_RELEASE_MASK |
-			GDK_POINTER_MOTION_MASK,
-			NULL, NULL, GDK_CURRENT_TIME);
-    }
-
-  g_signal_connect_data (completion->priv->entry, "size-allocate",
-			 G_CALLBACK (_gtk_entry_completion_popdown),
-			 completion, NULL, G_CONNECT_SWAPPED);
+    
+  gtk_grab_add (completion->priv->popup_window);
+  gdk_pointer_grab (completion->priv->popup_window->window, TRUE,
+                    GDK_BUTTON_PRESS_MASK |
+                    GDK_BUTTON_RELEASE_MASK |
+                    GDK_POINTER_MOTION_MASK,
+                    NULL, NULL, GDK_CURRENT_TIME);
 }
 
 void
@@ -1422,16 +1446,9 @@ _gtk_entry_completion_popdown (GtkEntryCompletion *completion)
     return;
 
   completion->priv->ignore_enter = FALSE;
-
-  g_signal_handlers_disconnect_by_func (completion->priv->entry,
-					_gtk_entry_completion_popdown,
-					completion);
-
-  if (! /* FIXME: Hildon grab free style */ 1)
-    {
-      gdk_pointer_ungrab (GDK_CURRENT_TIME);
-      gtk_grab_remove (completion->priv->popup_window);
-    }
+  
+  gdk_pointer_ungrab (GDK_CURRENT_TIME);
+  gtk_grab_remove (completion->priv->popup_window);
 
   gtk_widget_hide (completion->priv->popup_window);
 }
@@ -1479,7 +1496,7 @@ gtk_entry_completion_compute_prefix (GtkEntryCompletion *completion)
 			  &iter, completion->priv->text_column, &text,
 			  -1);
 
-      if (g_str_has_prefix (text, key))
+      if (text && g_str_has_prefix (text, key))
 	{
 	  if (!prefix)
 	    prefix = g_strdup (text);
@@ -1554,7 +1571,8 @@ gtk_entry_completion_insert_prefix (GtkEntryCompletion *completion)
 
   if (completion->priv->insert_text_id > 0)
     g_signal_handler_block (completion->priv->entry,
-			    completion->priv->insert_text_id);
+                            completion->priv->insert_text_id);
+
   prefix = gtk_entry_completion_compute_prefix (completion);
   if (prefix)
     {
@@ -1562,9 +1580,10 @@ gtk_entry_completion_insert_prefix (GtkEntryCompletion *completion)
 		     0, prefix, &done);
       g_free (prefix);
     }
+
   if (completion->priv->insert_text_id > 0)
     g_signal_handler_unblock (completion->priv->entry,
-			      completion->priv->insert_text_id);
+                              completion->priv->insert_text_id);
 }
 
 /**
@@ -1656,6 +1675,103 @@ gtk_entry_completion_get_popup_completion (GtkEntryCompletion *completion)
   
   return completion->priv->popup_completion;
 }
+
+/**
+ * gtk_entry_completion_set_popup_set_width:
+ * @completion: a #GtkEntryCompletion
+ * @popup_set_width: %TRUE to make the width of the popup the same as the entry
+ *
+ * Sets whether the completion popup window will be resized to be the same
+ * width as the entry.
+ *
+ * Since: 2.8
+ */
+void 
+gtk_entry_completion_set_popup_set_width (GtkEntryCompletion *completion,
+					  gboolean            popup_set_width)
+{
+  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (completion));
+  
+  popup_set_width = popup_set_width != FALSE;
+
+  if (completion->priv->popup_set_width != popup_set_width)
+    {
+      completion->priv->popup_set_width = popup_set_width;
+
+      g_object_notify (G_OBJECT (completion), "popup-set-width");
+    }
+}
+
+/**
+ * gtk_entry_completion_get_popup_set_width:
+ * @completion: a #GtkEntryCompletion
+ * 
+ * Returns whether the  completion popup window will be resized to the 
+ * width of the entry.
+ * 
+ * Return value: %TRUE if the popup window will be resized to the width of 
+ *   the entry
+ * 
+ * Since: 2.8
+ **/
+gboolean
+gtk_entry_completion_get_popup_set_width (GtkEntryCompletion *completion)
+{
+  g_return_val_if_fail (GTK_IS_ENTRY_COMPLETION (completion), TRUE);
+  
+  return completion->priv->popup_set_width;
+}
+
+
+/**
+ * gtk_entry_completion_set_popup_single_match:
+ * @completion: a #GtkEntryCompletion
+ * @popup_single_match: %TRUE if the popup should appear even for a single
+ *   match
+ *
+ * Sets whether the completion popup window will appear even if there is
+ * only a single match. You may want to set this to %FALSE if you
+ * are using <link linkend="GtkEntryCompletion--inline-completion">inline
+ * completion</link>.
+ *
+ * Since: 2.8
+ */
+void 
+gtk_entry_completion_set_popup_single_match (GtkEntryCompletion *completion,
+					     gboolean            popup_single_match)
+{
+  g_return_if_fail (GTK_IS_ENTRY_COMPLETION (completion));
+  
+  popup_single_match = popup_single_match != FALSE;
+
+  if (completion->priv->popup_single_match != popup_single_match)
+    {
+      completion->priv->popup_single_match = popup_single_match;
+
+      g_object_notify (G_OBJECT (completion), "popup-single-match");
+    }
+}
+
+/**
+ * gtk_entry_completion_get_popup_single_match:
+ * @completion: a #GtkEntryCompletion
+ * 
+ * Returns whether the completion popup window will appear even if there is
+ * only a single match. 
+ * 
+ * Return value: %TRUE if the popup window will appear regardless of the
+ *    number of matches.
+ * 
+ * Since: 2.8
+ **/
+gboolean
+gtk_entry_completion_get_popup_single_match (GtkEntryCompletion *completion)
+{
+  g_return_val_if_fail (GTK_IS_ENTRY_COMPLETION (completion), TRUE);
+  
+  return completion->priv->popup_single_match;
+}
+
 
 #define __GTK_ENTRY_COMPLETION_C__
 #include "gtkaliasdef.c"

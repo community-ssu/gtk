@@ -24,6 +24,7 @@
 #include <gtk/gtktreemodelfilter.h>
 #include <gtk/gtkliststore.h>
 #include <gtk/gtkentrycompletion.h>
+#include <gtk/gtkentry.h>
 
 G_BEGIN_DECLS
 
@@ -61,14 +62,21 @@ struct _GtkEntryCompletionPrivate
   guint has_completion    : 1;
   guint inline_completion : 1;
   guint popup_completion  : 1;
-
+  guint popup_set_width   : 1;
+  guint popup_single_match : 1;
   GSource *check_completion_idle;
 };
 
-gboolean            _gtk_entry_completion_resize_popup           (GtkEntryCompletion          *completion);
-void                _gtk_entry_completion_popup                  (GtkEntryCompletion          *completion);
-void                _gtk_entry_completion_popdown                (GtkEntryCompletion          *completion);
+gboolean _gtk_entry_completion_resize_popup (GtkEntryCompletion *completion);
+void     _gtk_entry_completion_popup        (GtkEntryCompletion *completion);
+void     _gtk_entry_completion_popdown      (GtkEntryCompletion *completion);
 
+void      _gtk_entry_get_borders            (GtkEntry  *entry,
+					     gint      *xborder,
+					     gint      *yborder);
+void     _gtk_entry_effective_inner_border (GtkEntry  *entry,
+					    GtkBorder *border);
+void     _gtk_entry_reset_im_context       (GtkEntry  *entry);
 G_END_DECLS
 
 #endif /* __GTK_ENTRY_PRIVATE_H__ */

@@ -24,8 +24,8 @@
 #include "gtkentry.h"
 #include "gtkcellrenderertext.h"
 
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define GTK_COMBO_BOX_ENTRY_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_COMBO_BOX_ENTRY, GtkComboBoxEntryPrivate))
@@ -37,9 +37,6 @@ struct _GtkComboBoxEntryPrivate
   GtkCellRenderer *text_renderer;
   gint text_column;
 };
-
-static void gtk_combo_box_entry_class_init       (GtkComboBoxEntryClass *klass);
-static void gtk_combo_box_entry_init             (GtkComboBoxEntry      *entry_box);
 
 static void gtk_combo_box_entry_set_property     (GObject               *object,
                                                   guint                  prop_id,
@@ -57,6 +54,7 @@ static void gtk_combo_box_entry_contents_changed (GtkEntry              *entry,
                                                   gpointer               user_data);
 static gboolean gtk_combo_box_entry_mnemonic_activate (GtkWidget        *entry,
 						       gboolean          group_cycling);
+static void gtk_combo_box_entry_grab_focus       (GtkWidget *widget);
 static void has_frame_changed                    (GtkComboBoxEntry      *entry_box,
 						  GParamSpec            *pspec,
 						  gpointer               data);
@@ -67,35 +65,7 @@ enum
   PROP_TEXT_COLUMN
 };
 
-
-GType
-gtk_combo_box_entry_get_type (void)
-{
-  static GType combo_box_entry_type = 0;
-
-  if (!combo_box_entry_type)
-    {
-      static const GTypeInfo combo_box_entry_info =
-        {
-          sizeof (GtkComboBoxEntryClass),
-          NULL, /* base_init */
-          NULL, /* base_finalize */
-          (GClassInitFunc) gtk_combo_box_entry_class_init,
-          NULL, /* class_finalize */
-          NULL, /* class_data */
-          sizeof (GtkComboBoxEntry),
-          0,
-          (GInstanceInitFunc) gtk_combo_box_entry_init
-        };
-
-      combo_box_entry_type = g_type_register_static (GTK_TYPE_COMBO_BOX,
-                                                     "GtkComboBoxEntry",
-                                                     &combo_box_entry_info,
-                                                     0);
-    }
-
-  return combo_box_entry_type;
-}
+G_DEFINE_TYPE (GtkComboBoxEntry, gtk_combo_box_entry, GTK_TYPE_COMBO_BOX)
 
 static void
 gtk_combo_box_entry_class_init (GtkComboBoxEntryClass *klass)
@@ -103,14 +73,14 @@ gtk_combo_box_entry_class_init (GtkComboBoxEntryClass *klass)
   GObjectClass *object_class;
   GtkWidgetClass *widget_class;
   GtkComboBoxClass *combo_class;
-
+  
   object_class = (GObjectClass *)klass;
   object_class->set_property = gtk_combo_box_entry_set_property;
   object_class->get_property = gtk_combo_box_entry_get_property;
 
   widget_class = (GtkWidgetClass *)klass;
   widget_class->mnemonic_activate = gtk_combo_box_entry_mnemonic_activate;
-  widget_class->grab_focus = _gtk_combo_box_entry_grab_focus;
+  widget_class->grab_focus = gtk_combo_box_entry_grab_focus;
 
   combo_class = (GtkComboBoxClass *)klass;
   combo_class->get_active_text = gtk_combo_box_entry_get_active_text;
@@ -143,7 +113,6 @@ gtk_combo_box_entry_init (GtkComboBoxEntry *entry_box)
   gtk_widget_show (entry_box->priv->entry);
 
   entry_box->priv->text_renderer = gtk_cell_renderer_text_new ();
-
   gtk_cell_layout_pack_start (GTK_CELL_LAYOUT (entry_box),
                               entry_box->priv->text_renderer, TRUE);
 
@@ -234,7 +203,7 @@ has_frame_changed (GtkComboBoxEntry *entry_box,
 {
   gboolean has_frame;
   
-  g_object_get (entry_box, "has_frame", &has_frame, NULL);
+  g_object_get (entry_box, "has-frame", &has_frame, NULL);
 
   gtk_entry_set_has_frame (GTK_ENTRY (entry_box->priv->entry), has_frame);
 }
@@ -300,7 +269,7 @@ gtk_combo_box_entry_new_with_model (GtkTreeModel *model,
 
   ret = g_object_new (gtk_combo_box_entry_get_type (),
                       "model", model,
-                      "text_column", text_column,
+                      "text-column", text_column,
                       NULL);
 
   return ret;
@@ -361,8 +330,8 @@ gtk_combo_box_entry_mnemonic_activate (GtkWidget *widget,
   return TRUE;
 }
 
-void
-_gtk_combo_box_entry_grab_focus (GtkWidget *widget)
+static void
+gtk_combo_box_entry_grab_focus (GtkWidget *widget)
 {
   GtkComboBoxEntry *entry_box = GTK_COMBO_BOX_ENTRY (widget);
 

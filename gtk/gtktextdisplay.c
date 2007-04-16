@@ -77,6 +77,7 @@
 #define GTK_TEXT_USE_INTERNAL_UNSUPPORTED_API
 #include <config.h>
 #include "gtktextdisplay.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 /* DO NOT go putting private headers in here. This file should only
  * use the semi-public headers, as with gtktextview.c.
@@ -122,7 +123,7 @@ text_renderer_get_error_color (GtkTextRenderer *text_renderer)
 
   if (!text_renderer->error_color)
     gtk_widget_style_get (text_renderer->widget,
-			  "error-underline_color", &text_renderer->error_color,
+			  "error-underline-color", &text_renderer->error_color,
 			  NULL);
   
   if (!text_renderer->error_color)
@@ -532,6 +533,25 @@ render_para (GtkTextRenderer    *text_renderer,
         }
       else
         {
+          if (line_display->pg_bg_color)
+            {
+              GdkGC *bg_gc;
+              
+              bg_gc = gdk_gc_new (text_renderer->drawable);
+              gdk_gc_set_fill (bg_gc, GDK_SOLID);
+              gdk_gc_set_rgb_fg_color (bg_gc, line_display->pg_bg_color);
+            
+              gdk_draw_rectangle (text_renderer->drawable,
+                                  bg_gc,
+                                  TRUE,
+                                  x + line_display->left_margin,
+                                  selection_y,
+                                  screen_width,
+                                  selection_height);
+              
+              g_object_unref (bg_gc);
+            }
+        
 	  text_renderer_set_selected (text_renderer, FALSE);
 	  pango_renderer_draw_layout_line (PANGO_RENDERER (text_renderer),
 					   line, 
@@ -627,12 +647,13 @@ render_para (GtkTextRenderer    *text_renderer,
 
 static void
 on_renderer_display_closed (GdkDisplay       *display,
+                            gboolean          is_error,
 			    GtkTextRenderer  *text_renderer)
 {
   g_signal_handlers_disconnect_by_func (text_renderer->screen,
 					(gpointer)on_renderer_display_closed,
 					text_renderer);
-  g_object_set_data (G_OBJECT (text_renderer->screen), "gtk-text-renderer", NULL);
+  g_object_set_data (G_OBJECT (text_renderer->screen), I_("gtk-text-renderer"), NULL);
 }
 
 static GtkTextRenderer *
@@ -648,11 +669,12 @@ get_text_renderer (GdkScreen *screen)
       text_renderer = g_object_new (GTK_TYPE_TEXT_RENDERER, "screen", screen, NULL);
       text_renderer->screen = screen;
       
-      g_object_set_data_full (G_OBJECT (screen), "gtk-text-renderer", text_renderer,
+      g_object_set_data_full (G_OBJECT (screen), I_("gtk-text-renderer"), text_renderer,
 			      (GDestroyNotify)g_object_unref);
 
-      g_signal_connect (gdk_screen_get_display (screen), "closed",
-			G_CALLBACK (on_renderer_display_closed), text_renderer);
+      g_signal_connect_object (gdk_screen_get_display (screen), "closed",
+                               G_CALLBACK (on_renderer_display_closed),
+                               text_renderer, 0);
     }
 
   return text_renderer;

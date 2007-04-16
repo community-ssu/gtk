@@ -1,4 +1,4 @@
-if OS_WIN32
+if PLATFORM_WIN32
 no_undefined = -no-undefined
 endif
 
@@ -6,7 +6,6 @@ INCLUDES = \
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/gdk				\
 	-I$(top_builddir)/gdk				\
-	-DG_DISABLE_DEPRECATED	 			\
 	-DGDK_PIXBUF_DISABLE_DEPRECATED			\
 	-DGDK_DISABLE_DEPRECATED			\
 	$(GTK_DEP_CFLAGS)

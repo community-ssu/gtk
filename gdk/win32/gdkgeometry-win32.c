@@ -108,9 +108,9 @@ gdk_window_scroll (GdkWindow *window,
   GdkRegion *invalidate_region;
   GdkWindowImplWin32 *impl;
   GdkWindowObject *obj;
-  GdkRectangle dest_rect;
   GList *tmp_list;
   GdkWindowParentPos parent_pos;
+  HRGN native_invalidate_region;
   
   g_return_if_fail (GDK_IS_WINDOW (window));
 
@@ -130,22 +130,6 @@ gdk_window_scroll (GdkWindow *window,
   if (obj->update_area)
     gdk_region_offset (obj->update_area, dx, dy);
   
-  invalidate_region = gdk_region_rectangle (&impl->position_info.clip_rect);
-  
-  dest_rect = impl->position_info.clip_rect;
-  dest_rect.x += dx;
-  dest_rect.y += dy;
-  gdk_rectangle_intersect (&dest_rect, &impl->position_info.clip_rect, &dest_rect);
-
-  if (dest_rect.width > 0 && dest_rect.height > 0)
-    {
-      GdkRegion *tmp_region;
-
-      tmp_region = gdk_region_rectangle (&dest_rect);
-      gdk_region_subtract (invalidate_region, tmp_region);
-      gdk_region_destroy (tmp_region);
-    }
-  
   gdk_window_compute_parent_pos (impl, &parent_pos);
 
   parent_pos.x += obj->x;
@@ -156,10 +140,13 @@ gdk_window_scroll (GdkWindow *window,
 
   gdk_window_tmp_unset_bg (window);
 
-  if (!ScrollWindowEx (GDK_WINDOW_HWND (window),
-		       dx, dy, NULL, NULL,
-		       NULL, NULL, SW_SCROLLCHILDREN))
-    WIN32_API_FAILED ("ScrollWindowEx");
+  native_invalidate_region = CreateRectRgn (0, 0, 0, 0);
+  if (native_invalidate_region == NULL)
+    WIN32_API_FAILED ("CreateRectRgn");
+
+  API_CALL (ScrollWindowEx, (GDK_WINDOW_HWND (window),
+			     dx, dy, NULL, NULL,
+			     native_invalidate_region, NULL, SW_SCROLLCHILDREN));
 
   if (impl->position_info.no_bg)
     gdk_window_tmp_reset_bg (window);
@@ -173,8 +160,93 @@ gdk_window_scroll (GdkWindow *window,
       tmp_list = tmp_list->next;
     }
 
-  gdk_window_invalidate_region (window, invalidate_region, TRUE);
+  if (native_invalidate_region != NULL)
+    {
+      invalidate_region = _gdk_win32_hrgn_to_region (native_invalidate_region);
+      gdk_region_offset (invalidate_region, impl->position_info.x_offset,
+                         impl->position_info.y_offset);
+      gdk_window_invalidate_region (window, invalidate_region, TRUE);
+      gdk_region_destroy (invalidate_region);
+      GDI_CALL (DeleteObject, (native_invalidate_region));
+    }
+}
+
+void
+gdk_window_move_region (GdkWindow *window,
+			GdkRegion *region,
+			gint       dx,
+			gint       dy)
+{
+  GdkRegion *invalidate_region;
+  GdkWindowImplWin32 *impl;
+  GdkWindowObject *obj;
+  GdkRectangle src_rect, dest_rect;
+  HRGN hrgn;
+  RECT clipRect, destRect;
+
+  g_return_if_fail (GDK_IS_WINDOW (window));
+
+  if (GDK_WINDOW_DESTROYED (window))
+    return;
+  
+  obj = GDK_WINDOW_OBJECT (window);
+  impl = GDK_WINDOW_IMPL_WIN32 (obj->impl);  
+
+  if (dx == 0 && dy == 0)
+    return;
+  
+  /* Move the current invalid region */
+  if (obj->update_area)
+    gdk_region_offset (obj->update_area, dx, dy);
+  
+  /* impl->position_info.clip_rect isn't meaningful for toplevels */
+  if (GDK_WINDOW_TYPE (window) == GDK_WINDOW_CHILD)
+    src_rect = impl->position_info.clip_rect;
+  else
+    {
+      src_rect.x = 0;
+      src_rect.y = 0;
+      src_rect.width = impl->width;
+      src_rect.height = impl->height;
+    }
+  
+  invalidate_region = gdk_region_rectangle (&src_rect);
+
+  dest_rect = src_rect;
+  dest_rect.x += dx;
+  dest_rect.y += dy;
+  gdk_rectangle_intersect (&dest_rect, &src_rect, &dest_rect);
+
+  if (dest_rect.width > 0 && dest_rect.height > 0)
+    {
+      GdkRegion *tmp_region;
+
+      tmp_region = gdk_region_rectangle (&dest_rect);
+      gdk_region_subtract (invalidate_region, tmp_region);
+      gdk_region_destroy (tmp_region);
+    }
+  
+  /* no guffaw scroll on win32 */
+  hrgn = _gdk_win32_gdkregion_to_hrgn(invalidate_region, 0, 0);
   gdk_region_destroy (invalidate_region);
+  destRect.left = dest_rect.y;
+  destRect.top = dest_rect.x;
+  destRect.right = dest_rect.x + dest_rect.width;
+  destRect.bottom = dest_rect.y + dest_rect.height;
+  clipRect.left = src_rect.y;
+  clipRect.top = src_rect.x;
+  clipRect.right = src_rect.x + src_rect.width;
+  clipRect.bottom = src_rect.y + src_rect.height;
+
+  g_print ("ScrollWindowEx(%d, %d, ...) - if you see this work, remove trace;)\n", dx, dy);
+  API_CALL(ScrollWindowEx, (GDK_WINDOW_HWND (window),
+                       dx, dy, /* in: scroll offsets */
+                       NULL, /* in: scroll rect, NULL == entire client area */
+                       &clipRect, /* in: restrict to */
+                       hrgn, /* in: update region */
+                       NULL, /* out: update rect */
+                       SW_INVALIDATE));
+  API_CALL(DeleteObject, (hrgn));
 }
 
 void
@@ -201,7 +273,7 @@ _gdk_window_move_resize_child (GdkWindow *window,
   obj = GDK_WINDOW_OBJECT (window);
   impl = GDK_WINDOW_IMPL_WIN32 (obj->impl);
   
-  GDK_NOTE (MISC, g_print ("_gdk_window_move_resize_child: %s@+%d+%d %dx%d@+%d+%d\n",
+  GDK_NOTE (MISC, g_print ("_gdk_window_move_resize_child: %s@%+d%+d %dx%d@%+d%+d\n",
 			   _gdk_win32_drawable_description (window),
 			   obj->x, obj->y,
 			   width, height, x, y));
@@ -214,11 +286,13 @@ _gdk_window_move_resize_child (GdkWindow *window,
 
   if (!is_move && !is_resize)
     {
-      GDK_NOTE (MISC, g_print ("...neither move or resize\n"));
+      GDK_NOTE (MISC, g_print ("... neither move or resize\n"));
       return;
     }
   
-  GDK_NOTE (MISC, g_print ("...%s%s\n", is_move ? "is_move " : "", is_resize ? "is_resize" : ""));
+  GDK_NOTE (MISC, g_print ("... %s%s\n",
+			   is_move ? "is_move " : "",
+			   is_resize ? "is_resize" : ""));
 
   obj->x = x;
   obj->y = y;
@@ -242,7 +316,7 @@ _gdk_window_move_resize_child (GdkWindow *window,
   
   if (d_xoffset != 0 || d_yoffset != 0)
     {
-      GDK_NOTE (MISC, g_print ("...d_xoffset=%d d_yoffset=%d\n", d_xoffset, d_yoffset));
+      GDK_NOTE (MISC, g_print ("... d_offset=%+d%+d\n", d_xoffset, d_yoffset));
 
       if (!ScrollWindowEx (GDK_WINDOW_HWND (window),
 			   -d_xoffset, -d_yoffset, /* in: scroll offsets */
@@ -255,17 +329,20 @@ _gdk_window_move_resize_child (GdkWindow *window,
 
       if (dx != d_xoffset || dy != d_yoffset || is_resize)
 	{
-	  GDK_NOTE (MISC, g_print ("...SetWindowPos(%p,%dx%d@+%d+%d)\n",
+	  GDK_NOTE (MISC, g_print ("... SetWindowPos(%p,NULL,%d,%d,%d,%d,"
+				   "NOACTIVATE|NOZORDER%s%s)\n",
 				   GDK_WINDOW_HWND (window),
+				   new_info.x, new_info.y, 
 				   new_info.width, new_info.height,
-				   new_info.x, new_info.y));
-	  if (!SetWindowPos (GDK_WINDOW_HWND (window), NULL,
-			     new_info.x, new_info.y, 
-			     new_info.width, new_info.height,
-			     SWP_NOACTIVATE | SWP_NOZORDER | 
-			     (is_move ? 0 : SWP_NOMOVE) |
-			     (is_resize ? 0 : SWP_NOSIZE)))
-	    WIN32_API_FAILED ("SetWindowPos");
+				   (is_move ? "" : "|NOMOVE"),
+				   (is_resize ? "" : "|NOSIZE")));
+
+	  API_CALL (SetWindowPos, (GDK_WINDOW_HWND (window), NULL,
+				   new_info.x, new_info.y, 
+				   new_info.width, new_info.height,
+				   SWP_NOACTIVATE | SWP_NOZORDER | 
+				   (is_move ? 0 : SWP_NOMOVE) |
+				   (is_resize ? 0 : SWP_NOSIZE)));
 	}
 
       if (impl->position_info.no_bg)
@@ -273,7 +350,7 @@ _gdk_window_move_resize_child (GdkWindow *window,
 
       if (!impl->position_info.mapped && new_info.mapped && GDK_WINDOW_IS_MAPPED (obj))
 	{
-	  GDK_NOTE (MISC, g_print ("...ShowWindow(%p, SW_SHOWNA)\n",
+	  GDK_NOTE (MISC, g_print ("... ShowWindow(%p, SW_SHOWNA)\n",
 				   GDK_WINDOW_HWND (window)));
 	  ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWNA);
 	}
@@ -291,22 +368,25 @@ _gdk_window_move_resize_child (GdkWindow *window,
     {
       if (impl->position_info.mapped && !new_info.mapped)
 	{
-	  GDK_NOTE (MISC, g_print ("...ShowWindow(%p, SW_HIDE)\n",
+	  GDK_NOTE (MISC, g_print ("... ShowWindow(%p, SW_HIDE)\n",
 				   GDK_WINDOW_HWND (window)));
 	  ShowWindow (GDK_WINDOW_HWND (window), SW_HIDE);
 	}
       
-      GDK_NOTE (MISC, g_print ("...SetWindowPos(%p,%dx%d@+%d+%d)\n",
+      GDK_NOTE (MISC, g_print ("... SetWindowPos(%p,NULL,%d,%d,%d,%d,"
+			       "NOACTIVATE|NOZORDER%s%s)\n",
 			       GDK_WINDOW_HWND (window),
+			       new_info.x, new_info.y, 
 			       new_info.width, new_info.height,
-			       new_info.x, new_info.y));
-      if (!SetWindowPos (GDK_WINDOW_HWND (window), NULL,
-                         new_info.x, new_info.y, 
-                         new_info.width, new_info.height,
-                         SWP_NOACTIVATE | SWP_NOZORDER | 
-                         (is_move ? 0 : SWP_NOMOVE) |
-                         (is_resize ? 0 : SWP_NOSIZE)))
-        WIN32_API_FAILED ("SetWindowPos");
+			       (is_move ? "" : "|NOMOVE"),
+			       (is_resize ? "" : "|NOSIZE")));
+
+      API_CALL (SetWindowPos, (GDK_WINDOW_HWND (window), NULL,
+			       new_info.x, new_info.y, 
+			       new_info.width, new_info.height,
+			       SWP_NOACTIVATE | SWP_NOZORDER | 
+			       (is_move ? 0 : SWP_NOMOVE) |
+			       (is_resize ? 0 : SWP_NOSIZE)));
 
       tmp_list = obj->children;
       while (tmp_list)
@@ -320,7 +400,7 @@ _gdk_window_move_resize_child (GdkWindow *window,
 
       if (!impl->position_info.mapped && new_info.mapped && GDK_WINDOW_IS_MAPPED (obj))
 	{
-	  GDK_NOTE (MISC, g_print ("...ShowWindow(%p, SW_SHOWNA)\n",
+	  GDK_NOTE (MISC, g_print ("... ShowWindow(%p, SW_SHOWNA)\n",
 				   GDK_WINDOW_HWND (window)));
 	  ShowWindow (GDK_WINDOW_HWND (window), SW_SHOWNA);
 	}
@@ -524,18 +604,18 @@ gdk_window_postmove (GdkWindow          *window,
   
   if (anti_scroll || (anti_scroll = d_xoffset != 0 || d_yoffset != 0))
     {
-      GDK_NOTE (MISC, g_print ("gdk_window_postmove: %s@+%d+%d\n"
-			       "...SetWindowPos(%dx%d@+%d+%d)\n",
+      GDK_NOTE (MISC, g_print ("gdk_window_postmove: %s@%+d%+d\n"
+			       "... SetWindowPos(%p,NULL,%d,%d,0,0,"
+			       "NOREDRAW|NOZORDER|NOACTIVATE|NOSIZE)\n",
 			       _gdk_win32_drawable_description (window),
 			       obj->x, obj->y,
-			       new_info.width, new_info.height,
+			       GDK_WINDOW_HWND (window),
 			       new_info.x, new_info.y));
 
-      if (!SetWindowPos (GDK_WINDOW_HWND (window), NULL,
-                         new_info.x, new_info.y, 
-                         0, 0,
-                         SWP_NOREDRAW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE))
-        WIN32_API_FAILED ("SetWindowPos");
+      API_CALL (SetWindowPos, (GDK_WINDOW_HWND (window), NULL,
+			       new_info.x, new_info.y, 
+			       0, 0,
+			       SWP_NOREDRAW | SWP_NOZORDER | SWP_NOACTIVATE | SWP_NOSIZE));
     }
 
   if (!impl->position_info.mapped && new_info.mapped && GDK_WINDOW_IS_MAPPED (obj))

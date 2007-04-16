@@ -6,6 +6,7 @@ democodedir=$(datadir)/gtk-2.0/demo
 ## demo app, which means alphabetized by demo title, not filename
 demos =						\
 	appwindow.c				\
+	assistant.c				\
 	button_box.c				\
 	changedisplay.c				\
 	clipboard.c				\
@@ -18,16 +19,19 @@ demos =						\
 	expander.c  				\
 	hypertext.c				\
 	iconview.c				\
+	iconview_edit.c				\
 	images.c				\
 	list_store.c				\
 	menus.c					\
 	panes.c					\
 	pickers.c				\
 	pixbufs.c				\
+	printing.c				\
 	rotated_text.c				\
 	sizegroup.c				\
 	stock_browser.c				\
 	textview.c				\
+	textscroll.c				\
 	tree_store.c				\
 	ui_manager.c
 
@@ -35,7 +39,6 @@ INCLUDES = \
 	-DDEMOCODEDIR="\"$(democodedir)\""		\
 	-I$(top_srcdir) 				\
 	-I$(top_builddir)/gdk				\
-	-DG_DISABLE_DEPRECATED	 			\
 	-DGDK_PIXBUF_DISABLE_DEPRECATED			\
 	-DGDK_DISABLE_DEPRECATED			\
 	-DGTK_DISABLE_DEPRECATED 			\

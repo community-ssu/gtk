@@ -21,39 +21,17 @@
 #include <string.h>
 
 #include "gtkwidget.h"
+#include "gtkintl.h"
 #include "gtkaccessible.h"
 #include "gtkalias.h"
 
-static void gtk_accessible_class_init (GtkAccessibleClass *klass);
-
 static void gtk_accessible_real_connect_widget_destroyed (GtkAccessible *accessible);
 
-GType
-gtk_accessible_get_type (void)
+G_DEFINE_TYPE (GtkAccessible, gtk_accessible, ATK_TYPE_OBJECT)
+
+static void
+gtk_accessible_init (GtkAccessible *object)
 {
-  static GType accessible_type = 0;
-
-  if (!accessible_type)
-    {
-      static const GTypeInfo accessible_info =
-      {
-	sizeof (GtkAccessibleClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_accessible_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkAccessible),
-	16,		/* n_preallocs */
-	(GInstanceInitFunc) NULL,
-      };
-
-      accessible_type =
-	g_type_register_static (ATK_TYPE_OBJECT, "GtkAccessible",
-				&accessible_info, 0);
-    }
-
-  return accessible_type;
 }
 
 static void

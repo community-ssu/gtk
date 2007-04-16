@@ -189,7 +189,8 @@ functions), but they will all return %NULL values.
 @GTK_IMAGE_STOCK: the widget contains a stock icon name (see <xref linkend="gtk-Stock-Items"/>)
 @GTK_IMAGE_ICON_SET: the widget contains a #GtkIconSet
 @GTK_IMAGE_ANIMATION: the widget contains a #GdkPixbufAnimation
-@GTK_IMAGE_ICON_NAME: 
+@GTK_IMAGE_ICON_NAME: the widget contains a named icon. 
+  This image type was added in GTK+ 2.6
 
 <!-- ##### FUNCTION gtk_image_get_icon_set ##### -->
 <para>
@@ -422,6 +423,14 @@ functions), but they will all return %NULL values.
 @size: 
 
 
+<!-- ##### FUNCTION gtk_image_clear ##### -->
+<para>
+
+</para>
+
+@image: 
+
+
 <!-- ##### FUNCTION gtk_image_new ##### -->
 <para>
 
@@ -429,7 +438,6 @@ functions), but they will all return %NULL values.
 
 @Returns: the #GtkImage
 <!-- # Unused Parameters # -->
-@val: 
 @mask: a #GdkBitmap that indicates which parts of the image should be transparent.
 
 
@@ -438,8 +446,8 @@ functions), but they will all return %NULL values.
 Sets the #GtkImage.
 </para>
 
-@image: a #GdkPixmap
-@val: 
+@image: a #GtkImage
+@val: a #GdkImage
 @mask: a #GdkBitmap that indicates which parts of the image should be transparent.
 
 
@@ -448,8 +456,8 @@ Sets the #GtkImage.
 Gets the #GtkImage.
 </para>
 
-@image: a #GdkPixmap
-@val: 
+@image: a #GtkImage
+@val: return location for a #GdkImage
 @mask: a #GdkBitmap that indicates which parts of the image should be transparent.
 
 

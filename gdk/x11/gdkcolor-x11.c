@@ -66,46 +66,17 @@ static gboolean gdk_colormap_equal       (Colormap    *a,
 static void     gdk_colormap_sync        (GdkColormap *colormap,
                                           gboolean     force);
 
-static void gdk_colormap_init       (GdkColormap      *colormap);
-static void gdk_colormap_class_init (GdkColormapClass *klass);
 static void gdk_colormap_finalize   (GObject              *object);
 
-static gpointer parent_class = NULL;
-
-GType
-gdk_colormap_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (GdkColormapClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gdk_colormap_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GdkColormap),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gdk_colormap_init,
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "GdkColormap",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (GdkColormap, gdk_colormap, G_TYPE_OBJECT)
 
 static void
 gdk_colormap_init (GdkColormap *colormap)
 {
   GdkColormapPrivateX11 *private;
 
-  private = g_new (GdkColormapPrivateX11, 1);
+  private = G_TYPE_INSTANCE_GET_PRIVATE (colormap, GDK_TYPE_COLORMAP, 
+					 GdkColormapPrivateX11);
 
   colormap->windowing_data = private;
   
@@ -123,9 +94,9 @@ gdk_colormap_class_init (GdkColormapClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (klass);
-
   object_class->finalize = gdk_colormap_finalize;
+
+  g_type_class_add_private (object_class, sizeof (GdkColormapPrivateX11));
 }
 
 static void
@@ -144,9 +115,8 @@ gdk_colormap_finalize (GObject *object)
   
   g_free (private->info);
   g_free (colormap->colors);
-  g_free (private);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gdk_colormap_parent_class)->finalize (object);
 }
 
 /**
@@ -569,7 +539,7 @@ gdk_colormap_change (GdkColormap *colormap,
  * For full documentation of the fields, see 
  * the Xlib documentation for <function>XAllocColorCells()</function>.
  * 
- * Return value: 
+ * Return value: %TRUE if the allocation was successful
  **/
 gboolean
 gdk_colors_alloc (GdkColormap   *colormap,
@@ -1130,8 +1100,16 @@ gdk_colormap_alloc_colors (GdkColormap *colormap,
 	  /* If bits not used for color are used for something other than padding,
 	   * it's likely alpha, so we set them to 1s.
 	   */
-	  guint32 unused = ~ (visual->red_mask | visual->green_mask | visual->blue_mask |
-			      (((~(guint32)0)) << visual->depth));
+	  guint padding, unused;
+
+	  /* Shifting by >= width-of-type isn't defined in C */
+	  if (visual->depth >= 32)
+	    padding = 0;
+	  else
+	    padding = ((~(guint32)0)) << visual->depth;
+	  
+	  unused = ~ (visual->red_mask | visual->green_mask | visual->blue_mask | padding);
+	  
 	  colors[i].pixel = (unused +
 			     ((colors[i].red >> (16 - visual->red_prec)) << visual->red_shift) +
 			     ((colors[i].green >> (16 - visual->green_prec)) << visual->green_shift) +
@@ -1363,7 +1341,7 @@ gdkx_colormap_get (Colormap xcolormap)
   GdkColormap *colormap;
 
   if (xcolormap == DefaultColormap (GDK_SCREEN_XDISPLAY (screen),
-				    GDK_SCREEN_XNUMBER (screen)));
+				    GDK_SCREEN_XNUMBER (screen)))
     return g_object_ref (gdk_screen_get_system_colormap (screen));
 
   colormap = gdk_colormap_lookup (screen, xcolormap);

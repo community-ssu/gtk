@@ -1,17 +1,23 @@
 ## Makefile.am for gtk+/gdk
 
 SUBDIRS = $(gdktarget)
-DIST_SUBDIRS = linux-fb win32 x11
+DIST_SUBDIRS = linux-fb win32 x11 quartz directfb
 
 EXTRA_DIST =			\
+	keynames.txt		\
+	keyname-table.h		\
+	gen-keyname-table.pl	\
 	gdkconfig.h.win32 	\
+	gdkkeysyms-update.pl	\
 	gdk.def 		\
 	gdkmarshalers.list	\
 	makeenums.pl		\
 	makefile.msc		\
 	gdk.symbols		\
 	makegdkalias.pl		\
-	abicheck.sh
+	gdkaliasdef.c		\
+	abicheck.sh		\
+	pltcheck.sh
 
 INCLUDES =                              \
 	-DG_LOG_DOMAIN=\"Gdk\"		\
@@ -19,9 +25,7 @@ INCLUDES =                              \
 	-I$(top_srcdir)			\
 	-I$(top_builddir)/gdk		\
 	-I$(top_srcdir)/gdk-pixbuf 	\
-	-DG_DISABLE_DEPRECATED		\
-	-DGDK_PIXBUF_DISABLE_DEPRECATED	\
-	-DGDK_DISABLE_DEPRECATED	\
+	-DGDK_PIXBUF_DISABLE_DEPRECATED \
 	$(GTK_DEBUG_FLAGS) 		\
 	$(GDK_DEP_CFLAGS)
 
@@ -50,6 +54,7 @@ LDADD = \
 #
 gdk_public_h_sources =				\
 	gdk.h					\
+	gdkcairo.h				\
 	gdkcolor.h				\
 	gdkcursor.h				\
 	gdkdisplay.h				\
@@ -85,6 +90,7 @@ gdk_headers =                     \
 
 gdk_c_sources =                 \
 	gdk.c			\
+	gdkcairo.c		\
 	gdkcolor.c		\
 	gdkcursor.c		\
 	gdkdisplay.c		\
@@ -122,11 +128,16 @@ gdk_c_sources =                 \
 gdkincludedir = $(includedir)/gtk-2.0/gdk
 gdkinclude_HEADERS = $(gdk_headers)
 
-# gdkmarshalers.c is not here becuase it is currently an empty file
+# gdkmarshalers.c is not here because it is currently an empty file
 common_sources =                \
 	$(gdk_c_sources)	\
 	gdkenumtypes.c		\
 	gdkmarshalers.h
+
+libgdk_directfb_2_0_la_SOURCES = $(common_sources) 
+libgdk_directfb_2_0_la_LIBADD = directfb/libgdk-directfb.la $(GDK_DEP_LIBS) \
+  $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
+libgdk_directfb_2_0_la_LDFLAGS = $(LDADD)
 
 libgdk_x11_2_0_la_SOURCES = $(common_sources)
 libgdk_x11_2_0_la_LIBADD = x11/libgdk-x11.la $(GDK_DEP_LIBS) \
@@ -138,11 +149,16 @@ libgdk_linux_fb_2_0_la_LIBADD = linux-fb/libgdk-linux-fb.la $(GDK_DEP_LIBS) \
   $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
 libgdk_linux_fb_2_0_la_LDFLAGS = $(LDADD)
 
+libgdk_quartz_2_0_la_SOURCES = $(common_sources) gdkkeynames.c
+libgdk_quartz_2_0_la_LIBADD = quartz/libgdk-quartz.la $(GDK_DEP_LIBS) \
+  $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
+libgdk_quartz_2_0_la_LDFLAGS = $(LDADD)
+
 libgdk_win32_2_0_la_SOURCES = $(common_sources) gdkkeynames.c
 libgdk_win32_2_0_la_LIBADD = win32/libgdk-win32.la $(GDK_DEP_LIBS) \
   $(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la
-libgdk_win32_2_0_la_DEPENDENCIES = win32/libgdk-win32.la gdk.def
-libgdk_win32_2_0_la_LDFLAGS = -export-symbols gdk.def $(LDADD)
+libgdk_win32_2_0_la_DEPENDENCIES = win32/libgdk-win32.la win32/rc/gdk-win32-res.o gdk.def
+libgdk_win32_2_0_la_LDFLAGS = -Wl,win32/rc/gdk-win32-res.o -export-symbols gdk.def $(LDADD)
 if HAVE_WINTAB
 libgdk_win32_2_0_la_LIBADD += -Lwin32 -lwntab32x
 endif
@@ -151,13 +167,13 @@ libgdk_win32_2_0_la_LIBADD += -Lwin32 -lie55uuid
 endif
 
 if OS_WIN32
-install-libtool-import-lib:
-	$(INSTALL) .libs/libgdk-win32-$(GTK_API_VERSION).dll.a $(DESTDIR)$(libdir)
-uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libgdk-win32-$(GTK_API_VERSION).dll.a
+install-def-file: gdk.def
+	$(INSTALL) gdk.def $(DESTDIR)$(libdir)/gdk-win32-2.0.def
+uninstall-def-file:
+	-rm $(DESTDIR)$(libdir)/gdk-win32-2.0.def
 else
-install-libtool-import-lib:
-uninstall-libtool-import-lib:
+install-def-file:
+uninstall-def-file:
 endif
 
 if MS_LIB_AVAILABLE
@@ -177,7 +193,7 @@ uninstall-ms-lib:
 endif
 
 gdk.def: gdk.symbols
-	(echo -e EXPORTS; $(CPP) -P -DGDK_WINDOWING_WIN32 -DINCLUDE_VARIABLES -DALL_FILES - <$(srcdir)/gdk.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gdk.def
+	(echo -e EXPORTS; $(CPP) -P -DALL_FILES -DGDK_WINDOWING_WIN32 -DINCLUDE_VARIABLES - <$(srcdir)/gdk.symbols | sed -e '/^$$/d' -e 's/^/	/' -e 's/G_GNUC_[^ ]*//g') > gdk.def
 
 gdkalias.h: gdk.symbols
 	 $(PERL) $(srcdir)/makegdkalias.pl < $(srcdir)/gdk.symbols > gdkalias.h
@@ -186,16 +202,16 @@ gdkaliasdef.c: gdk.symbols
 	 $(PERL) $(srcdir)/makegdkalias.pl -def < $(srcdir)/gdk.symbols > gdkaliasdef.c
 
 if OS_LINUX
-TESTS = abicheck.sh
+TESTS = pltcheck.sh abicheck.sh
 endif
 
 
 lib_LTLIBRARIES = $(gdktargetlib)
 
-EXTRA_LTLIBRARIES = libgdk-x11-2.0.la libgdk-linux-fb-2.0.la libgdk-win32-2.0.la
+EXTRA_LTLIBRARIES = libgdk-x11-2.0.la libgdk-linux-fb-2.0.la libgdk-win32-2.0.la libgdk-quartz-2.0.la libgdk-directfb-2.0.la
 
 MAINTAINERCLEANFILES = gdkenumtypes.h stamp-gdkenumtypes.h gdkenumtypes.c \
-  gdkmarshalers.h gdkmarshalers.c gdkalias.h gdkaliasdef.c
+  gdkmarshalers.h gdkmarshalers.c
 EXTRA_HEADERS =
 
 #
@@ -228,7 +244,7 @@ BUILT_SOURCES =					\
 gdkenumtypes.h: stamp-gdkenumtypes.h
 	@true
 stamp-gdkenumtypes.h: @REBUILD@ $(gdk_public_h_sources) Makefile
-	( cd $(srcdir) && glib-mkenums \
+	( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#ifndef __GDK_ENUM_TYPES_H__\n#define __GDK_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void) G_GNUC_CONST;\n#define GDK_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n" \
@@ -238,13 +254,13 @@ stamp-gdkenumtypes.h: @REBUILD@ $(gdk_public_h_sources) Makefile
 	&& rm -f xgen-geth \
 	&& echo timestamp > $(@F)
 gdkenumtypes.c: @REBUILD@ $(gdk_public_h_sources) Makefile
-	( cd $(srcdir) && glib-mkenums \
+	( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#define GDK_ENABLE_BROKEN\n#include \"gdk.h\"\n#include \"gdkalias.h\"\n" \
-		--fprod "\n/* enumerations from \"@filename@\" */" \
-		--ftail "\n#define __GDK_ENUM_TYPES_C__\n#include \"gdkaliasdef.c\"" \
+			--fprod "\n/* enumerations from \"@filename@\" */" \
+			--ftail "\n#define __GDK_ENUM_TYPES_C__\n#include \"gdkaliasdef.c\"\n" \
 			--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {" \
 			--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
+			--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (g_intern_static_string (\"@EnumName@\"), values);\n  }\n  return etype;\n}\n" \
 		$(gdk_public_h_sources) ) > xgen-getc \
 	&& cp xgen-getc gdkenumtypes.c  \
 	&& rm -f xgen-getc
@@ -270,9 +286,9 @@ stamp-gc-h: $(top_builddir)/config.status
 
 DISTCLEANFILES = gdkconfig.h stamp-gc-h
 
-install-data-local: install-ms-lib install-libtool-import-lib
+install-data-local: install-ms-lib install-def-file
 
-uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib
+uninstall-local: uninstall-ms-lib uninstall-def-file
 	rm -f $(DESTDIR)$(configexecincludedir)/gdkconfig.h
 
 # if srcdir!=builddir, clean out maintainer-clean files from builddir

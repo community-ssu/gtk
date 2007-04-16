@@ -128,7 +128,7 @@ void	   gtk_menu_popup		  (GtkMenu	       *menu,
 					   GtkWidget	       *parent_menu_item,
 					   GtkMenuPositionFunc	func,
 					   gpointer		data,
-					   guint		button, /* unused */
+					   guint		button,
 					   guint32		activate_time);
 
 /* Position the menu according to its position function. Called
@@ -198,8 +198,9 @@ void       gtk_menu_set_monitor           (GtkMenu             *menu,
                                            gint                 monitor_num);
 GList*     gtk_menu_get_for_attach_widget (GtkWidget           *widget); 
 
-/* Private functions */
-void _gtk_menu_enable_context_menu_behavior (GtkMenu *menu);
+#ifdef MAEMO_CHANGES
+void       _gtk_menu_enable_context_menu_behavior (GtkMenu *menu);
+#endif /* MAEMO_CHANGES */
 
 #ifndef GTK_DISABLE_DEPRECATED
 #define gtk_menu_append(menu,child)	gtk_menu_shell_append  ((GtkMenuShell *)(menu),(child))

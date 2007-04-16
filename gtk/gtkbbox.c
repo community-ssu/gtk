@@ -26,8 +26,8 @@
 
 #include <config.h>
 #include "gtkbbox.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum {
@@ -41,8 +41,6 @@ enum {
   CHILD_PROP_SECONDARY
 };
 
-static void gtk_button_box_class_init         (GtkButtonBoxClass *klass);
-static void gtk_button_box_init               (GtkButtonBox      *box);
 static void gtk_button_box_set_property       (GObject           *object,
 					       guint              prop_id,
 					       const GValue      *value,
@@ -67,34 +65,7 @@ static void gtk_button_box_get_child_property (GtkContainer      *container,
 #define DEFAULT_CHILD_IPAD_X 4
 #define DEFAULT_CHILD_IPAD_Y 0
 
-GType
-gtk_button_box_get_type (void)
-{
-  static GType button_box_type = 0;
-
-  if (!button_box_type)
-    {
-      static const GTypeInfo button_box_info =
-      {
-	sizeof (GtkButtonBoxClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_button_box_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkButtonBox),
-	0,               /* n_preallocs */
-	(GInstanceInitFunc) gtk_button_box_init,
-	NULL,		/* value_table */
-      };
-
-      button_box_type =
-	g_type_register_static (GTK_TYPE_BOX, "GtkButtonBox",
-				&button_box_info, G_TYPE_FLAG_ABSTRACT);
-    }
-
-  return button_box_type;
-}
+G_DEFINE_ABSTRACT_TYPE (GtkButtonBox, gtk_button_box, GTK_TYPE_BOX)
 
 static void
 gtk_button_box_class_init (GtkButtonBoxClass *class)
@@ -116,7 +87,6 @@ gtk_button_box_class_init (GtkButtonBoxClass *class)
   /* FIXME we need to override the "spacing" property on GtkBox once
    * libgobject allows that.
    */
-
   gtk_widget_class_install_style_property (widget_class,
 					   g_param_spec_int ("child-min-width",
 							     P_("Minimum child width"),
@@ -283,7 +253,7 @@ gtk_button_box_set_layout (GtkButtonBox      *widget,
 {
   g_return_if_fail (GTK_IS_BUTTON_BOX (widget));
   g_return_if_fail (layout_style >= GTK_BUTTONBOX_DEFAULT_STYLE &&
-		    layout_style <= GTK_BUTTONBOX_END);
+		    layout_style <= GTK_BUTTONBOX_CENTER);
 
   if (widget->layout_style != layout_style)
     {
@@ -450,14 +420,11 @@ _gtk_button_box_child_requisition (GtkWidget *widget,
   bbox = GTK_BUTTON_BOX (widget);
 
   gtk_widget_style_get (widget,
-                        "child_min_width",
-                        &width_default,
-                        "child_min_height",
-                        &height_default,
-                        "child_internal_pad_x",
-                        &ipad_x_default,
-                        "child_internal_pad_y",
-                        &ipad_y_default, NULL);
+                        "child-min-width", &width_default,
+                        "child-min-height", &height_default,
+                        "child-internal-pad-x", &ipad_x_default,
+                        "child-internal-pad-y", &ipad_y_default, 
+			NULL);
   
   child_min_width = bbox->child_min_width   != GTK_BUTTONBOX_DEFAULT
 	  ? bbox->child_min_width : width_default;

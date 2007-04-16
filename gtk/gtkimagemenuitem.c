@@ -31,13 +31,12 @@
 #include "gtkstock.h"
 #include "gtkiconfactory.h"
 #include "gtkimage.h"
+#include "gtkmenubar.h"
 #include "gtkcontainer.h"
 #include "gtkwindow.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
-static void gtk_image_menu_item_class_init           (GtkImageMenuItemClass *klass);
-static void gtk_image_menu_item_init                 (GtkImageMenuItem      *image_menu_item);
 static void gtk_image_menu_item_size_request         (GtkWidget        *widget,
                                                       GtkRequisition   *requisition);
 static void gtk_image_menu_item_size_allocate        (GtkWidget        *widget,
@@ -69,35 +68,7 @@ enum {
   PROP_IMAGE
 };
 
-static GtkMenuItemClass *parent_class = NULL;
-
-GType
-gtk_image_menu_item_get_type (void)
-{
-  static GType image_menu_item_type = 0;
-
-  if (!image_menu_item_type)
-    {
-      static const GTypeInfo image_menu_item_info =
-      {
-        sizeof (GtkImageMenuItemClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-        (GClassInitFunc) gtk_image_menu_item_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-        sizeof (GtkImageMenuItem),
-	0,		/* n_preallocs */
-        (GInstanceInitFunc) gtk_image_menu_item_init,
-      };
-
-      image_menu_item_type =
-	g_type_register_static (GTK_TYPE_MENU_ITEM, "GtkImageMenuItem",
-				&image_menu_item_info, 0);
-    }
-
-  return image_menu_item_type;
-}
+G_DEFINE_TYPE (GtkImageMenuItem, gtk_image_menu_item, GTK_TYPE_MENU_ITEM)
 
 static void
 gtk_image_menu_item_class_init (GtkImageMenuItemClass *klass)
@@ -111,8 +82,6 @@ gtk_image_menu_item_class_init (GtkImageMenuItemClass *klass)
   widget_class = (GtkWidgetClass*) klass;
   menu_item_class = (GtkMenuItemClass*) klass;
   container_class = (GtkContainerClass*) klass;
-  
-  parent_class = g_type_class_peek_parent (klass);
   
   widget_class->screen_changed = gtk_image_menu_item_screen_changed;
   widget_class->size_request = gtk_image_menu_item_size_request;
@@ -132,7 +101,7 @@ gtk_image_menu_item_class_init (GtkImageMenuItemClass *klass)
                                                         P_("Image widget"),
                                                         P_("Child widget to appear next to the menu text"),
                                                         GTK_TYPE_WIDGET,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
 
   gtk_settings_install_property (g_param_spec_boolean ("gtk-menu-images",
 						       P_("Show menu images"),
@@ -208,24 +177,35 @@ gtk_image_menu_item_toggle_size_request (GtkMenuItem *menu_item,
 					 gint        *requisition)
 {
   GtkImageMenuItem *image_menu_item = GTK_IMAGE_MENU_ITEM (menu_item);
+  GtkPackDirection pack_dir;
+  
+  if (GTK_IS_MENU_BAR (GTK_WIDGET (menu_item)->parent))
+    pack_dir = gtk_menu_bar_get_child_pack_direction (GTK_MENU_BAR (GTK_WIDGET (menu_item)->parent));
+  else
+    pack_dir = GTK_PACK_DIRECTION_LTR;
 
   *requisition = 0;
 
   if (image_menu_item->image && show_image (image_menu_item))
     {
       GtkRequisition image_requisition;
-
+      guint toggle_spacing;
       gtk_widget_get_child_requisition (image_menu_item->image,
                                         &image_requisition);
 
-      if (image_requisition.width > 0)
+      gtk_widget_style_get (GTK_WIDGET (menu_item),
+			    "toggle-spacing", &toggle_spacing,
+			    NULL);
+      
+      if (pack_dir == GTK_PACK_DIRECTION_LTR || pack_dir == GTK_PACK_DIRECTION_RTL)
 	{
-	  guint toggle_spacing;
-	  gtk_widget_style_get (GTK_WIDGET (menu_item),
-				"toggle_spacing", &toggle_spacing,
-				NULL);
-
-	  *requisition = image_requisition.width + toggle_spacing;
+	  if (image_requisition.width > 0)
+	    *requisition = image_requisition.width + toggle_spacing;
+	}
+      else
+	{
+	  if (image_requisition.height > 0)
+	    *requisition = image_requisition.height + toggle_spacing;
 	}
     }
 }
@@ -236,8 +216,15 @@ gtk_image_menu_item_size_request (GtkWidget      *widget,
                                   GtkRequisition *requisition)
 {
   GtkImageMenuItem *image_menu_item;
+  gint child_width = 0;
   gint child_height = 0;
+  GtkPackDirection pack_dir;
   
+  if (GTK_IS_MENU_BAR (widget->parent))
+    pack_dir = gtk_menu_bar_get_child_pack_direction (GTK_MENU_BAR (widget->parent));
+  else
+    pack_dir = GTK_PACK_DIRECTION_LTR;
+
   image_menu_item = GTK_IMAGE_MENU_ITEM (widget);
   
   if (image_menu_item->image && 
@@ -249,15 +236,20 @@ gtk_image_menu_item_size_request (GtkWidget      *widget,
       gtk_widget_size_request (image_menu_item->image,
                                &child_requisition);
 
+      child_width = child_requisition.width;
       child_height = child_requisition.height;
     }
   
-  (* GTK_WIDGET_CLASS (parent_class)->size_request) (widget, requisition);
+  (* GTK_WIDGET_CLASS (gtk_image_menu_item_parent_class)->size_request) (widget, requisition);
 
   /* not done with height since that happens via the
    * toggle_size_request
    */
-  requisition->height = MAX (requisition->height, child_height);
+  if (pack_dir == GTK_PACK_DIRECTION_LTR || pack_dir == GTK_PACK_DIRECTION_RTL)
+    requisition->height = MAX (requisition->height, child_height);
+  else
+    requisition->width = MAX (requisition->width, child_width);
+    
   
   /* Note that GtkMenuShell always size requests before
    * toggle_size_request, so toggle_size_request will be able to use
@@ -270,10 +262,16 @@ gtk_image_menu_item_size_allocate (GtkWidget     *widget,
                                    GtkAllocation *allocation)
 {
   GtkImageMenuItem *image_menu_item;
+  GtkPackDirection pack_dir;
+  
+  if (GTK_IS_MENU_BAR (widget->parent))
+    pack_dir = gtk_menu_bar_get_child_pack_direction (GTK_MENU_BAR (widget->parent));
+  else
+    pack_dir = GTK_PACK_DIRECTION_LTR;
   
   image_menu_item = GTK_IMAGE_MENU_ITEM (widget);  
   
-  (* GTK_WIDGET_CLASS (parent_class)->size_allocate) (widget, allocation);
+  (* GTK_WIDGET_CLASS (gtk_image_menu_item_parent_class)->size_allocate) (widget, allocation);
 
   if (image_menu_item->image && show_image (image_menu_item))
     {
@@ -283,8 +281,8 @@ gtk_image_menu_item_size_allocate (GtkWidget     *widget,
       guint horizontal_padding, toggle_spacing;
 
       gtk_widget_style_get (widget,
-			    "horizontal_padding", &horizontal_padding,
-			    "toggle_spacing", &toggle_spacing,
+			    "horizontal-padding", &horizontal_padding,
+			    "toggle-spacing", &toggle_spacing,
 			    NULL);
       
       /* Man this is lame hardcoding action, but I can't
@@ -294,25 +292,44 @@ gtk_image_menu_item_size_allocate (GtkWidget     *widget,
       gtk_widget_get_child_requisition (image_menu_item->image,
                                         &child_requisition);
 
-      offset = GTK_CONTAINER (image_menu_item)->border_width +
-	widget->style->xthickness;
-
-      if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR) 
+      if (pack_dir == GTK_PACK_DIRECTION_LTR ||
+	  pack_dir == GTK_PACK_DIRECTION_RTL)
 	{
-	  x = offset + horizontal_padding +
+	  offset = GTK_CONTAINER (image_menu_item)->border_width +
+	    widget->style->xthickness;
+	  
+	  if ((gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR) ==
+	      (pack_dir == GTK_PACK_DIRECTION_LTR))
+	    x = offset + horizontal_padding +
 	      (GTK_MENU_ITEM (image_menu_item)->toggle_size -
 	       toggle_spacing - child_requisition.width) / 2;
-	}
-      else
-	{
-	  x = widget->allocation.width - offset - horizontal_padding -
+	  else
+	    x = widget->allocation.width - offset - horizontal_padding -
 	      GTK_MENU_ITEM (image_menu_item)->toggle_size + toggle_spacing +
 	      (GTK_MENU_ITEM (image_menu_item)->toggle_size -
 	       toggle_spacing - child_requisition.width) / 2;
+	  
+	  y = (widget->allocation.height - child_requisition.height) / 2;
 	}
+      else
+	{
+	  offset = GTK_CONTAINER (image_menu_item)->border_width +
+	    widget->style->ythickness;
+	  
+	  if ((gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR) ==
+	      (pack_dir == GTK_PACK_DIRECTION_TTB))
+	    y = offset + horizontal_padding +
+	      (GTK_MENU_ITEM (image_menu_item)->toggle_size -
+	       toggle_spacing - child_requisition.height) / 2;
+	  else
+	    y = widget->allocation.height - offset - horizontal_padding -
+	      GTK_MENU_ITEM (image_menu_item)->toggle_size + toggle_spacing +
+	      (GTK_MENU_ITEM (image_menu_item)->toggle_size -
+	       toggle_spacing - child_requisition.height) / 2;
 
-      y = (widget->allocation.height - child_requisition.height) / 2;
-
+	  x = (widget->allocation.width - child_requisition.width) / 2;
+	}
+      
       child_allocation.width = child_requisition.width;
       child_allocation.height = child_requisition.height;
       child_allocation.x = widget->allocation.x + MAX (x, 0);
@@ -330,10 +347,10 @@ gtk_image_menu_item_forall (GtkContainer   *container,
 {
   GtkImageMenuItem *image_menu_item = GTK_IMAGE_MENU_ITEM (container);
   
-  (* GTK_CONTAINER_CLASS (parent_class)->forall) (container,
-                                                  include_internals,
-                                                  callback,
-                                                  callback_data);
+  (* GTK_CONTAINER_CLASS (gtk_image_menu_item_parent_class)->forall) (container,
+								      include_internals,
+								      callback,
+								      callback_data);
 
   if (image_menu_item->image)
     (* callback) (image_menu_item->image, callback_data);
@@ -492,7 +509,7 @@ gtk_image_menu_item_set_image (GtkImageMenuItem *image_menu_item,
   gtk_widget_set_parent (image, GTK_WIDGET (image_menu_item));
   g_object_set (image, 
 		"visible", show_image (image_menu_item),
-		"no_show_all", TRUE,
+		"no-show-all", TRUE,
 		NULL);
 
   g_object_notify (G_OBJECT (image_menu_item), "image");
@@ -538,7 +555,7 @@ gtk_image_menu_item_remove (GtkContainer *container,
     }
   else
     {
-      (* GTK_CONTAINER_CLASS (parent_class)->remove) (container, child);
+      (* GTK_CONTAINER_CLASS (gtk_image_menu_item_parent_class)->remove) (container, child);
     }
 }
 
@@ -601,7 +618,7 @@ gtk_image_menu_item_screen_changed (GtkWidget *widget,
     g_signal_connect (settings, "notify::gtk-menu-images",
 		      G_CALLBACK (gtk_image_menu_item_setting_changed), 0);
   g_object_set_data (G_OBJECT (settings), 
-		     "gtk-image-menu-item-connection",
+		     I_("gtk-image-menu-item-connection"),
 		     GUINT_TO_POINTER (show_image_connection));
 
   show_image_change_notify (GTK_IMAGE_MENU_ITEM (widget));

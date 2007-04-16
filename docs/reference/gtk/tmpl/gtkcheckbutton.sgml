@@ -43,11 +43,6 @@ The important signal ('toggled') is also inherited from #GtkToggleButton.
 </para>
 
 
-<!-- ##### ARG GtkCheckButton:focus-x-padding ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkCheckButton:indicator-size ##### -->
 <para>
 

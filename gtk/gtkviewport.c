@@ -39,8 +39,6 @@ enum {
 };
 
 
-static void gtk_viewport_class_init               (GtkViewportClass *klass);
-static void gtk_viewport_init                     (GtkViewport      *viewport);
 static void gtk_viewport_finalize                 (GObject          *object);
 static void gtk_viewport_destroy                  (GtkObject        *object);
 static void gtk_viewport_set_property             (GObject         *object,
@@ -71,34 +69,7 @@ static void gtk_viewport_adjustment_value_changed (GtkAdjustment    *adjustment,
 static void gtk_viewport_style_set                (GtkWidget *widget,
 			                           GtkStyle  *previous_style);
 
-static GtkBinClass *parent_class;
-
-GType
-gtk_viewport_get_type (void)
-{
-  static GType viewport_type = 0;
-
-  if (!viewport_type)
-    {
-      static const GTypeInfo viewport_info =
-      {
-	sizeof (GtkViewportClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_viewport_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkViewport),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_viewport_init,
-      };
-
-      viewport_type = g_type_register_static (GTK_TYPE_BIN, "GtkViewport",
-					      &viewport_info, 0);
-    }
-
-  return viewport_type;
-}
+G_DEFINE_TYPE (GtkViewport, gtk_viewport, GTK_TYPE_BIN)
 
 static void
 gtk_viewport_class_init (GtkViewportClass *class)
@@ -112,8 +83,6 @@ gtk_viewport_class_init (GtkViewportClass *class)
   gobject_class = G_OBJECT_CLASS (class);
   widget_class = (GtkWidgetClass*) class;
   container_class = (GtkContainerClass*) class;
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->finalize = gtk_viewport_finalize;
   gobject_class->set_property = gtk_viewport_set_property;
@@ -153,11 +122,11 @@ gtk_viewport_class_init (GtkViewportClass *class)
 						      P_("Shadow type"),
 						      P_("Determines how the shadowed box around the viewport is drawn"),
 						      GTK_TYPE_SHADOW_TYPE,
-						      GTK_SHADOW_NONE,
+						      GTK_SHADOW_IN,
 						      GTK_PARAM_READWRITE));
 
   widget_class->set_scroll_adjustments_signal =
-    g_signal_new ("set_scroll_adjustments",
+    g_signal_new (I_("set_scroll_adjustments"),
 		  G_OBJECT_CLASS_TYPE (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkViewportClass, set_scroll_adjustments),
@@ -230,7 +199,7 @@ gtk_viewport_init (GtkViewport *viewport)
   gtk_widget_set_redraw_on_allocate (GTK_WIDGET (viewport), FALSE);
   gtk_container_set_resize_mode (GTK_CONTAINER (viewport), GTK_RESIZE_QUEUE);
   
-  viewport->shadow_type = GTK_SHADOW_NONE;
+  viewport->shadow_type = GTK_SHADOW_IN;
   viewport->view_window = NULL;
   viewport->bin_window = NULL;
   viewport->hadjustment = NULL;
@@ -288,7 +257,7 @@ gtk_viewport_finalize (GObject *object)
   viewport_disconnect_adjustment (viewport, GTK_ORIENTATION_HORIZONTAL);
   viewport_disconnect_adjustment (viewport, GTK_ORIENTATION_VERTICAL);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_viewport_parent_class)->finalize (object);
 }
 
 static void
@@ -299,7 +268,7 @@ gtk_viewport_destroy (GtkObject *object)
   viewport_disconnect_adjustment (viewport, GTK_ORIENTATION_HORIZONTAL);
   viewport_disconnect_adjustment (viewport, GTK_ORIENTATION_VERTICAL);
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_viewport_parent_class)->destroy (object);
 }
 
 /**
@@ -464,11 +433,9 @@ viewport_set_adjustment (GtkViewport    *viewport,
   if (!adjustment)
     adjustment = GTK_ADJUSTMENT (gtk_adjustment_new (0.0, 0.0, 0.0,
 						     0.0, 0.0, 0.0));
-
   viewport_disconnect_adjustment (viewport, orientation);
   *adjustmentp = adjustment;
-  g_object_ref (adjustment);
-  gtk_object_sink (GTK_OBJECT (adjustment));
+  g_object_ref_sink (adjustment);
 
   if (orientation == GTK_ORIENTATION_HORIZONTAL)
     viewport_set_hadjustment_values (viewport, &value_changed);
@@ -670,8 +637,8 @@ gtk_viewport_unrealize (GtkWidget *widget)
   gdk_window_destroy (viewport->bin_window);
   viewport->bin_window = NULL;
 
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  if (GTK_WIDGET_CLASS (gtk_viewport_parent_class)->unrealize)
+    (* GTK_WIDGET_CLASS (gtk_viewport_parent_class)->unrealize) (widget);
 }
 
 static void
@@ -699,12 +666,10 @@ gtk_viewport_expose (GtkWidget      *widget,
 		     GdkEventExpose *event)
 {
   GtkViewport *viewport;
-  GtkBin *bin;
 
   if (GTK_WIDGET_DRAWABLE (widget))
     {
       viewport = GTK_VIEWPORT (widget);
-      bin = GTK_BIN (widget);
 
       if (event->window == widget->window)
 	gtk_viewport_paint (widget, &event->area);
@@ -715,7 +680,7 @@ gtk_viewport_expose (GtkWidget      *widget,
 			     &event->area, widget, "viewportbin",
 			     0, 0, -1, -1);
 	  
-	  (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
+	  (* GTK_WIDGET_CLASS (gtk_viewport_parent_class)->expose_event) (widget, event);
 	}
     }
 
@@ -735,18 +700,16 @@ gtk_viewport_add (GtkContainer *container,
 
   gtk_widget_set_parent_window (child, GTK_VIEWPORT (bin)->bin_window);
 
-  GTK_CONTAINER_CLASS (parent_class)->add (container, child);
+  GTK_CONTAINER_CLASS (gtk_viewport_parent_class)->add (container, child);
 }
 
 static void
 gtk_viewport_size_request (GtkWidget      *widget,
 			   GtkRequisition *requisition)
 {
-  GtkViewport *viewport;
   GtkBin *bin;
   GtkRequisition child_requisition;
 
-  viewport = GTK_VIEWPORT (widget);
   bin = GTK_BIN (widget);
 
   requisition->width = (GTK_CONTAINER (widget)->border_width +

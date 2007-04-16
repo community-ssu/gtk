@@ -1,42 +1,83 @@
-2005-08-18  Matthias Clasen  <mclasen@redhat.com>
+2006-08-17  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.10 ===
+	* === Released 2.10.2 ===
 
-2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+2006-07-23  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.1 ===
 
-	* === Released 2.6.9 ===
+2006-03-10  Matthias Clasen  <mclasen@redhat.com>
 
-2005-06-15  Matthias Clasen  <mclasen@redhat.com>
+	* Don't export any internal functions or variables,
+	only the theme engine abi.
 
-	* === Released 2.6.8 ===
+2006-03-10  Matthias Clasen  <mclasen@redhat.com>
 
-2005-04-12  Matthias Clasen  <mclasen@redhat.com>
+	* pixbuf-draw.c (draw_extension): Remove suspicious
+	code.  (#325295, Alexander Nedotsukov)
 
-	* === Releases 2.6.7 ====
+2006-01-17  Matthias Clasen  <mclasen@redhat.com>
 
-2005-04-10  Matthias Clasen  <mclasen@redhat.com>
+	* pixbuf-render.c: If the src positions for gradients
+	are nonsensical, don't render anything, rather than 
+	read out of bounds.  
+	
+2006-01-16  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.6 ===
+	* pixbuf-draw.c:
+	* pixbuf-rc-style.c:
+	* pixbuf.h: Apply a patch by Alexander Nedotsukov to
+	support customized drawing of expanders and resize 
+	grips. (#325289). 
 
-2005-04-10  Matthias Clasen  <mclasen@redhat.com>
+	* pixbuf-draw.c (draw_gap_image): Silence the 
+	compiler.
 
-	* === Released 2.6.6 ===
+2005-11-17  Matthias Clasen  <mclasen@redhat.com>
 
-2005-04-09  Matthias Clasen  <mclasen@redhat.com>
+	* pixbuf-rc-style.c: const correctness fixes
+	found by Arjan van de Ven and gcc.
 
-	* === Released 2.6.5 ===
+2005-08-24  Matthias Clasen  <mclasen@redhat.com>
 
-2005-03-01  Matthias Clasen  <mclasen@redhat.com>
+	* === Released 2.8.2 ===
 
-	* === Released 2.6.4 ===
+	* === Released 2.8.1 ===
 
-2005-02-28  Matthias Clasen  <mclasen@redhat.com>
+2005-08-13  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.3 ===
+	* === Released 2.8.0 ===
 
-2005-02-04  Matthias Clasen  <mclasen@redhat.com>
+2005-08-02  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.2 ===
+	* === Released 2.7.5 ===
+
+2005-07-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.4 === 
+
+2005-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.3 ===
+	
+2005-07-08  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.7.2 ===
+
+2005-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.1 ===
+	
+2005-06-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.0 ===
+
+2005-06-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* pixbuf-render.c (theme_pixbuf_render): Try to
+	handle the situation that the borders are larger
+	than the area we are rendering.  (#169731,
+	Benjamin Otte)
 
 2005-01-08  Matthias Clasen  <mclasen@redhat.com>
 

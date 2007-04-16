@@ -27,6 +27,7 @@
 #include "gtkstock.h"
 #include "gtkintl.h"
 #include "gtkradiotoolbutton.h"
+#include "gtkprivate.h"
 #include "gtkalias.h"
 
 #define MENU_ID "gtk-toggle-tool-button-menu-id"
@@ -36,6 +37,12 @@ enum {
   LAST_SIGNAL
 };
 
+enum {
+  PROP_0,
+  PROP_ACTIVE
+};
+
+
 #define GTK_TOGGLE_TOOL_BUTTON_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_TOGGLE_TOOL_BUTTON, GtkToggleToolButtonPrivate))
 
 struct _GtkToggleToolButtonPrivate
@@ -43,8 +50,15 @@ struct _GtkToggleToolButtonPrivate
   guint active : 1;
 };
   
-static void gtk_toggle_tool_button_init       (GtkToggleToolButton      *button);
-static void gtk_toggle_tool_button_class_init (GtkToggleToolButtonClass *klass);
+
+static void     gtk_toggle_tool_button_set_property        (GObject      *object,
+							    guint         prop_id,
+							    const GValue *value,
+							    GParamSpec   *pspec);
+static void     gtk_toggle_tool_button_get_property        (GObject      *object,
+							    guint         prop_id,
+							    GValue       *value,
+							    GParamSpec   *pspec);
 
 static gboolean gtk_toggle_tool_button_create_menu_proxy (GtkToolItem *button);
 
@@ -53,35 +67,9 @@ static void button_toggled      (GtkWidget           *widget,
 static void menu_item_activated (GtkWidget           *widget,
 				 GtkToggleToolButton *button);
 
-static GObjectClass *parent_class = NULL;
 static guint         toggle_signals[LAST_SIGNAL] = { 0 };
 
-GType
-gtk_toggle_tool_button_get_type (void)
-{
-  static GType type = 0;
-
-  if (!type)
-    {
-      static const GTypeInfo type_info =
-	{
-	  sizeof (GtkToggleToolButtonClass),
-	  (GBaseInitFunc) 0,
-	  (GBaseFinalizeFunc) 0,
-	  (GClassInitFunc) gtk_toggle_tool_button_class_init,
-	  (GClassFinalizeFunc) 0,
-	  NULL,
-	  sizeof (GtkToggleToolButton),
-	  0, /* n_preallocs */
-	  (GInstanceInitFunc) gtk_toggle_tool_button_init
-	};
-
-      type = g_type_register_static (GTK_TYPE_TOOL_BUTTON,
-				     "GtkToggleToolButton", &type_info, 0);
-    }
-  return type;
-}
-
+G_DEFINE_TYPE (GtkToggleToolButton, gtk_toggle_tool_button, GTK_TYPE_TOOL_BUTTON)
 
 static void
 gtk_toggle_tool_button_class_init (GtkToggleToolButtonClass *klass)
@@ -90,15 +78,31 @@ gtk_toggle_tool_button_class_init (GtkToggleToolButtonClass *klass)
   GtkToolItemClass *toolitem_class;
   GtkToolButtonClass *toolbutton_class;
 
-  parent_class = g_type_class_peek_parent (klass);
-
   object_class = (GObjectClass *)klass;
   toolitem_class = (GtkToolItemClass *)klass;
   toolbutton_class = (GtkToolButtonClass *)klass;
 
+  object_class->set_property = gtk_toggle_tool_button_set_property;
+  object_class->get_property = gtk_toggle_tool_button_get_property;
+
   toolitem_class->create_menu_proxy = gtk_toggle_tool_button_create_menu_proxy;
   toolbutton_class->button_type = GTK_TYPE_TOGGLE_BUTTON;
-  
+
+  /**
+   * GtkToggleToolButton:active:
+   *
+   * If the toggle tool button should be pressed in or not.
+   *
+   * Since: 2.8
+   */
+  g_object_class_install_property (object_class,
+                                   PROP_ACTIVE,
+                                   g_param_spec_boolean ("active",
+							 P_("Active"),
+							 P_("If the toggle button should be pressed in or not"),
+							 FALSE,
+							 GTK_PARAM_READWRITE));
+
 /**
  * GtkToggleToolButton::toggled:
  * @toggle_tool_button: the object that emitted the signal
@@ -106,7 +110,7 @@ gtk_toggle_tool_button_class_init (GtkToggleToolButtonClass *klass)
  * Emitted whenever the toggle tool button changes state.
  **/
   toggle_signals[TOGGLED] =
-    g_signal_new ("toggled",
+    g_signal_new (I_("toggled"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkToggleToolButtonClass, toggled),
@@ -132,6 +136,47 @@ gtk_toggle_tool_button_init (GtkToggleToolButton *button)
     
   g_signal_connect_object (toggle_button,
 			   "toggled", G_CALLBACK (button_toggled), button, 0);
+}
+
+static void
+gtk_toggle_tool_button_set_property (GObject      *object,
+				     guint         prop_id,
+				     const GValue *value,
+				     GParamSpec   *pspec)
+{
+  GtkToggleToolButton *button = GTK_TOGGLE_TOOL_BUTTON (object);
+
+  switch (prop_id)
+    {
+      case PROP_ACTIVE:
+	gtk_toggle_tool_button_set_active (button, 
+					   g_value_get_boolean (value));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
+}
+
+static void
+gtk_toggle_tool_button_get_property (GObject    *object,
+				     guint       prop_id,
+				     GValue     *value,
+				     GParamSpec *pspec)
+{
+  GtkToggleToolButton *button = GTK_TOGGLE_TOOL_BUTTON (object);
+
+  switch (prop_id)
+    {
+      case PROP_ACTIVE:
+        g_value_set_boolean (value, gtk_toggle_tool_button_get_active (button));
+        break;
+
+      default:
+        G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+        break;
+    }
 }
 
 static gboolean
@@ -218,6 +263,7 @@ menu_item_activated (GtkWidget           *menu_item,
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (_gtk_tool_button_get_button (tool_button)),
 				    toggle_tool_button->priv->active);
 
+      g_object_notify (G_OBJECT (toggle_tool_button), "active");
       g_signal_emit (toggle_tool_button, toggle_signals[TOGGLED], 0);
     }
 }
@@ -241,6 +287,7 @@ button_toggled (GtkWidget           *widget,
 					  toggle_tool_button->priv->active);
 	}
 
+      g_object_notify (G_OBJECT (toggle_tool_button), "active");
       g_signal_emit (toggle_tool_button, toggle_signals[TOGGLED], 0);
     }
 }
@@ -287,7 +334,7 @@ gtk_toggle_tool_button_new_from_stock (const gchar *stock_id)
   g_return_val_if_fail (stock_id != NULL, NULL);
   
   button = g_object_new (GTK_TYPE_TOGGLE_TOOL_BUTTON,
-			 "stock_id", stock_id,
+			 "stock-id", stock_id,
 			 NULL);
   
   return GTK_TOOL_ITEM (button);

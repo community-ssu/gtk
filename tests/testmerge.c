@@ -1,3 +1,22 @@
+/* testmerge.c
+ * Copyright (C) 2003 James Henstridge
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 #include <config.h>
 
 #include <stdio.h>
@@ -105,8 +124,8 @@ delayed_toggle_dynamic (GtkUIManager *merge)
 			     "dyn1menu", "dyn1", GTK_UI_MANAGER_MENU, 0);
       gtk_ui_manager_add_ui (merge, merge_id, "/menubar/EditMenu/dyn1menu", 
 			     "dyn1", "dyn1", GTK_UI_MANAGER_MENUITEM, 0);
-      gtk_ui_manager_add_ui (merge, merge_id, "/menubar/EditMenu/dyn1menu", 
-			     "dyn2", "dyn2", GTK_UI_MANAGER_AUTO, TRUE);
+      gtk_ui_manager_add_ui (merge, merge_id, "/menubar/EditMenu/dyn1menu/dyn1", 
+			     "dyn2", "dyn2", GTK_UI_MANAGER_AUTO, FALSE);
     }
   else 
     {

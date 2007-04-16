@@ -22,8 +22,8 @@
 #include "gtkcellrenderertoggle.h"
 #include "gtkintl.h"
 #include "gtkmarshalers.h"
-#include "gtktreeprivate.h"
 #include "gtkprivate.h"
+#include "gtktreeprivate.h"
 #include "gtkalias.h"
 
 static void gtk_cell_renderer_toggle_get_property  (GObject                    *object,
@@ -34,8 +34,6 @@ static void gtk_cell_renderer_toggle_set_property  (GObject                    *
 						    guint                       param_id,
 						    const GValue               *value,
 						    GParamSpec                 *pspec);
-static void gtk_cell_renderer_toggle_init       (GtkCellRendererToggle      *celltext);
-static void gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class);
 static void gtk_cell_renderer_toggle_get_size   (GtkCellRenderer            *cell,
 						 GtkWidget                  *widget,
  						 GdkRectangle               *cell_area,
@@ -70,10 +68,14 @@ enum {
   PROP_ACTIVE,
   PROP_RADIO,
   PROP_INCONSISTENT,
-  PROP_CHECKBOX_MODE
+  PROP_INDICATOR_SIZE
 };
 
+#ifndef MAEMO_CHANGES
+#define TOGGLE_WIDTH 12
+#else  /* MAEMO_CHANGES */
 #define TOGGLE_WIDTH 26
+#endif /* MAEMO_CHANGES */
 
 static guint toggle_cell_signals[LAST_SIGNAL] = { 0 };
 
@@ -82,46 +84,36 @@ static guint toggle_cell_signals[LAST_SIGNAL] = { 0 };
 typedef struct _GtkCellRendererTogglePrivate GtkCellRendererTogglePrivate;
 struct _GtkCellRendererTogglePrivate
 {
+  gint indicator_size;
+
   guint inconsistent : 1;
-  guint checkbox_mode : 1;
 };
 
 
-GType
-gtk_cell_renderer_toggle_get_type (void)
-{
-  static GType cell_toggle_type = 0;
-
-  if (!cell_toggle_type)
-    {
-      static const GTypeInfo cell_toggle_info =
-      {
-	sizeof (GtkCellRendererToggleClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_cell_renderer_toggle_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkCellRendererToggle),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) gtk_cell_renderer_toggle_init,
-      };
-
-      cell_toggle_type =
-	g_type_register_static (GTK_TYPE_CELL_RENDERER, "GtkCellRendererToggle",
-				&cell_toggle_info, 0);
-    }
-
-  return cell_toggle_type;
-}
+G_DEFINE_TYPE (GtkCellRendererToggle, gtk_cell_renderer_toggle, GTK_TYPE_CELL_RENDERER)
 
 static void
 gtk_cell_renderer_toggle_init (GtkCellRendererToggle *celltoggle)
 {
+  GtkCellRendererTogglePrivate *priv;
+
+  priv = GTK_CELL_RENDERER_TOGGLE_GET_PRIVATE (celltoggle);
+
   celltoggle->activatable = TRUE;
   celltoggle->active = FALSE;
   celltoggle->radio = FALSE;
+
   GTK_CELL_RENDERER (celltoggle)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
+#ifdef MAEMO_CHANGES
+  GTK_CELL_RENDERER (celltoggle)->xpad = 2;
+  GTK_CELL_RENDERER (celltoggle)->ypad = 2;
+#endif /* MAEMO_CHANGES */
+
+  priv->indicator_size = 12;
+#ifdef MAEMO_CHANGES
+  priv->indicator_size = TOGGLE_WIDTH;
+#endif /* MAEMO_CHANGES */
+  priv->inconsistent = FALSE;
 }
 
 static void
@@ -143,8 +135,7 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Toggle state"),
 							 P_("The toggle state of the button"),
 							 FALSE,
-							 GTK_PARAM_READABLE |
-							 GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
 		                   PROP_INCONSISTENT,
@@ -152,8 +143,7 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 					                 P_("Inconsistent state"),
 							 P_("The inconsistent state of the button"),
 							 FALSE,
-							 GTK_PARAM_READABLE |
-							 GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
   
   g_object_class_install_property (object_class,
 				   PROP_ACTIVATABLE,
@@ -161,8 +151,7 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Activatable"),
 							 P_("The toggle button can be activated"),
 							 TRUE,
-							 GTK_PARAM_READABLE |
-							 GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
 
   g_object_class_install_property (object_class,
 				   PROP_RADIO,
@@ -170,25 +159,18 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
 							 P_("Radio state"),
 							 P_("Draw the toggle button as a radio button"),
 							 FALSE,
-							 GTK_PARAM_READABLE |
-							 GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
 
-  /**
-   * GtkCellRendererToggle:checkbox-mode:
-   *
-   * Activates the checkbox mode of drawing selection. Currently there are no 
-   * major differences in how the drawing is done.
-   * 
-   * Since: maemo 1.0
-   */
   g_object_class_install_property (object_class,
-                                   PROP_CHECKBOX_MODE,
-                                   g_param_spec_boolean ("checkbox-mode",
-                                                         P_("Checkbox Mode"),
-                                                         P_("Activates the checkbox mode of drawing selection"),
-                                                         FALSE,
-                                                         GTK_PARAM_READABLE |
-                                                         GTK_PARAM_WRITABLE));
+				   PROP_INDICATOR_SIZE,
+				   g_param_spec_int ("indicator-size",
+						     P_("Indicator size"),
+						     P_("Size of check or radio indicator"),
+						     0,
+						     G_MAXINT,
+						     TOGGLE_WIDTH,
+						     GTK_PARAM_READWRITE));
+
   
   /**
    * GtkCellRendererToggle::toggled:
@@ -199,7 +181,7 @@ gtk_cell_renderer_toggle_class_init (GtkCellRendererToggleClass *class)
    * The ::toggled signal is emitted when the cell is toggled. 
    **/
   toggle_cell_signals[TOGGLED] =
-    g_signal_new ("toggled",
+    g_signal_new (I_("toggled"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkCellRendererToggleClass, toggled),
@@ -236,8 +218,8 @@ gtk_cell_renderer_toggle_get_property (GObject     *object,
     case PROP_RADIO:
       g_value_set_boolean (value, celltoggle->radio);
       break;
-    case PROP_CHECKBOX_MODE:
-      g_value_set_boolean (value, priv->checkbox_mode);
+    case PROP_INDICATOR_SIZE:
+      g_value_set_int (value, priv->indicator_size);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -271,8 +253,8 @@ gtk_cell_renderer_toggle_set_property (GObject      *object,
     case PROP_RADIO:
       celltoggle->radio = g_value_get_boolean (value);
       break;
-    case PROP_CHECKBOX_MODE:
-      priv->checkbox_mode = g_value_get_boolean (value);
+    case PROP_INDICATOR_SIZE:
+      priv->indicator_size = g_value_get_int (value);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
@@ -310,9 +292,12 @@ gtk_cell_renderer_toggle_get_size (GtkCellRenderer *cell,
 {
   gint calc_width;
   gint calc_height;
+  GtkCellRendererTogglePrivate *priv;
 
-  calc_width = (gint) cell->xpad * 2 + TOGGLE_WIDTH;
-  calc_height = (gint) cell->ypad * 2 + TOGGLE_WIDTH;
+  priv = GTK_CELL_RENDERER_TOGGLE_GET_PRIVATE (cell);
+
+  calc_width = (gint) cell->xpad * 2 + priv->indicator_size;
+  calc_height = (gint) cell->ypad * 2 + priv->indicator_size;
 
   if (width)
     *width = calc_width;
@@ -363,67 +348,28 @@ gtk_cell_renderer_toggle_render (GtkCellRenderer      *cell,
   if (width <= 0 || height <= 0)
     return;
 
-  if (priv->checkbox_mode)
+  if (priv->inconsistent)
+    shadow = GTK_SHADOW_ETCHED_IN;
+  else
+    shadow = celltoggle->active ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
+
+  if (!cell->sensitive)
     {
-      /* Checkbox mode drawing */
-
-      state = GTK_STATE_NORMAL;
-
-      if (!cell->sensitive)
-        {
-          state = GTK_STATE_INSENSITIVE;
-        }
-#if 0
-      /* FIXME: Enable this after the activatable-issue is cleared up */
-      if (!celltoggle->activatable)
-        state = GTK_STATE_INSENSITIVE;
-#endif
-
-      if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
-        shadow = GTK_SHADOW_IN;
+      state = GTK_STATE_INSENSITIVE;
+    }
+  else if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
+    {
+      if (GTK_WIDGET_HAS_FOCUS (widget))
+	state = GTK_STATE_SELECTED;
       else
-        shadow = GTK_SHADOW_OUT;
-
-      if (priv->inconsistent)
-        shadow = GTK_SHADOW_ETCHED_IN;
-
-      if ((flags & GTK_CELL_RENDERER_FOCUSED) == GTK_CELL_RENDERER_FOCUSED)
-        {
-          /* Don't overlap with the focus border */
-          height -= 2;
-          if (GTK_WIDGET_HAS_FOCUS (widget))
-            state = GTK_STATE_ACTIVE;
-          else
-            state = GTK_STATE_PRELIGHT;
-        }
+	state = GTK_STATE_ACTIVE;
     }
   else
     {
-      /* Normal operation */
-
-      if (priv->inconsistent)
-        shadow = GTK_SHADOW_ETCHED_IN;
+      if (celltoggle->activatable)
+        state = GTK_STATE_NORMAL;
       else
-        shadow = celltoggle->active ? GTK_SHADOW_IN : GTK_SHADOW_OUT;
-
-      if (!cell->sensitive)
-        {
-          state = GTK_STATE_INSENSITIVE;
-        }
-      else if ((flags & GTK_CELL_RENDERER_SELECTED) == GTK_CELL_RENDERER_SELECTED)
-        {
-          if (GTK_WIDGET_HAS_FOCUS (widget))
-            state = GTK_STATE_SELECTED;
-          else
-            state = GTK_STATE_ACTIVE;
-        }
-      else
-        {
-          if (celltoggle->activatable)
-            state = GTK_STATE_NORMAL;
-          else
-            state = GTK_STATE_INSENSITIVE;
-        }
+        state = GTK_STATE_INSENSITIVE;
     }
 
   if (celltoggle->radio)
@@ -495,7 +441,7 @@ gtk_cell_renderer_toggle_set_radio (GtkCellRendererToggle *toggle,
  * gtk_cell_renderer_toggle_get_radio:
  * @toggle: a #GtkCellRendererToggle
  *
- * Returns wether we're rendering radio toggles rather than checkboxes. 
+ * Returns whether we're rendering radio toggles rather than checkboxes. 
  * 
  * Return value: %TRUE if we're rendering radio toggles rather than checkboxes
  **/

@@ -1,8 +1,32 @@
+/* testsocket_common.c
+ * Copyright (C) 2001 Red Hat, Inc
+ * Author: Owen Taylor
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 #undef GTK_DISABLE_DEPRECATED
 
 #include <config.h>
-#include "x11/gdkx.h"
 #include <gtk/gtk.h>
+#if defined (GDK_WINDOWING_X11)
+#include "x11/gdkx.h"
+#elif defined (GDK_WINDOWING_WIN32)
+#include "win32/gdkwin32.h"
+#endif
 
 enum
 {
@@ -244,7 +268,11 @@ create_child_plug (guint32  xid,
   gtk_widget_show_all (window);
 
   if (GTK_WIDGET_REALIZED (window))
+#if defined (GDK_WINDOWING_X11)
     return GDK_WINDOW_XID (window->window);
+#elif defined (GDK_WINDOWING_WIN32)
+    return (guint32) GDK_WINDOW_HWND (window->window);
+#endif
   else
     return 0;
 }

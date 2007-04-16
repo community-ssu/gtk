@@ -30,9 +30,11 @@
 #define GDK_PIXBUF_COMPILATION
 #include "gdk-pixbuf.h"
 #include "gdk-pixbuf-private.h"
+/* Include the marshallers */
+#include <glib-object.h>
+#include "gdk-pixbuf-marshal.c"
 #include "gdk-pixbuf-alias.h"
 
-static void gdk_pixbuf_class_init   (GdkPixbufClass *klass);
 static void gdk_pixbuf_finalize     (GObject        *object);
 static void gdk_pixbuf_set_property (GObject        *object,
 				     guint           prop_id,
@@ -57,40 +59,17 @@ enum
   PROP_PIXELS
 };
 
-static gpointer parent_class;
+G_DEFINE_TYPE (GdkPixbuf, gdk_pixbuf, G_TYPE_OBJECT)
 
-GType
-gdk_pixbuf_get_type (void)
+static void 
+gdk_pixbuf_init (GdkPixbuf *pixbuf)
 {
-        static GType object_type = 0;
-
-        if (!object_type) {
-                static const GTypeInfo object_info = {
-                        sizeof (GdkPixbufClass),
-                        (GBaseInitFunc) NULL,
-                        (GBaseFinalizeFunc) NULL,
-                        (GClassInitFunc) gdk_pixbuf_class_init,
-                        NULL,           /* class_finalize */
-                        NULL,           /* class_data */
-                        sizeof (GdkPixbuf),
-                        0,              /* n_preallocs */
-                        (GInstanceInitFunc) NULL,
-                };
-                
-                object_type = g_type_register_static (G_TYPE_OBJECT,
-                                                      "GdkPixbuf",
-                                                      &object_info, 0);
-        }
-  
-        return object_type;
 }
 
 static void
 gdk_pixbuf_class_init (GdkPixbufClass *klass)
 {
         GObjectClass *object_class = G_OBJECT_CLASS (klass);
-        
-        parent_class = g_type_class_peek_parent (klass);
         
         object_class->finalize = gdk_pixbuf_finalize;
         object_class->set_property = gdk_pixbuf_set_property;
@@ -112,7 +91,7 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                            0,
                                                            G_MAXINT,
                                                            3,
-							   PIXBUF_PARAM_FLAGS));
+                                                           PIXBUF_PARAM_FLAGS));
 
         g_object_class_install_property (object_class,
                                          PROP_COLORSPACE,
@@ -121,8 +100,7 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                             P_("The colorspace in which the samples are interpreted"),
                                                             GDK_TYPE_COLORSPACE,
                                                             GDK_COLORSPACE_RGB,
-                                                            
-							    PIXBUF_PARAM_FLAGS));
+                                                            PIXBUF_PARAM_FLAGS));
 
         g_object_class_install_property (object_class,
                                          PROP_HAS_ALPHA,
@@ -130,7 +108,7 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                                P_("Has Alpha"),
                                                                P_("Whether the pixbuf has an alpha channel"),
                                                                FALSE,
-							       PIXBUF_PARAM_FLAGS));
+                                                               PIXBUF_PARAM_FLAGS));
 
         /**
          * GdkPixbuf:bits-per-sample:
@@ -146,7 +124,7 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                            1,
                                                            16,
                                                            8,
-							   PIXBUF_PARAM_FLAGS));
+                                                           PIXBUF_PARAM_FLAGS));
 
         g_object_class_install_property (object_class,
                                          PROP_WIDTH,
@@ -156,7 +134,7 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                            1,
                                                            G_MAXINT,
                                                            1,
-							   PIXBUF_PARAM_FLAGS));
+                                                           PIXBUF_PARAM_FLAGS));
 
         g_object_class_install_property (object_class,
                                          PROP_HEIGHT,
@@ -166,7 +144,7 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                            1,
                                                            G_MAXINT,
                                                            1,
-							   PIXBUF_PARAM_FLAGS));
+                                                           PIXBUF_PARAM_FLAGS));
 
         /**
          * GdkPixbuf:rowstride:
@@ -183,14 +161,14 @@ gdk_pixbuf_class_init (GdkPixbufClass *klass)
                                                            1,
                                                            G_MAXINT,
                                                            1,
-							   PIXBUF_PARAM_FLAGS));
+                                                           PIXBUF_PARAM_FLAGS));
 
         g_object_class_install_property (object_class,
                                          PROP_PIXELS,
                                          g_param_spec_pointer ("pixels",
                                                                P_("Pixels"),
                                                                P_("A pointer to the pixel data of the pixbuf"),
-							       PIXBUF_PARAM_FLAGS));
+                                                               PIXBUF_PARAM_FLAGS));
 }
 
 static void
@@ -201,7 +179,7 @@ gdk_pixbuf_finalize (GObject *object)
         if (pixbuf->destroy_fn)
                 (* pixbuf->destroy_fn) (pixbuf->pixels, pixbuf->destroy_fn_data);
         
-        G_OBJECT_CLASS (parent_class)->finalize (object);
+        G_OBJECT_CLASS (gdk_pixbuf_parent_class)->finalize (object);
 }
 
 
@@ -543,11 +521,7 @@ GDK_PIXBUF_VAR const char *gdk_pixbuf_version = GDK_PIXBUF_VERSION;
 GQuark
 gdk_pixbuf_error_quark (void)
 {
-  static GQuark q = 0;
-  if (q == 0)
-    q = g_quark_from_static_string ("gdk-pixbuf-error-quark");
-
-  return q;
+  return g_quark_from_static_string ("gdk-pixbuf-error-quark");
 }
 
 /**
@@ -781,12 +755,6 @@ gdk_pixbuf_get_property (GObject         *object,
                   break;
           }
 }
-
-
-
-/* Include the marshallers */
-#include <glib-object.h>
-#include "gdk-pixbuf-marshal.c"
 
 #define __GDK_PIXBUF_C__
 #include "gdk-pixbuf-aliasdef.c"

@@ -4,7 +4,6 @@ INCLUDES =					\
 	-I$(top_srcdir)				\
 	-I$(top_builddir)/gdk			\
 	-I$(top_srcdir)/gdk			\
-	-DG_DISABLE_DEPRECATED			\
 	-DGDK_PIXBUF_DISABLE_DEPRECATED		\
 	-DGDK_DISABLE_DEPRECATED		\
 	-DGTK_DISABLE_DEPRECATED		\
@@ -25,12 +24,22 @@ if USE_X11
 testsocket_programs = testsocket testsocket_child
 endif
 
+TESTS = floatingtest
 
 noinst_PROGRAMS =			\
+	autotestfilechooser		\
+	autotestfilesystem		\
+	floatingtest			\
 	simple				\
+	print-editor			\
+	testaccel			\
+	testassistant			\
+	testbbox			\
+	testcairo			\
 	testcalendar			\
 	testcombo			\
 	testcombochange			\
+	testcellrenderertext		\
 	testdnd				\
 	testellipsise			\
 	testentrycompletion 		\
@@ -42,13 +51,19 @@ noinst_PROGRAMS =			\
 	testimage			\
 	testinput			\
 	testmenus			\
+	testmenubars			\
 	testmultidisplay		\
 	testmultiscreen			\
+	testnotebookdnd			\
+	testnouiprint			\
+	testprint			\
 	testrgb				\
+	testrecentchooser 		\
+	testrichtext			\
 	testselection			\
-	testshortcuts			\
 	$(testsocket_programs)		\
 	testspinbutton			\
+	teststatusicon			\
 	testtext			\
         testtextbuffer			\
 	testtoolbar			\
@@ -68,14 +83,24 @@ noinst_PROGRAMS =			\
 	pixbuf-random			\
 	pixbuf-threads			\
 	testmerge			\
-	testactions
+	testactions			\
+	testgrouping
 
+autotestfilechooser_DEPENDENCIES = $(TEST_DEPS)
+autotestfilesystem_DEPENDENCIES = $(TEST_DEPS)
 simple_DEPENDENCIES = $(TEST_DEPS)
+floatingtest_DEPENDENCIES = $(TEST_DEPS)
+print_editor_DEPENDENCIES = $(TEST_DEPS)
 testicontheme_DEPENDENCIES = $(TEST_DEPS)
 testiconview_DEPENDENCIES = $(TEST_DEPS)
+testaccel_DEPENDENCIES = $(TEST_DEPS)
+testassistant_DEPENDENCIES = $(TEST_DEPS)
+testbbox_DEPENDENCIES = $(TEST_DEPS)
+testcairo_DEPENDENCIES = $(TEST_DEPS)
 testcalendar_DEPENDENCIES = $(TEST_DEPS)
 testcombo_DEPENDENCIES = $(TEST_DEPS)
 testcombochange_DEPENDENCIES = $(TEST_DEPS)
+testcellrenderertext_DEPENDENCIES = $(TEST_DEPS)
 testdnd_DEPENDENCIES = $(TEST_DEPS)
 testellipsise_DEPENDENCIES = $(TEST_DEPS)
 testentrycompletion_DEPENDENCIES = $(TEST_DEPS)
@@ -85,14 +110,20 @@ testgtk_DEPENDENCIES = $(TEST_DEPS)
 testinput_DEPENDENCIES = $(TEST_DEPS)
 testimage_DEPENDENCIES = $(TEST_DEPS)
 testmenus_DEPENDENCIES = $(TEST_DEPS)
+testmenubars_DEPENDENCIES = $(TEST_DEPS)
 testmultidisplay_DEPENDENCIES = $(TEST_DEPS)
 testmultiscreen_DEPENDENCIES = $(TEST_DEPS)
+testnotebookdnd_DEPENDENCIES = $(TEST_DEPS)
+testnouiprint_DEPENDENCIES = $(TEST_DEPS)
+testprint_DEPENDENCIES = $(TEST_DEPS)
+testrecentchooser_DEPENDENCIES = $(TEST_DEPS)
 testrgb_DEPENDENCIES = $(TEST_DEPS)
+testrichtext_DEPENDENCIES = $(TEST_DEPS)
 testselection_DEPENDENCIES = $(TEST_DEPS)
-testshortcuts_DEPENDENCIES = $(TEST_DEPS)
 testsocket_DEPENDENCIES = $(DEPS)
 testsocket_child_DEPENDENCIES = $(DEPS)
 testspinbutton_DEPENDENCIES = $(TEST_DEPS)
+teststatusicon_DEPENDENCIES = $(TEST_DEPS)
 testtext_DEPENDENCIES = $(TEST_DEPS)
 testtextbuffer_DEPENDENCIES = $(TEST_DEPS)
 testtreeedit_DEPENDENCIES = $(DEPS)
@@ -106,11 +137,21 @@ treestoretest_DEPENDENCIES = $(TEST_DEPS)
 testxinerama_DEPENDENCIES = $(TEST_DEPS)
 testmerge_DEPENDENCIES = $(TEST_DEPS)
 testactions_DEPENDENCIES = $(TEST_DEPS)
+testgrouping_DEPENDENCIES = $(TEST_DEPS)
 
+autotestfilechooser_LDADD = $(LDADDS)
+autotestfilesystem_LDADD = $(LDADDS)
 simple_LDADD = $(LDADDS)
+floatingtest_LDADD = $(LDADDS)
+print_editor_LDADD = $(LDADDS)
+testaccel_LDADD = $(LDADDS)
+testassistant_LDADD = $(LDADDS)
+testbbox_LDADD = $(LDADDS)
+testcairo_LDADD = $(LDADDS)
 testcalendar_LDADD = $(LDADDS)
 testcombo_LDADD = $(LDADDS)
 testcombochange_LDADD = $(LDADDS)
+testcellrenderertext_LDADD = $(LDADDS)
 testdnd_LDADD = $(LDADDS)
 testellipsise_LDADD = $(LDADDS)
 testentrycompletion_LDADD = $(LDADDS)
@@ -122,14 +163,20 @@ testiconview_LDADD = $(LDADDS)
 testinput_LDADD = $(LDADDS)
 testimage_LDADD = $(LDADDS)
 testmenus_LDADD = $(LDADDS)
+testmenubars_LDADD = $(LDADDS)
 testmultidisplay_LDADD = $(LDADDS)
 testmultiscreen_LDADD = $(LDADDS)
+testnotebookdnd_LDADD = $(LDADDS)
+testnouiprint_LDADD = $(LDADDS)
+testprint_LDADD = $(LDADDS)
+testrecentchooser_LDADD = $(LDADDS)
 testrgb_LDADD = $(LDADDS)
+testrichtext_LDADD = $(LDADDS)
 testselection_LDADD = $(LDADDS)
-testshortcuts_LDADD = $(LDADDS)
 testsocket_LDADD = $(LDADDS)
 testsocket_child_LDADD = $(LDADDS)
 testspinbutton_LDADD = $(LDADDS)
+teststatusicon_LDADD = $(LDADDS)
 testtextbuffer_LDADD = $(LDADDS)
 testtoolbar_LDADD = $(LDADDS)
 stresstest_toolbar_LDADD = $(LDADDS)
@@ -150,6 +197,17 @@ pixbuf_random_LDADD = $(LDADDS)
 pixbuf_threads_LDADD = $(LDADDS) $(GLIB_LIBS)
 testmerge_LDADD = $(LDADDS)
 testactions_LDADD = $(LDADDS)
+testgrouping_LDADD = $(LDADDS)
+
+autotestfilechooser_SOURCES =	\
+	autotestfilechooser.c
+
+autotestfilesystem_SOURCES =	\
+	autotestfilesystem.c
+
+testentrycompletion_SOURCES = 	\
+	prop-editor.c		\
+	testentrycompletion.c
 
 testfilechooser_SOURCES = 	\
 	prop-editor.c		\
@@ -181,6 +239,11 @@ testtoolbar_SOURCES =	\
 	testtoolbar.c	\
 	prop-editor.c
 
+testprint_SOURCES =    	\
+	testprint.c		\
+	testprintfileoperation.h \
+	testprintfileoperation.c
+
 testsocket_SOURCES =    	\
 	testsocket.c		\
 	testsocket_common.c
@@ -192,15 +255,28 @@ testsocket_child_SOURCES =    	\
 testspinbutton_SOURCES =    	\
 	testspinbutton.c
 
+teststatusicon_SOURCES =    	\
+	teststatusicon.c
+
 testmerge_SOURCES = 		\
 	testmerge.c
 
 testactions_SOURCES = 		\
 	testactions.c
 
+testbbox_SOURCES = 		\
+	testbbox.c
+
 testiconview_SOURCES = 		\
 	testiconview.c		\
 	prop-editor.c
+
+testrecentchooser_SOURCES = 	\
+	prop-editor.c 		\
+	testrecentchooser.c
+
+testgrouping_SOURCES =		\
+	testgrouping.c
 
 EXTRA_DIST = 			\
 	prop-editor.h		\

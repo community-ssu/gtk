@@ -651,19 +651,40 @@ _xdg_mime_magic_get_buffer_extents (XdgMimeMagic *mime_magic)
 const char *
 _xdg_mime_magic_lookup_data (XdgMimeMagic *mime_magic,
 			     const void   *data,
-			     size_t        len)
+			     size_t        len,
+                             const char   *mime_types[],
+                             int           n_mime_types)
 {
   XdgMimeMagicMatch *match;
   const char *mime_type;
+  int n;
 
   mime_type = NULL;
   for (match = mime_magic->match_list; match; match = match->next)
     {
       if (_xdg_mime_magic_match_compare_to_data (match, data, len))
 	{
-	  if ((mime_type == NULL) || (xdg_mime_mime_type_subclass (match->mime_type, mime_type))) {
+	  if ((mime_type == NULL) || (_xdg_mime_mime_type_subclass (match->mime_type, mime_type))) {
 	    mime_type = match->mime_type;
 	  }
+	}
+      else 
+	{
+	  for (n = 0; n < n_mime_types; n++)
+	    {
+	      if (mime_types[n] && 
+		  _xdg_mime_mime_type_equal (mime_types[n], match->mime_type))
+		mime_types[n] = NULL;
+	    }
+	}
+    }
+
+  if (mime_type == NULL)
+    {
+      for (n = 0; n < n_mime_types; n++)
+	{
+	  if (mime_types[n])
+	    mime_type = mime_types[n];
 	}
     }
 

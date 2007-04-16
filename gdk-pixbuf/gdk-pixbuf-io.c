@@ -48,32 +48,51 @@
 static gint 
 format_check (GdkPixbufModule *module, guchar *buffer, int size)
 {
-	int j;
+	int i, j;
 	gchar m;
 	GdkPixbufModulePattern *pattern;
+	gboolean anchored;
+	guchar *prefix;
+	gchar *mask;
 
 	for (pattern = module->info->signature; pattern->prefix; pattern++) {
-		for (j = 0; j < size && pattern->prefix[j] != 0; j++) {
-			m = pattern->mask ? pattern->mask[j] : ' ';
-			if (m == ' ') {
-				if (buffer[j] != pattern->prefix[j])
-					break;
-			}
-			else if (m == '!') {
-				if (buffer[j] == pattern->prefix[j])
-					break;
-			}
-			else if (m == 'z') {
-				if (buffer[j] != 0)
-					break;
-			}
-			else if (m == 'n') {
-				if (buffer[j] == 0)
-					break;
-			}
-		} 
-		if (pattern->prefix[j] == 0) 
-			return pattern->relevance;
+		if (pattern->mask && pattern->mask[0] == '*') {
+			prefix = (guchar *)pattern->prefix + 1;
+			mask = pattern->mask + 1;
+			anchored = FALSE;
+		}
+		else {
+			prefix = (guchar *)pattern->prefix;
+			mask = pattern->mask;
+			anchored = TRUE;
+		}
+		for (i = 0; i < size; i++) {
+			for (j = 0; i + j < size && prefix[j] != 0; j++) {
+				m = mask ? mask[j] : ' ';
+				if (m == ' ') {
+					if (buffer[i + j] != prefix[j])
+						break;
+				}
+				else if (m == '!') {
+					if (buffer[i + j] == prefix[j])
+						break;
+				}
+				else if (m == 'z') {
+					if (buffer[i + j] != 0)
+						break;
+				}
+				else if (m == 'n') {
+					if (buffer[i + j] == 0)
+						break;
+				}
+			} 
+
+			if (prefix[j] == 0) 
+				return pattern->relevance;
+
+			if (anchored)
+				break;
+		}
 	}
 	return 0;
 }
@@ -821,7 +840,7 @@ gdk_pixbuf_new_from_file (const char *filename,
 	GdkPixbuf *pixbuf;
 	int size;
 	FILE *f;
-	guchar buffer [128];
+	guchar buffer[1024];
 	GdkPixbufModule *image_module;
 	gchar *display_name;
 
@@ -832,12 +851,13 @@ gdk_pixbuf_new_from_file (const char *filename,
 
 	f = g_fopen (filename, "rb");
 	if (!f) {
+		gint save_errno = errno;
                 g_set_error (error,
                              G_FILE_ERROR,
-                             g_file_error_from_errno (errno),
+                             g_file_error_from_errno (save_errno),
                              _("Failed to open file '%s': %s"),
                              display_name,
-                             g_strerror (errno));
+                             g_strerror (save_errno));
                 g_free (display_name);
 		return NULL;
         }
@@ -939,9 +959,20 @@ size_prepared_cb (GdkPixbufLoader *loader,
 
 	g_return_if_fail (width > 0 && height > 0);
 
-	if(info->preserve_aspect_ratio) {
-		if ((double)height * (double)info->width >
-		    (double)width * (double)info->height) {
+	if (info->preserve_aspect_ratio && 
+	    (info->width > 0 || info->height > 0)) {
+		if (info->width < 0)
+		{
+			width = width * (double)info->height/(double)height;
+			height = info->height;
+		}
+		else if (info->height < 0)
+		{
+			height = height * (double)info->width/(double)width;
+			width = info->width;
+		}
+		else if ((double)height * (double)info->width >
+			 (double)width * (double)info->height) {
 			width = 0.5 + (double)width * (double)info->height / (double)height;
 			height = info->height;
 		} else {
@@ -949,8 +980,10 @@ size_prepared_cb (GdkPixbufLoader *loader,
 			width = info->width;
 		}
 	} else {
-		width = info->width;
-		height = info->height;
+		if (info->width > 0)
+			width = info->width;
+		if (info->height > 0)
+			height = info->height;
 	}
 	
 	gdk_pixbuf_loader_set_size (loader, width, height);
@@ -959,8 +992,8 @@ size_prepared_cb (GdkPixbufLoader *loader,
 /**
  * gdk_pixbuf_new_from_file_at_size:
  * @filename: Name of file to load, in the GLib file name encoding
- * @width: The width the image should have
- * @height: The height the image should have
+ * @width: The width the image should have or -1 to not constrain the width
+ * @height: The height the image should have or -1 to not constrain the height
  * @error: Return location for an error
  *
  * Creates a new pixbuf by loading an image from a file.  The file format is
@@ -1018,8 +1051,8 @@ gdk_pixbuf_new_from_file_at_size (const char *filename,
 /**
  * gdk_pixbuf_new_from_file_at_scale:
  * @filename: Name of file to load, in the GLib file name encoding
- * @width: The width the image should have
- * @height: The height the image should have
+ * @width: The width the image should have or -1 to not constrain the width
+ * @height: The height the image should have or -1 to not constrain the height
  * @preserve_aspect_ratio: %TRUE to preserve the image's aspect ratio
  * @error: Return location for an error
  *
@@ -1027,7 +1060,14 @@ gdk_pixbuf_new_from_file_at_size (const char *filename,
  * detected automatically. If %NULL is returned, then @error will be set.
  * Possible errors are in the #GDK_PIXBUF_ERROR and #G_FILE_ERROR domains.
  * The image will be scaled to fit in the requested size, optionally preserving
- * the image's aspect ratio.
+ * the image's aspect ratio. 
+ *
+ * When preserving the aspect ratio, a @width of -1 will cause the image
+ * to be scaled to the exact given height, and a @height of -1 will cause
+ * the image to be scaled to the exact given width. When not preserving
+ * aspect ratio, a @width or @height of -1 means to not scale the image 
+ * at all in that dimension. Negative values for @width and @height are 
+ * allowed since 2.8.
  *
  * Return value: A newly-created pixbuf with a reference count of 1, or %NULL 
  * if any of several error conditions occurred:  the file could not be opened,
@@ -1055,19 +1095,24 @@ gdk_pixbuf_new_from_file_at_scale (const char *filename,
 		gint height;
 		gboolean preserve_aspect_ratio;
 	} info;
+	GdkPixbufAnimation *animation;
+	GdkPixbufAnimationIter *iter;
+	gboolean has_frame;
 
 	g_return_val_if_fail (filename != NULL, NULL);
-        g_return_val_if_fail (width > 0 && height > 0, NULL);
+        g_return_val_if_fail (width > 0 || width == -1, NULL);
+        g_return_val_if_fail (height > 0 || height == -1, NULL);
 
 	f = g_fopen (filename, "rb");
 	if (!f) {
+		gint save_errno = errno;
                 gchar *display_name = g_filename_display_name (filename);
                 g_set_error (error,
                              G_FILE_ERROR,
-                             g_file_error_from_errno (errno),
+                             g_file_error_from_errno (save_errno),
                              _("Failed to open file '%s': %s"),
                              display_name,
-                             g_strerror (errno));
+                             g_strerror (save_errno));
                 g_free (display_name);
 		return NULL;
         }
@@ -1080,7 +1125,8 @@ gdk_pixbuf_new_from_file_at_scale (const char *filename,
 
 	g_signal_connect (loader, "size-prepared", G_CALLBACK (size_prepared_cb), &info);
 
-	while (!feof (f) && !ferror (f)) {
+	has_frame = FALSE;
+	while (!has_frame && !feof (f) && !ferror (f)) {
 		length = fread (buffer, 1, sizeof (buffer), f);
 		if (length > 0)
 			if (!gdk_pixbuf_loader_write (loader, buffer, length, error)) {
@@ -1089,11 +1135,20 @@ gdk_pixbuf_new_from_file_at_scale (const char *filename,
 				g_object_unref (loader);
 				return NULL;
 			}
+		
+		animation = gdk_pixbuf_loader_get_animation (loader);
+		if (animation) {
+			iter = gdk_pixbuf_animation_get_iter (animation, 0);
+			if (!gdk_pixbuf_animation_iter_on_currently_loading_frame (iter)) {
+				has_frame = TRUE;
+			}
+			g_object_unref (iter);
+		}
 	}
 
 	fclose (f);
 
-	if (!gdk_pixbuf_loader_close (loader, error)) {
+	if (!gdk_pixbuf_loader_close (loader, error) && !has_frame) {
 		g_object_unref (loader);
 		return NULL;
 	}
@@ -1330,11 +1385,12 @@ save_to_file_callback (const gchar *buf,
 
 	n = fwrite (buf, 1, count, filehandle);
 	if (n != count) {
+		gint save_errno = errno;
                 g_set_error (error,
                              G_FILE_ERROR,
-                             g_file_error_from_errno (errno),
+                             g_file_error_from_errno (save_errno),
                              _("Error writing to image file: %s"),
-                             g_strerror (errno));
+                             g_strerror (save_errno));
                 return FALSE;
 	}
 	return TRUE;
@@ -1422,9 +1478,10 @@ save_to_callback_with_tmp_file (GdkPixbufModule   *image_module,
 		goto end;
 	f = fdopen (fd, "wb+");
 	if (f == NULL) {
+		gint save_errno = errno;
 		g_set_error (error,
 			     G_FILE_ERROR,
-			     g_file_error_from_errno (errno),
+			     g_file_error_from_errno (save_errno),
 			     _("Failed to open temporary file"));
 		goto end;
 	}
@@ -1447,9 +1504,10 @@ save_to_callback_with_tmp_file (GdkPixbufModule   *image_module,
 			break;
 	}
 	if (ferror (f)) {
+		gint save_errno = errno;
 		g_set_error (error,
 			     G_FILE_ERROR,
-			     g_file_error_from_errno (errno),
+			     g_file_error_from_errno (save_errno),
 			     _("Failed to read from temporary file"));
 		goto end;
 	}
@@ -1565,10 +1623,6 @@ gdk_pixbuf_real_save_to_callback (GdkPixbuf         *pixbuf,
  * be specified using the "compression" parameter; it's value is in an
  * integer in the range of [0,9].
  *
- * <note><para>
- * The "compression" parameter is available only since 2.8 / maemo 3.0 (2.6.10-2.osso12)
- * </para></note>
- *
  * ICO images can be saved in depth 16, 24, or 32, by using the "depth"
  * parameter. When the ICO saver is given "x_hot" and "y_hot" parameters,
  * it produces a CUR instead of an ICO.
@@ -1659,7 +1713,7 @@ gdk_pixbuf_save (GdkPixbuf  *pixbuf,
  * @option_values: values for named options
  * @error: return location for error, or %NULL
  *
- * Saves pixbuf to a file in @type, which is currently "jpeg", "png", "ico" or "bmp".
+ * Saves pixbuf to a file in @type, which is currently "jpeg", "png", "tiff", "ico" or "bmp".
  * If @error is set, %FALSE will be returned. 
  * See gdk_pixbuf_save () for more details.
  *
@@ -1684,13 +1738,14 @@ gdk_pixbuf_savev (GdkPixbuf  *pixbuf,
         f = g_fopen (filename, "wb");
         
         if (f == NULL) {
+		gint save_errno = errno;
                 gchar *display_name = g_filename_display_name (filename);
                 g_set_error (error,
                              G_FILE_ERROR,
-                             g_file_error_from_errno (errno),
+                             g_file_error_from_errno (save_errno),
                              _("Failed to open '%s' for writing: %s"),
                              display_name,
-                             g_strerror (errno));
+                             g_strerror (save_errno));
                 g_free (display_name);
                 return FALSE;
         }
@@ -1708,13 +1763,14 @@ gdk_pixbuf_savev (GdkPixbuf  *pixbuf,
        }
 
        if (fclose (f) < 0) {
+	       gint save_errno = errno;
                gchar *display_name = g_filename_display_name (filename);
                g_set_error (error,
                             G_FILE_ERROR,
-                            g_file_error_from_errno (errno),
+                            g_file_error_from_errno (save_errno),
                             _("Failed to close '%s' while writing image, all data may not have been saved: %s"),
                             display_name,
-                            g_strerror (errno));
+                            g_strerror (save_errno));
                g_free (display_name);
                return FALSE;
        }
@@ -1820,7 +1876,7 @@ gdk_pixbuf_save_to_callback    (GdkPixbuf  *pixbuf,
  * @error: return location for error, or %NULL
  *
  * Saves pixbuf to a callback in format @type, which is currently "jpeg",
- * "png", "ico" or "bmp".  If @error is set, %FALSE will be returned. See
+ * "png", "tiff", "ico" or "bmp".  If @error is set, %FALSE will be returned. See
  * gdk_pixbuf_save_to_callback () for more details.
  *
  * Return value: whether an error was set
@@ -1866,7 +1922,7 @@ gdk_pixbuf_save_to_callbackv   (GdkPixbuf  *pixbuf,
  * @Varargs: list of key-value save options
  *
  * Saves pixbuf to a new buffer in format @type, which is currently "jpeg",
- * "png", "ico" or "bmp".  This is a convenience function that uses
+ * "png", "tiff", "ico" or "bmp".  This is a convenience function that uses
  * gdk_pixbuf_save_to_callback() to do the real work. Note that the buffer 
  * is not nul-terminated and may contain embedded  nuls.
  * If @error is set, %FALSE will be returned and @string will be set to
@@ -1954,7 +2010,7 @@ save_to_buffer_callback (const gchar *data,
  * @error: return location for error, or %NULL
  *
  * Saves pixbuf to a new buffer in format @type, which is currently "jpeg",
- * "png", "ico" or "bmp".  See gdk_pixbuf_save_to_buffer() for more details.
+ * "tiff", "png", "ico" or "bmp".  See gdk_pixbuf_save_to_buffer() for more details.
  *
  * Return value: whether an error was set
  *
@@ -2165,10 +2221,10 @@ gdk_pixbuf_format_set_disabled (GdkPixbufFormat *format,
  * gdk_pixbuf_format_get_license:
  * @format: a #GdkPixbufFormat
  *
- * Returns information about the license of the image loader
- * for the format. The returned string should be a shorthand for 
- * a wellknown license, e.g. "LGPL", "GPL", "QPL", "GPL/QPL",
- * or "other" to indicate some other license.  
+ * Returns information about the license of the image loader for the format. The
+ * returned string should be a shorthand for a wellknown license, e.g. "LGPL",
+ * "GPL", "QPL", "GPL/QPL", or "other" to indicate some other license.  This
+ * string should be freed with g_free() when it's no longer needed.
  *
  * Returns: a string describing the license of @format. 
  *

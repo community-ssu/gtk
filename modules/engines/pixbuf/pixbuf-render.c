@@ -43,6 +43,12 @@ bilinear_gradient (GdkPixbuf    *src,
   GdkPixbuf *result;
   int i, j, k;
 
+  if (src_x == 0 || src_y == 0)
+    {
+      g_warning ("invalid source position for bilinear gradient\n");
+      return NULL;
+    }
+
   p1 = src_pixels + (src_y - 1) * src_rowstride + (src_x - 1) * n_channels;
   p2 = p1 + n_channels;
   p3 = src_pixels + src_y * src_rowstride + (src_x - 1) * n_channels;
@@ -96,6 +102,12 @@ horizontal_gradient (GdkPixbuf    *src,
   GdkPixbuf *result;
   int i, j, k;
 
+  if (src_x == 0)
+    {
+      g_warning ("invalid source position for horizontal gradient\n");
+      return NULL;
+    }
+
   result = gdk_pixbuf_new (GDK_COLORSPACE_RGB, n_channels == 4, 8,
 			   width, height);
   dest_rowstride = gdk_pixbuf_get_rowstride (result);
@@ -144,6 +156,12 @@ vertical_gradient (GdkPixbuf    *src,
   guchar *dest_pixels;
   GdkPixbuf *result;
   int i, j;
+
+  if (src_y == 0)
+    {
+      g_warning ("invalid source position for vertical gradient\n");
+      return NULL;
+    }
 
   top_pixels = src_pixels + (src_y - 1) * src_rowstride + (src_x) * n_channels;
   bottom_pixels = top_pixels + src_rowstride;
@@ -304,7 +322,7 @@ pixbuf_render (GdkPixbuf    *src,
 	       gint          dest_width,
 	       gint          dest_height)
 {
-  GdkPixbuf *tmp_pixbuf;
+  GdkPixbuf *tmp_pixbuf = NULL;
   GdkRectangle rect;
   int x_offset, y_offset;
   gboolean has_alpha = gdk_pixbuf_get_has_alpha (src);
@@ -382,7 +400,7 @@ pixbuf_render (GdkPixbuf    *src,
       x_offset = rect.x - dest_x;
       y_offset = rect.y - dest_y;
     }
-  else 
+  else if (src_width > 0 && src_height > 0)
     {
       double x_scale = (double)dest_width / src_width;
       double y_scale = (double)dest_height / src_height;
@@ -415,22 +433,25 @@ pixbuf_render (GdkPixbuf    *src,
       y_offset = 0;
     }
 
-  if (mask)
+  if (tmp_pixbuf)
     {
-      gdk_pixbuf_render_threshold_alpha (tmp_pixbuf, mask,
-					 x_offset, y_offset,
-					 rect.x, rect.y,
-					 rect.width, rect.height,
-					 128);
+      if (mask)
+	{
+	  gdk_pixbuf_render_threshold_alpha (tmp_pixbuf, mask,
+					     x_offset, y_offset,
+					     rect.x, rect.y,
+					     rect.width, rect.height,
+					     128);
+	}
+      
+      gdk_draw_pixbuf (window, NULL, tmp_pixbuf,
+		       x_offset, y_offset,
+		       rect.x, rect.y,
+		       rect.width, rect.height,
+		       GDK_RGB_DITHER_NORMAL,
+		       0, 0);
+      g_object_unref (tmp_pixbuf);
     }
-
-  gdk_draw_pixbuf (window, NULL, tmp_pixbuf,
-		   x_offset, y_offset,
-		   rect.x, rect.y,
-		   rect.width, rect.height,
-		   GDK_RGB_DITHER_NORMAL,
-		   0, 0);
-  g_object_unref (tmp_pixbuf);
 }
 
 ThemePixbuf *
@@ -637,7 +658,7 @@ theme_pixbuf_set_stretch (ThemePixbuf *theme_pb,
     theme_pixbuf_compute_hints (theme_pb);
 }
 
-GdkPixbuf *
+static GdkPixbuf *
 pixbuf_cache_value_new (gchar *filename)
 {
   GError *err = NULL;
@@ -696,6 +717,9 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
 
   if (theme_pb->stretch)
     {
+      if (component_mask & COMPONENT_ALL)
+	component_mask = (COMPONENT_ALL - 1) & ~component_mask;
+
       src_x[0] = 0;
       src_x[1] = theme_pb->border_left;
       src_x[2] = pixbuf_width - theme_pb->border_right;
@@ -711,13 +735,24 @@ theme_pixbuf_render (ThemePixbuf  *theme_pb,
       dest_x[2] = x + width - theme_pb->border_right;
       dest_x[3] = x + width;
 
+      if (dest_x[1] > dest_x[2])
+	{
+	  component_mask &= ~(COMPONENT_NORTH | COMPONENT_SOUTH | COMPONENT_CENTER);
+	  dest_x[1] = dest_x[2] = (dest_x[1] + dest_x[2]) / 2;
+	}
+
       dest_y[0] = y;
       dest_y[1] = y + theme_pb->border_top;
       dest_y[2] = y + height - theme_pb->border_bottom;
       dest_y[3] = y + height;
 
-      if (component_mask & COMPONENT_ALL)
-	component_mask = (COMPONENT_ALL - 1) & ~component_mask;
+      if (dest_y[1] > dest_y[2])
+	{
+	  component_mask &= ~(COMPONENT_EAST | COMPONENT_WEST | COMPONENT_CENTER);
+	  dest_y[1] = dest_y[2] = (dest_y[1] + dest_y[2]) / 2;
+	}
+
+
 
 #define RENDER_COMPONENT(X1,X2,Y1,Y2)					         \
         pixbuf_render (pixbuf, theme_pb->hints[Y1][X1], window, mask, clip_rect, \

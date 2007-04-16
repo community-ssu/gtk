@@ -1,79 +1,163 @@
-gtk+2.0 (2:2.6.10-2.osso30) unstable; urgency=low
+gtk+2.0 (2:2.10.6-0osso10) unstable; urgency=low
 
-  * debian/rules: Revert vfp and go back to thumb mode
-  * Fixes: NB#50847 remove HW floating point from GTK+ and use thumb
+  * Don't close menus on clicks on their border area.
+  * Fix treeview focusing with button press.
+  * Add "maemo-position-theming" style property, used in sapwood to add
+    positioning data to the matching rules.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 25 Jan 2007 09:36:07 +0200
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 16 Apr 2007 11:07:02 +0300
 
-gtk+2.0 (2:2.6.10-2.osso29.1) unstable; urgency=low
+gtk+2.0 (2:2.10.6-0osso9) unstable; urgency=low
 
-  * Brown paper bag fix the build release
+  * HILDON_GTK_INPUT_MODE_DICTIONARY added
+  * GtkMenuItem background drawn around the submenu arrow (needs theme update
+    for correct looks)
+  * Do not use GTK_WINDOW_TYPE_HINT_MENU for all menus (needs fix for MB#1141
+    for correct behavior)
+  * API documentation updates.
+  * debian/rules: Do not compress index.sgml files so that gtkdoc-fixxref can
+    access those and generate better cross reference when building hildon API
+    docs.
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 16 Jan 2007 18:04:02 +0200
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 29 Mar 2007 17:16:37 +0300
 
-gtk+2.0 (2:2.6.10-2.osso29) unstable; urgency=low
+gtk+2.0 (2:2.10.6-0osso8) unstable; urgency=low
 
-  * debian/rules: Prefer HW floating points (via DEB_BUILD_OPTIONS=vfp)
-  * Fixes: NB#50601 Gtk not compiled with HW FPU support
+  *** NOTE: starting with this version we are ABI incompatible with maemo gtk+
+   2.6 ***
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 15 Jan 2007 14:03:46 +0200
+  * Remove all the stubs from the header files.
+  * Add MAEMO_CHANGES protection to the DISABLE_XSHM feature.
+  * Stop supporting TYPE_HINT_MESSAGE. TYPE_HINT_NOTIFICATION is the new
+    black.
 
-gtk+2.0 (2:2.6.10-2.osso28) unstable; urgency=low
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue, 13 Mar 2007 16:51:16 +0200
 
-  * Fixes: NB#48386 The scrolling speed in GtkMenu should be faster
-  * Fixes: NB#49859 GtkComboBox doesn't release grab when the popup menu is
-    closed
+gtk+2.0 (2:2.10.6-0osso7) experimental; urgency=low
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 10 Jan 2007 16:51:38 +0200
+  * Back out maemo icon theme load order patch.
 
-gtk+2.0 (2:2.6.10-2.osso27) unstable; urgency=low
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon,  5 Mar 2007 17:31:20 +0200
 
-  * Fixes: NB#48648 Enabling extension events stops GDK_2BUTTON_PRESS
+gtk+2.0 (2:2.10.6-0osso6) experimental; urgency=low
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 29 Nov 2006 10:56:52 +0200
+  * Menu changes to menu item drawing when there's a submenu
+  * Use full widget width for popup in combombox when using list-mode 
+  * Back out checkboxmode from cellrenderertoggle
+  * Pop down combobox with F4 and F5
+  * GtkIconView selection drawing fixes
+  * Adapt progressbar minimum height to maemo specs
 
-gtk+2.0 (2:2.6.10-2.osso26) unstable; urgency=low
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 22 Feb 2007 12:39:00 +0200
 
-  * Fixes: NB#46971 Wrong transiency for tap-and-hold menus
-  * Fixes: NB#48546 Enabling extension events breaks motion notification
-    events
-  * Made extension events more robust. Now extension events can be enabled
-    also after the widget has been realized.
+gtk+2.0 (2:2.10.6-0osso5) experimental; urgency=low
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 28 Nov 2006 17:05:17 +0200
+  * libgtk2.0-0.files: remove im-xim as unnecessary and in some cases harmful
+  * libgtk2.0-0.postinst: call hildon-theme-recache-all to regenerate theme
+    cache files (Fixes: MB#1024)
+  * Fixes: NB#38065 input method not return to VKB mode when connection is set
+    to offline mode and hw keyboard is actived
+  * Added gdk_event_request_motions () and use it all over the code
+  * Add GTK_BUTTONBOX_CENTER mode for GtkButtonBox and use it in GtkDialog
+  * Fix a problem with large ythickness in GtkFrame
+  * Add tree-view-separator-area style property for GtkButton, used to reserve
+    space between headers and content area in treeview
+  * Port over remaining logic changes in GtkMenu from maemo-gtk-2.6 (select
+    first item on opening, automatic popdown of obscured menus, ...)
+  * Reduce scratch image sizes
+  * Add content-area-spacing style property for GtkDialog
+  * Fix extension events
 
-gtk+2.0 (2:2.6.10-2.osso25) unstable; urgency=low
+ -- Xan Lopez <xan.lopez@nokia.com>  Fri, 16 Feb 2007 15:22:32 +0200
 
-  * debian/control:
-    - Bump libxfixes-dev Build-Deps to pick up libXfixes.so.3, and add
-    versioned libxfixes3 Conflicts to not break on upgrade. (Thanks Daniel)
-    - Removed obsolete Conflicts cruft
-  * Fixes: MB#848 libgtk2.0-bin doesn't upgrade if an old version of libXfixes
-    is present
-  * Fixes: NB#46176 Conflicting signals emitted when tapping a focused
-    GtkCellRendererToggle
-  * Fixes: NB#47124 Tree doesn't signal changed selection when replacing the
-    model
+gtk+2.0 (2:2.10.6-0osso4) experimental; urgency=low
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 15 Nov 2006 12:22:05 +0200
+  NOTE: Please remember you need to add "MAEMO_CHANGES" to your compilation
+  flags if you're using any of the Maemo GTK+ API.
+  See http://maemo.org/maemowiki/MaemoGtk210Overview for a review of the API.
 
-gtk+2.0 (2:2.6.10-2.osso24) unstable; urgency=low
+  * Pen dragging suport for GtkTreeView
+  * autodimmed property for GtkComboBox
+  * Fix scroll arrow backgrounds painting
 
-  * Fixes: NB#45984: Two patches against memory leaks
+ -- Xan Lopez <xan.lopez@nokia.com>  Tue,  6 Feb 2007 12:11:16 +0200
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri, 10 Nov 2006 12:28:29 +0200
+gtk+2.0 (2:2.10.6-0osso3) experimental; urgency=low
 
-gtk+2.0 (2:2.6.10-2.osso23) unstable; urgency=low
+  * Backport from trunk:
+    - GtkComboBox keynav.
+    - Infrastructure and notification of failed navigation.
+    - GtkProgressBar style properties.
+    - GtkWidget::insensitive-press signal.
+    - gtkrc files parsing order.
+    - revert generic disabling of PRELIGHT state.
+    - Change GtkMenu window type, auto-select first item, various
+      drawing updates.
+  * Misc:
+    - Change MAEMO_CHANGES comments to #ifdef/#endif to allow conditionalized
+      inclusion of maemo-gtk changes during compilation.
 
-  * Fixes: NB#46445 Enabling extension events gives negative coords
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 31 Jan 2007 15:12:14 +0200
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue,  7 Nov 2006 14:32:34 +0200
+gtk+2.0 (2:2.10.6-0osso2) unstable; urgency=low
 
-gtk+2.0 (2:2.6.10-2.osso22) unstable; urgency=low
+  * Restore API compatibility with maemo gtk+ 2.6
 
-  * Fixes: NB#45767 Wrong assertion in GtkTreeModelFilter
+  * Add "fill-level" property to GtkRange
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu,  2 Nov 2006 16:22:28 +0200
+  * Export symbols for implementing GtkFileChooser interface outside gtk:
+    - hildon_gtk_file_chooser_install_properties
+    - gtk/gtkfilesystemmodel.h, gtk/gtkfilechooserprivate.h,
+      gtk/gtkfilechooserutils.h
+  * Add stubs for removed / replaced API:
+    - gtk_widget_{get,set}_hildon_focus_handling
+    - osso_gtk_range_{get,set}_stream_indicator
+    - osso_gtk_range_{get,set}_stream_position
+    - gtk_style_lookup_logical_color
+    - gtk_text_buffer_{get,set}_can_paste_rich_text
+    - gtk_text_buffer_{get,set}_rich_text_format
+    - hildon_gtk_file_system_create
+    - gtk_file_system_render_icon
+    - hildon_gtk_button_set_depressed
+    - close signal (GtkMenuShell)
+    - "checkbox-mode" (GtkCellRendererToggle)
+  * Empty stubs:
+    - hildon_gtk_text_view_{get,set}_input_mode
+    - gtk_window_{get,set}_prev_focus_widget
+    - osso_gtk_button_set_detail_from_attach_flags
+    - osso_gtk_button_attach_details
+    - hildon_gtk_entry_{get,set}_input_mode
+    - invalid-input signal (GtkEntry)
+  * Restore the maemo API:
+    - tap'n'hold (GtkWidget, GtkContainer, GtkTreeView)
+    - insensitive-press signal (GtkWidget, GtkToolButton)
+    - row-insensitive signal (GtkTreeView)
+    - gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_{show,hide}
+    - hildon_gtk_im_context_has_selection
+    - hildon_gtk_im_context_{copy,cut,paste}
+    - HILDON_ICON_SIZE_{26,40,50,64}
+
+  * debian/rules:
+    - do not install .cvsignore files in gtk2.0-examples package
+    - Prefer HW floating points (via DEB_BUILD_OPTIONS=vfp)
+  * debian/control: Build-Depend on libtool >= 1.5.12 to handle four digits in
+    version
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 15 Jan 2007 18:27:03 +0200
+
+gtk+2.0 (2:2.10.6-0osso1) unstable; urgency=low
+
+  * Upgrade to 2.10.6 ** ALL MAEMO PATCHES DROPPED
+    - debian/control:
+      + Build-Depend on libglib2.0-dev >= 2.12.0, libpango1.0-dev >= 1.12.0,
+        libatk1.0-dev >= 1.9.0, libcairo2-dev >= 1.2.0
+      + libgtk2.0-dev: updated depends versions, depend on libcairo2-dev
+  * debian/libgtk2.0-0.files: Remove maemo-gtk-im-switch which is not in
+    upstream
+  * debian/rules: update shlibs to >= 2:2.10.6
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Fri,  3 Nov 2006 15:03:54 +0200
 
 gtk+2.0 (2:2.6.10-2.osso21) unstable; urgency=low
 

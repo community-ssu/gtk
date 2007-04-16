@@ -204,14 +204,19 @@ operations.
 <!-- ##### STRUCT GdkPixbufModulePattern ##### -->
 <para>
 The signature of a module is a set of prefixes. Prefixes are encoded as
-pairs of ordinary strings, where the second string, if not %NULL, must be
-of the same length as the first one and may contain ' ', '!', 'x', 'z', 
-and 'n' to indicate bytes that must be matched, not matched, 
-"don't-care"-bytes, zeros and non-zeros.
+pairs of ordinary strings, where the second string, called the mask, if 
+not %NULL, must be of the same length as the first one and may contain 
+' ', '!', 'x', 'z', and 'n' to indicate bytes that must be matched, 
+not matched, "don't-care"-bytes, zeros and non-zeros. 
 Each prefix has an associated integer that describes the relevance of 
 the prefix, with 0 meaning a mismatch and 100 a "perfect match".
 </para>
-
+<para>
+Starting with &gdk-pixbuf; 2.8, the first byte of the mask may be '*', 
+indicating an unanchored pattern that matches not only at the beginning, 
+but also in the middle. Versions prior to 2.8 will interpret the '*'
+like an 'x'. 
+</para>
 <para>
 The signature of a module is stored as an array of 
 #GdkPixbufModulePattern<!-- -->s. The array is terminated by a pattern
@@ -340,7 +345,7 @@ is loaded and must set the function pointers of the #GdkPixbufModule.
 @load_increment: continues an incremental load.
 @load_animation: loads an animation from a file.
 @save: saves a #GdkPixbuf to a file.
-@save_to_callback: 
+@save_to_callback: saves a #GdkPixbuf by calling the given #GdkPixbufSaveFunc.
 
 <!-- ##### STRUCT GdkPixbufAnimationClass ##### -->
 <para>
@@ -349,7 +354,7 @@ Modules supporting animations must derive a type from
 virtual functions.
 </para>
 
-@parent_class: 
+@parent_class: the parent class
 @is_static_image: returns whether the given animation is just a static image.
 @get_static_image: returns a static image representing the given animation.
 @get_size: fills @width and @height with the frame size of the animation.
@@ -362,7 +367,7 @@ Modules supporting animations must derive a type from
 virtual functions.
 </para>
 
-@parent_class: 
+@parent_class: the parent class
 @get_delay_time: returns the time in milliseconds that the current frame 
   should be shown.
 @get_pixbuf: returns the current frame.

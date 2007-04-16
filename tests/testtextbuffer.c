@@ -1,5 +1,22 @@
-/* Simplistic test suite */
-
+/* testtextbuffer.c -- Simplistic test suite
+ * Copyright (C) 2000 Red Hat, Inc
+ * Author: Havoc Pennington
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
 
 #include <config.h>
 #include <stdio.h>
@@ -943,6 +960,34 @@ test_line_separation (const char* str,
   g_object_unref (buffer);
 }
 
+/* there are cases where \r and \n should not be treated like \r\n,
+ * originally bug #337022. */
+static void
+split_r_n_separators_test (void)
+{
+  GtkTextBuffer *buffer;
+  GtkTextIter iter;
+
+  buffer = gtk_text_buffer_new (NULL);
+
+  gtk_text_buffer_set_text (buffer, "foo\ra\nbar\n", -1);
+
+  /* delete 'a' so that we have
+
+     1 foo\r
+     2 \n
+     3 bar\n
+
+   * and both \r and \n are line separators */
+
+  gtk_text_buffer_get_iter_at_offset (buffer, &iter, 5);
+  gtk_text_buffer_backspace (buffer, &iter, TRUE, TRUE);
+
+  g_assert (gtk_text_iter_ends_line (&iter));
+
+  gtk_text_buffer_get_iter_at_offset (buffer, &iter, 3);
+  g_assert (gtk_text_iter_ends_line (&iter));
+}
 
 static void
 line_separator_tests (void)
@@ -971,6 +1016,8 @@ line_separator_tests (void)
   str = g_strdup_printf ("line%sqw", buf);
   test_line_separation (str, TRUE, FALSE, 2, 4, 5);
   g_free (str);
+
+  split_r_n_separators_test ();
 
   g_print ("Line separator tests passed\n");
 }

@@ -55,7 +55,7 @@ static gboolean gdk_synchronize = FALSE;
 
 static gboolean dummy;
 
-GOptionEntry _gdk_windowing_args[] = {
+const GOptionEntry _gdk_windowing_args[] = {
   { "sync", 0, 0, G_OPTION_ARG_NONE, &gdk_synchronize, 
     /* Description of --sync in --help output */              N_("Don't batch GDI requests"), NULL },
   { "no-wintab", 0, 0, G_OPTION_ARG_NONE, &_gdk_input_ignore_wintab, 
@@ -97,7 +97,6 @@ _gdk_windowing_init (void)
 
   _gdk_app_hmodule = GetModuleHandle (NULL);
   _gdk_display_hdc = CreateDC ("DISPLAY", NULL, NULL, NULL);
-  _gdk_root_window = GetDesktopWindow ();
   _gdk_input_locale = GetKeyboardLayout (0);
   _gdk_input_locale_is_ime = ImmIsIME (_gdk_input_locale);
   GetLocaleInfo (MAKELCID (LOWORD (_gdk_input_locale), SORT_DEFAULT),
@@ -111,20 +110,21 @@ _gdk_windowing_init (void)
 
   _cf_rtf = RegisterClipboardFormat ("Rich Text Format");
   _cf_utf8_string = RegisterClipboardFormat ("UTF8_STRING");
+  _cf_image_bmp = RegisterClipboardFormat ("image/bmp");
 
-  _utf8_string = gdk_atom_intern ("UTF8_STRING", FALSE);
+  _gdk_selection_property = gdk_atom_intern ("GDK_SELECTION", FALSE);
+  _wm_transient_for = gdk_atom_intern ("WM_TRANSIENT_FOR", FALSE);
   _targets = gdk_atom_intern ("TARGETS", FALSE);
-
+  _save_targets = gdk_atom_intern ("SAVE_TARGETS", FALSE);
+  _utf8_string = gdk_atom_intern ("UTF8_STRING", FALSE);
+  _text = gdk_atom_intern ("TEXT", FALSE);
+  _compound_text = gdk_atom_intern ("COMPOUND_TEXT", FALSE);
   _text_uri_list = gdk_atom_intern ("text/uri-list", FALSE);
   _image_bmp = gdk_atom_intern ("image/bmp", FALSE);
 
   _local_dnd = gdk_atom_intern ("LocalDndSelection", FALSE);
   _gdk_win32_dropfiles = gdk_atom_intern ("DROPFILES_DND", FALSE);
   _gdk_ole2_dnd = gdk_atom_intern ("OLE2_DND", FALSE);
-
-  _gdk_selection_property = gdk_atom_intern ("GDK_SELECTION", FALSE);
-
-  _wm_transient_for = gdk_atom_intern ("WM_TRANSIENT_FOR", FALSE);
 
   _gdk_win32_selection_init ();
 }
@@ -176,13 +176,13 @@ gdk_get_use_xshm (void)
 gint
 gdk_screen_get_width (GdkScreen *screen)
 {
-  return GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (_gdk_parent_root)->impl)->width;
+  return GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (_gdk_root)->impl)->width;
 }
 
 gint
 gdk_screen_get_height (GdkScreen *screen)
 {
-  return GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (_gdk_parent_root)->impl)->height;
+  return GDK_WINDOW_IMPL_WIN32 (GDK_WINDOW_OBJECT (_gdk_root)->impl)->height;
 }
 gint
 gdk_screen_get_width_mm (GdkScreen *screen)
@@ -933,7 +933,7 @@ _gdk_win32_cf_to_string (UINT format)
 
   switch (format)
     {
-#define CASE(x) case CF_##x: return #x
+#define CASE(x) case CF_##x: return "CF_" #x
       CASE (BITMAP);
       CASE (DIB);
 #ifdef CF_DIBV5
@@ -966,7 +966,7 @@ _gdk_win32_cf_to_string (UINT format)
 	  format <= CF_PRIVATELAST)
 	return static_printf ("CF_PRIVATE%d", format - CF_PRIVATEFIRST);
       if (GetClipboardFormatName (format, buf, sizeof (buf)))
-	return static_printf ("%s", buf);
+	return static_printf ("'%s'", buf);
       else
 	return static_printf ("unk-%#lx", format);
     }
@@ -995,7 +995,7 @@ _gdk_win32_data_to_string (const guchar *data,
 gchar *
 _gdk_win32_rect_to_string (const RECT *rect)
 {
-  return static_printf ("%ldx%ld@+%ld+%ld",
+  return static_printf ("%ldx%ld@%+ld%+ld",
 			(rect->right - rect->left), (rect->bottom - rect->top),
 			rect->left, rect->top);
 }
@@ -1003,7 +1003,7 @@ _gdk_win32_rect_to_string (const RECT *rect)
 gchar *
 _gdk_win32_gdkrectangle_to_string (const GdkRectangle *rect)
 {
-  return static_printf ("%dx%d@+%d+%d",
+  return static_printf ("%dx%d@%+d%+d",
 			rect->width, rect->height,
 			rect->x, rect->y);
 }
@@ -1011,7 +1011,7 @@ _gdk_win32_gdkrectangle_to_string (const GdkRectangle *rect)
 gchar *
 _gdk_win32_gdkregion_to_string (const GdkRegion *rgn)
 {
-  return static_printf ("%dx%d@+%d+%d",
+  return static_printf ("%dx%d@%+d%+d",
 			(rgn->extents.x2 - rgn->extents.x1),
 			(rgn->extents.y2 - rgn->extents.y1),
 			rgn->extents.x1, rgn->extents.y1);

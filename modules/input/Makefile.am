@@ -8,7 +8,6 @@ INCLUDES = \
 	-I$(top_srcdir) 				\
 	-I$(top_srcdir)/gdk				\
 	-I$(top_builddir)/gdk				\
-	-DG_DISABLE_DEPRECATED	 			\
 	-DGDK_PIXBUF_DISABLE_DEPRECATED			\
 	-DGDK_DISABLE_DEPRECATED			\
 	-DGTK_DISABLE_DEPRECATED 			\
@@ -131,12 +130,7 @@ module_LTLIBRARIES =				\
 	$(IM_IME_MODULE)
 
 gtk.immodules: Makefile.am $(module_LTLIBRARIES)
-	@if $(RUN_QUERY_IMMODULES_TEST) ; then \
-	  $(top_builddir)/gtk/gtk-query-immodules-2.0 $(module_LTLIBRARIES) > gtk.immodules ; \
-	else \
-	  touch $@ ; \
-	fi
-
+	$(top_builddir)/gtk/gtk-query-immodules-2.0 $(module_LTLIBRARIES) > gtk.immodules
 
 CLEANFILES = gtk.immodules
 

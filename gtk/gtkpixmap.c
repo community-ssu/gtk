@@ -34,53 +34,24 @@
 #include <math.h>
 #include "gtkcontainer.h"
 #include "gtkpixmap.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
-static void gtk_pixmap_class_init (GtkPixmapClass  *klass);
-static void gtk_pixmap_init       (GtkPixmap       *pixmap);
 static gint gtk_pixmap_expose     (GtkWidget       *widget,
 				   GdkEventExpose  *event);
 static void gtk_pixmap_finalize   (GObject         *object);
 static void build_insensitive_pixmap (GtkPixmap *gtkpixmap);
 
-static GtkWidgetClass *parent_class;
-
-GtkType
-gtk_pixmap_get_type (void)
-{
-  static GtkType pixmap_type = 0;
-
-  if (!pixmap_type)
-    {
-      static const GtkTypeInfo pixmap_info =
-      {
-	"GtkPixmap",
-	sizeof (GtkPixmap),
-	sizeof (GtkPixmapClass),
-	(GtkClassInitFunc) gtk_pixmap_class_init,
-	(GtkObjectInitFunc) gtk_pixmap_init,
-	/* reserved_1 */ NULL,
-        /* reserved_2 */ NULL,
-        (GtkClassInitFunc) NULL,
-      };
-
-      pixmap_type = gtk_type_unique (GTK_TYPE_MISC, &pixmap_info);
-    }
-
-  return pixmap_type;
-}
+G_DEFINE_TYPE (GtkPixmap, gtk_pixmap, GTK_TYPE_MISC)
 
 static void
 gtk_pixmap_class_init (GtkPixmapClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
-  GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
 
-  object_class = (GtkObjectClass*) class;
   widget_class = (GtkWidgetClass*) class;
-  parent_class = gtk_type_class (gtk_misc_get_type ());
 
   gobject_class->finalize = gtk_pixmap_finalize;
 
@@ -117,7 +88,7 @@ gtk_pixmap_finalize (GObject *object)
 {
   gtk_pixmap_set (GTK_PIXMAP (object), NULL, NULL);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_pixmap_parent_class)->finalize (object);
 }
 
 void
@@ -131,6 +102,8 @@ gtk_pixmap_set (GtkPixmap *pixmap,
   gint oldheight;
 
   g_return_if_fail (GTK_IS_PIXMAP (pixmap));
+  if(GDK_IS_DRAWABLE(val))
+    g_return_if_fail (gdk_colormap_get_visual (gtk_widget_get_colormap (GTK_WIDGET (pixmap)))->depth == gdk_drawable_get_depth (GDK_DRAWABLE (val)));
 
   if (pixmap->pixmap != val)
     {
@@ -212,11 +185,9 @@ gtk_pixmap_expose (GtkWidget      *widget,
 	xalign = 1.0 - misc->xalign;
   
       x = floor (widget->allocation.x + misc->xpad
-		 + ((widget->allocation.width - widget->requisition.width) * xalign)
-		 + 0.5);
+		 + ((widget->allocation.width - widget->requisition.width) * xalign));
       y = floor (widget->allocation.y + misc->ypad 
-		 + ((widget->allocation.height - widget->requisition.height) * misc->yalign)
-		 + 0.5);
+		 + ((widget->allocation.height - widget->requisition.height) * misc->yalign));
       
       if (pixmap->mask)
 	{
@@ -277,7 +248,7 @@ build_insensitive_pixmap (GtkPixmap *gtkpixmap)
 
   pixbuf = gdk_pixbuf_get_from_drawable (NULL,
                                          pixmap,
-                                         gtk_widget_get_colormap (GTK_WIDGET(gtkpixmap)),
+                                         gtk_widget_get_colormap (GTK_WIDGET (gtkpixmap)),
                                          0, 0,
                                          0, 0,
                                          w, h);

@@ -27,6 +27,8 @@
 #include "gtkinvisible.h"
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
+#include "gtktextbufferrichtext.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #ifdef GDK_WINDOWING_X11
@@ -46,6 +48,7 @@ typedef struct _GtkClipboardClass GtkClipboardClass;
 
 typedef struct _RequestContentsInfo RequestContentsInfo;
 typedef struct _RequestTextInfo RequestTextInfo;
+typedef struct _RequestRichTextInfo RequestRichTextInfo;
 typedef struct _RequestImageInfo RequestImageInfo;
 typedef struct _RequestTargetsInfo RequestTargetsInfo;
 
@@ -96,6 +99,15 @@ struct _RequestTextInfo
   gpointer user_data;
 };
 
+struct _RequestRichTextInfo
+{
+  GtkClipboardRichTextReceivedFunc callback;
+  GdkAtom *atoms;
+  gint     n_atoms;
+  gint     current_atom;
+  gpointer user_data;
+};
+
 struct _RequestImageInfo
 {
   GtkClipboardImageReceivedFunc callback;
@@ -137,34 +149,13 @@ static GQuark request_contents_key_id = 0;
 static const gchar clipboards_owned_key[] = "gtk-clipboards-owned";
 static GQuark clipboards_owned_key_id = 0;
 
-static GObjectClass *parent_class;
 static guint         clipboard_signals[LAST_SIGNAL] = { 0 };
 
-GType
-gtk_clipboard_get_type (void)
+G_DEFINE_TYPE (GtkClipboard, gtk_clipboard, G_TYPE_OBJECT)
+
+static void
+gtk_clipboard_init (GtkClipboard *object)
 {
-  static GType clipboard_type = 0;
-  
-  if (!clipboard_type)
-    {
-      static const GTypeInfo clipboard_info =
-      {
-	sizeof (GtkClipboardClass),
-	NULL,           /* base_init */
-	NULL,           /* base_finalize */
-	(GClassInitFunc) gtk_clipboard_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (GtkClipboard),
-	0,              /* n_preallocs */
-	(GInstanceInitFunc) NULL,
-      };
-      
-      clipboard_type = g_type_register_static (G_TYPE_OBJECT, "GtkClipboard",
-					       &clipboard_info, 0);
-    }
-  
-  return clipboard_type;
 }
 
 static void
@@ -172,14 +163,12 @@ gtk_clipboard_class_init (GtkClipboardClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-  
   gobject_class->finalize = gtk_clipboard_finalize;
 
   class->owner_change = gtk_clipboard_owner_change;
 
   clipboard_signals[OWNER_CHANGE] =
-    g_signal_new ("owner_change",
+    g_signal_new (I_("owner_change"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkClipboardClass, owner_change),
@@ -202,20 +191,21 @@ gtk_clipboard_finalize (GObject *object)
   if (g_slist_index (clipboards, clipboard) >= 0)
     g_warning ("GtkClipboard prematurely finalized");
 
-  clipboard_widget = get_clipboard_widget (clipboard->display);
-  
+  /*  don't use get_clipboard_widget() here because it would create the
+   *  widget if it doesn't exist.
+   */
+  clipboard_widget = g_object_get_data (G_OBJECT (clipboard->display),
+                                        "gtk-clipboard-widget");
+
   clipboard_unset (clipboard);
   
   clipboards = g_object_get_data (G_OBJECT (clipboard->display), "gtk-clipboard-list");
   clipboards = g_slist_remove (clipboards, clipboard);
-  g_object_set_data (G_OBJECT (clipboard->display), "gtk-clipboard-list", clipboards);
+  g_object_set_data (G_OBJECT (clipboard->display), I_("gtk-clipboard-list"), clipboards);
 
-  if (g_main_loop_is_running (clipboard->store_loop))
-    {
-      g_main_loop_quit (clipboard->store_loop);
-      g_main_loop_unref (clipboard->store_loop);
-    }
-  
+  if (clipboard->store_loop && g_main_loop_is_running (clipboard->store_loop))
+    g_main_loop_quit (clipboard->store_loop);
+
   if (clipboard->store_timeout != 0)
     g_source_remove (clipboard->store_timeout);
 
@@ -224,7 +214,7 @@ gtk_clipboard_finalize (GObject *object)
   
   g_free (clipboard->storable_targets);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_clipboard_parent_class)->finalize (object);
 }
 
 static void
@@ -237,7 +227,7 @@ clipboard_display_closed (GdkDisplay   *display,
   clipboards = g_object_get_data (G_OBJECT (display), "gtk-clipboard-list");
   g_object_run_dispose (G_OBJECT (clipboard));
   clipboards = g_slist_remove (clipboards, clipboard);
-  g_object_set_data (G_OBJECT (display), "gtk-clipboard-list", clipboards);
+  g_object_set_data (G_OBJECT (display), I_("gtk-clipboard-list"), clipboards);
   g_object_unref (clipboard);
 }
 
@@ -372,7 +362,7 @@ get_clipboard_widget (GdkDisplay *display)
   if (!clip_widget)
     {
       clip_widget = make_clipboard_widget (display, TRUE);
-      g_object_set_data (G_OBJECT (display), "gtk-clipboard-widget", clip_widget);
+      g_object_set_data (G_OBJECT (display), I_("gtk-clipboard-widget"), clip_widget);
     }
 
   return clip_widget;
@@ -925,7 +915,7 @@ request_text_received_func (GtkClipboard     *clipboard,
   RequestTextInfo *info = data;
   gchar *result = NULL;
 
-  result = gtk_selection_data_get_text (selection_data);
+  result = (gchar *) gtk_selection_data_get_text (selection_data);
 
   if (!result)
     {
@@ -933,14 +923,14 @@ request_text_received_func (GtkClipboard     *clipboard,
        * if we asked for compound_text and didn't get it, try string;
        * If we asked for anything else and didn't get it, give up.
        */
-      if (selection_data->target == gdk_atom_intern ("UTF8_STRING", FALSE))
+      if (selection_data->target == gdk_atom_intern_static_string ("UTF8_STRING"))
 	{
 	  gtk_clipboard_request_contents (clipboard,
-					  gdk_atom_intern ("COMPOUND_TEXT", FALSE), 
+					  gdk_atom_intern_static_string ("COMPOUND_TEXT"), 
 					  request_text_received_func, info);
 	  return;
 	}
-      else if (selection_data->target == gdk_atom_intern ("COMPOUND_TEXT", FALSE))
+      else if (selection_data->target == gdk_atom_intern_static_string ("COMPOUND_TEXT"))
 	{
 	  gtk_clipboard_request_contents (clipboard,
 					  GDK_TARGET_STRING, 
@@ -985,8 +975,82 @@ gtk_clipboard_request_text (GtkClipboard                *clipboard,
   info->callback = callback;
   info->user_data = user_data;
 
-  gtk_clipboard_request_contents (clipboard, gdk_atom_intern ("UTF8_STRING", FALSE),
+  gtk_clipboard_request_contents (clipboard, gdk_atom_intern_static_string ("UTF8_STRING"),
 				  request_text_received_func,
+				  info);
+}
+
+static void
+request_rich_text_received_func (GtkClipboard     *clipboard,
+                                 GtkSelectionData *selection_data,
+                                 gpointer          data)
+{
+  RequestRichTextInfo *info = data;
+  guint8 *result = NULL;
+  gsize length = 0;
+
+  result = selection_data->data;
+  length = selection_data->length;
+
+  info->current_atom++;
+
+  if ((!result || length < 1) && (info->current_atom < info->n_atoms))
+    {
+      gtk_clipboard_request_contents (clipboard, info->atoms[info->current_atom],
+                                      request_rich_text_received_func,
+                                      info);
+      return;
+    }
+
+  info->callback (clipboard, selection_data->target, result, length,
+                  info->user_data);
+  g_free (info->atoms);
+  g_free (info);
+}
+
+/**
+ * gtk_clipboard_request_rich_text:
+ * @clipboard: a #GtkClipboard
+ * @buffer:    a #GtkTextBuffer
+ * @callback:  a function to call when the text is received,
+ *             or the retrieval fails. (It will always be called
+ *             one way or the other.)
+ * @user_data: user data to pass to @callback.
+ *
+ * Requests the contents of the clipboard as rich text. When the rich
+ * text is later received, @callback will be called.
+ *
+ * The @text parameter to @callback will contain the resulting rich
+ * text if the request succeeded, or %NULL if it failed. The @length
+ * parameter will contain @text's length. This function can fail for
+ * various reasons, in particular if the clipboard was empty or if the
+ * contents of the clipboard could not be converted into rich text form.
+ *
+ * Since: 2.10
+ **/
+void
+gtk_clipboard_request_rich_text (GtkClipboard                    *clipboard,
+                                 GtkTextBuffer                   *buffer,
+                                 GtkClipboardRichTextReceivedFunc callback,
+                                 gpointer                         user_data)
+{
+  RequestRichTextInfo *info;
+
+  g_return_if_fail (clipboard != NULL);
+  g_return_if_fail (GTK_IS_TEXT_BUFFER (buffer));
+  g_return_if_fail (callback != NULL);
+
+  info = g_new (RequestRichTextInfo, 1);
+  info->callback = callback;
+  info->atoms = NULL;
+  info->n_atoms = 0;
+  info->current_atom = 0;
+  info->user_data = user_data;
+
+  info->atoms = gtk_text_buffer_get_deserialize_formats (buffer, &info->n_atoms);
+
+  gtk_clipboard_request_contents (clipboard, info->atoms[info->current_atom],
+				  request_rich_text_received_func,
 				  info);
 }
 
@@ -1004,27 +1068,37 @@ request_image_received_func (GtkClipboard     *clipboard,
     {
       /* If we asked for image/png and didn't get it, try image/jpeg;
        * if we asked for image/jpeg and didn't get it, try image/gif;
+       * if we asked for image/gif and didn't get it, try image/bmp;
        * If we asked for anything else and didn't get it, give up.
        */
-      if (selection_data->target == gdk_atom_intern ("image/png", FALSE))
+      if (selection_data->target == gdk_atom_intern_static_string ("image/png"))
 	{
 	  gtk_clipboard_request_contents (clipboard,
-					  gdk_atom_intern ("image/jpeg", FALSE), 
+					  gdk_atom_intern_static_string ("image/jpeg"), 
 					  request_image_received_func, info);
 	  return;
 	}
-      else if (selection_data->target == gdk_atom_intern ("image/jpeg", FALSE))
+      else if (selection_data->target == gdk_atom_intern_static_string ("image/jpeg"))
 	{
 	  gtk_clipboard_request_contents (clipboard,
-					  gdk_atom_intern ("image/gif", FALSE), 
-					  request_text_received_func, info);
+					  gdk_atom_intern_static_string ("image/gif"), 
+					  request_image_received_func, info);
+	  return;
+	}
+      else if (selection_data->target == gdk_atom_intern_static_string ("image/gif"))
+	{
+	  gtk_clipboard_request_contents (clipboard,
+					  gdk_atom_intern_static_string ("image/bmp"), 
+					  request_image_received_func, info);
 	  return;
 	}
     }
 
   info->callback (clipboard, result, info->user_data);
   g_free (info);
-  g_object_unref (result);
+
+  if (result)
+    g_object_unref (result);
 }
 
 /**
@@ -1062,7 +1136,7 @@ gtk_clipboard_request_image (GtkClipboard                  *clipboard,
   info->user_data = user_data;
 
   gtk_clipboard_request_contents (clipboard, 
-				  gdk_atom_intern ("image/png", FALSE),
+				  gdk_atom_intern_static_string ("image/png"),
 				  request_image_received_func,
 				  info);
 }
@@ -1122,7 +1196,7 @@ gtk_clipboard_request_targets (GtkClipboard                *clipboard,
   info->callback = callback;
   info->user_data = user_data;
 
-  gtk_clipboard_request_contents (clipboard, gdk_atom_intern ("TARGETS", FALSE),
+  gtk_clipboard_request_contents (clipboard, gdk_atom_intern_static_string ("TARGETS"),
 				  request_targets_received_func,
 				  info);
 }
@@ -1131,6 +1205,8 @@ typedef struct
 {
   GMainLoop *loop;
   gpointer data;
+  GdkAtom format; /* used by rich text */
+  gsize length; /* used by rich text */
 } WaitResults;
 
 static void 
@@ -1242,6 +1318,76 @@ gtk_clipboard_wait_for_text (GtkClipboard *clipboard)
   return results.data;
 }
 
+static void
+clipboard_rich_text_received_func (GtkClipboard *clipboard,
+                                   GdkAtom       format,
+                                   const guint8 *text,
+                                   gsize         length,
+                                   gpointer      data)
+{
+  WaitResults *results = data;
+
+  results->data = g_memdup (text, length);
+  results->format = format;
+  results->length = length;
+  g_main_loop_quit (results->loop);
+}
+
+/**
+ * gtk_clipboard_wait_for_rich_text:
+ * @clipboard: a #GtkClipboard
+ * @buffer: a #GtkTextBuffer
+ * @format: return location for the format of the returned data
+ * @length: return location for the length of the returned data
+ *
+ * Requests the contents of the clipboard as rich text.  This function
+ * waits for the data to be received using the main loop, so events,
+ * timeouts, etc, may be dispatched during the wait.
+ *
+ * Return value: a newly-allocated binary block of data which must
+ *               be freed with g_free(), or %NULL if retrieving
+ *               the selection data failed. (This could happen
+ *               for various reasons, in particular if the
+ *               clipboard was empty or if the contents of the
+ *               clipboard could not be converted into text form.)
+ *
+ * Since: 2.10
+ **/
+guint8 *
+gtk_clipboard_wait_for_rich_text (GtkClipboard  *clipboard,
+                                  GtkTextBuffer *buffer,
+                                  GdkAtom       *format,
+                                  gsize         *length)
+{
+  WaitResults results;
+
+  g_return_val_if_fail (clipboard != NULL, NULL);
+  g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), NULL);
+  g_return_val_if_fail (format != NULL, NULL);
+  g_return_val_if_fail (length != NULL, NULL);
+
+  results.data = NULL;
+  results.loop = g_main_loop_new (NULL, TRUE);
+
+  gtk_clipboard_request_rich_text (clipboard, buffer,
+                                   clipboard_rich_text_received_func,
+                                   &results);
+
+  if (g_main_loop_is_running (results.loop))
+    {
+      GDK_THREADS_LEAVE ();
+      g_main_loop_run (results.loop);
+      GDK_THREADS_ENTER ();
+    }
+
+  g_main_loop_unref (results.loop);
+
+  *format = results.format;
+  *length = results.length;
+
+  return results.data;
+}
+
 static void 
 clipboard_image_received_func (GtkClipboard *clipboard,
 			       GdkPixbuf    *pixbuf,
@@ -1339,10 +1485,49 @@ gtk_clipboard_wait_is_text_available (GtkClipboard *clipboard)
   GtkSelectionData *data;
   gboolean result = FALSE;
 
-  data = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern ("TARGETS", FALSE));
+  data = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern_static_string ("TARGETS"));
   if (data)
     {
       result = gtk_selection_data_targets_include_text (data);
+      gtk_selection_data_free (data);
+    }
+
+  return result;
+}
+
+/**
+ * gtk_clipboard_wait_is_rich_text_available:
+ * @clipboard: a #GtkClipboard
+ * @buffer: a #GtkTextBuffer
+ *
+ * Test to see if there is rich text available to be pasted
+ * This is done by requesting the TARGETS atom and checking
+ * if it contains any of the supported rich text targets. This function
+ * waits for the data to be received using the main loop, so events,
+ * timeouts, etc, may be dispatched during the wait.
+ *
+ * This function is a little faster than calling
+ * gtk_clipboard_wait_for_rich_text() since it doesn't need to retrieve
+ * the actual text.
+ *
+ * Return value: %TRUE is there is rich text available, %FALSE otherwise.
+ *
+ * Since: 2.10
+ **/
+gboolean
+gtk_clipboard_wait_is_rich_text_available (GtkClipboard  *clipboard,
+                                           GtkTextBuffer *buffer)
+{
+  GtkSelectionData *data;
+  gboolean result = FALSE;
+
+  g_return_val_if_fail (GTK_IS_CLIPBOARD (clipboard), FALSE);
+  g_return_val_if_fail (GTK_IS_TEXT_BUFFER (buffer), FALSE);
+
+  data = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern_static_string ("TARGETS"));
+  if (data)
+    {
+      result = gtk_selection_data_targets_include_rich_text (data, buffer);
       gtk_selection_data_free (data);
     }
 
@@ -1374,7 +1559,7 @@ gtk_clipboard_wait_is_image_available (GtkClipboard *clipboard)
   gboolean result = FALSE;
 
   data = gtk_clipboard_wait_for_contents (clipboard, 
-					  gdk_atom_intern ("TARGETS", FALSE));
+					  gdk_atom_intern_static_string ("TARGETS"));
   if (data)
     {
       result = gtk_selection_data_targets_include_image (data, FALSE);
@@ -1432,7 +1617,7 @@ gtk_clipboard_wait_for_targets (GtkClipboard  *clipboard,
   if (targets)
     *targets = NULL;      
 
-  data = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern ("TARGETS", FALSE));
+  data = gtk_clipboard_wait_for_contents (clipboard, gdk_atom_intern_static_string ("TARGETS"));
 
   if (data)
     {
@@ -1494,7 +1679,7 @@ clipboard_peek (GdkDisplay *display,
       clipboard->n_cached_targets = -1;
       clipboard->n_storable_targets = -1;
       clipboards = g_slist_prepend (clipboards, clipboard);
-      g_object_set_data (G_OBJECT (display), "gtk-clipboard-list", clipboards);
+      g_object_set_data (G_OBJECT (display), I_("gtk-clipboard-list"), clipboards);
       g_signal_connect (display, "closed",
 			G_CALLBACK (clipboard_display_closed), clipboard);
       gdk_display_request_selection_notification (display, selection);
@@ -1648,7 +1833,7 @@ gtk_clipboard_selection_notify (GtkWidget         *widget,
 				GdkEventSelection *event,
 				GtkClipboard      *clipboard)
 {
-  if (event->selection == gdk_atom_intern ("CLIPBOARD_MANAGER", FALSE) &&
+  if (event->selection == gdk_atom_intern_static_string ("CLIPBOARD_MANAGER") &&
       clipboard->storing_selection)
     g_main_loop_quit (clipboard->store_loop);
 

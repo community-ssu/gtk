@@ -162,6 +162,17 @@ Deprecated alias for gtk_style_apply_default_background().
 @h: 
 
 
+<!-- ##### FUNCTION gtk_style_lookup_color ##### -->
+<para>
+
+</para>
+
+@style: 
+@color_name: 
+@color: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_style_lookup_icon_set ##### -->
 <para>
 
@@ -488,8 +499,6 @@ Deprecated alias for gtk_style_apply_default_background().
 @x: 
 @y: 
 @expander_style: 
-<!-- # Unused Parameters # -->
-@is_open: 
 
 
 <!-- ##### FUNCTION gtk_draw_layout ##### -->
@@ -862,8 +871,6 @@ Deprecated alias for gtk_style_apply_default_background().
 @x: 
 @y: 
 @expander_style: 
-<!-- # Unused Parameters # -->
-@is_open: 
 
 
 <!-- ##### FUNCTION gtk_paint_layout ##### -->
@@ -960,17 +967,6 @@ Deprecated alias for gtk_style_apply_default_background().
 @pspec: 
 @rc_string: 
 @property_value: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gtk_style_lookup_logical_color ##### -->
-<para>
-
-</para>
-
-@style: 
-@color_name: 
-@color: 
 @Returns: 
 
 

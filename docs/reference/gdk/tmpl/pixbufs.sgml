@@ -6,7 +6,9 @@ Functions for rendering pixbufs on drawables
 
 <!-- ##### SECTION Long_Description ##### -->
 <para>
-
+These functions allow to render pixbufs on drawables. Pixbufs are
+client-side images. For details on how to create and manipulate
+pixbufs, see the #GdkPixbuf API documentation.
 </para>
 
 <!-- ##### SECTION See_Also ##### -->

@@ -28,14 +28,13 @@
 
 #include "gtkmenu.h"
 #include "gtktearoffmenuitem.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define ARROW_SIZE 10
 #define TEAR_LENGTH 5
 #define BORDER_SPACING  3
 
-static void gtk_tearoff_menu_item_class_init (GtkTearoffMenuItemClass *klass);
-static void gtk_tearoff_menu_item_init       (GtkTearoffMenuItem      *tearoff_menu_item);
 static void gtk_tearoff_menu_item_size_request (GtkWidget             *widget,
 				                GtkRequisition        *requisition);
 static gint gtk_tearoff_menu_item_expose     (GtkWidget             *widget,
@@ -44,33 +43,7 @@ static void gtk_tearoff_menu_item_activate   (GtkMenuItem           *menu_item);
 static void gtk_tearoff_menu_item_parent_set (GtkWidget             *widget,
 					      GtkWidget             *previous);
 
-GType
-gtk_tearoff_menu_item_get_type (void)
-{
-  static GType tearoff_menu_item_type = 0;
-
-  if (!tearoff_menu_item_type)
-    {
-      static const GTypeInfo tearoff_menu_item_info =
-      {
-        sizeof (GtkTearoffMenuItemClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_tearoff_menu_item_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkTearoffMenuItem),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_tearoff_menu_item_init,
-      };
-
-      tearoff_menu_item_type =
-	g_type_register_static (GTK_TYPE_MENU_ITEM, "GtkTearoffMenuItem",
-			        &tearoff_menu_item_info, 0);
-    }
-
-  return tearoff_menu_item_type;
-}
+G_DEFINE_TYPE (GtkTearoffMenuItem, gtk_tearoff_menu_item, GTK_TYPE_MENU_ITEM)
 
 GtkWidget*
 gtk_tearoff_menu_item_new (void)
@@ -81,11 +54,9 @@ gtk_tearoff_menu_item_new (void)
 static void
 gtk_tearoff_menu_item_class_init (GtkTearoffMenuItemClass *klass)
 {
-  GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
   GtkMenuItemClass *menu_item_class;
 
-  object_class = (GtkObjectClass*) klass;
   widget_class = (GtkWidgetClass*) klass;
   menu_item_class = (GtkMenuItemClass*) klass;
 
@@ -106,10 +77,6 @@ static void
 gtk_tearoff_menu_item_size_request (GtkWidget      *widget,
 				    GtkRequisition *requisition)
 {
-  GtkTearoffMenuItem *tearoff;
-  
-  tearoff = GTK_TEAROFF_MENU_ITEM (widget);
-  
   requisition->width = (GTK_CONTAINER (widget)->border_width +
 			widget->style->xthickness +
 			BORDER_SPACING) * 2;
@@ -131,7 +98,6 @@ gtk_tearoff_menu_item_paint (GtkWidget   *widget,
 			     GdkRectangle *area)
 {
   GtkMenuItem *menu_item;
-  GtkTearoffMenuItem *tearoff_item;
   GtkShadowType shadow_type;
   gint width, height;
   gint x, y;
@@ -142,7 +108,6 @@ gtk_tearoff_menu_item_paint (GtkWidget   *widget,
   if (GTK_WIDGET_DRAWABLE (widget))
     {
       menu_item = GTK_MENU_ITEM (widget);
-      tearoff_item = GTK_TEAROFF_MENU_ITEM (widget);
 
       direction = gtk_widget_get_direction (widget);
 
@@ -157,7 +122,7 @@ gtk_tearoff_menu_item_paint (GtkWidget   *widget,
 	  gint selected_shadow_type;
 	  
 	  gtk_widget_style_get (widget,
-				"selected_shadow_type", &selected_shadow_type,
+				"selected-shadow-type", &selected_shadow_type,
 				NULL);
 	  gtk_paint_box (widget->style,
 			 widget->window,

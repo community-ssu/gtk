@@ -57,6 +57,11 @@ A GtkToolItem containing a toggle button
 
 @toggletoolbutton: the object which received the signal.
 
+<!-- ##### ARG GtkToggleToolButton:active ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_toggle_tool_button_new ##### -->
 <para>
 

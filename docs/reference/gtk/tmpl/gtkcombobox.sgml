@@ -55,6 +55,21 @@ gtk_combo_box_get_active_text().
 
 @combobox: the object which received the signal.
 
+<!-- ##### SIGNAL GtkComboBox::move-active ##### -->
+<para>
+
+</para>
+
+@combobox: the object which received the signal.
+@arg1: 
+
+<!-- ##### SIGNAL GtkComboBox::popup ##### -->
+<para>
+
+</para>
+
+@combobox: the object which received the signal.
+
 <!-- ##### ARG GtkComboBox:active ##### -->
 <para>
 
@@ -85,12 +100,17 @@ gtk_combo_box_get_active_text().
 
 </para>
 
-<!-- ##### ARG GtkComboBox:propagate-lr-keys ##### -->
+<!-- ##### ARG GtkComboBox:popup-shown ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkComboBox:row-span-column ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkComboBox:tearoff-title ##### -->
 <para>
 
 </para>
@@ -105,27 +125,12 @@ gtk_combo_box_get_active_text().
 
 </para>
 
-<!-- ##### ARG GtkComboBox:arrow-height ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkComboBox:arrow-width ##### -->
+<!-- ##### ARG GtkComboBox:arrow-size ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkComboBox:autodimmed-button ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkComboBox:hildonlike ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkComboBox:separator-width ##### -->
 <para>
 
 </para>
@@ -136,8 +141,6 @@ gtk_combo_box_get_active_text().
 </para>
 
 @Returns: 
-<!-- # Unused Parameters # -->
-@model: 
 
 
 <!-- ##### FUNCTION gtk_combo_box_new_with_model ##### -->
@@ -219,8 +222,6 @@ gtk_combo_box_get_active_text().
 
 @combo_box: 
 @index_: 
-<!-- # Unused Parameters # -->
-@index: 
 
 
 <!-- ##### FUNCTION gtk_combo_box_get_active_iter ##### -->
@@ -369,6 +370,24 @@ gtk_combo_box_get_active_text().
 
 
 <!-- ##### FUNCTION gtk_combo_box_get_add_tearoffs ##### -->
+<para>
+
+</para>
+
+@combo_box: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_combo_box_set_title ##### -->
+<para>
+
+</para>
+
+@combo_box: 
+@title: 
+
+
+<!-- ##### FUNCTION gtk_combo_box_get_title ##### -->
 <para>
 
 </para>

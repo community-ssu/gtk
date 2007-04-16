@@ -32,6 +32,7 @@
 #include "gtkintl.h"
 #include "gtkprivate.h"
 #include <gdk/gdkkeysyms.h>
+#include "gtkdnd.h"
 #include "gtkalias.h"
 
 #define GTK_EXPANDER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GTK_TYPE_EXPANDER, GtkExpanderPrivate))
@@ -58,6 +59,7 @@ struct _GtkExpanderPrivate
 
   GtkExpanderStyle  expander_style;
   guint             animation_timeout;
+  guint             expand_timer;
 
   guint             expanded : 1;
   guint             use_underline : 1;
@@ -65,9 +67,6 @@ struct _GtkExpanderPrivate
   guint             button_down : 1;
   guint             prelight : 1;
 };
-
-static void gtk_expander_class_init (GtkExpanderClass *klass);
-static void gtk_expander_init       (GtkExpander      *expander);
 
 static void gtk_expander_set_property (GObject          *object,
 				       guint             prop_id,
@@ -104,6 +103,14 @@ static void     gtk_expander_grab_notify    (GtkWidget        *widget,
 					     gboolean          was_grabbed);
 static void     gtk_expander_state_changed  (GtkWidget        *widget,
 					     GtkStateType      previous_state);
+static gboolean gtk_expander_drag_motion    (GtkWidget        *widget,
+					     GdkDragContext   *context,
+					     gint              x,
+					     gint              y,
+					     guint             time);
+static void     gtk_expander_drag_leave     (GtkWidget        *widget,
+					     GdkDragContext   *context,
+					     guint             time);
 
 static void gtk_expander_add    (GtkContainer *container,
 				 GtkWidget    *widget);
@@ -119,35 +126,7 @@ static void gtk_expander_activate (GtkExpander *expander);
 static void get_expander_bounds (GtkExpander  *expander,
 				 GdkRectangle *rect);
 
-static GtkBinClass *parent_class = NULL;
-
-GType
-gtk_expander_get_type (void)
-{
-  static GType expander_type = 0;
-  
-  if (!expander_type)
-    {
-      static const GTypeInfo expander_info =
-      {
-	sizeof (GtkExpanderClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_expander_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkExpander),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_expander_init,
-      };
-      
-      expander_type = g_type_register_static (GTK_TYPE_BIN,
-					      "GtkExpander",
-					      &expander_info, 0);
-    }
-  
-  return expander_type;
-}
+G_DEFINE_TYPE (GtkExpander, gtk_expander, GTK_TYPE_BIN)
 
 static void
 gtk_expander_class_init (GtkExpanderClass *klass)
@@ -156,8 +135,6 @@ gtk_expander_class_init (GtkExpanderClass *klass)
   GtkObjectClass *object_class;
   GtkWidgetClass *widget_class;
   GtkContainerClass *container_class;
-
-  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class   = (GObjectClass *) klass;
   object_class    = (GtkObjectClass *) klass;
@@ -183,6 +160,8 @@ gtk_expander_class_init (GtkExpanderClass *klass)
   widget_class->focus                = gtk_expander_focus;
   widget_class->grab_notify          = gtk_expander_grab_notify;
   widget_class->state_changed        = gtk_expander_state_changed;
+  widget_class->drag_motion          = gtk_expander_drag_motion;
+  widget_class->drag_leave           = gtk_expander_drag_leave;
 
   container_class->add    = gtk_expander_add;
   container_class->remove = gtk_expander_remove;
@@ -261,7 +240,7 @@ gtk_expander_class_init (GtkExpanderClass *klass)
 							     GTK_PARAM_READABLE));
 
   widget_class->activate_signal =
-    g_signal_new ("activate",
+    g_signal_new (I_("activate"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkExpanderClass, activate),
@@ -292,6 +271,10 @@ gtk_expander_init (GtkExpander *expander)
   priv->use_markup = FALSE;
   priv->button_down = FALSE;
   priv->prelight = FALSE;
+  priv->expand_timer = 0;
+
+  gtk_drag_dest_set (GTK_WIDGET (expander), 0, NULL, 0, 0);
+  gtk_drag_dest_set_track_motion (GTK_WIDGET (expander), TRUE);
 }
 
 static void
@@ -376,7 +359,7 @@ gtk_expander_destroy (GtkObject *object)
       priv->animation_timeout = 0;
     }
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_expander_parent_class)->destroy (object);
 }
 
 static void
@@ -387,6 +370,7 @@ gtk_expander_realize (GtkWidget *widget)
   gint attributes_mask;
   gint border_width;
   GdkRectangle expander_rect;
+  gint label_height;
 
   priv = GTK_EXPANDER (widget)->priv;
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
@@ -395,11 +379,21 @@ gtk_expander_realize (GtkWidget *widget)
 
   get_expander_bounds (GTK_EXPANDER (widget), &expander_rect);
   
+  if (priv->label_widget && GTK_WIDGET_VISIBLE (priv->label_widget))
+    {
+      GtkRequisition label_requisition;
+
+      gtk_widget_get_child_requisition (priv->label_widget, &label_requisition);
+      label_height = label_requisition.height;
+    }
+  else
+    label_height = 0;
+
   attributes.window_type = GDK_WINDOW_CHILD;
   attributes.x = widget->allocation.x + border_width;
-  attributes.y = expander_rect.y;
+  attributes.y = widget->allocation.y + border_width;
   attributes.width = MAX (widget->allocation.width - 2 * border_width, 1);
-  attributes.height = expander_rect.width;
+  attributes.height = MAX (expander_rect.height, label_height - 2 * border_width);
   attributes.wclass = GDK_INPUT_ONLY;
   attributes.event_mask = gtk_widget_get_events (widget)     |
 				GDK_BUTTON_PRESS_MASK        |
@@ -432,7 +426,7 @@ gtk_expander_unrealize (GtkWidget *widget)
       priv->event_window = NULL;
     }
 
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
+  GTK_WIDGET_CLASS (gtk_expander_parent_class)->unrealize (widget);
 }
 
 static void
@@ -501,7 +495,6 @@ get_expander_bounds (GtkExpander  *expander,
 		     GdkRectangle *rect)
 {
   GtkWidget *widget;
-  GtkBin *bin;
   GtkExpanderPrivate *priv;
   gint border_width;
   gint expander_size;
@@ -512,7 +505,6 @@ get_expander_bounds (GtkExpander  *expander,
   gboolean ltr;
 
   widget = GTK_WIDGET (expander);
-  bin = GTK_BIN (expander);
   priv = expander->priv;
 
   border_width = GTK_CONTAINER (expander)->border_width;
@@ -655,8 +647,10 @@ gtk_expander_size_allocate (GtkWidget     *widget,
       get_expander_bounds (expander, &rect);
 
       gdk_window_move_resize (priv->event_window,
-			      allocation->x + border_width, rect.y,
-			      MAX (allocation->width - 2 * border_width, 1), rect.width);
+			      allocation->x + border_width, 
+			      allocation->y + border_width, 
+			      MAX (allocation->width - 2 * border_width, 1), 
+			      MAX (rect.height, label_height - 2 * border_width));
     }
 
   if (child_visible)
@@ -693,7 +687,7 @@ gtk_expander_map (GtkWidget *widget)
   if (priv->label_widget)
     gtk_widget_map (priv->label_widget);
 
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (gtk_expander_parent_class)->map (widget);
 
   if (priv->event_window)
     gdk_window_show (priv->event_window);
@@ -707,7 +701,7 @@ gtk_expander_unmap (GtkWidget *widget)
   if (priv->event_window)
     gdk_window_hide (priv->event_window);
 
-  GTK_WIDGET_CLASS (parent_class)->unmap (widget);
+  GTK_WIDGET_CLASS (gtk_expander_parent_class)->unmap (widget);
 
   if (priv->label_widget)
     gtk_widget_unmap (priv->label_widget);
@@ -778,24 +772,6 @@ gtk_expander_paint (GtkExpander *expander)
       gtk_expander_paint_prelight (expander);
     }
 
-#if 1
-  /* FIXME: Update the theme engine to recognize the original
-   * gtk_paint_expander() call below.
-   */
-  gtk_paint_arrow (widget->style,
-                   widget->window,
-                   state,
-                   GTK_SHADOW_OUT,
-                   &clip,
-                   widget,
-                   "expander",
-                   (expander->priv->expander_style == GTK_EXPANDER_COLLAPSED) ? GTK_ARROW_RIGHT : GTK_ARROW_DOWN,
-                   FALSE,
-                   clip.x,
-                   clip.y,
-                   clip.x + clip.width / 2,
-                   clip.y + clip.height / 2);
-#else
   gtk_paint_expander (widget->style,
 		      widget->window,
 		      state,
@@ -805,7 +781,6 @@ gtk_expander_paint (GtkExpander *expander)
 		      clip.x + clip.width / 2,
 		      clip.y + clip.height / 2,
 		      expander->priv->expander_style);
-#endif
 }
 
 static void
@@ -838,12 +813,6 @@ gtk_expander_paint_focus (GtkExpander  *expander,
 
   ltr = gtk_widget_get_direction (widget) != GTK_TEXT_DIR_RTL;
   
-  x = widget->allocation.x + border_width;
-  y = widget->allocation.y + border_width;
-
-  if (ltr && interior_focus)
-    x += expander_spacing * 2 + expander_size;
-
   width = height = 0;
 
   if (priv->label_widget && GTK_WIDGET_VISIBLE (priv->label_widget))
@@ -854,15 +823,29 @@ gtk_expander_paint_focus (GtkExpander  *expander,
       height = label_allocation.height;
     }
 
+  width  += 2 * focus_pad + 2 * focus_width;
+  height += 2 * focus_pad + 2 * focus_width;
+
+  x = widget->allocation.x + border_width;
+  y = widget->allocation.y + border_width;
+
+  if (ltr)
+    {
+      if (interior_focus)
+	x += expander_spacing * 2 + expander_size;
+    }
+  else
+    {
+      x += widget->allocation.width - 2 * border_width
+	- expander_spacing * 2 - expander_size - width;
+    }
+
   if (!interior_focus)
     {
       width += expander_size + 2 * expander_spacing;
       height = MAX (height, expander_size + 2 * expander_spacing);
     }
       
-  width  += 2 * focus_pad + 2 * focus_width;
-  height += 2 * focus_pad + 2 * focus_width;
-
   gtk_paint_focus (widget->style, widget->window, GTK_WIDGET_STATE (widget),
 		   area, widget, "expander",
 		   x, y, width, height);
@@ -881,7 +864,7 @@ gtk_expander_expose (GtkWidget      *widget,
       if (GTK_WIDGET_HAS_FOCUS (expander))
 	gtk_expander_paint_focus (expander, &event->area);
 
-      GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+      GTK_WIDGET_CLASS (gtk_expander_parent_class)->expose_event (widget, event);
     }
 
   return FALSE;
@@ -989,6 +972,57 @@ gtk_expander_leave_notify (GtkWidget        *widget,
     }
 
   return FALSE;
+}
+
+static gboolean
+expand_timeout (gpointer data)
+{
+  GtkExpander *expander = GTK_EXPANDER (data);
+  GtkExpanderPrivate *priv = expander->priv;
+
+  priv->expand_timer = 0;
+  gtk_expander_set_expanded (expander, TRUE);
+
+  return FALSE;
+}
+
+static gboolean
+gtk_expander_drag_motion (GtkWidget        *widget,
+			  GdkDragContext   *context,
+			  gint              x,
+			  gint              y,
+			  guint             time)
+{
+  GtkExpander *expander = GTK_EXPANDER (widget);
+  GtkExpanderPrivate *priv = expander->priv;
+
+  if (!priv->expanded && !priv->expand_timer)
+    {
+      GtkSettings *settings;
+      guint timeout;
+
+      settings = gtk_widget_get_settings (widget);
+      g_object_get (settings, "gtk-timeout-expand", &timeout, NULL);
+
+      priv->expand_timer = g_timeout_add (timeout, (GSourceFunc) expand_timeout, expander);
+    }
+
+  return TRUE;
+}
+
+static void
+gtk_expander_drag_leave (GtkWidget      *widget,
+			 GdkDragContext *context,
+			 guint           time)
+{
+  GtkExpander *expander = GTK_EXPANDER (widget);
+  GtkExpanderPrivate *priv = expander->priv;
+
+  if (priv->expand_timer)
+    {
+      g_source_remove (priv->expand_timer);
+      priv->expand_timer = 0;
+    }
 }
 
 typedef enum
@@ -1154,7 +1188,7 @@ static void
 gtk_expander_add (GtkContainer *container,
 		  GtkWidget    *widget)
 {
-  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
+  GTK_CONTAINER_CLASS (gtk_expander_parent_class)->add (container, widget);
 
   gtk_widget_set_child_visible (widget, GTK_EXPANDER (container)->priv->expanded);
   gtk_widget_queue_resize (GTK_WIDGET (container));
@@ -1169,7 +1203,7 @@ gtk_expander_remove (GtkContainer *container,
   if (GTK_EXPANDER (expander)->priv->label_widget == widget)
     gtk_expander_set_label_widget (expander, NULL);
   else
-    GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
+    GTK_CONTAINER_CLASS (gtk_expander_parent_class)->remove (container, widget);
 }
 
 static void
@@ -1193,7 +1227,6 @@ gtk_expander_activate (GtkExpander *expander)
 {
   gtk_expander_set_expanded (expander, !expander->priv->expanded);
 }
-
 
 /**
  * gtk_expander_new:
@@ -1232,7 +1265,7 @@ gtk_expander_new_with_mnemonic (const gchar *label)
 {
   return g_object_new (GTK_TYPE_EXPANDER,
 		       "label", label,
-		       "use_underline", TRUE,
+		       "use-underline", TRUE,
 		       NULL);
 }
 
@@ -1328,13 +1361,18 @@ gtk_expander_set_expanded (GtkExpander *expander,
 
   if (priv->expanded != expanded)
     {
+      GtkSettings *settings = gtk_widget_get_settings (GTK_WIDGET (expander));
+      gboolean     enable_animations;
+
       priv->expanded = expanded;
 
-      if (GTK_WIDGET_REALIZED (expander))
+      g_object_get (settings, "gtk-enable-animations", &enable_animations, NULL);
+
+      if (enable_animations && GTK_WIDGET_REALIZED (expander))
 	{
 	  gtk_expander_start_animation (expander);
 	}
-      else 
+      else
 	{
 	  priv->expander_style = expanded ? GTK_EXPANDER_EXPANDED :
 					    GTK_EXPANDER_COLLAPSED;

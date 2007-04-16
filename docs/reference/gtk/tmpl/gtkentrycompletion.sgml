@@ -99,6 +99,16 @@ The GtkEntryCompletion struct contains only private data.
 
 </para>
 
+<!-- ##### ARG GtkEntryCompletion:popup-set-width ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkEntryCompletion:popup-single-match ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkEntryCompletion:text-column ##### -->
 <para>
 
@@ -135,8 +145,6 @@ to the unmodified key via <literal>gtk_entry_get_text (GTK_ENTRY (gtk_entry_comp
 
 @completion: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@entry: 
 
 
 <!-- ##### FUNCTION gtk_entry_completion_set_model ##### -->
@@ -210,8 +218,6 @@ to the unmodified key via <literal>gtk_entry_get_text (GTK_ENTRY (gtk_entry_comp
 @completion: 
 @index_: 
 @text: 
-<!-- # Unused Parameters # -->
-@index: 
 
 
 <!-- ##### FUNCTION gtk_entry_completion_insert_action_markup ##### -->
@@ -222,8 +228,6 @@ to the unmodified key via <literal>gtk_entry_get_text (GTK_ENTRY (gtk_entry_comp
 @completion: 
 @index_: 
 @markup: 
-<!-- # Unused Parameters # -->
-@index: 
 
 
 <!-- ##### FUNCTION gtk_entry_completion_delete_action ##### -->
@@ -233,8 +237,6 @@ to the unmodified key via <literal>gtk_entry_get_text (GTK_ENTRY (gtk_entry_comp
 
 @completion: 
 @index_: 
-<!-- # Unused Parameters # -->
-@index: 
 
 
 <!-- ##### FUNCTION gtk_entry_completion_set_text_column ##### -->
@@ -283,6 +285,42 @@ to the unmodified key via <literal>gtk_entry_get_text (GTK_ENTRY (gtk_entry_comp
 
 
 <!-- ##### FUNCTION gtk_entry_completion_get_popup_completion ##### -->
+<para>
+
+</para>
+
+@completion: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_entry_completion_set_popup_set_width ##### -->
+<para>
+
+</para>
+
+@completion: 
+@popup_set_width: 
+
+
+<!-- ##### FUNCTION gtk_entry_completion_get_popup_set_width ##### -->
+<para>
+
+</para>
+
+@completion: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_entry_completion_set_popup_single_match ##### -->
+<para>
+
+</para>
+
+@completion: 
+@popup_single_match: 
+
+
+<!-- ##### FUNCTION gtk_entry_completion_get_popup_single_match ##### -->
 <para>
 
 </para>

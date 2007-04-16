@@ -4,7 +4,7 @@
  * This file is a part of the mingw-runtime package.
  * No warranty is given; refer to the file DISCLAIMER within the package.
  *
- * Derived from DIRLIB.C by Matt J. Weinstein 
+ * Derived from DIRLIB.C by Matt J. Weinstein
  * This note appears in the DIRLIB.H
  * DIRLIB.H by M. J. Weinstein   Released to public domain 1-Jan-89
  *
@@ -56,7 +56,7 @@
  * Returns a pointer to a DIR structure appropriately filled in to begin
  * searching a directory.
  */
-_TDIR * 
+_TDIR *
 _topendir (const _TCHAR *szPath)
 {
   _TDIR *nd;
@@ -188,7 +188,7 @@ _treaddir (_TDIR * dirp)
 	{
 	  /* We are off the end or otherwise error.	
 	     _findnext sets errno to ENOENT if no more file
-	     Undo this. */ 
+	     Undo this. */
 	  DWORD winerr = GetLastError();
 	  if (winerr == ERROR_NO_MORE_FILES)
 	    errno = 0;	

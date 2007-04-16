@@ -116,27 +116,12 @@ and should be accessed using the functions below.
 
 </para>
 
-<!-- ##### ARG GtkProgressBar:height-increment ##### -->
+<!-- ##### ARG GtkProgressBar:xspacing ##### -->
 <para>
 
 </para>
 
-<!-- ##### ARG GtkProgressBar:text-spacing ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkProgressBar:text-xnudge ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkProgressBar:text-ynudge ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkProgressBar:width-increment ##### -->
+<!-- ##### ARG GtkProgressBar:yspacing ##### -->
 <para>
 
 </para>

@@ -18,7 +18,7 @@ GTK_LIBS = ../gtk/gtk-win32-$(GTK_VER).lib
 GDK_PIXBUF_LIBS = ../gdk-pixbuf/gdk_pixbuf-$(GDK_PIXBUF_VER).lib
 
 INCLUDES = -I . -I .. -I ../gdk -I ../gdk-pixbuf -I ../gtk
-DEPCFLAGS = $(PANGO_CFLAGS) $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(INTL_CFLAGS) $(ATK_CFLAGS)
+DEPCFLAGS = $(PANGO_CFLAGS) $(GLIB_CFLAGS) $(LIBICONV_CFLAGS) $(INTL_CFLAGS) $(ATK_CFLAGS) $(CAIRO_CFLAGS)
 LDFLAGS = /link /machine:ix86 $(LINKDEBUG)
 DEFINES = -DG_LOG_DOMAIN=\"GtkTest\" -DGTK_VERSION=\"$(GTK_VER)\"
 
@@ -29,6 +29,7 @@ TOUCH = copy makefile.msc+nul
 all :	\
 	..\config.h	\
 	prop-editor.obj \
+	testsocket_common.obj \
 	all-test-apps
 
 ..\config.h : ..\config.h.win32
@@ -39,20 +40,22 @@ all :	\
 # Test programs:
 #
 TESTAPPS = \
-	testabi testactions \
-	testcalendar testcombo testcombochange \
+	autotestfilechooser floatingtest \
+	testaccel testactions \
+	testcairo testcalendar testcellrenderertext testcombo testcombochange \
 	testdnd \
-	testentrycompletion \
-	testfilechooser \
+	testellipsise testentrycompletion \
+	testfilechooser testfilechooserbutton \
 	testgtk \
-	testicontheme testiconview testinput \
-	testmenus testmerge testmultidisplay testmultiscreen \
-	testrgb \
+	testicontheme testiconview testimage testinput \
+	testmenus testmenubars testmerge testmultidisplay testmultiscreen \
+	testnotebookdnd \
+	testrecentchooser testrgb \
 	testselection testspinbutton \
 	testtext testtextbuffer testtoolbar \
 	testtreecolumns testtreeedit testtreeflow testtreefocus \
 	testtreesort testtreeview treestoretest \
-	testsocket testsocket_child \
+	testsocket testsocket_child teststatusicon \
 	testthreads testxinerama \
 	simple 
 
@@ -61,18 +64,43 @@ TESTAPPS = \
 
 
 all-test-apps: 
-	for %d in ($(TESTAPPS)) do nmake -nologo -f makefile.msc one-test-app THIS=%d
+	@for %d in ($(TESTAPPS)) do @nmake -nologo -f makefile.msc one-test-app THIS=%d
 
 one-test-app:
 	@nmake -nologo -f makefile.msc $(THIS).exe TESTAPP=$(THIS) EXTRA_$(THIS)=1
 
 !ELSE
 
+!IFDEF EXTRA_testcairo
+EXTRA_LIBS = $(CAIRO_LIBS)
+!ENDIF
+
+!IFDEF EXTRA_testentrycompletion
+EXTRA_OBJETCS = prop-editor.obj
+!ENDIF
+
+!IFDEF EXTRA_testfilechooserbutton
+EXTRA_OBJETCS = prop-editor.obj
+!ENDIF
+
 !IFDEF EXTRA_testgtk
+EXTRA_LIBS = $(CAIRO_LIBS)
 EXTRA_OBJETCS = prop-editor.obj
 !ENDIF
 
 !IFDEF EXTRA_testiconview
+EXTRA_OBJETCS = prop-editor.obj
+!ENDIF
+
+!IFDEF EXTRA_testsocket
+EXTRA_OBJETCS = testsocket_common.obj
+!ENDIF
+
+!IFDEF EXTRA_testsocket_child
+EXTRA_OBJETCS = testsocket_common.obj
+!ENDIF
+
+!IFDEF EXTRA_testrecentchooser
 EXTRA_OBJETCS = prop-editor.obj
 !ENDIF
 

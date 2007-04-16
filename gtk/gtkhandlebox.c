@@ -32,8 +32,8 @@
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkwindow.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 typedef struct _GtkHandleBoxPrivate GtkHandleBoxPrivate;
@@ -104,8 +104,6 @@ enum {
  *          <--------bin_window-------------------->
  */
 
-static void gtk_handle_box_class_init     (GtkHandleBoxClass *klass);
-static void gtk_handle_box_init           (GtkHandleBox      *handle_box);
 static void gtk_handle_box_set_property   (GObject      *object,
 					   guint         param_id,
 					   const GValue *value,
@@ -145,37 +143,9 @@ static void gtk_handle_box_reattach       (GtkHandleBox      *hb);
 static void gtk_handle_box_end_drag       (GtkHandleBox      *hb,
 					   guint32            time);
 
-
-static GtkBinClass *parent_class;
 static guint        handle_box_signals[SIGNAL_LAST] = { 0 };
 
-
-GType
-gtk_handle_box_get_type (void)
-{
-  static GType handle_box_type = 0;
-
-  if (!handle_box_type)
-    {
-      static const GTypeInfo handle_box_info =
-      {
-	sizeof (GtkHandleBoxClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_handle_box_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkHandleBox),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_handle_box_init,
-      };
-
-      handle_box_type = g_type_register_static (GTK_TYPE_BIN, "GtkHandleBox",
-						&handle_box_info, 0);
-    }
-
-  return handle_box_type;
-}
+G_DEFINE_TYPE (GtkHandleBox, gtk_handle_box, GTK_TYPE_BIN)
 
 static void
 gtk_handle_box_class_init (GtkHandleBoxClass *class)
@@ -190,8 +160,6 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
   widget_class = (GtkWidgetClass *) class;
   container_class = (GtkContainerClass *) class;
 
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->set_property = gtk_handle_box_set_property;
   gobject_class->get_property = gtk_handle_box_get_property;
   
@@ -201,7 +169,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
                                                       P_("Deprecated property, use shadow_type instead"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_ETCHED_OUT,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
                                    g_param_spec_enum ("shadow-type",
@@ -209,7 +177,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
                                                       P_("Appearance of the shadow that surrounds the container"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_ETCHED_OUT,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_HANDLE_POSITION,
@@ -218,7 +186,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
                                                       P_("Position of the handle relative to the child widget"),
 						      GTK_TYPE_POSITION_TYPE,
 						      GTK_POS_LEFT,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_SNAP_EDGE,
@@ -227,7 +195,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
                                                       P_("Side of the handlebox that's lined up with the docking point to dock the handlebox"),
 						      GTK_TYPE_POSITION_TYPE,
 						      GTK_POS_TOP,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_SNAP_EDGE_SET,
@@ -235,7 +203,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
 							 P_("Snap edge set"),
 							 P_("Whether to use the value from the snap_edge property or a value derived from handle_position"),
 							 FALSE,
-							 GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
 
   object_class->destroy = gtk_handle_box_destroy;
 
@@ -257,7 +225,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
   class->child_detached = NULL;
 
   handle_box_signals[SIGNAL_CHILD_ATTACHED] =
-    g_signal_new ("child_attached",
+    g_signal_new (I_("child_attached"),
 		  G_OBJECT_CLASS_TYPE (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkHandleBoxClass, child_attached),
@@ -266,7 +234,7 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_WIDGET);
   handle_box_signals[SIGNAL_CHILD_DETACHED] =
-    g_signal_new ("child_detached",
+    g_signal_new (I_("child_detached"),
 		  G_OBJECT_CLASS_TYPE (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkHandleBoxClass, child_detached),
@@ -274,27 +242,14 @@ gtk_handle_box_class_init (GtkHandleBoxClass *class)
 		  _gtk_marshal_VOID__OBJECT,
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_WIDGET);
+
+  g_type_class_add_private (gobject_class, sizeof (GtkHandleBoxPrivate));    
 }
 
 static GtkHandleBoxPrivate *
 gtk_handle_box_get_private (GtkHandleBox *hb)
 {
-  GtkHandleBoxPrivate *private;
-  static GQuark private_quark = 0;
-
-  if (!private_quark)
-    private_quark = g_quark_from_static_string ("gtk-handle-box-private");
-
-  private = g_object_get_qdata (G_OBJECT (hb), private_quark);
-
-  if (!private)
-    {
-      private = g_new0 (GtkHandleBoxPrivate, 1);
-      g_object_set_qdata_full (G_OBJECT (hb), private_quark,
-			       private, g_free);
-    }
-
-  return private;
+  return G_TYPE_INSTANCE_GET_PRIVATE (hb, GTK_TYPE_HANDLE_BOX, GtkHandleBoxPrivate);
 }
 
 static void
@@ -383,8 +338,8 @@ gtk_handle_box_new (void)
 static void
 gtk_handle_box_destroy (GtkObject *object)
 {
-  if (GTK_OBJECT_CLASS (parent_class)->destroy)
-    (* GTK_OBJECT_CLASS (parent_class)->destroy) (object);
+  if (GTK_OBJECT_CLASS (gtk_handle_box_parent_class)->destroy)
+    (* GTK_OBJECT_CLASS (gtk_handle_box_parent_class)->destroy) (object);
 }
 
 static void
@@ -512,8 +467,8 @@ gtk_handle_box_unrealize (GtkWidget *widget)
   gdk_window_destroy (hb->float_window);
   hb->float_window = NULL;
 
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  if (GTK_WIDGET_CLASS (gtk_handle_box_parent_class)->unrealize)
+    (* GTK_WIDGET_CLASS (gtk_handle_box_parent_class)->unrealize) (widget);
 }
 
 static void
@@ -667,11 +622,9 @@ gtk_handle_box_size_allocate (GtkWidget     *widget,
 
   if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
     {
-      GtkWidget *child;
       GtkAllocation child_allocation;
       guint border_width;
 
-      child = bin->child;
       border_width = GTK_CONTAINER (widget)->border_width;
 
       child_allocation.x = border_width;
@@ -904,8 +857,7 @@ gtk_handle_box_paint (GtkWidget      *widget,
 {
   GtkBin *bin;
   GtkHandleBox *hb;
-  guint width;
-  guint height;
+  guint width, height;
   GdkRectangle rect;
   GdkRectangle dest;
   gint handle_position;
@@ -974,7 +926,7 @@ gtk_handle_box_paint (GtkWidget      *widget,
 			 event ? &event->area : area);
 
   if (bin->child && GTK_WIDGET_VISIBLE (bin->child))
-    (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
+    (* GTK_WIDGET_CLASS (gtk_handle_box_parent_class)->expose_event) (widget, event);
 }
 
 static gint
@@ -1378,14 +1330,14 @@ gtk_handle_box_add (GtkContainer *container,
 		    GtkWidget    *widget)
 {
   gtk_widget_set_parent_window (widget, GTK_HANDLE_BOX (container)->bin_window);
-  GTK_CONTAINER_CLASS (parent_class)->add (container, widget);
+  GTK_CONTAINER_CLASS (gtk_handle_box_parent_class)->add (container, widget);
 }
 
 static void
 gtk_handle_box_remove (GtkContainer *container,
 		       GtkWidget    *widget)
 {
-  GTK_CONTAINER_CLASS (parent_class)->remove (container, widget);
+  GTK_CONTAINER_CLASS (gtk_handle_box_parent_class)->remove (container, widget);
 
   gtk_handle_box_reattach (GTK_HANDLE_BOX (container));
 }

@@ -41,6 +41,19 @@ G_BEGIN_DECLS
  * GtkTextBTree is the PRIVATE internal representation of it.
  */
 
+/* these values are used as "info" for the targets contained in the
+ * lists returned by gtk_text_buffer_get_copy,paste_target_list()
+ *
+ * the enum counts down from G_MAXUINT to avoid clashes with application
+ * added drag destinations which usually start at 0.
+ */
+typedef enum
+{
+  GTK_TEXT_BUFFER_TARGET_INFO_BUFFER_CONTENTS = - 1,
+  GTK_TEXT_BUFFER_TARGET_INFO_RICH_TEXT       = - 2,
+  GTK_TEXT_BUFFER_TARGET_INFO_TEXT            = - 3
+} GtkTextBufferTargetInfo;
+
 typedef struct _GtkTextBTree GtkTextBTree;
 
 typedef struct _GtkTextLogAttrCache GtkTextLogAttrCache;
@@ -70,6 +83,8 @@ struct _GtkTextBuffer
   
   /* Whether the buffer has been modified since last save */
   guint modified : 1;
+
+  guint has_selection : 1;
 };
 
 struct _GtkTextBufferClass
@@ -184,14 +199,14 @@ void    gtk_text_buffer_insert_with_tags          (GtkTextBuffer     *buffer,
                                                    const gchar       *text,
                                                    gint               len,
                                                    GtkTextTag        *first_tag,
-                                                   ...);
+                                                   ...) G_GNUC_NULL_TERMINATED;
 
 void    gtk_text_buffer_insert_with_tags_by_name  (GtkTextBuffer     *buffer,
                                                    GtkTextIter       *iter,
                                                    const gchar       *text,
                                                    gint               len,
                                                    const gchar       *first_tag_name,
-                                                   ...);
+                                                   ...) G_GNUC_NULL_TERMINATED;
 
 /* Delete from the buffer */
 void     gtk_text_buffer_delete             (GtkTextBuffer *buffer,
@@ -337,6 +352,8 @@ gboolean        gtk_text_buffer_get_modified            (GtkTextBuffer *buffer);
 void            gtk_text_buffer_set_modified            (GtkTextBuffer *buffer,
                                                          gboolean       setting);
 
+gboolean        gtk_text_buffer_get_has_selection       (GtkTextBuffer *buffer);
+
 void gtk_text_buffer_add_selection_clipboard    (GtkTextBuffer     *buffer,
 						 GtkClipboard      *clipboard);
 void gtk_text_buffer_remove_selection_clipboard (GtkTextBuffer     *buffer,
@@ -363,13 +380,8 @@ gboolean        gtk_text_buffer_delete_selection        (GtkTextBuffer *buffer,
 void            gtk_text_buffer_begin_user_action       (GtkTextBuffer *buffer);
 void            gtk_text_buffer_end_user_action         (GtkTextBuffer *buffer);
 
-void            gtk_text_buffer_set_can_paste_rich_text (GtkTextBuffer *buffer,
-							 gboolean       can_paste_rich_text);
-gboolean        gtk_text_buffer_get_can_paste_rich_text (GtkTextBuffer *buffer);
-
-void                  gtk_text_buffer_set_rich_text_format (GtkTextBuffer *buffer,
-							    const gchar   *format);
-G_CONST_RETURN gchar *gtk_text_buffer_get_rich_text_format (GtkTextBuffer *buffer);
+GtkTargetList * gtk_text_buffer_get_copy_target_list    (GtkTextBuffer *buffer);
+GtkTargetList * gtk_text_buffer_get_paste_target_list   (GtkTextBuffer *buffer);
 
 /* INTERNAL private stuff */
 void            _gtk_text_buffer_spew                  (GtkTextBuffer      *buffer);

@@ -20,6 +20,7 @@
  */
 
 #include "gtkmnemonichash.h"
+#include "gtkalias.h"
 
 struct _GtkMnemnonicHash
 {
@@ -127,7 +128,9 @@ _gtk_mnemonic_hash_activate (GtkMnemonicHash *mnemonic_hash,
       widget = GTK_WIDGET (list->data);
       
       if (GTK_WIDGET_IS_SENSITIVE (widget) &&
-	  GTK_WIDGET_MAPPED (widget))
+	  GTK_WIDGET_MAPPED (widget) &&
+          widget->window &&
+	  gdk_window_is_viewable (widget->window))
 	{
 	  if (chosen_widget)
 	    {

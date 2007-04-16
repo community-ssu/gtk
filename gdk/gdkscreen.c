@@ -26,57 +26,67 @@
 #include "gdkcolor.h"
 #include "gdkwindow.h"
 #include "gdkscreen.h"
+#include "gdkintl.h"
 #include "gdkalias.h"
 
-static void gdk_screen_class_init  (GdkScreenClass *klass);
-static void gdk_screen_dispose     (GObject        *object);
+static void gdk_screen_dispose      (GObject        *object);
+static void gdk_screen_finalize     (GObject        *object);
+static void gdk_screen_set_property (GObject        *object,
+				     guint           prop_id,
+				     const GValue   *value,
+				     GParamSpec     *pspec);
+static void gdk_screen_get_property (GObject        *object,
+				     guint           prop_id,
+				     GValue         *value,
+				     GParamSpec     *pspec);
+
+enum
+{
+  PROP_0,
+  PROP_FONT_OPTIONS,
+  PROP_RESOLUTION
+};
 
 enum
 {
   SIZE_CHANGED,
+  COMPOSITED_CHANGED,
   LAST_SIGNAL
 };
 
 static guint signals[LAST_SIGNAL] = { 0 };
 
-static gpointer parent_class = NULL;
-
-GType
-gdk_screen_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-	{
-	  sizeof (GdkScreenClass),
-	  (GBaseInitFunc) NULL,
-	  (GBaseFinalizeFunc) NULL,
-	  (GClassInitFunc) gdk_screen_class_init,
-	  NULL,			/* class_finalize */
-	  NULL,			/* class_data */
-	  sizeof (GdkScreen),
-	  0,			/* n_preallocs */
-	  (GInstanceInitFunc) NULL,
-	};
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-					    "GdkScreen", &object_info, 0);
-    }
-
-  return object_type;
-}
+G_DEFINE_TYPE (GdkScreen, gdk_screen, G_TYPE_OBJECT)
 
 static void
 gdk_screen_class_init (GdkScreenClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (klass);
-  
   object_class->dispose = gdk_screen_dispose;
+  object_class->finalize = gdk_screen_finalize;
+  object_class->set_property = gdk_screen_set_property;
+  object_class->get_property = gdk_screen_get_property;
   
+  g_object_class_install_property (object_class,
+				   PROP_FONT_OPTIONS,
+				   g_param_spec_pointer ("font-options",
+							 P_("Font options"),
+							 P_("The default font options for the screen"),
+							 G_PARAM_READWRITE|G_PARAM_STATIC_NAME|
+							G_PARAM_STATIC_NICK|G_PARAM_STATIC_BLURB));
+
+  g_object_class_install_property (object_class,
+				   PROP_RESOLUTION,
+				   g_param_spec_double ("resolution",
+							P_("Font resolution"),
+							P_("The resolution for fonts on the screen"),
+							-G_MAXDOUBLE,
+							G_MAXDOUBLE,
+							-1.0,
+							G_PARAM_READWRITE|G_PARAM_STATIC_NAME|
+							G_PARAM_STATIC_NICK|G_PARAM_STATIC_BLURB));
+
   /**
    * GdkScreen::size-changed:
    * @screen: the object on which the signal is emitted
@@ -87,7 +97,7 @@ gdk_screen_class_init (GdkScreenClass *klass)
    * Since: 2.2
    */
   signals[SIZE_CHANGED] =
-    g_signal_new ("size_changed",
+    g_signal_new (g_intern_static_string ("size_changed"),
                   G_OBJECT_CLASS_TYPE (klass),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GdkScreenClass, size_changed),
@@ -95,6 +105,31 @@ gdk_screen_class_init (GdkScreenClass *klass)
                   g_cclosure_marshal_VOID__VOID,
                   G_TYPE_NONE,
                   0);
+
+  /**
+   * GdkScreen::composited-changed:
+   * @screen: the object on which the signal is emitted
+   *
+   * The ::composited_changed signal is emitted when the composited
+   * status of the screen changes
+   *
+   * Since: 2.10
+   */
+  signals[COMPOSITED_CHANGED] =
+    g_signal_new (g_intern_static_string ("composited_changed"),
+		  G_OBJECT_CLASS_TYPE (klass),
+		  G_SIGNAL_RUN_LAST,
+		  G_STRUCT_OFFSET (GdkScreenClass, composited_changed),
+		  NULL, NULL,
+		  g_cclosure_marshal_VOID__VOID,
+		  G_TYPE_NONE,
+		  0);
+}
+
+static void
+gdk_screen_init (GdkScreen *screen)
+{
+    screen->resolution = -1.;
 }
 
 static void
@@ -118,7 +153,18 @@ gdk_screen_dispose (GObject *object)
         }
     }
 
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (gdk_screen_parent_class)->dispose (object);
+}
+
+static void
+gdk_screen_finalize (GObject *object)
+{
+  GdkScreen *screen = GDK_SCREEN (object);
+
+  if (screen->font_options)
+      cairo_font_options_destroy (screen->font_options);
+
+  G_OBJECT_CLASS (gdk_screen_parent_class)->finalize (object);
 }
 
 void 
@@ -321,6 +367,153 @@ gint
 gdk_screen_height_mm (void)
 {
   return gdk_screen_get_height_mm (gdk_screen_get_default ());
+}
+
+/**
+ * gdk_screen_set_font_options:
+ * @screen: a #GdkScreen
+ * @options: a #cairo_font_options_t, or %NULL to unset any
+ *   previously set default font options.
+ *
+ * Sets the default font options for the screen. These
+ * options will be set on any #PangoContext's newly created
+ * with gdk_pango_context_get_for_screen(). Changing the
+ * default set of font options does not affect contexts that
+ * have already been created.
+ *
+ * Since: 2.10
+ **/
+void
+gdk_screen_set_font_options (GdkScreen                  *screen,
+			     const cairo_font_options_t *options)
+{
+    g_return_if_fail (GDK_IS_SCREEN (screen));
+
+    if (screen->font_options != options)
+      {
+	if (screen->font_options)
+	  cairo_font_options_destroy (screen->font_options);
+	
+	if (options)
+	  screen->font_options = cairo_font_options_copy (options);
+	else
+	  screen->font_options = NULL;
+	
+	g_object_notify (G_OBJECT (screen), "font-options");
+      }
+}
+
+/**
+ * gdk_screen_get_font_options:
+ * @screen: a #GdkScreen
+ * 
+ * Gets any options previously set with gdk_screen_set_font_options().
+ * 
+ * Return value: the current font options, or %NULL if no default
+ *  font options have been set.
+ *
+ * Since: 2.10
+ **/
+const cairo_font_options_t *
+gdk_screen_get_font_options (GdkScreen *screen)
+{
+    g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
+
+    return screen->font_options;
+}
+
+/**
+ * gdk_screen_set_resolution:
+ * @screen: a #GdkScreen
+ * @dpi: the resolution in "dots per inch". (Physical inches aren't actually
+ *   involved; the terminology is conventional.)
+ 
+ * Sets the resolution for font handling on the screen. This is a
+ * scale factor between points specified in a #PangoFontDescription
+ * and cairo units. The default value is 96, meaning that a 10 point
+ * font will be 13 units high. (10 * 96. / 72. = 13.3).
+ *
+ * Since: 2.10
+ **/
+void
+gdk_screen_set_resolution (GdkScreen *screen,
+			   gdouble    dpi)
+{
+    g_return_if_fail (GDK_IS_SCREEN (screen));
+
+    if (dpi < 0)
+      dpi = -1.0;
+
+    if (screen->resolution != dpi)
+      {
+	screen->resolution = dpi;
+
+	g_object_notify (G_OBJECT (screen), "resolution");
+      }
+}
+
+/**
+ * gdk_screen_get_resolution:
+ * @screen: a #GdkScreen
+ * 
+ * Gets the resolution for font handling on the screen; see
+ * gdk_screen_set_resolution() for full details.
+ * 
+ * Return value: the current resolution, or -1 if no resolution
+ * has been set.
+ *
+ * Since: 2.10
+ **/
+gdouble
+gdk_screen_get_resolution (GdkScreen *screen)
+{
+    g_return_val_if_fail (GDK_IS_SCREEN (screen), -1.);
+
+    return screen->resolution;
+}
+
+static void
+gdk_screen_get_property (GObject      *object,
+			 guint         prop_id,
+			 GValue       *value,
+			 GParamSpec   *pspec)
+{
+  GdkScreen *screen = GDK_SCREEN (object);
+
+  switch (prop_id)
+    {
+    case PROP_FONT_OPTIONS:
+      g_value_set_pointer (value, gdk_screen_get_font_options (screen));
+      break;
+    case PROP_RESOLUTION:
+      g_value_set_double (value, gdk_screen_get_resolution (screen));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
+}
+
+static void
+gdk_screen_set_property (GObject      *object,
+			 guint         prop_id,
+			 const GValue *value,
+			 GParamSpec   *pspec)
+{
+  GdkScreen *screen = GDK_SCREEN (object);
+
+  switch (prop_id)
+    {
+    case PROP_FONT_OPTIONS:
+      gdk_screen_set_font_options (screen, g_value_get_pointer (value));
+      break;
+    case PROP_RESOLUTION:
+      gdk_screen_set_resolution (screen, g_value_get_double (value));
+      break;
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+      break;
+    }
 }
 
 #define __GDK_SCREEN_C__

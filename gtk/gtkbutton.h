@@ -121,7 +121,9 @@ void                  gtk_button_get_alignment      (GtkButton      *button,
 void                  gtk_button_set_image          (GtkButton      *button,
 					             GtkWidget      *image);
 GtkWidget*            gtk_button_get_image          (GtkButton      *button);
-
+void                  gtk_button_set_image_position (GtkButton      *button,
+						     GtkPositionType position);
+GtkPositionType       gtk_button_get_image_position (GtkButton      *button);
 
 void _gtk_button_set_depressed             (GtkButton     *button,
 					    gboolean       depressed);
@@ -131,23 +133,6 @@ void _gtk_button_paint                     (GtkButton     *button,
 					    GtkShadowType  shadow_type,
 					    const gchar   *main_detail,
 					    const gchar   *default_detail);
-
-void hildon_gtk_button_set_depressed       (GtkButton     *button,
-					    gboolean       depressed);
-
-/* Osso addition : Button attach flags */
-typedef enum {
-  OSSO_GTK_BUTTON_ATTACH_NORTH =    1 << 0,
-  OSSO_GTK_BUTTON_ATTACH_EAST =     1 << 1,
-  OSSO_GTK_BUTTON_ATTACH_SOUTH =    1 << 2,
-  OSSO_GTK_BUTTON_ATTACH_WEST =     1 << 3,
-  OSSO_GTK_BUTTON_ATTACH_ENUM_END = 1 << 4
-} OssoGtkButtonAttachFlags;
-
-extern const gchar *osso_gtk_button_attach_details [OSSO_GTK_BUTTON_ATTACH_ENUM_END];
-
-void osso_gtk_button_set_detail_from_attach_flags (GtkButton *button,
-						   OssoGtkButtonAttachFlags flags);
 
 G_END_DECLS
 

@@ -1,4 +1,8 @@
 #include <gtk/gtk.h>
+#include <gtk/gtkprintunixdialog.h>
+#include <gtk/gtkpagesetupunixdialog.h>
+#include <gtk/gtkprinter.h>
+#include <gtk/gtkprintjob.h>
 
 gtk_about_dialog_get_type
 gtk_accel_group_get_type
@@ -11,6 +15,7 @@ gtk_adjustment_get_type
 gtk_alignment_get_type
 gtk_arrow_get_type
 gtk_aspect_frame_get_type
+gtk_assistant_get_type
 gtk_bin_get_type
 gtk_box_get_type
 gtk_button_box_get_type
@@ -18,15 +23,18 @@ gtk_button_get_type
 gtk_calendar_get_type
 gtk_cell_editable_get_type
 gtk_cell_layout_get_type
+gtk_cell_renderer_accel_get_type
 gtk_cell_renderer_combo_get_type
 gtk_cell_renderer_get_type
 gtk_cell_renderer_pixbuf_get_type
 gtk_cell_renderer_progress_get_type
+gtk_cell_renderer_spin_get_type
 gtk_cell_renderer_text_get_type
 gtk_cell_renderer_toggle_get_type
 gtk_cell_view_get_type
 gtk_check_button_get_type
 gtk_check_menu_item_get_type
+gtk_clipboard_get_type
 gtk_clist_get_type
 gtk_color_button_get_type
 gtk_color_selection_dialog_get_type
@@ -78,6 +86,7 @@ gtk_item_factory_get_type
 gtk_item_get_type
 gtk_label_get_type
 gtk_layout_get_type
+gtk_link_button_get_type
 gtk_list_get_type
 gtk_list_item_get_type
 gtk_list_store_get_type
@@ -92,10 +101,19 @@ gtk_notebook_get_type
 gtk_object_get_type
 gtk_old_editable_get_type
 gtk_option_menu_get_type
+gtk_page_setup_get_type
+gtk_page_setup_unix_dialog_get_type
 gtk_paned_get_type
+gtk_paper_size_get_type
 gtk_pixmap_get_type
 gtk_plug_get_type
 gtk_preview_get_type
+gtk_printer_get_type
+gtk_print_context_get_type
+gtk_print_job_get_type
+gtk_print_operation_get_type
+gtk_print_settings_get_type
+gtk_print_unix_dialog_get_type
 gtk_progress_bar_get_type
 gtk_progress_get_type
 gtk_radio_action_get_type
@@ -104,6 +122,11 @@ gtk_radio_menu_item_get_type
 gtk_radio_tool_button_get_type
 gtk_range_get_type
 gtk_rc_style_get_type
+gtk_recent_chooser_get_type
+gtk_recent_chooser_dialog_get_type
+gtk_recent_chooser_menu_get_type
+gtk_recent_chooser_widget_get_type
+gtk_recent_manager_get_type
 gtk_ruler_get_type
 gtk_scale_get_type
 gtk_scrollbar_get_type
@@ -116,6 +139,7 @@ gtk_size_group_get_type
 gtk_socket_get_type
 gtk_spin_button_get_type
 gtk_statusbar_get_type
+gtk_status_icon_get_type
 gtk_style_get_type
 gtk_table_get_type
 gtk_tearoff_menu_item_get_type

@@ -58,6 +58,7 @@ Used to indicate the direction in which a #GtkArrow should point.
 @GTK_ARROW_DOWN: Represents a downward pointing arrow.
 @GTK_ARROW_LEFT: Represents a left pointing arrow.
 @GTK_ARROW_RIGHT: Represents a right pointing arrow.
+@GTK_ARROW_NONE: No arrow. Since 2.10.
 
 <!-- ##### ENUM GtkAttachOptions ##### -->
 <para>
@@ -83,6 +84,7 @@ contains. (See also: #GtkVButtonBox and #GtkHButtonBox).
 left for a HBox, or the top for a VBox).
 @GTK_BUTTONBOX_END: Buttons are grouped towards the end of a box, (on the
 right for a HBox, or the bottom for a VBox).
+@GTK_BUTTONBOX_CENTER: Buttons are grouped in the middle of the ButtonBox.
 
 <!-- ##### ENUM GtkCornerType ##### -->
 <para>
@@ -360,9 +362,8 @@ Used to change the appearance of an outline typically provided by a #GtkFrame.
 @GTK_SHADOW_NONE: No outline.
 @GTK_SHADOW_IN: The outline is bevelled inwards.
 @GTK_SHADOW_OUT: The outline is bevelled outwards like a button.
-@GTK_SHADOW_ETCHED_IN: The outline itself is an inward bevel, but the frame
-does
-@GTK_SHADOW_ETCHED_OUT: 
+@GTK_SHADOW_ETCHED_IN: The outline has a sunken 3d appearance.
+@GTK_SHADOW_ETCHED_OUT: The outline has a raised 3d appearance
 
 <!-- ##### ENUM GtkSideType ##### -->
 <para>
@@ -478,4 +479,12 @@ Determines the direction of a sort.
 
 @GTK_SORT_ASCENDING: Sorting is in ascending order.
 @GTK_SORT_DESCENDING: Sorting is in descending order.
+
+<!-- ##### ENUM GtkInvalidInputType ##### -->
+<para>
+Reason why the "invalid-input" signal was emitted.
+</para>
+
+@GTK_INVALID_INPUT_MAX_CHARS_REACHED: Text exceeds the maximum allowed length for the widget.
+@GTK_INVALID_INPUT_MODE_RESTRICTION: Text contains characters forbidden in the selected #HildonGtkInputMode
 

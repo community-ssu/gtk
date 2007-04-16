@@ -26,6 +26,7 @@
 #include "gtkentry.h"
 #include "gtkfilechooserentry.h"
 #include "gtkmain.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 typedef struct _GtkFileChooserEntryClass GtkFileChooserEntryClass;
@@ -50,10 +51,11 @@ struct _GtkFileChooserEntry
   GtkFilePath *current_folder_path;
   gchar *file_part;
   gint file_part_pos;
-  GSource *check_completion_idle;
-  GSource *load_directory_idle;
+  guint check_completion_idle;
+  guint load_directory_idle;
 
   GtkFileFolder *current_folder;
+  GtkFileSystemHandle *load_folder_handle;
 
   GtkListStore *completion_store;
 
@@ -69,11 +71,10 @@ enum
   N_COLUMNS
 };
 
-static void gtk_file_chooser_entry_class_init (GtkFileChooserEntryClass *class);
-static void gtk_file_chooser_entry_iface_init (GtkEditableClass         *iface);
-static void gtk_file_chooser_entry_init       (GtkFileChooserEntry      *chooser_entry);
+static void     gtk_file_chooser_entry_iface_init     (GtkEditableClass *iface);
 
 static void     gtk_file_chooser_entry_finalize       (GObject          *object);
+static void     gtk_file_chooser_entry_dispose        (GObject          *object);
 static gboolean gtk_file_chooser_entry_focus          (GtkWidget        *widget,
 						       GtkDirectionType  direction);
 static void     gtk_file_chooser_entry_activate       (GtkEntry         *entry);
@@ -103,58 +104,21 @@ static char    *maybe_append_separator_to_path (GtkFileChooserEntry *chooser_ent
 						GtkFilePath         *path,
 						gchar               *display_name);
 
-static GObjectClass *parent_class;
 static GtkEditableClass *parent_editable_iface;
 
-GType
-_gtk_file_chooser_entry_get_type (void)
-{
-  static GType file_chooser_entry_type = 0;
-
-  if (!file_chooser_entry_type)
-    {
-      static const GTypeInfo file_chooser_entry_info =
-      {
-	sizeof (GtkFileChooserEntryClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_file_chooser_entry_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkFileChooserEntry),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_file_chooser_entry_init,
-      };
-
-      static const GInterfaceInfo editable_info =
-      {
-	(GInterfaceInitFunc) gtk_file_chooser_entry_iface_init, /* interface_init */
-	NULL,			                              /* interface_finalize */
-	NULL			                              /* interface_data */
-      };
-
-
-      file_chooser_entry_type = g_type_register_static (GTK_TYPE_ENTRY, "GtkFileChooserEntry",
-							&file_chooser_entry_info, 0);
-      g_type_add_interface_static (file_chooser_entry_type,
-				   GTK_TYPE_EDITABLE,
-				   &editable_info);
-    }
-
-
-  return file_chooser_entry_type;
-}
+G_DEFINE_TYPE_WITH_CODE (GtkFileChooserEntry, _gtk_file_chooser_entry, GTK_TYPE_ENTRY,
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_EDITABLE,
+						gtk_file_chooser_entry_iface_init))
 
 static void
-gtk_file_chooser_entry_class_init (GtkFileChooserEntryClass *class)
+_gtk_file_chooser_entry_class_init (GtkFileChooserEntryClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
   GtkEntryClass *entry_class = GTK_ENTRY_CLASS (class);
 
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->finalize = gtk_file_chooser_entry_finalize;
+  gobject_class->dispose = gtk_file_chooser_entry_dispose;
 
   widget_class->focus = gtk_file_chooser_entry_focus;
 
@@ -171,12 +135,15 @@ gtk_file_chooser_entry_iface_init (GtkEditableClass *iface)
 }
 
 static void
-gtk_file_chooser_entry_init (GtkFileChooserEntry *chooser_entry)
+_gtk_file_chooser_entry_init (GtkFileChooserEntry *chooser_entry)
 {
   GtkEntryCompletion *comp;
   GtkCellRenderer *cell;
 
+  g_object_set (chooser_entry, "truncate-multiline", TRUE, NULL);
+
   comp = gtk_entry_completion_new ();
+  gtk_entry_completion_set_popup_single_match (comp, FALSE);
 
   gtk_entry_completion_set_match_func (comp,
 				       completion_match_func,
@@ -190,7 +157,7 @@ gtk_file_chooser_entry_init (GtkFileChooserEntry *chooser_entry)
                                  cell,
                                  "text", 0);
 
-  g_signal_connect (comp, "match-selected",
+  g_signal_connect (comp, "match_selected",
 		    G_CALLBACK (match_selected_callback), chooser_entry);
 
   gtk_entry_set_completion (GTK_ENTRY (chooser_entry), comp);
@@ -207,8 +174,29 @@ gtk_file_chooser_entry_finalize (GObject *object)
 {
   GtkFileChooserEntry *chooser_entry = GTK_FILE_CHOOSER_ENTRY (object);
 
+  gtk_file_path_free (chooser_entry->base_folder);
+  gtk_file_path_free (chooser_entry->current_folder_path);
+  g_free (chooser_entry->file_part);
+
+  G_OBJECT_CLASS (_gtk_file_chooser_entry_parent_class)->finalize (object);
+}
+
+static void
+gtk_file_chooser_entry_dispose (GObject *object)
+{
+  GtkFileChooserEntry *chooser_entry = GTK_FILE_CHOOSER_ENTRY (object);
+
   if (chooser_entry->completion_store)
-    g_object_unref (chooser_entry->completion_store);
+    {
+      g_object_unref (chooser_entry->completion_store);
+      chooser_entry->completion_store = NULL;
+    }
+
+  if (chooser_entry->load_folder_handle)
+    {
+      gtk_file_system_cancel_operation (chooser_entry->load_folder_handle);
+      chooser_entry->load_folder_handle = NULL;
+    }
 
   if (chooser_entry->current_folder)
     {
@@ -217,16 +205,28 @@ gtk_file_chooser_entry_finalize (GObject *object)
       g_signal_handlers_disconnect_by_func (chooser_entry->current_folder,
 					    G_CALLBACK (files_deleted_cb), chooser_entry);
       g_object_unref (chooser_entry->current_folder);
+      chooser_entry->current_folder = NULL;
     }
 
   if (chooser_entry->file_system)
-    g_object_unref (chooser_entry->file_system);
+    {
+      g_object_unref (chooser_entry->file_system);
+      chooser_entry->file_system = NULL;
+    }
 
-  gtk_file_path_free (chooser_entry->base_folder);
-  gtk_file_path_free (chooser_entry->current_folder_path);
-  g_free (chooser_entry->file_part);
+  if (chooser_entry->check_completion_idle)
+    {
+      g_source_remove (chooser_entry->check_completion_idle);
+      chooser_entry->check_completion_idle = 0;
+    }
 
-  parent_class->finalize (object);
+  if (chooser_entry->load_directory_idle)
+    {
+      g_source_remove (chooser_entry->load_directory_idle);
+      chooser_entry->load_directory_idle = 0;
+    }
+
+  G_OBJECT_CLASS (_gtk_file_chooser_entry_parent_class)->dispose (object);
 }
 
 /* Match functions for the GtkEntryCompletion */
@@ -504,7 +504,7 @@ check_completion_callback (GtkFileChooserEntry *chooser_entry)
 
   g_assert (chooser_entry->file_part);
 
-  chooser_entry->check_completion_idle = NULL;
+  chooser_entry->check_completion_idle = 0;
 
   if (strcmp (chooser_entry->file_part, "") == 0)
     goto done;
@@ -524,19 +524,30 @@ check_completion_callback (GtkFileChooserEntry *chooser_entry)
   return FALSE;
 }
 
+static guint
+idle_add (GtkFileChooserEntry *chooser_entry, 
+	  GCallback            cb)
+{
+  GSource *source;
+  guint id;
+
+  source = g_idle_source_new ();
+  g_source_set_priority (source, G_PRIORITY_HIGH);
+  g_source_set_closure (source,
+			g_cclosure_new_object (cb, G_OBJECT (chooser_entry)));
+  id = g_source_attach (source, NULL);
+  g_source_unref (source);
+
+  return id;
+}
+
 static void
 add_completion_idle (GtkFileChooserEntry *chooser_entry)
 {
   /* idle to update the selection based on the file list */
-  if (chooser_entry->check_completion_idle == NULL)
-    {
-      chooser_entry->check_completion_idle = g_idle_source_new ();
-      g_source_set_priority (chooser_entry->check_completion_idle, G_PRIORITY_HIGH);
-      g_source_set_closure (chooser_entry->check_completion_idle,
-			    g_cclosure_new_object (G_CALLBACK (check_completion_callback),
-						   G_OBJECT (chooser_entry)));
-      g_source_attach (chooser_entry->check_completion_idle, NULL);
-    }
+  if (chooser_entry->check_completion_idle == 0)
+    chooser_entry->check_completion_idle = 
+      idle_add (chooser_entry, G_CALLBACK (check_completion_callback));
 }
 
 
@@ -597,6 +608,41 @@ files_deleted_cb (GtkFileSystem       *file_system,
   /* FIXME: gravy... */
 }
 
+static void
+load_directory_get_folder_callback (GtkFileSystemHandle *handle,
+				    GtkFileFolder       *folder,
+				    const GError        *error,
+				    gpointer             data)
+{
+  gboolean cancelled = handle->cancelled;
+  GtkFileChooserEntry *chooser_entry = data;
+
+  if (handle != chooser_entry->load_folder_handle)
+    goto out;
+
+  chooser_entry->load_folder_handle = NULL;
+
+  if (cancelled || error)
+    goto out;
+
+  chooser_entry->current_folder = folder;
+  g_signal_connect (chooser_entry->current_folder, "files-added",
+		    G_CALLBACK (files_added_cb), chooser_entry);
+  g_signal_connect (chooser_entry->current_folder, "files-removed",
+		    G_CALLBACK (files_deleted_cb), chooser_entry);
+  
+  chooser_entry->completion_store = gtk_list_store_new (N_COLUMNS,
+							G_TYPE_STRING,
+							GTK_TYPE_FILE_PATH);
+
+  gtk_entry_completion_set_model (gtk_entry_get_completion (GTK_ENTRY (chooser_entry)),
+				  GTK_TREE_MODEL (chooser_entry->completion_store));
+
+out:
+  g_object_unref (chooser_entry);
+  g_object_unref (handle);
+}
+
 static gboolean
 load_directory_callback (GtkFileChooserEntry *chooser_entry)
 {
@@ -604,7 +650,7 @@ load_directory_callback (GtkFileChooserEntry *chooser_entry)
 
   GDK_THREADS_ENTER ();
 
-  chooser_entry->load_directory_idle = NULL;
+  chooser_entry->load_directory_idle = 0;
 
   /* guard against bogus settings*/
   if (chooser_entry->current_folder_path == NULL ||
@@ -619,38 +665,15 @@ load_directory_callback (GtkFileChooserEntry *chooser_entry)
   g_assert (chooser_entry->completion_store == NULL);
 
   /* Load the folder */
-  chooser_entry->current_folder = gtk_file_system_get_folder (chooser_entry->file_system,
-							      chooser_entry->current_folder_path,
-							      GTK_FILE_INFO_DISPLAY_NAME | GTK_FILE_INFO_IS_FOLDER,
-							      NULL); /* NULL-GError */
+  if (chooser_entry->load_folder_handle)
+    gtk_file_system_cancel_operation (chooser_entry->load_folder_handle);
 
-  /* There is no folder by that name */
-  if (!chooser_entry->current_folder)
-    goto done;
-  g_signal_connect (chooser_entry->current_folder, "files-added",
-		    G_CALLBACK (files_added_cb), chooser_entry);
-  g_signal_connect (chooser_entry->current_folder, "files-removed",
-		    G_CALLBACK (files_deleted_cb), chooser_entry);
-  
-  chooser_entry->completion_store = gtk_list_store_new (N_COLUMNS,
-							G_TYPE_STRING,
-							GTK_TYPE_FILE_PATH);
-
-  if (chooser_entry->file_part_pos != -1)
-    {
-      gtk_file_folder_list_children (chooser_entry->current_folder,
-				     &child_paths,
-				     NULL); /* NULL-GError */
-      if (child_paths)
-	{
-	  update_current_folder_files (chooser_entry, child_paths);
-	  add_completion_idle (chooser_entry);
-	  gtk_file_paths_free (child_paths);
-	}
-    }
-
-  gtk_entry_completion_set_model (gtk_entry_get_completion (GTK_ENTRY (chooser_entry)),
-				  GTK_TREE_MODEL (chooser_entry->completion_store));
+  chooser_entry->load_folder_handle =
+    gtk_file_system_get_folder (chooser_entry->file_system,
+			        chooser_entry->current_folder_path,
+			        GTK_FILE_INFO_DISPLAY_NAME | GTK_FILE_INFO_IS_FOLDER,
+			        load_directory_get_folder_callback,
+			        g_object_ref (chooser_entry));
 
  done:
   
@@ -688,7 +711,7 @@ gtk_file_chooser_entry_focus (GtkWidget        *widget,
   entry = GTK_ENTRY (widget);
 
   if (!chooser_entry->eat_tabs)
-    return GTK_WIDGET_CLASS (parent_class)->focus (widget, direction);
+    return GTK_WIDGET_CLASS (_gtk_file_chooser_entry_parent_class)->focus (widget, direction);
 
   control_pressed = FALSE;
 
@@ -720,7 +743,7 @@ gtk_file_chooser_entry_focus (GtkWidget        *widget,
       return TRUE;
     }
   else
-    return GTK_WIDGET_CLASS (parent_class)->focus (widget, direction);
+    return GTK_WIDGET_CLASS (_gtk_file_chooser_entry_parent_class)->focus (widget, direction);
 }
 
 static void
@@ -734,7 +757,7 @@ gtk_file_chooser_entry_activate (GtkEntry *entry)
 				 entry->text_length);
     }
   
-  GTK_ENTRY_CLASS (parent_class)->activate (entry);
+  GTK_ENTRY_CLASS (_gtk_file_chooser_entry_parent_class)->activate (entry);
 }
 
 /* This will see if a path typed by the user is new, and installs the loading
@@ -783,15 +806,9 @@ gtk_file_chooser_entry_maybe_update_directory (GtkFileChooserEntry *chooser_entr
 
   chooser_entry->current_folder_path = folder_path;
 
-  if (queue_idle && chooser_entry->load_directory_idle == NULL)
-    {
-      chooser_entry->load_directory_idle = g_idle_source_new ();
-      g_source_set_priority (chooser_entry->load_directory_idle, G_PRIORITY_HIGH);
-      g_source_set_closure (chooser_entry->load_directory_idle,
-			    g_cclosure_new_object (G_CALLBACK (load_directory_callback),
-						   G_OBJECT (chooser_entry)));
-      g_source_attach (chooser_entry->load_directory_idle, NULL);
-    }
+  if (queue_idle && chooser_entry->load_directory_idle == 0)
+    chooser_entry->load_directory_idle =
+      idle_add (chooser_entry, G_CALLBACK (load_directory_callback));
 }
 
 
@@ -997,9 +1014,25 @@ _gtk_file_chooser_entry_set_action (GtkFileChooserEntry *chooser_entry,
 {
   g_return_if_fail (GTK_IS_FILE_CHOOSER_ENTRY (chooser_entry));
   
-  if (  chooser_entry->action != action)
+  if (chooser_entry->action != action)
     {
+      GtkEntryCompletion *comp;
+
       chooser_entry->action = action;
+
+      comp = gtk_entry_get_completion (GTK_ENTRY (chooser_entry));
+
+      switch (action)
+	{
+	case GTK_FILE_CHOOSER_ACTION_OPEN:
+	case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
+	  gtk_entry_completion_set_popup_single_match (comp, FALSE);
+	  break;
+	case GTK_FILE_CHOOSER_ACTION_SAVE:
+	case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
+	  gtk_entry_completion_set_popup_single_match (comp, TRUE);
+	  break;
+	}
     }
 }
 
@@ -1021,5 +1054,24 @@ _gtk_file_chooser_entry_get_action (GtkFileChooserEntry *chooser_entry)
   return chooser_entry->action;
 }
 
-#define __GTK_FILE_CHOOSER_ENTRY_C__
-#include "gtkaliasdef.c"
+gboolean
+_gtk_file_chooser_entry_get_is_folder (GtkFileChooserEntry *chooser_entry,
+				       const GtkFilePath   *path)
+{
+  gboolean retval = FALSE;
+
+  if (chooser_entry->current_folder)
+    {
+      GtkFileInfo *file_info;
+
+      file_info = gtk_file_folder_get_info (chooser_entry->current_folder,
+					    path, NULL);
+      if (file_info)
+        {
+	  retval = gtk_file_info_get_is_folder (file_info);
+	  gtk_file_info_free (file_info);
+	}
+    }
+
+  return retval;
+}

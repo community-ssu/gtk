@@ -55,7 +55,6 @@
 #include "gtkprivate.h"
 #include "gtksettings.h"
 #include "gtkwindow.h"
-#include "gtkhashtable.h"
 
 #include "gtkalias.h"
 
@@ -67,24 +66,45 @@ typedef struct _GtkRcSet    GtkRcSet;
 typedef struct _GtkRcNode   GtkRcNode;
 typedef struct _GtkRcFile   GtkRcFile;
 
+enum 
+{
+  PATH_ELT_PSPEC,
+  PATH_ELT_UNRESOLVED,
+  PATH_ELT_TYPE
+};
+
+typedef struct
+{
+  gint type;
+  union 
+  {
+    GType         class_type;
+    gchar        *class_name;
+    GPatternSpec *pspec;
+  } elt;
+} PathElt;
+
 struct _GtkRcSet
 {
+  GtkPathType   type;
+
   GPatternSpec *pspec;
-  GtkRcStyle *rc_style;
-  gint priority;
+  GSList       *path;
+
+  GtkRcStyle   *rc_style;
+  gint          priority;
 };
 
 struct _GtkRcFile
 {
-  gboolean is_string;		/* If TRUE, name is a string to parse with gtk_rc_parse_string() */
   time_t mtime;
   gchar *name;
   gchar *canonical_name;
   gchar *directory;
-  guint reload;
+  guint  reload    : 1;
+  guint  is_string : 1;	/* If TRUE, name is a string to parse with gtk_rc_parse_string() */
 };
 
-#define GTK_RC_MAX_PIXMAP_PATHS 128
 
 struct _GtkRcContext
 {
@@ -101,18 +121,23 @@ struct _GtkRcContext
   gchar *key_theme_name;
   gchar *font_name;
   
-  gchar *pixmap_path[GTK_RC_MAX_PIXMAP_PATHS];
+  gchar **pixmap_path;
 
   gint default_priority;
   GtkStyle *default_style;
+
+  GHashTable *color_hash;
+
+  guint reloading : 1;
 };
 
 #define GTK_RC_STYLE_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_RC_STYLE, GtkRcStylePrivate))
 
 typedef struct _GtkRcStylePrivate GtkRcStylePrivate;
 
-struct _GtkRcStylePrivate {
-  GSList *logical_color_hashes;
+struct _GtkRcStylePrivate
+{
+  GSList *color_hashes;
 };
 
 static GtkRcContext *gtk_rc_context_get              (GtkSettings     *settings);
@@ -128,8 +153,8 @@ static GtkRcStyle* gtk_rc_style_find                 (GtkRcContext    *context,
 static GSList *    gtk_rc_styles_match               (GSList          *rc_styles,
                                                       GSList          *sets,
                                                       guint            path_length,
-                                                      const gchar     *path,
-                                                      const gchar     *path_reversed);
+                                                      gchar           *path,
+                                                      gchar           *path_reversed);
 static GtkStyle *  gtk_rc_style_to_style             (GtkRcContext    *context,
 						      GtkRcStyle      *rc_style);
 static GtkStyle*   gtk_rc_init_style                 (GtkRcContext    *context,
@@ -151,6 +176,7 @@ static guint       gtk_rc_parse_statement            (GtkRcContext    *context,
 static guint       gtk_rc_parse_style                (GtkRcContext    *context,
 						      GScanner        *scanner);
 static guint       gtk_rc_parse_assignment           (GScanner        *scanner,
+                                                      GtkRcStyle      *style,
 						      GtkRcProperty   *prop);
 static guint       gtk_rc_parse_bg                   (GScanner        *scanner,
                                                       GtkRcStyle      *style);
@@ -190,11 +216,11 @@ static guint       gtk_rc_parse_stock                (GtkRcContext    *context,
                                                       GtkRcStyle      *rc_style,
                                                       GtkIconFactory  *factory);
 static guint       gtk_rc_parse_logical_color        (GScanner        *scanner,
-                                                              GtkRcStyle      *rc_style,
-                                                             GtkHashTable    *hash);
+                                                      GtkRcStyle      *rc_style,
+                                                      GHashTable      *hash);
 static guint       gtk_rc_parse_color_full           (GScanner        *scanner,
-                                                             GdkColor        *color,
-                                                             GtkRcStyle      *style);
+                                                      GtkRcStyle      *style,
+                                                      GdkColor        *color);
 
 static void        gtk_rc_clear_hash_node            (gpointer         key,
                                                       gpointer         data,
@@ -202,17 +228,18 @@ static void        gtk_rc_clear_hash_node            (gpointer         key,
 static void        gtk_rc_clear_styles               (GtkRcContext    *context);
 static void        gtk_rc_add_initial_default_files  (void);
 
-static void        gtk_rc_style_init                 (GtkRcStyle      *style);
-static void        gtk_rc_style_class_init           (GtkRcStyleClass *klass);
 static void        gtk_rc_style_finalize             (GObject         *object);
 static void        gtk_rc_style_real_merge           (GtkRcStyle      *dest,
                                                       GtkRcStyle      *src);
 static GtkRcStyle* gtk_rc_style_real_create_rc_style (GtkRcStyle      *rc_style);
 static GtkStyle*   gtk_rc_style_real_create_style    (GtkRcStyle      *rc_style);
+static void        gtk_rc_style_copy_icons_and_colors(GtkRcStyle      *rc_style,
+                                                      GtkRcStyle      *src_style,
+                                                      GtkRcContext    *context);
 static gint	   gtk_rc_properties_cmp	     (gconstpointer    bsearch_node1,
 						      gconstpointer    bsearch_node2);
+static void        gtk_rc_set_free                   (GtkRcSet        *rc_set);
 
-static gpointer parent_class = NULL;
 
 static const GScannerConfig gtk_rc_scanner_config =
 {
@@ -220,13 +247,14 @@ static const GScannerConfig gtk_rc_scanner_config =
    " \t\r\n"
    )			/* cset_skip_characters */,
   (
-   G_CSET_a_2_z
    "_"
+   G_CSET_a_2_z
    G_CSET_A_2_Z
    )			/* cset_identifier_first */,
   (
+   G_CSET_DIGITS
+   "-_"
    G_CSET_a_2_z
-   "_-0123456789"
    G_CSET_A_2_Z
    )			/* cset_identifier_nth */,
   ( "#\n" )		/* cpair_comment_single */,
@@ -254,56 +282,96 @@ static const GScannerConfig gtk_rc_scanner_config =
   TRUE			/* symbol_2_token */,
   FALSE			/* scope_0_fallback */,
 };
+ 
+static const gchar symbol_names[] = 
+  "include\0"
+  "NORMAL\0"
+  "ACTIVE\0"
+  "PRELIGHT\0"
+  "SELECTED\0"
+  "INSENSITIVE\0"
+  "fg\0"
+  "bg\0"
+  "text\0"
+  "base\0"
+  "xthickness\0"
+  "ythickness\0"
+  "font\0"
+  "fontset\0"
+  "font_name\0"
+  "bg_pixmap\0"
+  "pixmap_path\0"
+  "style\0"
+  "binding\0"
+  "bind\0"
+  "widget\0"
+  "widget_class\0"
+  "class\0"
+  "lowest\0"
+  "gtk\0"
+  "application\0"
+  "theme\0"
+  "rc\0"
+  "highest\0"
+  "engine\0"
+  "module_path\0"
+  "stock\0"
+  "im_module_file\0"
+  "LTR\0"
+  "RTL\0"
+  "color\0"
+  "unbind\0";
 
 static const struct
 {
-  gchar *name;
+  guint name_offset;
   guint token;
 } symbols[] = {
-  { "include", GTK_RC_TOKEN_INCLUDE },
-  { "NORMAL", GTK_RC_TOKEN_NORMAL },
-  { "ACTIVE", GTK_RC_TOKEN_ACTIVE },
-  { "PRELIGHT", GTK_RC_TOKEN_PRELIGHT },
-  { "SELECTED", GTK_RC_TOKEN_SELECTED },
-  { "INSENSITIVE", GTK_RC_TOKEN_INSENSITIVE },
-  { "fg", GTK_RC_TOKEN_FG },
-  { "bg", GTK_RC_TOKEN_BG },
-  { "text", GTK_RC_TOKEN_TEXT },
-  { "base", GTK_RC_TOKEN_BASE },
-  { "xthickness", GTK_RC_TOKEN_XTHICKNESS },
-  { "ythickness", GTK_RC_TOKEN_YTHICKNESS },
-  { "font", GTK_RC_TOKEN_FONT },
-  { "fontset", GTK_RC_TOKEN_FONTSET },
-  { "font_name", GTK_RC_TOKEN_FONT_NAME },
-  { "bg_pixmap", GTK_RC_TOKEN_BG_PIXMAP },
-  { "pixmap_path", GTK_RC_TOKEN_PIXMAP_PATH },
-  { "style", GTK_RC_TOKEN_STYLE },
-  { "binding", GTK_RC_TOKEN_BINDING },
-  { "bind", GTK_RC_TOKEN_BIND },
-  { "widget", GTK_RC_TOKEN_WIDGET },
-  { "widget_class", GTK_RC_TOKEN_WIDGET_CLASS },
-  { "class", GTK_RC_TOKEN_CLASS },
-  { "lowest", GTK_RC_TOKEN_LOWEST },
-  { "gtk", GTK_RC_TOKEN_GTK },
-  { "application", GTK_RC_TOKEN_APPLICATION },
-  { "theme", GTK_RC_TOKEN_THEME },
-  { "rc", GTK_RC_TOKEN_RC },
-  { "highest", GTK_RC_TOKEN_HIGHEST },
-  { "engine", GTK_RC_TOKEN_ENGINE },
-  { "module_path", GTK_RC_TOKEN_MODULE_PATH },
-  { "stock", GTK_RC_TOKEN_STOCK },
-  { "im_module_file", GTK_RC_TOKEN_IM_MODULE_FILE },
-  { "LTR", GTK_RC_TOKEN_LTR },
-  { "RTL", GTK_RC_TOKEN_RTL },
-  { "logical_color", GTK_RC_TOKEN_LOGICAL_COLOR }
+  {   0, GTK_RC_TOKEN_INCLUDE },
+  {   8, GTK_RC_TOKEN_NORMAL },
+  {  15, GTK_RC_TOKEN_ACTIVE },
+  {  22, GTK_RC_TOKEN_PRELIGHT },
+  {  31, GTK_RC_TOKEN_SELECTED },
+  {  40, GTK_RC_TOKEN_INSENSITIVE },
+  {  52, GTK_RC_TOKEN_FG },
+  {  55, GTK_RC_TOKEN_BG },
+  {  58, GTK_RC_TOKEN_TEXT },
+  {  63, GTK_RC_TOKEN_BASE },
+  {  68, GTK_RC_TOKEN_XTHICKNESS },
+  {  79, GTK_RC_TOKEN_YTHICKNESS },
+  {  90, GTK_RC_TOKEN_FONT },
+  {  95, GTK_RC_TOKEN_FONTSET },
+  { 103, GTK_RC_TOKEN_FONT_NAME },
+  { 113, GTK_RC_TOKEN_BG_PIXMAP },
+  { 123, GTK_RC_TOKEN_PIXMAP_PATH },
+  { 135, GTK_RC_TOKEN_STYLE },
+  { 141, GTK_RC_TOKEN_BINDING },
+  { 149, GTK_RC_TOKEN_BIND },
+  { 154, GTK_RC_TOKEN_WIDGET },
+  { 161, GTK_RC_TOKEN_WIDGET_CLASS },
+  { 174, GTK_RC_TOKEN_CLASS },
+  { 180, GTK_RC_TOKEN_LOWEST },
+  { 187, GTK_RC_TOKEN_GTK },
+  { 191, GTK_RC_TOKEN_APPLICATION },
+  { 203, GTK_RC_TOKEN_THEME },
+  { 209, GTK_RC_TOKEN_RC },
+  { 212, GTK_RC_TOKEN_HIGHEST },
+  { 220, GTK_RC_TOKEN_ENGINE },
+  { 227, GTK_RC_TOKEN_MODULE_PATH },
+  { 239, GTK_RC_TOKEN_STOCK },
+  { 245, GTK_RC_TOKEN_IM_MODULE_FILE },
+  { 260, GTK_RC_TOKEN_LTR },
+  { 264, GTK_RC_TOKEN_RTL },
+  { 268, GTK_RC_TOKEN_COLOR },
+  { 274, GTK_RC_TOKEN_UNBIND }
 };
 
 static GHashTable *realized_style_ht = NULL;
 
 static gchar *im_module_file = NULL;
 
-#define GTK_RC_MAX_DEFAULT_FILES 128
-static gchar *gtk_rc_default_files[GTK_RC_MAX_DEFAULT_FILES];
+static gint    max_default_files = 0;
+static gchar **gtk_rc_default_files = NULL;
 
 /* A stack of information of RC files we are parsing currently.
  * The directories for these files are implicitely added to the end of
@@ -430,7 +498,10 @@ gtk_rc_add_initial_default_files (void)
 
   if (init)
     return;
-  
+ 
+  gtk_rc_default_files = g_new (gchar*, 10);
+  max_default_files = 10;
+
   gtk_rc_default_files[0] = NULL;
   init = TRUE;
 
@@ -438,7 +509,7 @@ gtk_rc_add_initial_default_files (void)
 
   if (var)
     {
-      files = g_strsplit (var, G_SEARCHPATH_SEPARATOR_S, 128);
+      files = g_strsplit (var, G_SEARCHPATH_SEPARATOR_S, -1);
       i=0;
       while (files[i])
 	{
@@ -480,9 +551,17 @@ gtk_rc_add_default_file (const gchar *filename)
   
   gtk_rc_add_initial_default_files ();
 
-  for (n = 0; gtk_rc_default_files[n]; n++) ;
-  if (n >= GTK_RC_MAX_DEFAULT_FILES - 1)
-    return;
+  for (n = 0; n < max_default_files; n++) 
+    {
+      if (gtk_rc_default_files[n] == NULL)
+	break;
+    }
+
+  if (n == max_default_files)
+    {
+      max_default_files += 10;
+      gtk_rc_default_files = g_renew (gchar*, gtk_rc_default_files, max_default_files);
+    }
   
   gtk_rc_default_files[n++] = g_strdup (filename);
   gtk_rc_default_files[n] = NULL;
@@ -545,6 +624,9 @@ gtk_rc_settings_changed (GtkSettings  *settings,
   gchar *new_theme_name;
   gchar *new_key_theme_name;
 
+  if (context->reloading)
+    return;
+
   g_object_get (settings,
 		"gtk-theme-name", &new_theme_name,
 		"gtk-key-theme-name", &new_key_theme_name,
@@ -567,7 +649,25 @@ gtk_rc_font_name_changed (GtkSettings  *settings,
                           GParamSpec   *pspec,
                           GtkRcContext *context)
 {
-  _gtk_rc_context_get_default_font_name (settings);
+  if (!context->reloading)
+    _gtk_rc_context_get_default_font_name (settings);
+}
+
+static void
+gtk_rc_color_hash_changed (GtkSettings  *settings,
+			   GParamSpec   *pspec,
+			   GtkRcContext *context)
+{
+  if (context->color_hash)
+    g_hash_table_unref (context->color_hash);
+  
+  g_object_get (settings, "color-hash", &context->color_hash, NULL);
+
+  if (context->color_hash)
+    g_hash_table_ref (context->color_hash);
+
+  if (!context->reloading)
+    gtk_rc_reparse_all_for_settings (settings, TRUE);
 }
 
 static GtkRcContext *
@@ -589,7 +689,11 @@ gtk_rc_context_get (GtkSettings *settings)
 		    "gtk-theme-name", &context->theme_name,
 		    "gtk-key-theme-name", &context->key_theme_name,
 		    "gtk-font-name", &context->font_name,
+		    "color-hash", &context->color_hash,
 		    NULL);
+
+      if (context->color_hash)
+        g_hash_table_ref (context->color_hash);
 
       g_signal_connect (settings,
 			"notify::gtk-theme-name",
@@ -603,9 +707,12 @@ gtk_rc_context_get (GtkSettings *settings)
 			"notify::gtk-font-name",
 			G_CALLBACK (gtk_rc_font_name_changed),
 			context);
+      g_signal_connect (settings,
+			"notify::color-hash",
+			G_CALLBACK (gtk_rc_color_hash_changed),
+			context);
 
-      
-      context->pixmap_path[0] = NULL;
+      context->pixmap_path = NULL;
 
       context->default_priority = GTK_PATH_PRIO_RC;
 
@@ -613,6 +720,70 @@ gtk_rc_context_get (GtkSettings *settings)
     }
 
   return settings->rc_context;
+}
+
+static void 
+gtk_rc_clear_rc_files (GtkRcContext *context)
+{
+  GSList *list;
+
+  list = context->rc_files;
+  while (list)
+    {
+      GtkRcFile *rc_file = list->data;
+      
+      if (rc_file->canonical_name != rc_file->name)
+	g_free (rc_file->canonical_name);
+      g_free (rc_file->directory);
+      g_free (rc_file->name);
+      g_free (rc_file);
+      
+      list = list->next;
+    }
+  
+  g_slist_free (context->rc_files);
+  context->rc_files = NULL;
+}
+
+void
+_gtk_rc_context_destroy (GtkSettings *settings)
+{
+  GtkRcContext *context;
+
+  g_return_if_fail (GTK_IS_SETTINGS (settings));
+
+  context = settings->rc_context;
+  if (!context)
+    return;
+
+  _gtk_settings_reset_rc_values (context->settings);
+  gtk_rc_clear_styles (context);
+  gtk_rc_clear_rc_files (context);
+
+  if (context->default_style)
+    g_object_unref (context->default_style);
+
+  g_strfreev (context->pixmap_path);
+
+  g_free (context->theme_name);
+  g_free (context->key_theme_name);
+  g_free (context->font_name);
+
+  if (context->color_hash)
+    g_hash_table_unref (context->color_hash);
+
+  g_signal_handlers_disconnect_by_func (settings,
+					gtk_rc_settings_changed, context);
+  g_signal_handlers_disconnect_by_func (settings,
+					gtk_rc_font_name_changed, context);
+  g_signal_handlers_disconnect_by_func (settings,
+					gtk_rc_color_hash_changed, context);
+
+  rc_contexts = g_slist_remove (rc_contexts, context);
+
+  g_free (context);
+
+  settings->rc_context = NULL;
 }
 
 static void
@@ -710,21 +881,15 @@ _gtk_rc_init (void)
 		       "  text[PRELIGHT] = \"#ffffff\"\n"
 		       "}\n"
 		       "\n"
+		       "style \"gtk-default-tray-icon-style\" {\n"
+		       "  bg_pixmap[NORMAL] = \"<parent>\"\n"
+		       "}\n"
+		       "\n"
 		       "class \"GtkProgressBar\" style : gtk \"gtk-default-progress-bar-style\"\n"
+		       "class \"GtkTrayIcon\" style : gtk \"gtk-default-tray-icon-style\"\n"
 		       "widget \"gtk-tooltips*\" style : gtk \"gtk-default-tooltips-style\"\n"
-		       "class \"GtkMenuItem\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkAccelMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkRadioMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkCheckMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkImageMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkSeparatorMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*.GtkCellViewMenuItem.*\" style : gtk \"gtk-default-menu-item-style\"\n"
-		       "widget_class \"*GtkMenuBar*GtkMenuItem\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
-		       "widget_class \"*GtkMenuBar*GtkAccelMenuItem\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
-		       "widget_class \"*GtkMenuBar*GtkRadioMenuItem\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
-		       "widget_class \"*GtkMenuBar*GtkCheckMenuItem\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
-		       "widget_class \"*GtkMenuBar*GtkImageMenuItem\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
+		       "widget_class \"*<GtkMenuItem>*\" style : gtk \"gtk-default-menu-item-style\"\n"
+		       "widget_class \"*<GtkMenuBar>*<GtkMenuItem>\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
       );
 }
   
@@ -942,32 +1107,7 @@ gtk_rc_parse (const gchar *filename)
 
 /* Handling of RC styles */
 
-GType
-gtk_rc_style_get_type (void)
-{
-  static GType rc_style_type = 0;
-
-  if (!rc_style_type)
-    {
-      static const GTypeInfo rc_style_info =
-      {
-        sizeof (GtkRcStyleClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gtk_rc_style_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GtkRcStyle),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gtk_rc_style_init,
-      };
-      
-      rc_style_type = g_type_register_static (G_TYPE_OBJECT, "GtkRcStyle",
-					      &rc_style_info, 0);
-    }
-  
-  return rc_style_type;
-}
+G_DEFINE_TYPE (GtkRcStyle, gtk_rc_style, G_TYPE_OBJECT)
 
 static void
 gtk_rc_style_init (GtkRcStyle *style)
@@ -995,7 +1135,8 @@ gtk_rc_style_init (GtkRcStyle *style)
 
   style->rc_style_lists = NULL;
   style->icon_factories = NULL;
-  priv->logical_color_hashes = NULL;
+
+  priv->color_hashes = NULL;
 }
 
 static void
@@ -1003,8 +1144,6 @@ gtk_rc_style_class_init (GtkRcStyleClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
   
-  parent_class = g_type_class_peek_parent (klass);
-
   object_class->finalize = gtk_rc_style_finalize;
 
   klass->parse = NULL;
@@ -1013,19 +1152,6 @@ gtk_rc_style_class_init (GtkRcStyleClass *klass)
   klass->create_style = gtk_rc_style_real_create_style;
 
   g_type_class_add_private (object_class, sizeof (GtkRcStylePrivate));
-}
-
-static void
-free_object_list (GSList *list)
-{
-  GSList *tmp_list = list;
-  while (tmp_list)
-    {
-      g_object_unref (tmp_list->data);
-      tmp_list = tmp_list->next;
-    }
-  g_slist_free (list);
-  
 }
 
 static void
@@ -1038,7 +1164,7 @@ gtk_rc_style_finalize (GObject *object)
 
   rc_style = GTK_RC_STYLE (object);
   rc_priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
-  
+
   if (rc_style->name)
     g_free (rc_style->name);
   if (rc_style->font_desc)
@@ -1096,10 +1222,13 @@ gtk_rc_style_finalize (GObject *object)
       rc_style->rc_properties = NULL;
     }
 
-  free_object_list (rc_style->icon_factories);
-  free_object_list (rc_priv->logical_color_hashes);
-  
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  g_slist_foreach (rc_style->icon_factories, (GFunc) g_object_unref, NULL);
+  g_slist_free (rc_style->icon_factories);
+
+  g_slist_foreach (rc_priv->color_hashes, (GFunc) g_hash_table_unref, NULL);
+  g_slist_free (rc_priv->color_hashes);
+
+  G_OBJECT_CLASS (gtk_rc_style_parent_class)->finalize (object);
 }
 
 GtkRcStyle *
@@ -1132,6 +1261,8 @@ gtk_rc_style_copy (GtkRcStyle *orig)
   style = GTK_RC_STYLE_GET_CLASS (orig)->create_rc_style (orig);
   GTK_RC_STYLE_GET_CLASS (style)->merge (style, orig);
 
+  gtk_rc_style_copy_icons_and_colors (style, orig, NULL);
+
   return style;
 }
 
@@ -1158,11 +1289,11 @@ gtk_rc_style_real_create_rc_style (GtkRcStyle *style)
 }
 
 GSList *
-_gtk_rc_style_get_logical_color_hashes (GtkRcStyle *rc_style)
+_gtk_rc_style_get_color_hashes (GtkRcStyle *rc_style)
 {
   GtkRcStylePrivate *priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
 
-  return priv->logical_color_hashes;
+  return priv->color_hashes;
 }
 
 static gint
@@ -1235,7 +1366,7 @@ gtk_rc_style_real_merge (GtkRcStyle *dest,
 			 GtkRcStyle *src)
 {
   gint i;
-  
+
   for (i = 0; i < 5; i++)
     {
       if (!dest->bg_pixmap_name[i] && src->bg_pixmap_name[i])
@@ -1298,6 +1429,101 @@ gtk_rc_style_real_create_style (GtkRcStyle *rc_style)
 }
 
 static void
+gtk_rc_style_prepend_empty_icon_factory (GtkRcStyle *rc_style)
+{
+  GtkIconFactory *factory = gtk_icon_factory_new ();
+
+  rc_style->icon_factories = g_slist_prepend (rc_style->icon_factories, factory);
+}
+
+static void
+gtk_rc_style_prepend_empty_color_hash (GtkRcStyle *rc_style)
+{
+  GtkRcStylePrivate *priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
+  GHashTable        *hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+                                                   g_free,
+                                                   (GDestroyNotify) gdk_color_free);
+
+  priv->color_hashes = g_slist_prepend (priv->color_hashes, hash);
+}
+
+static void
+gtk_rc_style_append_icon_factories (GtkRcStyle *rc_style,
+                                    GtkRcStyle *src_style)
+{
+  GSList *concat = g_slist_copy (src_style->icon_factories);
+
+  g_slist_foreach (concat, (GFunc) g_object_ref, NULL);
+
+  rc_style->icon_factories = g_slist_concat (rc_style->icon_factories, concat);
+}
+
+static void
+gtk_rc_style_append_color_hashes (GtkRcStyle *rc_style,
+                                  GtkRcStyle *src_style)
+{
+  GtkRcStylePrivate *priv     = GTK_RC_STYLE_GET_PRIVATE (rc_style);
+  GtkRcStylePrivate *src_priv = GTK_RC_STYLE_GET_PRIVATE (src_style);
+  GSList            *concat   = g_slist_copy (src_priv->color_hashes);
+
+  g_slist_foreach (concat, (GFunc) g_hash_table_ref, NULL);
+
+  priv->color_hashes = g_slist_concat (priv->color_hashes, concat);
+}
+
+static void
+gtk_rc_style_copy_icons_and_colors (GtkRcStyle   *rc_style,
+                                    GtkRcStyle   *src_style,
+                                    GtkRcContext *context)
+{
+  GtkRcStylePrivate *priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
+
+  if (src_style)
+    {
+      GtkRcStylePrivate *src_priv = GTK_RC_STYLE_GET_PRIVATE (src_style);
+
+      /* Append src_style's factories, adding a ref to them */
+      if (src_style->icon_factories != NULL)
+        {
+          /* Add a factory for ourselves if we have none,
+           * in case we end up defining more stock icons.
+           * I see no real way around this; we need to maintain
+           * the invariant that the first factory in the list
+           * is always our_factory, the one belonging to us,
+           * and if we put src_style factories in the list we can't
+           * do that if the style is reopened.
+           */
+          if (rc_style->icon_factories == NULL)
+            gtk_rc_style_prepend_empty_icon_factory (rc_style);
+
+          gtk_rc_style_append_icon_factories (rc_style, src_style);
+        }
+
+      /* Also append src_style's color hashes, adding a ref to them */
+      if (src_priv->color_hashes != NULL)
+        {
+          /* See comment above .. */
+          if (priv->color_hashes == NULL)
+            gtk_rc_style_prepend_empty_color_hash (rc_style);
+
+          gtk_rc_style_append_color_hashes (rc_style, src_style);
+        }
+    }
+
+  /*  if we didn't get color hashes from the src_style, initialize
+   *  the list with the settings' color scheme (if it exists)
+   */
+  if (priv->color_hashes == NULL && context && context->color_hash != NULL)
+    {
+      gtk_rc_style_prepend_empty_color_hash (rc_style);
+
+      priv->color_hashes =
+        g_slist_append (priv->color_hashes,
+                        g_hash_table_ref (context->color_hash));
+    }
+}
+
+static void
 gtk_rc_clear_hash_node (gpointer key, 
 			gpointer data, 
 			gpointer user_data)
@@ -1313,8 +1539,7 @@ gtk_rc_free_rc_sets (GSList *slist)
       GtkRcSet *rc_set;
 
       rc_set = slist->data;
-      g_pattern_spec_free (rc_set->pspec);
-      g_free (rc_set);
+      gtk_rc_set_free (rc_set);
 
       slist = slist->next;
     }
@@ -1487,7 +1712,6 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
   GtkRcFile *rc_file;
   GSList *tmp_list;
   GtkRcContext *context;
-
   struct stat statbuf;
 
   g_return_val_if_fail (GTK_IS_SETTINGS (settings), FALSE);
@@ -1522,29 +1746,18 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
     {
       _gtk_binding_reset_parsed ();
       gtk_rc_clear_styles (context);
-      g_object_freeze_notify (G_OBJECT (context->settings));
+      context->reloading = TRUE;
 
       _gtk_settings_reset_rc_values (context->settings);
-      tmp_list = context->rc_files;
-      while (tmp_list)
-	{
-	  rc_file = tmp_list->data;
-
-	  if (rc_file->canonical_name != rc_file->name)
-	    g_free (rc_file->canonical_name);
-	  g_free (rc_file->directory);
-	  g_free (rc_file->name);
-	  g_free (rc_file);
-
-	  tmp_list = tmp_list->next;
-	}
-
-      g_slist_free (context->rc_files);
-      context->rc_files = NULL;
+      gtk_rc_clear_rc_files (context);
 
       gtk_rc_parse_default_files (context);
-/*Hildon- Swapped these sections of code, so the styles from the
-  XSettings theme are available when parsing with gtk_rc_context_parse_string*/
+
+#ifdef MAEMO_CHANGES
+      /* Swapped these sections of code, so the styles from the
+       * XSettings theme are available when parsing with
+       * gtk_rc_context_parse_string
+       */
       g_free (context->theme_name);
       g_free (context->key_theme_name);
 
@@ -1557,8 +1770,7 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
 	gtk_rc_parse_named (context, context->theme_name, NULL);
       if (context->key_theme_name && context->key_theme_name[0])
 	gtk_rc_parse_named (context, context->key_theme_name, "key");
- 
-/*****/
+#endif /* MAEMO_CHANGES */
 
       tmp_list = global_rc_files;
       while (tmp_list)
@@ -1572,8 +1784,23 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
 
 	  tmp_list = tmp_list->next;
 	}
-      
-      g_object_thaw_notify (G_OBJECT (context->settings));
+
+#ifndef MAEMO_CHANGES
+      g_free (context->theme_name);
+      g_free (context->key_theme_name);
+
+      g_object_get (context->settings,
+		    "gtk-theme-name", &context->theme_name,
+		    "gtk-key-theme-name", &context->key_theme_name,
+		    NULL);
+
+      if (context->theme_name && context->theme_name[0])
+	gtk_rc_parse_named (context, context->theme_name, NULL);
+      if (context->key_theme_name && context->key_theme_name[0])
+	gtk_rc_parse_named (context, context->key_theme_name, "key");
+#endif /* !MAEMO_CHANGES */
+
+      context->reloading = FALSE;
 
       gtk_rc_reset_widgets (context->settings);
     }
@@ -1610,8 +1837,8 @@ static GSList *
 gtk_rc_styles_match (GSList       *rc_styles,
 		     GSList	  *sets,
 		     guint         path_length,
-		     const gchar  *path,
-		     const gchar  *path_reversed)
+		     gchar        *path,
+		     gchar        *path_reversed)
 		     
 {
   GtkRcSet *rc_set;
@@ -1621,10 +1848,18 @@ gtk_rc_styles_match (GSList       *rc_styles,
       rc_set = sets->data;
       sets = sets->next;
 
-      if (g_pattern_match (rc_set->pspec, path_length, path, path_reversed))
-	rc_styles = g_slist_append (rc_styles, rc_set);
+      if (rc_set->type == GTK_PATH_WIDGET_CLASS)
+        {
+          if (_gtk_rc_match_widget_class (rc_set->path, path_length, path, path_reversed))
+	    rc_styles = g_slist_append (rc_styles, rc_set);
+        }
+      else
+        {
+          if (g_pattern_match (rc_set->pspec, path_length, path, path_reversed))
+	    rc_styles = g_slist_append (rc_styles, rc_set);
+	}
     }
-  
+
   return rc_styles;
 }
 
@@ -1733,16 +1968,17 @@ gtk_rc_get_style (GtkWidget *widget)
       type = G_TYPE_FROM_INSTANCE (widget);
       while (type)
 	{
-	  const gchar *path;
+	  gchar *path;
           gchar *path_reversed;
 	  guint path_length;
 
-	  path = g_type_name (type);
+	  path = g_strdup (g_type_name (type));
 	  path_length = strlen (path);
 	  path_reversed = g_strdup (path);
 	  g_strreverse (path_reversed);
 	  
 	  rc_styles = gtk_rc_styles_match (rc_styles, context->rc_sets_class, path_length, path, path_reversed);
+	  g_free (path);
 	  g_free (path_reversed);
       
 	  type = g_type_parent (type);
@@ -1819,27 +2055,33 @@ gtk_rc_get_style_by_paths (GtkSettings *settings,
 
   if (widget_path && context->rc_sets_widget)
     {
+      gchar *path;
       gchar *path_reversed;
       guint path_length;
 
       path_length = strlen (widget_path);
+      path = g_strdup (widget_path);
       path_reversed = g_strdup (widget_path);
       g_strreverse (path_reversed);
 
-      rc_styles = gtk_rc_styles_match (rc_styles, context->rc_sets_widget, path_length, widget_path, path_reversed);
+      rc_styles = gtk_rc_styles_match (rc_styles, context->rc_sets_widget, path_length, path, path_reversed);
+      g_free (path);
       g_free (path_reversed);
     }
   
   if (class_path && context->rc_sets_widget_class)
     {
+      gchar *path;
       gchar *path_reversed;
       guint path_length;
 
+      path = g_strdup (class_path);
       path_length = strlen (class_path);
       path_reversed = g_strdup (class_path);
       g_strreverse (path_reversed);
 
-      rc_styles = gtk_rc_styles_match (rc_styles, context->rc_sets_widget_class, path_length, class_path, path_reversed);
+      rc_styles = gtk_rc_styles_match (rc_styles, context->rc_sets_widget_class, path_length, path, path_reversed);
+      g_free (path);
       g_free (path_reversed);
     }
 
@@ -1847,16 +2089,17 @@ gtk_rc_get_style_by_paths (GtkSettings *settings,
     {
       while (type)
 	{
-	  const gchar *path;
+	  gchar *path;
           gchar *path_reversed;
 	  guint path_length;
 
-	  path = g_type_name (type);
+	  path = g_strdup (g_type_name (type));
 	  path_length = strlen (path);
 	  path_reversed = g_strdup (path);
 	  g_strreverse (path_reversed);
 	  
 	  rc_styles = gtk_rc_styles_match (rc_styles, context->rc_sets_class, path_length, path, path_reversed);
+	  g_free (path);
 	  g_free (path_reversed);
       
 	  type = g_type_parent (type);
@@ -1874,7 +2117,8 @@ gtk_rc_get_style_by_paths (GtkSettings *settings,
 static GSList *
 gtk_rc_add_rc_sets (GSList      *slist,
 		    GtkRcStyle  *rc_style,
-		    const gchar *pattern)
+		    const gchar *pattern,
+		    GtkPathType  path_type)
 {
   GtkRcStyle *new_style;
   GtkRcSet *rc_set;
@@ -1890,7 +2134,19 @@ gtk_rc_add_rc_sets (GSList      *slist,
     new_style->bg_pixmap_name[i] = g_strdup (rc_style->bg_pixmap_name[i]);
   
   rc_set = g_new (GtkRcSet, 1);
-  rc_set->pspec = g_pattern_spec_new (pattern);
+  rc_set->type = path_type;
+  
+  if (path_type == GTK_PATH_WIDGET_CLASS)
+    {
+      rc_set->pspec = NULL;
+      rc_set->path = _gtk_rc_parse_widget_class_path (pattern);
+    }
+  else
+    {
+      rc_set->pspec = g_pattern_spec_new (pattern);
+      rc_set->path = NULL;
+    }
+  
   rc_set->rc_style = rc_style;
   
   return g_slist_prepend (slist, rc_set);
@@ -1907,7 +2163,7 @@ gtk_rc_add_widget_name_style (GtkRcStyle  *rc_style,
 
   context = gtk_rc_context_get (gtk_settings_get_default ());
   
-  context->rc_sets_widget = gtk_rc_add_rc_sets (context->rc_sets_widget, rc_style, pattern);
+  context->rc_sets_widget = gtk_rc_add_rc_sets (context->rc_sets_widget, rc_style, pattern, GTK_PATH_WIDGET);
 }
 
 void
@@ -1921,7 +2177,7 @@ gtk_rc_add_widget_class_style (GtkRcStyle  *rc_style,
 
   context = gtk_rc_context_get (gtk_settings_get_default ());
   
-  context->rc_sets_widget_class = gtk_rc_add_rc_sets (context->rc_sets_widget_class, rc_style, pattern);
+  context->rc_sets_widget_class = gtk_rc_add_rc_sets (context->rc_sets_widget_class, rc_style, pattern, GTK_PATH_WIDGET_CLASS);
 }
 
 void
@@ -1935,7 +2191,7 @@ gtk_rc_add_class_style (GtkRcStyle  *rc_style,
 
   context = gtk_rc_context_get (gtk_settings_get_default ());
   
-  context->rc_sets_class = gtk_rc_add_rc_sets (context->rc_sets_class, rc_style, pattern);
+  context->rc_sets_class = gtk_rc_add_rc_sets (context->rc_sets_class, rc_style, pattern, GTK_PATH_CLASS);
 }
 
 GScanner*
@@ -1952,7 +2208,6 @@ gtk_rc_parse_any (GtkRcContext *context,
 {
   GScanner *scanner;
   guint	   i;
-  gchar    *name_str;
   gboolean done;
 
   scanner = gtk_rc_scanner_new ();
@@ -1962,14 +2217,6 @@ gtk_rc_parse_any (GtkRcContext *context,
       g_assert (input_string == NULL);
       
       g_scanner_input_file (scanner, input_fd);
-
-      if (input_name != NULL)
-        {
-          name_str = (gchar *) g_malloc(strlen(input_name) + 7);
-	  sprintf (name_str, "%s.cache", input_name);
-	  osso_g_scanner_cache_open (scanner, name_str);
-	  g_free (name_str);
-	}
     }
   else
     {
@@ -1980,8 +2227,7 @@ gtk_rc_parse_any (GtkRcContext *context,
   scanner->input_name = input_name;
 
   for (i = 0; i < G_N_ELEMENTS (symbols); i++)
-    g_scanner_scope_add_symbol (scanner, 0, symbols[i].name, GINT_TO_POINTER (symbols[i].token));
-  
+    g_scanner_scope_add_symbol (scanner, 0, symbol_names + symbols[i].name_offset, GINT_TO_POINTER (symbols[i].token));
   done = FALSE;
   while (!done)
     {
@@ -2012,7 +2258,7 @@ gtk_rc_parse_any (GtkRcContext *context,
 		    {
 		      for (i = 0; i < G_N_ELEMENTS (symbols); i++)
 			if (symbols[i].token == expected_token)
-			  msg = symbols[i].name;
+			  msg = symbol_names + symbols[i].name_offset;
 		      if (msg)
 			msg = g_strconcat ("e.g. `", msg, "'", NULL);
 		    }
@@ -2022,7 +2268,7 @@ gtk_rc_parse_any (GtkRcContext *context,
 		      symbol_name = "???";
 		      for (i = 0; i < G_N_ELEMENTS (symbols); i++)
 			if (symbols[i].token == scanner->token)
-			  symbol_name = symbols[i].name;
+			  symbol_name = symbol_names + symbols[i].name_offset;
 		    }
 		}
 	      g_scanner_unexp_token (scanner,
@@ -2109,36 +2355,11 @@ gtk_rc_style_to_style (GtkRcContext *context,
   style = GTK_RC_STYLE_GET_CLASS (rc_style)->create_style (rc_style);
   _gtk_style_init_for_settings (style, context->settings);
 
-  style->rc_style = rc_style;
-
-  gtk_rc_style_ref (rc_style);
+  style->rc_style = g_object_ref (rc_style);
   
   GTK_STYLE_GET_CLASS (style)->init_from_rc (style, rc_style);  
 
   return style;
-}
-
-static GSList *
-concat_object_lists (GSList *list_a, GSList *list_b)
-{
-  GSList *copy;
-  
-  copy = g_slist_copy (list_b);
-  if (copy)
-    {
-      GSList *iter;
-              
-      iter = copy;
-      while (iter != NULL)
-        {
-          g_object_ref (iter->data);
-          iter = g_slist_next (iter);
-        }
-
-      return g_slist_concat (list_a, copy);
-    }
-  else
-    return list_a;
 }
 
 /* Reuses or frees rc_styles */
@@ -2162,7 +2383,6 @@ gtk_rc_init_style (GtkRcContext *context,
       GtkRcStyle *base_style = NULL;
       GtkRcStyle *proto_style;
       GtkRcStyleClass *proto_style_class;
-      GtkRcStylePrivate *proto_priv;
       GSList *tmp_styles;
       GType rc_style_type = GTK_TYPE_RC_STYLE;
 
@@ -2189,27 +2409,21 @@ gtk_rc_init_style (GtkRcContext *context,
       
       proto_style_class = GTK_RC_STYLE_GET_CLASS (base_style);
       proto_style = proto_style_class->create_rc_style (base_style);
-      proto_priv = GTK_RC_STYLE_GET_PRIVATE (proto_style);
-      
+
       tmp_styles = rc_styles;
       while (tmp_styles)
 	{
 	  GtkRcStyle *rc_style = tmp_styles->data;
-	  GtkRcStylePrivate *rc_priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
-          
+
 	  proto_style_class->merge (proto_style, rc_style);	  
           
 	  /* Point from each rc_style to the list of styles */
 	  if (!g_slist_find (rc_style->rc_style_lists, rc_styles))
 	    rc_style->rc_style_lists = g_slist_prepend (rc_style->rc_style_lists, rc_styles);
 
-          proto_style->icon_factories =
-                concat_object_lists (proto_style->icon_factories,
-                                     rc_style->icon_factories);
-	  proto_priv->logical_color_hashes =
-                concat_object_lists (proto_priv->logical_color_hashes,
-                                     rc_priv->logical_color_hashes);
-          
+          gtk_rc_style_append_icon_factories (proto_style, rc_style);
+          gtk_rc_style_append_color_hashes (proto_style, rc_style);
+
 	  tmp_styles = tmp_styles->next;
 	}
 
@@ -2236,10 +2450,36 @@ gtk_rc_init_style (GtkRcContext *context,
  * Parsing functions *
  *********************/
 
+static gboolean
+lookup_color (GtkRcStyle *style,
+              const char *color_name,
+              GdkColor   *color)
+{
+  GtkRcStylePrivate *priv = GTK_RC_STYLE_GET_PRIVATE (style);
+  GSList *iter;
+
+  for (iter = priv->color_hashes; iter != NULL; iter = iter->next)
+    {
+      GHashTable *hash  = iter->data;
+      GdkColor   *match = g_hash_table_lookup (hash, color_name);
+
+      if (match)
+        {
+          color->red = match->red;
+          color->green = match->green;
+          color->blue = match->blue;
+          return TRUE;
+        }
+    }
+
+  return FALSE;
+}
+
 static guint
-rc_parse_token_or_compound (GScanner  *scanner,
-			    GString   *gstring,
-			    GTokenType delimiter)
+rc_parse_token_or_compound (GScanner   *scanner,
+                            GtkRcStyle *style,
+			    GString    *gstring,
+			    GTokenType  delimiter)
 {
   guint token = g_scanner_get_next_token (scanner);
 
@@ -2271,28 +2511,61 @@ rc_parse_token_or_compound (GScanner  *scanner,
       break;
     case G_TOKEN_COMMENT_SINGLE:
     case G_TOKEN_COMMENT_MULTI:
-      return rc_parse_token_or_compound (scanner, gstring, delimiter);
+      return rc_parse_token_or_compound (scanner, style, gstring, delimiter);
     case G_TOKEN_LEFT_PAREN:
       g_string_append_c (gstring, ' ');
       g_string_append_c (gstring, token);
-      token = rc_parse_token_or_compound (scanner, gstring, G_TOKEN_RIGHT_PAREN);
+      token = rc_parse_token_or_compound (scanner, style, gstring, G_TOKEN_RIGHT_PAREN);
       if (token != G_TOKEN_NONE)
 	return token;
       break;
     case G_TOKEN_LEFT_CURLY:
       g_string_append_c (gstring, ' ');
       g_string_append_c (gstring, token);
-      token = rc_parse_token_or_compound (scanner, gstring, G_TOKEN_RIGHT_CURLY);
+      token = rc_parse_token_or_compound (scanner, style, gstring, G_TOKEN_RIGHT_CURLY);
       if (token != G_TOKEN_NONE)
 	return token;
       break;
     case G_TOKEN_LEFT_BRACE:
       g_string_append_c (gstring, ' ');
       g_string_append_c (gstring, token);
-      token = rc_parse_token_or_compound (scanner, gstring, G_TOKEN_RIGHT_BRACE);
+      token = rc_parse_token_or_compound (scanner, style, gstring, G_TOKEN_RIGHT_BRACE);
       if (token != G_TOKEN_NONE)
 	return token;
       break;
+    case '@':
+      if (g_scanner_peek_next_token (scanner) == G_TOKEN_IDENTIFIER)
+        {
+          GdkColor color;
+          gchar    rbuf[G_ASCII_DTOSTR_BUF_SIZE];
+          gchar    gbuf[G_ASCII_DTOSTR_BUF_SIZE];
+          gchar    bbuf[G_ASCII_DTOSTR_BUF_SIZE];
+
+          g_scanner_get_next_token (scanner);
+
+          if (!style || !lookup_color (style, scanner->value.v_identifier,
+                                       &color))
+            {
+              g_scanner_warn (scanner, "Invalid symbolic color '%s'",
+                              scanner->value.v_identifier);
+              return G_TOKEN_IDENTIFIER;
+            }
+
+
+          g_string_append_printf (gstring, " { %s, %s, %s }",
+                                  g_ascii_formatd (rbuf, sizeof (rbuf),
+                                                   "%0.4f",
+                                                   color.red / 65535.0),
+                                  g_ascii_formatd (gbuf, sizeof (gbuf),
+                                                   "%0.4f",
+                                                   color.green / 65535.0),
+                                  g_ascii_formatd (bbuf, sizeof (bbuf),
+                                                   "%0.4f",
+                                                   color.blue / 65535.0));
+          break;
+        }
+      else
+        return G_TOKEN_IDENTIFIER;
     default:
       if (token >= 256 || token < 1)
 	return delimiter ? delimiter : G_TOKEN_STRING;
@@ -2305,46 +2578,74 @@ rc_parse_token_or_compound (GScanner  *scanner,
   if (!delimiter)
     return G_TOKEN_NONE;
   else
-    return rc_parse_token_or_compound (scanner, gstring, delimiter);
+    return rc_parse_token_or_compound (scanner, style, gstring, delimiter);
 }
 
 static guint
 gtk_rc_parse_assignment (GScanner      *scanner,
+                         GtkRcStyle    *style,
 			 GtkRcProperty *prop)
 {
-  gboolean scan_identifier = scanner->config->scan_identifier;
-  gboolean scan_symbols = scanner->config->scan_symbols;
-  gboolean identifier_2_string = scanner->config->identifier_2_string;
-  gboolean char_2_token = scanner->config->char_2_token;
+#define MY_SCAN_IDENTIFIER      TRUE
+#define MY_SCAN_SYMBOLS         FALSE
+#define MY_IDENTIFIER_2_STRING  FALSE
+#define MY_CHAR_2_TOKEN         TRUE
+#define MY_SCAN_IDENTIFIER_NULL FALSE
+#define MY_NUMBERS_2_INT        TRUE
+
+  gboolean scan_identifier      = scanner->config->scan_identifier;
+  gboolean scan_symbols         = scanner->config->scan_symbols;
+  gboolean identifier_2_string  = scanner->config->identifier_2_string;
+  gboolean char_2_token         = scanner->config->char_2_token;
   gboolean scan_identifier_NULL = scanner->config->scan_identifier_NULL;
-  gboolean numbers_2_int = scanner->config->numbers_2_int;
+  gboolean numbers_2_int        = scanner->config->numbers_2_int;
   gboolean negate = FALSE;
-  guint token;
+  gboolean is_color = FALSE;
+  guint    token;
 
   /* check that this is an assignment */
   if (g_scanner_get_next_token (scanner) != '=')
     return '=';
 
   /* adjust scanner mode */
-  scanner->config->scan_identifier = TRUE;
-  scanner->config->scan_symbols = FALSE;
-  scanner->config->identifier_2_string = FALSE;
-  scanner->config->char_2_token = TRUE;
-  scanner->config->scan_identifier_NULL = FALSE;
-  scanner->config->numbers_2_int = TRUE;
+  scanner->config->scan_identifier      = MY_SCAN_IDENTIFIER;
+  scanner->config->scan_symbols         = MY_SCAN_SYMBOLS;
+  scanner->config->identifier_2_string  = MY_IDENTIFIER_2_STRING;
+  scanner->config->char_2_token         = MY_CHAR_2_TOKEN;
+  scanner->config->scan_identifier_NULL = MY_SCAN_IDENTIFIER_NULL;
+  scanner->config->numbers_2_int        = MY_NUMBERS_2_INT;
 
   /* record location */
-  prop->origin = g_strdup_printf ("%s:%u", scanner->input_name, scanner->line);
+  if (g_getenv ("GTK_DEBUG"))
+    prop->origin = g_strdup_printf ("%s:%u", scanner->input_name, scanner->line);
+  else
+    prop->origin = NULL;
+
+  /* parse optional symbolic color prefix */
+  if (g_scanner_peek_next_token (scanner) == '@')
+    {
+      g_scanner_get_next_token (scanner); /* eat color prefix */
+      is_color = TRUE;
+    }
 
   /* parse optional sign */
-  if (g_scanner_peek_next_token (scanner) == '-')
+  if (!is_color && g_scanner_peek_next_token (scanner) == '-')
     {
       g_scanner_get_next_token (scanner); /* eat sign */
       negate = TRUE;
     }
 
-  /* parse one of LONG, DOUBLE and STRING or, if that fails, create an unparsed compund */
+  /* parse one of LONG, DOUBLE and STRING or, if that fails, create an
+   * unparsed compund
+   */
   token = g_scanner_peek_next_token (scanner);
+
+  if (is_color && token != G_TOKEN_IDENTIFIER)
+    {
+      token = G_TOKEN_IDENTIFIER;
+      goto out;
+    }
+
   switch (token)
     {
     case G_TOKEN_INT:
@@ -2371,14 +2672,96 @@ gtk_rc_parse_assignment (GScanner      *scanner,
 	}
       break;
     case G_TOKEN_IDENTIFIER:
+      if (is_color)
+        {
+          GdkColor  color;
+          gchar     rbuf[G_ASCII_DTOSTR_BUF_SIZE];
+          gchar     gbuf[G_ASCII_DTOSTR_BUF_SIZE];
+          gchar     bbuf[G_ASCII_DTOSTR_BUF_SIZE];
+          GString  *gstring;
+
+          g_scanner_get_next_token (scanner);
+
+          if (!style || !lookup_color (style, scanner->value.v_identifier,
+                                       &color))
+            {
+              g_scanner_warn (scanner, "Invalid symbolic color '%s'",
+                              scanner->value.v_identifier);
+              token = G_TOKEN_IDENTIFIER;
+              break;
+            }
+
+          gstring = g_string_new (NULL);
+
+          g_string_append_printf (gstring, " { %s, %s, %s }",
+                                  g_ascii_formatd (rbuf, sizeof (rbuf),
+                                                   "%0.4f",
+                                                   color.red / 65535.0),
+                                  g_ascii_formatd (gbuf, sizeof (gbuf),
+                                                   "%0.4f",
+                                                   color.green / 65535.0),
+                                  g_ascii_formatd (bbuf, sizeof (bbuf),
+                                                   "%0.4f",
+                                                   color.blue / 65535.0));
+
+          g_value_init (&prop->value, G_TYPE_GSTRING);
+          g_value_take_boxed (&prop->value, gstring);
+          token = G_TOKEN_NONE;
+          break;
+        }
+      /* fall through */
     case G_TOKEN_LEFT_PAREN:
     case G_TOKEN_LEFT_CURLY:
     case G_TOKEN_LEFT_BRACE:
       if (!negate)
 	{
-	  GString *gstring = g_string_new (NULL);
+          GString  *gstring  = g_string_new (NULL);
+          gboolean  parse_on = TRUE;
 
-	  token = rc_parse_token_or_compound (scanner, gstring, 0);
+          /*  allow identifier(foobar) to support color expressions  */
+          if (token == G_TOKEN_IDENTIFIER)
+            {
+              g_scanner_get_next_token (scanner);
+
+              g_string_append_c (gstring, ' ');
+              g_string_append (gstring, scanner->value.v_identifier);
+
+              /* temporarily reset scanner mode to default, so we
+               * don't peek the next token in a mode that only makes
+               * sense in this function; because if anything but
+               * G_TOKEN_LEFT_PAREN follows, the next token will be
+               * parsed by our caller.
+               *
+               * FIXME: right fix would be to call g_scanner_unget()
+               *        but that doesn't exist
+               */
+              scanner->config->scan_identifier      = scan_identifier;
+              scanner->config->scan_symbols         = scan_symbols;
+              scanner->config->identifier_2_string  = identifier_2_string;
+              scanner->config->char_2_token         = char_2_token;
+              scanner->config->scan_identifier_NULL = scan_identifier_NULL;
+              scanner->config->numbers_2_int        = numbers_2_int;
+
+              token = g_scanner_peek_next_token (scanner);
+
+              /* restore adjusted scanner mode */
+              scanner->config->scan_identifier      = MY_SCAN_IDENTIFIER;
+              scanner->config->scan_symbols         = MY_SCAN_SYMBOLS;
+              scanner->config->identifier_2_string  = MY_IDENTIFIER_2_STRING;
+              scanner->config->char_2_token         = MY_CHAR_2_TOKEN;
+              scanner->config->scan_identifier_NULL = MY_SCAN_IDENTIFIER_NULL;
+              scanner->config->numbers_2_int        = MY_NUMBERS_2_INT;
+
+              if (token != G_TOKEN_LEFT_PAREN)
+                {
+                  token = G_TOKEN_NONE;
+                  parse_on = FALSE;
+                }
+            }
+
+          if (parse_on)
+            token = rc_parse_token_or_compound (scanner, style, gstring, 0);
+
 	  if (token == G_TOKEN_NONE)
 	    {
 	      g_string_append_c (gstring, ' ');
@@ -2396,13 +2779,15 @@ gtk_rc_parse_assignment (GScanner      *scanner,
       break;
     }
 
+ out:
+
   /* restore scanner mode */
-  scanner->config->scan_identifier = scan_identifier;
-  scanner->config->scan_symbols = scan_symbols;
-  scanner->config->identifier_2_string = identifier_2_string;
-  scanner->config->char_2_token = char_2_token;
+  scanner->config->scan_identifier      = scan_identifier;
+  scanner->config->scan_symbols         = scan_symbols;
+  scanner->config->identifier_2_string  = identifier_2_string;
+  scanner->config->char_2_token         = char_2_token;
   scanner->config->scan_identifier_NULL = scan_identifier_NULL;
-  scanner->config->numbers_2_int = numbers_2_int;
+  scanner->config->numbers_2_int        = numbers_2_int;
 
   return token;
 }
@@ -2413,9 +2798,9 @@ is_c_identifier (const gchar *string)
   const gchar *p;
   gboolean is_varname;
 
-  is_varname = strchr (G_CSET_a_2_z G_CSET_A_2_Z "_", string[0]) != NULL;
+  is_varname = strchr ("_" G_CSET_a_2_z G_CSET_A_2_Z, string[0]) != NULL;
   for (p = string + 1; *p && is_varname; p++)
-    is_varname &= strchr (G_CSET_a_2_z G_CSET_A_2_Z G_CSET_DIGITS "_-", *p) != NULL;
+    is_varname &= strchr (G_CSET_DIGITS "-_" G_CSET_a_2_z G_CSET_A_2_Z, *p) != NULL;
 
   return is_varname;
 }
@@ -2496,7 +2881,7 @@ gtk_rc_parse_statement (GtkRcContext *context,
       return gtk_rc_parse_style (context, scanner);
       
     case GTK_RC_TOKEN_BINDING:
-      return gtk_binding_parse_binding (scanner);
+      return _gtk_binding_parse_binding (scanner);
       
     case GTK_RC_TOKEN_PIXMAP_PATH:
       return gtk_rc_parse_pixmap_path (context, scanner);
@@ -2525,14 +2910,14 @@ gtk_rc_parse_statement (GtkRcContext *context,
 	  g_scanner_get_next_token (scanner); /* eat identifier */
 	  name = g_strdup (scanner->value.v_identifier);
 	  
-	  token = gtk_rc_parse_assignment (scanner, &prop);
+	  token = gtk_rc_parse_assignment (scanner, NULL, &prop);
 	  if (token == G_TOKEN_NONE)
 	    {
 	      GtkSettingsValue svalue;
 
 	      svalue.origin = prop.origin;
 	      memcpy (&svalue.value, &prop.value, sizeof (prop.value));
-	      g_strcanon (name, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "-", '-');
+	      g_strcanon (name, G_CSET_DIGITS "-" G_CSET_a_2_z G_CSET_A_2_Z, '-');
 	      _gtk_settings_set_property_value_from_rc (context->settings,
 							name,
 							&svalue);
@@ -2585,13 +2970,13 @@ gtk_rc_parse_style (GtkRcContext *context,
 {
   GtkRcStyle *rc_style;
   GtkRcStyle *orig_style;
-  GtkRcStyle *parent_style;
+  GtkRcStyle *parent_style = NULL;
   GtkRcStylePrivate *rc_priv = NULL;
   guint token;
   gint i;
   GtkIconFactory *our_factory = NULL;
-  GtkHashTable *our_hash = NULL;
-  
+  GHashTable *our_hash = NULL;
+
   token = g_scanner_get_next_token (scanner);
   if (token != GTK_RC_TOKEN_STYLE)
     return GTK_RC_TOKEN_STYLE;
@@ -2617,7 +3002,7 @@ gtk_rc_parse_style (GtkRcContext *context,
       for (i = 0; i < 5; i++)
 	rc_style->color_flags[i] = 0;
     }
-  
+
   rc_priv = GTK_RC_STYLE_GET_PRIVATE (rc_style);
 
   /* If there's a list, its first member is always the factory belonging
@@ -2625,8 +3010,8 @@ gtk_rc_parse_style (GtkRcContext *context,
    */
   if (rc_style->icon_factories)
     our_factory = rc_style->icon_factories->data;
-  if (rc_priv->logical_color_hashes)
-    our_hash = rc_priv->logical_color_hashes->data;
+  if (rc_priv->color_hashes)
+    our_hash = rc_priv->color_hashes->data;
 
   token = g_scanner_peek_next_token (scanner);
   if (token == G_TOKEN_EQUAL_SIGN)
@@ -2643,8 +3028,6 @@ gtk_rc_parse_style (GtkRcContext *context,
       parent_style = gtk_rc_style_find (context, scanner->value.v_string);
       if (parent_style)
 	{
-	  GtkRcStylePrivate *parent_priv = GTK_RC_STYLE_GET_PRIVATE (parent_style); 
-
 	  for (i = 0; i < 5; i++)
 	    {
 	      rc_style->color_flags[i] = parent_style->color_flags[i];
@@ -2680,45 +3063,20 @@ gtk_rc_parse_style (GtkRcContext *context,
 		g_free (rc_style->bg_pixmap_name[i]);
 	      rc_style->bg_pixmap_name[i] = g_strdup (parent_style->bg_pixmap_name[i]);
 	    }
-          
-          /* Append parent's factories, adding a ref to them */
-          if (parent_style->icon_factories != NULL)
-            {
-              /* Add a factory for ourselves if we have none,
-               * in case we end up defining more stock icons.
-               * I see no real way around this; we need to maintain
-               * the invariant that the first factory in the list
-               * is always our_factory, the one belonging to us,
-               * and if we put parent factories in the list we can't
-               * do that if the style is reopened.
-               */
-              if (our_factory == NULL)
-                {
-                  our_factory = gtk_icon_factory_new ();
-                  rc_style->icon_factories = g_slist_prepend (rc_style->icon_factories,
-                                                              our_factory);
-                }
-              rc_style->icon_factories = concat_object_lists (rc_style->icon_factories,
-                                                              parent_style->icon_factories);
-            }
-
-	  /* Also append parent's color hashes, adding a ref to them */
-          if (parent_priv->logical_color_hashes != NULL)
-            {
-	      /* See comment above .. */
-              if (our_hash == NULL)
-                {
-                  our_hash = _gtk_hash_table_new ();
-                  rc_priv->logical_color_hashes = g_slist_prepend (rc_priv->logical_color_hashes,
-                                                                    our_hash);
-                }
-               
-              rc_priv->logical_color_hashes = concat_object_lists (rc_priv->logical_color_hashes,
-                                                                    parent_priv->logical_color_hashes);           
-          }
 	}
     }
-  
+
+  /*  get icon_factories and color_hashes from the parent style;
+   *  if the parent_style doesn't have color_hashes, initializes
+   *  the color_hashes with the settings' color scheme (if it exists)
+   */
+  gtk_rc_style_copy_icons_and_colors (rc_style, parent_style, context);
+
+  if (rc_style->icon_factories)
+    our_factory = rc_style->icon_factories->data;
+  if (rc_priv->color_hashes)
+    our_hash = rc_priv->color_hashes->data;
+
   token = g_scanner_get_next_token (scanner);
   if (token != G_TOKEN_LEFT_CURLY)
     {
@@ -2766,30 +3124,24 @@ gtk_rc_parse_style (GtkRcContext *context,
 	  break;
         case GTK_RC_TOKEN_STOCK:
           if (our_factory == NULL)
-            {
-              our_factory = gtk_icon_factory_new ();
-              rc_style->icon_factories = g_slist_prepend (rc_style->icon_factories,
-                                                          our_factory);
-            }
+            gtk_rc_style_prepend_empty_icon_factory (rc_style);
+          our_factory = rc_style->icon_factories->data;
           token = gtk_rc_parse_stock (context, scanner, rc_style, our_factory);
           break;
-    case GTK_RC_TOKEN_LOGICAL_COLOR:
-	  if (our_hash == NULL)
-	    {
-	      our_hash = _gtk_hash_table_new ();
-	      rc_priv->logical_color_hashes = g_slist_prepend (rc_priv->logical_color_hashes,
-								our_hash);
-	    }
-	  token = gtk_rc_parse_logical_color (scanner, rc_style, our_hash);
-	  break;
+        case GTK_RC_TOKEN_COLOR:
+          if (our_hash == NULL)
+            gtk_rc_style_prepend_empty_color_hash (rc_style);
+          our_hash = rc_priv->color_hashes->data;
+          token = gtk_rc_parse_logical_color (scanner, rc_style, our_hash);
+          break;
 	case G_TOKEN_IDENTIFIER:
 	  if (is_c_identifier (scanner->next_value.v_identifier) &&
 	      scanner->next_value.v_identifier[0] >= 'A' &&
 	      scanner->next_value.v_identifier[0] <= 'Z') /* match namespaced type names */
 	    {
 	      GtkRcProperty prop = { 0, 0, NULL, { 0, }, };
-              gchar *name;
-	      
+	      gchar *name;
+
 	      g_scanner_get_next_token (scanner); /* eat type name */
 	      prop.type_name = g_quark_from_string (scanner->value.v_identifier);
 	      if (g_scanner_get_next_token (scanner) != ':' ||
@@ -2806,15 +3158,15 @@ gtk_rc_parse_style (GtkRcContext *context,
 		}
 
 	      /* it's important that we do the same canonification as GParamSpecPool here */
-              name = g_strdup (scanner->value.v_identifier);
-              g_strcanon (name, G_CSET_A_2_Z G_CSET_a_2_z G_CSET_DIGITS "-", '-');
-              prop.property_name = g_quark_from_string (name);
-              g_free (name);
+	      name = g_strdup (scanner->value.v_identifier);
+	      g_strcanon (name, G_CSET_DIGITS "-" G_CSET_a_2_z G_CSET_A_2_Z, '-');
+	      prop.property_name = g_quark_from_string (name);
+	      g_free (name);
 
-	      token = gtk_rc_parse_assignment (scanner, &prop);
+	      token = gtk_rc_parse_assignment (scanner, rc_style, &prop);
 	      if (token == G_TOKEN_NONE)
 		{
-		  g_return_val_if_fail (prop.origin != NULL && G_VALUE_TYPE (&prop.value) != 0, G_TOKEN_ERROR);
+		  g_return_val_if_fail (G_VALUE_TYPE (&prop.value) != 0, G_TOKEN_ERROR);
 		  insert_rc_property (rc_style, &prop, TRUE);
 		}
 	      
@@ -2921,7 +3273,7 @@ gtk_rc_parse_bg (GScanner   *scanner,
     return G_TOKEN_EQUAL_SIGN;
 
   style->color_flags[state] |= GTK_RC_BG;
-  return gtk_rc_parse_color_full (scanner, &style->bg[state], style);
+  return gtk_rc_parse_color_full (scanner, style, &style->bg[state]);
 }
 
 static guint
@@ -2944,7 +3296,7 @@ gtk_rc_parse_fg (GScanner   *scanner,
     return G_TOKEN_EQUAL_SIGN;
   
   style->color_flags[state] |= GTK_RC_FG;
-  return gtk_rc_parse_color_full (scanner, &style->fg[state], style);
+  return gtk_rc_parse_color_full (scanner, style, &style->fg[state]);
 }
 
 static guint
@@ -2967,7 +3319,7 @@ gtk_rc_parse_text (GScanner   *scanner,
     return G_TOKEN_EQUAL_SIGN;
   
   style->color_flags[state] |= GTK_RC_TEXT;
-  return gtk_rc_parse_color_full (scanner, &style->text[state], style);
+  return gtk_rc_parse_color_full (scanner, style, &style->text[state]);
 }
 
 static guint
@@ -2990,7 +3342,7 @@ gtk_rc_parse_base (GScanner   *scanner,
     return G_TOKEN_EQUAL_SIGN;
 
   style->color_flags[state] |= GTK_RC_BASE;
-  return gtk_rc_parse_color_full (scanner, &style->base[state], style);
+  return gtk_rc_parse_color_full (scanner, style, &style->base[state]);
 }
 
 static guint
@@ -3111,13 +3463,14 @@ gtk_rc_find_pixmap_in_path (GtkSettings  *settings,
 
   GtkRcContext *context = gtk_rc_context_get (settings);
     
-  for (i = 0; (i < GTK_RC_MAX_PIXMAP_PATHS) && (context->pixmap_path[i] != NULL); i++)
-    {
-      filename = gtk_rc_check_pixmap_dir (context->pixmap_path[i], pixmap_file);
-      if (filename)
- 	return filename;
-    }
- 
+  if (context->pixmap_path)
+    for (i = 0; context->pixmap_path[i] != NULL; i++)
+      {
+	filename = gtk_rc_check_pixmap_dir (context->pixmap_path[i], pixmap_file);
+	if (filename)
+	  return filename;
+      }
+  
   tmp_list = current_files_stack;
   while (tmp_list)
     {
@@ -3332,6 +3685,18 @@ gtk_rc_parse_engine (GtkRcContext *context,
 
   if (new_style)
     {
+      GtkRcStylePrivate *rc_priv = GTK_RC_STYLE_GET_PRIVATE (*rc_style);
+      GtkRcStylePrivate *new_priv = GTK_RC_STYLE_GET_PRIVATE (new_style);
+
+      /* take over icon factories and color hashes from the to-be-deleted style
+       */
+
+      new_style->icon_factories = (*rc_style)->icon_factories;
+      (*rc_style)->icon_factories = NULL;
+
+      new_priv->color_hashes = rc_priv->color_hashes;
+      rc_priv->color_hashes = NULL;
+
       new_style->engine_specified = TRUE;
 
       g_object_unref (*rc_style);
@@ -3441,44 +3806,18 @@ gtk_rc_parse_priority (GScanner	           *scanner,
 
   return G_TOKEN_NONE;
 }
-static gboolean
-lookup_logical_color (GtkRcStyle *style,
-		      const char *color_name,
-		      GdkColor   *color)
-{
-  GtkRcStylePrivate *priv = GTK_RC_STYLE_GET_PRIVATE (style);
-  GSList *iter;
-
-  iter = priv->logical_color_hashes;
-  while (iter != NULL)
-    {
-      GdkColor *match = g_hash_table_lookup (GTK_HASH_TABLE (iter->data)->hash,
-					     color_name);
-      if (match)
-	{
-	  color->red = match->red;
-	  color->green = match->green;
-	  color->blue = match->blue;
-	  return TRUE;
-        }
-
-      iter = g_slist_next (iter);
-    }
-
-  return FALSE;
-}
 
 guint
 gtk_rc_parse_color (GScanner *scanner,
 		    GdkColor *color)
 {
-    return gtk_rc_parse_color_full (scanner, color, NULL);
+  return gtk_rc_parse_color_full (scanner, NULL, color);
 }
 
 static guint
-gtk_rc_parse_color_full (GScanner *scanner,
-		         GdkColor *color,
-		         GtkRcStyle *style)
+gtk_rc_parse_color_full (GScanner   *scanner,
+                         GtkRcStyle *style,
+                         GdkColor   *color)
 {
   guint token;
 
@@ -3492,7 +3831,10 @@ gtk_rc_parse_color_full (GScanner *scanner,
   switch (token)
     {
       gint token_int;
-      
+      GdkColor c1, c2;
+      gboolean negate;
+      gdouble l;
+
     case G_TOKEN_LEFT_CURLY:
       token = g_scanner_get_next_token (scanner);
       if (token == G_TOKEN_INT)
@@ -3537,16 +3879,134 @@ gtk_rc_parse_color_full (GScanner *scanner,
     case G_TOKEN_STRING:
       if (!gdk_color_parse (scanner->value.v_string, color))
 	{
-	  if (!(style && lookup_logical_color (style, scanner->value.v_string, color)))
-	    {
-	      g_scanner_warn (scanner, "Invalid color constant '%s'",
-			      scanner->value.v_string);
-	      return G_TOKEN_STRING;
-	    }
+          g_scanner_warn (scanner, "Invalid color constant '%s'",
+                          scanner->value.v_string);
+          return G_TOKEN_STRING;
 	}
+      return G_TOKEN_NONE;
 
-	return G_TOKEN_NONE;
-      
+    case '@':
+      token = g_scanner_get_next_token (scanner);
+      if (token != G_TOKEN_IDENTIFIER)
+	return G_TOKEN_IDENTIFIER;
+
+      if (!style || !lookup_color (style, scanner->value.v_identifier, color))
+        {
+          g_scanner_warn (scanner, "Invalid symbolic color '%s'",
+                          scanner->value.v_identifier);
+          return G_TOKEN_IDENTIFIER;
+        }
+
+      return G_TOKEN_NONE;
+
+    case G_TOKEN_IDENTIFIER:
+      if (strcmp (scanner->value.v_identifier, "mix") == 0)
+        {
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_LEFT_PAREN)
+            return G_TOKEN_LEFT_PAREN;
+
+          negate = FALSE;
+          if (g_scanner_peek_next_token (scanner) == '-')
+            {
+              g_scanner_get_next_token (scanner); /* eat sign */
+              negate = TRUE;
+            }
+
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_FLOAT)
+            return G_TOKEN_FLOAT;
+
+          l = negate ? -scanner->value.v_float : scanner->value.v_float;
+
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_COMMA)
+            return G_TOKEN_COMMA;
+
+          token = gtk_rc_parse_color_full (scanner, style, &c1);
+          if (token != G_TOKEN_NONE)
+            return token;
+
+	  token = g_scanner_get_next_token (scanner);
+	  if (token != G_TOKEN_COMMA)
+            return G_TOKEN_COMMA;
+
+	  token = gtk_rc_parse_color_full (scanner, style, &c2);
+	  if (token != G_TOKEN_NONE)
+            return token;
+
+	  token = g_scanner_get_next_token (scanner);
+	  if (token != G_TOKEN_RIGHT_PAREN)
+            return G_TOKEN_RIGHT_PAREN;
+
+	  color->red   = l * c1.red   + (1.0 - l) * c2.red;
+	  color->green = l * c1.green + (1.0 - l) * c2.green;
+	  color->blue  = l * c1.blue  + (1.0 - l) * c2.blue;
+
+	  return G_TOKEN_NONE;
+	}
+      else if (strcmp (scanner->value.v_identifier, "shade") == 0)
+        {
+	  token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_LEFT_PAREN)
+            return G_TOKEN_LEFT_PAREN;
+
+          negate = FALSE;
+          if (g_scanner_peek_next_token (scanner) == '-')
+            {
+              g_scanner_get_next_token (scanner); /* eat sign */
+              negate = TRUE;
+            }
+
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_FLOAT)
+            return G_TOKEN_FLOAT;
+
+          l = negate ? -scanner->value.v_float : scanner->value.v_float;
+
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_COMMA)
+            return G_TOKEN_COMMA;
+
+          token = gtk_rc_parse_color_full (scanner, style, &c1);
+          if (token != G_TOKEN_NONE)
+            return token;
+
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_RIGHT_PAREN)
+            return G_TOKEN_RIGHT_PAREN;
+
+          _gtk_style_shade (&c1, color, l);
+
+          return G_TOKEN_NONE;
+        }
+      else if (strcmp (scanner->value.v_identifier, "lighter") == 0 ||
+               strcmp (scanner->value.v_identifier, "darker") == 0)
+        {
+          if (scanner->value.v_identifier[0] == 'l')
+            l = 1.3;
+          else
+	    l = 0.7;
+
+	  token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_LEFT_PAREN)
+            return G_TOKEN_LEFT_PAREN;
+
+          token = gtk_rc_parse_color_full (scanner, style, &c1);
+          if (token != G_TOKEN_NONE)
+            return token;
+
+          token = g_scanner_get_next_token (scanner);
+          if (token != G_TOKEN_RIGHT_PAREN)
+            return G_TOKEN_RIGHT_PAREN;
+
+          _gtk_style_shade (&c1, color, l);
+
+          return G_TOKEN_NONE;
+        }
+      else
+        return G_TOKEN_IDENTIFIER;
+
     default:
       return G_TOKEN_STRING;
     }
@@ -3576,44 +4036,8 @@ gtk_rc_parse_pixmap_path_string (GtkRcContext *context,
 				 GScanner     *scanner,
 				 const gchar  *pix_path)
 {
-  gint end_offset;
-  gint start_offset = 0;
-  gint path_len;
-  gint path_num;
-  
-  /* free the old one, or just add to the old one ? */
-  for (path_num = 0; context->pixmap_path[path_num]; path_num++)
-    {
-      g_free (context->pixmap_path[path_num]);
-      context->pixmap_path[path_num] = NULL;
-    }
-  
-  path_num = 0;
-  
-  path_len = strlen (pix_path);
-  
-  for (end_offset = 0; end_offset <= path_len; end_offset++)
-    {
-      if ((pix_path[end_offset] == G_SEARCHPATH_SEPARATOR) ||
-	  (end_offset == path_len))
-	{
-	  gchar *path_element = g_strndup (pix_path + start_offset, end_offset - start_offset);
-	  if (g_path_is_absolute (path_element))
-	    {
-	      context->pixmap_path[path_num] = path_element;
-	      path_num++;
-	      context->pixmap_path[path_num] = NULL;
-	    }
-	  else
-	    {
-	      g_warning (_("Pixmap path element: \"%s\" must be absolute, %s, line %d"),
-			 path_element, scanner->input_name, scanner->line);
-	      g_free (path_element);
-	    }
-
-	  start_offset = end_offset + 1;
-	}
-    }
+  g_strfreev (context->pixmap_path);
+  context->pixmap_path = g_strsplit (pix_path, G_SEARCHPATH_SEPARATOR_S, -1);
 }
 
 static guint
@@ -3741,7 +4165,19 @@ gtk_rc_parse_path_pattern (GtkRcContext *context,
 	}
 
       rc_set = g_new (GtkRcSet, 1);
-      rc_set->pspec = g_pattern_spec_new (pattern);
+      rc_set->type = path_type;
+      
+      if (path_type == GTK_PATH_WIDGET_CLASS)
+        {
+          rc_set->pspec = NULL;
+          rc_set->path = _gtk_rc_parse_widget_class_path (pattern);
+        }
+      else
+        {
+          rc_set->pspec = g_pattern_spec_new (pattern);
+          rc_set->path = NULL;
+        }
+      
       rc_set->rc_style = rc_style;
       rc_set->priority = priority;
 
@@ -3758,7 +4194,7 @@ gtk_rc_parse_path_pattern (GtkRcContext *context,
 }
 
 static guint
-gtk_rc_parse_hash_key (GScanner *scanner,
+gtk_rc_parse_hash_key (GScanner  *scanner,
                        gchar    **hash_key)
 {
   guint token;
@@ -4046,6 +4482,326 @@ gtk_rc_parse_stock (GtkRcContext   *context,
   return G_TOKEN_NONE;
 }
 
+static guint
+gtk_rc_parse_logical_color (GScanner   *scanner,
+                            GtkRcStyle *rc_style,
+                            GHashTable *hash)
+{
+  gchar *color_id = NULL;
+  guint token;
+  GdkColor color;
+
+  token = g_scanner_get_next_token (scanner);
+  if (token != GTK_RC_TOKEN_COLOR)
+    return GTK_RC_TOKEN_COLOR;
+
+  token = gtk_rc_parse_hash_key (scanner, &color_id);
+  if (token != G_TOKEN_NONE)
+    return token;
+
+  token = g_scanner_get_next_token (scanner);
+  if (token != G_TOKEN_EQUAL_SIGN)
+    {
+      g_free (color_id);
+      return G_TOKEN_EQUAL_SIGN;
+    }
+
+  token = gtk_rc_parse_color_full (scanner, rc_style, &color);
+  if (token != G_TOKEN_NONE)
+    {
+      g_free (color_id);
+      return token;
+    }
+
+  /* Because the hash is created with destroy functions,
+   * g_hash_table_insert will free any old values for us,
+   * if a mapping with the specified key already exists.
+   */
+  g_hash_table_insert (hash, color_id, gdk_color_copy (&color));
+
+  return G_TOKEN_NONE;
+}
+
+
+GSList *
+_gtk_rc_parse_widget_class_path (const gchar *pattern)
+{
+  GSList *result;
+  PathElt *path_elt;
+  const gchar *current;
+  const gchar *class_start;
+  const gchar *class_end;
+  const gchar *pattern_end;
+  const gchar *pattern_start;
+  gchar *sub_pattern;
+
+  result = NULL;
+  current = pattern;
+  while ((class_start = strchr (current, '<')) && 
+	 (class_end = strchr (class_start, '>')))
+    {
+      /* Add patterns, but ignore single dots */
+      if (!(class_start == current || 
+	    (class_start == current + 1 && current[0] == '.')))
+        {
+          pattern_end = class_start - 1;
+          pattern_start = current;
+          
+          path_elt = g_new (PathElt, 1);
+          
+          sub_pattern = g_strndup (pattern_start, pattern_end - pattern_start + 1);
+	  path_elt->type = PATH_ELT_PSPEC;
+          path_elt->elt.pspec = g_pattern_spec_new (sub_pattern);
+          g_free (sub_pattern);
+          
+          result = g_slist_prepend (result, path_elt);
+        }
+      
+      path_elt = g_new (PathElt, 1);
+      
+      /* The < > need to be removed from the string. */
+      sub_pattern = g_strndup (class_start + 1, class_end - class_start - 1);
+      
+      path_elt->type = PATH_ELT_UNRESOLVED;
+      path_elt->elt.class_name = sub_pattern;
+      
+      result = g_slist_prepend (result, path_elt);
+      
+      current = class_end + 1;
+    }
+  
+  /* Add the rest, if anything is left */
+  if (strlen (current) > 0)
+    {
+      path_elt = g_new (PathElt, 1);
+      path_elt->type = PATH_ELT_PSPEC;
+      path_elt->elt.pspec = g_pattern_spec_new (current);
+      
+      result = g_slist_prepend (result, path_elt);
+    }
+  
+  return g_slist_reverse (result);
+}
+
+static void
+free_path_elt (gpointer data, 
+	       gpointer user_data)
+{
+  PathElt *path_elt = data;
+
+  switch (path_elt->type)
+    {
+    case PATH_ELT_PSPEC:
+      g_pattern_spec_free (path_elt->elt.pspec);
+      break;
+    case PATH_ELT_UNRESOLVED:
+      g_free (path_elt->elt.class_name);
+      break;
+    case PATH_ELT_TYPE:
+      break;
+    default:
+      g_assert_not_reached ();
+    }
+
+  g_free (path_elt);
+}
+
+void
+_gtk_rc_free_widget_class_path (GSList *list)
+{
+  g_slist_foreach (list, free_path_elt, NULL);
+  g_slist_free (list);
+}
+
+static void
+gtk_rc_set_free (GtkRcSet *rc_set)
+{
+  if (rc_set->pspec)
+    g_pattern_spec_free (rc_set->pspec);
+
+  _gtk_rc_free_widget_class_path (rc_set->path);
+  
+  g_free (rc_set);
+}
+
+static gboolean
+match_class (PathElt *path_elt, 
+	     gchar   *type_name)
+{
+  GType type;
+  
+  if (path_elt->type == PATH_ELT_UNRESOLVED)
+    {
+      type = g_type_from_name (path_elt->elt.class_name);
+      if (type != G_TYPE_INVALID)
+        {
+          g_free (path_elt->elt.class_name);
+          path_elt->elt.class_type = type;
+	  path_elt->type = PATH_ELT_TYPE;
+        }
+      else
+	return g_str_equal (type_name, path_elt->elt.class_name);
+    }
+  
+  return g_type_is_a (g_type_from_name (type_name), path_elt->elt.class_type);
+}
+
+static gboolean
+match_widget_class_recursive (GSList *list, 
+			      guint   length, 
+			      gchar  *path, 
+			      gchar  *path_reversed)
+{
+  PathElt *path_elt;
+  
+  /* break out if we cannot match anymore. */
+  if (list == NULL)
+    {
+      if (length > 0)
+        return FALSE;
+      else
+        return TRUE;
+    }
+
+  /* there are two possibilities:
+   *  1. The next pattern should match the class.
+   *  2. First normal matching, and then maybe a class */
+  
+  path_elt = list->data;
+
+  if (path_elt->type != PATH_ELT_PSPEC)
+    {
+      gchar *class_start = path;
+      gchar *class_end;
+      
+      /* ignore leading dot */
+      if (class_start[0] == '.')
+        class_start++;
+      class_end = strchr (class_start, '.');
+
+      if (class_end == NULL)
+        {
+          if (!match_class (path_elt, class_start))
+            return FALSE;
+	  else
+	    return match_widget_class_recursive (list->next, 0, "", "");
+        }
+      else
+        {
+          class_end[0] = '\0';
+          if (!match_class (path_elt, class_start))
+            {
+              class_end[0] = '.';
+              return FALSE;
+            }
+          else
+            {
+              gboolean result;
+              gint new_length = length - (class_end - path);
+              gchar old_char = path_reversed[new_length];
+              
+              class_end[0] = '.';
+              
+              path_reversed[new_length] = '\0';
+              result = match_widget_class_recursive (list->next, new_length, class_end, path_reversed);
+              path_reversed[new_length] = old_char;
+              
+              return result;
+            }
+        }
+    }
+  else
+    {
+      PathElt *class_elt;
+      gchar *class_start;
+      gchar *class_end;
+      gboolean result = FALSE;
+      
+      /* If there is nothing after this (ie. no class match), 
+       * just compare the pspec. 
+       */
+      if (list->next == NULL)
+        return g_pattern_match (path_elt->elt.pspec, length, path, path_reversed);
+      
+      class_elt = (PathElt *)list->next->data;
+      g_assert (class_elt->type != PATH_ELT_PSPEC);
+      
+      class_start = path;
+      if (class_start[0] == '.')
+        class_start++;
+      
+      while (TRUE)
+        {
+	  class_end = strchr (class_start, '.');
+          
+          /* It should be cheaper to match the class first. (either the pattern
+           * is simple, and will match most of the times, or it may be complex
+           * and matching is slow) 
+	   */
+          if (class_end == NULL)
+	    {
+	      result = match_class (class_elt, class_start);
+	    }
+          else
+            {
+              class_end[0] = '\0';
+              result = match_class (class_elt, class_start);
+              class_end[0] = '.';
+            }
+          
+          if (result)
+            {
+              gchar old_char;
+              result = FALSE;
+              
+              /* terminate the string in front of the class. It does not matter
+               * that the class becomes unusable, because it is not needed 
+	       * inside the recursion 
+	       */
+              old_char = class_start[0];
+              class_start[0] = '\0';
+              
+              if (g_pattern_match (path_elt->elt.pspec, class_start - path, path, path_reversed + length - (class_start - path)))
+                {
+                  if (class_end != NULL)
+                    {
+                      gint new_length = length - (class_end - path);
+                      gchar path_reversed_char = path_reversed[new_length];
+                      
+                      path_reversed[new_length] = '\0';
+                      
+                      result = match_widget_class_recursive (list->next->next, new_length, class_end, path_reversed);
+                      
+                      path_reversed[new_length] = path_reversed_char;
+                    }
+                  else
+                    result = match_widget_class_recursive (list->next->next, 0, "", "");
+                }
+                
+              class_start[0] = old_char;
+            }
+          
+          if (result)
+            return TRUE;
+          
+          /* get next class in path, or break out */
+          if (class_end != NULL)
+            class_start = class_end + 1;
+          else
+            return FALSE;
+        }
+    }
+}
+
+gboolean
+_gtk_rc_match_widget_class (GSList  *list,
+                            gint     length,
+                            gchar   *path,
+                            gchar   *path_reversed)
+{
+  return match_widget_class_recursive (list, length, path, path_reversed);
+}
+
 #ifdef G_OS_WIN32
 
 /* DLL ABI stability backward compatibility versions */
@@ -4098,47 +4854,6 @@ gtk_rc_parse (const gchar *filename)
 }
 
 #endif
-
-static guint
-gtk_rc_parse_logical_color (GScanner     *scanner,
-		GtkRcStyle   *rc_style,
-		GtkHashTable *hash)
-{
-	gchar *color_id = NULL;
-	guint token;
-	GdkColor *color;
-
-	token = g_scanner_get_next_token (scanner);
-	if (token != GTK_RC_TOKEN_LOGICAL_COLOR)
-		return GTK_RC_TOKEN_LOGICAL_COLOR;
-
-	token = gtk_rc_parse_hash_key (scanner, &color_id);
-	if (token != G_TOKEN_NONE)
-		return token;
-
-	token = g_scanner_get_next_token (scanner);
-	if (token != G_TOKEN_EQUAL_SIGN)
-	{
-		g_free (color_id);
-		return G_TOKEN_EQUAL_SIGN;
-	}
-
-	color = g_new (GdkColor, 1);
-	token = gtk_rc_parse_color_full (scanner, color, rc_style);
-	if (token != G_TOKEN_NONE)
-	{
-		g_free (color_id);
-		g_free (color);
-		return token;
-	}
-
-	/* Because the hash is created with destroy functions,
-	 * g_hash_table_insert will free any old values for us,
-	 * if a mapping with the specified key already exists. */
-	g_hash_table_insert (hash->hash, color_id, color);
-
-	return G_TOKEN_NONE;
-}
 
 #define __GTK_RC_C__
 #include "gtkaliasdef.c"

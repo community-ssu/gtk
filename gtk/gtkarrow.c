@@ -27,8 +27,8 @@
 #include <config.h>
 #include <math.h>
 #include "gtkarrow.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define MIN_ARROW_SIZE  15
@@ -43,8 +43,6 @@ enum {
 };
 
 
-static void gtk_arrow_class_init (GtkArrowClass  *klass);
-static void gtk_arrow_init       (GtkArrow       *arrow);
 static gint gtk_arrow_expose     (GtkWidget      *widget,
 				  GdkEventExpose *event);
 static void gtk_arrow_set_property (GObject         *object,
@@ -56,32 +54,9 @@ static void gtk_arrow_get_property (GObject         *object,
 				    GValue          *value,
 				    GParamSpec      *pspec);
 
-GType
-gtk_arrow_get_type (void)
-{
-  static GType arrow_type = 0;
 
-  if (!arrow_type)
-    {
-      static const GTypeInfo arrow_info =
-      {
-	sizeof (GtkArrowClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_arrow_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkArrow),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_arrow_init,
-      };
+G_DEFINE_TYPE (GtkArrow, gtk_arrow, GTK_TYPE_MISC)
 
-      arrow_type = g_type_register_static (GTK_TYPE_MISC, "GtkArrow",
-					   &arrow_info, 0);
-    }
-
-  return arrow_type;
-}
 
 static void
 gtk_arrow_class_init (GtkArrowClass *class)
@@ -94,7 +69,7 @@ gtk_arrow_class_init (GtkArrowClass *class)
 
   gobject_class->set_property = gtk_arrow_set_property;
   gobject_class->get_property = gtk_arrow_get_property;
-  
+
   g_object_class_install_property (gobject_class,
                                    PROP_ARROW_TYPE,
                                    g_param_spec_enum ("arrow-type",
@@ -102,7 +77,7 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                       P_("The direction the arrow should point"),
 						      GTK_TYPE_ARROW_TYPE,
 						      GTK_ARROW_RIGHT,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
                                    g_param_spec_enum ("shadow-type",
@@ -110,7 +85,7 @@ gtk_arrow_class_init (GtkArrowClass *class)
                                                       P_("Appearance of the shadow surrounding the arrow"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_OUT,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   
   widget_class->expose_event = gtk_arrow_expose;
 }
@@ -245,7 +220,10 @@ gtk_arrow_expose (GtkWidget      *widget,
 
       width = widget->allocation.width - misc->xpad * 2;
       height = widget->allocation.height - misc->ypad * 2;
-      extent = MIN (width, height); /* Hildon: removed '* 0.7' scaling */
+      extent = MIN (width, height) * 0.7;
+#ifdef MAEMO_CHANGES
+      extent = MIN (width, height);
+#endif /* MAEMO_CHANGES */
       effective_arrow_type = arrow->arrow_type;
 
       if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR)
@@ -260,11 +238,9 @@ gtk_arrow_expose (GtkWidget      *widget,
 	}
 
       x = floor (widget->allocation.x + misc->xpad
-		 + ((widget->allocation.width - extent) * xalign)
-		 + 0.5);
+		 + ((widget->allocation.width - extent) * xalign));
       y = floor (widget->allocation.y + misc->ypad 
-		 + ((widget->allocation.height - extent) * misc->yalign)
-		 + 0.5);
+		 + ((widget->allocation.height - extent) * misc->yalign));
       
       shadow_type = arrow->shadow_type;
 

@@ -1,7 +1,7 @@
 ## Makefile.am for GTK+
 
-SRC_SUBDIRS = gdk-pixbuf gdk gtk modules demos tests contrib
-SUBDIRS = po po-properties $(SRC_SUBDIRS) docs build m4macros
+SRC_SUBDIRS = gdk-pixbuf gdk gtk modules demos tests perf contrib
+SUBDIRS = po po-properties $(SRC_SUBDIRS) docs m4macros
 
 # require automake 1.4
 AUTOMAKE_OPTIONS = 1.7
@@ -16,6 +16,9 @@ EXTRA_DIST =			\
 	ChangeLog.pre-2-2	\
 	ChangeLog.pre-2-4	\
 	ChangeLog.pre-2-6	\
+	ChangeLog.pre-2-8	\
+	ChangeLog.gtk-async-file-chooser	\
+	ChangeLog.gtk-printing	\
 	README.cvs-commits	\
 	README.win32		\
 	config.h.win32		\
@@ -131,9 +134,10 @@ gdk-$(GDKTARGET)-2.0-uninstalled.pc: gdk-2.0-uninstalled.pc
 	cp gdk-2.0-uninstalled.pc gdk-$(GDKTARGET)-2.0-uninstalled.pc
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA= gdk-pixbuf-2.0.pc gdk-$(GDKTARGET)-2.0.pc gtk+-$(GDKTARGET)-2.0.pc
+pkgconfig_DATA= gdk-pixbuf-2.0.pc gdk-$(GDKTARGET)-2.0.pc gtk+-$(GDKTARGET)-2.0.pc gtk+-unix-print-2.0.pc
 
 DISTCLEANFILES =				\
+	gtk+-unix-print-2.0.pc			\
 	gtk+-$(GDKTARGET)-2.0.pc		\
 	gdk-$(GDKTARGET)-2.0.pc			\
 	gtk+-$(GDKTARGET)-2.0-uninstalled.pc	\
@@ -187,5 +191,4 @@ sanity:
 snapshot:
 	$(MAKE) dist distdir=$(PACKAGE)-snap`date +"%Y%m%d"`
 
-
-DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk-doc --enable-man --disable-rebuilds

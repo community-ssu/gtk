@@ -1,21 +1,165 @@
-2005-08-18  Matthias Clasen  <mclasen@redhat.com>
+2006-10-03  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.10 ===
+	* === Released 2.10.6 ===
 
-2005-08-01  Matthias Clasen  <mclasen@redhat.com>
+2006-10-02  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.9 ===
+	* === Released 2.10.5 ===
 
+2006-09-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.4 ===
+
+2006-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.3 ===
+
+2006-08-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.2 ===
+
+2006-07-23  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.1 ===
+
+2006-07-20  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix a thinko that leads to constantly reloading
+	the mime data if a mime.cache is present.  Patch
+	by Yevgen Muntyan, bugs.freedesktop.org #7495
+	
+	* xdgmime.c (xdg_check_dir): Look for mime.cache first.
+	(xdg_check_file): Report existance of the file separately.
+	
+2006-07-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmime.c (xdg_mime_shutdown): Unref the caches.
+	Patch by Yevgen Muntyan, bugs.freedesktop.org #7496
+
+	* xdgmimemagic.c: 
+	* xdgmime.c: 
+	* xdgmime.h: Add xdg_init-free versions of some
+	functions and use them internally, so that we don't
+	reload caches and clobber data structures in the
+	middle of an operation.  Patch by Joe Shaw,
+	bugs.freedesktop.org #6824
+
+2006-07-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmimeglob.c (_xdg_glob_hash_node_lookup_file_name):
+	Don't return NULL as a mimetype, ever, patch
+	by Yevgen Muntyan, bugs.freedesktop.org #5241
+
+2006-07-02  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.0 ===
+
+2006-06-21  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.9.4 ===
+
+2006-06-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.3 ===
+
+2006-06-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.2 ===
+
+2006-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.1 ====
+
+2006-05-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.0 ===
+
+2006-04-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmime.[hc]: Move xdg_mime_type_unknown to .rodata.
+
+2006-03-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmimemagic.c: Remove superfluous extern errno 
+	declaration.  (#333605, Tommi Komulainen)
+
+2006-02-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmime.h (xdg_mime_dump): Don't export xdg_mime_dump.
+
+2005-12-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* Merge upstream changes to handle duplicate glob
+	patterns.
+
+2005-11-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmime.c (xdg_mime_list_mime_parents): Prevent
+	a segfault.  
+
+2005-10-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmimecache.c: Make magic comparisons work correctly
+	in the cache.
+
+2005-10-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmime.c (xdg_mime_get_mime_type_for_file): Remove
+	a debugging printf.
+
+2005-09-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmime.h:
+	* xdgmime.c (xdg_mime_get_mime_type_for_file): Take
+	a struct statbuf * as argument.
+
+	* test-mime.c (main): Adjust.
+
+2005-08-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.2 ===
+
+	* === Released 2.8.1 ===
+
+2005-08-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.0 ===
+
+2005-08-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* Rename caches to _caches, so it doesn't
+	get exported. Also don't export n_caches.
+
+2005-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.5 ===
+
+2005-07-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.4 === 
+
+2005-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.3 ===
+	
+2005-07-08  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.7.2 ===
+
+2005-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.1 ===
+	
 2005-06-20  Matthias Clasen  <mclasen@redhat.com>
 
 	* xdgmimecache.c: Handle missing MAP_FAILED.  (#308449, Georg
-	Schwarz) 
+	Schwarz)
 
-2005-06-15  Matthias Clasen  <mclasen@redhat.com>
+2005-06-20  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.8 ===
+	* === Released 2.7.0 ===
 
-2005-05-28  Federico Mena Quintero  <federico@ximian.com>
+2005-06-10  Federico Mena Quintero  <federico@ximian.com>
 
 	* xdgmime.c (xdg_mime_init_from_directory): Pass the correct size
 	to realloc().  Fixes https://bugs.freedesktop.org/show_bug.cgi?id=3506.
@@ -27,24 +171,12 @@
 
 2005-05-20  Matthias Clasen  <mclasen@redhat.com>
 
-	* xdgmimecache.c: Don't rely on C99 
+	* xdgmimecache.c (GET_UINT32): Don't rely on C99 
 	types.  (#304924, John Ehresman)
 
 2005-04-29  Matthias Clasen  <mclasen@redhat.com>
 
 	* Sync to upstream.
-
-2005-04-12  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Releases 2.6.7 ====
-
-2005-04-10  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.6 ===
-
-2005-04-09  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.5 ===
 
 2005-04-08  Matthias Clasen  <mclasen@redhat.com>
 
@@ -52,17 +184,9 @@
 	(cache_magic_matchlet_compare): Use cache->buffer, not 
 	cache.  
 
-2005-04-02  Matthias Clasen  <mclasen@redhat.com>
+Tue Apr  5 16:00:04 2005  Manish Singh  <yosh@gimp.org>
 
-	Sync to latest upstream, support mmapped
-	mime.cache:
-
-	* xdgmimecache.[hc]: Implement the xgdmime
-	api on top of the mmapped cache. 
-
-	* xdgmime.c: Load caches, and use the cache-based
-	implementation of the api, if cache files are
-	present.
+	* Makefile.am: add xdgmimecache.[ch].
 
 2005-03-28  Matthias Clasen  <mclasen@redhat.com>
 
@@ -71,17 +195,16 @@
 	extensions (eg .tar.gz) and for suffix
 	patterns which don't start with a dot.
 
-2005-03-01  Matthias Clasen  <mclasen@redhat.com>
+Sat Mar 19 23:52:33 2005  Manish Singh  <yosh@gimp.org>
 
-	* === Released 2.6.4 ===
+	* xdgmimeglob.c (_xdg_glob_hash_insert_text): cast away the constness
+	in the call to free().
 
-2005-02-28  Matthias Clasen  <mclasen@redhat.com>
+2005-03-20  Matthias Clasen  <mclasen@redhat.com>
 
-	* === Released 2.6.3 ===
-
-2005-02-04  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.2 ===
+	* xdgmimeglob.c (_xdg_glob_hash_insert_text): Don't 
+	leak node->mime_type if we are reusing an existing
+	node.  (#170774, Kjartan Maraas)
 
 2005-01-08  Matthias Clasen  <mclasen@redhat.com>
 

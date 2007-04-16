@@ -84,7 +84,7 @@ gdk_visual_get_type (void)
       };
       
       object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "GdkVisual",
+                                            g_intern_static_string ("GdkVisual"),
                                             &object_info, 0);
     }
   
@@ -244,11 +244,22 @@ _gdk_visual_init (GdkScreen *screen)
     }
 
   for (i = 0; i < nvisuals; i++)
-    if (default_xvisual->visualid == visuals[i]->xvisual->visualid)
-      {
+    {
+      if (default_xvisual->visualid == visuals[i]->xvisual->visualid)
 	screen_x11->system_visual = visuals[i];
-	break;
-      }
+
+      /* For now, we only support 8888 ARGB for the "rgba visual".
+       * Additional formats (like ABGR) could be added later if they
+       * turn up.
+       */
+      if (visuals[i]->visual.depth == 32 &&
+	  (visuals[i]->visual.red_mask   == 0xff0000 &&
+	   visuals[i]->visual.green_mask == 0x00ff00 &&
+	   visuals[i]->visual.blue_mask  == 0x0000ff))
+	{
+	  screen_x11->rgba_visual = GDK_VISUAL (visuals[i]);
+	}
+    }
 
 #ifdef G_ENABLE_DEBUG 
   if (_gdk_debug_flags & GDK_DEBUG_MISC)

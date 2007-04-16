@@ -26,12 +26,9 @@
 
 #include <config.h>
 #include "gtkbox.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
-
-/* UGLY HACK */
-#include "gtkhbbox.h"
 
 enum {
   PROP_0,
@@ -48,8 +45,6 @@ enum {
   CHILD_PROP_POSITION
 };
 
-static void gtk_box_class_init (GtkBoxClass    *klass);
-static void gtk_box_init       (GtkBox         *box);
 static void gtk_box_set_property (GObject         *object,
 				  guint            prop_id,
 				  const GValue    *value,
@@ -79,44 +74,13 @@ static void gtk_box_get_child_property (GtkContainer    *container,
 static GType gtk_box_child_type (GtkContainer   *container);
      
 
-static GtkContainerClass *parent_class = NULL;
-
-
-GType
-gtk_box_get_type (void)
-{
-  static GType box_type = 0;
-
-  if (!box_type)
-    {
-      static const GTypeInfo box_info =
-      {
-	sizeof (GtkBoxClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_box_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkBox),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_box_init,
-	NULL,		/* value_table */
-      };
-
-      box_type = g_type_register_static (GTK_TYPE_CONTAINER, "GtkBox", 
-					 &box_info, G_TYPE_FLAG_ABSTRACT);
-    }
-
-  return box_type;
-}
+G_DEFINE_ABSTRACT_TYPE (GtkBox, gtk_box, GTK_TYPE_CONTAINER)
 
 static void
 gtk_box_class_init (GtkBoxClass *class)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkContainerClass *container_class = GTK_CONTAINER_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->set_property = gtk_box_set_property;
   gobject_class->get_property = gtk_box_get_property;
@@ -136,7 +100,7 @@ gtk_box_class_init (GtkBoxClass *class)
                                                      0,
                                                      G_MAXINT,
                                                      0,
-                                                     GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                     GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
                                    PROP_HOMOGENEOUS,
@@ -144,7 +108,7 @@ gtk_box_class_init (GtkBoxClass *class)
 							 P_("Homogeneous"),
 							 P_("Whether the children should all be the same size"),
 							 FALSE,
-							 GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+							 GTK_PARAM_READWRITE));
 
   gtk_container_class_install_child_property (container_class,
 					      CHILD_PROP_EXPAND,
@@ -395,16 +359,9 @@ gtk_box_pack_start (GtkBox    *box,
   gtk_widget_child_notify (child, "expand");
   gtk_widget_child_notify (child, "fill");
   gtk_widget_child_notify (child, "padding");
-  gtk_widget_child_notify (child, "pack_type");
+  gtk_widget_child_notify (child, "pack-type");
   gtk_widget_child_notify (child, "position");
   gtk_widget_thaw_child_notify (child);
-
-  /* UGLY HACK: we need to call this because the "add" signal is not emitted when a button
-     is a added to a container via the base class functions like this one. The find_button_detail
-     function was attached to that signal, which made us not to compute the proper details for all
-     the buttons in a GtkHButtonBox. See NB#36265 */
-  if (GTK_IS_HBUTTON_BOX (box))
-    _osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (box), child);
 }
 
 void
@@ -437,13 +394,9 @@ gtk_box_pack_end (GtkBox    *box,
   gtk_widget_child_notify (child, "expand");
   gtk_widget_child_notify (child, "fill");
   gtk_widget_child_notify (child, "padding");
-  gtk_widget_child_notify (child, "pack_type");
+  gtk_widget_child_notify (child, "pack-type");
   gtk_widget_child_notify (child, "position");
   gtk_widget_thaw_child_notify (child);
-
-  /* UGLY HACK: same as in gtk_box_pack_start */
-  if (GTK_IS_HBUTTON_BOX (box))
-      _osso_gtk_hbutton_box_find_button_detail (GTK_HBUTTON_BOX (box), child);
 }
 
 void
@@ -639,7 +592,7 @@ gtk_box_set_child_packing (GtkBox               *box,
 	child_info->pack = GTK_PACK_END;
       else
 	child_info->pack = GTK_PACK_START;
-      gtk_widget_child_notify (child, "pack_type");
+      gtk_widget_child_notify (child, "pack-type");
 
       if (GTK_WIDGET_VISIBLE (child) && GTK_WIDGET_VISIBLE (box))
 	gtk_widget_queue_resize (child);

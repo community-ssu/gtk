@@ -24,21 +24,16 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-/* Modified by Nokia Corporation - 2005.
- * 
- */
-
 #include <config.h>
 #include <string.h>
 #include "gtkframe.h"
 #include "gtklabel.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define LABEL_PAD 1
 #define LABEL_SIDE_PAD 2
-#define FRAME_BORDER_WIDTH 3
 
 enum {
   PROP_0,
@@ -50,9 +45,6 @@ enum {
   PROP_LABEL_WIDGET
 };
 
-
-static void gtk_frame_class_init    (GtkFrameClass  *klass);
-static void gtk_frame_init          (GtkFrame       *frame);
 static void gtk_frame_set_property (GObject      *object,
 				    guint         param_id,
 				    const GValue *value,
@@ -81,35 +73,7 @@ static void gtk_frame_compute_child_allocation      (GtkFrame      *frame,
 static void gtk_frame_real_compute_child_allocation (GtkFrame      *frame,
 						     GtkAllocation *child_allocation);
 
-static GtkBinClass *parent_class = NULL;
-
-
-GType
-gtk_frame_get_type (void)
-{
-  static GType frame_type = 0;
-
-  if (!frame_type)
-    {
-      static const GTypeInfo frame_info =
-      {
-	sizeof (GtkFrameClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_frame_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkFrame),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_frame_init,
-      };
-
-      frame_type = g_type_register_static (GTK_TYPE_BIN, "GtkFrame",
-					   &frame_info, 0);
-    }
-
-  return frame_type;
-}
+G_DEFINE_TYPE (GtkFrame, gtk_frame, GTK_TYPE_BIN)
 
 static void
 gtk_frame_class_init (GtkFrameClass *class)
@@ -121,8 +85,6 @@ gtk_frame_class_init (GtkFrameClass *class)
   gobject_class = (GObjectClass*) class;
   widget_class = GTK_WIDGET_CLASS (class);
   container_class = GTK_CONTAINER_CLASS (class);
-
-  parent_class = g_type_class_peek_parent (class);
 
   gobject_class->set_property = gtk_frame_set_property;
   gobject_class->get_property = gtk_frame_get_property;
@@ -143,8 +105,7 @@ gtk_frame_class_init (GtkFrameClass *class)
 						       0.0,
 						       1.0,
 						       0.5,
-						       GTK_PARAM_READABLE |
-						       GTK_PARAM_WRITABLE));
+						       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_LABEL_YALIGN,
 				   g_param_spec_float ("label-yalign",
@@ -153,15 +114,14 @@ gtk_frame_class_init (GtkFrameClass *class)
 						       0.0,
 						       1.0,
 						       0.5,
-						       GTK_PARAM_READABLE |
-						       GTK_PARAM_WRITABLE));
+						       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW,
                                    g_param_spec_enum ("shadow", NULL,
                                                       P_("Deprecated property, use shadow_type instead"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_ETCHED_IN,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_SHADOW_TYPE,
                                    g_param_spec_enum ("shadow-type",
@@ -169,7 +129,7 @@ gtk_frame_class_init (GtkFrameClass *class)
                                                       P_("Appearance of the frame border"),
 						      GTK_TYPE_SHADOW_TYPE,
 						      GTK_SHADOW_ETCHED_IN,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_LABEL_WIDGET,
@@ -177,21 +137,7 @@ gtk_frame_class_init (GtkFrameClass *class)
                                                         P_("Label widget"),
                                                         P_("A widget to display in place of the usual frame label"),
                                                         GTK_TYPE_WIDGET,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
-
-  /**
-   * GtkFrame:hildonlike:
-   *
-   * Changes the appearance GtkFrame to be consistent with Hildon library.
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
- 					   g_param_spec_boolean ("hildonlike",
-								 P_("hildonlike looks"),
-								 P_("Draw frame, 1/0"),
-								 FALSE,
-								 GTK_PARAM_READABLE));
+                                                        GTK_PARAM_READWRITE));
   
   widget_class->expose_event = gtk_frame_expose;
   widget_class->size_request = gtk_frame_size_request;
@@ -296,7 +242,7 @@ gtk_frame_get_property (GObject         *object,
 GtkWidget*
 gtk_frame_new (const gchar *label)
 {
-  return g_object_new (GTK_TYPE_FRAME, "label", label, "border-width", FRAME_BORDER_WIDTH, NULL);
+  return g_object_new (GTK_TYPE_FRAME, "label", label, NULL);
 }
 
 static void
@@ -308,7 +254,7 @@ gtk_frame_remove (GtkContainer *container,
   if (frame->label_widget == child)
     gtk_frame_set_label_widget (frame, NULL);
   else
-    GTK_CONTAINER_CLASS (parent_class)->remove (container, child);
+    GTK_CONTAINER_CLASS (gtk_frame_parent_class)->remove (container, child);
 }
 
 static void
@@ -553,9 +499,6 @@ gtk_frame_paint (GtkWidget    *widget,
 {
   GtkFrame *frame;
   gint x, y, width, height;
-  gboolean hildonlike;
-
-  gtk_widget_style_get ( widget, "hildonlike", &hildonlike, NULL );
 
   if (GTK_WIDGET_DRAWABLE (widget))
     {
@@ -566,16 +509,7 @@ gtk_frame_paint (GtkWidget    *widget,
       width = frame->child_allocation.width + 2 * widget->style->xthickness;
       height =  frame->child_allocation.height + 2 * widget->style->ythickness;
 
-      if (hildonlike) {
-          /* draw hildon application borders */
-         gtk_paint_box (widget->style,
-			     widget->window,
-			     GTK_WIDGET_STATE( widget ),
-			     GTK_SHADOW_OUT,
-			     area, widget, "frame",
-			     x, y, width, height);
-      }
-      else if (frame->label_widget)
+      if (frame->label_widget)
 	{
 	  GtkRequisition child_requisition;
 	  gfloat xalign;
@@ -618,9 +552,9 @@ gtk_frame_expose (GtkWidget      *widget,
 {
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-      	    gtk_frame_paint (widget, &event->area);
+      gtk_frame_paint (widget, &event->area);
 
-      (* GTK_WIDGET_CLASS (parent_class)->expose_event) (widget, event);
+      (* GTK_WIDGET_CLASS (gtk_frame_parent_class)->expose_event) (widget, event);
     }
 
   return FALSE;
@@ -706,7 +640,7 @@ gtk_frame_size_allocate (GtkWidget     *widget,
 	(frame->child_allocation.width - child_requisition.width - 2 * LABEL_PAD - 2 * LABEL_SIDE_PAD) * xalign + LABEL_PAD;
       child_allocation.width = child_requisition.width;
 
-      child_allocation.y = frame->child_allocation.y - child_requisition.height;
+      child_allocation.y = frame->child_allocation.y - MAX (child_requisition.height, widget->style->ythickness);
       child_allocation.height = child_requisition.height;
 
       gtk_widget_size_allocate (frame->label_widget, &child_allocation);

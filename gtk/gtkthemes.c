@@ -137,7 +137,7 @@ gtk_theme_engine_get_type (void)
 
   if (!theme_engine_type)
     {
-      static const GTypeInfo theme_engine_info = {
+      const GTypeInfo theme_engine_info = {
         sizeof (GtkThemeEngineClass),
         NULL,           /* base_init */
         NULL,           /* base_finalize */
@@ -150,7 +150,7 @@ gtk_theme_engine_get_type (void)
       };
 
       theme_engine_type =
-	g_type_register_static (G_TYPE_TYPE_MODULE, "GtkThemeEngine",
+	g_type_register_static (G_TYPE_TYPE_MODULE, I_("GtkThemeEngine"),
 				&theme_engine_info, 0);
     }
   

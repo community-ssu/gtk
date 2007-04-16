@@ -45,6 +45,9 @@ struct _GtkIMMulticontext
 
   GtkIMMulticontextPrivate *priv;
 
+#ifndef MAEMO_CHANGES
+  const
+#endif /* MAEMO_CHANGES */
   gchar *context_id;
 };
 

@@ -38,9 +38,9 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @style: The style for the widget. The style contains the colors the widget should be 
  drawn in for each state along with graphics contexts used to draw with and the font 
  to use for text.
-@requisition: The widgets desired size.
-@allocation: The widgets allocated size.
-@window: The widgets window or its parent window if it does not have a window. (Which 
+@requisition: The widget's desired size.
+@allocation: The widget's allocated size.
+@window: The widget's window or its parent window if it does not have a window. (Which 
  will be indicated by the #GTK_NO_WINDOW flag being set).
 @parent: 
 
@@ -94,6 +94,13 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @widget: the object which received the signal.
 @event: 
 @Returns: %TRUE to stop other handlers from being invoked for the event. %FALSE to propagate the event further.
+
+<!-- ##### SIGNAL GtkWidget::composited-changed ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
 
 <!-- ##### SIGNAL GtkWidget::configure-event ##### -->
 <para>
@@ -156,8 +163,6 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @data: 
 @info: 
 @time: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::drag-data-received ##### -->
 <para>
@@ -171,8 +176,6 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @data: 
 @info: 
 @time: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::drag-drop ##### -->
 <para>
@@ -185,8 +188,6 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @y: 
 @time: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::drag-end ##### -->
 <para>
@@ -204,8 +205,6 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @widget: the object which received the signal.
 @drag_context: 
 @time: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::drag-motion ##### -->
 <para>
@@ -218,8 +217,6 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @y: 
 @time: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::enter-notify-event ##### -->
 <para>
@@ -283,6 +280,15 @@ gtk_widget_style_get_valist() to obtain the value of a style property.
 @event: 
 @Returns: %TRUE to stop other handlers from being invoked for the event. %FALSE to propagate the event further.
 
+<!-- ##### SIGNAL GtkWidget::grab-broken-event ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@event: 
+@Returns: 
+
 <!-- ##### SIGNAL GtkWidget::grab-focus ##### -->
 <para>
 
@@ -341,6 +347,15 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @event: 
 @Returns: %TRUE to stop other handlers from being invoked for the event. %FALSE to propagate the event further.
+
+<!-- ##### SIGNAL GtkWidget::keynav-failed ##### -->
+<para>
+
+</para>
+
+@widget: the object which received the signal.
+@arg1: 
+@Returns: 
 
 <!-- ##### SIGNAL GtkWidget::leave-notify-event ##### -->
 <para>
@@ -479,8 +494,6 @@ a widget changes from un-anchored to anchored or vice-versa.
 @data: 
 @info: 
 @time: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::selection-notify-event ##### -->
 <para>
@@ -499,8 +512,6 @@ a widget changes from un-anchored to anchored or vice-versa.
 @widget: the object which received the signal.
 @data: 
 @time: 
-<!-- # Unused Parameters # -->
-@time_: 
 
 <!-- ##### SIGNAL GtkWidget::selection-request-event ##### -->
 <para>
@@ -731,6 +742,11 @@ a widget changes from un-anchored to anchored or vice-versa.
 
 </para>
 
+<!-- ##### ARG GtkWidget:draw-border ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkWidget:focus-line-pattern ##### -->
 <para>
 
@@ -746,17 +762,47 @@ a widget changes from un-anchored to anchored or vice-versa.
 
 </para>
 
-<!-- ##### ARG GtkWidget:hildon-focus-handling ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkWidget:interior-focus ##### -->
 <para>
 
 </para>
 
+<!-- ##### ARG GtkWidget:link-color ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:scroll-arrow-hlength ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:scroll-arrow-vlength ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkWidget:secondary-cursor-color ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:separator-height ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:separator-width ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:visited-link-color ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWidget:wide-separators ##### -->
 <para>
 
 </para>
@@ -807,11 +853,11 @@ Tells about certain properties of the widget.
         Set and unset by gtk_widget_set_sensitive().
         The sensitivity of a widget determines whether it will receive
         certain events (e.g. button or key presses). One premise for
-        the widgets sensitivity is to have this flag set.
+        the widget's sensitivity is to have this flag set.
 @GTK_PARENT_SENSITIVE: 
         Set and unset by gtk_widget_set_sensitive() operations on the
         parents of the widget.
-        This is the second premise for the widgets sensitivity. Once
+        This is the second premise for the widget's sensitivity. Once
         it has %GTK_SENSITIVE and %GTK_PARENT_SENSITIVE set, its state is
         effectively sensitive. This is expressed (and can be examined) by
         the #GTK_WIDGET_IS_SENSITIVE macro.
@@ -831,7 +877,7 @@ Tells about certain properties of the widget.
         widget is in the grab_widgets stack, and will be the preferred one for 
         receiving events other than ones of cosmetic value.
 @GTK_RC_STYLE: 
-        Indicates that the widgets style has been looked up through the rc 
+        Indicates that the widget's style has been looked up through the rc 
         mechanism. It does not imply that the widget actually had a style 
         defined through the rc mechanism.
 @GTK_COMPOSITE_CHILD: 
@@ -1014,7 +1060,7 @@ the preferred one for receiving events other than ones of cosmetic value.
 
 <!-- ##### MACRO GTK_WIDGET_RC_STYLE ##### -->
 <para>
-Evaluates to %TRUE if the widgets style has been looked up through the rc
+Evaluates to %TRUE if the widget's style has been looked up through the rc
 mechanism.
 </para>
 
@@ -1089,10 +1135,10 @@ widget by its parent. It is a subregion of its parents allocation. See
 <xref linkend="size-allocation"/> for more information.
 </para>
 
-@x: the X position of the widgets area relative to its parents allocation.
-@y: the Y position of the widgets area relative to its parents allocation.
-@width: the width of the widgets allocated area.
-@height: the height of the widgets allocated area.
+@x: the X position of the widget's area relative to its parents allocation.
+@y: the Y position of the widget's area relative to its parents allocation.
+@width: the width of the widget's allocated area.
+@height: the height of the widget's allocated area.
 
 <!-- ##### STRUCT GtkSelectionData ##### -->
 <para>
@@ -1145,8 +1191,6 @@ widget by its parent. It is a subregion of its parents allocation. See
 @first_property_name: 
 @Varargs: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@first_arg_name: 
 
 
 <!-- ##### FUNCTION gtk_widget_ref ##### -->
@@ -1191,8 +1235,6 @@ widget by its parent. It is a subregion of its parents allocation. See
 @widget: 
 @first_property_name: 
 @Varargs: 
-<!-- # Unused Parameters # -->
-@first_arg_name: 
 
 
 <!-- ##### FUNCTION gtk_widget_unparent ##### -->
@@ -1826,6 +1868,17 @@ This function is not useful for applications.
 @offset_y: 
 
 
+<!-- ##### FUNCTION gtk_widget_input_shape_combine_mask ##### -->
+<para>
+
+</para>
+
+@widget: 
+@shape_mask: 
+@offset_x: 
+@offset_y: 
+
+
 <!-- ##### FUNCTION gtk_widget_path ##### -->
 <para>
 
@@ -2082,8 +2135,6 @@ This function is not useful for applications.
 
 @klass: 
 @pspec: 
-<!-- # Unused Parameters # -->
-@class: 
 
 
 <!-- ##### FUNCTION gtk_widget_class_install_style_property_parser ##### -->
@@ -2094,8 +2145,6 @@ This function is not useful for applications.
 @klass: 
 @pspec: 
 @parser: 
-<!-- # Unused Parameters # -->
-@class: 
 
 
 <!-- ##### FUNCTION gtk_widget_class_find_style_property ##### -->
@@ -2106,8 +2155,6 @@ This function is not useful for applications.
 @klass: 
 @property_name: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@class: 
 
 
 <!-- ##### FUNCTION gtk_widget_class_list_style_properties ##### -->
@@ -2118,8 +2165,6 @@ This function is not useful for applications.
 @klass: 
 @n_properties: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@class: 
 
 
 <!-- ##### FUNCTION gtk_widget_region_intersect ##### -->
@@ -2395,21 +2440,40 @@ This function is deprecated; it does nothing.
 @label: 
 
 
-<!-- ##### FUNCTION gtk_requisition_copy ##### -->
+<!-- ##### FUNCTION gtk_widget_get_action ##### -->
 <para>
 
 </para>
 
-@requisition: 
+@widget: 
 @Returns: 
 
 
-<!-- ##### FUNCTION gtk_requisition_free ##### -->
+<!-- ##### FUNCTION gtk_widget_is_composited ##### -->
 <para>
 
 </para>
 
-@requisition: 
+@widget: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_widget_error_bell ##### -->
+<para>
+
+</para>
+
+@widget: 
+
+
+<!-- ##### FUNCTION gtk_widget_keynav_failed ##### -->
+<para>
+
+</para>
+
+@widget: 
+@direction: 
+@Returns: 
 
 
 <!-- ##### FUNCTION gtk_widget_tap_and_hold_menu_position_top ##### -->
@@ -2433,5 +2497,30 @@ This function is deprecated; it does nothing.
 @menu: 
 @func: 
 @flags: 
+
+
+<!-- ##### FUNCTION gtk_widget_insensitive_press ##### -->
+<para>
+
+</para>
+
+@widget: 
+
+
+<!-- ##### FUNCTION gtk_requisition_copy ##### -->
+<para>
+
+</para>
+
+@requisition: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_requisition_free ##### -->
+<para>
+
+</para>
+
+@requisition: 
 
 

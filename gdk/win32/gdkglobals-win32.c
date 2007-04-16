@@ -31,14 +31,13 @@
 
 GdkDisplay	 *_gdk_display = NULL;
 GdkScreen	 *_gdk_screen = NULL;
-GdkWindow	 *_gdk_parent_root = NULL;
+GdkWindow	 *_gdk_root = NULL;
 
 gint		  _gdk_num_monitors;
 GdkRectangle     *_gdk_monitors = NULL;
 
 gint		  _gdk_offset_x, _gdk_offset_y;
 
-HWND              _gdk_root_window = NULL;
 HDC		  _gdk_display_hdc;
 HINSTANCE	  _gdk_dll_hinstance;
 HINSTANCE	  _gdk_app_hmodule;
@@ -49,20 +48,21 @@ UINT		  _gdk_input_codepage;
 
 WORD  		  _cf_rtf;
 WORD		  _cf_utf8_string;
+WORD		  _cf_image_bmp;
 
-GdkAtom           _utf8_string;
+GdkAtom           _gdk_selection_property;
+GdkAtom	          _wm_transient_for;
 GdkAtom		  _targets;
-
+GdkAtom		  _save_targets;
+GdkAtom           _utf8_string;
+GdkAtom		  _text;
+GdkAtom		  _compound_text;
 GdkAtom		  _text_uri_list;
 GdkAtom		  _image_bmp;
 
 GdkAtom		  _local_dnd;
 GdkAtom		  _gdk_win32_dropfiles;
 GdkAtom		  _gdk_ole2_dnd;
-
-GdkAtom           _gdk_selection_property;
-
-GdkAtom	          _wm_transient_for;
 
 gint		  _gdk_input_ignore_wintab = FALSE;
 gint		  _gdk_max_colors = 0;

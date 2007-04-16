@@ -87,10 +87,7 @@ accessed through the function described below.
 
 @toolbar: the object which received the signal.
 @Returns: 
-@: 
-@:
 @Returns: 
-@:
 @Returns: 
 @Returns: 
 
@@ -101,6 +98,16 @@ accessed through the function described below.
 
 @toolbar: 
 @style: 
+
+<!-- ##### ARG GtkToolbar:icon-size ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkToolbar:icon-size-set ##### -->
+<para>
+
+</para>
 
 <!-- ##### ARG GtkToolbar:orientation ##### -->
 <para>
@@ -113,6 +120,11 @@ accessed through the function described below.
 </para>
 
 <!-- ##### ARG GtkToolbar:toolbar-style ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkToolbar:tooltips ##### -->
 <para>
 
 </para>
@@ -253,8 +265,6 @@ to a #GtkToolbar.
 @toolbar: 
 @tool_item: 
 @index_: 
-<!-- # Unused Parameters # -->
-@index: 
 
 
 <!-- ##### FUNCTION gtk_toolbar_set_show_arrow ##### -->

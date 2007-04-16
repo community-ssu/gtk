@@ -27,8 +27,8 @@
 #include <config.h>
 #include "gtkadjustment.h"
 #include "gtkmarshalers.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum
@@ -49,9 +49,6 @@ enum {
 };
 
 
-static void gtk_adjustment_class_init (GtkAdjustmentClass *klass);
-static void gtk_adjustment_init       (GtkAdjustment      *adjustment);
-
 static void gtk_adjustment_get_property (GObject      *object,
                                          guint         prop_id,
                                          GValue       *value,
@@ -63,34 +60,7 @@ static void gtk_adjustment_set_property (GObject      *object,
 
 static guint adjustment_signals[LAST_SIGNAL] = { 0 };
 
-
-GType
-gtk_adjustment_get_type (void)
-{
-  static GType adjustment_type = 0;
-
-  if (!adjustment_type)
-    {
-      static const GTypeInfo adjustment_info =
-      {
-	sizeof (GtkAdjustmentClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_adjustment_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkAdjustment),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_adjustment_init,
-      };
-
-      adjustment_type =
-	g_type_register_static (GTK_TYPE_OBJECT, "GtkAdjustment",
-				&adjustment_info, 0);
-    }
-
-  return adjustment_type;
-}
+G_DEFINE_TYPE (GtkAdjustment, gtk_adjustment, GTK_TYPE_OBJECT)
 
 static void
 gtk_adjustment_class_init (GtkAdjustmentClass *class)
@@ -213,7 +183,7 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
   
 
   adjustment_signals[CHANGED] =
-    g_signal_new ("changed",
+    g_signal_new (I_("changed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkAdjustmentClass, changed),
@@ -221,7 +191,7 @@ gtk_adjustment_class_init (GtkAdjustmentClass *class)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   adjustment_signals[VALUE_CHANGED] =
-    g_signal_new ("value_changed",
+    g_signal_new (I_("value_changed"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE,
 		  G_STRUCT_OFFSET (GtkAdjustmentClass, value_changed),
@@ -339,7 +309,7 @@ gtk_adjustment_new (gdouble value,
 		       "upper", upper,
 		       "step-increment", step_increment,
 		       "page-increment", page_increment,
-		       "page_size", page_size,
+		       "page-size", page_size,
 		       "value", value,
 		       NULL);
 }

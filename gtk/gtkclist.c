@@ -39,14 +39,12 @@
 #include "gtkbindings.h"
 #include "gtkdnd.h"
 #include "gtkmarshalers.h"
+#include "gtkintl.h"
 #include <gdk/gdkkeysyms.h>
 #include "gtkalias.h"
 
 /* length of button_actions array */
 #define MAX_BUTTON 5
-
-/* the number rows memchunk expands at a time */
-#define CLIST_OPTIMUM_SIZE 64
 
 /* the width of the column resize windows */
 #define DRAG_WIDTH  6
@@ -488,6 +486,7 @@ gtk_clist_get_type (void)
 	(GtkClassInitFunc) NULL,
       };
 
+      I_("GtkCList");
       clist_type = gtk_type_unique (GTK_TYPE_CONTAINER, &clist_info);
     }
 
@@ -576,41 +575,41 @@ gtk_clist_class_init (GtkCListClass *klass)
   klass->set_cell_contents = set_cell_contents;
   klass->cell_size_request = cell_size_request;
 
-  gtk_object_add_arg_type ("GtkCList::n_columns",
+  gtk_object_add_arg_type ("GtkCList::n-columns",
 			   GTK_TYPE_UINT,
-			   GTK_ARG_READWRITE | GTK_ARG_CONSTRUCT_ONLY,
+			   GTK_ARG_READWRITE | GTK_ARG_CONSTRUCT_ONLY | G_PARAM_STATIC_NAME,
 			   ARG_N_COLUMNS);
-  gtk_object_add_arg_type ("GtkCList::shadow_type",
+  gtk_object_add_arg_type ("GtkCList::shadow-type",
 			   GTK_TYPE_SHADOW_TYPE,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_SHADOW_TYPE);
-  gtk_object_add_arg_type ("GtkCList::selection_mode",
+  gtk_object_add_arg_type ("GtkCList::selection-mode",
 			   GTK_TYPE_SELECTION_MODE,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_SELECTION_MODE);
-  gtk_object_add_arg_type ("GtkCList::row_height",
+  gtk_object_add_arg_type ("GtkCList::row-height",
 			   GTK_TYPE_UINT,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_ROW_HEIGHT);
   gtk_object_add_arg_type ("GtkCList::reorderable",
 			   GTK_TYPE_BOOL,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_REORDERABLE);
-  gtk_object_add_arg_type ("GtkCList::titles_active",
+  gtk_object_add_arg_type ("GtkCList::titles-active",
 			   GTK_TYPE_BOOL,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_TITLES_ACTIVE);
-  gtk_object_add_arg_type ("GtkCList::use_drag_icons",
+  gtk_object_add_arg_type ("GtkCList::use-drag-icons",
 			   GTK_TYPE_BOOL,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_USE_DRAG_ICONS);
-  gtk_object_add_arg_type ("GtkCList::sort_type",
+  gtk_object_add_arg_type ("GtkCList::sort-type",
 			   GTK_TYPE_SORT_TYPE,
-			   GTK_ARG_READWRITE,
+			   GTK_ARG_READWRITE | G_PARAM_STATIC_NAME,
 			   ARG_SORT_TYPE);  
 
   widget_class->set_scroll_adjustments_signal =
-    gtk_signal_new ("set_scroll_adjustments",
+    gtk_signal_new (I_("set_scroll_adjustments"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, set_scroll_adjustments),
@@ -618,7 +617,7 @@ gtk_clist_class_init (GtkCListClass *klass)
 		    GTK_TYPE_NONE, 2, GTK_TYPE_ADJUSTMENT, GTK_TYPE_ADJUSTMENT);
 
   clist_signals[SELECT_ROW] =
-    gtk_signal_new ("select_row",
+    gtk_signal_new (I_("select_row"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, select_row),
@@ -628,7 +627,7 @@ gtk_clist_class_init (GtkCListClass *klass)
 		    GTK_TYPE_INT,
 		    GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   clist_signals[UNSELECT_ROW] =
-    gtk_signal_new ("unselect_row",
+    gtk_signal_new (I_("unselect_row"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, unselect_row),
@@ -636,21 +635,21 @@ gtk_clist_class_init (GtkCListClass *klass)
 		    GTK_TYPE_NONE, 3, GTK_TYPE_INT,
 		    GTK_TYPE_INT, GDK_TYPE_EVENT);
   clist_signals[ROW_MOVE] =
-    gtk_signal_new ("row_move",
+    gtk_signal_new (I_("row_move"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, row_move),
 		    _gtk_marshal_VOID__INT_INT,
 		    GTK_TYPE_NONE, 2, GTK_TYPE_INT, GTK_TYPE_INT);
   clist_signals[CLICK_COLUMN] =
-    gtk_signal_new ("click_column",
+    gtk_signal_new (I_("click_column"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, click_column),
 		    _gtk_marshal_VOID__INT,
 		    GTK_TYPE_NONE, 1, GTK_TYPE_INT);
   clist_signals[RESIZE_COLUMN] =
-    gtk_signal_new ("resize_column",
+    gtk_signal_new (I_("resize_column"),
 		    GTK_RUN_LAST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, resize_column),
@@ -658,56 +657,56 @@ gtk_clist_class_init (GtkCListClass *klass)
 		    GTK_TYPE_NONE, 2, GTK_TYPE_INT, GTK_TYPE_INT);
 
   clist_signals[TOGGLE_FOCUS_ROW] =
-    gtk_signal_new ("toggle_focus_row",
+    gtk_signal_new (I_("toggle_focus_row"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, toggle_focus_row),
                     _gtk_marshal_VOID__VOID,
                     GTK_TYPE_NONE, 0);
   clist_signals[SELECT_ALL] =
-    gtk_signal_new ("select_all",
+    gtk_signal_new (I_("select_all"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, select_all),
                     _gtk_marshal_VOID__VOID,
                     GTK_TYPE_NONE, 0);
   clist_signals[UNSELECT_ALL] =
-    gtk_signal_new ("unselect_all",
+    gtk_signal_new (I_("unselect_all"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, unselect_all),
                     _gtk_marshal_VOID__VOID,
                     GTK_TYPE_NONE, 0);
   clist_signals[UNDO_SELECTION] =
-    gtk_signal_new ("undo_selection",
+    gtk_signal_new (I_("undo_selection"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, undo_selection),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   clist_signals[START_SELECTION] =
-    gtk_signal_new ("start_selection",
+    gtk_signal_new (I_("start_selection"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, start_selection),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   clist_signals[END_SELECTION] =
-    gtk_signal_new ("end_selection",
+    gtk_signal_new (I_("end_selection"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, end_selection),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   clist_signals[TOGGLE_ADD_MODE] =
-    gtk_signal_new ("toggle_add_mode",
+    gtk_signal_new (I_("toggle_add_mode"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkCListClass, toggle_add_mode),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   clist_signals[EXTEND_SELECTION] =
-    gtk_signal_new ("extend_selection",
+    gtk_signal_new (I_("extend_selection"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, extend_selection),
@@ -715,21 +714,21 @@ gtk_clist_class_init (GtkCListClass *klass)
                     GTK_TYPE_NONE, 3,
 		    GTK_TYPE_SCROLL_TYPE, GTK_TYPE_FLOAT, GTK_TYPE_BOOL);
   clist_signals[SCROLL_VERTICAL] =
-    gtk_signal_new ("scroll_vertical",
+    gtk_signal_new (I_("scroll_vertical"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, scroll_vertical),
                     _gtk_marshal_VOID__ENUM_FLOAT,
                     GTK_TYPE_NONE, 2, GTK_TYPE_SCROLL_TYPE, GTK_TYPE_FLOAT);
   clist_signals[SCROLL_HORIZONTAL] =
-    gtk_signal_new ("scroll_horizontal",
+    gtk_signal_new (I_("scroll_horizontal"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, scroll_horizontal),
                     _gtk_marshal_VOID__ENUM_FLOAT,
                     GTK_TYPE_NONE, 2, GTK_TYPE_SCROLL_TYPE, GTK_TYPE_FLOAT);
   clist_signals[ABORT_COLUMN_RESIZE] =
-    gtk_signal_new ("abort_column_resize",
+    gtk_signal_new (I_("abort_column_resize"),
                     GTK_RUN_LAST | GTK_RUN_ACTION,
                     GTK_CLASS_TYPE (object_class),
                     GTK_SIGNAL_OFFSET (GtkCListClass, abort_column_resize),
@@ -738,7 +737,7 @@ gtk_clist_class_init (GtkCListClass *klass)
 
   binding_set = gtk_binding_set_by_class (klass);
   gtk_binding_entry_add_signal (binding_set, GDK_Up, 0,
-				"scroll_vertical", 2,
+			        "scroll_vertical", 2,
 				GTK_TYPE_ENUM, GTK_SCROLL_STEP_BACKWARD,
 				GTK_TYPE_FLOAT, 0.0);
   gtk_binding_entry_add_signal (binding_set, GDK_KP_Up, 0,
@@ -871,11 +870,11 @@ gtk_clist_class_init (GtkCListClass *klass)
 				"scroll_horizontal", 2,
 				GTK_TYPE_ENUM, GTK_SCROLL_JUMP,
 				GTK_TYPE_FLOAT, 1.0);
+
   gtk_binding_entry_add_signal (binding_set, GDK_KP_End, 0,
 				"scroll_horizontal", 2,
 				GTK_TYPE_ENUM, GTK_SCROLL_JUMP,
 				GTK_TYPE_FLOAT, 1.0);
-
   
   gtk_binding_entry_add_signal (binding_set, GDK_Escape, 0,
 				"undo_selection", 0);
@@ -1012,9 +1011,6 @@ gtk_clist_init (GtkCList *clist)
   GTK_CLIST_SET_FLAG (clist, CLIST_DRAW_DRAG_LINE);
   GTK_CLIST_SET_FLAG (clist, CLIST_USE_DRAG_ICONS);
 
-  clist->row_mem_chunk = NULL;
-  clist->cell_mem_chunk = NULL;
-
   clist->freeze_count = 0;
 
   clist->rows = 0;
@@ -1089,23 +1085,6 @@ gtk_clist_constructor (GType                  type,
 								n_construct_properties,
 								construct_properties);
   GtkCList *clist = GTK_CLIST (object);
-  
-  /* initalize memory chunks, if this has not been done by any
-   * possibly derived widget
-   */
-  if (!clist->row_mem_chunk)
-    clist->row_mem_chunk = g_mem_chunk_new ("clist row mem chunk",
-					    sizeof (GtkCListRow),
-					    sizeof (GtkCListRow) *
-					    CLIST_OPTIMUM_SIZE, 
-					    G_ALLOC_AND_FREE);
-  
-  if (!clist->cell_mem_chunk)
-    clist->cell_mem_chunk = g_mem_chunk_new ("clist cell mem chunk",
-					     sizeof (GtkCell) * clist->columns,
-					     sizeof (GtkCell) * clist->columns *
-					     CLIST_OPTIMUM_SIZE, 
-					     G_ALLOC_AND_FREE);
   
   /* allocate memory for columns */
   clist->column = columns_new (clist);
@@ -1185,8 +1164,7 @@ gtk_clist_set_hadjustment (GtkCList      *clist,
 
   if (clist->hadjustment)
     {
-      gtk_object_ref (GTK_OBJECT (clist->hadjustment));
-      gtk_object_sink (GTK_OBJECT (clist->hadjustment));
+      g_object_ref_sink (clist->hadjustment);
 
       gtk_signal_connect (GTK_OBJECT (clist->hadjustment), "changed",
 			  (GtkSignalFunc) hadjustment_changed,
@@ -1233,8 +1211,7 @@ gtk_clist_set_vadjustment (GtkCList      *clist,
 
   if (clist->vadjustment)
     {
-      gtk_object_ref (GTK_OBJECT (clist->vadjustment));
-      gtk_object_sink (GTK_OBJECT (clist->vadjustment));
+      g_object_ref_sink (clist->vadjustment);
 
       gtk_signal_connect (GTK_OBJECT (clist->vadjustment), "changed",
 			  (GtkSignalFunc) vadjustment_changed,
@@ -2812,7 +2789,7 @@ static void
 real_remove_row (GtkCList *clist,
 		 gint      row)
 {
-  gint was_visible, was_selected;
+  gint was_visible;
   GList *list;
   GtkCListRow *clist_row;
 
@@ -2823,7 +2800,6 @@ real_remove_row (GtkCList *clist,
     return;
 
   was_visible = (gtk_clist_row_is_visible (clist, row) != GTK_VISIBILITY_NONE);
-  was_selected = 0;
 
   /* get the row we're going to delete */
   list = ROW_ELEMENT (clist, row);
@@ -4438,9 +4414,6 @@ gtk_clist_finalize (GObject *object)
   clist = GTK_CLIST (object);
 
   columns_delete (clist);
-
-  g_mem_chunk_destroy (clist->cell_mem_chunk);
-  g_mem_chunk_destroy (clist->row_mem_chunk);
 
   G_OBJECT_CLASS (parent_class)->finalize (object);
 }
@@ -6375,8 +6348,8 @@ row_new (GtkCList *clist)
   int i;
   GtkCListRow *clist_row;
 
-  clist_row = g_chunk_new (GtkCListRow, clist->row_mem_chunk);
-  clist_row->cell = g_chunk_new (GtkCell, clist->cell_mem_chunk);
+  clist_row = g_slice_new (GtkCListRow);
+  clist_row->cell = g_slice_alloc (sizeof (GtkCell) * clist->columns);
 
   for (i = 0; i < clist->columns; i++)
     {
@@ -6425,8 +6398,8 @@ row_delete (GtkCList    *clist,
   if (clist_row->destroy)
     clist_row->destroy (clist_row->data);
 
-  g_mem_chunk_free (clist->cell_mem_chunk, clist_row->cell);
-  g_mem_chunk_free (clist->row_mem_chunk, clist_row);
+  g_slice_free1 (sizeof (GtkCell) * clist->columns, clist_row->cell);
+  g_slice_free (GtkCListRow, clist_row);
 }
 
 /* FOCUS FUNCTIONS
@@ -7518,7 +7491,7 @@ gtk_clist_drag_leave (GtkWidget      *widget,
 	  gtk_drag_get_source_widget (context) == widget)
 	{
 	  GList *list;
-	  GdkAtom atom = gdk_atom_intern ("gtk-clist-drag-reorder", FALSE);
+	  GdkAtom atom = gdk_atom_intern_static_string ("gtk-clist-drag-reorder");
 
 	  list = context->targets;
 	  while (list)
@@ -7573,7 +7546,7 @@ gtk_clist_drag_motion (GtkWidget      *widget,
   if (GTK_CLIST_REORDERABLE (clist))
     {
       GList *list;
-      GdkAtom atom = gdk_atom_intern ("gtk-clist-drag-reorder", FALSE);
+      GdkAtom atom = gdk_atom_intern_static_string ("gtk-clist-drag-reorder");
 
       list = context->targets;
       while (list)
@@ -7649,7 +7622,7 @@ gtk_clist_drag_drop (GtkWidget      *widget,
       gtk_drag_get_source_widget (context) == widget)
     {
       GList *list;
-      GdkAtom atom = gdk_atom_intern ("gtk-clist-drag-reorder", FALSE);
+      GdkAtom atom = gdk_atom_intern_static_string ("gtk-clist-drag-reorder");
 
       list = context->targets;
       while (list)
@@ -7682,7 +7655,7 @@ gtk_clist_drag_data_received (GtkWidget        *widget,
   if (GTK_CLIST_REORDERABLE (clist) &&
       gtk_drag_get_source_widget (context) == widget &&
       selection_data->target ==
-      gdk_atom_intern ("gtk-clist-drag-reorder", FALSE) &&
+      gdk_atom_intern_static_string ("gtk-clist-drag-reorder") &&
       selection_data->format == 8 &&
       selection_data->length == sizeof (GtkCListCellInfo))
     {
@@ -7718,8 +7691,7 @@ gtk_clist_drag_data_get (GtkWidget        *widget,
   g_return_if_fail (context != NULL);
   g_return_if_fail (selection_data != NULL);
 
-  if (selection_data->target ==
-      gdk_atom_intern ("gtk-clist-drag-reorder", FALSE))
+  if (selection_data->target == gdk_atom_intern_static_string ("gtk-clist-drag-reorder"))
     {
       GtkCListCellInfo *info;
 

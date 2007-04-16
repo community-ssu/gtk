@@ -36,6 +36,7 @@
 #include "gtkmarshalers.h"
 #include "gtkselection.h"
 #include "gtksignal.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define MIN_EDITABLE_WIDTH  150
@@ -74,9 +75,7 @@ enum {
   TARGET_COMPOUND_TEXT
 };
 
-static void  gtk_old_editable_class_init           (GtkOldEditableClass *klass);
 static void  gtk_old_editable_editable_init        (GtkEditableClass    *iface);
-static void  gtk_old_editable_init                 (GtkOldEditable      *editable);
 static void  gtk_old_editable_set_arg              (GtkObject           *object,
 						    GtkArg              *arg,
 						    guint                arg_id);
@@ -127,46 +126,11 @@ static void     gtk_old_editable_set_position        (GtkEditable *editable,
 						      gint         position);
 static gint     gtk_old_editable_get_position        (GtkEditable *editable);
 
-static GtkWidgetClass *parent_class = NULL;
 static guint editable_signals[LAST_SIGNAL] = { 0 };
 
-GtkType
-gtk_old_editable_get_type (void)
-{
-  static GtkType old_editable_type = 0;
-
-  if (!old_editable_type)
-    {
-      static const GTypeInfo old_editable_info =
-      {
-	sizeof (GtkOldEditableClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-        (GClassInitFunc) gtk_old_editable_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkOldEditable),
-	0,		/* n_preallocs */
-        (GInstanceInitFunc) gtk_old_editable_init,
-	NULL,		/* value_table */
-      };
-
-      static const GInterfaceInfo editable_info =
-      {
-	(GInterfaceInitFunc) gtk_old_editable_editable_init,	 /* interface_init */
-	NULL,			                                 /* interface_finalize */
-	NULL			                                 /* interface_data */
-      };
-
-      old_editable_type = g_type_register_static (GTK_TYPE_WIDGET, "GtkOldEditable",
-						  &old_editable_info, G_TYPE_FLAG_ABSTRACT);
-      g_type_add_interface_static (old_editable_type,
-				   GTK_TYPE_EDITABLE,
-				   &editable_info);
-    }
-
-  return old_editable_type;
-}
+G_DEFINE_ABSTRACT_TYPE_WITH_CODE (GtkOldEditable, gtk_old_editable, GTK_TYPE_WIDGET,
+				  G_IMPLEMENT_INTERFACE (GTK_TYPE_EDITABLE,
+							 gtk_old_editable_editable_init))
 
 static void
 gtk_old_editable_class_init (GtkOldEditableClass *class)
@@ -177,8 +141,6 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
   object_class = (GtkObjectClass*) class;
   widget_class = (GtkWidgetClass*) class;
 
-  parent_class = gtk_type_class (GTK_TYPE_WIDGET);
-    
   object_class->set_arg = gtk_old_editable_set_arg;
   object_class->get_arg = gtk_old_editable_get_arg;
 
@@ -209,7 +171,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
   class->set_position = NULL;
 
   editable_signals[ACTIVATE] =
-    gtk_signal_new ("activate",
+    gtk_signal_new (I_("activate"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, activate),
@@ -218,7 +180,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
   widget_class->activate_signal = editable_signals[ACTIVATE];
 
   editable_signals[SET_EDITABLE] =
-    gtk_signal_new ("set-editable",
+    gtk_signal_new (I_("set-editable"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, set_editable),
@@ -227,7 +189,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_BOOL);
 
   editable_signals[MOVE_CURSOR] =
-    gtk_signal_new ("move_cursor",
+    gtk_signal_new (I_("move_cursor"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, move_cursor),
@@ -237,7 +199,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[MOVE_WORD] =
-    gtk_signal_new ("move_word",
+    gtk_signal_new (I_("move_word"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, move_word),
@@ -246,7 +208,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[MOVE_PAGE] =
-    gtk_signal_new ("move_page",
+    gtk_signal_new (I_("move_page"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, move_page),
@@ -256,7 +218,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[MOVE_TO_ROW] =
-    gtk_signal_new ("move_to_row",
+    gtk_signal_new (I_("move_to_row"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, move_to_row),
@@ -265,7 +227,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[MOVE_TO_COLUMN] =
-    gtk_signal_new ("move_to_column",
+    gtk_signal_new (I_("move_to_column"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, move_to_column),
@@ -274,7 +236,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[KILL_CHAR] =
-    gtk_signal_new ("kill_char",
+    gtk_signal_new (I_("kill_char"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, kill_char),
@@ -283,7 +245,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[KILL_WORD] =
-    gtk_signal_new ("kill_word",
+    gtk_signal_new (I_("kill_word"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, kill_word),
@@ -292,7 +254,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[KILL_LINE] =
-    gtk_signal_new ("kill_line",
+    gtk_signal_new (I_("kill_line"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, kill_line),
@@ -301,7 +263,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_INT);
 
   editable_signals[CUT_CLIPBOARD] =
-    gtk_signal_new ("cut_clipboard",
+    gtk_signal_new (I_("cut_clipboard"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, cut_clipboard),
@@ -309,7 +271,7 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_NONE, 0);
 
   editable_signals[COPY_CLIPBOARD] =
-    gtk_signal_new ("copy_clipboard",
+    gtk_signal_new (I_("copy_clipboard"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, copy_clipboard),
@@ -317,15 +279,15 @@ gtk_old_editable_class_init (GtkOldEditableClass *class)
 		    GTK_TYPE_NONE, 0);
 
   editable_signals[PASTE_CLIPBOARD] =
-    gtk_signal_new ("paste_clipboard",
+    gtk_signal_new (I_("paste_clipboard"),
 		    GTK_RUN_LAST | GTK_RUN_ACTION,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkOldEditableClass, paste_clipboard),
 		    _gtk_marshal_NONE__NONE,
 		    GTK_TYPE_NONE, 0);
 
-  gtk_object_add_arg_type ("GtkOldEditable::text_position", GTK_TYPE_INT, GTK_ARG_READWRITE, ARG_TEXT_POSITION);
-  gtk_object_add_arg_type ("GtkOldEditable::editable", GTK_TYPE_BOOL, GTK_ARG_READWRITE, ARG_EDITABLE);
+  gtk_object_add_arg_type ("GtkOldEditable::text-position", GTK_TYPE_INT, GTK_ARG_READWRITE | G_PARAM_STATIC_NAME, ARG_TEXT_POSITION);
+  gtk_object_add_arg_type ("GtkOldEditable::editable", GTK_TYPE_BOOL, GTK_ARG_READWRITE | G_PARAM_STATIC_NAME, ARG_EDITABLE);
 }
 
 static void
@@ -557,7 +519,7 @@ gtk_old_editable_selection_clear (GtkWidget         *widget,
   
   /* Let the selection handling code know that the selection
    * has been changed, since we've overriden the default handler */
-  if (!parent_class->selection_clear_event (widget, event))
+  if (!GTK_WIDGET_CLASS (gtk_old_editable_parent_class)->selection_clear_event (widget, event))
     return FALSE;
   
   if (old_editable->has_selection)
@@ -680,14 +642,14 @@ gtk_old_editable_selection_received  (GtkWidget         *widget,
        * for text and didn't get it, try string.  If we asked for
        * anything else and didn't get it, give up.
        */
-      if (selection_data->target == gdk_atom_intern ("UTF8_STRING", FALSE))
+      if (selection_data->target == gdk_atom_intern_static_string ("UTF8_STRING"))
 	{
 	  gtk_selection_convert (widget, GDK_SELECTION_PRIMARY,
-				 gdk_atom_intern ("TEXT", FALSE),
+				 gdk_atom_intern_static_string ("TEXT"),
 				 time);
 	  return;
 	}
-      else if (selection_data->target == gdk_atom_intern ("TEXT", FALSE))
+      else if (selection_data->target == gdk_atom_intern_static_string ("TEXT"))
 	{
 	  gtk_selection_convert (widget, GDK_SELECTION_PRIMARY,
 				 GDK_TARGET_STRING,

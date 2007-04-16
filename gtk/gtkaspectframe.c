@@ -31,8 +31,8 @@
 
 #include <config.h>
 #include "gtkaspectframe.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum {
@@ -43,8 +43,6 @@ enum {
   PROP_OBEY_CHILD
 };
 
-static void gtk_aspect_frame_class_init               (GtkAspectFrameClass *klass);
-static void gtk_aspect_frame_init                     (GtkAspectFrame      *aspect_frame);
 static void gtk_aspect_frame_set_property (GObject         *object,
 					   guint            prop_id,
 					   const GValue    *value,
@@ -59,35 +57,7 @@ static void gtk_aspect_frame_compute_child_allocation (GtkFrame            *fram
 #define MAX_RATIO 10000.0
 #define MIN_RATIO 0.0001
 
-static GtkFrameClass *parent_class = NULL;
-
-GType
-gtk_aspect_frame_get_type (void)
-{
-  static GType aspect_frame_type = 0;
-  
-  if (!aspect_frame_type)
-    {
-      static const GTypeInfo aspect_frame_info =
-      {
-	sizeof (GtkAspectFrameClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_aspect_frame_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkAspectFrame),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_aspect_frame_init,
-      };
-      
-      aspect_frame_type =
-	g_type_register_static (GTK_TYPE_FRAME, "GtkAspectFrame",
-				&aspect_frame_info, 0);
-    }
-  
-  return aspect_frame_type;
-}
+G_DEFINE_TYPE (GtkAspectFrame, gtk_aspect_frame, GTK_TYPE_FRAME)
 
 static void
 gtk_aspect_frame_class_init (GtkAspectFrameClass *class)
@@ -95,8 +65,6 @@ gtk_aspect_frame_class_init (GtkAspectFrameClass *class)
   GObjectClass *gobject_class;
   GtkFrameClass *frame_class;
   
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class = (GObjectClass*) class;
   frame_class = (GtkFrameClass*) class;
   
@@ -111,28 +79,28 @@ gtk_aspect_frame_class_init (GtkAspectFrameClass *class)
                                                        P_("Horizontal Alignment"),
                                                        P_("X alignment of the child"),
                                                        0.0, 1.0, 0.5,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE ));
+                                                       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_YALIGN,
                                    g_param_spec_float ("yalign",
                                                        P_("Vertical Alignment"),
                                                        P_("Y alignment of the child"),
                                                        0.0, 1.0, 0.5,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE ));
+                                                       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_RATIO,
                                    g_param_spec_float ("ratio",
                                                        P_("Ratio"),
                                                        P_("Aspect ratio if obey_child is FALSE"),
                                                        MIN_RATIO, MAX_RATIO, 0.5,
-                                                       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE ));
+                                                       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_OBEY_CHILD,
                                    g_param_spec_boolean ("obey-child",
                                                          P_("Obey child"),
                                                          P_("Force aspect ratio to match that of the frame's child"),
                                                          TRUE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
 }
 
 static void
@@ -317,7 +285,7 @@ gtk_aspect_frame_compute_child_allocation (GtkFrame      *frame,
       else
 	ratio = aspect_frame->ratio;
 
-      parent_class->compute_child_allocation (frame, &full_allocation);
+      GTK_FRAME_CLASS (gtk_aspect_frame_parent_class)->compute_child_allocation (frame, &full_allocation);
       
       if (ratio * full_allocation.height > full_allocation.width)
 	{
@@ -334,7 +302,7 @@ gtk_aspect_frame_compute_child_allocation (GtkFrame      *frame,
       child_allocation->y = full_allocation.y + aspect_frame->yalign * (full_allocation.height - child_allocation->height);
     }
   else
-    parent_class->compute_child_allocation (frame, child_allocation);
+    GTK_FRAME_CLASS (gtk_aspect_frame_parent_class)->compute_child_allocation (frame, child_allocation);
 }
 
 #define __GTK_ASPECT_FRAME_C__

@@ -164,6 +164,24 @@ notification of drags.
 @widget: 
 
 
+<!-- ##### FUNCTION gtk_drag_dest_set_track_motion ##### -->
+<para>
+
+</para>
+
+@widget: 
+@track_motion: 
+
+
+<!-- ##### FUNCTION gtk_drag_dest_get_track_motion ##### -->
+<para>
+
+</para>
+
+@widget: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_drag_finish ##### -->
 <para>
 Informs the drag source that the drop is finished, and
@@ -285,6 +303,17 @@ a widget.
 @hot_y: 
 
 
+<!-- ##### FUNCTION gtk_drag_set_icon_name ##### -->
+<para>
+
+</para>
+
+@context: 
+@icon_name: 
+@hot_x: 
+@hot_y: 
+
+
 <!-- ##### FUNCTION gtk_drag_set_icon_default ##### -->
 <para>
 </para>
@@ -358,6 +387,15 @@ widget. The widget must have a window.
 
 @widget: 
 @stock_id: 
+
+
+<!-- ##### FUNCTION gtk_drag_source_set_icon_name ##### -->
+<para>
+
+</para>
+
+@widget: 
+@icon_name: 
 
 
 <!-- ##### FUNCTION gtk_drag_source_unset ##### -->

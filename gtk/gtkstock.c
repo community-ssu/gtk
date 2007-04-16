@@ -33,6 +33,7 @@
 #include <gdk/gdkkeysyms.h>
 #include "gtkalias.h"
 
+static GHashTable *translate_hash = NULL;
 static GHashTable *stock_hash = NULL;
 static void init_stock_hash (void);
 
@@ -40,6 +41,14 @@ static void init_stock_hash (void);
  * must be freed when they are removed from the hash table.
  */
 #define NON_STATIC_MASK (1 << 29)
+
+typedef struct _GtkStockTranslateFunc GtkStockTranslateFunc;
+struct _GtkStockTranslateFunc
+{
+  GtkTranslateFunc func;
+  gpointer data;
+  GtkDestroyNotify notify;
+};
 
 static void
 real_add (const GtkStockItem *items,
@@ -155,7 +164,20 @@ gtk_stock_lookup (const gchar  *stock_id,
       *item = *found;
       item->modifier &= ~NON_STATIC_MASK;
       if (item->label)
-        item->label = dgettext (item->translation_domain, item->label);
+	{
+	  GtkStockTranslateFunc *translate;
+	  
+	  if (item->translation_domain)
+	    translate = (GtkStockTranslateFunc *) 
+	      g_hash_table_lookup (translate_hash, item->translation_domain);
+	  else
+	    translate = NULL;
+	  
+	  if (translate != NULL && translate->func != NULL)
+	    item->label = (* translate->func) (item->label, translate->data);
+	  else
+	    item->label = dgettext (item->translation_domain, item->label);
+	}
     }
 
   return found != NULL;
@@ -299,48 +321,78 @@ static const GtkStockItem builtin_items [] =
   { GTK_STOCK_CDROM, N_("_CD-Rom"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_CLEAR, N_("_Clear"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_CLOSE, N_("_Close"), GDK_CONTROL_MASK, 'w', GETTEXT_PACKAGE },
+  { GTK_STOCK_CONNECT, N_("C_onnect"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_CONVERT, N_("_Convert"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_COPY, N_("_Copy"), GDK_CONTROL_MASK, 'c', GETTEXT_PACKAGE },
+   { GTK_STOCK_COPY, N_("_Copy"), GDK_CONTROL_MASK, 'c', GETTEXT_PACKAGE },
   { GTK_STOCK_CUT, N_("Cu_t"), GDK_CONTROL_MASK, 'x', GETTEXT_PACKAGE },
   { GTK_STOCK_DELETE, N_("_Delete"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_DISCONNECT, N_("_Disconnect"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_EXECUTE, N_("_Execute"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_EDIT, N_("_Edit"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_FIND, N_("_Find"), GDK_CONTROL_MASK, 'f', GETTEXT_PACKAGE },
   { GTK_STOCK_FIND_AND_REPLACE, N_("Find and _Replace"), GDK_CONTROL_MASK, 'r', GETTEXT_PACKAGE },
   { GTK_STOCK_FLOPPY, N_("_Floppy"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GOTO_BOTTOM, N_("_Bottom"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GOTO_FIRST, N_("_First"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GOTO_LAST, N_("_Last"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GOTO_TOP, N_("_Top"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GO_BACK, N_("_Back"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GO_DOWN, N_("_Down"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GO_FORWARD, N_("_Forward"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_GO_UP, N_("_Up"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_FULLSCREEN, N_("_Fullscreen"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_LEAVE_FULLSCREEN, N_("_Leave Fullscreen"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GOTO_BOTTOM, N_("Navigation|_Bottom"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GOTO_FIRST, N_("Navigation|_First"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GOTO_LAST, N_("Navigation|_Last"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GOTO_TOP, N_("Navigation|_Top"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GO_BACK, N_("Navigation|_Back"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GO_DOWN, N_("Navigation|_Down"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GO_FORWARD, N_("Navigation|_Forward"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_GO_UP, N_("Navigation|_Up"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_HARDDISK, N_("_Harddisk"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_HELP, N_("_Help"), GDK_CONTROL_MASK, 'h', GETTEXT_PACKAGE },
   { GTK_STOCK_HOME, N_("_Home"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_INDENT, N_("Increase Indent"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_UNINDENT, N_("Decrease Indent"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_INDEX, N_("_Index"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_INFO, N_("_Information"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_ITALIC, N_("_Italic"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_JUMP_TO, N_("_Jump to"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_JUSTIFY_CENTER, N_("_Center"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_JUSTIFY_FILL, N_("_Fill"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_JUSTIFY_LEFT, N_("_Left"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_JUSTIFY_RIGHT, N_("_Right"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_FORWARD, N_("_Forward"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_NEXT, N_("_Next"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_PAUSE, N_("P_ause"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_PLAY, N_("_Play"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_PREVIOUS, N_("Pre_vious"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_RECORD, N_("_Record"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_REWIND, N_("R_ewind"), 0, 0, GETTEXT_PACKAGE },
-  { GTK_STOCK_MEDIA_STOP, N_("_Stop"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_JUSTIFY_CENTER, N_("Justify|_Center"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_JUSTIFY_FILL, N_("Justify|_Fill"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_JUSTIFY_LEFT, N_("Justify|_Left"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_JUSTIFY_RIGHT, N_("Justify|_Right"), 0, 0, GETTEXT_PACKAGE },
+
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_FORWARD, N_("Media|_Forward"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_NEXT, N_("Media|_Next"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_PAUSE, N_("Media|P_ause"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_PLAY, N_("Media|_Play"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_PREVIOUS, N_("Media|Pre_vious"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_RECORD, N_("Media|_Record"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_REWIND, N_("Media|R_ewind"), 0, 0, GETTEXT_PACKAGE },
+  /* translators, strip the prefix up to and including the first | */
+  { GTK_STOCK_MEDIA_STOP, N_("Media|_Stop"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_NETWORK, N_("_Network"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_NEW, N_("_New"), GDK_CONTROL_MASK, 'n', GETTEXT_PACKAGE },
   { GTK_STOCK_NO, N_("_No"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_OK, N_("_OK"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_OPEN, N_("_Open"), GDK_CONTROL_MASK, 'o', GETTEXT_PACKAGE },
+  { GTK_STOCK_ORIENTATION_LANDSCAPE, N_("Landscape"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_ORIENTATION_PORTRAIT, N_("Portrait"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_ORIENTATION_REVERSE_LANDSCAPE, N_("Reverse landscape"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT, N_("Reverse portrait"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_PASTE, N_("_Paste"), GDK_CONTROL_MASK, 'v', GETTEXT_PACKAGE },
   { GTK_STOCK_PREFERENCES, N_("_Preferences"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_PRINT, N_("_Print"), 0, 0, GETTEXT_PACKAGE },
@@ -353,6 +405,7 @@ static const GtkStockItem builtin_items [] =
   { GTK_STOCK_REVERT_TO_SAVED, N_("_Revert"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_SAVE, N_("_Save"), GDK_CONTROL_MASK, 's', GETTEXT_PACKAGE },
   { GTK_STOCK_SAVE_AS, N_("Save _As"), 0, 0, GETTEXT_PACKAGE },
+  { GTK_STOCK_SELECT_ALL, N_("Select _All"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_SELECT_COLOR, N_("_Color"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_SELECT_FONT, N_("_Font"), 0, 0, GETTEXT_PACKAGE },
   { GTK_STOCK_SORT_ASCENDING, N_("_Ascending"), 0, 0, GETTEXT_PACKAGE },
@@ -370,6 +423,62 @@ static const GtkStockItem builtin_items [] =
   { GTK_STOCK_ZOOM_OUT, N_("Zoom _Out"), 0, 0, GETTEXT_PACKAGE }
 };
 
+/**
+ * gtk_stock_set_translate_func: 
+ * @domain: the translation domain for which @func shall be used
+ * @func: a #GtkTranslateFunc 
+ * @data: data to pass to @func
+ * @notify: a #GtkDestroyNotify that is called when @data is 
+ *   no longer needed
+ *
+ * Sets a function to be used for translating the @label of 
+ * a stock item.
+ *
+ * If no function is registered for a translation domain,
+ * dgettext() is used.
+ *
+ * Since: 2.8
+ * 
+ */
+void
+gtk_stock_set_translate_func (const gchar      *domain,
+			      GtkTranslateFunc  func,
+			      gpointer          data,
+			      GtkDestroyNotify  notify)
+{
+  GtkStockTranslateFunc *translate;
+  gchar *domainname;
+ 
+  domainname = g_strdup (domain);
+
+  translate = (GtkStockTranslateFunc *) 
+    g_hash_table_lookup (translate_hash, domainname);
+
+  if (translate)
+    {
+      if (translate->notify)
+	(* translate->notify) (translate->data);
+    }
+  else
+    translate = g_new0 (GtkStockTranslateFunc, 1);
+    
+  translate->func = func;
+  translate->data = data;
+  translate->notify = notify;
+      
+  g_hash_table_insert (translate_hash, domainname, translate);
+}
+
+static gchar *
+sgettext_swapped (const gchar *msgid, 
+		  gpointer     data)
+{
+  gchar *domainname = data;
+
+  return (gchar *)g_strip_context (msgid, dgettext (domainname, msgid));
+}
+
+
 static void
 init_stock_hash (void)
 {
@@ -378,6 +487,17 @@ init_stock_hash (void)
       stock_hash = g_hash_table_new (g_str_hash, g_str_equal);
 
       gtk_stock_add_static (builtin_items, G_N_ELEMENTS (builtin_items));
+    }
+
+  if (translate_hash == NULL)
+    {
+      translate_hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+	                                      g_free, NULL);
+
+      gtk_stock_set_translate_func (GETTEXT_PACKAGE, 
+				    sgettext_swapped,
+				    GETTEXT_PACKAGE,
+				    NULL);
     }
 }
 

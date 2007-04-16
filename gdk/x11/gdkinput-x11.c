@@ -242,12 +242,14 @@ gdk_input_device_new (GdkDisplay  *display,
   gdkdev->proximityout_type = 0;
   gdkdev->changenotify_type = 0;
 
-  /* Hildon: always enable extension events to get touchscreen pressure */
+#ifdef MAEMO_CHANGES
+  /* always enable extension events to get touchscreen pressure */
   if (gdkdev->info.source == GDK_SOURCE_PEN)
     {
       if (!gdk_device_set_mode (&gdkdev->info, GDK_MODE_SCREEN))
-	g_warning ("Failed to enable pressure on `%s'", gdkdev->info.name);
+        g_warning ("Failed to enable pressure on `%s'", gdkdev->info.name);
     }
+#endif /* MAEMO_CHANGES */
 
   return gdkdev;
 
@@ -454,18 +456,21 @@ gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
 	  break;
 	}
     }
-  
-  /* Xi spec allows max_value be unset (0 or -1 usually) meaning bounded to screen size */
+
+  /* Xi spec allows max_value be unset (0 or -1 usually) meaning
+   * bounded to screen size
+   */
   if (gdkdev->axes[x_axis].max_value <= 0)
     device_width = gdk_screen_get_width (gdk_drawable_get_screen (input_window->window));
   else
-    device_width = gdkdev->axes[x_axis].max_value - 
-		     gdkdev->axes[x_axis].min_value;
+    device_width = (gdkdev->axes[x_axis].max_value -
+                    gdkdev->axes[x_axis].min_value);
+
   if (gdkdev->axes[y_axis].max_value <= 0)
     device_height = gdk_screen_get_height (gdk_drawable_get_screen (input_window->window));
   else
-    device_height = gdkdev->axes[y_axis].max_value - 
-		      gdkdev->axes[y_axis].min_value;
+    device_height = (gdkdev->axes[y_axis].max_value -
+                     gdkdev->axes[y_axis].min_value);
 
   if (gdkdev->info.mode == GDK_MODE_SCREEN) 
     {
@@ -525,12 +530,14 @@ gdk_input_translate_coordinates (GdkDevicePrivate *gdkdev,
       switch (gdkdev->info.axes[i].use)
 	{
 	case GDK_AXIS_X:
-	  axis_out[i] = x_offset + x_scale * axis_data[x_axis];
+	  axis_out[i] = x_offset + x_scale * (axis_data[x_axis] - 
+	    gdkdev->axes[x_axis].min_value);
 	  if (x_out)
 	    *x_out = axis_out[i];
 	  break;
 	case GDK_AXIS_Y:
-	  axis_out[i] = y_offset + y_scale * axis_data[y_axis];
+	  axis_out[i] = y_offset + y_scale * (axis_data[y_axis] - 
+	    gdkdev->axes[y_axis].min_value);
 	  if (y_out)
 	    *y_out = axis_out[i];
 	  break;
@@ -592,8 +599,8 @@ _gdk_input_common_other_event (GdkEvent         *event,
       event->button.button = xdbe->button;
 
       if (event->button.type == GDK_BUTTON_PRESS)
-	_gdk_event_button_generate (gdk_drawable_get_display (event->button.window),
-				    event);
+        _gdk_event_button_generate (gdk_drawable_get_display (event->button.window),
+                                    event);
 
       GDK_NOTE (EVENTS,
 	g_print ("button %s:\t\twindow: %ld  device: %ld  x,y: %f %f  button: %d\n",

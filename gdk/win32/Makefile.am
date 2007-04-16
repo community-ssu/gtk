@@ -61,7 +61,6 @@ libgdk_win32_la_SOURCES = \
 	gdkinput-win32.h \
 	gdkkeys-win32.c \
 	gdkmain-win32.c \
-	gdkpango-win32.c \
 	gdkpixmap-win32.c \
 	gdkpixmap-win32.h \
 	gdkprivate-win32.h \
@@ -77,5 +76,3 @@ libgdk_win32_la_SOURCES = \
 
 libgdkinclude_HEADERS =		\
 	gdkwin32.h
-
-libgdk_win32_la_LIBADD = rc/gdk-win32res.lo

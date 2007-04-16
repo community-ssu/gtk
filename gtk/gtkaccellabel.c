@@ -33,8 +33,8 @@
 #include "gtkaccellabel.h"
 #include "gtkaccelmap.h"
 #include "gtkmain.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 enum {
@@ -43,8 +43,6 @@ enum {
   PROP_ACCEL_WIDGET
 };
 
-static void         gtk_accel_label_class_init   (GtkAccelLabelClass *klass);
-static void         gtk_accel_label_init         (GtkAccelLabel      *accel_label);
 static void         gtk_accel_label_set_property (GObject            *object,
 						  guint               prop_id,
 						  const GValue       *value,
@@ -62,35 +60,7 @@ static gboolean     gtk_accel_label_expose_event (GtkWidget          *widget,
 static const gchar *gtk_accel_label_get_string   (GtkAccelLabel      *accel_label);
 
 
-static GtkLabelClass *parent_class = NULL;
-
-GType
-gtk_accel_label_get_type (void)
-{
-  static GType accel_label_type = 0;
-  
-  if (!accel_label_type)
-    {
-      static const GTypeInfo accel_label_info =
-      {
-	sizeof (GtkAccelLabelClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_accel_label_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkAccelLabel),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_accel_label_init,
-      };
-      
-      accel_label_type =
-	g_type_register_static (GTK_TYPE_LABEL, "GtkAccelLabel",
-				&accel_label_info, 0);
-    }
-  
-  return accel_label_type;
-}
+G_DEFINE_TYPE (GtkAccelLabel, gtk_accel_label, GTK_TYPE_LABEL)
 
 static void
 gtk_accel_label_class_init (GtkAccelLabelClass *class)
@@ -98,8 +68,6 @@ gtk_accel_label_class_init (GtkAccelLabelClass *class)
   GObjectClass *gobject_class = G_OBJECT_CLASS (class);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-  
-  parent_class = g_type_class_peek_parent (class);
   
   gobject_class->finalize = gtk_accel_label_finalize;
   gobject_class->set_property = gtk_accel_label_set_property;
@@ -116,20 +84,23 @@ gtk_accel_label_class_init (GtkAccelLabelClass *class)
    * that use the shift key. If the text on this key isn't typically
    * translated on keyboards used for your language, don't translate
    * this.
+   * And do not translate the part before the |.
    */
-  class->mod_name_shift = g_strdup (_("Shift"));
+  class->mod_name_shift = g_strdup (Q_("keyboard label|Shift"));
   /* This is the text that should appear next to menu accelerators
    * that use the control key. If the text on this key isn't typically
    * translated on keyboards used for your language, don't translate
    * this.
+   * And do not translate the part before the |.
    */
-  class->mod_name_control = g_strdup (_("Ctrl"));
+  class->mod_name_control = g_strdup (Q_("keyboard label|Ctrl"));
   /* This is the text that should appear next to menu accelerators
    * that use the alt key. If the text on this key isn't typically
    * translated on keyboards used for your language, don't translate
    * this.
+   * And do not translate the part before the |.
    */
-  class->mod_name_alt = g_strdup (_("Alt"));
+  class->mod_name_alt = g_strdup (Q_("keyboard label|Alt"));
   class->mod_separator = g_strdup ("+");
   class->accel_seperator = g_strdup (" / ");
   class->latin1_to_char = TRUE;
@@ -140,14 +111,14 @@ gtk_accel_label_class_init (GtkAccelLabelClass *class)
 						       P_("Accelerator Closure"),
 						       P_("The closure to be monitored for accelerator changes"),
 						       G_TYPE_CLOSURE,
-						       GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+						       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_ACCEL_WIDGET,
                                    g_param_spec_object ("accel-widget",
                                                         P_("Accelerator Widget"),
                                                         P_("The widget to be monitored for accelerator changes"),
                                                         GTK_TYPE_WIDGET,
-                                                        GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                        GTK_PARAM_READWRITE));
 }
 
 static void
@@ -230,7 +201,7 @@ gtk_accel_label_destroy (GtkObject *object)
   gtk_accel_label_set_accel_widget (accel_label, NULL);
   gtk_accel_label_set_accel_closure (accel_label, NULL);
   
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_accel_label_parent_class)->destroy (object);
 }
 
 static void
@@ -240,7 +211,7 @@ gtk_accel_label_finalize (GObject *object)
 
   g_free (accel_label->accel_string);
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_accel_label_parent_class)->finalize (object);
 }
 
 /**
@@ -278,8 +249,8 @@ gtk_accel_label_size_request (GtkWidget	     *widget,
   PangoLayout *layout;
   gint width;
   
-  if (GTK_WIDGET_CLASS (parent_class)->size_request)
-    GTK_WIDGET_CLASS (parent_class)->size_request (widget, requisition);
+  if (GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->size_request)
+    GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->size_request (widget, requisition);
 
   layout = gtk_widget_create_pango_layout (widget, gtk_accel_label_get_string (accel_label));
   pango_layout_get_pixel_size (layout, &width, NULL);
@@ -336,8 +307,8 @@ gtk_accel_label_expose_event (GtkWidget      *widget,
 				    pango_layout_get_width (label_layout) 
 				    - ac_width * PANGO_SCALE);
 	  
-	  if (GTK_WIDGET_CLASS (parent_class)->expose_event)
-	    GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+	  if (GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->expose_event)
+	    GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->expose_event (widget, event);
 	  if (direction == GTK_TEXT_DIR_RTL)
 	    widget->allocation.x -= ac_width;
 	  widget->allocation.width += ac_width;
@@ -371,8 +342,8 @@ gtk_accel_label_expose_event (GtkWidget      *widget,
 	}
       else
 	{
-	  if (GTK_WIDGET_CLASS (parent_class)->expose_event)
-	    GTK_WIDGET_CLASS (parent_class)->expose_event (widget, event);
+	  if (GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->expose_event)
+	    GTK_WIDGET_CLASS (gtk_accel_label_parent_class)->expose_event (widget, event);
 	}
     }
   
@@ -560,6 +531,80 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
       g_string_append (gstring, klass->mod_name_alt);
       seen_mod = TRUE;
     }
+  if (accelerator_mods & GDK_MOD2_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      g_string_append (gstring, "Mod2");
+      seen_mod = TRUE;
+    }
+  if (accelerator_mods & GDK_MOD3_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      g_string_append (gstring, "Mod3");
+      seen_mod = TRUE;
+    }
+  if (accelerator_mods & GDK_MOD4_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      g_string_append (gstring, "Mod4");
+      seen_mod = TRUE;
+    }
+  if (accelerator_mods & GDK_MOD5_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      g_string_append (gstring, "Mod5");
+      seen_mod = TRUE;
+    }
+  if (accelerator_mods & GDK_SUPER_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      /* This is the text that should appear next to menu accelerators
+       * that use the super key. If the text on this key isn't typically
+       * translated on keyboards used for your language, don't translate
+       * this.
+       * And do not translate the part before the |.
+       */
+      g_string_append (gstring, Q_("keyboard label|Super"));
+      seen_mod = TRUE;
+    }
+  if (accelerator_mods & GDK_HYPER_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      /* This is the text that should appear next to menu accelerators
+       * that use the hyper key. If the text on this key isn't typically
+       * translated on keyboards used for your language, don't translate
+       * this.
+       * And do not translate the part before the |.
+       */
+      g_string_append (gstring, Q_("keyboard label|Hyper"));
+      seen_mod = TRUE;
+    }
+  if (accelerator_mods & GDK_META_MASK)
+    {
+      if (seen_mod)
+	g_string_append (gstring, klass->mod_separator);
+
+      /* This is the text that should appear next to menu accelerators
+       * that use the meta key. If the text on this key isn't typically
+       * translated on keyboards used for your language, don't translate
+       * this.
+       * And do not translate the part before the |.
+       */
+      g_string_append (gstring, Q_("keyboard label|Meta"));
+      seen_mod = TRUE;
+    }
   if (seen_mod)
     g_string_append (gstring, klass->mod_separator);
   
@@ -570,10 +615,12 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
       switch (ch)
 	{
 	case ' ':
-	  g_string_append (gstring, "Space");
+	  /* do not translate the part before the | */
+	  g_string_append (gstring, Q_("keyboard label|Space"));
 	  break;
 	case '\\':
-	  g_string_append (gstring, "Backslash");
+	  /* do not translate the part before the | */
+	  g_string_append (gstring, Q_("keyboard label|Backslash"));
 	  break;
 	default:
 	  g_string_append_unichar (gstring, g_unichar_toupper (ch));
@@ -583,13 +630,29 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
   else
     {
       gchar *tmp;
-      
-      tmp = gtk_accelerator_name (accelerator_key, 0);
-      if (tmp[0] != 0 && tmp[1] == 0)
-	tmp[0] = g_ascii_toupper (tmp[0]);
-      substitute_underscores (tmp);
-      g_string_append (gstring, tmp);
-      g_free (tmp);
+
+      tmp = gdk_keyval_name (gdk_keyval_to_lower (accelerator_key));
+      if (tmp != NULL)
+	{
+	  if (tmp[0] != 0 && tmp[1] == 0)
+	    g_string_append_c (gstring, g_ascii_toupper (tmp[0]));
+	  else
+	    {
+	      gchar msg[128];
+	      gchar *str;
+	      
+	      strcpy (msg, "keyboard label|");
+	      g_strlcat (msg, tmp, 128);
+	      str = dgettext (GETTEXT_PACKAGE, msg);
+	      if (str == msg)
+		{
+		  g_string_append (gstring, tmp);
+		  substitute_underscores (gstring->str);
+		}
+	      else
+		g_string_append (gstring, str);
+	    }
+	}
     }
 
   return g_string_free (gstring, FALSE);
@@ -598,16 +661,9 @@ _gtk_accel_label_class_get_accelerator_label (GtkAccelLabelClass *klass,
 gboolean
 gtk_accel_label_refetch (GtkAccelLabel *accel_label)
 {
-  GtkAccelLabelClass *class;
-  gboolean keyboard_shortcuts;
+  gboolean enable_accels;
 
   g_return_val_if_fail (GTK_IS_ACCEL_LABEL (accel_label), FALSE);
-
-  g_object_get (gtk_widget_get_settings (GTK_WIDGET (accel_label)),
-		"hildon-keyboard-shortcuts", &keyboard_shortcuts,
-		NULL);
-
-  class = GTK_ACCEL_LABEL_GET_CLASS (accel_label);
 
   if (accel_label->accel_string)
     {
@@ -615,7 +671,11 @@ gtk_accel_label_refetch (GtkAccelLabel *accel_label)
       accel_label->accel_string = NULL;
     }
 
-  if (keyboard_shortcuts && accel_label->accel_closure)
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (accel_label)),
+                "gtk-enable-accels", &enable_accels,
+                NULL);
+
+  if (enable_accels && accel_label->accel_closure)
     {
       GtkAccelKey *key = gtk_accel_group_find (accel_label->accel_group, find_accel, accel_label->accel_closure);
 

@@ -64,10 +64,7 @@ enum {
 };
 
 static guint signals[LAST_SIGNAL];
-static GtkRangeClass *parent_class = NULL;
 
-static void gtk_scale_class_init       (GtkScaleClass *klass);
-static void gtk_scale_init             (GtkScale      *scale);
 static void gtk_scale_set_property     (GObject       *object,
                                         guint          prop_id,
                                         const GValue  *value,
@@ -84,33 +81,7 @@ static void gtk_scale_finalize         (GObject       *object);
 static void gtk_scale_screen_changed   (GtkWidget     *widget,
                                         GdkScreen     *old_screen);
 
-GType
-gtk_scale_get_type (void)
-{
-  static GType scale_type = 0;
-
-  if (!scale_type)
-    {
-      static const GTypeInfo scale_info =
-      {
-	sizeof (GtkScaleClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_scale_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkScale),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_scale_init,
-	NULL,		/* value_table */
-      };
-
-      scale_type = g_type_register_static (GTK_TYPE_RANGE, "GtkScale",
-					   &scale_info, G_TYPE_FLAG_ABSTRACT);
-    }
-
-  return scale_type;
-}
+G_DEFINE_ABSTRACT_TYPE (GtkScale, gtk_scale, GTK_TYPE_RANGE)
 
 static gboolean
 single_string_accumulator (GSignalInvocationHint *ihint,
@@ -129,9 +100,9 @@ single_string_accumulator (GSignalInvocationHint *ihint,
 }
 
 
-#define add_slider_binding(binding_set, keyval, mask, scroll)          \
-  gtk_binding_entry_add_signal (binding_set, keyval, mask,             \
-                                "move_slider", 1,                      \
+#define add_slider_binding(binding_set, keyval, mask, scroll)              \
+  gtk_binding_entry_add_signal (binding_set, keyval, mask,                 \
+                                I_("move_slider"), 1, \
                                 GTK_TYPE_SCROLL_TYPE, scroll)
 
 static void
@@ -146,8 +117,6 @@ gtk_scale_class_init (GtkScaleClass *class)
   range_class = (GtkRangeClass*) class;
   widget_class = (GtkWidgetClass*) class;
   
-  parent_class = g_type_class_peek_parent (class);
-  
   gobject_class->set_property = gtk_scale_set_property;
   gobject_class->get_property = gtk_scale_get_property;
   gobject_class->finalize = gtk_scale_finalize;
@@ -158,7 +127,7 @@ gtk_scale_class_init (GtkScaleClass *class)
   range_class->get_range_border = gtk_scale_get_range_border;
   
   signals[FORMAT_VALUE] =
-    g_signal_new ("format_value",
+    g_signal_new (I_("format_value"),
                   G_TYPE_FROM_CLASS (gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (GtkScaleClass, format_value),
@@ -520,7 +489,7 @@ gtk_scale_get_range_border (GtkRange  *range,
   if (scale->draw_value)
     {
       gint value_spacing;
-      gtk_widget_style_get (widget, "value_spacing", &value_spacing, NULL);
+      gtk_widget_style_get (widget, "value-spacing", &value_spacing, NULL);
 
       switch (scale->value_pos)
         {
@@ -604,14 +573,14 @@ gtk_scale_style_set (GtkWidget *widget,
   range = GTK_RANGE (widget);
   
   gtk_widget_style_get (widget,
-                        "slider_length", &slider_length,
+                        "slider-length", &slider_length,
                         NULL);
   
   range->min_slider_size = slider_length;
   
   _gtk_scale_clear_layout (GTK_SCALE (widget));
 
-  (* GTK_WIDGET_CLASS (parent_class)->style_set) (widget, previous);
+  (* GTK_WIDGET_CLASS (gtk_scale_parent_class)->style_set) (widget, previous);
 }
 
 static void
@@ -646,8 +615,8 @@ _gtk_scale_format_value (GtkScale *scale,
   if (fmt)
     return fmt;
   else
-    return g_strdup_printf ("%0.*f", scale->digits,
-                            value);
+    /* insert a LRM, to prevent -20 to come out as 20- in RTL locales */
+    return g_strdup_printf ("\342\200\216%0.*f", scale->digits, value);
 }
 
 static void
@@ -661,7 +630,7 @@ gtk_scale_finalize (GObject *object)
 
   _gtk_scale_clear_layout (scale);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_scale_parent_class)->finalize (object);
 }
 
 /**
@@ -722,7 +691,8 @@ gtk_scale_get_layout_offsets (GtkScale *scale,
                               gint     *x,
                               gint     *y)
 {
-  gint local_x, local_y;
+  gint local_x = 0; 
+  gint local_y = 0;
 
   g_return_if_fail (GTK_IS_SCALE (scale));
 

@@ -30,6 +30,7 @@
 #define __XDG_MIME_H__
 
 #include <stdlib.h>
+#include <sys/stat.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -58,10 +59,10 @@ typedef void (*XdgMimeDestroy)  (void *user_data);
 #define xdg_mime_unalias_mime_type            XDG_ENTRY(unalias_mime_type)
 #define xdg_mime_get_max_buffer_extents       XDG_ENTRY(get_max_buffer_extents)
 #define xdg_mime_shutdown                     XDG_ENTRY(shutdown)
+#define xdg_mime_dump                         XDG_ENTRY(dump)
 #define xdg_mime_register_reload_callback     XDG_ENTRY(register_reload_callback)
 #define xdg_mime_remove_callback              XDG_ENTRY(remove_callback)
 #define xdg_mime_type_unknown                 XDG_ENTRY(type_unknown)
-#define xdg_mime_dump                         XDG_ENTRY(dump)
 #endif
 
 extern const char xdg_mime_type_unknown[];
@@ -69,7 +70,8 @@ extern const char xdg_mime_type_unknown[];
 
 const char  *xdg_mime_get_mime_type_for_data       (const void *data,
 						    size_t      len);
-const char  *xdg_mime_get_mime_type_for_file       (const char *file_name);
+const char  *xdg_mime_get_mime_type_for_file       (const char *file_name,
+                                                    struct stat *statbuf);
 const char  *xdg_mime_get_mime_type_from_file_name (const char *file_name);
 int          xdg_mime_is_valid_mime_type           (const char *mime_type);
 int          xdg_mime_mime_type_equal              (const char *mime_a,
@@ -94,8 +96,16 @@ int          xdg_mime_register_reload_callback     (XdgMimeCallback  callback,
 						    XdgMimeDestroy   destroy);
 void         xdg_mime_remove_callback              (int              callback_id);
 
+   /* Private versions of functions that don't call xdg_mime_init () */
+int          _xdg_mime_mime_type_equal             (const char *mime_a,
+						    const char *mime_b);
+int          _xdg_mime_media_type_equal            (const char *mime_a,
+						    const char *mime_b);
+int          _xdg_mime_mime_type_subclass          (const char *mime,
+						    const char *base);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
-
 #endif /* __XDG_MIME_H__ */

@@ -61,7 +61,7 @@ enum {
 
 #define GTK_CELL_RENDERER_COMBO_PATH "gtk-cell-renderer-combo-path"
 
-G_DEFINE_TYPE (GtkCellRendererCombo, gtk_cell_renderer_combo, GTK_TYPE_CELL_RENDERER_TEXT);
+G_DEFINE_TYPE (GtkCellRendererCombo, gtk_cell_renderer_combo, GTK_TYPE_CELL_RENDERER_TEXT)
 
 static void
 gtk_cell_renderer_combo_class_init (GtkCellRendererComboClass *klass)
@@ -376,9 +376,9 @@ gtk_cell_renderer_combo_start_editing (GtkCellRenderer     *cell,
 				       &(search_data.iter));
     }
 
-  g_object_set (combo, "has_frame", FALSE, NULL);
+  g_object_set (combo, "has-frame", FALSE, NULL);
   g_object_set_data_full (G_OBJECT (combo),
-			  GTK_CELL_RENDERER_COMBO_PATH,
+			  I_(GTK_CELL_RENDERER_COMBO_PATH),
 			  g_strdup (path), g_free);
 
   gtk_widget_show (combo);

@@ -334,7 +334,7 @@ _gtk_rbtree_new (void)
 {
   GtkRBTree *retval;
 
-  retval = (GtkRBTree *) g_new (GtkRBTree, 1);
+  retval = g_new (GtkRBTree, 1);
   retval->parent_tree = NULL;
   retval->parent_node = NULL;
 
@@ -797,7 +797,8 @@ _gtk_rbtree_mark_invalid (GtkRBTree *tree)
 
 void
 _gtk_rbtree_set_fixed_height (GtkRBTree *tree,
-			      gint       height)
+			      gint       height,
+			      gboolean   mark_valid)
 {
   GtkRBNode *node;
 
@@ -815,10 +816,12 @@ _gtk_rbtree_set_fixed_height (GtkRBTree *tree,
       if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_INVALID))
         {
 	  _gtk_rbtree_node_set_height (tree, node, height);
+	  if (mark_valid)
+	    _gtk_rbtree_node_mark_valid (tree, node);
 	}
 
       if (node->children)
-	_gtk_rbtree_set_fixed_height (node->children, height);
+	_gtk_rbtree_set_fixed_height (node->children, height, mark_valid);
     }
   while ((node = _gtk_rbtree_next (tree, node)) != NULL);
 }

@@ -24,9 +24,6 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
-/* Modified by Nokia Corporation - 2005.
- * 
- */
 #include <config.h>
 #include "gtkbutton.h"
 #include "gtkdialog.h"
@@ -34,13 +31,11 @@
 #include "gtklabel.h"
 #include "gtkhseparator.h"
 #include "gtkmarshalers.h"
-#include "gtkhbox.h"
 #include "gtkvbox.h"
 #include "gdkkeysyms.h"
 #include "gtkmain.h"
 #include "gtkintl.h"
 #include "gtkbindings.h"
-#include "gtkalignment.h"
 #include "gtkprivate.h"
 #include "gtkalias.h"
 
@@ -48,8 +43,6 @@
 
 typedef struct {
   guint ignore_separator : 1;
-  GtkWidget *first;
-  GtkWidget *last;
 } GtkDialogPrivate;
 
 typedef struct _ResponseData ResponseData;
@@ -58,9 +51,6 @@ struct _ResponseData
 {
   gint response_id;
 };
-
-static void gtk_dialog_class_init (GtkDialogClass *klass);
-static void gtk_dialog_init       (GtkDialog      *dialog);
 
 static void gtk_dialog_add_buttons_valist (GtkDialog   *dialog,
                                            const gchar *first_button_text,
@@ -85,14 +75,8 @@ static void gtk_dialog_map               (GtkWidget        *widget);
 static void gtk_dialog_close             (GtkDialog        *dialog);
 
 static ResponseData* get_response_data   (GtkWidget        *widget,
-                                          gboolean          create);
+					  gboolean          create);
 
-static gboolean gtk_dialog_handle_focus (GtkWidget *widget,
-                                         GtkDirectionType dir,
-                                         gpointer user_data);
-
-static gboolean gtk_dialog_move_to_next_active_button (GList *iter,
-                                                       gboolean forward);
 enum {
   PROP_0,
   PROP_HAS_SEPARATOR
@@ -104,35 +88,9 @@ enum {
   LAST_SIGNAL
 };
 
-static gpointer parent_class;
 static guint dialog_signals[LAST_SIGNAL];
 
-GType
-gtk_dialog_get_type (void)
-{
-  static GType dialog_type = 0;
-
-  if (!dialog_type)
-    {
-      static const GTypeInfo dialog_info =
-      {
-	sizeof (GtkDialogClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_dialog_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkDialog),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_dialog_init,
-      };
-
-      dialog_type = g_type_register_static (GTK_TYPE_WINDOW, "GtkDialog",
-					    &dialog_info, 0);
-    }
-
-  return dialog_type;
-}
+G_DEFINE_TYPE (GtkDialog, gtk_dialog, GTK_TYPE_WINDOW)
 
 static void
 gtk_dialog_class_init (GtkDialogClass *class)
@@ -144,8 +102,6 @@ gtk_dialog_class_init (GtkDialogClass *class)
   gobject_class = G_OBJECT_CLASS (class);
   widget_class = GTK_WIDGET_CLASS (class);
   
-  parent_class = g_type_class_peek_parent (class);
-
   gobject_class->set_property = gtk_dialog_set_property;
   gobject_class->get_property = gtk_dialog_get_property;
   
@@ -165,7 +121,7 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                          GTK_PARAM_READWRITE));
   
   dialog_signals[RESPONSE] =
-    g_signal_new ("response",
+    g_signal_new (I_("response"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkDialogClass, response),
@@ -175,7 +131,7 @@ gtk_dialog_class_init (GtkDialogClass *class)
 		  G_TYPE_INT);
 
   dialog_signals[CLOSE] =
-    g_signal_new ("close",
+    g_signal_new (I_("close"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkDialogClass, close),
@@ -197,9 +153,10 @@ gtk_dialog_class_init (GtkDialogClass *class)
    * Spacing between elements of the main dialog area.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("content-area-spacing",
+                                           g_param_spec_int ("content-area-spacing",
                                                              P_("Content area spacing"),
                                                              P_("Spacing between elements of the main dialog area"),
                                                              0,
@@ -212,7 +169,7 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                              P_("Spacing between buttons"),
                                                              0,
                                                              G_MAXINT,
-                                                             10,
+                                                             6,
                                                              GTK_PARAM_READABLE));
   
   gtk_widget_class_install_style_property (widget_class,
@@ -222,37 +179,6 @@ gtk_dialog_class_init (GtkDialogClass *class)
                                                              0,
                                                              G_MAXINT,
                                                              5,
-                                                             GTK_PARAM_READABLE));
-
-  /**
-   * GtkDialog:extended-left-border:
-   *
-   * Width of extra left border around the main dialog area.
-   *
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("extended-left-border",
-                                                             P_("Content area extra left border"),
-                                                             P_("Width of extra left border around the main dialog area"),
-                                                             0,
-                                                             G_MAXINT,
-                                                             0,
-                                                             GTK_PARAM_READABLE));
-  /**
-   * GtkDialog:extended-right-border:
-   *
-   * Width of extra right border around the main dialog area.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-                                           g_param_spec_int ("extended-right-border",
-                                                             P_("Content area extra right border"),
-                                                             P_("Width of extra right border around the main dialog area"),
-                                                             0,
-                                                             G_MAXINT,
-                                                             0,
                                                              GTK_PARAM_READABLE));
 
   binding_set = gtk_binding_set_by_class (class);
@@ -265,72 +191,33 @@ static void
 update_spacings (GtkDialog *dialog)
 {
   GtkWidget *widget;
-  GtkWidget *hbox;
-  GtkWidget *left_padding;
-  GtkWidget *right_padding;
   gint content_area_border;
-  gint content_area_spacing;
   gint button_spacing;
   gint action_area_border;
-
-	gint extended_left_border;
-  gint extended_right_border;
+  gint content_area_spacing;
   
   widget = GTK_WIDGET (dialog);
 
   gtk_widget_style_get (widget,
-                        "content_area_border",
-                        &content_area_border,
-                        "content_area_spacing",
-                        &content_area_spacing,
-                        "button_spacing",
-                        &button_spacing,
-                        "action_area_border",
-                        &action_area_border,
-	"extended_left_border",
-	&extended_left_border,
-	"extended_right_border",
-	&extended_right_border,
+                        "content-area-border", &content_area_border,
+                        "content-area-spacing", &content_area_spacing,
+                        "button-spacing", &button_spacing,
+                        "action-area-border", &action_area_border,
                         NULL);
 
-  gtk_box_set_spacing (GTK_BOX (dialog->vbox),
-                       content_area_spacing);
   gtk_container_set_border_width (GTK_CONTAINER (dialog->vbox),
                                   content_area_border);
+  gtk_box_set_spacing (GTK_BOX (dialog->vbox), content_area_spacing);
   gtk_box_set_spacing (GTK_BOX (dialog->action_area),
                        button_spacing);
   gtk_container_set_border_width (GTK_CONTAINER (dialog->action_area),
                                   action_area_border);
-
-  if ((extended_left_border == 0) && (extended_right_border == 0))
-    /* no extended borders, so we are done */
-    return;
-
-  /* extended borders are in use, so reconstruct dialog */
-  hbox = gtk_hbox_new(FALSE, 0);
-  left_padding = gtk_alignment_new(0.0, 0.0, 0.0, 0.0);
-  right_padding = gtk_alignment_new(0.0, 0.0, 0.0, 0.0);
-  gtk_widget_set_size_request(left_padding, extended_left_border, 0);
-  gtk_widget_set_size_request(right_padding, extended_right_border, 0);
-
-  gtk_widget_ref(dialog->vbox);
-  gtk_container_remove(GTK_CONTAINER(dialog), dialog->vbox);
-  gtk_container_add(GTK_CONTAINER(hbox), left_padding);
-  gtk_container_add(GTK_CONTAINER(hbox), dialog->vbox);
-  gtk_container_add(GTK_CONTAINER(hbox), right_padding);
-  gtk_container_add(GTK_CONTAINER(dialog), hbox);
-  gtk_widget_unref(dialog->vbox);
-
-  gtk_widget_show(left_padding);
-  gtk_widget_show(right_padding);
-  gtk_widget_show(hbox);
 }
 
 static void
 gtk_dialog_init (GtkDialog *dialog)
 {
   GtkDialogPrivate *priv;
-  GtkWidget *alignment;
 
   priv = GET_PRIVATE (dialog);
   priv->ignore_separator = FALSE;
@@ -349,23 +236,18 @@ gtk_dialog_init (GtkDialog *dialog)
   gtk_container_add (GTK_CONTAINER (dialog), dialog->vbox);
   gtk_widget_show (dialog->vbox);
 
-  /* Hildon : Here we add an alignment widget to gtk because
-   * we want that the dialog buttons are all centered. */
-  alignment = gtk_alignment_new (0.5, 0.5, 0, 0);
-  gtk_box_pack_end (GTK_BOX (dialog->vbox), alignment, FALSE, TRUE, 0);
-
   dialog->action_area = gtk_hbutton_box_new ();
 
   gtk_button_box_set_layout (GTK_BUTTON_BOX (dialog->action_area),
+#ifdef MAEMO_CHANGES
+                             GTK_BUTTONBOX_CENTER);
+#else
                              GTK_BUTTONBOX_END);  
+#endif /* MAEMO_CHANGES */
 
-  /* we need add-signal to allocate correct area for childs */ 
-  gtk_container_add (GTK_CONTAINER (alignment), dialog->action_area);
-  /* gtk_box_pack_end (GTK_BOX (dialog->vbox), dialog->action_area,
-     FALSE, TRUE, 0); */
-  
+  gtk_box_pack_end (GTK_BOX (dialog->vbox), dialog->action_area,
+                    FALSE, TRUE, 0);
   gtk_widget_show (dialog->action_area);
-  gtk_widget_show (alignment);
 
   dialog->separator = gtk_hseparator_new ();
   gtk_box_pack_end (GTK_BOX (dialog->vbox), dialog->separator, FALSE, TRUE, 0);
@@ -448,7 +330,7 @@ gtk_dialog_map (GtkWidget *widget)
   GtkWindow *window = GTK_WINDOW (widget);
   GtkDialog *dialog = GTK_DIALOG (widget);
   
-  GTK_WIDGET_CLASS (parent_class)->map (widget);
+  GTK_WIDGET_CLASS (gtk_dialog_parent_class)->map (widget);
 
   if (!window->focus_widget)
     {
@@ -463,19 +345,24 @@ gtk_dialog_map (GtkWidget *widget)
 	    first_focus = window->focus_widget;
 	  else if (first_focus == window->focus_widget)
 	    break;
+
+	  if (!GTK_IS_LABEL (window->focus_widget))
+	    break;
+	  else
+	    gtk_label_select_region (GTK_LABEL (window->focus_widget), 0, 0);
 	}
-      while (GTK_IS_LABEL (window->focus_widget));
+      while (TRUE);
 
       tmp_list = children = gtk_container_get_children (GTK_CONTAINER (dialog->action_area));
-
+      
       while (tmp_list)
 	{
 	  GtkWidget *child = tmp_list->data;
-
-	  if ((window->focus_widget == NULL ||
+	  
+	  if ((window->focus_widget == NULL || 
 	       child == window->focus_widget) && 
-              child != window->default_widget && 
-              window->default_widget)
+	      child != window->default_widget &&
+	      window->default_widget)
 	    {
 	      gtk_widget_grab_focus (window->default_widget);
 	      break;
@@ -527,9 +414,6 @@ gtk_dialog_close (GtkDialog *dialog)
   
   GtkWidget *widget = GTK_WIDGET (dialog);
   GdkEvent *event;
-
-  if (!dialog_find_button (dialog, GTK_RESPONSE_CANCEL))
-    return;
 
   event = gdk_event_new (GDK_DELETE);
   
@@ -637,6 +521,12 @@ gtk_dialog_new_with_buttons (const gchar    *title,
   return GTK_WIDGET (dialog);
 }
 
+static void 
+response_data_free (gpointer data)
+{
+  g_slice_free (ResponseData, data);
+}
+
 static ResponseData*
 get_response_data (GtkWidget *widget,
 		   gboolean   create)
@@ -646,12 +536,12 @@ get_response_data (GtkWidget *widget,
 
   if (ad == NULL && create)
     {
-      ad = g_new (ResponseData, 1);
+      ad = g_slice_new (ResponseData);
       
       g_object_set_data_full (G_OBJECT (widget),
-                              "gtk-dialog-response-data",
+                              I_("gtk-dialog-response-data"),
                               ad,
-                              g_free);
+			      response_data_free);
     }
 
   return ad;
@@ -715,10 +605,9 @@ gtk_dialog_add_action_widget (GtkDialog *dialog,
   else
     g_warning ("Only 'activatable' widgets can be packed into the action area of a GtkDialog");
 
-  gtk_container_add(GTK_CONTAINER(dialog->action_area), child);
-
-  g_signal_connect (child, "focus", 
-                    (GCallback)gtk_dialog_handle_focus, (gpointer)dialog);
+  gtk_box_pack_end (GTK_BOX (dialog->action_area),
+                    child,
+                    FALSE, TRUE, 0);
   
   if (response_id == GTK_RESPONSE_HELP)
     gtk_button_box_set_child_secondary (GTK_BUTTON_BOX (dialog->action_area), child, TRUE);
@@ -737,7 +626,7 @@ gtk_dialog_add_action_widget (GtkDialog *dialog,
  * you don't need it.
  *
  * Return value: the button widget that was added
- **/ 
+ **/
 GtkWidget*
 gtk_dialog_add_button (GtkDialog   *dialog,
                        const gchar *button_text,
@@ -753,7 +642,7 @@ gtk_dialog_add_button (GtkDialog   *dialog,
   GTK_WIDGET_SET_FLAGS (button, GTK_CAN_DEFAULT);
   
   gtk_widget_show (button);
-
+  
   gtk_dialog_add_action_widget (dialog,
                                 button,
                                 response_id);
@@ -1073,9 +962,9 @@ run_destroy_handler (GtkDialog *dialog, gpointer data)
  * 
  * Note that even though the recursive main loop gives the effect of a
  * modal dialog (it prevents the user from interacting with other 
- * windows while the dialog is run), callbacks such as timeouts, 
- * IO channel watches, DND drops, etc, <emphasis>will</emphasis> be 
- * triggered during a gtk_dialog_run() call.
+ * windows in the same window group while the dialog is run), callbacks 
+ * such as timeouts, IO channel watches, DND drops, etc, <emphasis>will</emphasis> 
+ * be triggered during a gtk_dialog_run() call.
  * 
  * Return value: response ID
  **/
@@ -1099,7 +988,7 @@ gtk_dialog_run (GtkDialog *dialog)
 
   if (!GTK_WIDGET_VISIBLE (dialog))
     gtk_widget_show (GTK_WIDGET (dialog));
-
+  
   response_handler =
     g_signal_connect (dialog,
                       "response",
@@ -1114,7 +1003,7 @@ gtk_dialog_run (GtkDialog *dialog)
   
   delete_handler =
     g_signal_connect (dialog,
-                      "delete_event",
+                      "delete-event",
                       G_CALLBACK (run_delete_handler),
                       &ri);
   
@@ -1171,7 +1060,7 @@ _gtk_dialog_set_ignore_separator (GtkDialog *dialog,
  * Returns: the response id of @widget, or %GTK_RESPONSE_NONE
  *  if @widget doesn't have a response id set.
  *
- * Since: 2.8 (maemo 2.0)
+ * Since: 2.8
  */
 gint
 gtk_dialog_get_response_for_widget (GtkDialog *dialog,
@@ -1337,117 +1226,14 @@ gtk_dialog_set_alternative_button_order_from_array (GtkDialog *dialog,
 
   screen = gtk_widget_get_screen (GTK_WIDGET (dialog));
   if (!gtk_alternative_dialog_button_order (screen))
-    return;
+      return;
 
   for (position = 0; position < n_params; position++)
   {
-    /* reorder child with response_id to position */
-    child = dialog_find_button (dialog, new_order[position]);
-    gtk_box_reorder_child (GTK_BOX (dialog->action_area), child, position);
-  }
-}
-
-static gboolean
-gtk_dialog_handle_focus (GtkWidget *widget,
-                          GtkDirectionType dir,
-                          gpointer user_data)
-{
-  GtkDialog *dialog = NULL;
-  GList *list = NULL;
-  GList *iter = NULL;
-  gint i = 0;
-  gint list_length = 0;
-  gboolean ret_val = FALSE;
-  GtkDialogPrivate *priv;
-
-  dialog = GTK_DIALOG(user_data);
-  list = gtk_container_get_children (GTK_CONTAINER(
-                                      GTK_DIALOG(user_data)->action_area));
-  iter = list;
-  priv = GET_PRIVATE (dialog);
-
-  if (GTK_WIDGET_HAS_FOCUS (widget))
-  {
-    list_length =  g_list_length(list);
-    while (iter != NULL)
-    {
-      ++i;
-      if (iter->data == widget)
-      {
-        switch (dir) {
-          case GTK_DIR_UP:
-          case GTK_DIR_LEFT:
-
-                /* If not in the first button, but in the first active
-                 * button, the default should do, else handle movement
-                 * by yourself
-                 */
-             ret_val = gtk_dialog_move_to_next_active_button (
-                        g_list_previous (iter),
-                        FALSE);
-            
-             if (!ret_val && dir == GTK_DIR_LEFT)
-                {
-                  g_signal_emit_by_name (dialog, "move-focus",
-                                         GTK_DIR_UP);
-                  ret_val = TRUE;
-                }
-             break;
-
-          /* If in the last item:jump to top, else select previous button */
-          case GTK_DIR_DOWN:
-          case GTK_DIR_RIGHT:
-            ret_val = gtk_dialog_move_to_next_active_button (
-                                            g_list_next (iter),
-                                            TRUE);
-            
-            if (!ret_val && dir == GTK_DIR_RIGHT)
-              {
-                g_signal_emit_by_name (dialog, "move-focus", 
-                                       GTK_DIR_DOWN);
-                ret_val = TRUE;
-              }
-            break;
-
-          case GTK_DIR_TAB_BACKWARD:
-          case GTK_DIR_TAB_FORWARD:
-          default:
-            break;
-        }
-        break;
-      }
-      iter = g_list_next(iter);
+      /* reorder child with response_id to position */
+      child = dialog_find_button (dialog, new_order[position]);
+      gtk_box_reorder_child (GTK_BOX (dialog->action_area), child, position);
     }
-  }
-
-  g_list_free (list);
-
-  return ret_val;
-}
-
-static gboolean
-gtk_dialog_move_to_next_active_button (GList *iter, gboolean forward)
-{
-    gboolean active;
-    gboolean visible;
-
-    while (iter)
-    {
-        g_object_get (G_OBJECT (iter->data), "sensitive", &active, NULL);
-        g_object_get (G_OBJECT (iter->data), "visible", &visible, NULL);
-        if (active && visible)
-        {
-            gtk_widget_grab_focus (GTK_WIDGET (iter->data));
-            return TRUE;
-        }
-
-        if (forward)
-            iter = g_list_next (iter);
-        else
-            iter = g_list_previous (iter);
-    }
-
-    return FALSE;
 }
 
 #define __GTK_DIALOG_C__

@@ -65,7 +65,6 @@ allocated or unallocated color.
 The colormap structure contains the following public fields.
 </para>
 
-@parent_instance: 
 @size: For pseudo-color colormaps, the number of colors
   in the colormap.
 @colors: An array containing the current values in the

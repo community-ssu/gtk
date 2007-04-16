@@ -567,14 +567,16 @@ gtk_im_context_xim_finalize (GObject *obj)
 
   if (context_xim->im_info && !context_xim->im_info->ics->next) 
     {
-      GdkDisplay *display;
-      
-      display = gdk_screen_get_display (context_xim->im_info->screen);
-      if (context_xim->im_info->reconnecting) 
-	XUnregisterIMInstantiateCallback (GDK_DISPLAY_XDISPLAY (display),
-					  NULL, NULL, NULL,
-					  xim_instantiate_callback,
-					  (XPointer)context_xim->im_info);
+      if (context_xim->im_info->reconnecting)
+	{
+	  GdkDisplay *display;
+
+	  display = gdk_screen_get_display (context_xim->im_info->screen);
+	  XUnregisterIMInstantiateCallback (GDK_DISPLAY_XDISPLAY (display),
+					    NULL, NULL, NULL,
+					    xim_instantiate_callback,
+					    (XPointer)context_xim->im_info);
+	}
       else if (context_xim->im_info->im)
 	{
 	  XIMCallback im_destroy_callback;

@@ -63,7 +63,7 @@ displays.
 The #GdkImage struct contains information on the image and the pixel data.
 </para>
 
-@parent_instance: 
+@parent_instance: the parent instance
 @type: the type of the image.
 @visual: the visual.
 @byte_order: the byte order.
@@ -72,10 +72,9 @@ The #GdkImage struct contains information on the image and the pixel data.
 @depth: the depth of the image, i.e. the number of bits per pixel.
 @bpp: the number of bytes per pixel.
 @bpl: the number of bytes per line of the image.
-@bits_per_pixel: 
+@bits_per_pixel: the number of bits per pixel.
 @mem: the pixel data.
-@colormap: 
-@windowing_data: 
+@colormap: the #GdkColormap associated with the image
 
 <!-- ##### FUNCTION gdk_image_new ##### -->
 <para>
@@ -89,7 +88,7 @@ then use %GDK_IMAGE_NORMAL.
 @visual: the #GdkVisual to use for the image.
 @width: the width of the image in pixels.
 @height: the height of the image in pixels.
-@Returns: a new #GdkImage, or NULL if the image could not be created.
+@Returns: a new #GdkImage, or %NULL if the image could not be created.
 
 
 <!-- ##### ENUM GdkImageType ##### -->

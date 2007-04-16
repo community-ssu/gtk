@@ -225,11 +225,25 @@ _gdk_events_init (GdkDisplay *display)
   display_sources = g_list_prepend (display_sources,display_source);
 
   gdk_display_add_client_message_filter (display,
-					 gdk_atom_intern ("WM_PROTOCOLS", FALSE), 
+					 gdk_atom_intern_static_string ("WM_PROTOCOLS"), 
 					 gdk_wm_protocols_filter,   
 					 NULL);
 }
 
+void
+_gdk_events_uninit (GdkDisplay *display)
+{
+  GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (display);
+
+  if (display_x11->event_source)
+    {
+      display_sources = g_list_remove (display_sources,
+                                       display_x11->event_source);
+      g_source_destroy (display_x11->event_source);
+      g_source_unref (display_x11->event_source);
+      display_x11->event_source = NULL;
+    }
+}
 
 /**
  * gdk_events_pending:
@@ -412,7 +426,7 @@ do_net_wm_state_changes (GdkWindow *window)
     }
   else
     {
-      if (toplevel->have_sticky && toplevel->on_all_desktops)
+      if (toplevel->have_sticky || toplevel->on_all_desktops)
         gdk_synthesize_window_state (window,
                                      0,
                                      GDK_WINDOW_STATE_STICKY);
@@ -462,33 +476,29 @@ gdk_check_wm_desktop_changed (GdkWindow *window)
   gint format;
   gulong nitems;
   gulong bytes_after;
+  guchar *data;
+  gulong *desktop;
 
-  if (toplevel->have_sticky)
+  type = None;
+  gdk_error_trap_push ();
+  XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), 
+                      GDK_WINDOW_XID (window),
+                      gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_DESKTOP"),
+                      0, G_MAXLONG, False, XA_CARDINAL, &type, 
+                      &format, &nitems,
+                      &bytes_after, &data);
+  gdk_error_trap_pop ();
+
+  if (type != None)
     {
-      guchar *data;
-      gulong *desktop;
-      
-      type = None;
-      gdk_error_trap_push ();
-      XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), 
-			  GDK_WINDOW_XID (window),
-                          gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_DESKTOP"),
-			  0, G_MAXLONG, False, XA_CARDINAL, &type, 
-			  &format, &nitems,
-                          &bytes_after, &data);
-      gdk_error_trap_pop ();
-
-      if (type != None)
-        {
-	  desktop = (gulong *)data;
-          toplevel->on_all_desktops = (*desktop == 0xFFFFFFFF);
-          XFree (desktop);
-        }
-      else
-	toplevel->on_all_desktops = FALSE;
-      
-      do_net_wm_state_changes (window);
+      desktop = (gulong *)data;
+      toplevel->on_all_desktops = (*desktop == 0xFFFFFFFF);
+      XFree (desktop);
     }
+  else
+    toplevel->on_all_desktops = FALSE;
+      
+  do_net_wm_state_changes (window);
 }
 
 static void
@@ -573,7 +583,7 @@ generate_focus_event (GdkWindow *window,
   gdk_event_put (&event);
 }
 
-static void
+static gboolean
 set_screen_from_root (GdkDisplay *display,
 		      GdkEvent   *event,
 		      Window      xrootwin)
@@ -581,9 +591,15 @@ set_screen_from_root (GdkDisplay *display,
   GdkScreen *screen;
 
   screen = _gdk_x11_display_screen_for_xrootwin (display, xrootwin);
-  g_assert (screen);
 
-  gdk_event_set_screen (event, screen);
+  if (screen)
+    {
+      gdk_event_set_screen (event, screen);
+
+      return TRUE;
+    }
+  
+  return FALSE;
 }
 
 static void
@@ -593,7 +609,7 @@ translate_key_event (GdkDisplay *display,
 {
   GdkKeymap *keymap = gdk_keymap_get_for_display (display);
   gunichar c = 0;
-  guchar buf[7];
+  gchar buf[7];
 
   event->key.type = xevent->xany.type == KeyPress ? GDK_KEY_PRESS : GDK_KEY_RELEASE;
   event->key.time = xevent->xkey.time;
@@ -610,6 +626,9 @@ translate_key_event (GdkDisplay *display,
 				       event->key.group,
 				       &event->key.keyval,
 				       NULL, NULL, NULL);
+
+  _gdk_keymap_add_virtual_modifiers (keymap, &event->key.state);
+  event->key.is_modifier = _gdk_keymap_key_is_modifier (keymap, event->key.hardware_keycode);
 
   /* Fill in event->string crudely, since various programs
    * depend on it.
@@ -1110,8 +1129,12 @@ gdk_event_translate (GdkDisplay *display,
 	  event->scroll.y_root = (gfloat)xevent->xbutton.y_root;
 	  event->scroll.state = (GdkModifierType) xevent->xbutton.state;
 	  event->scroll.device = display->core_pointer;
-
-	  set_screen_from_root (display, event, xevent->xbutton.root);
+	  
+	  if (!set_screen_from_root (display, event, xevent->xbutton.root))
+	    {
+	      return_val = FALSE;
+	      break;
+	    }
 	  
           break;
           
@@ -1128,13 +1151,19 @@ gdk_event_translate (GdkDisplay *display,
 	  event->button.button = xevent->xbutton.button;
 	  event->button.device = display->core_pointer;
 	  
-	  set_screen_from_root (display, event, xevent->xbutton.root);
+	  if (!set_screen_from_root (display, event, xevent->xbutton.root))
+	    {
+	      return_val = FALSE;
+	      break;
+	    }
 
 	  _gdk_event_button_generate (display, event);
           break;
 	}
 
       set_user_time (window, event);
+
+      _gdk_xgrab_check_button_event (window, xevent);
       break;
       
     case ButtonRelease:
@@ -1172,8 +1201,13 @@ gdk_event_translate (GdkDisplay *display,
       event->button.button = xevent->xbutton.button;
       event->button.device = display->core_pointer;
 
-      set_screen_from_root (display, event, xevent->xbutton.root);
-      
+      if (!set_screen_from_root (display, event, xevent->xbutton.root))
+	{
+	  return_val = FALSE;
+	  break;
+	}
+
+      _gdk_xgrab_check_button_event (window, xevent);
       break;
       
     case MotionNotify:
@@ -1190,7 +1224,7 @@ gdk_event_translate (GdkDisplay *display,
 	  return_val = FALSE;
 	  break;
 	}
-      
+
       event->motion.type = GDK_MOTION_NOTIFY;
       event->motion.window = window;
       event->motion.time = xevent->xmotion.time;
@@ -1203,8 +1237,12 @@ gdk_event_translate (GdkDisplay *display,
       event->motion.is_hint = xevent->xmotion.is_hint;
       event->motion.device = display->core_pointer;
       
-      set_screen_from_root (display, event, xevent->xmotion.root);
-      
+      if (!set_screen_from_root (display, event, xevent->xbutton.root))
+	{
+	  return_val = FALSE;
+	  break;
+	}
+            
       break;
       
     case EnterNotify:
@@ -1219,6 +1257,12 @@ gdk_event_translate (GdkDisplay *display,
           return_val = FALSE;
           break;
         }
+      
+      if (!set_screen_from_root (display, event, xevent->xbutton.root))
+	{
+	  return_val = FALSE;
+	  break;
+	}
       
       /* Handle focusing (in the case where no window manager is running */
       if (toplevel && xevent->xcrossing.detail != NotifyInferior)
@@ -1258,8 +1302,6 @@ gdk_event_translate (GdkDisplay *display,
       event->crossing.y = xevent->xcrossing.y + yoffset;
       event->crossing.x_root = xevent->xcrossing.x_root;
       event->crossing.y_root = xevent->xcrossing.y_root;
-      
-      set_screen_from_root (display, event, xevent->xcrossing.root);
       
       /* Translate the crossing mode into Gdk terms.
        */
@@ -1316,7 +1358,13 @@ gdk_event_translate (GdkDisplay *display,
           return_val = FALSE;
           break;
         }
-      
+
+      if (!set_screen_from_root (display, event, xevent->xbutton.root))
+	{
+	  return_val = FALSE;
+	  break;
+	}
+                  
       /* Handle focusing (in the case where no window manager is running */
       if (toplevel && xevent->xcrossing.detail != NotifyInferior)
 	{
@@ -1349,8 +1397,6 @@ gdk_event_translate (GdkDisplay *display,
       event->crossing.y = xevent->xcrossing.y + yoffset;
       event->crossing.x_root = xevent->xcrossing.x_root;
       event->crossing.y_root = xevent->xcrossing.y_root;
-      
-      set_screen_from_root (display, event, xevent->xcrossing.root);
       
       /* Translate the crossing mode into Gdk terms.
        */
@@ -1773,7 +1819,13 @@ gdk_event_translate (GdkDisplay *display,
 			   ? " (discarding substructure)"
 			   : ""));
       if (window && GDK_WINDOW_TYPE (window) == GDK_WINDOW_ROOT)
-	_gdk_x11_screen_size_changed (screen, xevent);
+        { 
+	  window_impl->width = xevent->xconfigure.width;
+	  window_impl->height = xevent->xconfigure.height;
+	  
+	  _gdk_x11_drawable_update_size (window_private->impl);
+	  _gdk_x11_screen_size_changed (screen, xevent);
+        }
 
       if (window &&
 	  xevent->xconfigure.event == xevent->xconfigure.window &&
@@ -1831,6 +1883,9 @@ gdk_event_translate (GdkDisplay *display,
 	  window_private->y = event->configure.y;
 	  window_impl->width = xevent->xconfigure.width;
 	  window_impl->height = xevent->xconfigure.height;
+	  
+	  _gdk_x11_drawable_update_size (window_private->impl);
+	  
 	  if (window_private->resize_count >= 1)
 	    {
 	      window_private->resize_count -= 1;
@@ -2018,7 +2073,7 @@ gdk_event_translate (GdkDisplay *display,
 	      break;
 	      
 	    case XkbStateNotify:
-	      _gdk_keymap_state_changed (display);
+	      _gdk_keymap_state_changed (display, xevent);
 	      break;
 	    }
 	}
@@ -2028,6 +2083,9 @@ gdk_event_translate (GdkDisplay *display,
       if (xevent->type - display_x11->xfixes_event_base == XFixesSelectionNotify)
 	{
 	  XFixesSelectionNotifyEvent *selection_notify = (XFixesSelectionNotifyEvent *)xevent;
+
+	  _gdk_x11_screen_process_owner_change (screen, xevent);
+	  
 	  event->owner_change.type = GDK_OWNER_CHANGE;
 	  event->owner_change.window = window;
 	  event->owner_change.owner = selection_notify->owner;
@@ -2037,7 +2095,7 @@ gdk_event_translate (GdkDisplay *display,
 					       selection_notify->selection);
 	  event->owner_change.time = selection_notify->timestamp;
 	  event->owner_change.selection_time = selection_notify->selection_timestamp;
-
+	  
 	  return_val = TRUE;
 	}
       else
@@ -2522,17 +2580,24 @@ fetch_net_wm_check_window (GdkScreen *screen)
   
   screen_x11 = GDK_SCREEN_X11 (screen);
   display = screen_x11->display;
+
+  g_return_if_fail (GDK_DISPLAY_X11 (display)->trusted_client);
   
   if (screen_x11->wmspec_check_window != None)
     return; /* already have it */
   
+  data = NULL;
   XGetWindowProperty (GDK_DISPLAY_XDISPLAY (display), screen_x11->xroot_window,
 		      gdk_x11_get_xatom_by_name_for_display (display, "_NET_SUPPORTING_WM_CHECK"),
 		      0, G_MAXLONG, False, XA_WINDOW, &type, &format, 
 		      &n_items, &bytes_after, &data);
   
   if (type != XA_WINDOW)
-    return;
+    {
+      if (data)
+        XFree (data);
+      return;
+    }
 
   xwindow = (Window *)data;
 
@@ -2545,14 +2610,14 @@ fetch_net_wm_check_window (GdkScreen *screen)
   if (gdk_error_trap_pop () == Success)
     {
       screen_x11->wmspec_check_window = *xwindow;
-      XFree (xwindow);
-      
       screen_x11->need_refetch_net_supported = TRUE;
       screen_x11->need_refetch_wm_name = TRUE;
       
       /* Careful, reentrancy */
       _gdk_x11_screen_window_manager_changed (GDK_SCREEN (screen_x11));
     }
+
+  XFree (xwindow);    
 }
 
 /**
@@ -2574,6 +2639,9 @@ gdk_x11_screen_get_window_manager_name (GdkScreen *screen)
 
   screen_x11 = GDK_SCREEN_X11 (screen);
   
+  if (!G_LIKELY (GDK_DISPLAY_X11 (screen_x11->display)->trusted_client))
+    return screen_x11->window_manager_name;
+
   fetch_net_wm_check_window (screen);
 
   if (screen_x11->need_refetch_wm_name)
@@ -2590,7 +2658,7 @@ gdk_x11_screen_get_window_manager_name (GdkScreen *screen)
           gint format;
           gulong n_items;
           gulong bytes_after;
-          guchar *name;
+          gchar *name;
           
           name = NULL;
 
@@ -2669,6 +2737,9 @@ gdk_x11_screen_supports_net_wm_hint (GdkScreen *screen,
   screen_x11 = GDK_SCREEN_X11 (screen);
   display = screen_x11->display;
 
+  if (!G_LIKELY (GDK_DISPLAY_X11 (display)->trusted_client))
+    return FALSE;
+
   supported_atoms = g_object_get_data (G_OBJECT (screen), "gdk-net-wm-supported-atoms");
   if (!supported_atoms)
     {
@@ -2740,38 +2811,7 @@ gdk_net_wm_supports (GdkAtom property)
   return gdk_x11_screen_supports_net_wm_hint (gdk_screen_get_default (), property);
 }
 
-static const struct
-{
-  const char *xsettings_name;
-  const char *gdk_name;
-} settings_map[] = {
-  { "Net/DoubleClickTime", "gtk-double-click-time" },
-  { "Net/DoubleClickDistance", "gtk-double-click-distance" },
-  { "Net/DndDragThreshold", "gtk-dnd-drag-threshold" },
-  { "Net/CursorBlink", "gtk-cursor-blink" },
-  { "Net/CursorBlinkTime", "gtk-cursor-blink-time" },
-  { "Net/ThemeName", "gtk-theme-name" },
-  { "Net/IconThemeName", "gtk-icon-theme-name" },
-  { "Gtk/CanChangeAccels", "gtk-can-change-accels" },
-  { "Gtk/ColorPalette", "gtk-color-palette" },
-  { "Gtk/FontName", "gtk-font-name" },
-  { "Gtk/IconSizes", "gtk-icon-sizes" },
-  { "Gtk/KeyThemeName", "gtk-key-theme-name" },
-  { "Gtk/ToolbarStyle", "gtk-toolbar-style" },
-  { "Gtk/ToolbarIconSize", "gtk-toolbar-icon-size" },
-  { "Gtk/IMPreeditStyle", "gtk-im-preedit-style" },
-  { "Gtk/IMStatusStyle", "gtk-im-status-style" },
-  { "Gtk/Modules", "gtk-modules" },
-  { "Gtk/FileChooserBackend", "gtk-file-chooser-backend" },
-  { "Gtk/ButtonImages", "gtk-button-images" },
-  { "Gtk/MenuImages", "gtk-menu-images" },
-  { "Gtk/MenuBarAccel", "gtk-menu-bar-accel" },
-  { "Xft/Antialias", "gtk-xft-antialias" },
-  { "Xft/Hinting", "gtk-xft-hinting" },
-  { "Xft/HintStyle", "gtk-xft-hintstyle" },
-  { "Xft/RGBA", "gtk-xft-rgba" },
-  { "Xft/DPI", "gtk-xft-dpi" },
-};
+#include "gdksettings.c"
 
 static void
 gdk_xsettings_notify_cb (const char       *name,
@@ -2792,10 +2832,10 @@ gdk_xsettings_notify_cb (const char       *name,
   new_event.setting.send_event = FALSE;
   new_event.setting.name = NULL;
 
-  for (i = 0; i < G_N_ELEMENTS (settings_map) ; i++)
-    if (strcmp (settings_map[i].xsettings_name, name) == 0)
+  for (i = 0; i < GDK_SETTINGS_N_ELEMENTS() ; i++)
+    if (strcmp (GDK_SETTINGS_X_NAME (i), name) == 0)
       {
-	new_event.setting.name = (char *)settings_map[i].gdk_name;
+	new_event.setting.name = (char*) GDK_SETTINGS_GDK_NAME (i);
 	break;
       }
   
@@ -2825,7 +2865,7 @@ check_transform (const gchar *xsettings_name,
 {
   if (!g_value_type_transformable (src_type, dest_type))
     {
-      g_warning ("Cannot tranform xsetting %s of type %s to type %s\n",
+      g_warning ("Cannot transform xsetting %s of type %s to type %s\n",
 		 xsettings_name,
 		 g_type_name (src_type),
 		 g_type_name (dest_type));
@@ -2860,7 +2900,7 @@ gdk_screen_get_setting (GdkScreen   *screen,
 
   const char *xsettings_name = NULL;
   XSettingsResult result;
-  XSettingsSetting *setting;
+  XSettingsSetting *setting = NULL;
   GdkScreenX11 *screen_x11;
   gboolean success = FALSE;
   gint i;
@@ -2870,20 +2910,20 @@ gdk_screen_get_setting (GdkScreen   *screen,
   
   screen_x11 = GDK_SCREEN_X11 (screen);
 
-  for (i = 0; i < G_N_ELEMENTS (settings_map) ; i++)
-    if (strcmp (settings_map[i].gdk_name, name) == 0)
+  for (i = 0; i < GDK_SETTINGS_N_ELEMENTS(); i++)
+    if (strcmp (GDK_SETTINGS_GDK_NAME (i), name) == 0)
       {
-	xsettings_name = settings_map[i].xsettings_name;
+	xsettings_name = GDK_SETTINGS_X_NAME (i);
 	break;
       }
 
   if (!xsettings_name)
-    return FALSE;
+    goto out;
 
   result = xsettings_client_get_setting (screen_x11->xsettings_client, 
 					 xsettings_name, &setting);
   if (result != XSETTINGS_SUCCESS)
-    return FALSE;
+    goto out;
 
   switch (setting->type)
     {
@@ -2930,9 +2970,14 @@ gdk_screen_get_setting (GdkScreen   *screen,
   
   g_value_unset (&tmp_val);
 
-  xsettings_setting_free (setting);
+ out:
+  if (setting)
+    xsettings_setting_free (setting);
 
-  return success;
+  if (success)
+    return TRUE;
+  else
+    return _gdk_x11_get_xft_setting (screen, name, value);
 }
 
 static GdkFilterReturn 

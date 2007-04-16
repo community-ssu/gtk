@@ -21,15 +21,18 @@
 #define __GTK_TREE_PRIVATE_H__
 
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
+
 
 #include <gtk/gtktreeview.h>
 #include <gtk/gtktreeselection.h>
 #include <gtk/gtkrbtree.h>
 
+#ifdef MAEMO_CHANGES
 #define TREE_VIEW_DRAG_WIDTH 28
+#else /* !MAEMO_CHANGES */
+#define TREE_VIEW_DRAG_WIDTH 6
+#endif /* !MAEMO_CHANGES */
 
 typedef enum
 {
@@ -59,6 +62,13 @@ enum
   DRAG_COLUMN_WINDOW_STATE_ARROW_RIGHT = 4
 };
 
+enum
+{
+  RUBBER_BAND_OFF = 0,
+  RUBBER_BAND_MAYBE_START = 1,
+  RUBBER_BAND_ACTIVE = 2
+};
+
 #define GTK_TREE_VIEW_SET_FLAG(tree_view, flag)   G_STMT_START{ (tree_view->priv->flags|=flag); }G_STMT_END
 #define GTK_TREE_VIEW_UNSET_FLAG(tree_view, flag) G_STMT_START{ (tree_view->priv->flags&=~(flag)); }G_STMT_END
 #define GTK_TREE_VIEW_FLAG_SET(tree_view, flag)   ((tree_view->priv->flags&flag)==flag)
@@ -70,9 +80,6 @@ enum
   * you can move the mouse and still have a column drag work.
   */
 #define TREE_VIEW_COLUMN_DRAG_DEAD_MULTIPLIER(tree_view) (10*TREE_VIEW_HEADER_HEIGHT(tree_view))
-
-typedef void (*GtkTreeViewSearchDialogPositionFunc) (GtkTreeView *tree_view,
-						     GtkWidget   *search_dialog);
 
 typedef struct _GtkTreeViewColumnReorder GtkTreeViewColumnReorder;
 struct _GtkTreeViewColumnReorder
@@ -176,6 +183,18 @@ struct _GtkTreeViewPrivate
   gint press_start_x;
   gint press_start_y;
 
+  gint rubber_band_status;
+  gint rubber_band_x;
+  gint rubber_band_y;
+  gint rubber_band_shift;
+  gint rubber_band_ctrl;
+
+  GtkRBNode *rubber_band_start_node;
+  GtkRBTree *rubber_band_start_tree;
+
+  GtkRBNode *rubber_band_end_node;
+  GtkRBTree *rubber_band_end_tree;
+
   /* fixed height */
   gint fixed_height;
 
@@ -208,20 +227,28 @@ struct _GtkTreeViewPrivate
   /* interactive search */
   guint enable_search : 1;
   guint disable_popdown : 1;
+  guint search_custom_entry_set : 1;
   
   guint hover_selection : 1;
   guint hover_expand : 1;
   guint imcontext_changed : 1;
+
+  guint rubber_banding_enable : 1;
+
+  guint in_grab : 1;
+
 
   /* Auto expand/collapse timeout in hover mode */
   guint auto_expand_timeout;
 
   gint selected_iter;
   gint search_column;
-  GtkTreeViewSearchDialogPositionFunc search_dialog_position_func;
+  GtkTreeViewSearchPositionFunc search_position_func;
   GtkTreeViewSearchEqualFunc search_equal_func;
   gpointer search_user_data;
   GtkDestroyNotify search_destroy;
+  gpointer search_position_user_data;
+  GDestroyNotify search_position_destroy;
   GtkWidget *search_window;
   GtkWidget *search_entry;
   guint search_entry_changed_id;
@@ -233,44 +260,20 @@ struct _GtkTreeViewPrivate
   gpointer row_separator_data;
   GtkDestroyNotify row_separator_destroy;
 
-  /* Hildon additions */
-  guint new_state : 1;        /* helper flag for pen drag in checkbox mode */
-  guint checkbox_mode : 1;       /* is checkbox mode on right now? */
-  guint allow_checkbox_mode : 1; /* is checkbox mode ever allowed to be on? */
-  guint pen_down : 1;
-  guint pen_drag_active : 1;
-  gint pen_drag_direction;
-  GList *pen_drag_old_selection;
-  guint pen_drag_reverse : 1;
-  guint first_drag_selectable : 1;
-  gdouble old_y;
-  gboolean pen_focus;
-  gboolean dotted_lines;
-  gboolean force_list_kludge;
+  gint level_indentation;
 
-  /* the "pen down" row of the current pen drag */
-  GtkTreeRowReference *first_drag_row;
+  GtkTreeViewGridLines grid_lines;
+  GdkGC *grid_line_gc;
 
-  /* most recently toggled row during pen drag */
-  GtkTreeRowReference *last_drag_row;
+  gboolean tree_lines_enabled;
+  GdkGC *tree_line_gc;
 
-  /* for postponing tree node expand/collapse at
-     button_press event until button_release event */
-  GtkTreeRowReference *queued_expand_row;
-
-  /* for postponing selection clearing at button_press event
-     until button_release event in painted multiple selection mode */
+#ifdef MAEMO_CHANGES
+  /* Fields for Maemo specific functionality */
   GtkTreeRowReference *queued_select_row;
-
-  /* for postponing selection activation at button_press event
-   * until button_release event */
+  GtkTreeRowReference *queued_expand_row;
   GtkTreeRowReference *queued_activate_row;
-
-  /* Hildon treeview can_focus hack */
-  guint check_if_can_focus_idle_id;
-
-  /* Hildon passive focus style */
-  GtkStyle *passive_focus_style;
+#endif /* MAEMO_CHANGES */
 };
 
 #ifdef __GNUC__
@@ -352,7 +355,7 @@ void         _gtk_tree_selection_internal_select_node (GtkTreeSelection  *select
 						       GtkTreePath       *path,
                                                        GtkTreeSelectMode  mode,
 						       gboolean           override_browse_mode);
-void         _gtk_tree_selection_emit_changed         (GtkTreeSelection  *selection);        
+void         _gtk_tree_selection_emit_changed         (GtkTreeSelection  *selection);
 gboolean     _gtk_tree_view_find_node                 (GtkTreeView       *tree_view,
 						       GtkTreePath       *path,
 						       GtkRBTree        **tree,
@@ -397,7 +400,6 @@ void             _gtk_tree_view_column_autosize          (GtkTreeView       *tre
 							  GtkTreeViewColumn *column);
 
 gboolean         _gtk_tree_view_column_has_editable_cell (GtkTreeViewColumn *column);
-gboolean         _gtk_tree_view_column_has_activatable_cell (GtkTreeViewColumn *column);
 GtkCellRenderer *_gtk_tree_view_column_get_edited_cell   (GtkTreeViewColumn *column);
 gint             _gtk_tree_view_column_count_special_cells (GtkTreeViewColumn *column);
 GtkCellRenderer *_gtk_tree_view_column_get_cell_at_pos   (GtkTreeViewColumn *column,
@@ -407,9 +409,9 @@ GtkTreeSelection* _gtk_tree_selection_new                (void);
 GtkTreeSelection* _gtk_tree_selection_new_with_tree_view (GtkTreeView      *tree_view);
 void              _gtk_tree_selection_set_tree_view      (GtkTreeSelection *selection,
                                                           GtkTreeView      *tree_view);
-gboolean          _gtk_tree_selection_is_row_selectable  (GtkTreeSelection *selection,
-                                                          GtkRBNode        *node,
-                                                          GtkTreePath      *path);
+gboolean          _gtk_tree_selection_row_is_selectable  (GtkTreeSelection *selection,
+							  GtkRBNode        *node,
+							  GtkTreePath      *path);
 
 void		  _gtk_tree_view_column_cell_render      (GtkTreeViewColumn *tree_column,
 							  GdkWindow         *window,
@@ -434,23 +436,8 @@ void              _gtk_tree_view_column_get_neighbor_sizes (GtkTreeViewColumn *c
 							    gint              *left,
 							    gint              *right);
 
-void              _gtk_tree_view_column_cell_set_cell_data_for_validation (GtkTreeViewColumn *tree_column,
-									   GtkTreeModel      *model,
-									   GtkTreeIter       *iter,
-									   gboolean           is_expander,
-									   gboolean           is_expanded);
-void              _gtk_tree_view_column_cell_set_cell_data_with_attributes (GtkTreeViewColumn *tree_column,
-									    GtkTreeModel      *model,
-									    GtkTreeIter       *iter,
-									    gboolean           is_expander,
-									    gboolean           is_expanded,
-									    char              *attribute,
-									    ...);
 
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 
 #endif /* __GTK_TREE_PRIVATE_H__ */

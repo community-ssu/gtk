@@ -94,7 +94,9 @@ struct _GtkWindow
   guint maximize_initially : 1;
   guint decorated : 1;
   
-  guint type_hint : 3; /* GdkWindowTypeHint */ 
+  guint type_hint : 3; /* GdkWindowTypeHint if the hint is one of the original eight. If not, then
+			* it contains GDK_WINDOW_TYPE_HINT_NORMAL
+			*/
   guint gravity : 5; /* GdkGravity */
 
   guint is_active : 1;
@@ -257,6 +259,9 @@ void       gtk_window_get_frame_dimensions     (GtkWindow *window,
 void       gtk_window_set_decorated            (GtkWindow *window,
                                                 gboolean   setting);
 gboolean   gtk_window_get_decorated            (GtkWindow *window);
+void       gtk_window_set_deletable            (GtkWindow *window,
+                                                gboolean   setting);
+gboolean   gtk_window_get_deletable            (GtkWindow *window);
 
 void       gtk_window_set_icon_list                (GtkWindow  *window,
                                                     GList      *list);
@@ -304,7 +309,9 @@ gboolean gtk_window_activate_key          (GtkWindow        *window,
 gboolean gtk_window_propagate_key_event   (GtkWindow        *window,
 					   GdkEventKey      *event);
 
-void     gtk_window_present       (GtkWindow *window);
+void     gtk_window_present            (GtkWindow *window);
+void     gtk_window_present_with_time  (GtkWindow *window,
+				        guint32    timestamp);
 void     gtk_window_iconify       (GtkWindow *window);
 void     gtk_window_deiconify     (GtkWindow *window);
 void     gtk_window_stick         (GtkWindow *window);
@@ -359,6 +366,7 @@ void     gtk_window_get_position     (GtkWindow   *window,
                                       gint        *root_y);
 gboolean gtk_window_parse_geometry   (GtkWindow   *window,
                                       const gchar *geometry);
+GtkWindowGroup *gtk_window_get_group (GtkWindow   *window);
 
 /* Ignore this unless you are writing a GUI builder */
 void     gtk_window_reshow_with_initial_size (GtkWindow *window);
@@ -388,7 +396,6 @@ void            _gtk_window_constrain_size     (GtkWindow *window,
 						gint       height,
 						gint      *new_width,
 						gint      *new_height);
-GtkWindowGroup *_gtk_window_get_group          (GtkWindow *window);
 GtkWidget      *_gtk_window_group_get_current_grab (GtkWindowGroup *window_group);
 
 void            _gtk_window_set_has_toplevel_focus (GtkWindow *window,
@@ -413,10 +420,6 @@ void _gtk_window_keys_foreach (GtkWindow               *window,
 gboolean	_gtk_window_query_nonaccels	(GtkWindow	*window,
 						 guint		 accel_key,
 						 GdkModifierType accel_mods);
-
-GtkWidget *gtk_window_get_prev_focus_widget( GtkWindow *window );
-void gtk_window_set_prev_focus_widget( GtkWindow *window, GtkWidget *widget );
-
 
 G_END_DECLS
 

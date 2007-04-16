@@ -20,11 +20,10 @@
 #ifndef __GTK_IM_MODULE_H__
 #define __GTK_IM_MODULE_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
 
 #include <gtk/gtkimcontext.h>
+
+G_BEGIN_DECLS
 
 typedef struct _GtkIMContextInfo GtkIMContextInfo;
 
@@ -42,7 +41,10 @@ struct _GtkIMContextInfo
 void          _gtk_im_module_list                   (const GtkIMContextInfo ***contexts,
 						    guint                    *n_contexts);
 GtkIMContext *_gtk_im_module_create                 (const gchar             *context_id);
-gchar        *_gtk_im_module_get_default_context_id (const gchar             *lang);
+#ifndef MAEMO_CHANGES
+const
+#endif /* MAEMO_CHANGES */
+gchar        * _gtk_im_module_get_default_context_id (const gchar             *lang);
 
 /* The following entry points are exported by each input method module
  */
@@ -55,8 +57,8 @@ void          im_module_exit   (void);
 GtkIMContext *im_module_create (const gchar             *context_id);
 */
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+
+G_END_DECLS
+
 
 #endif /* __GTK_IM_MODULE_H__ */

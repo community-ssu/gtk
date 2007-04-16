@@ -17,21 +17,27 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  */
-#ifndef GTK_TEXT_BUFFER_SERIALIZE_H
+
+#ifndef __GTK_TEXT_BUFFER_SERIALIZE_H__
+#define __GTK_TEXT_BUFFER_SERIALIZE_H__
 
 #include <gtk/gtktextbuffer.h>
 
-gchar *gtk_text_buffer_serialize_rich_text (GtkTextBuffer     *buffer,
-					    const GtkTextIter *start,
-					    const GtkTextIter *end,
-					    gint              *len);
+guint8 * _gtk_text_buffer_serialize_rich_text   (GtkTextBuffer     *register_buffer,
+                                                 GtkTextBuffer     *content_buffer,
+                                                 const GtkTextIter *start,
+                                                 const GtkTextIter *end,
+                                                 gsize             *length,
+                                                 gpointer           user_data);
 
-gboolean gtk_text_buffer_deserialize_rich_text (GtkTextBuffer *buffer,
-						GtkTextIter   *iter,
-						const gchar   *text,
-						gint           len,
-						gboolean       create_tags,
-						GError       **error);
+gboolean _gtk_text_buffer_deserialize_rich_text (GtkTextBuffer     *register_buffer,
+                                                 GtkTextBuffer     *content_buffer,
+                                                 GtkTextIter       *iter,
+                                                 const guint8      *data,
+                                                 gsize              length,
+                                                 gboolean           create_tags,
+                                                 gpointer           user_data,
+                                                 GError           **error);
 
 
-#endif /* GTK_TEXT_BUFFER_SERIALIZE_H */
+#endif /* __GTK_TEXT_BUFFER_SERIALIZE_H__ */

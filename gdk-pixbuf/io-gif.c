@@ -117,6 +117,7 @@ struct _GifContext
         unsigned int global_bit_pixel;
 	unsigned int global_color_resolution;
         unsigned int background_index;
+        gboolean stop_after_first_frame;
 
         gboolean frame_cmap_active;
         CMap frame_color_map;
@@ -213,11 +214,14 @@ gif_read (GifContext *context, guchar *buffer, size_t len)
 #endif
 		retval = (fread(buffer, len, 1, context->file) != 0);
 
-                if (!retval && ferror (context->file))
+                if (!retval && ferror (context->file)) {
+                        gint save_errno = errno;
                         g_set_error (context->error,
                                      G_FILE_ERROR,
-                                     g_file_error_from_errno (errno),
-                                     _("Failure reading GIF: %s"), strerror (errno));
+                                     g_file_error_from_errno (save_errno),
+                                     _("Failure reading GIF: %s"), 
+                                     strerror (save_errno));
+                }
                 
 #ifdef IO_GIFDEBUG
 		if (len < 100) {
@@ -1088,6 +1092,9 @@ gif_get_lzw (GifContext *context)
                  */
 		context->frame = NULL;
                 context->frame_cmap_active = FALSE;
+
+                if (context->stop_after_first_frame)
+                        context->state =  GIF_DONE;
 	}
 	
 	return v;
@@ -1415,7 +1422,7 @@ new_context (void)
 
         memset (context, 0, sizeof (GifContext));
         
-        context->animation = g_object_new (GDK_TYPE_PIXBUF_GIF_ANIM, NULL);        
+        context->animation = g_object_new (GDK_TYPE_PIXBUF_GIF_ANIM, NULL);
 	context->frame = NULL;
 	context->file = NULL;
 	context->state = GIF_START;
@@ -1430,6 +1437,7 @@ new_context (void)
 	context->gif89.disposal = -1;
         context->animation->loop = 1;
         context->in_loop_extension = FALSE;
+        context->stop_after_first_frame = FALSE;
 
 	return context;
 }
@@ -1454,7 +1462,8 @@ gdk_pixbuf__gif_image_load (FILE *file, GError **error)
         
 	context->file = file;
         context->error = error;
-        
+        context->stop_after_first_frame = TRUE;
+
 	if (gif_main_loop (context) == -1 || context->animation->frames == NULL) {
                 if (context->error && *(context->error) == NULL)
                         g_set_error (context->error,
@@ -1576,7 +1585,7 @@ gdk_pixbuf__gif_image_load_increment (gpointer data,
 		/* prepare for the next image_load_increment */
 		if (context->buf == buf) {
 			g_assert (context->size == size);
-			context->buf = (guchar *)g_new (guchar, context->amount_needed + (context->size - context->ptr));
+			context->buf = g_new (guchar, context->amount_needed + (context->size - context->ptr));
 			memcpy (context->buf, buf + context->ptr, context->size - context->ptr);
 		} else {
 			/* copy the left overs to the begining of the buffer */

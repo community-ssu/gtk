@@ -32,6 +32,7 @@
 
 #include "gdkpixmap.h"
 #include "gdkdisplay.h"
+#include "gdkscreen.h"
 
 #include "gdkprivate-win32.h"
 
@@ -108,8 +109,9 @@ gdk_pixmap_impl_win32_finalize (GObject *object)
   GDK_NOTE (PIXMAP, g_print ("gdk_pixmap_impl_win32_finalize: %p\n",
 			     GDK_PIXMAP_HBITMAP (wrapper)));
 
-  if (!DeleteObject (GDK_PIXMAP_HBITMAP (wrapper)))
-    WIN32_GDI_FAILED ("DeleteObject");
+  _gdk_win32_drawable_finish (GDK_DRAWABLE (object));  
+
+  GDI_CALL (DeleteObject, (GDK_PIXMAP_HBITMAP (wrapper)));
 
   gdk_win32_handle_table_remove (GDK_PIXMAP_HBITMAP (wrapper));
 
@@ -159,7 +161,7 @@ gdk_pixmap_new (GdkDrawable *drawable,
   g_return_val_if_fail ((width != 0) && (height != 0), NULL);
 
   if (!drawable)
-    drawable = _gdk_parent_root;
+    drawable = _gdk_root;
 
   if (GDK_IS_WINDOW (drawable) && GDK_WINDOW_DESTROYED (drawable))
     return NULL;
@@ -191,7 +193,7 @@ gdk_pixmap_new (GdkDrawable *drawable,
   if (GDK_IS_WINDOW (drawable))
     hwnd = GDK_WINDOW_HWND (drawable);
   else
-    hwnd = GDK_WINDOW_HWND (_gdk_parent_root);
+    hwnd = GetDesktopWindow ();
   if ((hdc = GetDC (hwnd)) == NULL)
     {
       WIN32_GDI_FAILED ("GetDC");
@@ -208,7 +210,7 @@ gdk_pixmap_new (GdkDrawable *drawable,
     case 1:
     case 24:
     case 32:
-      bmi.bmiHeader.biBitCount = depth;
+      bmi.bmiHeader.biBitCount = _gdk_windowing_get_bits_for_depth (gdk_display_get_default (), depth);
       break;
 
     case 4:
@@ -291,10 +293,9 @@ gdk_pixmap_new (GdkDrawable *drawable,
   if (holdpal != NULL)
     SelectPalette (hdc, holdpal, FALSE);
 
-  if (!ReleaseDC (hwnd, hdc))
-    WIN32_GDI_FAILED ("ReleaseDC");
+  GDI_CALL (ReleaseDC, (hwnd, hdc));
 
-  GDK_NOTE (PIXMAP, g_print ("...=%p bits=%p pixmap=%p\n", hbitmap, bits, pixmap));
+  GDK_NOTE (PIXMAP, g_print ("... =%p bits=%p pixmap=%p\n", hbitmap, bits, pixmap));
 
   if (hbitmap == NULL)
     {
@@ -311,7 +312,7 @@ gdk_pixmap_new (GdkDrawable *drawable,
   return pixmap;
 }
 
-static unsigned char mirror[256] = {
+static const unsigned char mirror[256] = {
   0x00, 0x80, 0x40, 0xc0, 0x20, 0xa0, 0x60, 0xe0,
   0x10, 0x90, 0x50, 0xd0, 0x30, 0xb0, 0x70, 0xf0,
   0x08, 0x88, 0x48, 0xc8, 0x28, 0xa8, 0x68, 0xe8,
@@ -362,9 +363,8 @@ gdk_bitmap_create_from_data (GdkDrawable *drawable,
   g_return_val_if_fail (drawable == NULL || GDK_IS_DRAWABLE (drawable), NULL);
 
   if (!drawable)
-    drawable = _gdk_parent_root;
-
-  if (GDK_IS_WINDOW (drawable) && GDK_WINDOW_DESTROYED (drawable))
+    drawable = _gdk_root;
+  else if (GDK_IS_WINDOW (drawable) && GDK_WINDOW_DESTROYED (drawable))
     return NULL;
 
   pixmap = gdk_pixmap_new (drawable, width, height, 1);
@@ -443,6 +443,18 @@ gdk_pixmap_foreign_new_for_display (GdkDisplay      *display,
 {
   g_return_val_if_fail (GDK_IS_DISPLAY (display), NULL);
   g_return_val_if_fail (display == _gdk_display, NULL);
+
+  return gdk_pixmap_foreign_new (anid);
+}
+
+GdkPixmap *
+gdk_pixmap_foreign_new_for_screen (GdkScreen       *screen,
+				   GdkNativeWindow  anid,
+				   gint             width,
+				   gint             height,
+				   gint             depth)
+{
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
 
   return gdk_pixmap_foreign_new (anid);
 }

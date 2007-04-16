@@ -24,8 +24,8 @@
 #include "gtksignal.h"
 #include "gtkcellrenderertext.h"
 #include "gtkcellrendererpixbuf.h"
-#include <gobject/gmarshal.h>
 #include "gtkprivate.h"
+#include <gobject/gmarshal.h>
 #include "gtkalias.h"
 
 typedef struct _GtkCellViewCellInfo GtkCellViewCellInfo;
@@ -57,7 +57,6 @@ struct _GtkCellViewPrivate
 };
 
 
-static void        gtk_cell_view_class_init               (GtkCellViewClass *klass);
 static void        gtk_cell_view_cell_layout_init         (GtkCellLayoutIface *iface);
 static void        gtk_cell_view_get_property             (GObject           *object,
                                                            guint             param_id,
@@ -67,8 +66,9 @@ static void        gtk_cell_view_set_property             (GObject          *obj
                                                            guint             param_id,
                                                            const GValue     *value,
                                                            GParamSpec       *pspec);
-static void        gtk_cell_view_init                     (GtkCellView      *cellview);
 static void        gtk_cell_view_finalize                 (GObject          *object);
+static void        gtk_cell_view_style_set                (GtkWidget        *widget,
+                                                           GtkStyle         *previous_style);
 static void        gtk_cell_view_size_request             (GtkWidget        *widget,
                                                            GtkRequisition   *requisition);
 static void        gtk_cell_view_size_allocate            (GtkWidget        *widget,
@@ -81,6 +81,7 @@ static void        gtk_cell_view_set_value                (GtkCellView     *cell
                                                            GValue          *value);
 static GtkCellViewCellInfo *gtk_cell_view_get_cell_info   (GtkCellView      *cellview,
                                                            GtkCellRenderer  *renderer);
+static void        gtk_cell_view_set_cell_data            (GtkCellView      *cell_view);
 
 
 static void        gtk_cell_view_cell_layout_pack_start        (GtkCellLayout         *layout,
@@ -113,56 +114,19 @@ enum
   PROP_0,
   PROP_BACKGROUND,
   PROP_BACKGROUND_GDK,
-  PROP_BACKGROUND_SET
+  PROP_BACKGROUND_SET,
+  PROP_MODEL
 };
 
-static GtkObjectClass *parent_class = NULL;
-
-
-GType
-gtk_cell_view_get_type (void)
-{
-  static GType cell_view_type = 0;
-
-  if (!cell_view_type)
-    {
-      static const GTypeInfo cell_view_info =
-        {
-          sizeof (GtkCellViewClass),
-          NULL, /* base_init */
-          NULL, /* base_finalize */
-          (GClassInitFunc) gtk_cell_view_class_init,
-          NULL, /* class_finalize */
-          NULL, /* class_data */
-          sizeof (GtkCellView),
-          0,
-          (GInstanceInitFunc) gtk_cell_view_init
-        };
-
-      static const GInterfaceInfo cell_layout_info =
-       {
-         (GInterfaceInitFunc) gtk_cell_view_cell_layout_init,
-         NULL,
-         NULL
-       };
-
-      cell_view_type = g_type_register_static (GTK_TYPE_WIDGET, "GtkCellView",
-                                               &cell_view_info, 0);
-
-      g_type_add_interface_static (cell_view_type, GTK_TYPE_CELL_LAYOUT,
-                                   &cell_layout_info);
-    }
-
-  return cell_view_type;
-}
+G_DEFINE_TYPE_WITH_CODE (GtkCellView, gtk_cell_view, GTK_TYPE_WIDGET, 
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_CELL_LAYOUT,
+						gtk_cell_view_cell_layout_init))
 
 static void
 gtk_cell_view_class_init (GtkCellViewClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
-
-  parent_class = g_type_class_peek_parent (klass);
 
   gobject_class->get_property = gtk_cell_view_get_property;
   gobject_class->set_property = gtk_cell_view_set_property;
@@ -171,6 +135,7 @@ gtk_cell_view_class_init (GtkCellViewClass *klass)
   widget_class->expose_event = gtk_cell_view_expose;
   widget_class->size_allocate = gtk_cell_view_size_allocate;
   widget_class->size_request = gtk_cell_view_size_request;
+  widget_class->style_set = gtk_cell_view_style_set;
 
   /* properties */
   g_object_class_install_property (gobject_class,
@@ -186,9 +151,24 @@ gtk_cell_view_class_init (GtkCellViewClass *klass)
                                                       P_("Background color"),
                                                       P_("Background color as a GdkColor"),
                                                       GDK_TYPE_COLOR,
-                                                      GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                      GTK_PARAM_READWRITE));
 
-#define ADD_SET_PROP(propname, propval, nick, blurb) g_object_class_install_property (gobject_class, propval, g_param_spec_boolean (propname, nick, blurb, FALSE, GTK_PARAM_READABLE | GTK_PARAM_WRITABLE))
+  /**
+   * GtkCellView:model
+   *
+   * The model for cell view
+   *
+   * since 2.10
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_MODEL,
+				   g_param_spec_object  ("model",
+							 P_("CellView model"),
+							 P_("The model for cell view"),
+							 GTK_TYPE_TREE_MODEL,
+							 GTK_PARAM_READWRITE));
+  
+#define ADD_SET_PROP(propname, propval, nick, blurb) g_object_class_install_property (gobject_class, propval, g_param_spec_boolean (propname, nick, blurb, FALSE, GTK_PARAM_READWRITE))
 
   ADD_SET_PROP ("background-set", PROP_BACKGROUND_SET,
                 P_("Background set"),
@@ -231,6 +211,9 @@ gtk_cell_view_get_property (GObject    *object,
       case PROP_BACKGROUND_SET:
         g_value_set_boolean (value, view->priv->background_set);
         break;
+      case PROP_MODEL:
+	g_value_set_object (value, view->priv->model);
+	break;
       default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
         break;
@@ -267,7 +250,10 @@ gtk_cell_view_set_property (GObject      *object,
       case PROP_BACKGROUND_SET:
         view->priv->background_set = g_value_get_boolean (value);
         break;
-      default:
+      case PROP_MODEL:
+	gtk_cell_view_set_model (view, g_value_get_object (value));
+	break;
+    default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID (object, param_id, pspec);
         break;
     }
@@ -279,6 +265,15 @@ gtk_cell_view_init (GtkCellView *cellview)
   GTK_WIDGET_SET_FLAGS (cellview, GTK_NO_WINDOW);
 
   cellview->priv = GTK_CELL_VIEW_GET_PRIVATE (cellview);
+}
+
+static void
+gtk_cell_view_style_set (GtkWidget *widget,
+                         GtkStyle  *previous_style)
+{
+  if (previous_style && GTK_WIDGET_REALIZED (widget))
+    gdk_window_set_background (widget->window,
+                               &widget->style->base[GTK_WIDGET_STATE (widget)]);
 }
 
 static void
@@ -294,7 +289,7 @@ gtk_cell_view_finalize (GObject *object)
   if (cellview->priv->displayed_row)
      gtk_tree_row_reference_free (cellview->priv->displayed_row);
 
-  (* G_OBJECT_CLASS (parent_class)->finalize) (object);
+  (* G_OBJECT_CLASS (gtk_cell_view_parent_class)->finalize) (object);
 }
 
 static void
@@ -349,7 +344,6 @@ gtk_cell_view_size_allocate (GtkWidget     *widget,
 
   cellview = GTK_CELL_VIEW (widget);
 
-
   /* checking how much extra space we have */
   for (i = cellview->priv->cell_list; i; i = i->next)
     {
@@ -365,81 +359,38 @@ gtk_cell_view_size_allocate (GtkWidget     *widget,
     }
 
   extra_space = widget->allocation.width - full_requested_width;
-  
-  if (expand_cell_count > 0)
+  if (extra_space < 0)
+    extra_space = 0;
+  else if (extra_space > 0 && expand_cell_count > 0)
     extra_space /= expand_cell_count;
-  
-  /* PACK_START cells */
-  if (extra_space >= 0)
-    {
-      /* we have more space than requested */
-      for (i = cellview->priv->cell_list; i; i = i->next)
-        {
-          GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
-          if (info->pack == GTK_PACK_END)
-              continue;
-          if (!info->cell->visible)
-              continue;
 
-          info->real_width = info->requested_width + 
-              (info->expand ? extra_space : 0);
-        }
-    }
-  else
+  /* iterate list for PACK_START cells */
+  for (i = cellview->priv->cell_list; i; i = i->next)
     {
-      /* we have less space than requested 
-       * iterate (and take space) from last cell in list so that first 
-       * cells remain visible */ 
-      for ( i = g_list_last(cellview->priv->cell_list); i; i = i->prev )
-         {
-           GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
-           if (info->pack == GTK_PACK_END)
-             continue;
-           if (!info->cell->visible)
-             continue;
-           
-           info->real_width = info->requested_width + extra_space;         
-           if (info->real_width < 0)
-               info->real_width = info->requested_width;
-           /* if there is at most one expanding cell, take space only once */
-           if (expand_cell_count <= 1)
-               extra_space = 0;
-         }
-    }
-  
-  /* PACK_END cells */
-  if (extra_space >= 0)
-    {
-      for (i = cellview->priv->cell_list; i; i = i->next)
-        {
-          GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
-          if (info->pack == GTK_PACK_START)
-              continue;
-          if (!info->cell->visible)
-              continue;
+      GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
 
-          info->real_width = info->requested_width + 
-              (info->expand ? extra_space : 0);
-        }
-    }
-  else
-    {
-       for ( i = g_list_last(cellview->priv->cell_list); i; i = i->prev )
-         {
-           GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
-           if (info->pack == GTK_PACK_START)
-               continue;
-           if (!info->cell->visible)
-               continue;
+      if (info->pack == GTK_PACK_END)
+        continue;
 
-           info->real_width = info->requested_width + extra_space;
-           if (info->real_width < 0)
-               info->real_width = info->requested_width;
-           if (expand_cell_count <= 1)
-               extra_space = 0;
-         }
+      if (!info->cell->visible)
+        continue;
+
+      info->real_width = info->requested_width + (info->expand?extra_space:0);
     }
-  
+
+  /* iterate list for PACK_END cells */
+  for (i = cellview->priv->cell_list; i; i = i->next)
+    {
+      GtkCellViewCellInfo *info = (GtkCellViewCellInfo *)i->data;
+
+      if (info->pack == GTK_PACK_START)
+        continue;
+
+      if (!info->cell->visible)
+        continue;
+
+      info->real_width = info->requested_width + (info->expand?extra_space:0);
+    }
 }
 
 static gboolean
@@ -460,23 +411,16 @@ gtk_cell_view_expose (GtkWidget      *widget,
   /* "blank" background */
   if (cellview->priv->background_set)
     {
-      GdkGC *gc;
+      cairo_t *cr = gdk_cairo_create (GTK_WIDGET (cellview)->window);
 
-      gc = gdk_gc_new (GTK_WIDGET (cellview)->window);
-      gdk_gc_set_rgb_fg_color (gc, &cellview->priv->background);
+      gdk_cairo_rectangle (cr, &widget->allocation);
+      cairo_set_source_rgb (cr,
+			    cellview->priv->background.red / 65535.,
+			    cellview->priv->background.green / 65535.,
+			    cellview->priv->background.blue / 65535.);
+      cairo_fill (cr);
 
-      gdk_draw_rectangle (GTK_WIDGET (cellview)->window,
-                          gc,
-                          TRUE,
-
-                          /*0, 0,*/
-                          widget->allocation.x,
-                          widget->allocation.y,
-
-                          widget->allocation.width,
-                          widget->allocation.height);
-
-      g_object_unref (gc);
+      cairo_destroy (cr);
     }
 
   /* set cell data (if available) */
@@ -568,24 +512,12 @@ gtk_cell_view_get_cell_info (GtkCellView     *cellview,
   return NULL;
 }
 
-/**
- * gtk_cell_view_set_cell_data:
- * @cell_view: a #GtkCellView
- *
- * Sets the cell data, if available.
- *
- * Since: maemo 1.0
- */
-void
+static void
 gtk_cell_view_set_cell_data (GtkCellView *cell_view)
 {
   GList *i;
   GtkTreeIter iter;
   GtkTreePath *path;
-  
-  /* This function should probably be private. It is private in  
-   * stock GTK and was made public in maemo GTK without any explanation 
-   * nor changelog entry.*/
 
   g_return_if_fail (cell_view->priv->displayed_row != NULL);
 
@@ -640,8 +572,7 @@ gtk_cell_view_cell_layout_pack_start (GtkCellLayout   *layout,
   g_return_if_fail (GTK_IS_CELL_RENDERER (renderer));
   g_return_if_fail (!gtk_cell_view_get_cell_info (cellview, renderer));
 
-  g_object_ref (renderer);
-  gtk_object_sink (GTK_OBJECT (renderer));
+  g_object_ref_sink (renderer);
 
   info = g_new0 (GtkCellViewCellInfo, 1);
   info->cell = renderer;
@@ -663,8 +594,7 @@ gtk_cell_view_cell_layout_pack_end (GtkCellLayout   *layout,
   g_return_if_fail (GTK_IS_CELL_RENDERER (renderer));
   g_return_if_fail (!gtk_cell_view_get_cell_info (cellview, renderer));
 
-  g_object_ref (renderer);
-  gtk_object_sink (GTK_OBJECT (renderer));
+  g_object_ref_sink (renderer);
 
   info = g_new0 (GtkCellViewCellInfo, 1);
   info->cell = renderer;

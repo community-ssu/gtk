@@ -1,9 +1,10 @@
 /* Application main window
  *
- * Demonstrates a typical application window, with menubar, toolbar, statusbar.
+ * Demonstrates a typical application window with menubar, toolbar, statusbar.
  */
 
 #include <gtk/gtk.h>
+#include "config.h"
 #include "demo-common.h"
 
 static GtkWidget *window = NULL;
@@ -48,7 +49,8 @@ activate_radio_action (GtkAction *action, GtkRadioAction *current)
 				       GTK_DIALOG_DESTROY_WITH_PARENT,
 				       GTK_MESSAGE_INFO,
 				       GTK_BUTTONS_CLOSE,
-				       "You activated radio action: \"%s\" of type \"%s\".\nCurrent value: %d",
+				       "You activated radio action: \"%s\" of type \"%s\".\n"
+				       "Current value: %d",
 				       name, typename, value);
 
       /* Close dialog on user response */
@@ -131,8 +133,8 @@ about_cb (GtkAction *action,
   gtk_about_dialog_set_url_hook (activate_url, NULL, NULL);
   gtk_show_about_dialog (GTK_WINDOW (window),
 			 "name", "GTK+ Code Demos",
-			 "version", "2.4.3",
-			 "copyright", "(C) 1997-2004 The GTK+ Team",
+			 "version", PACKAGE_VERSION,
+			 "copyright", "(C) 1997-2005 The GTK+ Team",
 			 "license", license,
 			 "website", "http://www.gtk.org",
 			 "comments", "Program to demonstrate GTK+ functions.",
@@ -144,9 +146,32 @@ about_cb (GtkAction *action,
   g_object_unref (transparent);
 }
 
+typedef struct 
+{
+  GtkAction action;
+} ToolMenuAction;
+
+typedef struct 
+{
+  GtkActionClass parent_class;
+} ToolMenuActionClass;
+
+G_DEFINE_TYPE(ToolMenuAction, tool_menu_action, GTK_TYPE_ACTION);
+
+static void
+tool_menu_action_class_init (ToolMenuActionClass *class)
+{
+  GTK_ACTION_CLASS (class)->toolbar_item_type = GTK_TYPE_MENU_TOOL_BUTTON;
+}
+
+static void
+tool_menu_action_init (ToolMenuAction *action)
+{
+}
 
 static GtkActionEntry entries[] = {
   { "FileMenu", NULL, "_File" },               /* name, stock id, label */
+  { "OpenMenu", NULL, "_Open" },               /* name, stock id, label */
   { "PreferencesMenu", NULL, "_Preferences" }, /* name, stock id, label */
   { "ColorMenu", NULL, "_Color"  },            /* name, stock id, label */
   { "ShapeMenu", NULL, "_Shape" },             /* name, stock id, label */
@@ -155,9 +180,9 @@ static GtkActionEntry entries[] = {
     "_New", "<control>N",                      /* label, accelerator */
     "Create a new file",                       /* tooltip */ 
     G_CALLBACK (activate_action) },      
-  { "Open", GTK_STOCK_OPEN,                    /* name, stock id */
-    "_Open","<control>O",                      /* label, accelerator */     
-    "Open a file",                             /* tooltip */
+  { "File1", NULL,                             /* name, stock id */
+    "File1", NULL,                             /* label, accelerator */     
+    "Open first file",                         /* tooltip */
     G_CALLBACK (activate_action) }, 
   { "Save", GTK_STOCK_SAVE,                    /* name, stock id */
     "_Save","<control>S",                      /* label, accelerator */     
@@ -258,8 +283,12 @@ static const gchar *ui_info =
 "      <menuitem action='About'/>"
 "    </menu>"
 "  </menubar>"
-"  <toolbar  name='ToolBar'>"
-"    <toolitem action='Open'/>"
+"  <toolbar name='ToolBar'>"
+"    <toolitem action='Open'>"
+"      <menu action='OpenMenu'>"
+"        <menuitem action='File1'/>"
+"      </menu>"  
+"    </toolitem>"
 "    <toolitem action='Quit'/>"
 "    <separator action='Sep1'/>"
 "    <toolitem action='Logo'/>"
@@ -344,7 +373,9 @@ update_statusbar (GtkTextBuffer *buffer,
   gint count;
   GtkTextIter iter;
   
-  gtk_statusbar_pop (statusbar, 0); /* clear any previous message, underflow is allowed */
+  gtk_statusbar_pop (statusbar, 0); /* clear any previous message, 
+				     * underflow is allowed 
+				     */
 
   count = gtk_text_buffer_get_char_count (buffer);
 
@@ -377,8 +408,15 @@ update_resize_grip (GtkWidget           *widget,
 		    GdkEventWindowState *event,
 		    GtkStatusbar        *statusbar)
 {
-  if (event->changed_mask & (GDK_WINDOW_STATE_MAXIMIZED | GDK_WINDOW_STATE_FULLSCREEN))
-    gtk_statusbar_set_has_resize_grip (statusbar, !(event->new_window_state & (GDK_WINDOW_STATE_MAXIMIZED | GDK_WINDOW_STATE_FULLSCREEN)));
+  if (event->changed_mask & (GDK_WINDOW_STATE_MAXIMIZED | 
+			     GDK_WINDOW_STATE_FULLSCREEN))
+    {
+      gboolean maximized;
+
+      maximized = event->new_window_state & (GDK_WINDOW_STATE_MAXIMIZED | 
+					     GDK_WINDOW_STATE_FULLSCREEN);
+      gtk_statusbar_set_has_resize_grip (statusbar, !maximized);
+    }
 }
 		    
 
@@ -394,6 +432,7 @@ do_appwindow (GtkWidget *do_widget)
       GtkWidget *bar;
       GtkTextBuffer *buffer;
       GtkActionGroup *action_group;
+      GtkAction *open_action;
       GtkUIManager *merge;
       GError *error = NULL;
 
@@ -421,6 +460,13 @@ do_appwindow (GtkWidget *do_widget)
        */
       
       action_group = gtk_action_group_new ("AppWindowActions");
+      open_action = g_object_new (tool_menu_action_get_type (), 
+				  "name", "Open",
+				  "label", "_Open",
+				  "tooltip", "Open a file",
+				  "stock-id", GTK_STOCK_OPEN,
+				  NULL);
+      gtk_action_group_add_action (action_group, open_action);
       gtk_action_group_add_actions (action_group, 
 				    entries, n_entries, 
 				    window);
@@ -439,7 +485,8 @@ do_appwindow (GtkWidget *do_widget)
 					  NULL);
 
       merge = gtk_ui_manager_new ();
-      g_object_set_data_full (G_OBJECT (window), "ui-manager", merge, g_object_unref);
+      g_object_set_data_full (G_OBJECT (window), "ui-manager", merge, 
+			      g_object_unref);
       gtk_ui_manager_insert_action_group (merge, action_group, 0);
       gtk_window_add_accel_group (GTK_WINDOW (window), 
 				  gtk_ui_manager_get_accel_group (merge));

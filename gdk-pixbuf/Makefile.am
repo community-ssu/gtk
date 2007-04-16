@@ -6,28 +6,22 @@ no_undefined = -no-undefined
 endif
 
 if OS_WIN32
-gdk_pixbuf_def = gdk_pixbuf.def
+gdk_pixbuf_def = $(srcdir)/gdk_pixbuf.def
 gdk_pixbuf_symbols = -export-symbols $(gdk_pixbuf_def)
 
-gdk_pixbuf_win32res_lo = gdk_pixbuf-win32res.lo
+gdk_pixbuf_win32_res = gdk_pixbuf-win32-res.o
+gdk_pixbuf_win32_res_ldflag = -Wl,$(gdk_pixbuf_win32_res)
 
-gdk_pixbuf-win32res.lo : gdk_pixbuf.rc
-	$(top_srcdir)/build/win32/lt-compile-resource gdk_pixbuf.rc gdk_pixbuf-win32res.lo
+gdk_pixbuf-win32-res.o : gdk_pixbuf.rc
+	$(WINDRES) gdk_pixbuf.rc $@
 
-install-libtool-import-lib:
-# 	Don't put the binary compatibility entries in the import lib!
-#	(Unfortunately the GNU linker doesn't yet understand the PRIVATE
-#	directive in .def files.)
-	for entry in `grep PRIVATE gdk_pixbuf.def | sed -e 's/PRIVATE//'`; do \
-	  file=`$(NM) -A .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a | tr -d '\r' | grep -E $$entry'$$' | head -n 1 | cut -d: -f2`; \
-	  $(AR) d .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a $$file; \
-	done
-	$(INSTALL) .libs/libgdk_pixbuf-$(GTK_API_VERSION).dll.a $(DESTDIR)$(libdir)
-uninstall-libtool-import-lib:
-	-rm $(DESTDIR)$(libdir)/libgdk_pixbuf-$(GTK_API_VERSION).dll.a
+install-def-file:
+	$(INSTALL) $(gdk_pixbuf_def) $(DESTDIR)$(libdir)/gdk_pixbuf-2.0.def
+uninstall-def-file:
+	-rm $(DESTDIR)$(libdir)/gdk_pixbuf-2.0.def
 else
-install-libtool-import-lib:
-uninstall-libtool-import-lib:
+install-def-file:
+uninstall-def-file:
 endif
 
 if MS_LIB_AVAILABLE
@@ -56,7 +50,7 @@ gdk-pixbuf-aliasdef.c: gdk-pixbuf.symbols
 	 $(PERL) $(srcdir)/makegdkpixbufalias.pl -def < $(srcdir)/gdk-pixbuf.symbols > gdk-pixbuf-aliasdef.c
 
 if OS_LINUX
-TESTS = abicheck.sh
+TESTS = abicheck.sh pltcheck.sh
 endif
 
 lib_LTLIBRARIES = 		\
@@ -279,8 +273,6 @@ INCLUDES = \
 	-DGTK_SYSCONFDIR=\"$(sysconfdir)\"	\
 	-DGTK_VERSION=\"$(GTK_VERSION)\"	\
 	-DGTK_BINARY_VERSION=\"$(GTK_BINARY_VERSION)\"	\
-	-DG_DISABLE_DEPRECATED			\
-	-DGDK_PIXBUF_DISABLE_DEPRECATED		\
 	-DGTK_PREFIX=\"$(prefix)\"		\
 	$(INCLUDED_LOADER_DEFINE) 		\
 	$(GTK_DEBUG_FLAGS)			\
@@ -307,27 +299,29 @@ gdk_pixbuf_query_loaders_SOURCES = queryloaders.c
 # The GdkPixBuf library
 #
 libgdk_pixbufincludedir = $(includedir)/gtk-2.0/gdk-pixbuf
-libgdk_pixbuf_2_0_la_SOURCES =  \
-	gdk-pixbuf-i18n.h	\
-	gdk-pixbuf.c		\
-	gdk-pixbuf-animation.c	\
-	gdk-pixbuf-data.c	\
-	gdk-pixbuf-io.c		\
-	gdk-pixbuf-loader.c	\
-	gdk-pixbuf-scale.c	\
-	gdk-pixbuf-util.c	\
-	gdk-pixdata.c		\
+libgdk_pixbuf_2_0_la_SOURCES =   \
+	gdk-pixbuf-i18n.h	 \
+	gdk-pixbuf.c		 \
+	gdk-pixbuf-animation.c	 \
+	gdk-pixbuf-data.c	 \
+	gdk-pixbuf-io.c		 \
+	gdk-pixbuf-loader.c	 \
+	gdk-pixbuf-scale.c	 \
+	gdk-pixbuf-simple-anim.c \
+	gdk-pixbuf-util.c	 \
+	gdk-pixdata.c		 \
 	gdk-pixbuf-enum-types.c
 
 libgdk_pixbuf_2_0_la_LDFLAGS = \
+	$(gdk_pixbuf_win32_res_ldflag)		\
 	-version-info $(LT_VERSION_INFO)	\
 	$(LIBTOOL_EXPORT_OPTIONS)		\
 	$(no_undefined)				\
 	$(gdk_pixbuf_symbols)
 
 
-libgdk_pixbuf_2_0_la_LIBADD = pixops/libpixops.la $(builtin_objs) $(gdk_pixbuf_win32res_lo) $(GDK_PIXBUF_DEP_LIBS)
-libgdk_pixbuf_2_0_la_DEPENDENCIES = pixops/libpixops.la $(builtin_objs) $(gdk_pixbuf_def) $(gdk_pixbuf_win32res_lo)
+libgdk_pixbuf_2_0_la_LIBADD = pixops/libpixops.la $(builtin_objs) $(GDK_PIXBUF_DEP_LIBS)
+libgdk_pixbuf_2_0_la_DEPENDENCIES = pixops/libpixops.la $(builtin_objs) $(gdk_pixbuf_def) $(gdk_pixbuf_win32_res)
 
 gdk_pixbuf_headers = 			\
 	gdk-pixbuf.h			\
@@ -335,6 +329,7 @@ gdk_pixbuf_headers = 			\
 	gdk-pixbuf-transform.h		\
 	gdk-pixbuf-io.h			\
 	gdk-pixbuf-animation.h		\
+	gdk-pixbuf-simple-anim.h	\
 	gdk-pixbuf-loader.h
 
 libgdk_pixbufinclude_HEADERS =  	\
@@ -346,7 +341,8 @@ libgdk_pixbufinclude_HEADERS =  	\
 
 noinst_HEADERS = 		\
 	gdk-pixbuf-alias.h	\
-	gdk-pixbuf-private.h
+	gdk-pixbuf-private.h	\
+	xpm-color-table.h
 
 BUILT_SOURCES = 		\
 	gdk-pixbuf-alias.h	\
@@ -358,12 +354,11 @@ BUILT_SOURCES = 		\
 
 CLEANFILES =
 MAINTAINERCLEANFILES = 		\
+	gdk-pixbuf-aliasdef.c	\
 	gdk-pixbuf-enum-types.h \
 	gdk-pixbuf-enum-types.c \
 	gdk-pixbuf-marshal.h 	\
 	gdk-pixbuf-marshal.c 	\
-	gdk-pixbuf-alias.h	\
-	gdk-pixbuf-aliasdef.c	\
 	gdk-pixbuf.loaders
 
 #
@@ -373,7 +368,7 @@ gdk-pixbuf-enum-types.h: s-enum-types-h
 	@true
 
 s-enum-types-h: @REBUILD@ $(gdk_pixbuf_headers) Makefile
-	( cd $(srcdir) && glib-mkenums \
+	( cd $(srcdir) && $(GLIB_MKENUMS) \
 			--fhead "#ifndef __GDK_PIXBUF_ENUM_TYPES_H__\n#define __GDK_PIXBUF_ENUM_TYPES_H__\n\n#include <glib-object.h>\n\nG_BEGIN_DECLS\n" \
 			--fprod "/* enumerations from \"@filename@\" */\n" \
 			--vhead "GType @enum_name@_get_type (void) G_GNUC_CONST;\n#define GDK_TYPE_@ENUMSHORT@ (@enum_name@_get_type())\n"         \
@@ -390,13 +385,13 @@ MAINTAINERCLEANFILES += s-enum-types-h
 # gdk-pixbuf-enum-types.c
 #
 gdk-pixbuf-enum-types.c: @REBUILD@ $(gdk_pixbuf_headers) Makefile
-	(cd $(srcdir) && glib-mkenums \
+	(cd $(srcdir) && $(GLIB_MKENUMS) \
 		--fhead "#include <gdk-pixbuf/gdk-pixbuf.h>\n#include \"gdk-pixbuf-alias.h\"\n" \
 		--fprod "\n/* enumerations from \"@filename@\" */" \
 		--ftail "\n#define __GDK_PIXBUF_ENUM_TYPES_C__\n#include \"gdk-pixbuf-aliasdef.c\"" \
 		--vhead "GType\n@enum_name@_get_type (void)\n{\n  static GType etype = 0;\n  if (etype == 0) {\n    static const G@Type@Value values[] = {"       \
 		--vprod "      { @VALUENAME@, \"@VALUENAME@\", \"@valuenick@\" }," \
-		--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (\"@EnumName@\", values);\n  }\n  return etype;\n}\n" \
+		--vtail "      { 0, NULL, NULL }\n    };\n    etype = g_@type@_register_static (g_intern_static_string (\"@EnumName@\"), values);\n  }\n  return etype;\n}\n" \
 		  $(gdk_pixbuf_headers)) > gdk-pixbuf-enum-types.c
 
 #
@@ -437,6 +432,7 @@ EXTRA_DIST =					\
 	gdk-pixbuf.symbols			\
 	makegdkpixbufalias.pl			\
 	abicheck.sh				\
+	pltcheck.sh				\
 	gdk_pixbuf.def				\
 	gdk_pixbuf.rc				\
 	gdk-pixbuf-marshal.c			\
@@ -453,7 +449,8 @@ EXTRA_DIST =					\
 	pixbufloader_tiff.def			\
 	pixbufloader_wbmp.def			\
 	pixbufloader_xbm.def			\
-	pixbufloader_tga.def
+	pixbufloader_tga.def			\
+	gen-color-table.pl
 
 if CROSS_COMPILING
 RUN_QUERY_LOADER_TEST=false
@@ -467,7 +464,7 @@ endif
 # that makes the install target for the loader libraries a dependency on
 # install-data-am, and not install-exec-am. We need to ensure this gets run
 # after the libraries are installed in their final locations.
-install-data-hook: install-ms-lib install-libtool-import-lib
+install-data-hook: install-ms-lib install-def-file
 	@if $(RUN_QUERY_LOADER_TEST) ; then \
 	  $(mkinstalldirs) $(DESTDIR)$(sysconfdir)/gtk-2.0 ; \
 	  $(top_builddir)/gdk-pixbuf/gdk-pixbuf-query-loaders > $(DESTDIR)$(sysconfdir)/gtk-2.0/gdk-pixbuf.loaders ; \
@@ -480,7 +477,7 @@ install-data-hook: install-ms-lib install-libtool-import-lib
 	  echo "***" ; \
 	fi
 
-uninstall-local: uninstall-ms-lib uninstall-libtool-import-lib
+uninstall-local: uninstall-ms-lib uninstall-def-file
 	rm -f $(DESTDIR)$(sysconfdir)/gtk-2.0/gdk-pixbuf.loaders
 
 if CROSS_COMPILING
@@ -489,7 +486,7 @@ all-local: gdk-pixbuf.loaders
 endif
 
 if BUILD_DYNAMIC_MODULES
-gdk-pixbuf.loaders: $(loader_LTLIBRARIES) gdk-pixbuf-query-loaders
+gdk-pixbuf.loaders: $(loader_LTLIBRARIES) gdk-pixbuf-query-loaders$(EXEEXT)
 	LOADERS=`echo libpixbufloader-*.la` ; \
 	if test "x$$LOADERS" != 'xlibpixbufloader-*.la' ; then \
           echo "Writing a gdk-pixbuf.loader file to use when running examples before installing gdk-pixbuf."; \

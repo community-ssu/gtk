@@ -19,16 +19,17 @@
 
 #include <config.h>
 #include <math.h>
+#include <pango/pangocairo.h>
+#include "gdkcairo.h"
 #include "gdkcolor.h"
 #include "gdkgc.h"
+#include "gdkinternals.h"
 #include "gdkpango.h"
 #include "gdkrgb.h"
 #include "gdkprivate.h"
 #include "gdkscreen.h"
+#include "gdkintl.h"
 #include "gdkalias.h"
-
-/* This is for P_() ... a bit non-kosher, but works fine */
-#include "gtk/gtkintl.h"
 
 #define GDK_INFO_KEY "gdk-info"
 
@@ -49,31 +50,18 @@ struct _GdkPangoRendererPrivate
   GdkBitmap *stipple[MAX_RENDER_PART + 1];
   gboolean embossed;
 
-  /* When switching between the normal and shadow copies when
-   * drawing shadows we can get unexpected recursion into the
-   * drawing functions; the 'in_emboss' flag guards against that.
-   */
-  gboolean in_emboss;
+  cairo_t *cr;
+  PangoRenderPart last_part;
 
   /* Current target */
   GdkDrawable *drawable;
   GdkGC *base_gc;
 
-  /* Cached GC, derived from base_gc */
-  GdkGC *gc;
-  PangoColor gc_color;
-  gboolean gc_color_set;
-  GdkBitmap *gc_stipple;
-  
-  /* we accumulate trapezoids for the same PangoRenderPart */
-  GArray *trapezoids;
-  PangoRenderPart trapezoid_part;
+  gboolean gc_changed;
 };
 
 static PangoAttrType gdk_pango_attr_stipple_type;
 static PangoAttrType gdk_pango_attr_embossed_type;
-
-static void flush_trapezoids (GdkPangoRenderer *gdk_renderer);
 
 enum {
   PROP_0,
@@ -89,10 +77,6 @@ gdk_pango_renderer_finalize (GObject *object)
   GdkPangoRendererPrivate *priv = gdk_renderer->priv;
   int i;
 
-  if (priv->gc)
-    g_object_unref (priv->gc);
-  if (priv->gc_stipple)
-    g_object_unref (priv->gc_stipple);
   if (priv->base_gc)
     g_object_unref (priv->base_gc);
   if (priv->drawable)
@@ -101,8 +85,6 @@ gdk_pango_renderer_finalize (GObject *object)
   for (i = 0; i <= MAX_RENDER_PART; i++)
     if (priv->stipple[i])
       g_object_unref (priv->stipple[i]);
-
-  g_array_free (priv->trapezoids, TRUE);
 
   G_OBJECT_CLASS (gdk_pango_renderer_parent_class)->finalize (object);
 }
@@ -130,154 +112,108 @@ gdk_pango_renderer_constructor (GType                  type,
   return object;
 }
 
-/* Adjusts matrix and color for the renderer to draw the secondar
+/* Adjusts matrix and color for the renderer to draw the secondary
  * "shadow" copy for embossed text */
 static void
-emboss_renderer (PangoRenderer   *renderer,
-		 PangoRenderPart  part,
-		 PangoMatrix    **save_matrix,
-		 PangoColor     **save_color)
+emboss_context (cairo_t *cr)
 {
-  GdkPangoRendererPrivate *priv = GDK_PANGO_RENDERER(renderer)->priv;
-  static const PangoColor white = { 0xffff, 0xffff, 0xffff };
-  PangoMatrix tmp_matrix = PANGO_MATRIX_INIT;
+  cairo_matrix_t tmp_matrix;
 
-  priv->in_emboss = TRUE;
-  
-  *save_color = pango_renderer_get_color (renderer, part);
-  if (*save_color)
-    *save_color = pango_color_copy (*save_color);
-  
-  *save_matrix = renderer->matrix;
-  if (*save_matrix)
-    {
-      *save_matrix = pango_matrix_copy (*save_matrix);
-      tmp_matrix = **save_matrix;
-    }
-  
   /* The gymnastics here to adjust the matrix are because we want
    * to offset by +1,+1 in device-space, not in user-space,
    * so we can't just draw the layout at x + 1, y + 1
    */
-  tmp_matrix.x0 += 1;
-  tmp_matrix.y0 += 1;
-  
-  pango_renderer_set_matrix (renderer, &tmp_matrix);
-  pango_renderer_set_color (renderer, part, &white);
+  cairo_get_matrix (cr, &tmp_matrix);
+  tmp_matrix.x0 += 1.0;
+  tmp_matrix.y0 += 1.0;
+  cairo_set_matrix (cr, &tmp_matrix);
+
+  cairo_set_source_rgb (cr, 1.0, 1.0, 1.0);
 }
 
-/* Restores from emboss_renderer() */
-static void
-unemboss_renderer (PangoRenderer   *renderer,
-		   PangoRenderPart  part,
-		   PangoMatrix    **save_matrix,
-		   PangoColor     **save_color)
+static inline gboolean
+color_equal (PangoColor *c1, PangoColor *c2)
 {
-  GdkPangoRendererPrivate *priv = GDK_PANGO_RENDERER(renderer)->priv;
-  pango_renderer_set_matrix (renderer, *save_matrix);
-  pango_renderer_set_color (renderer, part, *save_color);
+  if (!c1 && !c2)
+    return TRUE;
 
-  if (*save_matrix)
-    pango_matrix_free (*save_matrix);
-  if (*save_color)
-    pango_color_free (*save_color);
+  if (c1 && c2 &&
+      c1->red == c2->red &&
+      c1->green == c2->green &&
+      c1->blue == c2->blue)
+    return TRUE;
 
-  priv->in_emboss = FALSE;
+  return FALSE;
 }
 
-/* Gets the GC for drawing @part. This make involve copying the base GC
- * for the renderer, in which case we keep a one-GC cache. */
-static GdkGC *
-get_gc (GdkPangoRenderer *gdk_renderer,
-	PangoRenderPart   part)
+static cairo_t *
+get_cairo_context (GdkPangoRenderer *gdk_renderer,
+		   PangoRenderPart   part)
 {
   PangoRenderer *renderer = PANGO_RENDERER (gdk_renderer);
-  PangoColor *color;
-  GdkBitmap *stipple;
   GdkPangoRendererPrivate *priv = gdk_renderer->priv;
 
-  color = pango_renderer_get_color (renderer, part);
-
-  if (part <= MAX_RENDER_PART)
-    stipple = priv->stipple[part];
-  else
-    stipple = NULL;
-
-  if (!color && !stipple)	/* nothing override, use base_gc */
-    return priv->base_gc;
-  else
+  if (!priv->cr)
     {
-      gboolean new_stipple = FALSE;
-      gboolean new_color = FALSE;
+      const PangoMatrix *matrix;
       
-      if (stipple != priv->gc_stipple)
-	new_stipple = TRUE;
+      priv->cr = gdk_cairo_create (priv->drawable);
 
-      if ((priv->gc_color_set && !color) ||
-	  (!priv->gc_color_set && color) ||
-	  priv->gc_color.red != color->red ||
-	  priv->gc_color.green != color->green ||
-	  priv->gc_color.blue != color->blue)
-	new_color = TRUE;
-      
-      if (!priv->gc)
+      matrix = pango_renderer_get_matrix (renderer);
+      if (matrix)
 	{
-	  priv->gc = gdk_gc_new (priv->drawable);
-	  gdk_gc_copy (priv->gc, priv->base_gc);
+	  cairo_matrix_t cairo_matrix;
+	  
+	  cairo_matrix_init (&cairo_matrix,
+			     matrix->xx, matrix->yx,
+			     matrix->xy, matrix->yy,
+			     matrix->x0, matrix->y0);
+	  cairo_set_matrix (priv->cr, &cairo_matrix);
 	}
-      else if (new_color && priv->gc_color_set && !color)
-	{
-	  /* We have to recopy the original GC onto the cached GC
-	   * to get the default color */
-	  new_stipple = TRUE;
-	  gdk_gc_copy (priv->gc, priv->base_gc);
-	}
-      else if (new_stipple && priv->gc_stipple && !stipple)
-	{
-	  /* Similarly, we need to make a new copy to restore to the
-	   * default stipple state (the caller may have set a stipple
-	   * on the GC, and even if not, gdk_gc_set_stipple (gc, NULL)
-	   * doesn't work currently to restore to the default X stipple) */
-	  new_color = TRUE;
-	  gdk_gc_copy (priv->gc, priv->base_gc);
-	}
-
-      if (new_color)
-	{
-	  if (color)
-	    {
-	      GdkColor gdk_color;
-
-	      gdk_color.red = color->red;
-	      gdk_color.green = color->green;
-	      gdk_color.blue = color->blue;
-	      
-	      gdk_gc_set_rgb_fg_color (priv->gc, &gdk_color);
-
-	      priv->gc_color = *color;
-	      priv->gc_color_set = TRUE;
-	    }
-	  else
-	    priv->gc_color_set = FALSE;
-	}
-
-      if (new_stipple)
-	{
-	  if (priv->gc_stipple)
-	    g_object_unref (priv->gc_stipple);
-
-	  if (stipple)
-	    {
-	      gdk_gc_set_stipple (priv->gc, stipple);
-	      gdk_gc_set_fill (priv->gc, GDK_STIPPLED);
-	      priv->gc_stipple = g_object_ref (stipple);
-	    }
-	  else
-	    priv->gc_stipple = NULL;
-	}
-
-      return priv->gc;
     }
+
+  if (part != priv->last_part)
+    {
+      PangoColor *pango_color;
+      GdkColor *color;
+      GdkColor tmp_color;
+      gboolean changed;
+
+      pango_color = pango_renderer_get_color (renderer, part);
+      
+      if (priv->last_part != -1)
+	changed = priv->gc_changed ||
+	  priv->stipple[priv->last_part] != priv->stipple[part] ||
+	  !color_equal (pango_color,
+			pango_renderer_get_color (renderer, priv->last_part));
+      else
+	changed = TRUE;
+      
+      if (changed)
+	{
+	  if (pango_color)
+	    {
+	      tmp_color.red = pango_color->red;
+	      tmp_color.green = pango_color->green;
+	      tmp_color.blue = pango_color->blue;
+	      
+	      color = &tmp_color;
+	    }
+	  else
+	    color = NULL;
+
+	  _gdk_gc_update_context (priv->base_gc,
+				  priv->cr,
+				  color,
+				  priv->stipple[part],
+				  priv->gc_changed);
+	}
+
+      priv->last_part = part;
+      priv->gc_changed = FALSE;
+    }
+
+  return priv->cr;
 }
 
 static void
@@ -289,85 +225,102 @@ gdk_pango_renderer_draw_glyphs (PangoRenderer    *renderer,
 {
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
   GdkPangoRendererPrivate *priv = gdk_renderer->priv;
+  cairo_t *cr;
 
-  flush_trapezoids (gdk_renderer);
+  cr = get_cairo_context (gdk_renderer, 
+			  PANGO_RENDER_PART_FOREGROUND);
 
-  if (!priv->in_emboss && priv->embossed)
+  if (priv->embossed)
     {
-      PangoMatrix *save_matrix;
-      PangoColor *save_color;
+      cairo_save (cr);
+      emboss_context (cr);
+      cairo_move_to (cr, (double)x / PANGO_SCALE, (double)y / PANGO_SCALE);
+      pango_cairo_show_glyph_string (cr, font, glyphs);
+      cairo_restore (cr);
+    }
+  
+  cairo_move_to (cr, (double)x / PANGO_SCALE, (double)y / PANGO_SCALE);
+  pango_cairo_show_glyph_string (cr, font, glyphs);
+}
 
-      emboss_renderer (renderer, PANGO_RENDER_PART_FOREGROUND, &save_matrix, &save_color);
-      gdk_draw_glyphs_transformed (priv->drawable,
-				   get_gc (gdk_renderer, PANGO_RENDER_PART_FOREGROUND),
-				   renderer->matrix, font, x, y, glyphs);
-      unemboss_renderer (renderer, PANGO_RENDER_PART_FOREGROUND, &save_matrix, &save_color);
+/* Draws an error underline that looks like one of:
+ *              H       E                H
+ *     /\      /\      /\        /\      /\               -
+ *   A/  \    /  \    /  \     A/  \    /  \              |
+ *    \   \  /    \  /   /D     \   \  /    \             |
+ *     \   \/  C   \/   /        \   \/   C  \            | height = HEIGHT_SQUARES * square
+ *      \      /\  F   /          \  F   /\   \           | 
+ *       \    /  \    /            \    /  \   \G         |
+ *        \  /    \  /              \  /    \  /          |
+ *         \/      \/                \/      \/           -
+ *         B                         B       
+ *    |----|
+ *   unit_width = (HEIGHT_SQUARES - 1) * square
+ *
+ * The x, y, width, height passed in give the desired bounding box;
+ * x/width are adjusted to make the underline a integer number of units
+ * wide.
+ */
+#define HEIGHT_SQUARES 2.5
+
+/* Cut-and-pasted between here and pango/pango/pangocairo-render.c */
+static void
+draw_error_underline (cairo_t *cr,
+		      double  x,
+		      double  y,
+		      double  width,
+		      double  height)
+{
+  double square = height / HEIGHT_SQUARES;
+  double unit_width = (HEIGHT_SQUARES - 1) * square;
+  int width_units = (width + unit_width / 2) / unit_width;
+  double y_top, y_bottom;
+  int i;
+
+  x += (width - width_units * unit_width) / 2;
+  width = width_units * unit_width;
+
+  y_top = y;
+  y_bottom = y + height;
+  
+  /* Bottom of squiggle */
+  cairo_move_to (cr, x - square / 2, y_top + square / 2); /* A */
+  for (i = 0; i < width_units; i += 2)
+    {
+      double x_middle = x + (i + 1) * unit_width;
+      double x_right = x + (i + 2) * unit_width;
+    
+      cairo_line_to (cr, x_middle, y_bottom); /* B */
+      
+      if (i + 1 == width_units)
+	/* Nothing */;
+      else if (i + 2 == width_units)
+	cairo_line_to (cr, x_right + square / 2, y_top + square / 2); /* D */
+      else
+	cairo_line_to (cr, x_right, y_top + square); /* C */
+    }
+  
+  /* Top of squiggle */
+  for (i -= 2; i >= 0; i -= 2)
+    {
+      double x_left = x + i * unit_width;
+      double x_middle = x + (i + 1) * unit_width;
+      double x_right = x + (i + 2) * unit_width;
+      
+      if (i + 1 == width_units)
+	cairo_line_to (cr, x_middle + square / 2, y_bottom - square / 2); /* G */
+      else {
+	if (i + 2 == width_units)
+	  cairo_line_to (cr, x_right, y_top); /* E */
+	cairo_line_to (cr, x_middle, y_bottom - square); /* F */
+      }
+      
+      cairo_line_to (cr, x_left, y_top);   /* H */
     }
 
-  gdk_draw_glyphs_transformed (priv->drawable,
-			       get_gc (gdk_renderer, PANGO_RENDER_PART_FOREGROUND),
-			       renderer->matrix, font, x, y, glyphs);
+  cairo_close_path (cr);
+  cairo_fill (cr);
 }
-
-/* Outputs any pending trapezoids, we do this when the part or
- * part color changes, when we are about to draw text, etc. */
-static void
-flush_trapezoids (GdkPangoRenderer *gdk_renderer)
-{
-  GdkPangoRendererPrivate *priv = gdk_renderer->priv;
-
-  if (!priv->trapezoids || priv->trapezoids->len == 0)
-    return;
-
-  gdk_draw_trapezoids (priv->drawable,
-		       get_gc (gdk_renderer, priv->trapezoid_part),
-		       (GdkTrapezoid *)priv->trapezoids->data,
-		       priv->trapezoids->len);
-
-  g_array_set_size (priv->trapezoids, 0);
-}
-
-/* Draws a single trapezoid ... we don't draw it immediately, but rather
- * cache it to join together with other trapezoids that form part of the
- * same logical shape */
-static void
-gdk_pango_renderer_draw_trapezoid (PangoRenderer   *renderer,
-				   PangoRenderPart  part,
-				   double           y1,
-				   double           x11,
-				   double           x21,
-				   double           y2,
-				   double           x12,
-				   double           x22)
-{
-  GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
-  GdkTrapezoid trap;
-
-  if (!gdk_renderer->priv->trapezoids)
-    gdk_renderer->priv->trapezoids = g_array_new (FALSE, FALSE,
-						  sizeof (GdkTrapezoid));
-  
-  if (gdk_renderer->priv->trapezoids->len > 0 &&
-      gdk_renderer->priv->trapezoid_part != part)
-    flush_trapezoids (gdk_renderer);
-  
-  gdk_renderer->priv->trapezoid_part = part;
-
-  trap.y1 = y1;
-  trap.x11 = x11;
-  trap.x21 = x21;
-  trap.y2 = y2;
-  trap.x12 = x12;
-  trap.x22 = x22;
-
-  g_array_append_val (gdk_renderer->priv->trapezoids, trap);
-}
-
-/* We can't handle embossing at the level of trapezoids, because when an
- * underline is split into multiple trapezoids, the normal and shadow
- * trapezoids will be drawn mixed together. Instead, we have to emboss
- * and entire rectangle or error underline
- */
 
 static void
 gdk_pango_renderer_draw_rectangle (PangoRenderer    *renderer,
@@ -379,20 +332,26 @@ gdk_pango_renderer_draw_rectangle (PangoRenderer    *renderer,
 {
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
   GdkPangoRendererPrivate *priv = gdk_renderer->priv;
+  cairo_t *cr;
+  
+  cr = get_cairo_context (gdk_renderer, part);
 
-  if (!priv->in_emboss && priv->embossed && part != PANGO_RENDER_PART_BACKGROUND)
+  if (priv->embossed && part != PANGO_RENDER_PART_BACKGROUND)
     {
-      PangoMatrix *save_matrix;
-      PangoColor *save_color;
+      cairo_save (cr);
+      emboss_context (cr);
+      cairo_rectangle (cr,
+		       (double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
+		       (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
 
-      emboss_renderer (renderer, part, &save_matrix, &save_color);
-      PANGO_RENDERER_CLASS (gdk_pango_renderer_parent_class)->draw_rectangle (renderer, part,
-									      x, y, width, height);
-      unemboss_renderer (renderer, part, &save_matrix, &save_color);
+      cairo_fill (cr);
+      cairo_restore (cr);
     }
 
-  PANGO_RENDERER_CLASS (gdk_pango_renderer_parent_class)->draw_rectangle (renderer, part,
-									  x, y, width, height);
+  cairo_rectangle (cr,
+		   (double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
+		   (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+  cairo_fill (cr);
 }
 
 static void
@@ -404,20 +363,23 @@ gdk_pango_renderer_draw_error_underline (PangoRenderer    *renderer,
 {
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
   GdkPangoRendererPrivate *priv = gdk_renderer->priv;
-
-  if (!priv->in_emboss && priv->embossed)
+  cairo_t *cr;
+  
+  cr = get_cairo_context (gdk_renderer, PANGO_RENDER_PART_UNDERLINE);
+  
+  if (priv->embossed)
     {
-      PangoMatrix *save_matrix;
-      PangoColor *save_color;
-
-      emboss_renderer (renderer, PANGO_RENDER_PART_UNDERLINE, &save_matrix, &save_color);
-      PANGO_RENDERER_CLASS (gdk_pango_renderer_parent_class)->draw_error_underline (renderer,
-										    x, y, width, height);
-      unemboss_renderer (renderer, PANGO_RENDER_PART_UNDERLINE, &save_matrix, &save_color);
+      cairo_save (cr);
+      emboss_context (cr);
+      draw_error_underline (cr,
+			    (double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
+			    (double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
+      cairo_restore (cr);
     }
 
-  PANGO_RENDERER_CLASS (gdk_pango_renderer_parent_class)->draw_error_underline (renderer,
-										x, y, width, height);
+  draw_error_underline (cr,
+			(double)x / PANGO_SCALE, (double)y / PANGO_SCALE,
+			(double)width / PANGO_SCALE, (double)height / PANGO_SCALE);
 }
 
 static void
@@ -426,16 +388,17 @@ gdk_pango_renderer_part_changed (PangoRenderer   *renderer,
 {
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
 
-  if (part == gdk_renderer->priv->trapezoid_part)
-    flush_trapezoids (gdk_renderer);
+  if (gdk_renderer->priv->last_part == part)
+    gdk_renderer->priv->last_part = (PangoRenderPart)-1;
 }
 
 static void
 gdk_pango_renderer_begin (PangoRenderer *renderer)
 {
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
-
-  if (!gdk_renderer->priv->drawable || !gdk_renderer->priv->base_gc)
+  GdkPangoRendererPrivate *priv = gdk_renderer->priv;
+  
+  if (!priv->drawable || !priv->base_gc)
     {
       g_warning ("gdk_pango_renderer_set_drawable() and gdk_pango_renderer_set_drawable()"
 		 "must be used to set the target drawable and GC before using the renderer\n");
@@ -446,8 +409,14 @@ static void
 gdk_pango_renderer_end (PangoRenderer *renderer)
 {
   GdkPangoRenderer *gdk_renderer = GDK_PANGO_RENDERER (renderer);
+  GdkPangoRendererPrivate *priv = gdk_renderer->priv;
 
-  flush_trapezoids (gdk_renderer);
+  if (priv->cr)
+    {
+      cairo_destroy (priv->cr);
+      priv->cr = NULL;
+    }
+  priv->last_part = (PangoRenderPart)-1;
 }
 
 static void
@@ -545,6 +514,9 @@ gdk_pango_renderer_init (GdkPangoRenderer *renderer)
   renderer->priv = G_TYPE_INSTANCE_GET_PRIVATE (renderer,
 						GDK_TYPE_PANGO_RENDERER,
 						GdkPangoRendererPrivate);
+
+  renderer->priv->last_part = (PangoRenderPart)-1;
+  renderer->priv->gc_changed = TRUE;
 }
 
 static void
@@ -555,7 +527,6 @@ gdk_pango_renderer_class_init (GdkPangoRendererClass *klass)
   PangoRendererClass *renderer_class = PANGO_RENDERER_CLASS (klass);
   
   renderer_class->draw_glyphs = gdk_pango_renderer_draw_glyphs;
-  renderer_class->draw_trapezoid = gdk_pango_renderer_draw_trapezoid;
   renderer_class->draw_rectangle = gdk_pango_renderer_draw_rectangle;
   renderer_class->draw_error_underline = gdk_pango_renderer_draw_error_underline;
   renderer_class->part_changed = gdk_pango_renderer_part_changed;
@@ -575,7 +546,7 @@ gdk_pango_renderer_class_init (GdkPangoRendererClass *klass)
                                                         P_("the GdkScreen for the renderer"),
                                                         GDK_TYPE_SCREEN,
                                                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY |
-							G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK |
+							G_PARAM_STATIC_NAME | G_PARAM_STATIC_NICK | 
 							G_PARAM_STATIC_BLURB));
 
   g_type_class_add_private (object_class, sizeof (GdkPangoRendererPrivate));  
@@ -608,10 +579,11 @@ on_renderer_display_closed (GdkDisplay       *display,
                             gboolean          is_error,
 			    GdkPangoRenderer *renderer)
 {
-  g_signal_handlers_disconnect_by_func (renderer->priv->screen,
-					(gpointer)on_renderer_display_closed,
+  g_signal_handlers_disconnect_by_func (display,
+					on_renderer_display_closed,
 					renderer);
-  g_object_set_data (G_OBJECT (renderer->priv->screen), "gdk-pango-renderer", NULL);
+  g_object_set_data (G_OBJECT (renderer->priv->screen),
+                     g_intern_static_string ("gdk-pango-renderer"), NULL);
 }
 
 /**
@@ -644,7 +616,8 @@ gdk_pango_renderer_get_default (GdkScreen *screen)
   if (!renderer)
     {
       renderer = gdk_pango_renderer_new (screen);
-      g_object_set_data_full (G_OBJECT (screen), "gdk-pango-renderer", renderer,
+      g_object_set_data_full (G_OBJECT (screen), 
+                              g_intern_static_string ("gdk-pango-renderer"), renderer,
 			      (GDestroyNotify)g_object_unref);
 
       g_signal_connect (gdk_screen_get_display (screen), "closed",
@@ -674,8 +647,6 @@ gdk_pango_renderer_set_drawable (GdkPangoRenderer *gdk_renderer,
 
   priv = gdk_renderer->priv;
   
-  flush_trapezoids (gdk_renderer);
-
   if (priv->drawable != drawable)
     {
       if (priv->drawable)
@@ -710,8 +681,6 @@ gdk_pango_renderer_set_gc (GdkPangoRenderer *gdk_renderer,
 
   priv = gdk_renderer->priv;
   
-  flush_trapezoids (gdk_renderer);
-
   if (priv->base_gc != gc)
     {
       if (priv->base_gc)
@@ -720,19 +689,7 @@ gdk_pango_renderer_set_gc (GdkPangoRenderer *gdk_renderer,
       if (priv->base_gc)
 	g_object_ref (priv->base_gc);
 
-      if (priv->gc)
-	{
-	  g_object_unref (priv->gc);
-	  priv->gc = NULL;
-	}
-      
-      priv->gc_color_set = FALSE;
-
-      if (priv->gc_stipple)
-	{
-	  g_object_unref (priv->gc_stipple);
-	  priv->gc_stipple = NULL;
-	}
+      priv->gc_changed = TRUE;
     }
 }
 
@@ -1068,7 +1025,7 @@ gdk_draw_layout_with_colors (GdkDrawable     *drawable,
     }
   else
     pango_renderer_set_matrix (renderer, NULL);
-  
+
   pango_renderer_draw_layout (renderer, layout, x * PANGO_SCALE, y * PANGO_SCALE);
   
   release_renderer (renderer);
@@ -1262,6 +1219,63 @@ gdk_pango_attr_embossed_new (gboolean embossed)
  * region which contains the given ranges, i.e. if you draw with the
  * region as clip, only the given ranges are drawn.
  */
+static GdkRegion*
+layout_iter_get_line_clip_region (PangoLayoutIter *iter,
+				  gint             x_origin,
+				  gint             y_origin,
+				  gint            *index_ranges,
+				  gint             n_ranges)
+{
+  PangoLayoutLine *line;
+  GdkRegion *clip_region;
+  PangoRectangle logical_rect;
+  gint baseline;
+  gint i;
+
+  line = pango_layout_iter_get_line (iter);
+
+  clip_region = gdk_region_new ();
+
+  pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
+  baseline = pango_layout_iter_get_baseline (iter);
+
+  i = 0;
+  while (i < n_ranges)
+    {  
+      gint *pixel_ranges = NULL;
+      gint n_pixel_ranges = 0;
+      gint j;
+
+      /* Note that get_x_ranges returns layout coordinates
+       */
+      if (index_ranges[i*2+1] >= line->start_index &&
+	  index_ranges[i*2] < line->start_index + line->length)
+	pango_layout_line_get_x_ranges (line,
+					index_ranges[i*2],
+					index_ranges[i*2+1],
+					&pixel_ranges, &n_pixel_ranges);
+  
+      for (j = 0; j < n_pixel_ranges; j++)
+        {
+          GdkRectangle rect;
+	  int x_off, y_off;
+          
+          x_off = PANGO_PIXELS (pixel_ranges[2*j] - logical_rect.x);
+	  y_off = PANGO_PIXELS (baseline - logical_rect.y);
+
+          rect.x = x_origin + x_off;
+          rect.y = y_origin - y_off;
+          rect.width = PANGO_PIXELS (pixel_ranges[2*j + 1] - logical_rect.x) - x_off;
+          rect.height = PANGO_PIXELS (baseline - logical_rect.y + logical_rect.height) - y_off;
+
+          gdk_region_union_with_rect (clip_region, &rect);
+        }
+
+      g_free (pixel_ranges);
+      ++i;
+    }
+  return clip_region;
+}
 
 /**
  * gdk_pango_layout_line_get_clip_region:
@@ -1280,6 +1294,11 @@ gdk_pango_attr_embossed_new (gboolean embossed)
  * contained inside the line. This is to draw the selection all the way
  * to the side of the layout. However, the clip region is in line coordinates,
  * not layout coordinates.
+ *
+ * Note that the regions returned correspond to logical extents of the text
+ * ranges, not ink extents. So the drawn line may in fact touch areas out of
+ * the clip region.  The clip region is mainly useful for highlightling parts
+ * of text, such as when text is selected.
  * 
  * Return value: a clip region containing the given ranges
  **/
@@ -1291,56 +1310,18 @@ gdk_pango_layout_line_get_clip_region (PangoLayoutLine *line,
                                        gint             n_ranges)
 {
   GdkRegion *clip_region;
-  gint i;
-  PangoRectangle logical_rect;
   PangoLayoutIter *iter;
-  gint baseline;
   
   g_return_val_if_fail (line != NULL, NULL);
   g_return_val_if_fail (index_ranges != NULL, NULL);
   
-  clip_region = gdk_region_new ();
-
   iter = pango_layout_get_iter (line->layout);
   while (pango_layout_iter_get_line (iter) != line)
     pango_layout_iter_next_line (iter);
   
-  pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
-  baseline = pango_layout_iter_get_baseline (iter);
-  
+  clip_region = layout_iter_get_line_clip_region(iter, x_origin, y_origin, index_ranges, n_ranges);
+
   pango_layout_iter_free (iter);
-  
-  i = 0;
-  while (i < n_ranges)
-    {  
-      gint *pixel_ranges = NULL;
-      gint n_pixel_ranges = 0;
-      gint j;
-
-      /* Note that get_x_ranges returns layout coordinates
-       */
-      if (index_ranges[i*2+1] >= line->start_index &&
-	  index_ranges[i*2] < line->start_index + line->length)
-	pango_layout_line_get_x_ranges (line,
-					index_ranges[i*2],
-					index_ranges[i*2+1],
-					&pixel_ranges, &n_pixel_ranges);
-      
-      for (j = 0; j < n_pixel_ranges; j++)
-        {
-          GdkRectangle rect;
-          
-          rect.x = x_origin + pixel_ranges[2*j] / PANGO_SCALE - logical_rect.x / PANGO_SCALE;
-          rect.y = y_origin - (baseline / PANGO_SCALE - logical_rect.y / PANGO_SCALE);
-          rect.width = (pixel_ranges[2*j + 1] - pixel_ranges[2*j]) / PANGO_SCALE;
-          rect.height = logical_rect.height / PANGO_SCALE;
-          
-          gdk_region_union_with_rect (clip_region, &rect);
-        }
-
-      g_free (pixel_ranges);
-      ++i;
-    }
 
   return clip_region;
 }
@@ -1357,6 +1338,11 @@ gdk_pango_layout_line_get_clip_region (PangoLayoutLine *line,
  * of text would be drawn. @x_origin and @y_origin are the same position
  * you would pass to gdk_draw_layout_line(). @index_ranges should contain
  * ranges of bytes in the layout's text.
+ * 
+ * Note that the regions returned correspond to logical extents of the text
+ * ranges, not ink extents. So the drawn layout may in fact touch areas out of
+ * the clip region.  The clip region is mainly useful for highlightling parts
+ * of text, such as when text is selected.
  * 
  * Return value: a clip region containing the given ranges
  **/
@@ -1384,16 +1370,14 @@ gdk_pango_layout_get_clip_region (PangoLayout *layout,
       GdkRegion *line_region;
       gint baseline;
       
-      line = pango_layout_iter_get_line (iter);      
-
       pango_layout_iter_get_line_extents (iter, NULL, &logical_rect);
       baseline = pango_layout_iter_get_baseline (iter);      
 
-      line_region = gdk_pango_layout_line_get_clip_region (line,
-                                                           x_origin + logical_rect.x / PANGO_SCALE,
-                                                           y_origin + baseline / PANGO_SCALE,
-                                                           index_ranges,
-                                                           n_ranges);
+      line_region = layout_iter_get_line_clip_region(iter, 
+						     x_origin + logical_rect.x / PANGO_SCALE,
+						     y_origin + baseline / PANGO_SCALE,
+						     index_ranges,
+						     n_ranges);
 
       gdk_region_union (clip_region, line_region);
       gdk_region_destroy (line_region);
@@ -1416,12 +1400,63 @@ gdk_pango_layout_get_clip_region (PangoLayout *layout,
  * instead of this function, to get the appropriate context for
  * the widget you intend to render text onto.
  * 
+ * The newly created context will have the default font options (see
+ * #cairo_font_options_t) for the default screen; if these options
+ * change it will not be updated. Using gtk_widget_get_pango_context()
+ * is more convenient if you want to keep a context around and track
+ * changes to the screen's font rendering settings.
+ *
  * Return value: a new #PangoContext for the default display
  **/
 PangoContext *
 gdk_pango_context_get (void)
 {
   return gdk_pango_context_get_for_screen (gdk_screen_get_default ());
+}
+
+/**
+ * gdk_pango_context_get_for_screen:
+ * @screen: the #GdkScreen for which the context is to be created.
+ * 
+ * Creates a #PangoContext for @screen.
+ *
+ * The context must be freed when you're finished with it.
+ * 
+ * When using GTK+, normally you should use gtk_widget_get_pango_context()
+ * instead of this function, to get the appropriate context for
+ * the widget you intend to render text onto.
+ * 
+ * The newly created context will have the default font options
+ * (see #cairo_font_options_t) for the screen; if these options
+ * change it will not be updated. Using gtk_widget_get_pango_context()
+ * is more convenient if you want to keep a context around and track
+ * changes to the screen's font rendering settings.
+ * 
+ * Return value: a new #PangoContext for @screen
+ *
+ * Since: 2.2
+ **/
+PangoContext *
+gdk_pango_context_get_for_screen (GdkScreen *screen)
+{
+  PangoFontMap *fontmap;
+  PangoContext *context;
+  const cairo_font_options_t *options;
+  double dpi;
+  
+  g_return_val_if_fail (GDK_IS_SCREEN (screen), NULL);
+
+  fontmap = pango_cairo_font_map_get_default ();
+  
+  context = pango_cairo_font_map_create_context (PANGO_CAIRO_FONT_MAP (fontmap));
+
+  options = gdk_screen_get_font_options (screen);
+  pango_cairo_context_set_font_options (context, options);
+
+  dpi = gdk_screen_get_resolution (screen);
+  pango_cairo_context_set_resolution (context, dpi);
+
+  return context;
 }
 
 #define __GDK_PANGO_C__

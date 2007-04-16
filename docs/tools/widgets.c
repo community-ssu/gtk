@@ -1,3 +1,5 @@
+#include <gtk/gtkprintunixdialog.h>
+#include <gtk/gtkpagesetupunixdialog.h>
 #include <gdk/gdkkeysyms.h>
 #include <X11/Xatom.h>
 #include <gdkx.h>
@@ -184,6 +186,19 @@ create_check_button (void)
 }
 
 static WidgetInfo *
+create_link_button (void)
+{
+  GtkWidget *widget;
+  GtkWidget *align;
+
+  widget = gtk_link_button_new_with_label ("http://www.gtk.org", "Link Button");
+  align = gtk_alignment_new (0.5, 0.5, 0.0, 0.0);
+  gtk_container_add (GTK_CONTAINER (align), widget);
+
+  return new_widget_info ("link-button", align, SMALL);
+}
+
+static WidgetInfo *
 create_entry (void)
 {
   GtkWidget *widget;
@@ -295,6 +310,25 @@ create_combo_box (void)
   gtk_container_add (GTK_CONTAINER (align), widget);
 
   return new_widget_info ("combo-box", align, SMALL);
+}
+
+static WidgetInfo *
+create_recent_chooser_dialog (void)
+{
+  WidgetInfo *info;
+  GtkWidget *widget;
+
+  widget = gtk_recent_chooser_dialog_new ("Recent Chooser Dialog",
+					  NULL,
+					  GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+					  GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT,
+					  NULL); 
+  gtk_window_set_default_size (GTK_WINDOW (widget), 505, 305);
+  
+  info = new_widget_info ("recentchooserdialog", widget, ASIS);
+  info->include_decorations = TRUE;
+
+  return info;
 }
 
 static WidgetInfo *
@@ -613,6 +647,7 @@ create_fontsel (void)
 
   return info;
 }
+
 static WidgetInfo *
 create_filesel (void)
 {
@@ -628,6 +663,43 @@ create_filesel (void)
   gtk_window_set_default_size (GTK_WINDOW (widget), 505, 305);
   
   info = new_widget_info ("filechooser", widget, ASIS);
+  info->include_decorations = TRUE;
+
+  return info;
+}
+
+static WidgetInfo *
+create_print_dialog (void)
+{
+  WidgetInfo *info;
+  GtkWidget *widget;
+
+  widget = gtk_print_unix_dialog_new ("Print Dialog", NULL);   
+  gtk_widget_set_size_request (widget, 505, 350);
+  info = new_widget_info ("printdialog", widget, ASIS);
+  info->include_decorations = TRUE;
+
+  return info;
+}
+
+static WidgetInfo *
+create_page_setup_dialog (void)
+{
+  WidgetInfo *info;
+  GtkWidget *widget;
+  GtkPageSetup *page_setup;
+  GtkPrintSettings *settings;
+
+  page_setup = gtk_page_setup_new ();
+  settings = gtk_print_settings_new ();
+  widget = gtk_page_setup_unix_dialog_new ("Page Setup Dialog", NULL);   
+  gtk_page_setup_unix_dialog_set_page_setup (GTK_PAGE_SETUP_UNIX_DIALOG (widget),
+					     page_setup);
+  gtk_page_setup_unix_dialog_set_print_settings (GTK_PAGE_SETUP_UNIX_DIALOG (widget),
+						 settings);
+
+  info = new_widget_info ("pagesetupdialog", widget, ASIS);
+  gtk_widget_set_app_paintable (info->window, FALSE);
   info->include_decorations = TRUE;
 
   return info;
@@ -839,6 +911,34 @@ create_image (void)
   return new_widget_info ("image", vbox, SMALL);
 }
 
+static WidgetInfo *
+create_assistant (void)
+{
+  GtkWidget *widget;
+  GtkWidget *page1, *page2;
+  WidgetInfo *info;
+
+  widget = gtk_assistant_new ();
+  gtk_window_set_title (GTK_WINDOW (widget), "Assistant");
+
+  page1 = gtk_label_new ("Assistant");
+  gtk_widget_show (page1);
+  gtk_widget_set_size_request (page1, 300, 140);
+  gtk_assistant_prepend_page (GTK_ASSISTANT (widget), page1);
+  gtk_assistant_set_page_title (GTK_ASSISTANT (widget), page1, "Assistant page");
+  gtk_assistant_set_page_complete (GTK_ASSISTANT (widget), page1, TRUE);
+
+  page2 = gtk_label_new (NULL);
+  gtk_widget_show (page2);
+  gtk_assistant_append_page (GTK_ASSISTANT (widget), page2);
+  gtk_assistant_set_page_type (GTK_ASSISTANT (widget), page2, GTK_ASSISTANT_PAGE_CONFIRM);
+
+  info = new_widget_info ("assistant", widget, ASIS);
+  info->include_decorations = TRUE;
+
+  return info;
+}
+
 GList *
 get_all_widgets (void)
 {
@@ -851,11 +951,13 @@ get_all_widgets (void)
   retval = g_list_prepend (retval, create_combo_box ());
   retval = g_list_prepend (retval, create_combo_box_entry ());
   retval = g_list_prepend (retval, create_entry ());
+  retval = g_list_prepend (retval, create_file_button ());
   retval = g_list_prepend (retval, create_font_button ());
   retval = g_list_prepend (retval, create_frame ());
   retval = g_list_prepend (retval, create_icon_view ());
   retval = g_list_prepend (retval, create_image ());
   retval = g_list_prepend (retval, create_label ());
+  retval = g_list_prepend (retval, create_link_button ());
   retval = g_list_prepend (retval, create_menubar ());
   retval = g_list_prepend (retval, create_message_dialog ());
   retval = g_list_prepend (retval, create_notebook ());
@@ -875,6 +977,10 @@ get_all_widgets (void)
   retval = g_list_prepend (retval, create_colorsel ());
   retval = g_list_prepend (retval, create_filesel ());
   retval = g_list_prepend (retval, create_fontsel ());
+  retval = g_list_prepend (retval, create_assistant ());
+  retval = g_list_prepend (retval, create_recent_chooser_dialog ());
+  retval = g_list_prepend (retval, create_page_setup_dialog ());
+  retval = g_list_prepend (retval, create_print_dialog ());
 
   return retval;
 }

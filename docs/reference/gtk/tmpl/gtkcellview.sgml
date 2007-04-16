@@ -41,6 +41,11 @@ and drag and drop.
 
 </para>
 
+<!-- ##### ARG GtkCellView:model ##### -->
+<para>
+
+</para>
+
 <!-- ##### FUNCTION gtk_cell_view_new ##### -->
 <para>
 
@@ -130,17 +135,5 @@ and drag and drop.
 
 @cell_view: 
 @Returns: 
-<!-- # Unused Parameters # -->
-@cellview: 
-
-
-<!-- ##### FUNCTION gtk_cell_view_set_cell_data ##### -->
-<para>
-
-</para>
-
-@cellview: 
-<!-- # Unused Parameters # -->
-@cell_view: 
 
 

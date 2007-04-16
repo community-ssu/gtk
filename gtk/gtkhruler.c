@@ -29,6 +29,7 @@
 #include <glib/gprintf.h>
 #include <string.h>
 #include "gtkhruler.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
@@ -40,40 +41,12 @@
 #define ROUND(x) ((int) ((x) + 0.5))
 
 
-static void gtk_hruler_class_init    (GtkHRulerClass *klass);
-static void gtk_hruler_init          (GtkHRuler      *hruler);
 static gint gtk_hruler_motion_notify (GtkWidget      *widget,
 				      GdkEventMotion *event);
 static void gtk_hruler_draw_ticks    (GtkRuler       *ruler);
 static void gtk_hruler_draw_pos      (GtkRuler       *ruler);
 
-
-GType
-gtk_hruler_get_type (void)
-{
-  static GType hruler_type = 0;
-
-  if (!hruler_type)
-    {
-      static const GTypeInfo hruler_info =
-      {
-	sizeof (GtkHRulerClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_hruler_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkHRuler),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_hruler_init,
-      };
-
-      hruler_type = g_type_register_static (GTK_TYPE_RULER, "GtkHRuler",
-					    &hruler_info, 0);
-    }
-
-  return hruler_type;
-}
+G_DEFINE_TYPE (GtkHRuler, gtk_hruler, GTK_TYPE_RULER)
 
 static void
 gtk_hruler_class_init (GtkHRulerClass *klass)
@@ -116,10 +89,8 @@ gtk_hruler_motion_notify (GtkWidget      *widget,
 
   ruler = GTK_RULER (widget);
 
-  if (event->is_hint)
-    gdk_window_get_pointer (widget->window, &x, NULL, NULL);
-  else
-    x = event->x;
+  gdk_event_request_motions (event);
+  x = event->x;
 
   ruler->position = ruler->lower + ((ruler->upper - ruler->lower) * x) / widget->allocation.width;
   g_object_notify (G_OBJECT (ruler), "position");
@@ -135,7 +106,7 @@ static void
 gtk_hruler_draw_ticks (GtkRuler *ruler)
 {
   GtkWidget *widget;
-  GdkGC *gc, *bg_gc;
+  cairo_t *cr;
   gint i;
   gint width, height;
   gint xthickness;
@@ -159,9 +130,6 @@ gtk_hruler_draw_ticks (GtkRuler *ruler)
 
   widget = GTK_WIDGET (ruler);
 
-  gc = widget->style->fg_gc[GTK_STATE_NORMAL];
-  bg_gc = widget->style->bg_gc[GTK_STATE_NORMAL];
-
   xthickness = widget->style->xthickness;
   ythickness = widget->style->ythickness;
 
@@ -179,19 +147,22 @@ gtk_hruler_draw_ticks (GtkRuler *ruler)
 		 NULL, widget, "hruler",
 		 0, 0, 
 		 widget->allocation.width, widget->allocation.height);
-  
-  
-  gdk_draw_line (ruler->backing_store, gc,
-		 xthickness,
-		 height + ythickness,
-		 widget->allocation.width - xthickness,
-		 height + ythickness);
+
+  cr = gdk_cairo_create (ruler->backing_store);
+  gdk_cairo_set_source_color (cr, &widget->style->fg[widget->state]);
+ 
+  cairo_rectangle (cr, 
+		   xthickness,
+		   height + ythickness,
+		   widget->allocation.width - 2 * xthickness,
+		   1);
 
   upper = ruler->upper / ruler->metric->pixels_per_unit;
   lower = ruler->lower / ruler->metric->pixels_per_unit;
 
   if ((upper - lower) == 0) 
-    return;
+    goto out;
+
   increment = (gdouble) width / (upper - lower);
 
   /* determine the scale
@@ -242,9 +213,9 @@ gtk_hruler_draw_ticks (GtkRuler *ruler)
 	{
 	  pos = ROUND ((cur - lower) * increment);
 
-	  gdk_draw_line (ruler->backing_store, gc,
-			 pos, height + ythickness, 
-			 pos, height - length + ythickness);
+	  cairo_rectangle (cr, 
+			   pos, height + ythickness - length, 
+			   1,   length);
 
 	  /* draw label */
 	  if (i == 0)
@@ -267,15 +238,17 @@ gtk_hruler_draw_ticks (GtkRuler *ruler)
 	}
     }
 
+  cairo_fill (cr);
+out:
+  cairo_destroy (cr);
+
   g_object_unref (layout);
 }
 
 static void
 gtk_hruler_draw_pos (GtkRuler *ruler)
 {
-  GtkWidget *widget;
-  GdkGC *gc;
-  int i;
+  GtkWidget *widget = GTK_WIDGET (ruler);
   gint x, y;
   gint width, height;
   gint bs_width, bs_height;
@@ -285,24 +258,23 @@ gtk_hruler_draw_pos (GtkRuler *ruler)
 
   if (GTK_WIDGET_DRAWABLE (ruler))
     {
-      widget = GTK_WIDGET (ruler);
-
-      gc = widget->style->fg_gc[GTK_STATE_NORMAL];
       xthickness = widget->style->xthickness;
       ythickness = widget->style->ythickness;
       width = widget->allocation.width;
       height = widget->allocation.height - ythickness * 2;
 
-      bs_width = height / 2;
+      bs_width = height / 2 + 2;
       bs_width |= 1;  /* make sure it's odd */
       bs_height = bs_width / 2 + 1;
 
       if ((bs_width > 0) && (bs_height > 0))
 	{
+	  cairo_t *cr = gdk_cairo_create (widget->window);
+      
 	  /*  If a backing store exists, restore the ruler  */
-	  if (ruler->backing_store && ruler->non_gr_exp_gc)
-	    gdk_draw_drawable (ruler->widget.window,
-			       ruler->non_gr_exp_gc,
+	  if (ruler->backing_store)
+	    gdk_draw_drawable (widget->window,
+			       widget->style->black_gc,
 			       ruler->backing_store,
 			       ruler->xsrc, ruler->ysrc,
 			       ruler->xsrc, ruler->ysrc,
@@ -313,11 +285,14 @@ gtk_hruler_draw_pos (GtkRuler *ruler)
 	  x = ROUND ((ruler->position - ruler->lower) * increment) + (xthickness - bs_width) / 2 - 1;
 	  y = (height + bs_height) / 2 + ythickness;
 
-	  for (i = 0; i < bs_height; i++)
-	    gdk_draw_line (widget->window, gc,
-			   x + i, y + i,
-			   x + bs_width - 1 - i, y + i);
+	  gdk_cairo_set_source_color (cr, &widget->style->fg[widget->state]);
 
+	  cairo_move_to (cr, x,                  y);
+	  cairo_line_to (cr, x + bs_width / 2., y + bs_height);
+	  cairo_line_to (cr, x + bs_width,      y);
+	  cairo_fill (cr);
+
+	  cairo_destroy (cr);
 
 	  ruler->xsrc = x;
 	  ruler->ysrc = y;

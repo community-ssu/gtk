@@ -41,8 +41,6 @@
 
 #include <config.h>
 
-#include <X11/extensions/Xrender.h>
-
 #define GDK_TYPE_GC_X11              (_gdk_gc_x11_get_type ())
 #define GDK_GC_X11(object)           (G_TYPE_CHECK_INSTANCE_CAST ((object), GDK_TYPE_GC_X11, GdkGCX11))
 #define GDK_GC_X11_CLASS(klass)      (G_TYPE_CHECK_CLASS_CAST ((klass), GDK_TYPE_GC_X11, GdkGCX11Class))
@@ -61,19 +59,10 @@ struct _GdkGCX11
   
   GC xgc;
   GdkScreen *screen;
-  GdkRegion *clip_region;
   guint16 dirty_mask;
+  guint have_clip_region : 1;
   guint have_clip_mask : 1;
   guint depth : 8;
-
-  GdkFill fill;
-  GdkBitmap *stipple;
-  GdkPixmap *tile;
-
-  Picture fg_picture;
-  XRenderColor fg_picture_color; 
-  gulong fg_pixel;
-  gulong bg_pixel;
 };
 
 struct _GdkGCX11Class
@@ -86,6 +75,8 @@ struct _GdkCursorPrivate
   GdkCursor cursor;
   Cursor xcursor;
   GdkDisplay *display;
+  gchar *name;
+  guint serial;
 };
 
 struct _GdkVisualPrivate
@@ -94,6 +85,8 @@ struct _GdkVisualPrivate
   Visual *xvisual;
   GdkScreen *screen;
 };
+
+#define XID_FONT_BIT (1<<31)
 
 void _gdk_xid_table_insert (GdkDisplay *display,
 			    XID        *xid,
@@ -108,12 +101,7 @@ gint _gdk_send_xevent      (GdkDisplay *display,
 
 GType _gdk_gc_x11_get_type (void);
 
-gboolean _gdk_x11_have_render                 (GdkDisplay *display);
-gboolean _gdk_x11_have_render_with_trapezoids (GdkDisplay *display);
-
-Picture  _gdk_x11_gc_get_fg_picture   (GdkGC      *gc);
-void     _gdk_gc_x11_get_fg_xft_color (GdkGC      *gc,
-				       XftColor   *xftcolor);
+gboolean _gdk_x11_have_render           (GdkDisplay *display);
 
 GdkGC *_gdk_x11_gc_new                  (GdkDrawable     *drawable,
 					 GdkGCValues     *values,
@@ -153,18 +141,25 @@ gboolean _gdk_moveresize_handle_event   (XEvent     *event);
 gboolean _gdk_moveresize_configure_done (GdkDisplay *display,
 					 GdkWindow  *window);
 
-void _gdk_keymap_state_changed    (GdkDisplay      *display);
+void _gdk_keymap_state_changed    (GdkDisplay      *display,
+				   XEvent          *event);
 void _gdk_keymap_keys_changed     (GdkDisplay      *display);
 gint _gdk_x11_get_group_for_state (GdkDisplay      *display,
 				   GdkModifierType  state);
+void _gdk_keymap_add_virtual_modifiers (GdkKeymap       *keymap,
+					GdkModifierType *modifiers);
+gboolean _gdk_keymap_key_is_modifier   (GdkKeymap       *keymap,
+					guint            keycode);
 
 GC _gdk_x11_gc_flush (GdkGC *gc);
 
 void _gdk_x11_initialize_locale (void);
 
-void _gdk_xgrab_check_unmap   (GdkWindow *window,
-			       gulong     serial);
-void _gdk_xgrab_check_destroy (GdkWindow *window);
+void _gdk_xgrab_check_unmap        (GdkWindow *window,
+				    gulong     serial);
+void _gdk_xgrab_check_destroy      (GdkWindow *window);
+void _gdk_xgrab_check_button_event (GdkWindow *window,
+				    XEvent    *xevent);
 
 gboolean _gdk_x11_display_is_root_window (GdkDisplay *display,
 					  Window      xroot_window);
@@ -177,6 +172,7 @@ void _gdk_x11_events_init_screen   (GdkScreen *screen);
 void _gdk_x11_events_uninit_screen (GdkScreen *screen);
 
 void _gdk_events_init           (GdkDisplay *display);
+void _gdk_events_uninit         (GdkDisplay *display);
 void _gdk_windowing_window_init (GdkScreen *screen);
 void _gdk_visual_init           (GdkScreen *screen);
 void _gdk_dnd_init		(GdkDisplay *display);
@@ -185,6 +181,12 @@ void _gdk_input_init            (GdkDisplay *display);
 
 PangoRenderer *_gdk_x11_renderer_get (GdkDrawable *drawable,
 				      GdkGC       *gc);
+
+void _gdk_x11_cursor_update_theme (GdkCursor *cursor);
+
+gboolean _gdk_x11_get_xft_setting (GdkScreen   *screen,
+				   const gchar *name,
+				   GValue      *value);
 
 extern GdkDrawableClass  _gdk_x11_drawable_class;
 extern gboolean	         _gdk_use_xshm;

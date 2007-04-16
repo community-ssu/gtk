@@ -26,42 +26,16 @@
 
 #include <config.h>
 #include "gtkhseparator.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
-static void gtk_hseparator_class_init (GtkHSeparatorClass *klass);
-static void gtk_hseparator_init       (GtkHSeparator      *hseparator);
-static gint gtk_hseparator_expose     (GtkWidget          *widget,
-				       GdkEventExpose     *event);
+static void gtk_hseparator_size_request (GtkWidget          *widget,
+                                         GtkRequisition     *requisition);
+static gint gtk_hseparator_expose       (GtkWidget          *widget,
+                                         GdkEventExpose     *event);
 
-
-GType
-gtk_hseparator_get_type (void)
-{
-  static GType hseparator_type = 0;
-
-  if (!hseparator_type)
-    {
-      static const GTypeInfo hseparator_info =
-      {
-	sizeof (GtkHSeparatorClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_hseparator_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_init */
-	sizeof (GtkHSeparator),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_hseparator_init,
-      };
-
-      hseparator_type =
-	g_type_register_static (GTK_TYPE_SEPARATOR, "GtkHSeparator",
-				&hseparator_info, 0);
-    }
-
-  return hseparator_type;
-}
+G_DEFINE_TYPE (GtkHSeparator, gtk_hseparator, GTK_TYPE_SEPARATOR)
 
 static void
 gtk_hseparator_class_init (GtkHSeparatorClass *class)
@@ -70,6 +44,7 @@ gtk_hseparator_class_init (GtkHSeparatorClass *class)
 
   widget_class = (GtkWidgetClass*) class;
 
+  widget_class->size_request = gtk_hseparator_size_request;
   widget_class->expose_event = gtk_hseparator_expose;
 }
 
@@ -86,36 +61,58 @@ gtk_hseparator_new (void)
   return g_object_new (GTK_TYPE_HSEPARATOR, NULL);
 }
 
+static void
+gtk_hseparator_size_request (GtkWidget      *widget,
+                             GtkRequisition *requisition)
+{
+  gboolean wide_separators;
+  gint     separator_height;
+
+  gtk_widget_style_get (widget,
+                        "wide-separators",  &wide_separators,
+                        "separator-height", &separator_height,
+                        NULL);
+
+  if (wide_separators)
+    requisition->height = separator_height;
+  else
+    requisition->height = widget->style->ythickness;
+}
 
 static gint
 gtk_hseparator_expose (GtkWidget      *widget,
 		       GdkEventExpose *event)
 {
-   gboolean hildonlike_drawing = FALSE;
-   gtk_widget_style_get ( widget, "hildonlike-drawing", &hildonlike_drawing, NULL );
+  if (GTK_WIDGET_DRAWABLE (widget))
+    {
+      gboolean wide_separators;
+      gint     separator_height;
 
-   if (GTK_WIDGET_DRAWABLE (widget))
-   {
-	   if(hildonlike_drawing)
-		   gtk_paint_box   (widget->style, widget->window, GTK_STATE_NORMAL,
-				   GTK_SHADOW_NONE, &event->area, widget, "hseparator",
-				   widget->allocation.x,
-				   widget->allocation.y + (widget->allocation.height -
-					   widget->style->ythickness) / 2,
-				   widget->allocation.width - 1,
-				   widget->style->ythickness);
-	   else
-		   gtk_paint_hline (widget->style, widget->window, GTK_STATE_NORMAL,
-				   &event->area, widget, "hseparator",
-				   widget->allocation.x,
-				   widget->allocation.x + widget->allocation.width - 1,
-				   widget->allocation.y + (widget->allocation.height -
-					   widget->style->ythickness) / 2);
-   }
+      gtk_widget_style_get (widget,
+                            "wide-separators",  &wide_separators,
+                            "separator-height", &separator_height,
+                            NULL);
 
+      if (wide_separators)
+        gtk_paint_box (widget->style, widget->window,
+                       GTK_WIDGET_STATE (widget), GTK_SHADOW_ETCHED_OUT,
+                       &event->area, widget, "hseparator",
+                       widget->allocation.x,
+                       widget->allocation.y + (widget->allocation.height -
+                                               separator_height) / 2,
+                       widget->allocation.width,
+                       separator_height);
+      else
+        gtk_paint_hline (widget->style, widget->window,
+                         GTK_WIDGET_STATE (widget),
+                         &event->area, widget, "hseparator",
+                         widget->allocation.x,
+                         widget->allocation.x + widget->allocation.width - 1,
+                         widget->allocation.y + (widget->allocation.height -
+                                                 widget->style->ythickness) / 2);
+    }
 
-
-   return FALSE;
+  return FALSE;
 }
 
 #define __GTK_HSEPARATOR_C__

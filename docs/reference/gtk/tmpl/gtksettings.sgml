@@ -23,6 +23,11 @@ Sharing settings between applications
 </para>
 
 
+<!-- ##### ARG GtkSettings:color-hash ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-alternative-button-order ##### -->
 <para>
 
@@ -43,12 +48,27 @@ Sharing settings between applications
 
 </para>
 
+<!-- ##### ARG GtkSettings:gtk-color-scheme ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-cursor-blink ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkSettings:gtk-cursor-blink-time ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-cursor-theme-name ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-cursor-theme-size ##### -->
 <para>
 
 </para>
@@ -68,7 +88,37 @@ Sharing settings between applications
 
 </para>
 
+<!-- ##### ARG GtkSettings:gtk-enable-accels ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-enable-animations ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-enable-mnemonics ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-entry-password-hint-timeout ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-entry-select-on-focus ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-error-bell ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-fallback-icon-theme ##### -->
 <para>
 
 </para>
@@ -88,12 +138,22 @@ Sharing settings between applications
 
 </para>
 
-<!-- ##### ARG GtkSettings:gtk-initial-timeout ##### -->
+<!-- ##### ARG GtkSettings:gtk-key-theme-name ##### -->
 <para>
 
 </para>
 
-<!-- ##### ARG GtkSettings:gtk-key-theme-name ##### -->
+<!-- ##### ARG GtkSettings:gtk-keynav-cursor-only ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-keynav-wrap-around ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-label-select-on-focus ##### -->
 <para>
 
 </para>
@@ -128,6 +188,21 @@ Sharing settings between applications
 
 </para>
 
+<!-- ##### ARG GtkSettings:gtk-scrolled-window-placement ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-show-input-method-menu ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-show-unicode-menu ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkSettings:gtk-split-cursor ##### -->
 <para>
 
@@ -138,7 +213,17 @@ Sharing settings between applications
 
 </para>
 
-<!-- ##### ARG GtkSettings:gtk-toolbar-animation ##### -->
+<!-- ##### ARG GtkSettings:gtk-timeout-expand ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-timeout-initial ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkSettings:gtk-timeout-repeat ##### -->
 <para>
 
 </para>
@@ -153,7 +238,7 @@ Sharing settings between applications
 
 </para>
 
-<!-- ##### ARG GtkSettings:gtk-update-timeout ##### -->
+<!-- ##### ARG GtkSettings:gtk-touchscreen-mode ##### -->
 <para>
 
 </para>
@@ -179,11 +264,6 @@ Sharing settings between applications
 </para>
 
 <!-- ##### ARG GtkSettings:gtk-xft-rgba ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkSettings:hildon-keyboard-navigation ##### -->
 <para>
 
 </para>
@@ -219,8 +299,6 @@ Sharing settings between applications
 </para>
 
 @pspec: 
-<!-- # Unused Parameters # -->
-@settings: 
 
 
 <!-- ##### FUNCTION gtk_settings_install_property_parser ##### -->
@@ -230,8 +308,6 @@ Sharing settings between applications
 
 @pspec: 
 @parser: 
-<!-- # Unused Parameters # -->
-@settings: 
 
 
 <!-- ##### FUNCTION gtk_rc_property_parse_color ##### -->

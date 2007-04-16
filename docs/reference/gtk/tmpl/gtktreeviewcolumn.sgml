@@ -19,7 +19,7 @@ they work together.
 
 <!-- ##### SECTION See_Also ##### -->
 <para>
-#GtkTreeView, #GtkTreeSelection, #GtkTreeDnd, #GtkTreeModel, #GtkTreeSortable, #GtkTreeModelSort, #GtkListStore, #GtkTreeStore, #GtkCellRenderer, #GtkCellEditable, #GtkCellRendererPixbuf, #GtkCellRendererText, #GtkCellRendererToggle
+#GtkTreeView, #GtkTreeSelection, #GtkTreeDnd, #GtkTreeMode, #GtkTreeSortable, #GtkTreeModelSort, #GtkListStore, #GtkTreeStore, #GtkCellRenderer, #GtkCellEditable, #GtkCellRendererPixbuf, #GtkCellRendererText, #GtkCellRendererToggle
 
 </para>
 
@@ -431,8 +431,6 @@ calling gtk_tree_view_column_set_cell_data_func()
 
 @tree_column: 
 @clickable: 
-<!-- # Unused Parameters # -->
-@active: 
 
 
 <!-- ##### FUNCTION gtk_tree_view_column_get_clickable ##### -->
@@ -605,5 +603,13 @@ calling gtk_tree_view_column_set_cell_data_func()
 
 @tree_column: 
 @cell: 
+
+
+<!-- ##### FUNCTION gtk_tree_view_column_queue_resize ##### -->
+<para>
+
+</para>
+
+@tree_column: 
 
 

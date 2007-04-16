@@ -50,6 +50,11 @@ points are really 1/72.27 in.)
 
 </para>
 
+<!-- ##### ARG GtkRuler:metric ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkRuler:position ##### -->
 <para>
 
@@ -88,8 +93,8 @@ This sets the range of the ruler using gfloat lower, gfloat upper, gfloat positi
 </para>
 
 @ruler: the gtkruler
-@lower: the upper limit of the ruler
-@upper: the lower limit of the ruler
+@lower: the lower limit of the ruler
+@upper: the upper limit of the ruler
 @position: the mark on the ruler
 @max_size: the maximum size of the ruler
 

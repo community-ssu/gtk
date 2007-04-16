@@ -387,7 +387,7 @@ is_segment_start (GtkTextRealIter *real)
   return real->segment_byte_offset == 0 || real->segment_char_offset == 0;
 }
 
-#if 1
+#ifdef G_ENABLE_DEBUG
 static void
 check_invariants (const GtkTextIter *iter)
 {
@@ -395,7 +395,7 @@ check_invariants (const GtkTextIter *iter)
     _gtk_text_iter_check (iter);
 }
 #else
-#define check_invariants (x)
+#define check_invariants(x)
 #endif
 
 /**
@@ -441,7 +441,7 @@ gtk_text_iter_copy (const GtkTextIter *iter)
 
   g_return_val_if_fail (iter != NULL, NULL);
 
-  new_iter = g_new (GtkTextIter, 1);
+  new_iter = g_slice_new (GtkTextIter);
 
   *new_iter = *iter;
 
@@ -462,7 +462,7 @@ gtk_text_iter_free (GtkTextIter *iter)
 {
   g_return_if_fail (iter != NULL);
 
-  g_free (iter);
+  g_slice_free (GtkTextIter, iter);
 }
 
 GType
@@ -1547,13 +1547,10 @@ gtk_text_iter_starts_line (const GtkTextIter   *iter)
 gboolean
 gtk_text_iter_ends_line (const GtkTextIter   *iter)
 {
-  GtkTextRealIter *real;
   gunichar wc;
   
   g_return_val_if_fail (iter != NULL, FALSE);
 
-  real = gtk_text_iter_make_real (iter);
-  
   check_invariants (iter);
 
   /* Only one character has type G_UNICODE_PARAGRAPH_SEPARATOR in
@@ -1567,10 +1564,23 @@ gtk_text_iter_ends_line (const GtkTextIter   *iter)
     return TRUE;
   else if (wc == '\n')
     {
-      /* need to determine if a \r precedes the \n, in which case
-       * we aren't the end of the line
-       */
       GtkTextIter tmp = *iter;
+
+      /* need to determine if a \r precedes the \n, in which case
+       * we aren't the end of the line.
+       * Note however that if \r and \n are on different lines, they
+       * both are terminators. This for instance may happen after
+       * deleting some text:
+
+          1 some text\r    delete 'a'    1 some text\r
+          2 a\n            --------->    2 \n
+          3 ...                          3 ...
+
+       */
+
+      if (gtk_text_iter_get_line_offset (&tmp) == 0)
+        return TRUE;
+
       if (!gtk_text_iter_backward_char (&tmp))
         return TRUE;
 
@@ -2389,28 +2399,25 @@ gtk_text_iter_backward_chars (GtkTextIter *iter, gint count)
       g_assert (real->segment->char_count > 0);
       g_assert (real->segment->type == &gtk_text_char_type);
 
-      real->segment_char_offset -= count;
-      g_assert (real->segment_char_offset >= 0);
-
       if (real->line_byte_offset >= 0)
         {
+          const char *p;
           gint new_byte_offset;
-          gint i;
 
-          new_byte_offset = 0;
-          i = 0;
-          while (i < real->segment_char_offset)
-            {
-              const char * start = real->segment->body.chars + new_byte_offset;
-              new_byte_offset += g_utf8_next_char (start) - start;
+          /* if in the last fourth of the segment walk backwards */
+          if (count < real->segment_char_offset / 4)
+            p = g_utf8_offset_to_pointer (real->segment->body.chars + real->segment_byte_offset, 
+                                          -count);
+          else
+            p = g_utf8_offset_to_pointer (real->segment->body.chars,
+                                          real->segment_char_offset - count);
 
-              ++i;
-            }
-
+          new_byte_offset = p - real->segment->body.chars;
           real->line_byte_offset -= (real->segment_byte_offset - new_byte_offset);
           real->segment_byte_offset = new_byte_offset;
         }
 
+      real->segment_char_offset -= count;
       real->line_char_offset -= count;
 
       adjust_char_index (real, 0 - count);
@@ -2716,6 +2723,162 @@ gtk_text_iter_backward_lines (GtkTextIter *iter, gint count)
       gtk_text_iter_set_line (iter, MAX (old_line - count, 0));
 
       return (gtk_text_iter_get_line (iter) != old_line);
+    }
+}
+
+/**
+ * gtk_text_iter_forward_visible_line:
+ * @iter: an iterator
+ *
+ * Moves @iter to the start of the next visible line. Returns %TRUE if there
+ * was a next line to move to, and %FALSE if @iter was simply moved to
+ * the end of the buffer and is now not dereferenceable, or if @iter was
+ * already at the end of the buffer.
+ *
+ * Return value: whether @iter can be dereferenced
+ * 
+ * Since: 2.8
+ **/
+gboolean
+gtk_text_iter_forward_visible_line (GtkTextIter *iter)
+{
+  while (gtk_text_iter_forward_line (iter))
+    {
+      if (!_gtk_text_btree_char_is_invisible (iter))
+        return TRUE;
+      else
+        {
+          do
+            {
+              if (!gtk_text_iter_forward_char (iter))
+                return FALSE;
+          
+              if (!_gtk_text_btree_char_is_invisible (iter))
+                return TRUE;
+            }
+          while (!gtk_text_iter_ends_line (iter));
+        }
+    }
+    
+  return FALSE;
+}
+
+/**
+ * gtk_text_iter_backward_visible_line:
+ * @iter: an iterator
+ *
+ * Moves @iter to the start of the previous visible line. Returns %TRUE if
+ * @iter could be moved; i.e. if @iter was at character offset 0, this
+ * function returns %FALSE. Therefore if @iter was already on line 0,
+ * but not at the start of the line, @iter is snapped to the start of
+ * the line and the function returns %TRUE. (Note that this implies that
+ * in a loop calling this function, the line number may not change on
+ * every iteration, if your first iteration is on line 0.)
+ *
+ * Return value: whether @iter moved
+ *
+ * Since: 2.8
+ **/
+gboolean
+gtk_text_iter_backward_visible_line (GtkTextIter *iter)
+{
+  while (gtk_text_iter_backward_line (iter))
+    {
+      if (!_gtk_text_btree_char_is_invisible (iter))
+        return TRUE;
+      else
+        {
+          do
+            {
+              if (!gtk_text_iter_backward_char (iter))
+                return FALSE;
+          
+              if (!_gtk_text_btree_char_is_invisible (iter))
+                return TRUE;
+            }
+          while (!gtk_text_iter_starts_line (iter));
+        }
+    }
+    
+  return FALSE;
+}
+
+/**
+ * gtk_text_iter_forward_visible_lines:
+ * @iter: a #GtkTextIter
+ * @count: number of lines to move forward
+ *
+ * Moves @count visible lines forward, if possible (if @count would move
+ * past the start or end of the buffer, moves to the start or end of
+ * the buffer).  The return value indicates whether the iterator moved
+ * onto a dereferenceable position; if the iterator didn't move, or
+ * moved onto the end iterator, then %FALSE is returned. If @count is 0,
+ * the function does nothing and returns %FALSE. If @count is negative,
+ * moves backward by 0 - @count lines.
+ *
+ * Return value: whether @iter moved and is dereferenceable
+ * 
+ * Since: 2.8
+ **/
+gboolean
+gtk_text_iter_forward_visible_lines (GtkTextIter *iter,
+                                     gint         count)
+{
+  FIX_OVERFLOWS (count);
+  
+  if (count < 0)
+    return gtk_text_iter_backward_visible_lines (iter, 0 - count);
+  else if (count == 0)
+    return FALSE;
+  else if (count == 1)
+    {
+      check_invariants (iter);
+      return gtk_text_iter_forward_visible_line (iter);
+    }
+  else
+    {
+      while (gtk_text_iter_forward_visible_line (iter) && count > 0)
+        count--;
+      return count == 0;
+    }    
+}
+
+/**
+ * gtk_text_iter_backward_visible_lines:
+ * @iter: a #GtkTextIter
+ * @count: number of lines to move backward
+ *
+ * Moves @count visible lines backward, if possible (if @count would move
+ * past the start or end of the buffer, moves to the start or end of
+ * the buffer).  The return value indicates whether the iterator moved
+ * onto a dereferenceable position; if the iterator didn't move, or
+ * moved onto the end iterator, then %FALSE is returned. If @count is 0,
+ * the function does nothing and returns %FALSE. If @count is negative,
+ * moves forward by 0 - @count lines.
+ *
+ * Return value: whether @iter moved and is dereferenceable
+ *
+ * Since: 2.8
+ **/
+gboolean
+gtk_text_iter_backward_visible_lines (GtkTextIter *iter,
+                                      gint         count)
+{
+  FIX_OVERFLOWS (count);
+  
+  if (count < 0)
+    return gtk_text_iter_forward_visible_lines (iter, 0 - count);
+  else if (count == 0)
+    return FALSE;
+  else if (count == 1)
+    {
+      return gtk_text_iter_backward_visible_line (iter);
+    }
+  else
+    {
+      while (gtk_text_iter_backward_visible_line (iter) && count > 0)
+        count--;
+      return count == 0;
     }
 }
 
@@ -3581,7 +3744,7 @@ gtk_text_iter_forward_visible_cursor_positions (GtkTextIter *iter,
  * @count: number of positions to move
  *
  * Moves up to @count visible cursor positions. See
- * gtk_text_iter_forward_cursor_position() for details.
+ * gtk_text_iter_backward_cursor_position() for details.
  * 
  * Return value: %TRUE if we moved and the new position is dereferenceable
  * 
@@ -3740,12 +3903,6 @@ gtk_text_iter_set_visible_line_offset (GtkTextIter *iter,
     gtk_text_iter_forward_line (iter);
 }
 
-static gint
-bytes_in_char (GtkTextIter *iter)
-{
-  return g_unichar_to_utf8 (gtk_text_iter_get_char (iter), NULL);
-}
-
 /**
  * gtk_text_iter_set_visible_line_index:
  * @iter: a #GtkTextIter
@@ -3756,40 +3913,54 @@ bytes_in_char (GtkTextIter *iter)
  * in the index.
  **/
 void
-gtk_text_iter_set_visible_line_index  (GtkTextIter *iter,
-                                       gint         byte_on_line)
+gtk_text_iter_set_visible_line_index (GtkTextIter *iter,
+                                      gint         byte_on_line)
 {
-  gint bytes_seen = 0;
-  gint skipped = 0;
+  GtkTextRealIter *real;
+  gint bytes_in_line = 0;
+  gint offset = 0;
   GtkTextIter pos;
-
-  g_return_if_fail (iter != NULL);
+  GtkTextLineSegment *seg;
   
+  g_return_if_fail (iter != NULL);
+
   gtk_text_iter_set_line_offset (iter, 0);
+
+  bytes_in_line = gtk_text_iter_get_bytes_in_line (iter);
 
   pos = *iter;
 
-  /* For now we use a ludicrously slow implementation */
-  while (bytes_seen < byte_on_line)
+  real = gtk_text_iter_make_real (&pos);
+
+  if (real == NULL)
+    return;
+
+  ensure_byte_offsets (real);
+
+  check_invariants (&pos);
+
+  seg = _gtk_text_iter_get_indexable_segment (&pos);
+
+  while (seg != NULL && byte_on_line > 0)
     {
       if (!_gtk_text_btree_char_is_invisible (&pos))
-        bytes_seen += bytes_in_char (&pos);
-      else skipped++;
+        {
+          if (byte_on_line < seg->byte_count)
+            {
+              iter_set_from_byte_offset (real, real->line, offset + byte_on_line);
+              byte_on_line = 0;
+              break;
+            }
+          else
+            byte_on_line -= seg->byte_count;
+        }
 
-      if (!gtk_text_iter_forward_char (&pos))
-        break;
-
-      if (bytes_seen >= byte_on_line)
-        break;
+      offset += seg->byte_count;
+      _gtk_text_iter_forward_indexable_segment (&pos);
+      seg = _gtk_text_iter_get_indexable_segment (&pos);
     }
 
-  if (bytes_seen > byte_on_line)
-    g_warning ("%s: Incorrect visible byte index %d falls in the middle of a UTF-8 "
-               "character; this will crash the text buffer. "
-               "Byte indexes must refer to the start of a character.",
-               G_STRLOC, byte_on_line);
-  
-  if (_gtk_text_iter_get_text_line (&pos) == _gtk_text_iter_get_text_line (iter))
+  if (byte_on_line == 0)
     *iter = pos;
   else
     gtk_text_iter_forward_line (iter);
@@ -4534,7 +4705,7 @@ gtk_text_iter_forward_search (const GtkTextIter *iter,
         {
           if (limit == NULL ||
               (limit &&
-               gtk_text_iter_compare (&end, limit) < 0))
+               gtk_text_iter_compare (&end, limit) <= 0))
             {
               retval = TRUE;
               

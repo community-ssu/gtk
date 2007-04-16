@@ -49,16 +49,6 @@ should only be accessed through the functions described below.
 
 </para>
 
-<!-- ##### ARG GtkSeparatorToolItem:is-image ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkSeparatorToolItem:separator-size ##### -->
-<para>
-
-</para>
-
 <!-- ##### FUNCTION gtk_separator_tool_item_new ##### -->
 <para>
 
@@ -74,8 +64,6 @@ should only be accessed through the functions described below.
 
 @item: 
 @draw: 
-<!-- # Unused Parameters # -->
-@tool_item: 
 
 
 <!-- ##### FUNCTION gtk_separator_tool_item_get_draw ##### -->

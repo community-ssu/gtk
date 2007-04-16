@@ -14,20 +14,22 @@
 <cmdsynopsis>
 <command>gtk-update-icon-cache</command>
 <arg choice="opt">--force</arg>
+<arg choice="opt">--ignore-theme-index</arg>
+<arg choice="opt">--index-only</arg>
+<arg choice="opt">--source<arg>name</arg></arg>
 <arg choice="opt">--quiet</arg>
 <arg choice="req">iconpath</arg>
 </cmdsynopsis>
 </refsynopsisdiv>
 
 <refsect1><title>Description</title>
-<para>
-<command>gtk-update-icon-cache</command> creates mmap()able cache files for
+<para><command>gtk-update-icon-cache</command> creates mmap()able cache files for
 icon themes. 
 </para>
 <para>
-If expects to be given the path to a icon theme directory, e.g. 
-<filename>/usr/share/icons/hicolor</filename>, and writes a 
-<filename>icon-theme.cache</filename> containing cached information
+It expects to be given the path to a icon theme directory containing an
+<filename>index.theme</filename>, e.g. <filename>/usr/share/icons/hicolor</filename>, 
+and writes a <filename>icon-theme.cache</filename> containing cached information
 about the icons in the directory tree below the given directory.
 </para>
 <para>
@@ -43,9 +45,35 @@ multiple applications, the overall memory consumption is reduced as well.
   <varlistentry>
     <term>--force</term>
     <term>-f</term>
-    <listitem><para>Overwrite an existing cache file even if it appears to be uptodate.
+    <listitem><para>Overwrite an existing cache file even if it appears to be 
+         uptodate.</para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>--ignore-theme-index</term>
+    <term>-t</term>
+    <listitem><para>Don't check for the existence of 'index.theme' in the icon theme
+     directory. Without this option, <command>gtk-update-icon-cache</command> refuses
+     to create an icon cache in a directory which does not appear to be the toplevel
+     directory of an icon theme. 
     </para></listitem>
   </varlistentry>
+
+  <varlistentry>
+    <term>--index-only</term>
+    <term>-i</term>
+    <listitem><para>Don't include image data in the cache.
+    </para></listitem>
+  </varlistentry>
+
+  <varlistentry>
+    <term>--source</term>
+    <term>-c</term>
+    <listitem><para>Output a C header file declaring a constant 
+     <replaceable>name</replaceable> with the contents of the icon 
+     cache.</para></listitem>
+  </varlistentry>
+
   <varlistentry>
     <term>--quiet</term>
     <term>-q</term>

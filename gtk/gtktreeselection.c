@@ -23,10 +23,8 @@
 #include "gtktreeprivate.h"
 #include "gtkrbtree.h"
 #include "gtkmarshalers.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
-
-static void gtk_tree_selection_init              (GtkTreeSelection      *selection);
-static void gtk_tree_selection_class_init        (GtkTreeSelectionClass *class);
 
 static void gtk_tree_selection_finalize          (GObject               *object);
 static gint gtk_tree_selection_real_select_all   (GtkTreeSelection      *selection);
@@ -42,36 +40,9 @@ enum
   LAST_SIGNAL
 };
 
-static GObjectClass *parent_class = NULL;
 static guint tree_selection_signals [LAST_SIGNAL] = { 0 };
 
-GType
-gtk_tree_selection_get_type (void)
-{
-  static GType selection_type = 0;
-
-  if (!selection_type)
-    {
-      static const GTypeInfo selection_info =
-      {
-        sizeof (GtkTreeSelectionClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-        (GClassInitFunc) gtk_tree_selection_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-        sizeof (GtkTreeSelection),
-	0,              /* n_preallocs */
-        (GInstanceInitFunc) gtk_tree_selection_init
-      };
-
-      selection_type =
-	g_type_register_static (G_TYPE_OBJECT, "GtkTreeSelection",
-				&selection_info, 0);
-    }
-
-  return selection_type;
-}
+G_DEFINE_TYPE (GtkTreeSelection, gtk_tree_selection, G_TYPE_OBJECT)
 
 static void
 gtk_tree_selection_class_init (GtkTreeSelectionClass *class)
@@ -79,13 +50,12 @@ gtk_tree_selection_class_init (GtkTreeSelectionClass *class)
   GObjectClass *object_class;
 
   object_class = (GObjectClass*) class;
-  parent_class = g_type_class_peek_parent (class);
 
   object_class->finalize = gtk_tree_selection_finalize;
   class->changed = NULL;
 
   tree_selection_signals[CHANGED] =
-    g_signal_new ("changed",
+    g_signal_new (I_("changed"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkTreeSelectionClass, changed),
@@ -114,7 +84,7 @@ gtk_tree_selection_finalize (GObject *object)
     }
 
   /* chain parent_class' handler */
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_tree_selection_parent_class)->finalize (object);
 }
 
 /**
@@ -190,28 +160,11 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
 			     GtkSelectionMode  type)
 {
   GtkTreeSelectionFunc tmp_func;
-  
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
 
   if (selection->type == type)
     return;
 
-  /* Hildon addition */
-  if ((type == GTK_SELECTION_SINGLE) &&
-      (selection->type == GTK_SELECTION_MULTIPLE ||
-       selection->type == GTK_SELECTION_BROWSE))
-    {
-      GtkTreePath *cursor_path;
-
-      /* to successfully switch from multiple selection mode to single
-         selection, we must ensure that anchor exists and is selected
-         since otherwise gtk_tree_selection_select_path won't work anymore */
-      if (gtk_tree_row_reference_valid (selection->tree_view->priv->cursor))
-        {
-          cursor_path = gtk_tree_row_reference_get_path (selection->tree_view->priv->cursor);          gtk_tree_selection_select_path (selection, cursor_path);
-          gtk_tree_path_free (cursor_path);
-        }
-    }
   
   if (type == GTK_SELECTION_NONE)
     {
@@ -269,19 +222,24 @@ gtk_tree_selection_set_mode (GtkTreeSelection *selection,
 
   selection->type = type;
 
-  /* Hildon addition */
-  if (type == GTK_SELECTION_SINGLE)
+#ifdef MAEMO_CHANGES
+  if (type == GTK_SELECTION_SINGLE
+      || type == GTK_SELECTION_BROWSE)
     {
-      GtkTreePath *path;
       GtkTreeIter iter;
 
-      /* reset cursor to the selected row */
-      gtk_tree_selection_get_selected (selection, NULL, &iter);
-      path = gtk_tree_model_get_path (selection->tree_view->priv->model,
-                                      &iter);
-      gtk_tree_view_set_cursor (selection->tree_view, path, NULL, FALSE);
-      gtk_tree_path_free (path);
+      /* Make sure the cursor is on a selected node */
+      if (gtk_tree_selection_get_selected (selection, NULL, &iter))
+        {
+	  GtkTreePath *path;
+
+	  path = gtk_tree_model_get_path (selection->tree_view->priv->model,
+					  &iter);
+	  gtk_tree_view_set_cursor (selection->tree_view, path, NULL, FALSE);
+	  gtk_tree_path_free (path);
+	}
     }
+#endif /* MAEMO_CHANGES */
 }
 
 /**
@@ -463,8 +421,8 @@ gtk_tree_selection_get_selected (GtkTreeSelection  *selection,
  * Since: 2.2
  **/
 GList *
-gtk_tree_selection_get_selected_rows (GtkTreeSelection   *selection,
-                                      GtkTreeModel      **model)
+gtk_tree_selection_get_selected_rows (GtkTreeSelection  *selection,
+                                      GtkTreeModel     **model)
 {
   GList *list = NULL;
   GtkRBTree *tree = NULL;
@@ -590,8 +548,6 @@ gint
 gtk_tree_selection_count_selected_rows (GtkTreeSelection *selection)
 {
   gint count = 0;
-  GtkRBTree *tree;
-  GtkRBNode *node;
 
   g_return_val_if_fail (GTK_IS_TREE_SELECTION (selection), 0);
   g_return_val_if_fail (selection->tree_view != NULL, 0);
@@ -608,9 +564,6 @@ gtk_tree_selection_count_selected_rows (GtkTreeSelection *selection)
       else
 	return 0;
     }
-
-  tree = selection->tree_view->priv->tree;
-  node = selection->tree_view->priv->tree->root;
 
   _gtk_rbtree_traverse (selection->tree_view->priv->tree,
                         selection->tree_view->priv->tree->root,
@@ -652,7 +605,7 @@ gtk_tree_selection_selected_foreach (GtkTreeSelection            *selection,
   GtkTreeModel *model;
 
   gulong inserted_id, deleted_id, reordered_id, changed_id;
-  gboolean stop = FALSE, has_next = TRUE, has_parent = TRUE;
+  gboolean stop = FALSE;
 
   g_return_if_fail (GTK_IS_TREE_SELECTION (selection));
   g_return_if_fail (selection->tree_view != NULL);
@@ -695,63 +648,50 @@ gtk_tree_selection_selected_foreach (GtkTreeSelection            *selection,
 					   G_CALLBACK (model_changed),
 				           &stop);
   changed_id = g_signal_connect_swapped (selection->tree_view, "notify::model",
-					 G_CALLBACK (model_changed),
+					 G_CALLBACK (model_changed), 
 					 &stop);
 
   /* find the node internally */
   path = gtk_tree_path_new_first ();
-  gtk_tree_model_get_iter (model, &iter, path);
 
   do
     {
       if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
-	(* func) (model, path, &iter, data);
+        {
+          gtk_tree_model_get_iter (model, &iter, path);
+	  (* func) (model, path, &iter, data);
+        }
 
       if (stop)
 	goto out;
 
       if (node->children)
 	{
-	  gboolean has_child;
-	  GtkTreeIter tmp;
-
 	  tree = node->children;
 	  node = tree->root;
+
 	  while (node->left != tree->nil)
 	    node = node->left;
-	  tmp = iter;
-	  has_child = gtk_tree_model_iter_children (model, &iter, &tmp);
-	  gtk_tree_path_append_index (path, 0);
 
-	  /* we do the sanity check at the bottom of this function */
-	  if (!has_child)
-	    goto out;
+	  gtk_tree_path_append_index (path, 0);
 	}
       else
 	{
 	  gboolean done = FALSE;
+
 	  do
 	    {
 	      node = _gtk_rbtree_next (tree, node);
 	      if (node != NULL)
 		{
-		  gboolean has_next;
-
-		  has_next = gtk_tree_model_iter_next (model, &iter);
 		  done = TRUE;
 		  gtk_tree_path_next (path);
-
-		  /* we do the sanity check at the bottom of this function */
-		  if (!has_next)
-		    goto out;
 		}
 	      else
 		{
-		  gboolean has_parent;
-		  GtkTreeIter tmp_iter = iter;
-
 		  node = tree->parent_node;
 		  tree = tree->parent_tree;
+
 		  if (tree == NULL)
 		    {
 		      /* we've run out of tree */
@@ -760,12 +700,7 @@ gtk_tree_selection_selected_foreach (GtkTreeSelection            *selection,
 		      goto out;
 		    }
 
-		  has_parent = gtk_tree_model_iter_parent (model, &iter, &tmp_iter);
 		  gtk_tree_path_up (path);
-
-		  /* we do the sanity check at the bottom of this function */
-		  if (!has_parent)
-		    goto out;
 		}
 	    }
 	  while (!done);
@@ -784,16 +719,11 @@ out:
   g_object_unref (model);
 
   /* check if we have to spew a scary message */
-  if (!has_next)
-    TREE_VIEW_INTERNAL_ASSERT_VOID (has_next);
-  if (!has_parent)
-    TREE_VIEW_INTERNAL_ASSERT_VOID (has_parent);
   if (stop)
-    g_warning
-      ("The model has been modified from within gtk_tree_selection_selected_foreach.\n"
-       "This function is for observing the selections of the tree only.  If\n"
-       "you are trying to get all selected items from the tree, try using\n"
-       "gtk_tree_selection_get_selected_rows instead.\n");
+    g_warning ("The model has been modified from within gtk_tree_selection_selected_foreach.\n"
+	       "This function is for observing the selections of the tree only.  If\n"
+	       "you are trying to get all selected items from the tree, try using\n"
+	       "gtk_tree_selection_get_selected_rows instead.\n");
 }
 
 /**
@@ -1320,6 +1250,7 @@ gtk_tree_selection_unselect_range (GtkTreeSelection *selection,
     g_signal_emit (selection, tree_selection_signals[CHANGED], 0);
 }
 
+#ifdef MAEMO_CHANGES
 static gboolean
 tree_column_is_sensitive (GtkTreeViewColumn *column,
 			  GtkTreeModel      *model,
@@ -1329,12 +1260,8 @@ tree_column_is_sensitive (GtkTreeViewColumn *column,
   gboolean sensitive;
   gboolean visible;
 
-  _gtk_tree_view_column_cell_set_cell_data_with_attributes (column, model,
-							    iter,
-							    FALSE, FALSE,
-							    "sensitive",
-							    "visible",
-							    NULL);
+  gtk_tree_view_column_cell_set_cell_data (column, model,
+					   iter, FALSE, FALSE);
 
   cells = gtk_tree_view_column_get_cell_renderers (column);
 
@@ -1355,13 +1282,16 @@ tree_column_is_sensitive (GtkTreeViewColumn *column,
 
   return sensitive;
 }
+#endif /* MAEMO_CHANGES */
 
 gboolean
-_gtk_tree_selection_is_row_selectable (GtkTreeSelection *selection,
-                                       GtkRBNode        *node,
-                                       GtkTreePath      *path)
+_gtk_tree_selection_row_is_selectable (GtkTreeSelection *selection,
+				       GtkRBNode        *node,
+				       GtkTreePath      *path)
 {
+#ifdef MAEMO_CHANGES
   GList *list;
+#endif /* MAEMO_CHANGES */
   GtkTreeIter iter;
   gboolean sensitive = FALSE;
 
@@ -1377,6 +1307,7 @@ _gtk_tree_selection_is_row_selectable (GtkTreeSelection *selection,
 	return FALSE;
     }
 
+#ifdef MAEMO_CHANGES
   for (list = selection->tree_view->priv->columns; list && !sensitive; list = list->next)
     {
       GtkTreeViewColumn *column = GTK_TREE_VIEW_COLUMN (list->data);
@@ -1389,6 +1320,7 @@ _gtk_tree_selection_is_row_selectable (GtkTreeSelection *selection,
 
   if (!sensitive)
     return FALSE;
+#endif /* MAEMO_CHANGES */
 
   if (selection->user_func)
     return (*selection->user_func) (selection, selection->tree_view->priv->model, path,
@@ -1448,7 +1380,7 @@ _gtk_tree_selection_internal_select_node (GtkTreeSelection *selection,
 	    {
 	      /* We only want to select the new node if we can unselect the old one,
 	       * and we can select the new one. */
-	      dirty = _gtk_tree_selection_is_row_selectable (selection, node, path);
+	      dirty = _gtk_tree_selection_row_is_selectable (selection, node, path);
 
 	      /* if dirty is FALSE, we weren't able to select the new one, otherwise, we try to
 	       * unselect the new one
@@ -1545,13 +1477,14 @@ _gtk_tree_selection_internal_select_node (GtkTreeSelection *selection,
     gtk_tree_path_free (anchor_path);
 
   if (dirty)
-    g_signal_emit (selection, tree_selection_signals[CHANGED], 0);
+    g_signal_emit (selection, tree_selection_signals[CHANGED], 0);  
 }
 
-void
+
+void 
 _gtk_tree_selection_emit_changed (GtkTreeSelection *selection)
 {
-  g_signal_emit (selection, tree_selection_signals[CHANGED], 0);
+  g_signal_emit (selection, tree_selection_signals[CHANGED], 0);  
 }
 
 /* NOTE: Any {un,}selection ever done _MUST_ be done through this function!
@@ -1563,7 +1496,7 @@ gtk_tree_selection_real_select_node (GtkTreeSelection *selection,
 				     GtkRBNode        *node,
 				     gboolean          select)
 {
-  gboolean selected = FALSE;
+  gboolean toggle = FALSE;
   GtkTreePath *path = NULL;
 
   select = !! select;
@@ -1571,16 +1504,18 @@ gtk_tree_selection_real_select_node (GtkTreeSelection *selection,
   if (GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED) != select)
     {
       path = _gtk_tree_view_find_path (selection->tree_view, tree, node);
-      selected = _gtk_tree_selection_is_row_selectable (selection, node, path);
+      toggle = _gtk_tree_selection_row_is_selectable (selection, node, path);
       gtk_tree_path_free (path);
 
-      /* if row is unselectable, allow unselection only */
-      if (!selected && !select &&
-          GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
-        selected = TRUE;
+#ifdef MAEMO_CHANGES
+      /* Allow unselecting an insensitive row */
+      if (!toggle && !select
+	  && GTK_RBNODE_FLAG_SET (node, GTK_RBNODE_IS_SELECTED))
+	toggle = TRUE;
+#endif /* MAEMO_CHANGES */
     }
 
-  if (selected == TRUE)
+  if (toggle)
     {
       node->flags ^= GTK_RBNODE_IS_SELECTED;
 

@@ -25,6 +25,7 @@
 #include "gtkintl.h"
 #include "gtktypebuiltins.h"
 #include "gtkprivate.h"
+#include "gtkmarshalers.h"
 #include "gtkalias.h"
 
 static void gtk_file_chooser_class_init (gpointer g_iface);
@@ -38,22 +39,32 @@ gtk_file_chooser_get_type (void)
 
   if (!file_chooser_type)
     {
-      static const GTypeInfo file_chooser_info =
-      {
-	sizeof (GtkFileChooserIface),  /* class_size */
-	NULL,                          /* base_init */
-	NULL,			       /* base_finalize */
-	(GClassInitFunc)gtk_file_chooser_class_init, /* class_init */
-      };
-
-      file_chooser_type = g_type_register_static (G_TYPE_INTERFACE,
-						  "GtkFileChooser",
-						  &file_chooser_info, 0);
-
+      file_chooser_type = g_type_register_static_simple (G_TYPE_INTERFACE,
+							 I_("GtkFileChooser"),
+							 sizeof (GtkFileChooserIface),
+							 (GClassInitFunc) gtk_file_chooser_class_init,
+							 0, NULL, 0);
+      
       g_type_interface_add_prerequisite (file_chooser_type, GTK_TYPE_WIDGET);
     }
 
   return file_chooser_type;
+}
+
+static gboolean
+confirm_overwrite_accumulator (GSignalInvocationHint *ihint,
+			       GValue                *return_accu,
+			       const GValue          *handler_return,
+			       gpointer               dummy)
+{
+  gboolean continue_emission;
+  GtkFileChooserConfirmation conf;
+
+  conf = g_value_get_enum (handler_return);
+  g_value_set_enum (return_accu, conf);
+  continue_emission = (conf == GTK_FILE_CHOOSER_CONFIRMATION_CONFIRM);
+
+  return continue_emission;
 }
 
 static void
@@ -79,7 +90,7 @@ gtk_file_chooser_class_init (gpointer g_iface)
    * gtk_file_chooser_set_current_folder_uri(),
    * gtk_file_chooser_get_current_folder_uri().
    */
-  g_signal_new ("current-folder-changed",
+  g_signal_new (I_("current-folder-changed"),
 		iface_type,
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET (GtkFileChooserIface, current_folder_changed),
@@ -106,7 +117,7 @@ gtk_file_chooser_class_init (gpointer g_iface)
    * gtk_file_chooser_unselect_uri(), gtk_file_chooser_get_uri(),
    * gtk_file_chooser_get_uris().
    */
-  g_signal_new ("selection-changed",
+  g_signal_new (I_("selection-changed"),
 		iface_type,
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET (GtkFileChooserIface, selection_changed),
@@ -140,7 +151,7 @@ gtk_file_chooser_class_init (gpointer g_iface)
    * gtk_file_chooser_get_preview_filename(),
    * gtk_file_chooser_get_preview_uri().
    */
-  g_signal_new ("update-preview",
+  g_signal_new (I_("update-preview"),
 		iface_type,
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET (GtkFileChooserIface, update_preview),
@@ -164,13 +175,22 @@ gtk_file_chooser_class_init (gpointer g_iface)
    * gtk_file_chooser_get_filenames(), gtk_file_chooser_get_uri(),
    * gtk_file_chooser_get_uris().
    */
-  g_signal_new ("file-activated",
+  g_signal_new (I_("file-activated"),
 		iface_type,
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET (GtkFileChooserIface, file_activated),
 		NULL, NULL,
 		g_cclosure_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
+
+  /* Documented in the docbook files */
+  g_signal_new (I_("confirm-overwrite"),
+		iface_type,
+		G_SIGNAL_RUN_LAST,
+		G_STRUCT_OFFSET (GtkFileChooserIface, confirm_overwrite),
+		confirm_overwrite_accumulator, NULL,
+		_gtk_marshal_ENUM__VOID,
+		GTK_TYPE_FILE_CHOOSER_CONFIRMATION, 0);
   
   g_object_interface_install_property (g_iface,
 				       g_param_spec_enum ("action",
@@ -234,6 +254,24 @@ gtk_file_chooser_class_init (gpointer g_iface)
 							     P_("Whether the hidden files and folders should be displayed"),
 							     FALSE,
 							     GTK_PARAM_READWRITE));
+
+  /**
+   * GtkFileChooser:do-overwrite-confirmation:
+   * 
+   * Whether a file chooser in %GTK_FILE_CHOOSER_ACTION_SAVE mode
+   * will present an overwrite confirmation dialog if the user
+   * selects a file name that already exists.
+   *
+   * Since: 2.8
+   */
+  g_object_interface_install_property (g_iface,
+				       g_param_spec_boolean ("do-overwrite-confirmation",
+							     P_("Do overwrite confirmation"),
+							     P_("Whether a file chooser in save mode "
+								"will present an overwrite confirmation dialog "
+								"if necessary."),
+							     FALSE,
+							     GTK_PARAM_READWRITE));
 }
 
 /**
@@ -248,10 +286,7 @@ gtk_file_chooser_class_init (gpointer g_iface)
 GQuark
 gtk_file_chooser_error_quark (void)
 {
-  static GQuark quark = 0;
-  if (quark == 0)
-    quark = g_quark_from_static_string ("gtk-file-chooser-error-quark");
-  return quark;
+  return g_quark_from_static_string ("gtk-file-chooser-error-quark");
 }
 
 /**
@@ -434,16 +469,40 @@ gtk_file_chooser_get_filename (GtkFileChooser *chooser)
  * @chooser: a #GtkFileChooser
  * @filename: the filename to set as current
  * 
- * Sets @filename as the current filename for the file chooser;
- * If the file name isn't in the current folder of @chooser, then the
- * current folder of @chooser will be changed to the folder containing
- * @filename. This is equivalent to a sequence of
- * gtk_file_chooser_unselect_all() followed by gtk_file_chooser_select_filename().
+ * Sets @filename as the current filename for the file chooser, by changing
+ * to the file's parent folder and actually selecting the file in list.  If
+ * the @chooser is in #GTK_FILE_CHOOSER_ACTION_SAVE mode, the file's base name
+ * will also appear in the dialog's file name entry.
+ *
+ * If the file name isn't in the current folder of @chooser, then the current
+ * folder of @chooser will be changed to the folder containing @filename. This
+ * is equivalent to a sequence of gtk_file_chooser_unselect_all() followed by
+ * gtk_file_chooser_select_filename().
  *
  * Note that the file must exist, or nothing will be done except
- * for the directory change. To pre-enter a filename for the user, as in
- * a save-as dialog, use gtk_file_chooser_set_current_name()
+ * for the directory change.
  *
+ * If you are implementing a <guimenuitem>File/Save As...</guimenuitem> dialog, you
+ * should use this function if you already have a file name to which the user may save; for example,
+ * when the user opens an existing file and then does <guimenuitem>File/Save As...</guimenuitem>
+ * on it.  If you don't have a file name already &mdash; for example, if the user just created
+ * a new file and is saving it for the first time, do not call this function.  Instead, use
+ * something similar to this:
+ *
+ * <programlisting>
+ * if (document_is_new)
+ *   {
+ *     /<!-- -->* the user just created a new document *<!-- -->/
+ *     gtk_file_chooser_set_current_folder (chooser, default_folder_for_saving);
+ *     gtk_file_chooser_set_current_name (chooser, "Untitled document");
+ *   }
+ * else
+ *   {
+ *     /<!-- -->* the user edited an existing document *<!-- -->/ 
+ *     gtk_file_chooser_set_filename (chooser, existing_filename);
+ *   }
+ * </programlisting>
+ * 
  * Return value: %TRUE if both the folder could be changed and the file was
  * selected successfully, %FALSE otherwise.
  *
@@ -631,10 +690,20 @@ gtk_file_chooser_set_current_folder (GtkFileChooser *chooser,
  * 
  * Gets the current folder of @chooser as a local filename.
  * See gtk_file_chooser_set_current_folder().
+ *
+ * Note that this is the folder that the file chooser is currently displaying
+ * (e.g. "/home/username/Documents"), which is <emphasis>not the same</emphasis>
+ * as the currently-selected folder if the chooser is in
+ * #GTK_FILE_CHOOSER_SELECT_FOLDER mode
+ * (e.g. "/home/username/Documents/selected-folder/".  To get the
+ * currently-selected folder in that mode, use gtk_file_chooser_get_uri() as the
+ * usual way to get the selection.
  * 
- * Return value: the full path of the current folder, or %NULL
- *  if the current path cannot be represented as a local filename.
- *  Free with g_free().
+ * Return value: the full path of the current folder, or %NULL if the current
+ * path cannot be represented as a local filename.  Free with g_free().  This
+ * function will also return %NULL if the file chooser was unable to load the
+ * last folder that was requested from it; for example, as would be for calling
+ * gtk_file_chooser_set_current_folder() on a nonexistent folder.
  *
  * Since: 2.4
  **/
@@ -650,6 +719,9 @@ gtk_file_chooser_get_current_folder (GtkFileChooser *chooser)
   file_system = _gtk_file_chooser_get_file_system (chooser);
 
   path = _gtk_file_chooser_get_current_folder_path (chooser);
+  if (!path)
+    return NULL;
+
   filename = gtk_file_system_path_to_filename (file_system, path);
   gtk_file_path_free (path);
 
@@ -666,8 +738,10 @@ gtk_file_chooser_get_current_folder (GtkFileChooser *chooser)
  * string rather than a filename. This function is meant for
  * such uses as a suggested name in a "Save As..." dialog.
  *
- * If you want to preselect a particular existing file, you
- * should use gtk_file_chooser_set_filename() instead.
+ * If you want to preselect a particular existing file, you should use
+ * gtk_file_chooser_set_filename() or gtk_file_chooser_set_uri() instead.
+ * Please see the documentation for those functions for an example of using
+ * gtk_file_chooser_set_current_name() as well.
  *
  * Since: 2.4
  **/
@@ -722,15 +796,38 @@ gtk_file_chooser_get_uri (GtkFileChooser *chooser)
  * @chooser: a #GtkFileChooser
  * @uri: the URI to set as current
  * 
- * Sets the file referred to by @uri as the current file for the
- * file chooser; If the file name isn't in the current folder of @chooser,
- * then the current folder of @chooser will be changed to the folder containing
- * @uri. This is equivalent to a sequence of gtk_file_chooser_unselect_all()
- * followed by gtk_file_chooser_select_uri().
+ * Sets the file referred to by @uri as the current file for the file chooser,
+ * by changing to the URI's parent folder and actually selecting the URI in the
+ * list.  If the @chooser is #GTK_FILE_CHOOSER_ACTION_SAVE mode, the URI's base
+ * name will also appear in the dialog's file name entry.
  *
- * Note that the file must exist, or nothing will be done except
- * for the directory change. To pre-enter a filename for the user, as in
- * a save-as dialog, use gtk_file_chooser_set_current_name()
+ * If the URI isn't in the current folder of @chooser, then the current folder
+ * of @chooser will be changed to the folder containing @uri. This is equivalent
+ * to a sequence of gtk_file_chooser_unselect_all() followed by
+ * gtk_file_chooser_select_uri().
+ *
+ * Note that the URI must exist, or nothing will be done except
+ * for the directory change.
+ * If you are implementing a <guimenuitem>File/Save As...</guimenuitem> dialog, you
+ * should use this function if you already have a file name to which the user may save; for example,
+ * when the user opens an existing file and then does <guimenuitem>File/Save As...</guimenuitem>
+ * on it.  If you don't have a file name already &mdash; for example, if the user just created
+ * a new file and is saving it for the first time, do not call this function.  Instead, use
+ * something similar to this:
+ *
+ * <programlisting>
+ * if (document_is_new)
+ *   {
+ *     /<!-- -->* the user just created a new document *<!-- -->/
+ *     gtk_file_chooser_set_current_folder_uri (chooser, default_folder_for_saving);
+ *     gtk_file_chooser_set_current_name (chooser, "Untitled document");
+ *   }
+ * else
+ *   {
+ *     /<!-- -->* the user edited an existing document *<!-- -->/ 
+ *     gtk_file_chooser_set_uri (chooser, existing_uri);
+ *   }
+ * </programlisting>
  *
  * Return value: %TRUE if both the folder could be changed and the URI was
  * selected successfully, %FALSE otherwise.
@@ -925,9 +1022,19 @@ gtk_file_chooser_set_current_folder_uri (GtkFileChooser *chooser,
  * 
  * Gets the current folder of @chooser as an URI.
  * See gtk_file_chooser_set_current_folder_uri().
+ *
+ * Note that this is the folder that the file chooser is currently displaying
+ * (e.g. "file:///home/username/Documents"), which is <emphasis>not the same</emphasis>
+ * as the currently-selected folder if the chooser is in
+ * #GTK_FILE_CHOOSER_SELECT_FOLDER mode
+ * (e.g. "file:///home/username/Documents/selected-folder/".  To get the
+ * currently-selected folder in that mode, use gtk_file_chooser_get_uri() as the
+ * usual way to get the selection.
  * 
- * Return value: the URI for the current folder.
- *  Free with g_free().
+ * Return value: the URI for the current folder.  Free with g_free().  This
+ * function will also return %NULL if the file chooser was unable to load the
+ * last folder that was requested from it; for example, as would be for calling
+ * gtk_file_chooser_set_current_folder_uri() on a nonexistent folder.
  *
  * Since: 2.4
  */
@@ -1444,7 +1551,10 @@ gtk_file_chooser_get_extra_widget (GtkFileChooser *chooser)
  * 
  * Adds @filter to the list of filters that the user can select between.
  * When a filter is selected, only files that are passed by that
- * filter are displayed.
+ * filter are displayed. 
+ * 
+ * Note that the @chooser takes ownership of the filter, so you have to 
+ * ref and sink it if you want to keep a reference.
  *
  * Since: 2.4
  **/
@@ -1827,6 +1937,58 @@ gtk_file_chooser_get_show_hidden (GtkFileChooser *chooser)
   g_object_get (chooser, "show-hidden", &show_hidden, NULL);
 
   return show_hidden;
+}
+
+/**
+ * gtk_file_chooser_set_do_overwrite_confirmation:
+ * @chooser: a #GtkFileChooser
+ * @do_overwrite_confirmation: whether to confirm overwriting in save mode
+ * 
+ * Sets whether a file chooser in GTK_FILE_CHOOSER_ACTION_SAVE mode will present
+ * a confirmation dialog if the user types a file name that already exists.  This
+ * is %FALSE by default.
+ *
+ * Regardless of this setting, the @chooser will emit the "confirm-overwrite"
+ * signal when appropriate.
+ *
+ * If all you need is the stock confirmation dialog, set this property to %TRUE.
+ * You can override the way confirmation is done by actually handling the
+ * "confirm-overwrite" signal; please refer to its documentation for the
+ * details.
+ *
+ * Since: 2.8
+ **/
+void
+gtk_file_chooser_set_do_overwrite_confirmation (GtkFileChooser *chooser,
+						gboolean        do_overwrite_confirmation)
+{
+  g_return_if_fail (GTK_IS_FILE_CHOOSER (chooser));
+
+  g_object_set (chooser, "do-overwrite-confirmation", do_overwrite_confirmation, NULL);
+}
+
+/**
+ * gtk_file_chooser_get_do_overwrite_confirmation:
+ * @chooser: a #GtkFileChooser
+ * 
+ * Queries whether a file chooser is set to confirm for overwriting when the user
+ * types a file name that already exists.
+ * 
+ * Return value: %TRUE if the file chooser will present a confirmation dialog;
+ * %FALSE otherwise.
+ *
+ * Since: 2.8
+ **/
+gboolean
+gtk_file_chooser_get_do_overwrite_confirmation (GtkFileChooser *chooser)
+{
+  gboolean do_overwrite_confirmation;
+
+  g_return_val_if_fail (GTK_IS_FILE_CHOOSER (chooser), FALSE);
+
+  g_object_get (chooser, "do-overwrite-confirmation", &do_overwrite_confirmation, NULL);
+
+  return do_overwrite_confirmation;
 }
 
 #ifdef G_OS_WIN32

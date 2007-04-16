@@ -23,6 +23,7 @@
 
 #include "gtkmarshalers.h"
 #include "gtkwindow.h"  /* in lack of GtkAcceleratable */
+#include "gtkintl.h" 
 #include "gtkalias.h"
 
 #include <glib/gstdio.h>
@@ -56,8 +57,8 @@ typedef struct {
   guint        accel_mods;
   guint	       std_accel_key;
   guint	       std_accel_mods;
-  guint        changed : 1;
-  guint        lock_count;
+  guint        changed    :  1;
+  guint        lock_count : 15;
   GSList      *groups;
 } AccelEntry;
 
@@ -178,8 +179,8 @@ gtk_accel_map_add_entry (const gchar    *accel_path,
     }
   else
     {
-      entry = g_new0 (AccelEntry, 1);
-      entry->accel_path = g_quark_to_string (g_quark_from_string (accel_path));
+      entry = g_slice_new0 (AccelEntry);
+      entry->accel_path = g_intern_string (accel_path);
       entry->std_accel_key = accel_key;
       entry->std_accel_mods = accel_mods;
       entry->accel_key = accel_key;
@@ -386,8 +387,6 @@ internal_change_entry (const gchar    *accel_path,
   
   if (change_accel && !simulate)
     {
-      guint old_accel_key, old_accel_mods;
-      
       /* ref accel groups */
       for (slist = group_list; slist; slist = slist->next)
 	g_object_ref (slist->data);
@@ -397,8 +396,6 @@ internal_change_entry (const gchar    *accel_path,
 	internal_change_entry (g_quark_to_string (GPOINTER_TO_UINT (slist->data)), 0, 0, FALSE, FALSE);
 
       /* 9) install new accelerator */
-      old_accel_key = entry->accel_key;
-      old_accel_mods = entry->accel_mods;
       entry->accel_key = accel_key;
       entry->accel_mods = accel_mods;
       entry->changed = TRUE;
@@ -545,7 +542,7 @@ gtk_accel_map_load_scanner (GScanner *scanner)
   gchar *cpair_comment_single;
   gpointer saved_symbol;
   
-  g_return_if_fail (scanner != 0);
+  g_return_if_fail (scanner != NULL);
 
   /* configure scanner */
   skip_comment_single = scanner->config->skip_comment_single;
@@ -934,7 +931,7 @@ gtk_accel_map_unlock_path (const gchar *accel_path)
   entry->lock_count -= 1;  
 }
 
-G_DEFINE_TYPE (GtkAccelMap, gtk_accel_map, G_TYPE_OBJECT);
+G_DEFINE_TYPE (GtkAccelMap, gtk_accel_map, G_TYPE_OBJECT)
 
 static void
 gtk_accel_map_class_init (GtkAccelMapClass *accel_map_class)
@@ -953,7 +950,7 @@ gtk_accel_map_class_init (GtkAccelMapClass *accel_map_class)
    *
    * Since: 2.4
    */
-  accel_map_signals[CHANGED] = g_signal_new ("changed",
+  accel_map_signals[CHANGED] = g_signal_new (I_("changed"),
 					     G_TYPE_FROM_CLASS (accel_map_class),
 					     G_SIGNAL_DETAILED|G_SIGNAL_RUN_LAST,
 					     0,

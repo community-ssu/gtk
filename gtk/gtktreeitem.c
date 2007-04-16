@@ -36,6 +36,7 @@
 #define GTK_ENABLE_BROKEN
 #include "gtktree.h"
 #include "gtktreeitem.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #include "tree_plus.xpm"
@@ -86,8 +87,6 @@ static void gtk_real_tree_item_deselect (GtkItem          *item);
 static void gtk_real_tree_item_toggle   (GtkItem          *item);
 static void gtk_real_tree_item_expand   (GtkTreeItem      *item);
 static void gtk_real_tree_item_collapse (GtkTreeItem      *item);
-static void gtk_real_tree_item_expand   (GtkTreeItem      *item);
-static void gtk_real_tree_item_collapse (GtkTreeItem      *item);
 static void gtk_tree_item_destroy        (GtkObject *object);
 static gint gtk_tree_item_subtree_button_click (GtkWidget *widget);
 static void gtk_tree_item_subtree_button_changed_state (GtkWidget *widget);
@@ -120,6 +119,7 @@ gtk_tree_item_get_type (void)
         (GtkClassInitFunc) NULL,
       };
 
+      I_("GtkTreeItem");
       tree_item_type = gtk_type_unique (gtk_item_get_type (), &tree_item_info);
     }
 
@@ -161,14 +161,14 @@ gtk_tree_item_class_init (GtkTreeItemClass *class)
   class->collapse = gtk_real_tree_item_collapse;
 
   tree_item_signals[EXPAND_TREE] =
-    gtk_signal_new ("expand",
+    gtk_signal_new (I_("expand"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTreeItemClass, expand),
 		    _gtk_marshal_VOID__VOID,
 		    GTK_TYPE_NONE, 0);
   tree_item_signals[COLLAPSE_TREE] =
-    gtk_signal_new ("collapse",
+    gtk_signal_new (I_("collapse"),
 		    GTK_RUN_FIRST,
 		    GTK_CLASS_TYPE (object_class),
 		    GTK_SIGNAL_OFFSET (GtkTreeItemClass, collapse),
@@ -248,8 +248,7 @@ gtk_tree_item_init (GtkTreeItem *tree_item)
     gtk_container_add (GTK_CONTAINER (eventbox), pixmapwid);
   gtk_widget_show (pixmapwid);
   tree_item->plus_pix_widget = pixmapwid;
-  gtk_widget_ref (tree_item->plus_pix_widget);
-  gtk_object_sink (GTK_OBJECT (tree_item->plus_pix_widget));
+  g_object_ref_sink (tree_item->plus_pix_widget);
   
   /* create pixmap for button '-' */
   pixmapwid = gtk_type_new (gtk_pixmap_get_type ());
@@ -257,8 +256,7 @@ gtk_tree_item_init (GtkTreeItem *tree_item)
     gtk_container_add (GTK_CONTAINER (eventbox), pixmapwid);
   gtk_widget_show (pixmapwid);
   tree_item->minus_pix_widget = pixmapwid;
-  gtk_widget_ref (tree_item->minus_pix_widget);
-  gtk_object_sink (GTK_OBJECT (tree_item->minus_pix_widget));
+  g_object_ref_sink (tree_item->minus_pix_widget);
   
   gtk_widget_set_parent (eventbox, GTK_WIDGET (tree_item));
 }
@@ -611,7 +609,6 @@ static void
 gtk_tree_item_paint (GtkWidget    *widget,
 		     GdkRectangle *area)
 {
-  GtkBin *bin;
   GdkRectangle child_area, item_area;
   GtkTreeItem* tree_item;
 
@@ -626,7 +623,6 @@ gtk_tree_item_paint (GtkWidget    *widget,
    */
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-      bin = GTK_BIN (widget);
       tree_item = GTK_TREE_ITEM(widget);
 
       if (widget->state == GTK_STATE_NORMAL)
@@ -751,12 +747,10 @@ gtk_tree_item_expose (GtkWidget      *widget,
 static void
 gtk_real_tree_item_select (GtkItem *item)
 {    
-  GtkTreeItem *tree_item;
   GtkWidget *widget;
 
   g_return_if_fail (GTK_IS_TREE_ITEM (item));
 
-  tree_item = GTK_TREE_ITEM (item);
   widget = GTK_WIDGET (item);
 
   gtk_widget_set_state (GTK_WIDGET (item), GTK_STATE_SELECTED);

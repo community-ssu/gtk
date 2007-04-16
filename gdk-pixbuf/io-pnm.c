@@ -392,13 +392,6 @@ pnm_read_header (PnmLoaderContext *context)
 				return PNM_FATAL_ERR;
 			}
 
-			if (context->maxval > 255) {
-				g_set_error (context->error,
-					     GDK_PIXBUF_ERROR,
-					     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
- 					     _("Cannot handle PNM files with maximum color values greater than 255"));
-				return PNM_FATAL_ERR;
-			}
 		}
 		break;
 	default:
@@ -438,6 +431,8 @@ pnm_read_raw_scanline (PnmLoaderContext *context)
 			     _("Raw PNM image type is invalid"));
 		return PNM_FATAL_ERR;
 	}
+	if(context->maxval>255) 
+		numpix/=2;
 	
 	numpix = MIN (numpix, context->width - context->output_col);
 	
@@ -466,6 +461,8 @@ pnm_read_raw_scanline (PnmLoaderContext *context)
 			     _("Raw PNM image type is invalid"));
 		return PNM_FATAL_ERR;
 	}
+	if(context->maxval>255) 
+		numbytes*=2;				
 	
 	switch (context->type) {
 	case PNM_FORMAT_PBM_RAW:
@@ -479,6 +476,17 @@ pnm_read_raw_scanline (PnmLoaderContext *context)
 		if (context->maxval == 255) {
 			/* special-case optimization */
 			memcpy (dest, inbuf->byte, numbytes);
+		} else if(context->maxval == 65535) {
+			/* optimized version of the next case */
+			for(i=0; i < numbytes ; i+=2) {
+				*dest++=inbuf->byte[i];
+			}
+		} else if(context->maxval > 255) {
+			/* scale down to 256 colors */
+			for(i=0; i < numbytes ; i+=2) {
+				guint v=inbuf->byte[i]*256+inbuf->byte[i+1];
+				*dest++=v*255/context->maxval;
+			}
 		} else {
 			for (i = 0; i < numbytes; i++) {
 				guchar *byte = inbuf->byte + i;
@@ -519,109 +527,90 @@ pnm_read_raw_scanline (PnmLoaderContext *context)
 }
 
 static gint
-pnm_read_ascii_scanline (PnmLoaderContext *context)
+pnm_read_ascii_mono_scanline (PnmLoaderContext *context)
 {
 	PnmIOBuffer *inbuf;
-	guint offset;
-	guint value, numval, i;
-	guchar data;
-	guchar mask;
+	guint value;
+	gint retval;
+	guchar *dptr;
+	gint max_length;
+
+	if (context->type == PNM_FORMAT_PBM)
+		max_length = 1;
+	else
+		max_length = -1;
+
+	inbuf = &context->inbuf;
+
+	context->dptr = context->pixels + context->output_row * context->rowstride;
+
+	dptr = context->dptr + context->output_col * 3;
+
+	while (TRUE) {
+		retval = pnm_read_next_value (inbuf, max_length, &value, context->error);
+		if (retval != PNM_OK)
+			return retval;
+
+		if (context->type == PNM_FORMAT_PBM) {
+			value = value ? 0 : 0xff;
+		}
+		else {
+			/* scale the color up or down to an 8-bit color depth */
+			if (value > context->maxval)
+				value = 255;
+			else
+				value = (guchar)(255 * value / context->maxval);
+		}
+			
+		*dptr++ = value;
+		*dptr++ = value;
+		*dptr++ = value;
+
+		context->output_col++;
+
+		if (context->output_col == context->width) {
+			context->output_col = 0;
+			context->output_row++;
+			break;
+		}
+	}
+
+	return PNM_OK;
+}
+
+static gint
+pnm_read_ascii_color_scanline (PnmLoaderContext *context)
+{
+	PnmIOBuffer *inbuf;
+	guint value, i;
 	guchar *dptr;
 	gint retval;
-	gint max_length;
-	
-	g_return_val_if_fail (context != NULL, PNM_FATAL_ERR);
-	
-	data = mask = 0;
 	
 	inbuf = &context->inbuf;
 	
 	context->dptr = context->pixels + context->output_row * context->rowstride;
 	
-	switch (context->type) {
-	case PNM_FORMAT_PBM:
-		max_length = 1;
-		numval = MIN (8, context->width - context->output_col);
-		offset = context->output_col / 8;
-		break;
-	case PNM_FORMAT_PGM:
-		max_length = -1;
-		numval = 1;
-		offset = context->output_col;
-		break;
-	case PNM_FORMAT_PPM:
-		max_length = -1;
-		numval = 3;
-		offset = context->output_col * 3;
-		break;
-		
-	default:
-		g_set_error (context->error,
-			     GDK_PIXBUF_ERROR,
-			     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-			     _("PNM image format is invalid"));
-
-		return PNM_FATAL_ERR;
-	}
-	
-	dptr = context->dptr + offset + context->scan_state;
+	dptr = context->dptr + context->output_col * 3 + context->scan_state;
 	
 	while (TRUE) {
-		if (context->type == PNM_FORMAT_PBM) {
-			mask = 0x80;
-			data = 0;
-			numval = MIN (8, context->width - context->output_col);
-		}
-		
-		for (i = context->scan_state; i < numval; i++) {
-			retval = pnm_read_next_value (inbuf, max_length, 
-						      &value, context->error);
+		for (i = context->scan_state; i < 3; i++) {
+			retval = pnm_read_next_value (inbuf, -1, &value, context->error);
 			if (retval != PNM_OK) {
 				/* save state and return */
 				context->scan_state = i;
 				return retval;
 			}
 			
-			switch (context->type) {
-			case PNM_FORMAT_PBM:
-				if (value)
-					data |= mask;
-				mask >>= 1;
-				
-				break;
-			case PNM_FORMAT_PGM:
-			case PNM_FORMAT_PPM:
-				/* scale the color to an 8-bit color depth */
-				if (value > context->maxval)
-					*dptr++ = 255;
-				else
-					*dptr++ = (guchar)(255 * value / context->maxval);
-				break;
-			default:
-				g_set_error (context->error,
-					     GDK_PIXBUF_ERROR,
-					     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
-					     _("PNM image format is invalid"));
-				return PNM_FATAL_ERR;
-				break;
-			}
+			if (value > context->maxval)
+				*dptr++ = 255;
+			else
+				*dptr++ = (guchar)(255 * value / context->maxval);
 		}
 		
 		context->scan_state = 0;
-		
-		if (context->type == PNM_FORMAT_PBM) {
-			*dptr++ = data;
-			context->output_col += numval;
-		} else {
-			context->output_col++;
-		}
+		context->output_col++;
 		
 		if (context->output_col == context->width) {
-			if (context->type == PNM_FORMAT_PBM)
-				explode_bitmap_into_buf (context);
-			else if (context->type == PNM_FORMAT_PGM)
-				explode_gray_into_buf (context);
-			
 			context->output_col = 0;
 			context->output_row++;
 			break;
@@ -651,8 +640,12 @@ pnm_read_scanline (PnmLoaderContext *context)
 		break;
 	case PNM_FORMAT_PBM:
 	case PNM_FORMAT_PGM:
+		retval = pnm_read_ascii_mono_scanline (context);
+		if (retval != PNM_OK)
+			return retval;
+		break;		
 	case PNM_FORMAT_PPM:
-		retval = pnm_read_ascii_scanline (context);
+		retval = pnm_read_ascii_color_scanline (context);
 		if (retval != PNM_OK)
 			return retval;
 		break;
@@ -1015,9 +1008,10 @@ gdk_pixbuf__pnm_image_load_increment (gpointer data,
 			context->rowstride = context->pixbuf->rowstride;
 			
 			/* Notify the client that we are ready to go */
-			(* context->prepared_func) (context->pixbuf,
-						    NULL,
-						    context->user_data);
+			if (context->prepared_func)
+				(* context->prepared_func) (context->pixbuf,
+							    NULL,
+							    context->user_data);
 		}
 		
 		/* if we got here we're reading image data */
@@ -1028,7 +1022,7 @@ gdk_pixbuf__pnm_image_load_increment (gpointer data,
 				break;
 			} else if (retval == PNM_FATAL_ERR) {
 				return FALSE;
-			} else if (retval == PNM_OK) {	
+			} else if (retval == PNM_OK && context->updated_func) {	
 				/* send updated signal */
 				(* context->updated_func) (context->pixbuf,
 							   0, 

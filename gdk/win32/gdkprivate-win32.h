@@ -268,14 +268,8 @@ struct _GdkGCWin32
 
   GdkGCValuesMask values_mask;
 
-  gulong foreground;		/* Pixel values from GdkColor, */
-  gulong background;		/* not Win32 COLORREFs */
-
   GdkFont *font;
   gint rop2;
-  GdkFill fill_style;
-  GdkPixmap *tile;
-  GdkPixmap *stipple;
   GdkSubwindowMode subwindow_mode;
   gint graphics_exposures;
   gint pen_width;
@@ -292,9 +286,6 @@ struct _GdkGCWin32
   HDC hdc;
   int saved_dc;
 
-  HANDLE hwnd;			/* For which window, or what bitmap is
-				 * selected into it
-				 */
   HPALETTE holdpal;
 };
 
@@ -362,11 +353,10 @@ HRGN	  _gdk_win32_gdkregion_to_hrgn  (GdkRegion   *region,
 					 gint         x_origin,
 					 gint         y_origin);
 
+GdkRegion *_gdk_win32_hrgn_to_region    (HRGN hrgn);
+
 void	_gdk_win32_adjust_client_rect   (GdkWindow *window,
 					 RECT      *RECT);
-
-void	_gdk_win32_get_adjusted_client_rect (GdkWindow *window,
-					     RECT      *RECT);
 
 void    _gdk_selection_property_delete (GdkWindow *);
 
@@ -448,8 +438,7 @@ void    _gdk_win32_gdi_failed        (const gchar *where,
  
 extern LRESULT CALLBACK _gdk_win32_window_procedure (HWND, UINT, WPARAM, LPARAM);
 
-extern HWND		 _gdk_root_window;
-extern GdkWindow        *_gdk_parent_root;
+extern GdkWindow        *_gdk_root;
 
 extern GdkDisplay       *_gdk_display;
 extern GdkScreen        *_gdk_screen;
@@ -482,11 +471,16 @@ extern guint		 _scancode_rshift;
 /* Registered clipboard formats */
 extern WORD		 _cf_rtf;
 extern WORD		 _cf_utf8_string;
+extern WORD		 _cf_image_bmp;
 
-/* GdkAtoms: targets */
-extern GdkAtom           _utf8_string;
+/* GdkAtoms: properties, targets and types */
+extern GdkAtom		 _gdk_selection_property;
+extern GdkAtom		 _wm_transient_for;
 extern GdkAtom		 _targets;
-
+extern GdkAtom		 _save_targets;
+extern GdkAtom           _utf8_string;
+extern GdkAtom		 _text;
+extern GdkAtom		 _compound_text;
 extern GdkAtom		 _text_uri_list;
 extern GdkAtom		 _image_bmp;
 
@@ -494,10 +488,6 @@ extern GdkAtom		 _image_bmp;
 extern GdkAtom           _local_dnd;
 extern GdkAtom		 _gdk_win32_dropfiles;
 extern GdkAtom		 _gdk_ole2_dnd;
-
-extern GdkAtom		 _gdk_selection_property;
-
-extern GdkAtom		 _wm_transient_for;
 
 /* Options */
 extern gboolean		 _gdk_input_ignore_wintab;

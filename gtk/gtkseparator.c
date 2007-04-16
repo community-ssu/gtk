@@ -26,65 +26,15 @@
 
 #include <config.h>
 #include "gtkseparator.h"
-#include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
-static void gtk_separator_class_init (GtkSeparatorClass *klass);
-static void gtk_separator_init       (GtkSeparator      *separator);
-
-
-GType
-gtk_separator_get_type (void)
-{
-  static GType separator_type = 0;
-
-  if (!separator_type)
-    {
-      static const GTypeInfo separator_info =
-      {
-	sizeof (GtkSeparatorClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_separator_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkSeparator),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_separator_init,
-	NULL,		/* value_table */
-      };
-
-      separator_type =
-	g_type_register_static (GTK_TYPE_WIDGET, "GtkSeparator",
-				&separator_info, G_TYPE_FLAG_ABSTRACT);
-    }
-
-  return separator_type;
-}
+G_DEFINE_ABSTRACT_TYPE (GtkSeparator, gtk_separator, GTK_TYPE_WIDGET)
 
 static void
 gtk_separator_class_init (GtkSeparatorClass *class)
 {
-  GParamSpec* pspec;
-  
-  /**
-   * GtkSeparator:hildonlike-drawing:
-   *
-   * If TRUE, the separator is drawn with paint_box instead of paint_(vh)line.
-   * 
-   * Since: maemo 1.0
-   */
-  pspec = g_param_spec_boolean("hildonlike-drawing",
-                               "hildonlike looks.",
-                               "hildonlike looks. "
-			       "Draws with paint_box "
-			       "instead of paint_(vh)line, 1/0",
-                               FALSE,
-                               GTK_PARAM_READABLE);
-  
-  gtk_widget_class_install_style_property(GTK_WIDGET_CLASS(class),
-                                          pspec);
 }
 
 static void

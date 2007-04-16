@@ -29,9 +29,7 @@
 
 #include <gdk/win32/gdkdrawable-win32.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
 typedef struct _GdkWin32PositionInfo    GdkWin32PositionInfo;
 
@@ -75,6 +73,8 @@ struct _GdkWindowImplWin32
   
   GdkWin32PositionInfo position_info;
 
+  gint8 toplevel_window_type;
+
   HCURSOR hcursor;
   HICON   hicon_big;
   HICON   hicon_small;
@@ -82,6 +82,8 @@ struct _GdkWindowImplWin32
   /* Window size hints */
   gint hint_flags;
   GdkGeometry hints;
+
+  GdkWindowTypeHint type_hint;
 
   gboolean extension_events_selected;
 };
@@ -94,8 +96,6 @@ struct _GdkWindowImplWin32Class
 
 GType _gdk_window_impl_win32_get_type (void);
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
+G_END_DECLS
 
 #endif /* __GDK_WINDOW_WIN32_H__ */

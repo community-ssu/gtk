@@ -47,7 +47,7 @@ static GSList *current_messages;
 void
 _gtk_xembed_push_message (XEvent *xevent)
 {
-  GtkXEmbedMessage *message = g_new (GtkXEmbedMessage, 1);
+  GtkXEmbedMessage *message = g_slice_new (GtkXEmbedMessage);
   
   message->time = xevent->xclient.data.l[0];
   message->message = xevent->xclient.data.l[1];
@@ -68,8 +68,7 @@ _gtk_xembed_pop_message (void)
 {
   GtkXEmbedMessage *message = current_messages->data;
   current_messages = g_slist_delete_link (current_messages, current_messages);
-
-  g_free (message);
+  g_slice_free (GtkXEmbedMessage, message);
 }
 
 /**
@@ -149,7 +148,7 @@ _gtk_xembed_send_message (GdkWindow        *recipient,
 
   display = gdk_drawable_get_display (recipient);
   GTK_NOTE (PLUGSOCKET,
-	    g_message ("Sending XEMBED message of type %d", message));
+	    g_message ("Sending %s", _gtk_xembed_message_name (message)));
 
   xevent.xclient.window = GDK_WINDOW_XWINDOW (recipient);
   xevent.xclient.type = ClientMessage;
@@ -213,3 +212,31 @@ _gtk_xembed_send_focus_message (GdkWindow        *recipient,
   _gtk_xembed_send_message (recipient, message, detail, flags, 0);
 }
 
+const char *
+_gtk_xembed_message_name (XEmbedMessageType message)
+{
+  static char unk[24];
+  
+  switch (message)
+    {
+#define CASE(x) case XEMBED_##x: return "XEMBED_"#x
+      CASE (EMBEDDED_NOTIFY);
+      CASE (WINDOW_ACTIVATE);
+      CASE (WINDOW_DEACTIVATE);
+      CASE (REQUEST_FOCUS);
+      CASE (FOCUS_IN);
+      CASE (FOCUS_OUT);
+      CASE (FOCUS_NEXT);
+      CASE (FOCUS_PREV);
+      CASE (GRAB_KEY);
+      CASE (UNGRAB_KEY);
+      CASE (MODALITY_ON);
+      CASE (MODALITY_OFF);
+      CASE (GTK_GRAB_KEY);
+      CASE (GTK_UNGRAB_KEY);
+#undef CASE
+    default:
+      snprintf (unk, 24, "UNKNOWN(%d)", message);
+      return unk;
+    }
+}

@@ -26,51 +26,21 @@
 
 #include <config.h>
 #include "gtkhpaned.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
-static void     gtk_hpaned_class_init     (GtkHPanedClass *klass);
-static void     gtk_hpaned_init           (GtkHPaned      *hpaned);
 static void     gtk_hpaned_size_request   (GtkWidget      *widget,
 					   GtkRequisition *requisition);
 static void     gtk_hpaned_size_allocate  (GtkWidget      *widget,
 					   GtkAllocation  *allocation);
 
-static gpointer parent_class;
-
-GType
-gtk_hpaned_get_type (void)
-{
-  static GType hpaned_type = 0;
-
-  if (!hpaned_type)
-    {
-      static const GTypeInfo hpaned_info =
-      {
-	sizeof (GtkHPanedClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_hpaned_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkHPaned),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_hpaned_init,
-      };
-
-      hpaned_type = g_type_register_static (GTK_TYPE_PANED, "GtkHPaned",
-					    &hpaned_info, 0);
-    }
-
-  return hpaned_type;
-}
+G_DEFINE_TYPE (GtkHPaned, gtk_hpaned, GTK_TYPE_PANED)
 
 static void
 gtk_hpaned_class_init (GtkHPanedClass *class)
 {
   GtkWidgetClass *widget_class;
 
-  parent_class = g_type_class_peek_parent (class);
-  
   widget_class = (GtkWidgetClass *) class;
 
   widget_class->size_request = gtk_hpaned_size_request;
@@ -134,7 +104,7 @@ gtk_hpaned_size_request (GtkWidget      *widget,
     {
       gint handle_size;
       
-      gtk_widget_style_get (widget, "handle_size", &handle_size, NULL);
+      gtk_widget_style_get (widget, "handle-size", &handle_size, NULL);
       requisition->width += handle_size;
     }
 }
@@ -166,7 +136,7 @@ gtk_hpaned_size_allocate (GtkWidget     *widget,
       GtkRequisition child2_requisition;
       gint handle_size;
       
-      gtk_widget_style_get (widget, "handle_size", &handle_size, NULL);
+      gtk_widget_style_get (widget, "handle-size", &handle_size, NULL);
 
       gtk_widget_get_child_requisition (paned->child1, &child1_requisition);
       gtk_widget_get_child_requisition (paned->child2, &child2_requisition);

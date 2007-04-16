@@ -87,7 +87,7 @@ static int	    gdk_x_io_error		 (Display     *display);
 static GSList *gdk_error_traps = NULL;               /* List of error traps */
 static GSList *gdk_error_trap_free_list = NULL;      /* Free list */
 
-GOptionEntry _gdk_windowing_args[] = {
+const GOptionEntry _gdk_windowing_args[] = {
   { "sync", 0, 0, G_OPTION_ARG_NONE, &_gdk_synchronize, 
     /* Description of --sync in --help output */ N_("Make X calls synchronous"), NULL },
   { NULL }
@@ -101,7 +101,7 @@ _gdk_windowing_init (void)
   XSetErrorHandler (gdk_x_error);
   XSetIOErrorHandler (gdk_x_io_error);
 
-  _gdk_selection_property = gdk_atom_intern ("GDK_SELECTION", FALSE);
+  _gdk_selection_property = gdk_atom_intern_static_string ("GDK_SELECTION");
 }
 
 void
@@ -137,6 +137,27 @@ gdk_x11_convert_grab_status (gint status)
   return 0;
 }
 
+static void
+generate_grab_broken_event (GdkWindow *window,
+			    gboolean   keyboard,
+			    gboolean   implicit,
+			    GdkWindow *grab_window)
+{
+  if (!GDK_WINDOW_DESTROYED (window))
+    {
+      GdkEvent event;
+  
+      event.type = GDK_GRAB_BROKEN;
+      event.grab_broken.window = window;
+      event.grab_broken.send_event = 0;
+      event.grab_broken.keyboard = keyboard;
+      event.grab_broken.implicit = implicit;
+      event.grab_broken.grab_window = grab_window;
+      
+      gdk_event_put (&event);
+    }
+}
+
 /*
  *--------------------------------------------------------------
  * gdk_pointer_grab
@@ -170,6 +191,7 @@ gdk_pointer_grab (GdkWindow *	  window,
 {
   gint return_val;
   GdkCursorPrivate *cursor_private;
+  GdkDisplayX11 *display_x11;
   guint xevent_mask;
   Window xwindow;
   Window xconfine_to;
@@ -181,6 +203,8 @@ gdk_pointer_grab (GdkWindow *	  window,
   g_return_val_if_fail (GDK_IS_WINDOW (window), 0);
   g_return_val_if_fail (confine_to == NULL || GDK_IS_WINDOW (confine_to), 0);
   
+  display_x11 = GDK_DISPLAY_X11 (GDK_WINDOW_DISPLAY (window));
+
   cursor_private = (GdkCursorPrivate*) cursor;
   
   xwindow = GDK_WINDOW_XID (window);
@@ -194,8 +218,10 @@ gdk_pointer_grab (GdkWindow *	  window,
   if (!cursor)
     xcursor = None;
   else
-    xcursor = cursor_private->xcursor;
-  
+    {
+      _gdk_x11_cursor_update_theme (cursor);
+      xcursor = cursor_private->xcursor;
+    }
   
   xevent_mask = 0;
   for (i = 0; i < _gdk_nenvent_masks; i++)
@@ -210,7 +236,8 @@ gdk_pointer_grab (GdkWindow *	  window,
 					confine_to,
 					time);
 
-  if (return_val == GrabSuccess)
+  if (return_val == GrabSuccess || 
+      G_UNLIKELY (!display_x11->trusted_client && return_val == AlreadyGrabbed))
     {
       if (!GDK_WINDOW_DESTROYED (window))
 	{
@@ -234,10 +261,17 @@ gdk_pointer_grab (GdkWindow *	  window,
   
   if (return_val == GrabSuccess)
     {
-      GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (GDK_WINDOW_DISPLAY (window));
+      if (display_x11->pointer_xgrab_window != NULL &&
+	  display_x11->pointer_xgrab_window != (GdkWindowObject *)window)
+	generate_grab_broken_event (GDK_WINDOW (display_x11->pointer_xgrab_window),
+				    FALSE, display_x11->pointer_xgrab_implicit,
+				    window);
+
       display_x11->pointer_xgrab_window = (GdkWindowObject *)window;
       display_x11->pointer_xgrab_serial = serial;
       display_x11->pointer_xgrab_owner_events = owner_events;
+      display_x11->pointer_xgrab_time = time;
+      display_x11->pointer_xgrab_implicit = FALSE;
     }
 
   return gdk_x11_convert_grab_status (return_val);
@@ -307,10 +341,13 @@ gdk_keyboard_grab (GdkWindow *	   window,
 {
   gint return_val;
   unsigned long serial;
+  GdkDisplayX11 *display_x11;
   
   g_return_val_if_fail (window != NULL, 0);
   g_return_val_if_fail (GDK_IS_WINDOW (window), 0);
   
+  display_x11 = GDK_DISPLAY_X11 (GDK_WINDOW_DISPLAY (window));
+
   serial = NextRequest (GDK_WINDOW_XDISPLAY (window));
 
   if (!GDK_WINDOW_DESTROYED (window))
@@ -325,16 +362,25 @@ gdk_keyboard_grab (GdkWindow *	   window,
 				    owner_events,
 				    GrabModeAsync, GrabModeAsync,
 				    time);
+	if (G_UNLIKELY (!display_x11->trusted_client && 
+			return_val == AlreadyGrabbed))
+	  /* we can't grab the keyboard, but we can do a GTK-local grab */
+	  return_val = GrabSuccess;
     }
   else
     return_val = AlreadyGrabbed;
 
   if (return_val == GrabSuccess)
     {
-      GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (gdk_drawable_get_display (window));
+      if (display_x11->keyboard_xgrab_window != NULL &&
+	  display_x11->keyboard_xgrab_window != (GdkWindowObject *)window)
+	generate_grab_broken_event (GDK_WINDOW (display_x11->keyboard_xgrab_window),
+				    TRUE, FALSE, window);
+      
       display_x11->keyboard_xgrab_window = (GdkWindowObject *)window;
       display_x11->keyboard_xgrab_serial = serial;
       display_x11->keyboard_xgrab_owner_events = owner_events;
+      display_x11->keyboard_xgrab_time = time;      
     }
 
   return gdk_x11_convert_grab_status (return_val);
@@ -403,7 +449,12 @@ _gdk_xgrab_check_unmap (GdkWindow *window,
 	tmp = tmp->parent;
 
       if (tmp)
-	display_x11->pointer_xgrab_window = NULL;  
+	{	  
+	  generate_grab_broken_event (GDK_WINDOW (display_x11->pointer_xgrab_window),
+				      FALSE, display_x11->pointer_xgrab_implicit, 
+				      NULL);
+	  display_x11->pointer_xgrab_window = NULL;  
+	}
     }
 
   if (display_x11->keyboard_xgrab_window &&
@@ -417,7 +468,11 @@ _gdk_xgrab_check_unmap (GdkWindow *window,
 	tmp = tmp->parent;
 
       if (tmp)
-	display_x11->keyboard_xgrab_window = NULL;  
+	{
+	  generate_grab_broken_event (GDK_WINDOW (display_x11->keyboard_xgrab_window),
+				      TRUE, FALSE, NULL);
+	  display_x11->keyboard_xgrab_window = NULL;  
+	}
     }
 }
 
@@ -434,10 +489,58 @@ _gdk_xgrab_check_destroy (GdkWindow *window)
   GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (gdk_drawable_get_display (window));
   
   if ((GdkWindowObject *)window == display_x11->pointer_xgrab_window)
-     display_x11->pointer_xgrab_window = NULL;
+    {
+      generate_grab_broken_event (GDK_WINDOW (display_x11->pointer_xgrab_window),
+				  FALSE, display_x11->pointer_xgrab_implicit,
+				  NULL);
+      display_x11->pointer_xgrab_window = NULL;
+    }
 
   if ((GdkWindowObject *)window ==  display_x11->keyboard_xgrab_window)
-     display_x11->keyboard_xgrab_window = NULL;
+    {
+      generate_grab_broken_event (GDK_WINDOW (display_x11->keyboard_xgrab_window),
+				  TRUE, FALSE, NULL);
+      display_x11->keyboard_xgrab_window = NULL;
+    }
+}
+
+/**
+ * _gdk_xgrab_check_button_event:
+ * @window: a #GdkWindow
+ * @event: an XEvent of type ButtonPress or ButtonRelease
+ * 
+ * Checks to see if a button event starts or ends an implicit grab.
+ **/
+void
+_gdk_xgrab_check_button_event (GdkWindow *window, 
+			       XEvent *xevent)
+{
+  GdkDisplayX11 *display_x11 = GDK_DISPLAY_X11 (gdk_drawable_get_display (window));
+  
+  /* track implicit grabs for button presses */
+  switch (xevent->type)
+    {
+    case ButtonPress:
+      if (!display_x11->pointer_xgrab_window)
+	{
+	  display_x11->pointer_xgrab_window = (GdkWindowObject *)window;
+	  display_x11->pointer_xgrab_serial = xevent->xany.serial;
+	  display_x11->pointer_xgrab_owner_events = FALSE;
+	  display_x11->pointer_xgrab_time = xevent->xbutton.time;
+	  display_x11->pointer_xgrab_implicit = TRUE;	  
+	}
+      break;
+    case ButtonRelease:
+      if (display_x11->pointer_xgrab_window &&
+	  display_x11->pointer_xgrab_implicit &&
+	  (xevent->xbutton.state & ~(GDK_BUTTON1_MASK << (xevent->xbutton.button - 1))) == 0)
+	{
+	  display_x11->pointer_xgrab_window = NULL;
+	}
+      break;
+    default:
+      g_assert_not_reached ();
+    }
 }
 
 void
@@ -453,7 +556,7 @@ _gdk_windowing_display_set_sm_client_id (GdkDisplay  *display,
     {
       XChangeProperty (display_x11->xdisplay, display_x11->leader_window,
 		       gdk_x11_get_xatom_by_name_for_display (display, "SM_CLIENT_ID"),
-		       XA_STRING, 8, PropModeReplace, sm_client_id,
+		       XA_STRING, 8, PropModeReplace, (guchar *)sm_client_id,
 		       strlen (sm_client_id));
     }
   else

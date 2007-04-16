@@ -31,13 +31,15 @@
 #include <config.h>
 
 #include "gtkactiongroup.h"
+#include "gtkiconfactory.h"
+#include "gtkicontheme.h"
 #include "gtkstock.h"
 #include "gtktoggleaction.h"
 #include "gtkradioaction.h"
 #include "gtkaccelmap.h"
 #include "gtkmarshalers.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define GTK_ACTION_GROUP_GET_PRIVATE(obj) (G_TYPE_INSTANCE_GET_PRIVATE ((obj), GTK_TYPE_ACTION_GROUP, GtkActionGroupPrivate))
@@ -93,7 +95,7 @@ gtk_action_group_get_type (void)
 
   if (!type)
     {
-      static const GTypeInfo type_info =
+      const GTypeInfo type_info =
       {
         sizeof (GtkActionGroupClass),
 	NULL,           /* base_init */
@@ -106,7 +108,7 @@ gtk_action_group_get_type (void)
         (GInstanceInitFunc) gtk_action_group_init,
       };
 
-      type = g_type_register_static (G_TYPE_OBJECT, "GtkActionGroup",
+      type = g_type_register_static (G_TYPE_OBJECT, I_("GtkActionGroup"),
 				     &type_info, 0);
     }
 
@@ -135,8 +137,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
 							P_("Name"),
 							P_("A name for the action group."),
 							NULL,
-							GTK_PARAM_READWRITE |
-							G_PARAM_CONSTRUCT_ONLY));
+							GTK_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
   g_object_class_install_property (gobject_class,
 				   PROP_SENSITIVE,
 				   g_param_spec_boolean ("sensitive",
@@ -173,7 +174,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
    * Since: 2.4
    */
   action_group_signals[CONNECT_PROXY] =
-    g_signal_new ("connect_proxy",
+    g_signal_new (I_("connect_proxy"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  0, 0, NULL, NULL,
 		  _gtk_marshal_VOID__OBJECT_OBJECT,
@@ -196,7 +197,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
    * Since: 2.4
    */
   action_group_signals[DISCONNECT_PROXY] =
-    g_signal_new ("disconnect_proxy",
+    g_signal_new (I_("disconnect_proxy"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  0, 0, NULL, NULL,
 		  _gtk_marshal_VOID__OBJECT_OBJECT,
@@ -217,7 +218,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
    * Since: 2.4
    */
   action_group_signals[PRE_ACTIVATE] =
-    g_signal_new ("pre_activate",
+    g_signal_new (I_("pre_activate"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  0, 0, NULL, NULL,
 		  _gtk_marshal_VOID__OBJECT,
@@ -238,7 +239,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
    * Since: 2.4
    */
   action_group_signals[POST_ACTIVATE] =
-    g_signal_new ("post_activate",
+    g_signal_new (I_("post_activate"),
 		  G_OBJECT_CLASS_TYPE (klass),
 		  0, 0, NULL, NULL,
 		  _gtk_marshal_VOID__OBJECT,
@@ -252,7 +253,7 @@ gtk_action_group_class_init (GtkActionGroupClass *klass)
 static void 
 remove_action (GtkAction *action) 
 {
-  g_object_set (action, "action_group", NULL, NULL);
+  g_object_set (action, I_("action-group"), NULL, NULL);
   g_object_unref (action);
 }
 
@@ -418,12 +419,13 @@ gtk_action_group_get_sensitive (GtkActionGroup *action_group)
 }
 
 static void
-cb_set_action_sensitivity (const gchar *name, GtkAction *action)
+cb_set_action_sensitivity (const gchar *name, 
+			   GtkAction   *action)
 {
-  /* Minor optimization, the action_groups state only effects actions that are
-   * themselves sensitive */
+  /* Minor optimization, the action_groups state only affects actions 
+   * that are themselves sensitive */
   if (gtk_action_get_sensitive (action))
-    g_object_notify (G_OBJECT (action), "sensitive");
+    _gtk_action_sync_sensitive (action);
 }
 
 /**
@@ -436,15 +438,20 @@ cb_set_action_sensitivity (const gchar *name, GtkAction *action)
  * Since: 2.4
  */
 void
-gtk_action_group_set_sensitive (GtkActionGroup *action_group, gboolean sensitive)
+gtk_action_group_set_sensitive (GtkActionGroup *action_group, 
+				gboolean        sensitive)
 {
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
 
-  if (action_group->private_data->sensitive ^ sensitive)
+  sensitive = sensitive != FALSE;
+
+  if (action_group->private_data->sensitive != sensitive)
     {
       action_group->private_data->sensitive = sensitive;
       g_hash_table_foreach (action_group->private_data->actions, 
 			    (GHFunc) cb_set_action_sensitivity, NULL);
+
+      g_object_notify (G_OBJECT (action_group), "sensitive");
     }
 }
 
@@ -470,12 +477,13 @@ gtk_action_group_get_visible (GtkActionGroup *action_group)
 }
 
 static void
-cb_set_action_visiblity (const gchar *name, GtkAction *action)
+cb_set_action_visiblity (const gchar *name, 
+			 GtkAction   *action)
 {
-  /* Minor optimization, the action_groups state only effects actions that are
-   * themselves sensitive */
+  /* Minor optimization, the action_groups state only affects actions 
+   * that are themselves visible */
   if (gtk_action_get_visible (action))
-    g_object_notify (G_OBJECT (action), "visible");
+    _gtk_action_sync_visible (action);
 }
 
 /**
@@ -488,15 +496,20 @@ cb_set_action_visiblity (const gchar *name, GtkAction *action)
  * Since: 2.4
  */
 void
-gtk_action_group_set_visible (GtkActionGroup *action_group, gboolean visible)
+gtk_action_group_set_visible (GtkActionGroup *action_group, 
+			      gboolean        visible)
 {
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
 
-  if (action_group->private_data->visible ^ visible)
+  visible = visible != FALSE;
+
+  if (action_group->private_data->visible != visible)
     {
       action_group->private_data->visible = visible;
       g_hash_table_foreach (action_group->private_data->actions, 
 			    (GHFunc) cb_set_action_visiblity, NULL);
+
+      g_object_notify (G_OBJECT (action_group), "visible");
     }
 }
 
@@ -547,7 +560,7 @@ gtk_action_group_add_action (GtkActionGroup *action_group,
   g_hash_table_insert (action_group->private_data->actions, 
 		       g_strdup (gtk_action_get_name (action)),
                        g_object_ref (action));
-  g_object_set (action, "action_group", action_group, NULL);
+  g_object_set (action, I_("action-group"), action_group, NULL);
 }
 
 /**
@@ -570,8 +583,8 @@ gtk_action_group_add_action (GtkActionGroup *action_group,
  */
 void
 gtk_action_group_add_action_with_accel (GtkActionGroup *action_group,
-					GtkAction *action,
-					const gchar *accelerator)
+					GtkAction      *action,
+					const gchar    *accelerator)
 {
   gchar *accel_path;
   guint  accel_key = 0;
@@ -580,7 +593,7 @@ gtk_action_group_add_action_with_accel (GtkActionGroup *action_group,
   gchar *name;
   gchar *stock_id;
   
-  g_object_get (action, "name", &name, "stock_id", &stock_id, NULL);
+  g_object_get (action, "name", &name, "stock-id", &stock_id, NULL);
 
   accel_path = g_strconcat ("<Actions>/",
 			    action_group->private_data->name, "/", name, NULL);
@@ -715,7 +728,7 @@ shared_data_unref (gpointer data)
       if (shared_data->destroy) 
 	(*shared_data->destroy) (shared_data->data);
       
-      g_free (shared_data);
+      g_slice_free (SharedData, shared_data);
     }
 }
 
@@ -749,7 +762,7 @@ gtk_action_group_add_actions_full (GtkActionGroup       *action_group,
 
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
 
-  shared_data = g_new0 (SharedData, 1);
+  shared_data = g_slice_new0 (SharedData);
   shared_data->ref_count = 1;
   shared_data->data = user_data;
   shared_data->destroy = destroy;
@@ -766,8 +779,16 @@ gtk_action_group_add_actions_full (GtkActionGroup       *action_group,
       action = gtk_action_new (entries[i].name,
 			       label,
 			       tooltip,
-			       entries[i].stock_id);
+			       NULL);
 
+      if (entries[i].stock_id) 
+	{
+	  g_object_set (action, "stock-id", entries[i].stock_id, NULL);
+	  if (gtk_icon_theme_has_icon (gtk_icon_theme_get_default (), 
+				       entries[i].stock_id))
+	    g_object_set (action, "icon-name", entries[i].stock_id, NULL);
+	}
+	  
       if (entries[i].callback)
 	{
 	  GClosure *closure;
@@ -845,7 +866,7 @@ gtk_action_group_add_toggle_actions_full (GtkActionGroup             *action_gro
 
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
 
-  shared_data = g_new0 (SharedData, 1);
+  shared_data = g_slice_new0 (SharedData);
   shared_data->ref_count = 1;
   shared_data->data = user_data;
   shared_data->destroy = destroy;
@@ -862,7 +883,15 @@ gtk_action_group_add_toggle_actions_full (GtkActionGroup             *action_gro
       action = gtk_toggle_action_new (entries[i].name,
 				      label,
 				      tooltip,
-				      entries[i].stock_id);
+				      NULL);
+
+      if (entries[i].stock_id) 
+	{
+	  if (gtk_icon_factory_lookup_default (entries[i].stock_id))
+	    g_object_set (action, "stock-id", entries[i].stock_id, NULL);
+	  else
+	    g_object_set (action, "icon-name", entries[i].stock_id, NULL);
+	}
 
       gtk_toggle_action_set_active (action, entries[i].is_active);
 
@@ -966,8 +995,16 @@ gtk_action_group_add_radio_actions_full (GtkActionGroup            *action_group
       action = gtk_radio_action_new (entries[i].name,
 				     label,
 				     tooltip,
-				     entries[i].stock_id,
+				     NULL,
 				     entries[i].value);
+
+      if (entries[i].stock_id) 
+	{
+	  if (gtk_icon_factory_lookup_default (entries[i].stock_id))
+	    g_object_set (action, "stock-id", entries[i].stock_id, NULL);
+	  else
+	    g_object_set (action, "icon-name", entries[i].stock_id, NULL);
+	}
 
       if (i == 0) 
 	first_action = action;
@@ -1007,10 +1044,10 @@ gtk_action_group_add_radio_actions_full (GtkActionGroup            *action_group
  * Since: 2.4 
  **/
 void
-gtk_action_group_set_translate_func (GtkActionGroup      *action_group,
-				     GtkTranslateFunc     func,
-				     gpointer             data,
-				     GtkDestroyNotify     notify)
+gtk_action_group_set_translate_func (GtkActionGroup   *action_group,
+				     GtkTranslateFunc  func,
+				     gpointer          data,
+				     GtkDestroyNotify  notify)
 {
   g_return_if_fail (GTK_IS_ACTION_GROUP (action_group));
   
@@ -1026,7 +1063,11 @@ static gchar *
 dgettext_swapped (const gchar *msgid, 
 		  const gchar *domainname)
 {
-  return dgettext (domainname, msgid);
+  /* Pass through dgettext if and only if msgid is nonempty. */
+  if (msgid && *msgid) 
+    return dgettext (domainname, msgid); 
+  else
+    return (gchar*) msgid;
 }
 
 /**
@@ -1117,7 +1158,7 @@ _gtk_action_group_emit_pre_activate  (GtkActionGroup *action_group,
 
 void
 _gtk_action_group_emit_post_activate (GtkActionGroup *action_group,
-				      GtkAction *action)
+				      GtkAction      *action)
 {
   g_signal_emit (action_group, action_group_signals[POST_ACTIVATE], 0, action);
 }

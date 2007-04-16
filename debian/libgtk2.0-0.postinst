@@ -1,0 +1,12 @@
+#!/bin/sh -e
+
+#DEBHELPER#
+
+if [ "$1" = configure ]; then
+  # Regenerate theme caches which may need updating after gtk changes
+  if command -v hildon-theme-recache-all >/dev/null 2>&1; then
+    hildon-theme-recache-all
+  fi
+fi
+
+exit 0

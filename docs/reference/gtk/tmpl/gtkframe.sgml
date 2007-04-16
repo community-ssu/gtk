@@ -57,11 +57,6 @@ label can be controlled with gtk_frame_set_label_align().
 
 </para>
 
-<!-- ##### ARG GtkFrame:hildonlike ##### -->
-<para>
-
-</para>
-
 <!-- ##### FUNCTION gtk_frame_new ##### -->
 <para>
 </para>

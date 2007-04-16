@@ -14,9 +14,10 @@ DEPS = 									\
 LDADDS = 								\
 	$(top_builddir)/gdk-pixbuf/libgdk_pixbuf-$(GTK_API_VERSION).la	\
 	$(top_builddir)/gdk/$(gdktargetlib)        			\
-	$(top_builddir)/gtk/$(gtktargetlib)
+	$(top_builddir)/gtk/$(gtktargetlib)				\
+	$(GTK_DEP_LIBS)
 
-if OS_UNIX
+if USE_X11
 noinst_PROGRAMS = 		\
 	doc-shooter
 endif

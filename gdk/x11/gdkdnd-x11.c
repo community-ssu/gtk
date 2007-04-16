@@ -126,11 +126,8 @@ static void   xdnd_manage_source_filter (GdkDragContext *context,
 					 GdkWindow      *window,
 					 gboolean        add_filter);
 
-static void gdk_drag_context_init       (GdkDragContext      *dragcontext);
-static void gdk_drag_context_class_init (GdkDragContextClass *klass);
 static void gdk_drag_context_finalize   (GObject              *object);
 
-static gpointer parent_class = NULL;
 static GList *contexts;
 
 const static struct {
@@ -145,41 +142,17 @@ const static struct {
   { "XdndDrop",     xdnd_drop_filter },
 };
 	      
-GType
-gdk_drag_context_get_type (void)
-{
-  static GType object_type = 0;
-
-  if (!object_type)
-    {
-      static const GTypeInfo object_info =
-      {
-        sizeof (GdkDragContextClass),
-        (GBaseInitFunc) NULL,
-        (GBaseFinalizeFunc) NULL,
-        (GClassInitFunc) gdk_drag_context_class_init,
-        NULL,           /* class_finalize */
-        NULL,           /* class_data */
-        sizeof (GdkDragContext),
-        0,              /* n_preallocs */
-        (GInstanceInitFunc) gdk_drag_context_init,
-      };
-      
-      object_type = g_type_register_static (G_TYPE_OBJECT,
-                                            "GdkDragContext",
-                                            &object_info, 0);
-    }
-  
-  return object_type;
-}
+G_DEFINE_TYPE (GdkDragContext, gdk_drag_context, G_TYPE_OBJECT)
 
 static void
 gdk_drag_context_init (GdkDragContext *dragcontext)
 {
   GdkDragContextPrivateX11 *private;
 
-  private = g_new0 (GdkDragContextPrivateX11, 1);
-
+  private = G_TYPE_INSTANCE_GET_PRIVATE (dragcontext, 
+					 GDK_TYPE_DRAG_CONTEXT, 
+					 GdkDragContextPrivateX11);
+  
   dragcontext->windowing_data = private;
 
   contexts = g_list_prepend (contexts, dragcontext);
@@ -190,9 +163,9 @@ gdk_drag_context_class_init (GdkDragContextClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-  parent_class = g_type_class_peek_parent (klass);
-
   object_class->finalize = gdk_drag_context_finalize;
+
+  g_type_class_add_private (object_class, sizeof (GdkDragContextPrivateX11));
 }
 
 static void
@@ -222,9 +195,7 @@ gdk_drag_context_finalize (GObject *object)
   
   contexts = g_list_remove (contexts, context);
 
-  g_free (private);
-  
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gdk_drag_context_parent_class)->finalize (object);
 }
 
 /* Drag Contexts */
@@ -237,9 +208,9 @@ gdk_drag_context_finalize (GObject *object)
  * Return value: the newly created #GdkDragContext.
  **/
 GdkDragContext *
-gdk_drag_context_new        (void)
+gdk_drag_context_new (void)
 {
-  return g_object_new (gdk_drag_context_get_type (), NULL);
+  return g_object_new (GDK_TYPE_DRAG_CONTEXT, NULL);
 }
 
 /**
@@ -489,6 +460,25 @@ gdk_window_cache_new (GdkScreen *screen)
 
   XGetWindowAttributes (xdisplay, GDK_WINDOW_XWINDOW (root_window), &xwa);
   result->old_event_mask = xwa.your_event_mask;
+
+  if (G_UNLIKELY (!GDK_DISPLAY_X11 (GDK_SCREEN_X11 (screen)->display)->trusted_client)) 
+    {
+      GList *toplevel_windows, *list;
+      GdkWindow *window;
+      gint x, y, width, height;
+      
+      toplevel_windows = gdk_screen_get_toplevel_windows (screen);
+      for (list = toplevel_windows; list; list = list->next) {
+	window = GDK_WINDOW (list->data);
+	gdk_window_get_geometry (window, &x, &y, &width, &height, NULL);
+	gdk_window_cache_add (result, GDK_WINDOW_XID (window), 
+			      x, y, width, height, 
+			      gdk_window_is_visible (window));
+      }
+      g_list_free (toplevel_windows);
+      return result;
+    }
+
   XSelectInput (xdisplay, GDK_WINDOW_XWINDOW (root_window),
 		result->old_event_mask | SubstructureNotifyMask);
   gdk_window_add_filter (root_window, gdk_window_cache_filter, result);
@@ -539,7 +529,7 @@ get_client_window_at_coords_recurse (GdkDisplay *display,
   unsigned int nchildren;
   int i;
   gboolean found_child = FALSE;
-  GdkChildInfoX11 child;
+  GdkChildInfoX11 child = { 0, };
   gboolean has_wm_state = FALSE;
 
   if (!_gdk_x11_get_window_child_info (display, win, TRUE,
@@ -548,7 +538,11 @@ get_client_window_at_coords_recurse (GdkDisplay *display,
     return None;
 
   if (has_wm_state)
-    return win;
+    {
+      g_free (children);
+
+      return win;
+    }
 
   for (i = nchildren - 1; (i >= 0) && !found_child; i--)
     {
@@ -1312,6 +1306,9 @@ motif_send_enter (GdkDragContext  *context,
   GdkDisplay *display = GDK_DRAWABLE_DISPLAY (context->source_window);
   XEvent xev;
 
+  if (!G_LIKELY (GDK_DISPLAY_X11 (display)->trusted_client))
+    return; /* Motif Dnd requires getting properties on the root window */
+
   xev.xclient.type = ClientMessage;
   xev.xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display, "_MOTIF_DRAG_AND_DROP_MESSAGE");
   xev.xclient.format = 8;
@@ -1915,7 +1912,7 @@ xdnd_initialize_actions (void)
   
   xdnd_actions_initialized = TRUE;
   for (i=0; i < xdnd_n_actions; i++)
-    xdnd_actions_table[i].atom = gdk_atom_intern (xdnd_actions_table[i].name, FALSE);
+    xdnd_actions_table[i].atom = gdk_atom_intern_static_string (xdnd_actions_table[i].name);
 }
 
 static GdkDragAction
@@ -2390,7 +2387,7 @@ xdnd_send_motion (GdkDragContext *context,
 static guint32
 xdnd_check_dest (GdkDisplay *display,
 		 Window      win,
-		 gint       *xdnd_version)
+		 guint      *xdnd_version)
 {
   gboolean retval = FALSE;
   Atom type = None;
@@ -2516,8 +2513,10 @@ xdnd_read_actions (GdkDragContext *context)
 	    }
 #endif /* G_ENABLE_DEBUG */
 	  
-	  XFree(atoms);
 	}
+
+      if (data)
+	XFree (data);
       
       gdk_error_trap_pop ();
     }
@@ -2735,6 +2734,10 @@ xdnd_enter_filter (GdkXEvent *xev,
       if (gdk_error_trap_pop () || (format != 32) || (type != XA_ATOM))
 	{
 	  g_object_unref (new_context);
+
+	  if (data)
+	    XFree (data);
+
 	  return GDK_FILTER_REMOVE;
 	}
 
@@ -2928,14 +2931,14 @@ _gdk_dnd_init (GdkDisplay *display)
 
   gdk_display_add_client_message_filter (
 	display,
-	gdk_atom_intern ("_MOTIF_DRAG_AND_DROP_MESSAGE", FALSE),
+	gdk_atom_intern_static_string ("_MOTIF_DRAG_AND_DROP_MESSAGE"),
 	motif_dnd_filter, NULL);
   
   for (i = 0; i < G_N_ELEMENTS (xdnd_filters); i++)
     {
       gdk_display_add_client_message_filter (
 	display,
-	gdk_atom_intern (xdnd_filters[i].atom_name, FALSE),
+	gdk_atom_intern_static_string (xdnd_filters[i].atom_name),
 	xdnd_filters[i].func, NULL);
     }
 }		      
@@ -3002,7 +3005,7 @@ static guint32
 _gdk_drag_get_protocol_for_display (GdkDisplay      *display,
 				    guint32          xid,
 				    GdkDragProtocol *protocol,
-				    gint            *version)
+				    guint           *version)
 
 {
   GdkWindow *window;
@@ -3023,6 +3026,12 @@ _gdk_drag_get_protocol_for_display (GdkDisplay      *display,
 	  *version = 5;
 	  xdnd_precache_atoms (display);
 	  GDK_NOTE (DND, g_message ("Entering local Xdnd window %#x\n", xid));
+	  return xid;
+	}
+      else if (_gdk_x11_display_is_root_window (display, (Window) xid))
+	{
+	  *protocol = GDK_DRAG_PROTO_ROOTWIN;
+	  GDK_NOTE (DND, g_message ("Entering root window\n"));
 	  return xid;
 	}
     }
@@ -3079,7 +3088,10 @@ _gdk_drag_get_protocol_for_display (GdkDisplay      *display,
 				  0, 0, False, AnyPropertyType,
 				  &type, &format, &nitems, &data) &&
 	      type != None)
-	    rootwin = TRUE;
+	    {
+	      XFree (data);
+	      rootwin = TRUE;
+	    }
 	}
 #endif      
 
@@ -3087,6 +3099,7 @@ _gdk_drag_get_protocol_for_display (GdkDisplay      *display,
 
       if (rootwin)
 	{
+	  GDK_NOTE (DND, g_message ("Entering root window\n"));
 	  *protocol = GDK_DRAG_PROTO_ROOTWIN;
 	  return xid;
 	}
@@ -3392,8 +3405,8 @@ gdk_drag_motion (GdkDragContext *context,
 		/* GTK+ traditionally has used application/x-rootwin-drop,
 		 * but the XDND spec specifies x-rootwindow-drop.
 		 */
-		GdkAtom target1 = gdk_atom_intern ("application/x-rootwindow-drop", FALSE);
-		GdkAtom target2 = gdk_atom_intern ("application/x-rootwin-drop", FALSE);
+		GdkAtom target1 = gdk_atom_intern_static_string ("application/x-rootwindow-drop");
+		GdkAtom target2 = gdk_atom_intern_static_string ("application/x-rootwin-drop");
 
 		if (g_list_find (context->targets,
 				 GDK_ATOM_TO_POINTER (target1)) ||
@@ -3741,6 +3754,8 @@ gdk_window_register_dnd (GdkWindow      *window)
 
   motif_drag_receiver_info_atom = gdk_x11_get_xatom_by_name_for_display (display,
 									 "_MOTIF_DRAG_RECEIVER_INFO");
+  /* initialize to zero to avoid writing uninitialized data to socket */
+  memset(&info, 0, sizeof(info));
   info.byte_order = local_byte_order;
   info.protocol_version = 0;
   info.protocol_style = XmDRAG_DYNAMIC;
@@ -3782,7 +3797,7 @@ gdk_drag_get_selection (GdkDragContext *context)
     return gdk_x11_xatom_to_atom_for_display (GDK_DRAWABLE_DISPLAY (context->source_window),
 					      (PRIVATE_DATA (context))->motif_selection);
   else if (context->protocol == GDK_DRAG_PROTO_XDND)
-    return gdk_atom_intern ("XdndSelection", FALSE);
+    return gdk_atom_intern_static_string ("XdndSelection");
   else
     return GDK_NONE;
 }

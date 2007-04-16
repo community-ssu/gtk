@@ -46,8 +46,6 @@ will be a popup menu allowing the users to switch pages.
 
 @notebook: the object which received the signal.
 @arg1: 
-<!-- # Unused Parameters # -->
-@Returns: 
 
 <!-- ##### SIGNAL GtkNotebook::focus-tab ##### -->
 <para>
@@ -65,6 +63,42 @@ will be a popup menu allowing the users to switch pages.
 
 @notebook: the object which received the signal.
 @arg1: 
+
+<!-- ##### SIGNAL GtkNotebook::page-added ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@widget: 
+@arg1: 
+
+<!-- ##### SIGNAL GtkNotebook::page-removed ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@widget: 
+@arg1: 
+
+<!-- ##### SIGNAL GtkNotebook::page-reordered ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@widget: 
+@arg1: 
+
+<!-- ##### SIGNAL GtkNotebook::reorder-tab ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@arg1: 
+@Param3: 
 
 <!-- ##### SIGNAL GtkNotebook::select-page ##### -->
 <para>
@@ -85,6 +119,11 @@ Emitted when the user or a function changes the current page.
 @page_num: the index of the page
 
 <!-- ##### ARG GtkNotebook:enable-popup ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:group-id ##### -->
 <para>
 
 </para>
@@ -134,12 +173,22 @@ Emitted when the user or a function changes the current page.
 
 </para>
 
+<!-- ##### ARG GtkNotebook:detachable ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkNotebook:menu-label ##### -->
 <para>
 
 </para>
 
 <!-- ##### ARG GtkNotebook:position ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkNotebook:reorderable ##### -->
 <para>
 
 </para>
@@ -164,17 +213,7 @@ Emitted when the user or a function changes the current page.
 
 </para>
 
-<!-- ##### ARG GtkNotebook:arrow-height ##### -->
-<para>
-
-</para>
-
 <!-- ##### ARG GtkNotebook:arrow-spacing ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkNotebook:arrow-width ##### -->
 <para>
 
 </para>
@@ -195,21 +234,6 @@ Emitted when the user or a function changes the current page.
 </para>
 
 <!-- ##### ARG GtkNotebook:has-secondary-forward-stepper ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkNotebook:inner-left-border ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkNotebook:inner-right-border ##### -->
-<para>
-
-</para>
-
-<!-- ##### ARG GtkNotebook:label-padding ##### -->
 <para>
 
 </para>
@@ -538,6 +562,26 @@ gtk_notebook_set_current_page() instead.
 @tab_vborder: 
 
 
+<!-- ##### FUNCTION gtk_notebook_set_tab_reorderable ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@child: 
+@reorderable: 
+
+
+<!-- ##### FUNCTION gtk_notebook_set_tab_detachable ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@child: 
+@detachable: 
+
+
 <!-- ##### FUNCTION gtk_notebook_get_menu_label_text ##### -->
 <para>
 
@@ -594,6 +638,26 @@ gtk_notebook_set_current_page() instead.
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_notebook_get_tab_reorderable ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@child: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_notebook_get_tab_detachable ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@child: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_notebook_set_current_page ##### -->
 <para>
 
@@ -601,5 +665,52 @@ gtk_notebook_set_current_page() instead.
 
 @notebook: 
 @page_num: 
+
+
+<!-- ##### FUNCTION gtk_notebook_set_group_id ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@group_id: 
+
+
+<!-- ##### FUNCTION gtk_notebook_get_group_id ##### -->
+<para>
+
+</para>
+
+@notebook: 
+@Returns: 
+
+
+<!-- ##### USER_FUNCTION GtkNotebookWindowCreationFunc ##### -->
+<para>
+A function used by GtkNotebook when a detachable tab is dropped
+in the root window, it's used to create a window containing a notebook
+where the tab will be attached. This function will also be responsible
+of moving/resizing the window and adding the necessary properties to
+the notebook (i.e.: group-id).
+
+If the function returns %NULL, the drag will be cancelled.
+</para>
+
+@source: The source #GtkNotebook of the drag operation
+@page: the child #GtkWidget affected
+@x: the X coordinate where the drop happens
+@y: the Y coordinate where the drop happens
+@data: user data
+@Returns: The created #GtkNotebook where the tab will be attached, or NULL to cancel the drag
+
+
+<!-- ##### FUNCTION gtk_notebook_set_window_creation_hook ##### -->
+<para>
+
+</para>
+
+@func: 
+@data: 
+@destroy: 
 
 

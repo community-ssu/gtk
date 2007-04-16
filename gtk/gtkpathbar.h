@@ -17,8 +17,8 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifndef __GTK_PATH_BAR__
-#define __GTK_PATH_BAR__
+#ifndef __GTK_PATH_BAR_H__
+#define __GTK_PATH_BAR_H__
 
 #include "gtkcontainer.h"
 #include "gtkfilesystem.h"
@@ -45,12 +45,15 @@ struct _GtkPathBar
   GtkFilePath *home_path;
   GtkFilePath *desktop_path;
 
+  GtkFileSystemHandle *set_path_handle;
+
   GdkPixbuf *root_icon;
   GdkPixbuf *home_icon;
   GdkPixbuf *desktop_icon;
 
   GList *button_list;
   GList *first_scrolled_button;
+  GList *fake_root;
   GtkWidget *up_slider_button;
   GtkWidget *down_slider_button;
   guint settings_signal_id;
@@ -60,8 +63,10 @@ struct _GtkPathBar
   gint16 button_offset;
   guint timer;
   guint slider_visible : 1;
-  guint need_timer : 1;
-  guint ignore_click : 1;
+  guint need_timer     : 1;
+  guint ignore_click   : 1;
+  guint scrolling_up   : 1;
+  guint scrolling_down : 1;
 };
 
 struct _GtkPathBarClass
@@ -70,6 +75,7 @@ struct _GtkPathBarClass
 
   void (* path_clicked) (GtkPathBar  *path_bar,
 			 GtkFilePath *file_path,
+			 GtkFilePath *child_path,
 			 gboolean     child_is_hidden);
 };
 
@@ -85,4 +91,4 @@ void     _gtk_path_bar_down            (GtkPathBar *path_bar);
 
 G_END_DECLS
 
-#endif /* __GTK_PATH_BAR__ */
+#endif /* __GTK_PATH_BAR_H__ */

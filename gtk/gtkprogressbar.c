@@ -35,24 +35,24 @@
 #endif
 
 #include "gtkprogressbar.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
 #define MIN_HORIZONTAL_BAR_WIDTH   150
-#define MIN_HORIZONTAL_BAR_HEIGHT  30 /* OSSO mod. was 20 */
+#ifdef MAEMO_CHANGES
+/* maemo themes use 30pixel heigh progressbar images; so this setting is
+ * adjusted for progressbars to have the correct height, even when no text
+ * is being displayed.
+ */
+#define MIN_HORIZONTAL_BAR_HEIGHT  30
+#else /* !MAEMO_CHANGES */
+#define MIN_HORIZONTAL_BAR_HEIGHT  20
+#endif /* !MAEMO_CHANGES */
 #define MIN_VERTICAL_BAR_WIDTH     22
 #define MIN_VERTICAL_BAR_HEIGHT    80
 #define MAX_TEXT_LENGTH            80
-#define DEFAULT_TEXT_SPACING       2 /* OSSO mod. Changed from
-				      * TEXT_SPACING. Now controlled
-				      * by "text-spacing" style
-				      * property */
-#define DEFAULT_WIDTH_INCREMENT    3
-#define DEFAULT_HEIGHT_INCREMENT   3
-#define DEFAULT_TEXT_XNUDGE        1
-#define DEFAULT_TEXT_YNUDGE        1
 
 enum {
   PROP_0,
@@ -72,8 +72,6 @@ enum {
   PROP_DISCRETE_BLOCKS
 };
 
-static void gtk_progress_bar_class_init    (GtkProgressBarClass *klass);
-static void gtk_progress_bar_init          (GtkProgressBar      *pbar);
 static void gtk_progress_bar_set_property  (GObject             *object,
 					    guint                prop_id,
 					    const GValue        *value,
@@ -99,35 +97,8 @@ static void gtk_progress_bar_set_activity_step_internal   (GtkProgressBar *pbar,
 static void gtk_progress_bar_set_activity_blocks_internal (GtkProgressBar *pbar,
 							   guint           blocks);
 
-static gpointer gtk_progress_bar_parent_class;
 
-GType
-gtk_progress_bar_get_type (void)
-{
-  static GType progress_bar_type = 0;
-
-  if (!progress_bar_type)
-    {
-      static const GTypeInfo progress_bar_info =
-      {
-	sizeof (GtkProgressBarClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_progress_bar_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkProgressBar),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_progress_bar_init,
-      };
-
-      progress_bar_type =
-	g_type_register_static (GTK_TYPE_PROGRESS, "GtkProgressBar",
-				&progress_bar_info, 0);
-    }
-
-  return progress_bar_type;
-}
+G_DEFINE_TYPE (GtkProgressBar, gtk_progress_bar, GTK_TYPE_PROGRESS)
 
 static void
 gtk_progress_bar_class_init (GtkProgressBarClass *class)
@@ -135,8 +106,6 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
   GObjectClass *gobject_class;
   GtkWidgetClass *widget_class;
   GtkProgressClass *progress_class;
-
-  gtk_progress_bar_parent_class = g_type_class_peek_parent (class);
   
   gobject_class = G_OBJECT_CLASS (class);
   widget_class = (GtkWidgetClass *) class;
@@ -183,9 +152,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
                                    g_param_spec_uint ("activity-step",
 						      P_("Activity Step"),
 						      P_("The increment used for each iteration in activity mode (Deprecated)"),
-						      -G_MAXUINT,
-						      G_MAXUINT,
-						      3,
+						      0, G_MAXUINT, 3,
 						      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
@@ -193,9 +160,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
                                    g_param_spec_uint ("activity-blocks",
 						      P_("Activity Blocks"),
 						      P_("The number of blocks which can fit in the progress bar area in activity mode (Deprecated)"),
-						      2,
-						      G_MAXUINT,
-						      5,
+						      2, G_MAXUINT, 5,
 						      GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
@@ -203,9 +168,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
                                    g_param_spec_uint ("discrete-blocks",
 						      P_("Discrete Blocks"),
 						      P_("The number of discrete blocks in a progress bar (when shown in the discrete style)"),
-						      2,
-						      G_MAXUINT,
-						      10,
+						      2, G_MAXUINT, 10,
 						      GTK_PARAM_READWRITE));
   
   g_object_class_install_property (gobject_class,
@@ -213,9 +176,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 				   g_param_spec_double ("fraction",
 							P_("Fraction"),
 							P_("The fraction of total work that has been completed"),
-							0.0,
-							1.0,
-							0.0,
+							0.0, 1.0, 0.0,
 							GTK_PARAM_READWRITE));  
   
   g_object_class_install_property (gobject_class,
@@ -223,9 +184,7 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 				   g_param_spec_double ("pulse-step",
 							P_("Pulse Step"),
 							P_("The fraction of total progress to move the bouncing block when pulsed"),
-							0.0,
-							1.0,
-							0.1,
+							0.0, 1.0, 0.1,
 							GTK_PARAM_READWRITE));  
   
   g_object_class_install_property (gobject_class,
@@ -254,90 +213,23 @@ gtk_progress_bar_class_init (GtkProgressBarClass *class)
 				   PROP_ELLIPSIZE,
                                    g_param_spec_enum ("ellipsize",
                                                       P_("Ellipsize"),
-                                                      P_("The preferred place to ellipsize the string, if the progressbar does not have enough room to display the entire string, if at all"),
+                                                      P_("The preferred place to ellipsize the string, if the progress bar "
+                                                         "does not have enough room to display the entire string, if at all."),
 						      PANGO_TYPE_ELLIPSIZE_MODE,
 						      PANGO_ELLIPSIZE_NONE,
                                                       GTK_PARAM_READWRITE));
-
-  /**
-   * GtkProgressBar:text-spacing:
-   *
-   * The amount of pixels between the trough and text.
-   *
-   * Since: maemo 1.0
-   */
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("text-spacing",
-							     P_("Text Spacing"),
-							     P_("The amount of pixels between the trough and text."),
-							     G_MININT,
-							     G_MAXINT,
-							     DEFAULT_TEXT_SPACING,
-							     GTK_PARAM_READWRITE));
-
-  /**
-   * GtkProgressBar:width-increment:
-   *
-   * The amount of pixels to add to the width of size request.
-   * 
-   * Since: maemo 1.0
-   */
+                                           g_param_spec_int ("xspacing",
+                                                             P_("XSpacing"),
+                                                             P_("Extra spacing applied to the width of a progress bar."),
+                                                             0, G_MAXINT, 7,
+                                                             G_PARAM_READWRITE));
   gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("width-increment",
-							     P_("width Increment"),
-							     P_("The amount of pixels to add to the width size request."),
-							     G_MININT,
-							     G_MAXINT,
-							     DEFAULT_WIDTH_INCREMENT,
-							     GTK_PARAM_READWRITE));
-
-  /**
-   * GtkProgressBar:height-increment:
-   * 
-   * The amount of pixels to add to the height size request.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("height-increment",
-							     P_("Height Increment"),
-							     P_("The amount of pixels to add to the height size request."),
-							     G_MININT,
-							     G_MAXINT,
-							     DEFAULT_WIDTH_INCREMENT,
-							     GTK_PARAM_READWRITE));
-
-  /**
-   * GtkProgressBar:text-xnudge:
-   *
-   * Amount of pixels to move the text position on X axis.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("text-xnudge",
-							     P_("Text XNudge"),
-							     P_("Amount of pixels to move the text x position."),
-							     G_MININT,
-							     G_MAXINT,
-							     DEFAULT_TEXT_XNUDGE,
-							     GTK_PARAM_READWRITE));
-
-  /**
-   * GtkProgressBar:text-ynudge:
-   *
-   * Amount of pixels to move the text position on Y axis.
-   * 
-   * Since: maemo 1.0
-   */
-  gtk_widget_class_install_style_property (widget_class,
-					   g_param_spec_int ("text-ynudge",
-							     P_("Text YNudge"),
-							     P_("Amount of pixels to move the text y position."),
-							     G_MININT,
-							     G_MAXINT,
-							     DEFAULT_TEXT_YNUDGE,
-							     GTK_PARAM_READWRITE));
+                                           g_param_spec_int ("yspacing",
+                                                             "YSpacing",
+                                                             "Extra spacing applied to the height of a progress bar.",
+                                                             0, G_MAXINT, 7,
+                                                             G_PARAM_READWRITE));
 }
 
 static void
@@ -457,9 +349,13 @@ gtk_progress_bar_new (void)
 {
   GtkWidget *pbar;
 
-  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR, 
-			 "text-xalign", 0.0, /* OSSO addition. */
+#ifdef MAEMO_CHANGES
+  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR,
+			 "text-xalign", 0.0,
 			 NULL);
+#else /* !MAEMO_CHANGES */
+  pbar = gtk_widget_new (GTK_TYPE_PROGRESS_BAR, NULL);
+#endif /* !MAEMO_CHANGES */
 
   return pbar;
 }
@@ -581,7 +477,7 @@ gtk_progress_bar_real_update (GtkProgress *progress)
 
 static gboolean
 gtk_progress_bar_expose (GtkWidget      *widget,
-			 GdkEventExpose *event)
+		     GdkEventExpose *event)
 {
   GtkProgressBar *pbar;
 
@@ -605,23 +501,21 @@ gtk_progress_bar_size_request (GtkWidget      *widget,
   PangoRectangle logical_rect;
   PangoLayout *layout;
   gint width, height;
-  gint text_spacing;
-  gint width_increment, height_increment;
+  gint xspacing, yspacing;
 
   g_return_if_fail (GTK_IS_PROGRESS_BAR (widget));
   g_return_if_fail (requisition != NULL);
-  
+
   gtk_widget_style_get (widget,
-			"text-spacing", &text_spacing,
-			"width-increment", &width_increment,
-			"height-increment", &height_increment,
-			NULL);
+                        "xspacing", &xspacing,
+                        "yspacing", &yspacing,
+                        NULL);
 
   progress = GTK_PROGRESS (widget);
   pbar = GTK_PROGRESS_BAR (widget);
 
-  width = 2 * widget->style->xthickness + width_increment + 2 * text_spacing;
-  height = 2 * widget->style->ythickness + height_increment + 2 * text_spacing;
+  width = 2 * widget->style->xthickness + xspacing;
+  height = 2 * widget->style->ythickness + yspacing;
 
   if (progress->show_text && pbar->bar_style != GTK_PROGRESS_DISCRETE)
     {
@@ -661,29 +555,13 @@ gtk_progress_bar_size_request (GtkWidget      *widget,
   if (pbar->orientation == GTK_PROGRESS_LEFT_TO_RIGHT ||
       pbar->orientation == GTK_PROGRESS_RIGHT_TO_LEFT)
     {
-      if (progress->show_text && pbar->bar_style != GTK_PROGRESS_DISCRETE)
-	{
-	  requisition->width = MAX (MIN_HORIZONTAL_BAR_WIDTH, width);
-	  requisition->height = MAX (MIN_HORIZONTAL_BAR_HEIGHT, height);
-	}
-      else
-	{
-	  requisition->width = MIN_HORIZONTAL_BAR_WIDTH;
-	  requisition->height = MIN_HORIZONTAL_BAR_HEIGHT;
-	}
+      requisition->width = MAX (MIN_HORIZONTAL_BAR_WIDTH, width);
+      requisition->height = MAX (MIN_HORIZONTAL_BAR_HEIGHT, height);
     }
   else
     {
-      if (progress->show_text && pbar->bar_style != GTK_PROGRESS_DISCRETE)
-	{	  
-	  requisition->width = MAX (MIN_VERTICAL_BAR_WIDTH, width);
-	  requisition->height = MAX (MIN_VERTICAL_BAR_HEIGHT, height);
-	}
-      else
-	{
-	  requisition->width = MIN_VERTICAL_BAR_WIDTH;
-	  requisition->height = MIN_VERTICAL_BAR_HEIGHT;
-	}
+      requisition->width = MAX (MIN_VERTICAL_BAR_WIDTH, width);
+      requisition->height = MAX (MIN_VERTICAL_BAR_HEIGHT, height);
     }
 }
 
@@ -692,7 +570,6 @@ gtk_progress_bar_act_mode_enter (GtkProgress *progress)
 {
   GtkProgressBar *pbar;
   GtkWidget *widget;
-  gint size;
   GtkProgressBarOrientation orientation;
 
   pbar = GTK_PROGRESS_BAR (progress);
@@ -712,8 +589,6 @@ gtk_progress_bar_act_mode_enter (GtkProgress *progress)
   if (orientation == GTK_PROGRESS_LEFT_TO_RIGHT ||
       orientation == GTK_PROGRESS_RIGHT_TO_LEFT)
     {
-      size = MAX (2, widget->allocation.width / pbar->activity_blocks);
-
       if (orientation == GTK_PROGRESS_LEFT_TO_RIGHT)
 	{
 	  pbar->activity_pos = widget->style->xthickness;
@@ -729,8 +604,6 @@ gtk_progress_bar_act_mode_enter (GtkProgress *progress)
     }
   else
     {
-      size = MAX (2, widget->allocation.height / pbar->activity_blocks);
-
       if (orientation == GTK_PROGRESS_TOP_TO_BOTTOM)
 	{
 	  pbar->activity_pos = widget->style->ythickness;
@@ -776,22 +649,22 @@ gtk_progress_bar_paint_activity (GtkProgressBar            *pbar,
 {
   GtkWidget *widget = GTK_WIDGET (pbar);
   GtkProgress *progress = GTK_PROGRESS (pbar);
-  gint x, y, w, h;
+  GdkRectangle area;
 
   switch (orientation)
     {
     case GTK_PROGRESS_LEFT_TO_RIGHT:
     case GTK_PROGRESS_RIGHT_TO_LEFT:
-      gtk_progress_bar_get_activity (pbar, orientation, &x, &w);
-      y = widget->style->ythickness;
-      h = widget->allocation.height - 2 * widget->style->ythickness;
+      gtk_progress_bar_get_activity (pbar, orientation, &area.x, &area.width);
+      area.y = widget->style->ythickness;
+      area.height = widget->allocation.height - 2 * widget->style->ythickness;
       break;
 
     case GTK_PROGRESS_TOP_TO_BOTTOM:
     case GTK_PROGRESS_BOTTOM_TO_TOP:
-      gtk_progress_bar_get_activity (pbar, orientation, &y, &h);
-      x = widget->style->xthickness;
-      w = widget->allocation.width - 2 * widget->style->xthickness;
+      gtk_progress_bar_get_activity (pbar, orientation, &area.y, &area.height);
+      area.x = widget->style->xthickness;
+      area.width = widget->allocation.width - 2 * widget->style->xthickness;
       break;
 
     default:
@@ -802,8 +675,8 @@ gtk_progress_bar_paint_activity (GtkProgressBar            *pbar,
   gtk_paint_box (widget->style,
 		 progress->offscreen_pixmap,
 		 GTK_STATE_PRELIGHT, GTK_SHADOW_OUT,
-		 NULL, widget, "bar",
-		 x, y, w, h);
+		 &area, widget, "bar",
+		 area.x, area.y, area.width, area.height);
 }
 
 static void
@@ -811,8 +684,8 @@ gtk_progress_bar_paint_continuous (GtkProgressBar            *pbar,
 				   gint                       amount,
 				   GtkProgressBarOrientation  orientation)
 {
+  GdkRectangle area;
   GtkWidget *widget = GTK_WIDGET (pbar);
-  gint x, y, w, h;
 
   if (amount <= 0)
     return;
@@ -821,24 +694,24 @@ gtk_progress_bar_paint_continuous (GtkProgressBar            *pbar,
     {
     case GTK_PROGRESS_LEFT_TO_RIGHT:
     case GTK_PROGRESS_RIGHT_TO_LEFT:
-      w = amount;
-      h = widget->allocation.height - widget->style->ythickness * 2;
-      y = widget->style->ythickness;
+      area.width = amount;
+      area.height = widget->allocation.height - widget->style->ythickness * 2;
+      area.y = widget->style->ythickness;
       
-      x = widget->style->xthickness;
+      area.x = widget->style->xthickness;
       if (orientation == GTK_PROGRESS_RIGHT_TO_LEFT)
-	x = widget->allocation.width - amount - x;
+	area.x = widget->allocation.width - amount - area.x;
       break;
       
     case GTK_PROGRESS_TOP_TO_BOTTOM:
     case GTK_PROGRESS_BOTTOM_TO_TOP:
-      w = widget->allocation.width - widget->style->xthickness * 2;
-      h = amount;
-      x = widget->style->xthickness;
+      area.width = widget->allocation.width - widget->style->xthickness * 2;
+      area.height = amount;
+      area.x = widget->style->xthickness;
       
-      y = widget->style->ythickness;
+      area.y = widget->style->ythickness;
       if (orientation == GTK_PROGRESS_BOTTOM_TO_TOP)
-	y = widget->allocation.height - amount - y;
+	area.y = widget->allocation.height - amount - area.y;
       break;
       
     default:
@@ -849,8 +722,8 @@ gtk_progress_bar_paint_continuous (GtkProgressBar            *pbar,
   gtk_paint_box (widget->style,
 		 GTK_PROGRESS (pbar)->offscreen_pixmap,
 		 GTK_STATE_PRELIGHT, GTK_SHADOW_OUT,
-		 NULL, widget, "bar",
-		 x, y, w, h);
+		 &area, widget, "bar",
+		 area.x, area.y, area.width, area.height);
 }
 
 static void
@@ -862,7 +735,8 @@ gtk_progress_bar_paint_discrete (GtkProgressBar            *pbar,
 
   for (i = 0; i <= pbar->in_block; i++)
     {
-      gint x, y, w, h, space;
+      GdkRectangle area;
+      gint space;
 
       switch (orientation)
 	{
@@ -870,26 +744,26 @@ gtk_progress_bar_paint_discrete (GtkProgressBar            *pbar,
 	case GTK_PROGRESS_RIGHT_TO_LEFT:
 	  space = widget->allocation.width - 2 * widget->style->xthickness;
 	  
-	  x = widget->style->xthickness + (i * space) / pbar->blocks;
-	  y = widget->style->ythickness;
-	  w = widget->style->xthickness + ((i + 1) * space) / pbar->blocks - x;
-	  h = widget->allocation.height - 2 * widget->style->ythickness;
+	  area.x = widget->style->xthickness + (i * space) / pbar->blocks;
+	  area.y = widget->style->ythickness;
+	  area.width = widget->style->xthickness + ((i + 1) * space) / pbar->blocks - area.x;
+	  area.height = widget->allocation.height - 2 * widget->style->ythickness;
 
 	  if (orientation == GTK_PROGRESS_RIGHT_TO_LEFT)
-	    x = widget->allocation.width - w - x;
+	    area.x = widget->allocation.width - area.width - area.x;
 	  break;
 	  
 	case GTK_PROGRESS_TOP_TO_BOTTOM:
 	case GTK_PROGRESS_BOTTOM_TO_TOP:
 	  space = widget->allocation.height - 2 * widget->style->ythickness;
 	  
-	  x = widget->style->xthickness;
-	  y = widget->style->ythickness + (i * space) / pbar->blocks;
-	  w = widget->allocation.width - 2 * widget->style->xthickness;
-	  h = widget->style->ythickness + ((i + 1) * space) / pbar->blocks - y;
+	  area.x = widget->style->xthickness;
+	  area.y = widget->style->ythickness + (i * space) / pbar->blocks;
+	  area.width = widget->allocation.width - 2 * widget->style->xthickness;
+	  area.height = widget->style->ythickness + ((i + 1) * space) / pbar->blocks - area.y;
 	  
 	  if (orientation == GTK_PROGRESS_BOTTOM_TO_TOP)
-	    y = widget->allocation.height - h - y;
+	    area.y = widget->allocation.height - area.height - area.y;
 	  break;
 
 	default:
@@ -900,8 +774,8 @@ gtk_progress_bar_paint_discrete (GtkProgressBar            *pbar,
       gtk_paint_box (widget->style,
 		     GTK_PROGRESS (pbar)->offscreen_pixmap,
 		     GTK_STATE_PRELIGHT, GTK_SHADOW_OUT,
-		     NULL, widget, "bar",
-		     x, y, w, h);
+		     &area, widget, "bar",
+		     area.x, area.y, area.width, area.height);
     }
 }
 
@@ -913,7 +787,6 @@ gtk_progress_bar_paint_text (GtkProgressBar            *pbar,
 {
   GtkProgress *progress = GTK_PROGRESS (pbar);
   GtkWidget *widget = GTK_WIDGET (pbar);
-  
   gint x;
   gint y;
   gchar *buf;
@@ -921,14 +794,12 @@ gtk_progress_bar_paint_text (GtkProgressBar            *pbar,
   PangoLayout *layout;
   PangoRectangle logical_rect;
   GdkRectangle prelight_clip, normal_clip;
-  
-  gint text_xnudge, text_ynudge;
-  
-  gtk_widget_style_get (widget,
-			"text-xnudge", &text_xnudge,
-			"text-ynudge", &text_ynudge,
-			NULL);
-  
+  gfloat text_xalign = progress->x_align;
+  gfloat text_yalign = progress->y_align;
+
+  if (gtk_widget_get_direction (widget) != GTK_TEXT_DIR_LTR)
+    text_xalign = 1.0 - text_xalign;
+
   buf = gtk_progress_get_current_text (progress);
   
   layout = gtk_widget_create_pango_layout (widget, buf);
@@ -938,15 +809,13 @@ gtk_progress_bar_paint_text (GtkProgressBar            *pbar,
 
   pango_layout_get_pixel_extents (layout, NULL, &logical_rect);
   
-  x = widget->style->xthickness + text_xnudge +
-    (widget->allocation.width - 2 * widget->style->xthickness -
-     2 - logical_rect.width)
-    * progress->x_align; 
+  x = widget->style->xthickness + 1 + text_xalign *
+      (widget->allocation.width - 2 * widget->style->xthickness -
+       2 - logical_rect.width);
 
-  y = widget->style->ythickness + text_ynudge +
-    (widget->allocation.height - 2 * widget->style->ythickness -
-     2 - logical_rect.height)
-    * progress->y_align;
+  y = widget->style->ythickness + 1 + text_yalign *
+      (widget->allocation.height - 2 * widget->style->ythickness -
+       2 - logical_rect.height);
 
   rect.x = widget->style->xthickness;
   rect.y = widget->style->ythickness;
@@ -1201,7 +1070,7 @@ gtk_progress_bar_pulse (GtkProgressBar *pbar)
 /**
  * gtk_progress_bar_set_text:
  * @pbar: a #GtkProgressBar
- * @text: a UTF-8 string
+ * @text: a UTF-8 string, or %NULL 
  * 
  * Causes the given @text to appear superimposed on the progress bar.
  **/

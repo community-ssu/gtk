@@ -28,6 +28,17 @@
 #include <gdk/gdk.h>
 #include "gdkalias.h"
 
+/**
+ * gdk_rectangle_union:
+ * @src1: a #GdkRectangle
+ * @src2: a #GdkRectangle
+ * @dest: return location for the union of @src1 and @src2
+ *
+ * Calculates the union of two rectangles.
+ * The union of rectangles @src1 and @src2 is the smallest rectangle which
+ * includes both @src1 and @src2 within it.
+ * It is allowed for @dest to be the same as either @src1 or @src2.
+ */
 void
 gdk_rectangle_union (GdkRectangle *src1,
 		     GdkRectangle *src2,
@@ -47,6 +58,17 @@ gdk_rectangle_union (GdkRectangle *src1,
   dest->y = dest_y;
 }
 
+/**
+ * gdk_rectangle_intersect:
+ * @src1: a #GdkRectangle
+ * @src2: a #GdkRectangle
+ * @dest: return location for the intersection of @src1 and @src2
+ *
+ * Calculates the intersection of two rectangles.
+ * It is allowed for @dest to be the same as either @src1 or @src2.
+ *
+ * Returns: %TRUE if the rectangles intersect.
+ */
 gboolean
 gdk_rectangle_intersect (GdkRectangle *src1,
 			 GdkRectangle *src2,
@@ -99,7 +121,7 @@ gdk_rectangle_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GdkRectangle",
+    our_type = g_boxed_type_register_static (g_intern_static_string ("GdkRectangle"),
 					     (GBoxedCopyFunc)gdk_rectangle_copy,
 					     (GBoxedFreeFunc)g_free);
   return our_type;

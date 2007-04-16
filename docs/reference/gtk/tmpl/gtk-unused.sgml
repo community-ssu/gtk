@@ -1,7 +1,3 @@
-<!-- ##### SECTION ./tmpl/gtk-unused.sgml:Stability_Level ##### -->
-
-
-
 <!-- ##### SECTION ./tmpl/gtkarg.sgml:Long_Description ##### -->
 <para>
 All the functions in here are marked a Non-public.
@@ -340,6 +336,18 @@ Turns off certain object flags.  (Private)
 @obj: the object to affect.
 @flag: the flags to unset.
 
+<!-- ##### MACRO GTK_PRINT_SETTINGS_NUM_COPIES ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### MACRO GTK_PRINT_SETTINGS_PRINT_TO_FILE ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### MACRO GTK_STOCK_BUTTON_APPLY ##### -->
 <para>
 
@@ -517,6 +525,12 @@ Use to get the value of a GtkArg whose GtkType is GTK_TYPE_C_FOREIGN
 @b: 
 @Returns: 
 
+<!-- ##### ARG GtkAboutDialog:link-color ##### -->
+<para>
+
+</para>
+
+
 <!-- ##### STRUCT GtkAccelEntry ##### -->
 <para>
 This is a private struct used by GTK+ internally, don't worry about it.
@@ -623,6 +637,20 @@ Define a function pointer.  Deprecated.
 
 </para>
 
+
+<!-- ##### SIGNAL GtkComboBox::popup-hide ##### -->
+<para>
+
+</para>
+
+@combobox: the object which received the signal.
+
+<!-- ##### SIGNAL GtkComboBox::popup-show ##### -->
+<para>
+
+</para>
+
+@combobox: the object which received the signal.
 
 <!-- ##### ARG GtkComboBox:appearance ##### -->
 <para>
@@ -890,25 +918,7 @@ the #GtkAdjustment which sets the range of the scale.
 </para>
 
 
-<!-- ##### ARG GtkIMMulticontext:autocap ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### ARG GtkIMMulticontext:input-mode ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### ARG GtkIMMulticontext:use-show-hide ##### -->
-<para>
-
-</para>
-
-
-<!-- ##### ARG GtkIMMulticontext:visibility ##### -->
+<!-- ##### STRUCT GtkIconViewPrivate ##### -->
 <para>
 
 </para>
@@ -939,12 +949,6 @@ a RC file.
 </para>
 
 
-<!-- ##### ARG GtkLabel:translatable ##### -->
-<para>
-
-</para>
-
-
 <!-- ##### SIGNAL GtkMenuBar::cycle-focus ##### -->
 <para>
 
@@ -952,6 +956,33 @@ a RC file.
 
 @menubar: the object which received the signal.
 @arg1: 
+
+<!-- ##### SIGNAL GtkNotebook::tab-added ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@arg1: 
+@arg2: 
+
+<!-- ##### SIGNAL GtkNotebook::tab-removed ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@arg1: 
+@arg2: 
+
+<!-- ##### SIGNAL GtkNotebook::tab-reordered ##### -->
+<para>
+
+</para>
+
+@notebook: the object which received the signal.
+@arg1: 
+@arg2: 
 
 <!-- ##### ARG GtkObject:object-signal ##### -->
 <para>
@@ -1106,6 +1137,12 @@ after other user handlers and the default handler.
 @pattern_reversed: 
 @user_data: 
 @seq_id: 
+
+<!-- ##### ARG GtkPrintOperation:number-of-pages ##### -->
+<para>
+
+</para>
+
 
 <!-- ##### ENUM GtkPrivateFlags ##### -->
 <para>
@@ -1821,6 +1858,40 @@ get an array of #GtkArgs that this object accepts.
 @n_args_p: the number of arguments this object accepts.
 @Returns: the array of arguments (or NULL on error).
 
+<!-- ##### MACRO gtk_binding_entry_add ##### -->
+<para>
+Deprecated.
+</para>
+
+
+<!-- ##### FUNCTION gtk_binding_entry_add_signall ##### -->
+<para>
+
+</para>
+
+@binding_set: 
+@keyval: 
+@modifiers: 
+@signal_name: 
+@binding_args: 
+
+<!-- ##### FUNCTION gtk_binding_entry_clear ##### -->
+<para>
+
+</para>
+
+@binding_set: 
+@keyval: 
+@modifiers: 
+
+<!-- ##### FUNCTION gtk_binding_parse_binding ##### -->
+<para>
+
+</para>
+
+@scanner: 
+@Returns: 
+
 <!-- ##### FUNCTION gtk_button_box_child_requisition ##### -->
 <para>
 This is an internally used function and should never be called from an
@@ -1906,6 +1977,14 @@ Sets the default size of child buttons.
 </para>
 
 @Returns: 
+
+<!-- ##### FUNCTION gtk_cell_view_set_cell_data ##### -->
+<para>
+
+</para>
+
+@cell_view: 
+@cellview: 
 
 <!-- ##### FUNCTION gtk_clist_construct ##### -->
 <para>
@@ -2155,6 +2234,13 @@ Claim or disclaim ownership of the PRIMARY X selection.
 @editable: a #GtkEditable widget.
 @claim: if %TRUE, claim the selection, otherwise, disclaim it.
 @time: the timestamp for claiming the selection.
+
+<!-- ##### FUNCTION gtk_file_chooser_error_quark ##### -->
+<para>
+
+</para>
+
+@Returns: 
 
 <!-- ##### FUNCTION gtk_file_chooser_get_folder_mode ##### -->
 <para>
@@ -2742,6 +2828,78 @@ Set the the handle size to @size x @size pixels.
 
 @pspec: 
 @pattern: 
+
+<!-- ##### FUNCTION gtk_print_context_create_context ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+<!-- ##### FUNCTION gtk_print_context_create_layout ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+<!-- ##### FUNCTION gtk_print_context_get_cairo ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+<!-- ##### FUNCTION gtk_print_context_get_fontmap ##### -->
+<para>
+
+</para>
+
+@context: 
+@Returns: 
+
+<!-- ##### FUNCTION gtk_print_operation_set_nr_of_pages ##### -->
+<para>
+
+</para>
+
+@op: 
+@n_pages: 
+
+<!-- ##### FUNCTION gtk_print_settings_get_num_copies ##### -->
+<para>
+
+</para>
+
+@settings: 
+@Returns: 
+
+<!-- ##### FUNCTION gtk_print_settings_get_print_to_file ##### -->
+<para>
+
+</para>
+
+@settings: 
+@Returns: 
+
+<!-- ##### FUNCTION gtk_print_settings_set_num_copies ##### -->
+<para>
+
+</para>
+
+@settings: 
+@num_copies: 
+
+<!-- ##### FUNCTION gtk_print_settings_set_print_to_file ##### -->
+<para>
+
+</para>
+
+@settings: 
+@print_to_file: 
 
 <!-- ##### FUNCTION gtk_rc_init ##### -->
 <para>

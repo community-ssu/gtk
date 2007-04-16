@@ -78,9 +78,13 @@ struct _GdkDisplayX11
   gboolean use_xshm;
   gboolean have_shm_pixmaps;
   GdkTristate have_render;
-  GdkTristate have_render_with_trapezoids;
   gboolean have_xfixes;
   gint xfixes_event_base;
+
+  /* If the SECURITY extension is in place, whether this client holds 
+   * a trusted authorization and so is allowed to make various requests 
+   * (grabs, properties etc.) Otherwise always TRUE. */
+  gboolean trusted_client;
 
   /* Information about current pointer and keyboard grabs held by this
    * client. If gdk_pointer_xgrab_window or gdk_keyboard_xgrab_window
@@ -89,10 +93,13 @@ struct _GdkDisplayX11
   GdkWindowObject *pointer_xgrab_window;
   gulong pointer_xgrab_serial;
   gboolean pointer_xgrab_owner_events;
+  gboolean pointer_xgrab_implicit;
+  guint32 pointer_xgrab_time;
 
   GdkWindowObject *keyboard_xgrab_window;
   gulong keyboard_xgrab_serial;
   gboolean keyboard_xgrab_owner_events;
+  guint32 keyboard_xgrab_time;
 
   /* drag and drop information */
   GdkDragContext *current_dest_drag;
@@ -149,6 +156,9 @@ struct _GdkDisplayX11
   guint xdnd_atoms_precached : 1;
   guint motif_atoms_precached : 1;
   guint use_sync : 1;
+
+  guint have_shapes : 1;
+  guint have_input_shapes : 1;
 
   /* Alpha mask picture format */
   XRenderPictFormat *mask_format;

@@ -188,7 +188,7 @@ This is typically called by the owner of the #GtkAdjustment after it has
 changed any of the #GtkAdjustment fields other than the value.
 </para>
 
-@adjustment: 
+@adjustment: a #GtkAdjustment
 
 
 <!-- ##### FUNCTION gtk_adjustment_value_changed ##### -->
@@ -198,6 +198,6 @@ This is typically called by the owner of the #GtkAdjustment after it has
 changed the #GtkAdjustment value field.
 </para>
 
-@adjustment: 
+@adjustment: a #GtkAdjustment
 
 

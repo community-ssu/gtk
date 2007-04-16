@@ -23,10 +23,6 @@ routines for allocating colors (deprecated).
 Color Contexts
 
 
-<!-- ##### SECTION ./tmpl/gdk-unused.sgml:Stability_Level ##### -->
-
-
-
 <!-- ##### SECTION ./tmpl/input_contexts.sgml:Long_Description ##### -->
 <para>
 A #GdkIC input context is used for each user interface element which supports
@@ -898,6 +894,16 @@ they will be ignored.
 
 @display_name: 
 @Returns: 
+
+<!-- ##### FUNCTION gdk_pixbuf_set_as_cairo_source ##### -->
+<para>
+
+</para>
+
+@pixbuf: 
+@cr: 
+@pixbuf_x: 
+@pixbuf_y: 
 
 <!-- ##### VARIABLE gdk_progclass ##### -->
 <para>

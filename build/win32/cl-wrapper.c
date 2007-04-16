@@ -34,7 +34,7 @@ static const char **libraries;
 static const char **libdirs;
 static const char **objects;
 static const char *output_executable = NULL;
-static const char *output_object = NULL;
+static char *output_object = NULL;
 static const char *executable_type = NULL;
 static const char *source = NULL;
 static const char *def_file = NULL;
@@ -53,10 +53,12 @@ static FILE *force_header = NULL;
 #define INDIRECT_CMDLINE_FILE "__cl_wrapper.at"
 #define FORCE_HEADER "__force_header.h"
 
+#if 0
 static int MD_flag = 0;
 static int MP_flag = 0;
 static const char *MT_file = NULL;
 static const char *MF_file = NULL;
+#endif
 
 /* cl warnings that should be errors */
 static const int error_warnings[] = {
@@ -73,6 +75,8 @@ static const int disable_warnings[] = {
   4057,				/* indirection to slightly different base
 				   types */
   4132,			        /* const object should be initialized */
+  4761,				/* integral size mismatch in argument; conversion supplied */
+  4996,
   0
 };
 
@@ -87,6 +91,7 @@ static const int ignore_warnings_with_Wall[] = {
 				   pointer conversion in expression */
   4505,				/* unreferenced local function */
   4514,				/* unreferenced inline function */
+  4996,
   0
 };
 
@@ -98,7 +103,9 @@ static const char *default_libs[] = {
   "advapi32",
   "shell32",
   "oldnames",
-  /* mingw has dirent functions in its mingwex library, silly */
+  /* mingw has dirent functions in its mingwex library, silly,
+   * but bite the bucket and link with the dirent library
+   */
   "dirent",
   NULL
 };
@@ -116,8 +123,8 @@ static const struct
   { "unused", "4101,4100,4102,4505" },
   { NULL, NULL }
 };
-  
-static const char *
+
+static char *
 backslashify (const char *string)
 {
   char *result = malloc (strlen (string) + 1);
@@ -128,6 +135,27 @@ backslashify (const char *string)
     {
       if (*p == '/')
 	*q = '\\';
+      else
+	*q = *p;
+      p++;
+      q++;
+    }
+  *q = '\0';
+
+  return result;
+}
+
+static char *
+slashify (const char *string)
+{
+  char *result = malloc (strlen (string) + 1);
+  const char *p = string;
+  char *q = result;
+
+  while (*p)
+    {
+      if (*p == '\\')
+	*q = '/';
       else
 	*q = *p;
       p++;
@@ -238,6 +266,7 @@ process_argv (int argc,
 	_putenv (newinclude);
 	i++;
       }
+#if 0
     else if (strcmp (argv[i], "-MT") == 0)
       {
 	i++;
@@ -252,6 +281,7 @@ process_argv (int argc,
 	i++;
 	MF_file = argv[i];
       }
+#endif
     else if (strncmp (argv[i], "-l", 2) == 0)
       {
 	/* Ignore -lm */
@@ -295,8 +325,8 @@ process_argv (int argc,
 				     strcmp (lastdot, ".o") == 0 ))
 	  {
 	    strcat (cmdline, " -Fo");
-	    output_object = argv[i];
-	    strcat (cmdline, backslashify (argv[i]));
+	    output_object = backslashify (argv[i]);
+	    strcat (cmdline, output_object);
 	  }
 	else
 	  {
@@ -308,26 +338,45 @@ process_argv (int argc,
       }
     else if (strncmp (argv[i], "-O", 2) == 0)
       strcat (cmdline, " -O2");
-    else if (strncmp (argv[i], "-mcpu=", 6) == 0)
+    else if (strncmp (argv[i], "-mtune=", 7) == 0)
       {
-	const char *cpu = argv[i]+6;
+	if (cl_version <= 13)
+	  {
+	    const char *cpu = argv[i]+7;
 
-	if (strcmp (cpu, "i386") == 0)
-	  strcat (cmdline, " -G3");
-	else if (strcmp (cpu, "i486") == 0)
-	  strcat (cmdline, " -G4");
-	else if (strcmp (cpu, "i586") == 0 ||
-		 strcmp (cpu, "pentium") == 0)
-	  strcat (cmdline, " -G5");
-	else if (strcmp (cpu, "i686") == 0 ||
-		 strcmp (cpu, "pentiumpro") == 0 ||
-		 strcmp (cpu, "pentium2") == 0 ||
-		 strcmp (cpu, "pentium3") == 0 ||
-		 strcmp (cpu, "pentium3") == 0 ||
-		 strcmp (cpu, "pentium4") == 0)
-	  strcat (cmdline, " -G6");
-	else
-	  fprintf (stderr, "Ignored CPU flag %s\n", argv[i]);
+	    if (strcmp (cpu, "i386") == 0)
+	      strcat (cmdline, " -G3");
+	    else if (strcmp (cpu, "i486") == 0)
+	      strcat (cmdline, " -G4");
+	    else if (strcmp (cpu, "i586") == 0 ||
+		     strcmp (cpu, "pentium") == 0)
+	      strcat (cmdline, " -G5");
+	    else if (strcmp (cpu, "i686") == 0 ||
+		     strcmp (cpu, "pentiumpro") == 0 ||
+		     strcmp (cpu, "pentium2") == 0 ||
+		     strcmp (cpu, "pentium3") == 0 ||
+		     strcmp (cpu, "pentium3") == 0 ||
+		     strcmp (cpu, "pentium4") == 0)
+	      strcat (cmdline, " -G6");
+	    else
+	      fprintf (stderr, "Ignored CPU flag %s\n", argv[i]);
+	  }
+      }
+    else if (strcmp (argv[i], "-mno-sse3") == 0 ||
+	     strcmp (argv[i], "-mno-sse") == 0)
+      {
+      }
+    else if (strcmp (argv[i], "-mno-sse2") == 0 ||
+	     strcmp (argv[i], "-msse") == 0)
+      {
+	if (cl_version >= 13)
+	  strcat (cmdline, " -arch:SSE");
+      }
+    else if (strcmp (argv[i], "-msse3") == 0 ||
+	     strcmp (argv[i], "-msse2") == 0)
+      {
+	if (cl_version >= 13)
+	  strcat (cmdline, " -arch:SSE2");
       }
     else if (strcmp (argv[i], "-mms-bitfields") == 0)
       ;				/* Obviously the default... */
@@ -386,6 +435,18 @@ process_argv (int argc,
       verbose++;
     else if (strcmp (argv[i], "--version") == 0)
       version = 1;
+    else if (strcmp (argv[i], "-print-prog-name=ld") == 0 ||
+	     strcmp (argv[i], "--print-prog-name=ld") == 0)
+      {
+	printf ("link.exe\n");
+	exit (0);
+      }
+    else if (strcmp (argv[i], "-print-search-dirs") == 0 ||
+	     strcmp (argv[i], "--print-search-dirs") == 0)
+      {
+	printf ("libraries: %s\n", slashify (getenv ("LIB")));
+	exit (0);
+      }
     else if (argv[i][0] == '-')
       fprintf (stderr, "Ignored flag %s\n", argv[i]);
     else
@@ -399,7 +460,7 @@ process_argv (int argc,
 	    strcat (cmdline, " ");
 	    if (stricmp (lastdot, ".cc") == 0)
 	      strcat (cmdline, "-Tp");
-	    source = argv[i];
+	    source = backslashify (argv[i]);
 	    strcat (cmdline, backslashify (argv[i]));
 	  }
 	else if (lastdot != NULL && (stricmp (lastdot, ".obj") == 0 ||
@@ -479,7 +540,7 @@ main (int argc,
 
   /* -MD: Use msvcrt.dll runtime */
   strcpy (cmdline, "cl");
-  
+
   cmdline_compiler = strdup (cmdline);
   cmdline_args = cmdline + strlen (cmdline);
   strcat (cmdline, " -MD -Zm500");
@@ -496,11 +557,28 @@ main (int argc,
   process_argv (argc, (const char **) argv);
 
   fclose (force_header);
-      
+
   if (version)
     strcat (cmdline, " -c nul.c");
   else
     {
+      if (nsources == 1 && output_object == NULL)
+	{
+	  const char *base = strrchr (source, '\\');
+	  char *dot;
+
+	  if (base == NULL)
+	    base = source;
+
+	  output_object = malloc (strlen (base) + 1);
+	  strcpy (output_object, base);
+	  dot = strrchr (output_object, '.');
+	  strcpy (dot, ".o");
+
+	  strcat (cmdline, " -Fo");
+	  strcat (cmdline, output_object);
+	}
+
       if (!verbose)
 	strcat (cmdline, " -nologo");
 
@@ -575,7 +653,7 @@ main (int argc,
 	    }
 	}
     }
-  
+
   fprintf (stderr, "%s\n", cmdline);
 
   if (strlen (cmdline) >= 200)	/* Real limit unknown */
@@ -596,6 +674,7 @@ main (int argc,
 
       sprintf (indirect_cmdline, "%s @" INDIRECT_CMDLINE_FILE,
 	       cmdline_compiler);
+      dup2 (2, 1);
       retval = system (indirect_cmdline);
 #if 0
       remove (INDIRECT_CMDLINE_FILE);
@@ -603,6 +682,7 @@ main (int argc,
     }
   else
     {
+      dup2 (2, 1);
       retval = system (cmdline);
     }
 
@@ -613,6 +693,7 @@ main (int argc,
   remove (FORCE_HEADER);
 #endif
 
+#if 0
   /* Produce a dummy make dependency file if asked to... Perhaps it
    * would be feasible to look for this info from the object file, to
    * produce a real dependency file?
@@ -635,6 +716,7 @@ main (int argc,
 
       fclose (MF);
     }
+#endif
 
   exit (retval);
 }

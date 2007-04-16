@@ -22,9 +22,6 @@
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
-
- * Changes made to create Hildon focus handling and the tap and hold functionality
- *
  */
 
 #ifndef __GTK_WIDGET_H__
@@ -38,10 +35,17 @@
 #include <gtk/gtksettings.h>
 #include <atk/atkobject.h>
 
-#ifdef __cplusplus
-extern "C" {
-#endif /* __cplusplus */
+G_BEGIN_DECLS
 
+#ifdef MAEMO_CHANGES
+typedef enum
+{
+  GTK_TAP_AND_HOLD_NONE         = 0,
+  GTK_TAP_AND_HOLD_PASS_PRESS   = 1 << 0,
+  GTK_TAP_AND_HOLD_NO_SIGNALS   = 1 << 1,
+  GTK_TAP_AND_HOLD_NO_INTERNALS = 1 << 2
+} GtkWidgetTapAndHoldFlags;
+#endif /* MAEMO_CHANGES */
 
 /* The flags that are used by GtkWidget on top of the
  * flags field of GtkObject.
@@ -89,15 +93,6 @@ typedef enum
   GTK_WIDGET_HELP_TOOLTIP,
   GTK_WIDGET_HELP_WHATS_THIS
 } GtkWidgetHelpType;
-
-/*Tap And Hold type flags*/
-typedef enum
-{
-  GTK_TAP_AND_HOLD_NONE         = 0,
-  GTK_TAP_AND_HOLD_PASS_PRESS   = 1 << 0,
-  GTK_TAP_AND_HOLD_NO_SIGNALS   = 1 << 1,
-  GTK_TAP_AND_HOLD_NO_INTERNALS = 1 << 2
-} GtkWidgetTapAndHoldFlags;
 
 /* Macro for casting a pointer to a GtkWidget or GtkWidgetClass pointer.
  * Macros for testing whether `widget' or `klass' are of type GTK_TYPE_WIDGET.
@@ -194,7 +189,7 @@ struct _GtkWidget
    */
   guint8 state;
   
-  /* The saved state of the widget. When a widgets state
+  /* The saved state of the widget. When a widget's state
    *  is changed to GTK_STATE_INSENSITIVE via
    *  "gtk_widget_set_state" or "gtk_widget_set_sensitive"
    *  the old state is kept around in this field. The state
@@ -202,9 +197,9 @@ struct _GtkWidget
    */
   guint8 saved_state;
   
-  /* The widgets name. If the widget does not have a name
+  /* The widget's name. If the widget does not have a name
    *  (the name is NULL), then its name (as returned by
-   *  "gtk_widget_get_name") is its classes name.
+   *  "gtk_widget_get_name") is its class's name.
    * Among other things, the widget name is used to determine
    *  the style to use for a widget.
    */
@@ -219,21 +214,21 @@ struct _GtkWidget
    */
   GtkStyle *style;
   
-  /* The widgets desired size.
+  /* The widget's desired size.
    */
   GtkRequisition requisition;
   
-  /* The widgets allocated size.
+  /* The widget's allocated size.
    */
   GtkAllocation allocation;
   
-  /* The widgets window or its parent window if it does
+  /* The widget's window or its parent window if it does
    *  not have a window. (Which will be indicated by the
    *  GTK_NO_WINDOW flag being set).
    */
   GdkWindow *window;
   
-  /* The widgets parent.
+  /* The widget's parent.
    */
   GtkWidget *parent;
 };
@@ -418,14 +413,29 @@ struct _GtkWidgetClass
   gboolean     (*can_activate_accel) (GtkWidget *widget,
                                       guint      signal_id);
 
-  /* Padding for future expansion */
-  void (*_gtk_reserved2) (void);
-  void (*_gtk_reserved3) (void);
-  void (*tap_and_hold) (GtkWidget *widget);   /* Tap and hold action */
-  void (*tap_and_hold_setup) (GtkWidget *widget, GtkWidget *menu,
-			      GtkCallback func, GtkWidgetTapAndHoldFlags flags);
-  gboolean (*tap_and_hold_query) (GtkWidget *widget, GdkEvent *event);
+  /* Sent when a grab is broken. */
+  gboolean (*grab_broken_event) (GtkWidget	     *widget,
+                                 GdkEventGrabBroken  *event);
+
+  void         (* composited_changed) (GtkWidget *widget);
+
+#ifdef MAEMO_CHANGES
+  void      (*tap_and_hold)       (GtkWidget                *widget);   /* Tap and hold action */
+  void      (*tap_and_hold_setup) (GtkWidget                *widget,
+				   GtkWidget                *menu,
+				   GtkCallback               func,
+				   GtkWidgetTapAndHoldFlags  flags);
+  gboolean  (*tap_and_hold_query) (GtkWidget                *widget,
+				   GdkEvent                 *event);
+
   void (*insensitive_press) (GtkWidget *widget);
+#else /* !MAEMO_CHANGES */
+  /* Padding for future expansion */
+  void (*_gtk_reserved4) (void);
+  void (*_gtk_reserved5) (void);
+  void (*_gtk_reserved6) (void);
+  void (*_gtk_reserved7) (void);
+#endif /* !MAEMO_CHANGES */
 };
 
 struct _GtkWidgetAuxInfo
@@ -457,7 +467,7 @@ void	   gtk_widget_destroyed		  (GtkWidget	       *widget,
 #ifndef GTK_DISABLE_DEPRECATED
 void	   gtk_widget_set		  (GtkWidget	       *widget,
 					   const gchar         *first_property_name,
-					   ...);
+					   ...) G_GNUC_NULL_TERMINATED;
 #endif /* GTK_DISABLE_DEPRECATED */
 void	   gtk_widget_unparent		  (GtkWidget	       *widget);
 void	   gtk_widget_show		  (GtkWidget	       *widget);
@@ -575,6 +585,9 @@ GdkWindow *gtk_widget_get_parent_window	  (GtkWidget	       *widget);
 
 gboolean   gtk_widget_child_focus         (GtkWidget           *widget,
                                            GtkDirectionType     direction);
+gboolean   gtk_widget_keynav_failed       (GtkWidget           *widget,
+                                           GtkDirectionType     direction);
+void       gtk_widget_error_bell          (GtkWidget           *widget);
 
 void       gtk_widget_set_size_request    (GtkWidget           *widget,
                                            gint                 width,
@@ -729,7 +742,7 @@ void gtk_widget_style_get_valist   (GtkWidget	     *widget,
 				    va_list         var_args);
 void gtk_widget_style_get          (GtkWidget	     *widget,
 				    const gchar    *first_property_name,
-				    ...);
+				    ...) G_GNUC_NULL_TERMINATED;
 
 
 /* Set certain default values to be used at widget creation time.
@@ -751,12 +764,19 @@ GtkTextDirection gtk_widget_get_direction         (GtkWidget        *widget);
 void             gtk_widget_set_default_direction (GtkTextDirection  dir);
 GtkTextDirection gtk_widget_get_default_direction (void);
 
+/* Compositing manager functionality */
+gboolean gtk_widget_is_composited (GtkWidget *widget);
+
 /* Counterpart to gdk_window_shape_combine_mask.
  */
 void	     gtk_widget_shape_combine_mask (GtkWidget *widget,
 					    GdkBitmap *shape_mask,
 					    gint       offset_x,
 					    gint       offset_y);
+void	     gtk_widget_input_shape_combine_mask (GtkWidget *widget,
+						  GdkBitmap *shape_mask,
+						  gint       offset_x,
+						  gint       offset_y);
 
 /* internal function */
 void	     gtk_widget_reset_shapes	   (GtkWidget *widget);
@@ -797,24 +817,24 @@ void              _gtk_widget_propagate_hierarchy_changed (GtkWidget    *widget,
 							   GtkWidget    *previous_toplevel);
 void              _gtk_widget_propagate_screen_changed    (GtkWidget    *widget,
 							   GdkScreen    *previous_screen);
+void		  _gtk_widget_propagate_composited_changed (GtkWidget    *widget);
 
 GdkColormap* _gtk_widget_peek_colormap (void);
 
-/*Hildon functions for focus handling*/
-void gtk_widget_set_hildon_focus_handling( GtkWidget *widget, gboolean hildon_like );
-gboolean gtk_widget_get_hildon_focus_handling( GtkWidget *widget );
-
-/*Tap And Hold functions*/
-void gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
-                       gint *x, gint *y, gboolean *push_in, GtkWidget *widget);
-void gtk_widget_tap_and_hold_setup (GtkWidget *widget, GtkWidget *menu,
-                        GtkCallback func, GtkWidgetTapAndHoldFlags flags);
+#ifdef MAEMO_CHANGES
+void gtk_widget_tap_and_hold_menu_position_top (GtkWidget                *menu,
+						gint                     *x,
+						gint                     *y,
+						gboolean                 *push_in,
+						GtkWidget                *widget);
+void gtk_widget_tap_and_hold_setup	       (GtkWidget                *widget,
+						GtkWidget                *menu,
+						GtkCallback               func,
+						GtkWidgetTapAndHoldFlags  flags);
 
 void gtk_widget_insensitive_press ( GtkWidget *widget );
+#endif /* MAEMO_CHANGES */
 
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
+G_END_DECLS
 
 #endif /* __GTK_WIDGET_H__ */

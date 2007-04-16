@@ -53,7 +53,7 @@ struct _GtkMenuShell
   GtkWidget *active_menu_item;
   GtkWidget *parent_menu_shell;
   
-  guint button;                 /* unused */
+  guint button;
   guint32 activate_time;
 
   guint active : 1;
@@ -85,12 +85,10 @@ struct _GtkMenuShellClass
 			    gint          position);
   gint (*get_popup_delay)  (GtkMenuShell *menu_shell);
 
-  /* hildon */
-  void (*close)            (GtkMenuShell *menu_shell);
-
   /* Padding for future expansion */
   void (*_gtk_reserved1) (void);
   void (*_gtk_reserved2) (void);
+  void (*_gtk_reserved3) (void);
 };
 
 
@@ -117,18 +115,20 @@ void  _gtk_menu_shell_activate         (GtkMenuShell *menu_shell);
 gint  _gtk_menu_shell_get_popup_delay  (GtkMenuShell *menu_shell);
 void  gtk_menu_shell_cancel            (GtkMenuShell *menu_shell);
 
-void _gtk_menu_shell_add_mnemonic    (GtkMenuShell *menu_shell,
-				      guint         keyval,
-				      GtkWidget    *target);
-void _gtk_menu_shell_remove_mnemonic (GtkMenuShell *menu_shell,
-				      guint         keyval,
-				      GtkWidget    *target);
+void  _gtk_menu_shell_add_mnemonic     (GtkMenuShell *menu_shell,
+                                        guint         keyval,
+                                        GtkWidget    *target);
+void  _gtk_menu_shell_remove_mnemonic  (GtkMenuShell *menu_shell,
+                                        guint         keyval,
+                                        GtkWidget    *target);
+
 gboolean gtk_menu_shell_get_take_focus (GtkMenuShell *menu_shell);
 void     gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,
                                         gboolean      take_focus);
 
-/* Private function */
-void _gtk_menu_shell_set_first_click (GtkMenuShell *menu_shell);
+#ifdef MAEMO_CHANGES
+void    _gtk_menu_shell_set_first_click (GtkMenuShell *menu_shell);
+#endif /* MAEMO_CHANGES */
 
 G_END_DECLS
 

@@ -36,15 +36,12 @@
 #include "gtkwindow.h"
 #include "gtkintl.h"
 #include "gtktoolbar.h"
-#include "gtkmenu.h"
-#include "gtkentry.h"
-#include "gtktextview.h"
-#include "gtkwidget.h"
 #include <gobject/gobjectnotifyqueue.c>
 #include <gobject/gvaluecollector.h>
 #include "gtkalias.h"
-
-#include "gtkdialog.h"
+#ifdef MAEMO_CHANGES
+#include "gtkmenu.h"
+#endif /* MAEMO_CHANGES */
 
 enum {
   ADD,
@@ -61,18 +58,15 @@ enum {
   PROP_CHILD
 };
 
-enum {
-  FOCUS_MOVE_OK,
-  FOCUS_MOVE_OK_NO_MOVE,
-  FOCUS_MOVE_FAIL_NO_TEXT
-};
-
+#ifdef MAEMO_CHANGES
 typedef struct
 {
   GtkWidget *menu;
   void *func;
   GtkWidgetTapAndHoldFlags flags;
 } GtkContainerTAH;
+
+#endif /* MAEMO_CHANGES */
 
 #define PARAM_SPEC_PARAM_ID(pspec)              ((pspec)->param_id)
 #define PARAM_SPEC_SET_PARAM_ID(pspec, id)      ((pspec)->param_id = (id))
@@ -105,9 +99,6 @@ static void     gtk_container_real_set_focus_child (GtkContainer      *container
 static gboolean gtk_container_focus_move           (GtkContainer      *container,
 						    GList             *children,
 						    GtkDirectionType   direction);
-static gint gtk_container_focus_move_with_tab  (GtkContainer        *container,
-                                                GtkDirectionType    direction,
-                                                GtkWidget           **fallback);
 static void     gtk_container_children_callback    (GtkWidget         *widget,
 						    gpointer           client_data);
 static void     gtk_container_show_all             (GtkWidget         *widget);
@@ -116,16 +107,18 @@ static gint     gtk_container_expose               (GtkWidget         *widget,
 						    GdkEventExpose    *event);
 static void     gtk_container_map                  (GtkWidget         *widget);
 static void     gtk_container_unmap                (GtkWidget         *widget);
-static void gtk_container_tap_and_hold_setup (GtkWidget *widget,
-               GtkWidget *menu, GtkCallback func, GtkWidgetTapAndHoldFlags flags);
+
 static gchar* gtk_container_child_default_composite_name (GtkContainer *container,
 							  GtkWidget    *child);
-static void gtk_container_tap_and_hold_setup_forall( GtkWidget *widget,
-                                                     GtkContainerTAH *tah );
 
-static void gtk_container_grab_focus( GtkWidget *focus_widget );
-
-static GtkWidget *gtk_container_is_dialog(GtkWidget *widget);
+#ifdef MAEMO_CHANGES
+static void     gtk_container_tap_and_hold_setup   (GtkWidget                *widget,
+						    GtkWidget                *menu,
+						    GtkCallback               func,
+						    GtkWidgetTapAndHoldFlags  flags);
+static void     gtk_container_tap_and_hold_setup_forall (GtkWidget       *widget,
+							 GtkContainerTAH *tah);
+#endif /* MAEMO_CHANGES */
 
 /* --- variables --- */
 static const gchar           vadjustment_key[] = "gtk-vadjustment";
@@ -147,7 +140,7 @@ gtk_container_get_type (void)
 
   if (!container_type)
     {
-      static const GTypeInfo container_info =
+      const GTypeInfo container_info =
       {
 	sizeof (GtkContainerClass),
 	(GBaseInitFunc) gtk_container_base_class_init,
@@ -162,7 +155,7 @@ gtk_container_get_type (void)
       };
 
       container_type =
-	g_type_register_static (GTK_TYPE_WIDGET, "GtkContainer", 
+	g_type_register_static (GTK_TYPE_WIDGET, I_("GtkContainer"), 
 				&container_info, G_TYPE_FLAG_ABSTRACT);
     }
 
@@ -217,9 +210,10 @@ gtk_container_class_init (GtkContainerClass *class)
   widget_class->map = gtk_container_map;
   widget_class->unmap = gtk_container_unmap;
   widget_class->focus = gtk_container_focus;
+#ifdef MAEMO_CHANGES
   widget_class->tap_and_hold_setup = gtk_container_tap_and_hold_setup;
-  widget_class->grab_focus = gtk_container_grab_focus;
-
+#endif /* MAEMO_CHANGES */
+  
   class->add = gtk_container_add_unimplemented;
   class->remove = gtk_container_remove_unimplemented;
   class->check_resize = gtk_container_real_check_resize;
@@ -253,7 +247,7 @@ gtk_container_class_init (GtkContainerClass *class)
                                                       GTK_TYPE_WIDGET,
 						      GTK_PARAM_WRITABLE));
   container_signals[ADD] =
-    g_signal_new ("add",
+    g_signal_new (I_("add"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkContainerClass, add),
@@ -262,7 +256,7 @@ gtk_container_class_init (GtkContainerClass *class)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_WIDGET);
   container_signals[REMOVE] =
-    g_signal_new ("remove",
+    g_signal_new (I_("remove"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkContainerClass, remove),
@@ -271,7 +265,7 @@ gtk_container_class_init (GtkContainerClass *class)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_WIDGET);
   container_signals[CHECK_RESIZE] =
-    g_signal_new ("check_resize",
+    g_signal_new (I_("check_resize"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkContainerClass, check_resize),
@@ -279,7 +273,7 @@ gtk_container_class_init (GtkContainerClass *class)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   container_signals[SET_FOCUS_CHILD] =
-    g_signal_new ("set-focus-child",
+    g_signal_new (I_("set-focus-child"),
 		  G_OBJECT_CLASS_TYPE (object_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkContainerClass, set_focus_child),
@@ -526,7 +520,6 @@ gtk_container_child_set_valist (GtkContainer *container,
 				const gchar  *first_property_name,
 				va_list       var_args)
 {
-  GObject *object;
   GObjectNotifyQueue *nqueue;
   const gchar *name;
 
@@ -537,7 +530,6 @@ gtk_container_child_set_valist (GtkContainer *container,
   g_object_ref (container);
   g_object_ref (child);
 
-  object = G_OBJECT (container);
   nqueue = g_object_notify_queue_freeze (G_OBJECT (child), _gtk_widget_child_property_notify_context);
   name = first_property_name;
   while (name)
@@ -601,7 +593,6 @@ gtk_container_child_set_property (GtkContainer *container,
 				  const gchar  *property_name,
 				  const GValue *value)
 {
-  GObject *object;
   GObjectNotifyQueue *nqueue;
   GParamSpec *pspec;
 
@@ -614,7 +605,6 @@ gtk_container_child_set_property (GtkContainer *container,
   g_object_ref (container);
   g_object_ref (child);
 
-  object = G_OBJECT (container);
   nqueue = g_object_notify_queue_freeze (G_OBJECT (child), _gtk_widget_child_property_notify_context);
   pspec = g_param_spec_pool_lookup (_gtk_widget_child_property_pool, property_name,
 				    G_OBJECT_TYPE (container), TRUE);
@@ -1739,10 +1729,8 @@ up_down_compare (gconstpointer a,
   CompareInfo *compare = data;
   gint y1, y2;
 
-  if (!get_allocation_coords (compare->container, (GtkWidget *)a, &allocation1))
-    return 0;
-  if (!get_allocation_coords (compare->container, (GtkWidget *)b, &allocation2))
-    return 0;
+  get_allocation_coords (compare->container, (GtkWidget *)a, &allocation1);
+  get_allocation_coords (compare->container, (GtkWidget *)b, &allocation2);
 
   y1 = allocation1.y + allocation1.height / 2;
   y2 = allocation2.y + allocation2.height / 2;
@@ -1868,10 +1856,8 @@ left_right_compare (gconstpointer a,
   CompareInfo *compare = data;
   gint x1, x2;
 
-  if (!get_allocation_coords (compare->container, (GtkWidget *)a, &allocation1))
-    return 0;
-  if (!get_allocation_coords (compare->container, (GtkWidget *)b, &allocation2))
-    return 0;
+  get_allocation_coords (compare->container, (GtkWidget *)a, &allocation1);
+  get_allocation_coords (compare->container, (GtkWidget *)b, &allocation2);
 
   x1 = allocation1.x + allocation1.width / 2;
   x2 = allocation2.x + allocation2.width / 2;
@@ -2012,41 +1998,26 @@ _gtk_container_focus_sort (GtkContainer     *container,
 			   GtkDirectionType  direction,
 			   GtkWidget        *old_focus)
 {
-  GtkWidget *dialog = NULL;
-  dialog = gtk_container_is_dialog (GTK_WIDGET (container));
-  
-  children = g_list_copy (children);
+  GList *visible_children = NULL;
+
+  while (children)
+    {
+      if (GTK_WIDGET_REALIZED (children->data))
+	visible_children = g_list_prepend (visible_children, children->data);
+      children = children->next;
+    }
   
   switch (direction)
     {
     case GTK_DIR_TAB_FORWARD:
     case GTK_DIR_TAB_BACKWARD:
-      return gtk_container_focus_sort_tab (container, children, direction, old_focus);
+      return gtk_container_focus_sort_tab (container, visible_children, direction, old_focus);
     case GTK_DIR_UP:
     case GTK_DIR_DOWN:
-      /*
-       * If we're in a dialog -> sort the chuildren in the tab order.
-       */
-      if (dialog)
-      {
-        if (direction == GTK_DIR_UP)
-        {
-          direction = GTK_DIR_TAB_BACKWARD;
-          return gtk_container_focus_sort_tab (container, children, 
-                                               GTK_DIR_TAB_BACKWARD, old_focus);
-        }
-        else if (direction == GTK_DIR_DOWN)
-        {
-          direction = GTK_DIR_TAB_FORWARD;
-          return gtk_container_focus_sort_tab (container, children, 
-                                               GTK_DIR_TAB_FORWARD, old_focus);
-        }
-      }
-      else
-        return gtk_container_focus_sort_up_down (container, children, direction, old_focus);
+      return gtk_container_focus_sort_up_down (container, visible_children, direction, old_focus);
     case GTK_DIR_LEFT:
     case GTK_DIR_RIGHT:
-      return gtk_container_focus_sort_left_right (container, children, direction, old_focus);
+      return gtk_container_focus_sort_left_right (container, visible_children, direction, old_focus);
     }
 
   g_assert_not_reached ();
@@ -2062,76 +2033,24 @@ gtk_container_focus_move (GtkContainer     *container,
   GtkWidget *focus_child;
   GtkWidget *child;
 
-  gboolean looped = FALSE;
-  gboolean is_toplevel = FALSE;
-  GtkWidget *dialog = NULL;
-
-  /*
-   * If there's an item focus already and tab was pressed, only go thru
-   * GtkEntries and GtkTextviews. Do _not_ jump from last widget to the first
-   * one and vice verca.
-   */
-  if ((direction == GTK_DIR_TAB_FORWARD || direction == GTK_DIR_TAB_BACKWARD) &&
-      container->focus_child != NULL)
-    {
-      GtkWidget *fallback;
-      fallback = NULL;
-      if (gtk_container_focus_move_with_tab (container, direction, &fallback)
-              != FOCUS_MOVE_FAIL_NO_TEXT)
-        return TRUE;
-
-      if (fallback && gtk_widget_child_focus (fallback, direction))
-        return TRUE;
-    }
-
   focus_child = container->focus_child;
-  
-  /* Check if we are in a dialog */
-  dialog = gtk_container_is_dialog (GTK_WIDGET (container));
-  if (dialog)
-  {
-      /* 
-       * Check if we're handling the focus event for the topmost 
-       * container in the dialog window. is_toplevel indicates that we
-       * are in the topmost container, but also that we're in a dialog.
-       */
-      if (GTK_WIDGET (container) == GTK_DIALOG(dialog)->vbox)
-          is_toplevel = TRUE;
-  }
-  
+
   while (children)
     {
       child = children->data;
-      
-      /*
-       * If we have focusable candidates left, we have already looped
-       * them all through once or we are not in the topmost vbox of
-       * a dialog window -> proceed normally.
-       */
-      if (children->next != NULL || looped || !is_toplevel)
-      {
-          children = children->next;
-      }
-      /*
-       * In dialog however, we should loop through the widgets if 
-       * suitable widget is not found before the end of the widget list.
-       */
-      else
-      {
-          children = g_list_first (children);
-          looped = TRUE;
-      }
+      children = children->next;
 
       if (!child)
-        continue;
+	continue;
       
       if (focus_child)
         {
           if (focus_child == child)
             {
               focus_child = NULL;
-             if (gtk_widget_child_focus (child, direction))
-                return TRUE;
+
+		if (gtk_widget_child_focus (child, direction))
+		  return TRUE;
             }
         }
       else if (GTK_WIDGET_DRAWABLE (child) &&
@@ -2145,105 +2064,6 @@ gtk_container_focus_move (GtkContainer     *container,
   return FALSE;
 }
 
-static gint
-gtk_container_focus_move_with_tab (GtkContainer     *container,
-                                   GtkDirectionType direction,
-                                   GtkWidget        **fallback)
-{
-  GList *children, *sorted_children;
-  GtkWidget *child;
-  GtkWidget *focus_child;
-  gboolean found_text;
-  gint ret;
-
-  found_text = FALSE;
-  focus_child = container->focus_child;
-
-  /* This part is copied from gtk_container_focus() */
-  if (container->has_focus_chain)
-    children = g_list_copy (get_focus_chain (container));
-  else
-    children = gtk_container_get_all_children (container);
-
-  if (container->has_focus_chain &&
-      (direction == GTK_DIR_TAB_FORWARD ||
-       direction == GTK_DIR_TAB_BACKWARD))
-    {
-      sorted_children = g_list_copy (children);
-
-      if (direction == GTK_DIR_TAB_BACKWARD)
-        sorted_children = g_list_reverse (sorted_children);
-    }
-  else
-    sorted_children = _gtk_container_focus_sort (container, children,
-                                                 direction, NULL);
-  g_list_free(children);
-  children = sorted_children;
-
-  while (children)
-    {
-      child = children->data;
-      children = children->next;
-
-      if (!child)
-        continue;
-
-      if (GTK_IS_ENTRY (child) || GTK_IS_TEXT_VIEW (child))
-        found_text = TRUE;
-
-      if (focus_child)
-        {
-          if (child == focus_child)
-            {
-              focus_child = NULL;
-              if (GTK_IS_CONTAINER (child))
-                {
-                  ret = gtk_container_focus_move_with_tab (GTK_CONTAINER (child),
-                                                           direction,
-                                                           fallback);
-                  if (ret == FOCUS_MOVE_OK)
-                    {
-                      g_list_free (sorted_children);
-                      return FOCUS_MOVE_OK;
-                    }
-                  else if (ret == FOCUS_MOVE_OK_NO_MOVE)
-                    found_text = TRUE;
-                }
-            }
-        }
-      else if (GTK_WIDGET_DRAWABLE (child) &&
-               gtk_widget_is_ancestor (child, GTK_WIDGET (container)))
-        {
-          if (GTK_IS_ENTRY (child) || GTK_IS_TEXT_VIEW (child))
-            {
-              if (gtk_widget_child_focus (child, direction))
-                {
-                  g_list_free (sorted_children);
-                  return FOCUS_MOVE_OK;
-                }
-            }
-          else if (GTK_IS_CONTAINER (child))
-            {
-              ret = gtk_container_focus_move_with_tab (GTK_CONTAINER (child),
-                                                       direction,
-                                                       fallback);
-              if (ret == FOCUS_MOVE_OK)
-                {
-                  g_list_free (sorted_children);
-                  return FOCUS_MOVE_OK;
-                }
-              else if (ret == FOCUS_MOVE_OK_NO_MOVE)
-                found_text = TRUE;
-            }
-          if (GTK_WIDGET_CAN_FOCUS (child) && *fallback == NULL)
-            *fallback = child;
-        }
-    }
-
-  g_list_free (sorted_children);
-
-  return found_text ? FOCUS_MOVE_OK_NO_MOVE : FOCUS_MOVE_FAIL_NO_TEXT;
-}
 
 static void
 gtk_container_children_callback (GtkWidget *widget,
@@ -2274,7 +2094,7 @@ chain_widget_destroyed (GtkWidget *widget,
                                         user_data);
   
   g_object_set_data (G_OBJECT (container),
-                     "gtk-container-focus-chain",
+                     I_("gtk-container-focus-chain"),
                      chain);  
 }
 
@@ -2331,7 +2151,7 @@ gtk_container_set_focus_chain (GtkContainer *container,
   chain = g_list_reverse (chain);
   
   g_object_set_data (G_OBJECT (container),
-                     "gtk-container-focus-chain",
+                     I_("gtk-container-focus-chain"),
                      chain);
 }
 
@@ -2390,7 +2210,8 @@ gtk_container_unset_focus_chain (GtkContainer  *container)
       
       container->has_focus_chain = FALSE;
       
-      g_object_set_data (G_OBJECT (container), "gtk-container-focus-chain",
+      g_object_set_data (G_OBJECT (container), 
+                         I_("gtk-container-focus-chain"),
                          NULL);
 
       tmp_list = chain;
@@ -2666,75 +2487,40 @@ gtk_container_propagate_expose (GtkContainer   *container,
     }
 }
 
-static void gtk_container_tap_and_hold_setup_forall( GtkWidget *widget,
-                                                     GtkContainerTAH *tah )
+#ifdef MAEMO_CHANGES
+static void
+gtk_container_tap_and_hold_setup_forall (GtkWidget       *widget,
+					 GtkContainerTAH *tah)
 {
-  gtk_widget_tap_and_hold_setup( widget, tah->menu, tah->func,
-                                 tah->flags );
+  gtk_widget_tap_and_hold_setup (widget, tah->menu, tah->func, tah->flags);
 }
 
-static void gtk_container_tap_and_hold_setup( GtkWidget *widget,
-            GtkWidget *menu, GtkCallback func, GtkWidgetTapAndHoldFlags flags )
+static void
+gtk_container_tap_and_hold_setup (GtkWidget                *widget,
+				  GtkWidget                *menu,
+				  GtkCallback               func,
+				  GtkWidgetTapAndHoldFlags  flags)
 {
   GtkContainerTAH tah;
-  g_return_if_fail( GTK_IS_WIDGET(widget));
-  g_return_if_fail( menu == NULL || GTK_IS_MENU(menu) );
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+
   tah.menu = menu;
   tah.func = func;
   tah.flags = flags;
+
   if (flags & GTK_TAP_AND_HOLD_NO_INTERNALS)
-    gtk_container_foreach( GTK_CONTAINER(widget),
-                (GtkCallback)gtk_container_tap_and_hold_setup_forall, &tah );
+    gtk_container_foreach (GTK_CONTAINER (widget),
+			   (GtkCallback)gtk_container_tap_and_hold_setup_forall, &tah);
   else
-    gtk_container_forall( GTK_CONTAINER(widget),
-                (GtkCallback)gtk_container_tap_and_hold_setup_forall, &tah );
+    gtk_container_forall (GTK_CONTAINER (widget),
+			  (GtkCallback)gtk_container_tap_and_hold_setup_forall,
+			  &tah);
+
   parent_class->tap_and_hold_setup (widget, menu, func, flags);
 }
-
-static void gtk_container_grab_focus( GtkWidget *focus_widget )
-{
-  if( GTK_WIDGET_CAN_FOCUS(focus_widget) )
-    parent_class->grab_focus( focus_widget );
-  else
-  {
-    GList *first = NULL;
-    GList *children = NULL;
-    GtkWidget *old_focus = NULL;
-    GtkWidget *toplevel = NULL;
-
-    toplevel = gtk_widget_get_toplevel( focus_widget );
-    if( !GTK_IS_WINDOW(toplevel) )
-      return;
-
-    old_focus = GTK_WINDOW(toplevel)->focus_widget;
-    first = gtk_container_get_all_children(
-                               GTK_CONTAINER(focus_widget) );
-    children = g_list_last( first );
-    
-    while( children && GTK_WINDOW(toplevel)->focus_widget == old_focus )
-    {
-      gtk_widget_grab_focus( GTK_WIDGET(children->data) );
-      children = children->prev;
-    }
-    g_list_free( first );
-  }
-}
-
-/*
- * Because the focus behaviour is specified differently for the 
- * dialog widget, we should be able to ask whether we are in a dialog or 
- * not. 
- *
- * This function return NULL if we're not inside a dialog,
- * otherwise it'll return the dialog widget itself.
- */
-static GtkWidget *gtk_container_is_dialog(GtkWidget *widget)
-{
-  GtkWidget *dialog = NULL;  
-  dialog = gtk_widget_get_ancestor (widget, GTK_TYPE_DIALOG);
-
-  return dialog;
-}
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_CONTAINER_C__
 #include "gtkaliasdef.c"

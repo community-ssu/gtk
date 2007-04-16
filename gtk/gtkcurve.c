@@ -35,8 +35,8 @@
 #include "gtkmarshalers.h"
 #include "gtkradiobutton.h"
 #include "gtktable.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 #define RADIUS		3	/* radius of the control points */
@@ -87,7 +87,7 @@ gtk_curve_get_type (void)
 
   if (!curve_type)
     {
-      static const GTypeInfo curve_info =
+      const GTypeInfo curve_info =
       {
 	sizeof (GtkCurveClass),
 	NULL,		/* base_init */
@@ -100,7 +100,7 @@ gtk_curve_get_type (void)
 	(GInstanceInitFunc) gtk_curve_init,
       };
 
-      curve_type = g_type_register_static (GTK_TYPE_DRAWING_AREA, "GtkCurve",
+      curve_type = g_type_register_static (GTK_TYPE_DRAWING_AREA, I_("GtkCurve"),
 					   &curve_info, 0);
     }
   return curve_type;
@@ -125,8 +125,7 @@ gtk_curve_class_init (GtkCurveClass *class)
 						      P_("Is this curve linear, spline interpolated, or free-form"),
 						      GTK_TYPE_CURVE_TYPE,
 						      GTK_CURVE_TYPE_LINEAR,
-						      GTK_PARAM_READABLE |
-						      GTK_PARAM_WRITABLE));
+						      GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_MIN_X,
 				   g_param_spec_float ("min-x",
@@ -135,8 +134,7 @@ gtk_curve_class_init (GtkCurveClass *class)
 						       -G_MAXFLOAT,
 						       G_MAXFLOAT,
 						       0.0,
-						       GTK_PARAM_READABLE |
-						       GTK_PARAM_WRITABLE));
+						       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_MAX_X,
 				   g_param_spec_float ("max-x",
@@ -145,8 +143,7 @@ gtk_curve_class_init (GtkCurveClass *class)
 						       -G_MAXFLOAT,
 						       G_MAXFLOAT,
                                                        1.0,
-						       GTK_PARAM_READABLE |
-						       GTK_PARAM_WRITABLE));
+						       GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
 				   PROP_MIN_Y,
 				   g_param_spec_float ("min-y",
@@ -155,8 +152,7 @@ gtk_curve_class_init (GtkCurveClass *class)
                                                        -G_MAXFLOAT,
 						       G_MAXFLOAT,
 						       0.0,
-						       GTK_PARAM_READABLE |
-						       GTK_PARAM_WRITABLE));  
+						       GTK_PARAM_READWRITE));  
   g_object_class_install_property (gobject_class,
 				   PROP_MAX_Y,
 				   g_param_spec_float ("max-y",
@@ -165,11 +161,10 @@ gtk_curve_class_init (GtkCurveClass *class)
 						       -G_MAXFLOAT,
 						       G_MAXFLOAT,
 						       1.0,
-						       GTK_PARAM_READABLE |
-						       GTK_PARAM_WRITABLE));
+						       GTK_PARAM_READWRITE));
 
   curve_type_changed_signal =
-    g_signal_new ("curve_type_changed",
+    g_signal_new (I_("curve_type_changed"),
 		   G_OBJECT_CLASS_TYPE (gobject_class),
 		   G_SIGNAL_RUN_FIRST,
 		   G_STRUCT_OFFSET (GtkCurveClass, curve_type_changed),
@@ -432,7 +427,6 @@ gtk_curve_graph_events (GtkWidget *widget, GdkEvent *event, GtkCurve *c)
 {
   GdkCursorType new_type = c->cursor_type;
   gint i, src, dst, leftbound, rightbound;
-  GdkEventButton *bevent;
   GdkEventMotion *mevent;
   GtkWidget *w;
   gint tx, ty;
@@ -486,7 +480,6 @@ gtk_curve_graph_events (GtkWidget *widget, GdkEvent *event, GtkCurve *c)
     case GDK_BUTTON_PRESS:
       gtk_grab_add (widget);
 
-      bevent = (GdkEventButton *) event;
       new_type = GDK_TCROSS;
 
       switch (c->curve_type)

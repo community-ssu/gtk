@@ -25,20 +25,17 @@
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
  */
 
+#include <config.h>
+
 #include "gtkmain.h"
 #include "gtkmarshalers.h"
 #include "gtkplug.h"
+#include "gtkintl.h"
 #include "gtkprivate.h"
-
-#include "gdk/gdkkeysyms.h"
-#include "x11/gdkx.h"
-
-#include "gtkxembed.h"
+#include "gtkplugprivate.h"
 
 #include "gtkalias.h"
 
-static void            gtk_plug_class_init            (GtkPlugClass     *klass);
-static void            gtk_plug_init                  (GtkPlug          *plug);
 static void            gtk_plug_finalize              (GObject          *object);
 static void            gtk_plug_realize               (GtkWidget        *widget);
 static void            gtk_plug_unrealize             (GtkWidget        *widget);
@@ -58,19 +55,14 @@ static gboolean        gtk_plug_focus                 (GtkWidget        *widget,
 						       GtkDirectionType  direction);
 static void            gtk_plug_check_resize          (GtkContainer     *container);
 static void            gtk_plug_keys_changed          (GtkWindow        *window);
-static GdkFilterReturn gtk_plug_filter_func           (GdkXEvent        *gdk_xevent,
-						       GdkEvent         *event,
-						       gpointer          data);
 
-static void handle_modality_off        (GtkPlug       *plug);
-static void xembed_set_info            (GdkWindow     *window,
-					unsigned long  flags);
-
-/* From Tk */
-#define EMBEDDED_APP_WANTS_FOCUS NotifyNormal+20
-  
-static GtkWindowClass *parent_class = NULL;
 static GtkBinClass *bin_class = NULL;
+
+typedef struct
+{
+  guint			 accelerator_key;
+  GdkModifierType	 accelerator_mods;
+} GrabbedKey;
 
 enum {
   EMBEDDED,
@@ -79,32 +71,7 @@ enum {
 
 static guint plug_signals[LAST_SIGNAL] = { 0 };
 
-GType
-gtk_plug_get_type (void)
-{
-  static GType plug_type = 0;
-
-  if (!plug_type)
-    {
-      static const GTypeInfo plug_info =
-      {
-	sizeof (GtkPlugClass),
-	NULL,           /* base_init */
-	NULL,           /* base_finalize */
-	(GClassInitFunc) gtk_plug_class_init,
-	NULL,           /* class_finalize */
-	NULL,           /* class_data */
-	sizeof (GtkPlug),
-	16,             /* n_preallocs */
-	(GInstanceInitFunc) gtk_plug_init,
-      };
-
-      plug_type = g_type_register_static (GTK_TYPE_WINDOW, "GtkPlug",
-					  &plug_info, 0);
-    }
-
-  return plug_type;
-}
+G_DEFINE_TYPE (GtkPlug, gtk_plug, GTK_TYPE_WINDOW)
 
 static void
 gtk_plug_class_init (GtkPlugClass *class)
@@ -114,7 +81,6 @@ gtk_plug_class_init (GtkPlugClass *class)
   GtkWindowClass *window_class = (GtkWindowClass *)class;
   GtkContainerClass *container_class = (GtkContainerClass *)class;
 
-  parent_class = g_type_class_peek_parent (class);
   bin_class = g_type_class_peek (GTK_TYPE_BIN);
 
   gobject_class->finalize = gtk_plug_finalize;
@@ -139,7 +105,7 @@ gtk_plug_class_init (GtkPlugClass *class)
   window_class->keys_changed = gtk_plug_keys_changed;
 
   plug_signals[EMBEDDED] =
-    g_signal_new ("embedded",
+    g_signal_new (I_("embedded"),
 		  G_OBJECT_CLASS_TYPE (class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkPlugClass, embedded),
@@ -167,7 +133,7 @@ gtk_plug_set_is_child (GtkPlug  *plug,
   if (is_child)
     {
       if (plug->modality_window)
-	handle_modality_off (plug);
+	_gtk_plug_handle_modality_off (plug);
 
       if (plug->modality_group)
 	{
@@ -207,6 +173,27 @@ gtk_plug_set_is_child (GtkPlug  *plug,
 }
 
 /**
+ * gtk_plug_get_id:
+ * @plug: a #GtkPlug.
+ * 
+ * Gets the window ID of a #GtkPlug widget, which can then
+ * be used to embed this window inside another window, for
+ * instance with gtk_socket_add_id().
+ * 
+ * Return value: the window ID for the plug
+ **/
+GdkNativeWindow
+gtk_plug_get_id (GtkPlug *plug)
+{
+  g_return_val_if_fail (GTK_IS_PLUG (plug), 0);
+
+  if (!GTK_WIDGET_REALIZED (plug))
+    gtk_widget_realize (GTK_WIDGET (plug));
+
+  return _gtk_plug_windowing_get_id (plug);
+}
+
+/**
  * _gtk_plug_add_to_socket:
  * @plug: a #GtkPlug
  * @socket_: a #GtkSocket
@@ -215,23 +202,23 @@ gtk_plug_set_is_child (GtkPlug  *plug,
  **/
 void
 _gtk_plug_add_to_socket (GtkPlug   *plug,
-			 GtkSocket *socket)
+			 GtkSocket *socket_)
 {
   GtkWidget *widget;
   gint w, h;
   
   g_return_if_fail (GTK_IS_PLUG (plug));
-  g_return_if_fail (GTK_IS_SOCKET (socket));
-  g_return_if_fail (GTK_WIDGET_REALIZED (socket));
+  g_return_if_fail (GTK_IS_SOCKET (socket_));
+  g_return_if_fail (GTK_WIDGET_REALIZED (socket_));
 
   widget = GTK_WIDGET (plug);
 
   gtk_plug_set_is_child (plug, TRUE);
   plug->same_app = TRUE;
-  socket->same_app = TRUE;
-  socket->plug_widget = widget;
+  socket_->same_app = TRUE;
+  socket_->plug_widget = widget;
 
-  plug->socket_window = GTK_WIDGET (socket)->window;
+  plug->socket_window = GTK_WIDGET (socket_)->window;
 
   if (GTK_WIDGET_REALIZED (widget))
     {
@@ -239,13 +226,21 @@ _gtk_plug_add_to_socket (GtkPlug   *plug,
       gdk_window_reparent (widget->window, plug->socket_window, -w, -h);
     }
 
-  gtk_widget_set_parent (widget, GTK_WIDGET (socket));
+  gtk_widget_set_parent (widget, GTK_WIDGET (socket_));
 
-  g_signal_emit_by_name (socket, "plug_added", 0);
+  g_signal_emit_by_name (socket_, "plug_added");
 }
 
-static void
-send_delete_event (GtkWidget *widget)
+/**
+ * _gtk_plug_send_delete_event:
+ * @widget: a #GtkWidget
+ *
+ * Send a GDK_DELETE event to the @widget and destroy it if
+ * necessary. Internal GTK function, called from this file or the
+ * backend-specific GtkPlug implementation.
+ */
+void
+_gtk_plug_send_delete_event (GtkWidget *widget)
 {
   GdkEvent *event = gdk_event_new (GDK_DELETE);
   
@@ -271,58 +266,61 @@ send_delete_event (GtkWidget *widget)
  **/
 void
 _gtk_plug_remove_from_socket (GtkPlug   *plug,
-			      GtkSocket *socket)
+			      GtkSocket *socket_)
 {
   GtkWidget *widget;
   gboolean result;
   gboolean widget_was_visible;
 
   g_return_if_fail (GTK_IS_PLUG (plug));
-  g_return_if_fail (GTK_IS_SOCKET (socket));
+  g_return_if_fail (GTK_IS_SOCKET (socket_));
   g_return_if_fail (GTK_WIDGET_REALIZED (plug));
 
   widget = GTK_WIDGET (plug);
 
+  if (GTK_WIDGET_IN_REPARENT (widget))
+    return;
+
   g_object_ref (plug);
-  g_object_ref (socket);
+  g_object_ref (socket_);
 
   widget_was_visible = GTK_WIDGET_VISIBLE (plug);
   
   gdk_window_hide (widget->window);
+  GTK_PRIVATE_SET_FLAG (plug, GTK_IN_REPARENT);
   gdk_window_reparent (widget->window,
 		       gtk_widget_get_root_window (widget),
 		       0, 0);
-
-  GTK_PRIVATE_SET_FLAG (plug, GTK_IN_REPARENT);
   gtk_widget_unparent (GTK_WIDGET (plug));
   GTK_PRIVATE_UNSET_FLAG (plug, GTK_IN_REPARENT);
   
-  socket->plug_widget = NULL;
-  if (socket->plug_window != NULL)
+  socket_->plug_widget = NULL;
+  if (socket_->plug_window != NULL)
     {
-      g_object_unref (socket->plug_window);
-      socket->plug_window = NULL;
+      g_object_unref (socket_->plug_window);
+      socket_->plug_window = NULL;
     }
   
-  socket->same_app = FALSE;
+  socket_->same_app = FALSE;
 
   plug->same_app = FALSE;
   plug->socket_window = NULL;
 
   gtk_plug_set_is_child (plug, FALSE);
 		    
-  g_signal_emit_by_name (socket, "plug_removed", &result);
+  g_signal_emit_by_name (socket_, "plug_removed", &result);
   if (!result)
-    gtk_widget_destroy (GTK_WIDGET (socket));
+    gtk_widget_destroy (GTK_WIDGET (socket_));
 
-  send_delete_event (widget);
+  if (widget->window)
+    _gtk_plug_send_delete_event (widget);
 
   g_object_unref (plug);
 
-  if (widget_was_visible && GTK_WIDGET_VISIBLE (socket))
-    gtk_widget_queue_resize (GTK_WIDGET (socket));
+  if (widget_was_visible && GTK_WIDGET_VISIBLE (socket_))
+    gtk_widget_queue_resize (GTK_WIDGET (socket_));
 
-  g_object_unref (socket);
+  g_object_unref (socket_);
 }
 
 /**
@@ -423,27 +421,6 @@ gtk_plug_new_for_display (GdkDisplay	  *display,
   return GTK_WIDGET (plug);
 }
 
-/**
- * gtk_plug_get_id:
- * @plug: a #GtkPlug.
- * 
- * Gets the window ID of a #GtkPlug widget, which can then
- * be used to embed this window inside another window, for
- * instance with gtk_socket_add_id().
- * 
- * Return value: the window ID for the plug
- **/
-GdkNativeWindow
-gtk_plug_get_id (GtkPlug *plug)
-{
-  g_return_val_if_fail (GTK_IS_PLUG (plug), 0);
-
-  if (!GTK_WIDGET_REALIZED (plug))
-    gtk_widget_realize (GTK_WIDGET (plug));
-
-  return GDK_WINDOW_XWINDOW (GTK_WIDGET (plug)->window);
-}
-
 static void
 gtk_plug_finalize (GObject *object)
 {
@@ -455,7 +432,7 @@ gtk_plug_finalize (GObject *object)
       plug->grabbed_keys = NULL;
     }
   
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_plug_parent_class)->finalize (object);
 }
 
 static void
@@ -477,14 +454,14 @@ gtk_plug_unrealize (GtkWidget *widget)
   if (!plug->same_app)
     {
       if (plug->modality_window)
-	handle_modality_off (plug);
+	_gtk_plug_handle_modality_off (plug);
 
       gtk_window_group_remove_window (plug->modality_group, GTK_WINDOW (plug));
       g_object_unref (plug->modality_group);
     }
   
-  if (GTK_WIDGET_CLASS (parent_class)->unrealize)
-    (* GTK_WIDGET_CLASS (parent_class)->unrealize) (widget);
+  if (GTK_WIDGET_CLASS (gtk_plug_parent_class)->unrealize)
+    (* GTK_WIDGET_CLASS (gtk_plug_parent_class)->unrealize) (widget);
 }
 
 static void
@@ -548,12 +525,14 @@ gtk_plug_realize (GtkWidget *widget)
 					   &attributes, attributes_mask);
 	}
       
-      gdk_window_add_filter (widget->window, gtk_plug_filter_func, widget);
+      gdk_window_add_filter (widget->window,
+			     _gtk_plug_windowing_filter_func,
+			     widget);
 
       plug->modality_group = gtk_window_group_new ();
       gtk_window_group_add_window (plug->modality_group, window);
       
-      xembed_set_info (widget->window, 0);
+      _gtk_plug_windowing_realize_toplevel (plug);
     }
   else
     widget->window = gdk_window_new (gtk_widget_get_parent_window (widget), 
@@ -571,7 +550,7 @@ static void
 gtk_plug_show (GtkWidget *widget)
 {
   if (GTK_WIDGET_TOPLEVEL (widget))
-    GTK_WIDGET_CLASS (parent_class)->show (widget);
+    GTK_WIDGET_CLASS (gtk_plug_parent_class)->show (widget);
   else
     GTK_WIDGET_CLASS (bin_class)->show (widget);
 }
@@ -580,7 +559,7 @@ static void
 gtk_plug_hide (GtkWidget *widget)
 {
   if (GTK_WIDGET_TOPLEVEL (widget))
-    GTK_WIDGET_CLASS (parent_class)->hide (widget);
+    GTK_WIDGET_CLASS (gtk_plug_parent_class)->hide (widget);
   else
     GTK_WIDGET_CLASS (bin_class)->hide (widget);
 }
@@ -596,6 +575,7 @@ gtk_plug_map (GtkWidget *widget)
   if (GTK_WIDGET_TOPLEVEL (widget))
     {
       GtkBin *bin = GTK_BIN (widget);
+      GtkPlug *plug = GTK_PLUG (widget);
       
       GTK_WIDGET_SET_FLAGS (widget, GTK_MAPPED);
 
@@ -604,7 +584,7 @@ gtk_plug_map (GtkWidget *widget)
 	  !GTK_WIDGET_MAPPED (bin->child))
 	gtk_widget_map (bin->child);
 
-      xembed_set_info (widget->window, XEMBED_MAPPED);
+      _gtk_plug_windowing_map_toplevel (plug);
       
       gdk_synthesize_window_state (widget->window,
 				   GDK_WINDOW_STATE_WITHDRAWN,
@@ -619,10 +599,13 @@ gtk_plug_unmap (GtkWidget *widget)
 {
   if (GTK_WIDGET_TOPLEVEL (widget))
     {
+      GtkPlug *plug = GTK_PLUG (widget);
+
       GTK_WIDGET_UNSET_FLAGS (widget, GTK_MAPPED);
 
       gdk_window_hide (widget->window);
-      xembed_set_info (widget->window, 0);
+
+      _gtk_plug_windowing_unmap_toplevel (plug);
       
       gdk_synthesize_window_state (widget->window,
 				   0,
@@ -637,7 +620,7 @@ gtk_plug_size_allocate (GtkWidget     *widget,
 			GtkAllocation *allocation)
 {
   if (GTK_WIDGET_TOPLEVEL (widget))
-    GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+    GTK_WIDGET_CLASS (gtk_plug_parent_class)->size_allocate (widget, allocation);
   else
     {
       GtkBin *bin = GTK_BIN (widget);
@@ -670,7 +653,7 @@ gtk_plug_key_press_event (GtkWidget   *widget,
 			  GdkEventKey *event)
 {
   if (GTK_WIDGET_TOPLEVEL (widget))
-    return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
+    return GTK_WIDGET_CLASS (gtk_plug_parent_class)->key_press_event (widget, event);
   else
     return FALSE;
 }
@@ -692,23 +675,14 @@ gtk_plug_set_focus (GtkWindow *window,
 {
   GtkPlug *plug = GTK_PLUG (window);
 
-  GTK_WINDOW_CLASS (parent_class)->set_focus (window, focus);
+  GTK_WINDOW_CLASS (gtk_plug_parent_class)->set_focus (window, focus);
   
   /* Ask for focus from embedder
    */
 
   if (focus && !window->has_toplevel_focus)
-    {
-      _gtk_xembed_send_message (plug->socket_window,
-				XEMBED_REQUEST_FOCUS, 0, 0, 0);
-    }
+    _gtk_plug_windowing_set_focus (plug);
 }
-
-typedef struct
-{
-  guint			 accelerator_key;
-  GdkModifierType	 accelerator_mods;
-} GrabbedKey;
 
 static guint
 grabbed_key_hash (gconstpointer a)
@@ -742,19 +716,38 @@ add_grabbed_key (gpointer key, gpointer val, gpointer data)
   if (!plug->grabbed_keys ||
       !g_hash_table_lookup (plug->grabbed_keys, grabbed_key))
     {
-      _gtk_xembed_send_message (plug->socket_window, XEMBED_GTK_GRAB_KEY, 0, 
-				grabbed_key->accelerator_key, grabbed_key->accelerator_mods);
+      _gtk_plug_windowing_add_grabbed_key (plug,
+					   grabbed_key->accelerator_key,
+					   grabbed_key->accelerator_mods);
     }
 }
 
 static void
-add_grabbed_key_always (gpointer key, gpointer val, gpointer data)
+add_grabbed_key_always (gpointer key,
+			gpointer val,
+			gpointer data)
 {
   GrabbedKey *grabbed_key = key;
   GtkPlug *plug = data;
 
-  _gtk_xembed_send_message (plug->socket_window, XEMBED_GTK_GRAB_KEY, 0, 
-			    grabbed_key->accelerator_key, grabbed_key->accelerator_mods);
+  _gtk_plug_windowing_add_grabbed_key (plug,
+				       grabbed_key->accelerator_key,
+				       grabbed_key->accelerator_mods);
+}
+
+/**
+ * _gtk_plug_add_all_grabbed_keys:
+ *
+ * @plug: a #GtkPlug
+ *
+ * Calls _gtk_plug_windowing_add_grabbed_key() on all the grabbed keys
+ * in the @plug.
+ */
+void
+_gtk_plug_add_all_grabbed_keys (GtkPlug *plug)
+{
+  if (plug->grabbed_keys)
+    g_hash_table_foreach (plug->grabbed_keys, add_grabbed_key_always, plug);
 }
 
 static void
@@ -766,8 +759,9 @@ remove_grabbed_key (gpointer key, gpointer val, gpointer data)
   if (!plug->grabbed_keys ||
       !g_hash_table_lookup (plug->grabbed_keys, grabbed_key))
     {
-      _gtk_xembed_send_message (plug->socket_window, XEMBED_GTK_UNGRAB_KEY, 0, 
-				grabbed_key->accelerator_key, grabbed_key->accelerator_mods);
+      _gtk_plug_windowing_remove_grabbed_key (plug, 
+					      grabbed_key->accelerator_key,
+					      grabbed_key->accelerator_mods);
     }
 }
 
@@ -779,7 +773,7 @@ keys_foreach (GtkWindow      *window,
 	      gpointer        data)
 {
   GHashTable *new_grabbed_keys = data;
-  GrabbedKey *key = g_new (GrabbedKey, 1);
+  GrabbedKey *key = g_slice_new (GrabbedKey);
 
   key->accelerator_key = keyval;
   key->accelerator_mods = modifiers;
@@ -788,12 +782,18 @@ keys_foreach (GtkWindow      *window,
 }
 
 static void
+grabbed_key_free (gpointer data)
+{
+  g_slice_free (GrabbedKey, data);
+}
+
+static void
 gtk_plug_keys_changed (GtkWindow *window)
 {
   GHashTable *new_grabbed_keys, *old_grabbed_keys;
   GtkPlug *plug = GTK_PLUG (window);
 
-  new_grabbed_keys = g_hash_table_new_full (grabbed_key_hash, grabbed_key_equal, (GDestroyNotify)g_free, NULL);
+  new_grabbed_keys = g_hash_table_new_full (grabbed_key_hash, grabbed_key_equal, (GDestroyNotify)grabbed_key_free, NULL);
   _gtk_window_keys_foreach (window, keys_foreach, new_grabbed_keys);
 
   if (plug->socket_window)
@@ -808,29 +808,6 @@ gtk_plug_keys_changed (GtkWindow *window)
 	g_hash_table_foreach (old_grabbed_keys, remove_grabbed_key, plug);
       g_hash_table_destroy (old_grabbed_keys);
     }
-}
-
-static void
-focus_to_parent (GtkPlug          *plug,
-		 GtkDirectionType  direction)
-{
-  XEmbedMessageType message = XEMBED_FOCUS_PREV; /* Quiet GCC */
-  
-  switch (direction)
-    {
-    case GTK_DIR_UP:
-    case GTK_DIR_LEFT:
-    case GTK_DIR_TAB_BACKWARD:
-      message = XEMBED_FOCUS_PREV;
-      break;
-    case GTK_DIR_DOWN:
-    case GTK_DIR_RIGHT:
-    case GTK_DIR_TAB_FORWARD:
-      message = XEMBED_FOCUS_NEXT;
-      break;
-    }
-  
-  _gtk_xembed_send_focus_message (plug->socket_window, message, 0);
 }
 
 static gboolean
@@ -872,7 +849,7 @@ gtk_plug_focus (GtkWidget        *widget,
     }
 
   if (!GTK_CONTAINER (window)->focus_child)
-    focus_to_parent (plug, direction);
+    _gtk_plug_windowing_focus_to_parent (plug, direction);
 
   return FALSE;
 }
@@ -881,14 +858,63 @@ static void
 gtk_plug_check_resize (GtkContainer *container)
 {
   if (GTK_WIDGET_TOPLEVEL (container))
-    GTK_CONTAINER_CLASS (parent_class)->check_resize (container);
+    GTK_CONTAINER_CLASS (gtk_plug_parent_class)->check_resize (container);
   else
     GTK_CONTAINER_CLASS (bin_class)->check_resize (container);
 }
 
-static void
-focus_first_last (GtkPlug          *plug,
-		  GtkDirectionType  direction)
+/**
+ * _gtk_plug_handle_modality_on:
+ *
+ * @plug: a #GtkPlug
+ *
+ * Called from the GtkPlug backend when the corresponding socket has
+ * told the plug that it modality has toggled on.
+ */
+void
+_gtk_plug_handle_modality_on (GtkPlug *plug)
+{
+  if (!plug->modality_window)
+    {
+      plug->modality_window = gtk_window_new (GTK_WINDOW_POPUP);
+      gtk_window_set_screen (GTK_WINDOW (plug->modality_window),
+			     gtk_widget_get_screen (GTK_WIDGET (plug)));
+      gtk_widget_realize (plug->modality_window);
+      gtk_window_group_add_window (plug->modality_group, GTK_WINDOW (plug->modality_window));
+      gtk_grab_add (plug->modality_window);
+    }
+}
+
+/**
+ * _gtk_plug_handle_modality_off:
+ *
+ * @plug: a #GtkPlug
+ *
+ * Called from the GtkPlug backend when the corresponding socket has
+ * told the plug that it modality has toggled off.
+ */
+void
+_gtk_plug_handle_modality_off (GtkPlug *plug)
+{
+  if (plug->modality_window)
+    {
+      gtk_widget_destroy (plug->modality_window);
+      plug->modality_window = NULL;
+    }
+}
+
+/**
+ * _gtk_plug_focus_first_last:
+ *
+ * @plug: a #GtkPlug
+ * @direction: a direction
+ *
+ * Called from the GtkPlug backend when the corresponding socket has
+ * told the plug that it has received the focus.
+ */
+void
+_gtk_plug_focus_first_last (GtkPlug          *plug,
+			    GtkDirectionType  direction)
 {
   GtkWindow *window = GTK_WINDOW (plug);
   GtkWidget *parent;
@@ -906,238 +932,6 @@ focus_first_last (GtkPlug          *plug,
     }
 
   gtk_widget_child_focus (GTK_WIDGET (plug), direction);
-}
-
-static void
-handle_modality_on (GtkPlug *plug)
-{
-  if (!plug->modality_window)
-    {
-      plug->modality_window = gtk_window_new (GTK_WINDOW_POPUP);
-      gtk_window_set_screen (GTK_WINDOW (plug->modality_window),
-			     gtk_widget_get_screen (GTK_WIDGET (plug)));
-      gtk_widget_realize (plug->modality_window);
-      gtk_window_group_add_window (plug->modality_group, GTK_WINDOW (plug->modality_window));
-      gtk_grab_add (plug->modality_window);
-    }
-}
-
-static void
-handle_modality_off (GtkPlug *plug)
-{
-  if (plug->modality_window)
-    {
-      gtk_widget_destroy (plug->modality_window);
-      plug->modality_window = NULL;
-    }
-}
-
-static void
-xembed_set_info (GdkWindow     *window,
-		 unsigned long  flags)
-{
-  GdkDisplay *display = gdk_drawable_get_display (window);
-  unsigned long buffer[2];
-
-  Atom xembed_info_atom = gdk_x11_get_xatom_by_name_for_display (display, "_XEMBED_INFO");
-
-  buffer[0] = GTK_XEMBED_PROTOCOL_VERSION;
-  buffer[1] = flags;
-
-  XChangeProperty (GDK_DISPLAY_XDISPLAY (display),
-		   GDK_WINDOW_XWINDOW (window),
-		   xembed_info_atom, xembed_info_atom, 32,
-		   PropModeReplace,
-		   (unsigned char *)buffer, 2);
-}
-
-static void
-handle_xembed_message (GtkPlug           *plug,
-		       XEmbedMessageType  message,
-		       glong              detail,
-		       glong              data1,
-		       glong              data2,
-		       guint32            time)
-{
-  GtkWindow *window = GTK_WINDOW (plug);
-
-  GTK_NOTE (PLUGSOCKET,
-	    g_message ("GtkPlug: Message of type %d received", message));
-  
-  switch (message)
-    {
-    case XEMBED_EMBEDDED_NOTIFY:
-      break;
-    case XEMBED_WINDOW_ACTIVATE:
-      _gtk_window_set_is_active (window, TRUE);
-      break;
-    case XEMBED_WINDOW_DEACTIVATE:
-      _gtk_window_set_is_active (window, FALSE);
-      break;
-      
-    case XEMBED_MODALITY_ON:
-      handle_modality_on (plug);
-      break;
-    case XEMBED_MODALITY_OFF:
-      handle_modality_off (plug);
-      break;
-
-    case XEMBED_FOCUS_IN:
-      _gtk_window_set_has_toplevel_focus (window, TRUE);
-      switch (detail)
-	{
-	case XEMBED_FOCUS_FIRST:
-	  focus_first_last (plug, GTK_DIR_TAB_FORWARD);
-	  break;
-	case XEMBED_FOCUS_LAST:
-	  focus_first_last (plug, GTK_DIR_TAB_BACKWARD);
-	  break;
-	case XEMBED_FOCUS_CURRENT:
-	  break;
-	}
-      break;
-
-    case XEMBED_FOCUS_OUT:
-      _gtk_window_set_has_toplevel_focus (window, FALSE);
-      break;
-      
-    case XEMBED_GRAB_KEY:
-    case XEMBED_UNGRAB_KEY:
-    case XEMBED_GTK_GRAB_KEY:
-    case XEMBED_GTK_UNGRAB_KEY:
-    case XEMBED_REQUEST_FOCUS:
-    case XEMBED_FOCUS_NEXT:
-    case XEMBED_FOCUS_PREV:
-      g_warning ("GtkPlug: Invalid _XEMBED message of type %d received", message);
-      break;
-      
-    default:
-      GTK_NOTE(PLUGSOCKET,
-	       g_message ("GtkPlug: Ignoring unknown _XEMBED message of type %d", message));
-      break;
-    }
-}
-
-static GdkFilterReturn
-gtk_plug_filter_func (GdkXEvent *gdk_xevent, GdkEvent *event, gpointer data)
-{
-  GdkScreen *screen = gdk_drawable_get_screen (event->any.window);
-  GdkDisplay *display = gdk_screen_get_display (screen);
-  GtkPlug *plug = GTK_PLUG (data);
-  XEvent *xevent = (XEvent *)gdk_xevent;
-
-  GdkFilterReturn return_val;
-  
-  return_val = GDK_FILTER_CONTINUE;
-
-  switch (xevent->type)
-    {
-    case ClientMessage:
-      if (xevent->xclient.message_type == gdk_x11_get_xatom_by_name_for_display (display, "_XEMBED"))
-	{
-	  _gtk_xembed_push_message (xevent);
-	  handle_xembed_message (plug,
-				 xevent->xclient.data.l[1],
-				 xevent->xclient.data.l[2],
-				 xevent->xclient.data.l[3],
-				 xevent->xclient.data.l[4],
-				 xevent->xclient.data.l[0]);
-	  _gtk_xembed_pop_message ();
-				 
-	  return GDK_FILTER_REMOVE;
-	}
-      else if (xevent->xclient.message_type == gdk_x11_get_xatom_by_name_for_display (display, "WM_DELETE_WINDOW"))
-	{
-	  /* We filter these out because we take being reparented back to the
-	   * root window as the reliable end of the embedding protocol
-	   */
-
-	  return GDK_FILTER_REMOVE;
-	}
-      break;
-    case ReparentNotify:
-      {
-	XReparentEvent *xre = &xevent->xreparent;
-	gboolean was_embedded = plug->socket_window != NULL;
-
-	return_val = GDK_FILTER_REMOVE;
-	
-	g_object_ref (plug);
-	
-	if (was_embedded)
-	  {
-	    /* End of embedding protocol for previous socket */
-	    
-	    /* FIXME: race if we remove from another socket and
-	     * then add to a local window before we get notification
-	     * Probably need check in _gtk_plug_add_to_socket
-	     */
-	    
-	    if (xre->parent != GDK_WINDOW_XWINDOW (plug->socket_window))
-	      {
-		GtkWidget *widget = GTK_WIDGET (plug);
-
-		gdk_window_set_user_data (plug->socket_window, NULL);
-		g_object_unref (plug->socket_window);
-		plug->socket_window = NULL;
-
-		/* Emit a delete window, as if the user attempted
-		 * to close the toplevel. Simple as to how we
-		 * handle WM_DELETE_WINDOW, if it isn't handled
-		 * we destroy the widget. BUt only do this if
-		 * we are being reparented to the root window.
-		 * Moving from one embedder to another should
-		 * be invisible to the app.
-		 */
-
-		if (xre->parent == GDK_WINDOW_XWINDOW (gdk_screen_get_root_window (screen)))
-		  send_delete_event (widget);
-	      }
-	    else
-	      goto done;
-	  }
-
-	if (xre->parent != GDK_WINDOW_XWINDOW (gdk_screen_get_root_window (screen)))
-	  {
-	    /* Start of embedding protocol */
-
-	    plug->socket_window = gdk_window_lookup_for_display (display, xre->parent);
-	    if (plug->socket_window)
-	      {
-		gpointer user_data = NULL;
-		gdk_window_get_user_data (plug->socket_window, &user_data);
-
-		if (user_data)
-		  {
-		    g_warning (G_STRLOC "Plug reparented unexpectedly into window in the same process");
-		    plug->socket_window = NULL;
-		    break;
-		  }
-
-		g_object_ref (plug->socket_window);
-	      }
-	    else
-	      {
-		plug->socket_window = gdk_window_foreign_new_for_display (display, xre->parent);
-		if (!plug->socket_window) /* Already gone */
-		  break;
-	      }
-
-	    if (plug->grabbed_keys)
-	      g_hash_table_foreach (plug->grabbed_keys, add_grabbed_key_always, plug);
-
-	    if (!was_embedded)
-	      g_signal_emit (plug, plug_signals[EMBEDDED], 0);
-	  }
-
-      done:
-	g_object_unref (plug);
-	
-	break;
-      }
-    }
-
-  return GDK_FILTER_CONTINUE;
 }
 
 #define __GTK_PLUG_C__

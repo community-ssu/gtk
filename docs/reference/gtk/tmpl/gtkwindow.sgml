@@ -99,6 +99,11 @@ Toplevel which can contain other widgets
 
 </para>
 
+<!-- ##### ARG GtkWindow:deletable ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG GtkWindow:destroy-with-parent ##### -->
 <para>
 
@@ -165,6 +170,11 @@ Toplevel which can contain other widgets
 </para>
 
 <!-- ##### ARG GtkWindow:title ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG GtkWindow:transient-for ##### -->
 <para>
 
 </para>
@@ -563,6 +573,15 @@ Deprecated alias for gtk_window_set_position().
 @window: 
 
 
+<!-- ##### FUNCTION gtk_window_present_with_time ##### -->
+<para>
+
+</para>
+
+@window: 
+@timestamp: 
+
+
 <!-- ##### FUNCTION gtk_window_iconify ##### -->
 <para>
 
@@ -679,6 +698,15 @@ Deprecated alias for gtk_window_set_position().
 @setting: 
 
 
+<!-- ##### FUNCTION gtk_window_set_deletable ##### -->
+<para>
+
+</para>
+
+@window: 
+@setting: 
+
+
 <!-- ##### FUNCTION gtk_window_set_frame_dimensions ##### -->
 <para>
 
@@ -745,6 +773,15 @@ Deprecated alias for gtk_window_set_position().
 @setting: 
 
 
+<!-- ##### FUNCTION gtk_window_set_urgency_hint ##### -->
+<para>
+
+</para>
+
+@window: 
+@setting: 
+
+
 <!-- ##### FUNCTION gtk_window_set_accept_focus ##### -->
 <para>
 
@@ -764,6 +801,15 @@ Deprecated alias for gtk_window_set_position().
 
 
 <!-- ##### FUNCTION gtk_window_get_decorated ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_window_get_deletable ##### -->
 <para>
 
 </para>
@@ -873,9 +919,6 @@ Deprecated alias for gtk_window_set_position().
 @window: 
 @root_x: 
 @root_y: 
-<!-- # Unused Parameters # -->
-@x: 
-@y: 
 
 
 <!-- ##### FUNCTION gtk_window_get_role ##### -->
@@ -942,6 +985,15 @@ Deprecated alias for gtk_window_set_position().
 @Returns: 
 
 
+<!-- ##### FUNCTION gtk_window_get_urgency_hint ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
 <!-- ##### FUNCTION gtk_window_get_accept_focus ##### -->
 <para>
 
@@ -952,6 +1004,15 @@ Deprecated alias for gtk_window_set_position().
 
 
 <!-- ##### FUNCTION gtk_window_get_focus_on_map ##### -->
+<para>
+
+</para>
+
+@window: 
+@Returns: 
+
+
+<!-- ##### FUNCTION gtk_window_get_group ##### -->
 <para>
 
 </para>
@@ -1012,8 +1073,6 @@ Deprecated alias for gtk_window_set_position().
 </para>
 
 @icon: 
-<!-- # Unused Parameters # -->
-@pixbuf: 
 
 
 <!-- ##### FUNCTION gtk_window_set_default_icon_from_file ##### -->
@@ -1077,42 +1136,6 @@ Deprecated alias for gtk_window_set_position().
 
 </para>
 
-@setting: 
-
-
-<!-- ##### FUNCTION gtk_window_get_prev_focus_widget ##### -->
-<para>
-
-</para>
-
-@window: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gtk_window_get_urgency_hint ##### -->
-<para>
-
-</para>
-
-@window: 
-@Returns: 
-
-
-<!-- ##### FUNCTION gtk_window_set_prev_focus_widget ##### -->
-<para>
-
-</para>
-
-@window: 
-@widget: 
-
-
-<!-- ##### FUNCTION gtk_window_set_urgency_hint ##### -->
-<para>
-
-</para>
-
-@window: 
 @setting: 
 
 

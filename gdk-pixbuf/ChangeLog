@@ -1,97 +1,464 @@
-2006-09-07  Tommi Komulainen  <tommi.komulainen@nokia.com>
+2007-01-19  Michael Natterer  <mitch@imendio.com>
 
-	Backported from GNOME CVS. NB#35221
+	Port over io-jpeg.c changed (also filed upstream):
 
-    2005-05-24  Sven Neumann  <sven@gimp.org>
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use spinguard
+	to avoid infinite looping also when num_left > 0.
+
+	(gdk_pixbuf__jpeg_image_stop_load): Make sure the return value
+	matches error status, to ensure the caller can handle 'error'
+	correctly.
+
+2007-01-17  Michael Natterer  <mitch@imendio.com>
+
+	Port over io-png.c changes (also merged back to upstream):
+
+	* io-png.c (png_text_to_pixbuf_option): don't call g_convert() on
+	ASCII strings.
+
+	(png_info_callback): set an error when the size_func would scale
+	the pixbuf away completely.
+
+2006-10-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.6 ===
+
+2006-10-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.5 ===
+
+2006-09-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.4 ===
+
+2006-09-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-pnm.c: Simplify and fix reading of ASCII images. 
+
+2006-09-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.3 ===
+
+2006-08-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.2 ===
+
+2006-08-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_new_from_file_at_scale): 
+	Stop loading an animation if the first frame is complete.
+	(#350911, Christian Neumair)
+
+2006-07-23  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.1 ===
+
+2006-07-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_load_module) 
+	(gdk_pixbuf_loader_write, gdk_pixbuf_loader_close) 
+	(gdk_pixbuf_loader_ensure_error): Put the code to protect
+	against broken loaders that forget to set error in an
+	auxiliary function and call it in more places.  (#346428,
+	 Catmur)
+
+	* io-xbm.c: Fix incremental loading of 
+	xbms.  (#346427, Ed Catmur)
+	Also make the xbm loader accept const variations.
+
+2006-07-02  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.10.0 ===
+
+2006-06-21  Matthias Clasen  <mclasen@redhat.com>
+	
+	* pixops/*.S: NetBSD portability fixes.  (#346374,
+	Thomas Klausner)
+	
+	* === Released 2.9.4 ===
+
+2006-06-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.3 ===
+
+2006-06-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.2 ===
+
+2006-05-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.1 ====
+
+2006-05-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.9.0 ===
+
+2006-04-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c:
+	* gdk-pixbuf.c: Use G_DEFINE_TYPE.
+
+	* gdk-pixbuf.c: No point in making the error path fast by 
+	caching quarks.
+
+2006-03-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Remove a
+	pointless check, pointed out by Kjartan Maraas.
+
+2006-03-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c: Add some documentation about
+	supported image formats, and how to find out about them.
+	(#335536, Murray Cumming)
+
+2006-03-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-animation.c: 
+	* gdk-pixbuf-io.c: 
+	* io-xpm.c: 
+	* io-xbm.c: 
+	* io-gif.c: Always save errno to a temporary before making
+	other calls.  (#335179, Morten Welinder)
+
+2006-03-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-gif.c (gdk_pixbuf__gif_image_load): Add a shortcut
+	to stop the gif mainloop after the first frame, if that
+	is all we are interested in.  (#334538)
+
+2006-03-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-pnm.c: Support pnm files with maxval > 255.
+	(#327560, Matthijs Douze)
+
+2006-03-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-pcx.c (pcx_load_palette_8): Fix incremental loading
+	of 8-bit pcx files.  (#148518, Magnus Bergmann)
+
+2006-02-28  Anders Carlsson  <andersca@imendio.com>
+
+        * gdk-pixbuf-io.c:
+	Update documentation now that tiff supports saving.
+	
+        * io-tiff.c:
+        (tiff_load_read):
+        (tiff_load_write):
+        (tiff_load_seek):
+        (tiff_load_close):
+        (tiff_load_size):
+        (tiff_load_map_file):
+        (tiff_load_unmap_file):
+        (gdk_pixbuf__tiff_image_stop_load):
+	Rename callback functions that are used during loading.
+	
+        (tiff_save_read):
+        (tiff_save_write):
+        (tiff_save_seek):
+        (tiff_save_close):
+        (tiff_save_size):
+        (create_save_context):
+        (free_save_context):
+	New callback functions which operate on a memory buffer.
+	
+        (gdk_pixbuf__tiff_image_save_to_callback):
+	Implement saving of pixbufs to tiffs.
+	
+        (save_to_file_cb):
+        (gdk_pixbuf__tiff_image_save):
+	New function that saves a pixbuf to a FILE handle. Uses
+	save_to_callback.
+	
+        (fill_vtable):
+	Add new functions.
+	
+        (fill_info):
+	Change flags since this module supports writing now.
+	
+2006-02-10  Matthias Clasen  <mclasen@redhat.com>
+
+        * io-jpeg.c:
+        * io-png.c:
+        * io-pnm.c:
+        * io-tiff.c:
+        * io-xbm.c:
+        * io-xpm.c: Always check for NULL when using callbacks.
+        (#330563, Benjamin Otte)
+
+2006-01-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-gif.c (gdk_pixbuf__gif_image_load_increment): Don't cast
+	the results of g_new().  (#327423, Morten Welinder)
+
+2006-01-12  Federico Mena Quintero  <federico@ximian.com>
+
+	* gdk-pixbuf-util.c (gdk_pixbuf_saturate_and_pixelate): Clarify
+	the docs ("darkened/brightened" is not "saturation").
+
+Fri Dec 30 00:59:21 2005  Jonathan Blandford  <jrb@redhat.com>
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_format_get_license): minor doc edit.
+
+2005-12-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (_gdk_pixbuf_load_module_unlocked): Use
+	G_MODULE_BIND_LOCAL when opening modules.
+
+2005-12-14  Michael Natterer  <mitch@imendio.com>
+
+	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_lines): new utility
+	function which factors out massive code duplication from the
+	commit below.
+
+2005-12-14  Michael Natterer  <mitch@imendio.com>
+
+	* io-jpeg.c: applied patch from maemo-gtk which avoids the
+	allocation of an intermediate buffer for non-progressive
+	jpegs. Fixed bug #305894.
+
+2005-11-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-xpm.c: Fix several integer overflows which have been
+	reported as CVE-2005-3186 and CVE-2005-2975.
+
+2005-10-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Only call
+	gdk_pixbuf_loader_eat_header_write() when count > 0.  (#318589,
+	Bogdan Nicula)
+
+2005-10-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-animation.c (gdk_pixbuf_animation_new_from_file): 
+	* gdk-pixbuf-io.c (gdk_pixbuf_new_from_file): 
+	* gdk-pixbuf-loader.c: Use a 1k buffer for sniffing image formats,
+	instead of 128 or 256 bytes.  (#317225, Sebastien Bacher, 
+	Dom Lachowicz)
+
+2005-09-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-tga.c (parse_rle_data): Remove unused variable
+	pbuf_count.  (#315282, Kjartan Maraas)
+
+2005-08-31  Matthias Clasen  <mclasen@redhat.com>
+
+	* Makefile.am (gdk-pixbuf-enum-types.c): Intern type
+	names in code generated by glib-mkenums, too.
+
+	* io-ani-animation.c (gdk_pixbuf_ani_anim_iter_get_type) 
+	(gdk_pixbuf_ani_anim_get_type): 
+	* io-gif-animation.c (gdk_pixbuf_gif_anim_get_type) 
+	(gdk_pixbuf_gif_anim_iter_get_type): 
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_get_type): 
+	* gdk-pixbuf.c (gdk_pixbuf_get_type): 
+	* gdk-pixbuf-animation.c (gdk_pixbuf_animation_get_type): 
+	Intern type names before registering the type to avoid 
+	unnecessary copies.
+
+2005-08-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (format_check): Make this work again.
+
+	* io-png.c (png_save_to_callback_write_func): Add a cast
+	to avoid compiler warnings.
+
+	* pixops/timescale.c (main): Declare src_buf, dest_buf as
+	unsigned to avoid compiler warnings.
+
+	* gdk-pixbuf-io.h: Declare the prefix and mask members of
+	GdkPixbufModulePattern as char*, to avoid compiler warnings.
+
+	* io-ani.c (ani_load_chunk): Use g_try_new() in some places.
+
+2005-08-24  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.2 ===
+
+	* === Released 2.8.1 ===
+
+2005-08-18  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-ico.c (DecodeHeader): Check for overflow in one more
+	place.  (#313818, Tommi Komulainen)
+
+2005-08-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-jpeg.c (fatal_error_handler): Pay attention to the 
+	libjpeg error code and report OOM errors as such.  (#312674,
+	Tommi Komulainen)
+
+2005-08-13  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.8.0 ===
+
+2005-08-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* abicheck.sh: Also check exported variables.
+
+2005-08-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.5 ===
+
+2005-07-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.4 === 
+
+2005-07-22  Matthias Clasen  <mclasen@redhat.com>
+		
+	* queryloaders.c: Accept '*' in masks. (pointed out
+	by William Jon McCann)
+
+	* gdk-pixbuf-io.c (format_check): Make anchored patterns work 
+	as they did before.  (#311011, William Jon McCann)
+
+2005-07-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (format_check): Interpret patterns where
+	the first byte of the mask is '*' as unanchored.  (#311011)
+	(gdk_pixbuf_new_from_file): Use the first 256 bytes for
+	sniffing the file format.
+
+2005-07-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.3 ===
+	
+2005-07-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-i18n.h: 
+	* pixops/*: Add copyright and license information.
+
+2005-07-09  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: Don't use the scripts in build/win32 to compile the
+	rc file into a resource object file. (This means we lose the
+	build number increment magic, but I doubt it was that useful
+	anyway.) Instead use windres directly. To pass the normal .o file
+	produced by windres through libtool, which would want a .lo file,
+	pass it directly to the linker using a -Wl option.
+
+	* gdk_pixbuf.rc.in: Replace BUILDNUMBER with 0.
+
+2005-07-08  Matthias Clasen  <mclasen@redhat.com>
+	
+	* === Released 2.7.2 ===
+
+2005-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.1 ===
+	
+2005-07-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c (gdk_pixbuf_new_from_file_at_scale): Allow
+	-1 for width/height and interpret them as "not constrained".
+	(#309258, Mark McLoughlin)
+
+2005-06-26  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: Current GNU tools do understand the PRIVATE
+	keyword, so no need to remove those entries from the import
+	library. libtool installs the .dll.a import library itself, so no
+	need to do it here. Do install the .def file.
+
+2005-06-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-i18n.h: Use glib-i18n.h
+
+2005-06-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.7.0 ===
+
+2005-06-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf.symbols:
+	* gdk-pixbuf-simple-anim.h: Add 
+	gdk_pixbuf_simple_anim_iter_get_type()
+
+2005-06-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-pnm.c (pnm_read_next_value): Check for overflow.
+	(#306394, Morten Welinder)
+
+2005-05-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-bmp.c: Accept the 108 byte header of BMP v4.  (#168799)
+
+2005-05-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf.symbols: 
+	* gdk-pixbuf-simple-anim.[hc]: No need to expose the iter
+	subclass at all in the headers.
+
+	* Makefile.am: Add new files. 
+
+	* gdk-pixbuf.symbols: Add new api.
+
+	* gdk-pixbuf.h: Include gdk-pixbuf-simple-anim.h here.
+
+	* gdk-pixbuf-simple-anim.[hc]: Add a way to construct
+	simple animations out of pixbufs.  (#135161, Dom Lachowicz)
+
+2005-05-24  Sven Neumann  <sven@gimp.org>
 
 	* io-png.c: allow to specify the PNG compression level by passing
 	a "compression" parameter to the PNG save function (bug #305337).
 
 	* gdk-pixbuf-io.c (gdk_pixbuf_save): document the new parameter.
 
-2006-04-13  Tommi Komulainen  <tommi.komulainen@nokia.com>
+2005-04-09  Matthias Clasen  <mclasen@redhat.com>
 	
-	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use spinguard to
-	avoid infinite looping also when num_left > 0.
-	* io-jpeg.c (gdk_pixbuf__jpeg_image_stop_load): Make sure the return
-	value matches error status, to ensure the caller can handle 'error'
-	correctly.
-	* io-png.c (png_info_callback): Make sure 'error' is set on error.
-	N#26464
-
-2006-02-22  Tommi Komulainen  <tommi.komulainen@nokia.com>
-
-	* io-png.c (png_text_to_pixbuf_option): Avoid loading iconv if the
-	text is plain ASCII as it wastes quite a bit of memory for no benefit.
-
-2006-01-30  Tommi Komulainen  <tommi.komulainen@nokia.com>
-
-	Merge from GNOME CVS.
-
-	* gdk-pixbuf-io.c (_gdk_pixbuf_load_module_unlocked): Use
-	G_MODULE_BIND_LOCAL flags when opening modules.
-
-Thu Nov  3 12:23:17 2005  Tim Janik  <timj@gtk.org>
-
-	* io-ico.c (DecodeHeader): removed bogus HeaderSize<0 check (right
-	after initialization from unsigned variables).
-	synced with upstream HEAD.
-
-2005-10-07  Michael Natterer  <mitch@imendio.com>
-
-	Merged the 2.4 -> 2.10 diff, excluding the patches that have
-	already been applied:
-
-    2005-06-22  Matthias Clasen  <mclasen@redhat.com>
-
-	* gdk-pixbuf-i18n.h: Define ngettext() in the non-NLS
-	case.  (#308717, Peter S. Mazinger)
-
-    2005-06-08  Matthias Clasen  <mclasen@redhat.com>
-
-	* io-pnm.c (pnm_read_next_value): Check for overflow.
-	(#306394, Morten Welinder)
-
-    2005-04-29  Matthias Clasen  <mclasen@redhat.com>
-
 	* Makefile.am: Use $(NM), not nm directly. (#301299, 
 	Nguyen Thai Ngoc Duy)
-
-    2005-04-09  Matthias Clasen  <mclasen@redhat.com>
 
 	* io-bmp.c (gdk_pixbuf__bmp_image_save_to_callback): 
 	Don't overflow the stack.  (Jakub Jelinek, Arjan van de Ven)
 
-    2005-04-08  Matthias Clasen  <mclasen@redhat.com>
+2005-04-08  Matthias Clasen  <mclasen@redhat.com>
 
 	* io-pcx.c: No debugging output, please. (#173107,
 	John Ellis)
 
-    2005-04-03  Hans Breuer  <hans@breuer.org>
+2005-04-07  Matthias Clasen  <mclasen@redhat.com>
 
-	* makefile.msc : follow .symbols changes
+	* io-bmp.c (DecodeColormap): Initialize the colormap to 
+	zero.  (#171762, David Costanzo)
 
-    2005-03-30  Matthias Clasen  <mclasen@redhat.com>
+2005-03-30  Matthias Clasen  <mclasen@redhat.com>
 
-	* gdk-pixbuf-io.c: Document BMP saving support.
+	* io-bmp.c: Avoid bus errors due to unaligned access. (#168173,
+	Morten Welinder, Ivan Wong)
 
-	* io-bmp.c: Support saving as BMP. (168173, Ivan Wong)
-
-    2005-03-29  Matthias Clasen  <mclasen@redhat.com>
+2005-03-29  Matthias Clasen  <mclasen@redhat.com>
 
 	* io-tga.c (parse_rle_data): Fix the update areas for incremental
 	loading of compressed tgas.  (#171883, David Costanzo)
 
-	Sun Mar 27 19:59:52 2005  Manish Singh  <yosh@gimp.org>
+2005-03-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-bmp.c (DoCompressed): Use the correct update regions for
+	compressed bmps.  (#150664, Owen Taylor, test images provided
+	by David Costanzo)
+
+Sun Mar 27 19:59:52 2005  Manish Singh  <yosh@gimp.org>
 
 	* io-bmp.c (grow_buffer): reject 0-sized buffers as corrupt header
 	data. Fixes bug #171707.
 
-    2005-03-14  Matthias Clasen  <mclasen@redhat.com>
+2005-03-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-data.c (gdk_pixbuf_new_from_data): Use canonical
+	property names.
+
+2005-03-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf.c (gdk_pixbuf_class_init): Mark param spec strings
+	as static.
+
+2005-03-14  Matthias Clasen  <mclasen@redhat.com>
 
 	Make PLT-reduction work with gcc4, and don't include
 	everything in gdk-pixbuf-alias.h:
-
+	
 	* gdk-pixbuf.symbols: Group symbols by header and source file.
 	* /makegdkpixbufalias.pl: Protect definitions by the same 
 	preprocessor symbols used to guard the headers. Move
@@ -102,59 +469,64 @@ Thu Nov  3 12:23:17 2005  Tim Janik  <timj@gtk.org>
 	* *.c: Include gdk-pixbuf-alias.h after the other headers,
 	include gdk-pixbuf-aliasdef.c at the bottom.
 
-    2005-03-10  Tor Lillqvist  <tml@novell.com>
-
-	* Makefile.am: Use grep | head -n 1 instead of grep -m 1 which
-	doesn't work with slightly older versions of GNU grep in
-	install-libtool-import-lib rule.
+2005-03-10  Tor Lillqvist  <tml@novell.com>
 
 	* gdk-pixbuf-core.h
 	* gdk-pixbuf-io.c
 	* gdk-pixbuf.symbols: Implement DLL ABI stablility for
 	gdk_pixbuf_save() and gdk_pixbuf_savev(). (#167973)
 
-    2005-03-09  Matthias Clasen  <mclasen@redhat.com>
+2005-03-09  Matthias Clasen  <mclasen@redhat.com>
 
 	* io-gif-animation.c (gdk_pixbuf_gif_anim_frame_composite): Fix 
 	a C99ism.  (#169741, Morten Welinder)
 
-2005-10-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+2005-03-08  Matthias Clasen  <mclasen@redhat.com>
 
-	* io-jpeg.c (gdk_pixbuf__jpeg_image_load_increment): Use buffered mode
-	only with progressive images to avoid excessive memory consumption; it
-	makes no difference to disable it for progressive images.
-	N#20154
+	* gdk-pixbuf.c (gdk_pixbuf_class_init): Use canonical
+	form of the name when registering properties. 
 
-2005-09-01  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	* gdk-pixbuf.symbols: Add the new attributes here, too.
+	
+	* gdk-pixbuf-core.h: Use G_GNUC_NULL_TERMINATED where
+	appropriate.  (#165682, Marc Meissner)
 
-	Merge patches by Matthias Clasen and Manish Singh from GNOME CVS:
+2005-03-07  Matthias Clasen  <mclasen@redhat.com>
 
-	* io-bmp.c (DecodeColormap): Initialize the colormap to
-	zero.  (#171762, David Costanzo)
-	* io-bmp.c (DoCompressed): Use the correct update regions for
-	compressed bmps.  (#150664, Owen Taylor, test images provided
-	by David Costanzo)
-	* io-bmp.c (grow_buffer): reject 0-sized buffers as corrupt header
-	data. Fixes bug #171707.
-	N#18487
+	* io-xpm.c: Use a generated table of offsets
+	into a big const string to avoid relocations
+	in the rgb color table. (#168901, Tommi Komulainen)
+	
+	* gen-color-table.pl: Script to generate the table,
+	copied from Owen Taylors script by the same name
+	in Pango.
+	
+	* xpm-color-table.h: The generated table.
 
-2005-08-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+2005-03-03  Matthias Clasen  <mclasen@redhat.com>
 
-	* io-ico.c (DecodeHeader): Check for header size overflow.
-	N#17078
+	* io-xpm.c (pixbuf_create_from_xpm): Check the number
+	of scanned items.  (#168906, Morten Welinder)
 
-2005-03-01  Matthias Clasen  <mclasen@redhat.com>
+	Make the gif loader handle oom when loading 
+	animations.  (#168857, Tommi Komulainen)
+	
+	* io-gif-animation.c (gdk_pixbuf_gif_anim_frame_composite): 
+	Handle oom by returning NULL.
 
-	* === Released 2.6.4 ===
+	* io-gif.c (gif_get_lzw): Return an error if composite 
+	returns NULL.
 
 2005-02-28  Matthias Clasen  <mclasen@redhat.com>
 
 	* pixops/*.S: Add .note.GNU-stack sections to Mark these as not 
 	requiring an executable stack.
 	
-	* === Released 2.6.3 ===
-
 2005-02-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-io.c: Document BMP saving support.
+
+	* io-bmp.c: Support saving as BMP. (168173, Ivan Wong)
 
 	* io-ico.c: Fix a typo.  (#168173, Ivan Wong)
 
@@ -162,6 +534,10 @@ Thu Nov  3 12:23:17 2005  Tim Janik  <timj@gtk.org>
 
 	* io-pnm.c (pnm_skip_whitespace): Don't read over the end of
 	the buffer if '#' appears at the very end.  (#167141, Doug Morgan)
+
+2005-02-05  Hans Breuer  <hans@breuer.org>
+
+	* makefile.msc : rule for gdk_pixbuf.def
 
 2005-02-07  Matthias Clasen  <mclasen@redhat.com>
 
@@ -171,16 +547,19 @@ Thu Nov  3 12:23:17 2005  Tim Janik  <timj@gtk.org>
 	parsing of pbm images without whitespace between the 
 	pixels.  (#165803, Samuel Hym)
 
-2005-02-04  Matthias Clasen  <mclasen@redhat.com>
-
-	* === Released 2.6.2 ===
-
 2005-01-22  Matthias Clasen  <mclasen@redhat.com>
 
 	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_new_with_type) 
 	(gdk_pixbuf_loader_new_with_mime_type): Close the loader
 	before unreffing it in the error case.  (#164915, Crispin 
 	Flowerday)
+
+2005-01-12  Owen Taylor <otaylor@redhat.com>
+
+	* Makefile.am: 	Use grep | head -n 1 instead of grep -m 1 
+	which doesn't work
+	with slightly older versions of GNU grep in 
+	install-libtool-import-lib rule.
 
 2005-01-08  Matthias Clasen  <mclasen@redhat.com>
 

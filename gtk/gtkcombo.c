@@ -46,8 +46,8 @@
 #include "gdk/gdkkeysyms.h"
 #include "gtkcombo.h"
 #include "gtkframe.h"
-#include "gtkintl.h"
 #include "gtkprivate.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 const gchar gtk_combo_string_key[] = "gtk-combo-string-value";
@@ -64,8 +64,6 @@ enum {
   PROP_VALUE_IN_LIST
 };
 
-static void         gtk_combo_class_init         (GtkComboClass    *klass);
-static void         gtk_combo_init               (GtkCombo         *combo);
 static void         gtk_combo_realize		 (GtkWidget	   *widget);
 static void         gtk_combo_unrealize		 (GtkWidget	   *widget);
 static void         gtk_combo_destroy            (GtkObject        *combo);
@@ -122,7 +120,8 @@ static void         gtk_combo_get_property       (GObject         *object,
 						  guint            prop_id,
 						  GValue          *value,
 						  GParamSpec      *pspec);
-static GtkHBoxClass *parent_class = NULL;
+
+G_DEFINE_TYPE (GtkCombo, gtk_combo, GTK_TYPE_HBOX)
 
 static void
 gtk_combo_class_init (GtkComboClass * klass)
@@ -135,8 +134,6 @@ gtk_combo_class_init (GtkComboClass * klass)
   oclass = (GtkObjectClass *) klass;
   widget_class = (GtkWidgetClass *) klass;
 
-  parent_class = g_type_class_peek_parent (klass);
-
   gobject_class->set_property = gtk_combo_set_property; 
   gobject_class->get_property = gtk_combo_get_property; 
 
@@ -146,21 +143,21 @@ gtk_combo_class_init (GtkComboClass * klass)
                                                          P_("Enable arrow keys"),
                                                          P_("Whether the arrow keys move through the list of items"),
                                                          TRUE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_ENABLE_ARROWS_ALWAYS,
                                    g_param_spec_boolean ("enable-arrows-always",
                                                          P_("Always enable arrows"),
                                                          P_("Obsolete property, ignored"),
                                                          TRUE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
   g_object_class_install_property (gobject_class,
                                    PROP_CASE_SENSITIVE,
                                    g_param_spec_boolean ("case-sensitive",
                                                          P_("Case sensitive"),
                                                          P_("Whether list item matching is case sensitive"),
                                                          FALSE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_ALLOW_EMPTY,
@@ -168,7 +165,7 @@ gtk_combo_class_init (GtkComboClass * klass)
                                                          P_("Allow empty"),
 							 P_("Whether an empty value may be entered in this field"),
                                                          TRUE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
                                    PROP_VALUE_IN_LIST,
@@ -176,7 +173,7 @@ gtk_combo_class_init (GtkComboClass * klass)
                                                          P_("Value in list"),
                                                          P_("Whether entered values must already be present in the list"),
                                                          FALSE,
-                                                         GTK_PARAM_READABLE | GTK_PARAM_WRITABLE));
+                                                         GTK_PARAM_READWRITE));
   
    
   oclass->destroy = gtk_combo_destroy;
@@ -198,7 +195,7 @@ gtk_combo_destroy (GtkObject *object)
       combo->popwin = NULL;
     }
 
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_combo_parent_class)->destroy (object);
 }
 
 static int
@@ -366,7 +363,7 @@ gtk_combo_func (GtkListItem * li)
   GtkWidget *label;
   gchar *ltext = NULL;
 
-  ltext = g_object_get_data (G_OBJECT (li), gtk_combo_string_key);
+  ltext = g_object_get_data (G_OBJECT (li), I_(gtk_combo_string_key));
   if (!ltext)
     {
       label = GTK_BIN (li)->child;
@@ -562,8 +559,9 @@ gtk_combo_popup_list (GtkCombo *combo)
 
   if (GTK_IS_WINDOW (toplevel))
     {
-      gtk_window_group_add_window (_gtk_window_get_group (GTK_WINDOW (toplevel)), 
+      gtk_window_group_add_window (gtk_window_get_group (GTK_WINDOW (toplevel)), 
                                    GTK_WINDOW (combo->popwin));
+      gtk_window_set_transient_for (combo->popwin, GTK_WINDOW (toplevel));
     }
 
   gtk_widget_set_size_request (combo->popwin, width, height);
@@ -594,7 +592,7 @@ gtk_combo_popdown_list (GtkCombo *combo)
   
   gtk_widget_hide (combo->popwin);
 
-  gtk_window_group_add_window (_gtk_window_get_group (NULL), GTK_WINDOW (combo->popwin));
+  gtk_window_group_add_window (gtk_window_get_group (NULL), GTK_WINDOW (combo->popwin));
 }
 
 static gboolean
@@ -941,6 +939,7 @@ gtk_combo_init (GtkCombo * combo)
 		    G_CALLBACK (gtk_combo_popup_button_leave), combo);
 
   combo->popwin = gtk_window_new (GTK_WINDOW_POPUP);
+  gtk_window_set_type_hint (GTK_WINDOW (combo->popwin), GDK_WINDOW_TYPE_HINT_COMBO);
   g_object_ref (combo->popwin);
   gtk_window_set_resizable (GTK_WINDOW (combo->popwin), FALSE);
 
@@ -983,7 +982,7 @@ gtk_combo_init (GtkCombo * combo)
 				       gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (combo->popup)));
   gtk_widget_show (combo->list);
 
-  combo->list_change_id = g_signal_connect (combo->list, "selection_changed",
+  combo->list_change_id = g_signal_connect (combo->list, "selection-changed",
 					    G_CALLBACK (gtk_combo_selection_changed), combo);
   
   g_signal_connect (combo->popwin, "key_press_event",
@@ -1008,7 +1007,7 @@ gtk_combo_realize (GtkWidget *widget)
   gtk_window_set_screen (GTK_WINDOW (combo->popwin), 
 			 gtk_widget_get_screen (widget));
   
-  GTK_WIDGET_CLASS( parent_class )->realize (widget);  
+  GTK_WIDGET_CLASS (gtk_combo_parent_class)->realize (widget);  
 }
 
 static void        
@@ -1019,34 +1018,7 @@ gtk_combo_unrealize (GtkWidget *widget)
   gtk_combo_popdown_list (combo);
   gtk_widget_unrealize (combo->popwin);
   
-  GTK_WIDGET_CLASS (parent_class)->unrealize (widget);
-}
-
-GType
-gtk_combo_get_type (void)
-{
-  static GType combo_type = 0;
-
-  if (!combo_type)
-    {
-      static const GTypeInfo combo_info =
-      {
-	sizeof (GtkComboClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_combo_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_data */
-	sizeof (GtkCombo),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_combo_init,
-      };
-
-      combo_type = g_type_register_static (GTK_TYPE_HBOX, "GtkCombo",
-					   &combo_info, 0);
-    }
-
-  return combo_type;
+  GTK_WIDGET_CLASS (gtk_combo_parent_class)->unrealize (widget);
 }
 
 GtkWidget*
@@ -1151,7 +1123,7 @@ gtk_combo_set_item_string (GtkCombo * combo, GtkItem * item, const gchar * item_
   g_return_if_fail (GTK_IS_COMBO (combo));
   g_return_if_fail (item != NULL);
 
-  g_object_set_data_full (G_OBJECT (item), gtk_combo_string_key,
+  g_object_set_data_full (G_OBJECT (item), I_(gtk_combo_string_key),
 			  g_strdup (item_value), g_free);
 }
 
@@ -1164,7 +1136,7 @@ gtk_combo_size_allocate (GtkWidget     *widget,
   g_return_if_fail (GTK_IS_COMBO (widget));
   g_return_if_fail (allocation != NULL);
 
-  GTK_WIDGET_CLASS (parent_class)->size_allocate (widget, allocation);
+  GTK_WIDGET_CLASS (gtk_combo_parent_class)->size_allocate (widget, allocation);
   
   combo = GTK_COMBO (widget);
 

@@ -1,6 +1,27 @@
+/* GTK - The GIMP Toolkit
+ * gtkfilechooserembed.h: Abstract sizing interface for file selector implementations
+ * Copyright (C) 2004, Red Hat, Inc.
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
+ * Boston, MA 02111-1307, USA.
+ */
+
 #include <config.h>
 #include "gtkfilechooserembed.h"
 #include "gtkmarshalers.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 static void gtk_file_chooser_embed_class_init (gpointer g_iface);
@@ -13,6 +34,8 @@ static void delegate_get_resizable_hints      (GtkFileChooserEmbed *chooser_embe
 static gboolean delegate_should_respond       (GtkFileChooserEmbed *chooser_embed);
 static void delegate_initial_focus            (GtkFileChooserEmbed *chooser_embed);
 static void delegate_default_size_changed     (GtkFileChooserEmbed *chooser_embed,
+					       gpointer             data);
+static void delegate_response_requested       (GtkFileChooserEmbed *chooser_embed,
 					       gpointer             data);
 
 static GtkFileChooserEmbed *
@@ -56,10 +79,12 @@ _gtk_file_chooser_embed_set_delegate (GtkFileChooserEmbed *receiver,
   g_return_if_fail (GTK_IS_FILE_CHOOSER_EMBED (receiver));
   g_return_if_fail (GTK_IS_FILE_CHOOSER_EMBED (delegate));
   
-  g_object_set_data (G_OBJECT (receiver), "gtk-file-chooser-embed-delegate", delegate);
+  g_object_set_data (G_OBJECT (receiver), I_("gtk-file-chooser-embed-delegate"), delegate);
 
-  g_signal_connect (delegate, "default_size_changed",
+  g_signal_connect (delegate, "default-size-changed",
 		    G_CALLBACK (delegate_default_size_changed), receiver);
+  g_signal_connect (delegate, "response-requested",
+		    G_CALLBACK (delegate_response_requested), receiver);
 }
 
 
@@ -99,6 +124,13 @@ delegate_default_size_changed (GtkFileChooserEmbed *chooser_embed,
   g_signal_emit_by_name (data, "default-size-changed");
 }
 
+static void
+delegate_response_requested (GtkFileChooserEmbed *chooser_embed,
+			     gpointer             data)
+{
+  g_signal_emit_by_name (data, "response-requested");
+}
+
 
 /* publicly callable functions */
 
@@ -109,7 +141,7 @@ _gtk_file_chooser_embed_get_type (void)
 
   if (!file_chooser_embed_type)
     {
-      static const GTypeInfo file_chooser_embed_info =
+      const GTypeInfo file_chooser_embed_info =
       {
 	sizeof (GtkFileChooserEmbedIface),  /* class_size */
 	NULL,                          /* base_init */
@@ -118,7 +150,7 @@ _gtk_file_chooser_embed_get_type (void)
       };
 
       file_chooser_embed_type = g_type_register_static (G_TYPE_INTERFACE,
-							"GtkFileChooserEmbed",
+							I_("GtkFileChooserEmbed"),
 							&file_chooser_embed_info, 0);
 
       g_type_interface_add_prerequisite (file_chooser_embed_type, GTK_TYPE_WIDGET);
@@ -132,10 +164,17 @@ gtk_file_chooser_embed_class_init (gpointer g_iface)
 {
   GType iface_type = G_TYPE_FROM_INTERFACE (g_iface);
 
-  g_signal_new ("default-size-changed",
+  g_signal_new (I_("default-size-changed"),
 		iface_type,
 		G_SIGNAL_RUN_LAST,
 		G_STRUCT_OFFSET (GtkFileChooserEmbedIface, default_size_changed),
+		NULL, NULL,
+		_gtk_marshal_VOID__VOID,
+		G_TYPE_NONE, 0);
+  g_signal_new (I_("response-requested"),
+		iface_type,
+		G_SIGNAL_RUN_LAST,
+		G_STRUCT_OFFSET (GtkFileChooserEmbedIface, response_requested),
 		NULL, NULL,
 		_gtk_marshal_VOID__VOID,
 		G_TYPE_NONE, 0);
@@ -180,6 +219,3 @@ _gtk_file_chooser_embed_get_resizable_hints (GtkFileChooserEmbed *chooser_embed,
 
   GTK_FILE_CHOOSER_EMBED_GET_IFACE (chooser_embed)->get_resizable_hints (chooser_embed, resize_horizontally, resize_vertically);
 }
-
-#define __GTK_FILE_CHOOSER_EMBED_C__
-#include "gtkaliasdef.c"

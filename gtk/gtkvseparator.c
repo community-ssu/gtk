@@ -26,42 +26,17 @@
 
 #include <config.h>
 #include "gtkvseparator.h"
+#include "gtkintl.h"
 #include "gtkalias.h"
 
 
-static void gtk_vseparator_class_init (GtkVSeparatorClass *klass);
-static void gtk_vseparator_init       (GtkVSeparator      *vseparator);
-static gint gtk_vseparator_expose     (GtkWidget          *widget,
-				       GdkEventExpose     *event);
+static void gtk_vseparator_size_request (GtkWidget          *widget,
+                                         GtkRequisition     *requisition);
+static gint gtk_vseparator_expose       (GtkWidget          *widget,
+                                         GdkEventExpose     *event);
 
 
-GType
-gtk_vseparator_get_type (void)
-{
-  static GType vseparator_type = 0;
-
-  if (!vseparator_type)
-    {
-      static const GTypeInfo vseparator_info =
-      {
-	sizeof (GtkVSeparatorClass),
-	NULL,		/* base_init */
-	NULL,		/* base_finalize */
-	(GClassInitFunc) gtk_vseparator_class_init,
-	NULL,		/* class_finalize */
-	NULL,		/* class_init */
-	sizeof (GtkVSeparator),
-	0,		/* n_preallocs */
-	(GInstanceInitFunc) gtk_vseparator_init,
-      };
-
-      vseparator_type =
-	g_type_register_static (GTK_TYPE_SEPARATOR, "GtkVSeparator",
-				&vseparator_info, 0);
-    }
-
-  return vseparator_type;
-}
+G_DEFINE_TYPE (GtkVSeparator, gtk_vseparator, GTK_TYPE_SEPARATOR)
 
 static void
 gtk_vseparator_class_init (GtkVSeparatorClass *klass)
@@ -70,6 +45,7 @@ gtk_vseparator_class_init (GtkVSeparatorClass *klass)
 
   widget_class = (GtkWidgetClass*) klass;
 
+  widget_class->size_request = gtk_vseparator_size_request;
   widget_class->expose_event = gtk_vseparator_expose;
 }
 
@@ -86,6 +62,23 @@ gtk_vseparator_new (void)
   return g_object_new (GTK_TYPE_VSEPARATOR, NULL);
 }
 
+static void
+gtk_vseparator_size_request (GtkWidget      *widget,
+                             GtkRequisition *requisition)
+{
+  gboolean wide_separators;
+  gint     separator_width;
+
+  gtk_widget_style_get (widget,
+                        "wide-separators", &wide_separators,
+                        "separator-width", &separator_width,
+                        NULL);
+
+  if (wide_separators)
+    requisition->height = separator_width;
+  else
+    requisition->height = widget->style->xthickness;
+}
 
 static gint
 gtk_vseparator_expose (GtkWidget      *widget,
@@ -93,22 +86,26 @@ gtk_vseparator_expose (GtkWidget      *widget,
 {
   if (GTK_WIDGET_DRAWABLE (widget))
     {
-      gboolean hildonlike_drawing = FALSE;
+      gboolean wide_separators;
+      gint     separator_width;
 
       gtk_widget_style_get (widget,
-                            "hildonlike-drawing", &hildonlike_drawing,
+                            "wide-separators", &wide_separators,
+                            "separator-width", &separator_width,
                             NULL);
 
-      if (hildonlike_drawing)
-        gtk_paint_box (widget->style, widget->window, GTK_STATE_NORMAL,
-                       GTK_SHADOW_NONE, &event->area, widget, "vseparator",
+      if (wide_separators)
+        gtk_paint_box (widget->style, widget->window,
+                       GTK_WIDGET_STATE (widget), GTK_SHADOW_ETCHED_OUT,
+                       &event->area, widget, "vseparator",
                        widget->allocation.x + (widget->allocation.width -
-                                               widget->style->xthickness) / 2,
+                                               separator_width) / 2,
                        widget->allocation.y,
-                       widget->style->xthickness,
-                       widget->allocation.height - 1);
+                       separator_width,
+                       widget->allocation.height);
       else
-        gtk_paint_vline (widget->style, widget->window, GTK_STATE_NORMAL,
+        gtk_paint_vline (widget->style, widget->window,
+                         GTK_WIDGET_STATE (widget),
                          &event->area, widget, "vseparator",
                          widget->allocation.y,
                          widget->allocation.y + widget->allocation.height - 1,

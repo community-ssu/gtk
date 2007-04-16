@@ -7,88 +7,6 @@ Base class for input method contexts
 <!-- ##### SECTION Long_Description ##### -->
 <para>
 
-The following example shows how the IM context filter functions can be used
-in a widget.
-
-<informalexample>
-<programlisting>
-...
-
-static gboolean
-my_custom_widget_key_press (GtkWidget *widget, GdkEventKey *event, gpointer data)
-{
-  GtkIMContext *context = GTK_IM_CONTEXT(data);
-
-  if (hildon_gtk_im_context_filter_event (context, event))
-    return TRUE;
-
-  if (gtk_im_context_filter_keypress (context, event))
-    return TRUE;
-  else
-    {
-      /* Do something widget specific with the key press,
-	 for example moving the cursor */
-      ...
-
-      return FALSE;
-    }
-}
-
-static gboolean
-my_custom_widget_button_press (GtkWidget *widget, GdkEventButton *event, gpointer data)
-{
-  GtkIMContext *context = GTK_IM_CONTEXT(data);
-
-  if (hildon_gtk_im_context_filter_event (context, event))
-    return TRUE;
-
-  /* Do something widget specific with the button press,
-     for example focusing our widget */
-  if (!GTK_WIDGET_HAS_FOCUS (widget))
-    {
-      entry->in_click = TRUE;
-      gtk_widget_grab_focus (widget);
-      entry->in_click = FALSE;
-    }
-
-  ...
-
-  return FALSE;
-}
-
-static gboolean
-my_custom_widget_focus_in (GtkWidget *widget, GdkEventFocus *event, gpointer data)
-{
-  GtkIMContext *context = GTK_IM_CONTEXT(data);
-
-  if (hildon_gtk_im_context_filter_event (context, event))
-    return TRUE;
-
-  gtk_im_context_focus_in (entry->im_context);
-
-  /* Do something widget specific with the focus event,
-     for example queuing a redraw of the widget */
-  ...
-
-  return FALSE;
-}
-
-...
-
-GtkIMMultiContext *context = gtk_im_multicontext_new (<!-- -->);
-MyCustomWidget *widget = my_custom_widget_new (<!-- -->);
-
-g_signal_connect (widget, "key-press-event",
-                  G_CALLBACK (my_custom_widget_key_press), context);
-g_signal_connect (widget, "button-press-event",
-                  G_CALLBACK (my_custom_widget_button_press), context);
-g_signal_connect (widget, "focus-in-event",
-                  G_CALLBACK (my_custom_widget_focus_in), context);
-
-...
-</programlisting>
-</informalexample>
-
 </para>
 
 <!-- ##### SECTION See_Also ##### -->
@@ -104,14 +22,6 @@ g_signal_connect (widget, "focus-in-event",
 
 </para>
 
-
-<!-- ##### SIGNAL GtkIMContext::clipboard-operation ##### -->
-<para>
-
-</para>
-
-@imcontext: the object which received the signal.
-@arg1: 
 
 <!-- ##### SIGNAL GtkIMContext::commit ##### -->
 <para>
@@ -129,14 +39,6 @@ g_signal_connect (widget, "focus-in-event",
 @imcontext: the object which received the signal.
 @arg1: 
 @arg2: 
-@Returns: 
-
-<!-- ##### SIGNAL GtkIMContext::has-selection ##### -->
-<para>
-
-</para>
-
-@imcontext: the object which received the signal.
 @Returns: 
 
 <!-- ##### SIGNAL GtkIMContext::preedit-changed ##### -->
@@ -167,11 +69,6 @@ g_signal_connect (widget, "focus-in-event",
 
 @imcontext: the object which received the signal.
 @Returns: 
-
-<!-- ##### ARG GtkIMContext:hildon-input-mode ##### -->
-<para>
-
-</para>
 
 <!-- ##### FUNCTION gtk_im_context_set_client_window ##### -->
 <para>
@@ -278,78 +175,27 @@ g_signal_connect (widget, "focus-in-event",
 @Returns: 
 
 
-<!-- ##### FUNCTION gtk_im_context_hide ##### -->
+<!-- ##### ENUM GtkIMContextClipboardOperation ##### -->
 <para>
-
+Determines the type of the requested clipboard operation. 
 </para>
 
-@context: 
+@GTK_IM_CONTEXT_CLIPBOARD_OP_COPY: Copy the currently selected text to the clipboard.
+@GTK_IM_CONTEXT_CLIPBOARD_OP_CUT: Copy the currently selected text to the clipboard and then delete it from the widget.
+@GTK_IM_CONTEXT_CLIPBOARD_OP_PASTE: Paste the contents of the clipboard.
 
-
-<!-- ##### FUNCTION gtk_im_context_show ##### -->
+<!-- ##### ENUM HildonGtkInputMode ##### -->
 <para>
-
+Determines the input mode. Setting the mode allows the input method
+to focus on the type of input that the application is expecting.
 </para>
 
-@context: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_copy ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_cut ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_filter_event ##### -->
-<para>
-
-</para>
-
-@context: 
-@event: 
-@Returns: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_has_selection ##### -->
-<para>
-
-</para>
-
-@context: 
-@Returns: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_hide ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_paste ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
-<!-- ##### FUNCTION hildon_gtk_im_context_show ##### -->
-<para>
-
-</para>
-
-@context: 
-
-
+@HILDON_GTK_INPUT_MODE_ALPHA: alphabetical characters and whitespace
+@HILDON_GTK_INPUT_MODE_NUMERIC: numbers 0-9 and the '-' character
+@HILDON_GTK_INPUT_MODE_SPECIAL: special characters
+@HILDON_GTK_INPUT_MODE_HEXA: hexadecimal characters; numbers 0-9, characters a-f, and A-F
+@HILDON_GTK_INPUT_MODE_TELE: telephone numbers; numbers 0-9, whitespace, and the characters "pwPW/().-+*#?,"
+@HILDON_GTK_INPUT_MODE_FULL: unrestricted entry mode, combination of the alpha, numeric and special modes.
+@HILDON_GTK_INPUT_MODE_INVISIBLE: do not echo or save the input in the IM when entering sensitive information such as passwords.
+@HILDON_GTK_INPUT_MODE_AUTOCAP: automatically capitalize the first letter at the start of a sentence.
+@HILDON_GTK_INPUT_MODE_DICTIONARY: enable predictive dictionaries and learning based on the input.

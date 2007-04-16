@@ -5,10 +5,10 @@ noinst_LTLIBRARIES = libxdgmime.la
 libxdgmime_la_SOURCES = \
 	xdgmime.c 	\
 	xdgmime.h	\
-	xdgmimecache.c 	\
-	xdgmimecache.h	\
 	xdgmimealias.c	\
 	xdgmimealias.h	\
+	xdgmimecache.c	\
+	xdgmimecache.h	\
 	xdgmimeglob.c 	\
 	xdgmimeglob.h 	\
 	xdgmimeint.c 	\

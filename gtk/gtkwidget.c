@@ -28,8 +28,6 @@
 #include <stdarg.h>
 #include <string.h>
 #include <locale.h>
-#include <stdlib.h>
-#include <x11/gdkx.h>
 #include "gtkcontainer.h"
 #include "gtkaccelmap.h"
 #include "gtkclipboard.h"
@@ -45,7 +43,6 @@
 #include "gtkwindow.h"
 #include "gtkbindings.h"
 #include "gtkprivate.h"
-#include "gtkentry.h"
 #include "gdk/gdk.h"
 #include "gdk/gdkprivate.h" /* Used in gtk_reset_shapes_recurse to avoid copy */
 #include <gobject/gvaluecollector.h>
@@ -55,21 +52,26 @@
 #include "gtkaccessible.h"
 #include "gtktooltips.h"
 #include "gtkinvisible.h"
+#include "gtkalias.h"
+#ifdef MAEMO_CHANGES
+#include <x11/gdkx.h>
+#include <stdlib.h>
 #include "gtkmenu.h"
 #include "gtkmenuitem.h"
 #include "gtkicontheme.h"
 #include "gtkdnd.h"
-#include "gtkalias.h"
+#endif /* MAEMO_CHANGES */
 
 #define WIDGET_CLASS(w)	 GTK_WIDGET_GET_CLASS (w)
 #define	INIT_PATH_SIZE	(512)
 
-#define GTK_TAP_MENU_THRESHOLD 20
-#define GTK_TAP_AND_HOLD_TIMER_COUNTER 11
-#define GTK_TAP_AND_HOLD_TIMER_INTERVAL 100
+#ifdef MAEMO_CHANGES
+#define TAP_AND_HOLD_TIMER_COUNTER 11
+#define TAP_AND_HOLD_TIMER_INTERVAL 100
 
 #define TAP_AND_HOLD_ANIMATION 1
-                                      
+#endif /* MAEMO_CHANGES */
+
 enum {
   SHOW,
   HIDE,
@@ -132,10 +134,15 @@ enum {
   ACCEL_CLOSURES_CHANGED,
   SCREEN_CHANGED,
   CAN_ACTIVATE_ACCEL,
-	INSENSITIVE_PRESS,
+  GRAB_BROKEN,
+  COMPOSITED_CHANGED,
+  KEYNAV_FAILED,
+#ifdef MAEMO_CHANGES
+  INSENSITIVE_PRESS,
   TAP_AND_HOLD,
   TAP_AND_HOLD_SETUP,
   TAP_AND_HOLD_QUERY,
+#endif /* MAEMO_CHANGES */
   LAST_SIGNAL
 };
 
@@ -159,7 +166,9 @@ enum {
   PROP_EVENTS,
   PROP_EXTENSION_EVENTS,
   PROP_NO_SHOW_ALL,
+#ifdef MAEMO_CHANGES
   PROP_TAP_AND_HOLD
+#endif /* MAEMO_CHANGES */
 };
 
 typedef	struct	_GtkStateData	 GtkStateData;
@@ -172,6 +181,7 @@ struct _GtkStateData
   guint		use_forall : 1;
 };
 
+#ifdef MAEMO_CHANGES
 typedef struct
 {
   GtkWidget *menu;
@@ -183,28 +193,38 @@ typedef struct
   gint signals_connected : 1;
   guint interval;
   GdkWindow *tah_on_window;
-  
+
 #ifdef TAP_AND_HOLD_ANIMATION
   GdkPixbufAnimation *anim;
   GdkPixbufAnimationIter *iter;
 #endif
 } TahData;
 
+
 /* --- Tap And Hold --- */
-static gboolean gtk_widget_tap_and_hold_timeout( GtkWidget *widget );
-static gboolean gtk_widget_tap_and_hold_button_press( GtkWidget *widget,
-                                     GdkEvent *event, TahData *td );
-static gboolean gtk_widget_tap_and_hold_event_stop( GtkWidget *widget,
-                                     gpointer unused, TahData *td );
-static void gtk_widget_tap_and_hold_setup_real( GtkWidget *widget,
-            GtkWidget *menu, GtkCallback func, GtkWidgetTapAndHoldFlags flags );
-static void gtk_widget_real_tap_and_hold(GtkWidget *widget);
-static gboolean gtk_widget_tap_and_hold_query (GtkWidget *widget, GdkEvent *event);
-static gboolean gtk_widget_tap_and_hold_real_query (GtkWidget *widget, GdkEvent *event);
+static gboolean gtk_widget_tap_and_hold_timeout      (GtkWidget                *widget);
+static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget                *widget,
+						      GdkEvent                 *event,
+						      TahData                  *td);
+static gboolean gtk_widget_tap_and_hold_event_stop   (GtkWidget                *widget,
+						      gpointer                  unused,
+						      TahData                  *td);
+static void     gtk_widget_real_tap_and_hold_setup   (GtkWidget                *widget,
+						      GtkWidget                *menu,
+						      GtkCallback               func,
+						      GtkWidgetTapAndHoldFlags  flags );
+static void     gtk_widget_real_tap_and_hold         (GtkWidget                *widget);
+static gboolean gtk_widget_tap_and_hold_query        (GtkWidget                *widget,
+						      GdkEvent                 *event);
+static gboolean gtk_widget_real_tap_and_hold_query   (GtkWidget                *widget,
+						      GdkEvent                 *event);
+#endif /* MAEMO_CHANGES */
+
 
 /* --- prototypes --- */
-static void	gtk_widget_class_init		 (GtkWidgetClass    *klass);
-static void	gtk_widget_init			 (GtkWidget	    *widget);
+static void	gtk_widget_class_init		(GtkWidgetClass     *klass);
+static void	gtk_widget_base_class_finalize	(GtkWidgetClass     *klass);
+static void	gtk_widget_init			(GtkWidget          *widget);
 static void	gtk_widget_set_property		 (GObject           *object,
 						  guint              prop_id,
 						  const GValue      *value,
@@ -248,7 +268,10 @@ static gboolean		gtk_widget_real_focus_out_event   	(GtkWidget        *widget,
 								 GdkEventFocus    *event);
 static gboolean		gtk_widget_real_focus			(GtkWidget        *widget,
 								 GtkDirectionType  direction);
+static gboolean		gtk_widget_real_keynav_failed		(GtkWidget        *widget,
+								 GtkDirectionType  direction);
 static PangoContext*	gtk_widget_peek_pango_context		(GtkWidget	  *widget);
+static void     	gtk_widget_update_pango_context		(GtkWidget	  *widget);
 static void		gtk_widget_propagate_state		(GtkWidget	  *widget,
 								 GtkStateData 	  *data);
 static void             gtk_widget_reset_rc_style               (GtkWidget        *widget);
@@ -273,11 +296,13 @@ static gboolean         gtk_widget_real_can_activate_accel      (GtkWidget *widg
 static void gtk_widget_set_usize_internal (GtkWidget *widget,
 					   gint       width,
 					   gint       height);
+static void gtk_widget_get_draw_rectangle (GtkWidget    *widget,
+					   GdkRectangle *rect);
+
 
 /* --- variables --- */
-static gpointer         parent_class = NULL;
+static gpointer         gtk_widget_parent_class = NULL;
 static guint            widget_signals[LAST_SIGNAL] = { 0 };
-static GMemChunk       *aux_info_mem_chunk = NULL;
 static GtkStyle        *gtk_default_style = NULL;
 static GSList          *colormap_stack = NULL;
 static guint            composite_child_stack = 0;
@@ -292,6 +317,7 @@ static GQuark		quark_event_mask = 0;
 static GQuark		quark_extension_event_mode = 0;
 static GQuark		quark_parent_window = 0;
 static GQuark		quark_shape_info = 0;
+static GQuark		quark_input_shape_info = 0;
 static GQuark		quark_colormap = 0;
 static GQuark		quark_pango_context = 0;
 static GQuark		quark_rc_style = 0;
@@ -305,14 +331,14 @@ GType
 gtk_widget_get_type (void)
 {
   static GType widget_type = 0;
-  
-  if (!widget_type)
+
+  if (G_UNLIKELY (widget_type == 0))
     {
-      static const GTypeInfo widget_info =
+      const GTypeInfo widget_info =
       {
 	sizeof (GtkWidgetClass),
 	NULL,		/* base_init */
-	NULL,		/* base_finalize */
+	(GBaseFinalizeFunc) gtk_widget_base_class_finalize,
 	(GClassInitFunc) gtk_widget_class_init,
 	NULL,		/* class_finalize */
 	NULL,		/* class_init */
@@ -321,22 +347,22 @@ gtk_widget_get_type (void)
 	(GInstanceInitFunc) gtk_widget_init,
 	NULL,		/* value_table */
       };
-      
-      static const GInterfaceInfo accessibility_info =
+
+      const GInterfaceInfo accessibility_info =
       {
-        (GInterfaceInitFunc) gtk_widget_accessible_interface_init,
-        (GInterfaceFinalizeFunc) NULL,
-        NULL /* interface data */
+	(GInterfaceInitFunc) gtk_widget_accessible_interface_init,
+	(GInterfaceFinalizeFunc) NULL,
+	NULL /* interface data */
       };
 
-      widget_type = g_type_register_static (GTK_TYPE_OBJECT, "GtkWidget", 
-					    &widget_info, G_TYPE_FLAG_ABSTRACT);
+      widget_type = g_type_register_static (GTK_TYPE_OBJECT, "GtkWidget",
+                                           &widget_info, G_TYPE_FLAG_ABSTRACT);
 
       g_type_add_interface_static (widget_type, ATK_TYPE_IMPLEMENTOR,
                                    &accessibility_info) ;
 
     }
-  
+
   return widget_type;
 }
 
@@ -355,8 +381,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GtkObjectClass *object_class = GTK_OBJECT_CLASS (klass);
   GtkBindingSet *binding_set;
-  
-  parent_class = g_type_class_peek_parent (klass);
+
+  gtk_widget_parent_class = g_type_class_peek_parent (klass);
 
   quark_property_parser = g_quark_from_static_string ("gtk-rc-property-parser");
   quark_aux_info = g_quark_from_static_string ("gtk-aux-info");
@@ -366,6 +392,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   quark_extension_event_mode = g_quark_from_static_string ("gtk-extension-event-mode");
   quark_parent_window = g_quark_from_static_string ("gtk-parent-window");
   quark_shape_info = g_quark_from_static_string ("gtk-shape-info");
+  quark_input_shape_info = g_quark_from_static_string ("gtk-input-shape-info");
   quark_colormap = g_quark_from_static_string ("gtk-colormap");
   quark_pango_context = g_quark_from_static_string ("gtk-pango-context");
   quark_rc_style = g_quark_from_static_string ("gtk-rc-style");
@@ -441,10 +468,12 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   klass->drag_data_received = NULL;
   klass->screen_changed = NULL;
   klass->can_activate_accel = gtk_widget_real_can_activate_accel;
-  klass->tap_and_hold_setup = gtk_widget_tap_and_hold_setup_real;
-  klass->insensitive_press = NULL;
+  klass->grab_broken_event = NULL;
+#ifdef MAEMO_CHANGES
+  klass->tap_and_hold_setup = gtk_widget_real_tap_and_hold_setup;
   klass->tap_and_hold = gtk_widget_real_tap_and_hold;
-  klass->tap_and_hold_query = gtk_widget_tap_and_hold_real_query;
+  klass->tap_and_hold_query = gtk_widget_real_tap_and_hold_query;
+#endif /* MAEMO_CHANGES */
 
   klass->show_help = gtk_widget_real_show_help;
   
@@ -452,27 +481,6 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   klass->get_accessible = gtk_widget_real_get_accessible;
 
   klass->no_expose_event = NULL;
-
-  /** 
-   * GtkWidget:tap-and-hold-state:
-   *
-   * Sets the state (#GtkStateType) to be used to the tap and hold 
-   * functionality. The default is GTK_STATE_NORMAL. 
-   *
-   * Warning: Functionality for setting and getting this propery is not 
-   * implemented.
-   *
-   * Since: maemo 1.0
-   */
-  g_object_class_install_property (gobject_class,
-				   PROP_TAP_AND_HOLD,
-				   g_param_spec_int ("tap-and-hold-state",
- 						     P_("Tap and hold State type"),
- 						     P_("Sets the state to be used to the tap and hold functionality. The default is GTK_STATE_NORMAL"),
- 						     0,
- 						     4, /*4 == Last state in GTK+-2.0*/
- 						     GTK_STATE_NORMAL,
- 						     GTK_PARAM_READWRITE));
 
   g_object_class_install_property (gobject_class,
 				   PROP_NAME,
@@ -607,8 +615,34 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  							 P_("Whether gtk_widget_show_all() should not affect this widget"),
  							 FALSE,
  							 GTK_PARAM_READWRITE));
+  
+#ifdef MAEMO_CHANGES
+  /**
+   * GtkWidget:tap-and-hold-state:
+   *
+   * Sets the state (#GtkStateType) to be used to the tap and hold
+   * functionality. The default is GTK_STATE_NORMAL.
+   *
+   * Deprecated: Functionality for setting and getting this propery is not
+   * implemented.
+   *
+   * Since: maemo 1.0
+   * Stability: Unstable
+   */
+  g_object_class_install_property (gobject_class,
+				   PROP_TAP_AND_HOLD,
+				   g_param_spec_int ("tap-and-hold-state",
+ 						     P_("Tap and hold State type"),
+ 						     P_("Sets the state to be used to the tap and hold functionality. The default is GTK_STATE_NORMAL"),
+ 						     0,
+ 						     4, /*4 == Last state in GTK+-2.0*/
+						     GTK_STATE_NORMAL,
+						     G_PARAM_READWRITE));
+
+#endif /* MAEMO_CHANGES */
+
   widget_signals[SHOW] =
-    g_signal_new ("show",
+    g_signal_new (I_("show"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, show),
@@ -616,7 +650,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[HIDE] =
-    g_signal_new ("hide",
+    g_signal_new (I_("hide"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, hide),
@@ -624,7 +658,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[MAP] =
-    g_signal_new ("map",
+    g_signal_new (I_("map"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, map),
@@ -632,7 +666,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[UNMAP] =
-    g_signal_new ("unmap",
+    g_signal_new (I_("unmap"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, unmap),
@@ -640,7 +674,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[REALIZE] =
-    g_signal_new ("realize",
+    g_signal_new (I_("realize"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, realize),
@@ -648,7 +682,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[UNREALIZE] =
-    g_signal_new ("unrealize",
+    g_signal_new (I_("unrealize"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, unrealize),
@@ -656,7 +690,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[SIZE_REQUEST] =
-    g_signal_new ("size_request",
+    g_signal_new (I_("size_request"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, size_request),
@@ -665,7 +699,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_REQUISITION | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[SIZE_ALLOCATE] = 
-    g_signal_new ("size_allocate",
+    g_signal_new (I_("size_allocate"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, size_allocate),
@@ -674,7 +708,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_NONE, 1,
 		  GDK_TYPE_RECTANGLE | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[STATE_CHANGED] =
-    g_signal_new ("state_changed",
+    g_signal_new (I_("state_changed"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, state_changed),
@@ -682,8 +716,18 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__ENUM,
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_STATE_TYPE);
+
+  /**
+   * GtkWidget::parent-set:
+   * @widget: the object on which the signal is emitted
+   * @old_parent: the previous parent, or %NULL if the widget 
+   *   just got its initial parent.
+   *
+   * The parent-set signal is emitted when a new parent has been set 
+   * on a widget. 
+   */
   widget_signals[PARENT_SET] =
-    g_signal_new ("parent_set",
+    g_signal_new (I_("parent_set"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, parent_set),
@@ -692,7 +736,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_WIDGET);
   widget_signals[HIERARCHY_CHANGED] =
-    g_signal_new ("hierarchy_changed",
+    g_signal_new (I_("hierarchy_changed"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, hierarchy_changed),
@@ -711,7 +755,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * gtk_widget_modify_base() also cause this signal to be emitted.
    */
   widget_signals[STYLE_SET] =
-    g_signal_new ("style_set",
+    g_signal_new (I_("style_set"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, style_set),
@@ -720,7 +764,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_STYLE);
   widget_signals[DIRECTION_CHANGED] =
-    g_signal_new ("direction_changed",
+    g_signal_new (I_("direction_changed"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, direction_changed),
@@ -728,8 +772,24 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__ENUM,
 		  G_TYPE_NONE, 1,
 		  GTK_TYPE_TEXT_DIRECTION);
+
+  /**
+   * GtkWidget::grab-notify:
+   * @widget: the object which received the signal
+   * @was_grabbed: %FALSE if the widget becomes shadowed, %TRUE
+   *               if it becomes unshadowed
+   *
+   * The ::grab-notify signal is emitted when a widget becomes
+   * shadowed by a GTK+ grab (not a pointer or keyboard grab) on 
+   * another widget, or when it becomes unshadowed due to a grab 
+   * being removed.
+   * 
+   * A widget is shadowed by a gtk_grab_add() when the topmost 
+   * grab widget in the grab stack of its window group is not 
+   * its ancestor.
+   */
   widget_signals[GRAB_NOTIFY] =
-    g_signal_new ("grab_notify",
+    g_signal_new (I_("grab_notify"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_FIRST,
                   G_STRUCT_OFFSET (GtkWidgetClass, grab_notify),
@@ -747,7 +807,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  * changed on an object. The signal's detail holds the property name. 
  */
   widget_signals[CHILD_NOTIFY] =
-    g_signal_new ("child_notify",
+    g_signal_new (I_("child_notify"),
 		   G_TYPE_FROM_CLASS (gobject_class),
 		   G_SIGNAL_RUN_FIRST | G_SIGNAL_NO_RECURSE | G_SIGNAL_DETAILED | G_SIGNAL_NO_HOOKS,
 		   G_STRUCT_OFFSET (GtkWidgetClass, child_notify),
@@ -756,7 +816,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		   G_TYPE_NONE, 1,
 		   G_TYPE_PARAM);
   widget_signals[MNEMONIC_ACTIVATE] =
-    g_signal_new ("mnemonic_activate",
+    g_signal_new (I_("mnemonic_activate"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, mnemonic_activate),
@@ -765,7 +825,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  G_TYPE_BOOLEAN);
   widget_signals[GRAB_FOCUS] =
-    g_signal_new ("grab_focus",
+    g_signal_new (I_("grab_focus"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkWidgetClass, grab_focus),
@@ -773,7 +833,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   widget_signals[FOCUS] =
-    g_signal_new ("focus",
+    g_signal_new (I_("focus"),
 		  G_TYPE_FROM_CLASS (object_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, focus),
@@ -782,7 +842,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GTK_TYPE_DIRECTION_TYPE);
   widget_signals[EVENT] =
-    g_signal_new ("event",
+    g_signal_new (I_("event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, event),
@@ -791,7 +851,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[EVENT_AFTER] =
-    g_signal_new ("event-after",
+    g_signal_new (I_("event_after"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  0,
 		  0,
@@ -800,7 +860,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_NONE, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[BUTTON_PRESS_EVENT] =
-    g_signal_new ("button_press_event",
+    g_signal_new (I_("button_press_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, button_press_event),
@@ -809,7 +869,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[BUTTON_RELEASE_EVENT] =
-    g_signal_new ("button_release_event",
+    g_signal_new (I_("button_release_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, button_release_event),
@@ -818,7 +878,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[SCROLL_EVENT] =
-    g_signal_new ("scroll_event",
+    g_signal_new (I_("scroll_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, scroll_event),
@@ -827,7 +887,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[MOTION_NOTIFY_EVENT] =
-    g_signal_new ("motion_notify_event",
+    g_signal_new (I_("motion_notify_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, motion_notify_event),
@@ -835,6 +895,37 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_BOOLEAN__BOXED,
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+  widget_signals[COMPOSITED_CHANGED] =
+    g_signal_new (I_("composited_changed"),
+		  G_TYPE_FROM_CLASS (gobject_class),
+		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
+		  G_STRUCT_OFFSET (GtkWidgetClass, composited_changed),
+		  NULL, NULL,
+		  _gtk_marshal_VOID__VOID,
+		  G_TYPE_NONE, 0);
+
+  /**
+   * GtkWidget::keynav-failed:
+   * @widget: the object which received the signal.
+   * @direction: the direction of movement
+   *
+   * See gtk_widget_keynav_failed() for details.
+   *
+   * Returns: %TRUE if stopping keyboard navigation is fine, %FALSE
+   *          if the emitting widget should try to handle the keyboard
+   *          navigation attempt in its parent container(s).
+   *
+   * Since: 2.12
+   **/
+  widget_signals[KEYNAV_FAILED] =
+    _gtk_binding_signal_new (I_("keynav-failed"),
+                             G_TYPE_FROM_CLASS (gobject_class),
+                             G_SIGNAL_RUN_LAST,
+                             G_CALLBACK (gtk_widget_real_keynav_failed),
+                             _gtk_boolean_handled_accumulator, NULL,
+                             _gtk_marshal_BOOLEAN__ENUM,
+                             G_TYPE_BOOLEAN, 1,
+                             GTK_TYPE_DIRECTION_TYPE);
 
 /**
  * GtkWidget::delete-event:
@@ -851,7 +942,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  *   %FALSE to propagate the event further.
  */
   widget_signals[DELETE_EVENT] =
-    g_signal_new ("delete_event",
+    g_signal_new (I_("delete_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, delete_event),
@@ -874,7 +965,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  *   %FALSE to propagate the event further.
  */
   widget_signals[DESTROY_EVENT] =
-    g_signal_new ("destroy_event",
+    g_signal_new (I_("destroy_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, destroy_event),
@@ -883,7 +974,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[EXPOSE_EVENT] =
-    g_signal_new ("expose_event",
+    g_signal_new (I_("expose_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, expose_event),
@@ -892,7 +983,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[KEY_PRESS_EVENT] =
-    g_signal_new ("key_press_event",
+    g_signal_new (I_("key_press_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, key_press_event),
@@ -901,7 +992,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[KEY_RELEASE_EVENT] =
-    g_signal_new ("key_release_event",
+    g_signal_new (I_("key_release_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, key_release_event),
@@ -910,7 +1001,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[ENTER_NOTIFY_EVENT] =
-    g_signal_new ("enter_notify_event",
+    g_signal_new (I_("enter_notify_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, enter_notify_event),
@@ -919,7 +1010,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[LEAVE_NOTIFY_EVENT] =
-    g_signal_new ("leave_notify_event",
+    g_signal_new (I_("leave_notify_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, leave_notify_event),
@@ -928,7 +1019,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[CONFIGURE_EVENT] =
-    g_signal_new ("configure_event",
+    g_signal_new (I_("configure_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, configure_event),
@@ -937,7 +1028,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[FOCUS_IN_EVENT] =
-    g_signal_new ("focus_in_event",
+    g_signal_new (I_("focus_in_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, focus_in_event),
@@ -946,7 +1037,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[FOCUS_OUT_EVENT] =
-    g_signal_new ("focus_out_event",
+    g_signal_new (I_("focus_out_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, focus_out_event),
@@ -955,7 +1046,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[MAP_EVENT] =
-    g_signal_new ("map_event",
+    g_signal_new (I_("map_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, map_event),
@@ -964,7 +1055,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[UNMAP_EVENT] =
-    g_signal_new ("unmap_event",
+    g_signal_new (I_("unmap_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, unmap_event),
@@ -973,7 +1064,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[PROPERTY_NOTIFY_EVENT] =
-    g_signal_new ("property_notify_event",
+    g_signal_new (I_("property_notify_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, property_notify_event),
@@ -982,7 +1073,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[SELECTION_CLEAR_EVENT] =
-    g_signal_new ("selection_clear_event",
+    g_signal_new (I_("selection_clear_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, selection_clear_event),
@@ -991,7 +1082,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[SELECTION_REQUEST_EVENT] =
-    g_signal_new ("selection_request_event",
+    g_signal_new (I_("selection_request_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, selection_request_event),
@@ -1000,7 +1091,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[SELECTION_NOTIFY_EVENT] =
-    g_signal_new ("selection_notify_event",
+    g_signal_new (I_("selection_notify_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, selection_notify_event),
@@ -1009,7 +1100,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[SELECTION_RECEIVED] =
-    g_signal_new ("selection_received",
+    g_signal_new (I_("selection_received"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, selection_received),
@@ -1019,7 +1110,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  GTK_TYPE_SELECTION_DATA | G_SIGNAL_TYPE_STATIC_SCOPE,
 		  G_TYPE_UINT);
   widget_signals[SELECTION_GET] =
-    g_signal_new ("selection_get",
+    g_signal_new (I_("selection_get"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, selection_get),
@@ -1030,7 +1121,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_UINT,
 		  G_TYPE_UINT);
   widget_signals[PROXIMITY_IN_EVENT] =
-    g_signal_new ("proximity_in_event",
+    g_signal_new (I_("proximity_in_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, proximity_in_event),
@@ -1039,7 +1130,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[PROXIMITY_OUT_EVENT] =
-    g_signal_new ("proximity_out_event",
+    g_signal_new (I_("proximity_out_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, proximity_out_event),
@@ -1054,12 +1145,13 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * @drag_context: the drag context
    * @time: the timestamp of the motion event
    *
-   * The ::drag-leave signal is emitted on the drop site when the cursor leaves the widget.
-   * A typical reason to connect to this signal is to undo things done in ::drag-motion, e.g.
-   * undo highlighting with gtk_drag_unhighlight()
+   * The ::drag-leave signal is emitted on the drop site when the cursor 
+   * leaves the widget. A typical reason to connect to this signal is to 
+   * undo things done in ::drag-motion, e.g. undo highlighting with 
+   * gtk_drag_unhighlight()
    */
   widget_signals[DRAG_LEAVE] =
-    g_signal_new ("drag_leave",
+    g_signal_new (I_("drag_leave"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_leave),
@@ -1079,7 +1171,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * gtk_drag_source_set_icon().
    */
   widget_signals[DRAG_BEGIN] =
-    g_signal_new ("drag_begin",
+    g_signal_new (I_("drag_begin"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_begin),
@@ -1097,7 +1189,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * A typical reason to connect to this signal is to undo things done in ::drag-begin.
    */
   widget_signals[DRAG_END] =
-    g_signal_new ("drag_end",
+    g_signal_new (I_("drag_end"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_end),
@@ -1111,13 +1203,13 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * @widget: the object which received the signal.
    * @drag_context: the drag context
    *
-   * The ::drag-data-delete signal is emitted on the drag source when a drag with the action
-   * %GDK_ACTION_MOVE is successfully completed. The signal handler is responsible for deleting
-   * the data that has been dropped. What "delete" means, depends on the context of the drag
-   * operation. 
+   * The ::drag-data-delete signal is emitted on the drag source when a drag 
+   * with the action %GDK_ACTION_MOVE is successfully completed. The signal 
+   * handler is responsible for deleting the data that has been dropped. What 
+   * "delete" means, depends on the context of the drag operation. 
    */
   widget_signals[DRAG_DATA_DELETE] =
-    g_signal_new ("drag_data_delete",
+    g_signal_new (I_("drag_data_delete"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_data_delete),
@@ -1135,20 +1227,23 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * @time: the timestamp of the motion event
    * @returns: whether the cursor position is in a drop zone
    *
-   * The ::drag-motion signal is emitted on the drop site when the user moves the cursor over
-   * the widget during a drag. The signal handler must determine whether the cursor position is in 
-   * a drop zone or not. If it is not in a drop zone, it returns %FALSE and no further processing is
-   * necessary. Otherwise, the handler returns %TRUE. In this case, the handler is responsible for
-   * providing the necessary information for displaying feedback to the user, by calling
-   * gdk_drag_status(). If the decision whether the drop will be accepted or rejected can't be made
-   * based solely on the cursor position and the type of the data, the handler may inspect the dragged 
-   * data by calling gtk_drag_get_data() and defer the gdk_drag_status() call to the ::drag-data-received 
-   * handler. 
+   * The ::drag-motion signal is emitted on the drop site when the user 
+   * moves the cursor over the widget during a drag. The signal handler 
+   * must determine whether the cursor position is in a drop zone or not. 
+   * If it is not in a drop zone, it returns %FALSE and no further processing 
+   * is necessary. Otherwise, the handler returns %TRUE. In this case, the 
+   * handler is responsible for providing the necessary information for 
+   * displaying feedback to the user, by calling gdk_drag_status(). If the 
+   * decision whether the drop will be accepted or rejected can't be made
+   * based solely on the cursor position and the type of the data, the handler 
+   * may inspect the dragged data by calling gtk_drag_get_data() and defer the 
+   * gdk_drag_status() call to the ::drag-data-received handler. 
    *
-   * Note that there is no ::drag-enter signal. The drag receiver has to keep track of whether
-   * he has received any ::drag-motion signals since the last ::drag-leave and if not, treat the
-   * ::drag-motion signal as an "enter" signal. Upon an "enter", the handler will typically highlight 
-   * the drop site with gtk_drag_highlight().
+   * Note that there is no ::drag-enter signal. The drag receiver has to keep 
+   * track of whether he has received any ::drag-motion signals since the last 
+   * ::drag-leave and if not, treat the ::drag-motion signal as an "enter" signal. 
+   * Upon an "enter", the handler will typically highlight the drop site with 
+   * gtk_drag_highlight().
    *
    * <informalexample><programlisting> 
    * static void
@@ -1197,7 +1292,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    *      
    *     /<!-- -->* We are getting this data due to a request in drag_motion,
    *      * rather than due to a request in drag_drop, so we are just
-   *      * supposed to call gdk_drag_status(<!-- -->), not actually paste in the data.
+   *      * supposed to call gdk_drag_status(<!-- -->), not actually paste in 
+   *      * the data.
    *      *<!-- -->/
    *      str = gtk_selection_data_get_text (selection_data);
    *      if (!data_is_acceptable (str)) 
@@ -1213,7 +1309,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * </programlisting></informalexample>
    */
   widget_signals[DRAG_MOTION] =
-    g_signal_new ("drag_motion",
+    g_signal_new (I_("drag_motion"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_motion),
@@ -1234,17 +1330,18 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * @time: the timestamp of the motion event
    * @returns: whether the cursor position is in a drop zone
    *
-   * The ::drag-drop signal is emitted on the drop site when the user drops the data
-   * onto the widget. The signal handler must determine whether the cursor position is in 
-   * a drop zone or not. If it is not in a drop zone, it returns %FALSE and no further 
-   * processing is necessary. Otherwise, the handler returns %TRUE. In this case, the handler 
-   * must ensure that gtk_drag_finish() is called to let the source know that the drop is done.
-   * The call to gtk_drag_finish() can be done either directly or in a ::drag-data-received handler
-   * which gets triggered by calling gtk_drop_get_data() to receive the data for one or more of the 
-   * supported targets.
+   * The ::drag-drop signal is emitted on the drop site when the user drops the 
+   * data onto the widget. The signal handler must determine whether the cursor 
+   * position is in a drop zone or not. If it is not in a drop zone, it returns 
+   * %FALSE and no further processing is necessary. Otherwise, the handler returns 
+   * %TRUE. In this case, the handler must ensure that gtk_drag_finish() is called 
+   * to let the source know that the drop is done. The call to gtk_drag_finish() 
+   * can be done either directly or in a ::drag-data-received handler which gets 
+   * triggered by calling gtk_drop_get_data() to receive the data for one or more 
+   * of the supported targets.
    */
   widget_signals[DRAG_DROP] =
-    g_signal_new ("drag_drop",
+    g_signal_new (I_("drag_drop"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_drop),
@@ -1264,13 +1361,13 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * @info: the info that has been registered with the target in the #GtkTargetList.
    * @time: the timestamp at which the data was requested
    *
-   * The ::drag-data-get signal is emitted on the drag source when the drop site requests
-   * the data which is dragged. It is the responsibility of the signal handler to fill @data
-   * with the data in the format which is indicated by @info. See gtk_selection_data_set() and 
-   * gtk_selection_data_set_text().
+   * The ::drag-data-get signal is emitted on the drag source when the drop site 
+   * requests the data which is dragged. It is the responsibility of the signal 
+   * handler to fill @data with the data in the format which is indicated by @info. 
+   * See gtk_selection_data_set() and gtk_selection_data_set_text().
    */
   widget_signals[DRAG_DATA_GET] =
-    g_signal_new ("drag_data_get",
+    g_signal_new (I_("drag_data_get"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_data_get),
@@ -1292,16 +1389,18 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  * @info: the info that has been registered with the target in the #GtkTargetList.
  * @time: the timestamp at which the data was received
  *
- * The ::drag-data-received signal is emitted on the drop site when the dragged data has been 
- * received. If the data was received in order to determine whether the drop will be accepted, 
- * the handler is expected to call gdk_drag_status() and <emphasis>not</emphasis> finish the drag. 
- * If the data was received in response to a ::drag-drop signal (and this is the last target to be 
- * received), the handler for this signal is expected to process the received data and then call 
- * gtk_drag_finish(), setting the @success parameter depending on whether the data was processed 
- * successfully. 
+ * The ::drag-data-received signal is emitted on the drop site when the dragged 
+ * data has been received. If the data was received in order to determine whether 
+ * the drop will be accepted, the handler is expected to call gdk_drag_status() 
+ * and <emphasis>not</emphasis> finish the drag. If the data was received in 
+ * response to a ::drag-drop signal (and this is the last target to be received), 
+ * the handler for this signal is expected to process the received data and then 
+ * call gtk_drag_finish(), setting the @success parameter depending on whether 
+ * the data was processed successfully. 
  * 
- * The handler may inspect and modify @drag_context->action before calling gtk_drag_finish(), 
- * e.g. to implement %GDK_ACTION_ASK as shown in the following example:
+ * The handler may inspect and modify @drag_context->action before calling 
+ * gtk_drag_finish(), e.g. to implement %GDK_ACTION_ASK as shown in the following 
+ * example:
  * <informalexample><programlisting>
  * void  
  * drag_data_received (GtkWidget          *widget,
@@ -1343,7 +1442,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  * </programlisting></informalexample>
  */
   widget_signals[DRAG_DATA_RECEIVED] =
-    g_signal_new ("drag_data_received",
+    g_signal_new (I_("drag_data_received"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, drag_data_received),
@@ -1357,7 +1456,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_UINT,
 		  G_TYPE_UINT);
   widget_signals[VISIBILITY_NOTIFY_EVENT] =
-    g_signal_new ("visibility_notify_event",
+    g_signal_new (I_("visibility_notify_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, visibility_notify_event),
@@ -1366,7 +1465,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[CLIENT_EVENT] =
-    g_signal_new ("client_event",
+    g_signal_new (I_("client_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, client_event),
@@ -1375,7 +1474,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[NO_EXPOSE_EVENT] =
-    g_signal_new ("no_expose_event",
+    g_signal_new (I_("no_expose_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, no_expose_event),
@@ -1384,10 +1483,36 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
   widget_signals[WINDOW_STATE_EVENT] =
-    g_signal_new ("window_state_event",
+    g_signal_new (I_("window_state_event"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, window_state_event),
+		  _gtk_boolean_handled_accumulator, NULL,
+		  _gtk_marshal_BOOLEAN__BOXED,
+		  G_TYPE_BOOLEAN, 1,
+		  GDK_TYPE_EVENT | G_SIGNAL_TYPE_STATIC_SCOPE);
+  /**
+   * GtkWidget::grab-broken-event:
+   * @widget: the object which received the signal
+   * @event: the #GdkEventGrabBroken event
+   *
+   * Emitted when a pointer or keyboard grab on a window belonging 
+   * to @widget gets broken. 
+   * 
+   * On X11, this happens when the grab window becomes unviewable 
+   * (i.e. it or one of its ancestors is unmapped), or if the same 
+   * application grabs the pointer or keyboard again.
+   *
+   * Returns: %TRUE to stop other handlers from being invoked for the event. 
+   *   %FALSE to propagate the event further.
+   *
+   * Since: 2.8
+   */
+  widget_signals[GRAB_BROKEN] =
+    g_signal_new (I_("grab_broken_event"),
+		  G_TYPE_FROM_CLASS (gobject_class),
+		  G_SIGNAL_RUN_LAST,
+		  G_STRUCT_OFFSET (GtkWidgetClass, grab_broken_event),
 		  _gtk_boolean_handled_accumulator, NULL,
 		  _gtk_marshal_BOOLEAN__BOXED,
 		  G_TYPE_BOOLEAN, 1,
@@ -1405,7 +1530,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  * example of how to use this signal.
  */
   widget_signals[POPUP_MENU] =
-    g_signal_new ("popup_menu",
+    g_signal_new (I_("popup_menu"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkWidgetClass, popup_menu),
@@ -1413,7 +1538,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_BOOLEAN__VOID,
 		  G_TYPE_BOOLEAN, 0);
   widget_signals[SHOW_HELP] =
-    g_signal_new ("show_help",
+    g_signal_new (I_("show_help"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST | G_SIGNAL_ACTION,
 		  G_STRUCT_OFFSET (GtkWidgetClass, show_help),
@@ -1422,7 +1547,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  G_TYPE_BOOLEAN, 1,
 		  GTK_TYPE_WIDGET_HELP_TYPE);
   widget_signals[ACCEL_CLOSURES_CHANGED] =
-    g_signal_new ("accel_closures_changed",
+    g_signal_new (I_("accel_closures_changed"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  0,
 		  0,
@@ -1430,7 +1555,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_NONE__NONE,
 		  G_TYPE_NONE, 0);
   widget_signals[SCREEN_CHANGED] =
-    g_signal_new ("screen_changed",
+    g_signal_new (I_("screen_changed"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, screen_changed),
@@ -1451,7 +1576,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
  * for determining whether an accelerator can be activated.
  */
   widget_signals[CAN_ACTIVATE_ACCEL] =
-    g_signal_new ("can_activate_accel",
+     g_signal_new (I_("can_activate_accel"),
 		  G_TYPE_FROM_CLASS (gobject_class),
 		  G_SIGNAL_RUN_LAST,
 		  G_STRUCT_OFFSET (GtkWidgetClass, can_activate_accel),
@@ -1459,15 +1584,19 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_marshal_BOOLEAN__UINT,
                   G_TYPE_BOOLEAN, 1, G_TYPE_UINT);
 
-  /**	
+#ifdef MAEMO_CHANGES
+  /**
    * GtkWidget::insensitive-press:
-   * @widget: the object which received the signal	
-   *	
-   * If a widget is insensitive and it receives click event,	
-   * the signal is emited.  Signal is made to clarify situations where	
-   * a widget is not easily noticable as an insenitive widget.	
+   * @widget: the object which received the signal
+   *
+   * If a widget is insensitive and it receives click event,
+   * the signal is emited.  Signal is made to clarify situations where
+   * a widget is not easily noticable as an insensitive widget.
+   *
+   * Deprecated: Use hildon_helper_set_insensitive_message() instead.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   widget_signals[INSENSITIVE_PRESS] =
     g_signal_new ("insensitive_press",
@@ -1477,14 +1606,14 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                   NULL, NULL,
                   _gtk_marshal_VOID__VOID,
                   G_TYPE_NONE, 0);
-  
-  /**	
+  /**
    * GtkWidget::tap-and-hold:
-   * @widget: the object which received the signal	
-   *	
-   * The signal is emited when tap and hold activity occurs.	
+   * @widget: the object which received the signal
+   *
+   * The signal is emited when tap and hold activity occurs.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
   widget_signals[TAP_AND_HOLD] =
     g_signal_new("tap_and_hold", G_TYPE_FROM_CLASS(gobject_class),
@@ -1493,27 +1622,23 @@ gtk_widget_class_init (GtkWidgetClass *klass)
                   NULL, NULL,
                   _gtk_marshal_VOID__VOID,
                   G_TYPE_NONE, 0);
-
-  /**	
+  /**
    * GtkWidget::tap-and-hold-setup:
-   * @widget: the object which received the signal	
-   * @menu: the menu to be opened.	
-   * @func: the menu position function	
-   * @flags: debricated	
-   *	
-   * Enables the tap and hold functionality to the @widget.	
-   * Usually a @menu is used at tap and hold signal,	
-   * but this is optional.  Setup can be run and some other functionality	
-   * may be connected to it as well.  Usually this signal is not used,	
-   * instead the virtual function is over written.	
-   * 
-   * Signal is deprecated and should not be used.
+   * @widget: the object which received the signal
+   * @menu: the menu to be opened.
+   * @func: the menu position function
+   * @flags: deprecated
    *
-   * @Deprecated
+   * Enables the tap and hold functionality to the @widget.
+   * Usually a @menu is used at tap and hold signal,
+   * but this is optional.  Setup can be run and some other functionality
+   * may be connected to it as well.  Usually this signal is not used,
+   * instead the virtual function is over written.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
-  widget_signals[TAP_AND_HOLD_SETUP] =  
+  widget_signals[TAP_AND_HOLD_SETUP] =
     g_signal_new("tap_and_hold_setup", G_TYPE_FROM_CLASS(gobject_class),
                   G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET(GtkWidgetClass, tap_and_hold_setup),
@@ -1532,6 +1657,7 @@ gtk_widget_class_init (GtkWidgetClass *klass)
    * tap and hold.
    *
    * Since: maemo 1.0
+   * Stability: Unstable
    */
     widget_signals[TAP_AND_HOLD_QUERY] =
     g_signal_new ("tap_and_hold_query",
@@ -1541,6 +1667,8 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 		  _gtk_boolean_handled_accumulator, NULL,
 		  _gtk_marshal_BOOLEAN__BOXED,
 		  G_TYPE_BOOLEAN, 1, GDK_TYPE_EVENT);
+
+#endif /* MAEMO_CHANGES */
 
   binding_set = gtk_binding_set_by_class (klass);
   gtk_binding_entry_add_signal (binding_set, GDK_F10, GDK_SHIFT_MASK,
@@ -1571,21 +1699,17 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 								 P_("Whether to draw the focus indicator inside widgets"),
 								 TRUE,
 								 GTK_PARAM_READABLE));
-  /**
-   * GtkWidget:hildon-focus-handling:
-   *
-   * Whether the widget is using the hildon like focus handling or not.
-   *
-   * This style property is deprecated; it does nothing.
-   *
-   * Since: maemo 1.0
-   */
+
+#ifdef MAEMO_CHANGES
   gtk_widget_class_install_style_property (klass,
-				   g_param_spec_boolean ("hildon-focus-handling",
- 							 P_("Hildon focus handling"),
- 							 P_("Whether the widget is using the hildon like focus handling or not"),
- 							 FALSE,
-							 GTK_PARAM_READABLE));
+					   g_param_spec_boolean ("maemo-position-theming",
+								 P_("Maemo position theming"),
+								 P_("Theming hint to allow rounded corner effects on border children"),
+								 FALSE,
+								 GTK_PARAM_READABLE));
+#endif
+
+
   gtk_widget_class_install_style_property (klass,
 					   g_param_spec_int ("focus-line-width",
 							     P_("Focus linewidth"),
@@ -1623,18 +1747,140 @@ gtk_widget_class_init (GtkWidgetClass *klass)
 							       P_("Aspect ratio with which to draw insertion cursor"),
 							       0.0, 1.0, 0.04,
 							       GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:draw-border:
+ *
+ * The "draw-border" property defines the size of areas outside 
+ * the widget's allocation to draw.
+ *
+ * Since: 2.8
+ */
+  gtk_widget_class_install_style_property (klass,
+					   g_param_spec_boxed ("draw-border",
+							       P_("Draw Border"),
+							       P_("Size of areas outside the widget's allocation to draw"),
+							       GTK_TYPE_BORDER,
+							       GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:link-color:
+ *
+ * The "link-color" property defines the color of unvisited links.
+ *
+ * Since: 2.10
+ */
+  gtk_widget_class_install_style_property (klass,
+					   g_param_spec_boxed ("link-color",
+							       P_("Unvisited Link Color"),
+							       P_("Color of unvisited links"),
+							       GDK_TYPE_COLOR,
+							       GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:visited-link-color:
+ *
+ * The "visited-link-color" property defines the color of visited links.
+ *
+ * Since: 2.10
+ */
+  gtk_widget_class_install_style_property (klass,
+					   g_param_spec_boxed ("visited-link-color",
+							       P_("Visited Link Color"),
+							       P_("Color of visited links"),
+							       GDK_TYPE_COLOR,
+							       GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:wide-separators:
+ *
+ * The "wide-separators" property defines whether separators have 
+ * configurable width and should be drawn using a box instead of a line.
+ *
+ * Since: 2.10
+ */
+  gtk_widget_class_install_style_property (klass,
+                                           g_param_spec_boolean ("wide-separators",
+                                                                 P_("Wide Separators"),
+                                                                 P_("Whether separators have configurable width and should be drawn using a box instead of a line"),
+                                                                 FALSE,
+                                                                 GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:separator-width:
+ *
+ * The "separator-width" property defines the width of separators.
+ * This property only takes effect if "wide-separators" is %TRUE.
+ *
+ * Since: 2.10
+ */
+  gtk_widget_class_install_style_property (klass,
+                                           g_param_spec_int ("separator-width",
+                                                             P_("Separator Width"),
+                                                             P_("The width of separators if wide-separators is TRUE"),
+                                                             0, G_MAXINT, 0,
+                                                             GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:separator-height:
+ *
+ * The "separator-height" property defines the height of separators.
+ * This property only takes effect if "wide-separators" is %TRUE.
+ *
+ * Since: 2.10
+ */
+  gtk_widget_class_install_style_property (klass,
+                                           g_param_spec_int ("separator-height",
+                                                             P_("Separator Height"),
+                                                             P_("The height of separators if \"wide-separators\" is TRUE"),
+                                                             0, G_MAXINT, 0,
+                                                             GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:scroll-arrow-hlength:
+ *
+ * The "scroll-arrow-hlength" property defines the length of 
+ * horizontal scroll arrows.
+ *
+ * Since: 2.10
+ */
   gtk_widget_class_install_style_property (klass,
                                            g_param_spec_int ("scroll-arrow-hlength",
                                                              P_("Horizontal Scroll Arrow Length"),
                                                              P_("The length of horizontal scroll arrows"),
                                                              1, G_MAXINT, 16,
                                                              GTK_PARAM_READABLE));
+
+/**
+ * GtkWidget:scroll-arrow-vlength:
+ *
+ * The "scroll-arrow-vlength" property defines the length of 
+ * vertical scroll arrows.
+ *
+ * Since: 2.10
+ */
   gtk_widget_class_install_style_property (klass,
                                            g_param_spec_int ("scroll-arrow-vlength",
                                                              P_("Vertical Scroll Arrow Length"),
                                                              P_("The length of vertical scroll arrows"),
                                                              1, G_MAXINT, 16,
                                                              GTK_PARAM_READABLE));
+}
+
+static void
+gtk_widget_base_class_finalize (GtkWidgetClass *klass)
+{
+  GList *list, *node;
+
+  list = g_param_spec_pool_list_owned (style_property_spec_pool, G_OBJECT_CLASS_TYPE (klass));
+  for (node = list; node; node = node->next)
+    {
+      GParamSpec *pspec = node->data;
+
+      g_param_spec_pool_remove (style_property_spec_pool, pspec);
+      g_param_spec_unref (pspec);
+    }
+  g_list_free (list);
 }
 
 static void
@@ -1722,8 +1968,10 @@ gtk_widget_set_property (GObject         *object,
     case PROP_NO_SHOW_ALL:
       gtk_widget_set_no_show_all (widget, g_value_get_boolean (value));
       break;
+#ifdef MAEMO_CHANGES
     case PROP_TAP_AND_HOLD:
       break;
+#endif /* MAEMO_CHANGES */
     default:
       break;
     }
@@ -1818,84 +2066,20 @@ gtk_widget_get_property (GObject         *object,
     case PROP_NO_SHOW_ALL:
       g_value_set_boolean (value, gtk_widget_get_no_show_all (widget));
       break;
+#ifdef MAEMO_CHANGES
     case PROP_TAP_AND_HOLD:
       break;
+#endif /* MAEMO_CHANGES */
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
     }
 }
 
-static TahData*
-gtk_widget_peek_tah_data (GtkWidget *widget)
-{
-  TahData *td = g_object_get_data (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold");
-  return td;
-}
-
-static void
-tap_and_hold_stop_animation (TahData *td)
-{
-#ifdef TAP_AND_HOLD_ANIMATION
-  if (td->tah_on_window)
-    gdk_window_set_cursor (td->tah_on_window, NULL);
-  td->tah_on_window = NULL;
-
-  if (td->anim)
-    g_object_unref (td->anim);
-  td->anim = NULL;
-
-  if (td->iter)
-    g_object_unref (td->iter);
-  td->iter = NULL;
-#endif
-}
-
-static void
-tap_and_hold_free_data (gpointer data)
-{
-  TahData *td = data;
-  if (td)
-    {
-      if (td->timer_id)
-	g_source_remove (td->timer_id);
-      td->timer_id = 0;
-
-      if (GTK_IS_MENU (td->menu))
-	g_object_unref (td->menu);
-      td->menu = NULL;
-
-      tap_and_hold_stop_animation (td);
-
-      g_free (td);
-    }
-}
-
-static void
-gtk_widget_set_tah_data (GtkWidget *widget, TahData *td)
-{
-  g_object_set_data_full (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold",
-			  td, tap_and_hold_free_data);
-}
-
-static TahData*
-gtk_widget_get_tah_data (GtkWidget *widget)
-{
-  TahData *td = gtk_widget_peek_tah_data (widget);
-  if (!td)
-    {  
-      td = g_new0 (TahData, 1);
-      td->interval = GTK_TAP_AND_HOLD_TIMER_INTERVAL;
-      gtk_widget_set_tah_data (widget, td);
-    }
-  return td;
-}
-
 static void
 gtk_widget_init (GtkWidget *widget)
 {
   GTK_PRIVATE_FLAGS (widget) = PRIVATE_GTK_CHILD_VISIBLE;
-
   widget->state = GTK_STATE_NORMAL;
   widget->saved_state = GTK_STATE_NORMAL;
   widget->name = NULL;
@@ -2402,7 +2586,7 @@ gtk_widget_show_all (GtkWidget *widget)
 
   if ((GTK_WIDGET_FLAGS (widget) & GTK_NO_SHOW_ALL) != 0)
     return;
- 
+
   class = GTK_WIDGET_GET_CLASS (widget);
 
   if (class->show_all)
@@ -2480,9 +2664,9 @@ gtk_widget_unmap (GtkWidget *widget)
 }
 
 static void
-gtk_widget_set_extension_events_internal (GtkWidget        *widget, 
-					  GdkExtensionMode  mode,
-					  GList            *window_list)
+gtk_widget_set_extension_events_internal (GtkWidget        *widget,
+                                          GdkExtensionMode  mode,
+                                          GList            *window_list)
 {
   GList *free_list = NULL;
   GList *l;
@@ -2490,9 +2674,9 @@ gtk_widget_set_extension_events_internal (GtkWidget        *widget,
   if (window_list == NULL)
     {
       if (!GTK_WIDGET_NO_WINDOW (widget))
-	window_list = g_list_prepend (NULL, widget->window);
+        window_list = g_list_prepend (NULL, widget->window);
       else
-	window_list = gdk_window_get_children (widget->window);
+        window_list = gdk_window_get_children (widget->window);
 
       free_list = window_list;
     }
@@ -2504,23 +2688,26 @@ gtk_widget_set_extension_events_internal (GtkWidget        *widget,
 
       gdk_window_get_user_data (window, &user_data);
       if (user_data == widget)
-	{
-	  GList *children;
+        {
+          GList *children;
 
-	  gdk_input_set_extension_events (window,
-					  gdk_window_get_events (window),
-					  mode);
+          gdk_input_set_extension_events (window,
+                                          gdk_window_get_events (window),
+                                          mode);
 
-	  children = gdk_window_get_children (window);
-	  if (children)
-	    gtk_widget_set_extension_events_internal (widget, mode, children);
-	  g_list_free (children);
-	}
+          children = gdk_window_get_children (window);
+          if (children)
+            {
+              gtk_widget_set_extension_events_internal (widget, mode, children);
+              g_list_free (children);
+            }
+        }
     }
 
   if (free_list)
     g_list_free (free_list);
 }
+
 /**
  * gtk_widget_realize:
  * @widget: a #GtkWidget
@@ -2584,6 +2771,13 @@ gtk_widget_realize (GtkWidget *widget)
 					 shape_info->offset_y);
 	}
       
+      shape_info = g_object_get_qdata (G_OBJECT (widget), quark_input_shape_info);
+      if (shape_info)
+	gdk_window_input_shape_combine_mask (widget->window,
+					     shape_info->shape_mask,
+					     shape_info->offset_x,
+					     shape_info->offset_y);
+
       mode = gtk_widget_get_extension_events (widget);
       if (mode != GDK_EXTENSION_EVENTS_NONE)
 	gtk_widget_set_extension_events_internal (widget, mode, NULL);
@@ -2605,7 +2799,10 @@ gtk_widget_unrealize (GtkWidget *widget)
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
   if (GTK_WIDGET_HAS_SHAPE_MASK (widget))
-    gtk_widget_shape_combine_mask (widget, NULL, -1, -1);
+    gtk_widget_shape_combine_mask (widget, NULL, 0, 0);
+
+  if (g_object_get_qdata (G_OBJECT (widget), quark_input_shape_info))
+    gtk_widget_input_shape_combine_mask (widget, NULL, 0, 0);
 
   if (GTK_WIDGET_REALIZED (widget))
     {
@@ -2713,6 +2910,55 @@ gtk_widget_queue_draw_area (GtkWidget *widget,
   gdk_window_invalidate_rect (widget->window, &invalid_rect, TRUE);
 }
 
+static void
+widget_add_child_draw_rectangle (GtkWidget    *widget,
+				 GdkRectangle *rect)
+{
+  GdkRectangle child_rect;
+  
+  if (!GTK_WIDGET_MAPPED (widget) ||
+      widget->window != widget->parent->window)
+    return;
+
+  gtk_widget_get_draw_rectangle (widget, &child_rect);
+  gdk_rectangle_union (rect, &child_rect, rect);
+}
+
+static void
+gtk_widget_get_draw_rectangle (GtkWidget    *widget,
+			       GdkRectangle *rect)
+{
+  if (GTK_WIDGET_NO_WINDOW (widget))
+    {
+      GtkBorder *draw_border = NULL;
+
+      *rect = widget->allocation;
+
+      gtk_widget_style_get (widget, 
+			    "draw-border", &draw_border,
+			    NULL);
+      if (draw_border)
+	{
+	  rect->x -= draw_border->top;
+	  rect->y -= draw_border->left;
+	  rect->width += draw_border->left + draw_border->right;
+	  rect->height += draw_border->top + draw_border->bottom;
+	}
+
+      if (GTK_IS_CONTAINER (widget))
+	gtk_container_forall (GTK_CONTAINER (widget),
+			      (GtkCallback)widget_add_child_draw_rectangle,
+			      rect);
+    }
+  else
+    {
+      rect->x = 0;
+      rect->y = 0;
+      rect->width = widget->allocation.width;
+      rect->height = widget->allocation.height;
+    }
+}
+
 /**
  * gtk_widget_queue_draw:
  * @widget: a #GtkWidget
@@ -2724,20 +2970,15 @@ gtk_widget_queue_draw_area (GtkWidget *widget,
 void	   
 gtk_widget_queue_draw (GtkWidget *widget)
 {
+  GdkRectangle rect;
+  
   g_return_if_fail (GTK_IS_WIDGET (widget));
 
-  if (widget->allocation.width || widget->allocation.height)
-    {
-      if (GTK_WIDGET_NO_WINDOW (widget))
-	gtk_widget_queue_draw_area (widget, widget->allocation.x,
-				    widget->allocation.y,
-				    widget->allocation.width, 
-				    widget->allocation.height);
-      else
-	gtk_widget_queue_draw_area (widget, 0, 0, 
-				    widget->allocation.width, 
-				    widget->allocation.height);
-    }
+  gtk_widget_get_draw_rectangle (widget, &rect);
+
+  gtk_widget_queue_draw_area (widget,
+			      rect.x, rect.y,
+			      rect.width, rect.height);
 }
 
 /* Invalidates the given area (allocation-relative-coordinates)
@@ -2970,11 +3211,29 @@ gtk_widget_invalidate_widget_windows (GtkWidget *widget,
 static void
 gtk_widget_queue_shallow_draw (GtkWidget *widget)
 {
+  GdkRectangle rect;
   GdkRegion *region;
   
-  g_return_if_fail (GTK_IS_WIDGET (widget));
+  if (!GTK_WIDGET_REALIZED (widget))
+    return;
+
+  gtk_widget_get_draw_rectangle (widget, &rect);
+
+  /* get_draw_rectangle() gives us window coordinates, we
+   * need to convert to the coordinates that widget->allocation
+   * is in.
+   */
+  if (!GTK_WIDGET_NO_WINDOW (widget) && widget->parent)
+    {
+      int wx, wy;
+      
+      gdk_window_get_position (widget->window, &wx, &wy);
+      
+      rect.x += wx;
+      rect.y += wy;
+    }
   
-  region = gdk_region_rectangle (&widget->allocation);
+  region = gdk_region_rectangle (&rect);
   gtk_widget_invalidate_widget_windows (widget, region);
   gdk_region_destroy (region);
 }
@@ -3523,7 +3782,6 @@ gtk_widget_list_accel_closures (GtkWidget *widget)
 
 typedef struct {
   GQuark         path_quark;
-  GtkWidget     *widget;
   GtkAccelGroup *accel_group;
   GClosure      *closure;
 } AccelPath;
@@ -3538,7 +3796,7 @@ destroy_accel_path (gpointer data)
   /* closures_destroy takes care of unrefing the closure */
   g_object_unref (apath->accel_group);
   
-  g_free (apath);
+  g_slice_free (AccelPath, apath);
 }
 
 
@@ -3582,11 +3840,10 @@ gtk_widget_set_accel_path (GtkWidget     *widget,
       g_return_if_fail (_gtk_accel_path_is_valid (accel_path));
 
       gtk_accel_map_add_entry (accel_path, 0, 0);
-      apath = g_new (AccelPath, 1);
-      apath->widget = widget;
+      apath = g_slice_new (AccelPath);
       apath->accel_group = g_object_ref (accel_group);
       apath->path_quark = g_quark_from_string (accel_path);
-      apath->closure = widget_new_accel_closure (apath->widget, GTK_WIDGET_GET_CLASS (apath->widget)->activate_signal);
+      apath->closure = widget_new_accel_closure (widget, GTK_WIDGET_GET_CLASS (widget)->activate_signal);
     }
   else
     apath = NULL;
@@ -3646,7 +3903,7 @@ gtk_widget_real_mnemonic_activate (GtkWidget *widget,
     {
       g_warning ("widget `%s' isn't suitable for mnemonic activation",
 		 G_OBJECT_TYPE_NAME (widget));
-      gdk_display_beep (gtk_widget_get_display (widget));
+      gtk_widget_error_bell (widget);
     }
   return TRUE;
 }
@@ -3748,9 +4005,6 @@ gtk_widget_send_expose (GtkWidget *widget,
   g_return_val_if_fail (event != NULL, TRUE);
   g_return_val_if_fail (event->type == GDK_EXPOSE, TRUE);
 
-  if (event->type != GDK_EXPOSE)
-    return TRUE;
-  
   return gtk_widget_event_internal (widget, event);
 }
 
@@ -3905,6 +4159,9 @@ gtk_widget_event_internal (GtkWidget *widget,
 	case GDK_VISIBILITY_NOTIFY:
 	  signal_num = VISIBILITY_NOTIFY_EVENT;
 	  break;
+	case GDK_GRAB_BROKEN:
+	  signal_num = GRAB_BROKEN;
+	  break;
 	default:
 	  g_warning ("gtk_widget_event(): unhandled event type: %d", event->type);
 	  signal_num = -1;
@@ -4043,7 +4300,7 @@ static void
 gtk_widget_reparent_fixup_child (GtkWidget *widget,
 				 gpointer   client_data)
 {
-  g_return_if_fail (client_data != NULL);
+  g_assert (client_data != NULL);
   
   if (GTK_WIDGET_NO_WINDOW (widget))
     {
@@ -4166,12 +4423,15 @@ GdkRegion *
 gtk_widget_region_intersect (GtkWidget *widget,
 			     GdkRegion *region)
 {
+  GdkRectangle rect;
   GdkRegion *dest;
   
   g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
   g_return_val_if_fail (region != NULL, NULL);
+
+  gtk_widget_get_draw_rectangle (widget, &rect);
   
-  dest = gdk_region_rectangle (&widget->allocation);
+  dest = gdk_region_rectangle (&rect);
  
   gdk_region_intersect (dest, region);
 
@@ -4327,6 +4587,35 @@ gtk_widget_real_focus (GtkWidget         *widget,
     return FALSE;
 }
 
+static gboolean
+gtk_widget_real_keynav_failed (GtkWidget        *widget,
+                               GtkDirectionType  direction)
+{
+  gboolean cursor_only;
+
+  switch (direction)
+    {
+    case GTK_DIR_TAB_FORWARD:
+    case GTK_DIR_TAB_BACKWARD:
+      return FALSE;
+
+    case GTK_DIR_UP:
+    case GTK_DIR_DOWN:
+    case GTK_DIR_LEFT:
+    case GTK_DIR_RIGHT:
+      g_object_get (gtk_widget_get_settings (widget),
+                    "gtk-keynav-cursor-only", &cursor_only,
+                    NULL);
+      if (cursor_only)
+        return FALSE;
+      break;
+    }
+
+  gtk_widget_error_bell (widget);
+
+  return TRUE;
+}
+
 /**
  * gtk_widget_is_focus:
  * @widget: a #GtkWidget
@@ -4472,6 +4761,31 @@ gtk_widget_set_state (GtkWidget           *widget,
     }
 }
 
+
+/**
+ * gtk_widget_set_app_paintable:
+ * @widget: a #GtkWidget
+ * @app_paintable: %TRUE if the application will paint on the widget
+ *
+ * Sets whether the application intends to draw on the widget in
+ * an ::expose-event handler. 
+ *
+ * This is a hint to the widget and does not affect the behavior of 
+ * the GTK+ core; many widgets ignore this flag entirely. For widgets 
+ * that do pay attention to the flag, such as #GtkEventBox and #GtkWindow, 
+ * the effect is to suppress default themed drawing of the widget's 
+ * background. (Children of the widget will still be drawn.) The application 
+ * is then entirely responsible for drawing the widget background.
+ *
+ * Note that the background is still drawn when the widget is mapped.
+ * If this is not suitable (e.g. because you want to make a transparent
+ * window using an RGBA visual), you can work around this by doing:
+ * <informalexample><programlisting>
+ *  gtk_widget_realize (window);
+ *  gdk_window_set_back_pixmap (window->window, NULL, FALSE);
+ *  gtk_widget_show (window);
+ * </programlisting></informalexample> 
+ **/
 void
 gtk_widget_set_app_paintable (GtkWidget *widget,
 			      gboolean   app_paintable)
@@ -4513,6 +4827,11 @@ gtk_widget_set_app_paintable (GtkWidget *widget,
  * so you would only use this function to turn off double buffering
  * if you had special needs and really knew what you were doing.
  * 
+ * Note: if you turn off double-buffering, you have to handle
+ * expose events, since even the clearing to the background color or 
+ * pixmap will not happen automatically (as it is done in 
+ * gdk_window_begin_paint()).
+ * 
  **/
 void
 gtk_widget_set_double_buffered (GtkWidget *widget,
@@ -4533,8 +4852,8 @@ gtk_widget_set_double_buffered (GtkWidget *widget,
  *   when it is allocated to a new size. Otherwise, only the
  *   new portion of the widget will be redrawn.
  *
- * Sets whether a when a widgets size allocation changes, the entire
- * widget is queued for drawing. By default, this setting is %TRUE and
+ * Sets whether the entire widget is queued for drawing when its size 
+ * allocation changes. By default, this setting is %TRUE and
  * the entire widget is redrawn on every size change. If your widget
  * leaves the upper left unchanged when made bigger, turning this
  * setting on will improve performance.
@@ -4644,8 +4963,7 @@ gtk_widget_set_parent (GtkWidget *widget,
   /* keep this function in sync with gtk_menu_attach_to_widget()
    */
 
-  g_object_ref (widget);
-  gtk_object_sink (GTK_OBJECT (widget));
+  g_object_ref_sink (widget);
   widget->parent = parent;
 
   if (GTK_WIDGET_STATE (parent) != GTK_STATE_NORMAL)
@@ -4767,8 +5085,6 @@ gtk_widget_reset_rc_style (GtkWidget *widget)
   GtkStyle *new_style = NULL;
   gboolean initial_emission;
   
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
   initial_emission = !GTK_WIDGET_RC_STYLE (widget) && !GTK_WIDGET_USER_STYLE (widget);
 
   GTK_PRIVATE_UNSET_FLAG (widget, GTK_USER_STYLE);
@@ -4826,13 +5142,9 @@ void
 gtk_widget_modify_style (GtkWidget      *widget,
 			 GtkRcStyle     *style)
 {
-  GtkRcStyle *old_style;
-
   g_return_if_fail (GTK_IS_WIDGET (widget));
   g_return_if_fail (GTK_IS_RC_STYLE (style));
   
-  old_style = g_object_get_qdata (G_OBJECT (widget), quark_rc_style);
-
   g_object_set_qdata_full (G_OBJECT (widget),
 			   quark_rc_style,
 			   gtk_rc_style_copy (style),
@@ -4865,7 +5177,7 @@ gtk_widget_modify_style (GtkWidget      *widget,
  * 
  * Return value: the modifier style for the widget. This rc style is
  *   owned by the widget. If you want to keep a pointer to value this
- *   around, you must add a refcount using gtk_rc_style_ref().
+ *   around, you must add a refcount using g_object_ref().
  **/
 GtkRcStyle *
 gtk_widget_get_modifier_style (GtkWidget      *widget)
@@ -4957,7 +5269,14 @@ gtk_widget_modify_fg (GtkWidget      *widget,
  * 
  * Sets the background color for a widget in a particular state.  All
  * other style values are left untouched. See also
- * gtk_widget_modify_style().
+ * gtk_widget_modify_style(). 
+ *
+ * Note that "no window" widgets (which have the %GTK_NO_WINDOW flag set)
+ * draw on their parent container's window and thus may not draw any background
+ * themselves. This is the case for e.g. #GtkLabel. To modify the background
+ * of such widgets, you have to set the background color on their parent; if you want 
+ * to set the background of a rectangular area around a label, try placing the 
+ * label in a #GtkEventBox widget and setting the background color on that.
  **/
 void
 gtk_widget_modify_bg (GtkWidget      *widget,
@@ -5008,6 +5327,13 @@ gtk_widget_modify_text (GtkWidget      *widget,
  * is the background color used along with the text color
  * (see gtk_widget_modify_text()) for widgets such as #GtkEntry
  * and #GtkTextView. See also gtk_widget_modify_style().
+ *
+ * Note that "no window" widgets (which have the %GTK_NO_WINDOW flag set)
+ * draw on their parent container's window and thus may not draw any background
+ * themselves. This is the case for e.g. #GtkLabel. To modify the background
+ * of such widgets, you have to set the base color on their parent; if you want 
+ * to set the background of a rectangular area around a label, try placing the 
+ * label in a #GtkEventBox widget and setting the base color on that.
  **/
 void
 gtk_widget_modify_base (GtkWidget      *widget,
@@ -5074,13 +5400,6 @@ gtk_widget_set_style_internal (GtkWidget *widget,
   g_object_ref (widget);
   g_object_freeze_notify (G_OBJECT (widget));
 
-  if (widget->style != style || initial_emission)
-    {
-      PangoContext *context = gtk_widget_peek_pango_context (widget);
-      if (context)
-	pango_context_set_font_description (context, style->font_desc);
-    }
-  
   if (widget->style != style)
     {
       GtkStyle *previous_style;
@@ -5098,6 +5417,7 @@ gtk_widget_set_style_internal (GtkWidget *widget,
       if (GTK_WIDGET_REALIZED (widget))
 	widget->style = gtk_style_attach (widget->style, widget->window);
 
+      gtk_widget_update_pango_context (widget);
       g_signal_emit (widget,
 		     widget_signals[STYLE_SET],
 		     0,
@@ -5108,10 +5428,13 @@ gtk_widget_set_style_internal (GtkWidget *widget,
 	gtk_widget_queue_resize (widget);
     }
   else if (initial_emission)
-    g_signal_emit (widget,
-		   widget_signals[STYLE_SET],
-		   0,
-		   NULL);
+    {
+      gtk_widget_update_pango_context (widget);
+      g_signal_emit (widget,
+		     widget_signals[STYLE_SET],
+		     0,
+		     NULL);
+    }
   g_object_notify (G_OBJECT (widget), "style");
   g_object_thaw_notify (G_OBJECT (widget));
   g_object_unref (widget);
@@ -5228,6 +5551,51 @@ gtk_widget_propagate_screen_changed_recurse (GtkWidget *widget,
 }
 
 /**
+ * gtk_widget_is_composited:
+ * @widget: a #GtkWidget
+ * 
+ * Whether @widget can rely on having its alpha channel
+ * drawn correctly. On X11 this function returns whether a
+ * compositing manager is running for @widget's screen
+ * 
+ * Return value: %TRUE if the widget can rely on its alpha
+ * channel being drawn correctly.
+ * 
+ * Since: 2.10
+ */
+gboolean
+gtk_widget_is_composited (GtkWidget *widget)
+{
+  GdkScreen *screen;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+  
+  screen = gtk_widget_get_screen (widget);
+  
+  return gdk_screen_is_composited (screen);
+}
+
+static void
+propagate_composited_changed (GtkWidget *widget,
+			      gpointer dummy)
+{
+  if (GTK_IS_CONTAINER (widget))
+    {
+      gtk_container_forall (GTK_CONTAINER (widget),
+			    propagate_composited_changed,
+			    NULL);
+    }
+  
+  g_signal_emit (widget, widget_signals[COMPOSITED_CHANGED], 0);
+}
+
+void
+_gtk_widget_propagate_composited_changed (GtkWidget *widget)
+{
+  propagate_composited_changed (widget, NULL);
+}
+
+/**
  * _gtk_widget_propagate_screen_changed:
  * @widget: a #GtkWidget
  * @previous_screen: Previous screen
@@ -5303,7 +5671,7 @@ gtk_widget_peek_pango_context (GtkWidget *widget)
  * gtk_widget_get_pango_context:
  * @widget: a #GtkWidget
  * 
- * Gets a #PangoContext with the appropriate colormap, font description
+ * Gets a #PangoContext with the appropriate font map, font description,
  * and base direction for this widget. Unlike the context returned
  * by gtk_widget_create_pango_context(), this context is owned by
  * the widget (it can be used until the screen for the widget changes
@@ -5337,11 +5705,43 @@ gtk_widget_get_pango_context (GtkWidget *widget)
   return context;
 }
 
+static void
+update_pango_context (GtkWidget    *widget,
+		      PangoContext *context)
+{
+  pango_context_set_font_description (context, widget->style->font_desc);
+  pango_context_set_base_dir (context,
+			      gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR ?
+			      PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL);
+}
+
+static void
+gtk_widget_update_pango_context (GtkWidget *widget)
+{
+  PangoContext *context = gtk_widget_peek_pango_context (widget);
+  
+  if (context)
+    {
+      GdkScreen *screen;
+
+      update_pango_context (widget, context);
+
+      screen = gtk_widget_get_screen_unchecked (widget);
+      if (screen)
+	{
+	  pango_cairo_context_set_resolution (context,
+					      gdk_screen_get_resolution (screen));
+	  pango_cairo_context_set_font_options (context,
+						gdk_screen_get_font_options (screen));
+	}
+    }
+}
+
 /**
  * gtk_widget_create_pango_context:
  * @widget: a #GtkWidget
  * 
- * Creates a new #PangoContext with the appropriate colormap,
+ * Creates a new #PangoContext with the appropriate font map,
  * font description, and base direction for drawing text for
  * this widget. See also gtk_widget_get_pango_context().
  * 
@@ -5366,10 +5766,7 @@ gtk_widget_create_pango_context (GtkWidget *widget)
 
   context = gdk_pango_context_get_for_screen (screen);
 
-  pango_context_set_base_dir (context,
-			      gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR ?
-			        PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL);
-  pango_context_set_font_description (context, widget->style->font_desc);
+  update_pango_context (widget, context);
   pango_context_set_language (context, gtk_get_default_language ());
 
   return context;
@@ -5380,11 +5777,11 @@ gtk_widget_create_pango_context (GtkWidget *widget)
  * @widget: a #GtkWidget
  * @text:   text to set on the layout (can be %NULL)
  * 
- * Creates a new #PangoLayout with the appropriate colormap,
+ * Creates a new #PangoLayout with the appropriate font map,
  * font description, and base direction for drawing text for
  * this widget.
  *
- * If you keep a #PangoLayout created in this way around, in order
+ * If you keep a #PangoLayout created in this way around, in order to
  * notify the layout of changes to the base direction or font of this
  * widget, you must call pango_layout_context_changed() in response to
  * the ::style-set and ::direction-changed signals for the widget.
@@ -5715,11 +6112,11 @@ gtk_widget_get_parent_window   (GtkWidget           *widget)
   GdkWindow *parent_window;
 
   g_return_val_if_fail (GTK_IS_WIDGET (widget), NULL);
-  g_return_val_if_fail (widget->parent != NULL, NULL);
   
   parent_window = g_object_get_qdata (G_OBJECT (widget), quark_parent_window);
 
-  return (parent_window != NULL) ? parent_window : widget->parent->window;
+  return (parent_window != NULL) ? parent_window : 
+	 (widget->parent != NULL) ? widget->parent->window : NULL;
 }
 
 /**
@@ -5781,6 +6178,92 @@ gtk_widget_child_focus (GtkWidget       *widget,
 		 direction, &return_val);
 
   return return_val;
+}
+
+/**
+ * gtk_widget_keynav_failed:
+ * @widget:    a #GtkWidget
+ * @direction: direction of focus movement
+ *
+ * This function should be called whenever keyboard navigation within
+ * a single widget hits a boundary. The function emits the
+ * "keynav-changed" signal on the widget and its return value should
+ * be interpreted in a way similar to the return value of
+ * gtk_widget_child_focus():
+ *
+ * When %TRUE is returned, stay in the widget, the failed keyboard
+ * navigation is Ok and/or there is nowhere we can/should move the
+ * focus to.
+ *
+ * When %FALSE is returned, the caller should continue with keyboard
+ * navigation outside the widget, e.g. by calling
+ * gtk_widget_child_focus() on the widget's toplevel.
+ *
+ * The default implementation for the "keynav-failed" signal is to
+ * return %TRUE for %GTK_DIR_TAB_FORWARD and
+ * %GTK_DIR_TAB_BACKWARD. For the other values of #GtkDirectionType,
+ * it looks at the "gtk-keynav-cursor-only" settings property and
+ * returns %FALSE if the setting is %TRUE. This way the entire GUI
+ * becomes cursor-navigatable on input devices such as mobile phones
+ * which only have cursor keys but no tab key.
+ *
+ * Whenever the default implementation returns %TRUE, it also calls
+ * gtk_widget_error_bell() to notify the user of the failed keyboard
+ * navigation.
+ *
+ * A use case for providing an own implementation of keynav-failed (by
+ * either connecting to it or by overriding it) would be a row of
+ * #GtkEntry widgets where the user should be able to navigate the
+ * entire row with the cursor keys, as e.g. known from GUIs that
+ * require entering license keys.
+ *
+ * Return value: %TRUE if stopping keyboard navigation is fine, %FALSE
+ *               if the emitting widget should try to handle the keyboard
+ *               navigation attempt in its parent container(s).
+ *
+ * Since: 2.12
+ **/
+gboolean
+gtk_widget_keynav_failed (GtkWidget        *widget,
+                          GtkDirectionType  direction)
+{
+  gboolean return_val;
+
+  g_return_val_if_fail (GTK_IS_WIDGET (widget), FALSE);
+
+  g_signal_emit (widget, widget_signals[KEYNAV_FAILED], 0,
+		 direction, &return_val);
+
+  return return_val;
+}
+
+/**
+ * gtk_widget_error_bell:
+ * @widget: a #GtkWidget
+ *
+ * Notifies the user about an input-related error on this widget. If
+ * the gtk-error-bell settings property is %TRUE, it calls
+ * gdk_window_beep(), otherwise it does nothing.
+ *
+ * Note that the effect of gdk_window_beep() can be configured in many
+ * ways, depending on the windowing backend and the desktop environment
+ * or window manager that is used.
+ *
+ * Since: 2.12
+ **/
+void
+gtk_widget_error_bell (GtkWidget *widget)
+{
+  gboolean beep;
+
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
+  g_object_get (gtk_widget_get_settings (widget),
+                "gtk-error-bell", &beep,
+                NULL);
+
+  if (beep && widget->window)
+    gdk_window_beep (widget->window);
 }
 
 /**
@@ -5860,8 +6343,6 @@ gtk_widget_set_usize_internal (GtkWidget *widget,
 {
   GtkWidgetAuxInfo *aux_info;
   gboolean changed = FALSE;
-  
-  g_return_if_fail (GTK_IS_WIDGET (widget));
   
   g_object_freeze_notify (G_OBJECT (widget));
 
@@ -5989,9 +6470,7 @@ gtk_widget_set_size_request (GtkWidget *widget,
  * gtk_widget_set_size_request(). To get the size a widget will
  * actually use, call gtk_widget_size_request() instead of
  * this function.
- * 
  **/
- 
 void
 gtk_widget_get_size_request (GtkWidget *widget,
                              gint      *width,
@@ -6025,7 +6504,6 @@ gtk_widget_get_size_request (GtkWidget *widget,
  * mask. This function can't be used with #GTK_NO_WINDOW widgets;
  * to get events on those widgets, place them inside a #GtkEventBox
  * and receive events on the event box.
- * 
  **/
 void
 gtk_widget_set_events (GtkWidget *widget,
@@ -6041,14 +6519,14 @@ gtk_widget_set_events (GtkWidget *widget,
   if (events)
     {
       if (!eventp)
-	eventp = g_new (gint, 1);
+	eventp = g_slice_new (gint);
       
       *eventp = events;
       g_object_set_qdata (G_OBJECT (widget), quark_event_mask, eventp);
     }
   else if (eventp)
     {
-      g_free (eventp);
+      g_slice_free (gint, eventp);
       g_object_set_qdata (G_OBJECT (widget), quark_event_mask, NULL);
     }
 
@@ -6104,7 +6582,7 @@ gtk_widget_add_events (GtkWidget *widget,
     {
       if (!eventp)
 	{
-	  eventp = g_new (gint, 1);
+	  eventp = g_slice_new (gint);
 	  *eventp = 0;
 	}
       
@@ -6113,7 +6591,7 @@ gtk_widget_add_events (GtkWidget *widget,
     }
   else if (eventp)
     {
-      g_free (eventp);
+      g_slice_free (gint, eventp);
       g_object_set_qdata (G_OBJECT (widget), quark_event_mask, NULL);
     }
 
@@ -6141,20 +6619,19 @@ gtk_widget_add_events (GtkWidget *widget,
  *
  * Sets the extension events mask to @mode. See #GdkExtensionMode
  * and gdk_input_set_extension_events().
- * 
  **/
 void
 gtk_widget_set_extension_events (GtkWidget *widget,
 				 GdkExtensionMode mode)
 {
   GdkExtensionMode *modep;
-  
+
   g_return_if_fail (GTK_IS_WIDGET (widget));
-  
+
   modep = g_object_get_qdata (G_OBJECT (widget), quark_extension_event_mode);
-  
+
   if (!modep)
-    modep = g_new (GdkExtensionMode, 1);
+    modep = g_slice_new (GdkExtensionMode);
 
   if (GTK_WIDGET_REALIZED (widget))
     gtk_widget_set_extension_events_internal (widget, mode, NULL);
@@ -6621,12 +7098,7 @@ static void
 gtk_widget_emit_direction_changed (GtkWidget        *widget,
 				   GtkTextDirection  old_dir)
 {
-  PangoContext *context = gtk_widget_peek_pango_context (widget);
-
-  if (context)
-    pango_context_set_base_dir (context,
-				gtk_widget_get_direction (widget) == GTK_TEXT_DIR_LTR ?
-				  PANGO_DIRECTION_LTR : PANGO_DIRECTION_RTL);
+  gtk_widget_update_pango_context (widget);
   
   g_signal_emit (widget, widget_signals[DIRECTION_CHANGED], 0, old_dir);
 }
@@ -6704,7 +7176,7 @@ gtk_widget_set_default_direction_recurse (GtkWidget *widget, gpointer data)
   
   if (!GTK_WIDGET_DIRECTION_SET (widget))
     gtk_widget_emit_direction_changed (widget, old_dir);
-
+  
   if (GTK_IS_CONTAINER (widget))
     gtk_container_forall (GTK_CONTAINER (widget),
 			  gtk_widget_set_default_direction_recurse,
@@ -6712,24 +7184,6 @@ gtk_widget_set_default_direction_recurse (GtkWidget *widget, gpointer data)
 
   g_object_unref (widget);
 }
-
-/* Non static */
-/**
- * gtk_widget_set_direction_recursive:
- * @widget: a #GtkWidget
- * @dir: the new direction
- *
- * Sets the reading direction on a particular widget and all widgets it
- * contains. See gtk_widget_set_direction()
- *
- * Since: maemo 1.0
- */
-void
-gtk_widget_set_direction_recursive(GtkWidget * widget,  GtkTextDirection dir )
-{
-  gtk_widget_set_default_direction_recurse( widget, GUINT_TO_POINTER(dir) );
-}
-               
 
 /**
  * gtk_widget_set_default_direction:
@@ -6748,7 +7202,7 @@ gtk_widget_set_default_direction (GtkTextDirection dir)
     {
       GList *toplevels, *tmp_list;
       GtkTextDirection old_dir = gtk_default_direction;
-
+      
       gtk_default_direction = dir;
 
       tmp_list = toplevels = gtk_window_list_toplevels ();
@@ -6794,7 +7248,7 @@ gtk_widget_dispose (GObject *object)
   if (GTK_WIDGET_REALIZED (widget))
     gtk_widget_unrealize (widget);
   
-  G_OBJECT_CLASS (parent_class)->dispose (object);
+  G_OBJECT_CLASS (gtk_widget_parent_class)->dispose (object);
 }
 
 static void
@@ -6816,9 +7270,7 @@ gtk_widget_real_destroy (GtkObject *object)
   widget->style = gtk_widget_get_default_style ();
   g_object_ref (widget->style);
 
-  gtk_widget_set_tah_data (widget, NULL);
-
-  GTK_OBJECT_CLASS (parent_class)->destroy (object);
+  GTK_OBJECT_CLASS (gtk_widget_parent_class)->destroy (object);
 }
 
 static void
@@ -6844,17 +7296,17 @@ gtk_widget_finalize (GObject *object)
   
   events = g_object_get_qdata (G_OBJECT (widget), quark_event_mask);
   if (events)
-    g_free (events);
+    g_slice_free (gint, events);
   
   mode = g_object_get_qdata (G_OBJECT (widget), quark_extension_event_mode);
   if (mode)
-    g_free (mode);
+    g_slice_free (GdkExtensionMode, mode);
 
   accessible = g_object_get_qdata (G_OBJECT (widget), quark_accessible_object);
   if (accessible)
     g_object_unref (accessible);
 
-  G_OBJECT_CLASS (parent_class)->finalize (object);
+  G_OBJECT_CLASS (gtk_widget_parent_class)->finalize (object);
 }
 
 /*****************************************
@@ -6868,7 +7320,7 @@ gtk_widget_finalize (GObject *object)
 static void
 gtk_widget_real_map (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_WIDGET_REALIZED (widget) == TRUE);
+  g_assert (GTK_WIDGET_REALIZED (widget));
   
   if (!GTK_WIDGET_MAPPED (widget))
     {
@@ -6910,7 +7362,7 @@ gtk_widget_real_unmap (GtkWidget *widget)
 static void
 gtk_widget_real_realize (GtkWidget *widget)
 {
-  g_return_if_fail (GTK_WIDGET_NO_WINDOW (widget));
+  g_assert (GTK_WIDGET_NO_WINDOW (widget));
   
   GTK_WIDGET_SET_FLAGS (widget, GTK_REALIZED);
   if (widget->parent)
@@ -7090,11 +7542,7 @@ _gtk_widget_get_aux_info (GtkWidget *widget,
   aux_info = g_object_get_qdata (G_OBJECT (widget), quark_aux_info);
   if (!aux_info && create)
     {
-      if (!aux_info_mem_chunk)
-	aux_info_mem_chunk = g_mem_chunk_new ("widget aux info mem chunk",
-					      sizeof (GtkWidgetAuxInfo),
-					      1024, G_ALLOC_AND_FREE);
-      aux_info = g_chunk_new (GtkWidgetAuxInfo, aux_info_mem_chunk);
+      aux_info = g_slice_new (GtkWidgetAuxInfo);
 
       aux_info->width = -1;
       aux_info->height = -1;
@@ -7119,14 +7567,14 @@ _gtk_widget_get_aux_info (GtkWidget *widget,
 static void
 gtk_widget_aux_info_destroy (GtkWidgetAuxInfo *aux_info)
 {
-  g_mem_chunk_free (aux_info_mem_chunk, aux_info);
+  g_slice_free (GtkWidgetAuxInfo, aux_info);
 }
 
 static void
 gtk_widget_shape_info_destroy (GtkWidgetShapeInfo *info)
 {
   g_object_unref (info->shape_mask);
-  g_free (info);
+  g_slice_free (GtkWidgetShapeInfo, info);
 }
 
 /**
@@ -7165,7 +7613,7 @@ gtk_widget_shape_combine_mask (GtkWidget *widget,
     {
       GTK_PRIVATE_SET_FLAG (widget, GTK_HAS_SHAPE_MASK);
       
-      shape_info = g_new (GtkWidgetShapeInfo, 1);
+      shape_info = g_slice_new (GtkWidgetShapeInfo);
       g_object_set_qdata_full (G_OBJECT (widget), quark_shape_info, shape_info,
 			       (GDestroyNotify) gtk_widget_shape_info_destroy);
       
@@ -7173,14 +7621,67 @@ gtk_widget_shape_combine_mask (GtkWidget *widget,
       shape_info->offset_x = offset_x;
       shape_info->offset_y = offset_y;
       
-      /* set shape if widget has a gdk window allready.
-       * otherwise the shape is scheduled to be set by gtk_widget_realize.
+      /* set shape if widget has a gdk window already.
+       * otherwise the shape is scheduled to be set by gtk_widget_realize().
        */
       if (widget->window)
 	gdk_window_shape_combine_mask (widget->window, shape_mask,
 				       offset_x, offset_y);
     }
 }
+
+/**
+ * gtk_widget_input_shape_combine_mask: 
+ * @widget: a #GtkWidget.
+ * @shape_mask: shape to be added, or %NULL to remove an existing shape. 
+ * @offset_x: X position of shape mask with respect to @window.
+ * @offset_y: Y position of shape mask with respect to @window.
+ * 
+ * Sets an input shape for this widget's GDK window. This allows for
+ * windows which react to mouse click in a nonrectangular region, see 
+ * gdk_window_input_shape_combine_mask() for more information.
+ *
+ * Since: 2.10
+ **/
+void
+gtk_widget_input_shape_combine_mask (GtkWidget *widget,
+				     GdkBitmap *shape_mask,
+				     gint       offset_x,
+				     gint	offset_y)
+{
+  GtkWidgetShapeInfo* shape_info;
+  
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  /*  set_shape doesn't work on widgets without gdk window */
+  g_return_if_fail (!GTK_WIDGET_NO_WINDOW (widget));
+
+  if (!shape_mask)
+    {
+      if (widget->window)
+	gdk_window_input_shape_combine_mask (widget->window, NULL, 0, 0);
+      
+      g_object_set_qdata (G_OBJECT (widget), quark_input_shape_info, NULL);
+    }
+  else
+    {
+      shape_info = g_slice_new (GtkWidgetShapeInfo);
+      g_object_set_qdata_full (G_OBJECT (widget), quark_input_shape_info, 
+			       shape_info,
+			       (GDestroyNotify) gtk_widget_shape_info_destroy);
+      
+      shape_info->shape_mask = g_object_ref (shape_mask);
+      shape_info->offset_x = offset_x;
+      shape_info->offset_y = offset_y;
+      
+      /* set shape if widget has a gdk window already.
+       * otherwise the shape is scheduled to be set by gtk_widget_realize().
+       */
+      if (widget->window)
+	gdk_window_input_shape_combine_mask (widget->window, shape_mask,
+					     offset_x, offset_y);
+    }
+}
+
 
 static void
 gtk_reset_shapes_recurse (GtkWidget *widget,
@@ -7278,8 +7779,7 @@ gtk_widget_class_install_style_property_parser (GtkWidgetClass     *klass,
       return;
     }
 
-  g_param_spec_ref (pspec);
-  g_param_spec_sink (pspec);
+  g_param_spec_ref_sink (pspec);
   g_param_spec_set_qdata (pspec, quark_property_parser, (gpointer) parser);
   g_param_spec_pool_insert (style_property_spec_pool, pspec, G_OBJECT_CLASS_TYPE (klass));
 }
@@ -7662,13 +8162,32 @@ gtk_requisition_get_type (void)
   static GType our_type = 0;
   
   if (our_type == 0)
-    our_type = g_boxed_type_register_static ("GtkRequisition",
+    our_type = g_boxed_type_register_static (I_("GtkRequisition"),
 					     (GBoxedCopyFunc) gtk_requisition_copy,
 					     (GBoxedFreeFunc) gtk_requisition_free);
 
   return our_type;
 }
 
+/**
+ * gtk_widget_get_accessible:
+ * @widget: a #GtkWidget
+ *
+ * Returns the accessible object that describes the widget to an
+ * assistive technology. 
+ * 
+ * If no accessibility library is loaded (i.e. no ATK implementation library is 
+ * loaded via <envar>GTK_MODULES</envar> or via another application library, 
+ * such as libgnome), then this #AtkObject instance may be a no-op. Likewise, 
+ * if no class-specific #AtkObject implementation is available for the widget 
+ * instance in question, it will inherit an #AtkObject implementation from the 
+ * first ancestor class for which such an implementation is defined.
+ *
+ * The documentation of the <ulink url="http://developer.gnome.org/doc/API/2.0/atk/index.html">ATK</ulink>
+ * library contains more information about accessible objects and their uses.
+ * 
+ * Returns: the #AtkObject associated with @widget
+ */
 AtkObject* 
 gtk_widget_get_accessible (GtkWidget *widget)
 {
@@ -7803,7 +8322,7 @@ gtk_widget_list_mnemonic_labels (GtkWidget *widget)
  * this widget. (See gtk_widget_list_mnemonic_labels()). Note the
  * list of mnemonic labels for the widget is cleared when the
  * widget is destroyed, so the caller must make sure to update
- * it's internal state at this point as well, by using a connection
+ * its internal state at this point as well, by using a connection
  * to the ::destroy signal or a weak notifier.
  *
  * Since: 2.4
@@ -7902,27 +8421,87 @@ gtk_widget_set_no_show_all (GtkWidget *widget,
     GTK_WIDGET_SET_FLAGS (widget, GTK_NO_SHOW_ALL);
   else
     GTK_WIDGET_UNSET_FLAGS (widget, GTK_NO_SHOW_ALL);
-
+  
   g_object_notify (G_OBJECT (widget), "no-show-all");
 }
 
-/**
- * gtk_widget_insensitive_press:
- * @widget: a #GtkWidget
- *
- * Emits the "insensitive-press" signal.
- * 
- * Since: maemo 1.0
- */
-void
-gtk_widget_insensitive_press ( GtkWidget *widget )
+#ifdef MAEMO_CHANGES
+void gtk_widget_set_hildon_focus_handling( GtkWidget *widget, gboolean hildon_like )
 {
-  g_return_if_fail (GTK_IS_WIDGET (widget));
-
-  g_signal_emit(widget, widget_signals[INSENSITIVE_PRESS], 0);
 }
 
-/*Tap And Hold*/
+gboolean gtk_widget_get_hildon_focus_handling( GtkWidget *widget )
+{
+  return FALSE;
+}
+
+
+/* -- Tap and hold implementation -- */
+
+static TahData*
+gtk_widget_peek_tah_data (GtkWidget *widget)
+{
+  TahData *td = g_object_get_data (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold");
+  return td;
+}
+
+static void
+tap_and_hold_stop_animation (TahData *td)
+{
+#ifdef TAP_AND_HOLD_ANIMATION
+  if (td->tah_on_window)
+    gdk_window_set_cursor (td->tah_on_window, NULL);
+  td->tah_on_window = NULL;
+
+  if (td->anim)
+    g_object_unref (td->anim);
+  td->anim = NULL;
+
+  if (td->iter)
+    g_object_unref (td->iter);
+  td->iter = NULL;
+#endif
+}
+
+static void
+tap_and_hold_free_data (gpointer data)
+{
+  TahData *td = data;
+  if (td)
+    {
+      if (td->timer_id)
+	g_source_remove (td->timer_id);
+      td->timer_id = 0;
+
+      if (GTK_IS_MENU (td->menu))
+	g_object_unref (td->menu);
+      td->menu = NULL;
+
+      tap_and_hold_stop_animation (td);
+
+      g_free (td);
+    }
+}
+
+static void
+gtk_widget_set_tah_data (GtkWidget *widget, TahData *td)
+{
+  g_object_set_data_full (G_OBJECT (widget), "MaemoGtkWidget-tap-and-hold",
+			  td, tap_and_hold_free_data);
+}
+
+static TahData*
+gtk_widget_get_tah_data (GtkWidget *widget)
+{
+  TahData *td = gtk_widget_peek_tah_data (widget);
+  if (!td)
+    {
+      td = g_new0 (TahData, 1);
+      td->interval = TAP_AND_HOLD_TIMER_INTERVAL;
+      gtk_widget_set_tah_data (widget, td);
+    }
+  return td;
+}
 
 static void
 tap_and_hold_remove_timer (GtkWidget *widget)
@@ -7993,7 +8572,7 @@ tap_and_hold_init_animation (TahData *td)
       if (td->iter)
 	g_object_unref (td->iter);
       td->iter = gdk_pixbuf_animation_get_iter (td->anim, NULL);
-      
+
       td->interval = gdk_pixbuf_animation_iter_get_delay_time (td->iter);
     }
 #endif
@@ -8024,11 +8603,11 @@ tap_and_hold_animation_timeout (GtkWidget *widget)
       g_get_current_time (&time);
       screen = gdk_screen_get_default ();
       pic = gdk_pixbuf_animation_iter_get_pixbuf (td->iter);
-      
+
       pic = gdk_pixbuf_copy (pic);
-      
+
       if (!GDK_IS_PIXBUF (pic))
-      	return TRUE;
+        return TRUE;
 
       x_hot = gdk_pixbuf_get_option (pic, "x_hot");
       y_hot = gdk_pixbuf_get_option (pic, "y_hot");
@@ -8040,7 +8619,7 @@ tap_and_hold_animation_timeout (GtkWidget *widget)
       g_object_unref (pic);
 
       if (!cursor)
-      	return TRUE;
+        return TRUE;
 
       gdk_window_set_cursor (td->tah_on_window, cursor);
       gdk_cursor_unref (cursor);
@@ -8062,11 +8641,68 @@ tap_and_hold_animation_timeout (GtkWidget *widget)
 }
 
 /**
+ * gtk_widget_tap_and_hold_menu_position_top:
+ * @menu: a #GtkMenu
+ * @x: x cordinate to be returned
+ * @y: y cordinate to be returned
+ * @push_in: If going off screen, push it pack on the screen
+ * @widget: a #GtkWidget
+ *
+ * Pre-made menu positioning function.
+ * It positiones the @menu over the @widget.
+ *
+ * Since: maemo 1.0
+ * Stability: Unstable
+ **/
+void
+gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
+					   gint      *x,
+					   gint      *y,
+					   gboolean  *push_in,
+					   GtkWidget *widget)
+{
+  /*
+   * This function positiones the menu above widgets.
+   * This is a modified version of the position function
+   * gtk_combo_box_position_over.
+   */
+  GtkWidget *topw;
+  GtkRequisition requisition;
+  gint screen_width = 0;
+  gint menu_xpos = 0;
+  gint menu_ypos = 0;
+  gint w_xpos = 0, w_ypos = 0;
+  gtk_widget_size_request (menu, &requisition);
+
+  topw = gtk_widget_get_toplevel (widget);
+  gdk_window_get_origin (topw->window, &w_xpos, &w_ypos);
+
+  menu_xpos += widget->allocation.x + w_xpos;
+  menu_ypos += widget->allocation.y + w_ypos - requisition.height;
+
+  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
+    menu_xpos = menu_xpos + widget->allocation.width - requisition.width;
+
+  screen_width = gdk_screen_get_width (gtk_widget_get_screen (widget));
+
+  if (menu_xpos < w_xpos)
+    menu_xpos = w_xpos;
+  else if ((menu_xpos + requisition.width) > screen_width)
+    menu_xpos -= ((menu_xpos + requisition.width) - screen_width);
+  if (menu_ypos < w_ypos)
+    menu_ypos = w_ypos;
+
+  *x = menu_xpos;
+  *y = menu_ypos;
+  *push_in = TRUE;
+}
+
+/**
  * gtk_widget_tap_and_hold_setup:
- * @widget : a @GtkWidget
- * @menu : a @GtkWidget
- * @func : a @GtkCallback
- * @flags : a @GtkWidgetTapAndHoldFlags
+ * @widget : a #GtkWidget
+ * @menu : a #GtkMenu or %NULL
+ * @func : a #GtkMenuPositionFunc or %NULL
+ * @flags : a #GtkWidgetTapAndHoldFlags
  *
  * Setups the tap and hold functionality to the @widget.
  * The @menu is shown when the functionality is activated.
@@ -8075,22 +8711,26 @@ tap_and_hold_animation_timeout (GtkWidget *widget)
  * Fourth parameter, @flags is deprecated and has no effect.
  *
  * Since: maemo 1.0
+ * Stability: Unstable
  */
-void gtk_widget_tap_and_hold_setup (GtkWidget *widget, GtkWidget *menu,
-				    GtkCallback func,
-				    GtkWidgetTapAndHoldFlags flags)
+void
+gtk_widget_tap_and_hold_setup (GtkWidget                *widget,
+			       GtkWidget                *menu,
+			       GtkCallback               func,
+			       GtkWidgetTapAndHoldFlags  flags)
 {
-  /*GtkWidgetClass *klass = GTK_WIDGET_GET_CLASS(widget);*/
   g_return_if_fail (GTK_IS_WIDGET (widget));
   g_return_if_fail (menu == NULL || GTK_IS_MENU (menu));
+
   g_signal_emit (widget, widget_signals[TAP_AND_HOLD_SETUP], 0, menu, func,
 		 flags);
 }
 
-static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
-						GtkWidget *menu,
-						GtkCallback func,
-						GtkWidgetTapAndHoldFlags flags)
+static void
+gtk_widget_real_tap_and_hold_setup (GtkWidget                *widget,
+				    GtkWidget                *menu,
+				    GtkCallback               func,
+				    GtkWidgetTapAndHoldFlags  flags)
 {
   TahData *td;
 
@@ -8126,7 +8766,8 @@ static void gtk_widget_tap_and_hold_setup_real (GtkWidget *widget,
 		    G_CALLBACK (gtk_widget_tap_and_hold_event_stop), td);
 }
 
-static void gtk_widget_real_tap_and_hold (GtkWidget *widget)
+static void
+gtk_widget_real_tap_and_hold (GtkWidget *widget)
 {
   TahData *td = gtk_widget_peek_tah_data (widget);
   if (td && GTK_IS_MENU (td->menu))
@@ -8135,7 +8776,8 @@ static void gtk_widget_real_tap_and_hold (GtkWidget *widget)
 		    widget, 1, gdk_x11_get_server_time (widget->window));
 }
 
-static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
+static gboolean
+gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
 {
   TahData *td = gtk_widget_peek_tah_data (widget);
   gboolean result;
@@ -8150,8 +8792,9 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
       GDK_THREADS_LEAVE ();
       return FALSE;
     }
+
   /* A small timeout before starting the tap and hold */
-  if (td->timer_counter == GTK_TAP_AND_HOLD_TIMER_COUNTER)
+  if (td->timer_counter == TAP_AND_HOLD_TIMER_COUNTER)
     {
       td->timer_counter--;
 
@@ -8193,22 +8836,29 @@ static gboolean gtk_widget_tap_and_hold_timeout (GtkWidget *widget)
   return result;
 }
 
-static gboolean gtk_widget_tap_and_hold_real_query (GtkWidget *widget, GdkEvent *event)
+static gboolean
+gtk_widget_real_tap_and_hold_query (GtkWidget *widget,
+				    GdkEvent  *event)
 {
   return FALSE;
 }
 
-static gboolean gtk_widget_tap_and_hold_query (GtkWidget *widget, GdkEvent *event)
+static gboolean
+gtk_widget_tap_and_hold_query (GtkWidget *widget,
+			       GdkEvent  *event)
 {
   gboolean return_value = FALSE;
+
   g_signal_emit (G_OBJECT (widget), widget_signals[TAP_AND_HOLD_QUERY],
 		 0, event, &return_value);
+
   return return_value;
 }
 
-static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
-						      GdkEvent *event,
-						      TahData *td)
+static gboolean
+gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
+				      GdkEvent  *event,
+				      TahData   *td)
 {
   if (event->button.type == GDK_2BUTTON_PRESS)
     return FALSE;
@@ -8218,7 +8868,7 @@ static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
       gdk_display_get_pointer (gtk_widget_get_display (widget),
 			       NULL, &td->x, &td->y, NULL);
 
-      td->timer_counter = GTK_TAP_AND_HOLD_TIMER_COUNTER;
+      td->timer_counter = TAP_AND_HOLD_TIMER_COUNTER;
       td->tah_on_window = widget->window;
 
       tap_and_hold_init_animation (td);
@@ -8229,68 +8879,36 @@ static gboolean gtk_widget_tap_and_hold_button_press (GtkWidget *widget,
   return FALSE;
 }
 
-static gboolean gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
-						    gpointer unused,
-						    TahData *td)
+static gboolean
+gtk_widget_tap_and_hold_event_stop (GtkWidget *widget,
+				    gpointer   unused,
+				    TahData   *td)
 {
   if (td->timer_id)
     tap_and_hold_remove_timer (widget);
+
   return FALSE;
 }
 
+
 /**
- * gtk_widget_tap_and_hold_menu_position_top:
- * @menu: a #GtkMenu
- * @x: x cordinate to be returned
- * @y: y cordinate to be returned
- * @push_in: If going off screen, push it pack on the screen
+ * gtk_widget_insensitive_press:
  * @widget: a #GtkWidget
  *
- * Pre-made menu positioning function.
- * It positiones the @menu over the @widget.
+ * Emits the "insensitive-press" signal.
+ *
+ * Deprecated: Use hildon_helper_set_insensitive_message() instead.
  *
  * Since: maemo 1.0
- **/
-void gtk_widget_tap_and_hold_menu_position_top (GtkWidget *menu,
-						gint *x, gint *y,
-						gboolean *push_in,
-						GtkWidget *widget)
+ * Stability: Unstable
+ */
+void
+gtk_widget_insensitive_press ( GtkWidget *widget )
 {
-  /*
-   * This function positiones the menu above widgets.
-   * This is a modified version of the position function
-   * gtk_combo_box_position_over.
-   */
-  GtkWidget *topw;
-  GtkRequisition requisition;
-  gint screen_width = 0;
-  gint menu_xpos = 0;
-  gint menu_ypos = 0;
-  gint w_xpos = 0, w_ypos = 0;
-  gtk_widget_size_request (menu, &requisition);
-
-  topw = gtk_widget_get_toplevel (widget);
-  gdk_window_get_origin (topw->window, &w_xpos, &w_ypos);
-
-  menu_xpos += widget->allocation.x + w_xpos;
-  menu_ypos += widget->allocation.y + w_ypos - requisition.height;
-
-  if (gtk_widget_get_direction (widget) == GTK_TEXT_DIR_RTL)
-    menu_xpos = menu_xpos + widget->allocation.width - requisition.width;
-
-  screen_width = gdk_screen_get_width (gtk_widget_get_screen (widget));
-
-  if (menu_xpos < w_xpos)
-    menu_xpos = w_xpos;
-  else if ((menu_xpos + requisition.width) > screen_width)
-    menu_xpos -= ((menu_xpos + requisition.width) - screen_width);
-  if (menu_ypos < w_ypos)
-    menu_ypos = w_ypos;
-
-  *x = menu_xpos;
-  *y = menu_ypos;
-  *push_in = TRUE;
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+  g_signal_emit(widget, widget_signals[INSENSITIVE_PRESS], 0);
 }
+#endif /* MAEMO_CHANGES */
 
 #define __GTK_WIDGET_C__
 #include "gtkaliasdef.c"

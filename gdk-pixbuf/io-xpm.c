@@ -405,7 +405,8 @@ file_buffer (enum buf_op op, gpointer handle)
 		/* Fall through to the xpm_read_string. */
 
 	case op_body:
-		xpm_read_string (h->infile, &h->buffer, &h->buffer_size);
+		if(!xpm_read_string (h->infile, &h->buffer, &h->buffer_size))
+			return NULL;
 		return h->buffer;
 
 	default:
@@ -500,7 +501,9 @@ pixbuf_create_from_xpm (const gchar * (*get_buf) (enum buf_op op, gpointer handl
                              _("XPM has invalid number of chars per pixel"));
 		return NULL;
 	}
-	if (n_col <= 0 || n_col >= G_MAXINT / (cpp + 1)) {
+	if (n_col <= 0 || 
+	    n_col >= G_MAXINT / (cpp + 1) || 
+	    n_col >= G_MAXINT / sizeof (XPMColor)) {
                 g_set_error (error,
                              GDK_PIXBUF_ERROR,
                              GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
@@ -735,10 +738,12 @@ gdk_pixbuf__xpm_image_stop_load (gpointer data,
                pixbuf = gdk_pixbuf__xpm_image_load (context->file, error);
 
                if (pixbuf != NULL) {
-                       (* context->prepare_func) (pixbuf,
-                                                  NULL,
-                                                  context->user_data);
-                       (* context->update_func) (pixbuf, 0, 0, pixbuf->width, pixbuf->height, context->user_data);
+		       if (context->prepare_func)
+			       (* context->prepare_func) (pixbuf,
+							  NULL,
+							  context->user_data);
+		       if (context->update_func)
+			       (* context->update_func) (pixbuf, 0, 0, pixbuf->width, pixbuf->height, context->user_data);
                        g_object_unref (pixbuf);
 
                        retval = TRUE;
@@ -764,10 +769,11 @@ gdk_pixbuf__xpm_image_load_increment (gpointer data,
        g_return_val_if_fail (data != NULL, FALSE);
 
        if (fwrite (buf, sizeof (guchar), size, context->file) != size) {
+	       gint save_errno = errno;
                context->all_okay = FALSE;
                g_set_error (error,
                             G_FILE_ERROR,
-                            g_file_error_from_errno (errno),
+                            g_file_error_from_errno (save_errno),
                             _("Failed to write to temporary file when loading XPM image"));
                return FALSE;
        }
