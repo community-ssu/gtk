@@ -1,3 +1,9 @@
+atk1.0 (1.18.0-1osso2) unstable; urgency=low
+
+  * Actually disable docs.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 16 Apr 2007 15:38:47 +0300
+
 atk1.0 (1.18.0-1osso1) unstable; urgency=low
 
   * New upstream release.
