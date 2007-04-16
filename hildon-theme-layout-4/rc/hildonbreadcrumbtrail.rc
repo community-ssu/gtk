@@ -86,6 +86,27 @@ style "osso-bread-crumb-button" {
   engine "sapwood" {
     image {
       function = BOX
+	position = LEFT, RIGHT, TOP, BOTTOM
+	file = "../images/qgn_plat_breadcrumb_end_normal.png"
+	border = { 0, 2, 28, 29 }
+    }
+    image {
+      function = FOCUS
+	state = ACTIVE
+	position = LEFT, RIGHT, TOP, BOTTOM
+	file = "../images/qgn_plat_breadcrumb_end_pressed.png"
+	border = { 4, 4, 28, 29 }
+    }
+
+    image {
+      function = FOCUS
+	position = LEFT, RIGHT, TOP, BOTTOM
+	file = "../images/qgn_plat_breadcrumb_end_focused.png"
+	border = { 4, 4, 28, 29 }
+    }
+
+    image {
+      function = BOX
 	position = RIGHT, TOP, BOTTOM
 	file = "../images/qgn_plat_breadcrumb_end_normal.png"
 	border = { 0, 2, 28, 29 }
