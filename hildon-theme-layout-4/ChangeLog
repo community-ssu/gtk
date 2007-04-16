@@ -1,3 +1,8 @@
+2007-04-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/themespecificgtk.rc: Removing the alternative font defs for the
+	time being. Seems to break some things. Need to investiagate.
+
 2007-04-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtkbuttonbox.rc: Set maemo-position-theming style property.
