@@ -1,0 +1,9 @@
+usr/bin/gdk-pixbuf-csource
+usr/include/*
+usr/lib/lib*.{so,a}
+usr/lib/pkgconfig/*.pc
+usr/lib/*/*/*/*.a
+usr/lib/*/include/*.h
+usr/share/aclocal/*
+usr/share/locale/*/*/gtk20-properties.mo
+usr/share/man/man1/gdk-pixbuf-csource.1*
