@@ -213,28 +213,6 @@ check_buttonbox_child_position (GtkWidget *child, ThemeMatchData *match_data)
   g_list_free (children);
 }
 
-static void
-gtk_container_children_callback (GtkWidget *widget,
-				 gpointer   client_data)
-{
-  GList **children;
-
-  children = (GList**) client_data;
-  *children = g_list_prepend (*children, widget);
-}
-
-static GList *
-gtk_container_get_all_children (GtkContainer *container)
-{
-  GList *children = NULL;
-
-  gtk_container_forall (container,
-			gtk_container_children_callback,
-			&children);
-
-  return children;
-}
-
 static gboolean
 draw_simple_image(GtkStyle       *style,
 		  GdkWindow      *window,
@@ -279,9 +257,10 @@ draw_simple_image(GtkStyle       *style,
 	    check_buttonbox_child_position (widget, match_data);
 	  else
 	    {
+              /* Generic code for other kinds of containers */
 	      GList *children;
 
-	      children = gtk_container_get_all_children (widget->parent);
+	      children = gtk_container_get_children (widget->parent);
 	      check_child_position (widget, children, match_data);
 	      g_list_free (children);
 	    }
