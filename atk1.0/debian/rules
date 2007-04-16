@@ -12,7 +12,7 @@ ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
 endif
 
 # build static stuff:
-DEB_CONFIGURE_EXTRA_FLAGS := --enable-gtk-doc --enable-static
+DEB_CONFIGURE_EXTRA_FLAGS := --disable-gtk-doc --enable-static
 
 SHLIB_VERSION=1.12.2
 DEB_DH_MAKESHLIBS_ARGS_libatk1.0-0 := -V"libatk1.0-0 (>= $(SHLIB_VERSION))"
