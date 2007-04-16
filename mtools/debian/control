@@ -1,0 +1,12 @@
+Source: mtools
+Section: utils
+Priority: optional
+Maintainer: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
+Build-Depends: cdbs, debhelper
+Standards-Version: 3.7.2
+
+Package: mtools
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: MS-DOS file system tools.
+ MS-DOS file system tools, such as mlabel for setting the FAT volume label.

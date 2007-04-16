@@ -1,0 +1,12 @@
+diff -pur mtools-3.9.10/Makefile.in mtools-3.9.10.new/Makefile.in
+--- mtools-3.9.10/Makefile.in	2004-02-28 21:06:35.000000000 +0200
++++ mtools-3.9.10.new/Makefile.in	2006-11-20 14:32:07.121624560 +0200
+@@ -116,7 +116,7 @@ signal.c stream.c streamcache.c subdir.c
+ xdf_io.c mkmanifest.c
+ 
+ 
+-SCRIPTS = mcheck mxtar uz tgz mcomp amuFormat.sh
++SCRIPTS = mcheck mxtar uz tgz mcomp
+ 
+ LINKS=mattrib mcat mcd mclasserase mcopy mdel mdeltree mdir mdu mformat minfo \
+ mlabel mmd mmount mmove mpartition mrd mren mtype mtoolstest mshowfat \

@@ -1,0 +1,12 @@
+diff -ur mtools-3.9.10/Makefile.in mtools-3.9.10.new/Makefile.in
+--- mtools-3.9.10/Makefile.in	2004-02-28 21:06:35.000000000 +0200
++++ mtools-3.9.10.new/Makefile.in	2007-01-17 16:18:51.837532936 +0200
+@@ -218,7 +218,7 @@
+ 	cd $(infodir) && rm -f mtools.info*
+ 
+ install:	$(bindir)/mtools @BINFLOPPYD@ install-man install-links \
+-		$(bindir)/mkmanifest install-scripts install-info
++		$(bindir)/mkmanifest install-scripts
+ 
+ uninstall:	uninstall-bin uninstall-man uninstall-links \
+ 		uninstall-scripts

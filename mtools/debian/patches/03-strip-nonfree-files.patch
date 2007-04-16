@@ -1,0 +1,224 @@
+diff -pur mtools-3.9.10/Makefile.in mtools-3.9.10.new/Makefile.in
+--- mtools-3.9.10/Makefile.in	2004-02-28 21:06:35.000000000 +0200
++++ mtools-3.9.10.new/Makefile.in	2007-03-23 14:13:11.167484240 +0200
+@@ -59,7 +59,7 @@ INSTALL_INFO	= @INSTALL_INFO@
+ MAN1 = floppyd.1 floppyd_installtest.1 mattrib.1 mbadblocks.1 mcat.1 mcd.1 \
+ mclasserase.1 mcopy.1 mdel.1 mdeltree.1 mdir.1 mdu.1 mformat.1  minfo.1 \
+ mkmanifest.1 mlabel.1 mmd.1 mmount.1 mmove.1 mpartition.1 \
+-mrd.1 mren.1 mshowfat.1 mtoolstest.1 mtools.1 mtype.1 mzip.1
++mrd.1 mren.1 mshowfat.1 mtoolstest.1 mtools.1 mtype.1 
+ MAN1EXT	= 1
+ MAN1DIR	= $(mandir)/man${MAN1EXT}
+ MAN5	= mtools.5
+@@ -80,7 +80,7 @@ mattrib.c mbadblocks.1 mbadblocks.c mcat
+ mcopy.1 \
+ mcopy.c mdel.1 mdel.c mdeltree.1 mdir.1 mdir.c mdu.c mdu.1 mformat.1 \
+ mformat.c minfo.c \
+-misc.c tty.c scsi.c missFuncs.c mk_direntry.c mkmanifest.1 mkmanifest.c \
++misc.c tty.c mk_direntry.c mkmanifest.1 mkmanifest.c \
+ mlabel.1 mlabel.c mmd.1 mmd.c mmount.1 mmount.c mmove.1 mmove.c \
+ mpartition.1 mpartition.c mrd.1 \
+ mren.1 msdos.h mshowfat.1 mtoolstest.1 mtools.1 mtools.5 mtools.c \
+@@ -94,12 +94,12 @@ dirCache.o directory.o direntry.o expand
+ file_name.o filter.o floppyd_io.o force_io.o hash.o init.o llong.o match.o \
+ mainloop.o mattrib.o mbadblocks.o mcat.o mcd.o mclasserase.o mcopy.o mdel.o \
+ mdir.o mdoctorfat.o mdu.o \
+-mformat.o minfo.o misc.o missFuncs.o mk_direntry.o mlabel.o mmd.o mmount.o \
+-mmove.o mpartition.o mshowfat.o mzip.o mtools.o patchlevel.o plain_io.o \
+-precmd.o privileges.o scsi.o signal.o stream.o streamcache.o subdir.o \
++mformat.o minfo.o misc.o mk_direntry.o mlabel.o mmd.o mmount.o \
++mmove.o mpartition.o mshowfat.o mtools.o patchlevel.o plain_io.o \
++precmd.o privileges.o signal.o stream.o streamcache.o subdir.o \
+ unixdir.o toupper.o tty.o vfat.o xdf_io.o
+ 
+-OBJS2 = missFuncs.o mkmanifest.o misc.o patchlevel.o
++OBJS2 = mkmanifest.o misc.o patchlevel.o
+ 
+ SRCS3 = floppyd.c
+ 
+@@ -110,8 +110,8 @@ dirCache.c directory.c direntry.c expand
+ file_read.c filter.c floppyd_io.c force_io.c hash.c init.c match.c mainloop.c \
+ mattrib.c mbadblocks.c mcat.c mcd.c mclasserase.c mcopy.c mdel.c mdir.c \
+ mdu.c mdoctorfat.c mformat.c minfo.c misc.c \
+-missFuncs.c mk_direntry.c mlabel.c mmd.c mmount.c mmove.c mpartition.c \
+-mshowfat.c mzip.c mtools.c plain_io.c precmd.c privileges.c scsi.o \
++mk_direntry.c mlabel.c mmd.c mmount.c mmove.c mpartition.c \
++mshowfat.c mtools.c plain_io.c precmd.c privileges.c \
+ signal.c stream.c streamcache.c subdir.c unixdir.c toupper.c tty.o vfat.c \
+ xdf_io.c mkmanifest.c
+ 
+@@ -120,7 +120,7 @@ SCRIPTS = mcheck mxtar uz tgz mcomp amuF
+ 
+ LINKS=mattrib mcat mcd mclasserase mcopy mdel mdeltree mdir mdu mformat minfo \
+ mlabel mmd mmount mmove mpartition mrd mren mtype mtoolstest mshowfat \
+-mbadblocks mzip
++mbadblocks 
+ 
+ X_CFLAGS = @X_CFLAGS@
+ X_LIBS = @X_LIBS@
+diff -pur mtools-3.9.10/file_name.c mtools-3.9.10.new/file_name.c
+--- mtools-3.9.10/file_name.c	2002-05-01 12:57:02.000000000 +0300
++++ mtools-3.9.10.new/file_name.c	2007-03-23 13:54:52.682479344 +0200
+@@ -91,7 +91,7 @@ char *dos_name(char *name, int verbose, 
+ 		name = &name[2];
+ 
+ 	/* zap the leading path */
+-	name = (char *) _basename(name);
++	name = (char *) basename(name);
+ 	if ((s = strrchr(name, '\\')))
+ 		name = s + 1;
+ 	
+diff -pur mtools-3.9.10/mainloop.c mtools-3.9.10.new/mainloop.c
+--- mtools-3.9.10/mainloop.c	2002-05-01 13:17:50.000000000 +0300
++++ mtools-3.9.10.new/mainloop.c	2007-03-23 13:55:32.363446920 +0200
+@@ -466,7 +466,7 @@ int main_loop(MainParam_t *mp, char **ar
+ 		if ( got_signal )
+ 			break;
+ 		mp->originalArg = argv[i];
+-		mp->basenameHasWildcard = strpbrk(_basename(mp->originalArg), 
++		mp->basenameHasWildcard = strpbrk(basename(mp->originalArg), 
+ 						  "*[?") != 0;
+ 		if (mp->unixcallback && (!argv[i][0] || argv[i][1] != ':' ))
+ 			ret = unix_loop(0, mp, argv[i], 1);
+@@ -521,7 +521,7 @@ const char *mpGetBasename(MainParam_t *m
+ 	if(mp->direntry)
+ 		return mp->direntry->name;
+ 	else
+-		return _basename(mp->unixSourceName);
++		return basename(mp->unixSourceName);
+ }
+ 
+ void mpPrintFilename(FILE *fp, MainParam_t *mp)
+diff -pur mtools-3.9.10/mkmanifest.c mtools-3.9.10.new/mkmanifest.c
+--- mtools-3.9.10/mkmanifest.c	2002-05-01 12:57:02.000000000 +0300
++++ mtools-3.9.10.new/mkmanifest.c	2007-03-23 13:57:15.112826640 +0200
+@@ -31,7 +31,7 @@ int main(int argc, char **argv)
+ 
+ 	for (i=1; i<argc; i++) {
+ 		/* zap the leading path */
+-		name = _basename(argv[i]);
++		name = basename(argv[i]);
+ 		/* create new name */
+ 		new_name = dos_name2(name);
+ 
+diff -pur mtools-3.9.10/mmove.c mtools-3.9.10.new/mmove.c
+--- mtools-3.9.10/mmove.c	2005-02-13 15:45:50.000000000 +0200
++++ mtools-3.9.10.new/mmove.c	2007-03-23 13:55:58.742436704 +0200
+@@ -288,7 +288,7 @@ void mmove(int argc, char **argv, int ol
+ 		arg.fromname = argv[optind];
+ 		if(arg.fromname[0] && arg.fromname[1] == ':')
+ 			arg.fromname += 2;
+-		arg.fromname = _basename(arg.fromname);
++		arg.fromname = basename(arg.fromname);
+ 		arg.mp.targetName = strdup(argv[argc-1]);
+ 		arg.mp.callback = rename_oldsyntax;
+ 	}
+diff -pur mtools-3.9.10/mpartition.c mtools-3.9.10.new/mpartition.c
+--- mtools-3.9.10/mpartition.c	2003-05-17 16:25:48.000000000 +0300
++++ mtools-3.9.10.new/mpartition.c	2007-03-23 15:22:24.941014680 +0200
+@@ -446,6 +446,8 @@ void mpartition(int argc, char **argv, i
+ 		if(!sizetest)
+ 			tot_sectors = 0;
+ 		if(IS_SCSI(dev)) {
++                        fprintf(stderr, "ERROR! I'm missing parts\n");
++#if 0
+ 			unsigned char cmd[10];
+ 			unsigned char data[10];
+ 			cmd[0] = SCSI_READ_CAPACITY;
+@@ -461,6 +463,7 @@ void mpartition(int argc, char **argv, i
+ 				(data[3]      );
+ 			if(verbose)
+ 				printf("%d sectors in total\n", tot_sectors);
++#endif
+ 		}
+ 
+ #ifdef OS_linux
+diff -pur mtools-3.9.10/mtools.c mtools-3.9.10.new/mtools.c
+--- mtools-3.9.10/mtools.c	2004-02-28 20:49:25.000000000 +0200
++++ mtools-3.9.10.new/mtools.c	2007-03-23 15:23:29.113259016 +0200
+@@ -35,8 +35,7 @@ static const struct dispatch {
+ 	{"mshowfat", mshowfat, 0},
+ 	{"mtoolstest", mtoolstest, 0},
+ 	{"mtype",mcopy, 1},
+-	{"mwrite",mcopy, 0},
+-	{"mzip", mzip, 0}
++	{"mwrite",mcopy, 0}
+ };
+ #define NDISPATCH (sizeof dispatch / sizeof dispatch[0])
+ 
+@@ -95,7 +94,7 @@ int main(int argc,char **argv)
+ #ifdef __EMX__
+        argv[0] = _getname(argv[0]); _remext(argv[0]); name = argv[0];
+ #else  
+-	name = _basename(argv[0]);
++	name = basename(argv[0]);
+ #endif
+ 	progname = argv[0];
+ 
+diff -pur mtools-3.9.10/plain_io.c mtools-3.9.10.new/plain_io.c
+--- mtools-3.9.10/plain_io.c	2005-02-23 00:13:37.000000000 +0200
++++ mtools-3.9.10.new/plain_io.c	2007-03-23 14:12:26.237314664 +0200
+@@ -285,6 +285,7 @@ static int file_data(Stream_t *Stream, t
+ 
+ #define MAXBLKSPERCMD 255
+ 
++#if 0
+ static void scsi_init(SimpleFile_t *This)
+ {
+    int fd = This->fd;
+@@ -302,7 +303,9 @@ static void scsi_init(SimpleFile_t *This
+ 	   fprintf(stderr,"  (scsi_sector_size=%d)\n",This->scsi_sector_size);
+    }
+ }
++#endif
+ 
++#if 0
+ int scsi_io(Stream_t *Stream, char *buf,  mt_off_t where, size_t len, int rwcmd)
+ {
+ 	unsigned int firstblock, nsect;
+@@ -445,6 +448,7 @@ static Class_t ScsiClass = {
+ 	file_data,
+ 	0 /* pre-allocate */
+ };
++#endif
+ 
+ 
+ static Class_t SimpleFileClass = {
+@@ -544,8 +548,11 @@ APIRET rc;
+ #endif
+ 	    {
+ 		if (IS_SCSI(dev))
++                        fprintf(stderr, "ERROR! not supported\n");
++#if 0
+ 		    This->fd = scsi_open(name, mode, IS_NOLOCK(dev)?0444:0666,
+ 					 &This->extra_data);
++#endif
+ 		else
+ 		    This->fd = open(name, mode | O_LARGEFILE | O_BINARY, 
+ 				    IS_NOLOCK(dev)?0444:0666);
+@@ -655,12 +662,15 @@ APIRET rc;
+ 	 * this option. Indeed, there could conceivably be partitioned
+ 	 * devices where low level scsi commands will not be needed */
+ 	if(IS_SCSI(dev)) {
++                fprintf(stderr, "ERROR! I've been h4x0red by teh hax0r\n");
++#if 0
+ 		This->Class = &ScsiClass;
+ 		if(This->privileged)
+ 			reclaim_privs();
+ 		scsi_init(This);
+ 		if(This->privileged)
+ 			drop_privs();
++#endif
+ 	}
+ 
+ 	This->swap = DO_SWAP( dev );
+@@ -750,8 +760,7 @@ int get_fd(Stream_t *Stream)
+ 	Class_t *clazz;
+ 	DeclareThis(SimpleFile_t);
+ 	clazz = This->Class;
+-	if(clazz != &ScsiClass &&
+-	   clazz != &SimpleFileClass)
++	if(clazz != &SimpleFileClass)
+ 	  return -1;
+ 	else
+ 	  return This->fd;

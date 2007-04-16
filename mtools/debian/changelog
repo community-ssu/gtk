@@ -1,0 +1,22 @@
+mtools (3.9.10-0osso3) unstable; urgency=low
+
+  * Removed compilation of missFuncs.c, scsi.c, and mzip.c, at the expense of
+    crippling some functionality.
+  * Removed the aforementioned files from the tarball to a new removed-files
+    folder.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 23 Mar 2007 16:01:40 +0200
+
+mtools (3.9.10-0osso2) unstable; urgency=low
+
+  * Removed generation of info files.
+  * Added --without-x configure option.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 18 Jan 2007 16:15:08 +0200
+
+mtools (3.9.10-0osso1) unstable; urgency=low
+
+  * OSSO-packaged mtools.
+  * Removed installation of amuFormat.sh because of csh dependency.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 20 Nov 2006 14:39:37 +0200
