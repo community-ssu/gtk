@@ -70,7 +70,7 @@ hildon_file_system_info_free (HildonFileSystemInfo *info)
   g_free(info->name_cache);
   g_object_unref(info->fs);
   
-  g_free (info);
+  g_slice_free (HildonFileSystemInfo, info);
 }
 
 
@@ -203,7 +203,7 @@ hildon_file_system_info_async_new (const gchar *uri,
       return NULL;
     }
   
-  result = g_new0(HildonFileSystemInfo, 1);
+  result = g_slice_new0 (HildonFileSystemInfo);
   result->free_after_callback = TRUE;
   result->fs = fs;
   result->path = path;
