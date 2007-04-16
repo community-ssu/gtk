@@ -645,8 +645,12 @@ main_menu_keypress_cb (GtkWidget * menu, GdkEventKey *event,
     }
     else
     {
-      g_debug ("%s: %d, hd_wm_activate (HN_TN_ACTIVATE_KEY_FOCUS);",__FILE__,__LINE__);
-      gtk_widget_grab_focus (app_switcher->priv->main_button);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), TRUE);
+	    
+      GdkWindow *window = gtk_widget_get_parent_window (app_switcher->priv->main_button);
+
+      gtk_widget_grab_focus (GTK_WIDGET (app_switcher->priv->main_button));
+      hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS,window);
     }
         
     return TRUE;
@@ -888,7 +892,7 @@ main_menu_button_keypress_cb (GtkWidget     *toggle,
   if (event->keyval == GDK_Left || event->keyval == GDK_KP_Left)
   {
     g_debug ("%s: %d, hd_wm_activate (HN_TN_ACTIVATE_LAST_APP_WINDOW);",__FILE__,__LINE__);
-  }
+  }			  
   
   return FALSE;
 }

@@ -1,3 +1,9 @@
+2007-04-16  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- Grab focus for appswitcher's main button when left key is pressed.
+	Fixes: NB#54247
+
 2007-04-13  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-wm-c:
