@@ -1,0 +1,22 @@
+#!/usr/bin/make -f
+# Copyright © 2006 Nokia Corporation. All rights reserved.
+
+include /usr/share/cdbs/1/rules/debhelper.mk
+include /usr/share/cdbs/1/class/autotools.mk
+include /usr/share/cdbs/1/rules/simple-patchsys.mk
+include /usr/share/cdbs/1/rules/utils.mk
+
+DEB_TAR_SRCDIR := libxml2-2.6.27
+include /usr/share/cdbs/1/rules/tarball.mk
+
+DEB_CONFIGURE_EXTRA_FLAGS := --without-python --enable-ipv6=no
+
+DEB_DH_STRIP_ARGS := --dbg-package=libxml2
+
+# Use soft-float and thumb mode if it enabled.
+ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
+        CFLAGS += -mthumb
+endif
+
+clean::
+	rm -f *.cdbs-config_list

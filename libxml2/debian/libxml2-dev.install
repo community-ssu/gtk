@@ -1,0 +1,7 @@
+debian/tmp/usr/bin/xml2-config
+debian/tmp/usr/lib/libxml2.so
+debian/tmp/usr/lib/libxml2.a
+debian/tmp/usr/lib/xml2Conf.sh
+debian/tmp/usr/share/aclocal
+debian/tmp/usr/lib/pkgconfig
+debian/tmp/usr/include/libxml2
