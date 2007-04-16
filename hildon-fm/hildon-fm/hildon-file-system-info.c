@@ -70,7 +70,7 @@ hildon_file_system_info_free (HildonFileSystemInfo *info)
   g_free(info->name_cache);
   g_object_unref(info->fs);
   
-  g_slice_free(HildonFileSystemInfo, info);
+  g_free (info);
 }
 
 
