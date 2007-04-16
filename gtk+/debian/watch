@@ -1,4 +1,0 @@
-version=2
-ftp://ftp.gnome.org/pub/GNOME/sources/gtk+/2.6/ \
-	gtk\+-(.*)\.tar\.gz \
-	debian uupdate
