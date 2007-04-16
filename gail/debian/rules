@@ -8,7 +8,7 @@ include /usr/share/gnome-pkg-tools/1/rules/uploaders.mk
 
 CFLAGS += -Wall -g
 
-DEB_CONFIGURE_EXTRA_FLAGS += --disable-gtk-doc --enable_gnome=no
+DEB_CONFIGURE_EXTRA_FLAGS += --disable-gtk-doc --enable-gnome=no
 
 # debug lib
 DEB_DH_STRIP_ARGS += --dbg-package=libgail18
