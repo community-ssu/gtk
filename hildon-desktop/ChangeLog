@@ -1,3 +1,10 @@
+2007-04-17  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildonwm/hd-keys.[ch]:
+	- Added new actions as stubs.
+	* libhildonwm/hd-wm.[ch]:
+	- Implemented switching among windows from the same application.
+
 2007-04-17  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* debian/control: build dependency on hildon-1 or hildon-libs to be 

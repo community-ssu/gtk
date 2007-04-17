@@ -3139,3 +3139,78 @@ hd_wm_get_work_area (HDWM *hdwm, GdkRectangle *work_area)
       XFree (work_area_data);
     }
 }
+
+void
+hd_wm_switch_application_window (HDWM *hdwm, 
+				 HDWMWatchableApp *app,
+				 gboolean to_next)
+{
+  HDEntryInfo *app_info;
+	
+  g_return_if_fail (app != NULL);
+
+  app_info = hd_wm_watchable_app_get_info (app);
+
+  hd_wm_switch_info_window (hdwm,app_info,to_next);
+}
+
+void 
+hd_wm_switch_info_window (HDWM *hdwm, HDEntryInfo *app_info, gboolean to_next)
+{
+  HDEntryInfo *info = NULL;	
+  HDWMWatchedWindow *window;
+  const GList *list = NULL, *iter, *next_entry, *prev_entry;
+
+  g_return_if_fail (app_info != NULL);
+
+  if (app_info == hdwm->priv->home_info)
+    return;	  
+  
+  list = hd_entry_info_get_children (app_info);
+
+  for (iter = list; iter != NULL; iter = g_list_next (iter))
+  {
+    window = hd_entry_info_get_window ((HDEntryInfo *)iter->data);
+    
+    if (window == hdwm->priv->active_window)
+    {
+      info = NULL;
+	    
+      if (to_next)
+      {      
+	next_entry = iter->next;
+	prev_entry = iter->prev;
+      }
+      else
+      {
+        next_entry = iter->prev;
+        prev_entry = iter->next;	
+      }
+	
+      if (next_entry)
+        info = (HDEntryInfo *) next_entry->data;
+      else
+      if (prev_entry)	      
+        info = (HDEntryInfo *) prev_entry->data;
+      
+      if (info)
+      {	      
+        hd_wm_top_item (info);
+        g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
+	break;
+      }
+    }	    
+  }
+}
+
+void 
+hd_wm_switch_instance_current_window (HDWM *hdwm, gboolean to_next)
+{
+  if (!hdwm->priv->active_window)
+    return;
+  	  
+  hd_wm_switch_info_window 
+    (hdwm, 
+     hd_entry_info_get_parent (hd_wm_watched_window_peek_info (hdwm->priv->active_window)),
+     to_next);
+}	

@@ -286,13 +286,21 @@ void
 hd_wm_activate_service (const gchar *service_name,
                         const gchar *launch_parameters);
 
+void 
+hd_wm_switch_application_window (HDWM *hdwm, HDWMWatchableApp *app, gboolean to_next);
+
+void 
+hd_wm_switch_info_window (HDWM *hdwm, HDEntryInfo *entry_info, gboolean to_next);
+
+void 
+hd_wm_switch_instance_current_window (HDWM *hdwm, gboolean to_next);
+
 /*
  * These are simple getters/setters that replace direct use of global
  * hnwm->something. In order to ensure that we do not incure performance
  * penalty due to the function call, we declare all of these as
  * 'extern inline'; this ensures that these functions will always be inlined.
  */
-
 
 extern inline Atom
 hd_wm_get_atom(gint indx);

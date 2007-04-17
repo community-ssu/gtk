@@ -123,6 +123,15 @@ hd_keys_action_close (HDKeysConfig *keys,
 }
 
 static void 
+hd_keys_switch_window (HDKeysConfig *keys, 
+		       gpointer *user_data)
+{
+  HDWM *hdwm = hd_wm_get_singleton ();
+
+  hd_wm_switch_instance_current_window (hdwm,GPOINTER_TO_INT (user_data));
+}
+
+static void 
 hd_keys_action_minimize (HDKeysConfig *keys,
 			 gpointer     *user_data)
 {
@@ -219,9 +228,17 @@ HDKeysActionConfLookup[] =
     hd_keys_action_send_key, (gpointer)XK_F7  },
   { HD_KEYS_GCONF_PATH "/zoom_out",        HD_KEY_ACTION_ZOOM_OUT,
     hd_keys_action_send_key, (gpointer)XK_F8 },
+  { HD_KEYS_GCONF_PATH "/switch_window_prev",   HD_KEY_ACTION_SWITCH_WINDOW_PREV,
+    hd_keys_switch_window, GINT_TO_POINTER (FALSE) },
+  { HD_KEYS_GCONF_PATH "/switch_window_next",   HD_KEY_ACTION_SWITCH_WINDOW_NEXT,
+    hd_keys_switch_window, GINT_TO_POINTER (TRUE) },
+  /*{ HD_KEYS_GCONF_PATH "/launch_application", HD_KEY_ACTION_APPLICATION,
+    hd_keys_launch_application, NULL },*/
   { NULL, 0, NULL, NULL }
 };
 
+
+     	
 
 static gboolean
 hd_keys_keysym_needs_shift (KeySym keysym)
