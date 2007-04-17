@@ -220,7 +220,8 @@ the container. The value for position is a combination of LEFT, RIGHT, TOP, and
 BOTTOM when the widget is leftmost, rightmost, topmost, or bottommost
 respectively.
 
-Used only for buttons in button boxes.
+You'll need to set the "maemo-position-theming" property of the widgets' parent to
+TRUE for this data to be set in sapwood.
 
 See demos/buttonbox.gtkrc
 

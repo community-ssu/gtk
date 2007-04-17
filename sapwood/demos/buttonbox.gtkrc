@@ -1,6 +1,12 @@
 # vim:set ft=gtkrc sw=2 sts=2 expandtab:
 pixmap_path "images"
 
+style "container" {
+  GtkWidget::maemo-position-theming = 1
+}
+
+class "GtkButtonBox" style "container"
+
 style "button" {
   GtkButton::child-displacement-x = -2
   GtkButton::child-displacement-y = 1

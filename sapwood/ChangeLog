@@ -1,5 +1,12 @@
 2007-04-17  Xan Lopez  <xan.lopez@nokia.com>
 
+	* README:
+	* demos/buttonbox.gtkrc:
+
+	Update the documentation and the demo to take into account maemo-position-theming.
+	
+2007-04-17  Xan Lopez  <xan.lopez@nokia.com>
+
 	* src/sapwood-draw.c (draw_simple_image): Check that the maemo-position-theming
 	property exists before accessing it.
 
