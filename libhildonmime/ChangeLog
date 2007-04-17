@@ -12,7 +12,7 @@
 	that if the application associated with the mime type is not
 	running and has to be started by D-Bus, we have time to	allow dbus
 	to process the events and then send the "mime_open" dbus
-	message. Fixes NB#54056.
+	message. This work is related to NB#54056.
 
 2007-04-04  Richard Hult  <richard@imendio.com>
 

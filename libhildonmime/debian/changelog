@@ -1,7 +1,7 @@
 libhildonmime (1.9.4-1) unstable; urgency=low
 
   * UNRELEASED!
-  * Fixes: NB#54056, The files are not getting opened when the application...
+  * Improve test case and documentation for open API, related to NB#54056
 
  -- Martyn Russell <martyn@imendio.com>  Fri, 20 April 2007 17:33:01 +0000
 
