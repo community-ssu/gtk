@@ -246,7 +246,9 @@ draw_simple_image(GtkStyle       *style,
     }
 
   /* Check for maemo-position-theming to update the position data */
-  if (widget->parent)
+  if (widget->parent &&
+      gtk_widget_class_find_style_property (GTK_WIDGET_GET_CLASS (widget->parent),
+                                            "maemo-position-theming"))
     {
       gtk_widget_style_get (widget->parent,
 			    "maemo-position-theming", &maemo_position_theming,

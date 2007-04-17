@@ -1,3 +1,8 @@
+2007-04-17  Xan Lopez  <xan.lopez@nokia.com>
+
+	* src/sapwood-draw.c (draw_simple_image): Check that the maemo-position-theming
+	property exists before accessing it.
+
 2007-04-16  Xan Lopez  <xan.lopez@nokia.com>
 
 	* src/sapwood-draw.c (draw_simple_image): Don't take internal children
