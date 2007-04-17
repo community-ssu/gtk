@@ -1,3 +1,24 @@
+hildon-desktop (0.0.7-1) sardine; urgency=low
+
+  * src/hn-app-switcher.c:
+  - Grab focus for appswitcher's main button when left key is pressed.
+  Fixes: NB#54247
+
+  * libhildonwm/hd-wm-c:
+  - Added dbus method previously removed.
+  * src/hd-desktop.c:
+  - Only check timeout value.
+
+  * libhildondesktop/hildon-desktop-panel-window-dialog.c:
+  - Set no of items for container to 7. Fixes: NB#54193
+
+  * src/hn-app-switcher.c:
+  - Place main menu according to fullscreen mode. Fixes: NB#53969
+  * src/hn-app-button.c:
+  - Implemented proper left/right rocker behavior.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 17 Apr 2007 09:39:31 +0300
+
 hildon-desktop (0.0.6-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-panel-window-dialog.c:
