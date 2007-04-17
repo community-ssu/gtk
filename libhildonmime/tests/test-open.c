@@ -2,7 +2,7 @@
 /*
  * This is file is part of libhildonmime
  *
- * Copyright (C) 2004-2006 Nokia Corporation.
+ * Copyright (C) 2004-2007 Nokia Corporation.
  *
  * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
@@ -23,48 +23,127 @@
  */
 
 #include <config.h>
+#include <stdlib.h>
 #include <hildon-mime.h>
+
+static gboolean   use_system = FALSE;
+static gchar     *open_uri = NULL;
+static gchar    **open_uri_list = NULL;
+static gchar     *mime_type = NULL;
+
+static GOptionEntry entries[] = {
+	{ "open-uri", 'o', 
+	  0, G_OPTION_ARG_STRING, 
+	  &open_uri, 
+	  "Open a URI (for example, \"-l file://...\")",
+	  NULL },
+	{ "open-uri-list", 'l', 
+	  0, G_OPTION_ARG_STRING_ARRAY, 
+	  &open_uri_list, 
+	  "Open a list of URIs (for example, \"-l file://... -l file://...\", etc)",
+	  NULL },
+	{ "mime-type", 'm', 
+	  0, G_OPTION_ARG_STRING, 
+	  &mime_type, 
+	  "Opens the application associated with the mime-type (used WITH --open-uri)",
+	  NULL},
+	{ "system", 's', 
+	  0, G_OPTION_ARG_NONE,
+	  &use_system,
+	  "Use SYSTEM bus instead of SESSION bus for the D-Bus connection",
+	  NULL },
+	{ NULL }
+};
+
+static gboolean
+quit_cb (GMainLoop *main_loop)
+{
+	g_main_loop_quit (main_loop);
+	return FALSE;
+}
 
 int
 main (int argc, char** argv)
 {
-	DBusConnection *conn;
-	gint            ret;
+	DBusConnection *con;
+	GMainLoop      *main_loop;
+	GOptionContext *context;
+	gboolean        success;
 
-	if (argc < 2) {
-		g_printerr ("Usage: %s <URI> [<mime-type>]\n", argv[0]);
-		return 1;
+	context = g_option_context_new ("- test the hildon-open API.");
+	g_option_context_add_main_entries (context, entries, NULL);
+	g_option_context_parse (context, &argc, &argv, NULL);
+	g_option_context_free (context);
+
+	if (!open_uri && !mime_type && !open_uri_list) {
+ 		g_printerr ("Usage: %s --help\n", argv[0]); 
+		return EXIT_FAILURE;
 	}
 	
-	conn = dbus_bus_get (DBUS_BUS_SESSION, NULL);
-	g_assert (conn != NULL);
-
-	g_print ("\nTesting hildon_mime_open_file() with URI:'%s'\n", argv[1]);
-	ret = hildon_mime_open_file (conn, argv[1]);
-	if (ret != 1) {
-		g_print ("Error\n");
+	if (!use_system) {
+		g_print ("---- Using SESSION bus\n");
+		con = dbus_bus_get (DBUS_BUS_SESSION, NULL);
 	} else {
-		g_print ("Success\n");
-	}
-	
-	g_print ("\nTesting hildon_mime_open_file_list() with URI:'%s'\n", argv[1]);
-	ret = hildon_mime_open_file_list (conn, g_slist_append (NULL, argv[1]));
-	if (ret != 1) {
-		g_print ("Error\n");
-	} else {
-		g_print ("Success\n");
+		g_print ("---- Using SYSTEM bus\n");
+		con = dbus_bus_get (DBUS_BUS_SYSTEM, NULL);
 	}
 
-	if (argc > 2 && argv[2]) {
-		g_print ("\nTesting hildon_mime_open_file_with_mime() with URI:'%s' and MIME:'%s'\n", 
-                         argv[1], argv[2]);
-		ret = hildon_mime_open_file_with_mime_type (conn, argv[1], argv[2]);
-		if (ret != 1) {
-			g_print ("Error\n");
+	if (!con) {
+		g_printerr ("Could not get D-Bus connection\n");
+		return EXIT_FAILURE;
+	}
+
+	if (open_uri_list) {
+		GSList      *uris = NULL;
+		const gchar *uri;
+		gint         i = 0;
+
+		while ((uri = open_uri_list[i++]) != NULL) {
+			uris = g_slist_append (uris, g_strdup (uri));
+		}
+
+		g_print ("---> hildon_uri_open_file_list() with %d URIs\n", g_slist_length (uris));
+		success = hildon_mime_open_file_list (con, uris) == 1;
+		g_slist_foreach (uris, (GFunc) g_free, NULL);
+		g_slist_free (uris);
+
+		if (!success) {
+			g_print ("<--- Error\n");
+			return EXIT_FAILURE;
 		} else {
-			g_print ("Success\n");
+			g_print ("<--- Success\n");
+		}
+	}
+
+	if (open_uri && !mime_type) {
+		g_print ("---> Testing hildon_mime_open_file() with URI: '%s'\n", open_uri);
+		success = hildon_mime_open_file (con, open_uri) == 1;
+		if (!success) {
+			g_print ("<--- Error\n");
+			return EXIT_FAILURE;
+		} else {
+			g_print ("<--- Success\n");
 		}
 	}
 	
-	return 0;
+	if (open_uri && mime_type) {
+		g_print ("---> Testing hildon_mime_open_file_with_mime() with URI: '%s' and MIME: '%s'\n", 
+                         open_uri, mime_type);
+		
+		success = hildon_mime_open_file_with_mime_type (con, open_uri, mime_type) == 1;
+		if (!success) {
+			g_print ("<--- Error\n");
+			return EXIT_FAILURE;
+		} else {
+			g_print ("<--- Success\n");
+		}
+	}
+
+	/* Quit after 2 seconds, which should be long enough */
+	main_loop = g_main_loop_new (NULL, FALSE);
+	g_timeout_add (2000, (GSourceFunc) quit_cb, main_loop);
+	g_main_loop_run (main_loop);
+	g_main_loop_unref (main_loop);
+		
+	return EXIT_SUCCESS;
 }

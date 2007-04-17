@@ -1,3 +1,10 @@
+libhildonmime (1.9.4-1) unstable; urgency=low
+
+  * UNRELEASED!
+  * Fixes: NB#54056, The files are not getting opened when the application...
+
+ -- Martyn Russell <martyn@imendio.com>  Fri, 20 April 2007 17:33:01 +0000
+
 libhildonmime (1.9.3-2) unstable; urgency=low
 
   * Implemented: NR#153624, NR#153625, NR#153171

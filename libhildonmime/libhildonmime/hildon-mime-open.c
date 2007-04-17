@@ -92,22 +92,20 @@
 #define APP_LAUNCH_BANNER_METHOD_PATH       "/com/nokia/tasknav/app_launch_banner"
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
-
 typedef struct {
+	gchar  *service_name;
 	GSList *files;
 } AppEntry;
 
-
-static void mime_launch         (const gchar     *key,
-				 AppEntry        *entry,
-				 DBusConnection  *con);
-static void mime_launch_add_arg (const gchar     *uri,
-				 DBusMessageIter *iter);
-
+static gboolean mime_launch         (DBusConnection  *con,
+				     AppEntry        *entry);
+static void     mime_launch_add_arg (const gchar     *uri,
+				     DBusMessageIter *iter);
 
 static void
 app_entry_free (AppEntry *entry)
 {
+	g_free (entry->service_name);
 	g_slist_free (entry->files);
 	g_free (entry);
 }
@@ -139,8 +137,8 @@ desktop_file_get_service_name (const char *id)
 		g_free (group);
 	}
 
-	g_free (filename);
 	g_key_file_free (key_file);
+	g_free (filename);
 
 	return service_name;
 }
@@ -156,8 +154,11 @@ get_default_service_name (const char *mime_type)
 	gchar *service_name = NULL;
 
 	default_id = gnome_vfs_mime_get_default_desktop_entry (mime_type);
-	if (default_id != NULL && default_id[0] != '\0') {
-		service_name = desktop_file_get_service_name (default_id); 
+	if (default_id) {
+		if (default_id[0] != '\0') {
+			service_name = desktop_file_get_service_name (default_id); 
+		}
+
 		g_free (default_id);
 
 		return service_name;
@@ -199,6 +200,7 @@ hildon_mime_open_file (DBusConnection *con, const gchar *file)
 {
 	AppEntry *entry;
 	gchar    *service_name;
+	gboolean  success;
 
 	if (con == NULL) {
 		DLOG_OPEN("libossomime");
@@ -223,22 +225,33 @@ hildon_mime_open_file (DBusConnection *con, const gchar *file)
 	}
 
 	entry = g_new0 (AppEntry, 1);
+
+	entry->service_name = service_name;
 	entry->files = g_slist_append (NULL, (gpointer) file);
 
-	mime_launch (service_name, entry, con);
+	success = mime_launch (con, entry);
 
-	g_free (service_name);
 	app_entry_free (entry);
 
-	return 1;
+	return success ? 1 : 0;
+}
+
+static void 
+mime_open_file_list_foreach (const gchar  *key, 
+			     AppEntry     *entry, 
+			     GSList      **list)
+{
+	*list = g_slist_prepend (*list, entry);
 }
 
 gint
 hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 {
 	GHashTable *apps = NULL;
+	GSList     *list = NULL;
 	GSList     *l;
 	gint        num_apps;
+	gboolean    success = TRUE;
 
 	if (con == NULL) {
 		DLOG_OPEN("libossomime");
@@ -254,8 +267,9 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 		return 0;
 	}
 
-	apps = g_hash_table_new_full (g_str_hash, g_str_equal,
-				      g_free, 
+	apps = g_hash_table_new_full (g_str_hash, 
+				      g_str_equal,
+				      NULL, 
 				      (GDestroyNotify) app_entry_free);
     
 	gnome_vfs_init (); /* make sure that gnome vfs is initialized */
@@ -275,26 +289,37 @@ hildon_mime_open_file_list (DBusConnection *con, GSList *files)
 			entry = g_hash_table_lookup (apps, service_name);
 			if (!entry) {
 				entry = g_new0 (AppEntry, 1);
-				g_hash_table_insert (apps, service_name, entry);
+				
+				entry->service_name = service_name;
+				g_hash_table_insert (apps, entry->service_name, entry);
+			} else {
+				g_free (service_name);
 			}
-		
+					
 			entry->files = g_slist_append (entry->files, file);
 		} else {
 			dprint ("No service name for file '%s'", file);
 		}			
 	}	
 
-	num_apps = g_hash_table_size (apps);
 
-	g_hash_table_foreach (apps, (GHFunc) mime_launch, con);
-	g_hash_table_destroy (apps);
+	num_apps = g_hash_table_size (apps);
+	g_hash_table_foreach (apps, (GHFunc) mime_open_file_list_foreach, &list);
 
 	/* If we didn't find an application to launch, it's an error. */
-	if (num_apps == 0) {
-		return 0;
-	} else {
-		return 1;
+	success &= list != NULL;
+
+	for (l = list; l; l = l->next) {
+		AppEntry *entry;
+
+		entry = l->data;
+		success &= mime_launch (con, entry);
 	}
+	
+	g_slist_free (list);
+	g_hash_table_destroy (apps);
+	
+	return success ? 1 : 0;
 }
 
 gint
@@ -304,6 +329,7 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
 {
        AppEntry *entry;
        gchar    *service_name;
+       gboolean  success;
 
        if (con == NULL) {
                DLOG_OPEN("libossomime");
@@ -335,25 +361,78 @@ hildon_mime_open_file_with_mime_type (DBusConnection *con,
        }
 
        entry = g_new0 (AppEntry, 1);
+
+       entry->service_name = service_name;
        entry->files = g_slist_append (NULL, (gpointer) file);
 
-       mime_launch (service_name, entry, con);
-
-       g_free (service_name);
+       success = mime_launch (con, entry);
        app_entry_free (entry);
 
-       return 1;
+       return success ? 1 : 0;
 }
 
-static void mime_launch (const gchar    *key, 
-			 AppEntry       *entry, 
-			 DBusConnection *con)
+static gboolean
+mime_launch_notify_task_navigator (DBusConnection *con, 
+				   const gchar    *service)
+{
+	DBusMessage *msg;
+	gboolean     success = TRUE;
+
+	/* From osso-rpc.c */
+	/* Inform the task navigator that we are launching the service */
+	dprint ("Notifying the task navigator...");
+
+	dprint ("Creating message for service: '%s'", TASK_NAV_SERVICE);
+	msg = dbus_message_new_method_call (TASK_NAV_SERVICE,
+					    APP_LAUNCH_BANNER_METHOD_PATH,
+					    APP_LAUNCH_BANNER_METHOD_INTERFACE,
+					    APP_LAUNCH_BANNER_METHOD);
+	
+	if (msg) {
+		if (dbus_message_append_args (msg,
+					      DBUS_TYPE_STRING, &service,
+					      DBUS_TYPE_INVALID)) {
+			
+			if (dbus_connection_send (con, msg, NULL) == TRUE) {
+				dprint ("Sent message to service: '%s'", 
+					TASK_NAV_SERVICE);
+				dbus_connection_flush (con);
+			} else {
+				dprint ("Couldn't send message to service: '%s'", 
+					TASK_NAV_SERVICE);
+				success = FALSE;
+			}
+			
+		} else {
+			dprint ("Couldn't append msg with service: '%s'", 
+				TASK_NAV_SERVICE);
+			success = FALSE;
+		}
+		
+		dbus_message_unref (msg);
+	} else {
+		dprint ("Couldn't create msg with method: '%s' to service: '%s'", 
+			APP_LAUNCH_BANNER_METHOD, 
+			TASK_NAV_SERVICE);
+		success = FALSE;
+	}
+	
+	return success;
+}
+
+static gboolean 
+mime_launch (DBusConnection *con,
+	     AppEntry       *entry)
 {
 	DBusMessage     *msg;
 	DBusMessageIter  iter;
+	const gchar     *key;
 	gchar           *service;
 	gchar           *object_path;
 	gchar           *interface;
+	gboolean         success = TRUE;
+
+	key = entry->service_name;
 
 	/* If the service name has a '.', treat it as a full name, otherwise
 	 * prepend com.nokia. */
@@ -368,59 +447,54 @@ static void mime_launch (const gchar    *key,
 		object_path = g_strdup_printf ("/com/nokia/%s", key);
 		interface = g_strdup (service);
 	}
-	
-	dprint ("Activating service: %s\n", service);
 
-	msg = dbus_message_new_method_call (service, object_path,
-					    interface, "mime_open");
+	dprint ("Activating: '%s'...", key);
+
+	dprint ("Creating message for service: '%s'", service);
+	msg = dbus_message_new_method_call (service, object_path, interface, "mime_open");
+
 	if (msg) {
 		dbus_message_set_no_reply (msg, TRUE);
-		
 		dbus_message_iter_init_append (msg, &iter);
 		
+		dprint ("Adding arguments:");
 		g_slist_foreach (entry->files, (GFunc) mime_launch_add_arg, &iter);
 		
-		dbus_connection_send (con, msg, NULL);
-		dbus_connection_flush (con);
+		if (dbus_connection_send (con, msg, NULL) == TRUE) {
+			dprint ("Sent message to service: '%s'", service);
+			dbus_connection_flush (con);
+
+			/* Update the task navigator */
+			success = mime_launch_notify_task_navigator (con, service);
+		} else {
+			dprint ("Couldn't send message to service: '%s'", service);
+			success = FALSE;
+		}
 		
 		dbus_message_unref (msg);
-		
-		/* From osso-rpc.c */
-		/* Inform the task navigator that we are launching the service */
-		msg = dbus_message_new_method_call (TASK_NAV_SERVICE,
-						    APP_LAUNCH_BANNER_METHOD_PATH,
-						    APP_LAUNCH_BANNER_METHOD_INTERFACE,
-						    APP_LAUNCH_BANNER_METHOD);
-		
-		if (msg) {
-			if (dbus_message_append_args (msg,
-						      DBUS_TYPE_STRING, &service,
-						      DBUS_TYPE_INVALID)) {
-				dbus_connection_send (con, msg, NULL);
-				dbus_connection_flush (con);
-			} else {
-				dprint ("Couldn't add service: %s\n", service);
-			}
-			dbus_message_unref (msg);
-		} else {
-			dprint ("Couldn't create msg to: %s\n", service);
-		}
+	} else {
+		dprint ("Couldn't create msg with method: 'mime-open' to service: '%s'", 
+			service);
+		success = FALSE;
 	}
 
 	g_free (service);
 	g_free (object_path);
 	g_free (interface);
+
+	return success;
 }
 
-static void mime_launch_add_arg (const gchar     *uri, 
-				 DBusMessageIter *iter)
+static void 
+mime_launch_add_arg (const gchar     *uri, 
+		     DBusMessageIter *iter)
 {
 	if (!g_utf8_validate (uri, -1, NULL)) {
 		g_warning ("Invalid UTF-8 passed to hildon_mime_open\n");
 		return;
 	}
 
-	dprint ("  %s\n", uri);
+	dprint ("URI: '%s'", uri);
 	
 	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &uri);
 }

@@ -43,39 +43,45 @@ G_BEGIN_DECLS
 /*@{*/
 
 /**
+ * hildon_mime_open_file:
+ * @con: The D-BUS connection to use.
+ * @file: A %const @gchar pointer URI to be opened (UTF-8). 
+ *
  * This function opens a file in the application that has
- * registered as the handler for the mime type of the file.
- * @param con The D-BUS connection that we want to use.
- * @param file A string representation of the GnomeVFS URI of the file to be
- * opened (UTF-8). See hildonmime_open for more details.
+ * registered as the handler for the mime type of the @file.
+ *
+ * The @file parameter must be a full URI, that is to say that it must
+ * be in the form of 'file:///etc/hosts'.  
  *
  * The mapping from mime type to D-BUS service is done by looking up the
  * application for the mime type and in the desktop file for that application
  * the X-Osso-Service field is used to get the D-BUS service.
  *
- * @return 1 in case of success, < 1 if an error occurred or if some parameter
- * is invalid.
+ * This function operates asynchronously, this means that if D-BUS has
+ * to open the application that handles this @file type and your
+ * application quits prematurely, the application may not open the
+ * @file. An event loop is expected to be used here to ensure D-BUS has
+ * a chance to send the message if the application isn't already started. 
+ *
+ * Return: 1 in case of success, < 1 if an error occurred or if some parameter
+ * is invalid. 
  */
 gint hildon_mime_open_file                  (DBusConnection *con,
 					     const gchar    *file);
 
 
 /**
- * This function opens a list of files in the application that has
- * registered as the handler for the mime type of the file.
- * @param con The D-BUS connection that we want to use.
- * @param files A list of string representations of the GnomeVFS URI of the file
- * to be opened (UTF-8). See hildonmime_open for more details.
- * 
- * These will be sent to the application that handles this MIME-type.
- * If more then one type of file is specified, many applications may be
- * launched. 
+ * hildon_mime_open_file_list:
+ * @con: The D-BUS connection to use.
+ * @files: A @GList of %const @gchar pointer URIs to be opened (UTF-8). 
  *
- * The mapping from mime type to D-BUS service is done by looking up the
- * application for the mime type and in the desktop file for that application
- * the X-Osso-Service field is used to get the D-BUS service.
+ * This function opens a list of @files. The @files will be sent to
+ * each application that handles their MIME-type. If more then one
+ * type of file is specified, many applications may be launched.  
  *
- * @return 1 in case of success, < 1 if an error occurred or if some parameter
+ * For more information on opening files, see hildon_mime_open_file().
+ *
+ * Return: 1 in case of success, < 1 if an error occurred or if some parameter
  * is invalid.
  */
 gint hildon_mime_open_file_list             (DBusConnection *con,
@@ -83,16 +89,20 @@ gint hildon_mime_open_file_list             (DBusConnection *con,
 
 
 /**
- * This function opens a file in the application that has
- * registered as the handler for the mime type of the file.
- * @param con The D-BUS connection that we want to use.
- * @param mime_type A string representation of the mime-type.
+ * hildon_mime_open_file_with_mime_type:
+ * @con: The D-BUS connection that we want to use.
+ * @file: A %const @gchar pointer URI to be opened (UTF-8). 
+ * @mime_type: A %const @gchar pointer MIME-type to be used (UTF-8). 
  *
- * This operates similarly to hildonmime_open_file() with the exception
- * that a file does not need to be given, and the @mime_type supplied
- * is used without the need for checking the mime-type of the file itself. 
+ * This function opens @file in the application that has
+ * registered as the handler for @mime_type.
  *
- * @return 1 in case of success, < 1 if an error occurred or if some parameter
+ * The @file is optional. If it is omitted, the @mime_type is used
+ * to know which application to launch.
+ * 
+ * For more information on opening files, see hildon_mime_open_file().
+ *
+ * Return: 1 in case of success, < 1 if an error occurred or if some parameter
  * is invalid.
  */
 gint hildon_mime_open_file_with_mime_type   (DBusConnection *con,
@@ -118,20 +128,25 @@ typedef enum {
 } HildonMimeCategory;
 
 /**
- * Return the category the specified mime type is in. See
- * hildon_mime_get_mime_types_for_category() for more information.
+ * hildon_mime_get_category_for_mime_type:
+ * @mime_type: A %const @gchar pointer MIME-type to be used (UTF-8). 
  *
- * @param mime_type The mime type.
+ * This function returns the @HildonMimeCategory for the specified
+ * @mime_type. See hildon_mime_get_mime_types_for_category() for more
+ * information. 
  *
-* @return The category that the mime type is in.
-*/
+ * Return: The category that the @mime_type is in.
+ */
 HildonMimeCategory hildon_mime_get_category_for_mime_type     (const gchar       *mime_type);
 
 /**
- * Returns a list of mime types that are in the specified category. The returned
- * list should be freed by calling hildon_mime_types_list_free().
+ * hildon_mime_get_mime_types_for_category:
+ * @category: The @HildonMimeCategory.
  *
- * The mapping between category and mime type is handled through the shared mime
+ * This function returns a @GList of  %const @gchar pointer mime types
+ * that are in the specified category.  
+ *
+ * The mapping between @category and mime type is handled through the shared mime
  * info. Add the tag <osso:category name="name"/> to a mime type to specify that
  * the mime type is in the category "name". Valid category names are:
  *
@@ -139,40 +154,42 @@ HildonMimeCategory hildon_mime_get_category_for_mime_type     (const gchar      
  * 
  * An example:
  *
- *  <mime-type type="text/plain">
- *   <osso:category name="documents"/>
- * </mime-type>
- * 
- * @param category The category.
+ *   <mime-type type="text/plain">
+ *     <osso:category name="documents"/>
+ *   </mime-type>
  *
- * @return A list of mime types, represented as strings, or NULL if none were
- * found or not valid category.
+ * Return: A newly allocated @GList which should be freed with
+ * hildon_mime_types_list_free() OR %NULL if none were found.
  */
 GList *          hildon_mime_get_mime_types_for_category      (HildonMimeCategory   category);
 
 /**
- * Frees the list of mime types as returned by
+ * hildon_mime_types_list_free:
+ * @list: A @GList of mime types.
+ *
+ * Frees the list of mime types returned by
  * hildon_mime_get_mime_types_for_category().
- * 
- * @param list A list of mime types.
  */
 void             hildon_mime_types_list_free                  (GList             *list);
 
 /**
- * Returns the name of the specified category.
- * 
- * @param category The category.
+ * hildon_mime_get_category_name:
+ * @category: The @HildonMimeCategory.
  *
- * @return The name of the category, should not be freed or modified.
+ * This function returns the name of the specified category.
+ *
+ * Return: The %const @gchar pointer name of the category, this should not
+ * be freed or modified. 
  */
 const gchar *    hildon_mime_get_category_name                (HildonMimeCategory   category);
 
 /**
- * Returns the category corresponding to the given name.
- * 
- * @param category The category name.
+ * hildon_mime_get_category_from_name:
+ * @category: The %const @gchar pointer category name.
  *
- * @return The category.
+ * This function returns the @HildonMimeCategory corresponding to @category.
+ *
+ * Return: The @HildonMimeCategory.
  */
 HildonMimeCategory hildon_mime_get_category_from_name         (const gchar       *category);
 
@@ -184,25 +201,28 @@ HildonMimeCategory hildon_mime_get_category_from_name         (const gchar      
 /*@{*/
 
 /**
+ * hildon_mime_application_get_mime_types:
+ * @application_id: The application id, as returned by GnomeVFS.
+ *
  * Returns a list of mime types supported by the application corresponding to
- * the specified appliction id. The returned list should be freed by calling
- * hildon_mime_application_mime_types_list_free().
+ * the specified @appliction_id. 
  *
  * The list of mime types is specifed in the desktop file for the application
  * with the MimeType field.
- * 
- * @param application_id The application id, as returned by GnomeVFS.
  *
- * @return A list of mime types, represented as strings, or NULL if none were
- * found.
+ * Return: A newly allocated @GList of %const @gchar pointer mime
+ * types which should be freed with
+ * hildon_mime_application_mime_types_list_free() OR %NULL if none were
+ * found.  
  */
 GList *          hildon_mime_application_get_mime_types       (const gchar       *application_id);
 
 /**
- * Frees the list of mime types as returned by
- * hildon_mime_application_get_mime_types().
+ * hildon_mime_application_mime_types_list_free:
+ * @mime_types: A @GList of %const @gchar pointer mime types.
  * 
- * @param mime_types A list of mime types.
+ * Frees the list of mime_types as returned by
+ * hildon_mime_application_get_mime_types(). 
  */
 void             hildon_mime_application_mime_types_list_free (GList             *mime_types);
 
@@ -214,24 +234,27 @@ void             hildon_mime_application_mime_types_list_free (GList            
 /*@{*/
 
 /**
- * Returns a NULL terminated array of icon names for the specified mime
- * type. The icon names are GtkIconTheme names. A number of names are returned,
- * ordered by how specific they are. For example, if the mime type "image/png"
- * is passed, the first icon name might correspond to a png file, the second to
- * an image file, and the third to a regular file.
+ * hildon_mime_get_icon_names:
+ * @mime_type: The %const @gchar pointer mime type
+ * @file_info: Optional GnomeVFSFileInfo struct, or %NULL
+ * 
+ * This function returns a %NULL terminated array of icon names for
+ * the specified @mime_type. The icon names are @GtkIconTheme names. A
+ * number of names are returned, ordered by how specific they are. For
+ * example, if the mime type "image/png" is passed, the first icon
+ * name might correspond to a png file, the second to an image file,
+ * and the third to a regular file. 
  *
- * In order to decide which icon to use, the existance of it in the icon theme
- * should be checked with gtk_icon_theme_has_icon(). If the first icon is not
- * available, try the next etc.
+ * In order to decide which icon to use, the existance of it in the
+ * icon theme should be checked with gtk_icon_theme_has_icon(). If the
+ * first icon is not available, try the next etc. 
  *
- * The optional GnomeVFSFileInfo struct is used to get additional information
- * about a file or directory that might help to get the right icon.
+ * The optional GnomeVFSFileInfo struct is used to get additional
+ * information about a file or directory that might help to get the
+ * right icon. 
  *
- * @param mime_type The mime type
- * @param file_info Optional GnomeVFSFileInfo struct, or NULL
- *
- * @return A newly allocated array of icon name strings. Should be freed with
- * g_strfreev().
+ * Return: A newly allocated array of icon name strings which should be freed with
+ * g_strfreev() OR %NULL if none were found.
  */
 gchar **         hildon_mime_get_icon_names                   (const gchar       *mime_type,
 							       GnomeVFSFileInfo  *file_info);
