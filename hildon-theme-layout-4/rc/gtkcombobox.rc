@@ -87,7 +87,6 @@ style "osso-combobox-frame" {
 }
 widget_class "*.GtkComboBox.GtkFrame" style "osso-combobox-frame"
 
-
 ###################################################
 #
 # Styles for ComboBoxEntry
@@ -112,14 +111,14 @@ style "osso-combobox-entry-arrow"
         {
           function = ARROW
           state = ACTIVE
-          file = "../images/qgn_plat_combobox_button_pressed.png"
-          stretch = FALSE
+          overlay_file = "../images/qgn_plat_combobox_button_pressed.png"
+          overlay_stretch = FALSE
         }
       image
         {
           function = ARROW
-          file = "../images/qgn_plat_combobox_button_normal.png"
-          stretch = FALSE
+          overlay_file = "../images/qgn_plat_combobox_button_normal.png"
+          overlay_stretch = FALSE
         }
     }
 }
