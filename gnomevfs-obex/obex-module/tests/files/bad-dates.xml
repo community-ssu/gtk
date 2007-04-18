@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE folder-listing SYSTEM "obex-folder-listing.dtd">
+<folder-listing version="1.0">
+	<folder name="Documents" created="040504T211700Z" />
+	<folder name="Photos"    created="20040504T211700+0200" />
+
+	<file name="test3.txt" size="3425"  created="2004-05-04T21:17:00"/>
+	<file name="test4.txt" size="11233" created="fdsksakfo"/>
+	<file name="test5.txt" size="1314"  created="åäöåäö"/>
+	<file name="test6.txt" size="421"   created="!!!!"/>
+	<file name="test7.txt" size="12"    created=""/>
+</folder-listing>

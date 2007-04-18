@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE folder-listing SYSTEM "obex-folder-listing.dtd">
+<folder-listing version="1.0">
+	<folder name="Projects" user-perm="R" mem-type="DEV"/>
+	<folder name="Documents" user-perm="RWD" created="20030101T000000"/>
+	<folder name="Photos" created="20030712T112332" modified="20040502T210500"/>
+	
+	<file name="This File.txt" user-perm="R" created="20021014T001700" size="100980"/>
+	<file name="My Document.doc" size="12500" user-perm="WD" created="20040504T211700Z"/>
+</folder-listing>

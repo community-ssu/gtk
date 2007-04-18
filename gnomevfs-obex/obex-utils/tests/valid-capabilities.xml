@@ -1,0 +1,114 @@
+<?xml version="1.0" ?>
+<!DOCTYPE Capability SYSTEM "obex-capability.dtd">
+<Capability version="1.0">
+  <General>
+    <Manufacturer>Nokia</Manufacturer>
+    <Model>RH-12</Model>
+    <SN>352953002828261</SN>
+    <SW Version="V 03.15     " Date="20040317T120000"/>
+    <HW Version="0600"/>
+    <Language>sv</Language>
+
+    <Memory>
+      <MemType>DEV</MemType>
+      <!-- DEV memory -->
+      <Free>5482496</Free>
+      <Used>2107392</Used>
+      <CaseSenN/>
+    </Memory>
+
+    <Memory>
+      <MemType>MMC</MemType>
+      <!-- MMC memory -->
+      <Free>31768064</Free>
+      <Used>512</Used>
+      <CaseSenN/>
+    </Memory>
+
+    <Memory>
+      <MemType>APPL</MemType>
+      <!-- APPL memory -->
+      <Free>312606</Free>
+      <Used>UNAVAILABLE</Used>
+      <CaseSenN/>
+    </Memory>
+
+    <Memory>
+      <MemType>ABC</MemType>
+      <Free>312606</Free>
+      <Used>UNAVAILABLE</Used>
+    </Memory>
+
+  </General>
+
+  <Inbox>
+    <Object>
+      <Type>text/x-vCard</Type>
+      <Name-Ext>vcf</Name-Ext>
+    </Object>
+    <Object>
+      <Type>text/x-vCalendar</Type>
+      <Name-Ext>vcs</Name-Ext>
+    </Object>
+  </Inbox>
+
+  <Service>
+    <Name>Folder-Browsing</Name>
+    <UUID>F9EC7BC4-953c-11d2-984E-525400DC9E09</UUID>
+    <Object>
+      <Type>x-obex/folder-listing</Type>
+    </Object>
+    <Access>
+      <Protocol>IrDA</Protocol>
+      <Target>F9EC7BC4-953c-11d2-984E-525400DC9E09</Target>
+    </Access>
+
+    <Ext>
+      <XNam>predefphotos</XNam>
+      <XVal>Folder=predefgallery\predefphotos\</XVal>
+      <XVal>MemType=DEV</XVal>
+    </Ext>
+    <Ext>
+      <XNam>predefvideos</XNam>
+      <XVal>Folder=predefgallery\predefvideos\</XVal>
+      <XVal>MemType=DEV</XVal>
+    </Ext>
+    <Ext>
+      <XNam>predefmusic</XNam>
+      <XVal>Folder=predefgallery\predefmusic\</XVal>
+      <XVal>MemType=DEV</XVal>
+    </Ext>
+    <Ext>
+      <XNam>predefgraphics</XNam>
+      <XVal>Folder=predefgallery\predefgraphics\</XVal>
+      <XVal>MemType=DEV</XVal>
+    </Ext>
+    <Ext>
+      <XNam>predeftones</XNam>
+      <XVal>Folder=predefgallery\predeftones\</XVal>
+      <XVal>MemType=DEV</XVal>
+    </Ext>
+    <Ext>
+      <XNam>predefrecordings</XNam>
+      <XVal>Folder=predefgallery\predefrecordings\</XVal>
+      <XVal>MemType=DEV</XVal>
+    </Ext>
+  </Service>
+
+  <Service>
+    <Name>Infolog</Name>
+    <Object>
+      <Type>x-irmc/info.log</Type>
+      <Name-Ext>log</Name-Ext>
+    </Object>
+  </Service>
+
+  <Service>
+    <Name>SyncML</Name>
+    <UUID>SYNCML-SYNC</UUID>
+    <Object>
+      <Type>application/vnd.syncml+wbxml</Type>
+    </Object>
+  </Service>
+
+</Capability>

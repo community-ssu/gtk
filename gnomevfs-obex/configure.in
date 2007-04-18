@@ -1,0 +1,132 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_PREREQ(2.52)
+ 
+AC_INIT(osso-gnomevfs-extra, 1.9.2)
+AC_CONFIG_SRCDIR(obex-module/src/obex-method.c)
+AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
+
+dnl Globally define_GNU_SOURCE and therefore enable the GNU extensions
+AC_DEFINE(_GNU_SOURCE, 1, [Enable GNU Extensions])
+
+AM_MAINTAINER_MODE
+AM_CONFIG_HEADER(config.h)
+
+AM_DISABLE_STATIC
+AM_PROG_LIBTOOL
+
+AC_ISC_POSIX
+AC_PROG_CC
+AM_PROG_CC_STDC
+AC_HEADER_STDC
+
+AC_HEADER_SYS_WAIT
+AC_HEADER_TIME
+AC_CHECK_HEADERS([stdlib.h string.h])
+
+AC_FUNC_FORK
+AC_FUNC_MALLOC
+AC_FUNC_REALLOC
+AC_FUNC_STRERROR_R
+AC_FUNC_VPRINTF
+AC_CHECK_FUNCS([memset mkdir strdup strncasecmp opendir closedir readdir_r])
+
+AC_CHECK_FUNCS(getdtablesize open64 lseek64 statfs statvfs seteuid setegid setresuid setresgid readdir_r mbrtowc inet_pton getdelim sysctlbyname poll posix_fadvise fchmod atoll)
+AC_CHECK_MEMBERS([struct stat.st_blksize, struct stat.st_rdev])
+AC_STRUCT_ST_BLOCKS
+
+# Needed to build the obex module.
+AC_CACHE_CHECK([for off64_t],
+	ac_cv_have_off64_t,
+	AC_TRY_COMPILE([
+#		define _LARGEFILE64_SOURCE
+#		include <sys/types.h>],
+		[off64_t testoffset],
+	ac_cv_have_off64_t=yes,
+	ac_cv_have_off64_t=no))
+if test x"$ac_cv_have_off64_t" = "xyes" ; then
+	AC_DEFINE(HAVE_OFF64_T, 1, [Whether off64_t type is available])
+fi
+
+dnl Defined in acinclude.m4
+IDT_COMPILE_WARNINGS
+IDT_CHECK_TIMEZONE
+
+dnl This refers to osso-gnome-vfs.
+GNOME_VFS_REQUIRED=2.16.3
+DBUS_REQUIRED=0.60
+GLIB_REQUIRED=2.6.0
+LIBXML_REQUIRED=2.4
+
+GWOBEX_REQUIRED=0.45.1
+GWCONNECT_REQUIRED=0.93.2
+
+dnl =======================================
+dnl OBEX Module 
+dnl =======================================
+PKG_CHECK_MODULES(OBEX_MODULE, [
+	glib-2.0 >= $GLIB_REQUIRED
+	dbus-glib-1 >= $DBUS_REQUIRED
+	gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+	gnome-vfs-module-2.0 >= $GNOME_VFS_REQUIRED
+	libgwobex >= $GWOBEX_REQUIRED
+	gwconnect >= $GWCONNECT_REQUIRED
+])
+
+dnl =======================================
+dnl OBEX Utils
+dnl =======================================
+PKG_CHECK_MODULES(OBEX_UTILS, [
+        glib-2.0 >= $GLIB_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+])
+
+PKG_CHECK_MODULES(OBEX_UTILS_TEST, [
+        glib-2.0 >= $GLIB_REQUIRED
+        dbus-glib-1 >= $DBUS_REQUIRED
+        gnome-vfs-2.0 >= $GNOME_VFS_REQUIRED
+])
+
+dnl =======================================
+dnl Nautilus workaround in the OBEX module
+dnl =======================================
+AC_ARG_ENABLE(nautilus-workaround, [  --enable-nautilus-workaround   enables workaround in the OBEX module for Nautilus],,enable_nautilus_around=no)
+
+if test "x$enable_nautilus_workaround" = "xyes"; then
+	AC_DEFINE(ENABLE_NAUTILUS_WORKAROUND, 1, [whether to add Nautilus workaround])
+fi
+
+dnl Make sure we have expat
+AC_CHECK_LIB(expat, XML_ParserCreate_MM,
+             [ AC_CHECK_HEADERS(expat.h, have_expat=true, have_expat=false) ],
+             have_expat=false)
+
+if ! $have_expat ; then
+	AC_MSG_ERROR([Expat is required to build the OBEX module])
+fi
+
+XML_CFLAGS=""
+XML_LIBS="-lexpat"
+
+AC_SUBST(XML_CFLAGS)
+AC_SUBST(XML_LIBS)
+
+dnl This will cause the automake generated makefiles to pass the
+dnl correct flags to aclocal.
+ACLOCAL_AMFLAGS="\${ACLOCAL_FLAGS}"
+AC_SUBST(ACLOCAL_AMFLAGS)
+
+AC_OUTPUT([
+	Makefile 
+	debian/Makefile
+	obex-module/Makefile
+	obex-module/docs/Makefile
+	obex-module/src/Makefile
+	obex-module/tests/Makefile
+	obex-module/tests/files/Makefile
+	obex-utils/Makefile
+	obex-utils/obex-vfs-utils/Makefile
+	obex-utils/tests/Makefile
+	obex-utils/tests/invalid-files/Makefile
+	obex-utils/obex-vfs-utils.pc
+])

@@ -1,0 +1,6 @@
+#!/bin/sh -e
+
+if [ "$1" = "configure" ]; then
+	# Clean up old module files that conflict with our new versions
+	rm -f /etc/gnome-vfs-2.0/modules/dbus-file-module.conf
+fi

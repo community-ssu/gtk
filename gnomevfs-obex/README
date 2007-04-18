@@ -1,0 +1,15 @@
+Extra package for extentions to GnomeVFS. Contains an OBEX module, VFS
+DBUS daemon, modified file module that notifies file modifications over
+DBUS.
+
+Note that if you're not using the standard dbus system bus address, you
+need to set the environment variable DBUS_SYSTEM_BUS_ADDRESS to the path
+to the system dbus address to use, e.g:
+
+export DBUS_SYSTEM_BUS_ADDRESS=unix:path=/var/run/dbus/system_bus_socket
+
+for example in the login script.
+
+If the variable is not set, the OBEX module will fallback to the
+standard name in $(localstatedir), e.g. /var/run/dbus/system_bus_socket.
+

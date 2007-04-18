@@ -1,0 +1,45 @@
+Limited:
+========
+
+gnome_vfs_move ():
+gnome_vfs_move_uri ():
+----------------------
+If trying to rename (moving between two filenames in the same directory) 
+set_file_info () is called to try to do a rename.
+
+Otherwise GNOME_VFS_ERROR_NOT_IMPLEMENTED is returned.
+
+
+gnome_vfs_set_file_info ():
+---------------------------
+This can only be used to set the filename. If anything else is set
+GNOME_VFS_ERROR_NOT_IMPLEMENTED is returned.
+
+
+Unsupported:
+============
+
+gnome_vfs_truncate ():
+gnome_vfs_truncate_handle ():
+gnome_vfs_truncate_uri ():
+--------------------------
+This doesn't make much sense as the file is downloaded to local filesystem 
+when the file is opened.
+
+
+gnome_vfs_find_directory ():
+----------------------------
+This function is used to locate the trash can and doesn't make sense on a 
+remote device.
+
+
+gnome_vfs_create_symbolic_link ():
+----------------------------------
+This is unsupported by the OBEX layer.
+
+
+gnome_vfs_file_control ():
+--------------------------
+This is unsupported by the OBEX layer. It's used to be able to add extra
+functionality to a certain module.
+

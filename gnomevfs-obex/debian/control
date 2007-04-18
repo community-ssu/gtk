@@ -1,0 +1,33 @@
+Source: osso-gnomevfs-extra 
+Section: libs
+Priority: optional
+Maintainer: Richard Hult <richard@imendio.com>
+Build-Depends: debhelper (>= 4.0.0), libglib2.0-dev (>= 2.8), libopenobex1-dev, libgwobex-dev (>= 0.47), libosso-gnomevfs2-dev (>= 2.16.3), libdbus-glib-1-dev, osso-gwconnect-dev (>=0.93.2), libexpat1-dev
+Standards-Version: 3.6.1.0
+
+Package: osso-gnomevfs-extra
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}
+Replaces: osso-gnomevfs-backend
+Conflicts: osso-gnomevfs-backend
+Provides: osso-gnomevfs-backend
+Description: OSSO GnomeVFS Extra
+ This package contains extra parts to GnomeVFS developed for Nokia. 
+  * An OBEX GnomeVFS module
+  * Small library to retrieve the capabilities object from a remote devices.
+
+Package: osso-gnomevfs-extra-dev
+Section: devel
+Architecture: any
+Depends: osso-gnomevfs-extra (= ${Source-Version}), libosso-gnomevfs2-dev (>= 2.8.4.7), libglib2.0-dev
+Description: OSSO GnomeVFS Extra Development files
+ Development files for the osso-gnome-vfs-extra package.
+
+Package: osso-gnomevfs-extra-dbg
+Section: devel
+Priority: extra
+Architecture: any
+Depends: osso-gnomevfs-extra (= ${Source-Version})
+Description: OSSO GnomeVFS Extra debugging symbols
+ Development files for the osso-gnome-vfs-extra package.
