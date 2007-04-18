@@ -12,7 +12,6 @@ EXTRA_DIST = \
 	buttonbox.c \
 	buttonbox.gtkrc \
 	images/hbbox-brt.png \
-	images/hbbox.png \
 	images/hbbox-tb.png \
 	images/hbbox-tlb.png \
 	images/hbbox-tlbr.png \

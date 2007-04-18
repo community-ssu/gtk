@@ -43,7 +43,7 @@ style "button" {
     # default fallback (should be last)
     image {
       function = BOX
-      file = "hbbox.png"
+      file = "hbbox-tlbr.png"
       border = { 6, 6, 6, 6 }
     }
   }
