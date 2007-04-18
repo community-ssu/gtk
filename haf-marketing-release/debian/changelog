@@ -1,3 +1,11 @@
+haf-marketing-release (0.3.4) unstable; urgency=low
+
+  * Made hildon-input-method-l10n-mr1 ineffective since there is no mr1
+    for hildon-input-method-l10n (but we want to keep the package, just in
+    case).
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 18 Apr 2007 16:57:12 +0300
+
 haf-marketing-release (0.3.3) unstable; urgency=low
 
   * Added binary-arch target to debian/rules so that 'dpkg-buildpackage
