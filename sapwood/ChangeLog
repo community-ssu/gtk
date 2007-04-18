@@ -1,3 +1,8 @@
+2007-04-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* src/sapwood-draw.c (draw_simple_image): Add missing cast for
+	gtk_container_get_children
+
 2007-04-17  Xan Lopez  <xan.lopez@nokia.com>
 
 	* README:

@@ -262,7 +262,7 @@ draw_simple_image(GtkStyle       *style,
               /* Generic code for other kinds of containers */
 	      GList *children;
 
-	      children = gtk_container_get_children (widget->parent);
+	      children = gtk_container_get_children (GTK_CONTAINER (widget->parent));
 	      check_child_position (widget, children, match_data);
 	      g_list_free (children);
 	    }
