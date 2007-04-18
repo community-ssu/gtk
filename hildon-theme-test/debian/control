@@ -2,10 +2,10 @@ Source: hildon-theme-test
 Section: user/themes
 Priority: optional
 Maintainer: Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-4 (>= 0.2.0) (< 0.3.0), hildon-theme-tools
+Build-Depends: debhelper (>= 4.0.0), hildon-theme-layout-4 (>= 0.6.0), hildon-theme-layout-4 (< 0.7.0), hildon-theme-tools
 Standards-Version: 3.6.0
 
 Package: hildon-theme-test
 Architecture: all
-Depends: gtk2-engines-sapwood (>= 2.91.2), hildon-theme-cacher (>= 0.3.0)
+Depends: gtk2-engines-sapwood (>= 2.91.4), hildon-theme-cacher (>= 0.3.0)
 Description: A hildon test theme. 
