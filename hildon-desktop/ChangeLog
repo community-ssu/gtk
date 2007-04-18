@@ -1,3 +1,9 @@
+2007-04-18  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]:
+	implemented notification action and close support in the notification
+	manager. Changed public API to make it saner for direct use.
+
 2007-04-18  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-wm.c:

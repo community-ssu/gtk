@@ -4,10 +4,10 @@
 
   <interface name="org.freedesktop.Notifications">
                 
-    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="HDNotificationManager"/>
+    <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="HildonDesktopNotificationManager"/>
 
     <method name="Notify">
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_notify_handler"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_add_notification"/>
 
       <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
  
@@ -23,7 +23,7 @@
     </method>
 
     <method name="CloseNotification">
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_close_notification_handler"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_close_notification"/>
 
       <arg type="u" name="id" direction="in" />
     </method>

@@ -30,6 +30,8 @@
 #include <gtk/gtkliststore.h>
 #include <glib.h>
 #include <glib-object.h>
+#include <dbus/dbus.h>
+#include <dbus/dbus-glib-lowlevel.h>
 #include <dbus/dbus-glib-bindings.h>
 
 G_BEGIN_DECLS
@@ -46,6 +48,7 @@ enum
   HD_NM_COL_HINTS,
   HD_NM_COL_TIMEOUT,
   HD_NM_COL_REMOVABLE,
+  HD_NM_COL_SENDER,
   HD_NM_N_COLS
 };
 
@@ -72,32 +75,37 @@ struct _HildonDesktopNotificationManagerClass
   GtkListStoreClass parent_class;
 };
 
-GType      hildon_desktop_notification_manager_get_type          (void);
+GType      hildon_desktop_notification_manager_get_type           (void);
 
-GtkListStore *hildon_desktop_notification_manager_get_singleton     (void);
+GtkListStore *hildon_desktop_notification_manager_get_singleton   (void);
 
-gboolean   hildon_desktop_notification_manager_notify_handler    (HildonDesktopNotificationManager *nm,
-                                                      		  const gchar           *app_name,
-                                                      		  guint                  id,
-                                                      		  const gchar           *icon,
-                                                      		  const gchar           *summary,
-                                                      		  const gchar           *body,
-                                                      		  gchar                **actions,
-                                                      		  GHashTable            *hints,
-                                                      		  gint                   timeout, 
-                                                      		  DBusGMethodInvocation *context);
+gboolean   hildon_desktop_notification_manager_add_notification   (HildonDesktopNotificationManager *nm,
+                                                      		   const gchar           *app_name,
+                                                      		   guint                  id,
+                                                      		   const gchar           *icon,
+                                                      		   const gchar           *summary,
+                                                      		   const gchar           *body,
+                                                      		   gchar                **actions,
+                                                      		   GHashTable            *hints,
+                                                      		   gint                   timeout, 
+                                                      		   DBusGMethodInvocation *context);
 
-gboolean   hildon_desktop_notification_manager_get_capabilities  (HildonDesktopNotificationManager *nm, 
-                                                      		  gchar               ***caps);
+gboolean   hildon_desktop_notification_manager_get_capabilities   (HildonDesktopNotificationManager *nm, 
+                                                      		   gchar               ***caps);
 
-gboolean   hildon_desktop_notification_manager_get_server_info   (HildonDesktopNotificationManager *nm,
-                                                      		  gchar                **out_name,
-                                                      		  gchar                **out_vendor,
-                                                      		  gchar                **out_version,
-                                                      		  gchar                **out_spec_ver);
+gboolean   hildon_desktop_notification_manager_get_server_info    (HildonDesktopNotificationManager *nm,
+                                                      		   gchar                **out_name,
+                                                      		   gchar                **out_vendor,
+                                                      		   gchar                **out_version,
+                                                      		   gchar                **out_spec_ver);
 
-gboolean   hildon_desktop_notification_manager_close_notification_handler (HildonDesktopNotificationManager *nm,
-                                                               guint id, GError **error);
+gboolean   hildon_desktop_notification_manager_close_notification (HildonDesktopNotificationManager *nm,
+                                                                   guint id, 
+								   GError **error);
+
+void       hildon_desktop_notification_manager_call_action        (HildonDesktopNotificationManager *nm,
+                                                                   guint                  id,
+								   const gchar           *action_id);
 
 G_END_DECLS
 
