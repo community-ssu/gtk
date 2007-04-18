@@ -1,5 +1,12 @@
+2007-04-18  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-info.c (sync_callback): Only copy
+	error when it is non-NULL.  Thanks to Jörgen Scheibengruber!
+
 2007-04-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.9.15.
+	
 	* hildon-fm/hildon-file-system-info.c
 	(hildon_file_system_info_async_new): Use g_slice_new0 and
 	g_slice_free after all.  The slice allocator is the recommended
