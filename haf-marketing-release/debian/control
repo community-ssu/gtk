@@ -21,13 +21,8 @@ Package: hildon-input-method-l10n-mr1
 Architecture: all
 Provides: hildon-input-method-l10n-mr
 Conflicts: hildon-input-method-l10n-mr
-Depends: hildon-input-method-l10n-engb, 
 Description: hildon-input-method marketing release 0 locales
- This is a metapackage for hildon-input-method depending on the 
- locales needed on marketing release 1. Application
- developers of hildon-input-method should depend on:
-  "hildon-input-method-l10n-mr0 | hildon-input-method-l10n-mr" 
- to ensure correct locales are getting installed.
+ There is no mr1 for hildon-input-method so this package is empty.
 
 Package: hildon-common-strings-l10n-mr1
 Architecture: all
