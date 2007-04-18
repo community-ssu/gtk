@@ -1291,7 +1291,7 @@ hd_wm_activate_service (const gchar *app, const gchar *parameters)
                                       path,
                                       interface,
                                       OSSO_BUS_TOP);
-  if (parameters)
+  if (parameters && !g_str_equal (parameters, "restored"))
     dbus_message_append_args (msg,
                               DBUS_TYPE_STRING,
                               parameters,
