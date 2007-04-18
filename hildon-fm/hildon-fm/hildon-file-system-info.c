@@ -325,7 +325,7 @@ sync_callback  (HildonFileSystemInfoHandle *handle,
 {
   sync_data *c = data;
 
-  g_propagate_error (c->error, g_error_copy (error));
+  g_propagate_error (c->error, error ? g_error_copy (error) : NULL);
 
   if (info)
     info->free_after_callback = FALSE;
