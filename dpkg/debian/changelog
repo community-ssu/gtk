@@ -1,3 +1,13 @@
+dpkg (1.13.25.osso6) unstable; urgency=low
+
+  [ Marius Vollmer, for maemo ]
+
+  * debian/dpkg.postinst: Do not call remove_duplicate_daemons or
+    fix_damaged_info ever.  This doesn't seem to work when creating images
+    from scratch and is not necessary for maemo.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 18 Apr 2007 21:22:39 +0300
+
 dpkg (1.13.25.osso5) unstable; urgency=low
 
   [ Marius Vollmer, for maemo ]

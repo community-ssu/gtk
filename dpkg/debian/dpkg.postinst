@@ -154,14 +154,20 @@ case "$1" in
 	create_database
 	create_logfile
 
-	case "$2" in
-	    0.* | 1.0.* | 1.1.0 | 1.1.0[^0-9]* | '' )
-	        remove_duplicate_daemons
-		;;
-	    1.1.6 | 1.1.6elf | 1.2.[0123] | 1.2.[0123]elf)
-	        fix_damaged_info
-	        ;;
-	esac
+ 	case "$2" in
+
+# remove_duplicate_daemons seems to fail when creating a maemo image
+# from scratch, and is not needed for maemo.  So we don't run it,
+# ever.
+#
+# 	    0.* | 1.0.* | 1.1.0 | 1.1.0[^0-9]* | '' )
+# 	        remove_duplicate_daemons
+# 		;;
+
+ 	    1.1.6 | 1.1.6elf | 1.2.[0123] | 1.2.[0123]elf)
+ 	        fix_damaged_info
+ 	        ;;
+ 	esac
 
 	move_info_directory
 	remove_info_symlink
