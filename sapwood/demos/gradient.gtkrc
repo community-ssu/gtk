@@ -1,0 +1,13 @@
+# vim:set ft=gtkrc sw=2 sts=2 expandtab:
+pixmap_path "images"
+
+style "button" {
+  engine "sapwood" {
+    image {
+      function = BOX
+      file = "gradient.png"
+    }
+  }
+}
+
+class "GtkButton" style "button"

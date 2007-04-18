@@ -1,4 +1,15 @@
 2007-04-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* demos/Makefile.am
+	* demos/gradient.c
+	* demos/gradient.gtkrc
+	* demos/images/gradient.png: Add testcase for gradient
+
+	* src/sapwood-server.c (extract_pixmap_single): To avoid uninitialized
+	pixels when loading images with alpha channel, paint the pixmap white
+	first. MB#1216
+
+2007-04-18  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	* demos/Makefile.am
 	* demos/images/hbbox.png: remove ugly solid black image

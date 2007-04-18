@@ -82,6 +82,11 @@ extract_pixmap_single (GdkPixbuf  *pixbuf,
 		       int width, int height,
 		       PixbufOpenResponse *rep)
 {
+  /* This function is almost a copy of gdk_pixbuf_render_pixmap_and_mask() with
+   * the exception that it draws only a part of the pixbuf (could be achieved
+   * with gdk_pixbuf_new_subpixbuf()) and initializes the destination pixmap
+   * with white background to avoid uninitialized pixels when using alpha.
+   */
   GdkPixmap    *pixmap;
   static GdkGC *tmp_gc = NULL;
   gboolean      need_mask;
@@ -89,8 +94,15 @@ extract_pixmap_single (GdkPixbuf  *pixbuf,
   pixmap = gdk_pixmap_new (NULL, width, height, server_depth);
 
   if (!tmp_gc)
-    tmp_gc = gdk_gc_new (pixmap);
+    {
+      const GdkColor white = {0, 0xffff, 0xffff, 0xffff};
 
+      tmp_gc = gdk_gc_new (pixmap);
+
+      gdk_gc_set_rgb_fg_color (tmp_gc, &white);
+    }
+
+  gdk_draw_rectangle (pixmap, tmp_gc, TRUE, 0, 0, width, height);
   gdk_draw_pixbuf (pixmap, tmp_gc, pixbuf,
 		   x, y, 0, 0,
 		   width, height,

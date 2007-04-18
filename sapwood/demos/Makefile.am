@@ -3,6 +3,7 @@ LDADD = $(GTK_LIBS)
 
 noinst_PROGRAMS = \
 	buttonbox \
+	gradient \
 	treeview
 
 CLEANFILES = engines
@@ -15,6 +16,9 @@ EXTRA_DIST = \
 	images/hbbox-tb.png \
 	images/hbbox-tlb.png \
 	images/hbbox-tlbr.png \
+	gradient.c \
+	gradient.gtkrc \
+	images/gradient.png \
 	treeview.c \
 	treeview.gtkrc \
 	images/treeview-active.png \
