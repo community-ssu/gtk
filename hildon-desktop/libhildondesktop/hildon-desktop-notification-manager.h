@@ -1,7 +1,7 @@
 /*
  * This file is part of hildon-desktop
  *
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2007 Nokia Corporation.
  *
  * Author:  Lucas Rocha <lucas.rocha@nokia.com>
  *          Moises Martinez <moises.martinez@nokia.com>

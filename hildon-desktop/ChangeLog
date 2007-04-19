@@ -1,3 +1,12 @@
+2007-04-19  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.[ch]:
+	- Added stubs for new popup window.
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]:
+	* libhildondesktop/hildon-desktop-panel-expandable.[ch]:
+	* libhildondesktop/hildon-desktop-panel-window-dialog.[ch}:
+	- fixed (c) year
+
 2007-04-18  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-notification-manager.[ch],

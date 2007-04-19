@@ -1,7 +1,7 @@
 /*
  * This file is part of maemo-af-desktop
  *
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2007 Nokia Corporation.
  *
  * Author:  Moises Martinez <moises.martinez@nokia.com>
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
