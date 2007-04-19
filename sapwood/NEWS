@@ -1,3 +1,15 @@
+sapwood 2.91.4 - 2007-04-19
+===========================
+
+Changes
+-------
+Made the 'position' keyword support more generic. Now it can be used for
+widgets whose parent has the 'maemo-position-theming' style property set
+(only available in maemo modified gtk.)
+
+Don't require gtk+ 2.10 for building.
+
+
 sapwood 2.91.3 - 2007-03-29
 ===========================
 

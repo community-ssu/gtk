@@ -1,4 +1,8 @@
 2007-04-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
+	
+	* === Release 2.91.4 ===
+
+2007-04-19  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* src/sapwood-server.c (extract_pixmap_single): Revert the white
 	background initialization as it adds unwanted tint to the graphics.
