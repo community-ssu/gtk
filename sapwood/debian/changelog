@@ -1,3 +1,10 @@
+sapwood (2.91.4-1) unstable; urgency=low
+
+  * Use 'maemo-position-theming' style property for position dependent theming
+    (dialog buttons, bread crumb trail)
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Thu, 19 Apr 2007 15:18:51 +0300
+
 sapwood (2.91.3-1) unstable; urgency=low
 
   * Documentation for theme maintainers.
