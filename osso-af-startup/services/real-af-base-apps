@@ -44,6 +44,13 @@ start)
 
   source $AF_INIT_DIR/clipboard.sh start
 
+  if [ -f /tmp/.check_auto_install ]; then
+    dbus-send --system --dest=com.nokia.ke_recv --type=method_call \
+      --print-reply /com/nokia/ke_recv/check_auto_install \
+      com.nokia.ke_recv.foo
+    rm -f /tmp/.check_auto_install
+  fi
+
   ;;
 stop)
 
