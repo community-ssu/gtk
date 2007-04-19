@@ -1,3 +1,8 @@
+2007-04-19  Xan Lopez  <xan.lopez@nokia.com>
+
+	* gtk/gtkmain.c (gtk_main_do_event): send the insensitive-press
+	signal to the event widget instead of the grab widget.
+
 2007-04-13  Xan Lopez  <xan.lopez@nokia.com>
 
 	* gtk/gtkwidget.c: Add "maemo-position-theming" style property.
