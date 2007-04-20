@@ -1,4 +1,11 @@
-2007-04-17  Johan Bilien  <johan.bilien@nokia.com>
+2007-04-20  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.[ch]:
+	- Fixed a lot of issues to get it built.
+	* libhildondesktop/Makefile.am:
+	- Added HildonDesktopPopupWindow to building batch
+
+2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:
 	- fixed an infinite loop in some situations.

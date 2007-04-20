@@ -27,14 +27,18 @@
 #define __HILDON_DESKTOP_POPUP_WINDOW_H__
 
 #include <gtk/gtkwindow.h>
-
-#include <gtk/gtkmenu.h> /*Only for GtkMenuPositionFunc*/
+#include <gdk/gdk.h>
 
 G_BEGIN_DECLS
 
 typedef struct _HildonDesktopPopupWindow HildonDesktopPopupWindow;
 typedef struct _HildonDesktopPopupWindowClass HildonDesktopPopupWindowClass;
 typedef struct _HildonDesktopPopupWindowPrivate HildonDesktopPopupWindowPrivate;
+
+typedef void (*HDPopupWindowPositionFunc) (HildonDesktopPopupWindow   *window,
+                            	           gint      		      *x,
+                                           gint      		      *y,
+                                           gpointer   		      user_data);
 
 typedef enum 
 {
@@ -58,24 +62,29 @@ struct _HildonDesktopPopupWindow
 
 struct _HildonDesktopPopupWindowClass
 {
+  GtkWindowClass		parent_class;
   /* */	
-}
+};
 
 GType 
 hildon_desktop_popup_window_get_type (void);
 
 GtkWidget *
-hildon_desktop_popup_window (guint n_panes,
-			     GtkOrientation orientation,
-			     HildonDesktopPopupWindowDirection direction);
+hildon_desktop_popup_window_new (guint n_panes,
+			         GtkOrientation orientation,
+			         HildonDesktopPopupWindowDirection direction);
 
 GtkWidget *
 hildon_desktop_popup_window_get_pane (HildonDesktopPopupWindow *popup, gint pane);
 
 void 
 hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
-				   GtkMenuPositionFunc func);
+				   HDPopupWindowPositionFunc func,
+				   gpointer                  func_data,
+				   guint32 		     activate_time);
 
+void 
+hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup);
 
 G_BEGIN_DECLS
 

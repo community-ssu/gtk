@@ -13,6 +13,7 @@ pkginclude_HEADERS = \
 	hildon-desktop-plugin.h       \
 	hildon-desktop-panel-window.h \
 	hildon-desktop-panel-window-dialog.h \
+	hildon-desktop-popup-window.h \
 	hildon-desktop-panel.h        \
 	hildon-desktop-multiscreen.h  \
 	hildon-desktop-panel-expandable.h \
@@ -89,6 +90,8 @@ libhildondesktop_la_SOURCES = \
 	hildon-desktop-panel-window.c        \
 	hildon-desktop-panel-window-dialog.h \
         hildon-desktop-panel-window-dialog.c \
+	hildon-desktop-popup-window.h	     \
+	hildon-desktop-popup-window.c	     \
 	hildon-desktop-panel-expandable.h    \
 	hildon-desktop-panel-expandable.c    \
 	hildon-desktop-multiscreen.h         \

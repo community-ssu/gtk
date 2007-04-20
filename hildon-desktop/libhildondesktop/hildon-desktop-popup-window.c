@@ -25,6 +25,10 @@
 
 #include "hildon-desktop-popup-window.h" 
 
+#include <gtk/gtk.h>
+#include <gdk/gdkx.h>
+#include <gdk/gdkwindow.h>
+
 #define HILDON_DESKTOP_POPUP_WINDOW_GET_PRIVATE(object) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_DESKTOP_TYPE_POPUP_WINDOW, HildonDesktopPopupWindowPrivate))
 
@@ -39,7 +43,7 @@ enum
 
 enum
 {
-  POPUP_N_SIGNALS;
+  POPUP_N_SIGNALS
 };
 
 static GObject *hildon_desktop_popup_window_constructor (GType gtype, 
@@ -63,35 +67,50 @@ static void hildon_desktop_popup_window_hide (GtkWidget *widget);
 static void hildon_desktop_popup_window_show_all (GtkWidget *widget);
 static void hildon_desktop_popup_window_hide_all (GtkWidget *widget);
 
-static gboolean hildon_desktop_popup_window_focus (GtkWidget *widget);
+static gboolean hildon_desktop_popup_window_enter_notify (GtkWidget *widget, GdkEventCrossing *event);
+static gboolean hildon_desktop_popup_window_leave_notify (GtkWidget *widget, GdkEventCrossing *event);
 
 static gboolean hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 				                               GdkEventVisibility *event,
 			        		               gpointer            data);
 
-struct _HildonDesktopPopupWindow 
+static gboolean hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
+						     		     GdkEventCrossing *event,
+						     		     HildonDesktopPopupWindow *popup);
+
+static gboolean
+hildon_desktop_popup_window_button_release_event (GtkWidget *widget, GdkEventButton *event);
+
+struct _HildonDesktopPopupWindowPrivate 
 {
   GtkWidget	   	          **extra_panes;
   guint				    n_extra_panes;
   GtkOrientation 		    orientation;
   HildonDesktopPopupWindowDirection direction;
-}
+
+  HDPopupWindowPositionFunc	    position_func;
+  gpointer			    position_func_data;
+
+  gboolean 			    have_xgrab;
+
+  GtkWidget			   *attached_widget;
+};
 
 static void 
-hildon_desktop_popup_window_init (GObject *object)
+hildon_desktop_popup_window_init (HildonDesktopPopupWindow *popup)
 {
-  HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (object);
-
-  popup->priv = HILDON_DESKTOP_POPUP_WINDOW_GET_PRIVATE (object);
+  popup->priv = HILDON_DESKTOP_POPUP_WINDOW_GET_PRIVATE (popup);
 
   popup->priv->extra_panes   = NULL;
   popup->priv->n_extra_panes = 0;
 
+  popup->priv->have_xgrab = FALSE;
 
+  popup->priv->attached_widget = NULL;
 }
 
 static void 
-hildon_desktop_popup_window_class_init (HildonDesktopPopupWindow *popup_class)
+hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_class)
 {
   GObjectClass *object_class   = G_OBJECT_CLASS (popup_class);
   GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (popup_class);
@@ -102,17 +121,17 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindow *popup_class)
 
   widget_class->enter_notify_event      = hildon_desktop_popup_window_enter_notify;
   widget_class->leave_notify_event      = hildon_desktop_popup_window_leave_notify;
+  widget_class->button_release_event    = hildon_desktop_popup_window_button_release_event;
 
-  widget_class->focus = hildon_desktop_popup_window_focus;
 	  
   widget_class->realize    = hildon_desktop_popup_window_realize;
   widget_class->unrealize  = hildon_desktop_popup_window_unrealize;
-  widget_class->show       = hildon_desktop_popup_show;
-  widget_class->hide       = hildon_desktop_popup_hide;
-  widget_class->show_all   = hildon_desktop_popup_show_all;
-  widget_class->hide_all   = hildon_desktop_popup_hide_all;
+  widget_class->show       = hildon_desktop_popup_window_show;
+  widget_class->hide       = hildon_desktop_popup_window_hide;
+  widget_class->show_all   = hildon_desktop_popup_window_show_all;
+  widget_class->hide_all   = hildon_desktop_popup_window_hide_all;
   
-  g_type_class_add_private (g_object_class, sizeof (HildonDesktopPopupWindowPrivate));
+  g_type_class_add_private (object_class, sizeof (HildonDesktopPopupWindowPrivate));
 
   g_object_class_install_property (object_class,
                                    PROP_POPUP_N_PANES,
@@ -165,25 +184,23 @@ hildon_desktop_popup_window_constructor (GType gtype,
 
   GTK_WINDOW (popup)->type = GTK_WINDOW_POPUP;
 
-  gtk_window_set_type_hint (GTK_WINDOW (popup), GDK_WINDOW_TYPE_HINT_POPUP);
+  gtk_window_set_type_hint (GTK_WINDOW (popup), GDK_WINDOW_TYPE_HINT_MENU);
 
   g_signal_connect (popup,
-		    "visibility_notify_envent",
+		    "visibility-notify-event",
 		    G_CALLBACK (hildon_desktop_popup_window_visibility_notify),
 		    NULL);
 
   gtk_widget_push_composite_child ();
 
-  popup->priv->extra_panes = g_new0 (GtkWindow *, popup->priv->n_extra_panes);
+  popup->priv->extra_panes = g_new0 (GtkWidget *, popup->priv->n_extra_panes);
 
   for (i=0; i < popup->priv->n_extra_panes; i++)
   {	  
     popup->priv->extra_panes[i] = gtk_window_new (GTK_WINDOW_POPUP);
 
-    g_signal_connect (popup->priv->extra_panes[i],
-		      "enter-notify-event",
-		      G_CALLBACK (hildon_desktop_popup_window_composited_enter_notify),
-		      (gpointer)popup);
+    gtk_window_set_type_hint (GTK_WINDOW (popup->priv->extra_panes[i]),
+		    	      GDK_WINDOW_TYPE_HINT_MENU);
 
     g_signal_connect (popup->priv->extra_panes[i],
 		      "leave-notify-event",
@@ -272,24 +289,19 @@ hildon_desktop_popup_window_hide_all (GtkWidget *widget)
     gtk_widget_hide_all (popup->priv->extra_panes[i]);
 }
 
-static gboolean 
-hildon_desktop_popup_window_focus (GtkWidget *widget)
-{
-  /* What focus? */
-  return FALSE;
-}
-
 static gboolean
 hildon_desktop_popup_window_enter_notify (GtkWidget        *widget,
 		                          GdkEventCrossing *event)
 {
   HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);
 
+  g_debug ("%s enter_notify %p",__FILE__,popup);
   /* We have to grab the pointer in here, we should get this when we come from
    * a composited window
    */ 
   
-  return TRUE;	
+  return 
+    GTK_WIDGET_CLASS (hildon_desktop_popup_window_parent_class)->enter_notify_event (widget, event);	
 }
 
 static gboolean 
@@ -301,18 +313,10 @@ hildon_desktop_popup_window_leave_notify (GtkWidget        *widget,
  /* We have to ungrab the pointer in here, we should get this when we go to
   * a composited window
   */
+  g_debug ("%s leave_notify %p",__FILE__,popup);
   
-  return TRUE;	
-}
-
-static gboolean 
-hildon_desktop_popup_window_composited_enter_notify (GtkWidget *widget,
-						     GdkEventCrossing *event,
-						     HildonDesktopPopupWindow *popup)
-{
-
-
-  return TRUE;
+  return 
+    GTK_WIDGET_CLASS (hildon_desktop_popup_window_parent_class)->leave_notify_event (widget, event);	
 }
 
 static gboolean 
@@ -332,13 +336,157 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 {
   HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);
 
+  g_debug ("%s visibility_notify %p",__FILE__,popup);
   /* We have to close every window when called this but also we have to 
    * track if our composited windows are not the responsibles for the 
    * visibility-notify
    */
+  GdkScreen *screen;
+  GList *stack;
+  gboolean deactivate;
+
+  if (event->state == GDK_VISIBILITY_UNOBSCURED)
+    return FALSE;
+
+  screen = gtk_widget_get_screen (widget);
+
+  deactivate = FALSE;
+
+  /* Inspect windows above us */
+  stack = gdk_screen_get_window_stack (screen);
   
-  return TRUE;	
+  if (stack != NULL)
+  {
+     GList *iter;
+
+     iter = g_list_last (stack);
+
+     while (iter)
+     { 
+       GdkWindow *win = iter->data;
+       GdkWindowTypeHint type;
+
+       if (win == widget->window)
+         break;
+
+       gdk_error_trap_push ();
+
+       type = gdk_window_get_type_hint (win);
+ 
+      if (!gdk_error_trap_pop () && 
+ 	  /*type != GDK_WINDOW_TYPE_HINT_MESSAGE && */
+          type != GDK_WINDOW_TYPE_HINT_MENU)
+      {
+        /* A non-message and non-menu window above us; close. */
+        deactivate = TRUE;
+        break;
+      }
+
+      iter = iter->prev;
+    }
+
+    g_list_foreach (stack, (GFunc) g_object_unref, NULL);
+    g_list_free (stack);
+  }
+
+  if (deactivate)
+  {
+    hildon_desktop_popup_window_popdown (popup);
+    return TRUE;
+  }
+
+  return FALSE;
 }
+
+static gboolean
+hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
+                                                  GdkEventButton *event)
+{
+  HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);  	
+  gboolean in_panes_area  = FALSE,
+           in_window_area = FALSE;
+  gint x,y,w,h,i;
+
+  if (!event)
+    return FALSE;
+
+  gtk_widget_get_pointer (widget, &x, &y);
+
+  w = widget->allocation.width;
+  h = widget->allocation.height;
+
+  /* Pointer on window popup area */
+  if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    in_window_area = TRUE;
+  else
+  {
+     for (i=0; i < popup->priv->n_extra_panes; i++)
+     {	     
+       w = popup->priv->extra_panes[i]->allocation.width;
+       h = popup->priv->extra_panes[i]->allocation.height;
+
+       gtk_widget_get_pointer (popup->priv->extra_panes[i], &x, &y);
+
+       /* Pointer on button area  */
+       if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+         in_panes_area = TRUE;
+
+       break;
+     }
+  }
+
+  /* Event outside of popup or in button area, close in clean way */
+  if (!in_panes_area || in_window_area)
+    hildon_desktop_popup_window_popdown (popup);
+
+  return TRUE;
+}
+
+static void 
+hildon_desktop_popup_window_calculate_position (HildonDesktopPopupWindow *popup)
+{
+  gint x=0,y=0,i;
+  GtkRequisition req;
+
+  gtk_widget_size_request (GTK_WIDGET (popup), &req);
+
+  if (popup->priv->position_func)
+  {
+    (* popup->priv->position_func) (popup, &x, &y, popup->priv->position_func_data);
+  }	  
+
+  gtk_window_move (GTK_WINDOW (popup), x, y);
+
+  if (popup->priv->orientation == GTK_ORIENTATION_HORIZONTAL)
+  {
+    if (popup->priv->direction == HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM)
+      for (i=0; i < popup->priv->n_extra_panes; i++)
+        gtk_window_move (GTK_WINDOW (popup->priv->extra_panes[i]),
+			 req.width*(i+1) + x,
+			 y);
+    else
+    if (popup->priv->direction == HD_POPUP_WINDOW_DIRECTION_LEFT_TOP)	    
+      for (i=0; i < popup->priv->n_extra_panes; i++)
+        gtk_window_move (GTK_WINDOW (popup->priv->extra_panes[i]),
+                         req.width*(i+1) - x,
+                         y);
+  }	  
+  else
+  if (popup->priv->orientation == GTK_ORIENTATION_VERTICAL)
+  {
+    if (popup->priv->direction == HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM)
+      for (i=0; i < popup->priv->n_extra_panes; i++)
+        gtk_window_move (GTK_WINDOW (popup->priv->extra_panes[i]),
+			 x,
+			 req.height*(i+1) + y);
+    else
+    if (popup->priv->direction == HD_POPUP_WINDOW_DIRECTION_LEFT_TOP)	    
+      for (i=0; i < popup->priv->n_extra_panes; i++)
+        gtk_window_move (GTK_WINDOW (popup->priv->extra_panes[i]),
+                         x,
+                         req.height*(i+1) - y);
+  } 
+}	
 
 static void 
 hildon_desktop_popup_window_get_property (GObject *object, 
@@ -397,10 +545,69 @@ hildon_desktop_popup_window_set_property (GObject *object,
   }
 }
 
+static GdkWindow *
+popup_window_grab_transfer_window_get (HildonDesktopPopupWindow *popup)
+{
+  GdkWindow *window = 
+    g_object_get_data (G_OBJECT (popup),
+		       "popup-window-transfer-window");
+
+  if (!window)
+  {
+    GdkWindowAttr attributes;
+    gint attributes_mask;
+
+    attributes.x = -100;
+    attributes.y = -100;
+    attributes.width = 10;
+    attributes.height = 10;
+    attributes.window_type = GDK_WINDOW_TEMP;
+    attributes.wclass = GDK_INPUT_ONLY;
+    attributes.override_redirect = TRUE;
+    attributes.event_mask = 0;
+
+    attributes_mask = GDK_WA_X | GDK_WA_Y | GDK_WA_NOREDIR;
+
+    window = gdk_window_new (gtk_widget_get_root_window (GTK_WIDGET (popup)),
+                             &attributes, attributes_mask);
+    gdk_window_set_user_data (window, popup);
+
+    gdk_window_show (window);
+
+    g_object_set_data (G_OBJECT (popup), "popup-window-transfer-window", window);
+  }
+
+  return window;
+}
+
+static gboolean
+popup_grab_on_window (GdkWindow *window,
+                      guint32    activate_time,
+                      gboolean   grab_keyboard)
+{
+  if ((gdk_pointer_grab (window, TRUE,
+                         GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
+                         GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK |
+                         GDK_POINTER_MOTION_MASK,
+                         NULL, NULL, activate_time) == 0))
+  {
+    if (!grab_keyboard || gdk_keyboard_grab (window, TRUE, activate_time) == 0)
+      return TRUE;
+    else
+    {
+      gdk_display_pointer_ungrab 
+        (gdk_drawable_get_display (window), activate_time);
+      return FALSE;
+    }
+  }
+
+  return FALSE;
+}
+
 GtkWidget *
-hildon_desktop_popup_window (guint n_panes,
-			     GtkOrientation orientation,
-			     HildonDesktopPopupWindowDirection direction)
+hildon_desktop_popup_window_new (guint n_panes,
+			         GtkOrientation orientation,
+			         HildonDesktopPopupWindowDirection direction)
 {
   return GTK_WIDGET (g_object_new (HILDON_DESKTOP_TYPE_POPUP_WINDOW,
 			  	   "n-panes",n_panes,
@@ -425,8 +632,53 @@ hildon_desktop_popup_window_get_pane (HildonDesktopPopupWindow *popup, gint pane
 
 void 
 hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
-				   GtkMenuPositionFunc func)
+				   HDPopupWindowPositionFunc func,
+				   gpointer		     func_data,
+				   guint32 		     activate_time)
 {
+  GdkWindow *transfer_window;
+  GtkWidget *parent_toplevel;
+	
+  g_assert (HILDON_DESKTOP_IS_POPUP_WINDOW (popup));
+	
+  popup->priv->position_func      = func;
+  popup->priv->position_func_data = func_data;
 
+  transfer_window = popup_window_grab_transfer_window_get (popup);
 
+  if (popup_grab_on_window (transfer_window, activate_time, TRUE))
+    popup->priv->have_xgrab = TRUE;
+
+  if (popup->priv->attached_widget)
+  {
+    parent_toplevel = gtk_widget_get_toplevel (popup->priv->attached_widget);
+
+    if (parent_toplevel && GTK_IS_WINDOW (parent_toplevel))
+    {
+      register gint i;
+      gtk_window_set_transient_for (GTK_WINDOW (popup),
+                                    GTK_WINDOW (parent_toplevel));
+ 
+      for (i=0; i < popup->priv->n_extra_panes; i++)
+        gtk_window_set_transient_for (GTK_WINDOW (popup->priv->extra_panes[i]),
+				      GTK_WINDOW (parent_toplevel));
+    }
+  }
+
+  hildon_desktop_popup_window_calculate_position (popup);
+
+  gtk_widget_show (GTK_WIDGET (popup));
+
+  popup_grab_on_window (GTK_WIDGET (popup)->window, activate_time, TRUE); /* Should always succeed */
+
+  gtk_grab_add (GTK_WIDGET (popup));
 }
+
+void 
+hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup)
+{
+  gtk_widget_hide (GTK_WIDGET (popup));
+
+  gtk_grab_remove (GTK_WIDGET (popup));
+}
+
