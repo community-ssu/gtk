@@ -1,4 +1,10 @@
-gail (1.18.0-osso2)  unstable; urgency=low
+gail (1.18.0-osso3) unstable; urgency=low
+
+  * Use ${shlibs:Depends} instead of hardcoding dependencies
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 20 Apr 2007 15:18:31 +0100
+
+gail (1.18.0-osso2) unstable; urgency=low
 
   * Fixed build options
 
