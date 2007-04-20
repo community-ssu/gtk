@@ -1,5 +1,15 @@
 2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
 
+	* rc/ossorssfeedreader.rc:
+	* rc/ossointernetsearchapplet.rc:
+	* rc/ossospeeddial.rc:
+	* rc/ossoiradioapplet.rc:
+	* rc/ossoclock.rc:
+
+	Added necessary definitions for the Home compositor.
+
+2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
+
 	* rc/ossointernetsearchapplet: Fixed border values to 18
 
 2007-04-17  Xan Lopez  <xan.lopez@nokia.com>

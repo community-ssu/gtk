@@ -8,6 +8,8 @@ style "osso-iradio-applet"
 {
   xthickness = 0
   ythickness = 0
+  HildonDesktopHomeItem::background-borders = { 30, 140, 0, 0 }
+  bg_pixmap[PRELIGHT] = "../images/qgn_plat_radio_applet_bg.png"
 
   engine "sapwood"
     {
