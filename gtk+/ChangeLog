@@ -1,5 +1,17 @@
 2007-04-20  Michael Natterer  <mitch@imendio.com>
 
+	Merge from upstream trunk, replacing the old hildon popup name:
+
+    2007-03-07  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/gtkcombo.c: (gtk_combo_init):
+	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget),
+	(gtk_combo_box_menu_setup):
+	Set names on the popup widgets to make them themable. (#414975, 
+	Benjamin Berg)
+
+2007-04-20  Michael Natterer  <mitch@imendio.com>
+
 	* gtk/gtkscrolledwindow.c: back out "keep focussed child visible
 	when size changes".
 
