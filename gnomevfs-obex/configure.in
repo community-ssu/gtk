@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.52)
  
-AC_INIT(osso-gnomevfs-extra, 1.9.2)
+AC_INIT(gnomevfs-obex, 1.9.2)
 AC_CONFIG_SRCDIR(obex-module/src/obex-method.c)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
@@ -29,10 +29,6 @@ AC_FUNC_REALLOC
 AC_FUNC_STRERROR_R
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([memset mkdir strdup strncasecmp opendir closedir readdir_r])
-
-AC_CHECK_FUNCS(getdtablesize open64 lseek64 statfs statvfs seteuid setegid setresuid setresgid readdir_r mbrtowc inet_pton getdelim sysctlbyname poll posix_fadvise fchmod atoll)
-AC_CHECK_MEMBERS([struct stat.st_blksize, struct stat.st_rdev])
-AC_STRUCT_ST_BLOCKS
 
 # Needed to build the obex module.
 AC_CACHE_CHECK([for off64_t],

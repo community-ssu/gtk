@@ -1,6 +1,6 @@
 #!/bin/sh
 
-PACKAGE="osso-gnomevfs-extra"
+PACKAGE="gnomevfs-obex"
 
 have_libtool=false
 have_autoconf=false

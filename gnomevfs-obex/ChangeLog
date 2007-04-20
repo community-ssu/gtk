@@ -1,3 +1,7 @@
+2007-04-20  Richard Hult  <richard@imendio.com>
+
+	* Package renamed from osso-gnomevfs-extra to gnomevfs-obex.
+
 2007-02-15  Richard Hult  <richard@imendio.com>
 
 	* obex-module/src/om-dbus.c (connection_free): Close the private

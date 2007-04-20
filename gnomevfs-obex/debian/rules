@@ -31,12 +31,9 @@ configure-stamp:
 	NOCONFIGURE=1 ./autogen.sh
 
 	./configure $(confflags) \
-		--prefix=/usr --sysconfdir=/etc \
-		--localstatedir=/var \
-		--with-doc-dir=$(CURDIR)/debian/tmp/usr/share/doc
+		--prefix=/usr --sysconfdir=/etc --localstatedir=/var
 
 	touch configure-stamp
-
 
 build: build-stamp
 build-stamp: configure-stamp 
@@ -71,7 +68,7 @@ binary-arch: install
 	dh_installchangelogs 
 	dh_installdocs README obex-module/README.unsupported obex-module/docs/*.txt
 	dh_link
-	dh_strip --dbg-package=osso-gnomevfs-extra
+	dh_strip --dbg-package=gnomevfs-obex
 	dh_compress
 	dh_fixperms
 	dh_makeshlibs -V
