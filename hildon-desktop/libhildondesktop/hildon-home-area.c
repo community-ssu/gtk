@@ -732,6 +732,8 @@ substract_rectangle_from_region (GList        *region,
                 }
 
             }
+          else
+            i = i->next;
         }
       else
         i = i->next;
