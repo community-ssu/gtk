@@ -1,5 +1,9 @@
 2007-04-20  Richard Hult  <richard@imendio.com>
 
+	* Release 1.9.4 (initial version with new name).
+
+	* configure.in: Bump version.
+
 	* Package renamed from osso-gnomevfs-extra to gnomevfs-obex.
 
 2007-02-15  Richard Hult  <richard@imendio.com>
