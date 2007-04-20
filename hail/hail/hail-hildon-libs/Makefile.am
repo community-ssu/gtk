@@ -2,15 +2,14 @@ if OS_WIN32
 no_undefined = -no-undefined
 endif
 
-module_LTLIBRARIES = libhail.la
+module_LTLIBRARIES = libhail_hildonlibs.la
 
-hail_c_sources =			\
-	hail.c \
+libhail_hildonlibs_la_SOURCES =			\
+	hail-hildon-libs.c \
 	hailcaption.c \
 	hailvolumebar.c \
 	hailweekdaypicker.c \
 	hailtimepicker.c \
-	hailfileselection.c \
 	hailfindtoolbar.c \
 	haildialog.c \
 	hailnumbereditor.c \
@@ -26,14 +25,13 @@ hail_c_sources =			\
 
 #libhailincludedir=$(includedir)/hail-1.0/hail
 
-hail_private_h_sources =		\
-	hail.h \
+libhail_hildonlibs_private_h_sources =		\
+	hail-hildon-libs.h \
 	hailcaption.h \
 	hailfindtoolbar.h \
 	hailvolumebar.h \
 	hailweekdaypicker.h \
 	hailtimepicker.h \
-	hailfileselection.h \
 	haildialog.h \
 	haildateeditor.h \
 	hailnumbereditor.h \
@@ -41,17 +39,16 @@ hail_private_h_sources =		\
 	hailrangeeditor.h \
 	hailcolorbutton.h \
 	hailwindow.h \
-	hailcodedialog.h \
-	hailfactory.h
+	hailcodedialog.h
 
 
 #	hailcolorchooser.h 
 
 hail_public_h_sources =
 
-libhail_la_SOURCES = 			\
-	$(hail_c_sources)		\
-	$(hail_private_h_sources)
+# libhail_la_SOURCES = 			\
+# 	$(hail_c_sources)		\
+# 	$(hail_private_h_sources)
 
 #libhailinclude_HEADERS =		\
 #	$(hail_public_h_sources)
@@ -61,13 +58,13 @@ INCLUDES = \
 	-DVERSION=\"$(VERSION)\" \
 	@DEP_CFLAGS@
 
-libhail_la_LIBADD =     \
+libhail_hildonlibs_la_LIBADD =     \
         @DEP_LIBS@	\
 	$(INTLLIBS) 
 
 moduledir = $(libdir)/gtk-2.0/modules
 
-libhail_la_LDFLAGS =    \
+libhail_hildonlibs_la_LDFLAGS =    \
 	-rpath $(moduledir) -module -avoid-version \
 	$(no_undefined)	\
         @LDFLAGS@
