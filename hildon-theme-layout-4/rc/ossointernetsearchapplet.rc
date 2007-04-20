@@ -12,7 +12,7 @@ style "osso-internetsearch-applet"
         {
           function = BOX
           file     = "../images/qgn_plat_home_search_bg.png"
-          border   = { 20, 20, 20, 20 }
+          border   = { 18, 18, 18, 18 }
         }
     }
 }
