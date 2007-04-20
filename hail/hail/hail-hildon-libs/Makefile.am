@@ -1,5 +1,3 @@
-SUBDIRS = hail-hildon-libs hail-hildon-fm hail-hildon-desktop
-
 if OS_WIN32
 no_undefined = -no-undefined
 endif
@@ -7,13 +5,47 @@ endif
 module_LTLIBRARIES = libhail.la
 
 hail_c_sources =			\
-	hail.c
+	hail.c \
+	hailcaption.c \
+	hailvolumebar.c \
+	hailweekdaypicker.c \
+	hailtimepicker.c \
+	hailfileselection.c \
+	hailfindtoolbar.c \
+	haildialog.c \
+	hailnumbereditor.c \
+	hailtimeeditor.c \
+	haildateeditor.c \
+	hailrangeeditor.c \
+	hailcolorbutton.c \
+	hailwindow.c \
+	hailcodedialog.c
 	
+#TODO
+#	hailcolorchooser.c
+
 #libhailincludedir=$(includedir)/hail-1.0/hail
 
 hail_private_h_sources =		\
 	hail.h \
+	hailcaption.h \
+	hailfindtoolbar.h \
+	hailvolumebar.h \
+	hailweekdaypicker.h \
+	hailtimepicker.h \
+	hailfileselection.h \
+	haildialog.h \
+	haildateeditor.h \
+	hailnumbereditor.h \
+	hailtimeeditor.h \
+	hailrangeeditor.h \
+	hailcolorbutton.h \
+	hailwindow.h \
+	hailcodedialog.h \
 	hailfactory.h
+
+
+#	hailcolorchooser.h 
 
 hail_public_h_sources =
 
@@ -31,9 +63,6 @@ INCLUDES = \
 
 libhail_la_LIBADD =     \
         @DEP_LIBS@	\
-	hail-hildon-libs/libhail_hildonlibs.la \
-	hail-hildon-fm/libhail_hildonfm.la \
-	hail-hildon-desktop/libhail_hildondesktop.la \
 	$(INTLLIBS) 
 
 moduledir = $(libdir)/gtk-2.0/modules

@@ -26,21 +26,3 @@
  */
 
 
-#include "hailappview.h"
-#include "hailcaption.h"
-#include "hailcodedialog.h"
-#include "hailcolorbutton.h"
-#include "hailcolorchooser.h"
-#include "haildateeditor.h"
-#include "haildialog.h"
-#include "hailfileselection.h"
-#include "hailfindtoolbar.h"
-#include "hailgrid.h"
-#include "hailgriditem.h"
-#include "hailnumbereditor.h"
-#include "hailrangeeditor.h"
-#include "hailtimeeditor.h"
-#include "hailtimepicker.h"
-#include "hailvolumebar.h"
-#include "hailweekdaypicker.h"
-#include "hailwindow.h"

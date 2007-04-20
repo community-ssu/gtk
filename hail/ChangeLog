@@ -1,3 +1,59 @@
+2007-04-13  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+        * configure.in:
+	Added hildon-desktop package dependency and Makefiles creation at
+	hail/hail-hildon-libs, hail/hail-hildon-fm and
+	hail/hail-hildon-desktop.
+
+	* hail/hail-hildon-libs/Makefile.am:
+	* hail/hail-hildon-libs/hail-hildon-libs.[ch]:
+	Added management for the hildon-libs a11y sub-module.
+
+	* hail/hailappview.[ch]:
+	* hail/hailcaption.[ch]:
+	* hail/hailcodedialog.[ch]:
+	* hail/hailcolorbutton.[ch]:
+	* hail/hailcolorselector.[ch]:
+	* hail/haildateeditor.[ch]:
+	* hail/haildialog.[ch]:
+	* hail/hailfindtoolbar.[ch]:
+	* hail/hailgrid.[ch]:
+	* hail/hailgriditem.[ch]:
+	* hail/hailnumbereditor.[ch]:
+	* hail/hailrangeeditor.[ch]:
+	* hail/hailtimeeditor.[ch]:
+	* hail/hailtimepicker.[ch]:
+	* hail/hailvolumebar.[ch]:
+	* hail/hailweekdaypicker.[ch]:
+	* hail/hailwindow.[ch]:
+	Moved hildon-libs a11y implementation to hail/hail-hildon-libs.
+
+	* hail/hail-hildon-fm/Makefile.am:
+	* hail/hail-hildon-fm/hail-hildon-fm.[ch]:
+	Added management for the hildon-fm a11y sub-module.
+
+	* hail/hailfileselection.[ch]:
+	Moved hildon-fm a11y implementation to hail/hail-hildon-fm.
+
+	* hail/hail-hildon-desktop/Makefile.am:
+	* hail/hail-hildon-desktop/hail-hildon-desktop.[ch]:
+	Added management for the hildon-desktop a11y sub-module.
+
+        * hail/hail-hildon-desktop/hailimagemenuitem.[ch]:
+	Added hildon-desktop HNAppMenuItem a11y implementation.
+
+	* hail/hail-hildon-desktop/haildesktopitem.[ch]:
+	* hail/hail-hildon-desktop/haildesktoppanelitem.[ch]:
+	Added hildon-desktop HildonDesktopItem hierarchy a11y implementation.
+
+	* hail/hail-hildon-desktop/haildesktoppanel.[ch]:
+	Added hildon-desktop HildonDesktopPanel hierarchy a11y implementation.
+	
+	* hail/hail-hildon-desktop/haildesktopwindow.[ch]:
+	* hail/hail-hildon-desktop/hailhomewindow.[ch]:
+	* hail/hail-hildon-desktop/haildesktoppanelwindow.[ch]:
+	Added hildon-desktop HildonDesktopWindow hierarchy a11y implementation.
+
 2007-03-21  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* ut/Makefile.am:
