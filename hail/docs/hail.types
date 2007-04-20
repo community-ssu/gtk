@@ -1,34 +1,34 @@
 
-#include <hail/hailcaption.h>
-#include <hail/hailappview.h>
-#include <hail/hailfindtoolbar.h>
-#include <hail/hailvolumebar.h>
-#include <hail/hailweekdaypicker.h>
-#include <hail/hailfileselection.h>
-#include <hail/haildialog.h>
-#include <hail/hailtimepicker.h>
-#include <hail/hailcolorselector.h>
-#include <hail/hailgriditem.h>
-#include <hail/haildateeditor.h>
-#include <hail/hailrangeeditor.h>
-#include <hail/hailcolorbutton.h>
-#include <hail/hailwindow.h>
-#include <hail/hailcodedialog.h>
-#include <hail/hailgrid.h>
-#include <hail/hailtimeeditor.h>
-#include <hail/hailnumbereditor.h>
+#include <hail/hail-hildon-libs/hailcaption.h>
+#include <hail/hail-hildon-libs/hailfindtoolbar.h>
+#include <hail/hail-hildon-libs/hailvolumebar.h>
+#include <hail/hail-hildon-libs/hailweekdaypicker.h>
+#include <hail/hail-hildon-libs/haildialog.h>
+#include <hail/hail-hildon-libs/hailtimepicker.h>
+#include <hail/hail-hildon-libs/haildateeditor.h>
+#include <hail/hail-hildon-libs/hailrangeeditor.h>
+#include <hail/hail-hildon-libs/hailcolorbutton.h>
+#include <hail/hail-hildon-libs/hailwindow.h>
+#include <hail/hail-hildon-libs/hailcodedialog.h>
+#include <hail/hail-hildon-libs/hailtimeeditor.h>
+#include <hail/hail-hildon-libs/hailnumbereditor.h>
+
+#include <hail/hail-hildon-fm/hailfileselection.h>
+
+#include <hail/hail-hildon-desktop/haildesktoppanel.h>
+#include <hail/hail-hildon-desktop/haildesktoppanelwindow.h>
+#include <hail/hail-hildon-desktop/hailhomewindow.h>
+#include <hail/hail-hildon-desktop/haildesktopitem.h>
+#include <hail/hail-hildon-desktop/haildesktoppanelitem.h>
+#include <hail/hail-hildon-desktop/haildesktopwindow.h>
+#include <hail/hail-hildon-desktop/hailimagemenuitem.h>
 
 hail_caption_get_type
-hail_app_view_get_type
 hail_find_toolbar_get_type
 hail_volume_bar_get_type
 hail_weekday_picker_get_type
-hail_file_selection_get_type
 hail_dialog_get_type
 hail_time_picker_get_type
-hail_color_selector_get_type
-hail_grid_item_get_type
-hail_grid_get_type
 hail_date_editor_get_type
 hail_range_editor_get_type
 hail_number_editor_get_type
@@ -36,3 +36,13 @@ hail_time_editor_get_type
 hail_color_button_get_type
 hail_window_get_type
 hail_code_dialog_get_type
+
+hail_file_selection_get_type
+
+hail_desktop_panel_get_type
+hail_desktop_panel_window_get_type
+hail_home_window_get_type
+hail_desktop_item_get_type
+hail_desktop_panel_item_get_type
+hail_desktop_window_get_type
+hail_image_menu_item_get_type

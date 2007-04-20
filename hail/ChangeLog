@@ -1,5 +1,11 @@
 2007-04-20  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
+	* docs/hail.types:
+	Removed old widget dependencies (app_view, grid, grid_item) and
+	updated new hail module structure (hail-hildon-libs & so).
+
+2007-04-20  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
 	* hailcaption_tests.c:
 	* hailcodedialog_tests.c:
 	* hailcolorbutton_tests.c:
