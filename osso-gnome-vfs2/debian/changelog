@@ -3,7 +3,7 @@ osso-gnome-vfs2 (2.16.3-1osso14) unstable; urgency=low
   * Added a patch 29 to fix upstream bug with umounting monitored uris 
   * Add missing #DEBHELPER# marker in libosso-gnomevfs2-common.postinst
 
- -- Richard Hult <richard@imendio.com>  Fri, 13 Apr 2007 09:42:07 +0200
+ -- Martyn Russell <martyn@imendio.com>  Fri, 20 Apr 2007 15:10:07 +0100
 
 osso-gnome-vfs2 (2.16.3-1osso13) unstable; urgency=low
 
