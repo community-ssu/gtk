@@ -1275,84 +1275,6 @@ gtk_scrolled_window_relative_allocation (GtkWidget     *widget,
     }
 }
 
-#ifdef MAEMO_CHANGES
-
-static gdouble
-gtk_scrolled_window_get_focus_movement (GtkScrolledWindow *scrolled_window)
-{
-  GtkWidget *focus_child;
-  GtkRange *range;
-  GtkAdjustment *adj;
-  gdouble value, new_value;
-  gint x, y;
-  gint border_width;
-
-  focus_child = GTK_CONTAINER (scrolled_window)->focus_child;
-  if (focus_child == NULL)
-     return 0;
-
-  while (GTK_IS_CONTAINER (focus_child) &&
-        GTK_CONTAINER (focus_child)->focus_child)
-    {
-      focus_child = GTK_CONTAINER (focus_child)->focus_child;
-    }
-
-  if (!gtk_widget_translate_coordinates (focus_child->parent,
-                                         GTK_WIDGET (scrolled_window),
-                                         focus_child->allocation.x,
-                                         focus_child->allocation.y, &x, &y))
-    return 0;
-
-  range = GTK_RANGE (scrolled_window->vscrollbar);
-  adj = range->adjustment;
-  value = gtk_adjustment_get_value (adj);
-
-  border_width = GTK_CONTAINER (scrolled_window)->border_width;
-
-  x -= border_width;
-  y -= border_width;
-
-  if (y < 0)
-    {
-      /* scroll up */
-      new_value = value + y;
-      if (new_value < adj->lower)
-       new_value = adj->lower;
-    }
-  else if (y + focus_child->allocation.height > adj->page_size)
-    {
-      /* scroll down */
-      new_value = value + y + focus_child->allocation.height - adj->page_size;
-      if (new_value > adj->upper - adj->page_size)
-        new_value = adj->upper - adj->page_size;
-    }
-  else
-    {
-      new_value = value;
-    }
-
-  return new_value - value;
-}
-
-static void
-gtk_scrolled_window_scroll_to_focus (GtkScrolledWindow *scrolled_window)
-{
-  GtkAdjustment *adj;
-  gdouble diff;
-
-  diff = gtk_scrolled_window_get_focus_movement (scrolled_window);
-  if (diff != 0)
-    {
-      adj = GTK_RANGE (scrolled_window->vscrollbar)->adjustment;
-
-      gtk_adjustment_set_value (adj, gtk_adjustment_get_value (adj) + diff);
-      gtk_scrolled_window_set_vadjustment (scrolled_window,
-                                          GTK_ADJUSTMENT (adj));
-    }
-}
-
-#endif /* MAEMO_CHANGES */
-
 static void
 gtk_scrolled_window_size_allocate (GtkWidget     *widget,
 				   GtkAllocation *allocation)
@@ -1363,20 +1285,12 @@ gtk_scrolled_window_size_allocate (GtkWidget     *widget,
   GtkAllocation relative_allocation;
   GtkAllocation child_allocation;
   gint scrollbar_spacing;
-#ifdef MAEMO_CHANGES
-  gboolean is_focus_visible;
-#endif /* MAEMO_CHANGES */
 
   g_return_if_fail (GTK_IS_SCROLLED_WINDOW (widget));
   g_return_if_fail (allocation != NULL);
 
   scrolled_window = GTK_SCROLLED_WINDOW (widget);
   bin = GTK_BIN (scrolled_window);
-
-#ifdef MAEMO_CHANGES
-  is_focus_visible =
-    gtk_scrolled_window_get_focus_movement (scrolled_window) == 0;
-#endif /* MAEMO_CHANGES */
 
   scrollbar_spacing = _gtk_scrolled_window_get_scrollbar_spacing (scrolled_window);
 
@@ -1513,11 +1427,6 @@ gtk_scrolled_window_size_allocate (GtkWidget     *widget,
 	}
 
       gtk_widget_size_allocate (scrolled_window->vscrollbar, &child_allocation);
-
-#ifdef MAEMO_CHANGES
-      if (is_focus_visible)
-        gtk_scrolled_window_scroll_to_focus (scrolled_window);
-#endif /* MAEMO_CHANGES */
     }
   else if (GTK_WIDGET_VISIBLE (scrolled_window->vscrollbar))
     gtk_widget_hide (scrolled_window->vscrollbar);
