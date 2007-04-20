@@ -9,9 +9,9 @@ Package: gnomevfs-obex
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}
-Replaces: osso-gnomevfs-backend
-Conflicts: osso-gnomevfs-backend
-Provides: osso-gnomevfs-backend
+Replaces: osso-gnomevfs-extra
+Conflicts: osso-gnomevfs-extra
+Provides: osso-gnomevfs-extra
 Description: GnomeVFS OBEX
  This package contains OBEX related extentions for GnomeVFS.
   * An OBEX GnomeVFS module
