@@ -31,7 +31,7 @@
 
 #include <gtk/gtkwidget.h>
 #include <hildon/hildon-code-dialog.h>
-#include <hail/hailcodedialog.h>
+#include <hail/hail-hildon-libs/hailcodedialog.h>
 #include <hail_tests_utils.h>
 
 #include <assert.h>

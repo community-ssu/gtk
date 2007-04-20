@@ -35,7 +35,7 @@
 #include <atk/atkvalue.h>
 #include <atk/atkimage.h>
 #include <hildon/hildon-color-button.h>
-#include <hail/hailcolorbutton.h>
+#include <hail/hail-hildon-libs/hailcolorbutton.h>
 
 #include <string.h>
 #include <assert.h>

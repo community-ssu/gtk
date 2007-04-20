@@ -32,7 +32,7 @@
 #include <atk/atkvalue.h>
 #include <atk/atkimage.h>
 #include <hildon/hildon-color-selector.h>
-#include <hail/hailcolorselector.h>
+#include <hail/hail-hildon-libs/hailcolorselector.h>
 
 #include <assert.h>
 #include <string.h>

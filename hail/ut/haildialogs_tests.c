@@ -38,8 +38,8 @@
 #include <hildon/hildon-note.h>
 #include <hildon/hildon-sort-dialog.h>
 #include <hildon/hildon-file-chooser-dialog.h>
-#include <hail/hailcaption.h>
-#include <hail/hailfileselection.h>
+#include <hail/hail-hildon-libs/hailcaption.h>
+#include <hail/hail-hildon-fm/hailfileselection.h>
 
 #include <assert.h>
 #include <string.h>

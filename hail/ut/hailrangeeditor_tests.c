@@ -32,7 +32,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <hildon/hildon-range-editor.h>
-#include <hail/hailrangeeditor.h>
+#include <hail/hail-hildon-libs/hailrangeeditor.h>
 
 #include <assert.h>
 #include <string.h>

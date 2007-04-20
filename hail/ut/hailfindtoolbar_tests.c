@@ -31,7 +31,7 @@
 
 #include <gtk/gtkwidget.h>
 #include <hildon/hildon-find-toolbar.h>
-#include <hail/hailfindtoolbar.h>
+#include <hail/hail-hildon-libs/hailfindtoolbar.h>
 
 #include <assert.h>
 #include <string.h>

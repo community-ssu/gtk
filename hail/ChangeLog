@@ -1,5 +1,25 @@
 2007-04-20  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
+	* hailcaption_tests.c:
+	* hailcodedialog_tests.c:
+	* hailcolorbutton_tests.c:
+	* hailcolorselector_tests.c:
+	* haildateeditor_tests.c:
+	* haildialogs_tests.c:
+	* hailfindtoolbar_tests.c:
+	* hailnumbereditor_tests.c:
+	* hailrangeeditor_tests.c:
+	* hailtimeeditor_tests.c:
+	* hailtimepicker_tests.c:
+	* hailvolumebar_tests.c:
+	* hailweekdaypicker_tests.c:
+	* hailwindow_tests.c:
+	* hailfileselection_tests.c:
+	Fixed the calls to hail includes according to the new
+	structure (hail-hildon-libs & hail-hildon-fm).
+
+2007-04-20  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
 	* configure.in: Bump version to 1.2.1
 
 2007-04-13  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>

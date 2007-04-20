@@ -32,7 +32,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <hildon/hildon-time-editor.h>
-#include <hail/hailtimeeditor.h>
+#include <hail/hail-hildon-libs/hailtimeeditor.h>
 
 #include <assert.h>
 #include <string.h>

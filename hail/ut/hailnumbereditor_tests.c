@@ -32,7 +32,7 @@
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <hildon/hildon-number-editor.h>
-#include <hail/hailnumbereditor.h>
+#include <hail/hail-hildon-libs/hailnumbereditor.h>
 
 #include <stdlib.h>
 #include <assert.h>

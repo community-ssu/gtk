@@ -37,7 +37,7 @@
 #include <gtk/gtktoolbutton.h>
 #include <hildon/hildon-window.h>
 #include <hildon/hildon-program.h>
-#include <hail/hailwindow.h>
+#include <hail/hail-hildon-libs/hailwindow.h>
 
 #include <string.h>
 #include <assert.h>

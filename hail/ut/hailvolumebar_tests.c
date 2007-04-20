@@ -32,7 +32,7 @@
 #include <gtk/gtkwindow.h>
 #include <hildon/hildon-hvolumebar.h>
 #include <hildon/hildon-vvolumebar.h>
-#include <hail/hailvolumebar.h>
+#include <hail/hail-hildon-libs/hailvolumebar.h>
 
 #include <hail_tests_utils.h>
 #include <assert.h>

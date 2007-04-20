@@ -34,7 +34,7 @@
 #include <atk/atkaction.h>
 #include <atk/atktext.h>
 #include <hildon/hildon-date-editor.h>
-#include <hail/haildateeditor.h>
+#include <hail/hail-hildon-libs/haildateeditor.h>
 #include <hail_tests_utils.h>
 
 #include <assert.h>

@@ -31,7 +31,7 @@
 
 #include <gtk/gtkentry.h>
 #include <hildon/hildon-caption.h>
-#include <hail/hailcaption.h>
+#include <hail/hail-hildon-libs/hailcaption.h>
 #include <gtk/gtkwidget.h>
 #include <gtk/gtkwindow.h>
 #include <gtk/gtklabel.h>
