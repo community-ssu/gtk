@@ -1025,6 +1025,29 @@ void pkgAcqMetaIndex::AuthDone(string Message)
       URItoFileName(RealURI) + ".gpg";
    Rename(SigFile,VerifiedSigFile);
    chmod(VerifiedSigFile.c_str(),0644);
+
+   // Record what gpgv had to say about it
+
+   string SigInfoFile = _config->FindDir("Dir::State::lists") +
+      URItoFileName(RealURI) + ".gpg.info";
+   string GPGVOutput = LookupTag (Message,"GPGVOutput");
+   FILE *f = fopen (SigInfoFile.c_str(), "w");
+   if (f)
+     {
+       fputs (GPGVOutput.c_str(), f);
+       fputc ('\n', f);
+       fclose (f);
+     }
+   else
+     std::cerr << "Can't write info file: "
+	       << SigInfoFile << ": "
+	       << strerror (errno) << "\n";
+}
+
+bool pkgAcqMetaIndex::IsMyFile (string file)
+{
+  return (Item::IsYourFile (file)
+	  || file == flNotDir (DestFile) + ".gpg.info");
 }
 
 void pkgAcqMetaIndex::QueueIndexes(bool verify)

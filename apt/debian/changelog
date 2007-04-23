@@ -1,3 +1,11 @@
+apt (0.6.46.4.osso3) unstable; urgency=low
+
+  * Applied gpgvinfo.patch that causes the output of gpgv to be recorded
+    in a /var/lib/apt/lists/foo.gpg.info file.  This is used for the trust
+    domains in the Hildon Application Manager.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 23 Apr 2007 14:43:37 +0300
+
 apt (0.6.46.4.osso2) unstable; urgency=low
 
   * Applied gcc3-bug.patch which a long time ago did help against a

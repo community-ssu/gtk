@@ -439,8 +439,8 @@ bool pkgAcquire::Clean(string Dir)
       // Look in the get list
       ItemCIterator I = Items.begin();
       for (; I != Items.end(); I++)
-	 if (flNotDir((*I)->DestFile) == Dir->d_name)
-	    break;
+	if ((*I)->IsMyFile (Dir->d_name))
+	  break;
       
       // Nothing found, nuke it
       if (I == Items.end())

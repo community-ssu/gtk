@@ -77,7 +77,9 @@ class pkgAcquire::Item
    virtual string MD5Sum() {return string();};
    pkgAcquire *GetOwner() {return Owner;};
    virtual bool IsTrusted() {return false;};
-   
+   virtual bool IsMyFile(string file)
+     { return file == flNotDir (DestFile); }
+
    Item(pkgAcquire *Owner);
    virtual ~Item();
 };
@@ -231,6 +233,7 @@ class pkgAcqMetaIndex : public pkgAcquire::Item
 		     pkgAcquire::MethodConfig *Cnf);
    virtual string Custom600Headers();
    virtual string DescURI() {return RealURI; };
+   virtual bool IsMyFile (string file);
 
    pkgAcqMetaIndex(pkgAcquire *Owner,
 		   string URI,string URIDesc, string ShortDesc,
