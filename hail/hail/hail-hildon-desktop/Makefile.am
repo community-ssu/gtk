@@ -12,7 +12,10 @@ libhail_hildondesktop_la_SOURCES =		\
 	haildesktoppanelitem.c			\
 	haildesktopwindow.c			\
 	hailhomewindow.c			\
-	haildesktoppanelwindow.c		
+	haildesktoppanelwindow.c		\
+	hailtogglebutton.c			\
+	hailhomearea.c				\
+	hailhometitlebar.c
 	
 libhail_hildondesktop_private_h_sources =	\
 	hail-hildon-desktop.h			\
@@ -22,7 +25,10 @@ libhail_hildondesktop_private_h_sources =	\
 	haildesktoppanelitem.h			\
 	haildesktopwindow.h			\
 	hailhomewindow.h			\
-	haildesktoppanelwindow.h
+	haildesktoppanelwindow.h		\
+	hailtogglebutton.h			\
+	hailhomearea.h				\
+	hailhometitlebar.h
 
 #hail_public_h_sources =
 

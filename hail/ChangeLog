@@ -1,3 +1,21 @@
+2007-04-23  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hail/hail-hildon-desktop/Makefile.am:
+	* hail/hail-hildon-desktop/hail-hildon-desktop.c:
+	Added the management for the new a11y added.
+
+        * hail/hail-hildon-desktop/hailtogglebutton.[ch]:
+        Added HNAppButton a11y implementation.
+
+        * hail/hail-hildon-desktop/hailhometitlebar.[ch]:
+        Added HildonHomeTitlebar a11y implementation.
+
+        * hail/hail-hildon-desktop/hailhomearea.[ch]:
+        Added HildonHomeArea a11y implementation.
+
+	* hail/hail-hildon-desktop/haildesktopitem.c:
+	Fixed the value for the default description string.
+
 2007-04-20  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* docs/hail.types:
