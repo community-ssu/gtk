@@ -77,6 +77,12 @@ hildon_desktop_popup_window_new (guint n_panes,
 GtkWidget *
 hildon_desktop_popup_window_get_pane (HildonDesktopPopupWindow *popup, gint pane);
 
+GtkWidget *
+hildon_desktop_popup_window_get_grabbed_pane (HildonDesktopPopupWindow *popup);
+
+void 
+hildon_desktop_popup_window_jump_to_pane (HildonDesktopPopupWindow *popup, gint pane);
+
 void 
 hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 				   HDPopupWindowPositionFunc func,

@@ -67,7 +67,7 @@ static void hildon_desktop_popup_window_hide (GtkWidget *widget);
 static void hildon_desktop_popup_window_show_all (GtkWidget *widget);
 static void hildon_desktop_popup_window_hide_all (GtkWidget *widget);
 
-static gboolean hildon_desktop_popup_window_enter_notify (GtkWidget *widget, GdkEventCrossing *event);
+static gboolean hildon_desktop_popup_window_motion_notify (GtkWidget *widget, GdkEventMotion *event);
 static gboolean hildon_desktop_popup_window_leave_notify (GtkWidget *widget, GdkEventCrossing *event);
 
 static gboolean hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
@@ -77,6 +77,12 @@ static gboolean hildon_desktop_popup_window_visibility_notify (GtkWidget        
 static gboolean hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
 						     		     GdkEventCrossing *event,
 						     		     HildonDesktopPopupWindow *popup);
+
+static gboolean hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
+		                                                       GdkEventButton *event,
+	                                                               HildonDesktopPopupWindow *popup);
+
+static gboolean popup_grab_on_window (GdkWindow *window, guint32 activate_time, gboolean grab_keyboard);
 
 static gboolean
 hildon_desktop_popup_window_button_release_event (GtkWidget *widget, GdkEventButton *event);
@@ -92,6 +98,7 @@ struct _HildonDesktopPopupWindowPrivate
   gpointer			    position_func_data;
 
   gboolean 			    have_xgrab;
+  GtkWidget 			   *pane_with_grab;
 
   GtkWidget			   *attached_widget;
 };
@@ -104,8 +111,9 @@ hildon_desktop_popup_window_init (HildonDesktopPopupWindow *popup)
   popup->priv->extra_panes   = NULL;
   popup->priv->n_extra_panes = 0;
 
-  popup->priv->have_xgrab = FALSE;
+  popup->priv->have_xgrab = FALSE; 
 
+  popup->priv->pane_with_grab  =
   popup->priv->attached_widget = NULL;
 }
 
@@ -119,7 +127,7 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_cla
   object_class->set_property = hildon_desktop_popup_window_set_property;
   object_class->get_property = hildon_desktop_popup_window_get_property;
 
-  widget_class->enter_notify_event      = hildon_desktop_popup_window_enter_notify;
+  widget_class->motion_notify_event     = hildon_desktop_popup_window_motion_notify;
   widget_class->leave_notify_event      = hildon_desktop_popup_window_leave_notify;
   widget_class->button_release_event    = hildon_desktop_popup_window_button_release_event;
 
@@ -202,6 +210,11 @@ hildon_desktop_popup_window_constructor (GType gtype,
     gtk_window_set_type_hint (GTK_WINDOW (popup->priv->extra_panes[i]),
 		    	      GDK_WINDOW_TYPE_HINT_MENU);
 
+    g_signal_connect (popup->priv->extra_panes[i],
+		      "button-release-event",
+		      G_CALLBACK (hildon_desktop_popup_window_composited_button_release),
+		      (gpointer)popup); 
+    
     g_signal_connect (popup->priv->extra_panes[i],
 		      "leave-notify-event",
 		      G_CALLBACK (hildon_desktop_popup_window_composited_leave_notify),
@@ -289,19 +302,49 @@ hildon_desktop_popup_window_hide_all (GtkWidget *widget)
     gtk_widget_hide_all (popup->priv->extra_panes[i]);
 }
 
-static gboolean
-hildon_desktop_popup_window_enter_notify (GtkWidget        *widget,
-		                          GdkEventCrossing *event)
+static gboolean 
+hildon_desktop_popup_window_motion_notify (GtkWidget      *widget,
+                                           GdkEventMotion *event)
 {
   HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);
+  gboolean in_panes_area = FALSE;
+  gint w,h,x,y,i;
 
-  g_debug ("%s enter_notify %p",__FILE__,popup);
-  /* We have to grab the pointer in here, we should get this when we come from
-   * a composited window
-   */ 
+  w = widget->allocation.width;
+  h = widget->allocation.height;
+
+  gtk_widget_get_pointer (widget, &x, &y);
+
+  if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    in_panes_area = TRUE;
+
+  if (!in_panes_area)
+  {	  
+    for (i=0; i < popup->priv->n_extra_panes; i++)
+    {
+      w = popup->priv->extra_panes[i]->allocation.width;
+      h = popup->priv->extra_panes[i]->allocation.height;
+
+      gtk_widget_get_pointer (popup->priv->extra_panes[i], &x, &y);
+
+      if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+      {	       
+        gtk_grab_remove (widget);		 
+	 
+        popup_grab_on_window
+         (popup->priv->extra_panes[i]->window, GDK_CURRENT_TIME, TRUE);
+
+        gtk_grab_add (popup->priv->extra_panes[i]);
+
+        popup->priv->pane_with_grab = popup->priv->extra_panes[i];
+	popup->priv->have_xgrab = FALSE;
+	
+	break;
+      }
+    }
+  }
   
-  return 
-    GTK_WIDGET_CLASS (hildon_desktop_popup_window_parent_class)->enter_notify_event (widget, event);	
+  return TRUE; 
 }
 
 static gboolean 
@@ -309,22 +352,97 @@ hildon_desktop_popup_window_leave_notify (GtkWidget        *widget,
 					  GdkEventCrossing *event)
 {
   HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);
+  gint w,h,x,y,i;
+  gboolean in_panes_area = FALSE;
 
  /* We have to ungrab the pointer in here, we should get this when we go to
   * a composited window
   */
-  g_debug ("%s leave_notify %p",__FILE__,popup);
+
+  for (i=0; i < popup->priv->n_extra_panes; i++)
+  {
+    w = popup->priv->extra_panes[i]->allocation.width;
+    h = popup->priv->extra_panes[i]->allocation.height;
+
+    gtk_widget_get_pointer (popup->priv->extra_panes[i], &x, &y);
+
+    if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    {	    
+      in_panes_area = TRUE;
+      break;
+    }
+  }
+
+  if (in_panes_area)
+  {	  
+    gtk_grab_remove (GTK_WIDGET (popup));
+ 
+    popup_grab_on_window 
+      (popup->priv->extra_panes[i]->window, GDK_CURRENT_TIME, TRUE);
+
+    gtk_grab_add (popup->priv->extra_panes[i]);
+
+    popup->priv->pane_with_grab = popup->priv->extra_panes[i];
+    popup->priv->have_xgrab = FALSE;
+  }
   
   return 
     GTK_WIDGET_CLASS (hildon_desktop_popup_window_parent_class)->leave_notify_event (widget, event);	
 }
 
-static gboolean 
+static gboolean
 hildon_desktop_popup_window_composited_leave_notify (GtkWidget *widget,
-						     GdkEventCrossing *event,
-						     HildonDesktopPopupWindow *popup)
+                                                     GdkEventCrossing *event,
+                                                     HildonDesktopPopupWindow *popup)
 {
+  gint w,h,x,y,i;
+  gboolean in_panes_area = FALSE;
+  
+  for (i=0; i < popup->priv->n_extra_panes; i++)
+  {
+    w = popup->priv->extra_panes[i]->allocation.width;
+    h = popup->priv->extra_panes[i]->allocation.height;
+    
+    gtk_widget_get_pointer (popup->priv->extra_panes[i], &x, &y);
+       
+    if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    {	    
+      in_panes_area = TRUE;
+      break;
+    }
+  }
+  
+  if (in_panes_area)
+  {
+    gtk_grab_remove (widget);
 
+    popup_grab_on_window
+      (popup->priv->extra_panes[i]->window, GDK_CURRENT_TIME, TRUE);
+
+    gtk_grab_add (popup->priv->extra_panes[i]);
+
+    popup->priv->pane_with_grab = popup->priv->extra_panes[i];
+    popup->priv->have_xgrab = FALSE;
+  }
+  else
+  {
+    gtk_widget_get_pointer (GTK_WIDGET (popup), &x, &y);
+
+    w = GTK_WIDGET (popup)->allocation.width;
+    h = GTK_WIDGET (popup)->allocation.height;
+
+    if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    {
+     gtk_grab_remove (widget);
+
+     popup_grab_on_window (GTK_WIDGET (popup)->window, GDK_CURRENT_TIME, TRUE);
+
+     gtk_grab_add (GTK_WIDGET (popup));
+
+     popup->priv->pane_with_grab = NULL;
+     popup->priv->have_xgrab = TRUE;
+    }
+  }
 
   return TRUE;
 }
@@ -336,7 +454,6 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 {
   HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (widget);
 
-  g_debug ("%s visibility_notify %p",__FILE__,popup);
   /* We have to close every window when called this but also we have to 
    * track if our composited windows are not the responsibles for the 
    * visibility-notify
@@ -399,6 +516,60 @@ hildon_desktop_popup_window_visibility_notify (GtkWidget          *widget,
 }
 
 static gboolean
+hildon_desktop_popup_window_composited_button_release (GtkWidget *widget,
+                                                       GdkEventButton *event,
+                                                       HildonDesktopPopupWindow *popup)
+{
+  gboolean in_panes_area  = FALSE,
+           in_window_area = FALSE;
+  gint x,y,w,h,i;
+
+  if (!event)
+    return FALSE;
+
+  gtk_widget_get_pointer (widget, &x, &y);
+
+  w = widget->allocation.width;
+  h = widget->allocation.height;
+
+  if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    in_panes_area = TRUE;
+  else
+  {
+     w = GTK_WIDGET (popup)->allocation.width;
+     h = GTK_WIDGET (popup)->allocation.height;
+
+     gtk_widget_get_pointer (widget, &x, &y);
+
+     if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+       in_window_area = TRUE;
+
+     for (i=0; i < popup->priv->n_extra_panes; i++)
+     {
+       if (widget != popup->priv->extra_panes[i])
+       {
+         w = popup->priv->extra_panes[i]->allocation.width;
+         h = popup->priv->extra_panes[i]->allocation.height;
+
+         gtk_widget_get_pointer (popup->priv->extra_panes[i], &x, &y);
+
+         if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+         {		 
+           in_panes_area = TRUE;
+           break;
+	 }
+       }
+     }
+  }
+
+  /* Event outside of popup or in button area, close in clean way */
+  if (!in_panes_area || in_window_area)
+    hildon_desktop_popup_window_popdown (popup);
+
+  return TRUE;
+}
+
+static gboolean
 hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
                                                   GdkEventButton *event)
 {
@@ -415,7 +586,6 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
   w = widget->allocation.width;
   h = widget->allocation.height;
 
-  /* Pointer on window popup area */
   if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
     in_window_area = TRUE;
   else
@@ -427,7 +597,6 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
 
        gtk_widget_get_pointer (popup->priv->extra_panes[i], &x, &y);
 
-       /* Pointer on button area  */
        if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
          in_panes_area = TRUE;
 
@@ -630,6 +799,67 @@ hildon_desktop_popup_window_get_pane (HildonDesktopPopupWindow *popup, gint pane
     return popup->priv->extra_panes [pane];
 }	
 
+GtkWidget *
+hildon_desktop_popup_window_get_grabbed_pane (HildonDesktopPopupWindow *popup)
+{
+  g_assert (HILDON_DESKTOP_IS_POPUP_WINDOW (popup));
+
+  if (popup->priv->pane_with_grab)
+    return popup->priv->pane_with_grab;
+  else
+    return GTK_WIDGET (popup->priv->pane_with_grab);	   
+}	
+
+void
+hildon_desktop_popup_window_jump_to_pane (HildonDesktopPopupWindow *popup, gint pane)
+{
+  g_assert (HILDON_DESKTOP_IS_POPUP_WINDOW (popup));
+
+  if (pane >= popup->priv->n_extra_panes)
+    pane = popup->priv->n_extra_panes -1;	  
+	
+  if (GTK_WIDGET_VISIBLE (GTK_WIDGET (popup)))
+  {
+    if (pane <= -1)
+    {
+      if (popup->priv->have_xgrab)	    
+        return;
+      else
+      {
+        gtk_grab_remove (popup->priv->pane_with_grab);	      
+
+	popup_grab_on_window (GTK_WIDGET (popup)->window, GDK_CURRENT_TIME, TRUE);
+
+        gtk_grab_add (GTK_WIDGET (popup));
+
+        popup->priv->pane_with_grab = NULL;
+        popup->priv->have_xgrab = TRUE;
+      }
+    }
+    else
+    {
+      GtkWidget *widget_with_grab;
+	    
+      if (popup->priv->have_xgrab)
+        widget_with_grab = GTK_WIDGET (popup);
+      else
+        widget_with_grab = popup->priv->pane_with_grab;	      
+      	
+      if (widget_with_grab == popup->priv->extra_panes[pane])
+        return;
+      
+      gtk_grab_remove (widget_with_grab);
+
+      popup_grab_on_window (popup->priv->extra_panes[pane]->window, GDK_CURRENT_TIME, TRUE);
+
+      gtk_grab_add (popup->priv->extra_panes[pane]);
+
+      popup->priv->pane_with_grab = popup->priv->extra_panes[pane];
+      popup->priv->have_xgrab = FALSE;	
+    }	    
+  }
+}	
+
 void 
 hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 				   HDPopupWindowPositionFunc func,
@@ -677,8 +907,13 @@ hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 void 
 hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup)
 {
+  gint i;
+	
   gtk_widget_hide (GTK_WIDGET (popup));
 
   gtk_grab_remove (GTK_WIDGET (popup));
+
+  for (i=0; i < popup->priv->n_extra_panes; i++)
+    gtk_grab_remove (popup->priv->extra_panes[i]);	  
 }
 

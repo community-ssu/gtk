@@ -1,3 +1,9 @@
+2007-04-23  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-window.[ch]:
+	- Added new methods to access panes.
+	- Fixed behavior.
+
 2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.8
