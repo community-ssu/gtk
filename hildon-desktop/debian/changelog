@@ -1,3 +1,39 @@
+hildon-desktop (0.0.8-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-desktop-popup-window.[ch]:
+  - Fixed a lot of issues to get it built.
+  * libhildondesktop/Makefile.am:
+  - Added HildonDesktopPopupWindow to building batch
+
+  * libhildondesktop/hildon-home-area.c:
+  - fixed an infinite loop in some situations.
+  Fixes: NB#53973
+
+  * libhildondesktop/hildon-desktop-popup-window.[ch]:
+  - Added stubs for new popup window.
+  * libhildondesktop/hildon-desktop-notification-manager.[ch]:
+  * libhildondesktop/hildon-desktop-panel-expandable.[ch]:
+  * libhildondesktop/hildon-desktop-panel-window-dialog.[ch}:
+  - fixed (c) year
+
+  * libhildondesktop/hildon-desktop-notification-manager.[ch],
+  libhildondesktop/notification-manager.xml: implemented notification 
+  action and close support in the notification manager. Changed public 
+  API to make it saner for direct use.
+
+  * libhildonwm/hd-wm.c:
+  - No add parameters to awake a bgkilled process. Fixes: NB#54499
+
+  * libhildonwm/hd-keys.[ch]:
+  - Added new actions as stubs.
+  * libhildonwm/hd-wm.[ch]:
+  - Implemented switching among windows from the same application.
+
+  * debian/control: build dependency on hildon-1 or hildon-libs to be 
+  more Bora build friendly.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon, 23 Apr 2007 10:19:02 +0300
+
 hildon-desktop (0.0.7-1) sardine; urgency=low
 
   * src/hn-app-switcher.c:
