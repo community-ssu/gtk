@@ -30,6 +30,7 @@
 #include "hildon-desktop-notification-manager.h"
 #include "hildon-desktop-notification-service.h"
 
+#include <string.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_PRIVATE(object) \
@@ -117,7 +118,6 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
   dbus_g_connection_register_g_object (nm->priv->connection,
                                        HILDON_DESKTOP_NOTIFICATION_MANAGER_DBUS_PATH,
                                        G_OBJECT (nm));
-
 }
 
 static void
@@ -206,7 +206,7 @@ hildon_desktop_notification_manager_notification_closed (HildonDesktopNotificati
 
   message = hildon_desktop_notification_manager_create_signal (nm, id, "NotificationClosed");
 
-  g_assert (message != NULL); 
+  if (message == NULL) return;
 
   dbus_connection_send (dbus_g_connection_get_connection (nm->priv->connection), 
 		        message, 
@@ -243,23 +243,44 @@ hildon_desktop_notification_manager_get_singleton (void)
   return GTK_LIST_STORE (nm);
 }
 
+static void                            
+hint_value_free (GValue *value)
+{
+  g_value_unset (value);
+  g_free (value);
+}
+
+static void 
+copy_hash_table_item (gchar *key, GValue *value, GHashTable *new_hash_table)
+{
+  GValue *value_copy = g_new0 (GValue, 1);
+
+  value_copy = g_value_init (value_copy, G_VALUE_TYPE (value));
+  
+  g_value_copy (value, value_copy);
+
+  g_hash_table_insert (new_hash_table, g_strdup (key), value_copy);
+}
+
 gboolean
-hildon_desktop_notification_manager_add_notification (HildonDesktopNotificationManager *nm,
-                                        	      const gchar           *app_name,
-                                        	      guint                  id,
-                                        	      const gchar           *icon,
-                                        	      const gchar           *summary,
-                                        	      const gchar           *body,
-                                        	      gchar                **actions,
-                                        	      GHashTable            *hints,
-                                        	      gint                   timeout, 
-                                        	      DBusGMethodInvocation *context)
+hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm,
+                                            const gchar           *app_name,
+                                            guint                  id,
+                                            const gchar           *icon,
+                                            const gchar           *summary,
+                                            const gchar           *body,
+                                            gchar                **actions,
+                                            GHashTable            *hints,
+                                            gint                   timeout, 
+                                            DBusGMethodInvocation *context)
 {
   GtkTreeIter iter,*iter_timeout;
   GError *error = NULL;
   GdkPixbuf *pixbuf = NULL;
   GtkIconTheme *icon_theme;
-
+  GHashTable *hints_copy;
+  gint i;
+  
   if (!g_str_equal (icon, ""))
   {
     if (g_file_test (icon, G_FILE_TEST_EXISTS))
@@ -276,6 +297,7 @@ hildon_desktop_notification_manager_add_notification (HildonDesktopNotificationM
     else
     {	    
       icon_theme = gtk_icon_theme_get_default ();
+
       pixbuf = gtk_icon_theme_load_icon (icon_theme,
                                          icon,
                                          32,
@@ -303,6 +325,26 @@ hildon_desktop_notification_manager_add_notification (HildonDesktopNotificationM
         nm->priv->current_id = 0;
     }
 
+    /* Test if we have a valid list of actions */
+    for (i = 0; actions[i] != NULL; i += 2)
+    {
+      gchar *label = actions[i + 1];
+      
+      if (label == NULL)
+      {
+        g_warning ("Invalid action list: no label provided for action %s", actions[i]);
+
+        break;
+      }
+    }
+
+    hints_copy = g_hash_table_new_full (g_str_hash, 
+	  		                g_str_equal,
+			                (GDestroyNotify) g_free,
+			                (GDestroyNotify) hint_value_free);
+
+    g_hash_table_foreach (hints, (GHFunc) copy_hash_table_item, hints_copy);
+
     gtk_list_store_set (GTK_LIST_STORE (nm),
 		        &iter,
 		        HD_NM_COL_APPNAME, app_name,
@@ -311,11 +353,11 @@ hildon_desktop_notification_manager_add_notification (HildonDesktopNotificationM
 		        HD_NM_COL_ICON, pixbuf,
 		        HD_NM_COL_SUMMARY, summary,
 		        HD_NM_COL_BODY, body,
-		        HD_NM_COL_ACTIONS, actions,
-		        HD_NM_COL_HINTS, hints,
+		        HD_NM_COL_ACTIONS, g_strdupv (actions),
+		        HD_NM_COL_HINTS, hints_copy,
 		        HD_NM_COL_TIMEOUT, timeout,
 			HD_NM_COL_REMOVABLE, TRUE,
-			HD_NM_COL_SENDER, g_strdup (dbus_g_method_get_sender (context)),
+			HD_NM_COL_SENDER, dbus_g_method_get_sender (context),
 		        -1);
   }
   else 
@@ -349,7 +391,7 @@ hildon_desktop_notification_manager_add_notification (HildonDesktopNotificationM
 gboolean
 hildon_desktop_notification_manager_get_capabilities  (HildonDesktopNotificationManager *nm, gchar ***caps)
 {
-  *caps = g_new0(gchar *, 4);
+  *caps = g_new0 (gchar *, 4);
  
   (*caps)[0] = g_strdup ("body");
   (*caps)[1] = g_strdup ("body-markup");
@@ -379,7 +421,6 @@ hildon_desktop_notification_manager_close_notification (HildonDesktopNotificatio
                                                     	guint                  id, 
                                                     	GError               **error)
 {
-
   GtkTreeIter iter;
   gboolean removable = TRUE;
 
@@ -413,12 +454,170 @@ hildon_desktop_notification_manager_close_notification (HildonDesktopNotificatio
     return FALSE;
 }
 
+static guint
+parse_parameter (GScanner *scanner, DBusMessage *message)
+{
+  GTokenType value_token;
+	
+  g_scanner_get_next_token (scanner);
+
+  if (scanner->token != G_TOKEN_IDENTIFIER)
+  {
+    return G_TOKEN_IDENTIFIER;
+  }
+
+  if (g_str_equal (scanner->value.v_identifier, "string"))
+  {
+    value_token = G_TOKEN_STRING;
+  }
+  else if (g_str_equal (scanner->value.v_identifier, "int"))
+  {
+    value_token = G_TOKEN_INT;
+  }
+  else if (g_str_equal (scanner->value.v_identifier, "double"))
+  {
+    value_token = G_TOKEN_FLOAT;
+  } 
+  else
+  {
+    return G_TOKEN_IDENTIFIER;
+  }
+
+  g_scanner_get_next_token (scanner);
+
+  if (scanner->token != ':')
+  {
+    return ':';
+  }
+
+  g_scanner_get_next_token (scanner);
+
+  if (scanner->token != value_token)
+  {
+    return value_token;
+  }
+  else 
+  {
+    switch (value_token)
+    {
+      case G_TOKEN_STRING:
+        dbus_message_append_args (message,
+                                  DBUS_TYPE_STRING, &scanner->value.v_string,
+                                  DBUS_TYPE_INVALID);
+        break;
+      case G_TOKEN_INT:
+        dbus_message_append_args (message,
+                                  DBUS_TYPE_INT32, &scanner->value.v_int,
+                                  DBUS_TYPE_INVALID);
+        break;
+      case G_TOKEN_FLOAT:
+        dbus_message_append_args (message,
+                                  DBUS_TYPE_DOUBLE, &scanner->value.v_float,
+                                  DBUS_TYPE_INVALID);
+        break;
+      default:
+	return value_token;
+    }
+  }
+
+  return G_TOKEN_NONE;
+}
+
+static DBusMessage *
+hildon_desktop_notification_manager_message_from_desc (HildonDesktopNotificationManager *nm,
+                                                       const gchar *desc)
+{
+  DBusMessage *message;
+  gchar **message_elements;
+  gint n_elements;
+  
+  message_elements = g_strsplit (desc, " ", 5);
+
+  n_elements = g_strv_length (message_elements);
+  
+  if (n_elements < 4)
+  {
+    g_warning ("Invalid notification D-Bus callback description.");
+
+    return NULL;
+  } 
+
+  message = dbus_message_new_method_call (message_elements[0], 
+		                          message_elements[1], 
+					  message_elements[2], 
+					  message_elements[3]);
+
+  if (n_elements > 4)
+  {
+    GScanner *scanner;
+    guint expected_token;
+
+    scanner = g_scanner_new (NULL);
+
+    g_scanner_input_text (scanner, 
+                          message_elements[4], 
+                          strlen (message_elements[4]));
+
+    do
+    {
+      expected_token = parse_parameter (scanner, message);
+
+      g_scanner_peek_next_token (scanner);
+    }
+    while (expected_token == G_TOKEN_NONE &&
+           scanner->next_token != G_TOKEN_EOF &&
+           scanner->next_token != G_TOKEN_ERROR);
+
+    if (expected_token != G_TOKEN_NONE)
+    {
+      g_warning ("Invalid list of parameters for the notification D-Bus callback.");
+
+      return NULL;
+    }
+
+    g_scanner_destroy (scanner);
+  }
+
+  return message;
+}
+
 void
 hildon_desktop_notification_manager_call_action (HildonDesktopNotificationManager *nm,
                                                  guint                             id,
 				                 const gchar                      *action_id)
 {
-  DBusMessage *message;
+  DBusMessage *message = NULL;
+
+  if (g_str_equal (action_id, "default")) 
+  {
+    GHashTable *hints; 
+    GtkTreeIter iter;
+
+    if (hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
+    {
+      GValue *dbus_cb;
+	    
+      gtk_tree_model_get (GTK_TREE_MODEL (nm),
+                          &iter,
+                          HD_NM_COL_HINTS, &hints,
+                          -1);
+
+      dbus_cb = (GValue *) g_hash_table_lookup (hints, "dbus-callback");
+
+      if (dbus_cb != NULL)
+      {
+        message = hildon_desktop_notification_manager_message_from_desc (nm, 
+			              (const gchar *) g_value_get_string (dbus_cb));
+      }
+
+      if (message != NULL)
+      {
+        dbus_connection_send (dbus_g_connection_get_connection (nm->priv->connection), 
+			      message, 
+			      NULL);
+      }
+    }
+  }
 
   message = hildon_desktop_notification_manager_create_signal (nm, id, "ActionInvoked");
 

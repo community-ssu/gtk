@@ -1,3 +1,14 @@
+2007-04-23  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/notification-manager.xml: renamed
+	hildon_desktop_notification_manager_add_notification to
+	hildon_desktop_notification_manager_notify.
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]: added
+	support for D-Bus callbacks (with basic types parameters) on notifications 
+	backend. The callback description goes through a "dbus-callback" hint.
+	The D-Bus callback is called as the default action if defined. Fixed some 
+	memory management problems.
+
 2007-04-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-window.c:

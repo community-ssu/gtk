@@ -7,7 +7,7 @@
     <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="HildonDesktopNotificationManager"/>
 
     <method name="Notify">
-      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_add_notification"/>
+      <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_notify"/>
 
       <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
  

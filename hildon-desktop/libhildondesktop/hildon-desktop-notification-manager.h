@@ -79,7 +79,7 @@ GType      hildon_desktop_notification_manager_get_type           (void);
 
 GtkListStore *hildon_desktop_notification_manager_get_singleton   (void);
 
-gboolean   hildon_desktop_notification_manager_add_notification   (HildonDesktopNotificationManager *nm,
+gboolean   hildon_desktop_notification_manager_notify             (HildonDesktopNotificationManager *nm,
                                                       		   const gchar           *app_name,
                                                       		   guint                  id,
                                                       		   const gchar           *icon,
