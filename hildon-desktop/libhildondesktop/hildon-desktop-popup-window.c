@@ -60,6 +60,7 @@ static void hildon_desktop_popup_window_set_property (GObject *object,
                                                       const GValue *value, 
                                                       GParamSpec *pspec);
 
+static void hildon_desktop_popup_finalize (GObject *object);
 static void hildon_desktop_popup_window_realize (GtkWidget *widget);
 static void hildon_desktop_popup_window_unrealize (GtkWidget *widget);
 static void hildon_desktop_popup_window_show (GtkWidget *widget);
@@ -126,6 +127,7 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_cla
   object_class->constructor  = hildon_desktop_popup_window_constructor;
   object_class->set_property = hildon_desktop_popup_window_set_property;
   object_class->get_property = hildon_desktop_popup_window_get_property;
+  object_class->finalize     = hildon_desktop_popup_finalize;
 
   widget_class->motion_notify_event     = hildon_desktop_popup_window_motion_notify;
   widget_class->leave_notify_event      = hildon_desktop_popup_window_leave_notify;
@@ -207,6 +209,9 @@ hildon_desktop_popup_window_constructor (GType gtype,
   {	  
     popup->priv->extra_panes[i] = gtk_window_new (GTK_WINDOW_POPUP);
 
+    g_object_ref (G_OBJECT (popup->priv->extra_panes[i]));
+    gtk_object_sink (GTK_OBJECT (popup->priv->extra_panes[i]));		 
+
     gtk_window_set_type_hint (GTK_WINDOW (popup->priv->extra_panes[i]),
 		    	      GDK_WINDOW_TYPE_HINT_MENU);
 
@@ -227,6 +232,19 @@ hildon_desktop_popup_window_constructor (GType gtype,
 
   return object;
 }
+
+static void 
+hildon_desktop_popup_finalize (GObject *object)
+{
+  HildonDesktopPopupWindow *popup = HILDON_DESKTOP_POPUP_WINDOW (object);
+  register gint i;
+  
+  if (popup->priv->extra_panes)
+   for (i=0; i < popup->priv->n_extra_panes; i++)
+     g_object_unref (popup->priv->extra_panes[i]);
+
+  G_OBJECT_CLASS (hildon_desktop_popup_window_parent_class)->finalize (object);
+}	
 
 /* At some point I will use macros :) */
 
