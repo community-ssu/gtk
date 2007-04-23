@@ -1,5 +1,10 @@
 2007-04-23  Moises Martinez  <moises.martinez@nokia.com>
 
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	- Fixed Horizontal positioning. Vertical pending.
+
+2007-04-23  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-menu.[ch]:
 	- Added basic implementation of new menu.
 	* Makefile.am:

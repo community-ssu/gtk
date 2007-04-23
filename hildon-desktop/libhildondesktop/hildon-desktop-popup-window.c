@@ -632,10 +632,12 @@ hildon_desktop_popup_window_button_release_event (GtkWidget *widget,
 static void 
 hildon_desktop_popup_window_calculate_position (HildonDesktopPopupWindow *popup)
 {
-  gint x=0,y=0,i;
-  GtkRequisition req;
+  gint x=0,y=0,i,d_width=0;
+  GtkRequisition orig_req, req, req_pane;
 
   gtk_widget_size_request (GTK_WIDGET (popup), &req);
+
+  orig_req = req;
 
   if (popup->priv->position_func)
   {
@@ -648,15 +650,33 @@ hildon_desktop_popup_window_calculate_position (HildonDesktopPopupWindow *popup)
   {
     if (popup->priv->direction == HD_POPUP_WINDOW_DIRECTION_RIGHT_BOTTOM)
       for (i=0; i < popup->priv->n_extra_panes; i++)
+      {	
+	gtk_widget_size_request (popup->priv->extra_panes[i], &req_pane);
+
+	if (i > 0)
+          gtk_widget_size_request (popup->priv->extra_panes[i-1], &req);
+
+	d_width += req.width;
+	
         gtk_window_move (GTK_WINDOW (popup->priv->extra_panes[i]),
-			 req.width*(i+1) + x,
-			 y);
+			 d_width + x,
+			 y + orig_req.height - req_pane.height);
+      }
     else
     if (popup->priv->direction == HD_POPUP_WINDOW_DIRECTION_LEFT_TOP)	    
       for (i=0; i < popup->priv->n_extra_panes; i++)
+      {	      
+        gtk_widget_size_request (popup->priv->extra_panes[i], &req_pane);
+
+        if (i > 0)
+          gtk_widget_size_request (popup->priv->extra_panes[i-1], &req);
+
+        d_width -= req.width;
+
         gtk_window_move (GTK_WINDOW (popup->priv->extra_panes[i]),
-                         req.width*(i+1) - x,
-                         y);
+                         d_width - x,
+                         y + orig_req.height - req_pane.height);
+      }
   }	  
   else
   if (popup->priv->orientation == GTK_ORIENTATION_VERTICAL)
