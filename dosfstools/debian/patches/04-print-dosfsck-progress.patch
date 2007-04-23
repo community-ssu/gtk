@@ -1,0 +1,56 @@
+diff -pur dosfstools-2.11/dosfsck/check.c dosfstools-2.11.new/dosfsck/check.c
+--- dosfstools-2.11/dosfsck/check.c	2005-03-12 17:08:43.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/check.c	2007-04-18 17:36:27.000000000 +0300
+@@ -21,6 +21,10 @@
+ #include "check.h"
+ 
+ 
++extern unsigned long checked_clusters;
++extern unsigned long cluster_step;
++extern unsigned long last_print_cluster;
++
+ static DOS_FILE *root;
+ 
+ /* get start field of a dir entry */
+@@ -440,6 +444,11 @@ static int check_file(DOS_FS *fs,DOS_FIL
+     clusters = prev = 0;
+     for (curr = FSTART(file,fs) ? FSTART(file,fs) :
+       -1; curr != -1; curr = next_cluster(fs,curr)) {
++        ++checked_clusters;
++        if (checked_clusters > last_print_cluster + cluster_step) {
++            last_print_cluster = checked_clusters;
++            fprintf(stderr, "%lu\n", checked_clusters);
++        }
+ 	if (!fs->fat[curr].value || bad_cluster(fs,curr)) {
+ 	    printf("%s\n  Contains a %s cluster (%lu). Assuming EOF.\n",
+ 	      path_name(file),fs->fat[curr].value ? "bad" : "free",curr);
+diff -pur dosfstools-2.11/dosfsck/dosfsck.c dosfstools-2.11.new/dosfsck/dosfsck.c
+--- dosfstools-2.11/dosfsck/dosfsck.c	2004-02-25 21:28:57.000000000 +0200
++++ dosfstools-2.11.new/dosfsck/dosfsck.c	2007-04-23 16:00:34.395427320 +0300
+@@ -28,6 +28,9 @@ int interactive = 0,list = 0,test = 0,ve
+ int atari_format = 0;
+ unsigned n_files = 0;
+ void *mem_queue = NULL;
++unsigned long checked_clusters = 0;
++unsigned long cluster_step = 0;
++unsigned long last_print_cluster = 0;
+ 
+ 
+ static void usage(char *name)
+@@ -146,6 +149,8 @@ int main(int argc,char **argv)
+     printf( "dosfsck " VERSION ", " VERSION_DATE ", FAT32, LFN\n" );
+     fs_open(argv[optind],rw);
+     read_boot(&fs);
++    fprintf(stderr, "alleged total clusters: %lu\n", fs.clusters);
++    cluster_step = fs.clusters / 100;
+     if (verify) printf("Starting check/repair pass.\n");
+     while (read_fat(&fs), scan_root(&fs)) qfree(&mem_queue);
+     if (test) fix_bad(&fs);
+@@ -161,6 +166,7 @@ int main(int argc,char **argv)
+ 	reclaim_free(&fs);
+ 	qfree(&mem_queue);
+     }
++    printf("checked clusters: %lu\n", checked_clusters);
+ 
+     if (fs_changed()) {
+ 	if (rw) {
