@@ -27,7 +27,7 @@ Index: apt-pkg/acquire-item.cc
  
 +bool pkgAcqMetaIndex::IsMyFile (string file)
 +{
-+  return (Item::IsYourFile (file)
++  return (Item::IsMyFile (file)
 +	  || file == flNotDir (DestFile) + ".gpg.info");
 +}
 +

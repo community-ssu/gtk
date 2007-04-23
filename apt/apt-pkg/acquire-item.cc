@@ -1046,7 +1046,7 @@ void pkgAcqMetaIndex::AuthDone(string Message)
 
 bool pkgAcqMetaIndex::IsMyFile (string file)
 {
-  return (Item::IsYourFile (file)
+  return (Item::IsMyFile (file)
 	  || file == flNotDir (DestFile) + ".gpg.info");
 }
 
