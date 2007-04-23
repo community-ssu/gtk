@@ -1,0 +1,74 @@
+Index: apt-pkg/acquire-item.cc
+===================================================================
+--- apt-pkg/acquire-item.cc	(revision 9960)
++++ apt-pkg/acquire-item.cc	(working copy)
+@@ -1025,8 +1025,31 @@
+       URItoFileName(RealURI) + ".gpg";
+    Rename(SigFile,VerifiedSigFile);
+    chmod(VerifiedSigFile.c_str(),0644);
++
++   // Record what gpgv had to say about it
++
++   string SigInfoFile = _config->FindDir("Dir::State::lists") +
++      URItoFileName(RealURI) + ".gpg.info";
++   string GPGVOutput = LookupTag (Message,"GPGVOutput");
++   FILE *f = fopen (SigInfoFile.c_str(), "w");
++   if (f)
++     {
++       fputs (GPGVOutput.c_str(), f);
++       fputc ('\n', f);
++       fclose (f);
++     }
++   else
++     std::cerr << "Can't write info file: "
++	       << SigInfoFile << ": "
++	       << strerror (errno) << "\n";
+ }
+ 
++bool pkgAcqMetaIndex::IsMyFile (string file)
++{
++  return (Item::IsYourFile (file)
++	  || file == flNotDir (DestFile) + ".gpg.info");
++}
++
+ void pkgAcqMetaIndex::QueueIndexes(bool verify)
+ {
+    for (vector <struct IndexTarget*>::const_iterator Target = IndexTargets->begin();
+Index: apt-pkg/acquire-item.h
+===================================================================
+--- apt-pkg/acquire-item.h	(revision 9895)
++++ apt-pkg/acquire-item.h	(working copy)
+@@ -77,7 +77,9 @@
+    virtual string MD5Sum() {return string();};
+    pkgAcquire *GetOwner() {return Owner;};
+    virtual bool IsTrusted() {return false;};
+-   
++   virtual bool IsMyFile(string file)
++     { return file == flNotDir (DestFile); }
++
+    Item(pkgAcquire *Owner);
+    virtual ~Item();
+ };
+@@ -231,6 +233,7 @@
+ 		     pkgAcquire::MethodConfig *Cnf);
+    virtual string Custom600Headers();
+    virtual string DescURI() {return RealURI; };
++   virtual bool IsMyFile (string file);
+ 
+    pkgAcqMetaIndex(pkgAcquire *Owner,
+ 		   string URI,string URIDesc, string ShortDesc,
+Index: apt-pkg/acquire.cc
+===================================================================
+--- apt-pkg/acquire.cc	(revision 9895)
++++ apt-pkg/acquire.cc	(working copy)
+@@ -439,8 +439,8 @@
+       // Look in the get list
+       ItemCIterator I = Items.begin();
+       for (; I != Items.end(); I++)
+-	 if (flNotDir((*I)->DestFile) == Dir->d_name)
+-	    break;
++	if ((*I)->IsMyFile (Dir->d_name))
++	  break;
+       
+       // Nothing found, nuke it
+       if (I == Items.end())
