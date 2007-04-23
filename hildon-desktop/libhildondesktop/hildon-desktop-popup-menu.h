@@ -68,6 +68,12 @@ hildon_desktop_popup_menu_remove_item (HildonDesktopPopupMenu *menu,
 
 GList *
 hildon_desktop_popup_menu_get_children (HildonDesktopPopupMenu *menu);
+
+void
+hildon_desktop_popup_menu_select_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item);
+
+void
+hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item);
 G_BEGIN_DECLS
 
 #endif/*__HILDON_DESKTOP_POPUP_MENU_H__*/
