@@ -1,8 +1,21 @@
-libmatchbox1 (2:1.7-osso7) unstable; urgency=low
+libmatchbox1 (2:1.9-osso3) unstable; urgency=low
 
-  * debian package changes 
+  * disable doxygen for awhile, needs more documentation.
+  * mbutil.h, mbutil.c : add window frame animation functions
 
- -- Tapani Palli <tapani.palli@nokia.com>  Thu, 25 Jan 2007 10:33:42 +0200
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 24 Apr 2007 09:21:32 +0300
+
+libmatchbox1 (2:1.9-osso2) unstable; urgency=low
+
+  * enable doxygen documentation 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 17 Apr 2007 10:03:12 +0300
+
+libmatchbox1 (2:1.9-osso1) unstable; urgency=low
+
+  * merging upstream changes 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Tue, 16 Jan 2007 15:55:16 +0200
 
 libmatchbox1 (2:1.7-osso6) unstable; urgency=low
 
