@@ -1,3 +1,14 @@
+2007-04-24  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/base.rc: Add bindings for GtkComboBox and GtkDialog.
+	USe GtkArrow::arrow-scaling property.
+	
+	* rc/gtksettings.rc: Disable wrap around in menus, notebooks
+	and radio groups.
+	
+	* rc/hildonbreadcrumbtrail.rc: Update inner border values for
+	back button.
+
 2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	* rc/ossorssfeedreader.rc:

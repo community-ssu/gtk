@@ -107,6 +107,8 @@ style "osso-default"
       }
   }
 
+  GtkArrow::arrow-scaling = 1.0
+
 }
 class "GtkWidget" style "osso-default"
 
@@ -169,3 +171,25 @@ gtk-icon-sizes = "gtk-menu=26,26:gtk-button=26,26:gtk-small-toolbar=26,26:gtk-la
 ##################
 # THESE HAVE MISSING IMAGES BUT ARE HERE BECAUSE OF STYLE PROPERTIES
 ##################
+
+# BINDINGS
+
+binding "combo"
+{
+  bind "Left"  { "move-active" (step-up) }
+  bind "Right" { "move-active" (step-down) }
+  unbind "Up"
+  unbind "Down"
+}
+
+class "GtkComboBox" binding "combo"
+
+binding "dialog"
+{
+  bind "Left"  { "move-focus" (tab-backward) }
+  bind "Up"    { "move-focus" (tab-backward) }
+  bind "Right" { "move-focus" (tab-forward)  }
+  bind "Down"  { "move-focus" (tab-forward)  }
+}
+
+class "GtkDialog" binding "dialog"

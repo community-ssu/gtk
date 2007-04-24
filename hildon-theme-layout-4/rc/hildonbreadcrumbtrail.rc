@@ -36,7 +36,7 @@ style "osso-breadcrumb-backbutton-arrow"
 widget "*.hildon-bread-crumb-back-button.GtkArrow" style "osso-breadcrumb-backbutton-arrow"
 
 style "osso-bread-crumb-back-button" {
-  GtkButton::inner-border = { 0, 0, 9, 9 }
+  GtkButton::inner-border = { 0, 0, 10, 10 }
 
   engine "sapwood" {
     image {
@@ -148,4 +148,4 @@ style "osso-bread-crumb-button" {
   }
 }
 
-widget "*.HildonBreadCrumbTrail.HildonBreadCrumb" style "osso-bread-crumb-button"
+widget_class "*.HildonBreadCrumbTrail.<HildonBreadCrumb>" style "osso-bread-crumb-button"
