@@ -1,8 +1,10 @@
---- modules/http-neon-method.c-unmod	2007-02-02 14:59:12.000000000 +0100
-+++ modules/http-neon-method.c	2007-02-02 15:00:39.000000000 +0100
-@@ -1831,6 +1831,41 @@ strip_query (const char *path)
- 	return g_strndup (path, tmp - path);
- }
+Index: modules/http-neon-method.c
+===================================================================
+--- modules/http-neon-method.c	(revision 11158)
++++ modules/http-neon-method.c	(working copy)
+@@ -1819,6 +1819,41 @@ http_follow_redirect (HttpContext *conte
+ /* ************************************************************************** */
+ /* Http operations */
  
 +/* Sends a HEAD/GET request where we are not interested in any information
 + * except headers. Some broken servers send the content for HEAD requests, so we
@@ -42,28 +44,49 @@
  static GnomeVFSResult
  http_get_file_info (HttpContext *context, GnomeVFSFileInfo *info)
  {
-@@ -1921,9 +1956,18 @@ http_get_file_info (HttpContext *context
- 
+@@ -1898,7 +1933,7 @@ http_get_file_info (HttpContext *context
   head_start:
  	req  = ne_request_create (context->session, "HEAD", context->path);
-+	res = dispatch_head_request (req);
-+	result = resolve_result (res, req);
  
 -	res = ne_request_dispatch (req);
--
++	res = dispatch_head_request (req);
+ 
+ 	if (res == NE_REDIRECT) {
+ 		ne_request_destroy (req);
+@@ -1916,6 +1951,32 @@ http_get_file_info (HttpContext *context
+ 
+ 	result = resolve_result (res, req);	
+ 	
 +	if (res == NE_ERROR || result == GNOME_VFS_ERROR_NOT_SUPPORTED) {
 +		/* Assume that there was a broken server... fallback to GET. */
 +		DEBUG_HTTP ("Fall back to GET request");
 +		
 +		ne_request_destroy (req);
++		req = NULL;
++
 +		req = ne_request_create (context->session, "GET", context->path);
 +		res = dispatch_head_request (req);
++
++		if (res == NE_REDIRECT) {
++			result = http_follow_redirect (context);		
++
++			ne_request_destroy (req);
++			req = NULL;
++		
++			if (result == GNOME_VFS_OK) {
++				goto head_start;
++			} else {
++				return result;
++			}
++		}
++
++		result = resolve_result (res, req);	
 +	}
 +	
- 	if (res == NE_REDIRECT) {
- 		ne_request_destroy (req);
- 		req = NULL;
-@@ -1967,13 +2011,6 @@ http_get_file_info (HttpContext *context
+ 	if (result == GNOME_VFS_OK) {
+ 		const char *name;	
+ 		
+@@ -1930,13 +1991,6 @@ http_get_file_info (HttpContext *context
  		info->valid_fields |= GNOME_VFS_FILE_INFO_FIELDS_TYPE;
  
  		std_headers_to_file_info (req, info);
