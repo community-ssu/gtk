@@ -492,7 +492,7 @@ hildon_desktop_panel_expandable_add_button (HildonDesktopPanel *panel, GtkWidget
   {
     if (STATUSBAR_IS_ITEM (button))
       g_signal_connect_after (STATUSBAR_ITEM (item),
-		              "hildon-status-bar-update-conditional",
+		              "notify::condition",
 		              G_CALLBACK (hildon_desktop_panel_expandable_arrange_items_cb),
 		              (gpointer)ex_panel);
 	  

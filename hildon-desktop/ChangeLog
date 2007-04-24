@@ -1,3 +1,9 @@
+2007-04 24  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-panel-expandable.c:
+	- Connect to "notify::condition" instead of deprecated signal. 
+	Fixes: NB#53988
+
 2007-04-24  Johan Bilien  <johan.bilien@nokia.com>
 
 	* data/applications.menu: the e-mail client is now called
