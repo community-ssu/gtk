@@ -1,3 +1,11 @@
+2007-04-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.9.16.
+	
+	* configure.ac, hildon-fm/Makefile.am,
+	hildon-fm/hildon-file-system-model.c: Use the hildon thumbnailer
+	instead of the osso thumbnailer.  This is just a change in names.
+
 2007-04-18  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-system-info.c (sync_callback): Only copy

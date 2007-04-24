@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.16) unstable; urgency=low
+
+  * Use hildon-thumbnailer instead of osso-thumbnailer.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Apr 2007 20:47:25 +0300
+
 libhildonfm (1:1.9.15) unstable; urgency=low
 
   * Improve fix for NB#54107.
