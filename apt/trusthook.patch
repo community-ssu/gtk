@@ -1,0 +1,59 @@
+Index: apt-pkg/acquire-item.cc
+===================================================================
+--- apt-pkg/acquire-item.cc	(revision 11194)
++++ apt-pkg/acquire-item.cc	(working copy)
+@@ -1251,7 +1251,26 @@
+ }
+ 
+ 									/*}}}*/
++static bool
++default_index_is_trusted_for_package (pkgIndexFile *Index,
++				      const pkgCache::VerIterator &Ver)
++{
++  return Index->IsTrusted ();
++}
+ 
++static bool (*index_is_trusted_for_package) (pkgIndexFile *Index,
++					     const pkgCache::VerIterator &Ver)
++  = default_index_is_trusted_for_package;
++
++void
++apt_set_index_is_trusted_for_package_hook (bool (*hook)
++					   (pkgIndexFile *Index,
++					    const pkgCache::VerIterator &Ver))
++{
++  index_is_trusted_for_package = hook;
++}
++
++
+ // AcqArchive::AcqArchive - Constructor					/*{{{*/
+ // ---------------------------------------------------------------------
+ /* This just sets up the initial fetch environment and queues the first
+@@ -1312,7 +1331,7 @@
+          std::cerr << "Checking index: " << Index->Describe()
+                    << "(Trusted=" << Index->IsTrusted() << ")\n";
+       }
+-      if (Index->IsTrusted()) {
++      if (index_is_trusted_for_package (Index, Version)) {
+          Trusted = true;
+ 	 break;
+       }
+Index: apt-pkg/acquire-item.h
+===================================================================
+--- apt-pkg/acquire-item.h	(revision 11192)
++++ apt-pkg/acquire-item.h	(working copy)
+@@ -303,4 +303,14 @@
+ 	      const string &DestDir="", const string &DestFilename="");
+ };
+ 
++/* For influencing the IsTrusted decision when acquiring a new version
++   of a package.  The default behavior is to trust any signed (and
++   verified) MetaIndex for any package.
++*/
++
++void
++apt_set_index_is_trusted_for_package_hook (bool (*hook)
++					   (pkgIndexFile *Index,
++					    const pkgCache::VerIterator &Ver));
++
+ #endif
