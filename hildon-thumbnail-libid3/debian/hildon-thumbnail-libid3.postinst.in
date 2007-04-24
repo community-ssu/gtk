@@ -23,7 +23,7 @@ set -e
 #     installation fails and the `postinst' is called with `abort-upgrade',
 #     `abort-remove' or `abort-deconfigure'.
 
-#APP="osso-thumb-libid3"
+#APP="hildon-thumb-libid3"
 
 schemadir=@sysconfdir@/gconf/schemas
 
@@ -31,7 +31,7 @@ schemadir=@sysconfdir@/gconf/schemas
 #sysconfdir="@sysconfdir@"
 #schemadir="@GCONF_SCHEMA_FILE_DIR@"
 
-entries_DATA=osso-thumbnail-libid3.entries
+entries_DATA=hildon-thumbnail-libid3.entries
 
 GCONFTOOL="gconftool-2"
 
@@ -45,7 +45,7 @@ case "$1" in
 	
 	#for MIME in @MIME_TYPES@ ; do
 	    #echo "Registering $MIME"
-	    #if osso-thumber-register $APP $MIME ; then
+	    #if hildon-thumber-register $APP $MIME ; then
 	    
 	    if $GCONFTOOL --direct --config-source "$GCONF_CONFIG_SOURCE" --load "$schemadir/$entries_DATA" ; then
 		SUCCESS=1

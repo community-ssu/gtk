@@ -16,7 +16,7 @@ set -e
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
-#APP="osso-thumb-libid3"
+#APP="hildon-thumb-libid3"
 
 GCONFTOOL="gconftool-2"
 
@@ -38,7 +38,7 @@ case "$1" in
 	$GCONFTOOL --direct --config-source "$GCONF_CONFIG_SOURCE" --recursive-unset "/apps/osso/osso/thumbnailers/audio@x-m4a"
 	$GCONFTOOL --direct --config-source "$GCONF_CONFIG_SOURCE" --recursive-unset "/apps/osso/osso/thumbnailers/audio@x-mp2"
 
-	#if osso-thumber-register -u $APP ; then
+	#if hildon-thumber-register -u $APP ; then
 	#    SUCCESS=1
 	#else
 	#    echo "Warning: Thumbnailer unregistering failed"

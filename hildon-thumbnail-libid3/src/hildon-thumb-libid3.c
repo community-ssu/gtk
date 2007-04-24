@@ -1,12 +1,11 @@
 /*
- * Copyright (C) 2005 Nokia Corporation.
+ * Copyright (C) 2005, 2006, 2007 Nokia Corporation.
  *
- * Contact: Luc Pionchon <luc.pionchon@nokia.com>
+ * Contact: Marius Vollmer <marius.vollmer@nokia.com>
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public License
- * as published by the Free Software Foundation; either version 2.1 of
- * the License, or (at your option) any later version.
+ * version 2.1 as published by the Free Software Foundation.
  *
  * This library is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -22,8 +21,8 @@
 
 #include <string.h>
 
-#include <osso-thumbnail-factory.h>
-#include <osso-thumber-common.h>
+#include <hildon-thumbnail-factory.h>
+#include <hildon-thumber-common.h>
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <gdk-pixbuf/gdk-pixbuf-io.h>
@@ -51,16 +50,16 @@ void get_frame(ID3Tag *tag, int id, char buf[1024])
 #define SET_PAIR(name, val) \
     g_assert(i < N_PAIRS); \
     if(val && val[0] != '\0') { \
-	keys[i] = g_strdup(OSSO_THUMBNAIL_OPTION_PREFIX name); \
+	keys[i] = g_strdup(HILDON_THUMBNAIL_OPTION_PREFIX name); \
 	values[i] = g_strdup(val); \
 	i++; \
     }
 
 GdkPixbuf *create_thumb(const gchar *local_file, const gchar *mime_type,
-    guint width, guint height, OssoThumbnailFlags flags,
+    guint width, guint height, HildonThumbnailFlags flags,
     gchar ***opt_keys, gchar ***opt_values, GError **error)
 {
-    GdkPixbuf *pixbuf = osso_thumber_create_empty_pixbuf();
+    GdkPixbuf *pixbuf = hildon_thumber_create_empty_pixbuf();
 
     char **keys, **values;
     int i = 0;
@@ -96,5 +95,5 @@ GdkPixbuf *create_thumb(const gchar *local_file, const gchar *mime_type,
 
 int main(int argc, char **argv)
 {
-    return osso_thumber_main(&argc, &argv, create_thumb);
+    return hildon_thumber_main(&argc, &argv, create_thumb);
 }
