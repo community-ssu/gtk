@@ -1,3 +1,10 @@
+hildon-application-framework (0.8) unstable; urgency=low
+
+  * Added osso-thumbnail0 and osso-thumbnail-dev to -dev conflicts since
+    just installing libhildon-thumbnail-dev will refuse to uninstall them.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Apr 2007 21:33:31 +0300
+
 hildon-application-framework (0.7) unstable; urgency=low
 
   * Added libgtk2.0-dev (<< 2:2.10) to -dev conflicts, since we don't want
