@@ -1,3 +1,44 @@
+hildon-desktop (0.0.9-1) sardine; urgency=low
+
+  * fixed build-dependency on libhildonfm2-dev | hildon-libs-dev to
+     libhildonfm2-dev | hildon-fm-dev
+
+  * libhildondesktop/hildon-desktop-panel-expandable.c:
+  - Connect to "notify::condition" instead of deprecated signal.
+  Fixes: NB#53988
+
+  * data/applications.menu: the e-mail client is now called
+  modest
+
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]:
+  - Added item's activation
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - Fixed Horizontal positioning. Vertical pending.
+
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]:
+  - Added basic implementation of new menu.
+  * Makefile.am:
+  - Added HildonDesktopPopupMenu to building batch
+
+  * libhildondesktop/notification-manager.xml: renamed
+  hildon_desktop_notification_manager_add_notification to
+  hildon_desktop_notification_manager_notify.
+  * libhildondesktop/hildon-desktop-notification-manager.[ch]: added
+  support for D-Bus callbacks (with basic types parameters) on notifications
+  backend. The callback description goes through a "dbus-callback" hint.
+  The D-Bus callback is called as the default action if defined. Fixed some
+  memory management problems.
+
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - Added forgotten _finalize
+
+  * libhildondesktop/hildon-desktop-popup-window.[ch]:
+  - Added new methods to access panes.
+  - Fixed behavior.
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Tue, 24 Apr 2007 18:15:13 +0300
+
 hildon-desktop (0.0.8-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-popup-window.[ch]:

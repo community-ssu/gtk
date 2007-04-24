@@ -1,3 +1,7 @@
+2007-04-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.9
+
 2007-04 24  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-panel-expandable.c:
