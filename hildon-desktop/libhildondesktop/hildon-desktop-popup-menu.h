@@ -26,7 +26,7 @@
 #ifndef __HILDON_DESKTOP_POPUP_MENU_H__
 #define __HILDON_DESKTOP_POPUP_MENU_H__
 
-#include <gtk/gtkscrolledwindow.h>
+#include <gtk/gtkvbox.h>
 #include <gtk/gtkmenuitem.h>
 
 G_BEGIN_DECLS
@@ -44,14 +44,14 @@ typedef struct _HildonDesktopPopupMenuPrivate HildonDesktopPopupMenuPrivate;
 
 struct _HildonDesktopPopupMenu
 {
-  GtkScrolledWindow                parent;
+  GtkVBox	                   parent;
 
   HildonDesktopPopupMenuPrivate   *priv;
 };
 
 struct _HildonDesktopPopupMenuClass
 {
-  GtkScrolledWindowClass		parent_class;
+  GtkVBoxClass		           parent_class;
   /* */	
 };
 
@@ -74,6 +74,10 @@ hildon_desktop_popup_menu_select_item (HildonDesktopPopupMenu *menu, GtkMenuItem
 
 void
 hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item);
+
+void   
+hildon_desktop_popup_menu_scroll_to_selected (HildonDesktopPopupMenu *menu);
+
 G_BEGIN_DECLS
 
 #endif/*__HILDON_DESKTOP_POPUP_MENU_H__*/

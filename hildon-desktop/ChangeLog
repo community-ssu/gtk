@@ -1,3 +1,16 @@
+2007-04 25  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.ch:
+	- Each item has a pre-specified size except GtkSeparatorMenuItems.
+	- Added method to scroll to pre-selected item. Based on size of each item.
+	- Now inherits from a GtkVBox
+	- Set proper size to internal GtkScrolledWindow.
+	- Added scroll buttons.
+	- Several bugfixes.
+	* libhildondesktop/hildon-desktop-popup-window.ch:
+	- Emit signal when popping up the menu. (to be used along
+	"scrolling-to" HildonDesktopPopupMenu functionality).
+
 2007-04-24  Johan Bilien  <johan.bilien@nokia.com>
 
 	* configure.ac: 0.0.9

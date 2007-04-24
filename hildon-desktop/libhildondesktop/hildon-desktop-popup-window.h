@@ -64,6 +64,8 @@ struct _HildonDesktopPopupWindowClass
 {
   GtkWindowClass		parent_class;
   /* */	
+
+  void (*popup_window) (HildonDesktopPopupWindow *window);
 };
 
 GType 

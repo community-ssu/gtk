@@ -43,8 +43,11 @@ enum
 
 enum
 {
+  SIGNAL_POPUP_SHOW,
   POPUP_N_SIGNALS
 };
+
+static gint signals[POPUP_N_SIGNALS];
 
 static GObject *hildon_desktop_popup_window_constructor (GType gtype, 
                                                          guint n_params, 
@@ -142,6 +145,15 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_cla
   widget_class->hide_all   = hildon_desktop_popup_window_hide_all;
   
   g_type_class_add_private (object_class, sizeof (HildonDesktopPopupWindowPrivate));
+
+  signals[SIGNAL_POPUP_SHOW] =
+        g_signal_new ("popup-window",
+                      G_OBJECT_CLASS_TYPE (object_class),
+                      G_SIGNAL_RUN_LAST,
+                      G_STRUCT_OFFSET (HildonDesktopPopupWindowClass,popup_window),
+                      NULL, NULL,
+                      g_cclosure_marshal_VOID__VOID,
+                      G_TYPE_NONE, 0);
 
   g_object_class_install_property (object_class,
                                    PROP_POPUP_N_PANES,
@@ -935,11 +947,13 @@ hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 
   hildon_desktop_popup_window_calculate_position (popup);
 
-  gtk_widget_show (GTK_WIDGET (popup));
+  gtk_widget_show_all (GTK_WIDGET (popup));
 
   popup_grab_on_window (GTK_WIDGET (popup)->window, activate_time, TRUE); /* Should always succeed */
 
   gtk_grab_add (GTK_WIDGET (popup));
+
+  g_signal_emit_by_name (popup, "popup-window");
 }
 
 void 
