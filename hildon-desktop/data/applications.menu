@@ -34,7 +34,7 @@
     <Name>tana_fi_contact</Name>
     <Include>
       <Filename>osso-addressbook.desktop</Filename>
-      <Filename>email-engine.desktop</Filename>
+      <Filename>modest.desktop</Filename>
       <Filename>voip-ui.desktop</Filename>
       <Filename>chat-ui.desktop</Filename>
     </Include>

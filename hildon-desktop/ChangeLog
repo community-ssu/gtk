@@ -1,3 +1,8 @@
+2007-04-24  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/applications.menu: the e-mail client is now called
+	modest
+
 2007-04-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.[ch]:
