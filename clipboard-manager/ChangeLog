@@ -1,0 +1,56 @@
+2005-05-17  Anders Carlsson  <andersca@imendio.com>
+
+	* manager.c (main): Add a NULL check for the display.
+
+2005-03-31  Mikael Hallendal  <micke@imendio.com>
+
+	Release 0.6.2
+
+	* configure.ac:
+	* debian/changelog:
+	- Bumped version to 0.6.2
+
+2005-03-31  Anders Carlsson  <andersca@imendio.com>
+
+	* clipboard.sh: Use LAUNCHWRAPPER_NICE_TRYRESTART.
+
+2005-03-10  Anders Carlsson  <andersca@imendio.com>
+
+	* configure.ac: Make the X11 checks a bit more sane.
+
+	Update version to 0.6.1
+	
+2005-03-10  Anders Carlsson  <andersca@imendio.com>
+
+	* Makefile.:
+	* configure.ac:
+	* manager.c: (main):
+	Don't depend on gtk+.
+
+	Update version to 0.6
+	
+2005-01-24  Anders Carlsson  <andersca@imendio.com>
+
+	* configure.ac: Update to 0.5
+
+	* Makefile.am (servicedir): Install startup script in 
+	the correct directory
+
+	* clipboard.sh: Remove --session
+
+2005-01-20  Anders Carlsson  <andersca@imendio.com>
+
+	* configure.ac: Update to 0.4
+
+	* Makefile.am (service_DATA): 
+	* clipboard.sh: Add startup script
+
+2004-10-29  Mikael Hallendal  <micke@imendio.com>
+
+	* configure.ac: Bumped version to 0.3
+	
+	* debian/changelog: Updated to 0.3
+	* debian/Makefile.am: 
+	* debian/copyright: Added
+	* clipboard-manager.c: Fixed Nokia copyright
+

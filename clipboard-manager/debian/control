@@ -1,0 +1,13 @@
+Source: clipboard-manager
+Section: x11
+Priority: optional
+Maintainer: Mikael Hallendal <micke@imendio.com>
+Uploaders: Richard Hult <richard@imendio.com>, Anders Carlsson <andersca@imendio.com>
+Build-Depends: debhelper (>= 4.0.0), xlibs-dev
+Standards-Version: 3.6.1.0
+
+Package: clipboard-manager
+Architecture: any
+Depends: ${shlibs:Depends}
+Description: The clipboard manager is responsible for saving clipboard
+ data when clients want to.

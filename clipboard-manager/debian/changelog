@@ -1,0 +1,36 @@
+clipboard-manager (0.6.3) unstable; urgency=low
+
+  * Check for NULL display.
+
+ -- Richard Hult <richard@imendio.com>  Mon, 23 May 2005 22:14:35 +0200
+
+clipboard-manager (0.6.2) unstable; urgency=low
+
+  * Use LAUNCHWRAPPER_NICE_TRYRESTART.
+
+ -- Mikael Hallendal <micke@imendio.com>  Thu, 31 Mar 2005 17:38:23 +0100
+
+clipboard-manager (0.6.1) unstable; urgency=low
+
+  * Improved the X11 checks.
+  * Added build dependency on xlibs-dev
+  
+ -- Mikael Hallendal <micke@imendio.com>  Thu, 10 Mar 2005 17:10:27 +0100
+
+clipboard-manager (0.6) unstable; urgency=low
+
+  * Removed dependency on GTK+
+
+ -- Mikael Hallendal <micke@imendio.com>  Thu, 10 Mar 2005 15:03:12 +0100
+
+clipboard-manager (0.3) unstable; urgency=low
+
+  * Second release.
+  
+ -- Mikael Hallendal <micke@imendio.com>  Fri, 29 Oct 2004 14:22:32 +0200
+  
+clipboard-manager (0.2) unstable; urgency=low
+
+  * Initial release.
+
+ -- Richard Hult <richard@imendio.com>  Fri, 08 Oct 2004 14:09:53 +0200
