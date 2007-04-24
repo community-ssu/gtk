@@ -21,7 +21,7 @@ Depends: bluez-utils,
  gnome-vfs-filechooser-backend,
  osso-obc,
  osso-obexsrv,
- osso-thumbnail,
+ hildon-thumbnail,
  osso-update-category-database,
  posix-locales,
  telepathy-feed,
@@ -34,8 +34,7 @@ Description: Hildon Application Framework metapackage.
 Package: hildon-application-framework-dev
 Architecture: all
 Conflicts: libxtrans-dev,
- libgtk2.0-dev (<< 2:2.10),
- osso-thumbnail0, osso-thumbnail-dev
+ libgtk2.0-dev (<< 2:2.10)
 Description: Hildon Application Framework development metapackage.
  Installing this package makes sure you have the correct environment
  for development for the Hildon Application Framework.  You should not

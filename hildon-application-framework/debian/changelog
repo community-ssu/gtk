@@ -1,3 +1,11 @@
+hildon-application-framework (0.9) unstable; urgency=low
+
+  * Removed osso-thumbnail conflicts from -dev again, they are not needed
+    after all.
+    Changed osso-thumbnail Depends to hildon-thumbnail.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Apr 2007 21:57:32 +0300
+
 hildon-application-framework (0.8) unstable; urgency=low
 
   * Added osso-thumbnail0 and osso-thumbnail-dev to -dev conflicts since
