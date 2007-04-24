@@ -34,7 +34,7 @@
 #include <gtk/gtkmain.h>
 #include <gtk/gtkmarshal.h>
 #include <gtk/gtktreednd.h>
-#include <osso-thumbnail-factory.h>
+#include <hildon-thumbnail-factory.h>
 #include "hildon-file-system-model.h"
 #include "hildon-file-system-private.h"
 #include "hildon-file-system-settings.h"
@@ -80,7 +80,7 @@ typedef struct {
     gchar *title_cache;
     gchar *key_cache;
     HildonFileSystemModel *model;
-    OssoThumbnailFactoryHandle thumbnail_handle;
+    HildonThumbnailFactoryHandle thumbnail_handle;
     time_t load_time;
     gboolean present_flag : 1;
     gboolean available : 1; /* Set by code */
@@ -864,7 +864,7 @@ static void emit_node_changed(GNode *node)
 }
 
 static void 
-thumbnail_handled(OssoThumbnailFactoryHandle handle,
+thumbnail_handled(HildonThumbnailFactoryHandle handle,
   gpointer data, GdkPixbuf *thumbnail, GError *error)
 {
   GNode *node;
@@ -887,11 +887,11 @@ thumbnail_handled(OssoThumbnailFactoryHandle handle,
     g_assert(GDK_IS_PIXBUF(thumbnail));
 
     tmp_title = gdk_pixbuf_get_option(thumbnail,
-        OSSO_THUMBNAIL_OPTION_PREFIX "Title");
+        HILDON_THUMBNAIL_OPTION_PREFIX "Title");
     tmp_artist = gdk_pixbuf_get_option(thumbnail,
-        OSSO_THUMBNAIL_OPTION_PREFIX "Artist");
+        HILDON_THUMBNAIL_OPTION_PREFIX "Artist");
     noimage = gdk_pixbuf_get_option(thumbnail,
-        OSSO_THUMBNAIL_OPTION_PREFIX "Noimage");
+        HILDON_THUMBNAIL_OPTION_PREFIX "Noimage");
 
     if(tmp_title)
     {
@@ -1100,7 +1100,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               {  /* This can fail with GtkFileSystemUnix if the
                            name contains invalid UTF-8 */
                 model_node->thumbnail_handle =
-                    osso_thumbnail_factory_load(uri, 
+                    hildon_thumbnail_factory_load(uri, 
                         gtk_file_info_get_mime_type(info),
                         THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, 
                         thumbnail_handled, node);
@@ -1139,7 +1139,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
                                                        THUMBNAIL_ICON);
         }
         else if (model_node->thumbnail_handle)
-            osso_thumbnail_factory_move_front(model_node->thumbnail_handle);
+            hildon_thumbnail_factory_move_front(model_node->thumbnail_handle);
 
         g_value_set_object(value, model_node->thumbnail_cache);
         update_cache_queue(priv, node);
@@ -1923,7 +1923,7 @@ clear_model_node_caches(HildonFileSystemModelNode *model_node)
   }
   if (model_node->thumbnail_handle)
   {
-    osso_thumbnail_factory_cancel(model_node->thumbnail_handle);
+    hildon_thumbnail_factory_cancel(model_node->thumbnail_handle);
     model_node->thumbnail_handle = NULL;
   }
 
