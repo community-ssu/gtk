@@ -1,0 +1,31 @@
+<gconfentryfile>
+  <!-- 
+       When editing, synchronize this with debian/...postrm.in
+       so keys would be uninstalled too
+  -->
+  
+  <entrylist base="/apps/osso/osso/thumbnailers">
+
+    <entry>
+      <key>audio@mp3/command</key>
+      <value><string>/usr/bin/osso-thumb-libid3</string></value>
+    </entry>
+  
+    <entry>
+      <key>audio@x-mp3/command</key>
+      <value><string>/usr/bin/osso-thumb-libid3</string></value>
+    </entry>
+
+    <entry>
+      <key>audio@x-m4a/command</key>
+      <value><string>/usr/bin/osso-thumb-libid3</string></value>
+    </entry>
+
+    <entry>
+      <key>audio@x-mp2/command</key>
+      <value><string>/usr/bin/osso-thumb-libid3</string></value>
+    </entry>
+
+  </entrylist>
+  
+</gconfentryfile>

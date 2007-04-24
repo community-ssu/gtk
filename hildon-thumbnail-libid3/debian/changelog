@@ -1,0 +1,64 @@
+hildon-thumbnail-libid3 (0.5) unstable; urgency=low
+
+  * Folded into the Hildon family.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Apr 2007 20:31:53 +0300
+
+osso-thumbnail-libid3 (0.4-1) unstable; urgency=low
+
+  * Changed maintainer and version numbering.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 02 Feb 2006 19:46:59 +0200
+
+osso-thumbnail-libid3 (0.3.6-1) unstable; urgency=low
+
+  * code cleanup
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Tue,  3 Jan 2006 14:12:36 +0200
+
+osso-thumbnail-libid3 (0.3.5-1) unstable; urgency=low
+
+  * fixes,
+    N#18798 Mpeg1_layer2 and AAC files TagID information not shown in Audio players file system.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Sat, 12 Nov 2005 03:01:25 +0200
+
+osso-thumbnail-libid3 (0.3.4-2) unstable; urgency=low
+
+  * Fix usage of gconftool.
+
+ -- Alexander Kanevskiy <alexander.kanevskiy@nokia.com>  Thu, 25 Aug 2005 13:53:18 +0300
+
+osso-thumbnail-libid3 (0.3.4-1) unstable; urgency=low
+
+  * Fixed #12687 - osso-thumbnail-libid3 is not ready for publishing
+  * configure.ac:
+  * - replaced hardcoded id3lib info with real id3lib check
+  * COPYING:
+  * - new file containing LGPL info
+  * osso-thumb-libid3.c:
+  * - added copyright header
+  * debian/copyright:
+  * - added correct license information
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 27 Jun 2005 18:39:52 +0300
+
+osso-thumbnail-libid3 (0.3.3-1) unstable; urgency=low
+
+  * Remove osso-thumber-register, use gconftool-2 hack for registering
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Mon, 04 Apr 2005 10:50:00 +0200
+
+osso-thumbnail-libid3 (0.3.2-1) unstable; urgency=low
+
+  * Update to new thumber interface
+  
+  * Use Nokian libid3
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Sat, 12 Mar 2005 13:00:00 +0200
+
+osso-thumbnail-libid3 (0.0.1-1) unstable; urgency=low
+
+  * Initial release of the ID3 thumbnailer library.
+
+ -- Luc Pionchon <luc.pionchon@nokia.com>  Fri, 25 Feb 2005 13:00:00 +0200

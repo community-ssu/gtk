@@ -1,0 +1,13 @@
+2005-11-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	* configure.ac: 0.3.5
+
+2005-11-12  Luc Pionchon  <luc.pionchon@nokia.com>
+
+	N#18798 Mpeg1_layer2 and AAC files TagID information not shown in
+                Audio players file system.
+	
+	* osso-thumbnail-libid3.entries: added support for Mime types
+	audio/x-mp2 and audio/x-m4a.
+
+	* debian/osso-thumbnail-libid3.prerm.in: Likewise.

@@ -1,0 +1,12 @@
+Source: hildon-thumbnail-libid3
+Section: libs
+Priority: optional
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
+Build-Depends: debhelper (>= 4.0.0), pkg-config, libid3-3.8.3-dev, libhildon-thumbnail-dev (>= 0.4)
+Standards-Version: 3.6.0
+
+Package: hildon-thumbnail-libid3
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, hildon-thumbnail (>= 0.4), libid3-3.8.3
+Description: ID3 Tag reading thumbnailer
