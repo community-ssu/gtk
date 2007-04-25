@@ -308,6 +308,7 @@ hd_desktop_plugin_list_to_conf (GList *plugin_list, const gchar *config_file)
     return;
   }
 
+  g_free (buffer);
   g_free (config_file_path);
   g_key_file_free (keyfile);
 }
@@ -345,6 +346,7 @@ hd_desktop_plugin_list_from_conf (const gchar *config_file)
     plugin_list = g_list_append (plugin_list, groups[i]);
   }
 
+  g_free (groups);
   g_key_file_free (keyfile);
 
   return plugin_list;

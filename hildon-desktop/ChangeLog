@@ -1,3 +1,9 @@
+2007-04-25  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-desktop.c:
+	- Fixed the leak of the configuration file buffer
+	- Fixed the leak of the array returned by g_key_file_get_groups
+
 2007-04 25  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.ch:
