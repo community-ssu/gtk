@@ -1,3 +1,13 @@
+hildon-theme-layout-4 (0.6.2-1) unstable; urgency=low
+
+  * Fixes: NB#54157 GtkCombobox: Left/right keys does not work properly
+  * Fixes: NB#52986 Down arrow key not focussing on last button in a dialog
+  * Fixes: NB#53751 Double dropdown arrows are displayed for all the dropdown menus in all the applications.
+
+  * Fixing the problem with home applets.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 25 Apr 2007 10:49:14 +0300
+
 hildon-theme-layout-4 (0.6.1-1) unstable; urgency=low
 
   * Add special case for position theming when there's only one breadcrumb.

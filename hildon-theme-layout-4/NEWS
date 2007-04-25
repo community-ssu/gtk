@@ -1,3 +1,8 @@
+[0.6.2-1 release]
+* Disable wrap around in menus, notebooks and radio groups
+* Added necessary definitions for the Home compositor (applets)/
+* Fixing focus in radio button and check button  
+
 [0.6.1-1 release]
 * Add special case for position theming when there's only one breadcrumb.
 
