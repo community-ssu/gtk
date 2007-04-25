@@ -6,54 +6,130 @@ Index: apt-pkg/acquire-item.cc
  }
  
  									/*}}}*/
-+static bool
-+default_index_is_trusted_for_package (pkgIndexFile *Index,
-+				      const pkgCache::VerIterator &Ver)
++static int
++default_index_trust_level_for_package (pkgIndexFile *Index,
++				       const pkgCache::VerIterator &Ver)
 +{
-+  return Index->IsTrusted ();
++  return Index->IsTrusted ()? 1 : 0;
 +}
  
-+static bool (*index_is_trusted_for_package) (pkgIndexFile *Index,
-+					     const pkgCache::VerIterator &Ver)
-+  = default_index_is_trusted_for_package;
++static int (*index_trust_level_for_package) (pkgIndexFile *Index,
++					      const pkgCache::VerIterator &Ver)
++  = default_index_trust_level_for_package;
 +
 +void
-+apt_set_index_is_trusted_for_package_hook (bool (*hook)
-+					   (pkgIndexFile *Index,
-+					    const pkgCache::VerIterator &Ver))
++apt_set_index_trust_level_for_package_hook (int (*hook)
++					    (pkgIndexFile *Index,
++					     const pkgCache::VerIterator &Ver))
 +{
-+  index_is_trusted_for_package = hook;
++  index_trust_level_for_package = hook;
 +}
 +
 +
  // AcqArchive::AcqArchive - Constructor					/*{{{*/
  // ---------------------------------------------------------------------
  /* This just sets up the initial fetch environment and queues the first
-@@ -1312,7 +1331,7 @@
+@@ -1261,7 +1280,7 @@
+ 			     string &StoreFilename) :
+                Item(Owner), Version(Version), Sources(Sources), Recs(Recs), 
+                StoreFilename(StoreFilename), Vf(Version.FileList()), 
+-	       Trusted(false)
++	       TrustLevel(0)
+ {
+    Retries = _config->FindI("Acquire::Retries",0);
+ 
+@@ -1307,13 +1326,17 @@
+       pkgIndexFile *Index;
+       if (Sources->FindIndex(i.File(),Index) == false)
+          continue;
++
++      int l = index_trust_level_for_package (Index, Version);
++
+       if (_config->FindB("Debug::pkgAcquire::Auth", false))
+       {
           std::cerr << "Checking index: " << Index->Describe()
-                    << "(Trusted=" << Index->IsTrusted() << ")\n";
+-                   << "(Trusted=" << Index->IsTrusted() << ")\n";
++                   << "(Trust level =" << l << ")\n";
        }
 -      if (Index->IsTrusted()) {
-+      if (index_is_trusted_for_package (Index, Version)) {
-          Trusted = true;
+-         Trusted = true;
++
++      if (l > TrustLevel) {
++         TrustLevel = l;
  	 break;
        }
+    }
+@@ -1322,7 +1345,7 @@
+    // that means that e.g. unauthenticated file:// uris are higher
+    // priority than authenticated http:// uris
+    if (_config->FindB("APT::Get::AllowUnauthenticated",false) == true)
+-      Trusted = false;
++      TrustLevel = 0;
+ 
+    // Select a source
+    if (QueueNext() == false && _error->PendingError() == false)
+@@ -1349,10 +1372,9 @@
+       if (Sources->FindIndex(Vf.File(),Index) == false)
+ 	    continue;
+       
+-      // only try to get a trusted package from another source if that source
+-      // is also trusted
+-      if(Trusted && !Index->IsTrusted()) 
+-	 continue;
++      // only consider sources with a high enough trust level
++      if (index_trust_level_for_package (Index, Version) < TrustLevel)
++	continue;
+ 
+       // Grab the text package record
+       pkgRecords::Parser &Parse = Recs->Lookup(Vf);
+@@ -1537,7 +1559,7 @@
+ // ---------------------------------------------------------------------
+ bool pkgAcqArchive::IsTrusted()
+ {
+-   return Trusted;
++   return TrustLevel > 0;
+ }
+ 
+ // AcqArchive::Finished - Fetching has finished, tidy up		/*{{{*/
 Index: apt-pkg/acquire-item.h
 ===================================================================
 --- apt-pkg/acquire-item.h	(revision 11192)
 +++ apt-pkg/acquire-item.h	(working copy)
-@@ -303,4 +303,14 @@
+@@ -256,7 +256,7 @@
+    string &StoreFilename;
+    pkgCache::VerFileIterator Vf;
+    unsigned int Retries;
+-   bool Trusted; 
++   int TrustLevel; 
+ 
+    // Queue the next available file for download.
+    bool QueueNext();
+@@ -303,4 +303,28 @@
  	      const string &DestDir="", const string &DestFilename="");
  };
  
 +/* For influencing the IsTrusted decision when acquiring a new version
-+   of a package.  The default behavior is to trust any signed (and
-+   verified) MetaIndex for any package.
++   of a package and for influencing which source is selected if the
++   highest version of a package is available from multiple sources.
++
++   The hook should return a integer indicating the 'trust level' that
++   a given index should be afforded for a given package.  Indices with
++   higher trust levels will be preferred.
++
++   The default behavior is to use a trust level of zero for unsigned
++   repositories and a level of one for repositories with valid
++   signatures.
++
++   The IsTrusted prodicate on a pkgAcqArchive object will return true
++   when the highest trust level is non-zero, false otherwise.
++
++   A trust level can be negative.  In that case, the index will never
++   be considered as a source for the package.
 +*/
 +
 +void
-+apt_set_index_is_trusted_for_package_hook (bool (*hook)
-+					   (pkgIndexFile *Index,
-+					    const pkgCache::VerIterator &Ver));
++apt_set_index_trust_level_for_package_hook (int (*hook)
++					    (pkgIndexFile *Index,
++					     const pkgCache::VerIterator &V));
 +
  #endif
