@@ -1,3 +1,10 @@
+matchbox-window-manager (2:1.2-osso2) unstable; urgency=low
+
+  * src/ewmh.c : n_modals_present -> n_modal_blocker_wins
+  * Fixes: NB#54921
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 25 Apr 2007 15:58:17 +0300
+
 matchbox-window-manager (2:1.2-osso1) unstable; urgency=low
 
   * wm.c : inheritance of aboveness
