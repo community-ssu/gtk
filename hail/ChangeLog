@@ -1,3 +1,8 @@
+2007-04-25  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
+	* hail/hail-hildon-desktop/*:
+	Added forgotten files in the previous commit.
+
 2007-04-23  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
 	* hail/hail-hildon-desktop/Makefile.am:
