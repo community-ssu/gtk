@@ -1,3 +1,10 @@
+libmatchbox1 (2:1.9-osso4) unstable; urgency=low
+
+  * debian/rules : fix debian packaging
+  * remove un-needed files
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Wed, 25 Apr 2007 15:44:12 +0300
+
 libmatchbox1 (2:1.9-osso3) unstable; urgency=low
 
   * disable doxygen for awhile, needs more documentation.
