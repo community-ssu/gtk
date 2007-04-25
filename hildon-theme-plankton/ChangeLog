@@ -1,3 +1,15 @@
+2007-04-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[4.6.1-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control:
+
+	* wallpaper/Makefile.am: Install wallpaper in two places to make the
+	home pick it up on first boot. Totally TEMPORARY.
+
 2007-04-16  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[4.6.0-1 release]

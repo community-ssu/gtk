@@ -7,7 +7,7 @@ Standards-Version: 3.6.0
 
 Package: hildon-theme-plankton
 Architecture: all
-Depends: gtk2-engines-sapwood (>= 2.91.2), hildon-theme-cacher (>= 0.3.0)
+Depends: gtk2-engines-sapwood (>= 2.91.4), hildon-theme-cacher (>= 0.3.0)
 Description: A hildon theme. 
 Conflicts: hildon-theme-plankton-3, hildon-theme-plankton-2
 Replaces: hildon-theme-plankton-3, hildon-theme-plankton-2

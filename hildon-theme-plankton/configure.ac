@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-plankton, 4.6.0)
+AM_INIT_AUTOMAKE(hildon-theme-plankton, 4.6.1)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL

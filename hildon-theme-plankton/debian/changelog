@@ -1,3 +1,11 @@
+hildon-theme-plankton (4.6.1-1) unstable; urgency=low
+
+  * Layout bump.
+  * Temporarily installing wallpaper in two places to make the home pick it up
+    on first boot.
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 25 Apr 2007 11:04:23 +0300
+
 hildon-theme-plankton (4.6.0-1) unstable; urgency=low
 
   * Added combobox artwork, removed old cruft. Some cleanups too.
