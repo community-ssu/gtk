@@ -1,3 +1,14 @@
+gtk+2.0 (2:2.10.6-0osso11) unstable; urgency=low
+
+  * Send insensitive press event to the event widget instead of the grab
+    widget. Fixes: NB#54535
+  * Back out  "keep focussed child visible when size changes" feature from
+    gtkscrolledwindow.
+  * Added arrow-scalling style property to GtkArrow to control the
+    arrow/border ration within the allocation.
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Wed, 25 Apr 2007 10:38:19 +0300
+
 gtk+2.0 (2:2.10.6-0osso10) unstable; urgency=low
 
   * Don't close menus on clicks on their border area.
