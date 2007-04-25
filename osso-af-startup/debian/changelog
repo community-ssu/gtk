@@ -1,3 +1,10 @@
+osso-af-startup (1.38-2) unstable; urgency=low
+
+  * Used calls to osso-backup-startup.sh as 'if' statement conditions to prevent
+    non-zero return values from killing real-af-startup
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Apr 2007 13:35:28 +0300
+
 osso-af-startup (1.38-1) unstable; urgency=low
 
   * Added support for auto.install file check in the first boot.

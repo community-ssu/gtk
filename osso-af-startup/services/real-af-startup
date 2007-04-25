@@ -108,12 +108,16 @@ start)
 
     # Give Backup a chance to restore settings automatically
     if [ -x $AF_INIT_DIR/osso-backup-startup.sh ]; then
-      $AF_INIT_DIR/osso-backup-startup.sh check
-      if [ "x$?" = "x2" ]; then
+      if ! $AF_INIT_DIR/osso-backup-startup.sh check; then
         wizback_method set_progress_visible false
         wizback_method set_descriptions_visible false
 
-        $AF_INIT_DIR/osso-backup-startup.sh
+        # Need to wrap osso-backup-startup.sh into an 'if',
+        # otherwise this script will die when backup exits
+        # non-zero (such as on user cancel)
+        if $AF_INIT_DIR/osso-backup-startup.sh; then
+          echo -n ''
+        fi
 
         wizback_method set_progress_visible true
         wizback_method set_descriptions_visible true
