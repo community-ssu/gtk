@@ -1,4 +1,4 @@
-osso-af-startup (1.38-2) unstable; urgency=low
+osso-af-startup (1.39-1) unstable; urgency=low
 
   * Used calls to osso-backup-startup.sh as 'if' statement conditions to prevent
     non-zero return values from killing real-af-startup
