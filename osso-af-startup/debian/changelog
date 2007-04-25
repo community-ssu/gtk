@@ -2,6 +2,7 @@ osso-af-startup (1.39-1) unstable; urgency=low
 
   * Used calls to osso-backup-startup.sh as 'if' statement conditions to prevent
     non-zero return values from killing real-af-startup
+  * Fixes: NB#54691, NB#54789
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 25 Apr 2007 13:35:28 +0300
 
