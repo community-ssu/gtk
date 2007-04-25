@@ -2,6 +2,7 @@ osso-gnome-vfs2 (2.16.3-1osso15) unstable; urgency=low
 
   * UNRELEASED!
   * Fixes: NB#54743, hildon_uri_get_actions_by_uri aborts calling ...
+  * Change maintainer email to Kimmo
 
  -- Martyn Russell <martyn@imendio.com>  Fri, 27 Apr 2007 15:10:07 +0100
 
