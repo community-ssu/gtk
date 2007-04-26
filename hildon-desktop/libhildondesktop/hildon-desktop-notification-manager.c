@@ -156,24 +156,18 @@ hildon_desktop_notification_manager_find_by_id (HildonDesktopNotificationManager
 
 static DBusMessage *
 hildon_desktop_notification_manager_create_signal (HildonDesktopNotificationManager *nm, 
-		                                   guint                             id, 
+		                                   GtkTreeIter                      *iter, 
 						   const char                       *signal_name)
 {
   DBusMessage *message;
-  GtkTreeIter iter;
   gchar *dest;
-
-  if (hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
-  {
-    gtk_tree_model_get (GTK_TREE_MODEL (nm),
-		        &iter,
-			HD_NM_COL_SENDER, &dest,
-			-1);
-  }
-  else
-  {
-    return NULL;
-  }
+  gint id;
+  
+  gtk_tree_model_get (GTK_TREE_MODEL (nm),
+                      iter,
+                      HD_NM_COL_SENDER, &dest,
+                      HD_NM_COL_ID, &id,
+                      -1);
 
   g_assert(dest != NULL);
 
@@ -204,7 +198,7 @@ hildon_desktop_notification_manager_notification_closed (HildonDesktopNotificati
                       HD_NM_COL_ID, &id,
                       -1);
 
-  message = hildon_desktop_notification_manager_create_signal (nm, id, "NotificationClosed");
+  message = hildon_desktop_notification_manager_create_signal (nm, iter, "NotificationClosed");
 
   if (message == NULL) return;
 
@@ -530,6 +524,10 @@ hildon_desktop_notification_manager_message_from_desc (HildonDesktopNotification
   DBusMessage *message;
   gchar **message_elements;
   gint n_elements;
+
+  g_debug ("######################################### DBUS CALLBACK ##########################################");
+  g_debug (desc);
+  g_debug ("######################################### DBUS CALLBACK ##########################################");
   
   message_elements = g_strsplit (desc, " ", 5);
 
@@ -587,39 +585,40 @@ hildon_desktop_notification_manager_call_action (HildonDesktopNotificationManage
 				                 const gchar                      *action_id)
 {
   DBusMessage *message = NULL;
+  GHashTable *hints; 
+  GtkTreeIter iter;
 
-  if (g_str_equal (action_id, "default")) 
+  if (hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
   {
-    GHashTable *hints; 
-    GtkTreeIter iter;
+    GValue *dbus_cb;
+    gchar *hint;
+    
+    gtk_tree_model_get (GTK_TREE_MODEL (nm),
+                        &iter,
+                        HD_NM_COL_HINTS, &hints,
+                        -1);
 
-    if (hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
+    hint = g_strconcat ("dbus-callback-", action_id, NULL);
+    
+    dbus_cb = (GValue *) g_hash_table_lookup (hints, hint);
+
+    if (dbus_cb != NULL)
     {
-      GValue *dbus_cb;
-	    
-      gtk_tree_model_get (GTK_TREE_MODEL (nm),
-                          &iter,
-                          HD_NM_COL_HINTS, &hints,
-                          -1);
-
-      dbus_cb = (GValue *) g_hash_table_lookup (hints, "dbus-callback");
-
-      if (dbus_cb != NULL)
-      {
-        message = hildon_desktop_notification_manager_message_from_desc (nm, 
-			              (const gchar *) g_value_get_string (dbus_cb));
-      }
-
-      if (message != NULL)
-      {
-        dbus_connection_send (dbus_g_connection_get_connection (nm->priv->connection), 
-			      message, 
-			      NULL);
-      }
+      message = hildon_desktop_notification_manager_message_from_desc (nm, 
+      		              (const gchar *) g_value_get_string (dbus_cb));
     }
+
+    if (message != NULL)
+    {
+      dbus_connection_send (dbus_g_connection_get_connection (nm->priv->connection), 
+      		            message, 
+      		            NULL);
+    }
+
+    g_free (hint);
   }
 
-  message = hildon_desktop_notification_manager_create_signal (nm, id, "ActionInvoked");
+  message = hildon_desktop_notification_manager_create_signal (nm, &iter, "ActionInvoked");
 
   g_assert (message != NULL);
 
