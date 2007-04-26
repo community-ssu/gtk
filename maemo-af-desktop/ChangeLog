@@ -1,5 +1,9 @@
 2007-04-26  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.24
+
+2007-04-26  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-navigator/hildon-pixbuf-anim-blinker.c:
 	- protect against negative values for alpha.
 	Fixes: NB#54079

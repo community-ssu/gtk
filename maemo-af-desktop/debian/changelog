@@ -1,3 +1,23 @@
+maemo-af-desktop (2.9.99.24-1) unstable; urgency=low
+
+  * hildon-navigator/hildon-pixbuf-anim-blinker.c:
+  - protect against negative values for alpha.
+  Fixes: NB#54079
+
+  * maemo-af-desktop-main.c:
+  - create a stamp file in /tmp when starting, remove it on
+  clean shutdown
+  - do not load home applets if the file is already present on startup
+  * hildon-navigator/hildon-navigator-panel.c:
+  - place the log file in /tmp
+  * hildon-status-bar/hildon-status-bar-main.c:
+  - place the log file in /tmp
+  * hildon-home/home-applet-handler.[ch]:
+  - remove old protection mechanism for home applets.
+  Fixes: NB#51405
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 26 Apr 2007 14:36:43 +0300
+
 maemo-af-desktop (2.9.99.23-1) unstable; urgency=low
 
   * maemo-af-desktop.sh: Changed watchdog policy to restart.
