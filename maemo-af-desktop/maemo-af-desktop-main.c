@@ -90,6 +90,10 @@
 /* Moved from main to globals to reduce the amount
    of used stack -- Karoliina Salminen */
 
+
+#define MAEMO_AF_DESKTOP_STAMP_DIR      "/tmp/osso-appl-states/maemo_af_desktop/"
+#define MAEMO_AF_DESKTOP_STAMP_FILE     MAEMO_AF_DESKTOP_STAMP_DIR"/stamp"
+
 HildonNavigatorWindow *tasknav;
 osso_context_t *osso;
 StatusBar *panel;
@@ -159,16 +163,20 @@ deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
             continue;
         }
 
+        g_debug ("Got signal %i", buf.signal);
+
         switch(buf.signal)
         {
             case SIGINT:
                 /* Exit properly */
                 gtk_main_quit();
+                unlink(MAEMO_AF_DESKTOP_STAMP_FILE);
                 break;
             case SIGTERM:
                 /* Kill all the applications we where handling in TN */
                 hildon_navigator_killall();
             default:
+                unlink(MAEMO_AF_DESKTOP_STAMP_FILE);
                 exit(0);
         }
     }
@@ -194,12 +202,15 @@ deliver_signal(GIOChannel *source, GIOCondition cond, gpointer d)
 gboolean hildon_home_window_applets_init_wrapper (gpointer data);
 
 static gboolean
-start_status_bar (void)
+start_status_bar (gboolean safe_mode)
 {
     status_bar_main(osso, &panel);
 
-    /* load home applets when status bar is done */
-    g_idle_add (&hildon_home_window_applets_init_wrapper, NULL);
+    if (!safe_mode)
+    {
+        /* load home applets when status bar is done */
+        g_idle_add (&hildon_home_window_applets_init_wrapper, NULL);
+    }
  
     return FALSE;
 }
@@ -213,11 +224,28 @@ maemo_af_desktop_main(int argc, char* argv[])
     GError *error = NULL;   /* handle errors */
     long fd_flags; 	    /* used to change the pipe into non-blocking mode */
     gchar *gtkrc = NULL;
+    gboolean safe_mode = FALSE;
 
     setlocale (LC_ALL, "");
 
     bindtextdomain (PACKAGE, LOCALEDIR);
     textdomain (PACKAGE);
+
+    if (g_file_test (MAEMO_AF_DESKTOP_STAMP_FILE, G_FILE_TEST_EXISTS))
+    {
+        g_warning ("maemo-af-desktop did not exit properly on the previous "
+                   "session. All home plugins will be disabled.");
+        safe_mode = TRUE;
+    }
+    else
+    {
+        int fd;
+        mkdir (MAEMO_AF_DESKTOP_STAMP_DIR, 0755);
+        fd = creat(MAEMO_AF_DESKTOP_STAMP_FILE, S_IRUSR|S_IWUSR);
+        if (fd >= 0)
+            close (fd);
+    }
+
     
     /* Read the maemo-af-desktop gtkrc file */
     gtkrc = g_build_filename (g_get_home_dir (), 
@@ -266,7 +294,7 @@ maemo_af_desktop_main(int argc, char* argv[])
 
     gtk_widget_show_all (GTK_WIDGET (tasknav));
 
-    g_idle_add ((GSourceFunc)start_status_bar, NULL);
+    g_idle_add ((GSourceFunc)start_status_bar, GINT_TO_POINTER(safe_mode));
 
     if(pipe(signal_pipe)) 
     {

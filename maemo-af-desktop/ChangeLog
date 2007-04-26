@@ -1,14 +1,28 @@
+2007-04-26  Johan Bilien <johan.bilien@nokia.com>
+
+	* maemo-af-desktop-main.c:
+	- create a stamp file in /tmp when starting, remove it on
+	clean shutdown
+	- do not load home applets if the file is already present on startup
+	* hildon-navigator/hildon-navigator-panel.c:
+	- place the log file in /tmp
+	* hildon-status-bar/hildon-status-bar-main.c:
+	- place the log file in /tmp
+	* hildon-home/home-applet-handler.[ch]:
+	- remove old protection mechanism for home applets.
+	Fixes: NB#51405
+
 2007-02-13  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.99.23
-	
+
 2007-02-13  Johan Bilien <johan.bilien@nokia.com>
 
 	* maemo-af-desktop.sh: Changed watchdog policy to restart.
 	Fixes: NB#50401
 
 2007-02-13  Johan Bilien <johan.bilien@nokia.com>
-	
+
 	* configure.ac: 2.9.99.22
 
 2007-02-13  Johan Bilien <johan.bilien@nokia.com>
@@ -20,7 +34,7 @@
 2007-02-08  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.99.21
-	
+
 2007-02-08  Johan Bilien <johan.bilien@nokia.com>
 
 	* hildon-home/home-applet-handler.c: Do not log the deinit
@@ -47,7 +61,7 @@
 	hildon-status-bar/hildon-status-bar-main.c:
 	- reverted iteration of the main loop between the load of
 	each applet
-	
+
 2007-01-30  Johan Bilien <johan.bilien@nokia.com>
 
 	* configure.ac: 2.9.99.19

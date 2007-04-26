@@ -86,7 +86,7 @@ G_BEGIN_DECLS
 #define HSB_PLUGIN_CATEGORY_CONDITIONAL "conditional"
 #define HSB_PLUGIN_CATEGORY_TEMPORAL    "temporal"
 
-#define HSB_PLUGIN_LOG_FILE             "/.osso/statusbar.log"
+#define HSB_PLUGIN_LOG_FILE             "/osso-appl-states/maemo_af_desktop/statusbar.log"
 #define HSB_PLUGIN_LOG_KEY_START	"Init"
 #define HSB_PLUGIN_LOG_KEY_END		"End"
 

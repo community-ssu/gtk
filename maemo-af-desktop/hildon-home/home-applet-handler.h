@@ -101,9 +101,6 @@ struct _HomeAppletHandler {
 
 struct _HomeAppletHandlerClass {
     GObjectClass parent_class;
-
-    HildonLog   *log;
-    GList       *bad_plugins;
 };
 
 

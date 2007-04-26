@@ -135,7 +135,6 @@ static void home_applet_handler_class_init(HomeAppletHandlerClass * applet_class
 {
     /* Get convenience variables */
     GObjectClass *object_class = G_OBJECT_CLASS(applet_class);
-    gchar *log_path;
     
     /* Set the global parent_class here */
     parent_class = g_type_class_peek_parent(applet_class);
@@ -145,17 +144,6 @@ static void home_applet_handler_class_init(HomeAppletHandlerClass * applet_class
    
     g_type_class_add_private(applet_class,
                              sizeof(struct _HomeAppletHandlerPrivate));
-
-    log_path = g_strdup_printf ("%s%s",
-                                g_get_home_dir (),
-                                HH_LOG_PATH);
-    applet_class->log = hildon_log_new (log_path);
-    g_free (log_path);
-    applet_class->bad_plugins = 
-        hildon_log_get_incomplete_groups (applet_class->log,
-                                          "init_start",
-                                          "init_end",
-                                          NULL);
     
 }
 
@@ -276,8 +264,6 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     GtkWidget *applet;
     HomeAppletHandlerPrivate *priv;
     HomeAppletHandler *handler;
-    HildonLog *log;
-    GList     *bad_plugins;
     gint applet_x = APPLET_INVALID_COORDINATE;
     gint applet_y = APPLET_INVALID_COORDINATE;
     gint applet_minwidth = APPLET_NONCHANGABLE_DIMENSION;
@@ -428,23 +414,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
     
     handler = g_object_new (HOME_TYPE_APPLET_HANDLER, NULL);
     priv = HOME_APPLET_HANDLER_GET_PRIVATE(handler);
-    log = HOME_APPLET_HANDLER_GET_CLASS(handler)->log;
-    bad_plugins = HOME_APPLET_HANDLER_GET_CLASS(handler)->bad_plugins;
 
-    if (g_list_find_custom (bad_plugins, desktoppath, (GCompareFunc)strcmp))
-    {
-        g_warning ("Not loading %s as it did not complete initialization on "
-                   "previous startup",
-                   desktoppath);
-
-        /* The plugin was found to crash during initialization last time */
-        g_object_unref (handler);
-        g_free (libraryfile);
-        return NULL;
-    }
-
-    hildon_log_add_group (log, desktoppath);
-        
     librarypath =
             g_strconcat(HOME_APPLET_HANDLER_LIBRARY_DIR, libraryfile, NULL);
     priv->dlhandle = dlopen(librarypath, RTLD_NOW);
@@ -474,9 +444,7 @@ HomeAppletHandler *home_applet_handler_new(const char *desktoppath,
             return NULL;
         }
 
-        hildon_log_add_message (log, "init_start", "1");
         priv->applet_data = priv->initialize(state_data, state_size, &applet);
-        hildon_log_add_message (log, "init_end", "1");
         priv->widget = applet;
 	
         handler->libraryfile = libraryfile;

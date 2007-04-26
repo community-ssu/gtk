@@ -125,15 +125,15 @@ hildon_navigator_panel_init (HildonNavigatorPanel *panel)
 {
   HildonNavigatorPanelPrivate *priv;
   gchar *path;
-  const gchar *home;
+  const gchar *tmp;
   gint i;
   
   g_return_if_fail (panel);
 
   priv = HILDON_NAVIGATOR_PANEL_GET_PRIVATE (panel);
 
-  home = getenv ("HOME");
-  path = g_strdup_printf ("%s%s",home,HILDON_NAVIGATOR_LOG_FILE);
+  tmp = g_get_tmp_dir ();
+  path = g_strdup_printf ("%s%s",tmp,HILDON_NAVIGATOR_LOG_FILE);
   
   priv->log = hildon_log_new (path);
 

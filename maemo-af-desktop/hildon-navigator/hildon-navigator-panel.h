@@ -28,7 +28,7 @@
 #define LIBTN_MAIL_PLUGIN        "libtn_mail_plugin.so"
 #define LIBTN_BOOKMARK_PLUGIN    "libtn_bookmark_plugin.so"
 
-#define HILDON_NAVIGATOR_LOG_FILE "/.osso/navigator.log"
+#define HILDON_NAVIGATOR_LOG_FILE "/osso-appl-states/maemo_af_desktop/navigator.log"
 
 #include <gtk/gtkbox.h>
 #include "hildon-navigator-item.h"
