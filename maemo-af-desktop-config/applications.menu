@@ -16,6 +16,8 @@
     <Filename>osso_rss_feed_reader.desktop</Filename>
     <Filename>image-viewer.desktop</Filename>
     <Filename>filemanager.desktop</Filename>
+    <Filename>skype.desktop</Filename>
+    <Filename>rhapsody.desktop</Filename>
   </Include>
 
   <Separator/>
