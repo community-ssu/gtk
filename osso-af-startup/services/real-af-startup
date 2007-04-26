@@ -159,6 +159,9 @@ start)
     sleep 1
     wizback_method quit
 
+    if [ -x /usr/bin/rhapsody-installer.sh ]; then
+      /usr/bin/rhapsody-installer.sh
+    fi
     rm -f $HOME/first-boot-flag
     rm -f /tmp/suw-user-cancelled.tmp
     touch /tmp/.check_auto_install
