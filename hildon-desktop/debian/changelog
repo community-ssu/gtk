@@ -1,3 +1,27 @@
+hildon-desktop (0.0.10-1) unstable; urgency=low
+
+  * src/hn-app-switcher.c, src/hd-home-window.c, src/hn-others-button.c,
+  libhildondesktop/hildon-home-titlebar.c:
+  - define ENABLE_UNSTABLE_API when include hildon-helper.h, as this
+  seems now required
+
+  * src/hd-desktop.c:
+  - Fixed the leak of the configuration file buffer
+  - Fixed the leak of the array returned by g_key_file_get_groups
+
+  * libhildondesktop/hildon-desktop-popup-menu.ch:
+  - Each item has a pre-specified size except GtkSeparatorMenuItems.
+  - Added method to scroll to pre-selected item. Based on size of each item.
+  - Now inherits from a GtkVBox
+  - Set proper size to internal GtkScrolledWindow.
+  - Added scroll buttons.
+  - Several bugfixes.
+  * libhildondesktop/hildon-desktop-popup-window.ch:
+  - Emit signal when popping up the menu. (to be used along
+  "scrolling-to" HildonDesktopPopupMenu functionality).
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Thu, 26 Apr 2007 15:12:19 +0300
+
 hildon-desktop (0.0.9-1) sardine; urgency=low
 
   * fixed build-dependency on libhildonfm2-dev | hildon-libs-dev to

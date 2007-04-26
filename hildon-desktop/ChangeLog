@@ -1,5 +1,9 @@
 2007-04-26  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.10
+
+2007-04-26  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hn-app-switcher.c, src/hd-home-window.c, src/hn-others-button.c,
 	libhildondesktop/hildon-home-titlebar.c:
 	- define ENABLE_UNSTABLE_API when include hildon-helper.h, as this
