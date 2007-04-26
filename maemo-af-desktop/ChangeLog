@@ -1,5 +1,11 @@
 2007-04-26  Johan Bilien <johan.bilien@nokia.com>
 
+	* hildon-navigator/hildon-pixbuf-anim-blinker.c:
+	- protect against negative values for alpha.
+	Fixes: NB#54079
+
+2007-04-26  Johan Bilien <johan.bilien@nokia.com>
+
 	* maemo-af-desktop-main.c:
 	- create a stamp file in /tmp when starting, remove it on
 	clean shutdown
