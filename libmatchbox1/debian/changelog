@@ -1,3 +1,9 @@
+libmatchbox1 (2:1.9-osso5) unstable; urgency=low
+
+  * debian/rules : more fixing :-/, now it should run autogen before build
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Thu, 26 Apr 2007 14:02:49 +0300
+
 libmatchbox1 (2:1.9-osso4) unstable; urgency=low
 
   * debian/rules : fix debian packaging
