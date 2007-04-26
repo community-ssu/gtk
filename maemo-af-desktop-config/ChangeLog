@@ -1,5 +1,9 @@
 2007-04-26  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 0.1.10
+
+2007-04-26  Johan Bilien <johan.bilien@nokia.com>
+
 	* applet_manager.conf: Removed all but internet search and
 	webshortcut applets
 
