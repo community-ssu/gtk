@@ -45,7 +45,9 @@
 #include <X11/Xatom.h>
 
 #ifdef HAVE_LIBHILDON
+#define ENABLE_UNSTABLE_API
 #include <hildon/hildon-helper.h>
+#undef ENABLE_UNSTABLE_API
 #else
 #include <hildon-widgets/hildon-finger.h>
 #endif

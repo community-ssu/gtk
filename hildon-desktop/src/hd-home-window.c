@@ -44,7 +44,9 @@
 #include <hildon/hildon-banner.h>
 #include <hildon/hildon-note.h>
 #include <hildon/hildon-defines.h>
+#define ENABLE_UNSTABLE_API
 #include <hildon/hildon-helper.h>
+#undef ENABLE_UNSTABLE_API
 #else
 #include <hildon-widgets/hildon-banner.h>
 #include <hildon-widgets/hildon-note.h>
