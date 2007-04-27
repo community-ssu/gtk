@@ -29,46 +29,118 @@ Index: apt-pkg/acquire-item.cc
  // AcqArchive::AcqArchive - Constructor					/*{{{*/
  // ---------------------------------------------------------------------
  /* This just sets up the initial fetch environment and queues the first
-@@ -1261,7 +1280,7 @@
+@@ -1260,8 +1279,8 @@
+ 			     pkgRecords *Recs,pkgCache::VerIterator const &Version,
  			     string &StoreFilename) :
                 Item(Owner), Version(Version), Sources(Sources), Recs(Recs), 
-                StoreFilename(StoreFilename), Vf(Version.FileList()), 
+-               StoreFilename(StoreFilename), Vf(Version.FileList()), 
 -	       Trusted(false)
++               StoreFilename(StoreFilename),
 +	       TrustLevel(0)
  {
     Retries = _config->FindI("Acquire::Retries",0);
  
-@@ -1307,13 +1326,17 @@
-       pkgIndexFile *Index;
-       if (Sources->FindIndex(i.File(),Index) == false)
-          continue;
+@@ -1277,6 +1296,9 @@
+    /* We need to find a filename to determine the extension. We make the
+       assumption here that all the available sources for this version share
+       the same extension.. */
 +
-+      int l = index_trust_level_for_package (Index, Version);
++   pkgCache::VerFileIterator Vf = Version.FileList();
 +
-       if (_config->FindB("Debug::pkgAcquire::Auth", false))
-       {
-          std::cerr << "Checking index: " << Index->Describe()
+    // Skip not source sources, they do not have file fields.
+    for (; Vf.end() == false; Vf++)
+    {
+@@ -1300,31 +1322,55 @@
+ 	              "." + flExtension(Parse.FileName());
+    }
+ 
+-   // check if we have one trusted source for the package. if so, switch
+-   // to "TrustedOnly" mode
+-   for (pkgCache::VerFileIterator i = Version.FileList(); i.end() == false; i++)
+-   {
+-      pkgIndexFile *Index;
+-      if (Sources->FindIndex(i.File(),Index) == false)
+-         continue;
+-      if (_config->FindB("Debug::pkgAcquire::Auth", false))
+-      {
+-         std::cerr << "Checking index: " << Index->Describe()
 -                   << "(Trusted=" << Index->IsTrusted() << ")\n";
-+                   << "(Trust level =" << l << ")\n";
-       }
+-      }
 -      if (Index->IsTrusted()) {
 -         Trusted = true;
-+
-+      if (l > TrustLevel) {
-+         TrustLevel = l;
- 	 break;
-       }
-    }
-@@ -1322,7 +1345,7 @@
-    // that means that e.g. unauthenticated file:// uris are higher
-    // priority than authenticated http:// uris
+-	 break;
+-      }
+-   }
++   VerFileCandidates.clear();
++   TrustLevel = 0;
+ 
+-   // "allow-unauthenticated" restores apts old fetching behaviour
+-   // that means that e.g. unauthenticated file:// uris are higher
+-   // priority than authenticated http:// uris
     if (_config->FindB("APT::Get::AllowUnauthenticated",false) == true)
 -      Trusted = false;
-+      TrustLevel = 0;
++     {
++       // "allow-unauthenticated" restores apts old fetching behaviour
++       // that means that e.g. unauthenticated file:// uris are higher
++       // priority than authenticated http:// uris
++       
++       while (!Vf.end())
++	 {
++	   if ((Vf.File()->Flags & pkgCache::Flag::NotSource) != 0)
++	     continue;
++	   VerFileCandidates.push_back (Vf);
++	   Vf++;
++	 }
++     }
++   else
++     {
++       // Find the sources with the highest trust level.
  
++       while (!Vf.end())
++	 {
++	   pkgIndexFile *Index;
++	   if (Sources->FindIndex(Vf.File(),Index) == false)
++	     continue;
++       
++	   int l = index_trust_level_for_package (Index, Version);
++	   
++	   if (_config->FindB("Debug::pkgAcquire::Auth", false))
++	     {
++	       std::cerr << "Checking index: " << Index->Describe()
++			 << "(Trust level =" << l << ")\n";
++	     }
++	   
++	   if (l >= TrustLevel) 
++	     {
++	       if (l > TrustLevel)
++		 VerFileCandidates.clear ();
++	       VerFileCandidates.push_back (Vf);
++	       TrustLevel = l;
++	     }
++	   
++	   Vf++;
++	 }
++     }
++
     // Select a source
++   CurVerFile = VerFileCandidates.begin ();
     if (QueueNext() == false && _error->PendingError() == false)
-@@ -1349,10 +1372,9 @@
+       _error->Error(_("I wasn't able to locate file for the %s package. "
+ 		    "This might mean you need to manually fix this package."),
+@@ -1338,22 +1384,15 @@
+    checking later. */
+ bool pkgAcqArchive::QueueNext()
+ {   
+-   for (; Vf.end() == false; Vf++)
++  while (CurVerFile != VerFileCandidates.end())
+    {
+-      // Ignore not source sources
+-      if ((Vf.File()->Flags & pkgCache::Flag::NotSource) != 0)
+-	 continue;
++      pkgCache::VerFileIterator Vf = *CurVerFile++;
+ 
+       // Try to cross match against the source list
+       pkgIndexFile *Index;
        if (Sources->FindIndex(Vf.File(),Index) == false)
  	    continue;
        
@@ -76,13 +148,37 @@ Index: apt-pkg/acquire-item.cc
 -      // is also trusted
 -      if(Trusted && !Index->IsTrusted()) 
 -	 continue;
-+      // only consider sources with a high enough trust level
-+      if (index_trust_level_for_package (Index, Version) < TrustLevel)
-+	continue;
- 
+-
        // Grab the text package record
        pkgRecords::Parser &Parse = Recs->Lookup(Vf);
-@@ -1537,7 +1559,7 @@
+       if (_error->PendingError() == true)
+@@ -1431,7 +1470,6 @@
+       Desc.ShortDesc = Version.ParentPkg().Name();
+       QueueURI(Desc);
+ 
+-      Vf++;
+       return true;
+    }
+    return false;
+@@ -1508,7 +1546,7 @@
+        StringToBool(LookupTag(Message,"Transient-Failure"),false) == true)
+    {
+       // Vf = Version.FileList();
+-      while (Vf.end() == false) Vf++;
++      CurVerFile = VerFileCandidates.end ();
+       StoreFilename = string();
+       Item::Failed(Message,Cnf);
+       return;
+@@ -1522,7 +1560,7 @@
+ 	  StringToBool(LookupTag(Message,"Transient-Failure"),false) == true)
+       {
+ 	 Retries--;
+-	 Vf = Version.FileList();
++	 CurVerFile = VerFileCandidates.begin ();
+ 	 if (QueueNext() == true)
+ 	    return;
+       }
+@@ -1537,7 +1575,7 @@
  // ---------------------------------------------------------------------
  bool pkgAcqArchive::IsTrusted()
  {
@@ -95,16 +191,29 @@ Index: apt-pkg/acquire-item.h
 ===================================================================
 --- apt-pkg/acquire-item.h	(revision 11192)
 +++ apt-pkg/acquire-item.h	(working copy)
-@@ -256,7 +256,7 @@
+@@ -27,6 +27,8 @@
+ #include <apt-pkg/pkgrecords.h>
+ #include <apt-pkg/indexrecords.h>
+ 
++#include <list>
++
+ #ifdef __GNUG__
+ #pragma interface "apt-pkg/acquire-item.h"
+ #endif 
+@@ -254,9 +256,10 @@
+    pkgRecords *Recs;
+    string MD5;
     string &StoreFilename;
-    pkgCache::VerFileIterator Vf;
+-   pkgCache::VerFileIterator Vf;
++   std::list<pkgCache::VerFileIterator> VerFileCandidates;
++   std::list<pkgCache::VerFileIterator>::const_iterator CurVerFile;
     unsigned int Retries;
 -   bool Trusted; 
 +   int TrustLevel; 
  
     // Queue the next available file for download.
     bool QueueNext();
-@@ -303,4 +303,28 @@
+@@ -303,4 +306,28 @@
  	      const string &DestDir="", const string &DestFilename="");
  };
  
@@ -120,7 +229,7 @@ Index: apt-pkg/acquire-item.h
 +   repositories and a level of one for repositories with valid
 +   signatures.
 +
-+   The IsTrusted prodicate on a pkgAcqArchive object will return true
++   The IsTrusted predicate on a pkgAcqArchive object will return true
 +   when the highest trust level is non-zero, false otherwise.
 +
 +   A trust level can be negative.  In that case, the index will never

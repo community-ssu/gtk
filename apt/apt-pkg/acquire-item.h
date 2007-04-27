@@ -27,6 +27,8 @@
 #include <apt-pkg/pkgrecords.h>
 #include <apt-pkg/indexrecords.h>
 
+#include <list>
+
 #ifdef __GNUG__
 #pragma interface "apt-pkg/acquire-item.h"
 #endif 
@@ -254,9 +256,10 @@ class pkgAcqArchive : public pkgAcquire::Item
    pkgRecords *Recs;
    string MD5;
    string &StoreFilename;
-   pkgCache::VerFileIterator Vf;
+   std::list<pkgCache::VerFileIterator> VerFileCandidates;
+   std::list<pkgCache::VerFileIterator>::const_iterator CurVerFile;
    unsigned int Retries;
-   bool Trusted; 
+   int TrustLevel; 
 
    // Queue the next available file for download.
    bool QueueNext();
@@ -302,5 +305,29 @@ class pkgAcqFile : public pkgAcquire::Item
 	      string Desc, string ShortDesc,
 	      const string &DestDir="", const string &DestFilename="");
 };
+
+/* For influencing the IsTrusted decision when acquiring a new version
+   of a package and for influencing which source is selected if the
+   highest version of a package is available from multiple sources.
+
+   The hook should return a integer indicating the 'trust level' that
+   a given index should be afforded for a given package.  Indices with
+   higher trust levels will be preferred.
+
+   The default behavior is to use a trust level of zero for unsigned
+   repositories and a level of one for repositories with valid
+   signatures.
+
+   The IsTrusted predicate on a pkgAcqArchive object will return true
+   when the highest trust level is non-zero, false otherwise.
+
+   A trust level can be negative.  In that case, the index will never
+   be considered as a source for the package.
+*/
+
+void
+apt_set_index_trust_level_for_package_hook (int (*hook)
+					    (pkgIndexFile *Index,
+					     const pkgCache::VerIterator &V));
 
 #endif

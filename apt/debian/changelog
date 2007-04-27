@@ -1,3 +1,11 @@
+apt (0.6.46.4.osso4) unstable; urgency=low
+
+  * Applied trusthook.patch that gives us a way to hook into libapt-pkg
+    when it is deciding where to download a archive file from and whether
+    to trust it.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Tue, 24 Apr 2007 16:04:43 +0300
+
 apt (0.6.46.4.osso3) unstable; urgency=low
 
   * Applied gpgvinfo.patch that causes the output of gpgv to be recorded

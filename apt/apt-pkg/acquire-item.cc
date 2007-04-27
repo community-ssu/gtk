@@ -1251,6 +1251,25 @@ void pkgAcqMetaIndex::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
 }
 
 									/*}}}*/
+static int
+default_index_trust_level_for_package (pkgIndexFile *Index,
+				       const pkgCache::VerIterator &Ver)
+{
+  return Index->IsTrusted ()? 1 : 0;
+}
+
+static int (*index_trust_level_for_package) (pkgIndexFile *Index,
+					      const pkgCache::VerIterator &Ver)
+  = default_index_trust_level_for_package;
+
+void
+apt_set_index_trust_level_for_package_hook (int (*hook)
+					    (pkgIndexFile *Index,
+					     const pkgCache::VerIterator &Ver))
+{
+  index_trust_level_for_package = hook;
+}
+
 
 // AcqArchive::AcqArchive - Constructor					/*{{{*/
 // ---------------------------------------------------------------------
@@ -1260,8 +1279,8 @@ pkgAcqArchive::pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
 			     pkgRecords *Recs,pkgCache::VerIterator const &Version,
 			     string &StoreFilename) :
                Item(Owner), Version(Version), Sources(Sources), Recs(Recs), 
-               StoreFilename(StoreFilename), Vf(Version.FileList()), 
-	       Trusted(false)
+               StoreFilename(StoreFilename),
+	       TrustLevel(0)
 {
    Retries = _config->FindI("Acquire::Retries",0);
 
@@ -1277,6 +1296,9 @@ pkgAcqArchive::pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
    /* We need to find a filename to determine the extension. We make the
       assumption here that all the available sources for this version share
       the same extension.. */
+
+   pkgCache::VerFileIterator Vf = Version.FileList();
+
    // Skip not source sources, they do not have file fields.
    for (; Vf.end() == false; Vf++)
    {
@@ -1300,31 +1322,55 @@ pkgAcqArchive::pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
 	              "." + flExtension(Parse.FileName());
    }
 
-   // check if we have one trusted source for the package. if so, switch
-   // to "TrustedOnly" mode
-   for (pkgCache::VerFileIterator i = Version.FileList(); i.end() == false; i++)
-   {
-      pkgIndexFile *Index;
-      if (Sources->FindIndex(i.File(),Index) == false)
-         continue;
-      if (_config->FindB("Debug::pkgAcquire::Auth", false))
-      {
-         std::cerr << "Checking index: " << Index->Describe()
-                   << "(Trusted=" << Index->IsTrusted() << ")\n";
-      }
-      if (Index->IsTrusted()) {
-         Trusted = true;
-	 break;
-      }
-   }
+   VerFileCandidates.clear();
+   TrustLevel = 0;
 
-   // "allow-unauthenticated" restores apts old fetching behaviour
-   // that means that e.g. unauthenticated file:// uris are higher
-   // priority than authenticated http:// uris
    if (_config->FindB("APT::Get::AllowUnauthenticated",false) == true)
-      Trusted = false;
+     {
+       // "allow-unauthenticated" restores apts old fetching behaviour
+       // that means that e.g. unauthenticated file:// uris are higher
+       // priority than authenticated http:// uris
+       
+       while (!Vf.end())
+	 {
+	   if ((Vf.File()->Flags & pkgCache::Flag::NotSource) != 0)
+	     continue;
+	   VerFileCandidates.push_back (Vf);
+	   Vf++;
+	 }
+     }
+   else
+     {
+       // Find the sources with the highest trust level.
+
+       while (!Vf.end())
+	 {
+	   pkgIndexFile *Index;
+	   if (Sources->FindIndex(Vf.File(),Index) == false)
+	     continue;
+       
+	   int l = index_trust_level_for_package (Index, Version);
+	   
+	   if (_config->FindB("Debug::pkgAcquire::Auth", false))
+	     {
+	       std::cerr << "Checking index: " << Index->Describe()
+			 << "(Trust level =" << l << ")\n";
+	     }
+	   
+	   if (l >= TrustLevel) 
+	     {
+	       if (l > TrustLevel)
+		 VerFileCandidates.clear ();
+	       VerFileCandidates.push_back (Vf);
+	       TrustLevel = l;
+	     }
+	   
+	   Vf++;
+	 }
+     }
 
    // Select a source
+   CurVerFile = VerFileCandidates.begin ();
    if (QueueNext() == false && _error->PendingError() == false)
       _error->Error(_("I wasn't able to locate file for the %s package. "
 		    "This might mean you need to manually fix this package."),
@@ -1338,22 +1384,15 @@ pkgAcqArchive::pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
    checking later. */
 bool pkgAcqArchive::QueueNext()
 {   
-   for (; Vf.end() == false; Vf++)
+  while (CurVerFile != VerFileCandidates.end())
    {
-      // Ignore not source sources
-      if ((Vf.File()->Flags & pkgCache::Flag::NotSource) != 0)
-	 continue;
+      pkgCache::VerFileIterator Vf = *CurVerFile++;
 
       // Try to cross match against the source list
       pkgIndexFile *Index;
       if (Sources->FindIndex(Vf.File(),Index) == false)
 	    continue;
       
-      // only try to get a trusted package from another source if that source
-      // is also trusted
-      if(Trusted && !Index->IsTrusted()) 
-	 continue;
-
       // Grab the text package record
       pkgRecords::Parser &Parse = Recs->Lookup(Vf);
       if (_error->PendingError() == true)
@@ -1431,7 +1470,6 @@ bool pkgAcqArchive::QueueNext()
       Desc.ShortDesc = Version.ParentPkg().Name();
       QueueURI(Desc);
 
-      Vf++;
       return true;
    }
    return false;
@@ -1508,7 +1546,7 @@ void pkgAcqArchive::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
        StringToBool(LookupTag(Message,"Transient-Failure"),false) == true)
    {
       // Vf = Version.FileList();
-      while (Vf.end() == false) Vf++;
+      CurVerFile = VerFileCandidates.end ();
       StoreFilename = string();
       Item::Failed(Message,Cnf);
       return;
@@ -1522,7 +1560,7 @@ void pkgAcqArchive::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
 	  StringToBool(LookupTag(Message,"Transient-Failure"),false) == true)
       {
 	 Retries--;
-	 Vf = Version.FileList();
+	 CurVerFile = VerFileCandidates.begin ();
 	 if (QueueNext() == true)
 	    return;
       }
@@ -1537,7 +1575,7 @@ void pkgAcqArchive::Failed(string Message,pkgAcquire::MethodConfig *Cnf)
 // ---------------------------------------------------------------------
 bool pkgAcqArchive::IsTrusted()
 {
-   return Trusted;
+   return TrustLevel > 0;
 }
 
 // AcqArchive::Finished - Fetching has finished, tidy up		/*{{{*/
