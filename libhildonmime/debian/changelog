@@ -1,9 +1,8 @@
 libhildonmime (1.9.4-1) unstable; urgency=low
 
-  * UNRELEASED!
   * Improve test case and documentation for open API, related to NB#54056
 
- -- Martyn Russell <martyn@imendio.com>  Fri, 20 April 2007 17:33:01 +0000
+ -- Martyn Russell <martyn@imendio.com>  Fri, 27 April 2007 17:00:01 +0100
 
 libhildonmime (1.9.3-2) unstable; urgency=low
 
