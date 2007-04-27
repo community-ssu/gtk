@@ -63,8 +63,8 @@
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
 
-/* #define DEBUG_MSG(x)*/
-#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");   
+#define DEBUG_MSG(x)
+/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");   */
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
