@@ -1,3 +1,20 @@
+2007-04-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: 
+
+	qgn_plat_application_call_handling_block_active.png=7145,719,26,26
+	qgn_plat_application_call_handling_frame_block.png=7210,719,26,26
+
+	qgn_plat_arrow_expander_disabled.png=7184,619,26,26
+	qgn_plat_arrow_expander_down_disabled.png=7184,650,26,26
+	qgn_plat_arrow_expander_down_focused.png=7153,650,26,26
+	qgn_plat_arrow_expander_down_normal.png=7122,650,26,26
+	qgn_plat_arrow_expander_focused.png=7153,619,26,26
+	qgn_plat_arrow_expander_normal.png=7122,619,26,26
+
+	Moved around (left) a bit to make space for new logical color
+	layout.
+
 2007-04-27  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Oops. Swapped coords for disabled and
