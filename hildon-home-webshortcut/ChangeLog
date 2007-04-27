@@ -1,3 +1,9 @@
+2007-04-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* plugin/hildon-home-webshortcut.c: Pass the object
+	instead of its private member to the loader error handler.
+	Fixes: NB#55297
+
 2007-03-09  Johan Bilien  <johan.bilien@nokia.com>
 
 	* Reverted version to 1.9.0 for coherence with the rest

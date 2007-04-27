@@ -108,7 +108,8 @@ hhws_show_information_note (Hhws *hhws,
   HhwsPrivate  *priv = hhws->priv;
   GtkWidget    *note = NULL;
 
-  note = hildon_note_new_information (GTK_WINDOW (priv->home_win),
+  note = hildon_note_new_information (priv->home_win?
+                                      GTK_WINDOW (priv->home_win):NULL,
                                       text);
 
   gtk_dialog_run (GTK_DIALOG (note));
@@ -278,8 +279,10 @@ hhws_select_file_dialog (Hhws *hhws)
   gtk_file_filter_add_mime_type (mime_type_filter, "image/bmp");
   gtk_file_filter_add_mime_type (mime_type_filter, "image/tiff");
   gtk_file_filter_add_mime_type (mime_type_filter, "sketch/png");
+#if 0
   gtk_file_chooser_set_filter (GTK_FILE_CHOOSER (dialog),
                                mime_type_filter);
+#endif
 
   dir = hhws_get_user_image_dir ();
   if (!gtk_file_chooser_set_current_folder (GTK_FILE_CHOOSER (dialog), dir))
@@ -355,7 +358,7 @@ hhws_settings_dialog_response (GtkWidget *dialog,
               error_handler = g_signal_connect (priv->loader,
                                                 "loading-failed",
                                                 G_CALLBACK (hhws_loader_error_cb),
-                                                priv);
+                                                hhws);
 
               hhws_loader_set_uri (priv->loader, new_image_path);
               g_signal_handler_disconnect (priv->loader, error_handler);
@@ -655,9 +658,9 @@ hhws_settings (HildonDesktopHomeItem   *applet,
                GtkWidget               *parent)
 {
   Hhws         *hhws = HHWS (applet);
-  HhwsPrivate  *priv = hhws->priv; 
+  HhwsPrivate  *priv = hhws->priv;
   GtkWidget    *item;
- 
+
   priv->home_win = parent;
   item = gtk_menu_item_new_with_label (HHWS_TITLEBAR_MENU);
 
