@@ -95,7 +95,7 @@ hildon_desktop_item_class_init (HildonDesktopItemClass *item_class)
 
   g_object_class_install_property (object_class,
                                    PROP_NAME,
-                                   g_param_spec_string("name",
+                                   g_param_spec_string("item-name",
                                                        "Plugin's Name",
                                                        "Name of the plugin, not widget",
                                                        "HildonDesktopItem",

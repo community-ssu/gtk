@@ -1,3 +1,30 @@
+2007-04-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
+	- layout mode is now considered to suck again.
+	- added temporary alpha adjustment dialogs
+	* libhildondesktop/hildon-desktop-item.c:
+	- renamed "name" property to "item-name" (was conflicting with the
+	widget name)
+	* libhildondesktop/hildon-desktop-home-item.c:
+	- added "state" property, whether the applet is being moved
+	or resized
+	- added background-borders style property
+	- layout mode sucks by default
+	* libhildondesktop/hildon-home-area.c:
+	- added "default-alpha" property
+	- added "child-data" child property containing XRender picture
+	for the child and its alpha-mask
+	- added handlers for the child's style-set, realize, size-allocate
+	to redirect the child to offscreen and create the scaled
+	alpha mask accordingly
+	- added _realize/_unrealize to create a XRender Picture
+	- added _expose to composite the children on the area
+	- added child window filter to repair the damage to the
+	children
+	- removed simple placement algorithm
+	* configure.ac: check for libxdamage and libxcomposite
+
 2007-04-26  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-notification-manager.c: generalize

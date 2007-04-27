@@ -39,6 +39,7 @@
 #include <libhildondesktop/hildon-desktop-home-item.h>
 
 #include <gtk/gtkcheckmenuitem.h>
+#include <gtk/gtkspinbutton.h>
 
 #ifdef HAVE_LIBHILDON
 #include <hildon/hildon-banner.h>
@@ -208,6 +209,9 @@ hd_home_window_show_information_banner (HDHomeWindow *window,
 #endif
 
 static void
+hd_home_window_adjust_alpha_activate (HDHomeWindow *window);
+
+static void
 hd_home_window_class_init (HDHomeWindowClass *window_class)
 {
   GParamSpec               *pspec;
@@ -251,7 +255,7 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   pspec = g_param_spec_boolean ("layout-mode-sucks",
                                 "Layout mode sucks",
                                 "Whether or not the layout mode sucks",
-                                FALSE,
+                                TRUE,
                                (G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   g_object_class_install_property (object_class,
                                    PROP_LAYOUT_MODE_SUCKS,
@@ -781,6 +785,13 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
 #endif
 #endif
   
+  menu_item = gtk_menu_item_new_with_label ("Adjust transparency");
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+  g_signal_connect_swapped (menu_item, "activate",
+                            G_CALLBACK (hd_home_window_adjust_alpha_activate),
+                            window);
+  gtk_widget_show (menu_item);
+  
   return menu;
 
 }
@@ -1225,14 +1236,18 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
     {
       case GTK_RESPONSE_OK:
           gtk_widget_hide (GTK_WIDGET(dialog));
+          g_debug ("BACKGROUND_OK");
           if (!hd_home_background_equal (priv->background,
                                          background))
+            {
+          g_debug ("BACKGROUND_NOT_EQUAL");
             hd_home_background_apply_async 
                 (background,
                  GTK_WIDGET (window)->window,
                  workarea,
                  (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
                window);
+            }
           g_object_unref (priv->previous_background);
           break;
       case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
@@ -1312,3 +1327,55 @@ hd_home_window_show_information_banner (HDHomeWindow *window,
                                   text);
 }
 #endif
+
+static void
+scale_changed (GtkRange *range, GtkWidget *area)
+{
+  gint  alpha;
+  
+  alpha = (gint) gtk_range_get_value (range);
+
+  g_debug ("value_changed");
+
+  g_object_set (area,
+                "applet-default-alpha", alpha,
+                NULL);
+}
+
+static void
+hd_home_window_adjust_alpha_activate (HDHomeWindow *window)
+{
+  GtkWidget    *area, *dialog, *scale;
+  gint          alpha;
+  gint          response;
+
+  area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
+
+  g_object_get (area,
+                "applet-default-alpha", &alpha,
+                NULL);
+
+  dialog = gtk_dialog_new_with_buttons ("Adjust applets' transparency",
+                                        GTK_WINDOW (window),
+                                        GTK_DIALOG_MODAL | 
+                                          GTK_DIALOG_DESTROY_WITH_PARENT,
+                                        GTK_STOCK_OK, GTK_RESPONSE_ACCEPT,
+                                        NULL);
+  gtk_widget_set_size_request (dialog, 300, -1);
+
+  scale = gtk_hscale_new_with_range (0.0,
+                                     100.0,
+                                     1.0);
+  gtk_widget_show (scale);
+  g_signal_connect (scale, "value-changed",
+                    G_CALLBACK (scale_changed),
+                    area);
+  gtk_range_set_value (GTK_RANGE (scale), (gdouble)alpha);
+  
+  gtk_container_add (GTK_CONTAINER (GTK_DIALOG (dialog)->vbox), scale);
+
+  response = gtk_dialog_run (GTK_DIALOG (dialog));
+  
+  gtk_widget_destroy (dialog);
+}
+

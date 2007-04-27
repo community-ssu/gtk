@@ -411,6 +411,7 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
   HildonDesktopHomeItemResizeType resize_type = HILDON_DESKTOP_HOME_ITEM_RESIZE_NONE;
   gint                          min_width = -1, min_height = -1;
   GKeyFile                     *keyfile;
+  const gchar                  *name;
 
   priv = HD_PLUGIN_LOADER_LEGACY_GET_PRIVATE (loader);
 
@@ -490,13 +491,16 @@ hd_plugin_loader_legacy_home_init (HDPluginLoaderLegacy    *loader,
       else
         g_error_free (kferror);
     }
-
-  g_debug ("Creating applet with resize-type: %i, minim-width: %i, minimum-height: %i", resize_type, min_width, min_height);
   
+  name = gtk_widget_get_name (module_widget);
+
+  g_debug ("Setting name to %s", name);
+
   applet = GTK_WIDGET (g_object_new (HILDON_DESKTOP_TYPE_HOME_ITEM,
                                      "resize-type", resize_type,
                                      "minimum-width", min_width,
                                      "minimum-height", min_height,
+                                     "name", name,
                                      "child", module_widget,
                                      NULL));
 

@@ -167,6 +167,25 @@ PKG_CHECK_MODULES(ESD, esound)
 AC_SUBST(ESD_LIBS)
 AC_SUBST(ESD_CFLAGS)
 
+PKG_CHECK_MODULES(XDAMAGE, xdamage, has_damage=yes,
+[AC_MSG_NOTICE(libxdamage not found, compositing will be disabled)])
+AC_SUBST(XDAMAGE_LIBS)
+AC_SUBST(XDAMAGE_CFLAGS)
+
+PKG_CHECK_MODULES(XCOMPOSITE, xcomposite, has_composite=yes,
+[AC_MSG_NOTICE(libxcomposite not found, compositing will be disabled)])
+AC_SUBST(XCOMPOSITE_LIBS)
+AC_SUBST(XCOMPOSITE_CFLAGS)
+
+if ["x${has_composite}"="xyes" -a "x${has_damage}"="xyes"]
+then
+ echo "${has_composite} ${has_damage}"
+  AC_DEFINE(HAVE_X_COMPOSITE, [],
+            [Whether libxcomposite is present on the system])
+fi
+
+
+
 PKG_CHECK_MODULES(XLIBS, x11)
 AC_SUBST(XLIBS_CFLAGS)
 AC_SUBST(XLIBS_ERROR_LIBS)

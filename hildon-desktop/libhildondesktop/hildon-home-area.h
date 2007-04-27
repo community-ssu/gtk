@@ -39,6 +39,7 @@ G_BEGIN_DECLS
 #define HILDON_IS_HOME_AREA(obj) (GTK_CHECK_TYPE (obj, HILDON_TYPE_HOME_AREA))
 #define HILDON_IS_HOME_AREA_CLASS(klass) \
     (GTK_CHECK_CLASS_TYPE ((klass), HILDON_TYPE_HOME_AREA))
+#define HILDON_HOME_AREA_GET_CLASS(obj) (G_TYPE_INSTANCE_GET_CLASS ((obj),  HILDON_TYPE_HOME_AREA, HildonHomeAreaClass))
 
 
 typedef struct _HildonHomeArea
@@ -59,9 +60,12 @@ typedef struct _HildonHomeAreaClass
 
   void (* applet_change_start)  (HildonHomeArea *area, GtkWidget *w);
   void (* applet_change_end)    (HildonHomeArea *area, GtkWidget *w);
-  
+
   void (* applet_added)         (HildonHomeArea *area, GtkWidget *w);
   void (* applet_selected)      (HildonHomeArea *area, GtkWidget *w);
+
+  int                           xdamage_event_base;
+  gboolean                      composite;
 
 } HildonHomeAreaClass;
 
