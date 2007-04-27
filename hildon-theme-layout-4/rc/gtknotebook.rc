@@ -32,14 +32,14 @@ style "osso-notebook"
         function = EXTENSION
 	state    = ACTIVE
 	file     = "../images/qgn_plat_notebook_tab_passive.png"
-	border   = { 12, 12, 0, 0 }
+	border   = { 12, 12, 12, 12 }
 	gap_side = BOTTOM
       }
     image
       {
         function = EXTENSION
 	file     = "../images/qgn_plat_notebook_tab_active.png"
-	border   = { 12, 12, 0, 0 }
+	border   = { 12, 12, 12, 12 }
 	gap_side = BOTTOM
       }
     # Content area theming when arrows are not present.

@@ -1,3 +1,11 @@
+2007-04-27  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Oops. Swapped coords for disabled and
+	focused-pressed button bitmaps.. duh. Should now work better :-)
+
+	* rc/gtknotebook.rc: made the notebook pixmap not repeat if the
+	notebook is taller than normal.
+
 2007-04-25  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 	
 	[0.6.2-1 release]
