@@ -71,9 +71,6 @@ static void gtk_menu_item_parent_set     (GtkWidget        *widget,
 
 static void gtk_real_menu_item_select               (GtkItem     *item);
 static void gtk_real_menu_item_deselect             (GtkItem     *item);
-#ifdef MAEMO_CHANGES
-static void gtk_real_menu_item_activate             (GtkMenuItem *item);
-#endif /* MAEMO_CHANGES */
 static void gtk_real_menu_item_activate_item        (GtkMenuItem *item);
 static void gtk_real_menu_item_toggle_size_request  (GtkMenuItem *menu_item,
 						     gint        *requisition);
@@ -82,7 +79,7 @@ static void gtk_real_menu_item_toggle_size_allocate (GtkMenuItem *menu_item,
 static gboolean gtk_menu_item_mnemonic_activate     (GtkWidget   *widget,
 						     gboolean     group_cycling);
 
-static gint gtk_menu_item_select_timeout (gpointer          data);
+static gint gtk_menu_item_popup_timeout  (gpointer          data);
 static void gtk_menu_item_position_menu  (GtkMenu          *menu,
 					  gint             *x,
 					  gint             *y,
@@ -133,11 +130,7 @@ gtk_menu_item_class_init (GtkMenuItemClass *klass)
   item_class->select = gtk_real_menu_item_select;
   item_class->deselect = gtk_real_menu_item_deselect;
 
-#ifdef MAEMO_CHANGES
-  klass->activate = gtk_real_menu_item_activate;
-#else
   klass->activate = NULL;
-#endif /* MAEMO_CHANGES */
   klass->activate_item = gtk_real_menu_item_activate_item;
   klass->toggle_size_request = gtk_real_menu_item_toggle_size_request;
   klass->toggle_size_allocate = gtk_real_menu_item_toggle_size_allocate;
@@ -896,75 +889,28 @@ gtk_menu_item_expose (GtkWidget      *widget,
   return FALSE;
 }
 
-static gint
-get_popup_delay (GtkMenuItem *menu_item)
-{
-  GtkWidget *parent = GTK_WIDGET (menu_item)->parent;
-
-  if (GTK_IS_MENU_SHELL (parent))
-    {
-      return _gtk_menu_shell_get_popup_delay (GTK_MENU_SHELL (parent));
-    }
-  else
-    {
-      gint popup_delay;
-      
-      g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu_item)),
-		    "gtk-menu-popup-delay", &popup_delay,
-		    NULL);
-
-      return popup_delay;
-    }
-}
-
 static void
 gtk_real_menu_item_select (GtkItem *item)
 {
   GtkMenuItem *menu_item;
+  gboolean touchscreen_mode;
 
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
 
   menu_item = GTK_MENU_ITEM (item);
 
-  if (menu_item->submenu &&
+  g_object_get (gtk_widget_get_settings (GTK_WIDGET (item)),
+                "gtk-touchscreen-mode", &touchscreen_mode,
+                NULL);
+
+  if (!touchscreen_mode &&
+      menu_item->submenu &&
       (!GTK_WIDGET_MAPPED (menu_item->submenu) ||
        GTK_MENU (menu_item->submenu)->tearoff_active))
     {
-      gint popup_delay;
-
-      if (menu_item->timer)
-	{
-	  g_source_remove (menu_item->timer);
-	  menu_item->timer = 0;
-	  popup_delay = 0;
-	}
-      else
-	popup_delay = get_popup_delay (menu_item);
-      
-      if (popup_delay > 0)
-	{
-	  GdkEvent *event = gtk_get_current_event ();
-
-#ifndef MAEMO_CHANGES
-	  menu_item->timer = g_timeout_add (popup_delay,
-					    gtk_menu_item_select_timeout,
-					    menu_item);
-#endif /* !MAEMO_CHANGES */
-
-	  if (event &&
-	      event->type != GDK_BUTTON_PRESS &&
-	      event->type != GDK_ENTER_NOTIFY)
-	    menu_item->timer_from_keypress = TRUE;
-	  else
-	    menu_item->timer_from_keypress = FALSE;
-
-	  if (event)
-	    gdk_event_free (event);
-	}
-      else
-	_gtk_menu_item_popup_submenu (GTK_WIDGET (menu_item));
+      _gtk_menu_item_popup_submenu (GTK_WIDGET (menu_item), TRUE);
     }
-  
+
   gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_PRELIGHT);
   gtk_widget_queue_draw (GTK_WIDGET (menu_item));
 }
@@ -972,18 +918,6 @@ gtk_real_menu_item_select (GtkItem *item)
 static void
 gtk_real_menu_item_deselect (GtkItem *item)
 {
-#ifdef MAEMO_CHANGES
-  GtkWidget *menu_item;
-
-  g_return_if_fail (GTK_IS_MENU_ITEM (item));
-
-  menu_item = GTK_WIDGET (item);
-
-  _gtk_menu_item_popdown_submenu (menu_item);
-
-  gtk_widget_set_state (menu_item, GTK_STATE_NORMAL);
-  gtk_widget_queue_draw (menu_item);
-#else
   GtkMenuItem *menu_item;
 
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
@@ -991,19 +925,10 @@ gtk_real_menu_item_deselect (GtkItem *item)
   menu_item = GTK_MENU_ITEM (item);
 
   if (menu_item->submenu)
-    {
-      if (menu_item->timer)
-	{
-	  g_source_remove (menu_item->timer);
-	  menu_item->timer = 0;
-	}
-      else
-	gtk_menu_popdown (GTK_MENU (menu_item->submenu));
-    }
+    _gtk_menu_item_popdown_submenu (GTK_WIDGET (menu_item));
 
   gtk_widget_set_state (GTK_WIDGET (menu_item), GTK_STATE_NORMAL);
   gtk_widget_queue_draw (GTK_WIDGET (menu_item));
-#endif /* MAEMO_CHANGES */
 }
 
 static gboolean
@@ -1023,50 +948,6 @@ gtk_menu_item_mnemonic_activate (GtkWidget *widget,
   
   return TRUE;
 }
-
-#ifdef MAEMO_CHANGES
-/* This function exists only for opening submenus on
- * activation.
- */
-static void
-gtk_real_menu_item_activate (GtkMenuItem *item)
-{
-  GdkEvent *event;
-  gint popup_delay;
-
-  g_return_if_fail (GTK_IS_MENU_ITEM (item));
-
-  if (!GTK_IS_MENU (item->submenu) ||
-      GTK_WIDGET_VISIBLE (item->submenu))
-    return;
-
-  event = gtk_get_current_event ();
-
-  /* Add a delay before opening a new menu */
-  if (item->timer)
-    {
-      g_source_remove (item->timer);
-      item->timer = 0;
-      popup_delay = 0;
-    }
-  else
-    popup_delay = get_popup_delay (item);
-
-  item->timer = g_timeout_add (popup_delay,
-                               gtk_menu_item_select_timeout,
-                               item);
-
-  /* We don't want to select first item if the submenu
-   * is opened with mouse release because the selection
-   * would move straigh back under the cursor.
-   */
-  if ((event == NULL) || (event->type != GDK_BUTTON_RELEASE))
-    gtk_menu_shell_select_first (GTK_MENU_SHELL (item->submenu), TRUE);
-
-  if (event)
-    gdk_event_free (event);
-}
-#endif /* MAEMO_CHANGES */
 
 static void
 gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
@@ -1089,14 +970,14 @@ gtk_real_menu_item_activate_item (GtkMenuItem *menu_item)
 
 	  _gtk_menu_shell_activate (menu_shell);
 
-	  gtk_menu_shell_select_item (GTK_MENU_SHELL (widget->parent), widget); 
-
-	  _gtk_menu_item_popup_submenu (widget); 
+	  gtk_menu_shell_select_item (GTK_MENU_SHELL (widget->parent), widget);
+	  _gtk_menu_item_popup_submenu (widget, FALSE);
 
 	  gtk_menu_shell_select_first (GTK_MENU_SHELL (menu_item->submenu), TRUE);
 	}
     }
 }
+
 static void
 gtk_real_menu_item_toggle_size_request (GtkMenuItem *menu_item,
 					gint        *requisition)
@@ -1115,8 +996,53 @@ gtk_real_menu_item_toggle_size_allocate (GtkMenuItem *menu_item,
   menu_item->toggle_size = allocation;
 }
 
+static void
+gtk_menu_item_real_popup_submenu (GtkWidget *widget,
+                                  gboolean   remember_exact_time)
+{
+  GtkMenuItem *menu_item = GTK_MENU_ITEM (widget);
+
+  if (GTK_WIDGET_IS_SENSITIVE (menu_item->submenu))
+    {
+      gboolean take_focus;
+
+      take_focus = gtk_menu_shell_get_take_focus (GTK_MENU_SHELL (widget->parent));
+      gtk_menu_shell_set_take_focus (GTK_MENU_SHELL (menu_item->submenu),
+                                     take_focus);
+
+      if (remember_exact_time)
+        {
+          GTimeVal *popup_time = g_new0 (GTimeVal, 1);
+
+          g_get_current_time (popup_time);
+
+          g_object_set_data_full (G_OBJECT (menu_item->submenu),
+                                  "gtk-menu-exact-popup-time", popup_time,
+                                  (GDestroyNotify) g_free);
+        }
+      else
+        {
+          g_object_set_data (G_OBJECT (menu_item->submenu),
+                             "gtk-menu-exact-popup-time", NULL);
+        }
+
+      gtk_menu_popup (GTK_MENU (menu_item->submenu),
+                      widget->parent,
+                      widget,
+                      gtk_menu_item_position_menu,
+                      menu_item,
+                      GTK_MENU_SHELL (widget->parent)->button,
+                      0);
+    }
+
+  /* Enable themeing of the parent menu item depending on whether
+   * its submenu is shown or not.
+   */
+  gtk_widget_queue_draw (widget);
+}
+
 static gint
-gtk_menu_item_select_timeout (gpointer data)
+gtk_menu_item_popup_timeout (gpointer data)
 {
   GtkMenuItem *menu_item;
   GtkWidget *parent;
@@ -1130,53 +1056,79 @@ gtk_menu_item_select_timeout (gpointer data)
   if ((GTK_IS_MENU_SHELL (parent) && GTK_MENU_SHELL (parent)->active) || 
       (GTK_IS_MENU (parent) && GTK_MENU (parent)->torn_off))
     {
-      _gtk_menu_item_popup_submenu (GTK_WIDGET (menu_item));
+      gtk_menu_item_real_popup_submenu (GTK_WIDGET (menu_item), TRUE);
       if (menu_item->timer_from_keypress && menu_item->submenu)
 	GTK_MENU_SHELL (menu_item->submenu)->ignore_enter = TRUE;
     }
+
+  menu_item->timer = 0;
 
   GDK_THREADS_LEAVE ();
 
   return FALSE;  
 }
 
-void
-_gtk_menu_item_popup_submenu (GtkWidget *widget)
+static gint
+get_popup_delay (GtkWidget *widget)
 {
-  GtkMenuItem *menu_item;
-
-  menu_item = GTK_MENU_ITEM (widget);
-
-  if (menu_item->timer)
-    g_source_remove (menu_item->timer);
-  menu_item->timer = 0;
-
-  if (GTK_WIDGET_IS_SENSITIVE (menu_item->submenu))
+  if (GTK_IS_MENU_SHELL (widget->parent))
     {
-      gboolean take_focus;
-
-      take_focus = gtk_menu_shell_get_take_focus (GTK_MENU_SHELL (widget->parent));
-      gtk_menu_shell_set_take_focus (GTK_MENU_SHELL (menu_item->submenu),
-                                     take_focus);
-
-      gtk_menu_popup (GTK_MENU (menu_item->submenu),
-                      widget->parent,
-                      widget,
-                      gtk_menu_item_position_menu,
-                      menu_item,
-                      GTK_MENU_SHELL (widget->parent)->button,
-                      0);
+      return _gtk_menu_shell_get_popup_delay (GTK_MENU_SHELL (widget->parent));
     }
+  else
+    {
+      gint popup_delay;
 
-#ifdef MAEMO_CHANGES
-  /* This is required as changed submenu arrow isn't drawn automatically
-   * and drawing it must be requested.
-   */
-  gtk_widget_queue_draw (widget);
-#endif /* MAEMO_CHANGES */
+      g_object_get (gtk_widget_get_settings (widget),
+                  "gtk-menu-popup-delay", &popup_delay,
+                  NULL);
+
+      return popup_delay;
+    }
 }
 
-#ifdef MAEMO_CHANGES
+void
+_gtk_menu_item_popup_submenu (GtkWidget *widget,
+                              gboolean   with_delay)
+{
+  GtkMenuItem *menu_item = GTK_MENU_ITEM (widget);
+
+  if (menu_item->timer)
+    {
+      g_source_remove (menu_item->timer);
+      menu_item->timer = 0;
+      with_delay = FALSE;
+    }
+
+  if (with_delay)
+    {
+      gint popup_delay = get_popup_delay (widget);
+
+      if (popup_delay > 0)
+      {
+        GdkEvent *event = gtk_get_current_event ();
+
+        menu_item->timer = g_timeout_add (popup_delay,
+                                          gtk_menu_item_popup_timeout,
+                                          menu_item);
+
+        if (event &&
+            event->type != GDK_BUTTON_PRESS &&
+            event->type != GDK_ENTER_NOTIFY)
+          menu_item->timer_from_keypress = TRUE;
+        else
+          menu_item->timer_from_keypress = FALSE;
+
+        if (event)
+          gdk_event_free (event);
+
+          return;
+        }
+    }
+
+  gtk_menu_item_real_popup_submenu (widget, FALSE);
+}
+
 void
 _gtk_menu_item_popdown_submenu (GtkWidget *widget)
 {
@@ -1186,6 +1138,9 @@ _gtk_menu_item_popdown_submenu (GtkWidget *widget)
 
   if (menu_item->submenu)
     {
+      g_object_set_data (G_OBJECT (menu_item->submenu),
+                         "gtk-menu-exact-popup-time", NULL);
+
       if (menu_item->timer)
         {
           g_source_remove (menu_item->timer);
@@ -1193,11 +1148,10 @@ _gtk_menu_item_popdown_submenu (GtkWidget *widget)
         }
       else
         gtk_menu_popdown (GTK_MENU (menu_item->submenu));
-    }
 
-  gtk_widget_queue_draw (widget);
+      gtk_widget_queue_draw (widget);
+    }
 }
-#endif /* MAEMO_CHANGES */
 
 static void
 get_offsets (GtkMenu *menu,
@@ -1416,7 +1370,6 @@ gtk_menu_item_get_right_justified (GtkMenuItem *menu_item)
   
   return menu_item->right_justify;
 }
-
 
 static void
 gtk_menu_item_show_all (GtkWidget *widget)
