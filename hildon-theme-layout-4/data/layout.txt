@@ -9,80 +9,83 @@ ThemeThumbnail=qgn_plat_theme_thumbnail.png
 [Colours]
 
 # Text
-DefaultTextColor=7960,24,30,10
-EmpTextColor=7960,36,30,10
-PaintedDefaultTextColor=7960,48,30,10
-DisabledTextColor=7960,60,30,10
-ProgressTextColor1=7960,72,30,10
-ProgressTextColor2=7960,84,30,10
-SecondaryTextColor=7960,96,30,10
-TitleTextColor=7960,108,30,10
-DialogTitleTextColor=7960,120,30,10
+DefaultTextColor=7691,103,30,16
+EmpTextColor=7691,118,30,16
+PaintedDefaultTextColor=7691,133,30,16
+DisabledTextColor=7691,148,30,16
+SecondaryTextColor=7691,163,30,16
+ProgressTextColor1=7691,178,30,16
+ProgressTextColor2=7691,193,30,16
+TitleTextColor=7691,208,30,16
+DialogTitleTextColor=7691,223,30,16
 
 # Calculator
-ClearButtonTextColor=7960,156,30,10
-MemButtonTextColor=7960,168,30,10
+ClearButtonTextColor=7942,283,30,16
+MemButtonTextColor=7942,298,30,16
 
 # HW recognition
-HWRAlphaTextColor=7960,204,30,10
-HWRNumberTextColor=7960,216,30,10
-HWRDimmedTextColor=7960,228,30,10
-HWRIllegalTextColor=7960,240,30,10
-InputBackgrdColor=7960,252,30,10
-HWRAlphaBackgrdColor=7960,264,30,10
-HWRPunctBackgrdColor=7960,276,30,10
-HWRContBackgrdColor=7960,288,30,10
-HWRHyphBackgrdColor=7960,300,30,10
-HWRBaselineColor=7960,312,30,10
-HWRRecogColor=7960,324,30,10
-HWRUserColor=7960,336,30,10
-HWRUserBackgrdColor=7960,349,30,10
-HWRHintColor=7960,360,30,10
+HWRAlphaTextColor=7691,358,30,16
+HWRNumberTextColor=7691,373,30,16
+HWRDimmedTextColor=7691,388,30,16
+HWRIllegalTextColor=7691,403,30,16
+InputBackgrdColor=7691,418,30,16
+HWRAlphaBackgrdColor=7691,433,30,16
+HWRPunctBackgrdColor=7691,448,30,16
+HWRContBackgrdColor=7691,463,30,16
+HWRHyphBackgrdColor=7691,478,30,16
+HWRBaselineColor=7691,493,30,16
+HWRRecogColor=7691,508,30,16
+HWRUserColor=7691,523,30,16
+HWRUserBackgrdColor=7691,538,30,16
+HWRHintColor=7691,553,30,16
 
 # Web browser
-WebTextColor=7960,396,30,10
-DimWebTextColor=7960,408,30,10
-LinkTextColor=7960,420,30,10
-VisitedLinkTextColor=7960,432,30,10
-WebBackgrdColor=7960,445,30,10
+WebTextColor=7942,43,30,16
+DimWebTextColor=7942,58,30,16
+LinkTextColor=7942,73,30,16
+VisitedLinkTextColor=7942,88,30,16
+WebBackgrdColor=7942,103,30,16
 
-# Sketch?
-DefaultBackgrdColor=7960,480,30,10
-PaintedBackgrdColor=7960,493,30,10
-ImageBackgrdColor=7960,504,30,10
+DefaultBackgrdColor=7691,43,30,16
+DialogBackgrdColor=7691,58,30,16
+PaintedBackgrdColor=7691,73,30,16
+ImageBackgrdColor=7691,88,30,16
 
 # Gtk?
-ImageBorderColor=7960,540,30,10
-FocusColor=7960,552,30,10
-SelectionColor=7960,564,30,10
-MenuInfoTextColor=7960,576,30,10
+ImageBorderColor=7691,268,30,16
+FocusColor=7691,283,30,16
+SelectionColor=7691,298,30,16
+MenuInfoTextColor=7691,313,30,16
 
 # Clock application
-MapTopLeftColor=7960,612,30,10
-MapBottomRightColor=7960,624,30,10
-ClockHandColor=7960,636,30,10
+MapTopLeftColor=7942,118,30,16
+MapBottomRightColor=7942,133,30,16
+ClockHandColor=7942,148,30,16
 
 # Chat and voip
-ChatUserNameColor=7960,672,30,10
-ChatParticipantNameColor=7960,684,30,10
-ChatEventColor=7960,696,30,10
-CallHeaderBlockBgColor=7960,708,30,10
-CallHeaderOnHoldBlockBgColor=7960,720,30,10
+ChatUserNameColor=7942,163,30,16
+ChatParticipantNameColor=7942,178,30,16
+ChatEventColor=7942,193,30,16
+CallHeaderBlockBgColor=7942,208,30,16
+CallHeaderOnHoldBlockBgColor=7942,223,30,16
 
-# Applets?
-HomeFrameNormal=7960,756,30,10
-HomeFrameResize=7960,768,30,10
-HomeFrameReject=7960,780,30,10
+# These are removed!
+#HomeFrameNormal=7960,756,30,10
+#HomeFrameResize=7960,768,30,10
+#HomeFrameReject=7960,780,30,10
 
 # Virtual keyboard
-VKBButtonTextColor=7607,13,30,10
+VKBButtonTextColor=7691,583,30,16
 
 #new ones, check!
-HWRWhiteTextColor=7960,373,30,10
-TreeViewOddRowColor=7960,517,30,10
-TreeViewEvenRowColor=7960,529,30,10
-CropFrameColor=7960,732,30,10
-MediaPlayerToolbarFontColor=7960,132,30,10
+HWRWhiteTextColor=7691,568,30,16
+TreeViewOddRowColor=7691,238,30,16
+TreeViewEvenRowColor=7691,253,30,16
+CropFrameColor=7942,238,30,16
+MediaPlayerToolbarFontColor=7942,268,30,16
+RssAppletFeedTextColor=7942,253,30,16
+PaneMenuColor1=7691,328,30,16
+PaneMenuColor2=7691,343,30,16
 
 [Elements]
 qgn_plat_application_call_handling_block_active.png=7145,719,26,26

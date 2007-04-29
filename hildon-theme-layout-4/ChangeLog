@@ -1,3 +1,8 @@
+2007-04-29  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Grand reorganizing of color swatches. Hopefully
+	everything works after this :-) Some new colors added too.
+
 2007-04-28  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: 
