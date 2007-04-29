@@ -1,3 +1,11 @@
+2007-04-29  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.png: Updated the color swatches to the new
+	layout. Added some logical colors as well.
+
+	Also moved around expander arrows and call handling bits to make
+	space for color area. This is already reflected in the layout.
+	
 2007-04-18  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[4.6.0-1 release]
