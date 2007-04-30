@@ -208,8 +208,10 @@ hd_home_window_show_information_banner (HDHomeWindow *window,
                                         const gchar *text);
 #endif
 
+#if 0
 static void
 hd_home_window_adjust_alpha_activate (HDHomeWindow *window);
+#endif
 
 static void
 hd_home_window_class_init (HDHomeWindowClass *window_class)
@@ -668,7 +670,6 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
 {
   HDHomeWindowPrivate  *priv;
   GtkWidget            *menu;
-  GtkWidget            *tools_menu;
   GtkWidget            *settings_menu;
   GtkWidget            *menu_item;
 
@@ -702,6 +703,42 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
   priv->settings_item = menu_item;
   priv->settings_menu = settings_menu;
 
+  /* set background */
+  menu_item = gtk_menu_item_new_with_label (HH_MENU_SET_BACKGROUND);
+  g_signal_connect_swapped (menu_item, "activate",
+                            G_CALLBACK (hd_home_window_set_background_activate),
+                            window);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+  gtk_widget_show (menu_item);
+
+#ifdef HAVE_LIBOSSO
+  /* personalisation */
+  menu_item = gtk_menu_item_new_with_label (HH_MENU_PERSONALISATION);
+  g_signal_connect_swapped (menu_item, "activate",
+                            G_CALLBACK (hd_home_window_personalisation_activate),
+                            window);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+  gtk_widget_show (menu_item);
+
+  /* calibration */
+  menu_item = gtk_menu_item_new_with_label (HH_MENU_CALIBRATION);
+  g_signal_connect_swapped (menu_item, "activate",
+                            G_CALLBACK (hd_home_window_calibration_activate),
+                            window);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+  gtk_widget_show (menu_item);
+
+#ifdef HAVE_LIBHILDONHELP
+  /* help */
+  menu_item = gtk_menu_item_new_with_label (HH_MENU_HELP);
+  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
+  g_signal_connect_swapped (menu_item, "activate",
+                            G_CALLBACK (hd_home_window_help_activate),
+                            window);
+  gtk_widget_show (menu_item);
+#endif
+#endif
+
   if (!priv->layout_mode_sucks)
     {
       /* layout mode */
@@ -722,6 +759,7 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
       priv->layout_mode_item = menu_item;
     }
 
+#if 0
   else
     {
       GtkWidget *area;
@@ -741,49 +779,7 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
         }
       gtk_widget_show (menu_item);
     }
-  
-  /* tools sub-menu */
-  tools_menu = gtk_menu_new ();
-  menu_item = gtk_menu_item_new_with_label (HH_MENU_TOOLS);
-  gtk_menu_item_set_submenu (GTK_MENU_ITEM (menu_item), tools_menu);
-  gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
-  gtk_widget_show (menu_item);
 
-  /* set background */
-  menu_item = gtk_menu_item_new_with_label (HH_MENU_SET_BACKGROUND);
-  g_signal_connect_swapped (menu_item, "activate",
-                            G_CALLBACK (hd_home_window_set_background_activate),
-                            window);
-  gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
-  gtk_widget_show (menu_item);
-
-#ifdef HAVE_LIBOSSO
-  /* personalisation */
-  menu_item = gtk_menu_item_new_with_label (HH_MENU_PERSONALISATION);
-  g_signal_connect_swapped (menu_item, "activate",
-                            G_CALLBACK (hd_home_window_personalisation_activate),
-                            window);
-  gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
-  gtk_widget_show (menu_item);
-
-  /* calibration */
-  menu_item = gtk_menu_item_new_with_label (HH_MENU_CALIBRATION);
-  g_signal_connect_swapped (menu_item, "activate",
-                            G_CALLBACK (hd_home_window_calibration_activate),
-                            window);
-  gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
-  gtk_widget_show (menu_item);
-
-#ifdef HAVE_LIBHILDONHELP
-  /* help */
-  menu_item = gtk_menu_item_new_with_label (HH_MENU_HELP);
-  gtk_menu_shell_append (GTK_MENU_SHELL (tools_menu), menu_item);
-  g_signal_connect_swapped (menu_item, "activate",
-                            G_CALLBACK (hd_home_window_help_activate),
-                            window);
-  gtk_widget_show (menu_item);
-#endif
-#endif
   
   menu_item = gtk_menu_item_new_with_label ("Adjust transparency");
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
@@ -791,7 +787,8 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
                             G_CALLBACK (hd_home_window_adjust_alpha_activate),
                             window);
   gtk_widget_show (menu_item);
-  
+#endif
+
   return menu;
 
 }
@@ -1328,6 +1325,8 @@ hd_home_window_show_information_banner (HDHomeWindow *window,
 }
 #endif
 
+
+#if 0
 static void
 scale_changed (GtkRange *range, GtkWidget *area)
 {
@@ -1379,3 +1378,4 @@ hd_home_window_adjust_alpha_activate (HDHomeWindow *window)
   gtk_widget_destroy (dialog);
 }
 
+#endif

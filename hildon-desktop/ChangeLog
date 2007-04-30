@@ -1,6 +1,11 @@
 2007-04-27  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:
+	- new menu layout
+
+2007-04-27  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
 	- layout mode is now considered to suck again.
 	- added temporary alpha adjustment dialogs
 	* libhildondesktop/hildon-desktop-item.c:
