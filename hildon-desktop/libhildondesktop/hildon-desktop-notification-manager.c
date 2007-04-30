@@ -210,18 +210,24 @@ hildon_desktop_notification_manager_notification_closed (HildonDesktopNotificati
 }
 
 static gboolean 
-hildon_desktop_notification_manager_timeout (GtkTreeIter *iter)
+hildon_desktop_notification_manager_timeout (gint id)
 {
   GtkListStore *nm = 
-     hildon_desktop_notification_manager_get_singleton ();	
+     hildon_desktop_notification_manager_get_singleton ();
+  GtkTreeIter iter;
+
+  if (!hildon_desktop_notification_manager_find_by_id (HILDON_DESKTOP_NOTIFICATION_MANAGER (nm), 
+			  			       id, 
+						       &iter))
+  {
+    return FALSE;
+  }
 
   /* Notify the client */
   hildon_desktop_notification_manager_notification_closed (HILDON_DESKTOP_NOTIFICATION_MANAGER (nm), 
-		  					   iter);
+		  					   &iter);
  
-  gtk_list_store_remove (nm, iter);
-
-  g_free (iter);
+  gtk_list_store_remove (nm, &iter);
 
   return FALSE;
 }
@@ -268,7 +274,7 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
                                             gint                   timeout, 
                                             DBusGMethodInvocation *context)
 {
-  GtkTreeIter iter,*iter_timeout;
+  GtkTreeIter iter;
   GError *error = NULL;
   GdkPixbuf *pixbuf = NULL;
   GtkIconTheme *icon_theme;
@@ -368,13 +374,9 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
 
   if (timeout > 0)
   {
-    iter_timeout = g_new0 (GtkTreeIter, 1);
-
-    *iter_timeout = iter;  
-    
     g_timeout_add (timeout,
 		   (GSourceFunc) hildon_desktop_notification_manager_timeout,
-		   iter_timeout);
+		   GINT_TO_POINTER (id));
   }
 		      
   dbus_g_method_return (context, id);
@@ -525,10 +527,6 @@ hildon_desktop_notification_manager_message_from_desc (HildonDesktopNotification
   gchar **message_elements;
   gint n_elements;
 
-  g_debug ("######################################### DBUS CALLBACK ##########################################");
-  g_debug (desc);
-  g_debug ("######################################### DBUS CALLBACK ##########################################");
-  
   message_elements = g_strsplit (desc, " ", 5);
 
   n_elements = g_strv_length (message_elements);
