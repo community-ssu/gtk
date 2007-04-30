@@ -177,9 +177,8 @@ PKG_CHECK_MODULES(XCOMPOSITE, xcomposite, has_composite=yes,
 AC_SUBST(XCOMPOSITE_LIBS)
 AC_SUBST(XCOMPOSITE_CFLAGS)
 
-if ["x${has_composite}"="xyes" -a "x${has_damage}"="xyes"]
+if test "x${has_composite}" = "xyes" -a "x${has_damage}" = "xyes"
 then
- echo "${has_composite} ${has_damage}"
   AC_DEFINE(HAVE_X_COMPOSITE, [],
             [Whether libxcomposite is present on the system])
 fi
