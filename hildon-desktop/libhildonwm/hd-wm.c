@@ -2054,6 +2054,7 @@ hd_wm_process_x_client_list (HDWM *hdwm)
     {
       g_warning("Failed to read _MB_APP_WINDOW_LIST_STACKING root win prop, "
 		"you probably need a newer matchbox !!!");
+      return;
     }
 
   /* Check if any windows in our hash have since disappeared -- we use

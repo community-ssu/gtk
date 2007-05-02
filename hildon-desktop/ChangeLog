@@ -1,5 +1,10 @@
 2007-05-02  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildonwm/hd-wm.c: do not handle the matchbox client list if
+	it could not be retrieved
+
+2007-05-02  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-area.c: Fixed double unref
 
 2007-04-27  Lucas Rocha  <lucas.rocha@nokia.com>
