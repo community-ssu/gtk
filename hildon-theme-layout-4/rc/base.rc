@@ -193,3 +193,11 @@ binding "dialog"
 }
 
 class "GtkDialog" binding "dialog"
+
+binding "treeview"
+{
+  bind "Left"  { "expand-collapse-cursor-row" (1, 0, 0) }
+  bind "Right" { "expand-collapse-cursor-row" (1, 1, 0) }
+}
+
+class "GtkTreeView" binding "treeview"

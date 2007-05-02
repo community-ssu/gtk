@@ -1,3 +1,7 @@
+2007-05-02  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/base.rc: Add GtkTreeView Left/Right binding.
+
 2007-04-29  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Grand reorganizing of color swatches. Hopefully
