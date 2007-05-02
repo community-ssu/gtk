@@ -1,3 +1,9 @@
+apt (0.6.46.4.osso5) unstable; urgency=low
+
+  * Applied ignoretimeconflict.patch.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  2 May 2007 19:14:25 +0300
+
 apt (0.6.46.4.osso4) unstable; urgency=low
 
   * Applied trusthook.patch that gives us a way to hook into libapt-pkg
