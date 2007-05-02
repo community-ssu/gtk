@@ -59,7 +59,7 @@ fi
 
 case "$command" in
     add)
-        $GPG --quiet --batch --import "$1"
+        $GPG --quiet --batch --ignore-time-conflict --import "$1"
         echo "OK"
         ;;
     del|rm|remove)
