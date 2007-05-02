@@ -2,7 +2,7 @@
 
 	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): stop the rubber
 	band here if it's active.  (Merged from upstream, updated
-	MAEMO_CHANGES markers).
+	MAEMO_CHANGES markers).  (Fixes NB#55148).
 
 2007-04-27  Michael Natterer  <mitch@imendio.com>
 
