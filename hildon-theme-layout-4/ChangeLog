@@ -1,5 +1,9 @@
 2007-05-02  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/ossoiradioapplet.rc: Fix border values for bg.
+	
+2007-05-02  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/base.rc: Add GtkTreeView Left/Right binding.
 
 2007-04-29  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
