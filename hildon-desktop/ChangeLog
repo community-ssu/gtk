@@ -1,3 +1,12 @@
+2007-05-02  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Implemented new signal to handle resizing
+	- Implemented auto-resizing of parent window.
+	* libhildondesktop/hildon-desktop-popup-window.[ch]:
+	- Removed gtk_widget_show_all
+	- Added method to recalculate position.
+
 2007-05-02  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildonwm/hd-wm.c: do not handle the matchbox client list if

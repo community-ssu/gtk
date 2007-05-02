@@ -94,6 +94,9 @@ hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 void 
 hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup);
 
+void
+hildon_desktop_popup_recalculate_position (HildonDesktopPopupWindow *popup);
+
 G_BEGIN_DECLS
 
 #endif/*__HILDON_DESKTOP_POPUP_WINDOW_H__*/

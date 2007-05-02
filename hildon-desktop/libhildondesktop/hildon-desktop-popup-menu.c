@@ -44,9 +44,17 @@ enum
   PROP_POPUP_ITEM_HEIGHT=1
 };
 
+enum
+{
+  SIGNAL_POPUP_RESIZE,
+  N_SIGNALS
+};
+
+static gint signals[N_SIGNALS];
+
 struct _HildonDesktopPopupMenuPrivate
 {
-  GtkWidget *scrolled_window;
+  GtkWidget *viewport;
   GtkWidget *box_items;
 
   GtkWidget *box_buttons;
@@ -115,6 +123,15 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
 
   g_type_class_add_private (object_class, sizeof (HildonDesktopPopupMenuPrivate));
 
+  signals[SIGNAL_POPUP_RESIZE] =
+        g_signal_new ("popup-menu-resize",
+                      G_OBJECT_CLASS_TYPE (object_class),
+                      G_SIGNAL_RUN_FIRST,
+                      0,
+                      NULL, NULL,
+                      g_cclosure_marshal_VOID__VOID,
+                      G_TYPE_NONE, 0);
+  
   g_object_class_install_property (object_class,
                                    PROP_POPUP_ITEM_HEIGHT,
                                    g_param_spec_uint(
@@ -140,26 +157,21 @@ hildon_desktop_popup_menu_constructor (GType gtype,
      										 params);
   menu = HILDON_DESKTOP_POPUP_MENU (object);
 
-  menu->priv->scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+  menu->priv->viewport = gtk_viewport_new (NULL, NULL);
 
-  gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (menu->priv->scrolled_window), 
-		  		  GTK_POLICY_NEVER,
-				  GTK_POLICY_NEVER);
+  gtk_box_pack_start (GTK_BOX (menu),
+                      menu->priv->viewport,
+                      FALSE, FALSE, 0);
+  gtk_widget_show (menu->priv->viewport);
+
 
   gtk_widget_push_composite_child ();
 
   menu->priv->box_items = gtk_vbox_new (FALSE, 0); /* FIXME: add spacing decoration */
   
-  gtk_scrolled_window_add_with_viewport 
-    (GTK_SCROLLED_WINDOW (menu->priv->scrolled_window),
-     menu->priv->box_items);
+  gtk_container_add (GTK_CONTAINER (menu->priv->viewport), menu->priv->box_items);
 
   gtk_widget_show (menu->priv->box_items);
-
-  gtk_box_pack_start (GTK_BOX (menu),
-                      menu->priv->scrolled_window,
-                      FALSE, FALSE, 0);
-  gtk_widget_show (menu->priv->scrolled_window);
   
   menu->priv->box_buttons = gtk_hbox_new (TRUE,0);
 
@@ -243,9 +255,6 @@ hildon_desktop_popup_menu_set_property (GObject *object,
   }
 }
 
-	
-
-
 static gboolean 
 hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
 					 GdkEventMotion *event)
@@ -282,8 +291,8 @@ hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *
   gdouble position;
   gint delta = menu->priv->item_height;
   GtkAdjustment *adj = 
-    gtk_scrolled_window_get_vadjustment 
-      (GTK_SCROLLED_WINDOW (menu->priv->scrolled_window));
+    gtk_viewport_get_vadjustment 
+      (GTK_VIEWPORT (menu->priv->viewport));
 
   if (widget == menu->priv->scroll_up)
     delta *= -1;
@@ -335,7 +344,7 @@ static void
 hildon_desktop_popup_menu_show_controls (HildonDesktopPopupMenu *menu)
 {	
   if (!menu->priv->controls_on)	
-  {	  
+  {	 	  
     gtk_box_pack_start (GTK_BOX (menu),
 		        menu->priv->box_buttons,
 		        FALSE, FALSE, 0);
@@ -386,27 +395,43 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
       break;
     }
   }	  
-  
+ 
   if (show_scroll_controls)
   {	  
     hildon_desktop_popup_menu_show_controls (menu);	  
     gtk_widget_set_size_request 
-       (menu->priv->scrolled_window, req.width, d_height - menu->priv->item_height);
+       (menu->priv->viewport, req.width, d_height - menu->priv->item_height);
 
+    if (separators == 0)
+      separators++;	    
+    
     menu->priv->upper_hack = d_height - menu->priv->item_height*separators;
   }
   else
   {	  
     hildon_desktop_popup_menu_hide_controls (menu);
     gtk_widget_set_size_request
-      (menu->priv->scrolled_window, req.width, d_height);
+      (menu->priv->viewport, req.width, d_height);
   }
 
+  gtk_widget_queue_resize (menu->priv->viewport);
+  
   if (GTK_IS_WINDOW (parent))
   {	  
     gtk_widget_size_request (parent, &req);
     gtk_widget_set_size_request (parent, req.width, d_height);
-  }	  
+
+    if (GTK_WIDGET_MAPPED (parent))
+    {	    
+      g_signal_emit_by_name (menu, "popup-menu-resize");
+	    
+      gtk_widget_queue_resize (GTK_WIDGET (menu));    
+      gtk_widget_queue_resize (parent); 
+    }
+
+    if (GTK_WIDGET_REALIZED (parent))
+      gdk_window_resize (parent->window, req.width, d_height); 
+  }
 
   g_list_free (children);
 }	
@@ -437,13 +462,12 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
 
     gtk_widget_set_size_request (menu->priv->box_buttons, req.width, menu->priv->item_height);
   }	  
-	
+
   gtk_box_pack_start (GTK_BOX (menu->priv->box_items),
 		      GTK_WIDGET (item),
 		      FALSE, FALSE, 0);
-  
   gtk_widget_show (GTK_WIDGET (item));
-  
+
   menu->priv->n_items++;
 
   hildon_desktop_popup_menu_parent_size (menu);
@@ -452,25 +476,15 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
 void 
 hildon_desktop_popup_menu_remove_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item)
 {
-  GList *children = NULL, *l;
 	
   g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
 
-  children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
-
-  for (l = children; l != NULL; l = g_list_next (l))
-  {
-    if (l->data == item)
-    {	    
-      gtk_container_remove (GTK_CONTAINER (menu->priv->box_items), GTK_WIDGET (item));	    
-      break;
-    }
-  }	  
+  gtk_container_remove (GTK_CONTAINER (menu->priv->box_items), GTK_WIDGET (item));	    
  
   menu->priv->n_items--;
-  
-  g_list_free (children);
+
+  hildon_desktop_popup_menu_parent_size (menu);
 }
 
 GList *

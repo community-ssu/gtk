@@ -947,7 +947,7 @@ hildon_desktop_popup_window_popup (HildonDesktopPopupWindow *popup,
 
   hildon_desktop_popup_window_calculate_position (popup);
 
-  gtk_widget_show_all (GTK_WIDGET (popup));
+  gtk_widget_show (GTK_WIDGET (popup));
 
   popup_grab_on_window (GTK_WIDGET (popup)->window, activate_time, TRUE); /* Should always succeed */
 
@@ -968,4 +968,13 @@ hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup)
   for (i=0; i < popup->priv->n_extra_panes; i++)
     gtk_grab_remove (popup->priv->extra_panes[i]);	  
 }
+
+void 
+hildon_desktop_popup_recalculate_position (HildonDesktopPopupWindow *popup)
+{
+  if (!GTK_WIDGET_REALIZED (popup))
+    return;	  
+	
+  hildon_desktop_popup_window_calculate_position (popup);
+}	
 
