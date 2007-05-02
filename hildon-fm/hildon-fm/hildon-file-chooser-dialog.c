@@ -70,6 +70,25 @@
 #define FILE_SELECTION_WIDTH_TOTAL 590  /* Width for full filetree (both
                                            content and navigation pane) */
 
+
+#define HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE (hildon_file_chooser_dialog_selection_mode_get_type())
+static GType
+hildon_file_chooser_dialog_selection_mode_get_type(void)
+{
+  static GType selection_mode_type = 0;
+  static GEnumValue selection_mode[] = {
+    {HILDON_FILE_SELECTION_MODE_LIST, "1", "list"},
+    {HILDON_FILE_SELECTION_MODE_THUMBNAILS, "2", "thumbnails"}
+  };
+
+  if (!selection_mode_type) {
+    selection_mode_type =
+        g_enum_register_static ("HildonFileChooserDialogSelectionMode", selection_mode);
+  }
+  return selection_mode_type;
+}
+
+
 void hildon_gtk_file_chooser_install_properties(GObjectClass * klass);
 
 enum {
@@ -81,7 +100,8 @@ enum {
     PROP_OPEN_BUTTON_TEXT,
     PROP_MULTIPLE_TEXT,
     PROP_MAX_NAME_LENGTH,
-    PROP_MAX_FULL_PATH_LENGTH
+    PROP_MAX_FULL_PATH_LENGTH,
+    PROP_SELECTION_MODE
 };
 
 struct _HildonFileChooserDialogPrivate {
@@ -1406,6 +1426,11 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
 
       break;
     }
+    case PROP_SELECTION_MODE:
+      g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
+      hildon_file_selection_set_mode(priv->filetree,
+				     g_value_get_enum (value));
+      break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
         break;
@@ -1468,6 +1493,9 @@ static void hildon_file_chooser_dialog_get_property(GObject * object,
         break;
     case PROP_MAX_FULL_PATH_LENGTH:
         g_value_set_int(value, priv->max_full_path_length);
+        break;
+    case PROP_SELECTION_MODE:
+        g_value_set_enum(value, hildon_file_selection_get_mode(priv->filetree));
         break;
     default:   /* Backend is not readable */
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1640,6 +1668,14 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                              "Use -1 for no limit or 0 to look the value "
                              "from MAX_FILENAME_LENGTH environment variable", 
                              -1, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
+
+    pspec = g_param_spec_enum("selection-mode", "Selection mode",
+			      "View mode used for hildon file selection widget",
+			      HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE,
+			      HILDON_FILE_SELECTION_MODE_LIST, 			      
+			      G_PARAM_READWRITE);
+    g_object_class_install_property(gobject_class, PROP_SELECTION_MODE, pspec);
+
     
     hildon_gtk_file_chooser_install_properties(gobject_class);
 }
