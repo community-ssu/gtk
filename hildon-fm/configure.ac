@@ -1,5 +1,5 @@
 AC_INIT(hildon-fm/hildon-file-system-model.c)
-AM_INIT_AUTOMAKE(libhildonfm, 1.9.16)
+AM_INIT_AUTOMAKE(libhildonfm, 1.9.17)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST

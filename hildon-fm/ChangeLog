@@ -1,3 +1,21 @@
+2007-05-02  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.17
+	
+	Support for setting the file selection view mode on a file chooser
+	dialog widget. (N54390)
+	
+	* hildon-fm/hildon-file-chooser-dialog.c
+	(HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE,
+	hildon_file_chooser_dialog_selection_mode_get_type,
+	PROP_SELECTION_MODE): New.
+	(hildon_file_chooser_dialog_set_property): Handle
+	PROP_SELECTION_MODE by passing it to our HildonFileSelection
+	widget.
+	(hildon_file_chooser_dialog_get_property): Likewise.
+	(hildon_file_chooser_dialog_class_init): Register new
+	"selection-mode" property.
+
 2007-04-24  Marius Vollmer  <marius.vollmer@nokia.com>
 
         Released 1.9.16.
