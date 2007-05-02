@@ -1046,9 +1046,6 @@ hildon_home_area_child_build_alpha_mask_unscaled (HildonHomeArea       *area,
       child_data->alpha_mask_unscaled = None;
     }
 
-  else
-    g_object_unref (pixbuf);
-
   XFreePixmap (GDK_DISPLAY (), pixmap);
 
 }
