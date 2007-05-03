@@ -2,8 +2,9 @@ osso-af-startup (1.40-1) unstable; urgency=low
 
   * UNRELEASED
   * Added startup of a Rhapsody script in the first boot.
+  * Added support for osso-backup-finish-restore.sh.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 26 Apr 2007 14:31:51 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 03 May 2007 14:59:05 +0300
 
 osso-af-startup (1.39-1) unstable; urgency=low
 

@@ -170,6 +170,13 @@ start)
       start_input
       source $AF_INIT_DIR/startup-wizard.sh start
     fi
+
+    # Give Backup a chance to finish restoring task
+    if [ -f $HOME/.osso-backup/last-restore.xml ]; then
+      if [ -x $AF_INIT_DIR/osso-backup-finish-restore.sh ]; then
+        $AF_INIT_DIR/osso-backup-finish-restore.sh
+      fi
+    fi
   fi
 
   rm -f /tmp/im_disable_tools_menu
