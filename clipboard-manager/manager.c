@@ -59,6 +59,7 @@ x_error (Display *display,
 	 XErrorEvent *error)
 {
   error_code = error->error_code;
+  return 0; /* ignored */
 }
 
 int 
@@ -82,17 +83,14 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  if (!terminated)
+  XSetErrorHandler (x_error);
+  manager = clipboard_manager_new (display,
+				   error_trap_push, error_trap_pop,
+				   terminate_cb, &terminated);
+  if (!manager)
     {
-      XSetErrorHandler (x_error);
-      manager = clipboard_manager_new (display,
-				       error_trap_push, error_trap_pop,
-				       terminate_cb, &terminated);
-      if (!manager)
-	{
-	  fprintf (stderr, "Could not create clipboard manager!\n");
-	  exit (1);
-	}
+      fprintf (stderr, "Could not create clipboard manager!\n");
+      exit (1);
     }
 
   while (!terminated)
