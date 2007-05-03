@@ -1,5 +1,9 @@
 2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonhome.rc: Removing the unused apple resize mode styling.
+
+2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/hildonthumbscrollbar.rc: Changing "TRUE" to "1". Forgot that the
 	parsing is dumb. 
 

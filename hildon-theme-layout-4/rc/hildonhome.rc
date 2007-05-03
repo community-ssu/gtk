@@ -13,23 +13,3 @@ style "osso-home-titlebar-background" {
 }
 widget "HildonHomeTitleBar" style "osso-home-titlebar-background"
 
-#
-# Home Layout mode applet themeing
-#
-
-style "osso-home-layoutmode-applet" = "osso-logical-colors"
-{
-
-# Used for the border width for all borders
-  GtkWidget::focus-line-width = 4
-
-# Normal state border
-  fg[NORMAL]   = @HomeFrameNormal
-# Conflicting state border
-  fg[PRELIGHT] = @HomeFrameReject
-# Resize border
-  fg[ACTIVE]   = @HomeFrameResize
-
-}
-
-widget "*.osso-home-layoutmode-applet" style "osso-home-layoutmode-applet"
