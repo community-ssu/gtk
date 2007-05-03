@@ -15,6 +15,7 @@ style "hildon-thumb-scrollbar"
   GtkRange::arrow_displacement_y = 0
   GtkRange::autodimmed_steppers = 1
   GtkScrollbar::min-slider-length = 32
+  GtkRange::activate-slider = TRUE
   
   engine "sapwood"
   {
@@ -45,10 +46,17 @@ style "hildon-thumb-scrollbar"
       {
         function        = SLIDER
 	orientation     = VERTICAL
+        state           = ACTIVE
+	file            = "../images/qgn_plat_scroll_thumbsize_vertical_thumb_pressed.png"
+	border		= { 0, 0, 10, 10 }
+      }
+    image
+      {
+        function        = SLIDER
+	orientation     = VERTICAL
 	file            = "../images/qgn_plat_scroll_thumbsize_vertical_thumb_normal.png"
 	border		= { 0, 0, 10, 10 }
       }
-
     # up
     image
       {

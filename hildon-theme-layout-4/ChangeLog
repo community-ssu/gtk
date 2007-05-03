@@ -1,3 +1,10 @@
+2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonthumbscrollbar.rc: Highlight the thumb scrollbar when
+	dragging. Fixes NB#55340.
+
+	* rc/themespecificgtk.rc: Removing the unused color declarations.
+
 2007-05-02  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/ossoiradioapplet.rc: Fix border values for bg.

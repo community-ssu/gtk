@@ -63,10 +63,6 @@ style "osso-logical-colors" {
 	color["CallHeaderBlockBgColor"]  = "@CallHeaderBlockBgColor@"
 	color["CallHeaderOnHoldBlockBgColor"] = "@CallHeaderOnHoldBlockBgColor@"
 	
-	color["HomeFrameNormal"]         = "@HomeFrameNormal@"
-	color["HomeFrameResize"]         = "@HomeFrameResize@"
-	color["HomeFrameReject"]         = "@HomeFrameReject@"
-	
 	color["MenuInfoTextColor"]       = "@MenuInfoTextColor@"
         color["VKBButtonTextColor"]      = "@VKBButtonTextColor@"
 }
