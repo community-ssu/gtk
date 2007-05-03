@@ -50,7 +50,7 @@ Index: apt-pkg/acquire-item.cc
     // Skip not source sources, they do not have file fields.
     for (; Vf.end() == false; Vf++)
     {
-@@ -1300,31 +1322,55 @@
+@@ -1300,31 +1322,62 @@
  	              "." + flExtension(Parse.FileName());
     }
  
@@ -87,7 +87,11 @@ Index: apt-pkg/acquire-item.cc
 +       while (!Vf.end())
 +	 {
 +	   if ((Vf.File()->Flags & pkgCache::Flag::NotSource) != 0)
-+	     continue;
++            {
++              Vf++;
++	       continue;
++            }
++
 +	   VerFileCandidates.push_back (Vf);
 +	   Vf++;
 +	 }
@@ -100,7 +104,10 @@ Index: apt-pkg/acquire-item.cc
 +	 {
 +	   pkgIndexFile *Index;
 +	   if (Sources->FindIndex(Vf.File(),Index) == false)
-+	     continue;
++            {
++              Vf++;
++	       continue;
++            }
 +       
 +	   int l = index_trust_level_for_package (Index, Version);
 +	   

@@ -1334,7 +1334,11 @@ pkgAcqArchive::pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
        while (!Vf.end())
 	 {
 	   if ((Vf.File()->Flags & pkgCache::Flag::NotSource) != 0)
-	     continue;
+	     {
+	       Vf++;
+	       continue;
+	     }
+
 	   VerFileCandidates.push_back (Vf);
 	   Vf++;
 	 }
@@ -1347,7 +1351,10 @@ pkgAcqArchive::pkgAcqArchive(pkgAcquire *Owner,pkgSourceList *Sources,
 	 {
 	   pkgIndexFile *Index;
 	   if (Sources->FindIndex(Vf.File(),Index) == false)
-	     continue;
+	     {
+	       Vf++;
+	       continue;
+	     }
        
 	   int l = index_trust_level_for_package (Index, Version);
 	   
