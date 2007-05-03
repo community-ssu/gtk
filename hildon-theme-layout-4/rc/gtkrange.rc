@@ -44,6 +44,14 @@ style "osso-range"
       {
         function        = SLIDER
 	orientation     = VERTICAL
+        state           = ACTIVE
+	file            = "../images/qgn_plat_scroll_vertical_thumb_pressed.png"
+	border		= { 0, 0, 10, 10 }
+      }
+    image
+      {
+        function        = SLIDER
+	orientation     = VERTICAL
 	file            = "../images/qgn_plat_scroll_vertical_thumb_normal.png"
 	border		= { 0, 0, 10, 10 }
       }
@@ -71,6 +79,14 @@ style "osso-range"
 	orientation     = HORIZONTAL
 	file            = "../images/qgn_plat_scroll_horizontal_shaft_normal.png"
 	border          = { 0, 0, 0, 0 }
+      }
+    image 
+      {
+        function        = SLIDER
+	orientation     = HORIZONTAL
+        state           = ACTIVE
+	file            = "../images/qgn_plat_scroll_horizontal_thumb_pressed.png"
+	border		= { 10, 10, 0, 0 }
       }
     image 
       {

@@ -1,5 +1,14 @@
 2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/gtkrange.rc: 
+	* rc/gtkscrollbar.rc: Normal vertical and horizontal scrollbars are
+	now highlighted when being dragged.
+
+	* rc/gtksettings.rc: Adding the proper gtk-timeout-repeat setting.
+	Fixes NB#54151.
+
+2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/hildonhome.rc: Removing the unused apple resize mode styling.
 
 2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
