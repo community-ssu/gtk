@@ -1,3 +1,9 @@
+2007-05-03  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Fixed item-height.
+	- Pack the items at the end.
+
 2007-05-03  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hn-app-switcher.c:

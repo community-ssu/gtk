@@ -117,7 +117,6 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
   object_class->get_property = hildon_desktop_popup_menu_get_property;
   object_class->set_property = hildon_desktop_popup_menu_set_property;
 
-  
   widget_class->motion_notify_event  = hildon_desktop_popup_menu_motion_notify;
   widget_class->button_release_event = hildon_desktop_popup_menu_release_event;
 
@@ -135,8 +134,8 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
   g_object_class_install_property (object_class,
                                    PROP_POPUP_ITEM_HEIGHT,
                                    g_param_spec_uint(
-                                           "height-item",
-                                           "height-item",
+                                           "item-height",
+                                           "item-height",
                                            "Height of the menu items",
                                             1,
                                             G_MAXINT,
@@ -463,9 +462,9 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
     gtk_widget_set_size_request (menu->priv->box_buttons, req.width, menu->priv->item_height);
   }	  
 
-  gtk_box_pack_start (GTK_BOX (menu->priv->box_items),
-		      GTK_WIDGET (item),
-		      FALSE, FALSE, 0);
+  gtk_box_pack_end (GTK_BOX (menu->priv->box_items),
+		    GTK_WIDGET (item),
+		    FALSE, FALSE, 0);
   gtk_widget_show (GTK_WIDGET (item));
 
   menu->priv->n_items++;
