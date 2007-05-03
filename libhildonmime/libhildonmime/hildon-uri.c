@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
 /*
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2004-2007 Nokia Corporation.
  *
  * Contact: Erik Karlsson <erik.b.karlsson@nokia.com>
  *
@@ -36,7 +36,7 @@
 #define HILDON_URI_SCHEME_CACHE_GROUP         "X-Osso-URI-Action Handler Cache"
 #define HILDON_URI_SCHEME_CACHE_FILE          "schemeinfo.cache"
 
-#define HILDON_URI_HANDLER_SERVICE            "X-Osso-Service"   /* to deprecated */
+#define HILDON_URI_HANDLER_SERVICE            "X-Osso-Service"      /* deprecated */
 
 #define HILDON_URI_ACTIONS_GROUP_DEFAULT      "X-Osso-URI-Actions-Default" /* new */
 #define HILDON_URI_ACTIONS_GROUP_NEUTRAL      "X-Osso-URI-Actions-Neutral" /* new */
@@ -63,80 +63,79 @@
 #define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
 
 
-#define DEBUG_MSG(x)
-/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");   */
+/* #define DEBUG_MSG(x) */ 
+#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
  * name which is a translated string id. 
  */
 struct _HildonURIAction {
-	guint              ref_count;
+	guint                 ref_count;
 
-	HildonURIActionType  type;            /* new */
-	gchar             *desktop_file;
+	HildonURIActionType   type;            /* new */
+	gchar                *desktop_file;
 	
-	gchar             *id;              /* new */
+	gchar                *id;              /* new */
 
-	gchar             *scheme;
-	gchar             *mime_type;       /* new */
+	gchar                *scheme;
+	gchar                *mime_type;       /* new */
 
-	gchar             *name;
-	gchar             *service;
-	gchar             *method;
-	gchar             *domain; 
+	gchar                *name;
+	gchar                *service;
+	gchar                *method;
+	gchar                *domain; 
 };
 
 /* Actions */
-static HildonURIAction *   uri_action_new                        (HildonURIActionType  type,
-								  const gchar       *desktop_file,
-								  const gchar       *id,
-								  const gchar       *scheme,
-								  const gchar       *mime_type,
-								  const gchar       *name,
-								  const gchar       *service,
-								  const gchar       *method,
-								  const gchar       *domain);
-static void              uri_action_free                       (HildonURIAction     *action);
-static const gchar *     uri_action_type_to_string             (HildonURIActionType  type);
-static HildonURIActionType uri_action_type_from_string           (const gchar       *type_str);
+static HildonURIAction *   uri_action_new                              (HildonURIActionType   type,
+									const gchar          *desktop_file,
+									const gchar          *id,
+									const gchar          *scheme,
+									const gchar          *mime_type,
+									const gchar          *name,
+									const gchar          *service,
+									const gchar          *method,
+									const gchar          *domain);
+static void                uri_action_free                             (HildonURIAction      *action);
+static const gchar *       uri_action_type_to_string                   (HildonURIActionType   type);
+static HildonURIActionType uri_action_type_from_string                 (const gchar          *type_str);
 
 /* Desktop files */
-static gchar *           uri_get_desktop_file_that_exists      (const gchar       *str);
-static GSList *          uri_get_desktop_files_by_filename     (const gchar       *filename,
-								const gchar       *scheme);
-static GSList *          uri_get_desktop_files                 (const gchar       *scheme);
-
-static gboolean          uri_get_desktop_file_is_old_ver       (const gchar       *desktop_file);
-static GSList *          uri_get_desktop_file_actions          (const gchar       *desktop_file,
-								const gchar       *scheme);
-static GSList *          uri_get_desktop_file_actions_filtered (GSList            *actions,
-								HildonURIActionType  filter_action_type,
-								const gchar       *filter_mime_type);
-static GSList *          uri_get_desktop_file_info             (const gchar       *desktop_file,
-								const gchar       *scheme);
+static gchar *             uri_get_desktop_file_that_exists            (const gchar          *str);
+static GSList *            uri_get_desktop_files_by_scheme_by_filename (const gchar          *filename,
+									const gchar          *scheme);
+static GSList *            uri_get_desktop_files_by_scheme             (const gchar          *scheme);
+static gboolean            uri_get_desktop_file_is_old_ver             (const gchar          *desktop_file);
+static GSList *            uri_get_desktop_file_actions                (const gchar          *desktop_file,
+									const gchar          *scheme);
+static GSList *            uri_get_desktop_file_actions_filtered       (GSList               *actions,
+									HildonURIActionType   filter_action_type,
+									const gchar          *filter_mime_type);
+static GSList *            uri_get_desktop_file_info                   (const gchar          *desktop_file,
+									const gchar          *scheme);
 
 /* Defaults file */
-static gboolean          uri_get_desktop_file_by_filename      (const gchar       *filename,
-								const gchar       *scheme,
-								gchar            **desktop_file,
-								gchar            **action_name);
-static gboolean          uri_get_desktop_file_by_scheme        (const gchar       *scheme,
-								gchar            **filename,
-								gchar            **action_name);
-static HildonURIAction *   uri_get_desktop_file_action           (const gchar       *scheme,
-								  const gchar       *desktop_file_and_action);
-static gboolean          uri_set_defaults_file                 (const gchar       *scheme,
-								const gchar       *mime_type,
-								const gchar       *desktop_file,
-								const gchar       *action_id);
+static gboolean            uri_get_desktop_file_by_filename            (const gchar          *filename,
+									const gchar          *scheme,
+									gchar               **desktop_file,
+									gchar               **action_name);
+static gboolean            uri_get_desktop_file_by_scheme              (const gchar          *scheme,
+									gchar               **filename,
+									gchar               **action_name);
+static HildonURIAction *   uri_get_desktop_file_action                 (const gchar          *scheme,
+									const gchar          *desktop_file_and_action);
+static gboolean            uri_set_defaults_file                       (const gchar          *scheme,
+									const gchar          *mime_type,
+									const gchar          *desktop_file,
+									const gchar          *action_id);
 
 /* URI launching */
-static void              uri_launch_uris_foreach               (const gchar       *uri,
-								DBusMessageIter   *iter);
-static gboolean          uri_launch                            (DBusConnection    *connection,
-								HildonURIAction     *action,
-								GSList            *uris);
+static void                uri_launch_add_arg                          (const gchar          *uri,
+									DBusMessageIter      *iter);
+static gboolean            uri_launch                                  (DBusConnection       *connection,
+									HildonURIAction      *action,
+									GSList               *uris);
 
 /*
  * Actions
@@ -144,14 +143,14 @@ static gboolean          uri_launch                            (DBusConnection  
 
 static HildonURIAction *
 uri_action_new (HildonURIActionType  type,
-	        const gchar       *desktop_file,
-	        const gchar       *id,
-		const gchar       *scheme,
-		const gchar       *mime_type,
-		const gchar       *name,
-		const gchar       *service,
-		const gchar       *method,
-		const gchar       *domain)
+	        const gchar         *desktop_file,
+	        const gchar         *id,
+		const gchar         *scheme,
+		const gchar         *mime_type,
+		const gchar         *name,
+		const gchar         *service,
+		const gchar         *method,
+		const gchar         *domain)
 {
 	HildonURIAction *action;
 
@@ -318,8 +317,8 @@ uri_get_desktop_file_that_exists (const gchar *str)
 }
 
 static GSList *
-uri_get_desktop_files_by_filename (const gchar *filename, 
-				   const gchar *scheme)
+uri_get_desktop_files_by_scheme_by_filename (const gchar *filename, 
+					     const gchar *scheme)
 {
 	GKeyFile *key_file;
 	GSList   *desktop_files = NULL;
@@ -332,7 +331,8 @@ uri_get_desktop_files_by_filename (const gchar *filename,
 	 * scheme.
 	 */
 
-	DEBUG_MSG (("URI: Getting desktop files from:'%s'", filename));
+	DEBUG_MSG (("URI: Getting desktop files from:'%s' (by scheme:'%s')", 
+		    filename, scheme_lower));
 
 	key_file = g_key_file_new ();
 
@@ -352,7 +352,7 @@ uri_get_desktop_files_by_filename (const gchar *filename,
 			g_free (str);
 		}
 
-		for (i = 0; strv && strv[i] != NULL; i++) {
+		for (i = 0; strv && strv[i] != NULL && strv[i][0] != '\0'; i++) {
 			desktop_file = uri_get_desktop_file_that_exists (strv[i]);
 
 			if (desktop_file) {
@@ -371,7 +371,7 @@ uri_get_desktop_files_by_filename (const gchar *filename,
 }
 
 static GSList *
-uri_get_desktop_files (const char *scheme)
+uri_get_desktop_files_by_scheme (const char *scheme)
 {
 	GSList             *desktop_files = NULL;
 	gchar              *filename;
@@ -386,6 +386,9 @@ uri_get_desktop_files (const char *scheme)
 	 * files from all data dirs and inspect them. 
 	 */
 
+	DEBUG_MSG (("URI: Getting desktop files from all data dirs (by scheme:'%s')", 
+		    scheme));
+
 	filename = g_build_filename ("applications", 
 				     HILDON_URI_SCHEME_CACHE_FILE, 
 				     NULL);
@@ -395,7 +398,7 @@ uri_get_desktop_files (const char *scheme)
 	
 	/* Checking user dir ($home/.local/share/applications/...) first */
 	full_filename = g_build_filename (user_data_dir, filename, NULL);
-	desktop_files = uri_get_desktop_files_by_filename (full_filename, scheme);
+	desktop_files = uri_get_desktop_files_by_scheme_by_filename (full_filename, scheme);
 	g_free (full_filename);
 
 	/* Checking system dirs ($prefix/share/applications/..., etc) second */
@@ -404,7 +407,7 @@ uri_get_desktop_files (const char *scheme)
 		GSList *l;
 			
 		full_filename = g_build_filename (dir, filename, NULL);
-		list = uri_get_desktop_files_by_filename (full_filename, scheme);
+		list = uri_get_desktop_files_by_scheme_by_filename (full_filename, scheme);
 		g_free (full_filename);
 
 		/* Avoid duplicates */
@@ -425,8 +428,9 @@ uri_get_desktop_files (const char *scheme)
 		g_slist_free (list);
 	}
 
-	DEBUG_MSG (("URI: Found %d desktop files in user and system config",
-		    g_slist_length (desktop_files)));
+	DEBUG_MSG (("URI: Found %d desktop files in user and system config (by scheme:'%s')",
+		    g_slist_length (desktop_files), 
+		    scheme));
 
 	g_free (filename);
 
@@ -518,7 +522,7 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 				     desktop_file, 
 				     NULL);
 
-	DEBUG_MSG (("URI: Getting desktop file info from:'%s'", filename));
+	DEBUG_MSG (("URI: Getting desktop file actions from:'%s'", filename));
 
 	key_file = g_key_file_new ();
 
@@ -560,16 +564,14 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 		    have_scheme ? "has" : "doesn't have",
 		    scheme_lower));
 	
-	if (have_scheme) {
-		actions_str = g_key_file_get_value (key_file, 
-						    HILDON_URI_ACTIONS_GROUP,
-						    scheme_lower,
-						    NULL);
-	} else {
-		DEBUG_MSG (("URI: Could not find scheme:'%s' in filename:'%s'",
-			    scheme_lower, filename));
+	if (!have_scheme) {
 		goto finish;
 	}
+
+	actions_str = g_key_file_get_value (key_file, 
+					    HILDON_URI_ACTIONS_GROUP,
+					    scheme_lower,
+					    NULL);
 
 	/* Second we look up each action and create
 	 * HildonURIActions for each of those.
@@ -688,9 +690,9 @@ uri_get_desktop_file_actions (const gchar *desktop_file,
 }
 
 static GSList *
-uri_get_desktop_file_actions_filtered (GSList            *actions,
+uri_get_desktop_file_actions_filtered (GSList              *actions,
 				       HildonURIActionType  filter_action_type,
-				       const gchar       *filter_mime_type)
+				       const gchar         *filter_mime_type)
 {
 	GSList *l;
 	GSList *actions_filtered = NULL;
@@ -792,7 +794,7 @@ uri_get_desktop_file_info (const gchar *desktop_file,
 				     desktop_file, 
 				     NULL);
 
-	DEBUG_MSG (("URI: Getting desktop file info from:'%s'", filename));
+	DEBUG_MSG (("URI: Getting desktop file info from:'%s' (for old version)", filename));
 
 	key_file = g_key_file_new ();
 
@@ -935,9 +937,9 @@ uri_get_desktop_file_by_filename (const gchar  *filename,
 }
 
 static gboolean
-uri_get_desktop_file_by_scheme (const gchar *scheme,
-				gchar      **desktop_file,
-				gchar      **action_id)
+uri_get_desktop_file_by_scheme (const gchar  *scheme,
+				gchar       **desktop_file,
+				gchar       **action_id)
 {
 	gchar              *filename;
 	gchar              *full_filename;
@@ -1185,40 +1187,86 @@ uri_set_defaults_file (const gchar *scheme,
  * Launching URIs
  */
 
+static gboolean
+uri_launch_notify_task_navigator (DBusConnection *connection, 
+				  const gchar    *service)
+{
+	DBusMessage *msg;
+	gboolean     success = TRUE;
+
+	/* From osso-rpc.c */
+	/* Inform the task navigator that we are launching the service */
+	DEBUG_MSG (("URI: Notifying the task navigator..."));
+
+	DEBUG_MSG (("URI: Creating message for service: '%s'", TASK_NAV_SERVICE));
+	msg = dbus_message_new_method_call (TASK_NAV_SERVICE,
+					    APP_LAUNCH_BANNER_METHOD_PATH,
+					    APP_LAUNCH_BANNER_METHOD_INTERFACE,
+					    APP_LAUNCH_BANNER_METHOD);
+	
+	if (msg) {
+		if (dbus_message_append_args (msg,
+					      DBUS_TYPE_STRING, &service,
+					      DBUS_TYPE_INVALID)) {
+			
+			if (dbus_connection_send (connection, msg, NULL) == TRUE) {
+				DEBUG_MSG (("URI: Sent message to service: '%s'", 
+					    TASK_NAV_SERVICE));
+				dbus_connection_flush (connection);
+			} else {
+				DEBUG_MSG (("URI: Couldn't send message to service: '%s'", 
+					    TASK_NAV_SERVICE));
+				success = FALSE;
+			}
+			
+		} else {
+			DEBUG_MSG (("URI: Couldn't append msg with service: '%s'", 
+				    TASK_NAV_SERVICE));
+			success = FALSE;
+		}
+		
+		dbus_message_unref (msg);
+	} else {
+		DEBUG_MSG (("URI: Couldn't create msg with method: '%s' to service: '%s'", 
+			    APP_LAUNCH_BANNER_METHOD, 
+			    TASK_NAV_SERVICE));
+		success = FALSE;
+	}
+	
+	return success;
+}
+
 static void 
-uri_launch_uris_foreach (const gchar     *uri, 
-			 DBusMessageIter *iter)
+uri_launch_add_arg (const gchar     *uri, 
+		    DBusMessageIter *iter)
 {
 	if (!g_utf8_validate (uri, -1, NULL)) {
 		g_warning ("Invalid UTF-8 passed to hildon_mime_open\n");
 		return;
 	}
 
-	DEBUG_MSG (("\t%s\n", uri));
-
+	DEBUG_MSG (("URI: '%s'", uri));
+	
 	dbus_message_iter_append_basic (iter, DBUS_TYPE_STRING, &uri);
 }
 
-static gboolean
-uri_launch (DBusConnection *connection,
-	    HildonURIAction  *action, 
-	    GSList         *uris)
+static gboolean 
+uri_launch (DBusConnection  *connection,
+	    HildonURIAction *action,
+	    GSList          *uris)
 {
 	DBusMessage     *msg;
 	DBusMessageIter  iter;
+	const gchar     *key;
+	const gchar     *method;
 	gchar           *service;
 	gchar           *object_path;
 	gchar           *interface;
-	const gchar     *key;
-	const gchar     *method;
-	gboolean         ok = FALSE;
+	gboolean         success = TRUE;
 
 	key = action->service;
 	method = action->method;
 
-	/* If the service name has a '.', treat it as a full name, otherwise
-	 * prepend com.nokia. 
-	 */
 	if (strchr (key, '.')) {
 		service = g_strdup (key);
 		object_path = g_strdup_printf ("/%s", key);
@@ -1230,56 +1278,43 @@ uri_launch (DBusConnection *connection,
 		object_path = g_strdup_printf ("/com/nokia/%s", key);
 		interface = g_strdup (service);
 	}
-	
+
 	DEBUG_MSG (("URI: Activating service:'%s', object path:'%s', interface:'%s', method:'%s'", 
 		    service, object_path, interface, method));
 
-	msg = dbus_message_new_method_call (service, object_path,
-					    interface, method);
+	DEBUG_MSG (("URI: Creating message for service: '%s'", service));
+	msg = dbus_message_new_method_call (service, object_path, interface, method);
+
 	if (msg) {
 		dbus_message_set_no_reply (msg, TRUE);
+		dbus_message_iter_init_append (msg, &iter);
+		
+		DEBUG_MSG (("URI: Adding arguments:"));
+		g_slist_foreach (uris, (GFunc) uri_launch_add_arg, &iter);
+		
+		if (dbus_connection_send (connection, msg, NULL) == TRUE) {
+			DEBUG_MSG (("URI: Sent message to service: '%s'", service));
+			dbus_connection_flush (connection);
 
- 		dbus_message_iter_init_append (msg, &iter); 
-		g_slist_foreach (uris, (GFunc) uri_launch_uris_foreach, &iter);
-		
-		dbus_connection_send (connection, msg, NULL);
-		dbus_connection_flush (connection);
-		
-		dbus_message_unref (msg);
-		
-		/* From hildon-rpc.c */
-		/* Inform the task navigator that we are launching the service */
-		DEBUG_MSG (("URI: Informing Task Navigator...")); 
-		msg = dbus_message_new_method_call (TASK_NAV_SERVICE,
-						    APP_LAUNCH_BANNER_METHOD_PATH,
-						    APP_LAUNCH_BANNER_METHOD_INTERFACE,
-						    APP_LAUNCH_BANNER_METHOD);
-		
-		if (msg) {
-			if (dbus_message_append_args (msg,
-						      DBUS_TYPE_STRING, &service,
-						      DBUS_TYPE_INVALID)) {
-				dbus_connection_send (connection, msg, NULL);
-				dbus_connection_flush (connection);
-
-				ok = TRUE;
-			} else {
-				DEBUG_MSG (("URI: Couldn't add service: %s", service));
-			}
+			/* Update the task navigator */
+			success = uri_launch_notify_task_navigator (connection, service);
 		} else {
-			DEBUG_MSG (("URI: Couldn't create msg to: %s", service));
+			DEBUG_MSG (("URI: Couldn't send message to service: '%s'", service));
+			success = FALSE;
 		}
-	}
-
-	if (msg) {
+		
 		dbus_message_unref (msg);
+	} else {
+		DEBUG_MSG (("URI: Couldn't create msg with method: 'mime-open' to service: '%s'", 
+			    service));
+		success = FALSE;
 	}
 
 	g_free (service);
 	g_free (object_path);
 	g_free (interface);
 
-	return ok;
+	return success;
 }
 
 /*
@@ -1291,6 +1326,14 @@ hildon_uri_error_quark (void)
 	return g_quark_from_static_string (HILDON_URI_ERROR_DOMAIN);
 }
 
+/**
+ * hildon_uri_action_ref:
+ * @action: A @HildonURIAction pointer.
+ *
+ * Increments the object's reference count.
+ *
+ * Return: The original pointer @action.
+ **/
 HildonURIAction *  
 hildon_uri_action_ref (HildonURIAction *action)
 {
@@ -1301,6 +1344,13 @@ hildon_uri_action_ref (HildonURIAction *action)
 	return action;
 }
 
+/**
+ * hildon_uri_action_unref:
+ * @action: A @HildonURIAction pointer.
+ *
+ * Decrements the object's reference count. If the count happens to be
+ * < 1 after the decrement, @action is freed.
+ **/
 void
 hildon_uri_action_unref (HildonURIAction *action)
 {
@@ -1313,6 +1363,35 @@ hildon_uri_action_unref (HildonURIAction *action)
 	}
 }
 
+
+/**
+ * hildon_uri_action_get_type:
+ * @action: A @HildonURIAction pointer.
+ *
+ * This returns the type of the @action.
+ *
+ * Return: A @HildonURIActionType associated with the @action.
+ **/
+HildonURIActionType  
+hildon_uri_action_get_type (HildonURIAction *action)
+{
+	g_return_val_if_fail (action != NULL, -1);
+
+	return action->type;
+}
+
+/**
+ * hildon_uri_action_get_name:
+ * @action: A @HildonURIAction pointer.
+ *
+ * This returns the name associated with an @action. The name is the
+ * detailed description of the action. For example, if you are
+ * presenting a list of actions for the user to choose what to do with
+ * a URI, the name is what represents this @action.
+ *
+ * Return: A %const @gchar pointer to the name associated with the
+ * @action.
+ **/
 const gchar *  
 hildon_uri_action_get_name (HildonURIAction *action)
 {
@@ -1321,14 +1400,16 @@ hildon_uri_action_get_name (HildonURIAction *action)
 	return action->name;
 }
 
-const gchar *
-hildon_uri_action_get_translation_domain (HildonURIAction *action)
-{
-	g_return_val_if_fail (action != NULL, NULL);
-
-	return action->domain;
-}
-
+/**
+ * hildon_uri_action_get_service:
+ * @action: A @HildonURIAction pointer.
+ *
+ * This returns the service associated with an @action. The service is
+ * the D-Bus service that will be used when opening a URI.
+ *
+ * Return: A %const @gchar pointer to the service associated with the
+ * @action.
+ **/
 const gchar *  
 hildon_uri_action_get_service (HildonURIAction *action)
 {
@@ -1337,6 +1418,16 @@ hildon_uri_action_get_service (HildonURIAction *action)
 	return action->service;
 }
 
+/**
+ * hildon_uri_action_get_method:
+ * @action: A @HildonURIAction pointer.
+ *
+ * This returns the method associated with an @action. The method is
+ * the D-Bus method that will be used when opening a URI.
+ *
+ * Return: A %const @gchar pointer to the method associated with the
+ * @action.
+ **/
 const gchar *  
 hildon_uri_action_get_method (HildonURIAction *action)
 {
@@ -1345,6 +1436,44 @@ hildon_uri_action_get_method (HildonURIAction *action)
 	return action->method;
 }
 
+/**
+ * hildon_uri_action_get_translation_domain:
+ * @action: A @HildonURIAction pointer.
+ *
+ * This returns the translation domain associated with an @action. 
+ *
+ * Return: A %const @gchar pointer to the translation domain
+ * associated with the @action.
+ **/
+const gchar *
+hildon_uri_action_get_translation_domain (HildonURIAction *action)
+{
+	g_return_val_if_fail (action != NULL, NULL);
+
+	return action->domain;
+}
+
+/**
+ * hildon_uri_action_get_actions:
+ * @scheme: A %const @gchar pointer to a scheme.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * @Deprecated: Use @hildon_uri_get_actions_by_uri() instead.
+ *
+ * This returns a @GSList pointer to all actions associated with the
+ * @scheme. The @scheme can be obtained from a URI by calling
+ * hildon_uri_get_scheme_from_uri().
+ *
+ * If %NULL is returned and @error is %NULL then there is no default
+ * @HildonURIAction for @scheme. If %NULL is returned and @error is
+ * non-%NULL, it will hold the error that occurred while trying to
+ * obtain a list of actions. 
+ *
+ *
+ * Return: A @GSList of actions associated with the @scheme. This list
+ * is freed using @hildon_uri_free_actions(). 
+ **/
 GSList *  
 hildon_uri_get_actions (const gchar  *scheme,
 			GError      **error)
@@ -1356,7 +1485,7 @@ hildon_uri_get_actions (const gchar  *scheme,
 
 	g_return_val_if_fail (scheme != NULL && scheme[0] != '\0', NULL);
 
-	desktop_files = uri_get_desktop_files (scheme);
+	desktop_files = uri_get_desktop_files_by_scheme (scheme);
 
 	for (l = desktop_files; l; l = l->next) {
 		GSList *actions_found;
@@ -1375,10 +1504,26 @@ hildon_uri_get_actions (const gchar  *scheme,
 	return actions;
 }
 
+/**
+ * hildon_uri_action_get_actions_by_uri:
+ * @uri: A %const @gchar pointer to a URI.
+ * @type: The type of actions you want returned, can be -1 to all.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * This function operates the same way @hildon_uri_get_actions() does
+ * but instead uses the mime type of the uri to know which actions it
+ * can return and has the added ability to specify the types you want
+ * returned. For most cases, this will be -1 to return all actions
+ * available for a given URI.
+ *
+ * Return: A @GSList of actions. This list is freed using
+ * @hildon_uri_free_actions().
+ **/
 GSList *  
-hildon_uri_get_actions_by_uri (const gchar        *uri_str,
+hildon_uri_get_actions_by_uri (const gchar          *uri_str,
 			       HildonURIActionType   action_type,
-			       GError            **error)
+			       GError              **error)
 {
 	GnomeVFSURI      *uri;
 	GnomeVFSFileInfo *info;
@@ -1428,7 +1573,7 @@ hildon_uri_get_actions_by_uri (const gchar        *uri_str,
 	gnome_vfs_uri_unref (uri);
 	
 	/* Get desktop files */
-	desktop_files = uri_get_desktop_files (scheme);
+	desktop_files = uri_get_desktop_files_by_scheme (scheme);
 
 	DEBUG_MSG (("URI: Getting actions by uri: %s, found %d desktop files", 
 		    uri_str, g_slist_length (desktop_files)));
@@ -1457,6 +1602,13 @@ hildon_uri_get_actions_by_uri (const gchar        *uri_str,
 	return actions;
 }
 
+/**
+ * hildon_uri_free_actions:
+ * @list: A @GSList pointer.
+ *
+ * The @GSlist is freed and all data members in the list are freed
+ * too. 
+ **/
 void   
 hildon_uri_free_actions (GSList *list)
 {
@@ -1468,6 +1620,21 @@ hildon_uri_free_actions (GSList *list)
 	g_slist_free (list);
 }
 
+/**
+ * hildon_uri_get_scheme_from_uri:
+ * @uri: A %const @gchar pointer to a URI.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * This returns the scheme part of @uri. An example of a scheme would
+ * be "http", "callto", "mailto", etc. 
+ * 
+ * If %NULL is returned and @error is non-%NULL, it will hold the
+ * error that occurred while trying to obtain the scheme. 
+ *
+ * Return: A newly allocated @gchar pointer which must be freed with
+ * g_free().
+ **/
 gchar *
 hildon_uri_get_scheme_from_uri (const gchar  *uri,
 				GError      **error)
@@ -1502,9 +1669,17 @@ hildon_uri_get_scheme_from_uri (const gchar  *uri,
 	return NULL;
 }
 
+/**
+ * hildon_uri_action_is_default_action:
+ * @action: A @HildonURIAction pointer. 
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL. 
+ *
+ * Return: The %TRUE if it is the default action or %FALSE.
+ **/
 gboolean
 hildon_uri_is_default_action (HildonURIAction  *action,
-			      GError        **error)
+			      GError          **error)
 {
 	HildonURIAction *default_action;
 	gboolean       equal = FALSE;
@@ -1517,7 +1692,7 @@ hildon_uri_is_default_action (HildonURIAction  *action,
 	 * for that scheme in the old group ('Default Actions' in the
 	 * defaults file).
 	 */
-	if (action->id && !action->scheme) {
+ 	if (action->id && !action->scheme) {
 		return FALSE;
 	}
 
@@ -1583,10 +1758,19 @@ hildon_uri_is_default_action (HildonURIAction  *action,
 	return equal;
 }
 
+/**
+ * hildon_uri_action_is_default_action_by_uri:
+ * @uri: A %const @gchar pointer to a URI.
+ * @action: A @HildonURIAction pointer. 
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL. 
+ *
+ * Return: The %TRUE if it is the default action or %FALSE.
+ **/
 gboolean
-hildon_uri_is_default_action_by_uri (const gchar    *uri,
+hildon_uri_is_default_action_by_uri (const gchar      *uri,
 				     HildonURIAction  *action,
-				     GError        **error)
+				     GError          **error)
 {
 	HildonURIAction *default_action;
 	gboolean       equal = FALSE;
@@ -1656,6 +1840,23 @@ hildon_uri_is_default_action_by_uri (const gchar    *uri,
 	return equal;
 }
 
+/**
+ * hildon_uri_get_default_action:
+ * @scheme: A string which represents a scheme. 
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL. 
+ *
+ * This returns the @HildonURIAction which is the default for a
+ * @scheme. The @scheme can be obtained from a URI by calling
+ * hildon_uri_get_scheme_from_uri().  
+ * 
+ * If %NULL is returned and @error is %NULL then there is no default
+ * @HildonURIAction for @scheme. If %NULL is returned and @error is
+ * non-%NULL, it will hold the error that occurred while trying to
+ * obtain the default @action. 
+ *
+ * Return: The default @HildonURIAction for @scheme.
+ **/
 HildonURIAction *  
 hildon_uri_get_default_action (const gchar  *scheme,
 			       GError      **error)
@@ -1730,6 +1931,28 @@ hildon_uri_get_default_action (const gchar  *scheme,
 	return action;
 }
 
+/**
+ * hildon_uri_get_default_action_by_uri
+ * @scheme: A string which represents a uri
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL. 
+ *
+ * @Deprecated: Use @hildon_uri_get_default_action_by_uri() instead.
+ *
+ * This returns the @HildonURIAction which is the default for a
+ * @uri. This function works similarly to
+ * @hildon_uri_get_default_action() with the difference being that the
+ * mime type of the uri is used to look up the action. The reason for
+ * this being that default actions now are effective with scheme and
+ * mime type instead of JUST the scheme as before.
+ * 
+ * If %NULL is returned and @error is %NULL then there is no default
+ * @HildonURIAction for @scheme. If %NULL is returned and @error is
+ * non-%NULL, it will hold the error that occurred while trying to
+ * obtain the default @action. 
+ *
+ * Return: The default @HildonURIAction for @scheme.
+ **/
 HildonURIAction *  
 hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 				      GError      **error)
@@ -1738,7 +1961,7 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 	GnomeVFSURI      *uri;
 	GnomeVFSFileInfo *info;
 	GnomeVFSResult    result;
-	HildonURIAction    *action = NULL;
+	HildonURIAction  *action = NULL;
 	gchar            *scheme = NULL;
 	gchar            *mime_type = NULL;
 	gchar            *desktop_file = NULL;
@@ -1848,10 +2071,37 @@ hildon_uri_get_default_action_by_uri (const gchar  *uri_str,
 	return action;
 }
 
+/**
+ * hildon_uri_set_default_action:
+ * @scheme: A string which represents a scheme. 
+ * @action: A @HildonURIAction pointer.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * @Deprecated: Use @hildon_uri_set_default_action_by_uri() instead.
+ *
+ * Sets the default @action which should be used with a @scheme when
+ * hildon_uri_open() is called. The @scheme can be obtained from a URI
+ * by calling hildon_uri_get_scheme_from_uri().
+ * 
+ * If @action is NULL, the default action is unset. It is important to
+ * note that ONLY the user's default actions are unset NOT the system
+ * default actions. The user's default actions are in
+ * $home/.local/share/applications/defaults.list (the system
+ * default actions are in
+ * $prefix/share/applications/defaults.list). This means that if you
+ * remove a user's default action, the system default will be used
+ * instead if there is one. 
+ * 
+ * If %FALSE is returned and @error is non-%NULL, it will hold the error
+ * that occurred while trying to set the default @action.  
+ *
+ * Return: %TRUE if it was successfully set or %FALSE.
+ **/
 gboolean
-hildon_uri_set_default_action (const gchar    *scheme,
+hildon_uri_set_default_action (const gchar      *scheme,
 			       HildonURIAction  *action,
-			       GError        **error)
+			       GError          **error)
 {
 	const gchar *desktop_file = NULL;
 	const gchar *action_id = NULL;
@@ -1891,10 +2141,35 @@ hildon_uri_set_default_action (const gchar    *scheme,
 	return ok;
 }
 
+/**
+ * hildon_uri_set_default_action_by_uri:
+ * @scheme: A string which represents a uri. 
+ * @action: A @HildonURIAction pointer.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * Sets the default @action which should be used with a @uri when
+ * hildon_uri_open() is called. The @action is saved by the @uri scheme
+ * and mime type.
+ * 
+ * If @action is NULL, the default action is unset. It is important to
+ * note that ONLY the user's default actions are unset NOT the system
+ * default actions. The user's default actions are in
+ * $home/.local/share/applications/defaults.list (the system
+ * default actions are in
+ * $prefix/share/applications/defaults.list). This means that if you
+ * remove a user's default action, the system default will be used
+ * instead if there is one. 
+ * 
+ * If %FALSE is returned and @error is non-%NULL, it will hold the error
+ * that occurred while trying to set the default @action.  
+ *
+ * Return: %TRUE if it was successfully set or %FALSE.
+ **/
 gboolean
-hildon_uri_set_default_action_by_uri (const gchar    *uri_str,
+hildon_uri_set_default_action_by_uri (const gchar      *uri_str,
 				      HildonURIAction  *action,
-				      GError        **error)
+				      GError          **error)
 {
 	GnomeVFSURI      *uri;
 	GnomeVFSFileInfo *info;
@@ -1983,18 +2258,39 @@ hildon_uri_set_default_action_by_uri (const gchar    *uri_str,
 	return ok;
 }
 
+/**
+ * hildon_uri_open:
+ * @uri: A string which represents a URI. 
+ * @action: A @HildonURIAction pointer. This is optional and %NULL can
+ * be specified to use the default action instead.
+ * @error: The address of a pointer to a @GError structure. This is
+ * optional and can be %NULL.
+ *
+ * This will open the @uri with the application associated with
+ * @action. Using the details in @action, a DBus signal is sent to the
+ * application to open @uri.
+ * 
+ * If @action is %NULL then the default action will be tried. If the
+ * default action is %NULL, the first available action in the desktop
+ * file is used instead. 
+ * 
+ * If %FALSE is returned and @error is non-%NULL, it will hold the error
+ * that occurred while trying to open @uri.
+ *
+ * Return: %TRUE if successfull or %FALSE.
+ **/
 gboolean         
-hildon_uri_open (const gchar    *uri,
+hildon_uri_open (const gchar      *uri,
 		 HildonURIAction  *action_to_try,
-		 GError        **error)
+		 GError          **error)
 {
-	DBusConnection *connection;
+	DBusConnection   *connection;
 	HildonURIAction  *action;
-	gchar          *scheme;
-	GSList         *uris = NULL;
-	const gchar    *str;
-	gboolean        ok;
-	gboolean        cleanup_action = FALSE;
+	gchar            *scheme;
+	GSList           *uris = NULL;
+	const gchar      *str;
+	gboolean          ok;
+	gboolean          cleanup_action = FALSE;
 
 	connection = dbus_bus_get (DBUS_BUS_SESSION, NULL);
 	if (!connection) {

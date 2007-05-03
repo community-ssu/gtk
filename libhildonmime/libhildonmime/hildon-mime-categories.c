@@ -29,6 +29,15 @@
 
 static GHashTable *category_hash;
 
+/**
+ * hildon_mime_get_category_name:
+ * @category: The @HildonMimeCategory.
+ *
+ * This function returns the name of the specified category.
+ *
+ * Return: The %const @gchar pointer name of the category, this should not
+ * be freed or modified. 
+ */
 const gchar *
 hildon_mime_get_category_name (HildonMimeCategory category)
 {
@@ -52,6 +61,14 @@ hildon_mime_get_category_name (HildonMimeCategory category)
 	}
 }
 
+/**
+ * hildon_mime_get_category_from_name:
+ * @category: The %const @gchar pointer category name.
+ *
+ * This function returns the @HildonMimeCategory corresponding to @category.
+ *
+ * Return: The @HildonMimeCategory.
+ */
 HildonMimeCategory
 hildon_mime_get_category_from_name (const gchar *category)
 {
@@ -79,6 +96,16 @@ hildon_mime_get_category_from_name (const gchar *category)
 	return HILDON_MIME_CATEGORY_OTHER;
 }
 
+/**
+ * hildon_mime_get_category_for_mime_type:
+ * @mime_type: A %const @gchar pointer MIME-type to be used (UTF-8). 
+ *
+ * This function returns the @HildonMimeCategory for the specified
+ * @mime_type. See hildon_mime_get_mime_types_for_category() for more
+ * information. 
+ *
+ * Return: The category that the @mime_type is in.
+ */
 HildonMimeCategory
 hildon_mime_get_category_for_mime_type (const gchar *mime_type)
 {
@@ -508,6 +535,28 @@ dup_string_list (GList *list)
 	return g_list_reverse (new_list);
 }
 
+/**
+ * hildon_mime_get_mime_types_for_category:
+ * @category: The @HildonMimeCategory.
+ *
+ * This function returns a @GList of  %const @gchar pointer mime types
+ * that are in the specified category.  
+ *
+ * The mapping between @category and mime type is handled through the shared mime
+ * info. Add the tag <osso:category name="name"/> to a mime type to specify that
+ * the mime type is in the category "name". Valid category names are:
+ *
+ * audio, bookmarks, contacts, documents, emails, images, video
+ * 
+ * An example:
+ *
+ *   <mime-type type="text/plain">
+ *     <osso:category name="documents"/>
+ *   </mime-type>
+ *
+ * Return: A newly allocated @GList which should be freed with
+ * hildon_mime_types_list_free() OR %NULL if none were found.
+ */
 GList *
 hildon_mime_get_mime_types_for_category (HildonMimeCategory category)
 {
@@ -531,6 +580,13 @@ hildon_mime_get_mime_types_for_category (HildonMimeCategory category)
         return NULL;
 }
 
+/**
+ * hildon_mime_types_list_free:
+ * @list: A @GList of mime types.
+ *
+ * Frees the list of mime types returned by
+ * hildon_mime_get_mime_types_for_category().
+ */
 void 
 hildon_mime_types_list_free (GList *list)
 {

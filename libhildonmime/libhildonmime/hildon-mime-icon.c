@@ -137,9 +137,32 @@ make_generic_mime_name (const char *mime_type)
 	return icon_name;
 }
 
+/**
+ * hildon_mime_get_icon_names:
+ * @mime_type: The %const @gchar pointer mime type
+ * @file_info: Optional GnomeVFSFileInfo struct, or %NULL
+ * 
+ * This function returns a %NULL terminated array of icon names for
+ * the specified @mime_type. The icon names are @GtkIconTheme names. A
+ * number of names are returned, ordered by how specific they are. For
+ * example, if the mime type "image/png" is passed, the first icon
+ * name might correspond to a png file, the second to an image file,
+ * and the third to a regular file. 
+ *
+ * In order to decide which icon to use, the existance of it in the
+ * icon theme should be checked with gtk_icon_theme_has_icon(). If the
+ * first icon is not available, try the next etc. 
+ *
+ * The optional GnomeVFSFileInfo struct is used to get additional
+ * information about a file or directory that might help to get the
+ * right icon. 
+ *
+ * Return: A newly allocated array of icon name strings which should be freed with
+ * g_strfreev() OR %NULL if none were found.
+ */
 gchar **
 hildon_mime_get_icon_names (const gchar      *mime_type,
-			  GnomeVFSFileInfo *file_info)
+			    GnomeVFSFileInfo *file_info)
 {
 	gchar  *name;
 	gchar  *generic;

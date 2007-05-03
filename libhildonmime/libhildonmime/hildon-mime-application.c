@@ -58,6 +58,21 @@ desktop_file_get_mime_types (const char *id)
 	return service_name;
 }
 
+/**
+ * hildon_mime_application_get_mime_types:
+ * @application_id: The application id, as returned by GnomeVFS.
+ *
+ * Returns a list of mime types supported by the application corresponding to
+ * the specified @appliction_id. 
+ *
+ * The list of mime types is specifed in the desktop file for the application
+ * with the MimeType field.
+ *
+ * Return: A newly allocated @GList of %const @gchar pointer mime
+ * types which should be freed with
+ * hildon_mime_application_mime_types_list_free() OR %NULL if none were
+ * found.  
+ */
 GList *
 hildon_mime_application_get_mime_types (const gchar *application_id)
 {
@@ -94,6 +109,13 @@ hildon_mime_application_get_mime_types (const gchar *application_id)
 	return g_list_reverse (list);
 }
 
+/**
+ * hildon_mime_application_mime_types_list_free:
+ * @mime_types: A @GList of %const @gchar pointer mime types.
+ * 
+ * Frees the list of mime_types as returned by
+ * hildon_mime_application_get_mime_types(). 
+ */
 void
 hildon_mime_application_mime_types_list_free (GList *list)
 {
