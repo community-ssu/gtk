@@ -74,5 +74,5 @@ add_sudoer 'user ALL = NOPASSWD: /etc/init.d/alarmd stop'
 add_sudoer 'user ALL = NOPASSWD: /etc/init.d/osso-hss start'
 add_sudoer 'user ALL = NOPASSWD: /etc/init.d/osso-hss stop'
 add_sudoer 'user ALL = NOPASSWD: /usr/bin/osso-product-info'
-add_sudoer 'user ALL = NOPASSWD: rm -f /tmp/.opi.tmp'
+add_sudoer 'user ALL = NOPASSWD: /bin/rm -f /tmp/.opi.tmp'
 
