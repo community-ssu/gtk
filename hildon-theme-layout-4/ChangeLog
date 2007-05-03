@@ -1,3 +1,8 @@
+2007-05-03  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkmenuitem.rc: the arrow graphics selected/pressed states
+	are mixed.
+
 2007-05-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* rc/base.rc: Stop Menu key from popping up the entry/textview context

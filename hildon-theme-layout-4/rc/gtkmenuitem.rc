@@ -42,7 +42,7 @@ style "osso-menuitem"
 	arrow_direction = RIGHT
 	shadow          = OUT
 	state           = PRELIGHT
-	overlay_file    = "../images/qgn_plat_menu_next_level_arrow_focused.png"
+	overlay_file    = "../images/qgn_plat_menu_next_level_arrow_pressed.png"
 	overlay_stretch = FALSE
       }
     image
@@ -58,7 +58,7 @@ style "osso-menuitem"
         function        = ARROW
         arrow_direction = RIGHT
         shadow          = IN
-        overlay_file    = "../images/qgn_plat_menu_next_level_arrow_pressed.png"
+        overlay_file    = "../images/qgn_plat_menu_next_level_arrow_focused.png"
         overlay_stretch = FALSE
       }
      image
