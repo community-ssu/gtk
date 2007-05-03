@@ -1,3 +1,7 @@
+2007-05-03  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Oops, restored the listbox header graphics. D'oh.
+
 2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/gtkrange.rc: 
