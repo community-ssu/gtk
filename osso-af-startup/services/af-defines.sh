@@ -118,14 +118,20 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
   source_if_is keyboard.defs
 
   if [ -x /usr/bin/osso-product-info ]; then
-    sudo /usr/bin/osso-product-info 1> /tmp/.opi.tmp 2> /dev/null
+    if [ "x$USER" = "xroot" ]; then
+      _SUDO=''
+    else
+      _SUDO='sudo'
+    fi
+    $_SUDO /usr/bin/osso-product-info 1> /tmp/.opi.tmp 2> /dev/null
     if [ -r /tmp/.opi.tmp ]; then
       VNAMES=`awk -F '=' '{print $1}' < /tmp/.opi.tmp`
       source /tmp/.opi.tmp
       export $VNAMES
       unset VNAMES
     fi
-    sudo rm -f /tmp/.opi.tmp
+    $_SUDO rm -f /tmp/.opi.tmp
+    unset _SUDO
   fi
 
   export AF_DEFINES_SOURCED=1
