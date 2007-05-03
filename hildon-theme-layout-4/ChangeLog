@@ -1,5 +1,12 @@
 2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* rc/hildonthumbscrollbar.rc: Changing "TRUE" to "1". Forgot that the
+	parsing is dumb. 
+
+	* rc/hildonvolumebar.rc: Fixing the inverted vertical volumebar fill.
+
+2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* rc/hildonthumbscrollbar.rc: Highlight the thumb scrollbar when
 	dragging. Fixes NB#55340.
 

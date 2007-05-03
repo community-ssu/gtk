@@ -15,7 +15,7 @@ style "hildon-thumb-scrollbar"
   GtkRange::arrow_displacement_y = 0
   GtkRange::autodimmed_steppers = 1
   GtkScrollbar::min-slider-length = 32
-  GtkRange::activate-slider = TRUE
+  GtkRange::activate-slider = 1
   
   engine "sapwood"
   {

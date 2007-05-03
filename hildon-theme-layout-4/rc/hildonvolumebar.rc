@@ -237,7 +237,7 @@ style "osso-volumebar-vertical"
     image
     {
       function = BOX
-      detail = "trough-lower"
+      detail = "trough-upper"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_top_disabled.png"
       border = {0, 0, 4, 0}
@@ -245,14 +245,14 @@ style "osso-volumebar-vertical"
     image
     {
       function = BOX
-      detail = "trough-lower"
+      detail = "trough-upper"
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_top_normal.png"
       border = {0, 0, 4, 0}
     }
     image
     {
       function = BOX
-      detail = "trough-upper"
+      detail = "trough-lower"
       state = INSENSITIVE
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_bottom_disabled.png"
       border = {0, 0, 0, 4}
@@ -260,7 +260,7 @@ style "osso-volumebar-vertical"
     image
     {
       function = BOX
-      detail = "trough-upper"
+      detail = "trough-lower"
       file = "../images/qgn_plat_volume_bar_vertical_regular_shaft_bottom_normal.png"
       border = {0, 0, 0, 4}
     }
