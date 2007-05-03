@@ -1,3 +1,8 @@
+2007-05-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* rc/base.rc: Stop Menu key from popping up the entry/textview context
+	menu. Fixes: NB#50637
+
 2007-05-03  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Oops, restored the listbox header graphics. D'oh.

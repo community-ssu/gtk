@@ -201,3 +201,12 @@ binding "treeview"
 }
 
 class "GtkTreeView" binding "treeview"
+
+# Stop Menu key from popping up entry/textview context menus
+binding "entry+textview"
+{
+  unbind "Menu"
+}
+
+class "GtkEntry" binding "entry+textview"
+class "GtkTextView" binding "entry+textview"
