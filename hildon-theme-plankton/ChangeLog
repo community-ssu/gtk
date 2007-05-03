@@ -1,3 +1,12 @@
+2007-05-03  Michael Dominic K.  <mdk@mdk.am> 
+
+	[4.7.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog:
+	* debian/control: Updating.
+
 2007-04-29  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.svg: updated the color swatches layout to a

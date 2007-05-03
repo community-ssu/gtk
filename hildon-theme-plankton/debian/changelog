@@ -1,3 +1,10 @@
+hildon-theme-plankton (4.7.0-1) unstable; urgency=low
+
+  * Layout bump.
+  * NB#55138 - Scroll arrows missing in TN thumb menus 
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 03 May 2007 17:20:01 +0300
+
 hildon-theme-plankton (4.6.1-1) unstable; urgency=low
 
   * Layout bump.
