@@ -81,7 +81,7 @@ G_DEFINE_TYPE (HNOthersButton, hn_others_button, TASKNAVIGATOR_TYPE_ITEM);
 #define MENU_ITEM_EMPTY_SUBMENU_STRING _( "tana_li_of_noapps" )
 
 #define BORDER_WIDTH 7
-#define BUTTON_HEIGHT 90
+#define BUTTON_HEIGHT 80
 
 #define MENU_Y_POS 180
 #define MENU_MAX_WIDTH 360

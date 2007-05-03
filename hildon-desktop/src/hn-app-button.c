@@ -100,7 +100,7 @@ static guint app_group_n_icons = G_N_ELEMENTS (app_group_icons);
 #define APP_GROUP_ICON_SIZE     16
 
 /* Hardcoded pixel perfecting values */
-#define BUTTON_HEIGHT      38
+#define BUTTON_HEIGHT      60
 
 #define AS_BUTTON_BORDER_WIDTH  0
 #define AS_MENU_BORDER_WIDTH    20

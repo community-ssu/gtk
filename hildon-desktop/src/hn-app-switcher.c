@@ -103,7 +103,7 @@
 #define AS_BUTTON_NAME "hildon-navigator-small-button%d"
 #define AS_BUTTON_NAME_PRESSED "hildon-navigator-small-button%d-pressed"
 
-#define AS_MENU_BUTTON_NAME "hildon-navigator-small-button5"
+#define AS_MENU_BUTTON_NAME "hildon-navigator-small-button4"
 
 #define AS_UPPER_SEPARATOR "hildon-navigator-upper-separator"
 #define AS_LOWER_SEPARATOR "hildon-navigator-lower-separator"
@@ -115,8 +115,8 @@
 #define AS_MENU_BORDER_WIDTH    20
 #define AS_TIP_BORDER_WIDTH 	20
 #define AS_BUTTON_HEIGHT        38
-#define AS_MENU_BUTTON_HEIGHT  116
-#define AS_ROW_HEIGHT 		    30
+#define AS_MENU_BUTTON_HEIGHT   60
+#define AS_ROW_HEIGHT 		30
 #define AS_ICON_SIZE            26
 #define AS_TOOLTIP_WIDTH        360
 #define AS_MENU_ITEM_WIDTH      360

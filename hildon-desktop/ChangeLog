@@ -1,3 +1,13 @@
+2007-05-03  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hn-app-switcher.c:
+	- changed menu button name to -button4
+	- changed menu button height to 60
+	* src/hn-app-button.c:
+	- changed button height to 60
+	* src/hn-others-button.c, libhildondesktop/hildon-desktop-panel.c:
+	- changed button height to 80
+
 2007-05-02  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c:
