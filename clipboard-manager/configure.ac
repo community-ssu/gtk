@@ -1,4 +1,4 @@
-AC_INIT(clipboard-manager, 0.6.3)
+AC_INIT(clipboard-manager, 0.6.4)
 AC_CONFIG_AUX_DIR(config)
 
 AM_INIT_AUTOMAKE()

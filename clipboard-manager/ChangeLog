@@ -1,4 +1,10 @@
 2007-05-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	Release 0.6.4
+
+	* configure.ac: Bumped version
+
+2007-05-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 	
 	Silence compiler warnings
 
