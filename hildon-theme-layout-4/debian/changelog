@@ -1,3 +1,18 @@
+hildon-theme-layout-4 (0.7.0-1) unstable; urgency=low
+
+  * Fixes: NB#54069 Missing tick of check box in focus
+  * Fixes: NB#55340 The thumb in finger scrollbar does not show its clicked state
+  * Fixes: NB#54151 Time picker: Pressing Up/Down navigation keys does not increment or decrement the value correctly
+  * Fixes: NB#55140 Separators and arrowheads are missing from the column list headers
+
+  * Normal vertical and horizontal scrollbars are now highlighted when being dragged
+  * Adding the proper gtk-timeout-repeat setting
+  * Fixing the inverted vertical volumebar fill
+  * Grand reorganizing of color swatches
+  * Made the notebook pixmap not repeat if the notebook is taller than normal
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Thu, 03 May 2007 17:15:57 +0300
+
 hildon-theme-layout-4 (0.6.2-1) unstable; urgency=low
 
   * Fixes: NB#54157 GtkCombobox: Left/right keys does not work properly
