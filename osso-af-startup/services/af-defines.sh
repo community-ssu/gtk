@@ -4,7 +4,7 @@
 #
 # This file is part of osso-af-startup.
 #
-# Copyright (C) 2004-2006 Nokia Corporation. All rights reserved.
+# Copyright (C) 2004-2007 Nokia Corporation. All rights reserved.
 #
 # Contact: Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>
 #
@@ -115,8 +115,17 @@ if [ "x$AF_DEFINES_SOURCED" = "x" ]; then
 
   source_if_is osso-gtk.defs
   source_if_is matchbox.defs
-  source_if_is hildon-desktop.defs
   source_if_is keyboard.defs
+
+  if [ -x /usr/bin/osso-product-info ]; then
+    sudo /usr/bin/osso-product-info 1> /tmp/.opi.tmp
+    if [ -r /tmp/.opi.tmp ]; then
+      VNAMES=`awk -F '=' '{print $1}' < /tmp/.opi.tmp`
+      source /tmp/.opi.tmp
+      export $VNAMES
+    fi
+    sudo rm -f /tmp/.opi.tmp
+  fi
 
   export AF_DEFINES_SOURCED=1
 
