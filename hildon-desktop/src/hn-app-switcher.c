@@ -27,7 +27,6 @@
 #include "hn-app-switcher.h"
 #include "hn-app-button.h"
 #include "hn-app-tooltip.h"
-#include "hn-app-menu-item.h"
 #include "hn-app-sound.h"
 #include "hn-app-pixbuf-anim-blinker.h"
 
