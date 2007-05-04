@@ -1,3 +1,10 @@
+libmatchbox1 (2:1.9-osso6) unstable; urgency=low
+
+  * pango ellipsize optimization
+  * Fixes: NB#25304 
+
+ -- Tapani Palli <tapani.palli@nokia.com>  Fri,  4 May 2007 13:45:50 +0300
+
 libmatchbox1 (2:1.9-osso5) unstable; urgency=low
 
   * debian/rules : more fixing :-/, now it should run autogen before build
