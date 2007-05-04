@@ -1,8 +1,4 @@
-/* -*- mode:C; c-file-style:"gnu"; indent-tabs-mode:nil; -*- */
-
-/* hn-app-switcher.c
- * This file is part of maemo-af-desktop
- *
+ /*
  * Copyright (C) 2006 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
@@ -147,9 +143,6 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
 static void 
 hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data);
 
-static void
-hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data);
-
 static void 
 hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher);
 
@@ -194,12 +187,6 @@ struct _HNAppSwitcherPrivate
   GtkWidget **buttons;
   GSList *buttons_group;
 
-  GtkWidget *main_button;
-  GtkWidget *main_menu;
-  GtkWidget *main_home_item;
-  GtkWidget *active_menu_item;
-  HDEntryInfo *home_info;
-
   GtkWidget *tooltip;
   
   GtkWidget *current_toggle;
@@ -239,156 +226,6 @@ struct _HNAppSwitcherPrivate
 
 G_DEFINE_TYPE (HNAppSwitcher, hn_app_switcher, TASKNAVIGATOR_TYPE_ITEM);
 
-static void
-hn_app_switcher_get_workarea (GtkAllocation *allocation)
-{
-  unsigned long n;
-  unsigned long extra;
-  int format;
-  int status;
-  Atom property = XInternAtom (GDK_DISPLAY (), WORKAREA_ATOM, FALSE);
-  Atom realType;
-  
-  /* This is needed to get rid of the punned type-pointer 
-     breaks strict aliasing warning*/
-  union
-  {
-    unsigned char *char_value;
-    int *int_value;
-  } value;
-    
-  status = XGetWindowProperty (GDK_DISPLAY (), 
-			       GDK_ROOT_WINDOW (), 
-			       property, 
-			       0L, 
-			       4L,
-			       0, 
-			       XA_CARDINAL, 
-			       &realType, 
-			       &format,
-			       &n, 
-			       &extra, 
-			       (unsigned char **) &value.char_value);
-    
-  if (status == Success &&
-      realType == XA_CARDINAL &&
-      format == 32 && 
-      n == 4  &&
-      value.char_value != NULL)
-  {
-    allocation->x = value.int_value[0];
-    allocation->y = value.int_value[1];
-    allocation->width = value.int_value[2];
-    allocation->height = value.int_value[3];
-  }
-  else
-  {
-    allocation->x = 0;
-    allocation->y = 0;
-    allocation->width = 0;
-    allocation->height = 0;
-  }
-    
-  if (value.char_value) 
-  {
-    XFree(value.char_value);  
-  }
-}
-
-static void
-hn_app_switcher_toggle_menu_button (HNAppSwitcher *app_switcher)
-{
- 
- g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
-			
- if (!hd_wm_get_applications (app_switcher->hdwm))
-   return;
-
- if (gtk_toggle_button_get_active 
-      (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
- {
-   GList *l,*children = gtk_container_get_children (GTK_CONTAINER (app_switcher->priv->main_menu));
-   
-   for (l = children; l; l = g_list_next (l))
-   {
-      if (l->data == app_switcher->priv->active_menu_item &&
-	  l->data != app_switcher->priv->main_home_item)
-      {
-        GtkWidget *item;
-	
-        if (l->next && (l->next)->data)
-          item = GTK_WIDGET ((l->next)->data);        		
-	else
-	  item = app_switcher->priv->main_home_item;
-
-	if (GTK_IS_SEPARATOR_MENU_ITEM (item))
-        {		
-	  app_switcher->priv->active_menu_item = item;
-          continue;
-	}
-
-	app_switcher->priv->active_menu_item = item;
-	
-        gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), item);	      
-	g_debug ("home %p item %p",app_switcher->priv->main_home_item,item);
-	break;
-      }
-      else 
-      if (l->data == app_switcher->priv->main_home_item &&
-	  children->next)
-      {	      
-	gtk_menu_shell_select_item (GTK_MENU_SHELL (app_switcher->priv->main_menu), 
-			            GTK_WIDGET (children->data));
-
-	app_switcher->priv->active_menu_item = GTK_WIDGET (children->data);
-	break;
-      }
-   }	
-	 
-   return;
- }
- 
- gtk_toggle_button_set_active 
-   (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), TRUE);
- 
- g_signal_emit_by_name (app_switcher->priv->main_button, "toggled");
-}
-
-static void
-hn_app_image_animation (GtkWidget *icon,
-		       gboolean   is_on)
-{
-  GdkPixbuf *pixbuf;
-  GdkPixbufAnimation *pixbuf_anim;
-
-  g_return_if_fail (GTK_IS_IMAGE (icon));
-
-  if (is_on)
-  {
-    pixbuf = gtk_image_get_pixbuf (GTK_IMAGE (icon));
-    pixbuf_anim = 
-      hn_app_pixbuf_anim_blinker_new (pixbuf, 1000 / ANIM_FPS, -1, 10);
-     
-    gtk_image_set_from_animation (GTK_IMAGE(icon), pixbuf_anim);
-    g_object_unref (pixbuf_anim);
-  }
-  else
-  {
-    pixbuf_anim = gtk_image_get_animation (GTK_IMAGE (icon));
-
-    /* grab static image from menu item and reset */
-    pixbuf = gdk_pixbuf_animation_get_static_image (pixbuf_anim);
-
-    gtk_image_set_from_pixbuf (GTK_IMAGE (icon), pixbuf);
-
-    /*
-     * unrefing the pixbuf here causes SIGSEGV
-     */
-      
-    /*g_object_unref (pixbuf);*/
-  }
-}
-
 static gint
 get_app_button_pos (GtkWidget *button)
 {
@@ -414,657 +251,6 @@ set_app_button_pos (GtkWidget *button,
 		     GINT_TO_POINTER (pos));
 }
 
-static gboolean
-get_main_button_is_blinking (GtkWidget *button)
-{
-  gint is_blinking;
-
-  g_return_val_if_fail (GTK_IS_TOGGLE_BUTTON (button), FALSE);
-
-  is_blinking = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
-			  			    "button-is-blinking"));
-  return is_blinking;
-}
-
-static void
-set_main_button_is_blinking (GtkWidget *button,
-			     gboolean   is_blinking)
-{
-  g_return_if_fail (GTK_IS_TOGGLE_BUTTON (button));
-
-  g_object_set_data (G_OBJECT (button),
-                     "button-is-blinking",
-                     GINT_TO_POINTER (is_blinking));
-}
-
-static GdkPixbuf *
-hn_app_switcher_get_icon_from_theme (HNAppSwitcher *app_switcher,
-				     const gchar   *icon_name,
-				     gint           size)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-  GError *error;
-  GdkPixbuf *retval;
-
-  if (!icon_name)
-    return NULL;
-
-  if (!priv->icon_theme)
-    priv->icon_theme = gtk_icon_theme_get_default ();
-
-  g_return_val_if_fail (priv->icon_theme, NULL);
-
-  if (!icon_name || icon_name[0] == '\0')
-    return NULL;
-
-  error = NULL;
-  retval = gtk_icon_theme_load_icon (priv->icon_theme,
-		  		     icon_name,
-				     size == -1 ? AS_ICON_SIZE : size,
-				     0,
-				     &error);
-  if (error)
-  {
-    g_warning ("Could not load icon '%s': %s\n",
-     	      icon_name,
-	      error->message);
-
-    g_error_free (error);
-
-    return NULL;
-  }
-
-  return retval;  
-}
-
-#if 0
-static GdkPixbuf *
-hn_app_switcher_get_app_icon_for_entry_info (HNAppSwitcher *app_switcher,
-                                             HDEntryInfo   *info)
-{
-  GdkPixbuf *retval;
-  const gchar *icon_name;
- 
-  g_debug("New object does not have an icon -- using default");
-  
-  icon_name = hd_entry_info_get_app_icon_name (info);
-  if (!icon_name)
-    icon_name = AS_MENU_DEFAULT_APP_ICON;
-
-  retval = hn_app_switcher_get_icon_from_theme (app_switcher, icon_name, -1);
-
-  if(!retval)
-    {
-      /*perhaps the specified icon is missing -- try the default */
-      retval = hn_app_switcher_get_icon_from_theme (app_switcher,
-                                                    AS_MENU_DEFAULT_APP_ICON,
-                                                    -1);
-    }
-  
-  return retval;
-}
-#endif
-
-static void
-#if 0
-main_menu_detach  (HNAppSwitcher *app_switcher,
-#else
-main_menu_destroy (HNAppSwitcher *app_switcher,
-#endif
-                  GtkMenu   *menu)
-{
-  app_switcher->priv->main_menu = NULL;
-  app_switcher->priv->main_home_item = NULL;
-  app_switcher->priv->active_menu_item = NULL;
-
-  GtkToggleButton *button = GTK_TOGGLE_BUTTON(app_switcher->priv->main_button);
-  gtk_toggle_button_set_active (button, FALSE);
-}
-
-static void
-main_home_item_activate_cb (GtkMenuItem   *menuitem,
-			    HNAppSwitcher *app_switcher)
-{
-  g_debug ("Raising desktop");
-
-  hd_wm_top_desktop ();
-}
-
-static void
-main_menu_ensure_state (HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-  GList *menu_children, *l;
-  GtkWidget *separator;
-
-  if (priv->force_thumb)
-  {	  
-    priv->is_thumbable = TRUE;
-    priv->force_thumb = FALSE;
-  }
-
-  /* we must dispose the old contents of the menu first */
-  menu_children = gtk_container_get_children (GTK_CONTAINER (priv->main_menu));
-  for (l = menu_children; l != NULL; l = l->next)
-  {
-    GtkWidget *child = GTK_WIDGET (l->data);
-      
-    /* remove the home menu item too, but keep a reference so
-     * that it stays around until we can re-add it later
-     */
-    if (child == priv->main_home_item)
-      g_object_ref (child);	
-      
-    gtk_container_remove (GTK_CONTAINER (priv->main_menu), child);
-  }
-  g_list_free (menu_children);
-
-  priv->active_menu_item = NULL;
-  /* rebuild the menu */
-  for (l = hd_wm_get_applications (app_switcher->hdwm); l != NULL; l = l->next)
-  {
-    GtkWidget *menu_item;
-    const GList * children = hd_entry_info_get_children(l->data);
-    const GList * child;
-
-    for (child = children; child != NULL; child = child->next)
-    {
-      HDEntryInfo *entry = child->data;
-	  
-      g_debug ("Creating new app menu item (thumb:%s) for %s",
- 	       priv->is_thumbable ? "on" : "off",
-	       hd_entry_info_peek_title (entry));
-
-      menu_item = hn_app_menu_item_new (entry, TRUE, priv->is_thumbable);
-
-      if (hd_entry_info_is_active (entry))
-        priv->active_menu_item = menu_item;
-          
-      gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu), menu_item);
-      gtk_widget_show (menu_item);
-    }
-
-    /* append the separator for this app*/
-    separator = gtk_separator_menu_item_new ();
-    gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu), separator);
-
-    gtk_widget_show (separator);
-  }
-
-  /* append home menu item */
-  if (priv->main_home_item)
-  {
-    gtk_widget_destroy (priv->main_home_item);
-    priv->main_home_item = NULL;
-  }
- 
-  g_assert (priv->home_info); 
-  priv->main_home_item = hn_app_menu_item_new (priv->home_info,
-		                               FALSE,
-					       priv->is_thumbable);
-  g_assert (HN_IS_APP_MENU_ITEM (priv->main_home_item));
-      
-  g_signal_connect (priv->main_home_item, "activate",
-		    G_CALLBACK (main_home_item_activate_cb),
-		    app_switcher);
-      
-  gtk_menu_shell_append (GTK_MENU_SHELL (priv->main_menu),
-		 	 priv->main_home_item);
-  gtk_widget_show (priv->main_home_item);
-  
-  g_object_ref (priv->main_home_item);
-
-  priv->was_thumbable = priv->is_thumbable;
-  g_object_unref (priv->main_home_item);
-}
-
-static void
-main_menu_unmap_cb (GtkWidget     *menu,
-		    HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-  GtkToggleButton *button = GTK_TOGGLE_BUTTON (priv->main_button);
-  
-  gtk_toggle_button_set_active (button, FALSE);
-}
-
-static gboolean
-main_menu_keypress_cb (GtkWidget * menu, GdkEventKey *event,
-                       HNAppSwitcher *app_switcher)
-{
-  g_return_val_if_fail(event && menu && app_switcher, FALSE);
-
-  if (event->keyval == GDK_Left ||
-      event->keyval == GDK_KP_Left ||
-      event->keyval == GDK_Escape)
-  {
-    gtk_menu_shell_deactivate (GTK_MENU_SHELL(menu));
-
-    if (event->keyval == GDK_Escape)
-    {
-      /* pass focus to the last active application */
-      hd_wm_focus_active_window (app_switcher->hdwm);
-    }
-    else
-    {
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button), TRUE);
-	    
-      GdkWindow *window = gtk_widget_get_parent_window (app_switcher->priv->main_button);
-
-      gtk_widget_grab_focus (GTK_WIDGET (app_switcher->priv->main_button));
-      hd_wm_activate_window (HD_TN_ACTIVATE_KEY_FOCUS,window);
-    }
-        
-    return TRUE;
-  }
-
-  return FALSE;
-}
-
-gboolean
-hn_app_switcher_menu_button_release_cb (GtkWidget      *widget,
-                                        GdkEventButton *event)
-{
-  gint x, y;
-  
-  gtk_widget_get_pointer(widget, &x, &y);
-
-  g_debug ("Main menu button released\n"
-	  "\tpointer    [%d, %d],\n"
-          "\tallocation [%d, %d, %d, %d]",
-          x, y,
-          widget->allocation.x,
-          widget->allocation.y,
-          widget->allocation.width,
-          widget->allocation.height);
-
-#if 0
-  /* XXX - Is this really necessary? It breaks thumb menu support. EB */
-  if ((x > widget->allocation.width)  || (x < 0) ||
-      (y > widget->allocation.height) || (y < 0))
-    {
-      g_debug ("deactivating menu");
-      
-      hd_wm_activate (HN_TN_ACTIVATE_LAST_APP_WINDOW);
-      gtk_menu_shell_deactivate(GTK_MENU_SHELL(widget));
-      
-      return TRUE;
-    }
-#endif
-
-  return FALSE;
-}
-
-static void
-main_menu_build (HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-  
-  if (priv->main_menu)
-  {
-    return;
-  }
-
-  priv->main_menu = gtk_menu_new ();
-  g_signal_connect (priv->main_menu, "unmap",
-		    G_CALLBACK (main_menu_unmap_cb),
-		    app_switcher);
-  g_signal_connect (priv->main_menu, "key-press-event",
-		    G_CALLBACK (main_menu_keypress_cb),
-		    app_switcher);
-  g_signal_connect (priv->main_menu, "button-release-event",
-		    G_CALLBACK (hn_app_switcher_menu_button_release_cb),
-		    NULL);
-#if 0
-  gtk_menu_attach_to_widget (GTK_MENU (priv->main_menu),
-                             GTK_WIDGET (app_switcher),
-                             (GtkMenuDetachFunc)main_menu_detach);
-#else
-  g_signal_connect_swapped (priv->main_menu, "destroy",
-                            G_CALLBACK (main_menu_destroy),
-                            app_switcher);
-#endif
-
-  main_menu_ensure_state (app_switcher);
-}
-
-static void
-main_menu_position_func (GtkMenu  *menu,
-			 gint     *x,
-			 gint     *y,
-			 gboolean *push_in,
-			 gpointer  data)
-{
-  HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);	
-  GtkRequisition req;
-  GdkScreen *screen = gtk_widget_get_screen (GTK_WIDGET (menu));
-  gint menu_height = 0;
-  gint main_height = 0;
-  GtkAllocation workarea = { 0, 0, 0, 0 };
-  GtkWidget *top_level;
-  HildonDesktopPanelWindowOrientation orientation = 
-      HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT;
-  GtkWidget *button = HN_APP_SWITCHER (data)->priv->main_button;
-  
-  if (!GTK_WIDGET_REALIZED (GTK_WIDGET (data)))
-    return;
-
-  hn_app_switcher_get_workarea (&workarea);
-
-  *push_in = FALSE;
-
-  top_level = gtk_widget_get_toplevel (button);
-
-  if (HILDON_DESKTOP_IS_PANEL_WINDOW (top_level))
-  {
-    g_object_get (top_level, "orientation", &orientation, NULL);
-  }
- 
-  gtk_widget_size_request (GTK_WIDGET (menu), &req);
-
-  menu_height = req.height;
-  main_height = gdk_screen_get_height (screen);
-
-  if (app_switcher->priv->is_fullscreen)
-  {
-    *x = 0;
-    *y = MAX (0, (main_height - menu_height));
-  }
-  else
-  {
-    switch (orientation)
-    {
-      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT:
-        *x = workarea.x;
-
-        if (main_height - button->allocation.y < menu_height)
-          *y = MAX (0, (main_height - menu_height));
-        else
-          *y = button->allocation.y;
-        break;
-
-      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_RIGHT:
-        *x = workarea.x + workarea.width - req.width;
-
-        if (main_height - button->allocation.y < menu_height)
-          *y = MAX (0, (main_height - menu_height));
-        else
-          *y = button->allocation.y;
-        break;
-          
-      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_TOP:
-        *x = button->allocation.x;
-        *y = workarea.y;
-        break;
-          
-      case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_BOTTOM:
-        *x = button->allocation.x;
-        *y = workarea.y + workarea.height - req.height;
-        break;
-
-      default:
-        g_assert_not_reached ();
-    }
-  }
-}
-
-
-static void
-main_menu_pop (HNAppSwitcher *app_switcher,
-	       GtkWidget     *toggle)
-{
-  HNAppSwitcherPrivate *priv;
-  gboolean was_blinking;
-
-  g_return_if_fail (HN_IS_APP_SWITCHER (app_switcher));
-  g_return_if_fail (GTK_IS_WIDGET (toggle));
-
-  priv = app_switcher->priv;
-  
-  was_blinking = get_main_button_is_blinking (toggle);
-  if (was_blinking)
-  {
-    /* need to stop the button blinking */
-    const GList       *k, *l;
-    HDEntryInfo       *child;
-    GtkWidget         *app_image = gtk_bin_get_child (GTK_BIN (toggle));
-    gint                i;
-      
-    hn_app_image_animation (app_image, FALSE);
-    set_main_button_is_blinking (toggle, FALSE);
-
-    /*
-     * set the ignore flag on any children that were causing the blinking
-     * we skip the first four apps, which cause blinking of the app buttons,
-     * not the menu button.
-     */
-    for (k = hd_wm_get_applications (app_switcher->hdwm), i = 0; k != NULL; k = k->next, ++i)
-    {
-      if (i < priv->nitems)
-        continue;
-          
-      for (l = hd_entry_info_get_children (k->data); l != NULL; l = l->next)
-      {
-        child = l->data;
-        if (hd_entry_info_is_urgent(child))
-          hd_entry_info_set_ignore_urgent(child, TRUE);
-      }
-    }
-  }
-  
-  main_menu_build (app_switcher);
-
-  gtk_widget_realize (priv->main_menu);
-
-  if (priv->is_thumbable || priv->force_thumb)
-    gtk_widget_set_name (gtk_widget_get_toplevel (priv->main_menu),
-                         "hildon-menu-window-thumb");
-  else
-    gtk_widget_set_name (gtk_widget_get_toplevel (priv->main_menu),
-                         "hildon-menu-window-normal");
-  
-  if (priv->active_menu_item)
-    gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
-                                priv->active_menu_item);
-  else
-    gtk_menu_shell_select_item (GTK_MENU_SHELL (priv->main_menu),
-                                priv->main_home_item);
-
-
-  gtk_menu_popup (GTK_MENU (priv->main_menu), NULL, NULL,
-                  main_menu_position_func, app_switcher,
-                  0, GDK_CURRENT_TIME);
-}
-
-static gboolean
-main_menu_button_keypress_cb (GtkWidget     *toggle,
-	       		      GdkEventKey   *event,
-                              HNAppSwitcher *app_switcher)
-{
-  if (event->keyval == GDK_Right ||
-      event->keyval == GDK_KP_Right ||
-      event->keyval == GDK_KP_Enter)
-  {
-
-    hn_app_switcher_toggle_menu_button (app_switcher);
-	  
-    return TRUE;
-  }
-  else
-  if (event->keyval == GDK_Left || event->keyval == GDK_KP_Left)
-  {
-    g_debug ("%s: %d, hd_wm_activate (HN_TN_ACTIVATE_LAST_APP_WINDOW);",__FILE__,__LINE__);
-  }			  
-  
-  return FALSE;
-}
-
-static void
-main_menu_button_toggled_cb (HNAppSwitcher *app_switcher,
-			     GtkWidget     *toggle)
-{
-  HNAppSwitcherPrivate *priv;
-
-  g_return_if_fail (app_switcher);
-
-  priv = app_switcher->priv;
-
-  if (priv->menu_button_timeout)
-  {
-    g_source_remove (priv->menu_button_timeout);
-    priv->menu_button_timeout = 0;
-  }
-
-  if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (toggle)))
-  {
-    if (app_switcher->priv->main_menu)
-      gtk_menu_popdown (GTK_MENU (app_switcher->priv->main_menu));
-    return;
-  }
-
-  g_debug("Main menu button toggled");
-
-  g_debug ("%s: %d, hd_wm_others_open ();",__FILE__,__LINE__);
- 
-  main_menu_pop (app_switcher, toggle);
-}
-
-static gboolean
-menu_button_release_cb (GtkWidget      *widget,
-                        GdkEventButton *event,
-                        HNAppSwitcher  *app_switcher)
-{
-/*  gint x,y;*/
-  HNAppSwitcherPrivate *priv;
-
-  g_return_val_if_fail (event && app_switcher, FALSE);
-
-  priv = app_switcher->priv;
-#if 0
-  
-  /* if the relase is outside the button, reset the thumbable flag, to avoid
-   * problems if the menu is raised some other way than via pointer
-   */
-  gtk_widget_get_pointer (widget, &x, &y);
-
-  g_debug ("Main menu button released:\n"
-          "\tpointer    [%d, %d],\n"
-          "\tallocation [%d, %d, %d, %d]",
-          x, y,
-          widget->allocation.x,
-          widget->allocation.y,
-          widget->allocation.width,
-          widget->allocation.height);
-
-  if (((x > widget->allocation.width)  || (x < 0)) ||
-      ((y > widget->allocation.height) || (y < 0)))
-    {
-      g_debug ("Release outside button -- resetting thumbable flag");
-      priv->is_thumbable = FALSE;
-
-      hd_wm_activate (HN_TN_ACTIVATE_LAST_APP_WINDOW);
-    }
-#endif
-
-  return FALSE;
-}
-
-static gboolean
-menu_button_pressed_timeout (HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-
-  g_source_remove (priv->menu_button_timeout);
-  priv->menu_button_timeout = 0;
-
-  /* If the thumbable status has changed since last time, we need to
-   * rebuild the menu :( */
-  if (priv->main_menu && priv->is_thumbable != priv->was_thumbable)
-  {
-    gtk_widget_destroy (priv->main_menu);
-    priv->main_menu = NULL;
-  }
-  
-  hn_app_switcher_toggle_menu_button (app_switcher);
-  
-  return FALSE;
-}
-
-static gboolean
-menu_button_pressed_cb (GtkWidget      *widget,
-                        GdkEventButton *event,
-                        HNAppSwitcher  *app_switcher)
-{
-  g_return_val_if_fail (event && app_switcher, FALSE);
-  
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-
-  /* remember which button was used to press this button */
-  g_debug("Main menu button pressed using button %d", event->button);
-
-
-  /*FIXME: We will have to rewrite this */
-/*  hd_wm_activate (HN_TN_DEACTIVATE_KEY_FOCUS);*/
-#ifndef HAVE_LIBHILDON
-  if (event->button == APP_BUTTON_THUMBABLE || event->button == 2)
-#else
-  if (hildon_helper_event_button_is_finger (event))
-#endif
-    priv->is_thumbable = TRUE;
-  else 
-  if (!priv->menu_button_timeout)
-    priv->is_thumbable = FALSE;
-
-
-  if (!priv->menu_button_timeout)
-    priv->menu_button_timeout = g_timeout_add (100,
-                                               (GSourceFunc)
-                                                 menu_button_pressed_timeout,
-                                               app_switcher);
-                                               
-  return TRUE;
-}
-
-static GtkWidget *
-create_menu_button (HNAppSwitcher *app_switcher)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-  GdkPixbuf *pixbuf;
-  GtkWidget *button;
-  GtkWidget *icon;
-  
-  button = gtk_toggle_button_new ();
-  
-  gtk_widget_set_name (button, AS_MENU_BUTTON_NAME);
-  gtk_widget_set_sensitive (button, FALSE);
-  gtk_widget_set_size_request (button, -1, AS_MENU_BUTTON_HEIGHT);
-
-  pixbuf = hn_app_switcher_get_icon_from_theme (app_switcher, AS_MENU_BUTTON_ICON, -1);
-  icon = gtk_image_new_from_pixbuf (pixbuf);
-  gtk_container_add (GTK_CONTAINER (button), icon);
-  g_object_unref (pixbuf);
-
-  g_signal_connect_swapped (button, "toggled",
-		  	    G_CALLBACK (main_menu_button_toggled_cb),
-			    app_switcher);
-
-  g_signal_connect (button, "key-press-event",
-                    G_CALLBACK (main_menu_button_keypress_cb),
-                    app_switcher);
- 
-  g_signal_connect (button, "button-press-event",
-                    G_CALLBACK (menu_button_pressed_cb),
-                    app_switcher);
-
-  g_signal_connect (button, "button-release-event",
-                    G_CALLBACK (menu_button_release_cb),
-                    app_switcher);
-  
-  priv->main_button = button;
-  
-  return priv->main_button;
-}
-
 static void
 app_button_toggled_cb (GtkToggleButton *toggle,
 		       gpointer         user_data)
@@ -1074,7 +260,7 @@ app_button_toggled_cb (GtkToggleButton *toggle,
   gboolean is_active = gtk_toggle_button_get_active (toggle);
   gboolean is_inconsistent = gtk_toggle_button_get_inconsistent (toggle);
   gchar *name,*name_pressed;
-
+  static gint i=0;
   name =
    g_strdup_printf (AS_BUTTON_NAME,pos+1);
 
@@ -1094,28 +280,11 @@ app_button_toggled_cb (GtkToggleButton *toggle,
   g_free (name);
   g_free (name_pressed);
 
-  g_debug ("setting button (pos=%d) (inconsistent='<%s>', active='<%s>') name: %s",
-	   pos,
+  g_debug ("%i setting button (pos=%d) (inconsistent='<%s>', active='<%s>') name: %s",
+	   i,pos,
 	   is_inconsistent ? "true" : "false",
 	   is_active ? "true" : "false",
 	   gtk_widget_get_name (widget));
-}
-
-static void 
-hn_app_switcher_show_menu_cb (HDWM *hdwm, gpointer data)
-{
-  HNAppSwitcher *app_switcher = HN_APP_SWITCHER (data);
-
-  if (app_switcher->priv->main_menu && 
-      !gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
-  {
-    gtk_widget_destroy (app_switcher->priv->main_menu);
-    app_switcher->priv->main_menu = NULL;
-  }
-
-  app_switcher->priv->force_thumb = TRUE;
-
-  hn_app_switcher_toggle_menu_button (app_switcher);
 }
 
 static void 
@@ -1165,19 +334,6 @@ hn_app_switcher_orientation_changed_cb (HNAppSwitcher *app_switcher)
     g_list_free (children);
 }
 
-static void 
-hn_app_switcher_long_press_cb (HDWM *hdwm, HNAppSwitcher *app_switcher)
-{
-  if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_switcher->priv->main_button)))
-  {
-    gtk_menu_shell_activate_item (GTK_MENU_SHELL (app_switcher->priv->main_menu),
-		  		  app_switcher->priv->active_menu_item,
-				  TRUE);  
-  }
-  else
-    hd_wm_top_desktop ();  
-}
-
 static GtkWidget *
 create_app_button (HNAppSwitcher *app_switcher,
 	           gint           pos)
@@ -1213,11 +369,6 @@ create_app_button (HNAppSwitcher *app_switcher,
   return priv->buttons[pos];
 }
 
-static void 
-hn_app_switcher_track_fullscreen_cb (HDWM *hdwm, gboolean fullscreen, HNAppSwitcher *app_switcher)
-{
-  app_switcher->priv->is_fullscreen = fullscreen;
-}	
 
 static void
 hn_app_switcher_build (HNAppSwitcher *app_switcher)
@@ -1234,8 +385,6 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
 
   g_object_ref (app_switcher->hdwm);
 
-  app_switcher->priv->home_info = hd_wm_get_home_info (app_switcher->hdwm);
-
   gtk_widget_push_composite_child ();
 
   /* most recent applications buttons */
@@ -1249,10 +398,6 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
   }
    
   /* menu button */
-  g_debug ("Adding menu button");
-  button = create_menu_button (app_switcher);
-  gtk_box_pack_start (GTK_BOX (app_switcher->box), button, TRUE, TRUE, 0);
-  gtk_widget_show (button);
 
   g_signal_connect (app_switcher->hdwm,
 		    "entry_info_added",
@@ -1275,24 +420,9 @@ hn_app_switcher_build (HNAppSwitcher *app_switcher)
 		    (gpointer)app_switcher);
 
   g_signal_connect (app_switcher->hdwm,
-		    "show_menu",
-		    G_CALLBACK (hn_app_switcher_show_menu_cb),
-		    (gpointer)app_switcher);
-
-  g_signal_connect (app_switcher->hdwm,
-		    "long-key-press",
-		    G_CALLBACK (hn_app_switcher_long_press_cb),
-		    (gpointer)app_switcher);
-
-  g_signal_connect (app_switcher->hdwm,
 		    "close-app",
 		    G_CALLBACK (hn_app_switcher_close_application_dialog),
 		    NULL);
-
-  g_signal_connect (app_switcher->hdwm,
-		    "fullscreen",
-		    G_CALLBACK (hn_app_switcher_track_fullscreen_cb),
-		    (gpointer)app_switcher);
 
   g_signal_connect (app_switcher,
 		    "notify::orientation",
@@ -1379,14 +509,6 @@ hn_app_switcher_show_all (GtkWidget *widget)
 
   gtk_widget_show (widget);
 
-  /* show the main menu button only if there is at least
-   * one application on the switcher
-   */
-  if (hd_wm_get_applications (HN_APP_SWITCHER (widget)->hdwm) != NULL)
-    gtk_widget_show (priv->main_button);
-  else
-    gtk_widget_hide (GTK_BIN (priv->main_button)->child);
-
   /* show only the buttons linked to an application */
   for (i = 0; i < priv->nitems; i++)
   {
@@ -1398,27 +520,7 @@ hn_app_switcher_show_all (GtkWidget *widget)
       gtk_widget_show (button);
   }
 }
-#if 0
-static HDEntryInfo *
-hn_app_switcher_find_app_for_child(HNAppSwitcher *app_switcher,
-                                   HDEntryInfo *entry_info)
-{
-  HNAppSwitcherPrivate *priv = app_switcher->priv;
-  GList * l = priv->applications;
-  HDWMWatchableApp *app = hd_entry_info_get_app(entry_info);
-        
-  while (l)
-  {
-    HDEntryInfo *e = (HDEntryInfo *)l->data;
-            
-    if (app == hd_entry_info_get_app(e))
-      return e;
-    l = g_list_next(l);
-  }
 
-  return NULL;
-}
-#endif
 static void
 remove_entry_from_app_button (HNAppSwitcher *app_switcher,
 			      HDEntryInfo   *entry_info)
@@ -1506,16 +608,6 @@ refresh_app_button (HNAppSwitcher *app_switcher,
   gtk_widget_set_sensitive (priv->buttons[pos], TRUE);
 }
 
-static void 
-hn_app_switcher_destroy_main_menu (HNAppSwitcher *app_switcher)
-{
-  if (app_switcher->priv->main_menu)
-  {
-    gtk_widget_destroy (app_switcher->priv->main_menu);
-    app_switcher->priv->main_menu = NULL;
-  }
-}
-
 static gboolean
 refresh_buttons (gpointer user_data)
 {
@@ -1524,9 +616,7 @@ refresh_buttons (gpointer user_data)
   GList                *l;
   gint                  pos;
   gint                  active_button = -1;
-  gboolean              was_blinking;
   gboolean              is_urgent = FALSE;
-  GtkWidget            *app_image;
 
   /* first we reset all the buttons icons */
   for (pos = 0; pos < priv->nitems; pos++)
@@ -1582,7 +672,6 @@ refresh_buttons (gpointer user_data)
    * now we need to process the menu button to ensure that it blinks
    * if needed
    */
-  was_blinking = get_main_button_is_blinking (priv->main_button);
 
   is_urgent = FALSE;
   for (l = hd_wm_get_applications (app_switcher->hdwm), pos = 0;
@@ -1620,40 +709,6 @@ refresh_buttons (gpointer user_data)
     }
   }
 
-  app_image = gtk_bin_get_child (GTK_BIN (priv->main_button));
-  g_assert (GTK_IS_IMAGE (app_image));
-
-  if (is_urgent && !was_blinking && !priv->system_inactivity)
-  {
-    g_debug("Setting menu button urgency to '%s'",
-           is_urgent ? "true" : "false");
-    hn_app_image_animation (app_image, is_urgent);
-    set_main_button_is_blinking (priv->main_button, is_urgent);
-  }
-  else 
-  if (was_blinking && priv->system_inactivity)
-  {
-    g_debug("Setting menu button urgency to 'false'", FALSE);
-
-    hn_app_image_animation (app_image, FALSE);
-    set_main_button_is_blinking (priv->main_button, FALSE);
-  }
-
-  /* hide the main button if no more applications are left */
-  if (!hd_wm_get_applications (app_switcher->hdwm))
-  {
-    g_debug ("Hiding main button icon");
-
-    gtk_widget_hide (app_image);
-    gtk_widget_set_sensitive (priv->main_button, FALSE);
-  }
-  else
-  {
-    g_debug ("Showing main button icon");
-    gtk_widget_set_sensitive (priv->main_button, TRUE);
-    gtk_widget_show (app_image);
-  }
-  
   return FALSE;
 }
 
@@ -1703,13 +758,6 @@ hn_app_switcher_add_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer data)
   }
 
   queue_refresh_buttons (app_switcher);
-  
-  /* we must explicitely ensure that the main menu is rebuilt,
-   * now that the application list is tainted by a new entry;
-   * destroying the menu widget will call the detach function
-   */
-
-  hn_app_switcher_destroy_main_menu (app_switcher);
 }
 
 /* Class closure for the "remove" signal; this is called each time
@@ -1738,13 +786,6 @@ hn_app_switcher_remove_info_cb (HDWM *hdwm,
     remove_entry_from_app_button (app_switcher, info_parent);
 
   queue_refresh_buttons (app_switcher);
-
-  /* we must explicitely ensure that the main menu is rebuilt,
-   * now that the application list is tainted by delete entry;
-   * destroying the menu widget will call the detach function
-   */
-
-  hn_app_switcher_destroy_main_menu (app_switcher);
 }
 
 
@@ -1764,8 +805,6 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
   /* all changes have potential impact on the the main menu; app menus are
    * created on the fly, so we do not have to worry about menu changes there
    */
-
-  /* hn_app_switcher_destroy_main_menu (app_switcher);*/
 
   /*
    * If we are given an entry info and it of the app type, we just need to
@@ -1873,8 +912,6 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
       hn_app_button_force_update_icon (HN_APP_BUTTON (button));
     }
 
-    HN_MARK();
-
       /* if the current info is urgent and not to be ignored, we know the app
        * button should blink; make sure it does
        */
@@ -1887,21 +924,7 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
         if (!hn_app_button_get_is_blinking (HN_APP_BUTTON (button)))
           hn_app_button_set_is_blinking (HN_APP_BUTTON (button), TRUE);
       }
-      else
-      {
-        /* the child belongs to the main menu button */
-        if (!get_main_button_is_blinking (priv->main_button))
-        {
-          GtkWidget *app_image =
-            gtk_bin_get_child (GTK_BIN (priv->main_button));
-
-          g_debug("Setting menu button urgency to %d", TRUE);
-                  
-          hn_app_image_animation (app_image, TRUE);
-          set_main_button_is_blinking (priv->main_button, TRUE);
-        }
-      }
-          
+              
       return;
     }
 
@@ -1912,15 +935,12 @@ hn_app_switcher_changed_info_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer d
     if (!hd_entry_info_is_urgent (entry_info) &&
         !hd_entry_info_get_ignore_urgent (entry_info))
     {
-      if ((button && !hn_app_button_get_is_blinking (HN_APP_BUTTON (button))) ||
-         (!button && !get_main_button_is_blinking (priv->main_button)))
+      if ((button && !hn_app_button_get_is_blinking (HN_APP_BUTTON (button))))
       {
         return;
       }
     }
       
-    HN_MARK();
-
     /* we are left with the case where the info is not urgent, is not being
      * ignored, and the associated button is blinking -- this is probably a
      * change urgent -> !urgent, but we do not know if this button was the
@@ -1954,7 +974,6 @@ hn_app_switcher_changed_stack_cb (HDWM *hdwm, HDEntryInfo *entry_info, gpointer 
 
   g_debug ("In hn_app_switcher_real_changed_stack");
 
-  hn_app_switcher_destroy_main_menu (app_switcher);
   
   if (!entry_info || !hd_entry_info_is_active (entry_info))
   {
@@ -2144,9 +1163,6 @@ hn_app_switcher_init (HNAppSwitcher *app_switcher)
   app_switcher->priv = HN_APP_SWITCHER_GET_PRIVATE (app_switcher);
   
   app_switcher->priv->buttons_group = NULL;
-
-  app_switcher->priv->is_fullscreen = 
-  app_switcher->priv->force_thumb = FALSE;
 
   gtk_widget_set_name (GTK_WIDGET (app_switcher), AS_BOX_NAME);
   

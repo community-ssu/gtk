@@ -686,11 +686,6 @@ hn_others_button_create_menu (HNOthersButton *button)
 		    G_CALLBACK (hn_others_menu_key_press),
 		    button);
     
-  g_signal_connect (G_OBJECT (menu), 
-		    "button-release-event",
-		    G_CALLBACK (hn_app_switcher_menu_button_release_cb),
-		    NULL);
-
   if (TASKNAVIGATOR_ITEM (button)->menu)
   {
     /* Destroy the previous version of the menu */

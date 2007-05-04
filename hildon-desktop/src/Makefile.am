@@ -69,14 +69,16 @@ APP_SWITCHER_SOURCES  = \
 	hn-app-pixbuf-anim-blinker.h  \
 	hn-app-button.c               \
 	hn-app-button.h               \
-	hn-app-menu-item.c            \
-	hn-app-menu-item.h            \
 	hn-app-sound.c                \
 	hn-app-sound.h                \
 	hn-app-switcher.c             \
 	hn-app-switcher.h             \
 	hn-app-tooltip.c              \
-	hn-app-tooltip.h 
+	hn-app-tooltip.h 	      \
+	hd-switcher-menu.h	      \
+	hd-switcher-menu.c	      \
+	hd-switcher-menu-item.h	      \
+	hd-switcher-menu-item.c
 
 OTHERS_BUTTON_SOURCES  = \
 	hn-others-button.c \

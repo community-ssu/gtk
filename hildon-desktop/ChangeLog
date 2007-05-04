@@ -1,3 +1,29 @@
+2007-05-04  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.[ch]:
+	- New builtin plugin. Application Switcher & Notifications Menu.
+	* src/hd-plugin-loader-builtin.c:
+	- Added new hd-switcher-menu.
+	* src/hn-app-switcher.c:
+	- Removed main menu. Clenup.
+	* src/hd-switcher-menu-item.[ch]:
+	- Replaces hn-app-menu-item. No thumbable yet.
+	* src/hn-app-menu-item.[ch]:
+	- Deleted
+	* src/hn-app-button.c:
+	- Replaced hn-app-menu-item with hd-switcher-menu-item
+	* src/hn-others-button.c:
+	- Removed useless call to hn_app_switcher.
+	* src/Makefile.am:
+	- updated
+	* src/hd-switcher-menu.[ch]:
+	- New builtin plugin. Application Switcher & Notifications Menu.
+	* configure.ac:
+	* data/tasknavigator.conf.in:
+	* data/switcher-menu.desktop.in:
+	* data/Makefile.am:
+	- Updated with new additions.
+
 2007-05-03  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c:

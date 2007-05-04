@@ -25,7 +25,7 @@
 
 /* Hildon includes */
 #include "hn-app-button.h"
-#include "hn-app-menu-item.h"
+#include "hd-switcher-menu-item.h"
 #include "hn-app-tooltip.h"
 #include "hn-app-pixbuf-anim-blinker.h"
 #include "hn-app-switcher.h"
@@ -415,7 +415,7 @@ hn_app_button_create_menu (HNAppButton *app_button)
       GtkWidget *menu_item;
 
       menu_item =
-        hn_app_menu_item_new(l->data, FALSE, app_button->priv->is_thumbable);
+        hd_switcher_menu_item_new_from_entry_info (l->data, FALSE);
 
       /* the G spec says the first item should be selected */
       if (!active_item)
