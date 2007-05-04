@@ -1,5 +1,9 @@
 2007-05-04  Martyn Russell  <martyn@imendio.com>
 
+	* Release 1.9.5.
+
+2007-05-04  Martyn Russell  <martyn@imendio.com>
+
 	* libhildonmime/hildon-mime-open.c:
 	* libhildonmime/hildon-uri.c:
 	- Fixed a crasher caused when getting the default action by uri.
