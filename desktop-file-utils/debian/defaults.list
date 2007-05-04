@@ -1,0 +1,71 @@
+[Default Applications]
+# Browser supported mime types
+application/x-javascript=hildon-browser.desktop
+application/x-shockwave-flash=hildon-browser.desktop
+image/ico=hildon-browser.desktop
+image/pjpeg=hildon-browser.desktop
+image/vnd.wap.wbmp=hildon-browser.desktop
+image/xbm=hildon-browser.desktop
+image/x-ms-bmp=hildon-browser.desktop
+image/x-windows-bmp=hildon-browser.desktop
+image/x-xbitmap=hildon-browser.desktop
+text/css=hildon-browser.desktop
+text/html=hildon-browser.desktop
+text/sgml=hildon-browser.desktop
+text/x-dtd=hildon-browser.desktop
+
+# Media player supported mime types
+application/vnd.ms-wpl=hildon-mp_ui.desktop
+application/x-ms-asx=hildon-mp_ui.desktop
+audio/mp3=hildon-mp_ui.desktop
+audio/mpeg=hildon-mp_ui.desktop
+audio/wav=hildon-mp_ui.desktop
+audio/x-amr=hildon-mp_ui.desktop
+audio/x-m4a=hildon-mp_ui.desktop
+audio/x-mp2=hildon-mp_ui.desktop
+audio/x-mp3=hildon-mp_ui.desktop
+audio/x-mpegurl=hildon-mp_ui.desktop
+audio/x-ms-wax=hildon-mp_ui.desktop
+audio/x-ms-wma=hildon-mp_ui.desktop
+audio/x-pn-realaudio=hildon-mp_ui.desktop
+audio/x-pn-realaudio-plugin=hildon-mp_ui.desktop
+audio/x-real=hildon-mp_ui.desktop
+audio/x-scpls=hildon-mp_ui.desktop
+audio/x-wav=hildon-mp_ui.desktop
+video/3gpp=hildon-mp_ui.desktop
+video/avi=hildon-mp_ui.desktop
+video/mpeg=hildon-mp_ui.desktop
+video/x-mp4=hildon-mp_ui.desktop
+video/x-ms-asf=hildon-mp_ui.desktop
+video/x-msvideo=hildon-mp_ui.desktop
+
+# Image viewer
+image/bmp=hildon-image-viewer.desktop
+image/gif=hildon-image-viewer.desktop
+image/jpeg=hildon-image-viewer.desktop
+image/png=hildon-image-viewer.desktop
+image/svg+xml=hildon-image-viewer.desktop
+image/tiff=hildon-image-viewer.desktop
+image/wbmp=hildon-image-viewer.desktop
+image/x-ico=hildon-image-viewer.desktop
+
+# Sketch
+sketch/png=hildon-osso_sketch.desktop
+
+# Notes
+text/note=hildon-osso_notes.desktop
+text/plain=hildon-osso_notes.desktop
+
+# Application manager
+application/x-deb=hildon-hildon-application-manager.desktop
+application/x-debian-package=hildon-hildon-application-manager.desktop
+application/x-install-instructions=hildon-hildon-application-manager.desktop
+
+# Address book
+text/x-vcard=hildon-osso-addressbook.desktop
+
+# Others
+application/x-certman=hildon-certman.desktop
+application/news_reader=hildon-osso_rss_feed_reader.desktop
+application/game=hildon-chess_startup.desktop
+application/pdf=hildon-osso_pdfviewer.desktop
