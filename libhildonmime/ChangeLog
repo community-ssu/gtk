@@ -1,3 +1,10 @@
+2007-05-04  Martyn Russell  <martyn@imendio.com>
+
+	* libhildonmime/hildon-mime-open.c:
+	* libhildonmime/hildon-uri.c:
+	- Fixed a crasher caused when getting the default action by uri.
+	- Removed debugging for release.
+
 2007-05-03  Martyn Russell  <martyn@imendio.com>
 
 	* configure.ac: Bumped version to 1.9.5.
@@ -15,7 +22,6 @@
 	- Move all documentation to the .c file.
 	- Fixed a bug where we would return a list of desktop files with
 	the last entry being an empty string. 
-	- Fixed a crasher caused when getting the default action by uri.
 
 2007-04-17  Martyn Russell  <martyn@imendio.com>
 

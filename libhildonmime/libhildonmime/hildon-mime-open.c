@@ -37,8 +37,6 @@
 #include "hildon-mime.h"
 #include "hildon-uri.h"
 
-#define DEBUG
-
 #include <syslog.h>
 #define LOG_CLOSE() closelog()
 #define DLOG_OPEN(X) openlog(X, LOG_PID | LOG_NDELAY, LOG_DAEMON)

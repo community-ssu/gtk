@@ -56,15 +56,15 @@
 #define HILDON_URI_DEFAULTS_GROUP_FORMAT      "X-Osso-URI-Scheme %s"      /* new */
 
 /* From osso-rpc.c */
-#define TASK_NAV_SERVICE                    "com.nokia.tasknav"
+#define TASK_NAV_SERVICE                      "com.nokia.tasknav"
 /* NOTICE: Keep these in sync with values in hildon-navigator/windowmanager.c! */
-#define APP_LAUNCH_BANNER_METHOD_INTERFACE  "com.nokia.tasknav.app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD_PATH       "/com/nokia/tasknav/app_launch_banner"
-#define APP_LAUNCH_BANNER_METHOD            "app_launch_banner"
+#define APP_LAUNCH_BANNER_METHOD_INTERFACE    "com.nokia.tasknav.app_launch_banner"
+#define APP_LAUNCH_BANNER_METHOD_PATH         "/com/nokia/tasknav/app_launch_banner"
+#define APP_LAUNCH_BANNER_METHOD              "app_launch_banner"
 
 
-/* #define DEBUG_MSG(x) */ 
-#define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n");
+#define DEBUG_MSG(x) 
+/* #define DEBUG_MSG(args) g_printerr args ; g_printerr ("\n"); */
 
 /* The ID is the group name in the desktop file for this
  * action, the domain is the translation domain used for the
@@ -464,18 +464,18 @@ uri_get_desktop_file_is_old_ver (const gchar *desktop_file)
 					     G_KEY_FILE_KEEP_COMMENTS, 
 					     NULL);
 	if (ok) {
-		gchar *services;
+		gchar *actions;
 
 		/* If we find the 'X-Osso-URI-Actions' key in the 'Desktop
 		 * Entry' group then we know that this is the older
 		 * version of desktop file.
 		 */
-		services = g_key_file_get_string (key_file, 
-						  HILDON_URI_DESKTOP_ENTRY_GROUP,
-						  HILDON_URI_ACTIONS_GROUP, 
-						  NULL);
-		older_version = services != NULL;
-		g_free (services);
+		actions = g_key_file_get_string (key_file, 
+					 	 HILDON_URI_DESKTOP_ENTRY_GROUP,
+						 HILDON_URI_ACTIONS_GROUP, 
+						 NULL);
+		older_version = actions != NULL;
+		g_free (actions);
 	}
 
 	DEBUG_MSG (("URI: Found desktop file:'%s' to be %s version", 
@@ -1023,16 +1023,20 @@ uri_get_desktop_file_action (const gchar *scheme,
 	g_return_val_if_fail (scheme != NULL, NULL);
 	g_return_val_if_fail (desktop_file_and_action != NULL, NULL);
 	
-	/* Should be in the format of '<desktop file>;<action name>' */
+	/* Should be in the format of '<desktop file>:<action name>' */
 	strv = g_strsplit (desktop_file_and_action, ":", -1);
 	
-	if (g_strv_length (strv) == 2) {
-		GSList        *actions, *l;
+	if (strv && strv[0] && strv[1]) {
+		GSList          *actions, *l;
 		HildonURIAction *this_action;
 		
 		actions = uri_get_desktop_file_actions (strv[0], scheme);
 		for (l = actions; l && !action; l = l->next) {
 			this_action = l->data;
+	
+			if (!this_action->id) {
+				continue;
+			}
 			
 			if (strcmp (this_action->id, strv[1]) == 0) {
 				action = hildon_uri_action_ref (this_action);
@@ -1747,7 +1751,7 @@ hildon_uri_is_default_action (HildonURIAction  *action,
 				    default_action->method, action->method,
 				    equal ? "YES" : "NO"))
 
-				g_free (desktop_file1);
+			g_free (desktop_file1);
 			g_free (desktop_file2);
 		}
 
