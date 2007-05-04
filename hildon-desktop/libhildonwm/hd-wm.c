@@ -217,7 +217,7 @@ struct _HDWMPrivate   /* Our main struct */
   GHashTable             *watched_apps;
 
 
-  GtkWidget              *others_menu;
+  GtkWidget              *all_menu;
 
   /* stack for the launch banner messages. 
    * Needed to work round gtk(hindon)_infoprint issues.
@@ -2140,12 +2140,12 @@ hd_wm_set_window_focus (GdkWindow *window, gboolean focus)
 }
 
 void 
-hd_wm_set_others_menu_button (HDWM *hdwm, GtkWidget *widget)
+hd_wm_set_all_menu_button (HDWM *hdwm, GtkWidget *widget)
 {
   g_assert (hdwm && widget);
   g_assert (HD_IS_WM (hdwm) && GTK_IS_WIDGET (widget));
 
-  hdwm->priv->others_menu = widget;
+  hdwm->priv->all_menu = widget;
 }
 
 void 
@@ -2280,9 +2280,9 @@ hd_wm_activate_window (guint32 what, GdkWindow *window)
       hdwm->priv->has_focus = FALSE;
       hd_wm_focus_active_window (hdwm);
       return;
-    case HD_TN_ACTIVATE_OTHERS_MENU:
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hdwm->priv->others_menu), TRUE);
-      g_signal_emit_by_name (hdwm->priv->others_menu, "toggled");
+    case HD_TN_ACTIVATE_ALL_MENU:
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (hdwm->priv->all_menu), TRUE);
+      g_signal_emit_by_name (hdwm->priv->all_menu, "toggled");
       break;
     default:
       g_debug ("%s: %d, hd_wm_activate: deprecated. It was used to activate specific tasknavigator buttons",__FILE__,__LINE__);

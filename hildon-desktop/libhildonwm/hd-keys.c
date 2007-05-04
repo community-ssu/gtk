@@ -123,6 +123,18 @@ hd_keys_action_close (HDKeysConfig *keys,
 }
 
 static void 
+hd_keys_action_application_close (HDKeysConfig *keys,
+				  gpointer     *user_data)
+{
+  HDWM *hdwm = hd_wm_get_singleton (); 
+	
+  HDWMWatchableApp *app = 
+    hd_wm_watched_window_get_app (hd_wm_get_active_window ());
+
+  hd_wm_close_application (hdwm, hd_wm_watchable_app_get_info (app));
+}
+
+static void 
 hd_keys_switch_window (HDKeysConfig *keys, 
 		       gpointer *user_data)
 {
@@ -148,6 +160,13 @@ hd_keys_action_minimize (HDKeysConfig *keys,
   }
   else
     g_warning ("No active window set");
+}
+
+static void 
+hd_keys_launch_application (HDKeysConfig *keys,
+			    gpointer     *user_data)
+{
+
 }
 
 static void 
@@ -178,11 +197,11 @@ hd_keys_action_power (HDKeysConfig *keys,
   connection = dbus_bus_get (DBUS_BUS_SYSTEM, &error);
 
   if (dbus_error_is_set (&error))
-    {
-      g_warning ("Could not acquire the DBus system bus: %s", error.message);
-      dbus_error_free (&error);
-      return;
-    }
+  {
+    g_warning ("Could not acquire the DBus system bus: %s", error.message);
+    dbus_error_free (&error);
+    return;
+  }
 
   g_return_if_fail (connection);
 
@@ -215,7 +234,7 @@ HDKeysActionConfLookup[] =
   { HD_KEYS_GCONF_PATH "/task_switcher",   HD_KEY_ACTION_TASK_SWITCHER,
     hd_keys_action_tn_activate, GINT_TO_POINTER (HD_TN_ACTIVATE_MAIN_MENU) }, /* AS MENU */
   { HD_KEYS_GCONF_PATH "/task_launcher",   HD_KEY_ACTION_TASK_LAUNCHER,
-    hd_keys_action_tn_activate, GINT_TO_POINTER (HD_TN_ACTIVATE_OTHERS_MENU)}, /* OTHERS MENU */
+    hd_keys_action_tn_activate, GINT_TO_POINTER (HD_TN_ACTIVATE_ALL_MENU)}, /* OTHERS MENU */
   { HD_KEYS_GCONF_PATH "/power",           HD_KEY_ACTION_POWER,
     hd_keys_action_power, GINT_TO_POINTER(FALSE) },
   { HD_KEYS_GCONF_PATH "/home",            HD_KEY_ACTION_HOME,
@@ -228,12 +247,14 @@ HDKeysActionConfLookup[] =
     hd_keys_action_send_key, (gpointer)XK_F7  },
   { HD_KEYS_GCONF_PATH "/zoom_out",        HD_KEY_ACTION_ZOOM_OUT,
     hd_keys_action_send_key, (gpointer)XK_F8 },
-  { HD_KEYS_GCONF_PATH "/switch_window_prev",   HD_KEY_ACTION_SWITCH_WINDOW_PREV,
+  { HD_KEYS_GCONF_PATH "/window_switch_left",   HD_KEY_ACTION_WINDOW_SWITCH_LEFT,
     hd_keys_switch_window, GINT_TO_POINTER (FALSE) },
-  { HD_KEYS_GCONF_PATH "/switch_window_next",   HD_KEY_ACTION_SWITCH_WINDOW_NEXT,
+  { HD_KEYS_GCONF_PATH "/window_switch_right",   HD_KEY_ACTION_WINDOW_SWITCH_RIGHT,
     hd_keys_switch_window, GINT_TO_POINTER (TRUE) },
-  /*{ HD_KEYS_GCONF_PATH "/launch_application", HD_KEY_ACTION_APPLICATION,
-    hd_keys_launch_application, NULL },*/
+  { HD_KEYS_GCONF_PATH "/application_close",    HD_KEY_ACTION_APPLICATION_CLOSE,
+    hd_keys_action_application_close, NULL},
+  { HD_KEYS_GCONF_PATH "/global/isearch_applet", HD_KEY_ACTION_APPLICATION,
+    hd_keys_launch_application, NULL },
   { NULL, 0, NULL, NULL }
 };
 

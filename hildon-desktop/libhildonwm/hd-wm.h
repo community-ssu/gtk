@@ -259,7 +259,7 @@ void
 hd_wm_focus_active_window (HDWM *hdwm);
 
 void 
-hd_wm_set_others_menu_button (HDWM *hdwm, GtkWidget *widget);
+hd_wm_set_all_menu_button (HDWM *hdwm, GtkWidget *widget);
 
 gboolean
 hd_wm_fullscreen_mode (void);
