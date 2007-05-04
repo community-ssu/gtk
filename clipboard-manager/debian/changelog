@@ -1,3 +1,10 @@
+clipboard-manager (0.6.4-1) sardine; urgency=low
+
+  * Added myself as uploader
+  * Fixed build-dependency from xlibs-dev to libx11-dev. Fixes: NB#56029
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri,  4 May 2007 17:08:37 +0300
+
 clipboard-manager (0.6.4) unstable; urgency=low
 
   * debian/rules:
