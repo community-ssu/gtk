@@ -577,7 +577,6 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     _osso_hash_value_t *elem;
     gboolean is_method;
     const char *interface;
-    DBusHandlerResult ret = DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 #ifdef OSSOLOG_COMPILE
     gboolean found = FALSE;
 #endif
@@ -625,7 +624,6 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
 #ifdef OSSOLOG_COMPILE
                 found = TRUE;
 #endif
-                ret = DBUS_HANDLER_RESULT_HANDLED;
             }
 
             list = g_slist_next(list);
@@ -655,7 +653,7 @@ _msg_handler(DBusConnection *conn, DBusMessage *msg, void *data)
     }	
 #endif
 
-    return ret;
+    return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
 inline int __attribute__ ((visibility("hidden")))
