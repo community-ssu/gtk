@@ -1,7 +1,7 @@
 libosso (2.7-1) unstable; urgency=low
 
-  * UNRELEASED
-  * Undid the change for NB#54026: seems to break stuff.
+  * Undid the change for NB#54026: seems to break stuff (at least
+    hildon-desktop's Home key handling).
 
  -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Fri, 04 May 2007 10:56:40 +0300
 
