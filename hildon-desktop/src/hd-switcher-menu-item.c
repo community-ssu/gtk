@@ -139,6 +139,15 @@ hd_switcher_menu_item_finalize (GObject *gobject)
   if (priv->pixbuf_anim)
     g_object_unref (priv->pixbuf_anim); 
 
+  if (priv->notification_icon)
+    g_object_unref (priv->notification_icon);
+
+  if (priv->notification_summary)
+    g_free (priv->notification_summary);
+
+  if (priv->notification_body)
+    g_free (priv->notification_body);	  
+
   G_OBJECT_CLASS (hd_switcher_menu_item_parent_class)->finalize (gobject);
 }
 
@@ -414,6 +423,8 @@ hd_switcher_menu_item_constructor (GType                  type,
       gtk_image_set_from_pixbuf 
         (GTK_IMAGE (priv->icon), priv->notification_icon);
 
+    g_debug ("Id: %d Summary of notification: %s", priv->notification_id, priv->notification_summary);
+    
     gtk_label_set_text (GTK_LABEL (priv->label), 
 		        priv->notification_summary); /* TODO: Insert timestamp */
     gtk_label_set_text (GTK_LABEL (priv->label2),
@@ -494,27 +505,34 @@ static void
 hd_switcher_menu_item_activate (GtkMenuItem *menu_item)
 {
   HDEntryInfo *info;
-
+  
   info = hd_switcher_menu_item_get_entry_info (HD_SWITCHER_MENU_ITEM (menu_item));
-  g_assert (info != NULL);
+
+  if (info != NULL)
+  {
+    HN_DBG ("Raising application '%s'", hd_entry_info_peek_title (info));
   
-  HN_DBG ("Raising application '%s'", hd_entry_info_peek_title (info));
-  
-  hd_wm_top_item (info);
+    hd_wm_top_item (info);
+  }
+  else
+  if (HD_SWITCHER_MENU_ITEM (menu_item)->priv->notification_id != -1)
+  {
+    hildon_desktop_notification_manager_call_action 
+      (HD_SWITCHER_MENU_ITEM (menu_item)->priv->nm, 
+       HD_SWITCHER_MENU_ITEM (menu_item)->priv->notification_id,
+       "default");
+  }	  
 }
 
 static gboolean
 hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
-                                     GdkEventButton *event)
+                                            GdkEventButton *event)
 {
   HDSwitcherMenuItem *menuitem = HD_SWITCHER_MENU_ITEM(widget);
   gint x, y;
   
   HN_DBG ("menu item clicked ended");
   
-  g_return_val_if_fail (menuitem && menuitem->priv && menuitem->priv->info,
-                        FALSE);
-
   if(!menuitem->priv->show_close ||
      !menuitem->priv->close)
     return FALSE;
@@ -546,11 +564,6 @@ hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
     {
       GError *error = NULL;
 
-      hildon_desktop_notification_manager_call_action 
-        (menuitem->priv->nm, 
-	 menuitem->priv->notification_id,
-	 "default");
-
       hildon_desktop_notification_manager_close_notification
         (menuitem->priv->nm,
 	 menuitem->priv->notification_id,
@@ -578,9 +591,6 @@ hd_switcher_menu_item_button_press_event (GtkWidget      *widget,
   
   HN_DBG ("menu item clicked");
   
-  g_return_val_if_fail (menuitem && menuitem->priv && menuitem->priv->info,
-                        FALSE);
-
   if(!menuitem->priv->show_close ||
      !menuitem->priv->close)
     return FALSE;
@@ -663,25 +673,25 @@ hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
 				   g_param_spec_int ("notification-id",
 					   	     "Id of notification",
 						     "The id of the notification",
-						      0,
+						      -1,
 						      G_MAXINT,
 						      -1,
-						     (G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE)));
+						     (G_PARAM_CONSTRUCT | G_PARAM_READWRITE)));
   g_object_class_install_property (gobject_class,
 		  		   MENU_PROP_NOT_SUMMARY,
 				   g_param_spec_string ("notification-summary",
 					   		"Summary of notification",
 							"The summary of the notification",
-							NULL,
-							(G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE)));
+							"",
+							(G_PARAM_CONSTRUCT | G_PARAM_READWRITE)));
  
   g_object_class_install_property (gobject_class,
 		  		   MENU_PROP_NOT_BODY,
 				   g_param_spec_string ("notification-body",
 					   		"Body of notification",
 							"The body of the notification",
-							NULL,
-							(G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE))); 
+							"",
+							(G_PARAM_CONSTRUCT | G_PARAM_READWRITE))); 
  
   g_object_class_install_property (gobject_class,
 		  		   MENU_PROP_NOT_BODY,
@@ -689,7 +699,7 @@ hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
 					   		"Icon notification",
 							"The icon of the notification",
 							GDK_TYPE_PIXBUF,
-							(G_PARAM_CONSTRUCT_ONLY | G_PARAM_READWRITE))); 
+							(G_PARAM_CONSTRUCT | G_PARAM_READWRITE))); 
  
   g_type_class_add_private (klass, sizeof (HDSwitcherMenuItemPrivate));
 }
@@ -757,7 +767,7 @@ hd_switcher_menu_item_set_entry_info (HDSwitcherMenuItem *menuitem,
   HDSwitcherMenuItemPrivate *priv;
   GdkPixbuf *pixbuf;
   
-  g_return_if_fail (HN_IS_APP_MENU_ITEM (menuitem));
+  g_return_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem));
   g_return_if_fail (info != NULL);
 
   priv = menuitem->priv;
@@ -814,7 +824,7 @@ hd_switcher_menu_item_set_entry_info (HDSwitcherMenuItem *menuitem,
 HDEntryInfo *
 hd_switcher_menu_item_get_entry_info (HDSwitcherMenuItem *menuitem)
 {
-  g_return_val_if_fail (HN_IS_APP_MENU_ITEM (menuitem), NULL);
+  g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), NULL);
 
   return menuitem->priv->info;
 }
@@ -823,7 +833,7 @@ void
 hd_switcher_menu_item_set_is_blinking (HDSwitcherMenuItem *menuitem,
 				  gboolean       is_blinking)
 {
-  g_return_if_fail (HN_IS_APP_MENU_ITEM (menuitem));
+  g_return_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem));
 
   hd_switcher_menu_item_icon_animation (menuitem->priv->icon, is_blinking);
 }
@@ -831,7 +841,15 @@ hd_switcher_menu_item_set_is_blinking (HDSwitcherMenuItem *menuitem,
 gboolean
 hd_switcher_menu_item_get_is_blinking (HDSwitcherMenuItem *menuitem)
 {
-  g_return_val_if_fail (HN_IS_APP_MENU_ITEM (menuitem), FALSE);
+  g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), FALSE);
 
   return menuitem->priv->is_blinking;
 }
+
+gint 
+hd_switcher_menu_item_get_notification_id (HDSwitcherMenuItem *menuitem)
+{
+  g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), -1);
+
+  return menuitem->priv->notification_id;
+}	

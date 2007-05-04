@@ -113,8 +113,8 @@ static void hd_switcher_menu_notification_added_cb (GtkTreeModel   *tree_model,
                                                     GtkTreeIter    *iter,
                                                     HDSwitcherMenu *switcher);
 
-static void hd_switcher_menu_notification_deleted_cb (GtkTreeModel   *tree_model,
-                                                      GtkTreePath    *path,
+static void hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager *nm,
+                                                      gint 	      id,
                                                       HDSwitcherMenu *switcher);
 
 static void hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
@@ -264,13 +264,13 @@ hd_switcher_menu_constructor (GType gtype,
                     G_CALLBACK (hd_switcher_menu_long_press_cb),
                     (gpointer)switcher);
 
-  g_signal_connect (switcher->nm,
-		    "row-inserted",
-		    G_CALLBACK (hd_switcher_menu_notification_added_cb),
-		    (gpointer)switcher);
+  g_signal_connect_after (switcher->nm,
+		          "row-inserted",
+		          G_CALLBACK (hd_switcher_menu_notification_added_cb),
+		          (gpointer)switcher);
 
   g_signal_connect (switcher->nm,
-                    "row-deleted",
+                    "notification-closed",
                     G_CALLBACK (hd_switcher_menu_notification_deleted_cb),
                     (gpointer)switcher);
 
@@ -492,6 +492,8 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
       gtk_widget_destroy (GTK_WIDGET (l->data));
   }
 
+  g_list_free (children);
+
   for (l = hd_wm_get_applications (hdwm); l != NULL; l = l->next)
   {
     GtkWidget *menu_item;
@@ -568,7 +570,7 @@ hd_switcher_menu_remove_info_cb (HDWM *hdwm,
 
   for (l = children; l != NULL; l = g_list_next (l))
   {
-    if (GTK_IS_SEPARATOR_MENU_ITEM (l->data))
+    if (!GTK_IS_SEPARATOR_MENU_ITEM (l->data))
     {	    
       _info = hd_switcher_menu_item_get_entry_info (HD_SWITCHER_MENU_ITEM (l->data));
 
@@ -616,6 +618,8 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
     }
   }
 
+  g_list_free (children);
+
   if (menu_item)
   {
     hd_switcher_menu_item_set_entry_info (HD_SWITCHER_MENU_ITEM (menu_item), info);
@@ -661,24 +665,61 @@ hd_switcher_menu_long_press_cb (HDWM *hdwm, HDSwitcherMenu *switcher)
 }
 
 static void 
-hd_switcher_menu_notification_added_cb (GtkTreeModel   *tree_model,
+hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
                                         GtkTreePath    *path,
                                         GtkTreeIter    *iter,
                                         HDSwitcherMenu *switcher)
 {
+  GdkPixbuf *icon = NULL;
+  gchar *summary = NULL, *body = NULL;
+  guint id;
+  GtkWidget *menu_item;
+	
 
+  gtk_tree_model_get (tree_model,
+		      iter,
+		      HD_NM_COL_ID, &id,
+		      HD_NM_COL_ICON, &icon,
+		      HD_NM_COL_SUMMARY, &summary,
+		      HD_NM_COL_BODY, &body,
+		      -1);
+  g_debug ("Summary %s %s --------->",summary,body);
+  menu_item = 
+    hd_switcher_menu_item_new_from_notification 
+      (id, icon, summary, body, TRUE);
+
+  hildon_desktop_popup_menu_add_item
+    (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
 }
 
 static void 
-hd_switcher_menu_notification_deleted_cb (GtkTreeModel   *tree_model,
-                                          GtkTreePath    *path,
+hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm,
+                                          gint 		  id,
                                           HDSwitcherMenu *switcher)
 {
+  GList *children = NULL, *l;
+  
+  children =
+    hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);    	  
+  
+  for (l = children; l != NULL; l = g_list_next (l))
+  {
+    gint _id =
+      hd_switcher_menu_item_get_notification_id (HD_SWITCHER_MENU_ITEM (l->data));	    
+	  
+    if (_id == id)      
+    {
+      hildon_desktop_popup_menu_remove_item (switcher->priv->menu_notifications,
+	                                     GTK_MENU_ITEM (l->data));
+      break;
+    }	    
+  }	  
 
+  g_list_free (children);
 }
 
 static void 
-hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
+hd_switcher_menu_notification_added_cb   (GtkTreeModel   *tree_model,
                                           GtkTreePath    *path,
                                           GtkTreeIter    *iter,
                                           HDSwitcherMenu *switcher)

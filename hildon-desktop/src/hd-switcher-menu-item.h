@@ -39,9 +39,9 @@ G_BEGIN_DECLS
 
 #define HD_TYPE_SWITCHER_MENU_ITEM		 (hd_switcher_menu_item_get_type ())
 #define HD_SWITCHER_MENU_ITEM(obj)		 (G_TYPE_CHECK_INSTANCE_CAST ((obj), HD_TYPE_SWITCHER_MENU_ITEM, HDSwitcherMenuItem))
-#define HN_IS_APP_MENU_ITEM(obj)	 (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HD_TYPE_SWITCHER_MENU_ITEM))
+#define HD_IS_SWITCHER_MENU_ITEM(obj)	 (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HD_TYPE_SWITCHER_MENU_ITEM))
 #define HD_SWITCHER_MENU_ITEM_CLASS(klass)	 (G_TYPE_CHECK_CLASS_CAST ((klass), HD_TYPE_SWITCHER_MENU_ITEM, HDSwitcherMenuItemClass))
-#define HN_IS_APP_MENU_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), HD_TYPE_SWITCHER_MENU_ITEM))
+#define HD_IS_SWITCHER_MENU_ITEM_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass), HD_TYPE_SWITCHER_MENU_ITEM))
 #define HD_SWITCHER_MENU_ITEM_GET_CLASS(obj)	 (G_TYPE_INSTANCE_GET_CLASS ((obj), HD_TYPE_SWITCHER_MENU_ITEM, HDSwitcherMenuItemClass))
 
 typedef struct _HDSwitcherMenuItem        HDSwitcherMenuItem;
@@ -80,6 +80,8 @@ HDEntryInfo *hd_switcher_menu_item_get_entry_info  (HDSwitcherMenuItem *menuitem
 void         hd_switcher_menu_item_set_is_blinking (HDSwitcherMenuItem *menuitem,
 					       gboolean       is_blinking);
 gboolean     hd_switcher_menu_item_get_is_blinking (HDSwitcherMenuItem *menuitem);
+
+gint	     hd_switcher_menu_item_get_notification_id (HDSwitcherMenuItem *menuitem);
 
 G_END_DECLS
 
