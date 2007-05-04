@@ -29,4 +29,7 @@ fi
 #    fi
 #fi
 
-#DEBHELPER#
+if [ -x "/etc/init.d/dbus" ]; then
+        update-rc.d dbus defaults >/dev/null
+fi
+
