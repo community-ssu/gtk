@@ -1,7 +1,16 @@
+2007-05-04  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
+	- read /usr/share/backgrounds/default.desktop
+	to determine the default background.
+	* data/home-background.conf:
+	- removed, the default background settings are now fully fetched
+	from the theme and the above mentioned file
+
 2007-05-04  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu-item.[ch]:
-	- Several minor bugfixes. 
+	- Several minor bugfixes.
 	* src/hd-switcher-menu.c:
 	- Added basic support for notifications.
 

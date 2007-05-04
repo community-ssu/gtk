@@ -63,8 +63,11 @@
 
 #define HD_HOME_BACKGROUND_CONF_FILE        "home-background.conf"
 #define HD_DESKTOP_USER_PATH                ".osso/hildon-desktop/"
-#define HD_HOME_BACKGROUND_GLOBAL_CONF_FILE \
-    HD_DESKTOP_CONFIG_PATH G_DIR_SEPARATOR_S HD_HOME_BACKGROUND_CONF_FILE
+#define HD_HOME_BACKGROUND_DEFAULT          HD_DESKTOP_BACKGROUNDS_PATH\
+                                            "/default.desktop"
+
+#define BG_DESKTOP_GROUP           "Desktop Entry"
+#define BG_DESKTOP_IMAGE_FILENAME  "File"
 
 #define LAYOUT_OPENING_BANNER_TIMEOUT   2500
 
@@ -343,20 +346,43 @@ hd_home_window_constructor (GType                   gtype,
 
   if (error)
     {
+      GKeyFile         *keyfile;
+      const GdkColor    default_color = {0, 0, 0, 0};
+      gchar            *filename = NULL;
+
       g_clear_error (&error);
 
-      /* Try the global configuration file */
-      hd_home_background_load (background,
-                               HD_HOME_BACKGROUND_GLOBAL_CONF_FILE,
-                               &error);
+      /* Revert to the default background file */
+      keyfile = g_key_file_new ();
+      g_key_file_load_from_file (keyfile,
+                                 HD_HOME_BACKGROUND_DEFAULT,
+                                 G_KEY_FILE_NONE,
+                                 &error);
+      if (error) goto error;
 
+      filename = g_key_file_get_string (keyfile,
+                                        BG_DESKTOP_GROUP,
+                                        BG_DESKTOP_IMAGE_FILENAME,
+                                        &error);
+
+      if (error) goto error;
+
+      background = g_object_new (HD_TYPE_HOME_BACKGROUND,
+                                 "filename", filename,
+                                 "color", &default_color,
+                                 NULL);
+
+error:
       if (error)
         {
-          g_warning ("Error when loading background parameters from: %s",
+          g_warning ("Could not load default background: %s",
                      error->message);
-          g_error_free (error);
+          g_clear_error (&error);
           background = NULL;
         }
+
+      g_free (filename);
+
     }
 
 
