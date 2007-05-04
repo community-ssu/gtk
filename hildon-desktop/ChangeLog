@@ -1,3 +1,10 @@
+2007-05-04  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]: several
+	code cleanups and crasher fixes. Added "notification-closed" signal.
+	* src/hd-desktop: implemented system notifications support in the
+	desktop. Notification manager is used as backend.
+
 2007-05-04  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.[ch]:

@@ -73,6 +73,9 @@ struct _HildonDesktopNotificationManager
 struct _HildonDesktopNotificationManagerClass 
 {
   GtkListStoreClass parent_class;
+
+  void     *(*notification_closed)    (HildonDesktopNotificationManager *nm,
+		                       gint id);
 };
 
 GType      hildon_desktop_notification_manager_get_type           (void);
@@ -102,6 +105,10 @@ gboolean   hildon_desktop_notification_manager_get_server_info    (HildonDesktop
 gboolean   hildon_desktop_notification_manager_close_notification (HildonDesktopNotificationManager *nm,
                                                                    guint id, 
 								   GError **error);
+
+gboolean   hildon_desktop_notification_manager_find_by_id         (HildonDesktopNotificationManager *nm,
+		 						   guint id,
+								   GtkTreeIter *return_iter);
 
 void       hildon_desktop_notification_manager_call_action        (HildonDesktopNotificationManager *nm,
                                                                    guint                  id,

@@ -43,6 +43,7 @@
 #include <libhildondesktop/hildon-desktop-notification-manager.h>
 
 #include <hildon/hildon-banner.h>
+#include <hildon/hildon-note.h>
 
 #include "hd-desktop.h"
 #include "hd-select-plugins-dialog.h"
@@ -79,14 +80,22 @@ typedef struct
   GnomeVFSMonitorHandle  *plugin_dir_monitor;
 } HDDesktopContainerInfo;
 
+typedef struct
+{
+  guint      id;
+  HDDesktop *desktop;
+} HDDesktopNotificationInfo;
+
 struct _HDDesktopPrivate 
 {
   gchar                 *config_file;
   GnomeVFSMonitorHandle *system_conf_monitor;
   GnomeVFSMonitorHandle *user_conf_monitor;
   GHashTable            *containers;
+  GHashTable            *notifications;
+  GQueue                *dialog_queue;
   GObject               *pm;
-  GtkListStore          *nm;
+  GtkTreeModel          *nm;
 #ifdef HAVE_LIBOSSO
   osso_context_t  *osso_context;
 #endif
@@ -121,7 +130,7 @@ hd_desktop_launch_banner_show (HDWM *hdwm, HDWMWatchableApp *app, gpointer data)
   lapp_name = hd_wm_watchable_app_get_localized_name (app);
 
   info->msg = 
-    g_strdup_printf (_(hd_wm_watchable_app_is_hibernating(app) ?
+    g_strdup_printf (_(hd_wm_watchable_app_is_hibernating (app) ?
                      APP_LAUNCH_BANNER_MSG_RESUMING :
                      APP_LAUNCH_BANNER_MSG_LOADING),
                      lapp_name ? _(lapp_name) : "" );
@@ -152,7 +161,7 @@ hd_desktop_launch_banner_timeout (gpointer data)
   t2 = (long unsigned int) current_time.tv_sec;
   time_left = (guint) (t2 - t1);
 
-  if (time_left >= current_banner_timeout+4)/* ||
+  if (time_left >= current_banner_timeout + 4)/* ||
       hd_wm_watchable_app_has_windows (info->app))*/
   {
     hd_desktop_launch_banner_close (NULL, info);
@@ -648,6 +657,297 @@ hd_desktop_watch_dir (gchar                 *plugin_dir,
                           user_data);
 }
 
+#if 0
+#ifdef HAVE_LIBOSSO
+static gint 
+hildon_desktop_rpc_cb (const gchar *interface,
+                       const gchar *method,
+                       GArray *arguments,
+                       gpointer data,
+                       osso_rpc_t *retval)
+{
+  HDDesktop *desktop;
+  osso_rpc_t *val[5];
+  gint i;
+
+  if (!interface || !method || !arguments || !data) 
+  {
+    return OSSO_ERROR;
+  }
+
+  desktop = (HDDesktop *) data;
+
+  for (i = 0; i < arguments->len; ++i) 
+  {
+    val[i] = &g_array_index (arguments, osso_rpc_t, i);
+  }
+
+  if (g_str_equal("system_note_infoprint", method))
+  {
+    if (arguments->len < 1 || val[0]->type != DBUS_TYPE_STRING ) 
+    {
+      if (arguments->len < 1) 
+      {
+        retval->value.s = g_strdup ("Not enough args to infoprint");
+      } 
+      else 
+      {
+        g_sprintf (retval->value.s,
+                   "Wrong type param to infoprint (%d)", val[0]->type);
+      }
+
+      g_warning (retval->value.s);
+
+      return OSSO_ERROR;
+    }
+
+    hildon_banner_show_information( NULL, NULL, val[0]->value.s);
+  }
+  else if (g_str_equal ("system_note_dialog", method))
+  {
+    if (arguments->len < 2 ||
+        val[0]->type != DBUS_TYPE_STRING ||
+        val[1]->type != DBUS_TYPE_INT32 ) 
+    {
+      if (arguments->len < 2) 
+      {
+        retval->value.s = "Not enough args to dialog";
+      } 
+      else 
+      {
+        retval->value.s = "Wrong type of arguments to dialog";
+      }
+
+      g_warning (retval->value.s);
+
+      return OSSO_ERROR;
+    }
+
+    hildon_status_bar_lib_prepare_dialog (val[1]->value.i, 
+                                          NULL,
+                                          val[0]->value.s,  
+                                          0, 
+                                          NULL, 
+                                          NULL);
+  }
+  else if (g_str_equal ("open_closeable_system_dialog", method))
+  {
+    gint id;
+    const gchar *btext = NULL;
+
+    if (arguments->len < 4 ||
+        val[0]->type != DBUS_TYPE_STRING ||
+        val[1]->type != DBUS_TYPE_INT32 ||
+        val[2]->type != DBUS_TYPE_STRING ||
+        val[3]->type != DBUS_TYPE_BOOLEAN)
+    {
+      retval->type = DBUS_TYPE_STRING;
+
+      if (arguments->len < 4) 
+      {
+        retval->value.s = g_strdup ("Not enough args to dialog");
+      } 
+      else 
+      {
+        retval->value.s = g_strdup ("Wrong type of arguments to dialog");
+      }
+
+      g_warning (retval->value.s);
+
+      return OSSO_ERROR;
+    }
+
+    if ((val[2]->value.s)[0] != '\0')
+    {
+      btext = val[2]->value.s;
+    }
+
+    id = hildon_status_bar_lib_open_closeable_dialog (val[1]->value.i,
+                                                      val[0]->value.s, 
+                                                      btext, 
+                                                      val[0]->value.b);
+
+    retval->type = DBUS_TYPE_INT32;
+    retval->value.i = id;
+  }
+  else if (g_str_equal ("close_closeable_system_dialog", method))
+  {
+    /* The id of the dialog is given as argument */
+    if (arguments->len < 1 || val[0]->type != DBUS_TYPE_INT32)
+    {
+      retval->type = DBUS_TYPE_STRING;
+
+      if (arguments->len < 1) 
+      {
+        retval->value.s = g_strdup ("Not enough args to dialog");
+      } 
+      else 
+      {
+        retval->value.s = g_strdup ("Argument has invalid type");
+      }
+
+      g_warning (retval->value.s);
+
+      return OSSO_ERROR;
+    }
+
+    hildon_status_bar_lib_close_closeable_dialog (val[0]->value.i);
+  }
+  else if (g_str_equal( "get_system_dialog_response", method))
+  {
+    gint response = -1;
+
+    /* The id of the dialog is given as argument */
+    if (arguments->len < 1 || val[0]->type != DBUS_TYPE_INT32)
+    {
+      retval->type = DBUS_TYPE_STRING;
+
+      if (arguments->len < 1) 
+      {
+        retval->value.s = g_strdup ("Not enough args to dialog");
+      } 
+      else 
+      {
+        retval->value.s = g_strdup ("Argument has invalid type");
+      }
+
+      g_warning (retval->value.s);
+
+      return OSSO_ERROR;
+    }
+
+    response = hildon_status_bar_lib_get_dialog_response (val[0]->value.i);
+
+    retval->type = DBUS_TYPE_INT32;
+    retval->value.i = response;
+  }
+  else if (g_str_equal ("delayed_infobanner", method))
+  {
+      gint parent_window_id = 0;
+
+      if (arguments->len < 4 ||
+          arguments->len > 5 ||
+          val[0]->type != DBUS_TYPE_INT32 ||
+          val[1]->type != DBUS_TYPE_INT32 ||
+          val[2]->type != DBUS_TYPE_INT32 ||
+          val[3]->type != DBUS_TYPE_STRING ||
+          (arguments->len == 5 && val[4]->type != DBUS_TYPE_INT32))
+      {
+        if (arguments->len < 4) 
+        {
+          retval->value.s = "Not enough arguments.";
+        } 
+        else 
+        {
+          g_sprintf (retval->value.s, "Wrong type of arguments: "
+                     "(%d,%d,%d,%d); was expecting (%d, %d, %d and %d)",
+                     val[0]->type, val[1]->type,
+                     val[2]->type, val[3]->type,
+                     DBUS_TYPE_INT32, DBUS_TYPE_INT32,
+                     DBUS_TYPE_INT32, DBUS_TYPE_STRING);
+        }
+
+        g_warning (retval->value.s);
+
+        return OSSO_ERROR;
+      }
+
+      if (arguments->len == 5)
+        parent_window_id = val[4]->value.i;
+
+      return _delayed_infobanner_add (val[0]->value.i,
+                                      val[1]->value.i,
+                                      val[2]->value.i,
+                                      val[3]->value.s,
+                                      parent_window_id);
+  }
+  else if (g_str_equal( "cancel_delayed_infobanner", method))
+  {
+    if (arguments->len > 1 ||
+        val[0]->type != DBUS_TYPE_INT32 ) 
+    {
+      retval->type = DBUS_TYPE_STRING;
+
+      if (arguments->len > 1) 
+      {
+        retval->value.s = "Too many args.";
+      } 
+      else 
+      {
+        g_sprintf(retval->value.s, "Wrong type of arguments: "
+                  "(%d), was expecting int (%d)",
+                  val[0]->type, DBUS_TYPE_INT32);
+      }
+
+      g_warning (retval->value.s);
+
+      return OSSO_ERROR;
+    }
+
+    _delayed_infobanner_remove (GINT_TO_POINTER (val[0]->value.i));
+
+    /* This function returns boolean for the timeout functions, *
+     * we don't care about that here. It's false always, anyway */
+    return OSSO_OK;
+
+  }
+  else if( g_str_equal( "statusbar_insensitive", method ))
+  {
+    sb_is_sensitive = FALSE;
+
+    gtk_container_foreach (GTK_CONTAINER (panel->fixed),
+                           (GtkCallback) (statusbar_insensitive_cb),
+                           NULL);
+
+    gtk_container_foreach (GTK_CONTAINER (panel->arrow_button),
+                           (GtkCallback) (statusbar_insensitive_cb),
+                           NULL);
+
+    return OSSO_OK;
+  }
+  else if (g_str_equal("statusbar_sensitive", method))
+  {
+    sb_is_sensitive = TRUE;
+
+    gtk_container_foreach (GTK_CONTAINER (panel->fixed),
+                           (GtkCallback) (statusbar_sensitive_cb),
+                           NULL);
+
+    gtk_container_foreach (GTK_CONTAINER (panel->arrow_button),
+                           (GtkCallback) (statusbar_sensitive_cb),
+                           NULL);
+
+    return OSSO_OK;
+  }
+  else if (g_str_equal("statusbar_get_conditional", method))
+  {
+    int i;
+
+    for (i = 0; i < HSB_MAX_NO_OF_ITEMS; i++) /* Can we break earlier? */
+    {
+       if (panel->items[i])
+       {
+         statusbar_send_signal (osso_get_dbus_connection (panel->osso),
+                                HILDON_STATUS_BAR_ITEM (panel->items[i]),
+                                hildon_status_bar_item_get_conditional
+                                (HILDON_STATUS_BAR_ITEM (panel->items[i])));
+       }
+    }
+
+    return OSSO_OK;
+  }
+  else
+  {
+    g_warning ("Unknown SB RPC method");
+
+    return OSSO_ERROR;
+  }
+
+  return OSSO_OK;
+}
+#endif
+#endif
+
 static void 
 hd_desktop_load_containers (HDDesktop *desktop)
 {
@@ -1029,6 +1329,207 @@ hd_desktop_load_containers (HDDesktop *desktop)
   g_key_file_free (keyfile);
 }
 
+static GtkWidget *
+hd_desktop_create_note_infoprint (const gchar *summary, 
+				  const gchar *body, 
+				  const gchar *icon_name)
+{
+  GtkWidget *banner;
+
+  banner = GTK_WIDGET (g_object_new (HILDON_TYPE_BANNER, 
+		                     "is-timed", FALSE,
+			             NULL));
+
+  hildon_banner_set_markup (HILDON_BANNER (banner), body);
+  hildon_banner_set_icon (HILDON_BANNER (banner), icon_name);
+
+  return banner;
+}
+	
+static void
+hd_desktop_system_notification_dialog_response (GtkWidget *widget,
+	       					gint response,	
+		                                HDDesktopNotificationInfo *ninfo)
+{
+  HildonDesktopNotificationManager *nm;
+  HDDesktop *desktop;
+  GtkWidget *next_dialog = NULL;
+
+  desktop = ninfo->desktop;
+
+  nm = (HildonDesktopNotificationManager *) 
+	  gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (desktop->priv->nm));
+
+  hildon_desktop_notification_manager_close_notification (nm, ninfo->id, NULL);
+  
+  g_free (ninfo);
+
+  g_queue_pop_head (desktop->priv->dialog_queue);
+  gtk_widget_destroy (widget);
+
+  g_debug ("DIALOG QUEUE: %d", g_queue_get_length (desktop->priv->dialog_queue));
+    
+  /* Show next system notification dialog if present */
+  while (!g_queue_is_empty (desktop->priv->dialog_queue))
+  {
+    next_dialog = (GtkWidget *) g_queue_peek_head (desktop->priv->dialog_queue);
+
+    if (GTK_IS_WIDGET (next_dialog))
+    {
+      gtk_widget_show_all (next_dialog);
+      break;
+    }
+    else
+    {
+      g_queue_pop_head (desktop->priv->dialog_queue);
+    }
+  }
+}
+
+static GtkWidget *
+hd_desktop_create_note_dialog (const gchar *summary, 
+			       const gchar *body, 
+			       const gchar *icon_name)
+{
+  GtkWidget *note;
+
+  note = hildon_note_new_information_with_icon_name (NULL, 
+		  				     body, 
+						     icon_name);
+
+  return note;
+}
+
+static void
+hd_desktop_system_notification_closed (HildonDesktopNotificationManager *nm,
+				       gint id,
+				       HDDesktop *desktop)
+{
+  gpointer widget;
+
+  widget = g_hash_table_lookup (desktop->priv->notifications, GINT_TO_POINTER (id));
+
+  g_hash_table_remove (desktop->priv->notifications, GINT_TO_POINTER (id));
+
+  if (GTK_IS_WIDGET (widget))
+  {
+    gtk_widget_destroy (GTK_WIDGET (widget));
+  }
+}
+
+static void
+hd_desktop_system_notification_received (GtkTreeModel *model,
+                                         GtkTreePath *path,
+                                         GtkTreeIter *iter,
+                                         gpointer user_data)  
+
+{
+  HDDesktop *desktop;
+  GtkWidget *notification = NULL;
+  GHashTable *hints;
+  GValue *hint;
+  const gchar *hint_s;
+  gchar *summary;
+  gchar *body;
+  gchar *icon_name;
+  gint id;
+
+  g_return_if_fail (HD_IS_DESKTOP (user_data));
+  
+  desktop = HD_DESKTOP (user_data);
+
+  gtk_tree_model_get (model,
+		      iter,
+		      HD_NM_COL_ID, &id,
+		      HD_NM_COL_SUMMARY, &summary,
+		      HD_NM_COL_BODY, &body,
+		      HD_NM_COL_ICON_NAME, &icon_name,
+		      HD_NM_COL_HINTS, &hints,
+		      -1);
+
+  hint = g_hash_table_lookup (hints, "category");
+  hint_s = g_value_get_string (hint);
+
+  if (g_str_equal (hint_s, "system.note_infoprint")) 
+  {
+    notification = hd_desktop_create_note_infoprint (summary, 
+		    				     body, 
+						     icon_name);
+
+    gtk_widget_show_all (notification);
+  }
+  else if (g_str_equal (hint_s, "system.note_dialog")) 
+  {
+    HDDesktopNotificationInfo *ninfo;
+
+    notification = hd_desktop_create_note_dialog (summary, 
+		    				  body, 
+						  icon_name);
+
+    ninfo = g_new0 (HDDesktopNotificationInfo, 1); 
+
+    ninfo->id = id;
+    ninfo->desktop = desktop;
+  
+    g_signal_connect (G_OBJECT (notification),
+  		      "response",
+  		      G_CALLBACK (hd_desktop_system_notification_dialog_response),
+  		      ninfo);
+
+    if (g_queue_is_empty (desktop->priv->dialog_queue))
+    {
+      gtk_widget_show_all (notification);
+    }
+
+    g_queue_push_tail (desktop->priv->dialog_queue, notification);
+  } 
+  else
+  {
+    goto clean;
+  }
+
+  g_hash_table_insert (desktop->priv->notifications, 
+		       GINT_TO_POINTER (id), 
+		       notification);
+
+clean:
+  g_free (summary);
+  g_free (body);
+  g_free (icon_name);
+}
+
+static gboolean
+hd_desktop_system_notifications_filter (GtkTreeModel *model,
+				        GtkTreeIter *iter,
+				        gpointer user_data)
+{
+  GHashTable *hints;
+  GValue *category;
+
+  gtk_tree_model_get (model,
+		      iter,
+		      HD_NM_COL_HINTS, &hints,
+		      -1);
+
+  if (hints == NULL) 
+    return FALSE;
+  
+  category = g_hash_table_lookup (hints, "category");
+
+  if (category == NULL)
+  {
+    return FALSE;
+  }
+  else if (g_str_has_prefix (g_value_get_string (category), "system."))
+  {
+    return TRUE;
+  } 
+  else
+  {
+    return FALSE;
+  }
+}
+
 static void
 hd_desktop_init (HDDesktop *desktop)
 {
@@ -1036,7 +1537,8 @@ hd_desktop_init (HDDesktop *desktop)
   gchar *user_conf_dir;
   const gchar *env_config_file;
   HDWM *hdwm;
-
+  GtkListStore *nm;
+  
   desktop->priv = HD_DESKTOP_GET_PRIVATE (desktop);
 
   priv = desktop->priv;
@@ -1081,7 +1583,24 @@ hd_desktop_init (HDDesktop *desktop)
 
   desktop->priv->pm = hd_plugin_manager_new (); 
 
-  desktop->priv->nm = hildon_desktop_notification_manager_get_singleton (); 
+  nm = hildon_desktop_notification_manager_get_singleton (); 
+
+  priv->nm = gtk_tree_model_filter_new (GTK_TREE_MODEL (nm), NULL);
+
+  gtk_tree_model_filter_set_visible_func (GTK_TREE_MODEL_FILTER (priv->nm),
+		                          hd_desktop_system_notifications_filter,
+					  NULL,
+					  NULL);
+  
+  g_signal_connect (nm,
+		    "notification-closed",
+		    G_CALLBACK (hd_desktop_system_notification_closed),
+		    desktop);
+
+  g_signal_connect (priv->nm,
+		    "row-inserted",
+		    G_CALLBACK (hd_desktop_system_notification_received),
+		    desktop);
 
   hdwm = hd_wm_get_singleton ();
 
@@ -1089,9 +1608,17 @@ hd_desktop_init (HDDesktop *desktop)
 		    "application-starting",
 		    G_CALLBACK (hd_desktop_launch_banner_show),
 		    NULL);
-		    
+
   desktop->priv->system_conf_monitor = NULL;
   desktop->priv->user_conf_monitor = NULL;
+
+  desktop->priv->notifications = 
+          g_hash_table_new_full (g_direct_hash, 
+	  		         g_direct_equal,
+			         NULL,
+			         NULL);
+
+  desktop->priv->dialog_queue = g_queue_new ();
 }
 
 static void
@@ -1138,6 +1665,18 @@ hd_desktop_finalize (GObject *object)
   {
     gnome_vfs_monitor_cancel (priv->user_conf_monitor);
     priv->user_conf_monitor = NULL;
+  }
+
+  if (priv->notifications != NULL)
+  {
+    g_hash_table_destroy (priv->notifications);
+    priv->notifications = NULL;
+  }
+
+  if (priv->dialog_queue != NULL)
+  {
+    g_queue_free (priv->dialog_queue);
+    priv->dialog_queue = NULL;
   }
 
   G_OBJECT_CLASS (hd_desktop_parent_class)->finalize (object);
