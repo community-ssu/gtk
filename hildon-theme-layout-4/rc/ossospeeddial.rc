@@ -7,7 +7,7 @@
 style "osso-speeddial"
 {
   HildonDesktopHomeItem::background-borders = { 25, 25, 25, 25 }
-  bg_pixmap[PRELIGHT] = "../images/qgn_plat_gene_applet_bg.png"
+  bg_pixmap[PRELIGHT] = "../images/qgn_plat_gene_applet_bg_alpha.png"
   xthickness = 0
   ythickness = 0
 

@@ -7,7 +7,7 @@
 style "osso-internetsearch-applet"
 {
   HildonDesktopHomeItem::background-borders = { 18, 18, 18, 18 }
-  bg_pixmap[PRELIGHT] = "../images/qgn_plat_home_search_bg.png"
+  bg_pixmap[PRELIGHT] = "../images/qgn_plat_home_search_bg_alpha.png"
 
   engine "sapwood"
     {

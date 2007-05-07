@@ -1,3 +1,13 @@
+2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/ossorssfeedreader.rc:
+	* rc/ossointernetsearchapplet.rc:
+	* rc/ossospeeddial.rc:
+	* rc/ossoiradioapplet.rc:
+	* rc/ossoclock.rc:
+
+	Added _alpha suffix to all the backgrounds used as alpha mask
+
 2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.7.0-1 release]

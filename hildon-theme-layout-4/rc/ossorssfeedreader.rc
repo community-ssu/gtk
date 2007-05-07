@@ -9,7 +9,7 @@ style "osso-rss-feed-reader"
   xthickness = 0
   ythickness = 0
   HildonDesktopHomeItem::background-borders = { 55, 55, 55, 15 }
-  bg_pixmap[PRELIGHT] = "../images/qgn_plat_news_applet_bg.png"
+  bg_pixmap[PRELIGHT] = "../images/qgn_plat_news_applet_bg_alpha.png"
 
   engine "sapwood"
     {
