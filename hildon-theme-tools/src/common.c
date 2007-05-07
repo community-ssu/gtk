@@ -198,10 +198,17 @@ Element*                        new_element_from_key (GKeyFile *key_file, gchar 
         element->Height = atoi (vals [3]);
         element->Name = g_strdup (name);
 
+        /* Primitive check for the 'alpha' keyword */
         if (size >= 5 && strcmp (vals [4], "alpha") == 0) {
                 element->ForcedAlpha = TRUE;
         } else
                 element->ForcedAlpha = FALSE;
+
+        /* Primitive check for the 'separate_alpha' keyword */
+        if (size >= 5 && strcmp (vals [4], "separate_alpha") == 0) {
+                element->SeparateAlpha = TRUE;
+        } else
+                element->SeparateAlpha = FALSE;
 
 Done:
         if (vals != NULL)

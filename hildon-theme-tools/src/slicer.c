@@ -45,6 +45,49 @@ gboolean                        check_if_pixbuf_needs_alpha (GdkPixbuf *pixbuf)
         return FALSE;
 }
 
+/* Create a pixbuf copy with just the alpha channel */
+GdkPixbuf*                      extract_alpha_from_pixbuf (GdkPixbuf *pixbuf)
+{
+        GdkPixbuf *new = NULL;
+        guchar *new_pixels = NULL;
+        guchar *pixels = gdk_pixbuf_get_pixels (pixbuf);
+        int bytes_per_pixel = gdk_pixbuf_get_n_channels (pixbuf);
+        int width = gdk_pixbuf_get_width (pixbuf);
+        int height = gdk_pixbuf_get_height (pixbuf);
+        long rowstride = gdk_pixbuf_get_rowstride (pixbuf);
+        int x = 0;
+        int y = 0;
+
+        g_return_val_if_fail (width > 0, NULL);
+        g_return_val_if_fail (height > 0, NULL);
+        g_return_val_if_fail (bytes_per_pixel == 4, NULL);
+        g_return_val_if_fail (rowstride > 0, NULL);
+
+        new_pixels = g_malloc (width * height * 4);
+        g_return_val_if_fail (new_pixels != NULL, NULL);
+
+        for (y = 0; y < height; y++) {
+                for (x = 0; x < width; x++) {
+                        new_pixels [(y * width * 4) + (x * 4)] = pixels [(y * rowstride) + (x * bytes_per_pixel) + 3];
+                        new_pixels [(y * width * 4) + (x * 4) + 1] = pixels [(y * rowstride) + (x * bytes_per_pixel) + 3];
+                        new_pixels [(y * width * 4) + (x * 4) + 2] = pixels [(y * rowstride) + (x * bytes_per_pixel) + 3];
+                        new_pixels [(y * width * 4) + (x * 4) + 3] = pixels [(y * rowstride) + (x * bytes_per_pixel) + 3];
+                }
+        }
+
+        new = gdk_pixbuf_new_from_data (new_pixels, 
+                                        GDK_COLORSPACE_RGB, 
+                                        TRUE, 
+                                        8, 
+                                        width, 
+                                        height,
+                                        width * 4, 
+                                        g_free,
+                                        (gpointer) new_pixels);
+
+        return new;
+}
+
 /* Create a copy of the pixbuf with alpha removed */
 GdkPixbuf*                      strip_alpha_from_pixbuf (GdkPixbuf *pixbuf)
 {
@@ -135,7 +178,26 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                         else {
                                 gchar *fname = g_build_filename (directory, element->Name, NULL);
                              
-                                // FIXME This only covers one case (nnot stripping alpha when 
+                                // Save alpha as a separate filename if that's required
+                                if (gdk_pixbuf_get_n_channels (sub) == 4 &&
+                                    element->SeparateAlpha == TRUE &&
+                                    strlen (fname) >= 4 && 
+                                    strcmp (fname + (strlen (fname) - 4), ".png") == 0) {
+
+                                        GdkPixbuf *alpha_pixbuf = extract_alpha_from_pixbuf (sub);
+                                        gchar *fname_alpha = g_strdup (fname);
+                                        fname_alpha [strlen (fname_alpha) - 4] = 0;
+                                        gchar *final_fname = g_strdup_printf ("%s_alpha.png", fname_alpha);
+                                        
+                                        g_print ("Saving separate alpha for %s to %s\n", element->Name, final_fname);
+                                        save_png (alpha_pixbuf, final_fname);
+
+                                        g_free (fname_alpha);
+                                        g_free (final_fname);
+                                        gdk_pixbuf_unref (alpha_pixbuf);
+                                }
+
+                                // FIXME This only covers one case (not stripping alpha when 
                                 // forced alpha == TRUE). We should also support a case when 
                                 // alpha needs to be added.
                                 if (gdk_pixbuf_get_n_channels (sub) == 4 && 

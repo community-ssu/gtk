@@ -39,6 +39,7 @@ struct                          _Element
         gint Width;
         gint Height;
         gboolean ForcedAlpha;
+        gboolean SeparateAlpha;
 } typedef                       Element;
 
 struct                          _Color
