@@ -93,6 +93,15 @@ gboolean   hildon_desktop_notification_manager_notify             (HildonDesktop
                                                       		   gint                   timeout, 
                                                       		   DBusGMethodInvocation *context);
 
+gboolean   hildon_desktop_notification_manager_system_note_infoprint  (HildonDesktopNotificationManager *nm,
+								       const gchar           *message,
+								       DBusGMethodInvocation *context);
+
+gboolean   hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificationManager *nm,
+								   const gchar           *message,
+								   guint                  type,
+								   DBusGMethodInvocation *context);
+
 gboolean   hildon_desktop_notification_manager_get_capabilities   (HildonDesktopNotificationManager *nm, 
                                                       		   gchar               ***caps);
 

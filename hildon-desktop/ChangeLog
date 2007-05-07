@@ -1,3 +1,13 @@
+2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* src/hd-desktop.c: watch notification with system.note.infoprint and
+	system.note.dialog instead of system.note_dialog and
+	system.note_infoprint.
+	* libhildondesktop/hildon-desktop-notification-manager.[ch], 
+	libhildondesktop/notification-manager.xml: added SystemNoteDialog
+	and SystemNoteInfoprint D-Bus methods to be used by libosso. Check if
+	the actions list is valid and don't use in case it's invalid.
+
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
 
 	* src/hd-home-window.c:

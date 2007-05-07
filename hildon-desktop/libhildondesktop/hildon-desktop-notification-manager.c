@@ -298,6 +298,8 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
   GdkPixbuf *pixbuf = NULL;
   GtkIconTheme *icon_theme;
   GHashTable *hints_copy;
+  gchar **actions_copy;
+  gboolean valid_actions = TRUE;
   gint i;
   
   if (!g_str_equal (icon, ""))
@@ -343,9 +345,9 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
       if (nm->priv->current_id == G_MAXUINT)
         nm->priv->current_id = 0;
     }
-
+    
     /* Test if we have a valid list of actions */
-    for (i = 0; actions[i] != NULL; i += 2)
+    for (i = 0; actions && actions[i] != NULL; i += 2)
     {
       gchar *label = actions[i + 1];
       
@@ -353,10 +355,21 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
       {
         g_warning ("Invalid action list: no label provided for action %s", actions[i]);
 
-        break;
+	valid_actions = FALSE;
+
+	break;
       }
     }
 
+    if (valid_actions)
+    {
+      actions_copy = g_strdupv (actions);
+    }
+    else
+    {
+      actions_copy = NULL;
+    }
+	      
     hints_copy = g_hash_table_new_full (g_str_hash, 
 	  		                g_str_equal,
 			                (GDestroyNotify) g_free,
@@ -372,7 +385,7 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
 		        HD_NM_COL_ICON, pixbuf,
 		        HD_NM_COL_SUMMARY, summary,
 		        HD_NM_COL_BODY, body,
-		        HD_NM_COL_ACTIONS, g_strdupv (actions),
+		        HD_NM_COL_ACTIONS, actions_copy,
 		        HD_NM_COL_HINTS, hints_copy,
 		        HD_NM_COL_TIMEOUT, timeout,
 			HD_NM_COL_REMOVABLE, TRUE,
@@ -403,36 +416,85 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
   return TRUE;
 }
 
-#if 0
 gboolean
-hildon_desktop_notification_manager_system_infoprint (HildonDesktopNotificationManager *nm,
-						      gchar *message,
-                                                      DBusGMethodInvocation *context)
+hildon_desktop_notification_manager_system_note_infoprint (HildonDesktopNotificationManager *nm,
+						           const gchar *message,
+                                                           DBusGMethodInvocation *context)
 {
   GHashTable *hints;
+  GValue *hint;
 
-  hints = 
-                                            const gchar           *app_name,
-                                            guint                  id,
-                                            const gchar           *icon,
-                                            const gchar           *summary,
-                                            const gchar           *body,
-                                            gchar                **actions,
-                                            GHashTable            *hints,
-                                            gint                   timeout, 
+  hints = g_hash_table_new_full (g_str_hash, 
+        		         g_str_equal,
+      		                NULL,
+      		                (GDestroyNotify) hint_value_free);
+
+  hint = g_new0 (GValue, 1);
+  hint = g_value_init (hint, G_TYPE_STRING);
+  g_value_set_string (hint, "system.note.infoprint");
+
+  g_hash_table_insert (hints, "category", hint);
+
+  hildon_desktop_notification_manager_notify (nm,
+					      "hildon-desktop",
+		  			      0,
+					      "qgn_note_infoprint",
+		  			      "System Note Infoprint",
+					      message,
+					      NULL,
+					      hints,
+					      3000,
+					      context);
+
+  g_hash_table_destroy (hints);
 
   return TRUE;
 }
 
 gboolean
-hildon_desktop_notification_manager_system_dialog (HildonDesktopNotificationManager *nm,
-						   gchar *message,
-						   guint32 type
-                                                   DBusGMethodInvocation *context)
+hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificationManager *nm,
+						        const gchar *message,
+						        guint type,
+                                                        DBusGMethodInvocation *context)
 {
+  GHashTable *hints;
+  GValue *hint;
+
+  static const gchar *icon[4] = {
+      "qgn_note_gene_syswarning", /* OSSO_GN_WARNING */
+      "qgn_note_gene_syserror",   /* OSSO_GN_ERROR */
+      "qgn_note_info",            /* OSSO_GN_NOTICE */
+      "qgn_note_gene_wait"        /* OSSO_GN_WAIT */
+  };
+
+  g_debug ("ALOW ALOW ALOW ALOW");
+
+  hints = g_hash_table_new_full (g_str_hash, 
+        		         g_str_equal,
+      		                NULL,
+      		                (GDestroyNotify) hint_value_free);
+
+  hint = g_new0 (GValue, 1);
+  hint = g_value_init (hint, G_TYPE_STRING);
+  g_value_set_string (hint, "system.note.dialog");
+
+  g_hash_table_insert (hints, "category", hint);
+
+  hildon_desktop_notification_manager_notify (nm,
+					      "hildon-desktop",
+		  			      0,
+					      icon[type],
+		  			      "System Note Dialog",
+					      message,
+					      NULL,
+					      hints,
+					      3000,
+					      context);
+
+  g_hash_table_destroy (hints);
+  
   return TRUE;
 }
-#endif
 
 gboolean
 hildon_desktop_notification_manager_get_capabilities  (HildonDesktopNotificationManager *nm, gchar ***caps)

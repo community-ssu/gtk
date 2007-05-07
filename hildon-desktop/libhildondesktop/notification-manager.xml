@@ -28,7 +28,6 @@
       <arg type="u" name="id" direction="in" />
     </method>
 
-    <!--
     <method name="SystemNoteInfoprint">
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_system_note_infoprint"/>
 
@@ -41,11 +40,12 @@
     <method name="SystemNoteDialog">
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_system_note_dialog"/>
 
+      <annotation name="org.freedesktop.DBus.GLib.Async" value=""/>
+
       <arg type="s" name="message" direction="in" />
       <arg type="u" name="type" direction="in" />
       <arg type="u" name="return_id" direction="out" />
     </method>
-    -->
     
     <method name="GetCapabilities">
       <annotation name="org.freedesktop.DBus.GLib.CSymbol" value="hildon_desktop_notification_manager_get_capabilities"/>

@@ -1450,7 +1450,7 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
   hint = g_hash_table_lookup (hints, "category");
   hint_s = g_value_get_string (hint);
 
-  if (g_str_equal (hint_s, "system.note_infoprint")) 
+  if (g_str_equal (hint_s, "system.note.infoprint")) 
   {
     notification = hd_desktop_create_note_infoprint (summary, 
 		    				     body, 
@@ -1458,7 +1458,7 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
 
     gtk_widget_show_all (notification);
   }
-  else if (g_str_equal (hint_s, "system.note_dialog")) 
+  else if (g_str_equal (hint_s, "system.note.dialog")) 
   {
     HDDesktopNotificationInfo *ninfo;
 
@@ -1704,7 +1704,7 @@ void
 hd_desktop_run (HDDesktop *desktop)
 {
   gchar *user_conf_dir;
-        
+  
   hd_desktop_load_containers (desktop);
 
   user_conf_dir = g_build_filename (g_get_home_dir (), 
