@@ -1,3 +1,9 @@
+2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c:
+	- when no default background, revert to a black one rather
+	than NULL
+
 2007-05-04  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildonwm/hd-keys.[ch]:

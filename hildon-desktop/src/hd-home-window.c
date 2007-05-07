@@ -378,7 +378,10 @@ error:
           g_warning ("Could not load default background: %s",
                      error->message);
           g_clear_error (&error);
-          background = NULL;
+          background = g_object_new (HD_TYPE_HOME_BACKGROUND,
+                                     "filename", HD_HOME_BACKGROUND_NO_IMAGE,
+                                     "color", &default_color,
+                                     NULL);
         }
 
       g_free (filename);
@@ -1262,15 +1265,12 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
           g_debug ("BACKGROUND_OK");
           if (!hd_home_background_equal (priv->background,
                                          background))
-            {
-          g_debug ("BACKGROUND_NOT_EQUAL");
             hd_home_background_apply_async 
                 (background,
                  GTK_WIDGET (window)->window,
                  workarea,
                  (HDHomeBackgroundApplyCallback)background_apply_and_save_callback,
                window);
-            }
           g_object_unref (priv->previous_background);
           break;
       case HILDON_HOME_SET_BG_RESPONSE_PREVIEW:
@@ -1313,8 +1313,8 @@ hd_home_window_set_background_activate (HDHomeWindow *window)
 #ifdef HAVE_LIBOSSO
                          "osso-context", priv->osso_context,
 #endif
-                         "background-dir", HD_DESKTOP_BACKGROUNDS_PATH,
                          "background", priv->background,
+                         "background-dir", HD_DESKTOP_BACKGROUNDS_PATH,
                          NULL);
 
   g_signal_connect_swapped (dialog, "response",
