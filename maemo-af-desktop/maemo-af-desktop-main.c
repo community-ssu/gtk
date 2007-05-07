@@ -91,6 +91,7 @@
    of used stack -- Karoliina Salminen */
 
 
+#define STAMP_DIR                       "/tmp/osso-appl-states/"
 #define MAEMO_AF_DESKTOP_STAMP_DIR      "/tmp/osso-appl-states/maemo_af_desktop/"
 #define MAEMO_AF_DESKTOP_STAMP_FILE     MAEMO_AF_DESKTOP_STAMP_DIR"/stamp"
 
@@ -240,6 +241,7 @@ maemo_af_desktop_main(int argc, char* argv[])
     else
     {
         int fd;
+        mkdir (STAMP_DIR, 0755);
         mkdir (MAEMO_AF_DESKTOP_STAMP_DIR, 0755);
         fd = creat(MAEMO_AF_DESKTOP_STAMP_FILE, S_IRUSR|S_IWUSR);
         if (fd >= 0)

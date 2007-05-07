@@ -229,7 +229,7 @@ void init_dock( StatusBar *panel )
     g_signal_connect(panel->arrow_button, "toggled", 
 		     G_CALLBACK(arrow_button_toggled_cb), panel);
    
-    log_path = g_strdup_printf("%s%s",g_get_tmp_dir (),HSB_PLUGIN_LOG_FILE);
+    log_path = g_strdup(HSB_PLUGIN_LOG_FILE);
     
     panel->log = hildon_log_new (log_path);
 
