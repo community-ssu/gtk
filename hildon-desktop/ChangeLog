@@ -1,5 +1,9 @@
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.11
+
+2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-desktop-panel-window-dialog.c:
 	- add gdk_error_trap_ around XGetWindowProperty
 	- do not crash if the property is not set
