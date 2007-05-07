@@ -657,79 +657,6 @@ hd_desktop_watch_dir (gchar                 *plugin_dir,
                           user_data);
 }
 
-#if 0
-  if (g_str_equal ("delayed_infobanner", method))
-  {
-      gint parent_window_id = 0;
-
-      if (arguments->len < 4 ||
-          arguments->len > 5 ||
-          val[0]->type != DBUS_TYPE_INT32 ||
-          val[1]->type != DBUS_TYPE_INT32 ||
-          val[2]->type != DBUS_TYPE_INT32 ||
-          val[3]->type != DBUS_TYPE_STRING ||
-          (arguments->len == 5 && val[4]->type != DBUS_TYPE_INT32))
-      {
-        if (arguments->len < 4) 
-        {
-          retval->value.s = "Not enough arguments.";
-        } 
-        else 
-        {
-          g_sprintf (retval->value.s, "Wrong type of arguments: "
-                     "(%d,%d,%d,%d); was expecting (%d, %d, %d and %d)",
-                     val[0]->type, val[1]->type,
-                     val[2]->type, val[3]->type,
-                     DBUS_TYPE_INT32, DBUS_TYPE_INT32,
-                     DBUS_TYPE_INT32, DBUS_TYPE_STRING);
-        }
-
-        g_warning (retval->value.s);
-
-        return OSSO_ERROR;
-      }
-
-      if (arguments->len == 5)
-        parent_window_id = val[4]->value.i;
-
-      return _delayed_infobanner_add (val[0]->value.i,
-                                      val[1]->value.i,
-                                      val[2]->value.i,
-                                      val[3]->value.s,
-                                      parent_window_id);
-  }
-  else if (g_str_equal( "cancel_delayed_infobanner", method))
-  {
-    if (arguments->len > 1 ||
-        val[0]->type != DBUS_TYPE_INT32 ) 
-    {
-      retval->type = DBUS_TYPE_STRING;
-
-      if (arguments->len > 1) 
-      {
-        retval->value.s = "Too many args.";
-      } 
-      else 
-      {
-        g_sprintf(retval->value.s, "Wrong type of arguments: "
-                  "(%d), was expecting int (%d)",
-                  val[0]->type, DBUS_TYPE_INT32);
-      }
-
-      g_warning (retval->value.s);
-
-      return OSSO_ERROR;
-    }
-
-    _delayed_infobanner_remove (GINT_TO_POINTER (val[0]->value.i));
-
-    /* This function returns boolean for the timeout functions, *
-     * we don't care about that here. It's false always, anyway */
-    return OSSO_OK;
-
-  }
-#endif
-
 static void 
 hd_desktop_load_containers (HDDesktop *desktop)
 {
@@ -1142,6 +1069,7 @@ hd_desktop_system_notification_dialog_response (GtkWidget *widget,
   nm = (HildonDesktopNotificationManager *) 
 	  gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (desktop->priv->nm));
 
+  hildon_desktop_notification_manager_call_action (nm, ninfo->id, "default");
   hildon_desktop_notification_manager_close_notification (nm, ninfo->id, NULL);
   
   g_free (ninfo);

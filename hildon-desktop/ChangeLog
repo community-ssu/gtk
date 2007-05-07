@@ -1,5 +1,10 @@
 2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-desktop.c: call default action when system note dialog gets
+	the response event.
+
+2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-desktop.c, libhildondesktop/hildon-desktop-notification-manager.[ch], 
 	libhildondesktop/notification-manager.xml: support for setting the
 	button label on system.note.dialog to cover the open "closeable"
