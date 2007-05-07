@@ -1,3 +1,16 @@
+2007-05-07  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu-item.[ch]:
+	- Renamed some methods
+	- Added leave notify event handler to unselect itself
+	* src/hd-switcher-menu.c:
+	- Implemented blinking notifications.
+	- Fixed theme of icon.
+	- Fixed first selected item. Misses stack_changed to track selected
+	items.
+	* libhildondesktop/hildon-desktop-popup-window.[ch]:
+	- Added "popdown-window" signal
+
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-toggle-button.[ch]:

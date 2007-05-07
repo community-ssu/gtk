@@ -66,6 +66,7 @@ struct _HildonDesktopPopupWindowClass
   /* */	
 
   void (*popup_window) (HildonDesktopPopupWindow *window);
+  void (*popdown_window) (HildonDesktopPopupWindow *window);
 };
 
 GType 

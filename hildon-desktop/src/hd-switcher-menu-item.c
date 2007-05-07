@@ -264,7 +264,7 @@ hd_switcher_menu_item_icon_animation (GtkWidget *icon,
   else
   {
     pixbuf_anim = gtk_image_get_animation (GTK_IMAGE (icon));
-      
+    g_debug ("Turning animation off");      
     /* grab static image from menu item and reset */
     pixbuf = gdk_pixbuf_animation_get_static_image (pixbuf_anim);
 
@@ -423,7 +423,7 @@ hd_switcher_menu_item_constructor (GType                  type,
       gtk_image_set_from_pixbuf 
         (GTK_IMAGE (priv->icon), priv->notification_icon);
 
-    g_debug ("Id: %d Summary of notification: %s", priv->notification_id, priv->notification_summary);
+    g_debug ("pixbuf: %p Id: %d Summary of notification: %s", priv->notification_icon, priv->notification_id, priv->notification_summary);
     
     gtk_label_set_text (GTK_LABEL (priv->label), 
 		        priv->notification_summary); /* TODO: Insert timestamp */
@@ -569,7 +569,7 @@ hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
 	 menuitem->priv->notification_id,
 	 &error);
 
-      if (!error)
+      if (error)
       {
         g_warning ("We cannot close the notification!?!?!");
 	g_error_free (error);
@@ -621,6 +621,14 @@ hd_switcher_menu_item_button_press_event (GtkWidget      *widget,
   return FALSE;
 }
 
+static gboolean 
+hd_switcher_menu_item_leave_notify (GtkWidget        *widget,
+				    GdkEventCrossing *event)
+{
+  gtk_item_deselect (GTK_ITEM (widget));
+	
+  return TRUE;
+}
 
 static void
 hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
@@ -638,6 +646,8 @@ hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
   widget_class->size_request = hd_switcher_menu_item_size_request;
   widget_class->button_press_event = hd_switcher_menu_item_button_press_event;
   widget_class->button_release_event = hd_switcher_menu_item_button_release_event;
+
+  widget_class->leave_notify_event = hd_switcher_menu_item_leave_notify;
   
   menuitem_class->activate = hd_switcher_menu_item_activate;
 
@@ -694,7 +704,7 @@ hd_switcher_menu_item_class_init (HDSwitcherMenuItemClass *klass)
 							(G_PARAM_CONSTRUCT | G_PARAM_READWRITE))); 
  
   g_object_class_install_property (gobject_class,
-		  		   MENU_PROP_NOT_BODY,
+		  		   MENU_PROP_NOT_ICON,
 				   g_param_spec_object ("notification-icon",
 					   		"Icon notification",
 							"The icon of the notification",
@@ -830,16 +840,18 @@ hd_switcher_menu_item_get_entry_info (HDSwitcherMenuItem *menuitem)
 }
 
 void
-hd_switcher_menu_item_set_is_blinking (HDSwitcherMenuItem *menuitem,
+hd_switcher_menu_item_set_blinking (HDSwitcherMenuItem *menuitem,
 				  gboolean       is_blinking)
 {
   g_return_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem));
 
   hd_switcher_menu_item_icon_animation (menuitem->priv->icon, is_blinking);
+
+  menuitem->priv->is_blinking = is_blinking;
 }
 
 gboolean
-hd_switcher_menu_item_get_is_blinking (HDSwitcherMenuItem *menuitem)
+hd_switcher_menu_item_is_blinking (HDSwitcherMenuItem *menuitem)
 {
   g_return_val_if_fail (HD_IS_SWITCHER_MENU_ITEM (menuitem), FALSE);
 

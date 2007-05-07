@@ -44,6 +44,7 @@ enum
 enum
 {
   SIGNAL_POPUP_SHOW,
+  SIGNAL_POPUP_CLOSE,
   POPUP_N_SIGNALS
 };
 
@@ -154,6 +155,15 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_cla
                       NULL, NULL,
                       g_cclosure_marshal_VOID__VOID,
                       G_TYPE_NONE, 0);
+ 
+  signals[SIGNAL_POPUP_SHOW] =
+        g_signal_new ("popdown-window",
+                      G_OBJECT_CLASS_TYPE (object_class),
+                      G_SIGNAL_RUN_LAST,
+                      G_STRUCT_OFFSET (HildonDesktopPopupWindowClass,popdown_window),
+                      NULL, NULL,
+                      g_cclosure_marshal_VOID__VOID,
+                      G_TYPE_NONE, 0); 
 
   g_object_class_install_property (object_class,
                                    PROP_POPUP_N_PANES,
@@ -967,6 +977,8 @@ hildon_desktop_popup_window_popdown (HildonDesktopPopupWindow *popup)
 
   for (i=0; i < popup->priv->n_extra_panes; i++)
     gtk_grab_remove (popup->priv->extra_panes[i]);	  
+
+  g_signal_emit_by_name (popup, "popdown-window");
 }
 
 void 

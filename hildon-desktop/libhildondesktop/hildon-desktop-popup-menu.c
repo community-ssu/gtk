@@ -262,6 +262,14 @@ hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
   GList *menu_items = NULL, *l;
   gint w,h,x,y;
 
+  gtk_widget_get_pointer (GTK_WIDGET (widget), &x, &y);
+
+  w = widget->allocation.width;
+  h = widget->allocation.height;
+
+  if (!((x >= 0) && (x <= w) && (y >= 0) && (y <= h)))
+    return TRUE;    	 
+
   menu_items = 
     gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
