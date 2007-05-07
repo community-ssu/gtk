@@ -1,5 +1,12 @@
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-toggle-button.[ch]:
+	- added
+	- ToggleButton which implements its own painting, and supports
+	alpha in the pressed and focused states
+
+2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
+
 	* configure.ac: 0.0.12
 
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
