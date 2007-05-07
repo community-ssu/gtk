@@ -127,6 +127,7 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
 
   atom_check = XInternAtom (dpy, "_NET_SUPPORTING_WM_CHECK", False);
 
+  gdk_error_trap_push ();
   XGetWindowProperty (dpy, 
 		      GDK_WINDOW_XID (gdk_get_default_root_window ()),
 		      atom_check,
@@ -139,16 +140,21 @@ hildon_desktop_get_current_wm_name (HildonDesktopPanelWindowDialog *dialog)
   atom_utf8_string = XInternAtom (dpy, "UTF8_STRING", False);
   atom_wm_name     = XInternAtom (dpy, "_NET_WM_NAME", False);
 
+  gdk_error_trap_push ();
   result = XGetWindowProperty (dpy, *(support_xwin.w), atom_wm_name,
 			       0, 1000L,False, atom_utf8_string,
 			       &type, &format, &nitems,
 			       &bytes_after, &val);
+
+  if (gdk_error_trap_pop ())
+      return NULL;
+
   if (result != Success)
     return NULL;
 
   if (type != atom_utf8_string || format !=8 || nitems == 0)
   {
-    if (val) 
+    if (val)
       XFree (val);
     return NULL;
   }
@@ -217,7 +223,7 @@ hildon_desktop_panel_window_dialog_constructor (GType gtype,
 
   wm_name = hildon_desktop_get_current_wm_name (window);
 
-  if (g_str_equal (wm_name, "matchbox"))
+  if (wm_name && g_str_equal (wm_name, "matchbox"))
   {
     if (window->priv->old_titlebar)
     {
