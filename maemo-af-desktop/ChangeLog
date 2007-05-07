@@ -1,12 +1,15 @@
 2007-05-07  Johan Bilien <johan.bilien@nokia.com>
 
+	* configure.ac: 2.9.99.25
+
+2007-05-07  Johan Bilien <johan.bilien@nokia.com>
+
 	* hildon-status-bar/hildon-status-bar-main.[ch],
 	  hildon-navigator/hildon-navigator-panel.[ch]:
 	  do not use g_tmp_dir to get the log directory
 	  as it doesn't return /tmp
 	* maemo-af-desktop-main.c: Make sure /tmp/osso-appl-states
 	  is there
-
 
 2007-04-26  Johan Bilien <johan.bilien@nokia.com>
 
