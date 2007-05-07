@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.18) unstable; urgency=low
+
+  * Added hildon-fm1-compat.h header for legacy applications.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  7 May 2007 11:31:33 +0300
+
 libhildonfm (1:1.9.17) unstable; urgency=low
 
   * Fixes: NB#54390.

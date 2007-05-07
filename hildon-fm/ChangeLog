@@ -1,3 +1,13 @@
+2007-05-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.18
+	
+	* hildon-fm/hildon-fm1-compat.h: New.
+	* hildon-fm/hildon-fm1-compat.c: Move prototypes to
+	hildon-fm1-compat.h, include it.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES,
+	hildonincludeinst_DATA): Add it.
+
 2007-05-02  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.17
