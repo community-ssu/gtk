@@ -30,9 +30,17 @@
 #include <hildon/hildon-help.h>
 #endif
 
+#ifdef HAVE_X_COMPOSITE
+#include <X11/extensions/Xrender.h>
+#include <X11/extensions/Xcomposite.h>
+#endif
+
 #ifdef HAVE_LIBOSSO
 #include <libosso.h>
 #endif
+
+
+#include <libhildonwm/hd-wm.h>
 
 #include <libhildondesktop/hildon-home-area.h>
 #include <libhildondesktop/hildon-home-titlebar.h>
@@ -193,6 +201,12 @@ static gboolean
 hd_home_window_map_event (GtkWidget    *widget,
                           GdkEventAny  *event);
 
+static void
+hd_home_window_realize (GtkWidget *widget);
+
+static void
+hd_home_window_unrealize (GtkWidget *widget);
+
 static gboolean
 hd_home_window_key_press_event (GtkWidget *widget,
                                 GdkEventKey *event);
@@ -236,6 +250,8 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   widget_class->map_event = hd_home_window_map_event;
   widget_class->style_set = hd_home_window_style_set;
   widget_class->key_press_event = hd_home_window_key_press_event;
+  widget_class->realize   = hd_home_window_realize;
+  widget_class->unrealize = hd_home_window_unrealize;
 
   hhwindow_class->layout_mode_accept = hd_home_window_layout_mode_accept;
   hhwindow_class->layout_mode_cancel = hd_home_window_layout_mode_cancel;
@@ -531,9 +547,9 @@ background_apply_and_save_callback (HDHomeBackground *background,
                            HD_DESKTOP_USER_PATH,
                            HD_HOME_BACKGROUND_CONF_FILE,
                            NULL);
-  
+
   priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  
+
   hd_home_background_save (priv->background,
                            conffile,
                            &save_error);
@@ -548,6 +564,44 @@ background_apply_and_save_callback (HDHomeBackground *background,
 
   g_free (conffile);
 
+}
+
+static void
+hd_home_window_realize (GtkWidget *widget)
+{
+  HDWM *wm;
+
+  GTK_WIDGET_CLASS (hd_home_window_parent_class)->realize (widget);
+
+#ifdef HAVE_X_COMPOSITE
+  XCompositeRedirectWindow (GDK_DISPLAY (),
+                            GDK_WINDOW_XID (widget->window),
+                            CompositeRedirectAutomatic);
+#endif
+
+  wm = hd_wm_get_singleton ();
+  g_object_set (wm,
+                "desktop-window", (gint)GDK_WINDOW_XID (widget->window),
+                NULL);
+
+}
+
+static void
+hd_home_window_unrealize (GtkWidget *widget)
+{
+  HDWM *wm;
+#ifdef HAVE_X_COMPOSITE
+  XCompositeUnredirectWindow (GDK_DISPLAY (),
+                              GDK_WINDOW_XID (widget->window),
+                              CompositeRedirectAutomatic);
+#endif
+
+  wm = hd_wm_get_singleton ();
+  g_object_set (wm,
+                "desktop-window", (gint)None,
+                NULL);
+
+  GTK_WIDGET_CLASS (hd_home_window_parent_class)->unrealize (widget);
 }
 
 static gboolean

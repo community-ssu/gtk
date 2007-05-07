@@ -128,7 +128,8 @@ enum
 enum
 {
   PROP_0,
-  PROP_INIT_DBUS
+  PROP_INIT_DBUS,
+  PROP_DESKTOP_WINDOW
 };
 
 static gint hdwm_signals[HDWM_SIGNALS];
@@ -218,6 +219,8 @@ struct _HDWMPrivate   /* Our main struct */
 
 
   GtkWidget              *all_menu;
+
+  Window                  desktop_window;
 
   /* stack for the launch banner messages. 
    * Needed to work round gtk(hindon)_infoprint issues.
@@ -1029,19 +1032,33 @@ hd_wm_class_init (HDWMClass *hdwm_class)
                                                         "Max width when horizontal",
 	                                                TRUE,
 							G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
+
+  g_object_class_install_property (object_class,
+                                   PROP_DESKTOP_WINDOW,
+                                   g_param_spec_int("desktop-window",
+                                                    "desktop window",
+                                                    "Current desktop window",
+	                                            0,
+                                                    G_MAXINT,
+                                                    0,
+						    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
 
 static void 
 hd_wm_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
-  HDWM *hdwm = HD_WM (object);	
-	
+  HDWM *hdwm = HD_WM (object);
+
   switch (prop_id)
   {
     case PROP_INIT_DBUS:
       g_value_set_boolean (value, hdwm->priv->init_dbus);
       break;
-      
+
+    case PROP_DESKTOP_WINDOW:
+      g_value_set_int (value, (int)hdwm->priv->desktop_window);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;
@@ -1059,6 +1076,10 @@ hd_wm_set_property (GObject *object, guint prop_id, const GValue *value, GParamS
       hdwm->priv->init_dbus = g_value_get_boolean (value);
       break;      
 	  
+    case PROP_DESKTOP_WINDOW:
+      hdwm->priv->desktop_window = (Window)g_value_get_int (value);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
       break;

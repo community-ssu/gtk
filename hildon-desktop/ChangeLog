@@ -1,3 +1,18 @@
+2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildonwm/hd-wm.[ch]:
+	- added desktop-window property. It is currently set manually.
+	* src/hd-home-window.c:
+	- added _realize / _unrealize to composite-redirect the window
+	and update the "desktop-window" WM property
+	* src/hd-panel-window.c:
+	- tack the desktop-window property and create a Damage and Picture
+	when the desktop window changes
+	- added _expose which draws the desktop window as background
+	* src/hn-others-button.[ch], src/hn-app-button.[ch]:
+	- use a HildonToggleButton instead of a GtkToggleButton to
+	draw the focus and pressed mark with alpha
+
 2007-05-07  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu-item.[ch]:

@@ -44,11 +44,16 @@ typedef struct _HDPanelWindowPrivate HDPanelWindowPrivate;
 struct _HDPanelWindow 
 {
   HildonDesktopPanelWindow parent;
+
+  HDPanelWindowPrivate    *priv;
 };
 
 struct _HDPanelWindowClass
 {
   HildonDesktopPanelWindowClass parent_class;
+
+  gboolean                      composite;
+  gint                          xdamage_event_base;
 };
 
 GType  hd_panel_window_get_type  (void);

@@ -52,7 +52,7 @@
 #define ANIM_DURATION 5000 	/* 5 Secs for blinking icons */
 #define ANIM_FPS      2
 
-#define AS_MENU_BUTTON_NAME "hildon-navigator-small-button5"
+#define AS_MENU_BUTTON_NAME "hildon-navigator-small-button4"
 
 /* Hardcoded pixel perfecting values */
 #define AS_BUTTON_BORDER_WIDTH  0

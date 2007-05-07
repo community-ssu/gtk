@@ -101,7 +101,7 @@ static void hd_home_background_get_property (GObject       *object,
 static void
 hd_home_background_init (HDHomeBackground *background)
 {
-  background->priv = 
+  background->priv =
       G_TYPE_INSTANCE_GET_PRIVATE ((background),
                                    HD_TYPE_HOME_BACKGROUND,
                                    HDHomeBackgroundPrivate);
@@ -117,7 +117,7 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
   object_class->finalize = hd_home_background_finalize;
   object_class->set_property = hd_home_background_set_property;
   object_class->get_property = hd_home_background_get_property;
-  
+
   pspec = g_param_spec_string ("filename",
                                "filename",
                                "Image filename",
@@ -126,7 +126,7 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_FILENAME,
                                    pspec);
-  
+
   pspec = g_param_spec_string ("north-border",
                                "North border",
                                "North border image filename",
@@ -135,7 +135,7 @@ hd_home_background_class_init (HDHomeBackgroundClass *klass)
   g_object_class_install_property (object_class,
                                    PROP_NORTH_BORDER,
                                    pspec);
-  
+
   pspec = g_param_spec_string ("south-border",
                                "South border",
                                "South border image filename",

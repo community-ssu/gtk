@@ -55,6 +55,7 @@
 #include <libhildondesktop/libhildonmenu.h>
 #include <libhildondesktop/hildon-desktop-panel-window.h>
 #include <libhildondesktop/hildon-thumb-menu-item.h>
+#include <libhildondesktop/hildon-desktop-toggle-button.h>
 #include <libhildonwm/hd-wm.h>
 
 #include "hn-others-button.h"
@@ -163,7 +164,7 @@ hn_others_button_init (HNOthersButton *button)
   gtk_widget_set_extension_events (GTK_WIDGET (button),
                                    GDK_EXTENSION_EVENTS_ALL);
 
-  priv->button = gtk_toggle_button_new ();
+  priv->button = hildon_desktop_toggle_button_new ();
 
   icon = gtk_image_new_from_pixbuf (get_icon (OTHERS_MENU_ICON_NAME,
 				 	      OTHERS_MENU_ICON_SIZE));

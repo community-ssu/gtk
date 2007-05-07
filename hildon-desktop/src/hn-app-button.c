@@ -43,7 +43,6 @@
 #include <gtk/gtkcontainer.h>
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkcheckbutton.h>
-#include <gtk/gtktogglebutton.h>
 #include <gtk/gtkradiobutton.h>
 #include <gtk/gtkmenu.h>
 #include <gtk/gtkmenuitem.h>
@@ -141,7 +140,7 @@ struct _HNAppButtonPrivate
 };
 
 
-G_DEFINE_TYPE (HNAppButton, hn_app_button, GTK_TYPE_TOGGLE_BUTTON);
+G_DEFINE_TYPE (HNAppButton, hn_app_button, HILDON_DESKTOP_TYPE_TOGGLE_BUTTON);
 
 
 #if 0

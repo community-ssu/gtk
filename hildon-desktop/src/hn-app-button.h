@@ -33,7 +33,7 @@
 #define HN_APP_BUTTON_H
 
 #include <gdk-pixbuf/gdk-pixbuf.h>
-#include <gtk/gtktogglebutton.h>
+#include <libhildondesktop/hildon-desktop-toggle-button.h>
 
 #include <libhildonwm/hd-wm.h>
 
@@ -55,7 +55,7 @@ typedef struct _HNAppButtonClass   HNAppButtonClass;
 
 struct _HNAppButton
 {
-  GtkToggleButton parent_instance;
+  HildonDesktopToggleButton parent_instance;
 
   GSList *group;
 
@@ -64,7 +64,7 @@ struct _HNAppButton
 
 struct _HNAppButtonClass
 {
-  GtkToggleButtonClass parent_class;
+  HildonDesktopToggleButtonClass parent_class;
 
   GdkPixbuf **groupped_emblems;
   GdkPixbuf  *bkilled_emblem;
