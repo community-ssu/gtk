@@ -21,7 +21,7 @@
  *
  */
 
-#include "osso-thumbnail-factory.h"
+#include "osso-thumbnail-factory-private.h"
 #include "thumbs-private.h"
 
 #include <stdio.h>

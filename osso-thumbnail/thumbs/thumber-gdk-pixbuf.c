@@ -22,8 +22,8 @@
   */
 
 #include "config.h"
-#include "osso-thumbnail-factory.h"
-#include "osso-thumber-common.h"
+#include "osso-thumbnail-factory-private.h"
+#include "osso-thumber-common-private.h"
 
 #include <osso-mem.h>
 #include <osso-log.h>
