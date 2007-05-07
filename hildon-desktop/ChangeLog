@@ -1,3 +1,8 @@
+2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.c: Reverted accidental change,
+	background should be set after background-dir
+
 2007-05-07  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hd-desktop.c: call default action when system note dialog gets

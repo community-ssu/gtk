@@ -1313,8 +1313,8 @@ hd_home_window_set_background_activate (HDHomeWindow *window)
 #ifdef HAVE_LIBOSSO
                          "osso-context", priv->osso_context,
 #endif
-                         "background", priv->background,
                          "background-dir", HD_DESKTOP_BACKGROUNDS_PATH,
+                         "background", priv->background,
                          NULL);
 
   g_signal_connect_swapped (dialog, "response",
