@@ -1,5 +1,9 @@
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
 
+	* configure.ac: 0.0.12
+
+2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.c: Reverted accidental change,
 	background should be set after background-dir
 
