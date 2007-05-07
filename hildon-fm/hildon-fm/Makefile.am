@@ -51,19 +51,20 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-system-upnp.c		\
 	hildon-file-system-obex.h		\
 	hildon-file-system-obex.c		\
+	hildon-fm1-compat.h			\
 	hildon-fm1-compat.c			\
 	$(hildonfm_built_headers)		\
 	$(hildonfm_built_cfiles)
 
 hildonincludeinstdir=$(includedir)/hildon-fm-2/hildon
-hildonincludeinst_DATA = \
-	hildon-file-selection.h \
-	hildon-file-system-model.h \
-	hildon-file-chooser-dialog.h \
-	hildon-file-system-common.h \
-	hildon-file-system-info.h \
-	hildon-file-details-dialog.h
-
+hildonincludeinst_DATA =			\
+	hildon-file-selection.h			\
+	hildon-file-system-model.h		\
+	hildon-file-chooser-dialog.h		\
+	hildon-file-system-common.h		\
+	hildon-file-system-info.h		\
+	hildon-file-details-dialog.h		\
+	hildon-fm1-compat.h
 
 headers_to_scan_for_enums = $(hildonincludeinst_DATA)
  

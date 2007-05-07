@@ -21,23 +21,8 @@
  *
  */
 
-/* This is a thin compatibility layer on top of libhildonfm.so.2 that
-   gives you (more or less) the ABI of the old libhildonfm.so.1.  This
-   works well enough since we only removed functions in
-   libhildonfm.so.2 but didn't change existing functions in an
-   incompatible way.
-
-   However, this hack is only a migration helper.  It will not be
-   officially supported.
-*/
-
-#include "hildon-file-selection.h"
+#include "hildon-fm1-compat.h"
 #include "hildon-file-common-private.h"
-
-gboolean
-hildon_file_selection_set_current_folder (HildonFileSelection *self,
-					  const GtkFilePath *folder,
-					  GError **error);
 
 gboolean
 hildon_file_selection_set_current_folder (HildonFileSelection *self,
@@ -48,18 +33,10 @@ hildon_file_selection_set_current_folder (HildonFileSelection *self,
 }
 
 GtkFilePath *
-hildon_file_selection_get_current_folder (HildonFileSelection *self);
-
-GtkFilePath *
 hildon_file_selection_get_current_folder (HildonFileSelection *self)
 {
   return _hildon_file_selection_get_current_folder_path (self);
 }
-
-gboolean
-hildon_file_selection_select_path (HildonFileSelection *self,
-				   const GtkFilePath *path,
-				   GError **error);
 
 gboolean
 hildon_file_selection_select_path (HildonFileSelection *self,
@@ -69,20 +46,12 @@ hildon_file_selection_select_path (HildonFileSelection *self,
   return _hildon_file_selection_select_path (self, path, error);
 }
 
-
-void
-hildon_file_selection_unselect_path (HildonFileSelection *self,
-				     const GtkFilePath *path);
-
 void
 hildon_file_selection_unselect_path (HildonFileSelection *self,
 				     const GtkFilePath *path)
 {
   return _hildon_file_selection_unselect_path (self, path);
 }
-
-GSList *
-hildon_file_selection_get_selected_paths (HildonFileSelection *self);
 
 GSList *
 hildon_file_selection_get_selected_paths (HildonFileSelection *self)
