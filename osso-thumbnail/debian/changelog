@@ -1,3 +1,9 @@
+osso-thumbnail (0.9) unstable; urgency=low
+
+  * Made -dev headers unusable to force people towards libhildon-thumbnail.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon,  7 May 2007 14:42:06 +0300
+
 osso-thumbnail (0.8-2) unstable; urgency=low
 
   * Only put debugging symbols into -dbg package. 

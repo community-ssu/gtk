@@ -1,3 +1,13 @@
+2007-05-07  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 0.9
+	
+	* thumbs/osso-thumber-common.h,
+	thumbs/osso-thumber-common-private.h: Renamed former to latter and
+	use latter in our own code.  Make former unusable for public use.
+	* thumbs/osso-thumbnail-factory.h
+	thumbs/osso-thumbnail-factory-private.h: Likewise.
+
 2006-10-13  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 0.8-1.
