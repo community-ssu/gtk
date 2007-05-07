@@ -658,170 +658,7 @@ hd_desktop_watch_dir (gchar                 *plugin_dir,
 }
 
 #if 0
-#ifdef HAVE_LIBOSSO
-static gint 
-hildon_desktop_rpc_cb (const gchar *interface,
-                       const gchar *method,
-                       GArray *arguments,
-                       gpointer data,
-                       osso_rpc_t *retval)
-{
-  HDDesktop *desktop;
-  osso_rpc_t *val[5];
-  gint i;
-
-  if (!interface || !method || !arguments || !data) 
-  {
-    return OSSO_ERROR;
-  }
-
-  desktop = (HDDesktop *) data;
-
-  for (i = 0; i < arguments->len; ++i) 
-  {
-    val[i] = &g_array_index (arguments, osso_rpc_t, i);
-  }
-
-  if (g_str_equal("system_note_infoprint", method))
-  {
-    if (arguments->len < 1 || val[0]->type != DBUS_TYPE_STRING ) 
-    {
-      if (arguments->len < 1) 
-      {
-        retval->value.s = g_strdup ("Not enough args to infoprint");
-      } 
-      else 
-      {
-        g_sprintf (retval->value.s,
-                   "Wrong type param to infoprint (%d)", val[0]->type);
-      }
-
-      g_warning (retval->value.s);
-
-      return OSSO_ERROR;
-    }
-
-    hildon_banner_show_information( NULL, NULL, val[0]->value.s);
-  }
-  else if (g_str_equal ("system_note_dialog", method))
-  {
-    if (arguments->len < 2 ||
-        val[0]->type != DBUS_TYPE_STRING ||
-        val[1]->type != DBUS_TYPE_INT32 ) 
-    {
-      if (arguments->len < 2) 
-      {
-        retval->value.s = "Not enough args to dialog";
-      } 
-      else 
-      {
-        retval->value.s = "Wrong type of arguments to dialog";
-      }
-
-      g_warning (retval->value.s);
-
-      return OSSO_ERROR;
-    }
-
-    hildon_status_bar_lib_prepare_dialog (val[1]->value.i, 
-                                          NULL,
-                                          val[0]->value.s,  
-                                          0, 
-                                          NULL, 
-                                          NULL);
-  }
-  else if (g_str_equal ("open_closeable_system_dialog", method))
-  {
-    gint id;
-    const gchar *btext = NULL;
-
-    if (arguments->len < 4 ||
-        val[0]->type != DBUS_TYPE_STRING ||
-        val[1]->type != DBUS_TYPE_INT32 ||
-        val[2]->type != DBUS_TYPE_STRING ||
-        val[3]->type != DBUS_TYPE_BOOLEAN)
-    {
-      retval->type = DBUS_TYPE_STRING;
-
-      if (arguments->len < 4) 
-      {
-        retval->value.s = g_strdup ("Not enough args to dialog");
-      } 
-      else 
-      {
-        retval->value.s = g_strdup ("Wrong type of arguments to dialog");
-      }
-
-      g_warning (retval->value.s);
-
-      return OSSO_ERROR;
-    }
-
-    if ((val[2]->value.s)[0] != '\0')
-    {
-      btext = val[2]->value.s;
-    }
-
-    id = hildon_status_bar_lib_open_closeable_dialog (val[1]->value.i,
-                                                      val[0]->value.s, 
-                                                      btext, 
-                                                      val[0]->value.b);
-
-    retval->type = DBUS_TYPE_INT32;
-    retval->value.i = id;
-  }
-  else if (g_str_equal ("close_closeable_system_dialog", method))
-  {
-    /* The id of the dialog is given as argument */
-    if (arguments->len < 1 || val[0]->type != DBUS_TYPE_INT32)
-    {
-      retval->type = DBUS_TYPE_STRING;
-
-      if (arguments->len < 1) 
-      {
-        retval->value.s = g_strdup ("Not enough args to dialog");
-      } 
-      else 
-      {
-        retval->value.s = g_strdup ("Argument has invalid type");
-      }
-
-      g_warning (retval->value.s);
-
-      return OSSO_ERROR;
-    }
-
-    hildon_status_bar_lib_close_closeable_dialog (val[0]->value.i);
-  }
-  else if (g_str_equal( "get_system_dialog_response", method))
-  {
-    gint response = -1;
-
-    /* The id of the dialog is given as argument */
-    if (arguments->len < 1 || val[0]->type != DBUS_TYPE_INT32)
-    {
-      retval->type = DBUS_TYPE_STRING;
-
-      if (arguments->len < 1) 
-      {
-        retval->value.s = g_strdup ("Not enough args to dialog");
-      } 
-      else 
-      {
-        retval->value.s = g_strdup ("Argument has invalid type");
-      }
-
-      g_warning (retval->value.s);
-
-      return OSSO_ERROR;
-    }
-
-    response = hildon_status_bar_lib_get_dialog_response (val[0]->value.i);
-
-    retval->type = DBUS_TYPE_INT32;
-    retval->value.i = response;
-  }
-  else if (g_str_equal ("delayed_infobanner", method))
+  if (g_str_equal ("delayed_infobanner", method))
   {
       gint parent_window_id = 0;
 
@@ -891,61 +728,6 @@ hildon_desktop_rpc_cb (const gchar *interface,
     return OSSO_OK;
 
   }
-  else if( g_str_equal( "statusbar_insensitive", method ))
-  {
-    sb_is_sensitive = FALSE;
-
-    gtk_container_foreach (GTK_CONTAINER (panel->fixed),
-                           (GtkCallback) (statusbar_insensitive_cb),
-                           NULL);
-
-    gtk_container_foreach (GTK_CONTAINER (panel->arrow_button),
-                           (GtkCallback) (statusbar_insensitive_cb),
-                           NULL);
-
-    return OSSO_OK;
-  }
-  else if (g_str_equal("statusbar_sensitive", method))
-  {
-    sb_is_sensitive = TRUE;
-
-    gtk_container_foreach (GTK_CONTAINER (panel->fixed),
-                           (GtkCallback) (statusbar_sensitive_cb),
-                           NULL);
-
-    gtk_container_foreach (GTK_CONTAINER (panel->arrow_button),
-                           (GtkCallback) (statusbar_sensitive_cb),
-                           NULL);
-
-    return OSSO_OK;
-  }
-  else if (g_str_equal("statusbar_get_conditional", method))
-  {
-    int i;
-
-    for (i = 0; i < HSB_MAX_NO_OF_ITEMS; i++) /* Can we break earlier? */
-    {
-       if (panel->items[i])
-       {
-         statusbar_send_signal (osso_get_dbus_connection (panel->osso),
-                                HILDON_STATUS_BAR_ITEM (panel->items[i]),
-                                hildon_status_bar_item_get_conditional
-                                (HILDON_STATUS_BAR_ITEM (panel->items[i])));
-       }
-    }
-
-    return OSSO_OK;
-  }
-  else
-  {
-    g_warning ("Unknown SB RPC method");
-
-    return OSSO_ERROR;
-  }
-
-  return OSSO_OK;
-}
-#endif
 #endif
 
 static void 
@@ -1389,14 +1171,29 @@ hd_desktop_system_notification_dialog_response (GtkWidget *widget,
 static GtkWidget *
 hd_desktop_create_note_dialog (const gchar *summary, 
 			       const gchar *body, 
-			       const gchar *icon_name)
+			       const gchar *icon_name,
+			       gchar **actions)
 {
   GtkWidget *note;
-
+  gint i;
+  
   note = hildon_note_new_information_with_icon_name (NULL, 
 		  				     body, 
 						     icon_name);
 
+  /* If there's a default action, get the label and set
+   * the button text */
+  for (i = 0; actions && actions[i] != NULL; i += 2)
+  {
+    gchar *label = actions[i + 1];
+    
+    if (g_str_equal (actions[i], "default"))
+    {
+      hildon_note_set_button_text (HILDON_NOTE (note), label);
+      break;
+    }
+  }
+  
   return note;
 }
 
@@ -1428,6 +1225,7 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
   GtkWidget *notification = NULL;
   GHashTable *hints;
   GValue *hint;
+  gchar **actions;
   const gchar *hint_s;
   gchar *summary;
   gchar *body;
@@ -1444,6 +1242,7 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
 		      HD_NM_COL_SUMMARY, &summary,
 		      HD_NM_COL_BODY, &body,
 		      HD_NM_COL_ICON_NAME, &icon_name,
+		      HD_NM_COL_ACTIONS, &actions,
 		      HD_NM_COL_HINTS, &hints,
 		      -1);
 
@@ -1464,7 +1263,8 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
 
     notification = hd_desktop_create_note_dialog (summary, 
 		    				  body, 
-						  icon_name);
+						  icon_name,
+						  actions);
 
     ninfo = g_new0 (HDDesktopNotificationInfo, 1); 
 

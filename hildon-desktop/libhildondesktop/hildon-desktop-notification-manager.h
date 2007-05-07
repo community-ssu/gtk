@@ -100,6 +100,7 @@ gboolean   hildon_desktop_notification_manager_system_note_infoprint  (HildonDes
 gboolean   hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificationManager *nm,
 								   const gchar           *message,
 								   guint                  type,
+								   const gchar           *label,
 								   DBusGMethodInvocation *context);
 
 gboolean   hildon_desktop_notification_manager_get_capabilities   (HildonDesktopNotificationManager *nm, 

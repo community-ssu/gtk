@@ -44,6 +44,7 @@
 
       <arg type="s" name="message" direction="in" />
       <arg type="u" name="type" direction="in" />
+      <arg type="s" name="label" direction="in" />
       <arg type="u" name="return_id" direction="out" />
     </method>
     

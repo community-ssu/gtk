@@ -455,19 +455,19 @@ gboolean
 hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificationManager *nm,
 						        const gchar *message,
 						        guint type,
+							const gchar *label,
                                                         DBusGMethodInvocation *context)
 {
   GHashTable *hints;
   GValue *hint;
-
+  gchar **actions;
+  
   static const gchar *icon[4] = {
       "qgn_note_gene_syswarning", /* OSSO_GN_WARNING */
       "qgn_note_gene_syserror",   /* OSSO_GN_ERROR */
       "qgn_note_info",            /* OSSO_GN_NOTICE */
       "qgn_note_gene_wait"        /* OSSO_GN_WAIT */
   };
-
-  g_debug ("ALOW ALOW ALOW ALOW");
 
   hints = g_hash_table_new_full (g_str_hash, 
         		         g_str_equal,
@@ -480,18 +480,39 @@ hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificatio
 
   g_hash_table_insert (hints, "category", hint);
 
+  if (!g_str_equal (label, ""))
+  {
+    GArray *actions_arr;
+    gchar *action_id, *action_label;
+
+    actions_arr = g_array_sized_new (TRUE, FALSE, sizeof (gchar *), 2);
+
+    action_id = g_strdup ("default");
+    action_label = g_strdup (label);
+
+    g_array_append_val (actions_arr, action_id);
+    g_array_append_val (actions_arr, action_label);
+
+    actions = (gchar **) g_array_free (actions_arr, FALSE);
+  }
+  else
+  {
+    actions = NULL;
+  }
+
   hildon_desktop_notification_manager_notify (nm,
 					      "hildon-desktop",
 		  			      0,
 					      icon[type],
 		  			      "System Note Dialog",
 					      message,
-					      NULL,
+					      actions,
 					      hints,
 					      3000,
 					      context);
 
   g_hash_table_destroy (hints);
+  g_strfreev (actions);
   
   return TRUE;
 }
