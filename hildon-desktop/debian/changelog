@@ -1,4 +1,10 @@
-hildon-desktop (0.0.11-1) feisty; urgency=low
+hildon-desktop (0.0.11-2) sardine; urgency=low
+
+  * debian/conffiles: removed home-background.conf
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Mon,  7 May 2007 15:25:34 +0300
+
+hildon-desktop (0.0.11-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-panel-window-dialog.c:
   - add gdk_error_trap_ around XGetWindowProperty
@@ -130,7 +136,7 @@ hildon-desktop (0.0.11-1) feisty; urgency=low
 
  -- Johan Bilien <johan.bilien@nokia.com>  Mon,  7 May 2007 14:49:38 +0300
 
-hildon-desktop (0.0.10-1) unstable; urgency=low
+hildon-desktop (0.0.10-1) sardine; urgency=low
 
   * src/hn-app-switcher.c, src/hd-home-window.c, src/hn-others-button.c,
   libhildondesktop/hildon-home-titlebar.c:
