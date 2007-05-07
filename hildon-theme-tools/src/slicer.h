@@ -43,3 +43,5 @@ gboolean                        check_if_pixbuf_needs_alpha (GdkPixbuf *pixbuf);
 
 GdkPixbuf*                      strip_alpha_from_pixbuf (GdkPixbuf *pixbuf);
 
+GdkPixbuf*                      extract_alpha_from_pixbuf (GdkPixbuf *pixbuf);
+

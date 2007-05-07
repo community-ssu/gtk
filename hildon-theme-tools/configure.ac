@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-tools, 0.3.0)
+AM_INIT_AUTOMAKE(hildon-theme-tools, 0.4.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST

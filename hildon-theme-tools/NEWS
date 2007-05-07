@@ -1,3 +1,6 @@
+[0.4.0 release]
+* Slicer supports now 'separate_alpha' keyword
+
 [0.3.0 release]
 * Fixing a tiny dep problem in debian package
 * New tool: hildon-theme-bootstrap
