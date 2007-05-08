@@ -1,3 +1,8 @@
+2007-05-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Added new graphics for home applets and moved the
+	existing ones around a bit, changed sizes also.
+
 2007-05-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildonapp.rc: Reverting the mistakengly commited margin changes.
