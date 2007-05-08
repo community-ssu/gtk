@@ -154,6 +154,22 @@ style "osso-mplayer4-button"
 
 widget "*.Mplayer4Button" style "osso-mplayer4-button"
 
+style "osso-mplayer5-button"
+{
+        xthickness = 22
+        ythickness = 4
+}
+
+widget "*.Mplayer5Button" style "osso-mplayer5-button"
+
+style "osso-mplayer6-button"
+{
+        xthickness = 22
+        ythickness = 4
+}
+
+widget "*.Mplayer6Button" style "osso-mplayer6-button"
+
 style "osso-mp-button-frame"
 {
   engine "sapwood"

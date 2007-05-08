@@ -1,3 +1,9 @@
+2007-05-08  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/hildonapp.rc: Reverting the mistakengly commited margin changes.
+
+	* rc/ossomediaplayer.rc: Mediaplayer stuff. Fixes NB#54750. 
+
 2007-04-20  Johan Bilien  <johan.bilien@nokia.com>
 
 	* rc/ossorssfeedreader.rc:
