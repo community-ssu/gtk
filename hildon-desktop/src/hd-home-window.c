@@ -82,6 +82,9 @@
 #define HD_HOME_WINDOW_STYLE_NORTH_BORDER   "HildonHomeTitleBar"
 #define HD_HOME_WINDOW_STYLE_WEST_BORDER    "HildonHomeLeftEdge"
 
+#define HH_AREA_CONFIGURATION_FILE        ".osso/hildon-desktop/home-layout.conf"
+#define HH_AREA_GLOBAL_CONFIGURATION_FILE "/etc/hildon-desktop/home-layout.conf"
+
 #include "hd-home-window.h"
 
 #define HD_HOME_WINDOW_GET_PRIVATE(obj) \
@@ -109,6 +112,11 @@ struct _HDHomeWindowPrivate
 
   HDHomeBackground *background;
   HDHomeBackground *previous_background;
+
+  gboolean          is_inactive;
+
+  gboolean          selecting_applets;
+  guint             save_area_timeout;
 };
 
 /* Properties */
@@ -169,6 +177,9 @@ static void
 hd_home_window_layout_insensitive_press_cb (HDHomeWindow *window);
 #endif
 
+static void
+hd_home_window_layout_mode_activate (HDHomeWindow *window);
+
 static GtkWidget *
 hd_home_window_build_main_menu (HDHomeWindow *window);
 
@@ -179,10 +190,16 @@ static void
 hd_home_window_ensure_menu_status (HDHomeWindow *window);
 
 static void
-hd_home_window_layout_mode_accept (HildonHomeWindow *window);
+hd_home_window_cancel_layout (HDHomeWindow *window);
 
 static void
-hd_home_window_layout_mode_cancel (HildonHomeWindow *window);
+hd_home_window_accept_layout (HDHomeWindow *window);
+
+static void
+hd_home_window_layout_mode_accept (HDHomeWindow *window);
+
+static void
+hd_home_window_layout_mode_cancel (HDHomeWindow *window);
 
 static void
 hd_home_window_snap_toggled (HDHomeWindow *window, GtkCheckMenuItem *item);
@@ -225,6 +242,35 @@ hd_home_window_show_information_banner (HDHomeWindow *window,
                                         const gchar *text);
 #endif
 
+static void
+hd_home_window_background (HDHomeWindow        *window,
+                           gboolean             background);
+
+static void
+hd_home_window_system_inactivity (HDHomeWindow     *window,
+                                  gboolean              is_inactive);
+
+static void
+hd_home_window_area_add (HDHomeWindow *window);
+
+static void
+hd_home_window_area_remove (HDHomeWindow *window);
+
+static void
+hd_home_window_area_changed (HDHomeWindow *window);
+
+static void
+hd_home_window_layout_mode_started (HDHomeWindow *window);
+
+static void
+hd_home_window_layout_mode_ended (HDHomeWindow *window);
+
+static void
+hd_home_window_select_applets (HDHomeWindow *window);
+
+static void
+hd_home_window_load_area_layout (HDHomeWindow *window);
+
 #if 0
 static void
 hd_home_window_adjust_alpha_activate (HDHomeWindow *window);
@@ -253,8 +299,11 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   widget_class->realize   = hd_home_window_realize;
   widget_class->unrealize = hd_home_window_unrealize;
 
-  hhwindow_class->layout_mode_accept = hd_home_window_layout_mode_accept;
-  hhwindow_class->layout_mode_cancel = hd_home_window_layout_mode_cancel;
+  window_class->layout_mode_accept = hd_home_window_layout_mode_accept;
+  window_class->layout_mode_cancel = hd_home_window_layout_mode_cancel;
+
+  window_class->background         = hd_home_window_background;
+  window_class->system_inactivity  = hd_home_window_system_inactivity;
 
   pspec = g_param_spec_pointer ("osso-context",
                                 "Osso Context",
@@ -272,7 +321,7 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   g_object_class_install_property (object_class,
                                    PROP_BACKGROUND,
                                    pspec);
-  
+
   pspec = g_param_spec_boolean ("layout-mode-sucks",
                                 "Layout mode sucks",
                                 "Whether or not the layout mode sucks",
@@ -281,6 +330,73 @@ hd_home_window_class_init (HDHomeWindowClass *window_class)
   g_object_class_install_property (object_class,
                                    PROP_LAYOUT_MODE_SUCKS,
                                    pspec);
+
+  g_signal_new ("background",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HDHomeWindowClass, background),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__BOOLEAN,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_BOOLEAN);
+
+  g_signal_new ("system-inactivity",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HDHomeWindowClass, system_inactivity),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__BOOLEAN,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_BOOLEAN);
+
+  g_signal_new ("lowmem",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HDHomeWindowClass, lowmem),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__BOOLEAN,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_BOOLEAN);
+
+  g_signal_new ("layout-mode-accept",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HDHomeWindowClass, layout_mode_accept),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__VOID,
+                G_TYPE_NONE,
+                0);
+
+  g_signal_new ("layout-mode-cancel",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HDHomeWindowClass, layout_mode_cancel),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__VOID,
+                G_TYPE_NONE,
+                0);
+
+  g_signal_new ("io-error",
+                G_OBJECT_CLASS_TYPE (object_class),
+                G_SIGNAL_RUN_FIRST,
+                G_STRUCT_OFFSET (HDHomeWindowClass, io_error),
+                NULL,
+                NULL,
+                g_cclosure_marshal_VOID__POINTER,
+                G_TYPE_NONE,
+                1,
+                G_TYPE_POINTER);
+
+
+
 
   g_type_class_add_private (window_class, sizeof (HDHomeWindowPrivate));
 
@@ -299,6 +415,7 @@ hd_home_window_constructor (GType                   gtype,
 {
   GObject              *retval;
   HDHomeWindow         *window;
+  HDHomeWindowPrivate  *priv;
   HildonHomeWindow     *hhwindow;
   GtkWidget            *titlebar;
   GtkWidget            *menu;
@@ -319,7 +436,7 @@ hd_home_window_constructor (GType                   gtype,
 
   menu = hd_home_window_build_main_menu (window);
   hildon_home_titlebar_set_menu (HILDON_HOME_TITLEBAR (titlebar), menu);
-  
+
   menu = hd_home_window_build_layout_menu (window);
   hildon_home_titlebar_set_layout_menu (HILDON_HOME_TITLEBAR (titlebar), menu);
 
@@ -328,24 +445,50 @@ hd_home_window_constructor (GType                   gtype,
   hildon_home_titlebar_set_layout_menu_title (HILDON_HOME_TITLEBAR (titlebar),
                                               HH_MENU_LAYOUT_TITLE);
 
-  area = hildon_home_window_get_area (hhwindow);
+  priv = HD_HOME_WINDOW_GET_PRIVATE (retval);
+
+  area = hildon_home_area_new ();
+  gtk_widget_show (area);
+
+  gtk_container_add (GTK_CONTAINER (retval), area);
+  HILDON_DESKTOP_WINDOW (retval)->container = GTK_CONTAINER (area);
 
   g_signal_connect_swapped (area, "add",
-                            G_CALLBACK (hd_home_window_ensure_menu_status),
+                            G_CALLBACK (hd_home_window_area_add),
                             window);
-  
+
   g_signal_connect_swapped (area, "remove",
-                            G_CALLBACK (hd_home_window_ensure_menu_status),
+                            G_CALLBACK (hd_home_window_area_remove),
                             window);
 
   g_signal_connect_swapped (area, "layout-mode-start",
                             G_CALLBACK (hd_home_window_show_layout_mode_banner),
                             window);
 
-  g_signal_connect_swapped (area, "layout-mode-ended",
-                            G_CALLBACK (hd_home_window_destroy_banner),
+  g_signal_connect_swapped (area, "layout-mode-started",
+                            G_CALLBACK (hd_home_window_layout_mode_started),
                             window);
-  
+
+  g_signal_connect_swapped (area, "layout-mode-ended",
+                            G_CALLBACK (hd_home_window_layout_mode_ended),
+                            window);
+
+  g_signal_connect_swapped (titlebar, "layout-accept",
+                            G_CALLBACK (hd_home_window_accept_layout),
+                            window);
+
+  g_signal_connect_swapped (titlebar, "layout-cancel",
+                            G_CALLBACK (hd_home_window_cancel_layout),
+                            window);
+
+
+  if (priv->layout_mode_sucks)
+    {
+      g_signal_connect_swapped (area, "applet-change-end",
+                                G_CALLBACK (hd_home_window_area_changed),
+                                window);
+    }
+
   background = g_object_new (HD_TYPE_HOME_BACKGROUND, NULL);
 
   conffile = g_build_path (G_DIR_SEPARATOR_S,
@@ -408,9 +551,10 @@ error:
   if (background)
     hd_home_window_set_background (window, background);
 
+  hd_home_window_load_area_layout (window);
+
   /* Necessary to avoid the default background to be reset */
   gtk_widget_set_app_paintable (GTK_WIDGET (window), TRUE);
-/*  gtk_widget_set_double_buffered (GTK_WIDGET (window), FALSE);*/
 
   return retval;
 }
@@ -466,11 +610,11 @@ hd_home_window_get_property (GObject    *gobject,
       g_value_set_pointer (value, priv->osso_context);
       break;
 #endif
-    
+
     case PROP_LAYOUT_MODE_SUCKS:
       g_value_set_boolean (value, priv->layout_mode_sucks);
       break;
-      
+
     case PROP_BACKGROUND:
       g_value_set_object (value, priv->background);
       break;
@@ -514,7 +658,7 @@ background_apply_callback (HDHomeBackground *background,
 
   gdk_window_clear (GTK_WIDGET (window)->window);
   gtk_widget_queue_draw (GTK_WIDGET (window));
-  
+
   priv = HD_HOME_WINDOW_GET_PRIVATE (window);
 
   if (background != priv->background)
@@ -523,7 +667,7 @@ background_apply_callback (HDHomeBackground *background,
         g_object_unref (priv->background);
       priv->background = g_object_ref (background);
     }
- 
+
 }
 
 static void
@@ -638,7 +782,7 @@ hd_home_window_get_pixmap_name (HDHomeWindow *window,
                                      key,
                                      NULL,
                                      G_TYPE_NONE);
-  
+
   if (style && style->rc_style->bg_pixmap_name[0])
     return style->rc_style->bg_pixmap_name[0];
 
@@ -662,15 +806,15 @@ hd_home_window_style_set (GtkWidget *widget, GtkStyle *old_style)
                                                                old_style);
   north_border = hd_home_window_get_pixmap_name (window,
                                                  HD_HOME_WINDOW_STYLE_NORTH_BORDER);
-  
+
   west_border  = hd_home_window_get_pixmap_name (window,
                                                  HD_HOME_WINDOW_STYLE_WEST_BORDER);
-  
+
 
   /* avoid resetting the background when the window is exposed for the
    * first time
    */
-  if (!old_style || 
+  if (!old_style ||
       !(north_border && g_str_equal (priv->north_border, north_border)) ||
       !(west_border && g_str_equal (priv->west_border, west_border)))
     {
@@ -720,10 +864,9 @@ static gboolean
 hd_home_window_key_press_event (GtkWidget *widget,
                                 GdkEventKey *event)
 {
-  GtkWidget *titlebar = 
+  GtkWidget *titlebar =
       hildon_home_window_get_titlebar (HILDON_HOME_WINDOW (widget));
-  GtkWidget *area = 
-      hildon_home_window_get_area (HILDON_HOME_WINDOW (widget));
+  GtkWidget *area = GTK_BIN (widget)->child;
 
   switch (event->keyval)
     {
@@ -764,7 +907,7 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
   menu_item = gtk_menu_item_new_with_label (HH_MENU_SELECT);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), menu_item);
   g_signal_connect_swapped (menu_item, "activate",
-                            G_CALLBACK (hildon_home_window_select_applets),
+                            G_CALLBACK (hd_home_window_select_applets),
                             window);
   gtk_widget_show (menu_item);
 /*  priv->select_applets_item = menu_item;*/
@@ -827,7 +970,7 @@ hd_home_window_build_main_menu (HDHomeWindow *window)
       /* layout mode */
       menu_item = gtk_menu_item_new_with_label (HH_MENU_EDIT_LAYOUT);
       g_signal_connect_swapped (menu_item, "activate",
-                                G_CALLBACK (hildon_home_window_layout_mode_activate),
+                                G_CALLBACK (hd_home_window_layout_mode_activate),
                                 window);
 #ifdef HAVE_LIBHILDON
       hildon_helper_set_insensitive_message (menu_item, HH_LAYOUT_UNAVAIL_BANNER);
@@ -888,21 +1031,21 @@ hd_home_window_build_layout_menu (HDHomeWindow *window)
   mi = gtk_menu_item_new_with_label (HH_MENU_LAYOUT_SELECT);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
   g_signal_connect_swapped (mi, "activate",
-                            G_CALLBACK (hildon_home_window_select_applets),
+                            G_CALLBACK (hd_home_window_select_applets),
                             window);
   gtk_widget_show (mi);
 
   mi = gtk_menu_item_new_with_label (HH_MENU_LAYOUT_ACCEPT);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
   g_signal_connect_swapped (mi, "activate",
-                            G_CALLBACK (hildon_home_window_accept_layout),
+                            G_CALLBACK (hd_home_window_accept_layout),
                             window);
   gtk_widget_show (mi);
 
   mi = gtk_menu_item_new_with_label (HH_MENU_LAYOUT_CANCEL);
   gtk_menu_shell_append (GTK_MENU_SHELL (menu), mi);
   g_signal_connect_swapped (mi, "activate",
-                            G_CALLBACK (hildon_home_window_cancel_layout),
+                            G_CALLBACK (hd_home_window_cancel_layout),
                             window);
   gtk_widget_show (mi);
 
@@ -911,8 +1054,8 @@ hd_home_window_build_layout_menu (HDHomeWindow *window)
   g_signal_connect_swapped (mi, "toggled",
                             G_CALLBACK (hd_home_window_snap_toggled),
                             window);
-  area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
-  if (area)
+  area = GTK_BIN (window)->child;
+  if (HILDON_IS_HOME_AREA (area))
     {
       gboolean snap_to_grid;
       g_object_get (G_OBJECT (area), "snap-to-grid", &snap_to_grid, NULL);
@@ -1062,18 +1205,166 @@ hd_home_window_layout_insensitive_press_cb (HDHomeWindow *window)
 #endif
 
 static void
+hd_home_window_save_area_layout (HDHomeWindow *window)
+{
+  GtkWidget    *area = GTK_BIN (window)->child;
+
+  if (HILDON_IS_HOME_AREA (area))
+    {
+      GError *error = NULL;
+      gchar *filename = g_build_filename (g_get_home_dir (),
+                                          HH_AREA_CONFIGURATION_FILE,
+                                          NULL);
+
+      hildon_home_area_save_configuration (HILDON_HOME_AREA (area),
+                                           filename,
+                                           &error);
+
+      if (error)
+        {
+          g_signal_emit_by_name (window, "io-error", error);
+          g_error_free (error);
+        }
+
+      g_free (filename);
+    }
+}
+
+static void
+hd_home_window_load_area_layout (HDHomeWindow *window)
+{
+  GtkWidget    *area = GTK_BIN (window)->child;
+
+  if (HILDON_IS_HOME_AREA (area))
+    {
+      GError   *error = NULL;
+      gchar    *user_filename = NULL;
+      gchar    *filename = NULL;
+
+      user_filename = g_build_filename (g_get_home_dir (),
+                                        HH_AREA_CONFIGURATION_FILE,
+                                        NULL);
+
+      if (g_file_test (user_filename, G_FILE_TEST_EXISTS))
+        filename = user_filename;
+      else
+        filename = HH_AREA_GLOBAL_CONFIGURATION_FILE;
+
+      hildon_home_area_load_configuration (HILDON_HOME_AREA (area),
+                                           filename,
+                                           &error);
+
+      if (error)
+        {
+          g_signal_emit_by_name (window, "io-error", error);
+          g_error_free (error);
+        }
+
+      g_free (user_filename);
+    }
+
+}
+
+static void
 hd_home_window_snap_toggled (HDHomeWindow *window, GtkCheckMenuItem *item)
 {
   GtkWidget *area;
 
-  area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
+  area = GTK_BIN (window)->child;
 
-  if (area)
+  if (HILDON_IS_HOME_AREA (area))
     g_object_set (area,
                   "snap-to-grid", gtk_check_menu_item_get_active (item),
                   NULL);
 
 }
+
+static void
+hd_home_window_area_add (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv;
+  GtkWidget            *area;
+
+  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  area = GTK_BIN (window)->child;
+
+  if (!priv->layout_mode_sucks)
+    {
+      if (priv->selecting_applets &&
+          !hildon_home_area_get_layout_mode (HILDON_HOME_AREA (area)))
+        hildon_home_area_set_layout_mode (HILDON_HOME_AREA (area), TRUE);
+
+    }
+
+  hd_home_window_ensure_menu_status (window);
+}
+
+static void
+hd_home_window_area_remove (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv;
+  GtkWidget            *area;
+
+  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  area = GTK_BIN (window)->child;
+
+  if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (area)))
+    hd_home_window_save_area_layout (window);
+
+  hd_home_window_ensure_menu_status (window);
+
+}
+
+static void
+hd_home_window_layout_mode_started (HDHomeWindow *window)
+{
+  GtkWidget    *titlebar;
+
+  titlebar = hildon_home_window_get_titlebar (HILDON_HOME_WINDOW (window));
+  hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (titlebar),
+                                 HILDON_DESKTOP_HOME_TITLEBAR_NORMAL);
+}
+
+static void
+hd_home_window_layout_mode_ended (HDHomeWindow *window)
+{
+  GtkWidget    *titlebar;
+
+  hd_home_window_destroy_banner (window);
+
+  titlebar = hildon_home_window_get_titlebar (HILDON_HOME_WINDOW (window));
+  hildon_home_titlebar_set_mode (HILDON_HOME_TITLEBAR (titlebar),
+                                 HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT);
+}
+
+static gboolean
+hd_home_window_save_area_timeout (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv;
+
+  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  priv->save_area_timeout = 0;
+
+  hd_home_window_save_area_layout (window);
+
+  return FALSE;
+}
+
+
+#define SAVE_TIMEOUT            1000
+static void
+hd_home_window_area_changed (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv;
+
+  priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  if (!priv->save_area_timeout)
+    priv->save_area_timeout = g_timeout_add (SAVE_TIMEOUT,
+                                             (GSourceFunc)
+                                             hd_home_window_save_area_timeout,
+                                             window);
+}
+#undef SAVE_TIMEOUT
 
 static void
 hd_home_window_ensure_menu_status (HDHomeWindow *window)
@@ -1084,7 +1375,7 @@ hd_home_window_ensure_menu_status (HDHomeWindow *window)
   GList                *items, *l;
 
   priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  area = hildon_home_window_get_area (HILDON_HOME_WINDOW (window));
+  area = GTK_BIN (window)->child;
 
   /* remove old children from the settings menu */
   items = gtk_container_get_children (GTK_CONTAINER (priv->settings_menu));
@@ -1161,7 +1452,7 @@ hd_home_window_set_osso_context (HDHomeWindow *window,
                                 G_CALLBACK (hd_home_window_help_activate),
                                 window);
 #endif
-      
+
       g_signal_connect_swapped (titlebar, "applet-activate",
                                 G_CALLBACK (hd_home_window_applet_activate),
                                 window);
@@ -1174,8 +1465,7 @@ static gboolean
 hd_home_window_destroy_banner (HDHomeWindow *window)
 {
   HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  GtkWidget            *area = hildon_home_window_get_area (
-                                    HILDON_HOME_WINDOW (window));
+  GtkWidget            *area = GTK_BIN (window)->child;
 
   if (priv->layout_mode_banner)
     {
@@ -1194,16 +1484,15 @@ static void
 hd_home_window_show_layout_mode_banner (HDHomeWindow *window)
 {
   HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
-  GtkWidget            *area = hildon_home_window_get_area (
-                                       HILDON_HOME_WINDOW (window));
-  
+  GtkWidget            *area = GTK_BIN (window)->child;
+
   if (!priv->layout_mode_banner)
     {
-      priv->layout_mode_banner = 
+      priv->layout_mode_banner =
           hildon_banner_show_animation (GTK_WIDGET (window),
                                         NULL,
                                         HH_LAYOUT_MODE_BANNER);
-      priv->layout_mode_banner_to = 
+      priv->layout_mode_banner_to =
           g_timeout_add (LAYOUT_OPENING_BANNER_TIMEOUT,
                          (GSourceFunc)hd_home_window_destroy_banner,
                          window);
@@ -1215,15 +1504,17 @@ hd_home_window_show_layout_mode_banner (HDHomeWindow *window)
 
 
     }
-    
+
 }
 
 static void
-hd_home_window_layout_mode_accept (HildonHomeWindow *window)
+hd_home_window_layout_mode_accept (HDHomeWindow *window)
 {
-  GtkWidget        *area;
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  GtkWidget            *area;
 
-  area = hildon_home_window_get_area (window);
+  area = GTK_BIN (window)->child;
+  g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
   if (hildon_home_area_get_overlaps (HILDON_HOME_AREA (area)))
     {
@@ -1232,17 +1523,25 @@ hd_home_window_layout_mode_accept (HildonHomeWindow *window)
       return;
     }
 
+  if (!priv->layout_mode_sucks)
+    {
+      hildon_home_area_set_layout_mode (HILDON_HOME_AREA (area),
+                                        FALSE);
+    }
 
-  if (HILDON_HOME_WINDOW_CLASS (hd_home_window_parent_class)->layout_mode_accept)
-    HILDON_HOME_WINDOW_CLASS (hd_home_window_parent_class)->layout_mode_accept (window);
+  hd_home_window_save_area_layout (HD_HOME_WINDOW (window));
+  g_signal_emit_by_name (window, "save", NULL);
+
 }
 
 static void
-hd_home_window_layout_mode_cancel (HildonHomeWindow *window)
+hd_home_window_layout_mode_cancel (HDHomeWindow *window)
 {
-  GtkWidget        *area;
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  GtkWidget            *area;
 
-  area = hildon_home_window_get_area (window);
+  area = GTK_BIN (window)->child;
+  g_return_if_fail (HILDON_IS_HOME_AREA (area));
 
   if (hildon_home_area_get_layout_changed (HILDON_HOME_AREA (area)))
     {
@@ -1265,8 +1564,62 @@ hd_home_window_layout_mode_cancel (HildonHomeWindow *window)
         return;
     }
 
-  if (HILDON_HOME_WINDOW_CLASS (hd_home_window_parent_class)->layout_mode_cancel)
-    HILDON_HOME_WINDOW_CLASS (hd_home_window_parent_class)->layout_mode_cancel (window);
+  hd_home_window_load_area_layout (HD_HOME_WINDOW (window));
+  g_signal_emit_by_name (window, "load", NULL);
+
+  if (!priv->layout_mode_sucks)
+    hildon_home_area_set_layout_mode (HILDON_HOME_AREA (area),
+                                      FALSE);
+
+}
+
+static void
+hd_home_window_background (HDHomeWindow    *window,
+                           gboolean             is_background)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  GtkWidget            *area;
+
+  area = GTK_BIN (window)->child;
+  g_return_if_fail (HILDON_IS_HOME_AREA (area));
+
+  if (!priv->is_inactive)
+    {
+
+      /* If we were in layout mode and went to background, we need
+       * to cancel it */
+      if (is_background &&
+          hildon_home_area_get_layout_mode (HILDON_HOME_AREA (area)))
+        {
+          hildon_home_area_set_layout_mode (HILDON_HOME_AREA (area),
+                                            FALSE);
+
+          hd_home_window_save_area_layout (window);
+        }
+
+      gtk_container_foreach (GTK_CONTAINER (area),
+                             (GtkCallback)hildon_desktop_home_item_set_is_background,
+                             (gpointer)is_background);
+    }
+
+}
+
+static void
+hd_home_window_system_inactivity (HDHomeWindow         *window,
+                                  gboolean              is_inactive)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  GtkWidget            *area;
+
+  area = GTK_BIN (window)->child;
+  g_return_if_fail (HILDON_IS_HOME_AREA (area));
+
+  priv->is_inactive = is_inactive;
+
+  gtk_container_foreach (GTK_CONTAINER (area),
+                         (GtkCallback)hildon_desktop_home_item_set_is_background,
+                         (gpointer)is_inactive);
+
 }
 
 static void
@@ -1296,6 +1649,43 @@ hd_home_window_set_background (HDHomeWindow *window,
                                       window);
     }
 
+}
+
+static void
+hd_home_window_select_applets (HDHomeWindow *window)
+{
+  HDHomeWindowPrivate  *priv = HD_HOME_WINDOW_GET_PRIVATE (window);
+  GtkWidget            *area = GTK_BIN (window)->child;
+
+  g_return_if_fail (HILDON_IS_HOME_AREA (area));
+
+  priv->selecting_applets = TRUE;
+
+  hildon_home_area_set_batch_add (HILDON_HOME_AREA (area), TRUE);
+  g_signal_emit_by_name (window, "select-plugins", NULL);
+  hildon_home_area_set_batch_add (HILDON_HOME_AREA (area), FALSE);
+  priv->selecting_applets = FALSE;
+
+  if (HILDON_IS_HOME_AREA (area))
+    {
+      /* If we are in layout mode, we only save when layout mode is
+       * accepted */
+      if (!hildon_home_area_get_layout_mode (HILDON_HOME_AREA (area)))
+        g_signal_emit_by_name (window, "save", NULL);
+    }
+
+}
+
+static void
+hd_home_window_cancel_layout (HDHomeWindow *window)
+{
+  g_signal_emit_by_name (window, "layout-mode-cancel");
+}
+
+static void
+hd_home_window_accept_layout (HDHomeWindow *window)
+{
+  g_signal_emit_by_name (window, "layout-mode-accept");
 }
 
 static void
@@ -1353,6 +1743,18 @@ hd_home_window_set_background_reponse (HDHomeWindow *window,
       default:
           break;
     }
+}
+
+static void
+hd_home_window_layout_mode_activate (HDHomeWindow *window)
+{
+  GtkWidget    *area = GTK_BIN (window)->child; 
+
+  g_return_if_fail (HILDON_IS_HOME_AREA (area));
+
+  hildon_home_area_set_layout_mode (HILDON_HOME_AREA (area),
+                                    TRUE);
+
 }
 
 static void

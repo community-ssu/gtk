@@ -84,13 +84,6 @@ hd_panel_window_expose (GtkWidget *widget,
 
       gtk_window_get_position (GTK_WINDOW (widget), &x, &y);
 
-      g_debug ("got position: %i, %i", x, y);
-      g_debug ("got expose on the window: %i,%i %ix%i",
-               event->area.x,
-               event->area.y,
-               event->area.width,
-               event->area.height);
-
       gdk_window_get_internal_paint_info (widget->window,
                                           &drawable,
                                           &x_offset,

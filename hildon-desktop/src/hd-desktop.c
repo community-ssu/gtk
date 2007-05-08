@@ -831,8 +831,6 @@ hd_desktop_load_containers (HDDesktop *desktop)
                                       "padding-top",    padding_top,
                                       "padding-bottom", padding_bottom,
                                       NULL);
-
-      hildon_home_window_applets_init (HILDON_HOME_WINDOW (info->container));
     }
     else if (!g_ascii_strcasecmp (type, HD_CONTAINER_TYPE_PANEL_BOX) ||
  	     !g_ascii_strcasecmp (type, HD_CONTAINER_TYPE_PANEL_EXPANDABLE))

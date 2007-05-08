@@ -1,3 +1,16 @@
+2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-home-window.[ch], libhildondesktop/hildon-home-window.[ch]:
+	- moved all notions of layout mode to the HDHomeWindow
+	- moved all notions of system state to the HDHomeWindow
+	- removed _home_area, the home area is the bin's child
+	- removed _init_applets, no longer necessary
+	- when layout mode sucks, save the layout once
+	every second when an applet is moved
+	* src/hd-desktop.c: Do not call _applet_init anymore
+	* background-manager/background-manager.c:
+	- do not apply the borders for the initial background
+
 2007-05-07  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildonwm/hd-wm.[ch]:

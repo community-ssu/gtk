@@ -1367,7 +1367,7 @@ hildon_desktop_home_item_snap_to_grid (HildonDesktopHomeItem *applet)
                   && !(x_grid + GRID_SIZE + widget->allocation.width >
                        parent->allocation.width))
                 x_grid += GRID_SIZE;
-              
+
               y_grid = y - (y % GRID_SIZE);
               if (priv->delta_y > 0
                   && !(y_grid + GRID_SIZE + widget->allocation.height >
@@ -1437,24 +1437,17 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
       if (HILDON_IS_HOME_AREA (w->parent))
         g_signal_emit_by_name (G_OBJECT (w->parent),
                                "applet-change-start",
-                               w); 
+                               w);
       gtk_widget_destroy (w);
       return TRUE;
     }
 
-#if 0
-
-  if ((priv->layout_mode_sucks/* && event->window != priv->drag_handle_window*/) &&
-      event->window != priv->resize_handle_window)
-    return FALSE;
-#endif
-    
   if (!priv->timeout)
     {
       if (HILDON_IS_HOME_AREA (w->parent))
         g_signal_emit_by_name (G_OBJECT (w->parent),
                                "applet-change-start",
-                               w); 
+                               w);
 
       gdk_window_raise (w->window);
       gdk_pointer_grab (event->window,
@@ -1470,9 +1463,7 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
         {
           gint window_x, window_y;
           gint window_width, window_height;
-          
-          g_debug ("resizing");
-          
+
           gdk_window_get_position (priv->resize_handle_window,
                                    &window_x,
                                    &window_y);
@@ -1488,7 +1479,6 @@ hildon_desktop_home_item_button_press_event (GtkWidget *w,
         }
       else
         {
-          g_debug ("moving");
           priv->x_offset = event->x;
           priv->y_offset = event->y;
           priv->state = HILDON_DESKTOP_HOME_ITEM_STATE_MOVING;
@@ -1511,7 +1501,7 @@ hildon_desktop_home_item_button_release_event (GtkWidget *applet,
   HildonDesktopHomeItemPriv      *priv;
 
   priv = HILDON_DESKTOP_HOME_ITEM_GET_PRIVATE (applet);
-  
+
   if (!priv->layout_mode_sucks && !priv->layout_mode)
     {
       if  (GTK_WIDGET_CLASS (parent_class)->button_release_event)
@@ -1547,13 +1537,14 @@ hildon_desktop_home_item_button_release_event (GtkWidget *applet,
 
         {
           if (HILDON_IS_HOME_AREA (applet->parent))
-            g_signal_emit_by_name (G_OBJECT (applet->parent), "layout-changed"); 
+            g_signal_emit_by_name (G_OBJECT (applet->parent), "layout-changed");
         }
-      
+
+      g_debug ("Will emit applet-change-end");
       if (HILDON_IS_HOME_AREA (applet->parent))
         g_signal_emit_by_name (G_OBJECT (applet->parent),
                                "applet-change-end",
-                               applet); 
+                               applet);
     }
 
   return TRUE;

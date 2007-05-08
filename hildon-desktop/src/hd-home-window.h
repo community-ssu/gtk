@@ -41,7 +41,7 @@ typedef struct _HDHomeWindowPrivate HDHomeWindowPrivate;
 #define HD_IS_HOME_WINDOW_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  HD_TYPE_HOME_WINDOW))
 #define HD_HOME_WINDOW_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  HD_TYPE_HOME_WINDOW, HDHomeWindowClass))
 
-struct _HDHomeWindow 
+struct _HDHomeWindow
 {
   HildonHomeWindow parent;
 };
@@ -49,6 +49,14 @@ struct _HDHomeWindow
 struct _HDHomeWindowClass
 {
   HildonHomeWindowClass parent_class;
+
+  void    (* background)        (HDHomeWindow *window, gboolean is_background);
+  void    (* lowmem)            (HDHomeWindow *window, gboolean is_lowmem);
+  void    (* system_inactivity) (HDHomeWindow *window, gboolean is_inactive);
+  void    (* layout_mode_accept)(HDHomeWindow *window);
+  void    (* layout_mode_cancel)(HDHomeWindow *window);
+  void    (* io_error)          (HDHomeWindow *window, GError *error);
+
 };
 
 GType  hd_home_window_get_type  (void);

@@ -38,6 +38,7 @@
 #include <gtk/gtkimage.h>
 #include <libhildondesktop/hildon-desktop-popup-window.h>
 #include <libhildondesktop/hildon-desktop-popup-menu.h>
+#include <libhildondesktop/hildon-desktop-toggle-button.h>
 
 /* Menu item strings */
 #define AS_HOME_ITEM 		_("tana_fi_home")
@@ -252,7 +253,7 @@ hd_switcher_menu_constructor (GType gtype,
 
   gtk_widget_push_composite_child ();
 
-  button = gtk_toggle_button_new ();
+  button = hildon_desktop_toggle_button_new ();
 
   gtk_widget_set_name (button, AS_MENU_BUTTON_NAME);
   gtk_widget_set_size_request (button, -1, AS_MENU_BUTTON_HEIGHT);

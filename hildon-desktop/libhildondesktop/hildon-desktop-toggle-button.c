@@ -118,10 +118,6 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
                                       0,
                                       &pa);
 
-      g_debug ("Got picture: %i", (gint)picture);
-      g_debug ("focus picture: %i", (gint)priv->focus_picture);
-      g_debug ("pressed picture: %i", (gint)priv->pressed_picture);
-
       if (priv->pressed_picture != None  && button->depressed)
         XRenderComposite (GDK_DISPLAY (),
                           PictOpOver,

@@ -1,8 +1,8 @@
 /* -*- mode:C; c-file-style:"gnu"; -*- */
 /*
- * This file is part of maemo-af-desktop
+ * This file is part of hildon-desktop
  *
- * Copyright (C) 2006 Nokia Corporation.
+ * Copyright (C) 2006, 2007 Nokia Corporation.
  *
  * Contact: Karoliina Salminen <karoliina.t.salminen@nokia.com>
  *
@@ -51,16 +51,6 @@ struct _HildonHomeWindowClass
 {
   HildonDesktopWindowClass parent_class;
 
-  void    (* background)    (HildonHomeWindow *window, gboolean is_background);
-  void    (* lowmem)        (HildonHomeWindow *window, gboolean is_lowmem);
-  void    (* system_inactivity)
-                            (HildonHomeWindow *window, gboolean is_inactive);
-
-  void    (* layout_mode_accept) 
-                            (HildonHomeWindow *window);
-  void    (* layout_mode_cancel) 
-                            (HildonHomeWindow *window);
-  void    (* io_error)      (HildonHomeWindow *window, GError *error);
 };
 
 GType hildon_home_window_get_type                  (void) G_GNUC_CONST;
@@ -68,20 +58,6 @@ GType hildon_home_window_get_type                  (void) G_GNUC_CONST;
 GtkWidget *hildon_home_window_new                  (void);
 
 GtkWidget *hildon_home_window_get_titlebar         (HildonHomeWindow *window);
-
-void       hildon_home_window_applets_init         (HildonHomeWindow *window);
-
-void       hildon_home_window_select_applets       (HildonHomeWindow *window);
-
-void       hildon_home_window_layout_mode_activate (HildonHomeWindow *window);
-
-void       hildon_home_window_set_desktop_dimmed   (HildonHomeWindow *window,
-                                                    gboolean dimmed);
-
-void       hildon_home_window_accept_layout        (HildonHomeWindow *window);
-void       hildon_home_window_cancel_layout        (HildonHomeWindow *window);
-
-GtkWidget *hildon_home_window_get_area             (HildonHomeWindow *window);
 
 G_END_DECLS
 

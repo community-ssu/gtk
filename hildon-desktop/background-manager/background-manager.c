@@ -593,10 +593,13 @@ composite_background (const GdkPixbuf  *bg_image,
                                               mode,
                                               window_width,
                                               window_height,
+                                              0, 0, 0, 0,
+                                              /*
                                               top_offset,
                                               bottom_offset,
                                               left_offset,
                                               right_offset,
+                                              */
                                               &bg_error);
     }
   else
@@ -864,7 +867,7 @@ background_manager_set_background (BackgroundManager   *manager,
   background = composite_background (image,
                                      &color,
                                      mode,
-                                     top_bar,
+                                     NULL,
                                      left_bar,
                                      width,
                                      height,
