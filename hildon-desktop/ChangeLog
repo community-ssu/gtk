@@ -1,3 +1,20 @@
+2007-05-08  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c:
+	- Fixed menu positioning.
+	- Implemented key navigation.
+	- Added separators to notifications.
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Implemented navigation through keys. Misses auto-scrolling.
+	- Small fixes
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	- Propagate key-press-event to child widget of pane.
+	* libhildonwm/hd-wm-watched-window.c:
+	- Update state of fullscreen when a HDWMWatchedWindow is removed.
+	Fixes: NB#56174, NB#54820.
+	* libhildonwm/hd-wm.c:
+	- Renamed "show_menu" signal to "show-menu". 
+
 2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-desktop-home-item.c:

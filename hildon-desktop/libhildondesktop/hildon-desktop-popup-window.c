@@ -122,6 +122,28 @@ hildon_desktop_popup_window_init (HildonDesktopPopupWindow *popup)
   popup->priv->attached_widget = NULL;
 }
 
+static gboolean 
+hildon_desktop_popup_window_key_press_event (GtkWidget *widget, GdkEventKey *event)
+{
+  if (GTK_BIN (widget)->child)
+    return gtk_widget_event (GTK_BIN (widget)->child,(GdkEvent *)event);	
+
+  return
+    GTK_WIDGET_CLASS 
+      (hildon_desktop_popup_window_parent_class)->key_press_event (widget, event);	  
+}  
+
+static gboolean 
+hildon_desktop_popup_window_key_press_event_cb (GtkWidget *widget, 
+						GdkEventKey *event,
+						HildonDesktopPopupWindow *popup)
+{
+  if (GTK_BIN (widget)->child)
+    return gtk_widget_event (GTK_BIN (widget)->child,(GdkEvent *)event);
+
+  return FALSE;
+}
+
 static void 
 hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_class)
 {
@@ -136,7 +158,7 @@ hildon_desktop_popup_window_class_init (HildonDesktopPopupWindowClass *popup_cla
   widget_class->motion_notify_event     = hildon_desktop_popup_window_motion_notify;
   widget_class->leave_notify_event      = hildon_desktop_popup_window_leave_notify;
   widget_class->button_release_event    = hildon_desktop_popup_window_button_release_event;
-
+  widget_class->key_press_event 	= hildon_desktop_popup_window_key_press_event;
 	  
   widget_class->realize    = hildon_desktop_popup_window_realize;
   widget_class->unrealize  = hildon_desktop_popup_window_unrealize;
@@ -245,6 +267,11 @@ hildon_desktop_popup_window_constructor (GType gtype,
     g_signal_connect (popup->priv->extra_panes[i],
 		      "leave-notify-event",
 		      G_CALLBACK (hildon_desktop_popup_window_composited_leave_notify),
+		      (gpointer)popup);
+
+    g_signal_connect (popup->priv->extra_panes[i],
+		      "key-press-event",
+		      G_CALLBACK (hildon_desktop_popup_window_key_press_event_cb),
 		      (gpointer)popup);
 
     /*FIXME: NO FOCUS FOR ANY WINDOW!!!!!!!!!!!!!!!!!! */

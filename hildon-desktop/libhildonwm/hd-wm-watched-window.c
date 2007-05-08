@@ -815,6 +815,8 @@ hd_wm_watched_window_destroy (HDWMWatchedWindow *win)
   if(win->gdk_wrapper_win)
     g_object_unref (win->gdk_wrapper_win);
 
+  g_signal_emit_by_name (hdwm, "fullscreen", hd_wm_fullscreen_mode ());
+
   g_free(win);
 }
 

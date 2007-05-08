@@ -766,14 +766,14 @@ mce_handler (DBusConnection *conn,
   if (!member || member[0] == '\0')
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 
-  if (strcmp (HOME_LONG_PRESS, member) == 0 && !hd_wm_modal_windows_present())
+  if (g_str_equal (HOME_LONG_PRESS, member) && !hd_wm_modal_windows_present())
   {
     g_signal_emit_by_name (hdwm, "long-key-press");
 
     return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
   }
   
-  if (strcmp (HOME_PRESS, member) == 0 && !hd_wm_modal_windows_present())
+  if (g_str_equal (HOME_PRESS, member) && !hd_wm_modal_windows_present())
   {
     hd_wm_activate (HD_TN_ACTIVATE_MAIN_MENU);
 
@@ -976,7 +976,7 @@ hd_wm_class_init (HDWMClass *hdwm_class)
              	     G_TYPE_POINTER);
 
   hdwm_signals[HDWM_SHOW_A_MENU_SIGNAL] = 
-	g_signal_new("show_menu",
+	g_signal_new("show-menu",
 		     G_OBJECT_CLASS_TYPE(object_class),
 		     G_SIGNAL_RUN_LAST,
 		     G_STRUCT_OFFSET (HDWMClass,show_menu),
@@ -1124,6 +1124,8 @@ hd_wm_init (HDWM *hdwm)
 	
   memset(hdwm->priv, 0, sizeof(HDWMPrivate));
 
+  hdwm->priv->init_dbus = TRUE;
+  
   /* Check for configurable lowmem values. */
 
   hdwm->priv->lowmem_min_distance
@@ -2295,7 +2297,7 @@ hd_wm_activate_window (guint32 what, GdkWindow *window)
       return;
     case HD_TN_ACTIVATE_MAIN_MENU:
       g_debug  ("activating main menu: signal");
-      g_signal_emit_by_name (hdwm, "show_menu");
+      g_signal_emit_by_name (hdwm, "show-menu");
       return;
     case HD_TN_ACTIVATE_LAST_APP_WINDOW:
       hdwm->priv->has_focus = FALSE;

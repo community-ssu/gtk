@@ -32,7 +32,7 @@
 #include <gtk/gtkbutton.h>
 #include <gtk/gtkwindow.h>
 #include <gdk/gdk.h>
-
+#include <gdk/gdkkeysyms.h>
 
 #define HILDON_DESKTOP_POPUP_MENU_GET_PRIVATE(object) \
 	        (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_DESKTOP_TYPE_POPUP_MENU, HildonDesktopPopupMenuPrivate))
@@ -89,7 +89,7 @@ static void hildon_desktop_popup_menu_set_property (GObject *object,
 
 static gboolean hildon_desktop_popup_menu_motion_notify (GtkWidget *widget, GdkEventMotion *event);
 static gboolean hildon_desktop_popup_menu_release_event (GtkWidget *widget, GdkEventButton *event);
-
+static gboolean hildon_desktop_popup_menu_key_press_event (GtkWidget *widget, GdkEventKey *event);
 static void hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *menu);
 
 static void 
@@ -119,7 +119,8 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
 
   widget_class->motion_notify_event  = hildon_desktop_popup_menu_motion_notify;
   widget_class->button_release_event = hildon_desktop_popup_menu_release_event;
-
+  widget_class->key_press_event      = hildon_desktop_popup_menu_key_press_event;
+  
   g_type_class_add_private (object_class, sizeof (HildonDesktopPopupMenuPrivate));
 
   signals[SIGNAL_POPUP_RESIZE] =
@@ -284,7 +285,10 @@ hildon_desktop_popup_menu_motion_notify (GtkWidget      *widget,
     h = GTK_WIDGET (l->data)->allocation.height;
 
     if ((x >= 0) && (x <= w) && (y >= 0) && (y <= h))
+    {	    
       gtk_item_select (GTK_ITEM (l->data));
+      menu->priv->selected_item = GTK_MENU_ITEM (l->data);
+    }
   }
 
   g_list_free (menu_items);
@@ -345,6 +349,77 @@ hildon_desktop_popup_menu_release_event (GtkWidget      *widget,
   g_list_free (menu_items);
 
   return TRUE;
+}
+
+static gboolean 
+hildon_desktop_popup_menu_key_press_event (GtkWidget   *widget,
+					   GdkEventKey *event)
+{
+  HildonDesktopPopupMenu *menu = HILDON_DESKTOP_POPUP_MENU (widget);
+  GList *menu_items = NULL, *l;
+
+  menu_items =
+    gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items)); 
+
+  for (l = menu_items; l != NULL; l = g_list_next (l))
+  {
+    if (l->data == menu->priv->selected_item)
+      break;
+  }
+  
+  g_debug ("key press event %p",l);
+
+  if (l == NULL)
+    return FALSE;   
+  
+  if (event->keyval == GDK_Up ||
+      event->keyval == GDK_KP_Up)
+  {
+    GList *item = l->prev;
+	  
+    while (item)
+    {
+      if (GTK_IS_MENU_ITEM (item->data) && !GTK_IS_SEPARATOR_MENU_ITEM (item->data))
+      {
+        gtk_item_deselect (GTK_ITEM (l->data));
+        gtk_item_select   (GTK_ITEM (item->data));
+	menu->priv->selected_item = GTK_MENU_ITEM (item->data);
+	break;
+      }
+
+      item = g_list_previous (item);
+    } 
+    return TRUE;
+  }
+  else
+  if (event->keyval == GDK_Down ||
+      event->keyval == GDK_KP_Down)
+  {
+    GList *item = l->next;
+    
+    while  (item)    
+    {	   
+      if (GTK_IS_MENU_ITEM (item->data) && !GTK_IS_SEPARATOR_MENU_ITEM (item->data))
+      { 
+        gtk_item_deselect (GTK_ITEM (l->data));
+        gtk_item_select   (GTK_ITEM (item->data));
+	menu->priv->selected_item = GTK_MENU_ITEM (item->data);
+	break;
+      }
+
+      item = g_list_next (item);
+    }
+    return TRUE;
+  }	  
+  else
+  if (event->keyval == GDK_KP_Enter ||
+      event->keyval == GDK_ISO_Enter)
+  {	  
+    if (menu->priv->selected_item)
+      gtk_menu_item_activate (menu->priv->selected_item);
+  }
+
+  return FALSE;	
 }
 
 static void 
@@ -520,8 +595,9 @@ hildon_desktop_popup_menu_select_item (HildonDesktopPopupMenu *menu, GtkMenuItem
     {
       gtk_item_select (GTK_ITEM (item));
       menu->priv->selected_item = item;
-      break;
     }
+    else
+      gtk_item_deselect (GTK_ITEM (item));	    
   }
 
   g_list_free (children);
