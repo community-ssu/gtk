@@ -1,3 +1,7 @@
+2007-05-09  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Moved submenu arrow graphics around to make space.
+
 2007-05-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Added new graphics for home applets and moved the
