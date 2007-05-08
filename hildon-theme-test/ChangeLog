@@ -1,3 +1,13 @@
+2007-05-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.png: new applet graphics are in, moved the generic
+	applet bitmap around as well as webradio applet's volume bg bitmap.
+
+	The applets are now together in the middle of the home layout area
+	which seems to make more sense too. The file contains some cruft
+	that will be added later, but I need to clean it up and update the 
+	layout also.
+
 2007-04-29  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: Updated the color swatches to the new
