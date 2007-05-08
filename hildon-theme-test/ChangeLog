@@ -1,3 +1,8 @@
+2007-05-09  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.png: Moved submenu arrow graphics around to
+	make space.
+
 2007-05-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: new applet graphics are in, moved the generic
