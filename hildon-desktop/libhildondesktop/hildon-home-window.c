@@ -44,6 +44,16 @@
 #define HILDON_HOME_WINDOW_GET_PRIVATE(obj) \
 (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_HOME_WINDOW, HildonHomeWindowPrivate))
 
+enum
+{
+  BUTTON1_CLICKED,
+  BUTTON2_CLICKED,
+
+  LAST_SIGNAL
+};
+
+static guint window_signals[LAST_SIGNAL] = { 0 };
+
 struct _HildonHomeWindowPrivate
 {
   GtkWidget    *titlebar;
@@ -61,7 +71,9 @@ enum
 {
   PROP_0,
 
-  PROP_WORK_AREA
+  PROP_WORK_AREA,
+  PROP_TITLE,
+  PROP_MENU
 };
 
 static void
@@ -87,12 +99,23 @@ hildon_home_window_set_property (GObject      *gobject,
                                  const GValue *value,
                                  GParamSpec   *pspec)
 {
+  HildonHomeWindowPrivate      *priv = HILDON_HOME_WINDOW_GET_PRIVATE (gobject);
   switch (prop_id)
     {
+      case PROP_MENU:
+          hildon_home_window_set_menu (HILDON_HOME_WINDOW (gobject),
+                                       GTK_MENU (g_value_get_object (value)));
+          break;
       case PROP_WORK_AREA:
           hildon_home_window_set_work_area (HILDON_HOME_WINDOW (gobject),
                                             (GdkRectangle *)
                                               g_value_get_pointer (value));
+          break;
+      case PROP_TITLE:
+          g_debug ("Setting title %s", g_value_get_string (value));
+          g_object_set (priv->titlebar,
+                        "title", g_value_get_string (value),
+                        NULL);
           break;
       default:
           G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
@@ -113,9 +136,26 @@ hildon_home_window_get_property (GObject    *gobject,
 
   switch (prop_id)
     {
+      case PROP_MENU:
+            {
+              GtkWidget *menu;
+              menu = hildon_home_window_get_menu (HILDON_HOME_WINDOW (gobject));
+              g_value_set_object (value, menu);
+            }
+          break;
       case PROP_WORK_AREA:
           g_value_set_pointer (value, priv->work_area);
           break;
+      case PROP_TITLE:
+            {
+              gchar *title;
+              g_object_get (priv->titlebar,
+                            "title", &title,
+                            NULL);
+              g_value_set_string (value, title);
+            }
+          break;
+
       default:
           G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
           break;
@@ -311,6 +351,40 @@ hildon_home_window_class_init (HildonHomeWindowClass *klass)
                                    PROP_WORK_AREA,
                                    pspec);
 
+  pspec =  g_param_spec_object ("menu",
+                                "menu",
+                                "menu",
+                                GTK_TYPE_MENU,
+                                G_PARAM_READWRITE);
+
+  g_object_class_install_property (gobject_class,
+                                   PROP_WORK_AREA,
+                                   pspec);
+
+  /* Overriden from GtkWindow */
+  g_object_class_override_property (gobject_class,
+                                    PROP_TITLE,
+                                    "title");
+
+  window_signals[BUTTON1_CLICKED] =
+      g_signal_new ("button1-clicked",
+                    G_TYPE_FROM_CLASS (klass),
+                    G_SIGNAL_RUN_LAST,
+                    G_STRUCT_OFFSET (HildonHomeWindowClass, button1_clicked),
+                    NULL, NULL,
+                    g_cclosure_marshal_VOID__VOID,
+                    G_TYPE_NONE, 0);
+
+  window_signals[BUTTON2_CLICKED] =
+      g_signal_new ("button2-clicked",
+                    G_TYPE_FROM_CLASS (klass),
+                    G_SIGNAL_RUN_LAST,
+                    G_STRUCT_OFFSET (HildonHomeWindowClass, button2_clicked),
+                    NULL, NULL,
+                    g_cclosure_marshal_VOID__VOID,
+                    G_TYPE_NONE, 0);
+
+
   g_type_class_add_private (klass, sizeof (HildonHomeWindowPrivate));
 }
 
@@ -371,12 +445,43 @@ hildon_home_window_new ()
                        NULL);
 }
 
-GtkWidget *hildon_home_window_get_titlebar (HildonHomeWindow *window)
+void
+hildon_home_window_set_menu (HildonHomeWindow *window, GtkMenu *menu)
 {
   HildonHomeWindowPrivate      *priv;
+  g_return_if_fail (HILDON_IS_HOME_WINDOW (window) &&
+                    GTK_IS_MENU (menu));
 
+  priv = HILDON_HOME_WINDOW_GET_PRIVATE (window);
+  g_object_set (priv->titlebar,
+                "menu", menu,
+                NULL);
+
+  g_object_notify (G_OBJECT (window), "menu");
+}
+
+GtkWidget *
+hildon_home_window_get_menu (HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate      *priv;
+  GtkWidget                    *menu;
   g_return_val_if_fail (HILDON_IS_HOME_WINDOW (window), NULL);
 
   priv = HILDON_HOME_WINDOW_GET_PRIVATE (window);
-  return priv->titlebar;
+  g_object_get (priv->titlebar,
+                "menu", &menu,
+                NULL);
+
+  return menu;
+}
+
+void
+hildon_home_window_toggle_menu (HildonHomeWindow *window)
+{
+  HildonHomeWindowPrivate      *priv;
+  g_return_if_fail (HILDON_IS_HOME_WINDOW (window));
+
+  priv = HILDON_HOME_WINDOW_GET_PRIVATE (window);
+
+  hildon_home_titlebar_toggle_menu (HILDON_HOME_TITLEBAR (priv->titlebar));
 }

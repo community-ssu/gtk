@@ -51,13 +51,20 @@ struct _HildonHomeWindowClass
 {
   HildonDesktopWindowClass parent_class;
 
+  void (*button1_clicked)       (HildonHomeWindow *window);
+  void (*button2_clicked)       (HildonHomeWindow *window);
+
 };
 
 GType hildon_home_window_get_type                  (void) G_GNUC_CONST;
 
 GtkWidget *hildon_home_window_new                  (void);
 
-GtkWidget *hildon_home_window_get_titlebar         (HildonHomeWindow *window);
+
+GtkWidget *hildon_home_window_get_menu             (HildonHomeWindow *window);
+void       hildon_home_window_set_menu             (HildonHomeWindow *window,
+                                                    GtkMenu          *menu);
+void       hildon_home_window_toggle_menu          (HildonHomeWindow *window);
 
 G_END_DECLS
 

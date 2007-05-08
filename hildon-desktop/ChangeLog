@@ -1,5 +1,15 @@
 2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-home-titlebar.[ch]:
+	- removed all layout mode-related logic
+	* libhildondesktop/hildon-home-window.[ch]:
+	- added "menu" and "title" properties, proxied to the titlebar
+	- added _toggle_menu, proxied to the titlebar
+	* src/hd-home-window.c:
+	- act on the window rather than the titlebar
+
+2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
+
 	* src/hd-home-window.[ch], libhildondesktop/hildon-home-window.[ch]:
 	- moved all notions of layout mode to the HDHomeWindow
 	- moved all notions of system state to the HDHomeWindow

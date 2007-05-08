@@ -37,9 +37,9 @@ G_BEGIN_DECLS
 #define _KE_RECV(a)                 dgettext("ke-recv", (a))
 
 /* title bar menu */
-#define HH_MENU_TITLE               _MAD("home_ap_home_view")        
+#define HH_MENU_TITLE               _MAD("home_ap_home_view")
 
-#define HH_MENU_SELECT              _MAD("home_me_select_applets") 
+#define HH_MENU_SELECT              _MAD("home_me_select_applets")
 #define HH_MENU_APPLET_SETTINGS     _MAD("home_me_applet_settings")
 #define HH_MENU_EDIT_LAYOUT         _MAD("home_me_edit_layout")
 #define HH_MENU_TOOLS               _MAD("home_me_tools")
@@ -83,11 +83,11 @@ G_BEGIN_DECLS
 #define HH_SET_BG_COLOR_TITLE     _MAD("home_fi_set_backgr_color")
 #define HH_SET_BG_IMAGE_TITLE     _MAD("home_fi_set_backgr_image")
 #define HH_SET_BG_IMAGE_NONE      _MAD("home_va_set_backgr_none")
-#define HH_SET_BG_MODE_TITLE      _MAD("home_fi_set_backgr_mode") 
+#define HH_SET_BG_MODE_TITLE      _MAD("home_fi_set_backgr_mode")
 #define HH_SET_BG_MODE_CENTERED   _MAD("home_va_set_backgr_centered")
 #define HH_SET_BG_MODE_SCALED     _MAD("home_va_set_backgr_scaled")
 #define HH_SET_BG_MODE_STRETCHED  _MAD("home_va_set_backgr_stretched")
-#define HH_SET_BG_MODE_TILED      _MAD("home_va_set_backgr_tiled") 
+#define HH_SET_BG_MODE_TILED      _MAD("home_va_set_backgr_tiled")
 
 /* generic notification dialogs */
 #define HH_LOW_MEMORY_TEXT          _KE_RECV("memr_ib_operation_disabled")

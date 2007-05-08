@@ -44,7 +44,6 @@
 #endif
 
 #include "hildon-home-titlebar.h"
-#include "hildon-home-area.h"
 #include "hildon-home-window.h"
 
 #define HILDON_HOME_TITLEBAR_HEIGHT	60
@@ -69,51 +68,19 @@
 
 #define HH_TITLEBAR_MENU_WIDGET_NAME    "menu_force_with_corners"
 
-
-GType
-hildon_home_titlebar_mode_get_type (void)
-{
-  static GType etype = 0;
-
-  if (!etype)
-    {
-      static const GEnumValue values[] =
-      {
-        { HILDON_DESKTOP_HOME_TITLEBAR_NORMAL, "HILDON_DESKTOP_HOME_TITLEBAR_NORMAL", "normal" },
-	{ HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT, "HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT", "layout" },
-	{ 0, NULL, NULL }
-      };
-
-      etype = g_enum_register_static ("HildonHomeTitlebarMode", values);
-    }
-
-  return etype;
-}
-
 #define HILDON_HOME_TITLEBAR_GET_PRIVATE(obj) \
 (G_TYPE_INSTANCE_GET_PRIVATE ((obj), HILDON_TYPE_HOME_TITLEBAR, HildonHomeTitlebarPrivate))
 
 struct _HildonHomeTitlebarPrivate
 {
-  HildonHomeTitlebarMode mode;
-  
-  GtkWidget *label;
+  GtkWidget    *label;
 
-  gchar *normal_text;
-  gchar *layout_text;
-  
-  GtkWidget *menu;
-  GtkWidget *tools_menu;
-  GtkWidget *settings_menu;
+  gchar        *title;
 
-  GtkWidget *select_applets_item;
-  GtkWidget *layout_mode_item;
-  GtkWidget *settings_item;
+  GtkWidget    *menu;
 
-  GtkWidget *layout_menu;
-
-  GtkWidget *layout_cancel;
-  GtkWidget *layout_accept;
+  GtkWidget    *button1;
+  GtkWidget    *button2;
 
   guint menu_key_pressed : 1;
   guint menu_popup_status : 1;
@@ -123,19 +90,14 @@ enum
 {
   PROP_0,
 
-  PROP_MODE,
   PROP_MENU,
-  PROP_MENU_TITLE,
-  PROP_LAYOUT_MENU,
-  PROP_LAYOUT_MENU_TITLE
+  PROP_TITLE,
 };
 
 enum
 {
-  LAYOUT_ACCEPT,
-  LAYOUT_CANCEL,
-  APPLET_ADDED,
-  APPLET_REMOVED,
+  BUTTON1_CLICKED,
+  BUTTON2_CLICKED,
 
   LAST_SIGNAL
 };
@@ -149,8 +111,7 @@ hildon_home_titlebar_finalize (GObject *object)
 {
   HildonHomeTitlebarPrivate *priv = HILDON_HOME_TITLEBAR (object)->priv;
 
-  g_free (priv->normal_text);
-  g_free (priv->layout_text);
+  g_free (priv->title);
 
   G_OBJECT_CLASS (hildon_home_titlebar_parent_class)->finalize (object);
 }
@@ -162,9 +123,6 @@ hildon_home_titlebar_destroy (GtkObject *object)
 
   if (titlebar->priv->menu)
     gtk_menu_detach (GTK_MENU (titlebar->priv->menu));
-  
-  if (titlebar->priv->layout_menu)
-    gtk_menu_detach (GTK_MENU (titlebar->priv->layout_menu));
 
   GTK_OBJECT_CLASS (hildon_home_titlebar_parent_class)->destroy (object);
 }
@@ -188,13 +146,13 @@ titlebar_menu_position_func (GtkMenu  *menu,
 {
   GtkWidget *widget = GTK_WIDGET (user_data);
   gint h_offset, v_offset;
-  
+
   gdk_window_get_origin (widget->window, x, y);
   gtk_widget_style_get (GTK_WIDGET (menu),
 			"horizontal-offset", &h_offset,
 			"vertical-offset", &v_offset,
 			NULL);
- 
+
   *x += widget->allocation.x + h_offset;
   *y += widget->allocation.y + widget->allocation.height + v_offset;
 
@@ -202,17 +160,15 @@ titlebar_menu_position_func (GtkMenu  *menu,
 }
 
 static void
-layout_accept_clicked_cb (GtkWidget *widget,
-			  gpointer   data)
+button1_clicked_cb (HildonHomeTitlebar *titlebar)
 {
-  g_signal_emit (data, titlebar_signals[LAYOUT_ACCEPT], 0);
+  g_signal_emit (titlebar, titlebar_signals[BUTTON1_CLICKED], 0);
 }
 
 static void
-layout_cancel_clicked_cb (GtkWidget *widget,
-			  gpointer   data)
+button2_clicked_cb (HildonHomeTitlebar *titlebar)
 {
-  g_signal_emit (data, titlebar_signals[LAYOUT_CANCEL], 0);
+  g_signal_emit (titlebar, titlebar_signals[BUTTON2_CLICKED], 0);
 }
 
 static gboolean
@@ -246,9 +202,9 @@ hildon_home_titlebar_button_release_event (GtkWidget       *widget,
     {
       return TRUE;
     }
-      
+
   hildon_home_titlebar_toggle_menu (titlebar);
-  
+
   return FALSE;
 }
 
@@ -262,26 +218,13 @@ hildon_home_titlebar_set_property (GObject      *gobject,
 
   switch (prop_id)
     {
-    case PROP_MODE:
-      hildon_home_titlebar_set_mode (titlebar,
-		                     g_value_get_enum (value));
-      break;
     case PROP_MENU:
       hildon_home_titlebar_set_menu (titlebar,
                                      GTK_WIDGET (g_value_get_object (value)));
       break;
-    case PROP_MENU_TITLE:
-      hildon_home_titlebar_set_menu_title (titlebar,
-                                           g_value_get_string (value));
-      break;
-    case PROP_LAYOUT_MENU:
-      hildon_home_titlebar_set_layout_menu (titlebar,
-                                            GTK_WIDGET (g_value_get_object (value)));
-      break;
-
-    case PROP_LAYOUT_MENU_TITLE:
-      hildon_home_titlebar_set_layout_menu_title (titlebar,
-                                                  g_value_get_string (value));
+    case PROP_TITLE:
+      hildon_home_titlebar_set_title (titlebar,
+                                      g_value_get_string (value));
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
@@ -299,20 +242,11 @@ hildon_home_titlebar_get_property (GObject    *gobject,
 
   switch (prop_id)
     {
-    case PROP_MODE:
-      g_value_set_enum (value, titlebar->priv->mode);
-      break;
     case PROP_MENU:
       g_value_set_object (value, titlebar->priv->menu);
       break;
-    case PROP_MENU_TITLE:
-      g_value_set_string (value, titlebar->priv->normal_text);
-      break;
-    case PROP_LAYOUT_MENU:
-      g_value_set_object (value, titlebar->priv->layout_menu);
-      break;
-    case PROP_LAYOUT_MENU_TITLE:
-      g_value_set_string (value, titlebar->priv->layout_text);
+    case PROP_TITLE:
+      g_value_set_string (value, titlebar->priv->title);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
@@ -337,70 +271,39 @@ hildon_home_titlebar_class_init (HildonHomeTitlebarClass *klass)
   widget_class->button_press_event = hildon_home_titlebar_button_press_event;
   widget_class->button_release_event = hildon_home_titlebar_button_release_event;
 
-  pspec = g_param_spec_enum ("mode",
-                             "Mode",
-                             "Titlebar mode",
-                             HILDON_TYPE_HOME_TITLEBAR_MODE,
-                             HILDON_DESKTOP_HOME_TITLEBAR_NORMAL,
-                             G_PARAM_READWRITE);
-
-  g_object_class_install_property (gobject_class,
-                                   PROP_MODE,
-                                   pspec);
-
   pspec = g_param_spec_object ("menu",
                                "Menu",
-                               "Menu used in normal mode",
+                               "Menu",
                                GTK_TYPE_MENU,
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (gobject_class,
                                    PROP_MENU,
                                    pspec);
-  
-  pspec = g_param_spec_object ("layout-menu",
-                               "Layout mode menu",
-                               "Menu used in layout mode",
-                               GTK_TYPE_MENU,
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
-  g_object_class_install_property (gobject_class,
-                                   PROP_LAYOUT_MENU,
-                                   pspec);
-  
-  pspec = g_param_spec_string ("menu-title",
-                               "Menu title",
-                               "Menu title used in normal mode",
+  pspec = g_param_spec_string ("title",
+                               "Title",
+                               "Title",
                                "",
                                G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 
   g_object_class_install_property (gobject_class,
-                                   PROP_MENU_TITLE,
-                                   pspec);
-  
-  pspec = g_param_spec_string ("layout-menu-title",
-                               "Layout mode menu title",
-                               "Menu title used in layout mode",
-                               "",
-                               G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-
-  g_object_class_install_property (gobject_class,
-                                   PROP_LAYOUT_MENU_TITLE,
+                                   PROP_TITLE,
                                    pspec);
 
-  titlebar_signals[LAYOUT_ACCEPT] =
-      g_signal_new ("layout-accept",
+  titlebar_signals[BUTTON1_CLICKED] =
+      g_signal_new ("button1-clicked",
                     G_TYPE_FROM_CLASS (klass),
                     G_SIGNAL_RUN_LAST,
-                    G_STRUCT_OFFSET (HildonHomeTitlebarClass, layout_accept),
+                    G_STRUCT_OFFSET (HildonHomeTitlebarClass, button1_clicked),
                     NULL, NULL,
                     g_cclosure_marshal_VOID__VOID,
                     G_TYPE_NONE, 0);
-  titlebar_signals[LAYOUT_CANCEL] =
-      g_signal_new ("layout-cancel",
+  titlebar_signals[BUTTON2_CLICKED] =
+      g_signal_new ("button2-clicked",
                     G_TYPE_FROM_CLASS (klass),
                     G_SIGNAL_RUN_LAST,
-                    G_STRUCT_OFFSET (HildonHomeTitlebarClass, layout_cancel),
+                    G_STRUCT_OFFSET (HildonHomeTitlebarClass, button2_clicked),
                     NULL, NULL,
                     g_cclosure_marshal_VOID__VOID,
                     G_TYPE_NONE, 0);
@@ -417,7 +320,6 @@ hildon_home_titlebar_init (HildonHomeTitlebar *titlebar)
 
   titlebar->priv = priv = HILDON_HOME_TITLEBAR_GET_PRIVATE (titlebar);
 
-  priv->mode = HILDON_DESKTOP_HOME_TITLEBAR_NORMAL;
   priv->menu_key_pressed = FALSE;
   priv->menu_popup_status = FALSE;
 
@@ -442,7 +344,7 @@ hildon_home_titlebar_init (HildonHomeTitlebar *titlebar)
   gtk_box_pack_start (GTK_BOX (hbox), align, FALSE, FALSE, 0);
   gtk_widget_show (align);
 
-  priv->label = gtk_label_new (priv->normal_text);
+  priv->label = gtk_label_new (priv->title);
   gtk_widget_set_composite_name (priv->label, "hildon-home-titlebar-label");
   gtk_misc_set_alignment (GTK_MISC (priv->label), 0.0, 0.5);
 
@@ -478,30 +380,33 @@ hildon_home_titlebar_init (HildonHomeTitlebar *titlebar)
   gtk_container_add (GTK_CONTAINER (align), hbox);
   gtk_widget_show (hbox);
 
-  priv->layout_accept = gtk_button_new ();
-  gtk_container_add (GTK_CONTAINER (priv->layout_accept),
+  priv->button1 = gtk_button_new ();
+  gtk_container_add (GTK_CONTAINER (priv->button1),
                      gtk_image_new_from_icon_name (LAYOUT_MODE_ACCEPT_BUTTON,
                                                    GTK_ICON_SIZE_BUTTON));
-  gtk_widget_set_size_request (priv->layout_accept,
+  gtk_widget_set_size_request (priv->button1,
                                LAYOUT_MODE_BUTTON_SIZE,
                                LAYOUT_MODE_BUTTON_SIZE);
-  g_signal_connect (priv->layout_accept, "clicked",
-                    G_CALLBACK (layout_accept_clicked_cb),
-                    titlebar);
-  gtk_box_pack_start (GTK_BOX (hbox), priv->layout_accept, FALSE, FALSE, 0);
+  g_signal_connect_swapped (priv->button1, "clicked",
+                            G_CALLBACK (button1_clicked_cb),
+                            titlebar);
 
 
-  priv->layout_cancel = gtk_button_new ();
-  gtk_container_add (GTK_CONTAINER (priv->layout_cancel),
+  gtk_box_pack_start (GTK_BOX (hbox), priv->button1, FALSE, FALSE, 0);
+
+
+  priv->button2 = gtk_button_new ();
+  gtk_container_add (GTK_CONTAINER (priv->button2),
                      gtk_image_new_from_icon_name (LAYOUT_MODE_CANCEL_BUTTON,
                                                    GTK_ICON_SIZE_BUTTON));
-  gtk_widget_set_size_request (priv->layout_cancel,
+  gtk_widget_set_size_request (priv->button2,
                                LAYOUT_MODE_BUTTON_SIZE,
                                LAYOUT_MODE_BUTTON_SIZE);
-  g_signal_connect (priv->layout_cancel, "clicked",
-                    G_CALLBACK (layout_cancel_clicked_cb),
-                    titlebar);
-  gtk_box_pack_start (GTK_BOX (hbox), priv->layout_cancel, FALSE, FALSE, 0);
+
+  gtk_box_pack_start (GTK_BOX (hbox), priv->button2, FALSE, FALSE, 0);
+  g_signal_connect_swapped (priv->button2, "clicked",
+                            G_CALLBACK (button2_clicked_cb),
+                            titlebar);
 
   gtk_widget_pop_composite_child ();
 }
@@ -510,79 +415,18 @@ GtkWidget *
 hildon_home_titlebar_new ()
 {
   return g_object_new (HILDON_TYPE_HOME_TITLEBAR,
-                       "mode", HILDON_DESKTOP_HOME_TITLEBAR_NORMAL,
                        NULL);
-}
-
-
-void
-hildon_home_titlebar_set_mode (HildonHomeTitlebar     *titlebar,
-                               HildonHomeTitlebarMode  mode)
-{
-  HildonHomeTitlebarPrivate *priv;
-
-  g_return_if_fail (HILDON_IS_HOME_TITLEBAR (titlebar));
-
-  priv = titlebar->priv;
-
-  if (priv->mode != mode)
-    {
-      g_object_ref (titlebar);
-
-      priv->mode = mode;
-
-      switch (mode)
-        {
-	  case HILDON_DESKTOP_HOME_TITLEBAR_NORMAL:
-              gtk_label_set_text (GTK_LABEL (priv->label),
-                                  priv->normal_text);
-
-              gtk_widget_hide (priv->layout_accept);
-              gtk_widget_hide (priv->layout_cancel);
-              break;
-          case HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT:
-              gtk_label_set_text (GTK_LABEL (priv->label),
-                                  priv->layout_text);
-
-              gtk_widget_show_all (priv->layout_accept);
-              gtk_widget_show_all (priv->layout_cancel);
-              gtk_widget_grab_focus (priv->layout_cancel);
-              break;
-          default:
-              g_assert_not_reached ();
-              break;
-        }
-
-      g_object_notify (G_OBJECT (titlebar), "mode");
-      g_object_unref (titlebar);
-    }
 }
 
 void
 hildon_home_titlebar_toggle_menu (HildonHomeTitlebar *titlebar)
 {
-  GtkMenu * menu = NULL;
-  HildonHomeTitlebarPrivate *priv = titlebar->priv;
-
-  switch (priv->mode)
-    {
-      case HILDON_DESKTOP_HOME_TITLEBAR_NORMAL:
-          menu = GTK_MENU (priv->menu);
-          break;
-      case HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT:
-          menu = GTK_MENU (priv->layout_menu);
-          break;
-      default:
-          g_assert_not_reached ();
-          break;
-    }
+  HildonHomeTitlebarPrivate    *priv = titlebar->priv;
+  GtkMenu                      *menu = GTK_MENU (priv->menu);
 
   if (!menu)
     {
-      g_warning ("Titlebar mode `%s', but no menu defined",
-                 priv->mode == HILDON_DESKTOP_HOME_TITLEBAR_NORMAL ? "normal"
-                 : "layout");
-
+      g_warning ("Titlebar menu toggled but no menu defined");
       return;
     }
 
@@ -640,34 +484,8 @@ hildon_home_titlebar_set_menu (HildonHomeTitlebar *titlebar,
 }
 
 void
-hildon_home_titlebar_set_layout_menu (HildonHomeTitlebar *titlebar,
-                                      GtkWidget *menu)
-{
-  HildonHomeTitlebarPrivate *priv;
-
-  g_return_if_fail (HILDON_IS_HOME_TITLEBAR (titlebar));
-  
-  if (!GTK_IS_MENU (menu))
-    return;
-
-  priv = HILDON_HOME_TITLEBAR_GET_PRIVATE (titlebar);
-
-  if (priv->layout_menu)
-    gtk_menu_detach (GTK_MENU (priv->layout_menu));
-
-  priv->layout_menu = menu;
-
-  gtk_widget_set_name (menu, HH_TITLEBAR_MENU_WIDGET_NAME);
-  g_signal_connect (menu, "deactivate",
-                    G_CALLBACK (titlebar_menu_deactivate_cb),
-                    titlebar);
-
-  g_object_notify (G_OBJECT (titlebar), "layout-menu");
-}
-
-void
-hildon_home_titlebar_set_menu_title (HildonHomeTitlebar *titlebar,
-                                     const gchar *label)
+hildon_home_titlebar_set_title (HildonHomeTitlebar *titlebar,
+                                const gchar *label)
 {
   HildonHomeTitlebarPrivate *priv;
 
@@ -678,43 +496,15 @@ hildon_home_titlebar_set_menu_title (HildonHomeTitlebar *titlebar,
 
   priv = HILDON_HOME_TITLEBAR_GET_PRIVATE (titlebar);
 
-  if (!priv->normal_text || !g_str_equal (priv->normal_text, label))
+  if (!priv->title || !g_str_equal (priv->title, label))
     {
-      g_free (priv->normal_text);
+      g_free (priv->title);
 
-      priv->normal_text = g_strdup (label);
-      
-      if (priv->mode == HILDON_DESKTOP_HOME_TITLEBAR_NORMAL)
-        gtk_label_set_text (GTK_LABEL (priv->label), priv->normal_text);
-      
-      g_object_notify (G_OBJECT (titlebar), "menu-title");
-    }
+      priv->title = g_strdup (label);
 
-}
+      gtk_label_set_text (GTK_LABEL (priv->label), label);
 
-void
-hildon_home_titlebar_set_layout_menu_title (HildonHomeTitlebar *titlebar,
-                                            const gchar *label)
-{
-  HildonHomeTitlebarPrivate *priv;
-
-  g_return_if_fail (HILDON_IS_HOME_TITLEBAR (titlebar));
-
-  if (!label)
-    return;
-
-  priv = HILDON_HOME_TITLEBAR_GET_PRIVATE (titlebar);
-
-  if (!priv->layout_text || !g_str_equal (priv->layout_text, label))
-    {
-      g_free (priv->layout_text);
-
-      priv->layout_text = g_strdup (label);
-
-      if (priv->mode == HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT)
-        gtk_label_set_text (GTK_LABEL (priv->label), priv->layout_text);
-      
-      g_object_notify (G_OBJECT (titlebar), "layout-menu-title");
+      g_object_notify (G_OBJECT (titlebar), "title");
     }
 
 }
