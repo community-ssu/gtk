@@ -1,7 +1,7 @@
 Source: libsdl1.2
 Priority: optional
 Maintainer: Kuisma Salonen <kuisma.salonen@nokia.com>
-Build-Depends: debhelper (>= 4.0.0), xlibs-dev, automake1.8, libasound2-dev
+Build-Depends: debhelper (>= 4.0.0), libx11-dev, libsm-dev, libxpm-dev, libxext-dev, libxmu-dev, libxmuu-dev, libxi-dev, libxrandr-dev, x-dev, automake1.8, libasound2-dev, osso-esd-dev
 Standards-Version: 3.6.0
 
 Package: libsdl1.2-dev

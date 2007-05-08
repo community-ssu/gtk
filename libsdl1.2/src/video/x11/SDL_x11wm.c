@@ -381,12 +381,10 @@ int X11_GetWMInfo(_THIS, SDL_SysWMinfo *info)
 		info->subsystem = SDL_SYSWM_X11;
 		info->info.x11.display = SDL_Display;
 		info->info.x11.window = SDL_Window;
-		if ( SDL_VERSIONNUM(info->version.major,
-		                    info->version.minor,
-		                    info->version.patch) >= 1002 ) {
-			info->info.x11.fswindow = FSwindow;
-			info->info.x11.wmwindow = WMwindow;
-		}
+
+		info->info.x11.fswindow = FSwindow;
+		info->info.x11.wmwindow = WMwindow;
+
 		info->info.x11.lock_func = lock_display;
 		info->info.x11.unlock_func = unlock_display;
 		return(1);

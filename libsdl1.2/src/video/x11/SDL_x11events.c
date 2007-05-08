@@ -158,6 +158,8 @@ static int X11_DispatchEvent(_THIS)
 {
 	int posted;
 	XEvent xevent;
+	Window win;
+	int tmp;
 
 	XNextEvent(SDL_Display, &xevent);
 
@@ -198,12 +200,20 @@ printf("Mode: NotifyUngrab\n");
 		if ( (xevent.xcrossing.mode != NotifyGrab) &&
 		     (xevent.xcrossing.mode != NotifyUngrab) &&
 		     (xevent.xcrossing.detail != NotifyInferior) ) {
-			if ( this->input_grab == SDL_GRAB_OFF ) {
-				posted = SDL_PrivateAppActive(0, SDL_APPMOUSEFOCUS);
+			win = 0;
+			tmp = 0;
+			XGetInputFocus(SDL_Display, &win, &tmp);
+
+			if (win == (currently_fullscreen ? FSwindow : WMwindow)) {
+				XSetInputFocus(SDL_Display, SDL_Window, RevertToPointerRoot, CurrentTime);
 			} else {
-				posted = SDL_PrivateMouseMotion(0, 0,
-						xevent.xcrossing.x,
-						xevent.xcrossing.y);
+				if ( this->input_grab == SDL_GRAB_OFF ) {
+					posted = SDL_PrivateAppActive(0, SDL_APPMOUSEFOCUS);
+				} else {
+					posted = SDL_PrivateMouseMotion(0, 0,
+							xevent.xcrossing.x,
+							xevent.xcrossing.y);
+				}
 			}
 		}
 	    }

@@ -9,5 +9,5 @@ The Simple DirectMedia Layer library source code is available from:
 http://www.libsdl.org/
 
 This library is distributed under the terms of the GNU LGPL license:
-http://www.gnu.org/copyleft/lesser.html
+http://www.gnu.org/licenses/lgpl.txt
 
