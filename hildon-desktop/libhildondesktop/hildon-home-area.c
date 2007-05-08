@@ -1445,11 +1445,6 @@ hildon_home_area_create_child_data (HildonHomeArea     *area,
       child_data->damage = XDamageCreate (GDK_DISPLAY (),
                                           child_data->window,
                                           XDamageReportNonEmpty);
-
-      gdk_window_add_filter (child->window,
-                             (GdkFilterFunc)
-                                hildon_home_area_child_window_filter,
-                             child_data->widget);
     }
 }
 
@@ -1469,6 +1464,11 @@ hildon_home_area_child_realize (GtkWidget             *child,
 
   if (data->picture == None)
     hildon_home_area_create_child_data (HILDON_HOME_AREA (area), child);
+
+  gdk_window_add_filter (child->window,
+                         (GdkFilterFunc)
+                         hildon_home_area_child_window_filter,
+                         data->widget);
 
   if (data->alpha_mask == None)
     hildon_home_area_child_build_alpha_mask (area, child);

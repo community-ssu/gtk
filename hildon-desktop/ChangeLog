@@ -1,5 +1,12 @@
 2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
 
+	* libhildondesktop/hildon-desktop-home-item.c:
+	- added tap_and_hold handler to revert to normal state
+	when the popup is shown. Does not solve the problem of a
+	tap-n-hold set up on a child widget
+
+2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
+
 	* libhildondesktop/hildon-home-titlebar.[ch]:
 	- removed all layout mode-related logic
 	* libhildondesktop/hildon-home-window.[ch]:
