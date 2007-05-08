@@ -1,9 +1,8 @@
 dosfstools (2.11-0osso2) unstable; urgency=low
 
-  * UNRELEASED
   * Added patch for dosfsck to print progress indication.
   
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Mon, 23 Apr 2007 16:03:34 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 08 May 2007 19:46:13 +0300
 
 dosfstools (2.11-0osso1) unstable; urgency=low
 
