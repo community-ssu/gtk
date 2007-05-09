@@ -1,3 +1,19 @@
+hildon-home-webshortcut (1:1.9.1-1) sardine; urgency=low
+
+  * plugin/hildon-home-webshortcut.c: Ported from osso-ic to
+  libconic
+  Fixes: NB#54077
+
+  * plugin/hildon-home-webshortcut.c: Only launch the URI when
+  the user didn't drag the mouse.
+  Fixes: NB#56353
+
+  * plugin/hildon-home-webshortcut.c: Pass the object
+  instead of its private member to the loader error handler.
+  Fixes: NB#55297
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Wed,  9 May 2007 10:44:00 +0300
+
 hildon-home-webshortcut (1:1.9.0-2) unstable; urgency=low
 
   * Fixed .install file 
