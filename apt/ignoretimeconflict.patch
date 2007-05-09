@@ -11,3 +11,15 @@ Index: cmdline/apt-key
          echo "OK"
          ;;
      del|rm|remove)
+Index: debian/rules
+===================================================================
+--- debian/rules	(revision 9926)
++++ debian/rules	(working copy)
+@@ -216,6 +216,8 @@
+ 	cp debian/bugscript debian/$@/usr/share/bug/apt/script
+ 
+ #	cp share/debian-archive.gpg debian/$@/usr/share/$@
++	echo 'Acquire::gpgv::Options {"--ignore-time-conflict";};' \
++	     >$(DEBIAN_DIR)/$@/etc/apt/apt.conf.d/50gpgv
+ 
+ #	head -n 500 ChangeLog > debian/ChangeLog

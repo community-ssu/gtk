@@ -1,3 +1,10 @@
+apt (0.6.46.4.osso7) unstable; urgency=low
+
+  * Updated ignoretimeconflict.patch to also ignore time conflicts during
+    signature verification.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed,  9 May 2007 21:47:26 +0300
+
 apt (0.6.46.4.osso6) unstable; urgency=low
 
   * Bugfixed trusthook.patch to not get into infinite loops in certain
