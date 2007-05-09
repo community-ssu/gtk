@@ -130,8 +130,6 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
                           event->area.width, event->area.height);
 
       if (priv->focus_picture != None && GTK_WIDGET_HAS_FOCUS (widget))
-        {
-          g_debug ("painting focus");
         XRenderComposite (GDK_DISPLAY (),
                           PictOpOver,
                           priv->focus_picture,
@@ -141,7 +139,6 @@ hildon_desktop_toggle_button_expose (GtkWidget *widget, GdkEventExpose *event)
                           event->area.x, event->area.y,
                           event->area.x - x_offset, event->area.y - y_offset,
                           event->area.width, event->area.height);
-        }
 
       XRenderFreePicture (GDK_DISPLAY (),
                           picture);

@@ -1,3 +1,12 @@
+2007-05-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* libhildondesktop/hildon-home-area.c:
+	- fixed a bug I just introduced, the Damage needs to be created
+	even if the applet is already realized when added
+	- removed some debug messages
+	* libhildondesktop/hildon-desktop-toggle-button.c:
+	- removed excessive debug messages
+
 2007-05-09  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-config.h: Added thumb icon size.
@@ -61,6 +70,7 @@
 	- removed _init_applets, no longer necessary
 	- when layout mode sucks, save the layout once
 	every second when an applet is moved
+	Fixes: NB#56368
 	* src/hd-desktop.c: Do not call _applet_init anymore
 	* background-manager/background-manager.c:
 	- do not apply the borders for the initial background

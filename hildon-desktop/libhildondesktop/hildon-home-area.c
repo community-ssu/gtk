@@ -748,7 +748,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
 
   if (priv->batch_add)
     {
-      g_debug ("Batch adding it");
       priv->to_add = g_list_append (priv->to_add, applet);
       g_signal_emit_by_name (area, "layout-changed");
       return;
@@ -756,18 +755,14 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
 
   if (priv->layout && HILDON_DESKTOP_IS_HOME_ITEM (applet))
     {
-      g_debug ("Adding Hildon Home applet");
       GdkRectangle *rect;
       const gchar *name = hildon_desktop_item_get_id (
                                      HILDON_DESKTOP_ITEM (applet));
-
-      g_debug ("Name: %s", name);
 
       rect = g_hash_table_lookup (priv->layout, name);
 
       if (rect)
         {
-          g_debug ("Found layout configuration");
           gtk_fixed_put (GTK_FIXED (area), applet, rect->x, rect->y);
           if (rect->width > 0 && rect->height > 0)
             gtk_widget_set_size_request (applet, rect->width, rect->height);
@@ -775,7 +770,6 @@ hildon_home_area_add (GtkContainer *area, GtkWidget *applet)
 
       else
         {
-          g_debug ("No layout configuration");
           gtk_fixed_put (GTK_FIXED (area), applet, 0, 0);
         }
 
@@ -867,8 +861,6 @@ hildon_home_area_child_style_set (GtkWidget            *child,
 {
   ChildData    *child_data;
 
-  g_debug ("Child style set");
-
   if (!HILDON_DESKTOP_IS_HOME_ITEM (child))
     return;
 
@@ -900,6 +892,7 @@ hildon_home_area_child_size_allocate (GtkWidget        *child,
     hildon_home_area_child_build_alpha_mask (area, child);
 
   data->old_allocation = *allocation;
+
 
 }
 
@@ -938,7 +931,7 @@ hildon_home_area_child_build_alpha_mask_unscaled (HildonHomeArea       *area,
 
   if (mask_file_name)
     {
-      pixbuf = gdk_pixbuf_new_from_file (mask_file_name, 
+      pixbuf = gdk_pixbuf_new_from_file (mask_file_name,
                                          &error);
     }
 
@@ -950,6 +943,7 @@ hildon_home_area_child_build_alpha_mask_unscaled (HildonHomeArea       *area,
       pixbuf = NULL;
     }
 
+  g_debug ("Loaded %s for alpha mask", mask_file_name);
 
   if (pixbuf)
     {
@@ -1069,10 +1063,11 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
                            "child-data", &child_data,
                            NULL);
 
-  if (!child_data->alpha_mask_unscaled)
+  if (child_data->alpha_mask_unscaled == None)
     hildon_home_area_child_build_alpha_mask_unscaled (area, child);
 
-  g_return_if_fail (child_data->alpha_mask_unscaled);
+  if (child_data->alpha_mask_unscaled == None)
+    return;
 
   if (child_data->alpha_mask != None)
     XRenderFreePicture (GDK_DISPLAY (),
@@ -1087,12 +1082,6 @@ hildon_home_area_child_build_alpha_mask (HildonHomeArea *area,
       gint                      center_w, center_h, scenter_w, scenter_h;
       XRenderPictureAttributes  pa;
       XRenderPictFormat        *format;
-
-      g_debug ("Got border values: %i %i %i %i",
-               borders->left,
-               borders->right,
-               borders->top,
-               borders->bottom);
 
       w = child->allocation.width;
       h = child->allocation.height;
@@ -1284,7 +1273,7 @@ hildon_home_area_expose (GtkWidget *widget,
 
   priv = HILDON_HOME_AREA_GET_PRIVATE (widget);
 
-  if (GTK_WIDGET_VISIBLE (widget))
+  if (GTK_WIDGET_DRAWABLE (widget))
     {
       GList                    *children;
       XRectangle                rectangle;
@@ -1351,7 +1340,7 @@ hildon_home_area_expose (GtkWidget *widget,
 
       for (i = 0; i < n_children; i++)
         {
-          GList        *l = NULL; 
+          GList        *l = NULL;
 
           l = g_list_find_custom (children,
                                   &wchildren[i],
@@ -1445,6 +1434,11 @@ hildon_home_area_create_child_data (HildonHomeArea     *area,
       child_data->damage = XDamageCreate (GDK_DISPLAY (),
                                           child_data->window,
                                           XDamageReportNonEmpty);
+
+      gdk_window_add_filter (child_data->widget->window,
+                             (GdkFilterFunc)
+                                 hildon_home_area_child_window_filter,
+                             child_data->widget);
     }
 }
 
@@ -1464,11 +1458,6 @@ hildon_home_area_child_realize (GtkWidget             *child,
 
   if (data->picture == None)
     hildon_home_area_create_child_data (HILDON_HOME_AREA (area), child);
-
-  gdk_window_add_filter (child->window,
-                         (GdkFilterFunc)
-                         hildon_home_area_child_window_filter,
-                         data->widget);
 
   if (data->alpha_mask == None)
     hildon_home_area_child_build_alpha_mask (area, child);
@@ -1680,8 +1669,6 @@ hildon_home_area_batch_add (HildonHomeArea *area)
       w = GTK_WIDGET (i->data);
       name = hildon_desktop_item_get_id (HILDON_DESKTOP_ITEM (w));
 
-      g_debug ("Placing %s", name);
-
       gtk_widget_size_request (w, &req);
 
       i_rect = region;
@@ -1689,11 +1676,6 @@ hildon_home_area_batch_add (HildonHomeArea *area)
       while (i_rect)
         {
           GdkRectangle *r = (GdkRectangle *)i_rect->data;
-          g_debug ("Rectangle: (%i,%i) %ix%i",
-                   r->x,
-                   r->y,
-                   r->width,
-                   r->height);
 
           if (r->width  >= req.width &&
               r->height >= req.height)
@@ -1952,8 +1934,6 @@ hildon_home_area_load_configuration (HildonHomeArea *area,
 
   g_return_if_fail (area);
   priv = HILDON_HOME_AREA_GET_PRIVATE (area);
-
-  g_debug ("Loading Hildon Home layout from %s", path);
 
   applets = gtk_container_get_children (GTK_CONTAINER (area));
 
