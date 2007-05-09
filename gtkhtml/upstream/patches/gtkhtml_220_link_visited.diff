@@ -1,0 +1,79 @@
+diff -ru gtkhtml-3.13.91/src/gtkhtml.c gtkhtml-3.13.91-link-visited/src/gtkhtml.c
+--- gtkhtml-3.13.91/src/gtkhtml.c	2007-05-09 15:04:10.000000000 +0300
++++ gtkhtml-3.13.91-link-visited/src/gtkhtml.c	2007-05-09 19:27:23.000000000 +0300
+@@ -6015,6 +6015,12 @@
+ 	html_engine_flush (html->engine);
+ }
+ 
++void
++gtk_html_set_link_visited (GtkHTML *html, char *url, gboolean visited)
++  {
++  html_engine_set_link_visited (html->engine, url, visited) ;
++  }
++
+ const char *
+ gtk_html_get_object_id_at (GtkHTML *html, int x, int y)
+ {
+diff -ru gtkhtml-3.13.91/src/gtkhtml.h gtkhtml-3.13.91-link-visited/src/gtkhtml.h
+--- gtkhtml-3.13.91/src/gtkhtml.h	2007-05-09 15:04:10.000000000 +0300
++++ gtkhtml-3.13.91-link-visited/src/gtkhtml.h	2007-05-09 19:28:52.000000000 +0300
+@@ -328,6 +328,9 @@
+ char *                     gtk_html_get_cursor_url                (GtkHTML                   *html);
+ void                       gtk_html_set_tokenizer                 (GtkHTML                   *html,
+ 								   HTMLTokenizer             *tokenizer);
++void                       gtk_html_set_link_visited              (GtkHTML                   *html,
++                   char                      *url,
++                   gboolean                   visited);
+ 
+ /* DEPRECATED */
+ #if 1
+diff -ru gtkhtml-3.13.91/src/htmlengine.c gtkhtml-3.13.91-link-visited/src/htmlengine.c
+--- gtkhtml-3.13.91/src/htmlengine.c	2007-05-09 15:04:10.000000000 +0300
++++ gtkhtml-3.13.91-link-visited/src/htmlengine.c	2007-05-09 19:26:17.000000000 +0300
+@@ -6090,6 +6090,36 @@
+ 		g_hash_table_foreach (t, set_object_data, o);
+ }
+ 
++typedef struct
++  {
++  char *url ;
++  gboolean visited ;
++  } SET_LINK_VISITED_PARAMS ;
++
++static void html_engine_set_link_visited_forall_cb (HTMLObject *self, HTMLEngine *engine, SET_LINK_VISITED_PARAMS *params)
++  {
++  if (HTML_IS_TEXT (self))
++    {
++    char *url = NULL ;
++    gint offset = 0 ;
++
++    do
++      if (NULL != (url = html_object_get_complete_url (HTML_OBJECT (self), offset)))
++        {
++        if (!strcmp (params->url, url))
++          html_text_set_link_visited (HTML_TEXT (self), offset, engine, params->visited) ;
++        g_free (url) ;
++        }
++    while (html_text_next_link_offset (HTML_TEXT (self), &offset)) ;
++    }
++  }
++
++void
++html_engine_set_link_visited (HTMLEngine *e, char *url, gboolean visited)
++  {
++  SET_LINK_VISITED_PARAMS params = {url, visited} ;
++  html_object_forall (e->clue, e, (HTMLObjectForallFunc)html_engine_set_link_visited_forall_cb, &params) ;
++  }
+ 
+ HTMLEngine *
+ html_engine_get_top_html_engine (HTMLEngine *e)
+diff -ru gtkhtml-3.13.91/src/htmlengine.h gtkhtml-3.13.91-link-visited/src/htmlengine.h
+--- gtkhtml-3.13.91/src/htmlengine.h	2007-01-03 17:19:57.000000000 +0200
++++ gtkhtml-3.13.91-link-visited/src/htmlengine.h	2007-05-09 19:26:56.000000000 +0300
+@@ -493,5 +493,6 @@
+ void html_engine_opened_streams_set (HTMLEngine *e, int value);
+ 
+ void html_engine_refresh_fonts (HTMLEngine *e);
++void html_engine_set_link_visited (HTMLEngine *e, char *url, gboolean visited) ;
+ 
+ #endif /* _HTMLENGINE_H_ */

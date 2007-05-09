@@ -1,3 +1,7 @@
+2007-05-09  Gabriel Schulhof <gabriel.schulhof@nokia.com>
+
+	* Added API to programmatically set a link as visited
+
 2007-04-16  Gabriel Schulhof <gabriel.schulhof@nokia.com>
 
 	* Removed gtkhtml_000_memleak_fix.diff, because it was already upstream, and
