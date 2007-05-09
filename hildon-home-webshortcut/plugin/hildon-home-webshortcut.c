@@ -97,6 +97,7 @@ struct _HhwsPrivate {
   guint             old_width;
   guint             old_height;
   GConfClient      *gconf_client;
+  gdouble           click_x, click_y;
 };
 
 HD_DEFINE_PLUGIN_WITH_CODE (Hhws, hhws, HILDON_DESKTOP_TYPE_HOME_ITEM, hhws_loader_register_type (module);)
@@ -184,7 +185,7 @@ hhws_loader_error_cb (HhwsLoader *loader,
 
   if (text)
     hhws_show_information_note (hhws, text);
-  
+
 }
 
 static void
@@ -501,6 +502,19 @@ hhws_launch_uri (Hhws *hhws)
     }
 }
 
+static gboolean
+hhws_button_press (GtkWidget           *widget,
+                   GdkEventButton      *event)
+{
+  Hhws             *hhws = HHWS (widget);
+  HhwsPrivate      *priv = hhws->priv;
+
+  priv->click_x = event->x_root;
+  priv->click_y = event->y_root;
+
+  return GTK_WIDGET_CLASS (hhws_parent_class)->button_press_event (widget,
+                                                                   event);
+}
 
 static gboolean
 hhws_button_release (GtkWidget         *widget,
@@ -508,35 +522,22 @@ hhws_button_release (GtkWidget         *widget,
 {
   Hhws             *hhws = HHWS (widget);
   HhwsPrivate      *priv = hhws->priv;
-  gint              applet_x, applet_y;
 
-  /* Get the widget's root coordinates */
-  gdk_window_get_origin (widget->window, &applet_x, &applet_y);
-  if (GTK_WIDGET_NO_WINDOW (widget))
+  if (priv->click_x != event->x_root || priv->click_y != event->y_root)
     {
-      applet_x += widget->allocation.x;
-      applet_y += widget->allocation.y;
-    }
-
-  if((gint)event->x_root < applet_x || 
-     (gint)event->x_root > applet_x + widget->allocation.width ||
-     (gint)event->y_root < applet_y ||
-     (gint)event->y_root > applet_y + widget->allocation.height)
-    {
-      /* Released outside the applet */
       return GTK_WIDGET_CLASS (hhws_parent_class)->button_release_event (widget,
                                                                          event);
     }
 
-  if (priv->iap) 
+  if (priv->iap)
     {
       if (osso_iap_connect (priv->iap,
                             OSSO_IAP_REQUESTED_CONNECT,
                             NULL) != OSSO_OK)
         g_critical ("osso_iap_connect != OSSO_OK");
-    } 
-  else
-    hhws_launch_uri (hhws);
+    }
+
+  hhws_launch_uri (hhws);
 
   return GTK_WIDGET_CLASS (hhws_parent_class)->button_release_event (widget,
                                                                      event);
@@ -768,6 +769,7 @@ hhws_class_init (HhwsClass *klass)
 
   applet_class->settings = hhws_settings;
 
+  widget_class->button_press_event   = hhws_button_press;
   widget_class->button_release_event = hhws_button_release;
 
   object_class->destroy = hhws_destroy;

@@ -25,7 +25,7 @@ fi
 
 
 
-CFLAGS="$CFLAGS -Wall -ansi -pedantic -Wmissing-prototypes -Wmissing-declarations -Werror" 
+CFLAGS="$CFLAGS -Wall -ansi  -Wmissing-prototypes -Wmissing-declarations -Werror" 
 
 AC_SUBST(CFLAGS)
 
