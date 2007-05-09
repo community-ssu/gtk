@@ -1,5 +1,12 @@
 2007-05-09  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hd-config.h: Added thumb icon size.
+	* src/hd-switcher-menu-item.c: Include hd-config.h
+	* src/hd-switcher-menu.c:
+	- Implemented blinking of applications in menu icon.
+
+2007-05-09  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hd-switcher-menu.c:
 	- Populate notifications menu at start-up.
 

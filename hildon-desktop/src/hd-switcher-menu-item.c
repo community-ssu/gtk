@@ -22,11 +22,10 @@
 /* Hildon includes */
 #include "hd-switcher-menu-item.h"
 #include "hn-app-pixbuf-anim-blinker.h"
+#include "hd-config.h"
 
 #include <libhildondesktop/hildon-desktop-notification-manager.h>
 
-#include <stdlib.h>
-#include <string.h>
 
 /* GLib include */
 #include <glib.h>
@@ -75,7 +74,6 @@
 #define AS_BUTTON_HEIGHT        38
 #define AS_ROW_HEIGHT 		30
 #define AS_ICON_SIZE            26
-#define AS_ICON_THUMB_SIZE      64
 #define AS_CLOSE_BUTTON_SIZE    16
 #define AS_CLOSE_BUTTON_THUMB_SIZE 40
 #define AS_TOOLTIP_WIDTH        360

@@ -63,4 +63,6 @@
 
 #define HD_PLUGIN_CONFIG_KEY_SB             "X-status-bar-plugin"
 
+#define AS_ICON_THUMB_SIZE      64
+
 #endif /* __HD_CONFIG_FILES_H__ */
