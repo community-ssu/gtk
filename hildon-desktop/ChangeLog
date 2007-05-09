@@ -1,3 +1,11 @@
+2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
+
+	* data/home.conf:
+	- added hildon-home-webshortcut.desktop
+	Fixes: NB#56360
+	* data/home-layout.conf:
+	- removed none-default applets
+
 2007-05-08  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c:
@@ -13,7 +21,7 @@
 	- Update state of fullscreen when a HDWMWatchedWindow is removed.
 	Fixes: NB#56174, NB#54820.
 	* libhildonwm/hd-wm.c:
-	- Renamed "show_menu" signal to "show-menu". 
+	- Renamed "show_menu" signal to "show-menu".
 
 2007-05-08  Johan Bilien  <johan.bilien@nokia.com>
 
