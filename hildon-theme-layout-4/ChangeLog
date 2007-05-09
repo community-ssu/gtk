@@ -1,6 +1,9 @@
 2007-05-09  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
-	* data/layout.txt: Moved submenu arrow graphics around to make space.
+	* data/layout.txt: Moved submenu arrow graphics around to make
+	space, added 30 new arrows (I know...) for thumb scroll
+	buttons. Yikes. Also new background images for the new task
+	navigator menus. Still need to add the colors.
 
 2007-05-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
