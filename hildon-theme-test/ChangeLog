@@ -3,6 +3,11 @@
 	* template/template.png: Moved submenu arrow graphics around to
 	make space.
 
+	Oh the Humanity! I added 30 thumb-scroll arrows. Sorry, Sean. :-(
+	We need 8bit alpha for Sapwood themes to reduce these in the
+	future. In any case, these at least look the same, sans the
+	background color blending.
+
 2007-05-08  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: new applet graphics are in, moved the generic
