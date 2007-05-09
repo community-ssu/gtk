@@ -1,3 +1,7 @@
+[0.5.0 release]
+* Removing the 'separate_alpha' keyword
+* Adding the 'noalpha' keyword
+
 [0.4.0 release]
 * Slicer supports now 'separate_alpha' keyword
 

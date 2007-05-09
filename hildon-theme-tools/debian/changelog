@@ -1,3 +1,10 @@
+hildon-theme-tools (0.5.0-1) unstable; urgency=low
+
+  * Removing the 'separate_alpha' keyword
+  * Adding the 'noalpha' keyword
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Wed, 09 May 2007 15:57:06 +0300
+
 hildon-theme-tools (0.4.0-1) unstable; urgency=low
 
   * Slicer supports now 'separate_alpha' keyword.

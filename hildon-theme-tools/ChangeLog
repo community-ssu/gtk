@@ -1,5 +1,13 @@
 2007-05-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	[0.5.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog: Updating.
+
+2007-05-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* src/common.c:
 	* src/common.h:
 	* src/slicer.c: Replacing the 'separate_alpha' keywork with 'noalpha'
