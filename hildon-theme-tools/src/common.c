@@ -204,11 +204,11 @@ Element*                        new_element_from_key (GKeyFile *key_file, gchar 
         } else
                 element->ForcedAlpha = FALSE;
 
-        /* Primitive check for the 'separate_alpha' keyword */
-        if (size >= 5 && strcmp (vals [4], "separate_alpha") == 0) {
-                element->SeparateAlpha = TRUE;
+        /* Primitive check for the 'noalpha' keyword */
+        if (size >= 5 && strcmp (vals [4], "noalpha") == 0) {
+                element->NoAlpha = TRUE;
         } else
-                element->SeparateAlpha = FALSE;
+                element->NoAlpha = FALSE;
 
 Done:
         if (vals != NULL)

@@ -178,31 +178,13 @@ void                            process (Template *templ, GdkPixbuf *pixbuf, gch
                         else {
                                 gchar *fname = g_build_filename (directory, element->Name, NULL);
                              
-                                // Save alpha as a separate filename if that's required
-                                if (gdk_pixbuf_get_n_channels (sub) == 4 &&
-                                    element->SeparateAlpha == TRUE &&
-                                    strlen (fname) >= 4 && 
-                                    strcmp (fname + (strlen (fname) - 4), ".png") == 0) {
-
-                                        GdkPixbuf *alpha_pixbuf = extract_alpha_from_pixbuf (sub);
-                                        gchar *fname_alpha = g_strdup (fname);
-                                        fname_alpha [strlen (fname_alpha) - 4] = 0;
-                                        gchar *final_fname = g_strdup_printf ("%s_alpha.png", fname_alpha);
-                                        
-                                        g_print ("Saving separate alpha for %s to %s\n", element->Name, final_fname);
-                                        save_png (alpha_pixbuf, final_fname);
-
-                                        g_free (fname_alpha);
-                                        g_free (final_fname);
-                                        gdk_pixbuf_unref (alpha_pixbuf);
-                                }
-
                                 // FIXME This only covers one case (not stripping alpha when 
                                 // forced alpha == TRUE). We should also support a case when 
                                 // alpha needs to be added.
-                                if (gdk_pixbuf_get_n_channels (sub) == 4 && 
+                                if ((gdk_pixbuf_get_n_channels (sub) == 4 && 
                                     check_if_pixbuf_needs_alpha (sub) == FALSE &&
-                                    element->ForcedAlpha == FALSE) {
+                                    element->ForcedAlpha == FALSE) || 
+                                    element->NoAlpha == TRUE) {
                                         GdkPixbuf *oldy = sub;
                                         sub = strip_alpha_from_pixbuf (oldy);
                                         gdk_pixbuf_unref (oldy);

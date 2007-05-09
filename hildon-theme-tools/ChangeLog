@@ -1,5 +1,14 @@
 2007-05-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* src/common.c:
+	* src/common.h:
+	* src/slicer.c: Replacing the 'separate_alpha' keywork with 'noalpha'
+	keyword that enforces no-alpha save. Combined with 'alpha' keyword
+	(that enforces alpha save) it can be used to achieve the desire
+	effect.
+
+2007-05-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* COPYING: Updating the COPYING to talk about GPL instead of LGPL
 	license.
 
