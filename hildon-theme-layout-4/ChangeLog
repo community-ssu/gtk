@@ -1,3 +1,10 @@
+2007-05-09  Johan Bilien  <johan.bilien@nokia.com>
+
+	* rc/hildonnavigator.rc:
+	- moved focus and pressed images to bg_pixmaps so that they
+	can be applied by the compositing TN instead
+	- removed deceased button5
+
 2007-05-09  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Moved submenu arrow graphics around to make

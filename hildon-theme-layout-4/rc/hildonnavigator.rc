@@ -2,15 +2,15 @@
 ##############################################
 # Task Navigator Tooltip
 ##############################################
-style "osso-task-navigator-tooltip" 
+style "osso-task-navigator-tooltip"
 {
-    engine "sapwood" 
+    engine "sapwood"
     {
-        image 
+        image
         {
             function = FLAT_BOX
             state = NORMAL
-            file = "../images/qgn_plat_tool_tip.png"	
+            file = "../images/qgn_plat_tool_tip.png"
 	    border = { 20, 20, 20, 20 }
         }
     }
@@ -26,36 +26,32 @@ style "osso-navigator-button-one"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_button_01_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_button_01_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
 			state = NORMAL
-			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
-			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
-			file = "../images/qgn_plat_task_navigation_button_01_normal.png"
 		}
 		image {
 			function = BOX
 			state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_button_01_pressed.png"
 		}
 		image {
 			function = BOX
 			state = SELECTED
-			file = "../images/qgn_plat_task_navigation_button_01_pressed.png"
 		}
 		image {
 		        function = FOCUS
-        		file = "../images/qgn_plat_task_navigation_button_01_focused.png"
                 }
 	}
 }
@@ -65,37 +61,33 @@ style "osso-navigator-button-two"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_button_02_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_button_02_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
 			state = NORMAL
-			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
-			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
-			file = "../images/qgn_plat_task_navigation_button_02_normal.png"
 		}
 		image {
 			function = BOX
 			state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_button_02_pressed.png"
 		}
 		image {
 			function = BOX
 			state = SELECTED
-			file = "../images/qgn_plat_task_navigation_button_02_pressed.png"
 		}
 		image {
 		        function = FOCUS
-        		file = "../images/qgn_plat_task_navigation_button_02_focused.png"
-                }	
+                }
 	}
 }
 widget "*.hildon-navigator-button-two" style "osso-navigator-button-two"
@@ -104,36 +96,32 @@ style "osso-navigator-button-three"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_button_03_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_button_03_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
 			state = NORMAL
-			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
 		}
 		image {
 			function = BOX
 			state = PRELIGHT
-			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
 		}
 		image {
 			function = BOX
 			state = INSENSITIVE
-			file = "../images/qgn_plat_task_navigation_button_03_normal.png"
 		}
 		image {
 			function = BOX
 			state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_button_03_pressed.png"
 		}
 		image {
 			function = BOX
 			state = SELECTED
-			file = "../images/qgn_plat_task_navigation_button_03_pressed.png"
 		}
 		image {
 		        function = FOCUS
-        		file = "../images/qgn_plat_task_navigation_button_03_focused.png"
                 }
 	}
 }
@@ -143,16 +131,16 @@ style "osso-navigator-small-button1"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_01_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_01_normal.png"
 		}
 		image {
 			function = FOCUS
-			file = "../images/qgn_plat_task_navigation_application_switcher_01_focused.png"
-		}	
+		}
 	}
 }
 
@@ -162,16 +150,16 @@ style "osso-navigator-small-button2"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_02_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_02_normal.png"
 		}
 		image {
 			function = FOCUS
-			file = "../images/qgn_plat_task_navigation_application_switcher_02_focused.png"
-		}	
+		}
 	}
 }
 
@@ -181,16 +169,16 @@ style "osso-navigator-small-button3"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_03_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_03_normal.png"
 		}
 		image {
 			function = FOCUS
-			file = "../images/qgn_plat_task_navigation_application_switcher_03_focused.png"
-		}	
+		}
 	}
 }
 
@@ -200,79 +188,36 @@ style "osso-navigator-small-button4"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_04_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_04_normal.png"
 		}
 		image {
 			function = FOCUS
-			file = "../images/qgn_plat_task_navigation_application_switcher_04_focused.png"
-		}	
+		}
 	}
 }
 
 widget "*.hildon-navigator-small-button4" style "osso-navigator-small-button4"
 
-style "osso-navigator-small-button5"
-{   
-   GtkButton::child_displacement_x = 0
-   GtkButton::child_displacement_y = 0
-
-	engine "sapwood" {
-		image {
-			function = BOX
-			state = NORMAL
-			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
-		}
-		image {
-			function = BOX
-			state = PRELIGHT
-			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
-		}
-		image {
-			function = BOX
-			state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_application_switcher_05_pressed.png"
-		}
-		image {
-			function = BOX
-			state = SELECTED
-			file = "../images/qgn_plat_task_navigation_application_switcher_05_pressed.png"
-		}
-		image {
-			function = BOX
-			state = INSENSITIVE
-			file = "../images/qgn_plat_task_navigation_application_switcher_05_normal.png"
-		}
-		image {
-			function = FOCUS
-			file = "../images/qgn_plat_task_navigation_application_switcher_05_focused.png"
-		}	
-	}
-}
-
-widget "*.hildon-navigator-small-button5" style "osso-navigator-small-button5"
-
-
-
-
 style "osso-navigator-small-button1-pressed"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_01_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
 		}
 		image {
 			function = FOCUS
-            state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_application_switcher_01_pressed.png"
-		}	
+                        state = ACTIVE
+		}
 	}
 }
 
@@ -282,17 +227,17 @@ style "osso-navigator-small-button2-pressed"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_02_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
 		}
 		image {
 			function = FOCUS
-            state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_application_switcher_02_pressed.png"
-		}	
+                        state = ACTIVE
+		}
 	}
 }
 
@@ -302,17 +247,17 @@ style "osso-navigator-small-button3-pressed"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_03_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
 		}
 		image {
 			function = FOCUS
-            state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_application_switcher_03_pressed.png"
-		}	
+                        state = ACTIVE
+		}
 	}
 }
 
@@ -322,17 +267,17 @@ style "osso-navigator-small-button4-pressed"
 {
    GtkButton::child_displacement_x = 0
    GtkButton::child_displacement_y = 0
+   bg_pixmap[ACTIVE] = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
+   bg_pixmap[PRELIGHT] = "../images/qgn_plat_task_navigation_application_switcher_04_focused.png"
 
 	engine "sapwood" {
 		image {
 			function = BOX
-			file = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
 		}
 		image {
 			function = FOCUS
-            state = ACTIVE
-			file = "../images/qgn_plat_task_navigation_application_switcher_04_pressed.png"
-		}	
+                        state = ACTIVE
+		}
 	}
 }
 
