@@ -137,6 +137,8 @@ static void hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model
                                                       GtkTreeIter    *iter,
                                                       HDSwitcherMenu *switcher);
 
+static void hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher);
+
 static void 
 hd_switcher_menu_init (HDSwitcherMenu *switcher)
 {
@@ -458,6 +460,8 @@ hd_switcher_menu_constructor (GType gtype,
   hildon_desktop_popup_menu_add_item
    (switcher->priv->menu_applications, 
     GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+
+  hd_switcher_menu_populate_notifications (switcher);
   
   return object;
 }
@@ -1015,5 +1019,52 @@ hd_switcher_menu_notification_added_cb   (GtkTreeModel   *tree_model,
                                           HDSwitcherMenu *switcher)
 {
    switcher->priv->last_iter_added = iter;	
+}
+
+
+static void 
+hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher)
+{
+  GtkTreeIter  iter;	
+  GtkTreeModel *nm = GTK_TREE_MODEL (switcher->nm);
+
+  if (gtk_tree_model_get_iter_first (nm, &iter))
+  {
+    gint id;
+    GdkPixbuf *icon;
+    gchar *summary, *body;
+
+    do
+    {
+      GtkWidget *menu_item;
+
+      gtk_tree_model_get (nm,
+                          &iter,
+                          HD_NM_COL_ID, &id,
+                          HD_NM_COL_ICON, &icon,
+                          HD_NM_COL_SUMMARY, &summary,
+                          HD_NM_COL_BODY, &body,
+                          -1); 
+
+      menu_item =
+        hd_switcher_menu_item_new_from_notification
+         (id, icon, summary, body, TRUE);
+
+      hd_switcher_menu_item_set_blinking (HD_SWITCHER_MENU_ITEM (menu_item), TRUE);
+
+      hildon_desktop_popup_menu_add_item
+       (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
+
+      hildon_desktop_popup_menu_select_item
+       (switcher->priv->menu_notifications, GTK_MENU_ITEM (menu_item));
+
+      hd_switcher_menu_replace_blinking_icon (switcher, icon);
+
+      hildon_desktop_popup_menu_add_item
+       (switcher->priv->menu_notifications,
+        GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
+    }
+    while (gtk_tree_model_iter_next (nm, &iter));
+  }	  
 }
 
