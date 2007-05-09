@@ -38,9 +38,9 @@
 #include <gtk/gtkhbox.h>
 #include <gtk/gtkmenuitem.h>
 
-#include <osso-ic.h>
 #include <libosso.h>
 #include <hildon-uri.h>
+#include <conicconnection.h>
 
 #ifdef HAVE_CONFIG_H
 #include <config.h>
@@ -380,7 +380,7 @@ hhws_settings_dialog_response (GtkWidget *dialog,
 
               g_free (priv->selected_image_uri);
               priv->selected_image_uri = NULL;
-              
+
               gtk_widget_destroy (GTK_WIDGET (dialog));
             }
           break;
@@ -411,19 +411,17 @@ hhws_settings_dialog (Hhws *hhws)
   const gchar  *default_image_name;
   const gchar  *image_name;
 
-  dialog = gtk_dialog_new_with_buttons (HHWS_SET_TITLE, 
+  dialog = gtk_dialog_new_with_buttons (HHWS_SET_TITLE,
                                         GTK_WINDOW (priv->home_win),
                                         GTK_DIALOG_MODAL |
                                           GTK_DIALOG_DESTROY_WITH_PARENT,
-                                        HHWS_SET_OK, 
+                                        HHWS_SET_OK,
                                         GTK_RESPONSE_OK,
-                                        HHWS_SET_BROWSE, 
+                                        HHWS_SET_BROWSE,
                                         GTK_RESPONSE_APPLY,
                                         HHWS_SET_CANCEL,
                                         GTK_RESPONSE_CANCEL,
                                         NULL);
-
-  g_return_if_fail (dialog);
 
   gtk_dialog_set_has_separator (GTK_DIALOG (dialog), FALSE);
 
@@ -448,7 +446,7 @@ hhws_settings_dialog (Hhws *hhws)
     gtk_combo_box_set_active (GTK_COMBO_BOX(priv->image_cbox), 0);
 
   caption_image = hildon_caption_new (group,
-                                      HHWS_SET_IMAGE, 
+                                      HHWS_SET_IMAGE,
                                       priv->image_cbox,
                                       NULL,
                                       HILDON_CAPTION_OPTIONAL);
@@ -467,7 +465,7 @@ hhws_settings_dialog (Hhws *hhws)
                         priv->uri);
 
   caption_url = hildon_caption_new (group,
-                                    HHWS_SET_URL, 
+                                    HHWS_SET_URL,
                                     priv->entry_url,
                                     NULL,
                                     HILDON_CAPTION_OPTIONAL);
@@ -531,10 +529,16 @@ hhws_button_release (GtkWidget         *widget,
 
   if (priv->iap)
     {
-      if (osso_iap_connect (priv->iap,
-                            OSSO_IAP_REQUESTED_CONNECT,
-                            NULL) != OSSO_OK)
-        g_critical ("osso_iap_connect != OSSO_OK");
+      ConIcConnection  *connection;
+
+      connection = con_ic_connection_new ();
+
+      if (!con_ic_connection_connect_by_id (connection,
+                                            priv->iap,
+                                            CON_IC_CONNECT_FLAG_NONE))
+        g_critical ("con_ic_connection_connect_by_id failed");
+
+      g_object_unref (connection);
     }
 
   hhws_launch_uri (hhws);
@@ -603,27 +607,6 @@ hhws_create_csm (Hhws *hhws)
   gtk_widget_show_all (menu);
 
   return menu;
-}
-
-static void
-hhws_launch_iap_cb (struct iap_event_t *event,
-                    Hhws *hhws)
-{    
-  HhwsPrivate  *priv = hhws->priv;
-
-  switch(event->type)
-    {
-      case OSSO_IAP_CONNECTED:
-          hhws_launch_uri (hhws);
-          break;
-      case OSSO_IAP_ERROR:
-          hildon_banner_show_information (priv->home_win,
-                                          NULL,
-                                          HHWS_IAP_SCAN_FAIL);
-          break;
-      default:
-          break;
-    }
 }
 
 static void
@@ -702,23 +685,12 @@ hhws_init (Hhws *hhws)
   priv->gconf_client = gconf_client_get_default ();
   hhws_load_configuration (hhws);
 
-  if (priv->iap != NULL) 
-    {
-      gint iap_ok = osso_iap_cb ((osso_iap_cb_t)hhws_launch_iap_cb);
-
-      if(iap_ok != OSSO_OK)
-        {
-          g_free (priv->iap);
-          priv->iap = NULL;
-        }
-    }
-
   gtk_widget_set_size_request (GTK_WIDGET (hhws), 
                                HILDON_HOME_WS_WIDTH, 
                                HILDON_HOME_WS_HEIGHT);
 
   priv->image = gtk_image_new();
-  
+
   g_signal_connect_swapped (priv->image, "size-allocate",
                             G_CALLBACK (hhws_image_size_allocate),
                             hhws);

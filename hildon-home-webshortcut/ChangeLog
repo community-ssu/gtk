@@ -1,7 +1,14 @@
 2007-05-09  Johan Bilien  <johan.bilien@nokia.com>
 
+	* plugin/hildon-home-webshortcut.c: Ported from osso-ic to
+	libconic
+	Fixes: NB#54077
+
+2007-05-09  Johan Bilien  <johan.bilien@nokia.com>
+
 	* plugin/hildon-home-webshortcut.c: Only launch the URI when
 	the user didn't drag the mouse.
+	Fixes: NB#56353
 
 2007-04-27  Johan Bilien  <johan.bilien@nokia.com>
 

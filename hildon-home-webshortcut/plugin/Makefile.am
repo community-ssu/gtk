@@ -23,29 +23,29 @@ pluginlib_LTLIBRARIES = libhildon-home-webshortcut.la
 
 
 libhildon_home_webshortcut_la_CPPFLAGS = $(HILDON_CFLAGS) \
-										 $(HILDONDESKTOP_CFLAGS) \
-										 $(GNOME_VFS_CFLAGS) \
-										 $(HILDON_FM_CFLAGS) \
-										 $(OSSO_IC_CFLAGS) \
-										 $(GCONF_CFLAGS) \
-										 $(OSSOMIME_CFLAGS) \
-										 $(OSSO_CFLAGS) \
-										 $(BROWSER_CFLAGS) \
-										 -DLOCALEDIR=\"$(localedir)\"
+					 $(HILDONDESKTOP_CFLAGS) \
+					 $(GNOME_VFS_CFLAGS) \
+					 $(HILDON_FM_CFLAGS) \
+					 $(CONIC_CFLAGS) \
+					 $(GCONF_CFLAGS) \
+					 $(OSSOMIME_CFLAGS) \
+					 $(OSSO_CFLAGS) \
+					 $(BROWSER_CFLAGS) \
+					 -DLOCALEDIR=\"$(localedir)\"
 
 libhildon_home_webshortcut_la_LDFLAGS = -module -avoid-version
 
 libhildon_home_webshortcut_la_LIBADD = $(HILDON_LIBS) \
-									   $(OSSO_LIBS) \
-									   $(HILDONDESKTOP_LIBS) \
-									   $(OSSO_IC_LIBS) \
-									   $(GCONF_LIBS) \
-									   $(HILDON_FM_LIBS) \
-									   $(OSSOMIME_LIBS)
+				       $(OSSO_LIBS) \
+				       $(HILDONDESKTOP_LIBS) \
+				       $(CONIC_LIBS) \
+				       $(GCONF_LIBS) \
+				       $(HILDON_FM_LIBS) \
+				       $(OSSOMIME_LIBS)
 
 libhildon_home_webshortcut_la_SOURCES = hildon-home-webshortcut.c \
-										hildon-home-webshortcut.h \
-										hhwsloader.c \
-										hhwsloader.h \
-										hhws-l10n.h
+				        hildon-home-webshortcut.h \
+				       	hhwsloader.c \
+				        hhwsloader.h \
+				        hhws-l10n.h
 
