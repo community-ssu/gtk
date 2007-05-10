@@ -1,3 +1,8 @@
+2007-05-10  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: Updated to new layout changes - applets 
+	are still totally borken. To be fixed asap.
+
 2007-05-10  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* wallpaper/Makefile.am: Do not install the second qgn_plat_crap
