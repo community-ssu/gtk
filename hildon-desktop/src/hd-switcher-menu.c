@@ -94,6 +94,7 @@ struct _HDSwitcherMenuPrivate
   GtkImage		   *image_button;
 
   GtkWidget 		   *active_menu_item;
+  GtkWidget		   *clear_events_menu_item;
 
   gboolean 		    is_open;
   gboolean 		    fullscreen;
@@ -118,6 +119,10 @@ static void hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *swit
 
 static void hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
 					HDSwitcherMenu *switcher);
+
+static void hd_switcher_menu_add_clear_notifications_button_cb (HildonDesktopPopupMenu *menu,
+								gboolean show_controls,
+								HDSwitcherMenu *switcher);
 
 static void hd_switcher_menu_add_info_cb (HDWM *hdwm, HDEntryInfo *info, HDSwitcherMenu *switcher);
 static void hd_switcher_menu_remove_info_cb (HDWM *hdwm, gboolean removed_app, HDEntryInfo *info, HDSwitcherMenu *switcher);
@@ -145,6 +150,10 @@ static void hd_switcher_menu_populate_notifications (HDSwitcherMenu *switcher);
 
 static void hd_switcher_menu_reset_main_icon (HDSwitcherMenu *switcher);
 
+static void hd_switcher_menu_check_content (HDSwitcherMenu *switcher);
+
+static void hd_switcher_menu_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *switcher);
+
 static void 
 hd_switcher_menu_init (HDSwitcherMenu *switcher)
 {
@@ -155,7 +164,8 @@ hd_switcher_menu_init (HDSwitcherMenu *switcher)
 
   switcher->priv->popup_window = NULL;
 
-  switcher->priv->active_menu_item = NULL;
+  switcher->priv->active_menu_item       =
+  switcher->priv->clear_events_menu_item = NULL;
 
   switcher->priv->is_open    = 
   switcher->priv->fullscreen = FALSE;
@@ -395,6 +405,11 @@ hd_switcher_menu_constructor (GType gtype,
 		    "popup-menu-resize",
 		    G_CALLBACK (hd_switcher_menu_resize_menu),
 		    (gpointer)switcher);
+ 
+  g_signal_connect (switcher->priv->menu_notifications,
+		    "show-controls",
+		    G_CALLBACK (hd_switcher_menu_add_clear_notifications_button_cb),
+		    (gpointer)switcher); 
   
   g_signal_connect (button,
 		    "toggled",
@@ -470,6 +485,8 @@ hd_switcher_menu_constructor (GType gtype,
     GTK_MENU_ITEM (gtk_separator_menu_item_new ()));
 
   hd_switcher_menu_populate_notifications (switcher);
+
+  hd_switcher_menu_check_content (switcher);
   
   return object;
 }
@@ -484,7 +501,15 @@ hd_switcher_menu_finalize (GObject *object)
   gtk_widget_destroy (GTK_WIDGET (switcher->priv->popup_window));
 	
   G_OBJECT_CLASS (hd_switcher_menu_parent_class)->finalize (object);
-}	
+}
+
+static void 
+hd_switcher_menu_add_clear_notifications_button_cb (HildonDesktopPopupMenu *menu,
+						    gboolean show_controls,
+						    HDSwitcherMenu *switcher)
+{
+  /*TODO: Waiting for Roope to implement this wonderful feature */	
+}
 
 static void
 hd_switcher_menu_replace_blinking_icon (HDSwitcherMenu *switcher, GdkPixbuf *icon)
@@ -517,11 +542,48 @@ hd_switcher_menu_replace_blinking_icon (HDSwitcherMenu *switcher, GdkPixbuf *ico
 }
 
 static void 
+hd_switcher_menu_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *switcher)
+{
+  if (switcher->priv->is_open)
+    hildon_desktop_popup_window_popdown
+      (switcher->priv->popup_window);
+
+  gtk_toggle_button_set_active
+    (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), FALSE);
+}	
+
+static void 
 hd_switcher_menu_style_set (GtkWidget *widget, GtkStyle *style, gpointer data)
 {
 	
   gtk_widget_set_name (widget, AS_MENU_BUTTON_NAME);	
   gtk_widget_set_name (GTK_BIN (widget)->child, AS_MENU_BUTTON_NAME);
+}
+
+static void 
+hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
+{
+  GList *children = NULL;
+	
+  if ((hd_wm_get_applications (switcher->hdwm) != NULL) ||
+      (children = hildon_desktop_popup_menu_get_children 
+        (switcher->priv->menu_notifications)) != NULL)
+  {
+     gtk_widget_show (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child);
+  }
+  else
+  {	  
+     gtk_widget_hide (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child);	  
+
+     if (switcher->priv->is_open)
+       hildon_desktop_popup_window_popdown 
+         (switcher->priv->popup_window);	       
+
+     gtk_toggle_button_set_active 
+       (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), FALSE);
+  }
+
+  g_list_free (children);
 }	
 
 static void
@@ -666,6 +728,9 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
 static void 
 hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
 {
+  if (!GTK_WIDGET_VISIBLE (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child))
+    return;
+	
   if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON)))
   {
     hildon_desktop_popup_window_popdown (switcher->priv->popup_window);
@@ -766,6 +831,11 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
       menu_item = hd_switcher_menu_item_new_from_entry_info (entry, TRUE);
 
+      g_signal_connect_after (menu_item,
+		              "activate",
+			      G_CALLBACK (hd_switcher_menu_item_activated),
+			      (gpointer)switcher);
+
       hildon_desktop_popup_menu_add_item
        (switcher->priv->menu_applications, GTK_MENU_ITEM (menu_item));
 
@@ -782,6 +852,8 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
     hildon_desktop_popup_menu_add_item
       (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
   }
+
+  hd_switcher_menu_check_content (switcher); 
 }	
 
 static void 
@@ -834,6 +906,8 @@ hd_switcher_menu_remove_info_cb (HDWM *hdwm,
   }
 
   g_list_free (children);  
+
+  hd_switcher_menu_check_content (switcher);
 }
 
 static GdkPixbuf *
@@ -1109,9 +1183,10 @@ hd_switcher_menu_notification_changed_cb (GtkTreeModel   *tree_model,
   hildon_desktop_popup_menu_add_item
     (switcher->priv->menu_notifications, 
      GTK_MENU_ITEM (gtk_separator_menu_item_new ()));	 
-
     	    
   switcher->priv->last_iter_added = NULL;
+
+  hd_switcher_menu_check_content (switcher);
 }
 
 static void 
@@ -1145,6 +1220,8 @@ hd_switcher_menu_notification_deleted_cb (HildonDesktopNotificationManager   *nm
   }	  
 
   g_list_free (children);
+
+  hd_switcher_menu_check_content (switcher);
 }
 
 static void 

@@ -1,5 +1,19 @@
 2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hd-switcher-menu-item.c:
+	- Close notification when activated.
+	* src/hd-switcher-menu.c:
+	- Close menu when application topped.
+	- Don't show the button if there are no application and no
+	notifications.
+	- Connected to show-controls signals from the menu.
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Added show-controls signals when scroll bottons are shown or not.
+	* libhildonwm/hd-keys.c:
+	- Added shortcut for osso-global-search, harcoded, though :(
+
+2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
+
 	* libhildondesktop/hildon-desktop-popup-menu.c:
 	- Added "resize-parent" property if you don't want the menu to resize
 	the parent.

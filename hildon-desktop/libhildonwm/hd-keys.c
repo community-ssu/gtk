@@ -166,7 +166,7 @@ static void
 hd_keys_launch_application (HDKeysConfig *keys,
 			    gpointer     *user_data)
 {
-
+  hd_wm_activate_service ("osso-global-search.desktop", NULL);
 }
 
 static void 

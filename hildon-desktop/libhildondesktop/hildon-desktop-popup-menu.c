@@ -48,6 +48,7 @@ enum
 enum
 {
   SIGNAL_POPUP_RESIZE,
+  SIGNAL_POPUP_SHOW_CONTROLS,
   N_SIGNALS
 };
 
@@ -136,6 +137,15 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
                       NULL, NULL,
                       g_cclosure_marshal_VOID__VOID,
                       G_TYPE_NONE, 0);
+ 
+  signals[SIGNAL_POPUP_SHOW_CONTROLS] =
+        g_signal_new ("show-controls",
+                      G_OBJECT_CLASS_TYPE (object_class),
+                      G_SIGNAL_RUN_LAST,
+                      0,
+                      NULL, NULL,
+                      g_cclosure_marshal_VOID__BOOLEAN,
+                      G_TYPE_NONE, 1, G_TYPE_BOOLEAN); 
   
   g_object_class_install_property (object_class,
                                    PROP_POPUP_ITEM_HEIGHT,
@@ -456,6 +466,8 @@ hildon_desktop_popup_menu_show_controls (HildonDesktopPopupMenu *menu)
     gtk_widget_show (menu->priv->box_buttons);
     
     menu->priv->controls_on = TRUE;
+
+    g_signal_emit_by_name (menu, "show-controls", TRUE);
   }
 }
 
@@ -467,6 +479,8 @@ hildon_desktop_popup_menu_hide_controls (HildonDesktopPopupMenu *menu)
     gtk_container_remove (GTK_CONTAINER (menu),
                           menu->priv->box_buttons);	    
     menu->priv->controls_on = FALSE;
+
+    g_signal_emit_by_name (menu, "show-controls", FALSE);
   }
 }
 

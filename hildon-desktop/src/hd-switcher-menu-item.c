@@ -124,6 +124,8 @@ struct _HDSwitcherMenuItemPrivate
   gchar     *notification_body;
   GdkPixbuf *notification_icon;
 
+  gboolean   was_topped;
+
   HildonDesktopNotificationManager *nm;
 };
 
@@ -519,6 +521,19 @@ hd_switcher_menu_item_activate (GtkMenuItem *menu_item)
       (HD_SWITCHER_MENU_ITEM (menu_item)->priv->nm, 
        HD_SWITCHER_MENU_ITEM (menu_item)->priv->notification_id,
        "default");
+
+    GError *error = NULL;
+
+    hildon_desktop_notification_manager_close_notification
+      (HD_SWITCHER_MENU_ITEM (menu_item)->priv->nm,
+       HD_SWITCHER_MENU_ITEM (menu_item)->priv->notification_id,
+       &error);
+
+    if (error)
+    {
+      g_warning ("We cannot close the notification!?!?!");
+      g_error_free (error);
+    } 
   }	  
 }
 
@@ -542,18 +557,10 @@ hd_switcher_menu_item_button_release_event (GtkWidget      *widget,
   
   gtk_widget_get_pointer(widget, &x, &y);
 
-  HN_DBG ("pointer [%d,%d],\n"
-          "close allocation [%d, %d, %d, %d]",
-          x, y,
-          menuitem->priv->close->allocation.x,
-          menuitem->priv->close->allocation.y,
-          menuitem->priv->close->allocation.width,
-          menuitem->priv->close->allocation.height);
-
   /* only test x here; y is always withing the button range */
-  if(x >  menuitem->priv->close->allocation.x &&
-     x <= menuitem->priv->close->allocation.x +
-          menuitem->priv->close->allocation.width)
+  if (x >  menuitem->priv->close->allocation.x &&
+      x <= menuitem->priv->close->allocation.x +
+           menuitem->priv->close->allocation.width)
   {
     if (menuitem->priv->info != NULL)
       hd_entry_info_close (menuitem->priv->info);
