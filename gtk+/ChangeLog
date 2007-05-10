@@ -1,3 +1,10 @@
+2007-05-10  Michael Natterer  <mitch@gimp.org>
+
+	* gtk/gtkmenushell.c (gtk_real_menu_shell_move_current): add a
+	MAEMO_CHANGES patch that closes the menu on MENU_DIR_PARENT even
+	it if has no submenu. Together with a small gtkrc snippet this
+	will fix the behavior of the Escape key.
+
 2007-05-02  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): stop the rubber
