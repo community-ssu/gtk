@@ -1,3 +1,14 @@
+2007-05-10  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-notification-manager.[ch]: added
+	support for notification persistency (insert, update, delete and load)
+	with sqlite. Notifications database is store in
+	$HOME/.osso/hildon-desktop/notifications.db, Thus, we have now optional 
+	build dependency on sqlite. Protect the id generation with mutexes to
+	avoid concurrency problems.
+	* configure.ac, libhildondesktop/Makefile.am: added sqlite dependency
+	and build bits.
+
 2007-05-09  Johan Bilien  <johan.bilien@nokia.com>
 
 	* libhildondesktop/hildon-home-area.c:

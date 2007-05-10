@@ -38,7 +38,8 @@ enum {
   PROP_PADDING_BOTTOM
 };
 
-enum {
+enum 
+{
   SIGNAL_SELECT_PLUGINS,
   SIGNAL_SAVE,
   SIGNAL_LOAD,

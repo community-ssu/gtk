@@ -132,6 +132,13 @@ PKG_CHECK_MODULES(HILDON_HELP,
 AC_SUBST(HILDON_HELP_CFLAGS)
 AC_SUBST(HILDON_HELP_LIBS)
 
+PKG_CHECK_MODULES(SQLITE,
+                  [sqlite3], 
+                  [AC_DEFINE(HAVE_SQLITE, [], [Whether sqlite is present on the system])], 
+		  [AC_MSG_NOTICE([sqlite not present.])])
+AC_SUBST(SQLITE_LIBS)
+AC_SUBST(SQLITE_CFLAGS)
+
 PKG_CHECK_MODULES(HILDON,
                   [hildon-1], 
                   [AC_DEFINE(HAVE_LIBHILDON, [], [Whether libhildon-1 is present on the system])], 

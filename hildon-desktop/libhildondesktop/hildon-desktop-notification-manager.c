@@ -31,8 +31,13 @@
 #include "hildon-desktop-notification-service.h"
 
 #include <string.h>
+#include <stdio.h>
 #include <gtk/gtk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
+
+#ifdef HAVE_SQLITE
+#include <sqlite3.h>
+#endif
 
 #define HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_PRIVATE(object) \
         (G_TYPE_INSTANCE_GET_PRIVATE ((object), HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, HildonDesktopNotificationManagerPrivate))
@@ -54,15 +59,627 @@ static gint signals[N_SIGNALS];
 struct _HildonDesktopNotificationManagerPrivate
 {
   DBusGConnection *connection;
+  GMutex          *mutex;
   guint            current_id;
+#ifdef HAVE_SQLITE
+  sqlite3         *db;
+#endif
 };
+
+typedef struct 
+{
+  HildonDesktopNotificationManager  *nm;
+  gint                               id;
+  gint                               result;
+} HildonNotificationHintInfo;
+
+enum
+{
+  HD_NM_HINT_TYPE_NONE,
+  HD_NM_HINT_TYPE_STRING,
+  HD_NM_HINT_TYPE_INT,
+  HD_NM_HINT_TYPE_FLOAT,
+  HD_NM_HINT_TYPE_UCHAR
+};
+
+static void                            
+hint_value_free (GValue *value)
+{
+  g_value_unset (value);
+  g_free (value);
+}
+
+static guint
+hildon_desktop_notification_manager_next_id (HildonDesktopNotificationManager *nm)
+{
+  guint next_id;
+#ifdef HAVE_SQLITE
+  gchar *sql;
+  gint nrow, ncol;
+  gchar **results;
+  gchar *error;
+#endif
+  
+  g_mutex_lock (nm->priv->mutex);
+
+#ifdef HAVE_SQLITE
+  do
+  {
+    next_id = ++nm->priv->current_id;
+
+    sql = sqlite3_mprintf ("SELECT id FROM notifications WHERE id=%d", next_id);
+
+    sqlite3_get_table (nm->priv->db, sql,
+        	       &results, &nrow, &ncol, &error);
+
+    sqlite3_free_table (results);
+    sqlite3_free (sql); 
+    g_free (error);
+  }
+  while (nrow > 0);
+#else
+  next_id = ++nm->priv->current_id;
+#endif
+
+  g_debug ("USANDO ID: %d", next_id);
+  
+  if (nm->priv->current_id == G_MAXUINT)
+    nm->priv->current_id = 0;
+  
+  g_mutex_unlock (nm->priv->mutex);
+
+  return next_id;
+}
+
+static GdkPixbuf *
+hildon_desktop_notification_manager_get_icon (const gchar *icon_name)
+{
+  GdkPixbuf *pixbuf = NULL;
+  GError *error = NULL;	
+  GtkIconTheme *icon_theme;
+  
+  if (!g_str_equal (icon_name, ""))
+  {
+    if (g_file_test (icon_name, G_FILE_TEST_EXISTS))
+    {
+      pixbuf = gdk_pixbuf_new_from_file (icon_name, &error);
+
+      if (error)
+      {
+        pixbuf = NULL; /* It'd be already NULL */
+	g_warning ("Notification Manager %s:",error->message);
+        g_error_free (error);
+      }
+    }
+    else
+    {	    
+      icon_theme = gtk_icon_theme_get_default ();
+
+      pixbuf = gtk_icon_theme_load_icon (icon_theme,
+                                         icon_name,
+                                         32,
+                                         GTK_ICON_LOOKUP_NO_SVG,
+	                                 &error);
+
+      if (error)
+      {
+	pixbuf = NULL; /* It'd be already NULL */
+	g_warning ("Notification Manager %s:",error->message);
+        g_error_free (error);
+      }
+    }
+  }
+
+  return pixbuf;
+}
+
+#ifdef HAVE_SQLITE
+static int 
+hildon_desktop_notification_manager_load_hint (void *data, 
+					       gint argc, 
+					       gchar **argv, 
+					       gchar **col_name)
+{
+  GHashTable *hints = (GHashTable *) data;
+  GValue *value;
+  gint type;
+  
+  type = (guint) g_ascii_strtod (argv[1], NULL);
+
+  value = g_new0 (GValue, 1);
+	  
+  switch (type)
+  {
+    case HD_NM_HINT_TYPE_STRING:
+      g_value_init (value, G_TYPE_STRING);
+      g_value_set_string (value, argv[2]);
+      break;
+
+    case HD_NM_HINT_TYPE_INT:
+    {
+      gint value_i;
+
+      sscanf (argv[2], "%d", &value_i);
+      g_value_init (value, G_TYPE_INT);
+      g_value_set_int (value, value_i);
+      break;
+    }
+    case HD_NM_HINT_TYPE_FLOAT:
+    {
+      gfloat value_f;
+
+      sscanf (argv[2], "%f", &value_f);
+      g_value_init (value, G_TYPE_FLOAT);
+      g_value_set_float (value, value_f);
+      break;
+    }
+    case HD_NM_HINT_TYPE_UCHAR:
+    {
+      guchar value_c;
+
+      sscanf (argv[2], "%c", &value_c);
+      g_value_init (value, G_TYPE_UCHAR);
+      g_value_set_uchar (value, value_c);
+      break;
+    }
+  }
+
+  g_hash_table_insert (hints, g_strdup (argv[0]), value);
+  
+  return 0;
+}
+
+static int 
+hildon_desktop_notification_manager_load_action (void *data, 
+					         gint argc, 
+					         gchar **argv, 
+					         gchar **col_name)
+{
+  GArray *actions = (GArray *) data;
+
+  g_array_append_val (actions, argv[0]);
+  g_array_append_val (actions, argv[1]);
+
+  return 0;
+}
+
+static int 
+hildon_desktop_notification_manager_load_row (void *data, 
+					      gint argc, 
+					      gchar **argv, 
+					      gchar **col_name)
+{
+  HildonDesktopNotificationManager *nm;
+  GtkTreeIter iter;
+  GHashTable *hints;
+  GValue *hint;
+  GArray *actions;
+  gchar *sql;
+  gchar *error;
+  guint id;
+  
+  nm = HILDON_DESKTOP_NOTIFICATION_MANAGER (data);
+
+  id = (guint) g_ascii_strtod (argv[0], NULL);
+  
+  actions = g_array_new (TRUE, FALSE, sizeof (gchar *)); 
+
+  sql = sqlite3_mprintf ("SELECT * FROM actions WHERE nid=%d", id);
+
+  if (sqlite3_exec (nm->priv->db, 
+		    sql,
+		    hildon_desktop_notification_manager_load_action,
+		    actions,
+		    &error) != SQLITE_OK)
+  {
+  	g_warning ("Unable to load actions: %s", error);
+  	g_free (error);
+  }
+
+  sqlite3_free (sql);
+  
+  hints = g_hash_table_new_full (g_str_hash, 
+        		         g_str_equal,
+      		                (GDestroyNotify) g_free,
+      		                (GDestroyNotify) hint_value_free);
+
+  hint = g_new0 (GValue, 1);
+  hint = g_value_init (hint, G_TYPE_UCHAR);
+  g_value_set_uchar (hint, TRUE);
+
+  g_hash_table_insert (hints, "persistent", hint);
+
+  sql = sqlite3_mprintf ("SELECT * FROM hints WHERE nid=%d", id);
+
+  if (sqlite3_exec (nm->priv->db, 
+		    sql,
+		    hildon_desktop_notification_manager_load_hint,
+		    hints,
+		    &error) != SQLITE_OK)
+  {
+  	g_warning ("Unable to load hints: %s", error);
+  	g_free (error);
+  }
+
+  sqlite3_free (sql);
+
+  gtk_list_store_append (GTK_LIST_STORE (nm), &iter);
+
+  gtk_list_store_set (GTK_LIST_STORE (nm),
+		      &iter,
+		      HD_NM_COL_APPNAME, argv[1],
+		      HD_NM_COL_ID, id,
+		      HD_NM_COL_ICON_NAME, argv[2],
+		      HD_NM_COL_ICON, hildon_desktop_notification_manager_get_icon (argv[2]),
+		      HD_NM_COL_SUMMARY, argv[3],
+		      HD_NM_COL_BODY, argv[4],
+		      HD_NM_COL_ACTIONS, g_array_free (actions, FALSE),
+		      HD_NM_COL_HINTS, hints,
+		      HD_NM_COL_TIMEOUT, (gint) g_ascii_strtod (argv[5], NULL),
+		      HD_NM_COL_REMOVABLE, TRUE,
+		      HD_NM_COL_SENDER, argv[6],
+		      -1);
+
+  return 0;
+}
+
+static void 
+hildon_desktop_notification_manager_db_load (HildonDesktopNotificationManager *nm)
+{
+  gchar *error;
+  
+  g_return_if_fail(nm->priv->db != NULL);
+  
+  if (sqlite3_exec (nm->priv->db, 
+		    "SELECT * FROM notifications",
+		    hildon_desktop_notification_manager_load_row,
+		    nm,
+		    &error) != SQLITE_OK)
+  {
+  	g_warning ("Unable to load notifications: %s", error);
+  	g_free (error);
+  }
+}
+
+static gint 
+hildon_desktop_notification_manager_db_exec (HildonDesktopNotificationManager *nm,
+					     const gchar *sql)
+{
+  gchar *error;
+  
+  g_return_val_if_fail (nm->priv->db != NULL, SQLITE_ERROR);
+  g_return_val_if_fail (sql != NULL, SQLITE_ERROR);
+  
+  if (sqlite3_exec (nm->priv->db, sql, NULL, 0, &error) != SQLITE_OK)
+  {
+    g_warning ("Unable to execute the query: %s", error);
+    g_free (error);
+
+    return SQLITE_ERROR;
+  }
+
+  return SQLITE_OK;
+}
+
+static gint
+hildon_desktop_notification_manager_db_create (HildonDesktopNotificationManager *nm)
+{
+  gchar **results;
+  gint nrow, ncol;
+  gchar *error;
+  gint result = SQLITE_OK;
+
+  sqlite3_get_table (nm->priv->db, 
+      		     "SELECT tbl_name FROM sqlite_master WHERE type='table' ORDER BY tbl_name",
+    		     &results, &nrow, &ncol, &error);
+
+  if (nrow == 0)
+  {
+    result = hildon_desktop_notification_manager_db_exec (nm,
+      	      				         "CREATE TABLE notifications (\n"
+    		                                 "    id        INTEGER PRIMARY KEY,\n"
+    		                                 "    app_name  VARCHAR(30)  NOT NULL,\n"
+    		                                 "    icon_name VARCHAR(50)  NOT NULL,\n"
+    		                                 "    summary   VARCHAR(100) NOT NULL,\n"
+    		                                 "    body      VARCHAR(100) NOT NULL,\n"
+    		                                 "    timeout   INTEGER DEFAULT 0,\n"
+    		                                 "    dest      VARCHAR(100) NOT NULL\n"
+    		                                 ")");
+
+    result = hildon_desktop_notification_manager_db_exec (nm,
+      	      				         "CREATE TABLE hints (\n"
+    		                                 "    id        VARCHAR(50),\n"
+    		                                 "    type      INTEGER,\n"
+    		                                 "    value     VARCHAR(200) NOT NULL,\n"
+    		                                 "    nid       INTEGER,\n"
+    		                                 "    PRIMARY KEY (id, nid)\n"
+    		                                 ")");
+
+    result = hildon_desktop_notification_manager_db_exec (nm,
+      	      				         "CREATE TABLE actions (\n"
+    		                                 "    id        VARCHAR(50),\n"
+    		                                 "    label     VARCHAR(100) NOT NULL,\n"
+    		                                 "    nid       INTEGER,\n"
+    		                                 "    PRIMARY KEY (id, nid)\n"
+    		                                 ")");
+  }
+
+  sqlite3_free_table (results);
+  g_free (error);
+  
+  return result; 
+}
+
+static void 
+hildon_desktop_notification_manager_db_insert_hint (gpointer key, gpointer value, gpointer data)
+{
+  HildonNotificationHintInfo *hinfo = (HildonNotificationHintInfo *) data;
+  GValue *hvalue = (GValue *) value;
+  gchar *hkey = (gchar *) key;
+  gchar *sql;
+  gchar *sql_value = NULL;
+  gint type = HD_NM_HINT_TYPE_NONE;
+  
+  switch (G_VALUE_TYPE (hvalue))
+  {
+    case G_TYPE_STRING:
+      sql_value = g_strdup (g_value_get_string (hvalue));
+      type = HD_NM_HINT_TYPE_STRING;
+      break;
+
+    case G_TYPE_INT:
+      sql_value = g_strdup_printf ("%d", g_value_get_int (hvalue));;
+      type = HD_NM_HINT_TYPE_INT;
+      break;
+
+    case G_TYPE_FLOAT:
+      sql_value = g_strdup_printf ("%f", g_value_get_float (hvalue));;
+      type = HD_NM_HINT_TYPE_FLOAT;
+      type = 3;
+      break;
+
+    case G_TYPE_UCHAR:
+      sql_value = g_strdup_printf ("%d", g_value_get_uchar (hvalue));;
+      type = HD_NM_HINT_TYPE_UCHAR;
+      break;
+  }
+
+  if (sql_value == NULL || type == HD_NM_HINT_TYPE_NONE)
+  {
+    hinfo->result = SQLITE_ERROR;
+    return;
+  }
+  
+  sql = sqlite3_mprintf ("INSERT INTO hints \n"
+      	    	         "(id, type, value, nid)\n" 
+      		         "VALUES \n"
+      		         "('%q', %d, '%q', %d)",
+      		         hkey, type, sql_value, hinfo->id);
+
+  hinfo->result = hildon_desktop_notification_manager_db_exec (hinfo->nm, sql);
+
+  sqlite3_free (sql);
+
+}
+
+static gint 
+hildon_desktop_notification_manager_db_insert (HildonDesktopNotificationManager *nm,
+                                               const gchar           *app_name,
+                                               guint                  id,
+                                               const gchar           *icon,
+                                               const gchar           *summary,
+                                               const gchar           *body,
+                                               gchar                **actions,
+                                               GHashTable            *hints,
+                                               gint                   timeout,
+					       const gchar           *dest)
+{
+  HildonNotificationHintInfo *hinfo;
+  gchar *sql;
+  gint result, i;
+
+  result = hildon_desktop_notification_manager_db_exec (nm, "BEGIN TRANSACTION");
+
+  if (result != SQLITE_OK) goto rollback;
+  
+  sql = sqlite3_mprintf ("INSERT INTO notifications \n"
+      	    	         "(id, app_name, icon_name, summary, body, timeout, dest)\n" 
+      		         "VALUES \n"
+      		         "(%d, '%q', '%q', '%q', '%q', %d, '%q')",
+      		         id, app_name, icon, summary, body, timeout, dest);
+
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+  
+  if (result != SQLITE_OK) goto rollback;
+
+  for (i = 0; actions && actions[i] != NULL; i += 2)
+  {
+    gchar *label = actions[i + 1];
+
+    sql = sqlite3_mprintf ("INSERT INTO actions \n"
+        	    	   "(id, label, nid) \n" 
+        		   "VALUES \n"
+        		   "('%q', '%q', %d)",
+        		   actions[i], label, id);
+
+    result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+    sqlite3_free (sql);
+
+    if (result != SQLITE_OK) goto rollback;
+  }
+
+  hinfo = g_new0 (HildonNotificationHintInfo, 1);
+
+  hinfo->id = id;
+  hinfo->nm = nm;
+  hinfo->result = SQLITE_OK; 
+  
+  g_hash_table_foreach (hints, hildon_desktop_notification_manager_db_insert_hint, hinfo);
+
+  result = hinfo->result;
+  
+  g_free (hinfo);
+  
+  if (result != SQLITE_OK) goto rollback;
+
+  result = hildon_desktop_notification_manager_db_exec (nm, "COMMIT TRANSACTION");
+
+  if (result != SQLITE_OK) goto rollback;
+
+  return SQLITE_OK;
+  
+rollback:
+  hildon_desktop_notification_manager_db_exec (nm, "ROLLBACK TRANSACTION");
+
+  return SQLITE_ERROR;
+}
+
+static gint 
+hildon_desktop_notification_manager_db_update (HildonDesktopNotificationManager *nm,
+                                               const gchar           *app_name,
+                                               guint                  id,
+                                               const gchar           *icon,
+                                               const gchar           *summary,
+                                               const gchar           *body,
+                                               gchar                **actions,
+                                               GHashTable            *hints,
+                                               gint                   timeout)
+{
+  HildonNotificationHintInfo *hinfo;
+  gchar *sql;
+  gint result, i;
+        
+  result = hildon_desktop_notification_manager_db_exec (nm, "BEGIN TRANSACTION");
+
+  if (result != SQLITE_OK) goto rollback;
+
+  sql = sqlite3_mprintf ("UPDATE notifications SET\n"
+      	    	         "app_name='%q', icon_name='%q', \n"
+    		         "summary='%q', body='%q', timeout=%d\n" 
+      		         "WHERE id=%d",
+      		         app_name, icon, summary, body, timeout, id);
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+
+  if (result != SQLITE_OK) goto rollback;
+
+  sql = sqlite3_mprintf ("DELETE FROM actions WHERE nid=%d", id);
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+
+  if (result != SQLITE_OK) goto rollback;
+
+  for (i = 0; actions && actions[i] != NULL; i += 2)
+  {
+    gchar *label = actions[i + 1];
+
+    sql = sqlite3_mprintf ("INSERT INTO actions \n"
+        	    	   "(id, label, nid) \n" 
+        		   "VALUES \n"
+        		   "('%q', '%q', %d)",
+        		   actions[i], label, id);
+
+    result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+    sqlite3_free (sql);
+
+    if (result != SQLITE_OK) goto rollback;
+  }
+
+  sql = sqlite3_mprintf ("DELETE FROM hints WHERE nid=%d", id);
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+
+  if (result != SQLITE_OK) goto rollback;
+  
+  hinfo = g_new0 (HildonNotificationHintInfo, 1);
+
+  hinfo->id = id;
+  hinfo->nm = nm;
+  hinfo->result = SQLITE_OK; 
+  
+  g_hash_table_foreach (hints, hildon_desktop_notification_manager_db_insert_hint, hinfo);
+
+  result = hinfo->result;
+  
+  g_free (hinfo);
+  
+  if (result != SQLITE_OK) goto rollback;
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, "COMMIT TRANSACTION");
+
+  if (result != SQLITE_OK) goto rollback;
+
+  return SQLITE_OK;
+
+rollback:
+  hildon_desktop_notification_manager_db_exec (nm, "ROLLBACK TRANSACTION");
+
+  return SQLITE_ERROR;
+}
+
+static gint
+hildon_desktop_notification_manager_db_delete (HildonDesktopNotificationManager *nm,
+					       guint id)
+{
+  gchar *sql;
+  gint result;
+        
+  result = hildon_desktop_notification_manager_db_exec (nm, "BEGIN TRANSACTION");
+
+  if (result != SQLITE_OK) goto rollback;
+
+  sql = sqlite3_mprintf ("DELETE FROM actions WHERE nid=%d", id);
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+
+  sql = sqlite3_mprintf ("DELETE FROM hints WHERE nid=%d", id);
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+
+  sql = sqlite3_mprintf ("DELETE FROM notifications WHERE id=%d", id);
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, sql);
+
+  sqlite3_free (sql);
+
+  if (result != SQLITE_OK) goto rollback;
+  
+  result = hildon_desktop_notification_manager_db_exec (nm, "COMMIT TRANSACTION");
+
+  if (result != SQLITE_OK) goto rollback;
+
+  return SQLITE_OK;
+  
+rollback:
+  hildon_desktop_notification_manager_db_exec (nm, "ROLLBACK TRANSACTION");
+
+  return SQLITE_ERROR;
+}
+#endif
 
 static void
 hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
 {
   DBusGProxy *bus_proxy;
   GError *error = NULL;
-  guint request_name_result;
+#ifdef HAVE_SQLITE
+  gchar *notifications_db;
+#endif
+  guint result;
   GType _types[] = 
   { 
     G_TYPE_STRING,
@@ -80,6 +697,8 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
 
   nm->priv = HILDON_DESKTOP_NOTIFICATION_MANAGER_GET_PRIVATE (nm);
 
+  nm->priv->mutex = g_mutex_new ();
+  
   nm->priv->current_id = 0;
 
   gtk_list_store_set_column_types (GTK_LIST_STORE (nm),
@@ -106,7 +725,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
   if (!org_freedesktop_DBus_request_name (bus_proxy,
                                           HILDON_DESKTOP_NOTIFICATION_MANAGER_DBUS_NAME,
                                           DBUS_NAME_FLAG_DO_NOT_QUEUE,
-                                          &request_name_result, 
+                                          &result, 
                                           &error))
   {
     g_warning ("Could not register name: %s", error->message);
@@ -118,7 +737,7 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
 
   g_object_unref (bus_proxy);
 
-  if (request_name_result == DBUS_REQUEST_NAME_REPLY_EXISTS) return;
+  if (result == DBUS_REQUEST_NAME_REPLY_EXISTS) return;
   
   dbus_g_object_type_install_info (HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER,
                                    &dbus_glib_hildon_desktop_notification_service_object_info);
@@ -126,13 +745,63 @@ hildon_desktop_notification_manager_init (HildonDesktopNotificationManager *nm)
   dbus_g_connection_register_g_object (nm->priv->connection,
                                        HILDON_DESKTOP_NOTIFICATION_MANAGER_DBUS_PATH,
                                        G_OBJECT (nm));
+
+#ifdef HAVE_SQLITE
+  notifications_db = g_build_filename (g_get_home_dir (), 
+		  		       ".osso/hildon-desktop",
+				       "notifications.db",
+				       NULL); 
+  
+  result = sqlite3_open (notifications_db, &nm->priv->db);
+
+  g_free (notifications_db);
+  
+  if (result != SQLITE_OK)
+  {
+    g_warning ("Can't open database: %s", sqlite3_errmsg (nm->priv->db));
+    sqlite3_close (nm->priv->db);
+  } else {
+    result = hildon_desktop_notification_manager_db_create (nm);
+
+    if (result != SQLITE_OK)
+    {
+      g_warning ("Can't create database: %s", sqlite3_errmsg (nm->priv->db));
+    }
+    else
+    {
+      hildon_desktop_notification_manager_db_load (nm);
+    }
+  }
+#endif
 }
 
+static void 
+hildon_desktop_notification_manager_finalize (GObject *object)
+{
+  HildonDesktopNotificationManager *nm = HILDON_DESKTOP_NOTIFICATION_MANAGER (object);
+
+  if (nm->priv->mutex)
+  {
+    g_mutex_free (nm->priv->mutex);
+    nm->priv->mutex = NULL;
+  }
+  
+#ifdef HAVE_SQLITE
+  if (nm->priv->db)
+  {
+    sqlite3_close (nm->priv->db);
+    nm->priv->db = NULL;
+  }
+#endif
+}
+  
 static void
 hildon_desktop_notification_manager_class_init (HildonDesktopNotificationManagerClass *class)
 {
   GObjectClass *g_object_class = (GObjectClass *) class;
 
+  g_object_class->finalize = hildon_desktop_notification_manager_finalize;
+  
   signals[SIGNAL_NOTIFICATION_CLOSED] =
         g_signal_new ("notification-closed",
                       G_OBJECT_CLASS_TYPE (g_object_class),
@@ -199,7 +868,8 @@ hildon_desktop_notification_manager_create_signal (HildonDesktopNotificationMana
 static void
 hildon_desktop_notification_manager_notification_closed (HildonDesktopNotificationManager *nm,
 		                                         guint id,
-							 const gchar *dest)
+							 const gchar *dest,
+							 gboolean persistent)
 {
   DBusMessage *message;
   
@@ -216,6 +886,13 @@ hildon_desktop_notification_manager_notification_closed (HildonDesktopNotificati
 
   dbus_message_unref (message);
 
+#ifdef HAVE_SQLITE
+  if (persistent)
+  {
+    hildon_desktop_notification_manager_db_delete (nm, id);
+  }
+#endif
+
   g_signal_emit (nm, signals[SIGNAL_NOTIFICATION_CLOSED], 0, id);
 }
 
@@ -225,7 +902,12 @@ hildon_desktop_notification_manager_timeout (gint id)
   GtkListStore *nm = 
      hildon_desktop_notification_manager_get_singleton ();
   GtkTreeIter iter;
+  GHashTable *hints;
+#ifdef HAVE_SQLITE
+  GValue *hint;
+#endif
   gchar *dest;
+  gboolean persistent = FALSE;
   
   if (!hildon_desktop_notification_manager_find_by_id (HILDON_DESKTOP_NOTIFICATION_MANAGER (nm), 
 			  			       id, 
@@ -237,12 +919,20 @@ hildon_desktop_notification_manager_timeout (gint id)
   gtk_tree_model_get (GTK_TREE_MODEL (nm),
       	        &iter,
       		HD_NM_COL_SENDER, &dest,
+      		HD_NM_COL_HINTS, &hints,
       		-1);
   
+#ifdef HAVE_SQLITE
+      hint = g_hash_table_lookup (hints, "persistent");
+
+      persistent = hint != NULL && g_value_get_uchar (hint);
+#endif
+
   /* Notify the client */
   hildon_desktop_notification_manager_notification_closed (HILDON_DESKTOP_NOTIFICATION_MANAGER (nm), 
 		  					   id,
-							   dest);
+							   dest,
+							   persistent);
  
   gtk_list_store_remove (nm, &iter);
 
@@ -260,13 +950,6 @@ hildon_desktop_notification_manager_get_singleton (void)
     nm = g_object_new (HILDON_DESKTOP_TYPE_NOTIFICATION_MANAGER, NULL);
 
   return GTK_LIST_STORE (nm);
-}
-
-static void                            
-hint_value_free (GValue *value)
-{
-  g_value_unset (value);
-  g_free (value);
 }
 
 static void 
@@ -294,57 +977,26 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
                                             DBusGMethodInvocation *context)
 {
   GtkTreeIter iter;
-  GError *error = NULL;
-  GdkPixbuf *pixbuf = NULL;
-  GtkIconTheme *icon_theme;
   GHashTable *hints_copy;
+#ifdef HAVE_SQLITE
+  GValue *hint;
+#endif
   gchar **actions_copy;
   gboolean valid_actions = TRUE;
+  gboolean persistent = FALSE;
   gint i;
   
-  if (!g_str_equal (icon, ""))
-  {
-    if (g_file_test (icon, G_FILE_TEST_EXISTS))
-    {
-      pixbuf = gdk_pixbuf_new_from_file (icon, &error);
+#ifdef HAVE_SQLITE
+    hint = g_hash_table_lookup (hints, "persistent");
 
-      if (error)
-      {
-        pixbuf = NULL; /* It'd be already NULL */
-	g_warning ("Notification Manager %s:",error->message);
-        g_error_free (error);
-      }
-    }
-    else
-    {	    
-      icon_theme = gtk_icon_theme_get_default ();
-
-      pixbuf = gtk_icon_theme_load_icon (icon_theme,
-                                         icon,
-                                         32,
-                                         GTK_ICON_LOOKUP_NO_SVG,
-	                                 &error);
-
-      if (error)
-      {
-	pixbuf = NULL; /* It'd be already NULL */
-	g_warning ("Notification Manager %s:",error->message);
-        g_error_free (error);
-      }
-    }
-  }
-
+    persistent = hint != NULL && g_value_get_uchar (hint);
+#endif
+	    
   if (!hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
   {
     gtk_list_store_append (GTK_LIST_STORE (nm), &iter);
   
-    if (id == 0)
-    { 
-      id = ++nm->priv->current_id;	  
-    
-      if (nm->priv->current_id == G_MAXUINT)
-        nm->priv->current_id = 0;
-    }
+    id = hildon_desktop_notification_manager_next_id (nm);	  
     
     /* Test if we have a valid list of actions */
     for (i = 0; actions && actions[i] != NULL; i += 2)
@@ -382,7 +1034,7 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
 		        HD_NM_COL_APPNAME, app_name,
 		        HD_NM_COL_ID, id,
 		        HD_NM_COL_ICON_NAME, icon,
-		        HD_NM_COL_ICON, pixbuf,
+		        HD_NM_COL_ICON, hildon_desktop_notification_manager_get_icon (icon),
 		        HD_NM_COL_SUMMARY, summary,
 		        HD_NM_COL_BODY, body,
 		        HD_NM_COL_ACTIONS, actions_copy,
@@ -391,20 +1043,51 @@ hildon_desktop_notification_manager_notify (HildonDesktopNotificationManager *nm
 			HD_NM_COL_REMOVABLE, TRUE,
 			HD_NM_COL_SENDER, dbus_g_method_get_sender (context),
 		        -1);
+
+#ifdef HAVE_SQLITE
+    if (persistent)
+    {
+      hildon_desktop_notification_manager_db_insert (nm, 
+						     app_name,
+		      				     id, 
+						     icon,
+						     summary,
+						     body,
+						     actions_copy,
+						     hints_copy,
+						     timeout,
+						     dbus_g_method_get_sender (context));
+    }
+#endif
   }
   else 
   {
     gtk_list_store_set (GTK_LIST_STORE (nm),
 		        &iter,
 			HD_NM_COL_ICON_NAME, icon,
-			HD_NM_COL_ICON, pixbuf,
+			HD_NM_COL_ICON, hildon_desktop_notification_manager_get_icon (icon),
 			HD_NM_COL_SUMMARY, summary,
 			HD_NM_COL_BODY, body,
 			HD_NM_COL_REMOVABLE, FALSE,
 			-1);
+
+#ifdef HAVE_SQLITE
+    if (persistent)
+    {
+      hildon_desktop_notification_manager_db_update (nm, 
+						     app_name,
+		      				     id, 
+						     icon,
+						     summary,
+						     body,
+						     actions,
+						     hints,
+						     timeout);
+    }
+#endif
   }
 
-  if (timeout > 0)
+  if (!persistent && timeout > 0)
   {
     g_timeout_add (timeout,
 		   (GSourceFunc) hildon_desktop_notification_manager_timeout,
@@ -551,19 +1234,26 @@ hildon_desktop_notification_manager_close_notification (HildonDesktopNotificatio
                                                     	GError               **error)
 {
   GtkTreeIter iter;
+  GHashTable *hints;
+#ifdef HAVE_SQLITE
+  GValue *hint;
+#endif
   gchar *dest;
   gboolean removable = TRUE;
+  gboolean persistent = FALSE;
   
   if (hildon_desktop_notification_manager_find_by_id (nm, id, &iter))
   {
     gtk_tree_model_get (GTK_TREE_MODEL (nm),
 		        &iter,
+			HD_NM_COL_HINTS, &hints,
 			HD_NM_COL_REMOVABLE, &removable,
 			HD_NM_COL_SENDER, &dest,
 			-1);
 
     /* libnotify call close_notification_handler when updating a row 
        that we happend to not want removed */
+    /*
     if (!removable)
     {
       gtk_list_store_set (GTK_LIST_STORE (nm),
@@ -572,12 +1262,18 @@ hildon_desktop_notification_manager_close_notification (HildonDesktopNotificatio
                           -1);
     }
     else
-    {
+    {*/
+#ifdef HAVE_SQLITE
+      hint = g_hash_table_lookup (hints, "persistent");
+
+      persistent = hint != NULL && g_value_get_uchar (hint);
+#endif
+
       /* Notify the client */
-      hildon_desktop_notification_manager_notification_closed (nm, id, dest);
+      hildon_desktop_notification_manager_notification_closed (nm, id, dest, persistent);
 
       gtk_list_store_remove (GTK_LIST_STORE (nm), &iter);
-    }
+    /*}*/
 
     g_free (dest);
     
