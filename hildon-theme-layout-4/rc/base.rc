@@ -210,3 +210,11 @@ binding "entry+textview"
 
 class "GtkEntry" binding "entry+textview"
 class "GtkTextView" binding "entry+textview"
+
+# Fix Esc key for GtkMenus
+binding "menu-escape"
+{
+  bind "Escape" { "move-current" (parent) }
+}
+
+class "GtkMenu" binding "menu-escape"
