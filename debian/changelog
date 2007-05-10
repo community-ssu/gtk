@@ -1,3 +1,16 @@
+gtk+2.0 (2:2.10.6-0osso12) unstable; urgency=low
+
+  * Add opposite-arrows style property (Note: naming is temporary, don't use
+    it yet) to GtkMenu. It moves the arrows side by side to the bottom of the
+    menu. Fixes: NB#51958
+  * Close the menu on MENU_DIR_PARENT even if it has no submenu. Fixes: NB#53787
+  * Stop the rubber banding on GtkTreeView's grab_notify if it was active.
+    Fixes: NB#55148
+  * Misc. cleanups in GtkMenu.
+  * Partial: NR#167813
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Thu, 10 May 2007 18:14:40 +0300
+
 gtk+2.0 (2:2.10.6-0osso11) unstable; urgency=low
 
   * Send insensitive press event to the event widget instead of the grab
