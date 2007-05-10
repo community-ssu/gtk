@@ -1,4 +1,13 @@
-2007-05-03  Michael Dominic K.  <mdk@mdk.am> 
+2007-05-10  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* wallpaper/Makefile.am: Do not install the second qgn_plat_crap
+	background wallpaper into /usr/share/themes/plankton/images/. That was
+	needed to support the default wallpaper being hardfixed in the hildon
+	desktop. Now it'll nicely pick it up from
+	/usr/share/backgrounds/default.desktop which we symlink in another
+	place.
+
+2007-05-03  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[4.7.0-1 release]
 
