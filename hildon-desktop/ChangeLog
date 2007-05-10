@@ -1,5 +1,17 @@
 2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hd-switcher-menu.c:
+	- Implemented jumping from pane to pane. Unfortunately you cannot jump
+	to menu item at same height.
+	* libhildondesktop/hildon-desktop-popup-menu.[ch]:
+	- Added select first item method.
+	- If item to select is NULL, deselect everything.
+	* libhildondesktop/hildon-desktop-popup-window.c:
+	- "You shall not compare integers and unsigned integers without a
+	casting".
+
+2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hd-switcher-menu-item.c:
 	- Close notification when activated.
 	* src/hd-switcher-menu.c:

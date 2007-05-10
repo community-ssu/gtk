@@ -901,18 +901,18 @@ void
 hildon_desktop_popup_window_jump_to_pane (HildonDesktopPopupWindow *popup, gint pane)
 {
   g_assert (HILDON_DESKTOP_IS_POPUP_WINDOW (popup));
-
-  if (pane >= popup->priv->n_extra_panes)
+  
+  if (pane >= (gint) popup->priv->n_extra_panes)
     pane = popup->priv->n_extra_panes -1;	  
-	
+  
   if (GTK_WIDGET_VISIBLE (GTK_WIDGET (popup)))
   {
     if (pane <= -1)
-    {
+    { 
       if (popup->priv->have_xgrab)	    
         return;
       else
-      {
+      { 
         gtk_grab_remove (popup->priv->pane_with_grab);	      
 
 	popup_grab_on_window (GTK_WIDGET (popup)->window, GDK_CURRENT_TIME, TRUE);
@@ -924,7 +924,7 @@ hildon_desktop_popup_window_jump_to_pane (HildonDesktopPopupWindow *popup, gint 
       }
     }
     else
-    {
+    { 
       GtkWidget *widget_with_grab;
 	    
       if (popup->priv->have_xgrab)
