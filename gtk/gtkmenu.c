@@ -2555,35 +2555,60 @@ gtk_menu_size_allocate (GtkWidget     *widget,
 }
 
 static void
+get_arrows_visible_area (GtkMenu *menu,
+                         GdkRectangle *border,
+                         GdkRectangle *upper,
+                         GdkRectangle *lower,
+                         gint *arrow_space)
+{
+  GtkWidget *widget = GTK_WIDGET (menu);
+  guint vertical_padding;
+  guint horizontal_padding;
+  gint scroll_arrow_height;
+  
+  gtk_widget_style_get (widget,
+                        "vertical-padding", &vertical_padding,
+                        "horizontal-padding", &horizontal_padding,
+                        "scroll-arrow-vlength", &scroll_arrow_height,
+                        NULL);
+
+  border->x = GTK_CONTAINER (widget)->border_width + widget->style->xthickness + horizontal_padding;
+  border->y = GTK_CONTAINER (widget)->border_width + widget->style->ythickness + vertical_padding;
+  gdk_drawable_get_size (widget->window, &border->width, &border->height);
+
+  upper->x = border->x;
+  upper->y = border->y;
+  upper->width = border->width - 2 * border->x;
+  upper->height = scroll_arrow_height;
+
+  lower->x = border->x;
+  lower->y = border->height - border->y - scroll_arrow_height;
+  lower->width = border->width - 2 * border->x;
+  lower->height = scroll_arrow_height;
+
+  *arrow_space = scroll_arrow_height - 2 * widget->style->ythickness;
+}
+
+static void
 gtk_menu_paint (GtkWidget      *widget,
 		GdkEventExpose *event)
 {
   GtkMenu *menu;
   GtkMenuPrivate *priv;
-  gint width, height;
-  gint border_x, border_y;
-  guint vertical_padding;
-  guint horizontal_padding;
-  gint scroll_arrow_height;
+  GdkRectangle border;
+  GdkRectangle upper;
+  GdkRectangle lower;
+  gint arrow_space;
   
   g_return_if_fail (GTK_IS_MENU (widget));
 
   menu = GTK_MENU (widget);
   priv = gtk_menu_get_private (menu);
 
-  gtk_widget_style_get (GTK_WIDGET (menu),
-			"vertical-padding", &vertical_padding,
-                        "horizontal-padding", &horizontal_padding,
-                        "scroll-arrow-vlength", &scroll_arrow_height,
-                        NULL);
-
-  border_x = GTK_CONTAINER (widget)->border_width + widget->style->xthickness + horizontal_padding;
-  border_y = GTK_CONTAINER (widget)->border_width + widget->style->ythickness + vertical_padding;
-  gdk_drawable_get_size (widget->window, &width, &height);
+  get_arrows_visible_area (menu, &border, &upper, &lower, &arrow_space);
 
   if (event->window == widget->window)
     {
-      gint arrow_space = scroll_arrow_height - 2 * widget->style->ythickness;
       gint arrow_size = 0.7 * arrow_space;
 
       gtk_paint_box (widget->style,
@@ -2605,10 +2630,10 @@ gtk_menu_paint (GtkWidget      *widget,
 #else
 			 "menu",
 #endif
-			 border_x,
-			 border_y,
-			 width - 2 * border_x,
-			 scroll_arrow_height);
+                         upper.x,
+                         upper.y,
+                         upper.width,
+                         upper.height);
 
 	  gtk_paint_arrow (widget->style,
 			   widget->window,
@@ -2617,8 +2642,8 @@ gtk_menu_paint (GtkWidget      *widget,
 			   &event->area, widget, "menu_scroll_arrow_up",
 			   GTK_ARROW_UP,
 			   TRUE,
-			   (width - arrow_size ) / 2,
-			   border_y + widget->style->ythickness + (arrow_space - arrow_size)/2,
+                           upper.x + (upper.width - arrow_size) / 2,
+                           upper.y + widget->style->ythickness + (arrow_space - arrow_size) / 2,
 			   arrow_size, arrow_size);
 	}
 
@@ -2634,10 +2659,10 @@ gtk_menu_paint (GtkWidget      *widget,
 #else
 			 "menu",
 #endif
-			 border_x,
-			 height - border_y - scroll_arrow_height,
-			 width - 2*border_x,
-			 scroll_arrow_height);
+                         lower.x,
+                         lower.y,
+                         lower.width,
+                         lower.height);
 
 	  gtk_paint_arrow (widget->style,
 			   widget->window,
@@ -2646,9 +2671,8 @@ gtk_menu_paint (GtkWidget      *widget,
 			   &event->area, widget, "menu_scroll_arrow_down",
 			   GTK_ARROW_DOWN,
 			   TRUE,
-			   (width - arrow_size) / 2,
-			   height - border_y - scroll_arrow_height +
-			      widget->style->ythickness + (arrow_space - arrow_size)/2,
+                           lower.x + (lower.width - arrow_size) / 2,
+			   lower.y + widget->style->ythickness + (arrow_space - arrow_size) / 2,
 			   arrow_size, arrow_size);
 	}
     }
@@ -2659,8 +2683,8 @@ gtk_menu_paint (GtkWidget      *widget,
 		     GTK_STATE_NORMAL,
 		     GTK_SHADOW_OUT,
 		     &event->area, widget, "menu",
-		     - border_x, menu->scroll_offset - border_y, 
-		     width, height);
+		     - border.x, menu->scroll_offset - border.y,
+		     border.width, border.height);
     }
 }
 
