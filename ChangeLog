@@ -1,4 +1,14 @@
 2007-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (gtk_menu_class_init): Add "opposite-arrows" style
+	property (default=FALSE) to toggle scroll arrow location
+	(get_arrows_border, get_arrows_visible_area,
+	get_arrows_sensitive_area): Calculate the arrow positions when they're
+	both at the bottom
+	(get_double_arrows): !opposite-arrows implies double-arrows
+	(#436533, NB#51958)
+
+2007-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
     
 	* gtk/gtkmenu.c (get_arrows_sensitive_area): New function
 	(gtk_menu_handle_scrolling): Refactor arrow sensitive area calculations

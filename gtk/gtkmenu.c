@@ -564,6 +564,14 @@ gtk_menu_class_init (GtkMenuClass *class)
                                                                  TRUE,
                                                                  GTK_PARAM_READABLE));
 
+#ifdef MAEMO_CHANGES
+  gtk_widget_class_install_style_property (widget_class,
+                                           g_param_spec_boolean ("opposite-arrows",
+                                                                 P_("Opposite Arrows"),
+                                                                 P_("Place the scroll arrows on opposite sides of the menu."),
+                                                                 FALSE,
+                                                                 GTK_PARAM_READABLE));
+#endif
 
  gtk_container_class_install_child_property (container_class,
                                              CHILD_PROP_LEFT_ATTACH,
@@ -2120,13 +2128,29 @@ static void
 get_arrows_border (GtkMenu *menu, GtkBorder *border)
 {
   guint scroll_arrow_height;
-
+#ifndef MAEMO_CHANGES
   gtk_widget_style_get (GTK_WIDGET (menu),
                         "scroll-arrow-vlength", &scroll_arrow_height,
                         NULL);
+#else
+  gboolean opposite_arrows;
 
-  border->top = menu->upper_arrow_visible ? scroll_arrow_height : 0;
-  border->bottom = menu->lower_arrow_visible ? scroll_arrow_height : 0;
+  gtk_widget_style_get (GTK_WIDGET (menu),
+                        "scroll-arrow-vlength", &scroll_arrow_height,
+                        "opposite-arrows", &opposite_arrows,
+                        NULL);
+
+  if (!opposite_arrows)
+    {
+      border->top = 0;
+      border->bottom = (menu->upper_arrow_visible || menu->lower_arrow_visible) ? scroll_arrow_height : 0;
+    }
+  else
+#endif
+    {
+      border->top = menu->upper_arrow_visible ? scroll_arrow_height : 0;
+      border->bottom = menu->lower_arrow_visible ? scroll_arrow_height : 0;
+    }
 
   border->left = border->right = 0;
 }
@@ -2565,26 +2589,49 @@ get_arrows_visible_area (GtkMenu *menu,
   guint vertical_padding;
   guint horizontal_padding;
   gint scroll_arrow_height;
+#ifdef MAEMO_CHANGES
+  gboolean opposite_arrows;
+#endif
   
   gtk_widget_style_get (widget,
                         "vertical-padding", &vertical_padding,
                         "horizontal-padding", &horizontal_padding,
                         "scroll-arrow-vlength", &scroll_arrow_height,
+#ifdef MAEMO_CHANGES
+                        "opposite-arrows", &opposite_arrows,
+#endif
                         NULL);
 
   border->x = GTK_CONTAINER (widget)->border_width + widget->style->xthickness + horizontal_padding;
   border->y = GTK_CONTAINER (widget)->border_width + widget->style->ythickness + vertical_padding;
   gdk_drawable_get_size (widget->window, &border->width, &border->height);
 
-  upper->x = border->x;
-  upper->y = border->y;
-  upper->width = border->width - 2 * border->x;
-  upper->height = scroll_arrow_height;
+#ifdef MAEMO_CHANGES
+  if (!opposite_arrows)
+    {
+      upper->x = border->x;
+      upper->y = border->height - border->y - scroll_arrow_height;
+      upper->width = (border->width - 2 * border->x) / 2;
+      upper->height = scroll_arrow_height;
 
-  lower->x = border->x;
-  lower->y = border->height - border->y - scroll_arrow_height;
-  lower->width = border->width - 2 * border->x;
-  lower->height = scroll_arrow_height;
+      lower->x = border->x + upper->width;
+      lower->y = border->height - border->y - scroll_arrow_height;
+      lower->width = (border->width - 2 * border->x) / 2;
+      lower->height = scroll_arrow_height;
+    }
+  else
+#endif
+    {
+      upper->x = border->x;
+      upper->y = border->y;
+      upper->width = border->width - 2 * border->x;
+      upper->height = scroll_arrow_height;
+
+      lower->x = border->x;
+      lower->y = border->height - border->y - scroll_arrow_height;
+      lower->width = border->width - 2 * border->x;
+      lower->height = scroll_arrow_height;
+    }
 
   *arrow_space = scroll_arrow_height - 2 * widget->style->ythickness;
 }
@@ -3203,10 +3250,21 @@ get_double_arrows (GtkMenu *menu)
 {
   GtkMenuPrivate *priv = gtk_menu_get_private (menu);
   gboolean        double_arrows;
+#ifdef MAEMO_CHANGES
+  gboolean        opposite_arrows;
 
   gtk_widget_style_get (GTK_WIDGET (menu),
                         "double-arrows", &double_arrows,
+                        "opposite-arrows", &opposite_arrows,
                         NULL);
+
+  if (!opposite_arrows)
+    return TRUE;
+#else
+  gtk_widget_style_get (GTK_WIDGET (menu),
+                        "double-arrows", &double_arrows,
+                        NULL);
+#endif
 
   return double_arrows || (priv->initially_pushed_in &&
                            menu->scroll_offset != 0);
@@ -3387,12 +3445,14 @@ get_arrows_sensitive_area (GtkMenu *menu,
   guint vertical_padding;
   gint win_x, win_y;
   gint scroll_arrow_height;
+  gboolean opposite_arrows;
 
   gdk_drawable_get_size (GTK_WIDGET (menu)->window, &width, &height);
 
   gtk_widget_style_get (GTK_WIDGET (menu),
                         "vertical-padding", &vertical_padding,
                         "scroll-arrow-vlength", &scroll_arrow_height,
+                        "opposite-arrows", &opposite_arrows,
                         NULL);
 
   border = GTK_CONTAINER (menu)->border_width +
@@ -3400,20 +3460,41 @@ get_arrows_sensitive_area (GtkMenu *menu,
 
   gdk_window_get_position (GTK_WIDGET (menu)->window, &win_x, &win_y);
 
-  if (upper)
+  if (opposite_arrows)
     {
-      upper->x = win_x;
-      upper->y = win_y;
-      upper->width = width;
-      upper->height = scroll_arrow_height + border;
-    }
+      if (upper)
+        {
+          upper->x = win_x;
+          upper->y = win_y;
+          upper->width = width;
+          upper->height = scroll_arrow_height + border;
+        }
 
-  if (lower)
+      if (lower)
+        {
+          lower->x = win_x;
+          lower->y = win_y + height - border - scroll_arrow_height;
+          lower->width = width;
+          lower->height = scroll_arrow_height + border;
+        }
+    }
+  else /* arrows on same side */
     {
-      lower->x = win_x;
-      lower->y = win_y + height - border - scroll_arrow_height;
-      lower->width = width;
-      lower->height = scroll_arrow_height + border;
+      if (upper)
+        {
+          upper->x = win_x;
+          upper->y = win_y + height - border - scroll_arrow_height;
+          upper->width = width / 2;
+          upper->height = scroll_arrow_height + border;
+        }
+
+      if (lower)
+        {
+          lower->x = win_x + width / 2;
+          lower->y = win_y + height - border - scroll_arrow_height;
+          lower->width = width / 2;
+          lower->height = scroll_arrow_height + border;
+        }
     }
 }
 
