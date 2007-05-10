@@ -842,7 +842,7 @@ hd_switcher_menu_reset_main_icon (HDSwitcherMenu *switcher)
 static void 
 hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 {
-  GList *children = NULL, *l;
+  GList *children = NULL, *apps = NULL, *l;
   GtkWidget *separator;
 
   children =
@@ -865,7 +865,9 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
   g_list_free (children);
 
-  for (l = hd_wm_get_applications (hdwm); l != NULL; l = l->next)
+  apps = g_list_reverse (g_list_copy (hd_wm_get_applications (hdwm)));
+
+  for (l = apps; l != NULL; l = l->next)
   {
     GtkWidget *menu_item;
     const GList * children = hd_entry_info_get_children(l->data);
@@ -873,7 +875,7 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
 
     for (child = children; child != NULL; child = child->next)
     {
-      if (l == hd_wm_get_applications (hdwm) && child == children)
+      if (l == apps && child == children)
       {
         separator = gtk_separator_menu_item_new ();
 
@@ -906,6 +908,8 @@ hd_switcher_menu_create_menu (HDSwitcherMenu *switcher, HDWM *hdwm)
     hildon_desktop_popup_menu_add_item
       (switcher->priv->menu_applications, GTK_MENU_ITEM (separator));
   }
+
+  g_list_free (apps);
 
   hd_switcher_menu_check_content (switcher); 
 }	

@@ -1,6 +1,11 @@
 2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c:
+	- Order of the stacking fixed.
+
+2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c:
 	- Implemented jumping from pane to pane. Unfortunately you cannot jump
 	to menu item at same height.
 	* libhildondesktop/hildon-desktop-popup-menu.[ch]:
