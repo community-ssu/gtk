@@ -1,3 +1,12 @@
+2007-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (get_arrows_border): New function to calculate the
+	border sizes needed for the scroll arrows.
+	(gtk_menu_realize, gtk_menu_size_allocate, gtk_menu_scroll_by,
+	gtk_menu_position, gtk_menu_scroll_to, gtk_menu_scroll_item_visible,
+	get_visible_size, get_menu_height, gtk_menu_real_move_scroll): Update
+	callers. (#436533, NB#51958)
+	
 2007-05-10  Michael Natterer  <mitch@gimp.org>
 
 	* gtk/gtkmenushell.c (gtk_real_menu_shell_move_current): add a
