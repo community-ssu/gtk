@@ -1,3 +1,39 @@
+2007-05-10  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: updates:
+
+	changed:
+	   qgn_plat_home_search_bg.png=3296,521,106,50
+	   qgn_plat_inputmet_pane_border.png=6100,203,6,6
+	New:
+	   qgn_plat_search_applet_button_normal.png=3412,521,50,50
+	   qgn_plat_search_applet_button_pressed.png=3472,521,50,50
+	   qgn_plat_inputmet_button_key_space_normal.png=6100,77,105,35
+	   qgn_plat_inputmet_button_key_space_pressed.png=6100,117,105,35
+	   qgn_plat_inputmet_button_key_space_disabled.png=6100,158,105,35
+	   qgn_plat_scroll_rss_shaft_normal.png=3601,243,6,14
+	   qgn_plat_scroll_rss_thumb_normal.png=3601,267,6,14
+	Removed
+	   qgn_plat_application_call_handling_block_active.png
+	   qgn_plat_application_call_handling_frame_block.png
+	   qgn_plat_header_show.png
+	   qgn_plat_header_show_pressed.png
+	   qgn_plat_header_hide.png
+	   qgn_plat_header_hide_pressed.png
+	   qgn_plat_button_breadcrumb_normal.png 
+	   qgn_plat_button_breadcrumb_focused.png
+	   qgn_plat_button_breadcrumb_pressed.png
+	Removed,
+	   qgn_plat_task_navigation_application_switcher_01_normal.png
+	   qgn_plat_task_navigation_application_switcher_02_normal.png
+	   qgn_plat_task_navigation_application_switcher_03_normal.png 
+	   qgn_plat_task_navigation_application_switcher_04_normal.png
+	   qgn_plat_task_navigation_button_01_normal.png
+	   qgn_plat_task_navigation_button_02_normal.png
+	   qgn_plat_task_navigation_button_03_normal.png
+	...and replaced with one contiguous background:
+	 qgn_plat_home_border_left.png
+
 2007-05-10  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/ossortc.rc: remove the rule for chat background, the
