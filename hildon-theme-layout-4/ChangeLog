@@ -1,3 +1,7 @@
+2007-05-10 Tapani Palli <tapani.palli@nokia.com>
+
+	* data/theme.xml: add frame animation values
+
 2007-05-09  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/hildoncolorchooser.rc: Fixing the color chooser theming.
