@@ -1,3 +1,9 @@
+2007-05-10  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* debian/control:
+	* wallpaper/Makefile.am: Small bump to latest layout and wallpaper
+	installation pattern.
+
 2007-05-09  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.png: Moved submenu arrow graphics around to
