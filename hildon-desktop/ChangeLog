@@ -1,3 +1,9 @@
+2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Added "resize-parent" property if you don't want the menu to resize
+	the parent.
+
 2007-05-10  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildon-desktop-notification-manager.[ch]: added
