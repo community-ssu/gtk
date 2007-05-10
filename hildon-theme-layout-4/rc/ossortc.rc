@@ -6,20 +6,6 @@
 #
 ####################################################
 
-
-style "osso-rtc-window"
-{
-    engine "sapwood"
-    {
-        image {
-            function = FLAT_BOX
-                file     = "../images/qgn_plat_application_chat_background.jpg"
-        }
-    }
-}
-widget "*.ChavoWindow" style "osso-rtc-window"
-
-
 style "osso-rtc-button"
 {
   engine "sapwood"

@@ -1,5 +1,10 @@
 2007-05-10  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/ossortc.rc: remove the rule for chat background, the
+	image is missing.
+	
+2007-05-10  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/afterincludes.rc: remove reference to osso-entry-special.
 
 2007-05-10 Tapani Palli <tapani.palli@nokia.com>
