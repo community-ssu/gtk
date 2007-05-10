@@ -1,4 +1,10 @@
 2007-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
+    
+	* gtk/gtkmenu.c (get_arrows_visible_area): New function
+	(gtk_menu_paint): Refactor arrow visible area calculations to a
+	separate function (#436533, NB#51958)
+
+2007-05-10  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c (get_arrows_border): New function to calculate the
 	border sizes needed for the scroll arrows.
