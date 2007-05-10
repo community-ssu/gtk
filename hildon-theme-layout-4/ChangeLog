@@ -1,3 +1,7 @@
+2007-05-10  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/afterincludes.rc: remove reference to osso-entry-special.
+
 2007-05-10 Tapani Palli <tapani.palli@nokia.com>
 
 	* data/theme.xml: add frame animation values

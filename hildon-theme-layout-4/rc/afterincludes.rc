@@ -21,10 +21,6 @@ class "GtkWidget" style "osso-SystemFont"
 # Setting application menu pop-up position
 widget "*.menu_force_with_corners" style "osso-application-menu-popup-position"
 
-# Setting GtkEntry drawing type flag (whether to use our gtk_paint_box or
-# gtk's original gtk_paint_shadow
-class "GtkEntry" style "osso-entry-special"
-
 ####
 # To be moved :
 ####
