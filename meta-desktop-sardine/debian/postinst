@@ -10,12 +10,22 @@ fi
 
 # Remove the existing symlink if it exists
 if [ -h '/usr/share/themes/default' ]; then
-  echo "Removing existing 'default' symlink"
+  echo "Removing existing 'default' theme symlink"
   rm -f '/usr/share/themes/default'
 fi
 
 # Create a symlink to default theme
-echo "Creating a sumlink 'default' => 'plankton' in /usr/share/themes"
+echo "Creating a theme symlink 'default' => 'plankton' in /usr/share/themes"
 ln -s '/usr/share/themes/plankton' '/usr/share/themes/default'
+
+# Remove the existing symlink to the default wallpaper if it exists
+if [ -h '/usr/share/backgrounds/default.desktop' ]; then
+  echo "Removing existing 'default.desktop' wallpaper symlink"
+  rm -f '/usr/share/backgrounds/default.desktop'
+fi
+
+# Create a symlink to default wallpaper
+echo "Creating a default wallpaper symlink 'default.desktop' => 'plankton.desktop' in /usr/share/backgrounds"
+ln -s '/usr/share/backgrounds/plankton.desktop' '/usr/share/backgrounds/default.desktop'
 
 exit 0

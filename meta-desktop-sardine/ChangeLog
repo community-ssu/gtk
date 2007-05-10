@@ -1,3 +1,10 @@
+2007-05-10  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	[1.1.0-1 release]
+
+	* debian/changelog:
+	* debian/postinst: Add symlink to default wallpaper.
+
 2007-03-06  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[1.0.1-1 release]
