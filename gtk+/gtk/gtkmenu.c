@@ -3378,6 +3378,47 @@ gtk_menu_scroll (GtkWidget	*widget,
 }
 
 static void
+get_arrows_sensitive_area (GtkMenu *menu,
+                           GdkRectangle *upper,
+                           GdkRectangle *lower)
+{
+  gint width, height;
+  gint border;
+  guint vertical_padding;
+  gint win_x, win_y;
+  gint scroll_arrow_height;
+
+  gdk_drawable_get_size (GTK_WIDGET (menu)->window, &width, &height);
+
+  gtk_widget_style_get (GTK_WIDGET (menu),
+                        "vertical-padding", &vertical_padding,
+                        "scroll-arrow-vlength", &scroll_arrow_height,
+                        NULL);
+
+  border = GTK_CONTAINER (menu)->border_width +
+    GTK_WIDGET (menu)->style->ythickness + vertical_padding;
+
+  gdk_window_get_position (GTK_WIDGET (menu)->window, &win_x, &win_y);
+
+  if (upper)
+    {
+      upper->x = win_x;
+      upper->y = win_y;
+      upper->width = width;
+      upper->height = scroll_arrow_height + border;
+    }
+
+  if (lower)
+    {
+      lower->x = win_x;
+      lower->y = win_y + height - border - scroll_arrow_height;
+      lower->width = width;
+      lower->height = scroll_arrow_height + border;
+    }
+}
+
+
+static void
 gtk_menu_handle_scrolling (GtkMenu *menu,
 			   gint     x,
 			   gint     y,
@@ -3386,47 +3427,27 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 {
   GtkMenuShell *menu_shell;
   GtkMenuPrivate *priv;
-  gint width, height;
-  gint border;
   GdkRectangle rect;
   gboolean in_arrow;
   gboolean scroll_fast = FALSE;
-  guint vertical_padding;
   gint top_x, top_y;
-  gint win_x, win_y;
   gboolean touchscreen_mode;
-  gint scroll_arrow_height;
 
   priv = gtk_menu_get_private (menu);
 
   menu_shell = GTK_MENU_SHELL (menu);
 
-  gdk_drawable_get_size (GTK_WIDGET (menu)->window, &width, &height);
-
   g_object_get (gtk_widget_get_settings (GTK_WIDGET (menu)),
                 "gtk-touchscreen-mode", &touchscreen_mode,
                 NULL);
-
-  gtk_widget_style_get (GTK_WIDGET (menu),
-			"vertical-padding", &vertical_padding,
-                        "scroll-arrow-vlength", &scroll_arrow_height,
-			NULL);
-
-  border = GTK_CONTAINER (menu)->border_width +
-    GTK_WIDGET (menu)->style->ythickness + vertical_padding;
 
   gdk_window_get_position (menu->toplevel->window, &top_x, &top_y);
   x -= top_x;
   y -= top_y;
 
-  gdk_window_get_position (GTK_WIDGET (menu)->window, &win_x, &win_y);
-
   /*  upper arrow handling  */
 
-  rect.x = win_x;
-  rect.y = win_y;
-  rect.width = width;
-  rect.height = scroll_arrow_height + border;
+  get_arrows_sensitive_area (menu, &rect, NULL);
 
   in_arrow = FALSE;
   if (menu->upper_arrow_visible && !menu->tearoff_active &&
@@ -3525,10 +3546,7 @@ gtk_menu_handle_scrolling (GtkMenu *menu,
 
   /*  lower arrow handling  */
 
-  rect.x = win_x;
-  rect.y = win_y + height - border - scroll_arrow_height;
-  rect.width = width;
-  rect.height = scroll_arrow_height + border;
+  get_arrows_sensitive_area (menu, NULL, &rect);
 
   in_arrow = FALSE;
   if (menu->lower_arrow_visible && !menu->tearoff_active &&
