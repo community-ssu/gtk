@@ -1,3 +1,26 @@
+2007-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.19
+	
+	Support for smb:// locations.  Aka, the "Weirdos from another
+	planet" release.
+
+	* hildon-fm/hildon-file-system-special-location.h
+	(hildon_file_system_special_location_get_folder,
+	hildon-fm/hildon-file-system-special-location.c): New, to let the
+	smb:// special location provide their own weird way of listing the
+	top-level.
+	* hildon-fm/hildon-file-system-model.c (link_file_folder): Use it
+	for special locations.
+
+	* hildon-fm/hildon-file-system-smb.c,
+	hildon-fm/hildon-file-system-smb.h: New, for the weird smb://
+	namespace.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added them.
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Setup SMB.
+
 2007-05-07  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.18
