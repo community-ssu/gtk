@@ -52,10 +52,14 @@ extern GtkFileSystem *gtk_file_system_unix_new();
 
 /* Let's make sure that we survise with folder names both ending and
  * not ending to slash */
-gboolean _hildon_file_system_compare_ignore_last_separator(const char *a,
-                                                           const char *b)
+gboolean
+_hildon_file_system_compare_ignore_last_separator(const char *a,
+						  const char *b)
 {        
     gint len_a, len_b;
+
+    if (a == NULL || b == NULL)
+      return FALSE;
 
     /* XXX - Canonicalize the "file://" prefix away since not all path
              strings use it uniformly.  We should really be using the
