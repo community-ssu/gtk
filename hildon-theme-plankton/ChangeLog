@@ -1,6 +1,13 @@
+2007-05-11  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: Added new applet graphics, will break
+	everything on current code of course. :-P Generic applet bitmap is
+	still around to keep backwards compatibility, just moved around a
+	bit.
+	
 2007-05-10  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
-	* template/template.svg: Updated to new layout changes - applets 
+	* template/template.svg: Updated to new layout changes - applets
 	are still totally borken. To be fixed asap.
 
 2007-05-10  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
