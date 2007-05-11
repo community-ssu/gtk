@@ -1,4 +1,152 @@
-hildon-desktop (.0.0.12-1) feisty; urgency=low
+hildon-desktop (0.0.13-1) sardine; urgency=low
+
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Fixed problem I just introduced when resizing window parent.
+
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Fixed problem with scrolling.
+  - When resizing parent with scroll controls, resize it as big as the
+  screen.
+
+  * src/hd-panel-window.c:
+  - added _style_set to load a background picture
+  - added _realize to first call _style_set
+  - paint the background in expose
+
+  * libhildondesktop/hildon-desktop-popup-menu.c: fixed sizing and
+  scroll buttons behavior when "resize-parent" is FALSE.
+
+  * src/hd-switcher-menu.c:
+  - Order of the stacking fixed.
+
+  * src/hd-switcher-menu.c:
+  - Implemented jumping from pane to pane. Unfortunately you cannot jump
+  to menu item at same height.
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]:
+  - Added select first item method.
+  - If item to select is NULL, deselect everything.
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - "You shall not compare integers and unsigned integers without a
+  casting".
+
+  * src/hd-switcher-menu-item.c:
+  - Close notification when activated.
+  * src/hd-switcher-menu.c:
+  - Close menu when application topped.
+  - Don't show the button if there are no application and no
+  notifications.
+  - Connected to show-controls signals from the menu.
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Added show-controls signals when scroll bottons are shown or not.
+  * libhildonwm/hd-keys.c:
+  - Added shortcut for osso-global-search, harcoded, though :(
+
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Added "resize-parent" property if you don't want the menu to resize
+  the parent.
+
+  * libhildondesktop/hildon-desktop-notification-manager.[ch]: added
+  support for notification persistency (insert, update, delete and load)
+  with sqlite. Notifications database is store in
+  $HOME/.osso/hildon-desktop/notifications.db, Thus, we have now optional 
+  build dependency on sqlite. Protect the id generation with mutexes to
+  avoid concurrency problems.
+  * configure.ac, libhildondesktop/Makefile.am: added sqlite dependency
+  and build bits.
+
+  * libhildondesktop/hildon-home-area.c:
+  - fixed a bug I just introduced, the Damage needs to be created
+  even if the applet is already realized when added
+  - removed some debug messages
+  * libhildondesktop/hildon-desktop-toggle-button.c:
+  - removed excessive debug messages
+
+  * src/hd-config.h: Added thumb icon size.
+  * src/hd-switcher-menu-item.c: Include hd-config.h
+  * src/hd-switcher-menu.c:
+  - Implemented blinking of applications in menu icon.
+
+  * src/hd-switcher-menu.c:
+  - Populate notifications menu at start-up.
+
+  * data/home.conf:
+  - added hildon-home-webshortcut.desktop
+  Fixes: NB#56360
+  * data/home-layout.conf:
+  - removed none-default applets
+
+  * src/hd-switcher-menu.c:
+  - Fixed menu positioning.
+  - Implemented key navigation.
+  - Added separators to notifications.
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Implemented navigation through keys. Misses auto-scrolling.
+  - Small fixes
+  * libhildondesktop/hildon-desktop-popup-window.c:
+  - Propagate key-press-event to child widget of pane.
+  * libhildonwm/hd-wm-watched-window.c:
+  - Update state of fullscreen when a HDWMWatchedWindow is removed.
+  Fixes: NB#56174, NB#54820.
+  * libhildonwm/hd-wm.c:
+  - Renamed "show_menu" signal to "show-menu".
+
+  * libhildondesktop/hildon-desktop-home-item.c:
+  - added tap_and_hold handler to revert to normal state
+  when the popup is shown. Does not solve the problem of a
+  tap-n-hold set up on a child widget
+
+  * libhildondesktop/hildon-home-titlebar.[ch]:
+  - removed all layout mode-related logic
+  * libhildondesktop/hildon-home-window.[ch]:
+  - added "menu" and "title" properties, proxied to the titlebar
+  - added _toggle_menu, proxied to the titlebar
+  * src/hd-home-window.c:
+  - act on the window rather than the titlebar
+
+  * src/hd-home-window.[ch], libhildondesktop/hildon-home-window.[ch]:
+  - moved all notions of layout mode to the HDHomeWindow
+  - moved all notions of system state to the HDHomeWindow
+  - removed _home_area, the home area is the bin's child
+  - removed _init_applets, no longer necessary
+  - when layout mode sucks, save the layout once
+  every second when an applet is moved
+  Fixes: NB#56368
+  * src/hd-desktop.c: Do not call _applet_init anymore
+  * background-manager/background-manager.c:
+  - do not apply the borders for the initial background
+
+  * libhildonwm/hd-wm.[ch]:
+  - added desktop-window property. It is currently set manually.
+  * src/hd-home-window.c:
+  - added _realize / _unrealize to composite-redirect the window
+  and update the "desktop-window" WM property
+  * src/hd-panel-window.c:
+  - tack the desktop-window property and create a Damage and Picture
+  when the desktop window changes
+  - added _expose which draws the desktop window as background
+  * src/hn-others-button.[ch], src/hn-app-button.[ch]:
+  - use a HildonToggleButton instead of a GtkToggleButton to
+  draw the focus and pressed mark with alpha
+
+  * src/hd-switcher-menu-item.[ch]:
+  - Renamed some methods
+  - Added leave notify event handler to unselect itself
+  * src/hd-switcher-menu.c:
+  - Implemented blinking notifications.
+  - Fixed theme of icon.
+  - Fixed first selected item. Misses stack_changed to track selected
+  items.
+  * libhildondesktop/hildon-desktop-popup-window.[ch]:
+  - Added "popdown-window" signal
+
+  * libhildondesktop/hildon-desktop-toggle-button.[ch]:
+  - added
+  - ToggleButton which implements its own painting, and supports
+  alpha in the pressed and focused states
+
+ -- Johan Bilien <johan.bilien@nokia.com>  Fri, 11 May 2007 18:37:22 +0300
+
+hildon-desktop (0.0.12-1) sardine; urgency=low
 
   * src/hd-home-window.c: Reverted accidental change,
   background should be set after background-dir

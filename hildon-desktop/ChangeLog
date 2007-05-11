@@ -1,3 +1,7 @@
+2007-05-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* configure.ac: 0.0.13
+
 2007-05-11  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c:
@@ -9,6 +13,13 @@
 	- Fixed problem with scrolling.
 	- When resizing parent with scroll controls, resize it as big as the
 	screen.
+
+2007-05-11  Johan Bilien  <johan.bilien@nokia.com>
+
+	* src/hd-panel-window.c:
+	- added _style_set to load a background picture
+	- added _realize to first call _style_set
+	- paint the background in expose
 
 2007-05-11  Lucas Rocha  <lucas.rocha@nokia.com>
 
