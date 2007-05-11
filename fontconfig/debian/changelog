@@ -1,3 +1,9 @@
+fontconfig (2.4.1-1osso3) unstable; urgency=low
+
+  * New "LOCK" key introduced
+
+ -- Jakub Pavelek <jakub.pavelek@nokia.com>  Fri, 11 May 2007 17:00:45 +0300
+
 fontconfig (2.4.1-1osso2.1) unstable; urgency=low
 
   * Increasing the version, recompilation is needed to link with libdbus-1-3
