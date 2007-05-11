@@ -1,3 +1,8 @@
+2007-05-11  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c: fixed sizing and
+	scroll buttons behavior when "resize-parent" is FALSE.
+
 2007-05-10  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c:
