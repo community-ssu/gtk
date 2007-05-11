@@ -1,5 +1,10 @@
 2007-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.9.21
+
+	* hildon-fm/Makefile.am: Removed "t" target, which was only used
+	for testing.
+	
 	Released 1.9.20
 	
 	* hildon-fm/hildon-file-system-private.c

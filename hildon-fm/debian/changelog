@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.21) unstable; urgency=low
+
+  * Bugfixed Makefile.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Fri, 11 May 2007 17:35:17 +0300
+
 libhildonfm (1:1.9.20) unstable; urgency=low
 
   * Fixed crasher related to mounting of new volumes.
