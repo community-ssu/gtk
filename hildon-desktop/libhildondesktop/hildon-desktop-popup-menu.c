@@ -68,8 +68,6 @@ struct _HildonDesktopPopupMenuPrivate
 
   guint item_height;
 
-  gdouble upper_hack;
-
   GtkMenuItem *selected_item;
 
   gboolean     resize_parent;
@@ -358,7 +356,7 @@ hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *
     else
       gtk_adjustment_set_value (adj, upper_hack);	    
 
-    g_debug ("min: %lf max: %lf current: %lf upper_hack: %lf", adj->lower,adj->upper, adj->value, menu->priv->upper_hack);
+    g_debug ("min: %lf max: %lf current: %lf upper_hack: %lf", adj->lower,adj->upper, adj->value, upper_hack);
  }
 }	
 
@@ -544,7 +542,7 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
 		    		 req.width,
 				 show_scroll_controls ? 
 				 screen_height : 
-				 (d_height - menu->priv->item_height));
+				 d_height);
 
     if (GTK_WIDGET_MAPPED (parent))
     {	    
@@ -559,7 +557,9 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
 		         req.width,
 			 show_scroll_controls ? 
 			 screen_height : 
-			 (d_height - menu->priv->item_height)); 
+			 d_height);
+
+
   }
 
   g_list_free (children);

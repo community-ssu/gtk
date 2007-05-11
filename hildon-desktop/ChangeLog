@@ -1,6 +1,11 @@
 2007-05-11  Moises Martinez  <moises.martinez@nokia.com>
 
 	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Fixed problem I just introduced when resizing window parent.
+
+2007-05-11  Moises Martinez  <moises.martinez@nokia.com>
+
+	* libhildondesktop/hildon-desktop-popup-menu.c:
 	- Fixed problem with scrolling.
 	- When resizing parent with scroll controls, resize it as big as the
 	screen.
