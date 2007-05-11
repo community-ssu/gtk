@@ -279,13 +279,6 @@ hildon_file_system_special_location_failed_access (
     return FALSE;
 }
 
-/* If the given path is an immediate child of the location and location thinks
- * that the path is actually a device as well, it creates a new dynamic
- * location.
- * This functionality is used when dynamic device are appended to the tree.
- * If not, NULL is returned. If child_type == 0 or subclass doesn't implement
- * this, NULL is returned always.
- * THIS IS CALLED BY _hildon_file_system_get_special_location ONLY */
 HildonFileSystemSpecialLocation*
 hildon_file_system_special_location_create_child_location (
                 HildonFileSystemSpecialLocation *location, gchar *uri)
@@ -316,6 +309,38 @@ hildon_file_system_special_location_volumes_changed (
     if (klass->volumes_changed)
         return klass->volumes_changed (location, fs);
 }
+
+GtkFileSystemHandle *
+hildon_file_system_special_location_get_folder 
+    (HildonFileSystemSpecialLocation *location,
+     GtkFileSystem                  *file_system,
+     const GtkFilePath              *path,
+     GtkFileInfoType                 types,
+     GtkFileSystemGetFolderCallback  callback,
+     gpointer                        data)
+{
+    HildonFileSystemSpecialLocationClass *klass;
+
+    g_return_val_if_fail (HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
+			  NULL);
+    
+    klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
+
+    if (klass->get_folder)
+      return klass->get_folder (location,
+				file_system,
+				path,
+				types,
+				callback,
+				data);
+    else
+      return gtk_file_system_get_folder (file_system,
+					 path,
+					 types,
+					 callback,
+					 data);
+}
+
 /* Convenience function for setting fixed name. If fixed name is enough, name
  * related virtual functions are not needed to be overwritten by subclasses.*/
 void

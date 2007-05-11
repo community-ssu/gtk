@@ -55,7 +55,6 @@ typedef struct _HildonFileSystemSpecialLocation HildonFileSystemSpecialLocation;
 typedef struct _HildonFileSystemSpecialLocationClass
                     HildonFileSystemSpecialLocationClass;
 
-
 struct _HildonFileSystemSpecialLocation
 {
     GObject parent_instance;
@@ -69,22 +68,28 @@ struct _HildonFileSystemSpecialLocation
 
 struct _HildonFileSystemSpecialLocationClass
 {
-    GObjectClass parent_class;
+  GObjectClass parent_class;
 
-    /* private */
-    gchar* (*get_display_name) (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
-    gchar* (*get_extra_info) (HildonFileSystemSpecialLocation *location);
-    GdkPixbuf* (*get_icon) (HildonFileSystemSpecialLocation *location,
-                            GtkFileSystem *fs, GtkWidget *ref_widget, int size);
-    gboolean (*is_available) (HildonFileSystemSpecialLocation *location);
-    gboolean (*is_visible) (HildonFileSystemSpecialLocation *location);
-    gchar* (*get_unavailable_reason) (HildonFileSystemSpecialLocation *location);
-    gboolean (*requires_access) (HildonFileSystemSpecialLocation *location);
-    gboolean (*failed_access) (HildonFileSystemSpecialLocation *location);
-    HildonFileSystemSpecialLocation* (*create_child_location)
-        (HildonFileSystemSpecialLocation *location, gchar *uri);
-    void (*volumes_changed) (HildonFileSystemSpecialLocation *location,
+  /* private */
+  gchar* (*get_display_name) (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+  gchar* (*get_extra_info) (HildonFileSystemSpecialLocation *location);
+  GdkPixbuf* (*get_icon) (HildonFileSystemSpecialLocation *location,
+			  GtkFileSystem *fs, GtkWidget *ref_widget, int size);
+  gboolean (*is_available) (HildonFileSystemSpecialLocation *location);
+  gboolean (*is_visible) (HildonFileSystemSpecialLocation *location);
+  gchar* (*get_unavailable_reason) (HildonFileSystemSpecialLocation *location);
+  gboolean (*requires_access) (HildonFileSystemSpecialLocation *location);
+  gboolean (*failed_access) (HildonFileSystemSpecialLocation *location);
+  HildonFileSystemSpecialLocation* (*create_child_location) (HildonFileSystemSpecialLocation *location, gchar *uri);
+  void (*volumes_changed) (HildonFileSystemSpecialLocation *location,
                              GtkFileSystem *fs);
+
+  GtkFileSystemHandle * (*get_folder)  (HildonFileSystemSpecialLocation *location,
+					GtkFileSystem                  *file_system,
+					const GtkFilePath              *path,
+					GtkFileInfoType                 types,
+					GtkFileSystemGetFolderCallback  callback,
+					gpointer                        data);
 
     /* signals */
     void (*changed) (GObject *obj);
@@ -134,18 +139,23 @@ gboolean hildon_file_system_special_location_requires_access (HildonFileSystemSp
  * ignore this, but may also want to be removed from the model */
 gboolean hildon_file_system_special_location_failed_access (HildonFileSystemSpecialLocation *location);
 
-/* If the given path is an immediate child of the location and location thinks
- * that the path is actually a device as well, it creates a new dynamic
- * location.
- * This functionality is used when dynamic device are appended to the tree.
- * If not, NULL is returned. If child_type == 0 or subclass doesn't implement
- * this, NULL is returned always.
- * THIS IS CALLED BY _hildon_file_system_get_special_location ONLY */
+/* Determine whether URI should be considered a immediate child of
+   LOCATION and return the special location object for it, if so.  The
+   BASEPATH of LOCATION is guaranteed to be a prefix of URI.
+*/
 HildonFileSystemSpecialLocation *
 hildon_file_system_special_location_create_child_location (HildonFileSystemSpecialLocation *location, gchar *uri);
 
 void
 hildon_file_system_special_location_volumes_changed (HildonFileSystemSpecialLocation *location, GtkFileSystem *fs);
+
+GtkFileSystemHandle *
+hildon_file_system_special_location_get_folder (HildonFileSystemSpecialLocation *location,
+						GtkFileSystem                  *file_system,
+						const GtkFilePath              *path,
+						GtkFileInfoType                 types,
+						GtkFileSystemGetFolderCallback  callback,
+						gpointer                        data);
 
 /* Convenience function for setting fixed name. If fixed name is enough, name
  * related virtual functions are not needed to be overwritten by subclasses.*/

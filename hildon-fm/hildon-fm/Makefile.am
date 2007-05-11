@@ -1,3 +1,7 @@
+bin_PROGRAMS = t
+t_SOURCES = t.c
+t_CFLAGS= $(GTK_CFLAGS)
+t_LDFLAGS = $(GTK_LIBS)
 
 INCLUDES = $(GTK_CFLAGS) $(GCONF_CFLAGS) $(HILDON_THUMBNAIL_CFLAGS)	\
 	   $(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS)			\
@@ -51,6 +55,8 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-system-upnp.c		\
 	hildon-file-system-obex.h		\
 	hildon-file-system-obex.c		\
+	hildon-file-system-smb.h		\
+	hildon-file-system-smb.c		\
 	hildon-fm1-compat.h			\
 	hildon-fm1-compat.c			\
 	$(hildonfm_built_headers)		\

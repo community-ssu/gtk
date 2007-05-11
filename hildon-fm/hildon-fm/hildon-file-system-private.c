@@ -44,6 +44,7 @@
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-mmc.h"
 #include "hildon-file-system-upnp.h"
+#include "hildon-file-system-smb.h"
 #include "hildon-file-system-obex.h"
 #include "hildon-file-system-old-gateway.h"
 
@@ -217,6 +218,14 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
                 g_node_append_data(locations, location);
             }    
         }
+
+	/* Setup SMB
+	 */
+	{
+	  location = g_object_new (HILDON_TYPE_FILE_SYSTEM_SMB, NULL);
+	  location->basepath = g_strdup ("smb://");
+	  g_node_append_data (locations, location);
+	}
     }
 
     return locations;
@@ -257,7 +266,7 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
                     candidate->basepath, searched->uri, (gpointer) searched->result);
             }
 
-            return searched->result != NULL;
+	    return searched->result != NULL;
         }
     }
 

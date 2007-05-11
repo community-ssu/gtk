@@ -1432,9 +1432,10 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
     /* Not allocated dynamically */
     folder_string = gtk_file_path_get_string(path);
     
+    model_node = parent_node->data;
+
     /* First consider the parent itself.
      */
-    model_node = parent_node->data;
     if (model_node)
       {
 	test_string = gtk_file_path_get_string (model_node->path);
@@ -1449,8 +1450,8 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
 
         test_string = gtk_file_path_get_string(model_node->path);
 
-        /* Let's make sure that we survise with folder names both ending and not ending to slash */
-        if (_hildon_file_system_compare_ignore_last_separator(folder_string, test_string))
+        if (_hildon_file_system_compare_ignore_last_separator (folder_string,
+							       test_string))
             return node;
 
         if (recursively) {
@@ -1464,8 +1465,8 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
           {
                 GNode *result = 
                       hildon_file_system_model_search_path_internal(node,
-                                                                     path,
-                                                                     TRUE);
+								    path,
+								    TRUE);
                 if (result) return result;
           }
         }
@@ -1658,10 +1659,22 @@ link_file_folder (GNode *node, const GtkFilePath *path)
   parent_folder = (node->parent && node->parent->data) ?
       ((HildonFileSystemModelNode *) node->parent->data)->folder : NULL;
 
-  model_node->get_folder_handle =
-    gtk_file_system_get_folder (model->priv->filesystem,
-				path, GTK_FILE_INFO_ALL,
-				get_folder_callback, node);
+  if (model_node->location)
+    {
+      model_node->get_folder_handle =
+	hildon_file_system_special_location_get_folder 
+	  (model_node->location,
+	   model->priv->filesystem,
+	   path, GTK_FILE_INFO_ALL,
+	   get_folder_callback, node);
+    }
+  else
+    {
+      model_node->get_folder_handle =
+	gtk_file_system_get_folder (model->priv->filesystem,
+				    path, GTK_FILE_INFO_ALL,
+				    get_folder_callback, node);
+    }
 
   if (model_node->get_folder_handle == NULL)
     {
@@ -1795,8 +1808,9 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
 
     /* First check if this item is already part of the model */
     {
-        node = hildon_file_system_model_search_path_internal(
-                          parent_node, path, FALSE);
+      node =
+	hildon_file_system_model_search_path_internal (parent_node,
+						       path, FALSE);
 
         if (node) {
             HildonFileSystemModelNode *model_node = node->data;
@@ -2681,22 +2695,19 @@ gboolean hildon_file_system_model_search_path(HildonFileSystemModel *
                                               GtkTreeIter * start_iter,
                                               gboolean recursive)
 {
-    HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(model);
+  HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(model);
+  GNode *start_node;
 
-    g_return_val_if_fail(iter != NULL, FALSE);
+  g_return_val_if_fail(iter != NULL, FALSE);
 
-    iter->stamp = priv->stamp;
+  start_node = get_node (priv, start_iter);
+  g_return_val_if_fail (start_node != NULL, FALSE);
 
-
-
-
-
-    iter->user_data =
-        hildon_file_system_model_search_path_internal(
-                                                      get_node(priv,
-                                                               start_iter),
-                                                      path, recursive);
-    return iter->user_data != NULL;
+  iter->stamp = priv->stamp;
+  iter->user_data =
+    hildon_file_system_model_search_path_internal (start_node,
+						   path, recursive);
+  return iter->user_data != NULL;
 }
 
 /**
