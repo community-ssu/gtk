@@ -1,3 +1,11 @@
+2007-05-11  Tomas Junnonen  <tomas.junnonen@nokia.com>
+
+	* rc/hildonkeyboard.rc:
+	Updated Input Method theming to use current class names.
+	Added a scaling version of the word completion widget.
+
+	* rc/themespecificgtk.rc, data/layout.txt: Added a few IM colors
+	
 2007-05-10  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/base.rc (gtk-icon-sizes): add binding for Esc key on GtkMenu

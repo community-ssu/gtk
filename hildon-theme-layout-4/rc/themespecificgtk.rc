@@ -64,7 +64,10 @@ style "osso-logical-colors" {
 	color["CallHeaderOnHoldBlockBgColor"] = "@CallHeaderOnHoldBlockBgColor@"
 	
 	color["MenuInfoTextColor"]       = "@MenuInfoTextColor@"
-        color["VKBButtonTextColor"]      = "@VKBButtonTextColor@"
+	color["VKBButtonTextColor"]      = "@VKBButtonTextColor@"
+	color["WCFrameColor"]            = "@WCFrameColor@"
+	color["WCIndicatorColor"]        = "@WCIndicatorColor@"
+	color["WCIndicatorFNColor"]      = "@WCIndicatorFNColor@"
 }
 
 ##############################

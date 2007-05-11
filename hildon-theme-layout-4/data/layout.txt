@@ -23,7 +23,7 @@ DialogTitleTextColor=7691,223,30,16
 ClearButtonTextColor=7942,283,30,16
 MemButtonTextColor=7942,298,30,16
 
-# HW recognition
+# Input Method
 HWRAlphaTextColor=7691,358,30,16
 HWRNumberTextColor=7691,373,30,16
 HWRDimmedTextColor=7691,388,30,16
@@ -38,6 +38,10 @@ HWRRecogColor=7691,508,30,16
 HWRUserColor=7691,523,30,16
 HWRUserBackgrdColor=7691,538,30,16
 HWRHintColor=7691,553,30,16
+VKBButtonTextColor=7691,583,30,16
+WCFrameColor=7691,598,30,16
+WCIndicatorColor=7691,613,30,16
+WCIndicatorFNColor=7691,628,30,16
 
 # Web browser
 WebTextColor=7942,43,30,16
@@ -73,9 +77,6 @@ CallHeaderOnHoldBlockBgColor=7942,223,30,16
 #HomeFrameNormal=7960,756,30,10
 #HomeFrameResize=7960,768,30,10
 #HomeFrameReject=7960,780,30,10
-
-# Virtual keyboard
-VKBButtonTextColor=7691,583,30,16
 
 #new ones, check!
 HWRWhiteTextColor=7691,568,30,16

@@ -22,7 +22,7 @@ style "osso-input-method-frame"
     }
   }
 }
-class "HildonIMKeyboard" style "osso-input-method-frame"
+class "HildonIMUI" style "osso-input-method-frame"
 
 #close buttons
 style "osso-input-method-side-close-button"
@@ -634,3 +634,51 @@ style "osso-input-method-fkb-accent-key" = "osso-logical-colors"
     }
 }
 widget "*osso-im-fkb-accent-key" style "osso-input-method-fkb-accent-key"
+
+style "hildon-input-method-wc-frame" = "osso-logical-colors"
+{
+    bg[NORMAL] = @WCFrameColor
+}
+widget "*.hildon-input-method-wc-frame" style "hildon-input-method-wc-frame"
+
+style "hildon-input-method-wc-indicator" = "osso-logical-colors"
+{
+    font_name = "Nokia Sans 24"
+    fg[NORMAL] = @WCIndicatorColor
+}
+widget "*.hildon-input-method-wc-indicator" style "hildon-input-method-wc-indicator"
+
+style "hildon-input-method-wc-finger-candidates"
+{
+    engine "sapwood"
+    {
+        image
+        {
+            function = BOX
+            state = NORMAL
+            file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_normal.png"
+            border = { 5, 5, 5, 5 }
+        }
+        image
+        {
+            function = BOX
+            state = PRELIGHT
+            file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_normal.png"
+            border = { 5, 5, 5, 5 }
+        }
+        image
+        {
+            function = BOX
+            state = ACTIVE
+            file = "../images/qgn_plat_inputmet_button_keyboard_word_compl_pressed.png"
+            border = { 5, 5, 5, 5 }
+        }
+    }
+}
+widget "*hildon-input-method-finger-wc.hildon-wc-candidate-button" style "hildon-input-method-wc-finger-candidates"
+
+style "hildon-input-method-wc-finger-candidate-label"
+{
+    font_name = "Nokia Sans 24"
+}
+widget "*hildon-input-method-finger-wc.hildon-wc-candidate-button.GtkLabel" style "hildon-input-method-wc-finger-candidate-label"
