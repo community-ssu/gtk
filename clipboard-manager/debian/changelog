@@ -1,3 +1,9 @@
+clipboard-manager (0.6.5-1) sardine; urgency=low
+
+  * Added GConf-to-XSettings bridge
+
+ -- Gabriel Schulhof <gabriel.schulhof@nokia.com>  Mon, 14 May 2007 15:56:39 +0300
+
 clipboard-manager (0.6.4-1) sardine; urgency=low
 
   * Added myself as uploader

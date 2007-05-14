@@ -3,6 +3,7 @@ SUBDIRS = debian
 bin_PROGRAMS = clipboard-manager
 
 INCLUDES = 			\
+	$(CM_DEPS_CFLAGS)	\
 	$(X_CFLAGS)
 
 clipboard_manager_SOURCES =	\
@@ -11,10 +12,17 @@ clipboard_manager_SOURCES =	\
 	list.c			\
 	list.h			\
 	manager.c		\
+	gconf2xsettings.c	\
+	gconf2xsettings.h	\
+	xsettings-manager.c	\
+	xsettings-manager.h	\
+	xsettings-common.c	\
+	xsettings-common.h	\
 	xutils.c		\
 	xutils.h
 
 clipboard_manager_LDADD =	\
+	$(CM_DEPS_LIBS)		\
 	$(X_LIBS)
 
 EXTRA_DIST = \

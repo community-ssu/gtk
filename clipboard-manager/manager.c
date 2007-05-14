@@ -25,8 +25,17 @@
 #include <stdlib.h>
 
 #include <X11/Xlib.h>
+#include <glib.h>
 
 #include "clipboard-manager.h"
+#include "xsettings-manager.h"
+#include "gconf2xsettings.h"
+
+typedef struct
+  {
+  GSource source ;
+  Display *display ;
+  } X11EventSource ;
 
 void
 terminate_cb (void *data)
@@ -62,12 +71,72 @@ x_error (Display *display,
   return 0; /* ignored */
 }
 
+static gboolean x11_event_prepare (GSource *source, gint *p_timeout)
+  {
+  (*p_timeout) = -1 ;
+
+  return XPending (((X11EventSource *)source)->display) ;
+  }
+
+static gboolean x11_event_check (GSource *source)
+  {
+  return XPending (((X11EventSource *)source)->display) ;
+  }
+
+static gboolean x11_event_dispatch (GSource *source, GSourceFunc callback, gpointer user_data)
+  {
+  if (NULL != callback)
+    (*callback) (user_data) ;
+  return TRUE ;
+  }
+
+static GSourceFuncs source_funcs =
+  {
+  .prepare  = x11_event_prepare,
+  .check    = x11_event_check,
+  .dispatch = x11_event_dispatch,
+  NULL
+  } ;
+
+static GSource *
+x11_event_source_new (Display *display)
+  {
+  X11EventSource *x11_event_source = (X11EventSource *)g_source_new (&source_funcs, sizeof (X11EventSource)) ;
+  x11_event_source->display = display ;
+
+  g_print ("x11_event_source_new: Returning 0x%x\n", (int)x11_event_source) ;
+
+  return (GSource *)x11_event_source ;
+  }
+
+typedef struct
+  {
+  Display *display ;
+  XSettingsManager *xsettings_manager ;
+  ClipboardManager *clipboard_manager ;
+  } PROCESS_X11_EVENT_PARAMS ;
+
+static gboolean process_x11_event (PROCESS_X11_EVENT_PARAMS *params)
+  {
+  XEvent event ;
+
+  XNextEvent (params->display, &event) ;
+  clipboard_manager_process_event (params->clipboard_manager, &event) ;
+  xsettings_manager_process_event (params->xsettings_manager, &event) ;
+
+  return TRUE ;
+  }
+
 int 
 main (int argc, char *argv[])
 {
   ClipboardManager *manager;
   int terminated = False;
   Display *display;
+  GSource *source = NULL ;
+  PROCESS_X11_EVENT_PARAMS params = {NULL, NULL, NULL} ;
+  guint source_id = 0 ;
+  XSettingsManager *xsettings_manager = NULL ;
 
   display = XOpenDisplay (NULL);
 
@@ -83,6 +152,14 @@ main (int argc, char *argv[])
       exit (1);
     }
 
+  if (NULL == (xsettings_manager = xsettings_manager_new (display, DefaultScreen (display), terminate_cb,  &terminated)))
+    {
+    fprintf (stderr, "Failed to create an XSettings manager; exiting\n") ;
+    exit (1) ;
+    }
+
+  construct_gconf_to_xsettings_bridge (xsettings_manager) ;
+
   XSetErrorHandler (x_error);
   manager = clipboard_manager_new (display,
 				   error_trap_push, error_trap_pop,
@@ -93,17 +170,23 @@ main (int argc, char *argv[])
       exit (1);
     }
 
-  while (!terminated)
+  params.display = display ;
+  params.clipboard_manager = manager ;
+  params.xsettings_manager = xsettings_manager ;
+
+  if (NULL != (source = x11_event_source_new (display)))
     {
-      XEvent event;
-
-      XNextEvent (display, &event);
-
-      clipboard_manager_process_event (manager, &event);
+    g_source_set_callback (source, (GSourceFunc)process_x11_event, &params, NULL) ;
+    source_id = g_source_attach (source, NULL) ;
     }
-  
+
+  while (!terminated)
+    g_main_context_iteration (NULL, TRUE) ;
+
   clipboard_manager_destroy (manager);
 
-  return 0;
+  if (0 != source_id)
+    g_source_remove (source_id) ;
 
+  return 0;
 }

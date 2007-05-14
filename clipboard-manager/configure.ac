@@ -1,4 +1,4 @@
-AC_INIT(clipboard-manager, 0.6.4)
+AC_INIT(clipboard-manager, 0.6.5)
 AC_CONFIG_AUX_DIR(config)
 
 AM_INIT_AUTOMAKE()
@@ -8,6 +8,10 @@ AC_PROG_CC
 
 
 PKG_CHECK_MODULES(X, x11, [have_x=yes], [have_x=no])
+PKG_CHECK_MODULES(CM_DEPS,
+	[gconf-2.0 >= 2.16.0
+	 glib-2.0 >= 2.12.0
+	])
 
 if test x$have_x = xno ; then
   AC_PATH_XTRA
@@ -19,6 +23,7 @@ fi
 
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_LIBS)
+AC_DEFINE_UNQUOTED(PACKAGE_SYSCONFDIR,"${sysconfdir}")
 
 AC_OUTPUT([
         Makefile

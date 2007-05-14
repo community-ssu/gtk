@@ -1,3 +1,10 @@
+2007-05-14  Gabriel Schulhof  <gabriel.schulhof@nokia.com>
+
+	Release 0.6.5
+
+	- Added GConf-to-XSettings bridge
+	* configure.ac: Bumped version to 0.6.5
+
 2007-05-03  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Release 0.6.4
