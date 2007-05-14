@@ -36,8 +36,8 @@ typedef struct _HildonDesktopToggleButtonPrivate HildonDesktopToggleButtonPrivat
 #define HILDON_DESKTOP_TYPE_TOGGLE_BUTTON            (hildon_desktop_toggle_button_get_type ())
 #define HILDON_DESKTOP_TOGGLE_BUTTON(obj)            (G_TYPE_CHECK_INSTANCE_CAST ((obj), HILDON_DESKTOP_TYPE_TOGGLE_BUTTON, HildonDesktopToggleButton))
 #define HILDON_DESKTOP_TOGGLE_BUTTON_CLASS(klass)    (G_TYPE_CHECK_CLASS_CAST ((klass),  HILDON_DESKTOP_TYPE_TOGGLE_BUTTON, HildonDesktopToggleButtonClass))
-#define HD_IS_DESKTOP(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HILDON_DESKTOP_TYPE_TOGGLE_BUTTON))
-#define HD_IS_DESKTOP_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  HILDON_DESKTOP_TYPE_TOGGLE_BUTTON))
+#define HILDON_DESKTOP_IS_TOGGLE_BUTTON(obj)         (G_TYPE_CHECK_INSTANCE_TYPE ((obj), HILDON_DESKTOP_TYPE_TOGGLE_BUTTON))
+#define HILDON_DESKTOP_IS_TOGGLE_BUTTON_CLASS(klass) (G_TYPE_CHECK_CLASS_TYPE ((klass),  HILDON_DESKTOP_TYPE_TOGGLE_BUTTON))
 #define HILDON_DESKTOP_TOGGLE_BUTTON_GET_CLASS(obj)  (G_TYPE_INSTANCE_GET_CLASS ((obj),  HILDON_DESKTOP_TYPE_TOGGLE_BUTTON, HildonDesktopToggleButtonClass))
 
 struct _HildonDesktopToggleButton
