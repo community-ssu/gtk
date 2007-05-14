@@ -382,7 +382,7 @@ qgn_plat_number_editor_more_pressed.png=607,455,30,30
 qgn_plat_pane1_focus_active.png=2509,65,14,14
 qgn_plat_pane1_focus_passive.png=2509,45,14,14
 qgn_plat_pane2_focus_active.png=2617,45,14,14
-qgn_plat_panemenu_bg=2461,45,42,42,alpha
+qgn_plat_panemenu_bg.png=2461,45,42,42,alpha
 
 qgn_plat_pane_menu1_down_arrow_disabled.png=2461,249,72,72 
 qgn_plat_pane_menu1_down_arrow_normal.png=2461,93,72,72

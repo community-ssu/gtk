@@ -1,5 +1,9 @@
 2007-05-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
+	* data/layout.txt: Adding some missing .png extensions.
+
+2007-05-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
 	* data/layout.txt: Changing the 'separate_alpha' to 'noalpha' etc. 
 
 2007-05-11  Tomas Junnonen  <tomas.junnonen@nokia.com>
