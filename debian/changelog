@@ -1,8 +1,9 @@
-gtk+2.0 (2:2.10.6-0osso13) UNRELEASED; urgency=low
+gtk+2.0 (2:2.10.6-0osso13) unstable; urgency=low
 
-  * Import bugfixes for GtkTextView from upstream. Fixes: NB#54825 
+  * Import bugfixes for GtkTextView from upstream. Fixes: NB#54825
+  * Add Gtk/EnableAccels and Gtk/EnableMnemonics xsettings
 
- -- Xan Lopez <xan.lopez@nokia.com>  Mon, 14 May 2007 10:07:55 +0300
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Mon, 14 May 2007 11:14:04 +0300
 
 gtk+2.0 (2:2.10.6-0osso12) unstable; urgency=low
 
