@@ -1,0 +1,164 @@
+#!/usr/bin/make -f
+
+# Configure for cairo packages
+
+# Supported backends (as of Cairo 1.1.10):
+#  (internal) Image
+#  xlib       Xlib
+#  pdf        PDF
+#  ps         PostScript
+#  svg        SVG
+#
+# Experimental and unsupported backends:
+#  directfb  DirectFB (requires Build-Depend on libdirectfb-0.9-22-dev )
+#  glitz     OpenGL (glitz)
+#  xcb       XCB  (requires Build-Depend on at least libxcb1-dev)
+#
+# Other platform backends are auto disabled: quartz/OSX, win32/Win32
+#
+# Features:
+# --enable-png  PNG (default enabled)
+#
+MAIN_CONFIGURE_FLAGS = \
+--enable-xlib --enable-pdf --enable-ps --enable-svg \
+--disable-glitz --disable-xcb --disable-directfb \
+--enable-png
+
+SRC_DIR=$(CURDIR)
+MAIN_BUILD_DIR=$(CURDIR)/debian/build-main
+
+MAIN_DIST_DIR=$(CURDIR)/debian/dist-main
+
+
+export DH_COMPAT=4
+
+export DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+export DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -g -O0
+else
+	CFLAGS += -O2
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+CONFFLAGS = --host=$(DEB_BUILD_GNU_TYPE) --build=$(DEB_HOST_GNU_TYPE)
+
+package := tmp
+destdir := $(PWD)/debian/$(package)
+prefix  := /usr
+share   := $(prefix)/share
+
+version := $(shell dpkg-parsechangelog | \
+		sed -ne 's/^Version: *\([0-9]\+:\)*//p')
+
+include /usr/share/dpatch/dpatch.make
+
+configure: configure-main
+
+configure-common-stamp: patch-stamp
+	dh_testdir
+
+# handle timestamp skew; advice from autotools-dev README.Debian
+	touch configure.in && \
+	touch aclocal.m4 && \
+	touch configure
+
+	touch $@
+
+# Calling GNU configure properly; advice from autotools-dev README.Debian
+configure-main: configure-common-stamp configure-main-stamp
+configure-main-stamp: configure-common-stamp
+	dh_testdir
+	mkdir -p $(MAIN_BUILD_DIR); \
+	cd $(MAIN_BUILD_DIR); \
+	$(SRC_DIR)/configure $(CONFFLAGS) \
+		--prefix=$(prefix) \
+		--mandir=$(share)/man \
+		--infodir=$(share)/info \
+		$(MAIN_CONFIGURE_FLAGS)
+	touch $@
+
+build: build-main
+
+build-main: build-main-stamp
+build-main-stamp: configure-main-stamp
+	dh_testdir
+	cd $(MAIN_BUILD_DIR) && $(MAKE)
+	touch build-stamp
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	rm -f *-stamp libtool
+	rm -rf debian/libcairo2 debian/libcairo2-dev debian/libcairo2-doc
+	rm -rf $(MAIN_BUILD_DIR) $(MAIN_DIST_DIR)
+
+	-rm -f config.h config.cache config.status config.log
+
+# Copy in fresh copies of config.{sub,guess}
+# (these are from autotools-dev, so must Build-Depend on it)
+	-test -r /usr/share/misc/config.sub && \
+	  cp -f /usr/share/misc/config.sub config.sub
+	-test -r /usr/share/misc/config.guess && \
+	  cp -f /usr/share/misc/config.guess config.guess
+
+	dh_clean
+
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	cd $(MAIN_BUILD_DIR) && $(MAKE) install DESTDIR=$(MAIN_DIST_DIR)
+
+	sed -i 's:/usr/lib/lib\([^ ]*\).la:-l\1:g' $(MAIN_DIST_DIR)/usr/lib/*.la
+
+# Build architecture-independent files here.
+binary-indep: build install
+	dh_testdir -i
+	dh_testroot -i
+	dh_install -i
+	dh_installdocs -i -A TODO README NEWS AUTHORS
+
+	dh_link -plibcairo2-doc				\
+		usr/share/doc/libcairo2-doc/html	\
+		usr/share/gtk-doc/html/cairo
+
+	dh_installchangelogs -i ChangeLog
+	dh_compress -i
+	dh_fixperms -i
+	dh_installdeb -i
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+
+# Build architecture-dependent files here.
+binary-arch: build install
+	dh_testdir -a
+	dh_testroot -a
+	dh_install -a
+	dh_installdocs -a -A TODO README NEWS AUTHORS
+	dh_installchangelogs -a ChangeLog
+	dh_installman -a
+	dh_installexamples -a
+	dh_link -a
+	dh_strip -a --dbg-package=libcairo2
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -a -plibcairo2 -V
+	dh_installdeb -a
+	dh_shlibdeps -a
+	dh_perl -a
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+
+binary: binary-indep binary-arch
+
+.PHONY: build clean binary-indep binary-arch binary install configure \
+	patch unpatch clean1
