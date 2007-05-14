@@ -21,3 +21,6 @@ DEB_DH_STRIP_ARGS := --dbg-package=libatk1.0-0
 
 install/libatk1.0-udeb::
 	cp debian/tmp/usr/lib/libatk-1.0.so.0 debian/libatk1.0-udeb/usr/lib/
+
+# Disable all locales to save footprint
+export LINGUAS =
