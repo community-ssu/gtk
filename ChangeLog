@@ -1,3 +1,10 @@
+2007-05-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gdk/x11/gdksettings.c (gdk_settings_names, gdk_settings_map): Add
+	Gtk/EnableAccels and Gtk/EnableMnemonics xsettings for
+	gtk-enable-accels and gtk-enable-mnemonics GtkSettings respectively
+	(#436536)
+
 2007-05-11  Michael Natterer  <mitch@imendio.com>
 
 	Merge all GtkTextView fixes from the gtk-2-10 branch. The last
