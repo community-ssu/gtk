@@ -1,3 +1,9 @@
+atk1.0 (1.18.0-1osso4) unstable; urgency=low
+
+  * Disable all translations for real. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 14 May 2007 17:39:56 +0300
+
 atk1.0 (1.18.0-1osso3) unstable; urgency=low
 
   * Disable all translations. 

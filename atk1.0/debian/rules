@@ -6,6 +6,9 @@ include /usr/share/cdbs/1/class/gnome.mk
 
 DEB_CONFIGURE_SCRIPT_ENV += LDFLAGS="-Wl,-O1 -Wl,-z,defs -Wl,--as-needed"
 
+# Disable all locales to save footprint
+export LINGUAS =
+
 # Use soft-float and thumb mode if it enabled. 
 ifneq (,$(findstring thumb,$(DEB_BUILD_OPTIONS)))
 	CFLAGS += -mthumb
@@ -21,6 +24,3 @@ DEB_DH_STRIP_ARGS := --dbg-package=libatk1.0-0
 
 install/libatk1.0-udeb::
 	cp debian/tmp/usr/lib/libatk-1.0.so.0 debian/libatk1.0-udeb/usr/lib/
-
-# Disable all locales to save footprint
-export LINGUAS =
