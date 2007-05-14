@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.10.6-0osso13) UNRELEASED; urgency=low
+
+  * Import bugfixes for GtkTextView from upstream. Fixes: NB#54825 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 14 May 2007 10:07:55 +0300
+
 gtk+2.0 (2:2.10.6-0osso12) unstable; urgency=low
 
   * Add opposite-arrows style property (Note: naming is temporary, don't use
