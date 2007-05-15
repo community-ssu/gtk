@@ -4,7 +4,10 @@ pkgconfig_DATA = hildon-desktop.pc
 pkginclude_HEADERS = hd-plugin-loader.h \
 		     hd-config.h
 
-bin_PROGRAMS = hildon-desktop
+bin_PROGRAMS = hd-hung-app-handler hildon-desktop
+
+hd_hung_app_handler_SOURCES = hd-hung-app-handler.c
+hd_hung_app_handler_LDADD = $(XLIBS_LIBS)
 
 hildon_desktop_CPPFLAGS = \
 	$(HILDON_CFLAGS)             					   \

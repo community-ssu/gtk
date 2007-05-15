@@ -599,6 +599,11 @@ hd_switcher_menu_constructor (GType gtype,
   hildon_desktop_popup_menu_add_item
    (switcher->priv->menu_applications, GTK_MENU_ITEM (menu_item));
 
+  g_signal_connect_after (menu_item,
+                          "activate",
+                          G_CALLBACK (hd_switcher_menu_item_activated),
+                          (gpointer)switcher); 
+
   hildon_desktop_popup_menu_add_item
    (switcher->priv->menu_applications, 
     GTK_MENU_ITEM (gtk_separator_menu_item_new ()));

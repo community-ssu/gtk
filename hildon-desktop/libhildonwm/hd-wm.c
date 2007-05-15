@@ -1259,6 +1259,12 @@ hd_wm_top_item (HDEntryInfo *info)
     gdk_error_trap_pop();
 
   }
+
+  if (info->type == HD_ENTRY_DESKTOP)
+  {
+    hd_wm_top_desktop ();	  
+    g_signal_emit_by_name (hdwm, "entry_info_stack_changed", info);
+  }	  
   else
     g_debug  ("### Invalid window type ###\n");
 }
@@ -1785,13 +1791,10 @@ hd_wm_process_mb_current_app_window (HDWM *hdwm)
      * deactivate any active buttons.
      */
       
-    HDEntryInfo * info = NULL;
-      /*  = hn_app_switcher_get_home_entry_info (hdwm->priv->app_switcher);*/
+    HDEntryInfo * info = hdwm->priv->home_info;
       
     if (info)
       g_signal_emit_by_name (hdwm,"entry_info_stack_changed",info);
-    else
-      g_debug  ("***************** No Home info yet");
   }
   
 out:

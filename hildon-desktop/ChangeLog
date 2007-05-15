@@ -1,4 +1,13 @@
-2007-05-13  Moises Martinez  <moises.martinez@nokia.com>
+2007-05-15  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-hung-app-handler.c:
+	- Added missing "hung application" handler.
+	* src/Makefile.am: updated
+	* libhildonwm/hd-wm.c: 
+	- Handle home entry info from hd_wm_top_item
+	* src/hd-switcher-menu.c: Close the menu when topping desktop.
+	
+2007-05-14  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c:
 	- Fixed showing of menu button when notifications are added and there
