@@ -1,6 +1,8 @@
 gconf2 (2.16.0-1osso4) unstable; urgency=low
 
   * Fixes: NB#49550, gconf_client_get sees a removed key
+  * This was already in the first 2.16.0 release:
+  * Fixed: NB#48637, gconfd catches SIGSEGV and calls abort()
 
  -- Richard Hult <richard@imendio.com>  Tue, 15 May 2007 15:22:55 +0200
 
