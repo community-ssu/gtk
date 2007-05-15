@@ -1,3 +1,8 @@
+2007-05-15  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: Updated to layout, new colours, some old
+	colors removed, and added scroll indicator bitmaps for rss applet.
+
 2007-05-11  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.svg: Added new applet graphics, will break
