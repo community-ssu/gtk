@@ -28,4 +28,7 @@ gtk-entry-last-char-timeout = 600
 gtk-timeout-repeat = 150
 
 # Disable wrap-around in menus, notebooks and radio groups
-gtk-keynav-cursor-only = 0
+gtk-keynav-wrap-around = 0
+
+# Enable cursor only navigation
+gtk-keynav-cursor-only = 1

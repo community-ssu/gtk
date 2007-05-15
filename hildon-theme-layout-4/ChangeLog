@@ -1,3 +1,7 @@
+2007-05-15  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtksettings.rc: Fix keynav-cursor-only and set keynav-wrap-around to 0
+
 2007-05-15  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* data/layout.txt: Added a bunch of logical colours, had to move
