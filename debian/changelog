@@ -1,3 +1,11 @@
+gtk+2.0 (2:2.10.6-0osso14) UNRELEASED; urgency=low
+
+  * NOT RELEASED YET
+
+  * Make GtkMenu scroll arrows scroll by item. Fixes: NB#56638
+
+ -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 15 May 2007 12:39:51 +0300
+
 gtk+2.0 (2:2.10.6-0osso13) unstable; urgency=low
 
   * Import bugfixes for GtkTextView from upstream. Fixes: NB#54825
