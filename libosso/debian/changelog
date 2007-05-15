@@ -1,9 +1,9 @@
 libosso (2.8-1) unstable; urgency=low
 
-  * UNRELEASED
-  * Moved to the new org.freedesktop.Notifications API.
+  * Moved to the new org.freedesktop.Notifications API. Affects
+    osso_system_note_dialog and osso_system_note_infoprint.
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 15 May 2007 12:33:06 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 15 May 2007 13:39:03 +0300
 
 libosso (2.7-1) unstable; urgency=low
 
