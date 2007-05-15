@@ -1,3 +1,13 @@
+2007-05-15  Michael Dominic K.  <mdk@mdk.am> 
+
+	[0.8.0-1 release]
+
+	* NEWS:
+	* configure.ac:
+	* debian/changelog: Updating.
+
+	* rc/themespecificgtk.rc: Removing some old colors.
+
 2007-05-15  Xan Lopez  <xan.lopez@nokia.com>
 
 	* rc/gtksettings.rc: Fix keynav-cursor-only and set keynav-wrap-around to 0

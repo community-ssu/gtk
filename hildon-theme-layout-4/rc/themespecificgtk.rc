@@ -60,9 +60,6 @@ style "osso-logical-colors" {
 	color["ChatParticipantNameColor"]= "@ChatParticipantNameColor@"
 	color["ChatEventColor"]          = "@ChatEventColor@"
 	
-	color["CallHeaderBlockBgColor"]  = "@CallHeaderBlockBgColor@"
-	color["CallHeaderOnHoldBlockBgColor"] = "@CallHeaderOnHoldBlockBgColor@"
-	
 	color["MenuInfoTextColor"]       = "@MenuInfoTextColor@"
 	color["VKBButtonTextColor"]      = "@VKBButtonTextColor@"
 	color["WCFrameColor"]            = "@WCFrameColor@"

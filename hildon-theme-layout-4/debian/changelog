@@ -1,3 +1,18 @@
+hildon-theme-layout-4 (0.8.0-1) unstable; urgency=low
+
+  * Adding a bunch of new logical colours
+  * Updated input method theming   
+  * Added binding for Esc key on GtkMenu
+  * Transparent applets stuff
+  * Matchbox frame animation rules
+  * Fixed color chooser theming
+  * Reorganized elements here and there
+  * Theming support for media player now playing buttons
+  * Fixes: NB#54750 Theming support for Media player Now Playing view mode buttons
+  * Fixes: NB#50637 Unexpected outcome with menu-key
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 15 May 2007 14:51:08 +0300
+
 hildon-theme-layout-4 (0.7.0-1) unstable; urgency=low
 
   * Fixes: NB#54069 Missing tick of check box in focus

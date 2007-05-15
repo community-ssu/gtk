@@ -1,3 +1,13 @@
+[0.8.0-1]
+* Adding a bunch of new logical colours
+* Updated input method theming   
+* Added binding for Esc key on GtkMenu
+* Transparent applets stuff
+* Matchbox frame animation rules
+* Fixed color chooser theming
+* Reorganized elements here and there
+* Theming support for media player now playing buttons
+
 [0.7.0-1]
 * Fixes: NB#54069 Missing tick of check box in focus
 * Fixes: NB#55340 The thumb in finger scrollbar does not show its clicked state
