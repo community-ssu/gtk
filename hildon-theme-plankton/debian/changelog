@@ -1,3 +1,11 @@
+hildon-theme-plankton (4.8.0-1) unstable; urgency=low
+  
+  * Applet graphics
+  * Updates to support new layout
+  * Removing the temporary 2nd wallpaper installation 
+
+ -- Michael Dominic Kostrzewa <michael.kostrzewa@nokia.com>  Tue, 15 May 2007 16:25:50 +0300
+
 hildon-theme-plankton (4.7.0-1) unstable; urgency=low
 
   * Layout bump.

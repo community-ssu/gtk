@@ -1,5 +1,5 @@
 AC_INIT(Makefile.am)
-AM_INIT_AUTOMAKE(hildon-theme-plankton, 4.7.0)
+AM_INIT_AUTOMAKE(hildon-theme-plankton, 4.8.0)
 AM_CONFIG_HEADER(config.h)
 
 AC_PROG_INSTALL
@@ -17,7 +17,7 @@ dnl a layout this theme is based on
 LAYOUT_NAME="hildon-theme-layout-4"
 
 dnl check the layout installation
-PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME" >= 0.7.0)
+PKG_CHECK_MODULES(HILDON_LAYOUT, "$LAYOUT_NAME" >= 0.8.0)
 
 AC_SUBST(THEME_DIR)
 AC_SUBST(THEME_NAME)
@@ -28,7 +28,7 @@ AS_AC_EXPAND(IMAGES_FULL_DIR, "${datadir}/themes/$THEME_DIR/images")
 AS_AC_EXPAND(GTK_FULL_DIR, "${datadir}/themes/$THEME_DIR/gtk-2.0")
 
 dnl check the tools installation
-PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.2.0)
+PKG_CHECK_MODULES(TOOLS, hildon-theme-tools >= 0.5.0)
 
 AC_OUTPUT([Makefile             \
            template/Makefile    \
