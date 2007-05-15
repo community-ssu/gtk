@@ -3324,16 +3324,106 @@ gtk_menu_scroll_by (GtkMenu *menu,
     gtk_menu_scroll_to (menu, offset);
 }
 
+#ifdef MAEMO_CHANGES
+#include "gtkseparatormenuitem.h"
+
+/* Same as _gtk_menu_item_is_selectable() except that this considers
+ * insensitive items valid - otherwise scrolling would skip them over, or stop
+ * scrolling before the begin/end of the menu, both of which would look bad */
+static gboolean
+_gtk_menu_item_is_scrollable (GtkWidget *menu_item)
+{
+  if ((!GTK_BIN (menu_item)->child &&
+       G_OBJECT_TYPE (menu_item) == GTK_TYPE_MENU_ITEM) ||
+      GTK_IS_SEPARATOR_MENU_ITEM (menu_item) ||
+      !GTK_WIDGET_VISIBLE (menu_item))
+    return FALSE;
+
+  return TRUE;
+}
+#endif
+
 static void
 gtk_menu_do_timeout_scroll (GtkMenu  *menu,
                             gboolean  touchscreen_mode)
 {
   gboolean upper_visible;
   gboolean lower_visible;
+#ifdef MAEMO_CHANGES
+  GtkWidget *item = NULL;
+#endif
 
   upper_visible = menu->upper_arrow_visible;
   lower_visible = menu->lower_arrow_visible;
 
+#ifdef MAEMO_CHANGES
+#define VISIBILITY_THRESHOLD 0.70
+  if (touchscreen_mode)
+    {
+      GdkRectangle visible;
+      GdkRectangle rect;
+      GList *l;
+
+      /* Scroll by item picking the next item that is not sufficiently
+       * readable. The visibility threshold is to avoid the impression of
+       * skipping an item when there's only one or two pixels obscured.
+       */
+
+      visible.x = 0; /* unused */
+      visible.y = menu->scroll_offset;
+      gdk_drawable_get_size (menu->view_window, &visible.width, &visible.height);
+
+      if (menu->scroll_step < 0)
+        {
+          /* scrolling up */
+          for (l = GTK_MENU_SHELL (menu)->children; l != NULL; l = l->next)
+            {
+              GtkWidget *child = l->data;
+
+              if (!_gtk_menu_item_is_scrollable (child))
+                continue;
+
+              /* completely below the top edge, use the previous one */
+              if (child->allocation.y >= visible.y)
+                break;
+
+              /* visible/readable enough, use the previous one */
+              if (gdk_rectangle_intersect (&child->allocation, &visible, &rect) &&
+                  rect.height / (float)child->allocation.height >= VISIBILITY_THRESHOLD)
+                break;
+
+              item = child;
+            }
+        }
+      else
+        {
+          /* scrolling down */
+          for (l = GTK_MENU_SHELL (menu)->children; l != NULL; l = l->next)
+            {
+              GtkWidget *child = l->data;
+
+              if (!_gtk_menu_item_is_scrollable (child))
+                continue;
+
+              /* skip all completely above the bottom edge */
+              if (child->allocation.y + child->allocation.height < visible.y + visible.height)
+                continue;
+
+              /* visible/readable enough, try the next one */
+              if (gdk_rectangle_intersect (&child->allocation, &visible, &rect) &&
+                  rect.height / (float)child->allocation.height >= VISIBILITY_THRESHOLD)
+                continue;
+
+              item = child;
+              break;
+            }
+        }
+    }
+
+  if (item)
+    gtk_menu_scroll_item_visible (GTK_MENU_SHELL (menu), item);
+  else
+#endif
   gtk_menu_scroll_by (menu, menu->scroll_step);
 
   if (touchscreen_mode &&
