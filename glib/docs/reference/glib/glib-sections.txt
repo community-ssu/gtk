@@ -1450,9 +1450,6 @@ G_CSET_LATINS
 g_scanner_add_symbol
 g_scanner_remove_symbol
 g_scanner_foreach_symbol
-
-<SUBSECTION>
-osso_g_scanner_cache_open
 </SECTION>
 
 <SECTION>

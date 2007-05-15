@@ -1,3 +1,8 @@
+2007-05-15  Michael Natterer  <mitch@imendio.com>
+
+	* glib/glib-sections.txt
+	* glib/tmpl/scanner.sgml: remove osso_g_scanner_cache_open().
+
 2007-05-01  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.12 ===

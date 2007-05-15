@@ -1,3 +1,8 @@
+2007-05-15  Michael Natterer  <mitch@imendio.com>
+
+	* glib/gscanner.[ch]: replace with upstream versions, backing out
+	osso_g_scanner_cache_open().
+
 2007-05-01  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.12.12 ===

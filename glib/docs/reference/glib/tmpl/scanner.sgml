@@ -598,18 +598,3 @@ Calls a function for each symbol in the default scope.
 @Deprecated: 2.2: Use g_scanner_scope_foreach_symbol() instead.
 
 
-<!-- ##### FUNCTION osso_g_scanner_cache_open ##### -->
-<para>
-Prepares to read the tokens from a cache file instead of parsing the input.
-</para>
-<note>
-<para>
-Do not use this function. It is only intended to be used from modified gtk+.
-</para>
-</note>
-
-@scanner: a #GScanner
-@filename: absolute filename of the cache file to use
-@Since: maemo
-
-
