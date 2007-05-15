@@ -34,14 +34,22 @@
 
 #include "config.h"
 
+#include "glib.h"
+#include "gthreadprivate.h"
+
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
+#ifndef G_OS_WIN32
+#include <sys/time.h>
+#include <time.h>
+#else
+#include <windows.h>
+#endif /* G_OS_WIN32 */
+
 #include <string.h>
 
-#include "glib.h"
-#include "gthreadprivate.h"
 #include "galias.h"
 
 GQuark
@@ -68,8 +76,11 @@ struct _GStaticPrivateNode
   GDestroyNotify destroy;
 };
 
-static void g_thread_cleanup (gpointer data);
-static void g_thread_fail (void);
+static void    g_thread_cleanup (gpointer data);
+static void    g_thread_fail (void);
+static guint64 gettime (void);
+
+guint64        (*g_thread_gettime) (void) = gettime;
 
 /* Global variables */
 
@@ -99,7 +110,8 @@ GThreadFunctions g_thread_functions_for_glib_use = {
   NULL,                                        /* thread_join */
   NULL,                                        /* thread_exit */
   NULL,                                        /* thread_set_priority */
-  NULL                                         /* thread_self */
+  NULL,                                        /* thread_self */
+  NULL                                         /* thread_equal */
 };
 
 /* Local data */
@@ -533,6 +545,32 @@ static void
 g_thread_fail (void)
 {
   g_error ("The thread system is not yet initialized.");
+}
+
+#define G_NSEC_PER_SEC 1000000000
+
+static guint64
+gettime (void)
+{
+#ifdef G_OS_WIN32
+  guint64 v;
+
+  /* Returns 100s of nanoseconds since start of 1601 */
+  GetSystemTimeAsFileTime ((FILETIME *)&v);
+
+  /* Offset to Unix epoch */
+  v -= G_GINT64_CONSTANT (116444736000000000);
+  /* Convert to nanoseconds */
+  v *= 100;
+
+  return v;
+#else
+  struct timeval tv;
+
+  gettimeofday (&tv, NULL);
+
+  return (guint64) tv.tv_sec * G_NSEC_PER_SEC + tv.tv_usec * (G_NSEC_PER_SEC / G_USEC_PER_SEC); 
+#endif
 }
 
 static gpointer

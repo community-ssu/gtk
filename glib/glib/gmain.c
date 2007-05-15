@@ -52,7 +52,7 @@
 /* The poll() emulation on OS/X doesn't handle fds=NULL, nfds=0,
  * so we prefer our own poll emulation.
  */
-#ifdef _POLL_EMUL_H_
+#if defined(_POLL_EMUL_H_) || defined(BROKEN_POLL)
 #undef HAVE_POLL
 #endif
    
@@ -3718,6 +3718,8 @@ child_watch_helper_thread (gpointer data)
 	}
       G_UNLOCK (main_context_list);
     }
+
+  return NULL;
 }
 
 static void

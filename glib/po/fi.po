@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: glib\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-10-01 18:52-0400\n"
-"PO-Revision-Date: 2006-08-09 15:58+0300\n"
+"POT-Creation-Date: 2007-05-01 19:30-0400\n"
+"PO-Revision-Date: 2007-02-20 09:01+0300\n"
 "Last-Translator: Ilkka Tuohela <hile@iki.fi>\n"
 "Language-Team: Finnish <gnome-fi-laatu@lists.sourceforge.net>\n"
 "MIME-Version: 1.0\n"
@@ -56,9 +56,9 @@ msgstr "URI:lle \"%s\" on jo olemassa kirjanmerkki"
 #: glib/gbookmarkfile.c:2608 glib/gbookmarkfile.c:2687
 #: glib/gbookmarkfile.c:2729 glib/gbookmarkfile.c:2826
 #: glib/gbookmarkfile.c:2952 glib/gbookmarkfile.c:3142
-#: glib/gbookmarkfile.c:3218 glib/gbookmarkfile.c:3371
-#: glib/gbookmarkfile.c:3436 glib/gbookmarkfile.c:3526
-#: glib/gbookmarkfile.c:3653
+#: glib/gbookmarkfile.c:3218 glib/gbookmarkfile.c:3379
+#: glib/gbookmarkfile.c:3454 glib/gbookmarkfile.c:3544
+#: glib/gbookmarkfile.c:3671
 #, c-format
 msgid "No bookmark found for URI '%s'"
 msgstr "URI:lle \"%s\" ei löydy kirjanmerkkiä"
@@ -78,77 +78,82 @@ msgstr "URI:n \"%s\" kirjanmerkissä ei ole määritelty yksityisyyslippua"
 msgid "No groups set in bookmark for URI '%s'"
 msgstr "URI:n \"%s\" kirjanmerkissä ei ole asetettu ryhmiä"
 
-#: glib/gbookmarkfile.c:3236 glib/gbookmarkfile.c:3381
+#: glib/gbookmarkfile.c:3236 glib/gbookmarkfile.c:3389
 #, c-format
 msgid "No application with name '%s' registered a bookmark for '%s'"
 msgstr ""
 "Sovellus nimeltä \"%s\" ei rekisteröinyt kirjanmerkkiä kohteelle \"%s\""
 
-#: glib/gconvert.c:405 glib/gconvert.c:483 glib/giochannel.c:1150
+#: glib/gbookmarkfile.c:3402
+#, c-format
+msgid "Failed to expand exec line '%s' with URI '%s'"
+msgstr "Suoritusriviä \"%s\" URIlla \"%s\" ei voitu laajentaa."
+
+#: glib/gconvert.c:423 glib/gconvert.c:501 glib/giochannel.c:1150
 #, c-format
 msgid "Conversion from character set '%s' to '%s' is not supported"
 msgstr "Muunnos merkistöstä \"%s\" merkistöön \"%s\" ei ole tuettu"
 
-#: glib/gconvert.c:409 glib/gconvert.c:487
+#: glib/gconvert.c:427 glib/gconvert.c:505
 #, c-format
 msgid "Could not open converter from '%s' to '%s'"
 msgstr "Muunninta merkistöstä \"%s\" merkistöön \"%s\" ei voitu avata"
 
-#: glib/gconvert.c:603 glib/gconvert.c:992 glib/giochannel.c:1322
-#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:943
-#: glib/gutf8.c:1392
+#: glib/gconvert.c:621 glib/gconvert.c:1010 glib/giochannel.c:1322
+#: glib/giochannel.c:1364 glib/giochannel.c:2206 glib/gutf8.c:949
+#: glib/gutf8.c:1398
 #, c-format
 msgid "Invalid byte sequence in conversion input"
 msgstr "Virheellinen tavusarja muunnettavassa syötteessä"
 
-#: glib/gconvert.c:609 glib/gconvert.c:919 glib/giochannel.c:1329
+#: glib/gconvert.c:627 glib/gconvert.c:937 glib/giochannel.c:1329
 #: glib/giochannel.c:2218
 #, c-format
 msgid "Error during conversion: %s"
 msgstr "Virhe muunnoksen aikana: %s"
 
-#: glib/gconvert.c:644 glib/gutf8.c:939 glib/gutf8.c:1143 glib/gutf8.c:1284
-#: glib/gutf8.c:1388
+#: glib/gconvert.c:662 glib/gutf8.c:945 glib/gutf8.c:1149 glib/gutf8.c:1290
+#: glib/gutf8.c:1394
 #, c-format
 msgid "Partial character sequence at end of input"
 msgstr "Osittainen tavusarja syötteen lopussa"
 
-#: glib/gconvert.c:894
+#: glib/gconvert.c:912
 #, c-format
 msgid "Cannot convert fallback '%s' to codeset '%s'"
 msgstr "Koodausmerkkijonoa \"%s\" ei voi muuntaa merkistöön \"%s\""
 
-#: glib/gconvert.c:1703
+#: glib/gconvert.c:1721
 #, c-format
 msgid "The URI '%s' is not an absolute URI using the \"file\" scheme"
 msgstr "URI \"%s\" ei ole absoluuttinen URI \"file\"-muodossa"
 
-#: glib/gconvert.c:1713
+#: glib/gconvert.c:1731
 #, c-format
 msgid "The local file URI '%s' may not include a '#'"
 msgstr "Paikallinen tiedosto-URI \"%s\" ei saa sisältää merkkiä \"#\""
 
-#: glib/gconvert.c:1730
+#: glib/gconvert.c:1748
 #, c-format
 msgid "The URI '%s' is invalid"
 msgstr "URI \"%s\" on virheellinen"
 
-#: glib/gconvert.c:1742
+#: glib/gconvert.c:1760
 #, c-format
 msgid "The hostname of the URI '%s' is invalid"
 msgstr "URI:n \"%s\" isäntänimi on virheellinen"
 
-#: glib/gconvert.c:1758
+#: glib/gconvert.c:1776
 #, c-format
 msgid "The URI '%s' contains invalidly escaped characters"
 msgstr "URI \"%s\" sisältää virheellisesti suojattuja merkkejä"
 
-#: glib/gconvert.c:1853
+#: glib/gconvert.c:1871
 #, c-format
 msgid "The pathname '%s' is not an absolute path"
 msgstr "Polku \"%s\" ei ole absoluuttinen"
 
-#: glib/gconvert.c:1863
+#: glib/gconvert.c:1881
 #, c-format
 msgid "Invalid hostname"
 msgstr "Virheellinen isäntänimi"
@@ -362,15 +367,15 @@ msgstr "Päättämätön entiteettiviite"
 msgid "Unfinished character reference"
 msgstr "Päättämätön merkkiviite"
 
-#: glib/gmarkup.c:958 glib/gmarkup.c:986 glib/gmarkup.c:1017
+#: glib/gmarkup.c:958 glib/gmarkup.c:986 glib/gmarkup.c:1022
 msgid "Invalid UTF-8 encoded text"
 msgstr "Virheellinen UTF-8-merkistöinen teksti"
 
-#: glib/gmarkup.c:1053
+#: glib/gmarkup.c:1058
 msgid "Document must begin with an element (e.g. <book>)"
 msgstr "Asiakirjan on alettava elementillä (esim. <kirja>)"
 
-#: glib/gmarkup.c:1093
+#: glib/gmarkup.c:1098
 #, c-format
 msgid ""
 "'%s' is not a valid character following a '<' character; it may not begin an "
@@ -379,7 +384,7 @@ msgstr ""
 "\"%s\" ei ole kelvollinen merkki \"<\"-merkin jälkeen; se ei voi aloittaa "
 "elementin nimeä"
 
-#: glib/gmarkup.c:1157
+#: glib/gmarkup.c:1162
 #, c-format
 msgid ""
 "Odd character '%s', expected a '>' character to end the start tag of element "
@@ -388,7 +393,7 @@ msgstr ""
 "Pariton merkki \"%s\", odotettiin \">\"-merkkiä päättämään elementin \"%s\" "
 "alkulippu"
 
-#: glib/gmarkup.c:1246
+#: glib/gmarkup.c:1251
 #, c-format
 msgid ""
 "Odd character '%s', expected a '=' after attribute name '%s' of element '%s'"
@@ -396,7 +401,7 @@ msgstr ""
 "Pariton merkki \"%1$s\", odotettiin \"=\"-merkkiä elementin \"%3$s\" "
 "ominaisuuden \"%2$s\" jälkeen"
 
-#: glib/gmarkup.c:1288
+#: glib/gmarkup.c:1293
 #, c-format
 msgid ""
 "Odd character '%s', expected a '>' or '/' character to end the start tag of "
@@ -407,7 +412,7 @@ msgstr ""
 "elementin \"%s\" aloituslippu, tai mahdollista ominaisuutta; käytit ehkä "
 "ominaisuuden nimessä siihen kelpaamatonta merkkiä"
 
-#: glib/gmarkup.c:1377
+#: glib/gmarkup.c:1382
 #, c-format
 msgid ""
 "Odd character '%s', expected an open quote mark after the equals sign when "
@@ -416,7 +421,7 @@ msgstr ""
 "Pariton merkki \"%1$s\", odotettiin avaavaa lainausmerkkiä yhtäsuuruusmerkin "
 "jälkeen annettaessa elementin \"%3$s\" ominaisuuden \"%2$s\" arvoa"
 
-#: glib/gmarkup.c:1522
+#: glib/gmarkup.c:1527
 #, c-format
 msgid ""
 "'%s' is not a valid character following the characters '</'; '%s' may not "
@@ -425,7 +430,7 @@ msgstr ""
 "\"%s\" ei ole kelvollinen merkki merkkien \"</\" jälkeen; \"%s\" ei voi olla "
 "elementin nimen alussa"
 
-#: glib/gmarkup.c:1562
+#: glib/gmarkup.c:1567
 #, c-format
 msgid ""
 "'%s' is not a valid character following the close element name '%s'; the "
@@ -434,28 +439,28 @@ msgstr ""
 "\"%s\" ei ole kelvollinen merkki sulkuelementin \"%s\" jälkeen; sallittu "
 "merkki on \">\""
 
-#: glib/gmarkup.c:1573
+#: glib/gmarkup.c:1578
 #, c-format
 msgid "Element '%s' was closed, no element is currently open"
 msgstr "Elementti \"%s\" on suljettu, ei avoimia elementtejä"
 
-#: glib/gmarkup.c:1582
+#: glib/gmarkup.c:1587
 #, c-format
 msgid "Element '%s' was closed, but the currently open element is '%s'"
 msgstr ""
 "Elementti \"%s\" on suljettu, mutta tällä hetkellä on avoinna elementti \"%s"
 "\""
 
-#: glib/gmarkup.c:1748
+#: glib/gmarkup.c:1753
 msgid "Document was empty or contained only whitespace"
 msgstr "Asiakirja oli tyhjä tai sisälsi vain tyhjiä merkkejä"
 
-#: glib/gmarkup.c:1762
+#: glib/gmarkup.c:1767
 msgid "Document ended unexpectedly just after an open angle bracket '<'"
 msgstr ""
 "Asiakirja loppui odottamattomasti heti avoimen kulmasulkeen \"<\" jälkeen"
 
-#: glib/gmarkup.c:1770 glib/gmarkup.c:1814
+#: glib/gmarkup.c:1775 glib/gmarkup.c:1819
 #, c-format
 msgid ""
 "Document ended unexpectedly with elements still open - '%s' was the last "
@@ -464,7 +469,7 @@ msgstr ""
 "Asiakirja loppui odottamattomasti elementtien ollessa sulkematta - \"%s\" "
 "oli viimeinen avattu elementti"
 
-#: glib/gmarkup.c:1778
+#: glib/gmarkup.c:1783
 #, c-format
 msgid ""
 "Document ended unexpectedly, expected to see a close angle bracket ending "
@@ -473,19 +478,19 @@ msgstr ""
 "Asiakirja loppui odottamattomasti, odotettiin lipun <%s/> sulkevaa "
 "kulmasuljetta"
 
-#: glib/gmarkup.c:1784
+#: glib/gmarkup.c:1789
 msgid "Document ended unexpectedly inside an element name"
 msgstr "Asiakirja loppui odottamattomasti elementin nimen kohdalla"
 
-#: glib/gmarkup.c:1789
+#: glib/gmarkup.c:1794
 msgid "Document ended unexpectedly inside an attribute name"
 msgstr "Asiakirja loppui odottamattomasti ominaisuuden nimen kohdalla"
 
-#: glib/gmarkup.c:1794
+#: glib/gmarkup.c:1799
 msgid "Document ended unexpectedly inside an element-opening tag."
 msgstr "Asiakirja loppui odottamattomasti elementin avauslipun kohdalla"
 
-#: glib/gmarkup.c:1800
+#: glib/gmarkup.c:1805
 msgid ""
 "Document ended unexpectedly after the equals sign following an attribute "
 "name; no attribute value"
@@ -493,16 +498,16 @@ msgstr ""
 "Asiakirja loppui odottamattomasti ominaisuuden nimen jälkeisen "
 "yhtäsuuruusmerkin jälkeen; ominaisuudella ei ole arvoa"
 
-#: glib/gmarkup.c:1807
+#: glib/gmarkup.c:1812
 msgid "Document ended unexpectedly while inside an attribute value"
 msgstr "Asiakirja loppui odottamattomasti ominaisuuden arvon kohdalla"
 
-#: glib/gmarkup.c:1822
+#: glib/gmarkup.c:1827
 #, c-format
 msgid "Document ended unexpectedly inside the close tag for element '%s'"
 msgstr "Asiakirja loppui odottamattomasti elementin \"%s\" sulkulipun kohdalla"
 
-#: glib/gmarkup.c:1828
+#: glib/gmarkup.c:1833
 msgid "Document ended unexpectedly inside a comment or processing instruction"
 msgstr ""
 "Asiakirja loppui odottamattomasti kommentin tai käsittelykomennon kohdalla"
@@ -540,18 +545,18 @@ msgstr "Teksti oli tyhjä (tai sisälsi vain tyhjiä merkkejä)"
 msgid "Failed to read data from child process"
 msgstr "Datan lukeminen lapsiprosessilta epäonnistui"
 
-#: glib/gspawn-win32.c:287 glib/gspawn.c:1360
+#: glib/gspawn-win32.c:287 glib/gspawn.c:1379
 #, c-format
 msgid "Failed to create pipe for communicating with child process (%s)"
 msgstr ""
 "Putken luominen lapsiprosessin kanssa viestintää varten epäonnistui (%s)"
 
-#: glib/gspawn-win32.c:325 glib/gspawn.c:1024
+#: glib/gspawn-win32.c:325 glib/gspawn.c:1043
 #, c-format
 msgid "Failed to read from child pipe (%s)"
 msgstr "Lukeminen lapsiprosessin putkesta epäonnistui (%s)"
 
-#: glib/gspawn-win32.c:351 glib/gspawn.c:1229
+#: glib/gspawn-win32.c:351 glib/gspawn.c:1248
 #, c-format
 msgid "Failed to change to directory '%s' (%s)"
 msgstr "Hakemistoon \"%s\" siirtyminen epäonnistui (%s)"
@@ -597,143 +602,143 @@ msgstr ""
 "Odottamaton virhe funktiossa g_io_channel_win32_poll() luettaessa dataa "
 "lapsiprosessilta"
 
-#: glib/gspawn.c:164
+#: glib/gspawn.c:168
 #, c-format
 msgid "Failed to read data from child process (%s)"
 msgstr "Datan lukeminen lapsiprosessilta epäonnistui (%s)"
 
-#: glib/gspawn.c:296
+#: glib/gspawn.c:300
 #, c-format
 msgid "Unexpected error in select() reading data from a child process (%s)"
 msgstr ""
 "Odottamaton virhe funktiossa select() lapsiprosessilta dataa luettaessa (%s)"
 
-#: glib/gspawn.c:379
+#: glib/gspawn.c:383
 #, c-format
 msgid "Unexpected error in waitpid() (%s)"
 msgstr "Odottamaton virhe funktiossa waitpid() (%s)"
 
-#: glib/gspawn.c:1089
+#: glib/gspawn.c:1108
 #, c-format
 msgid "Failed to fork (%s)"
 msgstr "Haarauttaminen epäonnistui (%s)"
 
-#: glib/gspawn.c:1239
+#: glib/gspawn.c:1258
 #, c-format
 msgid "Failed to execute child process \"%s\" (%s)"
 msgstr "Lapsiprosessin \"%s\" käynnistäminen epäonnistui (%s)"
 
-#: glib/gspawn.c:1249
+#: glib/gspawn.c:1268
 #, c-format
 msgid "Failed to redirect output or input of child process (%s)"
 msgstr "Lapsiprosessin tulosteen tai syötteen uudelleenohjaus epäonnistui (%s)"
 
-#: glib/gspawn.c:1258
+#: glib/gspawn.c:1277
 #, c-format
 msgid "Failed to fork child process (%s)"
 msgstr "Lapsiprosessin haarauttaminen epäonnistui (%s)"
 
-#: glib/gspawn.c:1266
+#: glib/gspawn.c:1285
 #, c-format
 msgid "Unknown error executing child process \"%s\""
 msgstr "Tuntematon virhe käynnistettäessä lapsiprosessia \"%s\""
 
-#: glib/gspawn.c:1288
+#: glib/gspawn.c:1307
 #, c-format
 msgid "Failed to read enough data from child pid pipe (%s)"
 msgstr "Lapsiprosessin pid-putkesta ei voitu lukea riittävästi dataa (%s)"
 
-#: glib/gutf8.c:1017
+#: glib/gutf8.c:1023
 #, c-format
 msgid "Character out of range for UTF-8"
 msgstr "Merkki on sallitun UTF-8-välin ulkopuolella"
 
-#: glib/gutf8.c:1111 glib/gutf8.c:1120 glib/gutf8.c:1252 glib/gutf8.c:1261
-#: glib/gutf8.c:1402 glib/gutf8.c:1498
+#: glib/gutf8.c:1117 glib/gutf8.c:1126 glib/gutf8.c:1258 glib/gutf8.c:1267
+#: glib/gutf8.c:1408 glib/gutf8.c:1504
 #, c-format
 msgid "Invalid sequence in conversion input"
 msgstr "Virheellinen sarja muunnettavassa syötteessä"
 
-#: glib/gutf8.c:1413 glib/gutf8.c:1509
+#: glib/gutf8.c:1419 glib/gutf8.c:1515
 #, c-format
 msgid "Character out of range for UTF-16"
 msgstr "Merkki on sallitun UTF-16-välin ulkopuolella"
 
-#: glib/goption.c:495
+#: glib/goption.c:553
 msgid "Usage:"
 msgstr "Käyttö:"
 
-#: glib/goption.c:495
+#: glib/goption.c:553
 msgid "[OPTION...]"
 msgstr "[VALITSIN...]"
 
-#: glib/goption.c:586
+#: glib/goption.c:644
 msgid "Help Options:"
 msgstr "Ohjevalitsimet:"
 
-#: glib/goption.c:587
+#: glib/goption.c:645
 msgid "Show help options"
 msgstr "Näytä ohjevalitsimet"
 
-#: glib/goption.c:592
+#: glib/goption.c:650
 msgid "Show all help options"
 msgstr "Näytä kaikki ohjevalitsimet"
 
-#: glib/goption.c:642
+#: glib/goption.c:700
 msgid "Application Options:"
 msgstr "Sovelluksen valitsimet:"
 
-#: glib/goption.c:686 glib/goption.c:756
+#: glib/goption.c:744 glib/goption.c:814
 #, c-format
 msgid "Cannot parse integer value '%s' for %s"
 msgstr "Kokonaislukua \"%s\" ei voida tulkita kohteelle %s"
 
-#: glib/goption.c:696 glib/goption.c:764
+#: glib/goption.c:754 glib/goption.c:822
 #, c-format
 msgid "Integer value '%s' for %s out of range"
 msgstr "Kokonaisluku \"%s\" kohteelle %s on ylittää sallitun alueen"
 
-#: glib/goption.c:721
+#: glib/goption.c:779
 #, c-format
 msgid "Cannot parse double value '%s' for %s"
 msgstr "Kokonaislukua \"%s\" ei voida tulkita kohteelle %s"
 
-#: glib/goption.c:729
+#: glib/goption.c:787
 #, c-format
 msgid "Double value '%s' for %s out of range"
 msgstr "Double-arvo \"%s\" kohteelle %s ylittää sallitun alueen"
 
-#: glib/goption.c:1066
+#: glib/goption.c:1124
 #, c-format
 msgid "Error parsing option %s"
 msgstr "Virhe käsiteltäessä valitsinta %s"
 
-#: glib/goption.c:1097 glib/goption.c:1208
+#: glib/goption.c:1155 glib/goption.c:1266
 #, c-format
 msgid "Missing argument for %s"
 msgstr "Puuttuva argumentti kohteelle %s"
 
-#: glib/goption.c:1597
+#: glib/goption.c:1655
 #, c-format
 msgid "Unknown option %s"
 msgstr "Tuntematon optio %s"
 
-#: glib/gkeyfile.c:337
+#: glib/gkeyfile.c:342
 #, c-format
 msgid "Valid key file could not be found in data dirs"
 msgstr "Kelvollista avaintiedostoa ei löytynyt datahakemistoista"
 
-#: glib/gkeyfile.c:372
+#: glib/gkeyfile.c:377
 #, c-format
 msgid "Not a regular file"
 msgstr "Ei tavallinen tiedosto"
 
-#: glib/gkeyfile.c:380
+#: glib/gkeyfile.c:385
 #, c-format
 msgid "File is empty"
 msgstr "Tiedosto on tyhjä"
 
-#: glib/gkeyfile.c:696
+#: glib/gkeyfile.c:701
 #, c-format
 msgid ""
 "Key file contains line '%s' which is not a key-value pair, group, or comment"
@@ -741,41 +746,51 @@ msgstr ""
 "Avaintiedosto sisältää rivin \"%s\", joka ei ole avain-arvopari, ryhmä tai "
 "kommentti"
 
-#: glib/gkeyfile.c:767
+#: glib/gkeyfile.c:762
+#, c-format
+msgid "Invalid group name: %s"
+msgstr "Virheellinen ryhmän nimi: %s"
+
+#: glib/gkeyfile.c:784
 #, c-format
 msgid "Key file does not start with a group"
 msgstr "Avaintiedosto ei ala ryhmällä"
 
-#: glib/gkeyfile.c:811
+#: glib/gkeyfile.c:810
+#, c-format
+msgid "Invalid key name: %s"
+msgstr "Virheellinen avaimen nimi: %s"
+
+#: glib/gkeyfile.c:837
 #, c-format
 msgid "Key file contains unsupported encoding '%s'"
 msgstr "Avaintiedosto sisältää epäkelvon koodauksen \"%s\""
 
-#: glib/gkeyfile.c:1020 glib/gkeyfile.c:1179 glib/gkeyfile.c:2398
-#: glib/gkeyfile.c:2463 glib/gkeyfile.c:2582 glib/gkeyfile.c:2717
-#: glib/gkeyfile.c:2870 glib/gkeyfile.c:3046 glib/gkeyfile.c:3103
+#: glib/gkeyfile.c:1050 glib/gkeyfile.c:1209 glib/gkeyfile.c:2410
+#: glib/gkeyfile.c:2477 glib/gkeyfile.c:2598 glib/gkeyfile.c:2733
+#: glib/gkeyfile.c:2886 glib/gkeyfile.c:3066 glib/gkeyfile.c:3124
 #, c-format
 msgid "Key file does not have group '%s'"
 msgstr "Avaintiedostossa ei ole ryhmää \"%s\""
 
-#: glib/gkeyfile.c:1191
+#: glib/gkeyfile.c:1221
 #, c-format
 msgid "Key file does not have key '%s'"
 msgstr "Avaintiedostossa ei ole avainta \"%s\""
 
-#: glib/gkeyfile.c:1293 glib/gkeyfile.c:1405
+#: glib/gkeyfile.c:1323 glib/gkeyfile.c:1433
 #, c-format
 msgid "Key file contains key '%s' with value '%s' which is not UTF-8"
 msgstr ""
 "Avaintiedosto sisältää avaimen \"%s\" arvolla \"%s\", joka ei ole UTF-8 "
 "merkkijono"
 
-#: glib/gkeyfile.c:1313 glib/gkeyfile.c:1425 glib/gkeyfile.c:1797
+#: glib/gkeyfile.c:1343 glib/gkeyfile.c:1453 glib/gkeyfile.c:1821
 #, c-format
 msgid "Key file contains key '%s' which has value that cannot be interpreted."
 msgstr "Avaintiedosto sisältää avaimen \"%s\", jonka arvoa ei voida tulkita."
 
-#: glib/gkeyfile.c:2013 glib/gkeyfile.c:2226
+#: glib/gkeyfile.c:2033 glib/gkeyfile.c:2242
 #, c-format
 msgid ""
 "Key file contains key '%s' in group '%s' which has value that cannot be "
@@ -784,37 +799,37 @@ msgstr ""
 "Avaintiedosto sisältää avaimen \"%s\", jonka arvoa ei voida tulkita, "
 "ryhmässä \"%s\"."
 
-#: glib/gkeyfile.c:2413 glib/gkeyfile.c:2597 glib/gkeyfile.c:3114
+#: glib/gkeyfile.c:2425 glib/gkeyfile.c:2613 glib/gkeyfile.c:3135
 #, c-format
 msgid "Key file does not have key '%s' in group '%s'"
 msgstr "AVaintiedostossa ei ole avainta \"%s\" ryhmässä \"%s\""
 
-#: glib/gkeyfile.c:3287
+#: glib/gkeyfile.c:3374
 #, c-format
 msgid "Key file contains escape character at end of line"
 msgstr "Avaintiedosto sisältää escape-jonon rivin lopussa"
 
-#: glib/gkeyfile.c:3309
+#: glib/gkeyfile.c:3396
 #, c-format
 msgid "Key file contains invalid escape sequence '%s'"
 msgstr "Avaintiedostossa on virheellinen escape-jono \"%s\""
 
-#: glib/gkeyfile.c:3451
+#: glib/gkeyfile.c:3538
 #, c-format
 msgid "Value '%s' cannot be interpreted as a number."
 msgstr "Arvoa \"%s\" ei voida tulkita numeroksi."
 
-#: glib/gkeyfile.c:3465
+#: glib/gkeyfile.c:3552
 #, c-format
 msgid "Integer value '%s' out of range"
 msgstr "Kokonaisluku \"%s\" on sallitun alueen ulkopuolella"
 
-#: glib/gkeyfile.c:3498
+#: glib/gkeyfile.c:3585
 #, c-format
 msgid "Value '%s' cannot be interpreted as a float number."
 msgstr "Arvoa \"%s\" ei voida tulkita liukuluvuksi."
 
-#: glib/gkeyfile.c:3525
+#: glib/gkeyfile.c:3612
 #, c-format
 msgid "Value '%s' cannot be interpreted as a boolean."
 msgstr "Arvoa \"%s\" ei voida turkita totuusarvoksi."

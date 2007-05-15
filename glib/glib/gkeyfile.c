@@ -89,6 +89,7 @@ struct _GKeyFileGroup
   const gchar *name;  /* NULL for above first group (which will be comments) */
 
   GKeyFileKeyValuePair *comment; /* Special comment that is stuck to the top of a group */
+  gboolean has_trailing_blank_line;
 
   GList *key_value_pairs; 
 
@@ -136,6 +137,8 @@ static void                  g_key_file_add_key                (GKeyFile        
 								const gchar            *value);
 static void                  g_key_file_add_group              (GKeyFile               *key_file,
 								const gchar            *group_name);
+static gboolean              g_key_file_is_group_name          (const gchar *name);
+static gboolean              g_key_file_is_key_name            (const gchar *name);
 static void                  g_key_file_key_value_pair_free    (GKeyFileKeyValuePair   *pair);
 static gboolean              g_key_file_line_is_comment        (const gchar            *line);
 static gboolean              g_key_file_line_is_group          (const gchar            *line);
@@ -260,6 +263,8 @@ void
 g_key_file_set_list_separator (GKeyFile *key_file,
 			       gchar     separator)
 {
+  g_return_if_fail (key_file != NULL);
+
   key_file->list_separator = separator;
 }
 
@@ -725,6 +730,9 @@ g_key_file_parse_comment (GKeyFile     *key_file,
   
   key_file->current_group->key_value_pairs =
     g_list_prepend (key_file->current_group->key_value_pairs, pair);
+
+  if (length == 0 || line[0] != '#')
+    key_file->current_group->has_trailing_blank_line = TRUE;
 }
 
 static void
@@ -747,6 +755,15 @@ g_key_file_parse_group (GKeyFile     *key_file,
   group_name = g_strndup (group_name_start, 
                           group_name_end - group_name_start);
   
+  if (!g_key_file_is_group_name (group_name))
+    {
+      g_set_error (error, G_KEY_FILE_ERROR,
+		   G_KEY_FILE_ERROR_PARSE,
+		   _("Invalid group name: %s"), group_name);
+      g_free (group_name);
+      return;
+    }
+
   g_key_file_add_group (key_file, group_name);
   g_free (group_name);
 }
@@ -785,6 +802,15 @@ g_key_file_parse_key_value_pair (GKeyFile     *key_file,
   g_assert (key_len <= length);
 
   key = g_strndup (line, key_len - 1);
+
+  if (!g_key_file_is_key_name (key))
+    {
+      g_set_error (error, G_KEY_FILE_ERROR,
+                   G_KEY_FILE_ERROR_PARSE,
+                   _("Invalid key name: %s"), key);
+      g_free (key);
+      return; 
+    }
 
   /* Pull the value from the line (chugging leading whitespace)
    */
@@ -937,6 +963,7 @@ g_key_file_to_data (GKeyFile  *key_file,
 {
   GString *data_string;
   GList *group_node, *key_file_node;
+  gboolean has_blank_line = TRUE;
 
   g_return_val_if_fail (key_file != NULL, NULL);
 
@@ -950,10 +977,13 @@ g_key_file_to_data (GKeyFile  *key_file,
 
       group = (GKeyFileGroup *) group_node->data;
 
+      /* separate groups by at least an empty line */
+      if (!has_blank_line)
+	g_string_append_c (data_string, '\n');
+      has_blank_line = group->has_trailing_blank_line;
+
       if (group->comment != NULL)
         g_string_append_printf (data_string, "%s\n", group->comment->value);
-      else if (group_node->next) /* separate groups by at least an empty line */
-        g_string_append_c (data_string, '\n');
 
       if (group->name != NULL)
         g_string_append_printf (data_string, "[%s]\n", group->name);
@@ -1216,8 +1246,8 @@ g_key_file_set_value (GKeyFile    *key_file,
   GKeyFileKeyValuePair *pair;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
+  g_return_if_fail (g_key_file_is_group_name (group_name));
+  g_return_if_fail (g_key_file_is_key_name (key));
   g_return_if_fail (value != NULL);
 
   group = g_key_file_lookup_group (key_file, group_name);
@@ -1344,8 +1374,6 @@ g_key_file_set_string (GKeyFile    *key_file,
   gchar *value;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
   g_return_if_fail (string != NULL);
 
   value = g_key_file_parse_string_as_value (key_file, string, FALSE);
@@ -1470,8 +1498,6 @@ g_key_file_set_string_list (GKeyFile            *key_file,
   gsize i;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
   g_return_if_fail (list != NULL);
 
   value_list = g_string_sized_new (length * 128);
@@ -1514,7 +1540,6 @@ g_key_file_set_locale_string (GKeyFile     *key_file,
   gchar *full_key, *value;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
   g_return_if_fail (key != NULL);
   g_return_if_fail (locale != NULL);
   g_return_if_fail (string != NULL);
@@ -1717,7 +1742,6 @@ g_key_file_set_locale_string_list (GKeyFile            *key_file,
   gsize i;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
   g_return_if_fail (key != NULL);
   g_return_if_fail (locale != NULL);
   g_return_if_fail (length != 0);
@@ -1827,8 +1851,6 @@ g_key_file_set_boolean (GKeyFile    *key_file,
   gchar *result;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
 
   result = g_key_file_parse_boolean_as_value (key_file, value);
   g_key_file_set_value (key_file, group_name, key, result);
@@ -1933,8 +1955,6 @@ g_key_file_set_boolean_list (GKeyFile    *key_file,
   gsize i;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
   g_return_if_fail (list != NULL);
 
   value_list = g_string_sized_new (length * 8);
@@ -2043,8 +2063,6 @@ g_key_file_set_integer (GKeyFile    *key_file,
   gchar *result;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
 
   result = g_key_file_parse_integer_as_value (key_file, value);
   g_key_file_set_value (key_file, group_name, key, result);
@@ -2146,8 +2164,6 @@ g_key_file_set_integer_list (GKeyFile     *key_file,
   gsize i;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
   g_return_if_fail (list != NULL);
 
   values = g_string_sized_new (length * 16);
@@ -2257,10 +2273,8 @@ g_key_file_set_double  (GKeyFile    *key_file,
   gchar result[G_ASCII_DTOSTR_BUF_SIZE];
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
 
-  g_ascii_dtostr ( result, sizeof (result), value );
+  g_ascii_dtostr (result, sizeof (result), value);
   g_key_file_set_value (key_file, group_name, key, result);
 }
 
@@ -2360,8 +2374,6 @@ g_key_file_set_double_list (GKeyFile     *key_file,
   gsize i;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
-  g_return_if_fail (key != NULL);
   g_return_if_fail (list != NULL);
 
   values = g_string_sized_new (length * 16);
@@ -2455,6 +2467,8 @@ g_key_file_set_group_comment (GKeyFile             *key_file,
 {
   GKeyFileGroup *group;
   
+  g_return_if_fail (g_key_file_is_group_name (group_name));
+
   group = g_key_file_lookup_group (key_file, group_name);
   if (!group)
     {
@@ -2573,6 +2587,8 @@ g_key_file_get_key_comment (GKeyFile             *key_file,
   GList *key_node, *tmp;
   GString *string;
   gchar *comment;
+
+  g_return_val_if_fail (g_key_file_is_group_name (group_name), NULL);
 
   group = g_key_file_lookup_group (key_file, group_name);
   if (!group)
@@ -2885,10 +2901,14 @@ g_key_file_add_group (GKeyFile    *key_file,
   GKeyFileGroup *group;
 
   g_return_if_fail (key_file != NULL);
-  g_return_if_fail (group_name != NULL);
+  g_return_if_fail (g_key_file_is_group_name (group_name));
 
-  if (g_key_file_lookup_group_node (key_file, group_name) != NULL)
-    return;
+  group = g_key_file_lookup_group (key_file, group_name);
+  if (group != NULL)
+    {
+      key_file->current_group = group;
+      return;
+    }
 
   group = g_new0 (GKeyFileGroup, 1);
   group->name = g_strdup (group_name);
@@ -3066,6 +3086,7 @@ g_key_file_add_key (GKeyFile      *key_file,
 
   g_hash_table_replace (group->lookup_map, pair->key, pair);
   group->key_value_pairs = g_list_prepend (group->key_value_pairs, pair);
+  group->has_trailing_blank_line = FALSE;
   key_file->approximate_size += strlen (key) + strlen (value) + 2;
 }
 
@@ -3195,6 +3216,69 @@ g_key_file_line_is_comment (const gchar *line)
   return (*line == '#' || *line == '\0' || *line == '\n');
 }
 
+static gboolean 
+g_key_file_is_group_name (const gchar *name)
+{
+  gchar *p, *q;
+
+  if (name == NULL)
+    return FALSE;
+
+  p = q = (gchar *) name;
+  while (*q && *q != ']' && *q != '[' && !g_ascii_iscntrl (*q))
+    q = g_utf8_next_char (q);
+  
+  if (*q != '\0' || q == p)
+    return FALSE;
+
+  return TRUE;
+}
+
+static gboolean
+g_key_file_is_key_name (const gchar *name)
+{
+  gchar *p, *q;
+
+  if (name == NULL)
+    return FALSE;
+
+  p = q = (gchar *) name;
+  /* We accept a little more than the desktop entry spec says,
+   * since gnome-vfs uses mime-types as keys in its cache.
+   */
+  while (*q && *q != '=' && *q != '[' && *q != ']')
+    q = g_utf8_next_char (q);
+  
+  /* No empty keys, please */
+  if (q == p)
+    return FALSE;
+
+  /* We accept spaces in the middle of keys to not break
+   * existing apps, but we don't tolerate initial of final
+   * spaces, which would lead to silent corruption when
+   * rereading the file.
+   */
+  if (*p == ' ' || q[-1] == ' ')
+    return FALSE;
+
+  if (*q == '[')
+    {
+      q++;
+      while (*q && (g_unichar_isalnum (g_utf8_get_char (q)) || *q == '-' || *q == '_' || *q == '.' || *q == '@'))
+        q = g_utf8_next_char (q);
+
+      if (*q != ']')
+        return FALSE;     
+
+      q++;
+    }
+
+  if (*q != '\0')
+    return FALSE;
+
+  return TRUE;
+}
+
 /* A group in a key file is made up of a starting '[' followed by one
  * or more letters making up the group name followed by ']'.
  */
@@ -3207,17 +3291,20 @@ g_key_file_line_is_group (const gchar *line)
   if (*p != '[')
     return FALSE;
 
-  p = g_utf8_next_char (p);
-
-  /* Group name must be non-empty
-   */
-  if (!*p || *p == ']')
-    return FALSE;
+  p++;
 
   while (*p && *p != ']')
     p = g_utf8_next_char (p);
 
-  if (!*p)
+  if (*p != ']')
+    return FALSE;
+ 
+  /* silently accept whitespace after the ] */
+  p = g_utf8_next_char (p);
+  while (*p == ' ' || *p == '\t')
+    p = g_utf8_next_char (p);
+     
+  if (*p)
     return FALSE;
 
   return TRUE;

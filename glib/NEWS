@@ -1,3 +1,165 @@
+Overview of Changes from GLib 2.12.11 to GLib 2.12.12
+=====================================================
+
+* Bug fixes:
+ 418862 g_base64_decode will give critical warning when first par...
+ 356843 "make check" fails if /bin/sh is pdksh
+ 418217 g_unichar_toupper/_totitle broken for single to multiple ...
+ 432895 param_string_validate() frees and modifies static strings
+ 420686 g_key_file_to_data alters original data 
+
+* Translation updates: (da,es,eu,gl,ja,ro,ru,sr,
+  sr@Latn,ta,zh_CN)
+
+
+Overview of Changes from GLib 2.12.10 to GLib 2.12.11
+=====================================================
+
+* Remove leftover debug spew from thread pool code
+
+* Make g_strtoll() parse negative numbers correctly
+ 
+
+Overview of Changes from GLib 2.12.9 to GLib 2.12.10
+====================================================
+
+* Bugs fixed:
+ 149144 Missing linker flags in tests prevent build with -z defs ...
+ 399611 Variable checking base64 public functions
+ 350802 GMarkupParser reports wrong position for invalid UTF-8
+ 398069 Files missing from GLib distribution
+ 398203 Screwy definition of g_date_set_time()
+ 399971 goption flag typo
+ 400044 g_utf8_char_validated doesn't return -2 when maxlen is 0
+ 404832 g_date_strftime should use wcsftime if available
+ 407431 GLib-Genmarshal-WARNING **: failed to open "/dev/stdin": ...
+ 341988 don't use "-c" with msgfmt in Makefile.in.in
+ 346808 Minor tweaks for using GLib from Digital Mars c/c++ compi...
+ 396899 glib mentions non-existing PATCH bugzilla keyword 
+
+* New and updated translations (ar,be@latin,bn_IN,dz,en_GB,et,fi,
+  fr,gu,hu,it,ko,lt,mk,nb,nl,pl,pt,pt_BR,sq,sv,uk,zh_HK,zh_TW)
+
+
+Overview of Changes from GLib 2.12.8 to GLib 2.12.9
+===================================================
+
+* Fix an unintended ABI break in the 2.12.8 release
+
+* Bugs fixed:
+ 397139 glib-2.12.8 breaks ABI
+
+
+Overview of Changes from GLib 2.12.7 to GLib 2.12.8
+===================================================
+
+* Due to an oversight, GLib has been linked against 
+  libpthread since 2.12.2. This has been fixed by 
+  moving the monotonic timer support into gthread.
+ 
+* Bugs fixed:
+ 393812	glib links against pthread
+ 394258	gthread.c: illegal include order
+ 394641	Undefined reference in gthread
+ 394150	gettime implementation breaks compilation on darwin 6
+ 395203	g_timer_elapsed off by 2 order of magnitude
+ 394262	image/* mimetype breaks stuff
+ 392636	glib-2.0.m4 ignores PKG_CONFIG environment variable
+ 395419	Glib-2.12.7 with mingw(w32api-3.8/windows) fails to compi...
+ 329031	G_GNUC_INTERNAL fails with gcc-2.95
+
+* Updated translations (ar,bg,ca,it,nl,th)
+
+
+Overview of Changes from GLib 2.12.6 to GLib 2.12.7
+===================================================
+
+* GKeyFile
+ - The stricter syntax checks introduced in 2.12.5 have 
+   been reduced to warnings for the 2.12 series
+ 
+* GSlice
+ - The slice allocator has gained address validation that
+   can be activated with the environment variable
+   G_SLICE=debug-blocks
+ - The allocator emits a warning if it detects too late
+   thread initialization
+
+* GOption
+ - Take double-width and zero-width characters into account
+   when formatting --help output
+
+* Bugs fixed
+ 391370 Recent crash on file
+ 346955 NON-ASCII UTF-8 arg_description in GOptionEntry causes wr...
+ 371631 Bug in g_bit_nth_lsf?
+ 376645 Win32: Fatal warnings abort application even if IsDebugge...
+ 389300 g_utf8_collate_key modifies the locale
+ 390913 gslice.c: illegal declaration (C99)
+ 304517 glib/libcharset/localcharset.c/_g_locale_charset_raw: han...
+ 336438 unicode collate test failing
+ 391364 Warnings during ./configure due to $SED being undefined i...
+ 391367 config.status warning for datarootdir support in glib-get...
+ 371670 Faster g_bit_* operations
+
+* Updated translations (ar,de,en_CA,en_GB,sv,vi)
+
+
+Overview of Changes from GLib 2.12.5 to GLib 2.12.6
+===================================================
+
+* Fix a configure test that was added in 2.12.5 to
+  not declare every poll() broken  
+
+* Make GKeyFile accept keys that are commonly used
+
+* Bugs fixed
+ 354707 No return() in non-void function
+ 387260 hang in zenity
+ 387823 glib 2.12.5 is breaking hal
+  
+* New and updated translations (ca,gu,mk,th)
+
+
+Overview of Changes from GLib 2.12.4 to GLib 2.12.5
+===================================================
+
+* Various portability fixes
+
+* Bugs fixed
+ 302672	poll is completely broken on Mac OS X 10.4
+ 362328 errorcheck_mutex_test fails to compile due to missing -pthread
+ 316434	glib-2.6.6 fails to compile on AIX 5.1 due to assembler errors
+ 172406	gconvert.c, function open_converter
+ 327800	Hang during self-test of threads
+ 343825	Double expansion in m4macros/glib-gettext.m4 will fail with 
+        newer autoconf
+ 380801	build on Solaris does not work out of the box
+ 386252	HEAD broken with last commit
+ 138153	g_utf8_next_char problem with gcc -Wcast-qual
+ 161288	glib doesn't configure well on Mac OS < 10.3
+ 321977	GIOChannel ref_count private variable should be gint instead 
+        of guint
+ 343191	GKeyFile silently loses values
+ 346373	test failures in glib-2.10.3 on NetBSD
+ 347944	make check fails 2 test on Solaris 9
+ 355955	Hash tables in gwin32.c do not g_strdup their keys
+ 357585	Calls to set_cloexec inefficient on Solaris
+ 359190	gtimer.c failes to compile on solaris-2.9
+ 378078	extremely unlikely read-after-free in instance_real_class_get
+ 379207	gthreadpool.h causes warning with GCC and -Wshadow
+ 385132	solaris gettext support fix
+ 385910	Suprising behaviour with duplicate groups in GKeyFile
+ 386838	mapping-test freezes
+ 315061	compiler specific flag in gthread-2.0.pc
+ 362543	Compilation fail when configured with --disable-visibility
+ 362918	monotonic clock test uses AC_TRY_RUN
+ 369908	g_key_file_get_string not stripping final space
+ 373864	sanity_check is a bash script 
+
+* Translation updates (ar,en_CA,es,he,nb,pl,sq)
+
+
 Overview of Changes from GLib 2.12.3 to GLib 2.12.4
 ===================================================
 

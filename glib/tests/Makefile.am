@@ -13,9 +13,9 @@ libgobject = $(top_builddir)/gobject/libgobject-2.0.la
 libadd_libgmodule = $(libgmodule)
 libadd_libglib = $(libglib)
 
-if PLATFORM_WIN32
 libadd_libgmodule = $(libgmodule)
 libadd_libglib = $(libglib)
+if PLATFORM_WIN32
 no_undefined = -no-undefined
 
 module_test_exp = module-test.exp
@@ -37,7 +37,8 @@ EXTRA_DIST =					\
 	gen-casefold-txt.pl			\
 	gen-casemap-txt.pl			\
 	iochannel-test-infile			\
-	utf8.txt
+	utf8.txt				\
+	timeloop-basic.c		
 
 BUILT_EXTRA_DIST =				\
 	makefile.msc
@@ -59,7 +60,7 @@ patterntest_LDADD = $(libglib)
 testgdate_LDADD = $(libglib)
 testgdateparser_LDADD = $(libglib)
 unicode_normalize_LDADD = $(libglib)
-errorcheck_mutex_test_LDADD = $(libglib) $(libgthread)
+errorcheck_mutex_test_LDADD = $(libglib) $(libgthread) $(G_THREAD_LIBS) 
 if ENABLE_TIMELOOP
 timeloop_LDADD = $(libglib)
 timeloop_closure_LDADD = $(libglib) $(libgobject)
@@ -69,6 +70,7 @@ test_programs =					\
 	atomic-test				\
 	array-test				\
 	base64-test				\
+	bit-test				\
 	$(CXX_TEST)				\
 	child-test				\
 	completion-test				\
@@ -125,7 +127,7 @@ TESTS = $(test_programs) $(test_scripts)
 TESTS_ENVIRONMENT = srcdir=$(srcdir) \
 	LIBCHARSET_ALIAS_DIR=$(top_builddir)/glib/libcharset \
 	MALLOC_CHECK_=2	\
-	MALLOC_PERTURB_=$$(($$RANDOM % 256))
+	MALLOC_PERTURB_=$$(($${RANDOM:-256} % 256))
 
 progs_ldadd = $(EFENCE) $(libglib) $(EFENCE)
 thread_ldadd = $(libgthread) $(G_THREAD_LIBS) $(progs_ldadd)
@@ -134,6 +136,7 @@ module_ldadd = $(libgmodule) $(G_MODULE_LIBS) $(progs_ldadd)
 atomic_test_LDADD = $(progs_ldadd)
 array_test_LDADD = $(progs_ldadd)
 base64_test_LDADD = $(progs_ldadd)
+bit_test_LDADD = $(progs_ldadd)
 bookmarkfile_test_LDADD = $(progs_ldadd)
 child_test_LDADD = $(thread_ldadd)
 completion_test_LDADD = $(progs_ldadd)
