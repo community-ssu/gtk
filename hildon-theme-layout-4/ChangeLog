@@ -1,3 +1,9 @@
+2007-05-15  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* data/layout.txt: Added a bunch of logical colours, had to move
+	existing ones around, so beware with your designs if you use the
+	template!
+
 2007-05-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* data/layout.txt: Adding some missing .png extensions.

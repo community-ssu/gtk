@@ -20,8 +20,8 @@ TitleTextColor=7691,208,30,16
 DialogTitleTextColor=7691,223,30,16
 
 # Calculator
-ClearButtonTextColor=7942,283,30,16
-MemButtonTextColor=7942,298,30,16
+ClearButtonTextColor=7942,313,30,16
+MemButtonTextColor=7942,328,30,16
 
 # Input Method
 HWRAlphaTextColor=7691,358,30,16
@@ -38,6 +38,7 @@ HWRRecogColor=7691,508,30,16
 HWRUserColor=7691,523,30,16
 HWRUserBackgrdColor=7691,538,30,16
 HWRHintColor=7691,553,30,16
+HWRWhiteTextColor=7691,568,30,16
 VKBButtonTextColor=7691,583,30,16
 WCFrameColor=7691,598,30,16
 WCIndicatorColor=7691,613,30,16
@@ -51,7 +52,6 @@ VisitedLinkTextColor=7942,88,30,16
 WebBackgrdColor=7942,103,30,16
 
 DefaultBackgrdColor=7691,43,30,16
-DialogBackgrdColor=7691,58,30,16
 PaintedBackgrdColor=7691,73,30,16
 ImageBackgrdColor=7691,88,30,16
 
@@ -65,28 +65,37 @@ MenuInfoTextColor=7691,313,30,16
 MapTopLeftColor=7942,118,30,16
 MapBottomRightColor=7942,133,30,16
 ClockHandColor=7942,148,30,16
+ClockAppletDateColor=7942,163,30,16
+
 
 # Chat and voip
-ChatUserNameColor=7942,163,30,16
-ChatParticipantNameColor=7942,178,30,16
-ChatEventColor=7942,193,30,16
-CallHeaderBlockBgColor=7942,208,30,16
-CallHeaderOnHoldBlockBgColor=7942,223,30,16
+ChatUserNameColor=7942,178,30,16
+ChatParticipantNameColor=7942,193,30,16
+ChatEventColor=7942,208,30,16
+ChatTextBgColor=7942,223,30,16
+ChatTextBgColor2=7942,238,30,16
+ChatTextColor=7942,253,30,16
 
-# These are removed!
-#HomeFrameNormal=7960,756,30,10
-#HomeFrameResize=7960,768,30,10
-#HomeFrameReject=7960,780,30,10
-
-#new ones, check!
-HWRWhiteTextColor=7691,568,30,16
 TreeViewOddRowColor=7691,238,30,16
 TreeViewEvenRowColor=7691,253,30,16
-CropFrameColor=7942,238,30,16
-MediaPlayerToolbarFontColor=7942,268,30,16
-RssAppletFeedTextColor=7942,253,30,16
-PaneMenuColor1=7691,328,30,16
-PaneMenuColor2=7691,343,30,16
+CropFrameColor=7691,328,30,16
+MediaPlayerToolbarFontColor=7942,298,30,16
+RssAppletFeedTextColor=7942,283,30,16
+PaneMenuColor1=7942,343,30,16
+PaneMenuColor2=7942,358,30,16
+PaneMenu1TextColor=7942,373,30,16
+PaneMenu2TextColor=7942,388,30,16
+
+PaneSeparatorColor1=7942,403,30,16
+PaneSeparatorColor2=7942,418,30,16
+SpeedContactDefaultTextColor=7942,433,30,16
+SpeedContactSecondaryTextColor=7942,448,30,16
+TaskSwitcherFontColor=7942,463,30,16
+TaskSwitcherSecondaryFontColor=7942,478,30,16
+TaskSwitcherNotificationMenuFontColor=7942,493,30,16
+TaskSwitcherSeparatorColor=7942,508,30,16
+TaskSwitcherNotificationSeparatorColor=7942,523,30,16
+ThumbMenuSeparatorColor=7942,538,30,16
 
 [Elements]
 qgn_plat_application_frame_bottom.png=3271,619,50,24
