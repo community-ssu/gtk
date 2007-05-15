@@ -1,3 +1,10 @@
+libosso (2.8-1) unstable; urgency=low
+
+  * UNRELEASED
+  * Moved to the new org.freedesktop.Notifications API.
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Tue, 15 May 2007 12:33:06 +0300
+
 libosso (2.7-1) unstable; urgency=low
 
   * Undid the change for NB#54026: seems to break stuff (at least
