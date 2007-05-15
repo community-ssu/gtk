@@ -50,7 +50,7 @@ osso_return_t osso_system_note_dialog(osso_context_t *osso,
   rpc_retval = osso_rpc_run(osso, FDO_SERVICE, FDO_OBJECT_PATH,
                             FDO_INTERFACE, "SystemNoteDialog",
                             retval, DBUS_TYPE_STRING, message,
-                            DBUS_TYPE_INT32, type,
+                            DBUS_TYPE_UINT32, type,
                             DBUS_TYPE_STRING, "",
                             DBUS_TYPE_INVALID);
 
