@@ -1,3 +1,11 @@
+2007-05-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
+
+	* gtk/gtkmenu.c (_gtk_menu_item_is_scrollable): Added to check whether
+	a menu item is something to scroll to view when doing scroll by item
+	(gtk_menu_do_timeout_scroll): In touchscreen mode scroll by item
+	taking extra care to not scroll only a few pixels or two items at a
+	time. (NB#56638)
+
 2007-05-14  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gdk/x11/gdksettings.c (gdk_settings_names, gdk_settings_map): Add
