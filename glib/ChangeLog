@@ -1,3 +1,57 @@
+2007-05-16  Michael Natterer  <mitch@imendio.com>
+
+	* glib/gslice.[ch]: replace with versions from upstream trunk,
+	merging the following changes:
+
+    2007-05-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/gslice.h:
+	* glib/gslice.c:
+	* glib/glib.symbols: Make g_slice_debug_tree_statistics() 
+	debug-only functionality again.
+
+    2007-01-30  Matthias Clasen <mclasen@redhat.com>
+
+	* glib/glib.symbols:
+	* glib/gslice.h:
+	* glib/gslice.c: Don't make ABI depend on G_ENABLE_DEBUG,
+	just add an empty g_slice_debug_tree_statistics () implementation
+	in the !G_ENABLE_DEBUG case.
+
+    2007-01-26  Matthias Clasen <mclasen@redhat.com>
+
+	* gslice.c: Make some structs which are used only once
+	non-static.
+
+    2006-12-31  Matthias Clasen  <mclasen@redhat.com>
+
+	* glib/gslice.c: Fix some C99isms.  (#390913, Kazuki Iwamoto)
+
+    Fri Dec 29 13:28:07 2006  Tim Janik  <timj@imendio.com>
+
+	* glib/gslice.c: turned detection of too late g_thread_init() calls
+	into a warning. this is a temporary work-around for some head-room
+	to fix affected programs, memory corruption still occours regardless.
+
+    Thu Dec 28 21:14:45 2006  Tim Janik  <timj@imendio.com>
+
+	* glib/gslice.c: removed pthread-dependant debugging bits, the code
+	was already converted to GMutex. this obsoletes Tor's recent fixups.
+
+    2006-12-28  Tor Lillqvist  <tml@novell.com>
+
+	* glib/gslice.c: Make it compile on Win32 without pthreads: Use a
+	Win32 critical section instead.
+
+    Thu Dec 28 12:50:31 2006  Tim Janik  <timj@imendio.com>
+
+	* glib/gslice.h, glib/gslice.c: implemented static debugging
+	hash-tree to validate slice adresses and sizes with G_SLICE=debug-blocks.
+	use abort() to exit in mem_error() to allow catching of these in gdb.
+	abort programs with a descriptive error message if g_thread_init() is
+	called after GSlice was in use. previously this just silently corrupted
+	the magazines.
+
 2007-05-15  Michael Natterer  <mitch@imendio.com>
 
 	* glib/gscanner.[ch]: replace with upstream versions, backing out
