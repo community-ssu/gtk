@@ -41,6 +41,7 @@
 #include "hildon-file-system-settings.h"
 
 #include "hildon-file-common-private.h"
+#include "hildon-file-system-root.h"
 #include "hildon-file-system-local-device.h"
 #include "hildon-file-system-mmc.h"
 #include "hildon-file-system-upnp.h"
@@ -137,27 +138,6 @@ static GNode *setup_safe_folder(GNode *parent, const gchar *root_path,
     return result;
 }
 
-static void setup_mmc(GNode *parent, const gchar *path, gboolean internal)
-{
-    HildonFileSystemSpecialLocation *location;
-    gchar *uri;
-
-    if (path && path[0]) {
-        GValue val = {0, };
-        g_value_init(&val, G_TYPE_BOOLEAN);
-
-        uri = g_filename_to_uri(path, NULL, NULL);
-        if (uri) {
-            location = g_object_new(HILDON_TYPE_FILE_SYSTEM_MMC, NULL);
-            g_value_set_boolean(&val, internal);
-            g_object_set_property(G_OBJECT(location), "internal-card",
-                                  &val);
-            location->basepath = uri;
-            g_node_append_data(parent, location);
-        }
-    }
-}
-
 GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
 {
     static GNode *locations = NULL;
@@ -169,7 +149,13 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
         gchar *rootpath;
         GNode *rootnode;
 
-        locations = g_node_new(NULL); /* Invisible root node above everything else */
+	/* Invisible root node
+	   above everything else */
+
+	location = g_object_new (HILDON_TYPE_FILE_SYSTEM_ROOT, NULL);
+	location->basepath = g_strdup ("");
+        locations = g_node_new (location); 
+
         rootpath =  get_local_device_root_path();
 
         /* Setup local device */
@@ -196,10 +182,6 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES);
 
         g_free(rootpath);
-
-        /* Setup MMC device(s) */
-        setup_mmc(rootnode, g_getenv("MMC_MOUNTPOINT"), FALSE);
-        setup_mmc(rootnode, g_getenv("INTERNAL_MMC_MOUNTPOINT"), TRUE);
 
         /* Setup uPnP devices */
         env = g_getenv("UPNP_ROOT");
@@ -261,13 +243,14 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
             if (searched->len_uri == len_cand) {
                 searched->result = g_object_ref(candidate);
                 searched->is_child = FALSE;
-            } else if (searched->uri[len_cand] == G_DIR_SEPARATOR) {
+            } else if (len_cand == 0
+		       || searched->uri[len_cand] == G_DIR_SEPARATOR) {
                 searched->result =
                     hildon_file_system_special_location_create_child_location(
                     candidate, searched->uri);
                 searched->is_child = TRUE;
-                ULOG_INFO("Checking if %s considers %s as dynamic device? Result = %p",
-                    candidate->basepath, searched->uri, (gpointer) searched->result);
+		if (searched->result)
+		  g_node_append_data (node, searched->result);
             }
 
 	    return searched->result != NULL;
@@ -294,10 +277,13 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs,
         if (data.len_uri > 1 && data.uri[data.len_uri - 1] == G_DIR_SEPARATOR)
           data.len_uri--;
 
-        g_node_traverse(locations, G_PRE_ORDER, G_TRAVERSE_ALL, -1, 
+        g_node_traverse(locations, G_POST_ORDER, G_TRAVERSE_ALL, -1, 
             get_special_location_callback, &data);
         g_free(data.uri);
     }
+
+    if (data.result && data.is_child)
+      hildon_file_system_special_location_volumes_changed (data.result, fs);
 
     return data.result;
 }
