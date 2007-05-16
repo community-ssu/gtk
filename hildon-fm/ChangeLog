@@ -1,5 +1,7 @@
 2007-05-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
+	Released 1.9.22
+	
 	* hildon-fm/hildon-file-system-private.c
 	(_hildon_file_system_get_locations): Create a real root location.
 	Don't set up MMCs.

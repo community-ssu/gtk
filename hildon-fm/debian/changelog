@@ -1,3 +1,10 @@
+libhildonfm (1:1.9.22) unstable; urgency=low
+
+  * Added support for arbitrary GnomeVFS volumes and drives.  Used for
+    MMCs.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 16 May 2007 17:30:22 +0300
+
 libhildonfm (1:1.9.21) unstable; urgency=low
 
   * Bugfixed Makefile.
