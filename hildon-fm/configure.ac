@@ -64,6 +64,10 @@ AC_SUBST(LIBOSSO_CFLAGS)
 PKG_CHECK_MODULES(MCE, mce >= 0.8.5)
 AC_SUBST(MCE_CFLAGS)
 
+PKG_CHECK_MODULES(GNOMEVFS, gnome-vfs-2.0)
+AC_SUBST(GNOMEVFS_CFLAGS)
+AC_SUBST(GNOMEVFS_LIBS)
+
 ##################################################
 # Check for gtk-doc.
 ##################################################
