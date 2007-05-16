@@ -1,3 +1,9 @@
+hildon-application-framework (0.10) unstable; urgency=low
+
+  * Redefined package purposes and refactored dependencies.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Wed, 16 May 2007 14:26:37 +0300
+
 hildon-application-framework (0.9) unstable; urgency=low
 
   * Removed osso-thumbnail conflicts from -dev again, they are not needed
