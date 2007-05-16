@@ -1,5 +1,5 @@
 INCLUDES = $(GTK_CFLAGS) $(GCONF_CFLAGS) $(HILDON_THUMBNAIL_CFLAGS)	\
-	   $(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS)			\
+	   $(GWCONNECT_CFLAGS) $(DBUSGLIB_CFLAGS) $(GNOMEVFS_CFLAGS)	\
            $(LIBOSSO_CFLAGS)						\
            $(MCE_CFLAGS) -DLOCALEDIR=\"$(localedir)\"			\
            $(LIBOSSOMIME_CFLAGS) -I$(srcdir)/..				\
@@ -14,7 +14,7 @@ MAINTAINERCLEANFILES = \
 EXTRA_DIST = 
 
 libhildonfm_la_LIBADD = $(GTK_LIBS) $(GCONF_LIBS) $(HILDON_THUMBNAIL_LIBS) \
-	$(GWCONNECT_LIBS) $(DBUSGLIB_LIBS) $(LIBOSSOMIME_LIBS)
+	$(GWCONNECT_LIBS) $(DBUSGLIB_LIBS) $(LIBOSSOMIME_LIBS) $(GNOMEVFS_LIBS)
 
 libhildonfm_la_LDFLAGS = -version-info 2:0:0
 libhildonfm_la_SOURCES =			\
@@ -36,6 +36,8 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-details-dialog.c		\
 	hildon-file-system-special-location.h	\
 	hildon-file-system-special-location.c	\
+	hildon-file-system-root.h		\
+	hildon-file-system-root.c		\
 	hildon-file-system-local-device.h	\
 	hildon-file-system-local-device.c	\
 	hildon-file-system-remote-device.h	\
@@ -52,6 +54,8 @@ libhildonfm_la_SOURCES =			\
 	hildon-file-system-obex.c		\
 	hildon-file-system-smb.h		\
 	hildon-file-system-smb.c		\
+	hildon-file-system-voldev.h		\
+	hildon-file-system-voldev.c		\
 	hildon-fm1-compat.h			\
 	hildon-fm1-compat.c			\
 	$(hildonfm_built_headers)		\
@@ -66,6 +70,11 @@ hildonincludeinst_DATA =			\
 	hildon-file-system-info.h		\
 	hildon-file-details-dialog.h		\
 	hildon-fm1-compat.h
+
+noinst_PROGRAMS = t
+t_SOURCES = t.c
+t_CFLAGS = $(GTK_CFLAGS) $(GNOMEVFS_CFLAGS)
+t_LDFLAGS = $(GTK_LIBS) $(GNOMEVFS_LIBS)
 
 headers_to_scan_for_enums = $(hildonincludeinst_DATA)
  
