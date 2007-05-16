@@ -194,10 +194,50 @@ style "osso-input-method-vkb-key" = "osso-logical-colors"
         }
     }
 }
+
+style "osso-input-method-space-key" = "osso-logical-colors"
+{
+    fg[NORMAL] = @VKBButtonTextColor
+
+    GtkButton::child_spacing = 0
+    engine "sapwood" 
+    {
+        image
+        {
+            function = BOX
+            state = NORMAL
+            file = "../images/qgn_plat_inputmet_button_key_space_normal.png"
+            border = { 6, 97, 0, 0 }
+        }
+        image
+        {
+            function = BOX
+            state = PRELIGHT
+            file = "../images/qgn_plat_inputmet_button_key_space_normal.png"
+            border = { 6, 97, 0, 0 }
+        }
+        image
+        {
+            function = BOX
+            state = INSENSITIVE
+            file = "../images/qgn_plat_inputmet_button_key_space_disabled.png"
+            border = { 6, 97, 0, 0 }
+        }
+        image
+        {
+            function = BOX
+            state = ACTIVE
+            file = "../images/qgn_plat_inputmet_button_key_space_pressed.png"
+            border = { 6, 97, 0, 0 }
+        }
+    }
+}
+
+
 widget "*.osso-im-alpha" style "osso-input-method-vkb-key"
 widget "*.osso-im-numeric" style "osso-input-method-vkb-key"
 widget "*.osso-im-special" style "osso-input-method-vkb-key"
-widget "*.osso-im-space" style "osso-input-method-vkb-key"
+widget "*.osso-im-space" style "osso-input-method-space-key"
 widget "*.osso-im-key" style "osso-input-method-vkb-key"
 widget "*.osso-im-tele" style "osso-input-method-vkb-key"
 widget "*.osso-im-dim" style "osso-input-method-vkb-key"

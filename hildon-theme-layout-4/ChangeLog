@@ -1,4 +1,8 @@
-2007-05-15  Michael Dominic K.  <mdk@mdk.am> 
+2007-05-16  Mohammad Anwari  <mdamt@maemo.org>
+
+	* rc/hildonkeyboard.rc: Added space key theme. Related to NB#56124. 
+
+2007-05-14  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	[0.8.0-1 release]
 
