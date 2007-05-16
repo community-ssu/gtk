@@ -1,42 +1,49 @@
 Source: hildon-application-framework
 Section: base
 Priority: optional
-Maintainer: Carlos Guerreiro <carlos@maemo.org>
+Maintainer: Marius Vollmer <marius.vollmer@nokia.com>
 Build-Depends: debhelper (>= 4.0.0)
 Standards-Version: 3.6.1
 
-Package: hildon-application-framework
+Package: hildon-application-framework-packages
 Architecture: all
 Depends: bluez-utils,
- evolution-data-server,
- hildon-control-panel,
- hildon-theme-plankton,
- libxfixes3 (>= 1:3.0.1.2-3),
- hildon-desktop,
- hildon-application-manager,
- osso-bluez-compat,
- osso-dsp-plugin-alsa,
- osso-gwconnect,
- osso-memory-backend,
- gnome-vfs-filechooser-backend,
- osso-obc,
- osso-obexsrv,
- hildon-thumbnail,
- osso-update-category-database,
- posix-locales,
- telepathy-feed,
- osso-af-startup (>= 1.35-1),
- hildon-initscripts (>= 1.10-1)
-Description: Hildon Application Framework metapackage.
- Installing this package gives you the complete
- Hildon Application Framework. 
+         evolution-data-server,
+         hildon-control-panel,
+         libxfixes3 (>= 1:3.0.1.2-3),
+         hildon-desktop,
+         hildon-application-manager,
+         osso-bluez-compat,
+         osso-dsp-plugin-alsa,
+         osso-gwconnect,
+         osso-memory-backend,
+         gnome-vfs-filechooser-backend,
+         osso-obc,
+         osso-obexsrv,
+         hildon-thumbnail,
+         osso-update-category-database,
+         posix-locales,
+         telepathy-feed,
+         osso-af-startup (>= 1.35-1),
+         hildon-initscripts (>= 1.10-1)
+Description: Hildon Application Framework package collector
+ Installing this package on a Internet Tablet device gives you all the
+ Hildon Application Framework packages, but doesn't customize your system to
+ use it.  You likely want to install hildon-application-framework.
+
+Package: hildon-application-framework
+Depends: hildon-application-framework-packages,
+         hildon-theme-plankton
+Description: Hildon Application Framework meta-package.
+ Installing this package on a Internet Tablet device gives you the
+ complete Hildon Application Framework and customizes your system to use it.
 
 Package: hildon-application-framework-dev
 Architecture: all
+Depends: hildon-application-framework
 Conflicts: libxtrans-dev,
- libgtk2.0-dev (<< 2:2.10)
-Description: Hildon Application Framework development metapackage.
- Installing this package makes sure you have the correct environment
- for development for the Hildon Application Framework.  You should not
- use this package in Build-Dependencies, but installing it will make
- sure that you have no deprecated packages.
+           libgtk2.0-dev (<< 2:2.10)
+Description: Hildon Application Framework development meta-package.
+ Installing this package in a maemo SDK Scratchbox target gives you
+ the complete Hildon Application Framework together with most of its
+ development packages.
