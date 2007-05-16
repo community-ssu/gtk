@@ -1,3 +1,9 @@
+hildon-initscripts (1.11-1) unstable; urgency=low
+
+  * hn-hung-app-handler -> hd-hung-app-handler. Fixes: NB#54574
+
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Wed, 16 May 2007 16:06:44 +0300
+
 hildon-initscripts (1.10-1) unstable; urgency=low
 
   * maemo-af-desktop -> hildon-desktop
