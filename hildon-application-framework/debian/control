@@ -32,6 +32,7 @@ Description: Hildon Application Framework package collector
  use it.  You likely want to install hildon-application-framework.
 
 Package: hildon-application-framework
+Architecture: all
 Depends: hildon-application-framework-packages,
          hildon-theme-plankton
 Description: Hildon Application Framework meta-package.
