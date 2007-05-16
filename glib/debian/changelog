@@ -1,12 +1,11 @@
-glib2.0 (2.12.12-1osso1) UNRELEASED; urgency=low
+glib2.0 (2.12.12-1osso1) unstable; urgency=low
 
-  * NOT RELEASED YET
- 
+  * Backport GSlice debug-blocks from upstream gtk+ trunk.
   * Upgrade to glib 2.12.12
   * Ensure added symbols appear in API docs
   * debian/rules: do not compress index.sgml for gtkdoc-fixxref benefit
 
- -- Tommi Komulainen <tommi.komulainen@nokia.com>  Wed, 21 Mar 2007 13:32:55 +0200
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Wed, 16 May 2007 16:32:55 +0200
 
 glib2.0 (2.12.4-1osso1) unstable; urgency=low
 
