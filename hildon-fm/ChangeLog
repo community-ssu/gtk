@@ -1,3 +1,28 @@
+2007-05-16  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-system-private.c
+	(_hildon_file_system_get_locations): Create a real root location.
+	Don't set up MMCs.
+	(setup_mmc): Removed.
+	(get_special_location_callback): Always accept zero length
+	basepaths as candidates.  Add the new location object to the tree
+	of special locations.
+	(_hildon_file_system_get_special_location): Traverse locations in
+	post order so that more specific locations are considered first.
+	Call hildon_file_system_special_location_volumes_changed when a
+	new location object has been created.
+
+	* configure.ac: Check for gnome-vfs-2.0 as well.
+
+	* hildon-fm/hildon-file-system-root.c,
+	hildon-fm/hildon-file-system-root.h,
+	hildon-fm/hildon-file-system-voldev.h,
+	hildon-fm/hildon-file-system-voldev.c: New.
+	* hildon-fm/Makefile.am (libhildonfm_la_SOURCES): Added them.
+
+	* hildon-fm/t.c: New, for testing.
+	* hildon-fm/Makefile.am: Added "t" target.
+
 2007-05-11  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.21
