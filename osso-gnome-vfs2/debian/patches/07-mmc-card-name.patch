@@ -1,28 +1,42 @@
---- libgnomevfs/gnome-vfs-volume-monitor-daemon.c-unmod	2007-02-02 10:45:54.000000000 +0100
-+++ libgnomevfs/gnome-vfs-volume-monitor-daemon.c	2007-02-02 14:51:36.000000000 +0100
-@@ -25,6 +25,12 @@
- 
- #include <string.h>
- #include <stdlib.h>
-+/* Nokia patch */
+Index: libgnomevfs/gnome-vfs-volume-monitor-daemon.c
+===================================================================
+--- libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(revision 11674)
++++ libgnomevfs/gnome-vfs-volume-monitor-daemon.c	(arbetskopia)
+@@ -841,6 +841,14 @@ static char *
+ make_volume_name_from_path_and_fs (const char *mount_path, const char *fs_type)
+ {
+ 	const char *name;
++
++	/* Maemo patch. */
++	char *tmp;
++	tmp = _gnome_vfs_filesystem_get_label_for_mmc (mount_path);
++	if (tmp) {
++		return tmp;
++	}
++	/* End of Maemo patch. */
+ 	
+ 	if (mount_path[0] == '/' && mount_path[1] == '\0') {
+ 		return g_strdup (_("Root Volume"));
+Index: libgnomevfs/gnome-vfs-filesystem-type.c
+===================================================================
+--- libgnomevfs/gnome-vfs-filesystem-type.c	(revision 11674)
++++ libgnomevfs/gnome-vfs-filesystem-type.c	(arbetskopia)
+@@ -127,3 +127,115 @@ _gnome_vfs_filesystem_use_trash (const c
+ 	
+ 	return FALSE;
+ }
++
++ /* Maemo patch */
++#define MMC_LABEL_FILE                    "/tmp/.mmc-volume-label"
++#define MMC_LABEL_FILE2                   "/tmp/.internal-mmc-volume-label"
++#define MMC_LABEL_LENGTH                  11
++#define MMC_LABEL_UNDEFINED_NAME          "mmc-undefined-name"
++#define MMC_LABEL_UNDEFINED_NAME_INTERNAL "mmc-undefined-name-internal"
++
 +#include <sys/types.h>
 +#include <sys/stat.h>
 +#include <fcntl.h>
 +#include <unistd.h>
-+/* End of Nokia patch */
- #include <libgnomevfs/gnome-vfs-utils.h>
- #include <glib/gi18n-lib.h>
- 
-@@ -837,10 +843,119 @@ modify_volume_name_for_display (const ch
- 	return name;
- }
- 
-+/* Nokia patch */
-+#define MMC_LABEL_FILE "/tmp/.mmc-volume-label"
-+#define MMC_LABEL_FILE2 "/tmp/.internal-mmc-volume-label"
-+#define MMC_LABEL_LENGTH 11
-+#define MMC_LABEL_UNDEFINED_NAME          "mmc-undefined-name"
-+#define MMC_LABEL_UNDEFINED_NAME_INTERNAL "mmc-undefined-name-internal"
 +
 +/* Same as make_utf8 but without adding "Invalid unicode". */
 +static char *
@@ -62,13 +76,19 @@
 +}
 +
 +static char *
-+get_mmc_name_from_label_file (const char *label_file,
-+			      gboolean    internal)
++get_mmc_name (gboolean internal)
 +{
-+	int     fd;
-+	ssize_t size_read;
-+	char    buf[MMC_LABEL_LENGTH + 1];
++	const gchar *label_file;
++	int          fd;
++	ssize_t      size_read;
++	char         buf[MMC_LABEL_LENGTH + 1];
 +
++	if (internal) {
++		label_file = MMC_LABEL_FILE2;
++	} else {
++		label_file = MMC_LABEL_FILE;
++	}
++	
 +	if (!g_file_test (label_file, G_FILE_TEST_EXISTS)) {
 +		goto unknown;
 +	}
@@ -98,38 +118,50 @@
 +		return g_strdup (MMC_LABEL_UNDEFINED_NAME);
 +	}		
 +}
-+/* End of Nokia patch */
 +
- static char *
- make_volume_name_from_path_and_fs (const char *mount_path, const char *fs_type)
- {
- 	const char *name;
-+	/* Nokia patch */
++char *
++_gnome_vfs_filesystem_get_label_for_mmc (const char *mount_path)
++{
 +	const char *mmc_mount;
 +
 +	mmc_mount = g_getenv ("MMC_MOUNTPOINT");
-+
 +	if (mmc_mount && g_str_has_prefix (mount_path, mmc_mount)) {
-+		gchar *mmc_name;
-+		
-+		mmc_name = get_mmc_name_from_label_file (MMC_LABEL_FILE, FALSE);
-+
-+		if (mmc_name) {
-+			return mmc_name;
-+		}
++		return get_mmc_name (FALSE);
 +	}
 + 
 +	mmc_mount = g_getenv ("INTERNAL_MMC_MOUNTPOINT");
 +	if (mmc_mount && g_str_has_prefix (mount_path, mmc_mount)) {
-+		gchar *mmc_name;
-+		
-+		mmc_name = get_mmc_name_from_label_file (MMC_LABEL_FILE2, TRUE);
-+
-+		if (mmc_name) {
-+			return mmc_name;
-+		}
++		return get_mmc_name (TRUE);
 +	}
-+	/* End of Nokia patch */
- 	
- 	if (mount_path[0] == '/' && mount_path[1] == '\0') {
- 		return g_strdup (_("Root Volume"));
++	
++	return NULL;
++}
++/* End of maemo patch */
+Index: libgnomevfs/gnome-vfs-filesystem-type.h
+===================================================================
+--- libgnomevfs/gnome-vfs-filesystem-type.h	(revision 11674)
++++ libgnomevfs/gnome-vfs-filesystem-type.h	(arbetskopia)
+@@ -28,5 +28,6 @@
+ 
+ char *   _gnome_vfs_filesystem_volume_name (const char *fs_type);
+ gboolean _gnome_vfs_filesystem_use_trash   (const char *fs_type);
++char *   _gnome_vfs_filesystem_get_label_for_mmc (const char *mount_path);
+ 
+ #endif /* GNOME_VFS_FILESYSTEM_TYPE_H */
+Index: libgnomevfs/gnome-vfs-hal-mounts.c
+===================================================================
+--- libgnomevfs/gnome-vfs-hal-mounts.c	(revision 11674)
++++ libgnomevfs/gnome-vfs-hal-mounts.c	(arbetskopia)
+@@ -570,6 +570,12 @@ _hal_volume_policy_get_display_name (Gno
+ 		goto out;
+ 	}
+ 
++	name = _gnome_vfs_filesystem_get_label_for_mmc (libhal_volume_get_mount_point (hal_volume));
++	if (name) {
++		g_print ("Volume fallback: %s\n", name);
++		goto out;
++	}
++	
+ 	/* Fallback: size of media */
+ 
+ 	size_str = gnome_vfs_format_file_size_for_display (libhal_volume_get_size (hal_volume));
