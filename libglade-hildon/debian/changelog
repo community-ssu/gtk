@@ -1,3 +1,9 @@
+libglade-hildon (0.3) unstable; urgency=low
+
+  * Migrated to hildon-1
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Tue, 18 May 2006 16:35:49 +0300
+
 libglade-hildon (0.2) unstable; urgency=low
 
   * Added autogen.sh and removed deprecated widgets. Added also Hildon Window. 

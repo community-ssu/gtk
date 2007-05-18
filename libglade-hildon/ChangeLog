@@ -1,1 +1,9 @@
+2007-05-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
+	* Makefile.in:
+	* aclocal.m4:
+	* configure:
+	* configure.ac:
+	* debian/control:
+	* libglade-hildon.c: (glade_module_register_widgets): Migrated to
+	hildon-1

@@ -23,49 +23,7 @@
 #include <glade/glade.h>
 #include <glade/glade-build.h>
 
-#include <hildon-widgets/hildon-window.h>
-#include <hildon-widgets/hildon-app.h>
-#include <hildon-widgets/hildon-appview.h>
-#include <hildon-widgets/hildon-caption.h>
-#include <hildon-widgets/hildon-find-toolbar.h>
-
-#include <hildon-widgets/hildon-color-button.h>
-
-#include <hildon-widgets/hildon-time-editor.h>
-#include <hildon-widgets/hildon-date-editor.h>
-#include <hildon-widgets/hildon-number-editor.h>
-#include <hildon-widgets/hildon-range-editor.h>
-#include <hildon-widgets/hildon-weekday-picker.h>
-
-#include <hildon-widgets/hildon-controlbar.h>
-#include <hildon-widgets/hildon-seekbar.h>
-#include <hildon-widgets/hildon-hvolumebar.h>
-#include <hildon-widgets/hildon-vvolumebar.h>
-
-#include <hildon-widgets/hildon-font-selection-dialog.h>
-#include <hildon-widgets/hildon-get-password-dialog.h>
-#include <hildon-widgets/hildon-set-password-dialog.h>
-#include <hildon-widgets/hildon-sort-dialog.h>
-#include <hildon-widgets/hildon-wizard-dialog.h>
-#include <hildon-widgets/hildon-note.h>
-
-
-#define HILDON_TYPE_DATE_EDITOR HILDON_DATE_EDITOR_TYPE
-#define HILDON_TYPE_RANGE_EDITOR HILDON_RANGE_EDITOR_TYPE
-/*#define HILDON_TYPE_WEEKDAY_PICKER HILDON_WEEKDAY_PICKER_TYPE*/
-
-static GtkWidget *
-appview_find_internal_child(GladeXML *xml, GtkWidget *parent,
-			       const gchar *childname)
-{
-    if (!strcmp(childname, "vbox")) {
-			GtkWidget *pl;
-
-			pl = HILDON_APPVIEW (parent)->vbox;
-			return pl;
-    }
-    return NULL;
-}
+#include <hildon/hildon.h>
 
 void
 glade_module_register_widgets(void)
@@ -74,18 +32,10 @@ glade_module_register_widgets(void)
     glade_register_custom_prop (GTK_TYPE_COMBO_BOX, "items", combo_box_set_items);
 */
 
-/* lgpl-stuff */
-    glade_register_widget (HILDON_TYPE_APP, glade_standard_build_widget,
-			   glade_standard_build_children, NULL);
-    glade_register_widget (HILDON_TYPE_APPVIEW, glade_standard_build_widget,
-			   glade_standard_build_children, appview_find_internal_child);
     glade_register_widget (HILDON_TYPE_CAPTION, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
     glade_register_widget (HILDON_TYPE_FIND_TOOLBAR, glade_standard_build_widget,
 			   glade_standard_build_children, NULL);
-
-
-/* libs-stuff */
 
     glade_register_widget (HILDON_TYPE_WINDOW, glade_standard_build_widget,
 		                               glade_standard_build_children, NULL);

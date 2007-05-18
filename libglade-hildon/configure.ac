@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.52)
  
-AC_INIT(libglade-hildon, 0.1)
+AC_INIT(libglade-hildon, 0.3)
 AC_CONFIG_SRCDIR(libglade-hildon.c)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
@@ -34,8 +34,7 @@ dnl | Pkgconfig checks |---------------------------------------
 dnl  ------------------
 PKG_CHECK_MODULES(LIBGLADE_HILDON, [
   libglade-2.0
-	hildon-lgpl
-	hildon-libs
+	hildon-1
 ])
 
 AC_SUBST(LIBGLADE_HILDON_CFLAGS)
