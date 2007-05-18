@@ -1,5 +1,6 @@
-gtk+2.0 (2:2.10.6-0osso14) unstable; urgency=low
+gtk+2.0 (2:2.10.12-0osso1) unstable; urgency=low
 
+  * Upgrade to GTK+ 2.10.12
   * Make GtkMenu scroll arrows scroll by item. Fixes: NB#56638
 
  -- Tommi Komulainen <tommi.komulainen@nokia.com>  Tue, 15 May 2007 15:06:03 +0300

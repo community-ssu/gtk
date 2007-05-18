@@ -160,10 +160,10 @@ libgdk_win32_2_0_la_LIBADD = win32/libgdk-win32.la $(GDK_DEP_LIBS) \
 libgdk_win32_2_0_la_DEPENDENCIES = win32/libgdk-win32.la win32/rc/gdk-win32-res.o gdk.def
 libgdk_win32_2_0_la_LDFLAGS = -Wl,win32/rc/gdk-win32-res.o -export-symbols gdk.def $(LDADD)
 if HAVE_WINTAB
-libgdk_win32_2_0_la_LIBADD += -Lwin32 -lwntab32x
+libgdk_win32_2_0_la_LDFLAGS += -Wl,win32/libwntab32x.a
 endif
 if HAVE_IE55
-libgdk_win32_2_0_la_LIBADD += -Lwin32 -lie55uuid
+libgdk_win32_2_0_la_LDFLAGS += -Wl,win32/libie55uuid.a
 endif
 
 if OS_WIN32

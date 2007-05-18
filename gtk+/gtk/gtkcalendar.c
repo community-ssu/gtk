@@ -698,6 +698,30 @@ gtk_calendar_init (GtkCalendar *calendar)
   else if (strcmp (year_before, "calendar:MY") != 0)
     g_warning ("Whoever translated calendar:MY did so wrongly.\n");
 
+#ifdef G_OS_WIN32
+  priv->week_start = 0;
+  week_start = NULL;
+
+  if (G_WIN32_HAVE_WIDECHAR_API ())
+    {
+      if (GetLocaleInfoW (GetThreadLocale (), LOCALE_IFIRSTDAYOFWEEK,
+			  wbuffer, G_N_ELEMENTS (wbuffer)))
+	week_start = g_utf16_to_utf8 (wbuffer, -1, NULL, NULL, NULL);
+    }
+  else
+    {
+      if (GetLocaleInfoA (GetThreadLocale (),
+			  LOCALE_IFIRSTDAYOFWEEK | LOCALE_USE_CP_ACP,
+			  buffer, G_N_ELEMENTS (buffer)))
+	week_start = g_locale_to_utf8 (buffer, -1, NULL, NULL, NULL);
+    }
+  
+  if (week_start != NULL)
+    {
+      priv->week_start = (week_start[0] - '0' + 1) % 7;
+      g_free(week_start);
+    }
+#else
 #ifdef HAVE__NL_TIME_FIRST_WEEKDAY
   langinfo = nl_langinfo (_NL_TIME_FIRST_WEEKDAY);
   first_weekday = langinfo[0];
@@ -728,6 +752,7 @@ gtk_calendar_init (GtkCalendar *calendar)
       g_warning ("Whoever translated calendar:week_start:0 did so wrongly.\n");
       priv->week_start = 0;
     }
+#endif
 #endif
 
   calendar_compute_days (calendar);
@@ -2309,7 +2334,7 @@ calendar_paint_arrow (GtkCalendar *calendar,
 	gtk_paint_arrow (widget->style, window, state, 
 			 GTK_SHADOW_OUT, NULL, widget, "calendar",
 			 GTK_ARROW_RIGHT, TRUE, 
-			 width/2 - 2, height/2 - 4, 8, 8);
+			 width/2 - 4, height/2 - 4, 8, 8);
     }
 }
 
@@ -2733,7 +2758,7 @@ move_focus (GtkCalendar *calendar,
 	    gint         direction)
 {
   GtkTextDirection text_dir = gtk_widget_get_direction (GTK_WIDGET (calendar));
-
+ 
   if ((text_dir == GTK_TEXT_DIR_LTR && direction == -1) ||
       (text_dir == GTK_TEXT_DIR_RTL && direction == 1)) 
     {
@@ -2744,6 +2769,11 @@ move_focus (GtkCalendar *calendar,
 	  calendar->focus_col = 6;
 	  calendar->focus_row--;
 	}
+
+      if (calendar->focus_col < 0)
+        calendar->focus_col = 6;
+      if (calendar->focus_row < 0)
+        calendar->focus_row = 5;
     }
   else 
     {
@@ -2754,6 +2784,11 @@ move_focus (GtkCalendar *calendar,
 	  calendar->focus_col = 0;
 	  calendar->focus_row++;
 	}
+
+      if (calendar->focus_col < 0)
+        calendar->focus_col = 0;
+      if (calendar->focus_row < 0)
+        calendar->focus_row = 0;
     }
 }
 
@@ -2810,6 +2845,10 @@ gtk_calendar_key_press (GtkWidget   *widget,
 	{
 	  if (calendar->focus_row > 0)
 	    calendar->focus_row--;
+          if (calendar->focus_row < 0)
+            calendar->focus_row = 5;
+          if (calendar->focus_col < 0)
+            calendar->focus_col = 6;
 	  calendar_invalidate_day (calendar, old_focus_row, old_focus_col);
 	  calendar_invalidate_day (calendar, calendar->focus_row,
 				   calendar->focus_col);
@@ -2824,6 +2863,8 @@ gtk_calendar_key_press (GtkWidget   *widget,
 	{
 	  if (calendar->focus_row < 5)
 	    calendar->focus_row++;
+          if (calendar->focus_col < 0)
+            calendar->focus_col = 0;
 	  calendar_invalidate_day (calendar, old_focus_row, old_focus_col);
 	  calendar_invalidate_day (calendar, calendar->focus_row,
 				   calendar->focus_col);

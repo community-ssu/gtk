@@ -4324,8 +4324,9 @@ gtk_window_realize (GtkWidget *widget)
 			    GDK_LEAVE_NOTIFY_MASK |
 			    GDK_FOCUS_CHANGE_MASK |
 			    GDK_STRUCTURE_MASK);
+  attributes.type_hint = priv->type_hint;
 
-  attributes_mask |= GDK_WA_VISUAL | GDK_WA_COLORMAP;
+  attributes_mask |= GDK_WA_VISUAL | GDK_WA_COLORMAP | GDK_WA_TYPE_HINT;
   attributes_mask |= (window->title ? GDK_WA_TITLE : 0);
   attributes_mask |= (window->wmclass_name ? GDK_WA_WMCLASS : 0);
   
@@ -4357,8 +4358,6 @@ gtk_window_realize (GtkWidget *widget)
   if (!priv->deletable)
     gdk_window_set_functions (widget->window, GDK_FUNC_ALL | GDK_FUNC_CLOSE);
 
-  gdk_window_set_type_hint (widget->window, priv->type_hint);
- 
   if (gtk_window_get_skip_pager_hint (window))
     gdk_window_set_skip_pager_hint (widget->window, TRUE);
 
@@ -4702,7 +4701,7 @@ gtk_window_key_press_event (GtkWidget   *widget,
 
   /* Chain up, invokes binding set */
   if (!handled)
-    handled = GTK_WIDGET_CLASS (gtk_window_parent_class)->key_press_event (widget, event);
+    handled = GTK_WIDGET_CLASS (gtk_window_parent_class)->key_release_event (widget, event);
 
   return handled;
 }
@@ -5122,6 +5121,8 @@ gtk_window_compute_configure_request_size (GtkWindow *window,
          {
 	   gint base_width = 0;
 	   gint base_height = 0;
+	   gint min_width = 0;
+	   gint min_height = 0;
 	   gint width_inc = 1;
 	   gint height_inc = 1;
 	   
@@ -5138,10 +5139,10 @@ gtk_window_compute_configure_request_size (GtkWindow *window,
 		   base_width = geometry.base_width;
 		   base_height = geometry.base_height;
 		 }
-	       else if (flags & GDK_HINT_MIN_SIZE)
+	       if (flags & GDK_HINT_MIN_SIZE)
 		 {
-		   base_width = geometry.min_width;
-		   base_height = geometry.min_height;
+		   min_width = geometry.min_width;
+		   min_height = geometry.min_height;
 		 }
 	       if (flags & GDK_HINT_RESIZE_INC)
 		 {
@@ -5151,10 +5152,10 @@ gtk_window_compute_configure_request_size (GtkWindow *window,
 	     }
 	     
 	   if (info->default_width > 0)
-	     *width = info->default_width * width_inc + base_width;
+	     *width = MAX (info->default_width * width_inc + base_width, min_width);
 	   
 	   if (info->default_height > 0)
-	     *height = info->default_height * height_inc + base_height;
+	     *height = MAX (info->default_height * height_inc + base_height, min_height);
          }
     }
   else
@@ -5697,7 +5698,7 @@ gtk_window_move_resize (GtkWindow *window)
       allocation = widget->allocation;
       gtk_widget_size_allocate (widget, &allocation);
 
-      gdk_window_process_all_updates ();
+      gdk_window_process_updates (widget->window, TRUE);
       
       gdk_window_configure_finished (widget->window);
 

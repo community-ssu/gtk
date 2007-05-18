@@ -478,7 +478,11 @@ gtk_cell_renderer_text_class_init (GtkCellRendererTextClass *class)
   /**
    * GtkCellRendererText:alignment:
    *
-   * Specifies how to align the lines of text.
+   * Specifies how to align the lines of text with respect to each other. 
+   *
+   * Note that this property describes how to align the lines of text in 
+   * case there are several of them. The "xalign" property of #GtkCellRenderer, 
+   * on the other hand, sets the horizontal alignment of the whole text.
    *
    * Since: 2.10
    */
@@ -555,6 +559,14 @@ gtk_cell_renderer_text_class_init (GtkCellRendererTextClass *class)
                 P_("Ellipsize set"),
                 P_("Whether this tag affects the ellipsize mode"));
 
+  /**
+   * GtkCellRendererText::edited
+   * @renderer: the object which received the signal.
+   * @path: the path identifying the edited cell.
+   * @new_text: the new text.
+   *
+   * This signal is emitted after @renderer has been edited.
+   */
   text_cell_renderer_signals [EDITED] =
     g_signal_new (I_("edited"),
 		  G_OBJECT_CLASS_TYPE (object_class),
@@ -1785,7 +1797,9 @@ gtk_cell_renderer_text_focus_out_event (GtkWidget *entry,
   if (priv->in_entry_menu)
     return FALSE;
 
-  gtk_cell_renderer_text_editing_done (GTK_CELL_EDITABLE (entry), data);
+  GTK_ENTRY (entry)->editing_canceled = TRUE;
+  gtk_cell_editable_editing_done (GTK_CELL_EDITABLE (entry));
+  gtk_cell_editable_remove_widget (GTK_CELL_EDITABLE (entry));
 
   /* entry needs focus-out-event */
   return FALSE;

@@ -104,15 +104,10 @@ gtk_cell_renderer_toggle_init (GtkCellRendererToggle *celltoggle)
   celltoggle->radio = FALSE;
 
   GTK_CELL_RENDERER (celltoggle)->mode = GTK_CELL_RENDERER_MODE_ACTIVATABLE;
-#ifdef MAEMO_CHANGES
   GTK_CELL_RENDERER (celltoggle)->xpad = 2;
   GTK_CELL_RENDERER (celltoggle)->ypad = 2;
-#endif /* MAEMO_CHANGES */
 
-  priv->indicator_size = 12;
-#ifdef MAEMO_CHANGES
   priv->indicator_size = TOGGLE_WIDTH;
-#endif /* MAEMO_CHANGES */
   priv->inconsistent = FALSE;
 }
 

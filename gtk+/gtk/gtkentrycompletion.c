@@ -101,7 +101,7 @@ static void     gtk_entry_completion_reorder             (GtkCellLayout         
 static gboolean gtk_entry_completion_visible_func        (GtkTreeModel            *model,
                                                           GtkTreeIter             *iter,
                                                           gpointer                 data);
-static gboolean gtk_entry_completion_popup_key_press     (GtkWidget               *widget,
+static gboolean gtk_entry_completion_popup_key_event     (GtkWidget               *widget,
                                                           GdkEventKey             *event,
                                                           gpointer                 user_data);
 static gboolean gtk_entry_completion_popup_button_press  (GtkWidget               *widget,
@@ -436,7 +436,10 @@ gtk_entry_completion_init (GtkEntryCompletion *completion)
   priv->popup_window = gtk_window_new (GTK_WINDOW_POPUP);
   gtk_window_set_resizable (GTK_WINDOW (priv->popup_window), FALSE);
   g_signal_connect (priv->popup_window, "key_press_event",
-                    G_CALLBACK (gtk_entry_completion_popup_key_press),
+                    G_CALLBACK (gtk_entry_completion_popup_key_event),
+                    completion);
+  g_signal_connect (priv->popup_window, "key_release_event",
+                    G_CALLBACK (gtk_entry_completion_popup_key_event),
                     completion);
   g_signal_connect (priv->popup_window, "button_press_event",
                     G_CALLBACK (gtk_entry_completion_popup_button_press),
@@ -753,7 +756,7 @@ gtk_entry_completion_visible_func (GtkTreeModel *model,
 }
 
 static gboolean
-gtk_entry_completion_popup_key_press (GtkWidget   *widget,
+gtk_entry_completion_popup_key_event (GtkWidget   *widget,
                                       GdkEventKey *event,
                                       gpointer     user_data)
 {
@@ -833,7 +836,7 @@ gtk_entry_completion_action_button_press (GtkWidget      *widget,
   if (!GTK_WIDGET_MAPPED (completion->priv->popup_window))
     return FALSE;
 
-  _gtk_entry_reset_im_context (completion->priv->entry);
+  _gtk_entry_reset_im_context (GTK_ENTRY (completion->priv->entry));
 
   if (gtk_tree_view_get_path_at_pos (GTK_TREE_VIEW (widget),
                                      event->x, event->y,
@@ -1503,7 +1506,7 @@ gtk_entry_completion_compute_prefix (GtkEntryCompletion *completion)
 	  else
 	    {
 	      gchar *p = prefix;
-	      const gchar *q = text;
+	      gchar *q = text;
 	      
 	      while (*p && *p == *q)
 		{
@@ -1512,6 +1515,19 @@ gtk_entry_completion_compute_prefix (GtkEntryCompletion *completion)
 		}
 	      
 	      *p = '\0';
+              
+              if (p > prefix)
+                {
+                  /* strip a partial multibyte character */
+                  q = g_utf8_find_prev_char (prefix, p);
+                  switch (g_utf8_get_char_validated (q, p - q))
+                    {
+                    case (gunichar)-2:
+                    case (gunichar)-1:
+                      *q = 0;
+                    default: ;
+                    }
+                }
 	    }
 	}
       

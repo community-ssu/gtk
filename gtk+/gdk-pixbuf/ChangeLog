@@ -1,3 +1,161 @@
+2007-05-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.12 ===
+
+2007-04-29  Matthias Clasen <mclasen@redhat.com>
+
+	* io-jpeg.c: Remove a pointless check from the previous
+	commit that added a new string.
+
+2007-04-28  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* io-png.c:
+	* io-jpeg.c: Accept unknown parameters with a warning 
+	when saving.  (#405539, Daniel Atallah)
+
+2007-04-25  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gdk-pixbuf-simple-anim.c (gdk_pixbuf_simple_anim_add_frame):
+	Don't double the delay time of the first frame.  (#431997,
+	Björn Lindqvist)
+
+2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.11 ===
+
+2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.10 ===
+
+2007-03-06  Tor Lillqvist  <tml@novell.com>
+
+	* Makefile.am: Further fixes for building on Win32 outside
+	srcdir. (#413492, Mathias Hasselmann)
+
+2007-03-05  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* io-tga.c: (gdk_pixbuf__tga_stop_load): Flip rle-encoded
+	images even if they haven't been completely loaded.  (#347106)
+
+2007-02-27  Felix Riemann  <friemann@svn.gnome.org>
+
+	* io-ico.c: (fill_info): Add image/x-ico to supported mime types.
+	Fixes bug #393599.
+
+2007-02-16  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* io-png.c: Don't leak in the error path.  (#405539, Daniel Atallah)
+
+2007-02-07  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* io-jpeg.c: (gdk_pixbuf__jpeg_image_load),
+	(gdk_pixbuf__jpeg_image_load_increment): Set the GError
+	if the image is zero length. (#405327)
+
+2007-02-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Protect
+	against stop_load begin broken.  (#403255, Lucas Mazzardo Veloso)
+
+2007-01-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === 2.10.9 ===
+
+2007-01-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-gif.c (gdk_pixbuf__gif_image_stop_load): Return an
+	error if we didn't successfully load a frame.  (#394190,
+	Felix Riemann)
+
+2007-01-17  Michael Natterer  <mitch@imendio.com>
+
+	Patch taken from maemo-gtk (merged from trunk):
+
+	* io-png.c (png_text_to_pixbuf_option): don't call g_convert() on
+	ASCII strings.
+
+	(png_info_callback): set an error when the size_func would scale
+	the pixbuf away completely.
+
+2007-01-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.8 ===
+
+2007-01-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Just
+	call gdk_pixbuf_loader_close to close the loader in
+	the error case. Fixes memory leaks in the error case,
+	pointed out by David Ne¿as.
+
+2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.7 ===
+
+2007-01-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-bmp.c (OneLine32): Fix a warning
+
+2006-12-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-bmp.c (decode_bitmasks): Handle bmps
+	with more than 8 bits per channel.  (#172584,
+	David Costanzo)
+
+	* io-bmp.c: Handle offsets more carefully. (#172188, 
+	David Costanzo)
+	
+	* io-bmp.c: Handle v5 and OS/2 v2 bmps.
+	
+	* io-bmp.c: Handle alpha masks in v4 and v5 bmps.
+
+2006-12-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Emit
+	the closed signal when closing the loader, pointed out
+	by David Necas.
+
+2006-12-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* io-gif.c (gif_get_lzw): Handle invalid gif animations
+	a little bit more robustly.  (#357974, Vassilis Pandis,
+	patch by Felix Riemann)
+
+	* gdk-pixbuf-data.c (gdk_pixbuf_new_from_data):
+	* gdk-pixbuf.c (gdk_pixbuf_new): Remove redundant size
+	checks, and document that width, height must be > 0.
+	(#343330, Felix Riemann)
+
+	* Makefile.am: Link against GLib.  (#341158, Alexey Rusakov)
+
+2006-12-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_close): Don't
+	spew a warning if the printer is already closed.
+
+2006-12-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk-pixbuf-loader.c (gdk_pixbuf_loader_write): Behave as
+	documented and close the loader when returning FALSE. 
+
+2006-10-29  Tor Lillqvist  <tml@novell.com>
+
+	* pixbufloader_*.def
+	* Makefile.am (EXTRA_DIST): Remove pixbufloader_*.def, they are
+	not used. (#365388) They were all identical, and exported just two
+	symbols, so if somebody needs them for a MSVC build that doesn't
+	use built-in modules it's trivial to hack makefile.msc to produce
+	a common .def file for the loaders. The two symbols that need to
+	be exported are fill_info and fill_vtable.
+
 2007-01-19  Michael Natterer  <mitch@imendio.com>
 
 	Port over io-jpeg.c changed (also filed upstream):

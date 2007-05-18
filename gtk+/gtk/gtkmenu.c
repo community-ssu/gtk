@@ -2045,26 +2045,27 @@ gtk_menu_get_tearoff_state (GtkMenu *menu)
  * @title: a string containing the title for the menu.
  * 
  * Sets the title string for the menu.  The title is displayed when the menu
- * is shown as a tearoff menu.
+ * is shown as a tearoff menu.  If @title is %NULL, the menu will see if it is
+ * attached to a parent menu item, and if so it will try to use the same text as
+ * that menu item's label.
  **/
-void       
+void
 gtk_menu_set_title (GtkMenu     *menu,
 		    const gchar *title)
 {
   GtkMenuPrivate *priv;
+  char *old_title;
 
   g_return_if_fail (GTK_IS_MENU (menu));
 
   priv = gtk_menu_get_private (menu);
 
-  if (strcmp (title ? title : "", priv->title ? priv->title : "") != 0)
-    {
-      g_free (priv->title);
-      priv->title = g_strdup (title);
+  old_title = priv->title;
+  priv->title = g_strdup (title);
+  g_free (old_title);
        
-      gtk_menu_update_title (menu);
-      g_object_notify (G_OBJECT (menu), "tearoff-title");
-    }
+  gtk_menu_update_title (menu);
+  g_object_notify (G_OBJECT (menu), "tearoff-title");
 }
 
 /**
@@ -2725,12 +2726,22 @@ gtk_menu_paint (GtkWidget      *widget,
     }
   else if (event->window == menu->bin_window)
     {
+      gint y = -border.y + menu->scroll_offset;
+
+      if (!menu->tearoff_active)
+        {
+          GtkBorder arrow_border;
+
+          get_arrows_border (menu, &arrow_border);
+          y -= arrow_border.top;
+        }
+
       gtk_paint_box (widget->style,
 		     menu->bin_window,
 		     GTK_STATE_NORMAL,
 		     GTK_SHADOW_OUT,
 		     &event->area, widget, "menu",
-		     - border.x, menu->scroll_offset - border.y,
+		     - border.x, y,
 		     border.width, border.height);
     }
 }

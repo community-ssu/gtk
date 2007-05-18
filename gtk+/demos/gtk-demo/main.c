@@ -575,6 +575,8 @@ load_file (const gchar *filename)
 	}
     }
 
+  fclose (file);
+  
   fontify ();
 
   g_string_free (buffer, TRUE);
@@ -782,6 +784,8 @@ create_tree (void)
 
   gtk_widget_grab_focus (tree_view);
 
+   g_object_unref (model);
+
   return box;
 }
 
@@ -865,7 +869,7 @@ main (int argc, char **argv)
   
   window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
   gtk_window_set_title (GTK_WINDOW (window), "GTK+ Code Demos");
-  g_signal_connect (window, "destroy",
+  g_signal_connect_after (window, "destroy",
 		    G_CALLBACK (gtk_main_quit), NULL);
 
   hbox = gtk_hbox_new (FALSE, 0);
@@ -881,13 +885,15 @@ main (int argc, char **argv)
 			    create_text (&info_buffer, FALSE),
 			    gtk_label_new_with_mnemonic ("_Info"));
 
+  tag = gtk_text_buffer_create_tag (info_buffer, "title",
+                                    "font", "Sans 18",
+                                    NULL);
+   g_object_unref (info_buffer);
+
   gtk_notebook_append_page (GTK_NOTEBOOK (notebook),
 			    create_text (&source_buffer, TRUE),
 			    gtk_label_new_with_mnemonic ("_Source"));
 
-  tag = gtk_text_buffer_create_tag (info_buffer, "title",
-                                    "font", "Sans 18",
-                                    NULL);
 
   tag = gtk_text_buffer_create_tag (source_buffer, "comment",
 				    "foreground", "DodgerBlue",
@@ -910,6 +916,7 @@ main (int argc, char **argv)
 				    "weight", PANGO_WEIGHT_BOLD,
  				    "foreground", "DarkGoldenrod4",
                                     NULL);
+   g_object_unref (source_buffer);
   
   gtk_window_set_default_size (GTK_WINDOW (window), 600, 400);
   gtk_widget_show_all (window);

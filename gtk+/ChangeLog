@@ -1,3 +1,2208 @@
+2007-05-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.12 ===
+
+	* gtk/Makefile.am: Forgotten changes for the icon cache validator
+
+2007-05-02  Kristian Rietveld  <kris@imendio.com>
+
+	Merge from trunk:
+
+	* gtk/gtktreeview.c (gtk_tree_view_grab_notify): stop the rubber band
+	if it's active.
+
+2007-05-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* NEWS: Updates
+
+2007-05-01  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkiconcachevalidator.c: Don't be too strict when checking
+	icon flags.  (#435062)
+
+2007-05-01  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkfilesystemmodel.c (_gtk_file_system_model_path_do):
+	Don't ignore the fact that gtk_file_system_get_parent() 
+	may return NULL.  (#424042, Jan Martinek)
+
+2007-05-01  Dan Winship  <danw@novell.com>
+
+	Merge from trunk:
+
+	* gdk/x11/gdkwindow-x11.c (setup_toplevel_window): Make sure the
+	leader_window's WM_CLIENT_LEADER points to itself. #435028
+
+2007-05-01  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkfilechooserdefault.c (struct UpdateCurrentFolderData),
+	(update_current_folder_get_info_cb): add a new struct field to clear
+	the file entry after the current folder has been updated.
+
+	(gtk_file_chooser_default_update_current_folder),
+	(change_folder_and_display_error): Add a new function parameter to
+	trigger file entry clearing.
+
+	(edited_idle_create_folder_cb),
+	(file_list_drag_data_received_get_info_cb),
+	(gtk_file_chooser_default_map),
+	(gtk_file_chooser_default_set_current_folder),
+	(switch_to_selected_folder), (save_entry_get_info_cb),
+	(shortcuts_activate_volume_mount_cb), (shortcuts_activate_volume),
+	(shortcuts_activate_get_info_cb), (list_row_activated),
+	(path_bar_clicked): use new function parameter appropriately.
+
+	(gtk_file_chooser_default_should_respond): trigger file entry clearing
+	after the directory is updated instead of clearing it before, this way
+	we avoid reloading the completion model with the soon to be old folder,
+	causing a warning and a glitch in the folder where completion happens.
+	(#379414, Carlos Garnacho)
+
+2007-05-01  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkiconcachevalidator.[hc]: Add an icon cache validator.
+
+	* gtk/updateiconcache.c: Validate the generated cache before
+	moving it in place. 
+
+	* gtk/gtkiconcache.c: Validate icon caches before using them.
+
+	* gtk/Makefile.am: Integrate it.
+
+2007-04-30  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtksettings.c (settings_update_color_scheme):
+	Make sure we always have a color_hash.  (#423916, Jens
+	Granseuer)
+
+2007-04-30  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkexpander.c (gtk_expander_realize): A NO_WINDOW widget
+	must not set the background of its window.  (#433972,
+	Guilherme Polo)
+
+2007-04-30  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* modules/printbackends/cups/gtkprintbackendcups.c: Get all
+	the printer attributes when getting the list of printers,
+	not via separate requests.  (#387889, Krishan Purahoo)
+
+2007-04-30  Cody Russell  <bratsche@gnome.org>
+
+	Merge from trunk:
+
+	* gdk/win32/gdkwindow-win32.c: Reintroduced erase_background(),
+	but now we're calling it from _gdk_windowing_window_clear_area()
+	instead of from the WM_ERASEBKGND event.  Also fixes the area
+	that is cleared so that it is not an extra row and column too
+	large.  (Neil Roberts, #415681)
+
+2007-04-30  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintoperation.c: Translate the default job
+	name, and don't utf8-validate the job name in the
+	setter.  (#421993, Morten Welinder)
+
+2007-04-30  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintjob.c (gtk_print_job_get_surface): Use
+	g_unlink.  (#421990, Morten Welinder)
+
+2007-04-29  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	Fix some issues with reference handling in the printing
+	code.  (#429902, Mathias Hasselmann)
+
+	* gtk/gtkprintoperation.c (gtk_print_operation_finalize):
+	Unref the print context, if we have one.
+	(gtk_print_operation_done): Add a default ::done handler
+	that unrefs the print context.
+	(preview_ready): Take a reference on the print operation 
+	preview here.
+	(print_pages_idle): ...not here,
+	(preview_print_idle_done): ...and release it here.
+
+	* tests/print-editor.c (preview_cb): Take a reference
+	on the print operation here.
+
+2007-04-29  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	Make the emission of ::end-print and ::done consistent
+	for previews.  (#347567, Yevgen Muntyan)
+
+	* gtk/gtkprintoperation.c (preview_iface_end_preview): Set
+	the finished status here.
+	(preview_end_run): ...and not here.
+	(print_pages_idle_done): Emit ::done for a cancelled preview.
+	(print_pages_idle): If a preview has been cancelled, don't
+	emit ::ready, but emit ::end-print.
+
+	* tests/print-editor.c: Use ::end-print to undo allocations 
+	from ::begin-print.
+
+2007-04-29  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintoperation.c (gtk_print_operation_run): Document
+	that a print operation can be run only once, and add a
+	corresponding g_return_if_fail().   (#379399, Masao Mutoh)
+
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprintoperation-unix.c 
+	(_gtk_print_operatin_platform_launch_preview): Unlink the
+	file if launching the preview failed, use the settings from
+	the correct screen, and don't make the error dialog modal.
+	(#421985, Morten Welinder)
+
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtktoolbar.c (_gtk_toolbar_elide_underscores):
+	Only strip parentheses of the form (_x).  (#434261,
+	Brian Wellington)
+
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintoperation.c (print_pages_idle): Also check
+	the default handler when deciding whether to emit the
+	paginate signal.  (#345345, Yevgen Muntyan)
+
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkpagesetupunixdialog.c (gtk_page_setup_unix_dialog_finalize):
+	Free the custom paper list.  (#403267, Felix Riemann)
+
+2007-04-29  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintjob.c (gtk_print_job_get_surface): Fix a
+	small memory leak.  (#403251, Felix Riemann)
+
+2007-04-28  Matthias Clasen  <mclasen@redhat.com>
+	
+	Merge from trunk:
+
+	* gtk/gtkeventbox.c (gtk_event_box_realize): Fix the offsets
+	of the input-only window if we also have a visible window. 
+	(#405089)
+
+2007-04-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkliststore.c (gtk_list_store_set_valist_internal):
+	* gtk/gtktreestore.c (gtk_tree_store_set_valist_internal):
+	Recognize negative column indices as invalid.  (#415260,
+	Chris Wilson)
+
+2007-04-28  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gdk/win32/bdfcursor.c (compose_cursors_from_fonts):
+	* gtk/gtkcombobox.c (gtk_combo_box_cell_layout_reorder):
+	* gtk/gtkfilesystemmodel.c (got_root_folder_cb):
+	(get_children_folder_cb): Plug memory leaks caused by wrong
+	use of g_slist_remove_link().  (#405515, Nicolas Peninguy)
+
+2007-04-28  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* demos/gtk-demo/printing.c: Fix the headers in the print
+	demo.  (#423722, Yevgen Muntyan)
+
+2007-04-26  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkinputdialog.c (gtk_input_dialog_fill_axes)
+	(gtk_input_dialog_fill_keys): Remove old child of scrolled window
+	before adding a new one when switching what input device is being
+	handled. (#399425)
+
+2007-04-26  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* modules/printbackends/lpr/gtkprintbackendlpr.c
+	(gtk_print_backend_lpr_init): Mark the printer list as done.
+	(#428665, Bogdan Gheorghe)
+
+2007-04-26  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* Makefile.am:
+	* gtk/Makefile.am: Don't install UNIX-printing headers and
+	support files on non-UNIX platforms.  (#425655, Vincent Geddes)
+
+2007-04-26  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkuimanager.c (gtk_ui_manager_add_ui): Accept
+	unnamed separators.  (#369112, Christian Persch)
+
+2007-04-26  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkaccelgroup.c (gtk_accel_group_finalize): Don't access
+	invalid memory.  (#429732, Armin Burgmeier)
+
+2007-04-26  Cody Russell  <bratsche@gnome.org>
+
+	Merged from trunk:
+
+	* gdk/win32/xcursors.h:
+	* gdk/win32/gdkcursor-win32.c:
+
+	Use Win32 native cursors instead of the ones built into GTK
+	where it makes sense. (#128852, Tim Evans)
+
+2007-04-25  Cody Russell  <bratsche@gnome.org>
+
+	Merged from trunk:
+
+	* gdk/gdkwindow.h:
+	* gtk/gtkwidget.c:
+	* gtk/gtkhandlebox.c:
+	* gdk/directfb/gdkwindow-directfb.c:
+	* gdk/linux-fb/gdkwindow-fb.c:
+	* gdk/quartz/gdkwindow-quartz.c:
+	* gdk/win32/gdkwindow-win32.c:
+	* gdk/x11/gdkwindow-x11.c:
+	Added window type hint and implement drop shadows on Win32
+	for menus, tooltips, etc. (#148535, Tim Evans, Dom Lachowicz)
+
+2007-04-25  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtktreeview.c (gtk_tree_view_style_set): Set the background
+	of the header window again.  (#431067, Benjamin Berg)
+
+2007-04-25  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkicontheme.c (theme_lookup_icon): Set the filename to
+	NULL for builtin icons, since gtk_icon_info_get_builtin_pixbuf()
+	depends on it.
+
+	* tests/testicontheme.c: Report builtin icons.
+
+2007-04-25  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkprintoperation.c (preview_iface_end_preview): Don't 
+	crash if end_run is not set.  (#424168, Matthias Hasselmann)
+
+2007-04-25  Michael Natterer  <mitch@imendio.com>
+
+	Merged from trunk:
+
+	* gtk/gtkmenu.c (gtk_menu_handle_scrolling): fix ACTIVE state of
+	scroll buttons (we were setting the state to ACTIVE but
+	immediately overwriting it with NORMAL or PRELIGHT). Also got rid
+	of many separate calls to gdk_window_invalidate_rect() by
+	remembering the old button state and only invalidating the area if
+	the state has changed (addresses parts of bug #433242, Tommi
+	Komulainen).
+
+	(gtk_menu_scroll_to): change the arrow states only if changing
+	from or to INSENSITIVE state, so we don't overwrite the ACTIVE
+	state set by above function.
+
+2007-04-24  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* gtk/gtkicontheme.c (scan_directory): Ensure the 
+	icon_theme->all_icons and dir->icons hash tables use the same string
+	as their keys. (#418531)
+
+2007-04-23  Cody Russell  <bratsche@gnome.org>
+
+	Backported from trunk:
+
+	* modules/engines/ms-windows/msw_style.c: Fixed one-pixel drawing error on
+	left-most tab when notebooks are top-oriented.  Also general cleanup of
+	notebook tab related code.  (Lieven van der Heide, Cody Russell)
+
+2007-04-23  Cody Russell <bratsche@gnome.org>
+
+	Backported from trunk:
+
+	* modules/engines/ms-windows/msw_style.c: Fix prematurely
+	released DC that prevented fonts with multi-byte font names from
+	being loaded. (#404506, Hiroyuki Yamamoto)
+
+2007-04-23  Matthias Clasen  <mclasen@redhat.com>
+
+	Mreged from trunk:
+
+	* modules/printbackends/cups/gtkprintbackendcups.c: Reduce
+	the amount of debug spew if we are not debugging.
+	
+2007-04-19  Cody Russell <bratsche@gnome.org>
+
+	Backported from trunk:
+
+	* modules/engines/ms-windows/msw_style.c: Fix pixbuf leaks in
+	non-WinXP rendering paths. From Daniel Atallah (#403470)
+
+2007-04-19  Cody Russell <bratsche@gnome.org>
+
+	Merged from trunk:
+
+	* modules/engines/ms-windows/msw_style.c: Fix menuitem rendering
+	for Windows Vista.  (#392015, Hiroyuki Yamamoto)
+
+2007-04-18  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gdk/gdkregion-generic.h (GROWREGION): Handle the case
+	of nRects == 0 correctly.  
+	
+2007-04-18  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Merged from trunk:
+
+        * gtk/gtkrecentmanager.c (gtk_recent_manager_lookup_item): Fix
+        a leak by not increasing the refcount of the GtkRecentInfo
+        object when returning it (thanks to Matthias Clasen).
+
+2007-04-16  Dan Williams  <dcbw@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkrc.c: (gtk_rc_context_get): Initialise variable (#423064)
+
+2007-04-16  Alexander Larsson  <alexl@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkprintoperation.c (gtk_print_operation_run):
+	Make async print preview work by actually starting
+	the print process in that case (#424168)
+
+2007-04-11  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* gtk/gtkiconfactory.c (hash_table_get_keys),
+	(_gtk_icon_factory_list_ids):
+	* gtk/gtkstock.c (hash_table_get_keys), (gtk_stock_list_ids):
+	    s/g_hash_table_get_keys/hash_table_get_keys/
+	    Avoid the naming conflict with the recent GLib implementation
+	    of the similar function.
+
+2007-04-10  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gdk/x11/xsettings-client.[hc]: Change the XSettingsWatchFunc
+	to return a Bool to indicate success. Update callers and
+	implementors. Based on a patch by Owen Taylor.
+
+	* gdk/x11/gdkevents-x11.c (gdk_xsettings_watch_cb): Don't
+	leak a reference to gdkwin.
+
+2007-04-03  Loïc Minier  <lool@dooz.org>
+
+	* gdk/x11/gdkscreen-x11.c: (check_xfree_xinerama): Revert to
+	non-xinerama mode when XineramaQueryScreens returns NULL; patch from
+	Simon McVittie; #425786.
+
+2007-04-01  Cody Russell  <bratsche@gnome.org>
+
+	* modules/engines/ms-windows/msw_style.c: Unref the
+	rotated pixbuf.  Somehow this got applied to HEAD
+	but not to gtk-2-10.  (Daniel Atallah, #403470)
+
+2007-04-01  Cody Russell  <bratsche@gnome.org>
+
+	Merge from trunk:
+
+        * modules/engines/ms-windows/msw_style.c: Fix rendering of
+        notebook tabs when they are bottom-oriented.  Fixes #399253.
+
+2007-03-28  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* modules/printbackends/cups/gtkcupsutils.[hc]:
+	* modules/printbackends/cups/gtkprintbackendcups.c: Apply
+	a patch by John Palmieri to make the cups print backend support
+	raw printers.  
+
+2007-03-28  Kristian Rietveld  <kris@imendio.com>
+
+	Merge from trunk:
+
+	* gtk/gtkfilechooserdefault.c: Add a keybinding (C-h) to
+	toggle whether to show hidden files.  (#344657, 
+	Wouter Bolsterlee, Priit Laes, et al)
+
+2007-03-23  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkfilechooserdefault.c: Add a keybinding (C-l) to
+	toggle the visibility of the location entry.  (#383354, 
+	John Pye, patch by Carlos Garnacho)
+
+2007-03-22  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtksettings.c (merge_color_scheme): Freeze property
+	notification.
+	* gtk/gtksettings.c (_gtk_settings_handle_event): Handle
+	the gtk-color-scheme xsetting being unset.
+
+	* gtk/gtkrc.c (gtk_rc_reparse_all_for_settings): Handle
+	recursion locally.
+
+2007-03-21  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintoperation-unix.c: Remove leftover debug spew.
+
+2007-03-18  Matthias Clasen <mclasen@redhat.com> 
+
+	Merge from trunk:
+
+	* gtk/gtkentrycompletion.c (gtk_entry_completion_compute_prefix):
+	Ensure that the prefix is valid UTF-8.  (#419568, Nickolay V. Shmyrev)
+
+2007-03-17  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* gdk/x11/gdkvisual-x11.c (_gdk_visual_init):
+	Initialise nxvisuals to 0 in order to handle XGetVisualInfo()
+	failures gracefully. (#419171)
+
+2007-03-16  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintunixdialog.c (printer_added_cb): Scroll to
+	make the selected printer visible.  (#418403, Nickolay V. Shmyrev,
+	patch by Christian Persch)
+
+2007-03-15  Federico Mena Quintero  <federico@novell.com>
+
+	* gtk/gtkfilechooserdefault.c (find_good_size_from_style):
+	PANGO_PIXELS() gives us device units, which are *points* in
+	pangocairo's parlance, but we want actual pixels.  So, get the
+	screen's resolution to compute the actual number of pixels.
+	Fixes bug #418585.
+
+2007-03-15  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Merge from trunk:
+
+	* gtk/gtkrecentmanager.c (gtk_recent_manager_add_item): Remove
+	unused GError; do not allocate GtkRecentData and use a variable
+	on the stack. (#418673, Morten Welinder)
+
+2007-03-15  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* gtk/gtkicontheme.c (ensure_valid_themes), (rescan_themes),
+	(gtk_icon_theme_rescan_if_needed): Protect ensure_valid_themes()
+	from recursion, which can happen for example if the app tries to
+	reload an icon from within a theme-changed handler. (#418531)
+
+2007-03-15  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Merge from trunk:
+
+	* gtk/gtkrecentmanager.c: Fix documentation errors. (Morten
+	Welinder)
+
+2007-03-15  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Merge from trunk:
+
+	* gtk/gtkrecentchooserprivate.h:
+	* gtk/gtkrecentchooserutils.c: Share between the widgets
+	the recent chooser function for getting the filtered, sorted
+	and clamped list of recent files from the manager. (#418219)
+
+	* gtk/gtkrecentchoosermenu.c: Use the newly defined
+	_gtk_recent_chooser_get_items() function; remove some
+	pointer indirections.
+
+	* gtk/gtkrecentchooserdefault.c: Reload the items every time
+	a property affecting the view is changed; move the objects
+	unref and the source removal into the dispose function; use
+	the newly defined _gtk_recent_chooser_get_items()
+	function. (see #338843)
+
+2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+	
+	* configure.in: Bump version
+
+	* === Released 2.10.11 ===
+
+	* NEWS: Updates
+
+2007-03-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtknotebook.c (gtk_notebook_real_insert_page):
+	Fix tabbed browsing in epiphany.  (#413664, Christian Persch)
+
+2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+	
+	* configure.in: Bump version
+
+	* === Released 2.10.10 ===
+
+	* NEWS: Updates
+
+2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk: 
+
+	* gtk/gtkspinbutton.c (gtk_spin_button_style_set): Set
+	the background of the panel window on style changes. (#402144,
+	Benjamin Berg)
+
+2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* NEWS: Updates
+
+2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkfilechooserbutton.c (change_icon_theme_get_info_cb):
+	Handle the row reference path being NULL.  (#410565, Joe Markus
+	Clarke, patch by Chris Wilson)
+
+2007-03-11  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* tests/testiconview.c: Handle Menu key presses without
+	crash.  (#385637, Christian Persch)
+
+2007-03-11  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtktooltips.c (gtk_tooltips_get_info_from_tip_window):
+	Don't crash if active_tips_data is NULL.  (#382904, Li Yuan)
+
+2007-03-11  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtktextview.c (gtk_text_view_set_buffer): Set first_para_mark
+	to NULL.  (#396805, Colin Leroy, patch by Mariano Suárez-Alvarez)
+	
+2007-03-12  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from trunk:
+
+	* gtk/gtkfilechooserdefault.c (check_save_entry): immediately
+	bail out if current_folder is NULL. (#350988, lots of reporters,
+	modified patch by Jan Darmochwal).
+
+2007-03-12  Christian Persch  <chpe@gnome.org>
+
+	* gtk/gtkfilechooserdefault.c: (browse_widgets_create): Don't make the
+	Location: label bold. Bug #372449.
+
+2007-03-10  Kristian Rietveld  <kris@gtk.org>
+
+	Updated fix for #356515, merged from trunk:
+
+	* gtk/gtktreeview.c (gtk_tree_view_search_dialog_hide): send
+	a focus-in event to the tree view after hiding the search dialog;
+	only hide the search dialog and send the focus events when the
+	dialog is currently visible.
+
+2007-03-10  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from trunk:
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_ref_node),
+	(gtk_tree_model_sort_real_unref_node): when (un)reffing an
+	element, also (un)ref its parent elements. (Fixes #364946,
+	reported by many, testcase by Andreas Koehler).
+
+2007-03-10  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from trunk:
+
+	* gtk/gtktreemodelsort.c (gtk_tree_model_sort_row_changed),
+	(gtk_tree_model_sort_sort_level): ref count nodes the proper way,
+	(gtk_tree_model_sort_ref_node), (gtk_tree_model_sort_real_unref_node),
+	(gtk_tree_model_sort_free_level): bring zero ref count loops in
+	sync,
+	(gtk_tree_model_sort_free_level): free child levels before
+	decreasing the zero ref count of the current level,
+	(gtk_tree_model_sort_clear_cache): only clear cache if zero_ref_count
+	is > 0.
+
+2007-03-10  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprintoperation-unix.c: Initialize the do_preview
+	field of PrintResponseData.  (#396703, Christian Persch)
+
+	* tests/print-editor.c: Plug some leaks.
+
+2007-03-09  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtktextview.c (gtk_text_view_end_selection_drag):
+	Get rid of the unused event argument. Update all callers.
+
+	* gtk/gtktextview.c (gtk_text_view_focus_out): Call
+	gtk_text_view_end_selection_drag.  (#351671, Boyd Timothy)
+
+2007-03-09  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* modules/input/gtkimcontextxim.c 
+	(gtk_im_context_xim_filter_keypress): Don't commit
+	modifier-adorned characters.  (#331369, #335796, 
+	Lin Ma and others)
+
+2007-03-09  Matthias Clasen <mclasen@redhat.com>
+
+	* gdk/x11/gdkasync.c: Fix the build
+
+2007-03-09  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/gtkfilesystemwin32.c (get_icon_path): Remove
+	C99isms.  (#416525, Kazuki Iwamoto)
+
+2007-03-09  Tor Lillqvist  <tml@novell.com>
+
+	* README.win32: Update.
+
+2007-03-08  Matthias Clasen <mclasen@redhat.com>
+
+	* NEWS: Updates
+
+2007-03-08  Matthias Clasen <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gdk/x11/gdkasync.c (send_event_handler): Defer the callbacks
+	to an idle to avoid deadlock with xcb-ified libX11.  (#413032,
+	Sebastian Dröge)
+
+2007-03-08  Matthias Clasen <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtknotebook.c (gtk_notebook_real_insert_page):
+	Set child visibility to FALSE here; it will be turned
+	back on in switch_page.  (#413664, Carlos Garnacho)
+
+2007-03-08  Kristian Rietveld  <kris@gtk.org>
+
+	Revert revision 17315:
+
+	* gtk/gtktreeview.c (gtk_tree_view_search_dialog_hide): send
+	a focus-in event to the tree view after hiding the search dialog.
+	(#356515, Rich Burridge, Peter Parente).
+
+2007-03-08  Mathias Hasselmann <mathias.hasselmann@gmx.de>
+
+	* gtk/gtkfilesystemwin32.c: Use Windows shell icons. Icons are
+	stored in the current theme with the name
+	"gtk-win32-shell-icon;PATH;INDEX". PATH and INDEX reference shell
+	icons as reported by SHGetFileInfoW. (#412221)
+
+2007-03-07  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/gtkexpander.c (gtk_expander_paint_focus): Draw the
+	focus around the arrow if there is no label widget.
+	(#124045, Cody Russell)
+
+2007-03-07  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkcombo.c: (gtk_combo_init):
+	* gtk/gtkcombobox.c: (gtk_combo_box_set_popup_widget),
+	(gtk_combo_box_menu_setup): Set names on the popup 
+	widgets to make them themable. (#414975, Benjamin Berg)
+
+2007-03-07	Guillaume Savaton <llumeao@gmail.com>
+
+	* Added Esperanto (eo) to ALL_LINGUAS in configure.in
+
+2007-03-07  Michael Natterer  <mitch@imendio.com>
+
+	Merge from trunk:
+
+	* gtk/gtkcellrendereraccel.c: use multihead safe ungrab functions
+	instead of gdk_keyboard_ungrab() and gdk_pointer_ungrab(), remove
+	empty finalize() implementation, some cosmetic cleanup
+	(bug #415645).
+
+2007-03-06  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	* gtk/gtkicontheme.c (update_current_theme), (gtk_icon_theme_init),
+	(do_theme_change), (gtk_icon_theme_set_custom_theme),
+	(load_themes):
+	Be careful not to trigger a style reset before we have loaded
+	any icon themes. (#414875).
+
+2007-03-06  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/Makefile.am
+	* gtk/Makefile.am: Further fixes for building on Win32 outside
+	srcdir. (#413492, Mathias Hasselmann)
+
+2007-03-04  Ihar Hrachyshka <iharh@gnome.org>
+
+	* configure.in: Added be@latin to ALL_LINGUAS. Problems seems to be
+	fixed now.
+
+2007-03-04  Claudio Saavedra  <csaavedra@alumnos.utalca.cl>
+
+	* configure.in: Removed be@latin from ALL_LINGUAS, as it's currently
+	breaking the build.
+
+2007-03-04  Ihar Hrachyshka <iharh@gnome.org>
+
+	* configure.in: Added be@latin to ALL_LINGUAS.
+
+2007-03-01  Murray Cumming  <murrayc@murrayc.com>
+
+	* gtk/gtksettings.c: (gtk_settings_get_property): Fix the build, by 
+	converting the case statement to an if else. I am only guessing that 
+	this is the desired logic.
+
+2007-03-01  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtksettings.c: Always store gtk-color-scheme
+	values from all sources in the ColorSchemeData struct
+	and ignore the property_value for gtk-color-scheme.
+	This fixes #412596, reported by Thomas Wood.
+
+2007-02-28  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtksettings.c: Make color scheme update properly
+	when changing themes.  (#402131, Benjamin Berg)
+
+2007-02-28  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkrc.c: Don't leak references to the color-hash
+	gotten from GtkSettings.  (#409357, Benjamin Berg)
+
+2007-02-26  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	Apply a patch by Carlos Garnacho to fix several problems
+	with filechooser size handling (#325477, #151169, 143213,
+	#153785)
+
+	* gtk/gtkfilechooserdefault.c: Increase NUM_LINES slightly.
+	(browse_widgets_create): Don't force
+	the paned position to 200.
+	(find_good_size_from_style):
+	Take the size of the extra widget into account.
+
+	* gtk/gtkfilechooserdialog.c (file_chooser_widget_update_hints):
+	Accept a minimal width parameter.  Update all callers.
+
+2007-02-26  Matthias Clasen <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkprinteroptionwidget.c: Make the folder selection for
+	print-to-file work. Reported by Ian Collier.
+
+2007-02-26  Chris Wilson  <chris@chris-wilson.co.uk>
+
+	Bug 409101 – invalid read to gtkicontheme.c insert_theme(), might cause gnome-panel crash
+
+	* gtk/gtkicontheme.c: (scan_directory):
+		Reorder the replacement of the shared base_name key, so that we
+		avoid dereferencing the string in the icon_theme->all_icon
+		hash table after freeing it from the dir->icons hash table.
+
+2007-02-18  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtktextlayout.c (gtk_text_layout_move_iter_visually):
+	Ignore invisible text when going to end of the previous line.
+	(#382565)
+
+2007-02-16  Kristian Rietveld  <kris@gtk.org>
+
+	Merged from trunk:
+
+	* gtk/gtktreeview.c (gtk_tree_view_search_dialog_hide): send
+	a focus-in event to the tree view after hiding the search dialog.
+	(#356515, Rich Burridge, Peter Parente).
+
+2007-02-16  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtkmain.c: Run pre_parse_hook only once.  (#403139, Kjartan
+	Maraas)
+
+2007-02-15  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gdk/x11/gdmain-x11.c (_gdk_xgrab_check_button_event): Be more
+	careful when checking for ButtonRelease events that end implicit
+	grabs.  (#386618, Christof Krüger)
+
+2007-02-15  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* gtk/gtktextbtree.c (_gtk_text_btree_delete): Free the lines
+	even if there are no views.  (#408018, Albert Huang)
+
+2007-02-15  Cody Russell  <bratsche@gnome.org>
+
+	Backport from trunk:
+
+	* gdk/win32/gdkevents-win32.c: Make sure we get enough main context
+	iterations while we're resizing so that the window contents are
+	resized more smoothly (#389765).
+
+	* gdk/win32/gdkevents-win32.c: Fix flickering widgets when
+	window contents are resized (#310522).
+
+2007-02-09  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Backport from trunk:
+
+	* gtk/gtkrecentchoosermenu.c (idle_populate_func): Keep count
+	of the displayed items to build the menu items mnemonic instead
+	of the overall item count. (#377164)
+
+	(idle_populate_clean_up): Append a menu item if all the items
+	got filtered in the idle populate function. (#405696)
+
+	* tests/Makefile.am:
+	* tests/testrecentchoosermenu.c: Add a test for the
+	GtkRecentChooserMenu widget.
+
+2007-02-05  Michael Natterer  <mitch@imendio.com>
+
+	Merge from trunk:
+
+	* gtk/gtktextbuffer.h (enum GtkTextBufferTargetInfo): changed
+	values from G_MAXUINT-0, -1, -2 to -1, -2, -3 so we stay within
+	ansi C enum value limits. Fixes bug #46757.
+
+2007-02-04  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkcursor-win32.c: Don't define BITMAPV5HEADER on
+	mingw with w32api >= 3.8, which has it in wingdi.h. (#403896)
+
+2007-02-02  Mariano Suárez-Alvarez  <mariano@gnome.org>
+
+	* gtk/gtkcellrenderertext.c(gtk_cell_renderer_text_class_init):
+	be a little more helpful with the docs on GtkCellRendererText:alignment.
+	Bug #403409.
+
+2007-01-31  Christian Persch  <chpe@svn.gnome.org>
+
+	* gtk/gtkaboutdialog.c: (update_credits_button_visibility),
+	(gtk_about_dialog_set_authors), (gtk_about_dialog_set_documenters),
+	(gtk_about_dialog_set_artists),
+	(gtk_about_dialog_set_translator_credits): Hide the Credits button iff
+	there are no credits to show. Bug #402806.
+
+2007-01-31  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkinput-win32.c (print_cursor): New debugging
+	function.
+	(_gdk_input_wintab_init_check): Call it when debugging output is
+	requested.
+	(_gdk_input_wintab_init_check): Skip duplicated cursors for Wacom
+	tablets. The Wacom driver reports duplicated cursors with
+	physid==0. Fix verified by Robert Ögren.
+
+2007-01-30  Felix Riemann  <friemann@svn.gnome.org>
+
+	* modules/printbackends/file/gtkprintbackendfile.c:
+	(file_printer_get_options): Fix leaked string. Fixes bug #402565.
+
+2007-01-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gdk/x11/gdkwindow-x11.c (gdk_x11_window_move_to_current_desktop):
+	(gdk_x11_window_set_user_time): Be more careful about toplevel
+	possibly being NULL.  (#402453, Sebastian Bacher)
+
+2007-01-26  Michael Natterer  <mitch@imendio.com>
+
+	Merge from trunk:
+
+	* modules/input/gtkimcontextxim.c (gtk_im_context_xim_finalize):
+	destroy the XIM only if it exists. While the code does look safe
+	in general, there can be corner cases where the "reconnecting"
+	boolean being FALSE does not correspond to the XIM being
+	allocated (fixes #329450, fix taken from maemo-gtk).
+
+2007-01-25  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gdk/gdkwindow.c: Reduce locking overhead by not repeatedly getting
+	the paintable iface.  
+
+2007-01-24  Michael Natterer  <mitch@imendio.com>
+
+	Merge from trunk:
+
+	* gtk/gtkwidget.c (gtk_widget_set_state): revert generic disabling
+	of PRELIGHT state for the reasons given in bug #135666. Widget
+	states are sometimes abused or otherwise used wrongly for historic
+	reasons, causing this part of the patch to break e.g. menu items.
+
+2007-01-24  Roozbeh Pournader  <roozbeh@farsiweb.info>
+
+	* README: Remove mention of no-longer-existing PATCH
+	keyword in bugzilla. (#396899)
+
+2007-01-24  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* gtk/gtkfilesystemunix.c: (expand_tilde):
+	Revert the tilde patch I commited a while ago since it
+	apparently doesn't work with later releases of gtk+ anyway.
+
+2007-01-23  Carlos Garcia Campos  <carlosgc@gnome.org>
+
+	* gtk/gtkpagesetup.c
+	(gtk_page_setup_set_paper_size_and_default_margins): Fix memory leak.
+	Fixes bug #399907.
+
+2007-01-23  Murray Cumming  <murrayc@murrayc.com>
+
+	* gtk/gtktreemodel.c: gtk_tree_path_next(): 
+	Add a note to the documentation about the changed path being only a 
+	path to a potential node, so you must check that it really exists.
+
+2007-01-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Bump version
+
+	* === 2.10.9 ===
+
+	* NEWS: Updates
+
+2007-01-19  Matthias Clasen  <mclasen@redhat.com>
+
+	*gtk/gtkcalendar.c: Fix build breakage
+
+2007-01-18  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+	
+	* gtk/gtkcalendar.c: Fix problems with the initial
+	focus in GtkCalendar.  (#397783, Vincent Untz)
+
+2007-01-19  Robert Ögren  <gtk@roboros.com>
+
+	Fix for bug #143460 - missed tablet clicks on Windows
+
+	* gdk/win32/gdkinput-win32.c (_gdk_input_wintab_init_check):
+	Request absolute reporting of tablet button state, and cut down
+	the packet queue size a bit.
+	(_gdk_input_other_event): Change button state handling
+	accordingly. Also drop the no longer necessary code that detects
+	missed clicks/releases for button 1. The switch to absolute button
+	state should prevent missed events for all buttons. Additionally,
+	swap button 2 and 3.
+	(_gdk_input_grab_pointer): Don't reset button_state, that will only
+	cause a new press event as soon as the next tablet packet arrives.
+
+2007-01-18  Tor Lillqvist  <tml@novell.com>
+
+	* gdk-pixbuf/Makefile.am
+	* gdk/Makefile.am
+	* gdk/win32/Makefile.am
+	* gtk/Makefile.am: Fixes for building outside srcdir on
+	Win32. (#336819, #340013) Drop distributing the handmade .la
+	libtool wrappers for the wntab32x and ie55uid libraries. It's too
+	much trouble making them work when building outside srcdir. Just
+	link to these libraries direcly using -Wl,libfoo.a.
+
+2007-01-17  Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/Makefile.am: Fix a typo.  (#397330, Yongsu Park)
+
+2007-01-17  Tor Lillqvist  <tml@novell.com>
+
+	* gtk-zip.sh.in: Include also the COPYING file.
+
+2007-01-17  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentchoosermenu.c: Fix a wrong free() call. (Thanks
+	to Thomas Wood for catching that)
+
+2007-01-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/cups/gtkprintbackendcups.c: Don't use
+	httpGetFd() when building against cups 1.1
+
+2007-01-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Bump version
+
+	* === Released 2.10.8 ===
+
+	* NEWS: Updates
+
+2007-01-17  Tor Lillqvist  <tml@novell.com>
+
+	Merge from trunk, for discussion see #396175:
+
+	* gtk/gtkimmodule.c: Do the prefix corrections always on Win32,
+	not just when GTK_LIBDIR is defined. i.e., until now they were
+	done only in the autoconfiscated gcc builds. Hans needs to make
+	sure GTK_LIBDIR and GTK_LOCALEDIR are defined also in MSVC builds
+	now.
+	(correct_localedir_prefix): New function, like
+	correct_libdir_prefix(), but for GTK_LOCALEDIR, in case
+	GTK_LOCALEDIR is not a descendant of GTK_LIBDIR.
+	(gtk_im_module_initialize): Thus call correct_localedir_prefix()
+	on the domain_dirname instead of correct_libdir_prefix().
+	(_gtk_im_module_list): Call correct_localedir_prefix() on
+	simple_context_info.domain_dirname.
+
+2007-01-16  Matthias Clasen  <mclasen@redhat.com>
+
+	* Merge from trunk:
+
+	* gtk/gtkrange.c (range_grab_remove): Queue a redraw when the
+	grab changes.  (#396470, Benjamin Berg)
+
+2007-01-15  Emmanuele Bassi  <ebassi@gnome.org>
+
+	Backport from trunk.
+
+	* gtk/gtkrecentchoosermenu.c: Ellipsize the menu items label
+	if they grow too much. (#357303)
+
+2007-01-14  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkicontheme.c (theme_lookup_icon): When finding a matching
+	non-scalable dir, keep going and look for a closer match.
+	(#395830, Luca Ferretti)
+
+2007-01-14  Hans Breuer <hans@breuer.org>
+
+	Merge from trunk:
+
+	* gtk/gtktreeview.c : use g_snprintf instead of snprintf, which is
+	not available everywhere
+
+	* gtk/makefile.msc.in : updated
+
+2007-01-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkuimanager.c: Don't crash if menu or toolbar
+	positions can't be found.  (#396161, Hans Breuer)
+	
+2007-01-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkselection.c (_gtk_selection_request): Plug
+	memory leaks.  (#396160, Carlos Garcia Campos)
+
+2007-01-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+	
+	* configure.in: Link libgtk against Xfixes.  (#396074,
+	Tommi Komulainen)
+
+2007-01-13  Matthias Clasen  <mclasen@redhat.com>
+
+	Merge from trunk:
+
+	* gtk/gtkradiobutton.c (gtk_radio_button_focus): Avoid
+	a compiler warning.  (#395045, Chris Wilson)
+
+2007-01-13  Hans Breuer <hans@breuer.org>
+
+	Merge from trunk:
+
+	* gtk/gtkprintoperation-win32.c : take the custom tab label from
+	gtk_print_operation_set_custom_tab_label() into account (bug #390746).
+	
+2007-01-13  Pascal Terjan  <pterjan@linuxfr.org>
+
+	Merge from trunk:
+
+	* gtk/gtknotebook.c (gtk_notebook_draw_focus): fix crasher if
+	cur_page is NULL (bug #395326).
+
+2007-01-12  Michael Natterer  <mitch@imendio.com>
+
+	Merge from trunk:
+
+	* gtk/gtkentry.c (gtk_entry_button_press): don't add
+	entry->scroll_offset to entry->drag_start_y. Fixes the entry
+	starting drags after ridiculously small mouse movements.
+
+2007-01-11  Richard Hult  <richard@imendio.com>
+
+	* demos/gtk-demo/main.c: (load_file): Close the file after it's
+	loaded (bug #395316).
+
+2007-01-11  Kjartan Maraas  <kmaraas@gnome.org>
+
+	* gtk/gtkfilesystemunix.c: (expand_tilde): Merge fix
+	for making tilde go to $HOME in the location entry.
+	Patch from Yevgen Muntyan. Closes bug #334168.
+
+2007-01-10  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtkcellrenderertoggle.c (gtk_cell_renderer_toggle_init):
+	refactor to initialize indicator_size to TOGGLE_WIDTH instead
+	of the hardcoded value of 12.
+
+2007-01-09  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Fix the directfb cairo test. (#394855,
+	Josselin Mouette)
+
+2006-01-08  Peter Teichman  <peter@novell.com>
+
+	Merge from trunk.
+
+	* gtk/gtkfilechooserdefault.c:
+	* gtk/gtkfilechoosersettings.c:
+	* gtk/gtkfilechoosersettings.h:
+	Save the expanded state of the folder browser with the file
+	chooser settings.  Resolves the expander portions of (#153828,
+	Lemmit Kaplinski)
+
+2007-01-08  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentchoosermenu.c (gtk_recent_chooser_menu_create_item):
+	Don't leak the icon pixbuf after setting it to the image menu
+	item.  Found by Paolo Borelli.
+
+2007-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktreemodel.c (gtk_tree_path_to_string): Don't 
+	corrupt memory when faced with paths with ridiculously
+	large indices. Found by the GTKVTS test suite.  
+
+2007-01-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmodules.c (_gtk_modules_init): Set 
+	default_display_opened before loading modules.  (#393102,
+	Brian Cameron)
+
+2007-01-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktextview.c (gtk_text_view_set_border_window_size):
+	Call text_window_realize() with the correct parameters.
+	(#393813, Yevgen Muntyan)
+
+2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtknotebook.c (gtk_notebook_set_menu_label_text): Left-align
+	menu labels.  (#393255, Michail Crayson)
+
+2007-01-06  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/cursor.bdf: New file. Downloaded from
+	freedesktop.org's webcvs. Slighly edited cursors "crosshair",
+	"diamond_cross", "draft_large", "gobbler" and "target" to fix
+	#392504. It is possible that the same end result could have been
+	achieved by tweaking bdfcursor.c instead.
+	
+	* gdk/win32/bdfcursor.c: Add optional debugging output.
+
+	* gdk/win32/xcursors.h: Regenerated.
+
+2007-01-05  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD.
+
+	* gtk/gtktreeview.c (gtk_tree_view_row_changed): do allow to
+	invalidate nodes if the tree view is not realized. (#363147,
+	Carlos Garnacho, Miguel Cabrera).
+
+2007-01-05  Kristian Rietveld  <kris@gtk.org>
+
+	* NEWS: Updates
+
+2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Bump version
+
+	* === Released 2.10.7 ===
+
+	* NEWS: Updates
+
+2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* docus/tutorial/gtk-tut.sgml: Fix a formatting error
+
+	* gtk/gtkpapersize.c:
+	* gtk/paper_names.c:
+	* gtk/paper_names_offsets.c:
+	* gtk/gen-paper-names.c: Prefix non-static variables
+	with _gtk.
+	
+	* gdk/x11/xsettings-common.h: Add xsettings_client_new_with_grab_funcs.
+
+	* gtk/gtkmenu.c (gtk_menu_paint): Take the scroll arrow into
+	account when drawing the background.  (#393166, Benjamin Berg)
+
+2007-01-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* gtk/gtklabel.c (get_layout_location): Fix broken width computation,
+	again.
+
+2007-01-05  Carlos Garnacho  <carlosg@gnome.org>
+
+	* gtk/gtknotebook.c (gtk_notebook_size_request): take into account
+	both scroll arrows when calculating size request in GTK_POS_LEFT or
+	GTK_POS_RIGHT notebooks. (#393124, reported by Christian Persch)
+
+2007-01-05  Michael Natterer  <mitch@imendio.com>
+
+	Merged from HEAD:
+
+	* gtk/gtkwindow.c (gtk_window_key_release_event): chain up to
+	the right function (fix taken from maemo-gtk).
+
+2007-01-05  Behdad Esfahbod  <behdad@gnome.org>
+
+	* gdk/gdkprivate.h:
+	* gdk/gdkpango.c (gdk_draw_layout_line_with_colors),
+	(gdk_draw_layout_with_colors):
+	* gdk/gdkwindow.c (gdk_window_draw_glyphs_transformed):
+	Avoid overflow when converting coordinates to Pango units. (#332266,
+	Jody Goldberg)
+
+2007-01-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_popup): move set_cursor
+	after realization of the popup window, so clamp node doesn't fail.
+	(#346616, Tommi Komulainen, patch by Kristian Rietveld).
+
+2007-01-04  Behdad Esfahbod  <behdad@gnome.org>
+
+	* gtk/gtklabel.c (get_layout_location): Fix uninitialized width
+	variable.
+
+2007-01-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/Makefile.am:
+	* gdk-pixbuf/Makefile.am:
+	* configure.in:
+	* gdk/win32/rc/gdk.rc.in: Cross-compilation fixes.
+	(#392646, Yevgen Muntyan)
+
+2007-01-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* demos/gtk-demo/textscroll.c:
+	* gtk/gtkiconview.c:
+	* gtk/gtkicontheme.c:
+	* gtk/gtkhandlebox.c:
+	* gtk/gtkfilechooserentry.c:
+	* gtk/gtkentrycompletion.c:
+	* gtk/gtkcolorsel.c: Fix some compiler warnings.
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* NEWS: Updates
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix #332604, reported by Joe Wreschnig, patch
+	by Jan Arne Petersen and Behdad Esfahbod.
+
+	* gtk/gtklabel.c (gtk_label_size_allocate): Only
+	set the width of the layout when necessary.
+	(get_layout_location): Use pango_layout_get_pixel_extents()
+	instead of pango_layout_get_width().
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/cups/gtkprintbackendcups.c 
+	(available_choices): Don't leak conflicts.
+
+	* gtk/gtkprintoperation.c (gtk_print_operation_finalize):
+	Don't leak the status string.
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooserdefault.c (update_chooser_entry):
+	Exit early if we can't get file info - this happens
+	if the iter points to the row where we are editing
+	the name for a newly created folder.  (#392191, Michael
+	Partridge, patch by Kristian Rietveld)
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/*.c:
+	* gdk/x11/*.c: Apply a patch by Chris Wilson to
+	avoid spurious valgrind warnings from XSendEvent() 
+	calls.  (#392532)
+
+	* modules/printbackends/cups/gtkprintbackendcups.c: Close
+	the http connection after getting the PPD.
+
+	* gtk/gtkprinteroptionwidget.c (filesave_changed_cb):
+	Fix memory leaks.  
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkassistant.c (remove_page): If the current page
+	is removed, always pick a different one.  (#392457, 
+	Colin Watson)
+
+2007-01-03  Kristian Rietveld  <kris@gtk.org>
+
+	Merged from HEAD.
+
+	* gtk/gtkcellrenderertext.c (gtk_cell_renderer_text_focus_out_event):
+	cancel editing (ie. don't accept changes) when the entry loses
+	focus. (Fixes #164494, reported by Chris Rouch).
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Export SED to make sourcing of
+	libtool work. Tighten up the directfb pkgconfig check.
+
+2007-01-03  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkentry.c (get_text_area_size): Work when the
+	entry is not realized.  (#392315, Yevgen Muntyan)
+
+	* gtk/gtkentry.c (gtk_entry_queue_draw): Use 
+	GTK_WIDGET_DRAWABLE() here.  (#392227, Chris Wilson)
+
+	* gtk/gtkentry.c (cursor_blinks): Don't get settings
+	unnecessarily.  (#392227)
+
+2007-01-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwindow.c (gtk_window_move_resize): Only process
+	updates on the window at hand, not on all windows, to
+	avoid violating resize/redraw ordering constraints.
+	(#362406, Owen Taylor)
+	
+2007-01-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* NEWS: Updates
+
+2007-01-02  Matthias Clasen  <mclasen@redhat.com>
+
+	Try to fix #315732, reported by Luke Hutchinson:
+
+	* gdk/x11/xsettings-client.[hc]:
+	* gdk/x11/gdkdevents-x11.c: Don't assume that ref'ing a GdkWindow
+	will guarantee that it can be looked up in the xid hash later.
+	Also, use the nesting server grab function during the xsettings
+	client initialization. Finally, make xsettings client not
+	eat DestroyNotifys so that GDK can do its regular cleanup. 
+
+2007-01-02  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkrecentchoosermenu.c (gtk_recent_chooser_menu_dispose):
+	Fix typo.
+
+2007-01-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkentry.c (get_text_area_size): Center in the frame.  
+	(#304482, Rob Staudinger, patch by  Richard Stellingwerff)
+
+2007-01-02  Michael Emmel  <mike.emmel@gmail.com>
+
+	* gdkwindow-directfb.c: fixed leak of dfb resource on destroy 
+
+2007-01-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkscrolledwindow.h:
+	* gtk/gtkscrolledwindow.c: Only handle key bindings
+	for scrolling if the scrollbars are visible.
+	(#340135, Christian Persch)
+
+2007-01-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtknotebook.h:
+	* gtk/gtknotebook.c: Only handle key bindings for
+	tab reordering if the tabs are shown and reorderable. 
+	(#390468, Yevgen Muntyan)
+
+	* gtk/gtkmarshalers.list: Add required marshaler
+
+2007-01-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcontainer.c (gtk_container_class_list_child_properties):
+	Mention in the docs that the return value is
+	NULL-terminated.  (#383373, Christian Neumair)
+
+2007-01-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkicontheme.c (load_themes): Waste less time
+	with non-directories.  (#391725, Chris Wilson)
+
+2007-01-01  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix some IPP compliance issues.  (#391523, Albrecht Dress)
+
+	* modules/printbackends/cups/gtkcupsutils.c
+	(gtk_cups_request_encode_option): Use IPP_TAG_JOB, not
+	IPP_TAG_OPERATION.
+	* modules/printbackends/cups/gtkprintbackendcups.c
+	(gtk_print_backend_cups_print_stream): Don't add the
+	requesting-user-name attribute a second time. 
+
+2007-01-01  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkimcontextsimple.c: Fix en/em dash confusion.  (#378462)
+
+2006-12-31  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentchoosermenu.c (set_recent_manager): Use the
+	right object when disconnecting from the GtkRecentManager::changed
+	signal; save us a few indirections using a variable.
+
+2006-12-31  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentchoosermenu.c: Move the signal and idle
+	disconnections into the dispose function, as well as
+	the object unrefs; reset every handler id and the
+	pointers. (suggested by Paolo Borelli, #390873)
+
+	(set_recent_manager): Use the right object when disconnecting
+	from the GtkRecentManager::changed signal; save us a few
+	indirections.
+
+2006-12-31  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprintoperation-win32.c: Include windows.h (#391229,
+	Kazuki Iwamoto)
+
+2006-12-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktextview.c (gtk_text_view_destroy): Remove the
+	scroll timeout.  (#390872, Yevgen Muntyan)
+
+2006-12-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprintoperation-unix.c:
+	* gtk/gtkprintbackend.c:
+	* gtk/gtkfilechooserdefault.c:
+	* gtk/gtksettings.c: Move a few settings to gtksettings.c
+	to make sure they show up in the docs.  (#365364, Christian
+	Persch)
+
+2006-12-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkassistant.c: Redraw assistant on reallocate
+	to avoid rendering glitches.  (#343956, Christian
+	Persch, Carlos Garnacho)
+
+2006-12-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwindow.c (gtk_window_compute_configure_request_size):
+	Correctly handle min size. (#320465, Philipp Langdale)
+
+2006-12-30  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkentry.c:
+	* gtk/gtklabel.c:
+	* gtk/gtkpaned.c:
+	* gtk/gtkstatusbar.c:
+	* gtk/gtktextview.c: Don't install cursors on insensitive
+	widgets.  (#358864, Jan Schampera)
+
+2006-12-29  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkentry.c (blink_cb):
+	* gtk/gtktextview.c (blink_cb): Don't die in an assertion
+	if focus went missing. Just warn, clean up and continue.  
+	(#374378)
+
+2006-12-29  Carlos Garnacho  <carlosg@gnome.org>
+
+	* gtk/gtknotebook.c (gtk_notebook_scroll): return if the widget that
+	originally received the event is a notebook page. (#315440, reported
+	by Mateusz Stefek)
+
+2006-12-28  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkuimanager.c (update_node): Only use the results
+	of find_menu/toolbar_position() if they succeed. May fix
+	bug #388041.
+
+2006-12-28  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkstatusicon.c (gtk_status_icon_finalize)
+	(gtk_status_icon_update_image): Don't leak HICONs on
+	Win32. (#364868, Hiroyuki Yamamoto)
+
+2006-12-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/lpr/gtkprintbackendlpr.c 
+	(gtk_print_backend_lpr_print_stream): Close the io channel
+	on unref.  (#390159, Joe Markus Clarke)
+
+2006-12-27  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkstatusicon.c: Implement gtk_status_icon_position_menu()
+	on Windows. Keep track of where the last button click on the
+	taskbar icon took place, and return that. Obviously not correct if
+	no button has ever been clicked on the icon, or if the geometry of
+	the taskbar has changed since. But for most use cases where a menu
+	is going to be displayed as a direct result of a button click on
+	the status icon, works fine. (#377349)
+
+2006-12-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkcellview.c (gtk_cell_view_set_model): Accept NULL.
+
+	* gtk/gtkcombobox.c (gtk_combo_box_set_model): 
+	(gtk_combo_box_unset_model): Handle repeated unsetting
+	of models without warnings.  (#367529, Robert Ancell)
+
+2006-12-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/cups/gtkcupsutils.c:
+	* modules/printbackends/cups/gtkprintbackendcups.c: Use
+	getters for http fields where available.  (#364866,
+	Björn Lindqvist)
+
+2006-12-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwidget.c (gtk_widget_show): Add a g_return_if_fail.
+	(#362614, Xan Lopez)
+
+2006-12-27  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkuimanager.c (update_node): If a required action
+	is missing, don't recurse over the children.  (#349119,
+	Chris Moller)
+
+2006-12-27  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix a few problems with nested menus in comboboxes
+	(#386694, Yevgen Muntyan)
+
+	* gtk/gtkcombobox.c (gtk_combo_box_menu_fill_level): Always
+	connect the activate callback.
+	(gtk_combo_box_menu_item_activate): Do nothing if called on
+	an item with a submenu.
+	(gtk_combo_box_menu_row_deleted): Remove a submenu when it
+	is empty. 
+	
+2006-12-26  Kristian Rietveld  <kris@gtk.org>
+
+	Merged from HEAD.
+
+	* gtk/gtktreeview.c (gtk_tree_view_search_init): fix typo causing
+	the search dialog timeout never to be refreshed. (#389581,
+	Andrzej Szombierski).
+
+2006-12-26  Christian Persch  <chpe@cvs.gnome.org>
+
+	* gtk/gtknotebook.c: (gtk_notebook_real_insert_page):
+	Return the correct value from gtk_notebook_insert_page if the
+	page-added handler reorders the tabs. Bug #345094.
+
+2006-12-26  Carlos Garnacho  <carlosg@gnome.org>
+
+	Fix small regressions in GtkNotebook tab detaching. Bug #378852.
+
+	* gtk/gtknotebook.c (gtk_notebook_do_arrow): grab focus to allow tabs
+	scrolling when hovering with a detached tab.
+	(gtk_notebook_stop_reorder): Do not deparent the wrong tab if the
+	focus tab has changed during a tab DND operation.
+	(gtk_notebook_drag_end): ensure that the dropped tab gets focused.
+	(gtk_notebook_paint): do not take cur_page as a reference to paint the
+	box if it's detached.
+	(gtk_notebook_calculate_tabs_allocation): focus_tab may be different
+	to the detached tab if we hover the arrows during a tabs detaching 
+	operation, do not allocate it unconditionally in 0,0.
+
+2006-12-26  Carlos Garnacho  <carlosg@gnome.org>
+
+	Expose improvements for GtkNotebook. Bug #383435
+
+	* gtk/gtknotebook.c (gtk_notebook_expose): propagate the event to tab
+	labels.
+	(gtk_notebook_draw_focus): do not repaint the whole focused tab again.
+	(gtk_notebook_draw_tab): do not send handmade expose events to tab
+	labels.
+
+2006-12-26  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkrange.c (stop_scrolling): Avoid spurious
+	redraws.  
+
+2006-12-25  Christian Persch  <chpe@cvs.gnome.org>
+
+	* gtk/gtkpagesetupunixdialog.c: (printer_status_cb),
+	(add_custom_paper): Fix mem leaks. Bug #389194.
+
+2006-12-24  Matthias Clasen  <mclasen@redhat.com>
+	
+	* gtk/gtktextview.c: Improve the DND scrolling
+	behaviour.  (#92387, Carlos Garnacho Parro)
+
+2006-12-24  Bastien Nocera  <hadess@hadess.net>
+
+	* gtk/gtkrecentmanager.c: Fix typo (s/expansive/expensive)
+	(#389183)
+
+2006-12-24  Carlos Garcia Campos  <carlosgc@gnome.org>
+
+	* gtk/gtkpagesetupunixdialog.c: Don't ignore reverse portrait option
+	when is selected in page setup dialog. Fixes bug #365047.
+
+2006-12-24  Matthias Clasen  <mclasen@redhat.com>
+	
+	* gtk/gtkentry.c (gtk_entry_button_press): When
+	shift-clicking, keep the larger part of the selection
+	selected.  (#353709, Benjamin Otte)
+
+	* gtk/gtkbutton.c (gtk_button_grab_notify): Be more
+	careful when faking a button release.  (#323146,
+	Travis Abbott)
+
+	* gtk/gtkhandlebox.c (draw_textured_frame): Draw the
+	handle with the right orientation, depending on the
+	position of the handlebox.  (#159764, Benjamin Berg)
+
+	* gtk/gtkentry.c (gtk_entry_set_text): Emit changed 
+	and notify:text only once. The same fix was applied 
+	for replacing the selection via DND or copy-and-paste.
+	(#64998, Damon Chaplin, Sven Herzberg)
+
+2006-12-23  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkimmulticontext.c: Be careful to not override
+	GTK+ translations with the translations of the input
+	method.  (#317080, Tor Lillqvist)
+
+	* modules/input/imcedilla.c: Use standard macros
+	for translation domain and locale dir.
+
+	* gtk/gtkimcontextsimple.c: Allow composing l with
+	stroke.  (#349638, Daniel Lublin)
+
+	* gtk/gen-paper-names.c: Fix a thinko in the suffix
+	calculation.  (#382369, Christian Persch)
+
+	* gtk/paper_names_offsets.c: Regenerated.
+
+2006-12-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/engines/pixbuf/pixbuf.h:
+	* modules/engines/pixbuf/pixbuf-rc-style.h:
+	* modules/engines/pixbuf/pixbuf-style.h: Move
+	G_GNUC_INTERNAL before function declarations.  (#352276,
+	Damien Carbery)
+
+2006-12-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* demos/gtk-demo/*.c: Fix some leaks.  (#348108, Chris
+	Wilson)
+
+2006-12-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Check for getc_unlocked.
+
+	* gtk/xdgmime/xdgmimemagic.c: Use getc if getc_unlocked is
+	unavailable.   (#381499)
+
+2006-12-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkwidget.c (gtk_widget_get_draw_rectangle): Don't
+	leak draw_border.  (#387170, Kjartan Maraas)
+
+2006-12-21  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkfilechooserembed.c (_gtk_file_chooser_embed_set_delegate()):
+	Typo fix.  (#388123, Murray Cumming)
+
+	* gdk/x11/gdkinput-x11.c (_gdk_input_common_other_event):
+	Generate double-click events.  (#380421, Tommi Komulainen)
+
+	* gdk/x11/gdkinput-xfree.c (_gdk_input_configure_event):
+	(_gdk_input_enter_event): Correct return_if_fail checks.
+	(#379803, Tommi Komulainen)
+
+	* gdk/gdkdisplay.c (gdk_display_beep): Improve docs. 
+	(#353438, Mariano Suárez-Alvarez)
+
+2006-12-20  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtktextbuffer.c: Add signal documentation.  (#317064,
+	Søren Wedel Nielsen)
+
+	* gtk/gtktextview.c (gtk_text_view_start_selection_drag): 
+	Silently return if a drag is already in progress, rather
+	than asserting.  (#335622, Li Yuan, testcase by Erwann Chenede)
+
+	* gtk/gtkfilechooserbutton.c (gtk_file_chooser_button_new_with_dialog):
+	Allow any GtkDialog that implements GtkFileChooser as 
+	dialog.  (#335473, Tommi Komulainen)
+
+2006-12-19  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprintunixdialog.c: Improve the page sequence icon
+	for the case of n_copies == 1.
+
+2006-12-16  Tristan Van Berkom <tvb@gnome.org>
+
+	* gtk/gtkscrolledwindow.c: Fixed a bug in set_property()
+	(setting "window-placement-set" could result in a crash because
+	of boolean/enum mixup)
+
+2006-12-15  Federico Mena Quintero  <federico@novell.com>
+
+	* gtk/gtkmenu.c (gtk_menu_set_title): Don't try to optimize for
+	the case where the new title is the same as the old title, to
+	preserve the behavior from GTK+ 2.8 (NULL and "" titles are not
+	equivalent).  Handle the case where title == priv->title.  This
+	was found by the LSB compatibility tests:
+	https://bugzilla.novell.com/show_bug.cgi?id=223882
+
+2006-12-14  Ankit Patel  <ankit644@yahoo.com>
+
+	* configure.in: Added 'si' in ALL_LINGUAS
+
+2006-12-14  Carlos Garnacho  <carlosg@gnome.org>
+
+	* gtk/gtkcalendar.c: draw arrows pointing to the right correctly
+	placed inside their GdkWindow. Bug #385672.
+
+2006-12-14  Amitakhya Phukan  <aphukan@redhat.com>
+
+	* configure.in: Added 'as' in ALL_LINGUAS
+
+2006-12-13  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/modules/engines/ms-windows/msw_style.c: Bug 351679 - Notebooks 
+	drawn with extra line below tab in MS-Windows theme. Patch by 
+	Cody Russell
+	
+2006-12-11  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprogressbar.c (gtk_progress_bar_paint_text): Be more
+	careful when overdrawing antialiased text.  (#352435, Alex Jones,
+	patch by Benjamin Otte)
+
+	* gtk/gtksettings.c: Change the way in which color scheme information
+	is merged to correctly handle vanishing colors.  (#374420, 
+	Benjamin Berg, patch by Callum McKenzie) 
+	Also allow to separate entries in color schemes by ';' 
+	instead of newline.  
+
+2006-12-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/cups/gtkcupsutils.c (gtk_cups_request_encode_option):
+	Properly pass multi-value options to cups.  (#355350, Jürg Billeter) 
+
+2006-12-10  Matthias Clasen  <mclasen@redhat.com>
+
+	* configure.in: Check for crt_extern.h and _NSGetEnviron.
+	* gdk/x11/gdkspawn-x11.c: Fix compilation on Darwin where
+	environ is not available.  (#384168, Min Sik Kim)
+
+2006-12-07  Paolo Maggi  <paolo@gnome.org>
+
+	Fixes bug #383407
+	
+	* gtk/gtkentry.c (gtk_entry_set_text): check for
+	completion->priv->changed_id > 0 before calling 
+	g_signal_handler_[un]block.
+	(gtk_entry_completion_key_press): does not block/unblock the "changed"
+	signal before calling gtk_entry_set_text.
+	
+2006-12-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkrc.c (_gtk_rc_init): Fix clipping of accelerator
+	underlines by giving labels a small draw-border. 
+
+2006-12-06  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprintunixdialog.c (update_dialog_from_capabilities):
+	Update the sensitivity of the collate checkbutton more frequently,
+	proposed by Tim Waugh.
+
+2006-12-04  Christian Persch  <chpe@cvs.gnome.org>
+
+	* gtk/gtkpagesetup.c: (gtk_page_setup_get_paper_size),
+	(gtk_page_setup_set_paper_size): Don't leak the old page size when
+	setting a new one. Bug #382314.
+
+2006-12-04  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkmessagedialog.c (setup_type): Set a11y name and role
+	since we no longer set window titles.  
+
+2006-12-03  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD.
+
+	* gtk/gtktreeview.c (validate_visible_area): when not using an
+	explicit alignment, use the full area of the row (not just dy)
+	to determine how to implicitly align it.  (Fixes #363191, reported
+	by Federico Mena Quintero).
+
+2006-12-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkicontheme.c (insert_theme): Properly clean up
+	if an icon theme index file has no directories.  (#381236)
+
+2006-12-02  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* src/modules/engines/ms-windows/msw_style.c: Bug 351678 - Notebooks 
+	not with PositionType.Top drawn incorrectly. Patch by Cody Russell
+	
+2006-11-28  Behdad Esfahbod  <behdad@gnome.org>
+
+	Remove the broken Thai input method and add a functional Thai and Lao
+	input method by Theppitak Karoonboonyanan. (#81031)
+
+	* modules/input/imthai.c:
+	* modules/input/gtkimcontextthai.c:
+	* modules/input/gtkimcontextthai.h:
+	* modules/input/thai-charprop.c:
+	* modules/input/thai-charprop.h:
+	Added.
+
+	* modules/input/imthai-broken.c:
+	Removed.
+	
+	* modules/input/Makefile.am:
+	Updated.
+
+2006-11-26  Benjamin Berg  <benjamin@sipsolutions.net>
+
+	* gtk/gtkstyle.c: (gtk_default_draw_flat_box): Protect against NULL
+	  widget. (#379503)
+
+2006-11-25  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/cups/gtkprintbackendcups.c: Make
+	print dialog work when 'BrowseShortNames Off' is specified
+	in cups configuration. Patch by Tim Waugh.
+
+2006-11-22  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentmanager.c:
+	(get_uri_shortname_for_display): g_filename_from_uri() might
+	fail; catch the failure and fall back to the non-local URI
+	case. (#363437)
+
+2006-11-17  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix problems with drag cancellation. (#376535, Michael Natterer)
+
+	* gtk/gtkdnd.c (gtk_drag_source_info_destroy): Disconnect signal
+	handlers before emitting drag-end.
+	(gtk_drag_end): Disconnect signal handlers before removing
+	the grab.
+
+2006-11-16  Mariano Suárez-Alvarez <mariano@gnome.org>
+
+	* gtk/gtkcellrenderertext.c (gtk_cell_renderer_text_class_init):
+	add gtk-doc blurb on GtkCellRendererText::edited (#376094)
+
+2006-11-16  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentchoosermenu.c:
+	(gtk_recent_chooser_menu_add_tip): Apply the tip only
+	if we have a displayable name for the item. (#365031,
+	patch by padraig.obriain(at)sun.com)
+
+2006-11-16  Emmanuele Bassi  <ebassi@gnome.org>
+
+	* gtk/gtkrecentmanager.c: Provide a fast path returning
+	NULL when the limit is set to 0.
+
+	* gtk/gtkrecentchooserdefault.c:
+	* gtk/gtkrecentchoosermenu.c: Add the same fast path
+	inside the RecentChooser implementation; add a check
+	in the list clamping code. (#373466 and duplicates)
+
+2006-11-15  Matthias Clasen  <mclasen@redhat.com>
+
+	* modules/printbackends/cups/gtkprintbackendcups.c (cups_printer_get_options): 
+	Don't pass NULL to strncpy.  (#359537, patch by  Carlos Garcia Campos)
+
+2006-11-14  Behdad Esfahbod  <behdad@gnome.org>
+
+	* configure.in: Make libtool magic robust. (#352795)
+
+2006-11-13  Paolo Borelli  <pborelli@katamail.com>
+
+	* gtk/gtkrc.c (gtk_rc_parse_icon_source): plug small memory
+	leak (#370395)
+
+2006-11-09  Kristian Rietveld  <kris@imendio.com>
+
+	Merge from HEAD.
+
+	* gtk/gtktreeview.c (gtk_tree_view_move_cursor_up_down): disable
+	don't move cursor case for SELECTION_NONE. (#371756, John Ellis).
+
+2006-11-09  Carlos Garnacho  <carlosg@gnome.org>
+
+	* gtk/gtkpathbar.c (on_slider_unmap): Fix parenthesis confusion.
+
+2006-11-08  Carlos Garnacho  <carlosg@gnome.org>
+
+	* gtk/gtkpathbar.c (on_slider_unmap): added, do not leave the scroll
+	timeout running if the slider buttons are hidden. (#372527)
+
+2006-11-07  Carlos Garnacho  <carlosg@gnome.org>
+
+	* gtk/gtknotebook.c (gtk_notebook_calculate_tabs_allocation): make
+	non-focused tabs xthickness/ythickness thinner. (#353962)
+
+2006-11-07  Paolo Borelli  <pborelli@katamail.com>
+
+	* gtk/gtktextbtree.c (_gtk_text_btree_delete): avoid memory
+	corruption (#357050).
+
+2006-11-06  Alexander Larsson  <alexl@redhat.com>
+
+	* gtk/gtkdnd.c: (gtk_drag_begin_internal),
+	(gtk_drag_source_info_destroy), (gtk_drag_end),
+	(gtk_drag_grab_notify_cb):
+	Cancel drag when the grab is shadowed. (#122688)
+
+2006-10-30  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD
+
+	* gtk/gtktreeview.c (gtk_tree_view_move_cursor_page_up_down): don't
+	forget to queue a draw for the new cursor node. (Fixes #366548,
+	reported by Sven Herzberg).
+
+2006-10-30  Michael Natterer  <mitch@imendio.com>
+
+	Merge from HEAD
+
+	* gtk/gtkrange.c (gtk_range_key_press): consume the Escape key
+	only if we actually cancel a drag. Fixes bug #58389.
+
+2006-10-30  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD
+
+	* gtk/gtktreeviewcolumn.c (gtk_tree_view_column_update_button): draw
+	the indicator if the column has a sort column id (and the model is
+	sortable) or if the user explicitly requested the indicator
+	to be shown.  (Fixes #352738, Chris Vine).
+
+2006-10-29  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD
+
+	* gtk/gtktreeview.c (gtk_tree_view_real_expand_row): guard against
+	child removal in row-expanded callback. (#366782, John Ellis).
+
+2006-10-28  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD
+
+	* gtk/gtktreeview.c (gtk_tree_view_scroll_to_cell): if the tree view
+	has already been realized; scroll to background area instead of
+	cell area. (Fixes #330683, Johan Dahlin, Tommi Komulainen).
+
+2006-10-28  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD
+
+	* gtk/gtktreeview.c (gtk_tree_view_set_grid_lines): only attempt
+	to create the GCs if the widget is realized. (Fixes #357578).
+
+2006-10-28  Kristian Rietveld  <kris@imendio.com>
+
+	Merge from HEAD.
+
+	2006-09-15  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_key_press): refactored column
+	header navigation/resizing/reordering to be more readable and lose
+	one level of nesting.
+
+	2006-09-15  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_key_press): actually directly
+	return after handling column button focus; we disable wrap around
+	with this (which actually happened via a really weird code path).
+	(Michael Natterer)
+
+	2006-09-15  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreeview.c (gtk_tree_view_key_press): make column resizing
+	code RTL aware, also break from the loops after we have seen the
+	focussed column button (Michael Natterer).
+
+2006-10-29  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkwindow-win32.c (RegisterGdkClass): Improve handling
+	of the small icon of the window class. (#152620, Kazuki Iwamoto)
+
+2006-10-29  Tor Lillqvist  <tml@novell.com>
+
+	* gdk/win32/gdkcursor-win32.c
+	(gdk_win32_icon_to_pixbuf_libgtk_only): Implement for B&W cursors,
+	for instance the built-in GDK ones.
+
+2006-10-27  Kristian Rietveld  <kris@gtk.org>
+
+	Merge from HEAD.
+
+	* gtk/gtktreeview.c (validate_visible_area): rework the area_above == 0
+	case to not overwrite the variables in the lower scope (which are
+	used later on ...), get the path correctly and bail out when there
+	isn't a node above us. (#359231).
+
+2006-10-26  Christian Persch  <chpe@cvs.gnome.org>
+
+	* gtk/gtkaboutdialog.c: Put initial focus on Close button (#337261).
+
+2006-10-23  Dom Lachowicz <domlachowicz@gmail.com>
+
+	* modules/engines/ms-windows/msw_style.c (draw_expander): Remember
+	to free GDI Pen resources, introduced by bug 340201.(#364514)
+	
+2006-10-15  Paolo Borelli  <pborelli@katamail.com>
+
+	* gtk/gtkicontheme.c (pixbuf_supports_svg): plug memory leak.
+	Fixes bug #362439.
+
+2006-10-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkprintunixdialog.c (update_dialog_from_capabilities): Fix
+	a typo.  (#359542, Ghee Teo)
+
+2006-10-08 Matthias Clasen <mclasen@redhat.com>
+
+	* gtk/gtknotebook.c (gtk_notebook_reorder_tab): Only
+	reorder tabs if the focus is in the tab.  (#350342, Carlos
+	Garnacho Parro)
+
+2006-10-08  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkmain.c (do_pre_parse_initialization): Small fix to the
+	code committed earlier today.
+
+2006-10-08  Matthias Clasen  <mclasen@redhat.com>
+
+	* gtk/gtkradiobutton.c (gtk_radio_button_focus): Don't 
+	leak a list.  (#360350, Benjamin Berg)
+
+2006-10-08  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkmain.c (do_pre_parse_initialization): On Win32, if
+	environment variable LC_ALL or LANG is set, set the Win32 thread
+	locale to the corresponding locale. Then call the C library
+	setlocale() to set the C library locale accordingly. The
+	inconsistency mentioned below is gone. (#339756) Do some special
+	casing for Serbia and Montenegro. Handle the Latin and Cyrillic
+	scripts for Azeri, Uzbek and Serbian.
+	(enum_locale_proc): Helper function for the above functionality.
+
+	* gtk/gtkcalendar.c (gtk_calendar_init): No longer need to check
+	if the environment variables are set here, as they have already
+	been taken into account and the Win32 thread locale has been
+	set.
+
+2006-10-07  Tor Lillqvist  <tml@novell.com>
+
+	* gtk/gtkcalendar.c (gtk_calendar_init): Use the Win32 thread
+	locale's first day of week setting on Win32. (#339752, Bogdan
+	Nicula) Don't do this if one of the environment variables that
+	affect gettext is set, though. In that case use the week start day
+	from the corresponding message catalog.
+
+	Unfortunately the same logic isn't possible in the weekday and
+	month name lookup; there even if you have set one of the
+	aforementioned environment variables, you still get the weekday
+	and month names from the Win32 thread locale. Yes, this is
+	inconsistent.
+
+2006-10-06  Matthias Clasen  <mclasen@redhat.com>
+	
+	* gtk/gtkfilechooser.c (gtk_file_chooser_set_select_multiple):
+	Fix the docs.  (#360112)
+
+	* gtk/gtkcellview.c: Don't set the background of the
+	window in a no-window widget.  (#359581, Xan Lopez)
+
+2006-10-03  Matthias Clasen  <mclasen@redhat.com>
+
+	Fix interaction of GtkEntryCompletion with input 
+	methods.  (#354495, Diego Escalante Urrelo)
+
+	* gtk/gtkentry.c (gtk_entry_completion_key_press): Only reset
+	the im context if we actually handle the key event.
+
+	* gtk/gtkentrycompletion.c: Also propagate key release events
+	to the entry.  
+
 2007-05-15  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	* gtk/gtkmenu.c (_gtk_menu_item_is_scrollable): Added to check whether

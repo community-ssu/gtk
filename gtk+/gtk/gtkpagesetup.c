@@ -163,6 +163,8 @@ gtk_page_setup_set_orientation (GtkPageSetup       *setup,
 GtkPaperSize *
 gtk_page_setup_get_paper_size (GtkPageSetup *setup)
 {
+  g_return_val_if_fail (GTK_IS_PAGE_SETUP (setup), NULL);
+
   return setup->paper_size;
 }
 
@@ -181,7 +183,17 @@ void
 gtk_page_setup_set_paper_size (GtkPageSetup *setup,
 			       GtkPaperSize *size)
 {
+  GtkPaperSize *old_size;
+
+  g_return_if_fail (GTK_IS_PAGE_SETUP (setup));
+  g_return_if_fail (size != NULL);
+
+  old_size = setup->paper_size;
+
   setup->paper_size = gtk_paper_size_copy (size);
+
+  if (old_size)
+    gtk_paper_size_free (old_size);
 }
 
 /**
@@ -198,7 +210,7 @@ void
 gtk_page_setup_set_paper_size_and_default_margins (GtkPageSetup *setup,
 						   GtkPaperSize *size)
 {
-  setup->paper_size = gtk_paper_size_copy (size);
+  gtk_page_setup_set_paper_size (setup, size);
   setup->top_margin = gtk_paper_size_get_default_top_margin (setup->paper_size, GTK_UNIT_MM);
   setup->bottom_margin = gtk_paper_size_get_default_bottom_margin (setup->paper_size, GTK_UNIT_MM);
   setup->left_margin = gtk_paper_size_get_default_left_margin (setup->paper_size, GTK_UNIT_MM);

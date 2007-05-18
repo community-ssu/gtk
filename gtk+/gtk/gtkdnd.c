@@ -285,6 +285,9 @@ static gboolean gtk_drag_key_cb                (GtkWidget         *widget,
 static gboolean gtk_drag_grab_broken_event_cb  (GtkWidget          *widget,
 						GdkEventGrabBroken *event,
 						gpointer            data);
+static void     gtk_drag_grab_notify_cb        (GtkWidget         *widget,
+						gboolean           was_grabbed,
+						gpointer           data);
 static gboolean gtk_drag_button_release_cb     (GtkWidget         *widget, 
 					        GdkEventButton    *event, 
 					        gpointer           data);
@@ -2331,6 +2334,8 @@ gtk_drag_begin_internal (GtkWidget         *widget,
 
   g_signal_connect (info->ipc_widget, "grab_broken_event",
 		    G_CALLBACK (gtk_drag_grab_broken_event_cb), info);
+  g_signal_connect (info->ipc_widget, "grab_notify",
+		    G_CALLBACK (gtk_drag_grab_notify_cb), info);
   g_signal_connect (info->ipc_widget, "button_release_event",
 		    G_CALLBACK (gtk_drag_button_release_cb), info);
   g_signal_connect (info->ipc_widget, "motion_notify_event",
@@ -3748,18 +3753,16 @@ gtk_drag_source_info_destroy (GtkDragSourceInfo *info)
   gtk_drag_remove_icon (info);
 
   if (info->icon_pixbuf)
-    g_object_unref (info->icon_pixbuf);
-
-  if (!info->proxy_dest)
-    g_signal_emit_by_name (info->widget, "drag_end", 
-			   info->context);
-
-  if (info->widget)
-    g_object_unref (info->widget);
-
+    {
+      g_object_unref (info->icon_pixbuf);
+      info->icon_pixbuf = NULL;
+    }
 
   g_signal_handlers_disconnect_by_func (info->ipc_widget,
 					gtk_drag_grab_broken_event_cb,
+					info);
+  g_signal_handlers_disconnect_by_func (info->ipc_widget,
+					gtk_drag_grab_notify_cb,
 					info);
   g_signal_handlers_disconnect_by_func (info->ipc_widget,
 					gtk_drag_button_release_cb,
@@ -3773,6 +3776,13 @@ gtk_drag_source_info_destroy (GtkDragSourceInfo *info)
   g_signal_handlers_disconnect_by_func (info->ipc_widget,
 					gtk_drag_selection_get,
 					info);
+
+  if (!info->proxy_dest)
+    g_signal_emit_by_name (info->widget, "drag_end", 
+			   info->context);
+
+  if (info->widget)
+    g_object_unref (info->widget);
 
   gtk_selection_remove_all (info->ipc_widget);
   g_object_set_data (G_OBJECT (info->ipc_widget), I_("gtk-info"), NULL);
@@ -3918,12 +3928,11 @@ gtk_drag_end (GtkDragSourceInfo *info, guint32 time)
   
   info->have_grab = FALSE;
   
-  gdk_display_pointer_ungrab (display, time);
-  gdk_display_keyboard_ungrab (display, time);
-  gtk_grab_remove (info->ipc_widget);
-
   g_signal_handlers_disconnect_by_func (info->ipc_widget,
 					gtk_drag_grab_broken_event_cb,
+					info);
+  g_signal_handlers_disconnect_by_func (info->ipc_widget,
+					gtk_drag_grab_notify_cb,
 					info);
   g_signal_handlers_disconnect_by_func (info->ipc_widget,
 					gtk_drag_button_release_cb,
@@ -3934,6 +3943,10 @@ gtk_drag_end (GtkDragSourceInfo *info, guint32 time)
   g_signal_handlers_disconnect_by_func (info->ipc_widget,
 					gtk_drag_key_cb,
 					info);
+
+  gdk_display_pointer_ungrab (display, time);
+  gdk_display_keyboard_ungrab (display, time);
+  gtk_grab_remove (info->ipc_widget);
 
   /* Send on a release pair to the original 
    * widget to convince it to release its grab. We need to
@@ -4116,6 +4129,24 @@ gtk_drag_grab_broken_event_cb (GtkWidget          *widget,
   gtk_drag_cancel (info, gtk_get_current_event_time ());
   return TRUE;
 }
+
+static void
+gtk_drag_grab_notify_cb (GtkWidget        *widget,
+			 gboolean          was_grabbed,
+			 gpointer          data)
+{
+  GtkDragSourceInfo *info = (GtkDragSourceInfo *)data;
+
+  if (!was_grabbed)
+    {
+      /* We have to block callbacks to avoid recursion here, because
+	 gtk_drag_cancel calls gtk_grab_remove (via gtk_drag_end) */
+      g_signal_handlers_block_by_func (widget, gtk_drag_grab_notify_cb, data);
+      gtk_drag_cancel (info, gtk_get_current_event_time ());
+      g_signal_handlers_unblock_by_func (widget, gtk_drag_grab_notify_cb, data);
+    }
+}
+
 
 /*************************************************************
  * gtk_drag_button_release_cb:

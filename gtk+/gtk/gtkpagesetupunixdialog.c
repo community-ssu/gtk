@@ -78,6 +78,7 @@ struct GtkPageSetupUnixDialogPrivate
   GtkTooltips *tooltips;
 
   GtkWidget *portrait_radio;
+  GtkWidget *reverse_portrait_radio;
   GtkWidget *landscape_radio;
   GtkWidget *reverse_landscape_radio;
 
@@ -385,6 +386,12 @@ gtk_page_setup_unix_dialog_finalize (GObject *object)
       priv->page_setup_list = NULL;
     }
 
+  if (priv->custom_paper_list)
+    {
+      g_object_unref (priv->custom_paper_list);
+      priv->custom_paper_list = NULL;
+    }
+
   if (priv->print_settings)
     {
       g_object_unref (priv->print_settings);
@@ -489,6 +496,7 @@ printer_status_cb (GtkPrintBackend        *backend,
   gtk_list_store_set (priv->printer_list, iter,
                       PRINTER_LIST_COL_NAME, str,
                       -1);
+  g_free (str);
 }
 
 static void
@@ -1095,7 +1103,7 @@ populate_dialog (GtkPageSetupUnixDialog *ps_dialog)
 
   radio_button = create_radio_button (gtk_radio_button_get_group (GTK_RADIO_BUTTON (radio_button)),
 				      GTK_STOCK_ORIENTATION_REVERSE_PORTRAIT);
-  priv->reverse_landscape_radio = radio_button;
+  priv->reverse_portrait_radio = radio_button;
   gtk_table_attach (GTK_TABLE (table), radio_button,
 		    2, 3, 3, 4,
 		    GTK_EXPAND|GTK_FILL, 0, 0, 0);
@@ -1168,7 +1176,7 @@ get_orientation (GtkPageSetupUnixDialog *dialog)
     return GTK_PAGE_ORIENTATION_LANDSCAPE;
   if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->reverse_landscape_radio)))
     return GTK_PAGE_ORIENTATION_REVERSE_LANDSCAPE;
-  return GTK_PAGE_ORIENTATION_PORTRAIT;
+  return GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT;
 }
 
 static void
@@ -1180,6 +1188,8 @@ set_orientation (GtkPageSetupUnixDialog *dialog,
   switch (orientation)
     {
     case GTK_PAGE_ORIENTATION_REVERSE_PORTRAIT:
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->reverse_portrait_radio), TRUE);
+      break;
     case GTK_PAGE_ORIENTATION_PORTRAIT:
       gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->portrait_radio), TRUE);
       break;
@@ -1644,6 +1654,7 @@ add_custom_paper (CustomPaperDialog *data)
   gtk_tree_view_set_cursor (GTK_TREE_VIEW (data->treeview), path,
 			    data->text_column, TRUE);
   gtk_tree_path_free (path);
+  g_free (name);
 }
 
 static void

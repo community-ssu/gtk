@@ -130,17 +130,17 @@ static void gtk_range_realize        (GtkWidget        *widget);
 static void gtk_range_unrealize      (GtkWidget        *widget);
 static void gtk_range_map            (GtkWidget        *widget);
 static void gtk_range_unmap          (GtkWidget        *widget);
-static gint gtk_range_expose         (GtkWidget        *widget,
+static gboolean gtk_range_expose         (GtkWidget        *widget,
                                       GdkEventExpose   *event);
-static gint gtk_range_button_press   (GtkWidget        *widget,
+static gboolean gtk_range_button_press   (GtkWidget        *widget,
                                       GdkEventButton   *event);
-static gint gtk_range_button_release (GtkWidget        *widget,
+static gboolean gtk_range_button_release (GtkWidget        *widget,
                                       GdkEventButton   *event);
-static gint gtk_range_motion_notify  (GtkWidget        *widget,
+static gboolean gtk_range_motion_notify  (GtkWidget        *widget,
                                       GdkEventMotion   *event);
-static gint gtk_range_enter_notify   (GtkWidget        *widget,
+static gboolean gtk_range_enter_notify   (GtkWidget        *widget,
                                       GdkEventCrossing *event);
-static gint gtk_range_leave_notify   (GtkWidget        *widget,
+static gboolean gtk_range_leave_notify   (GtkWidget        *widget,
                                       GdkEventCrossing *event);
 static gboolean gtk_range_grab_broken (GtkWidget          *widget,
 				       GdkEventGrabBroken *event);
@@ -1410,7 +1410,7 @@ draw_stepper (GtkRange     *range,
 		   arrow_x, arrow_y, arrow_width, arrow_height);
 }
 
-static gint
+static gboolean
 gtk_range_expose (GtkWidget      *widget,
 		  GdkEventExpose *event)
 {
@@ -1734,12 +1734,16 @@ range_grab_add (GtkRange      *range,
 static void
 range_grab_remove (GtkRange *range)
 {
+  MouseLocation location;
+
   gtk_grab_remove (GTK_WIDGET (range));
-  
+ 
+  location = range->layout->grab_location; 
   range->layout->grab_location = MOUSE_OUTSIDE;
   range->layout->grab_button = 0;
 
-  if (gtk_range_update_mouse_location (range))
+  if (gtk_range_update_mouse_location (range) ||
+      location != MOUSE_OUTSIDE)
     gtk_widget_queue_draw (GTK_WIDGET (range));
 }
 
@@ -1858,20 +1862,21 @@ static gboolean
 gtk_range_key_press (GtkWidget   *widget,
 		     GdkEventKey *event)
 {
-  GtkRange *range = (GtkRange *)widget;
+  GtkRange *range = GTK_RANGE (widget);
 
-  if (event->keyval == GDK_Escape)
+  if (event->keyval == GDK_Escape &&
+      range->layout->grab_location != MOUSE_OUTSIDE)
     {
       stop_scrolling (range);
 
-      update_slider_position (range, 
+      update_slider_position (range,
 			      range->slide_initial_coordinate,
 			      range->slide_initial_coordinate);
 
       return TRUE;
     }
-  else
-    return GTK_WIDGET_CLASS (gtk_range_parent_class)->key_press_event (widget, event);
+
+  return GTK_WIDGET_CLASS (gtk_range_parent_class)->key_press_event (widget, event);
 }
 
 static gint
@@ -2039,11 +2044,6 @@ stop_scrolling (GtkRange *range)
   gtk_range_remove_step_timer (range);
   /* Flush any pending discontinuous/delayed updates */
   gtk_range_update_value (range);
-  
-  /* Just be lazy about this, if we scrolled it will all redraw anyway,
-   * so no point optimizing the button deactivate case
-   */
-  gtk_widget_queue_draw (GTK_WIDGET (range));
 }
 
 static gboolean
@@ -2065,7 +2065,7 @@ gtk_range_grab_broken (GtkWidget          *widget,
   return FALSE;
 }
 
-static gint
+static gboolean
 gtk_range_button_release (GtkWidget      *widget,
 			  GdkEventButton *event)
 {
@@ -2159,7 +2159,7 @@ gtk_range_scroll_event (GtkWidget      *widget,
   return TRUE;
 }
 
-static gint
+static gboolean
 gtk_range_motion_notify (GtkWidget      *widget,
 			 GdkEventMotion *event)
 {
@@ -2183,7 +2183,7 @@ gtk_range_motion_notify (GtkWidget      *widget,
   return range->layout->mouse_location != MOUSE_OUTSIDE;
 }
 
-static gint
+static gboolean
 gtk_range_enter_notify (GtkWidget        *widget,
 			GdkEventCrossing *event)
 {
@@ -2198,7 +2198,7 @@ gtk_range_enter_notify (GtkWidget        *widget,
   return TRUE;
 }
 
-static gint
+static gboolean
 gtk_range_leave_notify (GtkWidget        *widget,
 			GdkEventCrossing *event)
 {

@@ -614,7 +614,7 @@ build_recent_items_list (GtkRecentManager *manager)
  * monitors the recently used resources list, and emits the "changed" signal
  * each time something inside the list changes.
  *
- * #GtkRecentManager objects are expansive: be sure to create them only when
+ * #GtkRecentManager objects are expensive: be sure to create them only when
  * needed. You should use the gtk_recent_manager_new_for_screen() or the
  * gtk_recent_manager_get_default() functions instead.
  *
@@ -635,9 +635,9 @@ gtk_recent_manager_new (void)
  * gtk_recent_manager_get_for_screen().
  *
  * Return value: A unique #GtkRecentManager associated with the
- *   default screen. This recent manager is associated to the
+ *   default screen. This recent manager is associated with the
  *   screen and can be used as long as the screen is open.
- *   Do no ref or unref it.
+ *   Do not ref or unref it.
  *
  * Since: 2.10
  */
@@ -836,17 +836,15 @@ gboolean
 gtk_recent_manager_add_item (GtkRecentManager  *manager,
 			     const gchar       *uri)
 {
-  GtkRecentData *recent_data;
-  GError *add_error;
+  GtkRecentData recent_data;
   gboolean retval;
   
   g_return_val_if_fail (GTK_IS_RECENT_MANAGER (manager), FALSE);
   g_return_val_if_fail (uri != NULL, FALSE);
 
-  recent_data = g_slice_new (GtkRecentData);
-  
-  recent_data->display_name = NULL;
-  recent_data->description = NULL;
+  recent_data.display_name = NULL;
+  recent_data.description = NULL;
+  recent_data.mime_type = NULL;
   
 #ifdef G_OS_UNIX
   if (has_case_prefix (uri, "file:/"))
@@ -855,34 +853,33 @@ gtk_recent_manager_add_item (GtkRecentManager  *manager,
       const gchar *mime_type;
       
       filename = g_filename_from_uri (uri, NULL, NULL);
-      mime_type = xdg_mime_get_mime_type_for_file (filename, NULL);
-      if (!mime_type)
-        recent_data->mime_type = g_strdup (GTK_RECENT_DEFAULT_MIME);
-      else
-        recent_data->mime_type = g_strdup (mime_type);
-      
-      g_free (filename);
+      if (filename)
+        {
+          mime_type = xdg_mime_get_mime_type_for_file (filename, NULL);
+          if (mime_type && *mime_type)
+            recent_data.mime_type = g_strdup (mime_type);
+
+          g_free (filename);
+        }
+
+      if (!recent_data.mime_type)
+        recent_data.mime_type = g_strdup (GTK_RECENT_DEFAULT_MIME);
     }
   else
 #endif
-    recent_data->mime_type = g_strdup (GTK_RECENT_DEFAULT_MIME);
+    recent_data.mime_type = g_strdup (GTK_RECENT_DEFAULT_MIME);
   
-  recent_data->app_name = g_strdup (g_get_application_name ());
-  recent_data->app_exec = g_strjoin (" ", g_get_prgname (), "%u", NULL);
+  recent_data.app_name = g_strdup (g_get_application_name ());
+  recent_data.app_exec = g_strjoin (" ", g_get_prgname (), "%u", NULL);
+  recent_data.groups = NULL;
+  recent_data.is_private = FALSE;
   
-  recent_data->groups = NULL;
+  retval = gtk_recent_manager_add_full (manager, uri, &recent_data);
   
-  recent_data->is_private = FALSE;
-  
-  add_error = NULL;
-  retval = gtk_recent_manager_add_full (manager, uri, recent_data);
-  
-  g_free (recent_data->mime_type);
-  g_free (recent_data->app_name);
-  g_free (recent_data->app_exec);
+  g_free (recent_data.mime_type);
+  g_free (recent_data.app_name);
+  g_free (recent_data.app_exec);
 
-  g_slice_free (GtkRecentData, recent_data);
-  
   return retval;
 }
 
@@ -1235,7 +1232,7 @@ gtk_recent_manager_lookup_item (GtkRecentManager  *manager,
       return NULL;
     }
  
-  return gtk_recent_info_ref (info);
+  return info;
 }
 
 /**
@@ -1321,6 +1318,9 @@ gtk_recent_manager_get_items (GtkRecentManager *manager)
   
   priv = manager->priv;
   if (!priv->recent_items)
+    return NULL;
+
+  if (priv->limit == 0)
     return NULL;
   
   uris = g_bookmark_file_get_uris (priv->recent_items, &uris_len);
@@ -2222,7 +2222,7 @@ get_uri_shortname_for_display (const gchar *uri)
       
       local_file = g_filename_from_uri (uri, NULL, NULL);
       
-      if (local_file != NULL)
+      if (local_file)
         {
           name = g_filename_display_basename (local_file);
           validated = TRUE;
@@ -2230,7 +2230,8 @@ get_uri_shortname_for_display (const gchar *uri)
 		
       g_free (local_file);
     } 
-  else
+  
+  if (!name)
     {
       gchar *method;
       gchar *local_file;

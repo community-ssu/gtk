@@ -59,6 +59,9 @@ typedef struct _GtkPrintBackendCupsClass GtkPrintBackendCupsClass;
 #define _CUPS_MAX_ATTEMPTS 10 
 #define _CUPS_MAX_CHUNK_SIZE 8192
 
+/* define this to see warnings about ignored ppd options */
+#undef PRINT_IGNORED_OPTIONS
+
 #define _CUPS_MAP_ATTR_INT(attr, v, a) {if (!g_ascii_strcasecmp (attr->name, (a))) v = attr->values[0].integer;}
 #define _CUPS_MAP_ATTR_STR(attr, v, a) {if (!g_ascii_strcasecmp (attr->name, (a))) v = attr->values[0].string.text;}
 
@@ -266,16 +269,17 @@ _cairo_write_to_cups (void                *closure,
   error = NULL;
 
   GTK_NOTE (PRINTING,
-            g_print ("CUPS Backend: Writting %i byte chunk to temp file\n", length));
+            g_print ("CUPS Backend: Writing %i byte chunk to temp file\n", length));
 
   while (length > 0) 
     {
-      g_io_channel_write_chars (io, data, length, &written, &error);
+      g_io_channel_write_chars (io, (gchar *)data, length, &written, &error);
 
       if (error != NULL)
 	{
 	  GTK_NOTE (PRINTING,
-                    g_print ("CUPS Backend: Error writting to temp file, %s\n", error->message));
+                    g_print ("CUPS Backend: Error writing to temp file, %s\n", 
+                             error->message));
 
           g_error_free (error);
 	  return CAIRO_STATUS_WRITE_ERROR;
@@ -422,9 +426,6 @@ gtk_print_backend_cups_print_stream (GtkPrintBackend         *print_backend,
   gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_URI, "printer-uri",
                                    NULL, cups_printer->printer_uri);
 
-  gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_NAME, "requesting-user-name",
-                                   NULL, cupsUser());
-
   title = gtk_print_job_get_title (job);
   if (title)
     gtk_cups_request_ipp_add_string (request, IPP_TAG_OPERATION, IPP_TAG_NAME, "job-name", NULL,
@@ -503,27 +504,29 @@ cups_dispatch_watch_check (GSource *source)
   dispatch = (GtkPrintCupsDispatchWatch *) source;
 
   poll_state = gtk_cups_request_get_poll_state (dispatch->request);
-  
-  if (dispatch->data_poll == NULL && 
-      dispatch->request->http != NULL)
-    {
-      dispatch->data_poll = g_new0 (GPollFD, 1);
-      dispatch->data_poll->fd = dispatch->request->http->fd;
 
-      g_source_add_poll (source, dispatch->data_poll);
-    }
-            
-  if (dispatch->data_poll != NULL && dispatch->request->http != NULL)
+  if (dispatch->request->http != NULL)
     {
-      if (dispatch->data_poll->fd != dispatch->request->http->fd)
-        dispatch->data_poll->fd = dispatch->request->http->fd;
-
-      if (poll_state == GTK_CUPS_HTTP_READ)
-        dispatch->data_poll->events = G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_PRI;
-      else if (poll_state == GTK_CUPS_HTTP_WRITE)
-        dispatch->data_poll->events = G_IO_OUT | G_IO_ERR;
+      if (dispatch->data_poll == NULL)
+	{
+	  dispatch->data_poll = g_new0 (GPollFD, 1);
+	  g_source_add_poll (source, dispatch->data_poll);
+	}
       else
-        dispatch->data_poll->events = 0;
+	{
+	  if (poll_state == GTK_CUPS_HTTP_READ)
+	    dispatch->data_poll->events = G_IO_IN | G_IO_HUP | G_IO_ERR | G_IO_PRI;
+	  else if (poll_state == GTK_CUPS_HTTP_WRITE)
+	    dispatch->data_poll->events = G_IO_OUT | G_IO_ERR;
+	  else
+	    dispatch->data_poll->events = 0;
+	}
+
+#ifdef HAVE_CUPS_API_1_2
+      dispatch->data_poll->fd = httpGetFd (dispatch->request->http);
+#else
+      dispatch->data_poll->fd = dispatch->request->http->fd;
+#endif
     }
     
   if (poll_state != GTK_CUPS_HTTP_IDLE)  
@@ -578,10 +581,17 @@ cups_dispatch_watch_dispatch (GSource     *source,
             g_print ("CUPS Backend: %s <source %p>\n", G_STRFUNC, source));
 
   if (gtk_cups_result_is_error (result))
-    g_warning ("Error result: %s", gtk_cups_result_get_error_string (result));
+    {
+      GTK_NOTE (PRINTING, 
+                g_print("Error result: %s (type %i, status %i, code %i)\n", 
+                        gtk_cups_result_get_error_string (result),
+                        gtk_cups_result_get_error_type (result),
+                        gtk_cups_result_get_error_status (result),
+                        gtk_cups_result_get_error_code (result)));
+     }
 
   ep_callback (GTK_PRINT_BACKEND (dispatch->backend), result, user_data);
-
+    
   return FALSE;
 }
 
@@ -649,6 +659,7 @@ cups_request_execute (GtkPrintBackendCups              *print_backend,
   g_source_unref ((GSource *) dispatch);
 }
 
+#if 0
 static void
 cups_request_printer_info_cb (GtkPrintBackendCups *backend,
                               GtkCupsResult       *result,
@@ -769,7 +780,7 @@ cups_request_printer_info (GtkPrintBackendCups *print_backend,
                         g_strdup (printer_name),
                         (GDestroyNotify) g_free);
 }
-
+#endif
 
 typedef struct {
   GtkPrintBackendCups *print_backend;
@@ -965,7 +976,9 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 
   if (gtk_cups_result_is_error (result))
     {
-      g_warning ("Error getting printer list: %s", gtk_cups_result_get_error_string (result));
+      GTK_NOTE (PRINTING, 
+                g_warning ("CUPS Backend: Error getting printer list: %s", 
+        	           gtk_cups_result_get_error_string (result)));
 
       goto done;
     }
@@ -980,9 +993,15 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
   for (attr = response->attrs; attr != NULL; attr = attr->next)
     {
       GtkPrinter *printer;
-      const gchar *printer_name;
-      const gchar *printer_uri;
-      const gchar *member_uris;
+      const gchar *printer_name = NULL;
+      const gchar *printer_uri = NULL;
+      const gchar *member_uris = NULL;
+      const gchar *location = NULL;
+      const gchar *description = NULL;
+      const gchar *state_msg = NULL;
+      gint state = 0;
+      gint job_count = 0;
+      gboolean status_changed = FALSE;
       GList *node;
       
       /* Skip leading attributes until we hit a printer...
@@ -993,9 +1012,6 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
       if (attr == NULL)
         break;
 
-      printer_name = NULL;
-      printer_uri = NULL;
-      member_uris = NULL;
       while (attr != NULL && attr->group_tag == IPP_TAG_PRINTER)
       {
         if (!strcmp (attr->name, "printer-name") &&
@@ -1007,6 +1023,16 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 	else if (!strcmp (attr->name, "member-uris") &&
 		 attr->value_tag == IPP_TAG_URI)
 	  member_uris = attr->values[0].string.text;
+        else if (strcmp (attr->name, "printer-location") == 0)
+          location = attr->values[0].string.text;
+        else if (strcmp (attr->name, "printer-info") == 0)
+          description = attr->values[0].string.text;
+        else if (strcmp (attr->name, "printer-state-message") == 0)
+          state_msg = attr->values[0].string.text;
+        else if (strcmp (attr->name, "printer-state") == 0)
+          state = attr->values[0].integer;
+        else if (strcmp (attr->name, "queued-job-count") == 0)
+          job_count = attr->values[0].integer;
         else
 	  {
 	    GTK_NOTE (PRINTING,
@@ -1077,11 +1103,11 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 			resource);
 #endif
 
-          if (member_uris && !strncmp (resource, "/printers/", 10))
+          if (!strncmp (resource, "/printers/", 10))
 	    {
 	      cups_printer->ppd_name = g_strdup (resource + 10);
               GTK_NOTE (PRINTING,
-                        g_print ("CUPS Backend: Setting ppd name '%s' for printer class '%s'\n", cups_printer->ppd_name, printer_name));
+                        g_print ("CUPS Backend: Setting ppd name '%s' for printer/class '%s'\n", cups_printer->ppd_name, printer_name));
             }
 
 	  gethostname (uri, sizeof(uri));
@@ -1117,7 +1143,22 @@ cups_request_printer_list_cb (GtkPrintBackendCups *cups_backend,
 	  gtk_printer_set_is_new (printer, FALSE);
         }
 
+#if 0
+      /* Getting printer info with separate requests overwhelms cups
+       * when the printer list has more than a handful of printers.
+       */
       cups_request_printer_info (cups_backend, gtk_printer_get_name (printer));
+#endif
+
+      GTK_PRINTER_CUPS (printer)->state = state;
+      status_changed = gtk_printer_set_job_count (printer, job_count);
+      status_changed |= gtk_printer_set_location (printer, location);
+      status_changed |= gtk_printer_set_description (printer, description);
+      status_changed |= gtk_printer_set_state_message (printer, state_msg);
+
+      if (status_changed)
+        g_signal_emit_by_name (GTK_PRINT_BACKEND (backend),
+                               "printer-status-changed", printer);
 
       /* The ref is held by GtkPrintBackend, in add_printer() */
       g_object_unref (printer);
@@ -1152,7 +1193,12 @@ cups_request_printer_list (GtkPrintBackendCups *cups_backend)
     {
       "printer-name",
       "printer-uri-supported",
-      "member-uris"
+      "member-uris",
+      "printer-location",
+      "printer-info",
+      "printer-state-message",
+      "printer-state",
+      "queued-job-count"
     };
  
   if (cups_backend->list_printers_pending ||
@@ -1199,6 +1245,7 @@ cups_get_printer_list (GtkPrintBackend *backend)
 typedef struct {
   GtkPrinterCups *printer;
   GIOChannel *ppd_io;
+  http_t *http;
 } GetPPDData;
 
 static void
@@ -1206,7 +1253,7 @@ get_ppd_data_free (GetPPDData *data)
 {
   GTK_NOTE (PRINTING,
             g_print ("CUPS Backend: %s\n", G_STRFUNC));
-
+  httpClose (data->http);
   g_io_channel_unref (data->ppd_io);
   g_object_unref (data->printer);
   g_free (data);
@@ -1228,7 +1275,18 @@ cups_request_ppd_cb (GtkPrintBackendCups *print_backend,
 
   if (gtk_cups_result_is_error (result))
     {
-      g_signal_emit_by_name (printer, "details-acquired", FALSE);
+      gboolean success = FALSE;
+
+      /* if we get a 404 then it is just a raw printer without a ppd
+         and not an error */
+      if ((gtk_cups_result_get_error_type (result) == GTK_CUPS_ERROR_HTTP) &&
+          (gtk_cups_result_get_error_status (result) == HTTP_NOT_FOUND))
+        {
+          gtk_printer_set_has_details (printer, TRUE);
+          success = TRUE;
+        } 
+        
+      g_signal_emit_by_name (printer, "details-acquired", success);
       return;
     }
 
@@ -1262,11 +1320,10 @@ cups_request_ppd (GtkPrinter *printer)
   GTK_NOTE (PRINTING,
             g_print ("CUPS Backend: %s\n", G_STRFUNC));
 
-  /* FIXME this can return NULL! */
   http = httpConnectEncrypt (cups_printer->hostname, 
 			     cups_printer->port,
 			     cupsEncryption ());
-
+  
   data = g_new0 (GetPPDData, 1);
 
   fd = g_file_open_tmp ("gtkprint_ppd_XXXXXX", 
@@ -1283,7 +1340,9 @@ cups_request_ppd (GtkPrinter *printer)
 
   if (error != NULL)
     {
-      g_warning ("%s", error->message);
+      GTK_NOTE (PRINTING, 
+                g_warning ("CUPS Backend: Failed to create temp file, %s\n", 
+                           error->message));
       g_error_free (error);
       httpClose (http);
       g_free (ppd_filename);
@@ -1293,6 +1352,7 @@ cups_request_ppd (GtkPrinter *printer)
       return;
     }
     
+  data->http = http;
   fchmod (fd, S_IRUSR | S_IWUSR);
   data->ppd_io = g_io_channel_unix_new (fd);
   g_io_channel_set_encoding (data->ppd_io, NULL, NULL);
@@ -1301,8 +1361,9 @@ cups_request_ppd (GtkPrinter *printer)
   data->printer = g_object_ref (printer);
 
   resource = g_strdup_printf ("/printers/%s.ppd", 
-                              gtk_printer_cups_get_ppd_name (GTK_PRINTER_CUPS(printer)));
-  request = gtk_cups_request_new (http,
+                              gtk_printer_cups_get_ppd_name (GTK_PRINTER_CUPS (printer)));
+
+  request = gtk_cups_request_new (data->http,
                                   GTK_CUPS_GET,
 				  0,
                                   data->ppd_io,
@@ -1439,7 +1500,8 @@ ppd_text_to_utf8 (ppd_file_t *ppd_file,
 
   if (res == NULL)
     {
-      g_warning ("unable to convert PPD text");
+      GTK_NOTE (PRINTING,
+                g_warning ("CUPS Backend: Unable to convert PPD text\n"));
       res = g_strdup ("???");
     }
   
@@ -1781,12 +1843,13 @@ available_choices (ppd_file_t     *ppd,
 	all_default = FALSE;
     }
 
-  if (all_default && !keep_if_only_one_option)
-    return 0;
-  
-  if (num_conflicts == option->num_choices)
-    return 0;
+  if ((all_default && !keep_if_only_one_option) ||
+      (num_conflicts == option->num_choices))
+    {
+      g_free (conflicts);
 
+      return 0;
+    }
 
   /* Some ppds don't have a "use printer default" option for
    * InputSlot. This means you always have to select a particular slot,
@@ -1825,7 +1888,6 @@ available_choices (ppd_file_t     *ppd,
   
   if (available)
     {
-      
       *available = g_new (ppd_choice_t *, option->num_choices - num_conflicts + add_auto);
 
       i = 0;
@@ -1838,6 +1900,8 @@ available_choices (ppd_file_t     *ppd,
       if (add_auto) 
 	(*available)[i++] = NULL;
     }
+
+  g_free (conflicts);
   
   return option->num_choices - num_conflicts + add_auto;
 }
@@ -1903,19 +1967,25 @@ create_pickone_option (ppd_file_t   *ppd_file,
 		  option = gtk_printer_option_new (gtk_name, label,
 				         GTK_PRINTER_OPTION_TYPE_PICKONE_STRING);
 		  break;
+#ifdef PRINT_IGNORED_OPTIONS
                 case PPD_CUSTOM_POINTS: 
-		  g_warning ("Not Supported: PPD Custom Points Option");
+		  g_warning ("CUPS Backend: PPD Custom Points Option not supported");
 		  break;
                 case PPD_CUSTOM_CURVE:
-                  g_warning ("Not Supported: PPD Custom Curve Option");
+                  g_warning ("CUPS Backend: PPD Custom Curve Option not supported");
 		  break;
                 case PPD_CUSTOM_INVCURVE: 	
-		  g_warning ("Not Supported: PPD Custom Inverse Curve Option");
+		  g_warning ("CUPS Backend: PPD Custom Inverse Curve Option not supported");
 		  break;
+#endif
+                default: 
+                  break;
 		}
 	    }
+#ifdef PRINT_IGNORED_OPTIONS
 	  else
-	    g_warning ("Not Supported: PPD Custom Option has more than one parameter");
+	    g_warning ("CUPS Backend: Multi-parameter PPD Custom Option not supported");
+#endif
 	}
 #endif /* HAVE_CUPS_API_1_2 */
 
@@ -1943,7 +2013,7 @@ create_pickone_option (ppd_file_t   *ppd_file,
     }
 #ifdef PRINT_IGNORED_OPTIONS
   else
-    g_warning ("Ignoring pickone %s\n", ppd_option->text);
+    g_warning ("CUPS Backend: Ignoring pickone %s\n", ppd_option->text);
 #endif
   g_free (available);
 
@@ -1982,7 +2052,7 @@ create_boolean_option (ppd_file_t   *ppd_file,
     }
 #ifdef PRINT_IGNORED_OPTIONS
   else
-    g_warning ("Ignoring boolean %s\n", ppd_option->text);
+    g_warning ("CUPS Backend: Ignoring boolean %s\n", ppd_option->text);
 #endif
   g_free (available);
 
@@ -2045,9 +2115,10 @@ handle_option (GtkPrinterOptionSet *set,
     {
       option = create_boolean_option (ppd_file, ppd_option, name);
     }
+#ifdef PRINT_IGNORED_OPTIONS
   else
-    g_warning ("Ignored pickmany setting %s\n", ppd_option->text);
-  
+    g_warning ("CUPS Backend: Ignoring pickmany setting %s\n", ppd_option->text);
+#endif  
   
   if (option)
     {
@@ -2197,14 +2268,27 @@ cups_printer_get_options (GtkPrinter           *printer,
     {
       GtkPaperSize *paper_size;
       ppd_option_t *option;
+      const gchar  *ppd_name;
 
       ppdMarkDefaults (ppd_file);
 
       paper_size = gtk_page_setup_get_paper_size (page_setup);
 
       option = ppdFindOption (ppd_file, "PageSize");
-      strncpy (option->defchoice, gtk_paper_size_get_ppd_name (paper_size),
-	       PPD_MAX_NAME);
+      ppd_name = gtk_paper_size_get_ppd_name (paper_size);
+      
+      if (ppd_name)
+	strncpy (option->defchoice, ppd_name, PPD_MAX_NAME);
+      else
+        {
+          gchar *custom_name;
+
+	  custom_name = g_strdup_printf ("Custom.%2fx%.2f",
+					 gtk_paper_size_get_width (paper_size, GTK_UNIT_POINTS),
+					 gtk_paper_size_get_height (paper_size, GTK_UNIT_POINTS));
+          strncpy (option->defchoice, custom_name, PPD_MAX_NAME);
+          g_free (custom_name);
+        }
 
       for (i = 0; i < ppd_file->num_groups; i++)
         handle_group (set, ppd_file, &ppd_file->groups[i], &ppd_file->groups[i], settings);
@@ -2260,8 +2344,10 @@ set_conflicts_from_option (GtkPrinterOptionSet *set,
 
       if (option)
 	gtk_printer_option_set_has_conflict (option, TRUE);
+#ifdef PRINT_IGNORED_OPTIONS
       else
-	g_warning ("conflict for option %s ignored", ppd_option->keyword);
+	g_warning ("CUPS Backend: Ignoring conflict for option %s", ppd_option->keyword);
+#endif
       
       g_free (name);
     }

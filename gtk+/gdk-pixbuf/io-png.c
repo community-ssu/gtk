@@ -861,9 +861,7 @@ static gboolean real_save_png (GdkPixbuf        *pixbuf,
                                        return FALSE;
                                }
                        } else {
-                               g_warning ("Bad option name '%s' passed to PNG saver",
-                                          *kiter);
-                               return FALSE;
+                               g_warning ("Unrecognized parameter (%s) passed to PNG saver.", *kiter);
                        }
 
                        ++kiter;
@@ -918,7 +916,10 @@ static gboolean real_save_png (GdkPixbuf        *pixbuf,
                                           png_simple_error_callback,
                                           png_simple_warning_callback);
 
-       g_return_val_if_fail (png_ptr != NULL, FALSE);
+       if (png_ptr == NULL) {
+               success = FALSE;
+               goto cleanup;
+       }
 
        info_ptr = png_create_info_struct (png_ptr);
        if (info_ptr == NULL) {

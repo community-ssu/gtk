@@ -76,6 +76,7 @@ struct _GtkIconThemePrivate
   guint pixbuf_supports_svg : 1;
   guint themes_valid        : 1;
   guint check_reload        : 1;
+  guint loading_themes      : 1;
   
   char *current_theme;
   char *fallback_theme;
@@ -208,7 +209,8 @@ static void         theme_subdir_load (GtkIconTheme     *icon_theme,
 				       char             *subdir);
 static void         do_theme_change   (GtkIconTheme     *icon_theme);
 
-static void  blow_themes               (GtkIconTheme    *icon_themes);
+static void     blow_themes               (GtkIconTheme    *icon_themes);
+static gboolean rescan_themes             (GtkIconTheme    *icon_themes);
 
 static void  icon_data_free            (GtkIconData     *icon_data);
 static void load_icon_data             (IconThemeDir    *dir,
@@ -380,6 +382,9 @@ display_closed (GdkDisplay   *display,
 static void
 update_current_theme (GtkIconTheme *icon_theme)
 {
+#define theme_changed(_old, _new) \
+  ((_old && !_new) || (!_old && _new) || \
+   (_old && _new && strcmp (_old, _new) != 0))
   GtkIconThemePrivate *priv = icon_theme->priv;
 
   if (!priv->custom_theme)
@@ -396,27 +401,25 @@ update_current_theme (GtkIconTheme *icon_theme)
 			"gtk-fallback-icon-theme", &fallback_theme, NULL);
 	}
 
-      if (!theme)
+      /* ensure that the current theme (even when just the default)
+       * is searched before any fallback theme
+       */
+      if (!theme && fallback_theme)
 	theme = g_strdup (DEFAULT_THEME_NAME);
 
-      if (strcmp (priv->current_theme, theme) != 0)
+      if (theme_changed (priv->current_theme, theme))
 	{
 	  g_free (priv->current_theme);
 	  priv->current_theme = theme;
-
 	  changed = TRUE;
 	}
       else
 	g_free (theme);
 
-      if ((priv->fallback_theme && !fallback_theme) ||
-	  (!priv->fallback_theme && fallback_theme) ||
-	  (priv->fallback_theme && fallback_theme &&
-	   strcmp (priv->fallback_theme, fallback_theme) != 0))
+      if (theme_changed (priv->fallback_theme, fallback_theme))
 	{
 	  g_free (priv->fallback_theme);
 	  priv->fallback_theme = fallback_theme;
-
 	  changed = TRUE;
 	}
       else
@@ -425,6 +428,7 @@ update_current_theme (GtkIconTheme *icon_theme)
       if (changed)
 	do_theme_change (icon_theme);
     }
+#undef theme_changed
 }
 
 /* Callback when the icon theme GtkSetting changes
@@ -510,13 +514,15 @@ gtk_icon_theme_set_screen (GtkIconTheme *icon_theme,
 static gboolean
 pixbuf_supports_svg (void)
 {
-  GSList *formats = gdk_pixbuf_get_formats ();
+  GSList *formats;
   GSList *tmp_list;
   static gint found_svg = -1;
 
   if (found_svg != -1)
     return found_svg;
- 
+
+  formats = gdk_pixbuf_get_formats ();
+
   found_svg = FALSE; 
   for (tmp_list = formats; tmp_list && !found_svg; tmp_list = tmp_list->next)
     {
@@ -549,7 +555,6 @@ gtk_icon_theme_init (GtkIconTheme *icon_theme)
   icon_theme->priv = priv;
 
   priv->custom_theme = FALSE;
-  priv->current_theme = g_strdup (DEFAULT_THEME_NAME);
 
   xdg_data_dirs = g_get_system_data_dirs ();
   for (i = 0; xdg_data_dirs[i]; i++) ;
@@ -614,6 +619,9 @@ static void
 do_theme_change (GtkIconTheme *icon_theme)
 {
   GtkIconThemePrivate *priv = icon_theme->priv;
+
+  if (!priv->themes_valid)
+    return;
   
   GTK_NOTE (ICONTHEME, 
 	    g_print ("change to icon theme \"%s\"\n", priv->current_theme));
@@ -854,7 +862,7 @@ gtk_icon_theme_set_custom_theme (GtkIconTheme *icon_theme,
   if (theme_name != NULL)
     {
       priv->custom_theme = TRUE;
-      if (strcmp (theme_name, priv->current_theme) != 0)
+      if (!priv->current_theme || strcmp (theme_name, priv->current_theme) != 0)
 	{
 	  g_free (priv->current_theme);
 	  priv->current_theme = g_strdup (theme_name);
@@ -864,9 +872,12 @@ gtk_icon_theme_set_custom_theme (GtkIconTheme *icon_theme,
     }
   else
     {
-      priv->custom_theme = FALSE;
+      if (priv->custom_theme)
+	{
+	  priv->custom_theme = FALSE;
 
-      update_current_theme (icon_theme);
+	  update_current_theme (icon_theme);
+	}
     }
 }
 
@@ -878,7 +889,7 @@ insert_theme (GtkIconTheme *icon_theme, const char *theme_name)
   char **dirs;
   char **themes;
   GtkIconThemePrivate *priv;
-  IconTheme *theme;
+  IconTheme *theme = NULL;
   char *path;
   GKeyFile *theme_file;
   GError *error = NULL;
@@ -953,6 +964,8 @@ insert_theme (GtkIconTheme *icon_theme, const char *theme_name)
   if (!dirs)
     {
       g_warning ("Theme file for %s has no directories\n", theme_name);
+      priv->themes = g_list_remove (priv->themes, theme);
+      g_free (theme->name);
       g_free (theme->display_name);
       g_free (theme);
       g_key_file_free (theme_file);
@@ -1033,7 +1046,8 @@ load_themes (GtkIconTheme *icon_theme)
 
   priv->all_icons = g_hash_table_new (g_str_hash, g_str_equal);
   
-  insert_theme (icon_theme, priv->current_theme);
+  if (priv->current_theme)
+    insert_theme (icon_theme, priv->current_theme);
 
   /* Always look in the "default" icon theme, and in a fallback theme */
   if (priv->fallback_theme)
@@ -1050,20 +1064,21 @@ load_themes (GtkIconTheme *icon_theme)
       dir = icon_theme->priv->search_path[base];
 
       dir_mtime = g_slice_new (IconThemeDirMtime);
-      dir_mtime->cache = _gtk_icon_cache_new_for_path (dir);
-      dir_mtime->dir = g_strdup (dir);
-      if (g_stat (dir, &stat_buf) == 0 && S_ISDIR (stat_buf.st_mode))
-	dir_mtime->mtime = stat_buf.st_mtime;
-      else
-	dir_mtime->mtime = 0;
-      
       priv->dir_mtimes = g_list_append (priv->dir_mtimes, dir_mtime);
       
+      dir_mtime->dir = g_strdup (dir);
+      dir_mtime->mtime = 0;
+      dir_mtime->cache = NULL;
+
+      if (g_stat (dir, &stat_buf) != 0 || !S_ISDIR (stat_buf.st_mode))
+	continue;
+      dir_mtime->mtime = stat_buf.st_mtime;
+
+      dir_mtime->cache = _gtk_icon_cache_new_for_path (dir);
       if (dir_mtime->cache != NULL)
 	continue;
 
       gdir = g_dir_open (dir, 0, NULL);
-
       if (gdir == NULL)
 	continue;
 
@@ -1172,37 +1187,49 @@ ensure_valid_themes (GtkIconTheme *icon_theme)
   GTimeVal tv;
   gboolean was_valid = priv->themes_valid;
 
+  if (priv->loading_themes)
+    return;
+  priv->loading_themes = TRUE;
+
   _gtk_icon_theme_ensure_builtin_cache ();
 
   if (priv->themes_valid)
     {
       g_get_current_time (&tv);
 
-      if (ABS (tv.tv_sec - priv->last_stat_time) > 5)
-	gtk_icon_theme_rescan_if_needed (icon_theme);
+      if (ABS (tv.tv_sec - priv->last_stat_time) > 5 &&
+	  rescan_themes (icon_theme))
+	blow_themes (icon_theme);
     }
   
   if (!priv->themes_valid)
     {
       load_themes (icon_theme);
-      
-      if (!priv->check_reload && was_valid && priv->screen)
-	{	  
-	  static GdkAtom atom_iconthemes = GDK_NONE;
-	  GdkEvent *event = gdk_event_new (GDK_CLIENT_EVENT);
-	  int i;
 
-	  if (!atom_iconthemes)
-	    atom_iconthemes = gdk_atom_intern_static_string ("_GTK_LOAD_ICONTHEMES");
+      if (was_valid)
+	{
+	  g_signal_emit (icon_theme, signal_changed, 0);
 
-	  for (i = 0; i < 5; i++)
-	    event->client.data.l[i] = 0;
-	  event->client.data_format = 32;
-	  event->client.message_type = atom_iconthemes;
+	  if (!priv->check_reload && priv->screen)
+	    {	  
+	      static GdkAtom atom_iconthemes = GDK_NONE;
+	      GdkEvent *event = gdk_event_new (GDK_CLIENT_EVENT);
+	      int i;
 
-	  gdk_screen_broadcast_client_message (priv->screen, event);
+	      if (!atom_iconthemes)
+		atom_iconthemes = gdk_atom_intern_static_string ("_GTK_LOAD_ICONTHEMES");
+
+	      for (i = 0; i < 5; i++)
+		event->client.data.l[i] = 0;
+	      event->client.data_format = 32;
+	      event->client.message_type = atom_iconthemes;
+
+	      gdk_screen_broadcast_client_message (priv->screen, event);
+	    }
 	}
     }
+
+  priv->loading_themes = FALSE;
 }
 
 /**
@@ -1669,6 +1696,44 @@ gtk_icon_theme_get_example_icon_name (GtkIconTheme *icon_theme)
   return NULL;
 }
 
+
+static gboolean
+rescan_themes (GtkIconTheme *icon_theme)
+{
+  GtkIconThemePrivate *priv;
+  IconThemeDirMtime *dir_mtime;
+  GList *d;
+  int stat_res;
+  struct stat stat_buf;
+  GTimeVal tv;
+
+  priv = icon_theme->priv;
+
+  for (d = priv->dir_mtimes; d != NULL; d = d->next)
+    {
+      dir_mtime = d->data;
+
+      stat_res = g_stat (dir_mtime->dir, &stat_buf);
+
+      /* dir mtime didn't change */
+      if (stat_res == 0 &&
+	  S_ISDIR (stat_buf.st_mode) &&
+	  dir_mtime->mtime == stat_buf.st_mtime)
+	continue;
+      /* didn't exist before, and still doesn't */
+      if (dir_mtime->mtime == 0 &&
+	  (stat_res != 0 || !S_ISDIR (stat_buf.st_mode)))
+	continue;
+
+      return TRUE;
+    }
+
+  g_get_current_time (&tv);
+  priv->last_stat_time = tv.tv_sec;
+
+  return FALSE;
+}
+
 /**
  * gtk_icon_theme_rescan_if_needed:
  * @icon_theme: a #GtkIconTheme
@@ -1685,41 +1750,15 @@ gtk_icon_theme_get_example_icon_name (GtkIconTheme *icon_theme)
 gboolean
 gtk_icon_theme_rescan_if_needed (GtkIconTheme *icon_theme)
 {
-  GtkIconThemePrivate *priv;
-  IconThemeDirMtime *dir_mtime;
-  GList *d;
-  int stat_res;
-  struct stat stat_buf;
-  GTimeVal tv;
+  gboolean retval;
 
   g_return_val_if_fail (GTK_IS_ICON_THEME (icon_theme), FALSE);
 
-  priv = icon_theme->priv;
-  
-  for (d = priv->dir_mtimes; d != NULL; d = d->next)
-    {
-      dir_mtime = d->data;
-
-      stat_res = g_stat (dir_mtime->dir, &stat_buf);
-
-      /* dir mtime didn't change */
-      if (stat_res == 0 && 
-	  S_ISDIR (stat_buf.st_mode) &&
-	  dir_mtime->mtime == stat_buf.st_mtime)
-	continue;
-      /* didn't exist before, and still doesn't */
-      if (dir_mtime->mtime == 0 &&
-	  (stat_res != 0 || !S_ISDIR (stat_buf.st_mode)))
-	continue;
-	  
+  retval = rescan_themes (icon_theme);
+  if (retval)
       do_theme_change (icon_theme);
-      return TRUE;
-    }
-  
-  g_get_current_time (&tv);
-  priv->last_stat_time = tv.tv_sec;
 
-  return FALSE;
+  return retval;
 }
 
 static void
@@ -1887,13 +1926,14 @@ theme_lookup_icon (IconTheme          *theme,
   char *file;
   int min_difference, difference;
   BuiltinIcon *closest_builtin = NULL;
-  gboolean smaller, has_larger;
+  gboolean smaller, has_larger, match;
   IconSuffix suffix;
 
   min_difference = G_MAXINT;
   min_dir = NULL;
   has_larger = FALSE;
-  
+  match = FALSE;
+
   /* Builtin icons are logically part of the default theme and
    * are searched before other subdirectories of the default theme.
    */
@@ -1925,31 +1965,55 @@ theme_lookup_icon (IconTheme          *theme,
 
 	  if (difference == 0)
 	    {
-	      min_dir = dir;
-	      break;
+              if (dir->type == ICON_THEME_DIR_SCALABLE)
+                {
+                  /* don't pick scalable if we already found
+                   * a matching non-scalable dir
+                   */
+                  if (!match)
+                    {
+	              min_dir = dir;
+	              break;
+                    }
+                }
+              else
+                {
+                  /* for a matching non-scalable dir keep
+                   * going and look for a closer match
+                   */             
+                  difference = abs (size - dir->size);
+                  if (!match || difference < min_difference)
+                    {
+                      match = TRUE;
+                      min_difference = difference;
+	              min_dir = dir;
+                    }
+                  if (difference == 0)
+                    break;
+                }
+	    } 
+  
+          if (!match)
+            {
+	      if (!has_larger)
+	        {
+	          if (difference < min_difference || smaller)
+	  	    {
+		      min_difference = difference;
+		      min_dir = dir;
+		      has_larger = smaller;
+	 	    }
+	        }
+	      else
+	        {
+	          if (difference < min_difference && smaller)
+		    {
+		      min_difference = difference;
+		      min_dir = dir;
+		    }
+	        }
 	    }
-
-	  if (!has_larger)
-	    {
-	      if (difference < min_difference || smaller)
-		{
-		  min_difference = difference;
-		  min_dir = dir;
-		  closest_builtin = NULL;
-		  has_larger = smaller;
-		}
-	    }
-	  else
-	    {
-	      if (difference < min_difference && smaller)
-		{
-		  min_difference = difference;
-		  min_dir = dir;
-		  closest_builtin = NULL;
-		}
-	    }
-
-	}
+        }
 
       l = l->next;
 
@@ -1960,9 +2024,6 @@ theme_lookup_icon (IconTheme          *theme,
 	}
     }
 
-  if (closest_builtin)
-    return icon_info_new_builtin (closest_builtin);
-  
   if (min_dir)
     {
       GtkIconInfo *icon_info = icon_info_new ();
@@ -1972,13 +2033,23 @@ theme_lookup_icon (IconTheme          *theme,
       suffix = best_suffix (suffix, allow_svg);
       g_assert (suffix != ICON_SUFFIX_NONE);
       
-      file = g_strconcat (icon_name, string_from_suffix (suffix), NULL);
-      icon_info->filename = g_build_filename (min_dir->dir, file, NULL);
-      g_free (file);
+      if (min_dir->dir)
+        {
+          file = g_strconcat (icon_name, string_from_suffix (suffix), NULL);
+          icon_info->filename = g_build_filename (min_dir->dir, file, NULL);
+          g_free (file);
 #ifdef G_OS_WIN32
-      icon_info->cp_filename = g_locale_from_utf8 (icon_info->filename,
+          icon_info->cp_filename = g_locale_from_utf8 (icon_info->filename,
 						   -1, NULL, NULL, NULL);
 #endif
+        }
+      else
+        {
+          icon_info->filename = NULL;
+#ifdef G_OS_WIN32
+          icon_info->cp_filename = NULL;
+#endif
+        }
       
       if (min_dir->icon_data != NULL)
 	icon_info->data = g_hash_table_lookup (min_dir->icon_data, icon_name);
@@ -2028,7 +2099,10 @@ theme_lookup_icon (IconTheme          *theme,
       
       return icon_info;
     }
- 
+
+  if (closest_builtin)
+    return icon_info_new_builtin (closest_builtin);
+  
   return NULL;
 }
 
@@ -2191,8 +2265,8 @@ scan_directory (GtkIconThemePrivate *icon_theme,
       base_name = strip_suffix (name);
 
       hash_suffix = GPOINTER_TO_INT (g_hash_table_lookup (dir->icons, base_name));
+      g_hash_table_replace (icon_theme->all_icons, base_name, NULL);
       g_hash_table_replace (dir->icons, base_name, GUINT_TO_POINTER (hash_suffix| suffix));
-      g_hash_table_insert (icon_theme->all_icons, base_name, NULL);
     }
   
   g_dir_close (gdir);

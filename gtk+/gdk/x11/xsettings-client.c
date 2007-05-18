@@ -1,5 +1,5 @@
 /*
- * Copyright © 2001 Red Hat, Inc.
+ * Copyright © 2001, 2007 Red Hat, Inc.
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -441,9 +441,19 @@ check_manager_window (XSettingsClient *client)
   XFlush (client->display);
 
   if (client->manager_window && client->watch)
-    client->watch (client->manager_window, True, 
-		   PropertyChangeMask | StructureNotifyMask,
-		   client->cb_data);
+    {
+      if (!client->watch (client->manager_window, True, 
+			  PropertyChangeMask | StructureNotifyMask,
+			  client->cb_data))
+	{
+	  /* Inability to watch the window probably means that it was destroyed
+	   * after we ungrabbed
+	   */
+	  client->manager_window = None;
+	  return;
+	}
+    }
+      
   
   read_settings (client);
 }
@@ -454,6 +464,19 @@ xsettings_client_new (Display             *display,
 		      XSettingsNotifyFunc  notify,
 		      XSettingsWatchFunc   watch,
 		      void                *cb_data)
+{
+  return xsettings_client_new_with_grab_funcs (display, screen, notify, watch, cb_data,
+                                               NULL, NULL);
+}
+
+XSettingsClient *
+xsettings_client_new_with_grab_funcs (Display             *display,
+		                      int                  screen,
+		                      XSettingsNotifyFunc  notify,
+		                      XSettingsWatchFunc   watch,
+		                      void                *cb_data,
+		                      XSettingsGrabFunc    grab,
+		                      XSettingsGrabFunc    ungrab)
 {
   XSettingsClient *client;
   char buffer[256];
@@ -469,8 +492,8 @@ xsettings_client_new (Display             *display,
   client->notify = notify;
   client->watch = watch;
   client->cb_data = cb_data;
-  client->grab = NULL;
-  client->ungrab = NULL;
+  client->grab = grab;
+  client->ungrab = ungrab;
   
   client->manager_window = None;
   client->settings = NULL;
@@ -504,6 +527,7 @@ xsettings_client_new (Display             *display,
 
   return client;
 }
+
 
 void
 xsettings_client_set_grab_func   (XSettingsClient      *client,
@@ -571,7 +595,8 @@ xsettings_client_process_event (XSettingsClient *client,
       if (xev->xany.type == DestroyNotify)
 	{
 	  check_manager_window (client);
-	  return True;
+          /* let GDK do its cleanup */
+	  return False; 
 	}
       else if (xev->xany.type == PropertyNotify)
 	{
