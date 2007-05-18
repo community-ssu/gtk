@@ -687,15 +687,12 @@ gtk_file_system_gnome_vfs_list_volumes (GtkFileSystem *file_system)
       drive = gnome_vfs_volume_get_drive (volume);
 
       if (!drive && gnome_vfs_volume_is_user_visible (volume))
-	{
-	  gnome_vfs_drive_unref (drive);
-	  result = g_slist_prepend (result, volume);
-	}
+        result = g_slist_prepend (result, volume);
       else
-	{
-	  gnome_vfs_drive_unref (drive);
-	  gnome_vfs_volume_unref (volume);
-	}
+        gnome_vfs_volume_unref (volume);
+
+      if (drive)
+        gnome_vfs_drive_unref (drive);
     }
 
   g_list_free (list);
@@ -1780,7 +1777,21 @@ gtk_file_system_gnome_vfs_volume_get_is_mounted (GtkFileSystem        *file_syst
   if (IS_NETWORK_SERVERS_VOLUME_TOKEN (volume))
     return TRUE;
   else if (GNOME_IS_VFS_DRIVE (volume))
-    return gnome_vfs_drive_is_mounted (GNOME_VFS_DRIVE (volume));
+    {
+      GList *volumes, *l;
+      gboolean mounted = FALSE;
+
+      volumes = gnome_vfs_drive_get_mounted_volumes (GNOME_VFS_DRIVE (volume));
+      for (l = volumes; l; l = l->next)
+        {
+          if (gnome_vfs_volume_is_mounted (l->data))
+            mounted = TRUE;
+          gnome_vfs_volume_unref (l->data);
+        }
+      g_list_free (volumes);
+
+      return mounted;
+    }
   else if (GNOME_IS_VFS_VOLUME (volume))
     return gnome_vfs_volume_is_mounted (GNOME_VFS_VOLUME (volume));
   else

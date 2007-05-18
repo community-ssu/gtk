@@ -1,0 +1,18 @@
+2007-05-18  Richard Hult  <richard@imendio.com>
+
+	* Release 1.9.2.
+
+2007-05-18  Richard Hult  <richard@imendio.com>
+
+	* src/gtkfilesystemgnomevfs.c:
+	(gtk_file_system_gnome_vfs_list_volumes),
+	(gtk_file_system_gnome_vfs_volume_get_is_mounted):
+	- Work around detection of unmounted volumes, see GNOME bug
+	#439422.
+	- Fix memory bug, see GNOME bug #439420.
+
+2007-05-18  Richard Hult  <richard@imendio.com>
+
+	* configure.ac: Bump version
+
+

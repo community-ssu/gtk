@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_PREREQ(2.52)
  
-AC_INIT(gnome-vfs-filechooser-backend, 1.9.0)
+AC_INIT(gnome-vfs-filechooser-backend, 1.9.2)
 AC_CONFIG_SRCDIR(src/gtkfilesystemgnomevfs.c)
 AM_INIT_AUTOMAKE(AC_PACKAGE_NAME, AC_PACKAGE_VERSION)
 
