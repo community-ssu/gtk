@@ -90,5 +90,5 @@ glade_module_register_widgets(void)
          glade_standard_build_widget,
 			   NULL, NULL);
 
-    glade_provide("gtk");
+    glade_provide("glade-hildon");
 }

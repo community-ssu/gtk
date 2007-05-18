@@ -1,5 +1,10 @@
 2007-05-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
 
+	* libglade-hildon.c: (glade_module_register_widgets): provide
+	glade-hildon.
+
+2007-05-18  Fernando Herrera  <fernando.herrera-de-las-heras@nokia.com>
+
 	* Makefile.in:
 	* aclocal.m4:
 	* configure:
