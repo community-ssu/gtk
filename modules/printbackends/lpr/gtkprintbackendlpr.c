@@ -372,6 +372,8 @@ gtk_print_backend_lpr_print_stream (GtkPrintBackend        *print_backend,
       goto out;
     }
 
+  g_io_channel_set_close_on_unref (ps->in, TRUE);
+
   g_io_add_watch (data_io, 
                   G_IO_IN | G_IO_PRI | G_IO_ERR | G_IO_HUP,
                   (GIOFunc) lpr_write,
@@ -404,6 +406,7 @@ gtk_print_backend_lpr_init (GtkPrintBackendLpr *backend)
 
   gtk_print_backend_add_printer (GTK_PRINT_BACKEND (backend), printer);
   g_object_unref (printer);
+  gtk_print_backend_set_list_done (GTK_PRINT_BACKEND (backend));
 }
 
 static GtkPrinterOptionSet *

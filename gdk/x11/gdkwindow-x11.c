@@ -573,6 +573,7 @@ setup_toplevel_window (GdkWindow *window,
   GdkScreenX11 *screen_x11 = GDK_SCREEN_X11 (GDK_WINDOW_SCREEN (parent));
   XSizeHints size_hints;
   long pid;
+  Window leader_window;
     
   if (GDK_WINDOW_TYPE (window) == GDK_WINDOW_DIALOG)
     XSetTransientForHint (xdisplay, xid, xparent);
@@ -609,11 +610,14 @@ setup_toplevel_window (GdkWindow *window,
 		   XA_CARDINAL, 32,
 		   PropModeReplace,
 		   (guchar *)&pid, 1);
-  
+
+  leader_window = GDK_DISPLAY_X11 (screen_x11->display)->leader_window;
+  if (!leader_window)
+    leader_window = xid;
   XChangeProperty (xdisplay, xid, 
 		   gdk_x11_get_xatom_by_name_for_display (screen_x11->display, "WM_CLIENT_LEADER"),
 		   XA_WINDOW, 32, PropModeReplace,
-		   (guchar *) &GDK_DISPLAY_X11 (screen_x11->display)->leader_window, 1);
+		   (guchar *) &leader_window, 1);
 
   if (!obj->focus_on_map)
     gdk_x11_window_set_user_time (window, 0);
@@ -924,6 +928,9 @@ gdk_window_new (GdkWindow     *parent,
       break;
     }
 
+  if (attributes_mask & GDK_WA_TYPE_HINT)
+    gdk_window_set_type_hint (window, attributes->type_hint);
+
   return window;
 }
 
@@ -1146,27 +1153,28 @@ _gdk_windowing_window_destroy_foreign (GdkWindow *window)
    * so reparent it to the root window, and then send
    * it a delete event, as if we were a WM
    */
-  XClientMessageEvent xevent;
+  XClientMessageEvent xclient;
   
   gdk_error_trap_push ();
   gdk_window_hide (window);
   gdk_window_reparent (window, NULL, 0, 0);
   
-  xevent.type = ClientMessage;
-  xevent.window = GDK_WINDOW_XID (window);
-  xevent.message_type = gdk_x11_get_xatom_by_name_for_display (GDK_WINDOW_DISPLAY (window),
+  memset (&xclient, 0, sizeof (xclient));
+  xclient.type = ClientMessage;
+  xclient.window = GDK_WINDOW_XID (window);
+  xclient.message_type = gdk_x11_get_xatom_by_name_for_display (GDK_WINDOW_DISPLAY (window),
 							       "WM_PROTOCOLS");
-  xevent.format = 32;
-  xevent.data.l[0] = gdk_x11_get_xatom_by_name_for_display (GDK_WINDOW_DISPLAY (window),
+  xclient.format = 32;
+  xclient.data.l[0] = gdk_x11_get_xatom_by_name_for_display (GDK_WINDOW_DISPLAY (window),
 							    "WM_DELETE_WINDOW");
-  xevent.data.l[1] = CurrentTime;
-  xevent.data.l[2] = 0;
-  xevent.data.l[3] = 0;
-  xevent.data.l[4] = 0;
+  xclient.data.l[1] = CurrentTime;
+  xclient.data.l[2] = 0;
+  xclient.data.l[3] = 0;
+  xclient.data.l[4] = 0;
   
   XSendEvent (GDK_WINDOW_XDISPLAY (window),
 	      GDK_WINDOW_XID (window),
-	      False, 0, (XEvent *)&xevent);
+	      False, 0, (XEvent *)&xclient);
   gdk_display_sync (GDK_WINDOW_DISPLAY (window));
   gdk_error_trap_pop ();
 }
@@ -2041,6 +2049,10 @@ void
 gdk_x11_window_move_to_current_desktop (GdkWindow *window)
 {
   GdkToplevelX11 *toplevel;
+
+  g_return_if_fail (GDK_IS_WINDOW (window));
+  g_return_if_fail (GDK_WINDOW_TYPE (window) != GDK_WINDOW_CHILD);
+
   toplevel = _gdk_x11_window_get_toplevel (window);
 
   if (toplevel->on_all_desktops)
@@ -2055,7 +2067,6 @@ move_to_current_desktop (GdkWindow *window)
   if (gdk_x11_screen_supports_net_wm_hint (GDK_WINDOW_SCREEN (window),
 					   gdk_atom_intern_static_string ("_NET_WM_DESKTOP")))
     {
-      XEvent xev;
       Atom type;
       gint format;
       gulong nitems;
@@ -2078,26 +2089,28 @@ move_to_current_desktop (GdkWindow *window)
 
       if (type == XA_CARDINAL)
         {
+	  XClientMessageEvent xclient;
 	  current_desktop = (gulong *)data;
 	  
-          xev.xclient.type = ClientMessage;
-          xev.xclient.serial = 0;
-          xev.xclient.send_event = True;
-          xev.xclient.window = GDK_WINDOW_XWINDOW (window);
-	  xev.xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_DESKTOP");
-          xev.xclient.format = 32;
+	  memset (&xclient, 0, sizeof (xclient));
+          xclient.type = ClientMessage;
+          xclient.serial = 0;
+          xclient.send_event = True;
+          xclient.window = GDK_WINDOW_XWINDOW (window);
+	  xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_DESKTOP");
+          xclient.format = 32;
 
-          xev.xclient.data.l[0] = *current_desktop;
-          xev.xclient.data.l[1] = 0;
-          xev.xclient.data.l[2] = 0;
-          xev.xclient.data.l[3] = 0;
-          xev.xclient.data.l[4] = 0;
+          xclient.data.l[0] = *current_desktop;
+          xclient.data.l[1] = 0;
+          xclient.data.l[2] = 0;
+          xclient.data.l[3] = 0;
+          xclient.data.l[4] = 0;
       
           XSendEvent (GDK_DISPLAY_XDISPLAY (display), 
                       GDK_WINDOW_XROOTWIN (window), 
                       False,
                       SubstructureRedirectMask | SubstructureNotifyMask,
-                      &xev);
+                      (XEvent *)&xclient);
 
           XFree (current_desktop);
         }
@@ -2129,24 +2142,23 @@ gdk_window_focus (GdkWindow *window,
   if (gdk_x11_screen_supports_net_wm_hint (GDK_WINDOW_SCREEN (window),
 					   gdk_atom_intern_static_string ("_NET_ACTIVE_WINDOW")))
     {
-      XEvent xev;
+      XClientMessageEvent xclient;
 
-      xev.xclient.type = ClientMessage;
-      xev.xclient.serial = 0;
-      xev.xclient.send_event = True;
-      xev.xclient.window = GDK_WINDOW_XWINDOW (window);
-      xev.xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display,
+      memset (&xclient, 0, sizeof (xclient));
+      xclient.type = ClientMessage;
+      xclient.window = GDK_WINDOW_XWINDOW (window);
+      xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display,
 									"_NET_ACTIVE_WINDOW");
-      xev.xclient.format = 32;
-      xev.xclient.data.l[0] = 1; /* requestor type; we're an app */
-      xev.xclient.data.l[1] = timestamp;
-      xev.xclient.data.l[2] = None; /* currently active window */
-      xev.xclient.data.l[3] = 0;
-      xev.xclient.data.l[4] = 0;
+      xclient.format = 32;
+      xclient.data.l[0] = 1; /* requestor type; we're an app */
+      xclient.data.l[1] = timestamp;
+      xclient.data.l[2] = None; /* currently active window */
+      xclient.data.l[3] = 0;
+      xclient.data.l[4] = 0;
       
       XSendEvent (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XROOTWIN (window), False,
                   SubstructureRedirectMask | SubstructureNotifyMask,
-                  &xev);
+                  (XEvent *)&xclient);
     }
   else
     {
@@ -2392,27 +2404,26 @@ gdk_wmspec_change_state (gboolean   add,
 			 GdkAtom    state2)
 {
   GdkDisplay *display = GDK_WINDOW_DISPLAY (window);
-  XEvent xev;
+  XClientMessageEvent xclient;
   
 #define _NET_WM_STATE_REMOVE        0    /* remove/unset property */
 #define _NET_WM_STATE_ADD           1    /* add/set property */
 #define _NET_WM_STATE_TOGGLE        2    /* toggle property  */  
   
-  xev.xclient.type = ClientMessage;
-  xev.xclient.serial = 0;
-  xev.xclient.send_event = True;
-  xev.xclient.window = GDK_WINDOW_XID (window);
-  xev.xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE");
-  xev.xclient.format = 32;
-  xev.xclient.data.l[0] = add ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
-  xev.xclient.data.l[1] = gdk_x11_atom_to_xatom_for_display (display, state1);
-  xev.xclient.data.l[2] = gdk_x11_atom_to_xatom_for_display (display, state2);
-  xev.xclient.data.l[3] = 0;
-  xev.xclient.data.l[4] = 0;
+  memset (&xclient, 0, sizeof (xclient));
+  xclient.type = ClientMessage;
+  xclient.window = GDK_WINDOW_XID (window);
+  xclient.message_type = gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_STATE");
+  xclient.format = 32;
+  xclient.data.l[0] = add ? _NET_WM_STATE_ADD : _NET_WM_STATE_REMOVE;
+  xclient.data.l[1] = gdk_x11_atom_to_xatom_for_display (display, state1);
+  xclient.data.l[2] = gdk_x11_atom_to_xatom_for_display (display, state2);
+  xclient.data.l[3] = 0;
+  xclient.data.l[4] = 0;
   
   XSendEvent (GDK_WINDOW_XDISPLAY (window), GDK_WINDOW_XROOTWIN (window), False,
 	      SubstructureRedirectMask | SubstructureNotifyMask,
-	      &xev);
+	      (XEvent *)&xclient);
 }
 
 /**
@@ -3813,6 +3824,7 @@ gdk_window_add_colormap_windows (GdkWindow *window)
 
   if (GDK_WINDOW_DESTROYED (window))
     return;
+
   toplevel = gdk_window_get_toplevel (window);
   
   old_windows = NULL;
@@ -4264,7 +4276,8 @@ gdk_x11_window_set_user_time (GdkWindow *window,
   if (timestamp_long != GDK_CURRENT_TIME)
     display_x11->user_time = timestamp_long;
 
-  toplevel->user_time = timestamp_long;
+  if (toplevel)
+    toplevel->user_time = timestamp_long;
 }
 
 #define GDK_SELECTION_MAX_SIZE(display)                                 \
@@ -4593,7 +4606,7 @@ gdk_window_stick (GdkWindow *window)
        * viewport. i.e. glue to the monitor glass in all cases.
        */
       
-      XEvent xev;
+      XClientMessageEvent xclient;
 
       /* Request stick during viewport scroll */
       gdk_wmspec_change_state (TRUE, window,
@@ -4601,24 +4614,23 @@ gdk_window_stick (GdkWindow *window)
 			       NULL);
 
       /* Request desktop 0xFFFFFFFF */
-      xev.xclient.type = ClientMessage;
-      xev.xclient.serial = 0;
-      xev.xclient.send_event = True;
-      xev.xclient.window = GDK_WINDOW_XWINDOW (window);
-      xev.xclient.display = GDK_WINDOW_XDISPLAY (window);
-      xev.xclient.message_type = gdk_x11_get_xatom_by_name_for_display (GDK_WINDOW_DISPLAY (window), 
+      memset (&xclient, 0, sizeof (xclient));
+      xclient.type = ClientMessage;
+      xclient.window = GDK_WINDOW_XWINDOW (window);
+      xclient.display = GDK_WINDOW_XDISPLAY (window);
+      xclient.message_type = gdk_x11_get_xatom_by_name_for_display (GDK_WINDOW_DISPLAY (window), 
 									"_NET_WM_DESKTOP");
-      xev.xclient.format = 32;
+      xclient.format = 32;
 
-      xev.xclient.data.l[0] = 0xFFFFFFFF;
-      xev.xclient.data.l[1] = 0;
-      xev.xclient.data.l[2] = 0;
-      xev.xclient.data.l[3] = 0;
-      xev.xclient.data.l[4] = 0;
+      xclient.data.l[0] = 0xFFFFFFFF;
+      xclient.data.l[1] = 0;
+      xclient.data.l[2] = 0;
+      xclient.data.l[3] = 0;
+      xclient.data.l[4] = 0;
 
       XSendEvent (GDK_WINDOW_XDISPLAY (window), GDK_WINDOW_XROOTWIN (window), False,
                   SubstructureRedirectMask | SubstructureNotifyMask,
-                  &xev);
+                  (XEvent *)&xclient);
     }
   else
     {
@@ -5658,27 +5670,26 @@ wmspec_moveresize (GdkWindow *window,
 {
   GdkDisplay *display = GDK_WINDOW_DISPLAY (window);
   
-  XEvent xev;
+  XClientMessageEvent xclient;
 
   /* Release passive grab */
   gdk_display_pointer_ungrab (display, timestamp);
 
-  xev.xclient.type = ClientMessage;
-  xev.xclient.serial = 0;
-  xev.xclient.send_event = True;
-  xev.xclient.window = GDK_WINDOW_XID (window);
-  xev.xclient.message_type =
+  memset (&xclient, 0, sizeof (xclient));
+  xclient.type = ClientMessage;
+  xclient.window = GDK_WINDOW_XID (window);
+  xclient.message_type =
     gdk_x11_get_xatom_by_name_for_display (display, "_NET_WM_MOVERESIZE");
-  xev.xclient.format = 32;
-  xev.xclient.data.l[0] = root_x;
-  xev.xclient.data.l[1] = root_y;
-  xev.xclient.data.l[2] = direction;
-  xev.xclient.data.l[3] = 0;
-  xev.xclient.data.l[4] = 0;
+  xclient.format = 32;
+  xclient.data.l[0] = root_x;
+  xclient.data.l[1] = root_y;
+  xclient.data.l[2] = direction;
+  xclient.data.l[3] = 0;
+  xclient.data.l[4] = 0;
   
   XSendEvent (GDK_DISPLAY_XDISPLAY (display), GDK_WINDOW_XROOTWIN (window), False,
 	      SubstructureRedirectMask | SubstructureNotifyMask,
-	      &xev);
+	      (XEvent *)&xclient);
 }
 
 typedef struct _MoveResizeData MoveResizeData;

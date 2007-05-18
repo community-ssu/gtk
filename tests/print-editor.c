@@ -363,6 +363,8 @@ draw_page (GtkPrintOperation *operation,
     }
   while (i < end &&
 	 pango_layout_iter_next_line (iter));
+
+  pango_layout_iter_free (iter);
 }
 
 static void
@@ -579,7 +581,7 @@ preview_cb (GtkPrintOperation        *op,
   gtk_print_context_set_cairo_context (context, cr, 72, 72);
   cairo_destroy (cr);
   
-  pop->op = op;
+  pop->op = g_object_ref (op);
   pop->preview = preview;
   pop->spin = page;
   pop->area = da;
@@ -650,6 +652,15 @@ print_done (GtkPrintOperation *op,
 }
 
 static void
+end_print (GtkPrintOperation *op, GtkPrintContext *context, PrintData *print_data)
+{
+  g_list_free (print_data->page_breaks);
+  print_data->page_breaks = NULL;
+  g_object_unref (print_data->layout);
+  print_data->layout = NULL;
+}
+
+static void
 do_print_or_preview (GtkAction *action, GtkPrintOperationAction print_action)
 {
   GtkPrintOperation *print;
@@ -671,6 +682,7 @@ do_print_or_preview (GtkAction *action, GtkPrintOperationAction print_action)
     gtk_print_operation_set_default_page_setup (print, page_setup);
   
   g_signal_connect (print, "begin_print", G_CALLBACK (begin_print), print_data);
+  g_signal_connect (print, "end-print", G_CALLBACK (end_print), print_data);
   g_signal_connect (print, "draw_page", G_CALLBACK (draw_page), print_data);
   g_signal_connect (print, "create_custom_widget", G_CALLBACK (create_custom_widget), print_data);
   g_signal_connect (print, "custom_widget_apply", G_CALLBACK (custom_widget_apply), print_data);

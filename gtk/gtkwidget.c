@@ -2437,6 +2437,8 @@ gtk_widget_destroyed (GtkWidget      *widget,
 void
 gtk_widget_show (GtkWidget *widget)
 {
+  g_return_if_fail (GTK_IS_WIDGET (widget));
+
   if (!GTK_WIDGET_VISIBLE (widget))
     {
       g_object_ref (widget);
@@ -2943,6 +2945,8 @@ gtk_widget_get_draw_rectangle (GtkWidget    *widget,
 	  rect->y -= draw_border->left;
 	  rect->width += draw_border->left + draw_border->right;
 	  rect->height += draw_border->top + draw_border->bottom;
+        
+          gtk_border_free (draw_border);
 	}
 
       if (GTK_IS_CONTAINER (widget))

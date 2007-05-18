@@ -87,6 +87,7 @@ static void     update_collate_icon                (GtkToggleButton    *toggle_b
 						    GtkPrintUnixDialog *dialog);
 static gboolean dialog_get_collate                 (GtkPrintUnixDialog *dialog);
 static gboolean dialog_get_reverse                 (GtkPrintUnixDialog *dialog);
+static gint     dialog_get_n_copies                (GtkPrintUnixDialog *dialog);
 
 enum {
   PROP_0,
@@ -414,6 +415,7 @@ printer_added_cb (GtkPrintBackend    *backend,
   GtkPrintUnixDialogPrivate *priv = dialog->priv;
   GtkTreeIter iter, filter_iter;
   GtkTreeSelection *selection;
+  GtkTreePath *path;
 
   gtk_list_store_append (GTK_LIST_STORE (priv->printer_list), &iter);
   
@@ -433,7 +435,8 @@ printer_added_cb (GtkPrintBackend    *backend,
 
   gtk_tree_model_filter_convert_child_iter_to_iter (priv->printer_list_filter,
 						    &filter_iter, &iter);
-  
+  path = gtk_tree_model_get_path (GTK_TREE_MODEL (priv->printer_list_filter), &filter_iter);
+
   selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->printer_treeview));
   
   if (priv->waiting_for_printer != NULL &&
@@ -442,6 +445,8 @@ printer_added_cb (GtkPrintBackend    *backend,
     {
       priv->internal_printer_change = TRUE;
       gtk_tree_selection_select_iter (selection, &filter_iter);
+      gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (priv->printer_treeview),
+                                    path, NULL, TRUE, 0.5, 0.0);
       priv->internal_printer_change = FALSE;
       g_free (priv->waiting_for_printer);
       priv->waiting_for_printer = NULL;
@@ -451,8 +456,12 @@ printer_added_cb (GtkPrintBackend    *backend,
     {
       priv->internal_printer_change = TRUE;
       gtk_tree_selection_select_iter (selection, &filter_iter);
+      gtk_tree_view_scroll_to_cell (GTK_TREE_VIEW (priv->printer_treeview),
+                                    path, NULL, TRUE, 0.5, 0.0);
       priv->internal_printer_change = FALSE;
     }
+
+  gtk_tree_path_free (path);
 }
 
 static void
@@ -1018,8 +1027,10 @@ update_dialog_from_capabilities (GtkPrintUnixDialog *dialog)
   GtkPrintCapabilities caps;
   GtkPrintUnixDialogPrivate *priv = dialog->priv;
   gboolean can_collate;
+  const gchar *copies;
 
-  can_collate = gtk_spin_button_get_value_as_int (GTK_SPIN_BUTTON (priv->copies_spin)) > 1;
+  copies = gtk_entry_get_text (GTK_ENTRY (priv->copies_spin));
+  can_collate = (*copies != '\0' && atoi (copies) > 1);
 
   caps = priv->manual_capabilities | priv->printer_capabilities;
 
@@ -1033,7 +1044,7 @@ update_dialog_from_capabilities (GtkPrintUnixDialog *dialog)
   gtk_widget_set_sensitive (priv->reverse_check,
 			    caps & GTK_PRINT_CAPABILITY_REVERSE);
   gtk_widget_set_sensitive (priv->scale_spin,
-			    caps & GTK_PRINT_CAPABILITY_PAGE_SET);
+			    caps & GTK_PRINT_CAPABILITY_SCALE);
 
   if (caps & GTK_PRINT_CAPABILITY_PREVIEW)
     gtk_widget_show (priv->preview_button);
@@ -1331,10 +1342,13 @@ draw_collate_cb (GtkWidget	    *widget,
   gint size;
   gfloat scale;
   gboolean collate, reverse, rtl;
+  gint copies;
   gint text_x;
 
   collate = dialog_get_collate (dialog);
   reverse = dialog_get_reverse (dialog);
+  copies = dialog_get_n_copies (dialog);
+
   rtl = (gtk_widget_get_direction (GTK_WIDGET (widget)) == GTK_TEXT_DIR_RTL);
 
   settings = gtk_widget_get_settings (widget);
@@ -1347,12 +1361,20 @@ draw_collate_cb (GtkWidget	    *widget,
 
   cr = gdk_cairo_create (widget->window);
 
-  paint_page (widget, cr, scale, rtl ? 40: 15, 5, collate == reverse ? "1" : "2", text_x);
-  paint_page (widget, cr, scale, rtl ? 50: 5, 15, reverse ? "2" : "1", text_x);
+  if (copies == 1)
+    {
+      paint_page (widget, cr, scale, rtl ? 40: 15, 5, reverse ? "1" : "2", text_x);
+      paint_page (widget, cr, scale, rtl ? 50: 5, 15, reverse ? "2" : "1", text_x);
+    }
+  else
+    {
+      paint_page (widget, cr, scale, rtl ? 40: 15, 5, collate == reverse ? "1" : "2", text_x);
+      paint_page (widget, cr, scale, rtl ? 50: 5, 15, reverse ? "2" : "1", text_x);
 
-  paint_page (widget, cr, scale, rtl ? 5 : 50, 5, reverse ? "1" : "2", text_x);
-  paint_page (widget, cr, scale, rtl ? 15 : 40, 15, collate == reverse ? "2" : "1", text_x);
-  
+      paint_page (widget, cr, scale, rtl ? 5 : 50, 5, reverse ? "1" : "2", text_x);
+      paint_page (widget, cr, scale, rtl ? 15 : 40, 15, collate == reverse ? "2" : "1", text_x);
+    }
+
   cairo_destroy (cr);
 
   return TRUE;
@@ -1541,6 +1563,8 @@ create_main_page (GtkPrintUnixDialog *dialog)
 		    0, 0);
   gtk_label_set_mnemonic_widget (GTK_LABEL (label), spinbutton);
   g_signal_connect_swapped (spinbutton, "value-changed", 
+			    G_CALLBACK (update_dialog_from_capabilities), dialog);
+  g_signal_connect_swapped (spinbutton, "changed", 
 			    G_CALLBACK (update_dialog_from_capabilities), dialog);
   
   check = gtk_check_button_new_with_mnemonic (_("C_ollate"));

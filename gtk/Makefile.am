@@ -48,16 +48,16 @@ endif
 
 if OS_WIN32
 gtk_def = gtk.def
-gtk_win32_symbols = -export-symbols $(gtk_def)
+gtk_win32_symbols = -export-symbols gtk.def
 
 gtk_win32_res = gtk-win32-res.o
-gtk_win32_res_ldflag = -Wl,$(gtk_win32_res)
+gtk_win32_res_ldflag = -Wl,gtk-win32-res.o
 
 gtk-win32-res.o : gtk-win32.rc
 	$(WINDRES) gtk-win32.rc $@
 
 install-def-file: gtk.def
-	$(INSTALL) $(gtk_def) $(DESTDIR)$(libdir)/gtk-win32-2.0.def
+	$(INSTALL) gtk.def $(DESTDIR)$(libdir)/gtk-win32-2.0.def
 uninstall-def-file:
 	-rm $(DESTDIR)$(libdir)/gtk-win32-2.0.def
 else
@@ -94,7 +94,7 @@ check-aliases:
 
 .PHONY: check-aliases
 
-TESTS_ENVIRONMENT = gtk_all_c_sources="$(gtk_all_c_sources)"
+TESTS_ENVIRONMENT = srcdir="$(srcdir)" gtk_all_c_sources="$(gtk_all_c_sources)"
 TESTS = aliasfilescheck.sh
 if OS_LINUX
 TESTS += abicheck.sh pltcheck.sh
@@ -318,12 +318,13 @@ gtk_public_h_sources =          \
 	gtkwidget.h		\
 	gtkwindow.h
 
+if OS_UNIX
 gtk_unix_print_public_h_sources =    \
 	gtkpagesetupunixdialog.h	\
 	gtkprintunixdialog.h		\
 	gtkprinter.h			\
 	gtkprintjob.h
-
+endif
 
 # Installed header files without compatibility guarantees
 # that are not included in gtk/gtk.h
@@ -345,6 +346,7 @@ gtk_private_h_sources =		\
 	gtkfilesystemunix.h	\
 	gtkhsv.h		\
 	gtkiconcache.h		\
+	gtkiconcachevalidator.h	\
 	gtkintl.h		\
 	gtkkeyhash.h		\
 	gtkmnemonichash.h	\
@@ -453,6 +455,7 @@ gtk_base_c_sources =            \
 	gtkhseparator.c		\
 	gtkhsv.c		\
 	gtkiconcache.c		\
+	gtkiconcachevalidator.c	\
 	gtkiconfactory.c	\
 	gtkicontheme.c		\
 	gtkiconview.c		\
@@ -636,10 +639,10 @@ gtk_use_win32_c_sources = \
 	gtksocket-win32.c \
 	gtkwin32embed.c   \
 	gtkwin32embedwidget.c
-gtk_use_stuc_c_sources = \
+gtk_use_stub_c_sources = \
 	gtkplug-stub.c   \
 	gtksocket-stub.c
-gtk_all_c_sources += $(gtk_use_x11_c_sources) $(gtk_use_win32_c_sources) $(gtk_use_stuc_c_sources)
+gtk_all_c_sources += $(gtk_use_x11_c_sources) $(gtk_use_win32_c_sources) $(gtk_use_stub_c_sources)
 if USE_X11
 gtk_private_h_sources += gtkxembed.h gtktrayicon.h xembed.h
 gtk_c_sources += $(gtk_use_x11_c_sources)
@@ -1116,11 +1119,19 @@ stamp-icons: $(STOCK_ICONS)
 	done									\
 	&& touch stamp-icons
 
+if CROSS_COMPILING
+gtk_update_icon_cache_program = $(GTK_UPDATE_ICON_CACHE)
+else
+gtk_update_icon_cache_program =							\
+	GDK_PIXBUF_MODULE_FILE=$(top_builddir)/gdk-pixbuf/gdk-pixbuf.loaders	\
+	   ./gtk-update-icon-cache
+endif
+
 gtkbuiltincache.h: @REBUILD@ stamp-icons
 	$(MAKE) $(AM_MAKEFLAGS) gtk-update-icon-cache$(EXEEXT)
-	GDK_PIXBUF_MODULE_FILE=$(top_builddir)/gdk-pixbuf/gdk-pixbuf.loaders	\
-	   ./gtk-update-icon-cache --force --ignore-theme-index 		\
-	   --source builtin_icons stock-icons > gtkbuiltincache.h
+	$(gtk_update_icon_cache_program) --force --ignore-theme-index		\
+	   --source builtin_icons stock-icons > gtkbuiltincache.h.tmp &&        \
+	mv gtkbuiltincache.h.tmp gtkbuiltincache.h
 
 EXTRA_DIST +=                   \
 	$(STOCK_ICONS)		\

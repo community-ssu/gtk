@@ -452,21 +452,23 @@ gtk_radio_button_focus (GtkWidget         *widget,
       gboolean cursor_only;
       gboolean wrap_around;
 
-      focus_list = g_slist_copy (radio_button->group);
-      
       switch (direction)
 	{
-	case GTK_DIR_TAB_FORWARD:
-	case GTK_DIR_TAB_BACKWARD:
-	  return FALSE;
 	case GTK_DIR_LEFT:
 	case GTK_DIR_RIGHT:
+	  focus_list = g_slist_copy (radio_button->group);
 	  focus_list = g_slist_sort_with_data (focus_list, left_right_compare, toplevel);
 	  break;
 	case GTK_DIR_UP:
 	case GTK_DIR_DOWN:
+	  focus_list = g_slist_copy (radio_button->group);
 	  focus_list = g_slist_sort_with_data (focus_list, up_down_compare, toplevel);
 	  break;
+	case GTK_DIR_TAB_FORWARD:
+	case GTK_DIR_TAB_BACKWARD:
+          /* fall through */
+	default:
+	  return FALSE;
 	}
 
       if (direction == GTK_DIR_LEFT || direction == GTK_DIR_UP)

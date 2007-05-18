@@ -455,10 +455,7 @@ gdk_pixbuf_loader_write (GdkPixbufLoader *loader,
       
                         eaten = gdk_pixbuf_loader_eat_header_write (loader, buf, count, error);
                         if (eaten <= 0)
-                                {
-                                        gdk_pixbuf_loader_ensure_error (loader, error);
-                                        return FALSE;
-                                }
+                               goto fail; 
       
                         count -= eaten;
                         buf += eaten;
@@ -466,16 +463,18 @@ gdk_pixbuf_loader_write (GdkPixbufLoader *loader,
   
         if (count > 0 && priv->image_module->load_increment)
                 {
-                        gboolean retval;
-                        retval = priv->image_module->load_increment (priv->context, buf, count,
-                                                                     error);
-                        if (!retval)
-                                gdk_pixbuf_loader_ensure_error (loader, error);
-
-                        return retval;
+                        if (!priv->image_module->load_increment (priv->context, buf, count,
+                                                                 error))
+				goto fail;
                 }
       
         return TRUE;
+
+ fail:
+        gdk_pixbuf_loader_ensure_error (loader, error);
+        gdk_pixbuf_loader_close (loader, NULL);
+        
+        return FALSE;
 }
 
 /**
@@ -693,8 +692,8 @@ gdk_pixbuf_loader_close (GdkPixbufLoader *loader,
   
         priv = loader->priv;
   
-        /* we expect it's not closed */
-        g_return_val_if_fail (priv->closed == FALSE, TRUE);
+        if (priv->closed)
+                return TRUE;
   
         /* We have less the LOADER_HEADER_SIZE bytes in the image.  
          * Flush it, and keep going. 
@@ -712,8 +711,10 @@ gdk_pixbuf_loader_close (GdkPixbufLoader *loader,
 
         if (priv->image_module && priv->image_module->stop_load && priv->context) 
                 {
-                        if (!priv->image_module->stop_load (priv->context, error))
+                        GError *tmp = NULL;
+                        if (!priv->image_module->stop_load (priv->context, &tmp) || tmp)
                                 {
+					g_propagate_error (error, tmp);
                                         gdk_pixbuf_loader_ensure_error (loader, error);
                                         retval = FALSE;
                                 }

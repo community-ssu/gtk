@@ -59,6 +59,7 @@ noinst_PROGRAMS =			\
 	testprint			\
 	testrgb				\
 	testrecentchooser 		\
+	testrecentchoosermenu		\
 	testrichtext			\
 	testselection			\
 	$(testsocket_programs)		\
@@ -117,6 +118,7 @@ testnotebookdnd_DEPENDENCIES = $(TEST_DEPS)
 testnouiprint_DEPENDENCIES = $(TEST_DEPS)
 testprint_DEPENDENCIES = $(TEST_DEPS)
 testrecentchooser_DEPENDENCIES = $(TEST_DEPS)
+testrecentchoosermenu_DEPENDENCIES = $(TEST_DEPS)
 testrgb_DEPENDENCIES = $(TEST_DEPS)
 testrichtext_DEPENDENCIES = $(TEST_DEPS)
 testselection_DEPENDENCIES = $(TEST_DEPS)
@@ -170,6 +172,7 @@ testnotebookdnd_LDADD = $(LDADDS)
 testnouiprint_LDADD = $(LDADDS)
 testprint_LDADD = $(LDADDS)
 testrecentchooser_LDADD = $(LDADDS)
+testrecentchoosermenu_LDADD = $(LDADDS)
 testrgb_LDADD = $(LDADDS)
 testrichtext_LDADD = $(LDADDS)
 testselection_LDADD = $(LDADDS)
@@ -277,6 +280,9 @@ testrecentchooser_SOURCES = 	\
 
 testgrouping_SOURCES =		\
 	testgrouping.c
+
+testrecentchoosermenu_SOURCES =	\
+	testrecentchoosermenu.c
 
 EXTRA_DIST = 			\
 	prop-editor.h		\

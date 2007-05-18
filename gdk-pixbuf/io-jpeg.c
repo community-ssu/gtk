@@ -307,6 +307,8 @@ gdk_pixbuf__jpeg_image_load (FILE *f, GError **error)
 			g_object_unref (pixbuf);
 
 		jpeg_destroy_decompress (&cinfo);
+
+		/* error should have been set by fatal_error_handler () */
 		return NULL;
 	}
 
@@ -718,8 +720,13 @@ gdk_pixbuf__jpeg_image_load_increment (gpointer data,
 			height = cinfo->image_height;
 			if (context->size_func) {
 				(* context->size_func) (&width, &height, context->user_data);
-				if (width == 0 || height == 0)
+				if (width == 0 || height == 0) {
+					g_set_error (error,
+						     GDK_PIXBUF_ERROR,
+						     GDK_PIXBUF_ERROR_CORRUPT_IMAGE,
+						     _("Transformed JPEG has zero width or height."));
 					return FALSE;
+				}
 			}
 			
 			for (cinfo->scale_denom = 2; cinfo->scale_denom <= 8; cinfo->scale_denom *= 2) {
@@ -947,9 +954,7 @@ real_save_jpeg (GdkPixbuf          *pixbuf,
                                        return FALSE;
                                }
                        } else {
-                               g_warning ("Bad option name '%s' passed to JPEG saver",
-                                          *kiter);
-                               return FALSE;
+                               g_warning ("Unrecognized parameter (%s) passed to JPEG saver.", *kiter);
                        }
                
                        ++kiter;
@@ -962,10 +967,7 @@ real_save_jpeg (GdkPixbuf          *pixbuf,
 
        w = gdk_pixbuf_get_width (pixbuf);
        h = gdk_pixbuf_get_height (pixbuf);
-
-       /* no image data? abort */
        pixels = gdk_pixbuf_get_pixels (pixbuf);
-       g_return_val_if_fail (pixels != NULL, FALSE);
 
        /* Allocate a small buffer to convert image data,
 	* and a larger buffer if doing to_callback save.

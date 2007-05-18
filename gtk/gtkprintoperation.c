@@ -120,9 +120,13 @@ gtk_print_operation_finalize (GObject *object)
   if (priv->print_settings)
     g_object_unref (priv->print_settings);
   
+  if (priv->print_context)
+    g_object_unref (priv->print_context);
+
   g_free (priv->export_filename);
   g_free (priv->job_name);
   g_free (priv->custom_tab_label);
+  g_free (priv->status_string);
 
   if (priv->print_pages_idle_id > 0)
     g_source_remove (priv->print_pages_idle_id);
@@ -160,7 +164,11 @@ gtk_print_operation_init (GtkPrintOperation *operation)
   priv->unit = GTK_UNIT_PIXEL;
 
   appname = g_get_application_name ();
-  priv->job_name = g_strdup_printf ("%s job #%d", appname, ++job_nr);
+  /* translators: this string is the default job title for print
+   * jobs. %s gets replaced by the application name, %d gets replaced
+   * by the job number.
+   */
+  priv->job_name = g_strdup_printf (_("%s job #%d"), appname, ++job_nr);
 }
 
 static void
@@ -185,11 +193,13 @@ preview_iface_end_preview (GtkPrintOperationPreview *preview)
 
   if (op->priv->rloop)
     g_main_loop_quit (op->priv->rloop);
-
-  op->priv->end_run (op, op->priv->is_sync, TRUE);
   
-  g_signal_emit (op, signals[DONE], 0,
-		 GTK_PRINT_OPERATION_RESULT_APPLY);
+  if (op->priv->end_run)
+    op->priv->end_run (op, op->priv->is_sync, TRUE);
+  
+  _gtk_print_operation_set_status (op, GTK_PRINT_STATUS_FINISHED, NULL);
+
+  g_signal_emit (op, signals[DONE], 0, GTK_PRINT_OPERATION_RESULT_APPLY);
 }
 
 static gboolean
@@ -250,8 +260,6 @@ preview_end_run (GtkPrintOperation *op,
 {
   g_free (op->priv->page_ranges);
   op->priv->page_ranges = NULL;
-
-  _gtk_print_operation_set_status (op, GTK_PRINT_STATUS_FINISHED, NULL);
 }
 
 
@@ -397,6 +405,8 @@ preview_print_idle_done (gpointer data)
   g_free (pop->filename);
 
   gtk_print_operation_preview_end_preview (pop->preview);
+
+  g_object_unref (op);
   g_free (pop);
   
   GDK_THREADS_LEAVE ();
@@ -454,6 +464,7 @@ preview_ready (GtkPrintOperationPreview *preview,
   pop->page_nr = 0;
   pop->print_context = context;
 
+  g_object_ref (preview);
   g_idle_add_full (G_PRIORITY_DEFAULT_IDLE + 10,
 	           preview_print_idle,
 		   pop,
@@ -502,6 +513,18 @@ gtk_print_operation_create_custom_widget (GtkPrintOperation *operation)
   return NULL;
 }
 
+static void
+gtk_print_operation_done (GtkPrintOperation *operation)
+{
+  GtkPrintOperationPrivate *priv = operation->priv;
+
+  if (priv->print_context)
+    {
+      g_object_unref (priv->print_context);
+      priv->print_context = NULL;
+    } 
+}
+
 static gboolean
 custom_widget_accumulator (GSignalInvocationHint *ihint,
 			   GValue                *return_accu,
@@ -530,6 +553,7 @@ gtk_print_operation_class_init (GtkPrintOperationClass *class)
  
   class->preview = gtk_print_operation_preview_handler; 
   class->create_custom_widget = gtk_print_operation_create_custom_widget;
+  class->done = gtk_print_operation_done;
   
   g_type_class_add_private (gobject_class, sizeof (GtkPrintOperationPrivate));
 
@@ -1284,7 +1308,7 @@ gtk_print_operation_set_job_name (GtkPrintOperation *op,
   GtkPrintOperationPrivate *priv;
 
   g_return_if_fail (GTK_IS_PRINT_OPERATION (op));
-  g_return_if_fail (g_utf8_validate (job_name, -1, NULL));
+  g_return_if_fail (job_name != NULL);
 
   priv = op->priv;
 
@@ -1937,14 +1961,13 @@ print_pages_idle_done (gpointer user_data)
   if (priv->rloop && !data->is_preview) 
     g_main_loop_quit (priv->rloop);
 
-  if (!data->is_preview)
+  if (!data->is_preview || priv->cancelled)
     g_signal_emit (data->op, signals[DONE], 0,
 		   priv->cancelled ?
 		   GTK_PRINT_OPERATION_RESULT_CANCEL :
 		   GTK_PRINT_OPERATION_RESULT_APPLY);
   
   g_object_unref (data->op);
-
   g_free (data);
 
   GDK_THREADS_LEAVE ();
@@ -2061,7 +2084,8 @@ print_pages_idle (gpointer user_data)
 	  goto out;
 	}
       
-      if (g_signal_has_handler_pending (data->op, signals[PAGINATE], 0, FALSE))
+      if (GTK_PRINT_OPERATION_GET_CLASS (data->op)->paginate != NULL ||
+          g_signal_has_handler_pending (data->op, signals[PAGINATE], 0, FALSE))
 	{
 	  gboolean paginated = FALSE;
 
@@ -2133,12 +2157,10 @@ print_pages_idle (gpointer user_data)
 	}
     }
  
-  if (data->is_preview)
+  if (data->is_preview && !priv->cancelled)
     {
       done = TRUE;
 
-      g_object_ref (data->op);
-      
       g_signal_emit_by_name (data->op, "ready", priv->print_context);
       goto out;
     }
@@ -2154,7 +2176,7 @@ print_pages_idle (gpointer user_data)
       done = TRUE;
     }
 
-  if (done && !data->is_preview)
+  if (done && (!data->is_preview || priv->cancelled))
     {
       g_signal_emit (data->op, signals[END_PRINT], 0, priv->print_context);
       priv->end_run (data->op, priv->is_sync, priv->cancelled);
@@ -2316,8 +2338,7 @@ gtk_print_operation_get_error (GtkPrintOperation  *op,
  * @error: Return location for errors, or %NULL
  * 
  * Runs the print operation, by first letting the user modify
- * print settings in the print dialog, and then print the
- * document.
+ * print settings in the print dialog, and then print the document.
  *
  * Normally that this function does not return until the rendering of all 
  * pages is complete. You can connect to the ::status-changed signal on
@@ -2365,6 +2386,9 @@ gtk_print_operation_get_error (GtkPrintOperation  *op,
  *  }
  * </programlisting></informalexample>
  *
+ * Note that gtk_print_operation_run() can only be called once on a
+ * given #GtkPrintOperation.
+ *
  * Return value: the result of the print operation. A return value of 
  *   %GTK_PRINT_OPERATION_RESULT_APPLY indicates that the printing was
  *   completed successfully. In this case, it is a good idea to obtain 
@@ -2385,12 +2409,15 @@ gtk_print_operation_run (GtkPrintOperation        *op,
   GtkPrintOperationResult result;
   GtkPageSetup *page_setup;
   gboolean do_print;
+  gboolean run_print_pages;
   
   g_return_val_if_fail (GTK_IS_PRINT_OPERATION (op), 
                         GTK_PRINT_OPERATION_RESULT_ERROR);
-
+  g_return_val_if_fail (op->priv->status == GTK_PRINT_STATUS_INITIAL,
+                        GTK_PRINT_OPERATION_RESULT_ERROR);
   priv = op->priv;
-
+  
+  run_print_pages = TRUE;
   do_print = FALSE;
   priv->error = NULL;
   priv->action = action;
@@ -2426,6 +2453,7 @@ gtk_print_operation_run (GtkPrintOperation        *op,
 							      parent,
 							      print_pages);
       result = GTK_PRINT_OPERATION_RESULT_IN_PROGRESS;
+      run_print_pages = FALSE; /* print_pages is called asynchronously from dialog */
     }
 #endif
   else
@@ -2437,7 +2465,7 @@ gtk_print_operation_run (GtkPrintOperation        *op,
 								 &do_print);
     }
 
-  if (result != GTK_PRINT_OPERATION_RESULT_IN_PROGRESS)
+  if (run_print_pages)
     print_pages (op, parent, do_print, result);
 
   if (priv->error && error)

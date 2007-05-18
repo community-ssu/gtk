@@ -40,7 +40,8 @@
 #ifdef HAVE_WINTAB
 
 #define PACKETDATA (PK_CONTEXT | PK_CURSOR | PK_BUTTONS | PK_X | PK_Y  | PK_NORMAL_PRESSURE | PK_ORIENTATION)
-#define PACKETMODE (PK_BUTTONS)
+/* We want everything in absolute mode */
+#define PACKETMODE (0)
 #include <pktdef.h>
 
 #define DEBUG_WINTAB 1		/* Verbose debug messages enabled */
@@ -192,6 +193,135 @@ print_lc(LOGCONTEXT *lc)
 	  lc->lcSysSensX / 65536., lc->lcSysSensY / 65536.);
 }
 
+static void
+print_cursor (int index)
+{
+  int size;
+  int i;
+  char *name;
+  BOOL active;
+  WTPKT wtpkt;
+  BYTE buttons;
+  BYTE buttonbits;
+  char *btnnames;
+  char *p;
+  BYTE buttonmap[32];
+  BYTE sysbtnmap[32];
+  BYTE npbutton;
+  UINT npbtnmarks[2];
+  UINT *npresponse;
+  BYTE tpbutton;
+  UINT tpbtnmarks[2];
+  UINT *tpresponse;
+  DWORD physid;
+  UINT mode;
+  UINT minpktdata;
+  UINT minbuttons;
+  UINT capabilities;
+
+  size = WTInfo (WTI_CURSORS + index, CSR_NAME, NULL);
+  name = g_malloc (size + 1);
+  WTInfo (WTI_CURSORS + index, CSR_NAME, name);
+  g_print ("NAME: %s\n", name);
+  WTInfo (WTI_CURSORS + index, CSR_ACTIVE, &active);
+  g_print ("ACTIVE: %s\n", active ? "YES" : "NO");
+  WTInfo (WTI_CURSORS + index, CSR_PKTDATA, &wtpkt);
+  g_print ("PKTDATA: %#x:", (guint) wtpkt);
+#define BIT(x) if (wtpkt & PK_##x) g_print (" " #x)
+  BIT (CONTEXT);
+  BIT (STATUS);
+  BIT (TIME);
+  BIT (CHANGED);
+  BIT (SERIAL_NUMBER);
+  BIT (BUTTONS);
+  BIT (X);
+  BIT (Y);
+  BIT (Z);
+  BIT (NORMAL_PRESSURE);
+  BIT (TANGENT_PRESSURE);
+  BIT (ORIENTATION);
+  BIT (ROTATION);
+#undef BIT
+  g_print ("\n");
+  WTInfo (WTI_CURSORS + index, CSR_BUTTONS, &buttons);
+  g_print ("BUTTONS: %d\n", buttons);
+  WTInfo (WTI_CURSORS + index, CSR_BUTTONBITS, &buttonbits);
+  g_print ("BUTTONBITS: %d\n", buttonbits);
+  size = WTInfo (WTI_CURSORS + index, CSR_BTNNAMES, NULL);
+  g_print ("BTNNAMES:");
+  if (size > 0)
+    {
+      btnnames = g_malloc (size + 1);
+      WTInfo (WTI_CURSORS + index, CSR_BTNNAMES, btnnames);
+      p = btnnames;
+      while (*p)
+	{
+	  g_print (" %s", p);
+	  p += strlen (p) + 1;
+	}
+    }
+  g_print ("\n");
+  WTInfo (WTI_CURSORS + index, CSR_BUTTONMAP, buttonmap);
+  g_print ("BUTTONMAP:");
+  for (i = 0; i < buttons; i++)
+    g_print (" %d", buttonmap[i]);
+  g_print ("\n");
+  WTInfo (WTI_CURSORS + index, CSR_SYSBTNMAP, sysbtnmap);
+  g_print ("SYSBTNMAP:");
+  for (i = 0; i < buttons; i++)
+    g_print (" %d", sysbtnmap[i]);
+  g_print ("\n");
+  WTInfo (WTI_CURSORS + index, CSR_NPBUTTON, &npbutton);
+  g_print ("NPBUTTON: %d\n", npbutton);
+  WTInfo (WTI_CURSORS + index, CSR_NPBTNMARKS, npbtnmarks);
+  g_print ("NPBTNMARKS: %d %d\n", npbtnmarks[0], npbtnmarks[1]);
+  size = WTInfo (WTI_CURSORS + index, CSR_NPRESPONSE, NULL);
+  g_print ("NPRESPONSE:");
+  if (size > 0)
+    {
+      npresponse = g_malloc (size);
+      WTInfo (WTI_CURSORS + index, CSR_NPRESPONSE, npresponse);
+      for (i = 0; i < size / sizeof (UINT); i++)
+	g_print (" %d", npresponse[i]);
+    }
+  g_print ("\n");
+  WTInfo (WTI_CURSORS + index, CSR_TPBUTTON, &tpbutton);
+  g_print ("TPBUTTON: %d\n", tpbutton);
+  WTInfo (WTI_CURSORS + index, CSR_TPBTNMARKS, tpbtnmarks);
+  g_print ("TPBTNMARKS: %d %d\n", tpbtnmarks[0], tpbtnmarks[1]);
+  size = WTInfo (WTI_CURSORS + index, CSR_TPRESPONSE, NULL);
+  g_print ("TPRESPONSE:");
+  if (size > 0)
+    {
+      tpresponse = g_malloc (size);
+      WTInfo (WTI_CURSORS + index, CSR_TPRESPONSE, tpresponse);
+      for (i = 0; i < size / sizeof (UINT); i++)
+	g_print (" %d", tpresponse[i]);
+    }
+  g_print ("\n");
+  WTInfo (WTI_CURSORS + index, CSR_PHYSID, &physid);
+  g_print ("PHYSID: %#x\n", (guint) physid);
+  WTInfo (WTI_CURSORS + index, CSR_CAPABILITIES, &capabilities);
+  g_print ("CAPABILITIES: %#x:", capabilities);
+#define BIT(x) if (capabilities & CRC_##x) g_print (" " #x)
+  BIT (MULTIMODE);
+  BIT (AGGREGATE);
+  BIT (INVERT);
+#undef BIT
+  g_print ("\n");
+  if (capabilities & CRC_MULTIMODE)
+    {
+      WTInfo (WTI_CURSORS + index, CSR_MODE, &mode);
+      g_print ("MODE: %d\n", mode);
+    }
+  if (capabilities & CRC_AGGREGATE)
+    {
+      WTInfo (WTI_CURSORS + index, CSR_MINPKTDATA, &minpktdata);
+      g_print ("MINPKTDATA: %d\n", minpktdata);
+      WTInfo (WTI_CURSORS + index, CSR_MINBUTTONS, &minbuttons);
+      g_print ("MINBUTTONS: %d\n", minbuttons);
+    }
+}
 #endif
 
 void
@@ -204,6 +334,7 @@ _gdk_input_wintab_init_check (void)
   HCTX *hctx;
   UINT ndevices, ncursors, ncsrtypes, firstcsr, hardware;
   BOOL active;
+  DWORD physid;
   AXIS axis_x, axis_y, axis_npressure, axis_or[3];
   int i, k;
   int devix, cursorix;
@@ -323,7 +454,7 @@ _gdk_input_wintab_init_check (void)
 	  /* According to the specs, if the function fails we must try again */
 	  /* with a smaller queue size */
 	  GDK_NOTE (INPUT, g_print("Attempting to increase queue size\n"));
-	  for (i = 128; i >= 1; i >>= 1)
+	  for (i = 32; i >= 1; i >>= 1)
 	    {
 	      if (WTQueueSizeSet(*hctx, i))
 		{
@@ -335,11 +466,29 @@ _gdk_input_wintab_init_check (void)
 	    GDK_NOTE (INPUT, g_print("Whoops, no queue size could be set\n"));
 	  for (cursorix = firstcsr; cursorix < firstcsr + ncsrtypes; cursorix++)
 	    {
+#ifdef DEBUG_WINTAB
+	      GDK_NOTE (INPUT, (g_print("Cursor %d:\n", cursorix), print_cursor (cursorix)));
+#endif
 	      active = FALSE;
 	      WTInfo (WTI_CURSORS + cursorix, CSR_ACTIVE, &active);
 	      if (!active)
 		continue;
+
+	      /* Wacom tablets seem to report cursors corresponding to
+	       * nonexistent pens or pucks. At least my ArtPad II
+	       * reports six cursors: a puck, pressure stylus and
+	       * eraser stylus, and then the same three again. I only
+	       * have a pressure-sensitive pen. The puck instances,
+	       * and the second instances of the styluses report
+	       * physid zero. So at least for Wacom, skip cursors with
+	       * physid zero.
+	       */
+	      WTInfo (WTI_CURSORS + cursorix, CSR_PHYSID, &physid);
+	      if (strcmp (devname, "WACOM Tablet") == 0 && physid == 0)
+		continue;
+
 	      gdkdev = g_object_new (GDK_TYPE_DEVICE, NULL);
+
 	      WTInfo (WTI_CURSORS + cursorix, CSR_NAME, csrname);
 	      gdkdev->info.name = g_strconcat (devname, " ", csrname, NULL);
 	      gdkdev->info.source = GDK_SOURCE_PEN;
@@ -712,6 +861,11 @@ _gdk_input_other_event (GdkEvent  *event,
   PACKET packet;
   gint k;
   gint x, y;
+  guint translated_buttons, button_diff, button_mask;
+  /* Translation from tablet button state to GDK button state for
+   * buttons 1-3 - swap button 2 and 3.
+   */
+  static guint button_map[8] = {0, 1, 4, 5, 2, 3, 6, 7};
 
   if (event->any.window != wintab_window)
     {
@@ -777,23 +931,41 @@ _gdk_input_other_event (GdkEvent  *event,
 
       g_assert (k == gdkdev->info.num_axes);
 
-      if (HIWORD (packet.pkButtons) != TBN_NONE)
-	{
-	  /* Gdk buttons are numbered 1.. */
-	  event->button.button = 1 + LOWORD (packet.pkButtons);
+      translated_buttons = button_map[packet.pkButtons & 0x07] | (packet.pkButtons & ~0x07);
 
-	  if (HIWORD (packet.pkButtons) == TBN_UP)
+      if (translated_buttons != gdkdev->button_state)
+	{
+	  /* At least one button has changed state so produce a button event
+	   * If more than one button has changed state (unlikely),
+	   * just care about the first and act on the next the next time
+	   * we get a packet
+	   */
+	  button_diff = translated_buttons ^ gdkdev->button_state;
+	  
+	  /* Gdk buttons are numbered 1.. */
+	  event->button.button = 1;
+
+	  for (button_mask = 1; button_mask != 0x80000000;
+	       button_mask <<= 1, event->button.button++)
+	    {
+	      if (button_diff & button_mask)
+	        {
+		  /* Found a button that has changed state */
+		  break;
+		}
+	    }
+
+	  if (!(translated_buttons & button_mask))
 	    {
 	      event->any.type = GDK_BUTTON_RELEASE;
 	      masktest = GDK_BUTTON_RELEASE_MASK;
-	      gdkdev->button_state &= ~(1 << LOWORD (packet.pkButtons));
 	    }
 	  else
 	    {
 	      event->any.type = GDK_BUTTON_PRESS;
 	      masktest = GDK_BUTTON_PRESS_MASK;
-	      gdkdev->button_state |= 1 << LOWORD (packet.pkButtons);
 	    }
+	  gdkdev->button_state ^= button_mask;
 	}
       else
 	{
@@ -932,44 +1104,6 @@ _gdk_input_other_event (GdkEvent  *event,
 	  GDK_NOTE (EVENTS_OR_INPUT,
 		    g_print ("WINTAB motion: %g,%g\n",
 			     event->motion.x, event->motion.y));
-
-	  /* Check for missing release or press events for the normal
-	   * pressure button. At least on my ArtPadII I sometimes miss a
-	   * release event?
-	   */
-	  if ((gdkdev->pktdata & PK_NORMAL_PRESSURE
-	       && (event->motion.state & GDK_BUTTON1_MASK)
-	       && packet.pkNormalPressure <= MAX (0, (gint) gdkdev->npbtnmarks[0] - 2))
-	      || (gdkdev->pktdata & PK_NORMAL_PRESSURE
-		  && !(event->motion.state & GDK_BUTTON1_MASK)
-		  && packet.pkNormalPressure > gdkdev->npbtnmarks[1] + 2))
-	    {
-	      GdkEvent *event2 = gdk_event_copy (event);
-	      if (event->motion.state & GDK_BUTTON1_MASK)
-		{
-		  event2->button.type = GDK_BUTTON_RELEASE;
-		  gdkdev->button_state &= ~1;
-		}
-	      else
-		{
-		  event2->button.type = GDK_BUTTON_PRESS;
-		  gdkdev->button_state |= 1;
-		}
-	      event2->button.state = ((gdkdev->button_state << 8)
-				      & (GDK_BUTTON1_MASK | GDK_BUTTON2_MASK
-					 | GDK_BUTTON3_MASK | GDK_BUTTON4_MASK
-					 | GDK_BUTTON5_MASK))
-				     | key_state;
-	      event2->button.button = 1;
-	      GDK_NOTE (EVENTS_OR_INPUT,
-			g_print ("WINTAB synthesized button %s: %d %g,%gg\n",
-				 (event2->button.type == GDK_BUTTON_PRESS ?
-				  "press" : "release"),
-				 event2->button.button,
-				 event2->button.x,
-				 event2->button.y));
-	      _gdk_event_queue_append (display, event2);
-	    }
 	}
       return TRUE;
 
@@ -1098,6 +1232,7 @@ _gdk_input_grab_pointer (GdkWindow    *window,
   else
     { 
       x_grab_window = NULL;
+#if 0
       tmp_list = _gdk_input_devices;
       while (tmp_list)
 	{
@@ -1114,6 +1249,7 @@ _gdk_input_grab_pointer (GdkWindow    *window,
 	  
 	  tmp_list = tmp_list->next;
 	}
+#endif
     }
 #endif
 

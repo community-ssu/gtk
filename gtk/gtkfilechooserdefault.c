@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-file-style: "gnu"; tab-width: 8 -*- */
 /* GTK - The GIMP Toolkit
  * gtkfilechooserdefault.c: Default implementation of GtkFileChooser
  * Copyright (C) 2003, Red Hat, Inc.
@@ -79,7 +80,6 @@
 #include <string.h>
 #include <time.h>
 
-
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -137,7 +137,7 @@ _gtk_file_chooser_profile_log (const char *func, int indent, const char *msg1, c
 #define profile_msg(x, y)
 #endif
 
-
+
 
 typedef struct _GtkFileChooserDefaultClass GtkFileChooserDefaultClass;
 
@@ -161,6 +161,8 @@ enum {
   HOME_FOLDER,
   DESKTOP_FOLDER,
   QUICK_BOOKMARK,
+  LOCATION_TOGGLE_POPUP,
+  SHOW_HIDDEN,
   LAST_SIGNAL
 };
 
@@ -242,7 +244,7 @@ typedef enum {
 #define FALLBACK_ICON_SIZE 16
 
 #define PREVIEW_HBOX_SPACING 12
-#define NUM_LINES 40
+#define NUM_LINES 45
 #define NUM_CHARS 60
 
 static void gtk_file_chooser_default_iface_init       (GtkFileChooserIface        *iface);
@@ -277,6 +279,7 @@ static gboolean       gtk_file_chooser_default_set_current_folder 	   (GtkFileCh
 static gboolean       gtk_file_chooser_default_update_current_folder 	   (GtkFileChooser    *chooser,
 									    const GtkFilePath *path,
 									    gboolean           keep_trail,
+									    gboolean           clear_entry,
 									    GError           **error);
 static GtkFilePath *  gtk_file_chooser_default_get_current_folder 	   (GtkFileChooser    *chooser);
 static void           gtk_file_chooser_default_set_current_name   	   (GtkFileChooser    *chooser,
@@ -316,12 +319,14 @@ static void           gtk_file_chooser_default_initial_focus          (GtkFileCh
 static void location_popup_handler (GtkFileChooserDefault *impl,
 				    const gchar           *path);
 static void location_popup_on_paste_handler (GtkFileChooserDefault *impl);
+static void location_toggle_popup_handler   (GtkFileChooserDefault *impl);
 static void up_folder_handler      (GtkFileChooserDefault *impl);
 static void down_folder_handler    (GtkFileChooserDefault *impl);
 static void home_folder_handler    (GtkFileChooserDefault *impl);
 static void desktop_folder_handler (GtkFileChooserDefault *impl);
 static void quick_bookmark_handler (GtkFileChooserDefault *impl,
 				    gint                   bookmark_index);
+static void show_hidden_handler    (GtkFileChooserDefault *impl);
 static void update_appearance      (GtkFileChooserDefault *impl);
 
 static void set_current_filter   (GtkFileChooserDefault *impl,
@@ -449,7 +454,7 @@ static GtkTreeModel *shortcuts_model_filter_new (GtkFileChooserDefault *impl,
 						 GtkTreeModel          *child_model,
 						 GtkTreePath           *root);
 
-
+
 
 G_DEFINE_TYPE_WITH_CODE (GtkFileChooserDefault, _gtk_file_chooser_default, GTK_TYPE_VBOX,
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_FILE_CHOOSER,
@@ -497,6 +502,14 @@ _gtk_file_chooser_default_class_init (GtkFileChooserDefaultClass *class)
 			     NULL, NULL,
 			     _gtk_marshal_VOID__VOID,
 			     G_TYPE_NONE, 0);
+  signals[LOCATION_TOGGLE_POPUP] =
+    _gtk_binding_signal_new (I_("location-toggle-popup"),
+			     G_OBJECT_CLASS_TYPE (class),
+			     G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+			     G_CALLBACK (location_toggle_popup_handler),
+			     NULL, NULL,
+			     _gtk_marshal_VOID__VOID,
+			     G_TYPE_NONE, 0);
   signals[UP_FOLDER] =
     _gtk_binding_signal_new (I_("up-folder"),
 			     G_OBJECT_CLASS_TYPE (class),
@@ -537,13 +550,21 @@ _gtk_file_chooser_default_class_init (GtkFileChooserDefaultClass *class)
 			     NULL, NULL,
 			     _gtk_marshal_VOID__INT,
 			     G_TYPE_NONE, 1, G_TYPE_INT);
+  signals[SHOW_HIDDEN] =
+    _gtk_binding_signal_new ("show-hidden",
+			     G_OBJECT_CLASS_TYPE (class),
+			     G_SIGNAL_RUN_FIRST | G_SIGNAL_ACTION,
+			     G_CALLBACK (show_hidden_handler),
+			     NULL, NULL,
+			     _gtk_marshal_VOID__VOID,
+			     G_TYPE_NONE, 0);
 
   binding_set = gtk_binding_set_by_class (class);
 
   gtk_binding_entry_add_signal (binding_set,
 				GDK_l, GDK_CONTROL_MASK,
-				"location-popup",
-				1, G_TYPE_STRING, "");
+				"location-toggle-popup",
+				0);
 
   gtk_binding_entry_add_signal (binding_set,
 				GDK_slash, 0,
@@ -565,7 +586,6 @@ _gtk_file_chooser_default_class_init (GtkFileChooserDefaultClass *class)
 				GDK_v, GDK_CONTROL_MASK,
 				"location-popup-on-paste",
 				0);
-
   gtk_binding_entry_add_signal (binding_set,
 				GDK_Up, GDK_MOD1_MASK,
 				"up-folder",
@@ -600,6 +620,10 @@ _gtk_file_chooser_default_class_init (GtkFileChooserDefaultClass *class)
 				GDK_d, GDK_MOD1_MASK,
 				"desktop-folder",
 				0);
+  gtk_binding_entry_add_signal (binding_set,
+				GDK_h, GDK_CONTROL_MASK,
+                                "show-hidden",
+                                0);
 
   for (i = 0; i < 10; i++)
     gtk_binding_entry_add_signal (binding_set,
@@ -991,7 +1015,8 @@ error_changing_folder_dialog (GtkFileChooserDefault *impl,
 /* Changes folders, displaying an error dialog if this fails */
 static gboolean
 change_folder_and_display_error (GtkFileChooserDefault *impl,
-				 const GtkFilePath     *path)
+				 const GtkFilePath     *path,
+				 gboolean               clear_entry)
 {
   GError *error;
   gboolean result;
@@ -1013,7 +1038,7 @@ change_folder_and_display_error (GtkFileChooserDefault *impl,
   path_copy = gtk_file_path_copy (path);
 
   error = NULL;
-  result = gtk_file_chooser_default_update_current_folder (GTK_FILE_CHOOSER (impl), path_copy, TRUE, &error);
+  result = gtk_file_chooser_default_update_current_folder (GTK_FILE_CHOOSER (impl), path_copy, TRUE, clear_entry, &error);
 
   if (!result)
     error_changing_folder_dialog (impl, path_copy, error);
@@ -2128,7 +2153,7 @@ edited_idle_create_folder_cb (GtkFileSystemHandle *handle,
     goto out;
 
   if (!error)
-    change_folder_and_display_error (impl, path);
+    change_folder_and_display_error (impl, path, FALSE);
   else
     error_creating_folder_dialog (impl, path, g_error_copy (error));
 
@@ -3772,7 +3797,7 @@ file_list_drag_data_received_get_info_cb (GtkFileSystemHandle *handle,
        data->impl->action == GTK_FILE_CHOOSER_ACTION_SAVE) &&
       data->uris[1] == 0 && !error &&
       gtk_file_info_get_is_folder (info))
-    change_folder_and_display_error (data->impl, data->path);
+    change_folder_and_display_error (data->impl, data->path, FALSE);
   else
     {
       GError *error = NULL;
@@ -4239,6 +4264,7 @@ expander_changed_cb (GtkExpander           *expander,
 		     GParamSpec            *pspec,
 		     GtkFileChooserDefault *impl)
 {
+  impl->expand_folders = gtk_expander_get_expanded(GTK_EXPANDER (impl->save_expander));
   update_appearance (impl);
 }
 
@@ -4555,28 +4581,40 @@ location_mode_set (GtkFileChooserDefault *impl,
   impl->location_mode = new_mode;
 }
 
+static void
+toggle_location_mode (GtkFileChooserDefault *impl,
+                      gboolean               set_button)
+{
+  LocationMode new_mode;
+
+  /* toggle value */
+  new_mode = (impl->location_mode == LOCATION_MODE_PATH_BAR) ?
+    LOCATION_MODE_FILENAME_ENTRY : LOCATION_MODE_PATH_BAR;
+
+  location_mode_set (impl, new_mode, set_button);
+}
+
+static void
+location_toggle_popup_handler (GtkFileChooserDefault *impl)
+{
+  toggle_location_mode (impl, TRUE);
+}
+
 /* Callback used when one of the location mode buttons is toggled */
 static void
 location_button_toggled_cb (GtkToggleButton *toggle,
 			    GtkFileChooserDefault *impl)
 {
   gboolean is_active;
-  LocationMode new_mode;
 
   is_active = gtk_toggle_button_get_active (toggle);
 
   if (is_active)
-    {
-      g_assert (impl->location_mode == LOCATION_MODE_PATH_BAR);
-      new_mode = LOCATION_MODE_FILENAME_ENTRY;
-    }
+    g_assert (impl->location_mode == LOCATION_MODE_PATH_BAR);
   else
-    {
-      g_assert (impl->location_mode == LOCATION_MODE_FILENAME_ENTRY);
-      new_mode = LOCATION_MODE_PATH_BAR;
-    }
+    g_assert (impl->location_mode == LOCATION_MODE_FILENAME_ENTRY);
 
-  location_mode_set (impl, new_mode, FALSE);
+  toggle_location_mode (impl, FALSE);
 }
 
 /* Creates a toggle button for the location entry. */
@@ -4611,7 +4649,6 @@ browse_widgets_create (GtkFileChooserDefault *impl)
   GtkWidget *hpaned;
   GtkWidget *widget;
   GtkSizeGroup *size_group;
-  gchar *text;
 
   /* size group is used by the [+][-] buttons and the filter combo */
   size_group = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
@@ -4642,18 +4679,14 @@ browse_widgets_create (GtkFileChooserDefault *impl)
 
   impl->location_entry_box = gtk_hbox_new (FALSE, 12);
   gtk_box_pack_start (GTK_BOX (vbox), impl->location_entry_box, FALSE, FALSE, 0);
-  
-  text = g_strconcat ("<b>", _("_Location:"), "</b>", NULL);
-  impl->location_label = gtk_label_new_with_mnemonic (text);
-  g_free (text);
-  gtk_label_set_use_markup (GTK_LABEL (impl->location_label), TRUE);
+
+  impl->location_label = gtk_label_new_with_mnemonic (_("_Location:"));
   gtk_widget_show (impl->location_label);
   gtk_box_pack_start (GTK_BOX (impl->location_entry_box), impl->location_label, FALSE, FALSE, 0);
 
   /* Paned widget */
   hpaned = gtk_hpaned_new ();
   gtk_widget_show (hpaned);
-  gtk_paned_set_position (GTK_PANED (hpaned), 200); /* FIXME: this sucks */
   gtk_box_pack_start (GTK_BOX (vbox), hpaned, TRUE, TRUE, 0);
 
   widget = shortcuts_pane_create (impl, size_group);
@@ -5439,16 +5472,21 @@ settings_load (GtkFileChooserDefault *impl)
   GtkFileChooserSettings *settings;
   LocationMode location_mode;
   gboolean show_hidden;
+  gboolean expand_folders;
 
   settings = _gtk_file_chooser_settings_new ();
 
   location_mode = _gtk_file_chooser_settings_get_location_mode (settings);
   show_hidden = _gtk_file_chooser_settings_get_show_hidden (settings);
+  expand_folders = _gtk_file_chooser_settings_get_expand_folders (settings);
 
   g_object_unref (settings);
 
   location_mode_set (impl, location_mode, TRUE);
   gtk_file_chooser_set_show_hidden (GTK_FILE_CHOOSER (impl), show_hidden);
+  impl->expand_folders = expand_folders;
+  if (impl->save_expander)
+    gtk_expander_set_expanded (GTK_EXPANDER (impl->save_expander), expand_folders);
 }
 
 static void
@@ -5460,6 +5498,7 @@ settings_save (GtkFileChooserDefault *impl)
 
   _gtk_file_chooser_settings_set_location_mode (settings, impl->location_mode);
   _gtk_file_chooser_settings_set_show_hidden (settings, gtk_file_chooser_get_show_hidden (GTK_FILE_CHOOSER (impl)));
+  _gtk_file_chooser_settings_set_expand_folders (settings, impl->expand_folders);
 
   /* NULL GError */
   _gtk_file_chooser_settings_save (settings, NULL);
@@ -5498,7 +5537,7 @@ gtk_file_chooser_default_map (GtkWidget *widget)
       if (impl->current_folder)
         {
           pending_select_paths_store_selection (impl);
-          change_folder_and_display_error (impl, impl->current_folder);
+          change_folder_and_display_error (impl, impl->current_folder, FALSE);
 	}
       break;
 
@@ -6154,6 +6193,12 @@ update_chooser_entry (GtkFileChooserDefault *impl)
 
       info = _gtk_file_system_model_get_info (impl->browse_files_model, &child_iter);
 
+      /* If the cursor moved to the row of the newly created folder, 
+       * retrieving info will return NULL.
+       */
+      if (!info)
+	return;
+
       g_free (impl->browse_files_last_selected_name);
       impl->browse_files_last_selected_name = g_strdup (gtk_file_info_get_display_name (info));
 
@@ -6221,7 +6266,7 @@ gtk_file_chooser_default_set_current_folder (GtkFileChooser    *chooser,
 					     const GtkFilePath *path,
 					     GError           **error)
 {
-  return gtk_file_chooser_default_update_current_folder (chooser, path, FALSE, error);
+  return gtk_file_chooser_default_update_current_folder (chooser, path, FALSE, FALSE, error);
 }
 
 
@@ -6230,6 +6275,7 @@ struct UpdateCurrentFolderData
   GtkFileChooserDefault *impl;
   GtkFilePath *path;
   gboolean keep_trail;
+  gboolean clear_entry;
   GtkFilePath *original_path;
   GError *original_error;
 };
@@ -6335,8 +6381,13 @@ update_current_folder_get_info_cb (GtkFileSystemHandle *handle,
   /* Set the folder on the save entry */
 
   if (impl->location_entry)
-    _gtk_file_chooser_entry_set_base_folder (GTK_FILE_CHOOSER_ENTRY (impl->location_entry),
-					     impl->current_folder);
+    {
+      _gtk_file_chooser_entry_set_base_folder (GTK_FILE_CHOOSER_ENTRY (impl->location_entry),
+					       impl->current_folder);
+
+      if (data->clear_entry)
+	_gtk_file_chooser_entry_set_file_part (GTK_FILE_CHOOSER_ENTRY (impl->location_entry), "");
+    }
 
   /* Create a new list model.  This is slightly evil; we store the result value
    * but perform more actions rather than returning immediately even if it
@@ -6366,6 +6417,7 @@ static gboolean
 gtk_file_chooser_default_update_current_folder (GtkFileChooser    *chooser,
 						const GtkFilePath *path,
 						gboolean           keep_trail,
+						gboolean           clear_entry,
 						GError           **error)
 {
   GtkFileChooserDefault *impl = GTK_FILE_CHOOSER_DEFAULT (chooser);
@@ -6395,6 +6447,7 @@ gtk_file_chooser_default_update_current_folder (GtkFileChooser    *chooser,
   data->impl = impl;
   data->path = gtk_file_path_copy (path);
   data->keep_trail = keep_trail;
+  data->clear_entry = clear_entry;
 
   impl->reload_state = RELOAD_HAS_FOLDER;
 
@@ -6632,6 +6685,16 @@ check_save_entry (GtkFileChooserDefault *impl,
   *is_empty_ret = FALSE;
 
   current_folder = _gtk_file_chooser_entry_get_current_folder (chooser_entry);
+  if (!current_folder)
+    {
+      *path_ret = NULL;
+      *is_well_formed_ret = FALSE;
+      *is_file_part_empty_ret = FALSE;
+      *is_folder = FALSE;
+
+      return;
+    }
+
   file_part = _gtk_file_chooser_entry_get_file_part (chooser_entry);
 
   if (!file_part || file_part[0] == '\0')
@@ -7126,26 +7189,42 @@ find_good_size_from_style (GtkWidget *widget,
   gint default_width, default_height;
   int font_size;
   GtkRequisition req;
-  GtkRequisition preview_req;
+  GdkScreen *screen;
+  double resolution;
 
   g_assert (widget->style != NULL);
   impl = GTK_FILE_CHOOSER_DEFAULT (widget);
 
+  screen = gtk_widget_get_screen (widget);
+  if (screen)
+    {
+      resolution = gdk_screen_get_resolution (screen);
+      if (resolution < 0.0) /* will be -1 if the resolution is not defined in the GdkScreen */
+	resolution = 96.0;
+    }
+  else
+    resolution = 96.0; /* wheeee */
+
   font_size = pango_font_description_get_size (widget->style->font_desc);
-  font_size = PANGO_PIXELS (font_size);
+  font_size = PANGO_PIXELS (font_size) * resolution / 72.0;
 
   default_width = font_size * NUM_CHARS;
   default_height = font_size * NUM_LINES;
 
-  /* Use at least the requisition size not including the preview widget */
-  gtk_widget_size_request (widget, &req);
-
   if (impl->preview_widget_active && impl->preview_widget)
-    gtk_widget_size_request (impl->preview_box, &preview_req);
-  else
-    preview_req.width = 0;
+    {
+      gtk_widget_size_request (impl->preview_box, &req);
+      default_width += PREVIEW_HBOX_SPACING + req.width;
+    }
 
-  default_width = MAX (default_width, (req.width - (preview_req.width + PREVIEW_HBOX_SPACING)));
+  if (impl->extra_widget)
+    {
+      gtk_widget_size_request (impl->extra_align, &req);
+      default_height += GTK_BOX (widget)->spacing + req.height;
+    }
+
+  gtk_widget_size_request (widget, &req);
+  default_width = MAX (default_width, req.width);
   default_height = MAX (default_height, req.height);
 
   *width = default_width;
@@ -7160,11 +7239,7 @@ gtk_file_chooser_default_get_default_size (GtkFileChooserEmbed *chooser_embed,
   GtkFileChooserDefault *impl;
 
   impl = GTK_FILE_CHOOSER_DEFAULT (chooser_embed);
-
   find_good_size_from_style (GTK_WIDGET (chooser_embed), default_width, default_height);
-
-  if (impl->preview_widget_active && impl->preview_widget)
-    *default_width += impl->preview_box->requisition.width + PREVIEW_HBOX_SPACING;
 }
 
 static void
@@ -7237,7 +7312,7 @@ switch_to_selected_folder (GtkFileChooserDefault *impl)
 
   g_assert (closure.path && closure.num_selected == 1);
 
-  change_folder_and_display_error (impl, closure.path);
+  change_folder_and_display_error (impl, closure.path, FALSE);
 }
 
 /* Gets the GtkFileInfo for the selected row in the file list; assumes single
@@ -7532,7 +7607,7 @@ save_entry_get_info_cb (GtkFileSystemHandle *handle,
   else
     {
       /* This will display an error, which is what we want */
-      change_folder_and_display_error (data->impl, data->parent_path);
+      change_folder_and_display_error (data->impl, data->parent_path, FALSE);
     }
 
 out:
@@ -7777,8 +7852,7 @@ gtk_file_chooser_default_should_respond (GtkFileChooserEmbed *chooser_embed)
 	  if (impl->action == GTK_FILE_CHOOSER_ACTION_OPEN
 	      || impl->action == GTK_FILE_CHOOSER_ACTION_SAVE)
 	    {
-	      _gtk_file_chooser_entry_set_file_part (entry, "");
-	      change_folder_and_display_error (impl, path);
+	      change_folder_and_display_error (impl, path, TRUE);
 	      retval = FALSE;
 	    }
 	  else if (impl->action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER
@@ -8035,7 +8109,7 @@ shortcuts_activate_volume_mount_cb (GtkFileSystemHandle *handle,
   path = gtk_file_system_volume_get_base_path (impl->file_system, volume);
   if (path != NULL)
     {
-      change_folder_and_display_error (impl, path);
+      change_folder_and_display_error (impl, path, FALSE);
       gtk_file_path_free (path);
     }
 
@@ -8073,7 +8147,7 @@ shortcuts_activate_volume (GtkFileChooserDefault *impl,
       path = gtk_file_system_volume_get_base_path (impl->file_system, volume);
       if (path != NULL)
         {
-          change_folder_and_display_error (impl, path);
+          change_folder_and_display_error (impl, path, FALSE);
           gtk_file_path_free (path);
         }
     }
@@ -8106,7 +8180,7 @@ shortcuts_activate_get_info_cb (GtkFileSystemHandle *handle,
     goto out;
 
   if (!error && gtk_file_info_get_is_folder (info))
-    change_folder_and_display_error (data->impl, data->path);
+    change_folder_and_display_error (data->impl, data->path, FALSE);
   else
     gtk_file_chooser_default_select_path (GTK_FILE_CHOOSER (data->impl), data->path, NULL);
 
@@ -8276,7 +8350,8 @@ list_selection_changed (GtkTreeSelection      *selection,
 
  out:
 
-  update_chooser_entry (impl);
+  if (impl->location_entry)
+    update_chooser_entry (impl);
   check_preview_change (impl);
   bookmarks_check_add_sensitivity (impl);
 
@@ -8305,7 +8380,7 @@ list_row_activated (GtkTreeView           *tree_view,
       const GtkFilePath *file_path;
 
       file_path = _gtk_file_system_model_get_path (impl->browse_files_model, &child_iter);
-      change_folder_and_display_error (impl, file_path);
+      change_folder_and_display_error (impl, file_path, FALSE);
 
       return;
     }
@@ -8325,7 +8400,7 @@ path_bar_clicked (GtkPathBar            *path_bar,
   if (child_path)
     pending_select_paths_add (impl, child_path);
 
-  if (!change_folder_and_display_error (impl, file_path))
+  if (!change_folder_and_display_error (impl, file_path, FALSE))
     return;
 
   /* Say we have "/foo/bar/[.baz]" and the user clicks on "bar".  We should then
@@ -8682,7 +8757,14 @@ quick_bookmark_handler (GtkFileChooserDefault *impl,
   switch_to_shortcut (impl, bookmark_pos);
 }
 
-
+static void
+show_hidden_handler (GtkFileChooserDefault *impl)
+{
+  g_object_set (impl,
+		"show-hidden", !impl->show_hidden,
+		NULL);
+}
+
 
 /* Drag and drop interfaces */
 

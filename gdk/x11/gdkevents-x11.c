@@ -18,7 +18,7 @@
  */
 
 /*
- * Modified by the GTK+ Team and others 1997-2000.  See the AUTHORS
+ * Modified by the GTK+ Team and others 1997-2007.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
  * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
@@ -110,7 +110,7 @@ static GdkFilterReturn gdk_wm_protocols_filter (GdkXEvent *xev,
 static GSource *gdk_display_source_new (GdkDisplay *display);
 static gboolean gdk_check_xpending     (GdkDisplay *display);
 
-static void gdk_xsettings_watch_cb  (Window            window,
+static Bool gdk_xsettings_watch_cb  (Window            window,
 				     Bool              is_start,
 				     long              mask,
 				     void             *cb_data);
@@ -176,15 +176,13 @@ _gdk_x11_events_init_screen (GdkScreen *screen)
   /* Keep a flag to avoid extra notifies that we don't need
    */
   screen_x11->xsettings_in_init = TRUE;
-  screen_x11->xsettings_client = xsettings_client_new (screen_x11->xdisplay,
-						       screen_x11->screen_num,
-						       gdk_xsettings_notify_cb,
-						       gdk_xsettings_watch_cb,
-						       screen);
-  xsettings_client_set_grab_func (screen_x11->xsettings_client,
-				  refcounted_grab_server);
-  xsettings_client_set_ungrab_func (screen_x11->xsettings_client,
-				    refcounted_ungrab_server);
+  screen_x11->xsettings_client = xsettings_client_new_with_grab_funcs (screen_x11->xdisplay,
+						                       screen_x11->screen_num,
+						                       gdk_xsettings_notify_cb,
+						                       gdk_xsettings_watch_cb,
+						                       screen,
+                                                                       refcounted_grab_server,
+                                                                       refcounted_ungrab_server);
   screen_x11->xsettings_in_init = FALSE;
 }
 
@@ -2192,13 +2190,13 @@ gdk_wm_protocols_filter (GdkXEvent *xev,
 	   !_gdk_x11_display_is_root_window (display,
 					     xevent->xclient.window))
     {
-      XEvent xev = *xevent;
+      XClientMessageEvent xclient = xevent->xclient;
       
-      xev.xclient.window = GDK_WINDOW_XROOTWIN (win);
+      xclient.window = GDK_WINDOW_XROOTWIN (win);
       XSendEvent (GDK_WINDOW_XDISPLAY (win), 
-		  xev.xclient.window,
+		  xclient.window,
 		  False, 
-		  SubstructureRedirectMask | SubstructureNotifyMask, &xev);
+		  SubstructureRedirectMask | SubstructureNotifyMask, (XEvent *)&xclient);
 
       return GDK_FILTER_REMOVE;
     }
@@ -2993,7 +2991,7 @@ gdk_xsettings_client_event_filter (GdkXEvent *xevent,
     return GDK_FILTER_CONTINUE;
 }
 
-static void 
+static Bool
 gdk_xsettings_watch_cb (Window   window,
 			Bool	 is_start,
 			long     mask,
@@ -3006,19 +3004,39 @@ gdk_xsettings_watch_cb (Window   window,
 
   if (is_start)
     {
-      if (!gdkwin)
-	gdkwin = gdk_window_foreign_new_for_display (gdk_screen_get_display (screen), window);
-      else
+      if (gdkwin)
 	g_object_ref (gdkwin);
-      
+      else
+	{
+	  gdkwin = gdk_window_foreign_new_for_display (gdk_screen_get_display (screen), window);
+	  
+	  /* gdk_window_foreign_new_for_display() can fail and return NULL if the
+	   * window has already been destroyed.
+	   */
+	  if (!gdkwin)
+	    return False;
+	}
+
       gdk_window_add_filter (gdkwin, gdk_xsettings_client_event_filter, screen);
     }
   else
     {
-      g_assert (gdkwin);
+      if (!gdkwin)
+	{
+	  /* gdkwin should not be NULL here, since if starting the watch succeeded
+	   * we have a reference on the window. It might mean that the caller didn't
+	   * remove the watch when it got a DestroyNotify event. Or maybe the
+	   * caller ignored the return value when starting the watch failed.
+	   */
+	  g_warning ("gdk_xsettings_watch_cb(): Couldn't find window to unwatch");
+	  return False;
+	}
+      
       gdk_window_remove_filter (gdkwin, gdk_xsettings_client_event_filter, screen);
       g_object_unref (gdkwin);
     }
+
+  return True;
 }
 
 #define __GDK_EVENTS_X11_C__

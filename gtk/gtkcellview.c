@@ -67,8 +67,6 @@ static void        gtk_cell_view_set_property             (GObject          *obj
                                                            const GValue     *value,
                                                            GParamSpec       *pspec);
 static void        gtk_cell_view_finalize                 (GObject          *object);
-static void        gtk_cell_view_style_set                (GtkWidget        *widget,
-                                                           GtkStyle         *previous_style);
 static void        gtk_cell_view_size_request             (GtkWidget        *widget,
                                                            GtkRequisition   *requisition);
 static void        gtk_cell_view_size_allocate            (GtkWidget        *widget,
@@ -135,7 +133,6 @@ gtk_cell_view_class_init (GtkCellViewClass *klass)
   widget_class->expose_event = gtk_cell_view_expose;
   widget_class->size_allocate = gtk_cell_view_size_allocate;
   widget_class->size_request = gtk_cell_view_size_request;
-  widget_class->style_set = gtk_cell_view_style_set;
 
   /* properties */
   g_object_class_install_property (gobject_class,
@@ -267,14 +264,6 @@ gtk_cell_view_init (GtkCellView *cellview)
   cellview->priv = GTK_CELL_VIEW_GET_PRIVATE (cellview);
 }
 
-static void
-gtk_cell_view_style_set (GtkWidget *widget,
-                         GtkStyle  *previous_style)
-{
-  if (previous_style && GTK_WIDGET_REALIZED (widget))
-    gdk_window_set_background (widget->window,
-                               &widget->style->base[GTK_WIDGET_STATE (widget)]);
-}
 
 static void
 gtk_cell_view_finalize (GObject *object)
@@ -886,7 +875,7 @@ gtk_cell_view_set_model (GtkCellView  *cell_view,
                          GtkTreeModel *model)
 {
   g_return_if_fail (GTK_IS_CELL_VIEW (cell_view));
-  g_return_if_fail (GTK_IS_TREE_MODEL (model));
+  g_return_if_fail (model == NULL || GTK_IS_TREE_MODEL (model));
 
   if (cell_view->priv->model)
     {

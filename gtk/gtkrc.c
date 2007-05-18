@@ -663,11 +663,7 @@ gtk_rc_color_hash_changed (GtkSettings  *settings,
   
   g_object_get (settings, "color-hash", &context->color_hash, NULL);
 
-  if (context->color_hash)
-    g_hash_table_ref (context->color_hash);
-
-  if (!context->reloading)
-    gtk_rc_reparse_all_for_settings (settings, TRUE);
+  gtk_rc_reparse_all_for_settings (settings, TRUE);
 }
 
 static GtkRcContext *
@@ -684,6 +680,7 @@ gtk_rc_context_get (GtkSettings *settings)
       context->rc_sets_class = NULL;
       context->rc_files = NULL;
       context->default_style = NULL;
+      context->reloading = FALSE;
 
       g_object_get (settings,
 		    "gtk-theme-name", &context->theme_name,
@@ -691,9 +688,6 @@ gtk_rc_context_get (GtkSettings *settings)
 		    "gtk-font-name", &context->font_name,
 		    "color-hash", &context->color_hash,
 		    NULL);
-
-      if (context->color_hash)
-        g_hash_table_ref (context->color_hash);
 
       g_signal_connect (settings,
 			"notify::gtk-theme-name",
@@ -881,15 +875,22 @@ _gtk_rc_init (void)
 		       "  text[PRELIGHT] = \"#ffffff\"\n"
 		       "}\n"
 		       "\n"
+                       /* Make transparent tray icons work */
 		       "style \"gtk-default-tray-icon-style\" {\n"
 		       "  bg_pixmap[NORMAL] = \"<parent>\"\n"
 		       "}\n"
 		       "\n"
+                       /* Work around clipping of accelerator underlines */
+                       "style \"gtk-default-label-style\" {\n"
+                       "  GtkWidget::draw-border = {0,0,0,1}\n"
+                       "}\n"
+                       "\n"    
 		       "class \"GtkProgressBar\" style : gtk \"gtk-default-progress-bar-style\"\n"
 		       "class \"GtkTrayIcon\" style : gtk \"gtk-default-tray-icon-style\"\n"
 		       "widget \"gtk-tooltips*\" style : gtk \"gtk-default-tooltips-style\"\n"
 		       "widget_class \"*<GtkMenuItem>*\" style : gtk \"gtk-default-menu-item-style\"\n"
 		       "widget_class \"*<GtkMenuBar>*<GtkMenuItem>\" style : gtk \"gtk-default-menu-bar-item-style\"\n"
+                       "class \"GtkLabel\" style : gtk \"gtk-default-label-style\"\n"
       );
 }
   
@@ -1717,6 +1718,9 @@ gtk_rc_reparse_all_for_settings (GtkSettings *settings,
   g_return_val_if_fail (GTK_IS_SETTINGS (settings), FALSE);
 
   context = gtk_rc_context_get (settings);
+
+  if (context->reloading)
+    return FALSE;
 
   if (!force_load)
     {
@@ -4227,9 +4231,9 @@ gtk_rc_parse_icon_source (GtkRcContext   *context,
                           gboolean       *icon_set_valid)
 {
   guint token;
-  GtkIconSource *source;
   gchar *full_filename;
-  
+  GtkIconSource *source = NULL;
+
   token = g_scanner_get_next_token (scanner);
   if (token != G_TOKEN_LEFT_CURLY)
     return G_TOKEN_LEFT_CURLY;
@@ -4239,12 +4243,11 @@ gtk_rc_parse_icon_source (GtkRcContext   *context,
   if (token != G_TOKEN_STRING && token != '@')
     return G_TOKEN_STRING;
   
-  source = gtk_icon_source_new ();
-
   if (token == G_TOKEN_STRING)
     {
       /* Filename */
-      
+
+      source = gtk_icon_source_new ();      
       full_filename = gtk_rc_find_pixmap_in_path (context->settings, scanner, scanner->value.v_string);
       if (full_filename)
 	{
@@ -4261,6 +4264,7 @@ gtk_rc_parse_icon_source (GtkRcContext   *context,
       if (token != G_TOKEN_STRING)
 	return G_TOKEN_STRING;
 
+      source = gtk_icon_source_new ();
       gtk_icon_source_set_icon_name (source, scanner->value.v_string);
     }
 

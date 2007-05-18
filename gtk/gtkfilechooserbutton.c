@@ -354,7 +354,7 @@ gtk_file_chooser_button_class_init (GtkFileChooserButtonClass * class)
 				   g_param_spec_object ("dialog",
 							P_("Dialog"),
 							P_("The file chooser dialog to use."),
-							GTK_TYPE_FILE_CHOOSER_DIALOG,
+							GTK_TYPE_FILE_CHOOSER,
 							(GTK_PARAM_WRITABLE |
 							 G_PARAM_CONSTRUCT_ONLY)));
 
@@ -1217,17 +1217,20 @@ change_icon_theme_get_info_cb (GtkFileSystemHandle *handle,
       width = MAX (width, gdk_pixbuf_get_width (pixbuf));
 
       path = gtk_tree_row_reference_get_path (data->row_ref);
-      gtk_tree_model_get_iter (data->button->priv->model, &iter, path);
-      gtk_tree_path_free (path);
+      if (path) 
+        {
+          gtk_tree_model_get_iter (data->button->priv->model, &iter, path);
+          gtk_tree_path_free (path);
 
-      gtk_list_store_set (GTK_LIST_STORE (data->button->priv->model), &iter,
-			  ICON_COLUMN, pixbuf,
-			  -1);
+          gtk_list_store_set (GTK_LIST_STORE (data->button->priv->model), &iter,
+	  		      ICON_COLUMN, pixbuf,
+			      -1);
+
+          g_object_set (data->button->priv->icon_cell,
+		        "width", width,
+		        NULL);
+        }
       g_object_unref (pixbuf);
-
-      g_object_set (data->button->priv->icon_cell,
-		    "width", width,
-		    NULL);
     }
 
 out:
@@ -2755,11 +2758,12 @@ gtk_file_chooser_button_new_with_backend (const gchar          *title,
 
 /**
  * gtk_file_chooser_button_new_with_dialog:
- * @dialog: the #GtkFileChooserDialog widget to use.
+ * @dialog: the widget to use as dialog
  * 
  * Creates a #GtkFileChooserButton widget which uses @dialog as it's
- * file-picking window. Note that @dialog must be a #GtkFileChooserDialog (or
- * subclass) and must not have %GTK_DIALOG_DESTROY_WITH_PARENT set.
+ * file-picking window. Note that @dialog must be a #GtkDialog (or
+ * subclass) which implements the #GtkFileChooser interface and must 
+ * not have %GTK_DIALOG_DESTROY_WITH_PARENT set.
  * 
  * Returns: a new button widget.
  * 
@@ -2768,7 +2772,7 @@ gtk_file_chooser_button_new_with_backend (const gchar          *title,
 GtkWidget *
 gtk_file_chooser_button_new_with_dialog (GtkWidget *dialog)
 {
-  g_return_val_if_fail (GTK_IS_FILE_CHOOSER_DIALOG (dialog), NULL);
+  g_return_val_if_fail (GTK_IS_FILE_CHOOSER (dialog) && GTK_IS_DIALOG (dialog), NULL);
 
   return g_object_new (GTK_TYPE_FILE_CHOOSER_BUTTON,
 		       "dialog", dialog,

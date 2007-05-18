@@ -1,3 +1,45 @@
+2007-05-02  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.12 ===
+
+2007-04-09  Matthias Clasen  <mclasen@redhat.com>
+
+	Merged from trunk:
+
+	* xdgmimeglob.c (_xdg_glob_hash_insert_text): Duplicate the
+	mime_type when storing it in a hash node, to avoid leaks.
+	Update all callers.
+			
+2007-03-14  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.11 ===
+
+2007-03-12  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.10 ===
+
+2007-01-22  Matthias Clasen  <mclasen@redhat.com>
+
+	* === 2.10.9 ===
+
+2007-01-17  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.8 ===
+
+2007-01-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmimecache.c (cache_glob_node_lookup_suffix): Don't return "" 
+	as match.  (fd.o #9544, Yevgen Muntyan)
+
+2007-01-07  Matthias Clasen  <mclasen@redhat.com>
+
+	* xdgmimecache.c (_xdg_mime_cache_list_mime_parents): Fix 
+	several problems with this function.  (fd.o #9560, Yevgen Muntyan)
+
+2007-01-05  Matthias Clasen  <mclasen@redhat.com>
+
+	* === Released 2.10.7 ===
+
 2006-10-03  Matthias Clasen  <mclasen@redhat.com>
 
 	* === Released 2.10.6 ===

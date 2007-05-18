@@ -6,19 +6,19 @@ no_undefined = -no-undefined
 endif
 
 if OS_WIN32
-gdk_pixbuf_def = $(srcdir)/gdk_pixbuf.def
-gdk_pixbuf_symbols = -export-symbols $(gdk_pixbuf_def)
+gdk_pixbuf_def = gdk_pixbuf.def
+gdk_pixbuf_symbols = -export-symbols gdk_pixbuf.def
 
 gdk_pixbuf_win32_res = gdk_pixbuf-win32-res.o
-gdk_pixbuf_win32_res_ldflag = -Wl,$(gdk_pixbuf_win32_res)
+gdk_pixbuf_win32_res_ldflag = -Wl,gdk_pixbuf-win32-res.o
 
 gdk_pixbuf-win32-res.o : gdk_pixbuf.rc
 	$(WINDRES) gdk_pixbuf.rc $@
 
 install-def-file:
-	$(INSTALL) $(gdk_pixbuf_def) $(DESTDIR)$(libdir)/gdk_pixbuf-2.0.def
+	$(INSTALL) gdk_pixbuf.def $(DESTDIR)$(libdir)/gdk_pixbuf-$(GTK_API_VERSION).def
 uninstall-def-file:
-	-rm $(DESTDIR)$(libdir)/gdk_pixbuf-2.0.def
+	-rm $(DESTDIR)$(libdir)/gdk_pixbuf-$(GTK_API_VERSION).def
 else
 install-def-file:
 uninstall-def-file:
@@ -280,7 +280,7 @@ INCLUDES = \
 	-DGDK_PIXBUF_ENABLE_BACKEND
 
 AM_CPPFLAGS = "-DPIXBUF_LIBDIR=\"$(loaderdir)\"" "-DBUILT_MODULES_DIR=\"$(srcdir)/.libs\""
-LDADDS = libgdk_pixbuf-$(GTK_API_VERSION).la
+LDADDS = libgdk_pixbuf-$(GTK_API_VERSION).la $(GLIB_LIBS)
 
 noinst_PROGRAMS = test-gdk-pixbuf
 test_gdk_pixbuf_LDADD = $(LDADDS)
@@ -437,19 +437,6 @@ EXTRA_DIST =					\
 	gdk_pixbuf.rc				\
 	gdk-pixbuf-marshal.c			\
 	gdk-pixbuf-marshal.list			\
-	pixbufloader_ico.def			\
-	pixbufloader_ani.def			\
-	pixbufloader_pnm.def			\
-	pixbufloader_xpm.def			\
-	pixbufloader_bmp.def			\
-	pixbufloader_jpeg.def			\
-	pixbufloader_ras.def			\
-	pixbufloader_gif.def			\
-	pixbufloader_png.def			\
-	pixbufloader_tiff.def			\
-	pixbufloader_wbmp.def			\
-	pixbufloader_xbm.def			\
-	pixbufloader_tga.def			\
 	gen-color-table.pl
 
 if CROSS_COMPILING
