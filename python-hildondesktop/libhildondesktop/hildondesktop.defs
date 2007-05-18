@@ -106,16 +106,6 @@
   (gtype-id "HILDON_DESKTOP_TYPE_PANEL_WINDOW_ORIENTATION")
 )
 
-(define-enum HomeTitlebarMode
-  (in-module "HildonDesktop")
-  (c-name "HildonHomeTitlebarMode")
-  (gtype-id "HILDON_TYPE_HOME_TITLEBAR_MODE")
-  (values
-    '("normal" "HILDON_DESKTOP_HOME_TITLEBAR_NORMAL")
-    '("layout" "HILDON_DESKTOP_HOME_TITLEBAR_LAYOUT")
-  )
-)
-
 (define-enum HomeItemResizeType
   (in-module "HildonDesktop")
   (c-name "HildonDesktopHomeItemResizeType")
@@ -349,55 +339,25 @@
   (return-type "GtkWidget*")
 )
 
-(define-method get_titlebar
+(define-method get_menu
   (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_get_titlebar")
+  (c-name "hildon_home_window_get_menu")
   (return-type "GtkWidget*")
 )
 
-(define-method applets_init
+(define-method set_menu
   (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_applets_init")
-  (return-type "none")
-)
-
-(define-method select_applets
-  (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_select_applets")
-  (return-type "none")
-)
-
-(define-method layout_mode_activate
-  (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_layout_mode_activate")
-  (return-type "none")
-)
-
-(define-method set_desktop_dimmed
-  (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_set_desktop_dimmed")
+  (c-name "hildon_home_window_set_menu")
   (return-type "none")
   (parameters
-    '("gboolean" "dimmed")
+    '("GtkMenu*" "menu")
   )
 )
 
-(define-method accept_layout
+(define-method toggle_menu
   (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_accept_layout")
+  (c-name "hildon_home_window_toggle_menu")
   (return-type "none")
-)
-
-(define-method cancel_layout
-  (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_cancel_layout")
-  (return-type "none")
-)
-
-(define-method get_area
-  (of-object "HildonHomeWindow")
-  (c-name "hildon_home_window_get_area")
-  (return-type "GtkWidget*")
 )
 
 
@@ -475,11 +435,6 @@
 
 ;; From /usr/include/libhildondesktop/libhildondesktop/hildon-home-titlebar.h
 
-(define-function hildon_home_titlebar_mode_get_type
-  (c-name "hildon_home_titlebar_mode_get_type")
-  (return-type "GType")
-)
-
 (define-function hildon_home_titlebar_get_type
   (c-name "hildon_home_titlebar_get_type")
   (return-type "GType")
@@ -489,15 +444,6 @@
   (c-name "hildon_home_titlebar_new")
   (is-constructor-of "HildonHomeTitlebar")
   (return-type "GtkWidget*")
-)
-
-(define-method set_mode
-  (of-object "HildonHomeTitlebar")
-  (c-name "hildon_home_titlebar_set_mode")
-  (return-type "none")
-  (parameters
-    '("HildonHomeTitlebarMode" "mode")
-  )
 )
 
 (define-method toggle_menu
@@ -515,27 +461,9 @@
   )
 )
 
-(define-method set_layout_menu
+(define-method set_title
   (of-object "HildonHomeTitlebar")
-  (c-name "hildon_home_titlebar_set_layout_menu")
-  (return-type "none")
-  (parameters
-    '("GtkWidget*" "menu")
-  )
-)
-
-(define-method set_menu_title
-  (of-object "HildonHomeTitlebar")
-  (c-name "hildon_home_titlebar_set_menu_title")
-  (return-type "none")
-  (parameters
-    '("const-gchar*" "title")
-  )
-)
-
-(define-method set_layout_menu_title
-  (of-object "HildonHomeTitlebar")
-  (c-name "hildon_home_titlebar_set_layout_menu_title")
+  (c-name "hildon_home_titlebar_set_title")
   (return-type "none")
   (parameters
     '("const-gchar*" "title")

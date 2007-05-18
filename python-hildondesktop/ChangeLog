@@ -1,3 +1,7 @@
+2007-05-18  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* libhildondesktop/hildondesktop.defs: update to match API changes.
+
 2007-03-28  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* libhildondesktop/hildondesktop.defs: removed save_position from
