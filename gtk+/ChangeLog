@@ -1,3 +1,8 @@
+2007-05-21  Michael Natterer  <mitch@imendio.com>
+
+	* gtk/gtkcombobox.c (gtk_combo_box_set_model): allow NULL models
+	(forgotten merge from the 2.10.12 update).
+
 2007-05-21  Xan Lopez  <xan.lopez@nokia.com>
 
 	2007-04-28  Matthias Clasen  <mclasen@redhat.com>
