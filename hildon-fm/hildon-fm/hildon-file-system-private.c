@@ -250,7 +250,10 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
                     candidate, searched->uri);
                 searched->is_child = TRUE;
 		if (searched->result)
-		  g_node_append_data (node, searched->result);
+		  {
+		    g_object_ref (searched->result);
+		    g_node_append_data (node, searched->result);
+		  }
             }
 
 	    return searched->result != NULL;
