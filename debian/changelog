@@ -1,3 +1,9 @@
+gtk+2.0 (2:2.10.12-0osso2) unstable; urgency=low
+
+  * Allow NULL models on gtk_combo_box_set_model. 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 21 May 2007 15:45:36 +0300
+
 gtk+2.0 (2:2.10.12-0osso1) unstable; urgency=low
 
   * Fix "make maintainer-clean" to only remove generated files.
