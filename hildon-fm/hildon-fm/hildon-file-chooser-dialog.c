@@ -1102,6 +1102,7 @@ static void create_folder_callback(GtkFileSystemHandle *handle,
 
     g_assert(HILDON_IS_FILE_CHOOSER_DIALOG(data));
     self = HILDON_FILE_CHOOSER_DIALOG(data);
+
     g_assert(self->priv->create_folder_handle == handle);
 
     self->priv->create_folder_handle = NULL;
@@ -1177,10 +1178,14 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
 
       /* There shouldn't be a way to invoke two simultaneous folder
          creating actions */
-      g_assert(self->priv->create_folder_handle == NULL);
+
+      HildonFileChooserDialogPrivate *sub_priv =
+	HILDON_FILE_CHOOSER_DIALOG (dialog)->priv;
+
+      g_assert(sub_priv->create_folder_handle == NULL);
 
       /* Callback is quaranteed to be called, it unrefs the object data */
-      self->priv->create_folder_handle = 
+      sub_priv->create_folder_handle = 
 	gtk_file_system_create_folder (backend, file_path, 
 				       create_folder_callback,
 				       g_object_ref(dialog));
@@ -1787,6 +1792,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     self->priv = priv =
         G_TYPE_INSTANCE_GET_PRIVATE(self, HILDON_TYPE_FILE_CHOOSER_DIALOG,
                                     HildonFileChooserDialogPrivate);
+
     size_group = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
     priv->filters = NULL;
     priv->autonaming_enabled = TRUE;
