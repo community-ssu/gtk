@@ -1,3 +1,9 @@
+atk1.0 (1.18.0-1osso5) unstable; urgency=low
+
+  * Fixes: NB#56925 
+
+ -- Xan Lopez <xan.lopez@nokia.com>  Mon, 21 May 2007 11:08:26 +0300
+
 atk1.0 (1.18.0-1osso4) unstable; urgency=low
 
   * Disable all translations for real. 
