@@ -1,3 +1,10 @@
+gconf2 (2.16.0-1osso5) unstable; urgency=low
+
+  * UNRELEASED
+  * Handle setting empty pairs
+
+ -- Richard Hult <richard@imendio.com>  Tue, 15 May 2007 15:22:55 +0200
+
 gconf2 (2.16.0-1osso4) unstable; urgency=low
 
   * Fixes: NB#49550, gconf_client_get sees a removed key
