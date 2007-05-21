@@ -1,3 +1,9 @@
+2007-05-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: New graphics for task navigator. Man, the
+	svg is getting complex.. Need to look into cleaning it up again
+	soon.
+
 2007-05-15  Michael Dominic K.  <mdk@mdk.am> 
 
 	[4.8.0-1 release]
