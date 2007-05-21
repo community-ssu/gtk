@@ -1120,8 +1120,9 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               /* FIXME: hack to workaround problem with Sketch files.
                * Second check is because we cannot make thumbnails for
                * images on the Gateway. */
-              if (strcmp(mime_type, "sketch/png") != 0 &&
-                  (uri && !g_str_has_prefix(uri, "obex://")))
+              if (mime_type != NULL 
+		  && strcmp(mime_type, "sketch/png") != 0
+		  && (uri && !g_str_has_prefix(uri, "obex://")))
               {
                 cat = hildon_mime_get_category_for_mime_type(mime_type);
                 if (cat == HILDON_MIME_CATEGORY_IMAGES)
