@@ -30,6 +30,11 @@ list_gnome_vfs_volumes ()
 		 " %s %s\n",
 		 gnome_vfs_volume_get_device_path (volume),
 		 gnome_vfs_volume_get_activation_uri (volume));
+      else
+	fprintf (stderr, 
+		 " (%s %s)\n",
+		 gnome_vfs_volume_get_device_path (volume),
+		 gnome_vfs_volume_get_activation_uri (volume));
       
       volumes = volumes->next;
     }
@@ -45,6 +50,11 @@ list_gnome_vfs_volumes ()
 	fprintf (stderr, 
 		 " %s\n",
 		 gnome_vfs_drive_get_device_path (drive));
+      else
+	fprintf (stderr, 
+		 " (%s)\n",
+		 gnome_vfs_drive_get_device_path (drive));
+	
       
       drives = drives->next;
     }
