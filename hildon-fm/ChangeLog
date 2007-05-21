@@ -1,3 +1,18 @@
+2007-05-21  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):
+	Store the handle in the private structure of the sub-dialog, not
+	in the main dialog, stupid (N53829).
+
+	* hildon-fm/hildon-file-system-private.c
+	(get_special_location_callback): Add reference count to the
+	location object when adding it into the global tree of special
+	locations.
+
+	* hildon-fm/hildon-file-system-model.c
+	(hildon_file_system_model_get_value): Handle NULL mime_type
+	gracefully.
+
 2007-05-16  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.22
