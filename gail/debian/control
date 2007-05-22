@@ -3,7 +3,7 @@ Section: libs
 Priority: optional
 XSBC-Original-Maintainer: Akira TAGOH <tagoh@debian.org>
 Maintainer: Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>
-Build-Depends: debhelper (>> 4.0.0), cdbs, pkg-config, libatk1.0-dev (>= 1.13.0), libgtk2.0-dev (>= 2.9.4), gtk-doc-tools
+Build-Depends: debhelper (>> 4.0.0), cdbs, pkg-config, libatk1.0-dev (>= 1.13.0), libgtk2.0-dev (>= 2.9.4), gtk-doc-tools, gnome-pkg-tools
 Standards-Version: 3.6.2
 
 Package: libgail18
@@ -41,7 +41,7 @@ Description: GNOME Accessibility Implementation Library -- development files
  .
  This package contains the development files for Gail.
 
-Package: libgail-dbg
+Package: libgail18-dbg
 Architecture: any
 Section: libdevel
 Priority: extra

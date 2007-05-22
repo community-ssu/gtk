@@ -1,3 +1,9 @@
+gail (1.18.0-osso4) unstable; urgency=low
+
+  * Fix some packaging errors from lintian.
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Fri, 22 May 2007 15:12:31 +0100
+
 gail (1.18.0-osso3) unstable; urgency=low
 
   * Use ${shlibs:Depends} instead of hardcoding dependencies
@@ -10,7 +16,7 @@ gail (1.18.0-osso2) unstable; urgency=low
 
  -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Mon, 16 Apr 2007 19:12:31 +0100
 
-gail (1.18.0-osso1)  UNRELEASED; urgency=low
+gail (1.18.0-osso1) UNRELEASED; urgency=low
 
   * New package based on ubuntu one.
   * Added a patch to remove gnome-canvas dependency
