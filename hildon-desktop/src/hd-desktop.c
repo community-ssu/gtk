@@ -500,9 +500,12 @@ hd_desktop_system_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
   if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
   {
+    /* Disabling desktop conf file monitoing to avoid crashes for now */
+#if 0
     g_free (priv->config_file);
     priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
     hd_desktop_load_containers (desktop);
+#endif
   } else {
     HDDesktopContainerInfo *info;
     GList *plugin_list = NULL;
@@ -550,9 +553,12 @@ hd_desktop_user_conf_dir_changed (GnomeVFSMonitorHandle *handle,
 
   if (!g_ascii_strcasecmp (filename, HD_DESKTOP_CONFIG_FILE))
   {
+    /* Disabling desktop conf file monitoing to avoid crashes for now */
+#if 0
     g_free (priv->config_file);
     priv->config_file = hd_desktop_get_conf_file_path (HD_DESKTOP_CONFIG_FILE);
     hd_desktop_load_containers (desktop);
+#endif
   } else {
     HDDesktopContainerInfo *info;
     GList *plugin_list = NULL;
@@ -1094,19 +1100,52 @@ hd_desktop_system_notification_dialog_response (GtkWidget *widget,
   }
 }
 
+static gboolean
+hd_desktop_pulsate_progress_bar (gpointer user_data)
+{
+  if (GTK_IS_PROGRESS_BAR (user_data)) 
+  {
+    gtk_progress_bar_pulse (GTK_PROGRESS_BAR (user_data));
+    return TRUE;
+  }
+  else
+  {
+    return FALSE;
+  }
+}
+
 static GtkWidget *
 hd_desktop_create_note_dialog (const gchar *summary, 
 			       const gchar *body, 
 			       const gchar *icon_name,
-			       gchar **actions)
+			       gint         dialog_type,
+			       gchar      **actions)
 {
   GtkWidget *note;
   gint i;
   
-  note = hildon_note_new_information_with_icon_name (NULL, 
-		  				     body, 
-						     icon_name);
+  /* If it's a progress dialog, add the progress bar */
+  if (dialog_type == 4)
+  {
+    GtkWidget *progressbar;
 
+    progressbar = gtk_progress_bar_new ();
+
+    gtk_progress_bar_pulse (GTK_PROGRESS_BAR (progressbar));
+
+    note = hildon_note_new_cancel_with_progress_bar (NULL,
+                                                     body,
+                                                     progressbar);
+
+    g_timeout_add (100, hd_desktop_pulsate_progress_bar, progressbar);
+  }
+  else
+  {
+    note = hildon_note_new_information_with_icon_name (NULL, 
+  		  				       body, 
+  						       icon_name);
+  }
+  
   /* If there's a default action, get the label and set
    * the button text */
   for (i = 0; actions && actions[i] != NULL; i += 2)
@@ -1186,10 +1225,15 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
   else if (g_str_equal (hint_s, "system.note.dialog")) 
   {
     HDDesktopNotificationInfo *ninfo;
-
+    gint dialog_type = 0;
+    
+    hint = g_hash_table_lookup (hints, "dialog-type");
+    dialog_type = g_value_get_int (hint);
+    
     notification = hd_desktop_create_note_dialog (summary, 
 		    				  body, 
 						  icon_name,
+						  dialog_type,
 						  actions);
 
     ninfo = g_new0 (HDDesktopNotificationInfo, 1); 

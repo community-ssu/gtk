@@ -121,8 +121,6 @@ hildon_desktop_notification_manager_next_id (HildonDesktopNotificationManager *n
   next_id = ++nm->priv->current_id;
 #endif
 
-  g_debug ("USANDO ID: %d", next_id);
-  
   if (nm->priv->current_id == G_MAXUINT)
     nm->priv->current_id = 0;
   
@@ -1144,12 +1142,15 @@ hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificatio
   GHashTable *hints;
   GValue *hint;
   gchar **actions;
+
+  g_return_val_if_fail (type >= 0 && type < 5, FALSE);
   
-  static const gchar *icon[4] = {
+  static const gchar *icon[5] = {
       "qgn_note_gene_syswarning", /* OSSO_GN_WARNING */
       "qgn_note_gene_syserror",   /* OSSO_GN_ERROR */
       "qgn_note_info",            /* OSSO_GN_NOTICE */
-      "qgn_note_gene_wait"        /* OSSO_GN_WAIT */
+      "qgn_note_gene_wait",       /* OSSO_GN_WAIT */
+      "qgn_note_gene_wait"        /* OSSO_GN_PROGRESS */
   };
 
   hints = g_hash_table_new_full (g_str_hash, 
@@ -1162,6 +1163,12 @@ hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificatio
   g_value_set_string (hint, "system.note.dialog");
 
   g_hash_table_insert (hints, "category", hint);
+
+  hint = g_new0 (GValue, 1);
+  hint = g_value_init (hint, G_TYPE_INT);
+  g_value_set_int (hint, type);
+
+  g_hash_table_insert (hints, "dialog-type", hint);
 
   if (!g_str_equal (label, ""))
   {
@@ -1191,7 +1198,7 @@ hildon_desktop_notification_manager_system_note_dialog (HildonDesktopNotificatio
 					      message,
 					      actions,
 					      hints,
-					      3000,
+					      0,
 					      context);
 
   g_hash_table_destroy (hints);
