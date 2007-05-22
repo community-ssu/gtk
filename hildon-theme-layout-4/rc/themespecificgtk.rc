@@ -65,6 +65,32 @@ style "osso-logical-colors" {
 	color["WCFrameColor"]            = "@WCFrameColor@"
 	color["WCIndicatorColor"]        = "@WCIndicatorColor@"
 	color["WCIndicatorFNColor"]      = "@WCIndicatorFNColor@"
+	
+	# new ones!
+        color["ClockAppletDateColor"]			= "@ClockAppletDateColor@"
+        color["ChatTextBgColor"]			= "@ChatTextBgColor@"
+        color["ChatTextBgColor2"]			= "@ChatTextBgColor2@"
+        color["ChatTextColor"]				= "@ChatTextColor@"
+        color["TreeViewOddRowColor"]			= "@TreeViewOddRowColor@"
+        color["TreeViewEvenRowColor"]			= "@TreeViewEvenRowColor@"
+        color["CropFrameColor"]				= "@CropFrameColor@"
+        color["MediaPlayerToolbarFontColor"]		= "@MediaPlayerToolbarFontColor@"
+        color["RssAppletFeedTextColor"]			= "@RssAppletFeedTextColor@"
+        color["PaneMenuColor1"]				= "@PaneMenuColor1@"
+        color["PaneMenuColor2"]				= "@PaneMenuColor2@"
+        color["PaneMenu1TextColor"]			= "@PaneMenu1TextColor@"
+        color["PaneMenu2TextColor"]			= "@PaneMenu2TextColor@"
+        color["PaneSeparatorColor1"]			= "@PaneSeparatorColor1@"
+        color["PaneSeparatorColor2"]			= "@PaneSeparatorColor2@"
+        color["SpeedContactDefaultTextColor"]		= "@SpeedContactDefaultTextColor@"
+        color["SpeedContactSecondaryTextColor"]		= "@SpeedContactSecondaryTextColor@"
+        color["TaskSwitcherFontColor"]			= "@TaskSwitcherFontColor@"
+        color["TaskSwitcherSecondaryFontColor"]		= "@TaskSwitcherSecondaryFontColor@"
+        color["TaskSwitcherNotificationMenuFontColor"]	= "@TaskSwitcherNotificationMenuFontColor@"
+        color["TaskSwitcherSeparatorColor"]		= "@TaskSwitcherSeparatorColor@"
+        color["TaskSwitcherNotificationSeparatorColor"]	= "@TaskSwitcherNotificationSeparatorColor@"
+        color["ThumbMenuSeparatorColor"]		= "@ThumbMenuSeparatorColor@"
+
 }
 
 ##############################

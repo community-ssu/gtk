@@ -38,7 +38,6 @@ HWRRecogColor=7691,508,30,16
 HWRUserColor=7691,523,30,16
 HWRUserBackgrdColor=7691,538,30,16
 HWRHintColor=7691,553,30,16
-HWRWhiteTextColor=7691,568,30,16
 VKBButtonTextColor=7691,583,30,16
 WCFrameColor=7691,598,30,16
 WCIndicatorColor=7691,613,30,16
@@ -485,7 +484,8 @@ qgn_plat_seek_bar_toolbar_shaft_stream_finished_normal.png=1116,87,4,40
 qgn_plat_seek_bar_toolbar_shaft_stream_normal.png=868,87,4,40
 qgn_plat_seek_bar_toolbar_thumb_disabled.png=844,247,23,40
 qgn_plat_seek_bar_toolbar_thumb_normal.png=844,87,23,40
-qgn_plat_separator_columnlist_header.png=201,645,10,30
+# this has been removed
+#qgn_plat_separator_columnlist_header.png=201,645,10,30
 qgn_plat_separator_horizontal.png=113,647,26,3
 qgn_plat_separator_horizontal_paned.png=169,681,26,10
 qgn_plat_separator_horizontal_paned_thumb.png=169,697,30,10
