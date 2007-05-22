@@ -87,22 +87,26 @@ OTHERS_BUTTON_SOURCES  = \
 	hn-others-button.c \
 	hn-others-button.h
 
+APPLICATIONS_MENU_SOURCES  = \
+	hd-applications-menu.c \
+	hd-applications-menu.h
 
 hildon_desktop_SOURCES = \
-	$(BUILT_SOURCES)            \
-	$(PLUGIN_MANAGER_SOURCES)   \
-	$(HOME_SOURCES)             \
-	$(APP_SWITCHER_SOURCES)     \
-	$(OTHERS_BUTTON_SOURCES)    \
-	hd-desktop.c                \
-	hd-desktop.h                \
-	hd-select-plugins-dialog.c  \
-	hd-select-plugins-dialog.h  \
-	hd-panel-window.c           \
-	hd-panel-window.h           \
-	hd-panel-window-dialog.c    \
-	hd-panel-window-dialog.h    \
-	hd-config.h                 \
+	$(BUILT_SOURCES)             \
+	$(PLUGIN_MANAGER_SOURCES)    \
+	$(HOME_SOURCES)              \
+	$(APP_SWITCHER_SOURCES)      \
+	$(APPLICATIONS_MENU_SOURCES) \
+	$(OTHERS_BUTTON_SOURCES)     \
+	hd-desktop.c                 \
+	hd-desktop.h                 \
+	hd-select-plugins-dialog.c   \
+	hd-select-plugins-dialog.h   \
+	hd-panel-window.c            \
+	hd-panel-window.h            \
+	hd-panel-window-dialog.c     \
+	hd-panel-window-dialog.h     \
+	hd-config.h                  \
 	main.c
 
 EXTRA_DIST = notification-manager.xml

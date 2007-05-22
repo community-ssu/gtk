@@ -1,5 +1,20 @@
 2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-plugin-loader-builtin.c: added applications menu to the
+	possible builtin plugins. 
+	* data/applications-menu.desktop.in, src/hd-applications-menu.[ch]: new two-pane 
+	applications menu. Theming still missing.
+	* src/Makefile.am, data/Makefile.am, configure.ac: added new plugin to
+	the build.
+	* libhildondesktop/hildon-desktop-popup-menu.[ch]: implement size
+	allocate and request to correctly show the "toggle" region of menu
+	items. Fixed scrolling for popup menus which are not child of a
+	window. Added a method to get the current selected menu item.
+	* data/applications.menu: added (commented for now) new applications
+	menu layout.
+
+2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-desktop.c: fix build warning. 
 
 2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>

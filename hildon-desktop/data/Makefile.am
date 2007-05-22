@@ -8,6 +8,7 @@ hildondesktopconf_DATA = \
 hildonnavigatordesktopentry_DATA = \
 	app-switcher.desktop       \
         others-button.desktop	   \
+        applications-menu.desktop  \
 	switcher-menu.desktop
 
 applications_menudir = $(sysconfdir)/xdg/menus

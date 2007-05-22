@@ -30,6 +30,7 @@
 #include "hd-config.h"
 #include "hn-app-switcher.h"
 #include "hn-others-button.h"
+#include "hd-applications-menu.h"
 #include "hd-switcher-menu.h"
 
 #define HD_PLUGIN_LOADER_BUILTIN_GET_PRIVATE(obj) \
@@ -37,9 +38,10 @@
 
 G_DEFINE_TYPE (HDPluginLoaderBuiltin, hd_plugin_loader_builtin, HD_TYPE_PLUGIN_LOADER);
 
-#define HD_PLUGIN_LOADER_BUILTIN_APP_SWITCHER  "appswitcher"
-#define HD_PLUGIN_LOADER_BUILTIN_OTHERS_BUTTON "othersbutton"
-#define HD_PLUGIN_LOADER_BUILTIN_SWITCHER_MENU "switchermenu"
+#define HD_PLUGIN_LOADER_BUILTIN_APP_SWITCHER      "appswitcher"
+#define HD_PLUGIN_LOADER_BUILTIN_OTHERS_BUTTON     "othersbutton"
+#define HD_PLUGIN_LOADER_BUILTIN_APPLICATIONS_MENU "applicationsmenu"
+#define HD_PLUGIN_LOADER_BUILTIN_SWITCHER_MENU     "switchermenu"
 
 static GList *
 hd_plugin_loader_builtin_load (HDPluginLoader *loader, GError **error)
@@ -88,6 +90,12 @@ hd_plugin_loader_builtin_load (HDPluginLoader *loader, GError **error)
 
     objects = g_list_append (objects, object);
   }
+  else if (!g_ascii_strcasecmp (path, HD_PLUGIN_LOADER_BUILTIN_APPLICATIONS_MENU))
+  {
+    GObject *object = g_object_new (HD_TYPE_APPLICATIONS_MENU, NULL);
+
+    objects = g_list_append (objects, object);
+  }	  
   else if (!g_ascii_strcasecmp (path, HD_PLUGIN_LOADER_BUILTIN_SWITCHER_MENU))
   {
     GObject *object = g_object_new (HD_TYPE_SWITCHER_MENU, NULL);

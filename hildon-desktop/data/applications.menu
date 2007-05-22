@@ -10,6 +10,75 @@
   <DefaultAppDirs/>
   <DefaultDirectoryDirs/>
   
+  <!--
+  // My selection submenu 
+  <Menu>
+    <Name>tana_fi_my_selection</Name>
+    <Include>
+      <Filename>mp_ui.desktop</Filename>
+      <Filename>image-viewer.desktop</Filename>
+      <Filename>osso_help.desktop</Filename>
+    </Include>
+  </Menu>
+
+  // Internet submenu 
+  <Menu>
+    <Name>tana_fi_internet</Name>
+    <Include>
+      <Filename>browser.desktop</Filename>
+      <Filename>bookmark.desktop</Filename>
+      <Filename>osso_rss_feed_reader.desktop</Filename>
+    </Include>
+  </Menu>
+
+  // Communication submenu
+  <Menu>
+    <Name>tana_fi_communication</Name>
+    <Include>
+      <Filename>osso-addressbook.desktop</Filename>
+      <Filename>modest.desktop</Filename>
+      <Filename>voip-ui.desktop</Filename>
+      <Filename>chat-ui.desktop</Filename>
+    </Include>
+  </Menu>
+
+  // Utilities submenu 
+  <Menu>
+    <Name>tana_fi_utilities</Name>
+    <Include>
+      <Filename>filemanager.desktop</Filename>
+      <Filename>osso_calculator.desktop</Filename>
+      <Filename>osso_worldclock.desktop</Filename>
+      <Filename>osso_notes.desktop</Filename>
+      <Filename>osso_pdfviewer.desktop</Filename>
+      <Filename>osso_sketch.desktop</Filename>
+    </Include>
+  </Menu>
+
+  // Settings submenu
+  <Menu>
+    <Name>tana_fi_settings</Name>
+    <Include>
+      <Filename>hildon-control-panel.desktop</Filename>
+      <Filename>hildon-application-manager.desktop</Filename>
+      <Filename>osso-backup.desktop</Filename>
+      <Filename>osso-connectivity-ui-connmgr.desktop</Filename>
+      <Filename>hwr-teacher.desktop</Filename>
+    </Include>
+  </Menu>
+
+  // Extras submenu 
+  <Menu>
+    <Name>tana_fi_extras</Name>
+    <Include>
+      <Filename>chess_startup.desktop</Filename>
+      <Filename>maemoblocks.desktop</Filename>
+      <Filename>mahjong_startup.desktop</Filename>
+      <Filename>osso_lmarbles.desktop</Filename>
+    </Include>
+  </Menu>
+  -->
+
   <!-- Favourites -->
   <Include>
     <Filename>mp_ui.desktop</Filename>

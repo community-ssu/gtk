@@ -269,5 +269,6 @@ data/statusbar.conf
 data/home.conf
 data/app-switcher.desktop 
 data/others-button.desktop 
+data/applications-menu.desktop 
 data/switcher-menu.desktop
 ])

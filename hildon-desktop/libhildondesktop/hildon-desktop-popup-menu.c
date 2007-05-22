@@ -56,21 +56,23 @@ static gint signals[N_SIGNALS];
 
 struct _HildonDesktopPopupMenuPrivate
 {
-  GtkWidget *viewport;
-  GtkWidget *box_items;
+  GtkWidget    *viewport;
+  GtkWidget    *box_items;
 
-  GtkWidget *box_buttons;
-  GtkWidget *scroll_down;
-  GtkWidget *scroll_up;
-  gboolean   controls_on;
+  GtkWidget    *box_buttons;
+  GtkWidget    *scroll_down;
+  GtkWidget    *scroll_up;
+  gboolean      controls_on;
 
-  guint n_items;
+  guint         n_items;
 
-  guint item_height;
+  guint         item_height;
 
-  GtkMenuItem *selected_item;
+  GtkMenuItem  *selected_item;
 
-  gboolean     resize_parent;
+  gboolean      resize_parent;
+
+  guint         toggle_size;
 };
 
 static GObject *hildon_desktop_popup_menu_constructor (GType gtype,
@@ -89,6 +91,8 @@ static void hildon_desktop_popup_menu_set_property (GObject *object,
                                                     const GValue *value,
                                                     GParamSpec *pspec);
 
+static void hildon_desktop_popup_menu_size_request (GtkWidget *widget, GtkRequisition *req);
+static void hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *allocation);
 static gboolean hildon_desktop_popup_menu_motion_notify (GtkWidget *widget, GdkEventMotion *event);
 static gboolean hildon_desktop_popup_menu_release_event (GtkWidget *widget, GdkEventButton *event);
 static gboolean hildon_desktop_popup_menu_key_press_event (GtkWidget *widget, GdkEventKey *event);
@@ -107,7 +111,9 @@ hildon_desktop_popup_menu_init (HildonDesktopPopupMenu *menu)
   menu->priv->controls_on = FALSE;
 
   menu->priv->selected_item = NULL;
-}	
+
+  menu->priv->toggle_size = 0;
+}
 
 static void 
 hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
@@ -117,13 +123,16 @@ hildon_desktop_popup_menu_class_init (HildonDesktopPopupMenuClass *menu_class)
 
   object_class->constructor = hildon_desktop_popup_menu_constructor;
   object_class->finalize    = hildon_desktop_popup_menu_finalize;
-  
+
   object_class->get_property = hildon_desktop_popup_menu_get_property;
   object_class->set_property = hildon_desktop_popup_menu_set_property;
 
   widget_class->motion_notify_event  = hildon_desktop_popup_menu_motion_notify;
   widget_class->button_release_event = hildon_desktop_popup_menu_release_event;
   widget_class->key_press_event      = hildon_desktop_popup_menu_key_press_event;
+
+  widget_class->size_request = hildon_desktop_popup_menu_size_request;
+  widget_class->size_allocate = hildon_desktop_popup_menu_size_allocate;
   
   g_type_class_add_private (object_class, sizeof (HildonDesktopPopupMenuPrivate));
 
@@ -185,8 +194,8 @@ hildon_desktop_popup_menu_constructor (GType gtype,
   gtk_box_pack_start (GTK_BOX (menu),
                       menu->priv->viewport,
                       FALSE, FALSE, 0);
-  gtk_widget_show (menu->priv->viewport);
 
+  gtk_widget_show (menu->priv->viewport);
 
   gtk_widget_push_composite_child ();
 
@@ -201,11 +210,11 @@ hildon_desktop_popup_menu_constructor (GType gtype,
   menu->priv->scroll_down = gtk_button_new ();
   menu->priv->scroll_up   = gtk_button_new ();
 
-
   g_signal_connect (menu->priv->scroll_down,
 		    "clicked",
 		    G_CALLBACK (hildon_desktop_popup_menu_scroll_cb),
 		    (gpointer)menu);
+
   g_signal_connect (menu->priv->scroll_up,
                     "clicked",
                     G_CALLBACK (hildon_desktop_popup_menu_scroll_cb),
@@ -237,6 +246,92 @@ hildon_desktop_popup_menu_finalize (GObject *object)
 	
   G_OBJECT_CLASS (hildon_desktop_popup_menu_parent_class)->finalize (object);	
 }	
+static void
+hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
+{
+  HildonDesktopPopupMenu *menu;
+  HildonDesktopPopupMenuPrivate *priv;
+  GtkRequisition child_requisition;
+  GtkAllocation child_allocation;
+  GList *children;
+  gint height = 0;
+  
+  menu = HILDON_DESKTOP_POPUP_MENU (widget);
+  priv = menu->priv;
+
+  children = gtk_container_get_children (GTK_CONTAINER (priv->box_items));
+  
+  while (children)
+  {
+    GtkWidget *child;
+
+    child = children->data;
+    children = children->next;
+
+    if (GTK_WIDGET_VISIBLE (child))
+    {
+      gtk_widget_size_request (GTK_WIDGET (child), &child_requisition);
+
+      child_allocation.width = allocation->width;
+      child_allocation.height = child_requisition.height;
+      child_allocation.x = 0;
+      child_allocation.y = height;
+	    
+      gtk_menu_item_toggle_size_allocate (GTK_MENU_ITEM (child),
+                                          priv->toggle_size);
+
+      gtk_widget_size_allocate (child, &child_allocation);
+
+      gtk_widget_queue_draw (GTK_WIDGET (child));
+
+      height += child_requisition.height;
+    }
+  }
+
+  GTK_WIDGET_CLASS (hildon_desktop_popup_menu_parent_class)->size_allocate (widget, allocation);
+}
+
+static void
+hildon_desktop_popup_menu_size_request (GtkWidget *widget, GtkRequisition *req)
+{
+  HildonDesktopPopupMenu *menu;
+  HildonDesktopPopupMenuPrivate *priv;
+  GtkRequisition child_requisition;
+  guint max_toggle_size;
+  GList *children;
+  
+  g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (widget));
+  g_return_if_fail (req != NULL);
+
+  menu = HILDON_DESKTOP_POPUP_MENU (widget);
+  priv = menu->priv;
+  
+  max_toggle_size = 0;
+
+  children = gtk_container_get_children (GTK_CONTAINER (priv->box_items));
+
+  while (children)
+  {
+    GtkMenuItem *child;
+    gint toggle_size;
+
+    child = (GtkMenuItem *) children->data;
+    children = children->next;
+
+    if (GTK_WIDGET_VISIBLE (child))
+    {
+      gtk_widget_size_request (GTK_WIDGET (child), &child_requisition);
+
+      gtk_menu_item_toggle_size_request (child, &toggle_size);
+
+      max_toggle_size = MAX (max_toggle_size, toggle_size);
+    }
+  }
+
+  priv->toggle_size = max_toggle_size;
+
+  GTK_WIDGET_CLASS (hildon_desktop_popup_menu_parent_class)->size_request (widget, req);
+}
 
 static void 
 hildon_desktop_popup_menu_get_property (GObject *object,
@@ -345,7 +440,7 @@ hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *
 
   GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (menu));
 
-  if (parent && GTK_IS_WINDOW (parent))
+  if (parent)
   {		  
     gtk_widget_size_request (parent, &req);
   	  
@@ -358,7 +453,7 @@ hildon_desktop_popup_menu_scroll_cb (GtkWidget *widget, HildonDesktopPopupMenu *
 
     /* NOTE: Don't remove this
      * g_debug ("min: %lf max: %lf current: %lf upper_hack: %lf", adj->lower,adj->upper, adj->value, upper_hack);*/
- }
+  }
 }	
 
 static gboolean 
@@ -440,10 +535,10 @@ hildon_desktop_popup_menu_key_press_event (GtkWidget   *widget,
     if (l->data == menu->priv->selected_item)
       break;
   }
-  
+
   if (l == NULL)
     return FALSE;   
-  
+
   if (event->keyval == GDK_Up ||
       event->keyval == GDK_KP_Up)
   {
@@ -542,11 +637,11 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
 
   children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
-  for (l=children; l != NULL; l = g_list_next (l))
+  for (l = children; l != NULL; l = g_list_next (l))
   {
-     gtk_widget_size_request (GTK_WIDGET (l->data), &req);
+    gtk_widget_size_request (GTK_WIDGET (l->data), &req);
 
-     d_height += req.height;
+    d_height += req.height;
 
     if (d_height > screen_height)
     {	  
@@ -555,22 +650,22 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
       break;
     }
   }
- 
+
   if (show_scroll_controls)
-  {	  
+  {
     hildon_desktop_popup_menu_show_controls (menu);	  
     gtk_widget_set_size_request 
-       (menu->priv->viewport, -1, screen_height - menu->priv->item_height);/*d_height - menu->priv->item_height);*/
+       (menu->priv->viewport, -1, screen_height - menu->priv->item_height); /*d_height - menu->priv->item_height);*/
   }
   else
-  {	  
+  {
     hildon_desktop_popup_menu_hide_controls (menu);
     gtk_widget_set_size_request
       (menu->priv->viewport, -1, d_height);
   }
 
   gtk_widget_queue_resize (menu->priv->viewport);
-  
+ 
   if (menu->priv->resize_parent && GTK_IS_WINDOW (parent))
   {	  
     gtk_widget_size_request (parent, &req);
@@ -594,8 +689,6 @@ hildon_desktop_popup_menu_parent_size (HildonDesktopPopupMenu *menu)
 			 show_scroll_controls ? 
 			 screen_height : 
 			 d_height);
-
-
   }
 
   g_list_free (children);
@@ -606,11 +699,11 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
 {
   GtkRequisition req;
   gint item_width = -1;
-	
-  g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
-  g_return_if_fail (GTK_IS_MENU_ITEM (item));
   
-  GtkWidget *parent = gtk_widget_get_toplevel (GTK_WIDGET (menu));
+  g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu));
+  g_return_if_fail (GTK_IS_MENU_ITEM (item));
+
+  GtkWidget *parent = gtk_widget_get_parent (GTK_WIDGET (menu));
 
   if (GTK_IS_WINDOW (parent))
   {
@@ -626,15 +719,19 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
     gtk_widget_set_size_request (GTK_WIDGET (item), item_width, req_sep.height);
   }
   else
+  {
     gtk_widget_set_size_request (GTK_WIDGET (item), item_width, menu->priv->item_height);
-
-  gtk_widget_set_size_request (menu->priv->box_buttons, item_width, menu->priv->item_height);
-
+  }
+  
   gtk_box_pack_end (GTK_BOX (menu->priv->box_items),
 		    GTK_WIDGET (item),
 		    FALSE, FALSE, 0);
 
   gtk_widget_show (GTK_WIDGET (item));
+
+  gtk_widget_set_size_request (menu->priv->box_buttons, 
+		  	       item_width, 
+			       menu->priv->item_height);
 
   menu->priv->n_items++;
 
@@ -644,22 +741,20 @@ hildon_desktop_popup_menu_add_item (HildonDesktopPopupMenu *menu, GtkMenuItem *i
 void 
 hildon_desktop_popup_menu_remove_item (HildonDesktopPopupMenu *menu, GtkMenuItem *item)
 {
-	
   g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
   g_return_if_fail (GTK_IS_MENU_ITEM (item));
 
-  gtk_container_remove (GTK_CONTAINER (menu->priv->box_items), GTK_WIDGET (item));	    
+  gtk_container_remove (GTK_CONTAINER (menu->priv->box_items), GTK_WIDGET (item));
  
   menu->priv->n_items--;
 
-/*  if (menu->priv->resize_parent)*/
-    hildon_desktop_popup_menu_parent_size (menu);
+  hildon_desktop_popup_menu_parent_size (menu);
 }
 
 GList *
 hildon_desktop_popup_menu_get_children (HildonDesktopPopupMenu *menu)
 {
-  g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
+  g_return_val_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu), NULL);
 	
   GList *list = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 	
@@ -671,7 +766,7 @@ hildon_desktop_popup_menu_select_item (HildonDesktopPopupMenu *menu, GtkMenuItem
 {
   GList *children = NULL, *l;
 
-  g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
+  g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu));
 
   children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
@@ -694,7 +789,7 @@ hildon_desktop_popup_menu_select_first_item (HildonDesktopPopupMenu *menu)
 {
   GList *children = NULL, *l;
 
-  g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
+  g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu));
 
   children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
@@ -702,6 +797,9 @@ hildon_desktop_popup_menu_select_first_item (HildonDesktopPopupMenu *menu)
   {	  
     if (!GTK_IS_SEPARATOR_MENU_ITEM (l->data))
     {
+      if (menu->priv->selected_item != NULL)
+        gtk_item_deselect (GTK_ITEM (menu->priv->selected_item));
+
       gtk_item_select (GTK_ITEM (l->data));
       menu->priv->selected_item = GTK_MENU_ITEM (l->data);
       break;
@@ -714,7 +812,7 @@ hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuIt
 {	
   GList *children = NULL, *l;
 
-  g_assert (HILDON_DESKTOP_IS_POPUP_MENU (menu));
+  g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (menu));
 
   children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
 
@@ -730,15 +828,21 @@ hildon_desktop_popup_menu_activate_item (HildonDesktopPopupMenu *menu, GtkMenuIt
   g_list_free (children);				  
 }	
 
+const GtkMenuItem *
+hildon_desktop_popup_menu_get_selected_item (HildonDesktopPopupMenu *menu)
+{
+  return menu->priv->selected_item;
+}
+
 void   
 hildon_desktop_popup_menu_scroll_to_selected (HildonDesktopPopupMenu *menu)
 {
   GList *children = NULL, *l;
   gint position = 0, screen_height = gdk_screen_height (); 	 
  
-  if (HILDON_DESKTOP_IS_POPUP_MENU (menu))
-    return;	  
-  
+  if (!HILDON_DESKTOP_IS_POPUP_MENU (menu))
+    return;
+ 
   if (menu->priv->selected_item)
   {    	  
     children = gtk_container_get_children (GTK_CONTAINER (menu->priv->box_items));
