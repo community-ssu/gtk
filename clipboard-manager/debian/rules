@@ -49,6 +49,8 @@ install: build
 	dh_installdirs
 
 	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+	mkdir -p debian/tmp/etc/gconf2xsettings.d
+	cp keys debian/tmp/etc/gconf2xsettings.d
 
 binary-arch: install
 	dh_testdir

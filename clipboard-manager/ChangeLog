@@ -1,3 +1,7 @@
+2007-05-22  Gabriel Schulhof  <gabriel.schulhof@nokia.com>
+
+	- Added default gconf2xsettings keys file
+
 2007-05-16  Gabriel Schulhof  <gabriel.schulhof@nokia.com>
 
 	* debian/control: Forgot to add deps on gconf and glib
