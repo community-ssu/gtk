@@ -1,5 +1,9 @@
 2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hd-desktop.c: fix build warning. 
+
+2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-desktop.c: handle system note dialog queuing on explicit
 	response and notification close.
 

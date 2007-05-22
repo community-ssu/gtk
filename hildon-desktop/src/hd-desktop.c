@@ -1142,7 +1142,7 @@ hd_desktop_create_note_dialog (const gchar *summary,
 
     note = hildon_note_new_cancel_with_progress_bar (NULL,
                                                      body,
-                                                     progressbar);
+                                                     GTK_PROGRESS_BAR (progressbar));
 
     g_timeout_add (100, hd_desktop_pulsate_progress_bar, progressbar);
   }
