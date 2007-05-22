@@ -1,3 +1,9 @@
+libhildonfm (1:1.9.22.unreleased) unstable; urgency=low
+
+  * Fixes: NB#53829.
+
+ -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 21 May 2007 20:29:59 +0300
+
 libhildonfm (1:1.9.22) unstable; urgency=low
 
   * Added support for arbitrary GnomeVFS volumes and drives.  Used for
