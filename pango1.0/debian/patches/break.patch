@@ -1,11 +1,11 @@
---- pango-orig/pango/break.c	2005-01-04 21:20:15.000000000 +0200
-+++ pango-1.8.1/pango/break.c	2006-07-26 16:27:48.000000000 +0300
-@@ -789,8 +789,6 @@
-               switch (break_op)
-                 {
-                 case BREAK_PROHIBITED:
--                  /* can't break here */                  
--                  attrs[i].is_char_break = FALSE;
-                   break;
+--- pango-orig/pango/break.c	2007-02-27 15:01:33.000000000 +0200
++++ pango-1.16.4/pango/break.c	2007-02-27 15:01:42.000000000 +0200
+@@ -902,8 +902,6 @@
+ 	      switch (break_op)
+ 		{
+ 		case BREAK_PROHIBITED:
+-		  /* can't break here */
+-		  attrs[i].is_char_break = FALSE;
+ 		  break;
  
-                 case BREAK_IF_SPACES:
+ 		case BREAK_IF_SPACES:
