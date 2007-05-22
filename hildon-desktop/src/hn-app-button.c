@@ -848,17 +848,20 @@ hn_app_button_press_event (GtkWidget      *widget,
       return FALSE;
     }
 
-  if (!priv->tooltip)
-    priv->tooltip = hn_app_tooltip_new (GTK_WIDGET (app_button));
+  if (hd_entry_info_get_n_children (info) == 1)
+  {
+    if (!priv->tooltip)
+      priv->tooltip = hn_app_tooltip_new (GTK_WIDGET (app_button));
 
-  hn_app_tooltip_set_text (HN_APP_TOOLTIP(app_button->priv->tooltip),
-                           _(hd_entry_info_peek_app_name (info)));
+    hn_app_tooltip_set_text (HN_APP_TOOLTIP(app_button->priv->tooltip),
+                             _(hd_entry_info_peek_app_name (info)));
 
-  hn_app_tooltip_install_timer (HN_APP_TOOLTIP(app_button->priv->tooltip),
-                                NULL,
-                                NULL,
-                                NULL);
-  
+    hn_app_tooltip_install_timer (HN_APP_TOOLTIP(app_button->priv->tooltip),
+                                  NULL,
+                                  NULL,
+                                  NULL);
+  }
+    
   return TRUE;
 }
 

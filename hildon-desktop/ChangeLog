@@ -1,5 +1,11 @@
 2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
 
+	* src/hn-app-button.c: don't show tooltip when tapping and holding on
+	the application group. 
+	Fixes: NB#57836
+
+2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
+
 	* src/hd-plugin-loader-builtin.c: added applications menu to the
 	possible builtin plugins. 
 	* data/applications-menu.desktop.in, src/hd-applications-menu.[ch]: new two-pane 
