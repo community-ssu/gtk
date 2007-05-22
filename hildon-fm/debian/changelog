@@ -1,4 +1,4 @@
-libhildonfm (1:1.9.22.unreleased) unstable; urgency=low
+libhildonfm (1:1.9.23) unstable; urgency=low
 
   * Fixes: NB#53829.
   * Fixes: NB#55408.
