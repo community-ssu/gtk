@@ -135,8 +135,6 @@ hd_desktop_launch_banner_show (HDWM *hdwm, HDWMWatchableApp *app, gpointer data)
                      APP_LAUNCH_BANNER_MSG_LOADING),
                      lapp_name ? _(lapp_name) : "" );
 
-  g_debug ("Launching banner %s...",info->msg);
-
   info->banner = GTK_WIDGET (hildon_banner_show_animation (NULL, NULL, info->msg));
 
   g_timeout_add (interval, hd_desktop_launch_banner_timeout, info);
@@ -1058,32 +1056,14 @@ hd_desktop_create_note_infoprint (const gchar *summary,
 
   return banner;
 }
-	
+
 static void
-hd_desktop_system_notification_dialog_response (GtkWidget *widget,
-	       					gint response,	
-		                                HDDesktopNotificationInfo *ninfo)
+hd_desktop_show_next_system_dialog (HDDesktop *desktop)
 {
-  HildonDesktopNotificationManager *nm;
-  HDDesktop *desktop;
   GtkWidget *next_dialog = NULL;
 
-  desktop = ninfo->desktop;
-
-  nm = (HildonDesktopNotificationManager *) 
-	  gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (desktop->priv->nm));
-
-  hildon_desktop_notification_manager_call_action (nm, ninfo->id, "default");
-  hildon_desktop_notification_manager_close_notification (nm, ninfo->id, NULL);
-  
-  g_free (ninfo);
-
   g_queue_pop_head (desktop->priv->dialog_queue);
-  gtk_widget_destroy (widget);
 
-  g_debug ("DIALOG QUEUE: %d", g_queue_get_length (desktop->priv->dialog_queue));
-    
-  /* Show next system notification dialog if present */
   while (!g_queue_is_empty (desktop->priv->dialog_queue))
   {
     next_dialog = (GtkWidget *) g_queue_peek_head (desktop->priv->dialog_queue);
@@ -1098,6 +1078,33 @@ hd_desktop_system_notification_dialog_response (GtkWidget *widget,
       g_queue_pop_head (desktop->priv->dialog_queue);
     }
   }
+}
+
+static void
+hd_desktop_system_notification_dialog_destroy (GtkWidget *widget, HDDesktop *desktop)
+{
+  hd_desktop_show_next_system_dialog (desktop);
+}
+	
+static void
+hd_desktop_system_notification_dialog_response (GtkWidget *widget,
+	       					gint response,	
+		                                HDDesktopNotificationInfo *ninfo)
+{
+  HildonDesktopNotificationManager *nm;
+  HDDesktop *desktop;
+
+  desktop = ninfo->desktop;
+
+  nm = (HildonDesktopNotificationManager *) 
+	  gtk_tree_model_filter_get_model (GTK_TREE_MODEL_FILTER (desktop->priv->nm));
+
+  hildon_desktop_notification_manager_call_action (nm, ninfo->id, "default");
+  hildon_desktop_notification_manager_close_notification (nm, ninfo->id, NULL);
+  
+  g_free (ninfo);
+
+  gtk_widget_destroy (widget);
 }
 
 static gboolean
@@ -1245,6 +1252,11 @@ hd_desktop_system_notification_received (GtkTreeModel *model,
   		      "response",
   		      G_CALLBACK (hd_desktop_system_notification_dialog_response),
   		      ninfo);
+
+    g_signal_connect (G_OBJECT (notification),
+  		      "destroy",
+  		      G_CALLBACK (hd_desktop_system_notification_dialog_destroy),
+  		      desktop);
 
     if (g_queue_is_empty (desktop->priv->dialog_queue))
     {
