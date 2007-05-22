@@ -1,3 +1,10 @@
+2007-05-22  Onne Gorter  <onne.gorter@nokia.com>
+
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	Fix minor issue with named filters, fixes NB#55408
+	Proper fix needed though, because named filters and the filter list are
+	not kept in sync properly.
+
 2007-05-21  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	* hildon-fm/hildon-file-chooser-dialog.c (handle_folder_popup):

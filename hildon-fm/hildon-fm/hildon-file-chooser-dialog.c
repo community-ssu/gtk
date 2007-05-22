@@ -1739,27 +1739,20 @@ static void hildon_file_chooser_dialog_context(GtkWidget * widget,
 
     /* Updates the radio button of filters, if any */
     filter = hildon_file_selection_get_filter(priv->filetree);
-    if (filter != NULL)
-      {
-	filter_index = g_slist_index(priv->filters, filter);
-	if (filter_index >= 0)
-	  {
-	    menu_item = g_slist_nth_data (priv->filter_menu_items,
-					  filter_index);
-	    if (filter != NULL)
-	      {
-		gulong *signal_handler = NULL;
-		signal_handler =
-		  g_slist_nth_data (priv->filter_item_menu_toggle_handlers,
-				    filter_index);
-		g_signal_handler_block (G_OBJECT(menu_item), *signal_handler);
-		gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(menu_item),
-						TRUE);
-		g_signal_handler_unblock (G_OBJECT(menu_item),
-					  *signal_handler);
-	      }
-	  }
-      }
+    if (filter) {
+        filter_index = g_slist_index(priv->filters, filter);
+        if (filter_index >= 0) {
+            menu_item = g_slist_nth_data (priv->filter_menu_items, filter_index);
+            if (filter && menu_item) {
+                /* if we find a valid filter and menu item */
+                gulong *signal_handler = NULL;
+                signal_handler = g_slist_nth_data (priv->filter_item_menu_toggle_handlers, filter_index);
+                g_signal_handler_block (G_OBJECT(menu_item), *signal_handler);
+                gtk_check_menu_item_set_active (GTK_CHECK_MENU_ITEM(menu_item), TRUE);
+                g_signal_handler_unblock (G_OBJECT(menu_item), *signal_handler);
+            }
+        }
+    }
 }
 
 static void
