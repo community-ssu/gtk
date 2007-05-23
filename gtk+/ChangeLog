@@ -1,3 +1,12 @@
+2007-05-23  Kristian Rietveld  <kris@imendio.com>
+
+	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_drag_dest_init),
+	(gtk_tree_model_filter_drag_data_received),
+	(gtk_tree_model_filter_row_drop_possible): Add implementation of 
+	DragDestInterface which delegates the calls to its child model
+	likewise as the implementation of the DragSourceInterface. (Fixes
+	NB#50640).
+
 2007-05-23  Tommi Komulainen  <tommi.komulainen@nokia.com>
 
 	Merge from trunk:
