@@ -1,5 +1,10 @@
 2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hn-app-switcher.c:
+	- Show items in junk dialog of application killer. Fixes: NB54712
+
+2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hd-switcher-menu-item.c:
 	- Reverting to GtkMenuItem. Image shows but behavior not consistent
 	enough.

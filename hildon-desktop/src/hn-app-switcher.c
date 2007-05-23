@@ -125,6 +125,14 @@
 #define TOOLTIP_SHOW_TIMEOUT 500
 #define TOOLTIP_HIDE_TIMEOUT 1500
 
+#define _KE(a) dgettext("ke-recv", a)
+#define HD_CAD_TITLE            _KE("memr_ti_close_applications")
+#define HD_CAD_LABEL_OPENING    _KE("memr_ia_close_applications_opening")
+#define HD_CAD_LABEL_SWITCHING  _KE("memr_ia_close_applications_switching")
+#define HD_CAD_LABEL_APP_LIST   _KE("memr_ia_close_applications_application_list")
+#define HD_CAD_OK               _KE("memr_bd_close_applications_ok")
+#define HD_CAD_CANCEL           _KE("memr_bd_close_applications_cancel")
+
 enum 
 {
   AS_PROP_NITEMS=1,
@@ -1232,18 +1240,17 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
   GtkWidget *check;
   GtkRequisition req;
   
-  items = NULL;
   check = NULL;
   req.height = 0;
-
+  
   /* Creating the UI */
-  dialog = gtk_dialog_new_with_buttons ("Title"/*FIXME: HN_CAD_TITLE*/,
+  dialog = gtk_dialog_new_with_buttons (HD_CAD_TITLE,
                                         NULL,
                                         GTK_DIALOG_MODAL
                                         | GTK_DIALOG_DESTROY_WITH_PARENT,
-                                        "Ok"/*FIXME: HN_CAD_OK*/,
+                                        HD_CAD_OK,
                                         GTK_RESPONSE_ACCEPT,
-                                        "Cancel"/*FIXME: HN_CAD_CANCEL*/,
+                                        HD_CAD_CANCEL,
                                         GTK_RESPONSE_CANCEL,
                                         NULL);                                        
 
@@ -1264,14 +1271,14 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
 
   vbox = GTK_WIDGET(g_object_new(GTK_TYPE_VBOX, NULL));
 
-  label = gtk_label_new ("label_app_list"/*FIXME: HN_CAD_LABEL_APP_LIST*/);
+  label = gtk_label_new (HD_CAD_LABEL_APP_LIST);
 
   /* Align to top-right */
   gtk_misc_set_alignment (GTK_MISC(label), 1, 0);
 
   gtk_container_add (GTK_CONTAINER(hbox), label);
   gtk_container_add (GTK_CONTAINER(hbox), vbox);
-
+  g_debug ("there should be items %p", items);
   /* Collect open applications */
   for (l = items; l; l = l->next)
   {
@@ -1282,7 +1289,7 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
     GtkIconTheme *icon_theme;
     HDWMWatchableApp *app;
     HDWMCADItem *item = (HDWMCADItem *) l->data;
-
+    g_debug ("item --> %p",l->data);
     if (item->win == NULL)
       continue;
 
@@ -1336,10 +1343,10 @@ hn_app_switcher_close_application_dialog (HDWM *hdwm, HDWMCADAction action, GLis
   switch (action)
   {
     case CAD_ACTION_OPENING:
-      label = gtk_label_new ("opening");
+      label = gtk_label_new (HD_CAD_LABEL_OPENING);
       break;
     case CAD_ACTION_SWITCHING:
-      label = gtk_label_new ("switching");
+      label = gtk_label_new (HD_CAD_LABEL_SWITCHING);
       break;
     default:
       label = gtk_label_new("Unlikely internal error happened, but feel free "
