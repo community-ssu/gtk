@@ -736,7 +736,11 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
     -1);
 
   g_object_set(self->priv->file_name, "label", name, NULL);
-  g_object_set(self->priv->file_type, "label", _(mime), NULL);
+  if (mime && mime[0] != 0) {
+      g_object_set(self->priv->file_type, "label", _(mime), NULL);
+  } else {
+      g_warning("COLUMN_MIME_TYPE contains empty mime type for file: %s", name);
+  }
 
   if (size < 1024)
     g_snprintf(buffer, sizeof(buffer), _("ckdg_va_properties_size_kb"), 1);

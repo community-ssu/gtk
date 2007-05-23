@@ -2,6 +2,14 @@
 
 	* hildon-fm/hildon-file-details-dialog.c:
 	(hildon_file_details_dialog_set_file_iter):
+	Test is mime is "", if so, warn about error and continue, instead of
+	translating "" string, which returns translation information ...
+	Fixes NB#53804
+
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
+	* hildon-fm/hildon-file-details-dialog.c:
+	(hildon_file_details_dialog_set_file_iter):
 	add extra g_return_if_fail incase the path found is invalid. Happens if
 	called with invalid iterator, prevents certain crashes
 

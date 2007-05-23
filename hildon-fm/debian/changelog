@@ -1,6 +1,7 @@
 libhildonfm (1:1.9.23.unreleased) unstable; urgency=low
 
   * Fixes: NB#52802.
+  * Fixes: NB#53804.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 21 May 2007 20:29:59 +0300
 
