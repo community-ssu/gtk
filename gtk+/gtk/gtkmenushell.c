@@ -135,9 +135,6 @@ struct _GtkMenuShellPrivate
 
   guint take_focus : 1;
   guint activated_submenu : 1;
-#ifdef MAEMO_CHANGES
-  guint first_click : 1;
-#endif /* MAEMO_CHANGES */
 };
 
 static void gtk_menu_shell_set_property      (GObject           *object,
@@ -387,9 +384,6 @@ gtk_menu_shell_init (GtkMenuShell *menu_shell)
   priv->key_hash = NULL;
   priv->take_focus = TRUE;
   priv->activated_submenu = FALSE;
-#ifdef MAEMO_CHANGES
-  priv->first_click = FALSE;
-#endif /* MAEMO_CHANGES */
 }
 
 static void
@@ -590,12 +584,6 @@ gtk_menu_shell_button_press (GtkWidget      *widget,
     }
   else
     {
-#ifdef MAEMO_CHANGES
-      GtkMenuShellPrivate *priv = GTK_MENU_SHELL_GET_PRIVATE (widget);
-
-      priv->first_click = FALSE;
-#endif /* MAEMO_CHANGES */
-
       widget = gtk_get_event_widget ((GdkEvent*) event);
       if (widget == GTK_WIDGET (menu_shell))
 	{
@@ -655,7 +643,7 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
 	{
 	  menu_shell->button = 0;
 	  if (menu_shell->parent_menu_shell)
-	    return gtk_widget_event (menu_shell->parent_menu_shell, (GdkEvent*) event);
+            return gtk_widget_event (menu_shell->parent_menu_shell, (GdkEvent*) event);
 	}
 
       menu_shell->button = 0;
@@ -670,9 +658,6 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
 
               if (submenu == NULL)
                 {
-#ifdef MAEMO_CHANGES
-                  if (!priv->first_click)
-#endif /* MAEMO_CHANGES */
                   gtk_menu_shell_activate_item (menu_shell, menu_item, TRUE);
 
                   deactivate = FALSE;
@@ -758,17 +743,6 @@ gtk_menu_shell_button_release (GtkWidget      *widget,
           menu_shell->activate_time = 0;
           deactivate = FALSE;
         }
-
-#ifdef MAEMO_CHANGES
-      if (priv->first_click)
-        {
-          /* We only ever want to prevent deactivation on the first
-           * press/release. */
-          priv->first_click = FALSE;
-
-          deactivate = FALSE;
-        }
-#endif /* MAEMO_CHANGES */
 
       if (deactivate)
         {
@@ -991,12 +965,6 @@ gtk_real_menu_shell_deactivate (GtkMenuShell *menu_shell)
 {
   if (menu_shell->active)
     {
-#ifdef MAEMO_CHANGES
-      GtkMenuShellPrivate *priv = GTK_MENU_SHELL_GET_PRIVATE (menu_shell);
-
-      priv->first_click = FALSE;
-#endif /* MAEMO_CHANGES */
-
       menu_shell->button = 0;
       menu_shell->active = FALSE;
       menu_shell->activate_time = 0;
@@ -1699,16 +1667,6 @@ gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,
       g_object_notify (G_OBJECT (menu_shell), "take-focus");
     }
 }
-
-#ifdef MAEMO_CHANGES
-void
-_gtk_menu_shell_set_first_click (GtkMenuShell *menu_shell)
-{
-  GtkMenuShellPrivate *priv = GTK_MENU_SHELL_GET_PRIVATE (menu_shell);
-
-  priv->first_click = TRUE;
-}
-#endif /* MAEMO_CHANGES */
 
 #define __GTK_MENU_SHELL_C__
 #include "gtkaliasdef.c"
