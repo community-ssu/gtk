@@ -1,3 +1,26 @@
+2007-05-23  Marius Vollmer  <marius.vollmer@nokia.com>
+
+	Released 1.9.24
+	
+	* hildon-fm/hildon-file-selection.c (HildonFileSelectionPrivate):
+	Added fourth view for the "Repair" button.
+	(get_view_to_be_displayed): Select the "Repair" view for drives.
+	(repair_button_clicked): New (does nothing interesting for now).
+	(hildon_file_selection_init): Construct "Repair" view.
+	
+	* hildon-fm/hildon-file-system-model.h,
+	hildon-fm/hildon-file-system-model.c
+	(HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_DRIVE): New.
+	
+
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_volumes_changed): Translate Gnome icon
+	names to Hildon icons, as a 'temporary' measure.
+
+	* hildon-fm/hildon-file-system-root.c
+	(hildon_file_system_root_create_child_location): Also accept
+	direct children of "file:///media/usb/".
+
 2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
 
 	* hildon-fm/hildon-file-details-dialog.c:

@@ -1,6 +1,8 @@
-libhildonfm (1:1.9.23.unreleased) unstable; urgency=low
+libhildonfm (1:1.9.24) unstable; urgency=low
 
-  * Fixes: NB#52802.
+  * Handle USB devices. Show "Repair" button for unmounted drives.
+  
+  * Fixes: NB#52803.
   * Fixes: NB#53804.
 
  -- Marius Vollmer <marius.vollmer@nokia.com>  Mon, 21 May 2007 20:29:59 +0300
