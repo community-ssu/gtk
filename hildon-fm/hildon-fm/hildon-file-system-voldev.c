@@ -186,8 +186,21 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       location->fixed_icon = gnome_vfs_drive_get_icon (voldev->drive);
     }
 
-  /* XXX */
-  location->fixed_icon = "qgn_list_filesys_mmc_root";
+  /* XXX - GnomeVFS should provide the right icons and display names.
+   */
+
+  if (strcmp (location->fixed_icon, "gnome-dev-removable-usb") == 0
+      || strcmp (location->fixed_icon, "gnome-dev-harddisk-usb") == 0)
+    location->fixed_icon = "qgn_list_filesys_removable_storage";
+  else if (strcmp (location->fixed_icon, "gnome-dev-removable") == 0
+	   || strcmp (location->fixed_icon, "gnome-dev-media-sdmmcb") == 0)
+    {
+      if (g_str_has_prefix (location->basepath, "drive:///dev/mmcblk0")
+	  || g_str_has_prefix (location->basepath, "file:///media/mmc0"))
+	location->fixed_icon = "qgn_list_gene_internal_memory_card";
+      else
+      	location->fixed_icon = "qgn_list_gene_removable_memory_card";
+    }
 
   g_signal_emit_by_name (location, "changed");
 }
