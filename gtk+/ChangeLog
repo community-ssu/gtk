@@ -1,3 +1,8 @@
+Wed May 23 18:17:18 2007  Tim Janik  <timj@imendio.com>
+
+	* gtk/gtkwidget.c: allow Maemo specific hooks after widget construction
+	by calling them from GObjectClass.constructed().
+
 2007-05-23  Kristian Rietveld  <kris@imendio.com>
 
 	* gtk/gtktreemodelfilter.c (gtk_tree_model_filter_drag_dest_init),

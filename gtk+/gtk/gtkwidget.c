@@ -374,6 +374,19 @@ child_property_notify_dispatcher (GObject     *object,
   GTK_WIDGET_GET_CLASS (object)->dispatch_child_properties_changed (GTK_WIDGET (object), n_pspecs, pspecs);
 }
 
+#ifdef MAEMO_CHANGES
+static void
+maemo_widget_constructed (GObject *object)
+{
+  static GQuark quark_maemo_widget_customizer = 0;
+  if (!quark_maemo_widget_customizer)
+    quark_maemo_widget_customizer = g_quark_from_static_string ("maemo_widget_customizer");
+  void (*hook) (GtkWidget*) = g_type_get_qdata (G_OBJECT_TYPE (object), quark_maemo_widget_customizer);
+  if (hook)
+    hook (GTK_WIDGET (object));
+}
+#endif /* MAEMO_CHANGES */
+
 static void
 gtk_widget_class_init (GtkWidgetClass *klass)
 {
@@ -405,6 +418,9 @@ gtk_widget_class_init (GtkWidgetClass *klass)
   cpn_context.dispatcher = child_property_notify_dispatcher;
   _gtk_widget_child_property_notify_context = &cpn_context;
 
+#ifdef MAEMO_CHANGES
+  gobject_class->constructed = maemo_widget_constructed;
+#endif /* MAEMO_CHANGES */
   gobject_class->dispose = gtk_widget_dispose;
   gobject_class->finalize = gtk_widget_finalize;
   gobject_class->set_property = gtk_widget_set_property;
