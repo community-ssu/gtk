@@ -1,3 +1,9 @@
+2007-05-23  Michael Natterer  <mitch@imendio.com>
+
+	* gdk/x11/gdkinput-x11.c (_gdk_input_common_other_event): remove
+	duplicate call to _gdk_event_button_generate() which was
+	introduced by GTK 2.10.12 upgrade mis-merge.
+
 2007-05-21  Michael Natterer  <mitch@imendio.com>
 
 	* gtk/gtkcombobox.c (gtk_combo_box_set_model): allow NULL models
