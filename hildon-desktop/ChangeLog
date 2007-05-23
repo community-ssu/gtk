@@ -1,5 +1,10 @@
 2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
 
+	* src/hd-switcher-menu.c: check state of blinking application when
+	application is in app switcher slot. Fixes: NB#57680
+
+2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+
 	* src/hn-app-switcher.c:
 	- Show items in junk dialog of application killer. Fixes: NB54712
 

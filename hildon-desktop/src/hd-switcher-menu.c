@@ -87,6 +87,8 @@
 
 #define SWITCHER_DETTACHED_TIMEOUT 5000
 
+#define SWITCHER_N_SLOTS 3	
+
 enum 
 {
   PROP_MENU_NITEMS=1,
@@ -775,33 +777,42 @@ static void
 hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
 {
   GList *children = NULL;
+  GList *apps = NULL;
+  guint n_apps = 0;
 
   children = 
     hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);
-  
-  if ((hd_wm_get_applications (switcher->hdwm) != NULL) || children)
-  {
-     gtk_widget_show (GTK_BIN (switcher->priv->toggle_button)->child);
-     
-     if (children)
-     {	     
-       if (GTK_BIN (switcher->priv->toggle_button)->child != switcher->priv->icon)
-       {
-         if (switcher->priv->fullscreen)
-           hd_switcher_menu_dettach_button (switcher);
-         else
-           hd_switcher_menu_attach_button (switcher);	     
-       }	       
-	     
-       hd_switcher_menu_update_highlighting (switcher, TRUE);
-     }
-     else
-     {	     
-       hd_switcher_menu_update_highlighting (switcher, FALSE);        
-     }
 
-     if (!switcher->priv->fullscreen)
-       hd_switcher_menu_attach_button (switcher);
+  apps = hd_wm_get_applications (switcher->hdwm);
+  
+  if (apps || children)
+  {
+    gtk_widget_show (GTK_BIN (switcher->priv->toggle_button)->child);
+     
+    if (children)
+    {	     
+      if (GTK_BIN (switcher->priv->toggle_button)->child != switcher->priv->icon)
+      {
+        if (switcher->priv->fullscreen)
+          hd_switcher_menu_dettach_button (switcher);
+        else
+          hd_switcher_menu_attach_button (switcher);	     
+      }	       
+	     
+      hd_switcher_menu_update_highlighting (switcher, TRUE);
+    }
+    else
+    {	     
+      hd_switcher_menu_update_highlighting (switcher, FALSE);        
+    }
+
+    if (!switcher->priv->fullscreen)
+      hd_switcher_menu_attach_button (switcher);
+
+    n_apps = g_list_length (apps);
+
+    if (n_apps <= SWITCHER_N_SLOTS) 
+      hd_switcher_menu_reset_main_icon (switcher);	    
   }
   else
   {	  
@@ -1206,7 +1217,6 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
 				  HDEntryInfo *info,
 				  HDSwitcherMenu *switcher)
 {
-#define N_SLOTS 3	
   GtkWidget *menu_item = NULL;
   GList *children = NULL, *apps = NULL, *l;
   gint pos=0;
@@ -1237,7 +1247,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
         }		
      }
 
-     if (pos >= N_SLOTS)
+     if (pos >= SWITCHER_N_SLOTS)
        make_it_blink = TRUE;	    
   }     
   else
@@ -1266,7 +1276,7 @@ hd_switcher_menu_changed_info_cb (HDWM *hdwm,
        }	       
      }	     
 
-     if (pos >= N_SLOTS)
+     if (pos >= SWITCHER_N_SLOTS)
        make_it_blink = TRUE;	     
   }	  
 	  
