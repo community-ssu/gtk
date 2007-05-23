@@ -1,3 +1,67 @@
+hildon-desktop (0.0.14-1) sardine; urgency=low
+
+  * src/hd-switcher-menu.c: check state of blinking application when
+  application is in app switcher slot. Fixes: NB#57680
+  
+  * src/hn-app-switcher.c:
+  - Show items in junk dialog of application killer. Fixes: NB54712
+  
+  * src/hd-switcher-menu-item.c:
+  - Reverting to GtkMenuItem. Image shows but behavior not consistent
+  enough.
+  
+  * src/hd-switcher-menu-item.c:
+  - Inherits againg from GtkImageMenuItem.
+  * src/hd-switcher-menu.c:
+  - Implemented dettached menu button.
+  * libhildondesktop/hildon-desktop-popup-menu.c:
+  - Fixed two little memory leaks.
+  * libhildonwm/hd-keys.c:
+  - Changed applet name for search.
+  
+  * src/hn-app-button.c: don't show tooltip when tapping and holding on
+  the application group. 
+  Fixes: NB#57836
+  
+  * src/hd-plugin-loader-builtin.c: added applications menu to the
+  possible builtin plugins. 
+  * data/applications-menu.desktop.in, src/hd-applications-menu.[ch]: new two-pane 
+  applications menu. Theming still missing.
+  * src/Makefile.am, data/Makefile.am, configure.ac: added new plugin to
+  the build.
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]: implement size
+  allocate and request to correctly show the "toggle" region of menu
+  items. Fixed scrolling for popup menus which are not child of a
+  window. Added a method to get the current selected menu item.
+  * data/applications.menu: added (commented for now) new applications
+  menu layout.
+  
+  * src/hd-desktop.c: fix build warning. 
+  
+  * src/hd-desktop.c: handle system note dialog queuing on explicit
+  response and notification close.
+  
+  * src/hd-desktop.c,
+  libhildondesktop/hildon-desktop-notification-manager.c: implement new
+  kind of system note dialog with a progress bar.
+  
+  * src/hd-hung-app-handler.c:
+  - Added missing "hung application" handler.
+  * src/Makefile.am: updated
+  * libhildonwm/hd-wm.c: 
+  - Handle home entry info from hd_wm_top_item
+  * src/hd-switcher-menu.c: Close the menu when topping desktop.
+  
+  * src/hd-switcher-menu.c:
+  - Fixed showing of menu button when notifications are added and there
+  are no applications and the menu is closed afterwards.
+  * libhildondesktop/hildon-desktop-popup-menu.[ch]:
+  - Implemented basic scrolling support. To be improved, though.
+  * libhildondesktop/hildon-desktop-toggle-button.h:
+  - Fixed #define
+
+ -- Lucas Rocha <lucas.rocha@nokia.com>  Wed, 23 May 2007 18:23:36 +0300
+
 hildon-desktop (0.0.13-1) sardine; urgency=low
 
   * libhildondesktop/hildon-desktop-popup-menu.c:

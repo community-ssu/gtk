@@ -1,3 +1,7 @@
+2007-05-23  Lucas Rocha  <lucas.rocha@nokia.com>
+
+	* configure.ac: 0.0.14
+
 2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: check state of blinking application when
