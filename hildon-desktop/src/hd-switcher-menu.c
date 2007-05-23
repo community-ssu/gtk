@@ -811,8 +811,11 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
 
     n_apps = g_list_length (apps);
 
-    if (n_apps <= SWITCHER_N_SLOTS) 
+    if (n_apps <= SWITCHER_N_SLOTS && switcher->priv->last_urgent_info) 
+    {	    
       hd_switcher_menu_reset_main_icon (switcher);	    
+      switcher->priv->last_urgent_info = NULL;
+    }
   }
   else
   {	  
@@ -904,7 +907,7 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
       HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT;
   GtkWidget *button = GTK_BIN (switcher)->child;
   gboolean dettached = FALSE;
-
+  
   if (!button)
   {	  
     button = GTK_BIN (switcher->priv->window_dialog)->child;	  
@@ -924,10 +927,10 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
   }
 
   gtk_widget_size_request (GTK_WIDGET (menu), &req);
-
+  
   menu_height = req.height;
   main_height = gdk_screen_get_height (screen);
-
+  
   switch (orientation)
   {
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT:
@@ -941,9 +944,9 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
       else
       {
         if (!dettached)	      
-          *y = button->allocation.y;
+	  *y = button->allocation.y;
 	else
-          *y = main_height -menu_height;// button->requisition.height;
+	  *y = main_height - menu_height;
       }
       break;
 
@@ -999,7 +1002,7 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
     hd_switcher_menu_position_func,
     (gpointer)switcher,
     GDK_CURRENT_TIME);
-
+  
   if (!hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications))
     gtk_widget_hide (hildon_desktop_popup_window_get_pane (switcher->priv->popup_window, 1));
   else

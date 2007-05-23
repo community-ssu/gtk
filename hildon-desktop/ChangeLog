@@ -1,24 +1,28 @@
+2007-05-23  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu.c: Fixed behavior I just introduced.
+
 2007-05-23  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* configure.ac: 0.0.14
 
-2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+2007-05-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu.c: check state of blinking application when
 	application is in app switcher slot. Fixes: NB#57680
 
-2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+2007-05-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hn-app-switcher.c:
 	- Show items in junk dialog of application killer. Fixes: NB54712
 
-2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+2007-05-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu-item.c:
 	- Reverting to GtkMenuItem. Image shows but behavior not consistent
 	enough.
 
-2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+2007-05-23  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu-item.c:
 	- Inherits againg from GtkImageMenuItem.
