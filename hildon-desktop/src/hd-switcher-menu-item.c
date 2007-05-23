@@ -129,7 +129,7 @@ struct _HDSwitcherMenuItemPrivate
   HildonDesktopNotificationManager *nm;
 };
 
-G_DEFINE_TYPE (HDSwitcherMenuItem, hd_switcher_menu_item, GTK_TYPE_IMAGE_MENU_ITEM);
+G_DEFINE_TYPE (HDSwitcherMenuItem, hd_switcher_menu_item, GTK_TYPE_MENU_ITEM);
 
 static void
 hd_switcher_menu_item_finalize (GObject *gobject)
@@ -298,7 +298,7 @@ hd_switcher_menu_item_constructor (GType                  type,
   gtk_widget_show (hbox);
 
   priv->icon = gtk_image_new ();
-  gtk_image_menu_item_set_image (GTK_IMAGE_MENU_ITEM (menuitem), priv->icon);
+  gtk_box_pack_start (GTK_BOX (hbox), priv->icon, FALSE, FALSE, 0);
   gtk_widget_show (priv->icon);
 
   vbox = gtk_vbox_new (FALSE, 0);

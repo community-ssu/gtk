@@ -1,6 +1,12 @@
 2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
 
 	* src/hd-switcher-menu-item.c:
+	- Reverting to GtkMenuItem. Image shows but behavior not consistent
+	enough.
+
+2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu-item.c:
 	- Inherits againg from GtkImageMenuItem.
 	* src/hd-switcher-menu.c:
 	- Implemented dettached menu button.
