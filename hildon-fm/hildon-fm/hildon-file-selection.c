@@ -145,7 +145,7 @@ struct _HildonFileSelectionPrivate {
     GtkWidget *scroll_list;
     GtkWidget *scroll_thumb;
     GtkWidget *dir_tree;
-    GtkWidget *view[3]; /* List, thumbnail, empty */
+    GtkWidget *view[4]; /* List, thumbnail, empty, repair */
 #ifndef HILDON_FM_HPANED
     GtkWidget *separator;
 #else
@@ -312,15 +312,28 @@ static gint get_view_to_be_displayed(HildonFileSelectionPrivate *priv)
   if (gtk_tree_model_get_iter_first(model, &iter))
     return priv->mode;
 
-  /* We have currently nothing, check if we are loading */
-  g_object_get(model, "child-model", &child_model, "virtual-root", &path, NULL);
+  /* We have currently nothing, check if we are loading or if we
+     should offer the repair button. */
+
+  g_object_get(model, "child-model", &child_model,
+	       "virtual-root", &path, NULL);
 
   if (gtk_tree_model_get_iter(child_model, &iter, path))
-  {
-    gboolean ready;
-    gtk_tree_model_get(child_model, &iter, HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY, &ready, -1);
-    result = ready ? 2 : gtk_notebook_get_current_page(priv->view_selector);
-  }
+    {
+      gboolean ready, is_drive;
+
+      gtk_tree_model_get (child_model, &iter,
+			  HILDON_FILE_SYSTEM_MODEL_COLUMN_LOAD_READY, &ready,
+			  HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_DRIVE, &is_drive,
+			  -1);
+
+      if (is_drive)
+	result = 3;
+      else if (!ready)
+	result = gtk_notebook_get_current_page(priv->view_selector);
+      else
+	result = 2;
+    }
   else /* Virtual root is almost certainly found, EXCEPT when
           that node is destroyed and row_reference is invalidated... */
     result = 2;
@@ -2904,6 +2917,29 @@ static void hildon_file_selection_setup_dnd_view(HildonFileSelection *
        G_CALLBACK(drag_data_delete), self); */
 }
 
+static void
+repair_button_clicked (GtkWidget *button, HildonFileSelection *self)
+{
+  HildonFileSelectionPrivate *priv = self->priv;
+  GtkTreeSelection *selection =
+    gtk_tree_view_get_selection (GTK_TREE_VIEW (priv->dir_tree));
+  GtkTreeModel *model;
+  GtkTreeIter iter;
+
+  if (gtk_tree_selection_get_selected (selection, &model, &iter))
+    {
+      char *uri;
+
+      gtk_tree_model_get (model, &iter,
+			  HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri,
+			  -1);
+
+      fprintf (stderr, "REPAIR %s\n", uri);
+
+      g_free (uri);
+    }
+}
+
 static void hildon_file_selection_init(HildonFileSelection * self)
 {
     self->priv =
@@ -2972,6 +3008,27 @@ static void hildon_file_selection_init(HildonFileSelection * self)
     self->priv->view[2] = gtk_label_new(_("hfil_li_no_files_folders_to_show"));
     gtk_misc_set_alignment(GTK_MISC(self->priv->view[2]), 0.5f, 0.0f);
     gtk_notebook_append_page(self->priv->view_selector, self->priv->view[2], NULL);
+
+    {
+      GtkWidget *vbox, *label, *button;
+
+      label = gtk_label_new (_("hfil_li_memory_card_corrupted"));
+      gtk_widget_show (label);
+
+      button = gtk_button_new_with_label (_("sfil_bd_repair_memory_card"));
+      g_signal_connect_object (button, "clicked",
+			       G_CALLBACK (repair_button_clicked), self,
+			       0);
+      gtk_widget_show (button);
+
+      vbox = gtk_vbox_new (FALSE, 10);
+      gtk_box_pack_start (GTK_BOX (vbox), label, FALSE, FALSE, 10);
+      gtk_box_pack_start (GTK_BOX (vbox), button, FALSE, FALSE, 10);
+      
+      self->priv->view[3] = vbox;
+      gtk_notebook_append_page(self->priv->view_selector,
+			       self->priv->view[3], NULL);
+    }
 
     g_signal_connect(self, "grab-notify",
       G_CALLBACK(hildon_file_selection_check_scroll), NULL);
