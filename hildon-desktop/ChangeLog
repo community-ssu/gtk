@@ -1,3 +1,14 @@
+2007-05-22  Moises Martinez  <moises.martinez@nokia.com>
+
+	* src/hd-switcher-menu-item.c:
+	- Inherits againg from GtkImageMenuItem.
+	* src/hd-switcher-menu.c:
+	- Implemented dettached menu button.
+	* libhildondesktop/hildon-desktop-popup-menu.c:
+	- Fixed two little memory leaks.
+	* libhildonwm/hd-keys.c:
+	- Changed applet name for search.
+
 2007-05-22  Lucas Rocha  <lucas.rocha@nokia.com>
 
 	* src/hn-app-button.c: don't show tooltip when tapping and holding on

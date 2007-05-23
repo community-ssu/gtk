@@ -42,6 +42,7 @@
 #include <libhildondesktop/hildon-desktop-popup-window.h>
 #include <libhildondesktop/hildon-desktop-popup-menu.h>
 #include <libhildondesktop/hildon-desktop-toggle-button.h>
+#include <libhildondesktop/hildon-desktop-panel-window-dialog.h>
 
 /* Menu item strings */
 #define AS_HOME_ITEM 		_("tana_fi_home")
@@ -84,6 +85,8 @@
 
 #define SWITCHER_TOGGLE_BUTTON GTK_BIN(switcher)->child
 
+#define SWITCHER_DETTACHED_TIMEOUT 5000
+
 enum 
 {
   PROP_MENU_NITEMS=1,
@@ -118,6 +121,9 @@ struct _HDSwitcherMenuPrivate
   GtkTreeIter		   *last_iter_added;
 
   HDEntryInfo		   *last_urgent_info;
+
+  GtkWidget		   *window_dialog;
+  GtkWidget		   *toggle_button;
 };
 
 static GObject *hd_switcher_menu_constructor (GType gtype,
@@ -166,6 +172,10 @@ static void hd_switcher_menu_reset_main_icon (HDSwitcherMenu *switcher);
 static void hd_switcher_menu_check_content (HDSwitcherMenu *switcher);
 
 static void hd_switcher_menu_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *switcher);
+
+static void hd_switcher_menu_attach_button (HDSwitcherMenu *switcher);
+
+static void hd_switcher_menu_dettach_button (HDSwitcherMenu *switcher);
 
 static void 
 hd_switcher_menu_init (HDSwitcherMenu *switcher)
@@ -276,7 +286,7 @@ hd_switcher_menu_popup_window_keypress_cb (GtkWidget      *widget,
     }
     else
     {
-      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), FALSE);
+      gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 
       GdkWindow *window = gtk_widget_get_parent_window (GTK_WIDGET (switcher));
       gtk_widget_grab_focus (GTK_WIDGET (switcher));
@@ -347,9 +357,9 @@ hd_switcher_menu_switcher_keypress_cb (GtkWidget      *widget,
       event->keyval == GDK_KP_Right)
   {
     gtk_toggle_button_set_active
-      (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), TRUE);
+      (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), TRUE);
 	  
-    g_signal_emit_by_name (SWITCHER_TOGGLE_BUTTON, "toggled");
+    g_signal_emit_by_name (switcher->priv->toggle_button, "toggled");
   }	  
 
   return TRUE;
@@ -374,7 +384,7 @@ hd_switcher_menu_update_open (HildonDesktopPopupWindow *window, HDSwitcherMenu *
   }	  
 
   gtk_toggle_button_set_active 
-    (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), FALSE);
+    (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 
   g_list_free (children);
 }	
@@ -398,6 +408,8 @@ hd_switcher_menu_constructor (GType gtype,
   gtk_widget_push_composite_child ();
 
   button = hildon_desktop_toggle_button_new ();
+
+  switcher->priv->toggle_button = button;
 
   gtk_widget_set_name (button, AS_MENU_BUTTON_NAME);
   gtk_widget_set_size_request (button, -1, AS_MENU_BUTTON_HEIGHT);
@@ -611,9 +623,59 @@ hd_switcher_menu_constructor (GType gtype,
   hd_switcher_menu_populate_notifications (switcher);
 
   hd_switcher_menu_check_content (switcher);
+
+  switcher->priv->window_dialog = NULL;
   
   return object;
 }
+
+static gboolean 
+hd_switcher_menu_force_move_window (GtkWidget *widget, HDSwitcherMenu *switcher)
+{
+  gint x,y;
+
+  g_object_get (widget, "x", &x, "y", &y, NULL);  
+	
+  gdk_window_move (widget->window, x, y);
+
+  return FALSE;
+}	
+
+static void 
+hd_switcher_create_external_window (HDSwitcherMenu *switcher)
+{
+  HildonDesktopPanelWindowOrientation orientation;
+  GtkWidget *top_level;
+	
+  if (switcher->priv->window_dialog)
+    return;	  
+
+  top_level = gtk_widget_get_toplevel (GTK_WIDGET (switcher));
+
+  if (HILDON_DESKTOP_IS_PANEL_WINDOW (top_level))
+    g_object_get (top_level, "orientation", &orientation, NULL);
+  else
+    orientation = HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT;	  
+  
+  switcher->priv->window_dialog =
+    GTK_WIDGET (g_object_new (HILDON_DESKTOP_TYPE_PANEL_WINDOW_DIALOG,
+                              "x", 0,
+                              "y", gdk_screen_height () - AS_BUTTON_HEIGHT*2,
+                              "width", GTK_WIDGET (switcher)->allocation.width,
+                              "height", AS_BUTTON_HEIGHT*2,
+                              "move", TRUE,
+                              "use-old-titlebar", FALSE,
+			      "orientation", orientation,
+                              NULL));
+
+  gtk_container_remove (GTK_CONTAINER (switcher->priv->window_dialog),
+                        GTK_BIN (switcher->priv->window_dialog)->child);
+
+  g_signal_connect (switcher->priv->window_dialog,
+		    "map-event",
+		    G_CALLBACK (hd_switcher_menu_force_move_window),
+		    (gpointer)switcher);
+}	
 
 static void 
 hd_switcher_menu_finalize (GObject *object)
@@ -623,6 +685,9 @@ hd_switcher_menu_finalize (GObject *object)
   g_object_unref (switcher->hdwm);
 
   gtk_widget_destroy (GTK_WIDGET (switcher->priv->popup_window));
+
+  if (switcher->priv->window_dialog)
+    gtk_widget_destroy (switcher->priv->window_dialog);	  
 
   g_object_unref (switcher->priv->icon_theme);
 	
@@ -653,16 +718,16 @@ hd_switcher_menu_replace_blinking_icon (HDSwitcherMenu *switcher, GdkPixbuf *ico
 
     if (image_blinking)
     {    
-      if (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child == switcher->priv->icon)   
+      if (GTK_BIN (switcher->priv->toggle_button)->child == switcher->priv->icon)   
       {	      
         g_object_ref (G_OBJECT (switcher->priv->icon));
-        gtk_container_remove (GTK_CONTAINER (SWITCHER_TOGGLE_BUTTON), GTK_WIDGET (switcher->priv->icon));
+        gtk_container_remove (GTK_CONTAINER (switcher->priv->toggle_button), GTK_WIDGET (switcher->priv->icon));
       }
       else
-       gtk_container_remove (GTK_CONTAINER (SWITCHER_TOGGLE_BUTTON), GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child);	      
+       gtk_container_remove (GTK_CONTAINER (switcher->priv->toggle_button), GTK_BIN (switcher->priv->toggle_button)->child);	      
     }
 
-    gtk_container_add (GTK_CONTAINER (SWITCHER_TOGGLE_BUTTON), image_blinking);
+    gtk_container_add (GTK_CONTAINER (switcher->priv->toggle_button), image_blinking);
     gtk_widget_show (image_blinking);
   }
 }
@@ -675,7 +740,7 @@ hd_switcher_menu_item_activated (GtkMenuItem *menuitem, HDSwitcherMenu *switcher
       (switcher->priv->popup_window);
 
   gtk_toggle_button_set_active
-    (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), FALSE);
+    (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
 }	
 
 static void 
@@ -697,12 +762,12 @@ hd_switcher_menu_update_highlighting (HDSwitcherMenu *switcher, gboolean state)
   if (state)
   {
     gtk_widget_set_name (GTK_WIDGET (switcher), SWITCHER_HIGHLIGHTED_NAME);
-    gtk_widget_set_name (GTK_BIN (switcher)->child, SWITCHER_HIGHLIGHTED_NAME);    
+    gtk_widget_set_name (switcher->priv->toggle_button, SWITCHER_HIGHLIGHTED_NAME);    
   }	  
   else
   {
     gtk_widget_set_name (GTK_WIDGET (switcher), AS_MENU_BUTTON_NAME);
-    gtk_widget_set_name (GTK_BIN (switcher)->child, AS_MENU_BUTTON_NAME);
+    gtk_widget_set_name (switcher->priv->toggle_button, AS_MENU_BUTTON_NAME);
   }	  
 }
 
@@ -716,25 +781,40 @@ hd_switcher_menu_check_content (HDSwitcherMenu *switcher)
   
   if ((hd_wm_get_applications (switcher->hdwm) != NULL) || children)
   {
-     gtk_widget_show (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child);
+     gtk_widget_show (GTK_BIN (switcher->priv->toggle_button)->child);
      
      if (children)
+     {	     
+       if (GTK_BIN (switcher->priv->toggle_button)->child != switcher->priv->icon)
+       {
+         if (switcher->priv->fullscreen)
+           hd_switcher_menu_dettach_button (switcher);
+         else
+           hd_switcher_menu_attach_button (switcher);	     
+       }	       
+	     
        hd_switcher_menu_update_highlighting (switcher, TRUE);
+     }
      else
+     {	     
        hd_switcher_menu_update_highlighting (switcher, FALSE);        
+     }
+
+     if (!switcher->priv->fullscreen)
+       hd_switcher_menu_attach_button (switcher);
   }
   else
   {	  
      hd_switcher_menu_update_highlighting (switcher, FALSE);
 	  
-     gtk_widget_hide (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child);	  
+     gtk_widget_hide (GTK_BIN (switcher->priv->toggle_button)->child);	  
 
      if (switcher->priv->is_open)
        hildon_desktop_popup_window_popdown 
          (switcher->priv->popup_window);	       
 
      gtk_toggle_button_set_active 
-       (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), FALSE);
+       (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), FALSE);
   }
 
   g_list_free (children);
@@ -812,7 +892,14 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
   HildonDesktopPanelWindowOrientation orientation =
       HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT;
   GtkWidget *button = GTK_BIN (switcher)->child;
+  gboolean dettached = FALSE;
 
+  if (!button)
+  {	  
+    button = GTK_BIN (switcher->priv->window_dialog)->child;	  
+    dettached = TRUE;
+  }
+  
   if (!GTK_WIDGET_REALIZED (GTK_WIDGET (data)))
     return;
 
@@ -834,14 +921,19 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
   {
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_LEFT:
       if (switcher->priv->fullscreen)
-        *x = 0;
+        *x = 0;	
       else      
-        *x = workarea.x;
-
+        *x = workarea.x;		
+      
       if (main_height - button->allocation.y < menu_height)
         *y = MAX (0, (main_height - menu_height));
       else
-        *y = button->allocation.y;
+      {
+        if (!dettached)	      
+          *y = button->allocation.y;
+	else
+          *y = main_height -menu_height;// button->requisition.height;
+      }
       break;
 
     case HILDON_DESKTOP_PANEL_WINDOW_ORIENTATION_RIGHT:
@@ -882,10 +974,10 @@ hd_switcher_menu_position_func (HildonDesktopPopupWindow  *menu,
 static void 
 hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
 {
-  if (!GTK_WIDGET_VISIBLE (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child))
+  if (!GTK_WIDGET_VISIBLE (GTK_BIN (switcher->priv->toggle_button)->child))
     return;
-	
-  if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON)))
+
+  if (!gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button)))
   {
     hildon_desktop_popup_window_popdown (switcher->priv->popup_window);
     return;
@@ -907,6 +999,9 @@ hd_switcher_menu_toggled_cb (GtkWidget *button, HDSwitcherMenu *switcher)
   hd_switcher_menu_reset_main_icon (switcher);
 
   hd_switcher_menu_check_content (switcher);
+
+  if (GTK_BIN (switcher->priv->toggle_button)->child == switcher->priv->icon)
+    hd_switcher_menu_attach_button (switcher);	  
 }	
 
 static void 
@@ -929,12 +1024,12 @@ hd_switcher_menu_scroll_to (HildonDesktopPopupWindow *window,
 static void 
 hd_switcher_menu_reset_main_icon (HDSwitcherMenu *switcher)
 {
-  if (GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child != switcher->priv->icon)
+  if (GTK_BIN (switcher->priv->toggle_button)->child != switcher->priv->icon)
   {
-    gtk_container_remove (GTK_CONTAINER (SWITCHER_TOGGLE_BUTTON),
-		    	  GTK_BIN (SWITCHER_TOGGLE_BUTTON)->child);
+    gtk_container_remove (GTK_CONTAINER (switcher->priv->toggle_button),
+		    	  GTK_BIN (switcher->priv->toggle_button)->child);
 
-    gtk_container_add (GTK_CONTAINER (SWITCHER_TOGGLE_BUTTON),
+    gtk_container_add (GTK_CONTAINER (switcher->priv->toggle_button),
 	               GTK_WIDGET (switcher->priv->icon));
     
     g_object_unref (G_OBJECT (switcher->priv->icon)); 
@@ -1266,21 +1361,76 @@ static void
 hd_switcher_menu_show_menu_cb (HDWM *hdwm, HDSwitcherMenu *switcher)
 {
   gtk_toggle_button_set_active
-    (GTK_TOGGLE_BUTTON (SWITCHER_TOGGLE_BUTTON), TRUE);
+    (GTK_TOGGLE_BUTTON (switcher->priv->toggle_button), TRUE);
 
-  g_signal_emit_by_name (SWITCHER_TOGGLE_BUTTON, "toggled");
+  g_signal_emit_by_name (switcher->priv->toggle_button, "toggled");
 }
+
+static gboolean
+hd_switcher_menu_auto_attach (HDSwitcherMenu *switcher)
+{
+  hd_switcher_menu_attach_button (switcher);
+
+  return FALSE;
+}	
+
+static void 
+hd_switcher_menu_dettach_button (HDSwitcherMenu *switcher)
+{
+  if (SWITCHER_TOGGLE_BUTTON != NULL)
+  {
+    gtk_widget_reparent (switcher->priv->toggle_button, switcher->priv->window_dialog);	    
+    gtk_widget_show (switcher->priv->toggle_button);
+    
+    gtk_widget_show (GTK_WIDGET (switcher->priv->window_dialog));
+
+    SWITCHER_TOGGLE_BUTTON = NULL;
+
+    g_timeout_add (SWITCHER_DETTACHED_TIMEOUT,
+		   (GSourceFunc)hd_switcher_menu_auto_attach,
+		   (gpointer)switcher);
+  }
+}
+
+static void 
+hd_switcher_menu_attach_button (HDSwitcherMenu *switcher)
+{
+  if (SWITCHER_TOGGLE_BUTTON == NULL)
+  {
+    gtk_widget_reparent (switcher->priv->toggle_button, GTK_WIDGET (switcher));
+    gtk_widget_show (switcher->priv->toggle_button);
+    
+    gtk_widget_hide (switcher->priv->window_dialog); 	
+  }
+}	
 
 static void 
 hd_switcher_menu_fullscreen_cb (HDWM *hdwm, gboolean fullscreen, HDSwitcherMenu *switcher)
 {
   switcher->priv->fullscreen = fullscreen;
+
+  GList *children =
+    hildon_desktop_popup_menu_get_children (switcher->priv->menu_notifications);   	  
+
+  hd_switcher_create_external_window (switcher);
+  
+  if (children)  
+  {	  
+    if (fullscreen && GTK_BIN (switcher->priv->toggle_button)->child != switcher->priv->icon)
+      hd_switcher_menu_dettach_button (switcher);
+    else
+      hd_switcher_menu_attach_button (switcher);
+
+    g_list_free (children);    
+  }
+  
+  if (!fullscreen)
+    hd_switcher_menu_attach_button (switcher);	   
 }	
 
 static void 
 hd_switcher_menu_long_press_cb (HDWM *hdwm, HDSwitcherMenu *switcher)
 {
-  g_debug ("Heeeeeeeereeee");	
   if (switcher->priv->is_open)
   {
     hildon_desktop_popup_menu_activate_item 

@@ -253,20 +253,20 @@ hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *alloc
   HildonDesktopPopupMenuPrivate *priv;
   GtkRequisition child_requisition;
   GtkAllocation child_allocation;
-  GList *children;
+  GList *children, *iter;
   gint height = 0;
   
   menu = HILDON_DESKTOP_POPUP_MENU (widget);
   priv = menu->priv;
 
-  children = gtk_container_get_children (GTK_CONTAINER (priv->box_items));
+  iter = children = gtk_container_get_children (GTK_CONTAINER (priv->box_items));
   
-  while (children)
+  while (iter)
   {
     GtkWidget *child;
 
-    child = children->data;
-    children = children->next;
+    child = iter->data;
+    iter  = iter->next;
 
     if (GTK_WIDGET_VISIBLE (child))
     {
@@ -288,6 +288,8 @@ hildon_desktop_popup_menu_size_allocate (GtkWidget *widget, GtkAllocation *alloc
     }
   }
 
+  g_list_free (children);
+
   GTK_WIDGET_CLASS (hildon_desktop_popup_menu_parent_class)->size_allocate (widget, allocation);
 }
 
@@ -298,7 +300,7 @@ hildon_desktop_popup_menu_size_request (GtkWidget *widget, GtkRequisition *req)
   HildonDesktopPopupMenuPrivate *priv;
   GtkRequisition child_requisition;
   guint max_toggle_size;
-  GList *children;
+  GList *children, *iter;
   
   g_return_if_fail (HILDON_DESKTOP_IS_POPUP_MENU (widget));
   g_return_if_fail (req != NULL);
@@ -308,15 +310,15 @@ hildon_desktop_popup_menu_size_request (GtkWidget *widget, GtkRequisition *req)
   
   max_toggle_size = 0;
 
-  children = gtk_container_get_children (GTK_CONTAINER (priv->box_items));
+  iter = children = gtk_container_get_children (GTK_CONTAINER (priv->box_items));
 
-  while (children)
+  while (iter)
   {
     GtkMenuItem *child;
     gint toggle_size;
 
-    child = (GtkMenuItem *) children->data;
-    children = children->next;
+    child = (GtkMenuItem *) iter->data;
+    iter  = iter->next;
 
     if (GTK_WIDGET_VISIBLE (child))
     {
@@ -329,6 +331,8 @@ hildon_desktop_popup_menu_size_request (GtkWidget *widget, GtkRequisition *req)
   }
 
   priv->toggle_size = max_toggle_size;
+
+  g_list_free (children);
 
   GTK_WIDGET_CLASS (hildon_desktop_popup_menu_parent_class)->size_request (widget, req);
 }
