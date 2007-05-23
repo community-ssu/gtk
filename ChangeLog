@@ -1,5 +1,11 @@
 2007-05-23  Michael Natterer  <mitch@imendio.com>
 
+	* gtk/gtkmenushell.[ch]
+	* gtk/gtkmenu.c: back out _gtk_menu_shell_set_first_click() and
+	its logic. Fixes NB#57827, NB#57787 and NB#57776.
+
+2007-05-23  Michael Natterer  <mitch@imendio.com>
+
 	* gdk/x11/gdkinput-x11.c (_gdk_input_common_other_event): remove
 	duplicate call to _gdk_event_button_generate() which was
 	introduced by GTK 2.10.12 upgrade mis-merge.

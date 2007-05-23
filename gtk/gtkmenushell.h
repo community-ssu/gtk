@@ -126,10 +126,6 @@ gboolean gtk_menu_shell_get_take_focus (GtkMenuShell *menu_shell);
 void     gtk_menu_shell_set_take_focus (GtkMenuShell *menu_shell,
                                         gboolean      take_focus);
 
-#ifdef MAEMO_CHANGES
-void    _gtk_menu_shell_set_first_click (GtkMenuShell *menu_shell);
-#endif /* MAEMO_CHANGES */
-
 G_END_DECLS
 
 #endif /* __GTK_MENU_SHELL_H__ */
