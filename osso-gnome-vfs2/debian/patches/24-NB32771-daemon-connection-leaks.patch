@@ -1,9 +1,7 @@
-Index: daemon/daemon-connection.c
-===================================================================
---- daemon/daemon-connection.c	(revision 7519)
-+++ daemon/daemon-connection.c	(working copy)
-@@ -1468,6 +1468,8 @@
- 		uri, perm, context);
+--- daemon/daemon-connection.c-unmod	2007-05-23 12:07:29.000000000 +0200
++++ daemon/daemon-connection.c	2007-05-23 12:10:29.000000000 +0200
+@@ -1367,6 +1367,8 @@ connection_handle_get_file_info (DaemonC
+ 							  context);
  	gnome_vfs_daemon_set_current_connection (NULL);
  
 +	gnome_vfs_uri_unref (uri);
@@ -11,11 +9,33 @@ Index: daemon/daemon-connection.c
  	if (cancellation) {
  		connection_remove_cancellation (conn, cancellation);
  	}
-@@ -1726,6 +1728,7 @@
+@@ -1477,6 +1479,8 @@ connection_handle_is_local (DaemonConnec
+ 	is_local = gnome_vfs_uri_is_local (uri);
+ 	gnome_vfs_daemon_set_current_connection (NULL);
+ 
++	gnome_vfs_uri_unref (uri);
++
+ 	reply = connection_create_reply_ok (message);
+ 
+ 	dbus_message_iter_init_append (reply, &iter);
+@@ -1894,6 +1898,9 @@ connection_handle_find_directory (Daemon
+ 	gnome_vfs_uri_unref (uri);
+ 
+ 	if (connection_check_and_reply_error (conn, message, result)) {
++		if (result_uri) {
++			gnome_vfs_uri_unref (result_uri);
++		}
+ 		return;
  	}
  
- 	gnome_vfs_uri_unref (uri);
-+	gnome_vfs_file_info_unref (info);
+@@ -1909,6 +1916,10 @@ connection_handle_find_directory (Daemon
+ 	}
+ 	g_free (str);
  
- 	connection_reply_result (conn, message, result);
++	if (result_uri) {
++		gnome_vfs_uri_unref (result_uri);
++	}
++
+ 	dbus_connection_send (conn->conn, reply, NULL);
+ 	dbus_message_unref (reply);
  }

@@ -1,3 +1,10 @@
+osso-gnome-vfs2 (2.16.3-1osso17) unstable; urgency=low
+
+  * UNRELEASED
+  * Fix a daemon crash for "mkdir"
+
+ -- Richard Hult <richard@imendio.com>  Wed, 23 May 2007 14:12:45 +0200
+
 osso-gnome-vfs2 (2.16.3-1osso16) unstable; urgency=low
 
   * Fix related to NB#54827 and NB#54832, but needs fix in ke-recv
