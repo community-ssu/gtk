@@ -132,6 +132,7 @@ enum
 /* general code (object/interface init, properties, etc) */
 static void         gtk_tree_model_filter_tree_model_init                 (GtkTreeModelIface       *iface);
 static void         gtk_tree_model_filter_drag_source_init                (GtkTreeDragSourceIface  *iface);
+static void         gtk_tree_model_filter_drag_dest_init                  (GtkTreeDragDestIface    *iface);
 static void         gtk_tree_model_filter_finalize                        (GObject                 *object);
 static void         gtk_tree_model_filter_set_property                    (GObject                 *object,
                                                                            guint                    prop_id,
@@ -211,6 +212,14 @@ static gboolean    gtk_tree_model_filter_drag_data_get                    (GtkTr
 static gboolean    gtk_tree_model_filter_drag_data_delete                 (GtkTreeDragSource      *drag_source,
                                                                            GtkTreePath            *path);
 
+/* TreeDragDest interface */
+static gboolean    gtk_tree_model_filter_drag_data_received               (GtkTreeDragDest        *drag_dest,
+									   GtkTreePath            *dest,
+									   GtkSelectionData       *selection_data);
+static gboolean    gtk_tree_model_filter_row_drop_possible                (GtkTreeDragDest        *drag_dest,
+									   GtkTreePath            *dest,
+									   GtkSelectionData       *selection_data);
+
 /* private functions */
 static void        gtk_tree_model_filter_build_level                      (GtkTreeModelFilter     *filter,
                                                                            FilterLevel            *parent_level,
@@ -279,7 +288,9 @@ G_DEFINE_TYPE_WITH_CODE (GtkTreeModelFilter, gtk_tree_model_filter, G_TYPE_OBJEC
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_MODEL,
 						gtk_tree_model_filter_tree_model_init)
 			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_DRAG_SOURCE,
-						gtk_tree_model_filter_drag_source_init))
+						gtk_tree_model_filter_drag_source_init)
+			 G_IMPLEMENT_INTERFACE (GTK_TYPE_TREE_DRAG_DEST,
+						gtk_tree_model_filter_drag_dest_init))
 
 static void
 gtk_tree_model_filter_init (GtkTreeModelFilter *filter)
@@ -353,6 +364,13 @@ gtk_tree_model_filter_drag_source_init (GtkTreeDragSourceIface *iface)
   iface->row_draggable = gtk_tree_model_filter_row_draggable;
   iface->drag_data_delete = gtk_tree_model_filter_drag_data_delete;
   iface->drag_data_get = gtk_tree_model_filter_drag_data_get;
+}
+
+static void
+gtk_tree_model_filter_drag_dest_init (GtkTreeDragDestIface *iface)
+{
+  iface->drag_data_received = gtk_tree_model_filter_drag_data_received;
+  iface->row_drop_possible = gtk_tree_model_filter_row_drop_possible;
 }
 
 
@@ -2705,6 +2723,188 @@ gtk_tree_model_filter_drag_data_delete (GtkTreeDragSource *drag_source,
   gtk_tree_path_free (child_path);
 
   return deleted;
+}
+
+/* TreeDragSource interface implementation */
+static gboolean
+gtk_tree_model_filter_drag_data_received (GtkTreeDragDest  *drag_dest,
+					  GtkTreePath      *dest_path,
+					  GtkSelectionData *selection_data)
+{
+  GtkTreeModelFilter *tree_model_filter = (GtkTreeModelFilter *)drag_dest;
+  GtkTreePath *child_path;
+  gboolean received;
+
+  g_return_val_if_fail (GTK_IS_TREE_MODEL_FILTER (drag_dest), FALSE);
+  g_return_val_if_fail (dest_path != NULL, FALSE);
+
+  child_path = gtk_tree_model_filter_convert_path_to_child_path (tree_model_filter, dest_path);
+  if (!child_path)
+    {
+      GtkTreePath *parent_path;
+
+      parent_path = gtk_tree_path_copy (dest_path);
+      if (gtk_tree_path_up (parent_path)
+	  && gtk_tree_path_get_depth (parent_path) > 0)
+        {
+	  GtkTreeIter iter;
+
+	  /* Check if the parent exists */
+	  received = gtk_tree_model_get_iter (GTK_TREE_MODEL (drag_dest),
+					      &iter, parent_path);
+	  g_assert (received != FALSE);
+
+	  if (gtk_tree_model_iter_has_child (GTK_TREE_MODEL (drag_dest), &iter))
+	    {
+	      gint n;
+	      GtkTreeIter child_iter;
+
+	      /* Parent has children, so the drop was after the last node
+	       * in parent's child level.
+	       */
+
+	      gtk_tree_model_filter_convert_iter_to_child_iter (tree_model_filter, &child_iter, &iter);
+	      n = gtk_tree_model_iter_n_children (tree_model_filter->priv->child_model, &child_iter);
+
+	      child_path = gtk_tree_model_filter_convert_path_to_child_path (tree_model_filter, parent_path);
+	      gtk_tree_path_append_index (child_path, n);
+	    }
+	  else
+	    {
+	      /* Parent does not have children: this was a drop on
+	       * the parent.
+	       */
+	      child_path = gtk_tree_model_filter_convert_path_to_child_path (tree_model_filter, parent_path);
+	      gtk_tree_path_append_index (child_path, 0);
+	    }
+
+	  if (gtk_tree_path_get_depth (child_path) > 1
+	      && (tree_model_filter->priv->child_flags & GTK_TREE_MODEL_LIST_ONLY))
+	    {
+	      gtk_tree_path_free (child_path);
+	      gtk_tree_path_free (parent_path);
+	      return FALSE;
+	    }
+
+	  received = gtk_tree_drag_dest_drag_data_received (GTK_TREE_DRAG_DEST (tree_model_filter->priv->child_model), child_path, selection_data);
+	  gtk_tree_path_free (child_path);
+	  gtk_tree_path_free (parent_path);
+	  return received;
+	}
+      else
+        {
+	  gint n;
+
+	  /* There is no parent, check root level */
+	  gtk_tree_path_free (parent_path);
+
+	  n = gtk_tree_model_iter_n_children (tree_model_filter->priv->child_model, NULL);
+
+	  child_path = gtk_tree_path_new_from_indices (n, -1);
+	  received = gtk_tree_drag_dest_drag_data_received (GTK_TREE_DRAG_DEST (tree_model_filter->priv->child_model), child_path, selection_data);
+	  gtk_tree_path_free (child_path);
+
+	  return received;
+	}
+
+      g_assert_not_reached ();
+    }
+
+  received = gtk_tree_drag_dest_drag_data_received (GTK_TREE_DRAG_DEST (tree_model_filter->priv->child_model), child_path, selection_data);
+  gtk_tree_path_free (child_path);
+
+  return received;
+}
+
+static gboolean
+gtk_tree_model_filter_row_drop_possible (GtkTreeDragDest  *drag_dest,
+					 GtkTreePath      *dest_path,
+					 GtkSelectionData *selection_data)
+{
+  GtkTreeModelFilter *tree_model_filter = (GtkTreeModelFilter *)drag_dest;
+  GtkTreePath *child_path;
+  gboolean possible;
+
+  g_return_val_if_fail (GTK_IS_TREE_MODEL_FILTER (drag_dest), FALSE);
+  g_return_val_if_fail (dest_path != NULL, FALSE);
+
+  child_path = gtk_tree_model_filter_convert_path_to_child_path (tree_model_filter, dest_path);
+
+  if (!child_path)
+    {
+      GtkTreePath *parent_path;
+
+      parent_path = gtk_tree_path_copy (dest_path);
+      if (gtk_tree_path_up (parent_path)
+	  && gtk_tree_path_get_depth (parent_path) > 0)
+        {
+	  GtkTreeIter iter;
+
+	  /* Check if the parent exists */
+	  possible = gtk_tree_model_get_iter (GTK_TREE_MODEL (drag_dest),
+					      &iter, parent_path);
+	  g_assert (possible != FALSE);
+
+	  if (gtk_tree_model_iter_has_child (GTK_TREE_MODEL (drag_dest), &iter))
+	    {
+	      gint n;
+	      GtkTreeIter child_iter;
+
+	      /* Parent has children, so the drop was after the last node
+	       * in parent's child level.
+	       */
+
+	      gtk_tree_model_filter_convert_iter_to_child_iter (tree_model_filter, &child_iter, &iter);
+	      n = gtk_tree_model_iter_n_children (tree_model_filter->priv->child_model, &child_iter);
+
+	      child_path = gtk_tree_model_filter_convert_path_to_child_path (tree_model_filter, parent_path);
+	      gtk_tree_path_append_index (child_path, n);
+	    }
+	  else
+	    {
+	      /* Parent does not have children: this was a drop on
+	       * the parent.
+	       */
+	      child_path = gtk_tree_model_filter_convert_path_to_child_path (tree_model_filter, parent_path);
+	      gtk_tree_path_append_index (child_path, 0);
+	    }
+
+	  if (gtk_tree_path_get_depth (child_path) > 1
+	      && (tree_model_filter->priv->child_flags & GTK_TREE_MODEL_LIST_ONLY))
+	    {
+	      gtk_tree_path_free (child_path);
+	      gtk_tree_path_free (parent_path);
+	      return FALSE;
+	    }
+
+	  possible = gtk_tree_drag_dest_row_drop_possible (GTK_TREE_DRAG_DEST (tree_model_filter->priv->child_model), child_path, selection_data);
+	  gtk_tree_path_free (child_path);
+	  gtk_tree_path_free (parent_path);
+	  return possible;
+	}
+      else
+        {
+	  gint n;
+
+	  /* There is no parent, check root level */
+	  gtk_tree_path_free (parent_path);
+
+	  n = gtk_tree_model_iter_n_children (tree_model_filter->priv->child_model, NULL);
+
+	  child_path = gtk_tree_path_new_from_indices (n, -1);
+	  possible = gtk_tree_drag_dest_row_drop_possible (GTK_TREE_DRAG_DEST (tree_model_filter->priv->child_model), child_path, selection_data);
+	  gtk_tree_path_free (child_path);
+
+	  return possible;
+	}
+
+      g_assert_not_reached ();
+    }
+
+  possible = gtk_tree_drag_dest_row_drop_possible (GTK_TREE_DRAG_DEST (tree_model_filter->priv->child_model), child_path, selection_data);
+  gtk_tree_path_free (child_path);
+
+  return possible;
 }
 
 /* bits and pieces */
