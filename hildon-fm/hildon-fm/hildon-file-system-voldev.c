@@ -193,10 +193,9 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
       || strcmp (location->fixed_icon, "gnome-dev-harddisk-usb") == 0)
     location->fixed_icon = "qgn_list_filesys_removable_storage";
   else if (strcmp (location->fixed_icon, "gnome-dev-removable") == 0
-	   || strcmp (location->fixed_icon, "gnome-dev-media-sdmmcb") == 0)
+	   || strcmp (location->fixed_icon, "gnome-dev-media-sdmmc") == 0)
     {
-      if (g_str_has_prefix (location->basepath, "drive:///dev/mmcblk0")
-	  || g_str_has_prefix (location->basepath, "file:///media/mmc0"))
+      if (g_str_has_prefix (location->basepath, "file:///media/mmc2"))
 	location->fixed_icon = "qgn_list_gene_internal_memory_card";
       else
       	location->fixed_icon = "qgn_list_gene_removable_memory_card";
