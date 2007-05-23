@@ -78,7 +78,7 @@ hildon_file_system_remote_device_init (HildonFileSystemRemoteDevice *device)
 
     g_object_get (fs_settings, "flight-mode", &device->accessible, NULL);
     device->accessible = !device->accessible;
-    
+
     device->signal_handler_id = g_signal_connect (fs_settings,
                                                  "notify::flight-mode",
                                                  G_CALLBACK(flightmode_changed),

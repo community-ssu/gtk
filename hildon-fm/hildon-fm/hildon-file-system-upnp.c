@@ -92,9 +92,9 @@ hildon_file_system_upnp_init (HildonFileSystemUpnp *device)
 
     device->connected_handler_id =
       g_signal_connect (fs_settings,
-			"notify::iap-connected",
-			G_CALLBACK (iap_connected_changed),
-			device);
+                        "notify::iap-connected",
+                        G_CALLBACK (iap_connected_changed),
+                        device);
 }
 
 static void
@@ -102,15 +102,15 @@ hildon_file_system_upnp_finalize (GObject *obj)
 {
     HildonFileSystemUpnp *upnp;
     HildonFileSystemSettings *fs_settings;
-    
+
     upnp = HILDON_FILE_SYSTEM_UPNP (obj);
 
     fs_settings = _hildon_file_system_settings_get_instance ();
     if (g_signal_handler_is_connected (fs_settings,
-				       upnp->connected_handler_id))
+                                       upnp->connected_handler_id))
       {
-        g_signal_handler_disconnect (fs_settings, 
-				     upnp->connected_handler_id);
+        g_signal_handler_disconnect (fs_settings,
+                                     upnp->connected_handler_id);
       }
 
     G_OBJECT_CLASS (hildon_file_system_upnp_parent_class)->finalize (obj);
@@ -138,7 +138,7 @@ hildon_file_system_upnp_create_child_location (HildonFileSystemSpecialLocation
       HILDON_FILE_SYSTEM_REMOTE_DEVICE (child)->accessible =
           HILDON_FILE_SYSTEM_REMOTE_DEVICE (location)->accessible;
       hildon_file_system_special_location_set_icon
-	(child, "qgn_list_filesys_mediaserver");
+        (child, "qgn_list_filesys_mediaserver");
       child->failed_access_message = _("sfil_ib_cannot_connect_device");
 
       HILDON_FILE_SYSTEM_UPNP (location)->has_children = TRUE;
@@ -161,7 +161,7 @@ hildon_file_system_upnp_is_available (HildonFileSystemSpecialLocation *location)
 {
   HildonFileSystemSettings *fs_settings;
   gboolean connected;
-  
+
   fs_settings = _hildon_file_system_settings_get_instance ();
   g_object_get (fs_settings, "iap-connected", &connected, NULL);
   return connected;

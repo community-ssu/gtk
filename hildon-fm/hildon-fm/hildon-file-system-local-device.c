@@ -85,11 +85,11 @@ hildon_file_system_local_device_finalize (GObject *obj)
     HildonFileSystemSpecialLocation *location;
     HildonFileSystemLocalDevice *device;
     HildonFileSystemSettings *fs_settings;
-    
+
     location = HILDON_FILE_SYSTEM_SPECIAL_LOCATION (obj);
     device = HILDON_FILE_SYSTEM_LOCAL_DEVICE (obj);
     fs_settings = _hildon_file_system_settings_get_instance ();
-    
+
     if (g_signal_handler_is_connected (fs_settings, device->signal_handler_id))
     {
         g_signal_handler_disconnect (fs_settings, device->signal_handler_id);
@@ -116,13 +116,13 @@ hildon_file_system_local_device_get_display_name (HildonFileSystemSpecialLocatio
 {
     HildonFileSystemSettings *fs_settings;
     gchar *name = NULL;
-    
+
     fs_settings = _hildon_file_system_settings_get_instance ();
     g_object_get (fs_settings, "btname", &name, NULL);
-    
+
     if (!name)
         name = g_strdup (_("sfil_li_folder_root"));
 
     return name;
-}    
+}
 

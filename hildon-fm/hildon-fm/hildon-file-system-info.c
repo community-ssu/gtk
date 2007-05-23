@@ -36,7 +36,7 @@ struct _HildonFileSystemInfo
   gboolean free_after_callback;
 
   GtkFileSystem *fs;
-  GtkFilePath *path;  
+  GtkFilePath *path;
   GtkFileInfo *info;
   HildonFileSystemSpecialLocation *location;
 
@@ -65,20 +65,20 @@ hildon_file_system_info_free (HildonFileSystemInfo *info)
 
   if (info->icon_cache)
     g_object_unref(info->icon_cache);
-  
+
   gtk_file_path_free(info->path);
   g_free(info->name_cache);
   g_object_unref(info->fs);
-  
+
   g_slice_free (HildonFileSystemInfo, info);
 }
 
 
 static void
 get_info_callback (GtkFileSystemHandle *handle,
-		   const GtkFileInfo *file_info,
-		   const GError *error,
-		   gpointer data)
+                   const GtkFileInfo *file_info,
+                   const GError *error,
+                   gpointer data)
 {
   gboolean cancelled = handle->cancelled;
   HildonFileSystemInfo *info = data;
@@ -90,8 +90,8 @@ get_info_callback (GtkFileSystemHandle *handle,
 
   if (!cancelled)
     info->callback ((HildonFileSystemInfoHandle *)info,
-		    error ? NULL : info, 
-		    error, info->userdata);
+                    error ? NULL : info,
+                    error, info->userdata);
 
   /* The documented behavior of the async API is to free the info
      structure after the callback returns.  However, the syncronous
@@ -119,7 +119,7 @@ idle_callback (gpointer data)
 
   info->idle_handler_id = 0;
   info->callback ((HildonFileSystemInfoHandle *)info,
-		  info, NULL, info->userdata);
+                  info, NULL, info->userdata);
 
   /* See get_info_handle for the meaning of the FREE_AFTER_CALLBACK
      kluge.  We don't need to worry about info->info here since it is
@@ -135,7 +135,7 @@ void
 hildon_file_system_info_async_cancel (HildonFileSystemInfoHandle *handle)
 {
   HildonFileSystemInfo *info = (HildonFileSystemInfo *)handle;
-  
+
   if (info->get_info_handle)
     {
       /* get_info_callback takes care of the cleanup.
@@ -153,10 +153,10 @@ hildon_file_system_info_async_cancel (HildonFileSystemInfoHandle *handle)
   else
     {
       /* The operation has been completed already and the handle is
-	 invalid.  So we can't do anything but complain.
+         invalid.  So we can't do anything but complain.
       */
       ULOG_ERR ("attempt to cancel a completed "
-		"hildon_file_system_info_async_new operation");
+                "hildon_file_system_info_async_new operation");
     }
 }
 
@@ -179,55 +179,55 @@ hildon_file_system_info_async_cancel (HildonFileSystemInfoHandle *handle)
  * the callback has been entered, you can no longer call
  * hildon_file_system_info_async_cancel.
  *
- * Returns: a HildonFileSystemInfoHandle or %NULL if an error was 
+ * Returns: a HildonFileSystemInfoHandle or %NULL if an error was
  *          before setting up asyncronous operation.
  */
 HildonFileSystemInfoHandle *
-hildon_file_system_info_async_new (const gchar *uri, 
-				   HildonFileSystemInfoCallback callback,
-				   gpointer userdata)
+hildon_file_system_info_async_new (const gchar *uri,
+                                   HildonFileSystemInfoCallback callback,
+                                   gpointer userdata)
 {
   GtkFileSystem *fs;
   GtkFilePath *path;
   HildonFileSystemInfo *result;
-  
+
   g_return_val_if_fail (uri != NULL, NULL);
 
   fs = hildon_file_system_create_backend ("gnome-vfs", TRUE);
   g_return_val_if_fail (GTK_IS_FILE_SYSTEM(fs), NULL);
-  
+
   path = gtk_file_system_uri_to_path (fs, uri);
   if (!path)
     {
       g_object_unref(fs);
       return NULL;
     }
-  
+
   result = g_slice_new0 (HildonFileSystemInfo);
   result->free_after_callback = TRUE;
   result->fs = fs;
   result->path = path;
   result->info = NULL;
   result->location = _hildon_file_system_get_special_location(fs, path);
-  
+
   result->callback = callback;
   result->userdata = userdata;
 
   if (result->location)
     {
       /* We have all the information already and we could call the
-	 callback right here.  But doing that would complicate our
-	 API and thus we set up a idle handler.
+         callback right here.  But doing that would complicate our
+         API and thus we set up a idle handler.
       */
       result->idle_handler_id = g_idle_add (idle_callback, result);
     }
   else
     {
       result->get_info_handle =
-	gtk_file_system_get_info (fs, path, 
-				  GTK_FILE_INFO_ALL,
-				  get_info_callback,
-				  result);
+        gtk_file_system_get_info (fs, path,
+                                  GTK_FILE_INFO_ALL,
+                                  get_info_callback,
+                                  result);
     }
 
   return (HildonFileSystemInfoHandle *) result;
@@ -249,7 +249,7 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
   g_return_val_if_fail(info != NULL, NULL);
 
   if (info->name_cache == NULL)
-    info->name_cache = _hildon_file_system_create_display_name(info->fs, 
+    info->name_cache = _hildon_file_system_create_display_name(info->fs,
         info->path, info->location, info->info);
 
   return info->name_cache;
@@ -270,7 +270,7 @@ hildon_file_system_info_get_display_name(HildonFileSystemInfo *info)
 GdkPixbuf *
 hildon_file_system_info_get_icon(HildonFileSystemInfo *info, GtkWidget *ref_widget)
 {
-  return hildon_file_system_info_get_icon_at_size(info, 
+  return hildon_file_system_info_get_icon_at_size(info,
          ref_widget, TREE_ICON_SIZE);
 }
 
@@ -287,7 +287,7 @@ hildon_file_system_info_get_icon(HildonFileSystemInfo *info, GtkWidget *ref_widg
  * HildonFileSystemInfo and there is no need to free it.
  */
 GdkPixbuf *
-hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info, 
+hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info,
   GtkWidget *ref_widget, gint size)
 {
   g_return_val_if_fail(info != NULL && GTK_IS_WIDGET(ref_widget), NULL);
@@ -298,10 +298,10 @@ hildon_file_system_info_get_icon_at_size(HildonFileSystemInfo *info,
     info->icon_cache = NULL;
   }
 
-  /* render icon seems to internally require that the folder is already created by get_folder */  
+  /* render icon seems to internally require that the folder is already created by get_folder */
   if (info->icon_cache == NULL)
-    info->icon_cache = _hildon_file_system_create_image(info->fs,  
-                  ref_widget, info->info, 
+    info->icon_cache = _hildon_file_system_create_image(info->fs,
+                  ref_widget, info->info,
                   info->location, size);
 
   info->size = size;
@@ -319,9 +319,9 @@ typedef struct {
 
 static void
 sync_callback  (HildonFileSystemInfoHandle *handle,
-		HildonFileSystemInfo *info,
-		const GError *error,
-		gpointer data)
+                HildonFileSystemInfo *info,
+                const GError *error,
+                gpointer data)
 {
   sync_data *c = data;
 
@@ -351,12 +351,12 @@ hildon_file_system_info_new (const gchar *uri, GError **error)
   else
     {
       /* XXX - This is the only reason why info_async_new can return
-	       NULL.
+               NULL.
       */
       g_set_error (error,
-		   GTK_FILE_SYSTEM_ERROR, 
-		   GTK_FILE_SYSTEM_ERROR_INVALID_URI,
-		   "Invalid uri: %s", uri);
+                   GTK_FILE_SYSTEM_ERROR,
+                   GTK_FILE_SYSTEM_ERROR_INVALID_URI,
+                   "Invalid uri: %s", uri);
       return NULL;
     }
 }

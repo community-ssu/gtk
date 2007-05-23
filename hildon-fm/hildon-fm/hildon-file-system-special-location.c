@@ -311,7 +311,7 @@ hildon_file_system_special_location_volumes_changed (
 }
 
 GtkFileSystemHandle *
-hildon_file_system_special_location_get_folder 
+hildon_file_system_special_location_get_folder
     (HildonFileSystemSpecialLocation *location,
      GtkFileSystem                  *file_system,
      const GtkFilePath              *path,
@@ -322,23 +322,23 @@ hildon_file_system_special_location_get_folder
     HildonFileSystemSpecialLocationClass *klass;
 
     g_return_val_if_fail (HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION (location),
-			  NULL);
-    
+                          NULL);
+
     klass = HILDON_FILE_SYSTEM_SPECIAL_LOCATION_GET_CLASS (location);
 
     if (klass->get_folder)
       return klass->get_folder (location,
-				file_system,
-				path,
-				types,
-				callback,
-				data);
+                                file_system,
+                                path,
+                                types,
+                                callback,
+                                data);
     else
       return gtk_file_system_get_folder (file_system,
-					 path,
-					 types,
-					 callback,
-					 data);
+                                         path,
+                                         types,
+                                         callback,
+                                         data);
 }
 
 /* Convenience function for setting fixed name. If fixed name is enough, name

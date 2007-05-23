@@ -51,7 +51,7 @@
 #include "hildon-file-system-special-location.h"
 
 /*  Reload contents of removable devices after this amount of seconds */
-#define RELOAD_THRESHOLD 30  
+#define RELOAD_THRESHOLD 30
 #define THUMBNAIL_WIDTH 80      /* For images inside thumbnail folder */
 #define THUMBNAIL_HEIGHT 60
 #define THUMBNAIL_ICON 64       /* Size for icon theme icons used in
@@ -120,7 +120,7 @@ struct _HildonFileSystemModelPrivate {
     gchar *backend_name;
     gchar *alternative_root_dir;
     gboolean multiroot;
-    
+
     gulong volumes_changed_handler;
 };
 
@@ -161,7 +161,7 @@ static void hildon_file_system_model_change_node_list(GtkTreeModel * model,
                                                       folder,
                                                       GSList * children);
  static gboolean is_node_loaded(HildonFileSystemModelPrivate *priv,
-  	                            GNode * node);
+                                      GNode * node);
 static GNode *
 hildon_file_system_model_kick_node(GNode *node, gpointer data);
 static void
@@ -172,22 +172,22 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
 static void unlink_file_folder(GNode *node);
 static gboolean
 link_file_folder(GNode *node, const GtkFilePath *path);
-static void 
-hildon_file_system_model_folder_finished_loading(GtkFileFolder *monitor, 
+static void
+hildon_file_system_model_folder_finished_loading(GtkFileFolder *monitor,
   gpointer data);
 static void emit_node_changed(GNode *node);
-static void 
+static void
 location_changed(HildonFileSystemSpecialLocation *location, GNode *node);
-static void 
+static void
 location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     GNode *node);
-static void 
+static void
 location_rescan (HildonFileSystemSpecialLocation *location, GNode *node);
 static void setup_node_for_location(GNode *node);
 static void
 hildon_file_system_model_queue_node_reload (HildonFileSystemModel *model,
-					    GNode *node,
-					    gboolean force);
+                                            GNode *node,
+                                            gboolean force);
 
 static GtkTreePath *hildon_file_system_model_get_path(GtkTreeModel * model,
                                                       GtkTreeIter * iter);
@@ -213,32 +213,32 @@ static void handle_possibly_finished_node(GNode *node)
   if (is_node_loaded(model->priv, node))
     {
       GNode *child_node = g_node_first_child(node);
-      
-      while (child_node)
-	{
-	  HildonFileSystemModelNode *model_node = child_node->data;
-  	 
-	  /* We do not want to ever kick off devices by accident */ 
 
-	  if (model_node->present_flag
-	      || (model_node->location
-		  && (!hildon_file_system_special_location_failed_access
-		      (model_node->location))))
-	    child_node = g_node_next_sibling(child_node);
-	  else
-	    child_node = hildon_file_system_model_kick_node(child_node, model);
-	}
+      while (child_node)
+        {
+          HildonFileSystemModelNode *model_node = child_node->data;
+
+          /* We do not want to ever kick off devices by accident */
+
+          if (model_node->present_flag
+              || (model_node->location
+                  && (!hildon_file_system_special_location_failed_access
+                      (model_node->location))))
+            child_node = g_node_next_sibling(child_node);
+          else
+            child_node = hildon_file_system_model_kick_node(child_node, model);
+        }
 
       iter.stamp = model->priv->stamp;
       iter.user_data = node;
       g_signal_emit(model, signal_finished_loading, 0, &iter);
 
       {
-	GtkTreePath *path =
-	  hildon_file_system_model_get_path (GTK_TREE_MODEL (model), &iter);
-	if (gtk_tree_path_get_depth (path) > 0)
-	  gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
-	gtk_tree_path_free (path);
+        GtkTreePath *path =
+          hildon_file_system_model_get_path (GTK_TREE_MODEL (model), &iter);
+        if (gtk_tree_path_get_depth (path) > 0)
+          gtk_tree_model_row_changed (GTK_TREE_MODEL (model), path, &iter);
+        gtk_tree_path_free (path);
       }
     }
 }
@@ -256,7 +256,7 @@ static void hildon_file_system_model_real_device_disconnected(
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(self));
   g_return_if_fail(iter->stamp == self->priv->stamp);
   ULOG_INFO(__FUNCTION__);
-  
+
   node = iter->user_data;
   unlink_file_folder(node);
 
@@ -271,11 +271,11 @@ static void hildon_file_system_model_real_device_disconnected(
 
   if (model_node->location
       && (model_node->location->compatibility_type ==
-	  HILDON_FILE_SYSTEM_MODEL_MMC))
+          HILDON_FILE_SYSTEM_MODEL_MMC))
     {
       /* When a MMC is disconnected, we assume that the next it gets
-	 connected it is a different MMC.  Thus, we need to reset
-	 load_time and accessed.
+         connected it is a different MMC.  Thus, we need to reset
+         load_time and accessed.
       */
       model_node->load_time = 0;
       model_node->accessed = FALSE;
@@ -299,11 +299,11 @@ static void send_device_disconnected(GNode *node)
    the type pointer by node type if given */
 static GNode *get_device_for_node(GNode *node)
 {
-  while (node)  
+  while (node)
   {
     HildonFileSystemModelNode *model_node = node->data;
 
-    if (model_node && 
+    if (model_node &&
         model_node->location != NULL)
       return node;
 
@@ -325,14 +325,14 @@ static void handle_load_error(GNode *node)
   ULOG_ERR(model_node->error->message);
 
   /* We failed to connect to device before the call expired.
-     We want disconnect the whole device in question, not 
-     just to kick of the individual node that caused problems 
+     We want disconnect the whole device in question, not
+     just to kick of the individual node that caused problems
 
      XXX - Gtk+ 2.10 doesn't have ERROR_TIMEOUT anymore.  Is
            ERROR_FAILED equivalent?
   */
   if (g_error_matches (model_node->error, GTK_FILE_SYSTEM_ERROR,
-		       GTK_FILE_SYSTEM_ERROR_FAILED))
+                       GTK_FILE_SYSTEM_ERROR_FAILED))
   {
     GNode *device_node = get_device_for_node(node);
     if (device_node)
@@ -350,12 +350,12 @@ static void handle_load_error(GNode *node)
     send_device_disconnected(node);
     emit_node_changed(node);
   }
-  else if (g_error_matches(model_node->error, 
+  else if (g_error_matches(model_node->error,
       GTK_FILE_SYSTEM_ERROR, GTK_FILE_SYSTEM_ERROR_NONEXISTENT))
     /* No longer present, we remove this node totally */
     hildon_file_system_model_kick_node(node, model_node->model);
   else /* Some other error, we represent this as disabled */
-    emit_node_changed(node);    
+    emit_node_changed(node);
 }
 
 static void delayed_list_free(delayed_list_type *list)
@@ -383,11 +383,11 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
     */
     if ( (node = g_queue_pop_head(priv->reload_list)) != NULL)
       {
-	hildon_file_system_model_delayed_add_children(model, node, TRUE);
-	GDK_THREADS_LEAVE();
-	return TRUE;
+        hildon_file_system_model_delayed_add_children(model, node, TRUE);
+        GDK_THREADS_LEAVE();
+        return TRUE;
       }
-  
+
     current_list = g_queue_peek_head(priv->delayed_lists);
     if (!current_list) { /* No items to insert => remove idle handler */
         priv->timeout_id = 0;
@@ -415,9 +415,9 @@ hildon_file_system_model_delayed_add_node_list_timeout(gpointer data)
     }
 
     /* Current list ends here. We now have to check
-  	         if loading of some folder is really finished. If this is a
-  	         case we then have to check if there are unflagged
-  	         paths in that folder (paths to be removed) */
+                   if loading of some folder is really finished. If this is a
+                   case we then have to check if there are unflagged
+                   paths in that folder (paths to be removed) */
 
     node = current_list->parent_node;
     delayed_list_free(current_list);
@@ -434,14 +434,14 @@ static void
 clear_present_flag(GNode *node)
 {
   HildonFileSystemModelNode *model_node;
-  	 
+
   g_assert(node != NULL && node->data != NULL);
-  	 
+
   model_node = node->data;
   model_node->present_flag = FALSE;
 }
 
-static void 
+static void
 hildon_file_system_model_ensure_idle(HildonFileSystemModel *self)
 {
   if (self->priv->timeout_id == 0)
@@ -478,7 +478,7 @@ hildon_file_system_model_delayed_add_node_list(HildonFileSystemModel *
 
 static gboolean
 node_needs_reload (HildonFileSystemModel *model, GNode *node,
-		   gboolean force)
+                   gboolean force)
 {
   HildonFileSystemModelNode *model_node;
   time_t current_time;
@@ -496,10 +496,10 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
   if (model_node->location
       && !model_node->accessed
       && (hildon_file_system_special_location_requires_access
-	  (model_node->location)))
+          (model_node->location)))
     {
       /* Accessing this node is expensive and the user has not tried
-	 to do it explicitly yet.  We don't reload it even if forced.
+         to do it explicitly yet.  We don't reload it even if forced.
       */
       return FALSE;
     }
@@ -507,7 +507,7 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
   if (!is_node_loaded (model->priv, node))
     {
       /* This node is already queued for a reload, don't queue it
-	 again.
+         again.
        */
       return FALSE;
     }
@@ -515,7 +515,7 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
   if (force)
     {
       /* Explicit user action will trigger a reload even if the
-	 RELOAD_THRESHOLD timeout has not expired yet.
+         RELOAD_THRESHOLD timeout has not expired yet.
       */
       return TRUE;
     }
@@ -523,15 +523,15 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
   if (model_node->folder == NULL)
     {
       /* This node is not being watched and we ignore it if not
-	 forced.  This case happens when a device is diconnected, for
-	 example, and its nodes are kicked from the model.  The
-	 selection then moves to the device node and we would try to
-	 reload it (since it has been accessed already).
-	 
-	 We don't reset the 'accessed' property of disconnected
-	 devices since that would prevent a reload to try again.
+         forced.  This case happens when a device is diconnected, for
+         example, and its nodes are kicked from the model.  The
+         selection then moves to the device node and we would try to
+         reload it (since it has been accessed already).
 
-	 XXX - This logic could be improved.
+         We don't reset the 'accessed' property of disconnected
+         devices since that would prevent a reload to try again.
+
+         XXX - This logic could be improved.
       */
       return FALSE;
     }
@@ -545,12 +545,12 @@ node_needs_reload (HildonFileSystemModel *model, GNode *node,
   */
 
   current_time = time(NULL);
-  removable = !gtk_file_system_path_is_local (model->priv->filesystem, 
-					      model_node->path);
+  removable = !gtk_file_system_path_is_local (model->priv->filesystem,
+                                              model_node->path);
 
   return (model_node->load_time == 0
-	  || ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD)
-	      && (removable || model_node->error)));
+          || ((abs(current_time - model_node->load_time) > RELOAD_THRESHOLD)
+              && (removable || model_node->error)));
 }
 
 /* We are not any more called directly by GtkTreeModel interface methods, so we can modify
@@ -567,10 +567,10 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
 
     if (!node_needs_reload (model, node, force))
       {
-	handle_possibly_finished_node (node);
-	return;
+        handle_possibly_finished_node (node);
+        return;
       }
-    
+
     /* Unix backend can fail to set children to NULL if it encounters error */
     {
       GSList *children = NULL;
@@ -583,9 +583,9 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       /* List children do not work reliably with bluetooth connections. It can
          still succeed, even though the connection has died already. This
          if statement can be removed when the backend works better... */
-      
-      if (!gtk_file_system_path_is_local (model->priv->filesystem, 
-					  model_node->path))
+
+      if (!gtk_file_system_path_is_local (model->priv->filesystem,
+                                          model_node->path))
       {
         unlink_file_folder(node);
         if (!link_file_folder(node, model_node->path))
@@ -604,34 +604,34 @@ hildon_file_system_model_delayed_add_children(HildonFileSystemModel *
       ULOG_INFO("Delayed add for path %s", (char *) model_node->path);
 
       if (model_node->folder)
-	{
-	  /* Unix backend sends finished loading even before returning
-	     children.  This causes our internal bookkeeping fail. */
-	  g_signal_handlers_block_by_func
-	    (model_node->folder, 
-	     hildon_file_system_model_folder_finished_loading, model);
+        {
+          /* Unix backend sends finished loading even before returning
+             children.  This causes our internal bookkeeping fail. */
+          g_signal_handlers_block_by_func
+            (model_node->folder,
+             hildon_file_system_model_folder_finished_loading, model);
 
-	  result = gtk_file_folder_list_children
-	    (model_node->folder, &children, &(model_node->error));
+          result = gtk_file_folder_list_children
+            (model_node->folder, &children, &(model_node->error));
 
-	  g_signal_handlers_unblock_by_func
-	    (model_node->folder, 
-	     hildon_file_system_model_folder_finished_loading, model);
-	}
+          g_signal_handlers_unblock_by_func
+            (model_node->folder,
+             hildon_file_system_model_folder_finished_loading, model);
+        }
       else
-	{
-	  result = TRUE;
-	  children = NULL;
-	  model_node->error = NULL;
-	}
+        {
+          result = TRUE;
+          children = NULL;
+          model_node->error = NULL;
+        }
 
       /* Patched GnomeVFS now also reports errors. */
       if (result)
       {
-        hildon_file_system_model_delayed_add_node_list(model, node, 
+        hildon_file_system_model_delayed_add_node_list(model, node,
                           model_node->folder, children);
       }
-      else 
+      else
       {
         g_assert(children == NULL);
         ULOG_INFO("ERROR: %s", model_node->error->message);
@@ -653,11 +653,11 @@ static GNode *get_node(HildonFileSystemModelPrivate * priv,
 static gint max_cached_nodes(void)
 {
   static gint max_len = 0;
-  
+
   if (G_UNLIKELY(max_len < MIN_CACHE))
   {
     const gchar *env_var;
-  
+
     env_var = g_getenv("FILE_SELECTION_MAX_CACHED_NODES");
     if (env_var)
       max_len = atoi(env_var);
@@ -683,7 +683,7 @@ static void update_cache_queue(HildonFileSystemModelPrivate *priv, GNode *node)
   else
   {
     g_queue_push_head(priv->cache_queue, node);
-    
+
     if (g_queue_get_length(priv->cache_queue) > max_cached_nodes())
     {
       HildonFileSystemModelNode *model_node;
@@ -783,11 +783,11 @@ inline static GdkPixbuf
                                            HildonFileSystemModelNode *
                                            model_node, gint size)
 {
-    return _hildon_file_system_create_image (priv->filesystem, 
-					     priv->ref_widget,
-					     model_node->info, 
-					     model_node->location,
-					     size);
+    return _hildon_file_system_create_image (priv->filesystem,
+                                             priv->ref_widget,
+                                             model_node->info,
+                                             model_node->location,
+                                             size);
 }
 
 /* Creates a new pixbuf conatining normal image and given emblem */
@@ -808,10 +808,10 @@ static GdkPixbuf
     if (!result)  /* Not an assert anymore */
       return plain;
 
-    /* This causes read errors according to valgrind. I wonder why is that 
+    /* This causes read errors according to valgrind. I wonder why is that
      */
-    gdk_pixbuf_composite(emblem, result, 0, 0, 
-      MIN(gdk_pixbuf_get_width(emblem), gdk_pixbuf_get_width(result)), 
+    gdk_pixbuf_composite(emblem, result, 0, 0,
+      MIN(gdk_pixbuf_get_width(emblem), gdk_pixbuf_get_width(result)),
       MIN(gdk_pixbuf_get_height(emblem), gdk_pixbuf_get_height(result)),
       0, 0, 1, 1, GDK_INTERP_NEAREST, 255);
     g_object_unref(plain);
@@ -842,7 +842,7 @@ static gboolean is_node_loaded(HildonFileSystemModelPrivate *priv,
 
   return g_queue_find(priv->reload_list, node) == NULL &&
      gtk_file_folder_is_finished_loading(model_node->folder) &&
-     g_queue_find_custom(priv->delayed_lists, node, queue_finder) == NULL; 
+     g_queue_find_custom(priv->delayed_lists, node, queue_finder) == NULL;
 }
 
 static void emit_node_changed(GNode *node)
@@ -863,7 +863,7 @@ static void emit_node_changed(GNode *node)
   gtk_tree_path_free(path);
 }
 
-static void 
+static void
 thumbnail_handled(HildonThumbnailFactoryHandle handle,
   gpointer data, GdkPixbuf *thumbnail, GError *error)
 {
@@ -908,9 +908,9 @@ thumbnail_handled(HildonThumbnailFactoryHandle handle,
 
     if(!noimage)
     {
-    if (model_node->thumbnail_cache)    
+    if (model_node->thumbnail_cache)
       g_object_unref(model_node->thumbnail_cache);
-   
+
     g_object_ref(thumbnail);    /* Thumbnail factory will release reference to this */
     model_node->thumbnail_cache = thumbnail;
     }
@@ -1003,7 +1003,7 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
 
         /* We try to reload children, if we are actually showing something */
         /* This action should be performed for initial access only. Otherwise
-           we always end up loading all the children of a node after long 
+           we always end up loading all the children of a node after long
            time of inactivity. This is not good in case of gateway, since the
            old BT connection is already timed out. UI asks for reloads if
            user actually does something, so we just make sure that children
@@ -1020,8 +1020,8 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         {
           gchar *name, *casefold;
 
-          name = _hildon_file_system_create_file_name(fs, path, 
-                            model_node->location, info); 
+          name = _hildon_file_system_create_file_name(fs, path,
+                            model_node->location, info);
           casefold = g_utf8_casefold(name, -1);
           model_node->key_cache = g_utf8_collate_key_for_filename(casefold, -1);
           g_free(casefold);
@@ -1046,9 +1046,9 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             (info && gtk_file_info_get_is_folder(info)));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_AVAILABLE:
-        g_value_set_boolean(value, model_node->available && 
+        g_value_set_boolean(value, model_node->available &&
             /* Folders that cause access errors are dimmed. Devices are not */
-            (model_node->location ? 
+            (model_node->location ?
              hildon_file_system_special_location_is_available(model_node->location) :
              !model_node->error));
         break;
@@ -1057,18 +1057,18 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             path ? gtk_file_system_path_is_local(fs, path) : FALSE);
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_TYPE:
-        g_value_set_int(value, model_node->location ? 
-            model_node->location->compatibility_type : 
-            (gtk_file_info_get_is_folder(info) ? 
+        g_value_set_int(value, model_node->location ?
+            model_node->location->compatibility_type :
+            (gtk_file_info_get_is_folder(info) ?
                 HILDON_FILE_SYSTEM_MODEL_FOLDER :
                 HILDON_FILE_SYSTEM_MODEL_FILE));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON:
       if (!model_node->icon_cache)
-	model_node->icon_cache =
-	  hildon_file_system_model_create_image(priv, model_node,
-						TREE_ICON_SIZE);
-      
+        model_node->icon_cache =
+          hildon_file_system_model_create_image(priv, model_node,
+                                                TREE_ICON_SIZE);
+
       g_value_set_object(value, model_node->icon_cache);
       update_cache_queue(priv, node);
       break;
@@ -1096,13 +1096,13 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               gchar *uri =
                   gtk_file_system_path_to_uri(priv->filesystem, path);
 
-              if (uri && info && gtk_file_info_get_mime_type(info)) 
+              if (uri && info && gtk_file_info_get_mime_type(info))
               {  /* This can fail with GtkFileSystemUnix if the
                            name contains invalid UTF-8 */
                 model_node->thumbnail_handle =
-                    hildon_thumbnail_factory_load(uri, 
+                    hildon_thumbnail_factory_load(uri,
                         gtk_file_info_get_mime_type(info),
-                        THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, 
+                        THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT,
                         thumbnail_handled, node);
               }
               g_free(uri);
@@ -1115,14 +1115,14 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
               const gchar *mime_type;
               gchar *uri = gtk_file_system_path_to_uri(priv->filesystem,
                                                        path);
-              
+
               mime_type = gtk_file_info_get_mime_type(info);
               /* FIXME: hack to workaround problem with Sketch files.
                * Second check is because we cannot make thumbnails for
                * images on the Gateway. */
-              if (mime_type != NULL 
-		  && strcmp(mime_type, "sketch/png") != 0
-		  && (uri && !g_str_has_prefix(uri, "obex://")))
+              if (mime_type != NULL
+                  && strcmp(mime_type, "sketch/png") != 0
+                  && (uri && !g_str_has_prefix(uri, "obex://")))
               {
                 cat = hildon_mime_get_category_for_mime_type(mime_type);
                 if (cat == HILDON_MIME_CATEGORY_IMAGES)
@@ -1170,30 +1170,30 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
         result = gtk_file_info_get_is_hidden(info);
 
       if (result == TRUE)
-	{
-	  /* When this item is actually hidden, and it is a special
-	     location, we queue it for reload if it hasn't been loaded
-	     at all yet.  Special locations can become visible when
-	     they have children, and we need to scan them to figure
-	     this out.
-	  */
+        {
+          /* When this item is actually hidden, and it is a special
+             location, we queue it for reload if it hasn't been loaded
+             at all yet.  Special locations can become visible when
+             they have children, and we need to scan them to figure
+             this out.
+          */
 
-	  if (model_node->location
-	      && model_node->load_time == 0
-	      && (!hildon_file_system_special_location_requires_access
-		  (model_node->location)))
-	    {
-	      fprintf (stderr, "SCANNING FOR VISIBILITY\n");
-	      _hildon_file_system_model_queue_reload
-		(HILDON_FILE_SYSTEM_MODEL(model), iter, FALSE);
-	    }
-	}
+          if (model_node->location
+              && model_node->load_time == 0
+              && (!hildon_file_system_special_location_requires_access
+                  (model_node->location)))
+            {
+              fprintf (stderr, "SCANNING FOR VISIBILITY\n");
+              _hildon_file_system_model_queue_reload
+                (HILDON_FILE_SYSTEM_MODEL(model), iter, FALSE);
+            }
+        }
 
       g_value_set_boolean(value, result);
       break;
     }
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_UNAVAILABLE_REASON:
-        g_value_take_string(value, model_node->location ? 
+        g_value_take_string(value, model_node->location ?
             hildon_file_system_special_location_get_unavailable_reason(model_node->location) :
             g_strdup(_("sfil_ib_opening_not_allowed")));
         break;
@@ -1203,21 +1203,21 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
           if (!model_node->title_cache)
             model_node->title_cache = _hildon_file_system_create_display_name(
                 fs, path, model_node->location, info);
-          g_value_take_string(value, 
+          g_value_take_string(value,
                 g_strdup_printf(model_node->location->failed_access_message,
                 model_node->title_cache));
         }
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_SORT_WEIGHT:
         /* Temporary version of the weight calculation */
-        g_value_set_int(value, model_node->location ? 
+        g_value_set_int(value, model_node->location ?
                 model_node->location->sort_weight : (
-            (info && gtk_file_info_get_is_folder(info)) ? 
+            (info && gtk_file_info_get_is_folder(info)) ?
                 SORT_WEIGHT_FOLDER : SORT_WEIGHT_FILE));
         break;
     case HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO:
         if (model_node->location)
-            g_value_take_string(value, 
+            g_value_take_string(value,
                 hildon_file_system_special_location_get_extra_info(model_node->location));
         break;
     default:
@@ -1304,7 +1304,7 @@ static gboolean hildon_file_system_model_iter_parent(GtkTreeModel * model,
 {
     GNode *node;
     HildonFileSystemModelPrivate *priv = CAST_GET_PRIVATE(model);
-    
+
     TRACE;
     g_return_val_if_fail(child->stamp == priv->stamp, FALSE);
 
@@ -1421,8 +1421,8 @@ static void hildon_file_system_model_folder_finished_loading(GtkFileFolder *moni
 
 static GNode *
 hildon_file_system_model_search_path_internal (GNode *parent_node,
-					       const GtkFilePath *path,
-					       gboolean recursively)
+                                               const GtkFilePath *path,
+                                               gboolean recursively)
 {
     const gchar *folder_string, *test_string;
     GNode *node;
@@ -1432,19 +1432,19 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
 
     /* Not allocated dynamically */
     folder_string = gtk_file_path_get_string(path);
-    
+
     model_node = parent_node->data;
 
     /* First consider the parent itself.
      */
     if (model_node)
       {
-	test_string = gtk_file_path_get_string (model_node->path);
-	if (_hildon_file_system_compare_ignore_last_separator (folder_string,
-							       test_string))
-	  return parent_node;
+        test_string = gtk_file_path_get_string (model_node->path);
+        if (_hildon_file_system_compare_ignore_last_separator (folder_string,
+                                                               test_string))
+          return parent_node;
       }
-    
+
     for (node = g_node_first_child(parent_node); node;
          node = g_node_next_sibling(node)) {
         model_node = node->data;
@@ -1452,7 +1452,7 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
         test_string = gtk_file_path_get_string(model_node->path);
 
         if (_hildon_file_system_compare_ignore_last_separator (folder_string,
-							       test_string))
+                                                               test_string))
             return node;
 
         if (recursively) {
@@ -1464,10 +1464,10 @@ hildon_file_system_model_search_path_internal (GNode *parent_node,
                 (g_ascii_strncasecmp(folder_string, test_string, test_len) == 0
                  && (folder_string[test_len] == G_DIR_SEPARATOR)))
           {
-                GNode *result = 
+                GNode *result =
                       hildon_file_system_model_search_path_internal(node,
-								    path,
-								    TRUE);
+                                                                    path,
+                                                                    TRUE);
                 if (result) return result;
           }
         }
@@ -1510,7 +1510,7 @@ unlink_file_folder(GNode *node)
       model_node->get_folder_handle = NULL;
     }
 
-  if (model_node->folder) 
+  if (model_node->folder)
   {
     GQueue *queue;
     GList *link;
@@ -1519,15 +1519,15 @@ unlink_file_folder(GNode *node)
                        hildon_file_system_model_quark, NULL);
 
     g_signal_handlers_disconnect_by_func
-        (model_node->folder, 
+        (model_node->folder,
          (gpointer) hildon_file_system_model_dir_removed,
          model_node->model);
     g_signal_handlers_disconnect_by_func
-        (model_node->folder, 
+        (model_node->folder,
          (gpointer) hildon_file_system_model_files_added,
          model_node->model);
     g_signal_handlers_disconnect_by_func
-        (model_node->folder, 
+        (model_node->folder,
          (gpointer) hildon_file_system_model_files_removed,
          model_node->model);
     g_signal_handlers_disconnect_by_func
@@ -1541,7 +1541,7 @@ unlink_file_folder(GNode *node)
 
     /* Remove possibly pending nodes from queue */
     queue = model_node->model->priv->delayed_lists;
-    while ((link = g_queue_find_custom(queue, 
+    while ((link = g_queue_find_custom(queue,
             model_node->folder, search_folder_helper)) != NULL)
     {
       delayed_list_free(link->data);
@@ -1555,15 +1555,15 @@ unlink_file_folder(GNode *node)
 
 static void
 get_folder_callback (GtkFileSystemHandle *handle,
-		     GtkFileFolder *folder,
-		     const GError *error,
-		     gpointer data)
+                     GtkFileFolder *folder,
+                     const GError *error,
+                     gpointer data)
 {
   gboolean cancelled = handle->cancelled;
   GNode *node = (GNode *)data;
   HildonFileSystemModelNode *model_node;
   HildonFileSystemModel *model;
-  
+
   g_object_unref (handle);
 
   /* When the operation has been cancelled, DATA is no longer valid.
@@ -1581,7 +1581,7 @@ get_folder_callback (GtkFileSystemHandle *handle,
   if (folder == NULL)
     {
       ULOG_ERR_F("Failed to create monitor for path %s",
-		 gtk_file_path_get_string (model_node->path));
+                 gtk_file_path_get_string (model_node->path));
       return;
     }
 
@@ -1591,25 +1591,25 @@ get_folder_callback (GtkFileSystemHandle *handle,
      model, 0);
 
   g_object_set_qdata (G_OBJECT(model_node->folder),
-		      hildon_file_system_model_quark, node);
-  
+                      hildon_file_system_model_quark, node);
+
   if (gtk_file_folder_is_finished_loading (model_node->folder))
     {
       GSList *children = NULL;
       gboolean result;
 
       result = gtk_file_folder_list_children
-	(model_node->folder, &children, &(model_node->error));
+        (model_node->folder, &children, &(model_node->error));
       if (result)
-	{
-	  hildon_file_system_model_files_added (model_node->folder,
-						children,
-						model);
-	  hildon_file_system_model_folder_finished_loading
-	    (model_node->folder, model);
-	  gtk_file_paths_free (children);
-	}
-	  
+        {
+          hildon_file_system_model_files_added (model_node->folder,
+                                                children,
+                                                model);
+          hildon_file_system_model_folder_finished_loading
+            (model_node->folder, model);
+          gtk_file_paths_free (children);
+        }
+
     }
 
   g_signal_connect_object
@@ -1628,7 +1628,7 @@ get_folder_callback (GtkFileSystemHandle *handle,
     (model_node->folder, "finished-loading",
      G_CALLBACK (hildon_file_system_model_folder_finished_loading), model,
      0);
-  
+
   if (error)
     handle_load_error (node);
 }
@@ -1663,18 +1663,18 @@ link_file_folder (GNode *node, const GtkFilePath *path)
   if (model_node->location)
     {
       model_node->get_folder_handle =
-	hildon_file_system_special_location_get_folder 
-	  (model_node->location,
-	   model->priv->filesystem,
-	   path, GTK_FILE_INFO_ALL,
-	   get_folder_callback, node);
+        hildon_file_system_special_location_get_folder
+          (model_node->location,
+           model->priv->filesystem,
+           path, GTK_FILE_INFO_ALL,
+           get_folder_callback, node);
     }
   else
     {
       model_node->get_folder_handle =
-	gtk_file_system_get_folder (model->priv->filesystem,
-				    path, GTK_FILE_INFO_ALL,
-				    get_folder_callback, node);
+        gtk_file_system_get_folder (model->priv->filesystem,
+                                    path, GTK_FILE_INFO_ALL,
+                                    get_folder_callback, node);
     }
 
   if (model_node->get_folder_handle == NULL)
@@ -1727,7 +1727,7 @@ static gboolean hildon_file_system_model_destroy_model_node(GNode * node,
 
 /* Kicks off the node and all the children. Both GNodes and ModelNodes.
     returns the next sibling of the deleted node */
-static GNode * 
+static GNode *
 hildon_file_system_model_kick_node(GNode *node, gpointer data)
 {
   HildonFileSystemModelPrivate *priv;
@@ -1748,18 +1748,18 @@ hildon_file_system_model_kick_node(GNode *node, gpointer data)
 
   gtk_tree_model_row_deleted(GTK_TREE_MODEL(data), tree_path);
   gtk_tree_path_free(tree_path);
-  	 
+
   parent_node = node->parent;
   node = g_node_next_sibling(node);
 
-  g_node_traverse(destroy_node, G_POST_ORDER, G_TRAVERSE_ALL, 
+  g_node_traverse(destroy_node, G_POST_ORDER, G_TRAVERSE_ALL,
       -1, hildon_file_system_model_destroy_model_node, data);
 
   g_node_destroy(destroy_node);
 
   if (parent_node && parent_node != priv->roots && parent_node->children ==NULL)
-    hildon_file_system_model_send_has_child_toggled( GTK_TREE_MODEL(data), 
-						     parent_node);
+    hildon_file_system_model_send_has_child_toggled( GTK_TREE_MODEL(data),
+                                                     parent_node);
 
   return node;
 }
@@ -1778,7 +1778,7 @@ static void real_volumes_changed(GtkFileSystem *fs, gpointer data)
 {
     ULOG_DEBUG_F("entered");
 
-    g_node_traverse(_hildon_file_system_get_locations(fs), 
+    g_node_traverse(_hildon_file_system_get_locations(fs),
             G_PRE_ORDER, G_TRAVERSE_ALL, -1,
             notify_volumes_changed, fs);
 }
@@ -1810,8 +1810,8 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
     /* First check if this item is already part of the model */
     {
       node =
-	hildon_file_system_model_search_path_internal (parent_node,
-						       path, FALSE);
+        hildon_file_system_model_search_path_internal (parent_node,
+                                                       path, FALSE);
 
         if (node) {
             HildonFileSystemModelNode *model_node = node->data;
@@ -1829,9 +1829,9 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
 
       /* If we have received the path that we are adding by some other
          means than listing the folder (like via some API function),
-         then the backend will send us "files-added" signal immediately 
-         after we first time use it. This is *not good*, because it 
-         places "garbage list" info processing queue and rest of 
+         then the backend will send us "files-added" signal immediately
+         after we first time use it. This is *not good*, because it
+         places "garbage list" info processing queue and rest of
          the model believes that model is loading. See bug #14040. */
         g_signal_handlers_block_by_func(parent_folder,
           hildon_file_system_model_files_added, model);
@@ -1856,7 +1856,7 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
     model_node->model = HILDON_FILE_SYSTEM_MODEL(model);
     model_node->present_flag = TRUE;
     model_node->available = TRUE;
-    model_node->path = gtk_file_path_copy(path);    
+    model_node->path = gtk_file_path_copy(path);
 
     node = g_node_new(model_node);
     g_node_append(parent_node, node);
@@ -1874,8 +1874,8 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
 
     /* The following should be replaced by appending the functionality into
        GtkFileInfo, but this requires API changes into gtkfilesystem.h,
-       gtkfilesystemunix.h and gtkfilesystemgnomevfs.h (as well as into 
-       memory backend). Currently we can handle only local files, but 
+       gtkfilesystemunix.h and gtkfilesystemgnomevfs.h (as well as into
+       memory backend). Currently we can handle only local files, but
        that's better than nothing... */
     if (!model_node->location)
     {
@@ -1892,7 +1892,7 @@ hildon_file_system_model_add_node(GtkTreeModel * model,
         }
 
         g_free(local_path);
-      }      
+      }
     }
 
     /* We need to report first that new like has been inserted */
@@ -2038,7 +2038,7 @@ static void wait_node_load(HildonFileSystemModelPrivate * priv,
     {
         g_usleep(2000); /* microseconds */
         if (gtk_events_pending())       /* Don't do while here, because
-                                           there can be enormous amount of 
+                                           there can be enormous amount of
                                            events waiting */
             gtk_main_iteration();
     }
@@ -2151,7 +2151,7 @@ static void hildon_file_system_model_finalize(GObject * self)
 
     g_queue_foreach(priv->delayed_lists, (GFunc) delayed_list_free, NULL);
     g_queue_free(priv->delayed_lists);
-    g_queue_free(priv->reload_list); 
+    g_queue_free(priv->reload_list);
     g_queue_free(priv->cache_queue);
     /* Contents of this queue are gone already */
 
@@ -2260,7 +2260,7 @@ static void hildon_file_system_model_class_init(HildonFileSystemModelClass
     object->finalize = hildon_file_system_model_finalize;
     object->set_property = hildon_file_system_model_set_property;
     object->get_property = hildon_file_system_model_get_property;
-    klass->device_disconnected = 
+    klass->device_disconnected =
       hildon_file_system_model_real_device_disconnected;
 
     g_object_class_install_property(object, PROP_BACKEND,
@@ -2310,7 +2310,7 @@ static void hildon_file_system_model_class_init(HildonFileSystemModelClass
                             "displayed itself. This property has effect only when "
                             "root-dir is set.", FALSE,
                             G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY));
-                     
+
     hildon_file_system_model_quark =
         g_quark_from_static_string("HildonFileSystemModel Quark");
 
@@ -2326,7 +2326,7 @@ static void hildon_file_system_model_class_init(HildonFileSystemModelClass
                      G_SIGNAL_RUN_LAST,
                      G_STRUCT_OFFSET(HildonFileSystemModelClass,
                                      device_disconnected), NULL, NULL,
-                     g_cclosure_marshal_VOID__BOXED, G_TYPE_NONE, 1, 
+                     g_cclosure_marshal_VOID__BOXED, G_TYPE_NONE, 1,
                      GTK_TYPE_TREE_ITER);
 }
 
@@ -2364,7 +2364,7 @@ hildon_file_system_model_drag_source_iface_init(GtkTreeDragSourceIface *iface)
   iface->row_draggable = hildon_file_system_model_row_draggable;
 }
 
-static void 
+static void
 location_changed(HildonFileSystemSpecialLocation *location, GNode *node)
 {
     g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
@@ -2376,7 +2376,7 @@ location_changed(HildonFileSystemSpecialLocation *location, GNode *node)
     emit_node_changed(node);
 }
 
-static void 
+static void
 location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     GNode *node)
 {
@@ -2397,13 +2397,13 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
             ULOG_INFO("Location %s is now available", (char *) model_node->path);
 
             if (!hildon_file_system_special_location_requires_access(location))
-	      {    
-		link_file_folder (node, model_node->path);
-	      }
+              {
+                link_file_folder (node, model_node->path);
+              }
         } else {
-            ULOG_INFO("Location %s is no longer available", 
+            ULOG_INFO("Location %s is no longer available",
                 (char *) model_node->path);
-            
+
             send_device_disconnected(node);
         }
 
@@ -2419,7 +2419,7 @@ location_connection_state_changed(HildonFileSystemSpecialLocation *location,
     }
 }
 
-static void 
+static void
 location_rescan(HildonFileSystemSpecialLocation *location, GNode *node)
 {
     HildonFileSystemModelNode *model_node;
@@ -2437,7 +2437,7 @@ location_rescan(HildonFileSystemSpecialLocation *location, GNode *node)
       (HILDON_FILE_SYSTEM_MODEL(model), node, TRUE);
 }
 
-static HildonFileSystemModelNode * 
+static HildonFileSystemModelNode *
 create_model_node_for_location(HildonFileSystemModel *self,
     HildonFileSystemSpecialLocation *location)
 {
@@ -2454,11 +2454,11 @@ create_model_node_for_location(HildonFileSystemModel *self,
         model_node->model = self;
         model_node->present_flag = TRUE;
         model_node->available = TRUE;
-        model_node->path = path; 
+        model_node->path = path;
         model_node->location = g_object_ref(location);
 
         /* Let the location to initialize it's state */
-        hildon_file_system_special_location_volumes_changed(location, 
+        hildon_file_system_special_location_volumes_changed(location,
             self->priv->filesystem);
 
     } else {
@@ -2481,8 +2481,8 @@ static void setup_node_for_location(GNode *node)
         if ((location = model_node->location) != NULL)
         {
             if (!hildon_file_system_special_location_requires_access(location) &&
-		hildon_file_system_special_location_is_available(location))
-	      link_file_folder(node, model_node->path);
+                hildon_file_system_special_location_is_available(location))
+              link_file_folder(node, model_node->path);
 
 
             if (location->basepath) {
@@ -2492,15 +2492,15 @@ static void setup_node_for_location(GNode *node)
                 model_node->path = gtk_file_path_copy ( (GtkFilePath *)location->basepath);
             }
 
-            g_signal_connect(location, "changed", 
+            g_signal_connect(location, "changed",
                 G_CALLBACK(location_changed), node);
             g_signal_connect(location, "connection-state",
-                G_CALLBACK(location_connection_state_changed), node);    
+                G_CALLBACK(location_connection_state_changed), node);
             g_signal_connect(location, "rescan",
                 G_CALLBACK(location_rescan), node);
         }
         else
-	  link_file_folder (node, model_node->path);
+          link_file_folder (node, model_node->path);
     }
 }
 /* Similar to g_node_copy_deep, but will also allow nodes to be skipped,
@@ -2556,7 +2556,7 @@ hildon_file_system_model_constructor(GType type,
 
     if (priv->alternative_root_dir == NULL)
     {
-        /* Let's use device tree as a base of our tree */ 
+        /* Let's use device tree as a base of our tree */
         priv->roots = my_copy_deep(
                         _hildon_file_system_get_locations(priv->filesystem),
                         obj);
@@ -2580,18 +2580,18 @@ hildon_file_system_model_constructor(GType type,
         HildonFileSystemModelNode *model_node;
 
         model_node = g_new0(HildonFileSystemModelNode, 1);
-        model_node->path = gtk_file_path_copy(file_path);    
+        model_node->path = gtk_file_path_copy(file_path);
         model_node->available = TRUE;
         priv->roots->data = model_node;
         model_node->present_flag = TRUE;
-	model_node->model = HILDON_FILE_SYSTEM_MODEL(obj);
+        model_node->model = HILDON_FILE_SYSTEM_MODEL(obj);
 
         if (link_file_folder (priv->roots, file_path))
-	  {
-	    hildon_file_system_model_delayed_add_children
-	      (HILDON_FILE_SYSTEM_MODEL(obj), priv->roots, TRUE);
-	    wait_node_load(priv, priv->roots);
-	  }
+          {
+            hildon_file_system_model_delayed_add_children
+              (HILDON_FILE_SYSTEM_MODEL(obj), priv->roots, TRUE);
+            wait_node_load(priv, priv->roots);
+          }
       }
       else
       {
@@ -2599,7 +2599,7 @@ hildon_file_system_model_constructor(GType type,
                                           file_path);
       }
 
-      gtk_file_path_free(file_path); 
+      gtk_file_path_free(file_path);
     }
 
     return obj;
@@ -2613,7 +2613,7 @@ hildon_file_system_model_constructor(GType type,
  * @start_iter: a #GtkTreeIter for starting point. %NULL for entire model.
  * @recursive: if %FALSE, only immediate children of the parent are
  *   searched. %TRUE searches the entire subtree.
- * 
+ *
  * a wrapped for hildon_file_system_model_search_path that accepts local
  *   paths.
  *
@@ -2649,7 +2649,7 @@ gboolean hildon_file_system_model_search_local_path(HildonFileSystemModel *
  * @start_iter: a #GtkTreeIter for starting point. %NULL for entire model.
  * @recursive: if %FALSE, only immediate children of the parent are
  *   searched. %TRUE searches the entire subtree.
- * 
+ *
  * a wrapped for hildon_file_system_model_search_path that accepts URIs.
  *
  * Returns: %TRUE, if the iterator points to desired file.
@@ -2682,7 +2682,7 @@ gboolean hildon_file_system_model_search_uri(HildonFileSystemModel * model,
  * @start_iter: a #GtkTreeIter for starting point. %NULL for entire model.
  * @recursive: if %FALSE, only immediate children of the parent are
  *   searched. %TRUE searches the entire subtree.
- * 
+ *
  * Searches the model for given path and fills an iterator pointing to it.
  * Note that the path must already exist in model.
  *
@@ -2707,7 +2707,7 @@ gboolean hildon_file_system_model_search_path(HildonFileSystemModel *
   iter->stamp = priv->stamp;
   iter->user_data =
     hildon_file_system_model_search_path_internal (start_node,
-						   path, recursive);
+                                                   path, recursive);
   return iter->user_data != NULL;
 }
 
@@ -2816,7 +2816,7 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 
     /* Let's see if given path is already in the tree */
     if (hildon_file_system_model_search_path(model, real_path, iter,
-					     NULL, TRUE))
+                                             NULL, TRUE))
     {
       /* In case of gateway, we may need this to allow accessing contents */
       _hildon_file_system_model_mount_device_iter(model, iter);
@@ -2826,11 +2826,11 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
     /* No, path was not found. Let's try go one level up and loading more
        contents */
     if (!gtk_file_system_get_parent (model->priv->filesystem,
-				     real_path, &parent_path, NULL)
-	|| parent_path == NULL)
+                                     real_path, &parent_path, NULL)
+        || parent_path == NULL)
       {
         /* Let's check a special case: We want remote servers to report
-           the used protocol as their parent uri: 
+           the used protocol as their parent uri:
                obex://mac/ => obex://
          */
         const gchar *s;
@@ -2864,7 +2864,7 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
       parent_model_node = parent_node->data;
       g_assert(parent_model_node != NULL);
 
-      gtk_file_path_free(parent_path);    
+      gtk_file_path_free(parent_path);
       parent_folder = parent_model_node->folder;
 
       /* Ok, if we reached this point we had located "parent_folder". We
@@ -2887,8 +2887,8 @@ gboolean hildon_file_system_model_load_path(HildonFileSystemModel * model,
 
 static void
 hildon_file_system_model_queue_node_reload (HildonFileSystemModel *model,
-					    GNode *node,
-					    gboolean force)
+                                            GNode *node,
+                                            gboolean force)
 {
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
 
@@ -2926,7 +2926,7 @@ _hildon_file_system_model_load_children(HildonFileSystemModel *model,
 
   hildon_file_system_model_delayed_add_children(model,
                                                 parent_iter->user_data, FALSE);
-  wait_node_load(model->priv, parent_iter->user_data);  
+  wait_node_load(model->priv, parent_iter->user_data);
 }
 
 GtkFileSystem
@@ -2986,7 +2986,7 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
 
     model_node = node->data;
 
-    /* Spacial locations can have sub-locations within themselves. 
+    /* Spacial locations can have sub-locations within themselves.
        those can cause conflicts with autonaming. */
     if (model_node->location && !extension)
     {
@@ -3038,8 +3038,8 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
             {
               long value = _hildon_file_system_parse_autonumber(start);
 
-  	          if (value >= 0)  /* the string is reserved */ 
-                reserved = g_list_insert_sorted(reserved, 
+                    if (value >= 0)  /* the string is reserved */
+                reserved = g_list_insert_sorted(reserved,
                   GINT_TO_POINTER(value), compare_numbers);
             }
         }
@@ -3063,15 +3063,15 @@ gchar *hildon_file_system_model_new_item(HildonFileSystemModel * model,
     else
       result = g_strdup_printf("%s (%d)", stub_name, final);
 
-    /* stub_name may point to this, so we have to free 
+    /* stub_name may point to this, so we have to free
        this AFTER creating the result */
-    g_free(allocated); 
+    g_free(allocated);
 
     return result;
 }
 
-/* Devices are not mounted automatically, only in response to user action. 
-   Additionally, we never try to mount MMC ourselves. So there is now even 
+/* Devices are not mounted automatically, only in response to user action.
+   Additionally, we never try to mount MMC ourselves. So there is now even
    less to do here. */
 gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
                                                      * model,
@@ -3121,7 +3121,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
 
         if (!success)
             return FALSE;
-    
+
         hildon_file_system_model_delayed_add_children(model, node, TRUE);
         return TRUE;
       }
@@ -3134,7 +3134,7 @@ gboolean _hildon_file_system_model_mount_device_iter(HildonFileSystemModel
  * hildon_file_system_model_finished_loading:
  * @model: a #HildonFileSystemModel.
  *
- * Checks if model has data in it's processing queue. 
+ * Checks if model has data in it's processing queue.
  * Note! This api is broken an DEPRICATED. It only checks
  * internal processing queue and this information is mostly
  * useless.
@@ -3155,7 +3155,7 @@ gboolean hildon_file_system_model_finished_loading(HildonFileSystemModel *
  * @model: a #HildonFileSystemModel.
  * @uri: an URI to be autonamed.
  * @error: a GError to hold possible error information.
- * 
+ *
  * This function checks if the given URI already exists in the model.
  * if not, then a copy of it is returned unmodified. If the URI already
  * exists then a number is added in a form file://file(2).html.
@@ -3165,7 +3165,7 @@ gboolean hildon_file_system_model_finished_loading(HildonFileSystemModel *
  * this value using #g_free. Value can be %NULL, if error was
  * encountered.
  */
-gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model, 
+gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
   const gchar *uri, GError **error)
 {
   GtkFileSystem *backend;
@@ -3175,41 +3175,41 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
   gboolean is_folder = FALSE;
   gchar *result = NULL;
   GtkTreeIter iter;
-  
+
   g_return_val_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model), NULL);
   g_return_val_if_fail(uri != NULL, NULL);
 
   backend = model->priv->filesystem;
- 
-  
+
+
   if ( ((uri_path = gtk_file_system_uri_to_path(backend, uri)) != NULL) &&
         gtk_file_system_get_parent(backend, uri_path, &folder, NULL)    &&
-	(folder != NULL)                                                &&
-	hildon_file_system_model_load_path(model, folder, &iter) )
-  {     
-        
+        (folder != NULL)                                                &&
+        hildon_file_system_model_load_path(model, folder, &iter) )
+  {
+
       _hildon_file_system_model_load_children(model, &iter);
 
       GtkTreeIter ret_iter;
 
-      if ( hildon_file_system_model_search_uri(model, uri, &ret_iter, &iter, FALSE) ) 
+      if ( hildon_file_system_model_search_uri(model, uri, &ret_iter, &iter, FALSE) )
       {
-	 gtk_tree_model_get 
-	   (GTK_TREE_MODEL(model), &ret_iter,
-	    HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME, &file, 
-	    HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER, &is_folder, 
-	    -1); 
+         gtk_tree_model_get
+           (GTK_TREE_MODEL(model), &ret_iter,
+            HILDON_FILE_SYSTEM_MODEL_COLUMN_FILE_NAME, &file,
+            HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_FOLDER, &is_folder,
+            -1);
       }
   }
-   
+
   gtk_file_path_free(uri_path);
-  
+
   if( file == NULL )
-  {     
-      gtk_file_path_free(folder);	  
+  {
+      gtk_file_path_free(folder);
       return g_strdup(uri);
   }
-    
+
   gchar *extension = NULL, *dot, *autonamed;
 
   dot = _hildon_file_system_search_extension (file, FALSE, is_folder);
@@ -3220,14 +3220,14 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
 
   _hildon_file_system_remove_autonumber(file);
 
-  autonamed = hildon_file_system_model_new_item(model, 
+  autonamed = hildon_file_system_model_new_item(model,
                                 &iter, file, extension);
-  g_free(file); 
-       
+  g_free(file);
+
   if (autonamed)
-  { 
+  {
     GtkFilePath *result_path;
-      
+
     if (extension) {
        /* Dot is part of the extension */
         gchar *ext_name = g_strconcat(autonamed, extension, NULL);
@@ -3245,9 +3245,9 @@ gchar *hildon_file_system_model_autoname_uri(HildonFileSystemModel *model,
 
     g_free(autonamed);
   }
- 
+
   gtk_file_path_free(folder);
- 
+
   return result;
 }
 
@@ -3288,7 +3288,7 @@ reset_callback(GNode *node, gpointer data)
   HildonFileSystemModelNode *model_node;
 
   g_assert(node != NULL);
-  
+
   model_node = node->data;
   if (model_node && !model_node->available)
   {
@@ -3310,7 +3310,7 @@ void hildon_file_system_model_reset_available(HildonFileSystemModel *model)
 {
   g_return_if_fail(HILDON_IS_FILE_SYSTEM_MODEL(model));
 
-  g_node_traverse(model->priv->roots, G_POST_ORDER, 
+  g_node_traverse(model->priv->roots, G_POST_ORDER,
       G_TRAVERSE_ALL, -1, reset_callback, NULL);
 }
 

@@ -62,9 +62,9 @@
 #include "hildon-file-common-private.h"
 #define HILDON_RESPONSE_FOLDER_BUTTON 12345
 #define HILDON_RESPONSE_FOLDER_CREATED 54321
-/* Common height for filetrees. About 8 lines. Filetree sets default margins, 
+/* Common height for filetrees. About 8 lines. Filetree sets default margins,
     so we need to take them into account. See #9962. */
-#define FILE_SELECTION_HEIGHT (8 * 30 + 2 * HILDON_MARGIN_DEFAULT)  
+#define FILE_SELECTION_HEIGHT (8 * 30 + 2 * HILDON_MARGIN_DEFAULT)
 #define FILE_SELECTION_WIDTH_LIST 240   /* Width used in select folder
                                            mode */
 #define FILE_SELECTION_WIDTH_TOTAL 590  /* Width for full filetree (both
@@ -156,7 +156,7 @@ G_DEFINE_TYPE_EXTENDED
      G_IMPLEMENT_INTERFACE(GTK_TYPE_FILE_CHOOSER,
                            hildon_file_chooser_dialog_iface_init))
 
-/* <glib> 
+/* <glib>
 
     Borrowed from glib, because it's static there.
     I do not know if there is a better way to do
@@ -185,7 +185,7 @@ static void chooser_entry_invalid_input_cb (GtkEntry *entry,
   if (inv_type == GTK_INVALID_INPUT_MAX_CHARS_REACHED) {
     /* show the infoprint "ckdg_ib_maximum_characters_reached" */
     hildon_banner_show_information (GTK_WIDGET (entry), NULL,
-				    HCS("ckdg_ib_maximum_characters_reached"));
+                                    HCS("ckdg_ib_maximum_characters_reached"));
   }
 }
 
@@ -271,7 +271,7 @@ get_path_length_from_uri(const char *uri)
   if (!unescaped) return 0;
 
   ULOG_DEBUG("Original uri = %s", uri);
-  /* Should Not be utf8, but G_FILENAME_ENCODING, BUT it still is. */ 
+  /* Should Not be utf8, but G_FILENAME_ENCODING, BUT it still is. */
   len = g_utf8_strlen(unescaped, -1);
   ULOG_DEBUG("Unescaped path = %s, length = %d", unescaped, len);
   g_free(unescaped);
@@ -293,7 +293,7 @@ hildon_file_chooser_dialog_set_limit(HildonFileChooserDialog *self)
   */
 
   gtk_entry_set_max_length (GTK_ENTRY (self->priv->entry_name),
-			    self->priv->max_filename_length);
+                            self->priv->max_filename_length);
 }
 
 static void file_activated_handler(GtkWidget * widget, gpointer user_data)
@@ -322,7 +322,7 @@ set_entry (GtkWidget *entry, const char *name, const char *ext)
 {
   if (name == NULL)
     return;
-  
+
   gtk_entry_set_text (GTK_ENTRY(entry), name);
 
   /* Include the extension in the name when it is not recognized.  EXT
@@ -333,8 +333,8 @@ set_entry (GtkWidget *entry, const char *name, const char *ext)
     {
       gint position = strlen (name);
       gtk_editable_insert_text (GTK_EDITABLE (entry),
-				ext, strlen (ext), 
-				&position);
+                                ext, strlen (ext),
+                                &position);
     }
 }
 
@@ -350,7 +350,7 @@ get_entry (GtkWidget *entry, const char *ext)
      the full filename.  It the extension was recognized, we add it
      back now.
   */
-  
+
   if (ext && _hildon_file_system_is_known_extension (ext))
     {
        gchar *ext_name = g_strconcat (name, ext, NULL);
@@ -369,7 +369,7 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
     g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
 
     if (GTK_WIDGET_VISIBLE(priv->caption_control_name) &&
-        priv->stub_name && !priv->edited) 
+        priv->stub_name && !priv->edited)
     {
         gchar *name = NULL;
         gboolean selection;
@@ -397,9 +397,9 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
 
         if (name)
         {
-	  gboolean edited = !selection && 
-		  	     (pos != g_utf8_strlen (gtk_entry_get_text(GTK_ENTRY(priv->entry_name)), -1));
-	  set_entry (priv->entry_name, name, priv->ext_name);
+          gboolean edited = !selection &&
+                               (pos != g_utf8_strlen (gtk_entry_get_text(GTK_ENTRY(priv->entry_name)), -1));
+          set_entry (priv->entry_name, name, priv->ext_name);
           g_free(name);
           if (!edited)
             gtk_editable_select_region(GTK_EDITABLE(priv->entry_name), 0, -1);
@@ -409,7 +409,7 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
             gtk_editable_set_position(GTK_EDITABLE(priv->entry_name), pos);
         }
         else
-	  set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
+          set_entry (priv->entry_name, priv->stub_name, priv->ext_name);
 
         g_signal_handler_unblock(priv->entry_name, priv->changed_handler);
     }
@@ -424,8 +424,8 @@ hildon_file_chooser_dialog_do_autonaming(HildonFileChooserDialogPrivate *
    that the user can edit unrecognized extensions.
 */
 static void
-set_stub_and_ext (HildonFileChooserDialogPrivate *priv, 
-		  const char *name)
+set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
+                  const char *name)
 {
   char *dot;
   gboolean is_folder;
@@ -452,77 +452,77 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
   if (priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
     {
       if (priv->should_show_location)
-	{
-	  /* A "Create Folder" dialog.
-	   */
-	  is_folder = TRUE;
-	}
+        {
+          /* A "Create Folder" dialog.
+           */
+          is_folder = TRUE;
+        }
       else
-	{
-	  /* A "Rename" dialog.  Let's see whether we are renaming a
-	     folder.
-	  */
+        {
+          /* A "Rename" dialog.  Let's see whether we are renaming a
+             folder.
+          */
 
-	  is_folder = FALSE;
+          is_folder = FALSE;
 
 #if 0
-	  /* XXX - Do it asyncronously for Gtk+ 2.10.
-	   */
+          /* XXX - Do it asyncronously for Gtk+ 2.10.
+           */
 
-	  if (priv->model)
-	    {
-	      GtkFileSystem *filesystem =
-		_hildon_file_system_model_get_file_system (priv->model);
-	      if (filesystem)
-		{
-		  GtkFilePath *cur_folder_path;
-		  cur_folder_path =
-		    hildon_file_selection_get_current_folder (priv->filetree);
-		  if (cur_folder_path)
-		    {
-		      GtkFileFolder *cur_folder =
-			gtk_file_system_get_folder (filesystem,
-						    cur_folder_path,
-						    0, NULL);
-		      if (cur_folder)
-			{
-			  GtkFilePath *path =
-			    gtk_file_system_make_path (filesystem,
-						       cur_folder_path,
-						       name, NULL);
-			  if (path)
-			    {
-			      GtkFileInfo *info =
-				gtk_file_folder_get_info (cur_folder, path,
-							  NULL);
-			      if (info)
-				{
-				  is_folder = gtk_file_info_get_is_folder (info);
-				  gtk_file_info_free (info);
-				}
-			      gtk_file_path_free (path);
-			    }
-			  g_object_unref (cur_folder);
-			}
-		      gtk_file_path_free (cur_folder_path);
-		    }
-		}
-	    }
+          if (priv->model)
+            {
+              GtkFileSystem *filesystem =
+                _hildon_file_system_model_get_file_system (priv->model);
+              if (filesystem)
+                {
+                  GtkFilePath *cur_folder_path;
+                  cur_folder_path =
+                    hildon_file_selection_get_current_folder (priv->filetree);
+                  if (cur_folder_path)
+                    {
+                      GtkFileFolder *cur_folder =
+                        gtk_file_system_get_folder (filesystem,
+                                                    cur_folder_path,
+                                                    0, NULL);
+                      if (cur_folder)
+                        {
+                          GtkFilePath *path =
+                            gtk_file_system_make_path (filesystem,
+                                                       cur_folder_path,
+                                                       name, NULL);
+                          if (path)
+                            {
+                              GtkFileInfo *info =
+                                gtk_file_folder_get_info (cur_folder, path,
+                                                          NULL);
+                              if (info)
+                                {
+                                  is_folder = gtk_file_info_get_is_folder (info);
+                                  gtk_file_info_free (info);
+                                }
+                              gtk_file_path_free (path);
+                            }
+                          g_object_unref (cur_folder);
+                        }
+                      gtk_file_path_free (cur_folder_path);
+                    }
+                }
+            }
 #endif
-	}
+        }
     }
   else
-    { 
+    {
       /* Other actions are never about folders.
        */
       is_folder = FALSE;
     }
 
   dot = _hildon_file_system_search_extension (priv->stub_name,
-					      FALSE, is_folder);
-  
+                                              FALSE, is_folder);
+
   /* Is there a dot, but not as first character */
-  if (dot && dot != priv->stub_name) { 
+  if (dot && dot != priv->stub_name) {
     g_free(priv->ext_name);
     priv->ext_name = g_strdup(dot);
     *dot = '\0';
@@ -574,11 +574,11 @@ hildon_file_chooser_dialog_update_location_info
         ULOG_INFO("Failed to get current folder iter");
 }
 
-static void 
-hildon_file_chooser_dialog_selection_changed(HildonFileChooserDialogPrivate 
+static void
+hildon_file_chooser_dialog_selection_changed(HildonFileChooserDialogPrivate
     *priv)
 {
-    if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN) 
+    if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN)
     {
         GSList *files = _hildon_file_selection_get_selected_files(
                                       HILDON_FILE_SELECTION(priv->filetree));
@@ -598,7 +598,7 @@ static void hildon_file_chooser_dialog_current_folder_changed(GtkWidget *
   if (GTK_WIDGET_VISIBLE(priv->caption_control_location))
     hildon_file_chooser_dialog_update_location_info(priv);
   if (GTK_WIDGET_VISIBLE(priv->caption_control_name))
-    hildon_file_chooser_dialog_do_autonaming(priv);  
+    hildon_file_chooser_dialog_do_autonaming(priv);
 }
 
 static gboolean
@@ -646,7 +646,7 @@ static void hildon_file_chooser_dialog_set_current_name(GtkFileChooser *
 {
     HildonFileChooserDialogPrivate *priv =
         HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
-    
+
     set_stub_and_ext (priv, name);
 
     /* If we have autonaming enabled, we try to remove possible
@@ -671,11 +671,11 @@ static gboolean hildon_file_chooser_dialog_select_path(GtkFileChooser *
 
     if (_hildon_file_selection_select_path(priv->filetree, path, error))
       {
-	if (priv->action == GTK_FILE_CHOOSER_ACTION_SAVE
-	    || priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
-	  set_stub_and_ext (priv,
-			    basename (gtk_file_path_get_string (path)));
-	return TRUE;
+        if (priv->action == GTK_FILE_CHOOSER_ACTION_SAVE
+            || priv->action == GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER)
+          set_stub_and_ext (priv,
+                            basename (gtk_file_path_get_string (path)));
+        return TRUE;
       }
 
     return FALSE;
@@ -723,7 +723,7 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
         return g_slist_append(NULL,
                               _hildon_file_selection_get_current_folder_path
                               (priv->filetree));
-    
+
     if (priv->action == GTK_FILE_CHOOSER_ACTION_OPEN)
         return _hildon_file_selection_get_selected_files(priv->filetree);
 
@@ -739,7 +739,7 @@ static GSList *hildon_file_chooser_dialog_get_paths(GtkFileChooser *
     base_path =
             _hildon_file_selection_get_current_folder_path (priv->filetree);
     file_path =
-            gtk_file_system_make_path(backend, base_path, 
+            gtk_file_system_make_path(backend, base_path,
             name_without_dot_prefix, NULL);
 
     gtk_file_path_free(base_path);
@@ -764,7 +764,7 @@ static GtkFileSystem
 }
 
 static void hildon_file_chooser_toggle_filter (GtkCheckMenuItem * item,
-					       gpointer data)
+                                               gpointer data)
 {
   HildonFileChooserDialog *chooser = HILDON_FILE_CHOOSER_DIALOG(data);
   HildonFileChooserDialogPrivate *priv = HILDON_FILE_CHOOSER_DIALOG(chooser)->priv;
@@ -772,7 +772,7 @@ static void hildon_file_chooser_toggle_filter (GtkCheckMenuItem * item,
 
   filter_index = g_slist_index(priv->filter_menu_items, item);
   hildon_file_selection_set_filter(priv->filetree, g_slist_nth_data(priv->filters, filter_index));
-  
+
 }
 
 static void hildon_file_chooser_dialog_add_filter(GtkFileChooser * chooser,
@@ -800,24 +800,24 @@ static void hildon_file_chooser_dialog_add_filter(GtkFileChooser * chooser,
       GSList * node = NULL;
       node = priv->filter_menu_items;
       while (node) {
-	if (node->data) {
-	  break;
-	} else {
-	  node = g_slist_next(node);
-	}
+        if (node->data) {
+          break;
+        } else {
+          node = g_slist_next(node);
+        }
       }
       if (node) {
-	menu_item = gtk_radio_menu_item_new_with_label_from_widget (node->data, gtk_file_filter_get_name(filter));
+        menu_item = gtk_radio_menu_item_new_with_label_from_widget (node->data, gtk_file_filter_get_name(filter));
       } else {
-	menu_item = gtk_radio_menu_item_new_with_label (NULL, gtk_file_filter_get_name(filter));
+        menu_item = gtk_radio_menu_item_new_with_label (NULL, gtk_file_filter_get_name(filter));
       }
       gtk_menu_shell_append(GTK_MENU_SHELL(priv->popup), menu_item);
       if (hildon_file_selection_get_filter(priv->filetree) == filter) {
-	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
+        gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_item), TRUE);
       }
       signal_handler = g_malloc0(sizeof(gulong));
-      *signal_handler =   
-	g_signal_connect(G_OBJECT(menu_item), "toggled", G_CALLBACK(hildon_file_chooser_toggle_filter), chooser);
+      *signal_handler =
+        g_signal_connect(G_OBJECT(menu_item), "toggled", G_CALLBACK(hildon_file_chooser_toggle_filter), chooser);
       gtk_widget_show_all(priv->popup);
     }
     priv->filter_menu_items = g_slist_append(priv->filter_menu_items, menu_item);
@@ -837,7 +837,7 @@ static void hildon_file_chooser_dialog_remove_filter(GtkFileChooser *
     filter_index = g_slist_index(priv->filters, filter);
 
     menu_item_node = g_slist_nth(priv->filter_menu_items, filter_index);
-    if (menu_item_node->data != NULL) 
+    if (menu_item_node->data != NULL)
       gtk_container_remove(GTK_CONTAINER(priv->popup), menu_item_node->data);
     priv->filter_menu_items = g_slist_delete_link(priv->filter_menu_items, menu_item_node);
 
@@ -934,36 +934,36 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_select_object_ok_open"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_select_object_cancel"));
-	hildon_helper_set_insensitive_message (priv->action_button,
-					       _("sfil_ib_select_file"));
+        hildon_helper_set_insensitive_message (priv->action_button,
+                                               _("sfil_ib_select_file"));
         break;
     case GTK_FILE_CHOOSER_ACTION_SAVE:
         if (hildon_file_chooser_dialog_save_multiple_set(priv))
         {
           gtk_widget_hide(priv->caption_control_name);
           gtk_widget_show_all(priv->hbox_items);
-	  hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
-				   _("sfil_fi_save_objects_items"));
+          hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
+                                   _("sfil_fi_save_objects_items"));
         }
         else
         {
-	  hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
-				   _("ckdg_fi_save_object_name"));
+          hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
+                                   _("ckdg_fi_save_object_name"));
           gtk_widget_show_all(priv->caption_control_name);
           gtk_widget_hide(priv->hbox_items);
-	  hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
-				   _("ckdg_fi_save_object_name"));
+          hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
+                                   _("ckdg_fi_save_object_name"));
         }
-       
-	gtk_label_set_text(GTK_LABEL(priv->label_location), 
-				     _("sfil_fi_save_objects_location"));
+
+        gtk_label_set_text(GTK_LABEL(priv->label_location),
+                                     _("sfil_fi_save_objects_location"));
         gtk_widget_hide(GTK_WIDGET(priv->filetree));
 
         /* Content pane of the filetree widget needs to be realized.
            Otherwise automatic location change etc don't work correctly.
            This is because "rows-changed" handler in GtkTreeView exits
            immediately if treeview is not realized. */
-	_hildon_file_selection_realize_help(priv->filetree);
+        _hildon_file_selection_realize_help(priv->filetree);
         gtk_window_set_title(GTK_WINDOW(self), _("sfil_ti_save_file"));
         gtk_button_set_label(GTK_BUTTON(priv->action_button),
                              _("ckdg_bd_save_object_dialog_ok"));
@@ -973,8 +973,8 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_save_object_dialog_cancel"));
         gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(self),
                                           _("ckdg_va_save_object_name_stub_default"));
-	hildon_helper_set_insensitive_message (priv->action_button,
-					       HCS("ckdg_ib_enter_name"));
+        hildon_helper_set_insensitive_message (priv->action_button,
+                                               HCS("ckdg_ib_enter_name"));
         break;
     case GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER:
         gtk_widget_hide(priv->caption_control_name);
@@ -991,28 +991,28 @@ static void build_ui(HildonFileChooserDialog * self)
                              _("ckdg_bd_change_folder_new_folder"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_change_folder_cancel"));
-	hildon_helper_set_insensitive_message (priv->action_button,
-					       _("sfil_ib_select_file"));
+        hildon_helper_set_insensitive_message (priv->action_button,
+                                               _("sfil_ib_select_file"));
         break;
     case GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER:
         hildon_caption_set_label(HILDON_CAPTION(priv->caption_control_name),
-				 _("ckdg_fi_new_folder_name"));
-	gtk_label_set_text(GTK_LABEL(priv->label_location), 
-				     _("ckdg_fi_new_folder_location"));
+                                 _("ckdg_fi_new_folder_name"));
+        gtk_label_set_text(GTK_LABEL(priv->label_location),
+                                     _("ckdg_fi_new_folder_location"));
         gtk_widget_show_all(priv->caption_control_name);
         gtk_widget_hide(GTK_WIDGET(priv->filetree));
-	_hildon_file_selection_realize_help(priv->filetree);        
+        _hildon_file_selection_realize_help(priv->filetree);
         gtk_widget_hide(priv->hbox_items);
         gtk_window_set_title(GTK_WINDOW(self), dgettext("hildon-libs",
                              "ckdg_ti_new_folder"));
         gtk_file_chooser_set_current_name(GTK_FILE_CHOOSER(self),
-                                          _("ckdg_va_new_folder_name_stub")); 
+                                          _("ckdg_va_new_folder_name_stub"));
         gtk_button_set_label(GTK_BUTTON(priv->action_button),
                              _("ckdg_bd_new_folder_dialog_ok"));
         gtk_button_set_label(GTK_BUTTON(priv->cancel_button),
                              _("ckdg_bd_new_folder_dialog_cancel"));
-	hildon_helper_set_insensitive_message (priv->action_button,
-					       HCS("ckdg_ib_enter_name"));
+        hildon_helper_set_insensitive_message (priv->action_button,
+                                               HCS("ckdg_ib_enter_name"));
         break;
     default:
         g_assert_not_reached();
@@ -1034,13 +1034,13 @@ static GString *check_illegal_characters(const gchar * name)
 
         unichar = g_utf8_get_char(name);
 
-	if (g_utf8_strchr ("\\/:*?\"<>|", -1, unichar))
-	  {
+        if (g_utf8_strchr ("\\/:*?\"<>|", -1, unichar))
+          {
             if (!illegals)
                 illegals = g_string_new(NULL);
             if (g_utf8_strchr (illegals->str, -1, unichar) == NULL)
-	      g_string_append_unichar (illegals, unichar);
-	  }
+              g_string_append_unichar (illegals, unichar);
+          }
 
         name = g_utf8_next_char(name);
     }
@@ -1058,7 +1058,7 @@ static void sync_current_folders(HildonFileChooserDialog * source,
 
     fs = HILDON_FILE_SELECTION(source->priv->filetree);
 
-    if (hildon_file_selection_get_active_pane(fs) == 
+    if (hildon_file_selection_get_active_pane(fs) ==
         HILDON_FILE_SELECTION_PANE_CONTENT)
       uri = gtk_file_chooser_get_uri(GTK_FILE_CHOOSER(source));
     else
@@ -1093,7 +1093,7 @@ static GtkWidget
     return dialog;
 }
 
-static void create_folder_callback(GtkFileSystemHandle *handle, 
+static void create_folder_callback(GtkFileSystemHandle *handle,
     const GtkFilePath *path, const GError *error, gpointer data)
 {
     HildonFileChooserDialog *self;
@@ -1109,7 +1109,7 @@ static void create_folder_callback(GtkFileSystemHandle *handle,
     dialog = GTK_DIALOG(self);
 
     if (error) {
-        if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,  
+        if (g_error_matches(error, GTK_FILE_SYSTEM_ERROR,
               GTK_FILE_SYSTEM_ERROR_ALREADY_EXISTS))
             message = _("ckdg_ib_folder_already_exists");
         else
@@ -1180,21 +1180,21 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
          creating actions */
 
       HildonFileChooserDialogPrivate *sub_priv =
-	HILDON_FILE_CHOOSER_DIALOG (dialog)->priv;
+        HILDON_FILE_CHOOSER_DIALOG (dialog)->priv;
 
       g_assert(sub_priv->create_folder_handle == NULL);
 
       /* Callback is quaranteed to be called, it unrefs the object data */
-      sub_priv->create_folder_handle = 
-	gtk_file_system_create_folder (backend, file_path, 
-				       create_folder_callback,
-				       g_object_ref(dialog));
+      sub_priv->create_folder_handle =
+        gtk_file_system_create_folder (backend, file_path,
+                                       create_folder_callback,
+                                       g_object_ref(dialog));
 
       g_free(uri);
 
       /* Make OK button insensitive while folder operation is going */
       gtk_dialog_set_response_sensitive
-	(GTK_DIALOG(dialog), GTK_RESPONSE_OK, FALSE);
+        (GTK_DIALOG(dialog), GTK_RESPONSE_OK, FALSE);
     }
 
     /* If user cancelled the operation, we still can have handle
@@ -1207,7 +1207,7 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
       {
         g_assert(file_path != NULL);
         hildon_file_chooser_dialog_set_current_folder
-	  (GTK_FILE_CHOOSER(self), file_path, NULL);
+          (GTK_FILE_CHOOSER(self), file_path, NULL);
       }
     gtk_file_path_free(file_path);
   }
@@ -1225,7 +1225,7 @@ static void handle_folder_popup(HildonFileChooserDialog *self)
   self->priv->popup_protect = FALSE;
 }
 
-static gboolean hildon_file_chooser_dialog_location_pressed(GtkWidget 
+static gboolean hildon_file_chooser_dialog_location_pressed(GtkWidget
   *widget, GdkEventButton *event, gpointer data)
 {
   HildonFileChooserDialog *self = HILDON_FILE_CHOOSER_DIALOG(data);
@@ -1259,18 +1259,18 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                 hildon_file_chooser_dialog_do_autonaming(priv);
                 hildon_file_chooser_dialog_select_text(priv);
                 hildon_banner_show_information
-		  (widget, NULL, HCS("ckdg_ib_enter_name"));
+                  (widget, NULL, HCS("ckdg_ib_enter_name"));
             } else if (entry_text[0] == '.') {
-	        /* We don't allow files with a dot as the first character.
-		 */
+                /* We don't allow files with a dot as the first character.
+                 */
                 hildon_file_chooser_dialog_select_text(priv);
-	        g_signal_stop_emission_by_name(widget, "response");
-		hildon_banner_show_information
-		  (widget, NULL, _("sfil_ib_invalid_name_dot"));
-	    } else {
+                g_signal_stop_emission_by_name(widget, "response");
+                hildon_banner_show_information
+                  (widget, NULL, _("sfil_ib_invalid_name_dot"));
+            } else {
                 GString *illegals = check_illegal_characters(entry_text);
 
-		if (illegals) {
+                if (illegals) {
                     gchar *msg;
 
                     hildon_file_chooser_dialog_select_text(priv);
@@ -1284,8 +1284,8 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                     g_string_free(illegals, TRUE);
                 }
                 else if (self->priv->max_full_path_length >= 0)
-                     {  /* Let's check that filename is not too long. 
-			 */
+                     {  /* Let's check that filename is not too long.
+                         */
                     gchar *uri;
                     gint path_length;
 
@@ -1297,7 +1297,7 @@ static void response_handler(GtkWidget * widget, gint arg1, gpointer data)
                         g_signal_stop_emission_by_name(widget, "response");
                         hildon_file_chooser_dialog_select_text(priv);
                         hildon_banner_show_information
-			  (widget, NULL, HCS("file_ib_name_too_long"));
+                          (widget, NULL, HCS("file_ib_name_too_long"));
                     }
                     g_free(uri);
                 }
@@ -1397,11 +1397,11 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
         gint new_value = g_value_get_int(value);
         if (new_value != priv->max_filename_length)
         {
-          ULOG_INFO("Maximum name length is %d characters", 
+          ULOG_INFO("Maximum name length is %d characters",
             new_value);
           priv->max_filename_length = new_value;
           hildon_file_chooser_dialog_set_limit(self);
-        }    
+        }
         break;
     }
     case PROP_MAX_FULL_PATH_LENGTH:
@@ -1412,7 +1412,7 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
       new_value = g_value_get_int(value);
 
       if (new_value == 0)
-      {      
+      {
         /* Figuring out maximum allowed path length */
         filename_len = g_getenv("MAX_FILENAME_LENGTH");
         if (filename_len)
@@ -1423,7 +1423,7 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
 
       if (new_value != priv->max_full_path_length)
       {
-        ULOG_INFO("Maximum full path length is %d characters", 
+        ULOG_INFO("Maximum full path length is %d characters",
             new_value);
         priv->max_full_path_length = new_value;
         hildon_file_chooser_dialog_set_limit(self);
@@ -1434,7 +1434,7 @@ static void hildon_file_chooser_dialog_set_property(GObject * object,
     case PROP_SELECTION_MODE:
       g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
       hildon_file_selection_set_mode(priv->filetree,
-				     g_value_get_enum (value));
+                                     g_value_get_enum (value));
       break;
     default:
         G_OBJECT_WARN_INVALID_PROPERTY_ID(object, prop_id, pspec);
@@ -1486,7 +1486,7 @@ static void hildon_file_chooser_dialog_get_property(GObject * object,
         g_value_set_boolean(value, priv->autonaming_enabled);
         break;
     case PROP_OPEN_BUTTON_TEXT:
-        g_object_get_property(G_OBJECT(priv->action_button), 
+        g_object_get_property(G_OBJECT(priv->action_button),
                             "label", value);
         break;
     case PROP_MULTIPLE_TEXT:
@@ -1545,13 +1545,13 @@ static void hildon_file_chooser_dialog_show(GtkWidget * widget)
 
     priv = HILDON_FILE_CHOOSER_DIALOG(widget)->priv;
     hildon_file_chooser_dialog_select_text(priv);
-    hildon_file_chooser_dialog_selection_changed(priv); 
+    hildon_file_chooser_dialog_selection_changed(priv);
 }
 
 static void hildon_file_chooser_dialog_destroy(GtkObject * obj)
 {
     HildonFileChooserDialog *dialog;
- 
+
     ULOG_DEBUG_F("entered");
 
     dialog = HILDON_FILE_CHOOSER_DIALOG(obj);
@@ -1648,12 +1648,12 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                                  TRUE, G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_AUTONAMING, pspec);
 
-    g_object_class_install_property(gobject_class, PROP_OPEN_BUTTON_TEXT, 
+    g_object_class_install_property(gobject_class, PROP_OPEN_BUTTON_TEXT,
             g_param_spec_string("open-button-text", "Open button text",
                                 "String to use in leftmost (=open) button",
                                 NULL, G_PARAM_READWRITE));
 
-    g_object_class_install_property(gobject_class, PROP_MULTIPLE_TEXT, 
+    g_object_class_install_property(gobject_class, PROP_MULTIPLE_TEXT,
             g_param_spec_string("save-multiple", "Save multiple files",
                                 "Text to be displayed in items field when saving multiple files",
                                 NULL, G_PARAM_READWRITE));
@@ -1663,7 +1663,7 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                              "Maximum length of an individual file/folder "
                              "name when entered by user. Note that the actual "
                              "limit can be smaller, if the maximum full "
-                             "path length kicks in. Use -1 for no limit.", 
+                             "path length kicks in. Use -1 for no limit.",
                              -1, G_MAXINT, -1, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
     g_object_class_install_property(gobject_class, PROP_MAX_FULL_PATH_LENGTH,
@@ -1671,17 +1671,17 @@ hildon_file_chooser_dialog_class_init(HildonFileChooserDialogClass * klass)
                              "Maximum length of the whole path of an individual "
                              "file/folder name when entered by user. "
                              "Use -1 for no limit or 0 to look the value "
-                             "from MAX_FILENAME_LENGTH environment variable", 
+                             "from MAX_FILENAME_LENGTH environment variable",
                              -1, G_MAXINT, 0, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
     pspec = g_param_spec_enum("selection-mode", "Selection mode",
-			      "View mode used for hildon file selection widget",
-			      HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE,
-			      HILDON_FILE_SELECTION_MODE_LIST, 			      
-			      G_PARAM_READWRITE);
+                              "View mode used for hildon file selection widget",
+                              HILDON_FILE_CHOOSER_DIALOG_TYPE_SELECTION_MODE,
+                              HILDON_FILE_SELECTION_MODE_LIST,
+                              G_PARAM_READWRITE);
     g_object_class_install_property(gobject_class, PROP_SELECTION_MODE, pspec);
 
-    
+
     hildon_gtk_file_chooser_install_properties(gobject_class);
 }
 
@@ -1757,7 +1757,7 @@ static void hildon_file_chooser_dialog_context(GtkWidget * widget,
 
 static void
 hildon_file_chooser_entry_changed( GtkWidget * widget,
-				    gpointer data)
+                                    gpointer data)
 {
     HildonFileChooserDialogPrivate *priv;
 
@@ -1767,8 +1767,8 @@ hildon_file_chooser_entry_changed( GtkWidget * widget,
     priv = HILDON_FILE_CHOOSER_DIALOG( data )->priv;
     priv->edited = TRUE;
     gtk_dialog_set_response_sensitive(GTK_DIALOG(data),
-		    		      GTK_RESPONSE_OK,
-    				      strlen(gtk_entry_get_text(GTK_ENTRY(widget))) > 0);
+                                          GTK_RESPONSE_OK,
+                                          strlen(gtk_entry_get_text(GTK_ENTRY(widget))) > 0);
 }
 
 static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
@@ -1806,21 +1806,21 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
                               _("ckdg_bd_select_object_cancel"),
                               GTK_RESPONSE_CANCEL);
     priv->entry_name = gtk_entry_new();
-    
+
     priv->caption_control_name =
         hildon_caption_new(size_group, "caption control name",
                            priv->entry_name, NULL,
                            HILDON_CAPTION_OPTIONAL);
     hildon_caption_set_separator(HILDON_CAPTION(priv->caption_control_name),
-				 "");
+                                 "");
 
-    priv->changed_handler = 
+    priv->changed_handler =
           g_signal_connect( priv->entry_name, "changed",
-		          G_CALLBACK( hildon_file_chooser_entry_changed ),
-		          self );
+                          G_CALLBACK( hildon_file_chooser_entry_changed ),
+                          self );
 
     g_signal_connect(priv->entry_name, "invalid-input",
-		     G_CALLBACK(chooser_entry_invalid_input_cb), self);
+                     G_CALLBACK(chooser_entry_invalid_input_cb), self);
 
     priv->hbox_location = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
     priv->hbox_items = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
@@ -1842,8 +1842,8 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
     priv->multiple_label = gtk_label_new(NULL);
     gtk_box_pack_start(GTK_BOX(priv->hbox_items), label_items, FALSE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(priv->hbox_items), priv->multiple_label, FALSE, TRUE, 0);
-    gtk_box_pack_start(GTK_BOX(priv->caption_control_location), 
-		       priv->label_location, FALSE, TRUE, 0);
+    gtk_box_pack_start(GTK_BOX(priv->caption_control_location),
+                       priv->label_location, FALSE, TRUE, 0);
     gtk_box_pack_start(GTK_BOX(priv->caption_control_location), eventbox, TRUE, TRUE, 0);
     gtk_size_group_add_widget(size_group, priv->label_location);
     gtk_size_group_add_widget(size_group, label_items);
@@ -1917,7 +1917,7 @@ static void hildon_file_chooser_dialog_init(HildonFileChooserDialog * self)
                      G_CALLBACK(hildon_file_chooser_dialog_sort_changed),
                      priv);
     g_signal_connect(eventbox, "button-release-event",
-                     G_CALLBACK(hildon_file_chooser_dialog_location_pressed), 
+                     G_CALLBACK(hildon_file_chooser_dialog_location_pressed),
                      self);
 
     gtk_dialog_set_default_response(GTK_DIALOG(self), GTK_RESPONSE_OK);
@@ -1939,8 +1939,8 @@ hildon_file_chooser_dialog_constructor(GType type,
     priv = HILDON_FILE_CHOOSER_DIALOG(obj)->priv;
 
     g_assert(priv->model);
-    priv->filetree = g_object_new(HILDON_TYPE_FILE_SELECTION, 
-      "model", priv->model, "visible-columns", 
+    priv->filetree = g_object_new(HILDON_TYPE_FILE_SELECTION,
+      "model", priv->model, "visible-columns",
       HILDON_FILE_SELECTION_SHOW_NAME | HILDON_FILE_SELECTION_SHOW_MODIFIED,
       NULL);
 
@@ -2075,7 +2075,7 @@ void hildon_file_chooser_dialog_set_safe_folder_uri(
 /**
  * hildon_file_chooser_dialog_get_safe_folder:
  * @self: a #HildonFileChooserDialog widget.
- * 
+ *
  * Gets safe folder location as local path.
  *
  * Returns: a local path. Free this with #g_free.
@@ -2096,14 +2096,14 @@ gchar *hildon_file_chooser_dialog_get_safe_folder(
     result = gtk_file_system_path_to_filename(fs, path);
     gtk_file_path_free(path);
   }
-  
+
   return result;
 }
 
 /**
  * hildon_file_chooser_dialog_get_safe_folder_uri:
  * @self: a #HildonFileChooserDialog widget.
- * 
+ *
  * Gets safe folder location as uri.
  *
  * Returns: an uri. Free this with #g_free.
@@ -2124,7 +2124,7 @@ gchar *hildon_file_chooser_dialog_get_safe_folder_uri(
     result = gtk_file_system_path_to_uri(fs, path);
     gtk_file_path_free(path);
   }
-  
+
   return result;
 }
 
@@ -2146,7 +2146,7 @@ void hildon_file_chooser_dialog_focus_to_input(HildonFileChooserDialog *d)
  * hildon_file_chooser_dialog_set_show_upnp:
  * @self: a #HildonFileChooserDialog widget.
  * @value: a gboolean value to be set.
- * 
+ *
  * Set whether the dialog shows UPNP locations.
  *
  */
@@ -2158,7 +2158,7 @@ void hildon_file_chooser_dialog_set_show_upnp(
 
   priv = self->priv;
   g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
-								     
+
   g_object_set (priv->filetree, "show-upnp", value, NULL);
 }
 
@@ -2166,7 +2166,7 @@ void hildon_file_chooser_dialog_set_show_upnp(
 /**
  * hildon_file_chooser_dialog_get_show_upnp:
  * @self: a #HildonFileChooserDialog widget.
- * 
+ *
  * Gets whether the dialog shows UPNP locations.
  * Returns: gboolean value..
  *
@@ -2175,12 +2175,12 @@ gboolean hildon_file_chooser_dialog_get_show_upnp (HildonFileChooserDialog *self
 {
   HildonFileChooserDialogPrivate *priv;
   gboolean show_upnp;
-  
+
   g_return_val_if_fail(HILDON_IS_FILE_CHOOSER_DIALOG(self), FALSE);
 
   priv = self->priv;
   g_assert(HILDON_IS_FILE_SELECTION(priv->filetree));
-								     
+
   g_object_get (priv->filetree, "show-upnp", &show_upnp, NULL);
   return show_upnp;
 }

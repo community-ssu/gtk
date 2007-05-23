@@ -21,10 +21,10 @@
  *
  */
 
-/* @file hildon-file-details-dialog.c 
- * 
+/* @file hildon-file-details-dialog.c
+ *
  * This file contains API for Hildon File Details dialog.
- * 
+ *
  */
 
 #include <gtk/gtkcheckbutton.h>
@@ -89,12 +89,12 @@ static void hildon_file_details_dialog_finalize(GObject * object);
 
 static void
 hildon_file_details_dialog_set_property( GObject *object, guint param_id,
-			                                   const GValue *value,
+                                                           const GValue *value,
                                          GParamSpec *pspec );
 static void
 hildon_file_details_dialog_get_property( GObject *object, guint param_id,
-			                                   GValue *value, GParamSpec *pspec );
-static void 
+                                                           GValue *value, GParamSpec *pspec );
+static void
 hildon_file_details_dialog_response(GtkDialog *dialog, gint response_id);
 
 static GtkDialogClass *file_details_dialog_parent_class = NULL;
@@ -133,11 +133,11 @@ static gboolean write_access(const gchar *uri)
 
   /* Get information about file */
   info = gnome_vfs_file_info_new ();
-  if (gnome_vfs_get_file_info(uri, info, 
+  if (gnome_vfs_get_file_info(uri, info,
     GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS) == GNOME_VFS_OK)
 
     /* Detect that the file is writable or not */
-    result = ((info->permissions & GNOME_VFS_PERM_ACCESS_WRITABLE) 
+    result = ((info->permissions & GNOME_VFS_PERM_ACCESS_WRITABLE)
               == GNOME_VFS_PERM_ACCESS_WRITABLE);
 
   gnome_vfs_file_info_unref(info);
@@ -146,7 +146,7 @@ static gboolean write_access(const gchar *uri)
 
 /* When model deletes a file, we check if our reference is still valid.
    If not, we emit response, which usually closes the dialog */
-static void check_validity(GtkTreeModel *model, 
+static void check_validity(GtkTreeModel *model,
   GtkTreePath *path, gpointer data)
 {
   GtkTreeRowReference *ref;
@@ -165,20 +165,20 @@ static void change_state(HildonFileDetailsDialog *self, gboolean readonly)
 
   g_return_if_fail(HILDON_IS_FILE_DETAILS_DIALOG(self));
 
-  /* We fail to get the iterator in cases when the reference is 
+  /* We fail to get the iterator in cases when the reference is
      invalidated, for example when the file is removed. */
   if (hildon_file_details_dialog_get_file_iter(self, &iter))
-  {  
+  {
     gchar *uri;
     GnomeVFSFileInfo *info;
     GnomeVFSResult result;
 
     /* Get the value of cells referenced by a tree_modle */
-    gtk_tree_model_get(GTK_TREE_MODEL(self->priv->model), &iter, 
-      HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);    
+    gtk_tree_model_get(GTK_TREE_MODEL(self->priv->model), &iter,
+      HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &uri, -1);
 
     info = gnome_vfs_file_info_new();
-    result = gnome_vfs_get_file_info(uri, info, 
+    result = gnome_vfs_get_file_info(uri, info,
       GNOME_VFS_FILE_INFO_DEFAULT);
 
     /* Change the file information */
@@ -186,24 +186,24 @@ static void change_state(HildonFileDetailsDialog *self, gboolean readonly)
     {
       if (readonly)
         info->permissions &= ~(S_IWUSR | S_IWGRP | S_IWOTH);
-      else      
+      else
         info->permissions |= (S_IWUSR | S_IWGRP);
-      
-      result = gnome_vfs_set_file_info(uri, info, 
+
+      result = gnome_vfs_set_file_info(uri, info,
           GNOME_VFS_SET_FILE_INFO_PERMISSIONS);
     }
 
     if (result != GNOME_VFS_OK)
       hildon_banner_show_information (GTK_WIDGET (self), NULL,
-				      gnome_vfs_result_to_string (result));
-    
+                                      gnome_vfs_result_to_string (result));
+
     gnome_vfs_file_info_unref(info);
     g_free(uri);
   }
 }
 
 /* Cancel changes if read-only is changed */
-static void 
+static void
 hildon_file_details_dialog_response(GtkDialog *dialog, gint response_id)
 {
     if (response_id == GTK_RESPONSE_CANCEL)
@@ -211,7 +211,7 @@ hildon_file_details_dialog_response(GtkDialog *dialog, gint response_id)
       HildonFileDetailsDialog *self;
       gboolean state;
 
-      self = HILDON_FILE_DETAILS_DIALOG(dialog);  
+      self = HILDON_FILE_DETAILS_DIALOG(dialog);
       state = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(self->priv->file_readonly));
 
       if (state != self->priv->checkbox_original_state)
@@ -222,22 +222,22 @@ hildon_file_details_dialog_response(GtkDialog *dialog, gint response_id)
 static void
 hildon_file_details_dialog_read_only_toggled(GtkWidget *widget, gpointer data)
 {
-  change_state(HILDON_FILE_DETAILS_DIALOG(data), 
+  change_state(HILDON_FILE_DETAILS_DIALOG(data),
     gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)));
 }
 
-static void 
+static void
 hildon_file_details_dialog_map(GtkWidget *widget)
 {
   HildonFileDetailsDialogPrivate *priv;
 
   priv = HILDON_FILE_DETAILS_DIALOG(widget)->priv;
 
-  /* Map the GtkWidget */ 
+  /* Map the GtkWidget */
   GTK_WIDGET_CLASS(file_details_dialog_parent_class)->map(widget);
 
   /* Set the first page as default and
-   * make the GtkNotebook focusable if it shows tabs */ 
+   * make the GtkNotebook focusable if it shows tabs */
   if (gtk_notebook_get_show_tabs(priv->notebook))
   {
     gtk_notebook_set_current_page(priv->notebook, 0);
@@ -274,7 +274,7 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
                                    g_param_spec_object("additional-tab",
                                    "Additional tab",
                                    "Tab to show additinal information",
-			           GTK_TYPE_WIDGET,
+                                   GTK_TYPE_WIDGET,
                                    G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
   /**
    * HildonFileDetailsDialog:show_tabs:
@@ -289,7 +289,7 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
   /**
    * HildonFileDetailsDialog:additional_tab_label:
    *
-   * 
+   *
    */
   g_object_class_install_property( gobject_class, PROP_ADDITIONAL_TAB_LABEL,
                                    g_param_spec_string("additional-tab-label",
@@ -298,19 +298,19 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
                                    NULL, G_PARAM_READWRITE));
 
   g_object_class_install_property(gobject_class, PROP_MODEL,
-                 g_param_spec_object("model", "Model", 
+                 g_param_spec_object("model", "Model",
                  "HildonFileSystemModel to use when fetching information",
                  HILDON_TYPE_FILE_SYSTEM_MODEL, G_PARAM_READWRITE));
 
   /**
    * HildonFileDetailsDialog:enable_read_only_checkbox:
    *
-   * Whether or not to enable the read-only checkbox. 
+   * Whether or not to enable the read-only checkbox.
    */
   g_object_class_install_property(gobject_class,
                  PROP_ENABLE_READONLY_CHECKBOX,
                  g_param_spec_boolean("enable-read-only-checkbox",
-                 "Enable read-only checkbox", 
+                 "Enable read-only checkbox",
                  "Whether or not to enable the read-only checkbox.",
                  TRUE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 
@@ -322,7 +322,7 @@ hildon_file_details_dialog_class_init(HildonFileDetailsDialogClass * klass)
   g_object_class_install_property(gobject_class,
                  PROP_SHOW_TYPE_ICON,
                  g_param_spec_boolean("show-type-icon",
-                 "Show file type icon", 
+                 "Show file type icon",
                  "Whether or not to show the file icon next to the file type.",
                  FALSE, G_PARAM_READWRITE | G_PARAM_CONSTRUCT));
 }
@@ -350,7 +350,7 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     scroll = gtk_scrolled_window_new(NULL, NULL);
     vbox = gtk_vbox_new(FALSE, 0);
     group = gtk_size_group_new(GTK_SIZE_GROUP_BOTH);
-    
+
     priv->tab_label = gtk_label_new(_("sfil_ti_notebook_file"));
     g_object_ref(priv->tab_label);
     g_object_ref_sink (GTK_OBJECT(priv->tab_label));
@@ -370,7 +370,7 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     hbox_type = gtk_hbox_new (FALSE, HILDON_MARGIN_DEFAULT);
     hbox_location = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
     hbox_device = gtk_hbox_new(FALSE, HILDON_MARGIN_DEFAULT);
-    
+
     priv->file_image = gtk_image_new ();
     priv->file_location_image = gtk_image_new();
     priv->file_device_image = gtk_image_new();
@@ -387,30 +387,30 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     gtk_box_pack_start(GTK_BOX(hbox_device), priv->file_device, TRUE, TRUE, 0);
 
     /* Create captions for the dialog */
-    caption_name = hildon_caption_new(group, _("ckdg_fi_properties_name_prompt"), 
+    caption_name = hildon_caption_new(group, _("ckdg_fi_properties_name_prompt"),
       priv->file_name, NULL, HILDON_CAPTION_OPTIONAL);
 #if 0
     caption_type = hildon_caption_new(group,
-				      _("ckdg_fi_properties_type_prompt"), 
-				      priv->file_type, NULL, HILDON_CAPTION_OPTIONAL);
+                                      _("ckdg_fi_properties_type_prompt"),
+                                      priv->file_type, NULL, HILDON_CAPTION_OPTIONAL);
 #else
     caption_type = hildon_caption_new(group,
-				      _("ckdg_fi_properties_type_prompt"), 
-				      hbox_type, NULL, HILDON_CAPTION_OPTIONAL);
+                                      _("ckdg_fi_properties_type_prompt"),
+                                      hbox_type, NULL, HILDON_CAPTION_OPTIONAL);
 #endif
     caption_location = hildon_caption_new(group,
-                               _("sfil_fi_properties_location_prompt"), 
+                               _("sfil_fi_properties_location_prompt"),
                                hbox_location, NULL, HILDON_CAPTION_OPTIONAL);
     caption_device = hildon_caption_new(group,
-                               _("sfil_fi_properties_device_prompt"), 
+                               _("sfil_fi_properties_device_prompt"),
       hbox_device, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_date = hildon_caption_new(group, _("ckdg_fi_properties_date_prompt"), 
+    caption_date = hildon_caption_new(group, _("ckdg_fi_properties_date_prompt"),
       priv->file_date, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_time = hildon_caption_new(group, _("ckdg_fi_properties_time_prompt"), 
+    caption_time = hildon_caption_new(group, _("ckdg_fi_properties_time_prompt"),
       priv->file_time, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_size = hildon_caption_new(group, _("ckdg_fi_properties_size_prompt"), 
+    caption_size = hildon_caption_new(group, _("ckdg_fi_properties_size_prompt"),
       priv->file_size, NULL, HILDON_CAPTION_OPTIONAL);
-    caption_read = hildon_caption_new(group, _("ckdg_fi_properties_read_only"), 
+    caption_read = hildon_caption_new(group, _("ckdg_fi_properties_read_only"),
       priv->file_readonly, NULL, HILDON_CAPTION_OPTIONAL);
 
     hildon_caption_set_separator(HILDON_CAPTION(caption_name), "");
@@ -435,9 +435,9 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     gtk_box_pack_start(GTK_BOX(vbox), caption_read, FALSE, TRUE, 0);
 
     gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(scroll), vbox);
-    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll), 
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(scroll),
         GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-    gtk_container_set_border_width(GTK_CONTAINER(scroll), 
+    gtk_container_set_border_width(GTK_CONTAINER(scroll),
         HILDON_MARGIN_DEFAULT);
     /* Both scrolled window and viewport have separate shadows... */
     gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scroll),
@@ -446,12 +446,12 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
         GTK_VIEWPORT(gtk_bin_get_child(GTK_BIN(scroll))),
         GTK_SHADOW_NONE);
 
-    gtk_container_set_focus_vadjustment(GTK_CONTAINER(vbox), 
+    gtk_container_set_focus_vadjustment(GTK_CONTAINER(vbox),
       gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scroll)));
 
     /* Populate dialog */
     gtk_notebook_append_page(priv->notebook, scroll,
-			     gtk_label_new(_("sfil_ti_notebook_common")));
+                             gtk_label_new(_("sfil_ti_notebook_common")));
 
     gtk_box_pack_start(GTK_BOX(GTK_DIALOG(self)->vbox),
                        GTK_WIDGET(priv->notebook), TRUE, TRUE, 0);
@@ -465,11 +465,11 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
     geometry.max_height = 240 + (2 * HILDON_MARGIN_DEFAULT);
 
     gtk_window_set_geometry_hints(GTK_WINDOW(self),
-				  GTK_WIDGET(priv->notebook), &geometry,
-				  GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
+                                  GTK_WIDGET(priv->notebook), &geometry,
+                                  GDK_HINT_MIN_SIZE | GDK_HINT_MAX_SIZE);
 
     gtk_window_set_title (GTK_WINDOW (self), _("sfil_ti_file_details"));
-			  
+
     gtk_widget_show_all(GTK_WIDGET(priv->notebook));
 
     priv->ok_button = gtk_dialog_add_button(GTK_DIALOG(self),
@@ -479,8 +479,8 @@ hildon_file_details_dialog_init(HildonFileDetailsDialog *self)
                           _("sfil_bd_filetype_details_dialog_cancel"),
                           GTK_RESPONSE_CANCEL);
 
-    priv->toggle_handler = g_signal_connect(priv->file_readonly, "toggled", 
-      G_CALLBACK(hildon_file_details_dialog_read_only_toggled), 
+    priv->toggle_handler = g_signal_connect(priv->file_readonly, "toggled",
+      G_CALLBACK(hildon_file_details_dialog_read_only_toggled),
       self);
 }
 
@@ -497,7 +497,7 @@ hildon_file_details_dialog_set_property(GObject *object, guint param_id,
   notebook = priv->notebook;
   label = GTK_LABEL(priv->tab_label);
 
-  switch( param_id ) 
+  switch( param_id )
   {
     case PROP_SHOW_TABS:
     {
@@ -509,19 +509,19 @@ hildon_file_details_dialog_set_property(GObject *object, guint param_id,
     {
       GtkWidget *widget = g_value_get_object(value);
       GtkWidget *sw = gtk_scrolled_window_new(NULL, NULL);
-      
+
       if (gtk_notebook_get_n_pages(notebook) == 2)
         gtk_notebook_remove_page(notebook, 1);
 
       if (widget == NULL)
       {
-        widget = g_object_new(GTK_TYPE_LABEL, 
+        widget = g_object_new(GTK_TYPE_LABEL,
             "label", _("sfil_ia_filetype_no_details"), "yalign", 0.0f, NULL);
         gtk_widget_show(widget);
       }
 
       gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(sw),
-				     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+                                     GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
       gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(sw), widget);
       gtk_viewport_set_shadow_type(GTK_VIEWPORT(GTK_BIN(sw)->child),
                                    GTK_SHADOW_NONE);
@@ -551,7 +551,7 @@ hildon_file_details_dialog_set_property(GObject *object, guint param_id,
           priv->delete_handler = g_signal_connect(priv->model, "row-deleted",
             G_CALLBACK(check_validity), object);
         }
-      }  
+      }
       break;
     }
     case PROP_ENABLE_READONLY_CHECKBOX:
@@ -563,9 +563,9 @@ hildon_file_details_dialog_set_property(GObject *object, guint param_id,
     case PROP_SHOW_TYPE_ICON:
     {
       if (g_value_get_boolean(value))
-	gtk_widget_show (priv->file_image);
+        gtk_widget_show (priv->file_image);
       else
-	gtk_widget_hide (priv->file_image);
+        gtk_widget_hide (priv->file_image);
       break;
     }
     default:
@@ -576,19 +576,19 @@ hildon_file_details_dialog_set_property(GObject *object, guint param_id,
 
 static void
 hildon_file_details_dialog_get_property( GObject *object, guint param_id,
-			                                   GValue *value, GParamSpec *pspec )
+                                                           GValue *value, GParamSpec *pspec )
 {
   HildonFileDetailsDialogPrivate *priv;
 
   priv = HILDON_FILE_DETAILS_DIALOG(object)->priv;
 
-  switch (param_id) 
+  switch (param_id)
   {
     case PROP_SHOW_TABS:
       g_value_set_boolean(value, gtk_notebook_get_show_tabs(priv->notebook));
       break;
     case PROP_ADDITIONAL_TAB:
-      g_assert(gtk_notebook_get_n_pages(priv->notebook) == 2);        
+      g_assert(gtk_notebook_get_n_pages(priv->notebook) == 2);
       g_value_set_object(value, gtk_notebook_get_nth_page(priv->notebook, 1));
       break;
     case PROP_ADDITIONAL_TAB_LABEL:
@@ -622,7 +622,7 @@ static void hildon_file_details_dialog_finalize(GObject * object)
     g_object_unref(priv->tab_label);
   if (priv->active_file)
     gtk_tree_row_reference_free(priv->active_file);
-    
+
   G_OBJECT_CLASS(file_details_dialog_parent_class)->finalize(object);
 }
 
@@ -635,7 +635,7 @@ static void hildon_file_details_dialog_finalize(GObject * object)
  * @parent: the parent window.
  * @filename: the filename.
  *
- * Creates a new #hildon_file_details_dialog AND new underlying 
+ * Creates a new #hildon_file_details_dialog AND new underlying
  * HildonFileSystemModel. Be carefull with #filename
  * parameter: You don't get any notification if something fails.
  * THIS FUNCTION IS DEPRICATED AND PROVIDED ONLY FOR
@@ -654,10 +654,10 @@ GtkWidget *hildon_file_details_dialog_new(GtkWindow * parent,
   model = g_object_new(HILDON_TYPE_FILE_SYSTEM_MODEL, NULL);
 
   dialog =
-        g_object_new(HILDON_TYPE_FILE_DETAILS_DIALOG, 
+        g_object_new(HILDON_TYPE_FILE_DETAILS_DIALOG,
           "has-separator", FALSE, "model", model, NULL);
 
-  if (filename && filename[0] && 
+  if (filename && filename[0] &&
     hildon_file_system_model_load_local_path(dialog->priv->model, filename, &iter))
       hildon_file_details_dialog_set_file_iter(dialog, &iter);
 
@@ -767,7 +767,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
       to hardcode */
   strftime(buffer, sizeof(buffer), "%X", time_struct);
   g_object_set(self->priv->file_time, "label", buffer, NULL);
-  
+
   /* If format is passed directly to strftime, gcc complains about
       that some locales use only 2 digit year numbers. Using
       a temporary disable this warning (from strftime man page) */
@@ -784,12 +784,12 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
        -1);
     if (icon)
       {
-	gtk_image_set_from_pixbuf (GTK_IMAGE (self->priv->file_image),
-				   icon);
-	g_object_unref (icon);
+        gtk_image_set_from_pixbuf (GTK_IMAGE (self->priv->file_image),
+                                   icon);
+        g_object_unref (icon);
       }
   }
-      
+
   /* Parent information */
   if (gtk_tree_model_iter_parent(model, &parent_iter, iter))
   {
@@ -799,13 +799,13 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
     gtk_tree_model_get(model, &parent_iter,
       HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME, &location_name,
       HILDON_FILE_SYSTEM_MODEL_COLUMN_URI, &parent_path,
-      HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON, &location_icon, -1);      
+      HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON, &location_icon, -1);
 
     if (parent_path)
       location_readonly = !write_access(parent_path);
 
     gtk_label_set_text(GTK_LABEL(self->priv->file_location), location_name);
-    gtk_image_set_from_pixbuf(GTK_IMAGE(self->priv->file_location_image), 
+    gtk_image_set_from_pixbuf(GTK_IMAGE(self->priv->file_location_image),
       location_icon);
 
     if (G_IS_OBJECT(location_icon))
@@ -823,17 +823,17 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
 
       if (gtk_tree_model_iter_parent(model, &temp_iter, &parent_iter))
         parent_iter = temp_iter;
-      else 
+      else
         break;
-    }   
+    }
 
     gtk_tree_model_get(model, &parent_iter,
-      HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME, &location_name, 
-      HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON, &location_icon, 
+      HILDON_FILE_SYSTEM_MODEL_COLUMN_DISPLAY_NAME, &location_name,
+      HILDON_FILE_SYSTEM_MODEL_COLUMN_ICON, &location_icon,
       -1);
 
     gtk_label_set_text(GTK_LABEL(self->priv->file_device), location_name);
-    gtk_image_set_from_pixbuf(GTK_IMAGE(self->priv->file_device_image), 
+    gtk_image_set_from_pixbuf(GTK_IMAGE(self->priv->file_device_image),
       location_icon);
 
     if (G_IS_OBJECT(location_icon))
@@ -841,7 +841,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
     g_free(location_name);
     g_free(parent_path);
   }
-  else 
+  else
   {   /* We really should not come here */
       gtk_label_set_text(GTK_LABEL(self->priv->file_location), "");
       gtk_image_set_from_pixbuf(GTK_IMAGE(self->priv->file_location_image), NULL);
@@ -852,7 +852,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   /* We do not want initial setting to cause any action */
   g_signal_handler_block(self->priv->file_readonly, self->priv->toggle_handler);
 
-  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(self->priv->file_readonly), 
+  gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(self->priv->file_readonly),
     location_readonly || !write_access(uri));
   gtk_widget_set_sensitive(self->priv->file_readonly, !location_readonly);
 
@@ -875,7 +875,7 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
  *
  * Returns: %TRUE, if dialog is displaying some information.
  */
-gboolean 
+gboolean
 hildon_file_details_dialog_get_file_iter(HildonFileDetailsDialog *self, GtkTreeIter *iter)
 {
   GtkTreePath *path;
@@ -888,9 +888,9 @@ hildon_file_details_dialog_get_file_iter(HildonFileDetailsDialog *self, GtkTreeI
   path = gtk_tree_row_reference_get_path(self->priv->active_file);
   if (!path)
     return FALSE;
-  
+
   result = gtk_tree_model_get_iter(GTK_TREE_MODEL(self->priv->model), iter, path);
-  gtk_tree_path_free(path);  
+  gtk_tree_path_free(path);
 
   return result;
 }

@@ -20,7 +20,7 @@
  * 02110-1301 USA
  *
  */
- 
+
 /*
  * hildon-file-system-private.c
  *
@@ -55,8 +55,8 @@ extern GtkFileSystem *gtk_file_system_unix_new();
  * not ending to slash */
 gboolean
 _hildon_file_system_compare_ignore_last_separator(const char *a,
-						  const char *b)
-{        
+                                                  const char *b)
+{
     gint len_a, len_b;
 
     if (a == NULL || b == NULL)
@@ -99,17 +99,17 @@ static gchar *get_local_device_root_path(void)
     if (env && env[0])
         return g_strdup(env);
 
-    /* g_getenv uses $HOME as last resort. Normally it returns home 
+    /* g_getenv uses $HOME as last resort. Normally it returns home
        directory defined in passwd database. We want to use $HOME
        when possible. */
     env = g_getenv("HOME");
 
-    return g_build_path(G_DIR_SEPARATOR_S, 
-              (env && env[0]) ? env : g_get_home_dir(), 
+    return g_build_path(G_DIR_SEPARATOR_S,
+              (env && env[0]) ? env : g_get_home_dir(),
               "MyDocs", NULL);
 }
 
-static GNode *setup_safe_folder(GNode *parent, const gchar *root_path, 
+static GNode *setup_safe_folder(GNode *parent, const gchar *root_path,
     const gchar *relative_path, const gchar *title, const gchar *icon,
     HildonFileSystemModelItemType type)
 {
@@ -149,12 +149,12 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
         gchar *rootpath;
         GNode *rootnode;
 
-	/* Invisible root node
-	   above everything else */
+        /* Invisible root node
+           above everything else */
 
-	location = g_object_new (HILDON_TYPE_FILE_SYSTEM_ROOT, NULL);
-	location->basepath = g_strdup ("");
-        locations = g_node_new (location); 
+        location = g_object_new (HILDON_TYPE_FILE_SYSTEM_ROOT, NULL);
+        location->basepath = g_strdup ("");
+        locations = g_node_new (location);
 
         rootpath =  get_local_device_root_path();
 
@@ -165,19 +165,19 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
         g_node_append(locations, rootnode);
 
         /* Setup safe folders */
-        setup_safe_folder(rootnode, rootpath, ".images", 
+        setup_safe_folder(rootnode, rootpath, ".images",
             _("sfil_li_folder_images"), "qgn_list_filesys_image_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_IMAGES);
-        setup_safe_folder(rootnode, rootpath, ".videos", 
+        setup_safe_folder(rootnode, rootpath, ".videos",
             _("sfil_li_folder_video_clips"), "qgn_list_filesys_video_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_VIDEOS);
-        setup_safe_folder(rootnode, rootpath, ".sounds", 
+        setup_safe_folder(rootnode, rootpath, ".sounds",
             _("sfil_li_folder_sound_clips"), "qgn_list_filesys_audio_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_SOUNDS);
-        setup_safe_folder(rootnode, rootpath, ".documents", 
+        setup_safe_folder(rootnode, rootpath, ".documents",
             _("sfil_li_folder_documents"), "qgn_list_filesys_doc_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_DOCUMENTS);
-        setup_safe_folder(rootnode, rootpath, ".games", 
+        setup_safe_folder(rootnode, rootpath, ".games",
             _("sfil_li_folder_games"), "qgn_list_filesys_games_fldr",
             HILDON_FILE_SYSTEM_MODEL_SAFE_FOLDER_GAMES);
 
@@ -189,7 +189,7 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
             location = g_object_new(HILDON_TYPE_FILE_SYSTEM_UPNP, NULL);
             location->basepath = g_strdup(env);
             g_node_append_data(locations, location);
-        }    
+        }
 
         if (!g_getenv("DISABLE_GATEWAY")) {
             /* Setup gateway */
@@ -202,16 +202,16 @@ GNode *_hildon_file_system_get_locations(GtkFileSystem *fs)
                 location = g_object_new(HILDON_TYPE_FILE_SYSTEM_OBEX, NULL);
                 location->basepath = g_strdup(env);
                 g_node_append_data(locations, location);
-            }    
+            }
         }
 
-	/* Setup SMB
-	 */
-	{
-	  location = g_object_new (HILDON_TYPE_FILE_SYSTEM_SMB, NULL);
-	  location->basepath = g_strdup ("smb://");
-	  g_node_append_data (locations, location);
-	}
+        /* Setup SMB
+         */
+        {
+          location = g_object_new (HILDON_TYPE_FILE_SYSTEM_SMB, NULL);
+          location->basepath = g_strdup ("smb://");
+          g_node_append_data (locations, location);
+        }
     }
 
     return locations;
@@ -229,7 +229,7 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
     HildonFileSystemSpecialLocation *candidate = node->data;
     CallbackData *searched = data;
 
-    if (candidate) { 
+    if (candidate) {
         /* Check if the searched uri exactly matches this location OR
           is under this location. It might be a dynamic device in that case */
         gint len_cand = strlen(candidate->basepath);
@@ -237,26 +237,26 @@ static gboolean get_special_location_callback(GNode *node, gpointer data)
         if (len_cand > 1 && candidate->basepath[len_cand - 1] == G_DIR_SEPARATOR)
           len_cand--;
 
-        if (searched->len_uri >= len_cand && g_ascii_strncasecmp(searched->uri, 
-                candidate->basepath, len_cand) == 0) 
+        if (searched->len_uri >= len_cand && g_ascii_strncasecmp(searched->uri,
+                candidate->basepath, len_cand) == 0)
         {
             if (searched->len_uri == len_cand) {
                 searched->result = g_object_ref(candidate);
                 searched->is_child = FALSE;
             } else if (len_cand == 0
-		       || searched->uri[len_cand] == G_DIR_SEPARATOR) {
+                       || searched->uri[len_cand] == G_DIR_SEPARATOR) {
                 searched->result =
                     hildon_file_system_special_location_create_child_location(
                     candidate, searched->uri);
                 searched->is_child = TRUE;
-		if (searched->result)
-		  {
-		    g_object_ref (searched->result);
-		    g_node_append_data (node, searched->result);
-		  }
+                if (searched->result)
+                  {
+                    g_object_ref (searched->result);
+                    g_node_append_data (node, searched->result);
+                  }
             }
 
-	    return searched->result != NULL;
+            return searched->result != NULL;
         }
     }
 
@@ -273,14 +273,14 @@ _hildon_file_system_get_special_location(GtkFileSystem *fs,
     locations = _hildon_file_system_get_locations(fs);
     data.uri = gtk_file_system_path_to_uri(fs, path);
     data.result = NULL;
-    
+
     if (data.uri) {
         /* Let's precalculate the length for the entire search */
         data.len_uri = strlen(data.uri);
         if (data.len_uri > 1 && data.uri[data.len_uri - 1] == G_DIR_SEPARATOR)
           data.len_uri--;
 
-        g_node_traverse(locations, G_POST_ORDER, G_TRAVERSE_ALL, -1, 
+        g_node_traverse(locations, G_POST_ORDER, G_TRAVERSE_ALL, -1,
             get_special_location_callback, &data);
         g_free(data.uri);
     }
@@ -326,10 +326,10 @@ static guint cache_element_hash(gconstpointer a)
   return g_str_hash(e->name) ^ e->size;
 }
 
-static gboolean find_finalized_icon(gpointer key, gpointer value, 
+static gboolean find_finalized_icon(gpointer key, gpointer value,
   gpointer data)
 {
-  return value == data;  
+  return value == data;
 }
 
 static void icon_finalized(gpointer data, GObject *finalized_icon)
@@ -348,7 +348,7 @@ static void icon_finalized(gpointer data, GObject *finalized_icon)
 
 static void unref_all_helper(gpointer key, gpointer value, gpointer data)
 {
-  g_object_weak_unref(G_OBJECT(value), icon_finalized, NULL);  
+  g_object_weak_unref(G_OBJECT(value), icon_finalized, NULL);
 }
 
 static void cache_finalize(gpointer data)
@@ -357,7 +357,7 @@ static void cache_finalize(gpointer data)
 
   ULOG_INFO(__FUNCTION__);
 
-  g_hash_table_foreach(cache, unref_all_helper, NULL); 
+  g_hash_table_foreach(cache, unref_all_helper, NULL);
   g_hash_table_destroy(cache);
 }
 
@@ -388,7 +388,7 @@ static GdkPixbuf *_hildon_file_system_lookup_icon_cached(GtkIconTheme *theme,
   return g_hash_table_lookup(get_cache(theme), &key);
 }
 
-static void _hildon_file_system_insert_icon(GtkIconTheme *theme, 
+static void _hildon_file_system_insert_icon(GtkIconTheme *theme,
   const gchar *name, gint size, GdkPixbuf *icon)
 {
   CacheElement *key;
@@ -404,12 +404,12 @@ static void _hildon_file_system_insert_icon(GtkIconTheme *theme,
 }
 
 GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
-						const gchar *name,
-						gint size)
+                                                const gchar *name,
+                                                gint size)
 {
   GdkPixbuf *pixbuf;
 
-  pixbuf = _hildon_file_system_lookup_icon_cached(theme, name, size);  
+  pixbuf = _hildon_file_system_lookup_icon_cached(theme, name, size);
 
   if (!pixbuf)
   {
@@ -426,11 +426,11 @@ GdkPixbuf *_hildon_file_system_load_icon_cached(GtkIconTheme *theme,
 }
 
 GdkPixbuf *
-_hildon_file_system_create_image (GtkFileSystem *fs, 
-				  GtkWidget *ref_widget,
-				  GtkFileInfo *info,
-				  HildonFileSystemSpecialLocation *location,
-				  gint size)
+_hildon_file_system_create_image (GtkFileSystem *fs,
+                                  GtkWidget *ref_widget,
+                                  GtkFileInfo *info,
+                                  HildonFileSystemSpecialLocation *location,
+                                  gint size)
 {
     if (!ref_widget)
         return NULL;
@@ -480,28 +480,28 @@ hex_digit_to_int (char d)
     return d - 'A' + 10;
   return -1;
 }
- 
+
 static char *
 unescape_string (const char *escaped)
 {
   char *result = g_strdup (escaped);
   char *a, *b;
-  
+
   a = b = result;
   while (*a)
     {
       if (a[0] == '%' && a[1] != '\0' && a[2] != '\0')
-	{
-	  int d1 = hex_digit_to_int (a[1]), d2 = hex_digit_to_int (a[2]);
-	  int c = 16*d1 + d2;
+        {
+          int d1 = hex_digit_to_int (a[1]), d2 = hex_digit_to_int (a[2]);
+          int c = 16*d1 + d2;
 
-	  if (d1 >= 0 && d2 >= 0 && c != 0)
-	    {
-	      a += 3;
-	      *b++ = c;
-	      continue;
-	    }
-	}
+          if (d1 >= 0 && d2 >= 0 && c != 0)
+            {
+              a += 3;
+              *b++ = c;
+              continue;
+            }
+        }
 
       *b++ = *a++;
     }
@@ -512,9 +512,9 @@ unescape_string (const char *escaped)
 
 gchar *
 _hildon_file_system_create_file_name (GtkFileSystem *fs,
-				      const GtkFilePath *path,
-				      HildonFileSystemSpecialLocation *location, 
-				      GtkFileInfo *info)
+                                      const GtkFilePath *path,
+                                      HildonFileSystemSpecialLocation *location,
+                                      GtkFileInfo *info)
 {
   if (location) {
     char *name;
@@ -522,7 +522,7 @@ _hildon_file_system_create_file_name (GtkFileSystem *fs,
     if (name) return name;
   }
 
-  if (info)  
+  if (info)
     return g_strdup(gtk_file_info_get_display_name(info));
 
   return unescape_string (get_custom_root_name (path));
@@ -530,14 +530,14 @@ _hildon_file_system_create_file_name (GtkFileSystem *fs,
 
 gchar *
 _hildon_file_system_create_display_name(GtkFileSystem *fs,
-  const GtkFilePath *path, HildonFileSystemSpecialLocation *location, 
+  const GtkFilePath *path, HildonFileSystemSpecialLocation *location,
   GtkFileInfo *info)
 {
   gboolean only_known, is_folder;
   const gchar *mime_type;
   gchar *str, *dot;
 
-  str = _hildon_file_system_create_file_name(fs, path, location, info);   
+  str = _hildon_file_system_create_file_name(fs, path, location, info);
 
   if (info)
   {
@@ -558,7 +558,7 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
        out that bookmarks do have a different mime type:
        x-directory-normal.  (Doesn't make any sense, but nothing does
        in this universe.)
-       
+
        So, until we beat some sense into the bookmark backend, we
        catch the special case of items that are not a folder according
        to gtk_file_info_get_is_folder, but have a mime-type of
@@ -581,7 +581,7 @@ _hildon_file_system_create_display_name(GtkFileSystem *fs,
   return str;
 }
 
-GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs, 
+GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs,
   HildonFileSystemSpecialLocation *location)
 {
   g_assert(HILDON_IS_FILE_SYSTEM_SPECIAL_LOCATION(location));
@@ -590,7 +590,7 @@ GtkFilePath *_hildon_file_system_path_for_location(GtkFileSystem *fs,
 
 /* You can omit either type or base */
 GtkFileSystemVolume *
-_hildon_file_system_get_volume_for_location(GtkFileSystem *fs, 
+_hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
     HildonFileSystemSpecialLocation *location)
 {
     GSList *volumes, *iter;
@@ -614,7 +614,7 @@ _hildon_file_system_get_volume_for_location(GtkFileSystem *fs,
            _hildon_file_system_compare_ignore_last_separator(path_a, path_b))
           result = vol;
         else
-          gtk_file_system_volume_free(fs, vol); 
+          gtk_file_system_volume_free(fs, vol);
 
         gtk_file_path_free(path);
       }
@@ -630,13 +630,13 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
     GtkFileSystem *result = NULL;
     gchar *default_name = NULL;
 
-    /* Let's load a backend module. If user has given a name, we'll try to 
+    /* Let's load a backend module. If user has given a name, we'll try to
        load it. Otherwise we'll try the default module. As a last resort
        we'll create normal unix backend (if faalback is asked) */
 
     if (!name) {
         static gboolean not_installed = TRUE;
-        GtkSettings *settings;        
+        GtkSettings *settings;
 
         if (not_installed)
         {
@@ -667,11 +667,11 @@ GtkFileSystem *hildon_file_system_create_backend(const gchar *name, gboolean use
     return result;
 }
 
-/* 
+/*
    Giving MIME type is optional (when saving files we have to remove extension
-   as well, but we do not have mime-information available). 
-   * If not given, then extension db if just searched completely. 
-   * If given, then only matching mime-types are searched 
+   as well, but we do not have mime-information available).
+   * If not given, then extension db if just searched completely.
+   * If given, then only matching mime-types are searched
 */
 
 /* known types are stored into list of these structs (with longest types first) */
@@ -683,7 +683,7 @@ typedef struct
 
 static gint mime_list_insert(gconstpointer a, gconstpointer b)
 {
-  return strlen(((MimeType *) b)->extension) - 
+  return strlen(((MimeType *) b)->extension) -
          strlen(((MimeType *) a)->extension);
 }
 
@@ -693,7 +693,7 @@ get_known_mime_types ()
   static GSList *types = NULL;
   MimeType *type;
   gint len;
-  
+
   /* Initialize suffix hash table from /usr/share/mime/globs */
   if (!types)
   {
@@ -711,8 +711,8 @@ get_known_mime_types ()
         len = strlen(line);
         if (line[len - 1] == '\n') line[len - 1] = 0;
         sep = strstr(line, ":*.");
-      	if (sep == NULL) continue;
-        *sep = 0; /* Clear colon */ 
+              if (sep == NULL) continue;
+        *sep = 0; /* Clear colon */
 
         type = g_new(MimeType, 1);
         type->extension = g_strdup(sep + 2);
@@ -735,12 +735,12 @@ get_known_mime_types ()
 
 gchar *
 _hildon_file_system_search_extension (gchar *name,
-				      gboolean only_known,
-				      gboolean is_folder)
+                                      gboolean only_known,
+                                      gboolean is_folder)
 {
   if (name == NULL)
     return NULL;
-  
+
   if (is_folder)
     {
       /* Folders don't have extensions; any dot is part of the name.
@@ -755,32 +755,32 @@ _hildon_file_system_search_extension (gchar *name,
       GSList *iter;
 
       /* We must search possible extensions from the list that match a
-	 suffix of the given name.  The list is sorted from longest to
-	 shortest extension so that we are guaranteed to find the
-	 longest matching extension.
+         suffix of the given name.  The list is sorted from longest to
+         shortest extension so that we are guaranteed to find the
+         longest matching extension.
       */
 
       types = get_known_mime_types ();
       len = strlen(name);
       for (iter = types; iter; iter = iter->next)
-	{
-	  gchar *candidate;
-	  type = iter->data;
-	  
-	  candidate = name + len - strlen(type->extension);
-	  if (name <= candidate
-	      && g_ascii_strcasecmp (candidate, type->extension) == 0)
-	    return candidate;
-	}
-      
+        {
+          gchar *candidate;
+          type = iter->data;
+
+          candidate = name + len - strlen(type->extension);
+          if (name <= candidate
+              && g_ascii_strcasecmp (candidate, type->extension) == 0)
+            return candidate;
+        }
+
       /* If we haven't found any known extension, we use the part
-	 after the last dot as the extension, but only if that is
-	 wanted.
+         after the last dot as the extension, but only if that is
+         wanted.
       */
       if (only_known)
-	return NULL;
+        return NULL;
       else
-	return g_strrstr (name, ".");
+        return g_strrstr (name, ".");
     }
 }
 
@@ -797,9 +797,9 @@ _hildon_file_system_is_known_extension (const gchar *ext)
   for (iter = types; iter; iter = iter->next)
     {
       type = iter->data;
-      
+
       if (g_ascii_strcasecmp (ext, type->extension) == 0)
-	return TRUE;
+        return TRUE;
     }
 
   return FALSE;

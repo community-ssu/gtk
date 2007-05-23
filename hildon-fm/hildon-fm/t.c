@@ -25,17 +25,17 @@ list_gnome_vfs_volumes ()
       GnomeVFSVolume *volume = volumes->data;
 
       if (gnome_vfs_volume_is_user_visible (volume)
-	  && gnome_vfs_volume_is_mounted (volume))
-	fprintf (stderr, 
-		 " %s %s\n",
-		 gnome_vfs_volume_get_device_path (volume),
-		 gnome_vfs_volume_get_activation_uri (volume));
+          && gnome_vfs_volume_is_mounted (volume))
+        fprintf (stderr,
+                 " %s %s\n",
+                 gnome_vfs_volume_get_device_path (volume),
+                 gnome_vfs_volume_get_activation_uri (volume));
       else
-	fprintf (stderr, 
-		 " (%s %s)\n",
-		 gnome_vfs_volume_get_device_path (volume),
-		 gnome_vfs_volume_get_activation_uri (volume));
-      
+        fprintf (stderr,
+                 " (%s %s)\n",
+                 gnome_vfs_volume_get_device_path (volume),
+                 gnome_vfs_volume_get_activation_uri (volume));
+
       volumes = volumes->next;
     }
 
@@ -45,17 +45,17 @@ list_gnome_vfs_volumes ()
       GnomeVFSDrive *drive = drives->data;
 
       if (gnome_vfs_drive_is_user_visible (drive)
-	  && gnome_vfs_drive_is_connected (drive)
-	  && !gnome_vfs_drive_is_mounted (drive))
-	fprintf (stderr, 
-		 " %s\n",
-		 gnome_vfs_drive_get_device_path (drive));
+          && gnome_vfs_drive_is_connected (drive)
+          && !gnome_vfs_drive_is_mounted (drive))
+        fprintf (stderr,
+                 " %s\n",
+                 gnome_vfs_drive_get_device_path (drive));
       else
-	fprintf (stderr, 
-		 " (%s)\n",
-		 gnome_vfs_drive_get_device_path (drive));
-	
-      
+        fprintf (stderr,
+                 " (%s)\n",
+                 gnome_vfs_drive_get_device_path (drive));
+
+
       drives = drives->next;
     }
 
@@ -82,7 +82,7 @@ main (int argc, char **argv)
   volumes_changed ();
 
   g_signal_connect (fs, "volumes_changed",
-		    G_CALLBACK (volumes_changed), NULL);
+                    G_CALLBACK (volumes_changed), NULL);
 
   gtk_main ();
   return 0;

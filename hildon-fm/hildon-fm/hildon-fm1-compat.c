@@ -26,8 +26,8 @@
 
 gboolean
 hildon_file_selection_set_current_folder (HildonFileSelection *self,
-					  const GtkFilePath *folder,
-					  GError **error)
+                                          const GtkFilePath *folder,
+                                          GError **error)
 {
   return _hildon_file_selection_set_current_folder_path (self, folder, error);
 }
@@ -40,15 +40,15 @@ hildon_file_selection_get_current_folder (HildonFileSelection *self)
 
 gboolean
 hildon_file_selection_select_path (HildonFileSelection *self,
-				   const GtkFilePath *path,
-				   GError **error)
+                                   const GtkFilePath *path,
+                                   GError **error)
 {
   return _hildon_file_selection_select_path (self, path, error);
 }
 
 void
 hildon_file_selection_unselect_path (HildonFileSelection *self,
-				     const GtkFilePath *path)
+                                     const GtkFilePath *path)
 {
   return _hildon_file_selection_unselect_path (self, path);
 }
@@ -70,12 +70,12 @@ hildon_file_selection_get_selected_paths (HildonFileSelection *self)
     return NULL;
 
   uris = hildon_file_selection_get_selected_uris (self);
-  
+
   for (elt = uris; elt; elt = elt->next)
     {
       char *uri = (char *)elt->data;
       paths = g_slist_prepend (paths,
-			       gtk_file_system_uri_to_path (fs, uri));
+                               gtk_file_system_uri_to_path (fs, uri));
       g_free (uri);
     }
   g_slist_free (uris);

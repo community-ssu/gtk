@@ -1,3 +1,7 @@
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
+	Tabs to 8 spaces, remove trailing spaces
+
 2007-05-22  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.23

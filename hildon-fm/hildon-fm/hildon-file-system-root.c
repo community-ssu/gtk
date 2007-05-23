@@ -44,11 +44,11 @@ hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
 
 static GtkFileSystemHandle *
 hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
-				    GtkFileSystem                *filesystem,
-				    const GtkFilePath              *path,
-				    GtkFileInfoType                 types,
-				    GtkFileSystemGetFolderCallback  callback,
-				    gpointer                        data);
+                                    GtkFileSystem                *filesystem,
+                                    const GtkFilePath              *path,
+                                    GtkFileInfoType                 types,
+                                    GtkFileSystemGetFolderCallback  callback,
+                                    gpointer                        data);
 
 static HildonFileSystemSpecialLocation*
 hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
@@ -84,13 +84,13 @@ hildon_file_system_root_volumes_changed (HildonFileSystemSpecialLocation
 
 HildonFileSystemSpecialLocation*
 hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
-					       *location, gchar *uri)
+                                               *location, gchar *uri)
 {
   HildonFileSystemSpecialLocation *child = NULL;
 
   if (g_str_has_prefix (uri, "drive://")
       || (g_str_has_prefix (uri, "file:///media/")
-	  && strchr (uri + 14, '/') == NULL))
+          && strchr (uri + 14, '/') == NULL))
     {
       child = g_object_new (HILDON_TYPE_FILE_SYSTEM_VOLDEV, NULL);
       child->basepath = g_strdup (uri);
@@ -131,16 +131,16 @@ static void root_file_folder_init (RootFileFolder *impl);
 static void root_file_folder_finalize (GObject *object);
 
 static GtkFileInfo *root_file_folder_get_info (GtkFileFolder  *folder,
-					     const GtkFilePath    *path,
-					     GError        **error);
+                                             const GtkFilePath    *path,
+                                             GError        **error);
 static gboolean root_file_folder_list_children (GtkFileFolder  *folder,
-					      GSList        **children,
-					      GError        **error);
+                                              GSList        **children,
+                                              GError        **error);
 static gboolean root_file_folder_is_finished_loading (GtkFileFolder *folder);
 
 G_DEFINE_TYPE_WITH_CODE (RootFileFolder, root_file_folder, G_TYPE_OBJECT,
-			 G_IMPLEMENT_INTERFACE (GTK_TYPE_FILE_FOLDER,
-						root_file_folder_iface_init))
+                         G_IMPLEMENT_INTERFACE (GTK_TYPE_FILE_FOLDER,
+                                                root_file_folder_iface_init))
 
 static void
 root_file_folder_class_init (RootFileFolderClass *class)
@@ -178,8 +178,8 @@ root_file_folder_finalize (GObject *object)
 
 static GtkFileInfo *
 root_file_folder_get_info (GtkFileFolder      *folder,
-			   const GtkFilePath  *path,
-			   GError            **error)
+                           const GtkFilePath  *path,
+                           GError            **error)
 {
   GtkFileInfo *info;
 
@@ -188,16 +188,16 @@ root_file_folder_get_info (GtkFileFolder      *folder,
 
   info = gtk_file_info_new ();
   gtk_file_info_set_display_name (info,
-				  g_basename
-				  (gtk_file_path_get_string (path)));
+                                  g_basename
+                                  (gtk_file_path_get_string (path)));
   gtk_file_info_set_is_folder (info, TRUE);
   return info;
 }
 
 static gboolean
 root_file_folder_list_children (GtkFileFolder  *folder,
-				GSList        **children,
-				GError        **error)
+                                GSList        **children,
+                                GError        **error)
 {
   RootFileFolder *root_folder = ROOT_FILE_FOLDER (folder);
   GtkFileSystem *fs = root_folder->filesystem;
@@ -215,11 +215,11 @@ root_file_folder_list_children (GtkFileFolder  *folder,
       GnomeVFSVolume *volume = v->data;
 
       if (gnome_vfs_volume_is_user_visible (volume))
-	{
-	  const char *uri = gnome_vfs_volume_get_activation_uri (volume);
-	  *children = g_slist_append (*children,
-				      gtk_file_system_uri_to_path (fs, uri));
-	}
+        {
+          const char *uri = gnome_vfs_volume_get_activation_uri (volume);
+          *children = g_slist_append (*children,
+                                      gtk_file_system_uri_to_path (fs, uri));
+        }
     }
   g_list_free (volumes);
 
@@ -229,14 +229,14 @@ root_file_folder_list_children (GtkFileFolder  *folder,
       GnomeVFSDrive *drive = d->data;
 
       if (gnome_vfs_drive_is_user_visible (drive))
-	{
-	  char *uri =
-	    g_strdup_printf ("drive://%s",
-			     gnome_vfs_drive_get_device_path (drive));
-	  *children = g_slist_append (*children,
-				      gtk_file_system_uri_to_path (fs, uri));
-	  g_free (uri);
-	}
+        {
+          char *uri =
+            g_strdup_printf ("drive://%s",
+                             gnome_vfs_drive_get_device_path (drive));
+          *children = g_slist_append (*children,
+                                      gtk_file_system_uri_to_path (fs, uri));
+          g_free (uri);
+        }
     }
   g_list_free (drives);
 
@@ -261,21 +261,21 @@ deliver_get_folder_callback (gpointer data)
 {
   struct get_folder_clos *clos = (struct get_folder_clos *)data;
   clos->callback (clos->handle, GTK_FILE_FOLDER (clos->root_folder),
-		  NULL, clos->data);
+                  NULL, clos->data);
   g_free (clos);
   return FALSE;
 }
 
 static GtkFileSystemHandle *
 hildon_file_system_root_get_folder (HildonFileSystemSpecialLocation *location,
-				    GtkFileSystem                *filesystem,
-				    const GtkFilePath              *path,
-				    GtkFileInfoType                 types,
-				    GtkFileSystemGetFolderCallback  callback,
-				    gpointer                        data)
+                                    GtkFileSystem                *filesystem,
+                                    const GtkFilePath              *path,
+                                    GtkFileInfoType                 types,
+                                    GtkFileSystemGetFolderCallback  callback,
+                                    gpointer                        data)
 {
   GtkFileSystemHandle *handle = g_object_new (GTK_TYPE_FILE_SYSTEM_HANDLE,
-					      NULL);
+                                              NULL);
   RootFileFolder *root_folder = g_object_new (ROOT_TYPE_FILE_FOLDER, NULL);
   struct get_folder_clos *clos = g_new (struct get_folder_clos, 1);
 

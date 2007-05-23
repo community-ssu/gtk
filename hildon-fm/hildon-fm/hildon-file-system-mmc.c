@@ -153,10 +153,10 @@ capitalize_ascii_string (gchar *str)
       *str = g_ascii_toupper (*str);
       str++;
       while (*str)
-	{
-	  *str = g_ascii_tolower (*str);
-	  str++;
-	}
+        {
+          *str = g_ascii_tolower (*str);
+          str++;
+        }
     }
 }
 
@@ -176,7 +176,7 @@ hildon_file_system_mmc_get_display_name (HildonFileSystemSpecialLocation
     }
 
     /* check first if it is an unnamed memory card */
-    if (name && strncmp (name, "mmc-undefined-name", 18) == 0) 
+    if (name && strncmp (name, "mmc-undefined-name", 18) == 0)
     {
         g_free (name);
         name = NULL;
@@ -262,38 +262,38 @@ hildon_file_system_mmc_get_unavailable_reason (HildonFileSystemSpecialLocation
     gboolean mmc_is_present;
     gboolean mmc_is_corrupted;
     gboolean mmc_cover_open;
-    
+
     priv = PRIVATE (location);
 
     if (!priv->available)
     {
         fs_settings = _hildon_file_system_settings_get_instance ();
 
-	/* maybe should start using a bitmask instead of bunch of variables */
+        /* maybe should start using a bitmask instead of bunch of variables */
         g_object_get (fs_settings, "usb-cable", &is_connected, NULL);
-	g_object_get (fs_settings, "mmc-used", &mmc_is_used, NULL);
-	g_object_get (fs_settings, "mmc-is-present", &mmc_is_present, NULL);
-	g_object_get (fs_settings, "mmc-is-corrupted", &mmc_is_corrupted, NULL);
+        g_object_get (fs_settings, "mmc-used", &mmc_is_used, NULL);
+        g_object_get (fs_settings, "mmc-is-present", &mmc_is_present, NULL);
+        g_object_get (fs_settings, "mmc-is-corrupted", &mmc_is_corrupted, NULL);
         g_object_get (fs_settings, "mmc-cover-open", &mmc_cover_open, NULL);
 
-	if (mmc_cover_open)
-	{
-	  return NULL;
-	}
-	
-	if (mmc_is_corrupted)
-	{
-	  return g_strdup (KE("card_ib_memory_card_corrupted"));
-	}
-	
+        if (mmc_cover_open)
+        {
+          return NULL;
+        }
+
+        if (mmc_is_corrupted)
+        {
+          return g_strdup (KE("card_ib_memory_card_corrupted"));
+        }
+
         if (is_connected && mmc_is_used)
-	{
-    	  return g_strdup (_("sfil_ib_mmc_usb_connected"));
-	}
-  	else
-	{
+        {
+              return g_strdup (_("sfil_ib_mmc_usb_connected"));
+        }
+          else
+        {
           return g_strdup (_("hfil_ib_mmc_not_present"));
-	}
+        }
     }
 
     return NULL;

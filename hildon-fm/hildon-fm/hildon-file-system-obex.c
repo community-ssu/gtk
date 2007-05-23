@@ -102,14 +102,14 @@ hildon_file_system_obex_init (HildonFileSystemObex *device)
     location->fixed_icon = g_strdup ("qgn_list_filesys_divc_cls");
     location->fixed_title = g_strdup (_("sfil_li_bluetooth"));
     location->failed_access_message = NULL;
-    
+
     device->has_children = FALSE;
 
     device->bonding_handler_id =
       g_signal_connect (fs_settings,
-			"notify::bonding-changed",
-			G_CALLBACK (bonding_changed),
-			device);
+                        "notify::bonding-changed",
+                        G_CALLBACK (bonding_changed),
+                        device);
 }
 
 static void
@@ -117,14 +117,14 @@ hildon_file_system_obex_finalize (GObject *obj)
 {
     HildonFileSystemObex *obex;
     HildonFileSystemSettings *fs_settings;
-    
+
     obex = HILDON_FILE_SYSTEM_OBEX (obj);
     fs_settings = _hildon_file_system_settings_get_instance ();
     if (g_signal_handler_is_connected (fs_settings,
-				       obex->bonding_handler_id))
+                                       obex->bonding_handler_id))
       {
-        g_signal_handler_disconnect (fs_settings, 
-				     obex->bonding_handler_id);
+        g_signal_handler_disconnect (fs_settings,
+                                     obex->bonding_handler_id);
       }
 
     G_OBJECT_CLASS (hildon_file_system_obex_parent_class)->finalize (obj);
@@ -167,7 +167,7 @@ hildon_file_system_obex_create_child_location (HildonFileSystemSpecialLocation *
         child->basepath = new_uri;
         child->failed_access_message = _("sfil_ib_cannot_connect_device");
 
-	HILDON_FILE_SYSTEM_OBEX(location)->has_children = TRUE;
+        HILDON_FILE_SYSTEM_OBEX(location)->has_children = TRUE;
     }
 
 
@@ -316,7 +316,7 @@ static gchar *_obex_addr_to_display_name(gchar *obex_addr)
 
     dbus_error_init(&error);
     conn = dbus_bus_get_private (DBUS_BUS_SYSTEM, &error);
-    
+
     if (!conn) {
         dbus_error_free(&error);
 

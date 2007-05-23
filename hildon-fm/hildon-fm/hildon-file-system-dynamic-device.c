@@ -48,7 +48,7 @@ hildon_file_system_dynamic_device_class_init (HildonFileSystemDynamicDeviceClass
     GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
     HildonFileSystemSpecialLocationClass *location =
             HILDON_FILE_SYSTEM_SPECIAL_LOCATION_CLASS (klass);
-    
+
     gobject_class->finalize = hildon_file_system_dynamic_device_finalize;
     location->failed_access =
             hildon_file_system_model_dynamic_device_failed_access;

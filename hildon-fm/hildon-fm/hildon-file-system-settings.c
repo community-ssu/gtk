@@ -23,7 +23,7 @@
 
 /*
  * HildonFileSystemSettings
- * 
+ *
  * Shared settings object to be used in HildonFileSystemModel.
  * Setting up dbus/gconf stuff for each model takes time, so creating
  * a single settings object is much more convenient.
@@ -246,7 +246,7 @@ set_gateway_from_gconf_value(HildonFileSystemSettings *self,
 
 static void
 set_mmc_cover_open_from_gconf_value(HildonFileSystemSettings *self,
-		                    GConfValue *value)
+                                    GConfValue *value)
 {
   if (value && value->type == GCONF_VALUE_BOOL)
   {
@@ -257,7 +257,7 @@ set_mmc_cover_open_from_gconf_value(HildonFileSystemSettings *self,
 
 static void
 set_mmc_corrupted_from_gconf_value(HildonFileSystemSettings *self,
-			           GConfValue *value)
+                                   GConfValue *value)
 {
   if (value && value->type == GCONF_VALUE_BOOL)
   {
@@ -268,7 +268,7 @@ set_mmc_corrupted_from_gconf_value(HildonFileSystemSettings *self,
 
 static void
 set_mmc_present_from_gconf_value(HildonFileSystemSettings *self,
-	                         GConfValue *value)
+                                 GConfValue *value)
 {
   if (value && value->type == GCONF_VALUE_BOOL)
   {
@@ -321,7 +321,7 @@ set_bt_name_from_message(HildonFileSystemSettings *self,
   g_object_notify(G_OBJECT(self), "btname");
 }
 
-static void 
+static void
 set_flight_mode_from_message(HildonFileSystemSettings *self,
                              DBusMessage *message)
 {
@@ -341,7 +341,7 @@ set_flight_mode_from_message(HildonFileSystemSettings *self,
     new_mode = TRUE;
   else if (g_ascii_strcasecmp(mode_name, MCE_NORMAL_MODE) == 0)
     new_mode = FALSE;
-  else 
+  else
     new_mode = self->priv->flightmode;
 
   if (new_mode != self->priv->flightmode)
@@ -351,7 +351,7 @@ set_flight_mode_from_message(HildonFileSystemSettings *self,
   }
 }
 
-static void 
+static void
 set_icd_status_from_message (HildonFileSystemSettings *self,
                              DBusMessage *message)
 {
@@ -359,16 +359,16 @@ set_icd_status_from_message (HildonFileSystemSettings *self,
   gboolean new_value = self->priv->iap_connected;
 
   if (dbus_message_get_args (message, NULL,
-			     DBUS_TYPE_STRING, &name,
-			     DBUS_TYPE_STRING, &type,
-			     DBUS_TYPE_STRING, &status,
-			     DBUS_TYPE_STRING, &uierr,
-			     DBUS_TYPE_INVALID))
+                             DBUS_TYPE_STRING, &name,
+                             DBUS_TYPE_STRING, &type,
+                             DBUS_TYPE_STRING, &status,
+                             DBUS_TYPE_STRING, &uierr,
+                             DBUS_TYPE_INVALID))
     {
       if (strcmp (status, "IDLE") == 0)
-	new_value = FALSE;
+        new_value = FALSE;
       else if (strcmp (status, "CONNECTED") == 0)
-	new_value = TRUE;
+        new_value = TRUE;
     }
 
   if (new_value != self->priv->iap_connected)
@@ -394,17 +394,17 @@ hildon_file_system_settings_handle_dbus_signal(DBusConnection *conn,
       set_bt_name_from_message(HILDON_FILE_SYSTEM_SETTINGS(data), msg);
     }
   else if (dbus_message_is_signal(msg, "org.bluez.Adapter", "BondingCreated")
-	   || dbus_message_is_signal(msg, "org.bluez.Adapter",
-				     "BondingRemoved"))
+           || dbus_message_is_signal(msg, "org.bluez.Adapter",
+                                     "BondingRemoved"))
     {
       g_object_notify (data, "bonding-changed");
     }
   else if (dbus_message_is_signal (msg, ICD_DBUS_INTERFACE,
-				   ICD_STATUS_CHANGED_SIG))
+                                   ICD_STATUS_CHANGED_SIG))
     {
       set_icd_status_from_message (HILDON_FILE_SYSTEM_SETTINGS (data), msg);
     }
-				   
+
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }
 
@@ -470,7 +470,7 @@ static void btname_received(DBusPendingCall *call, void *user_data)
   self->priv->btname_ready = TRUE;
 }
 
-static void 
+static void
 hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
 {
   DBusConnection *conn;
@@ -491,7 +491,7 @@ hildon_file_system_settings_setup_dbus(HildonFileSystemSettings *self)
 
   /* Let's query initial state. These calls are async, so they do not
      consume too much startup time */
-  request = dbus_message_new_method_call(MCE_SERVICE, 
+  request = dbus_message_new_method_call(MCE_SERVICE,
         MCE_REQUEST_PATH, MCE_REQUEST_IF, MCE_DEVICE_MODE_GET);
   if (request == NULL)
   {
@@ -579,7 +579,7 @@ gconf_gateway_changed(GConfClient *client, guint cnxn_id,
                       GConfEntry *entry, gpointer data)
 {
   g_assert(entry != NULL);
-  	 
+
   if (g_ascii_strcasecmp(entry->key, BTCOND_GCONF_PREFERRED) == 0)
     set_gateway_from_gconf_value(
       HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
@@ -587,7 +587,7 @@ gconf_gateway_changed(GConfClient *client, guint cnxn_id,
 
 static void
 gconf_mmc_value_changed(GConfClient *client, guint cnxn_id,
-		        GConfEntry *entry, gpointer data)
+                        GConfEntry *entry, gpointer data)
 {
   g_assert(entry != NULL);
 
@@ -601,7 +601,7 @@ gconf_value_changed(GConfClient *client, guint cnxn_id,
                     GConfEntry *entry, gpointer data)
 {
   g_assert(entry != NULL);
-  
+
   if (g_ascii_strcasecmp(entry->key, USB_CABLE_KEY) == 0)
     set_usb_from_gconf_value(
       HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
@@ -609,11 +609,11 @@ gconf_value_changed(GConfClient *client, guint cnxn_id,
          set_mmc_used_from_gconf_value(
            HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
   else if (g_ascii_strcasecmp(entry->key, MMC_PRESENT_KEY) == 0)
-	 set_mmc_present_from_gconf_value(
-	   HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
+         set_mmc_present_from_gconf_value(
+           HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
   else if (g_ascii_strcasecmp(entry->key, MMC_COVER_OPEN_KEY) == 0)
-	 set_mmc_cover_open_from_gconf_value(
-	   HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
+         set_mmc_cover_open_from_gconf_value(
+           HILDON_FILE_SYSTEM_SETTINGS(data), entry->value);
 }
 
 static void
@@ -623,14 +623,14 @@ hildon_file_system_settings_finalize(GObject *obj)
 
   g_free(priv->btname);
   g_free(priv->gateway);
-   
+
   if (priv->gconf)
   {
     gconf_client_remove_dir(priv->gconf, BTCOND_GCONF_PATH, NULL);
     g_object_unref(priv->gconf);
   }
 
-  if (priv->dbus_conn)    
+  if (priv->dbus_conn)
   {
     dbus_bus_remove_match(priv->dbus_conn, MCE_MATCH_RULE, NULL);
     dbus_bus_remove_match(priv->dbus_conn, BTNAME_MATCH_RULE, NULL);
@@ -640,7 +640,7 @@ hildon_file_system_settings_finalize(GObject *obj)
     dbus_connection_close(priv->dbus_conn);
     dbus_connection_unref(priv->dbus_conn);
   }
-  
+
   G_OBJECT_CLASS(hildon_file_system_settings_parent_class)->finalize(obj);
 }
 
@@ -650,13 +650,13 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
   GObjectClass *object_class;
 
   g_type_class_add_private(klass, sizeof(HildonFileSystemSettingsPrivate));
- 
+
   object_class = G_OBJECT_CLASS(klass);
-    
+
   object_class->finalize = hildon_file_system_settings_finalize;
   object_class->get_property = hildon_file_system_settings_get_property;
   object_class->set_property = hildon_file_system_settings_set_property;
-  
+
   g_object_class_install_property(object_class, PROP_FLIGHT_MODE,
     g_param_spec_boolean("flight-mode", "Flight mode",
                          "Whether or not the device is in flight mode",
@@ -683,24 +683,24 @@ hildon_file_system_settings_class_init(HildonFileSystemSettingsClass *klass)
                          FALSE, G_PARAM_READABLE));
   g_object_class_install_property(object_class, PROP_MMC_PRESENT,
     g_param_spec_boolean("mmc-is-present", "MMC present",
-	                 "Whether or not the MMC is present",
-			 FALSE, G_PARAM_READABLE));
+                         "Whether or not the MMC is present",
+                         FALSE, G_PARAM_READABLE));
   g_object_class_install_property(object_class, PROP_MMC_CORRUPTED,
     g_param_spec_boolean("mmc-is-corrupted", "MMC corrupted",
-	                 "Whether or not the MMC is corrupted",
-			 FALSE, G_PARAM_READABLE));
+                         "Whether or not the MMC is corrupted",
+                         FALSE, G_PARAM_READABLE));
   g_object_class_install_property(object_class, PROP_MMC_COVER_OPEN,
     g_param_spec_boolean("mmc-cover-open", "MMC cover open",
-	                 "Whether or not the MMC cover is open",
-			 FALSE, G_PARAM_READABLE));
+                         "Whether or not the MMC cover is open",
+                         FALSE, G_PARAM_READABLE));
   g_object_class_install_property(object_class, PROP_IAP_CONNECTED,
     g_param_spec_boolean("iap-connected", "IAP Connected",
-	                 "Whether or not we have a internet connection",
-			 FALSE, G_PARAM_READABLE));
+                         "Whether or not we have a internet connection",
+                         FALSE, G_PARAM_READABLE));
   g_object_class_install_property(object_class, PROP_BONDING_CHANGED,
     g_param_spec_boolean("bonding-changed", "Bluetooth bondings changed",
-	                 "Hack: only used for notify signals...",
-			 FALSE, G_PARAM_READABLE));
+                         "Hack: only used for notify signals...",
+                         FALSE, G_PARAM_READABLE));
 }
 
 static gboolean delayed_init(gpointer data)
@@ -731,14 +731,14 @@ static gboolean delayed_init(gpointer data)
   }
 
   gconf_client_add_dir(self->priv->gconf, MMC_DIR,
-		       GCONF_CLIENT_PRELOAD_NONE, &error);
+                       GCONF_CLIENT_PRELOAD_NONE, &error);
   if (error != NULL)
   {
     ULOG_ERR_F("gconf_client_add_dir failed: %s", error->message);
     g_error_free(error);
     error = NULL;
   }
-  
+
   gconf_client_notify_add(self->priv->gconf, BTCOND_GCONF_PATH,
                           gconf_gateway_changed, self, NULL, &error);
   if (error != NULL)
@@ -758,15 +758,15 @@ static gboolean delayed_init(gpointer data)
   }
 
   gconf_client_notify_add(self->priv->gconf, MMC_DIR,
-		          gconf_mmc_value_changed, self, NULL, &error);
- 
+                          gconf_mmc_value_changed, self, NULL, &error);
+
   if (error != NULL)
   {
     ULOG_ERR_F("gconf_client_notify_add failed: %s", error->message);
     g_error_free(error);
     error = NULL;
   }
-  
+
   value = gconf_client_get_without_default(self->priv->gconf,
                                            BTCOND_GCONF_PREFERRED, &error);
   if (error != NULL)
@@ -821,8 +821,8 @@ static void
 hildon_file_system_settings_init(HildonFileSystemSettings *self)
 {
   self->priv = G_TYPE_INSTANCE_GET_PRIVATE(self, \
-    HILDON_TYPE_FILE_SYSTEM_SETTINGS, HildonFileSystemSettingsPrivate); 
- 
+    HILDON_TYPE_FILE_SYSTEM_SETTINGS, HildonFileSystemSettingsPrivate);
+
   self->priv->flightmode = TRUE;
   self->priv->iap_connected = TRUE;
 
@@ -830,7 +830,7 @@ hildon_file_system_settings_init(HildonFileSystemSettings *self)
      only after we are in idle */
   g_idle_add(delayed_init, self);
 
-  hildon_file_system_settings_setup_dbus(self);  
+  hildon_file_system_settings_setup_dbus(self);
 }
 
 HildonFileSystemSettings *_hildon_file_system_settings_get_instance(void)
@@ -845,7 +845,7 @@ HildonFileSystemSettings *_hildon_file_system_settings_get_instance(void)
 
 gboolean _hildon_file_system_settings_ready(HildonFileSystemSettings *self)
 {
-  return self->priv->btname_ready && 
+  return self->priv->btname_ready &&
          self->priv->gconf_ready &&
          self->priv->flightmode_ready;
 }
@@ -874,8 +874,8 @@ static gboolean banner_timeout(gpointer data)
    XXX - It is theoretically possible that the pid will be reused
          while this process still uses it as an identifier.
 
-	 When the kernel-glibc combo is fixed to no longer have
-	 per-thread-pids, banner_pid can be removed.
+         When the kernel-glibc combo is fixed to no longer have
+         per-thread-pids, banner_pid can be removed.
 */
 
 static dbus_int32_t banner_pid = 0;
