@@ -1,3 +1,11 @@
+2007-05-23  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
+
+	* template/template.svg: Removed
+	qgn_plat_separator_columnlist_header - its not used anywhere. 
+
+	* Added visually different states for the pressed and disabled
+	scroll arrows of task navigator menus.
+
 2007-05-21  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* template/template.svg: New graphics for task navigator. Man, the
