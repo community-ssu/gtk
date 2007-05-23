@@ -721,6 +721,8 @@ void hildon_file_details_dialog_set_file_iter(HildonFileDetailsDialog *self, Gtk
   /* Save iterator to priv struct as row reference */
   gtk_tree_row_reference_free(self->priv->active_file);
   path = gtk_tree_model_get_path(model, iter);
+  g_return_if_fail(path); // add some safety with logging here to clear up bug NB#51729, NB#52272, NB#52271
+
   self->priv->active_file = gtk_tree_row_reference_new(model, path);
   gtk_tree_path_free(path);
 
