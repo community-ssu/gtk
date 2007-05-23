@@ -1220,6 +1220,11 @@ static void hildon_file_system_model_get_value(GtkTreeModel * model,
             g_value_take_string(value,
                 hildon_file_system_special_location_get_extra_info(model_node->location));
         break;
+    case HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_DRIVE:
+        g_value_set_boolean (value,
+			     g_str_has_prefix (gtk_file_path_get_string (path),
+					       "drive://"));
+        break;
     default:
         g_assert_not_reached();
     };
@@ -2106,8 +2111,8 @@ static void hildon_file_system_model_init(HildonFileSystemModel * self)
         G_TYPE_INT;
     priv->column_types[HILDON_FILE_SYSTEM_MODEL_COLUMN_EXTRA_INFO] =
         G_TYPE_STRING;
-
-    g_assert(HILDON_FILE_SYSTEM_MODEL_NUM_COLUMNS == 26);
+    priv->column_types[HILDON_FILE_SYSTEM_MODEL_COLUMN_IS_DRIVE] =
+        G_TYPE_BOOLEAN;
 
     priv->stamp = g_random_int();
     priv->delayed_lists = g_queue_new();
