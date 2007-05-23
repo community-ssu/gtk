@@ -25,7 +25,7 @@ AC_ARG_ENABLE(logging,
     esac
   ])
 
-CFLAGS="$CFLAGS -Wall -ansi -Wmissing-prototypes -Wmissing-declarations -Werror -Wno-format-extra-args $LOGFLAGS"
+CFLAGS="$CFLAGS -Wall -Wmissing-prototypes -Wmissing-declarations -Wno-format-extra-args $LOGFLAGS"
 
 GTK_VERSION=2.10.0
 

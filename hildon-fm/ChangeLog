@@ -1,5 +1,11 @@
 2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
 
+	* hildon-fm/hildon-file-chooser-dialog.c:
+	When calculating new name, don't turn it into a known extension.
+	Fixes NB#52803 (hopefully)
+
+2007-05-23  Onne Gorter  <onne.gorter@nokia.com>
+
 	Tabs to 8 spaces, remove trailing spaces
 
 2007-05-22  Marius Vollmer  <marius.vollmer@nokia.com>

@@ -518,14 +518,20 @@ set_stub_and_ext (HildonFileChooserDialogPrivate *priv,
       is_folder = FALSE;
     }
 
-  dot = _hildon_file_system_search_extension (priv->stub_name,
-                                              FALSE, is_folder);
+  // TODO this should change, we should know:
+  // * what the user typed in the entry box
+  // * what the system proposed for the entry box (autonamed files parts)
+  // * what the system extension is
+  // Mixing all that together in the text field loses information, leading to corner cases
 
-  /* Is there a dot, but not as first character */
-  if (dot && dot != priv->stub_name) {
-    g_free(priv->ext_name);
-    priv->ext_name = g_strdup(dot);
-    *dot = '\0';
+  dot = _hildon_file_system_search_extension (priv->stub_name, FALSE, is_folder);
+  if (dot) {
+      /* if there is a dot and the extension is not the whole name, or the extension is known, separate them */
+      if (_hildon_file_system_is_known_extension (dot) || dot != priv->stub_name) {
+            g_free(priv->ext_name);
+            priv->ext_name = g_strdup(dot);
+            *dot = '\0';
+      }
   }
 
   hildon_file_chooser_dialog_do_autonaming (priv);
