@@ -88,9 +88,14 @@ hildon_file_system_root_create_child_location (HildonFileSystemSpecialLocation
 {
   HildonFileSystemSpecialLocation *child = NULL;
 
+  /* XXX - Cough, a bit of hardcoding, it is better to ask GnomeVFS
+           whether this is a volume or drive.
+   */
   if (g_str_has_prefix (uri, "drive://")
       || (g_str_has_prefix (uri, "file:///media/")
-          && strchr (uri + 14, '/') == NULL))
+          && strchr (uri + 14, '/') == NULL)
+      || (g_str_has_prefix (uri, "file:///media/usb/")
+          && strchr (uri + 18, '/') == NULL))
     {
       child = g_object_new (HILDON_TYPE_FILE_SYSTEM_VOLDEV, NULL);
       child->basepath = g_strdup (uri);
