@@ -66,8 +66,11 @@ static const char gdk_settings_names[] =
   "Xft/DPI\0"                 "gtk-xft-dpi\0"
   "Net/FallbackIconTheme\0"   "gtk-fallback-icon-theme\0"
   "Gtk/TouchscreenMode\0"     "gtk-touchscreen-mode\0"
+#ifdef MAEMO_CHANGES
   "Gtk/EnableAccels\0"        "gtk-enable-accels\0"
-  "Gtk/EnableMnemonics\0"     "gtk-enable-mnemonics\0";
+  "Gtk/EnableMnemonics\0"     "gtk-enable-mnemonics\0"
+#endif /* MAEMO_CHANGES */
+  ;
 
 static const struct
 {
@@ -109,7 +112,10 @@ static const struct
   { 1197, 1206 },
   { 1219, 1227 },
   { 1239, 1261 },
-  { 1285, 1305 },
+  { 1285, 1305 }
+#ifdef MAEMO_CHANGES
+  ,
   { 1326, 1343 },
   { 1361, 1381 }
+#endif /* MAEMO_CHANGES */
 };
