@@ -1,9 +1,8 @@
 osso-af-startup (1.41-1) unstable; urgency=low
 
-  * UNRELEASED
   * Added sourcing of sdl.defs. (Related to NB#54725)
 
- -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 10 May 2007 16:17:10 +0300
+ -- Kimmo Hämäläinen <kimmo.hamalainen@nokia.com>  Thu, 24 May 2007 16:29:59 +0300
 
 osso-af-startup (1.40-1) unstable; urgency=low
 
