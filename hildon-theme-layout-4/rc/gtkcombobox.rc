@@ -40,6 +40,9 @@ class "GtkComboBox" style "osso-combobox-base"
 ###################################################
 
 style "osso-combobox-button" {
+    GtkButton::child-displacement-x = 0
+    GtkButton::child-displacement-y = 0
+
     engine "sapwood" {
 
         image {
@@ -172,3 +175,5 @@ style "osso-combobox-entry-button-down" {
 	}
 }
 widget_class "*.GtkComboBoxEntry.GtkToggleButton" style "osso-combobox-entry-button-down"
+
+	

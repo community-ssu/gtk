@@ -218,3 +218,11 @@ binding "menu-escape"
 }
 
 class "GtkMenu" binding "menu-escape"
+
+#Make F4 close the menu
+binding "menu-f4"
+{
+  bind "F4" { "cancel" () }
+}
+
+class "GtkMenu" binding "menu-f4"

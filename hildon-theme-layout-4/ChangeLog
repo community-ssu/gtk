@@ -1,3 +1,9 @@
+2007-05-24  Xan Lopez  <xan.lopez@nokia.com>
+
+	* rc/gtkcombobox.rc: set child-displacement-{x,y} to 0
+	for the toggle button.
+	* rc/base.rc: make F4 (menu key) close menus.
+
 2007-05-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
 
 	* rc/ossorssfeedreader.rc: Removing arrows from the RSS reader. Fixes
