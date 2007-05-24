@@ -1,3 +1,9 @@
+glib2.0 (2.12.12-1osso3) unstable; urgency=low
+
+  * updated rules files to match correct version
+
+ -- Fernando Herrera <fernando.herrera-de-las-heras@nokia.com>  Wed, 24 May 2007 18:15:55 +0200
+
 glib2.0 (2.12.12-1osso2) unstable; urgency=low
 
   * GObjectClass.constructed() backported from upstream glib trunk.
