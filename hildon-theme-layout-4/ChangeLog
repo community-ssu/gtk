@@ -1,3 +1,8 @@
+2007-05-24  Michael Dominic Kostrzewa  <michael.kostrzewa@nokia.com> 
+
+	* rc/ossomediaplayer.rc: Fixing the borders in the media player. Fixes
+	NB#55620. 
+
 2007-05-22  Tuomas Kuosmanen  <tuomas.kuosmanen@nokia.com>
 
 	* rc/themespecificgtk.rc: Added new logical colors also

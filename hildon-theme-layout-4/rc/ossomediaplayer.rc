@@ -177,7 +177,7 @@ style "osso-mp-button-frame"
         image {
             function = SHADOW
                 file     = "../images/qgn_plat_mediaplayer_buttons_bg.png"
-                border   = { 0, 0, 112, 112 }
+                border   = { 55, 55, 112, 112 }
         }
     }
 }
