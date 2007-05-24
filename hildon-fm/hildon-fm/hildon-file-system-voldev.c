@@ -44,6 +44,10 @@ static void
 hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
                                            *location, GtkFileSystem *fs);
 
+static char *
+hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
+					  *location);
+
 G_DEFINE_TYPE (HildonFileSystemVoldev,
                hildon_file_system_voldev,
                HILDON_TYPE_FILE_SYSTEM_SPECIAL_LOCATION);
@@ -60,6 +64,7 @@ hildon_file_system_voldev_class_init (HildonFileSystemVoldevClass *klass)
     location->requires_access = FALSE;
     location->is_visible = hildon_file_system_voldev_is_visible;
     location->volumes_changed = hildon_file_system_voldev_volumes_changed;
+    location->get_extra_info = hildon_file_system_voldev_get_extra_info;
 }
 
 static void
@@ -203,3 +208,18 @@ hildon_file_system_voldev_volumes_changed (HildonFileSystemSpecialLocation
 
   g_signal_emit_by_name (location, "changed");
 }
+
+static char *
+hildon_file_system_voldev_get_extra_info (HildonFileSystemSpecialLocation
+					  *location)
+{
+  HildonFileSystemVoldev *voldev = HILDON_FILE_SYSTEM_VOLDEV (location);
+
+  if (voldev->volume)
+    return g_strdup (gnome_vfs_volume_get_device_path (voldev->volume));
+  else if (voldev->drive)
+    return g_strdup (gnome_vfs_drive_get_device_path (voldev->drive));
+  else
+    return NULL;
+}
+
