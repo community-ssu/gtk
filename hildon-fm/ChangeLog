@@ -1,3 +1,12 @@
+2007-05-24  Marius Vollmer  <marius.vollmer@nokia.com>
+
+        Released 1.9.25
+	
+	* hildon-fm/hildon-file-system-voldev.c
+	(hildon_file_system_voldev_get_extra_info): New, return the device
+	path.
+	(hildon_file_system_voldev_class_init): Install it.
+
 2007-05-23  Marius Vollmer  <marius.vollmer@nokia.com>
 
 	Released 1.9.24
