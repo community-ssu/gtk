@@ -1,5 +1,10 @@
 2007-05-24  Xan Lopez  <xan.lopez@nokia.com>
 
+	* rc/gtksettings.rc: revert gtk-timeout-repeat
+	to the default value, using 150 breaks too many things.
+
+2007-05-24  Xan Lopez  <xan.lopez@nokia.com>
+
 	* rc/gtkcombobox.rc: set child-displacement-{x,y} to 0
 	for the toggle button.
 	* rc/base.rc: make F4 (menu key) close menus. Fixes: NB#54923

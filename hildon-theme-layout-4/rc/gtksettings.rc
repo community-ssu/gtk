@@ -24,9 +24,6 @@ gtk-touchscreen-mode = 1
 # Show last char in hidden entries for 600 ms
 gtk-entry-last-char-timeout = 600
 
-# Update
-gtk-timeout-repeat = 150
-
 # Disable wrap-around in menus, notebooks and radio groups
 gtk-keynav-wrap-around = 0
 
